@@ -1,0 +1,46 @@
+{
+  "$schema_comment": "Claude Code project settings — hooks + permissions",
+
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Glob(**)",
+      "Grep(**)",
+      "Bash(dotnet build*)",
+      "Bash(dotnet test*)",
+      "Bash(dotnet run*)",
+      "Bash(dotnet ef*)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(ls*)",
+      "Bash(cat*)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(git commit*)",
+      "Bash(rm -rf*)",
+      "Edit(**)",
+      "Write(**)"
+    ],
+    "deny": [
+      "Bash(curl*)",
+      "Bash(wget*)",
+      "Read(**/.env)",
+      "Read(**/secrets/**)",
+      "Read(**/appsettings.Production.json)"
+    ]
+  },
+
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/validate-shared-changes.sh" },
+          { "type": "command", "command": ".claude/hooks/check-server-authority.sh" }
+        ]
+      }
+    ]
+  }
+}
