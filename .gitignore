@@ -1,0 +1,103 @@
+# ─────────────────────────────────────────────
+# .NET (server, shared, tools)
+# ─────────────────────────────────────────────
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Build output for shared/ DLL pipeline (ADR-010)
+client/Assets/Plugins/*.dll
+client/Assets/Plugins/*.pdb
+client/Assets/Plugins/*.dll.meta
+client/Assets/Plugins/*.pdb.meta
+
+# ─────────────────────────────────────────────
+# Unity (client/)
+# ─────────────────────────────────────────────
+[Ll]ibrary/
+[Tt]emp/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Unity 자동 생성 csproj/sln (shared/server csproj는 손으로 관리하므로 제외)
+client/*.csproj
+client/*.sln
+client/*.slnx
+client/Assembly-CSharp*.csproj
+
+# Unity 산출물
+*.unitypackage
+*.apk
+*.aab
+*.ipa
+*.app
+
+# Unity Asset Store package metadata
+ExportedObj/
+.consulo/
+*.svd
+*.[Pp]ublish.xml
+*.unityproj
+*.tmp
+*.[Cc]ache
+!?*.[Cc]ache/
+*.opt
+
+# ─────────────────────────────────────────────
+# IDE / Editor
+# ─────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# JetBrains Rider
+*.DotSettings.user
+
+# ─────────────────────────────────────────────
+# OS
+# ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─────────────────────────────────────────────
+# Backups / archives (커밋 금지)
+# ─────────────────────────────────────────────
+*.tar.gz
+*.zip
+*.bak
+*.orig
+
+# ─────────────────────────────────────────────
+# Secrets / credentials (절대 금지)
+# ─────────────────────────────────────────────
+*.env
+*.env.local
+.env*
+secrets/
+*.pem
+*.key
+appsettings.Development.json
+appsettings.Local.json
+
+# ─────────────────────────────────────────────
+# Logs
+# ─────────────────────────────────────────────
+*.log
+logs/
+
+# ─────────────────────────────────────────────
+# Claude Code (로컬 설정만 무시, 프로젝트 공유 설정은 커밋)
+# ─────────────────────────────────────────────
+.claude/settings.local.json
+.claude/worktrees/
