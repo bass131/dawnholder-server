@@ -25,24 +25,19 @@
 
 ## 현재까지 결정한 것들
 
-### ADR-001: Unity + .NET 권위 서버
-**날짜**: (Harness 셋업일)
-**상태**: 채택됨
-**결정**: Unity 클라이언트 + .NET 8 권위 서버 구조.
-**이유**: C# 단일 언어로 클라/서버/공유 코드를 통일. 사용자의 학습 목적
-(백엔드/네트워킹)에 부합. 권위 서버는 MMO 표준 패턴.
-**트레이드오프**: 웹 클라이언트는 추가 작업 필요. 모바일/콘솔 멀티플랫폼은
-지금 고려 안 함. Node.js나 Go로 갔을 때보다 컨테이너 풋프린트가 큼.
+### ADR-001: Unity 2022 LTS + .NET 10 LTS + .NET Standard 2.1 멀티타겟
+**날짜**: (Harness 셋업일) — **2026-05-06 .NET 버전 갱신**
+**상태**: 채택됨 (대체: ADR-001 v1 ".NET 8")
+**결정**: Unity 2022 LTS 클라이언트 + .NET 10 LTS 권위 서버. `shared/`는 .NET Standard 2.1로 빌드해 Unity가 인식 가능하게.
+**이유**: C# 단일 언어 통일. .NET 10 LTS는 2028년까지 지원이라 11월 본 마감 + 시연 후 시점도 커버 (.NET 8은 2026-11-10 만료, .NET 9는 2026-05-12 만료로 부적합). .NET Standard 2.1 = Unity 2022 LTS의 Mono/IL2CPP가 인식하는 공통 API 사양 → DLL 공유 가능.
+**트레이드오프**: 웹/모바일/콘솔은 추가 작업. 기존 ServerDev 코드(.NET 9)를 클론할 때 csproj TargetFramework 마이그레이션 필요 (대부분 한 줄). .NET 10이 신규 LTS라 일부 NuGet 라이브러리는 호환성 케이스별 확인.
 
-### ADR-002: Raw TCP + MessagePack
-**날짜**: (Harness 셋업일)
-**상태**: 채택됨
-**결정**: Mirror/FishNet 같은 HLAPI 대신 raw TCP + length-prefixed binary
-+ MessagePack 직렬화로 직접 구현.
-**이유**: 사용자의 학습 목적이 네트워킹 깊이 이해. HLAPI는 블랙박스가 많아
-학습 효과가 적음. MessagePack은 JSON 대비 빠르고, Protobuf 대비 C# 연동이 간편.
-**트레이드오프**: 신뢰성 계층(재연결, 패킷 순서 보장 등)을 직접 구현해야
-함. JSON처럼 디버깅하기 쉽지 않음 (바이너리). 개발 초기 속도가 느림.
+### ADR-002: Raw TCP + 자체 PDL + 코드 생성기
+**날짜**: (Harness 셋업일) — **2026-05-06 직렬화 방식 갱신**
+**상태**: 채택됨 (대체: ADR-002 v1 "MessagePack")
+**결정**: Mirror/FishNet 같은 HLAPI 대신 raw TCP + length-prefixed binary 사용. 직렬화는 MessagePack이 아니라 **자체 PDL(Packet Definition Language) XML + C# 코드 생성기**로. PDL.xml 단일 소스 → 양쪽(client/server)에 동일 패킷 클래스 자동 생성.
+**이유**: 학습 목적이 네트워킹 깊이 이해. PDL이 단일 소스 역할을 해서 헌법 #4 ("복사-붙여넣기 금지") 강제. MessagePack 대비 wire format이 더 가볍고 메타데이터 0. 면접 임팩트: "Rookiss 강의 패턴 응용해 PDL 생성기 직접 구현". 본인이 4월에 이미 작성한 PDL 시스템(`tools/PacketGenerator/`로 이주)이 있음.
+**트레이드오프**: 직접 짠 코드라 버그 가능 (생성기에서 발견된 하드코딩 버그 수정 필요 — 이주 시 처리). MessagePack의 schema evolution 같은 자동 호환성 없음 — packet ID 수동 관리 + Protocol.Version bump. JSON처럼 디버깅 쉽지 않음 (바이너리).
 
 ### ADR-003: 모노레포
 **날짜**: (Harness 셋업일)
@@ -119,15 +114,33 @@ EF Core는 raw query 대비 추상화 비용이 약간 있음. 캐싱 레이어�
 
 ---
 
+### ADR-010: Shared 코드 공유 방식 = DLL + Embedded PDB
+**날짜**: 2026-05-06
+**상태**: 채택됨
+**결정**: `shared/`는 .NET Standard 2.1 라이브러리로 빌드. 빌드 산출물(`.dll` + `.pdb`)을 `client/Assets/Plugins/`에 자동 복사해서 Unity가 참조. PDB는 `EmbedAllSources=true`로 원본 `.cs` 통째로 임베드 → IDE가 F12 시 원본 코드(주석 포함) 그대로 표시.
+**이유**: 헌법 #4 ("동일 어셈블리 참조, 복사-붙여넣기 금지")의 **물리적 강제**. Unity 측에선 임베드된 소스가 ReadOnly로 떠서 수정 자체가 불가능. F12 + step into는 정상 동작 → C++의 헤더+구현 분리 모델보다 풍부 (모든 함수 바디 보임). 비개발자 팀원(유현)이 클라 작업 중 실수로 shared 코드 건드릴 가능성 0%.
+**트레이드오프**: shared 수정 시 "빌드 → 복사 → Unity 새로고침" 사이클 1~2초 추가 (`dotnet watch` 자동화 가능). symlink/Unity Local Package 대비 빌드 단계 1개 더. `.dll`/`.pdb`는 빌드 산출물이라 `.gitignore` (커밋 금지).
+
+---
+
+### ADR-011: 기존 ServerDev 코드 부분 채택 (시나리오 B)
+**날짜**: 2026-05-06
+**상태**: 채택됨
+**결정**: 본인이 4월에 학습 목적으로 작성한 `C:\Users\bass1\바탕 화면\ServerDev\Dawnholder_Server`의 코드 일부를 채택. **채택**: ServerCore (Listener/Session/RecvBuffer/SendBuffer/JobQueue), PacketGenerator + PDL.xml, DummyClient. **새로 작성**: Server 게임 로직 (GameRoom/ClientSession 등), Unity 클라이언트 전체 (기존 코드는 3D였고 본 프로젝트는 2D).
+**이유**: ServerCore는 4월에 디버깅 끝낸 검증된 SocketAsyncEventArgs 패턴 → 시간 절약. PDL 시스템은 면접 임팩트 큰 자체 구현물. 게임 로직(GameRoom 등)은 헌법 #1(Server Authority) 위반 — 클라가 보낸 좌표 무검증 적용 — 이라 새로 짜야 함. 6월 캡스톤 C 옵션(2인 movement) 6주 안에 가려면 시간 절약 필요.
+**트레이드오프**: 본인 코드 빚 일부 안고 시작. 발견된 PacketGenerator 버그(`PacketFormat.cs` 178번 줄 하드코딩 `C_Chat`) 이주 시 수정 필요. 기존 코드의 한글 주석/네이밍 컨벤션이 새로 짜는 부분과 미묘하게 안 맞을 수 있음 → 이주 시 정리. **참고**: 기존 `GameRoom.Move()`의 Server Authority 위반은 **학습 일지 1호 후보** — "처음엔 이렇게 짰다 → 헌법 적용해 이렇게 진화" 면접 서사로 활용.
+
+---
+
 ## 채워질 ADR 후보들 (예시)
 
-> 본인이 진행하다가 다음 결정들을 할 때 ADR로 기록하세요.
+> 본인이 진행하다가 다음 결정들을 할 때 ADR로 기록하세요. 번호는 채택 순서대로 부여 — 아래는 가이드일 뿐.
 
-- **ADR-010**: 인증 방식 (단순 닉네임 → JWT? 세션?)
-- **ADR-011**: 캐릭터 데이터 스키마 (정규화 vs JSONB)
-- **ADR-012**: 채팅 시스템 (TCP로 전송 vs 별도 채널)
-- **ADR-013**: 로그 저장 (로컬 파일 vs 외부 sink)
-- **ADR-014**: 헤드리스 봇의 자동화 방식
+- **ADR-012**: 인증 방식 (단순 닉네임 → JWT? 세션?)
+- **ADR-013**: 캐릭터 데이터 스키마 (정규화 vs JSONB)
+- **ADR-014**: 채팅 시스템 (TCP로 전송 vs 별도 채널)
+- **ADR-015**: 로그 저장 (로컬 파일 vs 외부 sink)
+- **ADR-016**: 헤드리스 봇의 자동화 방식
 - ...
 
 ---
@@ -136,5 +149,9 @@ EF Core는 raw query 대비 추상화 비용이 약간 있음. 캐싱 레이어�
 
 | 날짜 | 변경 | 이유 |
 |------|------|------|
-| YYYY-MM-DD | 최초 작성 + ADR-001~005 시드 | 어제 Harness 셋업에서 결정한 것들 박제 |
-| YYYY-MM-DD | ADR-006~009 추가 | PRD 1차 작성 과정에서 결정된 것들 박제 |
+| (Harness 셋업일) | 최초 작성 + ADR-001~005 시드 | Harness 셋업에서 결정한 것들 박제 |
+| (PRD 1차 작성일) | ADR-006~009 추가 | PRD 1차 작성 과정에서 결정된 것들 박제 |
+| 2026-05-06 | ADR-001 갱신 (.NET 8 → .NET 10 LTS + .NET Standard 2.1) | .NET 9 STS 만료 임박, .NET 8 LTS도 본 마감 직전 만료. .NET 10 LTS가 시연 후 시점도 커버. shared/는 Unity 호환 위해 .NET Standard 2.1. |
+| 2026-05-06 | ADR-002 갱신 (MessagePack → 자체 PDL + 코드 생성기) | 본인이 4월에 작성한 PDL 시스템(`tools/PacketGenerator/`로 이주) 채택. 면접 임팩트 + 학습 가치. |
+| 2026-05-06 | ADR-010 신규 (DLL + Embedded PDB) | 헌법 #4 (복사-붙여넣기 금지) 물리적 강제. 비개발자 팀원 보호. |
+| 2026-05-06 | ADR-011 신규 (기존 ServerDev 코드 부분 채택, 시나리오 B) | 6월 캡스톤 옵션 C(2인 movement) 6주 일정 확보. 게임 로직은 헌법 적용 위해 새로 작성. |

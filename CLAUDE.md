@@ -149,10 +149,10 @@ Phase 단위 완료 시에만.
 ## Stack
 
 - **Client**: Unity 2022 LTS, C#, 2D sidescroll
-- **Server**: .NET 8, C# 콘솔 호스트 (authoritative)
-- **Network**: Raw TCP, length-prefixed binary frames, MessagePack 직렬화
+- **Server**: .NET 10 LTS, C# 콘솔 호스트 (authoritative) — [ADR-001]
+- **Network**: Raw TCP, length-prefixed binary frames. 직렬화는 **자체 PDL(Packet Definition Language) XML + C# 코드 생성기** (MessagePack 아님) — [ADR-002]
 - **Persistence**: PostgreSQL via EF Core (서버 전용)
-- **Shared code**: `shared/` — `.csproj`로 빌드되어 client/server 양쪽이 참조
+- **Shared code**: `shared/` — **.NET Standard 2.1** 라이브러리로 빌드. 산출물(.dll + .pdb)을 `client/Assets/Plugins/`에 복사해 Unity가 참조. PDB는 `EmbedAllSources=true`로 원본 .cs 임베드 → Unity 측에서 ReadOnly로 보이고 F12 시 원본 코드(주석 포함) 그대로 표시. 헌법 #4 ("복사-붙여넣기 금지")의 물리적 강제 — [ADR-010]
 
 ## Repo Layout
 
