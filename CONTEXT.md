@@ -59,22 +59,30 @@
 
 ## ⏸️ 현재 멈춤 지점 (2026-05-09)
 
-**Phase 01 완료 → Phase 02 진입 직전.**
+**Phase 02 완료 → Phase 03 진입 직전.**
 
-- ✅ 첫 실코드 main에 박힘 (commit `2411ae0`): .NET 10 솔루션 + shared 라이브러리(.NET Standard 2.1) + Unity 6.4 LTS 빈 프로젝트 + DLL 빌드 파이프라인 검증
-- ✅ ADR-010 동작 검증 완료 — 헌법 #4(공유 코드 규율)가 빌드 시스템으로 물리적 강제됨
-- ✅ Phase 01 학습 일지 + 개념 일지(`.NET Standard 2.1 + Embedded PDB`) 박제
-- ✅ 폴더 prefix 정렬 + 경로 정합성 일괄 갱신 (commit `071680e`, 2026-05-09)
-- ✅ ServerCore 마이그 함정 실측 (.NET 9 → .NET Std 2.1) — **함정 거의 없음**: 에러 0, nullable warning 13개. 단 그 결과 *무리하게 마이그하지 말자*는 결정으로 회귀 (아래 참조).
+- ✅ Phase 01 완료 (commit `2411ae0`): 솔루션 부트스트랩 + DLL 빌드 파이프라인. 학습 일지 박제.
+- ✅ 폴더 prefix 정렬 + 경로 정합성 일괄 갱신 (commit `071680e`)
+- ✅ ServerCore 마이그 함정 실측 — 에러 0, nullable 13개. 함정 거의 없음 확인.
+- ✅ **Phase 02 완료** (commit `c2ea772`): ServerCore 7파일을 `02_Server/Network/`에 **.NET 10 유지**로 정착. nullable 21곳 청소(실측 13 + .NET 10 추가 8). 빌드 경고 0 / 오류 0, 테스트 3 통과.
+- ✅ 노션 세션 로그 박제 — Phase 02 결정 흐름 + 학습 3가지 ([URL](https://www.notion.so/35b76ceccb78816b85abde9b91217218))
+- ⏳ Phase 02 학습 일지(`/journal-phase` 등)는 사용자 결정에 따라 미루거나 진행
 
-**다음 작업**: Phase 02 (**ServerCore 정착 — 서버측만**). 클라측 socket 전략(X/Y 갈래)은 **Phase 03 시작 시점에 재논의**. Hook 보강은 코드가 들어온 뒤 사례 기반으로 판단하기로 (2026-05-09 결정).
+**다음 작업**: Phase 03 (**Unity 클라 socket 전략 결정 + 클라측 시작**). 갈래 X(같은 코드 공유, .NET Std 2.1 마이그 + DLL) vs 갈래 Y2(분리 + 클라용 별도 DLL). 결정 직후 새 ADR 박기. 옛 Phase 03 파일(`03-tcp-listener.md`)은 outdated → 시작 시 재작성. Hook 보강은 여전히 사례 기반으로 미룸.
 
 ---
 
 ## 보류 중
 
-### Phase 02 후 판단 (사례 기반)
-코드가 실제로 들어온 뒤 *진짜 필요한 가드*가 어떤 것인지 보고 결정:
+### Phase 03 시작 직후 결정 — Unity 클라 socket 전략 (시급)
+서버측 정착(Phase 02)이 끝났으니 이제 갈래 결정 시점:
+
+- **갈래 X**: ServerCore를 `98_Shared/Net/`로 마이그 (.NET 10 → .NET Std 2.1, nullable 13곳 청소). 양쪽이 같은 DLL 참조. 4월 패턴 그대로.
+- **갈래 Y2**: ServerCore는 `02_Server/Network/`에만 (Phase 02 정착 그대로). Unity 클라 socket은 *별도 .NET Std 2.1 라이브러리*로 작성 후 DLL로 `03_Client/Assets/Plugins/`에 자동 복사. 팀원 보호 + 자체 socket 학습 가치.
+- **결정 근거 메모**: 마이그 함정 실측 결과 X도 무리 없음 (~1시간). 단 *현업 표준(Mirror/FishNet/gRPC) + 학습 임팩트 + 변경 내성*은 Y2가 우세. 결정되면 새 ADR 박기.
+
+### Phase 03 후 판단 (사례 기반)
+코드가 더 들어온 뒤 *진짜 필요한 가드*가 어떤 것인지 보고 결정:
 
 - **Hook 보강** (가드 강제):
   - `tdd-guard.sh` (공식·직렬화·상태머신 영역, 테스트 부재 시 차단)
@@ -82,11 +90,6 @@
   - `check-server-authority.sh` 강화 (03_Client/에 데미지/HP/XP 키워드 차단)
   - `HOOK_MODE=warn|block` 토글 — Phase 진행 단계별 적용
 - **TDD 강제 영역 결정**: 헌법 6번째 원칙으로 박을지, ADR로 박을지. "엄격 vs 미루기" 갈등 인지 중.
-
-### Phase 03 시작 시점 결정 — Unity 클라 socket 전략
-- **갈래 X**: ServerCore를 98_Shared/Net/로 마이그 (.NET 10 → .NET Std 2.1, nullable 13곳 청소). 양쪽이 같은 DLL 참조. 4월 패턴 그대로.
-- **갈래 Y**: ServerCore는 02_Server/Network/에만. Unity 클라 socket을 자체 작성 (~200줄). 현업 표준에 가까움 + 학습 임팩트 ↑. 단 작업량 ↑.
-- **결정 근거 메모**: 마이그 함정 실측 결과 X도 무리 없음 (1시간 청소). 단 *현업 표준 + 학습 가치 + 변경 내성*은 Y가 우세. Phase 02에서 서버측 정착 후 진짜 일정 감각 잡고 다시 논의.
 
 ### 학습 마라톤 시작 전 (~6월 말)
 - `00_Document/TEAM.md` (미팅 결과 박제)
@@ -98,22 +101,25 @@
 
 ---
 
-## 다음 Phase = Phase 02 (ServerCore 정착 — 서버측만)
+## 다음 Phase = Phase 03 (Unity 클라 socket 전략 결정 + 클라측 시작)
 
-**범위**: ServerDev 4월 코드의 ServerCore 7파일(`Connector/JobQueue/Listener/PriorityQueue/RecvBuffer/SendBuffer/Session`)을 `02_Server/Network/`로 정착. **.NET 10 그대로** + nullable annotation 청소(실측 13곳). GameServer.csproj가 02_Server/Network/ 코드를 참조하도록 정리.
+**범위**: Unity 클라이언트의 socket 레이어를 어떻게 만들지 결정 + 그에 따른 첫 코드 작업.
 
-**클라측은 이번 Phase 범위 외**. Phase 03에서 Unity 클라 socket 전략(X 같은 코드 공유 vs Y 자체 작성) 결정.
+**먼저 결정**: 갈래 X(같은 코드 공유, ServerCore를 .NET Std 2.1로 마이그 + DLL) vs 갈래 Y2(분리 + 클라용 별도 .NET Std 2.1 라이브러리, DLL로 03_Client에 복사). 결정 직후 새 ADR 박기.
 
-**예상 위험**: 낮음. 마이그가 아니라 *위치 이동 + 빌드 통합*. nullable 청소가 유일한 노이즈.
+**예상 위험**:
+- X 선택 시: ServerCore 마이그 (~1시간, 함정은 실측됨), 02_Server는 .NET 10 그대로 둘지 .NET Std 2.1로 일치시킬지 추가 결정
+- Y2 선택 시: 별도 클라용 라이브러리 새 프로젝트(`04_ClientNet/` 정도) + ~200줄 작성 + Unity Plugins 복사 파이프라인
 
 **시작 흐름**:
-1. 사용자가 "Phase 02 시작하자"
-2. Claude는 헌법 + ADR-001/002/010/011 + Phase 02 파일 통독
-3. 5대 원칙 + 시나리오 B 인지 확인
-4. ServerDev 폴더(`C:\Users\bass1\바탕 화면\ServerDev\Dawnholder_Server\`)에서 ReadOnly 참고 이주
-5. 단계별 빌드 검증 (`dotnet build Dawnholder.slnx`) + 5단계 보고 + 학습 일지 권유
+1. 사용자가 "Phase 03 시작하자"
+2. Claude는 헌법 + ADR-001/002/010/011 + Phase 03 파일(**재작성 필요**) 통독
+3. 갈래 X/Y2 최종 비교 + 사용자 결정
+4. 새 ADR 박기 (ADR-012 또는 그 이후 번호)
+5. Phase 03 파일 재작성 (이 작업의 작업 단계 포함)
+6. 코드 작업 → 빌드 검증 → 5단계 보고 → 학습 일지 권유
 
-**Phase 02 파일 (`01_Phases/M1-foundation/02-shared-library.md`)**: 옛 plan(shared 라이브러리 추가)은 사실상 Phase 01에 흡수됨 → 재작성 필요. 이 CONTEXT 갱신 후 별도 작업으로 진행.
+**Phase 03 파일 (`01_Phases/M1-foundation/03-tcp-listener.md`)**: 1차 셋업 시점 본이라 outdated. 갈래 결정 후 통째 재작성 필요.
 
 ---
 
@@ -155,7 +161,7 @@
 02_Server/, 03_Client/, 98_Shared/, 99_Tools/    ← 게임 코드
 .claude/agents/                                  ← 6개 서브에이전트
 .claude/commands/                                ← 14개 슬래시 커맨드
-.claude/hooks/                                   ← 2개 (Phase 02 후 사례 기반 보강 예정)
+.claude/hooks/                                   ← 2개 (코드 더 들어온 뒤 사례 기반 보강 예정)
 Dawnholder.slnx                                  ← .NET 솔루션 (02_Server + 98_Shared)
 global.json                                      ← .NET SDK 핀 (10.0.203)
 노션 "Dawnholder 협업 히스토리" DB               ← 세션 STAR 박제
@@ -194,3 +200,4 @@ global.json                                      ← .NET SDK 핀 (10.0.203)
 | 2026-05-09 (응축 재작성) | 200줄 내외로 처음부터 재작성. 옛 디테일은 git history + 노션 + learning-journal로 이관. START_HERE.md / harness-structure.html 삭제. |
 | 2026-05-09 (폴더 prefix) | 모든 최상위 폴더에 정렬용 숫자 prefix 부여 (`00_Document/`, `01_Phases/`, `02_Server/`, `03_Client/`, `98_Shared/`, `99_Tools/`). `Dawnholder.slnx` + `global.json` 신설. .gitignore / csproj / 헌법 / 서브-CLAUDE.md 경로 정합성 일괄 갱신. |
 | 2026-05-09 (Phase 02 재정의) | ServerCore 마이그 함정 실측 (nullable 13개뿐). 그 결과 *마이그 가능*하지만 *현업 표준 + 학습 가치*는 분리 모델 우세 판단. **Phase 02 = 서버측 ServerCore 정착(.NET 10 그대로)으로 축소. 클라측 socket 전략은 Phase 03에서 X/Y 결정.** Hook 보강도 Phase 02 후 사례 기반으로 미룸. |
+| 2026-05-09 (Phase 02 완료) | ServerCore 7파일을 `02_Server/Network/`에 정착(.NET 10 유지, namespace `Dawnholder.Server.Network`). nullable 21곳 청소(실측 13 + .NET 10 추가 8). JobQueueTests 2개 추가. 빌드 경고 0 / 오류 0, 테스트 3 통과. commit `c2ea772`. 노션 세션 로그 박제. |
