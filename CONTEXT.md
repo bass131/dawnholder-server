@@ -48,80 +48,117 @@
 
 ---
 
-## 팀 구조 (잠정 — 미팅 후 확정)
+## 팀 구조 (2026-05-06 미팅 후 확정)
 
-| 역할 | 영역 | 도구 |
-|------|------|------|
-| **본인 (팀장)** | 백엔드 코어 (서버/네트워크/DB) | Claude Code |
-| **팀원 1** | Unity 클라이언트 UI/입력 | Claude Code (학습 후) |
-| **팀원 2** | ComfyUI 리소스 + 게임 콘텐츠 데이터 | Claude Code (학습 후) |
-| **팀원 3** | 관리 시스템(MES) — **별도 도메인, 별도 레포 가능성** | 미정 (팀원 3과 상의) |
+| 역할 | 이름 | 영역 | 주당 시간 | Claude Code 학습 시작 |
+|------|------|------|-----------|----------------------|
+| **본인 (팀장)** | 정유현 | 백엔드 코어 (서버/네트워크/DB) | 주 6일 (조정 가능) | 사용 중 |
+| **팀원 1** | 김인규 | Unity 클라이언트 UI/입력 | 주 4~5일 | 6월 말 학기 후 |
+| **팀원 2** | 박정우 | 관리 시스템(MES) — **별도 레포 + 별도 헌법** | 주 4~5일 | 7월 이후 (Anthropic 구독 비용 사유) |
 
-- 팀원 3명은 비개발자. 본인 평가로 "논리적 사고/철저함 부족".
-- 도구 합의: 옥션 C — 다 같이 Claude Code 사용 (단, 학습 마라톤 4~6주 거쳐야 함).
-- MES는 게임 서버와 도메인이 다름 → 본인 통찰 "또 하나의 소프트웨어".
+- 팀원 전원 **개발 경험 거의 백지** (Git/터미널 포함). 온보딩은 그 수준에서 시작.
+- ComfyUI 리소스/콘텐츠 작업: 인규가 클라 UI와 병행하거나 추후 정리 (1차 미팅에선 분리 안 됨).
+- MES 별도 레포 + 별도 헌법 결정 (ADR-011 외 별도 헌법 골격은 정우 합류 직전에 작성).
+- "도구 합의: 옵션 C — 다 같이 Claude Code"는 합의됨. 학습 마라톤 시작이 6월 말~7월로 미뤄짐.
 
 ---
 
 ## ⏸️ 현재 멈춰있는 정확한 지점
 
-**팀원 미팅 대기 중.** 미팅이 끝나기 전엔 다음 작업 진행 안 함.
+**Phase 01 대기 중.** 묶음 A (결정 박제) 완료 — PR #1 미머지. 묶음 B (팀/조직 정렬) 사용자 결정으로 **잠시 대기 (2026-05-09)**. `/log-session` 슬래시 커맨드 구현 완료 — PR #2 미머지. Phase 01 코드 이주는 본인 시간 날 때 시작.
 
-**미팅에서 결정될 것**:
-- 영역 분담 합의/조정
-- 주당 투입 시간
-- 정기 미팅 시간
-- 학습 마라톤 4~6주 인정 여부
-- MES 방향 (팀원 3과 별도 상의)
-- Claude Code 도구 합의
+### 현재 열린 PR (2026-05-09 기준)
 
-**미팅 자료**: `dawnholder-team-meeting-brief.html` (이미 만들어둠).
+| PR | 제목 | 베이스 | 상태 | 머지 순서 |
+|----|------|--------|------|-----------|
+| [#1](https://github.com/bass131/dawnholder-server/pull/1) | Align project decisions after team meeting (scenario B) | main | open | **먼저** |
+| [#2](https://github.com/bass131/dawnholder-server/pull/2) | feat(harness): add /log-session slash command | main | open | PR #1 후 |
 
-**미팅 결과 받으면 할 작업**:
-1. PRD에 "6월 캡스톤" 마일스톤 추가
-2. `docs/TEAM.md` 작성
-3. `docs/onboarding/` (팀원 1, 2용 — Claude Code 처음 사용자 가정)
-4. `mentor` 서브에이전트 추가
-5. `.claude/settings.json` 권한 분리 (영역별 쓰기 권한)
-6. (필요 시) MES 별도 레포 헌법 골격 만들기 도움
+⚠️ PR #2는 PR #1의 `docs/skill-specs/log-session.md`를 인풋으로 함. PR #1 머지 전엔 PR #2 머지 보류.
 
-→ **사용자가 미팅 결과 들고 오면 위 작업 즉시 시작 가능.**
+⚠️ PR #2를 main 기준으로 올렸기에(방법 B), PR #1 머지 후 CONTEXT.md 일부 충돌 가능 — PR #1의 CONTEXT.md 갱신은 본 PR(=PR #1)에 같이 들어감.
+
+### 진척 상황 (2026-05-09 기준)
+
+**완료**:
+- ✅ 팀원 미팅 끝남. 결과 → "팀 구조" 섹션 갱신됨.
+- ✅ ServerDev (4월 학습용 코드) 분석 완료. 시나리오 B 결정 (코어 채택 + 게임 로직 새로).
+- ✅ DLL + Embedded PDB 코드 공유 방식 확정.
+- ✅ ADR-001 갱신 (.NET 8 → .NET 10 LTS + .NET Standard 2.1).
+- ✅ ADR-002 갱신 (MessagePack → 자체 PDL).
+- ✅ ADR-010 신규 (DLL 공유 방식).
+- ✅ ADR-011 신규 (ServerDev 코드 부분 채택).
+- ✅ PRD 캡스톤 1 발표 섹션 추가 (옵션 C / B fallback).
+- ✅ CLAUDE.md Stack 섹션 갱신.
+
+**완료 (2026-05-09 추가)**:
+- ✅ `/log-session` 슬래시 커맨드 구현 → PR #2. 명세(`docs/skill-specs/log-session.md`, PR #1)를 실행 파일(`.claude/commands/log-session.md`)로 옮김. 트리거 A(수동) 채택. 다음 세션 끝에서 첫 실호출 테스트 예정.
+
+**보류 중 (묶음 B — 사용자 "잠시 대기" 결정 2026-05-09)**:
+- ⏳ `docs/TEAM.md` 작성 (미팅 결과 박제. CONTEXT.md엔 요약만 있음).
+- ⏳ `.claude/settings.json` 권한 분리 (영역별 쓰기 권한 — client/server/shared/tools).
+
+**보류 중 (학습 마라톤 시작 전, 6월 말까지 시간 여유)**:
+- ⏳ `docs/onboarding/` (인규/정우용. 거의 백지 가정 — Git/터미널부터).
+- ⏳ `mentor` 서브에이전트 추가.
+- ⏳ MES 별도 레포 헌법 골격 (정우 합류 직전 — 7월 이후).
+- ⏳ 정우 Anthropic 학생 할인/저렴한 플랜 같이 알아보기.
+
+**다음 코드 작업 (묶음 C — Phase 01 재정의)**:
+- Phase 01 = "ServerDev 코드 이주 + DLL 빌드 파이프라인 셋업". 단순 솔루션 부트스트랩이 아님.
+- 자세한 흐름은 다음 섹션 참조.
 
 ---
 
-## 다음 Phase = Phase 01 (코드 시작)
+## 다음 Phase = Phase 01 (코드 이주 + 셋업)
 
-**조건**: 팀원 미팅 끝나고 + Harness 마무리 끝난 후 + 본인이 시간 있을 때.
+**조건**: 본인이 시간 있을 때. 묶음 B(TEAM.md/권한 분리)는 Phase 01 전후 어느 쪽이든 OK.
 
 **예상 시점**: 다음 주 (사용자가 "이번 주는 힘들고 다음 주에"라고 함).
 
+**Phase 01 재정의** (기존 `phases/M1-foundation/01-solution-bootstrap.md` 갱신 필요):
+"빈 솔루션 만들기"가 아니라 **"ServerDev 4월 코드 채택 + DLL 빌드 파이프라인"**.
+
+**완료 조건**:
+1. ✅ `shared/Net/` (Listener, Session, RecvBuffer, SendBuffer, JobQueue) — ServerCore에서 이주, .NET Standard 2.1로 빌드.
+2. ✅ `shared/Protocol/` + `tools/PacketGenerator/` — PDL.xml + 코드 생성기 이주. 발견된 버그(`PacketFormat.cs:178` 하드코딩 `C_Chat`) 수정.
+3. ✅ `tools/qa-sim/` — DummyClient 이주, .NET 10으로.
+4. ✅ `server/` — .NET 10 콘솔 호스트 부팅 (게임 로직은 Phase 02부터).
+5. ✅ `client/` — Unity 2022 LTS 빈 프로젝트, `Plugins/` 폴더에 shared.dll/.pdb 자동 복사 빌드 스크립트 동작.
+6. ✅ Unity 에디터에서 `using Net;` 입력 시 IntelliSense 뜨고 F12로 원본 .cs 코드 보임.
+7. ✅ `dotnet build` 한 번으로 server + shared + tools 다 빌드되고, Unity 새로고침이 자동 됨.
+
 **시작 흐름**:
 1. 사용자가 새 세션 열고 "Phase 01 시작하자"
-2. Claude는 헌법 + PRD + ADR + `phases/M1-foundation/01-solution-bootstrap.md` 통독
-3. 통독 후 사용자에게 5대 절대 원칙 인지 확인 + Phase 01 범위 확인
-4. 체크리스트 따라 작업 (한 단계씩)
-5. 완료 후 5단계 보고 + 학습 일지 권유
+2. Claude는 헌법 + PRD + ADR-001/002/010/011 + 갱신된 `phases/M1-foundation/01-solution-bootstrap.md` 통독
+3. 통독 후 사용자에게 5대 절대 원칙 인지 확인 + 시나리오 B 인지 확인
+4. ServerDev 폴더(`C:\Users\bass1\바탕 화면\ServerDev\Dawnholder_Server\`)에서 ReadOnly 참고하며 이주
+5. 단계별 빌드 검증 (shared만 → server → tools → client 순)
+6. 완료 후 5단계 보고 + 학습 일지 권유
 
-**Phase 01 = "Hello World 수준의 환경 검증"**. 작아 보여도 가장 중요. 여기서 막히면 다음 Phase 다 무의미.
+**가장 위험한 부분**: shared의 .NET Standard 2.1 빌드가 Unity Plugins/에서 정상 인식되는지. 첫 시도에 안 될 가능성 큼 — 시행착오 예상. 막히면 `/why DLL Plugins/` 같은 학습 도구로 풀어가기.
 
 ---
 
-## 두 세션의 핵심 결정들 (요약)
+## 핵심 결정들 (요약)
 
 상세는 ADR(`docs/ADR.md`)에 박제됨. 여기는 빠른 참조용.
 
 ### 기술 스택
-- Unity 2022 LTS + .NET 8 권위 서버 (ADR-001)
-- Raw TCP + length-prefixed binary + MessagePack (ADR-002, 직접 구현)
-- 모노레포 (ADR-003)
+- Unity 2022 LTS + **.NET 10 LTS** 권위 서버 (ADR-001, 2026-05-06 갱신)
+- Raw TCP + length-prefixed binary + **자체 PDL + 코드 생성기** (ADR-002, 2026-05-06 갱신)
+- 모노레포 (ADR-003) — 단, MES는 별도 레포 (ADR-011)
 - 20 TPS 서버 틱 (ADR-004)
 - PostgreSQL + EF Core (ADR-005)
+- **shared/ = .NET Standard 2.1 + DLL + Embedded PDB** (ADR-010, 신규)
+- **ServerDev 4월 코드 부분 채택** (ADR-011, 신규 — 시나리오 B)
 
 ### 게임/스코프
 - 두 장르 결합 MVP (ADR-006) — RPG + 길드 타이쿤 분리 안 함
 - 거점 시설 = 구매/기능제공 모델만 (ADR-007) — 자원 흐름 안 함
 - 단일 서버 프로세스 (ADR-008) — 분산/샤딩 안 함
 - 게임 회사 백엔드 포트폴리오 타겟 (ADR-009)
+- **6월 캡스톤 1 = 옵션 C(2인 movement) Stretch / 옵션 B(1인) Fallback** (PRD 갱신)
 
 ### Harness 작동 원칙
 - 학부생 멘토링 모드 (헌법 "사용자 컨텍스트" 섹션)
@@ -174,7 +211,7 @@ project-root/
 │   └── M1-foundation/                 ← 4개 Phase 작성됨
 ├── .claude/
 │   ├── agents/                        ← 6개: netcode/gameplay/client/content/persistence/qa-sim
-│   ├── commands/                      ← 11개 슬래시 커맨드
+│   ├── commands/                      ← 12개 슬래시 커맨드 (/log-session 포함, PR #2)
 │   ├── hooks/                         ← 2개
 │   └── settings.json
 └── (외부 산출물)
@@ -187,20 +224,27 @@ project-root/
 **학습용**: `/why`, `/explain`, `/concept`, `/recap`, `/dumb-it-down`
 **작업용**: `/plan`, `/review`, `/new-packet`, `/new-monster`, `/load-test`
 **일지**: `/journal-phase`, `/journal-concept`, `/journal-bug`
+**기록**: `/log-session` (PR #2, 첫 실호출 테스트 대기)
 
 ---
 
 ## 미해결 질문 / 결정 보류 중인 것
 
-이 항목들은 미팅 또는 후속 작업에서 결정됨. 다음 Claude는 사용자가
-관련 주제 꺼낼 때 이 목록 참조하세요.
+이 항목들은 후속 작업에서 결정됨. 다음 Claude는 사용자가 관련 주제 꺼낼 때 이 목록 참조하세요.
 
-- [ ] **MES 팀원 Harness**: 팀원 3과 상의 후 별도 레포 / 별도 헌법 / 본인이 도울 정도
-- [ ] **인증 방식**: 단순 닉네임 → JWT? 세션? (ADR-010 후보)
-- [ ] **캐릭터 데이터 스키마**: 정규화 vs JSONB (ADR-011 후보)
-- [ ] **채팅 시스템**: TCP로 전송 vs 별도 채널 (ADR-012 후보) — MVP 후
-- [ ] **로그 저장**: 로컬 파일 vs 외부 sink (ADR-013 후보)
-- [ ] **헤드리스 봇 자동화 방식** (ADR-014 후보)
+**해결된 것 (2026-05-06)**:
+- ✅ MES 방향 → 별도 레포 + 별도 헌법 (ADR-011 외, 골격은 정우 합류 직전 작성)
+- ✅ ServerDev 코드 채택 여부 → 시나리오 B (ADR-011)
+- ✅ Shared 코드 공유 방식 → DLL + Embedded PDB (ADR-010)
+
+**남은 미해결 질문**:
+- [ ] **캡스톤 1 발표 정확한 날짜** — 6월 중순 가정. 학교 일정 확정 시 PRD 갱신.
+- [ ] **인증 방식**: 단순 닉네임 → JWT? 세션? (ADR-012 후보)
+- [ ] **캐릭터 데이터 스키마**: 정규화 vs JSONB (ADR-013 후보)
+- [ ] **채팅 시스템**: TCP로 전송 vs 별도 채널 (ADR-014 후보) — MVP 후
+- [ ] **로그 저장**: 로컬 파일 vs 외부 sink (ADR-015 후보)
+- [ ] **헤드리스 봇 자동화 방식** (ADR-016 후보)
+- [ ] **정우 Anthropic 학생 할인/저렴한 플랜** — 합류 직전에 같이 알아보기
 
 ---
 
@@ -221,4 +265,5 @@ project-root/
 | 날짜 | 누가 | 무엇 |
 |------|------|------|
 | (셋업 다음 날) | Claude (이전 세션) | 최초 작성 — 두 세션 맥락 핸드오프 |
-| (미팅 후) | _(여기에 추가)_ | _(미팅 결과로 팀 구조 확정 등)_ |
+| 2026-05-06 | Claude (2번째 세션) | 미팅 결과 박제 + ServerDev 4월 코드 분석 + 시나리오 B 결정 + ADR-001/002 갱신 + ADR-010/011 신규 + PRD 캡스톤 1 섹션 추가 + Phase 01 재정의 |
+| 2026-05-09 | Claude (3번째 세션) | PR #1 미머지 상태에서 `/log-session` 슬래시 커맨드 구현 → PR #2 (방법 B = main 기준 별개 PR). 묶음 B는 사용자 "잠시 대기" 결정. PR 상태 섹션 추가. |
