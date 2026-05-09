@@ -8,7 +8,7 @@
 ## Layout
 
 ```
-shared/
+98_Shared/
 ├── Shared.csproj       .NET Standard 2.1 라이브러리로 빌드
 ├── Protocol/
 │   ├── PacketId.cs     모든 패킷 ID enum (값 절대 재사용 금지)
@@ -54,5 +54,5 @@ hard error보다 나쁩니다.
 
 ## 변경 머지 전
 
-실행: `dotnet build client/ && dotnet build server/` — 둘 다 통과해야 함.
+실행: `dotnet build Dawnholder.slnx` — 통과해야 함. (Unity 측은 `98_Shared/` DLL이 `03_Client/Assets/Plugins/Shared/`로 자동 복사된 뒤 Unity 컴파일을 통해 별도 검증.)
 `validate-shared-changes.sh` 훅이 편집 시 자동으로 이걸 합니다.

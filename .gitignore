@@ -9,12 +9,12 @@ obj/
 *.sln.docstates
 .vs/
 
-# Build output for shared/ DLL pipeline (ADR-010)
+# Build output for 98_Shared/ DLL pipeline (ADR-010)
 # **/*는 모든 깊이 매칭 — Plugins/Shared/Shared.dll 같이 한 단계 더 들어간 것도 잡음
-client/Assets/Plugins/**/*.dll
-client/Assets/Plugins/**/*.pdb
-client/Assets/Plugins/**/*.dll.meta
-client/Assets/Plugins/**/*.pdb.meta
+03_Client/Assets/Plugins/**/*.dll
+03_Client/Assets/Plugins/**/*.pdb
+03_Client/Assets/Plugins/**/*.dll.meta
+03_Client/Assets/Plugins/**/*.pdb.meta
 
 # ─────────────────────────────────────────────
 # Unity (client/)
@@ -28,11 +28,11 @@ client/Assets/Plugins/**/*.pdb.meta
 [Mm]emoryCaptures/
 [Rr]ecordings/
 
-# Unity 자동 생성 csproj/sln (shared/server csproj는 손으로 관리하므로 제외)
-client/*.csproj
-client/*.sln
-client/*.slnx
-client/Assembly-CSharp*.csproj
+# Unity 자동 생성 csproj/sln (98_Shared/02_Server csproj는 손으로 관리하므로 제외)
+03_Client/*.csproj
+03_Client/*.sln
+03_Client/*.slnx
+03_Client/Assembly-CSharp*.csproj
 
 # Unity 산출물
 *.unitypackage

@@ -3,7 +3,7 @@
 ## Layout
 
 ```
-server/
+02_Server/
 ├── GameServer/
 │   ├── Network/        TCP listener, session, framing
 │   ├── Loop/           Tick scheduler, world simulation
@@ -36,7 +36,7 @@ server/
 
 ## 새 packet handler를 추가할 때
 
-1. `shared/Protocol/`에 request/response 정의.
-2. `server/GameServer/Handlers/`에 핸들러 추가.
+1. `98_Shared/Protocol/`에 request/response 정의.
+2. `02_Server/GameServer/Handlers/`에 핸들러 추가.
 3. dispatch 테이블에 등록.
 4. 최소: happy 테스트 1, invalid input 테스트 1, auth 테스트 1 작성.

@@ -1,9 +1,9 @@
 <Solution>
-  <Folder Name="/server/">
-    <Project Path="server/GameServer.Tests/GameServer.Tests.csproj" />
-    <Project Path="server/GameServer/GameServer.csproj" />
+  <Folder Name="/02_Server/">
+    <Project Path="02_Server/GameServer.Tests/GameServer.Tests.csproj" />
+    <Project Path="02_Server/GameServer/GameServer.csproj" />
   </Folder>
-  <Folder Name="/shared/">
-    <Project Path="shared/Shared.csproj" />
+  <Folder Name="/98_Shared/">
+    <Project Path="98_Shared/Shared.csproj" />
   </Folder>
 </Solution>

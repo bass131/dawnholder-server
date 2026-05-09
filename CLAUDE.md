@@ -120,30 +120,30 @@ Phase 단위 완료 시에만.
 
 - `/log-session` — 이번 세션을 노션 "협업 히스토리" DB에 STAR 형식으로 박제
 
-> 전체 14개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`docs/commands-index.md`](docs/commands-index.md) 참조. 새 커맨드 추가 시 그 인덱스도 함께 갱신.
+> 전체 14개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`00_Document/commands-index.md`](00_Document/commands-index.md) 참조. 새 커맨드 추가 시 그 인덱스도 함께 갱신.
 
 ---
 
-## 📂 docs/ 와 phases/ 시스템
+## 📂 00_Document/ 와 01_Phases/ 시스템
 
-### docs/ (프로젝트의 뇌)
+### 00_Document/ (프로젝트의 뇌)
 
-`CLAUDE.md`가 "어떻게 만들지"라면, `docs/`는 "무엇을/왜":
+`CLAUDE.md`가 "어떻게 만들지"라면, `00_Document/`는 "무엇을/왜":
 
-- `docs/PRD.md` — 무엇을 만들지 (그리고 만들지 **않을** 것)
-- `docs/ARCHITECTURE.md` — 시스템 구조의 큰 그림
-- `docs/ADR.md` — 결정의 기록 (왜 이 선택을 했는지)
-- `docs/learning-journal/` — 학습 일지 (Phase/개념/트러블슈팅별)
+- `00_Document/PRD.md` — 무엇을 만들지 (그리고 만들지 **않을** 것)
+- `00_Document/ARCHITECTURE.md` — 시스템 구조의 큰 그림
+- `00_Document/ADR.md` — 결정의 기록 (왜 이 선택을 했는지)
+- `00_Document/learning-journal/` — 학습 일지 (Phase/개념/트러블슈팅별)
 
 큰 작업 시작 전에 이 문서들을 먼저 참조하세요. 충돌 시 우선순위는:
-**`CLAUDE.md`(헌법) > `docs/ADR.md`(결정) > `docs/ARCHITECTURE.md`(구조) > `docs/PRD.md`(요구사항)**
+**`CLAUDE.md`(헌법) > `00_Document/ADR.md`(결정) > `00_Document/ARCHITECTURE.md`(구조) > `00_Document/PRD.md`(요구사항)**
 
 학습 일지(`learning-journal/`)는 후행 문서. AI 결정에 영향 안 주지만,
 사용자의 학습 누적이자 면접 자료. Phase 완료 시 작성 권유.
 
-### phases/ (작업 쪼개기)
+### 01_Phases/ (작업 쪼개기)
 
-큰 목표는 1~3시간짜리 Phase로 쪼개서 `phases/M{N}-{slug}/` 안에 보관.
+큰 목표는 1~3시간짜리 Phase로 쪼개서 `01_Phases/M{N}-{slug}/` 안에 보관.
 
 - 새 작업 시작 시: `/plan <목표>` 로 Phase 분해
 - 한 Phase = 한 마크다운 파일 + 명확한 완료 조건
@@ -158,16 +158,22 @@ Phase 단위 완료 시에만.
 - **Server**: .NET 10 LTS, C# 콘솔 호스트 (authoritative) — [ADR-001]
 - **Network**: Raw TCP, length-prefixed binary frames. 직렬화는 **자체 PDL(Packet Definition Language) XML + C# 코드 생성기** (MessagePack 아님) — [ADR-002]
 - **Persistence**: PostgreSQL via EF Core (서버 전용)
-- **Shared code**: `shared/` — **.NET Standard 2.1** 라이브러리로 빌드. 산출물(.dll + .pdb)을 `client/Assets/Plugins/`에 복사해 Unity가 참조. PDB는 `EmbedAllSources=true`로 원본 .cs 임베드 → Unity 측에서 ReadOnly로 보이고 F12 시 원본 코드(주석 포함) 그대로 표시. 헌법 #4 ("복사-붙여넣기 금지")의 물리적 강제 — [ADR-010]
+- **Shared code**: `98_Shared/` — **.NET Standard 2.1** 라이브러리로 빌드. 산출물(.dll + .pdb)을 `03_Client/Assets/Plugins/`에 복사해 Unity가 참조. PDB는 `EmbedAllSources=true`로 원본 .cs 임베드 → Unity 측에서 ReadOnly로 보이고 F12 시 원본 코드(주석 포함) 그대로 표시. 헌법 #4 ("복사-붙여넣기 금지")의 물리적 강제 — [ADR-010]
 
 ## Repo Layout
 
+폴더는 탐색기 정렬 고정용 숫자 prefix를 갖습니다 (의미는 헌법/ADR 기준).
+
 ```
-client/   Unity 프로젝트. shared/ 읽기만. 절대 shared/에 쓰지 않음.
-server/   .NET 권위 서버. shared/ 읽기/쓰기 가능.
-shared/   Protocol + 게임 상수 + 공식. 양쪽이 공유하는 cross-cutting 코드.
-tools/    헤드리스 봇, 컨텐츠 도구, 시뮬레이션 하니스.
+00_Document/   PRD, ARCHITECTURE, ADR, learning-journal — 결정과 학습 기록.
+01_Phases/     작업 단위(M{N}-{slug}/) Phase 마크다운.
+02_Server/     .NET 권위 서버. 98_Shared/ 읽기/쓰기 가능.
+03_Client/     Unity 프로젝트. 98_Shared/ 읽기만 (DLL로). 절대 98_Shared/에 쓰지 않음.
+98_Shared/     Protocol + 게임 상수 + 공식. 양쪽이 공유하는 cross-cutting 코드.
+99_Tools/      헤드리스 봇, 컨텐츠 도구, 시뮬레이션 하니스.
 ```
+
+루트의 `Dawnholder.slnx`(.NET 솔루션)는 `02_Server/`와 `98_Shared/`의 csproj를 묶습니다. `03_Client/`는 Unity가 자체 솔루션을 관리합니다.
 
 ---
 
@@ -185,12 +191,12 @@ tools/    헤드리스 봇, 컨텐츠 도구, 시뮬레이션 하니스.
 - 클라이언트는 **prediction**(서버 확인 전 시각적으로 먼저 움직임)을 할 수
   있지만, 서버 상태와 불일치하면 반드시 **reconcile**합니다.
 - 데미지, 히트 판정, 루팅 굴림, 레벨업, 아이템 생성: **서버 전용.**
-- `client/`에서 데미지 수식을 쓰고 있다면 멈추세요. 그건 `shared/GameData/`
-  (공식 정의)와 `server/`(실행)에 속합니다.
+- `03_Client/`에서 데미지 수식을 쓰고 있다면 멈추세요. 그건 `98_Shared/GameData/`
+  (공식 정의)와 `02_Server/`(실행)에 속합니다.
 
 ### 2. Protocol is Sacred (프로토콜은 신성함)
 
-`shared/Protocol/`은 모든 패킷을 정의합니다. 규칙:
+`98_Shared/Protocol/`은 모든 패킷을 정의합니다. 규칙:
 
 - 모든 패킷은 stable한 숫자 ID를 가집니다. **은퇴한 ID는 절대 재사용 금지.**
 - 기존 패킷에 필드 추가 = 버전 관리 없으면 breaking change.
@@ -208,15 +214,15 @@ tools/    헤드리스 봇, 컨텐츠 도구, 시뮬레이션 하니스.
 
 ### 4. Shared Code Discipline (공유 코드 규율)
 
-`shared/` 변경은 양쪽 모두에 영향을 줍니다. 수정 전:
+`98_Shared/` 변경은 양쪽 모두에 영향을 줍니다. 수정 전:
 
-- 변경 후 `client/`와 `server/` **둘 다** 컴파일되는지 확인.
+- 변경 후 `03_Client/`와 `02_Server/` **둘 다** 컴파일되는지 확인.
 - 프로토콜 호환성 체크 실행 (`.claude/hooks/` 참조).
 - 패킷 모양이 바뀌었다면 `Protocol.Version` 상수를 bump.
 
 ### 5. No Blocking Calls in Server Game Loop (틱 루프 블로킹 금지)
 
-틱 루프(`server/GameServer/Loop/`)는 50ms마다 (20 TPS) 실행됩니다.
+틱 루프(`02_Server/GameServer/Loop/`)는 50ms마다 (20 TPS) 실행됩니다.
 - 틱 안에서 `await Task.Delay` 금지.
 - 동기 DB 호출 금지. 영속화는 큐드 라이터를 통해.
 - `Thread.Sleep` 절대 금지.

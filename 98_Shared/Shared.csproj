@@ -19,9 +19,9 @@
     <ItemGroup>
       <_Outputs Include="$(TargetDir)$(TargetName).dll" />
     </ItemGroup>
-    <MakeDir Directories="$(MSBuildThisFileDirectory)..\client\Assets\Plugins\Shared\" />
+    <MakeDir Directories="$(MSBuildThisFileDirectory)..\03_Client\Assets\Plugins\Shared\" />
     <Copy SourceFiles="@(_Outputs)"
-          DestinationFolder="$(MSBuildThisFileDirectory)..\client\Assets\Plugins\Shared\"
+          DestinationFolder="$(MSBuildThisFileDirectory)..\03_Client\Assets\Plugins\Shared\"
           SkipUnchangedFiles="true" />
   </Target>
 
