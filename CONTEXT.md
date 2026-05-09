@@ -65,18 +65,16 @@
 
 ## ⏸️ 현재 멈춰있는 정확한 지점
 
-**Phase 01 대기 중.** 묶음 A (결정 박제) 완료 — PR #1 미머지. 묶음 B (팀/조직 정렬) 사용자 결정으로 **잠시 대기 (2026-05-09)**. `/log-session` 슬래시 커맨드 구현 완료 — PR #2 미머지. Phase 01 코드 이주는 본인 시간 날 때 시작.
+**Phase 01 대기 중.** PR #1·#2 모두 머지 완료(2026-05-09 후속 세션, `--no-ff` 두 번 + 원격 브랜치/워크트리 정리). main이 최신 상태 — 미팅 결정 박제 + `/log-session` 구현 + CONTEXT 갱신 다 포함. 묶음 B (팀/조직 정렬)는 사용자 결정으로 **잠시 대기 (2026-05-09)** 유지. Phase 01 코드 이주는 본인 시간 날 때 시작.
 
-### 현재 열린 PR (2026-05-09 기준)
+### 머지된 PR (참조용)
 
-| PR | 제목 | 베이스 | 상태 | 머지 순서 |
-|----|------|--------|------|-----------|
-| [#1](https://github.com/bass131/dawnholder-server/pull/1) | Align project decisions after team meeting (scenario B) | main | open | **먼저** |
-| [#2](https://github.com/bass131/dawnholder-server/pull/2) | feat(harness): add /log-session slash command | main | open | PR #1 후 |
+| PR | 제목 | 머지 |
+|----|------|------|
+| [#1](https://github.com/bass131/dawnholder-server/pull/1) | Align project decisions after team meeting (scenario B) | merged |
+| [#2](https://github.com/bass131/dawnholder-server/pull/2) | feat(harness): add /log-session slash command | merged |
 
-⚠️ PR #2는 PR #1의 `docs/skill-specs/log-session.md`를 인풋으로 함. PR #1 머지 전엔 PR #2 머지 보류.
-
-⚠️ PR #2를 main 기준으로 올렸기에(방법 B), PR #1 머지 후 CONTEXT.md 일부 충돌 가능 — PR #1의 CONTEXT.md 갱신은 본 PR(=PR #1)에 같이 들어감.
+머지 순서는 #1 → #2 (의미적 의존성: #2의 CONTEXT 커밋이 #1의 슬래시 커맨드 구현을 전제로 씀). 자세한 머지 히스토리는 `git log --oneline` 참조.
 
 ### 진척 상황 (2026-05-09 기준)
 
@@ -92,7 +90,8 @@
 - ✅ CLAUDE.md Stack 섹션 갱신.
 
 **완료 (2026-05-09 추가)**:
-- ✅ `/log-session` 슬래시 커맨드 구현 → PR #2. 명세(`docs/skill-specs/log-session.md`, PR #1)를 실행 파일(`.claude/commands/log-session.md`)로 옮김. 트리거 A(수동) 채택. 다음 세션 끝에서 첫 실호출 테스트 예정.
+- ✅ `/log-session` 슬래시 커맨드 구현 → PR #2 머지 완료. 명세(`docs/skill-specs/log-session.md`, PR #1)를 실행 파일(`.claude/commands/log-session.md`)로 옮김. 트리거 A(수동) 채택. 첫 실호출 테스트는 이 세션 끝에서 시도 예정.
+- ✅ PR #1·#2 main에 머지(`--no-ff` 두 번) + 원격 브랜치/로컬 워크트리 정리. `.claude/settings.local.json` 메인 레포로 이동.
 
 **보류 중 (묶음 B — 사용자 "잠시 대기" 결정 2026-05-09)**:
 - ⏳ `docs/TEAM.md` 작성 (미팅 결과 박제. CONTEXT.md엔 요약만 있음).
@@ -267,3 +266,4 @@ project-root/
 | (셋업 다음 날) | Claude (이전 세션) | 최초 작성 — 두 세션 맥락 핸드오프 |
 | 2026-05-06 | Claude (2번째 세션) | 미팅 결과 박제 + ServerDev 4월 코드 분석 + 시나리오 B 결정 + ADR-001/002 갱신 + ADR-010/011 신규 + PRD 캡스톤 1 섹션 추가 + Phase 01 재정의 |
 | 2026-05-09 | Claude (3번째 세션) | PR #1 미머지 상태에서 `/log-session` 슬래시 커맨드 구현 → PR #2 (방법 B = main 기준 별개 PR). 묶음 B는 사용자 "잠시 대기" 결정. PR 상태 섹션 추가. |
+| 2026-05-09 (후속) | Claude (4번째 세션) | PR #1·#2 main에 `--no-ff` 머지 + 원격 브랜치/워크트리 정리. main이 최신 상태로 도달. CONTEXT의 PR 미머지 표기 → 머지 완료로 갱신. |
