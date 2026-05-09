@@ -65,9 +65,20 @@
 
 ## ⏸️ 현재 멈춰있는 정확한 지점
 
-**Phase 01 대기 중.** 묶음 A (결정 박제) 완료. 묶음 B (팀/조직 정렬) 보류 중. Phase 01 코드 이주는 본인 시간 날 때 시작.
+**Phase 01 대기 중.** 묶음 A (결정 박제) 완료 — PR #1 미머지. 묶음 B (팀/조직 정렬) 사용자 결정으로 **잠시 대기 (2026-05-09)**. `/log-session` 슬래시 커맨드 구현 완료 — PR #2 미머지. Phase 01 코드 이주는 본인 시간 날 때 시작.
 
-### 진척 상황 (2026-05-06 기준)
+### 현재 열린 PR (2026-05-09 기준)
+
+| PR | 제목 | 베이스 | 상태 | 머지 순서 |
+|----|------|--------|------|-----------|
+| [#1](https://github.com/bass131/dawnholder-server/pull/1) | Align project decisions after team meeting (scenario B) | main | open | **먼저** |
+| [#2](https://github.com/bass131/dawnholder-server/pull/2) | feat(harness): add /log-session slash command | main | open | PR #1 후 |
+
+⚠️ PR #2는 PR #1의 `docs/skill-specs/log-session.md`를 인풋으로 함. PR #1 머지 전엔 PR #2 머지 보류.
+
+⚠️ PR #2를 main 기준으로 올렸기에(방법 B), PR #1 머지 후 CONTEXT.md 일부 충돌 가능 — PR #1의 CONTEXT.md 갱신은 본 PR(=PR #1)에 같이 들어감.
+
+### 진척 상황 (2026-05-09 기준)
 
 **완료**:
 - ✅ 팀원 미팅 끝남. 결과 → "팀 구조" 섹션 갱신됨.
@@ -80,7 +91,10 @@
 - ✅ PRD 캡스톤 1 발표 섹션 추가 (옵션 C / B fallback).
 - ✅ CLAUDE.md Stack 섹션 갱신.
 
-**보류 중 (묶음 B — 다음 세션 또는 본인 시간 날 때)**:
+**완료 (2026-05-09 추가)**:
+- ✅ `/log-session` 슬래시 커맨드 구현 → PR #2. 명세(`docs/skill-specs/log-session.md`, PR #1)를 실행 파일(`.claude/commands/log-session.md`)로 옮김. 트리거 A(수동) 채택. 다음 세션 끝에서 첫 실호출 테스트 예정.
+
+**보류 중 (묶음 B — 사용자 "잠시 대기" 결정 2026-05-09)**:
 - ⏳ `docs/TEAM.md` 작성 (미팅 결과 박제. CONTEXT.md엔 요약만 있음).
 - ⏳ `.claude/settings.json` 권한 분리 (영역별 쓰기 권한 — client/server/shared/tools).
 
@@ -197,7 +211,7 @@ project-root/
 │   └── M1-foundation/                 ← 4개 Phase 작성됨
 ├── .claude/
 │   ├── agents/                        ← 6개: netcode/gameplay/client/content/persistence/qa-sim
-│   ├── commands/                      ← 11개 슬래시 커맨드
+│   ├── commands/                      ← 12개 슬래시 커맨드 (/log-session 포함, PR #2)
 │   ├── hooks/                         ← 2개
 │   └── settings.json
 └── (외부 산출물)
@@ -210,6 +224,7 @@ project-root/
 **학습용**: `/why`, `/explain`, `/concept`, `/recap`, `/dumb-it-down`
 **작업용**: `/plan`, `/review`, `/new-packet`, `/new-monster`, `/load-test`
 **일지**: `/journal-phase`, `/journal-concept`, `/journal-bug`
+**기록**: `/log-session` (PR #2, 첫 실호출 테스트 대기)
 
 ---
 
@@ -250,4 +265,5 @@ project-root/
 | 날짜 | 누가 | 무엇 |
 |------|------|------|
 | (셋업 다음 날) | Claude (이전 세션) | 최초 작성 — 두 세션 맥락 핸드오프 |
-| 2026-05-06 | Claude (이번 세션) | 미팅 결과 박제 + ServerDev 4월 코드 분석 + 시나리오 B 결정 + ADR-001/002 갱신 + ADR-010/011 신규 + PRD 캡스톤 1 섹션 추가 + Phase 01 재정의 |
+| 2026-05-06 | Claude (2번째 세션) | 미팅 결과 박제 + ServerDev 4월 코드 분석 + 시나리오 B 결정 + ADR-001/002 갱신 + ADR-010/011 신규 + PRD 캡스톤 1 섹션 추가 + Phase 01 재정의 |
+| 2026-05-09 | Claude (3번째 세션) | PR #1 미머지 상태에서 `/log-session` 슬래시 커맨드 구현 → PR #2 (방법 B = main 기준 별개 PR). 묶음 B는 사용자 "잠시 대기" 결정. PR 상태 섹션 추가. |
