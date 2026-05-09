@@ -10,10 +10,11 @@ obj/
 .vs/
 
 # Build output for shared/ DLL pipeline (ADR-010)
-client/Assets/Plugins/*.dll
-client/Assets/Plugins/*.pdb
-client/Assets/Plugins/*.dll.meta
-client/Assets/Plugins/*.pdb.meta
+# **/*는 모든 깊이 매칭 — Plugins/Shared/Shared.dll 같이 한 단계 더 들어간 것도 잡음
+client/Assets/Plugins/**/*.dll
+client/Assets/Plugins/**/*.pdb
+client/Assets/Plugins/**/*.dll.meta
+client/Assets/Plugins/**/*.pdb.meta
 
 # ─────────────────────────────────────────────
 # Unity (client/)

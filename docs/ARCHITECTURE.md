@@ -11,13 +11,13 @@
 ## 기술 스택
 
 ### Client
-- **엔진**: Unity 2022 LTS, URP 2D
+- **엔진**: Unity 6.4 LTS, URP 2D
 - **언어**: C#
-- **주요 패키지**: 새 Input System, MessagePack-CSharp
+- **주요 패키지**: 새 Input System
 - **빌드 타겟**: PC Windows (Standalone)
 
 ### Server
-- **런타임**: .NET 8
+- **런타임**: .NET 10 LTS
 - **호스트 형태**: 콘솔 앱 (개발) / Linux 서비스 (운영, 향후)
 - **DI**: Microsoft.Extensions.DependencyInjection
 - **로깅**: Serilog (Console + File sink)
@@ -25,7 +25,7 @@
 
 ### Network
 - **프로토콜**: Raw TCP, length-prefixed binary frame
-- **직렬화**: MessagePack-CSharp (`[Key(N)]` 명시 모드)
+- **직렬화**: 자체 PDL(Packet Definition Language) XML + C# 코드 생성기 (ADR-002)
 - **핸드셰이크**: 첫 패킷에 ProtocolVersion 교환
 
 ### Persistence

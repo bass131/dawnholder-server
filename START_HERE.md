@@ -43,8 +43,8 @@ project-root/
 
 ### Step 0: 환경 준비 (15~30분)
 
-- [ ] .NET 8 SDK 설치 (`dotnet --version`으로 확인)
-- [ ] Unity 2022 LTS 설치 (Unity Hub 통해)
+- [ ] .NET 10 SDK 설치 (`dotnet --version`으로 확인)
+- [ ] Unity 6.4 LTS 설치 (Unity Hub 통해)
 - [ ] PostgreSQL 또는 Docker Desktop 설치
 - [ ] Git 초기화 (`git init`)
 - [ ] VSCode 또는 Rider 같은 IDE

@@ -18,7 +18,7 @@ client/Assets/
 
 ## 컨벤션
 
-- Unity 2022 LTS. URP 2D renderer.
+- Unity 6.4 LTS. URP 2D renderer.
 - 새 Input System 패키지 사용. 레거시 `Input.GetKey` 금지.
 - 모든 네트워크 코드는 **메인 스레드 밖**에서 read; 메인 스레드 dispatch는
   thread-safe 큐를 `Update()`에서 비우는 방식.

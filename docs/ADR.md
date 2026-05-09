@@ -25,12 +25,12 @@
 
 ## 현재까지 결정한 것들
 
-### ADR-001: Unity 2022 LTS + .NET 10 LTS + .NET Standard 2.1 멀티타겟
-**날짜**: (Harness 셋업일) — **2026-05-06 .NET 버전 갱신**
-**상태**: 채택됨 (대체: ADR-001 v1 ".NET 8")
-**결정**: Unity 2022 LTS 클라이언트 + .NET 10 LTS 권위 서버. `shared/`는 .NET Standard 2.1로 빌드해 Unity가 인식 가능하게.
-**이유**: C# 단일 언어 통일. .NET 10 LTS는 2028년까지 지원이라 11월 본 마감 + 시연 후 시점도 커버 (.NET 8은 2026-11-10 만료, .NET 9는 2026-05-12 만료로 부적합). .NET Standard 2.1 = Unity 2022 LTS의 Mono/IL2CPP가 인식하는 공통 API 사양 → DLL 공유 가능.
-**트레이드오프**: 웹/모바일/콘솔은 추가 작업. 기존 ServerDev 코드(.NET 9)를 클론할 때 csproj TargetFramework 마이그레이션 필요 (대부분 한 줄). .NET 10이 신규 LTS라 일부 NuGet 라이브러리는 호환성 케이스별 확인.
+### ADR-001: Unity 6.4 LTS + .NET 10 LTS + .NET Standard 2.1 멀티타겟
+**날짜**: (Harness 셋업일) — **2026-05-06 .NET 버전 갱신**, **2026-05-09 Unity 버전 갱신**
+**상태**: 채택됨 (대체: v1 ".NET 8 + Unity 2022 LTS", v2 ".NET 10 + Unity 2022 LTS")
+**결정**: Unity 6.4 LTS 클라이언트 + .NET 10 LTS 권위 서버. `shared/`는 .NET Standard 2.1로 빌드해 Unity가 인식 가능하게.
+**이유**: C# 단일 언어 통일. .NET 10 LTS는 2028년까지 지원이라 11월 본 마감 + 시연 후 시점도 커버 (.NET 8은 2026-11-10 만료, .NET 9는 2026-05-12 만료로 부적합). .NET Standard 2.1 = Unity의 Mono/IL2CPP가 인식하는 공통 API 사양 → DLL 공유 가능. Unity 6.4 LTS 선택 이유: (a) **Unity AI MCP Server 활용 가능** — Claude Code가 Unity 에디터를 직접 조회/조작, 본 프로젝트의 Claude 중심 워크플로우와 직접 시너지. (b) Unity 6의 새 기능(GPU Resident Drawer, 향상된 2D 렌더링). (c) LTS 라이프사이클 더 김 — 2027~2028년까지.
+**트레이드오프**: 웹/모바일/콘솔은 추가 작업. 기존 ServerDev 코드(.NET 9)를 클론할 때 csproj TargetFramework 마이그레이션 필요 (대부분 한 줄). .NET 10이 신규 LTS라 일부 NuGet 라이브러리는 호환성 케이스별 확인. Unity 6는 2022 대비 일부 deprecated API/내부 매개변수 변경 가능 — 학습용 ServerDev 코드는 서버/네트워크 중심이라 영향 적지만, Unity 코드 작성 시 옛 튜토리얼(2022 LTS 기준)을 그대로 옮기면 안 됨.
 
 ### ADR-002: Raw TCP + 자체 PDL + 코드 생성기
 **날짜**: (Harness 셋업일) — **2026-05-06 직렬화 방식 갱신**
@@ -155,3 +155,4 @@ EF Core는 raw query 대비 추상화 비용이 약간 있음. 캐싱 레이어�
 | 2026-05-06 | ADR-002 갱신 (MessagePack → 자체 PDL + 코드 생성기) | 본인이 4월에 작성한 PDL 시스템(`tools/PacketGenerator/`로 이주) 채택. 면접 임팩트 + 학습 가치. |
 | 2026-05-06 | ADR-010 신규 (DLL + Embedded PDB) | 헌법 #4 (복사-붙여넣기 금지) 물리적 강제. 비개발자 팀원 보호. |
 | 2026-05-06 | ADR-011 신규 (기존 ServerDev 코드 부분 채택, 시나리오 B) | 6월 캡스톤 옵션 C(2인 movement) 6주 일정 확보. 게임 로직은 헌법 적용 위해 새로 작성. |
+| 2026-05-09 | ADR-001 갱신 (Unity 2022 LTS → Unity 6.4 LTS) | Unity AI MCP Server 활용 + Unity 6 새 기능 + LTS 라이프사이클이 더 김. |

@@ -7,6 +7,11 @@
 >
 > **사용자에게**: 이 문서는 새 Claude Code 세션 시작 시 가장 먼저 읽힐 파일.
 > 본인이 직접 갱신해도 됩니다 (예: 미팅 결과, 진척 상황).
+>
+> **유지 정책 (2026-05-09 사용자 결정)**: 누적이 아니라 **응축**.
+> 분량이 ~200줄을 넘기 시작하면 큰 마일스톤(예: Phase 묶음 완료) 끝나는 시점에
+> **처음부터 재작성**. 갱신 이력은 짧게 요약 1~2줄로. 옛 디테일은 git history와
+> learning-journal/ 또는 노션 협업 히스토리에서 찾기.
 
 ---
 
@@ -131,7 +136,7 @@
 2. ✅ `shared/Protocol/` + `tools/PacketGenerator/` — PDL.xml + 코드 생성기 이주. 발견된 버그(`PacketFormat.cs:178` 하드코딩 `C_Chat`) 수정.
 3. ✅ `tools/qa-sim/` — DummyClient 이주, .NET 10으로.
 4. ✅ `server/` — .NET 10 콘솔 호스트 부팅 (게임 로직은 Phase 02부터).
-5. ✅ `client/` — Unity 2022 LTS 빈 프로젝트, `Plugins/` 폴더에 shared.dll/.pdb 자동 복사 빌드 스크립트 동작.
+5. ✅ `client/` — Unity 6.4 LTS 빈 프로젝트, `Plugins/` 폴더에 shared.dll/.pdb 자동 복사 빌드 스크립트 동작.
 6. ✅ Unity 에디터에서 `using Net;` 입력 시 IntelliSense 뜨고 F12로 원본 .cs 코드 보임.
 7. ✅ `dotnet build` 한 번으로 server + shared + tools 다 빌드되고, Unity 새로고침이 자동 됨.
 
@@ -152,7 +157,7 @@
 상세는 ADR(`docs/ADR.md`)에 박제됨. 여기는 빠른 참조용.
 
 ### 기술 스택
-- Unity 2022 LTS + **.NET 10 LTS** 권위 서버 (ADR-001, 2026-05-06 갱신)
+- Unity 6.4 LTS + **.NET 10 LTS** 권위 서버 (ADR-001, 2026-05-06 갱신)
 - Raw TCP + length-prefixed binary + **자체 PDL + 코드 생성기** (ADR-002, 2026-05-06 갱신)
 - 모노레포 (ADR-003) — 단, MES는 별도 레포 (ADR-011)
 - 20 TPS 서버 틱 (ADR-004)

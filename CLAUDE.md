@@ -154,7 +154,7 @@ Phase 단위 완료 시에만.
 
 ## Stack
 
-- **Client**: Unity 2022 LTS, C#, 2D sidescroll
+- **Client**: Unity 6.4 LTS, C#, 2D sidescroll
 - **Server**: .NET 10 LTS, C# 콘솔 호스트 (authoritative) — [ADR-001]
 - **Network**: Raw TCP, length-prefixed binary frames. 직렬화는 **자체 PDL(Packet Definition Language) XML + C# 코드 생성기** (MessagePack 아님) — [ADR-002]
 - **Persistence**: PostgreSQL via EF Core (서버 전용)

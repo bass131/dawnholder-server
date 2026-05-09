@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <!-- .NET Standard 2.1의 default C#은 8.0. 최신 문법(file-scoped namespace 등) 쓰려면 명시. -->
+    <LangVersion>latest</LangVersion>
+
+    <!-- ADR-010: PDB를 .dll에 embedded + 원본 .cs 통째 임베드 -->
+    <!-- → Unity F12 시 원본 코드(주석 포함) 그대로 표시 -->
+    <DebugType>embedded</DebugType>
+    <EmbedAllSources>true</EmbedAllSources>
+  </PropertyGroup>
+
+  <!-- ADR-010: 빌드 후 산출물(.dll)을 Unity Plugins/로 자동 복사.
+       이 한 줄로 헌법 #4(복사-붙여넣기 금지)가 물리적으로 강제됨.
+       Unity 측에선 .dll만 보여서 클라가 shared 코드 수정 불가능. -->
+  <Target Name="CopyToUnityPlugins" AfterTargets="Build">
+    <ItemGroup>
+      <_Outputs Include="$(TargetDir)$(TargetName).dll" />
+    </ItemGroup>
+    <MakeDir Directories="$(MSBuildThisFileDirectory)..\client\Assets\Plugins\Shared\" />
+    <Copy SourceFiles="@(_Outputs)"
+          DestinationFolder="$(MSBuildThisFileDirectory)..\client\Assets\Plugins\Shared\"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

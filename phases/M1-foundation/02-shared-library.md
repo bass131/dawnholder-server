@@ -138,7 +138,7 @@
 
 1. **.NET Standard vs .NET (Core/8)**
    - .NET 8은 최신 런타임. .NET Standard 2.1은 "여러 런타임이 공통으로
-     지원하는 API 표준". Unity 2022 LTS가 .NET 8을 직접 지원 안 해서
+     지원하는 API 표준". Unity 6.4 LTS가 .NET 10을 직접 지원 안 해서
      shared만 .NET Standard 2.1로 빌드. 서버는 .NET 8 그대로.
    - 즉 한 어셈블리(shared.dll)가 .NET 8 서버와 Unity Mono 양쪽에서
      로드되는 구조.
