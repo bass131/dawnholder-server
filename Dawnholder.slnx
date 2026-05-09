@@ -2,6 +2,7 @@
   <Folder Name="/02_Server/">
     <Project Path="02_Server/GameServer.Tests/GameServer.Tests.csproj" />
     <Project Path="02_Server/GameServer/GameServer.csproj" />
+    <Project Path="02_Server/Network/Dawnholder.Server.Network.csproj" />
   </Folder>
   <Folder Name="/98_Shared/">
     <Project Path="98_Shared/Shared.csproj" />

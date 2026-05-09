@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\98_Shared\Shared.csproj" />
+    <ProjectReference Include="..\Network\Dawnholder.Server.Network.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
