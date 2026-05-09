@@ -103,6 +103,14 @@
 - ⏳ MES 별도 레포 헌법 골격 (정우 합류 직전 — 7월 이후).
 - ⏳ 정우 Anthropic 학생 할인/저렴한 플랜 같이 알아보기.
 
+**보류 중 (Phase 01 끝나고 Phase 02 진입 직전 처리, 2026-05-09 결정)**:
+- ⏳ TDD 강제 영역(공식·직렬화·상태머신) — 헌법 6번째 원칙 후보로 박을지 결정 + Hook 작성.
+- ⏳ `tdd-guard.sh` Hook — 위 영역 파일 수정 시 테스트 부재면 차단(또는 warn).
+- ⏳ `tick-blocking-guard.sh` Hook — `server/GameServer/Loop/`에 `Task.Delay`/`Thread.Sleep`/`await Db` 차단.
+- ⏳ `check-server-authority.sh` 강화 — `client/`에서 데미지/HP/XP 키워드 grep 차단.
+- ⏳ `HOOK_MODE=warn|block` 토글 — Phase 01은 warn, Phase 02부터 block.
+- 이유: Hook은 코드가 있어야 가치가 생김. Phase 01은 코드 이주라 코드가 거의 없음. 미리 박으면 YAGNI + 추측 기반이라 다시 손볼 가능성 큼.
+
 **다음 코드 작업 (묶음 C — Phase 01 재정의)**:
 - Phase 01 = "ServerDev 코드 이주 + DLL 빌드 파이프라인 셋업". 단순 솔루션 부트스트랩이 아님.
 - 자세한 흐름은 다음 섹션 참조.
@@ -267,3 +275,4 @@ project-root/
 | 2026-05-06 | Claude (2번째 세션) | 미팅 결과 박제 + ServerDev 4월 코드 분석 + 시나리오 B 결정 + ADR-001/002 갱신 + ADR-010/011 신규 + PRD 캡스톤 1 섹션 추가 + Phase 01 재정의 |
 | 2026-05-09 | Claude (3번째 세션) | PR #1 미머지 상태에서 `/log-session` 슬래시 커맨드 구현 → PR #2 (방법 B = main 기준 별개 PR). 묶음 B는 사용자 "잠시 대기" 결정. PR 상태 섹션 추가. |
 | 2026-05-09 (후속) | Claude (4번째 세션) | PR #1·#2 main에 `--no-ff` 머지 + 원격 브랜치/워크트리 정리. main이 최신 상태로 도달. CONTEXT의 PR 미머지 표기 → 머지 완료로 갱신. |
+| 2026-05-09 (후속2) | Claude (4번째 세션 연장) | Harness 정리: `docs/commands-index.md` 신규(14개 카탈로그), `/review` 5축으로 보강(테스트 강제 영역 + 도메인 패턴), `docs/skill-specs/log-session.md` 삭제(스킬 완성됨), CLAUDE.md 가리키는 경로 갱신. Hook 보강(3번 작업)은 Phase 02 진입 직전으로 미룸 — YAGNI. |

@@ -116,6 +116,12 @@ Phase 단위 완료 시에만.
 - `/new-monster <name> <level> <map>` — 데이터 기반 몬스터 추가
 - `/load-test <scenario> <bots> [duration]` — 헤드리스 봇 부하 테스트
 
+### 세션 기록 도구
+
+- `/log-session` — 이번 세션을 노션 "협업 히스토리" DB에 STAR 형식으로 박제
+
+> 전체 14개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`docs/commands-index.md`](docs/commands-index.md) 참조. 새 커맨드 추가 시 그 인덱스도 함께 갱신.
+
 ---
 
 ## 📂 docs/ 와 phases/ 시스템
