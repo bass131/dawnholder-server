@@ -47,9 +47,9 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 | 컬럼 | 타입 | 값 |
 |---|---|---|
 | `Title` | TITLE | `YYYY-MM-DD — 한 줄 요약` |
-| `Date` | DATE | 세션 날짜 (오늘). expanded property: `date:Date:start` |
+| `Date` | DATE | 세션 날짜 (오늘). **expanded key 필수**: `"date:Date:start": "YYYY-MM-DD"` |
 | `Topic` | RICH_TEXT | 한 줄 주제 (Title의 요약 부분) |
-| `Tags` | MULTI_SELECT | JSON 배열. 옵션: `ADR`, `팀미팅`, `GitHub`, `Phase`, `학습`, `결정`, `코드분석`, `Harness` |
+| `Tags` | MULTI_SELECT | **JSON 배열 문자열**: `"Tags": "[\"GitHub\", \"Harness\"]"`. 옵션: `ADR`, `팀미팅`, `GitHub`, `Phase`, `학습`, `결정`, `코드분석`, `Harness` |
 | `Status` | SELECT | 보통 `completed`. 진행 중이면 `in progress` |
 | `PR Link` | URL | 대화에 PR URL 있으면 채움. 없으면 비움 |
 
@@ -147,31 +147,40 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 
 ### 7. 노션 페이지 생성
 
-`mcp__fb113555-9662-4461-b002-1e555d4548cc__notion-create-pages` 호출:
+`mcp__claude_ai_Notion__notion-create-pages` 호출.
 
-```
+⚠️ **`properties`는 SQLite-flat 형식**. Notion 직접 API의 중첩 객체 형식이 **아님**. 실호출 검증된 정확한 형식:
+
+```json
 parent: {
   "type": "data_source_id",
   "data_source_id": "7f1c9432-674a-4df9-b151-3c5ffeb335f3"
 }
-properties: {
-  "Title": { "title": "..." },
-  "Date": { "date": { "start": "2026-MM-DD" } },
-  "Topic": { "rich_text": "..." },
-  "Tags": { "multi_select": [{ "name": "..." }, ...] },
-  "Status": { "select": { "name": "completed" } },
-  "PR Link": { "url": "..." }  // 없으면 생략
-}
-icon: 적절한 emoji (📌 결정 / 🛠️ 코드 / 📚 학습 / 🎯 Phase / 👥 미팅)
-content: STAR 본문
+pages: [{
+  "properties": {
+    "Title": "2026-MM-DD — 한 줄 요약",
+    "date:Date:start": "2026-MM-DD",
+    "Topic": "한 줄 주제",
+    "Tags": "[\"GitHub\", \"Harness\"]",
+    "Status": "completed",
+    "PR Link": "https://github.com/.../pull/N"
+  },
+  "icon": "🛠️",
+  "content": "## 상황\n..."
+}]
 ```
 
-**알려진 함정** (첫 사례에서 발견):
-1. **JSON escape**: 한글을 `\uec커` 같이 잘못 escape하면 파싱 깨짐.
-   한글은 직접 박는 게 안전.
-2. **content 길이**: 너무 길면 `expected string to have <=100 characters`
-   에러 가능. 분량 30~50줄 가이드 지킬 것.
-3. **parent 누락**: data_source_id 안 박으면 workspace 레벨로 떨어짐.
+핵심 포인트:
+- **Date** → `date:Date:start` expanded key (flat `Date` 키는 거부됨)
+- **Tags** → JSON 배열을 **문자열**로 인코딩 (콤마 구분이나 객체 형식 모두 거부됨)
+- **Status / Topic / Title** → 그냥 문자열
+- **PR Link** → 없으면 키 자체를 생략
+
+**알려진 함정**:
+1. **JSON escape** (첫 사례): 한글을 `\uec커` 같이 잘못 escape하면 파싱 깨짐. 한글 직접 박기.
+2. **content 길이** (첫 사례): 너무 길면 `expected string to have <=100 characters` 에러. 분량 30~50줄 지키기.
+3. **parent 누락**: `data_source_id` 안 박으면 workspace 레벨로 떨어짐.
+4. **properties 형식 함정** (첫 실호출): Notion 직접 API의 `{ "Date": { "date": { "start": "..." } } }` 같은 중첩 객체는 거부됨. 위 SQLite-flat 형식만 동작. 막히면 `notion-fetch`로 데이터 소스 스키마부터 확인 (SQLite 테이블 정의가 정답을 알려줌).
 
 ---
 

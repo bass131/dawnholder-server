@@ -2,9 +2,11 @@
 
 > **목적**: AI-사용자 협업 세션을 노션 "Dawnholder 협업 히스토리" DB에 자동 정리하는 슬래시 커맨드.
 >
-> **상태**: 명세만 작성됨 (2026-05-06). 다음 새 세션에서 이 파일을 인풋으로 슬래시 커맨드 구현.
+> **상태**: 구현 완료 + 첫 실호출 검증됨 (2026-05-09).
+> 슬래시 커맨드: `.claude/commands/log-session.md`. 트리거 A (수동) 채택.
 >
-> **첫 사례 (참고용)**: https://www.notion.so/35776ceccb7881998409f95be0e06b28
+> **첫 사례 (STAR 변경 전 참고용)**: https://www.notion.so/35776ceccb7881998409f95be0e06b28
+> **첫 실호출 결과**: https://www.notion.so/35b76ceccb788145bb64c26642cbcd3b (4번째 세션 머지·정리)
 
 ---
 
@@ -46,11 +48,25 @@
 | 컬럼 | 타입 | 설명 / 값 |
 |---|---|---|
 | `Title` | TITLE | `YYYY-MM-DD — 한 줄 요약` 형식. 예: `2026-05-06 — 팀 미팅 결과 + 시나리오 B + ADR 정렬 + PR #1` |
-| `Date` | DATE | 세션 날짜. expanded property: `date:Date:start` |
+| `Date` | DATE | 세션 날짜. **expanded key 필수**: `"date:Date:start": "YYYY-MM-DD"` |
 | `Topic` | RICH_TEXT | 한 줄 주제 |
-| `Tags` | MULTI_SELECT | JSON 배열 string. 옵션: `ADR`, `팀미팅`, `GitHub`, `Phase`, `학습`, `결정`, `코드분석`, `Harness` |
+| `Tags` | MULTI_SELECT | **JSON 배열 문자열**: `"Tags": "[\"GitHub\", \"Harness\"]"`. 옵션: `ADR`, `팀미팅`, `GitHub`, `Phase`, `학습`, `결정`, `코드분석`, `Harness` |
 | `Status` | SELECT | `in progress`, `completed`, `archived` (보통 `completed`) |
-| `PR Link` | URL | 관련 GitHub PR (있으면) |
+| `PR Link` | URL | 관련 GitHub PR (있으면). 없으면 키 자체를 생략 |
+
+### 실제 동작하는 `properties` 예시 (실호출 검증됨)
+
+```json
+{
+  "Title": "2026-05-09 — 두 워크트리를 main으로 정리한 날",
+  "date:Date:start": "2026-05-09",
+  "Topic": "두 워크트리를 main으로 안전하게 머지하고 정리",
+  "Tags": "[\"GitHub\", \"Harness\", \"결정\"]",
+  "Status": "completed"
+}
+```
+
+⚠️ `"Date": "2026-05-09"` (flat) 또는 `"Tags": "GitHub,Harness"` (콤마) 는 둘 다 validation 에러. 위 expanded key + JSON 배열 문자열만 동작함.
 
 ---
 
@@ -169,26 +185,32 @@
 
 - [ ] DB에 row 정상 생성됨
 - [ ] Tags / Status 정확히 매핑됨
-- [ ] 페이지 본문 6개 섹션(요약/결정/토론/변경/학습/액션) 다 박혀있음
+- [ ] STAR 4섹션(상황/정해야 했던 것/한 행동/결과) + "배운 것 3가지" 다 박혀있음
 - [ ] PR Link 자동 채워짐 (대화에 PR URL 있으면)
 - [ ] 한글 정상 (잘못된 unicode escape 없음 — 첫 사례에서 `\uec커` 같은 잘못된 escape 으로 실패한 적 있음, 한글 직접 박기 권장)
 
 ---
 
-## 알려진 함정 (첫 사례에서 발견)
+## 알려진 함정
 
-1. **JSON escape**: tool call 시 한글을 잘못 escape하면 (`\uec커` 같은) 파싱 깨짐. 한글 직접 박는 게 안전.
-2. **content 길이**: 너무 길면 일부 시스템에서 `expected string to have <=100 characters` 에러. 분량 제어.
-3. **parent 옵션**: `gh repo create --source=.`는 worktree에서 .git이 gitlink여서 실패. 노션 페이지 생성도 비슷 — parent 명시가 안 되면 workspace level로 떨어뜨림 (사용자 의도 따라).
+1. **JSON escape** (첫 사례): tool call 시 한글을 잘못 escape하면 (`\uec커` 같은) 파싱 깨짐. 한글 직접 박는 게 안전.
+2. **content 길이** (첫 사례): 너무 길면 일부 시스템에서 `expected string to have <=100 characters` 에러. 분량 제어.
+3. **parent 옵션** (첫 사례): `gh repo create --source=.`는 worktree에서 .git이 gitlink여서 실패. 노션 페이지 생성도 비슷 — parent 명시가 안 되면 workspace level로 떨어뜨림 (사용자 의도 따라).
+4. **`Date` 컬럼 형식** (첫 실호출 발견, 2026-05-09): flat `"Date": "..."` ❌ → expanded `"date:Date:start": "..."` ✅. 에러 메시지에 expanded key 명시됨.
+5. **`Tags` (multi_select) 형식** (첫 실호출 발견): 콤마 구분 `"GitHub,Harness"` ❌, expanded 인덱스 `"multi_select:Tags:0"` ❌ → **JSON 배열 문자열** `"[\"GitHub\", \"Harness\"]"` ✅. 데이터 소스 fetch 시 SQLite 스키마에 `JSON array` 명시돼있음 — 막히면 fetch부터.
 
 ---
 
 ## 미해결 / 다음 세션에서 결정
 
-- [ ] 자동 호출 vs 수동 (트리거 A / B / C)
-- [ ] 본문 길이 limit (예: 200줄 압축?)
+**해결됨 (2026-05-09 구현 + 첫 실호출)**:
+- ✅ 트리거 — A (수동) 채택
+- ✅ 짧은 잡담은 박지 않음 — 슬래시 커맨드 안의 "적합성 체크" 단계에서 거름
+- ✅ 본문 분량 — STAR 30~50줄로 제약
+
+**남은 것**:
 - [ ] `docs/learning-journal/` (로컬 학습 일지)와 노션 로그의 관계 — 둘 다? 노션이 메인?
-- [ ] 세션 도중 짧은 잡담만 한 경우 (예: 5분 대화) — 그것도 박을지?
+- [ ] STAR 4섹션이 정말 충분한가 — 몇 번 더 써본 뒤 재평가
 
 ---
 
