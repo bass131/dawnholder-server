@@ -5,41 +5,57 @@
 **여기서 바꾸는 모든 것은 client와 server 양쪽에 영향을 줍니다.**
 여기 breaking change = 프로덕션 desync. 편집증 수준으로 조심하세요.
 
+**경계**: Shared는 *양쪽 동기 필수인 cross-cutting*만 담음 — 패킷 정의 + 게임 데이터.
+**socket 인프라 (Connector/Listener/Session/Buffer 등)는 양쪽 분리** (Y2 갈래, ADR-012). 책임 단위 표는 ADR-012 본문 참조.
+
 ## Layout
 
 ```
 98_Shared/
-├── Shared.csproj       .NET Standard 2.1 라이브러리로 빌드
+├── Shared.csproj         .NET Standard 2.1 라이브러리로 빌드 (ADR-010)
 ├── Protocol/
-│   ├── PacketId.cs     모든 패킷 ID enum (값 절대 재사용 금지)
-│   ├── Packets/        패킷당 파일 1개, [MessagePackObject]
-│   └── ProtocolVersion.cs
+│   ├── Generated/        ★ 자체 PDL이 자동 생성한 패킷 클래스 (ADR-002 v2)
+│   │   └── GenPackets.cs   PacketID enum + IPacket + C_Xxx/S_Xxx 클래스
+│   └── ProtocolVersion.cs  (예정 — Phase M2+ 핸드셰이크)
 └── GameData/
-    ├── Formulas.cs     데미지, XP 곡선, 스탯 derivation
-    ├── Constants.cs    Tick rate, 최대 패킷 크기, 타임아웃
-    └── Tables/         정적 데이터: items, monsters, skills (보통 JSON 로드)
+    ├── Formulas.cs       데미지, XP 곡선, 스탯 derivation
+    ├── Constants.cs      Tick rate, 최대 패킷 크기, 타임아웃
+    └── Tables/           정적 데이터: items, monsters, skills (보통 JSON 로드)
 ```
 
 ## 규칙
 
 ### PacketId
-- 값은 영원히 stable. 제거된 패킷은 `[Obsolete]`로 마킹, 절대 삭제 안 함.
-- 패킷은 방향별로 그룹: `C2S_*` (client→server), `S2C_*` (server→client).
-- 숫자 범위: 1–999 system, 1000–1999 auth, 2000–2999 movement,
-  3000–3999 combat, 4000–4999 inventory, 5000–5999 chat, 등.
+- 값은 영원히 stable. 은퇴한 ID는 *PDL.xml에서 통째 제거 X* (재사용 방지). 주석으로 deprecated 표시.
+- 패킷은 방향별 접두사 (Rookiss 패턴, ADR-012):
+  - **`C_*`** = Client → Server
+  - **`S_*`** = Server → Client
+  - 생성기가 접두사로 *클라/서버 dispatch table 자동 분리* (Phase 08+)
+- 숫자 범위 예약 (PDL.xml 정의 순서대로 자동 부여, 충돌 방지):
+  - 1–999 system (Ping/Pong, Heartbeat, Disconnect 등)
+  - 1000–1999 auth, 2000–2999 movement, 3000–3999 combat,
+    4000–4999 inventory, 5000–5999 chat 등
 
-### Packet structs
-```csharp
-[MessagePackObject]
-public class C2S_Move {
-    [Key(0)] public int Tick;
-    [Key(1)] public sbyte InputX;     // -1, 0, 1
-    [Key(2)] public bool JumpPressed;
-}
+### Packet 정의 (PDL.xml + 자동 생성)
+*수동 작성 X*. PDL.xml 단일 소스 → 코드 생성기 (`99_Tools/PacketGenerator/`).
+
+```xml
+<!-- PDL.xml -->
+<packet name="C_Move">
+    <int name="tick"/>
+    <sbyte name="inputX"/>     <!-- -1, 0, 1 -->
+    <bool name="jumpPressed"/>
+</packet>
 ```
-- 항상 명시적 `[Key(N)]`. Contractless resolver 절대 금지.
-- 더 높은 `[Key]`로 새 필드 추가는 backward-compatible.
-- key 제거나 재정렬은 BREAKING change. `ProtocolVersion`을 bump.
+
+→ 생성된 `C_Move` 클래스 (98_Shared/Protocol/Generated/GenPackets.cs):
+- `BinaryPrimitives.*LittleEndian` 명시 (wire format = 플랫폼 무관 약속)
+- `Read(ArraySegment<byte>)` / `Write() : ArraySegment<byte>` (byte[] 반환)
+- SendBufferHelper 의존 X — 양쪽 socket 인프라 분리(ADR-012)와 정합
+
+**필드 추가는 backward-compatible** — PDL.xml 끝에 추가만. 재정렬·제거는 BREAKING (Protocol.Version bump).
+
+새 패킷 추가는 `/new-packet <C_|S_> <name>` 슬래시 커맨드 (Phase 08+).
 
 ### Formulas
 - 순수 함수만. `DateTime.Now` 금지, seed 없는 random 금지.

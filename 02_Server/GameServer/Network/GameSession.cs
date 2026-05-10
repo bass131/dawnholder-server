@@ -8,12 +8,12 @@ namespace Dawnholder.Server.GameServer.Sessions;
 /// <summary>
 /// 게임 도메인의 한 클라이언트 세션. ServerCore의 <see cref="PacketSession"/>을 상속.
 ///
-/// **Phase 05 변경**: Phase 04의 raw <see cref="Session"/> 상속에서 PacketSession으로 교체.
-/// 이제 framing(`[size(2)][packetId(2)][payload]`)이 자동 처리되고 <see cref="OnRecvPacket"/>이
-/// *완전한 한 패킷 단위*로 호출됨.
+/// **Phase 07 변경**: Phase 05의 임시 BitConverter 패킷 클래스(PingPacket/PongPacket)에서
+/// 자체 PDL이 자동 생성한 `C_Ping`/`S_Pong`로 교체. 명명은 PDL.xml 정의 그대로
+/// (camelCase 멤버, C_/S_ 접두사).
 ///
 /// 콜백은 모두 socket 워커 스레드에서 호출됨. 본 Phase에선 Console.WriteLine만 하므로
-/// 스레드 안전. 게임 로직(Phase 06+)이 들어오면 맵별 actor 큐로 marshalling 필요
+/// 스레드 안전. 게임 로직(M2+)이 들어오면 맵별 actor 큐로 marshalling 필요
 /// (헌법 #5: 맵당 단일 스레드).
 /// </summary>
 public class GameSession : PacketSession
@@ -33,19 +33,19 @@ public class GameSession : PacketSession
     /// </summary>
     public override void OnRecvPacket(ArraySegment<byte> buffer)
     {
-        // buffer[2..4] = packetId (little-endian, PingPacket/PongPacket과 동일 약속).
+        // buffer[2..4] = packetId (little-endian).
         ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
 
-        switch ((PacketId)packetId)
+        switch ((PacketID)packetId)
         {
-            case PacketId.Ping:
+            case PacketID.C_Ping:
                 HandlePing(buffer);
                 break;
 
             default:
                 // 헌법 #3 (Trust Boundary): 알 수 없는 패킷은 *조용히 drop + 로그*.
-                // Phase 06+에서 cheat-flag 테이블에 기록 추가 예정.
+                // M2+에서 cheat-flag 테이블에 기록 추가 예정.
                 Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
                 break;
         }
@@ -53,17 +53,17 @@ public class GameSession : PacketSession
 
     void HandlePing(ArraySegment<byte> buffer)
     {
-        PingPacket ping = new PingPacket();
+        C_Ping ping = new C_Ping();
         ping.Read(buffer);
 
         // Pong 응답: 클라 timestamp echo + 서버 timestamp.
-        PongPacket pong = new PongPacket
+        S_Pong pong = new S_Pong
         {
-            ClientTimestampMs = ping.ClientTimestampMs,
-            ServerTimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            clientTimestampMs = ping.clientTimestampMs,
+            serverTimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };
 
-        Console.WriteLine($"[GameSession] Ping received (clientTs={ping.ClientTimestampMs}) → Pong");
-        Send(new ArraySegment<byte>(pong.ToBytes()));
+        Console.WriteLine($"[GameSession] Ping received (clientTs={ping.clientTimestampMs}) → Pong");
+        Send(pong.Write());
     }
 }

@@ -15,7 +15,17 @@ namespace PacketGenerator
 
         static void Main(string[] args)
         {
-            string PDL_PATH = "../PDL.xml";
+            // 인자 파싱: 첫 비-옵션 인자 = PDL 경로. 옵션: --no-manager (manager 출력 skip),
+            // --no-wait (CI/스크립트용, ReadKey 대기 안 함).
+            string pdlPath = "PDL.xml";
+            bool noManager = false;
+            bool noWait = false;
+            foreach (string a in args)
+            {
+                if (a == "--no-manager") noManager = true;
+                else if (a == "--no-wait") noWait = true;
+                else if (!a.StartsWith("--")) pdlPath = a;
+            }
 
             XmlReaderSettings settings = new XmlReaderSettings()
             {
@@ -23,12 +33,7 @@ namespace PacketGenerator
                 IgnoreWhitespace = true
             };
 
-            if (args.Length >= 1)
-            {
-                PDL_PATH = args[0];
-            }
-
-            using (XmlReader r = XmlReader.Create(PDL_PATH, settings))
+            using (XmlReader r = XmlReader.Create(pdlPath, settings))
             {
                 r.MoveToContent();
 
@@ -36,32 +41,58 @@ namespace PacketGenerator
                 {
                     if (r.Depth == 1 && r.NodeType == XmlNodeType.Element)
                         ParsePacket(r);
-                    //Console.WriteLine(r.Name + " " + r["name"]);
+                }
+            }
+
+            string fileText = string.Format(PacketFormat.fileFormat, packetEnums, genPackets);
+
+            // 출력 디렉토리 = PDL.xml 위치 기준 ../../ (= 프로젝트 루트).
+            // Phase 07 책임 단위 분리 채택:
+            //   - GenPackets.cs (패킷 정의) → 98_Shared/Protocol/Generated/  (양쪽 통합)
+            //   - ServerPacketManager.cs   → 02_Server/GameServer/Network/Generated/  (서버 분리)
+            //   - ClientPacketManager.cs   → 04_ClientNet/Generated/  (클라 분리)
+            string pdlAbs = Path.GetFullPath(pdlPath);
+            string pdlDir = Path.GetDirectoryName(pdlAbs)!;
+            string projectRoot = Path.GetFullPath(Path.Combine(pdlDir, "..", ".."));
+
+            try
+            {
+                string genPacketsDir = Path.Combine(projectRoot, "98_Shared", "Protocol", "Generated");
+                Directory.CreateDirectory(genPacketsDir);
+                File.WriteAllText(Path.Combine(genPacketsDir, "GenPackets.cs"), fileText);
+                Console.WriteLine($"[GEN] GenPackets.cs → 98_Shared/Protocol/Generated/");
+
+                if (!noManager)
+                {
+                    string serverManagerText = string.Format(PacketFormat.managerFormat, serverRegister);
+                    string clientManagerText = string.Format(PacketFormat.managerFormat, clientRegister);
+
+                    string serverDir = Path.Combine(projectRoot, "02_Server", "GameServer", "Network", "Generated");
+                    string clientDir = Path.Combine(projectRoot, "04_ClientNet", "Generated");
+                    Directory.CreateDirectory(serverDir);
+                    Directory.CreateDirectory(clientDir);
+                    File.WriteAllText(Path.Combine(serverDir, "ServerPacketManager.cs"), serverManagerText);
+                    File.WriteAllText(Path.Combine(clientDir, "ClientPacketManager.cs"), clientManagerText);
+                    Console.WriteLine($"[GEN] ServerPacketManager.cs → 02_Server/GameServer/Network/Generated/");
+                    Console.WriteLine($"[GEN] ClientPacketManager.cs → 04_ClientNet/Generated/");
+                }
+                else
+                {
+                    Console.WriteLine("[GEN] --no-manager: PacketManager 출력 skip (Phase 08+에서 manager 도입 예정)");
                 }
 
-                string fileText = string.Format(PacketFormat.fileFormat, packetEnums, genPackets);
-                string clientManagerText = string.Format(PacketFormat.managerFormat, clientRegister);
-                string serverManagerText = string.Format(PacketFormat.managerFormat, serverRegister);
-                try
-                {
-                    File.WriteAllText("GenPackets.cs", fileText);
-                    File.WriteAllText("ClientPacketManager.cs", clientManagerText);
-                    File.WriteAllText("ServerPacketManager.cs", serverManagerText);
+                Console.WriteLine("[GEN] Packet Generate Success.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[GEN] Packet Generate FAIL!!");
+                Console.WriteLine(ex.Message);
+            }
 
-                    Console.WriteLine("[GEN] - Packet Generate Success!!\n");
-                    Console.WriteLine("1. - DummyClient/Packet/GenPackets.cs\n");
-                    Console.WriteLine("2. - Server/Packet/GenPackets.cs\n");
-                    Console.WriteLine("3. - DummyClient/Packet/ClientPacketManager.cs\n");
-                    Console.WriteLine("4. - Server/Packet/ServerPacketManager.cs\n\n");
-                    Console.WriteLine("Press AnyKey to quit...");
-                    Console.ReadKey(true);
-                }
-                catch (Exception ex) 
-                {
-                    Console.WriteLine("[GEN] - Packet Generate FAIL!!\n");
-                    Console.WriteLine(ex.Message);
-                    Console.ReadKey(true);
-                }
+            if (!noWait)
+            {
+                Console.WriteLine("Press AnyKey to quit...");
+                Console.ReadKey(true);
             }
         }
 
@@ -145,8 +176,9 @@ namespace PacketGenerator
                     case "float":
                     case "double":
                         memberCode += string.Format(PacketFormat.MemberFormat, memberType, memberName);
+                        // ReadFormat/WriteFormat 둘 다 {0}변수명 / {1}BinaryPrimitives 메서드 / {2}sizeof 형식
                         readCode += string.Format(PacketFormat.ReadFormat, memberName, ToMemberType(memberType), memberType);
-                        writeCode += string.Format(PacketFormat.WriteFormat, memberName, memberType);
+                        writeCode += string.Format(PacketFormat.WriteFormat, memberName, ToMemberType(memberType), memberType);
                         break;
                     case "string":
                         memberCode += string.Format(PacketFormat.MemberFormat, memberType, memberName);
@@ -199,24 +231,28 @@ namespace PacketGenerator
             return new Tuple<string, string, string>(memberCode, readCode, writeCode);
         }
 
+        // BinaryPrimitives.Read*LittleEndian / TryWrite*LittleEndian 의 * 부분 반환.
+        // 예: long → "Int64" → BinaryPrimitives.ReadInt64LittleEndian / TryWriteInt64LittleEndian
+        // bool은 BinaryPrimitives에 LittleEndian 변종이 없음 (1byte라 endian 무관).
+        // 본 Phase(07) 시점엔 Ping/Pong에 bool 없어 미사용. 미래 bool 사용 시 ReadByteFormat 패턴으로 별도 처리.
         public static string ToMemberType(string _memberType)
         {
             switch (_memberType.ToLower())
             {
                 case "bool":
-                    return "ToBoolean";
+                    return "Boolean";    // ⚠️ BinaryPrimitives에 ReadBooleanLittleEndian 없음 — 미래 정정 필요
                 case "short":
-                    return "ToInt16";
+                    return "Int16";
                 case "ushort":
-                    return "ToUInt16";
+                    return "UInt16";
                 case "int":
-                    return "ToInt32";
+                    return "Int32";
                 case "long":
-                    return "ToInt64";
+                    return "Int64";
                 case "float":
-                    return "ToSingle";
+                    return "Single";
                 case "double":
-                    return "ToDouble";
+                    return "Double";
                 default:
                     return "";
             }

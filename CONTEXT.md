@@ -59,7 +59,7 @@
 
 ## ⏸️ 현재 멈춤 지점 (2026-05-10)
 
-**Phase 06 완료 — Phase 07(생성 코드 양쪽 정합 + Phase 05 코드 교체) 진입 직전**.
+**Phase 07 완료 — M1 Foundation 정비 마지막 단계 끝. Phase 08(PacketManager 도입) 또는 M2 진입 직전**.
 
 - ✅ Phase 01 완료 (commit `2411ae0`): 솔루션 부트스트랩 + DLL 빌드 파이프라인. 학습 일지 박제.
 - ✅ 폴더 prefix 정렬 + 경로 정합성 일괄 갱신 (commit `071680e`)
@@ -72,25 +72,13 @@
 - ✅ **전체 outdated 점검 + 정합 (2026-05-10, commit `d5b8677` + `6494896`)**: Explore agent로 ARCHITECTURE.md가 2026-05-06/09/10 세 차례 변경에 누락됐던 것 일괄 정합. 디렉토리 구조 통째 재작성 + MessagePack 의존성 제거 + EF Core 8→10 + Y2 socket 분리 모델 명시. Phase 05 파일 신설.
 - ✅ **Phase 05 완료 (2026-05-10, commit `5174573`)**: framing(`[size(2)][packetId(2)][payload]`) + 첫 Ping/Pong 양방향 시연. `98_Shared/Protocol/` 신설(PacketId enum + PingPacket + PongPacket, BitConverter 임시). 서버/클라 PacketSession 상속 교체. Unity 1초마다 Ping → 서버 Pong → 클라 RTT 출력. **★ M1 Foundation 마일스톤 완료** — 영상 시연 가능한 첫 데모.
 - ✅ **Phase 06 완료 (2026-05-10, commit `03994b0`)**: PacketGenerator 4월 ServerDev → `99_Tools/PacketGenerator/` 이주 + 하드코딩 버그 2개 정정(`C_Chat`/`chatLen`) + Program.cs nullable 정합 + PDL.xml=`C_Ping`/`S_Pong`. 생성기 실행 → 3개 .cs(GenPackets+ClientPacketManager+ServerPacketManager) 정상 출력 + eyeball 검증 통과. 6개 프로젝트 빌드 경고 0/오류 0.
-- ⏳ Phase 02·03·04·05·06 학습 일지는 본인 페이스에 따라 추후
+- ✅ **Phase 07 완료 (2026-05-10)**: PDL 정합 + Phase 05 임시 코드 교체 + Unity 시연 재현. PacketFormat.cs 템플릿(Write byte[] + BinaryPrimitives.*LittleEndian) + Program.cs 출력 폴더 분리(`98_Shared/Protocol/Generated/`로 패킷 통합) + `--no-manager`/`--no-wait` 옵션. Phase 05 임시 PingPacket/PongPacket 삭제. **사용자 통찰로 ADR-012 진화 (책임 단위 분리/통합 정제) + AI sliding 패턴 메모리화**. 책임 단위 문서화 6군데 박제 (ADR-012 보강 + 98_Shared CLAUDE.md + SendBuffer 양쪽 주석 + PacketFormat 헤더 + Phase 07 -DONE + 학습 일지 후보 키워드).
+- ⏳ Phase 02·03·04·05·06·07 학습 일지는 본인 페이스에 따라 추후
 
-**다음 작업 = Phase 07: 생성 코드 양쪽 정합 + Phase 05 코드 교체 + 시연**
-
-진입 전 결정 필요 (Y2 정합 갈래):
-- ① **Shared에 SendBufferHelper 두기** (코드 중복 0, 생성기 단순)
-- ② **생성기가 양쪽에 별도 GenPackets.cs 출력** (Y2 분리 갈래 일관, 코드 두 벌)
-- ③ 다른 방식
-
-작업:
-- 위 갈래 결정 → PacketFormat.cs 템플릿 수정 (`using` + `SendBufferHelper` 분담)
-- BinaryPrimitives.*LittleEndian 정합 (현재 BitConverter 호스트 endian)
-- Phase 05 `PingPacket.cs`/`PongPacket.cs` 삭제 → 생성 `C_Ping`/`S_Pong` 사용
-- 양쪽 GameSession/UnityClientSession dispatch 정합
-- Unity 시연 (Phase 05와 동일 RTT 로그, 단 *생성 코드*로)
-
-**기타 후보** (Phase 07 후):
-- PRD.md 응축 (229줄→220 안)
-- M2 First Connection 진입 (캐릭터 첫 이동, 본격 게임 로직)
+**다음 작업 후보**:
+- **Phase 08 (옵션)**: PacketManager + PacketHandler 자동 dispatch 도입. 새 패킷 추가 시 *PDL.xml + 핸들러 메서드*만 작성 → 자동 등록. `/new-packet` 슬래시 커맨드 활용 가능. ~1.5h.
+- **M2 First Connection 진입**: 캐릭터 첫 이동(input → 패킷 → 서버 검증 → snapshot). 본격 게임 로직. M1 정비 끝났으니 진입 가능.
+- **PRD.md 응축** (229줄, 220 초과) — Phase 06 후속, 다음 세션 진입 전 처리 검토.
 - Hook 보강은 여전히 사례 기반으로 미룸.
 
 ---

@@ -1,3 +1,18 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚠️ 본 코드는 02_Server/Network/SendBuffer.cs와 거의 동일 (의도된 두 벌).
+//
+// "왜 합치지 않았나" — Y2 분리 갈래(ADR-012):
+//   - 클라: .NET Standard 2.1, Unity Mono/IL2CPP 제약
+//   - 서버: .NET 10 LTS, GC 최적화 자유
+//   환경별 최적화 자유 + 한쪽 변경이 반대편 빌드 안 깸 + 한국 MMO 백엔드
+//   현업 패턴(Rookiss/NCSoft/Nexon — 전용 서버 + 클라 socket layer 분리).
+//
+// "동기는 어떻게 보장하나" — 차이가 알고리즘 자체에 생기면 *그것이 신호*.
+//   현재는 같은 알고리즘 우연히 가능. 패킷 정의는 PDL.xml + 코드 생성기가
+//   자동 동기화 (98_Shared/Protocol/Generated/).
+//
+// 책임 단위 분리/통합 표는 ADR-012 본문 참조.
+// ─────────────────────────────────────────────────────────────────────────────
 namespace Dawnholder.Client.Net;
 
 /// <summary>
@@ -7,8 +22,6 @@ namespace Dawnholder.Client.Net;
 /// - 클라는 보내는 측 스레드가 보통 *둘*: ① Unity main thread (사용자 입력 → Send 호출)
 ///   ② socket 콜백 스레드 (응답 수신 직후 ack 전송 등). ThreadLocal로 두 스레드가
 ///   각자 자기 chunk를 갖게 해서 lock 없이 동시 Open/Close 가능.
-/// - 서버측 SendBufferHelper와 동일 코드. 클라에 단순화 안 한 이유: 같은 패턴을
-///   양쪽에서 *왜 쓰는지* 이해하는 게 학습 가치 (Y2 갈래의 본질).
 /// </summary>
 public class SendBufferHelper
 {

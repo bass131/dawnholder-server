@@ -43,9 +43,9 @@ namespace Dawnholder.Client.Network
             ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
                 new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
 
-            switch ((PacketId)packetId)
+            switch ((PacketID)packetId)
             {
-                case PacketId.Pong:
+                case PacketID.S_Pong:
                     HandlePong(buffer);
                     break;
 
@@ -60,14 +60,14 @@ namespace Dawnholder.Client.Network
 
         void HandlePong(ArraySegment<byte> buffer)
         {
-            PongPacket pong = new PongPacket();
+            S_Pong pong = new S_Pong();
             pong.Read(buffer);
 
             // RTT 계산은 워커 스레드에서 즉시 (Unity API 미사용). 로그만 main thread로.
             long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            long rtt = now - pong.ClientTimestampMs;
-            long oneWayLatencyEstimate = (now - pong.ClientTimestampMs) / 2;
-            long serverTs = pong.ServerTimestampMs;
+            long rtt = now - pong.clientTimestampMs;
+            long oneWayLatencyEstimate = rtt / 2;
+            long serverTs = pong.serverTimestampMs;
 
             MainThreadDispatcher.Enqueue(() =>
                 Debug.Log($"[Unity] Pong! RTT = {rtt}ms (one-way ≈ {oneWayLatencyEstimate}ms, serverTs={serverTs})"));

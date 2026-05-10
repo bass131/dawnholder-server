@@ -54,12 +54,13 @@ namespace Dawnholder.Client.Network
             _accumSec = 0f;
 
             // Ping 패킷 생성 + 직렬화 + 송신.
-            // ClientTimestampMs는 Unix epoch ms (서버에 그대로 echo됨).
-            PingPacket ping = new PingPacket
+            // clientTimestampMs는 Unix epoch ms (서버에 그대로 echo됨).
+            // Phase 07: 임시 BitConverter 코드 → 자체 PDL 자동 생성 코드 (C_Ping).
+            C_Ping ping = new C_Ping
             {
-                ClientTimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                clientTimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
             };
-            _session.Send(new ArraySegment<byte>(ping.ToBytes()));
+            _session.Send(ping.Write());
         }
 
         void OnApplicationQuit()
