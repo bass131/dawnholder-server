@@ -44,7 +44,7 @@
 
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
-| [`/log-session`](../.claude/commands/log-session.md) | 세션 끝 무렵, 결정·토론·코드 변경이 있었을 때 STAR 형식으로 노션 박제 | (인풋 없음) |
+| [`/log-session`](../.claude/commands/log-session.md) | 세션 끝 무렵, 결정·토론·코드 변경이 있었을 때 노션 박제 트리거. Claude가 Bash로 Codex CLI 호출 → Codex가 STAR 형식으로 박음 (2026-05-11 deprecation 후 새 흐름). 명세는 Codex 환경 참조용. | (인풋 없음) |
 
 ---
 
@@ -56,8 +56,8 @@
 - **`/explain <코드>`** — "이 **코드**가 무슨 일을 하는가". 줄 단위 풀이
 
 ### `/journal-*` 3종 vs `/log-session`
-- **`/journal-*`** — `docs/learning-journal/`에 **로컬 마크다운**으로 저장. 본인이 답을 채움. 면접 답변 연습용.
-- **`/log-session`** — **노션 DB**에 STAR로 박제. Claude가 작성. 결정·맥락 누적용.
+- **`/journal-*`** — `00_Document/learning-journal/`에 **로컬 마크다운**으로 저장. 본인이 답을 채움. 면접 답변 연습용.
+- **`/log-session`** — **노션 DB**에 STAR로 박제. **Codex가 작성** (2026-05-11 분업 정합 — Claude는 -DONE.md까지, Notion 박기는 Codex via Bash 위임). 결정·맥락 누적용.
 
 → 둘은 **상호 보완**. 큰 학습이 있었으면 `/journal-concept` 쓰고, 그날 세션 자체는 `/log-session`으로도 박는 식.
 

@@ -85,17 +85,16 @@ project-root/
 ├── 98_Shared/                    클라/서버 공유 (Protocol + GameData)
 │   ├── Shared.csproj             .NET Standard 2.1, Embedded PDB + EmbedAllSources
 │   ├── Protocol/
-│   │   ├── PacketId.cs           모든 패킷 ID enum
-│   │   ├── Packets/              패킷별 파일 (Phase 06+ 자체 PDL로 자동 생성 예정)
-│   │   └── ProtocolVersion.cs
-│   └── GameData/
+│   │   └── Generated/            PDL 자동 생성 (Phase 06/07 활성화, ADR-002)
+│   │       └── GenPackets.cs     PacketID enum + 패킷 정의 (BinaryPrimitives.*LittleEndian)
+│   └── GameData/                 (Phase M2+에서 채워질 예정)
 │       ├── Formulas.cs           데미지/XP/스탯 공식
 │       ├── Constants.cs          Tick rate 등
 │       └── Tables/               items.json, monsters.json 등
 │
 ├── 99_Tools/
-│   ├── headless-bot/             QA 시뮬레이션 봇 (Phase 06+ 본격 작성)
-│   └── PacketGenerator/          자체 PDL 코드 생성기 (Phase 06 이주 예정, ADR-002)
+│   ├── headless-bot/             QA 시뮬레이션 봇 (M2 이후 작성 예정)
+│   └── PacketGenerator/          자체 PDL 코드 생성기 (Phase 06 이주 완료, ADR-002)
 │
 ├── Dawnholder.slnx               .NET 솔루션 (02_Server + 04_ClientNet + 98_Shared)
 ├── global.json                   .NET SDK 핀
@@ -203,7 +202,7 @@ DB 쓰기는 절대 동기로 안 합니다. `Channel<SaveIntent>` 큐에 넣고
 | xUnit + FluentAssertions | latest | 테스트 | MIT |
 | PostgreSQL (Docker) | 16 | DB | PostgreSQL License |
 
-**직렬화는 외부 의존성 없음** — 자체 PDL(`99_Tools/PacketGenerator/`로 이주 예정, ADR-002 v2). MessagePack은 ADR-002 v1에서 채택했으나 v2(2026-05-06)에서 자체 PDL로 변경.
+**직렬화는 외부 의존성 없음** — 자체 PDL(`99_Tools/PacketGenerator/`, ADR-002 v2). Phase 06에서 이주·Phase 07에서 양쪽 wire-up 완료. `BinaryPrimitives.*LittleEndian`으로 wire format 플랫폼 무관. MessagePack은 ADR-002 v1에서 채택했으나 v2(2026-05-06)에서 자체 PDL로 변경.
 
 새 의존성 추가는 ADR로 기록.
 
@@ -215,3 +214,4 @@ DB 쓰기는 절대 동기로 안 합니다. `Channel<SaveIntent>` 큐에 넣고
 |------|------|------|
 | (Harness 셋업일) | 최초 작성 | - |
 | 2026-05-10 | 폴더 prefix 정렬 + ADR-002 v2(자체 PDL) + ADR-012(Y2 분리) 반영 | 디렉토리 구조 통째 재작성 + MessagePack 의존성 제거 + EF Core 8→10 + Y2 socket 분리 모델 명시. 2026-05-09 prefix 변경 + 2026-05-06 ADR-002 v2 / 2026-05-10 ADR-012 시점에 ARCHITECTURE는 누락됐던 것 일괄 정합. |
+| 2026-05-11 | Phase 06/07 활성화 반영 + ADR-012 진화 | Protocol 구조 갱신: 옛 `PacketId.cs`/`Packets/`/`ProtocolVersion.cs` (Phase 07에서 삭제·미작성) 대신 `Generated/GenPackets.cs` (PDL 자동 생성)로 정정. PacketGenerator "이주 예정" → "이주 완료". headless-bot은 M2 이후로 시점 재조정. ADR-012는 "전부 분리"에서 *책임 단위 분리/통합*으로 진화(Phase 07 사용자 통찰). |
