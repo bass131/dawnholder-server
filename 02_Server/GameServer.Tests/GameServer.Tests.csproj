@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GameServer\GameServer.csproj" />
     <ProjectReference Include="..\Network\Dawnholder.Server.Network.csproj" />
+    <ProjectReference Include="..\..\98_Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>
