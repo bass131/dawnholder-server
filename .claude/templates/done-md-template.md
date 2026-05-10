@@ -81,11 +81,13 @@ TL;DR
 
 ### 핸드오프 절차 (Claude → Codex)
 
-**Claude의 종료 지점**: `-DONE.md` 박제 + git commit/push까지. **Claude는 Notion 페이지를 직접 생성하지 않는다.** (이전 `/log-session`의 Claude 직접 박기 흐름은 deprecated.)
+**Claude의 종료 지점 (Phase 완료 ritual)**: `-DONE.md` 박제 + git commit/push까지. **Claude는 Notion 페이지를 직접 생성하지 않는다.** (이전 `/log-session`의 Claude 직접 박기 흐름은 deprecated.)
 
-**Codex 호출 방식**: 사용자가 cmd로 별도 Codex 세션 실행. ClaudeDev에 **readonly** 접근 (쓰기 권한 X — ClaudeDev 원본은 Claude만 변경).
+**Notion 박기 트리거**: 사용자가 명시 요청 (예: "노션 박아줘", `/log-session` 등). Phase 완료마다 자동 X — 사용자가 박을 가치 있다고 판단할 때만.
 
-**Codex가 받을 input 셋**:
+**Codex 호출 방식**: **Claude가 Bash 도구로 Codex CLI 호출** (사용자가 호출하는 게 아님). Codex 세션은 ClaudeDev에 **readonly** 접근 (쓰기 권한 X — ClaudeDev 원본은 Claude만 변경). 정확한 cmd 형식은 사용자 환경에 별도 보관.
+
+**Codex가 받을 input 셋** (Claude가 호출 시 path/내용 전달):
 - `01_Phases/M{N}/{NN}-*-DONE.md` ← 해당 Phase, 1순위 베이스
 - `CONTEXT.md` + `CONTEXT_History.md` ← 세션 맥락
 - `00_Document/ADR.md` ← 관련 ADR-NNN 절
@@ -98,16 +100,22 @@ TL;DR
 - Notion API/MCP로 "Dawnholder 협업 히스토리" DB에 페이지 생성
 - 분량 가이드(30~50줄) 준수
 
+**Claude의 책임**:
+- 사용자 트리거 받으면 Bash로 Codex CLI 호출
+- input 셋 path를 cmd 인자로 정확히 전달
+- Codex 출력(생성된 Notion 페이지 URL 등)을 사용자에게 보고
+
 **사용자의 책임**:
-- cmd 트리거 시점 결정 (Phase 완료 직후 / 마일스톤 / ad hoc)
+- 트리거 신호 ("노션 박아줘" 등)
 - Codex가 만든 Notion 페이지 검토 (사실 정합·분량·톤)
-- 정정 필요 시 Codex 재요청 또는 본인이 직접 수정
+- 정정 필요 시 Claude에 재호출 요청 또는 본인이 직접 수정
 
 **트리거 흐름 요약**:
 ```
-Phase 완료 → Claude: 5단계 보고 → -DONE.md 박제 → commit/push (여기까지가 Claude)
-        ↓ (사용자가 cmd 실행)
-Codex 세션 호출 (readonly) → 위 input 셋 읽기 → Notion 페이지 작성 → 사용자 검토
+Phase 완료 → Claude: 5단계 보고 → -DONE.md 박제 → commit/push (Phase ritual 끝)
+        ↓ (사용자: "노션 박아줘")
+Claude: Bash로 Codex CLI 호출 (readonly + input paths) → Codex: ClaudeDev 읽고 Notion 페이지 작성
+        → Claude: 결과 URL 사용자에게 보고 → 사용자: 검토
 ```
 
 ---

@@ -5,9 +5,9 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 
 > ⚠️ **2026-05-11 변경: Claude 직접 박기 흐름은 deprecated.**
 >
-> 새 흐름: Claude는 `-DONE.md` 박제까지만, Notion 페이지 작성은 cmd로 호출된 별도 **Codex** 세션이 readonly로 ClaudeDev를 읽고 직접 박는다. 분업 절차는 [`.claude/templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
+> 새 흐름: Claude는 `-DONE.md` 박제까지만, Notion 페이지 작성은 **Claude가 Bash로 호출하는 별도 Codex 세션**이 readonly로 ClaudeDev를 읽고 직접 박는다 (사용자가 cmd 치는 게 아님). 분업 절차는 [`.claude/templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
 >
-> **본 파일의 역할**: Codex가 Notion 페이지 생성 시 참조할 *환경 명세* — DB ID·스키마·페이지 생성 API 형식·STAR 본문 가이드·함정 사례. Claude 슬래시 커맨드로는 더 이상 호출되지 않는다 (Claude가 `/log-session` 호출을 받으면 위 핸드오프 절차로 안내만 함).
+> **본 파일의 역할**: Codex가 Notion 페이지 생성 시 참조할 *환경 명세* — DB ID·스키마·페이지 생성 API 형식·STAR 본문 가이드·함정 사례. 사용자가 `/log-session` 입력하면 Claude가 Bash로 Codex CLI를 호출해 본 명세에 따라 페이지를 만든다.
 
 사용자가 이번 세션을 노션에 기록 요청했습니다.
 한 줄 요약 (있으면): **$ARGUMENTS**
