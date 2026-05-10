@@ -8,6 +8,11 @@
 
 ---
 
+## TL;DR
+Phase 05의 임시 BitConverter `PingPacket`/`PongPacket`을 자체 PDL이 자동 생성한 `C_Ping`/`S_Pong`으로 교체했다. 코드 생성기 출력은 *책임 단위*로 분리했다 — 패킷 데이터 정의는 `98_Shared/Protocol/Generated/`로 통합, manager/handler는 양쪽 분리. 사용자 통찰("Network 코어는 같은 걸 쓰고 핸들러만 분리")로 ADR-012가 "전부 분리"에서 *책임마다 따로* 결정으로 진화했고, M1 Foundation의 네트워크 기반은 임시 코드 없이 정리됐다. 다음 단계는 Phase 08(자동 dispatch) 또는 M2 First Connection 진입.
+
+---
+
 ## 5단계 보고
 
 ### 🎯 무엇을 만들었나
@@ -77,6 +82,5 @@ Phase 05의 임시 BitConverter 코드는 *교체 가정*으로 박힌 것. ADR-
 
 - **PacketManager + PacketHandler (Phase 08)**: 생성기에 `--no-manager` 옵션 끄면 ServerPacketManager.cs / ClientPacketManager.cs 양쪽 분리 출력. 단 PacketHandler 클래스 *수동 작성 필요* (각 패킷마다 `Handler` 메서드). `/new-packet` 커맨드 활용.
 - **bool 타입 정정 (미래)**: ToMemberType에서 bool→Boolean 매핑이 BinaryPrimitives에 없음. 첫 bool 패킷 추가 시 ReadByteFormat 패턴으로 별도 분기 추가.
-- **결정 자료 HTML 2개**: `00_Document/_compare-network-split.html` + `_phase07-option-flows.html` — Phase 07 진입 시 *AI sliding 인지 + 책임 단위 정합* 흐름의 의사결정 자료. 보존 가치 있음 (학습 자료). 미래 사람이 *결정 흐름*을 시각적으로 복원 가능.
 - **PRD.md 229줄 미해결** (Phase 06 후속). 다음 세션 진입 전 응축 검토.
 - **ARCHITECTURE.md 디렉토리 다이어그램** — 현재 04_ClientNet 그대로 + 98_Shared/Protocol/Generated/ 추가됨. 다음 큰 변화 시 갱신.
