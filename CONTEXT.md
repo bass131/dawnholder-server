@@ -57,9 +57,9 @@
 
 ---
 
-## ⏸️ 현재 멈춤 지점 (2026-05-10)
+## ⏸️ 현재 멈춤 지점 (2026-05-11)
 
-**Phase 07 완료 — M1 Foundation 정비 마지막 단계 끝. Phase 08(PacketManager 도입) 또는 M2 진입 직전**.
+**Phase 07 완료 + 회귀 테스트 보강 — M1 Foundation 정비 마지막 단계 끝. 다음 세션에서 Phase 08(PacketManager 자동 dispatch) vs M2 진입 결정 필요**.
 
 - ✅ Phase 01 완료 (commit `2411ae0`): 솔루션 부트스트랩 + DLL 빌드 파이프라인. 학습 일지 박제.
 - ✅ 폴더 prefix 정렬 + 경로 정합성 일괄 갱신 (commit `071680e`)
@@ -72,7 +72,8 @@
 - ✅ **전체 outdated 점검 + 정합 (2026-05-10, commit `d5b8677` + `6494896`)**: Explore agent로 ARCHITECTURE.md가 2026-05-06/09/10 세 차례 변경에 누락됐던 것 일괄 정합. 디렉토리 구조 통째 재작성 + MessagePack 의존성 제거 + EF Core 8→10 + Y2 socket 분리 모델 명시. Phase 05 파일 신설.
 - ✅ **Phase 05 완료 (2026-05-10, commit `5174573`)**: framing(`[size(2)][packetId(2)][payload]`) + 첫 Ping/Pong 양방향 시연. `98_Shared/Protocol/` 신설(PacketId enum + PingPacket + PongPacket, BitConverter 임시). 서버/클라 PacketSession 상속 교체. Unity 1초마다 Ping → 서버 Pong → 클라 RTT 출력. **★ M1 Foundation 마일스톤 완료** — 영상 시연 가능한 첫 데모.
 - ✅ **Phase 06 완료 (2026-05-10, commit `03994b0`)**: PacketGenerator 4월 ServerDev → `99_Tools/PacketGenerator/` 이주 + 하드코딩 버그 2개 정정(`C_Chat`/`chatLen`) + Program.cs nullable 정합 + PDL.xml=`C_Ping`/`S_Pong`. 생성기 실행 → 3개 .cs(GenPackets+ClientPacketManager+ServerPacketManager) 정상 출력 + eyeball 검증 통과. 6개 프로젝트 빌드 경고 0/오류 0.
-- ✅ **Phase 07 완료 (2026-05-10)**: PDL 정합 + Phase 05 임시 코드 교체 + Unity 시연 재현. PacketFormat.cs 템플릿(Write byte[] + BinaryPrimitives.*LittleEndian) + Program.cs 출력 폴더 분리(`98_Shared/Protocol/Generated/`로 패킷 통합) + `--no-manager`/`--no-wait` 옵션. Phase 05 임시 PingPacket/PongPacket 삭제. **사용자 통찰로 ADR-012 진화 (책임 단위 분리/통합 정제) + AI sliding 패턴 메모리화**. 책임 단위 문서화 6군데 박제 (ADR-012 보강 + 98_Shared CLAUDE.md + SendBuffer 양쪽 주석 + PacketFormat 헤더 + Phase 07 -DONE + 학습 일지 후보 키워드).
+- ✅ **Phase 07 완료 (2026-05-10, commit `ec2cfe5`)**: PDL 정합 + Phase 05 임시 코드 교체 + Unity 시연 재현. PacketFormat.cs 템플릿(Write byte[] + BinaryPrimitives.*LittleEndian) + Program.cs 출력 폴더 분리(`98_Shared/Protocol/Generated/`로 패킷 통합) + `--no-manager`/`--no-wait` 옵션. Phase 05 임시 PingPacket/PongPacket 삭제. **사용자 통찰로 ADR-012 진화 (책임 단위 분리/통합 정제) + AI sliding 패턴 메모리화**. 책임 단위 문서화 6군데 박제 (ADR-012 보강 + 98_Shared CLAUDE.md + SendBuffer 양쪽 주석 + PacketFormat 헤더 + Phase 07 -DONE + 학습 일지 후보 키워드).
+- ✅ **Phase 07 회귀 안전망 보강 (2026-05-11, commit `2b1cc4d`)**: C_Ping/S_Pong 라운드트립 회귀 테스트 추가 (Phase 07에서 누락됐던 회수 commit). M1 Foundation 영역 테스트 커버리지 = Ping/Pong 한 군데뿐 → Phase 08 진입 시 또는 M2 코드 늘어나기 전 보강 후보.
 - ⏳ Phase 02·03·04·05·06·07 학습 일지는 본인 페이스에 따라 추후
 
 **다음 작업 후보**:
@@ -105,30 +106,36 @@
 
 ---
 
-## 다음 Phase = Phase 05 (Length-prefixed framing + 첫 Ping/Pong)
+## 다음 세션 결정 사항 (Phase 08 vs M2 진입)
 
-**범위**: TCP byte stream을 패킷 단위로 자르는 framing 도입 + 첫 양방향 패킷 왕복 시연.
+**M1 Foundation 정비 끝 → 갈래 선택 필요**. 다음 세션 시작 시 사용자 결정 후 진행.
 
-**핵심 작업**:
-- 와이어 포맷: `[size(2)][packetId(2)][payload...]` — `04_ClientNet/PacketSession.cs`(이미 작성됨)와 서버측 `02_Server/Network/Session.cs`의 PacketSession 패턴 사용
-- 첫 패킷 정의: `Ping` (클라→서버, 클라 timestamp) / `Pong` (서버→클라, 클라 timestamp echo + 서버 timestamp)
-- Unity Update()에서 1초마다 `Connector` 보유 세션을 통해 Ping 송신 → 서버 GameSession이 받아서 Pong 응답 → 클라 RTT 계산 출력
-- 서버측 GameSession을 PacketSession 상속으로 교체 (현재는 raw Session 상속)
+### 옵션 A: Phase 08 — PacketManager + PacketHandler 자동 dispatch
+- **범위**: 새 패킷 추가 시 `PDL.xml + 핸들러 메서드`만 작성하면 자동 등록되는 dispatch 레이어 도입.
+- **소요**: ~1.5h.
+- **사유**: M2의 캐릭터 이동 패킷부터는 양이 빠르게 늘어남 → 미리 깔아두면 M2 진입 후 가속.
+- **위험**: 아직 패킷이 Ping/Pong 둘뿐이라 추상화의 *진짜 형태*가 안 보임 (premature abstraction 위험). `/new-packet` 슬래시 커맨드도 같이 정합 필요.
 
-**판단 필요**:
-- **직렬화 방식**: ① 자체 PDL(ADR-002 채택, 4월 코드 재활용 + 코드 생성기 — 인프라 셋업 비용 ~1~2시간 추가) ② 단순 `BitConverter.WriteBytes` 직접(Ping/Pong은 필드 2개라 PDL 없이도 OK, Phase 06+에 PDL 도입). Phase 05 진입 시 사용자 결정.
+### 옵션 B: M2 First Connection 진입
+- **범위**: 캐릭터 첫 이동 (Unity input → 패킷 → 서버 검증 → snapshot → 클라 reconcile). 본격 게임 로직 시작점.
+- **사유**: M1 정비가 충분히 끝났으니 (framing/PDL/책임 단위/회귀 테스트) 더 미루지 말고 게임 본질로.
+- **위험**: 패킷 수 늘어날 때 dispatch 수동 wire-up 부담 → Phase 08을 *나중에* 끼울 수밖에 없음. 그때 기존 패킷 retrofit 필요.
 
-**위험 / 함정**:
-- Phase 05 파일은 **없음** — `/plan` 또는 직접 `01_Phases/M1-foundation/05-*.md` 신설부터
-- Unity Update에서 1초 간격은 `Time.time` 누적 또는 `InvokeRepeating` — 둘 다 OK
-- 서버측 GameSession을 PacketSession 상속으로 *교체* 시 OnRecv 시그니처 변경 — 컴파일 깨질 수 있음. 한 번에 처리.
+### 추천 (사용자 결정 전, 참고용)
+- **B (M2 진입) 추천**. 이유:
+  - Phase 08은 패킷 종류가 5~10개쯤 되면 *진짜 형태*가 보임. 지금은 추측 기반.
+  - M2가 게임 본질(권위/예측/reconcile)이라 캡스톤 1 시점 데모 가치도 큼.
+  - 단점은 명확: M2 중간에 dispatch 추상화 갈증 생김. 그때 Phase 08을 사이에 끼우는 흐름.
 
-**시작 흐름**:
-1. 사용자 "Phase 05 시작하자"
-2. Claude는 헌법 + CONTEXT + Phase 04 -DONE + ADR-002 통독
-3. 직렬화 방식 결정 (PDL vs BitConverter)
-4. Phase 05 파일 신설 → 작업 단계 박음
-5. 코드 작업 → 빌드 + 시연(클라 RTT 로그 + 서버 Ping 받음 로그) → 5단계 보고 → `-DONE.md` 박제 + commit → 학습 일지 권유
+### 그 외 사이드 작업 (다음 세션 진입 *전*에 처리 검토)
+- **PRD.md 응축** — 229줄(220 초과). Phase 06부터 미뤄진 항목. 5분 작업.
+- **Phase 02·03·04·05·06·07 학습 일지** — 본인 페이스. `/journal-phase` 또는 `/journal-concept <키워드>`. 미뤄도 되지만 디테일 잊기 전에 권장.
+
+### 시작 흐름 (다음 세션)
+1. 사용자가 "이어서 가자" / "Phase 08 가자" / "M2 진입" 등으로 신호
+2. Claude는 헌법 + CONTEXT + Phase 07 -DONE + ADR-012 통독
+3. (옵션 미정 시) 짧게 1~2문항으로 결정 묻기
+4. 결정된 방향에 따라 Phase 파일 신설 또는 기존 활용 → 코드 작업 → 5단계 보고 → `-DONE.md` 박제 + commit → 학습 일지 권유
 
 ---
 
@@ -155,6 +162,13 @@
 - 자동 실행 안 함 — Phase 끝 → 보고 → 사용자 확인 → 다음 Phase 수동
 - **박제 분업**: `-DONE.md` = AI 작성(사실/결정/증상). `learning-journal/` = 본인 작성(회고/면접 답변). Phase 폴더에 짝꿍으로.
 - 학습 일지: 본인이 쓰고 AI는 인터뷰만 (가짜 학습 방지). `-DONE.md`를 사실 베이스로 활용.
+
+### Notion 협업 히스토리 문서 분업 (2026-05-11 논의)
+배경: 사용자가 Notion MCP로 `세션 로그 - History` 보강을 Codex와 논의. Codex가 ClaudeDev 원본(`CONTEXT*`, `ADR.md`, `01_Phases/*-DONE.md`)을 읽고 Phase 07 Before/After HTML을 만들었고, 사용자는 "사람이 읽기 더 편하다"고 판단.
+- **역할**: Claude는 `*-DONE.md`/`CONTEXT*`/`ADR.md`에 사실·결정·트레이드오프·테스트·막힘을 정확히 박제하고, Codex는 그 원본을 Notion용 회고·면접 자료로 재편집한다.
+- **Notion 글 구조**: `TL;DR → 배경/용어 맥락 → 핵심 결정 → 구현 변경 → 검증 결과 → 막힌 지점 → 학습/면접 포인트 → 다음 액션`.
+- **용어 처리**: `Y2`, `PDL`, `ADR`, `M1 Foundation`, `AI sliding` 같은 내부 용어는 처음 보는 사람도 이해할 수 있게 첫 등장 시 한 번 풀어쓴다.
+- **원칙**: Claude는 Notion용 문장을 과하게 다듬지 않아도 된다. 사실 박제가 1순위다.
 
 ---
 
