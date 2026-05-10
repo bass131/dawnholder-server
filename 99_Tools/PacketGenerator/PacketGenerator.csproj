@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 콘솔 도구. 빌드 후 dotnet run으로 실행. -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- 옛 csproj의 ApplicationIcon / Content ICON.ico 제거 (Phase 06 단순화).
+         AppendTargetFrameworkToOutputPath / PackageOutputPath / BaseOutputPath 같은
+         커스텀 path 옵션도 제거 — 표준 bin/obj 위치 사용. -->
+
+    <RootNamespace>Dawnholder.Tools.PacketGenerator</RootNamespace>
+    <AssemblyName>Dawnholder.Tools.PacketGenerator</AssemblyName>
+  </PropertyGroup>
+
+</Project>

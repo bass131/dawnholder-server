@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    Dawnholder Protocol Definition Language (단일 소스).
+
+    Phase 06 시점: Ping/Pong만. M2 진입 시 Move/Snapshot 등 추가 예정.
+
+    명명 규칙 (Program.cs L93 참조):
+      - C_Xxx = Client → Server (서버 PacketManager에 dispatch 등록)
+      - S_Xxx = Server → Client (클라 PacketManager에 dispatch 등록)
+
+    PacketID는 추가 순서대로 1부터 자동 부여 (Program.cs L89 ++packetID).
+    은퇴한 패킷 제거 시 ID 재할당 주의 — 헌법 #2(Protocol is Sacred):
+    "은퇴한 ID는 절대 재사용 금지". 패킷 추가는 *맨 아래에만*.
+-->
+<PDL>
+    <packet name="C_Ping">
+        <long name="clientTimestampMs"/>
+    </packet>
+
+    <packet name="S_Pong">
+        <long name="clientTimestampMs"/>
+        <long name="serverTimestampMs"/>
+    </packet>
+</PDL>

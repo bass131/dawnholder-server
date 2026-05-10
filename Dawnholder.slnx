@@ -10,4 +10,7 @@
   <Folder Name="/98_Shared/">
     <Project Path="98_Shared/Shared.csproj" />
   </Folder>
+  <Folder Name="/99_Tools/">
+    <Project Path="99_Tools/PacketGenerator/PacketGenerator.csproj" />
+  </Folder>
 </Solution>
