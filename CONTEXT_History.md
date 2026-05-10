@@ -21,3 +21,4 @@
 | 2026-05-10 (Phase 03 완료) | `04_ClientNet/` 신규 라이브러리 (Connector / ClientSession+PacketSession / Recv·SendBuffer / SmokeProbe). 5개 프로젝트 빌드 경고 0 / 오류 0. Unity F12 → 원본 한국어 주석 ReadOnly 표시 검증 통과 (ADR-010 두 번째 인스턴스). commit `fb7a06d` + `c3f2246`. 다음 = Phase 04 (Listener wire-up + connect 스모크). |
 | 2026-05-10 (문서 세분화 정책) | 헌법에 **220줄 세분화 정책** 박음 (누적 섹션 외부화 / 응축 / 자르지 않음의 3분류 + 분리된 파일 재귀 세분화 시 주제별 카테고리 우선). 시범으로 `CONTEXT.md`의 갱신 이력을 본 파일(`CONTEXT_History.md`)로 외부화. |
 | 2026-05-10 (헌법 응축) | 자기 정책 위반 해결 — `CLAUDE.md` 348→264줄. 사용자 컨텍스트 섹션 5개(톤·용어·결정 / 5단계 보고 템플릿 / -DONE.md 박제 / 학습 일지 권유 / 도구 카탈로그) 응축. `-DONE.md` 템플릿은 `.claude/templates/done-md-template.md`로 외부화. 절대 원칙·세분화 정책·구조 섹션은 본질이라 보존. commit `d01624c`. |
+| 2026-05-10 (헌법 350줄 예외) | 헌법(`CLAUDE.md`)의 220줄 임계 자기참조 무한 제안 루프 차단. 헌법만 **350줄 임계**로 예외 처리(현재 264줄 → 86줄 성장 여유). 다른 사전형 문서(ARCHITECTURE.md 등)는 220 그대로 — 필요 시 별도 ADR. |
