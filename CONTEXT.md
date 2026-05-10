@@ -57,29 +57,22 @@
 
 ---
 
-## ⏸️ 현재 멈춤 지점 (2026-05-09)
+## ⏸️ 현재 멈춤 지점 (2026-05-10)
 
-**Phase 02 완료 → Phase 03 진입 직전.**
+**Phase 03 진입 직전 — Y2 갈래 확정, ADR + Phase 파일 재작성 필요.**
 
 - ✅ Phase 01 완료 (commit `2411ae0`): 솔루션 부트스트랩 + DLL 빌드 파이프라인. 학습 일지 박제.
 - ✅ 폴더 prefix 정렬 + 경로 정합성 일괄 갱신 (commit `071680e`)
-- ✅ ServerCore 마이그 함정 실측 — 에러 0, nullable 13개. 함정 거의 없음 확인.
-- ✅ **Phase 02 완료** (commit `c2ea772`): ServerCore 7파일을 `02_Server/Network/`에 **.NET 10 유지**로 정착. nullable 21곳 청소(실측 13 + .NET 10 추가 8). 빌드 경고 0 / 오류 0, 테스트 3 통과.
-- ✅ 노션 세션 로그 박제 — Phase 02 결정 흐름 + 학습 3가지 ([URL](https://www.notion.so/35b76ceccb78816b85abde9b91217218))
-- ⏳ Phase 02 학습 일지(`/journal-phase` 등)는 사용자 결정에 따라 미루거나 진행
+- ✅ Phase 02 완료 (commit `c2ea772`): ServerCore 7파일을 `02_Server/Network/`에 .NET 10 유지로 정착. nullable 21곳 청소. 빌드 경고 0 / 오류 0, 테스트 3 통과. 노션 세션 로그 박제.
+- ✅ **박제 정책 결정 (2026-05-10)**: 학습 일지가 밀릴 것을 전제로 **`-DONE.md` 페어 도입**. AI가 작성하는 사실·결정·증상 박제 (5단계 보고 직후 자동). 학습 일지(본인 회고)와 역할 분리. 헌법 + `/journal-phase` 스킬 갱신, Phase 01·02 소급 작성 완료.
+- ✅ **Phase 03 갈래 결정 (2026-05-10)**: **Y2 (분리 + 별도 클라 라이브러리)** 확정. 사유: 현업 표준(Mirror/FishNet/gRPC도 양쪽 분리), socket 자체 학습 가치, 서버 변경이 클라 빌드 안 깸.
+- ⏳ Phase 02 학습 일지는 본인 페이스에 따라 추후
 
-**다음 작업**: Phase 03 (**Unity 클라 socket 전략 결정 + 클라측 시작**). 갈래 X(같은 코드 공유, .NET Std 2.1 마이그 + DLL) vs 갈래 Y2(분리 + 클라용 별도 DLL). 결정 직후 새 ADR 박기. 옛 Phase 03 파일(`03-tcp-listener.md`)은 outdated → 시작 시 재작성. Hook 보강은 여전히 사례 기반으로 미룸.
+**다음 작업**: Phase 03 본 진입 — ① 새 ADR 박기 (Y2 결정 박제) → ② `01_Phases/M1-foundation/03-tcp-listener.md` 재작성 (Y2 기준) → ③ 코드 작업 (`04_ClientNet/` 신규 .NET Std 2.1 라이브러리 + Plugins 복사 파이프라인). Hook 보강은 여전히 사례 기반으로 미룸.
 
 ---
 
 ## 보류 중
-
-### Phase 03 시작 직후 결정 — Unity 클라 socket 전략 (시급)
-서버측 정착(Phase 02)이 끝났으니 이제 갈래 결정 시점:
-
-- **갈래 X**: ServerCore를 `98_Shared/Net/`로 마이그 (.NET 10 → .NET Std 2.1, nullable 13곳 청소). 양쪽이 같은 DLL 참조. 4월 패턴 그대로.
-- **갈래 Y2**: ServerCore는 `02_Server/Network/`에만 (Phase 02 정착 그대로). Unity 클라 socket은 *별도 .NET Std 2.1 라이브러리*로 작성 후 DLL로 `03_Client/Assets/Plugins/`에 자동 복사. 팀원 보호 + 자체 socket 학습 가치.
-- **결정 근거 메모**: 마이그 함정 실측 결과 X도 무리 없음 (~1시간). 단 *현업 표준(Mirror/FishNet/gRPC) + 학습 임팩트 + 변경 내성*은 Y2가 우세. 결정되면 새 ADR 박기.
 
 ### Phase 03 후 판단 (사례 기반)
 코드가 더 들어온 뒤 *진짜 필요한 가드*가 어떤 것인지 보고 결정:
@@ -101,25 +94,28 @@
 
 ---
 
-## 다음 Phase = Phase 03 (Unity 클라 socket 전략 결정 + 클라측 시작)
+## 다음 Phase = Phase 03 (Unity 클라 socket 레이어 — Y2 분리 모델)
 
-**범위**: Unity 클라이언트의 socket 레이어를 어떻게 만들지 결정 + 그에 따른 첫 코드 작업.
+**범위**: Y2 갈래로 Unity 클라이언트 socket 레이어 신작.
 
-**먼저 결정**: 갈래 X(같은 코드 공유, ServerCore를 .NET Std 2.1로 마이그 + DLL) vs 갈래 Y2(분리 + 클라용 별도 .NET Std 2.1 라이브러리, DLL로 03_Client에 복사). 결정 직후 새 ADR 박기.
+**왜 Y2인가** (확정됨, ADR로 박을 예정):
+- 현업 표준 — Mirror/FishNet/gRPC 등 주류 솔루션도 양쪽 분리
+- socket 자체를 클라 입장에서 한 번 짜보는 학습 가치 (면접 무기)
+- 서버측 변경이 클라 빌드를 즉시 깨지 않음 (변경 내성)
 
-**예상 위험**:
-- X 선택 시: ServerCore 마이그 (~1시간, 함정은 실측됨), 02_Server는 .NET 10 그대로 둘지 .NET Std 2.1로 일치시킬지 추가 결정
-- Y2 선택 시: 별도 클라용 라이브러리 새 프로젝트(`04_ClientNet/` 정도) + ~200줄 작성 + Unity Plugins 복사 파이프라인
+**위험**:
+- 별도 클라용 라이브러리 새 프로젝트(`04_ClientNet/` 가칭) + ~200줄 작성
+- Unity Plugins 복사 파이프라인 한 번 더 만들어야 함 (Phase 01 패턴 재사용)
+- 시간 추가 ~1.5~2시간
 
 **시작 흐름**:
-1. 사용자가 "Phase 03 시작하자"
-2. Claude는 헌법 + ADR-001/002/010/011 + Phase 03 파일(**재작성 필요**) 통독
-3. 갈래 X/Y2 최종 비교 + 사용자 결정
-4. 새 ADR 박기 (ADR-012 또는 그 이후 번호)
-5. Phase 03 파일 재작성 (이 작업의 작업 단계 포함)
-6. 코드 작업 → 빌드 검증 → 5단계 보고 → 학습 일지 권유
+1. 사용자 "Phase 03 시작하자"
+2. Claude는 헌법 + ADR-001/002/010/011 + 신규 ADR(Y2) + Phase 03 파일(**재작성 필요**) 통독
+3. 새 ADR 박기 (ADR-012 또는 그 이후 번호) — Y2 결정 사유 박제
+4. Phase 03 파일 재작성 — Y2 기준 작업 단계
+5. 코드 작업 → 빌드 검증 → 5단계 보고 → **`-DONE.md` 박제 + commit** → 학습 일지 권유
 
-**Phase 03 파일 (`01_Phases/M1-foundation/03-tcp-listener.md`)**: 1차 셋업 시점 본이라 outdated. 갈래 결정 후 통째 재작성 필요.
+**Phase 03 파일 (`01_Phases/M1-foundation/03-tcp-listener.md`)**: 1차 셋업 시점 본이라 outdated. Y2 기준으로 통째 재작성 필요.
 
 ---
 
@@ -142,9 +138,10 @@
 - 6월 캡스톤 1 = 옵션 C(2인 movement) Stretch / 옵션 B(1인) Fallback
 
 ### Harness 작동 원칙
-- 학부생 멘토링 + 5단계 보고 + 학습 일지 권유 (헌법)
+- 학부생 멘토링 + 5단계 보고 + `-DONE.md` 박제 + 학습 일지 권유 (헌법)
 - 자동 실행 안 함 — Phase 끝 → 보고 → 사용자 확인 → 다음 Phase 수동
-- 학습 일지: 본인이 쓰고 AI는 인터뷰만 (가짜 학습 방지)
+- **박제 분업**: `-DONE.md` = AI 작성(사실/결정/증상). `learning-journal/` = 본인 작성(회고/면접 답변). Phase 폴더에 짝꿍으로.
+- 학습 일지: 본인이 쓰고 AI는 인터뷰만 (가짜 학습 방지). `-DONE.md`를 사실 베이스로 활용.
 
 ---
 
@@ -157,7 +154,7 @@
 00_Document/commands-index.md                    ← 14개 슬래시 커맨드 카탈로그
 00_Document/learning-journal/M{N}-{slug}/        ← Phase 학습 일지
   └── concepts/                                  ← 개념 일지
-01_Phases/M{N}-{slug}/                           ← 작업 단위
+01_Phases/M{N}-{slug}/                           ← 작업 단위 ({NN}-*.md 정의 + {NN}-*-DONE.md 박제 페어)
 02_Server/, 03_Client/, 98_Shared/, 99_Tools/    ← 게임 코드
 .claude/agents/                                  ← 6개 서브에이전트
 .claude/commands/                                ← 14개 슬래시 커맨드
@@ -201,3 +198,4 @@ global.json                                      ← .NET SDK 핀 (10.0.203)
 | 2026-05-09 (폴더 prefix) | 모든 최상위 폴더에 정렬용 숫자 prefix 부여 (`00_Document/`, `01_Phases/`, `02_Server/`, `03_Client/`, `98_Shared/`, `99_Tools/`). `Dawnholder.slnx` + `global.json` 신설. .gitignore / csproj / 헌법 / 서브-CLAUDE.md 경로 정합성 일괄 갱신. |
 | 2026-05-09 (Phase 02 재정의) | ServerCore 마이그 함정 실측 (nullable 13개뿐). 그 결과 *마이그 가능*하지만 *현업 표준 + 학습 가치*는 분리 모델 우세 판단. **Phase 02 = 서버측 ServerCore 정착(.NET 10 그대로)으로 축소. 클라측 socket 전략은 Phase 03에서 X/Y 결정.** Hook 보강도 Phase 02 후 사례 기반으로 미룸. |
 | 2026-05-09 (Phase 02 완료) | ServerCore 7파일을 `02_Server/Network/`에 정착(.NET 10 유지, namespace `Dawnholder.Server.Network`). nullable 21곳 청소(실측 13 + .NET 10 추가 8). JobQueueTests 2개 추가. 빌드 경고 0 / 오류 0, 테스트 3 통과. commit `c2ea772`. 노션 세션 로그 박제. |
+| 2026-05-10 (박제 정책) | 학습 일지가 밀릴 것을 전제로 **`-DONE.md` 페어 박제 정책 도입**. AI가 5단계 보고 직후 사실/결정/증상/키워드를 `01_Phases/{milestone}/{phase}-DONE.md`에 박고 commit. 학습 일지(본인 회고)와 역할 분리. 헌법 + `/journal-phase` 스킬 갱신, Phase 01·02 소급 작성. **Phase 03 갈래 = Y2(분리 + 별도 클라 라이브러리) 확정**, ADR + Phase 03 파일 재작성 직전. |
