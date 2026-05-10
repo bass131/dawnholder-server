@@ -1,25 +1,23 @@
 using System;
+using System.Buffers.Binary;
 using System.Net;
 using Dawnholder.Client.Net;
+using Shared.Protocol;
 using UnityEngine;
 
 namespace Dawnholder.Client.Network
 {
     /// <summary>
-    /// ClientNet의 <see cref="ClientSession"/>을 Unity 컨텍스트로 wrap.
+    /// ClientNet의 <see cref="PacketSession"/>을 Unity 컨텍스트로 wrap.
     ///
-    /// 콜백 4종(OnConnected/OnDisconnected/OnRecv/OnSend)은 socket 워커 스레드
-    /// 에서 호출됨 → 모두 <see cref="MainThreadDispatcher"/>에 enqueue 한 뒤
-    /// Unity Update()에서 실행되도록 marshalling.
+    /// **Phase 05 변경**: Phase 04의 <see cref="ClientSession"/> 직접 상속에서
+    /// PacketSession 상속으로 교체. 이제 framing이 자동 처리되고 OnRecvPacket이
+    /// *완전한 한 패킷* 단위로 호출됨.
     ///
-    /// **Phase 04 범위**: 패킷 해석 X. Debug.Log만. Phase 05에서 PacketSession
-    /// 기반 wrapper로 교체 또는 분리 예정.
-    ///
-    /// **closure 캡처 가드**: 콜백 인자(<c>endPoint</c>, <c>buffer.Count</c>)를
-    /// 람다에 직접 캡처하면 워커 스레드의 *변경 가능 상태*를 가둘 위험. 안전하게
-    /// 로컬 변수로 박은 뒤 캡처.
+    /// 콜백 모두 socket 워커 스레드에서 호출 → Unity API는 main-thread queue 경유.
+    /// closure 캡처 가드(로컬 변수)는 Phase 04 패턴 그대로.
     /// </summary>
-    public class UnityClientSession : ClientSession
+    public class UnityClientSession : PacketSession
     {
         public override void OnConnected(EndPoint endPoint)
         {
@@ -33,19 +31,46 @@ namespace Dawnholder.Client.Network
             MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnDisconnected from {ep}"));
         }
 
-        public override int OnRecv(ArraySegment<byte> buffer)
-        {
-            // 모두 처리한 것으로 즉시 반환 (Phase 04: framing 없음).
-            // count는 워커 스레드에서 즉시 평가, 람다는 main thread에서 실행.
-            int count = buffer.Count;
-            MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnRecv {count} bytes"));
-            return count;
-        }
-
         public override void OnSend(int numOfBytes)
         {
             int n = numOfBytes;
             MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnSend {n} bytes"));
+        }
+
+        public override void OnRecvPacket(ArraySegment<byte> buffer)
+        {
+            // buffer = [size:2][packetId:2][payload...] 통째.
+            ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+                new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
+
+            switch ((PacketId)packetId)
+            {
+                case PacketId.Pong:
+                    HandlePong(buffer);
+                    break;
+
+                default:
+                    // 알 수 없는 ID — 클라가 받을 일 없는 게 정상. 로그만.
+                    int unknownId = packetId;
+                    MainThreadDispatcher.Enqueue(() =>
+                        Debug.LogWarning($"[Unity] Unknown PacketId {unknownId} — dropped"));
+                    break;
+            }
+        }
+
+        void HandlePong(ArraySegment<byte> buffer)
+        {
+            PongPacket pong = new PongPacket();
+            pong.Read(buffer);
+
+            // RTT 계산은 워커 스레드에서 즉시 (Unity API 미사용). 로그만 main thread로.
+            long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long rtt = now - pong.ClientTimestampMs;
+            long oneWayLatencyEstimate = (now - pong.ClientTimestampMs) / 2;
+            long serverTs = pong.ServerTimestampMs;
+
+            MainThreadDispatcher.Enqueue(() =>
+                Debug.Log($"[Unity] Pong! RTT = {rtt}ms (one-way ≈ {oneWayLatencyEstimate}ms, serverTs={serverTs})"));
         }
     }
 }
