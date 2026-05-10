@@ -1,0 +1,296 @@
+using System.Net;
+using System.Net.Sockets;
+
+namespace Dawnholder.Client.Net;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚠️ Unity main thread 침범 금지
+//
+// 이 파일의 모든 콜백 (OnConnected / OnDisconnected / OnRecv / OnSend /
+// OnRecvPacket)은 .NET 스레드풀의 *socket 워커 스레드*에서 호출됩니다.
+// Unity main thread가 아닙니다. 따라서:
+//
+//   - GameObject / Transform / MonoBehaviour 등 Unity API 직접 호출 금지.
+//   - 받은 데이터/이벤트는 main-thread queue에 박아두고 Unity의 Update()에서
+//     drain 하는 패턴을 Phase 04에서 도입 예정.
+//
+// 위반 시 런타임 예외:
+//   UnityException: get_isActiveAndEnabled can only be called from the main thread
+//
+// 이 경고는 Phase 03 학습 포인트 #2와 직결됨.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// <summary>
+/// 길이 prefix(2byte) 기반 패킷 프레이밍을 제공하는 Session 래퍼.
+///
+/// **클라 컨텍스트 메모**:
+/// 서버측 PacketSession과 동일 알고리즘. 클라도 TCP byte stream을 받기 때문에
+/// 한 번의 OnRecv에 패킷이 0.5개 / 1개 / 1.5개 / N개 섞여 올 수 있음.
+/// → 헤더(2byte size)만큼 모이면 size를 읽고, size만큼 모이면 한 패킷으로 잘라
+///    OnRecvPacket에 던지고 반복.
+///
+/// 패킷 와이어 포맷: [size(2)][packetId(2)][payload...] 가 N번 반복.
+/// </summary>
+public abstract class PacketSession : ClientSession
+{
+    public static readonly int HeaderSize = 2;
+
+    public sealed override int OnRecv(ArraySegment<byte> buffer)
+    {
+        int processLen = 0;
+        int packetCount = 0;
+
+        while (true)
+        {
+            // 최소한 헤더(2byte)는 읽을 수 있어야 size를 알 수 있음.
+            if (buffer.Count < HeaderSize)
+                break;
+
+            // 패킷이 통째로 도착했는지 확인.
+            ushort dataSize = BitConverter.ToUInt16(buffer.Array!, buffer.Offset);
+            if (buffer.Count < dataSize)
+                break;
+
+            // 한 패킷 분량을 잘라서 핸들러로.
+            OnRecvPacket(new ArraySegment<byte>(buffer.Array!, buffer.Offset, dataSize));
+            packetCount++;
+
+            // 다음 패킷으로 커서 전진.
+            processLen += dataSize;
+            buffer = new ArraySegment<byte>(
+                buffer.Array!,
+                buffer.Offset + dataSize,
+                buffer.Count - dataSize);
+        }
+
+        if (packetCount > 1)
+        {
+            // 클라에선 거의 안 일어나야 정상 (서버 push가 burst로 올 때만).
+            // Phase 04 이후 진단 로그용으로 유지.
+            Console.WriteLine($"[ClientPacketSession] 모아받기 {packetCount} Packets");
+        }
+
+        return processLen;
+    }
+
+    /// <summary>패킷 1개가 완전히 모였을 때 호출. 직렬화 해석은 상위 계층에서.</summary>
+    public abstract void OnRecvPacket(ArraySegment<byte> buffer);
+}
+
+/// <summary>
+/// 클라이언트 socket 세션의 base 클래스.
+///
+/// **서버 Session과의 비대칭** (Y2 갈래 핵심):
+/// - 서버 Session: 다수 connection 중 1개. Listener가 accept 후 만들어 풀에 둠.
+/// - 클라 Session: 단일 connection. Connector가 connect 후 1회 Start 호출.
+///   동일 패턴(SocketAsyncEventArgs + RecvBuffer + SendQueue + PendingList)을
+///   유지한 이유 = 한 번 익혀 둔 비동기 socket 패턴을 양쪽에서 *왜 쓰는지*
+///   인지하는 것이 학습 가치 (ADR-012).
+/// </summary>
+public abstract class ClientSession
+{
+    #region Private Member Variables
+
+    protected Socket? m_Socket;
+    protected int m_disconnected = 0; // 0 = 연결됨, 1 = 끊김. Interlocked로만 변경.
+
+    readonly RecvBuffer m_recvBuffer = new RecvBuffer(65535);
+
+    // m_lock: Send 호출이 main thread / socket worker thread 양쪽에서 들어올 수
+    // 있어 큐 보호 필요. 클라라고 단순화 안 한 이유 = 위 메모의 두 스레드 시나리오.
+    protected readonly object m_lock = new object();
+    protected readonly Queue<ArraySegment<byte>> m_SendQueue = new Queue<ArraySegment<byte>>();
+    protected readonly List<ArraySegment<byte>> m_PendingList = new List<ArraySegment<byte>>();
+    protected readonly SocketAsyncEventArgs m_SendArgs = new SocketAsyncEventArgs();
+    protected readonly SocketAsyncEventArgs m_RecvArgs = new SocketAsyncEventArgs();
+
+    #endregion
+
+    public abstract void OnConnected(EndPoint endPoint);
+    public abstract void OnDisconnected(EndPoint endPoint);
+    public abstract int OnRecv(ArraySegment<byte> buffer);
+    public abstract void OnSend(int numOfBytes);
+
+    void Clear()
+    {
+        lock (m_lock)
+        {
+            m_SendQueue.Clear();
+            m_PendingList.Clear();
+        }
+    }
+
+    /// <summary>Connector가 connect 성공 후 호출. 비동기 수신 시작.</summary>
+    public void Start(Socket socket)
+    {
+        m_Socket = socket;
+
+        m_RecvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
+        m_SendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
+
+        RegisterRecv();
+    }
+
+    /// <summary>패킷 1개를 전송 큐에 넣고, 대기 중이 없으면 즉시 전송 시작.</summary>
+    public void Send(ArraySegment<byte> sendBuff)
+    {
+        lock (m_lock)
+        {
+            m_SendQueue.Enqueue(sendBuff);
+
+            if (m_PendingList.Count == 0)
+                RegisterSend();
+        }
+    }
+
+    /// <summary>여러 패킷을 한 번에 전송 큐에 넣음 (모아보내기).</summary>
+    public void Send(List<ArraySegment<byte>> sendBuffList)
+    {
+        if (sendBuffList.Count == 0)
+            return;
+
+        lock (m_lock)
+        {
+            foreach (ArraySegment<byte> sendBuff in sendBuffList)
+                m_SendQueue.Enqueue(sendBuff);
+
+            if (m_PendingList.Count == 0)
+                RegisterSend();
+        }
+    }
+
+    /// <summary>연결 종료. 중복 호출 방지(Interlocked) + 양방향 shutdown + close.</summary>
+    public void Disconnect()
+    {
+        // Interlocked로 0→1 전이를 원자적으로 보장. 다른 스레드가 동시에 호출해도 1회만 실행.
+        if (Interlocked.Exchange(ref m_disconnected, 1) == 1)
+            return;
+
+        OnDisconnected(m_Socket!.RemoteEndPoint!);
+        m_Socket!.Shutdown(SocketShutdown.Both);
+        m_Socket!.Close();
+
+        Clear();
+    }
+
+    #region Network Connection Send / Recv
+
+    void RegisterSend()
+    {
+        if (m_disconnected == 1)
+            return;
+
+        // 큐에 쌓인 모든 segment를 PendingList로 옮김 → 한 번의 SendAsync 호출로 묶어 보냄.
+        while (m_SendQueue.Count > 0)
+        {
+            ArraySegment<byte> buffer = m_SendQueue.Dequeue();
+            m_PendingList.Add(buffer);
+        }
+
+        m_SendArgs.BufferList = m_PendingList;
+
+        try
+        {
+            bool pending = m_Socket!.SendAsync(m_SendArgs);
+
+            // SendAsync가 즉시 완료(=동기 처리)된 경우엔 Completed 이벤트가 안 뜸 → 직접 호출.
+            if (pending == false)
+                OnSendCompleted(null, m_SendArgs);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[ClientSession] RegisterSend Failed {e}");
+        }
+    }
+
+    void OnSendCompleted(object? sender, SocketAsyncEventArgs args)
+    {
+        lock (m_lock)
+        {
+            if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
+            {
+                try
+                {
+                    m_SendArgs.BufferList = null;
+                    m_PendingList.Clear();
+
+                    OnSend(m_SendArgs.BytesTransferred);
+
+                    if (m_SendQueue.Count > 0)
+                        RegisterSend();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ClientSession] OnSendCompleted Failed : {ex}");
+                }
+            }
+            else
+            {
+                Disconnect();
+            }
+        }
+    }
+
+    void RegisterRecv()
+    {
+        if (m_disconnected == 1)
+            return;
+
+        m_recvBuffer.Clean();
+        ArraySegment<byte> segment = m_recvBuffer.WriteSegment;
+        m_RecvArgs.SetBuffer(segment.Array, segment.Offset, segment.Count);
+
+        try
+        {
+            bool pending = m_Socket!.ReceiveAsync(m_RecvArgs);
+
+            if (pending == false)
+                OnRecvCompleted(null, m_RecvArgs);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[ClientSession] RegisterRecv Failed {e}");
+        }
+    }
+
+    void OnRecvCompleted(object? sender, SocketAsyncEventArgs args)
+    {
+        if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
+        {
+            try
+            {
+                // Write 커서 이동. 실패 = 버퍼 invariant 깨짐 = 즉시 끊고 종료.
+                if (m_recvBuffer.OnWrite(args.BytesTransferred) == false)
+                {
+                    Disconnect();
+                    return;
+                }
+
+                int processedSize = OnRecv(m_recvBuffer.ReadSegment);
+                if (processedSize < 0 || processedSize > m_recvBuffer.DataSize)
+                {
+                    Disconnect();
+                    return;
+                }
+
+                if (m_recvBuffer.OnRead(processedSize) == false)
+                {
+                    Disconnect();
+                    return;
+                }
+
+                RegisterRecv();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ClientSession] OnRecvCompleted Failed : {ex}");
+            }
+        }
+        else
+        {
+            Disconnect();
+        }
+    }
+
+    #endregion
+}

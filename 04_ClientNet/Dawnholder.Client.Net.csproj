@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- ADR-010: Unity 6.4 LTS의 Mono/IL2CPP가 인식하는 공통 API 사양 -->
+    <TargetFramework>netstandard2.1</TargetFramework>
+
+    <!-- Phase 01 함정 #1 (CS8400) 회피: file-scoped namespace 등 최신 C# 문법 사용 -->
+    <LangVersion>latest</LangVersion>
+
+    <!-- 헌법: nullable 추적 강제 -->
+    <Nullable>enable</Nullable>
+
+    <!-- Phase 02 실측 함정 회피: ThreadLocal<T> 등 흔한 타입 자동 임포트 -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- ADR-010: PDB + 원본 .cs를 .dll에 통째 임베드 → Unity F12 시 한국어 주석까지 표시 -->
+    <DebugType>embedded</DebugType>
+    <EmbedAllSources>true</EmbedAllSources>
+
+    <!-- 폴더명에 숫자 prefix(04_)가 있어 자동 추론 어색 → 명시 -->
+    <RootNamespace>Dawnholder.Client.Net</RootNamespace>
+    <AssemblyName>Dawnholder.Client.Net</AssemblyName>
+  </PropertyGroup>
+
+  <!-- ADR-010 패턴 재사용 (Phase 01의 Shared.csproj와 동일):
+       빌드 후 03_Client/Assets/Plugins/ClientNet/ 으로 산출 DLL 자동 복사. -->
+  <Target Name="CopyToUnityPlugins" AfterTargets="Build">
+    <ItemGroup>
+      <_ClientNetOutput Include="$(TargetDir)$(TargetName).dll" />
+    </ItemGroup>
+    <MakeDir Directories="$(MSBuildThisFileDirectory)..\03_Client\Assets\Plugins\ClientNet\" />
+    <Copy SourceFiles="@(_ClientNetOutput)"
+          DestinationFolder="$(MSBuildThisFileDirectory)..\03_Client\Assets\Plugins\ClientNet\"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

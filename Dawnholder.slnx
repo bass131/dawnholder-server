@@ -4,6 +4,9 @@
     <Project Path="02_Server/GameServer/GameServer.csproj" />
     <Project Path="02_Server/Network/Dawnholder.Server.Network.csproj" />
   </Folder>
+  <Folder Name="/04_ClientNet/">
+    <Project Path="04_ClientNet/Dawnholder.Client.Net.csproj" />
+  </Folder>
   <Folder Name="/98_Shared/">
     <Project Path="98_Shared/Shared.csproj" />
   </Folder>
