@@ -91,7 +91,19 @@ Codex는 STAR 4섹션 박을 때 위 8 항목이 다 들어갔나 점검 후 박
 
 **Notion 박기 트리거**: 사용자가 명시 요청 (예: "노션 박아줘", `/log-session` 등). Phase 완료마다 자동 X — 사용자가 박을 가치 있다고 판단할 때만.
 
-**Codex 호출 방식**: **Claude가 Bash 도구로 Codex CLI 호출** (사용자가 호출하는 게 아님). Codex 세션은 ClaudeDev에 **readonly** 접근 (쓰기 권한 X — ClaudeDev 원본은 Claude만 변경). 정확한 cmd 형식은 사용자 환경에 별도 보관.
+**Codex 호출 방식**: **Claude가 Bash 도구로 Codex CLI 호출** (사용자가 호출하는 게 아님). Codex 세션은 ClaudeDev에 **readonly** 접근 (쓰기 권한 X — ClaudeDev 원본은 Claude만 변경). 정확한 cmd 형식은 아래 "Codex CLI cmd 형식" 참조.
+
+**Codex CLI cmd 형식** (2026-05-11 첫 e2e 검증):
+
+| 케이스 | cmd | 사유 |
+|---|---|---|
+| **새 페이지 생성** (Notion DB에 신규 row) | `codex exec -s workspace-write -C "<ClaudeDev 절대 경로>" "<prompt>" < /dev/null 2>&1` | `notion-create-pages` MCP는 기본 sandbox로 OK |
+| **기존 페이지 수정** (update-page) | `codex exec --dangerously-bypass-approvals-and-sandbox -C "<ClaudeDev 절대 경로>" "<prompt>" < /dev/null 2>&1` | `notion-update-page` MCP는 비대화형 모드에서 confirmation 채널 없음 → 자동 cancel → bypass 필수 |
+
+**필수 옵션 공통**:
+- `< /dev/null` — stdin 차단. 안 하면 codex가 stdin 대기로 hang (2026-05-11 첫 시도 함정).
+- `-C <dir>` — Codex 작업 root. ClaudeDev 절대 경로.
+- `run_in_background: true` 권장 — Codex 호출은 1~10분 걸림.
 
 **Codex가 받을 input 셋** (Claude가 호출 시 path/내용 전달):
 - `01_Phases/M{N}/{NN}-*-DONE.md` ← 해당 Phase, 1순위 베이스
