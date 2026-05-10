@@ -1,236 +1,321 @@
-# Phase 04: 길이 프리픽스 프레이밍 + 첫 ping/pong
+# Phase 04: 서버 Listener wire-up + 첫 connect 스모크
 
 > **상태**: pending
 > **마일스톤**: M1 - Foundation
 > **예상 소요**: 2~3시간
-> **담당 에이전트**: `netcode`
+> **담당 에이전트**: 메인 세션 + `netcode` 서브에이전트 + 사용자 (Unity 시연)
+> **재작성**: 2026-05-10 (옛 plan = "framing + ping/pong + CLI 클라"는 폐기 — 너무 큰 단위 + Phase 03 가정 outdated + ADR-002 변경(MessagePack → 자체 PDL) 미반영)
+> **근거 ADR**: ADR-012 (Y2 분리 모델) + ADR-010 (DLL + Embedded PDB)
 
 ---
 
 ## 🎯 목표
 
-TCP 스트림을 "패킷" 단위로 자르는 framing을 구현하고, 첫 패킷 왕복
-(C2S_Ping → S2C_Pong)을 동작시킨다. 검증을 위해 `tools/cli-client/`에
-간단한 .NET 콘솔 클라이언트도 같이 만든다.
+서버에서 **처음으로 포트를 열고**, Unity 클라가 **connect**까지 가서 양쪽 로그가 뜨는 것까지. 패킷 송수신은 다음 Phase. 이번엔 *살아있는 connection 1개*가 양쪽에 인지되는 모습 시연.
 
-**이 Phase가 끝나면 M1 완료**. 첫 마일스톤의 마무리.
-
-**왜 length-prefixed framing인가**: TCP는 "스트림"이지 "메시지"가 아님.
-"안녕"과 "하세요" 두 번 보내도 받는 쪽엔 "안녕하세요"로 이어붙어 옴.
-어디서 끊어 읽을지 약속이 필요 → 가장 단순하고 일반적인 게
-**[길이 4바이트][본문 N바이트]** 형식.
+**왜 이 범위로 잘랐나** (3시간 가이드):
+- 서버 wire-up + 클라 wire-up + Unity main thread queue 첫 도입까지가 한 호흡
+- framing/직렬화/ping-pong까지 넣으면 4~5시간 + 디버깅 폭발 위험
+- Unity main thread queue는 *첫 패턴 도입*이라 학습 가치가 큼 → 이걸 깔끔히 박는 데 집중
 
 ---
 
 ## ⏪ 사전 조건
 
-- [x] Phase 03 완료 (TCP 리스너 + Session)
-- [x] MessagePack 패키지 추가 결정 (이미 ADR-002에서 채택)
+- [x] Phase 02 완료 (서버측 `02_Server/Network/` 정착)
+- [x] Phase 03 완료 (`04_ClientNet/` 신작 + Unity F12 검증)
+- [x] ADR-012 박힘 (Y2 분리 모델)
+- [ ] 헌법 + ADR-001/010/012 + Phase 03 -DONE 통독
+- [ ] **이번 Phase의 핵심 통찰 인지**: Unity main thread 제약. socket 콜백은 워커 스레드에서 호출됨 → GameObject·Transform 등 Unity API 직접 접근 시 `UnityException`. 해결 = main thread queue.
 
 ---
 
 ## 📝 작업 내용
 
-### MessagePack 패키지 추가
-- [ ] `dotnet add shared package MessagePack`
-- [ ] `dotnet add server/GameServer package MessagePack`
-- [ ] (CLI 클라용도 추후 추가)
+### 1단계: 서버 측 ServerSession 신작
 
-### Protocol 기반 정의
-- [ ] `shared/Protocol/PacketId.cs`:
-      ```csharp
-      namespace Dawnholder.Shared.Protocol;
+서버는 클라가 connect하면 새 세션을 만들어 Session을 상속한 *클래스 인스턴스*를 띄움. 이번 Phase에선 **로그만 찍는 가벼운 구현**.
 
-      public enum PacketId : ushort
+- [ ] 새 파일: `02_Server/GameServer/Network/GameSession.cs`
+  ```csharp
+  using System.Net;
+  using Dawnholder.Server.Network;
+
+  namespace Dawnholder.Server.GameSessions;
+
+  // Session(98_Shared의 Session과는 다름 — 서버측 02_Server/Network/Session.cs)을 상속.
+  // Phase 04에선 패킷 처리 X. connect/disconnect 로그만.
+  public class GameSession : Session
+  {
+      public override void OnConnected(EndPoint endPoint)
+          => Console.WriteLine($"[GameSession] OnConnected from {endPoint}");
+
+      public override void OnDisconnected(EndPoint endPoint)
+          => Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
+
+      public override int OnRecv(ArraySegment<byte> buffer)
       {
-          // 1~999: System
-          C2S_Ping = 1,
-          S2C_Pong = 2,
-          // 향후 추가:
-          // 1000~1999: Auth
-          // 2000~2999: Movement
-          // ...
+          // Phase 04: 받은 바이트 수만 로그. 패킷 해석은 Phase 05 framing 도입 후.
+          Console.WriteLine($"[GameSession] OnRecv {buffer.Count} bytes");
+          return buffer.Count; // 모두 처리한 것으로 간주
       }
-      ```
-- [ ] `shared/Protocol/Packets/C2S_Ping.cs`:
-      ```csharp
-      using MessagePack;
 
-      namespace Dawnholder.Shared.Protocol.Packets;
+      public override void OnSend(int numOfBytes)
+          => Console.WriteLine($"[GameSession] OnSend {numOfBytes} bytes");
+  }
+  ```
+- [ ] namespace는 `Dawnholder.Server.GameSessions` (또는 `Dawnholder.Server.Sessions`). `Network`와 분리한 이유: Network는 *프로토콜 인프라*, GameSession은 *게임 도메인*.
 
-      [MessagePackObject]
-      public class C2S_Ping
+### 2단계: 서버 Program.cs에 Listener 띄우기
+
+- [ ] `02_Server/GameServer/Program.cs` 교체:
+  ```csharp
+  using System.Net;
+  using Dawnholder.Server.Network;
+  using Dawnholder.Server.GameSessions;
+  using Shared.GameData;
+
+  Console.WriteLine("=== Dawnholder Server ===");
+  Console.WriteLine($"Tick rate: {Constants.ServerTickRate} TPS ({Constants.TickIntervalMs}ms)");
+
+  // 0.0.0.0:7777 listen. 0.0.0.0 = 모든 인터페이스 (loopback + LAN).
+  IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 7777);
+
+  Listener listener = new Listener();
+  listener.Init(endPoint, () => new GameSession());
+
+  Console.WriteLine($"Listening on {endPoint}. Press Enter to stop.");
+  Console.ReadLine();
+  ```
+- [ ] `Listener.Init` 시그니처 확인 — `02_Server/Network/Listener.cs` 읽고 정확한 메서드명·파라미터 맞춤. (이름이 `Init`이 아니라 `Listen`/`Start`일 수도 있음. 실제 코드에 맞춰 조정.)
+
+### 3단계: Unity 클라 측 — MainThreadDispatcher
+
+socket 콜백은 워커 스레드. Unity API는 main thread 전용. 그 *스레드 경계 넘기*를 담당하는 작은 헬퍼.
+
+- [ ] 새 폴더: `03_Client/Assets/Scripts/Network/`
+- [ ] 새 파일: `03_Client/Assets/Scripts/Network/MainThreadDispatcher.cs`
+  ```csharp
+  using System;
+  using System.Collections.Concurrent;
+  using UnityEngine;
+
+  namespace Dawnholder.Client.Network
+  {
+      /// <summary>
+      /// 워커 스레드에서 발생한 작업을 Unity main thread에서 실행하기 위한 큐.
+      ///
+      /// 사용법:
+      ///   - 워커 스레드: MainThreadDispatcher.Enqueue(() => Debug.Log("hi"));
+      ///   - main thread: 이 컴포넌트의 Update()가 자동으로 큐를 drain.
+      ///
+      /// **왜 필요한가**: Unity의 GameObject/Transform/MonoBehaviour API는
+      /// main thread에서만 접근 가능. socket 콜백은 .NET 스레드풀의 워커 스레드에서
+      /// 호출되어 UnityException 발생.
+      /// </summary>
+      public class MainThreadDispatcher : MonoBehaviour
       {
-          [Key(0)] public long ClientTimestampMs { get; set; }
+          static readonly ConcurrentQueue<Action> _queue = new ConcurrentQueue<Action>();
+
+          /// <summary>워커 스레드 안전. 다음 main thread 프레임에 실행됨.</summary>
+          public static void Enqueue(Action action)
+          {
+              if (action != null) _queue.Enqueue(action);
+          }
+
+          void Update()
+          {
+              // 한 프레임에 누적된 모든 작업을 drain.
+              while (_queue.TryDequeue(out Action action))
+              {
+                  try { action(); }
+                  catch (Exception ex) { Debug.LogException(ex); }
+              }
+          }
       }
-      ```
-- [ ] `shared/Protocol/Packets/S2C_Pong.cs`:
-      ```csharp
-      using MessagePack;
+  }
+  ```
+- [ ] **함정 가드**: `_queue`를 *static*으로 둔 이유 = MonoBehaviour 인스턴스가 여럿 있어도 단일 큐. 단점은 씬 전환 시 누수 가능 — 본 Phase에선 신경 X (Phase 04는 단일 씬 시연).
 
-      namespace Dawnholder.Shared.Protocol.Packets;
+### 4단계: Unity 클라 측 — UnityClientSession
 
-      [MessagePackObject]
-      public class S2C_Pong
+ClientNet의 `ClientSession`을 상속해서 *콜백을 main thread queue로 푸시*하는 wrapper.
+
+- [ ] 새 파일: `03_Client/Assets/Scripts/Network/UnityClientSession.cs`
+  ```csharp
+  using System;
+  using System.Net;
+  using Dawnholder.Client.Net;
+  using UnityEngine;
+
+  namespace Dawnholder.Client.Network
+  {
+      /// <summary>
+      /// ClientNet의 ClientSession을 Unity 컨텍스트로 wrap.
+      ///
+      /// 콜백(OnConnected/OnRecv/OnSend/OnDisconnected)은 socket 워커 스레드에서
+      /// 호출되므로, 모든 처리를 MainThreadDispatcher에 enqueue 한 뒤
+      /// Unity의 Update()에서 실행되게 함.
+      /// </summary>
+      public class UnityClientSession : ClientSession
       {
-          [Key(0)] public long ClientTimestampMs { get; set; }  // echo
-          [Key(1)] public long ServerTimestampMs { get; set; }
+          public override void OnConnected(EndPoint endPoint)
+              => MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnConnected to {endPoint}"));
+
+          public override void OnDisconnected(EndPoint endPoint)
+              => MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnDisconnected from {endPoint}"));
+
+          public override int OnRecv(ArraySegment<byte> buffer)
+          {
+              int count = buffer.Count;
+              MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnRecv {count} bytes"));
+              return count; // 모두 소비한 것으로
+          }
+
+          public override void OnSend(int numOfBytes)
+              => MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnSend {numOfBytes} bytes"));
       }
-      ```
+  }
+  ```
+- [ ] **주의**: `OnRecv`의 반환은 *워커 스레드에서 즉시* 결정 (몇 바이트 소비됐는지). 그러므로 `count` 변수를 *클로저 캡처 전에* 로컬에 박아둠 (closure 안 가두려는 안전망).
 
-### Framing (서버: `server/GameServer/Network/Framing.cs`)
+### 5단계: Unity 클라 측 — NetworkBootstrap (시연 트리거)
 
-Framing은 두 가지 책임:
-1. **읽기**: 스트림에서 [4바이트 길이][본문] 한 프레임 추출
-2. **쓰기**: 본문을 [4바이트 길이][본문]로 감싸서 스트림에 씀
+- [ ] 새 파일: `03_Client/Assets/Scripts/Network/NetworkBootstrap.cs`
+  ```csharp
+  using System.Net;
+  using Dawnholder.Client.Net;
+  using UnityEngine;
 
-- [ ] `static async Task<byte[]?> ReadFrameAsync(NetworkStream s, CancellationToken ct)`
-  - 정확히 4바이트 읽음 (못 읽으면 null = 연결 종료)
-  - 길이를 BinaryPrimitives.ReadInt32BigEndian으로 파싱
-  - 길이가 0 이하 또는 MaxPacketSize 초과면 예외 (불량 연결)
-  - 정확히 그 길이만큼 본문 읽음
-  - 본문 byte[] 반환
-- [ ] `static async Task WriteFrameAsync(NetworkStream s, byte[] body, CancellationToken ct)`
-  - 4바이트 길이 헤더 + body 한 번에 씀
+  namespace Dawnholder.Client.Network
+  {
+      /// <summary>
+      /// 씬에 빈 GameObject 하나 두고 이 컴포넌트 + MainThreadDispatcher를 같이 붙여서
+      /// Play 누르면 자동으로 서버에 connect 시도.
+      ///
+      /// Phase 04 시연용. Phase 05+에서는 UI 버튼이나 게임 시작 흐름과 통합 예정.
+      /// </summary>
+      public class NetworkBootstrap : MonoBehaviour
+      {
+          [SerializeField] string serverHost = "127.0.0.1";
+          [SerializeField] int serverPort = 7777;
 
-### Session.RunAsync 채우기
-이전 Phase에서 비워둔 read 루프를 채움.
+          void Start()
+          {
+              IPAddress ip = IPAddress.Parse(serverHost);
+              IPEndPoint endPoint = new IPEndPoint(ip, serverPort);
 
-- [ ] 무한 루프:
-  - `body = await Framing.ReadFrameAsync(stream, ct)`
-  - body == null이면 break (정상 종료)
-  - body 첫 2바이트 = PacketId, 나머지 = 페이로드
-  - PacketId에 따라 dispatcher 호출
-- [ ] try/catch로 모든 예외를 잡고 로깅 후 disconnect
-- [ ] 마지막 활동 시각 갱신
+              Connector connector = new Connector();
+              connector.Connect(endPoint, () => new UnityClientSession());
 
-### Dispatcher (`server/GameServer/Handlers/PacketDispatcher.cs`)
-- [ ] `Dictionary<PacketId, Func<Session, byte[], Task>>` 형태의 핸들러 맵
-- [ ] `RegisterHandlers()` 메서드에서 모든 핸들러 등록
-- [ ] `DispatchAsync(Session, PacketId, byte[] payload)` — 적절한 핸들러 호출
+              Debug.Log($"[Unity] Connect 시도 → {endPoint}");
+          }
+      }
+  }
+  ```
+- [ ] **시연 절차** (사용자가 Unity 에디터에서 직접):
+  1. 빈 씬에 빈 GameObject(`NetworkBootstrap`) 생성
+  2. 컴포넌트로 `MainThreadDispatcher` + `NetworkBootstrap` 추가
+  3. Play → Unity Console 로그: `Connect 시도` → `OnConnected to 127.0.0.1:7777`
+  4. 동시에 서버 콘솔: `[GameSession] OnConnected from 127.0.0.1:NNNNN`
 
-### Ping 핸들러 (`server/GameServer/Handlers/PingHandler.cs`)
-- [ ] `payload`를 `MessagePackSerializer.Deserialize<C2S_Ping>(payload)`
-- [ ] `S2C_Pong` 만들어서 `ClientTimestampMs` 그대로, `ServerTimestampMs`에 현재 시각
-- [ ] 직렬화 + framing + 전송 (`session.SendAsync(...)`)
-- [ ] 핸들러는 ASYNC METHOD. await 사용 시 스레드 양보 정상.
+### 6단계: 빌드 + 양쪽 시연
 
-### Session.SendAsync (편의 메서드)
-- [ ] `Task SendAsync<T>(PacketId id, T packet, CancellationToken ct)`
-- [ ] PacketId(2바이트) + MessagePack 직렬화된 packet 합쳐서
-- [ ] WriteFrameAsync로 전송
-- [ ] 동시 쓰기 보호: `SemaphoreSlim` 1개 사용 (한 번에 한 패킷만 씀)
+- [ ] `dotnet build Dawnholder.slnx` — 5개 프로젝트 경고 0 / 오류 0
+- [ ] 새 DLL이 Plugins/ClientNet/에 자동 복사됐는지 확인
+- [ ] 서버 실행: `dotnet run --project 02_Server/GameServer`
+  - 로그 "Listening on 0.0.0.0:7777" 확인
+- [ ] Unity 에디터: Play
+  - Unity Console: `Connect 시도` + `OnConnected to ...`
+  - 서버 콘솔: `OnConnected from ...`
+- [ ] Stop → `OnDisconnected` 양쪽 로그 (Unity가 socket 닫을 때)
 
-### CLI 클라이언트 (`tools/cli-client/`)
-- [ ] `dotnet new console -n CliClient -o tools/cli-client`
-- [ ] `dotnet sln add tools/cli-client/CliClient.csproj`
-- [ ] `dotnet add tools/cli-client reference shared/Shared.csproj`
-- [ ] `dotnet add tools/cli-client package MessagePack`
-- [ ] `Program.cs`:
-  - TcpClient로 localhost:7777 접속
-  - C2S_Ping 패킷 만들어서 (ClientTimestampMs = 현재) 전송
-  - S2C_Pong 응답 받아서 RTT(왕복 시간) 계산해 출력
-  - 1초마다 반복, Ctrl+C로 종료
+### 7단계: 커밋
 
-### 단위 테스트
-- [ ] `FramingTests.RoundTrip` — 메모리 스트림에 write 후 read해서 같은 바이트 나오는지
-- [ ] `FramingTests.RejectsOversizedFrame` — MaxPacketSize 초과 시 예외
-- [ ] `FramingTests.HandlesPartialRead` — TCP는 partial read 가능. 시뮬레이션해도 정확히 동작하는지
+- [ ] `feat(connect): 서버 Listener + Unity 첫 connect 스모크 — main thread queue 도입`
 
 ---
 
 ## ✅ 완료 조건
 
-- [ ] `dotnet build` + `dotnet test` 통과
-- [ ] **End-to-end 시나리오**:
-  1. `dotnet run --project server/GameServer` (서버 켜기)
-  2. 다른 터미널: `dotnet run --project tools/cli-client`
-  3. 클라이언트가 1초마다 ping 보내고 RTT 출력
-  4. 서버 로그에 ping 받음/pong 보냄 흔적
-  5. 동시 5개 클라이언트 연결, 각각 정상 RTT
-  6. 클라 또는 서버 Ctrl+C 시 깔끔한 종료
-- [ ] 1분간 ping/pong 반복해도 메모리 안정 (계속 증가 안 함)
+- [ ] `dotnet build Dawnholder.slnx` — 경고 0 / 오류 0
+- [ ] 서버에 `02_Server/GameServer/Network/GameSession.cs` 신규
+- [ ] 서버 `Program.cs` Listener wire-up 됨, 7777 listen 로그 표시
+- [ ] Unity 클라에 3개 .cs 신규 (`MainThreadDispatcher`, `UnityClientSession`, `NetworkBootstrap`)
+- [ ] **End-to-end 시연**: Unity Play → 양쪽 콘솔에 OnConnected 로그
+- [ ] Unity Stop → 양쪽에 OnDisconnected 로그 (clean shutdown)
+- [ ] Unity Console에 `UnityException: ... main thread` 같은 에러 없음 (main thread queue 작동 증명)
 
 ---
 
 ## 🧪 테스트
 
-**자동 테스트:**
-- `FramingTests.RoundTrip`
-- `FramingTests.RejectsOversizedFrame`
-- `FramingTests.HandlesPartialRead`
-- `FramingTests.Read_Returns_Null_On_Disconnect`
-- `PacketDispatcherTests.DispatchesToRegisteredHandler`
-- `PacketDispatcherTests.UnknownPacketId_Logs_And_Continues`
+**자동 테스트**: 이번 Phase는 **신설 안 함**. 이번엔 *wiring + 살아있는 connection 시연*이 본질. 단위 테스트 가치 낮음 (Listener·Connector 자체는 Phase 02·03에서 검증).
 
-**수동 테스트:**
-- 위 End-to-end 시나리오
-- 추가: 잘못된 데이터 보내기 (예: 길이 -1) → 서버가 깨끗하게 disconnect
+**수동 테스트**:
+1. 서버 단독 실행 → "Listening on 0.0.0.0:7777" 로그 표시
+2. Unity Play → 양쪽 OnConnected 로그
+3. Unity Stop → 양쪽 OnDisconnected 로그
+4. (옵션) Unity Play 두 번 — 같은 클라가 재접속해도 서버에 새 GameSession이 새로 만들어지는지 확인
+5. (옵션) 서버 안 켠 상태에서 Unity Play → `OnConnectCompleted Error : ConnectionRefused` 로그
 
 ---
 
 ## 📚 학습 포인트
 
-### 1. TCP는 스트림이지 메시지가 아니다
-- "Hello"와 "World" 두 번 send해도 받는 쪽엔 "HelloWorld"로 이어 옴.
-- Framing은 메시지 경계를 약속하는 방식 (length-prefix, delimiter 등).
+### 1. Unity main thread 제약 (Phase 04 핵심)
+- **문제**: Unity의 `GameObject` / `Transform` / `Rigidbody2D` / `Time.deltaTime` 등은 *main thread에서만* 안전.
+- **socket 콜백 위치**: .NET 스레드풀의 워커 스레드 (Unity main과 별개).
+- **해결 패턴**: `ConcurrentQueue<Action>` + main thread의 `Update()`에서 drain.
+- **대안**: `UnitySynchronizationContext` 활용 — 더 정교하지만 Phase 04엔 과함.
 
-### 2. Length-Prefixed Framing의 장단점
-- **장점**: 단순, 빠름, 바이너리 안전. 게임에서 표준.
-- **단점**: 이미 buffer에 들어온 데이터를 못 미리 봄 (peek 불가).
-- 대안 (지금 안 쓸 것): newline-delimited (텍스트), HTTP-style headers,
-  fixed-size frames.
+### 2. 0.0.0.0 vs 127.0.0.1
+- 서버: `IPAddress.Any` (= 0.0.0.0) → 모든 네트워크 인터페이스에서 listen (loopback + LAN).
+- 클라: `127.0.0.1` (loopback)으로 connect → 같은 머신 안 통신.
+- LAN 테스트(같은 와이파이의 다른 머신에서 접속) 시 클라가 서버 LAN IP를 입력하면 됨.
 
-### 3. Big-endian vs Little-endian
-- 네트워크 표준은 Big-endian (network byte order).
-- 인텔/AMD CPU는 Little-endian. 항상 변환 필요.
-- `BinaryPrimitives.ReadInt32BigEndian` 사용 (직접 비트 시프트보다 안전).
+### 3. Y2 갈래의 *분업* 본격 시연
+- **ClientNet.dll** = Unity 무지. socket 패턴만.
+- **Unity 측 wrapper** (`UnityClientSession` / `MainThreadDispatcher`) = ClientNet의 콜백을 Unity 컨텍스트로 변환.
+- 이 분업이 *진짜 작동*함을 시연. 같은 ClientNet.dll을 (미래에) `99_Tools/headless-bot`에서도 그대로 쓸 수 있음 (그땐 main thread queue 불필요).
 
-### 4. Partial Read 처리
-- `stream.ReadAsync(buffer, 0, 4)`가 4바이트 다 안 줄 수 있음 (예: 2바이트만).
-- 루프로 정확한 양 채울 때까지 반복해야 함. **MMO 코드 가장 흔한 버그**.
-- 우리 ReadFrameAsync는 이걸 내부에서 처리해야 함.
+### 4. Listener.Init의 SessionFactory 패턴
+- 서버는 connect 받을 때마다 *새 Session 인스턴스*가 필요. Listener는 *어떤 Session을 만들지* 모르고, 호출자가 `Func<Session>` factory로 알려줌.
+- 이 패턴 = "프레임워크가 제어, 사용자가 *행동*만 주입" (의존성 역전).
 
-### 5. MessagePack의 [Key(N)] 명시 모드
-- 자동 매핑(Contractless)은 클래스 변경에 취약.
-- [Key(0)], [Key(1)] 명시는 호환성 안전. 필드 추가는 OK, 재정렬은 금지.
-
-### 6. SemaphoreSlim과 동시 쓰기 방지
-- 두 스레드가 같은 NetworkStream에 동시에 쓰면 패킷이 섞일 수 있음.
-- SemaphoreSlim(1, 1) = 한 번에 한 명만 통과하는 mutex.
-- 읽기는 한 곳(Session.RunAsync)에서만 하니 보호 불필요.
-
-### 7. Fire-and-forget의 위험
-- `_ = SendPongAsync(...)` 같은 패턴은 예외를 삼킬 수 있음.
-- 우리 패턴: 핸들러 안에서 await로 처리. 호출 체인 상부에서 catch.
+### 5. ConcurrentQueue vs lock-Queue
+- ConcurrentQueue<T> = lock-free 자료구조 (CAS 기반). 멀티 producer / 단일 consumer 시나리오에 최적.
+- 단순 `Queue<T>` + lock도 가능하지만, *워커 스레드의 Enqueue가 빈번*하면 lock contention 발생.
+- Phase 04엔 connect/recv 빈도 낮아 어느 쪽이든 OK. 그러나 *학습 차원*에서 ConcurrentQueue를 선택.
 
 ---
 
 ## ⚠️ 함정 / 주의사항
 
-- **Partial read 안 처리**: 위에서 언급. 가장 흔한 신입 버그.
-- **PacketId enum 캐스팅 시**: 클라가 보낸 정수가 enum에 없는 값일 수 있음.
-  반드시 `Enum.IsDefined` 체크.
-- **MessagePack 직렬화 예외**: 잘못된 바이트는 예외 던짐. 핸들러 try/catch.
-- **CLI 클라이언트 NetworkStream 닫기**: `using` 쓰거나 finally에서 정리.
-- **로그 폭주**: ping/pong은 초당 수 회. Info 레벨로 찍으면 로그 폭발.
-  Debug 레벨 또는 sampling.
-- **동시 SendAsync**: 같은 세션에 여러 핸들러가 동시에 쓸 수 있음.
-  SemaphoreSlim으로 직렬화.
+- **`Listener.Init` 시그니처 mismatch**: ServerCore 코드의 정확한 메서드명·파라미터 모양이 `Listener` / `Init` / `Listen` 중 무엇인지 본 작업 시작 시 `02_Server/Network/Listener.cs` 직접 읽기. 이름 다르면 Program.cs 호출도 맞춰 변경.
+- **방화벽**: Windows 방화벽이 첫 7777 listen 시 팝업. "허용" 클릭. 안 그러면 LAN 접근 X (loopback은 OK).
+- **동시 두 Unity 에디터 Play**: 한 번에 하나만. 두 Play는 같은 7777 socket을 두 번 connect 시도 → 두 GameSession 정상 (서버는 각각 별도 처리).
+- **ConnectAsync 즉시 완료 케이스**: loopback connect는 가끔 동기 완료. ClientNet의 Connector는 이미 처리 (`pending == false` → 직접 OnConnectCompleted 호출). 별도 신경 X.
+- **Unity Plugin 인식 안 됨**: Plugins/ClientNet/에 새 .dll 들어가도 Unity가 못 잡으면 Refresh(Ctrl+R) 또는 에디터 재시작.
+- **Unity Stop 후 서버 콘솔에 OnDisconnected 안 뜸**: TCP RST를 못 받았을 수 있음. 서버측 OnRecv가 0바이트 받으면 정상 종료 처리하는지 ServerCore 코드 확인.
+- **MainThreadDispatcher 컴포넌트 안 붙임**: Console에 connect 로그가 안 뜸 (큐에는 쌓이지만 drain 안 됨). 항상 NetworkBootstrap 옆에 함께.
 
 ---
 
-## ➡️ 다음 마일스톤
+## ➡️ 다음 Phase
 
-**M2 - First Connection**: Unity 클라이언트 등장!
-- Unity 프로젝트 생성, shared/Shared.dll 참조
-- Unity에서 같은 ping/pong 동작 확인 (CLI 클라 로직을 Unity로 포팅)
-- 그 후 캐릭터 첫 이동 (input → 패킷 → 서버 검증 → snapshot)
+**Phase 05: Length-prefixed framing + 첫 패킷 (Ping/Pong)**
+- `[size(2)][packetId(2)][payload...]` framing 도입 (PacketSession 활용)
+- `Ping` / `Pong` 첫 패킷 정의 (자체 PDL 또는 단순 BitConverter — 결정은 Phase 05 진입 시)
+- Unity Update() 안 1초마다 Ping 송신 → 서버가 Pong 응답 → 클라 RTT 출력
+- 처음으로 *살아있는 양방향 통신* 시연
 
-여기까지 완료되면 우리 백엔드의 **첫 진짜 데모**가 가능해요. CLI든
-Unity든 클라가 서버에 연결돼서 패킷을 주고받는 모습을 영상으로 찍을
-수 있어요.
+> 이 시점에서 **M1 마일스톤(Foundation) 완료** 가까움. 두 머신 시연 영상도 가능.
 
 ---
 
 ## 작업 로그
+
+> Phase 진행하면서 발견된 이슈, 결정, 메모를 여기 누적.
+> Phase 끝나면 이 내용을 `04-framing-and-pingpong-DONE.md`로 박제.
+> ⚠️ Phase 04 파일명을 그대로 유지(이미 박힌 패턴) — 내용은 framing이 아닌 connect 스모크지만, 이름 변경은 git history 비용이 커서 생략.
