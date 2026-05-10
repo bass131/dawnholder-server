@@ -59,7 +59,7 @@
 
 ## ⏸️ 현재 멈춤 지점 (2026-05-10)
 
-**Phase 03 완료 — Phase 04 진입 직전.**
+**Phase 04 완료 — Phase 05 진입 직전.**
 
 - ✅ Phase 01 완료 (commit `2411ae0`): 솔루션 부트스트랩 + DLL 빌드 파이프라인. 학습 일지 박제.
 - ✅ 폴더 prefix 정렬 + 경로 정합성 일괄 갱신 (commit `071680e`)
@@ -67,9 +67,11 @@
 - ✅ **박제 정책 결정 (2026-05-10)**: 학습 일지가 밀릴 것을 전제로 **`-DONE.md` 페어 도입**. AI가 작성하는 사실·결정·증상 박제 (5단계 보고 직후 자동). 학습 일지(본인 회고)와 역할 분리.
 - ✅ **ADR-012 박힘 (2026-05-10)**: Phase 03 갈래 = Y2(분리 + 별도 클라 라이브러리). 사유: 현업 표준, socket 자체 학습 가치, 서버 변경 격리.
 - ✅ **Phase 03 완료 (2026-05-10, commit `fb7a06d` + `c3f2246`)**: `04_ClientNet/` 신규 .NET Std 2.1 라이브러리 (Connector / ClientSession+PacketSession / RecvBuffer / SendBuffer / SmokeProbe). 5개 프로젝트 빌드 경고 0 / 오류 0. **Unity F12 → 원본 .cs + 한국어 주석 ReadOnly 표시 검증 통과** (ADR-010 패턴 두 번째 인스턴스). `-DONE.md` 박제 + commit.
-- ⏳ Phase 02·03 학습 일지는 본인 페이스에 따라 추후 (`/journal-phase` 권유는 통과)
+- ✅ **Harness 정합성 일제 정비 (2026-05-10)**: 220줄 세분화 정책 + CONTEXT_History 외부화 + 헌법 응축(348→264) + 헌법 350줄 예외 + 슬래시 커맨드/서브에이전트/hooks 18개 폴더 prefix 일괄 정정 + Agent 점검으로 잔존 outdated 2건 정정. 다음 세션부터 헌법·CONTEXT·harness 모두 정합 상태로 작동.
+- ✅ **Phase 04 완료 (2026-05-10, commit `a798479`)**: 서버 `Program.cs` Listener wire-up(0.0.0.0:7777) + `GameSession.cs` 신작 + Unity 측 3파일(`MainThreadDispatcher` / `UnityClientSession` / `NetworkBootstrap`) 첫 시연. **양쪽 OnConnected 로그 동시 확인 + UnityException 없음** → main thread queue 패턴 작동 입증. SampleScene에 Network GameObject 박힘(다음 세션 시연 재현 가능).
+- ⏳ Phase 02·03·04 학습 일지는 본인 페이스에 따라 추후
 
-**다음 작업**: Phase 04 진입 — 서버 `Program.cs`에 Listener 인스턴스화(포트 7777) + Unity 측 MonoBehaviour로 ClientNet의 Connector 호출 → 양쪽 connect 스모크 → main thread queue 첫 도입. **Phase 04 파일(`04-framing-and-pingpong.md`)은 outdated** — 진입 시점에 "Listener wire-up + connect 스모크" 기준으로 재작성 필요. 첫 framing 코드는 Phase 05로 이동. Hook 보강은 여전히 사례 기반으로 미룸.
+**다음 작업**: Phase 05 진입 — Length-prefixed framing(`[size(2)][packetId(2)][payload]`) + 첫 패킷(Ping/Pong) + Unity Update에서 1초마다 Ping → 서버 Pong → 클라 RTT 출력. **Phase 05 파일은 없음** — `/plan` 또는 `01_Phases/M1-foundation/05-*.md` 신설부터. 직렬화 결정(자체 PDL vs 단순 BitConverter) 필요. Hook 보강은 여전히 사례 기반으로 미룸.
 
 ---
 
@@ -95,26 +97,30 @@
 
 ---
 
-## 다음 Phase = Phase 04 (서버 Listener wire-up + 첫 connect 스모크)
+## 다음 Phase = Phase 05 (Length-prefixed framing + 첫 Ping/Pong)
 
-**범위**: 서버에서 처음으로 포트를 열고, 클라가 connect까지 가서 양쪽 로그가 뜨는지 확인.
+**범위**: TCP byte stream을 패킷 단위로 자르는 framing 도입 + 첫 양방향 패킷 왕복 시연.
 
 **핵심 작업**:
-- 서버 `02_Server/GameServer/Program.cs`: `Listener` 인스턴스화 + 포트 7777 listen (현재는 `02_Server/Network/`에 코드만 있고 main에서 안 부름)
-- Unity 측 `MonoBehaviour` 1개로 `ClientNet`의 `Connector` 호출 → 서버에 connect → 양쪽 콘솔 로그 확인
-- **Unity main thread marshalling 첫 도입** — `Update()`에서 main thread queue drain 패턴 (Phase 03에서 자리만 박아둔 그것)
-- 첫 framing 코드(보내고 받기)는 **Phase 05**로 이동 — 이번엔 raw connect 한 번 시연만
+- 와이어 포맷: `[size(2)][packetId(2)][payload...]` — `04_ClientNet/PacketSession.cs`(이미 작성됨)와 서버측 `02_Server/Network/Session.cs`의 PacketSession 패턴 사용
+- 첫 패킷 정의: `Ping` (클라→서버, 클라 timestamp) / `Pong` (서버→클라, 클라 timestamp echo + 서버 timestamp)
+- Unity Update()에서 1초마다 `Connector` 보유 세션을 통해 Ping 송신 → 서버 GameSession이 받아서 Pong 응답 → 클라 RTT 계산 출력
+- 서버측 GameSession을 PacketSession 상속으로 교체 (현재는 raw Session 상속)
+
+**판단 필요**:
+- **직렬화 방식**: ① 자체 PDL(ADR-002 채택, 4월 코드 재활용 + 코드 생성기 — 인프라 셋업 비용 ~1~2시간 추가) ② 단순 `BitConverter.WriteBytes` 직접(Ping/Pong은 필드 2개라 PDL 없이도 OK, Phase 06+에 PDL 도입). Phase 05 진입 시 사용자 결정.
 
 **위험 / 함정**:
-- Phase 04 파일(`04-framing-and-pingpong.md`)이 **outdated** — 진입 첫 단계로 재작성
-- Unity main thread queue 첫 시연이라 디버깅 폭발 가능성. queue 패턴을 너무 정교하게 짜지 말고 *최소 동작*으로 박을 것
-- `Listener`는 서버측 `02_Server/Network/Dawnholder.Server.Network.csproj`에 이미 존재 — `GameServer.csproj`가 이걸 참조하는지 확인 필요
+- Phase 05 파일은 **없음** — `/plan` 또는 직접 `01_Phases/M1-foundation/05-*.md` 신설부터
+- Unity Update에서 1초 간격은 `Time.time` 누적 또는 `InvokeRepeating` — 둘 다 OK
+- 서버측 GameSession을 PacketSession 상속으로 *교체* 시 OnRecv 시그니처 변경 — 컴파일 깨질 수 있음. 한 번에 처리.
 
 **시작 흐름**:
-1. 사용자 "Phase 04 시작하자"
-2. Claude는 헌법 + CONTEXT + ADR-001/002/010/012 + Phase 03 -DONE.md + Phase 04 파일(재작성 필요) 통독
-3. Phase 04 파일 재작성 → Listener wire-up + connect 스모크 기준
-4. 코드 작업 → 빌드 + 양쪽 connect 로그 확인 → 5단계 보고 → `-DONE.md` 박제 + commit → 학습 일지 권유
+1. 사용자 "Phase 05 시작하자"
+2. Claude는 헌법 + CONTEXT + Phase 04 -DONE + ADR-002 통독
+3. 직렬화 방식 결정 (PDL vs BitConverter)
+4. Phase 05 파일 신설 → 작업 단계 박음
+5. 코드 작업 → 빌드 + 시연(클라 RTT 로그 + 서버 Ping 받음 로그) → 5단계 보고 → `-DONE.md` 박제 + commit → 학습 일지 권유
 
 ---
 
