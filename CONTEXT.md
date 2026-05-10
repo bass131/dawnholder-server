@@ -163,12 +163,9 @@
 - **박제 분업**: `-DONE.md` = AI 작성(사실/결정/증상). `learning-journal/` = 본인 작성(회고/면접 답변). Phase 폴더에 짝꿍으로.
 - 학습 일지: 본인이 쓰고 AI는 인터뷰만 (가짜 학습 방지). `-DONE.md`를 사실 베이스로 활용.
 
-### Notion 협업 히스토리 문서 분업 (2026-05-11 논의)
-배경: 사용자가 Notion MCP로 `세션 로그 - History` 보강을 Codex와 논의. Codex가 ClaudeDev 원본(`CONTEXT*`, `ADR.md`, `01_Phases/*-DONE.md`)을 읽고 Phase 07 Before/After HTML을 만들었고, 사용자는 "사람이 읽기 더 편하다"고 판단.
-- **역할**: Claude는 `*-DONE.md`/`CONTEXT*`/`ADR.md`에 사실·결정·트레이드오프·테스트·막힘을 정확히 박제하고, Codex는 그 원본을 Notion용 회고·면접 자료로 재편집한다.
-- **Notion 글 구조**: `TL;DR → 배경/용어 맥락 → 핵심 결정 → 구현 변경 → 검증 결과 → 막힌 지점 → 학습/면접 포인트 → 다음 액션`.
-- **용어 처리**: `Y2`, `PDL`, `ADR`, `M1 Foundation`, `AI sliding` 같은 내부 용어는 처음 보는 사람도 이해할 수 있게 첫 등장 시 한 번 풀어쓴다.
-- **원칙**: Claude는 Notion용 문장을 과하게 다듬지 않아도 된다. 사실 박제가 1순위다.
+### Notion 협업 히스토리 문서 분업
+- **정책 위치**: [`.claude/templates/done-md-template.md`](.claude/templates/done-md-template.md) "Notion 협업 분업 원칙" 섹션 (영속). CONTEXT 응축 시 유실 방지를 위해 템플릿으로 이주됨 (2026-05-11).
+- **요지**: Claude=사실 박제 / Codex=Notion 재편집·면접 답변 / 본인=회고·학습 일지. 자세한 8단 구조·용어 처리·원칙은 위 링크 참조.
 
 ---
 
