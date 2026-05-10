@@ -40,6 +40,6 @@
 
 ## 참고 사례
 
-- `01_Phases/M1-foundation/01-bootstrap-DONE.md`
-- `01_Phases/M1-foundation/02-servercore-settle-DONE.md`
+- `01_Phases/M1-foundation/01-solution-bootstrap-DONE.md`
+- `01_Phases/M1-foundation/02-server-network-DONE.md`
 - `01_Phases/M1-foundation/03-tcp-listener-DONE.md`
