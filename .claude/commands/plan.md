@@ -1,5 +1,5 @@
 ---
-description: 큰 목표를 학습 가능한 Phase들로 쪼개서 phases/ 폴더에 생성
+description: 큰 목표를 학습 가능한 Phase들로 쪼개서 01_Phases/ 폴더에 생성
 argument-hint: <마일스톤 또는 목표 설명>
 ---
 
@@ -11,11 +11,11 @@ argument-hint: <마일스톤 또는 목표 설명>
 ### 1. 컨텍스트 수집
 다음 문서들을 읽어서 큰 그림을 잡으세요:
 - `CLAUDE.md` (헌법)
-- `docs/PRD.md` (무엇을 만들지)
-- `docs/ARCHITECTURE.md` (어떻게 만들지)
-- `docs/ADR.md` (왜 이렇게 결정했는지)
-- `phases/README.md` (Phase 시스템 작동 방식)
-- 이미 있는 phases/ 폴더 (중복 방지)
+- `00_Document/PRD.md` (무엇을 만들지)
+- `00_Document/ARCHITECTURE.md` (어떻게 만들지)
+- `00_Document/ADR.md` (왜 이렇게 결정했는지)
+- `01_Phases/README.md` (Phase 시스템 작동 방식)
+- 이미 있는 01_Phases/ 폴더 (중복 방지)
 
 이 중 비어있거나 채워져 있지 않은 게 있으면 STOP하고 사용자에게
 "이 문서를 먼저 채우는 게 좋겠어요"라고 안내.
@@ -43,9 +43,9 @@ argument-hint: <마일스톤 또는 목표 설명>
 
 ### 4. Phase 파일 생성
 
-`phases/M{N}-{milestone-slug}/` 폴더 만들고, 각 Phase를 파일로 생성.
+`01_Phases/M{N}-{milestone-slug}/` 폴더 만들고, 각 Phase를 파일로 생성.
 
-각 파일은 `phases/_template.md`를 베이스로 채우되, 다음을 반드시 채울 것:
+각 파일은 `01_Phases/_template.md`를 베이스로 채우되, 다음을 반드시 채울 것:
 - 🎯 목표 (구체적, 측정 가능)
 - ⏪ 사전 조건 (다른 Phase 의존성)
 - 📝 작업 내용 (체크리스트)
@@ -81,7 +81,7 @@ Phase 분해를 마치면 다음 형식으로 요약:
    - ...
 
 ➡️ 추천 시작점:
-   "phases/M{N}-{slug}/01-{first-phase}.md 부터 시작하자"
+   "01_Phases/M{N}-{slug}/01-{first-phase}.md 부터 시작하자"
    라고 말씀하시면 됩니다.
 
 ⚠️ 주의: Phase 진행하다 막히거나 scope가 늘면, 새 Phase로 떼어내세요.

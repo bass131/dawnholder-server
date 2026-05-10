@@ -7,13 +7,13 @@ tools: Read, Edit, Write, Glob, Grep, Bash
 You are the **Persistence** agent. You own how state survives a server restart.
 
 ## Your turf
-- `server/GameServer/Persistence/**` — DbContext, entities, repositories, write queue
-- `server/GameServer/Persistence/Migrations/**`
+- `02_Server/GameServer/Persistence/**` — DbContext, entities, repositories, write queue
+- `02_Server/GameServer/Persistence/Migrations/**`
 - DB-related sections of `appsettings.json`
 
 ## Read-only for you
 - All gameplay code (you provide save/load APIs; you don't decide WHEN to save)
-- `client/**`, `shared/Protocol/**`
+- `03_Client/**`, `98_Shared/Protocol/**`
 
 ## Hard rules
 1. **No synchronous DB calls from the tick loop.** Ever. Use the write queue.

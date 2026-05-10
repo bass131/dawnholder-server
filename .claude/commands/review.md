@@ -21,28 +21,28 @@ argument-hint: [점검 범위 - 선택. 예: "방금 한 작업", "Phase 03"]
    PacketId 충돌? 기존 패킷 필드 재정렬?
 3. **Trust Boundary** — 클라이언트 입력에 대한 검증 코드 있는가?
    범위 체크, 소유권 체크, rate-limit?
-4. **Shared Discipline** — shared/ 변경 시 양쪽 빌드 검증?
+4. **Shared Discipline** — 98_Shared/ 변경 시 양쪽 빌드 검증?
    ProtocolVersion bump 필요 여부?
 5. **No Blocking in Tick** — 틱 루프에서 await DB / Task.Delay /
    Thread.Sleep 사용?
 
-도메인별 `CLAUDE.md`(client/server/shared)도 적용 범위에 따라 점검.
+도메인별 `CLAUDE.md`(03_Client/02_Server/shared)도 적용 범위에 따라 점검.
 
-### 점검 2: ADR 준수 (docs/ADR.md)
+### 점검 2: ADR 준수 (00_Document/ADR.md)
 
 채택된 ADR과 충돌하는 코드가 있는가?
 
 - 다른 직렬화 라이브러리 사용? (ADR-002와 충돌)
-- shared/ 외부에 패킷 정의? (ADR-003 모노레포 + shared 분리 원칙)
+- 98_Shared/ 외부에 패킷 정의? (ADR-003 모노레포 + shared 분리 원칙)
 - 비TCP 통신? (ADR-002)
 - 다른 ORM이나 DB 직접 접근? (ADR-005)
 - 기타 채택된 ADR 위반
 
-### 점검 3: 구조 준수 (docs/ARCHITECTURE.md)
+### 점검 3: 구조 준수 (00_Document/ARCHITECTURE.md)
 
 디렉토리 구조 점검:
 
-- 파일이 적절한 폴더에 있는가? (예: TCP 코드가 server/Network/에 있는지)
+- 파일이 적절한 폴더에 있는가? (예: TCP 코드가 02_Server/Network/에 있는지)
 - 의존성 방향 OK? (client는 shared 읽기만, server는 shared 읽고 쓰기 OK)
 - 한 Map 안에서 lock 사용? (Actor 모델 위반)
 
@@ -66,10 +66,10 @@ argument-hint: [점검 범위 - 선택. 예: "방금 한 작업", "Phase 03"]
 위반은 아니지만 게임 서버 도메인에서 학습 가치가 큰 패턴들. 발견하면 🟡 또는 🎓 학습 포인트로 짚어주기:
 
 - **Composition over inheritance** — 상속 깊이 2단계 이상이거나, "이 클래스가 X도 되고 Y도 된다" 식이면 컴포넌트 분리 제안. 게임 도메인에선 거의 항상 composition이 맞음.
-- **Hot path 알로케이션 최소화** — 틱 루프(`server/GameServer/Loop/`) 또는 패킷 처리 경로에서 매 호출마다 `new`, `ToList()`, LINQ 체인, 박싱? 별 문제 없어 보여도 짚어두기 — 부하 테스트 들어가야 비로소 보임.
+- **Hot path 알로케이션 최소화** — 틱 루프(`02_Server/GameServer/Loop/`) 또는 패킷 처리 경로에서 매 호출마다 `new`, `ToList()`, LINQ 체인, 박싱? 별 문제 없어 보여도 짚어두기 — 부하 테스트 들어가야 비로소 보임.
 - **Rule of three (premature abstraction 금지)** — 비슷한 로직이 **2번** 등장한 시점에 인터페이스/베이스 클래스로 추출했다면 너무 이른 추상화. 3번까지 기다리는 게 게임 도메인에선 거의 항상 맞음 (요구사항이 자주 바뀜).
 - **명시적 상태 머신** — `if (state == X && other != Y && ...)` 같은 implicit state는 enum + 명시적 transition 함수로. 특히 연결/세션/스킬 lifecycle.
-- **YAGNI / scope creep** — `docs/PRD.md`의 "MVP 제외" 항목이 슬그머니 들어왔는지? 미래 확장성을 위한 hook이 추가됐는데 현재 호출자가 0인지?
+- **YAGNI / scope creep** — `00_Document/PRD.md`의 "MVP 제외" 항목이 슬그머니 들어왔는지? 미래 확장성을 위한 hook이 추가됐는데 현재 호출자가 0인지?
 
 이 항목들은 **위반(🔴)이 아니라 학습 기회(🟡 또는 🎓)**로 다루세요. SOLID 같은 추상 원칙을 외우는 것보다, 실제 코드에서 "어 이거 rule of three 위반이네"를 만나야 몸에 박혀요.
 

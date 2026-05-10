@@ -20,7 +20,7 @@ argument-hint: [버그 한 줄 요약 - 선택]
 가벼운 시행착오 수준?" 물어보고 결정.
 
 ### 2. 일지 위치
-- 경로: `docs/learning-journal/M{N}-{milestone}/troubleshoots/{YYYY-MM-DD}-{slug}.md`
+- 경로: `00_Document/learning-journal/M{N}-{milestone}/troubleshoots/{YYYY-MM-DD}-{slug}.md`
 - 마일스톤 폴더 + troubleshoots 폴더 없으면 생성
 
 ### 3. 인터뷰 — 시간순 재구성
@@ -83,7 +83,7 @@ argument-hint: [버그 한 줄 요약 - 선택]
 8번 단계에서 "헌법에 명시" 같은 게 결정되면, 실제로 그 변경까지
 도와주세요. 예:
 
-- "헌법에 추가" → 사용자에게 어느 CLAUDE.md(루트/server/client/shared)에
+- "헌법에 추가" → 사용자에게 어느 CLAUDE.md(루트/02_Server/03_Client/shared)에
   넣을지 묻고, 추가 문구 제안.
 - "테스트 추가" → 어떤 시나리오를 단위 테스트로 만들지 코드 제안.
 
@@ -96,7 +96,7 @@ argument-hint: [버그 한 줄 요약 - 선택]
 ✅ 트러블슈팅 일지 저장됨
 ─────────────────────────────────────────
 
-📍 파일: docs/learning-journal/M{N}/troubleshoots/{date}-{slug}.md
+📍 파일: 00_Document/learning-journal/M{N}/troubleshoots/{date}-{slug}.md
 
 🎤 면접 답변 길이: ~N초
    → 90초 적정. 너무 짧으면 디테일 부족, 너무 길면 압축 필요.

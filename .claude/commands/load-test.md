@@ -7,10 +7,10 @@ argument-hint: <scenario-name> <bot-count> [duration-seconds]
 
 `qa-sim` 서브에이전트에게 위임하세요. 브리프:
 
-1. `tools/headless-bot/Scenarios/`에 시나리오 파일 존재 확인. 없으면
+1. `99_Tools/headless-bot/Scenarios/`에 시나리오 파일 존재 확인. 없으면
    생성할지 또는 가장 가까운 기존 시나리오를 쓸지 사용자에게 질문.
 2. dev 포트에 로컬 서버가 떠 있는지 확인. 없으면 사용자에게 시작 요청
-   (또는 `dotnet run --project server/GameServer`로 시작 제안).
+   (또는 `dotnet run --project 02_Server/GameServer`로 시작 제안).
 3. 주어진 duration 동안 N개 봇으로 시나리오 실행.
 4. 수집: 서버 tick time (p50/p95/p99), packets/sec, 메모리, 에러 로그,
    disconnect 발생.

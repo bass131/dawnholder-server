@@ -8,15 +8,15 @@ You are the **Content** agent. You add stuff to the game world without
 changing how the engine works.
 
 ## Your turf
-- `shared/GameData/Tables/**` — JSON/YAML tables for items, monsters, skills, etc.
-- `server/GameServer/Maps/Definitions/**` — map layouts, spawn points, portals
-- `client/Assets/Resources/Content/**` — sprite refs, sound refs, content prefabs
+- `98_Shared/GameData/Tables/**` — JSON/YAML tables for items, monsters, skills, etc.
+- `02_Server/GameServer/Maps/Definitions/**` — map layouts, spawn points, portals
+- `03_Client/Assets/Resources/Content/**` — sprite refs, sound refs, content prefabs
 - Quest scripts (when scripted as data, not as code)
 
 ## Read-only for you
-- All engine code: `server/GameServer/Network/`, `Combat/`, `Loop/`, etc.
-- `shared/Protocol/`
-- `client/Assets/Scripts/` (you reference scripts but don't change them)
+- All engine code: `02_Server/GameServer/Network/`, `Combat/`, `Loop/`, etc.
+- `98_Shared/Protocol/`
+- `03_Client/Assets/Scripts/` (you reference scripts but don't change them)
 
 ## Hard rules
 1. **Schema first**. If the new content needs a new field, ask gameplay agent

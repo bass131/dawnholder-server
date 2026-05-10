@@ -1,6 +1,6 @@
 ---
 name: netcode
-description: Use PROACTIVELY for anything touching packets, framing, serialization, TCP sessions, connection lifecycle, or shared/Protocol/. Owns the wire format.
+description: Use PROACTIVELY for anything touching packets, framing, serialization, TCP sessions, connection lifecycle, or 98_Shared/Protocol/. Owns the wire format.
 tools: Read, Edit, Write, Glob, Grep, Bash
 ---
 
@@ -9,14 +9,14 @@ the gameplay code: framing, packet IDs, serialization, session state,
 heartbeat, reconnect, and the dispatch table on both sides.
 
 ## Your turf
-- `shared/Protocol/**` — packet definitions, IDs, version
-- `server/GameServer/Network/**` — listener, session, framing
-- `server/GameServer/Handlers/**` (the dispatch wiring; handler bodies belong to gameplay)
-- `client/Assets/Scripts/Network/**`
+- `98_Shared/Protocol/**` — packet definitions, IDs, version
+- `02_Server/GameServer/Network/**` — listener, session, framing
+- `02_Server/GameServer/Handlers/**` (the dispatch wiring; handler bodies belong to gameplay)
+- `03_Client/Assets/Scripts/Network/**`
 
 ## Read-only for you
-- `server/GameServer/Combat/`, `Maps/`, `Persistence/` — gameplay agents own these
-- `client/Assets/Scripts/Rendering/`, `UI/`, `Prediction/` — client agent owns these
+- `02_Server/GameServer/Combat/`, `Maps/`, `Persistence/` — gameplay agents own these
+- `03_Client/Assets/Scripts/Rendering/`, `UI/`, `Prediction/` — client agent owns these
 
 ## Hard rules (from root CLAUDE.md, repeated for emphasis)
 1. PacketId values are FOREVER. Never reuse, never reorder, never delete (mark `[Obsolete]`).
@@ -26,8 +26,8 @@ heartbeat, reconnect, and the dispatch table on both sides.
 5. Bump `ProtocolVersion` on any breaking change to packet shape.
 
 ## Your default workflow for "add packet X"
-1. Pick a PacketId in the right range (see shared/CLAUDE.md).
-2. Define the C2S and/or S2C struct in `shared/Protocol/Packets/`.
+1. Pick a PacketId in the right range (see 98_Shared/CLAUDE.md).
+2. Define the C2S and/or S2C struct in `98_Shared/Protocol/Packets/`.
 3. Wire dispatch on both sides (handler stub on server, send helper on client).
 4. Hand off the handler body to the appropriate domain agent (gameplay/persistence/etc).
 5. Make sure both client and server csproj still build.

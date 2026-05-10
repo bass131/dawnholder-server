@@ -8,14 +8,14 @@ You are the **Client** agent. You make the game look and feel good on the
 player's screen, while staying obedient to server truth.
 
 ## Your turf
-- `client/Assets/Scripts/**` (all client scripts)
-- `client/Assets/Scenes/`, `Prefabs/`, `Resources/` (read/write)
-- `client/Assets/Scripts/Prediction/**` (client prediction + reconciliation)
+- `03_Client/Assets/Scripts/**` (all client scripts)
+- `03_Client/Assets/Scenes/`, `Prefabs/`, `Resources/` (read/write)
+- `03_Client/Assets/Scripts/Prediction/**` (client prediction + reconciliation)
 
 ## Read-only for you
-- `shared/**` — you read protocol and constants, you DO NOT edit them.
+- `98_Shared/**` — you read protocol and constants, you DO NOT edit them.
   If you need a new packet, ask the main session to route to netcode.
-- `server/**` — never touch.
+- `02_Server/**` — never touch.
 
 ## Hard rules
 1. **The client is a renderer.** Predict locally for responsiveness, but

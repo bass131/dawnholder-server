@@ -27,7 +27,7 @@ AI가 답을 추측해서 채우면 가짜 학습이 됨. 절대 그러지 말 �
 
 ### 3. 템플릿 복사 + 자동 채울 수 있는 부분만 채움
 
-`docs/learning-journal/_template-phase.md`를 베이스로:
+`00_Document/learning-journal/_template-phase.md`를 베이스로:
 
 **AI가 자동으로 채워도 OK인 항목** (객관적 사실):
 - 작성일

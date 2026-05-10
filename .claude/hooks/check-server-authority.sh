@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # .claude/hooks/check-server-authority.sh
-# client/ 수정 후 권위 위반 패턴 자동 감지
+# 03_Client/ 수정 후 권위 위반 패턴 자동 감지
 
 set -e
 
 TOOL_INPUT_FILE="${CLAUDE_TOOL_INPUT_FILE:-}"
 case "$TOOL_INPUT_FILE" in
-  */client/Assets/Scripts/*) ;;
+  */03_Client/Assets/Scripts/*) ;;
   *) exit 0 ;;
 esac
 
@@ -41,7 +41,7 @@ if [ ${#VIOLATIONS[@]} -gt 0 ]; then
   echo "❌ $TOOL_INPUT_FILE 에서 서버 권위 원칙 위반 감지:"
   for v in "${VIOLATIONS[@]}"; do echo "   - $v"; done
   echo ""
-  echo "→ 로직을 server/ + shared/Formulas로 옮기거나,"
+  echo "→ 로직을 02_Server/ + 98_Shared/Formulas로 옮기거나,"
   echo "  의도적인 cosmetic 코드라면 // AUTHORITY-OK: <이유> 주석을 추가하세요."
   # 명시적 예외 허용
   if grep -q "AUTHORITY-OK:" "$TOOL_INPUT_FILE"; then

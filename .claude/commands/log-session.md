@@ -10,7 +10,7 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 손으로 정리하면 번거로움 → 자동화하면 (1) 면접 자료 자동 누적, (2) 학습이
 휘발 안 됨, (3) `CONTEXT.md` 단일 진실 + 노션 누적 = 이중 안전망.
 
-**상세 명세**: `docs/skill-specs/log-session.md` (이 슬래시 커맨드의 인풋).
+**상세 명세**: `00_Document/skill-specs/log-session.md` (이 슬래시 커맨드의 인풋).
 이 파일은 그 명세의 실행 절차임. 명세와 충돌하면 명세가 이김.
 
 ---
@@ -33,7 +33,7 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 ### 2. 노션 자산 (이미 만들어진 것)
 
 ⚠️ **사용자 워크스페이스 종속**. 노션 이전됐거나 DB 재생성됐으면
-`docs/skill-specs/log-session.md`의 ID 갱신부터.
+`00_Document/skill-specs/log-session.md`의 ID 갱신부터.
 
 - **부모 페이지** "Dawnholder 협업 히스토리"
   - ID: `35776cec-cb78-810e-a516-f743e5028110`

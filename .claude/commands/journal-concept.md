@@ -17,13 +17,13 @@ argument-hint: <개념 키워드>
 - 관련 Phase 파일도 확인
 
 ### 2. 일지 파일 위치
-- 경로: `docs/learning-journal/M{N}-{milestone}/concepts/{slug}.md`
+- 경로: `00_Document/learning-journal/M{N}-{milestone}/concepts/{slug}.md`
 - 어느 마일스톤 소속인지 사용자에게 물어볼 수도 (애매하면)
 - 이미 있으면: "갱신할까요? 어느 부분?"
 
 ### 3. 템플릿 + 자동 채우기 + 인터뷰
 
-`docs/learning-journal/_template-concept.md` 베이스.
+`00_Document/learning-journal/_template-concept.md` 베이스.
 
 **자동 채워도 OK** (메타 정보):
 - 작성일
@@ -84,7 +84,7 @@ argument-hint: <개념 키워드>
 ✅ 개념 학습 일지 저장됨: [개념명]
 ─────────────────────────────────────────
 
-📍 파일: docs/learning-journal/M{N}/concepts/{slug}.md
+📍 파일: 00_Document/learning-journal/M{N}/concepts/{slug}.md
 
 🎓 자가 평가: 🟢/🟡/🔴
 
