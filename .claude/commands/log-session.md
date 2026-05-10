@@ -1,7 +1,13 @@
 ---
-description: 이번 협업 세션을 노션 "Dawnholder 협업 히스토리" DB에 STAR 형식으로 박음
+description: Notion "Dawnholder 협업 히스토리" DB 환경 명세 (Codex가 참조)
 argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 ---
+
+> ⚠️ **2026-05-11 변경: Claude 직접 박기 흐름은 deprecated.**
+>
+> 새 흐름: Claude는 `-DONE.md` 박제까지만, Notion 페이지 작성은 cmd로 호출된 별도 **Codex** 세션이 readonly로 ClaudeDev를 읽고 직접 박는다. 분업 절차는 [`.claude/templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
+>
+> **본 파일의 역할**: Codex가 Notion 페이지 생성 시 참조할 *환경 명세* — DB ID·스키마·페이지 생성 API 형식·STAR 본문 가이드·함정 사례. Claude 슬래시 커맨드로는 더 이상 호출되지 않는다 (Claude가 `/log-session` 호출을 받으면 위 핸드오프 절차로 안내만 함).
 
 사용자가 이번 세션을 노션에 기록 요청했습니다.
 한 줄 요약 (있으면): **$ARGUMENTS**
@@ -10,7 +16,7 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 손으로 정리하면 번거로움 → 자동화하면 (1) 면접 자료 자동 누적, (2) 학습이
 휘발 안 됨, (3) `CONTEXT.md` 단일 진실 + 노션 누적 = 이중 안전망.
 
-**명세는 이 파일 본문에 인라인**. (이전엔 `00_Document/skill-specs/log-session.md`로 분리하려 했지만 그 폴더는 만들지 않음 — 본문 통합이 단일 출처로 더 깔끔.)
+**명세는 이 파일 본문에 인라인** — Codex가 readonly로 본 파일을 읽고 아래 사양에 따라 페이지를 생성한다.
 
 ---
 

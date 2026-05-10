@@ -79,6 +79,37 @@ TL;DR
 - **면접 답변/회고는 Codex/본인 영역**. Claude는 침범 X.
 - **막힘·실패·AI sliding 같은 흔들림도 보존**. Codex가 의사결정 품질 사건으로 살림.
 
+### 핸드오프 절차 (Claude → Codex)
+
+**Claude의 종료 지점**: `-DONE.md` 박제 + git commit/push까지. **Claude는 Notion 페이지를 직접 생성하지 않는다.** (이전 `/log-session`의 Claude 직접 박기 흐름은 deprecated.)
+
+**Codex 호출 방식**: 사용자가 cmd로 별도 Codex 세션 실행. ClaudeDev에 **readonly** 접근 (쓰기 권한 X — ClaudeDev 원본은 Claude만 변경).
+
+**Codex가 받을 input 셋**:
+- `01_Phases/M{N}/{NN}-*-DONE.md` ← 해당 Phase, 1순위 베이스
+- `CONTEXT.md` + `CONTEXT_History.md` ← 세션 맥락
+- `00_Document/ADR.md` ← 관련 ADR-NNN 절
+- 본 템플릿 (`.claude/templates/done-md-template.md`) ← 분업 원칙·8단 구조 사양
+- `.claude/commands/log-session.md` ← Notion DB 스키마·페이지 생성 API 명세
+
+**Codex의 책임**:
+- readonly로 위 파일 읽기 → 8단 구조로 Notion 페이지 본문 작성
+- 내부 용어(`Y2`, `PDL`, `M1 Foundation`, `AI sliding` 등) 첫 등장 시 풀이 추가
+- Notion API/MCP로 "Dawnholder 협업 히스토리" DB에 페이지 생성
+- 분량 가이드(30~50줄) 준수
+
+**사용자의 책임**:
+- cmd 트리거 시점 결정 (Phase 완료 직후 / 마일스톤 / ad hoc)
+- Codex가 만든 Notion 페이지 검토 (사실 정합·분량·톤)
+- 정정 필요 시 Codex 재요청 또는 본인이 직접 수정
+
+**트리거 흐름 요약**:
+```
+Phase 완료 → Claude: 5단계 보고 → -DONE.md 박제 → commit/push (여기까지가 Claude)
+        ↓ (사용자가 cmd 실행)
+Codex 세션 호출 (readonly) → 위 input 셋 읽기 → Notion 페이지 작성 → 사용자 검토
+```
+
 ---
 
 ## 참고 사례
