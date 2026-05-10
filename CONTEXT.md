@@ -68,7 +68,7 @@
 - ✅ **Phase 03 갈래 결정 (2026-05-10)**: **Y2 (분리 + 별도 클라 라이브러리)** 확정. 사유: 현업 표준(Mirror/FishNet/gRPC도 양쪽 분리), socket 자체 학습 가치, 서버 변경이 클라 빌드 안 깸.
 - ⏳ Phase 02 학습 일지는 본인 페이스에 따라 추후
 
-**다음 작업**: Phase 03 본 진입 — ① 새 ADR 박기 (Y2 결정 박제) → ② `01_Phases/M1-foundation/03-tcp-listener.md` 재작성 (Y2 기준) → ③ 코드 작업 (`04_ClientNet/` 신규 .NET Std 2.1 라이브러리 + Plugins 복사 파이프라인). Hook 보강은 여전히 사례 기반으로 미룸.
+**다음 작업**: Phase 03 본 진입 — ✅ ADR-012 박힘 (Y2 결정) → ✅ `03-tcp-listener.md` Y2 기준 재작성 완료 → ⏳ **다음 = 코드 작업** (`04_ClientNet/` 신규 .NET Std 2.1 라이브러리 + Plugins 복사 파이프라인 + Unity 인식 검증). Hook 보강은 여전히 사례 기반으로 미룸.
 
 ---
 

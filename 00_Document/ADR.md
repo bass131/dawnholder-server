@@ -132,15 +132,24 @@ EF Core는 raw query 대비 추상화 비용이 약간 있음. 캐싱 레이어�
 
 ---
 
+### ADR-012: Unity 클라 socket 레이어 = 분리 클라용 라이브러리 (갈래 Y2)
+**날짜**: 2026-05-10
+**상태**: 채택됨
+**결정**: Unity 클라이언트의 socket 레이어를 **서버측 ServerCore와 별개로** 신작한다. 새 csproj `04_ClientNet/Dawnholder.Client.Net.csproj` (.NET Standard 2.1)로 작성하고, 빌드 산출물을 `03_Client/Assets/Plugins/ClientNet/`에 자동 복사 (ADR-010 패턴 재사용). 갈래 X(서버 ServerCore를 `98_Shared/Net/`로 마이그해 양쪽이 같은 DLL 참조)는 채택하지 않음.
+**이유**: ① **현업 표준** — Mirror/FishNet/Unity Netcode/gRPC 등 주류 솔루션도 클라용·서버용 socket 코드를 분리. 같은 추상화로 통합하기보다 각자의 제약(Unity Mono/IL2CPP vs .NET 10 GC/JIT)에 맞춰 최적화하는 것이 일반적. ② **socket 자체 학습 가치** — 클라 입장의 connect/recv/send를 한 번 직접 짜는 것이 면접 임팩트(Rookiss 패턴 응용 + Unity Job Threading 이슈 본인 경험). ③ **변경 내성** — 서버측 nullable·인터페이스 변경이 클라 빌드를 즉시 깨지 않음. ④ 마이그 함정 실측(2026-05-09)에서 X도 무리 없음(~1시간, nullable 13개)이 확인됐지만, 위 세 이유로 Y2 우세.
+**트레이드오프**: ① 코드 두 벌 — 같은 SocketAsyncEventArgs 패턴을 클라용으로 한 번 더. ~200~300줄 추가. ② 양쪽 socket 버그가 따로 발생할 수 있음 (서버는 잘 도는데 클라만 꺼짐 등). ③ Plugins 복사 파이프라인 한 번 더 셋업. 다만 Phase 01에서 `Shared.dll` 파이프라인 검증되어 패턴 그대로. ④ 추후 "클라/서버 양쪽이 진짜 같은 framing 로직을 써야겠다"가 되면 framing 부분만 `98_Shared/`로 떼어낼 수 있음 (열어둠).
+
+---
+
 ## 채워질 ADR 후보들 (예시)
 
 > 본인이 진행하다가 다음 결정들을 할 때 ADR로 기록하세요. 번호는 채택 순서대로 부여 — 아래는 가이드일 뿐.
 
-- **ADR-012**: 인증 방식 (단순 닉네임 → JWT? 세션?)
-- **ADR-013**: 캐릭터 데이터 스키마 (정규화 vs JSONB)
-- **ADR-014**: 채팅 시스템 (TCP로 전송 vs 별도 채널)
-- **ADR-015**: 로그 저장 (로컬 파일 vs 외부 sink)
-- **ADR-016**: 헤드리스 봇의 자동화 방식
+- **ADR-013**: 인증 방식 (단순 닉네임 → JWT? 세션?)
+- **ADR-014**: 캐릭터 데이터 스키마 (정규화 vs JSONB)
+- **ADR-015**: 채팅 시스템 (TCP로 전송 vs 별도 채널)
+- **ADR-016**: 로그 저장 (로컬 파일 vs 외부 sink)
+- **ADR-017**: 헤드리스 봇의 자동화 방식
 - ...
 
 ---
@@ -156,3 +165,4 @@ EF Core는 raw query 대비 추상화 비용이 약간 있음. 캐싱 레이어�
 | 2026-05-06 | ADR-010 신규 (DLL + Embedded PDB) | 헌법 #4 (복사-붙여넣기 금지) 물리적 강제. 비개발자 팀원 보호. |
 | 2026-05-06 | ADR-011 신규 (기존 ServerDev 코드 부분 채택, 시나리오 B) | 6월 캡스톤 옵션 C(2인 movement) 6주 일정 확보. 게임 로직은 헌법 적용 위해 새로 작성. |
 | 2026-05-09 | ADR-001 갱신 (Unity 2022 LTS → Unity 6.4 LTS) | Unity AI MCP Server 활용 + Unity 6 새 기능 + LTS 라이프사이클이 더 김. |
+| 2026-05-10 | ADR-012 신규 (Unity 클라 socket = Y2 분리 모델) | 현업 표준 + socket 자체 학습 가치 + 서버 변경이 클라 빌드 안 깸. 마이그 갈래(X) 실측에서도 가능했지만 학습 임팩트 우세 판단. |
