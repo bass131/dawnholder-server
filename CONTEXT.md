@@ -59,16 +59,17 @@
 
 ## ⏸️ 현재 멈춤 지점 (2026-05-10)
 
-**Phase 03 진입 직전 — Y2 갈래 확정, ADR + Phase 파일 재작성 필요.**
+**Phase 03 완료 — Phase 04 진입 직전.**
 
 - ✅ Phase 01 완료 (commit `2411ae0`): 솔루션 부트스트랩 + DLL 빌드 파이프라인. 학습 일지 박제.
 - ✅ 폴더 prefix 정렬 + 경로 정합성 일괄 갱신 (commit `071680e`)
 - ✅ Phase 02 완료 (commit `c2ea772`): ServerCore 7파일을 `02_Server/Network/`에 .NET 10 유지로 정착. nullable 21곳 청소. 빌드 경고 0 / 오류 0, 테스트 3 통과. 노션 세션 로그 박제.
-- ✅ **박제 정책 결정 (2026-05-10)**: 학습 일지가 밀릴 것을 전제로 **`-DONE.md` 페어 도입**. AI가 작성하는 사실·결정·증상 박제 (5단계 보고 직후 자동). 학습 일지(본인 회고)와 역할 분리. 헌법 + `/journal-phase` 스킬 갱신, Phase 01·02 소급 작성 완료.
-- ✅ **Phase 03 갈래 결정 (2026-05-10)**: **Y2 (분리 + 별도 클라 라이브러리)** 확정. 사유: 현업 표준(Mirror/FishNet/gRPC도 양쪽 분리), socket 자체 학습 가치, 서버 변경이 클라 빌드 안 깸.
-- ⏳ Phase 02 학습 일지는 본인 페이스에 따라 추후
+- ✅ **박제 정책 결정 (2026-05-10)**: 학습 일지가 밀릴 것을 전제로 **`-DONE.md` 페어 도입**. AI가 작성하는 사실·결정·증상 박제 (5단계 보고 직후 자동). 학습 일지(본인 회고)와 역할 분리.
+- ✅ **ADR-012 박힘 (2026-05-10)**: Phase 03 갈래 = Y2(분리 + 별도 클라 라이브러리). 사유: 현업 표준, socket 자체 학습 가치, 서버 변경 격리.
+- ✅ **Phase 03 완료 (2026-05-10, commit `fb7a06d` + `c3f2246`)**: `04_ClientNet/` 신규 .NET Std 2.1 라이브러리 (Connector / ClientSession+PacketSession / RecvBuffer / SendBuffer / SmokeProbe). 5개 프로젝트 빌드 경고 0 / 오류 0. **Unity F12 → 원본 .cs + 한국어 주석 ReadOnly 표시 검증 통과** (ADR-010 패턴 두 번째 인스턴스). `-DONE.md` 박제 + commit.
+- ⏳ Phase 02·03 학습 일지는 본인 페이스에 따라 추후 (`/journal-phase` 권유는 통과)
 
-**다음 작업**: Phase 03 본 진입 — ✅ ADR-012 박힘 (Y2 결정) → ✅ `03-tcp-listener.md` Y2 기준 재작성 완료 → ⏳ **다음 = 코드 작업** (`04_ClientNet/` 신규 .NET Std 2.1 라이브러리 + Plugins 복사 파이프라인 + Unity 인식 검증). Hook 보강은 여전히 사례 기반으로 미룸.
+**다음 작업**: Phase 04 진입 — 서버 `Program.cs`에 Listener 인스턴스화(포트 7777) + Unity 측 MonoBehaviour로 ClientNet의 Connector 호출 → 양쪽 connect 스모크 → main thread queue 첫 도입. **Phase 04 파일(`04-framing-and-pingpong.md`)은 outdated** — 진입 시점에 "Listener wire-up + connect 스모크" 기준으로 재작성 필요. 첫 framing 코드는 Phase 05로 이동. Hook 보강은 여전히 사례 기반으로 미룸.
 
 ---
 
@@ -94,28 +95,26 @@
 
 ---
 
-## 다음 Phase = Phase 03 (Unity 클라 socket 레이어 — Y2 분리 모델)
+## 다음 Phase = Phase 04 (서버 Listener wire-up + 첫 connect 스모크)
 
-**범위**: Y2 갈래로 Unity 클라이언트 socket 레이어 신작.
+**범위**: 서버에서 처음으로 포트를 열고, 클라가 connect까지 가서 양쪽 로그가 뜨는지 확인.
 
-**왜 Y2인가** (확정됨, ADR로 박을 예정):
-- 현업 표준 — Mirror/FishNet/gRPC 등 주류 솔루션도 양쪽 분리
-- socket 자체를 클라 입장에서 한 번 짜보는 학습 가치 (면접 무기)
-- 서버측 변경이 클라 빌드를 즉시 깨지 않음 (변경 내성)
+**핵심 작업**:
+- 서버 `02_Server/GameServer/Program.cs`: `Listener` 인스턴스화 + 포트 7777 listen (현재는 `02_Server/Network/`에 코드만 있고 main에서 안 부름)
+- Unity 측 `MonoBehaviour` 1개로 `ClientNet`의 `Connector` 호출 → 서버에 connect → 양쪽 콘솔 로그 확인
+- **Unity main thread marshalling 첫 도입** — `Update()`에서 main thread queue drain 패턴 (Phase 03에서 자리만 박아둔 그것)
+- 첫 framing 코드(보내고 받기)는 **Phase 05**로 이동 — 이번엔 raw connect 한 번 시연만
 
-**위험**:
-- 별도 클라용 라이브러리 새 프로젝트(`04_ClientNet/` 가칭) + ~200줄 작성
-- Unity Plugins 복사 파이프라인 한 번 더 만들어야 함 (Phase 01 패턴 재사용)
-- 시간 추가 ~1.5~2시간
+**위험 / 함정**:
+- Phase 04 파일(`04-framing-and-pingpong.md`)이 **outdated** — 진입 첫 단계로 재작성
+- Unity main thread queue 첫 시연이라 디버깅 폭발 가능성. queue 패턴을 너무 정교하게 짜지 말고 *최소 동작*으로 박을 것
+- `Listener`는 서버측 `02_Server/Network/Dawnholder.Server.Network.csproj`에 이미 존재 — `GameServer.csproj`가 이걸 참조하는지 확인 필요
 
 **시작 흐름**:
-1. 사용자 "Phase 03 시작하자"
-2. Claude는 헌법 + ADR-001/002/010/011 + 신규 ADR(Y2) + Phase 03 파일(**재작성 필요**) 통독
-3. 새 ADR 박기 (ADR-012 또는 그 이후 번호) — Y2 결정 사유 박제
-4. Phase 03 파일 재작성 — Y2 기준 작업 단계
-5. 코드 작업 → 빌드 검증 → 5단계 보고 → **`-DONE.md` 박제 + commit** → 학습 일지 권유
-
-**Phase 03 파일 (`01_Phases/M1-foundation/03-tcp-listener.md`)**: 1차 셋업 시점 본이라 outdated. Y2 기준으로 통째 재작성 필요.
+1. 사용자 "Phase 04 시작하자"
+2. Claude는 헌법 + CONTEXT + ADR-001/002/010/012 + Phase 03 -DONE.md + Phase 04 파일(재작성 필요) 통독
+3. Phase 04 파일 재작성 → Listener wire-up + connect 스모크 기준
+4. 코드 작업 → 빌드 + 양쪽 connect 로그 확인 → 5단계 보고 → `-DONE.md` 박제 + commit → 학습 일지 권유
 
 ---
 
@@ -190,12 +189,6 @@ global.json                                      ← .NET SDK 핀 (10.0.203)
 
 ## 갱신 이력
 
-| 날짜 | 변경 |
-|------|------|
-| 2026-05-06 | 미팅 결과 + ServerDev 시나리오 B 결정 + ADR-001/002/010/011 박제 |
-| 2026-05-09 (5번째 세션) | Phase 01 완료 + ADR-001 v3 (Unity 6.4 LTS) + 응축 정책 박제 |
-| 2026-05-09 (응축 재작성) | 200줄 내외로 처음부터 재작성. 옛 디테일은 git history + 노션 + learning-journal로 이관. START_HERE.md / harness-structure.html 삭제. |
-| 2026-05-09 (폴더 prefix) | 모든 최상위 폴더에 정렬용 숫자 prefix 부여 (`00_Document/`, `01_Phases/`, `02_Server/`, `03_Client/`, `98_Shared/`, `99_Tools/`). `Dawnholder.slnx` + `global.json` 신설. .gitignore / csproj / 헌법 / 서브-CLAUDE.md 경로 정합성 일괄 갱신. |
-| 2026-05-09 (Phase 02 재정의) | ServerCore 마이그 함정 실측 (nullable 13개뿐). 그 결과 *마이그 가능*하지만 *현업 표준 + 학습 가치*는 분리 모델 우세 판단. **Phase 02 = 서버측 ServerCore 정착(.NET 10 그대로)으로 축소. 클라측 socket 전략은 Phase 03에서 X/Y 결정.** Hook 보강도 Phase 02 후 사례 기반으로 미룸. |
-| 2026-05-09 (Phase 02 완료) | ServerCore 7파일을 `02_Server/Network/`에 정착(.NET 10 유지, namespace `Dawnholder.Server.Network`). nullable 21곳 청소(실측 13 + .NET 10 추가 8). JobQueueTests 2개 추가. 빌드 경고 0 / 오류 0, 테스트 3 통과. commit `c2ea772`. 노션 세션 로그 박제. |
-| 2026-05-10 (박제 정책) | 학습 일지가 밀릴 것을 전제로 **`-DONE.md` 페어 박제 정책 도입**. AI가 5단계 보고 직후 사실/결정/증상/키워드를 `01_Phases/{milestone}/{phase}-DONE.md`에 박고 commit. 학습 일지(본인 회고)와 역할 분리. 헌법 + `/journal-phase` 스킬 갱신, Phase 01·02 소급 작성. **Phase 03 갈래 = Y2(분리 + 별도 클라 라이브러리) 확정**, ADR + Phase 03 파일 재작성 직전. |
+> 이력은 [`CONTEXT_History.md`](CONTEXT_History.md) 참조 (헌법: 문서 세분화 정책 — 누적 섹션 외부화).
+>
+> 새 갱신 발생 시 본 파일이 아니라 `CONTEXT_History.md`에 한 줄씩 추가.
