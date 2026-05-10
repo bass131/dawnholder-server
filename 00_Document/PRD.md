@@ -179,7 +179,7 @@
 | **M7** | Guild Hideout | 길드 거점 인스턴스, 시설 구매/배치 1~2종 |
 | **M8** | Polish & Load Test | 헤드리스 봇 부하 테스트, 안정화, 데모 영상 촬영 |
 
-각 마일스톤은 `phases/M{N}-{slug}/` 안에 더 작은 Phase로 쪼개짐 (`/plan` 커맨드 활용).
+각 마일스톤은 `01_Phases/M{N}-{slug}/` 안에 더 작은 Phase로 쪼개짐 (`/plan` 커맨드 활용).
 
 ---
 

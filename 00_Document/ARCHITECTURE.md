@@ -30,7 +30,7 @@
 
 ### Persistence
 - **DB**: PostgreSQL 16
-- **ORM**: Entity Framework Core 8
+- **ORM**: Entity Framework Core 10 (.NET 10 LTS와 같이 묶음)
 - **마이그레이션**: EF Core code-first
 - **개발 환경**: Docker Compose로 로컬 PostgreSQL
 
@@ -38,50 +38,71 @@
 
 ## 디렉토리 구조
 
+폴더는 탐색기 정렬 고정용 숫자 prefix를 사용. Y2 갈래(ADR-012)로 클라/서버 socket 코드는 *분리*된 라이브러리에 둠.
+
 ```
 project-root/
-├── client/                        Unity 프로젝트
+├── 00_Document/                  PRD, ARCHITECTURE, ADR, learning-journal
+├── 01_Phases/                    Phase 작업 파일 (M{N}-{slug}/{NN}-*.md + -DONE.md)
+│
+├── 02_Server/                    .NET 10 LTS 권위 서버
+│   ├── GameServer/
+│   │   ├── Network/              게임 도메인 세션 (GameSession 등)
+│   │   ├── Loop/                 Tick scheduler, world simulation
+│   │   ├── Maps/                 맵별 actor, 공간 쿼리
+│   │   ├── Combat/               데미지 해석, hitbox 검사
+│   │   ├── Persistence/          DbContext, write queue
+│   │   ├── Handlers/             PacketId → handler dispatch
+│   │   └── Program.cs
+│   ├── GameServer.Tests/         xUnit + FluentAssertions
+│   └── Network/                  ★ ServerCore (Listener/Session/Buffers)
+│                                  별도 csproj (.NET 10). Y2 분리: 클라와 다른 어셈블리.
+│
+├── 03_Client/                    Unity 6.4 LTS 프로젝트
 │   ├── Assets/
-│   │   ├── Scripts/
-│   │   │   ├── Network/           TCP 클라이언트, 패킷 read 루프
-│   │   │   ├── Prediction/        클라이언트 prediction + reconciliation
-│   │   │   ├── Rendering/         스프라이트, 카메라, 애니메이터
-│   │   │   ├── Input/             입력 → intent packet
-│   │   │   ├── UI/                HUD, 메뉴
-│   │   │   └── State/             서버 상태의 로컬 미러
+│   │   ├── Plugins/
+│   │   │   ├── Shared/           ← Shared.dll 자동 복사 (ADR-010)
+│   │   │   └── ClientNet/        ← Dawnholder.Client.Net.dll 자동 복사
+│   │   └── Scripts/
+│   │       ├── Network/          Unity wrapper (UnityClientSession,
+│   │       │                      MainThreadDispatcher, NetworkBootstrap)
+│   │       ├── Prediction/       클라 prediction + reconciliation (예정)
+│   │       ├── Rendering/        스프라이트, 카메라, 애니메이터 (예정)
+│   │       ├── Input/            입력 → intent packet (예정)
+│   │       ├── UI/               HUD, 메뉴 (예정)
+│   │       └── State/            서버 상태의 로컬 미러 (예정)
 │   │   ├── Scenes/
 │   │   ├── Prefabs/
 │   │   └── Resources/
 │   └── ProjectSettings/
 │
-├── server/                        .NET 권위 서버
-│   ├── GameServer/
-│   │   ├── Network/               TcpListener, Session, Framing
-│   │   ├── Loop/                  Tick scheduler, world simulation
-│   │   ├── Maps/                  맵별 actor, 공간 쿼리
-│   │   ├── Combat/                데미지 해석, hitbox 검사
-│   │   ├── Persistence/           DbContext, write queue
-│   │   ├── Handlers/              PacketId → handler dispatch
-│   │   └── Program.cs
-│   └── GameServer.Tests/          xUnit
+├── 04_ClientNet/                 ★ Y2 갈래: 클라용 socket 라이브러리
+│                                  .NET Standard 2.1 (Unity 호환).
+│                                  Connector / ClientSession / RecvBuffer / SendBuffer.
+│                                  산출 DLL이 03_Client/Assets/Plugins/ClientNet/로
+│                                  자동 복사 (ADR-010 + ADR-012).
 │
-├── shared/                        클라/서버 공유
-│   ├── Shared.csproj              .NET Standard 2.1
+├── 98_Shared/                    클라/서버 공유 (Protocol + GameData)
+│   ├── Shared.csproj             .NET Standard 2.1, Embedded PDB + EmbedAllSources
 │   ├── Protocol/
-│   │   ├── PacketId.cs            모든 패킷 ID enum
-│   │   ├── Packets/               패킷별 파일
+│   │   ├── PacketId.cs           모든 패킷 ID enum
+│   │   ├── Packets/              패킷별 파일 (Phase 06+ 자체 PDL로 자동 생성 예정)
 │   │   └── ProtocolVersion.cs
 │   └── GameData/
-│       ├── Formulas.cs            데미지, XP, 스탯 공식
-│       ├── Constants.cs           Tick rate 등
-│       └── Tables/                items.json, monsters.json 등
+│       ├── Formulas.cs           데미지/XP/스탯 공식
+│       ├── Constants.cs          Tick rate 등
+│       └── Tables/               items.json, monsters.json 등
 │
-├── tools/
-│   └── headless-bot/              QA 시뮬레이션 봇
+├── 99_Tools/
+│   ├── headless-bot/             QA 시뮬레이션 봇 (Phase 06+ 본격 작성)
+│   └── PacketGenerator/          자체 PDL 코드 생성기 (Phase 06 이주 예정, ADR-002)
 │
-├── docs/                          PRD, ARCHITECTURE, ADR
-├── phases/                        Phase 작업 파일
-└── .claude/                       Harness 설정
+├── Dawnholder.slnx               .NET 솔루션 (02_Server + 04_ClientNet + 98_Shared)
+├── global.json                   .NET SDK 핀
+├── CLAUDE.md                     프로젝트 헌법 (단일 진실 공급원)
+├── CONTEXT.md                    세션 핸드오프 (응축, 200줄 한도)
+├── CONTEXT_History.md            CONTEXT 갱신 이력 (외부화)
+└── .claude/                      Harness (agents, commands, hooks, templates)
 ```
 
 ---
@@ -155,23 +176,34 @@ project-root/
 DB 쓰기는 절대 동기로 안 합니다. `Channel<SaveIntent>` 큐에 넣고, 별도
 백그라운드 워커가 배치로 씁니다. 게임 루프는 DB 응답을 안 기다림.
 
-### 4. Shared Protocol Assembly
+### 4. Shared Protocol + Y2 socket 분리 (ADR-010 + ADR-012)
 
-`shared/`는 .NET Standard 2.1 라이브러리로 빌드. 클라/서버 둘 다 이걸
-참조합니다. 한 어셈블리에서 컴파일된 같은 타입을 쓰니까 직렬화 호환성
-보장.
+**Protocol/GameData**: `98_Shared/`는 .NET Standard 2.1 라이브러리. 양쪽 공유.
+한 어셈블리에서 컴파일된 같은 타입을 쓰니까 직렬화 호환성 자동 보장.
+
+**Socket 레이어는 양쪽 분리**:
+
+| 위치 | 대상 | 타겟 | 역할 |
+|---|---|---|---|
+| `02_Server/Network/` | 서버 전용 | .NET 10 | Listener / Session / Buffers (ServerCore) |
+| `04_ClientNet/` | 클라 전용 | .NET Std 2.1 | Connector / ClientSession / Buffers |
+
+같은 패턴(SocketAsyncEventArgs)을 두 벌 두는 비용 vs *각자 환경 제약(Unity Mono/IL2CPP vs .NET 10 GC)에 맞춰 최적화 가능 + 한쪽 변경이 다른 쪽 빌드 안 깸*의 trade-off에서 후자 채택. 현업 표준(Mirror/FishNet/gRPC도 양쪽 분리).
+
+**DLL 파이프라인** (ADR-010): 빌드 시 `Shared.dll`은 `03_Client/Assets/Plugins/Shared/`로, `Dawnholder.Client.Net.dll`은 `03_Client/Assets/Plugins/ClientNet/`로 자동 복사. PDB는 `EmbedAllSources=true`로 원본 .cs 임베드 → Unity F12 시 한국어 주석까지 ReadOnly 표시. 헌법 #4("복사-붙여넣기 금지")의 물리적 강제.
 
 ---
 
 ## 외부 의존성
 
-| 의존성 | 용도 | 라이선스 |
-|--------|------|----------|
-| MessagePack-CSharp | 직렬화 | MIT |
-| Serilog | 로깅 | Apache 2.0 |
-| Entity Framework Core | ORM | MIT |
-| xUnit + FluentAssertions | 테스트 | MIT |
-| PostgreSQL (Docker) | DB | PostgreSQL License |
+| 의존성 | 버전 | 용도 | 라이선스 |
+|--------|------|------|----------|
+| Serilog | 4.x | 로깅 | Apache 2.0 |
+| Entity Framework Core | 10.x | ORM | MIT |
+| xUnit + FluentAssertions | latest | 테스트 | MIT |
+| PostgreSQL (Docker) | 16 | DB | PostgreSQL License |
+
+**직렬화는 외부 의존성 없음** — 자체 PDL(`99_Tools/PacketGenerator/`로 이주 예정, ADR-002 v2). MessagePack은 ADR-002 v1에서 채택했으나 v2(2026-05-06)에서 자체 PDL로 변경.
 
 새 의존성 추가는 ADR로 기록.
 
@@ -181,4 +213,5 @@ DB 쓰기는 절대 동기로 안 합니다. `Channel<SaveIntent>` 큐에 넣고
 
 | 날짜 | 변경 | 이유 |
 |------|------|------|
-| YYYY-MM-DD | 최초 작성 | - |
+| (Harness 셋업일) | 최초 작성 | - |
+| 2026-05-10 | 폴더 prefix 정렬 + ADR-002 v2(자체 PDL) + ADR-012(Y2 분리) 반영 | 디렉토리 구조 통째 재작성 + MessagePack 의존성 제거 + EF Core 8→10 + Y2 socket 분리 모델 명시. 2026-05-09 prefix 변경 + 2026-05-06 ADR-002 v2 / 2026-05-10 ADR-012 시점에 ARCHITECTURE는 누락됐던 것 일괄 정합. |
