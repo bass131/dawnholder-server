@@ -59,7 +59,7 @@
 
 ## ⏸️ 현재 멈춤 지점 (2026-05-10)
 
-**Phase 05 완료 — ★ M1 Foundation 마일스톤 완료**. Phase 06(PDL 이주) 또는 PRD 응축 진입 직전.
+**Phase 06 완료 — Phase 07(생성 코드 양쪽 정합 + Phase 05 코드 교체) 진입 직전**.
 
 - ✅ Phase 01 완료 (commit `2411ae0`): 솔루션 부트스트랩 + DLL 빌드 파이프라인. 학습 일지 박제.
 - ✅ 폴더 prefix 정렬 + 경로 정합성 일괄 갱신 (commit `071680e`)
@@ -71,12 +71,26 @@
 - ✅ **Phase 04 완료 (2026-05-10, commit `a798479`)**: 서버 `Program.cs` Listener wire-up(0.0.0.0:7777) + `GameSession.cs` 신작 + Unity 측 3파일(`MainThreadDispatcher` / `UnityClientSession` / `NetworkBootstrap`) 첫 시연. **양쪽 OnConnected 로그 동시 확인 + UnityException 없음** → main thread queue 패턴 작동 입증. SampleScene에 Network GameObject 박힘(다음 세션 시연 재현 가능).
 - ✅ **전체 outdated 점검 + 정합 (2026-05-10, commit `d5b8677` + `6494896`)**: Explore agent로 ARCHITECTURE.md가 2026-05-06/09/10 세 차례 변경에 누락됐던 것 일괄 정합. 디렉토리 구조 통째 재작성 + MessagePack 의존성 제거 + EF Core 8→10 + Y2 socket 분리 모델 명시. Phase 05 파일 신설.
 - ✅ **Phase 05 완료 (2026-05-10, commit `5174573`)**: framing(`[size(2)][packetId(2)][payload]`) + 첫 Ping/Pong 양방향 시연. `98_Shared/Protocol/` 신설(PacketId enum + PingPacket + PongPacket, BitConverter 임시). 서버/클라 PacketSession 상속 교체. Unity 1초마다 Ping → 서버 Pong → 클라 RTT 출력. **★ M1 Foundation 마일스톤 완료** — 영상 시연 가능한 첫 데모.
-- ⏳ Phase 02·03·04·05 학습 일지는 본인 페이스에 따라 추후
+- ✅ **Phase 06 완료 (2026-05-10, commit `03994b0`)**: PacketGenerator 4월 ServerDev → `99_Tools/PacketGenerator/` 이주 + 하드코딩 버그 2개 정정(`C_Chat`/`chatLen`) + Program.cs nullable 정합 + PDL.xml=`C_Ping`/`S_Pong`. 생성기 실행 → 3개 .cs(GenPackets+ClientPacketManager+ServerPacketManager) 정상 출력 + eyeball 검증 통과. 6개 프로젝트 빌드 경고 0/오류 0.
+- ⏳ Phase 02·03·04·05·06 학습 일지는 본인 페이스에 따라 추후
 
-**다음 작업 후보** (M1 완료 후 진입 갈래):
-- **Phase 06: PacketGenerator(자체 PDL) 이주** — 4월 외부 코드 이주 + `Packets.xml` 단일 소스 + 코드 생성기. Phase 05의 임시 BitConverter PingPacket/PongPacket을 *생성 코드*로 교체. 새 패킷 추가는 XML 한 줄 + 명령으로 자동화. 1.5~2h.
-- **PRD.md 응축** — 229줄(220 초과). 응축 또는 누적 외부화. ~30분.
-- **M2 First Connection** — 캐릭터 첫 이동(input → 패킷 → 서버 검증 → snapshot). M1과 달리 본격 *게임 로직*. Phase 06 후 진입 권장(PDL 인프라 있어야 새 패킷 추가 빠름).
+**다음 작업 = Phase 07: 생성 코드 양쪽 정합 + Phase 05 코드 교체 + 시연**
+
+진입 전 결정 필요 (Y2 정합 갈래):
+- ① **Shared에 SendBufferHelper 두기** (코드 중복 0, 생성기 단순)
+- ② **생성기가 양쪽에 별도 GenPackets.cs 출력** (Y2 분리 갈래 일관, 코드 두 벌)
+- ③ 다른 방식
+
+작업:
+- 위 갈래 결정 → PacketFormat.cs 템플릿 수정 (`using` + `SendBufferHelper` 분담)
+- BinaryPrimitives.*LittleEndian 정합 (현재 BitConverter 호스트 endian)
+- Phase 05 `PingPacket.cs`/`PongPacket.cs` 삭제 → 생성 `C_Ping`/`S_Pong` 사용
+- 양쪽 GameSession/UnityClientSession dispatch 정합
+- Unity 시연 (Phase 05와 동일 RTT 로그, 단 *생성 코드*로)
+
+**기타 후보** (Phase 07 후):
+- PRD.md 응축 (229줄→220 안)
+- M2 First Connection 진입 (캐릭터 첫 이동, 본격 게임 로직)
 - Hook 보강은 여전히 사례 기반으로 미룸.
 
 ---
