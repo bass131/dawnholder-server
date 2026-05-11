@@ -70,7 +70,7 @@
 
 ### 2026-05-11 본 세션 사이드 트랙
 - ✅ **Unity AI MCP 셋업 완료** (`440b0f3`) — `com.unity.ai.assistant` Unity 공식 패키지(2.x pre). Bridge Running + Claude Code 등록 + 도구 8개. ADR-001 v3 의도 실현.
-- ✅ **한글 경로 영구 해결 완료 + ADR-017 박힘** — 폴더 ASCII 이동 (`C:\Dev\ClaudeDev`). 검증 6단 통과: `pwd` / `git status` 깨끗(except Unity `_Recovery/` 자동 생성물) / `dotnet build` 0 error / `dotnet test` 25/25 / PacketGenerator `dotnet run` 직접 실행 성공 / Burst Enable 시 hang 없이 즉시 4551 에러(컴파일러 경로 파싱 회복, WDAC 차단은 별도 사건). Burst는 다시 Disable 상태 유지.
+- ✅ **한글 경로 영구 해결 완료 + ADR-017 박힘** (`53a476c`, push 완료) — 폴더 ASCII 이동 (`C:\Dev\ClaudeDev`). 검증 6단 통과: `pwd` / `git status` 깨끗 / `dotnet build` 0 error / `dotnet test` 25/25 / PacketGenerator `dotnet run` 직접 실행 성공 / Burst Enable 시 hang 없이 즉시 4551 에러(컴파일러 경로 파싱 회복, WDAC 차단은 별도 사건). Burst는 다시 Disable 상태 유지. 본 세션 정리 작업: `_Recovery/` 자동 생성물 + 옛 한글 경로 폴더 + `C:\Dev\ClaudeDev\ClaudeDev` 중첩 빈 잔여물(Move-Item 부산물) 모두 삭제. PacketGenerator manager 두 파일 IPacket using 누락으로 빌드 깨뜨려서 삭제 + 보류 항목으로 박음.
 
 ### M1 완료 요약 (이전 시점, [`CONTEXT_History.md`](CONTEXT_History.md) + `-DONE.md` 참조)
 Phase 01~07 + 회귀 안전망. 솔루션 부트스트랩 / ServerCore 7파일 / 04_ClientNet Y2 분리 / Listener wire-up / framing+Ping-Pong / PacketGenerator 이주 / PDL 정합. M2 진입 전 도구대 정합도 완료.
