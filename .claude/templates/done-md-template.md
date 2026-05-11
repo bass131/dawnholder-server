@@ -9,18 +9,43 @@
 
 ## 템플릿 본문 (이 아래를 그대로 가져다 채움)
 
+> **⚠️ Post-flight 게이트 적용 중**. 아래 frontmatter 필드 + 5개 H2 섹션 + 5단계 보고 5개 항목이 모두 채워져야 훅(`validate-phase-gate.sh`)을 통과해 commit 가능.
+
 ```markdown
+---
+summary: <1줄. 다음 Phase가 인용할 표준 입력. "무엇을 했고 무엇이 가능해졌는지" 압축>
+phase: {NN}-{phase-name}
+status: done
+completed_at: {YYYY-MM-DD}
+commit: {short hash}
+---
+
 # Phase {NN} — {제목} 완료 박제
 
-**완료일**: {YYYY-MM-DD}
-**커밋**: {short hash}
 **소요 시간**: {대략}
 
 ## TL;DR
 (2~4문장. 무엇을 / 왜 / 결과를 압축. Codex가 Notion 첫 단락으로 그대로 가져갈 수 있게 *사실*만. 본인 회고/면접 답변 X.)
 
 ## 5단계 보고
-(방금 출력한 5단계 보고를 그대로 복붙)
+(아래 5개 항목 라벨을 그대로 유지하며 채움. 훅이 라벨 존재를 검사함.)
+
+- **무엇을 만들었나** —
+- **왜 필요한가** —
+- **어떻게 만들었나** —
+- **테스트 결과** —
+- **다음 스텝** —
+
+## AC 검증 결과
+(Phase 파일의 완료조건(Acceptance Criteria)을 **실제로 실행한** 명령어와 결과를 박는다. 추측·요약 X. 실패하면 이 Phase는 아직 done이 아님.)
+
+예시:
+```bash
+$ dotnet test 02_Server/Tests/
+  Passed: 12, Failed: 0
+$ ./scripts/headless-bot --connect 1 --duration 30s
+  Handshake OK, 30s 동안 disconnect 0회
+```
 
 ## 결정 흐름 (학습 일지 쓸 때 참고용)
 - 갈래/대안 → 채택안 → 이유 (한두 줄씩)

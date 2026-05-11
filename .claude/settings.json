@@ -38,7 +38,8 @@
         "matcher": "Edit|Write",
         "hooks": [
           { "type": "command", "command": ".claude/hooks/validate-shared-changes.sh" },
-          { "type": "command", "command": ".claude/hooks/check-server-authority.sh" }
+          { "type": "command", "command": ".claude/hooks/check-server-authority.sh" },
+          { "type": "command", "command": ".claude/hooks/validate-phase-gate.sh" }
         ]
       }
     ]

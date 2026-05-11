@@ -75,6 +75,7 @@
 - ✅ **Phase 07 완료 (2026-05-10, commit `ec2cfe5`)**: PDL 정합 + Phase 05 임시 코드 교체 + Unity 시연 재현. PacketFormat.cs 템플릿(Write byte[] + BinaryPrimitives.*LittleEndian) + Program.cs 출력 폴더 분리(`98_Shared/Protocol/Generated/`로 패킷 통합) + `--no-manager`/`--no-wait` 옵션. Phase 05 임시 PingPacket/PongPacket 삭제. **사용자 통찰로 ADR-012 진화 (책임 단위 분리/통합 정제) + AI sliding 패턴 메모리화**. 책임 단위 문서화 6군데 박제 (ADR-012 보강 + 98_Shared CLAUDE.md + SendBuffer 양쪽 주석 + PacketFormat 헤더 + Phase 07 -DONE + 학습 일지 후보 키워드).
 - ✅ **Phase 07 회귀 안전망 보강 (2026-05-11, commit `2b1cc4d`)**: C_Ping/S_Pong 라운드트립 회귀 테스트 추가 (Phase 07에서 누락됐던 회수 commit). M1 Foundation 영역 테스트 커버리지 = Ping/Pong 한 군데뿐 → Phase 08 진입 시 또는 M2 코드 늘어나기 전 보강 후보.
 - ✅ **문서 협업 시스템 정합 + Notion e2e 검증 (2026-05-11, commit `6333022..64a1afa`, 8 commit)**: ① 일회성 HTML 3건 정리. ② Notion 협업 분업 원칙(Claude=사실 박제 / Codex=Notion 재편집 / 본인=회고)을 CONTEXT 응축 위험에서 보호하기 위해 `.claude/templates/done-md-template.md`로 영속 이주. ③ Claude→Codex 핸드오프 절차 박음(트리거/입력 셋/책임 분담/Codex CLI cmd 형식 포함 — `codex exec` create는 `-s workspace-write`, update는 `--dangerously-bypass-approvals-and-sandbox` 필요, stdin은 `< /dev/null`로 차단). ④ Notion 출력 형식 모순 해소: STAR=출력 표준 / 8단=사고 체크리스트(매핑 표). ⑤ `-DONE.md` 템플릿에 TL;DR 섹션 박음 + Phase 07 -DONE에 소급 적용. ⑥ `/log-session` 명세는 deprecated 헤더 + Codex 환경 명세로 reposition. **e2e 검증**: 오늘 세션 자체를 노션에 1 신규 페이지 박음 + 기존 9 페이지 중 7개에 34개 용어 풀이 소급 보강 (본문 무변경 검증 OK).
+- ✅ **Post-flight 게이트(② ) 도입 (2026-05-11)**: `jha0313/harness_framework` 비교 후 자동 실행은 비채택(학습 호흡 보존), 대신 `-DONE.md` 박제 시 형식 검증을 훅으로 강제. 새 훅 `validate-phase-gate.sh` + 템플릿 frontmatter(`summary` 1줄 / `phase` / `status`) + `## AC 검증 결과` 섹션 필수 + 5단계 보고 5개 항목 라벨 검사. 누락 시 `exit 2`로 차단. 헌법에 Post-flight 게이트 절 명문화. 게이트 ①(Pre-flight, Phase 시작 의식)·③(Blocked 명시화)는 게이트 ② 실전 1회 검증 후 결정. **하네스 비대화 우려 표명** — 향후는 *추가*보다 *정리* (슬래시 14개/에이전트 6개/문서 시스템 실사용 빈도 기반 가지치기 후보).
 - ⏳ Phase 02·03·04·05·06·07 학습 일지는 본인 페이스에 따라 추후
 
 **다음 작업 후보**:
@@ -91,11 +92,14 @@
 코드가 더 들어온 뒤 *진짜 필요한 가드*가 어떤 것인지 보고 결정:
 
 - **Hook 보강** (가드 강제):
+  - ✅ `validate-phase-gate.sh` (2026-05-11 박힘) — `-DONE.md` Post-flight 게이트
   - `tdd-guard.sh` (공식·직렬화·상태머신 영역, 테스트 부재 시 차단)
   - `tick-blocking-guard.sh` (`02_Server/GameServer/Loop/`에 `Task.Delay`/`Sleep`/`await Db` 차단)
   - `check-server-authority.sh` 강화 (03_Client/에 데미지/HP/XP 키워드 차단)
   - `HOOK_MODE=warn|block` 토글 — Phase 진행 단계별 적용
+- **게이트 ①·③ (보류)**: 게이트 ②(Post-flight) 실전 1회 검증 후 ① Pre-flight(Phase 시작 의식) → ③ Blocked 명시화 순으로 도입 검토.
 - **TDD 강제 영역 결정**: 헌법 6번째 원칙으로 박을지, ADR로 박을지. "엄격 vs 미루기" 갈등 인지 중.
+- **하네스 정리 점검** (비대화 우려 후속): 슬래시 14개/서브에이전트 6개 중 실사용 빈도 낮은 것 가지치기. `CONTEXT.md` vs `CONTEXT_History.md` vs `-DONE.md` 역할 중복 점검.
 
 ### 학습 마라톤 시작 전 (~6월 말)
 - `00_Document/TEAM.md` (미팅 결과 박제)
@@ -183,7 +187,7 @@
 02_Server/, 03_Client/, 98_Shared/, 99_Tools/    ← 게임 코드
 .claude/agents/                                  ← 6개 서브에이전트
 .claude/commands/                                ← 14개 슬래시 커맨드
-.claude/hooks/                                   ← 2개 (코드 더 들어온 뒤 사례 기반 보강 예정)
+.claude/hooks/                                   ← 3개 (validate-shared / check-authority / validate-phase-gate)
 Dawnholder.slnx                                  ← .NET 솔루션 (02_Server + 98_Shared)
 global.json                                      ← .NET SDK 핀 (10.0.203)
 노션 "Dawnholder 협업 히스토리" DB               ← 세션 STAR 박제
