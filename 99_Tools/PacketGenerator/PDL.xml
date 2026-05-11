@@ -34,4 +34,21 @@
     <packet name="S_LeaveMap">
         <int name="entityId"/>
     </packet>
+
+    <!-- Phase 04 (M2): C_MoveIntent — 클라가 보내는 *의도*. 좌표 X. 헌법 #3 (Trust Boundary).
+         inputX: -1 (좌), 0 (정지), 1 (우). |inputX|>1은 cheat. clientTick은 Phase 06 replay 대비. -->
+    <packet name="C_MoveIntent">
+        <sbyte name="inputX"/>
+        <int name="clientTick"/>
+    </packet>
+
+    <!-- Phase 04 (M2): S_Snapshot — 서버가 권위 좌표를 매 SnapshotTickInterval(=5)마다 브로드캐스트.
+         lastAckedClientTick은 Phase 06 replay reconcile에서 의미를 가짐 (지금은 미사용 0). -->
+    <packet name="S_Snapshot">
+        <int name="entityId"/>
+        <float name="x"/>
+        <float name="y"/>
+        <int name="serverTick"/>
+        <int name="lastAckedClientTick"/>
+    </packet>
 </PDL>

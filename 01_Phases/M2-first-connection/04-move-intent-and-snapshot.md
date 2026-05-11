@@ -1,6 +1,6 @@
 # Phase 04: C2S_MoveIntent + S2C_Snapshot (prediction 없이)
 
-> **상태**: pending
+> **상태**: done (페어: [`04-move-intent-and-snapshot-DONE.md`](04-move-intent-and-snapshot-DONE.md))
 > **마일스톤**: M2 First Connection
 > **예상 소요**: 2.5~3시간
 > **담당 에이전트**: netcode + gameplay

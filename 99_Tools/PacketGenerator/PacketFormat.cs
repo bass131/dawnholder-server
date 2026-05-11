@@ -268,11 +268,15 @@ public List<{0}> {1}s = new List<{0}>(); // {0} 리스트";
 this.{0} = BinaryPrimitives.Read{1}LittleEndian(s.Slice(count, s.Length - count));
 count += sizeof({2});
 ";
+        // byte/sbyte 1바이트 직접 인덱싱.
+        // Phase 04 정정: 옛 ServerDev `_Segment.Array[Offset+count]`/`Segment.Array[...]` 패턴은
+        // 새 Read/Write 메서드 변수와 안 맞음 → 현 메서드의 `s` (ReadOnlySpan/Span<byte>) 직접 사용.
+        //
         // {0} : 변수 이름
         // {1} : 변수 형식
         public static string ReadByteFormat =
 @"// {0} 읽기
-this.{0} = ({1})_Segment.Array[_Segment.Offset + count]; // testByte 읽기
+this.{0} = ({1})s[count];
 count += sizeof({1});
 ";
 
@@ -349,7 +353,7 @@ count += sizeof({2});
         // {1} : 변수 형식
         public static string WriteByteFormat =
 @"// {0} 쓰기
-Segment.Array[Segment.Offset + count] = (byte)this.{0}; // testByte 읽기
+s[count] = (byte)this.{0};
 count += sizeof({1});
 ";
 

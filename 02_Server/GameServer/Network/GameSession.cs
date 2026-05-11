@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Diagnostics;
 using System.Net;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Loop;
@@ -11,25 +12,26 @@ namespace Dawnholder.Server.GameServer.Sessions;
 /// <summary>
 /// 게임 도메인의 한 클라이언트 세션. ServerCore의 <see cref="PacketSession"/>을 상속.
 ///
-/// **Phase 03 변경**: OnConnected/Disconnected가 GameMap actor로 마샬링하도록 진화.
-/// 헌법 #1(Server Authority): spawn 좌표는 서버가 정함 — 클라는 S_EnterMap을 받기 전엔
-/// 자기 좌표를 결정하지 않는다.
+/// **Phase 03 변경**: OnConnected/Disconnected가 GameMap actor로 마샬링.
+/// **Phase 04 변경**: C_MoveIntent 핸들러 + 검증(헌법 #3) + rate-limit 골격.
 ///
-/// 콜백은 모두 socket 워커 스레드(IOCP)에서 호출됨. GameMap mutation은 직접 하지 않고
-/// `GameMap.EnqueueJob`으로 push → tick thread에서 실행. lock 없음.
+/// 콜백은 socket 워커(IOCP) 스레드. GameMap mutation은 직접 X — `EnqueueJob`으로 push.
 /// </summary>
 public class GameSession : PacketSession
 {
-    // 자기 entity의 캐시. 여러 콜백(Disconnect 등)에서 정리에 필요.
-    // IOCP는 같은 세션에 OnConnected/Disconnected를 직렬 호출 → race 부재.
     int _entityId = -1;
+
+    // Phase 04: rate-limit 골격 (헌법 #3). 1초 슬라이딩 윈도우.
+    // 차단은 안 함 (Phase 05+에서 정책 결정). 일단 *기록*만 — 보안 일반 원칙.
+    const int IntentRateLimitPerSecond = 100;
+    readonly Stopwatch _rateLimitWindow = Stopwatch.StartNew();
+    int _intentCountInWindow;
 
     public override void OnConnected(EndPoint endPoint)
     {
         EndPoint ep = endPoint;
         Console.WriteLine($"[GameSession] OnConnected from {ep}");
 
-        // Phase 03 (M2): 서버 권위 spawn. 마샬링을 거쳐 tick thread에서 entity 생성.
         GameMap map = GameWorld.Instance.Map;
         GameSession self = this;
         map.EnqueueJob(() =>
@@ -59,7 +61,7 @@ public class GameSession : PacketSession
         EndPoint ep = endPoint;
         Console.WriteLine($"[GameSession] OnDisconnected from {ep}");
 
-        if (_entityId < 0) return; // AddPlayer가 아직 처리 안 됐다면 정리할 게 없음
+        if (_entityId < 0) return;
 
         GameMap map = GameWorld.Instance.Map;
         int eid = _entityId;
@@ -73,10 +75,6 @@ public class GameSession : PacketSession
     public override void OnSend(int numOfBytes)
         => Console.WriteLine($"[GameSession] OnSend {numOfBytes} bytes");
 
-    /// <summary>
-    /// PacketSession이 framing을 끝낸 *완전한 한 패킷*을 넘김.
-    /// buffer = `[size:2][packetId:2][payload...]` 통째.
-    /// </summary>
     public override void OnRecvPacket(ArraySegment<byte> buffer)
     {
         ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
@@ -86,6 +84,10 @@ public class GameSession : PacketSession
         {
             case PacketID.C_Ping:
                 HandlePing(buffer);
+                break;
+
+            case PacketID.C_MoveIntent:
+                HandleMoveIntent(buffer);
                 break;
 
             default:
@@ -107,5 +109,51 @@ public class GameSession : PacketSession
 
         Console.WriteLine($"[GameSession] Ping received (clientTs={ping.clientTimestampMs}) → Pong");
         Send(pong.Write());
+    }
+
+    // Phase 04 (M2): 클라 의도 수신 → 검증 + tick thread로 마샬링.
+    // 헌법 #3 (Trust Boundary): 모든 클라 입력은 untrusted. 범위·rate 둘 다 검증.
+    void HandleMoveIntent(ArraySegment<byte> buffer)
+    {
+        C_MoveIntent pkt = new C_MoveIntent();
+        pkt.Read(buffer);
+
+        // Rate-limit 윈도우 갱신 (1초 슬라이딩).
+        if (_rateLimitWindow.ElapsedMilliseconds >= 1000)
+        {
+            _rateLimitWindow.Restart();
+            _intentCountInWindow = 0;
+        }
+        _intentCountInWindow++;
+        if (_intentCountInWindow > IntentRateLimitPerSecond)
+        {
+            // *차단 X, 기록 O* — Phase 05+에서 정책 결정.
+            Console.WriteLine(
+                $"[Cheat] Player {_entityId}: intent rate {_intentCountInWindow}/s > {IntentRateLimitPerSecond}");
+            // 그래도 처리 진행 (Phase 04는 기록만).
+        }
+
+        // 범위 검증. |inputX| > 1은 즉시 cheat 폐기.
+        if (Math.Abs(pkt.inputX) > 1)
+        {
+            Console.WriteLine(
+                $"[Cheat] Player {_entityId}: inputX={pkt.inputX} (range violation) — dropped");
+            return;
+        }
+
+        if (_entityId < 0) return; // 아직 EnterMap 안 끝남
+
+        // tick thread로 마샬링: PlayerEntity 갱신.
+        GameMap map = GameWorld.Instance.Map;
+        int eid = _entityId;
+        sbyte inputX = pkt.inputX;
+        uint clientTick = (uint)pkt.clientTick;
+        map.EnqueueJob(() =>
+        {
+            PlayerEntity? entity = map.GetPlayer(eid);
+            if (entity == null) return; // 이미 RemovePlayer 됐을 수도
+            entity.PendingInputX = inputX;
+            entity.LastClientTick = clientTick;
+        });
     }
 }
