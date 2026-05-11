@@ -203,7 +203,7 @@ Phase 05 BitConverter 임시 → Phase 07 생성 코드. 임시 코드의 신호
 
 **Phase 08 (옵션)**: PacketManager + PacketHandler 자동 dispatch 도입.
 - 새 패킷 추가 시 PDL.xml 한 줄 + 핸들러 메서드만 작성하면 자동 등록
-- 슬래시 커맨드 `/new-packet`이 그 흐름 자동화
+- 슬래시 커맨드 `/work:new-packet`이 그 흐름 자동화
 - 미루고 M2 진입해도 OK (수동 switch dispatch가 짧으면 비용 작음)
 
 **M2 First Connection** 진입 — 캐릭터 첫 이동 + Move/Snapshot 패킷.

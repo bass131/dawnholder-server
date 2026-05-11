@@ -31,7 +31,7 @@
 
 ### ➡️ 다음 스텝
 - Phase 02: ServerCore 7파일 정착 (당시 결정 = `98_Shared/Net/`로 마이그 → 후에 시나리오 변경되어 `02_Server/Network/`로 정착)
-- 학습 일지 작성 (`/journal-phase`) → 후에 `ed13936`로 박제됨
+- 학습 일지 작성 (`/journal:phase`) → 후에 `ed13936`로 박제됨
 
 ---
 

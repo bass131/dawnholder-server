@@ -31,7 +31,7 @@ shared 라이브러리를 .NET Standard 2.1로 빌드해서 .NET 10 서버와 Un
 ### 개념 차원
 - **`.NET Standard 2.1`과 `.NET Framework`의 차이 — .NET 생태계는 단일 런타임이 아니다.** 셋(Framework, Standard, .NET Core 계열)이 각각 다른 본질을 가지고 있다는 분리. 특히 "Standard"는 실제 런타임이 아니라 "이 API는 모든 .NET 변종이 공통으로 지원한다는 약속"이라는 게 인상 깊었다.
 - **C# 컴파일러는 단일(Roslyn)이지만 타겟 프레임워크에 따라 기본 언어 버전이 다르게 잡힌다.** `.NET Standard 2.1` → C# 8 기본, `.NET 10` → C# 13 기본. CS8400 함정에서 학습. `<LangVersion>latest</LangVersion>`로 덮어쓸 수 있음.
-- **Embedded PDB의 존재** — 디버그 정보를 .dll 안에 통째 압축. 단 메커니즘과 본 프로젝트에서의 가치는 표면만 이해. /journal-concept로 따로 파보기.
+- **Embedded PDB의 존재** — 디버그 정보를 .dll 안에 통째 압축. 단 메커니즘과 본 프로젝트에서의 가치는 표면만 이해. /journal:concept로 따로 파보기.
 
 ### 구현 차원
 - (이번 Phase는 코드량이 적어서 깊은 구현 학습은 적었음. Phase 02 ServerCore 이주 시 본격적으로 들어옴.)
@@ -80,7 +80,7 @@ shared 라이브러리를 .NET Standard 2.1로 빌드해서 .NET 10 서버와 Un
 🟢 가장 가치 큰 큐 (시간 나면 먼저)
 - Embedded PDB의 실제 메커니즘 + 본 프로젝트에서의 가치 (현재 표면만)
 - .NET Standard 2.1 자체 — "API 호환 사양"이라는 추상 개념의 메커니즘
-  → 두 개를 한 번에 묶어 /journal-concept으로 정리 추천
+  → 두 개를 한 번에 묶어 /journal:concept으로 정리 추천
 
 🟡 자주 마주칠 큐
 - MSBuild Target / Item / Property 시스템
@@ -100,7 +100,7 @@ shared 라이브러리를 .NET Standard 2.1로 빌드해서 .NET 10 서버와 Un
 A: Unity의 Mono 런타임은 .NET Standard 2.1까지 인식한다. 서버는 .NET 10 최신을 쓰지만, 양쪽이 공통으로 인식 가능한 .NET Standard 2.1을 shared의 타겟으로 잡으면 한 어셈블리로 양쪽이 같은 코드를 공유할 수 있다.
 
 **Q-B: "PDB를 임베드하면 뭐가 좋아요? 그냥 별도 .pdb 파일로 두는 거랑 차이가 뭔가요?"**
-A: 아직 답 못 함. /journal-concept "Embedded PDB"로 따로 학습 예정. 현재 표면 인지: .dll에 디버그 정보를 같이 압축해서 .pdb 파일이 별도로 안 생기게 한 것.
+A: 아직 답 못 함. /journal:concept "Embedded PDB"로 따로 학습 예정. 현재 표면 인지: .dll에 디버그 정보를 같이 압축해서 .pdb 파일이 별도로 안 생기게 한 것.
 
 **Q-C: "shared.dll을 클라이언트가 수정하지 못하게 막는 게 왜 중요한가요?"**
 A: shared는 클라/서버가 같은 패킷 정의와 공식을 공유하는 코드라, 클라가 임의 수정하면 (1) 양쪽이 다른 바이트를 주고받아 통신 자체가 깨지고 (runtime desync), (2) 데미지 수식 같은 로직이 클라 임의대로 바뀌어 핵 취약점이 된다. 그래서 빌드 시스템(DLL + Embedded PDB)으로 클라가 shared를 수정할 경로 자체를 차단했다.

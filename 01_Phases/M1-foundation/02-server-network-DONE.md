@@ -30,7 +30,7 @@ ServerDev 4월 코드의 ServerCore 7파일(`Connector`, `JobQueue`, `Listener`,
 
 ### ➡️ 다음 스텝
 - **Phase 03**: Unity 클라 socket 전략 결정 (갈래 X 공유 DLL vs 갈래 Y2 분리 클라 라이브러리). 결정 직후 새 ADR + Phase 03 파일 재작성.
-- 학습 일지(`/journal-phase`)는 본인 페이스에 따라 미루거나 진행.
+- 학습 일지(`/journal:phase`)는 본인 페이스에 따라 미루거나 진행.
 
 ---
 
@@ -75,4 +75,4 @@ ServerDev 4월 코드의 ServerCore 7파일(`Connector`, `JobQueue`, `Listener`,
 ## 후속 박제
 
 - 노션 협업 히스토리 DB: [Phase 02 세션 로그](https://www.notion.so/35b76ceccb78816b85abde9b91217218)
-- Phase 학습 일지: **미작성** (본인 페이스 따라 추후 `/journal-phase`)
+- Phase 학습 일지: **미작성** (본인 페이스 따라 추후 `/journal:phase`)

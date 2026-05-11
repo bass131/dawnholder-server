@@ -7,7 +7,7 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 >
 > 새 흐름: Claude는 `-DONE.md` 박제까지만, Notion 페이지 작성은 **Claude가 Bash로 호출하는 별도 Codex 세션**이 readonly로 ClaudeDev를 읽고 직접 박는다 (사용자가 cmd 치는 게 아님). 분업 절차는 [`.claude/templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
 >
-> **본 파일의 역할**: Codex가 Notion 페이지 생성 시 참조할 *환경 명세* — DB ID·스키마·페이지 생성 API 형식·STAR 본문 가이드·함정 사례. 사용자가 `/log-session` 입력하면 Claude가 Bash로 Codex CLI를 호출해 본 명세에 따라 페이지를 만든다.
+> **본 파일의 역할**: Codex가 Notion 페이지 생성 시 참조할 *환경 명세* — DB ID·스키마·페이지 생성 API 형식·STAR 본문 가이드·함정 사례. 사용자가 `/session:log` 입력하면 Claude가 Bash로 Codex CLI를 호출해 본 명세에 따라 페이지를 만든다.
 
 사용자가 이번 세션을 노션에 기록 요청했습니다.
 한 줄 요약 (있으면): **$ARGUMENTS**
@@ -62,7 +62,7 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 - 팀원 미팅 결과 → `팀미팅`
 - GitHub repo/PR/git → `GitHub`
 - Phase 작업 → `Phase`
-- `/why`·`/concept` 사용 / 개념 풀이 → `학습`
+- `/learn:why`·`/learn:concept` 사용 / 개념 풀이 → `학습`
 - 큰 결정 (시나리오 선택, 스택 변경) → `결정`
 - 기존 코드 분석 → `코드분석`
 - 헌법/Harness/CLAUDE.md/CONTEXT.md 변경 → `Harness`
@@ -79,7 +79,7 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 | 풀어야 했던 핵심 질문 1개 | **정해야 했던 것** |
 | 옵션 A/B/C 비교, 트레이드오프, 채택 + 이유 | **한 행동** |
 | 코드/문서 변경, git commit, PR URL, ADR-NNN | **결과** (구체 산출물) |
-| 사용자 `/why`·`/explain`·`/concept` 사용 / 개념 풀이 / "오 그럼 X도 돼?" 깨달음 | **결과**의 "배운 것 3가지" |
+| 사용자 `/learn:why`·`/learn:explain`·`/learn:concept` 사용 / 개념 풀이 / "오 그럼 X도 돼?" 깨달음 | **결과**의 "배운 것 3가지" |
 | "다음 세션", "머지 후", 남은 것 | 하단 italics |
 
 **"배운 것 3가지" 추출 시 주의** (가장 중요한 섹션):
@@ -224,8 +224,8 @@ pages: [{
 - [ ] 한글 깨짐 없음
 
 ➡️ 다음:
-- (이 세션에 깊은 학습 있었으면) /journal-concept <키워드> 로 별도 정리
-- (트러블슈팅 있었으면) /journal-bug 로 사건 정리
+- (이 세션에 깊은 학습 있었으면) /journal:concept <키워드> 로 별도 정리
+- (트러블슈팅 있었으면) /journal:bug 로 사건 정리
 ```
 
 ---

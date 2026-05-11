@@ -67,9 +67,9 @@ Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 �
 > **📚 Phase 완료 — 학습 일지 작성을 권유합니다**
 >
 > 이 Phase에서 배운 내용을 정리해두면 면접 무기가 돼요. 옵션:
-> 1. `/journal-phase` — Phase 통째 회고 (15~20분)
-> 2. `/journal-bug` — 막혔던 사건이 있었다면 (디테일 안 잊었을 때)
-> 3. `/journal-concept <키워드>` — 깊이 학습한 개념을 본인 말로
+> 1. `/journal:phase` — Phase 통째 회고 (15~20분)
+> 2. `/journal:bug` — 막혔던 사건이 있었다면 (디테일 안 잊었을 때)
+> 3. `/journal:concept <키워드>` — 깊이 학습한 개념을 본인 말로
 > 4. 패스 (다음 Phase로) — 단, 가급적 오늘 안에 추천
 
 **권유이지 강제 X**. 패스 시 즉시 존중. 같은 Phase에 두 번 권유 X.
@@ -77,10 +77,10 @@ Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 �
 
 ### 슬래시 커맨드
 
-- **학습/이해**: `/why` `/explain` `/concept` `/recap` `/dumb-it-down`
-- **학습 일지**: `/journal-phase` `/journal-concept` `/journal-bug`
-- **작업 진행**: `/plan` `/review` `/new-packet` `/new-monster` `/load-test`
-- **세션 기록**: `/log-session`
+- **학습/이해**: `/learn:why` `/learn:explain` `/learn:concept` `/learn:recap` `/learn:dumb-it-down`
+- **학습 일지**: `/journal:phase` `/journal:concept` `/journal:bug`
+- **작업 진행**: `/work:plan` `/work:review` `/work:new-packet` `/work:new-monster` `/work:load-test`
+- **세션 기록**: `/session:log`
 
 전체 14개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`00_Document/commands-index.md`](00_Document/commands-index.md) 참조. 새 커맨드 추가 시 인덱스도 함께 갱신.
 
@@ -107,9 +107,9 @@ Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 �
 
 큰 목표는 1~3시간짜리 Phase로 쪼개서 `01_Phases/M{N}-{slug}/` 안에 보관.
 
-- 새 작업 시작 시: `/plan <목표>` 로 Phase 분해
+- 새 작업 시작 시: `/work:plan <목표>` 로 Phase 분해
 - 한 Phase = 한 마크다운 파일 + 명확한 완료 조건
-- Phase 끝나면 5단계 보고 + `/review`로 검증
+- Phase 끝나면 5단계 보고 + `/work:review`로 검증
 - 다음 Phase로 수동 이동 (자동 순차 실행 안 함 — 학습 호흡 유지)
 
 ### 문서 세분화 정책 (220줄 임계)
@@ -121,7 +121,7 @@ Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 �
 2. **응축 가능하면** → 재작성. 옛 디테일은 git/학습 일지/노션으로 위임.
    (CONTEXT 패턴 — CONTEXT.md 자체는 별도 200줄 임계 유지)
 3. **단위 작업 문서면** (Phase 파일, `-DONE.md`) → **자르지 않음**.
-   220줄 넘었다 = 작업 단위가 너무 컸다는 신호 → `/plan`으로 더 잘게.
+   220줄 넘었다 = 작업 단위가 너무 컸다는 신호 → `/work:plan`으로 더 잘게.
 
 #### 분리된 파일도 220줄 넘으면 (재귀)
 

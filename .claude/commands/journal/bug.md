@@ -109,7 +109,7 @@ argument-hint: [버그 한 줄 요약 - 선택]
 
 ➡️ 다음:
 - README의 "개발 일지 하이라이트"에 이 트러블슈팅 후보로 메모
-- 관련 개념이 깊다면 /journal-concept 로 별도 정리
+- 관련 개념이 깊다면 /journal:concept 로 별도 정리
 ```
 
 ### 7. 톤

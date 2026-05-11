@@ -62,7 +62,7 @@
 
 ## 학습 일지 후보 키워드
 
-`/journal-concept <키워드>` 로 펼칠 만한 것들:
+`/journal:concept <키워드>` 로 펼칠 만한 것들:
 
 - **unity-main-thread-queue** — `UnitySynchronizationContext` vs ConcurrentQueue 패턴, Update() drain 흐름, 씬 전환 시 누수, async/await + UnityWebRequest 같은 다른 Unity-friendly 비동기 도구와의 관계.
 - **concurrent-queue-internals** — CAS(compare-and-swap) 기반 lock-free의 의미, ABA 문제, MPSC vs MPMC 시나리오 적합도, `BlockingCollection<T>` / `Channel<T>`와의 대비.
@@ -75,7 +75,7 @@
 ## 메모 (다음 세션을 위한)
 
 - Phase 04 시연용 GameObject(`Network`)가 SampleScene.unity에 박혀있어, 다음 세션엔 Unity 열고 서버 띄운 뒤 Play만 누르면 즉시 시연 재현.
-- Phase 05 진입 시 Phase 05 파일은 *없음* (Phase 04 옛 이름이 그 자리를 차지). `/plan` 또는 직접 `01_Phases/M1-foundation/05-*.md` 신설부터.
+- Phase 05 진입 시 Phase 05 파일은 *없음* (Phase 04 옛 이름이 그 자리를 차지). `/work:plan` 또는 직접 `01_Phases/M1-foundation/05-*.md` 신설부터.
 - `99_Tools/headless-bot`은 `99_Tools/headless-bot/` 폴더만 있고 코드 없음. Phase 06+(부하 테스트 진입 시) 시작점.
 - Phase 05에서 직렬화 결정 필요: ① 자체 PDL(ADR-002 채택, 4월 코드 재활용 + 코드 생성기) ② 단순 `BitConverter` 직접(첫 ping/pong은 필드 2개라 PDL 없이도 됨). PDL 인프라 셋업 비용 vs 학습 임팩트 trade-off.
 - 헌법 응축본이 다음 세션에서 *진짜 톤·동작*에 영향 주는지 자체 검증 가능 — 이번 세션 톤이 응축 전과 비슷하게 작동했음을 첫 신호로 박아둠.

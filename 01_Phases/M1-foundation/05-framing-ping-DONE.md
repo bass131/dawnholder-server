@@ -63,7 +63,7 @@
 
 ## 학습 일지 후보 키워드
 
-`/journal-concept <키워드>` 로 펼칠 만한 것들:
+`/journal:concept <키워드>` 로 펼칠 만한 것들:
 
 - **endianness-and-wire-format** — host endian vs network byte order, BitConverter의 함정, BinaryPrimitives.*LittleEndian/BigEndian의 의미. TCP/IP는 big-endian(network byte order)인데 게임은 왜 little-endian을 쓰나(인텔/ARM 호환성).
 - **length-prefix-framing** — TCP byte stream의 의미와 메시지 경계 모호성. length-prefix vs delimiter vs fixed-size의 trade-off. 게임에서 length-prefix가 표준인 이유.
@@ -80,6 +80,6 @@
   - **Phase 06: PacketGenerator 이주** — Phase 05에서 박은 임시 BitConverter를 PDL 자동 생성 코드로 교체. 인프라 1.5~2h.
   - **PRD.md 응축** — 229줄(220 초과). 응축 또는 누적 외부화. 30분 정도.
 - 4월 PacketGenerator 코드는 외부 백업 또는 ServerDev 레포에 있을 것. Phase 06 진입 시점에 사용자에게 코드 위치 확인 + 이주 plan.
-- Phase 06 후 새 패킷 추가는 `/new-packet <C2S|S2C> <name>` 슬래시 커맨드로 자동화 가능 (이미 `.claude/commands/new-packet.md`에 정의됨).
+- Phase 06 후 새 패킷 추가는 `/work:new-packet <C2S|S2C> <name>` 슬래시 커맨드로 자동화 가능 (이미 `.claude/commands/work:new-packet.md`에 정의됨).
 - 시연 영상 촬영 권장 시점 = M1 완료 직후(지금) 또는 M2 끝나고 캐릭터 이동까지 잡히면 더 임팩트. 캡스톤 1 발표(6월) 자료로 활용.
-- 노션 세션 로그 박을 가치 있음 — `/log-session` 권유.
+- 노션 세션 로그 박을 가치 있음 — `/session:log` 권유.

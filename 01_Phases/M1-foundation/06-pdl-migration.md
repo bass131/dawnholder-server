@@ -213,7 +213,7 @@ dotnet run -- PDL.xml
 - Phase 05 GameSession / UnityClientSession이 새 `C_Ping` / `S_Pong` 인지하도록 dispatch 정합
 - Unity Play → 1초마다 RTT 로그 (Phase 05 시연 그대로 재현, 단 *생성 코드*로)
 
-> Phase 07 후 새 패킷 추가는 `/new-packet <C2S|S2C> <name>` 슬래시 커맨드로 자동화 가능 (이미 정의됨).
+> Phase 07 후 새 패킷 추가는 `/work:new-packet <C2S|S2C> <name>` 슬래시 커맨드로 자동화 가능 (이미 정의됨).
 
 ---
 

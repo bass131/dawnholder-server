@@ -57,7 +57,7 @@ Y2 갈래(ADR-012) — 서버/클라가 **각자의 socket 코드**를 갖는 �
 
 ## 학습 일지 후보 키워드
 
-`/journal-concept <키워드>` 로 펼칠 만한 것들:
+`/journal:concept <키워드>` 로 펼칠 만한 것들:
 
 - **Embedded PDB & EmbedAllSources** — 디컴파일 대신 원본 표시가 가능한 메커니즘. 일반 .pdb vs portable .pdb vs embedded .pdb 차이. F12가 "메타데이터에서" 가는 게 아니라 *임베드된 원본*으로 가는 동작 원리.
 - **Unity main thread 제약** — `UnitySynchronizationContext`, main thread queue 패턴, .NET 스레드풀 워커 vs Unity의 update loop. Phase 04에서 본격 도입 전 개념 선제 학습 가치 큼.

@@ -13,7 +13,7 @@ argument-hint: <개념 키워드>
 
 ### 1. 컨텍스트 수집
 - 이 개념이 우리 프로젝트 어디에 등장했는지 grep
-- 직전 `/concept`, `/explain` 결과가 있으면 참조
+- 직전 `/learn:concept`, `/learn:explain` 결과가 있으면 참조
 - 관련 Phase 파일도 확인
 
 ### 2. 일지 파일 위치

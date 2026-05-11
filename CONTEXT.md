@@ -17,7 +17,7 @@
 2. **trade-off 항상 설명**. "A 골랐어요"가 아니라 "A vs B 중 A, 이유는…, 단점은…".
 3. **솔직함 우선**. 위험 미리 짚기. 마감 못 지킬 것 같으면 정직하게.
 4. **5단계 보고**. 코드 작업 끝나면 🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음.
-5. **Phase 완료 시 학습 일지 권유**. `/journal-phase` 등.
+5. **Phase 완료 시 학습 일지 권유**. `/journal:phase` 등.
 
 상세 톤 가이드: 헌법(`CLAUDE.md`) "사용자 컨텍스트" 섹션.
 
@@ -59,7 +59,7 @@
 
 ## ⏸️ 현재 멈춤 지점 (2026-05-11)
 
-**★ M1 Foundation 마일스톤 완료** (Phase 01~07 + 회귀 안전망). 다음 = **M2 First Connection 진입 결정 (옵션 B 채택)** — `/plan`으로 M2 분해 직전.
+**★ M1 Foundation 마일스톤 완료** (Phase 01~07 + 회귀 안전망). 다음 = **M2 First Connection 진입 결정 (옵션 B 채택)** — `/work:plan`으로 M2 분해 직전.
 
 ### M1 완료 요약 (디테일은 [`CONTEXT_History.md`](CONTEXT_History.md) + 각 `-DONE.md` + 노션)
 - 솔루션 부트스트랩 + DLL 빌드 파이프라인 (Phase 01)
@@ -80,7 +80,7 @@
 
 ### 다음 작업 (결정됨)
 - **M2 First Connection 진입** — 옵션 B 채택 (이전 세션 "Phase 08 vs M2" 갈래에서 결정).
-- 진행 방식: `/plan`으로 M2 분해부터 → 첫 Phase 진입.
+- 진행 방식: `/work:plan`으로 M2 분해부터 → 첫 Phase 진입.
 - Phase 02·03·04·05·06·07 학습 일지는 본인 페이스 추후.
 
 ---
@@ -156,7 +156,7 @@
 01_Phases/M{N}-{slug}/                           ← 작업 단위 ({NN}-*.md 정의 + {NN}-*-DONE.md 박제 페어)
 02_Server/, 03_Client/, 98_Shared/, 99_Tools/    ← 게임 코드
 .claude/agents/                                  ← 6개 서브에이전트
-.claude/commands/                                ← 14개 슬래시 커맨드
+.claude/commands/{learn,journal,work,session}/   ← 14개 슬래시 커맨드 (4 카테고리)
 .claude/hooks/                                   ← 3개 (validate-shared / check-authority / validate-phase-gate)
 Dawnholder.slnx                                  ← .NET 솔루션 (02_Server + 98_Shared)
 global.json                                      ← .NET SDK 핀 (10.0.203)
@@ -178,7 +178,7 @@ global.json                                      ← .NET SDK 핀 (10.0.203)
 
 ## 다음 Claude를 위한 마지막 안내
 
-1. **이 문서 + 헌법 통독 후 짧게 인지 확인**: "CONTEXT 잘 읽었어요. M1 끝났고 M2 진입 전 `/plan` 분해부터 가는 거 맞죠?"
+1. **이 문서 + 헌법 통독 후 짧게 인지 확인**: "CONTEXT 잘 읽었어요. M1 끝났고 M2 진입 전 `/work:plan` 분해부터 가는 거 맞죠?"
 2. **5단계 보고는 코드 작업 후에만** (대화/의논엔 안 씀).
 3. **사용자가 던지는 짧은 메시지**엔 짧게 공감 + 다음 액션 가볍게.
 4. **새 정보**(미팅 결과, Unity 업데이트 등)가 들어오면 즉시 재정렬.

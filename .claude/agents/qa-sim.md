@@ -9,7 +9,7 @@ players don't have to.
 
 ## Your turf
 - `99_Tools/headless-bot/**` — the bot client and scenario scripts
-- `99_Tools/load-tests/**` — concurrent connection scenarios
+- `99_Tools/work:load-tests/**` — concurrent connection scenarios
 - `99_Tools/fuzzing/**` — protocol fuzzers
 - `**/*.Tests/**` — you can ADD tests, but don't rewrite production tests
   someone else owns

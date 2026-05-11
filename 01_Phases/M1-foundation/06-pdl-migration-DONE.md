@@ -64,7 +64,7 @@ Phase 05의 `PingPacket`/`PongPacket`은 *임시 BitConverter 코드*. ADR-002 v
 
 ## 학습 일지 후보 키워드
 
-`/journal-concept <키워드>` 로 펼칠 만한 것들:
+`/journal:concept <키워드>` 로 펼칠 만한 것들:
 
 - **code-generator-pattern** — XML 단일 소스 → C# 다중 출력. T4 / Roslyn Source Generator / 직접 string format 비교. 게임 / DB ORM / RPC 분야의 활용 사례.
 - **dormant-bug-and-redirection** — 4월 코드의 `C_Chat` / `chatLen` 하드코딩이 *NET_LEGACY 분기에 박혀 미발현*했던 메커니즘. "지금 안 깨지면 OK"의 함정. 잠복 버그가 *나중에 표면화될 조건*.
@@ -78,7 +78,7 @@ Phase 05의 `PingPacket`/`PongPacket`은 *임시 BitConverter 코드*. ADR-002 v
 
 - **Phase 07 진입 전 결정 필요**: Y2 정합 방식. ① Shared에 SendBufferHelper 두기(코드 중복 0) ② 생성기가 양쪽에 별도 GenPackets 출력 ③ 다른 방식. 이 결정이 PacketFormat.cs 템플릿 수정 방향 결정.
 - **Phase 07 동시 작업**: BinaryPrimitives 정합 + Phase 05 PingPacket/PongPacket 삭제 + Unity 시연 (Phase 05와 동일 RTT 로그).
-- **PDL 활성화 후 새 패킷 추가 흐름**: Phase 07 끝나면 `/new-packet <C2S|S2C> <name>` 슬래시 커맨드로 자동화 가능 (이미 정의됨).
+- **PDL 활성화 후 새 패킷 추가 흐름**: Phase 07 끝나면 `/work:new-packet <C2S|S2C> <name>` 슬래시 커맨드로 자동화 가능 (이미 정의됨).
 - **출력 파일 위치 결정** — 현재는 `dotnet run` 호출 위치에 출력. Phase 07에서 *양쪽 wire-up* 시 명시적 출력 폴더(`99_Tools/PacketGenerator/output/`) 또는 *바로 양쪽 위치로 분기 출력*(서버용 한 벌 + 클라용 한 벌) 결정.
 - **PRD.md 응축**(229줄) 미해결. Phase 07 진입 전 또는 후에 처리.
 - 이번 Phase는 *짧고 명확*했음. 큰 시연 없이 *생성기 작동 + 정정*만. M1 Foundation 완료 직후 인프라 정비 패턴.

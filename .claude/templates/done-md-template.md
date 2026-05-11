@@ -54,7 +54,7 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
 - 증상 → 원인 → 해결 (각 한두 줄)
 
 ## 학습 일지 후보 키워드
-- /journal-concept 로 펼칠 만한 키워드들
+- /journal:concept 로 펼칠 만한 키워드들
 ```
 
 ---
@@ -64,7 +64,7 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
 - **사실 박제**, 본인 회고 X. 회고는 `learning-journal/`에서 본인이 쓰는 영역.
 - **잊히기 전에**. 5단계 보고 직후 같은 응답에서 작성.
 - **간결하게**. 학습 일지의 *베이스*이지 학습 일지 자체가 아님.
-- **검색 가능하게**. "학습 일지 후보 키워드"는 미래의 본인이 `/journal-concept`로 펼칠 단서.
+- **검색 가능하게**. "학습 일지 후보 키워드"는 미래의 본인이 `/journal:concept`로 펼칠 단서.
 - **Notion 분업 정합**. 아래 "Notion 협업 분업 원칙" 섹션 참조.
 
 ---
@@ -81,7 +81,7 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
 
 ### Notion 출력 형식 — STAR (메인) + 8단 (사고 체크리스트)
 
-**최종 출력 = STAR 4섹션 + 배운 것 3가지** — 기존 "Dawnholder 협업 히스토리" DB에 정착된 패턴. 분량 30~50줄. 자세한 STAR 명세·DB 스키마·페이지 생성 API는 [`.claude/commands/log-session.md`](../commands/log-session.md) 참조.
+**최종 출력 = STAR 4섹션 + 배운 것 3가지** — 기존 "Dawnholder 협업 히스토리" DB에 정착된 패턴. 분량 30~50줄. 자세한 STAR 명세·DB 스키마·페이지 생성 API는 [`.claude/commands/session:log.md`](../commands/session:log.md) 참조.
 
 **8단 = STAR 작성 시 빠뜨리면 안 될 사고 체크리스트** — Codex가 Phase 07 Before/After HTML에서 도출, 사용자가 "사람이 읽기 더 편하다" 판단한 항목 셋. STAR을 *형식*으로, 8단을 *항목 빠짐 체크*로 활용.
 
@@ -112,9 +112,9 @@ Codex는 STAR 4섹션 박을 때 위 8 항목이 다 들어갔나 점검 후 박
 
 ### 핸드오프 절차 (Claude → Codex)
 
-**Claude의 종료 지점 (Phase 완료 ritual)**: `-DONE.md` 박제 + git commit/push까지. **Claude는 Notion 페이지를 직접 생성하지 않는다.** (이전 `/log-session`의 Claude 직접 박기 흐름은 deprecated.)
+**Claude의 종료 지점 (Phase 완료 ritual)**: `-DONE.md` 박제 + git commit/push까지. **Claude는 Notion 페이지를 직접 생성하지 않는다.** (이전 `/session:log`의 Claude 직접 박기 흐름은 deprecated.)
 
-**Notion 박기 트리거**: 사용자가 명시 요청 (예: "노션 박아줘", `/log-session` 등). Phase 완료마다 자동 X — 사용자가 박을 가치 있다고 판단할 때만.
+**Notion 박기 트리거**: 사용자가 명시 요청 (예: "노션 박아줘", `/session:log` 등). Phase 완료마다 자동 X — 사용자가 박을 가치 있다고 판단할 때만.
 
 **Codex 호출 방식**: **Claude가 Bash 도구로 Codex CLI 호출** (사용자가 호출하는 게 아님). Codex 세션은 ClaudeDev에 **readonly** 접근 (쓰기 권한 X — ClaudeDev 원본은 Claude만 변경). 정확한 cmd 형식은 아래 "Codex CLI cmd 형식" 참조.
 
@@ -135,7 +135,7 @@ Codex는 STAR 4섹션 박을 때 위 8 항목이 다 들어갔나 점검 후 박
 - `CONTEXT.md` + `CONTEXT_History.md` ← 세션 맥락
 - `00_Document/ADR.md` ← 관련 ADR-NNN 절
 - 본 템플릿 (`.claude/templates/done-md-template.md`) ← 분업 원칙·8단 구조 사양
-- `.claude/commands/log-session.md` ← Notion DB 스키마·페이지 생성 API 명세
+- `.claude/commands/session:log.md` ← Notion DB 스키마·페이지 생성 API 명세
 
 **Codex의 책임**:
 - readonly로 위 파일 읽기 → 8단 구조로 Notion 페이지 본문 작성

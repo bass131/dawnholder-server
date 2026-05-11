@@ -40,7 +40,7 @@ Phase 05의 임시 BitConverter 코드는 *교체 가정*으로 박힌 것. ADR-
 - 임시 코드 잔재 grep 0건 (PingPacket/PongPacket 모두 사라짐)
 
 ### ➡️ 다음 스텝
-- **Phase 08 (옵션)**: PacketManager + PacketHandler 자동 dispatch 도입. 새 패킷 추가 시 *PDL.xml + 핸들러 메서드만* 작성하면 자동 등록. `/new-packet` 슬래시 커맨드 자동화.
+- **Phase 08 (옵션)**: PacketManager + PacketHandler 자동 dispatch 도입. 새 패킷 추가 시 *PDL.xml + 핸들러 메서드만* 작성하면 자동 등록. `/work:new-packet` 슬래시 커맨드 자동화.
 - **M2 First Connection** 진입 — 캐릭터 첫 이동 (input → 패킷 → 서버 검증 → snapshot). 본격 게임 로직.
 - **PRD.md 응축** (229줄, 220 초과) — 다음 세션 진입 전 처리 검토.
 
@@ -80,7 +80,7 @@ Phase 05의 임시 BitConverter 코드는 *교체 가정*으로 박힌 것. ADR-
 
 ## 메모 (다음 세션을 위한)
 
-- **PacketManager + PacketHandler (Phase 08)**: 생성기에 `--no-manager` 옵션 끄면 ServerPacketManager.cs / ClientPacketManager.cs 양쪽 분리 출력. 단 PacketHandler 클래스 *수동 작성 필요* (각 패킷마다 `Handler` 메서드). `/new-packet` 커맨드 활용.
+- **PacketManager + PacketHandler (Phase 08)**: 생성기에 `--no-manager` 옵션 끄면 ServerPacketManager.cs / ClientPacketManager.cs 양쪽 분리 출력. 단 PacketHandler 클래스 *수동 작성 필요* (각 패킷마다 `Handler` 메서드). `/work:new-packet` 커맨드 활용.
 - **bool 타입 정정 (미래)**: ToMemberType에서 bool→Boolean 매핑이 BinaryPrimitives에 없음. 첫 bool 패킷 추가 시 ReadByteFormat 패턴으로 별도 분기 추가.
 - **PRD.md 229줄 미해결** (Phase 06 후속). 다음 세션 진입 전 응축 검토.
 - **ARCHITECTURE.md 디렉토리 다이어그램** — 현재 04_ClientNet 그대로 + 98_Shared/Protocol/Generated/ 추가됨. 다음 큰 변화 시 갱신.

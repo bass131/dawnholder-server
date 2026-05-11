@@ -56,10 +56,10 @@ phases/
 
 ## 워크플로우
 
-### Phase 작성 (`/plan` 커맨드)
+### Phase 작성 (`/work:plan` 커맨드)
 
 ```
-/plan M1 (또는 구체적 목표)
+/work:plan M1 (또는 구체적 목표)
 ```
 
 → AI가 docs/ 읽고 적절한 Phase들로 쪼개서 파일 생성. 본인이 검토하고
@@ -74,9 +74,9 @@ phases/M1-foundation/01-server-bootstrap.md 시작하자
 → AI가 해당 Phase 파일을 읽고 그 범위 안에서만 작업. 끝나면 5단계 보고.
 완료 조건 충족하면 상태를 done으로.
 
-### Phase 리뷰 (`/review` 커맨드)
+### Phase 리뷰 (`/work:review` 커맨드)
 
-Phase 끝났을 때 `/review`로 헌법/ADR/테스트 준수 여부 자동 체크.
+Phase 끝났을 때 `/work:review`로 헌법/ADR/테스트 준수 여부 자동 체크.
 
 ---
 

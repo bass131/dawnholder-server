@@ -244,7 +244,7 @@ Rookiss 패턴 + Phase 06 PDL 생성기가 *자동 생성할 모양*과 정합. 
 - 코드 생성기 실행 → PingPacket/PongPacket이 *생성된 코드*로 교체
 - 새 패킷 추가 시 XML 한 줄 + 생성 명령 → 양쪽에 자동 반영
 
-> Phase 06 후 새 패킷 추가는 `/new-packet <C2S|S2C> <name>` 슬래시 커맨드로 자동화 가능.
+> Phase 06 후 새 패킷 추가는 `/work:new-packet <C2S|S2C> <name>` 슬래시 커맨드로 자동화 가능.
 
 ---
 

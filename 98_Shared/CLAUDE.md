@@ -55,7 +55,7 @@
 
 **필드 추가는 backward-compatible** — PDL.xml 끝에 추가만. 재정렬·제거는 BREAKING (Protocol.Version bump).
 
-새 패킷 추가는 `/new-packet <C_|S_> <name>` 슬래시 커맨드 (Phase 08+).
+새 패킷 추가는 `/work:new-packet <C_|S_> <name>` 슬래시 커맨드 (Phase 08+).
 
 ### Formulas
 - 순수 함수만. `DateTime.Now` 금지, seed 없는 random 금지.
