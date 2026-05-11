@@ -35,6 +35,39 @@
 ➡️ 다음 스텝 — 이어지는 작업 / 추천 1~2개 / 후속 고려사항
 ```
 
+### 코드 작업 봉투 (필수, Phase 완료 보고와 별개)
+
+`Edit` / `Write` / `MultiEdit`를 한 번이라도 호출한 응답 끝에는 **work-envelope 봉투**를 첨부합니다. 일반 대화·질문·설계 토론 응답에는 첨부하지 않습니다.
+
+봉투 형식 (코드 블록 그대로):
+
+    <!-- work-envelope: <WORK-ID> -->
+    변경: <건드린 파일 + 핵심 변경 한 줄>
+    검증: <실행한 빌드/테스트 결과 또는 미실행 사유>
+    남은 것: <TODO / 리스크 / 다음 액션>
+    학습 포인트: <사용자가 따라가야 할 개념 1줄>
+    <!-- /work-envelope -->
+
+**WORK-ID** = 현재 Phase의 slug (예: `phase05-snap-reconcile`) 또는 일반 작업 시 `ad-hoc-YYYYMMDD-주제`. 핀(`.claude/state/current-pin.txt`)·-DONE.md·학습 일지에 동일하게 박아 산출물을 그래프화 → 나중에 `grep "<WORK-ID>"` 한 방으로 한 작업의 모든 흔적 회수.
+
+**왜 봉투인가**: 5단계 보고는 Phase 완료 시만 적용되어 Phase 외 코드 작업의 검증·다음 액션 약속이 망각됨. 봉투는 *매 코드 응답*에 강제하는 미니 안전망. Phase 완료 보고는 별개 — 부분집합 아님 (Codex R2 통찰). 자세한 결정 흔적은 [ADR-018].
+
+**Stop 훅 검산**: `.claude/hooks/check-work-envelope.sh`가 transcript에서 도구 사용 여부 + 마커(`work-envelope`) + 4 헤더(`변경:` `검증:` `남은 것:` `학습 포인트:`) + WORK-ID 존재를 grep으로 확인. 누락 시 stderr 경고만(차단 X) → AI가 다음 응답에서 보강.
+
+### 작업 좌표 핀 (current-pin.txt) — 입구 안전망
+
+`.claude/state/current-pin.txt`에 현재 작업 좌표를 8~12줄로 보관. **UserPromptSubmit 훅**(`.claude/hooks/inject-current-pin.sh`)이 매 사용자 입력 직전 핀 내용을 컨텍스트 상단에 주입 → 학습 질문 끼어들어도 다음 턴에 작업 좌표 자동 복원 (헌법 사용자 컨텍스트 4번 — "Phase 중 질문 시 과정 깨짐" 페인 해소).
+
+핀 필드: `WORK-ID / PHASE / 현재 작업 / 완료 조건 / 다음 액션 / 주의할 약속 / 학습 보존 / 마지막 갱신`. 빈 템플릿은 [`.claude/templates/pin-template.txt`].
+
+**갱신 정책** (잘못된 핀 고착 방지 — Codex R3 권고):
+- Phase 시작 시 자동 생성 (`/work:plan` 호출 직후)
+- **이미 분해된 마일스톤에서 다음 Phase 진입 시** AI가 사용자 확인 후 핀을 그 Phase 좌표로 갱신 (사용자의 진입 의지 표현 — "Phase NN 시작하자" 같은 — 시점에. work:plan 갭 메우기)
+- 코드 변경 후 봉투 작성 시 AI가 **변경된 항목만** 갱신 (현재 작업 / 다음 액션)
+- 완료 조건 진척 시 AI가 사용자 확인 후 갱신
+- 주의할 약속 · 학습 보존은 사용자 수동
+- Phase 완료 시 archived 또는 cleared
+
 ### Phase 완료 시 -DONE.md 박제 (필수, 학습 일지 권유보다 먼저)
 
 Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 같은 응답에서 **AI가** 작성·commit:

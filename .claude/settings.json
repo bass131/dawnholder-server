@@ -42,6 +42,22 @@
           { "type": "command", "command": ".claude/hooks/validate-phase-gate.sh" }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/inject-current-pin.sh" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/check-work-envelope.sh" }
+        ]
+      }
     ]
   }
 }

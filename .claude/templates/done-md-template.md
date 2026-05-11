@@ -15,6 +15,7 @@
 ---
 summary: <1줄. 다음 Phase가 인용할 표준 입력. "무엇을 했고 무엇이 가능해졌는지" 압축>
 phase: {NN}-{phase-name}
+work-id: phase{NN}-{slug}   # ADR-018 합류 지점 — 봉투·핀·학습 일지와 동일 ID. grep으로 산출물 회수.
 status: done
 completed_at: {YYYY-MM-DD}
 commit: {short hash}

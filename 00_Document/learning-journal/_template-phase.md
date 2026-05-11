@@ -1,6 +1,7 @@
 # Phase NN: [Phase 제목] — 학습 일지
 
 > **작성일**: YYYY-MM-DD
+> **work-id**: phase{NN}-{slug}   ← ADR-018 합류 ID. 봉투/-DONE.md와 동일하게 박아 grep 회수 가능.
 > **Phase 파일**: `phases/M{N}-{slug}/{NN}-{phase-name}.md`
 > **소요 시간**: 예상 ?h / 실제 ?h
 > **상태**: 작성 중 / 완료 / 추가 학습 필요

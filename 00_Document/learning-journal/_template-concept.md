@@ -1,6 +1,7 @@
 # 개념: [개념명] — 학습 일지
 
 > **작성일**: YYYY-MM-DD
+> **work-id**: phase{NN}-{slug}   ← ADR-018 합류 ID (등장 Phase의 WORK-ID). 봉투/-DONE.md와 동일하게 박아 grep 회수 가능.
 > **등장 Phase**: Phase NN — [Phase 제목]
 > **이해도 자가평가**: 🟢 잘 이해함 / 🟡 대략 이해 / 🔴 표면만
 > **블로그 글로 발전?**: 예 / 아니오 / 미정

@@ -1,6 +1,7 @@
 # 트러블슈팅: [버그 한 줄 요약]
 
 > **작성일**: YYYY-MM-DD
+> **work-id**: phase{NN}-{slug}   ← ADR-018 합류 ID (발생 Phase의 WORK-ID). 봉투/-DONE.md와 동일하게 박아 grep 회수 가능.
 > **발생 Phase**: Phase NN
 > **소요 시간**: ?h
 > **재발 위험**: 🔴 높음 / 🟡 중간 / 🟢 낮음 (가드레일 추가했는지)

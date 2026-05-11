@@ -57,7 +57,7 @@
 
 ---
 
-## ⏸️ 현재 멈춤 지점 (2026-05-11)
+## ⏸️ 현재 멈춤 지점 (2026-05-11 / 12 갱신)
 
 **★ M2 Phase 05 완료 — client prediction + snap reconcile, 4/4 완료조건 wire 검증**. 다음 작업 = **Phase 06 input replay reconcile** 진입 직전.
 
@@ -74,6 +74,9 @@
 - ✅ **240Hz framerate-bound 송신 발견** (Phase 05 검증 부산물) — 클라가 매 frame 송신 시 wire rate 300-500/s, 서버 20Hz 대비 96% 낭비 + 정상 사용자가 rate-limit cheat 의심으로 잘못 분류. 임시 정정: 임계 100→500 + 윈도우당 첫1회만 로깅. 본질 fix는 Phase 06 fixed timestep accumulator.
 - ✅ **SnapThreshold 0.5→1.0 튜닝** — 검증 데이터(자연 drift 0.5 직상)가 임계 너무 빡빡함을 보여줘 1.0으로 조정. Phase 06 fixed simulation 후 다시 좁힐 여지.
 - ✅ **노션 세션 로그 박제** — Codex CLI 위임으로 STAR + 용어 풀이.
+
+### 2026-05-12 본 세션 사이드 트랙
+- ✅ **ADR-018 신규 — 하네스 망각 안전망(봉투 + 핀 + WORK-ID)** — AI 컨텍스트 디케이 진단 후 입구·출구 한 짝 안전망 + WORK-ID 합류 마커링. Codex CLI 3라운드 자문(R1 표준 봉투화 / R2 LLM self-check 금지 / R3 WORK-ID·핀 갱신 정책) 교차 검증. 6파일 신규(`current-pin.txt` / `inject-current-pin.sh` UserPromptSubmit / `check-work-envelope.sh` Stop / `pin-template.txt` 이식용 + CLAUDE.md 봉투·핀 섹션 / settings.json 훅 등록). 정합 갱신 5파일(CONTEXT.md / done-md-template.md / work:plan.md / learning-journal 3 템플릿). 후속 트랙(SessionStart 훅 / 라우팅 결정 트리)은 "**스타트 버튼 = 사용자 의지 표현이지 단순 반복 아님**" 통찰로 비채택 — 페인 분류를 단순 반복(A) / 본인 의지 표현(B) / 안전·확인 게이트(C)로 재정렬한 결과 그 둘은 B형.
 
 ### M1 완료 요약 (이전 시점, [`CONTEXT_History.md`](CONTEXT_History.md) + `-DONE.md` 참조)
 Phase 01~07 + 회귀 안전망. 솔루션 부트스트랩 / ServerCore 7파일 / 04_ClientNet Y2 분리 / Listener wire-up / framing+Ping-Pong / PacketGenerator 이주 / PDL 정합. M2 진입 전 도구대 정합도 완료.

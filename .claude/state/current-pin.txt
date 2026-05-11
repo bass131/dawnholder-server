@@ -1,0 +1,11 @@
+WORK-ID: ad-hoc-20260512-harness-forgetting-safety-net
+PHASE: ad-hoc (Phase 외 하네스 작업) — archived
+현재 작업: (완료) 봉투 + 핀 + WORK-ID 안전망 도입
+완료 조건: 7개 + cleanup 2개 (ADR.md/임시파일) + 정합 갱신 5개 (CONTEXT.md / done-md-template / work:plan 4.5 단계 / learning-journal 3 템플릿) 완료 ✅
+다음 액션: Phase 06 본 게임 작업 재개 (input replay reconcile — `01_Phases/M2-first-connection/06-input-replay-reconcile.md`) / SessionStart 훅·라우팅 트리 후속 트랙은 B형(의지 표현)으로 재분류되어 비채택
+주의할 약속:
+  - 봉투는 매 코드 응답, 5단계 보고는 Phase 완료 시만 (별개 운영)
+  - Stop Hook은 기계적 grep만 (LLM self-check 금지 — Codex R2)
+  - 핀 갱신은 "완료 조건/다음 액션 변경 시만" (잘못된 고착 방지)
+학습 보존: context decay, work-envelope, WORK-ID 마커링, UserPromptSubmit 훅, 입구·출구 안전망, 단일 리포 templates 분리
+마지막 갱신: 2026-05-12 (작업 완료 시점)

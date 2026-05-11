@@ -54,6 +54,21 @@ argument-hint: <마일스톤 또는 목표 설명>
 - ⚠️ 함정 (이 영역에서 자주 하는 실수)
 - 담당 에이전트 명시
 
+### 4.5. 핀 자동 시드 (ADR-018 입구 안전망)
+
+Phase 파일 생성 직후 `.claude/state/current-pin.txt`를 마일스톤의 **첫 Phase 좌표**로 시드 (헌법 "작업 좌표 핀" 섹션 + `.claude/templates/pin-template.txt` 참조). 시드 필드:
+
+- `WORK-ID: phase{NN}-{first-phase-slug}` ← 합류 ID. 봉투/-DONE.md/학습 일지에 동일하게 박힘
+- `PHASE: {NN}/{전체}` ← 예: `01/08`
+- `현재 작업:` 첫 Phase의 🎯 목표 한 줄
+- `완료 조건:` 첫 Phase의 ✅ 항목 수 + "0개 완료"
+- `다음 액션:` 첫 Phase의 📝 첫 체크리스트 항목
+- `주의할 약속:` 헌법 절대 원칙 중 이 Phase와 충돌 가능한 것 최대 3개
+- `학습 보존:` 첫 Phase의 📚 학습 포인트 키워드 콤마 구분
+- `마지막 갱신: {YYYY-MM-DD}`
+
+→ 시드된 직후 `UserPromptSubmit` 훅이 다음 입력부터 자동 주입. 사용자가 다른 Phase로 점프하면 그때 갱신 (헌법 갱신 정책: "완료 조건/다음 액션 변경 시만" + 사용자 확인).
+
 ### 5. 사용자에게 보고
 
 Phase 분해를 마치면 다음 형식으로 요약:
@@ -83,6 +98,8 @@ Phase 분해를 마치면 다음 형식으로 요약:
 ➡️ 추천 시작점:
    "01_Phases/M{N}-{slug}/01-{first-phase}.md 부터 시작하자"
    라고 말씀하시면 됩니다.
+
+📌 핀 시드 완료: WORK-ID=`phase{NN}-{first-phase-slug}`, 다음 입력부터 입구 훅이 작업 좌표 자동 주입.
 
 ⚠️ 주의: Phase 진행하다 막히거나 scope가 늘면, 새 Phase로 떼어내세요.
    현재 Phase에 끼워 넣지 마세요.
