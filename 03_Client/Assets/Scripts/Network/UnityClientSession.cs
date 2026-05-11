@@ -1,6 +1,7 @@
 using System;
 using System.Buffers.Binary;
 using System.Net;
+using Dawnholder.Client.Input;
 using Dawnholder.Client.Net;
 using Shared.Protocol;
 using UnityEngine;
@@ -49,6 +50,10 @@ namespace Dawnholder.Client.Network
                     HandlePong(buffer);
                     break;
 
+                case PacketID.S_EnterMap:
+                    HandleEnterMap(buffer);
+                    break;
+
                 default:
                     // 알 수 없는 ID — 클라가 받을 일 없는 게 정상. 로그만.
                     int unknownId = packetId;
@@ -56,6 +61,27 @@ namespace Dawnholder.Client.Network
                         Debug.LogWarning($"[Unity] Unknown PacketId {unknownId} — dropped"));
                     break;
             }
+        }
+
+        // Phase 03 (M2): 서버가 정한 spawn 좌표로 Player GameObject를 배치.
+        // 헌법 #1 첫 실전 — 클라는 자기 좌표를 결정하지 않는다.
+        void HandleEnterMap(ArraySegment<byte> buffer)
+        {
+            S_EnterMap pkt = new S_EnterMap();
+            pkt.Read(buffer);
+
+            int eid = pkt.entityId;
+            float x = pkt.spawnX;
+            float y = pkt.spawnY;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                Debug.Log($"[Unity] EnterMap as entity {eid} at server spawn ({x}, {y})");
+                if (LocalPlayerController.Instance != null)
+                    LocalPlayerController.Instance.SetServerPosition(new Vector3(x, y, 0f));
+                else
+                    Debug.LogWarning("[Unity] LocalPlayerController.Instance가 없음 — Player GameObject 미배치?");
+            });
         }
 
         void HandlePong(ArraySegment<byte> buffer)

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Sessions;
 
@@ -6,35 +7,61 @@ namespace Dawnholder.Server.GameServer.Maps;
 // Phase 02 (M2): 단일 GameMap actor. 모든 PlayerEntity가 이 안에 살고,
 // Tick() 호출은 단일 thread에서만 — *lock 없음*이 actor 패턴의 핵심.
 //
-// ARCHITECTURE "Map = Actor": 한 맵의 모든 mutation을 단일 thread에 가두면
-// 동시성 버그의 90%가 사라진다. 외부에서 변경 필요 시 message channel(향후 JobQueue).
+// Phase 03 (M2) 확장: IOCP 스레드(GameSession.OnConnected/Disconnected)에서
+// AddPlayer/RemovePlayer를 직접 호출하면 tick thread와 경합. 대신
+// ConcurrentQueue<Action>으로 마샬링 → Tick 시작에 drain한다.
 //
-// Phase 02는 entity 컬렉션만 가지고 매 tick "Tick #N (Δ=Xms)" 로그만 찍는다.
-// Phase 03부터 AddPlayer/RemovePlayer가 채워지고, Phase 04부터 위치 적분이 들어온다.
+// ServerCore의 JobQueue는 *첫 Push 스레드가 flush*하는 패턴이라 IOCP→tick 마샬링
+// 용도엔 부적합(IOCP 스레드가 그대로 실행). 따라서 GameMap 전용 큐를 둠.
 public class GameMap
 {
     readonly List<PlayerEntity> _players = new();
     int _nextEntityId = 1;
 
+    // 외부(IOCP 등) 스레드 → tick thread 마샬링 큐.
+    readonly ConcurrentQueue<Action> _pendingJobs = new();
+
     public IReadOnlyList<PlayerEntity> Players => _players;
 
-    // 외부에서 사용. Phase 02에선 직접 호출 없음(테스트용 보존).
-    // Phase 03부터 GameSession.OnConnected 핸들러가 JobQueue로 호출.
-    public PlayerEntity AddPlayer(GameSession? owner = null, Vector2 spawnPos = default)
+    /// <summary>
+    /// 외부 스레드에서 호출. job은 다음 Tick 시작에 tick thread에서 실행됨.
+    /// GameMap의 모든 mutation은 이 경로로만 들어와야 한다 (actor 패턴 강제).
+    /// </summary>
+    public void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
+
+    /// <summary>
+    /// tick thread에서만 호출. job 안에서 AddPlayer/RemovePlayer 같은
+    /// mutation을 안전하게 수행.
+    /// </summary>
+    public PlayerEntity AddPlayer(GameSession? owner, Vector2 spawnPos)
     {
         PlayerEntity entity = new PlayerEntity(_nextEntityId++, spawnPos, owner);
         _players.Add(entity);
         return entity;
     }
 
+    /// <summary>
+    /// tick thread에서만 호출.
+    /// </summary>
     public bool RemovePlayer(int entityId)
         => _players.RemoveAll(p => p.EntityId == entityId) > 0;
 
-    // TickScheduler가 매 50ms마다 호출. tickNumber는 서버 시작 후 누적.
-    // 이번 Phase에선 body가 비어있어도 OK (entity 0개라 할 일 없음).
+    /// <summary>
+    /// TickScheduler가 매 50ms마다 호출. 단일 thread.
+    /// </summary>
     public void Tick(long tickNumber)
     {
+        // 외부 스레드가 push한 job들을 tick thread에서 처리.
+        // 한 tick에 너무 많은 job이 쌓이면 tick duration 폭증 가능 — Phase 02 메트릭이 잡아냄.
+        while (_pendingJobs.TryDequeue(out Action? job))
+        {
+            try { job(); }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Map] pending job 예외: {ex.Message}");
+            }
+        }
+
         // Phase 04+: 각 player의 _pendingIntent를 적용해 Position 갱신.
-        // 지금은 entity 컬렉션 살아있다는 사실만으로 충분.
     }
 }

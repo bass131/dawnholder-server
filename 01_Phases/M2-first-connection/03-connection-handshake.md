@@ -1,6 +1,6 @@
 # Phase 03: 접속 핸드셰이크 — Enter/Leave 패킷
 
-> **상태**: pending
+> **상태**: done (페어: [`03-connection-handshake-DONE.md`](03-connection-handshake-DONE.md))
 > **마일스톤**: M2 First Connection
 > **예상 소요**: 2시간
 > **담당 에이전트**: netcode (+ gameplay 살짝)

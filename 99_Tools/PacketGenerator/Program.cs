@@ -173,12 +173,18 @@ namespace PacketGenerator
                     case "ushort":
                     case "int":
                     case "long":
-                    case "float":
-                    case "double":
                         memberCode += string.Format(PacketFormat.MemberFormat, memberType, memberName);
                         // ReadFormat/WriteFormat 둘 다 {0}변수명 / {1}BinaryPrimitives 메서드 / {2}sizeof 형식
                         readCode += string.Format(PacketFormat.ReadFormat, memberName, ToMemberType(memberType), memberType);
                         writeCode += string.Format(PacketFormat.WriteFormat, memberName, ToMemberType(memberType), memberType);
+                        break;
+                    case "float":
+                    case "double":
+                        // .NET Standard 2.1 호환 — BitConverter.Int32BitsToSingle 경유 (PacketFormat 주석 참조).
+                        // 현재 float만 지원. double은 추후 ReadDoubleFormat 추가 시 분기.
+                        memberCode += string.Format(PacketFormat.MemberFormat, memberType, memberName);
+                        readCode += string.Format(PacketFormat.ReadFloatFormat, memberName);
+                        writeCode += string.Format(PacketFormat.WriteFloatFormat, memberName);
                         break;
                     case "string":
                         memberCode += string.Format(PacketFormat.MemberFormat, memberType, memberName);

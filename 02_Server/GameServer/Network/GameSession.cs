@@ -1,5 +1,8 @@
 using System.Buffers.Binary;
 using System.Net;
+using System.Numerics;
+using Dawnholder.Server.GameServer.Loop;
+using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.Network;
 using Shared.Protocol;
 
@@ -8,21 +11,64 @@ namespace Dawnholder.Server.GameServer.Sessions;
 /// <summary>
 /// 게임 도메인의 한 클라이언트 세션. ServerCore의 <see cref="PacketSession"/>을 상속.
 ///
-/// **Phase 07 변경**: Phase 05의 임시 BitConverter 패킷 클래스(PingPacket/PongPacket)에서
-/// 자체 PDL이 자동 생성한 `C_Ping`/`S_Pong`로 교체. 명명은 PDL.xml 정의 그대로
-/// (camelCase 멤버, C_/S_ 접두사).
+/// **Phase 03 변경**: OnConnected/Disconnected가 GameMap actor로 마샬링하도록 진화.
+/// 헌법 #1(Server Authority): spawn 좌표는 서버가 정함 — 클라는 S_EnterMap을 받기 전엔
+/// 자기 좌표를 결정하지 않는다.
 ///
-/// 콜백은 모두 socket 워커 스레드에서 호출됨. 본 Phase에선 Console.WriteLine만 하므로
-/// 스레드 안전. 게임 로직(M2+)이 들어오면 맵별 actor 큐로 marshalling 필요
-/// (헌법 #5: 맵당 단일 스레드).
+/// 콜백은 모두 socket 워커 스레드(IOCP)에서 호출됨. GameMap mutation은 직접 하지 않고
+/// `GameMap.EnqueueJob`으로 push → tick thread에서 실행. lock 없음.
 /// </summary>
 public class GameSession : PacketSession
 {
+    // 자기 entity의 캐시. 여러 콜백(Disconnect 등)에서 정리에 필요.
+    // IOCP는 같은 세션에 OnConnected/Disconnected를 직렬 호출 → race 부재.
+    int _entityId = -1;
+
     public override void OnConnected(EndPoint endPoint)
-        => Console.WriteLine($"[GameSession] OnConnected from {endPoint}");
+    {
+        EndPoint ep = endPoint;
+        Console.WriteLine($"[GameSession] OnConnected from {ep}");
+
+        // Phase 03 (M2): 서버 권위 spawn. 마샬링을 거쳐 tick thread에서 entity 생성.
+        GameMap map = GameWorld.Instance.Map;
+        GameSession self = this;
+        map.EnqueueJob(() =>
+        {
+            // 헌법 #1 시연을 위해 spawn 좌표를 서버가 정함. 현재 (0, 0).
+            // Phase 03 검증 단계엔 (3, 0)으로 잠시 바꿔 Unity 캐릭터가 그 자리에 뜨는지
+            // 캡처로 시각 확인 완료 (DONE.md AC 섹션 참조).
+            Vector2 spawnPos = new Vector2(0f, 0f);
+            PlayerEntity entity = map.AddPlayer(self, spawnPos);
+            self._entityId = entity.EntityId;
+
+            S_EnterMap pkt = new S_EnterMap
+            {
+                entityId = entity.EntityId,
+                spawnX = entity.Position.X,
+                spawnY = entity.Position.Y
+            };
+            self.Send(pkt.Write());
+
+            Console.WriteLine(
+                $"[Map] Player {entity.EntityId} entered at ({entity.Position.X}, {entity.Position.Y})");
+        });
+    }
 
     public override void OnDisconnected(EndPoint endPoint)
-        => Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
+    {
+        EndPoint ep = endPoint;
+        Console.WriteLine($"[GameSession] OnDisconnected from {ep}");
+
+        if (_entityId < 0) return; // AddPlayer가 아직 처리 안 됐다면 정리할 게 없음
+
+        GameMap map = GameWorld.Instance.Map;
+        int eid = _entityId;
+        map.EnqueueJob(() =>
+        {
+            bool removed = map.RemovePlayer(eid);
+            Console.WriteLine($"[Map] Player {eid} left (removed={removed})");
+        });
+    }
 
     public override void OnSend(int numOfBytes)
         => Console.WriteLine($"[GameSession] OnSend {numOfBytes} bytes");
@@ -33,7 +79,6 @@ public class GameSession : PacketSession
     /// </summary>
     public override void OnRecvPacket(ArraySegment<byte> buffer)
     {
-        // buffer[2..4] = packetId (little-endian).
         ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
 
@@ -44,8 +89,6 @@ public class GameSession : PacketSession
                 break;
 
             default:
-                // 헌법 #3 (Trust Boundary): 알 수 없는 패킷은 *조용히 drop + 로그*.
-                // M2+에서 cheat-flag 테이블에 기록 추가 예정.
                 Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
                 break;
         }
@@ -56,7 +99,6 @@ public class GameSession : PacketSession
         C_Ping ping = new C_Ping();
         ping.Read(buffer);
 
-        // Pong 응답: 클라 timestamp echo + 서버 timestamp.
         S_Pong pong = new S_Pong
         {
             clientTimestampMs = ping.clientTimestampMs,

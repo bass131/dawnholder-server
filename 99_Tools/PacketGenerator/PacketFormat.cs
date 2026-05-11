@@ -319,6 +319,23 @@ for (int i = 0; i < {1}Len; i++)
 #endif
 ";
 
+        // float/double 우회 — .NET Standard 2.1엔 BinaryPrimitives.Read/WriteSingleLittleEndian이
+        // 없어 빌드 실패. BitConverter.Int32BitsToSingle / SingleToInt32Bits를 경유한다.
+        // .NET 5+ 환경(서버 .NET 10)에선 변환 비용 미미. 양쪽 어셈블리 동일 wire format.
+        //
+        // {0} : 변수 이름
+        public static string ReadFloatFormat =
+@"// {0} 읽기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+this.{0} = BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count)));
+count += sizeof(float);
+";
+        // {0} : 변수 이름
+        public static string WriteFloatFormat =
+@"// {0} 쓰기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), BitConverter.SingleToInt32Bits(this.{0}));
+count += sizeof(float);
+";
+
         // {0} : 변수 이름
         // {1} : BinaryPrimitives.Write*LittleEndian 의 * 부분 (Int16/UInt16/Int32/UInt32/Int64/UInt64/Single/Double)
         // {2} : 변수 형식 (sizeof 계산용)

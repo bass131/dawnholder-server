@@ -21,4 +21,17 @@
         <long name="clientTimestampMs"/>
         <long name="serverTimestampMs"/>
     </packet>
+
+    <!-- Phase 03 (M2): 접속 핸드셰이크. 서버가 정한 spawn 좌표로 클라 캐릭터 배치. -->
+    <packet name="S_EnterMap">
+        <int name="entityId"/>
+        <float name="spawnX"/>
+        <float name="spawnY"/>
+    </packet>
+
+    <!-- 본 Phase는 본인 1명만 — 자기 disconnect는 OnDisconnected로 처리되므로
+         이 패킷은 사실상 미사용. 향후 다른 플레이어 정리용 골격으로 박음. -->
+    <packet name="S_LeaveMap">
+        <int name="entityId"/>
+    </packet>
 </PDL>
