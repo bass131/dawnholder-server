@@ -80,9 +80,9 @@ Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 �
 - **학습/이해**: `/learn:why` `/learn:explain` `/learn:concept` `/learn:recap` `/learn:dumb-it-down`
 - **학습 일지**: `/journal:phase` `/journal:concept` `/journal:bug`
 - **작업 진행**: `/work:plan` `/work:review` `/work:new-packet` `/work:new-monster` `/work:load-test`
-- **세션 기록**: `/session:log`
+- **세션**: `/session:start` (새 세션 첫 입력 — CONTEXT.md 인지 확인) `/session:log` (세션 끝 노션 박제)
 
-전체 14개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`00_Document/commands-index.md`](00_Document/commands-index.md) 참조. 새 커맨드 추가 시 인덱스도 함께 갱신.
+전체 15개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`00_Document/commands-index.md`](00_Document/commands-index.md) 참조. 새 커맨드 추가 시 인덱스도 함께 갱신.
 
 ---
 

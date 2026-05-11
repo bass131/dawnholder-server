@@ -1,6 +1,6 @@
 # 슬래시 커맨드 빠른 참조
 
-총 **14개**. 4개 카테고리 폴더(`learn/` `journal/` `work/` `session/`)로 정리됨 (2026-05-11). 헷갈리면 아래 "비슷한 것끼리 차이" 섹션을 보세요.
+총 **15개**. 4개 카테고리 폴더(`learn/` `journal/` `work/` `session/`)로 정리됨 (2026-05-11). 헷갈리면 아래 "비슷한 것끼리 차이" 섹션을 보세요.
 
 호출 형식: `/<카테고리>:<이름>` (예: `/learn:why`, `/journal:phase`).
 
@@ -46,6 +46,7 @@
 
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
+| [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력. CONTEXT.md 읽고 톤·현재 멈춤 지점·다음 액션을 짧게 인지 확인. | (인풋 없음) |
 | [`/session:log`](../.claude/commands/session/log.md) | 세션 끝 무렵, 결정·토론·코드 변경이 있었을 때 노션 박제 트리거. Claude가 Bash로 Codex CLI 호출 → Codex가 STAR 형식으로 박음 (2026-05-11 deprecation 후 새 흐름). 명세는 Codex 환경 참조용. | (인풋 없음) |
 
 ---
@@ -77,7 +78,8 @@
 
 ```
 새 세션 시작
-  └─ /learn:recap            (현재 위치 짚기)
+  └─ /session:start          (CONTEXT.md 읽고 톤·멈춤 지점·다음 액션 인지 확인)
+        └─ /learn:recap            (필요 시 현재 위치 더 깊이 짚기)
         └─ 큰 작업이면 /work:plan <목표>   (Phase 분해)
               └─ Phase 작업 진행
                     └─ 막히면 /learn:why, /learn:explain, /learn:concept, /learn:dumb-it-down
