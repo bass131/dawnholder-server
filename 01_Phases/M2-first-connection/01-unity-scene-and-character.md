@@ -1,6 +1,6 @@
 # Phase 01: Unity 씬 + 캐릭터 GameObject (오프라인)
 
-> **상태**: pending
+> **상태**: done (페어: [`01-unity-scene-and-character-DONE.md`](01-unity-scene-and-character-DONE.md))
 > **마일스톤**: M2 First Connection
 > **예상 소요**: 1.5~2시간
 > **담당 에이전트**: client
