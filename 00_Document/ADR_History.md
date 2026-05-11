@@ -23,4 +23,5 @@
 | 2026-05-11 | ADR-014 신규 (문서 세분화 정책 — 220줄 임계 + 헌법 350줄 예외) | 사전형 문서 비대화 방지 + 헌법은 자기참조 무한 루프 차단 위해 예외 (2026-05-10 결정). |
 | 2026-05-11 | ADR-015 신규 (Post-flight 게이트 = validate-phase-gate.sh) | 자동 실행 비채택(학습 호흡), 형식 강제만 훅으로. `jha0313/harness_framework` 비교 후 결정 (2026-05-11). |
 | 2026-05-11 | ADR-016 신규 (Notion 협업 3자 분업 — Claude/Codex/본인) | 사실 박제·재편집·회고 역할 분리. 자세한 원칙은 `.claude/templates/done-md-template.md`에 영속화 (2026-05-11). |
+| 2026-05-11 | ADR-017 신규 (프로젝트 폴더 ASCII 경로 이동 — 한글 경로 영구 해결) | Phase 03·04에서 한글 경로 도구 호환성 사건 반복. ASCII 경로 이동 후 build/test/PacketGenerator 직접 실행 검증 완료. WDAC 차단(error 4551)은 별도 사건으로 명시 분리. |
 | 2026-05-11 | 변경 이력 외부화 (ADR.md → ADR_History.md) | ADR.md 220줄 임계 대응. CONTEXT_History 패턴 동일. |

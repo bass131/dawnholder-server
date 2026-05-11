@@ -59,31 +59,26 @@
 
 ## ⏸️ 현재 멈춤 지점 (2026-05-11)
 
-**★ M2 First Connection Phase 01·02·03·04 완료**. 다음 세션 첫 작업 = **한글 경로 영구 해결(폴더 이동)** → 그 뒤 **Phase 05 client prediction + snap reconcile**.
+**★ 한글 경로 영구 해결 완료(ADR-017 박힘)**. 다음 작업 = **Phase 05 client prediction + snap reconcile** 진입 직전.
 
 ### M2 진행 현황 (commit hash로 추적)
 - ✅ Phase 01 — Unity 씬 + Player/Ground/Camera (`f26fc92`)
 - ✅ Phase 02 — 20 TPS GameLoop + GameMap actor (`011bcaf`)
 - ✅ Phase 03 — 접속 핸드셰이크 (S_EnterMap) + ConcurrentQueue 마샬링 + 헌법 #1 첫 실전 (`d0b94d3`)
 - ✅ Phase 04 — C_MoveIntent + S_Snapshot + 헌법 #3 검증 골격 (lag 의도 노출) (`d9f8351`)
-- ⏳ Phase 05 — client prediction + snap reconcile (대기, *폴더 이동 후 진입*)
+- ⏳ Phase 05 — client prediction + snap reconcile (**다음 진입**)
 
 ### 2026-05-11 본 세션 사이드 트랙
-- ✅ **Unity AI MCP 셋업 완료** (`440b0f3`) — `com.unity.ai.assistant` Unity 공식 패키지(2.x pre). Bridge Running + Claude Code 등록 + 도구 8개. ADR-001 v3 의도 실현. 본 세션 Phase 03 NetworkBootstrap GameObject 자동 생성 + 검증 캡처에 적극 활용.
-- ⏳ **한글 경로 영구 해결 사전 정합** (`76388ae`) — *진행 중*. 본인이 폴더 이동 직접 실행 예정 (PowerShell Move-Item). 사후 새 세션에서 검증 + ADR-017 박을 가치.
+- ✅ **Unity AI MCP 셋업 완료** (`440b0f3`) — `com.unity.ai.assistant` Unity 공식 패키지(2.x pre). Bridge Running + Claude Code 등록 + 도구 8개. ADR-001 v3 의도 실현.
+- ✅ **한글 경로 영구 해결 완료 + ADR-017 박힘** — 폴더 ASCII 이동 (`C:\Dev\ClaudeDev`). 검증 6단 통과: `pwd` / `git status` 깨끗(except Unity `_Recovery/` 자동 생성물) / `dotnet build` 0 error / `dotnet test` 25/25 / PacketGenerator `dotnet run` 직접 실행 성공 / Burst Enable 시 hang 없이 즉시 4551 에러(컴파일러 경로 파싱 회복, WDAC 차단은 별도 사건). Burst는 다시 Disable 상태 유지.
 
 ### M1 완료 요약 (이전 시점, [`CONTEXT_History.md`](CONTEXT_History.md) + `-DONE.md` 참조)
 Phase 01~07 + 회귀 안전망. 솔루션 부트스트랩 / ServerCore 7파일 / 04_ClientNet Y2 분리 / Listener wire-up / framing+Ping-Pong / PacketGenerator 이주 / PDL 정합. M2 진입 전 도구대 정합도 완료.
 
-### 다음 세션 첫 액션 체크리스트
-1. `pwd` → `C:\Dev\ClaudeDev` 확인
-2. `git status` 깨끗
-3. `dotnet build Dawnholder.slnx` 0 error
-4. `dotnet test Dawnholder.slnx` 25/25 PASS
-5. PacketGenerator 직접 실행 (publish 우회 불필요)
-6. Unity Editor Burst Enable 재활성화 → hang 안 함
-7. 위 6개 통과 시 ADR-017 신규 박음 — "프로젝트 폴더 ASCII 경로로 이동 (한글 경로 도구 호환성)"
-8. Phase 05 진입
+### 다음 세션 첫 액션
+1. Phase 05 진입 — `/work:plan`은 이미 Phase 04 시점에 분해 끝났을 가능성 / `01_Phases/M2-first-connection/`에 Phase 05 파일 있는지 먼저 확인
+2. 없으면 그때 `/work:plan` 또는 직접 작성 결정
+3. (옵션) Phase 03·04 학습 일지 — 시간 흐르기 전 추천
 
 ### Phase 03·04 학습 일지 후보 (시간 흐르기 전)
 - ★★ `/journal:bug 한글 경로 도구 호환성 (Burst + WDAC)` — Phase 03·04 두 사건 같은 뿌리. 면접 임팩트 큼.
@@ -117,6 +112,10 @@ Phase 01~07 + 회귀 안전망. 솔루션 부트스트랩 / ServerCore 7파일 /
 - MES 별도 레포 헌법 골격 (정우 합류 직전)
 - 정우 Anthropic 학생 할인 알아보기
 
+### 도구 정책 (필요해질 때까지 보류)
+- **WDAC 미서명 DLL 차단 정책 정리** — Unity Burst Enable 시 `error code 4551` (Windows Defender Application Control). 현재는 Burst Disable로 회피 (ADR-017 트레이드오프 명시). Burst가 진짜 필요한 복잡도 시스템 도입 시점에 별도 ADR로 처리. 옵션 후보: (A) Smart App Control 끄기, (B) `BurstCache/` 경로 예외, (C) Burst self-sign + TrustedPublisher 등록.
+- **PacketGenerator PacketFormat 템플릿의 `using Shared.Protocol;` 누락** — 2026-05-11 검증 5번에서 표면화 (ADR-002 "직접 짠 코드라 버그 가능" 트레이드오프의 3번째 잠복 버그, M1 Phase 06에서 정정한 2건과 같은 부류). 현재 manager 두 파일(`02_Server/.../Generated/ServerPacketManager.cs`, `04_ClientNet/Generated/ClientPacketManager.cs`)은 한 번도 commit된 적 없고 import 안 되어 build 통과. 정정은 별도 미니 정정 Phase로 처리 — 템플릿에 `using` 추가 → 재생성 → manager 두 파일이 정상 컴파일되는지 확인.
+
 ---
 
 ## 핵심 결정 요약 (ADR 박혀있음, 빠른 참조)
@@ -130,6 +129,7 @@ Phase 01~07 + 회귀 안전망. 솔루션 부트스트랩 / ServerCore 7파일 /
 - `98_Shared/` = .NET Standard 2.1 + DLL + Embedded PDB (ADR-010)
 - ServerDev 4월 코드 부분 채택 — **시나리오 B** (ADR-011)
 - Unity 클라 socket 분리 모델 — **Y2** (ADR-012, 책임 단위 정제)
+- 프로젝트 폴더 ASCII 경로 — `C:\Dev\ClaudeDev` (ADR-017, 한글 경로 영구 해결. WDAC는 별도 보류)
 
 ### 게임/스코프
 - 두 장르 결합 MVP (RPG + 길드 타이쿤) — ADR-006
