@@ -2,7 +2,9 @@
 <!--
     Dawnholder Protocol Definition Language (단일 소스).
 
-    Phase 06 시점: Ping/Pong만. M2 진입 시 Move/Snapshot 등 추가 예정.
+    M1 Phase 06: Ping/Pong 시작.
+    M2 Phase 03: S_EnterMap/S_LeaveMap (접속 핸드셰이크) 추가.
+    M2 Phase 04: C_MoveIntent/S_Snapshot (이동) 추가.
 
     명명 규칙 (Program.cs L93 참조):
       - C_Xxx = Client → Server (서버 PacketManager에 dispatch 등록)

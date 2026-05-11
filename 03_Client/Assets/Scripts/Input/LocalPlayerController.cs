@@ -1,5 +1,6 @@
 #nullable enable
 using Dawnholder.Client.Network;
+using Dawnholder.Client.Prediction;
 using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,16 +9,19 @@ namespace Dawnholder.Client.Input
 {
     // Phase 01: 오프라인 로컬 좌우 이동 (transform 직접).
     // Phase 03: Instance singleton + SetServerPosition — S_EnterMap이 spawn 좌표 적용.
-    // Phase 04: **transform 직접 조작 제거** (헌법 #1 강제). 입력은 C_MoveIntent로만 전송.
-    //   - Update에서 자기 위치 갱신 X
-    //   - 매 frame 입력값을 sbyte로 인코딩해 서버에 송신
-    //   - 위치는 S_Snapshot 도착 시 SetServerPosition으로만 변경
+    // Phase 04: transform 직접 조작 *완전 제거* (헌법 #1 강제). 입력은 C_MoveIntent로만 전송.
+    // Phase 05: **prediction 도입** — PlayerPredictor가 매 frame 누적, transform이 따라감.
+    //   - S_EnterMap   → SetServerPosition → predictor.SetInitialPosition
+    //   - 매 frame     → predictor.Predict(input, dt) + transform = predictor.Position
+    //   - S_Snapshot   → OnServerSnapshot → predictor.OnSnapshot (threshold 비교 후 snap or 무시)
     //
-    // Phase 05+: prediction 도입 시 매 frame 자기 위치 예측 + 서버 snapshot과 비교(reconcile).
+    // 헌법 #1: prediction은 *예상*일 뿐. 서버 snapshot이 도착하면 항상 서버가 정답 — snap.
     [RequireComponent(typeof(PlayerInput))]
     public class LocalPlayerController : MonoBehaviour
     {
         public static LocalPlayerController? Instance { get; private set; }
+
+        readonly PlayerPredictor _predictor = new PlayerPredictor();
 
         Vector2 _moveInput;
         uint _localTickCounter; // Phase 06 replay reconcile 대비 (지금은 임의 누적)
@@ -29,12 +33,16 @@ namespace Dawnholder.Client.Input
 
         void Update()
         {
-            // 본인 transform 직접 갱신 *금지* (Phase 04 헌법 #1 강제).
-            // 매 frame 클라 intent 송신. 서버는 다음 tick에 적용 후 매 5 tick(=250ms)마다 snapshot.
             sbyte encoded = EncodeInputX(_moveInput.x);
             _localTickCounter++;
 
-            // UnityClientSession이 아직 connect 안 됐으면 송신 skip.
+            // Phase 05: prediction 즉시 적용 → 입력→화면 lag 0 (반응성).
+            // Time.deltaTime은 가변, 서버는 50ms 고정 → 미세 drift 필연 (snap이 가끔 발생, 의도).
+            _predictor.Predict(encoded, Time.deltaTime);
+            Vector2 predicted = _predictor.Position;
+            transform.position = new Vector3(predicted.x, predicted.y, 0f);
+
+            // C_MoveIntent 송신 (Phase 04 그대로 — 매 frame).
             UnityClientSession? session = UnityClientSession.Instance;
             if (session == null) return;
 
@@ -43,14 +51,30 @@ namespace Dawnholder.Client.Input
                 inputX = encoded,
                 clientTick = (int)_localTickCounter
             };
-            session.Send(pkt.Write());
+            // Phase 05: SendIntent 경유 — Editor에서 SimulatedLatencyMs 적용 가능.
+            session.SendIntent(pkt.Write());
         }
 
-        // S_EnterMap (Phase 03) / S_Snapshot (Phase 04)의 좌표를 적용.
-        // 헌법 #1: 위치 변경은 *오직 서버 데이터*를 통해서만.
+        // Phase 03 S_EnterMap → 서버가 정한 spawn 좌표 적용.
+        // Phase 05: transform 직접 갱신 대신 predictor 초기화 — 다음 Update에서 transform이 자동 동기.
+        // 단 spawn 첫 frame 깜빡임 방지를 위해 즉시 transform도 한 번 설정.
         public void SetServerPosition(Vector3 worldPos)
         {
-            transform.position = worldPos;
+            _predictor.SetInitialPosition(new Vector2(worldPos.x, worldPos.y));
+            transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
+        }
+
+        // Phase 05: S_Snapshot → predictor의 reconcile 판단에 위임.
+        // threshold 안이면 prediction 신뢰(아무 일도 안 일어남), 밖이면 강제 덮어쓰기 + snap 로그.
+        public void OnServerSnapshot(float serverX, float serverY, int serverTick)
+        {
+            float prevX = _predictor.Position.x;
+            bool snapped = _predictor.OnSnapshot(serverX, serverY);
+            if (snapped)
+            {
+                float dx = serverX - prevX;
+                Debug.Log($"[Snap] dx={dx:F2} at serverTick={serverTick} (count={_predictor.SnapCount})");
+            }
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.

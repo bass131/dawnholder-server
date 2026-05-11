@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dawnholder.Client.Network
@@ -30,11 +31,36 @@ namespace Dawnholder.Client.Network
     {
         static readonly ConcurrentQueue<Action> _queue = new ConcurrentQueue<Action>();
 
+        // Phase 05: 지연 작업 큐 (SimulatedLatencyMs 송신 지연 등).
+        // 동일 delay만 들어오면 FIFO 보존 → Queue 충분. 다양 delay 섞이면 priority queue 필요(미래).
+        static readonly Queue<DelayedAction> _delayedQueue = new Queue<DelayedAction>();
+        static readonly object _delayedLock = new object();
+
+        struct DelayedAction
+        {
+            public float DueTime;     // Time.realtimeSinceStartup 기준
+            public Action Action;
+        }
+
         /// <summary>워커 스레드 안전. 다음 main thread 프레임에 실행됨.</summary>
         public static void Enqueue(Action action)
         {
             if (action != null)
                 _queue.Enqueue(action);
+        }
+
+        /// <summary>
+        /// Phase 05: <paramref name="delaySeconds"/> 후 main thread에서 실행.
+        /// Editor only 송신 latency 시뮬레이션 용도. main thread에서 호출 가정(Time API).
+        /// </summary>
+        public static void EnqueueDelayed(Action action, float delaySeconds)
+        {
+            if (action == null) return;
+            float due = Time.realtimeSinceStartup + delaySeconds;
+            lock (_delayedLock)
+            {
+                _delayedQueue.Enqueue(new DelayedAction { DueTime = due, Action = action });
+            }
         }
 
         void Update()
@@ -44,6 +70,21 @@ namespace Dawnholder.Client.Network
             while (_queue.TryDequeue(out Action action))
             {
                 try { action(); }
+                catch (Exception ex) { Debug.LogException(ex); }
+            }
+
+            // 지연 큐 drain — 헤드가 due 됐을 때만 처리. FIFO + 동일 delay 가정이라 헤드만 보면 됨.
+            float now = Time.realtimeSinceStartup;
+            while (true)
+            {
+                Action delayed;
+                lock (_delayedLock)
+                {
+                    if (_delayedQueue.Count == 0) break;
+                    if (_delayedQueue.Peek().DueTime > now) break;
+                    delayed = _delayedQueue.Dequeue().Action;
+                }
+                try { delayed(); }
                 catch (Exception ex) { Debug.LogException(ex); }
             }
         }

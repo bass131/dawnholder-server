@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Phase 05 — SimulatedLatencyMs 배치 결정 (A/B/C)</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --card: #ffffff;
+    --border: #e0e0e0;
+    --text: #222;
+    --muted: #666;
+    --good: #2e7d32;
+    --warn: #ed6c02;
+    --bad:  #c62828;
+    --pick: #1565c0;
+    --pick-bg: #e3f2fd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text);
+    margin: 0; padding: 24px; line-height: 1.5;
+  }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .sub { color: var(--muted); margin-bottom: 24px; }
+
+  .cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin-bottom: 28px;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+  }
+  .card.pick {
+    border: 2px solid var(--pick); background: var(--pick-bg);
+  }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600; margin-bottom: 8px;
+  }
+  .badge.pick   { background: var(--pick); color: white; }
+  .badge.option { background: #eeeeee; color: var(--text); }
+
+  .card h2 { margin: 0 0 8px; font-size: 16px; }
+  .card .where {
+    background: #f5f5f5; padding: 6px 8px; border-radius: 4px;
+    font-family: ui-monospace, Consolas, monospace; font-size: 12px;
+    color: var(--muted); margin-bottom: 12px;
+  }
+  .card p { margin: 0 0 10px; font-size: 13px; }
+
+  table {
+    width: 100%; border-collapse: collapse; background: var(--card);
+    border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+    font-size: 13px;
+  }
+  th, td {
+    text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { background: #f5f5f5; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  td.axis { font-weight: 600; width: 22%; }
+  td.A, td.B, td.C { width: 26%; }
+
+  .mark { font-weight: 700; }
+  .mark.good { color: var(--good); }
+  .mark.mid  { color: var(--warn); }
+  .mark.bad  { color: var(--bad);  }
+
+  .verdict {
+    margin-top: 24px; background: var(--card);
+    border: 1px solid var(--border); border-left: 4px solid var(--pick);
+    padding: 16px; border-radius: 6px;
+  }
+  .verdict h3 { margin: 0 0 8px; font-size: 14px; color: var(--pick); }
+  .verdict p, .verdict li { font-size: 13px; }
+  .verdict ul { margin: 6px 0; padding-left: 18px; }
+  code {
+    background: #f0f0f0; padding: 1px 5px; border-radius: 3px;
+    font-family: ui-monospace, Consolas, monospace; font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<h1>SimulatedLatencyMs를 어디에 끼울까?</h1>
+<div class="sub">Phase 05 완료 조건 ②③ (latency 0 vs 200ms 시 snap 빈도 차이) 검증용. 셋 다 Editor only.</div>
+
+<div class="cards">
+
+  <div class="card">
+    <span class="badge option">A</span>
+    <h2>LocalPlayerController 측 큐</h2>
+    <div class="where">03_Client/Scripts/Input/<br>LocalPlayerController.cs</div>
+    <p><strong>어디서</strong>: 입력 → C_MoveIntent 송신 *직전*. timestamp 박은 큐에 enqueue, 코루틴이 200ms 후 실제 Send.</p>
+    <p><strong>영향</strong>: 이 컨트롤러가 보내는 C_MoveIntent에만.</p>
+  </div>
+
+  <div class="card pick">
+    <span class="badge pick">B · 추천</span>
+    <h2>UnityClientSession.Send 래핑</h2>
+    <div class="where">03_Client/Scripts/Network/<br>UnityClientSession.cs</div>
+    <p><strong>어디서</strong>: 세션의 Send 메서드를 wrapping. <code>#if UNITY_EDITOR</code>에서 큐 + 코루틴, 그 외엔 직통.</p>
+    <p><strong>영향</strong>: 이 세션을 통과하는 모든 송신 패킷 (C_MoveIntent + 미래 패킷 자동 적용).</p>
+  </div>
+
+  <div class="card">
+    <span class="badge option">C</span>
+    <h2>ClientNet 인프라 옵션</h2>
+    <div class="where">04_ClientNet/<br>ClientSession.cs (또는 신규)</div>
+    <p><strong>어디서</strong>: ServerCore에서 갈라진 ClientNet 어셈블리. 가장 깊은 계층.</p>
+    <p><strong>영향</strong>: 이 인프라를 쓰는 모든 코드 (다른 세션 종류 생기면 자동 적용).</p>
+  </div>
+
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>축</th>
+      <th>A · Controller</th>
+      <th>B · Session 래핑</th>
+      <th>C · ClientNet 인프라</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="axis">Phase 05 의도 적합성</td>
+      <td class="A"><span class="mark good">◉ 정확</span> — snap 빈도 보는 게 C_MoveIntent 시나리오라 직격</td>
+      <td class="B"><span class="mark good">◉ 정확</span> — 결과 동일. 위치만 한 단계 위</td>
+      <td class="C"><span class="mark good">◉ 정확</span> — 결과 동일. 위치 가장 아래</td>
+    </tr>
+    <tr>
+      <td class="axis">코드 복잡도</td>
+      <td class="A"><span class="mark good">◉ 낮음</span> — MonoBehaviour라 StartCoroutine 자연스러움. ~15줄</td>
+      <td class="B"><span class="mark good">◉ 낮음</span> — UnityClientSession도 MonoBehaviour 컨텍스트 접근 가능. ~15줄</td>
+      <td class="C"><span class="mark mid">◐ 중간</span> — 04_ClientNet엔 Unity 의존 없음. <code>UNITY_EDITOR</code> 안 통함 → 별도 플래그 필요</td>
+    </tr>
+    <tr>
+      <td class="axis">미래 재사용성 (Phase 06+ / 다른 패킷)</td>
+      <td class="A"><span class="mark bad">○ 낮음</span> — C_MoveIntent 한 컨트롤러에만. 채팅·아이템 송신은 별도</td>
+      <td class="B"><span class="mark good">◉ 좋음</span> — 세션을 통과하는 모든 송신에 자동 적용</td>
+      <td class="C"><span class="mark good">◉ 좋음</span> — B와 동일 + 다른 세션 종류에도 적용 (지금 그런 게 없음)</td>
+    </tr>
+    <tr>
+      <td class="axis">영향 범위 / 격리</td>
+      <td class="A"><span class="mark good">◉ 좁음</span> — 게임 코드 한 곳</td>
+      <td class="B"><span class="mark good">◉ 좁음</span> — 클라 네트워크 핸들러 한 곳</td>
+      <td class="C"><span class="mark mid">◐ 넓음</span> — 인프라 어셈블리 손댐. 서버 ServerCore와 분리됐지만 신중함 필요</td>
+    </tr>
+    <tr>
+      <td class="axis">헌법 / ADR 정합</td>
+      <td class="A"><span class="mark good">◉ OK</span></td>
+      <td class="B"><span class="mark good">◉ OK</span> — ADR-012(Y2) "socket 인프라는 양쪽 분리" 정합. 클라 측 손댐</td>
+      <td class="C"><span class="mark good">◉ OK</span> — 단 04_ClientNet은 "인프라"라 게임 시뮬레이션 옵션 박는 게 의미적으로 어색</td>
+    </tr>
+    <tr>
+      <td class="axis">Editor only 격리 명확성</td>
+      <td class="A"><span class="mark good">◉ 명확</span> — <code>#if UNITY_EDITOR</code> 한 곳</td>
+      <td class="B"><span class="mark good">◉ 명확</span> — <code>#if UNITY_EDITOR</code> 한 곳</td>
+      <td class="C"><span class="mark bad">○ 어색</span> — Unity 비의존 어셈블리에 Editor only 분기는 부적합</td>
+    </tr>
+    <tr>
+      <td class="axis">학습 가치</td>
+      <td class="A"><span class="mark mid">◐ 보통</span> — 코루틴 큐 패턴</td>
+      <td class="B"><span class="mark good">◉ 큼</span> — decorator/wrapper 패턴. "한 곳에서 모든 송신을 가로채기"의 직관</td>
+      <td class="C"><span class="mark good">◉ 큼</span> — 인프라 계층 옵션화. 단 의미적 적합성↓로 학습 가치가 흐려짐</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="verdict">
+  <h3>판단 — B 추천</h3>
+  <p><strong>이유</strong>:</p>
+  <ul>
+    <li><strong>Phase 05 의도엔 A·B·C 모두 통과</strong>. 차이는 "이후"에서 갈림.</li>
+    <li><strong>B가 미래 비용을 가장 적게 만듦</strong>: Phase 08 데모/M3 다인 진입 시 채팅·인벤토리 송신에도 latency 적용이 자연스러움. A로 가면 그때 옮겨야 함.</li>
+    <li><strong>C는 한 단계 과함</strong>: 04_ClientNet은 socket 인프라 레이어라 "게임 시뮬레이션 옵션"이 의미적으로 어색. 그리고 Unity 비의존 어셈블리라 <code>#if UNITY_EDITOR</code>가 안 먹음 → 별도 플래그 도입.</li>
+    <li><strong>A의 "단순함" 매력은 잠깐</strong>: 코드 양은 B와 비슷한데(~15줄) 격리가 좁아 재사용성을 일찍 잃음. Rule of three 한 번도 안 거쳐서 분리 정당성이 약함.</li>
+  </ul>
+  <p><strong>구현 메모 (B)</strong>:</p>
+  <ul>
+    <li><code>UnityClientSession</code>에 <code>SimulatedLatencyMs</code> 정적 필드 (기본 0).</li>
+    <li><code>Send()</code> 호출 시 <code>#if UNITY_EDITOR</code>로 분기 — 0이면 직통, &gt;0이면 큐에 timestamp 박고 코루틴이 후처리.</li>
+    <li>코루틴 호스트는 <code>MainThreadDispatcher</code> GameObject가 적합 (이미 있는 main-thread queue 인프라).</li>
+    <li>Inspector에서 토글 가능하면 더 좋음 (옵션, 사용자가 원하면 추가).</li>
+  </ul>
+</div>
+
+</body>
+</html>

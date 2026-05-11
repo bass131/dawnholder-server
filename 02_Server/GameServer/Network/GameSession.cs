@@ -21,11 +21,16 @@ public class GameSession : PacketSession
 {
     int _entityId = -1;
 
-    // Phase 04: rate-limit 골격 (헌법 #3). 1초 슬라이딩 윈도우.
-    // 차단은 안 함 (Phase 05+에서 정책 결정). 일단 *기록*만 — 보안 일반 원칙.
-    const int IntentRateLimitPerSecond = 100;
+    // Phase 04: rate-limit 골격 (헌법 #3). 1초 fixed 윈도우 (sliding 아님 — 학습 노트).
+    // Phase 05 조정 (2026-05-11):
+    //   - 임계값 100 → 500. 240Hz 모니터 사용자의 정상 wire rate가 ~300-500/s라 100은 너무 빡빡.
+    //     framerate-bound 송신이 본질 문제 — Phase 06 fixed simulation에서 ~20/s로 정상화 예정.
+    //   - 로그 폭주 차단: 윈도우당 *최초 1회만* 출력. 매 패킷마다 [Cheat] 1500줄 폭주 X.
+    // 차단은 여전히 안 함 (Phase 05+에서 정책 결정). 기록만.
+    const int IntentRateLimitPerSecond = 500;
     readonly Stopwatch _rateLimitWindow = Stopwatch.StartNew();
     int _intentCountInWindow;
+    bool _rateLimitLoggedThisWindow;
 
     public override void OnConnected(EndPoint endPoint)
     {
@@ -118,18 +123,20 @@ public class GameSession : PacketSession
         C_MoveIntent pkt = new C_MoveIntent();
         pkt.Read(buffer);
 
-        // Rate-limit 윈도우 갱신 (1초 슬라이딩).
+        // Rate-limit 윈도우 갱신 (1초 fixed).
         if (_rateLimitWindow.ElapsedMilliseconds >= 1000)
         {
             _rateLimitWindow.Restart();
             _intentCountInWindow = 0;
+            _rateLimitLoggedThisWindow = false;
         }
         _intentCountInWindow++;
-        if (_intentCountInWindow > IntentRateLimitPerSecond)
+        if (_intentCountInWindow > IntentRateLimitPerSecond && !_rateLimitLoggedThisWindow)
         {
-            // *차단 X, 기록 O* — Phase 05+에서 정책 결정.
+            // *차단 X, 기록 O* — Phase 05+에서 정책 결정. 윈도우당 최초 1회만 출력 (폭주 방지).
             Console.WriteLine(
-                $"[Cheat] Player {_entityId}: intent rate {_intentCountInWindow}/s > {IntentRateLimitPerSecond}");
+                $"[Cheat] Player {_entityId}: intent rate exceeded {IntentRateLimitPerSecond}/s (first warning this window)");
+            _rateLimitLoggedThisWindow = true;
             // 그래도 처리 진행 (Phase 04는 기록만).
         }
 

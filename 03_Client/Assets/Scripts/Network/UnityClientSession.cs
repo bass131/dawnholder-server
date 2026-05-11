@@ -24,7 +24,37 @@ namespace Dawnholder.Client.Network
         // 일회 설정. NetworkBootstrap이 connect 콜백에서 본 객체를 만들 때 등록.
         public static UnityClientSession? Instance { get; private set; }
 
+        // Phase 05: Editor only 송신 latency 시뮬레이션.
+        //   0이면 직통 (Release/일반 Play 동작).
+        //   >0이면 SendIntent 경로에 한해 N ms 지연 후 실제 Send.
+        //   값 변경은 코드 수정 후 Play 재시작 (Inspector 노출은 미래 옵션).
+        //   완료 조건 ②③ 검증: 0 → snap 분당 5회 미만 / 200 → snap 빈도 증가 + 점프 시각 확인.
+#if UNITY_EDITOR
+        public static int SimulatedLatencyMs = 0;
+#endif
+
         public UnityClientSession() => Instance = this;
+
+        /// <summary>
+        /// Phase 05: 입력 intent 송신용 wrapper. Editor에선 SimulatedLatencyMs 적용.
+        /// Release/일반 Play에선 Send 직통 — 컴파일 시 분기 사라짐(<c>#if UNITY_EDITOR</c>).
+        ///
+        /// 본 Phase에선 LocalPlayerController가 C_MoveIntent를 이 경로로 보냄.
+        /// 다른 패킷(Ping 등)은 그대로 Send 직통 — RTT 측정 시 latency 영향 분리 가능.
+        /// </summary>
+        public void SendIntent(ArraySegment<byte> buf)
+        {
+#if UNITY_EDITOR
+            if (SimulatedLatencyMs > 0)
+            {
+                // buf는 GenPackets.Write()가 매번 새로 할당한 byte[]라 큐 보존 안전(corruption X).
+                ArraySegment<byte> captured = buf;
+                MainThreadDispatcher.EnqueueDelayed(() => Send(captured), SimulatedLatencyMs / 1000f);
+                return;
+            }
+#endif
+            Send(buf);
+        }
 
         public override void OnConnected(EndPoint endPoint)
         {
@@ -99,25 +129,24 @@ namespace Dawnholder.Client.Network
             });
         }
 
-        // Phase 04: 서버가 권위로 결정한 좌표 적용. prediction *없음* → 매 250ms 스냅.
-        // Phase 06+에서 LastAckedClientTick + input replay로 부드럽게 진화.
+        // Phase 04: 서버 권위 좌표 적용. prediction 없음 → 매 250ms 스냅 (lag 체감).
+        // Phase 05: prediction 도입 → SetServerPosition 직접 호출 X.
+        //   OnServerSnapshot에 위임 → predictor가 threshold 비교 후 snap or 무시.
+        //   매 snapshot 로그는 폐기 (250ms × 다인 → 폭주). snap 발생 시에만 LocalPlayerController가 로깅.
+        // Phase 06+: lastAckedClientTick + input replay로 snap → 부드러운 reconcile 진화.
         void HandleSnapshot(ArraySegment<byte> buffer)
         {
             S_Snapshot pkt = new S_Snapshot();
             pkt.Read(buffer);
 
-            int eid = pkt.entityId;
             float x = pkt.x;
             float y = pkt.y;
             int sTick = pkt.serverTick;
 
             MainThreadDispatcher.Enqueue(() =>
             {
-                // 로그는 verbose 줄이기 위해 5초마다 1번 같은 패턴 가능하지만,
-                // Phase 04는 검증 단계라 매 snapshot 로그 — lag 체감 확인용.
-                Debug.Log($"[Unity] Snapshot entity={eid} pos=({x}, {y}) serverTick={sTick}");
                 if (LocalPlayerController.Instance != null)
-                    LocalPlayerController.Instance.SetServerPosition(new Vector3(x, y, 0f));
+                    LocalPlayerController.Instance.OnServerSnapshot(x, y, sTick);
             });
         }
 
