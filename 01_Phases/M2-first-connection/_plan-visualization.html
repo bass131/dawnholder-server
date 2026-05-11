@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>M2 First Connection — Phase 분해 시각화</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Pretendard', -apple-system, 'Segoe UI', 'Malgun Gothic', sans-serif;
+    background: #0f1419;
+    color: #e6e6e6;
+    padding: 40px 20px;
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: #fff;
+    border-bottom: 2px solid #3a3a3a;
+    padding-bottom: 12px;
+  }
+  .subtitle {
+    color: #888;
+    margin-bottom: 40px;
+    font-size: 15px;
+  }
+  h2 {
+    font-size: 20px;
+    margin: 48px 0 20px;
+    color: #fff;
+    border-left: 4px solid #4fc3f7;
+    padding-left: 12px;
+  }
+  h3 { font-size: 16px; margin: 24px 0 12px; color: #ddd; }
+  p { margin-bottom: 12px; color: #ccc; font-size: 14px; }
+  code {
+    background: #1e242b;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+    color: #f48fb1;
+  }
+
+  /* === Agent color palette === */
+  .agent-client    { --color: #4fc3f7; --bg: #0d3a52; }
+  .agent-gameplay  { --color: #81c784; --bg: #1b3a1f; }
+  .agent-netcode   { --color: #ffb74d; --bg: #4a3010; }
+  .agent-shared    { --color: #ba68c8; --bg: #3a1f48; }
+  .agent-qa        { --color: #e57373; --bg: #4a1f1f; }
+
+  /* === Dependency graph === */
+  .graph {
+    background: #161b22;
+    border: 1px solid #2a2f36;
+    border-radius: 8px;
+    padding: 32px 24px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+  }
+  .graph-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: min-content;
+  }
+  .node {
+    background: var(--bg);
+    border: 2px solid var(--color);
+    border-radius: 8px;
+    padding: 12px 14px;
+    min-width: 130px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .node .num { font-size: 11px; color: var(--color); font-weight: 700; letter-spacing: 1px; }
+  .node .title { font-size: 13px; color: #fff; margin-top: 4px; font-weight: 500; }
+  .node .agent {
+    font-size: 10px;
+    color: var(--color);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.85;
+  }
+  .arrow {
+    color: #555;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .branch {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .branch-line {
+    width: 30px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .branch-line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    background: #555;
+  }
+  .branch-line.top::after,
+  .branch-line.bottom::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    width: 2px;
+    background: #555;
+  }
+  .branch-line.top::after    { bottom: 50%; height: 32px; }
+  .branch-line.bottom::after { top: 50%;    height: 32px; }
+
+  /* === Phase cards === */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: #161b22;
+    border-left: 4px solid var(--color);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .card-id {
+    color: var(--color);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .card-time {
+    color: #888;
+    font-size: 12px;
+  }
+  .card-title {
+    color: #fff;
+    font-size: 15px;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .card-outcome {
+    color: #aaa;
+    font-size: 13px;
+    border-top: 1px solid #2a2f36;
+    padding-top: 8px;
+    margin-top: 8px;
+  }
+  .card-outcome::before {
+    content: '✓ 끝나면: ';
+    color: var(--color);
+    font-weight: 600;
+  }
+  .card-tag {
+    display: inline-block;
+    background: var(--bg);
+    color: var(--color);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-right: 4px;
+  }
+
+  /* === Insight callouts === */
+  .insights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .insight {
+    background: linear-gradient(135deg, #1a2733 0%, #161b22 100%);
+    border: 1px solid #2a3a4a;
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .insight-label {
+    display: inline-block;
+    background: #4fc3f7;
+    color: #0f1419;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+  .insight-title { color: #fff; font-size: 14px; margin-bottom: 6px; font-weight: 600; }
+  .insight-body { color: #bbb; font-size: 13px; }
+  .insight-body strong { color: #ffd54f; }
+
+  /* === Trade-off table === */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #161b22;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  th, td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #2a2f36;
+    font-size: 13px;
+  }
+  th {
+    background: #1e242b;
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  tr:last-child td { border-bottom: none; }
+  .pick { background: #1b3a1f; }
+  .pick td:first-child { color: #81c784; font-weight: 700; }
+  td.pro { color: #81c784; }
+  td.con { color: #e57373; }
+
+  /* === Legend === */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #161b22;
+    border-radius: 6px;
+    margin-bottom: 24px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #aaa;
+  }
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color);
+  }
+
+  .footnote {
+    color: #666;
+    font-size: 12px;
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #2a2f36;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>M2 First Connection — Phase 분해 시각화</h1>
+  <p class="subtitle">8개 Phase. 의존성·담당 영역·"왜 이 순서인지" 한눈에.</p>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item agent-client"><span class="legend-dot"></span> client (Unity)</div>
+    <div class="legend-item agent-gameplay"><span class="legend-dot"></span> gameplay (서버 로직)</div>
+    <div class="legend-item agent-netcode"><span class="legend-dot"></span> netcode (패킷·세션)</div>
+    <div class="legend-item agent-shared"><span class="legend-dot"></span> shared (공유 공식)</div>
+    <div class="legend-item agent-qa"><span class="legend-dot"></span> qa-sim (검증)</div>
+  </div>
+
+  <!-- =================== 1. Dependency Graph =================== -->
+  <h2>1. 의존성 그래프</h2>
+  <p>화살표 방향 = "앞이 끝나야 뒤가 가능". <strong>01과 02는 병렬 가능</strong> (서로 의존 X).</p>
+
+  <div class="graph">
+    <div class="graph-row">
+      <div class="branch">
+        <div class="node agent-client">
+          <div class="num">01</div>
+          <div class="title">Unity 씬 + 캐릭터</div>
+          <div class="agent">client</div>
+        </div>
+        <div class="node agent-gameplay">
+          <div class="num">02</div>
+          <div class="title">서버 GameLoop</div>
+          <div class="agent">gameplay</div>
+        </div>
+      </div>
+      <div class="branch">
+        <div class="branch-line top"></div>
+        <div class="branch-line bottom"></div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node agent-netcode">
+        <div class="num">03</div>
+        <div class="title">접속 핸드셰이크</div>
+        <div class="agent">netcode</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node agent-netcode">
+        <div class="num">04</div>
+        <div class="title">Intent + Snapshot</div>
+        <div class="agent">netcode</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node agent-client">
+        <div class="num">05</div>
+        <div class="title">Prediction (snap)</div>
+        <div class="agent">client</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node agent-client">
+        <div class="num">06</div>
+        <div class="title">Replay reconcile</div>
+        <div class="agent">client</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node agent-gameplay">
+        <div class="num">07</div>
+        <div class="title">중력 + 점프</div>
+        <div class="agent">gameplay</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node agent-qa">
+        <div class="num">08</div>
+        <div class="title">회귀 + 데모</div>
+        <div class="agent">qa-sim</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== 2. 왜 이 순서? =================== -->
+  <h2>2. 왜 이 순서인가</h2>
+
+  <div class="insights">
+    <div class="insight">
+      <span class="insight-label">병렬</span>
+      <div class="insight-title">01 + 02 동시 시작 가능</div>
+      <div class="insight-body">
+        01(Unity 캐릭터 로컬 이동)과 02(서버 tick 루프)는 <strong>서로 의존 X</strong>.
+        학부생 페이스라 순차로 가도 되지만, 막히면 다른 쪽 먼저 진행 가능한 안전판.
+      </div>
+    </div>
+
+    <div class="insight">
+      <span class="insight-label">필수 선행</span>
+      <div class="insight-title">03 핸드셰이크가 04 앞에</div>
+      <div class="insight-body">
+        04(이동 패킷)이 의미 있으려면 "서버에 내 entity 존재 + 좌표 합의" 상태가
+        먼저 필요. 03 빼면 "<strong>누구의</strong> 좌표를 옮기는 거지?"부터 모호.
+      </div>
+    </div>
+
+    <div class="insight">
+      <span class="insight-label">의도된 한계 노출</span>
+      <div class="insight-title">04는 prediction 없이 (lag 체감)</div>
+      <div class="insight-body">
+        키 누르면 ~250ms 후 움직임 → "이거 느려요"를 본인 눈으로 보게. 그 고통이
+        <strong>05의 동기 부여</strong>. 학습 모드의 핵심 패턴.
+      </div>
+    </div>
+
+    <div class="insight">
+      <span class="insight-label">면접 무기</span>
+      <div class="insight-title">05 (snap) → 06 (replay) 분리</div>
+      <div class="insight-body">
+        "처음엔 snap으로 했는데 점프 보이길래 replay로 진화시켰어요" 서사를 위해
+        <strong>일부러 두 Phase로</strong>. 합치면 그냥 "구현했어요"가 됨.
+      </div>
+    </div>
+
+    <div class="insight">
+      <span class="insight-label">변수 통제</span>
+      <div class="insight-title">07 점프를 마지막에서 두 번째로</div>
+      <div class="insight-body">
+        점프는 <strong>중력 + ground 충돌 + state machine</strong>이 한 번에 옴.
+        좌우 이동이 완전히 안정된 다음 얹어야 디버깅 변수가 적음.
+      </div>
+    </div>
+
+    <div class="insight">
+      <span class="insight-label">증명 영역</span>
+      <div class="insight-title">08을 별 Phase로 분리</div>
+      <div class="insight-body">
+        봇 회귀, p99 측정, 영상 캡처는 <strong>코드 작성이 아니라 증명</strong>.
+        영역(qa-sim) 달라서 같은 Phase에 끼우면 컨텍스트 스위칭 비용 큼.
+        M1 Phase 07 후속 패턴 재사용.
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== 3. Phase 상세 카드 =================== -->
+  <h2>3. Phase 상세 — 각 Phase 끝에 무엇이 보이는가</h2>
+
+  <div class="cards">
+    <div class="card agent-client">
+      <div class="card-head">
+        <span class="card-id">PHASE 01</span>
+        <span class="card-time">1.5~2h</span>
+      </div>
+      <div class="card-title">Unity 씬 + 캐릭터 GameObject</div>
+      <div><span class="card-tag">client</span></div>
+      <div class="card-outcome">A/D 키로 캐릭터 좌우 이동. 네트워크 X, 로컬만.</div>
+    </div>
+
+    <div class="card agent-gameplay">
+      <div class="card-head">
+        <span class="card-id">PHASE 02</span>
+        <span class="card-time">2~3h</span>
+      </div>
+      <div class="card-title">서버 GameLoop 20 TPS</div>
+      <div><span class="card-tag">gameplay</span></div>
+      <div class="card-outcome">콘솔에 50ms마다 "Tick #N" 안정 출력. drift &lt; 5ms.</div>
+    </div>
+
+    <div class="card agent-netcode">
+      <div class="card-head">
+        <span class="card-id">PHASE 03</span>
+        <span class="card-time">2h</span>
+      </div>
+      <div class="card-title">접속 핸드셰이크</div>
+      <div><span class="card-tag">netcode</span></div>
+      <div class="card-outcome">Unity Play 시 서버가 정한 좌표로 spawn. 헌법 #1 첫 실전.</div>
+    </div>
+
+    <div class="card agent-netcode">
+      <div class="card-head">
+        <span class="card-id">PHASE 04</span>
+        <span class="card-time">2.5~3h</span>
+      </div>
+      <div class="card-title">C_MoveIntent + S_Snapshot</div>
+      <div><span class="card-tag">netcode</span><span class="card-tag">gameplay</span></div>
+      <div class="card-outcome">키 → 250ms 후 움직임. lag 의도 노출. cheat 패킷 차단.</div>
+    </div>
+
+    <div class="card agent-client">
+      <div class="card-head">
+        <span class="card-id">PHASE 05</span>
+        <span class="card-time">2h</span>
+      </div>
+      <div class="card-title">Client prediction + snap</div>
+      <div><span class="card-tag">client</span></div>
+      <div class="card-outcome">입력 즉시 반응. snapshot 불일치 시 snap (의도된 점프 노출).</div>
+    </div>
+
+    <div class="card agent-client">
+      <div class="card-head">
+        <span class="card-id">PHASE 06</span>
+        <span class="card-time">2~3h</span>
+      </div>
+      <div class="card-title">Input replay reconcile</div>
+      <div><span class="card-tag">client</span><span class="card-tag">shared</span></div>
+      <div class="card-outcome">lag 200ms에서도 snap-점프 안 보임. 면접 무기 1순위.</div>
+    </div>
+
+    <div class="card agent-gameplay">
+      <div class="card-head">
+        <span class="card-id">PHASE 07</span>
+        <span class="card-time">2.5~3h</span>
+      </div>
+      <div class="card-title">중력 + 점프</div>
+      <div><span class="card-tag">gameplay</span><span class="card-tag">client</span></div>
+      <div class="card-outcome">사이드스크롤 좌우 + 점프 완성. Shared/Physics.cs 단일 출처.</div>
+    </div>
+
+    <div class="card agent-qa">
+      <div class="card-head">
+        <span class="card-id">PHASE 08</span>
+        <span class="card-time">2h</span>
+      </div>
+      <div class="card-title">회귀 + 데모 영상 + p99</div>
+      <div><span class="card-tag">qa-sim</span></div>
+      <div class="card-outcome">봇 100회 안정, p99 &lt; 10ms, 60초 데모 영상. M2 증명.</div>
+    </div>
+  </div>
+
+  <!-- =================== 4. 대안 비교 =================== -->
+  <h2>4. 만약 다르게 했다면 — trade-off</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>방식</th>
+        <th>장점</th>
+        <th>단점</th>
+        <th>왜 안 골랐나</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>대안 A — 5개로 응축<br><small>(01+02, 05+06, 04+07 묶기)</small></td>
+        <td class="pro">호흡 짧음. 진도 빨라 보임.</td>
+        <td class="con">변수 너무 많이 동시 → 디버깅 미궁. prediction 진화 서사 사라짐.</td>
+        <td>체감 시간은 비슷하거나 더 김(디버깅). 면접 무기 약함.</td>
+      </tr>
+      <tr>
+        <td>대안 B — 15개로 잘게<br><small>(패킷마다, 검증마다 따로)</small></td>
+        <td class="pro">매번 만족감. 막힐 가능성 거의 0.</td>
+        <td class="con">데모 누적 느림. 5단계 보고 + DONE 박제 의식 비용 폭증.</td>
+        <td>캡스톤 1 fallback 위험. 학습 호흡 너무 잘게 잘림.</td>
+      </tr>
+      <tr>
+        <td>대안 C — 기능 묶음<br><small>(좌우+점프+prediction 한 번에)</small></td>
+        <td class="pro">일반 게임 회사 개발 흐름.</td>
+        <td class="con">"prediction 왜 필요?"를 경험으로 알 기회 사라짐.</td>
+        <td>학습 모드엔 부적합. 본인 처음 만드는 영역이라 학습 손실 큼.</td>
+      </tr>
+      <tr class="pick">
+        <td>✅ 우리 — 8개</td>
+        <td class="pro">캡스톤 fallback 안전 + 면접 서사 누적 둘 다 잡음.</td>
+        <td class="con">Phase 수 중간 → 호흡이 길게 느껴질 수도.</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- =================== 5. 누적 데모 =================== -->
+  <h2>5. 매 Phase 끝에 무엇이 시각적으로 누적되는가</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:80px">끝 시점</th>
+        <th>화면에 보이는 것</th>
+        <th>면접에서 말할 수 있는 것</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>01</strong></td><td>Unity 캐릭터가 좌우로 움직임 (오프라인)</td><td>Unity Input System 활용</td></tr>
+      <tr><td><strong>02</strong></td><td>서버 콘솔에 tick 로그 흐름</td><td>20 TPS fixed tick + drift 보정 직접 구현</td></tr>
+      <tr><td><strong>03</strong></td><td>Unity 캐릭터가 서버 좌표에 spawn</td><td>Server Authority 실전 적용</td></tr>
+      <tr><td><strong>04</strong></td><td>네트워크 통해 움직임 (lag 있음)</td><td>Intent vs State 분리, Trust Boundary</td></tr>
+      <tr><td><strong>05</strong></td><td>즉시 반응 + 가끔 점프 (snap)</td><td>Client prediction의 첫 형태</td></tr>
+      <tr><td><strong>06</strong></td><td>lag 환경에서도 부드러움</td><td>Input replay reconciliation (Source 엔진 패턴)</td></tr>
+      <tr><td><strong>07</strong></td><td>좌우 + 점프 (사이드스크롤다움)</td><td>결정론적 물리, Shared 공식 패턴</td></tr>
+      <tr><td><strong>08</strong></td><td>봇 자동 시나리오 + 60초 데모 영상</td><td>tick p99 측정, 회귀 안전망 설계</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footnote">
+    각 Phase의 상세는 같은 폴더의 <code>0N-*.md</code> 파일 참조.
+    완료 시 <code>0N-*-DONE.md</code> 박제(AI 작성) + <code>/journal:phase</code> 권유.
+  </div>
+
+</div>
+</body>
+</html>
