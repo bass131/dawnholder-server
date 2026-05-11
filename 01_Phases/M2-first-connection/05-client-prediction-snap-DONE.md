@@ -3,7 +3,7 @@ summary: Client-side prediction(PlayerPredictor) + snap reconcile 도입. 클라
 phase: 05-client-prediction-snap
 status: done
 completed_at: 2026-05-11
-commit: (pending)
+commit: b02df49
 ---
 
 # Phase 05 — Client prediction + snap reconcile 완료 박제
