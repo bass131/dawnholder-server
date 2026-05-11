@@ -79,8 +79,8 @@
 - ✅ **CONTEXT 응축** (225 → 본 응축본): M1 완료 시점 정책 부합.
 
 ### 다음 작업 (결정됨)
-- **M2 First Connection 진입** — 옵션 B 채택 (이전 세션 "Phase 08 vs M2" 갈래에서 결정).
-- 진행 방식: `/work:plan`으로 M2 분해부터 → 첫 Phase 진입.
+- **M2 First Connection 진행 중** — Phase 01·02 ✅ 완료 (commit `f26fc92`, `011bcaf`). 다음 = **Phase 03 접속 핸드셰이크** (Enter/Leave 패킷, `S_EnterMap`).
+- 사이드 트랙 ✅: **Unity AI MCP 셋업 완료** (2026-05-11) — `com.unity.ai.assistant` Unity 공식 패키지(2.x pre). Bridge Running + Claude Code 등록 + 도구 8개(Scene/Camera/Console/RunCommand/AssetGen/Shader) 사용 가능. ADR-001 v3 의도 실현. CoplayDev 서드파티는 fallback으로 보류.
 - Phase 02·03·04·05·06·07 학습 일지는 본인 페이스 추후.
 
 ---
@@ -99,9 +99,6 @@
 - **게이트 ①·③ (보류)**: 게이트 ②(Post-flight) 실전 1회 검증 후 ① Pre-flight(Phase 시작 의식) → ③ Blocked 명시화 순으로 도입 검토.
 - **TDD 강제 영역 결정**: 헌법 6번째 원칙으로 박을지, ADR로 박을지. "엄격 vs 미루기" 갈등 인지 중.
 - **하네스 정리 점검** (비대화 우려 후속): 슬래시 14개/서브에이전트 6개 중 실사용 빈도 낮은 것 가지치기. `CONTEXT.md` vs `CONTEXT_History.md` vs `-DONE.md` 역할 중복 점검.
-
-### Phase 02 끝난 뒤 (M2 진행 중)
-- **Unity AI MCP 셋업** (2026-05-11 결정) — ADR-001 v3 시너지 활성화. Phase 01은 손 클릭으로 끝(학습 가치), Phase 02는 서버 작업이라 Unity 안 건드림 → 그 공백에 셋업. Phase 03부터 PDL 갱신 + 컴포넌트 wire-up 반복 구간에서 진가. 옵션 조사·설치는 그 시점에.
 
 ### 학습 마라톤 시작 전 (~6월 말)
 - `00_Document/TEAM.md` (미팅 결과 박제)
