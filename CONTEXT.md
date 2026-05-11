@@ -79,8 +79,9 @@
 - ✅ **CONTEXT 응축** (225 → 본 응축본): M1 완료 시점 정책 부합.
 
 ### 다음 작업 (결정됨)
-- **M2 First Connection 진행 중** — Phase 01·02 ✅ 완료 (commit `f26fc92`, `011bcaf`). 다음 = **Phase 03 접속 핸드셰이크** (Enter/Leave 패킷, `S_EnterMap`).
-- 사이드 트랙 ✅: **Unity AI MCP 셋업 완료** (2026-05-11) — `com.unity.ai.assistant` Unity 공식 패키지(2.x pre). Bridge Running + Claude Code 등록 + 도구 8개(Scene/Camera/Console/RunCommand/AssetGen/Shader) 사용 가능. ADR-001 v3 의도 실현. CoplayDev 서드파티는 fallback으로 보류.
+- **M2 First Connection 진행 중** — Phase 01·02·03·04 ✅ 완료 (commit `f26fc92`, `011bcaf`, `d0b94d3`, `d9f8351`). 다음 = **★ 한글 경로 영구 해결(폴더 이동)** → 그 뒤 **Phase 05 client prediction + snap reconcile**.
+- 사이드 트랙 ✅: **Unity AI MCP 셋업 완료** (2026-05-11) — `com.unity.ai.assistant` Unity 공식 패키지(2.x pre). Bridge Running + Claude Code 등록 + 도구 8개(Scene/Camera/Console/RunCommand/AssetGen/Shader) 사용 가능. ADR-001 v3 의도 실현.
+- 사이드 트랙 ⏳ **진행 중**: **한글 경로(`바탕 화면`) → `C:\Dev\ClaudeDev` 이동**. M2 Phase 03(Burst DLL 로드 hang) + Phase 04(WDAC가 .NET 어셈블리 차단 0x800711C7) 두 사건 = 같은 뿌리. 두 문서/DONE.md에 박혀있음. 영구 해결 결정.
 - Phase 02·03·04·05·06·07 학습 일지는 본인 페이스 추후.
 
 ---
