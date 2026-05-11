@@ -59,30 +59,38 @@
 
 ## ⏸️ 현재 멈춤 지점 (2026-05-11)
 
-**★ M1 Foundation 마일스톤 완료** (Phase 01~07 + 회귀 안전망). 다음 = **M2 First Connection 진입 결정 (옵션 B 채택)** — `/work:plan`으로 M2 분해 직전.
+**★ M2 First Connection Phase 01·02·03·04 완료**. 다음 세션 첫 작업 = **한글 경로 영구 해결(폴더 이동)** → 그 뒤 **Phase 05 client prediction + snap reconcile**.
 
-### M1 완료 요약 (디테일은 [`CONTEXT_History.md`](CONTEXT_History.md) + 각 `-DONE.md` + 노션)
-- 솔루션 부트스트랩 + DLL 빌드 파이프라인 (Phase 01)
-- ServerCore 7파일 정착 (Phase 02)
-- `04_ClientNet/` 신작 + Unity F12 ReadOnly 검증 (Phase 03, ADR-012 Y2 분리)
-- Listener wire-up + 양쪽 OnConnected 시연 (Phase 04)
-- framing(`[size(2)][packetId(2)][payload]`) + Ping/Pong 양방향 (Phase 05) → **영상 시연 가능한 첫 데모**
-- PacketGenerator 이주 + 하드코딩 버그 2건 정정 (Phase 06)
-- PDL 정합 + Phase 05 임시 코드 교체 + ADR-012 책임 단위 진화 (Phase 07)
-- C_Ping/S_Pong 라운드트립 회귀 안전망 (Phase 07 후속)
+### M2 진행 현황 (commit hash로 추적)
+- ✅ Phase 01 — Unity 씬 + Player/Ground/Camera (`f26fc92`)
+- ✅ Phase 02 — 20 TPS GameLoop + GameMap actor (`011bcaf`)
+- ✅ Phase 03 — 접속 핸드셰이크 (S_EnterMap) + ConcurrentQueue 마샬링 + 헌법 #1 첫 실전 (`d0b94d3`)
+- ✅ Phase 04 — C_MoveIntent + S_Snapshot + 헌법 #3 검증 골격 (lag 의도 노출) (`d9f8351`)
+- ⏳ Phase 05 — client prediction + snap reconcile (대기, *폴더 이동 후 진입*)
 
-### 2026-05-11 사이드 정비 (M2 진입 전 도구대 정합)
-- ✅ **Notion 협업 시스템 정합 + e2e 검증** (8 commit `6333022..64a1afa`): Codex 핸드오프 절차/STAR vs 8단 매핑/-DONE.md 템플릿 TL;DR/노션 9 페이지 용어 보강.
-- ✅ **Post-flight 게이트 도입**: `validate-phase-gate.sh` 훅 — `-DONE.md` 형식 강제 (자동 실행은 비채택, 학습 호흡 보존). 헌법 명문화.
-- ✅ **PRD.md 응축** (230 → 151줄): 220줄 임계 위반 해소. 위험/캡스톤/MVP 압축.
-- ✅ **ADR 전체 점검 + 갱신**: outdated 4건 정합 (ADR-002/005/010/011, EF Core 8→10 등) + 신규 ADR-013~016 박음 (-DONE.md 페어/220줄 임계/Post-flight 게이트/Notion 3자 분업) + 변경 이력 `ADR_History.md`로 외부화.
-- ✅ **CONTEXT 응축** (225 → 본 응축본): M1 완료 시점 정책 부합.
+### 2026-05-11 본 세션 사이드 트랙
+- ✅ **Unity AI MCP 셋업 완료** (`440b0f3`) — `com.unity.ai.assistant` Unity 공식 패키지(2.x pre). Bridge Running + Claude Code 등록 + 도구 8개. ADR-001 v3 의도 실현. 본 세션 Phase 03 NetworkBootstrap GameObject 자동 생성 + 검증 캡처에 적극 활용.
+- ⏳ **한글 경로 영구 해결 사전 정합** (`76388ae`) — *진행 중*. 본인이 폴더 이동 직접 실행 예정 (PowerShell Move-Item). 사후 새 세션에서 검증 + ADR-017 박을 가치.
 
-### 다음 작업 (결정됨)
-- **M2 First Connection 진행 중** — Phase 01·02·03·04 ✅ 완료 (commit `f26fc92`, `011bcaf`, `d0b94d3`, `d9f8351`). 다음 = **★ 한글 경로 영구 해결(폴더 이동)** → 그 뒤 **Phase 05 client prediction + snap reconcile**.
-- 사이드 트랙 ✅: **Unity AI MCP 셋업 완료** (2026-05-11) — `com.unity.ai.assistant` Unity 공식 패키지(2.x pre). Bridge Running + Claude Code 등록 + 도구 8개(Scene/Camera/Console/RunCommand/AssetGen/Shader) 사용 가능. ADR-001 v3 의도 실현.
-- 사이드 트랙 ⏳ **진행 중**: **한글 경로(`바탕 화면`) → `C:\Dev\ClaudeDev` 이동**. M2 Phase 03(Burst DLL 로드 hang) + Phase 04(WDAC가 .NET 어셈블리 차단 0x800711C7) 두 사건 = 같은 뿌리. 두 문서/DONE.md에 박혀있음. 영구 해결 결정.
-- Phase 02·03·04·05·06·07 학습 일지는 본인 페이스 추후.
+### M1 완료 요약 (이전 시점, [`CONTEXT_History.md`](CONTEXT_History.md) + `-DONE.md` 참조)
+Phase 01~07 + 회귀 안전망. 솔루션 부트스트랩 / ServerCore 7파일 / 04_ClientNet Y2 분리 / Listener wire-up / framing+Ping-Pong / PacketGenerator 이주 / PDL 정합. M2 진입 전 도구대 정합도 완료.
+
+### 다음 세션 첫 액션 체크리스트
+1. `pwd` → `C:\Dev\ClaudeDev` 확인
+2. `git status` 깨끗
+3. `dotnet build Dawnholder.slnx` 0 error
+4. `dotnet test Dawnholder.slnx` 25/25 PASS
+5. PacketGenerator 직접 실행 (publish 우회 불필요)
+6. Unity Editor Burst Enable 재활성화 → hang 안 함
+7. 위 6개 통과 시 ADR-017 신규 박음 — "프로젝트 폴더 ASCII 경로로 이동 (한글 경로 도구 호환성)"
+8. Phase 05 진입
+
+### Phase 03·04 학습 일지 후보 (시간 흐르기 전)
+- ★★ `/journal:bug 한글 경로 도구 호환성 (Burst + WDAC)` — Phase 03·04 두 사건 같은 뿌리. 면접 임팩트 큼.
+- `/journal:concept Server Authority 첫 실전 (헌법 #1)`
+- `/journal:concept Map=Actor + ConcurrentQueue 마샬링`
+- `/journal:concept Intent vs State 분리`
+- `/journal:concept Trust Boundary 실전 (헌법 #3)`
 
 ---
 
