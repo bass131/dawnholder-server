@@ -1,6 +1,6 @@
 # Phase 02: 서버 GameLoop (20 TPS) + 단일 GameMap actor
 
-> **상태**: pending
+> **상태**: done (페어: [`02-server-gameloop-DONE.md`](02-server-gameloop-DONE.md))
 > **마일스톤**: M2 First Connection
 > **예상 소요**: 2~3시간
 > **담당 에이전트**: gameplay
