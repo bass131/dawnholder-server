@@ -29,10 +29,11 @@
 - **핸드셰이크**: 첫 패킷에 ProtocolVersion 교환
 
 ### Persistence
-- **DB**: PostgreSQL 16
+- **DB**: Microsoft SQL Server (개발 환경 = LocalDB)
+- **인증**: Windows 통합 인증 (Trusted Connection) — 비밀번호 0개
 - **ORM**: Entity Framework Core 10 (.NET 10 LTS와 같이 묶음)
 - **마이그레이션**: EF Core code-first
-- **개발 환경**: Docker Compose로 로컬 PostgreSQL
+- **운영 환경 진입 시**: SQL 인증 전환 + secret 관리 전략 별도 ADR로 박제 예정 (ADR-005 v2 후속 항목)
 
 ---
 
@@ -199,8 +200,9 @@ DB 쓰기는 절대 동기로 안 합니다. `Channel<SaveIntent>` 큐에 넣고
 |--------|------|------|----------|
 | Serilog | 4.x | 로깅 | Apache 2.0 |
 | Entity Framework Core | 10.x | ORM | MIT |
+| Microsoft.EntityFrameworkCore.SqlServer | 10.x | EF Core SQL Server provider | MIT |
 | xUnit + FluentAssertions | latest | 테스트 | MIT |
-| PostgreSQL (Docker) | 16 | DB | PostgreSQL License |
+| SQL Server LocalDB | 2022 | 개발용 DB | 무료 (Visual Studio 설치 시 동봉) |
 
 **직렬화는 외부 의존성 없음** — 자체 PDL(`99_Tools/PacketGenerator/`, ADR-002 v2). Phase 06에서 이주·Phase 07에서 양쪽 wire-up 완료. `BinaryPrimitives.*LittleEndian`으로 wire format 플랫폼 무관. MessagePack은 ADR-002 v1에서 채택했으나 v2(2026-05-06)에서 자체 PDL로 변경.
 
@@ -215,3 +217,4 @@ DB 쓰기는 절대 동기로 안 합니다. `Channel<SaveIntent>` 큐에 넣고
 | (Harness 셋업일) | 최초 작성 | - |
 | 2026-05-10 | 폴더 prefix 정렬 + ADR-002 v2(자체 PDL) + ADR-012(Y2 분리) 반영 | 디렉토리 구조 통째 재작성 + MessagePack 의존성 제거 + EF Core 8→10 + Y2 socket 분리 모델 명시. 2026-05-09 prefix 변경 + 2026-05-06 ADR-002 v2 / 2026-05-10 ADR-012 시점에 ARCHITECTURE는 누락됐던 것 일괄 정합. |
 | 2026-05-11 | Phase 06/07 활성화 반영 + ADR-012 진화 | Protocol 구조 갱신: 옛 `PacketId.cs`/`Packets/`/`ProtocolVersion.cs` (Phase 07에서 삭제·미작성) 대신 `Generated/GenPackets.cs` (PDL 자동 생성)로 정정. PacketGenerator "이주 예정" → "이주 완료". headless-bot은 M2 이후로 시점 재조정. ADR-012는 "전부 분리"에서 *책임 단위 분리/통합*으로 진화(Phase 07 사용자 통찰). |
+| 2026-05-14 | DB 결정 정정 (PostgreSQL → MSSQL/LocalDB, Windows 통합 인증) | 한국 게임 업계 표준 정합 + Rookiss 학습 자료 정합 + .NET 1군 조합 + 학부생 팀원 온보딩 비용 최소화. ADR-005 v2로 박제. 코드 진입 전 시점 발견이라 변경 비용은 문서 텍스트만. |

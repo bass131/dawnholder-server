@@ -14,7 +14,7 @@
 | ADR-002 | Raw TCP + 자체 PDL + 코드 생성기 | [tech-stack/ADR-002-tcp-pdl.md](tech-stack/ADR-002-tcp-pdl.md) |
 | ADR-003 | 모노레포 (MES만 별도 레포) | [tech-stack/ADR-003-monorepo.md](tech-stack/ADR-003-monorepo.md) |
 | ADR-004 | 20 TPS 서버 틱 | [tech-stack/ADR-004-tickrate.md](tech-stack/ADR-004-tickrate.md) |
-| ADR-005 | PostgreSQL + EF Core 10 | [tech-stack/ADR-005-postgres-efcore.md](tech-stack/ADR-005-postgres-efcore.md) |
+| ADR-005 | **MSSQL (SQL Server) + EF Core 10** (v2: PostgreSQL→MSSQL 정정) | [tech-stack/ADR-005-mssql-efcore.md](tech-stack/ADR-005-mssql-efcore.md) |
 | ADR-010 | Shared 코드 공유 = DLL + Embedded PDB | [tech-stack/ADR-010-shared-dll.md](tech-stack/ADR-010-shared-dll.md) |
 | ADR-011 | 기존 ServerDev 코드 부분 채택 (시나리오 B) | [tech-stack/ADR-011-serverdev-scenario-b.md](tech-stack/ADR-011-serverdev-scenario-b.md) |
 | ADR-012 | Unity 클라 socket 분리 클라용 라이브러리 (Y2) | [tech-stack/ADR-012-socket-y2.md](tech-stack/ADR-012-socket-y2.md) |
