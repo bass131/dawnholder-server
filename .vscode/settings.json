@@ -1,0 +1,59 @@
+{
+  "// 협업 셋업": "이 파일은 .gitignore 화이트리스트로 공유됨 (옵션 B 결정). 협업 최소 셋만 박음. 개인 설정은 .vscode/settings.local.json에 자유롭게.",
+
+  "// 통합 터미널": "Git Bash 강제 — ADR-020 (훅 실행 환경 의존성) 회피용. 본인 48시간 silent fail 함정 예방.",
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+
+  "// 자동 저장": "1초 후 자동 저장 — 학부생 백지 팀원이 저장 깜빡해서 옛 내용 commit하는 사고 예방.",
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+
+  "// 저장 시 자동 포맷": "C# 코드 스타일 통일.",
+  "editor.formatOnSave": true,
+
+  "// 파일 가리기 — Unity 자동 생성물 + .NET 빌드 산출물": "기존 본인 셋업 유지.",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+
+    "**/bin": true,
+    "**/obj": true,
+    "**/*.user": true,
+    "**/*.suo": true,
+
+    "03_Client/Library": true,
+    "03_Client/Temp": true,
+    "03_Client/Logs": true,
+    "03_Client/Build": true,
+    "03_Client/Builds": true,
+    "03_Client/UserSettings": true,
+    "03_Client/MemoryCaptures": true,
+    "03_Client/*.csproj": true,
+    "03_Client/*.sln": true,
+
+    "**/*.meta": true
+  },
+
+  "search.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "03_Client/Library": true,
+    "03_Client/Temp": true,
+    "03_Client/Logs": true,
+    "03_Client/Build": true,
+    "03_Client/Builds": true,
+    "03_Client/UserSettings": true,
+    "**/*.meta": true
+  },
+
+  "files.watcherExclude": {
+    "**/bin/**": true,
+    "**/obj/**": true,
+    "03_Client/Library/**": true,
+    "03_Client/Temp/**": true,
+    "03_Client/Logs/**": true,
+    "03_Client/Build/**": true,
+    "03_Client/Builds/**": true
+  }
+}

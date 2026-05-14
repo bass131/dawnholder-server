@@ -5,7 +5,7 @@
 > 본인 정보(이름, 역할, 합류 시점 등)와 현재 게임 진행 상태를 채워서 사용합니다.
 > `CONTEXT.md` 본체는 `.gitignore`로 무시되어 각자 보유 — 협업 셋업 파트 1 결정.
 >
-> **셋업 절차**: `/setup:*` 슬래시 커맨드가 자동으로 복사·초기 작성을 안내합니다.
+> **셋업 절차**: `/setup` 슬래시 커맨드가 자동으로 복사·초기 작성을 안내합니다.
 > 수동 셋업 시: `cp .claude/templates/CONTEXT-template.md CONTEXT.md` 후 아래 placeholder 채우기.
 
 ---
@@ -19,7 +19,7 @@
 
 **유지 정책**: **누적이 아니라 응축**. ~200줄 넘으면 큰 마일스톤 끝날 때마다
 처음부터 재작성. 옛 디테일은 `git history` + `00_Document/learning-journal/{본인-네임스페이스}/`
-+ 노션 "Dawnholder 협업 히스토리"에서 찾기.
++ 본인 노션 "Dawnholder 협업 히스토리"에서 찾기.
 
 ---
 
@@ -47,6 +47,8 @@
 - **솔직함 패턴**: 모르는 건 모른다고, 마감 현실도 솔직히. AI도 솔직하게.
 - **본인의 학습 일지 위치**: `00_Document/learning-journal/<본인-네임스페이스>/`
   (예: `youngho/`, `ingyu/`, `yuhyun/`, `jungwoo/`)
+- **본인의 노션 페이지**: <본인 노션 "Dawnholder 협업 히스토리" 페이지 URL>
+  (각자 자기 노션에 박제. 포트폴리오용. 팀 공유 X.)
 
 ---
 
@@ -94,8 +96,9 @@
 
 1. <첫 작업 시작 전 읽을 문서들 — 헌법, ARCHITECTURE, PRD 통독>
 2. <자기 학습 일지 폴더 생성: `00_Document/learning-journal/<본인 네임스페이스>/`>
-3. <첫 Phase가 있다면 `/work:plan`으로 분해>
-4. ...
+3. <본인 노션 "Dawnholder 협업 히스토리" 페이지 셋업>
+4. <첫 Phase가 있다면 `/work:plan`으로 분해>
+5. ...
 
 ---
 
@@ -162,13 +165,16 @@
 02_Server/, 03_Client/, 98_Shared/, 99_Tools/    ← 게임 코드
 04_ClientNet/                                    ← 클라용 socket 라이브러리 (Y2)
 .claude/agents/                                  ← 서브에이전트
-.claude/commands/{learn,journal,work,session,setup}/  ← 슬래시 커맨드
+.claude/commands/{learn,journal,work,session}/   ← 슬래시 커맨드
+.claude/commands/setup.md + .claude/setup-steps/ ← 협업 셋업 흐름 (/setup)
 .claude/hooks/                                   ← 자동 검증 훅
 .claude/templates/                               ← 공유 템플릿 (본 파일 포함)
 .claude/state/current-pin.txt                    ← 각자의 작업 좌표 (.gitignore)
+.claude/CHANGELOG.md                             ← 하네스 변경 이력 (팀장 갱신, 모두 읽음)
+.github/CODEOWNERS                               ← 폴더 단위 PR 승인 강제
+본인 노션 "Dawnholder 협업 히스토리" 페이지       ← 각자 자기 노션에 박제 (포트폴리오용)
 Dawnholder.slnx                                  ← .NET 솔루션 (02_Server + 04_ClientNet + 98_Shared)
 global.json                                      ← .NET SDK 핀 (10.0.203+)
-노션 "Dawnholder 협업 히스토리" DB               ← 세션 STAR 박제
 ```
 
 ---

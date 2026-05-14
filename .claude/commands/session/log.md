@@ -1,13 +1,15 @@
 ---
-description: Notion "Dawnholder 협업 히스토리" DB 환경 명세 (Codex가 참조)
+description: 노션 "Dawnholder 협업 히스토리" DB 환경 명세 (Codex가 참조하거나 Claude 단독 박음)
 argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 ---
 
-> ⚠️ **2026-05-11 변경: Claude 직접 박기 흐름은 deprecated.**
+> ⚠️ **2026-05-11 변경: Claude 직접 박기 흐름은 deprecated 이었으나, 협업 환경에서 fallback으로 부활.**
 >
-> 새 흐름: Claude는 `-DONE.md` 박제까지만, Notion 페이지 작성은 **Claude가 Bash로 호출하는 별도 Codex 세션**이 readonly로 ClaudeDev를 읽고 직접 박는다 (사용자가 cmd 치는 게 아님). 분업 절차는 [`.claude/templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
+> **2026-05-14 변경 (협업 셋업)**: Codex 안 깔린 팀원(인규/유현) 대응으로 분기 추가.
+> - Codex 있으면 → 본인(유영호) 흐름. Claude가 Bash로 Codex CLI 호출. Codex가 readonly로 ClaudeDev 읽고 직접 박음.
+> - Codex 없으면 → Claude가 mcp__notion 직접 호출. 본인 노션 자산은 각자 자기 노션 페이지/DB (협업 셋업 결정).
 >
-> **본 파일의 역할**: Codex가 Notion 페이지 생성 시 참조할 *환경 명세* — DB ID·스키마·페이지 생성 API 형식·STAR 본문 가이드·함정 사례. 사용자가 `/session:log` 입력하면 Claude가 Bash로 Codex CLI를 호출해 본 명세에 따라 페이지를 만든다.
+> **본 파일의 역할**: Codex가 노션 박을 때 참조할 *환경 명세* + Claude 단독 박을 때 따를 가이드. 사용자가 `/session:log` 입력하거나 `/session:end`가 호출하면 본 명세에 따라 페이지 생성.
 
 사용자가 이번 세션을 노션에 기록 요청했습니다.
 한 줄 요약 (있으면): **$ARGUMENTS**
@@ -15,8 +17,6 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 **왜 이게 중요한가**: 11월 본 마감까지 매 세션의 결정/토론/학습이 누적됨.
 손으로 정리하면 번거로움 → 자동화하면 (1) 면접 자료 자동 누적, (2) 학습이
 휘발 안 됨, (3) `CONTEXT.md` 단일 진실 + 노션 누적 = 이중 안전망.
-
-**명세는 이 파일 본문에 인라인** — Codex가 readonly로 본 파일을 읽고 아래 사양에 따라 페이지를 생성한다.
 
 ---
 
@@ -35,9 +35,47 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 
 ---
 
-### 2. 노션 자산 (이미 만들어진 것)
+### 1.5. 실행자 분기 — Codex 사용 여부 묻기 (협업 셋업 추가)
 
-⚠️ **사용자 워크스페이스 종속**. 노션 이전됐거나 DB 재생성됐으면 본 파일의 ID들을 갱신.
+박기로 결정되면 사용자에게 Codex 가능 여부 확인:
+
+```
+노션 박기 진행할게요. 본인 컴퓨터에 Codex CLI 깔려있어요?
+
+- 있으면 → Codex가 박음 (기존 흐름, 본인 노션 자산 활용)
+- 없으면 → Claude가 직접 박음 (각자 자기 노션 페이지/DB)
+
+(처음 호출이면 잘 모를 수 있어요. 학부생 백지 팀원이면 보통 "없어요"입니다.)
+```
+
+응답 받고 변수 `executor`에 박음:
+- "있어요" 또는 동의 → `executor = "codex"`
+- "없어요" 또는 모름 → `executor = "claude"`
+
+### 1.5-부수. Claude 분기일 때 노션 자산 확인
+
+`executor == "claude"`이면 사용자에게 본인 노션 자산 한 번 더 확인:
+
+```
+본인 노션 페이지 또는 DB 정보 알려주세요. 다음 중 하나:
+
+A. 본인 노션 페이지 URL (단일 페이지에 누적 박는 형태)
+B. 본인 노션 DB의 Data Source ID (DB row로 박는 형태, 본인 유영호 패턴)
+
+처음 호출이면 본인 노션 "Dawnholder 협업 히스토리" 페이지/DB 만들어두고 URL 또는 ID 알려주세요.
+없으면 만들고 와도 됩니다 — 5분.
+
+⚠️ 본인 자산은 협업 셋업 결정에 따라 각자 자기 노션입니다 (팀 공유 X). 
+   포트폴리오용으로 누적해두는 거예요.
+```
+
+받은 정보를 변수 `notion_target`에 박음. 본인이 처음 호출인지 기억할 수 있게 변수 박혀 있으면 다음 호출엔 같은 자산 사용 (단, 본인 답을 매번 새로 받는 게 더 안전).
+
+---
+
+### 2. 노션 자산 (이미 만들어진 것 — 본인 유영호 환경)
+
+⚠️ **본인(유영호) 워크스페이스 종속**. 인규/유현은 1.5-부수에서 받은 본인 자산 사용.
 
 - **부모 페이지** "Dawnholder 협업 히스토리"
   - ID: `35776cec-cb78-810e-a516-f743e5028110`
@@ -66,6 +104,8 @@ argument-hint: [한 줄 요약 - 선택. 없으면 Claude가 추출]
 - 큰 결정 (시나리오 선택, 스택 변경) → `결정`
 - 기존 코드 분석 → `코드분석`
 - 헌법/Harness/CLAUDE.md/CONTEXT.md 변경 → `Harness`
+
+⚠️ **인규/유현의 자기 DB**: 위 스키마와 동일하게 본인이 만들었으면 그대로 사용. 다른 스키마면 본인 자산에 맞게 매핑 조정.
 
 ---
 
@@ -166,16 +206,28 @@ STAR 4섹션 박기 전, 다음 8 항목이 *어딘가에* 다 들어가 있는�
 
 ---
 
-### 7. 노션 페이지 생성
+### 7. 노션 페이지 생성 — 분기
 
-`mcp__claude_ai_Notion__notion-create-pages` 호출.
+`executor` 변수에 따라 두 흐름 중 하나.
+
+#### 7-A. `executor == "codex"` — 본인(유영호) 기존 흐름
+
+Claude가 Bash로 Codex CLI를 호출. Codex가 readonly로 ClaudeDev 읽고 본 명세 따라 박음. 분업 절차는 [`.claude/templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
+
+(이 흐름의 상세 호출 방법은 본인 자산에 박혀있음. 본 파일은 환경 명세만 제공.)
+
+#### 7-B. `executor == "claude"` — Claude 단독 흐름 (협업 셋업 추가)
+
+Claude가 `mcp__claude_ai_Notion__notion-create-pages` 직접 호출.
+
+⚠️ **사용자가 알려준 `notion_target` 사용**. 본인(유영호) 자산은 인규/유현 환경에서 안 통함.
 
 ⚠️ **`properties`는 SQLite-flat 형식**. Notion 직접 API의 중첩 객체 형식이 **아님**. 실호출 검증된 정확한 형식:
 
 ```json
 parent: {
   "type": "data_source_id",
-  "data_source_id": "7f1c9432-674a-4df9-b151-3c5ffeb335f3"
+  "data_source_id": "{사용자가 1.5-부수에서 알려준 ID}"
 }
 pages: [{
   "properties": {
@@ -203,6 +255,10 @@ pages: [{
 3. **parent 누락**: `data_source_id` 안 박으면 workspace 레벨로 떨어짐.
 4. **properties 형식 함정** (첫 실호출): Notion 직접 API의 `{ "Date": { "date": { "start": "..." } } }` 같은 중첩 객체는 거부됨. 위 SQLite-flat 형식만 동작. 막히면 `notion-fetch`로 데이터 소스 스키마부터 확인 (SQLite 테이블 정의가 정답을 알려줌).
 
+**Claude 분기 추가 함정** (협업 셋업 추가):
+5. **단일 페이지 vs DB row**: 사용자가 1.5-부수에서 URL만 알려주면 단일 페이지에 누적 박기. DB ID 알려주면 DB row 박기. 두 흐름 모두 mcp__notion으로 호출 가능. 사용자 답 따라 분기.
+6. **권한 없음 에러**: Claude가 호출하는 mcp__notion 연결이 사용자 본인 노션에 접근 권한 있어야 함. 없으면 에러. 그땐 사용자에게 Notion MCP 연결 설정 안내 (Claude.ai 설정 → Connectors → Notion).
+
 ---
 
 ### 8. 결과 보고
@@ -215,9 +271,10 @@ pages: [{
 📍 페이지: [URL]
 📌 제목: YYYY-MM-DD — [요약]
 🏷️ 태그: [...]
+🔧 실행자: {Codex 또는 Claude 단독}
 
 검증 체크:
-- [ ] DB row 정상 생성
+- [ ] DB row 정상 생성 (또는 페이지 추가)
 - [ ] Tags / Status 정상 매핑
 - [ ] STAR 4섹션 다 박힘
 - [ ] PR Link 채워짐 (해당 시)
@@ -238,4 +295,4 @@ pages: [{
 - **추측 금지**: 대화에 없는 결정·학습을 만들어내지 않음. 부족하면 빈 칸으로
   두고 사용자에게 채워달라고 요청.
 - **첫 사례 참조**: 의심 들면 https://www.notion.so/35776ceccb7881998409f95be0e06b28
-  의 STAR 적용 결과를 기준으로.
+  의 STAR 적용 결과를 기준으로 (본인 유영호 자산).

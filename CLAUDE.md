@@ -93,17 +93,22 @@ Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 �
 
 박제 후 학습 일지 권유로 넘어감.
 
-### Phase 완료 시 학습 일지 권유 (필수)
+### Phase 완료 시 두 액션 권유 (필수)
 
 `-DONE.md` commit 직후 출력:
 
-> **📚 Phase 완료 — 학습 일지 작성을 권유합니다**
+> **📚 Phase 완료 — 다음 두 액션 권유합니다**
 >
-> 이 Phase에서 배운 내용을 정리해두면 면접 무기가 돼요. 옵션:
-> 1. `/journal:phase` — Phase 통째 회고 (15~20분)
-> 2. `/journal:bug` — 막혔던 사건이 있었다면 (디테일 안 잊었을 때)
-> 3. `/journal:concept <키워드>` — 깊이 학습한 개념을 본인 말로
-> 4. 패스 (다음 Phase로) — 단, 가급적 오늘 안에 추천
+> **1. 학습 일지 작성** (선택, 면접 무기로 누적):
+> - `/journal:phase` — Phase 통째 회고 (15~20분)
+> - `/journal:bug` — 막혔던 사건이 있었다면 (디테일 안 잊었을 때)
+> - `/journal:concept <키워드>` — 깊이 학습한 개념을 본인 말로
+> - 패스 (다음 Phase로) — 단, 가급적 오늘 안에 추천
+>
+> **2. 세션 마감** (강한 권유, 작업 박제):
+> - `/session:end` — commit + PR + 노션 박제 + 다음 액션 결정까지 한 흐름
+> - 학부생 백지 팀원은 깜빡 위험 크니 잊지 말기
+> - `inject-current-pin.sh` 훅이 commit 안 된 -DONE.md 검출 시 매 입력 경고 주입 (안전망)
 
 **권유이지 강제 X**. 패스 시 즉시 존중. 같은 Phase에 두 번 권유 X.
 **Phase 외 일반 작업 후엔 권유 X** (Phase 단위 완료 시에만).
@@ -113,9 +118,9 @@ Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 �
 - **학습/이해**: `/learn:why` `/learn:explain` `/learn:concept` `/learn:recap` `/learn:dumb-it-down`
 - **학습 일지**: `/journal:phase` `/journal:concept` `/journal:bug`
 - **작업 진행**: `/work:plan` `/work:review` `/work:new-packet` `/work:new-monster` `/work:load-test`
-- **세션**: `/session:start` (새 세션 첫 입력 — CONTEXT.md 인지 확인) `/session:log` (세션 끝 노션 박제)
+- **세션**: `/session:start` (새 세션 첫 입력 — CONTEXT.md 인지 확인) `/session:end` (Phase 완료 마감 절차 — commit + PR + 박제 트리거) `/session:log` (노션 박제 — 보통 /session:end가 호출)
 
-전체 15개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`00_Document/commands-index.md`](00_Document/commands-index.md) 참조. 새 커맨드 추가 시 인덱스도 함께 갱신.
+전체 16개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`00_Document/commands-index.md`](00_Document/commands-index.md) 참조. 새 커맨드 추가 시 인덱스도 함께 갱신.
 
 ---
 

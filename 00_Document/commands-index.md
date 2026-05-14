@@ -1,8 +1,8 @@
 # 슬래시 커맨드 빠른 참조
 
-총 **15개**. 4개 카테고리 폴더(`learn/` `journal/` `work/` `session/`)로 정리됨 (2026-05-11). 헷갈리면 아래 "비슷한 것끼리 차이" 섹션을 보세요.
+총 **16개**. 4개 카테고리 폴더(`learn/` `journal/` `work/` `session/`) + 단독 진입점(`setup.md`)으로 정리됨 (2026-05-14 협업 셋업 작업으로 갱신). 헷갈리면 아래 "비슷한 것끼리 차이" 섹션을 보세요.
 
-호출 형식: `/<카테고리>:<이름>` (예: `/learn:why`, `/journal:phase`).
+호출 형식: `/<카테고리>:<이름>` (예: `/learn:why`, `/journal:phase`) 또는 단독 진입점 (`/setup`).
 
 ---
 
@@ -42,12 +42,23 @@
 
 ---
 
-## 📌 세션 기록 — 노션 협업 히스토리에 박제
+## 📌 세션 관리 — 시작·마감·박제
 
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
-| [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력. CONTEXT.md 읽고 톤·현재 멈춤 지점·다음 액션을 짧게 인지 확인. | (인풋 없음) |
-| [`/session:log`](../.claude/commands/session/log.md) | 세션 끝 무렵, 결정·토론·코드 변경이 있었을 때 노션 박제 트리거. Claude가 Bash로 Codex CLI 호출 → Codex가 STAR 형식으로 박음 (2026-05-11 deprecation 후 새 흐름). 명세는 Codex 환경 참조용. | (인풋 없음) |
+| [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력. CONTEXT.md 읽고 톤·현재 멈춤 지점·다음 액션 + CHANGELOG 최근 변경 짧게 인지 확인. | (인풋 없음) |
+| [`/session:end`](../.claude/commands/session/end.md) | Phase 완료 마감 절차. -DONE.md 박제 후 호출 → commit + PR + `/session:log` 자동 호출 + 다음 액션 결정까지 한 흐름. 학부생 백지 팀원 PR 처음 만들기 안내 포함. | (인풋 없음) |
+| [`/session:log`](../.claude/commands/session/log.md) | 노션 박제 트리거. 보통 `/session:end`가 자동 호출. 실행자 분기: Codex 있으면 Codex가 박음 (본인 유영호 흐름), Codex 없으면 Claude가 mcp__notion 직접 호출 (인규/유현 fallback). | (인풋 없음) |
+
+---
+
+## 🚀 협업 셋업 — 단독 진입점
+
+| 커맨드 | 언제 쓰나 | 인풋 |
+|--------|----------|------|
+| [`/setup`](../.claude/commands/setup.md) | 팀원 첫 합류 시 호출. 자기소개 → 환경 검증 → 역할별 셋업 → 자산 초기화 → 첫 작업 안내까지 차근차근. 한 번에 한 단계씩 떠먹임. | (인풋 없음) |
+
+(내부 단계 파일은 `.claude/setup-steps/`에 박혀있으나 직접 호출 안 함. `/setup`이 흐름 제어.)
 
 ---
 
@@ -59,10 +70,15 @@
 - **`/learn:explain <코드>`** — "이 **코드**가 무슨 일을 하는가". 줄 단위 풀이
 
 ### `/journal:*` 3종 vs `/session:log`
-- **`/journal:*`** — `00_Document/learning-journal/`에 **로컬 마크다운**으로 저장. 본인이 답을 채움. 면접 답변 연습용.
-- **`/session:log`** — **노션 DB**에 STAR로 박제. **Codex가 작성** (2026-05-11 분업 정합 — Claude는 -DONE.md까지, Notion 박기는 Codex via Bash 위임). 결정·맥락 누적용.
+- **`/journal:*`** — `00_Document/learning-journal/{본인-네임스페이스}/`에 **로컬 마크다운**으로 저장. 본인이 답을 채움. 면접 답변 연습용.
+- **`/session:log`** — **본인 노션**에 STAR로 박제. 실행자 분기 (Codex/Claude). 결정·맥락 누적용. **각자 자기 노션 페이지/DB** (협업 셋업 결정 — 팀 공유 X, 포트폴리오용).
 
 → 둘은 **상호 보완**. 큰 학습이 있었으면 `/journal:concept` 쓰고, 그날 세션 자체는 `/session:log`으로도 박는 식.
+
+### `/session:start` vs `/session:end` vs `/session:log`
+- **`/session:start`** — 세션 **시작**. CONTEXT 인지 + CHANGELOG 최근 변경 확인. 작업 시작 전 항상.
+- **`/session:end`** — **Phase 완료** 마감 절차. commit + PR + 박제 + 다음 액션. Phase 단위로 호출.
+- **`/session:log`** — 노션 **박제만**. 보통 `/session:end`가 호출. 본인이 직접 호출하는 경우는 Phase 외 큰 결정 박을 때.
 
 ### `/learn:recap` vs `/session:log`
 - **`/learn:recap`** — 지금 이 자리에서 "어디까지 왔지?" 자체 점검용. 어디에도 안 박힘.
@@ -72,20 +88,32 @@
 - **`/work:plan <목표>`** — 새 Phase 묶음(`01_Phases/M{N}-{slug}/`)을 생성. **만들기**.
 - **Phase 파일들** — 이미 만들어진 작업 단위. **실행**.
 
+### `/setup` vs `/session:start`
+- **`/setup`** — 팀원 **첫 합류**. 환경 검증 + 자산 초기화. **단 한 번** 호출.
+- **`/session:start`** — 매 세션 **시작**. 인지 확인. **매번** 호출.
+
 ---
 
 ## 보통 흐름 (참고)
 
+### 첫 합류 (단 한 번)
+```
+clone + Claude Code 설치 후 첫 호출
+  └─ /setup                    (자기소개 → 환경 검증 → 역할별 → 자산 초기화 → 첫 작업 안내)
+```
+
+### 일상 작업 흐름
 ```
 새 세션 시작
-  └─ /session:start          (CONTEXT.md 읽고 톤·멈춤 지점·다음 액션 인지 확인)
+  └─ /session:start            (CONTEXT 인지 + CHANGELOG 최근 변경 확인)
         └─ /learn:recap            (필요 시 현재 위치 더 깊이 짚기)
         └─ 큰 작업이면 /work:plan <목표>   (Phase 분해)
               └─ Phase 작업 진행
                     └─ 막히면 /learn:why, /learn:explain, /learn:concept, /learn:dumb-it-down
                     └─ 코드 점검: /work:review
-                    └─ Phase 끝: /journal:phase 권유 (헌법에 박혀있음)
-              └─ 세션 끝: /session:log  (노션 박제, 결정 있었을 때)
+                    └─ Phase 끝: -DONE.md 박제 + 5단계 보고
+                          └─ 학습 일지: /journal:phase 권유 (선택)
+                          └─ 마감: /session:end  (commit + PR + /session:log 자동 호출)
 ```
 
 ---
@@ -94,4 +122,4 @@
 
 - 헌법(`CLAUDE.md`)의 "사용자 컨텍스트" 섹션에 학습용/작업용/일지 커맨드의 짧은 안내 있음
 - `CONTEXT.md` "슬래시 커맨드 빠른 참조" 섹션에 카테고리 요약 있음
-- 새 커맨드 추가 시: (1) 알맞은 카테고리 폴더(`learn/` `journal/` `work/` `session/`)에 파일 생성, (2) 이 인덱스의 표에 추가, (3) 헌법(`CLAUDE.md`) 짧은 안내 갱신.
+- 새 커맨드 추가 시: (1) 알맞은 카테고리 폴더(`learn/` `journal/` `work/` `session/`)에 파일 생성, (2) 이 인덱스의 표에 추가, (3) 헌법(`CLAUDE.md`) 짧은 안내 갱신, (4) `.claude/CHANGELOG.md` 한 줄 박기.
