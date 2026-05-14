@@ -1,0 +1,13 @@
+{
+  "//": "VS Code 권장 확장 목록 (협업 셋업 파트 1 결정으로 화이트리스트 공유). VS Code가 이 레포 열면 '권장 확장 설치할래?' 팝업이 자동으로 뜸. 강요 X, 제안 O — 본인 환경에 맞춰 자유롭게 선택.",
+  "recommendations": [
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp",
+    "visualstudiotoolsforunity.vstuc",
+    "eamodio.gitlens",
+    "ms-vscode.powershell",
+    "redhat.vscode-xml",
+    "yzhang.markdown-all-in-one",
+    "anthropic.claude-code"
+  ]
+}

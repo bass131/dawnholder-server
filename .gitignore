@@ -54,9 +54,9 @@ ExportedObj/
 
 # ─────────────────────────────────────────────
 # IDE / Editor
+# .vscode는 아래 "VS Code" 섹션에서 화이트리스트 처리 — 이 섹션에서는 제외
 # ─────────────────────────────────────────────
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
@@ -78,6 +78,7 @@ desktop.ini
 *.zip
 *.bak
 *.orig
+*.backup
 
 # ─────────────────────────────────────────────
 # Secrets / credentials (절대 금지)
@@ -102,3 +103,26 @@ logs/
 # ─────────────────────────────────────────────
 .claude/settings.local.json
 .claude/worktrees/
+.claude/state/
+
+# ─────────────────────────────────────────────
+# 개인 워킹 메모 (각자 보유) — 협업 셋업 파트 1 결정
+# 공유 템플릿은 .claude/templates/CONTEXT-{template,History-template}.md 참조
+# ─────────────────────────────────────────────
+/CONTEXT.md
+/CONTEXT_History.md
+/CONTEXT_History/
+
+# ─────────────────────────────────────────────
+# learning-journal: 사람별 네임스페이스 (각자 폴더는 공유 X)
+# 템플릿·README는 공유 (화이트리스트 패턴)
+# ─────────────────────────────────────────────
+00_Document/learning-journal/*/
+!00_Document/learning-journal/_template-*.md
+!00_Document/learning-journal/README.md
+
+# ─────────────────────────────────────────────
+# VS Code: 권장 확장 목록만 화이트리스트로 공유, 개인 설정은 무시
+# ─────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json

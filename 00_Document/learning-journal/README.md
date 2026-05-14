@@ -79,30 +79,35 @@ Phase 하나 끝날 때마다 작성. 무엇을 만들었고, 어떤 결정을 �
 
 ## 디렉토리 구조
 
+협업 환경에서는 **사람별 네임스페이스** 아래 마일스톤별로 정리합니다 (협업 셋업 파트 1 결정). 각자의 폴더는 `.gitignore`로 공유 X, 템플릿·README는 공유 (화이트리스트 패턴).
+
 ```
-docs/learning-journal/
-├── README.md                          이 파일
-├── _template-phase.md                 Phase 정리 템플릿
-├── _template-concept.md               Concept 정리 템플릿
-├── _template-troubleshoot.md          Troubleshoot 템플릿
+00_Document/learning-journal/
+├── README.md                          이 파일 (공유)
+├── _template-phase.md                 Phase 정리 템플릿 (공유)
+├── _template-concept.md               Concept 정리 템플릿 (공유)
+├── _template-troubleshoot.md          Troubleshoot 템플릿 (공유)
 │
-├── M1-foundation/
-│   ├── 01-solution-bootstrap.md       Phase 01 정리
-│   ├── 02-shared-library.md           Phase 02 정리
-│   ├── 03-tcp-listener.md             Phase 03 정리
-│   ├── 04-framing-and-pingpong.md     Phase 04 정리
-│   ├── concepts/
-│   │   ├── async-await.md             깊이 판 개념들
-│   │   ├── tcp-stream-vs-message.md
-│   │   ├── length-prefix-framing.md
-│   │   └── ...
-│   └── troubleshoots/
-│       └── 2025-XX-XX-partial-read-bug.md
+├── youngho/                           ← 팀장(유영호) 개인 폴더 (다른 팀원은 안 보임)
+│   ├── M1-foundation/
+│   │   ├── 01-solution-bootstrap.md       Phase 01 정리
+│   │   ├── 02-shared-library.md           Phase 02 정리
+│   │   ├── concepts/                      깊이 판 개념들
+│   │   └── troubleshoots/                 트러블슐팅 기록
+│   └── M2-first-connection/
+│       └── ...
 │
-├── M2-first-connection/
+├── ingyu/                             ← 김인규 개인 폴더 (합류 시 자신이 생성)
 │   └── ...
-└── ...
+│
+├── yuhyun/                            ← 정유현 개인 폴더
+│   └── ...
+│
+└── jungwoo/                           ← 박정우 개인 폴더 (MES 별도 레포이지만 본인 일지는 여기 가능)
+    └── ...
 ```
+
+**새 합류자 셋업**: `/setup:*` 슬래시 커맨드가 자동으로 자신의 폴더를 생성하고 첫 일지를 쓰도록 안내. 수동 셋업 시: `mkdir 00_Document/learning-journal/<본인-네임스페이스>`.
 
 ---
 
