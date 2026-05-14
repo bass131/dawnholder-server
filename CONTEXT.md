@@ -57,9 +57,9 @@
 
 ---
 
-## ⏸️ 현재 멈춤 지점 (2026-05-11 / 12 갱신)
+## ⏸️ 현재 멈춤 지점 (2026-05-14 갱신)
 
-**★ M2 Phase 05 완료 — client prediction + snap reconcile, 4/4 완료조건 wire 검증**. 다음 작업 = **Phase 06 input replay reconcile** 진입 직전.
+**★ M2 Phase 05 완료**(client prediction + snap reconcile, 4/4 완료조건 wire 검증, `b02df49` + DONE `a118552`). **Phase 06 진입 전 사이드 트랙 직렬 처리 중**.
 
 ### M2 진행 현황 (commit hash로 추적)
 - ✅ Phase 01 — Unity 씬 + Player/Ground/Camera (`f26fc92`)
@@ -67,30 +67,28 @@
 - ✅ Phase 03 — 접속 핸드셰이크 (S_EnterMap) + ConcurrentQueue 마샬링 + 헌법 #1 첫 실전 (`d0b94d3`)
 - ✅ Phase 04 — C_MoveIntent + S_Snapshot + 헌법 #3 검증 골격 (lag 의도 노출) (`d9f8351`)
 - ✅ Phase 05 — client prediction + snap reconcile, **헌법 #1 코드 시연**(cheat dx=-1000) (`b02df49` + DONE.md `a118552`)
-- ⏳ Phase 06 — input replay reconcile (snap → 부드러운 따라잡음) (**다음 진입**)
+- ⏳ Phase 06 — input replay reconcile (snap → 부드러운 따라잡음) (**사이드 트랙 후 진입**)
 
-### 2026-05-11 본 세션 사이드 트랙
-- ✅ **Phase 03·04 라운드트립 회귀 안전망** (Phase 05 commit에 포함) — `PacketRoundTripTests`에 EnterMap/LeaveMap/MoveIntent/Snapshot Write→Read 왕복 +38 케이스. dotnet test 25→63 PASS. PacketGenerator byte/sbyte 정정 + .NET Std 2.1 float 경유 회귀 가드.
-- ✅ **240Hz framerate-bound 송신 발견** (Phase 05 검증 부산물) — 클라가 매 frame 송신 시 wire rate 300-500/s, 서버 20Hz 대비 96% 낭비 + 정상 사용자가 rate-limit cheat 의심으로 잘못 분류. 임시 정정: 임계 100→500 + 윈도우당 첫1회만 로깅. 본질 fix는 Phase 06 fixed timestep accumulator.
-- ✅ **SnapThreshold 0.5→1.0 튜닝** — 검증 데이터(자연 drift 0.5 직상)가 임계 너무 빡빡함을 보여줘 1.0으로 조정. Phase 06 fixed simulation 후 다시 좁힐 여지.
-- ✅ **노션 세션 로그 박제** — Codex CLI 위임으로 STAR + 용어 풀이.
-
-### 2026-05-12 본 세션 사이드 트랙
-- ✅ **ADR-018 신규 — 하네스 망각 안전망(봉투 + 핀 + WORK-ID)** — AI 컨텍스트 디케이 진단 후 입구·출구 한 짝 안전망 + WORK-ID 합류 마커링. Codex CLI 3라운드 자문(R1 표준 봉투화 / R2 LLM self-check 금지 / R3 WORK-ID·핀 갱신 정책) 교차 검증. 6파일 신규(`current-pin.txt` / `inject-current-pin.sh` UserPromptSubmit / `check-work-envelope.sh` Stop / `pin-template.txt` 이식용 + CLAUDE.md 봉투·핀 섹션 / settings.json 훅 등록). 정합 갱신 5파일(CONTEXT.md / done-md-template.md / work:plan.md / learning-journal 3 템플릿). 후속 트랙(SessionStart 훅 / 라우팅 결정 트리)은 "**스타트 버튼 = 사용자 의지 표현이지 단순 반복 아님**" 통찰로 비채택 — 페인 분류를 단순 반복(A) / 본인 의지 표현(B) / 안전·확인 게이트(C)로 재정렬한 결과 그 둘은 B형.
+> 5/11·5/12·5/14 일별 사이드 트랙 디테일은 [`CONTEXT_History.md`](CONTEXT_History.md) 한 줄씩 박힘. 본 응축 직전 5/14 세션에서 ADR-018 사후 검증 5/5 정상 확정 + ADR.md 220줄 임계 초과 발견 → 시나리오 A 확정.
 
 ### M1 완료 요약 (이전 시점, [`CONTEXT_History.md`](CONTEXT_History.md) + `-DONE.md` 참조)
 Phase 01~07 + 회귀 안전망. 솔루션 부트스트랩 / ServerCore 7파일 / 04_ClientNet Y2 분리 / Listener wire-up / framing+Ping-Pong / PacketGenerator 이주 / PDL 정합. M2 진입 전 도구대 정합도 완료.
 
-### 다음 세션 첫 액션
-1. **Phase 06 진입** — `01_Phases/M2-first-connection/06-input-replay-reconcile.md` 통독 → 6 step 분해 같은 패턴 (Phase 05 흐름 참조)
-2. **사전 정리 (Phase 06 시작 전)**: `clientTick = (uint)` 음수 캐스트 정합(Phase 04 본 리뷰 🟡, replay에서 폭발) + framerate-bound 송신 throttle (Phase 06 본 작업에 자연 흡수 예상)
-3. (옵션 — 강력 권유) **Phase 05 학습 일지** — 기억 휘발 전. 특히 ★★★ `/journal:concept Server Authority 코드 시연` (cheat dx=-1000 wire 박힘, 면접 결정타)
+### 다음 세션 첫 액션 (사이드 트랙 직렬, Phase 06 핀 좌표는 손대지 않음)
+1. **CONTEXT.md 응축** — 본 응답으로 진행 중. 5/11·5/12·5/14 sub-section을 History 한 줄 이주.
+2. **ADR.md 카테고리 외부화** — 헌법 ADR-014 (b) 패턴(`00_Document/ADR/{tech-stack, gameplay, harness}/`). 카테고리 경계 본인 결정 필요(특히 ADR-011 같이 경계 애매한 것). 헌법의 `[ADR-XXX]` 인용 링크 정합도 같이.
+3. **ADR-020 박제** — 외부화 직후. 골자는 5/14 의논에서 확정(훅 환경 의존성 + 파일 append 검증 패턴 부록 A). 후보 표 ADR-020 → ADR-021 밀어내기.
+4. **Phase 06 진입** — `01_Phases/M2-first-connection/06-input-replay-reconcile.md` 통독 → 6 step 분해 (Phase 05 흐름 참조)
+5. **사전 정리 (Phase 06 시작 전)**: `clientTick = (uint)` 음수 캐스트 정합(Phase 04 본 리뷰 🟡, replay에서 폭발) + framerate-bound 송신 throttle (Phase 06 본 작업에 자연 흡수 예상)
+6. (옵션 — 강력 권유) **Phase 05 학습 일지** — 기억 휘발 전. 특히 ★★★ `/journal:concept Server Authority 코드 시연` (cheat dx=-1000 wire 박힘, 면접 결정타)
 
 ### 학습 일지 후보 (밀린 것 + 본 세션 추가, 시간 흐르기 전)
 - ★★★ `/journal:concept Server Authority 코드 시연 (헌법 #1)` — Phase 05 cheat 시뮬 wire 박힘. 면접 결정타.
 - ★★ `/journal:concept Client-side prediction` — Phase 05 직접 구현 + 한계 발견.
 - ★★ `/journal:concept Prediction 본질적 한계 (방향 전환 클러스터링)` — Phase 05 본인 시각 관찰 + 데이터 부합.
 - ★★ `/journal:bug 한글 경로 도구 호환성 (Burst + WDAC)` — Phase 03·04 두 사건 같은 뿌리.
+- ★★ `/journal:bug ADR-018 5개 훅 48시간 silent fail 의심 → PATH 정정 → 5/5 정상 확정` — 5/14 본 세션. Windows에서 bash 훅 PATH 누락이 디폴트로 silent fail이라는 사실 + Claude Code가 PostToolUse/Stop 훅 exit 0 stderr를 silent 처리한다는 부수 발견. "안전망 박은 후 검증 안 하면 안전망인지 모른다" 교훈.
+- ★★ `/journal:concept 하네스 안전망 검증 절차 (파일 append 트레이스 패턴)` — 5/14 본 세션. 재사용 가능한 검증 도구: `echo "[HOOK-MARKER] <이름> $(date) pid=$$" >> log` 패턴. stderr만으로 결정적 증거 못 얻는 환경(Claude Code 등)에서 안전망 동작 검증의 표준 절차.
 - `/journal:bug framerate-bound 송신 (240Hz 모니터)` — Phase 05 검증 부산물.
 - `/journal:concept Map=Actor + ConcurrentQueue 마샬링` — Phase 03.
 - `/journal:concept Intent vs State 분리` — Phase 04.
@@ -166,7 +164,9 @@ Phase 01~07 + 회귀 안전망. 솔루션 부트스트랩 / ServerCore 7파일 /
 폴더는 탐색기 정렬 고정용 숫자 prefix를 갖습니다.
 
 ```
-00_Document/PRD.md, ARCHITECTURE.md, ADR.md     ← 결정·구조
+00_Document/PRD.md, ARCHITECTURE.md, ADR.md     ← 결정·구조 (ADR.md는 thin landing)
+00_Document/ADR/{tech-stack,gameplay,harness}/   ← ADR 본문 카테고리별 외부화 (2026-05-14)
+00_Document/ADR/INDEX.md                         ← ADR 전체 목록 + 1줄 요약
 00_Document/ADR_History.md                       ← ADR 변경 이력 (외부화)
 00_Document/commands-index.md                    ← 14개 슬래시 커맨드 카탈로그
 00_Document/learning-journal/M{N}-{slug}/        ← Phase 학습 일지

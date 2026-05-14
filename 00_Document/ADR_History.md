@@ -26,3 +26,5 @@
 | 2026-05-11 | ADR-017 신규 (프로젝트 폴더 ASCII 경로 이동 — 한글 경로 영구 해결) | Phase 03·04에서 한글 경로 도구 호환성 사건 반복. ASCII 경로 이동 후 build/test/PacketGenerator 직접 실행 검증 완료. WDAC 차단(error 4551)은 별도 사건으로 명시 분리. |
 | 2026-05-11 | 변경 이력 외부화 (ADR.md → ADR_History.md) | ADR.md 220줄 임계 대응. CONTEXT_History 패턴 동일. |
 | 2026-05-12 | ADR-018 신규 (하네스 망각 안전망 — 봉투 + 핀 + WORK-ID) | LLM context decay 진단 후 입구·출구 한 짝 안전망 + WORK-ID 합류 지점 도입. Codex 3라운드 자문 반영. 헌법 5요구 중 4번(컨텍스트 분기 망각)/5번(이식성) 직접 해소. |
+| 2026-05-14 | ADR 본문 카테고리 외부화 (`00_Document/ADR/{tech-stack,gameplay,harness}/` + `ADR/INDEX.md`) | ADR-014 정책 (b) 카테고리 분리 패턴 발화. ADR.md가 ADR-020 추가 시 220줄 초과 확정 → 채택된 18개 ADR을 카테고리 폴더로 분할. ADR.md는 thin landing(템플릿 + 후보 표 + INDEX 링크)으로 응축. 카테고리: tech-stack(9), gameplay(4), harness(5). |
+| 2026-05-14 | ADR-020 신규 (훅 실행 환경 의존성 — Git Bash on Windows + 검증 패턴) | ADR-018 사후 검증 48시간 silent fail 사건의 박제. Windows에서 bash 훅 실행 = Git for Windows + 시스템 PATH 전제 + Claude Code가 PostToolUse/Stop exit-0 stderr를 silent 처리한다는 부수 발견. 부록 A에 재사용 가능 검증 패턴(`echo "[HOOK-MARKER] ..." >> log`) 박음. 후보 표 번호 shift — 캐릭터 데이터 스키마는 ADR-020 → ADR-021. |
