@@ -11,7 +11,7 @@
 
 ## 이 파일의 역할
 
-`CONTEXT.md`의 누적 섹션 외부화 (헌법: 문서 세분화 정책, Level 1).
+`CONTEXT.md`의 누적 섹션 외부화 ([`00_Document/policies/doc-thresholds.md`](00_Document/policies/doc-thresholds.md) Level 1).
 
 본 파일이 220줄을 넘으면 주제별 카테고리(`CONTEXT_History/{topic}.md`)로
 분리. 후보 카테고리: phases / policies / structure / meetings.
