@@ -105,7 +105,7 @@ Phase 끝:    -DONE.md 박제 후
 
 | 계층 | 자산 | 역할 |
 |---|---|---|
-| L1 — 규칙 | [`CLAUDE.md`](CLAUDE.md) | 헌법. AI가 위반 시도 시 거부하도록 박힌 절대 원칙 |
+| L1 — 규칙 | [`CLAUDE.md`](CLAUDE.md) + [`00_Document/policies/`](00_Document/policies/INDEX.md) | 헌법은 절대 원칙·라우팅·스택만 (175줄, 2026-05-15 응축). 운영 정책 5개(보고 양식 / 핀·박제 / 문서 임계 / 리뷰 Tier)는 `policies/`로 외부화 |
 | L2 — 역할 | [`.claude/agents/`](.claude/agents/) | 서브에이전트 7개 (netcode / gameplay / client / content / persistence / qa-sim / **reviewer**—ADR-019 Tier 2 자동 리뷰) |
 | L3 — 단축키 | [`.claude/commands/`](.claude/commands/) | 슬래시 커맨드 16개 (학습 5 / 일지 3 / 작업 5 / 세션 3 / 셋업 1) |
 | L4 — 검증 | [`.claude/hooks/`](.claude/hooks/) | 자동 검증 훅 5개 (work-envelope, phase-gate, server-authority, shared-changes, current-pin 주입) |
@@ -114,6 +114,8 @@ Phase 끝:    -DONE.md 박제 후
 - [`00_Document/PRD.md`](00_Document/PRD.md) — 무엇을 만드는지
 - [`00_Document/ARCHITECTURE.md`](00_Document/ARCHITECTURE.md) — 어떻게 만드는지
 - [`00_Document/ADR/`](00_Document/ADR/) — 결정 박제 (`INDEX.md`에 전체 목록)
+- [`00_Document/policies/`](00_Document/policies/INDEX.md) — 헌법 외부화 정책 5파일 (Action 1, 2026-05-15). 자기참조 정책 루프 해소 — "절대 어기지 않는 것"(헌법) vs "그것을 어떻게 운영하는가"(정책) 분리
+- [`00_Document/REVIEW_CHECKLIST.md`](00_Document/REVIEW_CHECKLIST.md) — reviewer 에이전트 5축 점검 기준 (ADR-019)
 - [`01_Phases/`](01_Phases/) — Phase 단위 작업 박제 (`{NN}-*.md` 정의 + `{NN}-*-DONE.md` 결과 페어)
 
 ---
@@ -121,7 +123,7 @@ Phase 끝:    -DONE.md 박제 후
 ## 폴더 구조
 
 ```
-00_Document/        결정·구조 문서 (PRD, ARCHITECTURE, ADR, 학습 일지)
+00_Document/        결정·구조 문서 (PRD, ARCHITECTURE, ADR, policies, REVIEW_CHECKLIST, 학습 일지)
 01_Phases/          작업 단위 (마일스톤별 폴더, Phase 페어)
 02_Server/          권위 서버 (.NET 10) — 팀장 단독
 03_Client/          Unity 클라 (6000.4.1f1) — 인규/유현 공유
