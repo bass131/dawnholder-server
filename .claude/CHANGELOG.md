@@ -28,6 +28,7 @@
 
 | 날짜 | 변경 | 위험도 |
 |------|------|--------|
+| 2026-05-15 | ADR-019 박제: Reviewer 서브에이전트 도입 (Tier 2 자동 리뷰). 신규 `.claude/agents/reviewer.md` + `00_Document/REVIEW_CHECKLIST.md` (5축 점검 매핑) + 헌법 `## Tier 2 자동 리뷰` 섹션 추가. 도메인 에이전트 코드 변경 후 메인 세션이 트리거 조건(새 핸들러/패킷/공식/≥10줄/`98_Shared/` 포함) 충족 시 reviewer 자동 호출. 코드 스타일 검증은 의도적 Scope 제외 (Roslyn analyzer 도입 후보로 미루). 서브에이전트 6→7. | [M] |
 | 2026-05-14 | `/session:end` 슬래시 커맨드 신설 (Phase 마감 절차 8단계) + `/session:log` Codex 분기 추가 (Codex 없는 팀원은 Claude 단독 박제) + 헌법 Phase 완료 권유 섹션 통합 (15 → 16 슬래시) + inject-current-pin.sh 훅 확장 (commit 안 된 -DONE.md 경고 주입) | [M] |
 | 2026-05-14 | 협업 셋업 인프라 박제: `/setup` 슬래시 커맨드 + setup-steps 5개 + CHANGELOG 시스템 + CODEOWNERS + `/session:start` CHANGELOG 자동 확인 | [M] |
 | 2026-05-14 | `.vscode/settings.json` 화이트리스트로 공유 (통합 터미널 Git Bash + 자동 저장 + LF + 저장 시 포맷) | [M] |

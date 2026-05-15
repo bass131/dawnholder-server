@@ -23,7 +23,7 @@
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
 | [`/work:plan`](../.claude/commands/work/plan.md) | 큰 목표를 1~3시간짜리 Phase들로 쪼개고 싶을 때 | `<목표>` |
-| [`/work:review`](../.claude/commands/work/review.md) | 최근 변경이 헌법/ADR/구조를 잘 따르는지 자동 점검 | (인풋 없음) |
+| [`/work:review`](../.claude/commands/work/review.md) | **Tier 3** 수동 깊은 리뷰 — Phase 단위로 최근 변경이 헌법/ADR/구조를 잘 따르는지 자세한 점검. *Tier 2 자동 리뷰(reviewer 에이전트, 코드 변경당 호출)과는 별도* — Tier 3는 *사용자 명시 호출*이고 더 상세함. | (인풋 없음) |
 | [`/work:new-packet`](../.claude/commands/work/new-packet.md) | 새 패킷을 클라/서버 양쪽 wiring까지 한 번에 추가 | `<C2S\|S2C> <name>` |
 | [`/work:new-monster`](../.claude/commands/work/new-monster.md) | 새 몬스터 데이터 추가 (엔진 코드 변경 없음) | `<name> <level> <map>` |
 | [`/work:load-test`](../.claude/commands/work/load-test.md) | 헤드리스 봇 부하 테스트 시나리오 실행 + 리포트 | `<scenario> <bots> [duration]` |
@@ -63,6 +63,12 @@
 ---
 
 ## 비슷한 것끼리 차이 (헷갈리기 쉬운 것)
+
+### `/work:review` vs Tier 2 자동 리뷰 (reviewer 에이전트) — ADR-019
+- **`/work:review` (Tier 3)** — 사용자가 *명시 호출*. Phase 완료 시점 등 큰 단위 재점검. 상세 보고서 출력.
+- **Tier 2 reviewer 에이전트** — 메인 세션이 *자동 호출* (코드 변경 후 트리거 조건 충족 시). 요약만 출력. 사용자가 명시 조작 불필요 (우회는 가능 — 헌법 "Tier 2 자동 리뷰" 섹션 참조).
+
+→ 둘은 **상호 보완**. 호출 방식과 출력 폭이 다름. 아키텍쳐 점검 기준은 둘 다 동일하게 [`REVIEW_CHECKLIST.md`](REVIEW_CHECKLIST.md).
 
 ### `/learn:why` vs `/learn:concept` vs `/learn:explain`
 - **`/learn:why <X>`** — "X가 **왜** 존재해야 하는가". 동기·목적·trade-off

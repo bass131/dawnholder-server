@@ -106,7 +106,7 @@ Phase 끝:    -DONE.md 박제 후
 | 계층 | 자산 | 역할 |
 |---|---|---|
 | L1 — 규칙 | [`CLAUDE.md`](CLAUDE.md) | 헌법. AI가 위반 시도 시 거부하도록 박힌 절대 원칙 |
-| L2 — 역할 | [`.claude/agents/`](.claude/agents/) | 서브에이전트 6개 (netcode / gameplay / client / content / persistence / qa-sim) |
+| L2 — 역할 | [`.claude/agents/`](.claude/agents/) | 서브에이전트 7개 (netcode / gameplay / client / content / persistence / qa-sim / **reviewer**—ADR-019 Tier 2 자동 리뷰) |
 | L3 — 단축키 | [`.claude/commands/`](.claude/commands/) | 슬래시 커맨드 16개 (학습 5 / 일지 3 / 작업 5 / 세션 3 / 셋업 1) |
 | L4 — 검증 | [`.claude/hooks/`](.claude/hooks/) | 자동 검증 훅 5개 (work-envelope, phase-gate, server-authority, shared-changes, current-pin 주입) |
 
