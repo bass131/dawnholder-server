@@ -877,6 +877,19 @@
         <p style="margin-top: 8px;"><strong>절대 금지 (이거 치면 작업물 증발)</strong>: <code>git reset --hard</code> · <code>git checkout .</code> · <code>git clean -fd</code></p>
         <p style="margin-top: 12px;">충돌·복구 상황은 무조건 팀장(유영호) 슬랙. 부끄러운 일 아닙니다. 위 3개 명령은 한 번 치면 되돌릴 수 없어요.</p>
       </div>
+
+      <div class="callout note">
+        <div class="callout-title">💡 갑자기 STOP 떴어요? — 하네스 변경 후 첫 세션</div>
+        <p>본인이 마지막 작업한 이후 팀장(또는 본인)이 <code>.claude/</code> 안의 슬래시 커맨드·헌법·하네스를 갱신했을 수 있어요. 그런 변경은 <code>.claude/CHANGELOG.md</code> <strong>최상단</strong>에 한 줄씩 박힙니다 (위험도 <code>[L]</code> / <code>[M]</code> / <code>[H]</code> 표시).</p>
+        <p style="margin-top: 12px;"><code>/session:start</code>의 게이트나 다른 슬래시 커맨드 동작이 <strong>어제와 다르게</strong> 보이면 그건 버그가 아니라 <strong>변경 인지의 신호</strong>예요. 안전 장치가 박힌 거지 갑자기 동작이 바뀐 게 아닙니다.</p>
+        <p style="margin-top: 12px;"><strong>첫 STOP 만났을 때 3단계</strong>:</p>
+        <ol style="margin-top: 6px; padding-left: 22px;">
+          <li>CHANGELOG 최상단 한 줄 읽기 (오늘 또는 가까운 날짜의 변경)</li>
+          <li>게이트가 띄운 STOP 메시지 안내대로 처리 (브랜치 이동 · stash · wip commit 등)</li>
+          <li>그래도 헷갈리면 팀장(유영호) 슬랙. <strong>부끄러운 일 아닙니다</strong> — 하네스 전환 시점에 한 번씩 다 겪어요.</li>
+        </ol>
+        <p style="margin-top: 12px;"><code>[H]</code> 변경이면 슬랙에도 별도 안내가 갔을 거예요 — 그것도 같이 보면 컨텍스트가 더 빨리 잡힙니다.</p>
+      </div>
     </section>
 
     <div class="divider">Slash Commands</div>
