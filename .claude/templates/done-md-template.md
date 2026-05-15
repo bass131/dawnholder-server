@@ -1,6 +1,6 @@
 # -DONE.md 템플릿
 
-> Phase 완료 시 AI가 작성하는 사실 박제 페어 (헌법: "Phase 완료 시 -DONE.md 박제" 섹션).
+> Phase 완료 시 AI가 작성하는 사실 박제 페어 ([`00_Document/policies/pin-and-done.md`](../../00_Document/policies/pin-and-done.md) 2번 절 참조).
 >
 > 5단계 보고를 출력한 직후 같은 응답 안에서 AI가 작성·commit.
 > 작성 위치: `01_Phases/M{N}-{slug}/{NN}-{phase-name}-DONE.md`

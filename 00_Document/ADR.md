@@ -57,4 +57,4 @@
 
 ## 변경 이력
 
-> 이력은 [`ADR_History.md`](ADR_History.md) 참조. 새 ADR 추가/갱신 시 본 파일이 아니라 거기에 한 줄씩 추가 (헌법: 문서 세분화 정책 — 누적 섹션 외부화).
+> 이력은 [`ADR_History.md`](ADR_History.md) 참조. 새 ADR 추가/갱신 시 본 파일이 아니라 거기에 한 줄씩 추가 ([`00_Document/policies/doc-thresholds.md`](policies/doc-thresholds.md) — 누적 섹션 외부화).

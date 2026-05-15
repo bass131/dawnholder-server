@@ -56,7 +56,7 @@ argument-hint: <마일스톤 또는 목표 설명>
 
 ### 4.5. 핀 자동 시드 (ADR-018 입구 안전망)
 
-Phase 파일 생성 직후 `.claude/state/current-pin.txt`를 마일스톤의 **첫 Phase 좌표**로 시드 (헌법 "작업 좌표 핀" 섹션 + `.claude/templates/pin-template.txt` 참조). 시드 필드:
+Phase 파일 생성 직후 `.claude/state/current-pin.txt`를 마일스톤의 **첫 Phase 좌표**로 시드 ([`00_Document/policies/pin-and-done.md`](../../../00_Document/policies/pin-and-done.md) 1번 절 + `.claude/templates/pin-template.txt` 참조). 시드 필드:
 
 - `WORK-ID: phase{NN}-{first-phase-slug}` ← 합류 ID. 봉투/-DONE.md/학습 일지에 동일하게 박힘
 - `PHASE: {NN}/{전체}` ← 예: `01/08`
@@ -67,7 +67,7 @@ Phase 파일 생성 직후 `.claude/state/current-pin.txt`를 마일스톤의 **
 - `학습 보존:` 첫 Phase의 📚 학습 포인트 키워드 콤마 구분
 - `마지막 갱신: {YYYY-MM-DD}`
 
-→ 시드된 직후 `UserPromptSubmit` 훅이 다음 입력부터 자동 주입. 사용자가 다른 Phase로 점프하면 그때 갱신 (헌법 갱신 정책: "완료 조건/다음 액션 변경 시만" + 사용자 확인).
+→ 시드된 직후 `UserPromptSubmit` 훅이 다음 입력부터 자동 주입. 사용자가 다른 Phase로 점프하면 그때 갱신 ([`00_Document/policies/pin-and-done.md`](../../../00_Document/policies/pin-and-done.md) 1번 절 갱신 정책: "완료 조건/다음 액션 변경 시만" + 사용자 확인).
 
 ### 5. 사용자에게 보고
 

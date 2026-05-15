@@ -4,6 +4,8 @@
 모든 에이전트(메인/서브)는 변경 작업 전에 이 문서를 반드시 읽습니다.
 다른 문서와 충돌하면 이 문서가 이깁니다.
 
+> **헌법 운영 원칙**: 헌법은 *AI가 매 응답마다 떠올려야 할 절대 규칙*만 담습니다. 정책·양식·운영 가이드는 [`00_Document/policies/`](00_Document/policies/INDEX.md)로 외부화. 헌법 ≠ 정책 백과사전.
+
 ---
 
 ## 👥 사용자 컨텍스트 (먼저 읽으세요)
@@ -19,193 +21,58 @@
 - **전문 용어 첫 사용 시 풀어쓰기**. 예: "직렬화(serialization, 객체를 바이트로 변환)는...". 영어 약어도 한 번은 풀이 ("TCP(Transmission Control Protocol)"). 두 번째부터 OK.
 - **결정엔 항상 trade-off**. "A를 골랐다"가 아니라 "A vs B 중 A, 이유는..., 단점은..." 형식. "정답" 단정 X — "이 상황에선 이 선택이 보통 좋아요" 정도.
 
-### 작업 완료 보고 (필수)
+### 작업 보고 (2 양식)
 
-코드 작업 끝나면 5단계 보고. 작은 작업은 짧게, 큰 작업은 자세히 — 길이는 작업 크기에 비례.
+- **Phase 완료 시**: 5단계 보고 출력 (🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음)
+- **매 코드 응답 끝**: work-envelope 봉투 첨부 (`Edit`/`Write`/`MultiEdit` 호출 시)
 
-```
-─────────────────────────────────────────
-📋 작업 완료 보고: [작업 제목]
-─────────────────────────────────────────
+두 양식은 *부분집합 아님* (Phase 완료 + 코드 변경 응답엔 *둘 다* 첨부).
 
-🎯 무엇을 만들었나 — 결과물을 사람 말로 한두 문장 (코드 줄 단위 X)
-🤔 왜 필요한가 — 이게 없으면 뭐가 문제인지, 큰 그림에서 어디 끼는 조각인지
-🛠️ 어떻게 만들었나 — 핵심 선택 1~3개와 이유 / 안 고른 대안과 이유 / 새 개념 한 줄
-🧪 테스트 결과 — 무엇 돌렸는지 / 결과(통과/실패/측정값) / 수동 확인 절차
-➡️ 다음 스텝 — 이어지는 작업 / 추천 1~2개 / 후속 고려사항
-```
+양식·WORK-ID 규칙·훅 동작 → [`00_Document/policies/reporting-format.md`](00_Document/policies/reporting-format.md)
 
-### 코드 작업 봉투 (필수, Phase 완료 보고와 별개)
+### 작업 좌표 + Phase 완료 박제
 
-`Edit` / `Write` / `MultiEdit`를 한 번이라도 호출한 응답 끝에는 **work-envelope 봉투**를 첨부합니다. 일반 대화·질문·설계 토론 응답에는 첨부하지 않습니다.
+- **작업 중**: `.claude/state/current-pin.txt`가 좌표 보존, AI가 변경 시 갱신
+- **Phase 완료 시**: `-DONE.md` 작성 (AI가 사실 박제) → 두 액션 권유 (학습 일지 + 세션 마감)
+- **역할 분담**: `-DONE.md` = AI(사실), `learning-journal/` = 본인(회고). 가짜 학습 방지.
 
-봉투 형식 (코드 블록 그대로):
-
-    <!-- work-envelope: <WORK-ID> -->
-    변경: <건드린 파일 + 핵심 변경 한 줄>
-    검증: <실행한 빌드/테스트 결과 또는 미실행 사유>
-    남은 것: <TODO / 리스크 / 다음 액션>
-    학습 포인트: <사용자가 따라가야 할 개념 1줄>
-    <!-- /work-envelope -->
-
-**WORK-ID** = 현재 Phase의 slug (예: `phase05-snap-reconcile`) 또는 일반 작업 시 `ad-hoc-YYYYMMDD-주제`. 핀(`.claude/state/current-pin.txt`)·-DONE.md·학습 일지에 동일하게 박아 산출물을 그래프화 → 나중에 `grep "<WORK-ID>"` 한 방으로 한 작업의 모든 흔적 회수.
-
-**왜 봉투인가**: 5단계 보고는 Phase 완료 시만 적용되어 Phase 외 코드 작업의 검증·다음 액션 약속이 망각됨. 봉투는 *매 코드 응답*에 강제하는 미니 안전망. Phase 완료 보고는 별개 — 부분집합 아님 (Codex R2 통찰). 자세한 결정 흔적은 [ADR-018].
-
-**Stop 훅 검산**: `.claude/hooks/check-work-envelope.sh`가 transcript에서 도구 사용 여부 + 마커(`work-envelope`) + 4 헤더(`변경:` `검증:` `남은 것:` `학습 포인트:`) + WORK-ID 존재를 grep으로 확인. 누락 시 stderr 경고만(차단 X) → AI가 다음 응답에서 보강.
-
-### 작업 좌표 핀 (current-pin.txt) — 입구 안전망
-
-`.claude/state/current-pin.txt`에 현재 작업 좌표를 8~12줄로 보관. **UserPromptSubmit 훅**(`.claude/hooks/inject-current-pin.sh`)이 매 사용자 입력 직전 핀 내용을 컨텍스트 상단에 주입 → 학습 질문 끼어들어도 다음 턴에 작업 좌표 자동 복원 (헌법 사용자 컨텍스트 4번 — "Phase 중 질문 시 과정 깨짐" 페인 해소).
-
-핀 필드: `WORK-ID / PHASE / 현재 작업 / 완료 조건 / 다음 액션 / 주의할 약속 / 학습 보존 / 마지막 갱신`. 빈 템플릿은 [`.claude/templates/pin-template.txt`].
-
-**갱신 정책** (잘못된 핀 고착 방지 — Codex R3 권고):
-- Phase 시작 시 자동 생성 (`/work:plan` 호출 직후)
-- **이미 분해된 마일스톤에서 다음 Phase 진입 시** AI가 사용자 확인 후 핀을 그 Phase 좌표로 갱신 (사용자의 진입 의지 표현 — "Phase NN 시작하자" 같은 — 시점에. work:plan 갭 메우기)
-- 코드 변경 후 봉투 작성 시 AI가 **변경된 항목만** 갱신 (현재 작업 / 다음 액션)
-- 완료 조건 진척 시 AI가 사용자 확인 후 갱신
-- 주의할 약속 · 학습 보존은 사용자 수동
-- Phase 완료 시 archived 또는 cleared
-
-### Phase 완료 시 -DONE.md 박제 (필수, 학습 일지 권유보다 먼저)
-
-Phase 완료(파일의 모든 완료 조건 충족) 시 5단계 보고 직후 같은 응답에서 **AI가** 작성·commit:
-
-- 경로: `01_Phases/M{N}-{slug}/{NN}-{phase-name}-DONE.md` (짝꿍 페어)
-  예: `03-tcp-listener.md` ↔ `03-tcp-listener-DONE.md`
-- 템플릿: [`.claude/templates/done-md-template.md`](.claude/templates/done-md-template.md) 참조
-
-**역할 분담**:
-- `-DONE.md` = 사실·결정·증상·키워드 박제. **AI가 작성**. 잊히기 전에.
-- `learning-journal/` = 본인 회고·교훈·면접 답변. **본인이 작성** (AI는 인터뷰만).
-- 본인이 일지 쓸 때 `-DONE.md`를 사실 베이스로 활용.
-
-**Post-flight 게이트 (훅으로 강제)**:
-
-`-DONE.md` Write/Edit 시 `.claude/hooks/validate-phase-gate.sh`가 형식 검사. 누락 시 `exit 2`로 차단 → AI가 빠진 항목 채워서 재시도. 학습 호흡은 수동 유지하되, **박제 시 빼먹기는 물리적으로 차단**.
-
-훅이 강제하는 4가지:
-1. **YAML frontmatter 필수 필드**: `summary` (1줄, 다음 Phase가 인용할 표준 입력), `phase`, `status`
-2. **필수 H2 섹션 5개**: `TL;DR` / `5단계 보고` / `AC 검증 결과` / `결정 흐름` / `학습 일지 후보 키워드`
-3. **5단계 보고 항목 라벨 5개**: 무엇을 만들었나 / 왜 필요한가 / 어떻게 만들었나 / 테스트 결과 / 다음 스텝
-4. **`AC 검증 결과` 섹션 본문 비어있지 않음**: Phase 파일의 완료조건을 **실제로 실행한** 명령어 + 결과 박제 (추측·요약 X)
-
-박제 후 학습 일지 권유로 넘어감.
-
-### Phase 완료 시 두 액션 권유 (필수)
-
-`-DONE.md` commit 직후 출력:
-
-> **📚 Phase 완료 — 다음 두 액션 권유합니다**
->
-> **1. 학습 일지 작성** (선택, 면접 무기로 누적):
-> - `/journal:phase` — Phase 통째 회고 (15~20분)
-> - `/journal:bug` — 막혔던 사건이 있었다면 (디테일 안 잊었을 때)
-> - `/journal:concept <키워드>` — 깊이 학습한 개념을 본인 말로
-> - 패스 (다음 Phase로) — 단, 가급적 오늘 안에 추천
->
-> **2. 세션 마감** (강한 권유, 작업 박제):
-> - `/session:end` — commit + PR + 노션 박제 + 다음 액션 결정까지 한 흐름
-> - 학부생 백지 팀원은 깜빡 위험 크니 잊지 말기
-> - `inject-current-pin.sh` 훅이 commit 안 된 -DONE.md 검출 시 매 입력 경고 주입 (안전망)
-
-**권유이지 강제 X**. 패스 시 즉시 존중. 같은 Phase에 두 번 권유 X.
-**Phase 외 일반 작업 후엔 권유 X** (Phase 단위 완료 시에만).
+라이프사이클·핀 필드·박제 게이트·권유 양식 → [`00_Document/policies/pin-and-done.md`](00_Document/policies/pin-and-done.md)
 
 ### 슬래시 커맨드
 
-- **학습/이해**: `/learn:why` `/learn:explain` `/learn:concept` `/learn:recap` `/learn:dumb-it-down`
-- **학습 일지**: `/journal:phase` `/journal:concept` `/journal:bug`
-- **작업 진행**: `/work:plan` `/work:review` `/work:new-packet` `/work:new-monster` `/work:load-test`
-- **세션**: `/session:start` (새 세션 첫 입력 — CONTEXT.md 인지 확인) `/session:end` (Phase 완료 마감 절차 — commit + PR + 박제 트리거) `/session:log` (노션 박제 — 보통 /session:end가 호출)
-
-전체 16개 커맨드의 카테고리·인풋·"비슷한 것끼리 차이"는 [`00_Document/commands-index.md`](00_Document/commands-index.md) 참조. 새 커맨드 추가 시 인덱스도 함께 갱신.
+학습 5개 / 일지 3개 / 작업 5개 / 세션 3개 — 총 16개. 카탈로그·인풋·차이 → [`00_Document/commands-index.md`](00_Document/commands-index.md). 새 커맨드 추가 시 인덱스도 함께 갱신.
 
 ---
 
-## 📂 00_Document/ 와 01_Phases/ 시스템
+## 📂 문서 운영
 
-### 00_Document/ (프로젝트의 뇌)
+### 00_Document/ 우선순위
 
 `CLAUDE.md`가 "어떻게 만들지"라면, `00_Document/`는 "무엇을/왜":
 
 - `00_Document/PRD.md` — 무엇을 만들지 (그리고 만들지 **않을** 것)
 - `00_Document/ARCHITECTURE.md` — 시스템 구조의 큰 그림
-- `00_Document/ADR.md` — 결정의 기록 (왜 이 선택을 했는지)
-- `00_Document/learning-journal/` — 학습 일지 (Phase/개념/트러블슈팅별)
+- `00_Document/ADR/` — 결정의 기록 (왜 이 선택을 했는지, `INDEX.md` 참조)
+- `00_Document/policies/` — 본 헌법의 운영 가이드 (`INDEX.md` 참조)
+- `00_Document/learning-journal/` — 학습 일지 (AI 결정에 영향 X, 본인 회고용)
 
-큰 작업 시작 전에 이 문서들을 먼저 참조하세요. 충돌 시 우선순위는:
-**`CLAUDE.md`(헌법) > `00_Document/ADR.md`(결정) > `00_Document/ARCHITECTURE.md`(구조) > `00_Document/PRD.md`(요구사항)**
+**충돌 시 우선순위**:
+**`CLAUDE.md`(헌법) > `00_Document/ADR/`(결정) > `00_Document/ARCHITECTURE.md`(구조) > `00_Document/PRD.md`(요구사항)**
 
-학습 일지(`learning-journal/`)는 후행 문서. AI 결정에 영향 안 주지만,
-사용자의 학습 누적이자 면접 자료. Phase 완료 시 작성 권유.
-
-### 01_Phases/ (작업 쪼개기)
+### 01_Phases/ 작업 쪼개기
 
 큰 목표는 1~3시간짜리 Phase로 쪼개서 `01_Phases/M{N}-{slug}/` 안에 보관.
 
-- 새 작업 시작 시: `/work:plan <목표>` 로 Phase 분해
+- 새 작업 시작: `/work:plan <목표>` 로 Phase 분해
 - 한 Phase = 한 마크다운 파일 + 명확한 완료 조건
-- Phase 끝나면 5단계 보고 + `/work:review`로 검증
-- 다음 Phase로 수동 이동 (자동 순차 실행 안 함 — 학습 호흡 유지)
+- Phase 끝 = 5단계 보고 + `/work:review`로 검증
+- 다음 Phase로 **수동 이동** (자동 순차 실행 X — 학습 호흡 유지)
 
-### 문서 세분화 정책 (220줄 임계)
+### 문서 세분화
 
-`.md` 파일이 **220줄을 넘으면** 문서 종류에 따라 응답:
+`.md` 파일 비대 시 외부화·응축·분해. 사전형 문서 220줄 / 헌법 350줄 임계. 단위 작업 문서(Phase, `-DONE.md`)는 *자르지 않음*.
 
-1. **누적 섹션이 있으면** → 그 섹션을 별도 파일로 외부화. 원본은 참조 링크만.
-   예: `CONTEXT.md`의 "갱신 이력" → `CONTEXT_History.md`
-2. **응축 가능하면** → 재작성. 옛 디테일은 git/학습 일지/노션으로 위임.
-   (CONTEXT 패턴 — CONTEXT.md 자체는 별도 200줄 임계 유지)
-3. **단위 작업 문서면** (Phase 파일, `-DONE.md`) → **자르지 않음**.
-   220줄 넘었다 = 작업 단위가 너무 컸다는 신호 → `/work:plan`으로 더 잘게.
-
-#### 분리된 파일도 220줄 넘으면 (재귀)
-
-**Level 1 (단일 파일) → Level 2 (주제별 카테고리)**:
-
-```
-{원본}/
-├── INDEX.md            ← 한 줄 요약 + 링크
-├── {topic-1}.md        ← 예: phases.md, policies.md, meetings.md
-└── {topic-2}.md
-```
-
-**Level 2 → Level 3 (비대해진 카테고리만 사건별)**:
-
-```
-CONTEXT_History/phases/
-├── INDEX.md
-├── phase-01-complete.md
-└── phase-02-complete.md
-```
-
-다른 카테고리는 그대로. 일률 적용 X.
-
-#### 폴더 분류 기준
-
-- ❌ **단위 기준** (시간 분기, 마일스톤 묶음): `2026-Q2.md`, `M1.md`
-- ✅ **항목 기준** (주제 카테고리): `phases.md`, `meetings.md`
-
-이유: 항목 기준이 *내용 단위*라 검색·참조가 직관적이고, 비대 시
-사건별로 재귀 세분화가 자연스러움.
-
-#### INDEX.md 규칙
-
-분리된 파일들이 모이는 폴더에는 항상 `INDEX.md` 둠:
-시간순(또는 의미순) 한 줄 요약 + 링크. 새 항목 추가 시 INDEX.md도 함께 갱신.
-
-#### 헌법(`CLAUDE.md`) 예외 — 350줄 임계
-
-`CLAUDE.md`는 220줄이 아닌 **350줄 임계**로 예외 처리. 350줄 넘으면 그때 응축 제안.
-
-이유:
-- **자기참조 무한 제안 루프 차단** — 헌법이 220 임계의 주체이자 대상이라 매 세션 "응축 제안" 무한 발화 위험.
-- 절대 원칙(49줄) + 세분화 정책(45줄) + 사용자 컨텍스트(~75줄) 같은 *본질적으로 큰 정책 모음*이 모여있어 220줄 이하 강제는 핵심 룰 손상 위험.
-- 350줄은 헌법의 자연스러운 성장 여지(현재 264줄 → 약 86줄 여유) + 진짜 비대 시 발화점 둘 다 확보.
-
-이 예외는 **`CLAUDE.md`에만 적용**. 다른 사전형 문서(ARCHITECTURE.md 등)는 220줄 임계 그대로 — 필요 시 별도 ADR로 예외 박기.
+세분화 절차·재귀 정책·발동 체크리스트 → [`00_Document/policies/doc-thresholds.md`](00_Document/policies/doc-thresholds.md)
 
 ---
 
@@ -222,7 +89,7 @@ CONTEXT_History/phases/
 폴더는 탐색기 정렬 고정용 숫자 prefix를 갖습니다 (의미는 헌법/ADR 기준).
 
 ```
-00_Document/   PRD, ARCHITECTURE, ADR, learning-journal — 결정과 학습 기록.
+00_Document/   PRD, ARCHITECTURE, ADR, policies, learning-journal — 결정·정책·학습 기록.
 01_Phases/     작업 단위(M{N}-{slug}/) Phase 마크다운.
 02_Server/     .NET 권위 서버. 98_Shared/ 읽기/쓰기 가능.
 03_Client/     Unity 프로젝트. 98_Shared/ 읽기만 (DLL로). 절대 98_Shared/에 쓰지 않음.
@@ -315,70 +182,13 @@ CONTEXT_History/phases/
 여러 도메인에 걸친 작업(예: "새 스킬 추가")은 메인 세션이 분해해서
 하나씩 위임합니다. **서브에이전트끼리는 서로를 호출하지 않습니다.**
 
----
+### Tier 2 자동 리뷰 (ADR-019)
 
-## Tier 2 자동 리뷰 (reviewer 에이전트)
+도메인 에이전트 코드 변경 후 메인 세션이 `reviewer` 서브에이전트 자동 호출 (조건부). 점검 대상: 헌법 / ADR / ARCHITECTURE / 테스트 / 도메인 패턴. **코드 스타일은 Scope 제외** (analyzer 위임 예정).
 
-도메인 에이전트가 코드를 만든 후, 메인 세션은 *조건부로* `reviewer` 서브에이전트를 자동 호출해 1차 검증을 수행합니다. ADR-019 시니어 피드백("검증 부실 — 리뷰어로 1차 검증") 대응.
+3-Tier 구조·트리거 조건·입력 약속·결과 처리·우회·실측 후 재조정 항목 → [`00_Document/policies/review-tiering.md`](00_Document/policies/review-tiering.md)
 
-### 3-Tier 리뷰 구조
-
-| Tier | 누가 | 언제 | 무엇을 |
-|---|---|---|---|
-| **Tier 1** 도메인 셀프리뷰 | 도메인 에이전트 자기 자신 | 코드 변경 직후, 봉투 작성 전 | 자기 영역의 헌법 위반 자체 점검 (합류 후 도입 예정) |
-| **Tier 2** 자동 통합 리뷰 | `reviewer` 서브에이전트 | 메인 세션이 트리거 조건 충족 시 자동 호출 | `00_Document/REVIEW_CHECKLIST.md` 기준 5축 점검 |
-| **Tier 3** 수동 깊은 리뷰 | `/work:review` 슬래시 커맨드 | 사용자가 명시 호출 | Phase 단위 상세 보고 |
-
-### Tier 2 트리거 조건 (메인 세션 책임)
-
-도메인 에이전트가 코드 변경 후 메인 세션으로 복귀하면, 메인 세션은 다음 조건을 *순서대로* 평가:
-
-**1. 무조건 호출 (조건 무시)**:
-- `98_Shared/` 변경 포함 → 호출
-- 새 핸들러/패킷/공식 추가 → 호출
-- 사용자가 *"리뷰 돌려줘"* 명시 요청 → 호출
-
-**2. 조건부 호출**:
-- 실질 코드 변경 ≥ 10줄 → 호출
-- 실질 코드 변경 < 10줄 → 스킵
-
-**3. 무조건 스킵**:
-- 테스트 파일만 변경 → 스킵 (회귀 안전망 강화는 리뷰 우선순위 낮음)
-- 주석/오타/rename만 → 스킵
-- 사용자가 *"리뷰 스킵해줘 — <사유>"* 명시 + 사유 첨부 → 스킵, 봉투에 사유 기록
-
-### 입력 약속 (메인 세션 → reviewer)
-
-reviewer 호출 시 다음 3개 전달 (`reviewer.md` 입력 약속 섹션 참조):
-
-1. `range`: 변경 범위 식별자 (Phase slug 또는 ad-hoc id, work-envelope의 WORK-ID와 동일)
-2. `files`: 변경된 파일 절대 경로 목록
-3. `diff_summary`: 메인 세션이 작성한 자연어 diff 요약 (몇 줄)
-
-3개 중 하나라도 누락 시 reviewer가 *추측 없이 즉시 종료*하므로, 메인 세션은 호출 전 3개 다 준비.
-
-### 결과 처리 (메인 세션 책임)
-
-reviewer가 반환한 리뷰 결과를 *그대로 사용자에게 노출* + 다음 액션:
-
-- **🔴 위반 있음** → 사용자에게 "고칠까요?" 확인 후, *재* 도메인 에이전트에 위임. 사용자가 *"패스"*하면 봉투에 `리뷰 패스 사유: <한 줄>` 기록.
-- **🟡 개선 제안만** → 그대로 보여주고 통과. 봉투엔 별도 기록 X.
-- **🟢 위반 0개** → 통과. 메인 세션이 봉투 마무리 후 사용자에게 최종 제시.
-
-### 우회 메커니즘 (S-1: 사유 명시 후 허용)
-
-사용자가 *"리뷰 스킵해줘"* 명시 시 메인 세션은 *사유*를 요청 (예: "임시 디버깅용", "다음 커밋에 별도 리뷰"). 사유 받으면 reviewer 호출 스킵 + `work-envelope`에 다음 줄 추가:
-
-    리뷰 스킵 사유: <사용자가 제공한 한 줄>
-
-이 흔적은 `grep "리뷰 스킵 사유"`로 한 방에 회수 — 우회 *습관화* 감지 가능.
-
-### 범위 (Scope)
-
-**점검 대상**: 헌법 / ADR / ARCHITECTURE / 테스트 커버리지 / 도메인 패턴.
-**점검 대상 아님**: 코드 스타일 (네이밍/들여쓰기/포매팅 등) — 미래에 Roslyn analyzer로 도입 예정 (ADR-019 후속 후보).
-
-자세한 책임 범위는 [`00_Document/REVIEW_CHECKLIST.md`](00_Document/REVIEW_CHECKLIST.md) 참조.
+> ⚠️ **현재 명세는 추측 기반** (2026-05-15 박힘, 실측 0건). 합류 후 1~2회 발동 관찰 → 트리거 조건 재조정 예정.
 
 ---
 

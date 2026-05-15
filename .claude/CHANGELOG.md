@@ -28,6 +28,7 @@
 
 | 날짜 | 변경 | 위험도 |
 |------|------|--------|
+| 2026-05-15 | 헌법 응축 (354→175줄, -51%) + 정책 4개 외부화 (`00_Document/policies/`). 신규: `reporting-format.md` (5단계 보고 + work-envelope) / `pin-and-done.md` (current-pin + -DONE.md 박제 + Phase 완료 권유) / `doc-thresholds.md` (220/350줄 임계) / `review-tiering.md` (ADR-019 Tier 2). 헌법 자체는 절대 원칙·라우팅·스택만 유지. 자기참조 정책 루프 해소. 6파일 7건 참조 갱신 (훅·커맨드·템플릿·ADR.md). 훅 grep 패턴↔외부 정책 양식 정합 6항목 확인. | [M] |
 | 2026-05-15 | ADR-019 박제: Reviewer 서브에이전트 도입 (Tier 2 자동 리뷰). 신규 `.claude/agents/reviewer.md` + `00_Document/REVIEW_CHECKLIST.md` (5축 점검 매핑) + 헌법 `## Tier 2 자동 리뷰` 섹션 추가. 도메인 에이전트 코드 변경 후 메인 세션이 트리거 조건(새 핸들러/패킷/공식/≥10줄/`98_Shared/` 포함) 충족 시 reviewer 자동 호출. 코드 스타일 검증은 의도적 Scope 제외 (Roslyn analyzer 도입 후보로 미루). 서브에이전트 6→7. | [M] |
 | 2026-05-14 | `/session:end` 슬래시 커맨드 신설 (Phase 마감 절차 8단계) + `/session:log` Codex 분기 추가 (Codex 없는 팀원은 Claude 단독 박제) + 헌법 Phase 완료 권유 섹션 통합 (15 → 16 슬래시) + inject-current-pin.sh 훅 확장 (commit 안 된 -DONE.md 경고 주입) | [M] |
 | 2026-05-14 | 협업 셋업 인프라 박제: `/setup` 슬래시 커맨드 + setup-steps 5개 + CHANGELOG 시스템 + CODEOWNERS + `/session:start` CHANGELOG 자동 확인 | [M] |

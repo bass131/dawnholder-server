@@ -46,7 +46,7 @@ if [ -n "$MISSING" ]; then
   cat >&2 <<EOF
 ⚠️ work-envelope 누락 감지 (Edit/Write/MultiEdit 도구 사용 응답에 봉투 없음)
 누락 항목:$MISSING
-참조: CLAUDE.md "코드 작업 봉투" 섹션 / ADR-018
+참조: 00_Document/policies/reporting-format.md 2번 절 / ADR-018
 → 다음 응답에서 보강 권장 (차단 아님).
 EOF
 fi
