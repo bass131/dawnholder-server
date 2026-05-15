@@ -47,7 +47,65 @@ Git 상태 클리어 — feature 브랜치 + 워킹 디렉토리 깨끗.
 ```
 
 **(C) feature 브랜치에 있는데 uncommitted 변경 있음**
+→ `ProjectSettings.asset` 변경 여부 추가 점검 후 세 갈래 분기 (각자 Cloud 정책 = "B+", 2026-05-15 결정). 점검 명령:
+
+```bash
+# 1) ProjectSettings.asset이 변경 목록에 있나
+git status --porcelain 03_Client/ProjectSettings/ProjectSettings.asset
+
+# 2) 그 안 변경이 cloud 라인만인지 (cloud 외 추가/삭제 라인이 잡히면 비어있지 않음)
+git diff -U0 03_Client/ProjectSettings/ProjectSettings.asset 2>/dev/null \
+  | grep -E "^[+-][^+-]" \
+  | grep -vE "^[+-][[:space:]]*(cloudProjectId|organizationId):"
+
+# 3) ProjectSettings.asset 외 변경 파일이 또 있나
+git status --porcelain | grep -v "03_Client/ProjectSettings/ProjectSettings.asset"
+```
+
+**(C-1)** 변경 = `ProjectSettings.asset` *단독* + 변경 라인 = `cloudProjectId` / `organizationId` *만* (위 2번·3번 출력 둘 다 비어있음)
+→ 각자 Cloud 정책 (Unity AI 토큰 분리). 자동 정리 후 1단계 진행:
+
+```bash
+git checkout 03_Client/ProjectSettings/ProjectSettings.asset
+```
+
+다음 응답:
+```
+감지: ProjectSettings.asset의 cloudProjectId / organizationId 라인만 변경됐어요.
+각자 Cloud 정책으로 자동 정리했어요 (Unity 다음번에 자기 계정으로 자동 채워질 거예요).
+
+[이어서 1단계 CONTEXT 읽기 결과]
+```
+
+**(C-2)** `ProjectSettings.asset` 변경 *있음* + cloud 외 변경도 있음 (같은 파일 다른 라인 또는 다른 파일들)
+→ **CONTEXT 읽기 진입 금지**. STOP + 분리 옵션 안내:
+
+```
+⚠️ STOP — ProjectSettings.asset에 cloud 외 변경도 있어요.
+💡 처음 보는 STOP이면: .claude/CHANGELOG.md 최상단 또는 가이드 3번 섹션 "갑자기 STOP 떴어요?" 박스 한 번 보세요. 갑자기 동작이 바뀐 게 아니라 안전 장치가 박힌 거예요.
+
+cloud 라인 (자동 정리 대상):
+  cloudProjectId / organizationId
+
+cloud 외 변경 (확인 필요):
+[변경 라인/파일 요약 2~5줄]
+
+이건 본인이 의도한 변경인가요? Unity AI Assistant 패키지 만지면서
+자동 추가됐을 가능성도 있어요 (예: scriptingDefineSymbols).
+
+  1) 의도한 거면 → "맞아 두자" → cloud만 정리하는 명령 안내, 나머지는 그대로 stage 가능
+  2) 모르고 추가된 거면 → "다 버려" → 전체 복원 명령 안내
+
+응답 받은 후 처리하고 /session:start 다시 호출해주세요.
+```
+
+(C-2) 처리 — 사용자 응답에 따른 명령 안내 (Claude는 안내만, 실행은 사용자):
+- "맞아 두자" → `git checkout -p 03_Client/ProjectSettings/ProjectSettings.asset` 안내. cloud hunk만 `y`로 버리고 나머지 `n`으로 살림. 다른 파일 변경은 그대로
+- "다 버려" → `git checkout -- 03_Client/ProjectSettings/ProjectSettings.asset [다른 변경 파일들]` 안내. (C) 절대 금지 원칙대로 `reset --hard`는 금지
+
+**(C-3)** `ProjectSettings.asset` 변경 X (다른 파일만 변경 — 기존 (C) 케이스)
 → **CONTEXT 읽기 진입 금지**. 다음을 출력하고 종료:
+
 ```
 ⚠️ STOP — 커밋 안 된 변경이 있어요.
 💡 처음 보는 STOP이면: .claude/CHANGELOG.md 최상단 또는 가이드 3번 섹션 "갑자기 STOP 떴어요?" 박스 한 번 보세요. 갑자기 동작이 바뀐 게 아니라 안전 장치가 박힌 거예요.
@@ -64,6 +122,8 @@ Git 상태 클리어 — feature 브랜치 + 워킹 디렉토리 깨끗.
 ```
 
 **절대 금지**: 이 게이트에서 Claude가 `git reset --hard`, `git checkout .`, `git clean -fd` 같은 파괴적 명령을 자동으로 또는 사용자 요청으로도 실행하지 마세요. 작업물 유실의 단일 원인입니다. 사용자가 명시적으로 "이 변경 다 버려도 돼"라고 해도, 어느 파일을 어떻게 처리할지 한 단계씩 안내만 하고 실행은 사용자가.
+
+**예외 (B+ 정책, 2026-05-15)**: (C-1) 케이스 — `ProjectSettings.asset` *단독* 변경 + `cloudProjectId`/`organizationId` 라인만 변경됨이 grep으로 *정확히 확인*된 경우에 한해 `git checkout 03_Client/ProjectSettings/ProjectSettings.asset` 1회 자동 실행 허용. Unity가 다음 켤 때 자동 채워주므로 비파괴적 (각자 Cloud 정책). 그 외 모든 ProjectSettings.asset 변경은 (C-2)/(C-3)으로 빠져 사용자 결정.
 
 ### 1. CONTEXT.md 통독
 
