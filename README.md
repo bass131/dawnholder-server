@@ -38,7 +38,7 @@
 
 ⚠️ **백엔드 역할(유영호 외)이면**: Visual Studio 또는 Rider도 본인 선택 가능. 다만 본 셋업은 VS Code 기준.
 
-⚠️ **Unity 클라 역할(김인규, 정유현)이면**: Unity Hub + Unity 6 LTS (`6000.4.1f1` 정확한 빌드)도 필요. 셋업 가이드에서 안내함.
+⚠️ **Unity 클라 역할(김인규, 정유현)이면**: Unity Hub + Unity 6 LTS (`6000.4.7f1` 정확한 빌드)도 필요. 셋업 가이드에서 안내함.
 
 ### 2. 레포 clone
 
@@ -128,7 +128,7 @@ Phase 끝:    -DONE.md 박제 후
 00_Document/        결정·구조 문서 (PRD, ARCHITECTURE, ADR, policies, REVIEW_CHECKLIST, 학습 일지)
 01_Phases/          작업 단위 (마일스톤별 폴더, Phase 페어)
 02_Server/          권위 서버 (.NET 10) — 팀장 단독
-03_Client/          Unity 클라 (6000.4.1f1) — 인규/유현 공유
+03_Client/          Unity 클라 (6000.4.7f1) — 인규/유현 공유
 04_ClientNet/       클라용 socket 라이브러리 (Y2 모델) — 팀장 단독
 98_Shared/          서버·클라 공유 프로토콜 (.NET Standard 2.1 DLL) — 팀장 단독
 99_Tools/           PacketGenerator 등 도구 — 팀장 단독
