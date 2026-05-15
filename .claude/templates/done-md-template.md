@@ -162,6 +162,18 @@ Claude: Bash로 Codex CLI 호출 (readonly + input paths) → Codex: ClaudeDev �
         → Claude: 결과 URL 사용자에게 보고 → 사용자: 검토
 ```
 
+### Fallback — Codex sandbox 실패 시 (Windows 회귀)
+
+**증상**: `codex exec` 호출이 `CreateProcessAsUserW failed: 5` (Windows API ERROR_ACCESS_DENIED) 또는 sandbox 관련 hard fail로 노션 박제 중단. 2026-05-15 Action 1 노션 박제 시도에서 1회 발생.
+
+**환경 가설**: Codex CLI가 Windows에서 sandboxed worker 생성 시 권한/정책 실패 (정확한 뿌리 불명 — UAC·Smart App Control·그룹 정책 의심). ADR-020(훅 PATH 의존성)과 결이 비슷하지만 *주체가 Codex 외부 CLI*라 별 카테고리.
+
+**Fallback 절차**: Claude가 **`mcp__notion-*` MCP 도구를 직접 호출**해 노션 페이지 생성. Codex CLI 거치지 않음. 사용 도구: `notion-create-pages` (신규), `notion-update-page` (수정), `notion-search` (DB 조회).
+
+**트레이드오프**: Notion 분업 원칙 일시 위반 (Claude=사실 박제 / Codex=재편집). Fallback 사용 시 노션 페이지 톤이 *사실 톤*에 가까워지고, 면접 답변 박스·시각 구조화 같은 *Codex 재편집 가치*는 빠짐. 사용자가 별도 세션에서 Codex 재호출하거나 본인이 직접 다듬는 식으로 후처리.
+
+**재발 시 판단**: 1회성으로 보이면 본 Fallback 그대로. 누적되면 (3회+) 별도 ADR 박제하고 *기본 흐름을 mcp 직접 호출로 역전* 검토.
+
 ---
 
 ## 참고 사례
