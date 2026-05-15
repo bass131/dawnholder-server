@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClaudeDev — 팀원 사용 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --bg-elev: #1a1815;
+    --bg-card: #181614;
+    --border: #2a2823;
+    --border-strong: #3a3630;
+    --text: #e8e3d8;
+    --text-muted: #8a857a;
+    --text-dim: #5a564e;
+    --accent: #f59f3e;       /* amber */
+    --accent-dim: #c47e2e;
+    --accent-glow: rgba(245, 159, 62, 0.12);
+    --red: #e85d4a;
+    --green: #84a86b;
+    --blue: #6c95b8;
+    --font-display: 'JetBrains Mono', 'IBM Plex Sans KR', monospace;
+    --font-body: 'IBM Plex Sans KR', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Space Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 32px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.65;
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  /* ───────────────────────── grid background ───────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245, 159, 62, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245, 159, 62, 0.025) 1px, transparent 1px);
+    background-size: 64px 64px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 75% 25%, var(--accent-glow), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  /* ───────────────────────── sidebar ───────────────────────── */
+  aside {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 32px 28px;
+    background: linear-gradient(180deg, var(--bg) 0%, rgba(15, 14, 12, 0.6) 100%);
+    backdrop-filter: blur(8px);
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .brand-mark {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .brand-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .brand-sub {
+    color: var(--text-dim);
+    font-size: 12px;
+    margin-bottom: 32px;
+    font-family: var(--font-mono);
+  }
+
+  nav ol {
+    list-style: none;
+    counter-reset: section;
+  }
+
+  nav ol > li {
+    counter-increment: section;
+    margin-bottom: 4px;
+  }
+
+  nav a {
+    display: flex;
+    gap: 12px;
+    padding: 7px 0;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13.5px;
+    border-left: 1px solid transparent;
+    padding-left: 12px;
+    margin-left: -12px;
+    transition: all 0.15s ease;
+  }
+
+  nav a::before {
+    content: counter(section, decimal-leading-zero);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  nav a:hover {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: linear-gradient(90deg, var(--accent-glow), transparent);
+  }
+
+  nav a:hover::before { color: var(--accent); }
+
+  .sidebar-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    line-height: 1.6;
+  }
+
+  .sidebar-footer .key { color: var(--text-muted); }
+
+  /* ───────────────────────── main ───────────────────────── */
+  main {
+    padding: 64px 72px 120px;
+    min-width: 0;
+  }
+
+  /* ───────────────────────── hero ───────────────────────── */
+  .hero {
+    margin-bottom: 96px;
+    position: relative;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  h1 .accent {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 640px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .hero-stat {
+    background: var(--bg-elev);
+    padding: 24px 28px;
+  }
+
+  .hero-stat .num {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .hero-stat .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+  }
+
+  /* ───────────────────────── sections ───────────────────────── */
+  section {
+    margin-bottom: 96px;
+    scroll-margin-top: 32px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  h2 .section-num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .section-lead {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 36px;
+    max-width: 720px;
+    line-height: 1.7;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 36px;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+
+  h4 {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 24px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  p.muted { color: var(--text-muted); }
+
+  ul, ol {
+    padding-left: 24px;
+    margin-bottom: 20px;
+  }
+
+  li { margin-bottom: 6px; }
+
+  strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  em {
+    color: var(--accent-dim);
+    font-style: italic;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+
+  a:hover { border-bottom-color: var(--accent); }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--bg-card);
+    color: var(--accent);
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+  }
+
+  /* ───────────────────────── terminal-style command box ───────────────────────── */
+  .cmd {
+    background: #0a0908;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 0;
+    margin: 20px 0;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  .cmd-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: linear-gradient(180deg, #1a1816 0%, #14120f 100%);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .cmd-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .cmd-dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--border-strong);
+  }
+
+  .cmd-title { margin-left: auto; letter-spacing: 0.05em; }
+
+  .cmd-body {
+    padding: 16px 20px;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .cmd-body .prompt {
+    color: var(--accent);
+    user-select: none;
+    margin-right: 8px;
+  }
+
+  .cmd-body .comment {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .cmd-body .keyword { color: var(--blue); }
+  .cmd-body .string { color: var(--green); }
+
+  .cmd-body p {
+    margin: 0 0 4px;
+    color: inherit;
+  }
+
+  /* ───────────────────────── callout boxes ───────────────────────── */
+  .callout {
+    border-left: 3px solid;
+    padding: 18px 22px;
+    margin: 24px 0;
+    background: var(--bg-card);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .callout-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout.warn { border-color: var(--red); }
+  .callout.warn .callout-title { color: var(--red); }
+
+  .callout.note { border-color: var(--accent); }
+  .callout.note .callout-title { color: var(--accent); }
+
+  .callout.tip { border-color: var(--green); }
+  .callout.tip .callout-title { color: var(--green); }
+
+  /* ───────────────────────── steps ───────────────────────── */
+  .steps {
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+    margin: 24px 0;
+  }
+
+  .steps > li {
+    counter-increment: step;
+    position: relative;
+    padding: 20px 24px 20px 64px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    border-radius: 4px;
+  }
+
+  .steps > li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .step-title {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .step-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+
+  /* ───────────────────────── tables ───────────────────────── */
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 20px 0;
+    background: var(--bg-card);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  th {
+    background: var(--bg-elev);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  td { color: var(--text); }
+  td.muted { color: var(--text-muted); }
+  td code { font-size: 12.5px; }
+
+  /* ───────────────────────── command-grid ───────────────────────── */
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 20px 0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .cmd-card {
+    background: var(--bg-card);
+    padding: 18px 20px;
+    transition: background 0.15s ease;
+  }
+
+  .cmd-card:hover { background: var(--bg-elev); }
+
+  .cmd-card .slash {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .cmd-card .desc {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  /* ───────────────────────── flow diagram ───────────────────────── */
+  .flow {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 32px;
+    margin: 24px 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .flow .arrow { color: var(--accent); }
+  .flow .label { color: var(--text-muted); }
+  .flow .branch { color: var(--blue); }
+
+  /* ───────────────────────── divider ───────────────────────── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 56px 0 32px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ───────────────────────── footer ───────────────────────── */
+  .doc-footer {
+    margin-top: 96px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: var(--font-mono);
+    line-height: 1.8;
+  }
+
+  .doc-footer .meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  /* ───────────────────────── animations ───────────────────────── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero > * { animation: fade-up 0.6s ease backwards; }
+  .hero .eyebrow { animation-delay: 0.05s; }
+  .hero h1 { animation-delay: 0.15s; }
+  .hero-sub { animation-delay: 0.25s; }
+  .hero-grid { animation-delay: 0.35s; }
+
+  /* ───────────────────────── responsive ───────────────────────── */
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { padding: 48px 32px 80px; }
+    .hero-grid { grid-template-columns: 1fr; }
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-dim); }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <aside>
+    <div class="brand">
+      <span class="brand-mark">/dawnholder</span>
+    </div>
+    <div class="brand-title">팀원 가이드</div>
+    <div class="brand-sub">v1.1 · 2026-05-15</div>
+
+    <nav>
+      <ol>
+        <li><a href="#about">이게 뭔가요</a></li>
+        <li><a href="#setup">첫 셋업</a></li>
+        <li><a href="#daily">매일 작업 흐름</a></li>
+        <li><a href="#commands">슬래시 커맨드 16개</a></li>
+        <li><a href="#rules">협업 룰</a></li>
+        <li><a href="#harness">AI 운영 시스템</a></li>
+        <li><a href="#journal">학습 일지 시스템</a></li>
+        <li><a href="#stuck">막혔을 때</a></li>
+        <li><a href="#faq">자주 묻는 것</a></li>
+      </ol>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div><span class="key">team</span> · 4명</div>
+      <div><span class="key">repo</span> · ClaudeDev</div>
+      <div><span class="key">due</span> · 2026-11-19</div>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ HERO ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div class="hero">
+      <div class="eyebrow">Onboarding · For new members</div>
+      <h1>Dawnholder<br>팀원 <span class="accent">사용 가이드</span></h1>
+      <p class="hero-sub">
+        2D MMORPG 졸업작품 협업 환경. 학부생 백지여도 OK — 본 문서가 떠먹입니다.
+        Claude Code를 *통제하고 견제하는* 시스템이 본 레포의 진짜 자산이니, 그 사용법을 같이 익혀가요.
+      </p>
+
+      <div class="hero-grid">
+        <div class="hero-stat">
+          <div class="num">4</div>
+          <div class="label">팀원</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">16</div>
+          <div class="label">슬래시 커맨드</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">7</div>
+          <div class="label">서브에이전트</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 01 이게 뭔가요 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="about">
+      <h2><span class="section-num">01 —</span> 이게 뭔가요</h2>
+      <p class="section-lead">Dawnholder는 .NET 10 + Unity 6 LTS 기반 2D MMORPG 프로토타입. 본 레포의 진짜 자산은 게임 코드가 아니라 <em>AI를 어떻게 운영하고 통제하고 견제했는가</em>입니다.</p>
+
+      <h3>본인이 합류한 이유</h3>
+      <p>본인은 학부생 백지 수준에서 시작합니다. 그게 정상이에요. 본 프로젝트는 *AI에게 코드 시키는 법*이 아니라 *AI를 운영하는 법*을 같이 배우는 학습 마라톤입니다.</p>
+
+      <h3>본인이 얻어갈 것</h3>
+      <ul>
+        <li><strong>실전 백엔드/네트워킹</strong> — raw TCP, 권위 서버, 동시성, 영속화</li>
+        <li><strong>면접 무기로 누적되는 학습 일지</strong> — Claude와 협업한 모든 결정·트러블슈팅이 본인 명의로 박힘</li>
+        <li><strong>본인 노션 포트폴리오</strong> — 6개월 뒤에 본인 자기소개서 쓸 때 베이스 자료</li>
+      </ul>
+
+      <h3>팀 구조</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>역할</th><th>이름</th><th>영역</th><th>합류</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>팀장</strong></td><td>유영호</td><td>백엔드 코어 + 하네스 + 문서</td><td class="muted">진행 중</td></tr>
+            <tr><td>팀원 1</td><td>김인규</td><td>Unity 클라 아트 + 컨텐츠</td><td class="muted">6월 말</td></tr>
+            <tr><td>팀원 2</td><td>정유현</td><td>Unity 클라 UI/입력 + 컨텐츠</td><td class="muted">6월 말</td></tr>
+            <tr><td>팀원 3</td><td>박정우</td><td>MES 관제 (별도 레포)</td><td class="muted">7월~</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>일정</h3>
+      <ul>
+        <li><strong>6월</strong> — 캡스톤 1 발표 (수업 중간, "진행 중" OK)</li>
+        <li><strong>2026-11-19</strong> — 졸업작품 본 마감</li>
+      </ul>
+    </section>
+
+    <div class="divider">Onboarding</div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 02 첫 셋업 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="setup">
+      <h2><span class="section-num">02 —</span> 첫 셋업</h2>
+      <p class="section-lead">4단계로 진입. 막히면 그 자리에서 Claude가 안내해요. 학부생 백지여도 OK.</p>
+
+      <h3>Step 1 · 사전 설치 (본인이 직접)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>항목</th><th>다운로드</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Git for Windows</td><td><a href="https://git-scm.com/download/win">git-scm.com</a></td></tr>
+            <tr><td>.NET 10 SDK</td><td><a href="https://dotnet.microsoft.com/download/dotnet/10.0">dotnet.microsoft.com</a></td></tr>
+            <tr><td>MSSQL LocalDB (Express/Developer, "LocalDB" 체크)</td><td><a href="https://www.microsoft.com/sql-server/sql-server-downloads">microsoft.com</a></td></tr>
+            <tr><td>VS Code</td><td><a href="https://code.visualstudio.com/">code.visualstudio.com</a></td></tr>
+            <tr><td>Claude Code (VS Code 확장)</td><td>VS Code 확장 패널 → <code>claude-code</code> 검색</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-title">⚠ Unity 클라 역할인 경우</div>
+        <p>김인규·정유현은 위에 더해 <strong>Unity Hub + Unity 6 LTS (<code>6000.4.1f1</code> 정확한 빌드)</strong>도 필요. 셋업 가이드에서 안내됩니다.</p>
+      </div>
+
+      <h3>Step 2 · 레포 clone</h3>
+      <div class="callout warn">
+        <div class="callout-title">⚠ ASCII 경로 필수</div>
+        <p>한글 없는 경로에 clone하세요. ADR-017 — 한글 경로면 자동 검증 훅이 silent fail 합니다 (팀장이 48시간 함정 겪음).</p>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-header">
+          <div class="cmd-dots"><span></span><span></span><span></span></div>
+          <div class="cmd-title">Git Bash</div>
+        </div>
+        <div class="cmd-body">
+<p><span class="comment"># 권장 위치</span></p>
+<p><span class="prompt">$</span> cd /c/Dev</p>
+<p><span class="prompt">$</span> git clone <span class="string">&lt;레포 URL&gt;</span> ClaudeDev</p>
+<p><span class="prompt">$</span> cd ClaudeDev</p>
+        </div>
+      </div>
+
+      <h3>Step 3 · VS Code에서 Claude Code 실행</h3>
+      <div class="cmd">
+        <div class="cmd-header">
+          <div class="cmd-dots"><span></span><span></span><span></span></div>
+          <div class="cmd-title">Git Bash</div>
+        </div>
+        <div class="cmd-body">
+<p><span class="prompt">$</span> code .</p>
+        </div>
+      </div>
+
+      <p>VS Code 열리면 우측 하단에 "권장 확장 설치할래?" 팝업 떠야 합니다. <strong>Install All</strong> 누르면 협업 최소 셋(C# Dev Kit, GitLens, Claude Code 등) 자동 설치.</p>
+
+      <h3>Step 4 · <code>/setup</code> 호출</h3>
+      <p>Claude Code 패널 열고 채팅창에:</p>
+
+      <div class="cmd">
+        <div class="cmd-header">
+          <div class="cmd-dots"><span></span><span></span><span></span></div>
+          <div class="cmd-title">Claude Code</div>
+        </div>
+        <div class="cmd-body">
+<p><span class="prompt">&gt;</span> /setup</p>
+        </div>
+      </div>
+
+      <p>이게 끝입니다. 이후는 Claude가 차근차근:</p>
+      <ul>
+        <li>자기소개 (한글 이름) → 영문 식별자 + 역할 자동 결정</li>
+        <li>환경 검증 8단계 (Git Bash, .NET, MSSQL, VS Code 통합 터미널 등)</li>
+        <li>역할별 셋업 (백엔드 또는 Unity 클라)</li>
+        <li>본인 작업 공간 초기화 (<code>CONTEXT.md</code>, <code>learning-journal/</code>, 작업 좌표 핀)</li>
+        <li>본인 노션 페이지 안내 + 첫 작업 안내</li>
+      </ul>
+
+      <div class="callout tip">
+        <div class="callout-title">✓ 막혀도 괜찮아요</div>
+        <p>그 자리에서 Claude한테 물어보세요. 학부생 백지 가정으로 떠먹입니다. 같은 질문 두 번 OK. 멍청한 질문 같은 거 없어요.</p>
+      </div>
+    </section>
+
+    <div class="divider">Daily Workflow</div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 03 매일 작업 흐름 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="daily">
+      <h2><span class="section-num">03 —</span> 매일 작업 흐름</h2>
+      <p class="section-lead">셋업 끝났으면 본 흐름이 일상. 처음엔 어색해도 한 주만 지나면 손에 박힙니다.</p>
+
+      <div class="flow">
+<span class="label">아침:</span>
+   /session:start                 <span class="label"># git 안전 점검 + CONTEXT + CHANGELOG</span>
+   <span class="arrow">→</span> (게이트 통과 시) git pull origin main
+   <span class="arrow">→</span> 게이트가 STOP 띄우면 안내대로 처리 후 /session:start 다시
+
+<span class="label">작업 중:</span>
+   git checkout -b feature/{slug}-{작업명}
+   <span class="arrow">→</span> Phase 진행
+   <span class="arrow">→</span> 막히면 /learn:why · /learn:concept · /learn:explain
+   <span class="arrow">→</span> 큰 작업이면 /work:plan {목표}
+   <span class="arrow">→</span> 코드 점검: /work:review
+
+<span class="label">Phase 끝:</span>
+   -DONE.md 박제 + 5단계 보고  <span class="label"># AI가 자동 작성</span>
+   <span class="arrow">→</span> /journal:phase 권유 (선택)    <span class="label"># 학습 일지</span>
+   <span class="arrow">→</span> /session:end                  <span class="label"># commit + PR + 노션 박제</span></div>
+
+      <h3>핵심 3개 슬래시</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="slash">/session:start</div>
+          <div class="desc">아침에 첫 입력. <strong>git 안전 점검 게이트</strong> + CONTEXT.md 인지 + 팀장 변경(CHANGELOG) 자동 확인. 위험 상태(main 브랜치·미커밋 변경)면 STOP 띄우고 안내.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/work:plan</div>
+          <div class="desc">큰 목표를 1~3시간짜리 Phase로 쪼개기. Phase 분해 받기.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/session:end</div>
+          <div class="desc">Phase 끝났을 때 마감 절차. commit + PR + 노션 박제까지 한 흐름.</div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <div class="callout-title">⚠ Git 충돌·실수 — 안전 매뉴얼 (2026-05-15 보강)</div>
+        <p><strong>작업물 유실의 단 하나의 원인은 잘못된 복구 명령</strong>입니다. <code>git pull</code> 자체는 unstaged 변경을 덮어쓰지 않아요. 충돌이 나면 git이 멈춰서 물어볼 뿐.</p>
+        <p style="margin-top: 12px;"><strong>해도 되는 것</strong>: <code>git status</code> · <code>git stash push -m "{요약}"</code> · <code>git commit -m "wip: {요약}"</code> · <code>git checkout -- {특정파일}</code></p>
+        <p style="margin-top: 8px;"><strong>절대 금지 (이거 치면 작업물 증발)</strong>: <code>git reset --hard</code> · <code>git checkout .</code> · <code>git clean -fd</code></p>
+        <p style="margin-top: 12px;">충돌·복구 상황은 무조건 팀장(유영호) 슬랙. 부끄러운 일 아닙니다. 위 3개 명령은 한 번 치면 되돌릴 수 없어요.</p>
+      </div>
+    </section>
+
+    <div class="divider">Slash Commands</div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 04 슬래시 커맨드 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="commands">
+      <h2><span class="section-num">04 —</span> 슬래시 커맨드 16개</h2>
+      <p class="section-lead">4개 카테고리 + 단독 진입점 1개. 헷갈리면 <code>00_Document/commands-index.md</code> 카탈로그.</p>
+
+      <h3>🎓 학습용 (5개) — 막혔거나 이해 부족할 때</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="slash">/learn:why &lt;주제&gt;</div>
+          <div class="desc">"이게 왜 필요해?" — 어떤 개념·파일·결정의 존재 이유를 처음부터.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/learn:explain &lt;코드&gt;</div>
+          <div class="desc">특정 코드 블록을 한 줄 한 줄 풀어서 설명.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/learn:concept &lt;키워드&gt;</div>
+          <div class="desc">개념 자체(코드 외 일반 지식)를 학부 수준으로.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/learn:dumb-it-down</div>
+          <div class="desc">직전 Claude 답변이 어려웠을 때, 더 쉬운 말로 재설명.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/learn:recap</div>
+          <div class="desc">지금까지 진행 + 다음 할 일 한 번에 정리.</div>
+        </div>
+      </div>
+
+      <h3>🛠️ 작업용 (5개) — 실제 코드·구조 변경</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="slash">/work:plan &lt;목표&gt;</div>
+          <div class="desc">큰 목표를 1~3시간짜리 Phase로 쪼개기.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/work:review</div>
+          <div class="desc">Tier 3 수동 깊은 리뷰 — Phase 단위 자세한 점검.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/work:new-packet</div>
+          <div class="desc">새 패킷을 양쪽 wiring까지 한 번에 추가. <code>C2S|S2C &lt;name&gt;</code></div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/work:new-monster</div>
+          <div class="desc">새 몬스터 데이터 추가 (엔진 코드 변경 없음).</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/work:load-test</div>
+          <div class="desc">헤드리스 봇 부하 테스트 시나리오 실행 + 리포트.</div>
+        </div>
+      </div>
+
+      <h3>📚 학습 일지 (3개) — 면접 무기로 누적</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="slash">/journal:phase</div>
+          <div class="desc">Phase 하나 끝났을 때. 디테일 잊히기 전 작성 (15~20분).</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/journal:concept &lt;키워드&gt;</div>
+          <div class="desc">깊이 학습한 개념을 본인 말로 정리.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/journal:bug</div>
+          <div class="desc">막혔다가 풀린 사건을 트러블슈팅 일지로 박기.</div>
+        </div>
+      </div>
+
+      <div class="callout note">
+        <div class="callout-title">★ 가짜 학습 방지</div>
+        <p><code>/journal:*</code>는 인터뷰 형식 — Claude가 질문만 던지고 <strong>본인이 답을 채웁니다</strong>. Claude가 다 써주면 가짜 학습이 됨. 솔직히 "잘 모르겠어요" 답해도 OK — 그것도 학습의 흔적.</p>
+      </div>
+
+      <h3>📌 세션 관리 (3개)</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="slash">/session:start</div>
+          <div class="desc">새 세션 첫 입력. CONTEXT 인지 + CHANGELOG 최근 변경 확인.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/session:end</div>
+          <div class="desc">Phase 완료 마감. commit + PR + 노션 박제 + 다음 액션.</div>
+        </div>
+        <div class="cmd-card">
+          <div class="slash">/session:log</div>
+          <div class="desc">노션 박제만. 보통 /session:end가 자동 호출.</div>
+        </div>
+      </div>
+
+      <h3>🚀 협업 셋업 (1개) — 단독 진입점</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="slash">/setup</div>
+          <div class="desc">팀원 첫 합류 시 호출. 자기소개 → 환경 검증 → 역할별 셋업 → 자산 초기화 → 첫 작업 안내까지.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider">Team Rules</div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 05 협업 룰 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="rules">
+      <h2><span class="section-num">05 —</span> 협업 룰</h2>
+      <p class="section-lead">짧고 명확한 4개 룰. 어겨도 큰일 안 나지만, 따라야 서로 덜 부딪힙니다.</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-title">main 브랜치 직접 push 금지</div>
+          <p class="step-desc">팀원은 PR로만 머지. 팀장은 bypass 권한 있음. 작업은 <code>feature/{slug}-{작업명}</code> 브랜치에서 → PR 만들기 → 팀장 승인 → main에 머지.</p>
+        </li>
+        <li>
+          <div class="step-title">본인 영역만 만지기</div>
+          <p class="step-desc"><code>.github/CODEOWNERS</code> 참조. 백엔드는 팀장 단독, 클라는 인규·유현 공유, 학습 일지는 각자.</p>
+        </li>
+        <li>
+          <div class="step-title">하네스 변경 인지</div>
+          <p class="step-desc">팀장이 헌법/ADR/하네스 갱신하면 <code>.claude/CHANGELOG.md</code>에 박힘. <code>/session:start</code>가 매일 자동 확인.</p>
+        </li>
+        <li>
+          <div class="step-title">개인 자산은 git 무시</div>
+          <p class="step-desc"><code>CONTEXT.md</code> · <code>CONTEXT_History.md</code> · <code>current-pin.txt</code> · <code>learning-journal/{본인}/</code>은 각자 보유. .gitignore에 박혀있음.</p>
+        </li>
+      </ol>
+
+      <h3>폴더 구조 한눈에</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>경로</th><th>소유자</th><th>역할</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>00_Document/</code></td><td class="muted">전체</td><td>PRD, ARCHITECTURE, ADR, 학습 일지</td></tr>
+            <tr><td><code>01_Phases/</code></td><td class="muted">전체</td><td>작업 단위 (마일스톤별 폴더, Phase 페어)</td></tr>
+            <tr><td><code>02_Server/</code></td><td>팀장 단독</td><td>권위 서버 (.NET 10)</td></tr>
+            <tr><td><code>03_Client/</code></td><td>인규·유현 공유</td><td>Unity 클라 (6000.4.1f1)</td></tr>
+            <tr><td><code>04_ClientNet/</code></td><td>팀장 단독</td><td>클라용 socket 라이브러리 (Y2 모델)</td></tr>
+            <tr><td><code>98_Shared/</code></td><td>팀장 단독</td><td>서버·클라 공유 프로토콜 (.NET Standard 2.1 DLL)</td></tr>
+            <tr><td><code>99_Tools/</code></td><td>팀장 단독</td><td>PacketGenerator 등 도구</td></tr>
+            <tr><td><code>.claude/</code></td><td>팀장 단독</td><td>AI 하네스</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="divider">AI Operations</div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 06 AI 운영 시스템 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="harness">
+      <h2><span class="section-num">06 —</span> AI 운영 시스템</h2>
+      <p class="section-lead">본 레포의 핵심 자산. 4계층 구조로 Claude를 통제·견제합니다. 본인이 직접 만질 일은 거의 없지만, 어떻게 돌아가는지는 알면 좋아요.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>계층</th><th>자산</th><th>역할</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>L1 — 규칙</strong></td>
+              <td><code>CLAUDE.md</code> (헌법)</td>
+              <td>AI가 위반 시도 시 거부하도록 박힌 절대 원칙 5개 + 라우팅</td>
+            </tr>
+            <tr>
+              <td><strong>L2 — 역할</strong></td>
+              <td><code>.claude/agents/</code></td>
+              <td>서브에이전트 7개 (netcode / gameplay / client / content / persistence / qa-sim / reviewer)</td>
+            </tr>
+            <tr>
+              <td><strong>L3 — 단축키</strong></td>
+              <td><code>.claude/commands/</code></td>
+              <td>슬래시 커맨드 16개 (학습 5 / 일지 3 / 작업 5 / 세션 3 / 셋업 1)</td>
+            </tr>
+            <tr>
+              <td><strong>L4 — 검증</strong></td>
+              <td><code>.claude/hooks/</code></td>
+              <td>자동 검증 훅 5개 (work-envelope, phase-gate, server-authority, shared-changes, current-pin 주입)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>헌법 5대 절대 원칙</h3>
+      <p>이거 어기면 보안 구멍, 동기화 버그, 핵 취약점. <strong>본인이 어겨달라 요청해도 Claude는 거부</strong>합니다.</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-title">Server Authority — 서버 권위</div>
+          <p class="step-desc">클라이언트는 단순 렌더러 + 입력 전달자. HP/XP/인벤토리는 서버 전용. 데미지/히트 판정/루팅은 서버가 결정.</p>
+        </li>
+        <li>
+          <div class="step-title">Protocol is Sacred — 프로토콜은 신성함</div>
+          <p class="step-desc">패킷 ID는 영원. 은퇴 ID 재사용 절대 금지. 필드 추가는 끝에만.</p>
+        </li>
+        <li>
+          <div class="step-title">Trust Boundary — 신뢰 경계</div>
+          <p class="step-desc">클라이언트 소켓에서 오는 모든 것은 untrusted. 범위 검증·소유권 확인·rate-limit 항상.</p>
+        </li>
+        <li>
+          <div class="step-title">Shared Code Discipline — 공유 코드 규율</div>
+          <p class="step-desc"><code>98_Shared/</code> 변경 시 양쪽 빌드 확인. 복사-붙여넣기 금지.</p>
+        </li>
+        <li>
+          <div class="step-title">No Blocking in Tick Loop — 틱 루프 블로킹 금지</div>
+          <p class="step-desc">50ms마다 도는 틱 안에서 <code>await Task.Delay</code>·동기 DB·<code>Thread.Sleep</code> 절대 금지.</p>
+        </li>
+      </ol>
+
+      <div class="callout note">
+        <div class="callout-title">★ 정책 외부화 (2026-05-15)</div>
+        <p>헌법은 <em>"무엇을 절대 어기지 않는가"</em>만 담고, 양식·운영 가이드는 <code>00_Document/policies/</code>로 외부화됨. 4개 파일: <code>reporting-format.md</code> · <code>pin-and-done.md</code> · <code>doc-thresholds.md</code> · <code>review-tiering.md</code>.</p>
+      </div>
+
+      <h3>서브에이전트 7개 — 작업 라우팅</h3>
+      <p>큰 작업이 들어오면 메인 세션이 적절한 도메인 에이전트에게 위임합니다. 본인이 직접 호출하진 않아도 어느 영역인지는 알아두면 좋아요.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>도메인</th><th>에이전트</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>패킷, 직렬화, 프레이밍, 연결 라이프사이클</td><td><code>netcode</code></td></tr>
+            <tr><td>전투, 스킬, 스탯, 공식, AI</td><td><code>gameplay</code></td></tr>
+            <tr><td>Unity 씬, 렌더링, 입력, UI</td><td><code>client</code></td></tr>
+            <tr><td>맵, 몬스터, 아이템, 퀘스트, NPC</td><td><code>content</code></td></tr>
+            <tr><td>DB 스키마, EF, 마이그레이션, 캐싱</td><td><code>persistence</code></td></tr>
+            <tr><td>헤드리스 봇, 부하 테스트, 퍼징</td><td><code>qa-sim</code></td></tr>
+            <tr><td>코드 변경 후 자동 리뷰 (Tier 2)</td><td><code>reviewer</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="divider">Learning Journal</div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 07 학습 일지 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="journal">
+      <h2><span class="section-num">07 —</span> 학습 일지 시스템</h2>
+      <p class="section-lead">본인 면접 무기. 디테일이 잊히기 전에 박아두는 게 핵심. AI는 인터뷰만, 답은 본인이 채움.</p>
+
+      <h3>두 가지 박제 — 역할 분담</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>산출물</th><th>작성자</th><th>내용</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>-DONE.md</code></td>
+              <td><strong>AI</strong></td>
+              <td>사실·결정·증상·키워드 박제. 잊히기 전에 자동 작성.</td>
+            </tr>
+            <tr>
+              <td><code>learning-journal/{본인}/</code></td>
+              <td><strong>본인</strong></td>
+              <td>회고·교훈·면접 답변. AI는 질문만 던짐.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>본인이 학습 일지 쓸 때 <code>-DONE.md</code>를 <em>사실 베이스</em>로 활용. AI가 박은 사실 위에 본인 회고를 얹는 구조.</p>
+
+      <h3>3종 학습 일지</h3>
+      <ol class="steps">
+        <li>
+          <div class="step-title">/journal:phase — Phase 통째 회고</div>
+          <p class="step-desc">Phase 하나 끝났을 때. 7개 질문 (한 줄 요약 / 새로 배운 것 / 막혔던 지점 / 결정 포인트 / 다시 한다면 / 아직 모르는 것 / 면접 시뮬레이션). 15~20분.</p>
+        </li>
+        <li>
+          <div class="step-title">/journal:concept &lt;키워드&gt; — 개념 깊이 학습</div>
+          <p class="step-desc">9개 질문 (한 줄 정의 / 처음 만난 맥락 / 비유 / 단계별 설명 / 흔한 오해 / 우리 코드 사용 / 면접 시뮬레이션 / 이해도 자가평가). 자가평가 솔직하게.</p>
+        </li>
+        <li>
+          <div class="step-title">/journal:bug — 트러블슈팅 서사</div>
+          <p class="step-desc">막혔다가 풀린 사건. 10개 질문 (증상 / 재현 / 기대 / 가설들 / 진짜 원인 / 왜 헷갈렸나 / 해결 / 재발 방지 / 한 줄 학습 정수 / 면접 90초 답변).</p>
+        </li>
+      </ol>
+
+      <div class="callout tip">
+        <div class="callout-title">✓ "잘 모르겠어요"도 학습</div>
+        <p>면접 시뮬레이션에서 답이 잘 안 나오면 솔직히 적기. 그게 다음 학습 큐가 됩니다. AI가 채워주는 답은 가짜 학습 — 본인 머리로 통과한 것만 면접에서 답할 수 있어요.</p>
+      </div>
+
+      <h3>노션 박제도 따로</h3>
+      <p>본인 노션 "Dawnholder 협업 히스토리" 페이지에 STAR 형식 박제. 학습 일지가 *로컬 디테일*이라면 노션은 *간결한 결정 박제*. 둘이 상호 보완.</p>
+
+      <div class="callout note">
+        <div class="callout-title">★ 본인 자산</div>
+        <p>노션 페이지는 각자 자기 노션. 팀 공유 X. 본인 포트폴리오·자기소개서 베이스로 활용.</p>
+      </div>
+    </section>
+
+    <div class="divider">Help</div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 08 막혔을 때 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="stuck">
+      <h2><span class="section-num">08 —</span> 막혔을 때</h2>
+      <p class="section-lead">막히는 게 정상. 학습은 시간이 걸리는 거고 멍청한 질문 같은 건 없어요.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>상황</th><th>어디로</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>셋업 막힘</td><td><code>/setup</code> 다시 호출 또는 Claude한테 직접 물어보기</td></tr>
+            <tr><td>작업 중 개념 모름</td><td><code>/learn:why &lt;주제&gt;</code> · <code>/learn:concept &lt;개념&gt;</code></td></tr>
+            <tr><td>Claude 답이 어려움</td><td><code>/learn:dumb-it-down</code></td></tr>
+            <tr><td>지금 어디까지 왔는지 모름</td><td><code>/learn:recap</code></td></tr>
+            <tr><td>Git/PR 막힘 (일반)</td><td>팀장(유영호)에게 슬랙</td></tr>
+            <tr><td><strong>Git 충돌·복구</strong> (pull 충돌, 작업물 사라진 듯, 잘못 commit)</td><td><strong>팀장 슬랙 우선.</strong> <code>git reset --hard</code> · <code>git checkout .</code> · <code>git clean -fd</code> 절대 금지 (되돌릴 수 없음)</td></tr>
+            <tr><td>빌드 에러</td><td>에러 메시지 그대로 Claude한테 보여주기</td></tr>
+            <tr><td>헌법/ADR 결정 이유 궁금</td><td><code>/learn:why &lt;ADR 키워드&gt;</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Claude의 응답 톤 — 기대해도 됨</h3>
+      <p>본인 헌법에 박혀있는 약속:</p>
+      <ul>
+        <li><strong>친절·인내심</strong> — 같은 질문 두 번 OK. 멍청한 질문 같은 거 없음.</li>
+        <li><strong>전문 용어는 첫 사용 시 풀어쓰기</strong> — "직렬화(객체를 바이트로)..." 식.</li>
+        <li><strong>결정엔 항상 trade-off</strong> — "A를 골랐다"가 아니라 "A vs B 중 A, 이유는…, 단점은…".</li>
+        <li><strong>5단계 보고</strong> — 코드 작업 끝나면 🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음.</li>
+      </ul>
+    </section>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 09 FAQ ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="faq">
+      <h2><span class="section-num">09 —</span> 자주 묻는 것</h2>
+
+      <h4>Q. 본인 컴퓨터에 Codex CLI가 없는데 노션 박제 되나요?</h4>
+      <p class="muted">됩니다. <code>/session:log</code>가 Codex 분기 / Claude 단독 분기를 자동으로 묻고 처리. 본인은 본인 노션 페이지 URL 또는 DB ID만 준비하면 됨.</p>
+
+      <h4>Q. 헌법(CLAUDE.md) 읽어야 하나요?</h4>
+      <p class="muted">한 번 정독 권장. 길지만 본인이 따라야 할 약속이 박혀있어서 안 읽고 시작하면 충돌 발생. 셋업 끝나고 첫 작업 시작 전에.</p>
+
+      <h4>Q. ADR 문서들 다 읽어야 하나요?</h4>
+      <p class="muted">아니요. 직접 읽지 않아도 OK. 일하다 "이건 왜 이렇게 돼있지?" 싶으면 <code>/learn:why &lt;ADR 키워드&gt;</code> 호출하면 관련 ADR 근거로 학부생 톤으로 알려줍니다.</p>
+
+      <h4>Q. Phase가 너무 커요. 어떻게 쪼개죠?</h4>
+      <p class="muted">한 Phase = 1~3시간 작업이 기준. 더 크면 <code>/work:plan</code> 다시 호출해서 재분해. 의심되면 더 작게 쪼개기.</p>
+
+      <h4>Q. 작업하다 새 패킷 추가가 필요해요.</h4>
+      <p class="muted"><code>/work:new-packet &lt;C2S|S2C&gt; &lt;PacketName&gt; &lt;reason&gt;</code> 호출. netcode 에이전트가 양쪽 wiring까지 한 번에 처리. 본인이 직접 패킷 정의 만지지 마세요 — 그건 팀장 영역.</p>
+
+      <h4>Q. 한국어로 답하는데 면접은 영어로 봐야 하는데요.</h4>
+      <p class="muted">일단 한국어로 학습 일지 누적. 본인 영어 면접 준비 시점에 그 일지를 영어로 옮기는 게 효율적. 한국어로 일단 *생각이 박혀야* 영어로도 답할 수 있음.</p>
+
+      <h4>Q. 본인이 잘못 박은 게 있으면 어떻게 정정하나요?</h4>
+      <p class="muted">commit 안 했으면 그냥 파일 수정. commit 했으면 새 commit으로 정정 + 이유 commit 메시지에. CHANGELOG에 박혀야 할 수준이면 팀장에게 알리기. 부끄러워하지 말고 솔직히.</p>
+
+      <h4>Q. Phase 06부터 진입하라고 했는데 그게 뭐예요?</h4>
+      <p class="muted">M2-first-connection 마일스톤의 6번째 Phase. <code>01_Phases/M2-first-connection/06-input-replay-reconcile.md</code>에 정의됨. <code>/session:start</code> 호출하면 현재 위치 자동 안내.</p>
+    </section>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ FOOTER ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div class="doc-footer">
+      <div class="meta">
+        <div>Dawnholder Project · ClaudeDev · 팀원 사용 가이드</div>
+        <div>v1.1 · 2026-05-15 · git 안전 게이트 보강</div>
+      </div>
+      <p style="margin-top: 16px;">
+        문서가 오래됐거나 틀린 부분 발견하면 팀장(유영호)에게 슬랙. <code>00_Document/</code> 폴더의 다른 문서들과 충돌 시 헌법(<code>CLAUDE.md</code>)이 이깁니다.
+      </p>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

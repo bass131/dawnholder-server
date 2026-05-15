@@ -28,6 +28,7 @@
 
 | 날짜 | 변경 | 위험도 |
 |------|------|--------|
+| 2026-05-15 | `/session:start` git 안전 게이트 신설 ([0단계] 추가): `git status --porcelain=v1 --branch`로 브랜치+워킹 상태 점검, main 브랜치 또는 uncommitted 변경 시 CONTEXT 읽기 진입 자체 차단 (STOP 메시지 + 해결 안내). 파괴적 명령(`reset --hard`/`checkout .`/`clean -fd`) Claude 실행 절대 금지 명시, 사용자가 요청해도 안내만. 가이드 v1.1 동반 갱신 (`00_Document/team-guide.html`, README에 링크 추가) (다이어그램 순서 뒤집기: `/session:start` 먼저 → 게이트 통과 시 `git pull`, "막혔을 때" 표에 Git 충돌·복구 행 분리, 안전 매뉴얼 콜아웃 박스 신설). 모든 팀원 매일 첫 호출 슬래시 동작 변경이라 [H]. | [H] |
 | 2026-05-15 | README 갱신 (Action 1 후속): L1 헌법 표 셀에 `00_Document/policies/` 외부화 명시 ("절대 원칙·라우팅·스택만 / 운영 정책은 외부화"), 추가 인프라 섹션에 `policies/INDEX.md` + `REVIEW_CHECKLIST.md` 2개 항목 신설, 폴더 구조 `00_Document/` 설명에 policies·REVIEW_CHECKLIST 명시. 팀원·외부 독자가 한눈에 헌법/정책 분리 패턴을 보게. | [L] |
 | 2026-05-15 | 헌법 응축 (354→175줄, -51%) + 정책 4개 외부화 (`00_Document/policies/`). 신규: `reporting-format.md` (5단계 보고 + work-envelope) / `pin-and-done.md` (current-pin + -DONE.md 박제 + Phase 완료 권유) / `doc-thresholds.md` (220/350줄 임계) / `review-tiering.md` (ADR-019 Tier 2). 헌법 자체는 절대 원칙·라우팅·스택만 유지. 자기참조 정책 루프 해소. 6파일 7건 참조 갱신 (훅·커맨드·템플릿·ADR.md). 훅 grep 패턴↔외부 정책 양식 정합 6항목 확인. | [M] |
 | 2026-05-15 | ADR-019 박제: Reviewer 서브에이전트 도입 (Tier 2 자동 리뷰). 신규 `.claude/agents/reviewer.md` + `00_Document/REVIEW_CHECKLIST.md` (5축 점검 매핑) + 헌법 `## Tier 2 자동 리뷰` 섹션 추가. 도메인 에이전트 코드 변경 후 메인 세션이 트리거 조건(새 핸들러/패킷/공식/≥10줄/`98_Shared/` 포함) 충족 시 reviewer 자동 호출. 코드 스타일 검증은 의도적 Scope 제외 (Roslyn analyzer 도입 후보로 미루). 서브에이전트 6→7. | [M] |
