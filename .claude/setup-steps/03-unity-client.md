@@ -24,30 +24,49 @@ Windows 시작 메뉴에서 'Unity Hub' 검색해서 실행해주세요.
 
 ---
 
-## 2. Unity 6 LTS (6000.4.1f1) 정확한 버전 설치 확인
+## 2. Unity 6 LTS (6000.4.7f1) 정확한 버전 + revision hash 설치 확인
 
 ```
-2단계: 본인이 만든 Dawnholder 프로젝트는 Unity 6000.4.1f1 정확히 같은 빌드
-사용해요. 다른 버전이면 .meta 충돌 발생하니 주의.
+2단계: 본인이 만든 Dawnholder 프로젝트는 Unity 6000.4.7f1, revision hash
+`f3c3c4248748` 정확히 같은 빌드 사용해요. 같은 6000.4.7f1 라벨이라도 다른
+시점에 받으면 Unity가 다른 hash로 빌드해줘서 ProjectVersion.txt가 매 실행
+churn — 그래서 hash까지 통일.
 
 Unity Hub 좌측 'Installs' 탭 열어서 설치된 에디터 목록 알려주세요.
-정확한 버전 번호까지 (예: 6000.4.1f1).
+정확한 버전 번호까지 (예: 6000.4.7f1).
 ```
 
 **판정**:
-- `6000.4.1f1` 정확히 설치됨 → "OK, 다음으로"
+- `6000.4.7f1` 정확히 설치됨 → 다음에 hash 검증으로 진행 (아래 *hash 검증 보강* 박스)
 - 다른 버전 또는 없음 → **STOP**:
   ```
-  ⛔ Unity 6000.4.1f1이 없어요.
+  ⛔ Unity 6000.4.7f1이 없어요.
 
-  설치:
-  1. Unity Hub → 'Installs' → 'Install Editor' 클릭
-  2. 'Archive' 탭 → 'download archive' 링크 클릭
-  3. 웹페이지에서 6000.4.1f1 찾아서 'Unity Hub' 버튼 클릭
-  4. Hub로 돌아와 설치 진행 (Windows Build Support 모듈 포함 권장)
+  설치 (가장 빠른 방법 — Hub 딥링크):
+  1. 다음 링크를 브라우저 주소창에 붙여넣거나 Unity Hub 직접 클릭:
 
-  설치 시간 30분~1시간. 끝나면 알려주세요.
+       unityhub://6000.4.7f1/f3c3c4248748
+
+  2. Unity Hub가 열리면서 "Install Unity 6000.4.7f1 (f3c3c4248748)" 자동
+     안내 뜸 → 'Install' 클릭
+  3. Windows Build Support (IL2CPP) 모듈 포함 권장
+  4. 설치 시간 30분~1시간
+
+  ⚠️ 딥링크가 핵심 — Hub UI의 'Install Editor' 다이얼로그는 *현재 Hub가
+     서빙하는 hash*만 줘서, 시기에 따라 우리와 다른 hash 받게 됩니다.
+     딥링크는 특정 hash를 강제 설치하는 우회로.
+
+  딥링크 안 먹으면 (Hub 안 열림 등):
+  - https://unity.com/releases/editor/whats-new/6000.4.7f1 에서
+    'Install with Unity Hub' 버튼 직접 클릭 (같은 딥링크가 이 버튼에 박혀있음)
+
+  설치 끝나면 알려주세요.
   ```
+
+**hash 검증 보강**: 설치 후 Hub > Installs > 6000.4.7f1 카드 호버 또는 기어
+아이콘 > 'Show in Explorer'로 설치 경로 확인. 경로에 `f3c3c4248748` 들어있어야 정상.
+경로 또는 Hub 화면에서 hash 다르게 표시되면 (예: 다른 16진수) 팀장에게 알려주세요 —
+딥링크 설치 실패 또는 Unity가 또 re-spin한 경우라 별도 처리 필요.
 
 ---
 
@@ -72,7 +91,7 @@ Unity ID 없으면 'create one' 클릭해서 무료 가입.
 
 ---
 
-## 4. 03_Client 프로젝트 첫 열기
+## 4. 03_Client 프로젝트 첫 열기 + ProjectVersion.txt hash 검증
 
 ```
 4단계: Dawnholder 클라 프로젝트를 Unity Hub로 처음 열겠습니다.
@@ -80,19 +99,29 @@ Unity ID 없으면 'create one' 클릭해서 무료 가입.
 1. Unity Hub → 'Projects' 탭 → 우측 'Open' 옆 화살표 → 'Add project from disk'
 2. 본인 ClaudeDev 레포 안의 03_Client 폴더 선택
 3. 프로젝트 목록에 'ClaudeDev' (또는 03_Client) 뜨면 Editor Version이
-   6000.4.1f1로 보이는지 확인 → 클릭해서 열기
+   6000.4.7f1로 보이는지 확인 → 클릭해서 열기
 
 ⚠️ 첫 열기는 5~15분 걸려요. Unity가 Library/ 캐시 빌드하는 시간.
    진행률 바 차분히 기다리세요. 끝나면 에디터 창이 뜹니다.
 
-에디터 열리면 알려주세요.
+에디터 열린 직후, 한 가지 검증:
+
+  레포의 03_Client/ProjectSettings/ProjectVersion.txt 파일 열어 두 번째 줄 확인:
+
+    m_EditorVersionWithRevision: 6000.4.7f1 (f3c3c4248748)
+
+  hash가 `f3c3c4248748`이 아니면 본인 Unity 빌드가 main과 다른 빌드라는 뜻.
+  팀장에게 알리고 작업 시작 미루세요 — 동기화 안 된 상태로 commit 시 churn 발생.
+
+에디터 열림 + hash 일치 확인했으면 알려주세요.
 ```
 
 **판정**:
-- 에디터 정상 열림 → "OK, 다음으로"
+- 에디터 정상 열림 + hash `f3c3c4248748` 일치 → "OK, 다음으로"
 - 에러 발생 → **STOP**, 에러 메시지 받고 진단:
   - 패키지 복원 에러 → 인터넷 연결 확인
   - 버전 불일치 → 2단계 재확인
+- hash 불일치 → **STOP**, 팀장에게 보고 (재설치 또는 별도 처리 필요)
 
 ---
 

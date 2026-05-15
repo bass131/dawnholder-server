@@ -194,7 +194,7 @@ PR 만드는 법 모르면 알려주세요. 첫 작업 시작할 때 같이 안�
    - 한글 경로 없음, Bash PATH OK, .NET 10 SDK OK, MSSQL LocalDB OK,
      VS Code + 확장 OK, 빌드 OK
    - {role == backend ? "MSSQL 접속 + PacketGenerator + 서버 부팅 + C# Dev Kit OK" : ""}
-   - {role == unity-client ? "Unity Hub + 6000.4.1f1 + 라이선스 + Cloud + AI + MCP + Play 모드 OK" : ""}
+   - {role == unity-client ? "Unity Hub + 6000.4.7f1 (hash f3c3c4248748) + 라이선스 + Cloud + AI + MCP + Play 모드 OK" : ""}
    - CONTEXT.md, CONTEXT_History.md, learning-journal/{slug}/, current-pin.txt 박힘
 
 ➡️ 다음 액션

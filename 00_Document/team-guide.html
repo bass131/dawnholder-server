@@ -766,7 +766,7 @@
 
       <div class="callout warn">
         <div class="callout-title">⚠ Unity 클라 역할인 경우</div>
-        <p>김인규·정유현은 위에 더해 <strong>Unity Hub + Unity 6 LTS (<code>6000.4.1f1</code> 정확한 빌드)</strong>도 필요. 셋업 가이드에서 안내됩니다.</p>
+        <p>김인규·정유현은 위에 더해 <strong>Unity Hub + Unity 6 LTS (<code>6000.4.7f1</code> 정확한 빌드)</strong>도 필요. 셋업 가이드에서 안내됩니다.</p>
       </div>
 
       <h3>Step 2 · 레포 clone</h3>
@@ -1029,7 +1029,7 @@
             <tr><td><code>00_Document/</code></td><td class="muted">전체</td><td>PRD, ARCHITECTURE, ADR, 학습 일지</td></tr>
             <tr><td><code>01_Phases/</code></td><td class="muted">전체</td><td>작업 단위 (마일스톤별 폴더, Phase 페어)</td></tr>
             <tr><td><code>02_Server/</code></td><td>팀장 단독</td><td>권위 서버 (.NET 10)</td></tr>
-            <tr><td><code>03_Client/</code></td><td>인규·유현 공유</td><td>Unity 클라 (6000.4.1f1)</td></tr>
+            <tr><td><code>03_Client/</code></td><td>인규·유현 공유</td><td>Unity 클라 (6000.4.7f1)</td></tr>
             <tr><td><code>04_ClientNet/</code></td><td>팀장 단독</td><td>클라용 socket 라이브러리 (Y2 모델)</td></tr>
             <tr><td><code>98_Shared/</code></td><td>팀장 단독</td><td>서버·클라 공유 프로토콜 (.NET Standard 2.1 DLL)</td></tr>
             <tr><td><code>99_Tools/</code></td><td>팀장 단독</td><td>PacketGenerator 등 도구</td></tr>
@@ -1207,6 +1207,8 @@
             <tr><td>Git/PR 막힘 (일반)</td><td>팀장(유영호)에게 슬랙</td></tr>
             <tr><td><strong>Git 충돌·복구</strong> (pull 충돌, 작업물 사라진 듯, 잘못 commit)</td><td><strong>팀장 슬랙 우선.</strong> <code>git reset --hard</code> · <code>git checkout .</code> · <code>git clean -fd</code> 절대 금지 (되돌릴 수 없음)</td></tr>
             <tr><td><strong>Unity 켰더니 ProjectSettings.asset 변경 떴음</strong></td><td><strong>cloud 라인만이면 자동 정리됨</strong> (각자 Cloud 정책, B+). <code>/session:start</code> 게이트가 처리. cloud 외 변경(예: <code>scriptingDefineSymbols</code>)도 같이 떴으면 STOP 떠요 — 본인이 의도적으로 만진 게 아니면 팀장에게 물어보기</td></tr>
+            <tr><td><strong>Unity 켰더니 ProjectVersion.txt 변경 떴음 (M)</strong></td><td>Unity 빌드 hash가 main과 다름. main의 <code>03_Client/ProjectSettings/ProjectVersion.txt</code> 두 번째 줄과 본인 머신 출력 비교 → 다르면 팀장이 안내한 딥링크(<code>unityhub://6000.4.7f1/...</code>)로 재설치. <code>.gitignore</code>로 가리지 마세요 — 신규 팀원이 다른 버전으로 프로젝트 열어도 막아주는 안전망이 깨짐</td></tr>
+            <tr><td>Image 컴포넌트 Inspector 띄운 채 코드 변경 → 콘솔에 NRE</td><td>Unity 알려진 이슈 (UUM-139557, 6000.4.7f1에도 잔존). 빌드/런타임 영향 없음 — 짜증만 남. 회피: 코드 변경 전 Inspector에서 Image 안 띄우고 다른 GameObject 클릭해두기</td></tr>
             <tr><td>빌드 에러</td><td>에러 메시지 그대로 Claude한테 보여주기</td></tr>
             <tr><td>헌법/ADR 결정 이유 궁금</td><td><code>/learn:why &lt;ADR 키워드&gt;</code></td></tr>
           </tbody>
@@ -1256,7 +1258,7 @@
     <div class="doc-footer">
       <div class="meta">
         <div>Dawnholder Project · ClaudeDev · 팀원 사용 가이드</div>
-        <div>v1.1 · 2026-05-15 · git 안전 게이트 보강</div>
+        <div>v1.2 · 2026-05-16 · Unity 6000.4.7f1 동기화 + 막혔을 때 표 보강</div>
       </div>
       <p style="margin-top: 16px;">
         문서가 오래됐거나 틀린 부분 발견하면 팀장(유영호)에게 슬랙. <code>00_Document/</code> 폴더의 다른 문서들과 충돌 시 헌법(<code>CLAUDE.md</code>)이 이깁니다.
