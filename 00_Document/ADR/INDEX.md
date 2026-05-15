@@ -38,6 +38,7 @@
 | ADR-015 | Post-flight 게이트 (validate-phase-gate.sh 훅) | [harness/ADR-015-postflight-gate.md](harness/ADR-015-postflight-gate.md) |
 | ADR-016 | Notion 협업 3자 분업 (Claude / Codex / 본인) | [harness/ADR-016-notion-3way.md](harness/ADR-016-notion-3way.md) |
 | ADR-018 | 하네스 망각 안전망 — 작업 봉투 + 핀 + WORK-ID | [harness/ADR-018-forgetting-safety-net.md](harness/ADR-018-forgetting-safety-net.md) |
+| ADR-019 | Reviewer 에이전트 도입 (Tier 2 자동 리뷰) | [harness/ADR-019-reviewer-agent.md](harness/ADR-019-reviewer-agent.md) |
 | ADR-020 | 훅 실행 환경 의존성 (Git Bash on Windows) + 검증 패턴 | [harness/ADR-020-hook-env-deps.md](harness/ADR-020-hook-env-deps.md) |
 
 ---
