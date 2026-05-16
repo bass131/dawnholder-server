@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Dawnholder 프로젝트 진행 방향 + 내 역할 (정유현)</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --me: #2d8659;
+    --me-bg: #e8f5ed;
+    --me-border: #5cb887;
+    --lead: #3a7bd5;
+    --lead-bg: #eaf2fc;
+    --other: #9ca3af;
+    --other-bg: #f3f4f6;
+    --warn: #d9534f;
+    --warn-bg: #fdecea;
+    --soft: #fff7ed;
+    --done: #16a34a;
+    --pending: #f59e0b;
+    --future: #6366f1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6;
+  }
+  .container { max-width: 980px; margin: 0 auto; }
+  .hero {
+    background: linear-gradient(135deg, var(--me) 0%, #1f6b4a 100%);
+    color: #fff; padding: 32px; border-radius: 12px; margin-bottom: 24px;
+  }
+  .hero .tag { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 999px; font-size: 12px; margin-bottom: 12px; }
+  .hero h1 { margin: 0 0 12px; font-size: 28px; }
+  .hero p { margin: 0; opacity: 0.95; font-size: 15px; }
+  .section { background: var(--card); border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border: 1px solid var(--line); }
+  .section h2 { margin: 0 0 16px; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+  .section h2 .num { background: var(--ink); color: #fff; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+  .section h3 { font-size: 16px; margin: 20px 0 10px; color: var(--muted); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+  .card { padding: 16px; border-radius: 8px; border: 1px solid var(--line); }
+  .card.me { background: var(--me-bg); border-color: var(--me-border); border-width: 2px; }
+  .card.lead { background: var(--lead-bg); border-color: #b3d1f0; }
+  .card.other { background: var(--other-bg); }
+  .card .role { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .card .name { font-weight: 600; margin-bottom: 8px; font-size: 15px; }
+  .card.me .name::after { content: " ← 본인"; color: var(--me); font-weight: 700; }
+  .card .what { font-size: 13px; color: var(--ink); }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .pill.done { background: #dcfce7; color: #166534; }
+  .pill.pending { background: #fef3c7; color: #92400e; }
+  .pill.future { background: #e0e7ff; color: #3730a3; }
+  .pill.mine { background: var(--me-bg); color: var(--me); border: 1px solid var(--me-border); }
+  .rule {
+    background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 14px 16px; border-radius: 4px; margin: 12px 0;
+  }
+  .rule strong { color: var(--warn); }
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
+  .step { position: relative; padding: 12px 0 12px 18px; }
+  .step::before { content: ""; position: absolute; left: -22px; top: 18px; width: 14px; height: 14px; border-radius: 50%; background: var(--card); border: 2px solid var(--line); }
+  .step.done::before { background: var(--done); border-color: var(--done); }
+  .step.now::before { background: var(--pending); border-color: var(--pending); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2); }
+  .step.future::before { background: var(--card); border-color: var(--future); }
+  .step .label { font-weight: 600; margin-bottom: 2px; }
+  .step .desc { font-size: 13px; color: var(--muted); }
+  .mvp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  @media (max-width: 720px) { .mvp-grid { grid-template-columns: 1fr 1fr; } }
+  .mvp { padding: 10px 12px; border-radius: 6px; background: var(--other-bg); border: 1px solid var(--line); font-size: 13px; }
+  .mvp.mine { background: var(--me-bg); border-color: var(--me-border); }
+  .mvp.lead { background: var(--lead-bg); border-color: #b3d1f0; }
+  .mvp .num { font-weight: 700; color: var(--muted); margin-right: 4px; }
+  .mvp.mine .num { color: var(--me); }
+  .mvp.lead .num { color: var(--lead); }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 12px; }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--line); }
+  table.flow { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.flow th, table.flow td { padding: 10px; text-align: left; border-bottom: 1px solid var(--line); }
+  table.flow th { background: var(--bg); font-weight: 600; }
+  .stack { display: flex; flex-direction: column; gap: 6px; }
+  .stack-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg); border-radius: 6px; font-size: 13px; }
+  .stack-row .arrow { color: var(--muted); }
+  .ascii { font-family: "Consolas", "Menlo", monospace; background: #1f2937; color: #d1d5db; padding: 14px; border-radius: 8px; font-size: 12px; line-height: 1.5; overflow-x: auto; }
+  .ascii .me { color: #5cb887; font-weight: 700; }
+  .ascii .lead { color: #79b7ff; }
+  .ascii .label { color: #fbbf24; }
+  .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+  ul { padding-left: 20px; }
+  ul li { margin: 4px 0; font-size: 14px; }
+  .key { font-weight: 700; color: var(--me); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ============== HERO ============== -->
+  <div class="hero">
+    <div class="tag">정유현 (yuhyeon) — 학습 자료</div>
+    <h1>Dawnholder MMORPG — 내 위치와 다음 발걸음</h1>
+    <p><strong>한 줄 요약</strong> · 2D 사이드스크롤 캐주얼 RPG. 팀장이 백엔드 권위 서버를 만들고, 본인은 <em>그 서버가 보내주는 걸 화면에 보여주는</em> Dumb Client 트랙. 11/19 캡스톤 마감.</p>
+  </div>
+
+  <!-- ============== 1. 큰 그림 ============== -->
+  <div class="section">
+    <h2><span class="num">1</span> 큰 그림 — 누가 무엇을 하나</h2>
+    <p>4명이 각자 다른 슬라이스를 맡습니다. 본인 역할은 <span class="key">Unity 클라 UI·입력 (Dumb Client)</span>.</p>
+    <div class="grid-2">
+      <div class="card lead">
+        <div class="role">팀장 · 백엔드 코어 · 하네스</div>
+        <div class="name">유영호 (@bass131)</div>
+        <div class="what">.NET 서버 / TCP 프레이밍 / PDL / 권위 게임루프 / 영속화 / 헌법·ADR·하네스 단독 소유. M1·M2 골조 이미 완성.</div>
+      </div>
+      <div class="card me">
+        <div class="role">Unity 클라 · UI · 입력</div>
+        <div class="name">정유현 (yuhyeon)</div>
+        <div class="what">렌더링 / UI / 입력 처리 / 캐릭터 스프라이트 / 컨텐츠 표시. 서버가 보내준 상태를 <strong>그리기만</strong> 함 (서버 권위 절대 안 깸).</div>
+      </div>
+      <div class="card other">
+        <div class="role">Unity 클라 · 공유</div>
+        <div class="name">인규 (합류 예정)</div>
+        <div class="what">본인과 03_Client/ 공유 영역. 합류 시 세부 영역(네트워크 클라 / UI 등) 작업하며 분리됨.</div>
+      </div>
+      <div class="card other">
+        <div class="role">MES (별도 레포)</div>
+        <div class="name">박정우</div>
+        <div class="what">매치메이킹/에지 서버 등 외부 시스템. 본인 작업 영역과 직접 겹침 거의 없음.</div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="item"><span class="sw" style="background: var(--me-bg); border-color: var(--me-border);"></span>본인 영역</div>
+      <div class="item"><span class="sw" style="background: var(--lead-bg); border-color: #b3d1f0;"></span>팀장 영역</div>
+      <div class="item"><span class="sw" style="background: var(--other-bg);"></span>다른 팀원</div>
+    </div>
+  </div>
+
+  <!-- ============== 2. 시스템 그림 ============== -->
+  <div class="section">
+    <h2><span class="num">2</span> 시스템 한 장 — 본인이 어디 손대나</h2>
+    <p>아래 다이어그램에서 <span class="key">초록색</span>이 본인이 만지는 영역, <span style="color: var(--lead); font-weight: 700;">파란색</span>은 팀장이 만든 것 (본인은 *읽기*만 — 패킷 사용, 상수 참조).</p>
+    <pre class="ascii">
+   ┌─────────────────────────────────────────────────────────┐
+   │  <span class="me">03_Client/  (Unity 6.4)  ← 본인 작업 영역</span>             │
+   │  ┌────────────────────────────────────────────────────┐ │
+   │  │ <span class="me">UI 캔버스 · 입력 처리 · 스프라이트 · 애니메이션</span>    │ │
+   │  │ <span class="me">씬 / 카메라 / 렌더링 / 사운드</span>                       │ │
+   │  └──────────────────┬─────────────────────────────────┘ │
+   │                     │ ↑ 화면에 그림                       │
+   │  ┌──────────────────┴─────────────────────────────────┐ │
+   │  │ <span class="lead">04_ClientNet/  (팀장 영역, 본인은 호출만)</span>          │ │
+   │  │ <span class="lead">소켓 / 패킷 송수신 / prediction / reconciliation</span> │ │
+   │  └──────────────────┬─────────────────────────────────┘ │
+   └─────────────────────┼───────────────────────────────────┘
+                         │ TCP (length-prefixed)
+   ┌─────────────────────┴───────────────────────────────────┐
+   │ <span class="lead">98_Shared/  ← 본인은 *읽기*만 (패킷 정의 / 상수)</span>       │
+   │   Packets, GameData (수식·상수 — 데미지 공식 등)         │
+   └─────────────────────┬───────────────────────────────────┘
+                         │
+   ┌─────────────────────┴───────────────────────────────────┐
+   │ <span class="lead">02_Server/  (팀장 단독 영역, 본인 손 X)</span>                │
+   │   GameLoop (20 TPS) · 권위 상태 · 영속화 · 검증           │
+   └─────────────────────────────────────────────────────────┘
+    </pre>
+    <div class="rule">
+      <strong>⚠ 헌법 1번 — Server Authority</strong><br>
+      클라이언트는 <strong>단순 렌더러 + 입력 전달자</strong>. 데미지 계산 / HP 변경 / 아이템 생성 같은 <em>권위 있는 상태 변경</em>은 <strong>절대 클라에서 하지 않음</strong>. 클라가 prediction(미리 그림)은 OK, 단 서버랑 어긋나면 reconcile.
+    </div>
+  </div>
+
+  <!-- ============== 3. 팀장이 해놓은 것 ============== -->
+  <div class="section">
+    <h2><span class="num">3</span> 팀장이 이미 만들어 놓은 골조</h2>
+    <p>본인이 시작할 때 <strong>이미 동작하는 것</strong>들. 본인은 이 위에 클라 표시 레이어를 얹는 식.</p>
+    <table class="flow">
+      <thead>
+        <tr><th>마일스톤</th><th>내용</th><th>상태</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>M1 Foundation</strong> (7 Phase)</td><td>솔루션 / 서버 네트워크 / TCP 리스너 / 프레이밍 + 핑퐁 / PDL 마이그레이션</td><td><span class="pill done">완료</span></td></tr>
+        <tr><td><strong>M2 First Connection</strong> (8 Phase)</td><td>Unity 씬+캐릭터 / 서버 게임루프 / 핸드셰이크 / 이동 인텐트+스냅샷 / 클라 prediction</td><td><span class="pill done">5/8 완료</span></td></tr>
+        <tr><td>M2 남은 3개</td><td>input replay reconcile / gravity-jump / regression-demo</td><td><span class="pill pending">팀장 작업 중</span></td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 12px; font-size: 13px; color: var(--muted);"><strong>💡 활용법</strong>: 팀장 일지(<code>01_Phases/youngho/M*/</code>)는 본인의 <em>읽기 자료</em>. "서버가 이때 뭘 했고 왜 그렇게 만들었는지" 보고 → 클라에서 어떻게 표시할지 본인이 판단.</p>
+  </div>
+
+  <!-- ============== 4. 본인 트랙 ============== -->
+  <div class="section" style="border-left: 4px solid var(--me);">
+    <h2><span class="num">4</span> 본인 트랙 — Dumb Client 보조 (핵심)</h2>
+
+    <h3>학습 목표</h3>
+    <ul>
+      <li>백엔드/네트워킹을 <strong>보조하는</strong> 클라이언트 프로그래밍 — 서버가 권위, 클라는 그 결과를 멋지게 표시.</li>
+      <li>Unity UI · 입력 시스템 · 스프라이트/애니메이션 · 컨텐츠 표시 흐름 익히기.</li>
+      <li>서버 패킷 → 클라 상태 → 화면 매핑하는 일반 패턴 학습.</li>
+    </ul>
+
+    <h3>팀장 권장 시작 흐름</h3>
+    <div class="stack">
+      <div class="stack-row"><strong>1단계</strong> <span class="arrow">→</span> UI 세팅 (캔버스 / 메인 메뉴 / HUD 골격)</div>
+      <div class="stack-row"><strong>2단계</strong> <span class="arrow">→</span> 캐릭터 스프라이트 + 애니메이션 (idle / walk / jump / attack)</div>
+      <div class="stack-row"><strong>3단계</strong> <span class="arrow">→</span> 컨텐츠 작업 (몬스터 스프라이트 / 맵 타일 / 아이템 아이콘 등)</div>
+    </div>
+    <p style="font-size: 13px; color: var(--muted); margin-top: 10px;">위 순서는 <em>강제 X, 권장</em>. 본인 의견 있으면 팀장과 의논 후 조정 가능.</p>
+
+    <h3>해도 되는 것 vs 안 되는 것</h3>
+    <div class="grid-2">
+      <div class="card" style="border-color: var(--me-border); background: #f0faf4;">
+        <div class="name" style="color: var(--me);">✅ 본인이 하는 것</div>
+        <ul style="margin: 8px 0;">
+          <li>UI 캔버스 배치, 버튼/메뉴 핸들러</li>
+          <li>Unity Input System으로 입력 받아 *서버에 보낼 인텐트*만 만듦</li>
+          <li>스프라이트/애니메이터 셋업</li>
+          <li>서버에서 받은 위치/HP/인벤토리를 화면에 표시</li>
+          <li>이펙트, 사운드, 카메라, 트랜지션</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color: #ef9a9a; background: #fff5f5;">
+        <div class="name" style="color: var(--warn);">🚫 본인이 안 하는 것</div>
+        <ul style="margin: 8px 0;">
+          <li>데미지 계산 (서버 권위)</li>
+          <li>HP / 인벤토리 / 골드 직접 변경</li>
+          <li>아이템 생성 / 드랍 굴림</li>
+          <li>패킷 정의 변경 (98_Shared/ 손대지 않음)</li>
+          <li>서버 코드 (02_Server/, CODEOWNERS로 보호됨)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== 5. MVP 6개 중 본인 ============== -->
+  <div class="section">
+    <h2><span class="num">5</span> MVP 6개 중 본인이 닿는 부분</h2>
+    <p>MVP 6개 다 되면 데모 영상을 찍을 수 있음. 본인은 <strong>클라 표시 레이어</strong>로 거의 모든 항목에 손댐 — 단, 권위 로직은 팀장.</p>
+    <div class="mvp-grid">
+      <div class="mvp lead"><span class="num">1.</span>계정+캐릭터 <small>(서버: 인증·영속화)</small></div>
+      <div class="mvp mine"><span class="num">2.</span>이동+점프 ★ <small>(클라: 입력·렌더링)</small></div>
+      <div class="mvp mine"><span class="num">3.</span>사냥+전투 ★ <small>(클라: 이펙트·HP UI)</small></div>
+      <div class="mvp mine"><span class="num">4.</span>인벤토리+창고 ★ <small>(클라: 슬롯 UI·드래그)</small></div>
+      <div class="mvp mine"><span class="num">5.</span>길드+거점 ★ <small>(클라: 시설 배치 UI)</small></div>
+      <div class="mvp mine"><span class="num">6.</span>마을+사냥터 <small>(클라: 맵 타일·portal UI)</small></div>
+    </div>
+    <div class="legend">
+      <div class="item"><span class="sw" style="background: var(--me-bg); border-color: var(--me-border);"></span>본인 손대는 부분</div>
+      <div class="item"><span class="sw" style="background: var(--lead-bg); border-color: #b3d1f0;"></span>팀장 단독 (백엔드)</div>
+    </div>
+  </div>
+
+  <!-- ============== 6. 절대 원칙 ============== -->
+  <div class="section">
+    <h2><span class="num">6</span> 절대 어기면 안 되는 5가지 (헌법)</h2>
+    <p>이건 보안·동기화·핵 취약점 직결. 본인이 위반 요청해도 Claude가 거부함.</p>
+    <ol>
+      <li><strong>Server Authority</strong> — 권위 상태는 서버. 클라는 표시·prediction만. <span class="pill mine">본인 가장 중요</span></li>
+      <li><strong>Protocol is Sacred</strong> — 패킷 ID 재사용 X, 호환성 깨는 변경 금지. <span class="pill" style="background: var(--lead-bg); color: var(--lead);">팀장 단독</span></li>
+      <li><strong>Trust Boundary</strong> — 서버는 클라 입력 다 검증. <span class="pill" style="background: var(--lead-bg); color: var(--lead);">팀장 단독</span></li>
+      <li><strong>Shared Code Discipline</strong> — 98_Shared/ 변경 시 양쪽 컴파일 확인. <span class="pill" style="background: var(--lead-bg); color: var(--lead);">팀장 단독</span></li>
+      <li><strong>No Blocking in Game Loop</strong> — 서버 틱(50ms)에 await·sleep 금지. <span class="pill" style="background: var(--lead-bg); color: var(--lead);">팀장 단독</span></li>
+    </ol>
+  </div>
+
+  <!-- ============== 7. 현재 위치 + 다음 ============== -->
+  <div class="section">
+    <h2><span class="num">7</span> 본인의 현재 위치 + 다음 액션</h2>
+    <div class="timeline">
+      <div class="step done">
+        <div class="label">셋업 (2026-05-15 합류)</div>
+        <div class="desc">설치 / 가이드 / 첫 PR(#9 .gitignore lscache)</div>
+      </div>
+      <div class="step done">
+        <div class="label">슬러그 통일 따라잡기 (2026-05-17)</div>
+        <div class="desc">팀장 PR #13 (yuhyun→yuhyeon) 받기 + 본인 PR #14 stub 이사 머지</div>
+      </div>
+      <div class="step now">
+        <div class="label">⏸ 지금: 첫 Phase 진입 대기</div>
+        <div class="desc">M1 본인 마일스톤 미할당. /work:plan "UI 세팅"으로 분해 시작 예정.</div>
+      </div>
+      <div class="step future">
+        <div class="label">M1 UI 세팅 — 첫 Phase (예정)</div>
+        <div class="desc">캔버스 + 메인 메뉴 + HUD 골격. 1~3시간 단위로 쪼개짐.</div>
+      </div>
+      <div class="step future">
+        <div class="label">M2 캐릭터 스프라이트</div>
+        <div class="desc">팀장 M2 prediction 위에 시각 레이어 얹기.</div>
+      </div>
+      <div class="step future">
+        <div class="label">M3+ 컨텐츠</div>
+        <div class="desc">몬스터 스프라이트, 맵, 아이템 아이콘 등.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== 8. 바로 다음 5단계 ============== -->
+  <div class="section">
+    <h2><span class="num">8</span> 바로 다음에 할 5단계</h2>
+    <table class="flow">
+      <thead><tr><th>#</th><th>액션</th><th>왜</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>01_Phases/yuhyeon/README.md</code> 읽기</td><td>팀장이 본인 Claude한테 박은 메모 있음 (학습 방향 가이드)</td></tr>
+        <tr><td>2</td><td><code>git checkout -b feature/yuhyeon-m1-ui-setup</code></td><td>main 보호 + PR 만들 준비</td></tr>
+        <tr><td>3</td><td><code>/session:start</code></td><td>0단계 게이트 통과 확인</td></tr>
+        <tr><td>4</td><td><code>/work:plan "UI 세팅"</code></td><td>첫 마일스톤을 1~3시간짜리 Phase로 분해</td></tr>
+        <tr><td>5</td><td>첫 Phase 시작</td><td>"매우 작게" — Hello World 수준부터</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 12px; font-size: 13px; color: var(--muted);">💡 학습 일지(<code>/journal:bug</code>로 stub 두 건 확장)는 첫 Phase 마감 후 묶어 한 번에 박는 게 자연스러움.</p>
+  </div>
+
+  <div class="footer">
+    생성: 2026-05-17 · Dawnholder Project · 정유현 (yuhyeon) 본인 영역<br>
+    이 문서는 자동 생성된 학습 자료입니다 · 헌법(CLAUDE.md) / PRD / 핀과 충돌 시 그쪽이 우선
+  </div>
+
+</div>
+</body>
+</html>
