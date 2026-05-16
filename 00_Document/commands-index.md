@@ -47,7 +47,7 @@
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
 | [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력. CONTEXT.md 읽고 톤·현재 멈춤 지점·다음 액션 + CHANGELOG 최근 변경 짧게 인지 확인. | (인풋 없음) |
-| [`/session:end`](../.claude/commands/session/end.md) | Phase 완료 마감 절차. -DONE.md 박제 후 호출 → commit + PR + `/session:log` 자동 호출 + 다음 액션 결정까지 한 흐름. 학부생 백지 팀원 PR 처음 만들기 안내 포함. | (인풋 없음) |
+| [`/session:end`](../.claude/commands/session/end.md) | Phase 완료 마감 절차. -DONE.md 박제 후 호출 → commit + PR + `/session:log` 자동 호출 + **CONTEXT.md 자동 갱신**(멈춤 지점·학습 일지 후보·History 한 줄, 미리보기 컨펌) + 다음 액션 결정까지 한 흐름. 학부생 상세 안내는 `team-guide.html` 위임. | (인풋 없음) |
 | [`/session:log`](../.claude/commands/session/log.md) | 노션 박제 트리거. 보통 `/session:end`가 자동 호출. 실행자 분기: Codex 있으면 Codex가 박음 (본인 유영호 흐름), Codex 없으면 Claude가 mcp__notion 직접 호출 (인규/유현 fallback). | (인풋 없음) |
 
 ---
@@ -83,7 +83,7 @@
 
 ### `/session:start` vs `/session:end` vs `/session:log`
 - **`/session:start`** — 세션 **시작**. CONTEXT 인지 + CHANGELOG 최근 변경 확인. 작업 시작 전 항상.
-- **`/session:end`** — **Phase 완료** 마감 절차. commit + PR + 박제 + 다음 액션. Phase 단위로 호출.
+- **`/session:end`** — **Phase 완료** 마감 절차. commit + PR + 박제 + **CONTEXT 자동 갱신** + 다음 액션. Phase 단위로 호출.
 - **`/session:log`** — 노션 **박제만**. 보통 `/session:end`가 호출. 본인이 직접 호출하는 경우는 Phase 외 큰 결정 박을 때.
 
 ### `/learn:recap` vs `/session:log`
