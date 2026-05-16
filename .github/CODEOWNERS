@@ -52,6 +52,15 @@
 /03_Client/                    @bass131 @ingyu @yuhyeon
 
 # ───────────────────────────────────────────
+# Unity 클라 UI — 정유현 단독 (ADR-021, 2026-05-17)
+# UI 전용 씬 + UI 스크립트 + 씬 진입점 부트스트랩
+# Gameplay.unity / MainMenu.unity는 캐릭터·맵 들어오므로 공유 유지
+# ───────────────────────────────────────────
+/03_Client/Assets/Scenes/UI.unity         @yuhyeon
+/03_Client/Assets/Scripts/Bootstrap/      @yuhyeon
+/03_Client/Assets/Scripts/UI/             @yuhyeon
+
+# ───────────────────────────────────────────
 # 학습 일지 — 각자 자기 폴더만
 # (사람별 네임스페이스 — 협업 셋업 파트 1 결정)
 # ───────────────────────────────────────────
