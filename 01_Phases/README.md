@@ -20,20 +20,27 @@ Phase 시스템은 이걸 명시적으로 해결해요:
 ## 구조
 
 ```
-phases/
-├── README.md             (이 파일)
-├── M1-foundation/        마일스톤 1: 기본 골격
-│   ├── 01-server-bootstrap.md
-│   ├── 02-tcp-listener.md
-│   ├── 03-packet-framing.md
-│   └── ...
-├── M2-first-connection/  마일스톤 2: 첫 클라이언트 연결
+01_Phases/
+├── README.md             (이 파일, 공유)
+├── _template.md          (Phase 템플릿, 공유)
+├── youngho/              ← 팀장(유영호) 작업 영역
+│   ├── M1-foundation/        마일스톤 1: 기본 골격
+│   │   ├── 01-server-bootstrap.md
+│   │   ├── 02-tcp-listener.md
+│   │   └── ...
+│   └── M2-first-connection/  마일스톤 2: 첫 클라이언트 연결
+│       └── ...
+├── yuhyeon/              ← 정유현 작업 영역
+│   └── ...                   (본인이 첫 마일스톤부터 직접 생성)
+├── ingyu/                ← 김인규 작업 영역 (합류 시)
 │   └── ...
 └── ...
 ```
 
-- 마일스톤 단위(M1, M2...)로 폴더 나눔
-- 각 폴더 안에 Phase 파일이 순번 매겨진 채 들어감
+- **사람별 네임스페이스가 상위** (PR #11, 2026-05-16 영역 분리). 팀원끼리
+  Phase 겹침 차단 + `learning-journal/<사람>/` 패턴과 일관.
+- 마일스톤 단위(M1, M2...)로 그 안에 폴더 나눔
+- 각 마일스톤 폴더 안에 Phase 파일이 순번 매겨진 채 들어감
 - 한 Phase = 한 마크다운 파일
 
 ---
