@@ -286,7 +286,7 @@ public class C_MoveIntent : IPacket // C_MoveIntent 패킷
 {
     // 멤버 변수들
     public sbyte inputX;
-	public int clientTick;
+	public uint clientTick;
     public ushort Protocol { get { return (ushort)PacketID.C_MoveIntent; } }
 
     public void Read(ArraySegment<byte> _Segment)
@@ -305,8 +305,8 @@ public class C_MoveIntent : IPacket // C_MoveIntent 패킷
 		count += sizeof(sbyte);
 		
 		// clientTick 읽기 (LittleEndian 명시 — wire format 약속)
-		this.clientTick = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
-		count += sizeof(int);
+		this.clientTick = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(uint);
 		
     }
 
@@ -332,8 +332,8 @@ public class C_MoveIntent : IPacket // C_MoveIntent 패킷
 		count += sizeof(sbyte);
 		
 		// clientTick 쓰기 (LittleEndian 명시 — wire format 약속)
-		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.clientTick);
-		count += sizeof(int);
+		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.clientTick);
+		count += sizeof(uint);
 		
 
         // 최종 size 기록
@@ -353,7 +353,7 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
 	public float x;
 	public float y;
 	public int serverTick;
-	public int lastAckedClientTick;
+	public uint lastAckedClientTick;
     public ushort Protocol { get { return (ushort)PacketID.S_Snapshot; } }
 
     public void Read(ArraySegment<byte> _Segment)
@@ -384,8 +384,8 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
 		count += sizeof(int);
 		
 		// lastAckedClientTick 읽기 (LittleEndian 명시 — wire format 약속)
-		this.lastAckedClientTick = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
-		count += sizeof(int);
+		this.lastAckedClientTick = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(uint);
 		
     }
 
@@ -423,8 +423,8 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
 		count += sizeof(int);
 		
 		// lastAckedClientTick 쓰기 (LittleEndian 명시 — wire format 약속)
-		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.lastAckedClientTick);
-		count += sizeof(int);
+		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.lastAckedClientTick);
+		count += sizeof(uint);
 		
 
         // 최종 size 기록

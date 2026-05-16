@@ -76,7 +76,7 @@ public class GameMap
                     x = p.Position.X,
                     y = p.Position.Y,
                     serverTick = (int)tickNumber,
-                    lastAckedClientTick = (int)p.LastClientTick
+                    lastAckedClientTick = p.LastClientTick
                 };
                 // 본 Phase는 본인 1명만 — unicast. 다인은 M3+에서 broadcast로 확장.
                 p.Owner.Send(pkt.Write());

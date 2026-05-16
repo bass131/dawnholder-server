@@ -171,6 +171,7 @@ namespace PacketGenerator
                     case "bool":
                     case "short":
                     case "ushort":
+                    case "uint":
                     case "int":
                     case "long":
                         memberCode += string.Format(PacketFormat.MemberFormat, memberType, memberName);
@@ -251,6 +252,8 @@ namespace PacketGenerator
                     return "Int16";
                 case "ushort":
                     return "UInt16";
+                case "uint":
+                    return "UInt32";
                 case "int":
                     return "Int32";
                 case "long":
