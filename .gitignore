@@ -127,9 +127,13 @@ logs/
 # VS Code: 협업 최소 셋(extensions + settings)만 화이트리스트, 개인 설정은 무시
 # - extensions.json: 권장 확장 목록 (파트 1 결정)
 # - settings.json: 통합 터미널 Git Bash 등 협업 최소 셋 (옵션 B 결정 — ADR-020 함정 회피)
+# - tasks.json: 공통 build/run task (Ctrl+Shift+B 빌드, "Run Server" — 2026-05-16 박힘)
+# - launch.json: F5 GameServer 디버그 (2026-05-16 박힘)
 # - settings.local.json (있다면): 각자 개인 설정 자유 영역
 # ─────────────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 .vscode/settings.local.json
