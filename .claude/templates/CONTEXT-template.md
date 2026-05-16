@@ -78,7 +78,7 @@
 ## ⏸️ 현재 진행 상황 (셋업 시점에 갱신해주세요)
 
 **[합류 시점 기준 게임 진행 상태를 적으세요. 팀장에게 확인하거나
-최근 `01_Phases/M{N}-*/{NN}-*-DONE.md` 파일들을 보고 채우기.]**
+최근 `01_Phases/<팀장 네임스페이스>/M{N}-*/{NN}-*-DONE.md` 파일들을 보고 채우기. 본인 작업은 `01_Phases/<본인 네임스페이스>/`에 별도로.]**
 
 ### 현재 마일스톤
 - ✅ M1 Foundation — 완료
@@ -161,7 +161,7 @@
 00_Document/commands-index.md                    ← 슬래시 커맨드 카탈로그
 00_Document/learning-journal/<본인 네임스페이스>/  ← Phase 학습 일지 (각자)
   └── concepts/                                  ← 개념 일지 (각자)
-01_Phases/M{N}-{slug}/                           ← 작업 단위 ({NN}-*.md 정의 + {NN}-*-DONE.md 박제 페어)
+01_Phases/<본인 네임스페이스>/M{N}-{slug}/         ← 작업 단위 사람별 분리 ({NN}-*.md 정의 + {NN}-*-DONE.md 박제 페어)
 02_Server/, 03_Client/, 98_Shared/, 99_Tools/    ← 게임 코드
 04_ClientNet/                                    ← 클라용 socket 라이브러리 (Y2)
 .claude/agents/                                  ← 서브에이전트

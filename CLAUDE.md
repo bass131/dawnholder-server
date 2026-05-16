@@ -61,7 +61,7 @@
 
 ### 01_Phases/ 작업 쪼개기
 
-큰 목표는 1~3시간짜리 Phase로 쪼개서 `01_Phases/M{N}-{slug}/` 안에 보관.
+큰 목표는 1~3시간짜리 Phase로 쪼개서 `01_Phases/<본인 네임스페이스>/M{N}-{slug}/` 안에 보관 (사람별 분리 — 팀원 간 겹침 차단, `learning-journal/` 패턴과 일관).
 
 - 새 작업 시작: `/work:plan <목표>` 로 Phase 분해
 - 한 Phase = 한 마크다운 파일 + 명확한 완료 조건

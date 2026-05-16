@@ -3,7 +3,7 @@
 > Phase 완료 시 AI가 작성하는 사실 박제 페어 ([`00_Document/policies/pin-and-done.md`](../../00_Document/policies/pin-and-done.md) 2번 절 참조).
 >
 > 5단계 보고를 출력한 직후 같은 응답 안에서 AI가 작성·commit.
-> 작성 위치: `01_Phases/M{N}-{slug}/{NN}-{phase-name}-DONE.md`
+> 작성 위치: `01_Phases/<본인 네임스페이스>/M{N}-{slug}/{NN}-{phase-name}-DONE.md`
 
 ---
 
@@ -132,7 +132,7 @@ Codex는 STAR 4섹션 박을 때 위 8 항목이 다 들어갔나 점검 후 박
 - `run_in_background: true` 권장 — Codex 호출은 1~10분 걸림.
 
 **Codex가 받을 input 셋** (Claude가 호출 시 path/내용 전달):
-- `01_Phases/M{N}/{NN}-*-DONE.md` ← 해당 Phase, 1순위 베이스
+- `01_Phases/<본인 네임스페이스>/M{N}-{slug}/{NN}-*-DONE.md` ← 해당 Phase, 1순위 베이스
 - `CONTEXT.md` + `CONTEXT_History.md` ← 세션 맥락
 - `00_Document/ADR.md` ← 관련 ADR-NNN 절
 - 본 템플릿 (`.claude/templates/done-md-template.md`) ← 분업 원칙·8단 구조 사양
@@ -178,7 +178,7 @@ Claude: Bash로 Codex CLI 호출 (readonly + input paths) → Codex: ClaudeDev �
 
 ## 참고 사례
 
-- `01_Phases/M1-foundation/01-solution-bootstrap-DONE.md`
-- `01_Phases/M1-foundation/02-server-network-DONE.md`
-- `01_Phases/M1-foundation/03-tcp-listener-DONE.md`
-- `01_Phases/M1-foundation/07-pdl-integration-DONE.md` ← TL;DR + 분업 원칙 박힌 첫 사례 (기준점)
+- `01_Phases/youngho/M1-foundation/01-solution-bootstrap-DONE.md`
+- `01_Phases/youngho/M1-foundation/02-server-network-DONE.md`
+- `01_Phases/youngho/M1-foundation/03-tcp-listener-DONE.md`
+- `01_Phases/youngho/M1-foundation/07-pdl-integration-DONE.md` ← TL;DR + 분업 원칙 박힌 첫 사례 (기준점)
