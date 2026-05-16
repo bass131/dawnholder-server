@@ -64,6 +64,9 @@ ExportedObj/
 # JetBrains Rider
 *.DotSettings.user
 
+# Rider/Visual Studio C# Language Service cache
+*.csproj.lscache
+
 # ─────────────────────────────────────────────
 # OS
 # ─────────────────────────────────────────────
