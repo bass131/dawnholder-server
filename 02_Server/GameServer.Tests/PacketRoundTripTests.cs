@@ -290,7 +290,7 @@ public class PacketRoundTripTests
         decoded.Read(bytes);
 
         Assert.Equal((sbyte)-1, decoded.inputX);
-        Assert.Equal(12345, decoded.clientTick);
+        Assert.Equal(12345u, decoded.clientTick);
     }
 
     [Theory]
@@ -315,12 +315,12 @@ public class PacketRoundTripTests
     }
 
     [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(-1)]                // 음수 (현재 GameSession에서 검증 안 함 — 리뷰 🟡 항목)
-    [InlineData(int.MaxValue)]
-    [InlineData(int.MinValue)]
-    public void C_MoveIntent_RoundTrip_HandlesClientTickEdgeValues(int tick)
+    [InlineData(0u)]
+    [InlineData(1u)]
+    [InlineData((uint)int.MaxValue)]  // 21억 — signed/unsigned 경계
+    [InlineData(uint.MaxValue)]       // 42억 — uint 최대 (wrap 직전)
+    // 음수 케이스는 Phase 06에서 uint으로 정합 — 컴파일러가 원천 차단. 옛 리뷰 🟡 해결.
+    public void C_MoveIntent_RoundTrip_HandlesClientTickEdgeValues(uint tick)
     {
         var intent = new C_MoveIntent { inputX = 0, clientTick = tick };
 
@@ -379,7 +379,7 @@ public class PacketRoundTripTests
         Assert.Equal(1.25f, decoded.x);
         Assert.Equal(-3.5f, decoded.y);
         Assert.Equal(1000, decoded.serverTick);
-        Assert.Equal(999, decoded.lastAckedClientTick);
+        Assert.Equal(999u, decoded.lastAckedClientTick);
     }
 
     [Theory]

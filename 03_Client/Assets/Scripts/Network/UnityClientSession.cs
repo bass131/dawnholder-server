@@ -142,11 +142,12 @@ namespace Dawnholder.Client.Network
             float x = pkt.x;
             float y = pkt.y;
             int sTick = pkt.serverTick;
+            uint ackedTick = pkt.lastAckedClientTick; // Phase 06 Step 5: replay reconcile 기준점
 
             MainThreadDispatcher.Enqueue(() =>
             {
                 if (LocalPlayerController.Instance != null)
-                    LocalPlayerController.Instance.OnServerSnapshot(x, y, sTick);
+                    LocalPlayerController.Instance.OnServerSnapshot(x, y, sTick, ackedTick);
             });
         }
 

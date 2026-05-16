@@ -1,0 +1,52 @@
+{
+    "// 협업 셋업": "이 파일은 .gitignore 화이트리스트로 공유됨 (extensions.json/settings.json과 동일 패턴, 2026-05-16 박힘).",
+    "// 사용법": "Ctrl+Shift+B = 기본 빌드. Ctrl+Shift+P → 'Tasks: Run Task' → 메뉴에서 선택.",
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "// 경로 패턴": "Git Bash가 Windows 절대경로(\\)를 escape로 먹어버려서 상대 경로 사용. cwd는 workspaceFolder 기본값.",
+            "label": "Build Solution",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "Dawnholder.slnx"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "clear": true
+            },
+            "detail": "솔루션 컴파일 (02_Server + 04_ClientNet + 98_Shared + Tests + PacketGenerator)"
+        },
+        {
+            "label": "Run Server",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "02_Server/GameServer"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": false
+            },
+            "detail": "GameServer 콘솔 호스트 띄움 (Ctrl+C로 종료)"
+        }
+    ]
+}

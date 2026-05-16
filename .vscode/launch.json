@@ -1,0 +1,19 @@
+{
+    "// 협업 셋업": "F5 = GameServer 디버그 launch. 합류자 머신에서도 자동 동작 (.gitignore 화이트리스트).",
+    "// 사용법": "F5 키 누르면 자동 빌드(preLaunchTask) → 서버 디버거 attach → 브레이크포인트 동작.",
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug GameServer",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Build Solution",
+            "program": "${workspaceFolder}/02_Server/GameServer/bin/Debug/net10.0/GameServer.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/02_Server/GameServer",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "// 백엔드 포트폴리오 학습 노트": "브레이크포인트 = F9, 다음 줄 = F10, step into = F11. 핸들러/틱 루프 안에서 변수 인스펙트 가능."
+        }
+    ]
+}

@@ -1,6 +1,7 @@
 #nullable enable
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
+using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,6 +15,11 @@ namespace Dawnholder.Client.Input
     //   - S_EnterMap   → SetServerPosition → predictor.SetInitialPosition
     //   - 매 frame     → predictor.Predict(input, dt) + transform = predictor.Position
     //   - S_Snapshot   → OnServerSnapshot → predictor.OnSnapshot (threshold 비교 후 snap or 무시)
+    // Phase 06 Step 4: **framerate-bound 송신 차단** — 송신만 50ms 간격 (서버 20 TPS와 1:1 align).
+    //   - prediction은 그대로 매 frame (반응성 유지)
+    //   - C_MoveIntent 송신만 throttle: 240Hz 머신 240 packet/s → 20 packet/s
+    //   - _localTickCounter는 *송신 시점*에만 ++ (frame 번호 X, 송신 일련번호 O)
+    //   - 송신 직후 predictor.NotifySent로 InputHistory에 push (Step 5 reconcile 재료)
     //
     // 헌법 #1: prediction은 *예상*일 뿐. 서버 snapshot이 도착하면 항상 서버가 정답 — snap.
     [RequireComponent(typeof(PlayerInput))]
@@ -24,7 +30,8 @@ namespace Dawnholder.Client.Input
         readonly PlayerPredictor _predictor = new PlayerPredictor();
 
         Vector2 _moveInput;
-        uint _localTickCounter; // Phase 06 replay reconcile 대비 (지금은 임의 누적)
+        uint _localTickCounter; // 송신 일련번호 (송신 시점에만 ++). Phase 06 replay reconcile의 기준점.
+        float _sendAccumulator; // 50ms 송신 throttle 누적기.
 
         void Awake() => Instance = this;
         void OnDestroy() { if (Instance == this) Instance = null; }
@@ -34,7 +41,6 @@ namespace Dawnholder.Client.Input
         void Update()
         {
             sbyte encoded = EncodeInputX(_moveInput.x);
-            _localTickCounter++;
 
             // Phase 05: prediction 즉시 적용 → 입력→화면 lag 0 (반응성).
             // Time.deltaTime은 가변, 서버는 50ms 고정 → 미세 drift 필연 (snap이 가끔 발생, 의도).
@@ -42,17 +48,26 @@ namespace Dawnholder.Client.Input
             Vector2 predicted = _predictor.Position;
             transform.position = new Vector3(predicted.x, predicted.y, 0f);
 
-            // C_MoveIntent 송신 (Phase 04 그대로 — 매 frame).
+            // Phase 06 Step 4: 송신 throttle — 50ms 간격으로 *현재 inputX* 송신.
+            // 서버 GameMap.Tick(20 TPS)과 1:1 align → 환경 독립(60/144/240Hz 머신 동일 cadence).
+            _sendAccumulator += Time.deltaTime;
+            if (_sendAccumulator < Constants.TickDuration) return;
+            _sendAccumulator -= Constants.TickDuration;
+
             UnityClientSession? session = UnityClientSession.Instance;
             if (session == null) return;
 
+            _localTickCounter++;
             C_MoveIntent pkt = new C_MoveIntent
             {
                 inputX = encoded,
-                clientTick = (int)_localTickCounter
+                clientTick = _localTickCounter
             };
             // Phase 05: SendIntent 경유 — Editor에서 SimulatedLatencyMs 적용 가능.
             session.SendIntent(pkt.Write());
+
+            // Phase 06: 송신 *직후* InputHistory에 push (정의 파일 #83 함정 회피).
+            _predictor.NotifySent(_localTickCounter, encoded);
         }
 
         // Phase 03 S_EnterMap → 서버가 정한 spawn 좌표 적용.
@@ -65,15 +80,16 @@ namespace Dawnholder.Client.Input
         }
 
         // Phase 05: S_Snapshot → predictor의 reconcile 판단에 위임.
-        // threshold 안이면 prediction 신뢰(아무 일도 안 일어남), 밖이면 강제 덮어쓰기 + snap 로그.
-        public void OnServerSnapshot(float serverX, float serverY, int serverTick)
+        // Phase 06 Step 5: ackedClientTick 추가 → predictor가 input replay로 부드러운 정정.
+        //   threshold 안: 무시 (정리만). 밖: 서버 위치 + 미-ack 입력 replay (텔레포트 X).
+        public void OnServerSnapshot(float serverX, float serverY, int serverTick, uint ackedClientTick)
         {
             float prevX = _predictor.Position.x;
-            bool snapped = _predictor.OnSnapshot(serverX, serverY);
-            if (snapped)
+            bool reconciled = _predictor.OnSnapshot(serverX, serverY, ackedClientTick);
+            if (reconciled)
             {
                 float dx = serverX - prevX;
-                Debug.Log($"[Snap] dx={dx:F2} at serverTick={serverTick} (count={_predictor.SnapCount})");
+                Debug.Log($"[Reconcile] dx={dx:F2} at serverTick={serverTick} ack={ackedClientTick} (count={_predictor.SnapCount})");
             }
         }
 
