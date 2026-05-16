@@ -64,7 +64,7 @@ PHASE:          <마일스톤·Phase 번호>
 ### 경로
 
 ```
-01_Phases/M{N}-{slug}/{NN}-{phase-name}-DONE.md
+01_Phases/<본인 네임스페이스>/M{N}-{slug}/{NN}-{phase-name}-DONE.md
 ```
 
 원본 Phase 파일과 *짝꿍 페어*:

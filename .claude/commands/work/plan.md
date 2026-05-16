@@ -43,7 +43,7 @@ argument-hint: <마일스톤 또는 목표 설명>
 
 ### 4. Phase 파일 생성
 
-`01_Phases/M{N}-{milestone-slug}/` 폴더 만들고, 각 Phase를 파일로 생성.
+`01_Phases/<본인 네임스페이스>/M{N}-{milestone-slug}/` 폴더 만들고, 각 Phase를 파일로 생성 (사람별 분리 — 팀원과 겹침 차단).
 
 각 파일은 `01_Phases/_template.md`를 베이스로 채우되, 다음을 반드시 채울 것:
 - 🎯 목표 (구체적, 측정 가능)
@@ -96,7 +96,7 @@ Phase 분해를 마치면 다음 형식으로 요약:
    - ...
 
 ➡️ 추천 시작점:
-   "01_Phases/M{N}-{slug}/01-{first-phase}.md 부터 시작하자"
+   "01_Phases/<본인 네임스페이스>/M{N}-{slug}/01-{first-phase}.md 부터 시작하자"
    라고 말씀하시면 됩니다.
 
 📌 핀 시드 완료: WORK-ID=`phase{NN}-{first-phase-slug}`, 다음 입력부터 입구 훅이 작업 좌표 자동 주입.

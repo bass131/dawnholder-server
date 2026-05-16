@@ -91,7 +91,7 @@
 - **`/session:log`** — 노션에 영구 박제. 6개월 뒤 재참조용.
 
 ### `/work:plan` vs Phase 파일
-- **`/work:plan <목표>`** — 새 Phase 묶음(`01_Phases/M{N}-{slug}/`)을 생성. **만들기**.
+- **`/work:plan <목표>`** — 새 Phase 묶음(`01_Phases/<본인 네임스페이스>/M{N}-{slug}/`)을 생성. **만들기**.
 - **Phase 파일들** — 이미 만들어진 작업 단위. **실행**.
 
 ### `/setup` vs `/session:start`

@@ -118,7 +118,7 @@
 | **M7** | Guild Hideout | 길드 거점 인스턴스, 시설 1~2종 |
 | **M8** | Polish & Load Test | 봇 부하 테스트, 안정화, 데모 영상 |
 
-각 마일스톤은 `01_Phases/M{N}-{slug}/`에 더 작은 Phase로 쪼개짐 (`/work:plan` 활용).
+각 마일스톤은 `01_Phases/<본인 네임스페이스>/M{N}-{slug}/`에 더 작은 Phase로 쪼개짐 (`/work:plan` 활용, 사람별 분리).
 
 ---
 
