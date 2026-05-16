@@ -40,6 +40,7 @@
 | ADR-018 | 하네스 망각 안전망 — 작업 봉투 + 핀 + WORK-ID | [harness/ADR-018-forgetting-safety-net.md](harness/ADR-018-forgetting-safety-net.md) |
 | ADR-019 | Reviewer 에이전트 도입 (Tier 2 자동 리뷰) | [harness/ADR-019-reviewer-agent.md](harness/ADR-019-reviewer-agent.md) |
 | ADR-020 | 훅 실행 환경 의존성 (Git Bash on Windows) + 검증 패턴 | [harness/ADR-020-hook-env-deps.md](harness/ADR-020-hook-env-deps.md) |
+| ADR-021 | 클라이언트 UI는 별도 Additive Scene으로 분리 | [harness/ADR-021-client-ui-additive-scene.md](harness/ADR-021-client-ui-additive-scene.md) |
 
 ---
 
