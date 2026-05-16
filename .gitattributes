@@ -1,0 +1,161 @@
+# =============================================================================
+# .gitattributes — EOL & 머지 정책
+# =============================================================================
+# 목적: Windows + Git for Windows 기본 autocrlf=true 환경에서 Unity YAML
+#       자산 파일이 phantom dirty로 떠서 working tree가 더러워지는 문제 차단.
+#       OS와 git config에 무관하게 파일별 EOL을 레포가 강제.
+#
+# 트리거 사건 (2026-05-16, ad-hoc Unity 6000.4.7f1 동기화):
+#   정유현 환경에서 EditorBuildSettings.asset + ShaderGraphSettings.asset이
+#   git status에 modified로 떴는데 git diff는 비어있음 + "LF will be replaced
+#   by CRLF" 경고만. Unity가 자산을 같은 내용으로 다시 저장 → Git stat이
+#   touch 감지 → autocrlf=true가 phantom diff 만들어냄. 본 파일이 없으면
+#   매 Unity 실행마다 누군가 (C-3) STOP에 걸려 일을 못 시작.
+#
+# 참고: GitHub gitattributes 공식 Unity 템플릿 + 우리 프로젝트 맥락 조합.
+# =============================================================================
+
+# 전체 default — text auto detect (binary 명시 안 한 파일 안전망)
+* text=auto
+
+# -----------------------------------------------------------------------------
+# Unity YAML 자산 — 무조건 LF (OS 무관)
+# -----------------------------------------------------------------------------
+*.asset             text eol=lf
+*.meta              text eol=lf
+*.prefab            text eol=lf
+*.unity             text eol=lf
+*.mat               text eol=lf
+*.anim              text eol=lf
+*.controller        text eol=lf
+*.overrideController text eol=lf
+*.physicMaterial    text eol=lf
+*.physicsMaterial2D text eol=lf
+*.spriteatlas       text eol=lf
+*.terrainlayer      text eol=lf
+*.mask              text eol=lf
+*.brush             text eol=lf
+*.flare             text eol=lf
+*.fontsettings      text eol=lf
+*.giparams          text eol=lf
+*.guiskin           text eol=lf
+*.lighting          text eol=lf
+*.preset            text eol=lf
+*.signal            text eol=lf
+*.playable          text eol=lf
+
+# -----------------------------------------------------------------------------
+# 셰이더 / HLSL — LF
+# -----------------------------------------------------------------------------
+*.shader            text eol=lf
+*.cginc             text eol=lf
+*.hlsl              text eol=lf
+*.compute           text eol=lf
+*.raytrace          text eol=lf
+*.shadergraph       text eol=lf
+*.shadersubgraph    text eol=lf
+
+# -----------------------------------------------------------------------------
+# C# 소스 — diff hint + LF (Unity/롤랜드 표준 모두 LF로 수렴)
+# -----------------------------------------------------------------------------
+*.cs                text eol=lf diff=csharp
+
+# -----------------------------------------------------------------------------
+# .NET / VS 솔루션 — CRLF (Visual Studio 기본 형식)
+# -----------------------------------------------------------------------------
+*.sln               text eol=crlf
+*.slnx              text eol=crlf
+*.csproj            text eol=crlf
+*.vbproj            text eol=crlf
+*.fsproj            text eol=crlf
+*.dbproj            text eol=crlf
+*.props             text eol=crlf
+*.targets           text eol=crlf
+*.editorconfig      text eol=lf
+
+# -----------------------------------------------------------------------------
+# 데이터/설정/문서 — LF
+# -----------------------------------------------------------------------------
+*.json              text eol=lf
+*.xml               text eol=lf
+*.yaml              text eol=lf
+*.yml               text eol=lf
+*.md                text eol=lf
+*.txt               text eol=lf
+*.toml              text eol=lf
+
+# -----------------------------------------------------------------------------
+# 셸 / 스크립트 — LF (Bash/PowerShell 둘 다 LF로 안전)
+# -----------------------------------------------------------------------------
+*.sh                text eol=lf
+*.bash              text eol=lf
+*.ps1               text eol=lf
+*.psm1              text eol=lf
+*.cmd               text eol=crlf
+*.bat               text eol=crlf
+
+# -----------------------------------------------------------------------------
+# 바이너리 — 머지/diff 차단
+# -----------------------------------------------------------------------------
+# 이미지
+*.png               binary
+*.jpg               binary
+*.jpeg              binary
+*.gif               binary
+*.bmp               binary
+*.tga               binary
+*.tif               binary
+*.tiff              binary
+*.iff               binary
+*.pict              binary
+*.psd               binary
+*.exr               binary
+*.hdr               binary
+
+# 3D
+*.fbx               binary
+*.obj               binary
+*.blend             binary
+*.dae               binary
+*.3ds               binary
+*.dxf               binary
+*.max               binary
+*.mb                binary
+*.ma                binary
+
+# 오디오
+*.wav               binary
+*.mp3               binary
+*.ogg               binary
+*.aif               binary
+*.aiff              binary
+*.flac              binary
+
+# 영상
+*.mp4               binary
+*.mov               binary
+*.avi               binary
+*.webm              binary
+
+# 폰트
+*.ttf               binary
+*.otf               binary
+*.woff              binary
+*.woff2             binary
+
+# 패키지 / 아카이브
+*.unitypackage      binary
+*.zip               binary
+*.7z                binary
+*.rar               binary
+*.tar               binary
+*.gz                binary
+
+# 컴파일 산물
+*.dll               binary
+*.pdb               binary
+*.exe               binary
+*.so                binary
+*.dylib             binary
+*.a                 binary
+*.lib               binary
