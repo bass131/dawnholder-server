@@ -117,12 +117,11 @@ logs/
 /CONTEXT_History/
 
 # ─────────────────────────────────────────────
-# learning-journal: 사람별 네임스페이스 (각자 폴더는 공유 X)
-# 템플릿·README는 공유 (화이트리스트 패턴)
+# learning-journal: 모두 기본 공개 (2026-05-16 정책 변경)
+# 팀 학습 환경 공유 + 합류자 참고 자료 + 포트폴리오 어필.
+# 비공개 원하면 본인이 자기 네임스페이스 직접 추가 (예:
+# 00_Document/learning-journal/youngho/) — 영역 자율.
 # ─────────────────────────────────────────────
-00_Document/learning-journal/*/
-!00_Document/learning-journal/_template-*.md
-!00_Document/learning-journal/README.md
 
 # ─────────────────────────────────────────────
 # VS Code: 협업 최소 셋(extensions + settings)만 화이트리스트, 개인 설정은 무시
