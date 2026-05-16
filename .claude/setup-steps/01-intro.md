@@ -31,7 +31,7 @@ Dawnholder 협업 셋업에 오신 걸 환영합니다.
 |---|---|---|
 | 유영호 | `youngho` | `backend` |
 | 김인규 | `ingyu` | `unity-client` |
-| 정유현 | `yuhyun` | `unity-client` |
+| 정유현 | `yuhyeon` | `unity-client` |
 
 ### 사전 매칭 시
 
