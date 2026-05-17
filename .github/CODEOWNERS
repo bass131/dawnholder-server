@@ -13,8 +13,8 @@
 # - 인규/유현은 03_Client/ 통째로 공유 영역 (세부 영역은 작업하며 굳어짐)
 # - 모든 PR은 팀장(@bass131) 승인 필요
 #
-# ⚠️ TODO: 인규/유현 합류 후 @ingyu/@yuhyeon 자리에 실제 GitHub username으로 교체 필요.
-#    현재 자리잡이 상태로 박혀있으나 작동 X. 조심.
+# ⚠️ TODO: 인규 합류 후 @ingyu 자리에 실제 GitHub username으로 교체 필요.
+#    정유현: 2026-05-17 @yuhyeon placeholder → @jungyoohyun0105 정정 완료 (본인 PR).
 
 # ───────────────────────────────────────────
 # 기본 규칙 — 명시 안 된 모든 파일은 팀장 승인
@@ -49,16 +49,16 @@
 # 세부 영역(Scripts/Network, Scripts/UI 등)은 작업하며 굳어짐
 # 추후 7월 중순쯤 굳어진 패턴을 여기 박을 예정
 # ───────────────────────────────────────────
-/03_Client/                    @bass131 @ingyu @yuhyeon
+/03_Client/                    @bass131 @ingyu @jungyoohyun0105
 
 # ───────────────────────────────────────────
 # Unity 클라 UI — 정유현 단독 (ADR-021, 2026-05-17)
 # UI 전용 씬 + UI 스크립트 + 씬 진입점 부트스트랩
 # Gameplay.unity / MainMenu.unity는 캐릭터·맵 들어오므로 공유 유지
 # ───────────────────────────────────────────
-/03_Client/Assets/Scenes/UI.unity         @yuhyeon
-/03_Client/Assets/Scripts/Bootstrap/      @yuhyeon
-/03_Client/Assets/Scripts/UI/             @yuhyeon
+/03_Client/Assets/Scenes/UI.unity         @jungyoohyun0105
+/03_Client/Assets/Scripts/Bootstrap/      @jungyoohyun0105
+/03_Client/Assets/Scripts/UI/             @jungyoohyun0105
 
 # ───────────────────────────────────────────
 # 학습 일지 — 각자 자기 폴더만
@@ -66,7 +66,7 @@
 # ───────────────────────────────────────────
 /00_Document/learning-journal/youngho/   @bass131
 /00_Document/learning-journal/ingyu/     @ingyu
-/00_Document/learning-journal/yuhyeon/   @yuhyeon
+/00_Document/learning-journal/yuhyeon/   @jungyoohyun0105
 
 # ───────────────────────────────────────────
 # 박정우 (MES) — 별도 레포라 여기 박힐 가능성 거의 X
