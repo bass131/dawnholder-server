@@ -132,8 +132,8 @@ namespace Dawnholder.Client.Network
         // Phase 04: 서버 권위 좌표 적용. prediction 없음 → 매 250ms 스냅 (lag 체감).
         // Phase 05: prediction 도입 → SetServerPosition 직접 호출 X.
         //   OnServerSnapshot에 위임 → predictor가 threshold 비교 후 snap or 무시.
-        //   매 snapshot 로그는 폐기 (250ms × 다인 → 폭주). snap 발생 시에만 LocalPlayerController가 로깅.
-        // Phase 06+: lastAckedClientTick + input replay로 snap → 부드러운 reconcile 진화.
+        // Phase 06: lastAckedClientTick + input replay로 snap → 부드러운 reconcile.
+        // Phase 07: vx/vy 추가 — Y축 prediction(점프) 도입으로 velocity 동기화 필요.
         void HandleSnapshot(ArraySegment<byte> buffer)
         {
             S_Snapshot pkt = new S_Snapshot();
@@ -141,13 +141,15 @@ namespace Dawnholder.Client.Network
 
             float x = pkt.x;
             float y = pkt.y;
+            float vx = pkt.vx; // Phase 07: 서버 권위 속도
+            float vy = pkt.vy;
             int sTick = pkt.serverTick;
-            uint ackedTick = pkt.lastAckedClientTick; // Phase 06 Step 5: replay reconcile 기준점
+            uint ackedTick = pkt.lastAckedClientTick;
 
             MainThreadDispatcher.Enqueue(() =>
             {
                 if (LocalPlayerController.Instance != null)
-                    LocalPlayerController.Instance.OnServerSnapshot(x, y, sTick, ackedTick);
+                    LocalPlayerController.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
             });
         }
 

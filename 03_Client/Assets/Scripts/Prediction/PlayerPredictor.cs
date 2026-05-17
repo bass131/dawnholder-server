@@ -1,109 +1,128 @@
 #nullable enable
 using Shared.GameData;
 using UnityEngine;
+using SysVector2 = System.Numerics.Vector2;
+using SharedPhysics = Shared.GameData.Physics; // UnityEngine.Physics와 이름 충돌 회피
 
 namespace Dawnholder.Client.Prediction
 {
     // Phase 05 (M2): Client-side prediction + snap reconcile.
+    // Phase 06 (M2): Input replay reconcile (서버 위치 + 미-ack 입력 재시뮬, snap 텔레포트 X).
+    // Phase 07 (M2): Physics.Step 통합 — 양쪽 단일 출처 (헌법 #1). Y축 prediction + 점프 도입.
     //
     // **순수 C# 클래스 (MonoBehaviour 아님)** — 미래 EditMode 테스트 가능성 보존.
     // Unity 의존은 UnityEngine.Vector2 + Mathf.Abs 두 가지로 한정.
     //
-    // **흐름**:
+    // **흐름** (Phase 07 갱신):
     //   1. spawn 시점: LocalPlayerController가 SetInitialPosition(spawnPos)
-    //   2. 매 frame: LocalPlayerController가 Predict(inputX, Time.deltaTime)
-    //                → _predictedPosition 누적 → transform.position = Position
-    //   3. S_Snapshot 도착 시: UnityClientSession이 OnSnapshot(serverX, serverY)
-    //                → |serverX - predictedX| > SnapThreshold면 강제 덮어쓰기 (snap)
-    //                → 작으면 prediction 그대로 신뢰
+    //   2. *fixed cadence* (Constants.TickDuration = 50ms): LocalPlayerController가 Predict(inputX, jumpPressed)
+    //      → Physics.Step 호출 → Position/Velocity/OnGround 갱신
+    //   3. S_Snapshot 도착 시: UnityClientSession이 OnSnapshot(serverX/Y, serverVx/Vy, ackedTick)
+    //      → mispredict (X 또는 Y > SnapThreshold) 시 서버 권위 상태에서 미-ack 입력 replay
+    //      → 부드러운 정정 (Phase 06 패턴 그대로, snap 텔레포트 X)
     //
     // **양쪽 공식 일치 (헌법 #1 / ADR-010)**:
-    //   MoveSpeed는 오직 Shared.GameData.Constants. 클라 별도 const 박으면 무한 drift.
+    //   Physics.Step은 Shared.GameData. 클라/서버 같은 함수 호출 → drift 0.
+    //   타입은 UnityEngine.Vector2 ↔ System.Numerics.Vector2 변환 (PDL 주석 패턴).
     //
-    // **의도된 한계 (Phase 05)**:
-    //   Time.deltaTime은 가변(60/144Hz), 서버는 50ms 고정 → 미세 drift 필연.
-    //   snap이 가끔 발생하는 게 정상 — 학습 포인트. Phase 06 input replay로 해소.
+    // **fixed timestep (Phase 07 정의 #82)**:
+    //   Predict 호출은 *50ms cadence*. 매 frame X (정의 파일 #82 fps 의존 차단).
+    //   LocalPlayerController.Update의 송신 throttle과 같이 트리거 — frame 사이 화면은
+    //   transform = predictor.Position 그대로 (5 frame 같은 위치, 시각적 끊김 미미).
     //
-    // **비교 축**: 현재는 X만 (좌우 이동만). Phase 07 점프 도입 시 Y도 비교.
+    // **비교 축** (Phase 07): X + Y 둘 다 SnapThreshold 비교. Phase 06은 X만 — Y prediction
+    //   도입으로 mispredict 가능성 양축에 박힘.
     public class PlayerPredictor
     {
-        // Phase 05 튜닝 결과 (2026-05-11 1차 검증):
-        // 0.5f였을 때 latency 0 상태에서 분당 ~8회 snap (명세 "분당 5회 미만" 초과).
-        // Time.deltaTime 가변(60~240Hz) vs 서버 50ms 고정 → 5 tick 누적 시 0.5 유닛 직상 drift가 자연 발생.
-        // 1.0f로 올려 정상 drift는 흡수, 진짜 cheat/lag만 잡도록 조정.
-        // Phase 06 fixed simulation 도입 후엔 다시 좁힐 여지.
+        // Phase 05 튜닝 (1.0f). Phase 07도 같은 값 유지 — 점프 정상 동작 시 클라/서버 일치하므로
+        // 일시 reconcile은 lag 환경(200ms+)에서만 발생. M3+에서 X/Y 별도 threshold 검토.
         public const float SnapThreshold = 1.0f;
 
         public Vector2 Position { get; private set; }
+        public Vector2 Velocity { get; private set; }     // Phase 07: Y 속도 추가
+        public bool OnGround { get; private set; } = true;
         public int SnapCount { get; private set; }
 
-        // Phase 06: 송신된 입력의 (clientTick, inputX) 보관 → snapshot의 ackedTick 받으면
-        // 미-ack 입력만 replay (Step 5에서 OnSnapshot 알고리즘 확장 시 사용).
-        // Codex 응집도 가이드: prediction 도메인 상태 = predictor 소유.
+        // Phase 06: 송신된 입력의 (clientTick, inputX, jumpPressed) 보관 → snapshot의 ackedTick
+        // 받으면 미-ack 입력만 replay. Phase 07에서 jumpPressed 동봉.
         readonly InputHistory _history = new InputHistory();
 
         public void SetInitialPosition(Vector2 pos)
         {
             Position = pos;
+            Velocity = Vector2.zero;
+            OnGround = pos.y <= 0.0001f; // ground 가정 (Physics.GroundY = 0)
             _history.Clear();
         }
 
         // Phase 06 Step 4: LocalPlayerController가 C_MoveIntent 송신 직후 호출.
-        // *송신 직후*에 push해야 ack 받기 전 비는 위험(Phase 06 정의 #83) 회피.
-        public void NotifySent(uint clientTick, sbyte inputX)
+        // Phase 07: jumpPressed 동봉 — replay 시 점프 시도 재현.
+        public void NotifySent(uint clientTick, sbyte inputX, bool jumpPressed)
         {
-            _history.Push(clientTick, inputX);
+            _history.Push(clientTick, inputX, jumpPressed);
         }
 
-        // 매 frame 호출. inputX는 -1/0/1 (LocalPlayerController가 EncodeInputX로 인코딩한 값).
-        // deltaTime은 Unity Time.deltaTime — 큰 프레임 스파이크 시 서버(50ms 고정)와 drift.
-        public void Predict(sbyte inputX, float deltaTime)
+        // Phase 07: *fixed cadence* (Constants.TickDuration 고정). 매 frame X.
+        // 호출자(LocalPlayerController)가 송신 throttle과 같이 트리거.
+        // Physics.Step 단일 출처 호출 → 서버와 drift 0.
+        public void Predict(sbyte inputX, bool jumpPressed)
         {
-            if (inputX == 0) return;
-            float dx = inputX * Constants.MoveSpeed * deltaTime;
-            Position = new Vector2(Position.x + dx, Position.y);
+            PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
+                new PhysicsInput(inputX, jumpPressed, Constants.TickDuration));
+            ApplyPhysicsState(after);
         }
 
-        // Phase 06 Step 5: S_Snapshot 도착 시 호출 — replay reconcile.
-        // 반환값: reconcile 발생 여부 (true면 LocalPlayerController가 "[Reconcile] dx=..." 로깅).
+        // Phase 07: serverVx/serverVy 추가. mispredict 검사도 X+Y 둘 다.
         //
-        // **알고리즘 (Phase 06 정의 파일 #34-43)**:
-        //   1. mispredict 검사 — 서버 위치 vs 현재 예측 위치, threshold 비교 (Phase 05 단순화 유지)
-        //   2. mispredict 시: 서버 위치(=ackedClientTick 시점 권위 좌표)에서 출발해 미-ack 입력만 재시뮬
-        //                     → 결과 = "서버 인정 + 클라 미-ack 흡수" 부드러운 정정
-        //   3. 항상 InputHistory.EvictUpTo(ackedClientTick)로 정리 (메모리 위생)
+        // **알고리즘 (Phase 06 패턴 + Phase 07 확장)**:
+        //   1. mispredict 검사 — |dX| > threshold OR |dY| > threshold
+        //   2. mispredict 시: 서버 권위 (pos + vel + ground 추정) 박고 미-ack 입력 replay
+        //   3. 항상 InputHistory.EvictUpTo(ackedClientTick) — 메모리 위생
         //
-        // **Phase 05와의 차이**:
-        //   - 옛: mispredict → 서버 위치로 즉시 snap (텔레포트 점프)
-        //   - 새: mispredict → 서버 위치에서 출발 + 미-ack replay → 자연 위치
-        //
-        // **헌법 #1 (Server Authority) 유지**: 클라 cheat 시뮬(dx=-1000)도 여전히 즉시 보정 — replay는
-        //                                       *서버 권위 좌표 기준*에서 출발하므로 cheat 흡수 X.
-        public bool OnSnapshot(float serverX, float serverY, uint ackedClientTick)
+        // **헌법 #1 유지**: cheat 시뮬도 서버 권위 좌표 기준 → cheat 흡수 X.
+        public bool OnSnapshot(float serverX, float serverY,
+                               float serverVx, float serverVy,
+                               uint ackedClientTick)
         {
             float dx = serverX - Position.x;
-            bool mispredict = Mathf.Abs(dx) > SnapThreshold;
+            float dy = serverY - Position.y;
+            bool mispredict = Mathf.Abs(dx) > SnapThreshold
+                           || Mathf.Abs(dy) > SnapThreshold;
 
             if (mispredict)
             {
-                // 서버 권위 좌표에서 출발 → 미-ack 입력 재시뮬.
-                // ReplayFrom은 ackedClientTick *초과*만 반환 (동일 tick은 이미 처리됨).
-                Vector2 replayed = new Vector2(serverX, serverY);
-                foreach (InputRecord input in _history.ReplayFrom(ackedClientTick))
+                // 서버 권위 상태에서 출발 — 위치 + 속도 + ground (위치로 추정)
+                Position = new Vector2(serverX, serverY);
+                Velocity = new Vector2(serverVx, serverVy);
+                OnGround = serverY <= 0.0001f && serverVy <= 0f;
+
+                // 미-ack 입력 재시뮬 (서버 권위 → 클라 현재까지)
+                foreach (InputRecord rec in _history.ReplayFrom(ackedClientTick))
                 {
-                    if (input.InputX == 0) continue;
-                    // 양쪽 공식 일치 (헌법 #1 / ADR-010): Constants.MoveSpeed, TickDuration.
-                    // 50ms 고정 시뮬레이션 — 클라 송신이 throttle된 cadence와 동일.
-                    float dxr = input.InputX * Constants.MoveSpeed * Constants.TickDuration;
-                    replayed = new Vector2(replayed.x + dxr, replayed.y);
+                    PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
+                        new PhysicsInput(rec.InputX, rec.JumpPressed, Constants.TickDuration));
+                    ApplyPhysicsState(after);
                 }
-                Position = replayed;
-                SnapCount++; // 카운터 이름은 호환성 유지 (옛 "snap" 의미 X, 이제 "reconcile" 의미).
+                SnapCount++;
             }
 
-            // 항상 ack된 입력 정리 — 더 이상 replay 대상 X (메모리 위생).
+            // 항상 ack된 입력 정리 — 메모리 위생 (Phase 06 패턴).
             _history.EvictUpTo(ackedClientTick);
             return mispredict;
+        }
+
+        // === Vector2 변환 헬퍼 (PDL 주석 패턴 — System.Numerics ↔ UnityEngine) ===
+
+        PhysicsState ToPhysicsState() => new PhysicsState(
+            new SysVector2(Position.x, Position.y),
+            new SysVector2(Velocity.x, Velocity.y),
+            OnGround);
+
+        void ApplyPhysicsState(PhysicsState s)
+        {
+            Position = new Vector2(s.Position.X, s.Position.Y);
+            Velocity = new Vector2(s.Velocity.X, s.Velocity.Y);
+            OnGround = s.OnGround;
         }
     }
 }
