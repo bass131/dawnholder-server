@@ -38,20 +38,35 @@
     </packet>
 
     <!-- Phase 04 (M2): C_MoveIntent — 클라가 보내는 *의도*. 좌표 X. 헌법 #3 (Trust Boundary).
-         inputX: -1 (좌), 0 (정지), 1 (우). |inputX|>1은 cheat. clientTick은 Phase 06 replay 대비. -->
+         clientTick은 Phase 06 replay 대비.
+
+         Phase 07 (M2) [Protocol.Version v1→v2]: sbyte inputX → byte input 비트필드로 교체.
+         D2 결정 (현업 정석 — Quake/Source/한국 MMORPG): 입력 종류 늘면 패킷 비대 차단 + 1 byte에 8 입력 표현.
+
+         **byte input 비트 레이아웃** (Shared.GameData.InputBits 단일 출처 — 본 주석은 살아있는 문서):
+           bit 0~1: inputX (00=-1 / 01=0 / 10=+1 / 11=reserved/invalid)
+           bit 2:   jumpPressed (edge — 클라가 1tick만 true 송신, D4 결정)
+           bit 3~7: reserved (미래 — 공격/방어/스킬 등)
+
+         InputBits.cs와 본 주석의 비트표는 *반드시 일치*. 한쪽 변경 시 다른쪽 동반 갱신 (Codex 함정 #3). -->
     <packet name="C_MoveIntent">
-        <sbyte name="inputX"/>
+        <byte name="input"/>
         <uint name="clientTick"/>
     </packet>
 
     <!-- Phase 04 (M2): S_Snapshot — 서버가 권위 좌표를 매 SnapshotTickInterval(=5)마다 브로드캐스트.
          lastAckedClientTick = 서버가 "여기까지 처리했다" ack 값. Phase 06부터 클라 replay reconcile의 기준점.
-         타입은 uint (Phase 06에서 int→uint 정합, tick은 비음수 카운터). -->
-    <!-- Phase 06 (M2): clientTick / lastAckedClientTick uint 정합 — int 음수 사고 차단. -->
+         타입은 uint (Phase 06에서 int→uint 정합, tick은 비음수 카운터).
+
+         Phase 06 (M2): clientTick / lastAckedClientTick uint 정합 — int 음수 사고 차단.
+         Phase 07 (M2) [Protocol.Version v1→v2]: vx, vy 추가 — prediction reconcile 시 velocity 동기화.
+         클라가 점프 후 공중에서 reconcile 발생하면 서버 권위 vy까지 받아야 자연 정정 (Y축 prediction 정합). -->
     <packet name="S_Snapshot">
         <int name="entityId"/>
         <float name="x"/>
         <float name="y"/>
+        <float name="vx"/>
+        <float name="vy"/>
         <int name="serverTick"/>
         <uint name="lastAckedClientTick"/>
     </packet>

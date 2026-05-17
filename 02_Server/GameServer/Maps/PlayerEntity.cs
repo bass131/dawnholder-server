@@ -17,7 +17,9 @@ public class PlayerEntity
 
     // Phase 04: 다음 tick에 적용할 입력. 단일 thread(tick) mutation 보장 +
     // OnRecvPacket이 EnqueueJob으로 set하므로 동시성 안전.
+    // Phase 07: jumpPressed 추가 (D4 (a) 클라 에지 — 1tick만 true).
     public sbyte PendingInputX { get; set; }
+    public bool PendingJumpPressed { get; set; }
     public uint LastClientTick { get; set; }
 
     public PlayerEntity(int entityId, Vector2 position, GameSession? owner = null)
