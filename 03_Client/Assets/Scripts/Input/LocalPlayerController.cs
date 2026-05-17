@@ -11,15 +11,19 @@ namespace Dawnholder.Client.Input
     // Phase 01~04: 입력 → C_MoveIntent 송신 골격.
     // Phase 05: prediction 도입 — predictor 매 frame 누적, transform 따라감.
     // Phase 06 Step 4: 50ms 송신 throttle (서버 20 TPS와 1:1 align, framerate-bound 차단).
-    // Phase 07 (M2): 점프 + 비트필드 + fixed cadence Predict.
+    // Phase 07 (M2): 점프 + 비트필드 + 매 frame Predict (Phase 06 패턴 + jumpPressed).
     //
-    // **흐름 변경 (Phase 07)**:
-    //   - **매 frame**: transform = predictor.Position (그리기만, fps 의존 0).
-    //   - **50ms cadence** (Constants.TickDuration 누적기): Predict + 송신 *함께 트리거*.
-    //     - 옛 Phase 05~06: 매 frame Predict (Time.deltaTime 가변 dt) — fps 의존, drift.
-    //     - 새 Phase 07: 50ms fixed dt → Physics.Step 결정론 정합 (정의 파일 #82, 헌법 #1).
-    //     - 시각적: 5 frame 같은 위치 → 50ms 끊김 (체감 미미, M3+ 보간 검토).
-    //   - **OnJump 에지 검출** (D4 (a)): "started" phase만 캡처 → 1tick true 송신 후 reset.
+    // **흐름 (Phase 07 사후 정정 2026-05-17 — A 채택)**:
+    //   - **매 frame**: Predict (Time.deltaTime 가변) + transform 갱신.
+    //     - 시뮬 자체가 부드러움 (240Hz 12 frame 모두 다른 위치).
+    //     - 클라 가변 dt + 서버 fixed dt 차이는 reconcile로 흡수 (Phase 06 패턴).
+    //   - **50ms cadence** (송신 throttle): C_MoveIntent 송신 + InputHistory push.
+    //     - 정의 파일 #82 "fps 의존 차단" = *송신 cadence* 의미. Predict 자체는 가변 OK.
+    //   - **OnJump 에지 검출** (D4 (a)): "started" phase만 캡처 → 송신 cycle까지 보관 후 reset.
+    //
+    // **장르 정합 — MMORPG/캐주얼 RPG (ADR-006/009)**:
+    //   부드러움 > 결정론 정확도 (Source/Quake/Overwatch 패턴). fixed-step + visual lerp는
+    //   격투/콘솔 RTS 패턴이라 over-engineering. 사후 정정 commit (Step 4 → Step 4-fix).
     //
     // **비트필드 인코드** (D2 b 현업 정석): InputBits.Encode 단일 출처. 양쪽 같은 헬퍼 호출.
     [RequireComponent(typeof(PlayerInput))]
@@ -52,11 +56,15 @@ namespace Dawnholder.Client.Input
 
         void Update()
         {
-            // 매 frame: predictor 상태 그대로 그리기 (50ms cadence 사이는 정지 시각).
-            Vector3 pos = new Vector3(_predictor.Position.x, _predictor.Position.y, 0f);
-            transform.position = pos;
+            // Phase 07: 매 frame Predict (Phase 06 패턴 + jumpPressed). 시뮬 자체가 부드러움.
+            // jumpEdge는 송신 cycle까지 *보관* (송신 시점에 한 번 더 사용) — Predict는 매 frame이라
+            // OnJump 이후 50ms 안 모든 frame에 jumpEdge=true 들어가면 *재점프* 시도. 단 Physics.Step의
+            // OnGround 안전망이 1tick만 적용 — 점프 후 즉시 onGround=false라 자연 차단.
+            sbyte encoded = EncodeInputX(_moveInput.x);
+            _predictor.Predict(encoded, _jumpEdgeThisTick, Time.deltaTime);
+            transform.position = new Vector3(_predictor.Position.x, _predictor.Position.y, 0f);
 
-            // 50ms 누적기 — fixed cadence (서버 20 TPS와 1:1 align).
+            // 50ms 송신 throttle — fps 의존 차단 (240Hz도 20 packet/s, Phase 06 패턴).
             _sendAccumulator += Time.deltaTime;
             if (_sendAccumulator < Constants.TickDuration) return;
             _sendAccumulator -= Constants.TickDuration;
@@ -64,13 +72,9 @@ namespace Dawnholder.Client.Input
             UnityClientSession? session = UnityClientSession.Instance;
             if (session == null) return;
 
-            // 50ms cadence: 입력 캡처 → Predict (fixed dt, Physics.Step 단일 출처) → 송신 → reset.
-            sbyte encoded = EncodeInputX(_moveInput.x);
+            // 50ms cadence: 송신 + InputHistory push + jumpEdge reset.
             bool jumpEdge = _jumpEdgeThisTick;
-            _jumpEdgeThisTick = false; // 1tick 사용 후 reset — 다음 cycle은 새로 캡처.
-
-            // Phase 07: Physics.Step 위임 — 양쪽 결과 같음 (헌법 #1).
-            _predictor.Predict(encoded, jumpEdge);
+            _jumpEdgeThisTick = false; // 송신 후 reset — 다음 cycle은 새 OnJump 캡처.
 
             _localTickCounter++;
 
