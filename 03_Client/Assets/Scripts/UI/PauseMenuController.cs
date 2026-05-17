@@ -41,7 +41,6 @@ namespace Dawnholder.Client.UI
             {
                 togglePauseAction.action.performed += OnTogglePerformed;
                 togglePauseAction.action.Enable();
-                Debug.Log($"[PauseMenu] OnEnable — InputAction registered. pauseCanvas={pauseCanvas?.name ?? "NULL"}");
             }
             else
             {
@@ -63,13 +62,9 @@ namespace Dawnholder.Client.UI
         public void Toggle()
         {
             isPaused = !isPaused;
-            // Phase 04 진단 로그: ESC 콜백 들어왔지만 화면에 메뉴가 안 보이는 시각 버그 추적용.
-            // 다음 세션 MCP fix 후 안정화되면 제거.
-            Debug.Log($"[PauseMenu] Toggle → isPaused={isPaused}, pauseCanvas={pauseCanvas?.name ?? "NULL"}, activeSelf(before)={pauseCanvas?.activeSelf}");
             if (pauseCanvas != null)
             {
                 pauseCanvas.SetActive(isPaused);
-                Debug.Log($"[PauseMenu] After SetActive → activeSelf={pauseCanvas.activeSelf}, activeInHierarchy={pauseCanvas.activeInHierarchy}");
             }
             // timeScale은 *Realtime* 기반 입력(InputSystem)은 영향 X — ESC 재누름으로 닫기 보장.
             Time.timeScale = isPaused ? 0f : 1f;
