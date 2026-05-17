@@ -18,6 +18,9 @@ public class GameWorld
     public GameMap Map => _map;
     public long CurrentTick => _scheduler.CurrentTick;
 
+    // Phase 08 Step 4: 통합 테스트 p99 검증용 (구독자가 OnMetricsSnapshot 받음).
+    public TickScheduler Scheduler => _scheduler;
+
     public GameWorld()
     {
         // 첫 인스턴스 = 공식 singleton. 두 번째 생성은 테스트/오용 신호 → 예외.

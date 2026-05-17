@@ -12,5 +12,6 @@
   </Folder>
   <Folder Name="/99_Tools/">
     <Project Path="99_Tools/PacketGenerator/PacketGenerator.csproj" />
+    <Project Path="99_Tools/headless-bot/HeadlessBot.csproj" />
   </Folder>
 </Solution>
