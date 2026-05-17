@@ -15,9 +15,16 @@ public class PlayerEntity
     public Vector2 Position { get; set; }
     public GameSession? Owner { get; }
 
+    // Phase 07: 결정론 물리 상태 — Shared.GameData.Physics.Step이 매 tick mutation.
+    // spawn 시점 Velocity=0 + OnGround=true (ground y=0 가정).
+    public Vector2 Velocity { get; set; } = Vector2.Zero;
+    public bool OnGround { get; set; } = true;
+
     // Phase 04: 다음 tick에 적용할 입력. 단일 thread(tick) mutation 보장 +
     // OnRecvPacket이 EnqueueJob으로 set하므로 동시성 안전.
+    // Phase 07: jumpPressed 추가 (D4 (a) 클라 에지 — 1tick만 true).
     public sbyte PendingInputX { get; set; }
+    public bool PendingJumpPressed { get; set; }
     public uint LastClientTick { get; set; }
 
     public PlayerEntity(int entityId, Vector2 position, GameSession? owner = null)

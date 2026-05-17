@@ -285,7 +285,7 @@ public class S_LeaveMap : IPacket // S_LeaveMap 패킷
 public class C_MoveIntent : IPacket // C_MoveIntent 패킷
 {
     // 멤버 변수들
-    public sbyte inputX;
+    public byte input;
 	public uint clientTick;
     public ushort Protocol { get { return (ushort)PacketID.C_MoveIntent; } }
 
@@ -300,9 +300,9 @@ public class C_MoveIntent : IPacket // C_MoveIntent 패킷
         count += sizeof(ushort); // packet id 헤더 skip
 
         // 멤버 읽기
-        // inputX 읽기
-		this.inputX = (sbyte)s[count];
-		count += sizeof(sbyte);
+        // input 읽기
+		this.input = (byte)s[count];
+		count += sizeof(byte);
 		
 		// clientTick 읽기 (LittleEndian 명시 — wire format 약속)
 		this.clientTick = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
@@ -327,9 +327,9 @@ public class C_MoveIntent : IPacket // C_MoveIntent 패킷
         count += sizeof(ushort);
 
         // 멤버 쓰기
-        // inputX 쓰기
-		s[count] = (byte)this.inputX;
-		count += sizeof(sbyte);
+        // input 쓰기
+		s[count] = (byte)this.input;
+		count += sizeof(byte);
 		
 		// clientTick 쓰기 (LittleEndian 명시 — wire format 약속)
 		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.clientTick);
@@ -352,6 +352,8 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
     public int entityId;
 	public float x;
 	public float y;
+	public float vx;
+	public float vy;
 	public int serverTick;
 	public uint lastAckedClientTick;
     public ushort Protocol { get { return (ushort)PacketID.S_Snapshot; } }
@@ -377,6 +379,14 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
 		
 		// y 읽기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
 		this.y = BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count)));
+		count += sizeof(float);
+		
+		// vx 읽기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+		this.vx = BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count)));
+		count += sizeof(float);
+		
+		// vy 읽기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+		this.vy = BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count)));
 		count += sizeof(float);
 		
 		// serverTick 읽기 (LittleEndian 명시 — wire format 약속)
@@ -416,6 +426,14 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
 		
 		// y 쓰기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
 		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), BitConverter.SingleToInt32Bits(this.y));
+		count += sizeof(float);
+		
+		// vx 쓰기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), BitConverter.SingleToInt32Bits(this.vx));
+		count += sizeof(float);
+		
+		// vy 쓰기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), BitConverter.SingleToInt32Bits(this.vy));
 		count += sizeof(float);
 		
 		// serverTick 쓰기 (LittleEndian 명시 — wire format 약속)

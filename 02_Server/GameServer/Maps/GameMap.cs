@@ -50,17 +50,21 @@ public class GameMap
             catch (Exception ex) { Console.WriteLine($"[Map] job 예외: {ex.Message}"); }
         }
 
-        // 2) 각 player의 pending intent를 적용 후 0으로 리셋.
-        //    클라가 계속 누르면 매 tick 새 intent가 도착해 덮어씀.
-        //    *prediction 없음* — snapshot이 도착해야 클라 화면이 움직임 (Phase 04 의도).
+        // 2) Phase 07: Physics.Step (Shared 단일 출처, 헌법 #1)에 위임.
+        //    옛 Phase 04 단순 dx 코드 → jump + 중력 + ground clamp 통합.
+        //    jumpPressed는 *에지* (D4 (a)) — 적용 후 즉시 false reset로 같은 tick 재점프 안전망.
+        //    cheat가 매 frame jumpPressed=true 보내도 Physics.Step의 OnGround 검사로 무한 점프 차단.
         foreach (PlayerEntity p in _players)
         {
-            if (p.PendingInputX != 0)
-            {
-                float dx = p.PendingInputX * Constants.MoveSpeed * Constants.TickDuration;
-                p.Position = new Vector2(p.Position.X + dx, p.Position.Y);
-            }
+            PhysicsInput input = new PhysicsInput(
+                p.PendingInputX, p.PendingJumpPressed, Constants.TickDuration);
+            PhysicsState before = new PhysicsState(p.Position, p.Velocity, p.OnGround);
+            PhysicsState after = Physics.Step(before, input);
+            p.Position = after.Position;
+            p.Velocity = after.Velocity;
+            p.OnGround = after.OnGround;
             p.PendingInputX = 0;
+            p.PendingJumpPressed = false;
         }
 
         // 3) Snapshot 브로드캐스트. 매 5 tick(=250ms).
@@ -75,6 +79,8 @@ public class GameMap
                     entityId = p.EntityId,
                     x = p.Position.X,
                     y = p.Position.Y,
+                    vx = p.Velocity.X, // Phase 07 Step 3: 실제 velocity (prediction reconcile 정합)
+                    vy = p.Velocity.Y,
                     serverTick = (int)tickNumber,
                     lastAckedClientTick = p.LastClientTick
                 };

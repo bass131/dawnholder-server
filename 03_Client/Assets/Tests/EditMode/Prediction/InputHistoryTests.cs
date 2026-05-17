@@ -6,11 +6,13 @@ using NUnit.Framework;
 namespace Dawnholder.Client.Tests.Prediction
 {
     // Phase 06 (M2) Step 3: InputHistory 단위 테스트.
+    // Phase 07 (M2) Step 4: jumpPressed bool 추가 — InputRecord 시그니처 확장 반영.
     //
     // **본 테스트의 목적** (Phase 06 정의 파일 #59~61):
     //   - "push N개 → ack k → 큐 길이 N-k 검증"
     //   - 메모리 위생 (ack로 정리됨 확인)
     //   - replay 순서 보존
+    //   - Phase 07: jumpPressed 비트 보존 (replay 시 점프 시도 재현 정합)
     //
     // **Codex 5번째 규칙**: EditMode NUnit 테스트는 순수 자료구조 검증만. Unity 의존 0.
     public class InputHistoryTests
@@ -28,9 +30,9 @@ namespace Dawnholder.Client.Tests.Prediction
         {
             var history = new InputHistory();
 
-            history.Push(1, 1);
-            history.Push(2, -1);
-            history.Push(3, 0);
+            history.Push(1, 1, false);
+            history.Push(2, -1, false);
+            history.Push(3, 0, false);
 
             Assert.AreEqual(3, history.Count);
         }
@@ -43,7 +45,7 @@ namespace Dawnholder.Client.Tests.Prediction
             const int N = 10;
             for (uint t = 1; t <= N; t++)
             {
-                history.Push(t, 1);
+                history.Push(t, 1, false);
             }
 
             history.EvictUpTo(4); // ack tick 1, 2, 3, 4 처리 완료
@@ -57,7 +59,7 @@ namespace Dawnholder.Client.Tests.Prediction
             var history = new InputHistory();
             for (uint t = 1; t <= 5; t++)
             {
-                history.Push(t, 1);
+                history.Push(t, 1, false);
             }
 
             history.EvictUpTo(5);
@@ -69,8 +71,8 @@ namespace Dawnholder.Client.Tests.Prediction
         public void EvictUpTo_NoMatch_NoOp()
         {
             var history = new InputHistory();
-            history.Push(10, 1);
-            history.Push(11, -1);
+            history.Push(10, 1, false);
+            history.Push(11, -1, false);
 
             history.EvictUpTo(5); // 5 이하의 tick 없음
 
@@ -93,7 +95,7 @@ namespace Dawnholder.Client.Tests.Prediction
             var history = new InputHistory();
             for (uint t = 1; t <= 10; t++)
             {
-                history.Push(t, (sbyte)(t % 2 == 0 ? 1 : -1));
+                history.Push(t, (sbyte)(t % 2 == 0 ? 1 : -1), false);
             }
 
             List<InputRecord> replay = history.ReplayFrom(7).ToList();
@@ -108,10 +110,10 @@ namespace Dawnholder.Client.Tests.Prediction
         public void ReplayFrom_PreservesPushOrder()
         {
             var history = new InputHistory();
-            history.Push(1, 1);
-            history.Push(2, -1);
-            history.Push(3, 0);
-            history.Push(4, 1);
+            history.Push(1, 1, false);
+            history.Push(2, -1, false);
+            history.Push(3, 0, false);
+            history.Push(4, 1, false);
 
             List<InputRecord> replay = history.ReplayFrom(0).ToList();
 
@@ -126,8 +128,8 @@ namespace Dawnholder.Client.Tests.Prediction
         public void ReplayFrom_AfterAck_ReturnsEmpty()
         {
             var history = new InputHistory();
-            history.Push(1, 1);
-            history.Push(2, -1);
+            history.Push(1, 1, false);
+            history.Push(2, -1, false);
 
             List<InputRecord> replay = history.ReplayFrom(2).ToList();
 
@@ -141,7 +143,7 @@ namespace Dawnholder.Client.Tests.Prediction
             var history = new InputHistory();
             for (uint t = 1; t <= 10; t++)
             {
-                history.Push(t, 1);
+                history.Push(t, 1, false);
             }
 
             List<InputRecord> replay = history.ReplayFrom(6).ToList();
@@ -156,9 +158,9 @@ namespace Dawnholder.Client.Tests.Prediction
         {
             // uint wrap-around 무관 (학습 노트 사실 3-(c): 42억 tick = ~6.8년). 경계 핸들링 검증.
             var history = new InputHistory();
-            history.Push(uint.MaxValue - 2, 1);
-            history.Push(uint.MaxValue - 1, -1);
-            history.Push(uint.MaxValue, 1);
+            history.Push(uint.MaxValue - 2, 1, false);
+            history.Push(uint.MaxValue - 1, -1, false);
+            history.Push(uint.MaxValue, 1, false);
 
             Assert.AreEqual(3, history.Count);
             List<InputRecord> replay = history.ReplayFrom(uint.MaxValue - 2).ToList();
@@ -169,13 +171,48 @@ namespace Dawnholder.Client.Tests.Prediction
         public void Clear_ResetsHistory()
         {
             var history = new InputHistory();
-            history.Push(1, 1);
-            history.Push(2, -1);
+            history.Push(1, 1, false);
+            history.Push(2, -1, false);
 
             history.Clear();
 
             Assert.AreEqual(0, history.Count);
             Assert.AreEqual(0, history.ReplayFrom(0).Count());
+        }
+
+        // === Phase 07 신규 — jumpPressed 비트 보존 ===
+
+        [Test]
+        public void Push_JumpPressed_PreservedInReplay()
+        {
+            // Phase 07 (D4 a 클라 에지): 점프 시점 1tick만 true → replay 시 그 tick에 점프 재현돼야 정합.
+            var history = new InputHistory();
+            history.Push(1, 0, false);
+            history.Push(2, 0, true);   // 점프 에지 tick
+            history.Push(3, 0, false);
+
+            List<InputRecord> replay = history.ReplayFrom(0).ToList();
+
+            Assert.AreEqual(3, replay.Count);
+            Assert.False(replay[0].JumpPressed);
+            Assert.True(replay[1].JumpPressed, "에지 tick의 jumpPressed 보존");
+            Assert.False(replay[2].JumpPressed);
+        }
+
+        [Test]
+        public void Push_JumpAndInputX_Independent()
+        {
+            // jumpPressed가 inputX와 독립적으로 보존되는지 (비트 마스킹 정합 확인).
+            var history = new InputHistory();
+            history.Push(1, -1, true);   // 좌 + 점프
+            history.Push(2, 1, false);    // 우 + 점프 X
+
+            List<InputRecord> replay = history.ReplayFrom(0).ToList();
+
+            Assert.AreEqual((sbyte)-1, replay[0].InputX);
+            Assert.True(replay[0].JumpPressed);
+            Assert.AreEqual((sbyte)1, replay[1].InputX);
+            Assert.False(replay[1].JumpPressed);
         }
     }
 }

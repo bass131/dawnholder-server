@@ -31,9 +31,10 @@ namespace Dawnholder.Client.Prediction
         public int Count => _records.Count;
 
         // 새 입력 push. clientTick은 strictly increasing 가정 (Invariant 참조).
-        public void Push(uint clientTick, sbyte inputX)
+        // Phase 07: jumpPressed (D4 (a) 클라 에지 — 1tick만 true) 추가 — replay 시 점프 시점 재현.
+        public void Push(uint clientTick, sbyte inputX, bool jumpPressed)
         {
-            _records.Add(new InputRecord(clientTick, inputX));
+            _records.Add(new InputRecord(clientTick, inputX, jumpPressed));
         }
 
         // ackedTick 이하의 입력을 모두 제거 (서버가 처리 완료한 입력은 더 이상 replay 대상 X).
@@ -76,16 +77,20 @@ namespace Dawnholder.Client.Prediction
     }
 
     // 단일 입력 기록. struct로 잡아 List<> 안에서 stack-friendly.
-    // sbyte inputX — PDL `C_MoveIntent.inputX` 타입 그대로.
+    // sbyte inputX — InputBits.Decode 결과 (PDL byte input 비트 0~1 디코드 후 값).
+    // Phase 07: jumpPressed (PDL byte input 비트 2) 추가 — replay 시 점프 시도도 재현 (단 서버 OnGround
+    //          검증으로 공중 점프 무시되는 게 정상 — 클라 reconcile도 같은 결과 보장).
     public readonly struct InputRecord
     {
         public readonly uint ClientTick;
         public readonly sbyte InputX;
+        public readonly bool JumpPressed;
 
-        public InputRecord(uint clientTick, sbyte inputX)
+        public InputRecord(uint clientTick, sbyte inputX, bool jumpPressed)
         {
             ClientTick = clientTick;
             InputX = inputX;
+            JumpPressed = jumpPressed;
         }
     }
 }
