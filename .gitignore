@@ -137,3 +137,6 @@ logs/
 !.vscode/tasks.json
 !.vscode/launch.json
 .vscode/settings.local.json
+
+# 03_Client/.vscode/ — Unity가 외부 에디터(VSCode) 열 때 자동 생성. 공유 X (각자 머신 자유)
+03_Client/.vscode/
