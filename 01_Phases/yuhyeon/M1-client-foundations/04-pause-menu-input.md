@@ -31,8 +31,8 @@ Gameplay 씬에서 ESC 키 누르면 일시정지 메뉴 토글. **Resume / Main
   - InputAction 참조 (TogglePauseMenu)로 ESC 입력 받기
   - `Toggle()`: 활성화 ↔ 비활성화 + Time.timeScale = 0 또는 1
   - 버튼 핸들러 3개: Resume / MainMenu / Quit
-- [ ] Gameplay 씬에 PauseMenuCanvas 인스턴스 + PauseMenuController 부착 (시작 시 SetActive false)
-- [ ] 씬 저장
+- [ ] **UI 씬**(`UI.unity`)에 PauseMenuCanvas 인스턴스 + PauseMenuController 부착 (시작 시 SetActive false) — ADR-021 영역 분리 정책 일관성
+- [ ] UI 씬 저장
 
 ---
 
@@ -86,3 +86,4 @@ Phase 05 — 씬 전환 폴리시: 페이드 인/아웃으로 모든 씬 전환 
 ## 작업 로그
 
 - 2026-05-17: /work:plan으로 생성
+- 2026-05-17: 사후 정정 — PauseMenuCanvas 배치 씬을 `Gameplay.unity` → `UI.unity`로 변경. 사유: ad-hoc UI Scene 분리(ADR-021)가 본 Phase 정의 작성 후에 결정됨. UI 컴포넌트 한 씬 집중 + 팀장 영역(.unity)과의 머지 충돌 차단을 위해 영역 분리 정책 일관성 유지.
