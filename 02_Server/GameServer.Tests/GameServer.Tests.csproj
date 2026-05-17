@@ -22,6 +22,8 @@
     <ProjectReference Include="..\GameServer\GameServer.csproj" />
     <ProjectReference Include="..\Network\Dawnholder.Server.Network.csproj" />
     <ProjectReference Include="..\..\98_Shared\Shared.csproj" />
+    <!-- Phase 08 Step 4: M2BasicMovement 시나리오 import (EXE 프로젝트도 net 10.0에선 참조 가능). -->
+    <ProjectReference Include="..\..\99_Tools\headless-bot\HeadlessBot.csproj" />
   </ItemGroup>
 
 </Project>

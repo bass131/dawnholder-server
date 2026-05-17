@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 콘솔 도구. 서버와 동일한 net10.0 (Unity 호환 불필요). -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- 폴더 prefix(99_) 회피 명시 -->
+    <RootNamespace>Dawnholder.Tools.HeadlessBot</RootNamespace>
+    <AssemblyName>Dawnholder.Tools.HeadlessBot</AssemblyName>
+  </PropertyGroup>
+
+  <!-- 헌법 #4 (Shared Code Discipline) + ADR-012 Y2 분리:
+       04_ClientNet의 Connector/ClientSession을 클라와 동일 코드로 재사용.
+       98_Shared의 Physics.Step, Constants, Protocol 정의도 그대로. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\04_ClientNet\Dawnholder.Client.Net.csproj" />
+    <ProjectReference Include="..\..\98_Shared\Shared.csproj" />
+  </ItemGroup>
+
+</Project>

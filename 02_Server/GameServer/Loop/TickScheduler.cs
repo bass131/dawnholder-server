@@ -24,6 +24,10 @@ public class TickScheduler
     long _tickNumber;
     public long CurrentTick => Interlocked.Read(ref _tickNumber);
 
+    // Phase 08 Step 4: 통합 테스트에서 p99 검증 가능하도록 외부 hook 노출.
+    // 매 1초마다(= ServerTickRate tick) snapshot 발화. 콘솔 출력과 동시.
+    public event Action<TickMetrics.Stats>? OnMetricsSnapshot;
+
     public TickScheduler(Action<long> onTick)
     {
         _onTick = onTick ?? throw new ArgumentNullException(nameof(onTick));
@@ -56,9 +60,8 @@ public class TickScheduler
         Stopwatch tickWork = new Stopwatch();
 
         // 메트릭: 최근 ~1초 분량의 tick 소요시간 측정 (PRD: tick p99 < 10ms).
-        long bucketStartTick = 0;
-        long bucketSumMicros = 0;
-        long bucketMaxMicros = 0;
+        // Phase 08: TickMetrics로 책임 분리 (SRP). avg/max만 → p50/p95/p99/max/avg.
+        TickMetrics metrics = new TickMetrics();
 
         long intervalMs = Constants.TickIntervalMs;
 
@@ -89,20 +92,14 @@ public class TickScheduler
             tickWork.Stop();
 
             long elapsedMicros = tickWork.ElapsedTicks * 1_000_000L / Stopwatch.Frequency;
-            bucketSumMicros += elapsedMicros;
-            if (elapsedMicros > bucketMaxMicros) bucketMaxMicros = elapsedMicros;
+            metrics.Record(elapsedMicros);
 
-            // 매 ServerTickRate(=20) tick마다 = 1초마다 메트릭 출력.
-            if (_tickNumber - bucketStartTick >= Constants.ServerTickRate)
+            // 버킷 가득 차면(= 1초 분량 = ServerTickRate 개) 메트릭 출력 + 리셋.
+            if (metrics.IsBucketFull)
             {
-                long ticksInBucket = _tickNumber - bucketStartTick;
-                long avgMicros = bucketSumMicros / ticksInBucket;
-                Console.WriteLine(
-                    $"[Tick] #{_tickNumber} 1초 메트릭: avg={avgMicros / 1000.0:F2}ms, " +
-                    $"max={bucketMaxMicros / 1000.0:F2}ms, ticks={ticksInBucket}");
-                bucketStartTick = _tickNumber;
-                bucketSumMicros = 0;
-                bucketMaxMicros = 0;
+                TickMetrics.Stats s = metrics.SnapshotAndReset();
+                Console.WriteLine($"[Tick] #{_tickNumber} 1초 메트릭: {s.Format()}");
+                OnMetricsSnapshot?.Invoke(s);
             }
         }
     }
