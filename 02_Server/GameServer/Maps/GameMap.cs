@@ -75,6 +75,8 @@ public class GameMap
                     entityId = p.EntityId,
                     x = p.Position.X,
                     y = p.Position.Y,
+                    vx = 0f, // Phase 07 Step 2 placeholder — Step 3에서 PlayerEntity.Velocity 신설 후 실제 값
+                    vy = 0f, // 동상
                     serverTick = (int)tickNumber,
                     lastAckedClientTick = p.LastClientTick
                 };

@@ -5,6 +5,7 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.Network;
+using Shared.GameData;
 using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Sessions;
@@ -117,7 +118,10 @@ public class GameSession : PacketSession
     }
 
     // Phase 04 (M2): 클라 의도 수신 → 검증 + tick thread로 마샬링.
-    // 헌법 #3 (Trust Boundary): 모든 클라 입력은 untrusted. 범위·rate 둘 다 검증.
+    // Phase 07 (M2): byte input 비트필드 도입 — InputBits.Decode로 inputX/jumpPressed 분리.
+    //                옛 |inputX|>1 범위 검증은 InputBits가 0/-1/+1만 반환하므로 의미 X —
+    //                대신 invalid `11` reserved 코드 cheat 기록으로 대체.
+    // 헌법 #3 (Trust Boundary): 모든 클라 입력은 untrusted. rate + invalid 둘 다 검증.
     void HandleMoveIntent(ArraySegment<byte> buffer)
     {
         C_MoveIntent pkt = new C_MoveIntent();
@@ -140,12 +144,14 @@ public class GameSession : PacketSession
             // 그래도 처리 진행 (Phase 04는 기록만).
         }
 
-        // 범위 검증. |inputX| > 1은 즉시 cheat 폐기.
-        if (Math.Abs(pkt.inputX) > 1)
+        // Phase 07 비트필드 디코드 (InputBits 단일 출처 — Codex 함정 #2: 양쪽 중복 디코드 금지).
+        (sbyte inputX, bool jumpPressed, bool valid) = InputBits.Decode(pkt.input);
+        if (!valid)
         {
+            // Codex 함정 #1: invalid `11` reserved 패턴 — cheat 또는 protocol mismatch.
+            // Decode가 inputX=0으로 정상화했으니 시뮬은 폭주 X. 기록만.
             Console.WriteLine(
-                $"[Cheat] Player {_entityId}: inputX={pkt.inputX} (range violation) — dropped");
-            return;
+                $"[Cheat] Player {_entityId}: invalid input bits 0x{pkt.input:X2} — normalized to inputX=0");
         }
 
         if (_entityId < 0) return; // 아직 EnterMap 안 끝남
@@ -153,13 +159,15 @@ public class GameSession : PacketSession
         // tick thread로 마샬링: PlayerEntity 갱신.
         GameMap map = GameWorld.Instance.Map;
         int eid = _entityId;
-        sbyte inputX = pkt.inputX;
-        uint clientTick = (uint)pkt.clientTick;
+        sbyte capturedInputX = inputX;
+        bool capturedJump = jumpPressed;
+        uint clientTick = pkt.clientTick;
         map.EnqueueJob(() =>
         {
             PlayerEntity? entity = map.GetPlayer(eid);
             if (entity == null) return; // 이미 RemovePlayer 됐을 수도
-            entity.PendingInputX = inputX;
+            entity.PendingInputX = capturedInputX;
+            entity.PendingJumpPressed = capturedJump;
             entity.LastClientTick = clientTick;
         });
     }

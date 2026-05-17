@@ -271,47 +271,46 @@ public class PacketRoundTripTests
 
     // ──────────────────────────────────────────────────────────────────
     // Phase 04 (M2): C_MoveIntent / S_Snapshot 라운드트립.
+    // Phase 07 (M2): sbyte inputX → byte input 비트필드 (InputBits 단일 출처).
+    //                S_Snapshot에 vx/vy 추가 (prediction velocity 동기화).
     //
-    // 본 묶음의 *주된 의도*는 Phase 04에서 PacketGenerator의 byte/sbyte
-    // 템플릿(`PacketFormat.cs` ReadByteFormat/WriteByteFormat)이 옛
-    // ServerDev 잔재(`Segment.Array[Offset+count]`)에서 신 메서드의 `s[count]`
-    // 패턴으로 정정된 것에 대한 *회귀 안전망*.
-    //
-    // sbyte 음수 경계가 (byte) 캐스트 왕복에서 살아남는지를 특히 확인.
+    // 본 묶음의 의도: PacketGenerator의 byte/uint/float 템플릿 *wire round-trip* 회귀 안전망.
+    // 비트필드 의미(인코딩 매핑) 자체는 InputBitsTests가 검증 — 본 테스트는 byte 그대로 보존만.
     // ──────────────────────────────────────────────────────────────────
 
     [Fact]
     public void C_MoveIntent_RoundTrip_PreservesFields()
     {
-        var intent = new C_MoveIntent { inputX = -1, clientTick = 12345 };
+        // 비트 패턴: inputX=-1 (00) + jumpPressed=true (bit 2) = 0b0000_0100 = 0x04
+        var intent = new C_MoveIntent { input = 0x04, clientTick = 12345 };
 
         ArraySegment<byte> bytes = intent.Write();
         var decoded = new C_MoveIntent();
         decoded.Read(bytes);
 
-        Assert.Equal((sbyte)-1, decoded.inputX);
+        Assert.Equal((byte)0x04, decoded.input);
         Assert.Equal(12345u, decoded.clientTick);
     }
 
     [Theory]
-    [InlineData((sbyte)-1)]       // 좌 (정상 사용)
-    [InlineData((sbyte)0)]        // 정지 (정상 사용)
-    [InlineData((sbyte)1)]        // 우 (정상 사용)
-    [InlineData(sbyte.MinValue)]  // -128: byte 캐스트 왕복 경계
-    [InlineData(sbyte.MaxValue)]  // 127: 양수 경계
-    [InlineData((sbyte)-2)]       // cheat 범위 (HandleMoveIntent가 폐기) — 직렬화는 정확해야 함
-    public void C_MoveIntent_RoundTrip_HandlesSByteEdgeValues(sbyte value)
+    [InlineData((byte)0x00)]       // inputX=-1, no jump (00 + 0)
+    [InlineData((byte)0x01)]       // inputX=0, no jump (01 + 0)
+    [InlineData((byte)0x02)]       // inputX=+1, no jump (10 + 0)
+    [InlineData((byte)0x03)]       // reserved invalid (11) — wire는 통과, Decode가 정상화
+    [InlineData((byte)0x04)]       // inputX=-1, jump (00 + 100)
+    [InlineData((byte)0x06)]       // inputX=+1, jump (10 + 100)
+    [InlineData((byte)0xFF)]       // 모든 비트 on (미래 예약 영역까지) — wire는 통과
+    public void C_MoveIntent_RoundTrip_HandlesByteBitPatterns(byte value)
     {
-        // sbyte → byte 캐스트(WriteByteFormat) → 다시 sbyte 캐스트(ReadByteFormat) 왕복.
-        // -1 같은 음수가 0xFF로 박힌 뒤 0xFF가 다시 -1로 복원돼야 함.
-        // 본 테스트가 깨지면 = PacketGenerator의 byte/sbyte 패턴이 회귀한 것.
-        var intent = new C_MoveIntent { inputX = value, clientTick = 0 };
+        // PacketGenerator byte 템플릿(WriteByteFormat/ReadByteFormat) wire round-trip 회귀.
+        // 비트 의미는 InputBitsTests에서 별도 검증 — 본 테스트는 byte 자체 보존만.
+        var intent = new C_MoveIntent { input = value, clientTick = 0 };
 
         ArraySegment<byte> bytes = intent.Write();
         var decoded = new C_MoveIntent();
         decoded.Read(bytes);
 
-        Assert.Equal(value, decoded.inputX);
+        Assert.Equal(value, decoded.input);
     }
 
     [Theory]
@@ -319,10 +318,10 @@ public class PacketRoundTripTests
     [InlineData(1u)]
     [InlineData((uint)int.MaxValue)]  // 21억 — signed/unsigned 경계
     [InlineData(uint.MaxValue)]       // 42억 — uint 최대 (wrap 직전)
-    // 음수 케이스는 Phase 06에서 uint으로 정합 — 컴파일러가 원천 차단. 옛 리뷰 🟡 해결.
+    // 음수 케이스는 Phase 06에서 uint으로 정합 — 컴파일러가 원천 차단.
     public void C_MoveIntent_RoundTrip_HandlesClientTickEdgeValues(uint tick)
     {
-        var intent = new C_MoveIntent { inputX = 0, clientTick = tick };
+        var intent = new C_MoveIntent { input = 0x01, clientTick = tick };
 
         ArraySegment<byte> bytes = intent.Write();
         var decoded = new C_MoveIntent();
@@ -334,8 +333,8 @@ public class PacketRoundTripTests
     [Fact]
     public void C_MoveIntent_Write_ProducesCorrectSizeHeader()
     {
-        // [size:2][id:2][inputX:1][clientTick:4] = 9 bytes 총.
-        var intent = new C_MoveIntent { inputX = 1, clientTick = 0 };
+        // [size:2][id:2][input:1][clientTick:4] = 9 bytes 총. Phase 04→07에서 byte 그대로 1byte.
+        var intent = new C_MoveIntent { input = 0x02, clientTick = 0 };
 
         ArraySegment<byte> bytes = intent.Write();
 
@@ -349,7 +348,7 @@ public class PacketRoundTripTests
     public void C_MoveIntent_Write_ProducesCorrectPacketId()
     {
         // PDL.xml 5번째 정의 = PacketID 5
-        var intent = new C_MoveIntent { inputX = 0, clientTick = 0 };
+        var intent = new C_MoveIntent { input = 0x01, clientTick = 0 };
 
         ArraySegment<byte> bytes = intent.Write();
 
@@ -365,8 +364,10 @@ public class PacketRoundTripTests
         var snap = new S_Snapshot
         {
             entityId = 42,
-            x = 1.25f,           // GameMap.Tick 1회 = MoveSpeed(5) * TickDuration(0.05) = 0.25, 5tick 누적 = 1.25
+            x = 1.25f,            // GameMap.Tick 5회 = MoveSpeed(5) * TickDuration(0.05) * 5 = 1.25
             y = -3.5f,
+            vx = 5.0f,            // Phase 07: 우측 이동 중 속도 = MoveSpeed
+            vy = 8.0f,            // Phase 07: 점프 직후 vy = JumpSpeed
             serverTick = 1000,
             lastAckedClientTick = 999
         };
@@ -378,6 +379,8 @@ public class PacketRoundTripTests
         Assert.Equal(42, decoded.entityId);
         Assert.Equal(1.25f, decoded.x);
         Assert.Equal(-3.5f, decoded.y);
+        Assert.Equal(5.0f, decoded.vx);
+        Assert.Equal(8.0f, decoded.vy);
         Assert.Equal(1000, decoded.serverTick);
         Assert.Equal(999u, decoded.lastAckedClientTick);
     }
@@ -394,8 +397,15 @@ public class PacketRoundTripTests
         // float 직렬화는 .NET Standard 2.1 호환을 위해
         // BitConverter.SingleToInt32Bits / Int32BitsToSingle 경유 (PacketFormat.cs WriteFloatFormat).
         // 본 테스트가 깨지면 = float 직렬화 경로가 회귀한 것.
-        // NaN은 자기 자신과 != 이므로 제외 — Equal 비교 자체가 깨짐.
-        var snap = new S_Snapshot { entityId = 0, x = coord, y = coord, serverTick = 0, lastAckedClientTick = 0 };
+        // Phase 07: vx/vy도 같은 float 템플릿으로 직렬화 — 같은 경로 검증.
+        var snap = new S_Snapshot
+        {
+            entityId = 0,
+            x = coord, y = coord,
+            vx = coord, vy = coord,
+            serverTick = 0,
+            lastAckedClientTick = 0
+        };
 
         ArraySegment<byte> bytes = snap.Write();
         var decoded = new S_Snapshot();
@@ -403,27 +413,38 @@ public class PacketRoundTripTests
 
         Assert.Equal(coord, decoded.x);
         Assert.Equal(coord, decoded.y);
+        Assert.Equal(coord, decoded.vx);
+        Assert.Equal(coord, decoded.vy);
     }
 
     [Fact]
     public void S_Snapshot_Write_ProducesCorrectSizeHeader()
     {
-        // [size:2][id:2][entityId:4][x:4][y:4][serverTick:4][lastAckedClientTick:4] = 24 bytes.
-        var snap = new S_Snapshot { entityId = 0, x = 0f, y = 0f, serverTick = 0, lastAckedClientTick = 0 };
+        // [size:2][id:2][entityId:4][x:4][y:4][vx:4][vy:4][serverTick:4][lastAckedClientTick:4] = 32 bytes.
+        // Phase 04: 24 byte (x/y만). Phase 07: vx/vy 추가로 32 byte (8 byte 증가).
+        var snap = new S_Snapshot
+        {
+            entityId = 0, x = 0f, y = 0f, vx = 0f, vy = 0f,
+            serverTick = 0, lastAckedClientTick = 0
+        };
 
         ArraySegment<byte> bytes = snap.Write();
 
-        Assert.Equal(24, bytes.Count);
+        Assert.Equal(32, bytes.Count);
         ushort size = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset, 2));
-        Assert.Equal(24, size);
+        Assert.Equal(32, size);
     }
 
     [Fact]
     public void S_Snapshot_Write_ProducesCorrectPacketId()
     {
         // PDL.xml 6번째 정의 = PacketID 6
-        var snap = new S_Snapshot { entityId = 0, x = 0f, y = 0f, serverTick = 0, lastAckedClientTick = 0 };
+        var snap = new S_Snapshot
+        {
+            entityId = 0, x = 0f, y = 0f, vx = 0f, vy = 0f,
+            serverTick = 0, lastAckedClientTick = 0
+        };
 
         ArraySegment<byte> bytes = snap.Write();
 
