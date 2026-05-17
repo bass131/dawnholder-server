@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Dawnholder.Client.UI
 {
@@ -9,7 +8,7 @@ namespace Dawnholder.Client.UI
     /// **헌법 #1 (Server Authority)**: 시작 버튼은 *씬 로드*만 트리거. 캐릭터/인벤토리/연결
     /// 같은 권위 상태는 건드리지 않음. 서버 연결 흐름은 후속 마일스톤(M3+)에서 별도 도입.
     ///
-    /// **Phase 05+에선** SceneManager 직접 호출 대신 SceneTransition Singleton 경유 예정 (페이드 폴리시).
+    /// **Phase 05 — SceneTransition Singleton 경유로 교체됨** (페이드 폴리시). 직접 SceneManager 호출 X.
     /// </summary>
     public class MainMenuController : MonoBehaviour
     {
@@ -17,7 +16,7 @@ namespace Dawnholder.Client.UI
 
         public void OnStartClicked()
         {
-            SceneManager.LoadScene(gameplaySceneName);
+            SceneTransition.Instance.LoadScene(gameplaySceneName);
         }
 
         public void OnQuitClicked()

@@ -81,7 +81,13 @@ namespace Dawnholder.Client.UI
             // 함정 방지: timeScale 0인 상태로 씬 로드하면 새 씬도 정지된 채 로드됨.
             Time.timeScale = 1f;
             isPaused = false;
-            SceneManager.LoadScene(mainMenuSceneName);
+
+            // Phase 05 — SceneTransition Singleton 경유(페이드). 단 에디터에서 Gameplay 씬 직접 Play
+            // 시엔 MainMenu의 FadeCanvas가 생성된 적 없어 Instance == null → 직접 LoadScene fallback.
+            if (SceneTransition.Instance != null)
+                SceneTransition.Instance.LoadScene(mainMenuSceneName);
+            else
+                SceneManager.LoadScene(mainMenuSceneName);
         }
 
         public void OnQuitClicked()
