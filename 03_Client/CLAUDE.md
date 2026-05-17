@@ -5,13 +5,14 @@
 ```
 client/Assets/
 ├── Scripts/
+│   ├── Bootstrap/      씬 진입점 (SceneBootstrap.Awake → Additive Load) — ADR-021
 │   ├── Network/        TCP 클라이언트, 패킷 read 루프, dispatch
 │   ├── Prediction/     클라이언트 prediction + reconciliation
 │   ├── Rendering/      Sprite, Animator 훅, Camera
 │   ├── Input/          Input → intent packet
-│   ├── UI/             HUD, 메뉴
+│   ├── UI/             HUD, 메뉴 (UI 전용 씬 — ADR-021)
 │   └── State/          서버 상태의 로컬 미러 (read-only view)
-├── Scenes/
+├── Scenes/             Gameplay·MainMenu 공유 + UI 단독 (정유현 영역 — ADR-021)
 ├── Prefabs/
 └── Resources/
 ```
