@@ -13,22 +13,26 @@ namespace Dawnholder.Client.Prediction
     // **순수 C# 클래스 (MonoBehaviour 아님)** — 미래 EditMode 테스트 가능성 보존.
     // Unity 의존은 UnityEngine.Vector2 + Mathf.Abs 두 가지로 한정.
     //
-    // **흐름** (Phase 07 갱신):
+    // **흐름** (Phase 07 갱신, 매 frame Predict 패턴 — Phase 06 정합):
     //   1. spawn 시점: LocalPlayerController가 SetInitialPosition(spawnPos)
-    //   2. *fixed cadence* (Constants.TickDuration = 50ms): LocalPlayerController가 Predict(inputX, jumpPressed)
-    //      → Physics.Step 호출 → Position/Velocity/OnGround 갱신
-    //   3. S_Snapshot 도착 시: UnityClientSession이 OnSnapshot(serverX/Y, serverVx/Vy, ackedTick)
+    //   2. *매 frame* (Time.deltaTime 가변): LocalPlayerController가 Predict(inputX, jumpPressed, dt)
+    //      → Physics.Step 호출 → Position/Velocity/OnGround 갱신. 시뮬 자체가 부드러움.
+    //   3. *50ms cadence* (송신 throttle): C_MoveIntent 송신 + InputHistory push (정의 파일 #82
+    //      "fps 의존 차단" = *송신 cadence* 의미. Predict 시뮬은 가변 dt OK).
+    //   4. S_Snapshot 도착 시: UnityClientSession이 OnSnapshot(serverX/Y, serverVx/Vy, ackedTick)
     //      → mispredict (X 또는 Y > SnapThreshold) 시 서버 권위 상태에서 미-ack 입력 replay
     //      → 부드러운 정정 (Phase 06 패턴 그대로, snap 텔레포트 X)
     //
     // **양쪽 공식 일치 (헌법 #1 / ADR-010)**:
     //   Physics.Step은 Shared.GameData. 클라/서버 같은 함수 호출 → drift 0.
+    //   *클라 가변 dt + 서버 fixed dt* 차이는 누적 결과상 근사 → 미세 drift는 reconcile로 흡수.
     //   타입은 UnityEngine.Vector2 ↔ System.Numerics.Vector2 변환 (PDL 주석 패턴).
     //
-    // **fixed timestep (Phase 07 정의 #82)**:
-    //   Predict 호출은 *50ms cadence*. 매 frame X (정의 파일 #82 fps 의존 차단).
-    //   LocalPlayerController.Update의 송신 throttle과 같이 트리거 — frame 사이 화면은
-    //   transform = predictor.Position 그대로 (5 frame 같은 위치, 시각적 끊김 미미).
+    // **장르 결정 — Phase 07 Step 4 사후 정정 (2026-05-17)**:
+    //   초기 Step 4는 *fixed cadence Predict*로 박았으나 240Hz에서 *뚜두두둑* 끊김 발생
+    //   (정의 파일 완료 조건 4 "200ms lag 부드러움"과 충돌). MMORPG/캐주얼 RPG 장르
+    //   (ADR-006/009)는 fairness보다 부드러움 우선 — Source/Quake/Overwatch 패턴 정합.
+    //   fixed-step + visual lerp (C 옵션)는 격투/콘솔 RTS 패턴이라 우리 게임에 over-engineering.
     //
     // **비교 축** (Phase 07): X + Y 둘 다 SnapThreshold 비교. Phase 06은 X만 — Y prediction
     //   도입으로 mispredict 가능성 양축에 박힘.
@@ -62,13 +66,13 @@ namespace Dawnholder.Client.Prediction
             _history.Push(clientTick, inputX, jumpPressed);
         }
 
-        // Phase 07: *fixed cadence* (Constants.TickDuration 고정). 매 frame X.
-        // 호출자(LocalPlayerController)가 송신 throttle과 같이 트리거.
-        // Physics.Step 단일 출처 호출 → 서버와 drift 0.
-        public void Predict(sbyte inputX, bool jumpPressed)
+        // Phase 07: *매 frame* Time.deltaTime 가변 호출 (Phase 06 패턴 + jumpPressed 추가).
+        // 클라 가변 dt + 서버 fixed dt 차이는 누적상 근사 → reconcile 흡수.
+        // Physics.Step 단일 출처 호출 → 양쪽 공식 일치 (헌법 #1).
+        public void Predict(sbyte inputX, bool jumpPressed, float dt)
         {
             PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
-                new PhysicsInput(inputX, jumpPressed, Constants.TickDuration));
+                new PhysicsInput(inputX, jumpPressed, dt));
             ApplyPhysicsState(after);
         }
 
