@@ -2,7 +2,8 @@
     "name": "Dawnholder.Client",
     "rootNamespace": "Dawnholder.Client",
     "references": [
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
