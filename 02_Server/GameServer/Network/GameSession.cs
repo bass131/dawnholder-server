@@ -22,6 +22,12 @@ public class GameSession : PacketSession
 {
     int _entityId = -1;
 
+    // Phase 10 (M2.5 lifecycle race): _closing 플래그.
+    // connect job과 disconnect handler가 *서로 다른 thread*에서 race할 때,
+    // queued AddPlayer가 이미 닫힌 세션을 owner로 박지 못하게 + cleanup이 멱등하게 보장.
+    // 0=open, 1=closing/closed. Interlocked.Exchange로 atomic.
+    int _closing;
+
     // Phase 04: rate-limit 골격 (헌법 #3). 1초 fixed 윈도우 (sliding 아님 — 학습 노트).
     // Phase 05 조정 (2026-05-11):
     //   - 임계값 100 → 500. 240Hz 모니터 사용자의 정상 wire rate가 ~300-500/s라 100은 너무 빡빡.
@@ -57,6 +63,15 @@ public class GameSession : PacketSession
         GameSession self = this;
         map.EnqueueJob(() =>
         {
+            // Phase 10 (M2.5 lifecycle race): job 실행 시점에 이미 disconnect 왔으면 skip.
+            // 안 그러면 닫힌 세션을 owner로 가진 player가 맵에 남아 ghost entity 발생.
+            // tick thread에서 실행되므로 Volatile.Read로 충분 (memory barrier 보장).
+            if (Volatile.Read(ref self._closing) == 1)
+            {
+                Console.WriteLine("[Map] AddPlayer skipped — session already closing (lifecycle race window)");
+                return;
+            }
+
             // 헌법 #1 시연을 위해 spawn 좌표를 서버가 정함. 현재 (0, 0).
             // Phase 03 검증 단계엔 (3, 0)으로 잠시 바꿔 Unity 캐릭터가 그 자리에 뜨는지
             // 캡처로 시각 확인 완료 (DONE.md AC 섹션 참조).
@@ -77,24 +92,35 @@ public class GameSession : PacketSession
         });
     }
 
+    // Phase 10 (M2.5 lifecycle race) 재작성:
+    //  - 이전엔 `_entityId < 0` early-return으로 race window cleanup 누락 (γ 감사 위반).
+    //  - 이제 *항상* map job 보내고, owner reference 기반으로 cleanup (entityId 모를 때 안전).
+    //  - Interlocked.Exchange로 _closing 박고 이중 호출 멱등성 보장.
+    //  - 두 번째 OnDisconnected가 와도 enqueue 1회만.
     public override void OnDisconnected(EndPoint endPoint)
     {
-        EndPoint ep = endPoint;
-        Console.WriteLine($"[GameSession] OnDisconnected from {ep}");
+        // 이미 닫혔으면 두 번째 호출 — enqueue 안 함 (Codex β 검토 권장: 명시 표현).
+        // Exchange 반환값이 1이면 *직전*에 이미 1이었다는 뜻 = 이중 호출.
+        if (Interlocked.Exchange(ref _closing, 1) == 1) return;
 
-        if (_entityId < 0) return;
+        Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
 
         GameMap? map = GetMap();
         if (map == null)
         {
-            Console.WriteLine($"[Trust] GameSession: GetMap() returned null — config/shutdown race?");
+            Console.WriteLine($"[Trust] GameSession.OnDisconnected: GetMap() returned null — config/shutdown race?");
             return;
         }
-        int eid = _entityId;
+        GameSession self = this;
         map.EnqueueJob(() =>
         {
-            bool removed = map.RemovePlayer(eid);
-            Console.WriteLine($"[Map] Player {eid} left (removed={removed})");
+            // owner reference 기반 cleanup — entityId가 race window 안 -1이어도 안전.
+            // AddPlayer가 같은 batch에 들어왔으면 그 entity도 같이 제거 (멱등).
+            bool removed = map.RemovePlayerBySession(self);
+            Console.WriteLine($"[Map] Session cleanup (entityId={self._entityId}, removed={removed})");
+            // Codex β 권장(Phase 10): cleanup 후 _entityId reset.
+            // 기능상 ghost는 막혔지만 낡은 id가 로그/방어 로직에 남는 것 차단.
+            self._entityId = -1;
         });
     }
 

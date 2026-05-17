@@ -36,6 +36,13 @@ public class GameMap
     public bool RemovePlayer(int entityId)
         => _players.RemoveAll(p => p.EntityId == entityId) > 0;
 
+    // Phase 10 (M2.5 lifecycle race): owner reference 기반 cleanup.
+    // entityId가 아직 -1인 race window에서도 안전 — AddPlayer가 같은 batch에 들어왔으면
+    // 그 entity도 owner 일치로 제거됨. tick thread에서만 호출 (단일 thread invariant).
+    // 멱등: owner가 없으면 false 반환, 두 번 호출 안전.
+    public bool RemovePlayerBySession(GameSession owner)
+        => _players.RemoveAll(p => ReferenceEquals(p.Owner, owner)) > 0;
+
     public PlayerEntity? GetPlayer(int entityId)
         => _players.Find(p => p.EntityId == entityId);
 
