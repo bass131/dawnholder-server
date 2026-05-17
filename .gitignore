@@ -15,6 +15,13 @@ obj/
 03_Client/Assets/Plugins/**/*.pdb
 03_Client/Assets/Plugins/**/*.dll.meta
 03_Client/Assets/Plugins/**/*.pdb.meta
+# 2026-05-17 정정: Shared.dll은 *commit 필수* — Plugins/는 .gitignore이지만
+# Shared 빌드 산출물이 git에 없으면 다른 팀원 pull 받자마자 Unity 컴파일 깨짐
+# (Phase 07 정유현 main pull 사고로 표면화). dotnet build의 PostBuild target이
+# 자동 복사하지만 *각자 머신에서 빌드 안 하면* Plugins/Shared.dll이 outdated 또는 빈 상태.
+# 화이트리스트로 commit 강제 → 다른 머신 pull 즉시 동작 (헌법 #4 정합).
+!03_Client/Assets/Plugins/Shared/Shared.dll
+!03_Client/Assets/Plugins/Shared/Shared.dll.meta
 
 # ─────────────────────────────────────────────
 # Unity (client/)
@@ -115,6 +122,10 @@ logs/
 /CONTEXT.md
 /CONTEXT_History.md
 /CONTEXT_History/
+# 2026-05-17 추가: 학습 일지 *후보* 카탈로그 (CONTEXT.md 응축 시 외부화).
+# 실제 일지 본문은 00_Document/learning-journal/<본인 슬러그>/에 공개 박힘. 본 파일은
+# "박을 후보 목록"이라 사적 영역 (각자 자기 카탈로그 보유). 공유 X.
+/CONTEXT_LearningJournalCandidates.md
 
 # ─────────────────────────────────────────────
 # learning-journal: 모두 기본 공개 (2026-05-16 정책 변경)
