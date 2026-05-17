@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Phase 07 Step 4 부드러움 — 옵션 A vs C 비교</title>
+<style>
+  body {
+    font-family: -apple-system, "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: #0f1419;
+    color: #e4e7eb;
+    line-height: 1.65;
+    padding: 32px 24px;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+  h1 { color: #4dabf7; margin: 0 0 6px 0; font-size: 26px; }
+  h2 { color: #4dabf7; margin: 36px 0 14px 0; font-size: 20px; border-bottom: 1px solid #2a3a52; padding-bottom: 8px; }
+  h3 { color: #e4e7eb; margin: 20px 0 10px 0; font-size: 16px; }
+  .subtitle { color: #94a3b8; margin-bottom: 24px; font-size: 14px; }
+  code {
+    background: #0a0e14; padding: 1px 6px; border-radius: 3px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 13px; color: #ffd43b;
+  }
+
+  /* 핵심 차이 카드 */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 18px 0; }
+  .option-card {
+    padding: 18px 22px; border-radius: 8px;
+    background: #1a2332; border-left: 4px solid #4dabf7;
+  }
+  .option-card.a { border-left-color: #51cf66; }
+  .option-card.c { border-left-color: #ff9f43; }
+  .opt-title {
+    font-size: 16px; font-weight: 700; margin-bottom: 8px;
+  }
+  .opt-card.a .opt-title { color: #51cf66; }
+  .option-card.a .opt-title { color: #51cf66; }
+  .option-card.c .opt-title { color: #ff9f43; }
+  .opt-summary { font-size: 14px; color: #cbd5e1; margin-bottom: 12px; }
+
+  /* 타임라인 다이어그램 */
+  .timeline {
+    background: #0f1825;
+    padding: 18px 20px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-family: "Cascadia Code", Consolas, monospace;
+    overflow-x: auto;
+  }
+  .tl-label {
+    color: #94a3b8; font-size: 12px;
+    margin-bottom: 4px;
+  }
+  .tl-row { display: flex; align-items: center; margin-bottom: 4px; }
+  .tl-rowlabel {
+    flex-shrink: 0; width: 110px; color: #94a3b8;
+    font-size: 12px;
+  }
+  .tl-cell {
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-right: 1px;
+    border-radius: 2px;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .tl-frame {
+    width: 24px; height: 22px;
+    background: #1f2937; color: #64748b;
+  }
+  .tl-frame.active {
+    background: #51cf66; color: #0f1419;
+  }
+  .tl-frame.predict {
+    background: #f59e0b; color: #0f1419;
+    border: 1px solid #fff;
+    box-sizing: border-box;
+  }
+  .tl-frame.same { background: #dc2626; color: #fff; }
+  .tl-frame.lerp { background: #4dabf7; color: #0f1419; }
+
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    margin: 8px 0 14px 0; font-size: 12px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; color: #94a3b8; }
+  .legend-sw { width: 16px; height: 16px; border-radius: 2px; }
+  .sw-active { background: #51cf66; }
+  .sw-predict { background: #f59e0b; border: 1px solid #fff; box-sizing: border-box; }
+  .sw-same { background: #dc2626; }
+  .sw-lerp { background: #4dabf7; }
+  .sw-idle { background: #1f2937; }
+
+  /* code block */
+  pre {
+    background: #0a0e14;
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 12.5px;
+    color: #e4e7eb;
+    overflow-x: auto;
+    margin: 12px 0;
+    border-left: 3px solid #2a3a52;
+  }
+  .pre-a { border-left-color: #51cf66; }
+  .pre-c { border-left-color: #ff9f43; }
+  pre .k { color: #ff9f43; }
+  pre .s { color: #51cf66; }
+  pre .c { color: #64748b; }
+  pre .n { color: #4dabf7; }
+
+  /* 표 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13.5px;
+    background: #0f1825;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  th, td { padding: 9px 14px; text-align: left; border-bottom: 1px solid #2a3a52; }
+  th { color: #94a3b8; font-weight: 600; font-size: 12px; background: #14202d; }
+  tr:last-child td { border-bottom: none; }
+  td.a-col { color: #51cf66; font-weight: 600; }
+  td.c-col { color: #ff9f43; font-weight: 600; }
+  .indu-good { color: #51cf66; }
+  .indu-bad { color: #f87171; }
+  .indu-mid { color: #ff9f43; }
+
+  .callout {
+    background: #14202d;
+    border-left: 3px solid #94a3b8;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 14px 0;
+    font-size: 13.5px;
+  }
+
+  .verdict {
+    background: #0d3320;
+    border-left: 3px solid #51cf66;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 18px 0;
+    font-size: 14.5px;
+  }
+  .verdict.warning {
+    background: #3a2a0a; border-left-color: #ff9f43;
+  }
+  .verdict-label {
+    font-weight: 700; color: #51cf66;
+    margin-right: 8px;
+    font-size: 12px; letter-spacing: 0.5px;
+  }
+  .footnote {
+    margin-top: 32px;
+    font-size: 12.5px;
+    color: #64748b;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Step 4 부드러움 — 옵션 A vs C</h1>
+<div class="subtitle">Phase 07에서 본인 머신에 박힌 *뚜두두둑* 끊김 — 두 해결책의 trade-off 시각화.</div>
+
+<!-- 두 옵션 요약 -->
+<div class="options-grid">
+  <div class="option-card a">
+    <div class="opt-title">(A) Phase 06 패턴 복귀</div>
+    <div class="opt-summary">
+      Predict <strong>매 frame</strong> + <code>Time.deltaTime</code>. 시뮬레이션 자체가 부드러움.
+      drift는 reconcile (S_Snapshot)로 흡수. <em>Phase 06이 이미 검증한 방식.</em>
+    </div>
+  </div>
+  <div class="option-card c">
+    <div class="opt-title">(C) 50ms cadence + visual lerp</div>
+    <div class="opt-summary">
+      Predict는 <strong>50ms cadence</strong> 유지 (현재 Step 4) + <strong>frame 사이 보간 레이어</strong>
+      추가. 시뮬레이션은 fixed dt 결정론, transform은 별도 lerp.
+    </div>
+  </div>
+</div>
+
+<!-- 타임라인 비교 -->
+<h2>1. 타임라인 비교 (240Hz 머신, 50ms 안 12 frame)</h2>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-sw sw-idle"></span> 빈 frame (위치 계산 X)</div>
+  <div class="legend-item"><span class="legend-sw sw-active"></span> Predict + 새 위치 ✓</div>
+  <div class="legend-item"><span class="legend-sw sw-predict"></span> 50ms cadence Predict 시점</div>
+  <div class="legend-item"><span class="legend-sw sw-same"></span> 같은 위치 재사용 (끊김)</div>
+  <div class="legend-item"><span class="legend-sw sw-lerp"></span> 보간 (lerp)으로 부드러움</div>
+</div>
+
+<h3>(현재 Step 4) — 50ms cadence + 보간 X = 뚜두두둑</h3>
+<div class="timeline">
+  <div class="tl-row">
+    <div class="tl-rowlabel">frame #</div>
+<div class="tl-cell tl-frame">0</div><div class="tl-cell tl-frame">1</div><div class="tl-cell tl-frame">2</div><div class="tl-cell tl-frame">3</div><div class="tl-cell tl-frame">4</div><div class="tl-cell tl-frame">5</div><div class="tl-cell tl-frame">6</div><div class="tl-cell tl-frame">7</div><div class="tl-cell tl-frame">8</div><div class="tl-cell tl-frame">9</div><div class="tl-cell tl-frame">10</div><div class="tl-cell tl-frame">11</div><div class="tl-cell tl-frame">12</div><div class="tl-cell tl-frame">13</div><div class="tl-cell tl-frame">14</div>
+  </div>
+  <div class="tl-row">
+    <div class="tl-rowlabel">Predict?</div>
+<div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div>
+  </div>
+  <div class="tl-row">
+    <div class="tl-rowlabel">transform x</div>
+<div class="tl-cell tl-frame active">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame same">.25</div><div class="tl-cell tl-frame active">.50</div><div class="tl-cell tl-frame same">.50</div><div class="tl-cell tl-frame same">.50</div>
+  </div>
+</div>
+<p style="color:#cbd5e1;font-size:13.5px;margin:8px 0;">
+→ <strong>12 frame 같은 위치</strong> 후 1 frame에 0.25 점프 = 본인이 본 *뚜두두둑*.
+</p>
+
+<h3>(A) 매 frame Predict + Time.deltaTime</h3>
+<div class="timeline">
+  <div class="tl-row">
+    <div class="tl-rowlabel">frame #</div>
+<div class="tl-cell tl-frame">0</div><div class="tl-cell tl-frame">1</div><div class="tl-cell tl-frame">2</div><div class="tl-cell tl-frame">3</div><div class="tl-cell tl-frame">4</div><div class="tl-cell tl-frame">5</div><div class="tl-cell tl-frame">6</div><div class="tl-cell tl-frame">7</div><div class="tl-cell tl-frame">8</div><div class="tl-cell tl-frame">9</div><div class="tl-cell tl-frame">10</div><div class="tl-cell tl-frame">11</div><div class="tl-cell tl-frame">12</div><div class="tl-cell tl-frame">13</div><div class="tl-cell tl-frame">14</div>
+  </div>
+  <div class="tl-row">
+    <div class="tl-rowlabel">Predict?</div>
+<div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame predict">✓</div>
+  </div>
+  <div class="tl-row">
+    <div class="tl-rowlabel">transform x</div>
+<div class="tl-cell tl-frame active">.02</div><div class="tl-cell tl-frame active">.04</div><div class="tl-cell tl-frame active">.06</div><div class="tl-cell tl-frame active">.08</div><div class="tl-cell tl-frame active">.10</div><div class="tl-cell tl-frame active">.13</div><div class="tl-cell tl-frame active">.15</div><div class="tl-cell tl-frame active">.17</div><div class="tl-cell tl-frame active">.19</div><div class="tl-cell tl-frame active">.21</div><div class="tl-cell tl-frame active">.23</div><div class="tl-cell tl-frame active">.25</div><div class="tl-cell tl-frame active">.27</div><div class="tl-cell tl-frame active">.29</div><div class="tl-cell tl-frame active">.31</div>
+  </div>
+</div>
+<p style="color:#cbd5e1;font-size:13.5px;margin:8px 0;">
+→ <strong>12 frame 모두 다른 위치</strong>. 부드러움 ★★★. drift는 reconcile로 50ms마다 잡힘.
+</p>
+
+<h3>(C) 50ms cadence Predict + frame 사이 visual lerp</h3>
+<div class="timeline">
+  <div class="tl-row">
+    <div class="tl-rowlabel">frame #</div>
+<div class="tl-cell tl-frame">0</div><div class="tl-cell tl-frame">1</div><div class="tl-cell tl-frame">2</div><div class="tl-cell tl-frame">3</div><div class="tl-cell tl-frame">4</div><div class="tl-cell tl-frame">5</div><div class="tl-cell tl-frame">6</div><div class="tl-cell tl-frame">7</div><div class="tl-cell tl-frame">8</div><div class="tl-cell tl-frame">9</div><div class="tl-cell tl-frame">10</div><div class="tl-cell tl-frame">11</div><div class="tl-cell tl-frame">12</div><div class="tl-cell tl-frame">13</div><div class="tl-cell tl-frame">14</div>
+  </div>
+  <div class="tl-row">
+    <div class="tl-rowlabel">Predict?</div>
+<div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame predict">✓</div><div class="tl-cell tl-frame">·</div><div class="tl-cell tl-frame">·</div>
+  </div>
+  <div class="tl-row">
+    <div class="tl-rowlabel">transform x</div>
+<div class="tl-cell tl-frame lerp">.00</div><div class="tl-cell tl-frame lerp">.02</div><div class="tl-cell tl-frame lerp">.04</div><div class="tl-cell tl-frame lerp">.06</div><div class="tl-cell tl-frame lerp">.08</div><div class="tl-cell tl-frame lerp">.10</div><div class="tl-cell tl-frame lerp">.13</div><div class="tl-cell tl-frame lerp">.15</div><div class="tl-cell tl-frame lerp">.17</div><div class="tl-cell tl-frame lerp">.19</div><div class="tl-cell tl-frame lerp">.21</div><div class="tl-cell tl-frame lerp">.23</div><div class="tl-cell tl-frame active">.25</div><div class="tl-cell tl-frame lerp">.27</div><div class="tl-cell tl-frame lerp">.29</div>
+  </div>
+</div>
+<p style="color:#cbd5e1;font-size:13.5px;margin:8px 0;">
+→ <strong>Predict는 50ms마다 1회</strong> (결정론 fixed dt), <strong>transform은 매 frame lerp</strong>로 부드럽게.
+시각 결과는 (A)와 거의 같음.
+</p>
+
+<!-- 코드 패턴 -->
+<h2>2. 코드 패턴 비교</h2>
+
+<h3>(A) Phase 06 패턴 복귀 — 5분 작업</h3>
+<pre class="pre-a"><span class="c">// LocalPlayerController.Update()</span>
+<span class="k">void</span> Update() {
+    <span class="c">// 매 frame: Predict (Time.deltaTime 가변)</span>
+    sbyte encoded = EncodeInputX(_moveInput.x);
+    _predictor.Predict(encoded, _jumpEdgeThisTick, Time.deltaTime);  <span class="c">// dt 인자 복귀</span>
+    transform.position = _predictor.Position;
+
+    <span class="c">// 50ms cadence: 송신 only (Predict 호출 X)</span>
+    _sendAccumulator += Time.deltaTime;
+    <span class="k">if</span> (_sendAccumulator &lt; Constants.TickDuration) <span class="k">return</span>;
+    _sendAccumulator -= Constants.TickDuration;
+
+    <span class="c">// 송신 직전 jumpEdge 확정 + reset</span>
+    bool jumpEdge = _jumpEdgeThisTick;
+    _jumpEdgeThisTick = false;
+
+    _localTickCounter++;
+    byte input = InputBits.Encode(encoded, jumpEdge);
+    session.SendIntent(<span class="k">new</span> C_MoveIntent { input = input, clientTick = _localTickCounter }.Write());
+    _predictor.NotifySent(_localTickCounter, encoded, jumpEdge);
+}</pre>
+
+<h3>(C) 50ms cadence + visual lerp — 30분+ 작업</h3>
+<pre class="pre-c"><span class="c">// PlayerPredictor — 추가 필드</span>
+Vector2 _prevPosition;   <span class="c">// lerp 시작점 (이전 tick 위치)</span>
+float _lerpAccumulator;  <span class="c">// 0 ~ TickDuration 범위</span>
+
+<span class="c">// LocalPlayerController.Update()</span>
+<span class="k">void</span> Update() {
+    _sendAccumulator += Time.deltaTime;
+    _lerpAccumulator += Time.deltaTime;
+
+    <span class="k">if</span> (_sendAccumulator &gt;= Constants.TickDuration) {
+        _sendAccumulator -= Constants.TickDuration;
+        _lerpAccumulator = 0;  <span class="c">// 새 tick 시작 = lerp 리셋</span>
+
+        <span class="c">// 50ms cadence: Predict + 송신</span>
+        sbyte encoded = EncodeInputX(_moveInput.x);
+        bool jumpEdge = _jumpEdgeThisTick;
+        _jumpEdgeThisTick = false;
+
+        _predictor.SnapshotPrevPosition();  <span class="c">// lerp 시작점 박기</span>
+        _predictor.Predict(encoded, jumpEdge);
+
+        _localTickCounter++;
+        <span class="c">// ... 송신 + NotifySent (같음)</span>
+    }
+
+    <span class="c">// 매 frame: lerp로 부드럽게</span>
+    float t = Mathf.Clamp01(_lerpAccumulator / Constants.TickDuration);
+    Vector2 lerped = Vector2.Lerp(_predictor.PrevPosition, _predictor.Position, t);
+    transform.position = lerped;
+}</pre>
+
+<!-- trade-off 표 -->
+<h2>3. trade-off 표</h2>
+
+<table>
+  <thead>
+    <tr><th></th><th class="a-col">(A) 매 frame Predict</th><th class="c-col">(C) 50ms + lerp</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>부드러움</strong></td><td>★★★ (시뮬 자체 부드러움)</td><td>★★★ (lerp로 부드러움)</td></tr>
+    <tr><td><strong>결정론</strong></td><td>★★ (근사 + reconcile 흡수)</td><td>★★★ (fixed dt 정확)</td></tr>
+    <tr><td><strong>코드 복잡도</strong></td><td>★★★ (Phase 06 패턴 그대로)</td><td>★★ (lerp 누적기 + prev 박기)</td></tr>
+    <tr><td><strong>작업 시간</strong></td><td>5분 (시그니처 + Update 정정)</td><td>30~60분 (lerp 박기 + 검증)</td></tr>
+    <tr><td><strong>reconcile 빈도</strong></td><td>가끔 (drift 차이 누적 시)</td><td>거의 없음 (서버 fixed = 클라 fixed)</td></tr>
+    <tr><td><strong>현업 사례</strong></td><td>일반 prediction 표준 (Source/Quake 등)</td><td>fixed step 게임 (격투 / 콘솔 RTS)</td></tr>
+    <tr><td><strong>면접 가치</strong></td><td><span class="indu-mid">중</span> (Phase 06 패턴 일관)</td><td><span class="indu-good">강</span> ("왜 lerp까지 박았나" 답변 재료)</td></tr>
+    <tr><td><strong>완료 조건 4번 만족</strong></td><td>✓ (200ms lag 부드러움)</td><td>✓ (보간으로 부드러움)</td></tr>
+    <tr><td><strong>Phase 06 학습 일지 후보</strong></td><td>그대로 유지</td><td>"결정론 vs 부드러움 trade-off" 별도 추가</td></tr>
+  </tbody>
+</table>
+
+<!-- 권장 -->
+<div class="verdict">
+  <span class="verdict-label">지금 시점 권장</span>
+  <strong>(A) 즉시 정정</strong> — Phase 06 검증된 패턴 + 5분 작업 + 부드러움 회복.
+  본인이 Step 4 박을 때 *재해석 잘못*한 거 정직하게 인지 + 정정.
+</div>
+
+<div class="callout">
+  <strong>(C)는 M3+ 또는 별도 Phase 후보로 박을 가치</strong> — 더 엄격한 부드러움이 필요한 시점에.
+  결정론 정확도 강함 + 면접에서 "fixed simulation + visual lerp" 패턴 설명 가능.
+  CONTEXT.md "보류 중" 섹션에 추가:
+  <pre style="margin-top:8px;font-size:12px;background:#0a0e14;padding:8px 12px;">
+- Phase 07 후속 — visual lerp 보간 박기 (50ms cadence Predict + frame 사이 부드러움)
+  트리거: 본격 데모 직전 또는 fixed simulation 정확성 필요 시점</pre>
+</div>
+
+<div class="footnote">
+Phase 07 Step 4 부드러움 옵션 비교. 본인 머신 240Hz 기준 *뚜두두둑* 체감 정정 자료.
+</div>
+
+</body>
+</html>
