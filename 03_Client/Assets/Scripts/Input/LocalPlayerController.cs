@@ -61,7 +61,10 @@ namespace Dawnholder.Client.Input
             C_MoveIntent pkt = new C_MoveIntent
             {
                 inputX = encoded,
-                clientTick = _localTickCounter
+                // TEMP-yuhyeon-20260517: PDL의 clientTick이 int인데 _localTickCounter는 uint —
+                // tick counter uint 통일 결정(learning-journal/youngho/int-vs-uint-for-tick-counters.md)
+                // 후 팀장이 PDL 재생성 빼먹은 채 main push → 빌드 깨짐. PDL이 uint로 재생성되면 캐스트 제거.
+                clientTick = (int)_localTickCounter
             };
             // Phase 05: SendIntent 경유 — Editor에서 SimulatedLatencyMs 적용 가능.
             session.SendIntent(pkt.Write());

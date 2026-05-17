@@ -142,7 +142,9 @@ namespace Dawnholder.Client.Network
             float x = pkt.x;
             float y = pkt.y;
             int sTick = pkt.serverTick;
-            uint ackedTick = pkt.lastAckedClientTick; // Phase 06 Step 5: replay reconcile 기준점
+            // TEMP-yuhyeon-20260517: PDL의 lastAckedClientTick이 int인데 클라는 uint로 다룸 —
+            // tick counter uint 통일 결정 후 팀장이 PDL 재생성 누락. PDL 재생성되면 캐스트 제거.
+            uint ackedTick = (uint)pkt.lastAckedClientTick; // Phase 06 Step 5: replay reconcile 기준점
 
             MainThreadDispatcher.Enqueue(() =>
             {
