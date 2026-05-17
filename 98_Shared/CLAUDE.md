@@ -16,7 +16,7 @@
 ├── Protocol/
 │   ├── Generated/        ★ 자체 PDL이 자동 생성한 패킷 클래스 (ADR-002 v2)
 │   │   └── GenPackets.cs   PacketID enum + IPacket + C_Xxx/S_Xxx 클래스
-│   └── ProtocolVersion.cs  (예정 — Phase M2+ 핸드셰이크)
+│   └── ProtocolVersion.cs  Current=2 정의 (Phase 07 박힘) — 핸드셰이크 코드 미구현, M2.5 Phase 09 처리 예정
 └── GameData/
     ├── Formulas.cs       데미지, XP 곡선, 스탯 derivation
     ├── Constants.cs      Tick rate, 최대 패킷 크기, 타임아웃
@@ -30,7 +30,7 @@
 - 패킷은 방향별 접두사 (Rookiss 패턴, ADR-012):
   - **`C_*`** = Client → Server
   - **`S_*`** = Server → Client
-  - 생성기가 접두사로 *클라/서버 dispatch table 자동 분리* (Phase 08+)
+  - 생성기가 접두사로 *클라/서버 dispatch table 자동 분리* (M2.5+ 핸들러 layer 분리 시점)
 - 숫자 범위 예약 (PDL.xml 정의 순서대로 자동 부여, 충돌 방지):
   - 1–999 system (Ping/Pong, Heartbeat, Disconnect 등)
   - 1000–1999 auth, 2000–2999 movement, 3000–3999 combat,
@@ -55,7 +55,7 @@
 
 **필드 추가는 backward-compatible** — PDL.xml 끝에 추가만. 재정렬·제거는 BREAKING (Protocol.Version bump).
 
-새 패킷 추가는 `/work:new-packet <C_|S_> <name>` 슬래시 커맨드 (Phase 08+).
+새 패킷 추가는 `/work:new-packet <C_|S_> <name>` 슬래시 커맨드 사용.
 
 ### Formulas
 - 순수 함수만. `DateTime.Now` 금지, seed 없는 random 금지.
