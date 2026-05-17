@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Phase 07 D4 — jumpPressed 에지 처리, 누가 책임?</title>
+<style>
+  body {
+    font-family: -apple-system, "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: #0f1419;
+    color: #e4e7eb;
+    line-height: 1.65;
+    padding: 32px 24px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  h1 { color: #4dabf7; margin: 0 0 6px 0; font-size: 26px; }
+  h2 { color: #4dabf7; margin: 36px 0 14px 0; font-size: 20px; border-bottom: 1px solid #2a3a52; padding-bottom: 8px; }
+  h3 { color: #e4e7eb; margin: 20px 0 10px 0; font-size: 16px; }
+  .subtitle { color: #94a3b8; margin-bottom: 24px; font-size: 14px; }
+
+  code {
+    background: #0a0e14; padding: 1px 6px; border-radius: 3px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 13px; color: #ffd43b;
+  }
+
+  /* 키 누름 타임라인 다이어그램 */
+  .timeline {
+    background: #0f1825;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 13px;
+    overflow-x: auto;
+  }
+  .timeline-row {
+    display: flex; align-items: center;
+    margin-bottom: 8px; white-space: nowrap;
+  }
+  .timeline-label {
+    flex-shrink: 0; width: 130px; color: #94a3b8;
+    font-family: inherit; font-size: 13px;
+  }
+  .timeline-cell {
+    width: 50px; height: 30px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-right: 2px;
+    border-radius: 3px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .cell-low { background: #1f2937; color: #64748b; }
+  .cell-high { background: #1d4ed8; color: #ffffff; }
+  .cell-true { background: #16a34a; color: #ffffff; }
+  .cell-false { background: #1f2937; color: #64748b; }
+  .cell-edge { background: #f59e0b; color: #0f1419; border: 2px solid #fff; box-sizing: border-box; }
+  .cell-cheat { background: #dc2626; color: #ffffff; }
+
+  .scenarios { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+  .scenario {
+    background: #1a2332;
+    padding: 18px 22px;
+    border-radius: 8px;
+    border-left: 4px solid #4dabf7;
+  }
+  .scenario.a { border-left-color: #51cf66; }
+  .scenario.b { border-left-color: #ff9f43; }
+  .scenario-title {
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .scenario.a .scenario-title { color: #51cf66; }
+  .scenario.b .scenario-title { color: #ff9f43; }
+
+  .flowbox {
+    background: #14202d;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 10px 0;
+    font-size: 13.5px;
+  }
+  .flowbox-label {
+    font-size: 11.5px; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 4px; font-weight: 700;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13.5px;
+    background: #0f1825;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  th, td { padding: 9px 14px; text-align: left; border-bottom: 1px solid #2a3a52; }
+  th { color: #94a3b8; font-weight: 600; font-size: 12px; letter-spacing: 0.3px; background: #14202d; }
+  tr:last-child td { border-bottom: none; }
+  td.client-col { color: #51cf66; font-weight: 600; }
+  td.server-col { color: #4dabf7; font-weight: 600; }
+  td.cheat-tag { color: #f87171; font-size: 12px; }
+
+  .verdict {
+    background: #0d3320;
+    border-left: 3px solid #51cf66;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .verdict-label {
+    font-weight: 700; color: #51cf66;
+    margin-right: 8px;
+    font-size: 12px; letter-spacing: 0.5px;
+  }
+
+  .callout {
+    background: #14202d;
+    border-left: 3px solid #94a3b8;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 14px 0;
+    font-size: 13.5px;
+  }
+  .callout-label {
+    color: #94a3b8; font-weight: 700;
+    margin-right: 6px;
+    font-size: 11.5px; letter-spacing: 0.5px;
+  }
+
+  .legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    margin: 8px 0 16px 0; font-size: 12px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    color: #94a3b8;
+  }
+  .legend-swatch {
+    width: 16px; height: 16px; border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .footnote {
+    margin-top: 32px;
+    font-size: 12.5px;
+    color: #64748b;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>D4 — jumpPressed 에지 처리, 누가 책임?</h1>
+<div class="subtitle">"Space를 5초 누르고 있어도 점프는 1번"을 어떻게 보장할까? 클라가 보낼지, 서버가 검증할지.</div>
+
+<!-- 에지란 -->
+<h2>1. "에지(edge)"가 뭔가</h2>
+
+<p>디지털 회로 용어. <strong>0이 1로 바뀌는 그 *순간*</strong> (rising edge). Space 키로 풀면:</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-swatch cell-low"></span> 안 눌림 (0)</div>
+  <div class="legend-item"><span class="legend-swatch cell-high"></span> 눌림 (1)</div>
+  <div class="legend-item"><span class="legend-swatch cell-edge"></span> 에지 (0→1 순간)</div>
+</div>
+
+<div class="timeline">
+<div class="timeline-row">
+  <div class="timeline-label">시간 (tick)</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">1</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">2</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">3</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">4</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">5</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">6</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">7</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">8</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">9</div>
+  <div class="timeline-cell" style="background:transparent;color:#64748b;">10</div>
+</div>
+<div class="timeline-row">
+  <div class="timeline-label">Space 키 상태</div>
+  <div class="timeline-cell cell-low">0</div>
+  <div class="timeline-cell cell-edge">↑1</div>
+  <div class="timeline-cell cell-high">1</div>
+  <div class="timeline-cell cell-high">1</div>
+  <div class="timeline-cell cell-high">1</div>
+  <div class="timeline-cell cell-low">0</div>
+  <div class="timeline-cell cell-low">0</div>
+  <div class="timeline-cell cell-edge">↑1</div>
+  <div class="timeline-cell cell-high">1</div>
+  <div class="timeline-cell cell-low">0</div>
+</div>
+</div>
+
+<p style="color:#cbd5e1;font-size:14px;">
+점프는 <strong>tick 2</strong>(에지)에 1번, <strong>tick 8</strong>(에지)에 1번 — 총 2번만 발동해야 정상.
+tick 3, 4, 5처럼 "계속 눌려있는" 상태에서 점프 안 일어남.
+</p>
+
+<!-- 두 시나리오 -->
+<h2>2. 두 시나리오 비교</h2>
+<div class="legend">
+  <div class="legend-item"><span class="legend-swatch cell-true"></span> jumpPressed = true</div>
+  <div class="legend-item"><span class="legend-swatch cell-false"></span> jumpPressed = false</div>
+  <div class="legend-item"><span class="legend-swatch cell-edge"></span> 점프 실제 발동</div>
+</div>
+
+<div class="scenarios">
+
+<div class="scenario a">
+  <div class="scenario-title">(a) 클라가 에지 보장</div>
+  <div class="flowbox">
+    <div class="flowbox-label">클라가 보내는 의미</div>
+    "지금 점프 시작!" <em>의도</em>
+  </div>
+
+  <div class="timeline" style="margin:8px 0;padding:14px;">
+    <div class="timeline-row">
+      <div class="timeline-label" style="width:90px;">tick</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">2</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">3</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">4</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">5</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">8</div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label" style="width:90px;">키 상태</div>
+      <div class="timeline-cell cell-edge" style="width:36px;">↑1</div>
+      <div class="timeline-cell cell-high" style="width:36px;">1</div>
+      <div class="timeline-cell cell-high" style="width:36px;">1</div>
+      <div class="timeline-cell cell-high" style="width:36px;">1</div>
+      <div class="timeline-cell cell-edge" style="width:36px;">↑1</div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label" style="width:90px;">→ 서버 송신</div>
+      <div class="timeline-cell cell-true" style="width:36px;">T</div>
+      <div class="timeline-cell cell-false" style="width:36px;">F</div>
+      <div class="timeline-cell cell-false" style="width:36px;">F</div>
+      <div class="timeline-cell cell-false" style="width:36px;">F</div>
+      <div class="timeline-cell cell-true" style="width:36px;">T</div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label" style="width:90px;">점프 발동</div>
+      <div class="timeline-cell cell-edge" style="width:36px;">✓</div>
+      <div class="timeline-cell" style="width:36px;background:transparent;"></div>
+      <div class="timeline-cell" style="width:36px;background:transparent;"></div>
+      <div class="timeline-cell" style="width:36px;background:transparent;"></div>
+      <div class="timeline-cell cell-edge" style="width:36px;">✓</div>
+    </div>
+  </div>
+
+  <div class="flowbox">
+    <div class="flowbox-label">서버 로직</div>
+    <code>jumpPressed && OnGround</code> → vy 부여.<br>
+    클라 신뢰. OnGround만 검증.
+  </div>
+</div>
+
+<div class="scenario b">
+  <div class="scenario-title">(b) 서버가 에지 검출</div>
+  <div class="flowbox">
+    <div class="flowbox-label">클라가 보내는 의미</div>
+    "Space 지금 눌려있어요" <em>상태</em>
+  </div>
+
+  <div class="timeline" style="margin:8px 0;padding:14px;">
+    <div class="timeline-row">
+      <div class="timeline-label" style="width:90px;">tick</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">2</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">3</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">4</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">5</div>
+      <div class="timeline-cell" style="background:transparent;color:#64748b;width:36px;">8</div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label" style="width:90px;">키 상태</div>
+      <div class="timeline-cell cell-edge" style="width:36px;">↑1</div>
+      <div class="timeline-cell cell-high" style="width:36px;">1</div>
+      <div class="timeline-cell cell-high" style="width:36px;">1</div>
+      <div class="timeline-cell cell-high" style="width:36px;">1</div>
+      <div class="timeline-cell cell-edge" style="width:36px;">↑1</div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label" style="width:90px;">→ 서버 송신</div>
+      <div class="timeline-cell cell-true" style="width:36px;">T</div>
+      <div class="timeline-cell cell-true" style="width:36px;">T</div>
+      <div class="timeline-cell cell-true" style="width:36px;">T</div>
+      <div class="timeline-cell cell-true" style="width:36px;">T</div>
+      <div class="timeline-cell cell-true" style="width:36px;">T</div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label" style="width:90px;">점프 발동</div>
+      <div class="timeline-cell cell-edge" style="width:36px;">✓</div>
+      <div class="timeline-cell" style="width:36px;background:transparent;"></div>
+      <div class="timeline-cell" style="width:36px;background:transparent;"></div>
+      <div class="timeline-cell" style="width:36px;background:transparent;"></div>
+      <div class="timeline-cell cell-edge" style="width:36px;">✓</div>
+    </div>
+  </div>
+
+  <div class="flowbox">
+    <div class="flowbox-label">서버 로직</div>
+    <code>prevJump==false && currJump==true && OnGround</code> → vy 부여.<br>
+    서버에 prev/curr 상태 필드 필요.
+  </div>
+</div>
+
+</div>
+
+<!-- cheat 시나리오 -->
+<h2>3. Cheat 시나리오 — 매 tick true 강제 송신</h2>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-swatch cell-cheat"></span> cheat (강제 true)</div>
+  <div class="legend-item"><span class="legend-swatch cell-edge"></span> 실제 점프 발동</div>
+</div>
+
+<p style="color:#cbd5e1;font-size:14px;">
+악성 클라가 정상 입력 무시하고 <strong>매 tick jumpPressed=true</strong>로 패킷 위조. 공중에서도 무한 점프 노림.
+</p>
+
+<table>
+<thead>
+<tr>
+  <th>시점 (tick)</th>
+  <th>위치</th>
+  <th>OnGround?</th>
+  <th>cheat가 보낸 값</th>
+  <th class="client-col">(a) 결과</th>
+  <th class="server-col">(b) 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>1</td>
+  <td>땅 (y=0)</td>
+  <td>true</td>
+  <td><span class="cheat-tag">true</span></td>
+  <td>✓ 점프 (jumpPressed && OnGround)</td>
+  <td>✓ 점프 (prev=false→curr=true, OnGround)</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>공중 (y=0.4)</td>
+  <td>false</td>
+  <td><span class="cheat-tag">true</span></td>
+  <td>✗ OnGround=false</td>
+  <td>✗ prev=true→curr=true (에지 X)</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>공중 (y=0.7)</td>
+  <td>false</td>
+  <td><span class="cheat-tag">true</span></td>
+  <td>✗ OnGround=false</td>
+  <td>✗ 에지 아님</td>
+</tr>
+<tr>
+  <td>...</td>
+  <td>...</td>
+  <td>...</td>
+  <td><span class="cheat-tag">true</span></td>
+  <td>✗ 계속 공중</td>
+  <td>✗ 계속 same state</td>
+</tr>
+<tr style="background:#1a1f2e;">
+  <td>15</td>
+  <td>땅 다시 (y=0)</td>
+  <td>true</td>
+  <td><span class="cheat-tag">true</span></td>
+  <td><strong style="color:#f59e0b;">✓ 점프 ← 한 번 통과</strong></td>
+  <td>✗ prev=true→curr=true (에지 X) ← 차단</td>
+</tr>
+</tbody>
+</table>
+
+<div class="callout">
+<span class="callout-label">cheat 분석</span>
+(a) — 땅 닿을 때마다 점프 1회 적용 = "신나게 뛰는 캐릭터". 부정 이득 거의 없음. 정상 점프와 구분 X.<br>
+(b) — 땅 닿아도 prev=true 상태라 에지 검출 안 됨. 100% 차단. <strong>단</strong> cheat가 영리해서 "땅 닿기 직전에만 false 한 번 보내고 다시 true" 하면 (b)도 뚫림. 결국 양쪽 다 같은 한계.
+</div>
+
+<!-- Phase 06 연결 -->
+<h2>4. Phase 06 패턴과의 연결</h2>
+
+<p style="color:#cbd5e1;font-size:14px;">
+현재 <code>C_MoveIntent.inputX</code>가 어떻게 동작하는지 떠올리면:
+</p>
+
+<table>
+<thead><tr><th>값</th><th>의미</th><th>패턴</th></tr></thead>
+<tbody>
+<tr><td><code>-1</code></td><td>"왼쪽 가고 싶어"</td><td><span style="color:#51cf66;">의도(intent)</span></td></tr>
+<tr><td><code>0</code></td><td>"정지"</td><td><span style="color:#51cf66;">의도</span></td></tr>
+<tr><td><code>+1</code></td><td>"오른쪽 가고 싶어"</td><td><span style="color:#51cf66;">의도</span></td></tr>
+</tbody>
+</table>
+
+<p style="color:#cbd5e1;font-size:14px;">
+이미 <strong>의도 패턴</strong>이에요. 패킷 이름도 <code>C_<strong>Move<u>Intent</u></strong></code> — 직역 "이동 의도". jumpPressed도 같은 결로 가면 (a) "지금 점프하고 싶어"가 자연 일관. 만약 (b)로 가면 한 패킷 안에 의도(inputX)와 상태(jumpPressed)가 섞임 — 디자인 불일치.
+</p>
+
+<!-- 핵심 요약 -->
+<h2>5. 핵심 요약 표</h2>
+
+<table>
+<thead>
+<tr><th></th><th class="client-col">(a) 클라 에지</th><th class="server-col">(b) 서버 에지</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>클라가 보내는 거</strong></td><td>"점프 시작!" 의도 (1번)</td><td>"키 눌려있어" 상태 (계속)</td></tr>
+<tr><td><strong>에지 책임자</strong></td><td>클라 (입력 모듈)</td><td>서버 (prev/curr 비교)</td></tr>
+<tr><td><strong>통신량</strong></td><td>적음 (점프할 때만 true)</td><td>많음 (누르는 동안 계속 true)</td></tr>
+<tr><td><strong>cheat 방어</strong></td><td>OnGround만 — 한계 있음</td><td>state diff — 더 엄격, 영리한 cheat엔 같은 한계</td></tr>
+<tr><td><strong>inputX 패턴과 일관</strong></td><td>✓ 의도-의도</td><td>✗ 의도-상태 혼합</td></tr>
+<tr><td><strong>정의 파일 #85</strong></td><td>명시 — "보통 에지, 클라 1tick"</td><td>어긋남</td></tr>
+<tr><td><strong>현업 사례</strong></td><td>Source · Quake · Overwatch · 대부분 FPS/액션</td><td>일부 콘솔 격투게임</td></tr>
+</tbody>
+</table>
+
+<!-- 권장 -->
+<div class="verdict">
+  <span class="verdict-label">권장</span>
+  <strong>(a) 클라 에지 + 서버 OnGround 안전망.</strong>
+  3가지 이유:
+  <ol style="margin:8px 0 0 22px;padding:0;font-size:13.5px;">
+    <li>정의 파일 #85 명시 — "보통 에지, 클라 1tick만 true"</li>
+    <li>inputX와 같은 *의도* 패턴 — 패킷 디자인 일관</li>
+    <li>OnGround 안전망으로 cheat가 무한 점프 못 함 (땅 닿을 때만)</li>
+  </ol>
+</div>
+
+<div class="callout">
+<span class="callout-label">미래 강화</span>
+더 엄격한 cheat 방어 원하면 별도 anti-cheat Phase에서:
+<ul style="margin:6px 0 0 18px;padding:0;font-size:13px;">
+  <li><code>last-jump-tick</code> + cooldown N tick — "점프 직후 N tick 안에 또 점프 X"</li>
+  <li>비행 시간 검증 — 포물선 공식대로 떨어졌나 확인</li>
+  <li>velocity 일관성 — 클라 prediction과 서버 권위 거리 모니터링</li>
+</ul>
+Phase 07은 "기본 점프 만들기"라 OnGround만으로 충분. M3+ 또는 anti-cheat Phase 후보.
+</div>
+
+<div class="footnote">
+Phase 07 D4 — 단독 깊이 자료. 2026-05-17. ← 본 파일 학습 용도, 결정 확정 후 코드 반영.
+</div>
+
+</body>
+</html>
