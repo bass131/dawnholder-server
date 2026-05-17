@@ -78,6 +78,57 @@ public class MoveIntentTests
         Assert.Equal(0f, e.Position.Y);
     }
 
+    // === Phase 07 통합 회귀 — GameMap.Tick의 Physics.Step 위임 검증 ===
+    // (단위 시나리오는 PhysicsTests가 검증, 본 묶음은 GameMap.Tick wire 회귀)
+
+    [Fact]
+    public void Tick_JumpPressed_OnGround_AppliesJumpVelocity()
+    {
+        // Phase 07: PendingJumpPressed=true + OnGround=true (기본값) → vy=JumpSpeed
+        GameMap map = new GameMap();
+        PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
+        e.PendingJumpPressed = true;
+
+        map.Tick(1);
+
+        // vy = JumpSpeed (8) → newY = 8 * 0.05 = 0.4
+        Assert.Equal(Shared.GameData.Physics.JumpSpeed, e.Velocity.Y, 4);
+        Assert.Equal(Shared.GameData.Physics.JumpSpeed * Constants.TickDuration, e.Position.Y, 4);
+        Assert.False(e.OnGround);
+    }
+
+    [Fact]
+    public void Tick_JumpInAir_Ignored()
+    {
+        // Phase 07 (정의 파일 #83 함정): 공중에서 jumpPressed 무시
+        GameMap map = new GameMap();
+        PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 1f));
+        e.Velocity = new Vector2(0f, 5f);  // 점프 상승 중
+        e.OnGround = false;
+        e.PendingJumpPressed = true;
+
+        map.Tick(1);
+
+        // vy = 5 + Gravity*dt = 5 + (-20)*0.05 = 4.0 (jumpPressed 무시, 중력만)
+        float expectedVy = 5f + Shared.GameData.Physics.Gravity * Constants.TickDuration;
+        Assert.Equal(expectedVy, e.Velocity.Y, 4);
+    }
+
+    [Fact]
+    public void Tick_ResetsPendingFlags_AfterStep()
+    {
+        // Phase 07 통합 회귀: PendingInputX + PendingJumpPressed 모두 reset (다음 tick 누적 차단)
+        GameMap map = new GameMap();
+        PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
+        e.PendingInputX = 1;
+        e.PendingJumpPressed = true;
+
+        map.Tick(1);
+
+        Assert.Equal((sbyte)0, e.PendingInputX);
+        Assert.False(e.PendingJumpPressed);  // 에지 처리 — 1tick 후 false (D4 (a))
+    }
+
     [Fact]
     public void EnqueueJob_MarshalsToTickThread()
     {
