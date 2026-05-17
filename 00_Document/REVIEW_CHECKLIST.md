@@ -169,6 +169,7 @@
 | 5.4 | 명시적 상태 머신 — implicit `if (state == X && other != Y && ...)` 대신 enum + transition 함수 | 🎓 |
 | 5.5 | YAGNI / scope creep — `00_Document/PRD.md`의 "MVP 제외" 항목이 슬그머니 들어옴 | 🟡 |
 | 5.6 | 미래 확장성 hook인데 현재 호출자가 0개 | 🟡 |
+| 5.7 | **명시된 안전망의 코드 동작 일치** — 주석/상수/문서로 박힌 약속 (`rate-limit`, `ProtocolVersion`, cooldown 등)이 실제 코드에서 *차단/검증을 수행*하는지 점검. 약속만 박히고 호출/적용 누락 시 *silent 우회* 위험. 출처: 2026-05-18 ad-hoc 감사 (Codex 발견 rate-limit "기록만" + Claude 발견 ProtocolVersion 호출처 0건). | 🟡 (헌법 §3 정신 위반에 가까움) |
 
 이 축은 *위반이 아니라 학습 기회*. 학부생이 SOLID 같은 추상 원칙을 외우는 것보다 실제 코드에서 만나는 게 효과적이라는 학습 철학을 따름 (`/work:review` 슬래시 커맨드 정신 유지).
 
@@ -212,3 +213,4 @@ reviewer 에이전트는 본 체크리스트를 기준으로 5축 점검 후 다
 | 날짜 | 변경 | 이유 |
 |------|------|------|
 | 2026-05-15 | 최초 작성 | ADR-019 (시니어 피드백: 리뷰어 에이전트 도입) 결과물. Tier 2 자동 리뷰 기반 자료. 책임 범위(아키텍처만, 코드 스타일 제외) 명시 + 옵션 4 동기화 절차 박음. analyzer 도입은 ADR 후보로 미룸. |
+| 2026-05-18 | 축 5에 5.7 추가 (명시된 안전망의 코드 동작 일치 검증, 🟡) | Pre-M3 ad-hoc 전체 감사 (γ 방식)에서 Codex가 잡은 rate-limit "기록만" 패턴 + Claude가 잡은 ProtocolVersion 호출처 0건 패턴이 동형 — *약속이 코드 동작까지 박혀야 안전망 진짜*. 본인 헌법 §3 정신 위반에 가까움 (Trust Boundary), 학습 가치 큼 (`CONTEXT_LearningJournalCandidates.md` ★★★ 신규 항목과 정합). Rule of Three까지 ADR 신설은 보류. |
