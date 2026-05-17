@@ -21,7 +21,8 @@ public class GameMap
 
     public IReadOnlyList<PlayerEntity> Players => _players;
 
-    public void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
+    // virtual: 테스트 subclass에서 EnqueueJob 호출 카운트 추적 가능 (Phase 09 rate-limit drop 검증).
+    public virtual void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
 
     // tick thread에서만 호출.
     public PlayerEntity AddPlayer(GameSession? owner, Vector2 spawnPos)

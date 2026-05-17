@@ -27,18 +27,33 @@ public class GameSession : PacketSession
     //   - 임계값 100 → 500. 240Hz 모니터 사용자의 정상 wire rate가 ~300-500/s라 100은 너무 빡빡.
     //     framerate-bound 송신이 본질 문제 — Phase 06 fixed simulation에서 ~20/s로 정상화 예정.
     //   - 로그 폭주 차단: 윈도우당 *최초 1회만* 출력. 매 패킷마다 [Cheat] 1500줄 폭주 X.
-    // 차단은 여전히 안 함 (Phase 05+에서 정책 결정). 기록만.
+    // Phase 09 (M2.5 Trust-boundary, 2026-05-18): 임계 초과 intent *drop* (헌법 #3 fail-closed 코드 실현).
+    //   - 이전엔 로그만 + 처리 진행 → "주석으로 박힌 약속이 가짜" 패턴. 본 Phase에서 봉합.
+    //   - 카운트는 임계 이상이어도 *계속 증가* (oscillation attack 방지).
+    //   - drop만 — disconnect는 안 함 (정상 클라가 일시적 framerate spike로 임계 초과해도 게임 잘림 X).
     const int IntentRateLimitPerSecond = 500;
     readonly Stopwatch _rateLimitWindow = Stopwatch.StartNew();
     int _intentCountInWindow;
     bool _rateLimitLoggedThisWindow;
+
+    // Phase 09 (M2.5): 테스트가 GameMap을 주입할 수 있는 hook + 셧다운 race null-safe.
+    // GameWorld.Instance가 null인 race(테스트 dispose / 서버 종료 직후 in-flight socket callback)
+    // 시 null 반환 → 호출자가 안전 no-op. 운영 시 정상 흐름엔 영향 X.
+    protected virtual GameMap? GetMap() => GameWorld.Instance?.Map;
 
     public override void OnConnected(EndPoint endPoint)
     {
         EndPoint ep = endPoint;
         Console.WriteLine($"[GameSession] OnConnected from {ep}");
 
-        GameMap map = GameWorld.Instance.Map;
+        GameMap? map = GetMap();
+        if (map == null)
+        {
+            // Codex β 검토 권장(Phase 09): silent no-op은 shutdown race에는 맞지만
+            // startup/config 버그(GameWorld 초기화 누락)를 은폐 가능. 명시 로그로 표면화.
+            Console.WriteLine($"[Trust] GameSession.OnConnected: GetMap() returned null — config/shutdown race?");
+            return;
+        }
         GameSession self = this;
         map.EnqueueJob(() =>
         {
@@ -69,7 +84,12 @@ public class GameSession : PacketSession
 
         if (_entityId < 0) return;
 
-        GameMap map = GameWorld.Instance.Map;
+        GameMap? map = GetMap();
+        if (map == null)
+        {
+            Console.WriteLine($"[Trust] GameSession: GetMap() returned null — config/shutdown race?");
+            return;
+        }
         int eid = _entityId;
         map.EnqueueJob(() =>
         {
@@ -135,13 +155,17 @@ public class GameSession : PacketSession
             _rateLimitLoggedThisWindow = false;
         }
         _intentCountInWindow++;
-        if (_intentCountInWindow > IntentRateLimitPerSecond && !_rateLimitLoggedThisWindow)
+        if (_intentCountInWindow > IntentRateLimitPerSecond)
         {
-            // *차단 X, 기록 O* — Phase 05+에서 정책 결정. 윈도우당 최초 1회만 출력 (폭주 방지).
-            Console.WriteLine(
-                $"[Cheat] Player {_entityId}: intent rate exceeded {IntentRateLimitPerSecond}/s (first warning this window)");
-            _rateLimitLoggedThisWindow = true;
-            // 그래도 처리 진행 (Phase 04는 기록만).
+            // Phase 09 (M2.5): fail-closed drop. 윈도우당 1회만 로그 (폭주 방지).
+            // 카운트는 위에서 이미 증가 — drop 후에도 계속 누적 (oscillation 방지).
+            if (!_rateLimitLoggedThisWindow)
+            {
+                Console.WriteLine(
+                    $"[Cheat] Player {_entityId}: intent rate exceeded {IntentRateLimitPerSecond}/s — dropping intent (first warning this window)");
+                _rateLimitLoggedThisWindow = true;
+            }
+            return; // 임계 초과 intent는 tick queue 진입 X.
         }
 
         // Phase 07 비트필드 디코드 (InputBits 단일 출처 — Codex 함정 #2: 양쪽 중복 디코드 금지).
@@ -157,7 +181,12 @@ public class GameSession : PacketSession
         if (_entityId < 0) return; // 아직 EnterMap 안 끝남
 
         // tick thread로 마샬링: PlayerEntity 갱신.
-        GameMap map = GameWorld.Instance.Map;
+        GameMap? map = GetMap();
+        if (map == null)
+        {
+            Console.WriteLine($"[Trust] GameSession: GetMap() returned null — config/shutdown race?");
+            return;
+        }
         int eid = _entityId;
         sbyte capturedInputX = inputX;
         bool capturedJump = jumpPressed;
