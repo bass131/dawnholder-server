@@ -18,7 +18,9 @@ namespace PacketGenerator
             // 인자 파싱: 첫 비-옵션 인자 = PDL 경로. 옵션: --no-manager (manager 출력 skip),
             // --no-wait (CI/스크립트용, ReadKey 대기 안 함).
             string pdlPath = "PDL.xml";
-            bool noManager = false;
+            // 기본 true: manager 인프라(ServerCore namespace + PacketHandler 타입) 부재라 안전 default.
+            // Codex pre-M3 감사 발견 #3 / 99_Tools/CLAUDE.md 결함 #1 fix (M3 Phase 01).
+            bool noManager = true;
             bool noWait = false;
             foreach (string a in args)
             {
