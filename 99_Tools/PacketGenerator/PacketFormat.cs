@@ -281,19 +281,17 @@ count += sizeof({1});
 ";
 
         // {0} : 변수 이름
+        // M3 Phase 02 정정 (Codex pre-M3 감사 결함 박제 — bool/string broken 두 번째):
+        //   - 옛 BitConverter.ToUInt16(Span)은 호스트 endian 의존 → 헌법 #2 LittleEndian 약속 위반. BinaryPrimitives로 통일.
+        //   - 옛 NET_LEGACY 분기는 .Array 접근 시도(Span은 .Array 없음) → 컴파일 깨짐. 본 프로젝트는 NET_LEGACY 안 박으니 분기 제거.
+        //   - Encoding.Unicode.GetString(ReadOnlySpan<byte>) 시그니처는 .NET Standard 2.1 지원.
+        // S_HandshakeResult.reason이 첫 실수요자.
         public static string ReadStringFormat =
-@"#if !NET_LEGACY
-// {0} 문자열 읽기
-ushort {0}Len = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
+@"// {0} 문자열 읽기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+ushort {0}Len = BinaryPrimitives.ReadUInt16LittleEndian(s.Slice(count, s.Length - count));
 count += sizeof(ushort);
 this.{0} = Encoding.Unicode.GetString(s.Slice(count, {0}Len));
 count += {0}Len;
-#else
-ushort {0}Len = BitConverter.ToUInt16(s.Array, s.Offset + count);
-count += sizeof(ushort);
-this.{0} = Encoding.Unicode.GetString(s.Array, s.Offset + count, {0}Len);
-count += {0}Len;
-#endif
 ";
 
         // {0} : 리스트 이름 [대문자]
@@ -357,21 +355,40 @@ s[count] = (byte)this.{0};
 count += sizeof({1});
 ";
 
+        // M3 Phase 02 신설 (Codex pre-M3 감사 결함 박제 — bool broken):
+        //   - bool은 BinaryPrimitives에 LittleEndian 변종 부재 (1바이트라 endian 무관).
+        //   - 옛 묶음(short/ushort/uint/...)에 같이 들어가 ReadBooleanLittleEndian 호출 → 컴파일 깨짐.
+        //   - 정정: byte 패턴 별도 — 0=false, 1=true 매핑. sizeof(bool)=1 C# 보장.
+        //   - S_HandshakeResult.ok가 첫 실수요자.
+        //
         // {0} : 변수 이름
+        public static string ReadBoolFormat =
+@"// {0} 읽기 (1바이트, 0 = false / 그 외 = true)
+this.{0} = s[count] != 0;
+count += sizeof(bool);
+";
+
+        // {0} : 변수 이름
+        public static string WriteBoolFormat =
+@"// {0} 쓰기 (1바이트, false → 0 / true → 1)
+s[count] = (byte)(this.{0} ? 1 : 0);
+count += sizeof(bool);
+";
+
+        // {0} : 변수 이름
+        // M3 Phase 02 정정 (Codex pre-M3 감사 결함 박제):
+        //   - 옛 코드는 `Segment.Array` / `Segment.Offset` 참조 (변수 미존재 — Phase 07 책임 단위 분리 후 변수명 `s`). 컴파일 깨짐.
+        //   - 옛 NET_LEGACY 분기에 `{0}len` 오타까지(소문자) — 두 번째 결함.
+        //   - 정정: GetByteCount + GetBytes(ReadOnlySpan<char>, Span<byte>) 패턴 (.NET Standard 2.1 지원).
+        //   - GetByteCount는 모든 .NET 지원. GetBytes(span, span)는 alloc 없음.
+        //   - Length prefix는 BinaryPrimitives.TryWriteUInt16LittleEndian으로 헌법 #2 정합.
         public static string WriteStringFormat =
-@"#if !NET_LEGACY
-// {0} 문자열 읽기
-ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(this.{0}, 0, this.{0}.Length, Segment.Array, Segment.Offset + count + sizeof(ushort));
-success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), {0}Len);
+@"// {0} 문자열 쓰기 (Length prefix UInt16 LittleEndian + UTF-16 payload)
+ushort {0}Len = (ushort)Encoding.Unicode.GetByteCount(this.{0});
+success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), {0}Len);
 count += sizeof(ushort);
+Encoding.Unicode.GetBytes(this.{0}.AsSpan(), s.Slice(count, s.Length - count));
 count += {0}Len;
-#else
-// {0} 문자열 읽기
-ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(this.{0}, 0, this.{0}.Length, Segment.Array, Segment.Offset + count + sizeof(ushort));
-Array.Copy(BitConverter.GetBytes({0}len), 0, Segment.Array, Segment.Offset + count, sizeof(ushort));
-count += sizeof(ushort);
-count += {0}Len;
-#endif
 ";
 
         // {0} : 리스트 이름 [대문자]

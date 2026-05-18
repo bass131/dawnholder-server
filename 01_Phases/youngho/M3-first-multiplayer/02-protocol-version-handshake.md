@@ -1,6 +1,6 @@
 # Phase 02: ProtocolVersion 핸드셰이크
 
-> **상태**: pending
+> **상태**: done (2026-05-18, 박제 → `02-protocol-version-handshake-DONE.md`)
 > **마일스톤**: M3 — Multiplayer & Demo Stage
 > **예상 소요**: 1.5h
 > **담당 에이전트**: netcode
@@ -68,3 +68,4 @@ Phase 03 — 핸들러 layer 분리 + 02_Server/CLAUDE.md 정합
 ## 작업 로그
 
 - 2026-05-18: pending (헌법 #2 가짜 약속 1번째 봉합 = work-pin 박힌 약속)
+- 2026-05-18: **완료** — PacketGenerator bool/string 결함 동반 fix(blocker 봉합) + PDL C_Handshake/S_HandshakeResult 신설 + GameSession first-packet 강제 + 04_ClientNet/Unity wrapper/헤드레스 봇 handshake 전송 + HandshakeHandlerTests 3건 신설. dotnet test 135/0/1 green. 박제 → `02-protocol-version-handshake-DONE.md`.

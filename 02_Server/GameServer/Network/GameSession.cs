@@ -15,6 +15,9 @@ namespace Dawnholder.Server.GameServer.Sessions;
 ///
 /// **Phase 03 변경**: OnConnected/Disconnected가 GameMap actor로 마샬링.
 /// **Phase 04 변경**: C_MoveIntent 핸들러 + 검증(헌법 #3) + rate-limit 골격.
+/// **M3 Phase 02 변경**: 헌법 #2 "Protocol is Sacred" 가짜 약속 1번째 봉합 — first-packet 강제 패턴
+///   (handshake 통과 전까지 게임 진입 X). 옛 OnConnected의 AddPlayer 흐름을 EnterGameWorld로 이동,
+///   HandleHandshake가 검증 통과 시 호출. mismatch는 즉시 Disconnect (헌법 #3 — timeout 안 기다림).
 ///
 /// 콜백은 socket 워커(IOCP) 스레드. GameMap mutation은 직접 X — `EnqueueJob`으로 push.
 /// </summary>
@@ -27,6 +30,11 @@ public class GameSession : PacketSession
     // queued AddPlayer가 이미 닫힌 세션을 owner로 박지 못하게 + cleanup이 멱등하게 보장.
     // 0=open, 1=closing/closed. Interlocked.Exchange로 atomic.
     int _closing;
+
+    // M3 Phase 02 (헌법 #2 가짜 약속 봉합): handshake 완료 플래그.
+    // OnRecvPacket 첫 진입에서 false면 → handshake 패킷만 허용, 다른 패킷 = 즉시 Disconnect.
+    // first-packet 강제 패턴 = isolation 보장 (다른 패킷 받기 전 version 검증).
+    bool _handshakeCompleted;
 
     // Phase 04: rate-limit 골격 (헌법 #3). 1초 fixed 윈도우 (sliding 아님 — 학습 노트).
     // Phase 05 조정 (2026-05-11):
@@ -49,15 +57,22 @@ public class GameSession : PacketSession
 
     public override void OnConnected(EndPoint endPoint)
     {
-        EndPoint ep = endPoint;
-        Console.WriteLine($"[GameSession] OnConnected from {ep}");
+        Console.WriteLine($"[GameSession] OnConnected from {endPoint} — awaiting C_Handshake");
+        // M3 Phase 02: AddPlayer는 handshake 통과 후 EnterGameWorld()가 호출.
+        // 권한 미부여 상태에서 서버 리소스(맵 entity)를 미리 박지 않음 = trust boundary 강화.
+    }
 
+    // M3 Phase 02 (헌법 #2 봉합): handshake 통과 시 게임 월드 진입.
+    // 옛 OnConnected가 직접 호출하던 AddPlayer 흐름을 통째 이동.
+    // protected — TestGameSession이 handshake 우회(mock) 시 직접 호출 가능 (lifecycle 테스트 호환).
+    protected void EnterGameWorld()
+    {
         GameMap? map = GetMap();
         if (map == null)
         {
             // Codex β 검토 권장(Phase 09): silent no-op은 shutdown race에는 맞지만
             // startup/config 버그(GameWorld 초기화 누락)를 은폐 가능. 명시 로그로 표면화.
-            Console.WriteLine($"[Trust] GameSession.OnConnected: GetMap() returned null — config/shutdown race?");
+            Console.WriteLine($"[Trust] GameSession.EnterGameWorld: GetMap() returned null — config/shutdown race?");
             return;
         }
         GameSession self = this;
@@ -90,6 +105,24 @@ public class GameSession : PacketSession
             Console.WriteLine(
                 $"[Map] Player {entity.EntityId} entered at ({entity.Position.X}, {entity.Position.Y})");
         });
+    }
+
+    // M3 Phase 02 (Codex review 인사이트 — Phase 03 진입 캡슐화):
+    // handshake 통과 후 lifecycle 전이 묶음 = `_handshakeCompleted` 박힘 + S_HandshakeResult(ok=true) 회신 + EnterGameWorld.
+    // **왜 한 메서드로 묶었나**: Phase 03에서 핸들러 layer 분리 시 외부 핸들러 클래스가 *세션 내부 state를 직접 만지지 않게* 하는 게 깔끔. 핸들러는 packet decode + 검증 + (mismatch 거절 / OK이면 본 메서드 호출)만 책임.
+    // **테스트 mock 역할도 겸함**: 기존 lifecycle/rate-limit 테스트는 *handshake 이후*의 race/rate 검증이라
+    // TestGameSession.OnConnected에서 본 메서드 직접 호출 = handshake 우회. Send override가 socket I/O 차단해서 회신 byte는 버려짐.
+    protected void CompleteHandshakeAndEnter()
+    {
+        _handshakeCompleted = true;
+        S_HandshakeResult ok = new S_HandshakeResult
+        {
+            ok = true,
+            serverVersion = ProtocolVersion.Current,
+            reason = "",
+        };
+        Send(ok.Write());
+        EnterGameWorld();
     }
 
     // Phase 10 (M2.5 lifecycle race) 재작성:
@@ -132,8 +165,32 @@ public class GameSession : PacketSession
         ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
 
+        // M3 Phase 02 (헌법 #2 봉합): first-packet 강제. handshake 통과 전엔 다른 dispatch X.
+        if (!_handshakeCompleted)
+        {
+            if ((PacketID)packetId == PacketID.C_Handshake)
+            {
+                HandleHandshake(buffer);
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"[Trust] First packet was {(PacketID)packetId} (not C_Handshake) — disconnecting");
+                Disconnect();
+            }
+            return;
+        }
+
         switch ((PacketID)packetId)
         {
+            case PacketID.C_Handshake:
+                // M3 Phase 02 (Codex review #5): handshake 통과 후 재-handshake는 protocol violation.
+                // 헌법 #2 "Protocol is Sacred" 정합 — silent drop보다 명시적 거절이 진단 가치 ↑.
+                // 정상 클라가 두 번 보내는 경우는 *없어야 정상* — 버그 / 악의 / 옛 클라 어느 쪽이든 hard error.
+                Console.WriteLine($"[Trust] Duplicate C_Handshake after handshake completed — protocol violation, disconnecting");
+                Disconnect();
+                break;
+
             case PacketID.C_Ping:
                 HandlePing(buffer);
                 break;
@@ -146,6 +203,35 @@ public class GameSession : PacketSession
                 Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
                 break;
         }
+    }
+
+    // M3 Phase 02 (헌법 #2 봉합): handshake 검증 + 게임 진입 / 거절 분기.
+    // ProtocolVersion.Current와 == 비교 (응급 모드). 호환 minor version 표는 본 마감 후 별도 Phase.
+    // mismatch 즉시 Disconnect — 헌법 #3 정합 (timeout 안 기다림 = rate-limit 무효화 차단).
+    void HandleHandshake(ArraySegment<byte> buffer)
+    {
+        C_Handshake pkt = new C_Handshake();
+        pkt.Read(buffer);
+
+        if (pkt.clientVersion != ProtocolVersion.Current)
+        {
+            string reason =
+                $"ProtocolVersion mismatch (client={pkt.clientVersion}, server={ProtocolVersion.Current})";
+            Console.WriteLine($"[Trust] Handshake rejected — {reason}");
+
+            S_HandshakeResult fail = new S_HandshakeResult
+            {
+                ok = false,
+                serverVersion = ProtocolVersion.Current,
+                reason = reason,
+            };
+            Send(fail.Write());
+            Disconnect();
+            return;
+        }
+
+        Console.WriteLine($"[GameSession] Handshake OK (version={pkt.clientVersion})");
+        CompleteHandshakeAndEnter();
     }
 
     void HandlePing(ArraySegment<byte> buffer)

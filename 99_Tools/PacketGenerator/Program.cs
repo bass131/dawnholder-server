@@ -171,6 +171,13 @@ namespace PacketGenerator
                         writeCode += string.Format(PacketFormat.WriteByteFormat, memberName, memberType);
                         break;
                     case "bool":
+                        // bool은 1바이트지만 BinaryPrimitives에 LittleEndian 변종 없음 (Read/WriteBooleanLittleEndian 부재).
+                        // M3 Phase 02 fix (Codex pre-M3 감사 결함 박제): 옛 ToMemberType("Boolean") 경로는 broken code 생성 →
+                        // byte 패턴 별도 분기 (0=false, 1=true 매핑). S_HandshakeResult.ok가 첫 실수요자.
+                        memberCode += string.Format(PacketFormat.MemberFormat, memberType, memberName);
+                        readCode += string.Format(PacketFormat.ReadBoolFormat, memberName);
+                        writeCode += string.Format(PacketFormat.WriteBoolFormat, memberName);
+                        break;
                     case "short":
                     case "ushort":
                     case "uint":
@@ -242,14 +249,11 @@ namespace PacketGenerator
 
         // BinaryPrimitives.Read*LittleEndian / TryWrite*LittleEndian 의 * 부분 반환.
         // 예: long → "Int64" → BinaryPrimitives.ReadInt64LittleEndian / TryWriteInt64LittleEndian
-        // bool은 BinaryPrimitives에 LittleEndian 변종이 없음 (1byte라 endian 무관).
-        // 본 Phase(07) 시점엔 Ping/Pong에 bool 없어 미사용. 미래 bool 사용 시 ReadByteFormat 패턴으로 별도 처리.
+        // M3 Phase 02 정정: bool은 별도 ReadBoolFormat/WriteBoolFormat 경로 (byte 패턴) — 본 메서드 호출 X.
         public static string ToMemberType(string _memberType)
         {
             switch (_memberType.ToLower())
             {
-                case "bool":
-                    return "Boolean";    // ⚠️ BinaryPrimitives에 ReadBooleanLittleEndian 없음 — 미래 정정 필요
                 case "short":
                     return "Int16";
                 case "ushort":

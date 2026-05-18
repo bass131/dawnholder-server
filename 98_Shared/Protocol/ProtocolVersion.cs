@@ -11,10 +11,12 @@ namespace Shared.Protocol;
 ///   - v2: M2 Phase 07 — C_MoveIntent (byte input 비트필드), S_Snapshot (vx/vy 추가).
 ///         InputBits 헬퍼 신설, jumpPressed 에지 패턴(D4).
 ///
-/// **다음 단계** (별도 Phase 후보, 본 Phase 07 범위 밖):
-///   - 핸드셰이크에 클라/서버 버전 비교 박기 — mismatch 시 즉시 disconnect + 명확한 에러 코드
-///     (98_Shared/CLAUDE.md "Protocol 버전 핸드셰이크" 섹션 박혀있음).
-///   - 라이브 게임 표준: 옛 클라 차단 + 강제 업데이트 유도. 핵/취약점 노출 차단.
+/// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
+///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
+///   - GameSession.OnRecvPacket first-packet 강제 — handshake 외 첫 패킷은 즉시 Disconnect.
+///   - clientVersion == Current → ok=true + EnterGameWorld (AddPlayer).
+///   - clientVersion != Current → ok=false + reason 박고 즉시 Disconnect (헌법 #3 정합 — timeout 안 기다림).
+///   - 호환 가능 minor version 호환표는 응급 모드 범위 밖 — 본 마감 시 별도 Phase.
 ///
 /// **타입 ushort 이유**: 4 byte uint은 과잉, 1 byte byte는 256 버전 한계로 부족할 수 있어 2 byte ushort.
 /// 65535 버전이면 12년간 매일 bump해도 안 떨어짐.

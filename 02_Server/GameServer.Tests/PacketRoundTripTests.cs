@@ -453,4 +453,138 @@ public class PacketRoundTripTests
         Assert.Equal((ushort)PacketID.S_Snapshot, packetId);
         Assert.Equal((ushort)6, packetId);
     }
+
+    // ──────────────────────────────────────────────────────────────────
+    // M3 Phase 02: C_Handshake / S_HandshakeResult 라운드트립.
+    //
+    // **본 묶음의 가치** (Codex review 2026-05-18 #4):
+    //   - PacketGenerator의 bool / string 템플릿 fix 직접 회귀 안전망 (S_HandshakeResult가 두 타입의 첫 실수요자)
+    //   - empty / ASCII / Unicode reason 포함 → string wire format 정합 (UTF-16 LE, GetByteCount + GetBytes(span,span))
+    //   - bool 0/1 양쪽 라운드트립
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void C_Handshake_RoundTrip_PreservesClientVersion()
+    {
+        var pkt = new C_Handshake { clientVersion = 42 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new C_Handshake();
+        decoded.Read(bytes);
+
+        Assert.Equal((ushort)42, decoded.clientVersion);
+    }
+
+    [Theory]
+    [InlineData((ushort)0)]
+    [InlineData((ushort)1)]
+    [InlineData((ushort)2)]               // ProtocolVersion.Current
+    [InlineData((ushort)256)]             // 1 byte 경계
+    [InlineData(ushort.MaxValue)]         // 65535 boundary
+    public void C_Handshake_RoundTrip_HandlesUshortEdgeValues(ushort version)
+    {
+        var pkt = new C_Handshake { clientVersion = version };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new C_Handshake();
+        decoded.Read(bytes);
+
+        Assert.Equal(version, decoded.clientVersion);
+    }
+
+    [Fact]
+    public void C_Handshake_Write_ProducesCorrectSizeAndPacketId()
+    {
+        // [size:2][id:2][clientVersion:2] = 6 bytes. PDL.xml 7번째 정의 = PacketID 7.
+        var pkt = new C_Handshake { clientVersion = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        Assert.Equal(6, bytes.Count);
+        ushort size = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset, 2));
+        Assert.Equal(6, size);
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.C_Handshake, packetId);
+        Assert.Equal((ushort)7, packetId);
+    }
+
+    [Fact]
+    public void S_HandshakeResult_RoundTrip_PreservesAllFields_OkTrue()
+    {
+        var pkt = new S_HandshakeResult
+        {
+            ok = true,
+            serverVersion = 2,
+            reason = "",
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_HandshakeResult();
+        decoded.Read(bytes);
+
+        Assert.True(decoded.ok);
+        Assert.Equal((ushort)2, decoded.serverVersion);
+        Assert.Equal("", decoded.reason);
+    }
+
+    [Fact]
+    public void S_HandshakeResult_RoundTrip_PreservesAllFields_OkFalse()
+    {
+        var pkt = new S_HandshakeResult
+        {
+            ok = false,
+            serverVersion = 2,
+            reason = "ProtocolVersion mismatch (client=3, server=2)",
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_HandshakeResult();
+        decoded.Read(bytes);
+
+        Assert.False(decoded.ok);
+        Assert.Equal((ushort)2, decoded.serverVersion);
+        Assert.Equal("ProtocolVersion mismatch (client=3, server=2)", decoded.reason);
+    }
+
+    [Theory]
+    [InlineData("")]                                       // empty
+    [InlineData("OK")]                                     // ASCII 2 char
+    [InlineData("ProtocolVersion mismatch")]              // ASCII 긴 reason
+    [InlineData("한글 reason 메시지")]                       // Unicode 혼합 (CJK)
+    [InlineData("✨ emoji 🚀")]                            // surrogate pair (4 byte UTF-16)
+    public void S_HandshakeResult_RoundTrip_HandlesReasonStringEdgeValues(string reason)
+    {
+        // string wire format = UTF-16 LE + UInt16 LE length prefix. PacketGenerator fix(M3 Phase 02) 회귀 안전망.
+        var pkt = new S_HandshakeResult
+        {
+            ok = false,
+            serverVersion = 99,
+            reason = reason,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_HandshakeResult();
+        decoded.Read(bytes);
+
+        Assert.Equal(reason, decoded.reason);
+        Assert.False(decoded.ok);                          // bool false 보존도 같이 검증
+        Assert.Equal((ushort)99, decoded.serverVersion);
+    }
+
+    [Fact]
+    public void S_HandshakeResult_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 8번째 정의 = PacketID 8
+        var pkt = new S_HandshakeResult { ok = true, serverVersion = 0, reason = "" };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_HandshakeResult, packetId);
+        Assert.Equal((ushort)8, packetId);
+    }
 }

@@ -51,6 +51,14 @@ public class GameSessionRateLimitTests : IDisposable
         public TestGameSession(GameMap map) { _injectedMap = map; }
         protected override GameMap GetMap() => _injectedMap;
 
+        // M3 Phase 02 (handshake mock): 본 테스트는 rate-limit 검증이 목표.
+        // 캡슐화된 `CompleteHandshakeAndEnter()` 직접 호출 = handshake 우회.
+        // 내부 Send(S_HandshakeResult)는 아래 Send override가 skip → rate-limit 검증 자체엔 영향 X.
+        public override void OnConnected(EndPoint endPoint)
+        {
+            CompleteHandshakeAndEnter();
+        }
+
         public override void Send(ArraySegment<byte> _) { /* skip — socket I/O 차단 */ }
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { /* skip */ }

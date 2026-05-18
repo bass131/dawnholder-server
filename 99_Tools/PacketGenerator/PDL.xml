@@ -70,4 +70,27 @@
         <int name="serverTick"/>
         <uint name="lastAckedClientTick"/>
     </packet>
+
+    <!-- Phase 02 (M3): Application-layer handshake. 헌법 #2 "Protocol is Sacred" 가짜 약속 1번째 봉합.
+         98_Shared/CLAUDE.md "Protocol 버전 핸드셰이크" 섹션에 "코드 미구현" 박혀있던 상태 → 본 패킷 2개로 봉합.
+
+         **흐름**:
+           1. 클라 접속 → 첫 패킷으로 C_Handshake { clientVersion } 전송 (다른 패킷 보내기 전).
+           2. 서버 GameSession이 first-packet 강제 — handshake 아니면 거절 + 즉시 Disconnect.
+           3. clientVersion == ProtocolVersion.Current → S_HandshakeResult(ok=true) 회신 + 게임 진입 (S_EnterMap).
+           4. mismatch → S_HandshakeResult(ok=false, reason=...) 회신 + 즉시 Disconnect (헌법 #3 정합 — timeout 안 기다림).
+
+         **응급 모드 결정** (5/20 데모): clientVersion == serverVersion `==` 비교만. 호환 가능 minor version 호환표는 본 마감 시.
+
+         **PacketGenerator bool/string fix 의존**: 본 패킷이 도구 결함의 첫 실수요자 (M3 Phase 02 묶음 fix).
+         CHANGELOG 2026-05-18 (M3 Phase 02) 박힘. -->
+    <packet name="C_Handshake">
+        <ushort name="clientVersion"/>
+    </packet>
+
+    <packet name="S_HandshakeResult">
+        <bool name="ok"/>
+        <ushort name="serverVersion"/>
+        <string name="reason"/>
+    </packet>
 </PDL>

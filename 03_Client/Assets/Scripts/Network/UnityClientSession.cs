@@ -24,6 +24,13 @@ namespace Dawnholder.Client.Network
         // 일회 설정. NetworkBootstrap이 connect 콜백에서 본 객체를 만들 때 등록.
         public static UnityClientSession? Instance { get; private set; }
 
+        // M3 Phase 02 (Codex review #2): handshake 완료 게이트.
+        // OnConnected가 socket 워커 스레드에서 C_Handshake를 자동 Send하지만,
+        // *main thread Update*가 그 사이 LocalPlayerController.SendIntent를 호출할 race window가 짧게 존재.
+        // 본 플래그는 main thread에서 HandleHandshakeResult가 박음(dispatcher 큐 안) → 같은 thread의
+        // SendIntent에서 visibility 보장. ok 회신 도착 전 송신은 drop (헌법 #2 first-packet 정합).
+        public bool HandshakeOk { get; private set; }
+
         // Phase 05: Editor only 송신 latency 시뮬레이션.
         //   0이면 직통 (Release/일반 Play 동작).
         //   >0이면 SendIntent 경로에 한해 N ms 지연 후 실제 Send.
@@ -44,6 +51,14 @@ namespace Dawnholder.Client.Network
         /// </summary>
         public void SendIntent(ArraySegment<byte> buf)
         {
+            // M3 Phase 02 (Codex review #2): handshake 통과 전 송신은 drop.
+            // 정상 흐름에선 OnConnected의 C_Handshake → S_HandshakeResult OK가 첫 Update tick 안에 박혀서 영향 X.
+            // race window (handshake 결과 도착 *이전*에 LocalPlayerController.Update가 SendIntent 호출)에서만 발동.
+            if (!HandshakeOk)
+            {
+                // 폭주 차단 위해 main thread에서 한 줄만. 정상 흐름엔 거의 0회 박힘.
+                return;
+            }
 #if UNITY_EDITOR
             if (SimulatedLatencyMs > 0)
             {
@@ -60,6 +75,12 @@ namespace Dawnholder.Client.Network
         {
             EndPoint ep = endPoint;
             MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnConnected to {ep}"));
+
+            // M3 Phase 02 (헌법 #2 봉합): 첫 패킷 = 반드시 C_Handshake.
+            // 서버가 first-packet 강제 패턴 박혀있어 다른 패킷 먼저 보내면 즉시 Disconnect.
+            // Send 자체는 thread-safe(Session.m_lock) — socket 워커 스레드에서 직접 호출 OK.
+            C_Handshake handshake = new C_Handshake { clientVersion = ProtocolVersion.Current };
+            Send(handshake.Write());
         }
 
         public override void OnDisconnected(EndPoint endPoint)
@@ -89,6 +110,10 @@ namespace Dawnholder.Client.Network
 
             switch ((PacketID)packetId)
             {
+                case PacketID.S_HandshakeResult:
+                    HandleHandshakeResult(buffer);
+                    break;
+
                 case PacketID.S_Pong:
                     HandlePong(buffer);
                     break;
@@ -107,6 +132,34 @@ namespace Dawnholder.Client.Network
                         Debug.LogWarning($"[Unity] Unknown PacketId {unknownId} — dropped"));
                     break;
             }
+        }
+
+        // M3 Phase 02 (헌법 #2 봉합): 서버 handshake 결과 처리.
+        // ok=true → 로그만 (서버가 곧 S_EnterMap 보냄). ok=false → 에러 로그 + 명시적 Disconnect
+        // (서버가 이미 끊을 거지만 클라 측 cleanup 일관성).
+        void HandleHandshakeResult(ArraySegment<byte> buffer)
+        {
+            S_HandshakeResult pkt = new S_HandshakeResult();
+            pkt.Read(buffer);
+
+            bool ok = pkt.ok;
+            ushort sv = pkt.serverVersion;
+            string reason = pkt.reason;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (ok)
+                {
+                    // main thread에서 HandshakeOk 박음 — 같은 thread의 SendIntent visibility 보장.
+                    HandshakeOk = true;
+                    Debug.Log($"[Unity] Handshake OK (server version={sv})");
+                }
+                else
+                {
+                    Debug.LogError($"[Unity] Handshake FAILED — {reason} (server version={sv}). Disconnecting.");
+                    Disconnect();
+                }
+            });
         }
 
         // Phase 03: 서버가 정한 spawn 좌표로 Player GameObject 배치. 헌법 #1 첫 실전.
