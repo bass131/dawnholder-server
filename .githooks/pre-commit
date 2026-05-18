@@ -17,6 +17,71 @@
 
 set -e
 
+# ────────────────────────────────────────────────────────────────────────
+# A) ProjectSettings.asset cloud 라인 자동 unstage (각자 Cloud 정책)
+#
+# 도입: 2026-05-19 — 영호 commit이 유현 cloudProjectId 덮어씀(또는 반대) ping-pong
+# 발견. /session:start의 (C-1) 게이트는 *세션 시작 시점*만 작동, 세션 중간 commit은
+# 빠져나감. pre-commit 단계에 자동 unstage 박아 *모든 commit*에 강제.
+#
+# 동작:
+#   - cloud 라인 *만* stage → 자동 unstage (워킹 디렉토리는 유지 = 본인 머신 값 보존)
+#   - cloud + 다른 변경 함께 → block + 분리 안내
+#   - cloud 라인 stage 없음 → noop
+# ────────────────────────────────────────────────────────────────────────
+
+PROJ_SETTINGS="03_Client/ProjectSettings/ProjectSettings.asset"
+if git diff --cached --name-only 2>/dev/null | grep -qF "$PROJ_SETTINGS"; then
+  CLOUD_LINE_CHANGES=$(git diff --cached -U0 -- "$PROJ_SETTINGS" 2>/dev/null \
+    | grep -E "^[+-][^+-]" \
+    | grep -E "^[+-][[:space:]]*(cloudProjectId|organizationId|projectName|cloudServicesEnabled|Build|Game Performance|Legacy Analytics|Purchasing|UDP|Unity Ads):" \
+    || true)
+
+  if [ -n "$CLOUD_LINE_CHANGES" ]; then
+    OTHER_CHANGES=$(git diff --cached -U0 -- "$PROJ_SETTINGS" 2>/dev/null \
+      | grep -E "^[+-][^+-]" \
+      | grep -vE "^[+-][[:space:]]*(cloudProjectId|organizationId|projectName|cloudServicesEnabled|Build|Game Performance|Legacy Analytics|Purchasing|UDP|Unity Ads):" \
+      || true)
+
+    if [ -z "$OTHER_CHANGES" ]; then
+      echo "🛡️  ProjectSettings.asset cloud 라인만 stage 감지 → 자동 unstage"
+      echo "    (각자 Cloud 정책 — cloudProjectId/organizationId 머신마다 다름)"
+      git reset HEAD -- "$PROJ_SETTINGS" > /dev/null
+      echo "    워킹 디렉토리는 그대로 (본인 머신 Cloud 식별 보존)"
+      echo ""
+
+      REMAINING=$(git diff --cached --name-only 2>/dev/null | head -1)
+      if [ -z "$REMAINING" ]; then
+        echo "❌ pre-commit 차단 — cloud 라인 unstage 후 남은 stage 0건"
+        echo "   (cloud 라인만 commit하려는 의도면 commit 자체가 불필요)"
+        exit 1
+      fi
+    else
+      echo ""
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "⚠️  pre-commit 차단 — ProjectSettings.asset cloud + 다른 변경 함께 stage"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo ""
+      echo "cloud 라인 (자동 정리 대상 — commit하면 상대 머신 덮어씀):"
+      echo "$CLOUD_LINE_CHANGES" | head -4
+      echo ""
+      echo "cloud 외 변경 (의도된 commit 가능성 — 본인이 분리해서 stage 필요):"
+      echo "$OTHER_CHANGES" | head -10
+      echo ""
+      echo "해결:"
+      echo "  git reset HEAD -- $PROJ_SETTINGS"
+      echo "  git add -p $PROJ_SETTINGS    # cloud 외 hunk만 'y'로 선택"
+      echo "  git commit ..."
+      echo ""
+      exit 1
+    fi
+  fi
+fi
+
+# ────────────────────────────────────────────────────────────────────────
+# B) -DONE.md 형식 검증 (기존 로직)
+# ────────────────────────────────────────────────────────────────────────
+
 # 1) 변경된 *-DONE.md 파일 목록 추출 (staged + 신규)
 DONE_FILES=$(git diff --cached --name-only --diff-filter=AM 2>/dev/null | grep -E '\-DONE\.md$' || true)
 
