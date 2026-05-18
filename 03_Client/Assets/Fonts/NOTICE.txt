@@ -1,0 +1,8 @@
+Pretendard Std
+Copyright (c) Kil Hyung-jin
+Licensed under SIL Open Font License, Version 1.1
+https://github.com/orioncactus/pretendard
+
+Full license text: https://scripts.sil.org/OFL
+
+NOTE: 본 NOTICE는 임시 출처 표기. 정식 OFL.txt 전체 텍스트는 본인이 Pretendard zip에서 추출해 동봉 예정 (면담 후 정리 목록 ②).

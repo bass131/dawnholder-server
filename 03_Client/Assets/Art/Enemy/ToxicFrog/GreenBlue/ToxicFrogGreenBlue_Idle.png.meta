@@ -1,0 +1,357 @@
+fileFormatVersion: 2
+guid: d60b860845a286c498b61f6b62f5cde3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4594226271344970791
+    second: ToxicFrogGreenBlue_Idle_0
+  - first:
+      213: 4230211482518726239
+    second: ToxicFrogGreenBlue_Idle_1
+  - first:
+      213: -78296705786409181
+    second: ToxicFrogGreenBlue_Idle_2
+  - first:
+      213: -7338230988670231037
+    second: ToxicFrogGreenBlue_Idle_3
+  - first:
+      213: -8936241380143616754
+    second: ToxicFrogGreenBlue_Idle_4
+  - first:
+      213: 1408945351146187254
+    second: ToxicFrogGreenBlue_Idle_5
+  - first:
+      213: 5472890296994830641
+    second: ToxicFrogGreenBlue_Idle_6
+  - first:
+      213: 8573624489492885621
+    second: ToxicFrogGreenBlue_Idle_7
+  - first:
+      213: -4002248216384011410
+    second: frog_GreenBlue_idle_00
+  - first:
+      213: 1058741291764944508
+    second: frog_GreenBlue_idle_01
+  - first:
+      213: -5304108512176079076
+    second: frog_GreenBlue_idle_02
+  - first:
+      213: 3811068954580724170
+    second: frog_GreenBlue_idle_03
+  - first:
+      213: 1351221469069961720
+    second: frog_GreenBlue_idle_04
+  - first:
+      213: -368396160358399588
+    second: frog_GreenBlue_idle_05
+  - first:
+      213: 6157336888234143884
+    second: frog_GreenBlue_idle_06
+  - first:
+      213: 8011027825287697244
+    second: frog_GreenBlue_idle_07
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 0
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: frog_GreenBlue_idle_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e638d77b3782578c0800000000000000
+      internalID: -4002248216384011410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_idle_01
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7e00bc689761be00800000000000000
+      internalID: 1058741291764944508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_idle_02
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1f7e9919650466b0800000000000000
+      internalID: -5304108512176079076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_idle_03
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac9ad44b503a3e430800000000000000
+      internalID: 3811068954580724170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_idle_04
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f9ebcc54c080c210800000000000000
+      internalID: 1351221469069961720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_idle_05
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c91483dd4a133eaf0800000000000000
+      internalID: -368396160358399588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_idle_06
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c80fa91e641437550800000000000000
+      internalID: 6157336888234143884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_idle_07
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c531b04ec53ec2f60800000000000000
+      internalID: 8011027825287697244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ToxicFrogGreenBlue_Idle_0: -4594226271344970791
+      ToxicFrogGreenBlue_Idle_1: 4230211482518726239
+      ToxicFrogGreenBlue_Idle_2: -78296705786409181
+      ToxicFrogGreenBlue_Idle_3: -7338230988670231037
+      ToxicFrogGreenBlue_Idle_4: -8936241380143616754
+      ToxicFrogGreenBlue_Idle_5: 1408945351146187254
+      ToxicFrogGreenBlue_Idle_6: 5472890296994830641
+      ToxicFrogGreenBlue_Idle_7: 8573624489492885621
+      frog_GreenBlue_idle_00: -4002248216384011410
+      frog_GreenBlue_idle_01: 1058741291764944508
+      frog_GreenBlue_idle_02: -5304108512176079076
+      frog_GreenBlue_idle_03: 3811068954580724170
+      frog_GreenBlue_idle_04: 1351221469069961720
+      frog_GreenBlue_idle_05: -368396160358399588
+      frog_GreenBlue_idle_06: 6157336888234143884
+      frog_GreenBlue_idle_07: 8011027825287697244
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -16,7 +16,9 @@ namespace Dawnholder.Client.UI
 
         public void OnStartClicked()
         {
-            SceneTransition.Instance.LoadScene(gameplaySceneName);
+            // TODO(yuhyeon, M2 학습 마감 시 복원): Inspector 값("Gameplay") override 회피용 임시 hardcode.
+            // MainMenu.unity 수정 = 공유 영역 PR 필요 → 코드 hardcode가 빠른 우회.
+            SceneTransition.Instance.LoadScene("GameplayTest");
         }
 
         public void OnQuitClicked()
