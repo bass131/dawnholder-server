@@ -168,40 +168,43 @@ public class BroadcastTests : IDisposable
     [Fact]
     public void LifecycleRace_NewJoinBroadcastSkipsClosingSession()
     {
-        // Codex Phase 04 risk 1순위: B가 disconnect 중일 때 A가 join 시도하면 broadcast가 B에게 안 가야.
-        // Phase 10 _closing + always-enqueue 패턴 일반화 deterministic 재현.
+        // Codex Phase 03+04 review (γ 5회차) #1 권장 보강 — IsClosing skip *분기 자체*를 때림.
         //
-        // 시나리오:
-        // 1) s1 정상 접속 + tick (자리잡힘, _closing=0)
-        // 2) s1 OnDisconnected → _closing=1 박힘, cleanup job enqueue (아직 tick 안 함)
-        // 3) s2 OnConnected → s2 EnterGameWorld job enqueue (아직 tick 안 함)
-        // 4) Tick → 두 job 순차 처리. s2의 EnterGameWorld는 *기존 _players에 s1이 있는 상태*에서 실행 가능
-        //    (s1 cleanup이 먼저 실행되면 그 후에 s2 들어옴 → s2는 initial roster 0건)
-        //    (s2 EnterGameWorld가 먼저 실행되면 s1.IsClosing=true라 broadcast skip + initial roster skip)
+        // **이전 시나리오 (Codex 발견 약점)**:
+        //   s1.OnDisconnected() → s2.OnConnected() → Tick 1회
+        //   FIFO 순서상 s1 cleanup이 *먼저* 실행 → _players=[] 상태에서 s2 enter → roster 0건 자동
+        //   → IsClosing skip 코드가 깨져도 테스트 통과 = false confidence
         //
-        // 어느 순서든 s1.Send에 PlayerJoin이 박히면 안 됨 (IsClosing skip 검증).
+        // **본 보강 시나리오** (실제 skip 분기 강제 trigger):
+        //   1) s1 정상 접속 + tick → _players=[s1] 안정
+        //   2) s2.OnConnected() → s2 EnterGameWorld job *먼저* enqueue
+        //   3) s1.OnDisconnected() → s1 cleanup job 나중 enqueue + IsClosing=true *즉시 세팅*
+        //   4) Tick → FIFO로 s2 EnterGameWorld가 먼저 실행 → 그 시점에 _players=[s1] *남아있고* s1.IsClosing=true
+        //      → BroadcastToAll의 IsClosing skip / initial roster의 IsClosing skip이 *반드시* 작동해야 통과
+        //      → skip 깨지면 s1.SentPackets에 PlayerJoin 박힘 = 테스트 fail
         TestGameSession s1 = new(_map);
         s1.OnConnected(Ep());
-        _map.Tick(1); // s1 자리잡힘
+        _map.Tick(1); // s1 자리잡힘 (_closing=0, _players=[s1])
 
         int s1BaselineCount = s1.SentPackets.Count;
 
-        // race window 시작: s1 disconnect + s2 connect 동시 (둘 다 enqueue만 됨)
-        s1.OnDisconnected(Ep());                 // _closing=1
+        // race window: s2 enter job 먼저 enqueue → s1 disconnect 그 다음 (IsClosing 즉시 세팅).
         TestGameSession s2 = new(_map);
-        s2.OnConnected(Ep());                    // s2 EnterGameWorld enqueue
+        s2.OnConnected(Ep());           // s2 EnterGameWorld enqueue (먼저)
+        s1.OnDisconnected(Ep());        // cleanup enqueue (뒤) + Interlocked로 _closing=1 즉시
 
-        _map.Tick(2); // 두 job 처리
+        _map.Tick(2); // FIFO: s2 enter 처리 시점에 _players=[s1] + s1.IsClosing=true
 
-        // 검증: s1은 PlayerJoin 0건 추가 받음 (IsClosing skip 덕분).
+        // 검증 1: s1은 *map에 남아있는 상태에서* broadcast를 안 받음. IsClosing skip 직접 검증.
         List<byte[]> s1New = s1.SentPackets.Skip(s1BaselineCount).ToList();
         Assert.Equal(0, CountPacketsOfType(s1New, PacketID.S_PlayerJoin));
 
-        // 부수 검증: s2 ghost 박힌 s1이 initial roster에 들어가도 *order에 의해 빠짐*.
-        // s1.OnDisconnected가 먼저 호출되면 _players에 cleanup job이 enqueue되고
-        // s2.OnConnected가 다음 enqueue. Tick에서 cleanup이 먼저 dequeue되면 s2 진입 시
-        // _players=[] → initial roster 0건. cleanup이 나중이면 s1.IsClosing=true라 roster skip.
+        // 검증 2: s2의 initial roster는 s1을 *map에서 봤지만* IsClosing skip으로 제외.
+        // 만약 roster skip이 깨지면 s2.SentPackets에 s1의 PlayerJoin이 들어감.
         int s2RosterCount = CountPacketsOfType(s2.SentPackets, PacketID.S_PlayerJoin);
         Assert.Equal(0, s2RosterCount);
+
+        // 검증 3: tick 후 _players는 0 (s1 cleanup도 같은 tick에서 처리). ghost 차단.
+        Assert.Empty(_map.Players);
     }
 }

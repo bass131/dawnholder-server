@@ -33,8 +33,10 @@
 
 ## 컨벤션
 
-- **Async**: 핸들러는 `async Task`, 단 틱 루프는 동기.
-  무거운 작업은 백그라운드 channel로 보냄.
+- **Async**: 핸들러는 *현재 sync* `void Handle(GameSession, ArraySegment<byte>)` (Phase 03 박힘).
+  파싱·검증·session 메서드 호출 수준이라 async 불필요. 틱 루프도 동기.
+  IO / long-running work는 tick loop 밖으로 격리 (백그라운드 channel).
+  ※ 분기 많은 handler (DB 호출 포함 등) 들어오면 `IPacketHandler` + dispatcher를 `Task` 기반으로 승격 검토.
 - **Logging**: Serilog, 구조화. Info 레벨에서 패킷 페이로드 로깅 금지
   (PII / 스팸). Trace 레벨에서만.
 - **Locking**: 각 맵은 단일 스레드. 맵 안에서는 lock 없음.
