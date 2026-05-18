@@ -1,0 +1,327 @@
+fileFormatVersion: 2
+guid: b686841116cb61f4b8347b8bd62b5613
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3168485177583749839
+    second: ToxicFrogGreenBlue_Hop_0
+  - first:
+      213: -7059044426974323979
+    second: ToxicFrogGreenBlue_Hop_1
+  - first:
+      213: 4115175586707770981
+    second: ToxicFrogGreenBlue_Hop_2
+  - first:
+      213: -2344789260112867672
+    second: ToxicFrogGreenBlue_Hop_3
+  - first:
+      213: -1296331651404058540
+    second: ToxicFrogGreenBlue_Hop_4
+  - first:
+      213: -2362522750457860549
+    second: ToxicFrogGreenBlue_Hop_5
+  - first:
+      213: 3007709258848334678
+    second: ToxicFrogGreenBlue_Hop_6
+  - first:
+      213: -6845455302139884273
+    second: frog_GreenBlue_hop_00
+  - first:
+      213: 5856082998317556738
+    second: frog_GreenBlue_hop_01
+  - first:
+      213: 8241006056640182720
+    second: frog_GreenBlue_hop_02
+  - first:
+      213: 1816013506429759729
+    second: frog_GreenBlue_hop_03
+  - first:
+      213: -7541401543947247741
+    second: frog_GreenBlue_hop_04
+  - first:
+      213: 1874639108260248417
+    second: frog_GreenBlue_hop_05
+  - first:
+      213: -7292320137703957380
+    second: frog_GreenBlue_hop_06
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 0
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: frog_GreenBlue_hop_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0d4326ebae0001a0800000000000000
+      internalID: -6845455302139884273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_hop_01
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2042ce9c57cf44150800000000000000
+      internalID: 5856082998317556738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_hop_02
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c971e5885fed5270800000000000000
+      internalID: 8241006056640182720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_hop_03
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f0be0699a6c33910800000000000000
+      internalID: 1816013506429759729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_hop_04
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38f1178704f875790800000000000000
+      internalID: -7541401543947247741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_hop_05
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16b38e1365e040a10800000000000000
+      internalID: 1874639108260248417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_GreenBlue_hop_06
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7c5abb98797cca90800000000000000
+      internalID: -7292320137703957380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ToxicFrogGreenBlue_Hop_0: 3168485177583749839
+      ToxicFrogGreenBlue_Hop_1: -7059044426974323979
+      ToxicFrogGreenBlue_Hop_2: 4115175586707770981
+      ToxicFrogGreenBlue_Hop_3: -2344789260112867672
+      ToxicFrogGreenBlue_Hop_4: -1296331651404058540
+      ToxicFrogGreenBlue_Hop_5: -2362522750457860549
+      ToxicFrogGreenBlue_Hop_6: 3007709258848334678
+      frog_GreenBlue_hop_00: -6845455302139884273
+      frog_GreenBlue_hop_01: 5856082998317556738
+      frog_GreenBlue_hop_02: 8241006056640182720
+      frog_GreenBlue_hop_03: 1816013506429759729
+      frog_GreenBlue_hop_04: -7541401543947247741
+      frog_GreenBlue_hop_05: 1874639108260248417
+      frog_GreenBlue_hop_06: -7292320137703957380
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -682,11 +682,11 @@ PlayerSettings:
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: da3b8379-3220-457e-b1c5-65f29c738d7f
+  cloudProjectId: c89f079f-130f-41d9-8a6b-79c1d6d2f1a9
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: client
-  organizationId: roy_131
+  organizationId: jyhchallengers
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

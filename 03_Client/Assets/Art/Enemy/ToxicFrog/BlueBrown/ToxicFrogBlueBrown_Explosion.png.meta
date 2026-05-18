@@ -1,0 +1,427 @@
+fileFormatVersion: 2
+guid: 9e2cafab58c88a141958bcc578ece42b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9104046814778786325
+    second: ToxicFrogBlueBrown_Explosion_0
+  - first:
+      213: 8493275809342429865
+    second: ToxicFrogBlueBrown_Explosion_1
+  - first:
+      213: 4121793987462033879
+    second: ToxicFrogBlueBrown_Explosion_2
+  - first:
+      213: -1621401839460399084
+    second: ToxicFrogBlueBrown_Explosion_3
+  - first:
+      213: 1312387492484844374
+    second: ToxicFrogBlueBrown_Explosion_4
+  - first:
+      213: -5177494390187732806
+    second: ToxicFrogBlueBrown_Explosion_5
+  - first:
+      213: 5703270362967413544
+    second: ToxicFrogBlueBrown_Explosion_6
+  - first:
+      213: 6984342338519477353
+    second: ToxicFrogBlueBrown_Explosion_7
+  - first:
+      213: -3220224029122782803
+    second: ToxicFrogBlueBrown_Explosion_8
+  - first:
+      213: -441517484958101264
+    second: ToxicFrogBlueBrown_Explosion_9
+  - first:
+      213: 4194957902515030775
+    second: ToxicFrogBlueBrown_Explosion_10
+  - first:
+      213: 7692590178775864523
+    second: ToxicFrogBlueBrown_Explosion_11
+  - first:
+      213: 6666187030014348138
+    second: ToxicFrogBlueBrown_Explosion_12
+  - first:
+      213: -2634483243541885055
+    second: ToxicFrogBlueBrown_Explosion_13
+  - first:
+      213: -9098417793640904291
+    second: ToxicFrogBlueBrown_Explosion_14
+  - first:
+      213: 7577975197400892886
+    second: ToxicFrogBlueBrown_Explosion_15
+  - first:
+      213: -5774427865838385070
+    second: ToxicFrogBlueBrown_Explosion_16
+  - first:
+      213: 2626604614286062515
+    second: ToxicFrogBlueBrown_Explosion_17
+  - first:
+      213: -4144481466580565599
+    second: ToxicFrogBlueBrown_Explosion_18
+  - first:
+      213: 5950432791121135997
+    second: frog_BlueBrown_die_00
+  - first:
+      213: 2831151868375608916
+    second: frog_BlueBrown_die_01
+  - first:
+      213: 3082448905377460225
+    second: frog_BlueBrown_die_02
+  - first:
+      213: 6707168253761553874
+    second: frog_BlueBrown_die_03
+  - first:
+      213: 540976227389312270
+    second: frog_BlueBrown_die_04
+  - first:
+      213: -5212527032562779276
+    second: frog_BlueBrown_die_05
+  - first:
+      213: -7215493038167859980
+    second: frog_BlueBrown_die_06
+  - first:
+      213: 1315633929833328041
+    second: frog_BlueBrown_die_07
+  - first:
+      213: -7589274773291219951
+    second: frog_BlueBrown_die_08
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 0
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d798c96c81f249250800000000000000
+      internalID: 5950432791121135997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_01
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45e26bbcf954a4720800000000000000
+      internalID: 2831151868375608916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_02
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 100b05ba2fe07ca20800000000000000
+      internalID: 3082448905377460225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_03
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d50c3e9df5a41d50800000000000000
+      internalID: 6707168253761553874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_04
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0d8879330fe18700800000000000000
+      internalID: 540976227389312270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_05
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47b79f1f74269a7b0800000000000000
+      internalID: -5212527032562779276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_06
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fc53b4af4b6ddb90800000000000000
+      internalID: -7215493038167859980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_07
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9adaa22b612124210800000000000000
+      internalID: 1315633929833328041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: frog_BlueBrown_die_08
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 48
+        height: 48
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 114c42badca7da690800000000000000
+      internalID: -7589274773291219951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ToxicFrogBlueBrown_Explosion_0: -9104046814778786325
+      ToxicFrogBlueBrown_Explosion_1: 8493275809342429865
+      ToxicFrogBlueBrown_Explosion_10: 4194957902515030775
+      ToxicFrogBlueBrown_Explosion_11: 7692590178775864523
+      ToxicFrogBlueBrown_Explosion_12: 6666187030014348138
+      ToxicFrogBlueBrown_Explosion_13: -2634483243541885055
+      ToxicFrogBlueBrown_Explosion_14: -9098417793640904291
+      ToxicFrogBlueBrown_Explosion_15: 7577975197400892886
+      ToxicFrogBlueBrown_Explosion_16: -5774427865838385070
+      ToxicFrogBlueBrown_Explosion_17: 2626604614286062515
+      ToxicFrogBlueBrown_Explosion_18: -4144481466580565599
+      ToxicFrogBlueBrown_Explosion_2: 4121793987462033879
+      ToxicFrogBlueBrown_Explosion_3: -1621401839460399084
+      ToxicFrogBlueBrown_Explosion_4: 1312387492484844374
+      ToxicFrogBlueBrown_Explosion_5: -5177494390187732806
+      ToxicFrogBlueBrown_Explosion_6: 5703270362967413544
+      ToxicFrogBlueBrown_Explosion_7: 6984342338519477353
+      ToxicFrogBlueBrown_Explosion_8: -3220224029122782803
+      ToxicFrogBlueBrown_Explosion_9: -441517484958101264
+      frog_BlueBrown_die_00: 5950432791121135997
+      frog_BlueBrown_die_01: 2831151868375608916
+      frog_BlueBrown_die_02: 3082448905377460225
+      frog_BlueBrown_die_03: 6707168253761553874
+      frog_BlueBrown_die_04: 540976227389312270
+      frog_BlueBrown_die_05: -5212527032562779276
+      frog_BlueBrown_die_06: -7215493038167859980
+      frog_BlueBrown_die_07: 1315633929833328041
+      frog_BlueBrown_die_08: -7589274773291219951
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
