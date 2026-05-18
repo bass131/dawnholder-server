@@ -1,6 +1,12 @@
 # Phase 08: 유현 Asset 통합 + 3-zone 시각화 + Stage Clear UI
 
-> **상태**: pending
+> **2026-05-18 분리 결정** — 본 Phase는 *시점이 다른 두 종류*가 섞여있어 두 갈래로 분리:
+> - [`08a-asset-prefab-preparation.md`](08a-asset-prefab-preparation.md) — Asset import + Prefab variant + LocalPlayer 추출 검증 + RemotePlayer 비주얼 교체 (정유현, 의존성 0 = 본인 Phase 05와 *완전 병렬*)
+> - [`08b-zone-ui-integration.md`](08b-zone-ui-integration.md) — 3-zone 배경 + StageClear UI + HP 바 (정유현, 본인 Phase 07 후속)
+>
+> 본 파일은 *분리 흔적*으로 보존. 신규 작업은 08a/08b 참조.
+>
+> **상태**: superseded (분리 → 08a + 08b)
 > **마일스톤**: M3 — Multiplayer & Demo Stage
 > **예상 소요**: 2.5h
 > **담당 에이전트**: client

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>M3 캐릭터 prefab 분담 — 지금 합의용 (영호 ↔ 유현)</title>
+<style>
+  body { font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, sans-serif; max-width: 920px; margin: 2em auto; padding: 1.5em; line-height: 1.65; color: #222; }
+  h1 { border-bottom: 3px solid #2a4; padding-bottom: 0.4em; }
+  h2 { color: #2a5; margin-top: 1.8em; border-left: 5px solid #2a5; padding-left: 0.5em; }
+  h3 { color: #555; margin-top: 1.2em; }
+  .summary { background: #f0fdf4; border: 2px solid #2a5; padding: 1em 1.2em; border-radius: 8px; font-size: 1.05em; }
+  .youngho { background: #e8f1ff; border-left: 4px solid #36a; }
+  .yuhyeon { background: #fff0f5; border-left: 4px solid #c47; }
+  .shared { background: #f5f5f5; border-left: 4px solid #888; }
+  .note { background: #fffbe6; border-left: 4px solid #fa0; padding: 0.7em 1em; margin: 1em 0; font-size: 0.96em; }
+  .warn { background: #fef2f2; border-left: 4px solid #d33; padding: 0.7em 1em; margin: 1em 0; font-size: 0.96em; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  th, td { border: 1px solid #ccc; padding: 0.7em 0.9em; text-align: left; vertical-align: top; }
+  th { background: #f0f0f0; }
+  td.youngho, td.yuhyeon, td.shared { padding-left: 0.9em; }
+  .diagram { display: flex; gap: 1em; margin: 1.2em 0; flex-wrap: wrap; }
+  .scene { border: 2px dashed #999; border-radius: 8px; padding: 1em; flex: 1; min-width: 250px; background: #fafafa; }
+  .scene h4 { margin: 0 0 0.6em 0; color: #333; }
+  .scene p { font-size: 0.9em; color: #555; margin: 0.5em 0 0 0; }
+  .char { display: inline-block; padding: 0.5em 0.9em; margin: 0.25em 0.15em; border-radius: 6px; font-size: 0.9em; font-weight: 500; }
+  .char-local { background: #36a; color: white; }
+  .char-remote-box { background: #888; color: white; border: 2px dashed #555; }
+  .char-remote-real { background: #c47; color: white; }
+  .checklist { background: #fafafa; border: 1px solid #ddd; padding: 1em 1.3em; border-radius: 6px; }
+  .checklist label { display: block; margin: 0.5em 0; cursor: pointer; }
+  .checklist input { margin-right: 0.6em; transform: scale(1.2); }
+  code { background: #f3f3f3; padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.93em; font-family: 'D2Coding', Consolas, monospace; }
+  .glossary dt { font-weight: bold; margin-top: 0.6em; color: #25a; font-size: 1.02em; }
+  .glossary dd { margin-left: 1.2em; margin-bottom: 0.4em; }
+  .label-badge { display: inline-block; padding: 0.15em 0.5em; border-radius: 10px; font-size: 0.75em; font-weight: bold; margin-left: 0.5em; }
+  .label-youngho { background: #36a; color: white; }
+  .label-yuhyeon { background: #c47; color: white; }
+  .label-star { background: #fa0; color: white; }
+</style>
+</head>
+<body>
+
+<h1>M3 캐릭터 prefab 분담 — 지금 합의 (영호 ↔ 유현)</h1>
+
+<div class="summary">
+<strong>한 줄 요약</strong>: 5/20 면담 데모 목표 = "두 명이 같은 맵에서 보이는" 멀티. 그러려면 캐릭터를 prefab으로 만들어야 함.
+<strong>영호가 골격(움직임 로직)</strong>만 박고, <strong>유현이 비주얼(그림)</strong>을 살려내는 분담.
+</div>
+
+<h2>1. 용어 풀이 (이거 먼저)</h2>
+
+<dl class="glossary">
+  <dt>prefab (프리팹)</dt>
+  <dd>"캐릭터 한 마리의 <strong>도면</strong>". Unity에서 같은 캐릭터를 여러 마리 만들 때 이 도면 하나로 찍어냄.</dd>
+
+  <dt>LocalPlayer (로컬 플레이어)</dt>
+  <dd>"<strong>내 캐릭터</strong>" — 내가 키보드로 직접 조종.</dd>
+
+  <dt>RemotePlayer (리모트 플레이어)</dt>
+  <dd>"<strong>다른</strong> 플레이어 캐릭터" — 다른 사람이 조종하는 거. 내 화면엔 그 사람 위치를 따라 그리기만 함.<br>
+  <small>("리모트" = "내가 원격조종"이 아니라 "원격에 있는 다른 사람"이라는 뜻. 헷갈리기 쉬워서 박아둠.)</small></dd>
+
+  <dt>placeholder (플레이스홀더)</dt>
+  <dd>"<strong>임시 자리표시</strong>" — 진짜 그림이 안 박힌 동안 자리만 잡는 회색 박스. 위에 entityId 숫자만 띄움.</dd>
+
+  <dt>컴포넌트 (Component)</dt>
+  <dd>"캐릭터에 붙어있는 <strong>기능 모듈</strong>". 예: 그림 모듈(SpriteRenderer), 애니메이션 모듈(Animator), 서버 위치 받아 부드럽게 따라가는 모듈(RemoteEntity).</dd>
+</dl>
+
+<h2>2. 시간 순으로 화면이 어떻게 바뀌나</h2>
+
+<div class="diagram">
+
+<div class="scene">
+<h4>① 지금 (현재 게임 화면)</h4>
+<div><span class="char char-local">내 캐릭터</span></div>
+<p>혼자만 보임. 유현이 만든 캐릭터 그림으로 이미 멋있음. 단 prefab은 아니고 씬에 직접 박힌 GameObject.</p>
+</div>
+
+<div class="scene">
+<h4>② 영호 Phase 05 끝나면</h4>
+<div>
+<span class="char char-local">내 캐릭터</span><br>
+<span class="char char-remote-box">회색 박스 #1</span>
+<span class="char char-remote-box">회색 박스 #2</span>
+</div>
+<p>다른 플레이어들이 <strong>임시 회색 박스</strong>로 보임. 박스 위에 entityId 숫자만. <strong>멀티 작동은 됨</strong>, 그림만 임시.</p>
+</div>
+
+<div class="scene">
+<h4>③ 유현 Phase 08a 끝나면</h4>
+<div>
+<span class="char char-local">내 캐릭터</span><br>
+<span class="char char-remote-real">다른 캐릭터</span>
+<span class="char char-remote-real">다른 캐릭터</span>
+</div>
+<p>모두 <strong>진짜 캐릭터 그림</strong>. 면담 데모 도착점. 코드 변경 없이 prefab 비주얼만 교체.</p>
+</div>
+
+</div>
+
+<h2>3. 분담 표 — 누가 뭘 언제</h2>
+
+<table>
+<thead>
+<tr><th width="22%">단계</th><th width="14%">누가</th><th>무엇</th><th width="12%">예상 시간</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>지금~Phase 05</strong></td>
+  <td class="youngho"><span class="label-badge label-youngho">영호</span></td>
+  <td>
+    <ul style="margin: 0; padding-left: 1.2em;">
+      <li><code>RemotePlayer.prefab</code> 신설 (회색 박스 + entityId 라벨)</li>
+      <li>이 prefab에 <code>RemoteEntity</code> 컴포넌트 박음 (서버 위치 받아 200ms 보간하는 모듈)</li>
+      <li>서버 패킷 받아서 "다른 사람 들어왔네 → prefab 인스턴스 spawn" 흐름 박음</li>
+      <li>다른 사람 나가면 → despawn</li>
+    </ul>
+  </td>
+  <td>3시간</td>
+</tr>
+<tr>
+  <td><strong>그 다음 Phase 08a</strong></td>
+  <td class="yuhyeon"><span class="label-badge label-yuhyeon">유현</span></td>
+  <td>
+    <ul style="margin: 0; padding-left: 1.2em;">
+      <li>씬 안 <code>Player</code> GameObject → <code>LocalPlayer.prefab</code>으로 <strong>추출</strong> (M2 회귀 한 번 확인)</li>
+      <li><code>RemotePlayer.prefab</code>의 비주얼만 진짜 캐릭터로 교체<br>
+        → 영호가 박은 <code>RemoteEntity</code> 컴포넌트는 <strong style="color:#d33;">절대 건드리지 X</strong></li>
+      <li>(옵션) <code>PlayerBase.prefab</code> + variant 패턴 도입 — 학습 어필 ↑</li>
+    </ul>
+  </td>
+  <td>2시간</td>
+</tr>
+</tbody>
+</table>
+
+<h2>4. 합의 핵심 — RemotePlayer.prefab 안에 박힐 컴포넌트 4개</h2>
+
+<p>유현이 비주얼 작업할 때 <strong style="color:#d33;">RemoteEntity는 절대 건드리지 X</strong>. 나머지는 자유.</p>
+
+<table>
+<thead><tr><th>컴포넌트</th><th>역할 (쉬운말)</th><th width="22%">누구 영역</th></tr></thead>
+<tbody>
+<tr><td><code>Transform</code></td><td>캐릭터의 위치/회전/크기 (Unity 기본)</td><td class="shared"><span class="label-badge" style="background:#888;color:white;">공통</span></td></tr>
+<tr><td><code>SpriteRenderer</code></td><td>캐릭터 <strong>그림</strong> 그리기</td><td class="yuhyeon"><span class="label-badge label-yuhyeon">유현</span> 자유 편집</td></tr>
+<tr><td><code>Animator</code></td><td>대기/이동 <strong>애니메이션</strong></td><td class="yuhyeon"><span class="label-badge label-yuhyeon">유현</span> 자유 편집</td></tr>
+<tr><td><code>RemoteEntity</code> <span class="label-badge label-star">★ 보존 필수</span></td><td>서버에서 받은 다른 사람 위치를 200ms 보간해서 부드럽게 따라가는 <strong>핵심 모듈</strong></td><td class="youngho"><span class="label-badge label-youngho">영호</span> 영역</td></tr>
+</tbody>
+</table>
+
+<h2>5. 지금 합의할 항목 4개 (OK/NO만)</h2>
+
+<div class="checklist">
+
+<p><strong>① prefab 이름</strong></p>
+<label><input type="checkbox"> <code>LocalPlayer.prefab</code> (내 캐릭터)</label>
+<label><input type="checkbox"> <code>RemotePlayer.prefab</code> (다른 플레이어)</label>
+
+<p style="margin-top:1em;"><strong>② 폴더 위치</strong></p>
+<label><input type="checkbox"> <code>03_Client/Assets/Prefabs/Characters/</code> 안에 둘 다<br>
+  <small style="margin-left:1.8em;">(기존 유현 패턴 <code>Prefabs/UI/FadeCanvas.prefab</code>과 같은 뼈대)</small></label>
+
+<p style="margin-top:1em;"><strong>③ 분담 = 영호 골격 + 유현 비주얼</strong></p>
+<label><input type="checkbox"> 지금~Phase 05: 영호가 <code>RemotePlayer.prefab</code> placeholder 박음</label>
+<label><input type="checkbox"> 그 다음 Phase 08a: 유현이 <code>LocalPlayer.prefab</code> 추출 + <code>RemotePlayer</code> 비주얼 교체</label>
+
+<p style="margin-top:1em;"><strong>④ (옵션) <code>PlayerBase.prefab</code> + variant 패턴</strong></p>
+<label><input type="checkbox"> 도입 — Local/Remote가 base prefab 공유. 비주얼 1회 갱신 → 둘 다 자동 반영. 면담 어필↑, 단 +30분</label>
+<label><input type="checkbox"> 안 함 — 그냥 별도 두 prefab (단순)</label>
+
+</div>
+
+<div class="note">
+<strong>주의 — 유현이 <code>LocalPlayer.prefab</code> 추출할 때</strong>: 씬 안 <code>Player</code> GameObject의 컴포넌트 6개가 <strong>전부 보존되어야</strong> 함:
+<br><br>
+<code>Transform</code> · <code>SpriteRenderer</code> · <code>PlayerInput</code> · <code>LocalPlayerController</code> · <code>Animator</code> · <code>PlayerAnimatorSync</code>
+<br><br>
+추출 후 M2 회귀 한 번 (혼자 접속해서 캐릭터 WASD 조종 + 애니메이션 정상) 통과 확인.
+</div>
+
+<div class="warn">
+<strong>유의 — 영역 충돌 한 군데</strong>: 영호 Phase 05에서 <code>UnityClientSession.cs</code>와 <code>LocalPlayerController</code> 인접 영역 건드림. 유현 영역 직접 X (CODEOWNERS상 영호 영역)지만 <strong>비주얼 컴포넌트 wiring 안 깸</strong> 약속. 의심되는 변경 있으면 디스코드 박기.
+</div>
+
+<h2>6. 합의 끝나면</h2>
+
+<ol>
+  <li>영호: work-pin 갱신 + Phase 05 코드 작업 시작</li>
+  <li>유현: M2 Phase 07/08 스킵 박제(가벼운 1줄) + M3 Phase 08a 정의 파일 받기</li>
+  <li>다음 음성: <strong>5/19 진척 체크</strong> (영호 Phase 05 절반 진행 / 유현 Phase 08a Asset import 진행)</li>
+  <li>5/20 면담</li>
+</ol>
+
+<p style="margin-top:2em; color:#888; font-size:0.85em;">
+파일 위치: <code>01_Phases/youngho/M3-first-multiplayer/_handoff-prefab-20260518.html</code><br>
+박은 사람: 영호 (Claude 도움) · 2026-05-18 · 디스코드 음성 동기용 자료
+</p>
+
+</body>
+</html>
