@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Phase 11 쉬운 설명 — 큰 작업 끝났으니 책상 정리</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: #0f1419;
+    color: #e4e7eb;
+    line-height: 1.75;
+    padding: 32px 24px;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  h1 { color: #51cf66; font-size: 26px; margin: 0 0 6px 0; }
+  .subtitle { color: #94a3b8; margin-bottom: 28px; font-size: 14px; }
+  h2 {
+    color: #51cf66; font-size: 19px; margin: 38px 0 12px 0;
+    border-bottom: 2px solid #2a3a52; padding-bottom: 6px;
+  }
+  h3 { color: #4dabf7; font-size: 15px; margin: 18px 0 8px 0; }
+
+  .oneliner {
+    background: linear-gradient(135deg, #1a3a2c, #1a2332);
+    border-left: 4px solid #51cf66;
+    padding: 16px 22px; border-radius: 8px;
+    font-size: 16px; line-height: 1.6;
+    margin: 0 0 24px 0;
+  }
+  .analogy {
+    background: #1f1a3a;
+    border-left: 4px solid #ff9f43;
+    padding: 14px 20px; border-radius: 8px;
+    margin: 14px 0;
+    font-size: 14.5px;
+  }
+  .analogy-label {
+    color: #ff9f43; font-weight: 700; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  /* 4 cleanup tasks grid */
+  .tasks-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    margin: 18px 0;
+  }
+  .task-card {
+    background: #1a2332;
+    border-left: 4px solid #51cf66;
+    padding: 16px 20px;
+    border-radius: 8px;
+  }
+  .task-num {
+    color: #51cf66; font-weight: 700; font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .task-title { color: #e4e7eb; font-weight: 700; font-size: 15px; margin: 4px 0 8px 0; }
+  .task-why { color: #94a3b8; font-size: 13px; margin-bottom: 6px; font-style: italic; }
+  .task-what { color: #cbd5e1; font-size: 13px; }
+  .task-impact {
+    color: #51cf66; font-size: 12px; margin-top: 6px;
+    background: #0f1825; padding: 4px 8px; border-radius: 4px;
+    display: inline-block;
+  }
+
+  .number-line {
+    background: #1a2332;
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .num-big {
+    font-size: 36px; font-weight: 800;
+    background: linear-gradient(135deg, #51cf66 0%, #4dabf7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #51cf66;
+    line-height: 1;
+  }
+  .num-label { color: #94a3b8; font-size: 13px; }
+
+  pre {
+    background: #0f1825; padding: 12px 14px; border-radius: 6px;
+    overflow-x: auto; font-size: 12.5px; color: #cbd5e1;
+    border: 1px solid #2a3a52;
+    margin: 8px 0;
+  }
+  .diff-removed { color: #ff6b6b; }
+  .diff-added { color: #51cf66; }
+
+  code:not(pre code) {
+    background: #0f1825;
+    color: #4dabf7;
+    padding: 1px 6px; border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  .concept-box {
+    background: #1a3a2c;
+    border-left: 4px solid #51cf66;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin: 14px 0;
+  }
+  .concept-title {
+    color: #51cf66; font-weight: 700; font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .warning-box {
+    background: #3a2c1a;
+    border-left: 4px solid #ff9f43;
+    padding: 16px 22px;
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+  .warning-title {
+    color: #ff9f43; font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .summary-footer {
+    margin-top: 50px; padding: 20px 24px;
+    background: linear-gradient(135deg, #1a3a2c 0%, #1a2332 100%);
+    border-radius: 8px;
+    border-left: 4px solid #51cf66;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  footer { margin-top: 40px; text-align: center; color: #94a3b8; font-size: 12px; }
+
+  .codex-finding {
+    background: #1a2332;
+    border: 1px solid #2a3a52;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    font-size: 13.5px;
+  }
+  .codex-finding-tag {
+    display: inline-block; background: #ff9f43; color: #0f1419;
+    padding: 1px 6px; border-radius: 3px; font-size: 10px;
+    font-weight: 700; margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Phase 11 — 큰 작업 끝났으니 책상 정리</h1>
+<div class="subtitle">
+  M2.5 Hardening · 문서 작업 · ~45분 · commit <code>954c6b0</code>
+</div>
+
+<div class="oneliner">
+  <strong>한 줄 요약</strong>: Phase 09/10에서 큰 변경을 박았으니, 그 부산물 + 옛날 누락 항목 4가지를 깔끔하게 정리.
+  다음 마일스톤(M3) 진입 직전 *클린 상태*를 만드는 작업.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🤔 왜 정리가 필요했나?</h2>
+
+<div class="analogy">
+  <div class="analogy-label">📚 비유 — 큰 시험 끝난 후 책상</div>
+  큰 프로젝트 끝나고 보면 — 책상 위에 펜이 7개, 메모지가 30장, 안 쓰는 노트북 거치대, 누가 빌려준 책...<br><br>
+
+  당장은 "다음 작업 시작하자!" 싶지만, <strong>정리 안 하면 다음 작업이 더 느려져요</strong>. 메모지 30장에서 진짜 중요한 거 찾는 데 5분, 쌓인 거 정리하느라 자꾸 멈춤.<br><br>
+
+  <strong>CONTEXT.md (295줄)</strong>가 그 메모지 30장이에요. 다음 세션 시작 시 매번 295줄 토큰 비용 + Claude가 옛 디테일 찾느라 헷갈림. 적기는 *마일스톤 끝*.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🧹 정리한 4가지</h2>
+
+<div class="tasks-grid">
+
+  <div class="task-card">
+    <div class="task-num">정리 ①</div>
+    <div class="task-title">헌법 우선순위 표 보강</div>
+    <div class="task-why">왜 — γ 감사에서 발견. policies/ 폴더가 헌법 본문엔 박혀있는데 *우선순위 표엔 누락*. 합류 팀원이 충돌 시 어느 게 이기는지 모름.</div>
+    <div class="task-what">한 줄 추가: <code>ADR &gt; policies &gt; ARCHITECTURE &gt; PRD</code></div>
+    <div class="task-impact">→ 합류 첫날 혼란점 1개 차단</div>
+  </div>
+
+  <div class="task-card">
+    <div class="task-num">정리 ②</div>
+    <div class="task-title">CONTEXT.md 응축</div>
+    <div class="task-why">왜 — 자기 정책에 "≤200줄 한도"가 박혀있는데 296줄. 자기참조 정책 위반. 다음 세션 토큰 비용 ~50% 절감.</div>
+    <div class="task-what">295줄 → 221줄. 옛 M2 phase별 디테일은 <code>CONTEXT_History.md</code>로 이전.</div>
+    <div class="task-impact">→ -74줄 (25% 응축)</div>
+  </div>
+
+  <div class="task-card">
+    <div class="task-num">정리 ③</div>
+    <div class="task-title">UnitTest1.cs 삭제</div>
+    <div class="task-why">왜 — <code>[Fact] public void Test1() { }</code> 빈 placeholder. dotnet new xunit 기본 산출물 그대로. 통과 카운트 1만 올림.</div>
+    <div class="task-what"><code>git rm 02_Server/GameServer.Tests/UnitTest1.cs</code></div>
+    <div class="task-impact">→ "133 통과"가 의미 있는 132로</div>
+  </div>
+
+  <div class="task-card">
+    <div class="task-num">정리 ④</div>
+    <div class="task-title">CHANGELOG 박제</div>
+    <div class="task-why">왜 — 팀원이 다음 pull 시 "M2.5에서 뭐 바뀌었나" 한 줄로 알 수 있게. 위험도 [M] (헌법 변경 포함).</div>
+    <div class="task-what">Phase 09/10/11을 *한 entry로 통합*. (Codex β 권장)</div>
+    <div class="task-impact">→ 팀원이 옛 결정으로 작업하는 사고 차단</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>📏 응축 전후 숫자</h2>
+
+<div class="number-line">
+  <div class="num-big">295줄</div>
+  <div>
+    <div class="num-label">응축 전 CONTEXT.md</div>
+    <div style="color:#94a3b8; font-size:12px;">자기 정책 200줄 한도 초과</div>
+  </div>
+  <div style="font-size:24px; color:#94a3b8;">→</div>
+  <div class="num-big">221줄</div>
+  <div>
+    <div class="num-label">응축 후 (-74줄)</div>
+    <div style="color:#94a3b8; font-size:12px;">목표 200줄에 21줄 over (수용 가능)</div>
+  </div>
+</div>
+
+<p style="font-size:13.5px; color:#94a3b8;">
+  목표(≤200) 미달은 인정 — 추가 30줄 절감하려면 핵심 정보 손상. 다음 마일스톤(M3) 끝에서 재응축으로 위임.
+</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>💡 핵심 개념</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🔍 자기참조 정책의 함정</div>
+  <p style="margin:6px 0;">
+    "이 문서 200줄 한도" — *문서 자체에 박힌* 규칙이에요. 그런데 296줄 됐어요. <strong>정책은 강제 메커니즘(훅, CI)이 없으면 지키지 않는다</strong>는 일반 통찰.
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#94a3b8;">
+    훅으로 자동 검사할 수 있지만, 큰 마일스톤 끝 시 *수동 응축*이 더 자연스러움. M3 끝나면 또 같은 작업.
+  </p>
+</div>
+
+<div class="concept-box" style="border-left-color:#ff9f43; background:#3a2c1a;">
+  <div class="concept-title" style="color:#ff9f43;">🎯 헌법 자기일관성</div>
+  <p style="margin:6px 0;">
+    헌법 본문에 "policies/도 봐야 함"이 박혀있는데 우선순위 표엔 누락. <strong>헌법 작성자도 자기 글의 내부 참조를 다 못 잡는다</strong>는 사례.
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#94a3b8;">
+    합류 팀원이 첫날 헌법 읽고 혼란 — 이런 미시 사고가 누적됨. γ 감사의 가치 = *본인이 못 보는* 자기 글 결함을 잡아줌.
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🤝 Codex β가 마지막에 잡아준 것</h2>
+
+<p style="font-size:13.5px; color:#cbd5e1;">
+  Phase 11 자체는 가볍지만 Codex β가 <strong>3건 짚어줌</strong>:
+</p>
+
+<div class="codex-finding">
+  <span class="codex-finding-tag">정합</span>
+  <strong>CHANGELOG "22건"이 실제 24건과 안 맞음</strong> — grep으로 잡아냄. Phase 09 (11 length + 5 rate-limit) + Phase 10 (8) = 24. 정정.
+</div>
+
+<div class="codex-finding">
+  <span class="codex-finding-tag">강도</span>
+  <strong>settings 원복 안내가 너무 부드러움</strong> — 팀 전체 권한 정책 완화이므로 "원복이 기본, 유지 시 명시 승인"으로 더 강하게 박을 것. CONTEXT.md 수정.
+</div>
+
+<div class="codex-finding">
+  <span class="codex-finding-tag">자연</span>
+  <strong>PR 번호 + 최종 commit hash 보강</strong> — 본 commit 시점에 박힘. 별도 작업 불필요.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>⚠️ 사용자 결정 1건 남음</h2>
+
+<div class="warning-box">
+  <div class="warning-title">⚠ 임시 settings.json 변경 원복</div>
+  <p style="margin:6px 0; font-size:14px;">
+    자율 작업 prompt 차단 목적으로 Phase 09 commit(<code>82ceffd</code>)에 settings.json의 ask 룰 일부 제거. <strong>main에 머지되면 팀 전체 권한 정책 완화</strong>.
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#cbd5e1;">
+    제거된 룰: <code>Edit(**)</code>, <code>Write(**)</code>, <code>Bash(git commit*)</code>
+  </p>
+  <p style="margin:10px 0 6px 0; font-size:13.5px; color:#51cf66; font-weight:600;">
+    ✓ 원복이 기본 (Codex β Phase 11 검토 권장)
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#94a3b8;">
+    유지 결정 시: 명시 승인 + CHANGELOG에 별도 박제 권장
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🎓 다음 세션을 위한 준비 완료</h2>
+
+<p style="font-size:14px; color:#cbd5e1;">
+  M2.5 Hardening 마감 = 다음 세션 첫 인사가 <strong>"CONTEXT 잘 읽었어요. M2.5 끝났고 M3 진입 직전. <code>/work:plan M3</code> 갈까요?"</strong> 한 줄로 됩니다.
+</p>
+
+<p style="font-size:13.5px; color:#cbd5e1;">
+  M3 첫 Phase 후보 (CONTEXT.md에 박힘):
+</p>
+<ul style="font-size:13.5px;">
+  <li><strong>ProtocolVersion 핸드셰이크</strong> — 가짜 약속 1번째 봉합 (정의는 있고 호출 0건)</li>
+  <li><strong>핸들러 layer 분리</strong> — <code>02_Server/CLAUDE.md</code> Layout vs 현실 mismatch 동시 갱신</li>
+  <li><strong>두 명 같은 맵 broadcast</strong> — M3 핵심 목표, 캡스톤 1 옵션 C 데모</li>
+  <li><strong>handler 단위 invalid/auth 테스트</strong> — γ 감사 관찰 발견 후속</li>
+</ul>
+
+<div class="summary-footer">
+  <strong>한 줄 마무리</strong>: Phase 09/10이 "코드 안전망"이라면 Phase 11은 "문서 안전망". 다음 세션의 본인(또는 합류 팀원)이 깨끗한 상태로 시작할 수 있게 책상을 치웠어요. 사소해 보이지만 누적되면 큰 차이.
+</div>
+
+<footer>
+  Phase 11 쉬운 설명 자료 · M2.5 Hardening · 2026-05-18 · 학부생 멘토링 톤<br>
+  자세한 사실 박제: <code>11-m25-cleanup-DONE.md</code> · 종합 보고: <code>_m25-summary.html</code>
+</footer>
+
+</body>
+</html>
