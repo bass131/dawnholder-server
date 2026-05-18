@@ -21,7 +21,8 @@ public class GameMap
 
     public IReadOnlyList<PlayerEntity> Players => _players;
 
-    public void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
+    // virtual: 테스트 subclass에서 EnqueueJob 호출 카운트 추적 가능 (Phase 09 rate-limit drop 검증).
+    public virtual void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
 
     // tick thread에서만 호출.
     public PlayerEntity AddPlayer(GameSession? owner, Vector2 spawnPos)
@@ -34,6 +35,13 @@ public class GameMap
     // tick thread에서만 호출.
     public bool RemovePlayer(int entityId)
         => _players.RemoveAll(p => p.EntityId == entityId) > 0;
+
+    // Phase 10 (M2.5 lifecycle race): owner reference 기반 cleanup.
+    // entityId가 아직 -1인 race window에서도 안전 — AddPlayer가 같은 batch에 들어왔으면
+    // 그 entity도 owner 일치로 제거됨. tick thread에서만 호출 (단일 thread invariant).
+    // 멱등: owner가 없으면 false 반환, 두 번 호출 안전.
+    public bool RemovePlayerBySession(GameSession owner)
+        => _players.RemoveAll(p => ReferenceEquals(p.Owner, owner)) > 0;
 
     public PlayerEntity? GetPlayer(int entityId)
         => _players.Find(p => p.EntityId == entityId);

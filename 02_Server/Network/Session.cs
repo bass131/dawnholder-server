@@ -12,6 +12,18 @@ namespace Dawnholder.Server.Network
     public abstract class PacketSession : Session
     {
         public static readonly int HeaderSize = 2;
+
+        // Phase 09 (M2.5 Trust-boundary): packet-id 크기 (모든 frame에 박힘).
+        public const int PacketIdSize = 2;
+
+        // Phase 09 (M2.5 Trust-boundary): frame 최소 크기. [size:2][id:2] = 4. 미만은 invalid.
+        public const int MinFrameSize = 4;  // = HeaderSize + PacketIdSize
+
+        // Phase 09 (M2.5 Trust-boundary): frame 최대 크기. 초과 시 fail-closed disconnect.
+        // 본 값은 Shared.GameData.Constants.MaxPacketSize와 *동기화 약속*.
+        // ServerCore는 의도적으로 Shared 참조 X(재사용성) — 두 파일 동시 변경 컨벤션으로 처리.
+        public const int MaxFrameSize = 4096;
+
         //[size(2)][packetID(2)][...][size(2)][packetID(2)][...]
         public sealed override int OnRecv(ArraySegment<byte> buffer)
         {
@@ -21,14 +33,26 @@ namespace Dawnholder.Server.Network
             while(true)
             {
                 // 최소한 헤더는 파싱할 수 있는지 확인.
-                if(buffer.Count < HeaderSize) 
+                if(buffer.Count < HeaderSize)
                     break;
 
                 // 완전체로 패킷을 수신했는지 확인.
                 ushort dataSize = BitConverter.ToUInt16(buffer.Array!, buffer.Offset);
-                if(buffer.Count < dataSize) 
+
+                // Phase 09 (M2.5 Trust-boundary): invalid frame size fail-closed.
+                // 순서 중요 — 정상 분할 패킷(buffer.Count < dataSize) 체크보다 *먼저*.
+                // 안 그러면 dataSize=70000 같은 attack frame이 영원히 wait에 잡혀 disconnect 안 됨.
+                if (dataSize < MinFrameSize || dataSize > MaxFrameSize)
+                {
+                    Console.WriteLine(
+                        $"[Trust] invalid frame size {dataSize} (min={MinFrameSize}, max={MaxFrameSize}) — disconnect");
+                    Disconnect();
+                    return processLen;
+                }
+
+                if(buffer.Count < dataSize)
                     break;
-                
+
                 // 여기까지 왔으면 패킷 조립 가능
 
                 // 패킷 처리
@@ -93,7 +117,8 @@ namespace Dawnholder.Server.Network
             RegisterRecv(); // 비동기적으로 데이터 수신 시작
         }
         // Send : 데이터를 큐에 추가하고 전송 시작
-        public void Send(ArraySegment<byte> _sendBuff)
+        // virtual: 테스트 subclass에서 실제 socket I/O 차단 가능 (Phase 09 (M2.5) testability).
+        public virtual void Send(ArraySegment<byte> _sendBuff)
         {
             lock (m_lock) // 멀티쓰레드 환경에서 큐에 대한 동기화를 위해 락을 사용
             {
@@ -121,7 +146,9 @@ namespace Dawnholder.Server.Network
         }
 
         // Disconnect : 연결을 종료하는 메서드
-        public void Disconnect()
+        // virtual: 테스트 subclass에서 override 가능 (실제 socket 없이 Disconnect 호출 추적).
+        // Phase 09 (M2.5) length-validation 테스트의 필수 testability hook.
+        public virtual void Disconnect()
         {
             // 멀티쓰레드 환경에서 교착상태를 방지하기 위해
             // 연결이 끊어진 상태를 나타내는 플래그를 원자적으로 설정
@@ -258,7 +285,12 @@ namespace Dawnholder.Server.Network
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"OnRecvCompleted Failed : {ex}");
+                    // Phase 09 (M2.5 Trust-boundary): decode 예외 fail-closed.
+                    // 이전엔 로그만 찍고 세션이 half-open 상태로 잔존 (recv 멈추되 socket은 살아있음).
+                    // 이제 명시적으로 Disconnect → 자원 회수 + GameSession.OnDisconnected 트리거.
+                    // RegisterRecv는 호출하지 않음 — Disconnect가 그 길을 차단.
+                    Console.WriteLine($"[Trust] OnRecvCompleted decode failed — disconnect: {ex.Message}");
+                    Disconnect();
                 }
             }
             else

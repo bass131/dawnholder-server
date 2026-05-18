@@ -32,4 +32,13 @@ public static class Constants
     /// 너무 잦으면 대역폭 폭증, 너무 띄엄띄엄이면 lag 체감 끔찍. Phase 06+에서 튜닝 가능.
     /// </summary>
     public const int SnapshotTickInterval = 5;
+
+    /// <summary>
+    /// 단일 패킷 frame 최대 크기 (byte). Phase 09 (M2.5 Trust-boundary) 도입.
+    /// PacketSession.OnRecv가 length 헤더 상한으로 사용 — 초과 시 fail-closed disconnect.
+    /// 현재 가장 큰 패킷 (S_Snapshot ~24B) 기준 175배 여유. M3 broadcast 도입 후에도
+    /// 단일 frame 4KB 한도는 정상 (broadcast batch는 별도 frame). 추후 packet-id별 min/max
+    /// 테이블 도입은 M5+ 자리잡이. 헌법 #3 (Trust Boundary) 코드 실현의 핵심 상수.
+    /// </summary>
+    public const int MaxPacketSize = 4096;
 }

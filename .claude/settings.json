@@ -18,10 +18,7 @@
     ],
     "ask": [
       "Bash(git push*)",
-      "Bash(git commit*)",
-      "Bash(rm -rf*)",
-      "Edit(**)",
-      "Write(**)"
+      "Bash(rm -rf*)"
     ],
     "deny": [
       "Bash(curl*)",

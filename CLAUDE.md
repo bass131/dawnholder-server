@@ -57,7 +57,9 @@
 - `00_Document/learning-journal/` — 학습 일지 (AI 결정에 영향 X, 본인 회고용)
 
 **충돌 시 우선순위**:
-**`CLAUDE.md`(헌법) > `00_Document/ADR/`(결정) > `00_Document/ARCHITECTURE.md`(구조) > `00_Document/PRD.md`(요구사항)**
+**`CLAUDE.md`(헌법) > `00_Document/ADR/`(결정) > `00_Document/policies/`(운영) > `00_Document/ARCHITECTURE.md`(구조) > `00_Document/PRD.md`(요구사항)**
+
+`policies/`는 ADR 결정의 *운영 풀이*라 ADR 하위. (Phase 11 M2.5 정리에서 박힘 — γ 감사 위반.)
 
 ### 01_Phases/ 작업 쪼개기
 
