@@ -1,0 +1,567 @@
+fileFormatVersion: 2
+guid: 0408123870f73d942ab79e7795724402
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4880523274685937445
+    second: Mushroom-Die_0
+  - first:
+      213: 6497299558051612606
+    second: Mushroom-Die_1
+  - first:
+      213: 1640459993709404721
+    second: Mushroom-Die_2
+  - first:
+      213: 1620020546130643878
+    second: Mushroom-Die_3
+  - first:
+      213: -2032438291353025295
+    second: Mushroom-Die_4
+  - first:
+      213: -4042034173729339270
+    second: Mushroom-Die_5
+  - first:
+      213: -8632210637703985939
+    second: Mushroom-Die_6
+  - first:
+      213: 4451060922991824286
+    second: Mushroom-Die_7
+  - first:
+      213: 6405643120833249975
+    second: Mushroom-Die_8
+  - first:
+      213: 1878989539424652003
+    second: Mushroom-Die_9
+  - first:
+      213: 8520895683359543962
+    second: Mushroom-Die_10
+  - first:
+      213: -6670348678217829923
+    second: Mushroom-Die_11
+  - first:
+      213: -1953191800096732447
+    second: Mushroom-Die_12
+  - first:
+      213: -5784191093614676159
+    second: Mushroom-Die_13
+  - first:
+      213: -9147222279066183815
+    second: Mushroom-Die_14
+  - first:
+      213: 3702124535801308871
+    second: mush_die_00
+  - first:
+      213: 229481367956354434
+    second: mush_die_01
+  - first:
+      213: 1670103219717261217
+    second: mush_die_02
+  - first:
+      213: -7259227151720521945
+    second: mush_die_03
+  - first:
+      213: 8739861909176815827
+    second: mush_die_04
+  - first:
+      213: 3677414855609903832
+    second: mush_die_05
+  - first:
+      213: -5543518009907570148
+    second: mush_die_06
+  - first:
+      213: 5040206971387981970
+    second: mush_die_07
+  - first:
+      213: 6497427893579564579
+    second: mush_die_08
+  - first:
+      213: 8639805864601813898
+    second: mush_die_09
+  - first:
+      213: -467399804517528115
+    second: mush_die_10
+  - first:
+      213: -7174897435054788220
+    second: mush_die_11
+  - first:
+      213: -7717170580801256829
+    second: mush_die_12
+  - first:
+      213: -4246672751856627301
+    second: mush_die_13
+  - first:
+      213: -7015792529201274461
+    second: mush_die_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 0
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: mush_die_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c6e1be86a6906330800000000000000
+      internalID: 3702124535801308871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_01
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 285fb9b96184f2300800000000000000
+      internalID: 229481367956354434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_02
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a7cb7d97066d2710800000000000000
+      internalID: 1670103219717261217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_03
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72fd3d5dd5b024b90800000000000000
+      internalID: -7259227151720521945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_04
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d09372c91a3a4970800000000000000
+      internalID: 8739861909176815827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_05
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8da6f50d35dc80330800000000000000
+      internalID: 3677414855609903832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_06
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1a9a75adb77113b0800000000000000
+      internalID: -5543518009907570148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_07
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 290370c498962f540800000000000000
+      internalID: 5040206971387981970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_08
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 326468e8e308b2a50800000000000000
+      internalID: 6497427893579564579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_09
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a838def78a1c6e770800000000000000
+      internalID: 8639805864601813898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_10
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcd45abaa567389f0800000000000000
+      internalID: -467399804517528115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_11
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 481b2bb0cc4ad6c90800000000000000
+      internalID: -7174897435054788220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_12
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3820f3c7e3a17e490800000000000000
+      internalID: -7717170580801256829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_13
+      rect:
+        serializedVersion: 2
+        x: 1040
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b91514cc1a9c015c0800000000000000
+      internalID: -4246672751856627301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mush_die_14
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 0
+        width: 80
+        height: 64
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a16e1fadd5e2ae90800000000000000
+      internalID: -7015792529201274461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Mushroom-Die_0: 4880523274685937445
+      Mushroom-Die_1: 6497299558051612606
+      Mushroom-Die_10: 8520895683359543962
+      Mushroom-Die_11: -6670348678217829923
+      Mushroom-Die_12: -1953191800096732447
+      Mushroom-Die_13: -5784191093614676159
+      Mushroom-Die_14: -9147222279066183815
+      Mushroom-Die_2: 1640459993709404721
+      Mushroom-Die_3: 1620020546130643878
+      Mushroom-Die_4: -2032438291353025295
+      Mushroom-Die_5: -4042034173729339270
+      Mushroom-Die_6: -8632210637703985939
+      Mushroom-Die_7: 4451060922991824286
+      Mushroom-Die_8: 6405643120833249975
+      Mushroom-Die_9: 1878989539424652003
+      mush_die_00: 3702124535801308871
+      mush_die_01: 229481367956354434
+      mush_die_02: 1670103219717261217
+      mush_die_03: -7259227151720521945
+      mush_die_04: 8739861909176815827
+      mush_die_05: 3677414855609903832
+      mush_die_06: -5543518009907570148
+      mush_die_07: 5040206971387981970
+      mush_die_08: 6497427893579564579
+      mush_die_09: 8639805864601813898
+      mush_die_10: -467399804517528115
+      mush_die_11: -7174897435054788220
+      mush_die_12: -7717170580801256829
+      mush_die_13: -4246672751856627301
+      mush_die_14: -7015792529201274461
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
