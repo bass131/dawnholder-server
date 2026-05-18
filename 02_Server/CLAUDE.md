@@ -2,18 +2,34 @@
 
 ## Layout
 
+> M3 Phase 03 (헌법 #4 봉합): 본 표는 *실제 폴더 구조와 1:1 정합*. 폴더가 약속으로만 박혀
+> 있고 실재 X면 가짜 약속 — 코드 변경 + 본 표 갱신은 *동일 commit*.
+
 ```
 02_Server/
 ├── GameServer/
-│   ├── Network/        TCP listener, session, framing
+│   ├── Network/        ServerCore + GameSession (PacketSession 상속)
+│   │   └── GameSession.cs    socket 콜백 + first-packet 게이트 + Dictionary dispatch +
+│   │                          캡슐화된 lifecycle/state 메서드 (CompleteHandshakeAndEnter
+│   │                          / RejectHandshake / SubmitMoveIntent / RespondPong)
+│   ├── Handlers/       IPacketHandler 단위 + dispatch 테이블 (M3 Phase 03 신설)
+│   │   ├── IPacketHandler.cs       internal 인터페이스 (decode + 검증 + session 호출)
+│   │   ├── HandlerRegistry.cs      Dictionary<PacketID, IPacketHandler> (한 줄 등록)
+│   │   ├── HandshakeHandler.cs     C_Handshake → version 검증 → session 캡슐화 메서드
+│   │   ├── MoveIntentHandler.cs    C_MoveIntent → InputBits.Decode → session 캡슐화 메서드
+│   │   └── PingHandler.cs          C_Ping → session 캡슐화 메서드
 │   ├── Loop/           Tick scheduler, world simulation
-│   ├── Maps/           맵별 actor, spatial query
-│   ├── Combat/         데미지 해석, hitbox 검사
-│   ├── Persistence/    DB writer queue, EF context
-│   ├── Handlers/       PacketId → handler dispatch
+│   ├── Maps/           맵별 actor, spatial query, PlayerEntity
+│   ├── Persistence/    (예정) DB writer queue, EF context
 │   └── Program.cs
-└── GameServer.Tests/   xUnit, 주로 handler + 공식 테스트
+└── GameServer.Tests/   xUnit
+    ├── Network/        핸들러 단위 + lifecycle/rate-limit/length 검증
+    ├── Loop/           TickScheduler/Metrics
+    ├── Integration/    M2 movement 통합
+    └── *.cs            InputBits / MoveIntent(GameMap 단위) / Physics / PacketRoundTrip
 ```
+
+> M4+ 예정: `Combat/` (데미지 해석, hitbox), `Persistence/` 본격 구현.
 
 ## 컨벤션
 
@@ -33,10 +49,13 @@
 - 맵 상태에 `lock`/`Monitor` (actor 모델 사용).
 - 정적 mutable 게임 상태. 싱글톤은 readonly 설정만 허용.
 - 검증 없이 클라이언트 입력을 다른 클라에게 echo.
+- 핸들러가 GameSession 내부 state(`_handshakeCompleted` / `_entityId` /
+  rate-limit window)를 *직접* 만짐 — session 캡슐화 메서드(internal)만 호출.
 
 ## 새 packet handler를 추가할 때
 
-1. `98_Shared/Protocol/`에 request/response 정의.
-2. `02_Server/GameServer/Handlers/`에 핸들러 추가.
-3. dispatch 테이블에 등록.
-4. 최소: happy 테스트 1, invalid input 테스트 1, auth 테스트 1 작성.
+1. `98_Shared/Protocol/` PDL XML에 request/response 정의 + 재생성.
+2. `02_Server/GameServer/Handlers/XxxHandler.cs` 신설 (`IPacketHandler` 구현).
+   핸들러는 *decode + 검증 + session 메서드 호출*만 — lifecycle state는 session 안.
+3. `HandlerRegistry._handlers` Dictionary에 *한 줄* 등록 (`{ PacketID.X, new XxxHandler() }`).
+4. 최소 테스트: happy 1, invalid input 1, auth(handshake 미완료 또는 권한 부재) 1.

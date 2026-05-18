@@ -2,6 +2,7 @@ using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Net;
 using System.Numerics;
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.Network;
@@ -18,6 +19,11 @@ namespace Dawnholder.Server.GameServer.Sessions;
 /// **M3 Phase 02 변경**: 헌법 #2 "Protocol is Sacred" 가짜 약속 1번째 봉합 — first-packet 강제 패턴
 ///   (handshake 통과 전까지 게임 진입 X). 옛 OnConnected의 AddPlayer 흐름을 EnterGameWorld로 이동,
 ///   HandleHandshake가 검증 통과 시 호출. mismatch는 즉시 Disconnect (헌법 #3 — timeout 안 기다림).
+/// **M3 Phase 03 변경**: 헌법 #4 "Shared Code Discipline" 가짜 약속 2번째 봉합 — 02_Server/CLAUDE.md에
+///   약속만 박혀있던 `Handlers/` 폴더를 실제 구조로. inline HandleXxx 메서드 3개를 외부 IPacketHandler
+///   구현체로 추출 + HandlerRegistry Dictionary dispatch. session은 lifecycle state(handshake 완료
+///   여부 / entityId / rate-limit window) 캡슐화한 internal 메서드만 외부 노출
+///   (RejectHandshake / SubmitMoveIntent / RespondPong). handler = decode + 검증, session = state.
 ///
 /// 콜백은 socket 워커(IOCP) 스레드. GameMap mutation은 직접 X — `EnqueueJob`으로 push.
 /// </summary>
@@ -112,7 +118,9 @@ public class GameSession : PacketSession
     // **왜 한 메서드로 묶었나**: Phase 03에서 핸들러 layer 분리 시 외부 핸들러 클래스가 *세션 내부 state를 직접 만지지 않게* 하는 게 깔끔. 핸들러는 packet decode + 검증 + (mismatch 거절 / OK이면 본 메서드 호출)만 책임.
     // **테스트 mock 역할도 겸함**: 기존 lifecycle/rate-limit 테스트는 *handshake 이후*의 race/rate 검증이라
     // TestGameSession.OnConnected에서 본 메서드 직접 호출 = handshake 우회. Send override가 socket I/O 차단해서 회신 byte는 버려짐.
-    protected void CompleteHandshakeAndEnter()
+    // **M3 Phase 03 (헌법 #4 봉합)**: protected → protected internal. Handlers/HandshakeHandler가 같은
+    // 어셈블리 외부 클래스로 호출 (internal) + 기존 테스트 subclass의 OnConnected mock에서도 호출 (protected) — 양쪽 호환.
+    protected internal void CompleteHandshakeAndEnter()
     {
         _handshakeCompleted = true;
         S_HandshakeResult ok = new S_HandshakeResult
@@ -123,6 +131,99 @@ public class GameSession : PacketSession
         };
         Send(ok.Write());
         EnterGameWorld();
+    }
+
+    // M3 Phase 03 (헌법 #4 봉합): HandshakeHandler 외부 추출 시 mismatch 거절 경로 캡슐화.
+    // 이전엔 GameSession.HandleHandshake 안에서 inline (S_HandshakeResult(ok=false) Send + Disconnect).
+    // 변경 후엔 핸들러가 검증 + reason 만 만들고 본 메서드 호출 — Send/Disconnect 두 흐름은 session 안.
+    // 헌법 #3 정합 — timeout 안 기다리고 즉시 Disconnect (rate-limit 무효화 차단).
+    internal void RejectHandshake(string reason)
+    {
+        Console.WriteLine($"[Trust] Handshake rejected — {reason}");
+
+        S_HandshakeResult fail = new S_HandshakeResult
+        {
+            ok = false,
+            serverVersion = ProtocolVersion.Current,
+            reason = reason,
+        };
+        Send(fail.Write());
+        Disconnect();
+    }
+
+    // M3 Phase 03 (헌법 #4 봉합): MoveIntentHandler 외부 추출 시 rate-limit + invalid 정규화 +
+    // tick 마샬링 캡슐화. 핸들러는 decode + InputBits.Decode만, 본 메서드는 헌법 #3 trust boundary +
+    // tick thread 마샬링 책임.
+    //
+    // **매개변수**:
+    //   inputX/jumpPressed = InputBits.Decode가 정규화한 값 (invalid 시 inputX=0 자동)
+    //   inputBitsValid = decode가 valid 플래그로 반환한 값 (false면 cheat 로그)
+    //   rawInput = 원본 byte (cheat 로그에 0x.. 박을 때만 사용)
+    //   clientTick = entity.LastClientTick 기록용
+    internal void SubmitMoveIntent(sbyte inputX, bool jumpPressed, bool inputBitsValid, byte rawInput, uint clientTick)
+    {
+        // Rate-limit 윈도우 갱신 (1초 fixed).
+        if (_rateLimitWindow.ElapsedMilliseconds >= 1000)
+        {
+            _rateLimitWindow.Restart();
+            _intentCountInWindow = 0;
+            _rateLimitLoggedThisWindow = false;
+        }
+        _intentCountInWindow++;
+        if (_intentCountInWindow > IntentRateLimitPerSecond)
+        {
+            // Phase 09 (M2.5): fail-closed drop. 윈도우당 1회만 로그 (폭주 방지).
+            // 카운트는 위에서 이미 증가 — drop 후에도 계속 누적 (oscillation 방지).
+            if (!_rateLimitLoggedThisWindow)
+            {
+                Console.WriteLine(
+                    $"[Cheat] Player {_entityId}: intent rate exceeded {IntentRateLimitPerSecond}/s — dropping intent (first warning this window)");
+                _rateLimitLoggedThisWindow = true;
+            }
+            return; // 임계 초과 intent는 tick queue 진입 X.
+        }
+
+        if (!inputBitsValid)
+        {
+            // Codex 함정 #1: invalid `11` reserved 패턴 — cheat 또는 protocol mismatch.
+            // Decode가 inputX=0으로 정상화했으니 시뮬은 폭주 X. 기록만.
+            Console.WriteLine(
+                $"[Cheat] Player {_entityId}: invalid input bits 0x{rawInput:X2} — normalized to inputX=0");
+        }
+
+        if (_entityId < 0) return; // 아직 EnterMap 안 끝남
+
+        // tick thread로 마샬링: PlayerEntity 갱신.
+        GameMap? map = GetMap();
+        if (map == null)
+        {
+            Console.WriteLine($"[Trust] GameSession: GetMap() returned null — config/shutdown race?");
+            return;
+        }
+        int eid = _entityId;
+        sbyte capturedInputX = inputX;
+        bool capturedJump = jumpPressed;
+        uint capturedClientTick = clientTick;
+        map.EnqueueJob(() =>
+        {
+            PlayerEntity? entity = map.GetPlayer(eid);
+            if (entity == null) return; // 이미 RemovePlayer 됐을 수도
+            entity.PendingInputX = capturedInputX;
+            entity.PendingJumpPressed = capturedJump;
+            entity.LastClientTick = capturedClientTick;
+        });
+    }
+
+    // M3 Phase 03 (헌법 #4 봉합): PingHandler 외부 추출 시 Pong Send 캡슐화.
+    // 핸들러는 decode + clientTimestampMs만, 본 메서드는 serverTimestampMs 박고 Send.
+    internal void RespondPong(long clientTimestampMs)
+    {
+        S_Pong pong = new S_Pong
+        {
+            clientTimestampMs = clientTimestampMs,
+            serverTimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+        };
+        Send(pong.Write());
     }
 
     // Phase 10 (M2.5 lifecycle race) 재작성:
@@ -164,152 +265,44 @@ public class GameSession : PacketSession
     {
         ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
+        PacketID id = (PacketID)packetId;
 
         // M3 Phase 02 (헌법 #2 봉합): first-packet 강제. handshake 통과 전엔 다른 dispatch X.
+        // **M3 Phase 03**: dispatch는 HandlerRegistry로 위임하되 게이트는 session 책임 (lifecycle 캡슐화).
         if (!_handshakeCompleted)
         {
-            if ((PacketID)packetId == PacketID.C_Handshake)
+            if (id == PacketID.C_Handshake && HandlerRegistry.TryGet(id, out IPacketHandler handshake))
             {
-                HandleHandshake(buffer);
+                handshake.Handle(this, buffer);
             }
             else
             {
                 Console.WriteLine(
-                    $"[Trust] First packet was {(PacketID)packetId} (not C_Handshake) — disconnecting");
+                    $"[Trust] First packet was {id} (not C_Handshake) — disconnecting");
                 Disconnect();
             }
             return;
         }
 
-        switch ((PacketID)packetId)
+        // M3 Phase 02 (Codex review #5): handshake 통과 후 재-handshake는 protocol violation.
+        // 헌법 #2 "Protocol is Sacred" 정합 — silent drop보다 명시적 거절이 진단 가치 ↑.
+        // **M3 Phase 03**: dispatch table 진입 전 게이트로 박음 — duplicate 검사가 handler 책임 아님.
+        if (id == PacketID.C_Handshake)
         {
-            case PacketID.C_Handshake:
-                // M3 Phase 02 (Codex review #5): handshake 통과 후 재-handshake는 protocol violation.
-                // 헌법 #2 "Protocol is Sacred" 정합 — silent drop보다 명시적 거절이 진단 가치 ↑.
-                // 정상 클라가 두 번 보내는 경우는 *없어야 정상* — 버그 / 악의 / 옛 클라 어느 쪽이든 hard error.
-                Console.WriteLine($"[Trust] Duplicate C_Handshake after handshake completed — protocol violation, disconnecting");
-                Disconnect();
-                break;
-
-            case PacketID.C_Ping:
-                HandlePing(buffer);
-                break;
-
-            case PacketID.C_MoveIntent:
-                HandleMoveIntent(buffer);
-                break;
-
-            default:
-                Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
-                break;
-        }
-    }
-
-    // M3 Phase 02 (헌법 #2 봉합): handshake 검증 + 게임 진입 / 거절 분기.
-    // ProtocolVersion.Current와 == 비교 (응급 모드). 호환 minor version 표는 본 마감 후 별도 Phase.
-    // mismatch 즉시 Disconnect — 헌법 #3 정합 (timeout 안 기다림 = rate-limit 무효화 차단).
-    void HandleHandshake(ArraySegment<byte> buffer)
-    {
-        C_Handshake pkt = new C_Handshake();
-        pkt.Read(buffer);
-
-        if (pkt.clientVersion != ProtocolVersion.Current)
-        {
-            string reason =
-                $"ProtocolVersion mismatch (client={pkt.clientVersion}, server={ProtocolVersion.Current})";
-            Console.WriteLine($"[Trust] Handshake rejected — {reason}");
-
-            S_HandshakeResult fail = new S_HandshakeResult
-            {
-                ok = false,
-                serverVersion = ProtocolVersion.Current,
-                reason = reason,
-            };
-            Send(fail.Write());
+            Console.WriteLine($"[Trust] Duplicate C_Handshake after handshake completed — protocol violation, disconnecting");
             Disconnect();
             return;
         }
 
-        Console.WriteLine($"[GameSession] Handshake OK (version={pkt.clientVersion})");
-        CompleteHandshakeAndEnter();
-    }
-
-    void HandlePing(ArraySegment<byte> buffer)
-    {
-        C_Ping ping = new C_Ping();
-        ping.Read(buffer);
-
-        S_Pong pong = new S_Pong
+        // M3 Phase 03 (헌법 #4 봉합): if-else 체인 / switch 제거, Dictionary dispatch.
+        // 새 핸들러 추가 = HandlerRegistry._handlers에 한 줄 등록. 누락 시 unknown drop.
+        if (HandlerRegistry.TryGet(id, out IPacketHandler handler))
         {
-            clientTimestampMs = ping.clientTimestampMs,
-            serverTimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-        };
-
-        Console.WriteLine($"[GameSession] Ping received (clientTs={ping.clientTimestampMs}) → Pong");
-        Send(pong.Write());
-    }
-
-    // Phase 04 (M2): 클라 의도 수신 → 검증 + tick thread로 마샬링.
-    // Phase 07 (M2): byte input 비트필드 도입 — InputBits.Decode로 inputX/jumpPressed 분리.
-    //                옛 |inputX|>1 범위 검증은 InputBits가 0/-1/+1만 반환하므로 의미 X —
-    //                대신 invalid `11` reserved 코드 cheat 기록으로 대체.
-    // 헌법 #3 (Trust Boundary): 모든 클라 입력은 untrusted. rate + invalid 둘 다 검증.
-    void HandleMoveIntent(ArraySegment<byte> buffer)
-    {
-        C_MoveIntent pkt = new C_MoveIntent();
-        pkt.Read(buffer);
-
-        // Rate-limit 윈도우 갱신 (1초 fixed).
-        if (_rateLimitWindow.ElapsedMilliseconds >= 1000)
-        {
-            _rateLimitWindow.Restart();
-            _intentCountInWindow = 0;
-            _rateLimitLoggedThisWindow = false;
+            handler.Handle(this, buffer);
         }
-        _intentCountInWindow++;
-        if (_intentCountInWindow > IntentRateLimitPerSecond)
+        else
         {
-            // Phase 09 (M2.5): fail-closed drop. 윈도우당 1회만 로그 (폭주 방지).
-            // 카운트는 위에서 이미 증가 — drop 후에도 계속 누적 (oscillation 방지).
-            if (!_rateLimitLoggedThisWindow)
-            {
-                Console.WriteLine(
-                    $"[Cheat] Player {_entityId}: intent rate exceeded {IntentRateLimitPerSecond}/s — dropping intent (first warning this window)");
-                _rateLimitLoggedThisWindow = true;
-            }
-            return; // 임계 초과 intent는 tick queue 진입 X.
+            Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
         }
-
-        // Phase 07 비트필드 디코드 (InputBits 단일 출처 — Codex 함정 #2: 양쪽 중복 디코드 금지).
-        (sbyte inputX, bool jumpPressed, bool valid) = InputBits.Decode(pkt.input);
-        if (!valid)
-        {
-            // Codex 함정 #1: invalid `11` reserved 패턴 — cheat 또는 protocol mismatch.
-            // Decode가 inputX=0으로 정상화했으니 시뮬은 폭주 X. 기록만.
-            Console.WriteLine(
-                $"[Cheat] Player {_entityId}: invalid input bits 0x{pkt.input:X2} — normalized to inputX=0");
-        }
-
-        if (_entityId < 0) return; // 아직 EnterMap 안 끝남
-
-        // tick thread로 마샬링: PlayerEntity 갱신.
-        GameMap? map = GetMap();
-        if (map == null)
-        {
-            Console.WriteLine($"[Trust] GameSession: GetMap() returned null — config/shutdown race?");
-            return;
-        }
-        int eid = _entityId;
-        sbyte capturedInputX = inputX;
-        bool capturedJump = jumpPressed;
-        uint clientTick = pkt.clientTick;
-        map.EnqueueJob(() =>
-        {
-            PlayerEntity? entity = map.GetPlayer(eid);
-            if (entity == null) return; // 이미 RemovePlayer 됐을 수도
-            entity.PendingInputX = capturedInputX;
-            entity.PendingJumpPressed = capturedJump;
-            entity.LastClientTick = clientTick;
-        });
     }
 }
