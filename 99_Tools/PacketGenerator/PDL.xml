@@ -70,4 +70,46 @@
         <int name="serverTick"/>
         <uint name="lastAckedClientTick"/>
     </packet>
+
+    <!-- Phase 02 (M3): Application-layer handshake. 헌법 #2 "Protocol is Sacred" 가짜 약속 1번째 봉합.
+         98_Shared/CLAUDE.md "Protocol 버전 핸드셰이크" 섹션에 "코드 미구현" 박혀있던 상태 → 본 패킷 2개로 봉합.
+
+         **흐름**:
+           1. 클라 접속 → 첫 패킷으로 C_Handshake { clientVersion } 전송 (다른 패킷 보내기 전).
+           2. 서버 GameSession이 first-packet 강제 — handshake 아니면 거절 + 즉시 Disconnect.
+           3. clientVersion == ProtocolVersion.Current → S_HandshakeResult(ok=true) 회신 + 게임 진입 (S_EnterMap).
+           4. mismatch → S_HandshakeResult(ok=false, reason=...) 회신 + 즉시 Disconnect (헌법 #3 정합 — timeout 안 기다림).
+
+         **응급 모드 결정** (5/20 데모): clientVersion == serverVersion `==` 비교만. 호환 가능 minor version 호환표는 본 마감 시.
+
+         **PacketGenerator bool/string fix 의존**: 본 패킷이 도구 결함의 첫 실수요자 (M3 Phase 02 묶음 fix).
+         CHANGELOG 2026-05-18 (M3 Phase 02) 박힘. -->
+    <packet name="C_Handshake">
+        <ushort name="clientVersion"/>
+    </packet>
+
+    <packet name="S_HandshakeResult">
+        <bool name="ok"/>
+        <ushort name="serverVersion"/>
+        <string name="reason"/>
+    </packet>
+
+    <!-- Phase 04 (M3): Player join broadcast. multi-player 환경에서 *기존 플레이어들에게* 신규 entity 알림.
+         **수신측 동작 (Phase 05 클라 remote entity)**: entityId 일치하는 remote entity가 없으면 spawn,
+         있으면 무시 (idempotent — initial roster 재전송 안전).
+         **자기 자신은 받지 않음** — sender의 OnConnected 흐름에서 자기 외 모든 세션에 broadcast.
+         spawnX/Y는 *서버가 정한* 좌표 (헌법 #1 Server Authority). -->
+    <packet name="S_PlayerJoin">
+        <int name="entityId"/>
+        <float name="spawnX"/>
+        <float name="spawnY"/>
+    </packet>
+
+    <!-- Phase 04 (M3): Player leave broadcast. multi-player 환경에서 *남은 플레이어들에게* 이탈 entity 알림.
+         **수신측 동작**: entityId 일치하는 remote entity despawn. idempotent.
+         **자기 자신은 받지 않음** — leaver의 OnDisconnected 흐름에서 자기 외 모든 세션에 broadcast.
+         S_LeaveMap과 구별: S_LeaveMap = "내가 떠난다" 통보(현재 미사용), S_PlayerLeave = "다른 플레이어가 떠났다" broadcast. -->
+    <packet name="S_PlayerLeave">
+        <int name="entityId"/>
+    </packet>
 </PDL>

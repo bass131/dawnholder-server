@@ -112,8 +112,8 @@
 | **M1** | Foundation | 서버 부팅, TCP 리스너, 한 명 접속/끊김 ✅ 완료 |
 | **M2** | First Connection | 클라 1명 접속, 캐릭터 서버 기준 이동 (예측 + 검증) ✅ 완료 |
 | **M2.5** | Hardening | Trust-boundary fail-closed + Session lifecycle race 제거 (γ 감사 후속, Phase 09/10) |
-| **M3** | Multiplayer | 두 명이 같은 맵에서 서로 보임, 부드러운 보간 |
-| **M4** | Combat | 몬스터 1종 + 근접 공격 + HP/사망/리스폰 |
+| **M3** | Multiplayer & Demo Stage | 두 명 같은 맵 broadcast + 단순 전투 시연(적/보스 placeholder, 단일 맵 3-zone) + Stage Clear UI |
+| **M4** | Combat & Map Transition | 진짜 4맵 분리(마을/사냥터/보스/종료) + 정밀 hitbox + lag compensation + portal handoff + 몬스터/보스 정식 |
 | **M5** | Persistence | DB 연결, 캐릭터/인벤토리 영속화, 재접속 복원 |
 | **M6** | Guild Foundation | 길드 생성/가입/탈퇴, 길드 창고 (동시성) |
 | **M7** | Guild Hideout | 길드 거점 인스턴스, 시설 1~2종 |
@@ -129,10 +129,13 @@
 가정 (팀원 학습 마라톤은 6월 말 학기 후 시작).
 
 ### 데모 범위
-- **옵션 C (Stretch, 목표)** — M3 도달, 두 명 같은 맵 movement. 임팩트 강함.
+- **옵션 C (Stretch, 목표)** — M3 풀세트(broadcast + 단순 전투 데모). 임팩트 강함.
 - **옵션 B (Fallback)** — M2 도달, 1인 movement (권위 + prediction + reconciliation). 임팩트 보통.
 
 → **6주 안에 C가 안 되면 발표 직전 깔끔하게 B로 다운그레이드.** 자존심 빚 X.
+
+### 중간 면담 (2026-05-20) — 응급 데모
+캡스톤 1 직전 교수 면담 = M3 풀세트 응급 시연. 단일 맵 3-zone 트릭(마을/전투/보스 + Stage Clear UI)으로 *진짜 4맵 분리 인프라 부담 회피*. 본격 4맵 + 정밀 전투는 M4로 분리. 시연 위주 / 발표자료 병렬 작성. 헌법 #1(서버 권위) #3(신뢰경계) 단순화는 OK, 위반은 X.
 
 ### 코드 베이스 출발점
 4월 학습용 ServerDev 코드 시나리오 B 부분 채택(ADR-011): ServerCore + PacketGenerator + PDL.xml
@@ -151,3 +154,4 @@
 | 2026-05-06 | 캡스톤 1 발표 섹션 + 시나리오 B / 옵션 C·B 명시 (팀원 미팅 결과) |
 | 2026-05-11 | 230줄 → 응축본 재작성 (위험/캡스톤/MVP 디테일 압축, 220줄 임계 대응) |
 | 2026-05-18 | 캡스톤 1 발표 일자 확정 (6/10) + M2 완료 + 마일스톤 표에 M2.5 (Hardening) 행 추가 (γ 감사 후속) |
+| 2026-05-18 | 5/20 교수 중간 면담 응급 데모 가닥. M3 = Multiplayer & Demo Stage (broadcast + 단순 전투 시연, 단일 맵 3-zone 트릭) / M4 = Combat & Map Transition (진짜 4맵 + 정밀 전투)로 분리. M5(DB)는 면담 후 1순위 작업. |

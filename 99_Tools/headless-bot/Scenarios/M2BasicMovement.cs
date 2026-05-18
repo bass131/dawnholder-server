@@ -52,12 +52,16 @@ public class M2BasicMovement
         Result result = new();
 
         ManualResetEventSlim connectedEv = new();
+        ManualResetEventSlim handshakeResultEv = new();
         ManualResetEventSlim enterMapEv = new();
         ManualResetEventSlim disconnectedEv = new();
 
         Vector2 spawnPos = Vector2.Zero;
         S_Snapshot? lastSnapshot = null;
         int snapshotCount = 0;
+        // M3 Phase 02: handshake 결과 캡처 — Run 메서드 본문에서 ok/reason 검사.
+        bool handshakeOk = false;
+        string handshakeReason = "";
         BotSession? session = null;
 
         Connector connector = new();
@@ -76,6 +80,13 @@ public class M2BasicMovement
                             buffer.AsSpan(2, 2));
                         switch (id)
                         {
+                            case (ushort)PacketID.S_HandshakeResult:
+                                S_HandshakeResult hr = new();
+                                hr.Read(buffer);
+                                handshakeOk = hr.ok;
+                                handshakeReason = hr.reason;
+                                handshakeResultEv.Set();
+                                break;
                             case (ushort)PacketID.S_EnterMap:
                                 S_EnterMap em = new();
                                 em.Read(buffer);
@@ -100,6 +111,24 @@ public class M2BasicMovement
             result.Reason = "connect timeout (5s)";
             return result;
         }
+
+        // M3 Phase 02 (헌법 #2 봉합): 첫 패킷 = 반드시 C_Handshake. 다른 거 먼저 보내면 서버가 Disconnect.
+        C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
+        session?.Send(handshake.Write());
+
+        if (!handshakeResultEv.Wait(TimeSpan.FromSeconds(5)))
+        {
+            result.Reason = "S_HandshakeResult timeout (5s)";
+            session?.Disconnect();
+            return result;
+        }
+        if (!handshakeOk)
+        {
+            result.Reason = $"handshake rejected: {handshakeReason}";
+            session?.Disconnect();
+            return result;
+        }
+
         if (!enterMapEv.Wait(TimeSpan.FromSeconds(5)))
         {
             result.Reason = "S_EnterMap timeout (5s)";
