@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Phase 10 쉬운 설명 — "두 이벤트 사이"의 race를 없애기</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: #0f1419;
+    color: #e4e7eb;
+    line-height: 1.75;
+    padding: 32px 24px;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  h1 { color: #ff9f43; font-size: 26px; margin: 0 0 6px 0; }
+  .subtitle { color: #94a3b8; margin-bottom: 28px; font-size: 14px; }
+  h2 {
+    color: #ff9f43; font-size: 19px; margin: 38px 0 12px 0;
+    border-bottom: 2px solid #2a3a52; padding-bottom: 6px;
+  }
+  h3 { color: #51cf66; font-size: 16px; margin: 22px 0 8px 0; }
+
+  .oneliner {
+    background: linear-gradient(135deg, #3a2c1a, #1a2332);
+    border-left: 4px solid #ff9f43;
+    padding: 16px 22px; border-radius: 8px;
+    font-size: 16px; line-height: 1.6;
+    margin: 0 0 24px 0;
+  }
+  .analogy {
+    background: #1f1a3a;
+    border-left: 4px solid #ff9f43;
+    padding: 14px 20px; border-radius: 8px;
+    margin: 14px 0;
+    font-size: 14.5px;
+  }
+  .analogy-label {
+    color: #ff9f43; font-weight: 700; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  /* Race timeline — 핵심 시각화 */
+  .race-timeline {
+    background: #0f1825;
+    border: 1px solid #2a3a52;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    font-family: "JetBrains Mono", "Consolas", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .lane-header {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr;
+    gap: 14px;
+    color: #94a3b8;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2a3a52;
+    margin-bottom: 8px;
+  }
+  .lane-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr;
+    gap: 14px;
+    padding: 6px 0;
+    align-items: start;
+  }
+  .lane-time {
+    color: #4dabf7;
+    font-weight: 700;
+  }
+  .lane-event {
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .ev-iocp { background: #1a3a5c; color: #4dabf7; }
+  .ev-tick { background: #1a3a2c; color: #51cf66; }
+  .ev-queue { background: #1a2332; color: #94a3b8; font-style: italic; }
+  .ev-bad { background: #3a1a1a; color: #ff6b6b; font-weight: 700; }
+  .ev-good { background: #1a3a2c; color: #51cf66; font-weight: 700; }
+  .ev-empty { color: #44546a; font-style: italic; }
+
+  .before-after {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    margin: 16px 0;
+  }
+  .ba-box {
+    padding: 14px 18px; border-radius: 8px;
+    background: #1a2332;
+  }
+  .ba-before { border-left: 4px solid #ff6b6b; }
+  .ba-after { border-left: 4px solid #51cf66; }
+  .ba-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .ba-before .ba-label { color: #ff6b6b; }
+  .ba-after .ba-label { color: #51cf66; }
+  .ba-content { font-size: 13.5px; }
+
+  pre {
+    background: #0f1825; padding: 12px 14px; border-radius: 6px;
+    overflow-x: auto; font-size: 12.5px; color: #cbd5e1;
+    border: 1px solid #2a3a52;
+    margin: 8px 0;
+  }
+  .diff-removed { color: #ff6b6b; text-decoration: line-through; }
+  .diff-added { color: #51cf66; }
+
+  code:not(pre code) {
+    background: #0f1825;
+    color: #4dabf7;
+    padding: 1px 6px; border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  .concept-box {
+    background: #1a3a2c;
+    border-left: 4px solid #51cf66;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin: 14px 0;
+  }
+  .concept-title {
+    color: #51cf66; font-weight: 700; font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .test-summary {
+    background: #1a2332;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  .test-row {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid #2a3a52;
+    font-size: 13.5px;
+  }
+  .test-row:last-child { border-bottom: none; }
+  .test-icon { color: #51cf66; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+  .test-num {
+    background: #ff9f43; color: #0f1419;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .summary-footer {
+    margin-top: 50px; padding: 20px 24px;
+    background: linear-gradient(135deg, #3a2c1a 0%, #1a2332 100%);
+    border-radius: 8px;
+    border-left: 4px solid #ff9f43;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  footer { margin-top: 40px; text-align: center; color: #94a3b8; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<h1>Phase 10 — "두 이벤트 사이"의 race를 없애기</h1>
+<div class="subtitle">
+  M2.5 Hardening · netcode · ~1.5시간 · commit <code>9418ad9</code>
+</div>
+
+<div class="oneliner">
+  <strong>한 줄 요약</strong>: 누가 접속하자마자 즉시 끊으면, 서버 상태가 *이상해질 수 있었어요*.
+  실제로 다른 사람 화면에 "유령 캐릭터"로 보일 수 있는 버그를 사전에 봉합했습니다.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🤔 어떤 문제였나? — "두 이벤트 사이"</h2>
+
+<div class="analogy">
+  <div class="analogy-label">🏢 비유 — 회사 입사 + 즉시 퇴사 race</div>
+  새 직원이 입사했어요. 절차는 두 단계:<br>
+  <strong>① 본인이 인사팀에 ID 카드 신청</strong> (즉시)<br>
+  <strong>② 인사팀이 다음 회의 때 그 신청 처리 → 시스템 등록</strong> (15분 후)<br><br>
+
+  그런데 이 직원이 신청 *직후* 마음 바꿔서 사직서 던지고 나가버렸어요.<br>
+  옛 규칙: "사직서? 본인 시스템 등록 안 됐으면 패스, 처리 안 함."<br>
+  결과: 인사팀이 회의 때 신청 처리 → <strong>시스템에 "이미 떠난 직원"이 등록됨</strong>. 다른 사람 눈엔 보이는데 실제론 없는 사람.
+</div>
+
+<p style="font-size:14px; color:#cbd5e1;">
+  서버에서 똑같은 일이 일어날 수 있었어요. <strong>두 스레드가 다른 속도로 일하는 사이</strong>에 race window가 열려있던 거죠.
+</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🎬 Race window 실제 진행 — 시간 순서로</h2>
+
+<h3>BEFORE (Phase 10 전) — 유령 캐릭터 발생</h3>
+
+<div class="race-timeline">
+  <div class="lane-header">
+    <div>시각</div>
+    <div>IOCP thread (네트워크)</div>
+    <div>Tick thread (50ms마다)</div>
+  </div>
+
+  <div class="lane-row">
+    <div class="lane-time">T+0ms</div>
+    <div class="lane-event ev-iocp">① OnConnected</div>
+    <div class="lane-event ev-empty">대기 중</div>
+  </div>
+  <div class="lane-row">
+    <div class="lane-time"></div>
+    <div class="lane-event ev-queue">→ AddPlayer job 큐에 넣음</div>
+    <div></div>
+  </div>
+
+  <div class="lane-row">
+    <div class="lane-time">T+5ms</div>
+    <div class="lane-event ev-iocp">② OnDisconnected</div>
+    <div class="lane-event ev-empty">대기 중</div>
+  </div>
+  <div class="lane-row">
+    <div class="lane-time"></div>
+    <div class="lane-event ev-bad">if (_entityId &lt; 0) return; ✗<br>cleanup 안 함!</div>
+    <div></div>
+  </div>
+
+  <div class="lane-row">
+    <div class="lane-time">T+50ms</div>
+    <div class="lane-event ev-empty"></div>
+    <div class="lane-event ev-tick">③ Tick — 큐 처리</div>
+  </div>
+  <div class="lane-row">
+    <div class="lane-time"></div>
+    <div></div>
+    <div class="lane-event ev-bad">AddPlayer 실행 → ghost 등록!<br>다른 사람 화면에 보임 👻</div>
+  </div>
+</div>
+
+<h3>AFTER (Phase 10 후) — 깨끗하게 봉합</h3>
+
+<div class="race-timeline">
+  <div class="lane-header">
+    <div>시각</div>
+    <div>IOCP thread</div>
+    <div>Tick thread</div>
+  </div>
+
+  <div class="lane-row">
+    <div class="lane-time">T+0ms</div>
+    <div class="lane-event ev-iocp">① OnConnected</div>
+    <div class="lane-event ev-empty">대기 중</div>
+  </div>
+  <div class="lane-row">
+    <div class="lane-time"></div>
+    <div class="lane-event ev-queue">→ AddPlayer job 큐</div>
+    <div></div>
+  </div>
+
+  <div class="lane-row">
+    <div class="lane-time">T+5ms</div>
+    <div class="lane-event ev-iocp">② OnDisconnected</div>
+    <div class="lane-event ev-empty">대기 중</div>
+  </div>
+  <div class="lane-row">
+    <div class="lane-time"></div>
+    <div class="lane-event ev-good">Interlocked.Exchange(_closing, 1)<br><em>+ 항상</em> cleanup job 큐</div>
+    <div></div>
+  </div>
+
+  <div class="lane-row">
+    <div class="lane-time">T+50ms</div>
+    <div></div>
+    <div class="lane-event ev-tick">③ Tick — 큐 순차 처리</div>
+  </div>
+  <div class="lane-row">
+    <div class="lane-time"></div>
+    <div></div>
+    <div class="lane-event ev-good">AddPlayer 실행 시점에<br>Volatile.Read(_closing) == 1<br>→ <strong>skip</strong> + 로그</div>
+  </div>
+  <div class="lane-row">
+    <div class="lane-time"></div>
+    <div></div>
+    <div class="lane-event ev-good">cleanup job 실행<br>→ players=0 ✓</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🛠️ 어떻게 고쳤나? — 핵심 3가지</h2>
+
+<h3>① <code>_closing</code> 플래그 추가</h3>
+
+<div class="before-after">
+  <div class="ba-box ba-before">
+    <div class="ba-label">BEFORE</div>
+    <div class="ba-content">
+      각 세션이 "지금 닫는 중인가?"를 알 방법이 없었음. OnDisconnected가 와도 queued job들은 그 상태를 모르고 계속 실행.
+    </div>
+  </div>
+  <div class="ba-box ba-after">
+    <div class="ba-label">AFTER</div>
+    <div class="ba-content">
+      <code>int _closing = 0;</code> 필드. <code>Interlocked</code>로 cross-thread 안전하게 1로 박음. 다른 스레드는 <code>Volatile.Read</code>로 확인.
+    </div>
+  </div>
+</div>
+
+<h3>② OnDisconnected를 "항상 큐에 넣기"로</h3>
+
+<div class="before-after">
+  <div class="ba-box ba-before">
+    <div class="ba-label">BEFORE</div>
+    <div class="ba-content">
+      <code>if (_entityId &lt; 0) return;</code> — 아직 등록 안 됐으면 그냥 끝.<br>
+      → race window 안에 들어가면 cleanup 누락.
+    </div>
+  </div>
+  <div class="ba-box ba-after">
+    <div class="ba-label">AFTER</div>
+    <div class="ba-content">
+      <code>Interlocked.Exchange(_closing, 1) == 1</code>이면 두 번째 호출이므로 종료.<br>
+      그 외엔 <strong>항상</strong> cleanup job 큐에 넣음. 멱등(idempotent)이므로 안전.
+    </div>
+  </div>
+</div>
+
+<h3>③ "owner 기준" cleanup helper</h3>
+
+<div class="before-after">
+  <div class="ba-box ba-before">
+    <div class="ba-label">BEFORE</div>
+    <div class="ba-content">
+      <code>RemovePlayer(int entityId)</code> — entityId 알아야 cleanup 가능.<br>
+      → race window 안에선 entityId가 아직 -1. cleanup 못 함.
+    </div>
+  </div>
+  <div class="ba-box ba-after">
+    <div class="ba-label">AFTER</div>
+    <div class="ba-content">
+      <code>RemovePlayerBySession(owner)</code> — 세션 참조 기준.<br>
+      → entityId 모를 때도 owner-ref로 찾아서 제거. 0건이어도 안전(멱등).
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>💡 핵심 개념 두 가지</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🏃 분산 시스템의 "두 이벤트 사이"</div>
+  <p style="margin:6px 0;">
+    A 이벤트와 B 이벤트가 <strong>서로 다른 스레드</strong>에서 진행되면, 그 사이 시간에 *세 번째 이벤트*가 끼어들 수 있어요. 이게 race condition의 본질.
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#94a3b8;">
+    이 패턴은 게임 서버만 아니라 Discord 봇, gRPC 스트림, REST API의 webhook 등 모든 long-lived 세션의 공통 함정. M3에서 사람이 늘면 더 자주 발생할 것.
+  </p>
+</div>
+
+<div class="concept-box" style="border-left-color:#4dabf7; background:#1a3a5c;">
+  <div class="concept-title" style="color:#4dabf7;">🔁 멱등성 (Idempotent) cleanup</div>
+  <p style="margin:6px 0;">
+    "같은 함수를 두 번 불러도 결과가 같다"가 멱등성. 본 Phase의 <code>RemovePlayerBySession</code>은 owner가 없으면 0건 반환 — 두 번 호출해도 OK.
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#94a3b8;">
+    분산 시스템 cleanup의 표준 패턴: <strong>"항상 큐에 넣되 함수 자체는 멱등"</strong> = 락 없이 race를 봉합하는 방법.
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🧪 무엇을 검증했나? — 결정론적 race regression</h2>
+
+<p style="font-size:14px; color:#cbd5e1;">
+  8개 자동 테스트 — 그중 핵심은 <strong>결정론적(deterministic)</strong> race 재현. CPU race를 실제로 트리거하지 않고 <code>ConcurrentQueue</code> 순서만 직접 제어해서 같은 race를 100% 재현.
+</p>
+
+<div class="test-summary">
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">A</span>
+    <span><strong>정순 race</strong> — OnConnected → OnDisconnected → tick 1회 → players=0 + "AddPlayer skipped" 로그</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">A2</span>
+    <span><strong>역순 race</strong> — OnDisconnected → OnConnected → tick 1회 → players=0 (Codex β 권장 추가)</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">B</span>
+    <span><strong>정상 flow 회귀</strong> — 일반 connect/tick/disconnect는 영향 X</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">C</span>
+    <span><strong>이중 호출 멱등성</strong> — OnDisconnected 2번 호출 → 로그 1회만</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">D</span>
+    <span><strong>rapid 100회 smoke</strong> — 누적 누수 X</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">E</span>
+    <span><strong>disconnect-only edge</strong> — connect 없이 disconnect만 와도 crash X</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">F</span>
+    <span><strong>owner 정확성</strong> — 두 세션 중 한 명만 disconnect 시 다른 사람 영향 X</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">G</span>
+    <span><strong>entityId reset</strong> — cleanup 후 낡은 id 잔존 안 함 (Codex β 권장 추가)</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🤝 Codex β 검토 — 안전망 평가</h2>
+
+<p style="font-size:14px; color:#cbd5e1;">
+  Codex β가 코드 검토 후 <strong>"전체 구조 OK"</strong>. 단, 2건 추가 권장 → 100% 반영:
+</p>
+
+<ul style="font-size:13.5px;">
+  <li><strong>cleanup 후 <code>_entityId</code> reset 누락</strong> — 기능상 ghost는 막혔지만 낡은 id가 로그/방어 로직에 남음. <code>self._entityId = -1;</code> 추가.</li>
+  <li><strong>OnDisconnected → OnConnected 역순 시나리오 미테스트</strong> — race 안전망의 대칭성 입증. ScenarioA2로 박음.</li>
+</ul>
+
+<p style="font-size:13px; color:#94a3b8;">
+  추가 발견 — <code>int _closing</code> + <code>Interlocked.Exchange</code> + <code>Volatile.Read</code> 조합이 cross-thread 플래그 용도로는 충분하다는 확인. <code>ReferenceEquals(p.Owner, owner)</code>도 owner가 null인 entity 안 건드림 (NRE 위험 X).
+</p>
+
+<div class="summary-footer">
+  <strong>한 줄 마무리</strong>: M3에서 두 명이 같은 맵에 들어가면 누군가는 분명히 connect 직후 끊을 거예요. 그때 우리 서버에 ghost player가 안 남아요. <em>비동기 race를 결정론적으로 재현 가능</em>한 테스트 패턴도 함께 박았으니, 비슷한 race가 다른 영역에서 발견돼도 같은 패턴으로 잡으면 됩니다.
+</div>
+
+<footer>
+  Phase 10 쉬운 설명 자료 · M2.5 Hardening · 2026-05-18 · 학부생 멘토링 톤<br>
+  자세한 사실 박제: <code>10-session-lifecycle-race-DONE.md</code> · 종합 보고: <code>_m25-summary.html</code>
+</footer>
+
+</body>
+</html>

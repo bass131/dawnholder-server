@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Phase 09 쉬운 설명 — 서버가 "이상한 우편물"을 받지 않게 하기</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    background: #0f1419;
+    color: #e4e7eb;
+    line-height: 1.75;
+    padding: 32px 24px;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  h1 { color: #4dabf7; font-size: 26px; margin: 0 0 6px 0; }
+  .subtitle { color: #94a3b8; margin-bottom: 28px; font-size: 14px; }
+  h2 {
+    color: #4dabf7; font-size: 19px; margin: 38px 0 12px 0;
+    border-bottom: 2px solid #2a3a52; padding-bottom: 6px;
+  }
+  h3 { color: #51cf66; font-size: 16px; margin: 22px 0 8px 0; }
+
+  .oneliner {
+    background: linear-gradient(135deg, #1a3a5c, #1a2332);
+    border-left: 4px solid #4dabf7;
+    padding: 16px 22px; border-radius: 8px;
+    font-size: 16px; line-height: 1.6;
+    margin: 0 0 24px 0;
+  }
+  .analogy {
+    background: #1f1a3a;
+    border-left: 4px solid #ff9f43;
+    padding: 14px 20px; border-radius: 8px;
+    margin: 14px 0;
+    font-size: 14.5px;
+  }
+  .analogy-label {
+    color: #ff9f43; font-weight: 700; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .before-after {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    margin: 16px 0;
+  }
+  .ba-box {
+    padding: 14px 18px; border-radius: 8px;
+    background: #1a2332;
+  }
+  .ba-before { border-left: 4px solid #ff6b6b; }
+  .ba-after { border-left: 4px solid #51cf66; }
+  .ba-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .ba-before .ba-label { color: #ff6b6b; }
+  .ba-after .ba-label { color: #51cf66; }
+  .ba-content { font-size: 13.5px; }
+
+  .scene {
+    background: #1a2332;
+    border: 1px solid #2a3a52;
+    border-radius: 8px;
+    padding: 16px 22px;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  .scene-actor {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 0;
+  }
+  .actor-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+    background: #2a3a52;
+  }
+  .actor-name { color: #94a3b8; font-size: 12px; font-weight: 700; }
+  .actor-text { color: #cbd5e1; }
+
+  pre {
+    background: #0f1825; padding: 12px 14px; border-radius: 6px;
+    overflow-x: auto; font-size: 12.5px; color: #cbd5e1;
+    border: 1px solid #2a3a52;
+    margin: 8px 0;
+  }
+  .diff-removed { color: #ff6b6b; }
+  .diff-added { color: #51cf66; }
+
+  code:not(pre code) {
+    background: #0f1825;
+    color: #4dabf7;
+    padding: 1px 6px; border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  .concept-box {
+    background: #1a3a2c;
+    border-left: 4px solid #51cf66;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin: 14px 0;
+  }
+  .concept-title {
+    color: #51cf66; font-weight: 700; font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .test-summary {
+    background: #1a2332;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  .test-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 6px 0;
+    border-bottom: 1px solid #2a3a52;
+    font-size: 13.5px;
+  }
+  .test-row:last-child { border-bottom: none; }
+  .test-icon { color: #51cf66; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+  .test-num {
+    background: #4dabf7; color: #0f1419;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .summary-footer {
+    margin-top: 50px; padding: 20px 24px;
+    background: linear-gradient(135deg, #1a3a2c 0%, #1a2332 100%);
+    border-radius: 8px;
+    border-left: 4px solid #51cf66;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  footer { margin-top: 40px; text-align: center; color: #94a3b8; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<h1>Phase 09 — 서버가 "이상한 우편물"을 받지 않게 하기</h1>
+<div class="subtitle">
+  M2.5 Hardening · netcode · ~2시간 · commit <code>82ceffd</code>
+</div>
+
+<div class="oneliner">
+  <strong>한 줄 요약</strong>: 클라이언트에서 오는 패킷을 *무조건 받아주던* 서버가 이제 *수상하면 바로 끊는다*.
+  악성 또는 깨진 패킷이 서버를 흔들 수 없게 안전망 3겹을 박았다.
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🤔 어떤 문제였나?</h2>
+
+<div class="analogy">
+  <div class="analogy-label">🏤 비유 — 우편함이 무방비라면</div>
+  당신이 운영하는 우편함이 있어요. 매일 편지가 옵니다.<br><br>
+
+  지금까지의 우편함은 — <strong>봉투 크기 검사 X / 내용 깨진 우편물 검사 X / 같은 사람이 1초에 1000통 보내도 그냥 받음</strong>.<br><br>
+
+  내일 누가 트럭 한 대 분량 종이뭉치를 우편함에 박으면? 우편함이 폭발해요. 누가 봉투에 글자가 깨진 편지를 넣으면? 당신은 그걸 열려다 손가락이 베일 수 있죠. 같은 사람이 1초에 1000통 보내면? 정상 우편물 보낼 사람들 차례가 안 와요.
+</div>
+
+<p style="font-size:14px; color:#cbd5e1;">
+  서버도 똑같았어요. γ 감사(2주간 양쪽 AI 리뷰)에서 위반 3건 짚힘 — 헌법 #3 "들어오는 모든 것은 untrusted"가 *주석에만 박혀있고 코드에는 없었음*.
+</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🛡️ 3겹 안전망 — Before vs After</h2>
+
+<h3>① 우편물 크기 검사 (Packet length validation)</h3>
+
+<div class="before-after">
+  <div class="ba-box ba-before">
+    <div class="ba-label">BEFORE</div>
+    <div class="ba-content">
+      "헤더에 박힌 크기가 4096이래? 받자. 0이래? 받자. 65535이래? 받자."<br><br>
+      → 0이면 같은 자리 무한 루프 가능. 65535는 메모리 폭증.
+    </div>
+  </div>
+  <div class="ba-box ba-after">
+    <div class="ba-label">AFTER</div>
+    <div class="ba-content">
+      "크기가 4 미만(헤더도 없음) 또는 4096 초과면 즉시 <code>Disconnect()</code> + <code>[Trust]</code> 로그."<br><br>
+      → 정상 분할 패킷(아직 다 안 옴)은 그대로 <em>대기</em>. 명백한 invalid만 끊음.
+    </div>
+  </div>
+</div>
+
+<h3>② 글자 깨진 편지 — decode 예외 발생 시</h3>
+
+<div class="before-after">
+  <div class="ba-box ba-before">
+    <div class="ba-label">BEFORE</div>
+    <div class="ba-content">
+      "패킷 읽다 예외? 로그만 찍어두자. 다음 recv는?"<br><br>
+      → 세션이 <strong>half-open</strong>: 소켓은 살아있는데 더는 데이터 안 받음. 자원 누수.
+    </div>
+  </div>
+  <div class="ba-box ba-after">
+    <div class="ba-label">AFTER</div>
+    <div class="ba-content">
+      "예외 났어? 명시적으로 <code>Disconnect()</code>."<br><br>
+      → 자원 회수 + <code>OnDisconnected</code> 정상 트리거. 깨끗하게 끊음.
+    </div>
+  </div>
+</div>
+
+<h3>③ 한 사람이 1초에 너무 많이 — Rate-limit</h3>
+
+<div class="before-after">
+  <div class="ba-box ba-before">
+    <div class="ba-label">BEFORE</div>
+    <div class="ba-content">
+      "1초에 501개째 패킷? <em>로그만</em> 찍고 그래도 처리하자."<br><br>
+      → 주석엔 "rate-limit"이라 박혀있는데 코드는 <strong>아무것도 안 막음</strong>. 약속이 가짜.
+    </div>
+  </div>
+  <div class="ba-box ba-after">
+    <div class="ba-label">AFTER</div>
+    <div class="ba-content">
+      "501개째? 그냥 <code>return</code> (drop). 카운트는 계속 증가."<br><br>
+      → 임계 후 카운트도 증가 시켜야 폭주 후 다시 정상 복귀 안 됨 (oscillation 방어).
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>💡 핵심 개념 한 가지만 가져가요</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🔒 Fail-closed (default-deny)</div>
+  <p style="margin:6px 0;">
+    보안의 기본 자세 = <strong>"모르면 거부"</strong>. 방화벽이 default-deny인 이유와 같음.
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#94a3b8;">
+    반대 = fail-open ("모르면 일단 통과"). 정상 케이스엔 편하지만 공격 면적이 커집니다. Production hardening의 첫 발걸음은 fail-open 코드를 찾아 fail-closed로 갈아엎는 것.
+  </p>
+</div>
+
+<div class="concept-box" style="border-left-color:#ff9f43; background:#3a2c1a;">
+  <div class="concept-title" style="color:#ff9f43;">📜 "주석으로 박힌 약속은 가짜다"</div>
+  <p style="margin:6px 0;">
+    이번 Phase가 <strong>실제로 봉합되는 순간</strong>이에요.
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#cbd5e1;">
+    Phase 04에서 rate-limit 주석을 "차단은 안 함, 기록만" 박았어요. 약 2주 동안 약속은 살아있는데 코드 동작은 거꾸로였죠. Phase 09에서 <code>return;</code> 한 줄로 봉합. 미래의 학습 일지 재료.
+  </p>
+  <p style="margin:6px 0; font-size:13px; color:#94a3b8;">
+    같은 패턴 1번째 = ProtocolVersion (정의만 있고 호출 0건). M3 첫 Phase에서 봉합 예정.
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🧪 무엇을 검증했나?</h2>
+
+<div class="test-summary">
+  <p style="margin:0 0 14px 0; color:#94a3b8; font-size:13px;">
+    16개 자동 테스트로 회귀 안전망 박음. 다 PASS.
+  </p>
+
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">11</span>
+    <span><strong>길이 검증</strong> — size=0/1/3 끊음 / size=4 통과(최소) / size=4097 끊음 / size=4096 통과(최대) / partial packet은 정상 대기 / batch 정상 / batch 중간 invalid도 cursor 정합 / drift 안전망</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">5</span>
+    <span><strong>rate-limit</strong> — 500개 정상 / 501개째 drop + 로그 1회 / 윈도우 리셋 후 재개 / drop 후 entity 위치 변경 안 됨 (tick 검증)</span>
+  </div>
+  <div class="test-row">
+    <span class="test-icon">✓</span>
+    <span class="test-num">+1</span>
+    <span><strong>drift 자가-verify</strong> — <code>PacketSession.MaxFrameSize</code>와 <code>Constants.MaxPacketSize</code> 항상 같은 값인지 commit 시점에 검증</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>🤝 Codex β가 잡아준 것 (γ 방식)</h2>
+
+<p style="font-size:14px; color:#cbd5e1;">
+  내가 1차 구현 후 Codex β(xhigh reasoning)가 검토. <strong>5건 권장 100% 반영</strong>:
+</p>
+
+<div class="scene">
+  <div class="scene-actor">
+    <span class="actor-icon" style="background:#4dabf7; color:#0f1419;">α</span>
+    <div><span class="actor-name">Claude</span><br>
+    <span class="actor-text">"1차 구현 끝났고 테스트 13/13 통과. 다 됐나요?"</span></div>
+  </div>
+  <div class="scene-actor">
+    <span class="actor-icon" style="background:#ff9f43; color:#0f1419;">β</span>
+    <div><span class="actor-name">Codex (xhigh)</span><br>
+    <span class="actor-text">"코드 흐름은 OK인데 5가지 함정 있어요..."</span></div>
+  </div>
+
+  <p style="margin-top:14px; padding-left:38px; font-size:13.5px;">
+    ① <strong>GetMap() null 시 silent no-op</strong>이 config bug 은폐 가능 → <code>[Trust]</code> 로그<br>
+    ② <strong>TestGameSession.Send <code>new</code> 키워드 미작동</strong> (compile-time binding) → Session.Send를 virtual로<br>
+    ③ <strong>MaxFrameSize ↔ Constants drift</strong> → 자가-verify 테스트<br>
+    ④ <strong>Console.SetOut 병렬 flake</strong> → <code>[Collection]</code> 박음<br>
+    ⑤ <strong>rate-limit drop 후 entity state 변경 안 됨 확증 없음</strong> → tick + Position 검증 테스트
+  </p>
+</div>
+
+<div class="summary-footer">
+  <strong>한 줄 마무리</strong>: 서버가 헌법 §3 "관대하게 처리 금지"를 *주석으로만* 약속했던 영역을 *코드 동작*까지 일치시킨 Phase. M3에서 두 명이 같은 맵에 들어가면 누군가는 분명히 이 안전망을 두드릴 거예요. 그때 우리 서버가 깨끗하게 거부할 수 있게 됐어요.
+</div>
+
+<footer>
+  Phase 09 쉬운 설명 자료 · M2.5 Hardening · 2026-05-18 · 학부생 멘토링 톤<br>
+  자세한 사실 박제: <code>09-trust-boundary-fail-closed-DONE.md</code> · 종합 보고: <code>_m25-summary.html</code>
+</footer>
+
+</body>
+</html>
