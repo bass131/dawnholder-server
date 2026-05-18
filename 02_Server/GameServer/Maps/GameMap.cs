@@ -47,6 +47,30 @@ public class GameMap
         => _players.Find(p => p.EntityId == entityId);
 
     /// <summary>
+    /// M3 Phase 04 (헌법 #3 정합 + Phase 10 lifecycle race 패턴 일반화): 같은 맵 전원에게 packet 전송.
+    ///
+    /// **호출 invariant**: tick thread에서만. EnqueueJob 람다 안 또는 Tick 안에서.
+    ///
+    /// **skip 규칙**:
+    ///   - owner == null (테스트용 entity)
+    ///   - owner == except (발신자 자기 자신 제외 — broadcast except self 패턴)
+    ///   - owner.IsClosing (Phase 10 lifecycle race 재발 봉합 — disconnect 중인 세션에 Send X)
+    ///
+    /// **N² 비용 인지**: 응급 모드 데모(N≤4) 환경에선 무시 가능 (250ms마다 16 패킷 = 64/s).
+    /// M4+ 다인 환경에선 S_Snapshot 배열 형태 + PDL 도구 확장 필요.
+    /// </summary>
+    public void BroadcastToAll(ArraySegment<byte> payload, GameSession? except = null)
+    {
+        foreach (PlayerEntity p in _players)
+        {
+            if (p.Owner == null) continue;
+            if (ReferenceEquals(p.Owner, except)) continue;
+            if (p.Owner.IsClosing) continue; // race 안전망
+            p.Owner.Send(payload);
+        }
+    }
+
+    /// <summary>
     /// TickScheduler가 매 50ms마다 호출. 단일 thread.
     /// </summary>
     public void Tick(long tickNumber)
@@ -77,11 +101,14 @@ public class GameMap
 
         // 3) Snapshot 브로드캐스트. 매 5 tick(=250ms).
         //    헌법 #3 (Trust Boundary): 좌표는 *서버가 정한 것만* 전송. 클라 보고 받지 않음.
+        //    **M3 Phase 04**: 각 entity별 packet을 *전원에게* broadcast (자기 자신 포함).
+        //      - 자기 entity packet: reconcile 진입 (lastAckedClientTick 본인 것만 의미)
+        //      - 남 entity packet: remote view 업데이트 (lastAckedClientTick은 무시 권장 — 클라 책임 Phase 05)
+        //      N² 비용 인지 (응급 모드 데모 N≤4 환경 무시 가능 / M4+ 배열 형태 PDL 확장)
         if (tickNumber % Constants.SnapshotTickInterval == 0)
         {
             foreach (PlayerEntity p in _players)
             {
-                if (p.Owner == null) continue;
                 S_Snapshot pkt = new S_Snapshot
                 {
                     entityId = p.EntityId,
@@ -92,8 +119,7 @@ public class GameMap
                     serverTick = (int)tickNumber,
                     lastAckedClientTick = p.LastClientTick
                 };
-                // 본 Phase는 본인 1명만 — unicast. 다인은 M3+에서 broadcast로 확장.
-                p.Owner.Send(pkt.Write());
+                BroadcastToAll(pkt.Write()); // 자기 자신 포함 전원
             }
         }
     }

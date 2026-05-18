@@ -61,6 +61,11 @@ public class GameSession : PacketSession
     // 시 null 반환 → 호출자가 안전 no-op. 운영 시 정상 흐름엔 영향 X.
     protected virtual GameMap? GetMap() => GameWorld.Instance?.Map;
 
+    // M3 Phase 04 (Phase 10 lifecycle race 재발 봉합 패턴 일반화): GameMap.BroadcastToAll에서
+    // 발신 시 closing 중인 세션 skip 판별용 internal getter. broadcast 발신은 tick thread에서만
+    // 호출되므로 Volatile.Read로 memory barrier 보장.
+    internal bool IsClosing => Volatile.Read(ref _closing) == 1;
+
     public override void OnConnected(EndPoint endPoint)
     {
         Console.WriteLine($"[GameSession] OnConnected from {endPoint} — awaiting C_Handshake");
@@ -97,6 +102,12 @@ public class GameSession : PacketSession
             // Phase 03 검증 단계엔 (3, 0)으로 잠시 바꿔 Unity 캐릭터가 그 자리에 뜨는지
             // 캡처로 시각 확인 완료 (DONE.md AC 섹션 참조).
             Vector2 spawnPos = new Vector2(0f, 0f);
+
+            // M3 Phase 04 (initial roster 순서): AddPlayer *전에* 기존 player 목록을 snapshot.
+            // 자기 자신이 _players에 들어간 다음에 initial roster 만들면 자기에게 자기 PlayerJoin 보내게 됨.
+            // 깔끔하게 분리: 기존 entity 목록 먼저 캡처 → 자기 add → 자기에게 기존 entity 다발 Send → 자기 외 broadcast.
+            List<PlayerEntity> existing = new(map.Players);
+
             PlayerEntity entity = map.AddPlayer(self, spawnPos);
             self._entityId = entity.EntityId;
 
@@ -108,8 +119,32 @@ public class GameSession : PacketSession
             };
             self.Send(pkt.Write());
 
+            // M3 Phase 04: Initial roster — 자기에게 기존 entity 전원의 S_PlayerJoin 다발 Send.
+            // race 안전: closing 중인 owner의 entity는 skip (race window에서 곧 disappear).
+            foreach (PlayerEntity existingEntity in existing)
+            {
+                if (existingEntity.Owner != null && existingEntity.Owner.IsClosing) continue;
+                S_PlayerJoin rosterEntry = new S_PlayerJoin
+                {
+                    entityId = existingEntity.EntityId,
+                    spawnX = existingEntity.Position.X,
+                    spawnY = existingEntity.Position.Y,
+                };
+                self.Send(rosterEntry.Write());
+            }
+
+            // M3 Phase 04: 자기 외 모든 player에게 신규 entity broadcast.
+            // BroadcastToAll의 IsClosing skip이 race window 방어.
+            S_PlayerJoin joinNotice = new S_PlayerJoin
+            {
+                entityId = entity.EntityId,
+                spawnX = entity.Position.X,
+                spawnY = entity.Position.Y,
+            };
+            map.BroadcastToAll(joinNotice.Write(), except: self);
+
             Console.WriteLine(
-                $"[Map] Player {entity.EntityId} entered at ({entity.Position.X}, {entity.Position.Y})");
+                $"[Map] Player {entity.EntityId} entered at ({entity.Position.X}, {entity.Position.Y}) — roster:{existing.Count}, broadcasted join");
         });
     }
 
@@ -248,10 +283,24 @@ public class GameSession : PacketSession
         GameSession self = this;
         map.EnqueueJob(() =>
         {
+            // M3 Phase 04: PlayerLeave broadcast를 위해 *cleanup 전*에 entityId 캡처.
+            // 이미 -1이면 (AddPlayer 안 끝남 race) leave broadcast skip.
+            int leavingEntityId = self._entityId;
+
             // owner reference 기반 cleanup — entityId가 race window 안 -1이어도 안전.
             // AddPlayer가 같은 batch에 들어왔으면 그 entity도 같이 제거 (멱등).
             bool removed = map.RemovePlayerBySession(self);
-            Console.WriteLine($"[Map] Session cleanup (entityId={self._entityId}, removed={removed})");
+
+            // M3 Phase 04: 자기 외 남은 player 전원에게 leave broadcast.
+            // BroadcastToAll의 IsClosing skip은 *다른* 동시 disconnect 세션 추가 안전망.
+            // 자기 자신은 BroadcastToAll의 except로 차단 + 이미 _players에서 빠진 상태(자기 owner X).
+            if (removed && leavingEntityId >= 0)
+            {
+                S_PlayerLeave leaveNotice = new S_PlayerLeave { entityId = leavingEntityId };
+                map.BroadcastToAll(leaveNotice.Write(), except: self);
+            }
+
+            Console.WriteLine($"[Map] Session cleanup (entityId={leavingEntityId}, removed={removed})");
             // Codex β 권장(Phase 10): cleanup 후 _entityId reset.
             // 기능상 ghost는 막혔지만 낡은 id가 로그/방어 로직에 남는 것 차단.
             self._entityId = -1;
