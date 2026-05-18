@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# .githooks/pre-commit
+# git commit 시점 안전망 — Claude Code의 PostToolUse 훅이 우회 가능한 경로(외부 에디터,
+# Claude 안 거친 직접 편집 등)를 git 자체 단계에서 봉합.
+#
+# 도입 시점: 2026-05-18 (정유현 PR #27 분석에서 Phase 04~06 형식 드리프트 발견)
+# - Phase 01~03 -DONE.md: 표준 frontmatter ✅ (PostToolUse hook 통과 흔적)
+# - Phase 04~06 -DONE.md: frontmatter 누락 (이모지 형식) — hook 우회 흔적
+# - 진단: 사용자 선호 명시 시 Claude가 hook 차단 메시지 보고도 진행 가능 +
+#         외부 에디터 편집 시 hook 작동 불가. 결정 = git commit 시점 강제.
+#
+# 적용 방법 (각 머신에 1회):
+#   git config core.hooksPath .githooks
+#
+# 우회 (의도적):
+#   git commit --no-verify    # 학습용 임시 작업 등. 단 main 보호 룰이 별도 차단 가능.
+
+set -e
+
+# 1) 변경된 *-DONE.md 파일 목록 추출 (staged + 신규)
+DONE_FILES=$(git diff --cached --name-only --diff-filter=AM 2>/dev/null | grep -E '\-DONE\.md$' || true)
+
+if [ -z "$DONE_FILES" ]; then
+  # -DONE.md 변경 없음 — 통과
+  exit 0
+fi
+
+# 2) validate-phase-gate.sh 존재 확인
+GATE=".claude/hooks/validate-phase-gate.sh"
+if [ ! -x "$GATE" ]; then
+  echo "⚠ pre-commit: $GATE 가 없거나 실행 권한 X — 검사 건너뜀"
+  echo "  (정합 위해선 chmod +x $GATE)"
+  exit 0
+fi
+
+# 3) 각 -DONE.md에 대해 검증
+FAIL_COUNT=0
+FAIL_LIST=()
+
+for FILE in $DONE_FILES; do
+  # validate-phase-gate.sh는 CLAUDE_TOOL_INPUT_FILE env var 기대
+  if ! CLAUDE_TOOL_INPUT_FILE="$FILE" "$GATE"; then
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+    FAIL_LIST+=("$FILE")
+  fi
+done
+
+# 4) 결과 처리
+if [ "$FAIL_COUNT" -gt 0 ]; then
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "❌ pre-commit 차단 — -DONE.md 형식 검증 실패 ($FAIL_COUNT 건)"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  for F in "${FAIL_LIST[@]}"; do
+    echo "  ✗ $F"
+  done
+  echo ""
+  echo "📋 표준 형식: .claude/templates/done-md-template.md"
+  echo ""
+  echo "필수 항목:"
+  echo "  - YAML frontmatter: summary / phase / work-id / status / completed_at / commit"
+  echo "  - 필수 섹션 5개: TL;DR / 5단계 보고 / AC 검증 결과 / 결정 흐름 / 학습 일지 후보 키워드"
+  echo "  - 5단계 보고 라벨: '무엇을 만들었나' / '왜 필요한가' / '어떻게 만들었나' / '테스트 결과' / '다음 스텝'"
+  echo ""
+  echo "💡 학습용 임시 작업이면: git commit --no-verify (의도적 우회)"
+  echo "   단 main 보호 룰이 PR 단계에서 다시 검사할 수 있음."
+  echo ""
+  exit 1
+fi
+
+exit 0

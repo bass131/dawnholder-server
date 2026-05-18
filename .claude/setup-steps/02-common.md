@@ -252,12 +252,51 @@ VS Code 자체는 이미 깔려있어요 (지금 본인이 보고 있는 게 그
 
 ---
 
-## 8. 공통 단계 완료
+## 8. Git hooks 공유 경로 활성화 (`core.hooksPath`)
+
+```
+8단계: 우리 레포의 `.githooks/` 디렉토리를 본인 머신의 git hook으로 활성화할게요.
+이게 박혀야 commit 시점에 -DONE.md 형식 검증 + 다른 안전망이 자동으로 돌아요.
+
+레포 루트에서 다음 명령 실행해주세요:
+
+  git config core.hooksPath .githooks
+
+확인:
+
+  git config --get core.hooksPath
+```
+
+**판정**:
+- 출력 `.githooks` → "OK, 다음으로"
+- 빈 출력 또는 다른 값 → **STOP**:
+  ```
+  ⛔ core.hooksPath가 .githooks로 박히지 않았어요.
+
+  이게 안 박히면 본인이 외부 에디터로 -DONE.md를 잘못된 형식으로
+  박아도 commit이 그냥 통과해버려요. 우리 레포에 *지역 컨벤션 드리프트*
+  사고가 한 번 있었던 영역(정유현 PR #27 분석 결과).
+
+  다시 실행:
+    cd <레포 루트>
+    git config core.hooksPath .githooks
+
+  여전히 안 박히면 git 버전 확인 (`git --version` 2.9 이상 필요).
+  ```
+
+**왜 이 설정이 필요한가** (학부생 안내):
+- `.git/hooks/`는 git의 기본 hook 폴더지만 *각 머신 로컬*이라 공유 X.
+- `.githooks/`는 우리 레포에 *commit된 공유 hook 폴더*. `core.hooksPath` 설정으로 git이 이 폴더를 보게 됨.
+- 한 번 박으면 그 머신에 영구. clone마다 1회 필요.
+
+---
+
+## 9. 공통 단계 완료
 
 모든 검증 통과 시 사용자에게:
 
 ```
-공통 환경 검증 8단계 다 통과했어요. 잘 따라오셨어요.
+공통 환경 검증 9단계 다 통과했어요. 잘 따라오셨어요.
 
 다음 단계: 역할별 셋업 ({role})
 - backend면 MSSQL LocalDB 시작 + PacketGenerator + 서버 실행 검증
