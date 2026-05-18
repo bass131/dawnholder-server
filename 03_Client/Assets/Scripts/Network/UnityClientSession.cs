@@ -3,6 +3,7 @@ using System.Buffers.Binary;
 using System.Net;
 using Dawnholder.Client.Input;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.State;
 using Shared.Protocol;
 using UnityEngine;
 
@@ -30,6 +31,11 @@ namespace Dawnholder.Client.Network
         // 본 플래그는 main thread에서 HandleHandshakeResult가 박음(dispatcher 큐 안) → 같은 thread의
         // SendIntent에서 visibility 보장. ok 회신 도착 전 송신은 drop (헌법 #2 first-packet 정합).
         public bool HandshakeOk { get; private set; }
+
+        // M3 Phase 05: 본인 entityId. HandleEnterMap에서 박음 (main thread).
+        // HandleSnapshot이 entityId 비교로 본인/타인 분기. null이면 (EnterMap 도착 전 Snapshot race)
+        // 해당 Snapshot drop — 다음 Snapshot에서 정상화.
+        public int? LocalEntityId { get; private set; }
 
         // Phase 05: Editor only 송신 latency 시뮬레이션.
         //   0이면 직통 (Release/일반 Play 동작).
@@ -89,6 +95,9 @@ namespace Dawnholder.Client.Network
             MainThreadDispatcher.Enqueue(() =>
             {
                 Debug.Log($"[Unity] OnDisconnected from {ep}");
+                // M3 Phase 05: 모든 타인 entity cleanup — 메모리 누수 차단.
+                if (RemoteEntityRegistry.Instance != null)
+                    RemoteEntityRegistry.Instance.Clear();
                 if (Instance == this) Instance = null;
             });
         }
@@ -124,6 +133,14 @@ namespace Dawnholder.Client.Network
 
                 case PacketID.S_Snapshot:
                     HandleSnapshot(buffer);
+                    break;
+
+                case PacketID.S_PlayerJoin:
+                    HandlePlayerJoin(buffer);
+                    break;
+
+                case PacketID.S_PlayerLeave:
+                    HandlePlayerLeave(buffer);
                     break;
 
                 default:
@@ -174,6 +191,7 @@ namespace Dawnholder.Client.Network
 
             MainThreadDispatcher.Enqueue(() =>
             {
+                LocalEntityId = eid; // M3 Phase 05: 본인 entityId 박음 — Snapshot 분기 기준점.
                 Debug.Log($"[Unity] EnterMap as entity {eid} at server spawn ({x}, {y})");
                 if (LocalPlayerController.Instance != null)
                     LocalPlayerController.Instance.SetServerPosition(new Vector3(x, y, 0f));
@@ -182,16 +200,19 @@ namespace Dawnholder.Client.Network
             });
         }
 
-        // Phase 04: 서버 권위 좌표 적용. prediction 없음 → 매 250ms 스냅 (lag 체감).
-        // Phase 05: prediction 도입 → SetServerPosition 직접 호출 X.
+        // Phase 04 (M2): 서버 권위 좌표 적용. prediction 없음 → 매 250ms 스냅 (lag 체감).
+        // Phase 05 (M2): prediction 도입 → SetServerPosition 직접 호출 X.
         //   OnServerSnapshot에 위임 → predictor가 threshold 비교 후 snap or 무시.
-        // Phase 06: lastAckedClientTick + input replay로 snap → 부드러운 reconcile.
-        // Phase 07: vx/vy 추가 — Y축 prediction(점프) 도입으로 velocity 동기화 필요.
+        // Phase 06 (M2): lastAckedClientTick + input replay로 snap → 부드러운 reconcile.
+        // Phase 07 (M2): vx/vy 추가 — Y축 prediction(점프) 도입으로 velocity 동기화 필요.
+        // Phase 05 (M3): entityId 분기. 본인 → 기존 reconcile flow (회귀 X 보장).
+        //   타인 → RemoteEntityRegistry로 보간 buffer push (지연 spawn 패턴).
         void HandleSnapshot(ArraySegment<byte> buffer)
         {
             S_Snapshot pkt = new S_Snapshot();
             pkt.Read(buffer);
 
+            int eid = pkt.entityId;
             float x = pkt.x;
             float y = pkt.y;
             float vx = pkt.vx; // Phase 07: 서버 권위 속도
@@ -201,8 +222,55 @@ namespace Dawnholder.Client.Network
 
             MainThreadDispatcher.Enqueue(() =>
             {
-                if (LocalPlayerController.Instance != null)
-                    LocalPlayerController.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
+                // M3 Phase 05: LocalEntityId 모르면 (EnterMap 전 Snapshot 도착 race) drop.
+                if (LocalEntityId == null) return;
+
+                if (eid == LocalEntityId.Value)
+                {
+                    // 본인 path — 기존 reconcile flow 그대로 (회귀 X 보장).
+                    if (LocalPlayerController.Instance != null)
+                        LocalPlayerController.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
+                }
+                else
+                {
+                    // 타인 path — registry 위임 (지연 spawn 포함).
+                    if (RemoteEntityRegistry.Instance != null)
+                        RemoteEntityRegistry.Instance.UpdateSnapshot(eid, x, y);
+                }
+            });
+        }
+
+        // M3 Phase 05: 타인 entity spawn. Phase 04 broadcast 인프라 (S_PlayerJoin) 수신측 dispatch.
+        // 본인 entityId가 잘못 박혀 도착해도 무시 (idempotent 안전망 — 정상 흐름엔 X).
+        void HandlePlayerJoin(ArraySegment<byte> buffer)
+        {
+            S_PlayerJoin pkt = new S_PlayerJoin();
+            pkt.Read(buffer);
+
+            int eid = pkt.entityId;
+            float x = pkt.spawnX;
+            float y = pkt.spawnY;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (LocalEntityId != null && eid == LocalEntityId.Value) return;
+                if (RemoteEntityRegistry.Instance != null)
+                    RemoteEntityRegistry.Instance.Spawn(eid, x, y);
+            });
+        }
+
+        // M3 Phase 05: 타인 entity despawn. Phase 04 broadcast 인프라 (S_PlayerLeave) 수신측 dispatch.
+        void HandlePlayerLeave(ArraySegment<byte> buffer)
+        {
+            S_PlayerLeave pkt = new S_PlayerLeave();
+            pkt.Read(buffer);
+
+            int eid = pkt.entityId;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (RemoteEntityRegistry.Instance != null)
+                    RemoteEntityRegistry.Instance.Despawn(eid);
             });
         }
 
