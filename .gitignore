@@ -9,6 +9,10 @@ obj/
 *.sln.docstates
 .vs/
 
+# 임시 박제 prompt 파일 (Phase 마감 시점에 노션 박제용 명세 등 — 박은 후 역할 끝)
+# 2026-05-18 박힘 — Phase 02 마감 시점 codex-notion-session-log-prompt.tmp.md 사고로 표면화
+*.tmp.md
+
 # Build output for 98_Shared/ DLL pipeline (ADR-010)
 # **/*는 모든 깊이 매칭 — Plugins/Shared/Shared.dll 같이 한 단계 더 들어간 것도 잡음
 03_Client/Assets/Plugins/**/*.dll
