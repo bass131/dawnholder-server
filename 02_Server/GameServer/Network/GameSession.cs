@@ -271,6 +271,34 @@ public class GameSession : PacketSession
         });
     }
 
+    // M3 Phase 06 Step 5 (응급 전투): AttackHandler 외부 추출 시 tick 마샬링 캡슐화.
+    // 핸들러는 decode + targetEntityId만, 본 메서드는 헌법 #3 trust boundary 진입 게이트 +
+    // tick thread 마샬링 책임 (SubmitMoveIntent 패턴 정합).
+    //
+    // **헌법 #3 (Trust Boundary) — attacker 강제**: 패킷에 attacker 필드 *없음*. attacker는 본 메서드가
+    // `_entityId`에서 강제 — 다른 entityId 도용 차단. Codex β 사전 검증 HIGH #2 봉합 정합.
+    //
+    // **handshake 미완 방어**: 이론상 `OnRecvPacket`의 first-packet 게이트가 잡아 본 메서드 진입
+    // 안 되지만, 방어적으로 `_entityId < 0` 검사 (SubmitMoveIntent 정합 패턴). EnterGameWorld
+    // 안 끝난 race window에서도 안전.
+    //
+    // **헌법 #5 정합**: mutation은 EnqueueJob 람다 안 — GameMap.ProcessAttack이 tick thread에서
+    // 6단계 검증 (handshake/target/alive/cooldown/range/data) + S_HitResult/S_EntityDeath broadcast 처리.
+    internal void SubmitAttack(int targetEntityId)
+    {
+        if (_entityId < 0) return; // 아직 EnterGameWorld 안 끝남 (방어적)
+
+        GameMap? map = GetMap();
+        if (map == null)
+        {
+            Console.WriteLine($"[Trust] GameSession.SubmitAttack: GetMap() returned null — config/shutdown race?");
+            return;
+        }
+        int attackerEntityId = _entityId;
+        int targetId = targetEntityId;
+        map.EnqueueJob(() => map.ProcessAttack(attackerEntityId, targetId));
+    }
+
     // M3 Phase 03 (헌법 #4 봉합): PingHandler 외부 추출 시 Pong Send 캡슐화.
     // 핸들러는 decode + clientTimestampMs만, 본 메서드는 serverTimestampMs 박고 Send.
     internal void RespondPong(long clientTimestampMs)

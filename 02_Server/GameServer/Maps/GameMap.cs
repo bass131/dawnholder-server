@@ -100,6 +100,79 @@ public class GameMap
         => _enemies.TryGetValue(entityId, out EnemyEntity? e) ? e : null;
 
     /// <summary>
+    /// M3 Phase 06 Step 5 (응급 전투 — 서버 권위 공격 해석): tick thread 안에서 attack 1건 처리.
+    ///
+    /// **호출 invariant**: tick thread에서만. `GameSession.SubmitAttack`이 `EnqueueJob` 람다로 박음.
+    ///
+    /// **6단계 검증 (헌법 #3 Trust Boundary 정합 — fail-closed silent drop)**:
+    ///   1. attacker player 존재 — 없으면 silent drop (race window 또는 cheat).
+    ///   2. target enemy 존재 — `GetEnemyById(id) == null`이면 silent drop. **player id 던지면
+    ///      자동 차단** (PvP 미지원 응급 약속). 같은 map invariant도 자동 정합 (별 map 검사 불필요).
+    ///   3. target alive — `IsDead`면 silent drop. KillBroadcast 후 후속 attack idempotent no-op.
+    ///   4. rate-limit 500ms — `Environment.TickCount64 - LastAttackTickMs &lt; AttackCooldownMs`이면
+    ///      silent drop. cheat가 매 frame 공격 보내도 잘림.
+    ///   5. range 검증 — 서버 권위 position만으로 `dist² &lt; AttackRangeSquared` (sqrt 회피).
+    ///      클라 좌표는 안 봄 (헌법 #1/#3 정합).
+    ///   6. (handshake 미완은 `GameSession.SubmitAttack`이 진입 게이트에서 잡음 — `_entityId &lt; 0` 방어적
+    ///      검사. tick까지 도달 시 attacker player가 _players에 있어 step 1로 자동 흡수).
+    ///
+    /// **통과 시 처리**:
+    ///   - `attacker.LastAttackTickMs` 갱신 (rate-limit 윈도우 next cycle 시작점).
+    ///   - `target.Hp -= BaseDamage` (고정 데미지, 헌법 #1).
+    ///   - `S_HitResult` broadcast 전원 (`except: null` — attacker도 local damage text 렌더 정합).
+    ///   - Hp ≤ 0 → `S_EntityDeath` broadcast 전원 + `_enemies.Remove`로 map에서 제거.
+    ///     `IsDead`는 derived(`Hp &lt;= 0`)라 별도 flag set 불필요 — death broadcast 1회 보장은
+    ///     step 3의 `IsDead` 검사가 흡수 (이미 dead enemy에 다시 공격 와도 step 3 silent drop).
+    /// </summary>
+    internal void ProcessAttack(int attackerEntityId, int targetEntityId)
+    {
+        // 1) attacker player exists
+        PlayerEntity? attacker = GetPlayer(attackerEntityId);
+        if (attacker == null) return;
+
+        // 2) target enemy exists (player id 던지면 자동 silent drop — PvP 미지원 응급 약속)
+        EnemyEntity? target = GetEnemyById(targetEntityId);
+        if (target == null) return;
+
+        // 3) target alive (idempotent — kill broadcast 후 후속 attack no-op)
+        if (target.IsDead) return;
+
+        // 4) rate-limit 500ms silent drop
+        long now = Environment.TickCount64;
+        if (now - attacker.LastAttackTickMs < CombatConstants.AttackCooldownMs) return;
+
+        // 5) range 검증 — 서버 권위 position만 사용, dist² < range² 패턴
+        float dx = target.X - attacker.Position.X;
+        float dy = target.Y - attacker.Position.Y;
+        float distSquared = dx * dx + dy * dy;
+        if (distSquared >= CombatConstants.AttackRangeSquared) return;
+
+        // 통과 → 권위 mutation 진입
+        attacker.LastAttackTickMs = now;
+        target.Hp -= CombatConstants.BaseDamage;
+
+        S_HitResult hit = new S_HitResult
+        {
+            attackerEntityId = attacker.EntityId,
+            targetEntityId = target.EntityId,
+            damage = CombatConstants.BaseDamage,
+            currentHp = target.Hp,
+            maxHp = target.MaxHp,
+        };
+        BroadcastToAll(hit.Write()); // 전원 (attacker 자기 포함) — except=null
+
+        // death 처리. IsDead 체크는 step 3의 *진입 검사*가 흡수하지만 (이미 dead면 여기 도달 X),
+        // damage 적용 후 Hp ≤ 0 박힌 첫 시점은 본 분기 1회 — `_enemies.Remove`로 map에서 빼면
+        // 다음 attack job은 step 2(GetEnemyById null)에서 잘림 = idempotent 보장.
+        if (target.Hp <= 0)
+        {
+            S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
+            BroadcastToAll(death.Write());
+            _enemies.Remove(target.EntityId);
+        }
+    }
+
+    /// <summary>
     /// M3 Phase 04 (헌법 #3 정합 + Phase 10 lifecycle race 패턴 일반화): 같은 맵 전원에게 packet 전송.
     ///
     /// **호출 invariant**: tick thread에서만. EnqueueJob 람다 안 또는 Tick 안에서.
