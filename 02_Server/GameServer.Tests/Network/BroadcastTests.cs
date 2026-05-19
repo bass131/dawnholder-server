@@ -87,11 +87,41 @@ public class BroadcastTests : IDisposable
         // s1이 s2의 PlayerJoin 1건 받았는지 검증
         List<byte[]> s1New = s1.SentPackets.Skip(s1BaselineCount).ToList();
         Assert.Equal(1, CountPacketsOfType(s1New, PacketID.S_PlayerJoin));
-        // entityId=2 (s2)
+        // Phase 06: GameMap ctor enemy spawn(entityId=1)에 따른 player id offset 갱신 — s2=entityId 3.
         S_PlayerJoin parsed = new S_PlayerJoin();
         byte[] joinPacket = s1New.First(p => PacketIdOf(p) == PacketID.S_PlayerJoin);
         parsed.Read(new ArraySegment<byte>(joinPacket));
-        Assert.Equal(2, parsed.entityId);
+        Assert.Equal(3, parsed.entityId);
+    }
+
+    [Fact]
+    public void NewSession_ReceivesActiveEnemyRoster_OnEnter()
+    {
+        // M3 Phase 06 Step 4: 신규 client EnterGameWorld 시 active enemy roster(`S_EntitySpawn`)
+        // 다발 전송 검증. Phase 04 player initial roster 패턴과 정합.
+        //
+        // **검증 invariant**:
+        //   - GameMap ctor가 Normal enemy 1마리 spawn (entityId=1) → s1 OnConnected 시 S_EntitySpawn 1건 받음
+        //   - entityKind=Normal=0, currentHp=maxHp=NormalEnemyMaxHp(=30), 좌표는 NormalEnemySpawn(X,Y)
+        //   - 헌법 #1 정합: server-only spawn 흐름 (클라가 트리거 X)
+        TestGameSession s1 = new(_map);
+        s1.OnConnected(Ep());
+        _map.Tick(1); // EnterGameWorld job 처리 → enemy roster Send 포함
+
+        // s1 받은 패킷에 S_EntitySpawn 1건 박혔는지
+        int enemySpawnCount = CountPacketsOfType(s1.SentPackets, PacketID.S_EntitySpawn);
+        Assert.Equal(1, enemySpawnCount);
+
+        // 페이로드 내용 검증 (ctor 박힌 NormalEnemy와 1:1 정합)
+        S_EntitySpawn parsed = new S_EntitySpawn();
+        byte[] spawnPacket = s1.SentPackets.First(p => PacketIdOf(p) == PacketID.S_EntitySpawn);
+        parsed.Read(new ArraySegment<byte>(spawnPacket));
+        Assert.Equal(1, parsed.entityId); // GameMap ctor가 첫 번째로 enemy id=1 발급
+        Assert.Equal((byte)Dawnholder.Server.GameServer.Combat.EnemyKind.Normal, parsed.entityKind);
+        Assert.Equal(GameMap.NormalEnemySpawnX, parsed.x);
+        Assert.Equal(GameMap.NormalEnemySpawnY, parsed.y);
+        Assert.Equal(GameMap.NormalEnemyMaxHp, parsed.currentHp);
+        Assert.Equal(GameMap.NormalEnemyMaxHp, parsed.maxHp);
     }
 
     [Fact]
@@ -113,7 +143,8 @@ public class BroadcastTests : IDisposable
         S_PlayerJoin parsed = new S_PlayerJoin();
         byte[] rosterPacket = s2.SentPackets.First(p => PacketIdOf(p) == PacketID.S_PlayerJoin);
         parsed.Read(new ArraySegment<byte>(rosterPacket));
-        Assert.Equal(1, parsed.entityId); // s1
+        // Phase 06: GameMap ctor enemy spawn(entityId=1)에 따른 player id offset 갱신 — s1=entityId 2.
+        Assert.Equal(2, parsed.entityId);
     }
 
     [Fact]
@@ -140,7 +171,8 @@ public class BroadcastTests : IDisposable
         S_PlayerLeave parsed = new S_PlayerLeave();
         byte[] leavePacket = s2New.First(p => PacketIdOf(p) == PacketID.S_PlayerLeave);
         parsed.Read(new ArraySegment<byte>(leavePacket));
-        Assert.Equal(1, parsed.entityId); // s1
+        // Phase 06: GameMap ctor enemy spawn(entityId=1)에 따른 player id offset 갱신 — s1=entityId 2.
+        Assert.Equal(2, parsed.entityId);
     }
 
     [Fact]
@@ -204,7 +236,13 @@ public class BroadcastTests : IDisposable
         int s2RosterCount = CountPacketsOfType(s2.SentPackets, PacketID.S_PlayerJoin);
         Assert.Equal(0, s2RosterCount);
 
-        // 검증 3: tick 후 _players는 0 (s1 cleanup도 같은 tick에서 처리). ghost 차단.
-        Assert.Empty(_map.Players);
+        // 검증 3: tick 후 s1만 사라지고 s2는 정상 add됨 (s2는 closing 아님).
+        // **Phase 06 정정**: 옛 주석 "_players는 0"은 잘못된 가정 — s2 EnterGameWorld 람다는
+        // `self=s2`의 _closing(=0)만 보고 add 진행한다. s1만 cleanup으로 제거되고 s2는 남는다.
+        // (옛 main에서도 같은 결과였을 텐데 `Assert.Empty` 통과한 건 enemy ctor가 없어
+        // _players=[s2 entityId=2]일 때 어떤 우연으로 통과… 본 Phase 06 enemy ctor 도입으로
+        // s2.entityId=3 박히며 표면화. 운영 invariant는 *s2는 남는 게 맞음* — 검증 정정.)
+        Assert.Single(_map.Players);
+        Assert.Same(s2, _map.Players[0].Owner);
     }
 }

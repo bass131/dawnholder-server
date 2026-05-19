@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Numerics;
+using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
@@ -9,17 +10,56 @@ namespace Dawnholder.Server.GameServer.Maps;
 // Phase 02 (M2): 단일 GameMap actor. 단일 thread Tick → lock 없음.
 // Phase 03: IOCP→tick 마샬링 ConcurrentQueue + AddPlayer/RemovePlayer.
 // Phase 04: intent 적용 + 매 SnapshotTickInterval(=5) tick마다 S_Snapshot 브로드캐스트.
+// M3 Phase 06 Step 2 (응급 전투): `_enemies` Dictionary 분리 보관 +
+//   ctor에서 Normal enemy 1마리 spawn(맵 중간 zone 고정 위치). entity id는 player와
+//   공유 풀(`_nextEntityId`)에서 발급 — collision 방지 + S_HitResult.targetEntityId 라우팅
+//   단순화 (player/enemy 구분 없이 GetById로 찾을 수 있음, Step 3+에서 활용).
 //
 // ARCHITECTURE "Map = Actor": 한 맵의 모든 mutation을 단일 thread에 가두면
 // 동시성 버그의 90%가 사라진다. 외부 → 자기 위치 마샬링.
 public class GameMap
 {
     readonly List<PlayerEntity> _players = new();
+    // M3 Phase 06 Step 2: enemy 보관소. player와 *분리* — broadcast 대상은 players만 (enemy는
+    // owner session X). 같은 entity id 풀에서 발급해 id collision 차단.
+    readonly Dictionary<int, EnemyEntity> _enemies = new();
     int _nextEntityId = 1;
 
     readonly ConcurrentQueue<Action> _pendingJobs = new();
 
     public IReadOnlyList<PlayerEntity> Players => _players;
+
+    // M3 Phase 06 Step 2: 읽기 전용 노출. Step 3에서 EnterGameWorld가 active enemy roster
+    // 다발 전송(S_EntitySpawn) 시 순회용 + Step 5 AttackHandler가 target lookup 보조용.
+    public IReadOnlyDictionary<int, EnemyEntity> Enemies => _enemies;
+
+    // M3 Phase 06 Step 2 (응급 전투): 단일 맵 3-zone trick (좌=마을 / 중=전투 / 우=보스).
+    // ground y=0 가정(Physics.cs 정의 정합) + player spawn (0,0)에서 우측으로 충분히 떨어진
+    // 위치로 박음. 진짜 zone 경계 좌표는 클라(Phase 08b)에서 시각화 박힘 — 서버는 위치만 정의.
+    // `MoveSpeed = 5 units/sec`이므로 (10, 0)은 정상 도보 2초 거리 = 시연 흐름 자연.
+    public const float NormalEnemySpawnX = 10f;
+    public const float NormalEnemySpawnY = 0f;
+    public const int NormalEnemyMaxHp = 30;
+
+    public GameMap()
+    {
+        // M3 Phase 06 Step 2: 서버 시작 시 Normal enemy 1마리 즉시 spawn.
+        // 응급 단순화 — respawn 없음, AI 없음, 고정 위치. Step 3에서 신규 client 접속 시
+        // 본 enemy를 S_EntitySpawn으로 다발 전송 (initial roster 패턴, Phase 04 정합).
+        //
+        // 헌법 #5 (틱 블로킹 금지) 정합: ctor는 tick 진입 전이라 동기 코드 OK. await 없음.
+        SpawnNormalEnemy(NormalEnemySpawnX, NormalEnemySpawnY, NormalEnemyMaxHp);
+    }
+
+    // M3 Phase 06 Step 2: tick thread (또는 ctor) 에서만 호출 invariant.
+    // 헌법 #5 — 동기 코드만, await/Task.Delay/Thread.Sleep 금지.
+    EnemyEntity SpawnNormalEnemy(float x, float y, int maxHp)
+    {
+        int id = _nextEntityId++;
+        EnemyEntity e = new EnemyEntity(id, EnemyKind.Normal, x, y, maxHp);
+        _enemies.Add(id, e);
+        return e;
+    }
 
     // virtual: 테스트 subclass에서 EnqueueJob 호출 카운트 추적 가능 (Phase 09 rate-limit drop 검증).
     public virtual void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
@@ -45,6 +85,19 @@ public class GameMap
 
     public PlayerEntity? GetPlayer(int entityId)
         => _players.Find(p => p.EntityId == entityId);
+
+    /// <summary>
+    /// M3 Phase 06 Step 3 (netcode 인계 — Step 5 AttackHandler 사전 작업):
+    /// enemy entityId 단건 lookup. 없으면 null.
+    ///
+    /// **사용 의도**: Step 5 AttackHandler에서 target validation 묶음 처리
+    /// (`GetEnemyById(id)` → null이면 silent drop, `IsDead`면 idempotent no-op).
+    /// `GetPlayer(id)` 시그니처 정합 (둘 다 entityId 단건 lookup, 같은 entity id 풀 사용).
+    ///
+    /// **호출 invariant**: tick thread에서만 (단일 thread invariant 유지).
+    /// </summary>
+    internal EnemyEntity? GetEnemyById(int entityId)
+        => _enemies.TryGetValue(entityId, out EnemyEntity? e) ? e : null;
 
     /// <summary>
     /// M3 Phase 04 (헌법 #3 정합 + Phase 10 lifecycle race 패턴 일반화): 같은 맵 전원에게 packet 전송.

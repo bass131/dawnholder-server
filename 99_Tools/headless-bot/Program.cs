@@ -7,6 +7,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //
 // 사용 예:
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario M2BasicMovement
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario MultiRosterSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -27,6 +28,17 @@ Console.WriteLine($"=== HeadlessBot ===");
 Console.WriteLine($"target: {host}:{port}  scenario: {scenarioName}");
 
 // 시나리오 분기.
+if (string.Equals(scenarioName, "MultiRosterSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    MultiRosterSmoke.Result r = await MultiRosterSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] MultiRosterSmoke: success={r.Success} " +
+                      $"entities=({r.FirstEntityId}, {r.SecondEntityId}, reconnect:{r.ReconnectEntityId})");
+    Console.WriteLine($"      firstJoins={r.FirstJoinCount} secondJoins={r.SecondJoinCount} " +
+                      $"secondLeaves={r.SecondLeaveCount} reconnectRoster={r.ReconnectRosterCount}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
 if (scenarioName == "M2BasicMovement")
 {
     M2BasicMovement.Result r = await M2BasicMovement.Run(host, port);

@@ -112,4 +112,51 @@
     <packet name="S_PlayerLeave">
         <int name="entityId"/>
     </packet>
+
+    <!-- Phase 06 (M3): 응급 전투 — 클라가 서버에 공격 의도 전송. 헌법 #1 (Server Authority) 정합 표준 패턴.
+         클라 = "I attempted attack on target Y" / 서버 = hit/miss/damage/HP 권위 판정 후 S_HitResult 회신.
+
+         ⚠️ **attacker 필드 *없음* — 헌법 #3 (Trust Boundary) 정합**.
+         서버가 `GameSession._entityId`에서 attacker 강제 → 패킷에 attacker 박으면 다른 entityId 도용 가능.
+         Codex β 사전 검증 HIGH #2 봉합 (direction/facing/ray 모델은 응급 범위 초과로 폐기,
+         target id 직접 지정 방식으로 단순화). -->
+    <packet name="C_Attack">
+        <int name="targetEntityId"/>
+    </packet>
+
+    <!-- Phase 06 (M3): Enemy spawn 알림. Codex β 사전 검증 HIGH #1 봉합 — 본 패킷 누락 시 클라가
+         target id를 모름(공격 패킷만 박으면 end-to-end 데모 막힘).
+         **수신측 동작**: entityId 일치하는 remote enemy entity가 없으면 spawn, 있으면 무시(idempotent).
+         **다발 전송 패턴** (Phase 04 S_PlayerJoin 정합): 신규 client EnterGameWorld 시 active enemy roster
+         (`GameMap._enemies` 전체)를 다발 전송 → 신규 client는 한 번에 전원 위치 파악.
+         entityKind = EnemyKind enum의 byte cast (0=Normal, 1=Boss). 클라 측 디코드 책임. -->
+    <packet name="S_EntitySpawn">
+        <int name="entityId"/>
+        <byte name="entityKind"/>
+        <float name="x"/>
+        <float name="y"/>
+        <int name="currentHp"/>
+        <int name="maxHp"/>
+    </packet>
+
+    <!-- Phase 06 (M3): Hit 결과 broadcast. Codex β 사전 검증 MEDIUM #3 봉합 — HpUpdate 통합.
+         damage text(클라 시각 효과) + HP bar 갱신을 *한 패킷*으로 동시 처리 → broadcast 비용 1배.
+         통합 vs 분리 trade-off: 분리는 UI 이벤트 ↔ 상태 갱신 직무 분리지만, 응급은 통합 우선
+         (현재 정의는 Phase 06 정의 박힘, 본 마감 분리 검토).
+         서버가 전원에게 broadcast (attacker 자기도 포함 — local damage text 렌더 정합). -->
+    <packet name="S_HitResult">
+        <int name="attackerEntityId"/>
+        <int name="targetEntityId"/>
+        <int name="damage"/>
+        <int name="currentHp"/>
+        <int name="maxHp"/>
+    </packet>
+
+    <!-- Phase 06 (M3): Entity 사망 broadcast. idempotent 약속 — 서버 `IsDead` flag로 1회만 발사 보장.
+         **수신측 동작**: entityId 일치하는 entity despawn (player/enemy 공통). 두 번 받아도 안전.
+         Phase 07 보스 사망은 본 패킷 + S_StageClear *별개* 이벤트 (Codex 권장 — 통합 X).
+         death broadcast → 클라가 엔티티 제거 → 다음 spawn 패킷 안 옴 (서버 map에서도 제거). -->
+    <packet name="S_EntityDeath">
+        <int name="entityId"/>
+    </packet>
 </PDL>

@@ -170,8 +170,9 @@ public class GameSessionLifecycleTests : IDisposable
         session.OnDisconnected(Ep());
         _map.Tick(2);
 
-        // 첫 cleanup 로그는 _entityId=1 (reset 전)
-        Assert.Contains("entityId=1", _consoleCapture.ToString());
+        // 첫 cleanup 로그는 _entityId=2 (reset 전).
+        // Phase 06: GameMap ctor enemy spawn(entityId=1)에 따른 player id offset 갱신 — player=entityId 2.
+        Assert.Contains("entityId=2", _consoleCapture.ToString());
         // reset 이후의 검증 — direct access 불가하므로, 두 번째 OnDisconnected를 무시(_closing=1)
         // 후 _entityId 직접 reflection으로 확인하는 대신 _closing 멱등성으로 간접 검증.
         // (이 테스트는 reset 자체보다는 *cleanup 호출이 정상 마무리됨* 검증)

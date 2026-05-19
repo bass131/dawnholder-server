@@ -65,7 +65,8 @@ public class MoveIntentHandlerTests : IDisposable
 
         _map.Tick(2); // tick에서 PendingInputX/Jump 적용
 
-        PlayerEntity? entity = _map.GetPlayer(1);
+        // Phase 06: GameMap ctor enemy spawn(entityId=1)에 따른 player id offset 갱신 — player=entityId 2.
+        PlayerEntity? entity = _map.GetPlayer(2);
         Assert.NotNull(entity);
         Assert.Equal((uint)42, entity!.LastClientTick);
         Assert.True(entity.Position.X > 0f, $"+1 input 적용 안 됨 — Position.X={entity.Position.X}");
@@ -89,7 +90,8 @@ public class MoveIntentHandlerTests : IDisposable
         Assert.Contains("invalid input bits 0x03", log);
 
         // inputX 정규화 → Position 변경 X (안전 default).
-        PlayerEntity? entity = _map.GetPlayer(1);
+        // Phase 06: GameMap ctor enemy spawn(entityId=1)에 따른 player id offset 갱신 — player=entityId 2.
+        PlayerEntity? entity = _map.GetPlayer(2);
         Assert.NotNull(entity);
         Assert.Equal(0f, entity!.Position.X);
     }
