@@ -10,6 +10,9 @@ namespace Shared.Protocol;
 ///   - v1: M2 Phase 04~06 — C_MoveIntent (sbyte inputX), S_Snapshot (x/y만).
 ///   - v2: M2 Phase 07 — C_MoveIntent (byte input 비트필드), S_Snapshot (vx/vy 추가).
 ///         InputBits 헬퍼 신설, jumpPressed 에지 패턴(D4).
+///   - v3: M3 Phase 06 — Combat 4패킷 (C_Attack/S_EntitySpawn/S_HitResult/S_EntityDeath).
+///         additive지만 데모 기능이 신규 패킷 의존이라 stale client 빠른 cutoff 위해 bump
+///         (Codex β 사전 검증 MEDIUM #4, handshake exact equality 정합).
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -23,6 +26,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. Phase 07 = v2.</summary>
-    public const ushort Current = 2;
+    /// <summary>현재 프로토콜 버전. M3 Phase 06 = v3 (Combat 4패킷 추가).</summary>
+    public const ushort Current = 3;
 }

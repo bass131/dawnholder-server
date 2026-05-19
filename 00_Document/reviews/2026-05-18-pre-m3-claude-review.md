@@ -123,7 +123,7 @@
 ### [관찰] 5축 통과 영역 (잘 된 부분)
 
 - **헌법 #1 Server Authority**: `GameSession.HandleMoveIntent`가 클라에서 좌표를 받지 않고 *의도만* 받음. `GameMap.Tick`이 권위 `Physics.Step`만 적용. 클라가 보낸 좌표를 echo하는 코드 0건. ✓
-- **헌법 #2 Protocol Sacred**: `[MessagePackObject]` 사용 X(자체 PDL), PDL.xml 주석에 "은퇴한 ID 재사용 금지"+"맨 아래에만 추가" 박혀 있음. PacketID 1~6 가용. ✓
+- **헌법 #2 Protocol Sacred**: 자체 PDL XML + 코드 생성기 사용. PDL.xml 주석에 "은퇴한 ID 재사용 금지"+"맨 아래에만 추가" 박혀 있음. PacketID 1~6 가용. ✓
 - **헌법 #4 Shared Discipline**: `Shared.csproj` `<EmbedAllSources>true` + `<DebugType>embedded</DebugType>` 박혀 있어 ADR-010 물리적 강제. csproj 빌드 후 03_Client/Plugins로 자동 복사. ✓
 - **헌법 #5 No Blocking**: `TickScheduler.RunLoop`이 `SpinWait.SpinUntil` 사용. `await`/`Thread.Sleep`/`Task.Run`/동기 DB 호출 *틱 안에서* 0건. 주석에 "헌법 #5 정신 부합" 명시. ✓
 - **ADR-012 Y2 socket 분리**: `Dawnholder.Server.Network.csproj`와 `Dawnholder.Client.Net.csproj` 분리. 98_Shared에 socket 코드 0건 (Connector/Listener는 02_Server/Network/와 04_ClientNet/ 양쪽 분리, 패킷 정의만 통합). ✓

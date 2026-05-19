@@ -2,6 +2,7 @@ using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Net;
 using System.Numerics;
+using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
@@ -143,8 +144,29 @@ public class GameSession : PacketSession
             };
             map.BroadcastToAll(joinNotice.Write(), except: self);
 
+            // M3 Phase 06 Step 4 (응급 전투 — 헌법 #1 server-only spawn 흐름):
+            // 신규 client에게 active enemy roster 다발 전송 (Phase 04 initial roster 패턴 정합).
+            // - server-only spawn 트리거: 클라가 spawn 요청 보낼 권한 X, 모두 EnterGameWorld 시점 서버 단발
+            // - `IsDead` 체크 = idempotent 보장 (현재는 ctor spawn뿐이지만 죽은 enemy 잔류 케이스 대비)
+            // - byte cast (EnemyKind → byte) = wire format 1:1 매핑 (S_EntitySpawn.entityKind 약속)
+            // - **헌법 #5 정합**: 단순 foreach + Send. await/Task.Delay/Thread.Sleep 없음.
+            foreach (EnemyEntity enemy in map.Enemies.Values)
+            {
+                if (enemy.IsDead) continue;
+                S_EntitySpawn enemySpawn = new S_EntitySpawn
+                {
+                    entityId = enemy.EntityId,
+                    entityKind = (byte)enemy.Kind,
+                    x = enemy.X,
+                    y = enemy.Y,
+                    currentHp = enemy.Hp,
+                    maxHp = enemy.MaxHp,
+                };
+                self.Send(enemySpawn.Write());
+            }
+
             Console.WriteLine(
-                $"[Map] Player {entity.EntityId} entered at ({entity.Position.X}, {entity.Position.Y}) — roster:{existing.Count}, broadcasted join");
+                $"[Map] Player {entity.EntityId} entered at ({entity.Position.X}, {entity.Position.Y}) — roster:{existing.Count}, enemies:{map.Enemies.Count}, broadcasted join");
         });
     }
 
@@ -247,6 +269,34 @@ public class GameSession : PacketSession
             entity.PendingJumpPressed = capturedJump;
             entity.LastClientTick = capturedClientTick;
         });
+    }
+
+    // M3 Phase 06 Step 5 (응급 전투): AttackHandler 외부 추출 시 tick 마샬링 캡슐화.
+    // 핸들러는 decode + targetEntityId만, 본 메서드는 헌법 #3 trust boundary 진입 게이트 +
+    // tick thread 마샬링 책임 (SubmitMoveIntent 패턴 정합).
+    //
+    // **헌법 #3 (Trust Boundary) — attacker 강제**: 패킷에 attacker 필드 *없음*. attacker는 본 메서드가
+    // `_entityId`에서 강제 — 다른 entityId 도용 차단. Codex β 사전 검증 HIGH #2 봉합 정합.
+    //
+    // **handshake 미완 방어**: 이론상 `OnRecvPacket`의 first-packet 게이트가 잡아 본 메서드 진입
+    // 안 되지만, 방어적으로 `_entityId < 0` 검사 (SubmitMoveIntent 정합 패턴). EnterGameWorld
+    // 안 끝난 race window에서도 안전.
+    //
+    // **헌법 #5 정합**: mutation은 EnqueueJob 람다 안 — GameMap.ProcessAttack이 tick thread에서
+    // 6단계 검증 (handshake/target/alive/cooldown/range/data) + S_HitResult/S_EntityDeath broadcast 처리.
+    internal void SubmitAttack(int targetEntityId)
+    {
+        if (_entityId < 0) return; // 아직 EnterGameWorld 안 끝남 (방어적)
+
+        GameMap? map = GetMap();
+        if (map == null)
+        {
+            Console.WriteLine($"[Trust] GameSession.SubmitAttack: GetMap() returned null — config/shutdown race?");
+            return;
+        }
+        int attackerEntityId = _entityId;
+        int targetId = targetEntityId;
+        map.EnqueueJob(() => map.ProcessAttack(attackerEntityId, targetId));
     }
 
     // M3 Phase 03 (헌법 #4 봉합): PingHandler 외부 추출 시 Pong Send 캡슐화.

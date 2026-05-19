@@ -82,7 +82,7 @@
 
 - **Client**: Unity 6.4 LTS, C#, 2D sidescroll
 - **Server**: .NET 10 LTS, C# 콘솔 호스트 (authoritative) — [ADR-001]
-- **Network**: Raw TCP, length-prefixed binary frames. 직렬화는 **자체 PDL(Packet Definition Language) XML + C# 코드 생성기** (MessagePack 아님) — [ADR-002]
+- **Network**: Raw TCP, length-prefixed binary frames. 직렬화는 **자체 PDL(Packet Definition Language) XML + C# 코드 생성기** — [ADR-002]
 - **Persistence**: Microsoft SQL Server (개발용 LocalDB, Windows 통합 인증) via EF Core 10 (서버 전용)
 - **Shared code**: `98_Shared/` — **.NET Standard 2.1** 라이브러리로 빌드. 산출물(.dll + .pdb)을 `03_Client/Assets/Plugins/`에 복사해 Unity가 참조. PDB는 `EmbedAllSources=true`로 원본 .cs 임베드 → Unity 측에서 ReadOnly로 보이고 F12 시 원본 코드(주석 포함) 그대로 표시. 헌법 #4 ("복사-붙여넣기 금지")의 물리적 강제 — [ADR-010]
 
@@ -126,7 +126,7 @@
 
 - 모든 패킷은 stable한 숫자 ID를 가집니다. **은퇴한 ID는 절대 재사용 금지.**
 - 기존 패킷에 필드 추가 = 버전 관리 없으면 breaking change.
-- 패킷 struct는 `[MessagePackObject]` + 명시적 `[Key(N)]` 인덱스.
+- 패킷은 PDL.xml에 append-only로 정의하고, PacketGenerator가 정의 순서대로 stable PacketID와 필드 직렬화 코드를 생성합니다.
 - 클라/서버는 동일하게 컴파일된 어셈블리를 참조. 복사-붙여넣기 금지.
 
 ### 3. Trust Boundary (신뢰 경계)

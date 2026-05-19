@@ -26,6 +26,7 @@ internal static class HandlerRegistry
             { PacketID.C_Handshake, new HandshakeHandler() },
             { PacketID.C_Ping, new PingHandler() },
             { PacketID.C_MoveIntent, new MoveIntentHandler() },
+            { PacketID.C_Attack, new AttackHandler() },
         };
 
     public static bool TryGet(PacketID id, out IPacketHandler handler)

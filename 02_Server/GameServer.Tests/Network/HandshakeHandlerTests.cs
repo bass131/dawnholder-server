@@ -14,6 +14,10 @@ namespace GameServer.Tests.Network;
 ///   - mismatch: clientVersion != Current → S_HandshakeResult(ok=false, reason) 회신 + 즉시 Disconnect (헌법 #3 정합)
 ///   - non-handshake 첫 패킷: handshake 외 패킷으로 시작하면 즉시 Disconnect (first-packet 강제)
 ///
+/// **버전 이력 추적**: `ProtocolVersion.Current` 상수를 직접 참조하므로 bump 시 본 테스트 자동 갱신.
+///   - v3 = M3 Phase 06 Combat 4패킷 추가 (C_Attack/S_EntitySpawn/S_HitResult/S_EntityDeath).
+///     mismatch 케이스는 Current+1(=4) 사용하므로 추가 갱신 불필요.
+///
 /// **테스트 전략** (lifecycle/rate-limit 테스트 패턴 정합):
 ///   - GameSession.GetMap() override로 GameMap 주입 (singleton race 차단)
 ///   - Send() override로 회신 패킷 캡처 (실제 socket I/O 차단)
@@ -105,8 +109,12 @@ public class HandshakeHandlerTests : IDisposable
         _map.Tick(1);
         Assert.Single(_map.Players);
 
-        // tick 후 S_EnterMap도 보냈을 것 (EnterGameWorld 내부 Send).
-        Assert.Equal(2, _session.SentPackets.Count);
+        // tick 후 추가 패킷:
+        //   - S_EnterMap (자기 entityId/spawn 통보, Phase 02부터)
+        //   - S_EntitySpawn × N (Phase 06 Step 4 enemy roster 다발 전송 — ctor에서 Normal 1마리 spawn)
+        // 헌법 #1 정합: server-only spawn 흐름, 신규 client에 active enemy roster 다발 전송.
+        // SentPackets = S_HandshakeResult + S_EnterMap + S_EntitySpawn(enemy 수) = 2 + Enemies.Count.
+        Assert.Equal(2 + _map.Enemies.Count, _session.SentPackets.Count);
     }
 
     [Fact]
