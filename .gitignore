@@ -155,3 +155,7 @@ logs/
 
 # 03_Client/.vscode/ — Unity가 외부 에디터(VSCode) 열 때 자동 생성. 공유 X (각자 머신 자유)
 03_Client/.vscode/
+
+# Unity Recovery (auto-generated on Editor crash, M2 P06 TMP NRE 잔재)
+03_Client/Assets/_Recovery/
+03_Client/Assets/_Recovery.meta
