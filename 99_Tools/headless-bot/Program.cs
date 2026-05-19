@@ -8,6 +8,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 // 사용 예:
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario M2BasicMovement
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario MultiRosterSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario EmergencyCombatSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -35,6 +36,19 @@ if (string.Equals(scenarioName, "MultiRosterSmoke", StringComparison.OrdinalIgno
                       $"entities=({r.FirstEntityId}, {r.SecondEntityId}, reconnect:{r.ReconnectEntityId})");
     Console.WriteLine($"      firstJoins={r.FirstJoinCount} secondJoins={r.SecondJoinCount} " +
                       $"secondLeaves={r.SecondLeaveCount} reconnectRoster={r.ReconnectRosterCount}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "EmergencyCombatSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    EmergencyCombatSmoke.Result r = await EmergencyCombatSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] EmergencyCombatSmoke: success={r.Success} " +
+                      $"entity={r.LocalEntityId} target={r.TargetEntityId} " +
+                      $"hits={r.HitCount} death={r.SawDeath}");
+    Console.WriteLine($"      hp: {r.InitialHp} -> {r.FinalHp} " +
+                      $"moveIntents={r.MoveIntentsSent} " +
+                      $"rateLimitDropped={r.RateLimitDropped} optionB={r.UsedOptionBDeathEquivalent}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }
