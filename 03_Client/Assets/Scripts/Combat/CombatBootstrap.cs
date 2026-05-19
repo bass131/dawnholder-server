@@ -49,7 +49,10 @@ namespace Dawnholder.Client.Combat
 
         void Awake()
         {
-            BuildZoneVisualizer();
+            // M3 hardening 5/20: ZoneVisualizer 자동 생성 *비활성*.
+            // 사용자가 BackGround.prefab을 Gameplay 씬에 직접 박았기 때문 — 코드 빌드와 중복되면 두 배경 박힘.
+            // ZoneVisualizer 클래스는 fallback 용으로 보존 (수동 박을 수 있게). GameplayTest 씬은 자체 Bg GameObject들 박혀있음.
+            // BuildZoneVisualizer();
             BuildEnemyRegistry();
             BuildStageClearUI();
         }
