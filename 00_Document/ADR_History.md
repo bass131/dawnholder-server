@@ -9,7 +9,7 @@
 | (Harness 셋업일) | 최초 작성 + ADR-001~005 시드 | Harness 셋업에서 결정한 것들 박제 |
 | (PRD 1차 작성일) | ADR-006~009 추가 | PRD 1차 작성 과정에서 결정된 것들 박제 |
 | 2026-05-06 | ADR-001 갱신 (.NET 8 → .NET 10 LTS + .NET Standard 2.1) | .NET 9 STS 만료 임박, .NET 8 LTS도 본 마감 직전 만료. .NET 10 LTS가 시연 후 시점도 커버. shared/는 Unity 호환 위해 .NET Standard 2.1. |
-| 2026-05-06 | ADR-002 갱신 (MessagePack → 자체 PDL + 코드 생성기) | 본인이 4월에 작성한 PDL 시스템 채택. 면접 임팩트 + 학습 가치. |
+| 2026-05-06 | ADR-002 갱신 (외부 직렬화안 → 자체 PDL + 코드 생성기) | 본인이 4월에 작성한 PDL 시스템 채택. 면접 임팩트 + 학습 가치. |
 | 2026-05-06 | ADR-010 신규 (DLL + Embedded PDB) | 헌법 #4 (복사-붙여넣기 금지) 물리적 강제. 비개발자 팀원 보호. |
 | 2026-05-06 | ADR-011 신규 (기존 ServerDev 코드 부분 채택, 시나리오 B) | 6월 캡스톤 옵션 C(2인 movement) 6주 일정 확보. 게임 로직은 헌법 적용 위해 새로 작성. |
 | 2026-05-09 | ADR-001 갱신 (Unity 2022 LTS → Unity 6.4 LTS) | Unity AI MCP Server 활용 + Unity 6 새 기능 + LTS 라이프사이클이 더 김. |

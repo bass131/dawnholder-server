@@ -72,7 +72,7 @@
 | 1.2 | 데미지·히트 판정·루팅·레벨업·아이템 생성을 클라에서 수행 | 헌법 §1 | 🔴 |
 | 1.3 | 클라 prediction 결과를 서버 reconcile 없이 commit | 헌법 §1 + `03_Client/CLAUDE.md` "Authoritative 경계선" | 🔴 |
 | 2.1 | 은퇴 PacketId 재사용 / 기존 ID 값 변경 | 헌법 §2 Protocol Sacred + `98_Shared/CLAUDE.md` | 🔴 |
-| 2.2 | 패킷 struct에 `[MessagePackObject]` 또는 명시적 `[Key(N)]` 누락 | 헌법 §2 | 🔴 |
+| 2.2 | PDL.xml이 아닌 수동 패킷 struct 작성 또는 PacketID/필드 순서 임의 지정 | 헌법 §2 + ADR-002 v2 | 🔴 |
 | 2.3 | 기존 패킷에 필드 *재정렬* 또는 *중간 삽입* (끝 추가는 OK) | 헌법 §2 + `98_Shared/CLAUDE.md` "PacketId" | 🔴 |
 | 2.4 | 클라/서버가 서로 다르게 컴파일된 protocol을 참조 (복사-붙여넣기) | 헌법 §2 + ADR-010 | 🔴 |
 | 3.1 | 클라 소켓 입력 사용 전 *범위 검증* 누락 (위치 델타, 수량 등) | 헌법 §3 Trust Boundary | 🔴 |
@@ -98,7 +98,7 @@
 | # | 점검 항목 | 위반 ADR | 등급 |
 |---|----------|----------|------|
 | 2A.1 | TCP 외 통신 프로토콜 (UDP/WebSocket/gRPC) 도입 | ADR-002 (Raw TCP + 자체 PDL) | 🔴 |
-| 2A.2 | MessagePack / protobuf / System.Text.Json 등 *대체 직렬화* 사용 | ADR-002 v2 (자체 PDL만) | 🔴 |
+| 2A.2 | 자체 PDL XML + 코드 생성기 외 *대체 직렬화* 사용 | ADR-002 v2 (자체 PDL만) | 🔴 |
 | 2A.3 | `98_Shared/Protocol/Generated/GenPackets.cs` 외부에서 패킷 *수동 작성* | ADR-002 v2 + `98_Shared/CLAUDE.md` | 🔴 |
 | 2A.4 | MSSQL/EF Core 외 DB 또는 ORM 도입 (개발 단계) | ADR-005 v2 | 🔴 |
 | 2A.5 | `98_Shared/` 외부에 패킷 정의 (서버/클라 어느 쪽이든) | ADR-003 모노레포 + ADR-010 | 🔴 |
