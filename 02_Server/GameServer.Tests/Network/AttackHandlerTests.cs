@@ -41,11 +41,12 @@ public class AttackHandlerTests : IDisposable
     readonly StringWriter _consoleCapture;
     readonly TextWriter _originalOut;
 
-    // GameMap ctor가 Normal enemy를 entityId=1로 박음 → 다음 발급은 player=2.
-    // 본 상수는 매직 넘버 회피용 — Phase 04/05 테스트와 같은 컨벤션
-    // (`Phase 06: GameMap ctor enemy spawn(entityId=1)에 따른 player id offset 갱신 — player=entityId 2`).
-    const int EnemyEntityId = 1;
-    const int PlayerEntityId = 2;
+    // GameMap ctor가 Normal enemy=1 + Boss=2를 박음 → 다음 발급은 player=3.
+    // 본 상수는 매직 넘버 회피용 — Phase 04/05 테스트와 같은 컨벤션.
+    // Phase 06 도입 (Normal enemy entityId=1) + Phase 07 추가 (Boss entityId=2) → player offset 갱신.
+    const int EnemyEntityId = 1;       // Normal enemy (Phase 06)
+    const int BossEntityId = 2;        // Boss (Phase 07)
+    const int PlayerEntityId = 3;
 
     // `CombatConstants`는 internal — 본 어셈블리(test)에서 직접 참조 불가.
     // 단순 mirror 상수로 박음 (production은 `Combat/CombatConstants.cs` 단일 출처).

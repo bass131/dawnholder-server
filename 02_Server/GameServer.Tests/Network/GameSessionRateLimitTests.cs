@@ -119,8 +119,8 @@ public class GameSessionRateLimitTests : IDisposable
             _session.OnRecvPacket(MakeMoveIntent(0b00_0_0_0_010, (uint)(i + 1))); // +1
 
         _map.Tick(2); // 첫 tick은 ctor에서 Tick(1) — 본 tick은 2번째
-        // Phase 06: GameMap ctor enemy spawn(entityId=1)에 따른 player id offset 갱신 — player=entityId 2.
-        PlayerEntity? entity = _map.GetPlayer(2);
+        // Phase 06 enemy(1) + Phase 07 Boss(2) ctor spawn에 따른 player id offset 갱신 — player=entityId 3.
+        PlayerEntity? entity = _map.GetPlayer(3);
         Assert.NotNull(entity);
         float posAfterFirstTick = entity!.Position.X;
         Assert.True(posAfterFirstTick > 0, $"+1 input 적용 안 됨 — Position.X={posAfterFirstTick}");

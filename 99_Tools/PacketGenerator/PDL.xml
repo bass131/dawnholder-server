@@ -159,4 +159,22 @@
     <packet name="S_EntityDeath">
         <int name="entityId"/>
     </packet>
+
+    <!-- Phase 07 (M3): Stage Clear broadcast. 보스(EnemyKind.Boss) HP 0 시점 1회 broadcast.
+         서버 `_stageCleared` flag로 중복 방지 (death broadcast와 별 trigger).
+         클라 = UI 표시만 (헌법 #1 권위) — 보스 죽음 판정 X, 본 패킷 수신 시점 = stage clear 권위 신호.
+
+         **death (S_EntityDeath, ID 14)와 *별 패킷* 분리 결정** (Codex 권장):
+           - S_EntityDeath = entity lifecycle (player/enemy 공통, idempotent despawn)
+           - S_StageClear  = game event (보스 한정, UI/씬 전환 trigger)
+           직무 분리 + S_EntityDeath.isStageBoss 플래그 통합은 미래 보스 종류 확장 시 폐쇄 패킷화.
+
+         **broadcast 순서**: 같은 tick 안에서 S_EntityDeath → S_StageClear (lifecycle 먼저 / game event 두 번째).
+         클라 측은 entity despawn 처리 후 stage clear UI 띄우면 자연스러운 흐름.
+
+         **중복 방지**: 서버 `GameMap._stageCleared` flag로 1회 보장. HP 0 후 추가 attack 도착해도
+         (a) target이 이미 _enemies.Remove로 사라져 step 2 silent drop (b) `_stageCleared=true`면 본 broadcast 미진입. -->
+    <packet name="S_StageClear">
+        <int name="bossEntityId"/>
+    </packet>
 </PDL>

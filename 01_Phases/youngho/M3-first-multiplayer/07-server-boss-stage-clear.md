@@ -1,6 +1,6 @@
 # Phase 07: 서버 보스 + Stage Clear 트리거
 
-> **상태**: pending
+> **상태**: server done (5/19) — 클라 UI Phase 08b 후속
 > **마일스톤**: M3 — Multiplayer & Demo Stage
 > **예상 소요**: 1.5h
 > **담당 에이전트**: gameplay
@@ -68,3 +68,12 @@ Phase 08 — 유현 Asset 통합 + 3-zone 시각화 + Stage Clear UI
 ## 작업 로그
 
 - 2026-05-18: pending
+- 2026-05-19: **server 5/5 완성** (gameplay 에이전트). 산출물:
+  - `GameMap.cs` — `BossSpawnX/Y/MaxHp` 상수 + `SpawnBoss` helper + ctor에서 Boss 1마리(EnemyKind.Boss, (30, 0), HP 100) 추가 spawn. `_stageCleared` flag + `IsStageCleared` getter 신설.
+  - `GameMap.ProcessAttack` — Boss HP 0 시 `_stageCleared` flag 체크 + `S_StageClear { bossEntityId }` broadcast 1회 (S_EntityDeath 다음 순서). 이중 안전망 (target Remove + flag) 으로 중복 broadcast 차단.
+  - `PDL.xml` — `S_StageClear` ID 15 신설 (additive). **ProtocolVersion v3 유지** (Phase 06이 이미 stale client cutoff 박힘 + 단순 신규 1패킷 → bump 가치 X. Codex 권장 검토 후 v3 유지 결정 — 면담 시간 절약 + HandshakeHandlerTests 변경 0).
+  - `02_Server/GameServer.Tests/Network/BossStageClearTests.cs` 신설 — 3건: `Boss_Death_BroadcastsStageClearOnce` / `BossDuplicateAttack_NoExtraStageClear` / `NormalEnemy_Death_NoStageClear`.
+  - 회귀 영향: entity id 풀 shift (Normal=1, Boss=2, Player=3) — 기존 6개 테스트 파일의 player id 기대값 갱신 (AttackHandlerTests / MoveIntentHandlerTests / GameSessionRateLimitTests / GameSessionLifecycleTests / BroadcastTests).
+  - BroadcastTests.`NewSession_ReceivesActiveEnemyRoster_OnEnter` 갱신 — enemy roster 1마리 → 2마리(Normal + Boss) 검증으로 확장.
+  - `dotnet build` PASS 경고 0 / 오류 0. `dotnet test` 170 PASS (기존 167 + 신규 3) / 1 Skip.
+- 2026-05-19: **클라 UI는 Phase 08b로 위임**. Unity 측은 v3 클라가 미지 S_StageClear 패킷 자동 silent drop (dispatch 안 박힘) — server-only 박은 본 Phase 산출물은 헤드리스 봇(BossStageClearSmoke.md 명세 → .cs 변환은 Codex 영역)에서 검증 완료 가능.

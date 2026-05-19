@@ -41,6 +41,26 @@ public class GameMap
     public const float NormalEnemySpawnY = 0f;
     public const int NormalEnemyMaxHp = 30;
 
+    // M3 Phase 07 (보스 + Stage Clear): 우측 zone 보스 placeholder.
+    // 3-zone 좌표 약속 = 좌 마을 (x<0) / 중 전투 (Normal=10) / 우 보스 (Boss=30). player spawn=0 정합.
+    // HP 100 = damage 10 × 10회 사망. 본 마감엔 보스 전용 데미지 공식 + 페이즈 — M4 backlog.
+    // AI 없음, 패시브 dummy (Phase 06 Normal과 동일 모델 — `EnemyKind.Boss` 분기만 다름).
+    public const float BossSpawnX = 30f;
+    public const float BossSpawnY = 0f;
+    public const int BossMaxHp = 100;
+
+    // M3 Phase 07: Stage Clear 1회 보장 flag. tick thread invariant 안에서만 읽기/쓰기.
+    // **헌법 #1 (Server Authority)**: 클라가 stage clear 자체 판정 X — 서버가 본 flag로 1회 broadcast.
+    // **idempotent 약속**: 보스 HP 0 후 추가 attack 도착해도 (a) target.Hp<=0 + _enemies.Remove로
+    // step 2/3 silent drop (b) 본 flag true면 broadcast 분기 미진입 — 이중 안전망.
+    bool _stageCleared = false;
+
+    /// <summary>
+    /// M3 Phase 07: Stage Clear 상태 read-only 노출. 단위 테스트 + Phase 09 리허설 진단용.
+    /// flag 자체는 *서버 권위* — 외부에서 강제 set 불가 (헌법 #1).
+    /// </summary>
+    public bool IsStageCleared => _stageCleared;
+
     public GameMap()
     {
         // M3 Phase 06 Step 2: 서버 시작 시 Normal enemy 1마리 즉시 spawn.
@@ -49,6 +69,12 @@ public class GameMap
         //
         // 헌법 #5 (틱 블로킹 금지) 정합: ctor는 tick 진입 전이라 동기 코드 OK. await 없음.
         SpawnNormalEnemy(NormalEnemySpawnX, NormalEnemySpawnY, NormalEnemyMaxHp);
+
+        // M3 Phase 07: 서버 시작 시 Boss 1마리 즉시 spawn (우측 zone). Normal과 같은 entity id 풀
+        // 공유 (`_nextEntityId++`) → S_HitResult.targetEntityId 라우팅 단순화 (Step 5 ProcessAttack에서
+        // GetEnemyById 한 번에 lookup). 별 BossEntity 모델 분리 X (Codex β 권장 — combat 로직 재사용,
+        // StageClear trigger만 EnemyKind.Boss 분기).
+        SpawnBoss(BossSpawnX, BossSpawnY, BossMaxHp);
     }
 
     // M3 Phase 06 Step 2: tick thread (또는 ctor) 에서만 호출 invariant.
@@ -57,6 +83,17 @@ public class GameMap
     {
         int id = _nextEntityId++;
         EnemyEntity e = new EnemyEntity(id, EnemyKind.Normal, x, y, maxHp);
+        _enemies.Add(id, e);
+        return e;
+    }
+
+    // M3 Phase 07: tick thread (또는 ctor)에서만 호출 invariant.
+    // Normal과 분리 helper로 박은 이유 = 호출처 명확화 (`SpawnBoss(30, 0, 100)`가 `SpawnEnemy(Boss, 30, 0, 100)`보다
+    // 의도 표현 명확). 본 마감 시 통합 SpawnEnemy(kind, ...)로 합치는 게 정석이지만 응급 = 명시 helper 2개로 유지.
+    EnemyEntity SpawnBoss(float x, float y, int maxHp)
+    {
+        int id = _nextEntityId++;
+        EnemyEntity e = new EnemyEntity(id, EnemyKind.Boss, x, y, maxHp);
         _enemies.Add(id, e);
         return e;
     }
@@ -168,6 +205,29 @@ public class GameMap
         {
             S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
             BroadcastToAll(death.Write());
+
+            // M3 Phase 07 (보스 + Stage Clear): Boss 사망 시 S_StageClear 1회 broadcast.
+            //
+            // **순서 약속** (PDL.xml 본문 박힘): S_EntityDeath → S_StageClear (lifecycle → game event).
+            //   클라가 entity despawn 처리 후 stage clear UI 띄우면 자연스러운 흐름.
+            //
+            // **`_stageCleared` flag 1회 보장 — 이중 안전망**:
+            //   (a) HP 0 후 추가 attack 도착 시 _enemies.Remove로 step 2(GetEnemyById null) silent drop —
+            //       본 분기 자체에 도달 안 함.
+            //   (b) 만약 보스 2마리 spawn 시나리오가 미래에 도입돼도 본 flag로 *첫 보스 사망*만 stage clear
+            //       broadcast (M4 backlog 다중 보스 시 본 로직 재검토 필요).
+            //
+            // **헌법 #1 (Server Authority)**: 클라는 본 패킷 수신 시점이 권위 stage clear 신호.
+            //   클라가 자체 보스 HP 추적해서 "0이니까 clear"라고 자체 판정 X — 본 broadcast가 단일 진실.
+            //
+            // **broadcast 대상**: 전원 (`except: null`) — attacker 자기도 포함. 같은 맵 전원 stage clear UI.
+            if (target.Kind == EnemyKind.Boss && !_stageCleared)
+            {
+                _stageCleared = true;
+                S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
+                BroadcastToAll(stageClear.Write());
+            }
+
             _enemies.Remove(target.EntityId);
         }
     }
