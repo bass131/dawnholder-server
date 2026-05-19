@@ -199,12 +199,15 @@ namespace Dawnholder.Client.Combat
             comp = go.AddComponent<RemoteEnemy>();
 
             // HP bar 부모 (offset) + 배경 + fill. localScale.x 깎는 단순 패턴.
-            // M3 hardening 5/20: sprite *bottom pivot* 정합 — sprite 머리 = pos.y + spriteHeight.
-            // HpBar localPosition.y = spriteHeight + 여유 (size 보정).
+            // M3 hardening 5/20: sprite *그림 안 실제 머리 위치* hardcode (sprite asset 마다 그림 영역 다름).
+            // visualFootOffset과 정합한 *visualHeadLocalY* — local 단위 (transform.localScale로 size 적용).
+            //   Mushroom: 그림 발 = sprite bottom (offset 0), 그림 머리 ≈ 1.7 (sprite 안 1.5~1.8 그림 영역)
+            //   Boss (ToxicFrogBlueBlue): visualFootOffset=-1 (world) → -0.4 (local) 그림 발 박힘
+            //                              그림 머리 = visual 발 + 그림 visual height ≈ -0.4 + 1.5 = 1.1 (local)
+            //                              여유 +0.2 = 1.3 (local) → world = -1 + 1.3*2.5 = 2.25
             GameObject hpBarRoot = new GameObject("HpBar");
             hpBarRoot.transform.SetParent(go.transform, worldPositionStays: false);
-            float spriteHeight = bodySprite != null ? bodySprite.bounds.size.y : 1f;
-            float hpBarLocalY = spriteHeight + 0.2f / size; // sprite 머리 위 약간 떨어진 곳
+            float hpBarLocalY = isBoss ? 1.3f : 1.4f; // 그림 머리 추정치 + 여유 (Mushroom 그림 작아 1.4)
             hpBarRoot.transform.localPosition = new Vector3(0f, hpBarLocalY, 0f);
             // 부모 scale로 늘어나는 효과 차단 — 자식 localScale을 1/size로 보정.
             hpBarRoot.transform.localScale = new Vector3(1f / size, 1f / size, 1f);
