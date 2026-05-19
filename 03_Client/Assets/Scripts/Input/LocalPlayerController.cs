@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Combat;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
 using Shared.GameData;
@@ -52,6 +53,38 @@ namespace Dawnholder.Client.Input
         void OnJump(InputValue value)
         {
             if (value.isPressed) _jumpEdgeThisTick = true;
+        }
+
+        // M3 Phase 08c: "Attack" 액션 콜백 (Space 또는 좌클릭 — InputSystem_Actions.inputactions 박힘).
+        //
+        // **클라 책임 = target 추천 + intent 송신만** (헌법 #1):
+        //   - 가장 가까운 enemy/boss → C_Attack { targetEntityId } 송신.
+        //   - 데미지/range/cooldown *서버가 최종 검사* — 클라 자체 판정 X.
+        //   - 자체 rate-limit 없음 (서버가 silent drop, 응급 단순).
+        //
+        // **AttackRange² = 9.0f** — 정의 약속 (3.0f 사거리). 응급 모드 hardcoded.
+        //   M4에서 Constants/Formulas로 외부화 권장.
+        const float AttackRangeSq = 9.0f;
+
+        void OnAttack(InputValue value)
+        {
+            if (!value.isPressed) return; // up edge 무시 — down 시점 한 번만.
+
+            UnityClientSession? session = UnityClientSession.Instance;
+            if (session == null) return;
+            if (EnemyRegistry.Instance == null) return;
+
+            // 본인 position 기준 nearest enemy/boss 결정.
+            Vector3 origin = transform.position;
+            if (!EnemyRegistry.Instance.TryGetNearest(origin, AttackRangeSq, out int targetEntityId))
+            {
+                // 사거리 내 enemy 없음 — silent (서버가 어차피 drop).
+                return;
+            }
+
+            C_Attack pkt = new C_Attack { targetEntityId = targetEntityId };
+            session.SendIntent(pkt.Write());
+            Debug.Log($"[Attack] → target entity {targetEntityId}");
         }
 
         void Update()

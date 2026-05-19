@@ -103,12 +103,12 @@ TextureImporter:
       name: Goldbar_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 4096
-        height: 1024
+        x: 1134
+        y: 216
+        width: 2760
+        height: 584
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -121,11 +121,33 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Goldbar_1
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 148
+        width: 767
+        height: 742
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e705bcb7f54a45c459cda9fa0d442d6d
+      internalID: 500327392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: ad85b7ec11e7f74499b90b96c3ba66ad
     internalID: 0
     vertices: []
     indices: 
@@ -136,6 +158,7 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Goldbar_0: 4917477865461855328
+      Goldbar_1: 500327392
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

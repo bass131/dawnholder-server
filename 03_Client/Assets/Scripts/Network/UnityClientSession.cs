@@ -1,9 +1,11 @@
 using System;
 using System.Buffers.Binary;
 using System.Net;
+using Dawnholder.Client.Combat;
 using Dawnholder.Client.Input;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.State;
+using Dawnholder.Client.UI;
 using Shared.Protocol;
 using UnityEngine;
 
@@ -98,6 +100,9 @@ namespace Dawnholder.Client.Network
                 // M3 Phase 05: 모든 타인 entity cleanup — 메모리 누수 차단.
                 if (RemoteEntityRegistry.Instance != null)
                     RemoteEntityRegistry.Instance.Clear();
+                // M3 Phase 08c: enemy/boss도 동일 cleanup. StageClearUI는 누적 표시 OK라 유지.
+                if (EnemyRegistry.Instance != null)
+                    EnemyRegistry.Instance.Clear();
                 if (Instance == this) Instance = null;
             });
         }
@@ -141,6 +146,23 @@ namespace Dawnholder.Client.Network
 
                 case PacketID.S_PlayerLeave:
                     HandlePlayerLeave(buffer);
+                    break;
+
+                // M3 Phase 08c: combat dispatch (4 신규 패킷).
+                case PacketID.S_EntitySpawn:
+                    HandleEntitySpawn(buffer);
+                    break;
+
+                case PacketID.S_HitResult:
+                    HandleHitResult(buffer);
+                    break;
+
+                case PacketID.S_EntityDeath:
+                    HandleEntityDeath(buffer);
+                    break;
+
+                case PacketID.S_StageClear:
+                    HandleStageClear(buffer);
                     break;
 
                 default:
@@ -286,6 +308,92 @@ namespace Dawnholder.Client.Network
 
             MainThreadDispatcher.Enqueue(() =>
                 Debug.Log($"[Unity] Pong! RTT = {rtt}ms (one-way ≈ {oneWayLatencyEstimate}ms, serverTs={serverTs})"));
+        }
+
+        // ========================================================================
+        // M3 Phase 08c: combat dispatch — enemy/boss spawn + hit + death + clear.
+        // 헌법 #1 (Server Authority): 모두 *서버 신호 표시만*. 클라 자체 판정 0.
+        // ========================================================================
+
+        // S_EntitySpawn (ID 12) — enemy/boss 새 spawn. entityKind 분기.
+        void HandleEntitySpawn(ArraySegment<byte> buffer)
+        {
+            S_EntitySpawn pkt = new S_EntitySpawn();
+            pkt.Read(buffer);
+
+            int eid = pkt.entityId;
+            byte kind = pkt.entityKind;
+            float x = pkt.x;
+            float y = pkt.y;
+            int hp = pkt.currentHp;
+            int maxHp = pkt.maxHp;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (EnemyRegistry.Instance == null)
+                {
+                    Debug.LogWarning($"[Unity] EnemyRegistry 미박힘 — entity {eid} spawn drop. CombatBootstrap 누락?");
+                    return;
+                }
+                EnemyRegistry.Instance.Spawn(eid, kind, x, y, hp, maxHp);
+            });
+        }
+
+        // S_HitResult (ID 13) — damage 적용 + currentHp/maxHp 갱신.
+        // attackerEntityId는 로깅용 (어느 플레이어가 때렸는지). UI 갱신은 target HP bar만.
+        void HandleHitResult(ArraySegment<byte> buffer)
+        {
+            S_HitResult pkt = new S_HitResult();
+            pkt.Read(buffer);
+
+            int attackerId = pkt.attackerEntityId;
+            int targetId = pkt.targetEntityId;
+            int dmg = pkt.damage;
+            int hp = pkt.currentHp;
+            int maxHp = pkt.maxHp;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                Debug.Log($"[Unity] Hit: attacker={attackerId} target={targetId} dmg={dmg} hp={hp}/{maxHp}");
+                if (EnemyRegistry.Instance == null) return;
+                EnemyRegistry.Instance.ApplyHit(targetId, hp, maxHp);
+            });
+        }
+
+        // S_EntityDeath (ID 14) — entity 사라짐. Despawn 호출만.
+        void HandleEntityDeath(ArraySegment<byte> buffer)
+        {
+            S_EntityDeath pkt = new S_EntityDeath();
+            pkt.Read(buffer);
+
+            int eid = pkt.entityId;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                Debug.Log($"[Unity] Entity {eid} died");
+                if (EnemyRegistry.Instance == null) return;
+                EnemyRegistry.Instance.Despawn(eid);
+            });
+        }
+
+        // S_StageClear (ID 15) — 보스 처치 → UI 표시.
+        void HandleStageClear(ArraySegment<byte> buffer)
+        {
+            S_StageClear pkt = new S_StageClear();
+            pkt.Read(buffer);
+
+            int bossId = pkt.bossEntityId;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                Debug.Log($"[Unity] StageClear! (boss entity {bossId})");
+                if (StageClearUI.Instance == null)
+                {
+                    Debug.LogWarning("[Unity] StageClearUI 미박힘 — UI drop. CombatBootstrap 누락?");
+                    return;
+                }
+                StageClearUI.Instance.Show(bossId);
+            });
         }
     }
 }
