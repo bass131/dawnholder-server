@@ -596,7 +596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1862c7591af61064291f6962d148fb34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.State.RemoteEntityRegistry
-  _remotePlayerPrefab: {fileID: 4848602846163679299, guid: 0048daf2e0dd8d44d83628fd21811f0d, type: 3}
+  _remotePlayerPrefab: {fileID: 6351463016081183086, guid: 5b7701fc260d7c645b3debb0fc1d447b, type: 3}
 --- !u!1 &1679516768
 GameObject:
   m_ObjectHideFlags: 0
