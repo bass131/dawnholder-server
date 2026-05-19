@@ -114,6 +114,16 @@ namespace Dawnholder.Client.UI
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = new Color(1f, 0.92f, 0.2f, 1f);
             tmp.fontStyle = FontStyles.Bold;
+            // M3 Phase 08b hardening (5/20): TMP Font Asset 명시 할당 — 자동 fallback 경고 봉합.
+            var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+#if UNITY_EDITOR
+            if (font == null)
+            {
+                font = UnityEditor.AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
+                    "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
+            }
+#endif
+            if (font != null) tmp.font = font;
 
             StageClearUI ui = root.AddComponent<StageClearUI>();
             // SerializeField 직접 접근 — 런타임 셋업이라 안전 (private이라 외부 X).
