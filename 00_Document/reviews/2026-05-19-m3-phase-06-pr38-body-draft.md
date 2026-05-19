@@ -1,68 +1,69 @@
-# PR #38 Body Draft — M3 Phase 06 Emergency Combat
+# PR #38 Body Draft — M3 Phase 06+07 Emergency Combat + Boss Stage Clear
 
-> GitHub PR ready 전환 시 본문에 붙여넣기 위한 draft.  
-> Step 5/6 완료 후 `TBD`와 체크박스를 실제 결과로 갱신한다.
+Suggested title:
+
+```text
+M3 Phase 06+07: 서버 응급 전투 + 보스 + Stage Clear (server 7+5/5 + smoke PASS)
+```
 
 ## Summary
 
-M3 Phase 06 emergency combat infrastructure.
+This PR completes the server-side emergency demo combat path for M3:
 
-This PR adds the minimum server-authoritative combat loop needed for the 2026-05-20 demo:
+- Phase 06: server-authoritative emergency combat, Normal enemy spawn, attack intent, HP/death broadcast, rate-limit silent drop, headless smoke PASS.
+- Phase 07: Boss spawn in the right zone, Boss death -> `S_StageClear` broadcast exactly once, duplicate suppression, server tests PASS.
 
-- server-owned enemy combat state
-- `C_Attack` intent packet
-- enemy spawn packet so clients can know target ids
-- hit result packet with HP state included
-- optional death packet / HP 0 death-equivalent handling
-- `ProtocolVersion.Current = 3`
-- attack handler and combat validation tests
+Scope is intentionally demo-grade for the 2026-05-20 professor meeting. Lag compensation, precision hitboxes, full damage formulas, cheat-flag persistence, richer enemy AI, and PvP are deferred to M4.
 
-Phase 06 is intentionally emergency-scoped. Lag compensation, precision hitboxes, full damage formulas, cheat-flag persistence, and PvP are deferred to M4.
-
-## Commits
+## Commit Chain
 
 - `986a042` — docs: MessagePack 잔재 정정
-- `de1031a` — feat(M3 Phase 06 WIP): Step 1~4 + Codex 사전 검증 봉합
-- `TBD` — feat(M3 Phase 06): Step 5 AttackHandler + Step 6 tests
+- `de1031a` — feat(M3 Phase 06 WIP): 서버 응급 전투 인프라 Step 1~4 + Codex 사전 검증 봉합
+- `e197ae9` — Merge remote-tracking branch `origin/main` into Phase 06 branch
+- `ee88b41` — feat(M3 Phase 06): Step 5+6 완성 + Codex 병렬 산출물 (server 7/7)
+- `5beb0ec` — feat(M3 Phase 06 smoke): EmergencyCombatSmoke 헤드리스 봇 구현
+- `eb5e7f0` — fix(M3 Phase 06 smoke): rate-limit burst 100 -> 50ms 보정 + 실측 로그 박제
+- `35358fb` — feat(M3 Phase 07): 보스 + Stage Clear 응급
+- `TBD` — feat(M3 Phase 07 smoke): BossStageClearSmoke 구현 + 실측
+- `TBD` — docs(M3 Phase 06+07): DONE/PR body finalization
 
-## 변경 요약
+## Changes
 
-### Step 1~4
+### Phase 06 — Server Combat Emergency
 
-- `02_Server/GameServer/Combat/` 신설
-- `PlayerEntity` combat HP 상태 추가
-- `EnemyEntity` / `EnemyKind` 추가
-- `GameMap`에 server-owned enemy registry 추가
-- PDL combat packet 추가
-- `ProtocolVersion.Current` v2 → v3 bump
-- PacketGenerator 재생성 + `Shared.dll` 갱신
-- handshake test expectation v3 반영
-
-### Step 5~6
-
-- `AttackHandler` 추가
-- `HandlerRegistry`에 `C_Attack` 등록
-- `GameSession.SubmitAttack(...)` 추가
-- attack mutation은 `GameMap.EnqueueJob` 경유로 처리
-- server authority checks:
+- `02_Server/GameServer/Combat/` 추가
+- `EnemyEntity`, `EnemyKind`, player HP/rate-limit state 추가
+- `C_Attack`, `S_EntitySpawn`, `S_HitResult`, `S_EntityDeath` 추가
+- `ProtocolVersion.Current = 3`
+- `AttackHandler` + `GameSession.SubmitAttack(...)`
+- `GameMap.ProcessAttack(...)`
+- server-side checks:
   - attacker는 session entity id에서 강제
-  - target exists / alive
-  - server position 기반 range check
-  - 500ms cooldown rate-limit
-  - fixed emergency damage
-- `AttackHandlerTests` 추가
+  - target exists/alive 검증
+  - server-authoritative position 기반 range check
+  - 500ms cooldown rate-limit silent drop
+  - fixed emergency damage 10
+- `EmergencyCombatSmoke` headless scenario PASS
 
-### Step 7 후속
+### Phase 07 — Boss + Stage Clear
 
-- Unity 1인 + headless-bot smoke 검증
-- Phase 07 boss/stage clear 진입
-- `EmergencyCombatSmoke.cs` 구현 가능 상태로 전환
+- Boss spawn: `EnemyKind.Boss`, `(30, 0)`, HP 100
+- `S_StageClear { bossEntityId }` 추가, packet ID 15
+- Boss death 시 `S_EntityDeath` 뒤에 `S_StageClear` broadcast
+- `_stageCleared` flag로 duplicate stage clear 차단
+- Normal enemy death는 StageClear를 트리거하지 않음
+- entity id pool shift 회귀 갱신:
+  - Normal=1
+  - Boss=2
+  - Player=3부터
+- `BossStageClearTests` 3건 추가
+- `BossStageClearSmoke` headless scenario PASS
 
-## Codex β 사전 검증 반영
+## Codex Review / Pre-Spec
+
+### Gamma 6 — Phase 06 Precommit Review
 
 `00_Document/reviews/2026-05-19-m3-phase-06-codex-precommit-review.md`
-
-Codex β γ 6회차 사전 검증에서 발견된 HIGH 2건 + MEDIUM 3건을 코드 진입 전 봉합했다.
 
 | Finding | Risk | Resolution |
 |---|---:|---|
@@ -71,6 +72,14 @@ Codex β γ 6회차 사전 검증에서 발견된 HIGH 2건 + MEDIUM 3건을 코
 | `S_HitResult` / `S_EntityHpUpdate` 중복 | MEDIUM | `S_HitResult`에 `currentHp/maxHp` 포함 |
 | `ProtocolVersion` bump 누락 | MEDIUM | `Current = 3` |
 | rate-limit "reject" vs silent drop 표현 불일치 | MEDIUM | 기대값을 `no HP change + no broadcast`로 고정 |
+
+### Gamma 7 — Phase 07 Smoke Pre-Spec
+
+`99_Tools/headless-bot/Scenarios/BossStageClearSmoke.md`
+
+- Boss spawn -> repeated `C_Attack`
+- Boss HP 0 -> `S_EntityDeath` + `S_StageClear`
+- dead boss re-attack -> no duplicate hit/death/stage clear
 
 ## Protocol / PDL
 
@@ -87,6 +96,7 @@ C_Attack { int targetEntityId }
 S_EntitySpawn { int entityId, byte entityKind, float x, float y, int currentHp, int maxHp }
 S_HitResult { int attackerEntityId, int targetEntityId, int damage, int currentHp, int maxHp }
 S_EntityDeath { int entityId }
+S_StageClear { int bossEntityId }
 ```
 
 Version:
@@ -97,59 +107,84 @@ ProtocolVersion.Current = 3
 
 Notes:
 
-- packet ids are append-only under the current generator
-- stale clients should fail handshake instead of silently dropping unknown combat packets
-- Phase 07 will add `S_StageClear` separately
+- Phase 06 bumped v2 -> v3 because stale clients must fail handshake.
+- Phase 07 stayed on v3. It adds one packet inside the same emergency PR after the v3 cutoff.
+- Packet ids are append-only under the current generator.
 
 ## Acceptance Criteria
 
-- [ ] enemy spawn is sent to newly joined clients through `S_EntitySpawn`
-- [ ] client `C_Attack` reduces enemy HP only after server-side checks
-- [ ] hit result is broadcast with `damage/currentHp/maxHp`
-- [ ] enemy death broadcasts exactly once or HP 0 death-equivalent is handled under Option B
-- [ ] rate-limit violation within 500ms is silent drop: no HP change, no broadcast
-- [ ] out-of-range attack is silent no-op
-- [ ] protocol version mismatch rejects stale clients
+### Phase 06
+
+- [x] enemy spawn is sent to newly joined clients through `S_EntitySpawn`
+- [x] client `C_Attack` reduces enemy HP only after server-side checks
+- [x] hit result is broadcast with `damage/currentHp/maxHp`
+- [x] enemy death broadcasts exactly once
+- [x] rate-limit violation within 500ms is silent drop: no HP change, no broadcast
+- [x] out-of-range attack is silent no-op
+- [x] protocol version mismatch rejects stale clients
+
+### Phase 07
+
+- [x] Boss spawn in right zone: `(30, 0)`, HP 100
+- [x] Boss uses Phase 06 attack -> HP decrease flow
+- [x] Boss HP 0 broadcasts `S_StageClear` exactly once
+- [x] duplicate attack after Boss death does not emit extra hit/death/stage clear
+- [x] Normal enemy death does not emit `S_StageClear`
+- [x] `BossStageClearSmoke` fresh server PASS
 
 ## Constitution Alignment
 
 ### #1 Server Authority
 
 - client sends attack intent only
-- client does not send attacker id, damage, HP, or authoritative position
-- server computes range, hit, damage, HP, death
+- client does not send attacker id, damage, HP, stage clear, or authoritative position
+- server computes range, hit, damage, HP, death, and stage clear
 
 ### #3 Trust Boundary
 
 - attacker identity is derived from `GameSession`
 - target id is validated server-side
-- attack cooldown/rate-limit is enforced server-side
-- invalid / too-fast / out-of-range attacks fail closed as no-op
+- cooldown/rate-limit is enforced server-side
+- invalid / too-fast / out-of-range / dead-target attacks fail closed as no-op
 
 ### #5 No Blocking in Tick Loop
 
 - handler only decodes and calls session method
 - combat state mutation is marshaled into `GameMap` actor path
-- no `await`, `Task.Delay`, `Thread.Sleep`, or DB call in combat tick mutation path
+- combat/stage clear mutation has no await, `Task.Delay`, `Thread.Sleep`, or DB call
 
 ## Test Plan
 
 - [x] `dotnet build Dawnholder.slnx --nologo`
-- [ ] `dotnet test Dawnholder.slnx --nologo --filter "FullyQualifiedName~AttackHandlerTests|FullyQualifiedName~HandshakeHandlerTests"`
-- [ ] `dotnet test Dawnholder.slnx --nologo`
-- [ ] Unity manual smoke:
+- [x] `dotnet test Dawnholder.slnx --nologo`
+  - 170 PASS / 1 Skip
+  - Phase 06: `AttackHandlerTests` 6/6 PASS
+  - Phase 07: `BossStageClearTests` 3/3 PASS
+- [x] `EmergencyCombatSmoke`
+
+```text
+dotnet run --project 99_Tools/headless-bot -- --host 127.0.0.1 --port 7777 --scenario EmergencyCombatSmoke
+
+[Bot] EmergencyCombatSmoke: success=True entity=3 target=1 hits=3 death=True
+      hp: 30 -> 0 moveIntents=33 rateLimitDropped=True optionB=False
+```
+
+- [x] `BossStageClearSmoke`
+
+```text
+dotnet run --project 99_Tools/headless-bot -- --host 127.0.0.1 --port 7777 --scenario BossStageClearSmoke
+
+[Bot] BossStageClearSmoke: success=True entity=3 boss=2 hits=10 stageClear=True
+      boss hp: 100 -> 0 moveIntents=113 death=True stageClearCount=1 duplicateSuppressed=True
+```
+
+- [ ] Unity manual smoke after Phase 08b/08c:
   - connect
-  - receive enemy spawn
-  - attack on ground
-  - enemy HP decreases
-  - enemy disappears at HP 0
-- [x] Headless bot smoke:
-  - `dotnet run --project 99_Tools/headless-bot -- --host 127.0.0.1 --port 7777 --scenario EmergencyCombatSmoke`
-  - fresh server result:
-    ```text
-    [Bot] EmergencyCombatSmoke: success=True entity=3 target=1 hits=3 death=True
-          hp: 30 -> 0 moveIntents=33 rateLimitDropped=True optionB=False
-    ```
+  - receive Normal + Boss spawn
+  - attack Normal on ground
+  - Normal HP decreases and death hides/despawns it
+  - attack Boss in right zone
+  - `S_StageClear` drives UI
 
 ## Known Trade-offs
 
@@ -160,16 +195,16 @@ Notes:
 - no PvP
 - no cheat-flag persistence yet
 - fixed damage is acceptable for emergency demo
+- StageClear UI dispatch is Unity Phase 08b/08c follow-up
 
 ## Follow-ups
 
-### Phase 07
+### Phase 08 / Yuhyeon
 
-- boss as `EnemyKind.Boss`
-- boss spawn in right zone
-- `S_StageClear` separate from death packet
-- stage clear broadcast exactly once
-- `BossStageClearSmoke.cs` implementation from spec
+- Unity dispatch for `S_EntitySpawn`, `S_HitResult`, `S_EntityDeath`, `S_StageClear`
+- enemy/boss prefab visual mapping from `entityKind`
+- right-zone Boss visual placement driven by server spawn packet
+- Stage Clear UI display from `S_StageClear`
 
 ### M4 Backlog
 
@@ -179,13 +214,6 @@ Tracked in `00_Document/M4-backlog.md`:
 - lag compensation
 - precision hitboxes
 - cheat-flag table
-- jump Y mispredict
+- jump Y mispredict reconcile
 - packet explicit ID / doc-range alignment
 - PvP support decision
-
-## Review Notes
-
-- PR contains emergency demo infrastructure, not final combat design.
-- `02_Server` and `98_Shared` changes are expected.
-- `03_Client/Assets/Plugins/Shared/Shared.dll` must be included when PDL/generated protocol changes are included.
-- Phase 07 should stay a separate commit even if it lands in the same PR.
