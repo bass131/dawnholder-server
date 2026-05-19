@@ -9,6 +9,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario M2BasicMovement
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario MultiRosterSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario EmergencyCombatSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario BossStageClearSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -49,6 +50,19 @@ if (string.Equals(scenarioName, "EmergencyCombatSmoke", StringComparison.Ordinal
     Console.WriteLine($"      hp: {r.InitialHp} -> {r.FinalHp} " +
                       $"moveIntents={r.MoveIntentsSent} " +
                       $"rateLimitDropped={r.RateLimitDropped} optionB={r.UsedOptionBDeathEquivalent}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "BossStageClearSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    BossStageClearSmoke.Result r = await BossStageClearSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] BossStageClearSmoke: success={r.Success} " +
+                      $"entity={r.LocalEntityId} boss={r.BossEntityId} " +
+                      $"hits={r.HitCount} stageClear={r.SawStageClear}");
+    Console.WriteLine($"      boss hp: {r.InitialBossHp} -> {r.FinalBossHp} " +
+                      $"moveIntents={r.MoveIntentsSent} death={r.SawBossDeath} " +
+                      $"stageClearCount={r.StageClearCount} duplicateSuppressed={r.DuplicateSuppressed}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }
