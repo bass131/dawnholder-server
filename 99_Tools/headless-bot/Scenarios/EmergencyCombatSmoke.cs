@@ -21,7 +21,7 @@ public class EmergencyCombatSmoke
     const float PreferredAttackDistance = 2.0f;
     const int MaxKillAttempts = 10;
     const int RateLimitBurstCount = 5;
-    const int RateLimitBurstIntervalMs = 100;
+    const int RateLimitBurstIntervalMs = 50;
 
     public class Result
     {

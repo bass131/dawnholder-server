@@ -134,7 +134,7 @@ Notes:
 
 ## Test Plan
 
-- [ ] `dotnet build Dawnholder.slnx --nologo`
+- [x] `dotnet build Dawnholder.slnx --nologo`
 - [ ] `dotnet test Dawnholder.slnx --nologo --filter "FullyQualifiedName~AttackHandlerTests|FullyQualifiedName~HandshakeHandlerTests"`
 - [ ] `dotnet test Dawnholder.slnx --nologo`
 - [ ] Unity manual smoke:
@@ -143,8 +143,13 @@ Notes:
   - attack on ground
   - enemy HP decreases
   - enemy disappears at HP 0
-- [ ] Optional bot smoke after `.cs` implementation:
-  - `EmergencyCombatSmoke`
+- [x] Headless bot smoke:
+  - `dotnet run --project 99_Tools/headless-bot -- --host 127.0.0.1 --port 7777 --scenario EmergencyCombatSmoke`
+  - fresh server result:
+    ```text
+    [Bot] EmergencyCombatSmoke: success=True entity=3 target=1 hits=3 death=True
+          hp: 30 -> 0 moveIntents=33 rateLimitDropped=True optionB=False
+    ```
 
 ## Known Trade-offs
 
