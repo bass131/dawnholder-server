@@ -94,7 +94,7 @@ project-root/
 │       └── Tables/               items.json, monsters.json 등
 │
 ├── 99_Tools/
-│   ├── headless-bot/             QA 시뮬레이션 봇 (M2 이후 작성 예정)
+│   ├── headless-bot/             QA 시뮬레이션 봇 (M2/M3 smoke 자동 검증)
 │   └── PacketGenerator/          자체 PDL 코드 생성기 (Phase 06 이주 완료, ADR-002)
 │
 ├── Dawnholder.slnx               .NET 솔루션 (02_Server + 04_ClientNet + 98_Shared)
@@ -194,6 +194,128 @@ DB 쓰기는 절대 동기로 안 합니다. `Channel<SaveIntent>` 큐에 넣고
 
 ---
 
+## M3 결과 종합 — Multiplayer & Demo Stage
+
+M3의 현재 server baseline은 "보이기만 하면 OK" 응급 데모 스코프로 정리되어 있다. 핵심은 정밀 전투가 아니라 server-authoritative multiplayer 흐름, enemy/boss spawn, HP/death, StageClear broadcast가 protocol smoke로 검증됐다는 점이다.
+
+### 서버 측 Combat 흐름 (Phase 06+07)
+
+PDL 신규 패킷은 append-only ID로 추가됐다.
+
+| ID | Packet | 역할 |
+|---:|---|---|
+| 11 | `C_Attack` | client attack intent. `targetEntityId`만 보냄 |
+| 12 | `S_EntitySpawn` | server-owned enemy/boss spawn roster |
+| 13 | `S_HitResult` | damage + `currentHp/maxHp` state update |
+| 14 | `S_EntityDeath` | entity lifecycle death/despawn |
+| 15 | `S_StageClear` | boss death 이후 game event |
+
+`ProtocolVersion.Current = 3`은 Phase 06에서 bump됐다. Phase 07의 `S_StageClear`는 같은 emergency PR 안의 additive packet이라 v3을 유지한다.
+
+Combat packet 처리 경로:
+
+```text
+C_Attack
+  -> AttackHandler decode only
+  -> GameSession.SubmitAttack(targetEntityId)
+  -> GameMap.EnqueueJob(...)
+  -> GameMap.ProcessAttack(...) on tick thread
+  -> S_HitResult / S_EntityDeath / S_StageClear broadcast
+```
+
+`GameMap.ProcessAttack`의 trust-boundary 검증은 6단계다.
+
+1. attacker player exists
+2. target enemy exists
+3. target alive
+4. rate-limit 500ms
+5. server-authoritative position 기반 `dist² < range²`
+6. 통과 시에만 mutation + broadcast
+
+실패 케이스는 응급 단계에서 일관되게 silent drop이다. 즉 no HP change, no broadcast. 본 마감에서는 cheat-flag table로 의심 이벤트를 별도 기록한다.
+
+헌법 #5 관점에서 handler는 decode-only이고, combat mutation은 `GameMap.EnqueueJob` 이후 tick thread에서 동기 처리된다. 이 경로에는 `await`, `Task.Delay`, `Thread.Sleep`, DB call이 없어야 한다.
+
+### EnemyKind 통합 패턴
+
+M3 enemy model은 별도 `BossEntity`를 만들지 않는다.
+
+```csharp
+enum EnemyKind : byte
+{
+    Normal = 0,
+    Boss = 1,
+}
+```
+
+Normal과 Boss는 같은 `EnemyEntity`와 같은 combat path를 쓴다. 차이는 `EnemyKind.Boss`가 HP 0이 될 때 StageClear trigger가 추가로 실행된다는 점뿐이다.
+
+이 선택의 trade-off:
+
+- 장점: 응급 데모 표면적 최소화, Phase 06 combat 로직 재사용, 테스트 fixture 단순화
+- 비용: M4에서 AI/state machine/보스 패턴이 커지면 `EnemyType`, `EnemyDefinition`, 또는 별도 behavior component 분리를 재검토해야 함
+
+### StageClear 권위 흐름
+
+StageClear는 client가 자체 판정하지 않는다. Boss HP 0 이후 서버가 아래 순서로 broadcast한다.
+
+```text
+Boss HP <= 0
+  -> S_EntityDeath { entityId = bossEntityId }   // lifecycle
+  -> S_StageClear { bossEntityId }               // game event
+```
+
+`_stageCleared` flag가 `S_StageClear` 1회 broadcast를 보장한다. death idempotency는 target remove/alive check가 흡수하고, stage clear idempotency는 별도 flag가 흡수한다. 이중 안전망 덕분에 죽은 boss에 추가 attack이 들어와도 추가 hit/death/stage-clear broadcast가 없다.
+
+### Phase 08a Client Asset 결과
+
+정유현 Phase 08a에서 player prefab variant 체인이 정리됐다.
+
+- `PlayerBase.prefab`: 공통 비주얼 base
+- `LocalPlayer.prefab`: PlayerBase variant
+- `RemotePlayer.prefab`: PlayerBase variant, RemoteEntity signature 보존
+- `Gameplay.unity`: `_RemoteEntityRegistry._remotePlayerPrefab` 참조 갱신
+
+Phase 08b/08c 후속은 3-zone visual, enemy/boss placeholder dispatch, StageClear UI 연결이다. Unity combat dispatch가 완성되기 전에도 headless-bot smoke로 server/backend 흐름은 검증할 수 있다.
+
+### Headless Smoke Baseline
+
+M3 backend demo smoke는 2종이다.
+
+```text
+EmergencyCombatSmoke
+  Normal enemy hp 30 -> 0
+  hits=3
+  death=True
+  rateLimitDropped=True
+
+BossStageClearSmoke
+  Boss hp 100 -> 0
+  hits=10
+  death=True
+  stageClearCount=1
+  duplicateSuppressed=True
+```
+
+이 smoke들은 Unity 시각 레이어와 독립적으로 protocol/backend 정합을 검증한다.
+
+### M4 사전 과제
+
+M4에서는 응급 전투를 본 마감용 전투로 승격한다.
+
+- 진짜 4맵 구성
+- precision hitbox
+- lag compensation, 약 200ms position history rewind
+- damage formula를 `98_Shared/GameData/Formulas.cs` 순수 함수로 분리
+- cheat-flag table과 trust-boundary event logging
+- Phase 05 jump Y mispredict reconcile
+- enemy AI / boss behavior
+- PvP 지원 여부 결정
+
+본 마감 기준일은 2026-11-19이며, M3의 응급 단순화는 M4 backlog로 이미 분리되어 있다.
+
+---
+
 ## 외부 의존성
 
 | 의존성 | 버전 | 용도 | 라이선스 |
@@ -218,3 +340,4 @@ DB 쓰기는 절대 동기로 안 합니다. `Channel<SaveIntent>` 큐에 넣고
 | 2026-05-10 | 폴더 prefix 정렬 + ADR-002 v2(자체 PDL) + ADR-012(Y2 분리) 반영 | 디렉토리 구조 통째 재작성 + 외부 직렬화 의존성 제거 + EF Core 8→10 + Y2 socket 분리 모델 명시. 2026-05-09 prefix 변경 + 2026-05-06 ADR-002 v2 / 2026-05-10 ADR-012 시점에 ARCHITECTURE는 누락됐던 것 일괄 정합. |
 | 2026-05-11 | Phase 06/07 활성화 반영 + ADR-012 진화 | Protocol 구조 갱신: 옛 `PacketId.cs`/`Packets/`/`ProtocolVersion.cs` (Phase 07에서 삭제·미작성) 대신 `Generated/GenPackets.cs` (PDL 자동 생성)로 정정. PacketGenerator "이주 예정" → "이주 완료". headless-bot은 M2 이후로 시점 재조정. ADR-012는 "전부 분리"에서 *책임 단위 분리/통합*으로 진화(Phase 07 사용자 통찰). |
 | 2026-05-14 | DB 결정 정정 (PostgreSQL → MSSQL/LocalDB, Windows 통합 인증) | 한국 게임 업계 표준 정합 + Rookiss 학습 자료 정합 + .NET 1군 조합 + 학부생 팀원 온보딩 비용 최소화. ADR-005 v2로 박제. 코드 진입 전 시점 발견이라 변경 비용은 문서 텍스트만. |
+| 2026-05-19 | M3 Phase 06+07 combat/stage clear 결과 반영 | `C_Attack`/enemy spawn/hit/death/stage clear PDL 5패킷, `EnemyKind` 통합 boss 모델, `S_EntityDeath`와 `S_StageClear` 분리, headless smoke 2종 PASS, Phase 08a prefab variant 결과, M4 전투 backlog를 ARCHITECTURE에 종합. |
