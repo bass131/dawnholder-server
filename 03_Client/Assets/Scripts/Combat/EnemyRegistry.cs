@@ -175,6 +175,11 @@ namespace Dawnholder.Client.Combat
             string name = isBoss ? $"Boss_{entityId}" : $"Enemy_{entityId}";
             GameObject go = new GameObject(name);
             go.transform.localScale = new Vector3(size, size, 1f);
+            // M3 hardening 5/20: sprite bottom pivot 기준 + sprite 내부 발 위치 보정.
+            // Mushroom: 발이 sprite bottom과 일치 → offset 0.
+            // ToxicFrogBlueBlue: sprite 안 발 아래 투명 여백 ~약 0.4 unit (size 2.5 적용 시 1.0 world) → offset -1.0.
+            float visualFootOffset = isBoss ? -1.0f : 0f;
+            go.transform.position = new Vector3(x, y + visualFootOffset, 0f);
 
             TryLoadEnemySprites();
             Sprite? bodySprite = isBoss ? _toxicFrogSprite : _mushroomSprite;
@@ -191,19 +196,15 @@ namespace Dawnholder.Client.Combat
             }
             sr.sortingOrder = 2; // Player(1)보다 위
 
-            // M3 hardening 5/20: 발바닥 pivot 정합 — 서버 spawn (x, y)는 *발바닥* 기준 가정.
-            // sprite pivot=center라 transform.y를 sprite 절반 높이만큼 위로 보정해야 발바닥이 spawn y에 맞음.
-            float halfHeight = bodySprite != null ? bodySprite.bounds.size.y * size / 2f : 0.5f * size;
-            go.transform.position = new Vector3(x, y + halfHeight, 0f);
-
             comp = go.AddComponent<RemoteEnemy>();
 
             // HP bar 부모 (offset) + 배경 + fill. localScale.x 깎는 단순 패턴.
+            // M3 hardening 5/20: sprite *bottom pivot* 정합 — sprite 머리 = pos.y + spriteHeight.
+            // HpBar localPosition.y = spriteHeight + 여유 (size 보정).
             GameObject hpBarRoot = new GameObject("HpBar");
             hpBarRoot.transform.SetParent(go.transform, worldPositionStays: false);
-            // 부모 scale이 size배 적용되니, 자식 localPosition.y는 1/size로 보정해야 시각 일정.
-            // Boss(size=2)면 박스 윗변 = +1 (local 0.5) → +0.7 = local 0.35; Normal(size=1)면 +0.6 = local 0.6.
-            float hpBarLocalY = isBoss ? 0.35f : 0.6f;
+            float spriteHeight = bodySprite != null ? bodySprite.bounds.size.y : 1f;
+            float hpBarLocalY = spriteHeight + 0.2f / size; // sprite 머리 위 약간 떨어진 곳
             hpBarRoot.transform.localPosition = new Vector3(0f, hpBarLocalY, 0f);
             // 부모 scale로 늘어나는 효과 차단 — 자식 localScale을 1/size로 보정.
             hpBarRoot.transform.localScale = new Vector3(1f / size, 1f / size, 1f);
