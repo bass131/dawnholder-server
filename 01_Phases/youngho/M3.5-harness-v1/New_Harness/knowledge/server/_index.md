@@ -19,17 +19,43 @@ last_updated: 2026-05-20
 
 | 키워드 | 한 줄 요약 | 트리거 | 검증 |
 |---|---|---|---|
-| _(Phase 04 (2/3)에서 시드 박힘 — 예정: `lifecycle-race-broadcast-skip`)_ | — | — | — |
+| `lifecycle-race-broadcast-skip` | N-1 fan-out broadcast 시 IsClosing session skip — race window deterministic 재현 | 새 broadcast 패킷 신설 시 / lifecycle race 의심 증상 시 | M3 Phase 04 (commit `5ea1123`) + Phase 10 일반화 |
 
 ---
 
 ## 디테일 본문
 
-_Phase 04 (2/3)에서 시드 항목별 ~30~50줄 박힘._
+### `lifecycle-race-broadcast-skip`
 
-### 예정 시드
+**증상**: Session A가 OnDisconnected 처리 *중*에 (`_closing=true`) Session B의 broadcast가 도착 → Send 호출 시점에 A 소켓 이미 닫힘 → 예외 또는 silent drop. N-1 fan-out에서 *N개 receiver마다* race window 존재.
 
-- `lifecycle-race-broadcast-skip` — N-1 fan-out broadcast 시 IsClosing session skip deterministic 재현 (Phase 04 + Phase 10)
+**패턴**: TCP socket lifecycle은 *비동기 cleanup*. broadcast 발신 시점과 receiver의 cleanup 시점이 겹치면 race. Phase 10에서 처음 발견 (단일 session) → Phase 04에서 N-1 fan-out 일반화.
+
+**봉합 (3종 skip)**:
+```csharp
+// GameMap.BroadcastToAll(payload, except=null)
+foreach (var session in _players.Values) {
+    if (session == null) continue;            // 1. owner null skip
+    if (session == except) continue;          // 2. except skip (자기 자신)
+    if (session.IsClosing) continue;          // 3. IsClosing skip (race 봉합)
+    session.Send(payload);
+}
+```
+
+`IsClosing` getter는 `Volatile.Read(_closing)`으로 thread-safe (`OnDisconnected` 다른 thread).
+
+**Deterministic 재현 (테스트 패턴)**:
+- `LifecycleRace_NewJoinBroadcastSkipsClosingSession` (BroadcastTests.cs)
+- 순서: `s2.OnConnected → s1.OnDisconnected → Tick` (s2 enter 시점에 _players=[s1] + s1.IsClosing=true → skip 분기 *반드시* 통과해야 PASS)
+- 잘못된 순서(s1.OnDisconnected → s2.OnConnected): cleanup이 FIFO로 먼저 처리 → s2 enter 시 _players=[] → skip 분기 *안 거치고도* 통과 (false confidence)
+
+**사례**:
+- M3 Phase 10 — 단일 session race 첫 발견 + `IsClosing` 도입
+- M3 Phase 04 (commit `5ea1123`) — N-1 fan-out 일반화 + deterministic 재현 테스트
+- Codex γ 5회차 Medium #1 — 순서 보강 (γ 검토로 false confidence 발견)
+
+**확신도**: 실측 2건 + γ 검토 1건. Rule of Three 미달 — 다음 lifecycle race 패턴 발견 시 ★★★ 승격.
+**관련 키워드**: [[gamma-pre-validation-pattern]] (γ가 false confidence 발견)
 
 ---
 
