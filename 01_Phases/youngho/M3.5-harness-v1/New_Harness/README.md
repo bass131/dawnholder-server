@@ -111,19 +111,20 @@ New_Harness/
 | (옛 없음, 헌법 본문 표 박힘) | `_routing.md` | 신설 (도메인 → SubAgent + 등급 → 처리 패턴 + 자동 호출 트리거 + 권한 경계 통합) |
 | (옛 없음, 헌법 본문 + 사용자 직접 처리) | `_escalation.md` | 신설 (Sonnet 2회 → Opus → 사용자 + Reviewer 위반 재위임 + Plan-auditor 옵션 A/B + 권한 위반 + 재귀 차단 + 우회 흐름) |
 
-### Phase 03 산출물 (예정)
+### Phase 03 산출물 (완료 — commits `e2faae9` + `ef4682c` + (3/3) 본 commit)
 
 | 옛 `.claude/hooks/` | 새 `New_Harness/hooks/` | 변경 |
 |---|---|---|
-| `check-work-envelope.sh` | (삭제) | work-envelope 죽임 |
-| `check-authority.sh` | (삭제) | false positive 많음, 코드 리뷰가 잡음 |
-| `validate-shared.sh` | `shared-discipline-guard.sh` | 강화 (PDL 의무 3종 자동 점검) |
-| `inject-current-pin.sh` | `pin-injector.sh` | rename + 새 압축 양식 정합 |
-| `validate-phase-gate.sh` | `phase-gate-validator.sh` | rename + 새 등급 frontmatter 점검 |
-| (옛 없음) | `dangerous-cmd-guard.sh` | 신설 (rm -rf / git reset --hard / force push 차단) |
-| (옛 없음) | `tdd-guard.sh` | 신설 (TDD 강제 영역 경고) |
-| (옛 없음) | `circuit-breaker.sh` | 신설 (Worker 무한 재시도 차단) |
-| (옛 없음) | `risk-detector.sh` | 신설 (trust-boundary/irreversible/unity-asset 자동 등급 상향) |
+| `check-work-envelope.sh` | (삭제) | work-envelope 죽임 (5/20 의논) |
+| `check-server-authority.sh` | (삭제) | false positive 많음, 코드 리뷰가 잡음 (Reviewer SubAgent) |
+| `validate-shared-changes.sh` | `shared-discipline-guard.sh` | 강화 — 경고만 → exit 2 차단 + PDL 의무 3종 자동 점검 (GenPackets stale / Shared.dll commit / ProtocolVersion bump) |
+| `inject-current-pin.sh` | `pin-injector.sh` | rename + 정책 경로 정합 (ADR-018 → policies/pin-and-done.md) |
+| `validate-phase-gate.sh` | `phase-gate-validator.sh` | rename + `grade`/`owner` frontmatter 필수 + 5단계 보고 = 대규모만 의무 + MD/HTML 이중 박음 경고 |
+| (옛 없음) | `dangerous-cmd-guard.sh` | 신설 (7 파괴 패턴 차단: rm -rf / git reset --hard / force push / git clean -fd / main force push / gh pr merge --admin / git checkout --force) |
+| (옛 없음) | `tdd-guard.sh` | 신설 (TDD 영역 4 경고만 + 누적 로그) |
+| (옛 없음) | `circuit-breaker.sh` | 신설 (같은 도구 N회 반복 알림, Bash 제외, 등급별 임계 5/10/15/20, 윈도우 5분) |
+| (옛 없음) | `risk-detector.sh` | 신설 (trust-boundary/irreversible/unity-asset 3 깃발 검출 + 누적 + stderr 알림) |
+| (옛 없음) | `settings.proposed.json` | 신설 (hooks 7 매핑 + Auto Mode permissions + deny 확장 `.env.*`/`appsettings.Secrets.json`) |
 
 ### Phase 04 산출물 (완료 — commits `a42dbdc` + `c6b1402` + (3/3) 본 commit)
 
@@ -171,7 +172,7 @@ dotnet test Dawnholder.slnx --nologo    # 170+ PASS
 git rm CLAUDE.md
 git rm 00_Document/policies/{reporting-format,pin-and-done,doc-thresholds,review-tiering}.md
 git rm -r .claude/agents/   # 옛 7개
-git rm .claude/hooks/{check-work-envelope,check-authority,validate-shared,inject-current-pin,validate-phase-gate}.sh
+git rm .claude/hooks/{check-work-envelope,check-server-authority,validate-shared-changes,inject-current-pin,validate-phase-gate}.sh
 git rm -r .claude/commands/{learn,journal}/   # 8개 + work/review.md + work/audit.md
 
 # 3. 새 자산 mv (일괄)
