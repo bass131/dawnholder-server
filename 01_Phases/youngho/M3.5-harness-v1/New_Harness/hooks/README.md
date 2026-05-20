@@ -10,11 +10,11 @@
 
 | # | Hook | 단계 | 매처 | 동작 | 진입 |
 |---|------|------|------|------|------|
-| 1 | `dangerous-cmd-guard.sh` | PreToolUse | Bash | rm -rf / git reset --hard / force push 등 차단 (exit 2) | (2/3) 박힘 예정 |
-| 2 | `tdd-guard.sh` | PreToolUse | Edit/Write | 02_Server/Handlers/ 등 TDD 영역 변경 시 테스트 부재 *경고만* (exit 0) | (2/3) 박힘 예정 |
-| 3 | `circuit-breaker.sh` | PostToolUse | (all) | 같은 SubAgent × 같은 도구 N회 반복 시 *알림* (Bash 제외, false positive 차단) | (2/3) 박힘 예정 |
-| 4 | `risk-detector.sh` | PreToolUse | Bash/Edit/Write | trust-boundary / irreversible / unity-asset 자동 검출 → 등급 상향 + work-pin 갱신 | (2/3) 박힘 예정 |
-| 5 | `shared-discipline-guard.sh` | PreToolUse | Edit/Write | 98_Shared/Protocol/PDL.xml 변경 시 PacketGenerator 재생성 + Shared.dll commit + Protocol.Version bump 의무 3종 자동 점검 (exit 2) | (2/3) 박힘 예정 |
+| 1 | `dangerous-cmd-guard.sh` | PreToolUse | Bash | rm -rf / git reset --hard / force push 등 7 패턴 차단 (exit 2) | ✅ (2/3) |
+| 2 | `tdd-guard.sh` | PreToolUse | Edit/Write | TDD 영역 4 (Handlers / GameSession / Protocol/Packets / GameData) 변경 시 테스트 부재 *경고만* (exit 0) + 누적 로그 | ✅ (2/3) |
+| 3 | `circuit-breaker.sh` | PostToolUse | (all) | 같은 도구 N회 반복 시 *알림* (Bash 제외, 등급별 임계 5/10/15/20, 윈도우 5분) | ✅ (2/3) |
+| 4 | `risk-detector.sh` | PreToolUse | Bash/Edit/Write | trust-boundary / irreversible / unity-asset 자동 검출 → stderr 알림 + .claude/state/risk-flags.txt 누적 | ✅ (2/3) |
+| 5 | `shared-discipline-guard.sh` | PreToolUse | Edit/Write | PDL.xml 변경 시 GenPackets stale 검사 + Shared.dll commit 동반 검사 (exit 2) + ProtocolVersion bump 경고 | ✅ (2/3) |
 | 6 | `pin-injector.sh` | UserPromptSubmit | (all) | 매 사용자 입력 직전 work-pin + 미commit -DONE.md 경고 주입 | ✅ (1/3) |
 | 7 | `phase-gate-validator.sh` | PostToolUse | Edit/Write | -DONE.md 박제 frontmatter (summary/phase/status/grade/owner) + 등급별 의무 섹션 점검 (exit 2) | ✅ (1/3) |
 
