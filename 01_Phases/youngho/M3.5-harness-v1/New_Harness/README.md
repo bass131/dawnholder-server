@@ -93,19 +93,21 @@ New_Harness/
 | (옛 없음) | `New_Harness/policies/subagent-routing.md` | 신설 | SubAgent 풀 8 라우팅 (옛 헌법 본문에 박혔던 표 외부화) |
 | (옛 없음) | `New_Harness/policies/knowledge-system.md` | 신설 | Knowledge 시스템 입출력 패턴 (Phase 04 reference) |
 
-### Phase 02 산출물 (예정)
+### Phase 02 산출물 (완료 — commits `5fec7ec` + `c723195` + Phase 02 -DONE.md)
 
 | 옛 `.claude/agents/` | 새 `New_Harness/agents/` | 변경 |
 |---|---|---|
-| `netcode.md` + `gameplay.md` + `persistence.md` + `qa-sim.md`의 server-side | `server.md` | 4→1 통합 |
-| (옛 묵시적) | `shared.md` | 신설 (98_Shared/ 단독) |
-| `client.md` | `client.md` | 그대로 |
-| `qa-sim.md` + `content.md` 일부 | `qa.md` | 책임 명확화 |
-| `reviewer.md` | `reviewer.md` | 그대로 |
-| (옛 없음, Codex γ 외부 의존) | `plan-auditor.md` | 신설 (γ 흡수) |
-| (옛 없음, Unity MCP 도구만) | `unity-bridge.md` | 신설 |
-| (옛 없음, 메인 세션 직접 분해) | `coordinator.md` | 신설 |
-| `content.md` | (삭제, server/client/qa로 흡수) | 삭제 |
+| `netcode.md` + `gameplay.md` + `persistence.md` + `qa-sim.md`의 server-side | `server.md` | 4→1 통합 (경계 코드 직접 처리, 옛 다중 위임 부담 해소) |
+| (옛 묵시적, 메인 세션 처리) | `shared.md` | 신설 (98_Shared/ 단독 게이트 — 헌법 §2 보호 SubAgent) |
+| `client.md` | `client.md` | 갱신 (Y2 04_ClientNet/ 통합 + unity-bridge 분리 + 새 등급 정합 + Knowledge 캐시 통독) |
+| `qa-sim.md` + `content.md` 일부 (데이터 값 영역) | `qa.md` | 책임 명확화 (헤드리스 봇 + 부하 + 퍼징 + 콘텐츠 데이터 값) |
+| `reviewer.md` | `reviewer.md` | 흡수 + 새 등급 정합 + Knowledge 캐시 통독 + Tier 2-A 자동 호출 트리거 명시 |
+| (옛 없음, Codex γ 외부 의존) | `plan-auditor.md` | 신설 (γ 사전 검증 패턴 내부 흡수, Tier 2-B 자동) |
+| (옛 없음, Unity MCP 도구만) | `unity-bridge.md` | 신설 (asset/scene/prefab 전담 + Phase 08 prefab 사고 학습 정합) |
+| (옛 없음, 메인 세션 직접 분해) | `coordinator.md` | 신설 (복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합, Coordinator → Worker 1단계만) |
+| `content.md` | (삭제, server/qa/unity-bridge로 흡수) | 삭제 |
+| (옛 없음, 헌법 본문 표 박힘) | `_routing.md` | 신설 (도메인 → SubAgent + 등급 → 처리 패턴 + 자동 호출 트리거 + 권한 경계 통합) |
+| (옛 없음, 헌법 본문 + 사용자 직접 처리) | `_escalation.md` | 신설 (Sonnet 2회 → Opus → 사용자 + Reviewer 위반 재위임 + Plan-auditor 옵션 A/B + 권한 위반 + 재귀 차단 + 우회 흐름) |
 
 ### Phase 03 산출물 (예정)
 
