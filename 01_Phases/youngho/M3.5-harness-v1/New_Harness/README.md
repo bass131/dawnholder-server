@@ -33,7 +33,7 @@ New_Harness/
 │   ├── grade-and-risk.md           (신규)
 │   ├── subagent-routing.md         (신규)
 │   └── knowledge-system.md         (신규, Phase 04 reference)
-├── agents/                         새 SubAgent 풀 8 (Phase 02)
+├── agents/                         새 SubAgent 풀 9 (Phase 02 + Phase 04 knowledge-gc 확장)
 │   ├── server.md
 │   ├── shared.md
 │   ├── client.md
@@ -42,6 +42,7 @@ New_Harness/
 │   ├── plan-auditor.md
 │   ├── unity-bridge.md
 │   ├── coordinator.md
+│   ├── knowledge-gc.md             (Phase 04 신설, Specialist 3번째)
 │   ├── _routing.md
 │   └── _escalation.md
 ├── hooks/                          새 Hook 7 (Phase 03)
@@ -53,13 +54,14 @@ New_Harness/
 │   ├── pin-injector.sh
 │   └── phase-gate-validator.sh
 ├── settings.proposed.json          (Phase 03)
-├── knowledge/                      새 Knowledge 시스템 (Phase 04)
-│   ├── server/_index.md
-│   ├── shared/_index.md
-│   ├── client/_index.md
-│   ├── qa/_index.md
-│   ├── cross-cutting/_index.md
-│   └── _usage.md
+├── knowledge/                      새 Knowledge 시스템 (Phase 04 ✅)
+│   ├── README.md                   진입점 + 트랙 A/B 분리 + 박는 양식
+│   ├── _usage.md                   SubAgent/사용자 입출력 가이드 (통독 매핑 등)
+│   ├── server/_index.md            (시드 1건: lifecycle-race-broadcast-skip)
+│   ├── shared/_index.md            (시드 1건: false-promise-pattern)
+│   ├── client/_index.md            (시드 2건: prefab-overwrite-untracked-disaster / unity-version-hash-pinning)
+│   ├── qa/_index.md                (시드 0건 — M4 진입 후 자연 누적)
+│   └── cross-cutting/_index.md     (시드 4건: sac-dotnet-test-block / projectsettings-cloud-ping-pong / gamma-pre-validation-pattern / riot-vanguard-spawn-unknown)
 └── commands/                       새 슬래시 10개 (Phase 05)
     ├── _mapping.md
     ├── work/
@@ -123,13 +125,17 @@ New_Harness/
 | (옛 없음) | `circuit-breaker.sh` | 신설 (Worker 무한 재시도 차단) |
 | (옛 없음) | `risk-detector.sh` | 신설 (trust-boundary/irreversible/unity-asset 자동 등급 상향) |
 
-### Phase 04 산출물 (예정)
+### Phase 04 산출물 (완료 — commits `a42dbdc` + `c6b1402` + (3/3) 본 commit)
 
-| 옛 | 새 `New_Harness/knowledge/` | 변경 |
+| 옛 | 새 `New_Harness/knowledge/` + `agents/knowledge-gc.md` | 변경 |
 |---|---|---|
-| (옛 없음, AI 캐시 영역 X) | `server/_index.md` + `shared/_index.md` + `client/_index.md` + `qa/_index.md` + `cross-cutting/_index.md` | 신설 |
-| 옛 CHANGELOG / `~/.claude/memory/` 항목들 | `cross-cutting/` 흡수 후보 | 마이그 |
-| 옛 `learning-journal/` (트랙 B) | 그대로 유지 | 변경 X (트랙 B 분리) |
+| (옛 없음, AI 캐시 영역 X) | `server/_index.md` + `shared/_index.md` + `client/_index.md` + `qa/_index.md` + `cross-cutting/_index.md` | 신설 (5 도메인 골격 + 시드 8건) |
+| (옛 없음) | `knowledge/README.md` + `_usage.md` | 신설 (진입점 + AI/사용자 입출력 가이드) |
+| (옛 없음, AI 캐시 GC 영역 X) | `agents/knowledge-gc.md` | 신설 (Specialist 3번째, 수동 트리거 — `/harness-review` 또는 `/session:end`) |
+| 옛 `~/.claude/memory/{sac-dotnet-test-block, unity-version-hash-pinning, riot-vanguard-spawn-unknown}.md` | `cross-cutting/_index.md` + `client/_index.md` 시드 흡수 | 마이그 (옛 memory는 *유지* — 개인 영역, 새 캐시는 *팀 영역* git 박힘) |
+| 옛 CHANGELOG [M] (5/18 SAC / 5/19 cloud ping-pong) | `cross-cutting/_index.md` 시드 흡수 | 마이그 (CHANGELOG는 *유지* — 시간순 이력) |
+| 옛 학습 일지 ★★★ (`false-promise-pattern`, `gamma-pre-validation-pattern`, `prefab-overwrite-untracked-disaster`, `lifecycle-race-broadcast-skip`) | `shared/_index.md` + `cross-cutting/_index.md` + `client/_index.md` + `server/_index.md` 시드 흡수 | AI 가독성으로 *재작성* (회고체 X, 구조화 패턴) |
+| 옛 `learning-journal/` (트랙 B) | 그대로 유지 | 변경 X (트랙 B 분리 정신) |
 
 ### Phase 05 산출물 (예정)
 

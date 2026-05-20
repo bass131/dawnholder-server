@@ -191,7 +191,7 @@
 
 ---
 
-## 🤖 SubAgent 풀 (8개) + 모델 분담
+## 🤖 SubAgent 풀 (9개) + 모델 분담
 
 작업이 들어오면 메인 세션이 등급 + 도메인 따라 SubAgent 위임:
 
@@ -205,6 +205,7 @@
 | 6 | `plan-auditor` | `_milestone-plan.md` / Phase 정의 `.md` 사전 검증 (Codex γ 흡수) | Opus | 전체 R only |
 | 7 | `unity-bridge` | Unity Editor MCP + asset + scene/prefab 작업 전담 | Sonnet | 03_Client/ + Unity MCP |
 | 8 | `coordinator` | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합 | Opus | 전체 R only, 위임 권한 |
+| 9 | `knowledge-gc` | Knowledge 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `../knowledge/` R/W, 다른 영역 R only |
 
 **여러 도메인 작업**: Coordinator가 분해 → 도메인별 Worker 위임 → Reviewer 통합 점검.
 **서브에이전트끼리 호출 X**: 분해는 Coordinator가, 위임은 Coordinator → Worker 1단계만 (재귀 차단).
@@ -213,6 +214,7 @@
 
 - **reviewer**: 도메인 Worker 코드 변경 후 (트리거 조건은 hook 명세)
 - **plan-auditor**: `_milestone-plan.md` 또는 Phase 정의 `.md` Write 후 자동
+- **knowledge-gc**: *자동 호출 X* — `/harness-review` 슬래시 또는 `/session:end` 권유 또는 사용자 명시 요청만
 - **그 외**: 수동 위임
 
 라우팅 룰·에스컬레이션 (Sonnet 2회 실패 → Opus 재호출 → 사용자) → [`00_Document/policies/subagent-routing.md`](00_Document/policies/subagent-routing.md)

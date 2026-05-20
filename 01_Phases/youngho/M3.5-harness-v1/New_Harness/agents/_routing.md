@@ -1,4 +1,4 @@
-# Agents Routing — SubAgent 풀 8 도메인 매핑
+# Agents Routing — SubAgent 풀 9 도메인 매핑
 
 > 본 문서는 *작업 → SubAgent* 빠른 매핑 표. **WHY/원칙은 [`../policies/subagent-routing.md`](../policies/subagent-routing.md), 본 문서는 HOW**.
 
@@ -15,6 +15,7 @@
 | 헤드리스 봇 / 부하 / 퍼징 / 테스트 | `qa` | 게임 코드 R only |
 | ComfyUI 자산 / 2D 스프라이트 import | `unity-bridge` | unity-asset 깃발 자동 발동 (인규 영역 보조) |
 | 콘텐츠 데이터 값 (몬스터 stat 등) | `qa` | 스키마 자체는 `shared` |
+| Knowledge 캐시 정리 (비활성화/응축/승격/분해) | `knowledge-gc` | 수동 트리거만 (`/harness-review` / `/session:end` / 사용자 명시) |
 | 헌법 / ADR / policies / 하네스 자체 | (위임 X, 영호 단독) | M3.5 약속 |
 
 ---
@@ -57,6 +58,11 @@
 
 **스킵**: 주석·오타만 / 사용자 "점검 스킵 + 사유"
 
+### Knowledge-GC 자동 호출 (없음)
+
+- **자동 호출 X** — knowledge 자율 변경은 가짜 학습 누적 위험
+- 발동 트리거: `/harness-review` 슬래시 (Phase 05 산출물) / `/session:end` 마일스톤 마감 권유 / 사용자 "knowledge-gc 호출해줘" 명시
+
 ---
 
 ## 위임 입력 약속 (필수 5항목)
@@ -89,6 +95,7 @@ Coordinator → Worker 위임 시:
 | `reviewer` | (없음) | 전체 | 코드 편집 X (Tier 2-A) |
 | `plan-auditor` | (없음) | 전체 | 코드 편집 X (Tier 2-B) |
 | `coordinator` | (없음, 위임 권한 보유) | 전체 | 코드 편집 X / 다른 coordinator 호출 X |
+| `knowledge-gc` | `../knowledge/**/*.md` | 정책 + CHANGELOG + learning-journal | 코드 / 헌법 / ADR — 사용자 확인 게이트 통과 후만 정리 |
 
 권한 위반 시 즉시 거부 + coordinator에게 다른 SubAgent 요청 보고.
 
@@ -117,3 +124,4 @@ Coordinator → Worker 위임 시:
 ## 갱신 이력
 
 - 2026-05-20 — M3.5 Phase 02 (3/3) 신설. 옛 헌법 본문에 박혔던 6 도메인 라우팅 표를 8 SubAgent로 확장 + 자동 호출 트리거 + 권한 경계 통합.
+- 2026-05-20 — M3.5 Phase 04 (3/3) 풀 9 확장. `knowledge-gc` Specialist 3번째 추가 (수동 트리거만, 자동 호출 X) — 도메인 매핑 + 자동 호출 트리거 + 권한 경계 행 추가.
