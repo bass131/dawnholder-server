@@ -17,10 +17,12 @@
 │   │   ├── HandlerRegistry.cs      Dictionary<PacketID, IPacketHandler> (한 줄 등록)
 │   │   ├── HandshakeHandler.cs     C_Handshake → version 검증 → session 캡슐화 메서드
 │   │   ├── MoveIntentHandler.cs    C_MoveIntent → InputBits.Decode → session 캡슐화 메서드
-│   │   └── PingHandler.cs          C_Ping → session 캡슐화 메서드
+│   │   ├── PingHandler.cs          C_Ping → session 캡슐화 메서드
+│   │   └── AttackHandler.cs        C_Attack → targetEntityId 전달 (M3 Phase 06 신설)
 │   ├── Loop/           Tick scheduler, world simulation
 │   ├── Maps/           맵별 actor, spatial query, PlayerEntity
-│   ├── Persistence/    (예정) DB writer queue, EF context
+│   ├── Combat/         M3 응급 단순화 (CombatConstants/EnemyKind/EnemyEntity) — M4 정밀화 대기
+│   ├── Persistence/    (예정 — M5 진입 시 박힘) DB writer queue, EF context
 │   └── Program.cs
 └── GameServer.Tests/   xUnit
     ├── Network/        핸들러 단위 + lifecycle/rate-limit/length 검증
@@ -37,11 +39,10 @@
   파싱·검증·session 메서드 호출 수준이라 async 불필요. 틱 루프도 동기.
   IO / long-running work는 tick loop 밖으로 격리 (백그라운드 channel).
   ※ 분기 많은 handler (DB 호출 포함 등) 들어오면 `IPacketHandler` + dispatcher를 `Task` 기반으로 승격 검토.
-- **Logging**: Serilog, 구조화. Info 레벨에서 패킷 페이로드 로깅 금지
-  (PII / 스팸). Trace 레벨에서만.
+- **Logging**: 현재 `Console.WriteLine` 직접 사용 (응급 데모 단순화). **M5 진입 시 Serilog 도입 예정** — 구조화 + Info 레벨 패킷 페이로드 로깅 금지 (PII / 스팸), Trace 레벨에서만. M3.6 Phase 04 점검 발견 = 옛 본문이 "Serilog" 박혔으나 실재 미박힘 정정 (false-promise 7번째 발본 봉합).
 - **Locking**: 각 맵은 단일 스레드. 맵 안에서는 lock 없음.
   맵 간 통신은 message channel만.
-- **DI**: Microsoft.Extensions.DependencyInjection. 생성자 주입.
+- **DI**: 현재 미박힘 (응급 데모 단순화). **M5 진입 시 Microsoft.Extensions.DependencyInjection 도입 예정** — 생성자 주입. M3.6 Phase 04 점검에서 옛 본문 stale 정정.
 - **Tests**: 새 패킷 핸들러는 최소 happy path 1개 + rejection 테스트
   (validation/auth 실패) 1개.
 

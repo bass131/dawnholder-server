@@ -77,14 +77,14 @@ B. 본인 노션 DB의 Data Source ID (DB row, 본인 유영호 패턴)
 
 ### 3. DB 스키마
 
-| 컬럼 | 타입 | 값 |
-|---|---|---|
-| `Title` | TITLE | `YYYY-MM-DD — 한 줄 요약` |
-| `Date` | DATE | 세션 날짜 (오늘). **expanded key**: `"date:Date:start": "YYYY-MM-DD"` |
-| `Topic` | RICH_TEXT | 한 줄 주제 |
-| `Tags` | MULTI_SELECT | **JSON 배열 문자열**: `"Tags": "[\"GitHub\", \"Harness\"]"` |
-| `Status` | SELECT | 보통 `completed`. 진행 중이면 `in progress` |
-| `PR Link` | URL | 대화에 PR URL 있으면 채움 |
+| 컬럼      | 타입         | 값                                                                    |
+| --------- | ------------ | --------------------------------------------------------------------- |
+| `Title`   | TITLE        | `YYYY-MM-DD — 한 줄 요약`                                             |
+| `Date`    | DATE         | 세션 날짜 (오늘). **expanded key**: `"date:Date:start": "YYYY-MM-DD"` |
+| `Topic`   | RICH_TEXT    | 한 줄 주제                                                            |
+| `Tags`    | MULTI_SELECT | **JSON 배열 문자열**: `"Tags": "[\"GitHub\", \"Harness\"]"`           |
+| `Status`  | SELECT       | 보통 `completed`. 진행 중이면 `in progress`                           |
+| `PR Link` | URL          | 대화에 PR URL 있으면 채움                                             |
 
 **태그 자동 매핑**:
 - ADR 작성/갱신 → `ADR`
@@ -104,14 +104,14 @@ B. 본인 노션 DB의 Data Source ID (DB row, 본인 유영호 패턴)
 
 대화에서 추출 → STAR 4섹션:
 
-| 신호 | STAR 어디로 |
-|---|---|
-| 외부 맥락 (미팅·마감·팀 변동) | **상황** |
-| 풀어야 했던 핵심 질문 1개 | **정해야 했던 것** |
-| 옵션 A/B/C 비교, 트레이드오프, 채택 + 이유 | **한 행동** |
-| 코드/문서 변경, git commit, PR URL, ADR-NNN | **결과** (구체 산출물) |
+| 신호                                        | STAR 어디로                |
+| ------------------------------------------- | -------------------------- |
+| 외부 맥락 (미팅·마감·팀 변동)               | **상황**                   |
+| 풀어야 했던 핵심 질문 1개                   | **정해야 했던 것**         |
+| 옵션 A/B/C 비교, 트레이드오프, 채택 + 이유  | **한 행동**                |
+| 코드/문서 변경, git commit, PR URL, ADR-NNN | **결과** (구체 산출물)     |
 | 사용자 개념 풀이 / "오 그럼 X도 돼?" 깨달음 | **결과**의 "배운 것 3가지" |
-| "다음 세션", "머지 후", 남은 것 | 하단 italics |
+| "다음 세션", "머지 후", 남은 것             | 하단 italics               |
 
 **"배운 것 3가지" 추출 시 주의**:
 - **단편 사실 나열 X** — 사전적 정의보다 "왜 가치인지"
@@ -122,16 +122,16 @@ B. 본인 노션 DB의 Data Source ID (DB row, 본인 유영호 패턴)
 
 STAR 4섹션 박기 전 다음 8 항목이 *어딘가에* 들어가 있는지 점검:
 
-| 8단 항목 | STAR 어디로 |
-|---|---|
-| TL;DR | 제목 + 상황 첫 문장 |
-| 배경/용어 맥락 | 상황 |
-| 핵심 결정 | 정해야 했던 것 |
-| 구현 변경 | 한 행동 |
-| 검증 결과 | 결과 (앞부분 bullet) |
-| 막힌 지점 | 한 행동 (녹임) |
+| 8단 항목         | STAR 어디로          |
+| ---------------- | -------------------- |
+| TL;DR            | 제목 + 상황 첫 문장  |
+| 배경/용어 맥락   | 상황                 |
+| 핵심 결정        | 정해야 했던 것       |
+| 구현 변경        | 한 행동              |
+| 검증 결과        | 결과 (앞부분 bullet) |
+| 막힌 지점        | 한 행동 (녹임)       |
 | 학습/면접 포인트 | 결과 → 배운 것 3가지 |
-| 다음 액션 | italics 한 줄 (말미) |
+| 다음 액션        | italics 한 줄 (말미) |
 
 ---
 
@@ -195,7 +195,7 @@ STAR 4섹션 박기 전 다음 8 항목이 *어딘가에* 들어가 있는지 �
 
 #### 7-A. `executor == "codex"` — 본인(유영호) 흐름
 
-Claude가 Bash로 Codex CLI 호출. Codex가 readonly로 ClaudeDev 읽고 본 명세 따라 박음. 분업 절차는 [`../templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
+**무조건 Claude가 Bash로 Codex CLI 호출**. Codex가 readonly로 ClaudeDev 읽고 본 명세 따라 박음. 분업 절차는 [`../templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
 
 #### 7-B. `executor == "claude"` — Claude 단독
 

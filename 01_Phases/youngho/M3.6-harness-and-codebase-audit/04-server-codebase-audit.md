@@ -3,7 +3,7 @@ owner: youngho
 milestone: M3.6
 phase: 04
 title: 서버 코드 전수조사 (02_Server/ + 98_Shared/ + 99_Tools/)
-status: pending
+status: done
 grade: 대규모
 risk: trust-boundary
 estimated: 1일+ (Coordinator + Team)

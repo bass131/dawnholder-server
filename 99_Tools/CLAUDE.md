@@ -24,12 +24,16 @@
 2. **`dotnet build Dawnholder.slnx`로 `Shared.dll` 갱신** — PostBuild가 `03_Client/Assets/Plugins/Shared/`로 자동 복사.
 3. **세 산출물 동반 commit**: `PDL.xml` + `98_Shared/Protocol/Generated/GenPackets.cs` + `Shared.dll`. 누락 시 다른 머신 pull 직후 빌드 회귀 (정유현 PR #19 사고 패턴).
 
-## PacketGenerator 알려진 결함 (M2.5 후 또는 새 패킷 추가 직전 fix 대상)
+## PacketGenerator 결함 fix 완료 이력 (M3 Phase 01·02)
 
-Codex pre-M3 감사 발견 (2026-05-18, `00_Document/reviews/2026-05-18-pre-m3-codex-review.md`):
+> M3.6 Phase 04 점검 발견 (2026-05-22): 옛 본문이 "알려진 결함 (fix 대상)" 절로 박혀있었으나 실제로는 M3 Phase 01/02에서 모두 fix 완료. *역방향 false-promise 6번째 발본* — 코드는 fix 박혔는데 문서가 "결함" 상태 그대로 유지. 본 정정 = fix 완료 이력으로 전환.
 
-- **기본값 `noManager = false`인데 manager 인프라 부재** — `--no-manager` 없이 실행하면 *컴파일 깨지는* `ServerPacketManager.cs` 생성됨 (현재 `ServerCore` namespace + `PacketHandler` 타입이 존재하지 않음). **대처**: PDL 변경 시 `--no-manager` 옵션 의무 또는 기본값 반전 fix.
-- **PDL schema validation 약함** — `<unit name="x"/>` 같은 *오타가 silent하게 누락됨*. `bool`/`string` 타입은 *broken code* 생성 (`BinaryPrimitives.ReadBooleanLittleEndian` 부재 / `Segment` 변수 누락). **대처**: 현재 PDL이 두 타입을 안 쓰니 즉시 영향 X. 새 패킷에 `bool`/`string` 추가 시점 *직전* 본 결함 fix 의무.
+Codex pre-M3 감사 (2026-05-18, `00_Document/reviews/2026-05-18-pre-m3-codex-review.md`)에서 발견된 결함 2건, M3 진행 중 모두 봉합:
+
+- **기본값 `noManager` 반전 (M3 Phase 01 fix `39a4bda`)** — 옛 `noManager = false` → 새 `noManager = true` (`Program.cs:23`). `--no-manager` 잊어도 manager 인프라 부재로 컴파일 깨지는 `ServerPacketManager.cs` 생성 차단. `--no-manager` 인자는 redundant이지만 호환성 유지.
+- **`bool`/`string` 타입 broken code fix (M3 Phase 02 fix)** — `PacketFormat.cs:365/372` `ReadBoolFormat`/`WriteBoolFormat` 별도 분기 + `Program.cs:173/199` `case "bool":`/`case "string":` 분기 + `BinaryPrimitives.TryWriteUInt16LittleEndian` + `Encoding.Unicode.GetByteCount/GetBytes(span,span)` 패턴 박음. 현재 PDL `S_HandshakeResult.ok`(bool) + `S_HandshakeResult.reason`(string) 실재 사용 중 = fix 정합 검증 완료.
+
+**PDL schema validation 약함** (`<unit name="x"/>` 같은 오타 silent 누락)은 *여전히 잔존* — 별 Phase 또는 M4+ 자연 정리 후보 (work-pin 별 시점).
 
 ## headless-bot — 서버 회귀 안전망 (Phase 08 박힘)
 
