@@ -90,8 +90,8 @@ if [ -z "$DONE_FILES" ]; then
   exit 0
 fi
 
-# 2) validate-phase-gate.sh 존재 확인
-GATE=".claude/hooks/validate-phase-gate.sh"
+# 2) phase-gate-validator.sh 존재 확인 (ADR-022 — 옛 validate-phase-gate.sh rename + 강화)
+GATE=".claude/hooks/phase-gate-validator.sh"
 if [ ! -x "$GATE" ]; then
   echo "⚠ pre-commit: $GATE 가 없거나 실행 권한 X — 검사 건너뜀"
   echo "  (정합 위해선 chmod +x $GATE)"
@@ -103,7 +103,7 @@ FAIL_COUNT=0
 FAIL_LIST=()
 
 for FILE in $DONE_FILES; do
-  # validate-phase-gate.sh는 CLAUDE_TOOL_INPUT_FILE env var 기대
+  # phase-gate-validator.sh는 CLAUDE_TOOL_INPUT_FILE env var 기대 (인터페이스 동일)
   if ! CLAUDE_TOOL_INPUT_FILE="$FILE" "$GATE"; then
     FAIL_COUNT=$((FAIL_COUNT + 1))
     FAIL_LIST+=("$FILE")
