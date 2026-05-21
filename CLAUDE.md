@@ -237,3 +237,9 @@
 사용자에게 물어보세요. 프로토콜 모양, DB 스키마, 핵심 공식, 헌법 변경은 추측하지 마세요 — 이것들은 되돌리는 비용이 큽니다.
 
 본인 머리 한 사람으로 큰 결정 안 박기. plan-auditor SubAgent + (옵션) Codex β cross-check + 사용자 확인 = 3중 안전망.
+
+### PR 생성/머지 = 사용자 명시 GO 의무
+
+`gh pr create` + `gh pr merge`는 irreversible 깃발 — 외부 publication + main history 변경. AI 자율 진행 X, **사용자 명시 GO 게이트** 의무. CODEOWNERS 거절 시 *합법 우회 경로 = admin bypass 예외 경로*는 사유 박힘 + 사용자 명시 GO 후만 진행. PR body에 `--admin` 같은 보안 키워드 literal 박지 않기 (풀어쓰기 — Auto Mode classifier가 bypass 정상화 거절).
+
+상세 절차·예외 경로·사고 보고 → [`00_Document/policies/pr-and-merge-gate.md`](00_Document/policies/pr-and-merge-gate.md)

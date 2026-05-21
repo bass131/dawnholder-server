@@ -25,7 +25,11 @@
       "Bash(gh issue view*)"
     ],
 
-    "ask": [],
+    "ask": [
+      "Bash(gh pr merge*--admin*)",
+      "Bash(gh pr create*)",
+      "Bash(gh pr merge*)"
+    ],
 
     "deny": [
       "Bash(curl*)",
