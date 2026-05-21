@@ -1,5 +1,5 @@
 {
-  "$schema_comment": "Claude Code project settings — hooks + permissions",
+  "$schema_comment": "New_Harness v1 — Claude Code project settings (proposed). 본 파일 안내·디테일·옛 → 새 매핑은 hooks/README.md 참조. 옛 .claude/settings.json은 Phase 06 전환 시점에 본 파일로 교체 (옛 운영 깨뜨림 금지 원칙).",
 
   "permissions": {
     "allow": [
@@ -13,46 +13,70 @@
       "Bash(git status)",
       "Bash(git diff*)",
       "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git branch*)",
+      "Bash(git checkout -- *)",
+      "Bash(git stash *)",
       "Bash(ls*)",
-      "Bash(cat*)"
+      "Bash(cat*)",
+      "Bash(gh pr list*)",
+      "Bash(gh pr view*)",
+      "Bash(gh issue list*)",
+      "Bash(gh issue view*)"
     ],
-    "ask": [
-      "Bash(git push*)",
-      "Bash(rm -rf*)"
-    ],
+
+    "ask": [],
+
     "deny": [
       "Bash(curl*)",
       "Bash(wget*)",
       "Read(**/.env)",
+      "Read(**/.env.*)",
       "Read(**/secrets/**)",
-      "Read(**/appsettings.Production.json)"
+      "Read(**/appsettings.Production.json)",
+      "Read(**/appsettings.Secrets.json)"
     ]
   },
 
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/dangerous-cmd-guard.sh" },
+          { "type": "command", "command": ".claude/hooks/risk-detector.sh" }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/tdd-guard.sh" },
+          { "type": "command", "command": ".claude/hooks/risk-detector.sh" },
+          { "type": "command", "command": ".claude/hooks/shared-discipline-guard.sh" }
+        ]
+      }
+    ],
+
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/validate-shared-changes.sh" },
-          { "type": "command", "command": ".claude/hooks/check-server-authority.sh" },
-          { "type": "command", "command": ".claude/hooks/validate-phase-gate.sh" }
+          { "type": "command", "command": ".claude/hooks/phase-gate-validator.sh" }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/circuit-breaker.sh" }
         ]
       }
     ],
+
     "UserPromptSubmit": [
       {
         "matcher": "",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/inject-current-pin.sh" }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          { "type": "command", "command": ".claude/hooks/check-work-envelope.sh" }
+          { "type": "command", "command": ".claude/hooks/pin-injector.sh" }
         ]
       }
     ]

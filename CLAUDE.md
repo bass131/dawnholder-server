@@ -1,4 +1,4 @@
-# 프로젝트 헌법 — 2D 사이드스크롤 MMORPG
+# 프로젝트 헌법 — 2D 사이드스크롤 MMORPG (v1)
 
 이 문서는 아키텍처 결정의 **단일 진실 공급원(single source of truth)**입니다.
 모든 에이전트(메인/서브)는 변경 작업 전에 이 문서를 반드시 읽습니다.
@@ -21,26 +21,24 @@
 - **전문 용어 첫 사용 시 풀어쓰기**. 예: "직렬화(serialization, 객체를 바이트로 변환)는...". 영어 약어도 한 번은 풀이 ("TCP(Transmission Control Protocol)"). 두 번째부터 OK.
 - **결정엔 항상 trade-off**. "A를 골랐다"가 아니라 "A vs B 중 A, 이유는..., 단점은..." 형식. "정답" 단정 X — "이 상황에선 이 선택이 보통 좋아요" 정도.
 
-### 작업 보고 (2 양식)
+### 작업 보고
 
-- **Phase 완료 시**: 5단계 보고 출력 (🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음)
-- **매 코드 응답 끝**: work-envelope 봉투 첨부 (`Edit`/`Write`/`MultiEdit` 호출 시)
+- **대규모 등급 Phase 완료 시만**: 5단계 보고 출력 (🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음) + MD/HTML 이중 박음 (캡스톤 평가 자산)
+- **그 외 응답**: 양식 노이즈 X. 단순/보통/복잡 등급은 work-pin + commit message로 충분.
 
-두 양식은 *부분집합 아님* (Phase 완료 + 코드 변경 응답엔 *둘 다* 첨부).
-
-양식·WORK-ID 규칙·훅 동작 → [`00_Document/policies/reporting-format.md`](00_Document/policies/reporting-format.md)
+양식 디테일·등급별 보고 격차 → [`00_Document/policies/reporting-format.md`](00_Document/policies/reporting-format.md)
 
 ### 작업 좌표 + Phase 완료 박제
 
-- **작업 중**: `.claude/state/current-pin.txt`가 좌표 보존, AI가 변경 시 갱신
+- **작업 중**: `.claude/state/current-pin.txt`가 좌표 보존 (압축 양식, 목표 30~40줄). AI가 변경 시 갱신
 - **Phase 완료 시**: `-DONE.md` 작성 (AI가 사실 박제) → 두 액션 권유 (학습 일지 + 세션 마감)
-- **역할 분담**: `-DONE.md` = AI(사실), `learning-journal/` = 본인(회고). 가짜 학습 방지.
+- **역할 분담**: `-DONE.md` = AI(사실), `learning-journal/` = 본인(회고). 가짜 학습 방지
 
 라이프사이클·핀 필드·박제 게이트·권유 양식 → [`00_Document/policies/pin-and-done.md`](00_Document/policies/pin-and-done.md)
 
 ### 슬래시 커맨드
 
-학습 5개 / 일지 3개 / 작업 5개 / 세션 3개 — 총 16개. 카탈로그·인풋·차이 → [`00_Document/commands-index.md`](00_Document/commands-index.md). 새 커맨드 추가 시 인덱스도 함께 갱신.
+작업 4 + 세션 3 + 점검 2 + 셋업 1 — 총 10개. 옛 학습 5 + 일지 3은 트랙 B(Notion)로 이관 (5/20 의논 결과 — KPI 전환). 카탈로그 → [`00_Document/commands-index.md`](00_Document/commands-index.md).
 
 ---
 
@@ -54,27 +52,27 @@
 - `00_Document/ARCHITECTURE.md` — 시스템 구조의 큰 그림
 - `00_Document/ADR/` — 결정의 기록 (왜 이 선택을 했는지, `INDEX.md` 참조)
 - `00_Document/policies/` — 본 헌법의 운영 가이드 (`INDEX.md` 참조)
-- `00_Document/learning-journal/` — 학습 일지 (AI 결정에 영향 X, 본인 회고용)
+- `00_Document/learning-journal/` — 학습 일지 (AI 결정에 영향 X, 본인 회고용 — **트랙 B**)
 
 **충돌 시 우선순위**:
 **`CLAUDE.md`(헌법) > `00_Document/ADR/`(결정) > `00_Document/policies/`(운영) > `00_Document/ARCHITECTURE.md`(구조) > `00_Document/PRD.md`(요구사항)**
 
-`policies/`는 ADR 결정의 *운영 풀이*라 ADR 하위. (Phase 11 M2.5 정리에서 박힘 — γ 감사 위반.)
+`policies/`는 ADR 결정의 *운영 풀이*라 ADR 하위.
 
 ### 01_Phases/ 작업 쪼개기
 
-큰 목표는 1~3시간짜리 Phase로 쪼개서 `01_Phases/<본인 네임스페이스>/M{N}-{slug}/` 안에 보관 (사람별 분리 — 팀원 간 겹침 차단, `learning-journal/` 패턴과 일관).
+큰 목표는 `01_Phases/<본인 네임스페이스>/M{N}-{slug}/` 안에 Phase 단위로 보관 (사람별 분리). Phase 정의 `.md`는 frontmatter `owner:` 필수.
 
-- 새 작업 시작: `/work:plan <목표>` 로 Phase 분해
-- 한 Phase = 한 마크다운 파일 + 명확한 완료 조건
-- Phase 끝 = 5단계 보고 + `/work:review`로 검증
+- 새 작업 시작: `/work:plan <목표>` 로 Phase 분해 (plan-auditor SubAgent 자동 호출)
+- Phase 입자 = 5~7개/마일스톤 (옛 M3 9개는 과했음 — 5/20 의논 결과)
+- 한 Phase = 한 `.md` + 명확한 완료 조건
 - 다음 Phase로 **수동 이동** (자동 순차 실행 X — 학습 호흡 유지)
 
 ### 문서 세분화
 
 `.md` 파일 비대 시 외부화·응축·분해. 사전형 문서 220줄 / 헌법 350줄 임계. 단위 작업 문서(Phase, `-DONE.md`)는 *자르지 않음*.
 
-세분화 절차·재귀 정책·발동 체크리스트 → [`00_Document/policies/doc-thresholds.md`](00_Document/policies/doc-thresholds.md)
+세분화 절차·재귀 정책 → [`00_Document/policies/doc-thresholds.md`](00_Document/policies/doc-thresholds.md)
 
 ---
 
@@ -92,7 +90,7 @@
 
 ```
 00_Document/   PRD, ARCHITECTURE, ADR, policies, learning-journal — 결정·정책·학습 기록.
-01_Phases/     작업 단위(M{N}-{slug}/) Phase 마크다운.
+01_Phases/     사람별 namespace + 마일스톤별 작업 단위(M{N}-{slug}/) Phase 마크다운.
 02_Server/     .NET 권위 서버. 98_Shared/ 읽기/쓰기 가능.
 03_Client/     Unity 프로젝트. 98_Shared/ 읽기만 (DLL로). 절대 98_Shared/에 쓰지 않음.
 98_Shared/     Protocol + 게임 상수 + 공식. 양쪽이 공유하는 cross-cutting 코드.
@@ -143,7 +141,7 @@
 `98_Shared/` 변경은 양쪽 모두에 영향을 줍니다. 수정 전:
 
 - 변경 후 `03_Client/`와 `02_Server/` **둘 다** 컴파일되는지 확인.
-- 프로토콜 호환성 체크 실행 (`.claude/hooks/` 참조).
+- 프로토콜 호환성 체크 실행 (`.claude/hooks/shared-discipline-guard.sh` 자동 발동).
 - 패킷 모양이 바뀌었다면 `Protocol.Version` 상수를 bump.
 
 ### 5. No Blocking Calls in Server Game Loop (틱 루프 블로킹 금지)
@@ -168,33 +166,74 @@
 
 ---
 
-## Agent Routing (에이전트 라우팅)
+## 📊 작업 등급 (정량 4단계)
 
-작업이 들어오면 메인 세션이 어느 서브에이전트에게 맡길지 결정합니다:
+모든 작업은 다음 4등급 중 하나로 분류됩니다 (PDF NDREAM 패턴 + 5/20 의논 결과). 등급이 *양식 부담*과 *동원 패턴*을 결정합니다.
 
-| 작업 도메인                                    | 에이전트       |
-|-----------------------------------------------|----------------|
-| 패킷 모양, 직렬화, 프레이밍, 연결 라이프사이클 | `netcode`      |
-| 전투, 스킬, 스탯, 공식, AI                     | `gameplay`     |
-| Unity 씬, 렌더링, 입력, UI                     | `client`       |
-| 맵, 몬스터, 아이템, 퀘스트, NPC                | `content`      |
-| DB 스키마, 마이그레이션, EF, 캐싱              | `persistence`  |
-| 헤드리스 봇, 부하 테스트, 퍼징                 | `qa-sim`       |
+| 등급 | 정량 기준 | 처리 패턴 | 보고 양식 |
+|---|---|---|---|
+| **단순** | 1 도메인 × 1 파일 / ≤10줄 / 가역적 | 메인 세션 직접 | work-pin + commit message |
+| **보통** | 1 도메인 × 2~3 파일 / ≤50줄 / 가역적 | Worker SubAgent 1개 | work-pin + commit message |
+| **복잡** | 2 도메인 / ~100~200줄 / 일부 비가역 | Coordinator + Worker 1~2개 | work-pin + -DONE.md |
+| **대규모** | 3+ 도메인 또는 300줄+ / 비가역 | Coordinator + Team (Worker 3~4개 + Reviewer) | work-pin + -DONE.md + **5단계 보고 MD/HTML** |
 
-여러 도메인에 걸친 작업(예: "새 스킬 추가")은 메인 세션이 분해해서
-하나씩 위임합니다. **서브에이전트끼리는 서로를 호출하지 않습니다.**
+### 위험 깃발 (자동 등급 상향)
 
-### Tier 2 자동 리뷰 (ADR-019)
+다음 깃발이 잡히면 등급이 *자동 상향*됩니다 (예: 단순 → 보통, 보통 → 복잡, 복잡 → 대규모):
 
-도메인 에이전트 코드 변경 후 메인 세션이 `reviewer` 서브에이전트 자동 호출 (조건부). 점검 대상: 헌법 / ADR / ARCHITECTURE / 테스트 / 도메인 패턴. **코드 스타일은 Scope 제외** (analyzer 위임 예정).
+- **trust-boundary**: `02_Server/GameSession.cs`, `Handlers/`, 신뢰 경계 검증 코드 변경
+- **irreversible**: `git push` to main, `gh pr merge`, DB 마이그 SQL, `Protocol.Version` bump
+- **unity-asset**: `03_Client/Assets/**/*.{prefab,unity,asset}` 변경 (특히 prefab)
 
-3-Tier 구조·트리거 조건·입력 약속·결과 처리·우회·실측 후 재조정 항목 → [`00_Document/policies/review-tiering.md`](00_Document/policies/review-tiering.md)
+자동 상향은 `risk-detector.sh` Hook이 강제. 상향 결과는 work-pin에 한 줄 박힘.
 
-> ⚠️ **현재 명세는 추측 기반** (2026-05-15 박힘, 실측 0건). 합류 후 1~2회 발동 관찰 → 트리거 조건 재조정 예정.
+등급 정의·위험 깃발 디테일 → [`00_Document/policies/grade-and-risk.md`](00_Document/policies/grade-and-risk.md)
+
+---
+
+## 🤖 SubAgent 풀 (9개) + 모델 분담
+
+작업이 들어오면 메인 세션이 등급 + 도메인 따라 SubAgent 위임:
+
+| # | SubAgent | 도메인 | 모델 | 권한 |
+|---|---|---|---|---|
+| 1 | `server` | 02_Server/ + 98_Shared/ 서버측 (게임플레이/네트워킹/영속화) | Sonnet | 02_Server/ + 98_Shared/ R/W |
+| 2 | `shared` | 98_Shared/ 단독 (Protocol/공식/공유 상수) | Sonnet | 98_Shared/ R/W, 04_ClientNet/ R |
+| 3 | `client` | 03_Client/ + 04_ClientNet/ (Unity 씬/렌더링/입력/UI/prediction) | Sonnet | 03_Client/ + 04_ClientNet/ R/W, 98_Shared/ R |
+| 4 | `qa` | 99_Tools/ + 테스트 코드 (헤드리스 봇/부하/퍼징) | Sonnet | 99_Tools/ + 테스트 R/W, 게임 코드 R only |
+| 5 | `reviewer` | Tier 2 자동 리뷰 (헌법/ADR/도메인 패턴 점검) | Opus | 전체 R only |
+| 6 | `plan-auditor` | `_milestone-plan.md` / Phase 정의 `.md` 사전 검증 (Codex γ 흡수) | Opus | 전체 R only |
+| 7 | `unity-bridge` | Unity Editor MCP + asset + scene/prefab 작업 전담 | Sonnet | 03_Client/ + Unity MCP |
+| 8 | `coordinator` | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합 | Opus | 전체 R only, 위임 권한 |
+| 9 | `knowledge-gc` | Knowledge 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `../knowledge/` R/W, 다른 영역 R only |
+
+**여러 도메인 작업**: Coordinator가 분해 → 도메인별 Worker 위임 → Reviewer 통합 점검.
+**서브에이전트끼리 호출 X**: 분해는 Coordinator가, 위임은 Coordinator → Worker 1단계만 (재귀 차단).
+
+### 자동 호출 트리거
+
+- **reviewer**: 도메인 Worker 코드 변경 후 (트리거 조건은 hook 명세)
+- **plan-auditor**: `_milestone-plan.md` 또는 Phase 정의 `.md` Write 후 자동
+- **knowledge-gc**: *자동 호출 X* — `/harness-review` 슬래시 또는 `/session:end` 권유 또는 사용자 명시 요청만
+- **그 외**: 수동 위임
+
+라우팅 룰·에스컬레이션 (Sonnet 2회 실패 → Opus 재호출 → 사용자) → [`00_Document/policies/subagent-routing.md`](00_Document/policies/subagent-routing.md)
+
+---
+
+## 📚 Knowledge 시스템
+
+각 SubAgent는 `.claude/knowledge/<domain>/_index.md`로 도메인별 학습 캐시 조회. AI 백지 비용 ↓. GC Collector가 오래되거나 중복된 항목 정리.
+
+- **AI 캐시 ≠ 학습 일지**: knowledge는 AI 직접 활용용 (구조화 패턴). 학습 일지(`learning-journal/`)는 본인 회고용 트랙 B
+- **시드 + 유기적 누적**: 처음부터 풀세트 박지 않음. 작업 진행하며 새 학습 박을지 판단 (사용자 확인 후, AI 자율 박제 X)
+
+상세 입출력 패턴·GC 정책·승격 룰 → [`00_Document/policies/knowledge-system.md`](00_Document/policies/knowledge-system.md)
 
 ---
 
 ## 확신이 없을 때
 
-사용자에게 물어보세요. 프로토콜 모양, DB 스키마, 핵심 공식은 추측하지
-마세요 — 이것들은 되돌리는 비용이 큽니다.
+사용자에게 물어보세요. 프로토콜 모양, DB 스키마, 핵심 공식, 헌법 변경은 추측하지 마세요 — 이것들은 되돌리는 비용이 큽니다.
+
+본인 머리 한 사람으로 큰 결정 안 박기. plan-auditor SubAgent + (옵션) Codex β cross-check + 사용자 확인 = 3중 안전망.
