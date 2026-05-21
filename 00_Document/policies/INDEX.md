@@ -13,7 +13,7 @@
 
 ---
 
-## 정책 목록 (7개 — 옛 4 + 신규 3)
+## 정책 목록 (8개 — 옛 4 + 신규 4)
 
 | 파일 | 한 줄 요약 | 헌법에서 참조하는 위치 | 상태 |
 |---|---|---|---|
@@ -22,8 +22,9 @@
 | [`doc-thresholds.md`](doc-thresholds.md) | 220줄·350줄 문서 세분화 정책 + 단위 작업 비대 시 등급 재산정 | "문서 운영 / 문서 세분화" | 옛 미세 정합 |
 | [`review-tiering.md`](review-tiering.md) | 3-Tier 리뷰 + Tier 2 = reviewer + plan-auditor 두 SubAgent | "SubAgent 풀 / 자동 호출 트리거" | 옛 재작성 (Tier 2-B 신설) |
 | [`grade-and-risk.md`](grade-and-risk.md) | 정량 4등급(단순/보통/복잡/대규모) + 위험 깃발 자동 상향 | "📊 작업 등급" | **신규** (M3.5) |
-| [`subagent-routing.md`](subagent-routing.md) | SubAgent 풀 8 라우팅 + 자동 호출 + 에스컬레이션 | "🤖 SubAgent 풀" | **신규** (M3.5) |
+| [`subagent-routing.md`](subagent-routing.md) | SubAgent 풀 9 라우팅 + 자동 호출 + 에스컬레이션 | "🤖 SubAgent 풀" | **신규** (M3.5) |
 | [`knowledge-system.md`](knowledge-system.md) | AI 캐시 도메인별 _index.md + GC + 트랙 A/B 분리 | "📚 Knowledge 시스템" | **신규** (M3.5, Phase 04 reference) |
+| [`pr-and-merge-gate.md`](pr-and-merge-gate.md) | PR 생성/머지 = irreversible 깃발 + 사용자 명시 GO + 예외 경로(admin bypass) + PR body literal X | "확신이 없을 때 / PR 생성·머지 게이트" | **신규** (M3.5 후속 봉합 PR #43) |
 
 ---
 
@@ -38,6 +39,7 @@
 | (옛 없음) | `grade-and-risk.md` | **신설** |
 | (옛 없음) | `subagent-routing.md` | **신설** (옛 헌법 본문 라우팅 표 외부화) |
 | (옛 없음) | `knowledge-system.md` | **신설** (Phase 04 산출물 reference) |
+| (옛 없음) | `pr-and-merge-gate.md` | **신설** (M3.5 후속 봉합 PR #43, 세 안전망 동시 사고 학습) |
 
 ---
 
@@ -56,4 +58,5 @@
 
 ## 갱신 이력
 
+- 2026-05-22 — M3.6 cross-review γ 8회차 봉합 (α1 결함). PR #43에서 박힌 `pr-and-merge-gate.md`가 본 INDEX 표에 누락된 정합 깨짐 봉합. 총 7 → 총 8 정책. `subagent-routing.md` 한 줄 요약도 풀 8 → 풀 9 동기 정정.
 - 2026-05-20 — M3.5 Phase 01 (2/2) 신설. 옛 4 (응축 갱신) + 신규 3 = 총 7 정책 카탈로그. Phase 06 전환 시점에 옛 `00_Document/policies/INDEX.md` 자리에 mv 예정.

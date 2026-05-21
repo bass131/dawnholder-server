@@ -16,7 +16,7 @@
 ├── Protocol/
 │   ├── Generated/        ★ 자체 PDL이 자동 생성한 패킷 클래스 (ADR-002 v2)
 │   │   └── GenPackets.cs   PacketID enum + IPacket + C_Xxx/S_Xxx 클래스
-│   └── ProtocolVersion.cs  Current=2 정의 (Phase 07 박힘) — 핸드셰이크 코드 M3 Phase 02 봉합 완료 (C_Handshake/S_HandshakeResult + first-packet 강제)
+│   └── ProtocolVersion.cs  Current=3 정의 (M3 Phase 06 bump — C_Attack/S_EntitySpawn/S_HitResult/S_EntityDeath/S_StageClear 5 패킷 추가) — 핸드셰이크 코드 M3 Phase 02 봉합 완료 (C_Handshake/S_HandshakeResult + first-packet 강제)
 └── GameData/
     ├── Formulas.cs       데미지, XP 곡선, 스탯 derivation
     ├── Constants.cs      Tick rate, 최대 패킷 크기, 타임아웃
