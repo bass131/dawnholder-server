@@ -1,7 +1,7 @@
 # 작업 좌표 핀 (current-pin.txt) — 빈 템플릿
 # 이 파일을 `.claude/state/current-pin.txt`로 복사 후 채워서 사용.
-# 매 사용자 입력 직전 inject-current-pin.sh가 컨텍스트 상단에 주입.
-# 갱신 정책: 00_Document/policies/pin-and-done.md 1번 절 + ADR-018 참조.
+# 매 사용자 입력 직전 pin-injector.sh (ADR-022 — 옛 inject-current-pin.sh rename, 본문 로직 동일)가 컨텍스트 상단에 주입.
+# 갱신 정책: 00_Document/policies/pin-and-done.md §1 (라이프사이클) + §5 (work-pin ↔ CONTEXT 정합 게이트 옵션 C, ADR-022 신설).
 
 WORK-ID: <phase05-slug 또는 ad-hoc-YYYYMMDD-주제>
 PHASE: <NN/MM 또는 "ad-hoc">

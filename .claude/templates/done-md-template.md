@@ -9,7 +9,7 @@
 
 ## 템플릿 본문 (이 아래를 그대로 가져다 채움)
 
-> **⚠️ Post-flight 게이트 적용 중**. 아래 frontmatter 필드 + 5개 H2 섹션 + 5단계 보고 5개 항목이 모두 채워져야 훅(`validate-phase-gate.sh`)을 통과해 commit 가능.
+> **⚠️ Post-flight 게이트 적용 중** (ADR-022 새 운영). 아래 frontmatter 필드 + 5개 H2 섹션 + 등급별 의무 섹션 (대규모 = 5단계 보고 MD/HTML 의무, 복잡 = -DONE.md 본문 의무, 단순/보통 = work-pin + commit message만 충분 / -DONE.md 박지 않음)이 모두 채워져야 훅(`phase-gate-validator.sh` — 옛 `validate-phase-gate.sh` rename + 강화)을 통과해 commit 가능.
 
 ```markdown
 ---
@@ -55,7 +55,7 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
 - 증상 → 원인 → 해결 (각 한두 줄)
 
 ## 학습 일지 후보 키워드
-- /journal:concept 로 펼칠 만한 키워드들
+- (트랙 B — 본인 노션 "Dawnholder 학습 일지" DB) 깊이 학습 펼칠 키워드들 (ADR-022 — 옛 `/journal:concept` 제거, Claude 자연어 인터뷰 도움 가능)
 ```
 
 ---
@@ -65,7 +65,7 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
 - **사실 박제**, 본인 회고 X. 회고는 `learning-journal/`에서 본인이 쓰는 영역.
 - **잊히기 전에**. 5단계 보고 직후 같은 응답에서 작성.
 - **간결하게**. 학습 일지의 *베이스*이지 학습 일지 자체가 아님.
-- **검색 가능하게**. "학습 일지 후보 키워드"는 미래의 본인이 `/journal:concept`로 펼칠 단서.
+- **검색 가능하게**. "학습 일지 후보 키워드"는 미래의 본인이 본인 노션 트랙 B 또는 Claude 자연어 인터뷰("이 키워드 학습 일지 인터뷰 도와줘")로 펼칠 단서.
 - **Notion 분업 정합**. 아래 "Notion 협업 분업 원칙" 섹션 참조.
 
 ---

@@ -37,8 +37,8 @@
 | ADR-014 | 문서 세분화 정책 (220줄 임계 + 헌법 350줄 예외) | [harness/ADR-014-doc-length-thresholds.md](harness/ADR-014-doc-length-thresholds.md) |
 | ADR-015 | Post-flight 게이트 (validate-phase-gate.sh 훅) | [harness/ADR-015-postflight-gate.md](harness/ADR-015-postflight-gate.md) |
 | ADR-016 | Notion 협업 3자 분업 (Claude / Codex / 본인) | [harness/ADR-016-notion-3way.md](harness/ADR-016-notion-3way.md) |
-| ADR-018 | 하네스 망각 안전망 — 작업 봉투 + 핀 + WORK-ID | [harness/ADR-018-forgetting-safety-net.md](harness/ADR-018-forgetting-safety-net.md) |
-| ADR-019 | Reviewer 에이전트 도입 (Tier 2 자동 리뷰) | [harness/ADR-019-reviewer-agent.md](harness/ADR-019-reviewer-agent.md) |
+| ADR-018 | 하네스 망각 안전망 — 작업 봉투 + 핀 + WORK-ID *(부분 superseded — ADR-022)* | [harness/ADR-018-forgetting-safety-net.md](harness/ADR-018-forgetting-safety-net.md) |
+| ADR-019 | Reviewer 에이전트 도입 (Tier 2 자동 리뷰) *(부분 갱신 — ADR-022)* | [harness/ADR-019-reviewer-agent.md](harness/ADR-019-reviewer-agent.md) |
 | ADR-020 | 훅 실행 환경 의존성 (Git Bash on Windows) + 검증 패턴 | [harness/ADR-020-hook-env-deps.md](harness/ADR-020-hook-env-deps.md) |
 | ADR-021 | 클라이언트 UI는 별도 Additive Scene으로 분리 | [harness/ADR-021-client-ui-additive-scene.md](harness/ADR-021-client-ui-additive-scene.md) |
 | ADR-022 | 새 하네스 v1 (M3.5 — 5/20 의논 + NDREAM 패턴 흡수 + KPI 전환) | [harness/ADR-022-new-harness-v1.md](harness/ADR-022-new-harness-v1.md) |
