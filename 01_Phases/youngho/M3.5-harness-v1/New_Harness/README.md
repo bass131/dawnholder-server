@@ -62,20 +62,20 @@ New_Harness/
 │   ├── client/_index.md            (시드 2건: prefab-overwrite-untracked-disaster / unity-version-hash-pinning)
 │   ├── qa/_index.md                (시드 0건 — M4 진입 후 자연 누적)
 │   └── cross-cutting/_index.md     (시드 4건: sac-dotnet-test-block / projectsettings-cloud-ping-pong / gamma-pre-validation-pattern / riot-vanguard-spawn-unknown)
-└── commands/                       새 슬래시 10개 (Phase 05)
-    ├── _mapping.md
+└── commands/                       새 슬래시 10개 (Phase 05 ✅)
+    ├── _mapping.md                 옛 16/17 → 새 10 매핑 최종본 + 트랙 B 이관 처
     ├── work/
-    │   ├── plan.md
-    │   ├── new-packet.md
-    │   ├── new-monster.md
-    │   └── load-test.md
+    │   ├── plan.md                 등급 4단계 + plan-auditor 자동 + 입자 5~7
+    │   ├── new-packet.md           shared+server+client 3 SubAgent 분담
+    │   ├── new-monster.md          qa(데이터) + unity-bridge(자산) 분담
+    │   └── load-test.md            qa SubAgent (옛 qa-sim rename)
     ├── session/
-    │   ├── start.md
-    │   ├── end.md
-    │   └── log.md
-    ├── setup.md
-    ├── harness-review.md           (신규)
-    └── cross-review.md             (신규)
+    │   ├── start.md                work-pin 압축 + 등급별 보고
+    │   ├── end.md                  등급별 -DONE.md 의무 + 트랙 B 안내
+    │   └── log.md                  ADR-016 + 트랙 A/B 분리 정신
+    ├── setup.md                    팀 namespace (영호/유현/인규)
+    ├── harness-review.md           (신규) 하네스 자체 점검 (헌법/SubAgent/Hook/Knowledge/슬래시) + 양식 비용 평가
+    └── cross-review.md             (신규) γ 방식 흡수 (α reviewer + β Codex 옵션 + γ 비교)
 ```
 
 ---
@@ -138,18 +138,25 @@ New_Harness/
 | 옛 학습 일지 ★★★ (`false-promise-pattern`, `gamma-pre-validation-pattern`, `prefab-overwrite-untracked-disaster`, `lifecycle-race-broadcast-skip`) | `shared/_index.md` + `cross-cutting/_index.md` + `client/_index.md` + `server/_index.md` 시드 흡수 | AI 가독성으로 *재작성* (회고체 X, 구조화 패턴) |
 | 옛 `learning-journal/` (트랙 B) | 그대로 유지 | 변경 X (트랙 B 분리 정신) |
 
-### Phase 05 산출물 (예정)
+### Phase 05 산출물 (완료 — 본 commit)
 
 | 옛 `.claude/commands/` | 새 `New_Harness/commands/` | 변경 |
 |---|---|---|
-| `learn/*.md` (5개) | (삭제, 트랙 B Notion 이관) | 학습은 별 트랙 |
-| `journal/*.md` (3개) | (삭제, 트랙 B Notion 이관) | 학습은 별 트랙 |
-| `work/plan.md` | `work/plan.md` | 등급 4단계 + plan-auditor 자동 호출 정합 |
-| `work/review.md` | `harness-review.md` | rename + 강화 (하네스 자체 점검 슬래시) |
-| `work/audit.md` | `cross-review.md` | rename + γ 방식 정합 |
-| `work/new-packet.md` + `work/new-monster.md` + `work/load-test.md` | 그대로 | 정합 갱신 |
-| `session/*.md` (3개) | 그대로 | work-pin 압축 양식 정합 |
-| `setup.md` | 그대로 | 팀 namespace 갱신 |
+| `learn/*.md` (5개: concept/dumb-it-down/explain/recap/why) | (삭제, 트랙 B Notion 이관) | 학습은 별 트랙. `_mapping.md`에 이관 처 명시 (본인 노션 + 잔존 learning-journal/) |
+| `journal/*.md` (3개: bug/concept/phase) | (삭제, 트랙 B Notion 이관) | 학습은 별 트랙. 인터뷰 양식은 사용자 요청 시 Claude가 자연스럽게 던짐 |
+| `work/plan.md` | `commands/work/plan.md` | 등급 4단계 명시 + plan-auditor SubAgent 자동 호출 + Phase 입자 5~7개/마일스톤 권장 + frontmatter `owner`/`grade` 필수 |
+| `work/review.md` | `commands/harness-review.md` | **rename + 책임 확장** — 옛 코드 리뷰(Tier 3) → 새 하네스 자체 점검 (헌법/SubAgent/Hook/Knowledge/슬래시 + 양식 비용 평가). 옛 코드 리뷰 책임은 reviewer Tier 2-A로 흡수 |
+| (옛 `work/audit.md` = 보류 상태) | `commands/cross-review.md` | **신설** — γ 방식 4~7회차 Rule of Three 통과 후 슬래시화. α(reviewer) + β(Codex 옵션) + γ 비교 + 외부 시각 cross-check + 옵션 A/B 결정 권유 |
+| `work/new-packet.md` | `commands/work/new-packet.md` | 정합 갱신 — 옛 `netcode` 단일 SubAgent → 새 `shared`+`server`+`client` 분담 + `shared-discipline-guard` Hook 자동 발동 |
+| `work/new-monster.md` | `commands/work/new-monster.md` | 정합 갱신 — 옛 `content` SubAgent 삭제(Phase 02) → 새 `qa`(데이터 값) + `unity-bridge`(자산 조건부) 분담 |
+| `work/load-test.md` | `commands/work/load-test.md` | 정합 갱신 — 옛 `qa-sim` → 새 `qa` (이름 일관, 책임 동일) |
+| `session/start.md` | `commands/session/start.md` | 정합 갱신 — work-pin 압축 양식 30~40줄 / 등급별 보고 안내 / B+ 게이트 유지 |
+| `session/end.md` | `commands/session/end.md` | 정합 갱신 — 등급별 -DONE.md 의무(복잡/대규모만) + 5단계 보고 = 대규모만 / 옛 `/journal:phase` 안내 → 본인 노션 트랙 B 안내 |
+| `session/log.md` | `commands/session/log.md` | 정합 갱신 — ADR-016 그대로 + 트랙 A/B 분리 정신 명시 |
+| `setup.md` | `commands/setup.md` | 정합 갱신 — 팀 namespace (영호/유현/인규) 명시 + 옛 `/learn:*`/`/journal:*` 안내 제거 |
+| (옛 없음) | `commands/_mapping.md` | **신설** — 옛 16/17 → 새 10 매핑 최종본 + 제거 8개 트랙 B 이관 처 명시 + 변환 트리거 절차 박힘 |
+
+**총합**: 옛 16/17개 → 새 10개 (작업 4 + 세션 3 + 점검 2 + 셋업 1). 38% 다이어트. 자세히 → [`commands/_mapping.md`](commands/_mapping.md)
 
 ### Phase 06 산출물 (예정)
 
@@ -173,7 +180,10 @@ git rm CLAUDE.md
 git rm 00_Document/policies/{reporting-format,pin-and-done,doc-thresholds,review-tiering}.md
 git rm -r .claude/agents/   # 옛 7개
 git rm .claude/hooks/{check-work-envelope,check-server-authority,validate-shared-changes,inject-current-pin,validate-phase-gate}.sh
-git rm -r .claude/commands/{learn,journal}/   # 8개 + work/review.md + work/audit.md
+git rm -r .claude/commands/learn/             # 5개 (concept/dumb-it-down/explain/recap/why)
+git rm -r .claude/commands/journal/           # 3개 (bug/concept/phase)
+git rm .claude/commands/work/review.md        # → harness-review.md로 책임 확장 (이동)
+# 옛 work/audit.md = 미존재 (M2.5 Rule of Three 미통과로 보류 — cross-review.md로 신설)
 
 # 3. 새 자산 mv (일괄)
 git mv 01_Phases/youngho/M3.5-harness-v1/New_Harness/CLAUDE.md ./
