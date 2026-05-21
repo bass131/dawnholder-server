@@ -83,12 +83,12 @@ Claude Code 채팅창에:
 
 ```
 세션 시작:   /session:start         (CONTEXT 인지 + 최근 변경 확인)
-작업:        Phase 진행, 막히면 /learn:* 활용
+작업:        Phase 진행, 막히면 Claude한테 자연어로 질문
 Phase 끝:    -DONE.md 박제 후
              /session:end          (commit + PR + 노션 박제 + 다음 액션)
 ```
 
-전체 슬래시 커맨드 16개 카탈로그: [`00_Document/commands-index.md`](00_Document/commands-index.md)
+전체 슬래시 커맨드 10개 카탈로그: [`00_Document/commands-index.md`](00_Document/commands-index.md). 옛 학습 5 + 일지 3 = 본인 노션 트랙 B 이관 (5/20 의논 결과 — ADR-022).
 
 ---
 
@@ -107,17 +107,18 @@ Phase 끝:    -DONE.md 박제 후
 
 | 계층 | 자산 | 역할 |
 |---|---|---|
-| L1 — 규칙 | [`CLAUDE.md`](CLAUDE.md) + [`00_Document/policies/`](00_Document/policies/INDEX.md) | 헌법은 절대 원칙·라우팅·스택만 (175줄, 2026-05-15 응축). 운영 정책 5개(보고 양식 / 핀·박제 / 문서 임계 / 리뷰 Tier)는 `policies/`로 외부화 |
-| L2 — 역할 | [`.claude/agents/`](.claude/agents/) | 서브에이전트 7개 (netcode / gameplay / client / content / persistence / qa-sim / **reviewer**—ADR-019 Tier 2 자동 리뷰) |
-| L3 — 단축키 | [`.claude/commands/`](.claude/commands/) | 슬래시 커맨드 16개 (학습 5 / 일지 3 / 작업 5 / 세션 3 / 셋업 1) |
-| L4 — 검증 | [`.claude/hooks/`](.claude/hooks/) | 자동 검증 훅 5개 (work-envelope, phase-gate, server-authority, shared-changes, current-pin 주입) |
+| L1 — 규칙 | [`CLAUDE.md`](CLAUDE.md) + [`00_Document/policies/`](00_Document/policies/INDEX.md) | 헌법은 절대 원칙·라우팅·스택·등급·SubAgent 풀·Knowledge 시스템 (239줄, 2026-05-21 새 하네스 v1 — ADR-022). 운영 정책 8개(보고 양식 / 핀·박제 / 문서 임계 / 리뷰 Tier / 등급·위험 / 라우팅 / Knowledge 시스템)는 `policies/`로 외부화 |
+| L2 — 역할 | [`.claude/agents/`](.claude/agents/) | 서브에이전트 9개 = Worker 4 (server / shared / client / qa) + Reviewer 2 (reviewer—Tier 2 자동 / plan-auditor—Phase 정의 사전 검증) + Specialist 3 (unity-bridge / coordinator / knowledge-gc) — ADR-022 |
+| L3 — 단축키 | [`.claude/commands/`](.claude/commands/) | 슬래시 커맨드 10개 (작업 4 / 세션 3 / 점검 2 / 셋업 1). 옛 학습 5 + 일지 3은 트랙 B Notion 이관 |
+| L4 — 검증 | [`.claude/hooks/`](.claude/hooks/) | 자동 검증 훅 7개 (dangerous-cmd-guard / tdd-guard / circuit-breaker / risk-detector / shared-discipline-guard / pin-injector / phase-gate-validator) |
+| L5 — 캐시 | [`.claude/knowledge/`](.claude/knowledge/) | SubAgent 도메인별 학습 캐시 5 (cross-cutting / server / shared / client / qa) + GC (knowledge-gc agent) — 신설 (ADR-022) |
 
 추가 인프라:
 - [`00_Document/PRD.md`](00_Document/PRD.md) — 무엇을 만드는지
 - [`00_Document/ARCHITECTURE.md`](00_Document/ARCHITECTURE.md) — 어떻게 만드는지
 - [`00_Document/ADR/`](00_Document/ADR/) — 결정 박제 (`INDEX.md`에 전체 목록)
-- [`00_Document/policies/`](00_Document/policies/INDEX.md) — 헌법 외부화 정책 5파일 (Action 1, 2026-05-15). 자기참조 정책 루프 해소 — "절대 어기지 않는 것"(헌법) vs "그것을 어떻게 운영하는가"(정책) 분리
-- [`00_Document/REVIEW_CHECKLIST.md`](00_Document/REVIEW_CHECKLIST.md) — reviewer 에이전트 5축 점검 기준 (ADR-019)
+- [`00_Document/policies/`](00_Document/policies/INDEX.md) — 헌법 외부화 정책 8파일 (옛 5 + 새 3: `grade-and-risk` / `subagent-routing` / `knowledge-system`). 자기참조 정책 루프 해소 — "절대 어기지 않는 것"(헌법) vs "그것을 어떻게 운영하는가"(정책) 분리
+- [`00_Document/REVIEW_CHECKLIST.md`](00_Document/REVIEW_CHECKLIST.md) — reviewer 에이전트 5축 점검 기준 (ADR-019 + ADR-022 정합)
 - [`01_Phases/`](01_Phases/) — Phase 단위 작업 박제 (`{NN}-*.md` 정의 + `{NN}-*-DONE.md` 결과 페어)
 
 ---
@@ -132,7 +133,7 @@ Phase 끝:    -DONE.md 박제 후
 04_ClientNet/       클라용 socket 라이브러리 (Y2 모델) — 팀장 단독
 98_Shared/          서버·클라 공유 프로토콜 (.NET Standard 2.1 DLL) — 팀장 단독
 99_Tools/           PacketGenerator 등 도구 — 팀장 단독
-.claude/            AI 하네스 (agents / commands / hooks / templates / setup-steps)
+.claude/            AI 하네스 (agents 9 / commands 10 / hooks 7 / knowledge 5도메인 / templates / setup-steps) — 새 하네스 v1 (ADR-022)
 .github/            CODEOWNERS + GitHub 설정
 .vscode/            VS Code 협업 최소 셋 (Git Bash 통합 터미널, 자동 저장 등)
 ```
@@ -162,10 +163,11 @@ Phase 끝:    -DONE.md 박제 후
 | 상황 | 어디로 |
 |---|---|
 | 셋업 막힘 | `/setup` 다시 호출 또는 Claude한테 직접 물어보기 |
-| 작업 중 개념 모름 | `/learn:why <주제>`, `/learn:concept <개념>` |
+| 작업 중 개념 모름 | Claude한테 자연어로 질문 (예: "이 코드 한 줄씩 설명해줘", "이 ADR 왜 박혔어?") |
 | Git/PR 막힘 | 팀장(유영호)에게 슬랙 |
 | 빌드 에러 | 에러 메시지 그대로 Claude한테 보여주기 |
-| 헌법/ADR 결정 이유 궁금 | `/learn:why <ADR 키워드>` |
+| 헌법/ADR 결정 이유 궁금 | Claude한테 자연어로 질문 또는 `00_Document/ADR/INDEX.md` 참조 |
+| 본인 회고 박고 싶음 | 본인 노션 "Dawnholder 학습 일지" DB (트랙 B) — `learning-journal/{본인}/` 잔존분도 그대로 사용 가능 |
 
 ---
 

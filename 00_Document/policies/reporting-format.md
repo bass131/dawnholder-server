@@ -1,27 +1,28 @@
-# Reporting Format — 5단계 보고 + work-envelope
+# Reporting Format — 5단계 보고 (대규모 등급 한정)
 
-> **헌법 참조**: 본 정책은 헌법 "응대 원칙"에서 링크됩니다.
+> **헌법 참조**: 본 정책은 새 헌법 v1 "응대 원칙 / 작업 보고" 섹션에서 링크됩니다.
 > 충돌 시 헌법이 이깁니다.
 
-본 문서는 두 가지 *별개의* 보고 양식을 정의합니다:
-
-| 양식 | 발동 시점 | 책임 |
-|---|---|---|
-| **5단계 보고** | **Phase 완료** 시 (해당 Phase의 모든 완료 조건 충족) | 작업 통째의 회고·요약 |
-| **work-envelope** | **매 코드 응답** 끝 (`Edit`/`Write`/`MultiEdit` 호출 시) | 응답 단위 미니 안전망 |
-
-> **두 양식은 부분집합이 아닙니다** (Codex R2 통찰, ADR-018 박제).
-> Phase 완료 응답은 *둘 다* 첨부되고, Phase 외 코드 응답은 envelope만 첨부됩니다.
+본 문서는 **5단계 보고** 양식을 정의합니다. 옛 운영에는 매 코드 응답마다 첨부되는 `work-envelope` 양식이 함께 있었으나, 5/20 의논 결과 **죽임 결정** — 양식 노이즈 부담이 가치 추월 (옛 → 새 매핑 표 참조).
 
 ---
 
-## 1. 5단계 보고
+## 1. 발동 조건
 
-### 발동 조건
-- Phase 파일의 모든 완료 조건 충족 시
-- 작은 작업은 짧게, 큰 작업은 자세히 (길이는 작업 크기에 비례)
+5단계 보고는 **대규모 등급 Phase 완료 시만** 발동합니다 ([`grade-and-risk.md`](grade-and-risk.md) 등급 정의 참조).
 
-### 양식
+| 등급 | 5단계 보고 | -DONE.md | work-pin |
+|---|---|---|---|
+| 단순 | ❌ | ❌ | ✅ |
+| 보통 | ❌ | ❌ | ✅ |
+| 복잡 | ❌ | ✅ | ✅ |
+| **대규모** | ✅ **MD + HTML** | ✅ | ✅ |
+
+**왜 대규모 한정인가**: 옛 운영은 *모든 Phase에 5단계 보고* 강제 → 단순/보통 등급도 양식 부담 → 본질 작업 집중력 ↓. 5/20 의논에서 양식 비용 평가 → 대규모만 가치 추월. 캡스톤 평가 자산(MD + HTML 이중 박음) 가치도 대규모에 집중.
+
+---
+
+## 2. 양식
 
 ```
 ─────────────────────────────────────────
@@ -36,81 +37,87 @@
 ```
 
 ### 5개 라벨 (변경 금지)
+
 1. **무엇을 만들었나**
 2. **왜 필요한가**
 3. **어떻게 만들었나**
 4. **테스트 결과**
 5. **다음 스텝**
 
-이 5개 라벨은 `-DONE.md` 박제 게이트 훅 (`.claude/hooks/validate-phase-gate.sh`)이 grep으로 강제합니다. 라벨 변경 시 훅도 동시 갱신 필요.
+이 5개 라벨은 `-DONE.md` 박제 게이트 훅(`../hooks/phase-gate-validator.sh`, Phase 03 산출물)이 grep으로 강제합니다. 라벨 변경 시 훅도 동시 갱신 필요.
 
 ---
 
-## 2. work-envelope (코드 작업 봉투)
+## 3. MD + HTML 이중 박음 (캡스톤 평가 자산)
 
-### 발동 조건
-- `Edit` / `Write` / `MultiEdit`를 **한 번이라도** 호출한 응답 끝
-- 일반 대화·질문·설계 토론 응답에는 **첨부하지 않음**
+대규모 등급 Phase 완료 시 5단계 보고를 두 형식으로 박습니다:
 
-### 양식 (코드 블록 그대로 출력)
+| 형식 | 위치 | 용도 |
+|---|---|---|
+| **MD** | `01_Phases/<owner>/M{N}-{slug}/NN-{phase}-DONE.md` 안 "5단계 보고" 섹션 | git에 박힘, AI 활용 가능 |
+| **HTML** | `00_Document/reports/M{N}-{phase}.html` | 캡스톤 발표 자산, 사용자/심사위원 가독성 |
+
+### HTML 변환 약속
+
+- MD 본문을 그대로 HTML로 렌더링 (별도 본문 X — *동기화 책임*)
+- 헤더는 5단계 보고 5 라벨 유지 (스타일은 자유)
+- 캡스톤 1(6/10) + 본 마감(11/19) 발표 시 *PR URL + 본 HTML 링크*가 평가자가 보는 첫 자료
+
+### 자동화 후보
+
+- M4 진입 후 *MD → HTML 변환 스크립트*(`99_Tools/`) 신설 검토. 본 정책 시점엔 수동.
+
+---
+
+## 4. WORK-ID
+
+work-pin·`-DONE.md`·learning-journal·노션 박제에 *동일 WORK-ID* 박아 산출물을 그래프화 → `grep "<WORK-ID>"` 한 방으로 한 작업의 모든 흔적 회수.
+
+- **Phase 작업 중**: 현재 Phase의 slug (예: `m3.5-harness-v1-phase01`)
+- **Phase 외 일반 작업**: `ad-hoc-YYYYMMDD-주제` (예: `ad-hoc-20260520-cloud-id-fix`)
+
+WORK-ID 시스템은 [`pin-and-done.md`](pin-and-done.md)에서 통합 관리.
+
+---
+
+## 5. 죽인 양식 (work-envelope)
+
+옛 운영의 `work-envelope`는 매 코드 응답 끝(`Edit`/`Write`/`MultiEdit` 호출 시)에 다음을 첨부:
 
 ```
 <!-- work-envelope: <WORK-ID> -->
-변경: <건드린 파일 + 핵심 변경 한 줄>
-검증: <실행한 빌드/테스트 결과 또는 미실행 사유>
-남은 것: <TODO / 리스크 / 다음 액션>
-학습 포인트: <사용자가 따라가야 할 개념 1줄>
+변경: ...
+검증: ...
+남은 것: ...
+학습 포인트: ...
 <!-- /work-envelope -->
 ```
 
-### WORK-ID 규칙
+**5/20 의논 결과 죽임**. 사유:
 
-- **Phase 작업 중**: 현재 Phase의 slug
-  예: `phase05-snap-reconcile`
-- **Phase 외 일반 작업**: `ad-hoc-YYYYMMDD-주제`
-  예: `ad-hoc-20260515-harness-shrink`
+- 단순/보통 등급에서도 봉투 첨부 → 매 응답 양식 노이즈 ↑
+- *변경 / 검증 / 남은 것*은 work-pin + commit message로 *이미 박힘* → 중복
+- *학습 포인트*는 도메인 _index.md(트랙 A) + 학습 일지(트랙 B)로 더 정밀히 박힘 → 양식 강제 가치 ↓
+- AI/사용자 둘 다 봉투 작성/통독에 토큰 부담
 
-핀(`.claude/state/current-pin.txt`)·`-DONE.md`·학습 일지에 **동일한 WORK-ID**를 박아 산출물을 그래프화 → `grep "<WORK-ID>"` 한 방으로 한 작업의 모든 흔적 회수.
+**핵심 교훈**: *양식이 가치를 만드는지 노이즈를 만드는지*가 헌법 운영 결정의 핵심 기준. 가치 < 노이즈 = 죽임.
 
-### 왜 envelope인가
-
-5단계 보고는 *Phase 완료 시만* 발동. Phase 외 코드 작업은 검증·다음 액션 약속이 망각됨. envelope는 *매 코드 응답*에 강제하는 미니 안전망.
-
-### Stop 훅 검산
-
-`.claude/hooks/check-work-envelope.sh`가 transcript에서 다음을 grep으로 확인:
-
-1. 도구 사용 여부 (`Edit` / `Write` / `MultiEdit`)
-2. 마커 (`work-envelope`)
-3. 4 헤더 (`변경:` / `검증:` / `남은 것:` / `학습 포인트:`)
-4. WORK-ID 존재
-
-누락 시 stderr 경고만(차단 X) → AI가 다음 응답에서 보강.
+옛 `.claude/hooks/check-work-envelope.sh`는 M3.5 Phase 06 전환 시점에 *삭제됨* (ADR-022).
 
 ---
 
-## 3. 한 응답에 두 양식이 같이 나오는 경우
+## 6. 변경 시 동기화 책임
 
-Phase 완료 + 코드 변경이 동시에 일어난 응답에서는 **둘 다** 첨부:
+본 정책 수정 시 *반드시* 함께 갱신:
 
-1. 응답 본문
-2. 5단계 보고 블록
-3. work-envelope 블록 (응답 맨 끝)
-
-`-DONE.md` 작성은 5단계 보고 직후 같은 응답에서 (관련 정책: [`pin-and-done.md`](pin-and-done.md)).
-
----
-
-## 4. 라벨·양식 변경 시 동기화 책임
-
-본 정책을 수정하면 *반드시* 다음을 함께 갱신:
-
-- `.claude/hooks/check-work-envelope.sh` (envelope 4 헤더 grep)
-- `.claude/hooks/validate-phase-gate.sh` (5단계 보고 5 라벨 grep)
-- `.claude/templates/done-md-template.md` (-DONE.md 양식과 동기)
+- [`../hooks/phase-gate-validator.sh`](../hooks/phase-gate-validator.sh) (Phase 03 산출물 — 5단계 보고 5 라벨 grep)
+- [`../templates/done-md-template.md`](../templates/done-md-template.md) (-DONE.md 양식 정합)
+- [`pin-and-done.md`](pin-and-done.md) (WORK-ID 일관성)
+- [`grade-and-risk.md`](grade-and-risk.md) (등급별 보고 양식 격차)
 
 ---
 
 ## 갱신 이력
 
-- 2026-05-15 — 헌법에서 외부화 (Action 1, 2단계). 기존 두 섹션을 한 문서로 통합하되 *별개 양식*임을 명시.
+- 2026-05-20 — M3.5 Phase 01 (2/2)에서 응축. work-envelope 절 통째 삭제 (5/20 의논). 5단계 보고를 대규모 등급 한정으로 조건부화. MD + HTML 이중 박음 명시(캡스톤 평가 자산). 옛 117줄 → ~90줄.
+- 2026-05-15 — 헌법에서 외부화 (Action 1, 2단계).

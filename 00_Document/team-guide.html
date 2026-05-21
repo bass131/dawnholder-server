@@ -654,14 +654,14 @@
       <span class="brand-mark">/dawnholder</span>
     </div>
     <div class="brand-title">팀원 가이드</div>
-    <div class="brand-sub">v1.1 · 2026-05-15</div>
+    <div class="brand-sub">v2.0 · 2026-05-21 — 새 하네스 v1 (ADR-022)</div>
 
     <nav>
       <ol>
         <li><a href="#about">이게 뭔가요</a></li>
         <li><a href="#setup">첫 셋업</a></li>
         <li><a href="#daily">매일 작업 흐름</a></li>
-        <li><a href="#commands">슬래시 커맨드 16개</a></li>
+        <li><a href="#commands">슬래시 커맨드 10개</a></li>
         <li><a href="#rules">협업 룰</a></li>
         <li><a href="#harness">AI 운영 시스템</a></li>
         <li><a href="#journal">학습 일지 시스템</a></li>
@@ -694,11 +694,11 @@
           <div class="label">팀원</div>
         </div>
         <div class="hero-stat">
-          <div class="num">16</div>
+          <div class="num">10</div>
           <div class="label">슬래시 커맨드</div>
         </div>
         <div class="hero-stat">
-          <div class="num">7</div>
+          <div class="num">9</div>
           <div class="label">서브에이전트</div>
         </div>
       </div>
@@ -845,14 +845,16 @@
 <span class="label">작업 중:</span>
    git checkout -b feature/{slug}-{작업명}
    <span class="arrow">→</span> Phase 진행
-   <span class="arrow">→</span> 막히면 /learn:why · /learn:concept · /learn:explain
-   <span class="arrow">→</span> 큰 작업이면 /work:plan {목표}
-   <span class="arrow">→</span> 코드 점검: /work:review
+   <span class="arrow">→</span> 막히면 Claude한테 자연어로 질문 (예: "이거 왜 이래?")
+   <span class="arrow">→</span> 큰 작업이면 /work:plan {목표}  (plan-auditor 자동 호출)
+   <span class="arrow">→</span> 코드 변경 후 Tier 2 reviewer SubAgent 자동 호출 + 새 hooks 자동 검사
 
-<span class="label">Phase 끝:</span>
-   -DONE.md 박제 + 5단계 보고  <span class="label"># AI가 자동 작성</span>
-   <span class="arrow">→</span> /journal:phase 권유 (선택)    <span class="label"># 학습 일지</span>
-   <span class="arrow">→</span> /session:end                  <span class="label"># commit + PR + 노션 박제</span></div>
+<span class="label">Phase 끝 (등급별):</span>
+   단순/보통 = work-pin + commit message
+   복잡    = -DONE.md 박제 (AI가 사실 박음)
+   대규모   = + 5단계 보고 MD/HTML (캡스톤 평가 자산)
+   <span class="arrow">→</span> 학습 회고: 본인 노션 트랙 B (자유 양식)
+   <span class="arrow">→</span> /session:end  <span class="label"># commit + PR + 노션 박제 + CONTEXT 자동 갱신</span></div>
 
       <h3>핵심 3개 슬래시</h3>
       <div class="cmd-grid">
@@ -896,76 +898,50 @@
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 04 슬래시 커맨드 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <section id="commands">
-      <h2><span class="section-num">04 —</span> 슬래시 커맨드 16개</h2>
-      <p class="section-lead">4개 카테고리 + 단독 진입점 1개. 헷갈리면 <code>00_Document/commands-index.md</code> 카탈로그.</p>
+      <h2><span class="section-num">04 —</span> 슬래시 커맨드 10개</h2>
+      <p class="section-lead">3개 카테고리 + 점검 2 + 단독 진입점 1. 헷갈리면 <code>00_Document/commands-index.md</code> 카탈로그. 옛 학습 5 + 일지 3 = 트랙 B Notion 이관 (ADR-022, 5/20 의논 결과).</p>
 
-      <h3>🎓 학습용 (5개) — 막혔거나 이해 부족할 때</h3>
-      <div class="cmd-grid">
-        <div class="cmd-card">
-          <div class="slash">/learn:why &lt;주제&gt;</div>
-          <div class="desc">"이게 왜 필요해?" — 어떤 개념·파일·결정의 존재 이유를 처음부터.</div>
-        </div>
-        <div class="cmd-card">
-          <div class="slash">/learn:explain &lt;코드&gt;</div>
-          <div class="desc">특정 코드 블록을 한 줄 한 줄 풀어서 설명.</div>
-        </div>
-        <div class="cmd-card">
-          <div class="slash">/learn:concept &lt;키워드&gt;</div>
-          <div class="desc">개념 자체(코드 외 일반 지식)를 학부 수준으로.</div>
-        </div>
-        <div class="cmd-card">
-          <div class="slash">/learn:dumb-it-down</div>
-          <div class="desc">직전 Claude 답변이 어려웠을 때, 더 쉬운 말로 재설명.</div>
-        </div>
-        <div class="cmd-card">
-          <div class="slash">/learn:recap</div>
-          <div class="desc">지금까지 진행 + 다음 할 일 한 번에 정리.</div>
-        </div>
-      </div>
-
-      <h3>🛠️ 작업용 (5개) — 실제 코드·구조 변경</h3>
+      <h3>🛠️ 작업용 (4개) — 실제 코드·구조 변경</h3>
       <div class="cmd-grid">
         <div class="cmd-card">
           <div class="slash">/work:plan &lt;목표&gt;</div>
-          <div class="desc">큰 목표를 1~3시간짜리 Phase로 쪼개기.</div>
-        </div>
-        <div class="cmd-card">
-          <div class="slash">/work:review</div>
-          <div class="desc">Tier 3 수동 깊은 리뷰 — Phase 단위 자세한 점검.</div>
+          <div class="desc">큰 목표를 Phase 5~7개로 쪼개기. plan-auditor SubAgent 자동 호출 (사전 검증).</div>
         </div>
         <div class="cmd-card">
           <div class="slash">/work:new-packet</div>
-          <div class="desc">새 패킷을 양쪽 wiring까지 한 번에 추가. <code>C2S|S2C &lt;name&gt;</code></div>
+          <div class="desc">새 패킷을 양쪽 wiring까지 한 번에. shared+server SubAgent 분담 + shared-discipline-guard Hook 자동.</div>
         </div>
         <div class="cmd-card">
           <div class="slash">/work:new-monster</div>
-          <div class="desc">새 몬스터 데이터 추가 (엔진 코드 변경 없음).</div>
+          <div class="desc">새 몬스터 데이터 추가 (엔진 코드 변경 없음). qa+shared SubAgent 분담.</div>
         </div>
         <div class="cmd-card">
           <div class="slash">/work:load-test</div>
-          <div class="desc">헤드리스 봇 부하 테스트 시나리오 실행 + 리포트.</div>
+          <div class="desc">헤드리스 봇 부하 테스트 시나리오 실행 + 리포트. qa SubAgent.</div>
         </div>
       </div>
 
-      <h3>📚 학습 일지 (3개) — 면접 무기로 누적</h3>
+      <h3>🔍 점검 (2개) — 하네스 정합 + 외부 cross-check (신설)</h3>
       <div class="cmd-grid">
         <div class="cmd-card">
-          <div class="slash">/journal:phase</div>
-          <div class="desc">Phase 하나 끝났을 때. 디테일 잊히기 전 작성 (15~20분).</div>
+          <div class="slash">/harness-review</div>
+          <div class="desc">Tier 3 수동 깊은 리뷰 — 본인 하네스 자체 점검 (헌법/SubAgent/Hook/Knowledge/슬래시). 옛 <code>/work:review</code> rename + 책임 확장.</div>
         </div>
         <div class="cmd-card">
-          <div class="slash">/journal:concept &lt;키워드&gt;</div>
-          <div class="desc">깊이 학습한 개념을 본인 말로 정리.</div>
-        </div>
-        <div class="cmd-card">
-          <div class="slash">/journal:bug</div>
-          <div class="desc">막혔다가 풀린 사건을 트러블슈팅 일지로 박기.</div>
+          <div class="slash">/cross-review &lt;scope&gt;</div>
+          <div class="desc">외부 시각 cross-check (Codex β 또는 외부 도구). 큰 PR 머지 전, 비가역 변경 전 권유.</div>
         </div>
       </div>
 
       <div class="callout note">
-        <div class="callout-title">★ 가짜 학습 방지</div>
-        <p><code>/journal:*</code>는 인터뷰 형식 — Claude가 질문만 던지고 <strong>본인이 답을 채웁니다</strong>. Claude가 다 써주면 가짜 학습이 됨. 솔직히 "잘 모르겠어요" 답해도 OK — 그것도 학습의 흔적.</p>
+        <div class="callout-title">★ 트랙 B 이관 (옛 학습 5 + 일지 3)</div>
+        <p>옛 <code>/learn:*</code> + <code>/journal:*</code>는 M3.5 새 하네스 v1에서 *제거* (5/20 의논 결과 = KPI 전환 "학습 박제 중심 → Planning + 구현 + 보고"). 대체:</p>
+        <ul style="margin-top: 6px; padding-left: 22px;">
+          <li><strong>학습 풀이</strong> — Claude한테 자연어로 ("이거 왜 이래?" / "이 코드 한 줄씩 설명해줘"). 학부생 멘토링 톤은 헌법에 박혀있음.</li>
+          <li><strong>회고 박음</strong> — 본인 노션 "Dawnholder 학습 일지" DB에 자유 양식. AI 인터뷰 형식은 그대로 가능 ("회고 박을 거 인터뷰 도와줘").</li>
+          <li><strong>Phase 회고</strong> — <code>-DONE.md</code> 안 "학습 일지 후보 키워드" 섹션 + 본인 노션.</li>
+          <li><strong>옛 자산 보존</strong> — 잔존 <code>learning-journal/{본인}/</code> 디렉토리 그대로 사용 가능.</li>
+        </ul>
       </div>
 
       <h3>📌 세션 관리 (3개)</h3>
@@ -1054,23 +1030,28 @@
           <tbody>
             <tr>
               <td><strong>L1 — 규칙</strong></td>
-              <td><code>CLAUDE.md</code> (헌법)</td>
-              <td>AI가 위반 시도 시 거부하도록 박힌 절대 원칙 5개 + 라우팅</td>
+              <td><code>CLAUDE.md</code> (헌법, 239줄)</td>
+              <td>AI가 위반 시도 시 거부하도록 박힌 절대 원칙 5개 + 라우팅 + 4등급 + SubAgent 풀 9 + Knowledge 시스템</td>
             </tr>
             <tr>
               <td><strong>L2 — 역할</strong></td>
               <td><code>.claude/agents/</code></td>
-              <td>서브에이전트 7개 (netcode / gameplay / client / content / persistence / qa-sim / reviewer)</td>
+              <td>서브에이전트 9개 = Worker 4 (server / shared / client / qa) + Reviewer 2 (reviewer / plan-auditor) + Specialist 3 (unity-bridge / coordinator / knowledge-gc)</td>
             </tr>
             <tr>
               <td><strong>L3 — 단축키</strong></td>
               <td><code>.claude/commands/</code></td>
-              <td>슬래시 커맨드 16개 (학습 5 / 일지 3 / 작업 5 / 세션 3 / 셋업 1)</td>
+              <td>슬래시 커맨드 10개 (작업 4 / 세션 3 / 점검 2 / 셋업 1). 옛 학습 5 + 일지 3은 트랙 B Notion 이관</td>
             </tr>
             <tr>
               <td><strong>L4 — 검증</strong></td>
               <td><code>.claude/hooks/</code></td>
-              <td>자동 검증 훅 5개 (work-envelope, phase-gate, server-authority, shared-changes, current-pin 주입)</td>
+              <td>자동 검증 훅 7개 (dangerous-cmd-guard / tdd-guard / circuit-breaker / risk-detector / shared-discipline-guard / pin-injector / phase-gate-validator)</td>
+            </tr>
+            <tr>
+              <td><strong>L5 — 캐시</strong></td>
+              <td><code>.claude/knowledge/</code></td>
+              <td>SubAgent 도메인별 학습 캐시 5 (cross-cutting / server / shared / client / qa) + GC Collector (신설)</td>
             </tr>
           </tbody>
         </table>
@@ -1103,25 +1084,27 @@
       </ol>
 
       <div class="callout note">
-        <div class="callout-title">★ 정책 외부화 (2026-05-15)</div>
-        <p>헌법은 <em>"무엇을 절대 어기지 않는가"</em>만 담고, 양식·운영 가이드는 <code>00_Document/policies/</code>로 외부화됨. 4개 파일: <code>reporting-format.md</code> · <code>pin-and-done.md</code> · <code>doc-thresholds.md</code> · <code>review-tiering.md</code>.</p>
+        <div class="callout-title">★ 정책 외부화 (2026-05-15 시작 + 2026-05-21 ADR-022 갱신)</div>
+        <p>헌법은 <em>"무엇을 절대 어기지 않는가"</em>만 담고, 양식·운영 가이드는 <code>00_Document/policies/</code>로 외부화됨. 8개 파일: <code>reporting-format.md</code> · <code>pin-and-done.md</code> · <code>doc-thresholds.md</code> · <code>review-tiering.md</code> + 새 3개 (<code>grade-and-risk.md</code> · <code>subagent-routing.md</code> · <code>knowledge-system.md</code>).</p>
       </div>
 
-      <h3>서브에이전트 7개 — 작업 라우팅</h3>
-      <p>큰 작업이 들어오면 메인 세션이 적절한 도메인 에이전트에게 위임합니다. 본인이 직접 호출하진 않아도 어느 영역인지는 알아두면 좋아요.</p>
+      <h3>서브에이전트 9개 — 작업 라우팅 (ADR-022 새 모델)</h3>
+      <p>큰 작업이 들어오면 메인 세션이 등급 + 도메인 따라 SubAgent에게 위임합니다. 본인이 직접 호출하진 않아도 어느 영역인지는 알아두면 좋아요.</p>
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>도메인</th><th>에이전트</th></tr>
+            <tr><th>카테고리</th><th>도메인</th><th>에이전트</th><th>모델</th></tr>
           </thead>
           <tbody>
-            <tr><td>패킷, 직렬화, 프레이밍, 연결 라이프사이클</td><td><code>netcode</code></td></tr>
-            <tr><td>전투, 스킬, 스탯, 공식, AI</td><td><code>gameplay</code></td></tr>
-            <tr><td>Unity 씬, 렌더링, 입력, UI</td><td><code>client</code></td></tr>
-            <tr><td>맵, 몬스터, 아이템, 퀘스트, NPC</td><td><code>content</code></td></tr>
-            <tr><td>DB 스키마, EF, 마이그레이션, 캐싱</td><td><code>persistence</code></td></tr>
-            <tr><td>헤드리스 봇, 부하 테스트, 퍼징</td><td><code>qa-sim</code></td></tr>
-            <tr><td>코드 변경 후 자동 리뷰 (Tier 2)</td><td><code>reviewer</code></td></tr>
+            <tr><td rowspan="4">Worker</td><td>02_Server/ + 98_Shared/ 서버측 (게임플레이/네트워킹/영속화)</td><td><code>server</code></td><td>Sonnet</td></tr>
+            <tr><td>98_Shared/ 단독 (Protocol/공식/공유 상수)</td><td><code>shared</code></td><td>Sonnet</td></tr>
+            <tr><td>03_Client/ + 04_ClientNet/ (Unity 씬/렌더링/입력/UI/prediction)</td><td><code>client</code></td><td>Sonnet</td></tr>
+            <tr><td>99_Tools/ + 테스트 (헤드리스 봇/부하/퍼징)</td><td><code>qa</code></td><td>Sonnet</td></tr>
+            <tr><td rowspan="2">Reviewer</td><td>Tier 2 자동 리뷰 (헌법/ADR/도메인 패턴)</td><td><code>reviewer</code></td><td>Opus</td></tr>
+            <tr><td>Phase 정의 사전 검증 (Codex γ 흡수)</td><td><code>plan-auditor</code></td><td>Opus</td></tr>
+            <tr><td rowspan="3">Specialist</td><td>Unity Editor MCP + asset + scene/prefab 작업 전담</td><td><code>unity-bridge</code></td><td>Sonnet</td></tr>
+            <tr><td>복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합</td><td><code>coordinator</code></td><td>Opus</td></tr>
+            <tr><td>Knowledge 캐시 정리 (수동 트리거만)</td><td><code>knowledge-gc</code></td><td>Sonnet</td></tr>
           </tbody>
         </table>
       </div>
@@ -1157,19 +1140,20 @@
 
       <p>본인이 학습 일지 쓸 때 <code>-DONE.md</code>를 <em>사실 베이스</em>로 활용. AI가 박은 사실 위에 본인 회고를 얹는 구조.</p>
 
-      <h3>3종 학습 일지</h3>
+      <h3>3종 회고 양식 (트랙 B — 자유 양식, AI 인터뷰 도움 가능)</h3>
+      <p>옛 <code>/journal:*</code> 슬래시는 M3.5 새 하네스 v1에서 제거됨 (ADR-022). 같은 3종 양식은 그대로 활용 가능 — 본인 노션 "Dawnholder 학습 일지" DB에 자유 양식으로 박고, AI 인터뷰 도움 필요하면 Claude에게 자연어로 요청.</p>
       <ol class="steps">
         <li>
-          <div class="step-title">/journal:phase — Phase 통째 회고</div>
-          <p class="step-desc">Phase 하나 끝났을 때. 7개 질문 (한 줄 요약 / 새로 배운 것 / 막혔던 지점 / 결정 포인트 / 다시 한다면 / 아직 모르는 것 / 면접 시뮬레이션). 15~20분.</p>
+          <div class="step-title">Phase 통째 회고</div>
+          <p class="step-desc">Phase 하나 끝났을 때. 7개 질문 (한 줄 요약 / 새로 배운 것 / 막혔던 지점 / 결정 포인트 / 다시 한다면 / 아직 모르는 것 / 면접 시뮬레이션). 15~20분. Claude에게: "Phase 회고 인터뷰 도와줘".</p>
         </li>
         <li>
-          <div class="step-title">/journal:concept &lt;키워드&gt; — 개념 깊이 학습</div>
-          <p class="step-desc">9개 질문 (한 줄 정의 / 처음 만난 맥락 / 비유 / 단계별 설명 / 흔한 오해 / 우리 코드 사용 / 면접 시뮬레이션 / 이해도 자가평가). 자가평가 솔직하게.</p>
+          <div class="step-title">개념 깊이 학습 &lt;키워드&gt;</div>
+          <p class="step-desc">9개 질문 (한 줄 정의 / 처음 만난 맥락 / 비유 / 단계별 설명 / 흔한 오해 / 우리 코드 사용 / 면접 시뮬레이션 / 이해도 자가평가). 자가평가 솔직하게. Claude에게: "이 개념 학습 일지 인터뷰 도와줘".</p>
         </li>
         <li>
-          <div class="step-title">/journal:bug — 트러블슈팅 서사</div>
-          <p class="step-desc">막혔다가 풀린 사건. 10개 질문 (증상 / 재현 / 기대 / 가설들 / 진짜 원인 / 왜 헷갈렸나 / 해결 / 재발 방지 / 한 줄 학습 정수 / 면접 90초 답변).</p>
+          <div class="step-title">트러블슈팅 서사 (버그 회고)</div>
+          <p class="step-desc">막혔다가 풀린 사건. 10개 질문 (증상 / 재현 / 기대 / 가설들 / 진짜 원인 / 왜 헷갈렸나 / 해결 / 재발 방지 / 한 줄 학습 정수 / 면접 90초 답변). Claude에게: "이 버그 트러블슈팅 일지 인터뷰 도와줘".</p>
         </li>
       </ol>
 
@@ -1179,7 +1163,7 @@
       </div>
 
       <h3>노션 박제도 따로</h3>
-      <p>본인 노션 "Dawnholder 협업 히스토리" 페이지에 STAR 형식 박제. 학습 일지가 *로컬 디테일*이라면 노션은 *간결한 결정 박제*. 둘이 상호 보완.</p>
+      <p>본인 노션 "Dawnholder 협업 히스토리" 페이지에 STAR 형식 박제. 학습 일지가 *로컬 디테일*이라면 노션은 *간결한 결정 박제*. 둘이 상호 보완. <code>/session:log</code>가 자동 호출.</p>
 
       <div class="callout note">
         <div class="callout-title">★ 본인 자산</div>
@@ -1201,16 +1185,17 @@
           </thead>
           <tbody>
             <tr><td>셋업 막힘</td><td><code>/setup</code> 다시 호출 또는 Claude한테 직접 물어보기</td></tr>
-            <tr><td>작업 중 개념 모름</td><td><code>/learn:why &lt;주제&gt;</code> · <code>/learn:concept &lt;개념&gt;</code></td></tr>
-            <tr><td>Claude 답이 어려움</td><td><code>/learn:dumb-it-down</code></td></tr>
-            <tr><td>지금 어디까지 왔는지 모름</td><td><code>/learn:recap</code></td></tr>
+            <tr><td>작업 중 개념 모름</td><td>Claude한테 자연어로 — 예: "이 코드 한 줄씩 설명해줘" / "이 개념 학부 수준으로 풀어줘"</td></tr>
+            <tr><td>Claude 답이 어려움</td><td>"더 쉽게 다시 설명해줘" 한 줄로 OK</td></tr>
+            <tr><td>지금 어디까지 왔는지 모름</td><td><code>/session:start</code> 다시 호출 (CONTEXT 자동 출력) 또는 "지금까지 진행 + 다음 할 일 정리해줘"</td></tr>
             <tr><td>Git/PR 막힘 (일반)</td><td>팀장(유영호)에게 슬랙</td></tr>
             <tr><td><strong>Git 충돌·복구</strong> (pull 충돌, 작업물 사라진 듯, 잘못 commit)</td><td><strong>팀장 슬랙 우선.</strong> <code>git reset --hard</code> · <code>git checkout .</code> · <code>git clean -fd</code> 절대 금지 (되돌릴 수 없음)</td></tr>
             <tr><td><strong>Unity 켰더니 ProjectSettings.asset 변경 떴음</strong></td><td><strong>cloud 라인만이면 자동 정리됨</strong> (각자 Cloud 정책, B+). <code>/session:start</code> 게이트가 처리. cloud 외 변경(예: <code>scriptingDefineSymbols</code>)도 같이 떴으면 STOP 떠요 — 본인이 의도적으로 만진 게 아니면 팀장에게 물어보기</td></tr>
             <tr><td><strong>Unity 켰더니 ProjectVersion.txt 변경 떴음 (M)</strong></td><td>Unity 빌드 hash가 main과 다름. main의 <code>03_Client/ProjectSettings/ProjectVersion.txt</code> 두 번째 줄과 본인 머신 출력 비교 → 다르면 팀장이 안내한 딥링크(<code>unityhub://6000.4.7f1/...</code>)로 재설치. <code>.gitignore</code>로 가리지 마세요 — 신규 팀원이 다른 버전으로 프로젝트 열어도 막아주는 안전망이 깨짐</td></tr>
             <tr><td>Image 컴포넌트 Inspector 띄운 채 코드 변경 → 콘솔에 NRE</td><td>Unity 알려진 이슈 (UUM-139557, 6000.4.7f1에도 잔존). 빌드/런타임 영향 없음 — 짜증만 남. 회피: 코드 변경 전 Inspector에서 Image 안 띄우고 다른 GameObject 클릭해두기</td></tr>
             <tr><td>빌드 에러</td><td>에러 메시지 그대로 Claude한테 보여주기</td></tr>
-            <tr><td>헌법/ADR 결정 이유 궁금</td><td><code>/learn:why &lt;ADR 키워드&gt;</code></td></tr>
+            <tr><td>헌법/ADR 결정 이유 궁금</td><td>Claude한테 자연어로 ("ADR-022 왜 박혔어?") 또는 <code>00_Document/ADR/INDEX.md</code> 참조</td></tr>
+            <tr><td>회고 박고 싶음 (Phase 끝 / 버그 풀린 후 / 개념 학습 후)</td><td>본인 노션 "Dawnholder 학습 일지" DB. AI 인터뷰 도움 필요하면 Claude에게 자연어로 요청. 옛 <code>learning-journal/{본인}/</code> 디렉토리도 그대로 사용 OK</td></tr>
           </tbody>
         </table>
       </div>
@@ -1221,7 +1206,7 @@
         <li><strong>친절·인내심</strong> — 같은 질문 두 번 OK. 멍청한 질문 같은 거 없음.</li>
         <li><strong>전문 용어는 첫 사용 시 풀어쓰기</strong> — "직렬화(객체를 바이트로)..." 식.</li>
         <li><strong>결정엔 항상 trade-off</strong> — "A를 골랐다"가 아니라 "A vs B 중 A, 이유는…, 단점은…".</li>
-        <li><strong>5단계 보고</strong> — 코드 작업 끝나면 🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음.</li>
+        <li><strong>5단계 보고</strong> — *대규모 등급 Phase 완료 시만* 🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음 (MD + HTML 이중 박음 = 캡스톤 평가 자산). 단순/보통/복잡은 work-pin + commit message로 충분 (ADR-022 양식 다이어트).</li>
       </ul>
     </section>
 
@@ -1236,13 +1221,13 @@
       <p class="muted">한 번 정독 권장. 길지만 본인이 따라야 할 약속이 박혀있어서 안 읽고 시작하면 충돌 발생. 셋업 끝나고 첫 작업 시작 전에.</p>
 
       <h4>Q. ADR 문서들 다 읽어야 하나요?</h4>
-      <p class="muted">아니요. 직접 읽지 않아도 OK. 일하다 "이건 왜 이렇게 돼있지?" 싶으면 <code>/learn:why &lt;ADR 키워드&gt;</code> 호출하면 관련 ADR 근거로 학부생 톤으로 알려줍니다.</p>
+      <p class="muted">아니요. 직접 읽지 않아도 OK. 일하다 "이건 왜 이렇게 돼있지?" 싶으면 Claude한테 자연어로 물어보면 관련 ADR 근거로 학부생 톤으로 알려줍니다.</p>
 
       <h4>Q. Phase가 너무 커요. 어떻게 쪼개죠?</h4>
       <p class="muted">한 Phase = 1~3시간 작업이 기준. 더 크면 <code>/work:plan</code> 다시 호출해서 재분해. 의심되면 더 작게 쪼개기.</p>
 
       <h4>Q. 작업하다 새 패킷 추가가 필요해요.</h4>
-      <p class="muted"><code>/work:new-packet &lt;C2S|S2C&gt; &lt;PacketName&gt; &lt;reason&gt;</code> 호출. netcode 에이전트가 양쪽 wiring까지 한 번에 처리. 본인이 직접 패킷 정의 만지지 마세요 — 그건 팀장 영역.</p>
+      <p class="muted"><code>/work:new-packet &lt;C2S|S2C&gt; &lt;PacketName&gt;</code> 호출. shared+server SubAgent가 양쪽 wiring까지 한 번에 처리 + shared-discipline-guard Hook이 PDL 의무 3종(PacketGenerator 재생성 + Shared.dll commit + Protocol.Version bump) 자동 점검. 본인이 직접 패킷 정의 만지지 마세요 — 그건 팀장 영역.</p>
 
       <h4>Q. 한국어로 답하는데 면접은 영어로 봐야 하는데요.</h4>
       <p class="muted">일단 한국어로 학습 일지 누적. 본인 영어 면접 준비 시점에 그 일지를 영어로 옮기는 게 효율적. 한국어로 일단 *생각이 박혀야* 영어로도 답할 수 있음.</p>
@@ -1258,7 +1243,7 @@
     <div class="doc-footer">
       <div class="meta">
         <div>Dawnholder Project · ClaudeDev · 팀원 사용 가이드</div>
-        <div>v1.2 · 2026-05-16 · Unity 6000.4.7f1 동기화 + 막혔을 때 표 보강</div>
+        <div>v2.0 · 2026-05-21 · M3.5 새 하네스 v1 발효 (ADR-022) — SubAgent 9 / Hook 7 / 슬래시 10 / Knowledge 5도메인 / 학습 트랙 B 분리</div>
       </div>
       <p style="margin-top: 16px;">
         문서가 오래됐거나 틀린 부분 발견하면 팀장(유영호)에게 슬랙. <code>00_Document/</code> 폴더의 다른 문서들과 충돌 시 헌법(<code>CLAUDE.md</code>)이 이깁니다.

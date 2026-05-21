@@ -29,7 +29,7 @@
 2. **trade-off 항상 설명**. "A 골랐어요"가 아니라 "A vs B 중 A, 이유는…, 단점은…".
 3. **솔직함 우선**. 위험 미리 짚기. 마감 못 지킬 것 같으면 정직하게.
 4. **5단계 보고**. 코드 작업 끝나면 🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음.
-5. **Phase 완료 시 학습 일지 권유**. `/journal:phase` 등.
+5. **Phase 완료 시 학습 회고 권유** — 본인 노션 트랙 B (자유 양식) 또는 Claude 자연어 인터뷰 ("Phase 회고 인터뷰 도와줘"). 옛 `/journal:*` 슬래시는 M3.5 새 하네스 v1에서 제거됨 (ADR-022).
 
 상세 톤 가이드: 헌법(`CLAUDE.md`) "사용자 컨텍스트" 섹션.
 
@@ -106,9 +106,11 @@
 
 본인이 학습하면서 일지로 박을 후보들을 여기 누적. Phase 완료 시 또는 시간 여유 시 작성:
 
-- `/journal:concept <개념>` — 깊이 학습한 개념을 본인 말로
-- `/journal:bug <사건>` — 막혔던 디버깅 사건 (디테일 안 잊었을 때)
-- `/journal:phase` — Phase 통째 회고
+- (트랙 B 이관, ADR-022) 학습 회고는 본인 노션 "Dawnholder 학습 일지" DB에 자유 양식 + Claude 자연어 인터뷰 도움 가능:
+  - 개념 깊이 학습 → "이 개념 학습 일지 인터뷰 도와줘"
+  - 트러블슈팅 서사 → "이 버그 트러블슈팅 일지 인터뷰 도와줘"
+  - Phase 통째 회고 → "Phase 회고 인터뷰 도와줘"
+- 잔존 `learning-journal/{본인}/` 디렉토리는 옛 자산 보존 — 그대로 사용 OK
 
 ---
 
@@ -141,8 +143,8 @@
 - 자동 실행 안 함 — Phase 끝 → 보고 → 사용자 확인 → 다음 Phase 수동
 - **문서 세분화**: 사전형 .md 220줄 임계 + 헌법만 350줄 예외 (ADR-014)
 - **박제 분업**: `-DONE.md` = AI 작성 / `learning-journal/` = 본인 작성 (ADR-013)
-- **Post-flight 게이트**: `-DONE.md` Write/Edit 시 `validate-phase-gate.sh` (ADR-015)
-- **작업 봉투 + 핀**: ADR-018 (망각 안전망)
+- **Post-flight 게이트**: `-DONE.md` Write/Edit 시 `phase-gate-validator.sh` (ADR-015 + ADR-022 — 옛 `validate-phase-gate.sh` rename + 강화: grade/owner frontmatter + 등급별 의무 섹션)
+- **작업 좌표 핀 + WORK-ID**: ADR-018 (망각 안전망, *부분 superseded by ADR-022* — work-envelope 양식 죽임, pin-injector.sh로 rename, 본질은 유지)
 - **훅 환경**: Git Bash on Windows + PATH 셋업 필수 (ADR-020)
 
 전체 ADR 목록 = `00_Document/ADR/INDEX.md` 참조.
