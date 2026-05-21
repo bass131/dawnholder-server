@@ -15,7 +15,7 @@ argument-hint: <C2S|S2C> <PacketName> <reason>
 - **보통**: C2S/S2C 한 방향 + 핸들러 stub만 + ProtocolVersion bump 없음 → Worker 1개 위임
 - **복잡**: ProtocolVersion bump 동반 (필드 모양 breaking change) → 자동 *irreversible* 깃발 발동 → 복잡 상향 → Coordinator + Worker 2개 + Reviewer
 
-`risk-detector.sh` Hook이 `Protocol.Version` bump 자동 검출 시 등급 상향 + work-pin에 박음.
+`risk-detector.sh` Hook이 `Protocol.Version` bump 자동 검출 시 stderr 알림 (irreversible 깃발). **등급 상향 + work-pin 갱신은 본인 수동** (Hook 알림 인지 후).
 
 ---
 
@@ -61,7 +61,7 @@ argument-hint: <C2S|S2C> <PacketName> <reason>
 ### 자동 발동 Hook (M3.5 신규)
 
 - **`shared-discipline-guard.sh`** — PDL.xml Edit/Write 시 GenPackets 재생성 누락 / Shared.dll commit 누락 자동 차단 (exit 2). 우회 불가.
-- **`risk-detector.sh`** — ProtocolVersion bump 시 `irreversible` 깃발 발동 → 등급 자동 상향 + work-pin 박힘
+- **`risk-detector.sh`** — ProtocolVersion bump 시 `irreversible` 깃발 발동 → stderr 알림. **등급 상향 + work-pin 갱신은 본인 수동** (알림 인지 후)
 - **`tdd-guard.sh`** — `Protocol/Packets/**` 변경 시 라운드트립 테스트 누락 *경고만*
 
 ---

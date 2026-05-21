@@ -1,15 +1,15 @@
-# SubAgent Routing — 풀 8 라우팅 + 자동 호출 + 에스컬레이션
+# SubAgent Routing — 풀 9 라우팅 + 자동 호출 + 에스컬레이션
 
 > **헌법 참조**: 본 정책은 새 헌법 v1 "🤖 SubAgent 풀" 섹션에서 링크됩니다.
 > 충돌 시 헌법이 이깁니다.
 >
-> **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. SubAgent 8개 중 다수가 신설(`plan-auditor` / `unity-bridge` / `coordinator` / `shared` 분리). M4 진입 후 1주 안에 라우팅 false hit·에스컬레이션 패턴 관찰 → 재조정.
+> **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. SubAgent 9개 중 다수가 신설(`plan-auditor` / `unity-bridge` / `coordinator` / `shared` 분리 + `knowledge-gc` Phase 04 신설). M4 진입 후 1주 안에 라우팅 false hit·에스컬레이션 패턴 관찰 → 재조정.
 
-본 문서는 SubAgent 풀 8개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02 산출물(`../agents/<name>.md`).
+본 문서는 SubAgent 풀 9개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02/04 산출물(`../agents/<name>.md`).
 
 ---
 
-## 1. SubAgent 풀 8 (요약)
+## 1. SubAgent 풀 9 (요약)
 
 | # | 이름 | 역할 | 모델 | 권한 |
 |---|---|---|---|---|
@@ -21,8 +21,9 @@
 | 6 | `plan-auditor` | _milestone-plan.md / Phase 정의 사전 검증 (Codex γ 흡수) | Opus | 전체 R only |
 | 7 | `unity-bridge` | Unity Editor MCP + asset + scene/prefab 작업 전담 | Sonnet | 03_Client/ + Unity MCP |
 | 8 | `coordinator` | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합 | Opus | 전체 R only, 위임 권한 |
+| 9 | `knowledge-gc` | `.claude/knowledge/` 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `.claude/knowledge/` R/W, 다른 영역 R only |
 
-옛 6 도메인(`netcode`/`gameplay`/`client`/`content`/`persistence`/`qa-sim`) → 새 8 SubAgent 매핑은 `../README.md` 옛 → 새 매핑 표 참조.
+옛 6 도메인(`netcode`/`gameplay`/`client`/`content`/`persistence`/`qa-sim`) → 새 9 SubAgent 매핑은 `../README.md` 옛 → 새 매핑 표 참조 (`knowledge-gc`는 옛 대응 없음, Phase 04 신설).
 
 각 SubAgent 디테일(입력/출력/툴 권한) = [`../agents/<name>.md`](../agents/) (Phase 02 산출물).
 
@@ -90,7 +91,16 @@
 
 Codex γ 방식(4~7회 실측)에서 *코드 박기 전 설계 검증* 패턴 흡수. γ 6/7회차 HIGH 2 + MEDIUM 3 봉합 시간 절감이 가치 증명.
 
-### 4-3. 그 외 (수동 위임)
+### 4-3. `knowledge-gc` (*자동 호출 X — 수동 트리거만*)
+
+- AI 자율 박제 차단 (`ai-self-reinforcement-bias-prevention` 학습 정합) — Knowledge 캐시 변경은 *사용자 확인 게이트* 의무
+- 발동 경로:
+  - `/harness-review` 슬래시 (수동) — 본인이 점검 중 권유 시
+  - `/session:end` 마감 시 권유 (사용자가 GO 줄 때만)
+  - 사용자 명시 요청 ("knowledge 정리 부탁")
+- 작업: 비활성화 / 응축 / 승격 후보 식별 / 분해 (Phase 04 산출물 명세 = `../agents/knowledge-gc.md` + `../knowledge/_usage.md`)
+
+### 4-4. 그 외 (수동 위임)
 
 - `server`/`shared`/`client`/`qa`/`unity-bridge`: 메인 세션 또는 coordinator가 명시 위임
 - `coordinator`: 복잡/대규모 등급 자동 호출 (등급 결정 직후)
@@ -168,7 +178,7 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 본 정책 수정 시 *반드시* 함께 갱신:
 
 - [`../CLAUDE.md`](../CLAUDE.md) "🤖 SubAgent 풀" 섹션 (헌법 본문 표와 정합)
-- [`../agents/`](../agents/) (SubAgent 정의 8개 — Phase 02 산출물)
+- [`../agents/`](../agents/) (SubAgent 정의 9개 — Phase 02 산출물 8 + Phase 04 신설 `knowledge-gc` 1)
 - [`grade-and-risk.md`](grade-and-risk.md) (등급 → 처리 패턴 매핑)
 - [`review-tiering.md`](review-tiering.md) (reviewer 자동 호출 트리거)
 - [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 산출물 — Worker 무한 재시도 차단)
@@ -192,3 +202,4 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 ## 갱신 이력
 
 - 2026-05-20 — M3.5 Phase 01 (2/2)에서 신설. 5/20 의논 결과(SubAgent 풀 8 + 모델 분담 + 에스컬레이션 룰) 박힘. 옛 헌법 6 도메인 라우팅 표를 본 정책으로 외부화 + 신설 4개(`shared`/`plan-auditor`/`unity-bridge`/`coordinator`) 흡수.
+- 2026-05-22 — M3.5 후속 봉합 (β cross-review #3). 풀 8 → 풀 9 갱신 (`knowledge-gc` Phase 04 신설 항목 누락 봉합) + §4-3 수동 트리거 명세 박음.

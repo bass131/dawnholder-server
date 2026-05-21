@@ -19,9 +19,9 @@
 
 set -e
 
-# 입력 — Edit/Write는 파일 경로, Bash는 명령
-TOOL_INPUT_FILE="${CLAUDE_TOOL_INPUT_FILE:-}"
-TOOL_INPUT_COMMAND="${CLAUDE_TOOL_INPUT_COMMAND:-${CLAUDE_TOOL_INPUT:-}}"
+# stdin JSON payload 파싱 — $TOOL_INPUT_FILE / $TOOL_INPUT_COMMAND 세팅
+. "$(dirname "$0")/hook-common.sh"
+parse_hook_payload
 
 # 둘 다 없으면 통과
 if [ -z "$TOOL_INPUT_FILE" ] && [ -z "$TOOL_INPUT_COMMAND" ]; then

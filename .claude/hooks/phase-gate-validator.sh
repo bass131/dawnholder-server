@@ -15,7 +15,9 @@
 
 set -e
 
-TOOL_INPUT_FILE="${CLAUDE_TOOL_INPUT_FILE:-}"
+# stdin JSON payload 파싱 — $TOOL_INPUT_FILE 세팅
+. "$(dirname "$0")/hook-common.sh"
+parse_hook_payload
 
 # *-DONE.md 만 대상
 case "$TOOL_INPUT_FILE" in

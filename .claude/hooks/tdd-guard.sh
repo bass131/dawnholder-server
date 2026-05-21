@@ -17,7 +17,9 @@
 
 set -e
 
-TOOL_INPUT_FILE="${CLAUDE_TOOL_INPUT_FILE:-}"
+# stdin JSON payload 파싱 — $TOOL_INPUT_FILE 세팅
+. "$(dirname "$0")/hook-common.sh"
+parse_hook_payload
 
 # 입력 없으면 통과
 [ -z "$TOOL_INPUT_FILE" ] && exit 0

@@ -9,14 +9,18 @@
 # Claude Code 도구 호출은 명령 단위 grep으로 잡힘 → 사용자가 의도적으로 우회하면
 # 그건 명시적 결정 (별 셸).
 #
-# 환경변수: PreToolUse Bash의 입력 — Claude Code 공식 명세 의존. 추정 변수 후보 검사.
+# 입력: Claude Code Hook payload — **stdin JSON** (공식 명세).
+# 옛 추측 명세 (`CLAUDE_TOOL_INPUT_*` env vars)는 hook-common.sh에서 fallback.
 #
 # 정책 참조: 00_Document/policies/grade-and-risk.md "irreversible" 깃발 + 헌법.
 
 set -e
 
-# 입력 명령 추출 — 환경변수 또는 arg ($1) 양쪽 호환
-COMMAND="${CLAUDE_TOOL_INPUT_COMMAND:-${CLAUDE_TOOL_INPUT:-${1:-}}}"
+# stdin JSON payload 파싱 — $TOOL_INPUT_COMMAND 세팅
+. "$(dirname "$0")/hook-common.sh"
+parse_hook_payload
+
+COMMAND="$TOOL_INPUT_COMMAND"
 
 if [ -z "$COMMAND" ]; then
   # 입력 없으면 그냥 통과 (잘못된 호출 가정)
@@ -66,10 +70,16 @@ if [[ "$COMMAND" =~ git[[:space:]]+push[[:space:]]+.*main.*(-f|--force) ]] || \
   REASON="main 브랜치 history 파괴 — 협업 전원 영향. 절대 금지. PR 흐름 사용."
 fi
 
-# 7. gh pr merge --admin (CODEOWNERS 우회)
+# 7. gh pr merge --admin (CODEOWNERS 우회) — 합법 예외 경로 있음
+# policies/pr-and-merge-gate.md §4 예외 경로 = 사유 박힘 + 사용자 명시 GO 후 진행.
+# Hook 본문은 *최후 안전망* — settings.json permissions.ask가 1차 게이트.
+# 일반 차단 X, 사유 명시 환경변수가 있으면 통과.
 if [[ "$COMMAND" =~ gh[[:space:]]+pr[[:space:]]+merge.*--admin ]]; then
-  BLOCKED="gh pr merge --admin"
-  REASON="CODEOWNERS 승인 우회 = 영역 분리 정책 위반. 정상 PR 흐름으로 머지."
+  if [ -z "${CLAUDE_ADMIN_BYPASS_REASON:-}" ]; then
+    BLOCKED="gh pr merge --admin (사유 미박힘)"
+    REASON="admin bypass = 예외 경로. 사유를 \$CLAUDE_ADMIN_BYPASS_REASON 환경변수 또는 PR comment에 박은 후 재호출. 정책: 00_Document/policies/pr-and-merge-gate.md §4-A."
+  fi
+  # 사유 박힘 + 사용자 GO 거친 케이스로 가정 → 통과 (settings.json ask 매처가 1차 게이트)
 fi
 
 # ─────────────────────────────────────────────
