@@ -185,7 +185,7 @@
 - **irreversible**: `git push` to main, `gh pr merge`, DB 마이그 SQL, `Protocol.Version` bump
 - **unity-asset**: `03_Client/Assets/**/*.{prefab,unity,asset}` 변경 (특히 prefab)
 
-자동 상향은 `risk-detector.sh` Hook이 강제. 상향 결과는 work-pin에 한 줄 박힘.
+위험 깃발은 `risk-detector.sh` Hook이 자동 검출 → stderr 알림 + `.claude/state/risk-flags.txt` 누적. **work-pin 갱신은 본인이 수동** (Hook은 알림 전용 — 본인 인지를 거치는 게 정합, hook이 work-pin 자체를 안전 수정하기 어려움).
 
 등급 정의·위험 깃발 디테일 → [`00_Document/policies/grade-and-risk.md`](00_Document/policies/grade-and-risk.md)
 

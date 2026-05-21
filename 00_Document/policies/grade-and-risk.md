@@ -61,7 +61,7 @@ PDF NDREAM 패턴(Sonnet Worker + Opus Coordinator)을 본 프로젝트에 정�
 
 ### 상향 결과 박힘
 
-상향이 일어나면 work-pin에 한 줄 박힘:
+상향 사유는 *본인이 수동으로* work-pin에 한 줄 박음 (Hook 알림 인지 후):
 
 ```
 등급:           복잡 (자동 상향: 보통 + trust-boundary)
@@ -69,9 +69,11 @@ PDF NDREAM 패턴(Sonnet Worker + Opus Coordinator)을 본 프로젝트에 정�
 
 상향 사유가 *명시*되면 본인이 "왜 갑자기 양식 부담 늘었지?" 의문 즉시 해소.
 
-### 강제 발동 = Hook
+### 자동 검출 + 알림 = Hook
 
-위 깃발은 사용자/AI 판단에 *의존하지 않음*. `.claude/hooks/risk-detector.sh`(Phase 03 산출물)가 PreToolUse/PostToolUse에서 변경 파일 경로 grep으로 자동 검출 → 등급 상향 + work-pin 갱신 강제.
+위 깃발은 사용자/AI 판단에 *의존하지 않음*. `.claude/hooks/risk-detector.sh`(Phase 03 산출물)가 PreToolUse/PostToolUse에서 변경 파일 경로/명령 grep으로 자동 검출 → **stderr 알림 + `.claude/state/risk-flags.txt` 누적** (작업 차단 X).
+
+**work-pin 갱신은 본인 수동** — Hook이 work-pin 파일을 직접 안전하게 수정하기 어려움(동시 편집 충돌 위험) + 본인 인지를 거쳐야 등급 상향이 의미 있음. Hook 발동 = "주의 환기" 신호, 갱신 = 본인 책임.
 
 Hook 명세 = [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03 reference).
 
@@ -89,12 +91,12 @@ Hook 명세 = [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03
    │
    ├─ 기본 등급 결정 (단순/보통/복잡/대규모)
    │
-   ├─ risk-detector.sh Hook 자동 발동
+   ├─ risk-detector.sh Hook 자동 발동 (stderr 알림 — 차단 X)
    │   ├─ 깃발 0개 → 기본 등급 유지
-   │   ├─ 깃발 1개 → 1단계 상향
-   │   └─ 깃발 2개+ → 2단계 상향
+   │   ├─ 깃발 1개 → 1단계 상향 (본인 인지 후 갱신)
+   │   └─ 깃발 2개+ → 2단계 상향 (본인 인지 후 갱신)
    │
-   ├─ 최종 등급 → work-pin에 박힘
+   ├─ 최종 등급 → 본인이 수동으로 work-pin에 박음
    │
    ├─ 처리 패턴 결정 (메인 직접 / Worker / Coordinator+Team)
    │   └─ [subagent-routing.md] 참조

@@ -9,14 +9,18 @@
 # Claude Code 도구 호출은 명령 단위 grep으로 잡힘 → 사용자가 의도적으로 우회하면
 # 그건 명시적 결정 (별 셸).
 #
-# 환경변수: PreToolUse Bash의 입력 — Claude Code 공식 명세 의존. 추정 변수 후보 검사.
+# 입력: Claude Code Hook payload — **stdin JSON** (공식 명세).
+# 옛 추측 명세 (`CLAUDE_TOOL_INPUT_*` env vars)는 hook-common.sh에서 fallback.
 #
 # 정책 참조: 00_Document/policies/grade-and-risk.md "irreversible" 깃발 + 헌법.
 
 set -e
 
-# 입력 명령 추출 — 환경변수 또는 arg ($1) 양쪽 호환
-COMMAND="${CLAUDE_TOOL_INPUT_COMMAND:-${CLAUDE_TOOL_INPUT:-${1:-}}}"
+# stdin JSON payload 파싱 — $TOOL_INPUT_COMMAND 세팅
+. "$(dirname "$0")/hook-common.sh"
+parse_hook_payload
+
+COMMAND="$TOOL_INPUT_COMMAND"
 
 if [ -z "$COMMAND" ]; then
   # 입력 없으면 그냥 통과 (잘못된 호출 가정)

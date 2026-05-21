@@ -1,8 +1,10 @@
-# New_Harness v1 — Hook 인프라
+# Hook 인프라 (M3.5 새 하네스 v1)
 
-> **상태**: M3.5 Phase 03 산출물 (작업 중).
-> Phase 06 전환 시점에 본 폴더 → `.claude/hooks/`로 일괄 mv → 본격 작동.
-> 현재는 격리 폴더 안 *제안*이라 실행 안 됨 (옛 운영 깨뜨림 금지 원칙).
+> **상태**: **active** — M3.5 Phase 06 atomic 전환 (PR #42 main `fc983ea`, 2026-05-21) 후 `.claude/settings.json` PreToolUse/PostToolUse/UserPromptSubmit 등록 완료. 매 도구 호출마다 발동.
+>
+> **입력 인터페이스**: Claude Code Hook payload = **stdin JSON** (공식 명세). 공통 헬퍼 `hook-common.sh`가 파싱 → `$TOOL_NAME` / `$TOOL_INPUT_FILE` / `$TOOL_INPUT_COMMAND` 세팅. 옛 추측 env vars(`$CLAUDE_TOOL_INPUT_*`)는 fallback만 유지.
+>
+> **봉합 이력**: 2026-05-22 M3.5 후속 봉합 — Phase 03 박힘 시점 추측 명세 (`CLAUDE_TOOL_INPUT_*` env vars)가 hook 무력화 (β cross-review #1 발견 + 본 세션 `gh pr merge --admin` 차단 누락 현장 실증) → `hook-common.sh` 신설 + 6 hook 본문 정정.
 
 ---
 
