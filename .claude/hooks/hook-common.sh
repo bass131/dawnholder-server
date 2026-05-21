@@ -27,21 +27,21 @@ parse_hook_payload() {
   payload=$(cat 2>/dev/null || true)
   [ -z "$payload" ] && payload='{}'
 
-  # python으로 3개 필드 한 번에 추출 (json.dumps로 quote escape 안전)
+  # python으로 3개 필드 한 번에 추출 (shlex.quote로 single-quoted = bash command sub. 무력화)
   local extracted
   extracted=$(printf '%s' "$payload" | python -c "
-import sys, json
+import sys, json, shlex
 try:
     d = json.load(sys.stdin)
 except Exception:
     d = {}
 ti = d.get('tool_input', {}) if isinstance(d.get('tool_input'), dict) else {}
-print('PARSED_TOOL_NAME=' + json.dumps(d.get('tool_name', '') or ''))
-print('PARSED_TOOL_INPUT_FILE=' + json.dumps(ti.get('file_path', '') or ''))
-print('PARSED_TOOL_INPUT_COMMAND=' + json.dumps(ti.get('command', '') or ''))
+print('PARSED_TOOL_NAME=' + shlex.quote(d.get('tool_name', '') or ''))
+print('PARSED_TOOL_INPUT_FILE=' + shlex.quote(ti.get('file_path', '') or ''))
+print('PARSED_TOOL_INPUT_COMMAND=' + shlex.quote(ti.get('command', '') or ''))
 " 2>/dev/null || true)
 
-  # eval 안전 — 자체 생성한 JSON-escaped 문자열만 평가
+  # eval 안전 — shlex.quote 출력은 single-quoted (\$(), \`\`, \$VAR 모두 literal)
   if [ -n "$extracted" ]; then
     eval "$extracted"
   fi
