@@ -3,9 +3,10 @@ owner: youngho
 milestone: M3.6
 phase: 03
 title: 하네스 v1 실측 1주차 재조정
-status: pending
-grade: 복잡
-risk: irreversible
+status: done
+grade: 대규모
+risk: irreversible+harness
+note: 옛 등급 복잡 = 옛 추측 (4-1만 가정). 실제 5건 Hook 변경 + ADR-020 + setup-steps + CHANGELOG [H] = 대규모 정합. 4-4 자기 참조 깃발 발동으로 자동 상향 (M3.6 Phase 03-B 4-4 진행 중 인지 박힘, 2026-05-22).
 estimated: 2~3h
 domain: cross
 ---

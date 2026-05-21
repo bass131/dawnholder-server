@@ -112,12 +112,16 @@ if [ -z "$AC_BODY" ]; then
 fi
 
 # ─────────────────────────────────────────────
-# 7. (대규모) MD/HTML 이중 박음 = 경고만
+# 7. (대규모) MD/HTML 이중 박음 의무 (M3.6 Phase 03-B 4-3 강화)
 # ─────────────────────────────────────────────
+# 옛 = WARNINGS (권장). 새 = ERRORS (의무, 캡스톤 평가 자산).
+# 옛 자산(M3.5 대규모 -DONE.md 3건)은 Edit 안 하면 자연 회피 (PostToolUse Edit/Write 시점만 발동).
+# 새 대규모 -DONE.md = HTML 페어 박지 않으면 차단.
 if [ "$GRADE" = "대규모" ]; then
   HTML_SIBLING="${TOOL_INPUT_FILE%.md}.html"
   if [ ! -f "$HTML_SIBLING" ]; then
-    WARNINGS+=("대규모 등급은 MD + HTML 이중 박음 권장 (캡스톤 평가 자산). 대응 .html 파일 없음: $HTML_SIBLING")
+    ERRORS+=("대규모 등급은 MD + HTML 이중 박음 의무 (캡스톤 평가 자산). 대응 .html 파일 없음: $HTML_SIBLING")
+    FAIL=1
   fi
 fi
 

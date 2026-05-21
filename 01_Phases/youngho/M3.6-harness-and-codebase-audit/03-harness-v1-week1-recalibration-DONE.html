@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>M3.6 Phase 03 — 하네스 v1 실측 1주차 재조정 + Hook hardening bundle (마감)</title>
+<style>
+  body { font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif; max-width: 920px; margin: 2em auto; padding: 0 1em; line-height: 1.6; color: #222; }
+  h1 { border-bottom: 3px solid #4a7; padding-bottom: 0.3em; }
+  h2 { border-bottom: 1px solid #ddd; padding-bottom: 0.2em; margin-top: 2em; color: #4a7; }
+  h3 { color: #555; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  th, td { border: 1px solid #ccc; padding: 0.5em 0.8em; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f0f0f0; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.92em; }
+  pre { background: #f7f7f7; padding: 0.8em; border-left: 3px solid #4a7; overflow-x: auto; }
+  .pass { color: #2a7; font-weight: bold; }
+  .fail { color: #d44; font-weight: bold; }
+  .star { color: #fa3; }
+  .summary-box { background: #f0f8f4; border-left: 4px solid #4a7; padding: 1em 1.2em; margin: 1.5em 0; }
+  .grade-large { display: inline-block; background: #d44; color: white; padding: 0.2em 0.6em; border-radius: 4px; font-weight: bold; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<h1>M3.6 Phase 03 — 하네스 v1 실측 1주차 재조정 + Hook hardening bundle (마감)</h1>
+
+<p>
+  <strong>마일스톤</strong>: M3.6 (AI Harness 점검 + 프로젝트 코드 전수조사) /
+  <strong>등급</strong>: <span class="grade-large">대규모 (자동 상향)</span> /
+  <strong>담당</strong>: 영호 단독 통제 (새 하네스 v1) /
+  <strong>마감</strong>: 2026-05-22
+</p>
+
+<div class="summary-box">
+<strong>핵심 요약</strong>: 옛 추측 정책의 <em>첫 실측 사이클 통과</em> + Hook 안전망 <em>본질 봉합 5건</em>. Phase 02-A에서 "가짜 약속 0건" 박았던 진단이 본 Phase 진행 중 정정 — <code>risk-detector.sh</code> trust-boundary 매처가 실제 경로와 불일치 발견 = <strong>가짜 약속 4번째 발본</strong>. 정합 감사를 <em>시뮬 발동 검증까지 확장 필요</em> 정신 박힘.
+</div>
+
+<h2>🎯 5단계 보고 — 무엇을 만들었나</h2>
+
+<p>새 하네스 v1의 첫 1주 실측 사이클 통과 + Hook 안전망 본질 봉합 7건:</p>
+
+<ol>
+<li><code>dangerous-cmd-guard.sh</code> Python shlex.split 토큰화 (false positive 봉합, β2 매트릭스 13/13 PASS)</li>
+<li><code>phase-gate-validator.sh</code> 대규모 등급 HTML 페어 의무화 (옛 경고 → exit 2 차단)</li>
+<li><code>risk-detector.sh</code> 4번째 깃발 <code>harness</code> 신설 + trust-boundary 매처 stale 봉합 (가짜 약속 4번째 발본)</li>
+<li><code>reviewer-auto-trigger.sh</code> 신설 (ADR-019 Hard hook, 정유현 5/16 합류 → 5/22 = 1주 약속 봉합)</li>
+<li>ADR-020 갱신 — Python 3.6+ 의존성 + Windows CRLF 함정 명시</li>
+<li>ADR-019 갱신 — Hard hook 박힘 명시</li>
+<li><code>setup-steps/02-common.md</code> Python 9단계 + Hook 풀세트 7→8 + CHANGELOG [H]</li>
+</ol>
+
+<h2>🤔 5단계 보고 — 왜 필요한가</h2>
+
+<ul>
+<li><strong>추측 정책 → 실측 정책 진화</strong>: M3.5에서 박힌 grade-and-risk + subagent-routing 본문 "M4 진입 후 1주 안에 재조정 예정" 약속이 M3.6 Phase 03-A에서 봉합되는 <em>정책 생명주기</em>.</li>
+<li><strong>false positive 봉합</strong>: PR #43 응급 봉합 (eval shlex.quote) → 본질 봉합 (Python shlex.split). bypass 습관화 위험 차단.</li>
+<li><strong>가짜 약속 4번째 발본</strong>: Phase 02-A "0건" 진단이 <em>시뮬 검증</em> 없이는 한계. trust-boundary 매처 stale 발견 = 정합 감사 <em>시뮬까지 확장 필요</em> 정신.</li>
+<li><strong>1주 약속 봉합</strong>: ADR-019 "합류 후 첫 주 안정화 후 추가" 박힘 = 정유현 5/16 합류 → 5/22 = 1주 임박. 약속 지연 누적 차단.</li>
+</ul>
+
+<h2>🛠️ 5단계 보고 — 어떻게 만들었나</h2>
+
+<h3>핵심 결정 패턴</h3>
+<ol>
+<li><strong>본인 자동 진행 GO + 큰 분기만 짚음</strong> — 자기 참조 함정 (4-4) + Python 도입 (4-1) = [H] 변경 영향이라 본인 명시 GO 의무</li>
+<li><strong>본질 봉합 정신</strong> — bash regex 한계 → 적절한 공구 교체 (Python shlex). 옛 PR #43 응급 봉합 → 새 Phase 03-B 본질 봉합</li>
+<li><strong>시뮬 발동 검증 의무</strong> — Hook 변경 시 β2 매트릭스 시뮬 + 정상 케이스 + 발견 케이스 (CRLF 함정)</li>
+<li><strong>자기 참조 함정 인지</strong> — 본 Phase 자체가 <em>하네스 변경</em> = harness 깃발 발동. 등급 자동 상향 (복잡 → 대규모) 정합 박음</li>
+</ol>
+
+<h3>기술 스택</h3>
+<ul>
+<li>Python 3.14.4 <code>shlex.split</code> (Windows 11 + Microsoft Store 박힘)</li>
+<li>bash <code>mapfile -t TOKENS</code> + <code>tr -d '\r'</code> Windows CRLF 봉합</li>
+<li>POSIX bash + Git for Windows shebang (<code>#!/usr/bin/env bash</code>)</li>
+</ul>
+
+<h2>🧪 5단계 보고 — 테스트 결과</h2>
+
+<table>
+<thead>
+<tr><th>시뮬</th><th>결과</th><th>비고</th></tr>
+</thead>
+<tbody>
+<tr><td>4-1 β2 매트릭스 (5 실행 + 5 literal + 3 정상)</td><td class="pass">13/13 PASS</td><td>CRLF 봉합 후</td></tr>
+<tr><td>4-3 HTML 페어 (없으면 차단 / 박음 통과)</td><td class="pass">2/2 PASS</td><td>옛 자산 grandfathered (변경 X 자연 회피)</td></tr>
+<tr><td>4-4 harness 깃발 (.claude/hooks + .claude/agents)</td><td class="pass">2/2 PASS</td><td>정상 파일 미발동 1 PASS</td></tr>
+<tr><td>4-4 trust-boundary 매처 stale 봉합</td><td class="pass">3/3 PASS</td><td>Handlers/Network/Program.cs</td></tr>
+<tr><td>4-5 reviewer-auto-trigger</td><td class="pass">5/5 PASS</td><td>Protocol/Handlers 발동, Tests/CONTEXT/Client 스킵</td></tr>
+<tr><td><strong>총합</strong></td><td class="pass"><strong>25/25 PASS</strong></td><td>본 머신 dotnet build green</td></tr>
+</tbody>
+</table>
+
+<p><strong>현장 자기 봉합 검증</strong>: 본 -DONE.html 박는 시점, 본인이 박은 phase-gate-validator.sh 4-3 강화가 03-DONE.md write를 차단함. <em>4-3 강화 자체의 정합 작동 실증</em> — Hook이 자기 작성자를 차단하는 패턴.</p>
+
+<h2>➡️ 5단계 보고 — 다음 스텝</h2>
+
+<p><strong>M3.6 진척</strong>: Phase 01 ✅ + Phase 02 ✅ + Phase 03 ✅ → <strong>Phase 04 + Phase 05 진입</strong> (4/6, 코드 전수조사).</p>
+
+<ul>
+<li><strong>Phase 04</strong> (서버 코드 전수조사 02_Server/ + 98_Shared/) — 대규모, Coordinator + Team (server + shared + qa Worker) 첫 실측</li>
+<li><strong>Phase 05</strong> (클라 코드 전수조사 03_Client/ + 04_ClientNet/) — 복잡, client Worker + reviewer</li>
+<li>병렬 가능 (server/shared vs client 도메인 분리)</li>
+<li><strong>Phase 06</strong> (외부 리뷰 흡수 + 종합 마감) — 대규모, M3.6 마일스톤 PR 마감</li>
+</ul>
+
+<p><strong>별 시점</strong>:</p>
+<ul>
+<li>M3 + M3.5 + M3.6 학습 일지 트랙 B 노션 박제 (누적 ★★★ 43건+ 예상)</li>
+<li>SubAgent 재귀 차단 Hook (work-pin 별 시점, 실측 0건)</li>
+<li>정합 감사 <em>시뮬 발동 확장</em> 별 마일스톤 (Phase 02-A "0건" 정정 학습 흡수)</li>
+</ul>
+
+<h2>학습 일지 후보 키워드 (트랙 B)</h2>
+
+<ul>
+<li><span class="star">★★★</span> <code>bash-regex-to-python-shlex-essence-fix</code> — 공구의 한계 인식 → 적절한 공구 교체</li>
+<li><span class="star">★★★</span> <code>windows-crlf-trap-git-bash-python</code> — Python text mode stdout 함정 + tr -d '\r' 봉합</li>
+<li><span class="star">★★★</span> <code>self-referential-flag-pattern-conscious-grade-elevation</code> — 정책 박는 commit이 자기 정책에 잡히는 패턴 + 솔직한 등급 평가</li>
+<li><span class="star">★★★</span> <code>matcher-stale-after-folder-restructure</code> — 시뮬 발동 검증 없으면 정합 감사 한계 = 4번째 발본 발견</li>
+<li><span class="star">★★</span> <code>policy-week-1-recalibration-cycle</code> — 추측 정책 → 실측 정책 진화 사이클</li>
+<li><span class="star">★★</span> <code>hard-vs-soft-hook-claude-context-decay-defense</code> — Soft (메인 판단) 위험 + Hard hook 안전망</li>
+<li><span class="star">★</span> <code>grandfathered-without-explicit-policy</code> — 옛 자산 = 변경 X 자연 회피, 명시 정책 박지 X</li>
+</ul>
+
+<hr>
+<p><small>본 문서는 캡스톤 평가 자산 (M3.6 Phase 06 마감 시 종합 5단계 보고 MD+HTML 풀세트에 흡수). 본 Phase 03 단독 5단계 보고는 대규모 등급 자동 상향에 따른 의무 박힘.</small></p>
+
+</body>
+</html>

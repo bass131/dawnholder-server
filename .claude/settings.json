@@ -65,7 +65,8 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": ".claude/hooks/phase-gate-validator.sh" }
+          { "type": "command", "command": ".claude/hooks/phase-gate-validator.sh" },
+          { "type": "command", "command": ".claude/hooks/reviewer-auto-trigger.sh" }
         ]
       },
       {

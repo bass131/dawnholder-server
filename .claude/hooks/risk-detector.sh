@@ -5,10 +5,11 @@
 # ★ 함정 (Phase 03): 등급 자동 상향이 5/20 의논 핵심 안전망.
 # 본인이 깜빡 단순 등급으로 처리하려는 변경이 trust-boundary일 때 강제 인지.
 #
-# 깃발 3종:
+# 깃발 4종 (M3.6 Phase 03-B 4-4 박힘):
 #   1. trust-boundary  — 02_Server/GameSession.cs / Handlers/ / Validation*
 #   2. irreversible    — git push to main / gh pr merge / Protocol.Version bump / force push
 #   3. unity-asset     — 03_Client/Assets/**/*.{prefab,unity,asset,mat}
+#   4. harness         — .claude/{hooks,agents,commands}/** (하네스 자체 변경)
 #
 # 동작:
 #   - 깃발 0개: 통과 (exit 0)
@@ -33,10 +34,15 @@ fi
 # ─────────────────────────────────────────────
 FLAGS=()
 
-# trust-boundary: 파일 경로 grep
+# trust-boundary: 파일 경로 grep (M3.6 Phase 03-B 4-4 발견 봉합 — 옛 매처 stale)
+# 옛 매처는 `02_Server/Handlers/` 직접만 박혀있어 실제 경로 `02_Server/GameServer/Handlers/`
+# (한 단계 깊음) 누락 = 가짜 약속 패턴. 본 봉합 = 한 단계 + 두 단계 깊이 모두 흡수.
 if [ -n "$TOOL_INPUT_FILE" ]; then
   case "$TOOL_INPUT_FILE" in
-    */02_Server/GameSession.cs|*/02_Server/Handlers/*|*/02_Server/*Validation*|*/02_Server/Network/*Auth*)
+    */02_Server/GameSession.cs|*/02_Server/*/GameSession.cs|\
+    */02_Server/Handlers/*|*/02_Server/*/Handlers/*|\
+    */02_Server/*Validation*|*/02_Server/*/*Validation*|\
+    */02_Server/Network/*Auth*|*/02_Server/*/Network/*Auth*)
       FLAGS+=("trust-boundary")
       ;;
   esac
@@ -87,6 +93,15 @@ if [ -n "$TOOL_INPUT_FILE" ]; then
   esac
 fi
 
+# harness: 하네스 자체 변경 (M3.6 Phase 03-B 4-4 박힘)
+if [ -n "$TOOL_INPUT_FILE" ]; then
+  case "$TOOL_INPUT_FILE" in
+    */.claude/hooks/*|*/.claude/agents/*|*/.claude/commands/*)
+      FLAGS+=("harness")
+      ;;
+  esac
+fi
+
 # ─────────────────────────────────────────────
 # 결과 처리
 # ─────────────────────────────────────────────
@@ -119,6 +134,7 @@ cat <<EOF >&2
     - trust-boundary  : 헌법 #3 — 한 줄 실수가 보안 구멍
     - irreversible    : 되돌리는 비용 큼 (push/merge/migration)
     - unity-asset     : YAML 자동 머지 충돌 + prefab 백업 사고 (Phase 08 사고)
+    - harness         : 하네스 자체 변경 — 모든 팀원 매번 영향
 
   본 작업이 *정말 단순한 변경인지* 본인이 인지 후 진행.
   양식 부담 적절히 자동 상향 — 양식 노이즈 X, 안전망 ↑.

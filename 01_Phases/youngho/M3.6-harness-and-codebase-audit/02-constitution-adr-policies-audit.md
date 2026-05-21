@@ -3,7 +3,7 @@ owner: youngho
 milestone: M3.6
 phase: 02
 title: 헌법 + ADR + policies 정합 감사
-status: pending
+status: done
 grade: 복잡
 estimated: 2~3h
 domain: cross
