@@ -141,7 +141,7 @@
 `98_Shared/` 변경은 양쪽 모두에 영향을 줍니다. 수정 전:
 
 - 변경 후 `03_Client/`와 `02_Server/` **둘 다** 컴파일되는지 확인.
-- 프로토콜 호환성 체크 실행 (`.claude/hooks/shared-discipline-guard.sh` 자동 발동).
+- 프로토콜 호환성 체크 실행 (`.claude/hooks/` 참조).
 - 패킷 모양이 바뀌었다면 `Protocol.Version` 상수를 bump.
 
 ### 5. No Blocking Calls in Server Game Loop (틱 루프 블로킹 금지)
