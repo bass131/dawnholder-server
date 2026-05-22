@@ -13,6 +13,9 @@ namespace Shared.Protocol;
 ///   - v3: M3 Phase 06 — Combat 4패킷 (C_Attack/S_EntitySpawn/S_HitResult/S_EntityDeath).
 ///         additive지만 데모 기능이 신규 패킷 의존이라 stale client 빠른 cutoff 위해 bump
 ///         (Codex β 사전 검증 MEDIUM #4, handshake exact equality 정합).
+///   - v4: M3.8 Phase 03 — C_CharacterSelect (캐릭터 선택, 전사/원거리 분기).
+///         backward compatible append-only지만 옛 빌드 클라가 캐릭터 선택 안 보내고 EnterGameWorld
+///         시도하면 default stats 미박힘 → server-side null 처리 사고 차단 위해 bump.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -26,6 +29,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M3 Phase 06 = v3 (Combat 4패킷 추가).</summary>
-    public const ushort Current = 3;
+    /// <summary>현재 프로토콜 버전. M3.8 Phase 03 = v4 (C_CharacterSelect 추가).</summary>
+    public const ushort Current = 4;
 }

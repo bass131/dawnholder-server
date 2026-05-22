@@ -177,4 +177,18 @@
     <packet name="S_StageClear">
         <int name="bossEntityId"/>
     </packet>
+
+    <!-- Phase 03 (M3.8): 캐릭터 선택. 클라가 *선택 의도만* 전송 (헌법 #1 Server Authority 정합).
+         서버가 characterClass 검증 + PlayerStats 박음 (전사/원거리 default stats 매핑).
+
+         **헌법 #3 (Trust Boundary)**: characterClass 범위 검증 0/1만 허용. 2/255 등은 silent drop
+         (cheat-flag 후보, M4.2 cheat-flag 도입 시 기록). disconnect X (cheat 인지 X).
+
+         **중복 선택 차단**: GameSession.HasSelectedClass=true 시 silent drop (옛 stats 유지).
+
+         **ProtocolVersion bump 3→4 동반** — backward compatible append-only지만 옛 빌드 클라
+         호환성 차단 위해 bump (M3 Phase 02 handshake 정합 패턴). -->
+    <packet name="C_CharacterSelect">
+        <byte name="characterClass"/>
+    </packet>
 </PDL>
