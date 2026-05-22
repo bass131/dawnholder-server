@@ -43,6 +43,29 @@ public class GameSession : PacketSession
     // first-packet 강제 패턴 = isolation 보장 (다른 패킷 받기 전 version 검증).
     bool _handshakeCompleted;
 
+    // M3.8 Phase 03 (캐릭터 선택 — 헌법 #1 Server Authority):
+    // C_CharacterSelect 수신 후 서버가 CharacterClass → PlayerStats 매핑.
+    // null = 아직 선택 안 함 (handshake 통과 후, 선택 전 상태).
+    // CharacterSelectHandler가 HasSelectedClass 확인 후 SetCharacterClass 호출.
+    PlayerStats? _stats;
+
+    // CharacterSelectHandler가 중복 선택 차단에 사용.
+    // protected internal: 같은 어셈블리(CharacterSelectHandler) + 서브클래스(테스트 TestGameSession) 양쪽 접근.
+    // CompleteHandshakeAndEnter/RejectHandshake 패턴 정합.
+    protected internal bool HasSelectedClass => _stats != null;
+
+    // M3.8 Phase 03 (헌법 #1): 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑.
+    // 범위 검증은 CharacterSelectHandler에서 이미 완료 (0 또는 1만 도달).
+    // 여기서는 매핑만 — 두 번 검증 불필요 (CLAUDE.md "handler = 검증, session = state" 정합).
+    internal void SetCharacterClass(byte characterClass)
+    {
+        _stats = characterClass == (byte)CharacterClass.Warrior
+            ? PlayerStats.Warrior()
+            : PlayerStats.Ranger();
+        Console.WriteLine(
+            $"[GameSession] CharacterClass set to {_stats.Class} — Hp:{_stats.Hp} Atk:{_stats.Attack} Def:{_stats.Defense} Spd:{_stats.MoveSpeed}");
+    }
+
     // Phase 04: rate-limit 골격 (헌법 #3). 1초 fixed 윈도우 (sliding 아님 — 학습 노트).
     // Phase 05 조정 (2026-05-11):
     //   - 임계값 100 → 500. 240Hz 모니터 사용자의 정상 wire rate가 ~300-500/s라 100은 너무 빡빡.
