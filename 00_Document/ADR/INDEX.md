@@ -42,6 +42,8 @@
 | ADR-020 | 훅 실행 환경 의존성 (Git Bash on Windows) + 검증 패턴 | [harness/ADR-020-hook-env-deps.md](harness/ADR-020-hook-env-deps.md) |
 | ADR-021 | 클라이언트 UI는 별도 Additive Scene으로 분리 | [harness/ADR-021-client-ui-additive-scene.md](harness/ADR-021-client-ui-additive-scene.md) |
 | ADR-022 | 새 하네스 v1 (M3.5 — 5/20 의논 + NDREAM 패턴 흡수 + KPI 전환) | [harness/ADR-022-new-harness-v1.md](harness/ADR-022-new-harness-v1.md) |
+| ADR-023 | work-pin/CONTEXT 동기화 결함 — 진행 단계 stale hole 봉합 (M3.7 — 옵션 C 게이트 보강, `/session:start` drift 발견 단계 신설) | [harness/ADR-023-sync-gate-progress-stale-hole.md](harness/ADR-023-sync-gate-progress-stale-hole.md) |
+| ADR-024 | false-promise 주기적 감사 cadence (M3.7 — 누적 12건+ Rule of Three 3회 통과, 마일스톤 마감 + ad-hoc X건 트리거) | [harness/ADR-024-false-promise-cadence.md](harness/ADR-024-false-promise-cadence.md) |
 
 ---
 

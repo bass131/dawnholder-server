@@ -78,6 +78,62 @@ git checkout 03_Client/ProjectSettings/ProjectSettings.asset
 
 ---
 
+### 0-부수. work-pin drift 발견 게이트 — 0단계 (A) 통과 후만
+
+**왜**: work-pin "현재 작업 / 다음 액션"이 실제 git/gh 진행 단계와 어긋난 채 박혀있을 수 있어요 (commit/push/PR 생성/PR 머지 진행 후 work-pin 갱신 누락). 옛 옵션 C 게이트(`/session:end` 단일 동기, ADR-022)는 *세션 마감 시점*만 잡고 *세션 도중 진행 단계*는 못 잡음 → 다음 세션 시작 시 stale 출발 위험. 본 게이트가 그 stale을 시작 시점에 발견 (ADR-023 박힘, 5번 누적 후 Rule of Three 통과).
+
+**핵심 정신**: 본 게이트는 *발견*만, *갱신은 본인 수동* (헌법 정신 = pin-and-done.md §1 "갱신은 본인 수동" / Hook is for alert, not action). 자동 갱신 박지 않음.
+
+**실행**:
+
+```bash
+git log -3 --oneline
+gh pr list --state all --head $(git branch --show-current) --limit 3
+git status -sb
+```
+
+**비교**: `.claude/state/current-pin.txt` "현재 작업" / "다음 액션" 줄 키워드 vs 실제 상태. **대략 매칭만** (work-pin은 자유 양식이라 정확 매칭 X — 본인 인지 게이트가 최종 판단):
+
+| work-pin 키워드 | 실제 상태 → stale 판정 |
+|---|---|
+| "commit 박을 예정" / "commit 대기" / "본 commit 대기" | 최근 commit가 그 작업 commit이면 stale |
+| "push 대기" / "origin 미푸시" | `git status -sb`가 origin과 sync (ahead 0)면 stale |
+| "PR 생성 대기" / "PR 게이트 대기" | `gh pr list`에 본 브랜치 PR 박혀있으면 stale |
+| "PR 머지 대기" | PR state == MERGED면 stale |
+| "M{N} 진입 대기" + 옛 마일스톤 본문 | 본 브랜치명이 새 마일스톤 슬러그면 stale |
+
+**판정 — 둘 중 하나**:
+
+#### (정합) 차이 없음 → 무음 통과, 1단계 진행
+
+#### (drift) 차이 있음 → STOP:
+
+```
+⚠️ STOP — work-pin이 실제 진행 단계와 어긋났어요 (drift 발견).
+💡 처음 보는 STOP이면: ADR-023 또는 가이드 8번 섹션 "막혔을 때" 표 한 번 보세요.
+
+work-pin "현재 작업/다음 액션" 박힌 단계:
+  [키워드]
+
+실제 git/gh 상태:
+  - 최근 commit: [hash + 메시지]
+  - PR 상태: [번호 + state]
+  - 브랜치 sync: [ahead/behind 또는 sync]
+
+다음 중 본인이 결정 (자동 갱신 X):
+  1) work-pin 갱신 (.claude/state/current-pin.txt) — 실제 상태 반영
+  2) CONTEXT.md "⏸️ 현재 멈춤 지점" 갱신 (다음 세션 동기)
+  3) 둘 다 갱신 (보통 묶음)
+
+해결 후 /session:start 다시 호출해주세요.
+```
+
+**절대 금지**: Claude가 work-pin/CONTEXT.md 자동 갱신 X. 사용자가 "그냥 너가 고쳐줘"라 해도 한 단계씩 안내만, 본인이 결정·실행 (학부생 인지 게이트 보호).
+
+**예외 — 사용자 명시 위임**: 사용자가 명시적으로 "drift 봉합해줘"라 요청하면 Claude가 갱신 박음 OK. 본 예외는 *사용자 의도 명확*에만, default는 안내만.
+
+---
+
 ### 1. CONTEXT.md 통독
 
 (0단계 클리어 후에만 진입)
