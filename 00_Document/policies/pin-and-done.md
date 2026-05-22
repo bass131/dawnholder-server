@@ -201,6 +201,20 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 - **단순 복사 X** — work-pin은 *압축 좌표*, CONTEXT는 *맥락 포함 한 문단*
 - **마일스톤 끝엔 응축 평가 의무** — 250줄+ 알림만, 본인 결정 (옛 자동 응축 사고 위험)
 
+### 5.1 진행 단계 stale hole 봉합 (M3.7 보강, ADR-023)
+
+**한계 발견**: 옵션 C 게이트는 *세션 마감 시점*만 동기 → *세션 도중 진행 단계*(commit / push / PR 생성 / PR 머지)는 못 잡음. 5번 실측 누적 (M3.6 Phase 06 + M3.7 진입 시점 등) → Rule of Three 통과 → 본질 봉합 트리거 ON.
+
+**보강**: 옵션 C 게이트는 *유지* (세션 마감 시 동기 그대로). 새 **발견 게이트** = `/session:start` 0-부수 단계에 박힘 ([../../.claude/commands/session/start.md](../../.claude/commands/session/start.md) `0-부수. work-pin drift 발견 게이트`). 세션 시작 시점에 `git log -3` + `gh pr list --head $(branch)` + `git status -sb` 자동 호출 → work-pin 키워드 vs 실제 상태 대략 매칭 → 차이 발견 시 STOP + 본인 수동 갱신 안내.
+
+**핵심 정신**: 발견만 자동, 갱신은 본인 수동 (Hook is for alert, not action / §1 "갱신은 본인 수동" 정신 확장). 사용자 명시 위임("drift 봉합해줘") 시 예외 허용. 디테일 = [ADR-023](../ADR/harness/ADR-023-sync-gate-progress-stale-hole.md).
+
+| 진행 단계 stale | 동기 시점 |
+|---|---|
+| **세션 마감** (마지막 작업 commit 직후) | `/session:end` 게이트 (옵션 C, 단방향) |
+| **세션 시작** (다음 세션 진입 시) | `/session:start` 0-부수 (drift 발견, 본인 수동 갱신) |
+| **세션 도중** (commit/push/PR 진행 중) | 자동화 X — 본인 인지 게이트 의존 (학부생 호흡 보호) |
+
 ---
 
 ## 6. 변경 시 동기화 책임
@@ -211,6 +225,7 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 
 ## 갱신 이력
 
+- 2026-05-22 — M3.7 Phase 02에서 §5.1 신설 (진행 단계 stale hole 봉합, ADR-023). 옵션 C 게이트 한계 명시 (세션 마감 시점만 동기 → 세션 도중 진행 단계 X) + 새 발견 게이트 인용 (`/session:start` 0-부수, Hook is for alert 정신). 5번 실측 누적 → Rule of Three 통과 후 박힘. 동기화 룰 표 한 행 추가 (진행 단계 stale 세 시점).
 - 2026-05-22 — M3.6 Phase 02-D에서 §5 응축 (254 → ~219줄, doc-thresholds 220 임계 위반 봉합). 정합 약속 + 동기화 룰 표 + 함정 핵심만 유지, 풀 절차는 [`session/end.md §7.5`](../../.claude/commands/session/end.md) 참조로 위임. 정신 변경 X, 중복 제거만.
 - 2026-05-21 — M3.5 Phase 05에서 §5 신설 (work-pin ↔ CONTEXT 정합, 옵션 C `/session:end` 단일 게이트). 등급 무관 "⏸️ 현재 멈춤 지점" 항상 동기 / 학습 후보는 콘텐츠 유무 분기. 양식 부담 ↓보다 Claude 혼선 방지 우선 정신 박힘. 옛 §5 → 새 §6 (변경 동기화 책임).
 - 2026-05-20 — M3.5 Phase 01 (2/2)에서 압축. work-pin 8 필드 → 5+1, 본문 응축. -DONE.md 박제 = 복잡/대규모 등급 한정 조건부화. 학습 일지 권유 = 트랙 A/B 분리 정합. 옛 178줄 → ~140줄.

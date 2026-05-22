@@ -1188,6 +1188,7 @@
             <tr><td>작업 중 개념 모름</td><td>Claude한테 자연어로 — 예: "이 코드 한 줄씩 설명해줘" / "이 개념 학부 수준으로 풀어줘"</td></tr>
             <tr><td>Claude 답이 어려움</td><td>"더 쉽게 다시 설명해줘" 한 줄로 OK</td></tr>
             <tr><td>지금 어디까지 왔는지 모름</td><td><code>/session:start</code> 다시 호출 (CONTEXT 자동 출력) 또는 "지금까지 진행 + 다음 할 일 정리해줘"</td></tr>
+            <tr><td><strong><code>/session:start</code>가 "work-pin drift" STOP을 띄움</strong></td><td>옛 work-pin 박힌 진행 단계(commit/push/PR 생성/PR 머지)가 실제 git/gh 상태와 어긋남 — work-pin(<code>.claude/state/current-pin.txt</code>) 또는 CONTEXT.md "⏸️ 현재 멈춤 지점" 본인이 갱신 후 재호출 (자동 갱신 안 함, ADR-023). 사용자가 명시적으로 "drift 봉합해줘"라 요청하면 Claude가 갱신 박음 OK</td></tr>
             <tr><td>Git/PR 막힘 (일반)</td><td>팀장(유영호)에게 슬랙</td></tr>
             <tr><td><strong>Git 충돌·복구</strong> (pull 충돌, 작업물 사라진 듯, 잘못 commit)</td><td><strong>팀장 슬랙 우선.</strong> <code>git reset --hard</code> · <code>git checkout .</code> · <code>git clean -fd</code> 절대 금지 (되돌릴 수 없음)</td></tr>
             <tr><td><strong>Unity 켰더니 ProjectSettings.asset 변경 떴음</strong></td><td><strong>cloud 라인만이면 자동 정리됨</strong> (각자 Cloud 정책, B+). <code>/session:start</code> 게이트가 처리. cloud 외 변경(예: <code>scriptingDefineSymbols</code>)도 같이 떴으면 STOP 떠요 — 본인이 의도적으로 만진 게 아니면 팀장에게 물어보기</td></tr>
