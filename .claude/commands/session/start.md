@@ -54,27 +54,25 @@ Git 상태 클리어 — feature 브랜치 + 워킹 디렉토리 깨끗.
 # 1) ProjectSettings.asset 변경 있나
 git status --porcelain 03_Client/ProjectSettings/ProjectSettings.asset
 
-# 2) 변경이 cloud 라인만인지 확인
+# 2) 변경이 cloud 라인만인지 확인 (패턴은 .githooks/pre-commit과 동일하게 유지 — drift 봉합)
 git diff -U0 03_Client/ProjectSettings/ProjectSettings.asset 2>/dev/null \
   | grep -E "^[+-][^+-]" \
-  | grep -vE "^[+-][[:space:]]*(cloudProjectId|organizationId):"
+  | grep -vE "^[+-][[:space:]]*(cloudProjectId|organizationId|projectName|cloudServicesEnabled|Build|Game Performance|Legacy Analytics|Purchasing|UDP|Unity Ads):"
 
 # 3) ProjectSettings.asset 외 다른 파일 변경 있나
 git status --porcelain | grep -v "03_Client/ProjectSettings/ProjectSettings.asset"
 ```
 
-**(C-1)** `ProjectSettings.asset` 단독 + cloud 라인만 → 자동 정리 후 1단계 진행:
-```bash
-git checkout 03_Client/ProjectSettings/ProjectSettings.asset
-```
+**(C-1)** `ProjectSettings.asset` 단독 + cloud 라인만 → **무음 통과**, 1단계 진행:
+- 워킹 디렉토리 그대로 유지 (= 본인 머신 Unity Cloud 식별 보존, 각자 머신마다 다른 값)
+- `git status`는 항상 dirty 박혀있지만 `.githooks/pre-commit`이 commit 시 자동 unstage + 차단 → push 사고 위험 X
+- 본 결정 사유: 매 세션 자동 `git checkout` → Unity 다시 열면 또 변경 → 무한 핑퐁. 무음 통과가 학부생 워크플로 정합 (2026-05-23 의논 결과)
 
 **(C-2)** `ProjectSettings.asset` + cloud 외 변경 → STOP + 분리 옵션 안내 (`git checkout -p`)
 
 **(C-3)** `ProjectSettings.asset` 변경 X + 다른 파일 변경 → STOP + commit/stash/discard 옵션 안내
 
 **절대 금지**: 게이트에서 Claude가 `git reset --hard`, `git checkout .`, `git clean -fd` 같은 파괴적 명령 자동/요청 실행 X. 사용자가 명시적으로 "버려도 돼"라 해도 한 단계씩 안내만, 실행은 사용자가.
-
-**예외 (B+ 정책)**: (C-1) 케이스만 cloud 라인 자동 정리 비파괴적 허용.
 
 ---
 
