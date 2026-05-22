@@ -222,9 +222,53 @@ PrefabInstance:
       propertyPath: m_Name
       value: NpcVillager
       objectReference: {fileID: 0}
+    - target: {fileID: 1655084750071319879, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 6166110345489382641, guid: 17e5ac96d413cc24ba5d22e7cbb3d198, type: 3}
+    - target: {fileID: 1655084750071319879, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655084750071319879, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1655084750071319879, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3670123548994731723, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_SpriteTilingProperty.border.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3670123548994731723, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_SpriteTilingProperty.border.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3670123548994731723, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_SpriteTilingProperty.border.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3670123548994731723, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_SpriteTilingProperty.border.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3670123548994731723, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 0.8125
+      objectReference: {fileID: 0}
+    - target: {fileID: 3670123548994731723, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 0.953125
+      objectReference: {fileID: 0}
+    - target: {fileID: 6577510471998018216, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6577510471998018216, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6577510471998018216, guid: f6c88d6e497689241850aa80f66aa3a4, type: 3}
       propertyPath: m_LocalPosition.y
@@ -781,6 +825,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 917862319334666408, guid: 64f7153ff2484f342ba3864c03ab32e8, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: e3265ab4bf004d28a9537516768c1c75, type: 3}
     - target: {fileID: 5755020305314624348, guid: 64f7153ff2484f342ba3864c03ab32e8, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -861,6 +909,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6506193792532520468, guid: 64f7153ff2484f342ba3864c03ab32e8, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: e3265ab4bf004d28a9537516768c1c75, type: 3}
     - target: {fileID: 6873419021736550703, guid: 64f7153ff2484f342ba3864c03ab32e8, type: 3}
       propertyPath: m_Name
       value: NpcDialogPanel

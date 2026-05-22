@@ -52,6 +52,15 @@ namespace Dawnholder.Client.Gameplay
             }
         }
 
+        void OnTriggerStay2D(Collider2D other)
+        {
+            // OnTriggerEnter 못 잡힌 케이스 보완 (처음부터 trigger 안에 있는 경우 — 데모용 LocalPlayer 미이동 시점)
+            if (!_isPlayerNear && other.CompareTag(playerTag))
+            {
+                _isPlayerNear = true;
+            }
+        }
+
         void OnTriggerExit2D(Collider2D other)
         {
             if (other.CompareTag(playerTag))
@@ -64,7 +73,7 @@ namespace Dawnholder.Client.Gameplay
         void OnInteractPerformed(InputAction.CallbackContext _)
         {
             if (!_isPlayerNear) return;
-            if (NpcDialogPanel.IsShown) return; // 이미 열려있으면 NpcDialogPanel이 닫기 처리
+            if (NpcDialogPanel.IsShown) return;
             NpcDialogPanel.Show(dialogText);
         }
     }
