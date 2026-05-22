@@ -30,6 +30,7 @@ domain: shared+server
 ## ⏪ 사전 조건
 
 - [ ] Phase 01 (Codex 크로스 리뷰) 마감 — 발견 항목 처리 결정 박힘
+- [ ] **M3.8 Phase 03 마감 (PlayerStats 박힘, 2026-05-22 결정)** — 본 Phase Formulas.cs는 M3.8 박힌 `PlayerStats` 흡수 의무. M3.8 미마감 상태에서 본 Phase 진입 X (의존성 직결)
 - [x] `98_Shared/` .NET Standard 2.1 빌드 환경 (ADR-010)
 - [x] `CombatConstants.BaseDamage=10` 현재 위치 인지 (`02_Server/GameServer/Combat/CombatConstants.cs:26`)
 - [x] PacketGenerator 재생성 의무 인지 (Shared 변경 시, ADR-002)
@@ -42,15 +43,15 @@ domain: shared+server
 
 - [ ] `98_Shared/GameData/` 디렉토리 확인 (이미 박혀있으면 OK, 없으면 신설)
 - [ ] `Formulas.cs` 신설 — `public static class Formulas` (헌법 #1 정합 — readonly static만)
-- [ ] `PlayerStats` struct 정의 (attack/defense/critRate? — Phase 01 발견 결과 정합. 응급은 attack/defense 2개만)
-- [ ] `EnemyStats` struct 정의 (defense/maxHp — defense 0이면 응급 정합)
-- [ ] `ComputeDamage(PlayerStats attacker, EnemyStats target, int baseDamage) → int` 시그니처 박음
-- [ ] 응급 공식 = `Math.Max(1, baseDamage + attacker.Attack - target.Defense)` (최소 1 데미지 보장)
+- [ ] **`PlayerStats`는 M3.8 Phase 03에서 박힌 클래스 재활용** (`02_Server/GameServer/Combat/PlayerStats.cs` — 전사/원거리 분기 `{ Class, Hp, MaxHp, Attack, Defense, MoveSpeed }`). 본 Phase에선 *PlayerStats 활용*만, 신설 X.
+- [ ] `EnemyStats` struct 정의 (defense/maxHp — defense 0이면 응급 정합) — 본 Phase에서 신설
+- [ ] `ComputeDamage(PlayerStats attacker, EnemyStats target, int baseDamage) → int` 시그니처 박음 — M3.8 PlayerStats `Attack`/`Defense` 필드 활용
+- [ ] 응급 공식 = `Math.Max(1, baseDamage + attacker.Attack - target.Defense)` (최소 1 데미지 보장). 전사(Attack=15) / 원거리(Attack=12) 정합 = baseDamage 10 기준 데미지 차이 자연 발생
 - [ ] xmldoc 박음 (헌법 #1 정합 명시 — 본 함수는 *서버 권위 판정용*, 클라가 *스탯 hint 표시* 목적 호출은 OK)
 
-### 2단계: `PlayerEntity` / `EnemyEntity` 스탯 필드 추가
+### 2단계: `PlayerEntity` / `EnemyEntity` 스탯 필드 연결
 
-- [ ] `PlayerEntity.Stats` (PlayerStats 타입, default 박힘 — Attack=0/Defense=0 응급)
+- [ ] `PlayerEntity.Stats` (PlayerStats 타입) — **M3.8 Phase 03에서 박힘 `GameSession._stats` 활용**. `PlayerEntity` 생성 시 `GameSession.Stats`를 ctor 인자로 받음. default = `PlayerStats.Warrior()` (M3.8 정합)
 - [ ] `EnemyEntity.Stats` (EnemyStats 타입, ctor에서 default 박힘 — Defense=0 응급)
 - [ ] 스탯 *변경* 메서드는 박지 않음 (M5 영속화 도입 시 박을 영역, 헌법 #1 정합)
 
@@ -70,12 +71,13 @@ domain: shared+server
 ### 5단계: 단위 테스트 박음
 
 - [ ] `02_Server/GameServer.Tests/Combat/FormulasTests.cs` 신설
-- [ ] 테스트 5건+:
-  1. `ComputeDamage_HappyPath` — attacker(5)/target(2)/base(10) → 13
-  2. `ComputeDamage_TargetDefenseHigh` — attacker(2)/target(20)/base(10) → 1 (최소 1 보장)
-  3. `ComputeDamage_AttackerZeroStats` — attacker(0)/target(0)/base(10) → 10
-  4. `ComputeDamage_NegativeStatsOverflow` — 음수 입력 시 safe (overflow X)
-  5. `ComputeDamage_LargeStats` — int.MaxValue 근처 입력 시 overflow 검증
+- [ ] 테스트 6건+ (M3.8 PlayerStats 흡수 후 캐릭터 클래스별 검증 추가):
+  1. `ComputeDamage_WarriorHappyPath` — PlayerStats.Warrior(Attack=15)/target(Defense=2)/base(10) → 23
+  2. `ComputeDamage_RangerHappyPath` — PlayerStats.Ranger(Attack=12)/target(Defense=2)/base(10) → 20
+  3. `ComputeDamage_TargetDefenseHigh` — Warrior/target(Defense=30)/base(10) → 1 (최소 1 보장)
+  4. `ComputeDamage_AttackerZeroStats` — PlayerStats(Attack=0/Defense=0)/target(0)/base(10) → 10
+  5. `ComputeDamage_NegativeStatsOverflow` — 음수 입력 시 safe (overflow X)
+  6. `ComputeDamage_LargeStats` — int.MaxValue 근처 입력 시 overflow 검증
 - [ ] dotnet test green (M3 baseline 회귀 0)
 
 ### 6단계: PDL 정합 점검
@@ -89,10 +91,11 @@ domain: shared+server
 ## ✅ 완료 조건
 
 - [ ] `98_Shared/GameData/Formulas.cs` 신설 + `ComputeDamage` 순수 함수 박힘
-- [ ] `PlayerStats` / `EnemyStats` struct 박힘 (응급 = attack/defense 2~3개 필드)
+- [ ] **`PlayerStats`는 M3.8 박힘 재활용** (신설 X), `EnemyStats` struct 박힘 (응급 = defense/maxHp 2개 필드)
+- [ ] `PlayerEntity.Stats` = `GameSession.Stats` 연결 (M3.8 PlayerStats 흡수)
 - [ ] `GameMap.ProcessAttack` Formulas 위임 박힘
 - [ ] `S_HitResult.damage` = Formulas 결과 정합
-- [ ] dotnet test green + 새 단위 테스트 5건+ 통과
+- [ ] dotnet test green + 새 단위 테스트 6건+ 통과 (전사/원거리 분리 검증 포함)
 - [ ] Shared.dll 새 빌드 commit (Unity 측 자동 복사)
 - [ ] Unity batchmode compile green (`unity-bridge` SubAgent 확인)
 - [ ] 본 Phase 보통 등급 = -DONE.md 없음, work-pin + commit message 충분

@@ -30,6 +30,7 @@ domain: server
 ## ⏪ 사전 조건
 
 - [ ] Phase 02 (Formulas.cs 분리) 마감 — damage apply 분기에서 Formulas 호출 정합
+- [ ] **M3.8 Phase 03 마감 (ProtocolVersion 3→4 박힘)** — 본 Phase는 4→5 별 bump 박음 (2026-05-22 결정 정합)
 - [x] PDL append-only 패턴 (M3 Phase 02 handshake 학습 정합)
 - [x] PacketGenerator 재생성 의무 (PDL 변경 시, ADR-002)
 - [x] `GameMap` actor 단일 thread invariant (헌법 #5)
@@ -52,8 +53,8 @@ domain: server
 - [ ] `99_Tools/PacketGenerator/` 재생성 (ADR-002 + 99_Tools/CLAUDE.md 정합)
 - [ ] `98_Shared/Protocol/Generated/GenPackets.cs` 갱신 확인
 - [ ] `Shared.csproj` 재빌드 → `03_Client/Assets/Plugins/Shared/Shared.dll` 자동 복사 + commit
-- [ ] `ProtocolVersion.Current` = 3 → 4 bump (헌법 #2 정합 — 필드 추가는 backward compatible이지만 클라 옛 빌드 호환성 위해 bump)
-- [ ] `98_Shared/CLAUDE.md` Current=3 → Current=4 정합 갱신 (M3.6 학습 정합)
+- [ ] `ProtocolVersion.Current` = **4 → 5 bump** (헌법 #2 정합 — 필드 추가는 backward compatible이지만 클라 옛 빌드 호환성 위해 bump). **M3.8 Phase 03이 3→4 박은 후 본 M4.1 Phase 03이 4→5 별 bump** (2026-05-22 결정, 두 마일스톤 영역 분리 의미)
+- [ ] `98_Shared/CLAUDE.md` Current=4 → Current=5 정합 갱신 (M3.6 학습 정합, M3.8 Phase 03 박은 후 본 Phase에서 다시 갱신)
 
 ### 3단계: 클라 측 `C_Attack` 송신 정합
 
@@ -103,7 +104,7 @@ domain: server
 ## ✅ 완료 조건
 
 - [ ] `PlayerEntity` ring buffer 4 tick 깊이 박힘 + `RecordPosition` / `GetPositionAtTick` 메서드
-- [ ] `C_Attack.attackerClientTick` 필드 PDL append-only 박힘 + ProtocolVersion 4 bump
+- [ ] `C_Attack.attackerClientTick` 필드 PDL append-only 박힘 + ProtocolVersion 4→5 bump
 - [ ] `GameMap.ProcessAttack` lag compensation rewind 박힘 + 범위 검증 (≤ 4 tick) silent drop
 - [ ] precision hitbox = AABB 박힘 (`Hitbox.cs` + `Intersects` 메서드) + `dist²` 패턴 교체
 - [ ] 단위 테스트 8건+ 통과 (LagCompensationTests 5건 + HitboxTests 3건)

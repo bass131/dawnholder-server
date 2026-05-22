@@ -2,18 +2,20 @@
 owner: youngho
 milestone: M4.1
 title: Combat Precision (Codex 크로스 리뷰 + Formulas.cs 분리 + lag compensation + precision hitbox)
-status: in-progress
+status: pending
 grade: 복잡
 risk: low
 estimated: 5~8h (총합, 3 Phase)
 domain: server+shared+qa
+depends_on: M3.8 Phase 03 (PlayerStats + CharacterClass 박힘)
 ---
 
 # M4.1 — Combat Precision
 
-> **상태**: in-progress
-> **시작**: 2026-05-22
-> **마감 목표**: 2026-06-03 (캡스톤 1 발표 1주 전, M4.2 진입 여유)
+> **상태**: pending (M3.8 신설로 진입 시점 재조정 — M3.8 마감 후 진입)
+> **시작 예정**: 2026-05-27 (M3.8 마감 후 = 5/26 예상)
+> **마감 목표**: 2026-06-02 (캡스톤 1 발표 1주 전, M4.2 진입 여유)
+> **사전 조건 (신설)**: M3.8 Phase 03 마감 = PlayerStats 박힘 (Phase 02 Formulas.cs가 PlayerStats 흡수 의무)
 
 ---
 
@@ -29,8 +31,9 @@ domain: server+shared+qa
 **왜 본 마일스톤이 필요한가**:
 
 - **M3 응급 단순화 8건 (ARCHITECTURE.md "M4 사전 과제")**: `BaseDamage=10` 고정 / 거리만 보는 hitbox / lag 보정 없음 / cheat-flag table 없음 등 = *권위·신뢰 경계는 지키되 정밀도 X* 상태. 본 마감(11/19)엔 전부 정밀화 필요.
-- **캡스톤 1(6/10) 발표 데모 욕심 (C 선택)**: M3 그대로 발표 X, "정밀 전투 + 4맵 분리" 어필. 본 마일스톤 = 캡스톤 1 데모 절반 (나머지 절반 = M4.2 Map Transition).
+- **캡스톤 1(6/10) 발표 데모 욕심 (C 선택)**: M3 그대로 발표 X, "정밀 전투 + 4맵 분리" 어필. 본 마일스톤 = 캡스톤 1 데모 절반 (나머지 절반 = M3.8 Demo 인프라 + M4.2 Map Transition).
 - **3토막 분할 정합 (M3.5 학습)**: M3 9 Phase 과했음 정정. 본 마일스톤 = 3 Phase로 압축, 학습 호흡 유지.
+- **M3.8 신설 흡수 (2026-05-22 박힘)**: 캡스톤 1 발표 데모 인프라(메인/캐릭터 선택/NPC/엔딩)는 M3.8 별 마일스톤로 분리. 본 M4.1은 *정밀 전투* 단독 영역. M3.8 Phase 03에서 `PlayerStats` (전사/원거리 스탯 분기) 박힘 = 본 M4.1 Phase 02 `Formulas.cs`가 흡수.
 
 **비-목표 (M4.2/M4.3로 미룸)**:
 
@@ -104,7 +107,7 @@ Phase 03 (lag compensation + precision hitbox)
 ## ⚠️ 주의할 약속 (헌법 절대 원칙 충돌 가능 항목)
 
 1. **헌법 #1 (Server Authority)** — Phase 02 Formulas.cs는 *클라/서버 공유 코드*. 클라가 Formulas를 *읽는* 건 OK (스탯 hint 표시 등), *권위 판정에 활용 X*. 데미지 최종 판정은 서버 단독 (`GameMap.ProcessAttack` 안에서만 적용).
-2. **헌법 #2 (Protocol is Sacred)** — Phase 03 `C_Attack` 필드 추가 = PDL XML append-only + PacketGenerator 재생성 + Shared.dll commit 의무. ProtocolVersion bump 검토 (기존 v3 → v4? — append-only 필드 추가는 backward compatible이지만 클라 측 옛 빌드 호환성 위해 bump 권장).
+2. **헌법 #2 (Protocol is Sacred)** — Phase 03 `C_Attack` 필드 추가 = PDL XML append-only + PacketGenerator 재생성 + Shared.dll commit 의무. **ProtocolVersion bump 4→5** (M3.8 Phase 03이 3→4 박은 후 본 M4.1 Phase 03이 4→5 별 bump 박음 — 2026-05-22 결정 박힘, 두 마일스톤 영역 분리 의미 + 시연 시점 호환성 추적 쉬움).
 3. **헌법 #3 (Trust Boundary)** — Phase 03 lag compensation = "클라가 보낸 attacker tick 시점으로 rewind". 클라가 *과거 50 tick 거짓 보고* 시도 가능 → 서버측 rewind 범위 제한 (최대 4 tick = 200ms) + 범위 밖이면 silent drop (cheat-flag 후보, M4.2 cheat-flag 도입 시 기록).
 4. **헌법 #4 (Shared Code Discipline)** — Phase 02 (Formulas.cs 신설) + Phase 03 (PDL `C_Attack` 변경 + ProtocolVersion bump) 모두 *Shared.dll 양쪽 영향* 변경. 변경 후 `dotnet build` 양쪽 컴파일 검증 + Unity 측 batchmode compile (`unity-bridge` SubAgent) + Shared.dll commit 정합 의무. CHANGELOG 2026-05-17 (Shared.dll 미commit 사고) 학습 정합.
 5. **헌법 #5 (틱 블로킹 금지)** — Phase 03 ring buffer 갱신은 tick thread 안에서만, lock 없음 (GameMap actor 정합). `await`/`Task.Delay` 없음 의무.
@@ -131,3 +134,4 @@ Phase 03 (lag compensation + precision hitbox)
 ## 갱신 이력
 
 - 2026-05-22 — 본 세션 사용자 의논 후 박힘. M3 응급 코드 전수조사 필요 인지 → Phase 01 Codex 크로스 리뷰 흡수. M4 전체 7~9 Phase 추정을 3토막(M4.1/M4.2/M4.3) × 3 Phase로 분할.
+- 2026-05-22 — M3.8 Capstone-1 Demo Infrastructure 신설 흡수 갱신. 사전 조건 = "M3.8 Phase 03 마감 (PlayerStats 박힘)" 추가. ProtocolVersion bump 3→4 → 4→5 정정 (M3.8 Phase 03이 3→4 박은 후 본 M4.1 Phase 03이 4→5). status `in-progress` → `pending` (M3.8 진입 우선). 시작 예정 5/22 → 5/27 (M3.8 마감 후), 마감 목표 6/3 → 6/2 (M4.2 진입 여유 동일).
