@@ -8,17 +8,26 @@
 
 ---
 
-## Hook 7개 풀세트
+## Hook 8개 풀세트 (M3.6 Phase 03-B 4-5에서 reviewer-auto-trigger 신설로 7→8)
 
-| # | Hook | 단계 | 매처 | 동작 | 진입 |
+| # | Hook | 단계 | 매처 | 동작 | 분류 |
 |---|------|------|------|------|------|
-| 1 | `dangerous-cmd-guard.sh` | PreToolUse | Bash | rm -rf / git reset --hard / force push 등 7 패턴 차단 (exit 2) | ✅ (2/3) |
-| 2 | `tdd-guard.sh` | PreToolUse | Edit/Write | TDD 영역 4 (Handlers / GameSession / Protocol/Packets / GameData) 변경 시 테스트 부재 *경고만* (exit 0) + 누적 로그 | ✅ (2/3) |
-| 3 | `circuit-breaker.sh` | PostToolUse | (all) | 같은 도구 N회 반복 시 *알림* (Bash 제외, 등급별 임계 5/10/15/20, 윈도우 5분) | ✅ (2/3) |
-| 4 | `risk-detector.sh` | PreToolUse | Bash/Edit/Write | trust-boundary / irreversible / unity-asset 자동 검출 → stderr 알림 + .claude/state/risk-flags.txt 누적 | ✅ (2/3) |
-| 5 | `shared-discipline-guard.sh` | PreToolUse | Edit/Write | PDL.xml 변경 시 GenPackets stale 검사 + Shared.dll commit 동반 검사 (exit 2) + ProtocolVersion bump 경고 | ✅ (2/3) |
-| 6 | `pin-injector.sh` | UserPromptSubmit | (all) | 매 사용자 입력 직전 work-pin + 미commit -DONE.md 경고 주입 | ✅ (1/3) |
-| 7 | `phase-gate-validator.sh` | PostToolUse | Edit/Write | -DONE.md 박제 frontmatter (summary/phase/status/grade/owner) + 등급별 의무 섹션 점검 (exit 2) | ✅ (1/3) |
+| 1 | `dangerous-cmd-guard.sh` | PreToolUse | Bash | **Python shlex.split 토큰화** 후 rm -rf / git reset --hard / force push 등 6 패턴 차단 (exit 2). false positive 봉합 (M3.6 Phase 03-B 4-1) | **must-pass** |
+| 2 | `shared-discipline-guard.sh` | PreToolUse | Edit/Write | PDL.xml 변경 시 GenPackets stale 검사 + Shared.dll commit 동반 검사 (exit 2) + ProtocolVersion bump 경고 | **must-pass** |
+| 3 | `phase-gate-validator.sh` | PostToolUse | Edit/Write | -DONE.md 박제 frontmatter (5 필드) + 등급별 의무 섹션 + **대규모 등급 MD+HTML 페어 의무** (M3.6 Phase 03-B 4-3 강화, exit 2) | **must-pass** |
+| 4 | `risk-detector.sh` | PreToolUse | Bash/Edit/Write | trust-boundary (Handlers/ 매처 stale 봉합, M3.6 Phase 03-B 4-4) / irreversible / unity-asset / **harness** (M3.6 Phase 03-B 4-4 신설) 4 깃발 → stderr 알림 + 누적 (exit 0) | advisory |
+| 5 | `tdd-guard.sh` | PreToolUse | Edit/Write | TDD 영역 4 (Handlers / GameSession / Protocol/Packets / GameData) 변경 시 테스트 부재 *경고만* + 누적 로그 | advisory |
+| 6 | `circuit-breaker.sh` | PostToolUse | (all) | 같은 도구 N회 반복 시 *알림* (Bash 제외, 등급별 임계 5/10/15/20, 윈도우 5분) | advisory |
+| 7 | `pin-injector.sh` | UserPromptSubmit | (all) | 매 사용자 입력 직전 work-pin + 미commit -DONE.md 경고 주입 | advisory |
+| 8 | `reviewer-auto-trigger.sh` | PostToolUse | Edit/Write | **(신설 M3.6 Phase 03-B 4-5)** ADR-019 Hard hook — 98_Shared/ + Handlers/ + Protocol + GameSession.cs 변경 시 reviewer SubAgent 자동 호출 *알림 + 누적*. SubAgent 호출 자체는 메인 세션 책임. | advisory |
+
+**must-pass / advisory 분리** (M3.6 Phase 03-B 4-2 정합 박힘):
+- **must-pass** = exit 2 차단. Phase 진입 의무. risk-detector는 옛 분류 "must-pass" 였으나 실제 동작 = exit 0 (알림만)이라 advisory로 재분류 정합.
+- **advisory** = exit 0 알림 + 누적. 사유 박고 통과 가능.
+
+**Python 의존성** (M3.6 Phase 03-B 4-1 명시 박힘): `hook-common.sh` + `dangerous-cmd-guard.sh`가 Python 3.6+ 호출. ADR-020 정합 = Hook 환경 = Git Bash + Python 3. setup-steps/02-common.md 9단계에 Python 검증 박힘.
+
+**Windows CRLF 함정** (M3.6 Phase 03-B 4-1 발견): Python text mode stdout `\r\n` → mapfile split 후 토큰 끝 `\r` 잔재. 봉합 = `| tr -d '\r'` 후처리. 새 hook 박을 때 의무 정신.
 
 ---
 

@@ -20,6 +20,7 @@
 - **친절·인내심**. "당연한 거 아냐?" 가정 금지(학부 커리큘럼에 없을 가능성 높음). 같은 질문 두 번 OK. 멍청한 질문 같은 건 없음. "이해했어" 답변 시 중요 개념은 확인 질문으로 점검.
 - **전문 용어 첫 사용 시 풀어쓰기**. 예: "직렬화(serialization, 객체를 바이트로 변환)는...". 영어 약어도 한 번은 풀이 ("TCP(Transmission Control Protocol)"). 두 번째부터 OK.
 - **결정엔 항상 trade-off**. "A를 골랐다"가 아니라 "A vs B 중 A, 이유는..., 단점은..." 형식. "정답" 단정 X — "이 상황에선 이 선택이 보통 좋아요" 정도.
+- **무조건 완성된 한국어 문장으로**. "옛 추측 복잡이 실제 대규모면 정정. M3.6 마일스톤 자체가 대규모." 같은 함축적 문장이 아니라 대화형으로 완성된 한국어 문장으로만 응답.
 
 ### 작업 보고
 
@@ -170,12 +171,12 @@
 
 모든 작업은 다음 4등급 중 하나로 분류됩니다 (PDF NDREAM 패턴 + 5/20 의논 결과). 등급이 *양식 부담*과 *동원 패턴*을 결정합니다.
 
-| 등급 | 정량 기준 | 처리 패턴 | 보고 양식 |
-|---|---|---|---|
-| **단순** | 1 도메인 × 1 파일 / ≤10줄 / 가역적 | 메인 세션 직접 | work-pin + commit message |
-| **보통** | 1 도메인 × 2~3 파일 / ≤50줄 / 가역적 | Worker SubAgent 1개 | work-pin + commit message |
-| **복잡** | 2 도메인 / ~100~200줄 / 일부 비가역 | Coordinator + Worker 1~2개 | work-pin + -DONE.md |
-| **대규모** | 3+ 도메인 또는 300줄+ / 비가역 | Coordinator + Team (Worker 3~4개 + Reviewer) | work-pin + -DONE.md + **5단계 보고 MD/HTML** |
+| 등급       | 정량 기준                            | 처리 패턴                                    | 보고 양식                                    |
+| ---------- | ------------------------------------ | -------------------------------------------- | -------------------------------------------- |
+| **단순**   | 1 도메인 × 1 파일 / ≤10줄 / 가역적   | 메인 세션 직접                               | work-pin + commit message                    |
+| **보통**   | 1 도메인 × 2~3 파일 / ≤50줄 / 가역적 | Worker SubAgent 1개                          | work-pin + commit message                    |
+| **복잡**   | 2 도메인 / ~100~200줄 / 일부 비가역  | Coordinator + Worker 1~2개                   | work-pin + -DONE.md                          |
+| **대규모** | 3+ 도메인 또는 300줄+ / 비가역       | Coordinator + Team (Worker 3~4개 + Reviewer) | work-pin + -DONE.md + **5단계 보고 MD/HTML** |
 
 ### 위험 깃발 (자동 등급 상향)
 
@@ -195,17 +196,17 @@
 
 작업이 들어오면 메인 세션이 등급 + 도메인 따라 SubAgent 위임:
 
-| # | SubAgent | 도메인 | 모델 | 권한 |
-|---|---|---|---|---|
-| 1 | `server` | 02_Server/ + 98_Shared/ 서버측 (게임플레이/네트워킹/영속화) | Sonnet | 02_Server/ + 98_Shared/ R/W |
-| 2 | `shared` | 98_Shared/ 단독 (Protocol/공식/공유 상수) | Sonnet | 98_Shared/ R/W, 04_ClientNet/ R |
-| 3 | `client` | 03_Client/ + 04_ClientNet/ (Unity 씬/렌더링/입력/UI/prediction) | Sonnet | 03_Client/ + 04_ClientNet/ R/W, 98_Shared/ R |
-| 4 | `qa` | 99_Tools/ + 테스트 코드 (헤드리스 봇/부하/퍼징) | Sonnet | 99_Tools/ + 테스트 R/W, 게임 코드 R only |
-| 5 | `reviewer` | Tier 2 자동 리뷰 (헌법/ADR/도메인 패턴 점검) | Opus | 전체 R only |
-| 6 | `plan-auditor` | `_milestone-plan.md` / Phase 정의 `.md` 사전 검증 (Codex γ 흡수) | Opus | 전체 R only |
-| 7 | `unity-bridge` | Unity Editor MCP + asset + scene/prefab 작업 전담 | Sonnet | 03_Client/ + Unity MCP |
-| 8 | `coordinator` | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합 | Opus | 전체 R only, 위임 권한 |
-| 9 | `knowledge-gc` | Knowledge 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `../knowledge/` R/W, 다른 영역 R only |
+| #   | SubAgent       | 도메인                                                               | 모델   | 권한                                         |
+| --- | -------------- | -------------------------------------------------------------------- | ------ | -------------------------------------------- |
+| 1   | `server`       | 02_Server/ + 98_Shared/ 서버측 (게임플레이/네트워킹/영속화)          | Sonnet | 02_Server/ + 98_Shared/ R/W                  |
+| 2   | `shared`       | 98_Shared/ 단독 (Protocol/공식/공유 상수)                            | Sonnet | 98_Shared/ R/W, 04_ClientNet/ R              |
+| 3   | `client`       | 03_Client/ + 04_ClientNet/ (Unity 씬/렌더링/입력/UI/prediction)      | Sonnet | 03_Client/ + 04_ClientNet/ R/W, 98_Shared/ R |
+| 4   | `qa`           | 99_Tools/ + 테스트 코드 (헤드리스 봇/부하/퍼징)                      | Sonnet | 99_Tools/ + 테스트 R/W, 게임 코드 R only     |
+| 5   | `reviewer`     | Tier 2 자동 리뷰 (헌법/ADR/도메인 패턴 점검)                         | Opus   | 전체 R only                                  |
+| 6   | `plan-auditor` | `_milestone-plan.md` / Phase 정의 `.md` 사전 검증 (Codex γ 흡수)     | Opus   | 전체 R only                                  |
+| 7   | `unity-bridge` | Unity Editor MCP + asset + scene/prefab 작업 전담                    | Sonnet | 03_Client/ + Unity MCP                       |
+| 8   | `coordinator`  | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합                     | Opus   | 전체 R only, 위임 권한                       |
+| 9   | `knowledge-gc` | Knowledge 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `../knowledge/` R/W, 다른 영역 R only        |
 
 **여러 도메인 작업**: Coordinator가 분해 → 도메인별 Worker 위임 → Reviewer 통합 점검.
 **서브에이전트끼리 호출 X**: 분해는 Coordinator가, 위임은 Coordinator → Worker 1단계만 (재귀 차단).

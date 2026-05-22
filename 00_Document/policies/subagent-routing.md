@@ -3,7 +3,7 @@
 > **헌법 참조**: 본 정책은 새 헌법 v1 "🤖 SubAgent 풀" 섹션에서 링크됩니다.
 > 충돌 시 헌법이 이깁니다.
 >
-> **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. SubAgent 9개 중 다수가 신설(`plan-auditor` / `unity-bridge` / `coordinator` / `shared` 분리 + `knowledge-gc` Phase 04 신설). M4 진입 후 1주 안에 라우팅 false hit·에스컬레이션 패턴 관찰 → 재조정.
+> **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. **M3.6 Phase 03-A 첫 실측 사이클 (2026-05-22)** — 5 항목 모두 0건 또는 간접 증명 박힘 (위임 false hit 0 / 재귀 마찰 0 — 단 재귀 차단 Hook 부재 발견 = work-pin 별 시점 / 에스컬레이션 0 / plan-auditor 가치 M3.6 plan 통과로 증명 / unity-bridge 영역 효과 간접 증명). 본문 수정 항목 없음.
 
 본 문서는 SubAgent 풀 9개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02/04 산출물(`../agents/<name>.md`).
 

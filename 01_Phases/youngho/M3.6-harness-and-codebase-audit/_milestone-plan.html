@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3.6 — AI Harness 점검 + 프로젝트 코드 전수조사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --bg-elev: #1a1815;
+    --bg-card: #181614;
+    --border: #2a2823;
+    --border-strong: #3a3630;
+    --text: #e8e3d8;
+    --text-muted: #8a857a;
+    --accent: #f59f3e;
+    --green: #84a86b;
+    --blue: #6c95b8;
+    --red: #e85d4a;
+    --purple: #b289c4;
+    --yellow: #d4b94a;
+    --font-body: 'IBM Plex Sans KR', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--accent);
+    letter-spacing: -0.3px;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 32px 0 14px;
+    color: var(--text);
+    border-left: 3px solid var(--accent);
+    padding-left: 12px;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 18px 0 10px;
+    color: var(--text-muted);
+  }
+  .subtitle { color: var(--text-muted); margin-bottom: 24px; font-size: 14px; }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .badge {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+  }
+  .badge.accent { border-color: var(--accent); color: var(--accent); }
+  .badge.green { border-color: var(--green); color: var(--green); }
+  .badge.yellow { border-color: var(--yellow); color: var(--yellow); }
+  .badge.red { border-color: var(--red); color: var(--red); }
+  .badge.purple { border-color: var(--purple); color: var(--purple); }
+  .badge.blue { border-color: var(--blue); color: var(--blue); }
+
+  .callout {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 4px;
+  }
+  .callout.green { border-left-color: var(--green); }
+  .callout.yellow { border-left-color: var(--yellow); }
+  .callout.red { border-left-color: var(--red); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+  }
+  th, td {
+    border-bottom: 1px solid var(--border);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 14px;
+  }
+  th {
+    background: var(--bg-elev);
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 12px;
+  }
+  td.center { text-align: center; }
+  tr:hover td { background: rgba(245, 159, 62, 0.03); }
+
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 6px; }
+
+  .grade-simple { color: var(--green); }
+  .grade-normal { color: var(--blue); }
+  .grade-complex { color: var(--yellow); }
+  .grade-large { color: var(--red); }
+
+  /* dependency graph */
+  .graph-wrap { overflow-x: auto; margin: 20px 0; }
+  svg { display: block; margin: 0 auto; }
+
+  .phase-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-left: 4px solid var(--accent);
+    padding: 18px 22px;
+    margin: 14px 0;
+    border-radius: 4px;
+  }
+  .phase-card .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .phase-card .num {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .phase-card .title {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .phase-card .meta-row {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+  }
+  .phase-card .desc {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+  .phase-card.large { border-left-color: var(--red); }
+  .phase-card.complex { border-left-color: var(--yellow); }
+  .phase-card.normal { border-left-color: var(--blue); }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin: 10px 0 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    border-left: 3px solid;
+  }
+  .legend-normal { border-left-color: var(--blue); background: var(--bg-card); }
+  .legend-complex { border-left-color: var(--yellow); background: var(--bg-card); }
+  .legend-large { border-left-color: var(--red); background: var(--bg-card); }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--bg-elev);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+  .footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>M3.6 — AI Harness 점검 + 프로젝트 코드 전수조사</h1>
+<div class="subtitle">M3.5 새 하네스 v1 atomic 전환 직후 + M4 진입 전 mini-milestone</div>
+
+<div class="meta">
+  <span class="badge accent">owner: youngho</span>
+  <span class="badge purple">총 등급: 대규모</span>
+  <span class="badge">6 Phase</span>
+  <span class="badge">예상 3~5일</span>
+  <span class="badge red">risk: irreversible</span>
+  <span class="badge green">plan-auditor: ✅ GO</span>
+</div>
+
+<div class="callout">
+  <strong>한 줄 목표</strong> — 새 하네스 v1 + 프로젝트 코드 베이스 양쪽을 <em>정합 점검</em>하고 M4 진입 전 cleanup 완료. <br>
+  <strong>두 축</strong>: ① 하네스 점검 (헌법/ADR/policies/Hook/SubAgent/Knowledge) ② 코드 전수조사 (02_Server / 98_Shared / 03_Client / 04_ClientNet / 99_Tools).
+</div>
+
+<h2>왜 이 마일스톤이 필요한가</h2>
+<ul>
+  <li><strong>M3.5 atomic 전환은 옛/새 운영 동시 검증만 했음</strong> — 새 운영 단독 실측 1주 누적이 없음. <code>grade-and-risk.md</code>와 <code>subagent-routing.md</code> 둘 다 본문에 "M4 진입 후 첫 1주 안에 재조정 예정" 명시 → M3.6이 그 1주가 됨.</li>
+  <li><strong>M3 응급 데모 직후 코드 베이스는 시연 위주 단순화 + 별 시점 backlog 누적</strong> (work-pin "별 시점 대기 액션" 6건). M4 진입 전 정합 cleanup 없이 가면 부채가 M4 위에 쌓임.</li>
+  <li><strong>새 PR/머지 게이트(PR #43) + Coordinator → Worker 분해는 모두 첫 실측 대기 중</strong> — M3.6이 그 실측 마일스톤.</li>
+</ul>
+
+<h2>의존성 그래프</h2>
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot legend-normal"></span> 보통</div>
+  <div class="legend-item"><span class="legend-dot legend-complex"></span> 복잡</div>
+  <div class="legend-item"><span class="legend-dot legend-large"></span> 대규모</div>
+  <div class="legend-item">─→ 의존 / ⇈ 병렬 가능</div>
+</div>
+<div class="graph-wrap">
+<svg width="780" height="380" viewBox="0 0 780 380" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#8a857a"/>
+    </marker>
+  </defs>
+
+  <!-- Phase 01 -->
+  <g>
+    <rect x="320" y="20" width="160" height="58" rx="4" fill="#181614" stroke="#6c95b8" stroke-width="2"/>
+    <text x="400" y="42" text-anchor="middle" fill="#e8e3d8" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">Phase 01</text>
+    <text x="400" y="62" text-anchor="middle" fill="#8a857a" font-size="11" font-family="IBM Plex Sans KR, sans-serif">Pre-flight baseline</text>
+  </g>
+
+  <!-- Phase 02 (left) -->
+  <g>
+    <rect x="120" y="130" width="200" height="58" rx="4" fill="#181614" stroke="#d4b94a" stroke-width="2"/>
+    <text x="220" y="152" text-anchor="middle" fill="#e8e3d8" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">Phase 02</text>
+    <text x="220" y="172" text-anchor="middle" fill="#8a857a" font-size="11" font-family="IBM Plex Sans KR, sans-serif">헌법/ADR/policies 감사</text>
+  </g>
+
+  <!-- Phase 03 (right) -->
+  <g>
+    <rect x="480" y="130" width="200" height="58" rx="4" fill="#181614" stroke="#d4b94a" stroke-width="2"/>
+    <text x="580" y="152" text-anchor="middle" fill="#e8e3d8" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">Phase 03</text>
+    <text x="580" y="172" text-anchor="middle" fill="#8a857a" font-size="11" font-family="IBM Plex Sans KR, sans-serif">하네스 실측 재조정</text>
+  </g>
+
+  <!-- Parallel marker -->
+  <text x="400" y="166" text-anchor="middle" fill="#f59f3e" font-size="14" font-weight="700">⇈ 병렬 ⇈</text>
+
+  <!-- Phase 04 (left) -->
+  <g>
+    <rect x="120" y="240" width="200" height="58" rx="4" fill="#181614" stroke="#e85d4a" stroke-width="2"/>
+    <text x="220" y="262" text-anchor="middle" fill="#e8e3d8" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">Phase 04 ★대규모</text>
+    <text x="220" y="282" text-anchor="middle" fill="#8a857a" font-size="11" font-family="IBM Plex Sans KR, sans-serif">서버 코드 전수조사</text>
+  </g>
+
+  <!-- Phase 05 (right) -->
+  <g>
+    <rect x="480" y="240" width="200" height="58" rx="4" fill="#181614" stroke="#d4b94a" stroke-width="2"/>
+    <text x="580" y="262" text-anchor="middle" fill="#e8e3d8" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">Phase 05</text>
+    <text x="580" y="282" text-anchor="middle" fill="#8a857a" font-size="11" font-family="IBM Plex Sans KR, sans-serif">클라 코드 전수조사</text>
+  </g>
+
+  <!-- Parallel marker 2 -->
+  <text x="400" y="276" text-anchor="middle" fill="#f59f3e" font-size="14" font-weight="700">⇈ 병렬 ⇈</text>
+
+  <!-- Phase 06 -->
+  <g>
+    <rect x="300" y="320" width="200" height="50" rx="4" fill="#181614" stroke="#e85d4a" stroke-width="2"/>
+    <text x="400" y="342" text-anchor="middle" fill="#e8e3d8" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700">Phase 06 ★대규모</text>
+    <text x="400" y="358" text-anchor="middle" fill="#8a857a" font-size="11" font-family="IBM Plex Sans KR, sans-serif">외부 리뷰 흡수 + 종합 마감 (PR/머지 게이트)</text>
+  </g>
+
+  <!-- arrows from 01 → 02 -->
+  <path d="M 370 80 Q 280 105 240 128" stroke="#8a857a" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <!-- arrows from 01 → 03 -->
+  <path d="M 430 80 Q 520 105 560 128" stroke="#8a857a" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- arrows from 02 → 04 -->
+  <path d="M 220 190 L 220 238" stroke="#8a857a" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <!-- arrows from 03 → 05 -->
+  <path d="M 580 190 L 580 238" stroke="#8a857a" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- diagonal cross arrows (02→05, 03→04) - optional, indicate inputs -->
+  <path d="M 320 170 Q 420 205 480 245" stroke="#3a3630" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 480 170 Q 380 205 320 245" stroke="#3a3630" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- arrows to Phase 06 -->
+  <path d="M 240 300 Q 320 315 340 320" stroke="#8a857a" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 560 300 Q 480 315 460 320" stroke="#8a857a" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+</svg>
+</div>
+
+<div class="callout yellow">
+  <strong>plan-auditor 권고 (P1, 옵션 B 채택)</strong> — Phase 02→04/05 의존성이 <em>과보호</em>일 가능성. 첫 실측 마일스톤 호흡 우선 = 현 직렬 의존 유지. 점선은 2/3 결과가 4/5 시각에 영향만 (블로커 X) 표시. M4 두 번째 실측에서 4-way 병렬 가능성 검토.
+</div>
+
+<h2>Phase 6개 카드</h2>
+
+<div class="phase-card normal">
+  <div class="header">
+    <span class="num">01</span>
+    <span class="title">Pre-flight 인프라 작동 baseline</span>
+    <span class="badge blue">보통</span>
+    <span class="badge">1.5~2h</span>
+    <span class="badge">담당: 메인 직접 (영호)</span>
+  </div>
+  <div class="meta-row">domain: cross / 빌드 + Hook 7 + SubAgent 9 + Knowledge 5</div>
+  <div class="desc">
+    🎯 새 하네스 v1 인프라 4종이 <em>실제로 작동하는지</em> baseline 확정. 이후 Phase 02~06 점검 결과 신뢰성 게이트.<br>
+    ✅ 끝나면: 인프라 작동 baseline 표 + false negative 차단 사전 게이트 통과.
+  </div>
+</div>
+
+<div class="phase-card complex">
+  <div class="header">
+    <span class="num">02</span>
+    <span class="title">헌법 + ADR + policies 정합 감사</span>
+    <span class="badge yellow">복잡</span>
+    <span class="badge">2~3h</span>
+    <span class="badge">담당: reviewer + 영호</span>
+  </div>
+  <div class="meta-row">domain: cross / ADR 22개 × 코드 / policies 8개 × Hook / 헌법 5원칙 × 코드 시연</div>
+  <div class="desc">
+    🎯 ADR 22 + policies 8 + 헌법 5원칙이 코드와 정합한지 감사. <em>가짜 약속 4번째 발본</em> (옛 3번 시리즈 정신 흡수).<br>
+    ✅ 끝나면: 정합 4상태 표 박힘 (완전/부분/가짜/supersede 누락) + 봉합 분기 결정.
+  </div>
+</div>
+
+<div class="phase-card complex">
+  <div class="header">
+    <span class="num">03</span>
+    <span class="title">하네스 v1 실측 1주차 재조정</span>
+    <span class="badge yellow">복잡</span>
+    <span class="badge">2~3h</span>
+    <span class="badge red">risk: irreversible</span>
+    <span class="badge">담당: 영호 단독</span>
+  </div>
+  <div class="meta-row">domain: cross / Hook 패치 + policies 갱신 + dangerous-cmd-guard 본질 봉합</div>
+  <div class="desc">
+    🎯 grade-and-risk + subagent-routing 양쪽이 박은 "1주 안에 재조정 예정" 항목 실측. <em>추측 정책 → 실측 정책 진화</em>.<br>
+    ✅ 끝나면: dangerous-cmd-guard Python lexer 본질 봉합 + policies 2개 §8/§9 ≥80% 봉합.
+  </div>
+</div>
+
+<div class="phase-card large">
+  <div class="header">
+    <span class="num">04</span>
+    <span class="title">서버 코드 전수조사 (02_Server/ + 98_Shared/ + 99_Tools/)</span>
+    <span class="badge red">대규모</span>
+    <span class="badge">1일+</span>
+    <span class="badge red">risk: trust-boundary (자동 상향)</span>
+    <span class="badge">담당: Coordinator + Team</span>
+  </div>
+  <div class="meta-row">domain: server + shared + qa / 헌법 5원칙 위반 점검 + 구조/품질</div>
+  <div class="desc">
+    🎯 서버 측 전 코드 점검. <strong>Coordinator → Worker 분해 첫 실측</strong>. server / shared / qa Worker 3개 동원 + reviewer 5축 점검.<br>
+    ✅ 끝나면: P0/P1/P2 분류 결과 박힘 (P0=즉시 봉합 / P1=별 Phase / P2=묶음).
+  </div>
+</div>
+
+<div class="phase-card complex">
+  <div class="header">
+    <span class="num">05</span>
+    <span class="title">클라 코드 전수조사 (03_Client/ + 04_ClientNet/)</span>
+    <span class="badge yellow">복잡</span>
+    <span class="badge">4~6h</span>
+    <span class="badge">담당: client Worker + reviewer</span>
+  </div>
+  <div class="meta-row">domain: client / 본인 영역 점검 + 유현 영역 경계 보고 (변경 X)</div>
+  <div class="desc">
+    🎯 클라 측 헌법 #1(서버 권위) 정합 + prediction/reconciliation 패턴 + ADR-021(UI Scene 분리) 정합 + 유현 영역 경계.<br>
+    ✅ 끝나면: client Worker 점검 + 유현 영역 재논의 자료 박힘 (변경 X, 보고만).
+  </div>
+</div>
+
+<div class="phase-card large">
+  <div class="header">
+    <span class="num">06</span>
+    <span class="title">외부 리뷰 4건 흡수 + 종합 마감 보고</span>
+    <span class="badge red">대규모</span>
+    <span class="badge">3~5h</span>
+    <span class="badge red">risk: irreversible (PR/머지)</span>
+    <span class="badge">담당: Coordinator + Team</span>
+  </div>
+  <div class="meta-row">domain: cross / 외부 리뷰 흡수 + 5단계 보고 MD+HTML + PR/머지 게이트 첫 실측</div>
+  <div class="desc">
+    🎯 별 시점 외부 리뷰 4건 자연 흡수 + M3.6 종합 5단계 보고 MD+HTML 박음(캡스톤 평가 자산) + PR/머지 게이트 4-D/4-E/4-F 첫 실측.<br>
+    ✅ 끝나면: M3.6 마감 + main 머지 + work-pin → M4 진입 좌표 정합.
+  </div>
+</div>
+
+<h2>마일스톤 완료 조건</h2>
+<ol>
+  <li>Phase 01~06 모두 <code>status: done</code> + 복잡/대규모 등급은 <code>-DONE.md</code> 박음</li>
+  <li>M3.5 정책 2개의 "M4 진입 후 1주 안에 재조정" 항목 ≥80% 봉합</li>
+  <li>헌법 절대 원칙 5개 모두 코드 시연 검증 (가짜 약속 0건 또는 봉합 plan 박힘)</li>
+  <li>외부 리뷰 4건 (<code>Dawnholder-harness-review-2026-05-19.md</code>) 흡수 또는 별 Phase 분리</li>
+  <li>M3.6 종합 5단계 보고 MD + HTML 이중 박음</li>
+  <li>CHANGELOG [H] entry + 디스코드/슬랙 공지 (모든 팀원 영향)</li>
+  <li>PR 생성 + main 머지 (PR/머지 게이트 4-D/4-E/4-F 첫 실측)</li>
+  <li>work-pin → M4 진입 좌표로 clear/이전</li>
+</ol>
+
+<h2>주의할 약속</h2>
+<ul>
+  <li><strong>새 하네스 v1 = 영호 단독 통제</strong> — Phase 02/03은 reviewer/plan-auditor + 영호만. 다른 Worker가 헌법/ADR/policies/Hook 수정 X</li>
+  <li><strong>PR/머지 게이트</strong> — Phase 06 마감 PR <code>gh pr create/merge</code> = 사용자 명시 GO 의무. PR body literal X (풀어쓰기)</li>
+  <li><strong>유현 영역 변경 = 재논의 시점</strong> — Phase 05 발견은 <em>변경 X, 보고만</em>. 재논의는 별 시점</li>
+  <li><strong>dotnet test 본 머신 SAC On 차단</strong> — <code>dotnet build green</code>까지만 본 머신. test 실측은 Cloud Codex 위탁</li>
+  <li><strong>BackGround prefab 사고 학습</strong> — M3.6은 unity-asset 변경 X 예상 (점검만)</li>
+</ul>
+
+<h2>plan-auditor 점검 결과</h2>
+<table>
+  <thead>
+    <tr><th>분류</th><th>건수</th><th>내용</th><th>권고</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="badge red">P0</span> 헌법/등급</td><td class="center">0</td><td>위반 위험 없음 (5원칙 × 6 Phase 매트릭스 정합)</td><td>—</td></tr>
+    <tr><td><span class="badge yellow">P1</span> 분해/의존성</td><td class="center">1</td><td>02→04/05 의존성 <em>과보호</em> 가능성 (4-way 병렬 검토 여지)</td><td>옵션 B — 현 유지 (첫 실측 호흡 우선)</td></tr>
+    <tr><td><span class="badge blue">P2</span> 명세 부족</td><td class="center">2</td><td>Phase 02 완료 조건 / Phase 04 시나리오 명세 정정</td><td>5분 내 즉시 봉합 가능</td></tr>
+    <tr><td><span class="badge green">합격</span></td><td class="center">6</td><td>입자 6개 정합 / DAG 사이클 0 / 등급 산정 / 헌법 5원칙 체계화 / 영호 통제 영역 / 변경 폭 차단</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<h2>이번 마일스톤에서 배우게 될 핵심 개념</h2>
+<ul>
+  <li><strong>점검 마일스톤의 정합</strong> — 한국 게임 회사 백엔드는 <em>기능 추가만이 아니라 자가 점검 사이클</em>이 있는 현실. M3.6 = 그 사이클 첫 박힘.</li>
+  <li><strong>Coordinator → Worker 분해 첫 실측</strong> (Phase 04/06) — 분해 비용 vs 가치 가시화.</li>
+  <li><strong>추측 정책 → 실측 정책 진화</strong> (Phase 03) — M3.5 박힌 "1주 안에 재조정 예정" 명시 항목이 봉합되는 정책 생명주기.</li>
+  <li><strong>외부 리뷰 자연 흡수</strong> (Phase 06) — Rule of Three 정합. 별 시점 backlog가 본 마일스톤에 자연 흡수되는 정신.</li>
+  <li><strong>PR/머지 게이트 첫 실측</strong> (Phase 06) — 정책(PR #43) → 실측(M3.6 마감 PR) 정합.</li>
+</ul>
+
+<h2>추천 시작점</h2>
+<div class="callout green">
+  <strong>옵션 A (권장)</strong>: P2 2건 즉시 봉합 (5분 plan 갱신) → Phase 01 진입 → <code>dotnet build Dawnholder.slnx</code> green 확인.<br>
+  <strong>옵션 B</strong>: 현 plan 그대로 GO → Phase 01 진입 (P2는 진행 중 자연 봉합 모니터링).
+</div>
+
+<div class="footer">
+  생성: 2026-05-22 / <code>/work:plan M3.6-harness-and-codebase-audit</code> 호출 / plan-auditor 6축 점검 GO. <br>
+  본 문서는 <code>01_Phases/youngho/M3.6-harness-and-codebase-audit/_milestone-plan.md</code> 시각화. 양식 정합: <code>00_Document/team-guide.html</code> 색상 토큰 차용.
+</div>
+
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 > **헌법 참조**: 본 정책은 새 헌법 v1 "📊 작업 등급" 섹션에서 링크됩니다.
 > 충돌 시 헌법이 이깁니다.
 >
-> **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. M4 진입 후 1주 안에 false positive·누락·등급 기준 재조정 예정.
+> **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. **M3.6 Phase 03-A 첫 실측 사이클 (2026-05-22)** — 5 항목 모두 0건 또는 정합 박힘 (줄 수 임계 / 등급 마찰 / 처리 효율 = 현 정책 정합 / false positive = 정량 grep 후속 / 누락 후보 = 4번째 깃발 `harness` 박힘으로 봉합 = Phase 03-B 4-4). 본문 수정 항목 없음 (옛 §8 5 항목 정합 박힘).
 
 본 문서는 모든 작업을 *정량 4등급*으로 분류하고, *위험 깃발*이 잡히면 등급을 자동 상향하는 정책을 정의합니다. 등급이 **양식 부담**(work-pin / -DONE.md / 5단계 보고)과 **동원 패턴**(메인 직접 / Worker SubAgent / Coordinator+Team)을 결정합니다.
 
@@ -58,6 +58,7 @@ PDF NDREAM 패턴(Sonnet Worker + Opus Coordinator)을 본 프로젝트에 정�
 | **trust-boundary** | `02_Server/GameSession.cs`, `02_Server/Handlers/`, `02_Server/**/Validation*`, 신뢰 경계 검증 코드 | 헌법 #3 — 한 줄 실수가 보안 구멍 |
 | **irreversible** | `git push` to `main`, `gh pr merge`, DB 마이그 SQL, `Protocol.Version` bump, `git reset --hard`, force push | 되돌리는 비용이 큼 |
 | **unity-asset** | `03_Client/Assets/**/*.{prefab,unity,asset,mat}`, 특히 prefab | YAML 자동 머지 충돌·prefab 백업 사고 (Phase 08 BackGround 사고) |
+| **harness** (M3.6 Phase 03-B 4-4 신설) | `.claude/{hooks,agents,commands}/**` 변경 | 하네스 자체 변경 = 모든 팀원 매번 영향 = CHANGELOG [M]/[H] 의무 + 자기 참조 함정 인지 |
 
 ### 상향 결과 박힘
 

@@ -291,12 +291,44 @@ VS Code 자체는 이미 깔려있어요 (지금 본인이 보고 있는 게 그
 
 ---
 
-## 9. 공통 단계 완료
+## 9. Python 3 설치 + PATH 검증 (M3.6 Phase 03-B 4-1 박힘)
+
+```
+9단계: Python 3 설치 + PATH 확인할게요.
+.claude/hooks/ 안의 dangerous-cmd-guard.sh + hook-common.sh가 Python 3을
+호출해서 명령 파싱 안전망이 작동합니다. Python 없으면 hook이 silent fail
+→ 위험 명령 차단 무력화 (false negative 위험).
+
+레포 루트에서 다음 실행 결과 알려주세요:
+
+  python --version
+```
+
+**판정**:
+- `Python 3.6.0` 이상 출력 → "OK, 다음으로"
+- 명령 실패 또는 Python 2 → **STOP**:
+  ```
+  ⛔ Python 3 설치 안 됐거나 PATH에 없어요.
+
+  본인 레포의 hook 안전망 (M3.6 Phase 03-B 4-1)에서 명령 토큰화 +
+  payload 파싱에 Python 3 의무 박혔어요. 없으면 false negative 위험.
+
+  해결 (Windows):
+  1. Microsoft Store → "Python 3.12" 또는 "Python 3.13" 검색 → 설치 (한 클릭)
+  2. PowerShell 재시작
+  3. python --version 다시 확인
+
+  설치 막히면 알려주세요.
+  ```
+
+---
+
+## 10. 공통 단계 완료
 
 모든 검증 통과 시 사용자에게:
 
 ```
-공통 환경 검증 9단계 다 통과했어요. 잘 따라오셨어요.
+공통 환경 검증 10단계 다 통과했어요. 잘 따라오셨어요.
 
 다음 단계: 역할별 셋업 ({role})
 - backend면 MSSQL LocalDB 시작 + PacketGenerator + 서버 실행 검증

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>M3.6 Phase 04 — 서버 코드 전수조사 (마감)</title>
+<style>
+  body { font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif; max-width: 920px; margin: 2em auto; padding: 0 1em; line-height: 1.6; color: #222; }
+  h1 { border-bottom: 3px solid #4a7; padding-bottom: 0.3em; }
+  h2 { border-bottom: 1px solid #ddd; padding-bottom: 0.2em; margin-top: 2em; color: #4a7; }
+  h3 { color: #555; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  th, td { border: 1px solid #ccc; padding: 0.5em 0.8em; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f0f0f0; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.92em; }
+  pre { background: #f7f7f7; padding: 0.8em; border-left: 3px solid #4a7; overflow-x: auto; }
+  .pass { color: #2a7; font-weight: bold; }
+  .star { color: #fa3; }
+  .summary-box { background: #f0f8f4; border-left: 4px solid #4a7; padding: 1em 1.2em; margin: 1.5em 0; }
+  .grade-large { display: inline-block; background: #d44; color: white; padding: 0.2em 0.6em; border-radius: 4px; font-weight: bold; font-size: 0.9em; }
+  .meta-box { background: #fff7e0; border-left: 4px solid #fa3; padding: 1em 1.2em; margin: 1.5em 0; }
+</style>
+</head>
+<body>
+
+<h1>M3.6 Phase 04 — 서버 코드 전수조사 (마감)</h1>
+
+<p>
+  <strong>마일스톤</strong>: M3.6 (AI Harness 점검 + 프로젝트 코드 전수조사) /
+  <strong>등급</strong>: <span class="grade-large">대규모 + trust-boundary 깃발</span> /
+  <strong>담당</strong>: Coordinator + Worker 3 (server/shared/qa) + reviewer Tier 2-A /
+  <strong>마감</strong>: 2026-05-22
+</p>
+
+<div class="summary-box">
+<strong>핵심 요약</strong>: ADR-022 새 하네스 v1의 <em>대규모 등급 분해 패턴 첫 실측</em>. 5 SubAgent 호출 (Coordinator 67k + Worker 3 × Sonnet + reviewer 93k = 총 378k tokens, ~17분) 충돌 0건 + 발견 7건 통합. 헌법 5원칙 0 위반 + <strong>false-promise 7건 누적 패턴 정착</strong> (Rule of Three 통과 후 +4건 추가, 두 변종 + 시기상조 메타 발견).
+</div>
+
+<div class="meta-box">
+<strong>메타 발견 ★★★</strong>: false-promise <em>두 변종 + 시기상조</em> — forward (코드 부재) + <strong>역방향</strong> (문서 stale) + <strong>시기상조 컨벤션</strong> (Serilog+DI 박혔는데 응급 미박힘). 헌법 #4 "코드+문서 동시 commit"만으로 못 잡는 패턴 = <strong>M3.6 마일스톤 = 주기적 감사 사이클 가치 정량 증명</strong>. 다음 마일스톤 sweep cadence 결정 후보.
+</div>
+
+<h2>🎯 5단계 보고 — 무엇을 만들었나</h2>
+
+<p>ADR-022 새 하네스 v1의 대규모 등급 분해 첫 실측:</p>
+<ol>
+<li>Coordinator 분해 → 3 Worker × 13 시나리오 명세 (γ 6/7회차 + plan-auditor P2 #2 봉합 정합)</li>
+<li>server Worker (Sonnet, 84k tokens / 264s, 5 시나리오) — 헌법 #1/#3/#5 PASS + P2 4건</li>
+<li>shared Worker (Sonnet, 67k tokens / 130s, 4 시나리오) — 헌법 #2/#4 PASS + P1 1건</li>
+<li>qa Worker (Sonnet, 67k tokens / 240s, 4 시나리오) — 170 PASS baseline 갱신 + P1 1건</li>
+<li>reviewer Tier 2-A (Opus, 93k tokens / 212s, 5축) — 위반 0건 + 학습 2건</li>
+<li>봉합 옵션 A 진행 = 3 CLAUDE.md 문서 정정 (02_Server / 98_Shared / 99_Tools)</li>
+</ol>
+
+<h2>🤔 5단계 보고 — 왜 필요한가</h2>
+
+<ul>
+<li><strong>대규모 등급 분해 첫 실측</strong> — ADR-022 박힌 시점 <em>추측 패턴</em>이 실제 작동하는지 첫 검증. 분해 비용 vs 가치 가시화 ✓</li>
+<li><strong>헌법 5원칙 코드 검증 사이클</strong> — Phase 02 정합 감사 (file:line 매핑) + Phase 04 시뮬/grep 발동 검증 = 주기적 감사 정합</li>
+<li><strong>false-promise 패턴 정착</strong> — Rule of Three 통과 후 본 Phase에서 +4건 추가 발본. 패턴 정착 + 두 변종 + 시기상조 메타 발견</li>
+<li><strong>SubAgent 보안 안전망 검증</strong> — Worker 차원에서도 deny rule 우회 시도 차단 작동 실증 (Auto Mode classifier 2차 안전망)</li>
+</ul>
+
+<h2>🛠️ 5단계 보고 — 어떻게 만들었나</h2>
+
+<h3>핵심 결정 패턴</h3>
+<ol>
+<li><strong>Coordinator → Worker 1단계만</strong> — 재귀 차단 정합 (circuit-breaker.sh 정합)</li>
+<li><strong>권한 경계 엄수</strong> — server는 02_Server/+98_Shared/ 읽기만, qa만 99_Tools/ R/W (본 Phase 변경 0건)</li>
+<li><strong>위임 순서 = server + shared 병렬 → qa 후속</strong> — 발견 누적 흡수 효과</li>
+<li><strong>시나리오 명세 의무 (γ 6/7회차)</strong> — grep 명령 + 기대 결과까지 박음</li>
+<li><strong>옵션 A 본 Phase 묶음 봉합</strong> — 4건 단순 등급 문서만 = 양식 부담 ↓</li>
+</ol>
+
+<h2>🧪 5단계 보고 — 테스트 결과</h2>
+
+<table>
+<thead>
+<tr><th>검증</th><th>결과</th></tr>
+</thead>
+<tbody>
+<tr><td>헌법 5원칙 위반</td><td class="pass">0건 (3 Worker + reviewer 독립 검증)</td></tr>
+<tr><td>단위 테스트 baseline</td><td class="pass">170 PASS / 0 FAIL / 1 SKIP (옛 160 +10 갱신)</td></tr>
+<tr><td>PacketRoundTripTests stale</td><td class="pass">없음 (Coordinator 예상 G 정정)</td></tr>
+<tr><td>headless-bot 4 시나리오 + Connector 재사용</td><td class="pass">정합</td></tr>
+<tr><td>PacketGenerator 결함 fix</td><td class="pass">M3 Phase 01·02 모두 완료</td></tr>
+<tr><td>false-promise 발본</td><td class="pass">7건 누적 (Rule of Three 후 +5)</td></tr>
+<tr><td>봉합 4건</td><td class="pass">3 CLAUDE.md 문서 정정 완료</td></tr>
+<tr><td>SubAgent 보안 우회 차단</td><td class="pass">server + shared 시도 → classifier 차단</td></tr>
+<tr><td>dotnet build green</td><td class="pass">유지 (문서만 변경, 코드 영향 0)</td></tr>
+</tbody>
+</table>
+
+<h2>false-promise 7건 누적 표 (★★★ 패턴 정착 증명)</h2>
+
+<table>
+<thead>
+<tr><th>#</th><th>사례</th><th>변종</th><th>발견 시점</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>헌법 #2 ProtocolVersion handshake</td><td>forward</td><td>M3 Phase 02</td></tr>
+<tr><td>2</td><td>헌법 #4 Shared Discipline</td><td>forward</td><td>M3 Phase 03</td></tr>
+<tr><td>3</td><td><code>02_Server/Handlers/</code> 폴더</td><td>forward</td><td>M3 Phase 03 (Rule of Three 통과)</td></tr>
+<tr><td>4</td><td>risk-detector trust-boundary 매처 stale</td><td>forward</td><td>M3.6 Phase 03-B 4-4</td></tr>
+<tr><td>5</td><td><code>98_Shared/CLAUDE.md</code> Layout Formulas.cs/Tables/</td><td>forward + 역방향</td><td>본 Phase 04 shared</td></tr>
+<tr><td>6</td><td><code>99_Tools/CLAUDE.md</code> "결함" 절 stale</td><td><strong>역방향</strong></td><td>본 Phase 04 qa</td></tr>
+<tr><td>7</td><td><code>02_Server/CLAUDE.md</code> Serilog+DI</td><td><strong>시기상조 컨벤션</strong></td><td>본 Phase 04 server</td></tr>
+</tbody>
+</table>
+
+<h2>➡️ 5단계 보고 — 다음 스텝</h2>
+
+<p><strong>M3.6 진척</strong>: Phase 01·02·03·04 ✅ / Phase 05·06 ⏸️ (5/6)</p>
+<ul>
+<li><strong>Phase 05</strong> (클라 코드 전수조사 03_Client/ + 04_ClientNet/) — 복잡, client Worker + reviewer + unity-bridge 자문. 유현 영역 변경 X 보고만</li>
+<li><strong>Phase 06</strong> (외부 리뷰 4건 흡수 + 종합 마감) — 대규모, M3.6 마일스톤 PR 마감</li>
+</ul>
+
+<p><strong>별 시점</strong>:</p>
+<ul>
+<li>false-promise <em>주기적 감사 사이클</em> cadence 결정 (M4 마감 또는 M4 진입 직전, Rule of Three 후 ADR 신설 검토)</li>
+<li>SubAgent 보안 우회 명시 안내 (정유현/인규 합류 시점)</li>
+<li>PDL schema validation 약함 봉합 (work-pin 별 시점)</li>
+<li>학습 일지 트랙 B 노션 박제 (누적 ★★★ 50건+ 예상)</li>
+</ul>
+
+<h2>학습 일지 후보 키워드 (트랙 B)</h2>
+
+<ul>
+<li><span class="star">★★★</span> <code>coordinator-worker-decomposition-first-instance</code> — 5 SubAgent 호출 충돌 0건 + 발견 7건 통합 = 분해 가치 입증</li>
+<li><span class="star">★★★</span> <code>false-promise-pattern-three-variants</code> — forward + 역방향 + 시기상조 세 변종 메타 발견</li>
+<li><span class="star">★★★</span> <code>subagent-permission-classifier-second-safety-net</code> — Worker 우회 시도 → classifier 차단 이중 안전망 실증</li>
+<li><span class="star">★★</span> <code>triage-priority-pattern-p0-p1-p2-first-instance</code> — Worker 분류 + reviewer 통합 + 봉합 분기 사이클</li>
+<li><span class="star">★★</span> <code>worker-permission-boundary-physical-enforcement</code> — 권한 경계 정합 + 본 Phase 0 위반 = 분해 안전성 입증</li>
+<li><span class="star">★★</span> <code>scenario-spec-grep-mandate</code> — γ 6/7회차 학습 정착 (grep + 기대 결과까지)</li>
+<li><span class="star">★</span> <code>worker-cross-check-cascade-effect</code> — qa가 server/shared 발견 누적 흡수 + Coordinator 예상 정정</li>
+</ul>
+
+<hr>
+<p><small>본 문서는 캡스톤 평가 자산. M3.6 Phase 06 마감 시 종합 5단계 보고에 흡수. Phase 04 단독 5단계 보고는 대규모 등급 자동 발동 의무 (trust-boundary 깃발).</small></p>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>M3.6 Phase 06 — 외부 리뷰 4건 흡수 + 종합 마감 보고</title>
+<style>
+  body { font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif; max-width: 920px; margin: 2em auto; padding: 0 1em; line-height: 1.6; color: #222; }
+  h1 { border-bottom: 3px solid #4a7; padding-bottom: 0.3em; }
+  h2 { border-bottom: 1px solid #ddd; padding-bottom: 0.2em; margin-top: 2em; color: #4a7; }
+  h3 { color: #555; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  th, td { border: 1px solid #ccc; padding: 0.5em 0.8em; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f0f0f0; padding: 0.1em 0.3em; border-radius: 3px; font-size: 0.92em; }
+  pre { background: #f7f7f7; padding: 0.8em; border-left: 3px solid #4a7; overflow-x: auto; }
+  .pass { color: #2a7; font-weight: bold; }
+  .fail { color: #d44; font-weight: bold; }
+  .star { color: #fa3; }
+  .summary-box { background: #f0f8f4; border-left: 4px solid #4a7; padding: 1em 1.2em; margin: 1.5em 0; }
+  .grade-large { display: inline-block; background: #d44; color: white; padding: 0.2em 0.6em; border-radius: 4px; font-weight: bold; font-size: 0.9em; }
+  .meta-box { background: #fff7e0; border-left: 4px solid #fa3; padding: 1em 1.2em; margin: 1.5em 0; }
+  .milestone-box { background: #eef5ff; border-left: 4px solid #47a; padding: 1em 1.2em; margin: 1.5em 0; }
+</style>
+</head>
+<body>
+
+<h1>M3.6 Phase 06 — 외부 리뷰 4건 흡수 + M3.6 종합 마감 보고</h1>
+
+<p>
+  <strong>마일스톤</strong>: M3.6 (AI Harness 점검 + 프로젝트 코드 전수조사) — <strong class="pass">완전 마감</strong> /
+  <strong>등급</strong>: <span class="grade-large">대규모 + irreversible 깃발</span> /
+  <strong>담당</strong>: 메인 직접 분해 (Coordinator 비-호출 Rule of Three 2/3) /
+  <strong>마감</strong>: 2026-05-22
+</p>
+
+<div class="summary-box">
+<strong>핵심 요약</strong>: M3.6 "하네스 + 코드 점검" 마일스톤 완전 마감 의례. 6 Phase × 본 세션 누적 5 commit + 본 commit. <strong>외부 리뷰 4건 = (c) 미흡수 결정 박힘</strong>: 노션 + 로컬 별 폴더 본인 확인 결과 잔여 4건 (<code>2of5 ~ 5of5</code>) 흔적 없음 = <strong>옛 본인 work-pin "외부 리뷰 4건" 약속 자체가 가짜 약속 5번째 사례 = 점검 마일스톤 목적 적중 1회 추가</strong>.
+</div>
+
+<div class="meta-box">
+<strong>메타 발견 ★★★ 4건</strong>:
+<ul>
+<li><code>false-promise-5th-instance-self-work-pin</code> — 자기 work-pin 약속 가짜화 발본 (5번째)</li>
+<li><code>milestone-closing-ritual-pattern</code> — 마일스톤 마감 의례 정합</li>
+<li><code>coordinator-non-call-rule-of-three-2of3</code> — Phase 05 + 본 Phase 두 사례</li>
+<li><code>audit-milestone-purpose-validation</code> — 점검 마일스톤 자체 가치 = 가짜 약속 발본 정량 누적 12건+</li>
+</ul>
+</div>
+
+<h2>🎯 5단계 보고 — 무엇을 만들었나</h2>
+
+<p><strong>M3.6 마일스톤 완전 마감 박제</strong>:</p>
+<ol>
+<li>6 Phase × 5 commit + 본 commit</li>
+<li>외부 리뷰 4건 (c) 미흡수 결정 박힘 = 5번째 false-promise 사례 발본</li>
+<li>본 -DONE.md (5 라벨 박힘) + 동명 -DONE.html (캡스톤 평가 자산)</li>
+<li>CHANGELOG [H] 묶음 entry</li>
+<li>work-pin → M4 진입 좌표 갱신 (옵션 C 게이트)</li>
+</ol>
+
+<h2>🤔 5단계 보고 — 왜 필요한가</h2>
+
+<ul>
+<li><strong>M3.5 atomic 전환 후 새 운영 첫 실측 필요</strong> — 새 하네스 v1 (SubAgent 9 + Hook 8 + Knowledge 5) PR #42 + #43으로 박힌 직후, <em>실제 작동 검증</em> 필요</li>
+<li><strong>M3 응급 데모 backlog cleanup</strong> — 5/20 면담 응급 데모로 박힌 M3 코드는 <em>데모 위주</em>. 본격 M4 진입 전 코드 전수조사 + 결함 발본 의무</li>
+<li><strong>M4 진입 전 정합 가시화</strong> — M3.6 결과가 M4 진입 시 <code>/work:plan M4</code> plan-auditor 사전 검증 자산</li>
+</ul>
+
+<p><strong>점검 마일스톤 자체 가치 입증</strong> — false-promise 5번째 사례 발본 = <em>목적 적중 1회 추가</em>. Rule of Three 통과 후 4번째 변종 + 5번째 사례 누적 = false-promise cadence ADR 신설 트리거 ON.</p>
+
+<h2>🛠️ 5단계 보고 — 어떻게 만들었나</h2>
+
+<h3>Phase별 분해 패턴 실측 종합</h3>
+
+<table>
+<thead>
+<tr><th>Phase</th><th>등급</th><th>분해</th><th>SubAgent</th><th>주 발견 / 봉합</th></tr>
+</thead>
+<tbody>
+<tr><td>01 baseline</td><td>보통</td><td>메인 직접</td><td>0</td><td>Hook 7 / SubAgent 9 / Knowledge 5 / dotnet build green 정합</td></tr>
+<tr><td>02 정합 감사</td><td>복잡 (자동 상향)</td><td>메인 직접</td><td>0</td><td>ADR 22 + policies 8 + 헌법 5 매핑, 가짜 약속 0건 발본</td></tr>
+<tr><td>03 Hook hardening</td><td>대규모 (자동 상향)</td><td>메인 직접</td><td>0</td><td>bundle 5건 + Python shlex.split 봉합 + reviewer Hard hook 신설</td></tr>
+<tr><td>04 server audit</td><td>대규모</td><td>Coordinator + Worker 3 + reviewer</td><td>5</td><td>5 SubAgent 분해 첫 실측 + false-promise 7건 누적</td></tr>
+<tr><td>05 client audit</td><td>복잡</td><td>메인 직접 + Worker 2 + reviewer</td><td>3</td><td>Coordinator 비-호출 1/3 + false-promise 4번째 변종 + Unity batchmode 첫 실측</td></tr>
+<tr><td>06 마감 보고</td><td>대규모</td><td>메인 직접</td><td>0</td><td>(c) 미흡수 결정 박힘 = 5번째 false-promise 사례</td></tr>
+</tbody>
+</table>
+
+<h3>외부 리뷰 흡수 매핑</h3>
+
+<table>
+<thead>
+<tr><th>자료</th><th>위치</th><th>흡수 상태</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Dawnholder-harness-review-2026-05-19.md</code> (기준)</td><td>repo + 노션 + 로컬 = 없음</td><td class="fail">❌ 흡수 불가</td></tr>
+<tr><td><code>1of5.md</code> (MessagePack 잔재 정정)</td><td><code>00_Document/reviews/</code></td><td class="pass">✅ 자연 흡수 (5/19)</td></tr>
+<tr><td><code>2of5 ~ 5of5</code> (잔여 4건)</td><td>어디에도 없음</td><td class="fail">❌ 흡수 불가 = (c) 박음</td></tr>
+</tbody>
+</table>
+
+<h2>🧪 5단계 보고 — 테스트 결과</h2>
+
+<table>
+<thead>
+<tr><th>검증</th><th>결과</th></tr>
+</thead>
+<tbody>
+<tr><td>dotnet build (Phase 02·03·04·05)</td><td class="pass">✅ green</td></tr>
+<tr><td>dotnet test (Codex 환경 Cloud, β γ 8회차)</td><td class="pass">✅ 170 passed / 1 skipped / 46초</td></tr>
+<tr><td>Hook 시뮬 (dangerous-cmd-guard + reviewer-auto-trigger + risk-detector)</td><td class="pass">✅ 18/18 PASS</td></tr>
+<tr><td>reviewer 5축 (Phase 04 + 05)</td><td class="pass">✅ PASS 0 위반</td></tr>
+<tr><td>plan-auditor 6축 (M3.6 plan)</td><td class="pass">✅ PASS</td></tr>
+<tr><td>Unity batchmode compile (β3 봉합)</td><td class="pass">✅ 첫 실측 통과</td></tr>
+<tr><td>cross-review γ 8회차 α + β 보완성</td><td class="pass">✅ 7건 분리 정합</td></tr>
+<tr><td>phase-gate-validator.sh 본 -DONE.md (대규모 5 라벨)</td><td class="pass">✅ 통과</td></tr>
+</tbody>
+</table>
+
+<h2>➡️ 5단계 보고 — 다음 스텝</h2>
+
+<div class="milestone-box">
+<strong>M4 진입 정합</strong>: M3.6 종합 보고 = M4 진입 시 <code>/work:plan M4</code> plan-auditor 사전 검증 자산. M4 = "Combat &amp; Map Transition" (진짜 4맵 + 정밀 전투). M3.6에서 발본된 P1 2건 (M4 backlog 묶음) + P2 다수 (별 시점) 흡수 정합.
+</div>
+
+<p><strong>별 시점 후속 액션 8건</strong> (work-pin 박힘):</p>
+<ol>
+<li>M4 진입 — <code>/work:plan M4</code></li>
+<li><code>session/end.md</code> <code>ㄲ</code> 오타 stash 처리</li>
+<li>팀 공지 [H] 묶음 (Python 3 + reviewer Hard hook + CODEOWNERS + SubAgent 보안 우회 + false-promise 5번째)</li>
+<li>M3 + M3.5 + M3.6 학습 일지 트랙 B Notion 박제 (★★★ 누적 55건+)</li>
+<li>false-promise 주기적 감사 cadence ADR 신설 (트리거 ON)</li>
+<li>PDL schema validation 약함 봉합</li>
+<li>work-pin baseline 160 → 170 갱신</li>
+<li>work-pin commit 시점 stale hole 봉합 검토 (본 세션 신규 ★★ 학습)</li>
+</ol>
+
+<h2>📚 학습 일지 후보 키워드 (★ 등급별)</h2>
+
+<h3 class="star">★★★ (마감 의례 / false-promise 5번째)</h3>
+<ul>
+<li><code>false-promise-5th-instance-self-work-pin</code> — <strong>본 Phase 핵심</strong>. 옛 본인 work-pin "외부 리뷰 4건" 약속 자체가 모호한 상태로 누적, 본 점검 마일스톤이 잡음. <em>목적 적중 5번째</em></li>
+<li><code>milestone-closing-ritual-pattern</code> — 마일스톤 마감 = 종합 + 박제 + 정합 한 묶음</li>
+<li><code>coordinator-non-call-rule-of-three-2of3</code> — Phase 05 + 본 Phase 두 사례. Rule of Three 1 사례 남음</li>
+<li><code>audit-milestone-purpose-validation</code> — 점검 마일스톤 자체 가치 = 가짜 약속 발본 정량 누적 12건+</li>
+</ul>
+
+<h3 class="star">★★ (보통 가치)</h3>
+<ul>
+<li><code>external-asset-search-cost-estimation</code> — 노션 + 로컬 별 폴더 + 디스코드 (제외) 3 채널 검색. AI 권한 한계 + 사용자 직접 확인 분리</li>
+<li><code>pr-merge-gate-first-instance</code> — 정책 박힘 (PR #43) → 실측 (본 Phase) 정합</li>
+</ul>
+
+<h3 class="star">★ (낮은 가치)</h3>
+<ul>
+<li><code>md-html-asymmetric-format</code> — 같은 정보 두 양식 비대칭 정합</li>
+</ul>
+
+<hr>
+
+<p><em>본 Phase = M3.6 마일스톤 마감 = 마지막 박제. 다음 액션 = <code>/work:plan M4</code> 또는 별 시점 휴식.</em></p>
+
+</body>
+</html>
