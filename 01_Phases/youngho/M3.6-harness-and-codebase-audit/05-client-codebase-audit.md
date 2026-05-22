@@ -3,7 +3,7 @@ owner: youngho
 milestone: M3.6
 phase: 05
 title: 클라 코드 전수조사 (03_Client/ + 04_ClientNet/)
-status: pending
+status: done
 grade: 복잡
 estimated: 4~6h
 domain: client

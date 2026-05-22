@@ -39,7 +39,7 @@ ClientSession은 *trusted server*에서 받지만, `02_Server`의 length-check �
 
 ## 변경 머지 전
 
-실행: `dotnet build Dawnholder.slnx` — 통과해야 함. PostBuild에서 `Client.Net.dll`이 `03_Client/Assets/Plugins/Client.Net/`로 자동 복사됨 (`.gitignore` 화이트리스트 정합, PR #19 박힘).
+실행: `dotnet build Dawnholder.slnx` — 통과해야 함. PostBuild에서 `Dawnholder.Client.Net.dll`이 `03_Client/Assets/Plugins/ClientNet/`로 자동 복사됨 (`.gitignore` 화이트리스트 정합, PR #19 박힘).
 
 ## 자매 영역 동기화
 
