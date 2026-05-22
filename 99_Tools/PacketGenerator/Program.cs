@@ -13,6 +13,10 @@ namespace PacketGenerator
         static string serverRegister = "";
         static string clientRegister = "";
 
+        // PDL schema validation: 같은 패킷 이름 두 번 박힘 차단.
+        // 헌법 #2 (Protocol is Sacred) "은퇴한 ID는 절대 재사용 금지" 정합.
+        static HashSet<string> seenPacketNames = new HashSet<string>();
+
         static void Main(string[] args)
         {
             // 인자 파싱: 첫 비-옵션 인자 = PDL 경로. 옵션: --no-manager (manager 출력 skip),
@@ -113,8 +117,16 @@ namespace PacketGenerator
 
             if (string.IsNullOrEmpty(packetName))
             {
-                Console.WriteLine("[Gen] - Packet name is missing.");
-                return;
+                throw new InvalidDataException("[Gen] Packet name is missing.");
+            }
+
+            // PDL schema validation: 같은 패킷 이름 재사용 차단 (헌법 #2 정합).
+            // M3.7 후속 (M4 진입 전 처리 묶음 #3) 박힘.
+            if (!seenPacketNames.Add(packetName))
+            {
+                throw new InvalidDataException(
+                    $"[Gen] Duplicate packet name '{packetName}'. " +
+                    "헌법 #2: 은퇴한 패킷 ID는 절대 재사용 금지.");
             }
 
             Tuple<string, string, string> t = ParseMembers(_r);
@@ -162,6 +174,15 @@ namespace PacketGenerator
                     writeCode += Environment.NewLine;
 
                 string memberType = _r.Name.ToLower();
+
+                // PDL schema validation: member type 빈 문자열 차단.
+                // XML 파서가 element 이름 없는 노드를 흘려보내는 케이스 방어 (현실 시나리오 X지만 안전망).
+                if (string.IsNullOrEmpty(memberType))
+                {
+                    throw new InvalidDataException(
+                        $"[Gen] Member '{memberName}' in packet '{packetName}' has empty type.");
+                }
+
                 switch (memberType)
                 {
                     case "byte":
@@ -208,7 +229,14 @@ namespace PacketGenerator
                         writeCode += t.Item3;
                         break;
                     default:
-                        break;
+                        // PDL schema validation: 알 수 없는 타입 silent skip 차단.
+                        // 옛 동작: `<unit name="x"/>` 같은 오타 무시 + 빌드 통과 + 런타임 시점에야 발견.
+                        // 새 동작: 즉시 throw로 PDL 작성 시점 표면화.
+                        // 99_Tools/CLAUDE.md "PDL schema validation 약함" 봉합 (M3.7 후속).
+                        throw new InvalidDataException(
+                            $"[Gen] Unknown member type '<{memberType}>' for member '{memberName}' " +
+                            $"in packet '{packetName}'. " +
+                            "지원 타입: byte/sbyte/bool/short/ushort/int/uint/long/float/double/string/list.");
                 }
             }
 

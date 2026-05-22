@@ -33,7 +33,7 @@ Codex pre-M3 감사 (2026-05-18, `00_Document/reviews/2026-05-18-pre-m3-codex-re
 - **기본값 `noManager` 반전 (M3 Phase 01 fix `39a4bda`)** — 옛 `noManager = false` → 새 `noManager = true` (`Program.cs:23`). `--no-manager` 잊어도 manager 인프라 부재로 컴파일 깨지는 `ServerPacketManager.cs` 생성 차단. `--no-manager` 인자는 redundant이지만 호환성 유지.
 - **`bool`/`string` 타입 broken code fix (M3 Phase 02 fix)** — `PacketFormat.cs:365/372` `ReadBoolFormat`/`WriteBoolFormat` 별도 분기 + `Program.cs:173/199` `case "bool":`/`case "string":` 분기 + `BinaryPrimitives.TryWriteUInt16LittleEndian` + `Encoding.Unicode.GetByteCount/GetBytes(span,span)` 패턴 박음. 현재 PDL `S_HandshakeResult.ok`(bool) + `S_HandshakeResult.reason`(string) 실재 사용 중 = fix 정합 검증 완료.
 
-**PDL schema validation 약함** (`<unit name="x"/>` 같은 오타 silent 누락)은 *여전히 잔존* — 별 Phase 또는 M4+ 자연 정리 후보 (work-pin 별 시점).
+- **PDL schema validation 봉합 (M3.7 후속, M4 진입 전 처리 묶음 #3)** — `Program.cs` 3건 throw 추가. ① `ParseMembers` switch `default:` → 옛 silent skip → 새 `throw InvalidDataException` (`<unit name="x"/>` 같은 오타 표면화). ② packet name 중복 검사 `HashSet<string> seenPacketNames` → 같은 이름 두 번 박힘 시 throw (헌법 #2 "은퇴 ID 재사용 금지" 정합). ③ `ParsePacket` 옛 `Console.WriteLine + return` (packet name 빈 문자열) → 새 throw (`ParseMembers` member name 빈 검사와 패턴 정합). 검증 3종 PDL 모두 throw 표면화 + 정상 PDL 회귀 0 (생성 코드 본질 동일).
 
 ## headless-bot — 서버 회귀 안전망 (Phase 08 박힘)
 
