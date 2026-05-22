@@ -18,11 +18,9 @@ namespace Dawnholder.Client.UI
     {
         public void OnStartClicked()
         {
-            // M3.8 Phase 02 placeholder — Phase 03 (캐릭터 선택 Scene 박힌 후) 활성화.
-            // 옛 흐름 (Gameplay 직접 로드)은 Demo flow 재정렬로 제거.
-            Debug.Log("[MainMenu] Start clicked → CharacterSelect 진입 (Phase 03 미박힘, placeholder)");
-            // TODO(M3.8 Phase 03 박힌 후): 아래 한 줄 활성화 + 본 Debug.Log 제거.
-            // SceneTransition.Instance.LoadScene("CharacterSelect");
+            // M3.8 Phase 04 활성화 — Phase 03 박힘 후 CharacterSelect Scene 실재 박힘.
+            // Demo flow = MainMenu → CharacterSelect → Gameplay → Ending.
+            SceneTransition.Instance.LoadScene("CharacterSelect");
         }
 
         public void OnQuitClicked()

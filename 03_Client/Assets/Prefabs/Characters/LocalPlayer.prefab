@@ -50,7 +50,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3056698000475167370, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
       propertyPath: m_Name
-      value: LocalPlayer_new
+      value: LocalPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 3056698000475167370, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
