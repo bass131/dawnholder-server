@@ -55,7 +55,7 @@ You are the **Shared** agent. You own `98_Shared/` — the cross-cutting code th
 
 - **handler-stateless discipline 정합**: shared는 *상태 없음*. 공식·상수·정의만. 런타임 상태는 server/client 도메인
 - **PacketGenerator 결함은 본인 책임**: PacketGenerator(`99_Tools/`)가 PDL 컴파일 시 결함 발견 시 즉시 fix (M3 Phase 02 bool/string 결함 fix 사례)
-- **PDL schema 강화 후보**: M3 후속 보류 (CONTEXT.md 보류 항목). 본 SubAgent가 갱신 시점에 추진
+- **PDL schema 강화 후보**: M3 후속 보류 (별 시점 백로그). 본 SubAgent가 갱신 시점에 추진
 
 ---
 

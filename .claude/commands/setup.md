@@ -94,4 +94,4 @@ description: 협업 셋업 — clone 후 첫 호출. 자기소개 → 환경 검
 
 - **본 절차 변경 X** — 옛 협업 셋업 인프라 그대로 유지 (2026-05-14 박힘)
 - **namespace 정합 명시**: 옛 `<본인 네임스페이스>` placeholder → 새 영호/유현/인규 실제 slug 박힘 (Phase 06 전환 시 setup-steps/*.md 안 placeholder도 정정)
-- **`/learn:*`, `/journal:*` 안내 제거**: 옛 첫 작업 안내에 학습/일지 슬래시 등장 → 새 본인 노션 (트랙 B) 안내로 대체 (Phase 06 전환 시 `04-finalize.md` 갱신)
+- **`/learn:*`, `/journal:*` 안내 제거**: 옛 첫 작업 안내의 학습/일지 슬래시 제거. 본인 회고 학습 트랙은 ADR-025로 은퇴 (work-pin 단일 핸드오프 + knowledge 트랙 A만).

@@ -71,7 +71,7 @@
 
 ## 4. WORK-ID
 
-work-pin·`-DONE.md`·learning-journal·노션 박제에 *동일 WORK-ID* 박아 산출물을 그래프화 → `grep "<WORK-ID>"` 한 방으로 한 작업의 모든 흔적 회수.
+work-pin·`-DONE.md`·commit·(선택)노션 박제에 *동일 WORK-ID* 박아 산출물을 그래프화 → `grep "<WORK-ID>"` 한 방으로 한 작업의 모든 흔적 회수.
 
 - **Phase 작업 중**: 현재 Phase의 slug (예: `m3.5-harness-v1-phase01`)
 - **Phase 외 일반 작업**: `ad-hoc-YYYYMMDD-주제` (예: `ad-hoc-20260520-cloud-id-fix`)
@@ -97,7 +97,7 @@ WORK-ID 시스템은 [`pin-and-done.md`](pin-and-done.md)에서 통합 관리.
 
 - 단순/보통 등급에서도 봉투 첨부 → 매 응답 양식 노이즈 ↑
 - *변경 / 검증 / 남은 것*은 work-pin + commit message로 *이미 박힘* → 중복
-- *학습 포인트*는 도메인 _index.md(트랙 A) + 학습 일지(트랙 B)로 더 정밀히 박힘 → 양식 강제 가치 ↓
+- *학습 포인트*는 도메인 _index.md(knowledge 트랙 A)로 더 정밀히 박힘 → 양식 강제 가치 ↓
 - AI/사용자 둘 다 봉투 작성/통독에 토큰 부담
 
 **핵심 교훈**: *양식이 가치를 만드는지 노이즈를 만드는지*가 헌법 운영 결정의 핵심 기준. 가치 < 노이즈 = 죽임.

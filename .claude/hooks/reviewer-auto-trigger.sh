@@ -26,7 +26,7 @@ parse_hook_payload
 case "$TOOL_INPUT_FILE" in
   *Tests.cs|*Test.cs|*.Tests/*|*Tests/*) exit 0 ;;
   *-DONE.md|*-DONE.html) exit 0 ;;
-  */CONTEXT.md|*/CONTEXT_*.md|*/CHANGELOG.md) exit 0 ;;
+  */CHANGELOG.md) exit 0 ;;
 esac
 
 # ─────────────────────────────────────────────

@@ -32,14 +32,14 @@
 ### 작업 좌표 + Phase 완료 박제
 
 - **작업 중**: `.claude/state/current-pin.txt`가 좌표 보존 (압축 양식, 목표 30~40줄). AI가 변경 시 갱신
-- **Phase 완료 시**: `-DONE.md` 작성 (AI가 사실 박제) → 두 액션 권유 (학습 일지 + 세션 마감)
-- **역할 분담**: `-DONE.md` = AI(사실), `learning-journal/` = 본인(회고). 가짜 학습 방지
+- **Phase 완료 시**: `-DONE.md` 작성 (AI가 사실 박제, 복잡/대규모 등급만) → 세션 마감 권유
+- **역할 분담**: `-DONE.md` = AI가 *사실* 박제. (본인 회고 트랙은 ADR-025로 은퇴 — work-pin이 단일 핸드오프)
 
 라이프사이클·핀 필드·박제 게이트·권유 양식 → [`00_Document/policies/pin-and-done.md`](00_Document/policies/pin-and-done.md)
 
 ### 슬래시 커맨드
 
-작업 4 + 세션 3 + 점검 2 + 셋업 1 — 총 10개. 옛 학습 5 + 일지 3은 트랙 B(Notion)로 이관 (5/20 의논 결과 — KPI 전환). 카탈로그 → [`00_Document/commands-index.md`](00_Document/commands-index.md).
+작업 4 + 세션 3 + 점검 2 + 셋업 1 — 총 10개. 옛 학습 5 + 일지 3은 제거 (M3.5 KPI 전환 + ADR-025 학습 트랙 은퇴). 카탈로그 → [`00_Document/commands-index.md`](00_Document/commands-index.md).
 
 ---
 
@@ -53,7 +53,6 @@
 - `00_Document/ARCHITECTURE.md` — 시스템 구조의 큰 그림
 - `00_Document/ADR/` — 결정의 기록 (왜 이 선택을 했는지, `INDEX.md` 참조)
 - `00_Document/policies/` — 본 헌법의 운영 가이드 (`INDEX.md` 참조)
-- `00_Document/learning-journal/` — 학습 일지 (AI 결정에 영향 X, 본인 회고용 — **트랙 B**)
 
 **충돌 시 우선순위**:
 **`CLAUDE.md`(헌법) > `00_Document/ADR/`(결정) > `00_Document/policies/`(운영) > `00_Document/ARCHITECTURE.md`(구조) > `00_Document/PRD.md`(요구사항)**
@@ -90,7 +89,7 @@
 폴더는 탐색기 정렬 고정용 숫자 prefix를 갖습니다 (의미는 헌법/ADR 기준).
 
 ```
-00_Document/   PRD, ARCHITECTURE, ADR, policies, learning-journal — 결정·정책·학습 기록.
+00_Document/   PRD, ARCHITECTURE, ADR, policies — 결정·정책 기록.
 01_Phases/     사람별 namespace + 마일스톤별 작업 단위(M{N}-{slug}/) Phase 마크다운.
 02_Server/     .NET 권위 서버. 98_Shared/ 읽기/쓰기 가능.
 03_Client/     Unity 프로젝트. 98_Shared/ 읽기만 (DLL로). 절대 98_Shared/에 쓰지 않음.
@@ -226,7 +225,7 @@
 
 각 SubAgent는 `.claude/knowledge/<domain>/_index.md`로 도메인별 학습 캐시 조회. AI 백지 비용 ↓. GC Collector가 오래되거나 중복된 항목 정리.
 
-- **AI 캐시 ≠ 학습 일지**: knowledge는 AI 직접 활용용 (구조화 패턴). 학습 일지(`learning-journal/`)는 본인 회고용 트랙 B
+- **knowledge = AI 직접 활용용 캐시** (구조화 패턴). 본인 회고용 학습 트랙은 ADR-025로 은퇴 (knowledge만 유지).
 - **시드 + 유기적 누적**: 처음부터 풀세트 박지 않음. 작업 진행하며 새 학습 박을지 판단 (사용자 확인 후, AI 자율 박제 X)
 
 상세 입출력 패턴·GC 정책·승격 룰 → [`00_Document/policies/knowledge-system.md`](00_Document/policies/knowledge-system.md)
