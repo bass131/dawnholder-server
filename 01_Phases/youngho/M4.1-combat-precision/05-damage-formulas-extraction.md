@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.1
 phase: 05
 title: Formulas.cs 분리 + PlayerStats 진짜 전투 반영 (옛 Phase 02 → 05 rename, P0-3 흡수)
-status: pending
+status: completed
 grade: 복잡
 risk: low
 estimated: 2~3h

@@ -1,5 +1,6 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Sessions;
+using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Maps;
 
@@ -20,6 +21,11 @@ public class PlayerEntity
     public int EntityId { get; }
     public Vector2 Position { get; set; }
     public GameSession? Owner { get; }
+
+    // M4.1 Phase 05 (2단계): 서버 권위 스탯. GameSession.SetCharacterClass가 생성해 AddPlayer에 전달.
+    // null이면 PlayerStats.Warrior() 응급 default 박힘 (M5 영속화 도입 시 DB 로드 스탯으로 교체 backlog).
+    // **헌법 #1 (Server Authority)**: 스탯 수치는 서버가 결정 — 클라이언트가 스탯 값 직접 전송 경로 없음.
+    public PlayerStats Stats { get; }
 
     // Phase 07: 결정론 물리 상태 — Shared.GameData.Physics.Step이 매 tick mutation.
     // spawn 시점 Velocity=0 + OnGround=true (ground y=0 가정).
@@ -45,10 +51,14 @@ public class PlayerEntity
     // 본 Step에선 필드 박힘만 — 갱신/검사 로직은 Step 5에서 추가.
     public long LastAttackTickMs { get; set; }
 
-    public PlayerEntity(int entityId, Vector2 position, GameSession? owner = null)
+    // M4.1 Phase 05 (2단계): stats 옵션 인자 추가.
+    // null 시 PlayerStats.Warrior() 응급 default — M3.8 정합 (전사 기본값).
+    // GameSession.EnterGameWorld에서 _stats(non-null 보장 — EnterGameWorldIfReady 가드) 전달 예정.
+    public PlayerEntity(int entityId, Vector2 position, GameSession? owner = null, PlayerStats? stats = null)
     {
         EntityId = entityId;
         Position = position;
         Owner = owner;
+        Stats = stats ?? PlayerStats.Warrior();
     }
 }

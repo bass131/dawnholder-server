@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.1
 phase: 03
 title: ClientNet Trust Boundary Symmetry (P0-4 — 클라 framing 검증 대칭)
-status: pending
+status: completed
 grade: 보통
 risk: trust-boundary
 estimated: 1~2h

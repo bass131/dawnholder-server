@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.1
 phase: 02
 title: Session State Machine Hardening (P0-1 + P0-2 — 캐릭터 선택 강제 + 월드 진입 게이트)
-status: pending
+status: completed
 grade: 복잡
 risk: trust-boundary
 estimated: 2~3h

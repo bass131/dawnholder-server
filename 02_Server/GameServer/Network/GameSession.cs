@@ -134,7 +134,9 @@ public class GameSession : PacketSession
             // 깔끔하게 분리: 기존 entity 목록 먼저 캡처 → 자기 add → 자기에게 기존 entity 다발 Send → 자기 외 broadcast.
             List<PlayerEntity> existing = new(map.Players);
 
-            PlayerEntity entity = map.AddPlayer(self, spawnPos);
+            // M4.1 Phase 05 (3단계): _stats를 AddPlayer에 전달. EnterGameWorldIfReady 가드로
+            // non-null 보장 (HasSelectedClass=true 조건 충족 후에만 EnterGameWorld 진입).
+            PlayerEntity entity = map.AddPlayer(self, spawnPos, self._stats);
             self._entityId = entity.EntityId;
 
             S_EnterMap pkt = new S_EnterMap

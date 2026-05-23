@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.1
 phase: 04
 title: Build Artifact Hygiene (P0-5 — Shared.dll/ProjectSettings dirty 봉합, hash 비교)
-status: pending
+status: completed
 grade: 보통
 risk: low
 estimated: 1~2h

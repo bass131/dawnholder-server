@@ -1,4 +1,5 @@
 using System.Numerics;
+using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Combat;
 
@@ -23,7 +24,14 @@ public class EnemyEntity
     public int MaxHp { get; }
     public bool IsDead => Hp <= 0;
 
-    public EnemyEntity(int entityId, EnemyKind kind, float x, float y, int maxHp)
+    // M4.1 Phase 05 (2단계): 서버 권위 스탯.
+    // struct default = Defense:0 — 응급 무방어 적 표현 (헌법 #1: 적 스탯도 서버가 결정).
+    // M4+ 몬스터 테이블 도입 시 ctor에서 테이블 룩업 스탯으로 교체 backlog.
+    public EnemyStats Stats { get; }
+
+    // M4.1 Phase 05 (2단계): stats 옵션 인자 추가. 옛 시그니처 (entityId, kind, x, y, maxHp) 보존 —
+    // 기존 SpawnNormalEnemy/SpawnBoss 호출지 변경 X (default 인자 패턴).
+    public EnemyEntity(int entityId, EnemyKind kind, float x, float y, int maxHp, EnemyStats stats = default)
     {
         EntityId = entityId;
         Kind = kind;
@@ -31,5 +39,6 @@ public class EnemyEntity
         Y = y;
         MaxHp = maxHp;
         Hp = maxHp;
+        Stats = stats;
     }
 }

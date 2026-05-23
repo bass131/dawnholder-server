@@ -102,9 +102,10 @@ public class GameMap
     public virtual void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
 
     // tick thread에서만 호출.
-    public PlayerEntity AddPlayer(GameSession? owner, Vector2 spawnPos)
+    // M4.1 Phase 05 (3단계): stats 옵션 인자 추가. null 시 PlayerEntity ctor가 Warrior() 응급 default 박음.
+    public PlayerEntity AddPlayer(GameSession? owner, Vector2 spawnPos, PlayerStats? stats = null)
     {
-        PlayerEntity entity = new PlayerEntity(_nextEntityId++, spawnPos, owner);
+        PlayerEntity entity = new PlayerEntity(_nextEntityId++, spawnPos, owner, stats);
         _players.Add(entity);
         return entity;
     }
@@ -185,14 +186,18 @@ public class GameMap
         if (distSquared >= CombatConstants.AttackRangeSquared) return;
 
         // 통과 → 권위 mutation 진입
+        // M4.1 Phase 05 (3단계): 옛 고정 BaseDamage 빼기 → Formulas.ComputeDamage 위임.
+        // CombatConstants.BaseDamage는 *보존* — Formulas의 baseDamage 입력으로 활용 (제거 X, 의도적 보존).
+        // **헌법 #1 (Server Authority)**: 데미지 계산은 서버만. 클라는 S_HitResult.damage 수신 후 표시만.
         attacker.LastAttackTickMs = now;
-        target.Hp -= CombatConstants.BaseDamage;
+        int damage = Formulas.ComputeDamage(attacker.Stats, target.Stats, CombatConstants.BaseDamage);
+        target.Hp -= damage;
 
         S_HitResult hit = new S_HitResult
         {
             attackerEntityId = attacker.EntityId,
             targetEntityId = target.EntityId,
-            damage = CombatConstants.BaseDamage,
+            damage = damage,
             currentHp = target.Hp,
             maxHp = target.MaxHp,
         };
