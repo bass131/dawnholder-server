@@ -2,20 +2,20 @@
 owner: youngho
 milestone: M4.1
 title: Combat Precision (Codex 크로스 리뷰 + Formulas.cs 분리 + lag compensation + precision hitbox)
-status: pending
+status: in-progress
 grade: 복잡
 risk: low
 estimated: 5~8h (총합, 3 Phase)
 domain: server+shared+qa
-depends_on: M3.8 Phase 03 (PlayerStats + CharacterClass 박힘)
+depends_on: M3.8 Phase 03 (PlayerStats + CharacterClass 박힘) — ✅ 해소 (main `2cd0fbc`)
 ---
 
 # M4.1 — Combat Precision
 
-> **상태**: pending (M3.8 신설로 진입 시점 재조정 — M3.8 마감 후 진입)
-> **시작 예정**: 2026-05-27 (M3.8 마감 후 = 5/26 예상)
-> **마감 목표**: 2026-06-02 (캡스톤 1 발표 1주 전, M4.2 진입 여유)
-> **사전 조건 (신설)**: M3.8 Phase 03 마감 = PlayerStats 박힘 (Phase 02 Formulas.cs가 PlayerStats 흡수 의무)
+> **상태**: in-progress (M3.8 마감 + PR #49 머지 완료, M4.1 진입)
+> **시작 예정**: 2026-05-23 (M3.8 마감 4일 일찍 완료로 즉시 진입 — 2026-05-23 옵션 A 결정)
+> **마감 목표**: 2026-06-01 (M4.2 진입 6/2 = 9일 여유, 캡스톤 1 발표 6/10 안정화 ↑)
+> **사전 조건 (해소)**: M3.8 Phase 03 마감 = ✅ PlayerStats 박힘 (`02_Server/GameServer/Combat/PlayerStats.cs` main `2cd0fbc` 박힘)
 
 ---
 
@@ -135,4 +135,6 @@ Phase 03 (lag compensation + precision hitbox)
 
 - 2026-05-22 — 본 세션 사용자 의논 후 박힘. M3 응급 코드 전수조사 필요 인지 → Phase 01 Codex 크로스 리뷰 흡수. M4 전체 7~9 Phase 추정을 3토막(M4.1/M4.2/M4.3) × 3 Phase로 분할.
 - 2026-05-22 — M3.8 Capstone-1 Demo Infrastructure 신설 흡수 갱신. 사전 조건 = "M3.8 Phase 03 마감 (PlayerStats 박힘)" 추가. ProtocolVersion bump 3→4 → 4→5 정정 (M3.8 Phase 03이 3→4 박은 후 본 M4.1 Phase 03이 4→5). status `in-progress` → `pending` (M3.8 진입 우선). 시작 예정 5/22 → 5/27 (M3.8 마감 후), 마감 목표 6/3 → 6/2 (M4.2 진입 여유 동일).
-- 2026-05-23 — M3.8 ✅ 완전 마감 + PR #49 머지 완료 (`2cd0fbc`) 흡수 갱신. **Phase 01 분담 정정** — 옛 "메인 직접 + Codex β 외부" → 새 "본인 (영호) Codex CLI 직접 호출 + Claude 점검 자료 + γ 비교 분담". 사유: (1) 옛 `/cross-review` 슬래시에 박힌 `codex review --files X --context Y` = false-promise 23번째 변종 발본 (실제 옵션 존재 X), (2) Claude가 Bash로 `codex` 호출 시 토큰 비용 ↑ + sandbox 옵션 결함 8회+ 누적 + 본인 학습 호흡 ↓, (3) 본인 직접 호출 = 비용 ↓ + 학습 호흡 ↑ + 본인 환경 sandbox 즉시 조정. memory [[unity-visual-work-user-owned]] "본인 직접" 정신을 외부 도구 호출 일반으로 확장 + memory [[codex-sandbox-permission-current-dir]]에 명령어별 옵션 표 박음 + 본인 직접 호출 default 절 박음. `/cross-review.md` 슬래시 정정 동반. 시작 예정 5/27 → 5/23 즉시 진입 검토 가닥 박힘 (별 의논 후 결정).
+- 2026-05-23 — M3.8 ✅ 완전 마감 + PR #49 머지 완료 (`2cd0fbc`) 흡수 갱신. **Phase 01 분담 정정** — 옛 "메인 직접 + Codex β 외부" → 새 "본인 (영호) Codex CLI 직접 호출 + Claude 점검 자료 + γ 비교 분담". 사유: (1) 옛 `/cross-review` 슬래시에 박힌 `codex review --files X --context Y` = false-promise 23번째 변종 발본 (실제 옵션 존재 X), (2) Claude가 Bash로 `codex` 호출 시 토큰 비용 ↑ + sandbox 옵션 결함 8회+ 누적 + 본인 학습 호흡 ↓, (3) 본인 직접 호출 = 비용 ↓ + 학습 호흡 ↑ + 본인 환경 sandbox 즉시 조정. memory [[unity-visual-work-user-owned]] "본인 직접" 정신을 외부 도구 호출 일반으로 확장 + memory [[codex-sandbox-permission-current-dir]]에 명령어별 옵션 표 박음 + 본인 직접 호출 default 절 박음. `/cross-review.md` 슬래시 정정 동반.
+- 2026-05-23 — **일정 갱신 (옵션 A 결정)**. M3.8 마감 4일 일찍 완료로 즉시 진입 가능 판정. 시작 예정 5/27 → 5/23 (즉시), 마감 목표 6/2 → 6/1 (M4.2 진입 6/2 = 9일 여유, 캡스톤 1 발표 6/10 안정화 ↑). 사전 조건 "M3.8 Phase 03 마감 (PlayerStats 박힘)" = ✅ 해소 표기. status `pending` → `in-progress`.
+- 2026-05-23 — **M3.8 ★★★ 본인 통찰 2건 흡수** (Phase 03 갱신). (1) 학습 포인트 추가 = "클라 입력 컨트롤이 서버 부담 ↓" (헌법 #1 = 보안 게이트 / 클라 입력 컨트롤 = UX 게이트, 영역 분리). 본 Phase 3단계 클라 측 `C_Attack` 송신 쿨다운 게이트 권유. (2) 함정 추가 = "새 race 차원 도입 함정" — ring buffer 갱신 (tick thread) + rewind lookup (tick thread) + clientTick 수신 (network thread) = 본 Phase가 *새 race 차원* 도입. M2.5/M3.8 race 봉합 박혔지만 audit 의무 (reviewer Tier 2-A 호출 시 race 차원 audit 명시).

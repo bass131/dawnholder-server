@@ -135,6 +135,7 @@ domain: server
 - **AABB vs capsule trade-off** — AABB = 축 정렬 박스, 단순·빠름 (계산 ~5 비교). capsule = 점프·회전 정합, 비용 ↑ (계산 ~20 비교). 학부생 호흡 = AABB 첫 도입, capsule은 본 마감 전 별 Phase.
 - **PDL append-only + ProtocolVersion bump** — 필드 추가는 backward compatible (옛 클라가 새 필드 모르고 default 0 박힘)이지만 옛 빌드 호환성 위해 bump. 헌법 #2 가짜 약속 1번째 봉합(M3 Phase 02) 학습 정합 패턴.
 - **ring buffer 정합** — fixed-size 배열 + head index 회전 = 메모리 일정 + GC 부담 X. 게임 엔진 표준 패턴 (NGO `NetworkTransform`, Mirror `SnapshotInterpolator` 정합).
+- **★★★ 클라 입력 컨트롤이 서버 부담 ↓ (M3.8 본인 통찰 흡수)** — 공격 cooldown 같은 클라 측 입력 게이트가 *서버 권위는 그대로* 두면서 (헌법 #1 정합 — 서버 rate-limit는 본 Phase 4단계에 박힘) 서버 검증 부담 + Reconcile 끊김 ↓. 본 Phase 3단계 클라 측 `C_Attack` 송신 시 쿨다운 게이트 권유 (예: 마지막 attack tick 박아두고 N tick 안 송신 X). 일거삼득 = 시각 부드러움 / 대역폭 / 서버 부담 ↓. 헌법 #1 = 보안 게이트, 클라 입력 컨트롤 = UX 게이트 (두 영역 분리).
 
 ---
 
@@ -146,6 +147,7 @@ domain: server
 - **ProtocolVersion 정합 누락 함정 (학습 정합)** — M3.6 Phase 04 학습 = 98_Shared/CLAUDE.md "Current=N" 박힌 stale 봉합 정합. 본 Phase 4 bump 시 동시 정정 의무.
 - **Shared.dll commit 누락 함정 (트라우마)** — CHANGELOG 2026-05-17 학습. PDL 변경 시 PacketGenerator 재생성 + Shared.dll commit + Unity 측 자동 복사 확인 3종 의무.
 - **trust-boundary 위험 깃발** — 본 Phase frontmatter `risk: trust-boundary` 박힘. risk-detector Hook 자동 검출 + reviewer SubAgent 5축 점검 의무. 검증 통과 전 commit 게이트.
+- **★★★ 새 race 차원 도입 함정 (M3.8 본인 통찰 흡수)** — 본 Phase = ring buffer 갱신 (tick thread, 1단계) + rewind 시점 lookup (tick thread, 4단계) + `attackerClientTick` 수신 (network thread → tick thread dispatch). M2.5 GameSession 내부 race + M3.8 5-C Listener accept race 봉합 박혔지만 본 Phase는 *또 다른 race 차원* 도입. "한 차원 race 봉합 ≠ 다른 차원 race 안전 보장" 정합 — ring buffer 갱신 시점 vs rewind lookup 시점 정합 audit 의무 (예: rewind 호출 시 같은 tick에 record 박혔는지 / network thread가 ring buffer 직접 접근 X 검증). reviewer SubAgent Tier 2-A 호출 시 *race 차원 audit* 항목 명시.
 
 ---
 
@@ -168,3 +170,4 @@ domain: server
 ## 작업 로그
 
 - 2026-05-22: Phase 정의 박힘 (M4.1 plan 박는 시점)
+- 2026-05-23: M3.8 ★★★ 본인 통찰 2건 흡수 — (1) 학습 포인트 추가 = 클라 입력 컨트롤이 서버 부담 ↓ (헌법 #1 = 보안 / 클라 게이트 = UX 영역 분리), (2) 함정 추가 = 새 race 차원 도입 audit 의무 (ring buffer 갱신 vs rewind lookup 시점 정합).
