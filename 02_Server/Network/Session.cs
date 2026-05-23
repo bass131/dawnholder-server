@@ -16,13 +16,10 @@ namespace Dawnholder.Server.Network
         // Phase 09 (M2.5 Trust-boundary): packet-id 크기 (모든 frame에 박힘).
         public const int PacketIdSize = 2;
 
-        // Phase 09 (M2.5 Trust-boundary): frame 최소 크기. [size:2][id:2] = 4. 미만은 invalid.
-        public const int MinFrameSize = 4;  // = HeaderSize + PacketIdSize
-
-        // Phase 09 (M2.5 Trust-boundary): frame 최대 크기. 초과 시 fail-closed disconnect.
-        // 본 값은 Shared.GameData.Constants.MaxPacketSize와 *동기화 약속*.
-        // ServerCore는 의도적으로 Shared 참조 X(재사용성) — 두 파일 동시 변경 컨벤션으로 처리.
-        public const int MaxFrameSize = 4096;
+        // Phase 03 (M4.1 Trust-boundary symmetry): 상수를 FrameValidator로 일원화.
+        // PacketSession은 FrameValidator 인용으로 유지 — 기존 테스트 참조 호환 보존.
+        public const int MinFrameSize = FrameValidator.MinFrameSize;
+        public const int MaxFrameSize = FrameValidator.MaxFrameSize;
 
         //[size(2)][packetID(2)][...][size(2)][packetID(2)][...]
         public sealed override int OnRecv(ArraySegment<byte> buffer)
@@ -39,13 +36,13 @@ namespace Dawnholder.Server.Network
                 // 완전체로 패킷을 수신했는지 확인.
                 ushort dataSize = BitConverter.ToUInt16(buffer.Array!, buffer.Offset);
 
-                // Phase 09 (M2.5 Trust-boundary): invalid frame size fail-closed.
+                // Phase 03 (M4.1 Trust-boundary symmetry): FrameValidator 위임.
                 // 순서 중요 — 정상 분할 패킷(buffer.Count < dataSize) 체크보다 *먼저*.
                 // 안 그러면 dataSize=70000 같은 attack frame이 영원히 wait에 잡혀 disconnect 안 됨.
-                if (dataSize < MinFrameSize || dataSize > MaxFrameSize)
+                if (!FrameValidator.TryValidateFrameHeader(dataSize, out var reason))
                 {
                     Console.WriteLine(
-                        $"[Trust] invalid frame size {dataSize} (min={MinFrameSize}, max={MaxFrameSize}) — disconnect");
+                        $"[Trust] invalid frame size {dataSize} ({reason}) — disconnect");
                     Disconnect();
                     return processLen;
                 }
