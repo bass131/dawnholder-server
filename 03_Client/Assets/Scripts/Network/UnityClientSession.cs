@@ -46,6 +46,13 @@ namespace Dawnholder.Client.Network
         // 해당 Snapshot drop — 다음 Snapshot에서 정상화.
         public int? LocalEntityId { get; private set; }
 
+        // M4.1 Phase 06 (lag comp 3단계): 마지막으로 수신한 S_Snapshot의 serverTick.
+        // C_Attack 송신 시 attackerClientTick 필드에 박아 서버 rewind 기준점을 제공.
+        // HandleSnapshot(main thread)에서 갱신. 초기값 0 — 첫 Snapshot 전 공격은 서버가
+        // silent drop(검증 규칙: currentServerTick - attackerClientTick > 4)하므로 실전 영향 없음.
+        // 본인/타인 Snapshot 모두 갱신 (어느 것이든 서버 현재 tick을 표현하므로 기준점으로 유효).
+        public int LastReceivedServerTick { get; private set; }
+
         // Phase 05: Editor only 송신 latency 시뮬레이션.
         //   0이면 직통 (Release/일반 Play 동작).
         //   >0이면 SendIntent 경로에 한해 N ms 지연 후 실제 Send.
@@ -258,6 +265,11 @@ namespace Dawnholder.Client.Network
 
             MainThreadDispatcher.Enqueue(() =>
             {
+                // M4.1 Phase 06 (lag comp 3단계): 수신 시점마다 최신 serverTick 보관.
+                // LocalEntityId 검사 전에 먼저 갱신 — 어느 entity의 Snapshot이든 서버 현재 tick 표현.
+                // C_Attack.attackerClientTick 송신 시 이 값을 참조해 rewind 기준점 제공.
+                LastReceivedServerTick = sTick;
+
                 // M3 Phase 05: LocalEntityId 모르면 (EnterMap 전 Snapshot 도착 race) drop.
                 if (LocalEntityId == null) return;
 

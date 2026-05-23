@@ -119,9 +119,13 @@
          ⚠️ **attacker 필드 *없음* — 헌법 #3 (Trust Boundary) 정합**.
          서버가 `GameSession._entityId`에서 attacker 강제 → 패킷에 attacker 박으면 다른 entityId 도용 가능.
          Codex β 사전 검증 HIGH #2 봉합 (direction/facing/ray 모델은 응급 범위 초과로 폐기,
-         target id 직접 지정 방식으로 단순화). -->
+         target id 직접 지정 방식으로 단순화).
+
+         M4.1 Phase 06 lag compensation: 클라가 본 공격을 인지한 시점의 lastReceivedServerTick.
+         서버가 이 tick으로 attacker 위치를 rewind. -->
     <packet name="C_Attack">
         <int name="targetEntityId"/>
+        <int name="attackerClientTick"/>
     </packet>
 
     <!-- Phase 06 (M3): Enemy spawn 알림. Codex β 사전 검증 HIGH #1 봉합 — 본 패킷 누락 시 클라가

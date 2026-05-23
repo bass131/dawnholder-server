@@ -55,6 +55,11 @@ public class GameMap
     // step 2/3 silent drop (b) 본 flag true면 broadcast 분기 미진입 — 이중 안전망.
     bool _stageCleared = false;
 
+    // M4.1 Phase 06 (4단계): ProcessAttack이 rewind 범위 검증에 사용하는 현재 서버 tick.
+    // Tick(long tickNumber) 진입 직후 박힘 — job 처리 *전*에 갱신해야 job 안에서 올바른 tick 읽힘.
+    // tick thread invariant 안에서만 읽기/쓰기 (lock 불필요).
+    long _currentTick;
+
     /// <summary>
     /// M3 Phase 07: Stage Clear 상태 read-only 노출. 단위 테스트 + Phase 09 리허설 진단용.
     /// flag 자체는 *서버 권위* — 외부에서 강제 set 불가 (헌법 #1).
@@ -138,31 +143,30 @@ public class GameMap
         => _enemies.TryGetValue(entityId, out EnemyEntity? e) ? e : null;
 
     /// <summary>
-    /// M3 Phase 06 Step 5 (응급 전투 — 서버 권위 공격 해석): tick thread 안에서 attack 1건 처리.
+    /// M4.1 Phase 06 (4·5단계 통합 개정): tick thread 안에서 attack 1건 처리.
+    /// lag compensation rewind (attacker 위치 4-tick 이내 rewinding) + AABB precision hitbox.
     ///
     /// **호출 invariant**: tick thread에서만. `GameSession.SubmitAttack`이 `EnqueueJob` 람다로 박음.
     ///
-    /// **6단계 검증 (헌법 #3 Trust Boundary 정합 — fail-closed silent drop)**:
-    ///   1. attacker player 존재 — 없으면 silent drop (race window 또는 cheat).
-    ///   2. target enemy 존재 — `GetEnemyById(id) == null`이면 silent drop. **player id 던지면
-    ///      자동 차단** (PvP 미지원 응급 약속). 같은 map invariant도 자동 정합 (별 map 검사 불필요).
-    ///   3. target alive — `IsDead`면 silent drop. KillBroadcast 후 후속 attack idempotent no-op.
-    ///   4. rate-limit 500ms — `Environment.TickCount64 - LastAttackTickMs &lt; AttackCooldownMs`이면
-    ///      silent drop. cheat가 매 frame 공격 보내도 잘림.
-    ///   5. range 검증 — 서버 권위 position만으로 `dist² &lt; AttackRangeSquared` (sqrt 회피).
-    ///      클라 좌표는 안 봄 (헌법 #1/#3 정합).
-    ///   6. (handshake 미완은 `GameSession.SubmitAttack`이 진입 게이트에서 잡음 — `_entityId &lt; 0` 방어적
-    ///      검사. tick까지 도달 시 attacker player가 _players에 있어 step 1로 자동 흡수).
+    /// **검증 순서 (헌법 #3 Trust Boundary — fail-closed silent drop)**:
+    ///   1. attacker player 존재 — 없으면 silent drop.
+    ///   2. target enemy 존재 — null이면 silent drop (PvP 미지원 + 죽은 target 자동 차단).
+    ///   3. target alive — IsDead면 silent drop (idempotent).
+    ///   4. rate-limit 500ms — AttackCooldownMs 안 재공격 silent drop.
+    ///   4.5. rewind 범위 검증 (M4.1 Phase 06 신설, 헌법 #3 정합):
+    ///       - attackerClientTick &lt; 0 → silent drop (음수 = 미초기화/조작).
+    ///       - attackerClientTick > _currentTick → silent drop (미래 tick = 클라 조작).
+    ///       - _currentTick - attackerClientTick > 4 → silent drop (200ms 초과 = cheat 후보).
+    ///       - 통과 → attacker.GetPositionAtTick(attackerClientTick)으로 rewind 위치 획득.
+    ///   5. AABB precision hitbox — attacker.GetAttackHitbox(rewindedPos).Intersects(target.Hitbox).
+    ///      옛 `dist² &lt; AttackRangeSquared` 교체. 클라 좌표 직접 사용 X (헌법 #1/#3 정합).
     ///
     /// **통과 시 처리**:
-    ///   - `attacker.LastAttackTickMs` 갱신 (rate-limit 윈도우 next cycle 시작점).
-    ///   - `target.Hp -= BaseDamage` (고정 데미지, 헌법 #1).
-    ///   - `S_HitResult` broadcast 전원 (`except: null` — attacker도 local damage text 렌더 정합).
-    ///   - Hp ≤ 0 → `S_EntityDeath` broadcast 전원 + `_enemies.Remove`로 map에서 제거.
-    ///     `IsDead`는 derived(`Hp &lt;= 0`)라 별도 flag set 불필요 — death broadcast 1회 보장은
-    ///     step 3의 `IsDead` 검사가 흡수 (이미 dead enemy에 다시 공격 와도 step 3 silent drop).
+    ///   - attacker.LastAttackTickMs 갱신 + Formulas.ComputeDamage 데미지 계산 + target.Hp 감소.
+    ///   - S_HitResult broadcast 전원 (except=null — attacker 자기 포함).
+    ///   - Hp ≤ 0 → S_EntityDeath broadcast + Boss 시 S_StageClear 1회 + _enemies.Remove.
     /// </summary>
-    internal void ProcessAttack(int attackerEntityId, int targetEntityId)
+    internal void ProcessAttack(int attackerEntityId, int targetEntityId, long attackerClientTick)
     {
         // 1) attacker player exists
         PlayerEntity? attacker = GetPlayer(attackerEntityId);
@@ -179,11 +183,29 @@ public class GameMap
         long now = Environment.TickCount64;
         if (now - attacker.LastAttackTickMs < CombatConstants.AttackCooldownMs) return;
 
-        // 5) range 검증 — 서버 권위 position만 사용, dist² < range² 패턴
-        float dx = target.X - attacker.Position.X;
-        float dy = target.Y - attacker.Position.Y;
-        float distSquared = dx * dx + dy * dy;
-        if (distSquared >= CombatConstants.AttackRangeSquared) return;
+        // 4.5) M4.1 Phase 06: rewind 범위 검증 (헌법 #3 Trust Boundary — 3분기 silent drop)
+        //
+        // **왜 여기(rate-limit 후, range 전)인가**:
+        //   rate-limit 통과 후 범위 검증 전에 끊어야 cheat가 rate-limit 우회 후
+        //   무한 rewind를 시도하는 것을 막을 수 있음.
+        //
+        // **3분기**:
+        //   (a) 음수 tick — 초기화 안 된 클라 or 조작. 헌법 #3 fail-closed.
+        //   (b) 미래 tick — 클라가 아직 오지 않은 tick 보냄 = 조작.
+        //   (c) 5tick 이상 전 — 200ms 초과 lag = cheat 후보 (또는 비정상 lag).
+        //       4 tick = 200ms가 허용 최대 (Phase 06 설계 결정, 4-slot ring buffer 깊이와 정합).
+        if (attackerClientTick < 0) return;                               // (a) 음수
+        if (attackerClientTick > _currentTick) return;                    // (b) 미래
+        if (_currentTick - attackerClientTick > 4) return;               // (c) 200ms 초과
+
+        // rewind: attacker가 공격 버튼을 눌렀을 당시 tick의 서버 저장 위치로 되돌림.
+        // target은 현재 위치 사용 (target rewind는 M4.3 backlog).
+        Vector2 rewindedPos = attacker.GetPositionAtTick(attackerClientTick);
+
+        // 5) AABB precision hitbox (옛 dist² < range² 교체)
+        // attacker 공격 박스(3×3 unit, rewindedPos 중심) vs target 피격 박스(1×1 unit).
+        AABB attackBox = GetAttackHitbox(rewindedPos);
+        if (!attackBox.Intersects(target.Hitbox)) return;
 
         // 통과 → 권위 mutation 진입
         // M4.1 Phase 05 (3단계): 옛 고정 BaseDamage 빼기 → Formulas.ComputeDamage 위임.
@@ -262,10 +284,24 @@ public class GameMap
     }
 
     /// <summary>
+    /// M4.1 Phase 06 (5단계): attacker 위치 중심으로 공격 AABB 박스를 생성.
+    /// ProcessAttack이 rewindedPos로 호출 → 그 tick 기준 박스 생성.
+    ///
+    /// **static 설계 이유**: 위치만 달라지는 순수 함수 (GameMap 상태 의존 X).
+    ///   AttackHalfExtent = 1.5f → 전체 3×3 unit (CombatConstants.AttackRange 정합).
+    /// </summary>
+    static AABB GetAttackHitbox(Vector2 origin)
+        => new AABB(origin, new Vector2(CombatConstants.AttackHalfExtent, CombatConstants.AttackHalfExtent));
+
+    /// <summary>
     /// TickScheduler가 매 50ms마다 호출. 단일 thread.
     /// </summary>
     public void Tick(long tickNumber)
     {
+        // M4.1 Phase 06 (4단계): _currentTick 갱신 — job 처리 *전*에 박아야
+        // job(ProcessAttack 람다) 안에서 올바른 tick으로 rewind 범위 검증 가능.
+        _currentTick = tickNumber;
+
         // 1) 외부 thread가 push한 job들 처리 (AddPlayer/RemovePlayer/SetPendingInputX 등).
         while (_pendingJobs.TryDequeue(out Action? job))
         {
@@ -277,6 +313,10 @@ public class GameMap
         //    옛 Phase 04 단순 dx 코드 → jump + 중력 + ground clamp 통합.
         //    jumpPressed는 *에지* (D4 (a)) — 적용 후 즉시 false reset로 같은 tick 재점프 안전망.
         //    cheat가 매 frame jumpPressed=true 보내도 Physics.Step의 OnGround 검사로 무한 점프 차단.
+        //
+        // M4.1 Phase 06 (1단계): Physics.Step 완료 직후 RecordPosition 호출.
+        //   "그 tick에 실제로 있던 위치"를 기록해야 rewind가 정확.
+        //   Step *전* 위치 기록은 이동 반영 전 snapshot → rewind 시 1tick 느린 위치 반환 = 오류.
         foreach (PlayerEntity p in _players)
         {
             PhysicsInput input = new PhysicsInput(
@@ -288,6 +328,8 @@ public class GameMap
             p.OnGround = after.OnGround;
             p.PendingInputX = 0;
             p.PendingJumpPressed = false;
+            // M4.1 Phase 06 (1단계): Physics.Step 완료 후 위치 기록.
+            p.RecordPosition(tickNumber, p.Position);
         }
 
         // 3) Snapshot 브로드캐스트. 매 5 tick(=250ms).

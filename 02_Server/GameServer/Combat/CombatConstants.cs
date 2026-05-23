@@ -21,7 +21,16 @@ internal static class CombatConstants
     // 3.0f units = ground level 2 unit 간격 + 약간의 여유 = 점프 공격 miss 위험 완화
     // (Phase 05 Y mispredict 잔류 — 시연은 지상 공격 위주이지만 range 넉넉히가 안전).
     public const float AttackRange = 3.0f;
-    public const float AttackRangeSquared = AttackRange * AttackRange;
+
+    // M4.1 Phase 06 (5단계): AttackRangeSquared는 AABB 전환으로 ProcessAttack 5단계에서 직접 미사용.
+    // 박스 크기 산출 참고용으로 보존 (AttackRange=3.0f → AABB halfExtent 기반 = 1.5f).
+    // 제거 시 AttackRange만으로 halfExtent 재도출 가능하지만, 옛 dist² 비교 로직을 추적할 때 유용.
+    public const float AttackRangeSquared = AttackRange * AttackRange; // Phase 06 AABB 전환으로 직접 미사용, 박스 크기 산출 참고용 보존
+
+    // M4.1 Phase 06 (5단계): AABB attack hitbox 크기.
+    // AttackRange=3.0f → halfExtent=1.5f (각 방향 1.5 unit) → 전체 3×3 unit 박스.
+    // 응급 단순화: X/Y 방향 동일 크기. 점프 중 Y 방향 히트박스 조정은 M4.3 backlog.
+    public const float AttackHalfExtent = AttackRange / 2f;
 
     public const int BaseDamage = 10;
 

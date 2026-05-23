@@ -40,8 +40,11 @@ public class EmergencyCombatSmoke
         public bool UsedOptionBDeathEquivalent;
     }
 
+    // M4.1 Phase 06 (7단계): simulatedLatencyMs — 봇이 C_Attack 송신 시 attackerClientTick에
+    // "N ms 전 서버 tick"을 박아 lag 환경을 시뮬. 0 = zero-lag (기본, 회귀 호환).
     public static async Task<Result> Run(
         string host, int port,
+        int simulatedLatencyMs = 0,
         CancellationToken ct = default)
     {
         Result result = new();
@@ -79,12 +82,20 @@ public class EmergencyCombatSmoke
 
             result.MoveIntentsSent = await bot.MoveIntoAttackRange(spawn.x, ct);
 
+            // M4.1 Phase 06 (7단계): lag 시뮬 시 _lastReceivedServerTick이 갱신돼야 함.
+            // 이동 중 S_Snapshot을 받지 못한 경우를 대비해 명시적 대기.
+            // zero-lag(simulatedLatencyMs=0)도 serverTick 추적을 보장하므로 항상 기다림.
+            bool gotSnapshot = await bot.WaitForFirstSnapshot(DefaultTimeout, ct);
+            if (!gotSnapshot)
+                return Fail(result, "S_Snapshot timeout — serverTick 추적 불가");
+
             HitEvent? firstHit = await SendAttackAndWaitForHit(
                 bot,
                 result.TargetEntityId,
                 bot.HitCountFor(result.TargetEntityId),
                 DefaultTimeout,
-                ct);
+                ct,
+                simulatedLatencyMs);
 
             if (firstHit == null)
             {
@@ -108,7 +119,8 @@ public class EmergencyCombatSmoke
 
             for (int i = 0; i < RateLimitBurstCount; i++)
             {
-                bot.SendAttack(result.TargetEntityId);
+                // rate-limit burst: simulatedLatencyMs 적용 — burst 검증은 lag와 무관하게 rate-limit만 검증.
+                bot.SendAttack(result.TargetEntityId, simulatedLatencyMs);
                 if (i < RateLimitBurstCount - 1)
                     await Task.Delay(RateLimitBurstIntervalMs, ct);
             }
@@ -144,7 +156,8 @@ public class EmergencyCombatSmoke
                     result.TargetEntityId,
                     previousHitCount,
                     DefaultTimeout,
-                    ct);
+                    ct,
+                    simulatedLatencyMs);
 
                 if (hit == null)
                     return Fail(result, $"S_HitResult timeout during kill flow at attempt {attempt + 1}");
@@ -187,7 +200,7 @@ public class EmergencyCombatSmoke
             int hitCountBeforeDeadRetarget = bot.HitCountFor(result.TargetEntityId);
             int deathCountBeforeDeadRetarget = bot.DeathCountFor(result.TargetEntityId);
 
-            bot.SendAttack(result.TargetEntityId);
+            bot.SendAttack(result.TargetEntityId, simulatedLatencyMs);
             await Task.Delay(QuietWindow, ct);
 
             int hitCountAfterDeadRetarget = bot.HitCountFor(result.TargetEntityId);
@@ -221,9 +234,10 @@ public class EmergencyCombatSmoke
         int targetEntityId,
         int previousHitCount,
         TimeSpan timeout,
-        CancellationToken ct)
+        CancellationToken ct,
+        int simulatedLatencyMs = 0)
     {
-        bot.SendAttack(targetEntityId);
+        bot.SendAttack(targetEntityId, simulatedLatencyMs);
         return await bot.WaitForHitCount(targetEntityId, previousHitCount + 1, timeout, ct);
     }
 
@@ -302,6 +316,11 @@ public class EmergencyCombatSmoke
         BotSession? _session;
         uint _clientTick;
 
+        // M4.1 Phase 06 (7단계): 서버 tick 추적 — S_Snapshot 수신 시 갱신.
+        // C_Attack.attackerClientTick에 박아야 서버 rewind 범위 검증(diff ≤ 4)을 통과.
+        // volatile: network thread(HandlePacket)에서 쓰고 메인 시나리오 thread(SendAttack)에서 읽음.
+        volatile int _lastReceivedServerTick = 0;
+
         public bool HandshakeOk { get; private set; }
         public string HandshakeReason { get; private set; } = "";
         public int LocalEntityId { get; private set; } = -1;
@@ -367,9 +386,26 @@ public class EmergencyCombatSmoke
             return ticks + 1;
         }
 
-        public void SendAttack(int targetEntityId)
+        // M4.1 Phase 06 (7단계): 서버에서 최소 1개 S_Snapshot 수신 대기.
+        // simulatedLatencyMs > 0이면 lastReceivedServerTick이 0인 채 공격하면 항상 silent drop.
+        // 이동 완료 후 이 메서드로 serverTick이 갱신될 때까지 기다려야 함.
+        public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
+            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+
+        // M4.1 Phase 06 (7단계): simulatedLatencyMs 옵션.
+        // 0이면 최신 serverTick 그대로 사용 (zero-lag 시뮬).
+        // 양수이면 "N ms 전에 본 serverTick"을 보냄 — 서버 rewind 시뮬.
+        //   20 TPS = 1 tick 50ms → latencyTicks = latencyMs / 50.
+        //   음수 방지 클램프: Math.Max(0, ...).
+        public void SendAttack(int targetEntityId, int simulatedLatencyMs = 0)
         {
-            C_Attack attack = new() { targetEntityId = targetEntityId };
+            int latencyTicks = simulatedLatencyMs / Constants.TickIntervalMs;
+            int clientTick = Math.Max(0, _lastReceivedServerTick - latencyTicks);
+            C_Attack attack = new()
+            {
+                targetEntityId = targetEntityId,
+                attackerClientTick = clientTick,
+            };
             _session?.Send(attack.Write());
         }
 
@@ -472,6 +508,14 @@ public class EmergencyCombatSmoke
                     S_EntityDeath death = new();
                     death.Read(buffer);
                     lock (_gate) _deaths.Add(death.entityId);
+                    break;
+
+                case PacketID.S_Snapshot:
+                    // M4.1 Phase 06 (7단계): 최신 서버 tick 갱신.
+                    // SendAttack이 이 값을 attackerClientTick에 박아 서버 rewind 범위 검증 통과.
+                    S_Snapshot snapshot = new();
+                    snapshot.Read(buffer);
+                    _lastReceivedServerTick = snapshot.serverTick;
                     break;
             }
         }

@@ -130,9 +130,12 @@ public class AttackHandlerTests : IDisposable
     static void PlaceOutOfRange(PlayerEntity player)
         => player.Position = new Vector2(0f, 0f);
 
-    static ArraySegment<byte> AttackPacketBytes(int targetEntityId)
+    // M4.1 Phase 06 (회귀 갱신): attackerClientTick 인자 추가.
+    // zero-lag 시뮬 = attackerClientTick을 현재 서버 tick과 동일하게 설정 → diff=0 → rewind 없음.
+    // 이렇게 하면 ProcessAttack의 rewind 범위 검증을 통과하면서 옛 동작과 동일한 결과.
+    static ArraySegment<byte> AttackPacketBytes(int targetEntityId, long attackerClientTick = 0)
     {
-        C_Attack pkt = new C_Attack { targetEntityId = targetEntityId };
+        C_Attack pkt = new C_Attack { targetEntityId = targetEntityId, attackerClientTick = (int)attackerClientTick };
         return pkt.Write();
     }
 
@@ -151,7 +154,8 @@ public class AttackHandlerTests : IDisposable
         s.SentPackets.Clear();
 
         // act: C_Attack 송신 → tick으로 ProcessAttack job 처리.
-        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
+        // attackerClientTick=2 = 이번 tick과 동일(diff=0) → rewind 없음 = 옛 동작 정합.
+        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: 2));
         _map.Tick(2);
 
         // S_HitResult broadcast 1건 (자기 자신 포함 전원 — except=null) 검증.
@@ -189,11 +193,12 @@ public class AttackHandlerTests : IDisposable
 
         s.SentPackets.Clear();
 
-        // act
-        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
+        // act: attackerClientTick=2=현재 tick → rewind 범위 통과. 거리 초과로 step 5 silent drop.
+        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: 2));
         _map.Tick(2);
 
-        // silent drop: HitResult/Death 둘 다 broadcast 없음 (헌법 #3 fail-closed no-op).
+        // silent drop 이유: 거리 초과 (range check). attackerClientTick=2=현재 tick → rewind 통과.
+        // HitResult/Death 둘 다 broadcast 없음 (헌법 #3 fail-closed no-op).
         Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
         Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_EntityDeath));
 
@@ -213,14 +218,15 @@ public class AttackHandlerTests : IDisposable
         PlaceInRange(player!);
         s.SentPackets.Clear();
 
-        // act 1: 첫 attack → 정상 적용 (Hp 30 → 20).
-        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
+        // act 1: 첫 attack → 정상 적용 (Hp 30 → 20). attackerClientTick=2=현재 tick.
+        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: 2));
         _map.Tick(2);
         Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
 
         // act 2: 즉시 두 번째 attack — Environment.TickCount64는 단조 증가지만 직전 tick과 같거나 ms 단위 차 → 500ms 안.
         // PlayerEntity.LastAttackTickMs는 *그대로 두고* attack을 한 번 더 보냄 → ProcessAttack step 4 (rate-limit)에서 silent drop.
-        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
+        // attackerClientTick=3=현재 tick → rewind 범위 통과 (rate-limit이 먼저 잡음).
+        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: 3));
         _map.Tick(3);
 
         // S_HitResult 여전히 1건만 (두 번째는 silent drop). enemy Hp 추가 감소 X.
@@ -241,7 +247,8 @@ public class AttackHandlerTests : IDisposable
         // 본 시점 SentPackets = [] (handshake 대기), DisconnectCalls = 0.
 
         // act: 첫 패킷으로 C_Attack 진입 → first-packet 게이트가 차단해야 함.
-        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
+        // attackerClientTick은 어떤 값이든 무관 — 게이트 이전에 차단.
+        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: 1));
         _map.Tick(1);
 
         // first-packet 게이트는 dispatcher 진입 전 차단 → Send X, Disconnect 1회.
@@ -267,12 +274,13 @@ public class AttackHandlerTests : IDisposable
         s.SentPackets.Clear();
 
         // 2회 공격 루프 — 매번 LastAttackTickMs reset으로 cooldown 우회.
+        // M4.1 Phase 06 회귀: attackerClientTick=tick과 동일 → diff=0 → rewind 없음 = 옛 동작 정합.
         int hitsNeeded = (int)Math.Ceiling((double)GameMap.NormalEnemyMaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
             player!.LastAttackTickMs = 0; // cooldown 우회 (테스트 hook = public setter 직접 사용)
-            s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
+            s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
 
@@ -307,12 +315,13 @@ public class AttackHandlerTests : IDisposable
         s.SentPackets.Clear();
 
         // M4.1 Phase 05 회귀 갱신: 2회 hit으로 Normal enemy 사망 (옛 3회).
+        // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)GameMap.NormalEnemyMaxHp / ExpectedDamage);
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
             player!.LastAttackTickMs = 0;
-            s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
+            s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
         // 사전 검증: 죽었고 map에서 빠짐.
@@ -324,7 +333,7 @@ public class AttackHandlerTests : IDisposable
 
         // act: kill 후 추가 attack → idempotent 검증. cooldown reset해서 *최대한* 통과 시도.
         player!.LastAttackTickMs = 0;
-        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
+        s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: tick));
         _map.Tick(tick++);
 
         // 검증: HitResult/Death 추가 broadcast 없음 (target lookup step 2에서 silent drop).

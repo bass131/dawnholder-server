@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dawnholder · M4.1 Phase 06 — Lag Compensation & AABB Hitbox</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 사이드바 ============ -->
+  <aside class="sidebar">
+    <div class="brand"><span class="glyph">◆</span> Dawnholder</div>
+    <div class="subtitle">M4.1 Phase 06<br>Lag Compensation + AABB Hitbox</div>
+    <nav>
+      <ul class="nav">
+        <li><a href="index.html" class="active"><span class="num">0</span>개요</a></li>
+        <li><a href="1-problem.html"><span class="num">1</span>왜 필요한가</a></li>
+        <li><a href="2-ring-buffer.html"><span class="num">2</span>위치 기록 (Ring Buffer)</a></li>
+        <li><a href="3-rewind.html"><span class="num">3</span>되감기 (Rewind)</a></li>
+        <li><a href="4-cheat-defense.html"><span class="num">4</span>신뢰 경계 (Cheat 차단)</a></li>
+        <li><a href="5-aabb-hitbox.html"><span class="num">5</span>AABB Hitbox</a></li>
+        <li><a href="6-implementation.html"><span class="num">6</span>전체 구현 잇기</a></li>
+        <li><a href="7-tests-result.html"><span class="num">7</span>테스트 & 결과</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- ============ 본문 ============ -->
+  <main class="content">
+    <div class="eyebrow">M4.1 · Combat Precision · Phase 06</div>
+    <h1>지연(Lag) 보상과 정밀 Hitbox</h1>
+    <p class="lead">200ms 인터넷 지연 환경에서도 <strong>공정한 hit 판정</strong>과 <strong>핵(cheat) 차단</strong>을 동시에 만족시키는 서버 권위 전투 시스템을 만든 기록입니다.</p>
+
+    <div class="learn-box">
+      <b>이 사이트에서 배울 것</b><br>
+      이 문서는 제가 직접 설계하고 구현한 "lag compensation(지연 보상)"과 "AABB hitbox(정밀 충돌 판정)"를, 처음 보는 사람도 이해할 수 있도록 단계별로 풀어쓴 학습 사이트입니다. 인터넷 지연이 왜 전투 판정을 망가뜨리는지부터, 그것을 서버가 어떻게 "공격 시점으로 되감아" 해결하는지, 그리고 그 과정에서 어떻게 핵을 막는지까지 한 흐름으로 따라갈 수 있습니다. 왼쪽 목차를 1번부터 순서대로 읽으시면 됩니다.
+    </div>
+
+    <h2>Phase 06이 한 일 (3줄 요약)</h2>
+    <ul class="clean">
+      <li>플레이어의 최근 4틱(=200ms) 위치를 서버가 기록하는 <strong>ring buffer(고정 크기 원형 배열)</strong>를 추가했습니다.</li>
+      <li>공격 패킷에 "클라이언트가 본 시점 번호"를 실어 보내고, 서버가 그 시점의 위치로 <strong>되감기(rewind)</strong>해서 판정하도록 만들었습니다.</li>
+      <li>거리 기반 원형 판정을 <strong>AABB 박스 교차 판정</strong>으로 교체하고, 시점 번호를 신뢰 경계로 검사해 핵을 <strong>조용히 차단(silent drop)</strong>하도록 했습니다.</li>
+    </ul>
+
+    <div class="callout key">
+      <div class="title">🎯 한 줄 목표</div>
+      <p>"내 화면에선 분명히 적을 맞췄는데 서버에선 빗나갔다"는 억울함을 없애되, "옛날 위치로 무한히 되감아 맞췄다고 우기는" 핵은 막는다. 이 둘은 보통 충돌하는 목표인데, <strong>되감기 범위를 200ms로 제한</strong>해서 양립시켰습니다.</p>
+    </div>
+
+    <h2>결과 한눈에 보기</h2>
+    <div class="badges">
+      <span class="badge ok"><span class="dot"></span>테스트 221 통과 / 0 실패 / 3 skip</span>
+      <span class="badge ok"><span class="dot"></span>reviewer (Opus) 5축 PASS</span>
+      <span class="badge info"><span class="dot"></span>ProtocolVersion v4 → v5</span>
+      <span class="badge info"><span class="dot"></span>빌드 0 에러</span>
+      <span class="badge warn"><span class="dot"></span>등급: 복잡 · risk: trust-boundary</span>
+    </div>
+
+    <h2>목차</h2>
+    <div class="card-grid">
+      <a class="card" href="1-problem.html">
+        <div class="card-num">CHAPTER 1</div>
+        <h3>왜 필요한가</h3>
+        <p>200ms 지연이 전투 판정을 어떻게 망가뜨리는지, 공정성과 서버 권위의 trade-off를 살펴봅니다.</p>
+      </a>
+      <a class="card" href="2-ring-buffer.html">
+        <div class="card-num">CHAPTER 2</div>
+        <h3>위치 기록 (Ring Buffer)</h3>
+        <p>고정 4슬롯이 회전하며 최근 200ms 위치를 보관하는 원형 배열 구조와 실제 코드.</p>
+      </a>
+      <a class="card" href="3-rewind.html">
+        <div class="card-num">CHAPTER 3</div>
+        <h3>되감기 (Rewind)</h3>
+        <p>서버가 공격 시점의 위치로 attacker를 되돌려 판정하는 핵심 메커니즘.</p>
+      </a>
+      <a class="card" href="4-cheat-defense.html">
+        <div class="card-num">CHAPTER 4</div>
+        <h3>신뢰 경계 (Cheat 차단)</h3>
+        <p>음수·미래·범위 초과 3분기로 거르는 fail-closed 검증과 헌법 #3.</p>
+      </a>
+      <a class="card" href="5-aabb-hitbox.html">
+        <div class="card-num">CHAPTER 5</div>
+        <h3>AABB Hitbox</h3>
+        <p>원형 거리 판정을 박스 교차 판정으로 교체. AABB vs capsule trade-off.</p>
+      </a>
+      <a class="card" href="6-implementation.html">
+        <div class="card-num">CHAPTER 6</div>
+        <h3>전체 구현 잇기</h3>
+        <p>7단계를 파일에 매핑하고, 패킷 흐름·버전 bump·동시성(race) audit를 정리합니다.</p>
+      </a>
+      <a class="card" href="7-tests-result.html">
+        <div class="card-num">CHAPTER 7</div>
+        <h3>테스트 & 결과</h3>
+        <p>단위 테스트 8건, 경계값 검증, 최종 결과와 면접에서 말할 핵심 3가지.</p>
+      </a>
+      <a class="card" href="2-ring-buffer.html">
+        <div class="card-num">START →</div>
+        <h3>바로 시작하기</h3>
+        <p>1번 "왜 필요한가"부터 순서대로 읽는 것을 권합니다.</p>
+      </a>
+    </div>
+
+    <div class="pager">
+      <a class="disabled" href="#">&nbsp;</a>
+      <a class="next" href="1-problem.html">
+        <span class="dir">다음 →</span>
+        <span class="ttl">1. 왜 필요한가</span>
+      </a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

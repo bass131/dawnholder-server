@@ -209,7 +209,7 @@ PDL 신규 패킷은 append-only ID로 추가됐다.
 | 14 | `S_EntityDeath` | entity lifecycle death/despawn |
 | 15 | `S_StageClear` | boss death 이후 game event |
 
-`ProtocolVersion.Current = 4`는 M3.8 Phase 03에서 3→4 bump됐다 (캐릭터 선택 도입 = `C_CharacterSelect` 박힘). M4.1 Phase 06에서 4→5 별 bump 예정 (`C_Attack.attackerClientTick` 필드 추가, lag compensation 영역). M3 Phase 07의 `S_StageClear`는 같은 emergency PR 안의 additive packet이라 그 시점 v3 유지 박혔다.
+`ProtocolVersion.Current = 5`. M3.8 Phase 03에서 3→4 bump됐고 (캐릭터 선택 도입 = `C_CharacterSelect` 박힘), M4.1 Phase 06에서 4→5 bump됐다 (`C_Attack.attackerClientTick` 필드 추가, lag compensation rewind 도입). M3 Phase 07의 `S_StageClear`는 같은 emergency PR 안의 additive packet이라 그 시점 v3 유지 박혔다.
 
 Combat packet 처리 경로:
 

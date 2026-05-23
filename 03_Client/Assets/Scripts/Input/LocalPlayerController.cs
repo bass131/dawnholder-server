@@ -63,13 +63,17 @@ namespace Dawnholder.Client.Input
         // M3 Phase 08c: "Attack" 액션 콜백 (Space 또는 좌클릭 — InputSystem_Actions.inputactions 박힘).
         //
         // **클라 책임 = target 추천 + intent 송신만** (헌법 #1):
-        //   - 가장 가까운 enemy/boss → C_Attack { targetEntityId } 송신.
+        //   - 가장 가까운 enemy/boss → C_Attack { targetEntityId, attackerClientTick } 송신.
         //   - 데미지/range/cooldown *서버가 최종 검사* — 클라 자체 판정 X.
         //   - 자체 rate-limit 없음 (서버가 silent drop, 응급 단순).
         //
-        // **AttackRange² = 9.0f** — 정의 약속 (3.0f 사거리). 응급 모드 hardcoded.
-        //   M4에서 Constants/Formulas로 외부화 권장.
-        const float AttackRangeSq = 9.0f;
+        // **TargetingRangeSquared = 9.0f** — 클라 측 *타게팅 힌트* (3.0f 사거리의 제곱).
+        //   어느 적을 C_Attack target으로 지명할지 결정하는 UX 용도.
+        //   서버 권위 판정(AABB hitbox in CombatConstants)과 *의도적으로 분리*된 별개 개념 —
+        //   서버가 최종 hit/miss 결정. 헌법 #1/#4 정합 — 밸런스 수식 복붙 X, 클라 UX 힌트.
+        //   서버 AABB halfExtent(1.5) + 적 반경(0.5) ≈ 2 units 기준 TargetingRange 3.0f는 여유분 포함.
+        //   M4.1 Phase 06 sweep: 매직 리터럴 제거, 명명 + 주석으로 의도 명확화.
+        const float TargetingRangeSquared = 9.0f;
 
         void OnAttack(InputValue value)
         {
@@ -79,17 +83,25 @@ namespace Dawnholder.Client.Input
             if (session == null) return;
             if (EnemyRegistry.Instance == null) return;
 
-            // 본인 position 기준 nearest enemy/boss 결정.
+            // 본인 position 기준 nearest enemy/boss 결정 (타게팅 힌트 — 서버 판정과 독립).
             Vector3 origin = transform.position;
-            if (!EnemyRegistry.Instance.TryGetNearest(origin, AttackRangeSq, out int targetEntityId))
+            if (!EnemyRegistry.Instance.TryGetNearest(origin, TargetingRangeSquared, out int targetEntityId))
             {
-                // 사거리 내 enemy 없음 — silent (서버가 어차피 drop).
+                // 타게팅 범위 내 enemy 없음 — silent (서버가 어차피 최종 판정).
                 return;
             }
 
-            C_Attack pkt = new C_Attack { targetEntityId = targetEntityId };
+            // M4.1 Phase 06 (lag comp 3단계): attackerClientTick = 마지막으로 수신한 S_Snapshot의
+            // serverTick. 서버 ProcessAttack이 이 tick으로 position history를 rewind해 hitbox 판정.
+            // 검증 규칙: tick < 0 || > 현재서버tick || (현재서버tick - tick) > 4 → silent drop.
+            // 첫 Snapshot 수신 전(= 0) 공격은 drop되지만 게임 극초반이라 실전 영향 없음.
+            C_Attack pkt = new C_Attack
+            {
+                targetEntityId = targetEntityId,
+                attackerClientTick = session.LastReceivedServerTick
+            };
             session.SendIntent(pkt.Write());
-            Debug.Log($"[Attack] → target entity {targetEntityId}");
+            Debug.Log($"[Attack] → target entity {targetEntityId} clientTick={pkt.attackerClientTick}");
         }
 
         void Update()

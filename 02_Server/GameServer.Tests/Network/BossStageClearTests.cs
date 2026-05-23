@@ -113,9 +113,11 @@ public class BossStageClearTests : IDisposable
     static void PlaceInRangeOfNormalEnemy(PlayerEntity player)
         => player.Position = new Vector2(GameMap.NormalEnemySpawnX - 1f, GameMap.NormalEnemySpawnY);
 
-    static ArraySegment<byte> AttackPacketBytes(int targetEntityId)
+    // M4.1 Phase 06 (회귀 갱신): attackerClientTick 인자 추가.
+    // zero-lag 시뮬 = attackerClientTick을 현재 서버 tick과 동일하게 → diff=0 → rewind 없음.
+    static ArraySegment<byte> AttackPacketBytes(int targetEntityId, long attackerClientTick = 0)
     {
-        C_Attack pkt = new C_Attack { targetEntityId = targetEntityId };
+        C_Attack pkt = new C_Attack { targetEntityId = targetEntityId, attackerClientTick = (int)attackerClientTick };
         return pkt.Write();
     }
 
@@ -140,12 +142,13 @@ public class BossStageClearTests : IDisposable
         s.SentPackets.Clear();
 
         // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 4회 attack으로 Boss HP 100 → 0 (옛 10회).
+        // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음 = 옛 동작 정합.
         int hitsNeeded = (int)Math.Ceiling((double)GameMap.BossMaxHp / ExpectedDamage); // 4
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
             player!.LastAttackTickMs = 0;
-            s.OnRecvPacket(AttackPacketBytes(BossEntityId));
+            s.OnRecvPacket(AttackPacketBytes(BossEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
 
@@ -193,12 +196,13 @@ public class BossStageClearTests : IDisposable
         s.SentPackets.Clear();
 
         // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 4회 attack (옛 10회).
+        // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)GameMap.BossMaxHp / ExpectedDamage); // 4
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
             player!.LastAttackTickMs = 0;
-            s.OnRecvPacket(AttackPacketBytes(BossEntityId));
+            s.OnRecvPacket(AttackPacketBytes(BossEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
 
@@ -213,10 +217,11 @@ public class BossStageClearTests : IDisposable
         Assert.Equal(1, stageClearsAfterKill);
 
         // act: kill 후 추가 attack — cooldown 우회로 *최대한 통과 시도* → idempotent 검증.
+        // Boss가 이미 사망 → step 2(GetEnemyById null) silent drop. rewind 검증엔 도달 X.
         for (int i = 0; i < 3; i++)
         {
             player!.LastAttackTickMs = 0;
-            s.OnRecvPacket(AttackPacketBytes(BossEntityId));
+            s.OnRecvPacket(AttackPacketBytes(BossEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
 
@@ -241,12 +246,13 @@ public class BossStageClearTests : IDisposable
         s.SentPackets.Clear();
 
         // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 2회 attack으로 Normal HP 30 → 0 이하 (옛 3회).
+        // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)GameMap.NormalEnemyMaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
             player!.LastAttackTickMs = 0;
-            s.OnRecvPacket(AttackPacketBytes(NormalEnemyId));
+            s.OnRecvPacket(AttackPacketBytes(NormalEnemyId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
 

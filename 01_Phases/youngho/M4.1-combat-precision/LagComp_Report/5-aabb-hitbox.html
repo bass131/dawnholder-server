@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5. AABB Hitbox · Dawnholder M4.1 Phase 06</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="glyph">◆</span> Dawnholder</div>
+    <div class="subtitle">M4.1 Phase 06<br>Lag Compensation + AABB Hitbox</div>
+    <nav>
+      <ul class="nav">
+        <li><a href="index.html"><span class="num">0</span>개요</a></li>
+        <li><a href="1-problem.html"><span class="num">1</span>왜 필요한가</a></li>
+        <li><a href="2-ring-buffer.html"><span class="num">2</span>위치 기록 (Ring Buffer)</a></li>
+        <li><a href="3-rewind.html"><span class="num">3</span>되감기 (Rewind)</a></li>
+        <li><a href="4-cheat-defense.html"><span class="num">4</span>신뢰 경계 (Cheat 차단)</a></li>
+        <li><a href="5-aabb-hitbox.html" class="active"><span class="num">5</span>AABB Hitbox</a></li>
+        <li><a href="6-implementation.html"><span class="num">6</span>전체 구현 잇기</a></li>
+        <li><a href="7-tests-result.html"><span class="num">7</span>테스트 & 결과</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="eyebrow">Chapter 5</div>
+    <h1>정밀 충돌 판정 — AABB Hitbox</h1>
+
+    <div class="learn-box">
+      <b>이 페이지에서 배울 것</b><br>
+      되감긴 위치를 손에 쥐었으니, 이제 "맞았는지"를 판정할 차례입니다. 기존의 거리 기반 원형 판정을 <b>AABB(Axis-Aligned Bounding Box, 축 정렬 경계 상자)</b> 박스 교차 판정으로 교체했습니다. 이 페이지에서는 두 박스가 겹치는지 판단하는 알고리즘, 왜 원형에서 박스로 바꿨는지, 그리고 <b>AABB vs capsule(캡슐형)</b> trade-off를 배웁니다.
+    </div>
+
+    <h2>기존 방식 — 원형 거리 판정</h2>
+    <p>이전 응급 구현에서는 attacker와 적 사이의 <strong>거리의 제곱</strong>이 사거리의 제곱보다 작으면 명중으로 처리했습니다 (<code class="inline">dist² &lt; AttackRangeSquared</code>, 여기서 <code class="inline">AttackRangeSquared = 9.0</code>). 제곱근(sqrt)을 피하려고 양변을 제곱한 형태입니다. 단순하지만, 이는 attacker를 중심으로 한 "원" 안에 적이 있으면 무조건 맞는 방식이라, 사이드스크롤 게임의 캐릭터 실루엣(세로로 긴 직사각형)과 잘 안 맞습니다.</p>
+
+    <h2>새 방식 — AABB 박스 교차</h2>
+    <p>AABB는 "축에 정렬된(기울어지지 않은) 직사각형 박스"입니다. 우리는 박스를 <strong>중심(Center) + 반-길이(HalfExtent, 각 축으로 절반 크기)</strong>로 표현합니다. 예를 들어 3×3 박스는 중심에서 가로·세로로 각각 1.5씩 뻗으므로 <code class="inline">HalfExtent = (1.5, 1.5)</code>입니다.</p>
+    <ul class="clean">
+      <li><strong>attacker 공격 박스</strong> = 되감긴 위치를 중심으로 한 <strong>3×3</strong> (halfExtent 1.5)</li>
+      <li><strong>적 피격 박스</strong> = 적 위치를 중심으로 한 <strong>1×1</strong> (halfExtent 0.5)</li>
+    </ul>
+    <p>이 두 박스가 겹치면 명중입니다.</p>
+
+    <h2>겹침 vs 안 겹침</h2>
+    <div class="figure">
+      <svg viewBox="0 0 760 300" role="img" aria-label="AABB 박스 겹침과 미겹침 비교">
+        <rect class="svg-bg" x="0" y="0" width="760" height="300" rx="8"/>
+
+        <!-- 겹침 케이스 -->
+        <text class="svg-label" x="60" y="36" font-weight="bold" fill="#59d499">✓ 겹침 → 명중(hit)</text>
+        <!-- attack 3x3 -->
+        <rect class="svg-box-2" x="60" y="80" width="150" height="150" rx="4" fill="#2a211388"/>
+        <text class="svg-small" x="64" y="74" fill="#ffb454">공격 박스 3×3</text>
+        <line x1="135" y1="80" x2="135" y2="230" stroke="#ffb454" stroke-width="1" stroke-dasharray="3 3"/>
+        <!-- enemy 1x1 (겹치게) -->
+        <rect class="svg-box-g" x="160" y="130" width="50" height="50" rx="4"/>
+        <text class="svg-small" x="148" y="252" fill="#59d499">적 박스 1×1</text>
+        <circle cx="135" cy="155" r="4" fill="#ffb454"/>
+        <circle cx="185" cy="155" r="4" fill="#59d499"/>
+
+        <!-- 구분선 -->
+        <line x1="400" y1="30" x2="400" y2="270" stroke="#2a3442" stroke-width="1" stroke-dasharray="4 4"/>
+
+        <!-- 안 겹침 케이스 -->
+        <text class="svg-label" x="440" y="36" font-weight="bold" fill="#ff6b6b">✗ 분리 → 빗나감(miss)</text>
+        <rect class="svg-box-2" x="440" y="80" width="150" height="150" rx="4" fill="#2a211388"/>
+        <text class="svg-small" x="444" y="74" fill="#ffb454">공격 박스 3×3</text>
+        <line x1="515" y1="80" x2="515" y2="230" stroke="#ffb454" stroke-width="1" stroke-dasharray="3 3"/>
+        <!-- enemy 1x1 (멀리) -->
+        <rect class="svg-box-r" x="660" y="130" width="50" height="50" rx="4"/>
+        <text class="svg-small" x="648" y="252" fill="#ff6b6b">적 박스 1×1</text>
+        <circle cx="515" cy="155" r="4" fill="#ffb454"/>
+        <circle cx="685" cy="155" r="4" fill="#ff6b6b"/>
+        <!-- 분리 갭 표시 -->
+        <line class="svg-arrow-r" x1="590" y1="155" x2="658" y2="155" stroke-dasharray="4 3"/>
+        <text class="svg-small" x="596" y="148" fill="#ff6b6b">분리 갭</text>
+      </svg>
+      <div class="fig-cap">왼쪽: 두 박스가 겹쳐 명중. 오른쪽: 한 축에서 분리 갭이 생겨 빗나감. AABB 교차 판정은 "어느 축에도 분리 갭이 없으면 겹침"으로 판단한다.</div>
+    </div>
+
+    <h2>겹침을 판단하는 알고리즘</h2>
+    <p>두 박스가 <strong>겹치지 않으려면</strong>, 적어도 한 축(X 또는 Y)에서 둘 사이에 틈이 있어야 합니다. 이것을 수식으로 옮기면 간단합니다. 각 축에서 <strong>두 중심 사이의 거리</strong>가 <strong>두 반-길이의 합</strong>보다 작거나 같으면 그 축에서는 겹친 것이고, X와 Y 둘 다 겹치면 박스가 겹친 것입니다.</p>
+    <p>이는 SAT(Separating Axis Theorem, 분리 축 정리)라는 충돌 판정 이론을 축 정렬 박스에 맞춰 특수화한 형태입니다. 일반 SAT는 회전한 도형까지 다루지만, 축 정렬 박스는 검사할 축이 X·Y 둘뿐이라 비교 몇 번으로 끝납니다.</p>
+
+    <div class="code">
+      <div class="cap">02_Server/GameServer/Combat/Hitbox.cs — AABB.Intersects</div>
+<pre><span class="k">public bool</span> <span class="t">Intersects</span>(<span class="t">AABB</span> other)
+{
+    <span class="k">float</span> dx = <span class="t">Math</span>.Abs(other.Center.X - Center.X);
+    <span class="k">float</span> dy = <span class="t">Math</span>.Abs(other.Center.Y - Center.Y);
+    <span class="k">float</span> sumHalfX = HalfExtent.X + other.HalfExtent.X;
+    <span class="k">float</span> sumHalfY = HalfExtent.Y + other.HalfExtent.Y;
+    <span class="k">return</span> dx &lt;= sumHalfX &amp;&amp; dy &lt;= sumHalfY;
+}</pre>
+    </div>
+
+    <p>한 점이 박스 안에 있는지 검사하는 <code class="inline">Contains</code>도 같은 발상입니다. 점과 중심의 거리가 각 축의 반-길이 이하면 박스 안입니다.</p>
+    <div class="code">
+      <div class="cap">02_Server/GameServer/Combat/Hitbox.cs — AABB.Contains</div>
+<pre><span class="k">public bool</span> <span class="t">Contains</span>(<span class="t">Vector2</span> point)
+{
+    <span class="k">float</span> dx = <span class="t">Math</span>.Abs(point.X - Center.X);
+    <span class="k">float</span> dy = <span class="t">Math</span>.Abs(point.Y - Center.Y);
+    <span class="k">return</span> dx &lt;= HalfExtent.X &amp;&amp; dy &lt;= HalfExtent.Y;
+}</pre>
+    </div>
+
+    <div class="callout key">
+      <div class="title">💡 경계값은 "포함(≤)"으로</div>
+      <p>비교에 <code class="inline">&lt;=</code>(이하)를 쓴 점에 주목하세요. 박스가 정확히 경계에서 닿는 "간신히 닿음" 상황을, 우리는 <strong>명중으로 처리</strong>합니다. 만약 <code class="inline">&lt;</code>(미만, strict)를 썼다면 딱 경계에 닿은 공격이 빗나감으로 처리되어, 플레이어가 "분명 닿았는데 안 맞았다"는 억울한 miss를 겪습니다. 이 경계값 동작은 테스트(<code class="inline">AABB_EdgeContact</code>)로 못 박았습니다.</p>
+    </div>
+
+    <h2>박스 크기는 어디서 나오나</h2>
+    <p>박스 크기는 매직 넘버를 흩뿌리지 않고 한 곳(<code class="inline">CombatConstants</code>)에 모았습니다. 기존 사거리 상수 <code class="inline">AttackRange = 3.0</code>에서 절반을 취해 <code class="inline">AttackHalfExtent = 1.5</code>를 도출합니다. 즉 3×3 공격 박스가 됩니다.</p>
+    <div class="code">
+      <div class="cap">02_Server/GameServer/Combat/CombatConstants.cs</div>
+<pre><span class="k">public const float</span> AttackRange = <span class="n">3.0f</span>;
+
+<span class="c">// M4.1 Phase 06: AABB attack hitbox 크기.</span>
+<span class="c">// AttackRange=3.0f → halfExtent=1.5f → 전체 3×3 unit 박스.</span>
+<span class="k">public const float</span> AttackHalfExtent = AttackRange / <span class="n">2f</span>;</pre>
+    </div>
+
+    <h2>AABB vs capsule — 왜 AABB를 택했나</h2>
+    <p>충돌 판정 도형에는 더 정밀한 대안인 <strong>capsule(캡슐형: 선분 + 반지름)</strong>도 있습니다. 둘 사이에는 명확한 trade-off가 있습니다.</p>
+    <table>
+      <tr><th></th><th>AABB (이번 선택)</th><th>capsule (M4.3 backlog)</th></tr>
+      <tr><td>모양</td><td>축 정렬 직사각형 박스</td><td>선분 + 반지름 (둥근 캡슐)</td></tr>
+      <tr><td>계산 비용</td><td><span class="pass">~5 비교 (싸다)</span></td><td>~20 비교 (비싸다)</td></tr>
+      <tr><td>구현 복잡도</td><td><span class="pass">단순</span></td><td>복잡</td></tr>
+      <tr><td>점프·회전 정합</td><td>박스가 실루엣과 약간 어긋날 수 있음</td><td><span class="pass">정밀</span></td></tr>
+      <tr><td>적합 시점</td><td>지상 공격 위주의 현재 데모</td><td>보스 AI + 활발한 점프 판정이 생기면</td></tr>
+    </table>
+
+    <div class="callout">
+      <div class="title">⚖️ 결정 — 지금은 AABB, capsule은 미룸</div>
+      <p>현재 데모는 지상에서의 공격이 대부분이고, 학습 호흡상 단순한 것부터 익히는 게 맞습니다. capsule은 점프·회전이 게임의 핵심이 되는 시점에 가치가 커지므로 <strong>M4.3 backlog</strong>로 명시적으로 미뤘습니다. capsule을 지금 도입하면 작업 등급이 "복잡 → 대규모"로 자동 상향될 만큼 범위가 커지므로, scope creep을 피하는 결정이기도 합니다. "더 좋은 것"이 항상 "지금 해야 할 것"은 아니라는, 엔지니어링 판단의 좋은 예입니다.</p>
+    </div>
+
+    <h2>readonly struct로 만든 이유</h2>
+    <p><code class="inline">AABB</code>는 <code class="inline">class</code>가 아니라 <code class="inline">readonly struct</code>로 정의했습니다. <code class="inline">struct</code>(값 타입)는 힙(heap) 할당을 일으키지 않아 GC 부담이 없습니다. 매 공격마다 박스를 새로 만드는데, <code class="inline">class</code>였다면 그때마다 힙에 객체가 쌓여 GC 압박이 커집니다. <code class="inline">readonly</code>는 한 번 만든 박스를 실수로 변경하지 못하게 막아 줍니다. 이 또한 Unity의 <code class="inline">Bounds</code>처럼 게임 엔진의 표준 패턴입니다.</p>
+
+    <p>이제 모든 부품이 갖춰졌습니다. 다음 페이지에서 이 조각들이 패킷 한 번의 흐름 속에서 어떻게 이어지는지 전체 그림을 봅니다.</p>
+
+    <div class="pager">
+      <a href="4-cheat-defense.html"><span class="dir">← 이전</span><span class="ttl">4. 신뢰 경계 (Cheat 차단)</span></a>
+      <a class="next" href="6-implementation.html"><span class="dir">다음 →</span><span class="ttl">6. 전체 구현 잇기</span></a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

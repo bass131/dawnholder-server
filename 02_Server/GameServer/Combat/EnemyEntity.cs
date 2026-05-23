@@ -3,6 +3,7 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Combat;
 
+
 // M3 Phase 06 Step 2 (응급 전투 인프라):
 // 서버 소유 entity — owner GameSession 없음 (player와 가장 큰 차이). spawn/mutation/broadcast
 // 모두 서버 권위 (헌법 #1). 본 Step은 모델 + spawn만 — AI/이동/사망 broadcast는 Step 3+.
@@ -28,6 +29,12 @@ public class EnemyEntity
     // struct default = Defense:0 — 응급 무방어 적 표현 (헌법 #1: 적 스탯도 서버가 결정).
     // M4+ 몬스터 테이블 도입 시 ctor에서 테이블 룩업 스탯으로 교체 backlog.
     public EnemyStats Stats { get; }
+
+    // M4.1 Phase 06 (5단계): 적 entity의 피격 판정 AABB.
+    // 응급 = 1×1 unit 박스 (center = X/Y, halfExtent = 0.5×0.5).
+    // EnemyEntity는 float X/Y로 위치 관리 → new Vector2(X, Y)로 변환.
+    // M4+ 몬스터 테이블 도입 시 hitbox 크기도 테이블에서 로드 backlog.
+    public AABB Hitbox => new AABB(new Vector2(X, Y), new Vector2(0.5f, 0.5f));
 
     // M4.1 Phase 05 (2단계): stats 옵션 인자 추가. 옛 시그니처 (entityId, kind, x, y, maxHp) 보존 —
     // 기존 SpawnNormalEnemy/SpawnBoss 호출지 변경 X (default 인자 패턴).

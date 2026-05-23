@@ -730,6 +730,7 @@ public class C_Attack : IPacket // C_Attack 패킷
 {
     // 멤버 변수들
     public int targetEntityId;
+	public int attackerClientTick;
     public ushort Protocol { get { return (ushort)PacketID.C_Attack; } }
 
     public void Read(ArraySegment<byte> _Segment)
@@ -745,6 +746,10 @@ public class C_Attack : IPacket // C_Attack 패킷
         // 멤버 읽기
         // targetEntityId 읽기 (LittleEndian 명시 — wire format 약속)
 		this.targetEntityId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// attackerClientTick 읽기 (LittleEndian 명시 — wire format 약속)
+		this.attackerClientTick = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
 		count += sizeof(int);
 		
     }
@@ -768,6 +773,10 @@ public class C_Attack : IPacket // C_Attack 패킷
         // 멤버 쓰기
         // targetEntityId 쓰기 (LittleEndian 명시 — wire format 약속)
 		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.targetEntityId);
+		count += sizeof(int);
+		
+		// attackerClientTick 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.attackerClientTick);
 		count += sizeof(int);
 		
 

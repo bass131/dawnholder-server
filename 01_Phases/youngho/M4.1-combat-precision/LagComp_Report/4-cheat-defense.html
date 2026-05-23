@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4. 신뢰 경계 (Cheat 차단) · Dawnholder M4.1 Phase 06</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="glyph">◆</span> Dawnholder</div>
+    <div class="subtitle">M4.1 Phase 06<br>Lag Compensation + AABB Hitbox</div>
+    <nav>
+      <ul class="nav">
+        <li><a href="index.html"><span class="num">0</span>개요</a></li>
+        <li><a href="1-problem.html"><span class="num">1</span>왜 필요한가</a></li>
+        <li><a href="2-ring-buffer.html"><span class="num">2</span>위치 기록 (Ring Buffer)</a></li>
+        <li><a href="3-rewind.html"><span class="num">3</span>되감기 (Rewind)</a></li>
+        <li><a href="4-cheat-defense.html" class="active"><span class="num">4</span>신뢰 경계 (Cheat 차단)</a></li>
+        <li><a href="5-aabb-hitbox.html"><span class="num">5</span>AABB Hitbox</a></li>
+        <li><a href="6-implementation.html"><span class="num">6</span>전체 구현 잇기</a></li>
+        <li><a href="7-tests-result.html"><span class="num">7</span>테스트 & 결과</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="eyebrow">Chapter 4</div>
+    <h1>신뢰 경계 — Cheat 차단</h1>
+
+    <div class="learn-box">
+      <b>이 페이지에서 배울 것</b><br>
+      클라이언트가 보내는 <code class="inline">attackerClientTick</code>은 <b>신뢰할 수 없는 입력(untrusted input)</b>입니다. 핵 사용자가 마음대로 조작할 수 있으니까요. 이 페이지에서는 이 값을 <b>음수 / 미래 / 범위 초과</b> 세 갈래로 검사해 부정한 공격을 <b>조용히 버리는(silent drop)</b> 방어 로직과, 그 바탕에 깔린 <b>fail-closed(닫힘 우선)</b> 사고방식을 배웁니다.
+    </div>
+
+    <h2>untrusted 입력이라는 전제</h2>
+    <div class="callout warn">
+      <div class="title">⚠️ 헌법 #3 — Trust Boundary (신뢰 경계)</div>
+      <p>클라이언트 소켓에서 들어오는 모든 것은 <strong>신뢰할 수 없는 입력</strong>입니다. 항상 범위를 검증하고, 소유권을 확인하고, rate-limit(횟수 제한)을 걸고, 의심스러운 패턴을 로깅합니다. <code class="inline">attackerClientTick</code>도 예외가 아닙니다 — 핵 사용자는 이 정수를 -9999든 999999든 마음대로 채워 보낼 수 있습니다.</p>
+    </div>
+
+    <h2>3개의 검사 게이트</h2>
+    <p>되감기 위치를 꺼내기 <strong>전에</strong>, 서버는 <code class="inline">attackerClientTick</code>이 정상 범위 안인지 세 개의 게이트로 검사합니다. 하나라도 걸리면 즉시 <strong>silent drop</strong> — 응답도, HP 변화도, broadcast도 전혀 일어나지 않습니다. 핵 입장에서는 "아무 일도 안 일어난" 것처럼 보입니다.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 760 420" role="img" aria-label="attackerClientTick 3분기 검증 흐름도">
+        <rect class="svg-bg" x="0" y="0" width="760" height="420" rx="8"/>
+        <!-- 입력 -->
+        <rect class="svg-box-2" x="290" y="20" width="180" height="44" rx="8"/>
+        <text class="svg-label" x="320" y="40">untrusted 입력</text>
+        <text class="svg-mono" x="312" y="58" fill="#ffb454">attackerClientTick</text>
+        <line class="svg-arrow" x1="380" y1="64" x2="380" y2="92"/>
+        <polygon points="380,94 374,84 386,84" fill="#4ea1ff"/>
+
+        <!-- 게이트 1 -->
+        <rect class="svg-box" x="250" y="94" width="260" height="46" rx="8"/>
+        <text class="svg-mono" x="270" y="122">① tick &lt; 0 ? (음수)</text>
+        <line class="svg-arrow-r" x1="510" y1="117" x2="610" y2="117"/>
+        <polygon points="612,117 602,111 602,123" fill="#ff6b6b"/>
+        <line class="svg-arrow" x1="380" y1="140" x2="380" y2="168"/>
+        <polygon points="380,170 374,160 386,160" fill="#4ea1ff"/>
+        <text class="svg-small" x="388" y="158">통과</text>
+
+        <!-- 게이트 2 -->
+        <rect class="svg-box" x="250" y="170" width="260" height="46" rx="8"/>
+        <text class="svg-mono" x="270" y="198">② tick &gt; 현재틱 ? (미래)</text>
+        <line class="svg-arrow-r" x1="510" y1="193" x2="610" y2="193"/>
+        <polygon points="612,193 602,187 602,199" fill="#ff6b6b"/>
+        <line class="svg-arrow" x1="380" y1="216" x2="380" y2="244"/>
+        <polygon points="380,246 374,236 386,236" fill="#4ea1ff"/>
+        <text class="svg-small" x="388" y="234">통과</text>
+
+        <!-- 게이트 3 -->
+        <rect class="svg-box" x="250" y="246" width="260" height="46" rx="8"/>
+        <text class="svg-mono" x="270" y="274">③ 현재틱-tick &gt; 4 ? (초과)</text>
+        <line class="svg-arrow-r" x1="510" y1="269" x2="610" y2="269"/>
+        <polygon points="612,269 602,263 602,275" fill="#ff6b6b"/>
+        <line class="svg-arrow-g" x1="380" y1="292" x2="380" y2="324"/>
+        <polygon points="380,326 374,316 386,316" fill="#59d499"/>
+        <text class="svg-small" x="388" y="312" fill="#59d499">통과</text>
+
+        <!-- 통과 결과 -->
+        <rect class="svg-box-g" x="240" y="326" width="280" height="52" rx="8"/>
+        <text class="svg-label" x="260" y="350" fill="#59d499">✓ rewind 위치 획득 → hit 판정 진행</text>
+        <text class="svg-mono" x="260" y="370" fill="#59d499">GetPositionAtTick(tick)</text>
+
+        <!-- silent drop 박스 -->
+        <rect class="svg-box-r" x="615" y="155" width="130" height="70" rx="8"/>
+        <text class="svg-label" x="632" y="184" fill="#ff6b6b">silent drop</text>
+        <text class="svg-small" x="628" y="204" fill="#ff6b6b">응답 X</text>
+        <text class="svg-small" x="628" y="220" fill="#ff6b6b">HP·broadcast X</text>
+      </svg>
+      <div class="fig-cap">세 게이트 중 하나라도 걸리면 즉시 silent drop. 모두 통과해야만 되감기 위치를 꺼내 hit 판정으로 넘어간다.</div>
+    </div>
+
+    <h2>세 게이트의 의미</h2>
+    <table>
+      <tr><th>게이트</th><th>조건</th><th>왜 막나</th></tr>
+      <tr><td><strong>① 음수</strong></td><td><code class="inline">tick &lt; 0</code></td><td>정상 틱 번호는 음수가 될 수 없습니다. 미초기화 값이거나 조작입니다.</td></tr>
+      <tr><td><strong>② 미래</strong></td><td><code class="inline">tick &gt; 현재 서버 틱</code></td><td>클라이언트가 아직 오지도 않은 미래 틱을 안다는 건 불가능합니다. 명백한 조작입니다.</td></tr>
+      <tr><td><strong>③ 범위 초과</strong></td><td><code class="inline">현재 틱 - tick &gt; 4</code></td><td>200ms보다 더 옛날로 되감으려는 시도입니다. cheat 후보이거나 정상 범위를 넘은 과도한 지연입니다.</td></tr>
+    </table>
+
+    <h2>경계값 — diff=4는 통과, diff=5는 차단</h2>
+    <p>게이트 ③의 조건이 <code class="inline">&gt; 4</code>(4 초과)라는 점이 중요합니다. 즉 <strong>차이(diff)가 정확히 4이면 통과(hit), 5이면 차단(drop)</strong>입니다. ring buffer 깊이가 4슬롯이므로, 마침 되감을 수 있는 가장 오래된 슬롯(diff=4)까지는 허용하고, 그보다 한 틱이라도 오래되면(diff=5) 데이터가 없으니 막습니다. 버퍼 깊이와 검증 경계가 정확히 맞물리도록 설계한 것입니다. 이 경계값은 테스트로 직접 검증했습니다(7장 참고).</p>
+
+    <h2>fail-closed 라는 사고방식</h2>
+    <div class="callout key">
+      <div class="title">💡 fail-closed (닫힘 우선)</div>
+      <p>보안 설계에는 두 가지 기본 자세가 있습니다. <strong>fail-open(열림 우선)</strong>은 "애매하면 일단 허용", <strong>fail-closed(닫힘 우선)</strong>는 "애매하면 일단 거부"입니다. 게임 전투 판정처럼 핵 위험이 있는 곳에서는 항상 fail-closed가 정답입니다.</p>
+      <p>그래서 의심스러운 입력은 막되, <strong>연결을 끊거나 에러를 돌려주지 않고 그냥 조용히 버립니다(silent drop)</strong>. 에러를 돌려주면 핵 제작자에게 "이 값은 거부됐다"는 힌트를 주는 셈이라, 우회 방법을 찾기 쉬워집니다. 아무 반응이 없으면 핵이 무엇이 막혔는지 알기 어렵습니다.</p>
+    </div>
+
+    <h2>왜 rate-limit 다음, range 검사 전에 두었나</h2>
+    <p>이 3분기 검증은 코드상 <strong>rate-limit(500ms 횟수 제한) 통과 직후, AABB hitbox 검사 직전</strong>에 위치합니다. 순서에 이유가 있습니다. rate-limit을 먼저 통과시켜야 "초당 수천 번 공격"을 먼저 거를 수 있고, 그 다음 되감기 범위를 검사해야 rate-limit을 통과한 공격이 무한히 옛 시점으로 되감는 것을 막을 수 있습니다.</p>
+
+    <h2>실제 코드 — 3분기</h2>
+    <div class="code">
+      <div class="cap">02_Server/GameServer/Maps/GameMap.cs — ProcessAttack (4.5단계)</div>
+<pre><span class="c">// 4) rate-limit 500ms silent drop</span>
+<span class="k">long</span> now = <span class="t">Environment</span>.TickCount64;
+<span class="k">if</span> (now - attacker.LastAttackTickMs &lt; <span class="t">CombatConstants</span>.AttackCooldownMs) <span class="k">return</span>;
+
+<span class="c">// 4.5) rewind 범위 검증 (헌법 #3 Trust Boundary — 3분기 silent drop)</span>
+<span class="hlr"><span class="k">if</span> (attackerClientTick &lt; <span class="n">0</span>) <span class="k">return</span>;                  <span class="c">// (a) 음수</span>
+<span class="k">if</span> (attackerClientTick &gt; _currentTick) <span class="k">return</span>;        <span class="c">// (b) 미래</span>
+<span class="k">if</span> (_currentTick - attackerClientTick &gt; <span class="n">4</span>) <span class="k">return</span>;     <span class="c">// (c) 200ms 초과</span></span>
+
+<span class="c">// rewind: 통과한 경우에만 위치 획득</span>
+<span class="t">Vector2</span> rewindedPos = attacker.GetPositionAtTick(attackerClientTick);</pre>
+    </div>
+
+    <p>이제 부정한 공격은 걸러졌고, 정상 공격은 되감긴 위치를 손에 쥐었습니다. 다음 페이지에서는 그 위치로 실제 "맞았는지"를 판정하는 AABB hitbox를 봅니다.</p>
+
+    <div class="pager">
+      <a href="3-rewind.html"><span class="dir">← 이전</span><span class="ttl">3. 되감기 (Rewind)</span></a>
+      <a class="next" href="5-aabb-hitbox.html"><span class="dir">다음 →</span><span class="ttl">5. AABB Hitbox</span></a>
+    </div>
+  </main>
+</div>
+</body>
+</html>
