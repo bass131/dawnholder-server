@@ -290,5 +290,5 @@ Phase: <slug>
 본 SubAgent 동작 변경 시 동기화 책임:
 - [`../policies/subagent-routing.md`](../policies/subagent-routing.md) (라우팅 룰)
 - [`../policies/grade-and-risk.md`](../policies/grade-and-risk.md) (등급별 동원 패턴)
-- [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 — Worker 무한 재시도 차단)
+- [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 coordinator 단독 위임 구조로 강제)
 - ADR-023 후속 신설 (M4 진입 후 결정)

@@ -155,8 +155,10 @@ M4 진입 후 *Opus 발동 주간 카운트* 추적 → 잦으면 등급 체계 
 ```
 [Worker가 다른 Worker 직접 호출 시도]
    │
-   └─ Hook (circuit-breaker.sh, Phase 03 산출물)가 차단:
-       "재귀 호출 차단 — Worker → Worker 직접 호출 금지"
+   └─ 구조적으로 차단 (Hook 강제 아님):
+       Worker는 위임 권한(Agent/Task tool) 없음 + coordinator만 단독 위임자.
+       circuit-breaker.sh는 *반복 도구 사용 알림* advisory일 뿐 —
+       Worker→Worker 재귀 판정 로직은 미실재. 차단은 구조/규율로 강제.
        ↓
        coordinator에게 분해 요청으로 escalate
 ```
@@ -190,7 +192,7 @@ M4 진입 후 *Opus 발동 주간 카운트* 추적 → 잦으면 등급 체계 
 본 문서 수정 시 *반드시* 함께 갱신:
 - [`../policies/subagent-routing.md`](../policies/subagent-routing.md) (에스컬레이션 룰 원칙)
 - [`coordinator.md`](coordinator.md) (에스컬레이션 절차 카탈로그)
-- [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 산출물 — 재귀 호출 차단)
+- [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 산출물 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 구조/규율 강제)
 - 각 SubAgent의 "에스컬레이션 룰" 절
 
 ---
@@ -198,3 +200,4 @@ M4 진입 후 *Opus 발동 주간 카운트* 추적 → 잦으면 등급 체계 
 ## 갱신 이력
 
 - 2026-05-20 — M3.5 Phase 02 (3/3) 신설. Sonnet 2회 → Opus → 사용자 흐름 + Reviewer 위반 재위임 1회 + Plan-auditor A/B 옵션 + 권한 위반 + 경계 코드 충돌 + 재귀 차단 + 사용자 우회 통합.
+- 2026-05-24 — `/harness-review all` 봉합. §6 "circuit-breaker.sh가 재귀 차단" false claim 정정 — 재귀 차단은 구조/규율 강제(Worker 무위임 + coordinator 단독), circuit-breaker는 반복 도구 알림 advisory. line 193 참조 동반 정정.

@@ -3,7 +3,7 @@ name: knowledge-client-index
 description: Client 도메인 (03_Client/ + 04_ClientNet/ Unity 패턴) 학습 캐시 인덱스
 domain: client
 maintainer: youngho
-last_updated: 2026-05-20
+last_updated: 2026-05-24
 ---
 
 # Client Knowledge — _index.md
@@ -60,7 +60,7 @@ git status --porcelain | grep <target>  # stage 확인
 - `.gitignore`는 함정 — 신규 팀원이 임의 Unity 버전으로 열어도 막을 안전망 사라짐
 - 옵션 (B1) 같은 LTS minor 내 다음 패치 점프 = 깔끔 (재설치 부가비용 0)
 
-**사례**: 5/16 사건 (본인+정유현). 학부생 본인이 처음 `.gitignore 하자` 제안 → 추적 후 본인이 `hash까지 통일이 정답`으로 스스로 정정 (학습 가치).
+**사례**: 5/16 사건 (본인+정유현 hash 어긋남).
 **확신도**: 실측 1건. 신규 합류(인규) 환경 셋업 시 재발 확인 예정 (Rule of Three 후보).
 **관련 키워드**: [[projectsettings-cloud-ping-pong]] (Unity 다인 함정 묶음), [[prefab-overwrite-untracked-disaster]] (Unity asset 사고 묶음)
 
@@ -95,3 +95,4 @@ _(없음 — 본 캐시는 2026-05-20 신설)_
 ## 갱신 이력
 
 - 2026-05-20 — M3.5 Phase 04 (1/3) 골격 박힘. 시드 항목은 (2/3)에서 채움.
+- 2026-05-24 — `/harness-review all` knowledge-gc 후속. `unity-version-hash-pinning` 디테일 中 트랙 B(회고) 성격 1줄 제거 (트랙 A/B 경계 정신 정합).
