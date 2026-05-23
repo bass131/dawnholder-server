@@ -664,7 +664,7 @@
         <li><a href="#commands">슬래시 커맨드 10개</a></li>
         <li><a href="#rules">협업 룰</a></li>
         <li><a href="#harness">AI 운영 시스템</a></li>
-        <li><a href="#journal">학습 일지 시스템</a></li>
+        <li><a href="#journal">학습 회고 (자율)</a></li>
         <li><a href="#stuck">막혔을 때</a></li>
         <li><a href="#faq">자주 묻는 것</a></li>
       </ol>
@@ -715,7 +715,7 @@
       <h3>본인이 얻어갈 것</h3>
       <ul>
         <li><strong>실전 백엔드/네트워킹</strong> — raw TCP, 권위 서버, 동시성, 영속화</li>
-        <li><strong>면접 무기로 누적되는 학습 일지</strong> — Claude와 협업한 모든 결정·트러블슈팅이 본인 명의로 박힘</li>
+        <li><strong>면접 무기로 누적되는 협업 기록</strong> — Claude와 협업한 모든 결정·트러블슈팅이 본인 명의로 박힘 (노션 자유 양식)</li>
         <li><strong>본인 노션 포트폴리오</strong> — 6개월 뒤에 본인 자기소개서 쓸 때 베이스 자료</li>
       </ul>
 
@@ -819,7 +819,7 @@
         <li>자기소개 (한글 이름) → 영문 식별자 + 역할 자동 결정</li>
         <li>환경 검증 8단계 (Git Bash, .NET, MSSQL, VS Code 통합 터미널 등)</li>
         <li>역할별 셋업 (백엔드 또는 Unity 클라)</li>
-        <li>본인 작업 공간 초기화 (<code>CONTEXT.md</code>, <code>learning-journal/</code>, 작업 좌표 핀)</li>
+        <li>본인 작업 공간 초기화 (작업 좌표 핀 — <code>.claude/state/current-pin.txt</code>)</li>
         <li>본인 노션 페이지 안내 + 첫 작업 안내</li>
       </ul>
 
@@ -838,7 +838,7 @@
 
       <div class="flow">
 <span class="label">아침:</span>
-   /session:start                 <span class="label"># git 안전 점검 + CONTEXT + CHANGELOG</span>
+   /session:start                 <span class="label"># git 안전 점검 + work-pin + CHANGELOG</span>
    <span class="arrow">→</span> (게이트 통과 시) git pull origin main
    <span class="arrow">→</span> 게이트가 STOP 띄우면 안내대로 처리 후 /session:start 다시
 
@@ -853,14 +853,14 @@
    단순/보통 = work-pin + commit message
    복잡    = -DONE.md 박제 (AI가 사실 박음)
    대규모   = + 5단계 보고 MD/HTML (캡스톤 평가 자산)
-   <span class="arrow">→</span> 학습 회고: 본인 노션 트랙 B (자유 양식)
-   <span class="arrow">→</span> /session:end  <span class="label"># commit + PR + 노션 박제 + CONTEXT 자동 갱신</span></div>
+   <span class="arrow">→</span> (선택) 학습 회고: 본인 노션 자유 양식
+   <span class="arrow">→</span> /session:end  <span class="label"># commit + PR + (선택)노션 + work-pin 갱신</span></div>
 
       <h3>핵심 3개 슬래시</h3>
       <div class="cmd-grid">
         <div class="cmd-card">
           <div class="slash">/session:start</div>
-          <div class="desc">아침에 첫 입력. <strong>git 안전 점검 게이트</strong> + CONTEXT.md 인지 + 팀장 변경(CHANGELOG) 자동 확인. 위험 상태(main 브랜치·미커밋 변경)면 STOP 띄우고 안내.</div>
+          <div class="desc">아침에 첫 입력. <strong>git 안전 점검 게이트</strong> + work-pin 좌표 인지 + 팀장 변경(CHANGELOG) 자동 확인. 위험 상태(main 브랜치·미커밋 변경)면 STOP 띄우고 안내.</div>
         </div>
         <div class="cmd-card">
           <div class="slash">/work:plan</div>
@@ -899,7 +899,7 @@
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 04 슬래시 커맨드 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <section id="commands">
       <h2><span class="section-num">04 —</span> 슬래시 커맨드 10개</h2>
-      <p class="section-lead">3개 카테고리 + 점검 2 + 단독 진입점 1. 헷갈리면 <code>00_Document/commands-index.md</code> 카탈로그. 옛 학습 5 + 일지 3 = 트랙 B Notion 이관 (ADR-022, 5/20 의논 결과).</p>
+      <p class="section-lead">3개 카테고리 + 점검 2 + 단독 진입점 1. 헷갈리면 <code>00_Document/commands-index.md</code> 카탈로그. 옛 학습 5 + 일지 3 슬래시는 M3.5에서 제거 (ADR-022), 학습 트랙 B는 ADR-025로 은퇴.</p>
 
       <h3>🛠️ 작업용 (4개) — 실제 코드·구조 변경</h3>
       <div class="cmd-grid">
@@ -934,13 +934,12 @@
       </div>
 
       <div class="callout note">
-        <div class="callout-title">★ 트랙 B 이관 (옛 학습 5 + 일지 3)</div>
-        <p>옛 <code>/learn:*</code> + <code>/journal:*</code>는 M3.5 새 하네스 v1에서 *제거* (5/20 의논 결과 = KPI 전환 "학습 박제 중심 → Planning + 구현 + 보고"). 대체:</p>
+        <div class="callout-title">★ 제거된 8 슬래시 (옛 학습 5 + 일지 3)</div>
+        <p>옛 <code>/learn:*</code> + <code>/journal:*</code>는 M3.5 새 하네스 v1에서 *제거* (5/20 의논 = KPI 전환 "학습 박제 중심 → Planning + 구현 + 보고"). 그 슬래시들이 떠받치던 <strong>학습 추적 트랙 B 자체도 ADR-025로 은퇴</strong> (회고 자산이 거의 안 쌓여 가치보다 비용 ↑). 대체:</p>
         <ul style="margin-top: 6px; padding-left: 22px;">
           <li><strong>학습 풀이</strong> — Claude한테 자연어로 ("이거 왜 이래?" / "이 코드 한 줄씩 설명해줘"). 학부생 멘토링 톤은 헌법에 박혀있음.</li>
-          <li><strong>회고 박음</strong> — 본인 노션 "Dawnholder 학습 일지" DB에 자유 양식. AI 인터뷰 형식은 그대로 가능 ("회고 박을 거 인터뷰 도와줘").</li>
-          <li><strong>Phase 회고</strong> — <code>-DONE.md</code> 안 "학습 일지 후보 키워드" 섹션 + 본인 노션.</li>
-          <li><strong>옛 자산 보존</strong> — 잔존 <code>learning-journal/{본인}/</code> 디렉토리 그대로 사용 가능.</li>
+          <li><strong>회고 박음</strong> — 본인 노션에 자유 양식 (자율). AI 인터뷰 형식은 그대로 가능 ("회고 박을 거 인터뷰 도와줘").</li>
+          <li><strong>옛 자산 보존</strong> — 잔존 <code>learning-journal/{본인}/</code> 디렉토리는 각자 작업물이라 그대로 사용 가능 (신규 박제는 자율).</li>
         </ul>
       </div>
 
@@ -948,7 +947,7 @@
       <div class="cmd-grid">
         <div class="cmd-card">
           <div class="slash">/session:start</div>
-          <div class="desc">새 세션 첫 입력. CONTEXT 인지 + CHANGELOG 최근 변경 확인.</div>
+          <div class="desc">새 세션 첫 입력. work-pin 좌표 인지 + CHANGELOG 최근 변경 확인.</div>
         </div>
         <div class="cmd-card">
           <div class="slash">/session:end</div>
@@ -991,7 +990,7 @@
         </li>
         <li>
           <div class="step-title">개인 자산은 git 무시</div>
-          <p class="step-desc"><code>CONTEXT.md</code> · <code>CONTEXT_History.md</code> · <code>current-pin.txt</code>는 각자 보유(.gitignore). <code>learning-journal/{본인}/</code>은 2026-05-16부터 <strong>기본 공개</strong>(PR #12) — 비공개 원하면 본인이 자기 슬러그를 .gitignore에 추가(영역 자율).</p>
+          <p class="step-desc"><code>current-pin.txt</code>(작업 좌표, 세션 간 단일 핸드오프 — ADR-025)는 각자 보유(.gitignore). <code>learning-journal/{본인}/</code>은 2026-05-16부터 <strong>기본 공개</strong>(PR #12) — 비공개 원하면 본인이 자기 슬러그를 .gitignore에 추가(영역 자율).</p>
         </li>
       </ol>
 
@@ -1041,7 +1040,7 @@
             <tr>
               <td><strong>L3 — 단축키</strong></td>
               <td><code>.claude/commands/</code></td>
-              <td>슬래시 커맨드 10개 (작업 4 / 세션 3 / 점검 2 / 셋업 1). 옛 학습 5 + 일지 3은 트랙 B Notion 이관</td>
+              <td>슬래시 커맨드 10개 (작업 4 / 세션 3 / 점검 2 / 셋업 1). 옛 학습 5 + 일지 3 슬래시는 M3.5에서 제거 (ADR-022), 학습 트랙 B는 ADR-025로 은퇴</td>
             </tr>
             <tr>
               <td><strong>L4 — 검증</strong></td>
@@ -1114,8 +1113,8 @@
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━ 07 학습 일지 ━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <section id="journal">
-      <h2><span class="section-num">07 —</span> 학습 일지 시스템</h2>
-      <p class="section-lead">본인 면접 무기. 디테일이 잊히기 전에 박아두는 게 핵심. AI는 인터뷰만, 답은 본인이 채움.</p>
+      <h2><span class="section-num">07 —</span> 학습 회고 (자율)</h2>
+      <p class="section-lead">본인 면접 무기. 디테일이 잊히기 전에 박아두면 좋음. AI는 인터뷰만, 답은 본인이 채움. <strong>옛 학습 추적 트랙 B(자동 권유 + ★★ 후보 누적)는 ADR-025로 은퇴</strong> — 이제 회고는 <em>강제 아닌 자율</em>. 아래 양식은 박고 싶을 때 쓰는 도구일 뿐.</p>
 
       <h3>두 가지 박제 — 역할 분담</h3>
       <div class="table-wrap">
@@ -1130,9 +1129,9 @@
               <td>사실·결정·증상·키워드 박제. 잊히기 전에 자동 작성.</td>
             </tr>
             <tr>
-              <td><code>learning-journal/{본인}/</code></td>
+              <td>노션 자유 양식 또는 잔존 <code>learning-journal/{본인}/</code></td>
               <td><strong>본인</strong></td>
-              <td>회고·교훈·면접 답변. AI는 질문만 던짐.</td>
+              <td>회고·교훈·면접 답변 (자율). AI는 질문만 던짐. 트랙 B 은퇴(ADR-025)로 자동 권유는 없음.</td>
             </tr>
           </tbody>
         </table>
@@ -1140,8 +1139,8 @@
 
       <p>본인이 학습 일지 쓸 때 <code>-DONE.md</code>를 <em>사실 베이스</em>로 활용. AI가 박은 사실 위에 본인 회고를 얹는 구조.</p>
 
-      <h3>3종 회고 양식 (트랙 B — 자유 양식, AI 인터뷰 도움 가능)</h3>
-      <p>옛 <code>/journal:*</code> 슬래시는 M3.5 새 하네스 v1에서 제거됨 (ADR-022). 같은 3종 양식은 그대로 활용 가능 — 본인 노션 "Dawnholder 학습 일지" DB에 자유 양식으로 박고, AI 인터뷰 도움 필요하면 Claude에게 자연어로 요청.</p>
+      <h3>3종 회고 양식 (자율 — AI 인터뷰 도움 가능)</h3>
+      <p>옛 <code>/journal:*</code> 슬래시는 M3.5에서 제거 (ADR-022), 학습 추적 트랙 B 자체도 ADR-025로 은퇴. 다만 같은 3종 양식은 박고 싶을 때 그대로 활용 가능 — 본인 노션에 자유 양식으로 박고, AI 인터뷰 도움 필요하면 Claude에게 자연어로 요청.</p>
       <ol class="steps">
         <li>
           <div class="step-title">Phase 통째 회고</div>
@@ -1162,8 +1161,8 @@
         <p>면접 시뮬레이션에서 답이 잘 안 나오면 솔직히 적기. 그게 다음 학습 큐가 됩니다. AI가 채워주는 답은 가짜 학습 — 본인 머리로 통과한 것만 면접에서 답할 수 있어요.</p>
       </div>
 
-      <h3>노션 박제도 따로</h3>
-      <p>본인 노션 "Dawnholder 협업 히스토리" 페이지에 STAR 형식 박제. 학습 일지가 *로컬 디테일*이라면 노션은 *간결한 결정 박제*. 둘이 상호 보완. <code>/session:log</code>가 자동 호출.</p>
+      <h3>노션 박제도 따로 (선택)</h3>
+      <p>본인 노션 "Dawnholder 협업 히스토리" 페이지에 STAR 형식 박제. 로컬 회고가 *디테일*이라면 노션은 *간결한 결정 박제*. 둘이 상호 보완. <code>/session:log</code>로 박음 (선택 — 자동 강제 X).</p>
 
       <div class="callout note">
         <div class="callout-title">★ 본인 자산</div>
@@ -1187,8 +1186,8 @@
             <tr><td>셋업 막힘</td><td><code>/setup</code> 다시 호출 또는 Claude한테 직접 물어보기</td></tr>
             <tr><td>작업 중 개념 모름</td><td>Claude한테 자연어로 — 예: "이 코드 한 줄씩 설명해줘" / "이 개념 학부 수준으로 풀어줘"</td></tr>
             <tr><td>Claude 답이 어려움</td><td>"더 쉽게 다시 설명해줘" 한 줄로 OK</td></tr>
-            <tr><td>지금 어디까지 왔는지 모름</td><td><code>/session:start</code> 다시 호출 (CONTEXT 자동 출력) 또는 "지금까지 진행 + 다음 할 일 정리해줘"</td></tr>
-            <tr><td><strong><code>/session:start</code>가 "work-pin drift" STOP을 띄움</strong></td><td>옛 work-pin 박힌 진행 단계(commit/push/PR 생성/PR 머지)가 실제 git/gh 상태와 어긋남 — work-pin(<code>.claude/state/current-pin.txt</code>) 또는 CONTEXT.md "⏸️ 현재 멈춤 지점" 본인이 갱신 후 재호출 (자동 갱신 안 함, ADR-023). 사용자가 명시적으로 "drift 봉합해줘"라 요청하면 Claude가 갱신 박음 OK</td></tr>
+            <tr><td>지금 어디까지 왔는지 모름</td><td><code>/session:start</code> 다시 호출 (work-pin 자동 출력) 또는 "지금까지 진행 + 다음 할 일 정리해줘"</td></tr>
+            <tr><td><strong><code>/session:start</code>가 "work-pin drift" STOP을 띄움</strong></td><td>옛 work-pin 박힌 진행 단계(commit/push/PR 생성/PR 머지)가 실제 git/gh 상태와 어긋남 — work-pin(<code>.claude/state/current-pin.txt</code>)의 "현재 작업 / 다음 액션"을 본인이 갱신 후 재호출 (자동 갱신 안 함, ADR-023+025). 사용자가 명시적으로 "drift 봉합해줘"라 요청하면 Claude가 갱신 박음 OK</td></tr>
             <tr><td>Git/PR 막힘 (일반)</td><td>팀장(유영호)에게 슬랙</td></tr>
             <tr><td><strong>Git 충돌·복구</strong> (pull 충돌, 작업물 사라진 듯, 잘못 commit)</td><td><strong>팀장 슬랙 우선.</strong> <code>git reset --hard</code> · <code>git checkout .</code> · <code>git clean -fd</code> 절대 금지 (되돌릴 수 없음)</td></tr>
             <tr><td><strong>Unity 켰더니 ProjectSettings.asset 변경 떴음</strong></td><td><strong>cloud 라인만이면 자동 정리됨</strong> (각자 Cloud 정책, B+). <code>/session:start</code> 게이트가 처리. cloud 외 변경(예: <code>scriptingDefineSymbols</code>)도 같이 떴으면 STOP 떠요 — 본인이 의도적으로 만진 게 아니면 팀장에게 물어보기</td></tr>
@@ -1196,7 +1195,7 @@
             <tr><td>Image 컴포넌트 Inspector 띄운 채 코드 변경 → 콘솔에 NRE</td><td>Unity 알려진 이슈 (UUM-139557, 6000.4.7f1에도 잔존). 빌드/런타임 영향 없음 — 짜증만 남. 회피: 코드 변경 전 Inspector에서 Image 안 띄우고 다른 GameObject 클릭해두기</td></tr>
             <tr><td>빌드 에러</td><td>에러 메시지 그대로 Claude한테 보여주기</td></tr>
             <tr><td>헌법/ADR 결정 이유 궁금</td><td>Claude한테 자연어로 ("ADR-022 왜 박혔어?") 또는 <code>00_Document/ADR/INDEX.md</code> 참조</td></tr>
-            <tr><td>회고 박고 싶음 (Phase 끝 / 버그 풀린 후 / 개념 학습 후)</td><td>본인 노션 "Dawnholder 학습 일지" DB. AI 인터뷰 도움 필요하면 Claude에게 자연어로 요청. 옛 <code>learning-journal/{본인}/</code> 디렉토리도 그대로 사용 OK</td></tr>
+            <tr><td>회고 박고 싶음 (Phase 끝 / 버그 풀린 후 / 개념 학습 후)</td><td>본인 노션에 자유 양식 (자율 — 트랙 B 은퇴, ADR-025). AI 인터뷰 도움 필요하면 Claude에게 자연어로 요청. 잔존 <code>learning-journal/{본인}/</code> 디렉토리도 그대로 사용 OK</td></tr>
           </tbody>
         </table>
       </div>
@@ -1244,7 +1243,7 @@
     <div class="doc-footer">
       <div class="meta">
         <div>Dawnholder Project · ClaudeDev · 팀원 사용 가이드</div>
-        <div>v2.0 · 2026-05-21 · M3.5 새 하네스 v1 발효 (ADR-022) — SubAgent 9 / Hook 7 / 슬래시 10 / Knowledge 5도메인 / 학습 트랙 B 분리</div>
+        <div>v2.1 · 2026-05-24 · M3.5 새 하네스 v1 (ADR-022) + ADR-025 정합 — SubAgent 9 / Hook 8 / 슬래시 10 / Knowledge 5도메인 / CONTEXT 3종 + 학습 트랙 B 은퇴, work-pin 단일 핸드오프</div>
       </div>
       <p style="margin-top: 16px;">
         문서가 오래됐거나 틀린 부분 발견하면 팀장(유영호)에게 슬랙. <code>00_Document/</code> 폴더의 다른 문서들과 충돌 시 헌법(<code>CLAUDE.md</code>)이 이깁니다.

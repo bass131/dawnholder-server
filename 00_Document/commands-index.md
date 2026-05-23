@@ -4,7 +4,7 @@
 
 호출 형식: `/<카테고리>:<이름>` (예: `/work:plan`, `/session:end`) 또는 단독 진입점 (`/setup`, `/harness-review`, `/cross-review`).
 
-> **옛 학습 5 (`/learn:*`) + 일지 3 (`/journal:*`) = 트랙 B 이관**: 본인 노션 "Dawnholder 학습 일지" DB로 이관 (5/20 의논 결과 — KPI 전환 "학습 박제 중심 → Planning + 구현 + 보고"). 잔존 `00_Document/learning-journal/{본인}/` 디렉토리는 *그대로 유지* (옛 자산 보존).
+> **옛 학습 5 (`/learn:*`) + 일지 3 (`/journal:*`) 슬래시 = M3.5에서 제거** (5/20 의논 — KPI 전환 "학습 박제 중심 → Planning + 구현 + 보고"). 그 슬래시들이 떠받치던 학습 추적 트랙 B 자체도 **ADR-025로 은퇴** — 회고는 대화/노션 자유 양식으로 자율. 잔존 `00_Document/learning-journal/{본인}/` 디렉토리는 *각자 작업물*이라 보존 (신규 박제 안 강제).
 
 ---
 
@@ -23,8 +23,8 @@
 
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
-| [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력. git 게이트 (B+) 정책 + CONTEXT.md 읽고 톤·현재 멈춤 지점·다음 액션 + CHANGELOG 최근 변경 확인. | (인풋 없음) |
-| [`/session:end`](../.claude/commands/session/end.md) | Phase 완료 마감 절차. -DONE.md 박제 후 호출 → commit + PR + `/session:log` 자동 호출 + **CONTEXT.md 자동 갱신** (work-pin ↔ CONTEXT 정합 게이트 옵션 C, 항상 동기) + 다음 액션 결정. 등급별 마감 분기 (단순/보통 = work-pin + commit message / 복잡 = work-pin + -DONE.md / 대규모 = +5단계 보고 MD/HTML). | (인풋 없음) |
+| [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력. git 게이트 (B+) 정책 + work-pin(`current-pin.txt`) 좌표 인지(현재 작업·다음 액션) + CHANGELOG 최근 변경 확인. | (인풋 없음) |
+| [`/session:end`](../.claude/commands/session/end.md) | Phase 완료 마감 절차. -DONE.md 박제 후 호출 → commit + PR + `/session:log`(선택) + **work-pin 갱신** (마감 상태 반영, ADR-025 — 단일 핸드오프) + 다음 액션 결정. 등급별 마감 분기 (단순/보통 = work-pin + commit message / 복잡 = work-pin + -DONE.md / 대규모 = +5단계 보고 MD/HTML). | (인풋 없음) |
 | [`/session:log`](../.claude/commands/session/log.md) | 노션 박제 트리거. 보통 `/session:end`가 자동 호출. 실행자 분기: Codex 있으면 Codex가 박음 (본인 유영호 흐름), Codex 없으면 Claude가 mcp__notion 직접 호출 (인규/유현 fallback). | (인풋 없음) |
 
 ---
@@ -65,8 +65,8 @@
 - **`plan-auditor` SubAgent** — `_milestone-plan.md` 또는 Phase 정의 `.md` Write 직후 *자동 호출* (사전 검증 = γ 방식 흡수, Codex 외부 의존 → 내부 자산 전환).
 
 ### `/session:start` vs `/session:end` vs `/session:log`
-- **`/session:start`** — 세션 **시작**. git 안전 게이트 + CONTEXT 인지 + CHANGELOG 최근 변경 확인.
-- **`/session:end`** — **Phase 완료** 마감 절차. commit + PR + 박제 + work-pin ↔ CONTEXT 정합 게이트 + 다음 액션.
+- **`/session:start`** — 세션 **시작**. git 안전 게이트 + work-pin 좌표 인지 + CHANGELOG 최근 변경 확인.
+- **`/session:end`** — **Phase 완료** 마감 절차. commit + PR + 박제 + work-pin 갱신 + 다음 액션.
 - **`/session:log`** — 노션 **박제만**. 보통 `/session:end`가 호출. 본인이 직접 호출하는 경우는 Phase 외 큰 결정 박을 때.
 
 ### `/work:plan` vs Phase 파일
@@ -79,17 +79,16 @@
 
 ---
 
-## 트랙 B 이관 안내 (제거된 8 슬래시)
+## 제거된 8 슬래시 안내 (옛 학습 5 + 일지 3)
 
-옛 `/learn:*` (5) + `/journal:*` (3) = M3.5 새 하네스 v1에서 *제거*. 학습/일지 트랙 B 분리 결정 결과 (ADR-022, 5/20 의논).
+옛 `/learn:*` (5) + `/journal:*` (3) = M3.5 새 하네스 v1에서 *제거* (ADR-022, 5/20 의논). 그 슬래시들이 떠받치던 학습 추적 트랙 B 자체도 **ADR-025로 은퇴** (가치보다 비용 ↑ — 회고 자산이 거의 안 쌓임).
 
 **대체**:
 - 학습 풀이 → 대화 안에서 "이거 왜 이래?" / "이 코드 한 줄씩 설명해줘" / "이 ADR 왜 박혔어?" 같이 *자연어로* 물어보세요. Claude가 학부생 멘토링 톤으로 풀어줌
-- 회고 박음 → 본인 노션 "Dawnholder 학습 일지" DB에 *자유 양식* (학부생 회고체 + 면접 무기 누적). AI 인터뷰 형식은 그대로 가능 — 사용자가 "노션 회고 박을 거 인터뷰 도와줘" 요청 시 Claude가 질문 던지면 됨
-- Phase 회고 → `-DONE.md` "학습 일지 후보 키워드" 섹션 + 본인 노션
-- 옛 `learning-journal/{본인}/` 디렉토리는 *그대로 유지* (옛 자산 보존, 새 박제도 본인 자유)
+- 회고 박음 → 본인 노션에 *자유 양식* (학부생 회고체 + 면접 무기 누적). AI 인터뷰 형식은 그대로 가능 — 사용자가 "노션 회고 박을 거 인터뷰 도와줘" 요청 시 Claude가 질문 던지면 됨 (자율, 권유 강제 X)
+- 옛 `learning-journal/{본인}/` 디렉토리는 *그대로 유지* (각자 작업물 보존, 새 박제도 본인 자유)
 
-상세 매핑은 [`.claude/commands/_mapping.md`](../.claude/commands/_mapping.md) 참조.
+상세 매핑은 [`.claude/commands/_mapping.md`](../.claude/commands/_mapping.md) 참조 (트랙 B 이관 내용은 ADR-025 이후 *역사 기록*).
 
 ---
 
@@ -104,7 +103,7 @@ clone + Claude Code 설치 후 첫 호출
 ### 일상 작업 흐름
 ```
 새 세션 시작
-  └─ /session:start            (git 안전 게이트 + CONTEXT 인지 + CHANGELOG 최근 변경 확인)
+  └─ /session:start            (git 안전 게이트 + work-pin 인지 + CHANGELOG 최근 변경 확인)
         └─ 큰 작업이면 /work:plan <목표>   (plan-auditor 자동 호출)
               └─ Phase 작업 진행
                     └─ 막히면 Claude한테 자연어로 질문
@@ -114,8 +113,8 @@ clone + Claude Code 설치 후 첫 호출
                           ├─ 복잡    = work-pin + -DONE.md
                           └─ 대규모   = + 5단계 보고 MD/HTML
                           └─ 큰 PR 머지 전: /cross-review 권유 (옵션)
-                          └─ 학습 회고 권유: 본인 노션 트랙 B
-                          └─ 마감: /session:end  (commit + PR + /session:log 자동 호출 + CONTEXT 자동 갱신)
+                          └─ (선택) 학습 회고: 본인 노션 자유 양식 (트랙 B 은퇴, ADR-025)
+                          └─ 마감: /session:end  (commit + PR + /session:log 선택 + work-pin 갱신)
                           └─ (가끔) /harness-review : 하네스 자체 정합 재점검
 ```
 
@@ -124,12 +123,13 @@ clone + Claude Code 설치 후 첫 호출
 ## 추가 정보
 
 - 헌법(`CLAUDE.md`)의 "사용자 컨텍스트" 섹션에 작업용/세션/점검/셋업 짧은 안내 있음
-- `CONTEXT.md` 응축본 안에 마일스톤 컨텍스트 요약 있음
+- 세션 간 작업 좌표(현재 작업·다음 액션)는 work-pin(`.claude/state/current-pin.txt`)이 단일 보유 (ADR-025, 매 턴 자동 주입)
 - 새 슬래시 추가 시: (1) 알맞은 카테고리 폴더(`work/` `session/`) 또는 단독 진입점에 `.md` 생성, (2) 이 인덱스의 표에 추가, (3) 헌법(`CLAUDE.md`) 짧은 안내 갱신, (4) `.claude/CHANGELOG.md` 한 줄 박기, (5) `.claude/commands/_mapping.md` 옛 → 새 매핑 갱신 (필요 시)
 
 ---
 
 ## 갱신 이력
 
+- **2026-05-24** — ADR-025 정합 sweep. `/session:start` CONTEXT 통독 → work-pin 인지 / `/session:end` CONTEXT 자동 갱신 → work-pin 갱신 (CONTEXT 3종 은퇴). 트랙 B "이관 안내" → "제거된 8 슬래시 안내" (트랙 B 자체 은퇴 반영).
 - **2026-05-21** — M3.5 Phase 06 통째 재작성. 옛 16 카탈로그 → 새 10 카탈로그. 학습 5 + 일지 3 = 트랙 B 이관 안내 섹션 신설. 점검 카테고리 신설 (`/harness-review` + `/cross-review`). 비슷한 것끼리 차이 갱신 (SubAgent 자동 호출 vs 슬래시 수동 호출 + 하네스 정합 vs 코드 리뷰 분리 명시). ADR-022 정합.
 - 2026-05-14 — 협업 셋업 후속 갱신 (옛 15 → 16, `/session:end` 신설).

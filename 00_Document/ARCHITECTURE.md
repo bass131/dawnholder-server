@@ -100,9 +100,8 @@ project-root/
 ├── Dawnholder.slnx               .NET 솔루션 (02_Server + 04_ClientNet + 98_Shared)
 ├── global.json                   .NET SDK 핀
 ├── CLAUDE.md                     프로젝트 헌법 (단일 진실 공급원)
-├── CONTEXT.md                    세션 핸드오프 (응축, 200줄 한도)
-├── CONTEXT_History.md            CONTEXT 갱신 이력 (외부화)
 └── .claude/                      Harness (agents, commands, hooks, templates)
+                                  └ state/current-pin.txt = 세션 간 단일 핸드오프 (ADR-025, gitignore)
 ```
 
 ---

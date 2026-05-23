@@ -72,7 +72,7 @@ Claude Code 채팅창에:
 - 자기소개 (한글 이름) → 영문 식별자 + 역할 자동 결정
 - 환경 검증 8단계 (Git Bash, .NET, MSSQL, VS Code 통합 터미널 등)
 - 역할별 셋업 (백엔드 또는 Unity 클라)
-- 본인 작업 공간 초기화 (CONTEXT.md, learning-journal, 작업 좌표 핀)
+- 본인 작업 공간 초기화 (작업 좌표 핀 — `.claude/state/current-pin.txt`)
 - 본인 노션 페이지 안내 + 첫 작업 안내
 
 막히는 거 있으면 그 자리에서 Claude한테 물어보세요. 학부생 백지 가정으로 떠먹입니다.
@@ -82,13 +82,13 @@ Claude Code 채팅창에:
 ## 매일 작업 흐름
 
 ```
-세션 시작:   /session:start         (CONTEXT 인지 + 최근 변경 확인)
+세션 시작:   /session:start         (work-pin 좌표 인지 + 최근 변경 확인)
 작업:        Phase 진행, 막히면 Claude한테 자연어로 질문
 Phase 끝:    -DONE.md 박제 후
              /session:end          (commit + PR + 노션 박제 + 다음 액션)
 ```
 
-전체 슬래시 커맨드 10개 카탈로그: [`00_Document/commands-index.md`](00_Document/commands-index.md). 옛 학습 5 + 일지 3 = 본인 노션 트랙 B 이관 (5/20 의논 결과 — ADR-022).
+전체 슬래시 커맨드 10개 카탈로그: [`00_Document/commands-index.md`](00_Document/commands-index.md). 옛 학습 5 + 일지 3 슬래시는 M3.5에서 제거됨 (ADR-022) — 학습 추적 트랙 B 자체도 ADR-025로 은퇴 (회고는 대화/노션 자유 양식, 잔존 `learning-journal/{본인}/`은 보존).
 
 ---
 
@@ -97,7 +97,7 @@ Phase 끝:    -DONE.md 박제 후
 - **main 브랜치 직접 push 금지** — 팀원은 PR로만 머지 (팀장은 bypass 권한)
 - **본인 영역만 만지기** — [`.github/CODEOWNERS`](.github/CODEOWNERS) 참조. 백엔드는 팀장 단독, 클라는 인규/유현 공유, 학습 일지는 각자
 - **하네스 변경 인지** — 팀장이 헌법/ADR/하네스 갱신하면 [`.claude/CHANGELOG.md`](.claude/CHANGELOG.md)에 박힘. `/session:start`가 매일 자동 확인
-- **개인 자산은 git 무시** — `CONTEXT.md`, `CONTEXT_History.md`, `current-pin.txt`, `learning-journal/{본인}/`은 각자 보유
+- **개인 자산은 git 무시** — `current-pin.txt`(작업 좌표)는 각자 보유 (세션 간 단일 핸드오프, ADR-025)
 
 ---
 
@@ -109,7 +109,7 @@ Phase 끝:    -DONE.md 박제 후
 |---|---|---|
 | L1 — 규칙 | [`CLAUDE.md`](CLAUDE.md) + [`00_Document/policies/`](00_Document/policies/INDEX.md) | 헌법은 절대 원칙·라우팅·스택·등급·SubAgent 풀·Knowledge 시스템 (239줄, 2026-05-21 새 하네스 v1 — ADR-022). 운영 정책 8개(보고 양식 / 핀·박제 / 문서 임계 / 리뷰 Tier / 등급·위험 / 라우팅 / Knowledge 시스템)는 `policies/`로 외부화 |
 | L2 — 역할 | [`.claude/agents/`](.claude/agents/) | 서브에이전트 9개 = Worker 4 (server / shared / client / qa) + Reviewer 2 (reviewer—Tier 2 자동 / plan-auditor—Phase 정의 사전 검증) + Specialist 3 (unity-bridge / coordinator / knowledge-gc) — ADR-022 |
-| L3 — 단축키 | [`.claude/commands/`](.claude/commands/) | 슬래시 커맨드 10개 (작업 4 / 세션 3 / 점검 2 / 셋업 1). 옛 학습 5 + 일지 3은 트랙 B Notion 이관 |
+| L3 — 단축키 | [`.claude/commands/`](.claude/commands/) | 슬래시 커맨드 10개 (작업 4 / 세션 3 / 점검 2 / 셋업 1). 옛 학습 5 + 일지 3 슬래시는 M3.5에서 제거 (ADR-022), 학습 트랙 B는 ADR-025로 은퇴 |
 | L4 — 검증 | [`.claude/hooks/`](.claude/hooks/) | 자동 검증 훅 7개 (dangerous-cmd-guard / tdd-guard / circuit-breaker / risk-detector / shared-discipline-guard / pin-injector / phase-gate-validator) |
 | L5 — 캐시 | [`.claude/knowledge/`](.claude/knowledge/) | SubAgent 도메인별 학습 캐시 5 (cross-cutting / server / shared / client / qa) + GC (knowledge-gc agent) — 신설 (ADR-022) |
 
@@ -167,7 +167,7 @@ Phase 끝:    -DONE.md 박제 후
 | Git/PR 막힘 | 팀장(유영호)에게 슬랙 |
 | 빌드 에러 | 에러 메시지 그대로 Claude한테 보여주기 |
 | 헌법/ADR 결정 이유 궁금 | Claude한테 자연어로 질문 또는 `00_Document/ADR/INDEX.md` 참조 |
-| 본인 회고 박고 싶음 | 본인 노션 "Dawnholder 학습 일지" DB (트랙 B) — `learning-journal/{본인}/` 잔존분도 그대로 사용 가능 |
+| 본인 회고 박고 싶음 | 본인 노션에 자유 양식 (AI 인터뷰 도움 가능) — 잔존 `learning-journal/{본인}/`도 사용 OK. 학습 추적 트랙 B는 ADR-025로 은퇴 (자율 박제) |
 
 ---
 
