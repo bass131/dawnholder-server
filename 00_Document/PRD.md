@@ -67,8 +67,7 @@
 6. **마을 + 사냥터** — 공용 마을 1개, 사냥터 1~2개(오픈), 거점(인스턴스),
    맵 간 portal/handoff.
 
-**MVP에 의도적으로 뺀 것**: 채팅, 친구/우편/거래, 직업/스킬 트리, 퀘스트/NPC,
-업적/도감.
+**MVP에 의도적으로 뺀 것**: 채팅, 친구/우편/거래, **스킬 트리** (기본 직업 2종 = 전사/원거리는 캡스톤 데모용 흡수, M3.8), **퀘스트** (NPC 대화는 캡스톤 데모용 단순 hardcoded 흡수, M3.8 — 본 마감 후 M6 길드 진입 시 정식화 가능), 업적/도감.
 
 ---
 
@@ -111,9 +110,15 @@
 |----|------|-------------------|
 | **M1** | Foundation | 서버 부팅, TCP 리스너, 한 명 접속/끊김 ✅ 완료 |
 | **M2** | First Connection | 클라 1명 접속, 캐릭터 서버 기준 이동 (예측 + 검증) ✅ 완료 |
-| **M2.5** | Hardening | Trust-boundary fail-closed + Session lifecycle race 제거 (γ 감사 후속, Phase 09/10) |
-| **M3** | Multiplayer & Demo Stage | 두 명 같은 맵 broadcast + 단순 전투 시연(적/보스 placeholder, 단일 맵 3-zone) + Stage Clear UI |
-| **M4** | Combat & Map Transition | 진짜 4맵 분리(마을/사냥터/보스/종료) + 정밀 hitbox + lag compensation + portal handoff + 몬스터/보스 정식 |
+| **M2.5** | Hardening | Trust-boundary fail-closed + Session lifecycle race 제거 (γ 감사 후속, Phase 09/10) ✅ 완료 |
+| **M3** | Multiplayer & Demo Stage | 두 명 같은 맵 broadcast + 단순 전투 시연(적/보스 placeholder, 단일 맵 3-zone) + Stage Clear UI ✅ 완료 |
+| **M3.5** | Harness v1 | KPI 트랙 분리 + 정량 4등급 + SubAgent 풀 9 + Hook 8 + Knowledge 5 도메인 + 슬래시 10 (옛 17→10) ✅ 완료 |
+| **M3.6** | 하네스 + 코드 점검 | 정합 감사 + Hook hardening bundle + 서버/클라 전수조사 (false-promise 12건 발본) ✅ 완료 |
+| **M3.7** | Sync gate + cadence | `/session:start` drift 발견 게이트 + false-promise 주기적 감사 cadence 정책화 (ADR-023/024) ✅ 완료 |
+| **M3.8** | Capstone-1 Demo Infrastructure | 메인 → 캐릭터 선택(전사/원거리) → 마을(NPC 대화) → 전투 → 엔딩 끊김 없는 데모 flow (시연용 한정, 본 마감 후 일부 제거 가능) |
+| **M4.1** | Combat Precision | lag compensation 200ms + AABB hitbox + `PlayerStats` (class 분기) + `Formulas.cs` 데미지 공식 분리 |
+| **M4.2** | Map Transition | 진짜 4맵 분리 (마을/사냥터/보스/종료) + portal handoff + 맵 간 entity migration |
+| **M4.3** | AI + Polish | 정식 몬스터 AI + 보스 패턴 정밀화 + 데모 영상 (캡스톤 1 후 7~10월) |
 | **M5** | Persistence | DB 연결, 캐릭터/인벤토리 영속화, 재접속 복원 |
 | **M6** | Guild Foundation | 길드 생성/가입/탈퇴, 길드 창고 (동시성) |
 | **M7** | Guild Hideout | 길드 거점 인스턴스, 시설 1~2종 |
@@ -155,3 +160,4 @@
 | 2026-05-11 | 230줄 → 응축본 재작성 (위험/캡스톤/MVP 디테일 압축, 220줄 임계 대응) |
 | 2026-05-18 | 캡스톤 1 발표 일자 확정 (6/10) + M2 완료 + 마일스톤 표에 M2.5 (Hardening) 행 추가 (γ 감사 후속) |
 | 2026-05-18 | 5/20 교수 중간 면담 응급 데모 가닥. M3 = Multiplayer & Demo Stage (broadcast + 단순 전투 시연, 단일 맵 3-zone 트릭) / M4 = Combat & Map Transition (진짜 4맵 + 정밀 전투)로 분리. M5(DB)는 면담 후 1순위 작업. |
+| 2026-05-23 | 캡스톤 1 발표 데모 인프라 도입 (M3.8) — 마일스톤 표 세분화 (M3.5/M3.6/M3.7/M3.8 신설 + M4 → M4.1/M4.2/M4.3 분할) + MVP 제외 항목 정정 (직업/스킬 트리 → 캡스톤 데모용 전사/원거리 흡수, 퀘스트/NPC → 캡스톤 데모용 단순 hardcoded 흡수). 본 마감 후 일부 제거 가능 (NPC hardcoded → M6 길드 진입 시 정식화). [H] CHANGELOG entry 동반. |

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Listener Race Window 사고 + 패킷 처리 서순 분석 (M3.8 Phase 05 5-C)</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; line-height: 1.7; color: #222; }
+  h1 { border-bottom: 3px solid #2563eb; padding-bottom: 0.5rem; }
+  h2 { border-left: 5px solid #2563eb; padding-left: 0.8rem; margin-top: 2.5rem; color: #1e3a8a; }
+  h3 { color: #1e40af; margin-top: 1.8rem; }
+  code, pre { font-family: "Cascadia Code", Consolas, "Courier New", monospace; }
+  code { background: #f1f5f9; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.92em; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 1rem 1.2rem; border-radius: 6px; overflow-x: auto; font-size: 0.88em; line-height: 1.5; }
+  pre code { background: transparent; color: inherit; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #cbd5e1; padding: 0.6rem 0.9rem; text-align: left; vertical-align: top; }
+  th { background: #e0e7ff; color: #1e3a8a; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .meta { background: #f1f5f9; padding: 0.8rem 1.2rem; border-left: 4px solid #64748b; margin-bottom: 1.5rem; font-size: 0.94em; }
+  .warn { background: #fef3c7; padding: 0.9rem 1.2rem; border-left: 4px solid #f59e0b; border-radius: 4px; margin: 1rem 0; }
+  .good { background: #dcfce7; padding: 0.9rem 1.2rem; border-left: 4px solid #16a34a; border-radius: 4px; margin: 1rem 0; }
+  .bad  { background: #fee2e2; padding: 0.9rem 1.2rem; border-left: 4px solid #dc2626; border-radius: 4px; margin: 1rem 0; }
+  .quote { background: #eef2ff; padding: 0.9rem 1.2rem; border-left: 4px solid #6366f1; font-style: italic; margin: 1rem 0; }
+  .ascii { font-family: "Cascadia Code", Consolas, monospace; background: #f8fafc; padding: 1rem; border-radius: 6px; white-space: pre; overflow-x: auto; font-size: 0.85em; line-height: 1.4; border: 1px solid #cbd5e1; }
+  .tag { display: inline-block; background: #e0e7ff; color: #1e3a8a; padding: 0.15rem 0.6rem; border-radius: 12px; font-size: 0.8em; margin-right: 0.4rem; }
+</style>
+</head>
+<body>
+
+<h1>Listener Race Window 사고 + 패킷 처리 서순 분석</h1>
+
+<div class="meta">
+  <span class="tag">M3.8 Phase 05 5-C</span>
+  <span class="tag">발본일: 2026-05-23</span>
+  <span class="tag">등급: 보통</span>
+  <span class="tag">false-promise 22번째 변종</span><br>
+  <strong>왜 본 문서가 있나</strong>: Hamachi 시연 검증 도중 발본한 서버 race condition 사고 + 본인 의심 "패킷이 Queue에 제대로 박히는 거 맞나?" 분석을 박제. 캡스톤 평가 자산 + 면접 결정타 소재.
+</div>
+
+<h2>1. 사고 발견 경위</h2>
+
+<p>M3.8 Phase 05 마감 의례 직전, <strong>Hamachi 가상 LAN 시연 검증</strong> 단계에서 본 머신 + 서브 노트북 2 인스턴스 통신 점검 도중 서버 콘솔에 다음 박힘:</p>
+
+<pre><code>[GameSession] OnDisconnected from 127.0.0.1:64340
+[Map] Session cleanup (entityId=-1, removed=False)
+Unhandled exception. System.ObjectDisposedException: Cannot access a disposed object.
+Object name: 'System.Net.Sockets.Socket'.
+   at System.Net.Sockets.Socket.get_RemoteEndPoint()
+   at Dawnholder.Server.Network.Listener.OnAcceptCompleted(...) line 83</code></pre>
+
+<div class="warn">
+<strong>흥미로운 관찰</strong>: Unhandled exception이 박혔는데 서버가 <em>즉시 죽지 않음</em>. <code>[Tick] #140~#180</code> 계속 흐름. 이게 더 위험한 패턴이에요 — <strong>IOCP worker thread가 1개씩 점진 소모</strong>. <code>Listener.Init</code>에서 <code>_register=10</code> 박힌 worker가 모두 소모되면 신규 accept 거부 → 서버 효과적 사망. 시연 중 조용히 망가짐.
+</div>
+
+<h2>2. Race Condition (경쟁 상태)이 뭔가요?</h2>
+
+<p>두 개 이상의 <strong>thread(흐름)</strong>가 <em>같은 자원</em>을 동시에 박을 때, <strong>누가 먼저 박는지에 따라 결과가 달라지는</strong> 상황이에요. 본 사고의 자원 = <code>args.AcceptSocket</code>이라는 TCP socket 객체.</p>
+
+<ul>
+  <li><strong>Thread A</strong> — 서버 <code>OnAcceptCompleted</code> 콜백 (accept 통과 후 socket 박는 흐름)</li>
+  <li><strong>Thread B</strong> — .NET 내부 socket lifecycle 관리 thread (클라이언트가 close 박으면 서버 측 socket을 dispose 박는 흐름)</li>
+</ul>
+
+<p>두 thread가 박는 <strong>타이밍</strong>에 따라 사고가 박힘.</p>
+
+<h2>3. 본 사고의 시간순 시나리오</h2>
+
+<table>
+  <tr><th>시간</th><th>누가</th><th>뭘 박음</th><th>socket 상태</th></tr>
+  <tr><td>T+0</td><td>서버</td><td>accept 통과 → <code>args.AcceptSocket</code> 박힘</td><td>alive</td></tr>
+  <tr><td>T+1</td><td>서버</td><td><code>session = m_SessionFactory.Invoke()</code></td><td>alive</td></tr>
+  <tr><td>T+2</td><td>서버</td><td><code>session.Start(args.AcceptSocket)</code> — IO 등록</td><td>alive</td></tr>
+  <tr><td>T+3</td><td>클라이언트</td><td><code>close()</code> 박음 (ConnectionProbe 패턴)</td><td>→ FIN 패킷 전송</td></tr>
+  <tr><td>T+4</td><td>.NET 내부</td><td>서버 측 <code>args.AcceptSocket</code> dispose 박힘 ★</td><td><strong>disposed!</strong></td></tr>
+  <tr><td>T+5</td><td>서버</td><td><code>args.AcceptSocket.RemoteEndPoint</code> 박으려 함</td><td>💥 <code>ObjectDisposedException</code></td></tr>
+</table>
+
+<p><strong>T+3 ~ T+4의 짧은 창</strong>이 race window. 평소엔 클라이언트가 connect → handshake → 한참 후 close 박았기 때문에 T+5 시점엔 socket이 alive였어요. 그런데 5-B에서 박은 <strong><code>ConnectionProbe.TryConnect</code></strong>는 <em>connect 통과 즉시 close</em> 박는 패턴 → race window가 매번 노출 → 사고 표면화.</p>
+
+<h2>4. 왜 옛에 안 박혔나? (M2.5 봉합 영역과 본 사고의 차이)</h2>
+
+<p>M2.5 Phase 10에서 봉합한 race는 <strong>GameSession 내부</strong> — session이 박힌 후의 lifecycle race (connect job vs disconnect handler). 본 사고는 <strong>Listener accept callback의 race</strong> — session 박기 <em>전</em>의 race라 옛 봉합 영역 밖.</p>
+
+<table>
+  <tr><th></th><th>M2.5 Phase 10 봉합</th><th>본 사고 (M3.8 Phase 05 5-C)</th></tr>
+  <tr><td>위치</td><td>GameSession 내부</td><td>Listener accept callback</td></tr>
+  <tr><td>race 자원</td><td><code>_closing</code> 플래그 / map job 순서</td><td><code>AcceptSocket</code> lifecycle</td></tr>
+  <tr><td>봉합 패턴</td><td><code>Interlocked.Exchange</code> + owner reference cleanup</td><td><code>try-catch</code> + early skip + <code>RegisterAccept</code></td></tr>
+  <tr><td>표면화 트리거</td><td>γ 감사 (Codex β 사전 검증)</td><td>Hamachi 시연 검증 ConnectionProbe 패턴</td></tr>
+</table>
+
+<div class="quote">
+"차원이 다른 race"는 박혀있을 수 있고, 한 차원 봉합이 다른 차원 안전을 보장 X. 시스템 외곽까지 audit 박는 게 정합 — 본 사고가 그 교훈 실증.
+</div>
+
+<h2>5. 봉합 패턴 (try-catch + early skip + fail-closed)</h2>
+
+<p>race window 박는 거 자체는 <em>TCP 본성</em>이라 피할 수 없어요. 하지만 socket이 disposed면 <strong>예측 가능한 예외</strong>(<code>ObjectDisposedException</code>)가 박혀요. 그러니까:</p>
+
+<ul>
+  <li><strong>예외 잡고 정상 처리</strong> = race window 박혀도 서버는 안 죽음</li>
+  <li><strong>"fail-closed" 패턴</strong> (헌법 #3 Trust Boundary 정합) = 사고 박히면 본 connection 포기 + 다음 accept 박는다 = 서버 process 보호</li>
+</ul>
+
+<h3>봉합 전 (사고 코드)</h3>
+<pre><code>void OnAcceptCompleted(object? sender, SocketAsyncEventArgs args)
+{
+    if (args.SocketError == SocketError.Success)
+    {
+        Session session = m_SessionFactory!.Invoke();
+        session.Start(args.AcceptSocket!);
+        session.OnConnected(args.AcceptSocket!.RemoteEndPoint!); // ← 💥 race window
+    }
+    else { Console.WriteLine(args.SocketError.ToString()); }
+    RegisterAccept(args);
+}</code></pre>
+
+<h3>봉합 후 (race window 안전)</h3>
+<pre><code>void OnAcceptCompleted(object? sender, SocketAsyncEventArgs args)
+{
+    if (args.SocketError == SocketError.Success)
+    {
+        Socket acceptedSocket = args.AcceptSocket!;
+        EndPoint? remote = null;
+        try { remote = acceptedSocket.RemoteEndPoint; }
+        catch (ObjectDisposedException)
+        {
+            // race window — 클라가 accept 직후 close. session 박지 않고 skip.
+        }
+
+        if (remote != null)
+        {
+            Session session = m_SessionFactory!.Invoke();
+            session.Start(acceptedSocket);
+            session.OnConnected(remote);
+        }
+        else
+        {
+            try { acceptedSocket.Close(); } catch { /* swallow */ }
+        }
+    }
+    else { Console.WriteLine(args.SocketError.ToString()); }
+
+    RegisterAccept(args); // race 분기에서도 다음 accept 의무
+}</code></pre>
+
+<h2>6. 비유로 이해하기</h2>
+
+<div class="quote">
+문지기(<code>Listener</code>)가 입장객(<code>accept</code>된 socket)을 안내처(<code>session</code>)로 데려가는 중인데, 입장객이 <em>안내처에 도착하기 전에 갑자기 사라짐</em> (close). 문지기가 "이 입장객 이름 뭐였지?" (<code>RemoteEndPoint</code>) 박으려고 돌아봤는데 이미 사라진 상태 → 문지기가 충격 받고 쓰러짐 (process 죽음).<br><br>
+<strong>봉합</strong> = 문지기가 "어, 사라졌네? 그럼 다음 입장객 받자" 박는 거 (try-catch + 다음 accept).
+</div>
+
+<h2>7. 본인 의심 답변 — 패킷이 Queue에 제대로 박히는가?</h2>
+
+<p>본인 의심: <em>"애초에 패킷이 들어와서 처리되는 서순 보장되게 Queue에 제대로 들어가는거 맞나?"</em></p>
+
+<div class="good">
+<strong>결론 먼저</strong>: Queue 자체는 <em>제대로 박혀 있어요</em>. 진짜 race는 <em>Queue 진입 시점</em>이 아니라 <strong>socket lifecycle 외곽</strong>에 박혀있고, 그게 바로 본 Listener 사고. 본인 의심이 핵심을 가리켰지만 <strong>위치가 한 단계 밖</strong>이에요.
+</div>
+
+<h3>패킷 처리 3-layer 흐름</h3>
+
+<div class="ascii">┌─ Layer 1: socket worker (IOCP) thread ────────────────────────┐
+│  TCP byte 수신 → 프레이밍 통과 → OnRecvPacket(buffer) 호출    │
+│  ★ TCP 본성: 같은 connection의 byte는 *순서 보장* ★            │
+└────────────────────────────────────────────────────────────────┘
+                          ↓ (같은 thread, sync 호출)
+┌─ Layer 2: HandlerRegistry dispatch ───────────────────────────┐
+│  PacketID 추출 → IPacketHandler.Handle() → session 캡슐화      │
+│  메서드 (SubmitMoveIntent / SubmitAttack 등) 호출              │
+│  ★ decode + 검증만, mutation 없음 ★                            │
+└────────────────────────────────────────────────────────────────┘
+                          ↓ (EnqueueJob — thread-safe queue)
+┌─ Layer 3: GameMap tick thread (단일!) ─────────────────────────┐
+│  50ms마다 (20 TPS) Queue 풀어서 FIFO 처리                      │
+│  ★ 한 맵 = 한 thread → lock-free + 순서 보장 ★                  │
+└────────────────────────────────────────────────────────────────┘</div>
+
+<h3>케이스별 보장 정합 (3가지)</h3>
+
+<table>
+  <tr><th>케이스</th><th>보장</th><th>메커니즘</th></tr>
+  <tr>
+    <td><strong>같은 클라의 연속 패킷</strong> A1 → A2 → A3</td>
+    <td>✅ 보장</td>
+    <td>TCP 순서 + 같은 IOCP thread sync 처리 + Queue FIFO. A3가 A1보다 먼저 박힐 일 X</td>
+  </tr>
+  <tr>
+    <td><strong>다른 클라 간 패킷</strong> A vs B</td>
+    <td>⚠️ 부분 보장</td>
+    <td>물리 도착 순서 ≠ Queue 진입 순서 가능 (각 클라마다 다른 IOCP thread). 다만 <strong>20 TPS tick window 안에 들어오면 같은 tick에서 처리</strong> → 게임 본질 영향 X (이동 = PendingInputX 박는 거라 순서 의존 X). 진짜 순서 중요한 거 = <strong>전투</strong> (먼저 친 사람 우선) → M4+ lag compensation으로 별도 봉합 예정</td>
+  </tr>
+  <tr>
+    <td><strong>session 내부 state</strong> (<code>_handshakeCompleted</code>/<code>_entityId</code>)</td>
+    <td>⚠️ 부분 보장</td>
+    <td><code>bool</code>은 atomic이라 read tear X. 다만 <em>visibility</em>는 <code>Volatile.Read</code>/<code>Interlocked</code> 박은 곳만 보장. <code>_closing</code>은 박음, <code>_handshakeCompleted</code>는 안 박음. M2.5에서 일부 봉합, 잔여 race 가능성은 별 시점 audit</td>
+  </tr>
+</table>
+
+<h3>진짜 잠재 race 영역 3개</h3>
+
+<ol>
+  <li><strong>본 Listener accept callback race</strong> — 본 commit으로 봉합 ✅</li>
+  <li><strong>다른 클라 간 도착 순서</strong> — 게임 본질 영향 X, M4+ lag compensation 예정</li>
+  <li><strong>session state visibility</strong> — bool 박힌 거는 안전, 별 시점 audit 박을 가닥</li>
+</ol>
+
+<h2>8. 면접 자산화 정신</h2>
+
+<div class="quote">
+"M2.5에서 session 내부 race는 봉합했는데, 캡스톤 1 시연 검증 중 <strong>Listener accept callback의 다른 차원의 race</strong>를 발본했고, <code>try-catch + early skip + fail-closed</code> 패턴(헌법 #3 Trust Boundary 정합)으로 봉합했다."<br><br>
+이게 <em>경험</em> 있는 백엔드 신예의 정통 답변. 한국 게임 회사 백엔드 면접 결정타 소재 = <strong>발견 + 봉합 사이클 그 자체</strong>의 가치 박제.
+</div>
+
+<h2>9. false-promise cadence 박제 (ADR-024 정합)</h2>
+
+<p>본 사고 = <strong>M3.8 누적 22번째 false-promise 변종</strong> (옛 21건 + 본 사고 1건). ADR-024 박힌 cadence 정합 — 마일스톤 마감 -DONE.md "false-promise 점검 결과" 섹션에 박을 가닥.</p>
+
+<p><strong>본 변종의 특징</strong>: 옛 변종(폰트 false-promise, PretendardStd 영문만 박힌 거 등)은 <em>약속 vs 실재</em> 불일치였는데, 본 사고는 <em>한 차원 봉합이 다른 차원 안전 보장 X</em>라는 더 깊은 패턴. ★★★ 학습 자산.</p>
+
+<h2>10. 본 학습이 박은 통찰 한 줄</h2>
+
+<div class="quote" style="text-align: center; font-size: 1.1em;">
+"한 차원 race 봉합은 다른 차원 race를 안전 보장 X. 시스템 <strong>외곽까지</strong> audit 박는 게 정합."
+</div>
+
+<hr style="margin-top: 3rem;">
+<p style="text-align: center; color: #64748b; font-size: 0.85em;">
+M3.8 Phase 05 5-C 후속 학습 자산 · 2026-05-23 · Dawnholder Project (유영호)
+</p>
+
+</body>
+</html>

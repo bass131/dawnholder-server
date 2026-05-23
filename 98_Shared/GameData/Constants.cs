@@ -28,10 +28,12 @@ public static class Constants
     public const float MoveSpeed = 5.0f;
 
     /// <summary>
-    /// S_Snapshot 브로드캐스트 주기 (tick 단위). 5 tick = 250ms.
-    /// 너무 잦으면 대역폭 폭증, 너무 띄엄띄엄이면 lag 체감 끔찍. Phase 06+에서 튜닝 가능.
+    /// S_Snapshot 브로드캐스트 주기 (tick 단위). 2 tick = 100ms (10Hz).
+    /// 옛 5 tick (250ms, 4Hz)은 시연 보간 어색 (buffer 매번 50ms 빔 → last-known 정지 패턴).
+    /// M3.8 Phase 05 시연 검증 시점에 2로 낮춤 (4배 부드러움 ↑, N≤4 시연 대역폭 무시).
+    /// 본 마감(11/19) 클라우드 환경 전환 시 N+ 동시접속 대역폭 재검토 필요 (M5+).
     /// </summary>
-    public const int SnapshotTickInterval = 5;
+    public const int SnapshotTickInterval = 2;
 
     /// <summary>
     /// 단일 패킷 frame 최대 크기 (byte). Phase 09 (M2.5 Trust-boundary) 도입.

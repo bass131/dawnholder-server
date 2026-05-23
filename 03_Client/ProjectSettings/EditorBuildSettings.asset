@@ -9,17 +9,17 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 602e7b261603f864f86b761e6f8a6a47
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+    path: Assets/Scenes/CharacterSelect.unity
+    guid: acd12d6031949984d920a49b0bf3a198
   - enabled: 1
     path: Assets/Scenes/Gameplay.unity
     guid: 85c5ff57d16574348b47ba3e9483cac9
   - enabled: 1
-    path: Assets/Scenes/GameplayTest.unity
-    guid: f71fe309a13038943836a4bbc99f19f1
-  - enabled: 1
     path: Assets/Scenes/UI.unity
     guid: 3725ddffe81ab7542b30b3ffd095db69
+  - enabled: 1
+    path: Assets/Scenes/Ending.unity
+    guid: d1fa6956af94cd4458ff62392a6beb76
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

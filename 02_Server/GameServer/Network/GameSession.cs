@@ -43,6 +43,29 @@ public class GameSession : PacketSession
     // first-packet 강제 패턴 = isolation 보장 (다른 패킷 받기 전 version 검증).
     bool _handshakeCompleted;
 
+    // M3.8 Phase 03 (캐릭터 선택 — 헌법 #1 Server Authority):
+    // C_CharacterSelect 수신 후 서버가 CharacterClass → PlayerStats 매핑.
+    // null = 아직 선택 안 함 (handshake 통과 후, 선택 전 상태).
+    // CharacterSelectHandler가 HasSelectedClass 확인 후 SetCharacterClass 호출.
+    PlayerStats? _stats;
+
+    // CharacterSelectHandler가 중복 선택 차단에 사용.
+    // protected internal: 같은 어셈블리(CharacterSelectHandler) + 서브클래스(테스트 TestGameSession) 양쪽 접근.
+    // CompleteHandshakeAndEnter/RejectHandshake 패턴 정합.
+    protected internal bool HasSelectedClass => _stats != null;
+
+    // M3.8 Phase 03 (헌법 #1): 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑.
+    // 범위 검증은 CharacterSelectHandler에서 이미 완료 (0 또는 1만 도달).
+    // 여기서는 매핑만 — 두 번 검증 불필요 (CLAUDE.md "handler = 검증, session = state" 정합).
+    internal void SetCharacterClass(byte characterClass)
+    {
+        _stats = characterClass == (byte)CharacterClass.Warrior
+            ? PlayerStats.Warrior()
+            : PlayerStats.Ranger();
+        Console.WriteLine(
+            $"[GameSession] CharacterClass set to {_stats.Class} — Hp:{_stats.Hp} Atk:{_stats.Attack} Def:{_stats.Defense} Spd:{_stats.MoveSpeed}");
+    }
+
     // Phase 04: rate-limit 골격 (헌법 #3). 1초 fixed 윈도우 (sliding 아님 — 학습 노트).
     // Phase 05 조정 (2026-05-11):
     //   - 임계값 100 → 500. 240Hz 모니터 사용자의 정상 wire rate가 ~300-500/s라 100은 너무 빡빡.
@@ -358,13 +381,26 @@ public class GameSession : PacketSession
     }
 
     public override void OnSend(int numOfBytes)
-        => Console.WriteLine($"[GameSession] OnSend {numOfBytes} bytes");
+    {
+        // M3.8 Phase 05 시연 검증 시점 봉합: 본 로그는 N=2 환경에서 40+/sec 박혀
+        // 콘솔 spam → 누적 결함 처럼 보임 (실제는 정상 빈도). 디버그 필요 시 verbose
+        // 게이트 또는 M5+ Serilog 도입 시 Trace 레벨에서. 봉합 결정 서버 SubAgent
+        // 진단 1순위 정합 (호출 빈도 자체는 정상, 로그 verbose만 결함).
+    }
 
     public override void OnRecvPacket(ArraySegment<byte> buffer)
     {
         ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
         PacketID id = (PacketID)packetId;
+
+        // M3.8 Phase 05: 패킷 종류 추적 로그. 단 spam 패킷 (C_MoveIntent 20Hz × N 클라 / C_Ping 자주)은
+        // 제외 — OnSend 시각 spam 결함 패턴 반복 차단. Handshake/Attack/Unknown 등 드문 패킷만 박음
+        // (디버그 가치 ↑, 콘솔 가독성 유지). M5+ Serilog 도입 시 Trace 레벨에서 모든 패킷 박을 예정.
+        if (id != PacketID.C_MoveIntent && id != PacketID.C_Ping)
+        {
+            Console.WriteLine($"[GameSession] OnRecv {id} ({buffer.Count} bytes)");
+        }
 
         // M3 Phase 02 (헌법 #2 봉합): first-packet 강제. handshake 통과 전엔 다른 dispatch X.
         // **M3 Phase 03**: dispatch는 HandlerRegistry로 위임하되 게이트는 session 책임 (lifecycle 캡슐화).

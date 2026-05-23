@@ -50,9 +50,14 @@ namespace Dawnholder.Client.Input
         // PlayerInput component의 Behavior=Send Messages 모드에서 이 메서드명이 자동 wire.
         // value.isPressed == true: 키 down (에지), false: 키 up (무시).
         // 송신 cycle 전에 다시 누르면 같은 에지로 합쳐짐 (정상 — cadence별 1 점프).
+        //
+        // M3.8 Phase 05 봉합: 공중 점프 시도 차단 — 점프 입력 *시점* OnGround 검사.
+        // 옛 봉합(cadence 게이트)은 Predict 후 OnGround=false 박혀서 *지면 점프*도 차단됨.
+        // 본 위치는 *점프 시도 시점* OnGround = 정확 (착지 직후 재점프 OK, 공중 점프 차단).
+        // 헌법 #1 영향 X — 서버가 어차피 권위적으로 재검증, 본 게이트는 UX + 송신 절감용.
         void OnJump(InputValue value)
         {
-            if (value.isPressed) _jumpEdgeThisTick = true;
+            if (value.isPressed && _predictor.OnGround) _jumpEdgeThisTick = true;
         }
 
         // M3 Phase 08c: "Attack" 액션 콜백 (Space 또는 좌클릭 — InputSystem_Actions.inputactions 박힘).
@@ -106,6 +111,8 @@ namespace Dawnholder.Client.Input
             if (session == null) return;
 
             // 50ms cadence: 송신 + InputHistory push + jumpEdge reset.
+            // 점프 게이트는 OnJump에서 박힘 (입력 시점 OnGround 검사 = 정확).
+            // cadence 시점에 다시 검사하면 Predict 후 OnGround=false 박혀서 지면 점프도 차단됨 (옛 결함).
             bool jumpEdge = _jumpEdgeThisTick;
             _jumpEdgeThisTick = false; // 송신 후 reset — 다음 cycle은 새 OnJump 캡처.
 
