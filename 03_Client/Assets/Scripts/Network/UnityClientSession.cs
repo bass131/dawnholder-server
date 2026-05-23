@@ -18,6 +18,8 @@ namespace Dawnholder.Client.Network
     /// PacketSession 상속으로 교체. framing 자동, OnRecvPacket은 *완전한 한 패킷*.
     /// **Phase 03 변경**: S_EnterMap 핸들러 추가 — 서버 결정 spawn 좌표 적용.
     /// **Phase 04 변경**: S_Snapshot 핸들러 + Instance singleton (LocalPlayerController가 Send용으로 참조).
+    /// **M4.1 Phase 02 변경**: OnHandshakeOkEvent 추가 — NetworkBootstrap이 event 기반으로
+    ///   C_CharacterSelect 송신 (race 봉합, 옵션 A).
     ///
     /// 콜백 모두 socket 워커 스레드 → Unity API는 main-thread queue 경유.
     /// </summary>
@@ -33,6 +35,11 @@ namespace Dawnholder.Client.Network
         // 본 플래그는 main thread에서 HandleHandshakeResult가 박음(dispatcher 큐 안) → 같은 thread의
         // SendIntent에서 visibility 보장. ok 회신 도착 전 송신은 drop (헌법 #2 first-packet 정합).
         public bool HandshakeOk { get; private set; }
+
+        // M4.1 Phase 02 5-B: handshake OK event. NetworkBootstrap이 등록 후 S_HandshakeResult(ok=true)
+        // 수신 시 main thread에서 호출됨. C_CharacterSelect 송신 race 봉합 핵심.
+        // event 패턴: 구독자 없어도 null check로 안전 (NetworkBootstrap 미박힘 씬 단독 Play 방어).
+        public event Action OnHandshakeOkEvent;
 
         // M3 Phase 05: 본인 entityId. HandleEnterMap에서 박음 (main thread).
         // HandleSnapshot이 entityId 비교로 본인/타인 분기. null이면 (EnterMap 도착 전 Snapshot race)
@@ -174,8 +181,11 @@ namespace Dawnholder.Client.Network
         }
 
         // M3 Phase 02 (헌법 #2 봉합): 서버 handshake 결과 처리.
-        // ok=true → 로그만 (서버가 곧 S_EnterMap 보냄). ok=false → 에러 로그 + 명시적 Disconnect
-        // (서버가 이미 끊을 거지만 클라 측 cleanup 일관성).
+        // ok=true → HandshakeOk 박음 + OnHandshakeOkEvent 호출 (M4.1 Phase 02 추가).
+        // ok=false → 에러 로그 + 명시적 Disconnect (서버가 이미 끊을 거지만 클라 측 cleanup 일관성).
+        //
+        // M4.1 Phase 02 5-B: OnHandshakeOkEvent 발화 시점 = HandshakeOk = true 박힌 직후 (같은 main thread).
+        // NetworkBootstrap.OnHandshakeOk()가 이 이벤트를 받아 C_CharacterSelect 송신.
         void HandleHandshakeResult(ArraySegment<byte> buffer)
         {
             S_HandshakeResult pkt = new S_HandshakeResult();
@@ -192,6 +202,10 @@ namespace Dawnholder.Client.Network
                     // main thread에서 HandshakeOk 박음 — 같은 thread의 SendIntent visibility 보장.
                     HandshakeOk = true;
                     Debug.Log($"[Unity] Handshake OK (server version={sv})");
+
+                    // M4.1 Phase 02 5-B: event 기반 C_CharacterSelect 송신 트리거.
+                    // 구독자(NetworkBootstrap) 없는 씬 단독 Play에서도 null이라 안전.
+                    OnHandshakeOkEvent?.Invoke();
                 }
                 else
                 {
