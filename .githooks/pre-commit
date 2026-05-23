@@ -57,23 +57,50 @@ if git diff --cached --name-only 2>/dev/null | grep -qF "$PROJ_SETTINGS"; then
         exit 1
       fi
     else
-      echo ""
-      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      echo "⚠️  pre-commit 차단 — ProjectSettings.asset cloud + 다른 변경 함께 stage"
-      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      echo ""
-      echo "cloud 라인 (자동 정리 대상 — commit하면 상대 머신 덮어씀):"
-      echo "$CLOUD_LINE_CHANGES" | head -4
-      echo ""
-      echo "cloud 외 변경 (의도된 commit 가능성 — 본인이 분리해서 stage 필요):"
-      echo "$OTHER_CHANGES" | head -10
-      echo ""
-      echo "해결:"
-      echo "  git reset HEAD -- $PROJ_SETTINGS"
-      echo "  git add -p $PROJ_SETTINGS    # cloud 외 hunk만 'y'로 선택"
-      echo "  git commit ..."
-      echo ""
-      exit 1
+      # 새 동작 (2026-05-23 봉합): cloud + 다른 변경 함께 stage → cloud hunk만 자동 unstage
+      # + 다른 변경은 stage 유지 + commit 진행. 본인 손 `git add -p` 부담 X (학부생 워크플로 정합).
+      #
+      # 옛 동작 = 차단 + 분리 안내 (본인 손 의무). 사용자가 명시 봉합 요청 (2026-05-23 M3.8 Phase 05).
+      # 안전 = cloud 라인 패턴 매칭으로 *알려진 cloud 라인은 unstage*. 잔여 위험 = 알려지지 않은
+      # 새 cloud 라인은 commit 박힐 수 있음 (각자 머신 식별 덮어쓸 가능성) → 발견 시 패턴 추가 의무.
+      echo "🛡️  ProjectSettings.asset cloud + 다른 변경 함께 stage 감지"
+      echo "    → cloud hunk만 자동 unstage, 다른 변경은 commit 진행 (각자 Cloud 정책 정합)"
+
+      CLOUD_HUNKS=$(git diff --cached -- "$PROJ_SETTINGS" 2>/dev/null | awk '
+        BEGIN { in_header=1; hunk=""; has_cloud=0 }
+        /^diff --git/ { print; in_header=1; next }
+        in_header && /^(index|---|\+\+\+)/ { print; next }
+        /^@@/ {
+          if (hunk != "" && has_cloud) printf "%s", hunk
+          hunk = $0 "\n"
+          has_cloud = 0
+          in_header = 0
+          next
+        }
+        in_header { print; next }
+        {
+          hunk = hunk $0 "\n"
+          if (match($0, /^[+-][ \t]*(cloudProjectId|organizationId|projectName|cloudServicesEnabled|Build|Game Performance|Legacy Analytics|Purchasing|UDP|Unity Ads):/)) {
+            has_cloud = 1
+          }
+        }
+        END { if (hunk != "" && has_cloud) printf "%s", hunk }
+      ')
+
+      if [ -n "$CLOUD_HUNKS" ]; then
+        if echo "$CLOUD_HUNKS" | git apply --cached --reverse - 2>/dev/null; then
+          echo "    cloud 라인 unstage 완료 (워킹 디렉토리는 본인 머신 값 유지)"
+          echo ""
+        else
+          # apply 실패 (예: cloud + 다른 변경이 같은 hunk = 거리 가까운 yaml 영역)
+          echo "❌ cloud hunk 자동 unstage 실패 — 같은 hunk에 섞여있을 가능성"
+          echo "   fallback (본인 손 1회):"
+          echo "     git reset HEAD -- $PROJ_SETTINGS"
+          echo "     git add -p $PROJ_SETTINGS    # cloud 외 hunk만 'y'로 선택"
+          echo "     git commit ..."
+          exit 1
+        fi
+      fi
     fi
   fi
 fi
