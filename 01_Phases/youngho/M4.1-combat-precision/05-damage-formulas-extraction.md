@@ -1,21 +1,22 @@
 ---
 owner: youngho
 milestone: M4.1
-phase: 02
-title: 데미지 공식 → 98_Shared/GameData/Formulas.cs 순수 함수 분리
+phase: 05
+title: Formulas.cs 분리 + PlayerStats 진짜 전투 반영 (옛 Phase 02 → 05 rename, P0-3 흡수)
 status: pending
-grade: 보통
+grade: 복잡
 risk: low
-estimated: 1~2h
+estimated: 2~3h
 domain: shared+server
 ---
 
-# Phase 02: 데미지 공식 → `98_Shared/GameData/Formulas.cs` 순수 함수 분리
+# Phase 05: Formulas.cs 분리 + PlayerStats 진짜 전투 반영 (P0-3 + P1)
 
 > **상태**: pending
 > **마일스톤**: M4.1
-> **등급**: 보통 (2 도메인 shared+server / ~50줄 / 가역적)
+> **등급**: 복잡 (자동 상향, 옛 보통 → 새 복잡 = P0-3 결함 흡수 + scope ↑)
 > **담당**: server SubAgent (Sonnet) + shared SubAgent (Sonnet, Protocol 정합 점검)
+> **rename 흔적 (2026-05-23)**: 옛 Phase 02 → 새 Phase 05 (M4.1 재구성 옵션 A', P0 신뢰도 봉합 베이스 후 진입). 옛 Phase 02 정신 (Formulas 분리) 유지 + P0-3 결함 (`PlayerStats`가 `PlayerEntity`와 전투 공식에 *진짜* 반영) 흡수 강화. 옛 Phase 02 본문 작업 내용 그대로 + 명시 강제 박음 (옛 "PlayerStats 활용" 암묵 → 새 "PlayerEntity.Stats 연결 + GameMap.ProcessAttack 흡수 의무" 명시).
 
 ---
 
@@ -98,14 +99,14 @@ domain: shared+server
 - [ ] dotnet test green + 새 단위 테스트 6건+ 통과 (전사/원거리 분리 검증 포함)
 - [ ] Shared.dll 새 빌드 commit (Unity 측 자동 복사)
 - [ ] Unity batchmode compile green (`unity-bridge` SubAgent 확인)
-- [ ] 본 Phase 보통 등급 = -DONE.md 없음, work-pin + commit message 충분
+- [ ] 본 Phase 복잡 등급 = **-DONE.md 박음** (요약 + 사실 박제 + 학습 키워드) + reviewer SubAgent Tier 2-A 자동 호출 의무
 
 ---
 
 ## 🧪 테스트
 
 **자동**:
-- `FormulasTests.cs` 5건+ (위 박힘)
+- `FormulasTests.cs` 6건+ (위 박힘)
 - 기존 `AttackHandlerTests` / `BossStageClearTests` 회귀 0 확인 (Formulas 위임 후도 damage 값 정합)
 
 **수동**:
@@ -133,17 +134,20 @@ domain: shared+server
 
 ## ➡️ 다음 Phase
 
-- **Phase 03 (lag compensation + precision hitbox)** — Formulas 분리 후 자연 진입. Phase 03 hitbox 통과 후 damage apply 분기에서 `Formulas.ComputeDamage` 호출.
+- **Phase 06 (lag compensation + AABB hitbox + B1/B3 sweep)** — Formulas 분리 후 자연 진입. Phase 06 hitbox 통과 후 damage apply 분기에서 `Formulas.ComputeDamage` 호출.
 
 ---
 
 ## 📋 박제 (완료 후)
 
-- 보통 등급 = -DONE.md 없음, work-pin + commit message 충분
-- 단, 함정 발견 (예: 클라 측 Formulas 오용 발견 + 별 Phase 신설) 시 *복잡 자동 상향* → -DONE.md 박음
+- **복잡 등급 = -DONE.md 박음** (요약 + 사실 박제 + 학습 키워드 후보)
+- 5단계 보고 X (대규모 등급만)
+- HTML X (대규모 등급만)
+- reviewer SubAgent Tier 2-A 자동 호출 의무 (코드 변경 + P0-3 결함 흡수)
 
 ---
 
 ## 작업 로그
 
 - 2026-05-22: Phase 정의 박힘 (M4.1 plan 박는 시점)
+- 2026-05-23: M4.1 재구성 옵션 A' GO — Phase 02 → 05 rename + 보통 → 복잡 자동 상향 (P0-3 결함 흡수 + scope ↑ + `PlayerEntity.Stats` 연결 + `GameMap.ProcessAttack` 흡수 명시 강제). 옛 Phase 02 정신 (Formulas 분리) 유지 + P0-3 강화.

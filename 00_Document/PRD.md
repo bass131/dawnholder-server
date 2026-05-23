@@ -116,7 +116,7 @@
 | **M3.6** | 하네스 + 코드 점검 | 정합 감사 + Hook hardening bundle + 서버/클라 전수조사 (false-promise 12건 발본) ✅ 완료 |
 | **M3.7** | Sync gate + cadence | `/session:start` drift 발견 게이트 + false-promise 주기적 감사 cadence 정책화 (ADR-023/024) ✅ 완료 |
 | **M3.8** | Capstone-1 Demo Infrastructure | 메인 → 캐릭터 선택(전사/원거리) → 마을(NPC 대화) → 전투 → 엔딩 끊김 없는 데모 flow (시연용 한정, 본 마감 후 일부 제거 가능) |
-| **M4.1** | Combat Precision | lag compensation 200ms + AABB hitbox + `PlayerStats` (class 분기) + `Formulas.cs` 데미지 공식 분리 |
+| **M4.1** | Combat Integrity & Portfolio Hardening | P0 신뢰도 베이스 (Session 상태 머신 + ClientNet framing 대칭 + Build 산출물 위생) + P1 정밀도 (`Formulas.cs` + `PlayerStats` 진짜 전투 반영 + lag compensation 200ms + AABB hitbox + PDL 4→5) — 재구성 2026-05-23 옵션 A' GO, 6 Phase 풀세트, 대규모 자동 상향 |
 | **M4.2** | Map Transition | 진짜 4맵 분리 (마을/사냥터/보스/종료) + portal handoff + 맵 간 entity migration |
 | **M4.3** | AI + Polish | 정식 몬스터 AI + 보스 패턴 정밀화 + 데모 영상 (캡스톤 1 후 7~10월) |
 | **M5** | Persistence | DB 연결, 캐릭터/인벤토리 영속화, 재접속 복원 |
