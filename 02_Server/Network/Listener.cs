@@ -66,28 +66,45 @@ namespace Dawnholder.Server.Network
         // 클라이언트 연결 수락이 완료되었을 때 호출되는 이벤트 핸들러
         // 항상 멀티쓰레드로 동작하기 때문에, Red Zone이 발생할 수 있음
         // 앞으로 조심해서 신경을 곤두세워야할 부분.
+        //
+        // M3.8 Phase 05 후속 봉합 — accept callback race window:
+        // 클라가 accept 통과 직후 close 박으면 (예: ConnectionProbe.TryConnect 패턴 = probe 후 즉시 Shutdown+Close),
+        // AcceptSocket.RemoteEndPoint 박는 시점에 socket이 이미 disposed → ObjectDisposedException → IOCP worker thread 죽음.
+        // _register(10) worker thread 점진 소모 시 신규 accept 거부 → 서버 효과적 사망.
+        // 봉합 = RemoteEndPoint 박을 때 try-catch + race 발생 시 session 박지 않고 socket close + 다음 accept 재등록만.
+        // 헌법 #3 Trust Boundary fail-closed 정합 — disposed socket = untrusted, 서버 process 보호 우선.
         void OnAcceptCompleted(object? sender, SocketAsyncEventArgs args)
         {
             if (args.SocketError == SocketError.Success)
             {
-                // 클라이언트 연결이 성공적으로 수락된 경우,
-                // 등록된 이벤트 핸들러를 호출하여 클라이언트 소켓을 전달
+                Socket acceptedSocket = args.AcceptSocket!;
+                EndPoint? remote = null;
+                try
+                {
+                    remote = acceptedSocket.RemoteEndPoint;
+                }
+                catch (ObjectDisposedException)
+                {
+                    // race window — 클라가 accept 직후 close. session 박지 않고 skip.
+                }
 
-                // 클라이언트 외부에서 생성할 수도 있지만.
-                // 성향의 차이로 나뉘어진다. 
-                // 1. 외부에서 생성해도 상관없다
-                // 2. 내부에 게임 세션을 구현하는게 코드상 깔끔하다.
-
-                Session session = m_SessionFactory!.Invoke(); // 팩토리 메서드를 호출하여 세션 생성
-                session.Start(args.AcceptSocket!); // 클라이언트 소켓으로 세션 초기화
-                session.OnConnected(args.AcceptSocket!.RemoteEndPoint!); // 연결 성공 알림
+                if (remote != null)
+                {
+                    Session session = m_SessionFactory!.Invoke(); // 팩토리 메서드를 호출하여 세션 생성
+                    session.Start(acceptedSocket); // 클라이언트 소켓으로 세션 초기화
+                    session.OnConnected(remote); // 연결 성공 알림
+                }
+                else
+                {
+                    try { acceptedSocket.Close(); } catch { /* swallow */ }
+                }
             }
             else
             {
                 Console.WriteLine(args.SocketError.ToString());
             }
 
-            RegisterAccept(args); // 다음 클라이언트 연결 수락을 위해 다시 등록
+            RegisterAccept(args); // 다음 클라이언트 연결 수락을 위해 다시 등록 (race 분기에서도 의무)
         }
 
         public Socket Accept()
