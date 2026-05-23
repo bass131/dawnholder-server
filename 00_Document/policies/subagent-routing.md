@@ -181,7 +181,7 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 - [`../agents/`](../agents/) (SubAgent 정의 9개 — Phase 02 산출물 8 + Phase 04 신설 `knowledge-gc` 1)
 - [`grade-and-risk.md`](grade-and-risk.md) (등급 → 처리 패턴 매핑)
 - [`review-tiering.md`](review-tiering.md) (reviewer 자동 호출 트리거)
-- [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 산출물 — Worker 무한 재시도 차단)
+- [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 산출물 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 coordinator 단독 위임 구조로 강제 — line 6 신선도 주석 정합)
 
 ---
 

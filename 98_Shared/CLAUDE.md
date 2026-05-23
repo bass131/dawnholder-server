@@ -16,13 +16,14 @@
 ├── Protocol/
 │   ├── Generated/        ★ 자체 PDL이 자동 생성한 패킷 클래스 (ADR-002 v2)
 │   │   └── GenPackets.cs   PacketID enum + IPacket + C_Xxx/S_Xxx 클래스
-│   └── ProtocolVersion.cs  Current=3 정의 (M3 Phase 06 bump — C_Attack/S_EntitySpawn/S_HitResult/S_EntityDeath/S_StageClear 5 패킷 추가) — 핸드셰이크 코드 M3 Phase 02 봉합 완료 (C_Handshake/S_HandshakeResult + first-packet 강제)
+│   └── ProtocolVersion.cs  Current=4 정의 (M3.8 PR #49 bump — PlayerStats + CharacterClass + C_CharacterSelect/S_StartGame 캐릭터 선택 흐름 추가) — M3 Phase 06 시점 v3 bump (C_Attack/S_EntitySpawn/S_HitResult/S_EntityDeath/S_StageClear 5 패킷) — 핸드셰이크 코드 M3 Phase 02 봉합 완료 (C_Handshake/S_HandshakeResult + first-packet 강제)
 └── GameData/
     ├── Constants.cs      Tick rate, 최대 패킷 크기, 타임아웃
     ├── InputBits.cs      MoveIntent 입력 비트필드 인코딩/디코딩 (M2 Phase 07 박힘)
     ├── Physics.cs        결정론 Step 함수 — 클라/서버 동일 시뮬 (Time.deltaTime 직접 사용 금지)
-    ├── Formulas.cs       (M4 진입 시 박힘 예정 — 현재 미박힘) 데미지, XP 곡선, 스탯 derivation
-    └── Tables/           (M4 진입 시 박힘 예정 — 현재 미박힘) 정적 데이터: items, monsters, skills (보통 JSON 로드)
+    ├── PlayerStats.cs    플레이어 스탯 (M4.1 Phase 05에 02_Server에서 이동, 헌법 #4 정합) — Class/Hp/MaxHp/Attack/Defense/MoveSpeed, private ctor + factory(Warrior/Ranger) 패턴
+    ├── Formulas.cs       데미지 공식 (M4.1 Phase 05 박힘) — ComputeDamage(PlayerStats, EnemyStats, int) → int + EnemyStats struct. XP 곡선/스탯 derivation은 M5+
+    └── Tables/           (M5 진입 시 박힘 예정 — 현재 미박힘) 정적 데이터: items, monsters, skills (보통 JSON 로드)
 
 > M3.6 Phase 04 점검 발견 (2026-05-22): 옛 Layout 표가 Formulas.cs/Tables/를 *현재 존재*하는 것처럼 박혀있었고 (false-promise 5번째 발본), 실재 InputBits.cs/Physics.cs는 약속 미박힘이었음 (역방향 격차). 본 정정 = M4 진입 예정 명시 + 실재 파일 박음.
 ```

@@ -150,7 +150,7 @@ hook은 *literal 매칭*만, settings는 *권한 매처* — 두 자리 다름. 
 - 사유: `/03_Client/  @bass131 @ingyu @jungyoohyun0105` 룰에 `Shared.dll` 1개가 자동 매칭 (98_Shared/ 빌드 산출물). 유현 ack 대기 시간 ↑
 - 사유 평가: **자동 빌드 산출물 매칭 = 합법 예외 (§4-A 사유)**
 - 게이트: 사용자 옵션 B (admin bypass) 명시 GO ✅
-- 사유 박힘: 한 줄 work-pin / CONTEXT.md / PR body 모두 박힘 ✅
+- 사유 박힘: 한 줄 work-pin / PR body 모두 박힘 ✅
 - 결과: 정당. 단 본 정책 부재로 *어떻게* 정당한지 박힌 자산 0 = 학습 ★★★ (`codeowners-shared-bin-pitfall`)
 
 ### 케이스 2 — PR #43 시도 차단 (2026-05-22)

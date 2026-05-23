@@ -21,6 +21,17 @@ internal sealed class AttackHandler : IPacketHandler
 {
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
+        // M4.1 Phase 02 (P0-2 봉합 — 헌법 #3 trust boundary 강화):
+        // class 선택 전 C_Attack 수신 시 silent drop + [Trust] 경고 로그.
+        // MoveIntentHandler 정합 패턴 — 캐릭터 선택 전 전투 입력은 신뢰 경계 위반.
+        // M4.2에서 cheat-flag 카운터 박을 예정.
+        if (!session.HasSelectedClass)
+        {
+            Console.WriteLine(
+                $"[Trust] C_Attack before CharacterSelect — silent drop (cheat-flag candidate)");
+            return;
+        }
+
         C_Attack pkt = new C_Attack();
         pkt.Read(buffer);
 

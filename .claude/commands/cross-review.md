@@ -17,6 +17,11 @@ argument-hint: [branch 또는 file-list] - 선택. 없으면 현재 브랜치 �
 
 본 슬래시는 **β 호출 + γ 비교** 흐름을 슬래시화한 것. 옛 운영은 ad-hoc 메인 세션에서 진행 → 일관성 X + 발동 시점 모호. 새 운영 = *명시 호출* + 일관 산출물.
 
+**분담 정신 (2026-05-23 봉합)** — 본 슬래시는 *Claude가 Codex CLI를 Bash로 직접 호출 X*. 분담:
+- **Claude (α + γ 조율)** = (a) Claude reviewer SubAgent 호출 + (b) 본인 입력용 점검 자료 박음 (`00_Document/reviews/YYYY-MM-DD-claude-pre-review-{slug}.md`) + (c) 본인이 Codex 세션에 던질 prompt 박음 + (d) 본인이 가져온 Codex 결과 받아 γ 비교 + 산출물 박음
+- **본인 (β 직접 호출)** = 별 세션 터미널에서 `codex review --base main` (또는 `--uncommitted`) 직접 호출 + 결과 검토 후 Claude한테 요약 또는 raw 출력 전달
+- **사유**: (1) Claude Bash → Codex 호출 시 *Codex 출력이 Claude 컨텍스트 채움* = 토큰 비용 ↑ / (2) 본인이 Codex 결과 *직접 검토*하면 학부생 학습 호흡 ↑ / (3) sandbox/명령어 옵션 결함 본인 환경에서 즉시 조정 가능 / (4) Codex CLI는 본인 계정 사용 → Claude를 거쳐도 과금은 같음. 이 분담은 [`memory unity-visual-work-user-owned`](../../../Users/bass1/.claude/projects/C--Dev-ClaudeDev/memory/unity-visual-work-user-owned.md) "본인 직접 정신"의 외부 도구 호출 확장.
+
 **언제 호출**:
 - 큰 PR 머지 *전* (대규모 등급 + irreversible 깃발)
 - 본인 reviewer 결과만으로 자신감 부족 시
@@ -67,25 +72,50 @@ echo "{콤마 구분 파일}" | tr ',' '\n'
 - 본 slash가 *명시 cross-check* 호출 = reviewer는 *추가 시각* 제공
 - 결과를 변수 `alpha_review` 박음
 
-#### Step 3. Codex β 호출 (옵션)
+#### Step 3. Codex β 호출 자료 박음 (본인이 직접 호출)
 
-사용자에게 Codex 가능 여부 확인:
+**Claude는 Codex 직접 호출 X**. 분담 정신 (2026-05-23 봉합) — Claude는 *본인이 별 세션에서 던질 자료*만 박음:
 
+3-A. **점검 자료 박음** = `00_Document/reviews/YYYY-MM-DD-claude-pre-review-{slug}.md` Write:
+
+```markdown
+# Pre-Review for Codex β — {YYYY-MM-DD} — {brief}
+
+## 변경 범위
+- 브랜치 / 인자: <branch 또는 files>
+- 변경 파일 목록: <files>
+- 등급: <단순/보통/복잡/대규모> (위험 깃발: <flag>)
+- main 대비 diff 요약: <자연어 ~5줄>
+
+## α (Claude reviewer) 결과 요약
+<reviewer 출력 핵심만, 본인이 Codex 입력 시 참조 자료>
+
+## Codex β 점검 가닥 (본인 직접 호출 시 참고)
+- 헌법 §1~§5 위반 여부 (특히 trust-boundary)
+- M3 응급 하드코딩 잔존 패턴
+- PDL/ProtocolVersion 정합
+- 옛 사고 패턴 잠복 의심 (false-promise 변종)
 ```
-Codex CLI 깔려있어요? β cross-check (코드 직접 접근 + dotnet test 재실측)을 위해 필요.
 
-- 있어요 → Codex 호출 진행
-- 없어요 → reviewer 단독 결과로만 진행 (옵션 A, β 스킵)
+3-B. **본인 Codex 호출 명령어 박음** = 본인이 별 세션에서 복사해 던질 형식:
+
+```bash
+# 권장 (PR 머지 전 main 대비 변경분 검토)
+codex review --base main
+
+# 또는 (commit 박기 전 staged + unstaged 변경분)
+codex review --uncommitted
+
+# 또는 (특정 commit 검토)
+codex review --commit <SHA>
+
+# 자료 입력은 본인이 직접 — 위 `pre-review` MD 본인이 첨부 또는 prompt에 박음
 ```
 
-응답:
-- **"있어요"** → Bash로 Codex CLI 호출 (사용자 환경 종속, 본인 유영호 자산 활용)
-  ```bash
-  codex review --files "{files}" --context "<자연어 diff 요약>"
-  ```
-  결과를 변수 `beta_review` 박음
-
-- **"없어요"** → β 스킵, α 단독 진행 (산출물에 *β 미발동* 명시)
+3-C. **본인 응답 대기** = Claude는 본인이 Codex 결과를 가져올 때까지 대기. 본인 응답 형식:
+- **(A) "Codex 결과 첨부"** = raw 출력 또는 요약 던짐 → Claude γ 비교 진행
+- **(B) "β 스킵"** = Codex 환경 없음 또는 본인 시간 부족 → α 단독 진행 (산출물에 *β 미발동* 명시)
+- **(C) "Codex가 봉합 박음"** = 본인이 Codex 직접 봉합 박은 경우, diff 보여주면 Claude γ 비교 + 후속 처리
 
 #### Step 4. γ 비교 분석
 
@@ -167,11 +197,12 @@ Codex CLI 깔려있어요? β cross-check (코드 직접 접근 + dotnet test �
 
 ### Hard rules
 
-1. **외부 도구 호출 = 사용자 환경 종속** — Codex 안 깔린 환경에서 β 스킵 가능 (옵션). reviewer 단독으로도 작동
-2. **읽기 전용** — Step 5 산출물 외 코드/헌법 *수정 X*. 결함 발견해도 *제안*만
-3. **γ 비교는 정량** — "α/β 일치/불일치 어림짐작" X. 각 결함을 *축 번호 + 위치*로 매핑 후 비교
-4. **양쪽 다 잡음 = 최우선** — 의사결정 *기본값*은 즉시 봉합. 별 마일스톤 빼두는 건 사용자 명시 결정 + work-pin 사유 박힘
-5. **scope 인자 명시** — 인자 없으면 현재 브랜치 *전체* 변경분. 큰 작업이면 시간 ↑. 미리 시간 짐작
+1. **Codex CLI 직접 호출 = 본인 분담** (2026-05-23 봉합) — Claude는 Bash로 `codex` 직접 호출 X. 본인이 별 세션 터미널에서 호출. Claude는 *자료 박음 + γ 비교*만. 사유 = 토큰 비용 ↓ + 본인 학습 호흡 ↑ + sandbox 옵션 결함 본인 환경 즉시 조정 + Codex CLI 본인 계정 종속. 옛 ad-hoc Claude 직접 호출 패턴 = 컨텍스트 채움 사고 + sandbox 차단 8회+ 누적 발본 학습 정합.
+2. **외부 도구 호출 = 사용자 환경 종속** — Codex 안 깔린 환경에서 β 스킵 가능 (옵션). reviewer 단독으로도 작동
+3. **읽기 전용** — Step 5 산출물 외 코드/헌법 *수정 X*. 결함 발견해도 *제안*만
+4. **γ 비교는 정량** — "α/β 일치/불일치 어림짐작" X. 각 결함을 *축 번호 + 위치*로 매핑 후 비교
+5. **양쪽 다 잡음 = 최우선** — 의사결정 *기본값*은 즉시 봉합. 별 마일스톤 빼두는 건 사용자 명시 결정 + work-pin 사유 박힘
+6. **scope 인자 명시** — 인자 없으면 현재 브랜치 *전체* 변경분. 큰 작업이면 시간 ↑. 미리 시간 짐작
 
 ---
 

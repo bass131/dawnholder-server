@@ -129,9 +129,15 @@ public class M2BasicMovement
             return result;
         }
 
+        // M4.1 Phase 02 (P0-1/P0-2 봉합): handshake 후 C_CharacterSelect 의무 송신.
+        // 서버가 class 선택 없이 월드 진입을 차단하므로 S_EnterMap은 이 패킷 후에야 옴.
+        // Warrior(0) 선택 — 봇은 클래스 무관하게 movement만 검증.
+        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
+        session?.Send(charSelect.Write());
+
         if (!enterMapEv.Wait(TimeSpan.FromSeconds(5)))
         {
-            result.Reason = "S_EnterMap timeout (5s)";
+            result.Reason = "S_EnterMap timeout (5s) — CharacterSelect 후 서버 응답 없음?";
             session?.Disconnect();
             return result;
         }

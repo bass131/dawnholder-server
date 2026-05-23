@@ -17,6 +17,12 @@
     <DebugType>embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
 
+    <!-- M4.1 Phase 04: local dirty 방지용 deterministic build (Shared.csproj 동형).
+         *같은 환경에서 같은 소스 재빌드 시 같은 hash* 보장 (cross-machine은 별 가닥).
+         CI 환경 진입 시 ContinuousIntegrationBuild=true 추가 권장 — Codex β cross-review 2026-05-23 보강. -->
+    <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
+
     <!-- 폴더명에 숫자 prefix(04_)가 있어 자동 추론 어색 → 명시 -->
     <RootNamespace>Dawnholder.Client.Net</RootNamespace>
     <AssemblyName>Dawnholder.Client.Net</AssemblyName>

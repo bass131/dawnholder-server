@@ -15,7 +15,7 @@ domain: qa+cross
 > **상태**: pending
 > **마일스톤**: M4.1
 > **등급**: 보통 (2 도메인 cross / qa+cross / 비가역 X / 보고서 박제 위주)
-> **담당**: 메인 직접 (영호) + Codex β 외부 (`/cross-review` 슬래시 정신)
+> **담당 (2026-05-23 봉합)**: **본인 (영호) Codex CLI 직접 호출** + **Claude (메인)** = 점검 자료 박음 + Codex prompt 박음 + γ 비교. `/cross-review` 슬래시 정신 정정 정합 (Claude는 `codex` Bash 직접 호출 X).
 
 ---
 
@@ -48,11 +48,34 @@ domain: qa+cross
 - [ ] `03_Client/Assets/Scripts/Network/NetworkBootstrap.cs` — 서버 IP 박힘 (`127.0.0.1` placeholder?) / 포트 박힘 (7777?) 발견
 - [ ] 발견 항목을 `00_Document/reviews/2026-05-22-pre-m4-cross-review-claude.md` 임시 박음 (Codex 입력용)
 
-### 2단계: Codex β 외부 호출 (`/cross-review` 슬래시 정신)
+### 2단계: Codex β 외부 호출 — **본인 직접 호출** (2026-05-23 봉합 분담)
 
-- [ ] `/cross-review` 슬래시 호출 (또는 본인이 Codex CLI 직접 호출) — input = "M3 응급 코드 전수조사. 본 마감(11/19)엔 정밀화 필요한 하드코딩·magic number·placeholder·TODO 색출. ARCHITECTURE.md M4 사전 과제 8건은 본인 이미 인지 — 그 *외* 발견 중심. **추가 자문: M4.1 Phase 03 precision hitbox = AABB vs capsule trade-off 의견** (응급 우선 AABB 추천 박혀있음, capsule은 점프 정합 영역 — Codex 시각 자문)"
-- [ ] Codex β 발견 항목 박제 → `00_Document/reviews/2026-05-22-pre-m4-cross-review-codex.md`
-- [ ] α 점검 vs β 점검 교집합 / 차집합 분류
+**분담**: Claude는 점검 자료 + Codex prompt만 박음. 본인이 별 세션 터미널에서 Codex CLI 직접 호출.
+
+2-A. **Claude (점검 자료 박음)**:
+- [ ] 1단계 결과를 `00_Document/reviews/2026-05-23-pre-m4-cross-review-claude.md` Write (Codex 입력 자료 + α 점검 결과 요약)
+
+2-B. **Claude (Codex prompt 박음)** — 본인이 별 세션에서 복사해 던질 형식:
+
+```bash
+# 권장 명령어 (현재 브랜치 변경분 = 옛 M3 응급 코드 전체 검토는 별 형식)
+
+# (옵션 A) 현재 feature 브랜치 변경분 검토 (M3.8 머지 후 main 위 = 본 브랜치 0 commit, 사용 X)
+codex review --base main
+
+# (옵션 B) M3 응급 코드 전체 *조사* — 본 마일스톤 정신. review 옵션으로는 한계 (특정 변경분만 봄)
+#          → codex exec 정신 = 비대화 PROMPT 자체에 점검 가닥 박음
+codex exec --sandbox read-only --cd "C:\Dev\ClaudeDev" "@00_Document/reviews/2026-05-23-pre-m4-cross-review-claude.md 입력 자료 보고 M3 응급 코드 전수조사. 본 마감(11/19)엔 정밀화 필요한 하드코딩·magic number·placeholder·TODO 색출. ARCHITECTURE.md M4 사전 과제 8건은 인지 — 그 *외* 발견 중심. 추가 자문: M4.1 Phase 03 precision hitbox = AABB vs capsule trade-off 의견. 결과를 00_Document/reviews/2026-05-23-pre-m4-cross-review-codex.md 형식으로 박음."
+```
+
+2-C. **본인 (Codex 호출 + 결과 박음)**:
+- [ ] 별 세션 터미널에서 위 명령어 직접 호출 (본인 환경 sandbox 옵션 정합)
+- [ ] Codex 결과 → `00_Document/reviews/2026-05-23-pre-m4-cross-review-codex.md` 박음 (Codex가 자동 박을 수도, 안 박으면 본인이 raw 출력 copy)
+- [ ] Claude한테 결과 전달 (raw 또는 요약)
+
+2-D. **Claude (γ 비교)**:
+- [ ] α (1단계 + claude-pre-review.md) vs β (codex.md) 교집합 / 차집합 분류
+- [ ] 결함 항목별 위치 + 축 매핑
 
 ### 3단계: 발견 항목별 처리 결정
 
@@ -77,8 +100,8 @@ domain: qa+cross
 
 ## ✅ 완료 조건
 
-- [ ] `00_Document/reviews/2026-05-22-pre-m4-cross-review-codex.md` 박힘 (Codex β 발견 항목)
-- [ ] `00_Document/reviews/2026-05-22-pre-m4-cross-review-claude.md` 박힘 (Claude α 점검 — Codex 입력 자료 + α/β 비교)
+- [ ] `00_Document/reviews/2026-05-23-pre-m4-cross-review-claude.md` 박힘 (Claude α 점검 + Codex 입력 자료)
+- [ ] `00_Document/reviews/2026-05-23-pre-m4-cross-review-codex.md` 박힘 (본인 직접 Codex 호출 결과)
 - [ ] 발견 항목별 처리 결정 (4 분류) 표 박힘 — **Codex 보고서 마지막 섹션에 박음** (위치 확정)
 - [ ] M4.1 Phase 02·03 plan 갱신 결정 박힘 (그대로 / 일부 조정 / 재구성)
 - [ ] **등급 자동 상향 트리거**: 발견 양 8건+ 또는 즉시 봉합 결정 항목 있으면 *복잡 자동 상향* → -DONE.md 박음 + **사용자 명시 GO 게이트** 후 plan 갱신 (plan 재구성 = irreversible 직전 단계, 옵션 C 게이트 정신)
@@ -112,7 +135,8 @@ domain: qa+cross
 - **Codex β scope creep 함정** — Codex가 *M4 사전 과제 8건*까지 다 발견 박으면 noise ↑. 입력에 "*그 외* 발견 중심" 명시 의무.
 - **α 자체 점검 빠뜨림 함정** — α가 자신 작업 결과를 *덜 비판적*으로 보는 패턴. M3.6 Phase 05 학습 정합 (본인 영역은 외부 시각이 필수).
 - **즉시 봉합 분류 함정** — 발견 항목을 "지금 빨리 고치자"로 즉시 봉합 시 *scope creep*. 본 Phase는 *발견 + 분류*가 본질, 봉합 자체는 Phase 02·03 또는 별 Phase.
-- **보고서 파일명 날짜 정합** — `2026-05-22` 박지만 본 Phase가 다음 세션으로 미뤄지면 실제 날짜로 정정. work-pin "마지막 갱신" 정합.
+- **보고서 파일명 날짜 정합** — `2026-05-23` 박지만 본 Phase가 다음 세션으로 미뤄지면 실제 날짜로 정정. work-pin "마지막 갱신" 정합.
+- **Claude가 Codex 직접 호출 함정 (2026-05-23 봉합)** — 옛 패턴 = Claude가 Bash로 `codex` 호출 시 (1) Codex 출력이 Claude 컨텍스트 채움 = 토큰 비용 ↑ / (2) sandbox 옵션 결함 8회+ 누적 / (3) 본인 학습 호흡 ↓. 본 Phase 분담 = *본인 직접 호출*. memory [[codex-sandbox-permission-current-dir]] + [[unity-visual-work-user-owned]] 정합.
 
 ---
 
@@ -132,3 +156,4 @@ domain: qa+cross
 ## 작업 로그
 
 - 2026-05-22: Phase 정의 박힘 (M4.1 plan 박는 시점)
+- 2026-05-23: 본인 직접 Codex 호출 분담 명시 갱신 — Claude는 점검 자료 + Codex prompt 박음, 본인이 별 세션 호출. `/cross-review` 슬래시 정정 정합 (옛 `codex review --files X --context Y` false-promise 23번째 변종 발본). memory [[codex-sandbox-permission-current-dir]] + [[unity-visual-work-user-owned]] 외부 도구 호출 분담 확장.

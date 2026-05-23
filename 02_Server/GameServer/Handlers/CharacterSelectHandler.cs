@@ -47,5 +47,10 @@ internal sealed class CharacterSelectHandler : IPacketHandler
 
         // 통과 (헌법 #3 step 3): 서버가 stats 박음 (헌법 #1).
         session.SetCharacterClass(pkt.characterClass);
+
+        // M4.1 Phase 02 (P0-2 봉합): class 선택 완료 후 월드 진입 게이트 호출.
+        // handshake + class 선택 양쪽 충족 시에만 EnterGameWorld() 실행 (idempotent).
+        // 클라가 C_CharacterSelect 없이 다른 입력을 보내도 _enteredWorld=false라 월드 진입 안 됨.
+        session.EnterGameWorldIfReady();
     }
 }

@@ -12,7 +12,7 @@ current-pin 갱신    →    -DONE.md 박제          →    두 액션 권유
 (매 응답 영향)          (복잡/대규모 등급만)         (사용자 선택)
 ```
 
-5/20 의논 결과 — work-pin은 *압축*(목표 30~40줄, 옛 60줄+에서 다이어트), 학습 일지 권유는 *트랙 B* (Notion + 잔존 learning-journal/)로 이관.
+5/20 의논 결과 — work-pin은 *압축*(목표 30~40줄, 옛 60줄+에서 다이어트). 본인 회고 학습 트랙은 ADR-025로 은퇴 (knowledge 트랙 A만 유지).
 
 ---
 
@@ -47,7 +47,7 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 | 완료 조건 | **삭제** | Phase 정의 `.md`에 박혀있음 (중복) |
 | 다음 액션 | 유지 | 다음 턴 진입 좌표 |
 | 주의할 약속 | **선택**(없으면 생략) | 매 작업 박힐 가치 없음 |
-| 학습 보존 | **트랙 A/B로 이관** | knowledge `_index.md` 또는 Notion |
+| 학습 보존 | **트랙 A(knowledge)로 이관** | knowledge `_index.md` (회고 트랙 B는 ADR-025 은퇴) |
 | 마지막 갱신 | 유지 | 신선도 검증 |
 
 압축 결과: 옛 8개 필드 + 본문 ~60줄 → 새 5+1개 필드 + 본문 ~30줄.
@@ -93,9 +93,8 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 |---|---|---|
 | `-DONE.md` | **AI** | 사실·결정·증상·키워드 박제. 잊히기 전에. |
 | 트랙 A 학습 (`.claude/knowledge/`) | AI 박제 + 사용자 확인 | 구조화 패턴 ([`knowledge-system.md`](knowledge-system.md)) |
-| 트랙 B 학습 일지 (Notion + 잔존 learning-journal/) | **본인** | 회고·교훈·면접 답변. AI는 인터뷰만. |
 
-본인이 학습 일지 쓸 때 `-DONE.md`를 *사실 베이스*로 활용.
+(본인 회고 학습 일지 = ADR-025로 은퇴. `-DONE.md`는 AI 사실 박제로 유지.)
 
 ### Post-flight 게이트 (훅 강제 4가지)
 
@@ -116,18 +115,17 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 
 `-DONE.md` commit 직후 같은 응답.
 
-### 출력 양식 (트랙 A/B 분리 정합)
+### 출력 양식
 
 ```
-**📚 Phase 완료 — 다음 두 액션 권유합니다**
+**📚 Phase 완료 — 다음 권유합니다**
 
 **1. 학습 박제** (옵션, 본인 의지):
-- **트랙 A (AI 캐시)**: 도메인 _index.md에 박을 키워드 있나요? — 사용자 확인 후 AI 박제
-- **트랙 B (회고)**: Notion "Dawnholder 협업 히스토리" 또는 learning-journal/ — 본인 작성
-  - 패스해도 OK (시간 없을 때). 단 큰 학습은 잊기 전에 박는 게 가치 ↑
+- **트랙 A (knowledge AI 캐시)**: 도메인 _index.md에 박을 키워드 있나요? — 사용자 확인 후 AI 박제
+  - 패스해도 OK (시간 없을 때). (본인 회고 트랙 B는 ADR-025로 은퇴)
 
 **2. 세션 마감** (강한 권유, 작업 박제):
-- `/session:end` — commit + PR + 노션 박제 + 다음 액션 결정까지 한 흐름
+- `/session:end` — commit + PR + (선택)노션 박제 + 다음 액션 결정까지 한 흐름
 - 학부생 백지 팀원은 깜빡 위험 크니 잊지 말기
 - `pin-injector.sh` 훅이 commit 안 된 -DONE.md 검출 시 매 입력 경고 주입 (안전망)
 ```
@@ -163,7 +161,7 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
    │   ├─ 대규모만: 5단계 보고 출력 (MD + HTML 이중)
    │   ├─ -DONE.md 작성 (AI, 짝꿍 페어 경로) → 훅 4가지 검산
    │   ├─ commit
-   │   ├─ 두 액션 권유 출력 (트랙 A 박제 + 트랙 B 회고 + 세션 마감)
+   │   ├─ 권유 출력 (트랙 A knowledge 박제 옵션 + 세션 마감)
    │   └─ AI가 핀 archived 또는 cleared
    │
    └─ 단순/보통 등급:
@@ -173,47 +171,19 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 
 ---
 
-## 5. work-pin ↔ CONTEXT.md 정합 (옵션 C: `/session:end` 단일 게이트)
+## 5. work-pin = 단일 작업 좌표 (ADR-025)
 
-### 정합 약속
+옛 운영은 작업 좌표를 두 곳(work-pin + `CONTEXT.md` "현재 멈춤 지점")에 두고 `/session:end`에서 동기화했다. **ADR-025로 CONTEXT 3종 은퇴** → work-pin(`.claude/state/current-pin.txt`, 매 응답 자동 주입)이 *유일한* 세션 간 핸드오프 표면. 안 변하는 사용자 컨텍스트(신분/목표/일정)는 memory(`~/.claude/projects/.../memory/`)가 보유.
 
-본 프로젝트에는 *현재 작업 좌표*를 담는 두 자산이 공존 — **work-pin** (`.claude/state/current-pin.txt`, 매 응답 영향, AI 자동 주입) + **CONTEXT.md "⏸️ 현재 멈춤 지점"** (세션 진입 `/session:start` 통독). 두 곳 어긋나면 AI가 *어느 게 진짜*인지 못 잡음 → 옛 결정 기반 작업 위험.
+→ 이중 좌표 동기 비용 + 세션 시작 컨텍스트 적재 낭비 소멸. 단 **work-pin 자체 비대**가 새 위험 → 30~40줄 목표 유지 + 마감 commit 이력·완료 Phase 상세는 CHANGELOG/`-DONE.md`로 위임 (핀에 누적 X).
 
-**정합 게이트 = `/session:end` 단일 박힘 (단방향 동기, work-pin → CONTEXT)**. 작업 중엔 work-pin만 갱신, CONTEXT는 마감 시점만.
+### 5.1 진행 단계 stale hole 발견 게이트 (M3.7 ADR-023; ADR-025로 work-pin 단독화)
 
-### 동기화 룰 (요약)
+**한계**: work-pin "현재 작업/다음 액션"이 실제 git/gh 진행 단계(commit / push / PR 생성 / PR 머지)와 어긋난 채 박힐 수 있음.
 
-| CONTEXT 항목 | 동기 분기 |
-|---|---|
-| **⏸️ 현재 멈춤 지점** | ✅ 등급 무관 항상 동기 (work-pin 압축본 → 풀어쓴 한 문단) |
-| **학습 일지 후보** | ✅ 콘텐츠 있으면 추가 (★ 평가). 없으면 스킵 |
-| **CONTEXT_History.md** | ✅ 매 마감 한 줄 자동 |
-| **응축 평가** | ⚠️ 250줄+ 알림만, 자동 응축 X (사용자 결정) |
-| **다른 섹션** (하드 일정 / 팀 구조 / 보류 중 / 핵심 결정) | ❌ 자동 갱신 X (사용자 의도 보호) |
+**게이트**: `/session:start` 0-부수 단계가 `git log -3` + `gh pr list --head $(branch)` + `git status -sb` 자동 호출 → work-pin 키워드 vs 실제 상태 대략 매칭 → 차이 발견 시 STOP + 본인 수동 갱신 안내.
 
-**핵심 정신**: 옛 운영 "단순/보통 등급 = CONTEXT 갱신 스킵" 분기 고려했으나, work-pin 정합 깨짐 비용 > 양식 부담 ↓. **"현재 멈춤 지점" = 등급 무관 항상 동기**. 양식 부담은 *기본 OK 디폴트*로 줄임.
-
-**디테일 절차** (자산 확인 / 미리보기 / 응축 알림): [`../../.claude/commands/session/end.md`](../../.claude/commands/session/end.md) §7.5 풀세트 박힘. 본 정책은 *정신*만, 절차는 슬래시 본문.
-
-### 함정
-
-- **work-pin 갱신 시 CONTEXT 동시 갱신 X** — 작업 중엔 work-pin만, 정합은 `/session:end`에서만 (양식 부담 ↑↑ 회피)
-- **단순 복사 X** — work-pin은 *압축 좌표*, CONTEXT는 *맥락 포함 한 문단*
-- **마일스톤 끝엔 응축 평가 의무** — 250줄+ 알림만, 본인 결정 (옛 자동 응축 사고 위험)
-
-### 5.1 진행 단계 stale hole 봉합 (M3.7 보강, ADR-023)
-
-**한계 발견**: 옵션 C 게이트는 *세션 마감 시점*만 동기 → *세션 도중 진행 단계*(commit / push / PR 생성 / PR 머지)는 못 잡음. 5번 실측 누적 (M3.6 Phase 06 + M3.7 진입 시점 등) → Rule of Three 통과 → 본질 봉합 트리거 ON.
-
-**보강**: 옵션 C 게이트는 *유지* (세션 마감 시 동기 그대로). 새 **발견 게이트** = `/session:start` 0-부수 단계에 박힘 ([../../.claude/commands/session/start.md](../../.claude/commands/session/start.md) `0-부수. work-pin drift 발견 게이트`). 세션 시작 시점에 `git log -3` + `gh pr list --head $(branch)` + `git status -sb` 자동 호출 → work-pin 키워드 vs 실제 상태 대략 매칭 → 차이 발견 시 STOP + 본인 수동 갱신 안내.
-
-**핵심 정신**: 발견만 자동, 갱신은 본인 수동 (Hook is for alert, not action / §1 "갱신은 본인 수동" 정신 확장). 사용자 명시 위임("drift 봉합해줘") 시 예외 허용. 디테일 = [ADR-023](../ADR/harness/ADR-023-sync-gate-progress-stale-hole.md).
-
-| 진행 단계 stale | 동기 시점 |
-|---|---|
-| **세션 마감** (마지막 작업 commit 직후) | `/session:end` 게이트 (옵션 C, 단방향) |
-| **세션 시작** (다음 세션 진입 시) | `/session:start` 0-부수 (drift 발견, 본인 수동 갱신) |
-| **세션 도중** (commit/push/PR 진행 중) | 자동화 X — 본인 인지 게이트 의존 (학부생 호흡 보호) |
+**핵심 정신**: 발견만 자동, 갱신은 본인 수동 (Hook is for alert, not action / §1 "갱신은 본인 수동" 확장). 사용자 명시 위임("drift 봉합해줘") 시 예외. 디테일 = [ADR-023](../ADR/harness/ADR-023-sync-gate-progress-stale-hole.md) — CONTEXT 동기 절반은 ADR-025로 무효, drift 게이트는 work-pin 단독으로 유지.
 
 ---
 
@@ -225,6 +195,7 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 
 ## 갱신 이력
 
+- 2026-05-24 — ADR-025 정합. §5 "work-pin ↔ CONTEXT 정합"을 "work-pin = 단일 작업 좌표"로 재작성 (CONTEXT 3종 은퇴, memory가 사용자 컨텍스트 보유). §1·§2·§3 학습 일지 트랙 B 참조 제거 (knowledge 트랙 A만 유지). drift 발견 게이트는 work-pin 단독으로 유지.
 - 2026-05-22 — M3.7 Phase 02에서 §5.1 신설 (진행 단계 stale hole 봉합, ADR-023). 옵션 C 게이트 한계 명시 (세션 마감 시점만 동기 → 세션 도중 진행 단계 X) + 새 발견 게이트 인용 (`/session:start` 0-부수, Hook is for alert 정신). 5번 실측 누적 → Rule of Three 통과 후 박힘. 동기화 룰 표 한 행 추가 (진행 단계 stale 세 시점).
 - 2026-05-22 — M3.6 Phase 02-D에서 §5 응축 (254 → ~219줄, doc-thresholds 220 임계 위반 봉합). 정합 약속 + 동기화 룰 표 + 함정 핵심만 유지, 풀 절차는 [`session/end.md §7.5`](../../.claude/commands/session/end.md) 참조로 위임. 정신 변경 X, 중복 제거만.
 - 2026-05-21 — M3.5 Phase 05에서 §5 신설 (work-pin ↔ CONTEXT 정합, 옵션 C `/session:end` 단일 게이트). 등급 무관 "⏸️ 현재 멈춤 지점" 항상 동기 / 학습 후보는 콘텐츠 유무 분기. 양식 부담 ↓보다 Claude 혼선 방지 우선 정신 박힘. 옛 §5 → 새 §6 (변경 동기화 책임).

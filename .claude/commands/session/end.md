@@ -1,5 +1,5 @@
 ---
-description: Phase 완료 마감 절차 — commit + PR + 노션 박제 + CONTEXT 자동 갱신 + 다음 액션 결정. /session:log 자동 호출.
+description: Phase 완료 마감 절차 — commit + PR + (선택)노션 박제 + work-pin 갱신 + 다음 액션 결정.
 ---
 
 사용자가 Phase 완료 마감을 요청. 본인 헌법 "Phase 완료 시 두 액션 권유"의 두 번째 액션.
@@ -8,7 +8,7 @@ description: Phase 완료 마감 절차 — commit + PR + 노션 박제 + CONTEX
 
 ### 이 커맨드의 역할
 
-`-DONE.md` 박제 직후 호출 → commit + PR + 노션 박제 + CONTEXT.md 갱신 + 다음 액션까지 한 흐름. 학부생 백지 팀원이 PR/노션 누락하거나 매번 "CONTEXT 갱신해줘" 손으로 부탁하는 부담 자동화.
+`-DONE.md` 박제 직후 호출 → commit + PR + (선택)노션 박제 + work-pin 갱신 + 다음 액션까지 한 흐름. 학부생 백지 팀원이 PR 누락하는 부담 자동화. (ADR-025로 옛 CONTEXT.md 자동 갱신 단계 은퇴 — work-pin이 단일 핸드오프.)
 
 ---
 
@@ -53,10 +53,9 @@ work-pin 갱신 + commit message만으로 마감. 본 절차 2~7단계 진행 (5
 Phase 마감 진행. 마감 후 다음 액션:
   1. 계속 — 바로 다음 Phase 진입
   2. 종료 — 오늘 작업 끝, 다음 세션에서 이어감
-  3. 학습 일지 먼저 — 본인 노션 또는 잔존 learning-journal/ (트랙 B)
 ```
 
-응답 받아 변수 `next_action`에 박음 (continue / stop / journal).
+응답 받아 변수 `next_action`에 박음 (continue / stop).
 
 ---
 
@@ -203,7 +202,7 @@ AI가 `gh pr merge` 호출 *직전*에 명시 GO (CODEOWNERS 통과한 정상 �
 🚨 PR 머지 = irreversible (main history 변경)
    PR: #<번호>
    방식: <merge/squash/rebase>
-   머지 후 자동: work-pin/CONTEXT 동기 (§7.5)
+   머지 후: work-pin 갱신 (§7.5)
    
    진행 OK?
      1. 진행
@@ -213,13 +212,13 @@ AI가 `gh pr merge` 호출 *직전*에 명시 GO (CODEOWNERS 통과한 정상 �
 
 ---
 
-### 5. 노션 박제 트리거 (트랙 A/B 분리 정합)
+### 5. 노션 박제 트리거 (선택)
 
-"PR 박혔어요. /session:log 자동 호출."
+"PR 박혔어요. 협업 기록 남기려면 /session:log."
 
-`.claude/commands/session/log.md` 안내대로 진행. PR URL 인자로 넘김.
+`.claude/commands/session/log.md` 안내대로 진행 (선택). PR URL 인자로 넘김.
 
-**M3.5 정합**: 노션 박제 = *트랙 B* (본인 회고). 트랙 A (knowledge 캐시 박을지)는 별도 사용자 확인 게이트.
+**ADR-025 정합**: 노션 박제는 *선택* (프로젝트 협업 기록). knowledge 캐시(트랙 A) 박을지는 별도 사용자 확인 게이트. (본인 회고 트랙 B는 은퇴.)
 
 ---
 
@@ -242,67 +241,16 @@ AI가 `gh pr merge` 호출 *직전*에 명시 GO (CODEOWNERS 통과한 정상 �
 
 - **continue** → 다음 Phase 진입
 - **stop** → 오늘 마감. 다음 세션에서 `/session:start` → work-pin이 좌표 알려줌
-- **journal** → 본인 노션 트랙 B 박음 또는 잔존 `learning-journal/{본인}/` (M3.5 옛 `/journal:phase` 슬래시 제거됨, 본 절차에서 직접 안내)
 
 ---
 
-### 7.5. CONTEXT.md 동기화 (work-pin ↔ CONTEXT 정합 게이트)
+### 7.5. work-pin 최신 확인 (ADR-025 — CONTEXT 동기 은퇴)
 
-`/session:end` = 작업 완료 시점 = work-pin은 이미 최신 = **CONTEXT 단방향 동기 트리거**.
+work-pin(`.claude/state/current-pin.txt`)이 방금 마감한 상태(완료 Phase + 다음 액션)를 반영하는지 확인. 작업 중 갱신했으면 이미 최신. 안 했으면 "현재 작업 / 다음 액션"만 갱신 (자동 X — 본인 결정 또는 명시 위임 시 AI).
 
-본 단계는 *양식 부담 줄이기* 자동화가 아니라 ***work-pin ↔ CONTEXT 정합 보장 게이트***입니다 (옵션 C, [`../../policies/pin-and-done.md`](../../policies/pin-and-done.md) §5). 두 곳 어긋나면 다음 세션 `/session:start` 시 AI가 옛 멈춤 지점 읽음 → 옛 결정 기반 작업 위험 (Claude 혼선).
+**핵심**: work-pin이 *유일한* 세션 간 핸드오프 표면이므로, 마감 시점에 실제 상태를 반영해야 다음 `/session:start` drift 게이트가 통과. 단 핀 비대 주의 — 마감 commit 이력은 핀이 아니라 CHANGELOG/`-DONE.md`로.
 
-**동기 룰** (등급 무관 — 정합이 양식 부담보다 우선):
-
-| 항목 | 동기 분기 |
-|---|---|
-| **⏸️ 현재 멈춤 지점** | ✅ **매 마감 자동** (등급 무관, work-pin 압축본 → CONTEXT 풀어쓴 한 문단으로 박음) |
-| **학습 일지 후보** | ✅ 콘텐츠 유무 분기 — -DONE.md / work-pin에 학습 키워드 *실제 있으면* 추가 (★ 평가 포함). 키워드 없으면 스킵 |
-| **CONTEXT_History.md** | ✅ 매 마감 한 줄 자동 (비용 0) |
-| **응축 평가** | ⚠️ 250줄+ 알림만, 자동 응축 X — 큰 마일스톤 끝 사용자 명시 결정 |
-| **다른 섹션** (하드 일정/팀 구조/보류 중/핵심 결정) | ❌ 자동 갱신 X (사용자 의도 보호) |
-
-**핵심 정신**: 옛 운영은 "단순/보통 등급 = CONTEXT 갱신 스킵" 분기 고려했으나, work-pin과 정합 깨지면 Claude 혼선 비용 > 양식 부담 ↓. 따라서 *등급별 분기*는 *콘텐츠 깊이*만 (학습 후보 유무 등). "현재 멈춤 지점" 자체는 *등급 무관 항상 동기*.
-
-#### 7.5-A. 본인 자산 확인
-
-```bash
-git check-ignore CONTEXT.md CONTEXT_History.md
-```
-
-- 둘 다 ignored → 정상 (본인 머신만 갱신)
-- 한 쪽이라도 not ignored → STOP + 알림 (협업 셋업 어긋남)
-
-#### 7.5-B. 동기 초안 + 미리보기 + 컨펌
-
-work-pin 최신 내용 읽어서 CONTEXT 동기 초안 박음:
-
-```
-CONTEXT.md 동기 미리보기 (work-pin → CONTEXT):
-
-【⏸️ 현재 멈춤 지점】(work-pin 정합 동기, 항상)
-[work-pin 압축본 → CONTEXT 풀어쓴 한 문단]
-
-【학습 일지 후보】(키워드 있을 때만 추가)
-- [새 한 줄, ★ 평가 포함]
-  또는 "이번 마감 학습 키워드 없음 → 스킵"
-
-【CONTEXT_History.md】(이력 한 줄 자동)
-| YYYY-MM-DD (Phase NN 완료, 등급 X) | 1줄 요약 |
-
-OK (기본) / 수정 / 스킵 — 알려주세요.
-```
-
-**기본 OK 디폴트**: 사용자가 명시적으로 "스킵" 또는 "수정" 말하지 않으면 OK로 진행. 양식 부담 ↓ + 정합 보장.
-
-#### 7.5-C. 응축 임계 알림 (250줄+ 시만)
-
-`wc -l CONTEXT.md`가 250줄 넘으면 미리보기 끝에 알림:
-```
-⚠️ CONTEXT.md 현재 {N}줄. 다음 큰 마일스톤 끝날 때 처음부터 재작성 고려.
-```
-
-자동 응축 X — 사용자 결정 영역.
+(옛 CONTEXT.md 단방향 동기 + CONTEXT_History 한 줄 + 응축 알림은 ADR-025로 은퇴.)
 
 ---
 
@@ -318,7 +266,7 @@ OK (기본) / 수정 / 스킵 — 알려주세요.
 📝 commit: {commit hash 짧은 형식}
 🔗 PR: {pr_url}
 📚 노션: {Notion 페이지 URL 또는 "/session:log 실행됨"}
-📋 CONTEXT 갱신: {✅ / ⏭️ 스킵}
+📋 work-pin: {✅ 최신}
 {CHANGELOG 갱신 있었으면: 📋 CHANGELOG.md 갱신됨}
 
 ➡️ 다음: {next_action에 맞는 안내}
@@ -331,9 +279,8 @@ OK (기본) / 수정 / 스킵 — 알려주세요.
 - **학부생 백지 팀원 가정** — 핵심만 명확히, 상세 안내는 `00_Document/team-guide.html` 위임
 - **막히면 STOP** — 그 자리에서 도움 요청, 무리한 추측 X
 - **헌법 정합**: 5단계 보고는 대규모 -DONE.md에 박혀있으니 본 커맨드 끝에 별도 X
-- **위임 패턴**: 노션 박제는 `/session:log`, 학습 일지는 본인 노션 (트랙 B). 본 커맨드는 *오케스트레이터*
-- **CONTEXT 동기는 정합 게이트** — 옛 운영 "양식 부담 줄이기 자동화"가 아니라 *work-pin ↔ CONTEXT 정합 보장*. "현재 멈춤 지점" 등급 무관 항상 동기 ([`../../policies/pin-and-done.md`](../../policies/pin-and-done.md) §5)
-- **다른 섹션·응축은 사용자 결정 영역** — 자동 갱신 X (의도 보호)
+- **위임 패턴**: 노션 박제는 `/session:log` (선택). 본 커맨드는 *오케스트레이터*
+- **work-pin이 단일 핸드오프** (ADR-025) — 마감 시점에 실제 상태 반영. 옛 CONTEXT 동기는 은퇴
 
 ---
 
@@ -341,6 +288,6 @@ OK (기본) / 수정 / 스킵 — 알려주세요.
 
 - **등급별 -DONE.md 의무**: 옛 "Phase 완료 시 항상 -DONE.md" → 새 "복잡/대규모만 -DONE.md, 단순/보통은 commit message로 충분"
 - **5단계 보고 = 대규모만**: 옛 "Phase 완료 시 항상 5단계 보고" → 새 "대규모 등급만 5단계 보고 MD/HTML 이중 박음"
-- **`/journal:phase` 슬래시 제거**: 옛 호출 → 새 본 커맨드 7단계 분기에서 *본인 노션 직접 안내* (트랙 B)
+- **`/journal:phase` 슬래시 제거**: 옛 호출 → 학습 일지 트랙 B는 ADR-025로 은퇴 (knowledge 트랙 A만)
 - **work-pin 압축**: 옛 ~80줄 → 새 30~40줄. 8단계 마감 보고도 짧게
-- **7.5 단계 정신 전환**: 옛 "CONTEXT.md 자동 갱신 = 양식 부담 줄이기" → 새 "**work-pin ↔ CONTEXT 정합 게이트**" (옵션 C). 등급 무관 "현재 멈춤 지점" 항상 동기 / 학습 후보는 콘텐츠 유무 분기 / 기본 OK 디폴트로 양식 부담 ↓
+- **7.5 단계 전환 (ADR-025)**: 옛 "CONTEXT.md 단방향 동기 게이트" → 새 "work-pin 최신 확인" (CONTEXT 3종 은퇴, work-pin 단일 핸드오프)

@@ -90,12 +90,14 @@ public class HandshakeHandlerTests : IDisposable
     }
 
     [Fact]
-    public void Happy_MatchingVersion_AcksAndEntersGame()
+    public void Happy_MatchingVersion_AcksOnly_NotEnteringWorld()
     {
-        // C_Handshake(version=Current) → 서버가 ok=true 회신 + AddPlayer enqueue.
+        // M4.1 Phase 02 변경: C_Handshake(version=Current) → S_HandshakeResult(ok=true) 회신만.
+        // handshake 후 EnterGameWorld 직접 호출 제거 (P0-1 봉합).
+        // 월드 진입은 CharacterSelect 완료 후 EnterGameWorldIfReady()를 통해서만.
         _session.OnRecvPacket(MakeHandshakeBytes(ProtocolVersion.Current));
 
-        // S_HandshakeResult(ok=true) 회신 검증.
+        // S_HandshakeResult(ok=true) 회신 검증 — 이 패킷 하나만 와야 함.
         Assert.Single(_session.SentPackets);
         S_HandshakeResult result = ParseHandshakeResult(_session.SentPackets[0]);
         Assert.True(result.ok);
@@ -105,16 +107,13 @@ public class HandshakeHandlerTests : IDisposable
         // Disconnect 호출 X.
         Assert.Equal(0, _session.DisconnectCalls);
 
-        // EnterGameWorld가 AddPlayer job enqueue → tick 후 player=1.
+        // 핵심: handshake 후 class 선택 없으면 tick 후에도 player=0 (P0-1 봉합 검증).
+        // 이전엔 이 시점에 AddPlayer job이 enqueue되었지만 이제 아님.
         _map.Tick(1);
-        Assert.Single(_map.Players);
+        Assert.Empty(_map.Players);
 
-        // tick 후 추가 패킷:
-        //   - S_EnterMap (자기 entityId/spawn 통보, Phase 02부터)
-        //   - S_EntitySpawn × N (Phase 06 Step 4 enemy roster 다발 전송 — ctor에서 Normal 1마리 spawn)
-        // 헌법 #1 정합: server-only spawn 흐름, 신규 client에 active enemy roster 다발 전송.
-        // SentPackets = S_HandshakeResult + S_EnterMap + S_EntitySpawn(enemy 수) = 2 + Enemies.Count.
-        Assert.Equal(2 + _map.Enemies.Count, _session.SentPackets.Count);
+        // S_EnterMap / S_EntitySpawn 추가 패킷 없음 — 회신은 S_HandshakeResult 1건뿐.
+        Assert.Single(_session.SentPackets);
     }
 
     [Fact]

@@ -95,7 +95,7 @@ Coordinator → Worker 위임 시:
 | `reviewer` | (없음) | 전체 | 코드 편집 X (Tier 2-A) |
 | `plan-auditor` | (없음) | 전체 | 코드 편집 X (Tier 2-B) |
 | `coordinator` | (없음, 위임 권한 보유) | 전체 | 코드 편집 X / 다른 coordinator 호출 X |
-| `knowledge-gc` | `../knowledge/**/*.md` | 정책 + CHANGELOG + learning-journal | 코드 / 헌법 / ADR — 사용자 확인 게이트 통과 후만 정리 |
+| `knowledge-gc` | `../knowledge/**/*.md` | 정책 + CHANGELOG | 코드 / 헌법 / ADR — 사용자 확인 게이트 통과 후만 정리 |
 
 권한 위반 시 즉시 거부 + coordinator에게 다른 SubAgent 요청 보고.
 

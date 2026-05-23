@@ -3,6 +3,7 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
+using Shared.GameData;
 using Shared.Protocol;
 
 namespace GameServer.Tests.Network;
@@ -48,10 +49,12 @@ public class AttackHandlerTests : IDisposable
     const int BossEntityId = 2;        // Boss (Phase 07)
     const int PlayerEntityId = 3;
 
-    // `CombatConstants`는 internal — 본 어셈블리(test)에서 직접 참조 불가.
-    // 단순 mirror 상수로 박음 (production은 `Combat/CombatConstants.cs` 단일 출처).
-    // 두 곳 drift 위험 인지 — Phase 06 응급 마감 후 `InternalsVisibleTo` 박을 때 정리.
-    const int ExpectedBaseDamage = 10;
+    // M4.1 Phase 05 (회귀 갱신): Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = Max(1, 10+15-0) = 25.
+    // PlayerStats.Warrior() Attack=15, EnemyStats default Defense=0, CombatConstants.BaseDamage=10.
+    // 옛 mirror 상수 10 → 실제 Formulas 기반 기대값으로 교체.
+    // 두 곳 drift 방지: 이 값은 Warrior factory + EnemyStats default + CombatConstants.BaseDamage 3곳 기반.
+    static readonly int ExpectedDamage = Formulas.ComputeDamage(
+        PlayerStats.Warrior(), default, baseDamage: 10);
 
     class TestGameSession : GameSession
     {
@@ -74,7 +77,14 @@ public class AttackHandlerTests : IDisposable
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
 
-        public void BypassHandshake() => CompleteHandshakeAndEnter();
+        // M4.1 Phase 02: CompleteHandshakeAndEnter()가 더 이상 EnterGameWorld를 직접 호출 안 함.
+        // 월드 진입 = handshake + class 선택 양쪽 충족 필요. class 선택도 우회 (Warrior=0).
+        public void BypassHandshake()
+        {
+            CompleteHandshakeAndEnter();  // _handshakeCompleted = true
+            SetCharacterClass(0);          // HasSelectedClass = true (Warrior)
+            EnterGameWorldIfReady();       // 두 조건 충족 → EnterGameWorld() 호출
+        }
     }
 
     public AttackHandlerTests()
@@ -153,13 +163,14 @@ public class AttackHandlerTests : IDisposable
         parsed.Read(new ArraySegment<byte>(hitPacket));
         Assert.Equal(PlayerEntityId, parsed.attackerEntityId);
         Assert.Equal(EnemyEntityId, parsed.targetEntityId);
-        Assert.Equal(ExpectedBaseDamage, parsed.damage);
-        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedBaseDamage, parsed.currentHp); // 30 - 10 = 20
-        Assert.Equal(GameMap.NormalEnemyMaxHp, parsed.maxHp);                                   // 30
+        // M4.1 Phase 05 회귀 갱신: Warrior(Attack=15) + BaseDamage=10 - Defense=0 = 25.
+        Assert.Equal(ExpectedDamage, parsed.damage);
+        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedDamage, parsed.currentHp); // 30 - 25 = 5
+        Assert.Equal(GameMap.NormalEnemyMaxHp, parsed.maxHp);                      // 30
 
         // 권위 상태(enemy.Hp)도 같이 갱신됨 — broadcast와 정합.
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedBaseDamage, enemy.Hp);
+        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedDamage, enemy.Hp);
         Assert.False(enemy.IsDead);
 
         // Death broadcast 없어야 — Hp=20 > 0이라 kill 분기 미진입.
@@ -217,7 +228,8 @@ public class AttackHandlerTests : IDisposable
         Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_EntityDeath));
 
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedBaseDamage, enemy.Hp); // 20 (한 번만)
+        // M4.1 Phase 05 회귀 갱신: 첫 hit 후 Hp = 30 - 25 = 5 (한 번만).
+        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedDamage, enemy.Hp);
     }
 
     [Fact]
@@ -245,7 +257,8 @@ public class AttackHandlerTests : IDisposable
     [Fact]
     public void KillBroadcast_HpZero_BroadcastsDeath_RemovesFromMap()
     {
-        // arrange: handshake + in-range. HP 30 + damage 10 → 3회 공격 필요.
+        // M4.1 Phase 05 회귀 갱신: HP 30 + damage 25 → 2회 공격 필요 (옛 3회).
+        // 1번째: 30 - 25 = 5. 2번째: 5 - 25 = -20 → IsDead. currentHp = -20 (Math.Max는 데미지에만 적용, Hp 자체는 음수 가능).
         // rate-limit 우회: 매 공격 후 `player.LastAttackTickMs = 0`으로 reset (production code 변경 X, public setter).
         TestGameSession s = SetupHandshakedSession();
         PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
@@ -253,24 +266,25 @@ public class AttackHandlerTests : IDisposable
         PlaceInRange(player!);
         s.SentPackets.Clear();
 
-        // 3회 공격 루프 — 매번 LastAttackTickMs reset으로 cooldown 우회.
+        // 2회 공격 루프 — 매번 LastAttackTickMs reset으로 cooldown 우회.
+        int hitsNeeded = (int)Math.Ceiling((double)GameMap.NormalEnemyMaxHp / ExpectedDamage); // 2
         long tick = 2;
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < hitsNeeded; i++)
         {
             player!.LastAttackTickMs = 0; // cooldown 우회 (테스트 hook = public setter 직접 사용)
             s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
             _map.Tick(tick++);
         }
 
-        // 검증: S_HitResult 3건 (각 -10), S_EntityDeath 1건.
-        Assert.Equal(3, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
+        // 검증: S_HitResult 2건 (각 -25), S_EntityDeath 1건.
+        Assert.Equal(hitsNeeded, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
         Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_EntityDeath));
 
-        // 마지막 HitResult parsed = currentHp ≤ 0 (Hp=0 정확).
+        // 마지막 HitResult parsed = currentHp ≤ 0 (Math.Max는 데미지에만, Hp 음수 가능).
         byte[] lastHit = s.SentPackets.Last(p => PacketIdOf(p) == PacketID.S_HitResult);
         S_HitResult parsedHit = new S_HitResult();
         parsedHit.Read(new ArraySegment<byte>(lastHit));
-        Assert.Equal(0, parsedHit.currentHp);
+        Assert.True(parsedHit.currentHp <= 0);
 
         // S_EntityDeath payload = entityId 정합.
         byte[] deathPacket = s.SentPackets.First(p => PacketIdOf(p) == PacketID.S_EntityDeath);
@@ -292,8 +306,10 @@ public class AttackHandlerTests : IDisposable
         PlaceInRange(player!);
         s.SentPackets.Clear();
 
+        // M4.1 Phase 05 회귀 갱신: 2회 hit으로 Normal enemy 사망 (옛 3회).
+        int hitsNeeded = (int)Math.Ceiling((double)GameMap.NormalEnemyMaxHp / ExpectedDamage);
         long tick = 2;
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < hitsNeeded; i++)
         {
             player!.LastAttackTickMs = 0;
             s.OnRecvPacket(AttackPacketBytes(EnemyEntityId));
@@ -303,7 +319,7 @@ public class AttackHandlerTests : IDisposable
         Assert.False(_map.Enemies.ContainsKey(EnemyEntityId));
         int hitsAfterKill = CountPacketsOfType(s.SentPackets, PacketID.S_HitResult);
         int deathsAfterKill = CountPacketsOfType(s.SentPackets, PacketID.S_EntityDeath);
-        Assert.Equal(3, hitsAfterKill);
+        Assert.Equal(hitsNeeded, hitsAfterKill);
         Assert.Equal(1, deathsAfterKill);
 
         // act: kill 후 추가 attack → idempotent 검증. cooldown reset해서 *최대한* 통과 시도.

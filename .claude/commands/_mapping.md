@@ -1,5 +1,7 @@
 # 옛 16 → 새 10 슬래시 매핑 (Phase 05 최종)
 
+> **⚠️ ADR-025 (2026-05-24)**: 본 문서가 가리키는 *트랙 B (학습/일지)* 자체가 은퇴됨. 아래 "트랙 B 이관" 내용은 이제 *역사 기록*. 학습은 knowledge(트랙 A)만 유지, 잔존 `learning-journal/{본인}/`는 보존.
+>
 > **상태**: M3.5 Phase 05 산출물. Phase 06 전환 시점에 본 폴더 안 .md → `.claude/commands/`로 일괄 mv + 옛 8개 슬래시 삭제 + `00_Document/commands-index.md` 재작성.
 >
 > **본 문서의 역할**: 옛 운영 슬래시 17개(학습 5 + 일지 3 + 작업 5 + 세션 3 + setup 1)를 새 운영 슬래시 10개로 다이어트 + rename + 신설하는 결정 표. 이관 처도 명시.
@@ -26,7 +28,7 @@
 | `/learn:concept` | (제거) | 본인 노션 "Dawnholder 학습 일지" DB 또는 잔존 `learning-journal/{본인}/concepts/` |
 | `/learn:dumb-it-down` | (제거) | 대화 안에서 자연스럽게 처리 (Claude 직접 응답) |
 | `/learn:explain` | (제거) | 대화 안에서 자연스럽게 처리 (Claude 직접 응답) |
-| `/learn:recap` | (제거) | `/session:start`가 흡수 (CONTEXT.md "현재 멈춤 지점" 자동 출력) |
+| `/learn:recap` | (제거) | `/session:start`가 흡수 (work-pin 자동 주입) |
 | `/learn:why` | (제거) | 대화 안에서 자연스럽게 처리 + ADR/policies 참조 |
 
 **왜 제거 가능한가**: 옛 5개는 *학습 토큰 절약 슬래시*였음. 새 모델은 Claude 응답 안에서 자연스럽게 *질문하면 풀어 설명* 정신 그대로 적용. 슬래시 양식이 *학습을 더 잘하게* 만들지 않음. 노션 박제는 *기록 차원*이지 *학습 활동* 자체가 아님.
@@ -56,7 +58,7 @@
 | 옛 슬래시 | 새 슬래시 | 변경 |
 |---|---|---|
 | `/session:start` | `session/start.md` | 유지 + 정합 갱신 (work-pin 압축 양식 30~40줄 정합 + CHANGELOG 확인 절차 + git 게이트 (B+) 정책 유지) |
-| `/session:end` | `session/end.md` | 유지 + 정합 갱신 (Phase 완료 권유 정합 + 자동 CONTEXT.md 갱신 흐름 유지 + 등급별 마감 절차 분기) |
+| `/session:end` | `session/end.md` | 유지 + 정합 갱신 (Phase 완료 권유 정합 + work-pin 갱신 흐름 — ADR-025로 CONTEXT 동기 은퇴 + 등급별 마감 절차 분기) |
 | `/session:log` | `session/log.md` | 유지 + 정합 갱신 (ADR-016 그대로 + 트랙 A/B 분리 정신 박힘) |
 
 ### 진입점 (1개) — 1 유지

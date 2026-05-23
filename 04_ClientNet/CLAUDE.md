@@ -13,6 +13,7 @@
 ├── Dawnholder.Client.Net.csproj  .NET Standard 2.1 (ADR-010)
 ├── ClientSession.cs              PacketSession 기반, OnConnected/OnRecv/OnSend
 ├── Connector.cs                  비동기 connect (헤드리스 봇 재사용 — ADR-011 자리잡이 효과)
+├── FrameValidator.cs             frame 헤더 검증 helper (M4.1 Phase 03 — 02_Server/Network/FrameValidator.cs와 동기화 약속)
 ├── RecvBuffer.cs                 수신 ring buffer (서버와 동형 구조)
 ├── SendBuffer.cs                 송신 ring buffer (자리잡이 — M5+ broadcast 최적화 시 활용)
 └── SmokeProbe.cs                 연결 smoke test 유틸 (현재 미사용, 자리잡이)
@@ -35,7 +36,9 @@
 
 ## 헌법 #3 (Trust Boundary) 정합
 
-ClientSession은 *trusted server*에서 받지만, `02_Server`의 length-check 누락 위반(M2.5 Phase 09 fix 대상)과 *동형 패턴*. 서버 fix 시 본 영역도 같은 helper로 동반 정정 권장 (M2.5 Phase 09에서 묶음).
+M4.1 Phase 03 봉합 완료 (2026-05-23). `FrameValidator` helper가 클라/서버 양쪽 각자 박힘 — 옵션 B 변형, ServerCore 재사용성 정신 보존. 두 helper는 같은 시그니처(`TryValidateFrameHeader(ushort, out string?)`) + 같은 상수(`MinFrameSize=4`, `MaxFrameSize=4096`) 동기화 약속으로 헌법 #4 정신을 유지합니다. 어느 한쪽 상수/시그니처 변경 시 반드시 양쪽 동시 변경 의무.
+
+봉합된 결함 3종: `dataSize=0` 무한 루프 / `dataSize<4` 깨진 frame 해석 / `dataSize>4096` disconnect 안 됨. 검증 실패 시 `Disconnect()` 호출(silent drop X, 헌법 #3 정합).
 
 ## 변경 머지 전
 

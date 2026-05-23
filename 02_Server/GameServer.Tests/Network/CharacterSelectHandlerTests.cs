@@ -52,6 +52,9 @@ public class CharacterSelectHandlerTests : IDisposable
         public override void Disconnect() { DisconnectCalls++; }
 
         // CompleteHandshakeAndEnter는 protected internal — handshake 우회용.
+        // M4.1 Phase 02: CompleteHandshakeAndEnter()가 EnterGameWorld를 직접 호출 안 함.
+        // CharacterSelectHandlerTests는 class 선택 핸들러 검증 목적 — handshake만 우회, class 선택은 테스트 대상.
+        // EnterGameWorldIfReady() 호출 안 함 (class 선택 후 월드 진입이 테스트 대상).
         public void BypassHandshake() => CompleteHandshakeAndEnter();
 
         // HasSelectedClass는 GameSession.HasSelectedClass (internal getter) 직접 접근.

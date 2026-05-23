@@ -48,14 +48,14 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
   Handshake OK, 30s 동안 disconnect 0회
 ```
 
-## 결정 흐름 (학습 일지 쓸 때 참고용)
+## 결정 흐름 (회고 참고용)
 - 갈래/대안 → 채택안 → 이유 (한두 줄씩)
 
 ## 막혔던 지점 (있다면)
 - 증상 → 원인 → 해결 (각 한두 줄)
 
-## 학습 일지 후보 키워드
-- (트랙 B — 본인 노션 "Dawnholder 학습 일지" DB) 깊이 학습 펼칠 키워드들 (ADR-022 — 옛 `/journal:concept` 제거, Claude 자연어 인터뷰 도움 가능)
+## 학습 키워드 (검색용)
+- 나중에 회고/면접 준비 시 펼칠 키워드들 (자율 — 학습 추적 트랙 B는 ADR-025로 은퇴, Claude 자연어 인터뷰 도움은 그대로 가능)
 ```
 
 ---
@@ -64,19 +64,19 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
 
 - **사실 박제**, 본인 회고 X. 회고는 `learning-journal/`에서 본인이 쓰는 영역.
 - **잊히기 전에**. 5단계 보고 직후 같은 응답에서 작성.
-- **간결하게**. 학습 일지의 *베이스*이지 학습 일지 자체가 아님.
-- **검색 가능하게**. "학습 일지 후보 키워드"는 미래의 본인이 본인 노션 트랙 B 또는 Claude 자연어 인터뷰("이 키워드 학습 일지 인터뷰 도와줘")로 펼칠 단서.
+- **간결하게**. 회고의 *베이스*이지 회고 자체가 아님.
+- **검색 가능하게**. "학습 키워드"는 미래의 본인이 노션 자유 양식 또는 Claude 자연어 인터뷰("이 키워드 학습 인터뷰 도와줘")로 펼칠 단서 (자율 — 트랙 B 은퇴, ADR-025).
 - **Notion 분업 정합**. 아래 "Notion 협업 분업 원칙" 섹션 참조.
 
 ---
 
 ## Notion 협업 분업 원칙
 
-> 2026-05-11 정합. ClaudeDev 원본(`-DONE.md`/`CONTEXT*`/`ADR.md`)과 Notion "Dawnholder 협업 히스토리" DB 사이의 역할 분담.
+> 2026-05-11 정합. ClaudeDev 원본(`-DONE.md` + 관련 ADR)과 Notion "Dawnholder 협업 히스토리" DB 사이의 역할 분담. (옛 `CONTEXT*` 원본은 ADR-025로 은퇴 — 세션 맥락은 work-pin + git history.)
 
 ### 역할
 
-- **Claude**: `-DONE.md` / `CONTEXT*` / `ADR.md`에 **사실·결정·트레이드오프·테스트·막힘**을 정확히 박제.
+- **Claude**: `-DONE.md` + 관련 ADR에 **사실·결정·트레이드오프·테스트·막힘**을 정확히 박제.
 - **Codex**: 그 원본을 **Notion용 회고·면접 자료로 재편집**. 문장 다듬기, 면접 답변 박스, 시각 구조화 담당.
 - **본인**: `learning-journal/`에서 회고·교훈·면접 답변 작성. AI는 인터뷰만.
 
@@ -133,8 +133,8 @@ Codex는 STAR 4섹션 박을 때 위 8 항목이 다 들어갔나 점검 후 박
 
 **Codex가 받을 input 셋** (Claude가 호출 시 path/내용 전달):
 - `01_Phases/<본인 네임스페이스>/M{N}-{slug}/{NN}-*-DONE.md` ← 해당 Phase, 1순위 베이스
-- `CONTEXT.md` + `CONTEXT_History.md` ← 세션 맥락
-- `00_Document/ADR.md` ← 관련 ADR-NNN 절
+- `.claude/state/current-pin.txt` (work-pin) + 최근 git/CHANGELOG ← 세션 맥락 (옛 `CONTEXT*`는 ADR-025로 은퇴)
+- `00_Document/ADR/` ← 관련 ADR-NNN 절
 - 본 템플릿 (`.claude/templates/done-md-template.md`) ← 분업 원칙·8단 구조 사양
 - `.claude/commands/session:log.md` ← Notion DB 스키마·페이지 생성 API 명세
 

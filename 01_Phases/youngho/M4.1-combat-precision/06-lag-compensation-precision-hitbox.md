@@ -1,8 +1,8 @@
 ---
 owner: youngho
 milestone: M4.1
-phase: 03
-title: lag compensation 200ms rewind + precision hitbox (AABB/capsule)
+phase: 06
+title: lag compensation 200ms rewind + AABB hitbox + B1/B3 sweep (옛 Phase 03 → 06 rename)
 status: pending
 grade: 복잡
 risk: trust-boundary
@@ -10,12 +10,13 @@ estimated: 3~5h
 domain: server
 ---
 
-# Phase 03: lag compensation 200ms rewind + precision hitbox
+# Phase 06: lag compensation 200ms rewind + AABB hitbox + B1/B3 sweep (P1)
 
 > **상태**: pending
 > **마일스톤**: M4.1
-> **등급**: 복잡 (1 도메인 server / ~150~200줄 / trust-boundary 위험 깃발)
+> **등급**: 복잡 (1 도메인 server / ~150~200줄 / trust-boundary 위험 깃발 + irreversible 깃발 plan-auditor 제안 흡수)
 > **담당**: server SubAgent (Sonnet) — reviewer Tier 2-A 자동 호출 예정 (코드 변경 + trust-boundary)
+> **rename 흔적 (2026-05-23)**: 옛 Phase 03 → 새 Phase 06 (M4.1 재구성 옵션 A', P0/P1 순서 정합 — P1 정밀도는 P0 신뢰도 베이스 후 진입). 옛 Phase 03 정신 (lag comp + AABB hitbox + PDL 4→5 bump) 그대로 + B1/B3 sweep 흡수 (Phase 01 β 발견). M3.8 ★★★ 통찰 2건 흡수 박힘 (Phase 03 학습 포인트 + 함정).
 
 ---
 
@@ -55,12 +56,14 @@ domain: server
 - [ ] `Shared.csproj` 재빌드 → `03_Client/Assets/Plugins/Shared/Shared.dll` 자동 복사 + commit
 - [ ] `ProtocolVersion.Current` = **4 → 5 bump** (헌법 #2 정합 — 필드 추가는 backward compatible이지만 클라 옛 빌드 호환성 위해 bump). **M3.8 Phase 03이 3→4 박은 후 본 M4.1 Phase 03이 4→5 별 bump** (2026-05-22 결정, 두 마일스톤 영역 분리 의미)
 - [ ] `98_Shared/CLAUDE.md` Current=4 → Current=5 정합 갱신 (M3.6 학습 정합, M3.8 Phase 03 박은 후 본 Phase에서 다시 갱신)
+- [ ] **B3 sweep (Phase 01 β 발견 흡수)**: 문서 잔재 v3 → v5 sweep — `98_Shared/CLAUDE.md:19` ProtocolVersion `Current=3` (실제 코드 = 4, Phase 03 후 = 5) + `00_Document/ARCHITECTURE.md:213` 같은 잔재. false-promise 변종 (M3.6 Phase 04 학습 정합) 재발 방지 의무.
 
-### 3단계: 클라 측 `C_Attack` 송신 정합
+### 3단계: 클라 측 `C_Attack` 송신 정합 + 옛 hardcoded sweep
 
 - [ ] `03_Client/Assets/Scripts/Combat/` 또는 `Input/` — `C_Attack` 송신 시점에 `clientTick` 박음
 - [ ] 응급 = `clientTick = NetworkBootstrap.LastReceivedServerTick` 또는 `MainThreadDispatcher` 보유 tick 사용 (Phase 01 Codex 결과로 결정)
 - [ ] 헤드리스 봇 (`99_Tools/headless-bot/`) 동일 박음
+- [ ] **B1 sweep (Phase 01 β 발견 흡수)**: `03_Client/Assets/Scripts/Input/LocalPlayerController.cs:72` `const float AttackRangeSq = 9.0f` 제거 또는 shared/client combat hint 상수로 연결. 서버 `CombatConstants.AttackRangeSquared`와 중복 박힌 가닥 봉합. Phase 03 AABB 전환 시 클라 target 추천이 옛 원형 range 붙들면 데모 체감 어긋남 차단. 헌법 #4 "복사-붙여넣기 금지" 정신 정합.
 
 ### 4단계: `GameMap.ProcessAttack` lag compensation rewind
 
@@ -107,6 +110,8 @@ domain: server
 - [ ] `C_Attack.attackerClientTick` 필드 PDL append-only 박힘 + ProtocolVersion 4→5 bump
 - [ ] `GameMap.ProcessAttack` lag compensation rewind 박힘 + 범위 검증 (≤ 4 tick) silent drop
 - [ ] precision hitbox = AABB 박힘 (`Hitbox.cs` + `Intersects` 메서드) + `dist²` 패턴 교체
+- [ ] **B1 sweep**: `LocalPlayerController.AttackRangeSq = 9.0f` 제거 또는 shared/client combat hint 상수로 연결 (Phase 01 β 발견 흡수)
+- [ ] **B3 sweep**: `98_Shared/CLAUDE.md` + `00_Document/ARCHITECTURE.md` ProtocolVersion v3 → v5 잔재 정정 (Phase 01 β 발견 흡수, false-promise 변종 재발 방지)
 - [ ] 단위 테스트 8건+ 통과 (LagCompensationTests 5건 + HitboxTests 3건)
 - [ ] 부하 봇 lag 200ms 환경에서 hit 일관성 검증 + lag 250ms 환경에서 silent drop 검증
 - [ ] 본 Phase 복잡 등급 = **-DONE.md 박음** (요약 + 사실 박제 + 학습 키워드)
@@ -135,6 +140,7 @@ domain: server
 - **AABB vs capsule trade-off** — AABB = 축 정렬 박스, 단순·빠름 (계산 ~5 비교). capsule = 점프·회전 정합, 비용 ↑ (계산 ~20 비교). 학부생 호흡 = AABB 첫 도입, capsule은 본 마감 전 별 Phase.
 - **PDL append-only + ProtocolVersion bump** — 필드 추가는 backward compatible (옛 클라가 새 필드 모르고 default 0 박힘)이지만 옛 빌드 호환성 위해 bump. 헌법 #2 가짜 약속 1번째 봉합(M3 Phase 02) 학습 정합 패턴.
 - **ring buffer 정합** — fixed-size 배열 + head index 회전 = 메모리 일정 + GC 부담 X. 게임 엔진 표준 패턴 (NGO `NetworkTransform`, Mirror `SnapshotInterpolator` 정합).
+- **★★★ 클라 입력 컨트롤이 서버 부담 ↓ (M3.8 본인 통찰 흡수)** — 공격 cooldown 같은 클라 측 입력 게이트가 *서버 권위는 그대로* 두면서 (헌법 #1 정합 — 서버 rate-limit는 본 Phase 4단계에 박힘) 서버 검증 부담 + Reconcile 끊김 ↓. 본 Phase 3단계 클라 측 `C_Attack` 송신 시 쿨다운 게이트 권유 (예: 마지막 attack tick 박아두고 N tick 안 송신 X). 일거삼득 = 시각 부드러움 / 대역폭 / 서버 부담 ↓. 헌법 #1 = 보안 게이트, 클라 입력 컨트롤 = UX 게이트 (두 영역 분리).
 
 ---
 
@@ -146,6 +152,7 @@ domain: server
 - **ProtocolVersion 정합 누락 함정 (학습 정합)** — M3.6 Phase 04 학습 = 98_Shared/CLAUDE.md "Current=N" 박힌 stale 봉합 정합. 본 Phase 4 bump 시 동시 정정 의무.
 - **Shared.dll commit 누락 함정 (트라우마)** — CHANGELOG 2026-05-17 학습. PDL 변경 시 PacketGenerator 재생성 + Shared.dll commit + Unity 측 자동 복사 확인 3종 의무.
 - **trust-boundary 위험 깃발** — 본 Phase frontmatter `risk: trust-boundary` 박힘. risk-detector Hook 자동 검출 + reviewer SubAgent 5축 점검 의무. 검증 통과 전 commit 게이트.
+- **★★★ 새 race 차원 도입 함정 (M3.8 본인 통찰 흡수)** — 본 Phase = ring buffer 갱신 (tick thread, 1단계) + rewind 시점 lookup (tick thread, 4단계) + `attackerClientTick` 수신 (network thread → tick thread dispatch). M2.5 GameSession 내부 race + M3.8 5-C Listener accept race 봉합 박혔지만 본 Phase는 *또 다른 race 차원* 도입. "한 차원 race 봉합 ≠ 다른 차원 race 안전 보장" 정합 — ring buffer 갱신 시점 vs rewind lookup 시점 정합 audit 의무 (예: rewind 호출 시 같은 tick에 record 박혔는지 / network thread가 ring buffer 직접 접근 X 검증). reviewer SubAgent Tier 2-A 호출 시 *race 차원 audit* 항목 명시.
 
 ---
 
@@ -168,3 +175,5 @@ domain: server
 ## 작업 로그
 
 - 2026-05-22: Phase 정의 박힘 (M4.1 plan 박는 시점)
+- 2026-05-23: M3.8 ★★★ 본인 통찰 2건 흡수 — (1) 학습 포인트 추가 = 클라 입력 컨트롤이 서버 부담 ↓ (헌법 #1 = 보안 / 클라 게이트 = UX 영역 분리), (2) 함정 추가 = 새 race 차원 도입 audit 의무 (ring buffer 갱신 vs rewind lookup 시점 정합).
+- 2026-05-23: M4.1 Phase 01 β 발견 흡수 (γ 비교 결정 옵션 A). (1) 3단계 = B1 sweep 박음 (`LocalPlayerController.AttackRangeSq = 9.0f` 제거 또는 shared 연결, 서버 `CombatConstants.AttackRangeSquared` 중복 봉합), (2) 2단계 = B3 sweep 박음 (`98_Shared/CLAUDE.md` + `00_Document/ARCHITECTURE.md` ProtocolVersion v3 잔재 sweep, false-promise 변종 재발 방지), (3) 완료 조건 2건 추가. γ 비교 산출물 = `00_Document/reviews/2026-05-23-cross-review-m4.1-phase01.md`.

@@ -100,9 +100,8 @@ project-root/
 ├── Dawnholder.slnx               .NET 솔루션 (02_Server + 04_ClientNet + 98_Shared)
 ├── global.json                   .NET SDK 핀
 ├── CLAUDE.md                     프로젝트 헌법 (단일 진실 공급원)
-├── CONTEXT.md                    세션 핸드오프 (응축, 200줄 한도)
-├── CONTEXT_History.md            CONTEXT 갱신 이력 (외부화)
 └── .claude/                      Harness (agents, commands, hooks, templates)
+                                  └ state/current-pin.txt = 세션 간 단일 핸드오프 (ADR-025, gitignore)
 ```
 
 ---
@@ -210,7 +209,7 @@ PDL 신규 패킷은 append-only ID로 추가됐다.
 | 14 | `S_EntityDeath` | entity lifecycle death/despawn |
 | 15 | `S_StageClear` | boss death 이후 game event |
 
-`ProtocolVersion.Current = 3`은 Phase 06에서 bump됐다. Phase 07의 `S_StageClear`는 같은 emergency PR 안의 additive packet이라 v3을 유지한다.
+`ProtocolVersion.Current = 4`는 M3.8 Phase 03에서 3→4 bump됐다 (캐릭터 선택 도입 = `C_CharacterSelect` 박힘). M4.1 Phase 06에서 4→5 별 bump 예정 (`C_Attack.attackerClientTick` 필드 추가, lag compensation 영역). M3 Phase 07의 `S_StageClear`는 같은 emergency PR 안의 additive packet이라 그 시점 v3 유지 박혔다.
 
 Combat packet 처리 경로:
 

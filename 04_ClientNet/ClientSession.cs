@@ -48,6 +48,18 @@ public abstract class PacketSession : ClientSession
 
             // 패킷이 통째로 도착했는지 확인.
             ushort dataSize = BitConverter.ToUInt16(buffer.Array!, buffer.Offset);
+
+            // M4.1 Phase 03 (Trust Boundary): invalid frame size fail-closed.
+            // 순서 중요 — 정상 분할 패킷(buffer.Count < dataSize) 체크보다 *먼저*.
+            // 안 그러면 dataSize=0(무한루프) / dataSize=70000(attack frame)이
+            // wait에 잡혀 disconnect 안 됨 — 결함 3종 봉합.
+            if (!FrameValidator.TryValidateFrameHeader(dataSize, out var reason))
+            {
+                Console.WriteLine($"[Trust] invalid frame size {dataSize} ({reason}) — disconnect");
+                Disconnect();
+                return processLen;
+            }
+
             if (buffer.Count < dataSize)
                 break;
 

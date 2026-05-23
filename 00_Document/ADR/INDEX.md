@@ -33,7 +33,7 @@
 
 | 번호 | 결정 | 파일 |
 |------|------|------|
-| ADR-013 | -DONE.md 페어 박제 정책 (AI=사실 / 본인=회고 분업) | [harness/ADR-013-done-md-pair.md](harness/ADR-013-done-md-pair.md) |
+| ADR-013 | -DONE.md 페어 박제 정책 (AI=사실 / 본인=회고 분업) *(회고 절반 superseded — ADR-025)* | [harness/ADR-013-done-md-pair.md](harness/ADR-013-done-md-pair.md) |
 | ADR-014 | 문서 세분화 정책 (220줄 임계 + 헌법 350줄 예외) | [harness/ADR-014-doc-length-thresholds.md](harness/ADR-014-doc-length-thresholds.md) |
 | ADR-015 | Post-flight 게이트 (validate-phase-gate.sh 훅) | [harness/ADR-015-postflight-gate.md](harness/ADR-015-postflight-gate.md) |
 | ADR-016 | Notion 협업 3자 분업 (Claude / Codex / 본인) | [harness/ADR-016-notion-3way.md](harness/ADR-016-notion-3way.md) |
@@ -42,8 +42,9 @@
 | ADR-020 | 훅 실행 환경 의존성 (Git Bash on Windows) + 검증 패턴 | [harness/ADR-020-hook-env-deps.md](harness/ADR-020-hook-env-deps.md) |
 | ADR-021 | 클라이언트 UI는 별도 Additive Scene으로 분리 | [harness/ADR-021-client-ui-additive-scene.md](harness/ADR-021-client-ui-additive-scene.md) |
 | ADR-022 | 새 하네스 v1 (M3.5 — 5/20 의논 + NDREAM 패턴 흡수 + KPI 전환) | [harness/ADR-022-new-harness-v1.md](harness/ADR-022-new-harness-v1.md) |
-| ADR-023 | work-pin/CONTEXT 동기화 결함 — 진행 단계 stale hole 봉합 (M3.7 — 옵션 C 게이트 보강, `/session:start` drift 발견 단계 신설) | [harness/ADR-023-sync-gate-progress-stale-hole.md](harness/ADR-023-sync-gate-progress-stale-hole.md) |
+| ADR-023 | work-pin/CONTEXT 동기화 결함 — 진행 단계 stale hole 봉합 (M3.7 — 옵션 C 게이트 보강, `/session:start` drift 발견 단계 신설) *(CONTEXT 절반 superseded — ADR-025, drift 게이트는 work-pin 단독으로 유지)* | [harness/ADR-023-sync-gate-progress-stale-hole.md](harness/ADR-023-sync-gate-progress-stale-hole.md) |
 | ADR-024 | false-promise 주기적 감사 cadence (M3.7 — 누적 12건+ Rule of Three 3회 통과, 마일스톤 마감 + ad-hoc X건 트리거) | [harness/ADR-024-false-promise-cadence.md](harness/ADR-024-false-promise-cadence.md) |
+| ADR-025 | CONTEXT 3종 + 학습 일지 트랙 B 은퇴, work-pin 단일 핸드오프 (M4.1 — ADR-013 회고/ADR-023 CONTEXT/ADR-022 트랙 B 부분 supersede) | [harness/ADR-025-retire-context-trio-and-learning-track.md](harness/ADR-025-retire-context-trio-and-learning-track.md) |
 
 ---
 

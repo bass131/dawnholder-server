@@ -7,7 +7,7 @@
 #
 # 옛 validate-shared-changes.sh 흡수 + 다음 강화:
 #   1. PDL.xml 변경 검출 → 의무 3종 점검:
-#      (a) PacketGenerator 산출물 (GenPackets.cs / PacketFormat.cs) 재생성됐는지 (mtime)
+#      (a) PacketGenerator 산출물 (Generated/GenPackets.cs) 재생성됐는지 (mtime)
 #      (b) Shared.dll 변경 동반 (git status)
 #      (c) ProtocolVersion.cs 변경 검토 (필드 추가/재정렬 = breaking change → bump)
 #   2. 98_Shared/ 일반 변경 → 빌드 산출물 stale 검사 (mtime)
@@ -38,8 +38,8 @@ ERRORS=()
 WARNINGS=()
 
 PDL_XML="98_Shared/Protocol/PDL.xml"
-GEN_PACKETS="98_Shared/Protocol/GenPackets.cs"
-PACKET_FORMAT="98_Shared/Protocol/PacketFormat.cs"
+GEN_PACKETS="98_Shared/Protocol/Generated/GenPackets.cs"
+# (PacketFormat.cs는 PacketGenerator 내부 템플릿 클래스이지 98_Shared 산출물 아님 — 옛 stale 변수 제거)
 PROTOCOL_VERSION="98_Shared/Protocol/ProtocolVersion.cs"
 SHARED_DLL="03_Client/Assets/Plugins/Shared/Shared.dll"
 
@@ -54,7 +54,7 @@ case "$TOOL_INPUT_FILE" in
 
   1. PacketGenerator 재생성 실행:
      cd 99_Tools/PacketGenerator && dotnet run -- ../../98_Shared/Protocol/PDL.xml
-     → 산출물: GenPackets.cs + PacketFormat.cs 갱신
+     → 산출물: Generated/GenPackets.cs (+ Server/ClientPacketManager.cs) 갱신
 
   2. Shared.dll 갱신 commit 동반:
      dotnet build 98_Shared/  → Shared.dll 자동 복사 (CopyToUnityPlugins target)

@@ -39,7 +39,7 @@ Codex pre-M3 감사 (2026-05-18, `00_Document/reviews/2026-05-18-pre-m3-codex-re
 
 xUnit 통합 테스트(`02_Server/GameServer.Tests/Integration/M2BasicMovementIntegrationTests.cs`)에서 사용. ServerFixture (port 0 bind) + 봇 결정론 시나리오 + p99 자동 assert. LongRunning (100회 반복) Skip 처리.
 
-- **04_ClientNet 재사용 의존성** — `Dawnholder.Client.Net.csproj` 프로젝트 참조 (ADR-012 Y2 분리 정합). Connector.cs:21~25 "헤드리스 봇 재사용" 의도 박힘 활용 — *자리잡이 패턴 효과 3번째 증명* (CONTEXT.md 응축본 메모).
+- **04_ClientNet 재사용 의존성** — `Dawnholder.Client.Net.csproj` 프로젝트 참조 (ADR-012 Y2 분리 정합). Connector.cs:21~25 "헤드리스 봇 재사용" 의도 박힘 활용 — *자리잡이 패턴 효과 3번째 증명*.
 - **98_Shared 재사용** — 패킷 정의 공유 (헌법 #4 정합).
 
 ## 새 시나리오 추가 시

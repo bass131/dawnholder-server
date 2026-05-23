@@ -228,7 +228,7 @@ M3는 "보이기만 하면 OK" 응급 데모다. 다만 헌법 #1 서버 권위,
 - boss-as-enemy-kind
 - stage-clear-authority-event
 
-M4 계획 분해 시 `CONTEXT_LearningJournalCandidates.md` 또는 phase DONE 문서에서 다시 회수한다.
+M4 계획 분해 시 phase DONE 문서 또는 본 backlog에서 다시 회수한다. (옛 `CONTEXT_LearningJournalCandidates.md`는 ADR-025로 은퇴.)
 
 ---
 

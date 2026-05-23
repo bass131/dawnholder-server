@@ -7,8 +7,17 @@
 
 ```
 02_Server/
+├── Network/            ServerCore — TCP socket 인프라 (M2 박힘, GameServer와 별 csproj)
+│   ├── Session.cs            PacketSession abstract base (length-prefixed framing)
+│   ├── Listener.cs           accept loop + race window fail-closed (M3.8 Phase 05 봉합)
+│   ├── Connector.cs          client connect (헤드리스 봇 재사용)
+│   ├── RecvBuffer.cs         수신 링 버퍼
+│   ├── SendBuffer.cs         송신 링 버퍼
+│   ├── FrameValidator.cs     frame 헤더 검증 helper (M4.1 Phase 03 — 04_ClientNet과 동기화 약속)
+│   ├── JobQueue.cs           작업 직렬화 큐
+│   └── PriorityQueue.cs      우선순위 큐 자리잡이
 ├── GameServer/
-│   ├── Network/        ServerCore + GameSession (PacketSession 상속)
+│   ├── Network/        Game 도메인 session — PacketSession 상속
 │   │   └── GameSession.cs    socket 콜백 + first-packet 게이트 + Dictionary dispatch +
 │   │                          캡슐화된 lifecycle/state 메서드 (CompleteHandshakeAndEnter
 │   │                          / RejectHandshake / SubmitMoveIntent / RespondPong)

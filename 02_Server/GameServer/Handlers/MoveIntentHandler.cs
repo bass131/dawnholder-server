@@ -16,6 +16,17 @@ internal sealed class MoveIntentHandler : IPacketHandler
 {
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
+        // M4.1 Phase 02 (P0-2 봉합 — 헌법 #3 trust boundary 강화):
+        // class 선택 전 C_MoveIntent 수신 시 silent drop + [Trust] 경고 로그.
+        // 이유: 캐릭터 선택 없이 movement를 처리하면 stats 없는 상태로 월드에 영향을 줄 수 있음.
+        // silent drop 선택 = disconnect보다 UX 부드러움 (reconnect storm 회피, M4.2에서 cheat-flag 박을 예정).
+        if (!session.HasSelectedClass)
+        {
+            Console.WriteLine(
+                $"[Trust] C_MoveIntent before CharacterSelect — silent drop (cheat-flag candidate)");
+            return;
+        }
+
         C_MoveIntent pkt = new C_MoveIntent();
         pkt.Read(buffer);
 

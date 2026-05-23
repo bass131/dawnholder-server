@@ -15,8 +15,8 @@
 
 | 문서 종류 | 응답 | 예시 |
 |---|---|---|
-| 누적 섹션 있음 | 그 섹션을 별도 파일로 외부화. 원본은 참조 링크만. | `CONTEXT.md`의 "갱신 이력" → `CONTEXT_History.md` |
-| 응축 가능 | 재작성. 옛 디테일은 git/학습 일지/노션으로 위임. | `CONTEXT.md` 자체 (별도 200줄 임계 유지) |
+| 누적 섹션 있음 | 그 섹션을 별도 파일로 외부화. 원본은 참조 링크만. | `ADR.md` → `ADR/INDEX.md` 카테고리 외부화 |
+| 응축 가능 | 재작성. 옛 디테일은 git/CHANGELOG/노션으로 위임. | work-pin (`current-pin.txt`) 자체 (30~40줄 목표 재작성) |
 | 단위 작업 문서 | **자르지 않음**. 220줄 넘었다 = *작업 단위 등급이 너무 컸다*는 신호 → 등급 재산정 + `/work:plan`으로 더 잘게 분해. | Phase 파일, `-DONE.md` |
 | 슬래시 커맨드 | **응축 가능형 동일 룰**. 학부생 안내문은 외부 가이드(`team-guide.html` 등) 링크로 위임. 단계별 외부화(별도 커맨드 파일로 위임)는 재사용성 있을 때만. | `.claude/commands/session/end.md` |
 
@@ -45,7 +45,7 @@
 ### Level 2 → Level 3 (비대해진 카테고리만 사건별)
 
 ```
-CONTEXT_History/phases/
+ADR_History/phases/
 ├── INDEX.md
 ├── phase-01-complete.md
 └── phase-02-complete.md

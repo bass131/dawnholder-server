@@ -435,6 +435,13 @@ public class BossStageClearSmoke
                     handshake.Read(buffer);
                     HandshakeOk = handshake.ok;
                     HandshakeReason = handshake.reason;
+                    // M4.1 Phase 02 (P0-1/P0-2 봉합): handshake OK 후 즉시 C_CharacterSelect 송신.
+                    // 서버가 class 선택 없이 월드 진입을 차단하므로 S_EnterMap은 이 패킷 후에야 옴.
+                    if (handshake.ok)
+                    {
+                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
+                        _session?.Send(charSelect.Write());
+                    }
                     _handshake.Set();
                     break;
 

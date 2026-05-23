@@ -3,6 +3,7 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
+using Shared.GameData;
 using Shared.Protocol;
 
 namespace GameServer.Tests.Network;
@@ -41,8 +42,10 @@ public class BossStageClearTests : IDisposable
     const int BossEntityId = 2;
     const int PlayerEntityId = 3;
 
-    // CombatConstants internal — mirror 상수 (AttackHandlerTests 정합).
-    const int ExpectedBaseDamage = 10;
+    // M4.1 Phase 05 회귀 갱신: Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = 25.
+    // AttackHandlerTests와 같은 패턴 — Formulas 직접 참조로 drift 방지.
+    static readonly int ExpectedDamage = Formulas.ComputeDamage(
+        PlayerStats.Warrior(), default, baseDamage: 10);
 
     class TestGameSession : GameSession
     {
@@ -62,7 +65,14 @@ public class BossStageClearTests : IDisposable
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
 
-        public void BypassHandshake() => CompleteHandshakeAndEnter();
+        // M4.1 Phase 02: handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
+        // 본 테스트는 Boss/StageClear 전투 흐름 검증 목적 — state machine 순서는 테스트 대상 X.
+        public void BypassHandshake()
+        {
+            CompleteHandshakeAndEnter();   // _handshakeCompleted = true
+            SetCharacterClass(0);           // HasSelectedClass = true (Warrior)
+            EnterGameWorldIfReady();        // → EnterGameWorld() 호출
+        }
     }
 
     public BossStageClearTests()
@@ -129,8 +139,8 @@ public class BossStageClearTests : IDisposable
 
         s.SentPackets.Clear();
 
-        // act: 10회 attack (HP 100 → 0). 매번 LastAttackTickMs reset으로 cooldown 우회.
-        int hitsNeeded = GameMap.BossMaxHp / ExpectedBaseDamage; // 10
+        // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 4회 attack으로 Boss HP 100 → 0 (옛 10회).
+        int hitsNeeded = (int)Math.Ceiling((double)GameMap.BossMaxHp / ExpectedDamage); // 4
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
@@ -139,7 +149,7 @@ public class BossStageClearTests : IDisposable
             _map.Tick(tick++);
         }
 
-        // 검증: S_HitResult 10건 + S_EntityDeath 1건 + S_StageClear 1건.
+        // 검증: S_HitResult 4건 + S_EntityDeath 1건 + S_StageClear 1건.
         Assert.Equal(hitsNeeded, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
         Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_EntityDeath));
         Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_StageClear));
@@ -182,7 +192,8 @@ public class BossStageClearTests : IDisposable
         PlaceInRangeOfBoss(player!);
         s.SentPackets.Clear();
 
-        int hitsNeeded = GameMap.BossMaxHp / ExpectedBaseDamage; // 10
+        // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 4회 attack (옛 10회).
+        int hitsNeeded = (int)Math.Ceiling((double)GameMap.BossMaxHp / ExpectedDamage); // 4
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
@@ -229,8 +240,8 @@ public class BossStageClearTests : IDisposable
         PlaceInRangeOfNormalEnemy(player!);
         s.SentPackets.Clear();
 
-        // act: Normal enemy 죽임.
-        int hitsNeeded = GameMap.NormalEnemyMaxHp / ExpectedBaseDamage; // 3
+        // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 2회 attack으로 Normal HP 30 → 0 이하 (옛 3회).
+        int hitsNeeded = (int)Math.Ceiling((double)GameMap.NormalEnemyMaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {

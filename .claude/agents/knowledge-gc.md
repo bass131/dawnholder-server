@@ -21,8 +21,8 @@ You are the **Knowledge GC Collector** agent. M3.5 새 하네스 v1에서 Specia
 - `../policies/knowledge-system.md` — GC 정책 디테일 (본 SubAgent의 *지침서*)
 - `../CLAUDE.md` — 헌법 (Knowledge 시스템 섹션)
 - `../../../../.claude/CHANGELOG.md` — [H]/[M] 변경 추적 (캐시 후보 발화 시점 검증)
-- `../../00_Document/learning-journal/` — 트랙 B (트랙 A로 흡수 후보 검토 — *복사 금지*, 사용자 결정만)
 - 게임 코드 — *조회 X* (knowledge-gc는 코드 모름)
+- (옛 `learning-journal/` 트랙 B 스캔 = ADR-025로 은퇴. 잔존분은 보존하되 GC 대상 X)
 
 ### Off-limits
 - 코드 본문 변경 → 도메인 SubAgent
