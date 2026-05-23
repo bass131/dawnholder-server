@@ -23,6 +23,11 @@ namespace Dawnholder.Client.Network
         [SerializeField] int serverPort = 7777;
         [SerializeField] float pingIntervalSeconds = 1.0f;
 
+        // M3.8 Phase 05 5-B: MainMenu에서 PlayerPrefs.SetString("ServerHost", ...) 박은 값을 우선.
+        // 키 없거나 빈 문자열이면 인스펙터 박힌 serverHost 그대로 fallback.
+        // Hamachi 검증 / 발표장 비상시 즉석 변경 안전망.
+        const string ServerHostPrefsKey = "ServerHost";
+
         Connector _connector;
         UnityClientSession _session;
         float _accumSec;
@@ -30,7 +35,10 @@ namespace Dawnholder.Client.Network
 
         void Start()
         {
-            IPAddress ip = IPAddress.Parse(serverHost);
+            string host = PlayerPrefs.GetString(ServerHostPrefsKey, serverHost);
+            if (string.IsNullOrWhiteSpace(host)) host = serverHost;
+
+            IPAddress ip = IPAddress.Parse(host);
             IPEndPoint endPoint = new IPEndPoint(ip, serverPort);
 
             _connector = new Connector();
@@ -41,7 +49,7 @@ namespace Dawnholder.Client.Network
                 return _session;
             });
 
-            Debug.Log($"[Unity] Connect 시도 → {endPoint}");
+            Debug.Log($"[Unity] Connect 시도 → {endPoint} (PlayerPrefs host={host})");
         }
 
         void Update()
