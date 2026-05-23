@@ -17,8 +17,9 @@
     <DebugType>embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
 
-    <!-- M4.1 Phase 04: deterministic build for Client.Net.dll dirty 봉합.
-         Shared.csproj와 동형 패턴 (PathMap = 자기 프로젝트 디렉토리 → /_/). -->
+    <!-- M4.1 Phase 04: local dirty 방지용 deterministic build (Shared.csproj 동형).
+         *같은 환경에서 같은 소스 재빌드 시 같은 hash* 보장 (cross-machine은 별 가닥).
+         CI 환경 진입 시 ContinuousIntegrationBuild=true 추가 권장 — Codex β cross-review 2026-05-23 보강. -->
     <Deterministic>true</Deterministic>
     <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
 

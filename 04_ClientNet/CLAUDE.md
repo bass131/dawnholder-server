@@ -13,6 +13,7 @@
 ├── Dawnholder.Client.Net.csproj  .NET Standard 2.1 (ADR-010)
 ├── ClientSession.cs              PacketSession 기반, OnConnected/OnRecv/OnSend
 ├── Connector.cs                  비동기 connect (헤드리스 봇 재사용 — ADR-011 자리잡이 효과)
+├── FrameValidator.cs             frame 헤더 검증 helper (M4.1 Phase 03 — 02_Server/Network/FrameValidator.cs와 동기화 약속)
 ├── RecvBuffer.cs                 수신 ring buffer (서버와 동형 구조)
 ├── SendBuffer.cs                 송신 ring buffer (자리잡이 — M5+ broadcast 최적화 시 활용)
 └── SmokeProbe.cs                 연결 smoke test 유틸 (현재 미사용, 자리잡이)

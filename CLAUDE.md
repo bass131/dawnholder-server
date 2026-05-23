@@ -98,7 +98,7 @@
 99_Tools/      헤드리스 봇, 컨텐츠 도구, 시뮬레이션 하니스.
 ```
 
-루트의 `Dawnholder.slnx`(.NET 솔루션)는 `02_Server/`와 `98_Shared/`의 csproj를 묶습니다. `03_Client/`는 Unity가 자체 솔루션을 관리합니다.
+루트의 `Dawnholder.slnx`(.NET 솔루션)는 `02_Server/`, `04_ClientNet/`, `98_Shared/`, `99_Tools/`의 csproj를 묶습니다. `03_Client/`는 Unity가 자체 솔루션을 관리합니다 (Unity가 `98_Shared/`와 `04_ClientNet/`의 빌드 산출물 DLL만 참조).
 
 ---
 

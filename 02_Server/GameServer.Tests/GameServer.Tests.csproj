@@ -24,6 +24,11 @@
     <ProjectReference Include="..\..\98_Shared\Shared.csproj" />
     <!-- Phase 08 Step 4: M2BasicMovement 시나리오 import (EXE 프로젝트도 net 10.0에선 참조 가능). -->
     <ProjectReference Include="..\..\99_Tools\headless-bot\HeadlessBot.csproj" />
+    <!-- M4.1 Phase 03 후속 (Codex β cross-review 보강): FrameValidatorSymmetryTests 전용 참조.
+         옵션 B 변형(서버/클라 각자 FrameValidator)의 *동등 보호*를 commit 시점에 자동 검출.
+         ADR-012 Y2 분리 정신 정합 — 본 참조는 *contract test 전용*, production code 흐름에서는
+         서버 측이 클라 측 어셈블리 참조 X. -->
+    <ProjectReference Include="..\..\04_ClientNet\Dawnholder.Client.Net.csproj" />
   </ItemGroup>
 
 </Project>

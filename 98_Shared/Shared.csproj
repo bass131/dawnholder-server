@@ -11,11 +11,15 @@
     <DebugType>embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
 
-    <!-- M4.1 Phase 04: deterministic build for Shared.dll dirty 봉합.
+    <!-- M4.1 Phase 04: local dirty 방지용 deterministic build.
          EmbedAllSources + DebugType=embedded와 결합 시, 절대 경로/timestamp가
          dll에 임베드 박혀 매 빌드마다 hash 달라짐 → SkipUnchangedFiles 항상 실패 →
-         매번 Unity Plugins/Shared.dll 갱신 → git dirty. Deterministic + PathMap으로
-         "같은 소스 + 다른 환경 = 같은 hash" 보장. -->
+         매번 Unity Plugins/Shared.dll 갱신 → git dirty.
+         Deterministic + PathMap으로 *같은 환경에서 같은 소스 재빌드 시 같은 hash* 보장.
+         주의 (Codex β cross-review 2026-05-23 보강) — *cross-machine* reproducible은 별 가닥.
+         deterministic 입력에는 compiler 정확한 버전, 참조 assembly, culture, encoding, analyzer 등 포함되고
+         global.json rollForward 정책에 따라 팀원 SDK feature band가 달라지면 hash 깨짐.
+         CI 환경 진입 시 ContinuousIntegrationBuild=true 옵션 추가가 정석 (현재 CI 환경 없어 backlog). -->
     <Deterministic>true</Deterministic>
     <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
   </PropertyGroup>
