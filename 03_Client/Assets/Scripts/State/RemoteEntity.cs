@@ -27,9 +27,10 @@ namespace Dawnholder.Client.State
     [DisallowMultipleComponent]
     public class RemoteEntity : MonoBehaviour
     {
-        // 200ms 지연 — packet jitter 흡수 윈도우. 서버 SnapshotTickInterval(=5 × 50ms = 250ms)보다 짧게
-        // 잡아 buffer 빔 빈도 낮춤 + 시각적 lag 체감 최소화. 정밀 값은 Phase 09 리허설에서 튜닝.
-        const float InterpolationDelay = 0.2f;
+        // 150ms 지연 — packet jitter 흡수 윈도우. 서버 SnapshotTickInterval(=2 × 50ms = 100ms)보다 살짝 길게
+        // 잡아 buffer 1~2개 항상 풍부 + 보간 자연. 옛 200ms(서버 250ms 시절)은 buffer 매번 빔 → 정지 패턴 결함.
+        // M3.8 Phase 05 시연 검증 시점에 100ms broadcast + 150ms 보간 콤보로 봉합. 정밀 튜닝은 M4+ 별 시점.
+        const float InterpolationDelay = 0.15f;
 
         // 메모리 위생: receivedAt - BufferRetention 이전 항목 제거. 보간 윈도우(0.2s) + 여유(0.8s).
         const float BufferRetention = 1.0f;

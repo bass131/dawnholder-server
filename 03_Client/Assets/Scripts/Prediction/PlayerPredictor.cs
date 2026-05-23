@@ -38,9 +38,12 @@ namespace Dawnholder.Client.Prediction
     //   도입으로 mispredict 가능성 양축에 박힘.
     public class PlayerPredictor
     {
-        // Phase 05 튜닝 (1.0f). Phase 07도 같은 값 유지 — 점프 정상 동작 시 클라/서버 일치하므로
-        // 일시 reconcile은 lag 환경(200ms+)에서만 발생. M3+에서 X/Y 별도 threshold 검토.
-        public const float SnapThreshold = 1.0f;
+        // Phase 05 튜닝 1.0f → M3.8 Phase 05 검증 시점 1.5f 갱신.
+        // 사유: SnapshotTickInterval 5→2 (250ms→100ms broadcast 10Hz)로 박은 후 mispredict 검사
+        // 빈도 4배 ↑ → 점프 중 클라 가변 dt vs 서버 fixed dt drift 누적이 1.0f 초과 빈도 ↑ →
+        // 점프할 때 reconcile snap 자주 → 끊김 결함. 1.5f로 작은 drift 흡수.
+        // 헌법 #1 영향 X — 큰 cheat (텔레포트)은 여전히 reconcile, 서버는 권위 그대로.
+        public const float SnapThreshold = 1.5f;
 
         public Vector2 Position { get; private set; }
         public Vector2 Velocity { get; private set; }     // Phase 07: Y 속도 추가

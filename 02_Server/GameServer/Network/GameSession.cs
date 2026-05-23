@@ -381,13 +381,26 @@ public class GameSession : PacketSession
     }
 
     public override void OnSend(int numOfBytes)
-        => Console.WriteLine($"[GameSession] OnSend {numOfBytes} bytes");
+    {
+        // M3.8 Phase 05 시연 검증 시점 봉합: 본 로그는 N=2 환경에서 40+/sec 박혀
+        // 콘솔 spam → 누적 결함 처럼 보임 (실제는 정상 빈도). 디버그 필요 시 verbose
+        // 게이트 또는 M5+ Serilog 도입 시 Trace 레벨에서. 봉합 결정 서버 SubAgent
+        // 진단 1순위 정합 (호출 빈도 자체는 정상, 로그 verbose만 결함).
+    }
 
     public override void OnRecvPacket(ArraySegment<byte> buffer)
     {
         ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
         PacketID id = (PacketID)packetId;
+
+        // M3.8 Phase 05: 패킷 종류 추적 로그. 단 spam 패킷 (C_MoveIntent 20Hz × N 클라 / C_Ping 자주)은
+        // 제외 — OnSend 시각 spam 결함 패턴 반복 차단. Handshake/Attack/Unknown 등 드문 패킷만 박음
+        // (디버그 가치 ↑, 콘솔 가독성 유지). M5+ Serilog 도입 시 Trace 레벨에서 모든 패킷 박을 예정.
+        if (id != PacketID.C_MoveIntent && id != PacketID.C_Ping)
+        {
+            Console.WriteLine($"[GameSession] OnRecv {id} ({buffer.Count} bytes)");
+        }
 
         // M3 Phase 02 (헌법 #2 봉합): first-packet 강제. handshake 통과 전엔 다른 dispatch X.
         // **M3 Phase 03**: dispatch는 HandlerRegistry로 위임하되 게이트는 session 책임 (lifecycle 캡슐화).
