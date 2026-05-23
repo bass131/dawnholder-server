@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1. 왜 필요한가 · Dawnholder M4.1 Phase 06</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="glyph">◆</span> Dawnholder</div>
+    <div class="subtitle">M4.1 Phase 06<br>Lag Compensation + AABB Hitbox</div>
+    <nav>
+      <ul class="nav">
+        <li><a href="index.html"><span class="num">0</span>개요</a></li>
+        <li><a href="1-problem.html" class="active"><span class="num">1</span>왜 필요한가</a></li>
+        <li><a href="2-ring-buffer.html"><span class="num">2</span>위치 기록 (Ring Buffer)</a></li>
+        <li><a href="3-rewind.html"><span class="num">3</span>되감기 (Rewind)</a></li>
+        <li><a href="4-cheat-defense.html"><span class="num">4</span>신뢰 경계 (Cheat 차단)</a></li>
+        <li><a href="5-aabb-hitbox.html"><span class="num">5</span>AABB Hitbox</a></li>
+        <li><a href="6-implementation.html"><span class="num">6</span>전체 구현 잇기</a></li>
+        <li><a href="7-tests-result.html"><span class="num">7</span>테스트 & 결과</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="eyebrow">Chapter 1</div>
+    <h1>왜 지연 보상이 필요한가</h1>
+
+    <div class="learn-box">
+      <b>이 페이지에서 배울 것</b><br>
+      인터넷에는 항상 "지연(latency, 신호가 오가는 데 걸리는 시간)"이 존재합니다. 이 페이지에서는 200ms라는 지연이 전투 게임에서 구체적으로 어떤 문제를 일으키는지, 그리고 "공정성"과 "서버 권위(server authority)"라는 두 원칙이 왜 충돌하는지를 그림과 함께 이해합니다. 해결책의 이름은 미리 말하면 <b>lag compensation(지연 보상)</b>입니다.
+    </div>
+
+    <h2>200ms가 뭐길래</h2>
+    <p>우리 서버는 <strong>20 TPS(Ticks Per Second, 초당 20번 갱신)</strong>로 돌아갑니다. 즉 서버는 50ms마다 한 번씩 "틱(tick)"을 돌며 세계를 한 칸씩 진행시킵니다. 따라서 1틱 = 50ms이고, <strong>4틱 = 200ms</strong>가 됩니다. 이 200ms는 추상적인 숫자가 아니라, 현실에서 흔히 겪는 인터넷 왕복 지연(한국 내 게임 서버 기준으로도 충분히 나올 수 있는 값)입니다.</p>
+
+    <p>문제는 이 200ms 동안 화면 속 적이 가만히 있지 않는다는 점입니다. 플레이어의 화면에 "적이 여기 있다"고 보이는 순간, 그 정보는 사실 서버가 200ms 전에 보낸 과거의 모습입니다. 그 사이 서버에서는 적이 이미 다른 곳으로 이동했을 수 있습니다.</p>
+
+    <h2>"맞췄는데 빗나갔다" 문제</h2>
+    <p>아래 그림은 같은 순간을 두 시점에서 본 것입니다. 왼쪽은 <strong>발사자(공격하는 플레이어)의 화면</strong>, 오른쪽은 <strong>서버의 실제 상태</strong>입니다.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 760 300" role="img" aria-label="플레이어 화면과 서버 상태의 위치 불일치">
+        <rect class="svg-bg" x="0" y="0" width="760" height="300" rx="8"/>
+        <!-- 왼쪽: 플레이어 화면 -->
+        <text class="svg-label" x="40" y="34" font-weight="bold">① 플레이어 화면 (200ms 과거)</text>
+        <line class="svg-line" x1="40" y1="220" x2="350" y2="220"/>
+        <!-- 플레이어 -->
+        <rect class="svg-box" x="70" y="160" width="44" height="60" rx="6"/>
+        <text class="svg-small" x="74" y="240">나(공격)</text>
+        <!-- 적 (화면상 위치) -->
+        <rect class="svg-box-2" x="250" y="170" width="40" height="50" rx="6"/>
+        <text class="svg-small" x="246" y="240">적(보이는 위치)</text>
+        <!-- 조준선 -->
+        <line class="svg-arrow" x1="114" y1="185" x2="248" y2="190" stroke-dasharray="6 4"/>
+        <polygon points="248,190 238,184 238,196" fill="#4ea1ff"/>
+        <text class="svg-small" x="135" y="178" fill="#59d499">"명중!"</text>
+
+        <!-- 구분선 -->
+        <line x1="380" y1="20" x2="380" y2="280" stroke="#2a3442" stroke-width="1" stroke-dasharray="4 4"/>
+
+        <!-- 오른쪽: 서버 상태 -->
+        <text class="svg-label" x="420" y="34" font-weight="bold">② 서버 실제 상태 (현재)</text>
+        <line class="svg-line" x1="420" y1="220" x2="730" y2="220"/>
+        <!-- 플레이어 -->
+        <rect class="svg-box" x="450" y="160" width="44" height="60" rx="6"/>
+        <text class="svg-small" x="454" y="240">나</text>
+        <!-- 적 옛 위치 (반투명) -->
+        <rect x="630" y="170" width="40" height="50" rx="6" fill="#2a2113" stroke="#5c4a26" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text class="svg-small" x="610" y="158" fill="#5c6b7a">적이 있던 곳</text>
+        <!-- 적 현재 위치 (이동함) -->
+        <rect class="svg-box-2" x="690" y="170" width="40" height="50" rx="6"/>
+        <text class="svg-small" x="676" y="240">적(이동함)</text>
+        <!-- 이동 화살표 -->
+        <line class="svg-arrow-r" x1="672" y1="195" x2="688" y2="195"/>
+        <polygon points="690,195 680,189 680,201" fill="#ff6b6b"/>
+        <!-- 조준선이 빈 곳을 향함 -->
+        <line class="svg-arrow-r" x1="494" y1="185" x2="628" y2="190" stroke-dasharray="6 4"/>
+        <polygon points="630,190 620,184 620,196" fill="#ff6b6b"/>
+        <text class="svg-small" x="520" y="178" fill="#ff6b6b">"빗나감"</text>
+      </svg>
+      <div class="fig-cap">같은 공격 한 번. 왼쪽 플레이어 화면에선 명중이지만, 서버에선 적이 이미 이동해 빗나감으로 처리된다.</div>
+    </div>
+
+    <p>플레이어는 분명히 적을 조준하고 공격 버튼을 눌렀습니다. 하지만 그 공격이 서버에 도착했을 때, 서버 입장의 적은 이미 옆으로 이동한 뒤입니다. 그 결과 서버는 "빗나감"으로 판정하고, 플레이어는 "내가 분명히 맞췄는데?"라는 억울함을 느낍니다. 지연이 클수록 이 어긋남은 심해집니다.</p>
+
+    <h2>그냥 클라이언트 말을 믿으면 안 되나요?</h2>
+    <p>가장 쉬워 보이는 해결책은 "클라이언트가 맞췄다고 하면 그냥 맞은 걸로 처리하자"입니다. 하지만 이것은 우리 프로젝트의 <strong>가장 중요한 원칙</strong>을 정면으로 위반합니다.</p>
+
+    <div class="callout warn">
+      <div class="title">⚠️ 헌법 #1 — Server Authority (서버 권위)</div>
+      <p>클라이언트는 <strong>단순 렌더러 + 입력 전달자</strong>일 뿐입니다. 데미지·히트 판정·HP 변경은 <strong>오직 서버만</strong> 합니다. 만약 "맞췄다"는 클라이언트의 말을 그냥 믿으면, 핵 사용자는 "나는 모든 공격을 다 맞췄다"고 거짓말하는 패킷을 보내 무적/즉살 핵을 만들 수 있습니다.</p>
+    </div>
+
+    <h2>핵심 trade-off: 공정성 vs 권위</h2>
+    <p>여기서 두 원칙이 충돌합니다.</p>
+    <table>
+      <tr><th>목표</th><th>원하는 것</th><th>그냥 두면 생기는 문제</th></tr>
+      <tr><td><strong>공정성</strong></td><td>플레이어 화면에서 맞췄으면 맞은 걸로 인정</td><td>클라 말을 다 믿으면 핵 천국</td></tr>
+      <tr><td><strong>서버 권위</strong></td><td>모든 판정은 서버가 직접 검증</td><td>지연 때문에 정상 플레이어가 억울하게 빗나감</td></tr>
+    </table>
+
+    <p>둘 중 하나만 택하면 게임이 망가집니다. 공정성만 택하면 핵 천국이 되고, 권위만 고집하면 지연 있는 플레이어는 도저히 적을 못 맞춥니다. 그래서 상용 FPS(예: Valve의 Counter-Strike 계열)들은 제3의 길을 택했습니다.</p>
+
+    <div class="callout key">
+      <div class="title">💡 해결의 핵심 아이디어 — 시간을 되감기</div>
+      <p><strong>서버가 판정의 주체는 그대로 유지하되</strong>, 공격을 검사할 때 "이 플레이어가 공격 버튼을 눌렀던 그 시점"으로 시간을 잠깐 되돌립니다. 그 과거 시점에 서버가 기록해 둔 위치들로 hit를 판정하면, 플레이어 화면에서 보였던 상황과 일치하게 됩니다. 이것이 <strong>lag compensation(지연 보상)</strong>입니다.</p>
+      <p>단, 이 "되감기"를 무한정 허용하면 핵이 됩니다. 그래서 <strong>최대 200ms(=4틱)까지만</strong> 되감을 수 있게 제한합니다. 이 제한이 바로 공정성과 권위를 양립시키는 열쇠입니다.</p>
+    </div>
+
+    <p>다음 페이지부터는 이 아이디어를 실제로 구현하기 위한 첫 부품, "서버가 과거 위치를 어떻게 기록하는가(ring buffer)"부터 살펴보겠습니다.</p>
+
+    <div class="pager">
+      <a href="index.html"><span class="dir">← 이전</span><span class="ttl">0. 개요</span></a>
+      <a class="next" href="2-ring-buffer.html"><span class="dir">다음 →</span><span class="ttl">2. 위치 기록 (Ring Buffer)</span></a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

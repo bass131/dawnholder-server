@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6. 전체 구현 잇기 · Dawnholder M4.1 Phase 06</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="glyph">◆</span> Dawnholder</div>
+    <div class="subtitle">M4.1 Phase 06<br>Lag Compensation + AABB Hitbox</div>
+    <nav>
+      <ul class="nav">
+        <li><a href="index.html"><span class="num">0</span>개요</a></li>
+        <li><a href="1-problem.html"><span class="num">1</span>왜 필요한가</a></li>
+        <li><a href="2-ring-buffer.html"><span class="num">2</span>위치 기록 (Ring Buffer)</a></li>
+        <li><a href="3-rewind.html"><span class="num">3</span>되감기 (Rewind)</a></li>
+        <li><a href="4-cheat-defense.html"><span class="num">4</span>신뢰 경계 (Cheat 차단)</a></li>
+        <li><a href="5-aabb-hitbox.html"><span class="num">5</span>AABB Hitbox</a></li>
+        <li><a href="6-implementation.html" class="active"><span class="num">6</span>전체 구현 잇기</a></li>
+        <li><a href="7-tests-result.html"><span class="num">7</span>테스트 & 결과</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="eyebrow">Chapter 6</div>
+    <h1>전체 구현 잇기</h1>
+
+    <div class="learn-box">
+      <b>이 페이지에서 배울 것</b><br>
+      앞 장에서 부품을 하나씩 봤다면, 이 페이지에서는 그것들이 <b>공격 패킷 한 번의 여정</b> 속에서 어떻게 이어지는지를 봅니다. 작업 7단계를 실제 파일에 매핑하고, <code class="inline">C_Attack</code> 패킷의 클라→서버 흐름, ProtocolVersion bump, 동시성(race) 안전성 검증, 그리고 클라이언트 상수 정리(B1 sweep)까지 정리합니다.
+    </div>
+
+    <h2>7단계 → 파일 매핑</h2>
+    <p>이번 Phase는 7개 단계로 쪼개 진행했고, 각 단계는 아래 파일들에 박혔습니다.</p>
+    <table>
+      <tr><th>단계</th><th>한 일</th><th>파일</th></tr>
+      <tr><td>1</td><td>position history ring buffer 추가</td><td><code class="inline">PlayerEntity.cs</code></td></tr>
+      <tr><td>2</td><td><code class="inline">C_Attack.attackerClientTick</code> 필드 추가 + 재생성 + 버전 bump</td><td><code class="inline">PDL.xml</code> · <code class="inline">GenPackets.cs</code> · <code class="inline">ProtocolVersion.cs</code></td></tr>
+      <tr><td>3</td><td>클라 송신 시점 채우기 + 상수 정리(B1)</td><td><code class="inline">LocalPlayerController.cs</code> · <code class="inline">UnityClientSession.cs</code></td></tr>
+      <tr><td>4</td><td>ProcessAttack 되감기 + 범위 검증 3분기 + <code class="inline">_currentTick</code></td><td><code class="inline">GameMap.cs</code></td></tr>
+      <tr><td>5</td><td>AABB 정밀 hitbox로 교체</td><td><code class="inline">Hitbox.cs</code> · <code class="inline">CombatConstants.cs</code> · <code class="inline">GameMap.cs</code></td></tr>
+      <tr><td>6</td><td>단위 테스트 8건</td><td><code class="inline">LagCompensationTests.cs</code> · <code class="inline">HitboxTests.cs</code></td></tr>
+      <tr><td>7</td><td>봇 지연 시뮬 검증 (200ms/250ms)</td><td><code class="inline">99_Tools/headless-bot/</code></td></tr>
+    </table>
+
+    <h2>공격 패킷 한 번의 여정</h2>
+    <p>플레이어가 공격 버튼을 누르면 아래 흐름이 일어납니다. 클라이언트는 의도만 보내고, 모든 판정은 서버 틱 루프 안에서 일어납니다.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 760 360" role="img" aria-label="C_Attack 패킷의 클라이언트에서 서버까지 흐름">
+        <rect class="svg-bg" x="0" y="0" width="760" height="360" rx="8"/>
+
+        <!-- 클라 영역 -->
+        <rect x="20" y="20" width="320" height="320" rx="8" fill="#12191f" stroke="#243042" stroke-width="1"/>
+        <text class="svg-label" x="40" y="44" font-weight="bold" fill="#4ea1ff">클라이언트 (Unity)</text>
+
+        <rect class="svg-box" x="50" y="60" width="260" height="44" rx="6"/>
+        <text class="svg-small" x="66" y="78">LocalPlayerController.OnAttack</text>
+        <text class="svg-mono" x="66" y="96" fill="#94a3b8">nearest 적 → target 지명</text>
+        <line class="svg-arrow" x1="180" y1="104" x2="180" y2="128"/><polygon points="180,130 174,120 186,120" fill="#4ea1ff"/>
+
+        <rect class="svg-box-2" x="50" y="130" width="260" height="56" rx="6"/>
+        <text class="svg-mono" x="66" y="152" fill="#ffb454">C_Attack {</text>
+        <text class="svg-mono" x="80" y="168" fill="#ffb454">targetEntityId,</text>
+        <text class="svg-mono" x="80" y="182" fill="#ffb454">attackerClientTick }</text>
+
+        <!-- 네트워크 화살표 -->
+        <line class="svg-arrow" x1="310" y1="158" x2="420" y2="158" stroke-width="2.5"/>
+        <polygon points="422,158 410,151 410,165" fill="#4ea1ff"/>
+        <text class="svg-small" x="330" y="148">TCP</text>
+
+        <!-- 서버 영역 -->
+        <rect x="420" y="20" width="320" height="320" rx="8" fill="#12191f" stroke="#243042" stroke-width="1"/>
+        <text class="svg-label" x="440" y="44" font-weight="bold" fill="#59d499">서버 (.NET)</text>
+
+        <rect class="svg-box" x="445" y="60" width="270" height="40" rx="6"/>
+        <text class="svg-small" x="460" y="84">AttackHandler (network thread)</text>
+        <line class="svg-arrow" x1="580" y1="100" x2="580" y2="120"/><polygon points="580,122 574,112 586,112" fill="#4ea1ff"/>
+
+        <rect class="svg-box" x="445" y="122" width="270" height="40" rx="6"/>
+        <text class="svg-small" x="460" y="146">GameSession.SubmitAttack</text>
+        <text class="svg-mono" x="588" y="146" fill="#94a3b8">EnqueueJob</text>
+        <line class="svg-arrow" x1="580" y1="162" x2="580" y2="182"/><polygon points="580,184 574,174 586,174" fill="#4ea1ff"/>
+
+        <rect class="svg-box-g" x="445" y="184" width="270" height="124" rx="6"/>
+        <text class="svg-label" x="460" y="206" fill="#59d499">ProcessAttack (tick thread)</text>
+        <text class="svg-mono" x="460" y="228" fill="#cdd6e3">① attacker/target/alive 검사</text>
+        <text class="svg-mono" x="460" y="246" fill="#cdd6e3">② rate-limit 500ms</text>
+        <text class="svg-mono" x="460" y="264" fill="#cdd6e3">③ rewind 3분기 검증</text>
+        <text class="svg-mono" x="460" y="282" fill="#cdd6e3">④ GetPositionAtTick → AABB</text>
+        <text class="svg-mono" x="460" y="300" fill="#59d499">⑤ damage → S_HitResult broadcast</text>
+      </svg>
+      <div class="fig-cap">클라는 target과 시점만 보낸다. 서버는 network thread에서 패킷을 받아 EnqueueJob으로 tick thread에 위임하고, 모든 판정은 ProcessAttack 안에서 단일 스레드로 처리한다.</div>
+    </div>
+
+    <h2>C_Attack 패킷 정의 (PDL)</h2>
+    <p>패킷은 직접 손으로 쓰지 않고 <strong>PDL.xml(Packet Definition Language)</strong>에 정의한 뒤 코드 생성기로 C# 클래스를 자동 생성합니다. 이번에 <code class="inline">attackerClientTick</code> 한 줄을 <strong>맨 끝에 추가(append-only)</strong>했습니다. 주목할 점은 이 패킷에 <strong>attacker(공격자) 필드가 없다</strong>는 것입니다 — 서버가 세션에서 공격자 id를 강제하므로, 패킷에 attacker를 넣으면 남의 id를 도용할 수 있어 일부러 뺐습니다(헌법 #3).</p>
+    <div class="code">
+      <div class="cap">99_Tools/PacketGenerator/PDL.xml — C_Attack</div>
+<pre><span class="c">&lt;!-- 클라 = "공격 시도" / 서버 = hit/miss/damage 권위 판정 --&gt;</span>
+<span class="c">&lt;!-- attacker 필드 *없음* — 서버가 세션 id에서 강제 (헌법 #3) --&gt;</span>
+&lt;<span class="t">packet</span> name=<span class="s">"C_Attack"</span>&gt;
+    &lt;<span class="t">int</span> name=<span class="s">"targetEntityId"</span>/&gt;
+    <span class="hl">&lt;<span class="t">int</span> name=<span class="s">"attackerClientTick"</span>/&gt;   <span class="c">&lt;!-- M4.1 Phase 06 추가 --&gt;</span></span>
+&lt;/<span class="t">packet</span>&gt;</pre>
+    </div>
+
+    <h2>ProtocolVersion 4 → 5 bump</h2>
+    <p>필드를 끝에 추가하는 것은 기술적으로 <strong>backward compatible(하위 호환)</strong>입니다 — 옛 클라가 이 필드를 모르고 0으로 채워 보내도 패킷 자체는 깨지지 않습니다. 그런데도 버전을 올린 이유는, 옛 빌드 클라가 <code class="inline">attackerClientTick=0</code>을 보내면 서버 되감기 검증에서 매번 silent drop되어 "공격이 안 먹는" 이상한 경험을 하기 때문입니다. 차라리 핸드셰이크 단계에서 <strong>버전 불일치로 빠르게 끊어주는(cutoff)</strong> 것이 더 친절합니다.</p>
+    <div class="code">
+      <div class="cap">98_Shared/Protocol/ProtocolVersion.cs</div>
+<pre><span class="c">// v5: M4.1 Phase 06 — C_Attack.attackerClientTick 추가 (lag compensation rewind).</span>
+<span class="c">//     backward compatible append-only지만 옛 클라가 tick 안 보내면 0 →</span>
+<span class="c">//     서버 rewind 범위 검증에서 silent drop 가능 → 빠른 cutoff 위해 bump.</span>
+<span class="k">public const</span> <span class="t">ushort</span> Current = <span class="n">5</span>;</pre>
+    </div>
+
+    <div class="callout warn">
+      <div class="title">⚠️ PDL 변경 3종 의무</div>
+      <p>PDL을 수정하면 ① 코드 생성기 재실행 → ② <code class="inline">Shared.dll</code> 재빌드(Unity로 자동 복사) → ③ <code class="inline">PDL.xml</code>·<code class="inline">GenPackets.cs</code>·<code class="inline">Shared.dll</code> 세 산출물을 함께 커밋해야 합니다. 하나라도 빠지면 다른 팀원이 pull한 직후 빌드가 깨집니다. 이는 과거 실제 사고에서 박제된 규칙입니다.</p>
+    </div>
+
+    <h2>새 race(경합) 차원 — 동시성 audit</h2>
+    <p>이번 Phase는 새로운 <strong>race condition(경합 조건, 여러 스레드가 같은 데이터를 동시에 건드려 생기는 버그)</strong> 차원을 들여왔습니다. ring buffer를 쓰는 시점(틱 스레드)과, 패킷이 도착하는 시점(네트워크 스레드)이 다르기 때문입니다. "한 차원의 race를 막았다고 다른 차원도 안전한 건 아니다"라는 원칙에 따라 별도로 audit(점검)했습니다.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 760 260" role="img" aria-label="네트워크 스레드와 틱 스레드 사이 단일 소유 경로">
+        <rect class="svg-bg" x="0" y="0" width="760" height="260" rx="8"/>
+        <!-- network thread -->
+        <rect class="svg-box-2" x="40" y="100" width="200" height="60" rx="8"/>
+        <text class="svg-label" x="58" y="128" fill="#ffb454">network thread</text>
+        <text class="svg-small" x="58" y="148">패킷 수신 + decode</text>
+
+        <!-- queue -->
+        <rect class="svg-box" x="300" y="100" width="160" height="60" rx="8"/>
+        <text class="svg-mono" x="320" y="128" fill="#4ea1ff">EnqueueJob</text>
+        <text class="svg-small" x="320" y="148">ConcurrentQueue</text>
+
+        <!-- tick thread -->
+        <rect class="svg-box-g" x="520" y="80" width="200" height="100" rx="8"/>
+        <text class="svg-label" x="538" y="106" fill="#59d499">tick thread (단독 소유)</text>
+        <text class="svg-small" x="538" y="128">RecordPosition</text>
+        <text class="svg-small" x="538" y="146">GetPositionAtTick</text>
+        <text class="svg-small" x="538" y="164" fill="#59d499">→ lock 불필요</text>
+
+        <line class="svg-arrow" x1="240" y1="130" x2="298" y2="130"/><polygon points="300,130 290,124 290,136" fill="#4ea1ff"/>
+        <line class="svg-arrow" x1="460" y1="130" x2="518" y2="130"/><polygon points="520,130 510,124 510,136" fill="#4ea1ff"/>
+
+        <text class="svg-small" x="40" y="220">핵심: ring buffer는 오직 tick thread만 만진다. network thread는 큐에 일을 맡길 뿐 직접 접근하지 않는다.</text>
+        <text class="svg-small" x="40" y="240" fill="#94a3b8">봇(테스트 클라)의 가시성은 volatile int로 보장 — 스레드 간 값이 제때 보이도록.</text>
+      </svg>
+      <div class="fig-cap">단일 소유(single ownership) 패턴. ring buffer 접근을 한 스레드에 가두면 lock 없이도 안전하다 — GameMap의 actor 모델과 정합.</div>
+    </div>
+
+    <p>audit 결과 세 가지를 확인했습니다. (a) 네트워크 스레드는 ring buffer를 직접 만지지 않고 오직 <code class="inline">EnqueueJob</code>으로만 일을 넘깁니다. (b) <code class="inline">RecordPosition</code>과 <code class="inline">GetPositionAtTick</code>은 모두 틱 스레드 단독으로만 호출되므로 lock이 필요 없습니다. (c) 테스트용 봇의 스레드 간 값 가시성은 <code class="inline">volatile int</code>로 보장했습니다.</p>
+
+    <p><code class="inline">_currentTick</code> 갱신 순서도 중요합니다. 틱이 시작될 때 맨 앞에서 <code class="inline">_currentTick = tickNumber</code>를 박은 뒤에 큐의 job(=ProcessAttack)을 처리합니다. 그래야 job 안에서 올바른 현재 틱으로 되감기 범위를 검증할 수 있습니다.</p>
+    <div class="code">
+      <div class="cap">02_Server/GameServer/Maps/GameMap.cs — Tick() 맨 앞</div>
+<pre><span class="k">public void</span> <span class="t">Tick</span>(<span class="k">long</span> tickNumber)
+{
+    <span class="hl"><span class="c">// job 처리 *전*에 박아야 job 안에서 올바른 tick으로 rewind 검증.</span>
+    _currentTick = tickNumber;</span>
+
+    <span class="c">// 1) 외부 thread가 push한 job들 처리 (ProcessAttack 람다 포함)</span>
+    <span class="k">while</span> (_pendingJobs.TryDequeue(<span class="k">out</span> <span class="t">Action</span>? job)) { ... }
+
+    <span class="c">// 2) Physics.Step → RecordPosition (틱 뒷부분)</span>
+    ...
+}</pre>
+    </div>
+
+    <h2>클라이언트 상수 정리 (B1 sweep)</h2>
+    <p>이번 기회에 클라이언트에 흩어져 있던 매직 넘버 <code class="inline">9.0f</code>를 <code class="inline">TargetingRangeSquared</code>로 이름 붙이고 주석을 달았습니다. 중요한 점은, 이 값이 <strong>서버의 권위 판정 상수와는 의도적으로 분리된 별개 개념</strong>이라는 것입니다. 이것은 클라이언트가 "어느 적을 공격 대상으로 지명할지" 정하는 <strong>UX 힌트일 뿐</strong>이고, 실제 hit/miss는 서버의 AABB가 최종 결정합니다.</p>
+    <div class="code">
+      <div class="cap">03_Client/Assets/Scripts/Input/LocalPlayerController.cs</div>
+<pre><span class="c">// TargetingRangeSquared = 클라 측 *타게팅 힌트* (3.0f 사거리의 제곱).</span>
+<span class="c">// 서버 권위 판정(AABB hitbox)과 *의도적으로 분리*된 별개 개념.</span>
+<span class="c">// 헌법 #4 정합 — 밸런스 수식 복붙 X, 클라 UX 힌트.</span>
+<span class="k">const float</span> TargetingRangeSquared = <span class="n">9.0f</span>;</pre>
+    </div>
+    <p>만약 서버 상수를 그대로 복사해 왔다면 헌법 #4(복사-붙여넣기 금지)를 위반했을 것입니다. "역할이 다르면 별개 상수"라는 구분이 핵심입니다.</p>
+
+    <div class="pager">
+      <a href="5-aabb-hitbox.html"><span class="dir">← 이전</span><span class="ttl">5. AABB Hitbox</span></a>
+      <a class="next" href="7-tests-result.html"><span class="dir">다음 →</span><span class="ttl">7. 테스트 & 결과</span></a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

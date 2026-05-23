@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3. 되감기 (Rewind) · Dawnholder M4.1 Phase 06</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="glyph">◆</span> Dawnholder</div>
+    <div class="subtitle">M4.1 Phase 06<br>Lag Compensation + AABB Hitbox</div>
+    <nav>
+      <ul class="nav">
+        <li><a href="index.html"><span class="num">0</span>개요</a></li>
+        <li><a href="1-problem.html"><span class="num">1</span>왜 필요한가</a></li>
+        <li><a href="2-ring-buffer.html"><span class="num">2</span>위치 기록 (Ring Buffer)</a></li>
+        <li><a href="3-rewind.html" class="active"><span class="num">3</span>되감기 (Rewind)</a></li>
+        <li><a href="4-cheat-defense.html"><span class="num">4</span>신뢰 경계 (Cheat 차단)</a></li>
+        <li><a href="5-aabb-hitbox.html"><span class="num">5</span>AABB Hitbox</a></li>
+        <li><a href="6-implementation.html"><span class="num">6</span>전체 구현 잇기</a></li>
+        <li><a href="7-tests-result.html"><span class="num">7</span>테스트 & 결과</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="eyebrow">Chapter 3</div>
+    <h1>되감기 — Rewind</h1>
+
+    <div class="learn-box">
+      <b>이 페이지에서 배울 것</b><br>
+      이제 서버는 과거 위치를 기억하고 있습니다. 이 페이지에서는 공격이 들어왔을 때 서버가 "이 플레이어가 공격을 인지한 그 시점의 위치"로 어떻게 되돌려 판정하는지를 봅니다. 그리고 이 설계에서 가장 중요한 통찰 — <b>"클라이언트는 자기 좌표가 아니라 시점 번호만 보낸다"</b> — 가 왜 보안의 핵심인지 이해합니다.
+    </div>
+
+    <h2>되감기의 흐름</h2>
+    <p>플레이어가 공격할 때, 클라이언트는 공격 패킷(<code class="inline">C_Attack</code>)에 <strong>"내가 마지막으로 받은 서버 틱 번호"</strong>를 함께 실어 보냅니다. 이 값을 <code class="inline">attackerClientTick</code>이라 부릅니다. 서버는 현재 틱(N)에서 공격을 처리하지만, hit 판정에 쓸 attacker의 위치는 현재 위치가 아니라 <strong>그 시점(보통 N-4쯤)의 ring buffer 위치</strong>를 꺼내 씁니다.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 760 320" role="img" aria-label="틱 타임라인에서 공격 시점으로 되감는 과정">
+        <rect class="svg-bg" x="0" y="0" width="760" height="320" rx="8"/>
+        <!-- 타임라인 -->
+        <line class="svg-line" x1="60" y1="120" x2="710" y2="120" stroke-width="2"/>
+        <polygon points="712,120 700,114 700,126" fill="#94a3b8"/>
+        <text class="svg-small" x="660" y="112">시간 →</text>
+
+        <!-- 틱 마커 -->
+        <g font-family="Consolas, monospace">
+          <circle cx="120" cy="120" r="6" fill="#4ea1ff"/><text class="svg-mono" x="100" y="148">N-4</text>
+          <circle cx="260" cy="120" r="6" fill="#3a4a5e"/><text class="svg-mono" x="244" y="148">N-3</text>
+          <circle cx="400" cy="120" r="6" fill="#3a4a5e"/><text class="svg-mono" x="384" y="148">N-2</text>
+          <circle cx="540" cy="120" r="6" fill="#3a4a5e"/><text class="svg-mono" x="524" y="148">N-1</text>
+          <circle cx="680" cy="120" r="8" fill="#ffb454"/><text class="svg-mono" x="664" y="148" fill="#ffb454">N</text>
+        </g>
+        <text class="svg-small" x="100" y="96" fill="#4ea1ff">클라가 본 시점</text>
+        <text class="svg-small" x="616" y="96" fill="#ffb454">서버 현재 틱</text>
+
+        <!-- 200ms 범위 표시 -->
+        <line x1="120" y1="180" x2="680" y2="180" stroke="#59d499" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text class="svg-small" x="330" y="200" fill="#59d499">허용 되감기 범위 = 4틱 = 200ms</text>
+
+        <!-- 되감기 곡선 화살표 N -> N-4 -->
+        <path class="svg-arrow" d="M 680 100 C 560 30, 240 30, 120 100" />
+        <polygon points="120,100 130,90 132,104" fill="#4ea1ff"/>
+        <text class="svg-label" x="320" y="42" fill="#4ea1ff" font-weight="bold">rewind: 공격 시점으로 되감기</text>
+
+        <!-- 하단 설명 -->
+        <text class="svg-small" x="60" y="252">① 서버는 N에서 공격을 처리하지만,</text>
+        <text class="svg-small" x="60" y="274">② attacker의 위치는 ring buffer에서 N-4 슬롯을 꺼내 쓴다.</text>
+        <text class="svg-small" x="60" y="296">③ 그 위치로 hitbox를 만들어 판정 → 플레이어 화면과 일치.</text>
+      </svg>
+      <div class="fig-cap">서버는 현재 틱 N에서 공격을 처리하되, attacker 위치만 N-4 시점으로 되감아 판정한다. (적은 현재 위치 그대로 — 이유는 아래 참고)</div>
+    </div>
+
+    <h2>핵심 통찰 — 클라는 좌표가 아니라 "시점 번호"만 보낸다</h2>
+    <div class="callout key">
+      <div class="title">💡 이 설계의 심장</div>
+      <p>클라이언트는 <strong>자기 좌표(x, y)를 절대 보내지 않습니다.</strong> 오직 <strong>시점 번호(틱)</strong>만 보냅니다. 위치는 서버가 자기 ring buffer에서 직접 꺼냅니다.</p>
+      <p>만약 클라이언트가 좌표를 보냈다면 어땠을까요? 핵 사용자는 "나는 적 바로 옆 좌표에 있었다"고 거짓 좌표를 보내 어디서든 공격을 명중시키는 <strong>텔레포트 핵</strong>을 만들 수 있습니다. 이는 헌법 #1(서버 권위)의 정면 위반입니다. 시점 번호만 받으면, 그 시점에 서버가 직접 기록한 위치만 쓰이므로 위치 조작이 원천 불가능합니다.</p>
+    </div>
+
+    <p>이 점이 바로 코드 리뷰어(Opus)가 칭찬한 부분입니다: <em>"신뢰 경계를 시점 인덱스에만 둔 설계가 상용 FPS(Valve의 lag compensation)의 정석 패턴"</em>이라는 평을 받았습니다. 신뢰해야 할 untrusted 입력의 표면적을 "정수 하나(틱 번호)"로 최소화한 것이 핵심입니다.</p>
+
+    <h2>왜 적(target)은 되감지 않나요?</h2>
+    <p>이번 구현에서는 <strong>attacker(공격자)만 되감고, target(적)은 현재 위치를 그대로</strong> 씁니다. 둘 다 되감으면 더 정밀하지만, 적도 시간을 거꾸로 돌려야 하므로 구현 복잡도가 올라가고, 우리 데모(고정 위치 더미 적)에서는 이득이 거의 없습니다. 그래서 "둘 다 되감기"는 의도적으로 <strong>M4.3 backlog</strong>로 미뤘습니다. 보스 AI가 도입되어 적이 활발히 움직이게 되면 그때 가치가 생깁니다. 지금 둘 다 시도하면 작업 범위가 불필요하게 커지는 scope creep(범위 과잉)이 됩니다.</p>
+
+    <h2>실제 코드 — ProcessAttack의 되감기 부분</h2>
+    <p>아래는 서버가 신뢰 경계 검증(다음 페이지에서 자세히)을 통과한 직후, ring buffer에서 위치를 꺼내는 부분입니다.</p>
+    <div class="code">
+      <div class="cap">02_Server/GameServer/Maps/GameMap.cs — ProcessAttack (rewind 부분)</div>
+<pre><span class="c">// 4.5) rewind 범위 검증 (3분기 — 다음 페이지 참고)</span>
+<span class="k">if</span> (attackerClientTick &lt; <span class="n">0</span>) <span class="k">return</span>;                  <span class="c">// (a) 음수</span>
+<span class="k">if</span> (attackerClientTick &gt; _currentTick) <span class="k">return</span>;        <span class="c">// (b) 미래</span>
+<span class="k">if</span> (_currentTick - attackerClientTick &gt; <span class="n">4</span>) <span class="k">return</span>;     <span class="c">// (c) 200ms 초과</span>
+
+<span class="hl"><span class="c">// rewind: attacker가 공격 버튼을 눌렀을 당시 tick의 서버 저장 위치로 되돌림.</span>
+<span class="c">// target은 현재 위치 사용 (target rewind는 M4.3 backlog).</span>
+<span class="t">Vector2</span> rewindedPos = attacker.GetPositionAtTick(attackerClientTick);</span>
+
+<span class="c">// 5) AABB precision hitbox (옛 dist² &lt; range² 교체)</span>
+<span class="t">AABB</span> attackBox = <span class="t">GetAttackHitbox</span>(rewindedPos);
+<span class="k">if</span> (!attackBox.Intersects(target.Hitbox)) <span class="k">return</span>;</pre>
+    </div>
+
+    <h2>클라이언트 쪽 — 시점 번호를 어떻게 채우나</h2>
+    <p>클라이언트는 서버로부터 받는 위치 스냅샷(<code class="inline">S_Snapshot</code>)마다 그 안의 <code class="inline">serverTick</code> 값을 기억해 둡니다(<code class="inline">LastReceivedServerTick</code>). 공격할 때는 이 "마지막으로 본 서버 틱"을 그대로 패킷에 담습니다. 즉 "내가 화면에서 본 세계는 이 틱의 것이었다"고 서버에 알리는 것입니다.</p>
+    <div class="code">
+      <div class="cap">03_Client/Assets/Scripts/Input/LocalPlayerController.cs — OnAttack</div>
+<pre><span class="c">// attackerClientTick = 마지막으로 수신한 S_Snapshot의 serverTick.</span>
+<span class="c">// 서버 ProcessAttack이 이 tick으로 position history를 rewind해 hitbox 판정.</span>
+<span class="t">C_Attack</span> pkt = <span class="k">new</span> <span class="t">C_Attack</span>
+{
+    targetEntityId     = targetEntityId,
+    attackerClientTick = session.LastReceivedServerTick
+};
+session.SendIntent(pkt.Write());</pre>
+    </div>
+
+    <p>되감기 자체는 이렇게 단순합니다. 하지만 untrusted 입력인 <code class="inline">attackerClientTick</code>을 그냥 믿으면 안 됩니다. 다음 페이지에서 이 값을 어떻게 검증해 핵을 막는지 봅니다.</p>
+
+    <div class="pager">
+      <a href="2-ring-buffer.html"><span class="dir">← 이전</span><span class="ttl">2. 위치 기록 (Ring Buffer)</span></a>
+      <a class="next" href="4-cheat-defense.html"><span class="dir">다음 →</span><span class="ttl">4. 신뢰 경계 (Cheat 차단)</span></a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

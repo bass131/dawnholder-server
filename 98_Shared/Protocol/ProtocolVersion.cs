@@ -16,6 +16,9 @@ namespace Shared.Protocol;
 ///   - v4: M3.8 Phase 03 — C_CharacterSelect (캐릭터 선택, 전사/원거리 분기).
 ///         backward compatible append-only지만 옛 빌드 클라가 캐릭터 선택 안 보내고 EnterGameWorld
 ///         시도하면 default stats 미박힘 → server-side null 처리 사고 차단 위해 bump.
+///   - v5: M4.1 Phase 06 — C_Attack.attackerClientTick 추가 (lag compensation rewind).
+///         backward compatible append-only지만 옛 클라가 tick 안 보내면 attackerClientTick=0 →
+///         서버 rewind 범위 검증에서 silent drop 가능 → 빠른 cutoff 위해 bump.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -29,6 +32,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M3.8 Phase 03 = v4 (C_CharacterSelect 추가).</summary>
-    public const ushort Current = 4;
+    /// <summary>현재 프로토콜 버전. M4.1 Phase 06 = v5 (C_Attack.attackerClientTick 추가, lag compensation).</summary>
+    public const ushort Current = 5;
 }

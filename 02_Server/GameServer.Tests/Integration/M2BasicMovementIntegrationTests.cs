@@ -15,6 +15,14 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 // **시나리오 크기 절충**: 정의 파일 "100회 반복"은 1000 intent×100회=87분 비현실.
 // 자동 테스트 = 50 intent×10회 (~25초). 100회 풀스케일 회귀는 별도 [Trait("Category","LongRunning")]
 // + 수동 트리거 (`dotnet test --filter "Category=LongRunning"`).
+//
+// M4.1 Phase 06 (7단계): ICollectionFixture로 전환.
+// LagSimIntegrationTests도 동일 서버 인스턴스를 공유 → GameWorld 싱글톤 위반 방지.
+// Collection "IntegrationTests" = 모든 통합 테스트 sequential 실행 + 서버 1회 spawn.
+
+[CollectionDefinition("IntegrationTests")]
+public class IntegrationTestsCollection : ICollectionFixture<ServerFixture> { }
+
 public class ServerFixture : IDisposable
 {
     public int Port { get; }
@@ -44,7 +52,8 @@ public class ServerFixture : IDisposable
     }
 }
 
-public class M2BasicMovementIntegrationTests : IClassFixture<ServerFixture>
+[Collection("IntegrationTests")]
+public class M2BasicMovementIntegrationTests
 {
     readonly ServerFixture _server;
     const int SmokeIntents = 50;

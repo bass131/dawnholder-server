@@ -35,6 +35,9 @@ internal sealed class AttackHandler : IPacketHandler
         C_Attack pkt = new C_Attack();
         pkt.Read(buffer);
 
-        session.SubmitAttack(pkt.targetEntityId);
+        // M4.1 Phase 06 (4단계): attackerClientTick 전달 — lag compensation rewind.
+        // pkt.attackerClientTick은 클라가 공격 버튼 눌렀을 당시의 lastReceivedServerTick.
+        // 헌법 #3 (Trust Boundary): 값 자체는 untrusted — ProcessAttack step 4.5에서 범위 검증.
+        session.SubmitAttack(pkt.targetEntityId, pkt.attackerClientTick);
     }
 }

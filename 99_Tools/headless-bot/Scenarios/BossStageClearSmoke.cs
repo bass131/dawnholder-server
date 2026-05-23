@@ -42,8 +42,10 @@ public class BossStageClearSmoke
         public bool UsedOptionBDeathEquivalent;
     }
 
+    // M4.1 Phase 06 (7단계): simulatedLatencyMs — EmergencyCombatSmoke와 동일 패턴.
     public static async Task<Result> Run(
         string host, int port,
+        int simulatedLatencyMs = 0,
         CancellationToken ct = default)
     {
         Result result = new();
@@ -81,6 +83,11 @@ public class BossStageClearSmoke
 
             result.MoveIntentsSent = await bot.MoveIntoAttackRange(bossSpawn.x, ct);
 
+            // M4.1 Phase 06 (7단계): lag 시뮬 시 serverTick 추적 보장.
+            bool gotSnapshot = await bot.WaitForFirstSnapshot(DefaultTimeout, ct);
+            if (!gotSnapshot)
+                return Fail(result, "S_Snapshot timeout — serverTick 추적 불가");
+
             int currentHp = result.InitialBossHp;
             int previousHitCount = bot.HitCountFor(result.BossEntityId);
             int deathCountBeforeKill = bot.DeathCountFor(result.BossEntityId);
@@ -92,7 +99,8 @@ public class BossStageClearSmoke
                     result.BossEntityId,
                     previousHitCount,
                     DefaultTimeout,
-                    ct);
+                    ct,
+                    simulatedLatencyMs);
 
                 if (hit == null)
                     return Fail(result, $"S_HitResult timeout during boss kill at attempt {attempt + 1}");
@@ -153,7 +161,7 @@ public class BossStageClearSmoke
 
             for (int i = 0; i < DeadTargetRetargetCount; i++)
             {
-                bot.SendAttack(result.BossEntityId);
+                bot.SendAttack(result.BossEntityId, simulatedLatencyMs);
                 await Task.Delay(50, ct);
             }
 
@@ -200,9 +208,10 @@ public class BossStageClearSmoke
         int targetEntityId,
         int previousHitCount,
         TimeSpan timeout,
-        CancellationToken ct)
+        CancellationToken ct,
+        int simulatedLatencyMs = 0)
     {
-        bot.SendAttack(targetEntityId);
+        bot.SendAttack(targetEntityId, simulatedLatencyMs);
         return await bot.WaitForHitCount(targetEntityId, previousHitCount + 1, timeout, ct);
     }
 
@@ -285,6 +294,11 @@ public class BossStageClearSmoke
         BotSession? _session;
         uint _clientTick;
 
+        // M4.1 Phase 06 (7단계): 서버 tick 추적 — S_Snapshot 수신 시 갱신.
+        // C_Attack.attackerClientTick에 박아야 서버 rewind 범위 검증(diff ≤ 4)을 통과.
+        // volatile: network thread(HandlePacket)에서 쓰고 메인 시나리오 thread(SendAttack)에서 읽음.
+        volatile int _lastReceivedServerTick = 0;
+
         public bool HandshakeOk { get; private set; }
         public string HandshakeReason { get; private set; } = "";
         public int LocalEntityId { get; private set; } = -1;
@@ -350,9 +364,22 @@ public class BossStageClearSmoke
             return ticks + 1;
         }
 
-        public void SendAttack(int targetEntityId)
+        // M4.1 Phase 06 (7단계): 서버에서 최소 1개 S_Snapshot 수신 대기.
+        // EmergencyCombatSmoke.CombatProbe와 동일 패턴.
+        public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
+            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+
+        // M4.1 Phase 06 (7단계): simulatedLatencyMs 옵션.
+        // EmergencyCombatSmoke.CombatProbe와 동일 패턴.
+        public void SendAttack(int targetEntityId, int simulatedLatencyMs = 0)
         {
-            C_Attack attack = new() { targetEntityId = targetEntityId };
+            int latencyTicks = simulatedLatencyMs / Constants.TickIntervalMs;
+            int clientTick = Math.Max(0, _lastReceivedServerTick - latencyTicks);
+            C_Attack attack = new()
+            {
+                targetEntityId = targetEntityId,
+                attackerClientTick = clientTick,
+            };
             _session?.Send(attack.Write());
         }
 
@@ -484,6 +511,13 @@ public class BossStageClearSmoke
                     stageClear.Read(buffer);
                     lock (_gate)
                         _stageClears.Add(new StageClearEvent(stageClear.bossEntityId));
+                    break;
+
+                case PacketID.S_Snapshot:
+                    // M4.1 Phase 06 (7단계): 최신 서버 tick 갱신.
+                    S_Snapshot snapshot = new();
+                    snapshot.Read(buffer);
+                    _lastReceivedServerTick = snapshot.serverTick;
                     break;
             }
         }
