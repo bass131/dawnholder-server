@@ -10,6 +10,14 @@
     <!-- → Unity F12 시 원본 코드(주석 포함) 그대로 표시 -->
     <DebugType>embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
+
+    <!-- M4.1 Phase 04: deterministic build for Shared.dll dirty 봉합.
+         EmbedAllSources + DebugType=embedded와 결합 시, 절대 경로/timestamp가
+         dll에 임베드 박혀 매 빌드마다 hash 달라짐 → SkipUnchangedFiles 항상 실패 →
+         매번 Unity Plugins/Shared.dll 갱신 → git dirty. Deterministic + PathMap으로
+         "같은 소스 + 다른 환경 = 같은 hash" 보장. -->
+    <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
   </PropertyGroup>
 
   <!-- ADR-010: 빌드 후 산출물(.dll)을 Unity Plugins/로 자동 복사.

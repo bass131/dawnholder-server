@@ -17,6 +17,11 @@
     <DebugType>embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
 
+    <!-- M4.1 Phase 04: deterministic build for Client.Net.dll dirty 봉합.
+         Shared.csproj와 동형 패턴 (PathMap = 자기 프로젝트 디렉토리 → /_/). -->
+    <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
+
     <!-- 폴더명에 숫자 prefix(04_)가 있어 자동 추론 어색 → 명시 -->
     <RootNamespace>Dawnholder.Client.Net</RootNamespace>
     <AssemblyName>Dawnholder.Client.Net</AssemblyName>

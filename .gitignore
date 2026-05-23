@@ -26,6 +26,10 @@ obj/
 # 화이트리스트로 commit 강제 → 다른 머신 pull 즉시 동작 (헌법 #4 정합).
 !03_Client/Assets/Plugins/Shared/Shared.dll
 !03_Client/Assets/Plugins/Shared/Shared.dll.meta
+# M4.1 Phase 04: ClientNet DLL도 같은 정신으로 화이트리스트 추가 (Phase 03 발견 결함 봉합).
+# Shared.dll과 동형 — PostBuild 자동 복사 박혀있지만 다른 머신 pull 시 outdated 회피.
+!03_Client/Assets/Plugins/ClientNet/Dawnholder.Client.Net.dll
+!03_Client/Assets/Plugins/ClientNet/Dawnholder.Client.Net.dll.meta
 
 # ─────────────────────────────────────────────
 # Unity (client/)
