@@ -74,7 +74,14 @@ public class AttackHandlerTests : IDisposable
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
 
-        public void BypassHandshake() => CompleteHandshakeAndEnter();
+        // M4.1 Phase 02: CompleteHandshakeAndEnter()가 더 이상 EnterGameWorld를 직접 호출 안 함.
+        // 월드 진입 = handshake + class 선택 양쪽 충족 필요. class 선택도 우회 (Warrior=0).
+        public void BypassHandshake()
+        {
+            CompleteHandshakeAndEnter();  // _handshakeCompleted = true
+            SetCharacterClass(0);          // HasSelectedClass = true (Warrior)
+            EnterGameWorldIfReady();       // 두 조건 충족 → EnterGameWorld() 호출
+        }
     }
 
     public AttackHandlerTests()

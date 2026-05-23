@@ -34,8 +34,14 @@ public class MoveIntentHandlerTests : IDisposable
         public TestGameSession(GameMap map) { _injectedMap = map; }
         protected override GameMap GetMap() => _injectedMap;
 
-        // handshake mock = rate-limit/lifecycle 테스트와 동일 패턴.
-        public override void OnConnected(EndPoint endPoint) { CompleteHandshakeAndEnter(); }
+        // M4.1 Phase 02: handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
+        // 본 테스트는 MoveIntentHandler 로직 검증 목적 — state machine 순서는 테스트 대상 X.
+        public override void OnConnected(EndPoint endPoint)
+        {
+            CompleteHandshakeAndEnter();   // _handshakeCompleted = true
+            SetCharacterClass(0);           // HasSelectedClass = true (Warrior)
+            EnterGameWorldIfReady();        // → EnterGameWorld() 호출
+        }
         public override void Send(ArraySegment<byte> _) { /* socket I/O 차단 */ }
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { }

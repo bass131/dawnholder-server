@@ -2,6 +2,7 @@ using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Net;
 using Dawnholder.Client.Net;
+using Shared.GameData;
 using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
@@ -187,6 +188,12 @@ public class MultiRosterSmoke
                     handshake.Read(buffer);
                     HandshakeOk = handshake.ok;
                     HandshakeReason = handshake.reason;
+                    // M4.1 Phase 02 (P0-1/P0-2 봉합): handshake OK 후 즉시 C_CharacterSelect 송신.
+                    if (handshake.ok)
+                    {
+                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
+                        _session?.Send(charSelect.Write());
+                    }
                     _handshake.Set();
                     break;
 

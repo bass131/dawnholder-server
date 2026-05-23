@@ -57,7 +57,9 @@ public class GameSession : PacketSession
     // M3.8 Phase 03 (헌법 #1): 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑.
     // 범위 검증은 CharacterSelectHandler에서 이미 완료 (0 또는 1만 도달).
     // 여기서는 매핑만 — 두 번 검증 불필요 (CLAUDE.md "handler = 검증, session = state" 정합).
-    internal void SetCharacterClass(byte characterClass)
+    // M4.1 Phase 02: internal → protected internal. 테스트 서브클래스(다른 어셈블리)에서 mock 우회 호출 가능.
+    // CompleteHandshakeAndEnter / HasSelectedClass 패턴 정합.
+    protected internal void SetCharacterClass(byte characterClass)
     {
         _stats = characterClass == (byte)CharacterClass.Warrior
             ? PlayerStats.Warrior()
@@ -194,12 +196,12 @@ public class GameSession : PacketSession
     }
 
     // M3 Phase 02 (Codex review 인사이트 — Phase 03 진입 캡슐화):
-    // handshake 통과 후 lifecycle 전이 묶음 = `_handshakeCompleted` 박힘 + S_HandshakeResult(ok=true) 회신 + EnterGameWorld.
-    // **왜 한 메서드로 묶었나**: Phase 03에서 핸들러 layer 분리 시 외부 핸들러 클래스가 *세션 내부 state를 직접 만지지 않게* 하는 게 깔끔. 핸들러는 packet decode + 검증 + (mismatch 거절 / OK이면 본 메서드 호출)만 책임.
-    // **테스트 mock 역할도 겸함**: 기존 lifecycle/rate-limit 테스트는 *handshake 이후*의 race/rate 검증이라
-    // TestGameSession.OnConnected에서 본 메서드 직접 호출 = handshake 우회. Send override가 socket I/O 차단해서 회신 byte는 버려짐.
-    // **M3 Phase 03 (헌법 #4 봉합)**: protected → protected internal. Handlers/HandshakeHandler가 같은
-    // 어셈블리 외부 클래스로 호출 (internal) + 기존 테스트 subclass의 OnConnected mock에서도 호출 (protected) — 양쪽 호환.
+    // handshake 통과 후 lifecycle 전이 묶음 = `_handshakeCompleted` 박힘 + S_HandshakeResult(ok=true) 회신.
+    // **M4.1 Phase 02 변경**: EnterGameWorld() 직접 호출 *제거*. handshake = 상태 전이만.
+    //   클라이언트 선택 전 월드 진입 차단 (P0-1 봉합). EnterGameWorld 호출은 EnterGameWorldIfReady()로만.
+    // **테스트 mock 역할도 겸함**: lifecycle/rate-limit 테스트는 handshake + class 선택 양쪽 우회 필요.
+    //   TestGameSession에서 CompleteHandshakeAndEnter() + SetCharacterClass(0) + EnterGameWorldIfReady() 연속 호출.
+    // **M3 Phase 03 (헌법 #4 봉합)**: protected internal — HandshakeHandler(internal) + 테스트 서브클래스(protected) 양쪽.
     protected internal void CompleteHandshakeAndEnter()
     {
         _handshakeCompleted = true;
@@ -210,6 +212,22 @@ public class GameSession : PacketSession
             reason = "",
         };
         Send(ok.Write());
+        // EnterGameWorld() 직접 호출 제거 (M4.1 Phase 02 P0-1 봉합).
+        // 월드 진입은 CharacterSelectHandler → EnterGameWorldIfReady() 경로로만 허용.
+    }
+
+    // M4.1 Phase 02 (P0-1 + P0-2 봉합): idempotent 월드 진입 게이트.
+    // handshake 완료 + class 선택 완료, 두 조건 *모두* 충족 시에만 EnterGameWorld() 호출.
+    // **idempotent**: 두 번 호출해도 EnterGameWorld가 한 번만 실행됨 (_enteredWorld flag).
+    //   CharacterSelectHandler에서 SetCharacterClass 후 호출, HandshakeHandler에서는 호출 X.
+    // **헌법 #5 정합**: sync 코드만, await/Task.Delay 없음 (EnterGameWorld 내부는 EnqueueJob으로 tick thread 마샬링).
+    // **race 안전**: 두 패킷(C_Handshake, C_CharacterSelect)이 다른 순서로 도착해도 두 조건 모두 충족 후에만 진입.
+    bool _enteredWorld;
+
+    protected internal void EnterGameWorldIfReady()
+    {
+        if (!_handshakeCompleted || !HasSelectedClass || _enteredWorld) return;
+        _enteredWorld = true;
         EnterGameWorld();
     }
 

@@ -62,7 +62,14 @@ public class BossStageClearTests : IDisposable
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
 
-        public void BypassHandshake() => CompleteHandshakeAndEnter();
+        // M4.1 Phase 02: handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
+        // 본 테스트는 Boss/StageClear 전투 흐름 검증 목적 — state machine 순서는 테스트 대상 X.
+        public void BypassHandshake()
+        {
+            CompleteHandshakeAndEnter();   // _handshakeCompleted = true
+            SetCharacterClass(0);           // HasSelectedClass = true (Warrior)
+            EnterGameWorldIfReady();        // → EnterGameWorld() 호출
+        }
     }
 
     public BossStageClearTests()

@@ -32,11 +32,15 @@ public class GameSessionLifecycleTests : IDisposable
         protected override GameMap GetMap() => _injectedMap;
 
         // M3 Phase 02 (handshake mock): 본 테스트는 *handshake 이후*의 race 흐름 검증.
-        // 캡슐화된 `CompleteHandshakeAndEnter()` 직접 호출 = handshake 우회.
-        // 내부 Send(S_HandshakeResult)는 아래 Send override가 skip → race window 검증 자체엔 영향 X.
+        // M4.1 Phase 02 변경: CompleteHandshakeAndEnter()가 EnterGameWorld를 직접 호출 안 함.
+        // 월드 진입 = handshake + class 선택 양쪽 충족 필요 (P0-1 봉합).
+        // 본 테스트 mock = lifecycle race 검증 목적이라 두 조건 모두 우회 (state machine 검증 X).
+        // SetCharacterClass(Warrior=0) + EnterGameWorldIfReady() 연속 호출로 월드 진입 흉내냄.
         public override void OnConnected(EndPoint endPoint)
         {
-            CompleteHandshakeAndEnter();
+            CompleteHandshakeAndEnter();     // handshake 우회 (_handshakeCompleted = true)
+            SetCharacterClass(0);             // class 선택 우회 (Warrior)
+            EnterGameWorldIfReady();          // 두 조건 충족 → EnterGameWorld() 호출
         }
         public override void Send(ArraySegment<byte> _) { }
         public override void OnSend(int numOfBytes) { }
