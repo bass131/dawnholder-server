@@ -33,6 +33,8 @@ public enum PacketID : ushort
 	S_EntityDeath = 14,
 	S_StageClear = 15,
 	C_CharacterSelect = 16,
+	C_EnterPortal = 17,
+	S_MapTransition = 18,
 	
 }
 
@@ -1134,6 +1136,134 @@ public class C_CharacterSelect : IPacket // C_CharacterSelect 패킷
         // characterClass 쓰기
 		s[count] = (byte)this.characterClass;
 		count += sizeof(byte);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class C_EnterPortal : IPacket // C_EnterPortal 패킷
+{
+    // 멤버 변수들
+    public int portalId;
+    public ushort Protocol { get { return (ushort)PacketID.C_EnterPortal; } }
+
+    public void Read(ArraySegment<byte> _Segment)
+    {
+        // _Segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(_Segment.Array, _Segment.Offset, _Segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // portalId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.portalId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환 (Phase 07 책임 단위 분리).
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.C_EnterPortal);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // portalId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.portalId);
+		count += sizeof(int);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class S_MapTransition : IPacket // S_MapTransition 패킷
+{
+    // 멤버 변수들
+    public byte destMapId;
+	public float spawnX;
+	public float spawnY;
+    public ushort Protocol { get { return (ushort)PacketID.S_MapTransition; } }
+
+    public void Read(ArraySegment<byte> _Segment)
+    {
+        // _Segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(_Segment.Array, _Segment.Offset, _Segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // destMapId 읽기
+		this.destMapId = (byte)s[count];
+		count += sizeof(byte);
+		
+		// spawnX 읽기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+		this.spawnX = BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count)));
+		count += sizeof(float);
+		
+		// spawnY 읽기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+		this.spawnY = BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count)));
+		count += sizeof(float);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환 (Phase 07 책임 단위 분리).
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.S_MapTransition);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // destMapId 쓰기
+		s[count] = (byte)this.destMapId;
+		count += sizeof(byte);
+		
+		// spawnX 쓰기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), BitConverter.SingleToInt32Bits(this.spawnX));
+		count += sizeof(float);
+		
+		// spawnY 쓰기 (LittleEndian 명시 — .NET Standard 2.1 호환을 위해 Int32Bits 경유)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), BitConverter.SingleToInt32Bits(this.spawnY));
+		count += sizeof(float);
 		
 
         // 최종 size 기록

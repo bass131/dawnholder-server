@@ -19,6 +19,7 @@
 | ADR-011 | 기존 ServerDev 코드 부분 채택 (시나리오 B) | [tech-stack/ADR-011-serverdev-scenario-b.md](tech-stack/ADR-011-serverdev-scenario-b.md) |
 | ADR-012 | Unity 클라 socket 분리 클라용 라이브러리 (Y2) | [tech-stack/ADR-012-socket-y2.md](tech-stack/ADR-012-socket-y2.md) |
 | ADR-017 | 프로젝트 폴더 ASCII 경로 이동 | [tech-stack/ADR-017-ascii-path.md](tech-stack/ADR-017-ascii-path.md) |
+| ADR-026 | entity id 전역 풀 (맵 간 id 유지) | [tech-stack/ADR-026-entity-id-global-pool.md](tech-stack/ADR-026-entity-id-global-pool.md) |
 
 ## gameplay/ — 게임 디자인·스코프
 

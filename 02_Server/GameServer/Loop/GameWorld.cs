@@ -21,6 +21,31 @@ public class GameWorld
     // 4맵은 ctor에서 1회 생성 + 등록. 이후 추가/제거 X (Phase 03 맵간 이동도 맵 자체 내용 변경이지 레지스트리 변경 아님).
     readonly Dictionary<MapId, GameMap> _maps;
 
+    // M4.2 Phase 02: 전역 entity id 발급기 (ADR-026).
+    //
+    // **왜 전역 풀인가?**
+    //   맵 간 이동 시 entity id를 유지(재배정 X) → S_MapTransition에 entityId 필드 불필요 (ADR-026).
+    //   클라이언트 단순화 (id 교체 로직 0) + 미래 cheat-flag 추적 일관성 확보.
+    //
+    // **Interlocked.Increment 이유**:
+    //   id 발급은 게임 상태 mutation이 아님 — "번호 뽑기"일 뿐 (ADR-026 명시).
+    //   GameMap tick thread가 AllocId()를 호출하는 시점이 맵마다 다를 수 있으나
+    //   Interlocked가 atomic 보장 → race 없이 globally-unique id 발급.
+    //   맵별 모든 게임 로직(이동/전투/spawn)은 여전히 맵별 단일 thread로 격리됨.
+    //
+    // **헌법 #5**: Interlocked.Increment는 non-blocking lock-free — tick loop 내 허용.
+    int _nextEntityId;
+
+    /// <summary>
+    /// M4.2 Phase 02: 전역 entity id 발급. 각 GameMap이 ctor에서 주입받는 Func&lt;int&gt;.
+    ///
+    /// <para>
+    /// 단조 증가 보장: Interlocked.Increment(post-increment) → 1, 2, 3, ...
+    /// 멀티스레드 안전: Interlocked.Increment는 atomic — 두 맵이 동시 호출해도 같은 id 발급 X.
+    /// </para>
+    /// </summary>
+    public int NextEntityId() => Interlocked.Increment(ref _nextEntityId);
+
     readonly TickScheduler _scheduler;
 
     // M4.2 Phase 01: 호환용 프로퍼티. 기존 코드가 GameWorld.Instance?.Map으로 Town 맵을 반환하던 흐름 보존.
@@ -50,12 +75,28 @@ public class GameWorld
         //
         // **헌법 #5 정합**: ctor 동기 코드만. await/Task.Delay/Thread.Sleep 없음.
         // **entity id 풀**: 맵별 독립 (_nextEntityId 맵마다 1부터 시작). 전역 풀 vs 맵별 풀 trade-off는 Phase 03 결정.
+        // M4.2 Phase 02: idAllocator = NextEntityId 주입 → 전역 풀 (ADR-026).
+        //
+        // **생성 순서 결정론적 고정**: Town → HuntingGround → BossRoom → Ending.
+        //   ctor 순서가 id 발급 순서를 결정. Town=빈맵(enemy 0) → id 소비 0.
+        //   HuntingGround: Normal enemy 1마리 → id=1 소비.
+        //   BossRoom: Boss 1마리 → id=2 소비.
+        //   Ending=빈맵(enemy 0) → id 소비 0.
+        //   → 플레이어가 Town 진입 시 AddPlayer → id=3 (첫 번째 player id).
+        //
+        // **테스트 회귀 분석**:
+        //   GameMapContentTests: new GameMap(MapId.HuntingGround) 단독 생성 (idAllocator=null)
+        //     → 로컬 카운터 1부터 시작 → Normal enemy id=1 기대값 *변경 없음*.
+        //   AttackHandlerTests/BossStageClearTests: new GameMap(MapId.HuntingGround) 단독 생성
+        //     → EnemyEntityId=1, BossEntityId=2, PlayerEntityId=3 *변경 없음*.
+        //   GameWorldRegistryTests: GameWorld 경유 → 전역 풀 적용.
+        //     맵 등록 수(4) + MapId 조회만 검증 — id 숫자 직접 검증 없음 → 회귀 없음.
         _maps = new Dictionary<MapId, GameMap>
         {
-            { MapId.Town,           new GameMap(MapId.Town) },
-            { MapId.HuntingGround,  new GameMap(MapId.HuntingGround) },
-            { MapId.BossRoom,       new GameMap(MapId.BossRoom) },
-            { MapId.Ending,         new GameMap(MapId.Ending) },
+            { MapId.Town,           new GameMap(MapId.Town,          NextEntityId) },
+            { MapId.HuntingGround,  new GameMap(MapId.HuntingGround, NextEntityId) },
+            { MapId.BossRoom,       new GameMap(MapId.BossRoom,      NextEntityId) },
+            { MapId.Ending,         new GameMap(MapId.Ending,        NextEntityId) },
         };
 
         _scheduler = new TickScheduler(OnTick);

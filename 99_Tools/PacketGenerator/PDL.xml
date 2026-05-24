@@ -195,4 +195,25 @@
     <packet name="C_CharacterSelect">
         <byte name="characterClass"/>
     </packet>
+
+    <!-- Phase 02 (M4.2): 맵 전환 패킷 2종. ProtocolVersion 5→6 bump 동반.
+
+         C_EnterPortal — 클라가 portal 진입 *의도만* 전송 (헌법 #1 Server Authority 정합).
+         portalId만 포함. 좌표/목적지는 X — 서버가 portalId로 portal 정의를 조회해 목적지 결정.
+         **헌법 #3 (Trust Boundary)**: portalId는 untrusted. Phase 03에서 범위/근접 검증 추가.
+         패킷 필드에 attacker/destination을 클라가 결정하면 teleport 핵 가능 (C_Attack 패턴 정합). -->
+    <packet name="C_EnterPortal">
+        <int name="portalId"/>
+    </packet>
+
+    <!-- S_MapTransition — 서버가 맵 전환 권위 통보. 목적지 맵 + spawn 좌표.
+         **entityId 필드 없음** (ADR-026: entity id 전역 풀 — 맵 이동 시 id 유지, 클라가 기존 id 보유).
+         destMapId = MapId enum의 byte cast (0=Town, 1=HuntingGround, 2=BossRoom 등).
+         spawnX/spawnY = 서버가 정한 목적지 spawn 좌표 (헌법 #1 Server Authority).
+         클라 수신 시 현재 맵 entity 전체 정리 → destMapId 맵으로 씬 전환 → spawnX/Y에 player 배치. -->
+    <packet name="S_MapTransition">
+        <byte name="destMapId"/>
+        <float name="spawnX"/>
+        <float name="spawnY"/>
+    </packet>
 </PDL>

@@ -43,8 +43,8 @@ domain: cross
 
 - [ ] `99_Tools/PacketGenerator/PDL.xml` **맨 아래에 append** (헌법 #2 — 은퇴 ID 재사용 금지):
   - `C_EnterPortal { int portalId }` — 클라 의도. portalId만 (좌표/목적지 X — 서버가 결정)
-  - `S_MapTransition { byte destMapId, float spawnX, float spawnY, int entityId }`
-    — 목적지 맵 + spawn 좌표 + (재배정될 수 있는) entityId
+  - `S_MapTransition { byte destMapId, float spawnX, float spawnY }` — 목적지 맵 + spawn 좌표.
+    **entityId 필드 없음** (ADR-026: entity id 전역 유지 → 클라가 기존 id 보유, redundant).
 - [ ] `Shared.GameData` 또는 `Protocol`에 `ProtocolVersion.Current` **5 → 6**
 - [ ] **PacketGenerator 후속 3종 의무** (99_Tools/CLAUDE.md):
   - `dotnet run --project 99_Tools/PacketGenerator/` 재생성
@@ -57,7 +57,12 @@ domain: cross
       HuntingGround 우측 끝 → BossRoom). `GameMap`에 `IReadOnlyList<Portal>` 또는 const 정의.
   - `Portal { int PortalId, Vector2 Position, MapId Dest, Vector2 DestSpawn }`
 - [ ] portal 좌표는 M3 3-zone 경계 좌표 재활용 (자연스러운 이동 흐름)
-- [ ] **AddPlayer/Migration 로직은 박지 않음** — Phase 03. 본 Phase는 portal **데이터 + 패킷 정의**만.
+- [ ] **entity id 전역 풀 전환** (ADR-026 채택): Phase 01 현행 = 맵별 `GameMap._nextEntityId` 독립 풀.
+      이를 `GameWorld`의 **단일 전역 발급기**(`Interlocked.Increment`)로 전환. `GameMap.AddPlayer`/
+      `SpawnEnemy`가 GameWorld에서 id를 받도록. id 발급은 게임 상태 mutation 아님 → Map=Actor 위배 X.
+      회귀 0 사수 (기존 테스트의 entity id 기대값 영향 점검 — 전역 풀이면 맵 생성 순서 따라 초기 id 달라질 수 있음).
+- [ ] **AddPlayer/Migration 로직은 박지 않음** — Phase 03. 본 Phase는 portal **데이터 + 패킷 정의 +
+      entity id 전역 풀 인프라**까지.
 
 ---
 
@@ -98,8 +103,8 @@ domain: cross
 
 - **PacketGenerator 후속 3종 누락 = 다른 머신 pull 빌드 회귀** (정유현 PR #19 사고 패턴, 99_Tools/CLAUDE.md).
 - ProtocolVersion bump 잊으면 옛 클라가 새 서버에 붙어 디코드 깨짐 — handshake 게이트가 막아야 함.
-- `S_MapTransition.entityId` — 맵 간 이동 시 entity id 유지/재배정 정책은 Phase 03에서 확정.
-  본 Phase는 패킷 **필드만** 정의 (값 채우기는 Phase 03 migration 로직).
+- **entity id 정책 = ADR-026 결론 (전역 유지)** — S_MapTransition에 entityId 필드 없음. 전역 풀
+  전환 시 기존 테스트의 id 기대값(예: Town player id=1)이 맵 생성 순서에 영향받을 수 있으니 회귀 점검.
 - portalId는 클라가 보내는 값이라 **untrusted** — Phase 03에서 범위/근접 검증 (헌법 #3).
 
 ---

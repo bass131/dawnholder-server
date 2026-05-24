@@ -23,7 +23,27 @@ public class GameMap
     // M3 Phase 06 Step 2: enemy 보관소. player와 *분리* — broadcast 대상은 players만 (enemy는
     // owner session X). 같은 entity id 풀에서 발급해 id collision 차단.
     readonly Dictionary<int, EnemyEntity> _enemies = new();
-    int _nextEntityId = 1;
+
+    // M4.2 Phase 02: entity id 발급기.
+    //
+    // **두 가지 동작 모드**:
+    //   (A) GameWorld 경유 생성: _idAllocator = GameWorld.NextEntityId — 전역 풀에서 발급.
+    //       4맵 간 id가 globally-unique (같은 id가 두 맵에 동시 존재 X).
+    //       ADR-026: 맵 이동 시 entity id 유지 → S_MapTransition에 entityId 필드 불필요.
+    //   (B) 단독 생성 (테스트 / 미래 확장): _idAllocator = null → 로컬 _localNextId 사용 (1부터 시작).
+    //       GameMap을 GameWorld 없이 독립 사용 가능 — 테스트 격리 보장.
+    //
+    // **Func<int> vs GameWorld 직접 참조**:
+    //   Func<int>를 주입하면 GameMap이 GameWorld에 직접 의존하지 않음 → 순환 참조 없음.
+    //   테스트에서 GameWorld singleton 없이도 GameMap 단독 생성 가능 (테스트 친화적).
+    //   Interlocked.Increment는 GameWorld 안에서 처리 — GameMap은 "번호 뽑기 함수"만 받음.
+    readonly Func<int>? _idAllocator;
+
+    // (B) 모드 전용 로컬 카운터. (A) 모드에서는 _idAllocator()를 호출하므로 이 필드는 불사용.
+    int _localNextId = 1;
+
+    // entity id 발급 단일 경로. (A)/(B) 분기를 여기에만 박음 — SpawnEnemy/AddPlayer는 AllocId() 호출만.
+    int AllocId() => _idAllocator != null ? _idAllocator() : _localNextId++;
 
     readonly ConcurrentQueue<Action> _pendingJobs = new();
 
@@ -59,6 +79,11 @@ public class GameMap
     // readonly — ctor 이후 변경 X (맵 identity는 불변).
     public MapId MapId { get; }
 
+    // M4.2 Phase 02: 맵에 속한 portal 목록. PortalTable 단일 진실 공급원에서 가져옴.
+    // IReadOnlyList — 외부에서 추가/제거 불가 (헌법 #1 Server Authority: portal 정의는 서버 권위).
+    // Phase 03에서 C_EnterPortal 핸들러가 portalId로 이 목록을 lookup.
+    public IReadOnlyList<Portal> Portals { get; }
+
     // M4.2 Phase 01 (결정 2 — Spawn 모듈화): ctor switch 분기 제거.
     // MapSpawnTable.GetSpawnsFor(mapId) → spawn 정의 목록을 받아 순서대로 spawn.
     //
@@ -71,9 +96,18 @@ public class GameMap
     //   - EnemyKind 분기(Normal/Boss 별도 helper) 통합 → SpawnEnemy(kind, x, y, hp) 단일 경로.
     //
     // **헌법 #5**: ctor는 tick 진입 전 → 동기 코드 OK. await/Task.Delay/Thread.Sleep 없음.
-    public GameMap(MapId mapId = MapId.HuntingGround)
+    //
+    // M4.2 Phase 02: idAllocator 선택적 주입 (Func<int>? = null).
+    // GameWorld 경유 생성 시 GameWorld.NextEntityId 전달 → 전역 풀.
+    // 단독 생성 시 null → 로컬 카운터 (테스트 격리 보장).
+    public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null)
     {
         MapId = mapId;
+        _idAllocator = idAllocator;
+
+        // M4.2 Phase 02: portal 목록 초기화. PortalTable 단일 진실 공급원.
+        Portals = PortalTable.GetPortalsFor(mapId);
+
         // MapSpawnTable이 단일 진실 공급원 — 맵별 spawn 목록 반환.
         // Town/Ending은 Empty 목록 → foreach 본문 진입 X (빈 맵).
         foreach (EnemySpawnDef def in MapSpawnTable.GetSpawnsFor(mapId))
@@ -92,7 +126,7 @@ public class GameMap
     //   ex. AttackHandlerTests가 임의 맵에 enemy를 추가할 때 호출.
     internal EnemyEntity SpawnEnemy(EnemyKind kind, float x, float y, int maxHp)
     {
-        int id = _nextEntityId++;
+        int id = AllocId();
         EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp);
         _enemies.Add(id, e);
         return e;
@@ -105,7 +139,7 @@ public class GameMap
     // M4.1 Phase 05 (3단계): stats 옵션 인자 추가. null 시 PlayerEntity ctor가 Warrior() 응급 default 박음.
     public PlayerEntity AddPlayer(GameSession? owner, Vector2 spawnPos, PlayerStats? stats = null)
     {
-        PlayerEntity entity = new PlayerEntity(_nextEntityId++, spawnPos, owner, stats);
+        PlayerEntity entity = new PlayerEntity(AllocId(), spawnPos, owner, stats);
         _players.Add(entity);
         return entity;
     }
