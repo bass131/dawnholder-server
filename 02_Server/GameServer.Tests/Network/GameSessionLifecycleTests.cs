@@ -49,7 +49,9 @@ public class GameSessionLifecycleTests : IDisposable
 
     public GameSessionLifecycleTests()
     {
-        _map = new GameMap();
+        // M4.2 Phase 01: Town(빈 맵) — lifecycle 테스트는 enemy 불필요.
+        // 플레이어 entityId = 1 (enemy 없음 → 첫 발급 = 1).
+        _map = new GameMap(MapId.Town);
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
         Console.SetOut(_consoleCapture);
@@ -174,9 +176,9 @@ public class GameSessionLifecycleTests : IDisposable
         session.OnDisconnected(Ep());
         _map.Tick(2);
 
-        // 첫 cleanup 로그는 _entityId=3 (reset 전).
-        // Phase 06 enemy(1) + Phase 07 Boss(2) ctor spawn에 따른 player id offset 갱신 — player=entityId 3.
-        Assert.Contains("entityId=3", _consoleCapture.ToString());
+        // 첫 cleanup 로그는 _entityId=1 (reset 전).
+        // M4.2 Phase 01: Town 맵(빈 맵) 사용 → enemy 없음 → player = 첫 발급 entityId=1.
+        Assert.Contains("entityId=1", _consoleCapture.ToString());
         // reset 이후의 검증 — direct access 불가하므로, 두 번째 OnDisconnected를 무시(_closing=1)
         // 후 _entityId 직접 reflection으로 확인하는 대신 _closing 멱등성으로 간접 검증.
         // (이 테스트는 reset 자체보다는 *cleanup 호출이 정상 마무리됨* 검증)

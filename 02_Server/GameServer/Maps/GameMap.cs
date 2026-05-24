@@ -33,21 +33,10 @@ public class GameMap
     // 다발 전송(S_EntitySpawn) 시 순회용 + Step 5 AttackHandler가 target lookup 보조용.
     public IReadOnlyDictionary<int, EnemyEntity> Enemies => _enemies;
 
-    // M3 Phase 06 Step 2 (응급 전투): 단일 맵 3-zone trick (좌=마을 / 중=전투 / 우=보스).
-    // ground y=0 가정(Physics.cs 정의 정합) + player spawn (0,0)에서 우측으로 충분히 떨어진
-    // 위치로 박음. 진짜 zone 경계 좌표는 클라(Phase 08b)에서 시각화 박힘 — 서버는 위치만 정의.
-    // `MoveSpeed = 5 units/sec`이므로 (10, 0)은 정상 도보 2초 거리 = 시연 흐름 자연.
-    public const float NormalEnemySpawnX = 10f;
-    public const float NormalEnemySpawnY = 0f;
-    public const int NormalEnemyMaxHp = 30;
-
-    // M3 Phase 07 (보스 + Stage Clear): 우측 zone 보스 placeholder.
-    // 3-zone 좌표 약속 = 좌 마을 (x<0) / 중 전투 (Normal=10) / 우 보스 (Boss=30). player spawn=0 정합.
-    // HP 100 = damage 10 × 10회 사망. 본 마감엔 보스 전용 데미지 공식 + 페이즈 — M4 backlog.
-    // AI 없음, 패시브 dummy (Phase 06 Normal과 동일 모델 — `EnemyKind.Boss` 분기만 다름).
-    public const float BossSpawnX = 30f;
-    public const float BossSpawnY = 0f;
-    public const int BossMaxHp = 100;
+    // M4.2 Phase 01 (결정 2 — Spawn 모듈화):
+    // 옛 NormalEnemySpawnX/Y/MaxHp · BossSpawnX/Y/MaxHp const 제거.
+    // 좌표/HP 정의는 MapSpawnTable.cs로 이동 (단일 진실 공급원).
+    // 테스트 참조: GameMapContentTests가 GameMap.const 대신 MapSpawnTable에서 값 확인.
 
     // M3 Phase 07: Stage Clear 1회 보장 flag. tick thread invariant 안에서만 읽기/쓰기.
     // **헌법 #1 (Server Authority)**: 클라가 stage clear 자체 판정 X — 서버가 본 flag로 1회 broadcast.
@@ -66,39 +55,45 @@ public class GameMap
     /// </summary>
     public bool IsStageCleared => _stageCleared;
 
-    public GameMap()
-    {
-        // M3 Phase 06 Step 2: 서버 시작 시 Normal enemy 1마리 즉시 spawn.
-        // 응급 단순화 — respawn 없음, AI 없음, 고정 위치. Step 3에서 신규 client 접속 시
-        // 본 enemy를 S_EntitySpawn으로 다발 전송 (initial roster 패턴, Phase 04 정합).
-        //
-        // 헌법 #5 (틱 블로킹 금지) 정합: ctor는 tick 진입 전이라 동기 코드 OK. await 없음.
-        SpawnNormalEnemy(NormalEnemySpawnX, NormalEnemySpawnY, NormalEnemyMaxHp);
+    // M4.2 Phase 01: 맵 ID. 어느 맵인지 식별 + GetMap 라우팅 + 로그용.
+    // readonly — ctor 이후 변경 X (맵 identity는 불변).
+    public MapId MapId { get; }
 
-        // M3 Phase 07: 서버 시작 시 Boss 1마리 즉시 spawn (우측 zone). Normal과 같은 entity id 풀
-        // 공유 (`_nextEntityId++`) → S_HitResult.targetEntityId 라우팅 단순화 (Step 5 ProcessAttack에서
-        // GetEnemyById 한 번에 lookup). 별 BossEntity 모델 분리 X (Codex β 권장 — combat 로직 재사용,
-        // StageClear trigger만 EnemyKind.Boss 분기).
-        SpawnBoss(BossSpawnX, BossSpawnY, BossMaxHp);
+    // M4.2 Phase 01 (결정 2 — Spawn 모듈화): ctor switch 분기 제거.
+    // MapSpawnTable.GetSpawnsFor(mapId) → spawn 정의 목록을 받아 순서대로 spawn.
+    //
+    // **변경 전**: ctor 안에 switch(mapId) { HuntingGround: SpawnNormalEnemy(...); BossRoom: SpawnBoss(...); }
+    // **변경 후**: foreach(def in MapSpawnTable.GetSpawnsFor(mapId)) SpawnEnemy(def);
+    //
+    // **이점**:
+    //   - ctor에 맵별 로직 없음 — spawn 내용 변경 시 MapSpawnTable만 수정.
+    //   - 맵 추가 시 MapSpawnTable에 항목 추가 + GameMap ctor는 변경 없음.
+    //   - EnemyKind 분기(Normal/Boss 별도 helper) 통합 → SpawnEnemy(kind, x, y, hp) 단일 경로.
+    //
+    // **헌법 #5**: ctor는 tick 진입 전 → 동기 코드 OK. await/Task.Delay/Thread.Sleep 없음.
+    public GameMap(MapId mapId = MapId.HuntingGround)
+    {
+        MapId = mapId;
+        // MapSpawnTable이 단일 진실 공급원 — 맵별 spawn 목록 반환.
+        // Town/Ending은 Empty 목록 → foreach 본문 진입 X (빈 맵).
+        foreach (EnemySpawnDef def in MapSpawnTable.GetSpawnsFor(mapId))
+        {
+            SpawnEnemy(def.Kind, def.X, def.Y, def.MaxHp);
+        }
     }
 
-    // M3 Phase 06 Step 2: tick thread (또는 ctor) 에서만 호출 invariant.
+    // M4.2 Phase 01 (결정 2 — Spawn 모듈화): SpawnNormalEnemy + SpawnBoss 통합.
+    // 옛 두 helper는 kind 인자 하나 차이밖에 없었음 → 통합 SpawnEnemy(kind, x, y, maxHp).
+    //
+    // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).
     // 헌법 #5 — 동기 코드만, await/Task.Delay/Thread.Sleep 금지.
-    EnemyEntity SpawnNormalEnemy(float x, float y, int maxHp)
+    //
+    // **internal 유지 이유**: 테스트 픽스처가 직접 enemy 구성 가능 (InternalsVisibleTo).
+    //   ex. AttackHandlerTests가 임의 맵에 enemy를 추가할 때 호출.
+    internal EnemyEntity SpawnEnemy(EnemyKind kind, float x, float y, int maxHp)
     {
         int id = _nextEntityId++;
-        EnemyEntity e = new EnemyEntity(id, EnemyKind.Normal, x, y, maxHp);
-        _enemies.Add(id, e);
-        return e;
-    }
-
-    // M3 Phase 07: tick thread (또는 ctor)에서만 호출 invariant.
-    // Normal과 분리 helper로 박은 이유 = 호출처 명확화 (`SpawnBoss(30, 0, 100)`가 `SpawnEnemy(Boss, 30, 0, 100)`보다
-    // 의도 표현 명확). 본 마감 시 통합 SpawnEnemy(kind, ...)로 합치는 게 정석이지만 응급 = 명시 helper 2개로 유지.
-    EnemyEntity SpawnBoss(float x, float y, int maxHp)
-    {
-        int id = _nextEntityId++;
-        EnemyEntity e = new EnemyEntity(id, EnemyKind.Boss, x, y, maxHp);
+        EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp);
         _enemies.Add(id, e);
         return e;
     }

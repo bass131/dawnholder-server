@@ -49,6 +49,11 @@ public class AttackHandlerTests : IDisposable
     const int BossEntityId = 2;        // Boss (Phase 07)
     const int PlayerEntityId = 3;
 
+    // M4.2 Phase 01 (결정 2 모듈화 갱신): MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
+    // 옛 GameMap.NormalEnemySpawnX/Y/MaxHp · BossSpawnX/Y/MaxHp const 대체.
+    static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
+    static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
+
     // M4.1 Phase 05 (회귀 갱신): Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = Max(1, 10+15-0) = 25.
     // PlayerStats.Warrior() Attack=15, EnemyStats default Defense=0, CombatConstants.BaseDamage=10.
     // 옛 mirror 상수 10 → 실제 Formulas 기반 기대값으로 교체.
@@ -89,7 +94,13 @@ public class AttackHandlerTests : IDisposable
 
     public AttackHandlerTests()
     {
-        _map = new GameMap();
+        // M4.2 Phase 01: HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2).
+        // 옛 단일맵 ctor는 Normal+Boss 둘 다 박았지만, 맵 분리 후 HuntingGround는 Normal만.
+        // 전투 테스트는 둘 다 필요 → SpawnEnemy(EnemyKind.Boss, ...) 직접 호출 (InternalsVisibleTo).
+        // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴 (옛 GameMap.BossSpawnX 대체).
+        _map = new GameMap(MapId.HuntingGround);
+        _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);
+
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
         Console.SetOut(_consoleCapture);
@@ -123,7 +134,7 @@ public class AttackHandlerTests : IDisposable
     // enemy는 (10, 0)에 박혀있고 AttackRangeSquared=9 → distance < 3 필요.
     // (9, 0)이면 distance=1 = 안전 in-range.
     static void PlaceInRange(PlayerEntity player)
-        => player.Position = new Vector2(GameMap.NormalEnemySpawnX - 1f, GameMap.NormalEnemySpawnY);
+        => player.Position = new Vector2(NormalDef.X - 1f, NormalDef.Y);
 
     // 공격 사거리 *밖*: enemy (10, 0)에서 거리 10 → dist² = 100 ≥ 9.
     // spawn 좌표 그대로(0, 0)면 자동 out-of-range지만 명시적 박음 = 의도 표현.
@@ -169,12 +180,12 @@ public class AttackHandlerTests : IDisposable
         Assert.Equal(EnemyEntityId, parsed.targetEntityId);
         // M4.1 Phase 05 회귀 갱신: Warrior(Attack=15) + BaseDamage=10 - Defense=0 = 25.
         Assert.Equal(ExpectedDamage, parsed.damage);
-        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedDamage, parsed.currentHp); // 30 - 25 = 5
-        Assert.Equal(GameMap.NormalEnemyMaxHp, parsed.maxHp);                      // 30
+        Assert.Equal(NormalDef.MaxHp - ExpectedDamage, parsed.currentHp); // 30 - 25 = 5
+        Assert.Equal(NormalDef.MaxHp, parsed.maxHp);                      // 30
 
         // 권위 상태(enemy.Hp)도 같이 갱신됨 — broadcast와 정합.
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedDamage, enemy.Hp);
+        Assert.Equal(NormalDef.MaxHp - ExpectedDamage, enemy.Hp);
         Assert.False(enemy.IsDead);
 
         // Death broadcast 없어야 — Hp=20 > 0이라 kill 분기 미진입.
@@ -204,7 +215,7 @@ public class AttackHandlerTests : IDisposable
 
         // enemy Hp 변동 없음 — server 권위 상태 보존 검증.
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        Assert.Equal(GameMap.NormalEnemyMaxHp, enemy.Hp);
+        Assert.Equal(NormalDef.MaxHp, enemy.Hp);
         Assert.False(enemy.IsDead);
     }
 
@@ -235,7 +246,7 @@ public class AttackHandlerTests : IDisposable
 
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
         // M4.1 Phase 05 회귀 갱신: 첫 hit 후 Hp = 30 - 25 = 5 (한 번만).
-        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedDamage, enemy.Hp);
+        Assert.Equal(NormalDef.MaxHp - ExpectedDamage, enemy.Hp);
     }
 
     [Fact]
@@ -258,7 +269,7 @@ public class AttackHandlerTests : IDisposable
 
         // enemy Hp 변동 없음 — handler 도달 전 차단 검증.
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        Assert.Equal(GameMap.NormalEnemyMaxHp, enemy.Hp);
+        Assert.Equal(NormalDef.MaxHp, enemy.Hp);
     }
 
     [Fact]
@@ -275,7 +286,7 @@ public class AttackHandlerTests : IDisposable
 
         // 2회 공격 루프 — 매번 LastAttackTickMs reset으로 cooldown 우회.
         // M4.1 Phase 06 회귀: attackerClientTick=tick과 동일 → diff=0 → rewind 없음 = 옛 동작 정합.
-        int hitsNeeded = (int)Math.Ceiling((double)GameMap.NormalEnemyMaxHp / ExpectedDamage); // 2
+        int hitsNeeded = (int)Math.Ceiling((double)NormalDef.MaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
@@ -316,7 +327,7 @@ public class AttackHandlerTests : IDisposable
 
         // M4.1 Phase 05 회귀 갱신: 2회 hit으로 Normal enemy 사망 (옛 3회).
         // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)GameMap.NormalEnemyMaxHp / ExpectedDamage);
+        int hitsNeeded = (int)Math.Ceiling((double)NormalDef.MaxHp / ExpectedDamage);
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {

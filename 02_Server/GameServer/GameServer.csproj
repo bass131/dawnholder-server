@@ -12,4 +12,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- M4.2 Phase 01: 테스트 어셈블리가 internal 멤버(SpawnNormalEnemy/SpawnBoss) 직접 접근.
+       GameMap.SpawnXxx를 internal로 노출한 이유: 테스트 픽스처가 맵 콘텐츠를 직접 구성
+       (ex. AttackHandlerTests: HuntingGround + Boss 둘 다 필요) — production API 오염 없이 해결.
+       .NET 표준 테스트 패턴 (InternalsVisibleTo). -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>GameServer.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>

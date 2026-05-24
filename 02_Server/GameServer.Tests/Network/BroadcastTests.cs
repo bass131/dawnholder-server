@@ -27,6 +27,10 @@ public class BroadcastTests : IDisposable
     readonly StringWriter _consoleCapture;
     readonly TextWriter _originalOut;
 
+    // M4.2 Phase 01 (결정 2 모듈화 갱신): MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
+    static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
+    static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
+
     class TestGameSession : GameSession
     {
         readonly GameMap _injectedMap;
@@ -56,7 +60,13 @@ public class BroadcastTests : IDisposable
 
     public BroadcastTests()
     {
-        _map = new GameMap();
+        // M4.2 Phase 01: HuntingGround(Normal id=1) + Boss 수동 spawn(id=2).
+        // NewSession_ReceivesActiveEnemyRoster_OnEnter가 Normal(id=1)+Boss(id=2) 2마리 roster를 검증하므로
+        // 두 enemy 모두 필요. 결과적으로 플레이어 entityId = 3부터 (기존 가정 유지).
+        // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴.
+        _map = new GameMap(MapId.HuntingGround);
+        _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);
+
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
         Console.SetOut(_consoleCapture);
@@ -136,18 +146,18 @@ public class BroadcastTests : IDisposable
         // Normal (Phase 06 ctor 박힘)
         Assert.Equal(1, parsedNormal.entityId);
         Assert.Equal((byte)Dawnholder.Server.GameServer.Combat.EnemyKind.Normal, parsedNormal.entityKind);
-        Assert.Equal(GameMap.NormalEnemySpawnX, parsedNormal.x);
-        Assert.Equal(GameMap.NormalEnemySpawnY, parsedNormal.y);
-        Assert.Equal(GameMap.NormalEnemyMaxHp, parsedNormal.currentHp);
-        Assert.Equal(GameMap.NormalEnemyMaxHp, parsedNormal.maxHp);
+        Assert.Equal(NormalDef.X, parsedNormal.x);
+        Assert.Equal(NormalDef.Y, parsedNormal.y);
+        Assert.Equal(NormalDef.MaxHp, parsedNormal.currentHp);
+        Assert.Equal(NormalDef.MaxHp, parsedNormal.maxHp);
 
         // Boss (Phase 07 ctor 박힘)
         Assert.Equal(2, parsedBoss.entityId);
         Assert.Equal((byte)Dawnholder.Server.GameServer.Combat.EnemyKind.Boss, parsedBoss.entityKind);
-        Assert.Equal(GameMap.BossSpawnX, parsedBoss.x);
-        Assert.Equal(GameMap.BossSpawnY, parsedBoss.y);
-        Assert.Equal(GameMap.BossMaxHp, parsedBoss.currentHp);
-        Assert.Equal(GameMap.BossMaxHp, parsedBoss.maxHp);
+        Assert.Equal(BossDef.X, parsedBoss.x);
+        Assert.Equal(BossDef.Y, parsedBoss.y);
+        Assert.Equal(BossDef.MaxHp, parsedBoss.currentHp);
+        Assert.Equal(BossDef.MaxHp, parsedBoss.maxHp);
     }
 
     [Fact]

@@ -35,6 +35,10 @@ public class GameSessionRateLimitTests : IDisposable
     class CountingGameMap : GameMap
     {
         public int EnqueueJobCalls;
+
+        // M4.2 Phase 01: base의 mapId 인자 전달 ctor 추가.
+        public CountingGameMap(MapId mapId = MapId.HuntingGround) : base(mapId) { }
+
         public override void EnqueueJob(Action job)
         {
             EnqueueJobCalls++;
@@ -68,7 +72,10 @@ public class GameSessionRateLimitTests : IDisposable
 
     public GameSessionRateLimitTests()
     {
-        _map = new CountingGameMap();
+        // M4.2 Phase 01: CountingGameMap은 GameMap 상속 — 기본 mapId=HuntingGround(Normal=1).
+        // rate-limit 테스트는 enemy 불필요. Town(빈 맵) → player=entityId 1 (enemy 없음).
+        // Drop_PreventsEntityStateChange_AfterTick가 GetPlayer(3) → 1로 갱신.
+        _map = new CountingGameMap(MapId.Town);
         _session = new TestGameSession(_map);
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
@@ -121,8 +128,8 @@ public class GameSessionRateLimitTests : IDisposable
             _session.OnRecvPacket(MakeMoveIntent(0b00_0_0_0_010, (uint)(i + 1))); // +1
 
         _map.Tick(2); // 첫 tick은 ctor에서 Tick(1) — 본 tick은 2번째
-        // Phase 06 enemy(1) + Phase 07 Boss(2) ctor spawn에 따른 player id offset 갱신 — player=entityId 3.
-        PlayerEntity? entity = _map.GetPlayer(3);
+        // M4.2 Phase 01: Town 맵(빈 맵) → enemy 없음 → player=entityId 1 (첫 발급).
+        PlayerEntity? entity = _map.GetPlayer(1);
         Assert.NotNull(entity);
         float posAfterFirstTick = entity!.Position.X;
         Assert.True(posAfterFirstTick > 0, $"+1 input 적용 안 됨 — Position.X={posAfterFirstTick}");
