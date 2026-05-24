@@ -43,6 +43,10 @@ obj/
 [Mm]emoryCaptures/
 [Rr]ecordings/
 
+# Unity AI 2.0 sprite 생성 부산물 — 생성 임시 산출물 폴더 (각자 머신 자유, commit X)
+# 2026-05-25 박힘 — Player sprite asset 생성 테스트 시 표면화
+03_Client/GeneratedAssets/
+
 # Unity 자동 생성 csproj/sln (98_Shared/02_Server csproj는 손으로 관리하므로 제외)
 03_Client/*.csproj
 03_Client/*.sln
