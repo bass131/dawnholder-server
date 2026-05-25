@@ -82,10 +82,49 @@ public class GameSession : PacketSession
     int _intentCountInWindow;
     bool _rateLimitLoggedThisWindow;
 
+    // M4.2 Phase 03: 현재 맵 추적 필드.
+    //
+    // **초기값 Town**: EnterGameWorld에서 Town으로 최초 진입 (Phase 01 임시 Town 고정 동작 유지).
+    // **_migrating flag**: RemovePlayer~AddPlayer 사이 "어느 맵에도 없는" 순간 transitioning 마킹.
+    //   이 사이 도착하는 게임플레이 패킷(attack/move)은 GetMap()이 null 반환 → 핸들러 안전 no-op.
+    //
+    // **왜 null이 아닌 Town 초기값인가?**
+    //   EnterGameWorldIfReady 호출 전 gamePlay 패킷은 이미 _handshakeCompleted/_enteredWorld 게이트가
+    //   차단함. CurrentMapId 초기값은 EnterGameWorld에서 Town으로 세팅되므로 초기 Town이 자연스러움.
+    //
+    // **동시성 가정** (M4.2 Phase 03 리뷰어 🟡 1 봉합):
+    //   읽기 = socket thread (GetMap() → SubmitMoveIntent/SubmitAttack/SubmitEnterPortal/OnDisconnected 호출 경로).
+    //   쓰기 = tick thread (migration 람다, EnqueueJob 안).
+    //   단일 writer + 단순 대입(RMW 아님) → Volatile로 가시성만 보장하면 충분. Interlocked/lock 불필요.
+    //   MapId는 int 기반 enum이라 Volatile.Read/Write 직접 불가 → int 백킹 필드(_currentMapIdValue) 패턴.
+    int _currentMapIdValue = (int)MapId.Town; // Volatile.Read/Write용 int 백킹 필드
+
+    MapId CurrentMapId
+    {
+        get => (MapId)Volatile.Read(ref _currentMapIdValue);
+        set => Volatile.Write(ref _currentMapIdValue, (int)value);
+    }
+
+    // Migration 중간 상태 플래그. 0=정상, 1=이동중(어느 맵에도 없는 순간).
+    // **동시성 가정**: 쓰기=tick thread (EnqueueJob 람다), 읽기=socket thread (GetMap() / OnDisconnected).
+    // 단일 writer(tick) + 단순 대입 → Volatile.Read/Write로 가시성 보장. Interlocked/lock 불필요.
+    int _migrating;
+
     // Phase 09 (M2.5): 테스트가 GameMap을 주입할 수 있는 hook + 셧다운 race null-safe.
-    // GameWorld.Instance가 null인 race(테스트 dispose / 서버 종료 직후 in-flight socket callback)
-    // 시 null 반환 → 호출자가 안전 no-op. 운영 시 정상 흐름엔 영향 X.
-    protected virtual GameMap? GetMap() => GameWorld.Instance?.Map;
+    // M4.2 Phase 03: GameWorld.Instance?.Map(Town 고정 임시) → GetMap(_currentMapId)으로 교체.
+    //   _migrating == 1 이면 null 반환 → 핸들러 안전 no-op (transient drop 핵심).
+    //   GameWorld.Instance가 null인 race 시에도 null 반환 (기존 셧다운 race 안전망 유지).
+    protected virtual GameMap? GetMap()
+    {
+        if (Volatile.Read(ref _migrating) == 1) return null;
+        return GameWorld.Instance?.GetMap(CurrentMapId);
+    }
+
+    // M4.2 Phase 03: 목적지 맵 조회 hook. 테스트가 다중 맵 주입 시 override.
+    // 운영 시: GameWorld.Instance?.GetMap(destMapId) — 전역 레지스트리에서 조회.
+    // 테스트: TestGameSession이 override해 미리 준비한 맵을 반환.
+    protected virtual GameMap? GetDestMap(MapId destMapId)
+        => GameWorld.Instance?.GetMap(destMapId);
 
     // M3 Phase 04 (Phase 10 lifecycle race 재발 봉합 패턴 일반화): GameMap.BroadcastToAll에서
     // 발신 시 closing 중인 세션 skip 판별용 internal getter. broadcast 발신은 tick thread에서만
@@ -102,8 +141,10 @@ public class GameSession : PacketSession
     // M3 Phase 02 (헌법 #2 봉합): handshake 통과 시 게임 월드 진입.
     // 옛 OnConnected가 직접 호출하던 AddPlayer 흐름을 통째 이동.
     // protected — TestGameSession이 handshake 우회(mock) 시 직접 호출 가능 (lifecycle 테스트 호환).
+    // M4.2 Phase 03: 최초 진입 맵은 Town으로 명시 고정 (CurrentMapId Town 초기값과 정합).
     protected void EnterGameWorld()
     {
+        CurrentMapId = MapId.Town; // 최초 진입은 항상 Town (헌법 #1 서버 권위)
         GameMap? map = GetMap();
         if (map == null)
         {
@@ -360,6 +401,190 @@ public class GameSession : PacketSession
         Send(pong.Write());
     }
 
+    // M4.2 Phase 03: C_EnterPortal 수신 시 EnterPortalHandler가 호출하는 캡슐화 메서드.
+    //
+    // **헌법 #1 (Server Authority)**: 목적지/spawn 좌표는 PortalTable이 결정. 클라는 portalId만 보냄.
+    // **헌법 #3 (Trust Boundary)**: 아래 검증 순서 (tick thread에서 실행):
+    //   1. portalId가 현재 맵의 유효 portal인가 (범위 검증) → 아니면 silent drop
+    //   2. 플레이어 위치가 portal 좌표 근처인가 (2 unit 임계) → 멀면 silent drop (텔레포트 핵 차단)
+    //   3. _entityId < 0 방어 (EnterGameWorld 미완료 race)
+    // **헌법 #5 (틱 블로킹 금지)**: EnqueueJob 람다로 tick thread 동기 처리. await/DB/Sleep 금지.
+    //
+    // **맵 간 마샬링 방식** (Map=Actor 원칙):
+    //   맵 A의 tick thread에서 RemovePlayer + S_PlayerLeave broadcast.
+    //   그 후 맵 B.EnqueueJob으로 AddPlayerWithId (id 유지 — ADR-026) + S_PlayerJoin broadcast.
+    //   한 맵의 tick thread가 다른 맵 상태를 직접 mutate하지 않음 (message channel만).
+    //
+    // **Transient drop 처리**:
+    //   RemovePlayer(맵 A) 직후 ~ AddPlayerWithId(맵 B) 완료 직전 사이,
+    //   _migrating = 1로 세팅 → GetMap() null 반환 → 이 사이 도착하는 attack/move는 자동 no-op.
+    //   AddPlayerWithId 완료 후 _migrating = 0 reset + _currentMapId 갱신 → 이후 패킷 정상 처리.
+    //
+    // **portal 근접 임계 2 unit 이유**:
+    //   PortalTable 좌표(예: Town x=20)에서 플레이어가 spawn(x=0)에서 걸어옴.
+    //   클라이언트는 서버 S_Snapshot으로 보정된 서버 권위 위치를 갖지만,
+    //   네트워크 지연 1-2 tick(50-100ms) 내 위치 오차가 최대 ~1.5 unit(MoveSpeed 1.5 × 1tick).
+    //   2 unit은 이 오차를 흡수하면서 텔레포트 핵(portal에서 10 unit 이상 떨어진 곳에서 요청)을 차단.
+    internal void SubmitEnterPortal(int portalId)
+    {
+        if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
+
+        GameMap? currentMap = GetMap();
+        if (currentMap == null)
+        {
+            Console.WriteLine($"[Trust] GameSession.SubmitEnterPortal: GetMap() null — config/shutdown/migration race");
+            return;
+        }
+
+        int eid = _entityId;
+        GameSession self = this;
+
+        currentMap.EnqueueJob(() =>
+        {
+            // tick thread 안에서 검증 + migration 실행
+
+            // 1) portal lookup — portalId가 현재 맵의 유효 portal인가
+            // hot-path 일관성 (reviewer 🟡#3): LINQ FirstOrDefault는 클로저 할당이 생김.
+            // 이동/공격 hot path가 LINQ를 피하는 패턴과 정합 위해 foreach로 lookup.
+            Portal? portal = null;
+            foreach (Portal p in currentMap.Portals)
+            {
+                if (p.PortalId == portalId) { portal = p; break; }
+            }
+            if (portal == null)
+            {
+                Console.WriteLine($"[Trust] Player {eid}: invalid portalId={portalId} for map={currentMap.MapId} — silent drop");
+                return;
+            }
+
+            // 2) 플레이어 존재 확인
+            PlayerEntity? player = currentMap.GetPlayer(eid);
+            if (player == null) return; // 이미 없는 경우 (race)
+
+            // 3) 근접 검증 (헌법 #3 — 텔레포트 핵 차단)
+            // 플레이어 현재 위치와 portal 좌표 간 거리가 임계(2 unit) 이내인가.
+            const float ProximityThreshold = 2f;
+            float dx = player.Position.X - portal.Position.X;
+            float dy = player.Position.Y - portal.Position.Y;
+            float distSq = dx * dx + dy * dy;
+            if (distSq > ProximityThreshold * ProximityThreshold)
+            {
+                Console.WriteLine(
+                    $"[Trust] Player {eid}: portal proximity fail — dist²={distSq:F2} > threshold²={ProximityThreshold * ProximityThreshold} — silent drop");
+                return;
+            }
+
+            // 검증 통과 → migration 시작
+
+            // 캡처: migration에 필요한 상태 (tick thread 안에서 읽으므로 안전)
+            int capturedEntityId = eid;
+            PlayerStats capturedStats = player.Stats;
+            int capturedHp = player.Hp;
+            Vector2 destSpawn = portal.DestSpawn;
+            MapId destMapId = portal.Dest;
+
+            // _migrating = 1 세팅 — 이 시점부터 GetMap() null 반환 (transient drop 시작)
+            // tick thread에서 세팅하지만 GetMap()은 socket thread에서도 읽음 → Volatile.Write.
+            Volatile.Write(ref self._migrating, 1);
+
+            // 맵 A: RemovePlayer + 남은 플레이어에게 S_PlayerLeave broadcast
+            currentMap.RemovePlayer(capturedEntityId);
+            S_PlayerLeave leaveNotice = new S_PlayerLeave { entityId = capturedEntityId };
+            currentMap.BroadcastToAll(leaveNotice.Write()); // 자기 자신은 이미 _players에서 빠짐 — except 불필요
+
+            Console.WriteLine($"[Map] Player {capturedEntityId} left map={currentMap.MapId} → heading to {destMapId}");
+
+            // 맵 B 조회 (virtual hook — 테스트에서 override 가능)
+            GameMap? destMap = self.GetDestMap(destMapId);
+            if (destMap == null)
+            {
+                // 목적지 맵 없음 = config 버그. _migrating reset + 이전 맵에 재추가는 불가(복잡).
+                // 대신 disconnect (무결성 우선).
+                Console.WriteLine($"[Error] Destination map {destMapId} not found — disconnecting player {capturedEntityId}");
+                Volatile.Write(ref self._migrating, 0);
+                self.Disconnect();
+                return;
+            }
+
+            // 맵 B: EnqueueJob으로 AddPlayerWithId (id 유지 — ADR-026) 마샬링
+            // 한 맵의 tick thread가 다른 맵 상태를 직접 mutate 금지 (Map=Actor 원칙, 헌법).
+            destMap.EnqueueJob(() =>
+            {
+                // 맵 B tick thread 안에서 실행
+
+                // closing race: 이미 disconnect된 세션이면 skip
+                if (Volatile.Read(ref self._closing) == 1)
+                {
+                    Volatile.Write(ref self._migrating, 0);
+                    return;
+                }
+
+                // 맵 B 기존 플레이어 snapshot (자기 자신 추가 전 — initial roster 정합)
+                List<PlayerEntity> existingInDest = new(destMap.Players);
+
+                // AddPlayerWithId: 기존 entity id 유지 (ADR-026 핵심)
+                PlayerEntity newEntity = destMap.AddPlayerWithId(
+                    capturedEntityId, self, destSpawn, capturedStats, capturedHp);
+
+                // _currentMapId 갱신 + _migrating 해제 (이 시점부터 GetMap() 정상 반환)
+                // CurrentMapId setter = Volatile.Write → 프로퍼티 하나로 atomic 가시성 보장.
+                self.CurrentMapId = destMapId;
+                Volatile.Write(ref self._migrating, 0);
+
+                // 본인에게 S_MapTransition (목적지 맵 + spawn 좌표 — entityId 없음, ADR-026)
+                S_MapTransition transition = new S_MapTransition
+                {
+                    destMapId = (byte)destMapId,
+                    spawnX = destSpawn.X,
+                    spawnY = destSpawn.Y,
+                };
+                self.Send(transition.Write());
+
+                // 본인에게 맵 B 기존 player roster (initial roster — EnterGameWorld 패턴 정합)
+                foreach (PlayerEntity existing in existingInDest)
+                {
+                    if (existing.Owner == null) continue;
+                    if (existing.Owner.IsClosing) continue;
+                    S_PlayerJoin rosterEntry = new S_PlayerJoin
+                    {
+                        entityId = existing.EntityId,
+                        spawnX = existing.Position.X,
+                        spawnY = existing.Position.Y,
+                    };
+                    self.Send(rosterEntry.Write());
+                }
+
+                // 본인에게 맵 B active enemy roster (S_EntitySpawn — EnterGameWorld 패턴 정합)
+                foreach (EnemyEntity enemy in destMap.Enemies.Values)
+                {
+                    if (enemy.IsDead) continue;
+                    S_EntitySpawn enemySpawn = new S_EntitySpawn
+                    {
+                        entityId = enemy.EntityId,
+                        entityKind = (byte)enemy.Kind,
+                        x = enemy.X,
+                        y = enemy.Y,
+                        currentHp = enemy.Hp,
+                        maxHp = enemy.MaxHp,
+                    };
+                    self.Send(enemySpawn.Write());
+                }
+
+                // 맵 B 기존 플레이어에게 신규 진입자 S_PlayerJoin broadcast
+                S_PlayerJoin joinNotice = new S_PlayerJoin
+                {
+                    entityId = newEntity.EntityId,
+                    spawnX = newEntity.Position.X,
+                    spawnY = newEntity.Position.Y,
+                };
+                destMap.BroadcastToAll(joinNotice.Write(), except: self);
+
+                Console.WriteLine(
+                    $"[Map] Player {capturedEntityId} arrived at map={destMapId} spawn=({destSpawn.X},{destSpawn.Y}) — hp={capturedHp}, roster:{existingInDest.Count}");
+            });
+        });
+    }
+
     // Phase 10 (M2.5 lifecycle race) 재작성:
     //  - 이전엔 `_entityId < 0` early-return으로 race window cleanup 누락 (γ 감사 위반).
     //  - 이제 *항상* map job 보내고, owner reference 기반으로 cleanup (entityId 모를 때 안전).
@@ -376,7 +601,13 @@ public class GameSession : PacketSession
         GameMap? map = GetMap();
         if (map == null)
         {
-            Console.WriteLine($"[Trust] GameSession.OnDisconnected: GetMap() returned null — config/shutdown race?");
+            // M4.2 Phase 03: _migrating=1이면 "맵 간 이동 중 disconnect" — 맵 A에서 이미 RemovePlayer됨.
+            // 맵 B 람다가 _closing=1 보고 AddPlayerWithId skip → entity 어느 맵에도 없이 정리 (ghost 없음).
+            // shutdown race는 GetMap이 null 반환하는 다른 경로 (GameWorld.Instance == null).
+            if (Volatile.Read(ref _migrating) == 1)
+                Console.WriteLine($"[GameSession] OnDisconnected during migration (player={_entityId}) — cleanup handled by migration lambda");
+            else
+                Console.WriteLine($"[Trust] GameSession.OnDisconnected: GetMap() returned null — config/shutdown race?");
             return;
         }
         GameSession self = this;

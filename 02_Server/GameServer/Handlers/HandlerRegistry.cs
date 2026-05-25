@@ -28,6 +28,7 @@ internal static class HandlerRegistry
             { PacketID.C_MoveIntent, new MoveIntentHandler() },
             { PacketID.C_Attack, new AttackHandler() },
             { PacketID.C_CharacterSelect, new CharacterSelectHandler() },   // M3.8 Phase 03
+            { PacketID.C_EnterPortal,    new EnterPortalHandler() },        // M4.2 Phase 03
         };
 
     public static bool TryGet(PacketID id, out IPacketHandler handler)

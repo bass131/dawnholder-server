@@ -144,6 +144,28 @@ public class GameMap
         return entity;
     }
 
+    // M4.2 Phase 03: migration 전용 AddPlayer 오버로드 — 기존 entity id 유지 (ADR-026).
+    //
+    // **ADR-026 핵심**: 맵 이동 시 player의 entity id를 재배정하지 않는다.
+    //   이 메서드가 새 id를 AllocId()로 발급하는 대신 호출자가 제공한 entityId를 그대로 사용.
+    //
+    // **왜 별도 오버로드인가?**
+    //   기존 AddPlayer(owner, spawnPos, stats)에 entityId 옵션을 추가하면
+    //   "생성 경로"와 "migration 경로"의 의도 구분이 모호해짐.
+    //   오버로드로 명확히 분리 → 코드 읽는 사람이 migration임을 즉시 알 수 있음.
+    //
+    // **HP 복원**: stats와 별도로 currentHp를 받음. stats.Hp는 *최대* HP 기준이고
+    //   migration 시 실제 HP는 전투로 깎인 상태일 수 있음.
+    //
+    // **호출 invariant**: tick thread에서만 (맵 B의 EnqueueJob 람다 안).
+    public PlayerEntity AddPlayerWithId(int entityId, GameSession? owner, Vector2 spawnPos, PlayerStats stats, int currentHp)
+    {
+        PlayerEntity entity = new PlayerEntity(entityId, spawnPos, owner, stats);
+        entity.Hp = currentHp;
+        _players.Add(entity);
+        return entity;
+    }
+
     // tick thread에서만 호출.
     public bool RemovePlayer(int entityId)
         => _players.RemoveAll(p => p.EntityId == entityId) > 0;

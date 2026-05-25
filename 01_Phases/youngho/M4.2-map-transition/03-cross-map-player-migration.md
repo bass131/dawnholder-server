@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.2
 phase: 03
 title: 맵 간 player migration 서버 로직
-status: pending
+status: done
 grade: 복잡
 risk: trust-boundary
 estimated: 3~4h
@@ -12,7 +12,7 @@ domain: server
 
 # Phase 03: 맵 간 player migration 서버 로직
 
-> **상태**: pending
+> **상태**: done
 > **마일스톤**: M4.2
 > **등급**: 복잡 (맵 간 actor 통신 + state 이전 + 일부 비가역 동시성 / trust-boundary)
 > **담당**: server SubAgent
@@ -52,12 +52,10 @@ domain: server
   - 맵 B: `EnqueueJob`으로 `AddPlayer(owner, destSpawn, stats)` + HP 복원
   - 맵 B 기존 플레이어에게 `S_PlayerJoin` broadcast + **신규 진입자에게** active roster
     (`S_PlayerJoin` 역방향 + `S_EntitySpawn` enemy roster) 다발 전송
-  - 본인에게 `S_MapTransition { destMapId, spawnX, spawnY, entityId }`
-- [ ] **entity id 정책 — ⚠️ Phase 02 진입 *전* 사용자 확인 + ADR 후보** (plan-auditor 2026-05-25 🟡):
-      Phase 02가 `S_MapTransition.entityId` 필드를 PDL에 먼저 박으므로, 정책이 미정이면 헌법 #2
-      (은퇴 ID 재사용 금지)에 걸림. "전역 id 풀 유지" vs "맵별 풀 + 재배정" trade-off를 Phase 02 전 결론.
-  - 잠정 권장: **재배정** (맵별 독립 풀 단순) → S_MapTransition.entityId로 클라에 새 id 통보.
-    단 사용자 최종 확인 후 확정 (전역 vs 맵별 = ADR 박을 가치).
+  - 본인에게 `S_MapTransition { destMapId, spawnX, spawnY }` (entityId 없음 — ADR-026 전역 유지)
+- [ ] **entity id 정책 = ADR-026 확정 (전역 풀 유지)**: 맵 이동해도 player entity id 유지
+      (GameWorld Interlocked 전역 발급). migration 시 `AddPlayerWithId`로 **기존 id 재추가** (새 발급 X).
+      S_MapTransition에 entityId 필드 없음 (클라가 기존 id 보유 — 교체 불필요).
 - [ ] 맵 간 통신은 **각 맵 EnqueueJob 경유** — 한 맵의 tick thread가 다른 맵 상태 직접 mutate 금지
       (헌법 Map=Actor, 맵 간은 message channel만)
 - [ ] **migration 중간 상태(transient) 처리 방침 명시** (plan-auditor 2026-05-25 🟡): RemovePlayer~AddPlayer
@@ -103,8 +101,8 @@ domain: server
 
 - **맵 간 race**: 맵 A에서 RemovePlayer 한 직후 맵 B EnqueueJob 사이에 player가 "어느 맵에도
   없는" 순간 — 이 사이 도착하는 패킷(attack 등) 처리 주의. `_currentMapId` 갱신 시점 명확히.
-- **entity id 재배정 시 클라 동기화**: 클라는 옛 id로 자기 entity 추적 중 → S_MapTransition.entityId로
-  새 id 받아 교체해야 함 (Phase 04 클라 책임).
+- **entity id 전역 유지 (ADR-026)**: 맵 이동해도 id 안 바뀜 → 클라는 id 교체 불필요 (Phase 04 단순).
+  migration 시 `AddPlayerWithId`로 기존 id 보존이 핵심 (새 발급하면 ADR-026 위반 + 클라 추적 깨짐).
 - **broadcast 누락**: 떠난 맵에 leave 안 보내면 ghost entity, 도착 맵에 join 안 보내면 안 보임.
 - **GameMap ctor enemy가 죽은 상태로 재진입**: HuntingGround enemy를 죽이고 떠났다 돌아오면
   enemy 없음 — respawn 정책은 M4.3 backlog (본 Phase는 enemy 상태 그대로, respawn X).
@@ -127,4 +125,5 @@ domain: server
 ## 작업 로그
 
 - 2026-05-25: 계획 수립 (`/work:plan M4.2`)
+- 2026-05-25: server SubAgent 구현 완료. 테스트 278→294 (신규 16개, 실패 0, skip 5 유지).
 </content>
