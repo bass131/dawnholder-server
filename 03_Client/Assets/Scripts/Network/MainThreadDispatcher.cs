@@ -23,7 +23,9 @@ namespace Dawnholder.Client.Network
     ///
     /// **설계 메모**
     /// - <c>_queue</c>는 static — MonoBehaviour 인스턴스가 여럿이어도 단일 큐.
-    ///   단점은 씬 전환 시 잔존 작업 누수 가능. Phase 04는 단일 씬 시연이라 OK.
+    /// - 본 컴포넌트는 PersistentServices 프리팹 소속으로 PersistentServicesBootstrap가 앱 전체에
+    ///   1개만 생성(DontDestroyOnLoad). 맵 전환에도 계속 drain — 소켓 콜백 누수 없음.
+    ///   (ADR-027: "persistent한 네트워크 ⟺ dispatcher persistent는 한 쌍".)
     /// - <c>ConcurrentQueue&lt;T&gt;</c> = lock-free (CAS 기반). 다수 producer
     ///   (워커 스레드들) + 단일 consumer (Update) 시나리오에 최적.
     /// </summary>

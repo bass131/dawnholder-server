@@ -41,6 +41,22 @@ namespace Dawnholder.Client.Input
         float _sendAccumulator; // 50ms 송신 throttle 누적기.
 
         void Awake() => Instance = this;
+
+        void Start()
+        {
+            // M4.2 Phase 04: 맵 전환 후 씬 로드 완료 시 pending spawn 좌표 소비.
+            // S_MapTransition 핸들러가 박아둔 spawn 좌표를 읽어 본인 위치 설정.
+            // S_EnterMap(첫 접속) 흐름과 달리 이미 entityId는 유지됨(ADR-026).
+            if (UnityClientSession.HasPendingSpawn)
+            {
+                float x = UnityClientSession.PendingSpawnX;
+                float y = UnityClientSession.PendingSpawnY;
+                UnityClientSession.ConsumePendingSpawn();
+                SetServerPosition(new Vector3(x, y, 0f));
+                Debug.Log($"[LocalPlayer] 맵 전환 spawn 적용: ({x:F2}, {y:F2})");
+            }
+        }
+
         void OnDestroy() { if (Instance == this) Instance = null; }
 
         // Input System "Move" 액션 콜백 (Phase 01~ 박힘).
@@ -152,6 +168,19 @@ namespace Dawnholder.Client.Input
         {
             _predictor.SetInitialPosition(new Vector2(worldPos.x, worldPos.y));
             transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
+        }
+
+        // M4.2 Phase 04: 맵 전환 시 prediction 버퍼 리셋.
+        // 좌표계가 맵마다 다르므로 이전 맵 입력이 버퍼에 남으면 새 맵에서 reconcile 시 캐릭터가 튐.
+        // HandleMapTransition이 씬 전환 전 호출. _predictor.SetInitialPosition(zero)로 버퍼 초기화.
+        // spawn 좌표 실제 반영은 씬 로드 완료 후 Start()의 pending spawn 소비에서 함.
+        public void ResetPredictionForMapTransition()
+        {
+            _predictor.SetInitialPosition(Vector2.zero);
+            _localTickCounter = 0;
+            _sendAccumulator = 0f;
+            _jumpEdgeThisTick = false;
+            Debug.Log("[LocalPlayer] 맵 전환 prediction 버퍼 리셋 완료.");
         }
 
         // Phase 05~06: S_Snapshot → predictor의 reconcile 판단에 위임.

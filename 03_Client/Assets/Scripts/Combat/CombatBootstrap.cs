@@ -13,8 +13,8 @@ namespace Dawnholder.Client.Combat
     //   - 박힌 후 누락 검출 단순 — Inspector 사진 비교 X, *코드*가 진실.
     //
     // **자동 진입** — `RuntimeInitializeOnLoadMethod`로 씬 로드 직후 GameObject 자동 생성.
-    //   Gameplay.unity 안에 컴포넌트 박을 필요 없음 → 씬 YAML 편집 0건.
-    //   Gameplay 씬 식별: 활성 씬 이름이 "Gameplay" 또는 "GameplayTest"일 때만 발동.
+    //   맵 씬 안에 컴포넌트 박을 필요 없음 → 씬 YAML 편집 0건.
+    //   발동 대상: 전투 맵(Town/HuntingGround/BossRoom + GameplayTest) — OnSceneLoaded의 CombatScenes 참조. (M4.2 ADR-027)
     //
     // **셋업 순서** (Awake — 다른 컴포넌트 진입 전 보장):
     //   1. ZoneVisualizer — 3-zone 배경.
@@ -22,7 +22,7 @@ namespace Dawnholder.Client.Combat
     //   3. StageClearUI — S_StageClear 도착 시 표시할 Canvas.
     //
     // **SceneBootstrap과의 관계**: SceneBootstrap이 UI 씬 Additive 로드 담당.
-    //   본 컴포넌트는 *Gameplay 씬*에 박혀서 combat 인프라만. 책임 분리.
+    //   본 컴포넌트는 *전투 맵 씬*에 박혀서 combat 인프라만. 책임 분리.
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-100)] // 다른 MonoBehaviour보다 먼저 Awake (UnityClientSession Dispatch 도착 전 ready)
     public class CombatBootstrap : MonoBehaviour
@@ -35,10 +35,14 @@ namespace Dawnholder.Client.Combat
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
+        // M4.2 (ADR-027): 옛 단일 "Gameplay" 씬이 Town/HuntingGround/BossRoom로 분리됨.
+        // 전투 인프라가 필요한 게임플레이 맵에서만 발동. MainMenu/CharacterSelect/UI/Ending(결과화면)은 skip.
+        // GameplayTest는 테스트 씬용으로 유지.
+        static readonly string[] CombatScenes = { "Town", "HuntingGround", "BossRoom", "GameplayTest" };
+
         static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            // Gameplay 또는 GameplayTest 씬에서만 박힘. MainMenu / UI 씬에선 skip.
-            if (scene.name != "Gameplay" && scene.name != "GameplayTest") return;
+            if (System.Array.IndexOf(CombatScenes, scene.name) < 0) return;
             // 이미 있으면 noop (씬에 수동 박힘 + auto 동시 케이스 안전).
             if (FindAnyObjectByType<CombatBootstrap>() != null) return;
 

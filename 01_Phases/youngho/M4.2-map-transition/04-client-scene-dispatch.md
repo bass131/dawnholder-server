@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.2
 phase: 04
 title: 클라 4 scene dispatch + portal UX
-status: pending
+status: in-progress
 grade: 복잡
 risk: unity-asset
 estimated: 3~5h
@@ -120,4 +120,10 @@ domain: client
 ## 작업 로그
 
 - 2026-05-25: 계획 수립 (`/work:plan M4.2`)
+- 2026-05-25: AI(client SubAgent) 스크립트 wiring 완료. 편집/신설 파일 4개:
+  - `NetworkBootstrap.cs` — DontDestroyOnLoad 영속 싱글톤 + 중복가드 + teardown
+  - `UnityClientSession.cs` — S_MapTransition dispatch + HandleMapTransition + PendingSpawn
+  - `LocalPlayerController.cs` — Start() pending spawn 소비 + ResetPredictionForMapTransition()
+  - `Gameplay/PortalTrigger.cs` (신규) — C_EnterPortal 의도 송신 컴포넌트
+  - 본인 씬 외관(4 scene 배경/portal sprite/NetworkBootstrap 배치/PortalTrigger 붙이기) 남음.
 </content>

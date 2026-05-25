@@ -36,7 +36,12 @@ namespace Dawnholder.Client.UI
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+
+            // PersistentServices 프리팹의 *자식*(FadeCanvas)으로 들어가면 영속화는 루트가 담당
+            // (PersistentServicesBootstrap이 루트를 DontDestroyOnLoad). 자식에 DDOL 호출은
+            // "only works for root GameObjects" 경고만 내고 무의미하므로 루트일 때만 호출.
+            if (transform.parent == null)
+                DontDestroyOnLoad(gameObject);
 
             if (fadeGroup != null)
             {
