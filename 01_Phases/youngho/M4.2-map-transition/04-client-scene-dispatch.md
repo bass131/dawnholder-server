@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.2
 phase: 04
 title: 클라 4 scene dispatch + portal UX
-status: in-progress
+status: done
 grade: 복잡
 risk: unity-asset
 estimated: 3~5h
@@ -113,7 +113,9 @@ domain: client
 
 ## 📋 박제 (완료 후)
 
-- **복잡 등급** — M4.2 마일스톤 -DONE.md는 Phase 05 통합 박제. 본 Phase는 work-pin + commit.
+- **복잡 등급** — 본 Phase `04-client-scene-dispatch-DONE.md` 박제 (2026-05-28, 정책 §2 + M4.1 선례 정합).
+  M4.2 `_milestone-DONE.md`는 Phase 05 마일스톤 마감 시 별도 작성 (Phase 상세 → 마일스톤 요약 계층).
+  ※ 옛 표기 "본 Phase는 work-pin+commit, -DONE.md는 Phase 05 통합"은 정책/선례와 어긋나 정정 (2026-05-28).
 
 ---
 
