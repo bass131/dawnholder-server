@@ -40,13 +40,21 @@ namespace Dawnholder.Client.Input
         uint _localTickCounter; // 송신 일련번호 (송신 시점에만 ++). Phase 06 replay reconcile 기준점.
         float _sendAccumulator; // 50ms 송신 throttle 누적기.
 
-        void Awake() => Instance = this;
-
-        void Start()
+        void Awake()
         {
-            // M4.2 Phase 04: 맵 전환 후 씬 로드 완료 시 pending spawn 좌표 소비.
+            Instance = this;
+
+            // M4.2 Phase 04: 맵 전환 후 pending spawn 좌표 소비.
             // S_MapTransition 핸들러가 박아둔 spawn 좌표를 읽어 본인 위치 설정.
             // S_EnterMap(첫 접속) 흐름과 달리 이미 entityId는 유지됨(ADR-026).
+            //
+            // **Awake에서 소비하는 이유 (M4.2 Phase 04 Play 검증 후 봉합)**:
+            //   Start()에서 하면 서버의 첫 S_Snapshot이 Start()보다 먼저 처리되는 race가 생김.
+            //   그 순간 predictor가 아직 (0,0)이라 서버 spawn 좌표(예: HuntingGround x=2)로
+            //   reconcile snap이 발생 → 맵 전환 직후 캐릭터가 2 unit 튐(로그 d=(2.00,0) ack=0).
+            //   Awake는 Instantiate 즉시(같은 프레임) 호출 → 첫 snapshot 처리(MainThreadDispatcher.Update)
+            //   보다 확실히 먼저 위치를 잡아 snap을 제거. (HandleEnterMap이 Instance를 늦게 보는
+            //   초기 진입 race는 그쪽에서 직접 SetServerPosition으로 이미 커버.)
             if (UnityClientSession.HasPendingSpawn)
             {
                 float x = UnityClientSession.PendingSpawnX;
@@ -170,17 +178,26 @@ namespace Dawnholder.Client.Input
             transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
         }
 
-        // M4.2 Phase 04: 맵 전환 시 prediction 버퍼 리셋.
-        // 좌표계가 맵마다 다르므로 이전 맵 입력이 버퍼에 남으면 새 맵에서 reconcile 시 캐릭터가 튐.
-        // HandleMapTransition이 씬 전환 전 호출. _predictor.SetInitialPosition(zero)로 버퍼 초기화.
-        // spawn 좌표 실제 반영은 씬 로드 완료 후 Start()의 pending spawn 소비에서 함.
+        // M4.2 Phase 04: 맵 전환 시 옛 LocalPlayer를 snapshot/Update에서 분리.
+        // HandleMapTransition이 씬 전환(페이드) 시작 전 호출.
+        //
+        // **Play 검증 후 봉합 (2026-05-28)**:
+        //   옛 구현은 _predictor.SetInitialPosition(Vector2.zero)로 위치를 (0,0)에 박았는데,
+        //   이 GameObject는 페이드 동안 *아직 살아있어* (a) Update가 transform을 (0,0)으로 점프시키고
+        //   (b) 그 사이 도착한 S_Snapshot이 서버의 새 맵 좌표(예: HuntingGround x=2)로 reconcile snap
+        //   → 전환 직후 캐릭터가 튐 (Play 로그: [Reconcile] d=(2.00,0) ack=0).
+        //   새 맵의 LocalPlayer는 *별도 인스턴스 + 깨끗한 predictor*라 옛 버퍼 리셋 자체가 불필요했음.
+        //
+        //   → 위치는 건드리지 않고:
+        //     1) Instance 등록 해제 — HandleSnapshot의 `Instance != null` 가드로 이후 snapshot이 drop
+        //        (옛 캐릭터가 서버 좌표로 snap하지 않음).
+        //     2) enabled=false — Update 정지 (predict/transform 갱신 중단).
+        //   곧 씬 전환(LoadScene Single)이 이 GameObject를 파괴하고, 새 맵에서 새로 spawn됨.
         public void ResetPredictionForMapTransition()
         {
-            _predictor.SetInitialPosition(Vector2.zero);
-            _localTickCounter = 0;
-            _sendAccumulator = 0f;
-            _jumpEdgeThisTick = false;
-            Debug.Log("[LocalPlayer] 맵 전환 prediction 버퍼 리셋 완료.");
+            if (Instance == this) Instance = null;
+            enabled = false;
+            Debug.Log("[LocalPlayer] 맵 전환 — 옛 LocalPlayer를 snapshot/Update에서 분리 (곧 파괴).");
         }
 
         // Phase 05~06: S_Snapshot → predictor의 reconcile 판단에 위임.

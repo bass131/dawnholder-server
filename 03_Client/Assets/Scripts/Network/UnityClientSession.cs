@@ -506,7 +506,7 @@ namespace Dawnholder.Client.Network
 
         // M4.2 Phase 04: 씬 로드 완료 후 새 LocalPlayerController가 참조하는 pending spawn 좌표.
         // UnityClientSession은 DontDestroyOnLoad 없이 IOCP 스레드에서 계속 살아있으므로 static 공유.
-        // LocalPlayerController.Start()에서 HasPendingSpawn 확인 → SetServerPosition 호출 → Clear.
+        // LocalPlayerController.Awake()에서 HasPendingSpawn 확인 → SetServerPosition 호출 → Clear.
         public static float PendingSpawnX { get; private set; }
         public static float PendingSpawnY { get; private set; }
         public static bool HasPendingSpawn { get; private set; }
