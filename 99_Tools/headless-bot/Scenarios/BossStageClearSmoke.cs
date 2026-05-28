@@ -42,6 +42,14 @@ public class BossStageClearSmoke
         public bool UsedOptionBDeathEquivalent;
     }
 
+    // M4.2 Phase 05: portal 좌표 상수 (서버 PortalTable.cs와 정합 — 변경 시 양쪽 동기화 의무).
+    // Town portal: x=20 → HuntingGround destSpawn x=2.
+    // HuntingGround portal: x=25 → BossRoom destSpawn x=22.
+    const float TownPortalX = 20f;
+    const int TownPortalId = 1;
+    const float HGPortalX = 25f;
+    const int HGPortalId = 1;
+
     // M4.1 Phase 06 (7단계): simulatedLatencyMs — EmergencyCombatSmoke와 동일 패턴.
     public static async Task<Result> Run(
         string host, int port,
@@ -66,6 +74,28 @@ public class BossStageClearSmoke
 
             if (!bot.WaitEnterMap(DefaultTimeout))
                 return Fail(result, "S_EnterMap timeout (5s)");
+
+            // M4.2 Phase 05: 1회차 portal — Town → HuntingGround.
+            // Town = 빈 맵이므로 HG를 경유해 BossRoom으로 가야 함.
+            // ADR-026: entityId는 맵 이동 시 유지.
+            // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X).
+            await bot.MoveToPortal(TownPortalX, ct);
+            bot.SendEnterPortal(TownPortalId);
+            if (!await bot.WaitMapTransition(DefaultTimeout, ct))
+                return Fail(result, "S_MapTransition timeout (5s) — Town→HuntingGround portal");
+
+            // S_MapTransition 후 서버 tick thread가 다음 맵 job을 처리하기까지 대기.
+            await Task.Delay(Constants.TickIntervalMs * 2, ct);
+
+            // M4.2 Phase 05: 2회차 portal — HuntingGround → BossRoom.
+            // BossRoom portal(x=25)까지 이동. HG destSpawn(x=2)에서 시작.
+            await bot.MoveToPortal(HGPortalX, ct);
+            bot.SendEnterPortal(HGPortalId);
+            if (!await bot.WaitSecondMapTransition(DefaultTimeout, ct))
+                return Fail(result, "S_MapTransition timeout (5s) — HuntingGround→BossRoom portal");
+
+            // S_MapTransition 후 서버 tick thread 처리 대기.
+            await Task.Delay(Constants.TickIntervalMs * 2, ct);
 
             S_EntitySpawn? bossSpawn = await bot.WaitForBossSpawn(DefaultTimeout, ct);
             if (bossSpawn == null)
@@ -286,6 +316,10 @@ public class BossStageClearSmoke
         readonly ManualResetEventSlim _connected = new(false);
         readonly ManualResetEventSlim _handshake = new(false);
         readonly ManualResetEventSlim _enterMap = new(false);
+        // M4.2 Phase 05: 2회 portal 흐름 — 1회차/2회차 S_MapTransition 각각 관리.
+        // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X).
+        readonly ManualResetEventSlim _mapTransition1 = new(false);
+        readonly ManualResetEventSlim _mapTransition2 = new(false);
         readonly List<S_EntitySpawn> _spawns = new();
         readonly List<HitEvent> _hits = new();
         readonly List<int> _deaths = new();
@@ -327,6 +361,38 @@ public class BossStageClearSmoke
         public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
         public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
         public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
+
+        // M4.2 Phase 05: 1회차/2회차 S_MapTransition 수신 대기.
+        // 서버는 S_MapTransition만 발송 — 이 이벤트 수신으로 맵 진입 완료 판정.
+        public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
+            => await WaitUntil(() => _mapTransition1.IsSet, timeout, ct);
+        public async Task<bool> WaitSecondMapTransition(TimeSpan timeout, CancellationToken ct)
+            => await WaitUntil(() => _mapTransition2.IsSet, timeout, ct);
+
+        // M4.2 Phase 05: portal 위치까지 C_MoveIntent 기반 이동.
+        // 서버 PortalTable.cs와 정합 — portal x 좌표는 호출부 const로 박음.
+        public async Task<int> MoveToPortal(float portalX, CancellationToken ct)
+        {
+            float delta = portalX - SpawnX;
+            sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
+            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (Constants.MoveSpeed * Constants.TickDuration));
+            ticks = Math.Clamp(ticks, 0, 160);
+            for (int i = 0; i < ticks; i++)
+            {
+                SendMove(direction);
+                await Task.Delay(Constants.TickIntervalMs, ct);
+            }
+            SendMove(0);
+            await Task.Delay(150, ct);
+            return ticks + 1;
+        }
+
+        // M4.2 Phase 05: C_EnterPortal 송신.
+        public void SendEnterPortal(int portalId)
+        {
+            C_EnterPortal packet = new() { portalId = portalId };
+            _session?.Send(packet.Write());
+        }
 
         public async Task<S_EntitySpawn?> WaitForBossSpawn(TimeSpan timeout, CancellationToken ct)
         {
@@ -473,11 +539,25 @@ public class BossStageClearSmoke
                     break;
 
                 case PacketID.S_EnterMap:
+                    // 서버는 최초 진입 시에만 S_EnterMap 발송. 맵 전환 시엔 S_MapTransition만 발송.
+                    // ADR-026: entityId는 맵 이동 시 유지 — S_EnterMap은 최초 1회만 수신.
                     S_EnterMap enterMap = new();
                     enterMap.Read(buffer);
                     LocalEntityId = enterMap.entityId;
                     SpawnX = enterMap.spawnX;
                     _enterMap.Set();
+                    break;
+
+                case PacketID.S_MapTransition:
+                    // M4.2 Phase 05: 맵 전환 패킷 수신 — 1회차/2회차 순서로 처리.
+                    // SpawnX를 목적지 spawn 좌표로 갱신. 봇은 서버 권위 좌표만 사용 (헌법 #1).
+                    S_MapTransition mapTransition = new();
+                    mapTransition.Read(buffer);
+                    SpawnX = mapTransition.spawnX;
+                    if (!_mapTransition1.IsSet)
+                        _mapTransition1.Set();
+                    else
+                        _mapTransition2.Set();
                     break;
 
                 case PacketID.S_EntitySpawn:

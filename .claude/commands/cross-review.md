@@ -17,10 +17,19 @@ argument-hint: [branch 또는 file-list] - 선택. 없으면 현재 브랜치 �
 
 본 슬래시는 **β 호출 + γ 비교** 흐름을 슬래시화한 것. 옛 운영은 ad-hoc 메인 세션에서 진행 → 일관성 X + 발동 시점 모호. 새 운영 = *명시 호출* + 일관 산출물.
 
-**분담 정신 (2026-05-23 봉합)** — 본 슬래시는 *Claude가 Codex CLI를 Bash로 직접 호출 X*. 분담:
+**분담 정신 (2026-05-23 봉합 + 2026-05-28 γ 9회차 학습 갱신)** — 두 갈래:
+
+**(default) 본인 직접 호출** — 큰 cross-review (대규모 등급, 100+ 파일 diff, 전체 마일스톤 검토):
 - **Claude (α + γ 조율)** = (a) Claude reviewer SubAgent 호출 + (b) 본인 입력용 점검 자료 박음 (`00_Document/reviews/YYYY-MM-DD-claude-pre-review-{slug}.md`) + (c) 본인이 Codex 세션에 던질 prompt 박음 + (d) 본인이 가져온 Codex 결과 받아 γ 비교 + 산출물 박음
 - **본인 (β 직접 호출)** = 별 세션 터미널에서 `codex review --base main` (또는 `--uncommitted`) 직접 호출 + 결과 검토 후 Claude한테 요약 또는 raw 출력 전달
 - **사유**: (1) Claude Bash → Codex 호출 시 *Codex 출력이 Claude 컨텍스트 채움* = 토큰 비용 ↑ / (2) 본인이 Codex 결과 *직접 검토*하면 학부생 학습 호흡 ↑ / (3) sandbox/명령어 옵션 결함 본인 환경에서 즉시 조정 가능 / (4) Codex CLI는 본인 계정 사용 → Claude를 거쳐도 과금은 같음. 이 분담은 [`memory unity-visual-work-user-owned`](../../../Users/bass1/.claude/projects/C--Dev-ClaudeDev/memory/unity-visual-work-user-owned.md) "본인 직접 정신"의 외부 도구 호출 확장.
+
+**(γ 9회차 추가 허용) Claude 직접 호출 OK 시점** — 짧은 메타 질문 / 단일 파일 점검 / 빠른 sanity check / 봉합 후 재실측:
+- 사용자 명시 "Claude가 직접 호출해줘" 시점에 한정
+- **필수 옵션**: `codex exec --sandbox read-only --cd "$PROJECT_DIR" --skip-git-repo-check "<prompt>"` 또는 `codex review --base main` (review 모드는 sandbox 옵션 없음 = R-only 자체)
+- **prompt 가드 의무**: (i) "셸 명령 / web search / MCP 도구 우회 호출 금지", (ii) "각 답변에 *확신/추측/불명* 자가 표기 강제", (iii) "총 N줄 이내" 길이 가드 (truncation 회피 — γ 9회차 1차 호출에서 Codex가 self-help 셸 차단당해 web search로 우회 → 응답 잘림 관측)
+- **위험 옵션 절대 금지**: `--dangerously-bypass-approvals-and-sandbox` (외부 sandbox 환경 한정, 본인 로컬 X — 파일 삭제/비밀키/네트워크 무제한 = 악성 instruction 시 로컬 환경 전체 피해)
+- **사유**: 메타 질문 응답 짧음 = 토큰 부담 ↓ + 의논 흐름 즉시 박음. 단 큰 cross-review는 여전히 본인 분담 default (학습 호흡 ↑).
 
 **언제 호출**:
 - 큰 PR 머지 *전* (대규모 등급 + irreversible 깃발)
@@ -134,6 +143,27 @@ codex review --commit <SHA>
 - β만 잡음 = 동작은 깨졌는데 헌법 정합 (검증 시각)
 - 양쪽 다 잡음 = 명확한 위반 (최우선 봉합)
 
+#### Step 4-A. 봉합 후 재실측 (γ 9회차 학습 추가, 2026-05-28)
+
+β 1차 결함 발견 + 봉합 박았으면 *반드시 β 2차 재실측* 박음:
+
+- **사유**: 봉합 자체가 *새 결함 차원* 도입 가능. 학부생 → 실무 도약 패턴 입증.
+- **M4.2 γ 9회차 실측**: β 1차 4건(P1 buffer / P2 RemoteEntityRegistry / P3 _spawned guard / P4 race) 봉합 → β 2차에서 추가 4건 발견 (P1 buffer가 lifecycle deltas 누락 + sceneLoaded unsubscribe 누락 + RemotePlayer prefab Resources 위치 누락 + `.gitignore .backups/` 누락). 봉합 자체가 새 race 차원 박음.
+- **재실측 호출**: `codex review --uncommitted` (미커밋 봉합 묶음만 검토 — 토큰 ↓ + 시간 ↓)
+- **종료 조건**: β 재실측에서 결함 0건 또는 false positive 확정만. 추가 결함 박히면 *다시 봉합 → 다시 재실측* 박음 (수렴까지).
+
+#### Step 4-B. 실측 검증 (γ 9회차 학습 추가, 2026-05-28)
+
+α + β + 봉합 통과 후 *반드시 사용자 실측 검증* 박음:
+
+- **사유**: α/β 둘 다 *코드 정적 시각*. 실제 동작 truth는 *서버 구동 + 클라 동작 + 실측*으로만. 결정타 — 체크리스트 < 실측.
+- **M4.2 γ 9회차 실측**: β P1 "페이드 중 roster 옛 씬 적용" 추론이 *논리적으로 정합*이지만 본인 Play 모드 실측에서 enemy/RemotePlayer 잘 보임 → **false positive 가능성 ↑↑** (어딘가 방어 메커니즘 박혀있음 = MainThreadDispatcher batch / 페이드 timing / 미확인). β 신뢰 맹목 X.
+- **검증 시나리오 권장**: (1) 서버 구동, (2) 본인 Play 모드 single player 흐름 전수, (3) 가능하면 multi player(Hamachi 또는 두 클라 인스턴스) 흐름, (4) 콘솔 에러/경고 확인
+- **결과 반영**:
+  - 실측 통과 + β 추론 발현 X → false positive 가능성 명시 + 봉합 *방어적 유지* 또는 *롤백* 결정 (M4.x backlog로 재실측 cadence 박음)
+  - 실측 X + β 추론 발현 → 진짜 결함 실증, 봉합 의무
+- **사용자 통찰 final arbiter**: M4.2 γ 9회차에서 사용자 "서버 구동 안 하고 테스트한 거 아니야?" 한 마디로 *γ 함정* 짚음 → 실측 검증 의무 진입. 학부생 → 실무 도약 핵심 패턴(`user-as-final-truth-arbiter`).
+
 #### Step 5. 산출물 생성
 
 `00_Document/reviews/YYYY-MM-DD-cross-review-{slug}.md` Write:
@@ -197,12 +227,15 @@ codex review --commit <SHA>
 
 ### Hard rules
 
-1. **Codex CLI 직접 호출 = 본인 분담** (2026-05-23 봉합) — Claude는 Bash로 `codex` 직접 호출 X. 본인이 별 세션 터미널에서 호출. Claude는 *자료 박음 + γ 비교*만. 사유 = 토큰 비용 ↓ + 본인 학습 호흡 ↑ + sandbox 옵션 결함 본인 환경 즉시 조정 + Codex CLI 본인 계정 종속. 옛 ad-hoc Claude 직접 호출 패턴 = 컨텍스트 채움 사고 + sandbox 차단 8회+ 누적 발본 학습 정합.
+1. **Codex CLI 직접 호출 = 본인 분담 (default)** (2026-05-23 봉합) — 큰 cross-review는 본인이 별 세션 터미널에서 호출. Claude는 *자료 박음 + γ 비교*만. 사유 = 토큰 비용 ↓ + 본인 학습 호흡 ↑ + sandbox 옵션 결함 본인 환경 즉시 조정 + Codex CLI 본인 계정 종속. **예외 (γ 9회차 추가, 2026-05-28)**: 짧은 메타 질문 / 단일 점검 / 봉합 후 재실측은 사용자 명시 시점에 Claude 직접 호출 OK (필수 옵션 `--sandbox read-only --cd "$PROJECT_DIR"` + prompt 가드).
 2. **외부 도구 호출 = 사용자 환경 종속** — Codex 안 깔린 환경에서 β 스킵 가능 (옵션). reviewer 단독으로도 작동
 3. **읽기 전용** — Step 5 산출물 외 코드/헌법 *수정 X*. 결함 발견해도 *제안*만
 4. **γ 비교는 정량** — "α/β 일치/불일치 어림짐작" X. 각 결함을 *축 번호 + 위치*로 매핑 후 비교
 5. **양쪽 다 잡음 = 최우선** — 의사결정 *기본값*은 즉시 봉합. 별 마일스톤 빼두는 건 사용자 명시 결정 + work-pin 사유 박힘
 6. **scope 인자 명시** — 인자 없으면 현재 브랜치 *전체* 변경분. 큰 작업이면 시간 ↑. 미리 시간 짐작
+7. **봉합 후 재실측 의무** (γ 9회차 추가, 2026-05-28) — β 1차 봉합 박으면 β 2차 재실측 의무 (Step 4-A). 봉합이 새 결함 차원 도입 가능. M3.7 옵션 C 게이트 5번째 실측 + M4.2 γ 9회차 β 1차→2차 추가 4건 패턴 정합.
+8. **실측 우선 = β 신뢰 맹목 X** (γ 9회차 추가, 2026-05-28) — β/Codex의 정적 추론이 *논리적 정합*이지만 *실측 truth*와 격차 가능. 사용자 Play 모드 실측 검증 *반드시* 박음 (Step 4-B). 충돌 시 *실측이 final arbiter*.
+9. **위험 옵션 절대 금지** (γ 9회차 추가, 2026-05-28) — `--dangerously-bypass-approvals-and-sandbox`는 *외부 sandbox 환경 한정*, 본인 로컬 X. 파일 삭제/비밀키 유출/네트워크 무제한 = 악성 instruction 시 로컬 환경 전체 피해.
 
 ---
 
@@ -212,6 +245,9 @@ codex review --commit <SHA>
 - **β 신뢰 맹목** — Codex도 false positive 가능. "Codex가 말하면 무조건 맞다" X. γ 비교 의무
 - **양쪽 통과 = 안심** ❌ — α/β 둘 다 *체크리스트 기반*. 체크리스트에 없는 새 패턴은 둘 다 놓침. *완벽 보장 X*
 - **호출 빈도 ↑↑** — γ 비용 = ~5~10분 + 외부 도구 호출. 매 PR마다 X. 큰 PR 또는 대규모 등급만
+- **정적 추론 vs 실측 truth 격차** (γ 9회차 추가, 2026-05-28) — α/β 둘 다 *코드 정적 시각*. 실제 동작 truth는 *서버 구동 + Play 모드*로만 검증됨. M4.2 γ 9회차: β P1 "페이드 중 roster 옛 씬 적용" 추론이 *논리적 정합*이지만 본인 Play 실측에서 enemy/RemotePlayer 잘 보임 = false positive 가능성 ↑. 결정타 — *체크리스트 < 실측*. Step 4-B 실측 검증 의무.
+- **봉합이 새 결함 도입** (γ 9회차 추가, 2026-05-28) — β 1차 봉합 박은 후 β 2차 재실측에서 추가 결함 박힐 가능성. 봉합 자체가 새 race 차원 도입 가능 (M4.2 γ 9회차 P1 buffer 봉합 → lifecycle deltas 누락 + sceneLoaded unsubscribe 누락 새 결함 발견). Step 4-A 재실측 의무.
+- **Claude 직접 호출 시 truncation** (γ 9회차 추가, 2026-05-28) — Claude가 `codex exec` 박을 때 응답이 길면 `head -N` 잘림 + Codex가 self-help 셸 차단당해 web search로 우회하면 응답 폭증 → 잘림. prompt에 *셸 우회 금지* + *길이 가드* 박음. 응답 받을 때 `2>&1` 박고 *마지막 부분* 가닥 우선 (`tail`).
 
 ---
 
@@ -242,5 +278,7 @@ codex review --commit <SHA>
 - γ 4회차: M3 Phase 02 후속 (Codex β 7건 = `false-promise-second-instance` ★★★)
 - γ 5회차: M3 Phase 03~04 Codex β 1차 검증 (2건 후속 봉합)
 - γ 6/7회차: M3 Phase 06 사전 검증 (HIGH 2 + MEDIUM 3 봉합 시간 절감 = ★★★)
+- γ 8회차: M4.1 Phase 02-04 cross-review (조건부 GO → GO 격상)
+- γ 9회차 (2026-05-28): M4.2 마감 — β 1차 4건 + 봉합 + β 2차 추가 4건 + 사용자 통찰 "서버 구동 안 하고?" + 실측 검증 → β P1 false positive ↑ / β P2 진짜 결함 실증. 본 슬래시 명세 갱신 트리거 (분담 정신 + Step 4-A/4-B + Hard rules 7~9 + 함정 3건 추가).
 
-본 슬래시 = γ 정착 후 슬래시화. 새 운영에서 외부 의존 ↓ (plan-auditor가 *사전 검증* 책임 흡수) + 본 슬래시가 *사후 cross-check* 책임 흡수. 옛 ad-hoc 운영 → 새 슬래시화 = *재현 가능성* 확보.
+본 슬래시 = γ 정착 후 슬래시화. 새 운영에서 외부 의존 ↓ (plan-auditor가 *사전 검증* 책임 흡수) + 본 슬래시가 *사후 cross-check* 책임 흡수. **γ 9회차 후 추가**: *β 결과 ≠ truth* = 봉합 후 재실측 + 실측 검증 두 단계 의무.

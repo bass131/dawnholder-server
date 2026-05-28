@@ -19,6 +19,9 @@ namespace Shared.Protocol;
 ///   - v5: M4.1 Phase 06 — C_Attack.attackerClientTick 추가 (lag compensation rewind).
 ///         backward compatible append-only지만 옛 클라가 tick 안 보내면 attackerClientTick=0 →
 ///         서버 rewind 범위 검증에서 silent drop 가능 → 빠른 cutoff 위해 bump.
+///   - v6: M4.2 Phase 02 — C_EnterPortal / S_MapTransition 2패킷 추가 (맵 전환 프로토콜).
+///         새 패킷에 의존하는 맵 이동 기능이 핵심이라 옛 클라 빠른 cutoff 위해 bump.
+///         S_MapTransition에 entityId 없음 (ADR-026: 전역 id 풀, 맵 이동 시 id 유지).
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -32,6 +35,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.1 Phase 06 = v5 (C_Attack.attackerClientTick 추가, lag compensation).</summary>
-    public const ushort Current = 5;
+    /// <summary>현재 프로토콜 버전. M4.2 Phase 02 = v6 (C_EnterPortal / S_MapTransition 추가, 맵 전환).</summary>
+    public const ushort Current = 6;
 }

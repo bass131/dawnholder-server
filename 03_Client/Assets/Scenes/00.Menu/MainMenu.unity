@@ -1409,8 +1409,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.65921426, y: 0.033587303}
   m_AnchorMax: {x: 0.9828613, y: 0.15782541}
-  m_AnchoredPosition: {x: -125.856384, y: -25.772522}
-  m_SizeDelta: {x: 251.7125, y: -38.5586}
+  m_AnchoredPosition: {x: -109.99521, y: -26.407}
+  m_SizeDelta: {x: 219.9901, y: -32.2141}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1730545219
 MonoBehaviour:
@@ -1534,7 +1534,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.6
+  m_fontSize: 18
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1

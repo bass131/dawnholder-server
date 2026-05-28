@@ -587,4 +587,113 @@ public class PacketRoundTripTests
         Assert.Equal((ushort)PacketID.S_HandshakeResult, packetId);
         Assert.Equal((ushort)8, packetId);
     }
+
+    // ──────────────────────────────────────────────────────────────────
+    // M4.2 Phase 02: C_EnterPortal / S_MapTransition 라운드트립.
+    //
+    // 맵 전환 패킷 2종 (PacketID 17/18, ProtocolVersion 6). reviewer Tier 2-A 권고로
+    // 핸들러 배선(Phase 03) *전* 추가. S_MapTransition.spawnX/Y의 float 직렬화는
+    // .NET Standard 2.1 ↔ .NET 10 cross-runtime 경로(SingleToInt32Bits)라 회귀 가치 큼.
+    // entityId 필드 없음 (ADR-026: entity id 전역 유지).
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void C_EnterPortal_RoundTrip_PreservesPortalId()
+    {
+        var pkt = new C_EnterPortal { portalId = 3 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new C_EnterPortal();
+        decoded.Read(bytes);
+
+        Assert.Equal(3, decoded.portalId);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(-1)]
+    [InlineData(int.MaxValue)]
+    [InlineData(int.MinValue)]
+    public void C_EnterPortal_RoundTrip_HandlesIntEdgeValues(int portalId)
+    {
+        var pkt = new C_EnterPortal { portalId = portalId };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new C_EnterPortal();
+        decoded.Read(bytes);
+
+        Assert.Equal(portalId, decoded.portalId);
+    }
+
+    [Fact]
+    public void C_EnterPortal_Write_ProducesCorrectSizeAndPacketId()
+    {
+        // [size:2][id:2][portalId:4] = 8 bytes. PDL.xml 17번째 정의 = PacketID 17.
+        var pkt = new C_EnterPortal { portalId = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        Assert.Equal(8, bytes.Count);
+        ushort size = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset, 2));
+        Assert.Equal(8, size);
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.C_EnterPortal, packetId);
+        Assert.Equal((ushort)17, packetId);
+    }
+
+    [Fact]
+    public void S_MapTransition_RoundTrip_PreservesAllFields()
+    {
+        var pkt = new S_MapTransition { destMapId = 1, spawnX = 2.0f, spawnY = -1.5f };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_MapTransition();
+        decoded.Read(bytes);
+
+        Assert.Equal((byte)1, decoded.destMapId);
+        Assert.Equal(2.0f, decoded.spawnX);
+        Assert.Equal(-1.5f, decoded.spawnY);
+    }
+
+    [Theory]
+    [InlineData((byte)0, 0f, 0f)]         // Town
+    [InlineData((byte)1, 2.0f, 0f)]       // HuntingGround spawn
+    [InlineData((byte)2, 22.0f, 0f)]      // BossRoom spawn
+    [InlineData((byte)255, float.MaxValue, float.MinValue)]
+    public void S_MapTransition_RoundTrip_HandlesEdgeValues(byte destMapId, float x, float y)
+    {
+        // float 직렬화 cross-runtime 경로(SingleToInt32Bits) 회귀 안전망. byte destMapId 보존.
+        var pkt = new S_MapTransition { destMapId = destMapId, spawnX = x, spawnY = y };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_MapTransition();
+        decoded.Read(bytes);
+
+        Assert.Equal(destMapId, decoded.destMapId);
+        Assert.Equal(x, decoded.spawnX);
+        Assert.Equal(y, decoded.spawnY);
+    }
+
+    [Fact]
+    public void S_MapTransition_Write_ProducesCorrectSizeAndPacketId()
+    {
+        // [size:2][id:2][destMapId:1][spawnX:4][spawnY:4] = 13 bytes. PDL.xml 18번째 정의 = PacketID 18.
+        var pkt = new S_MapTransition { destMapId = 0, spawnX = 0f, spawnY = 0f };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        Assert.Equal(13, bytes.Count);
+        ushort size = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset, 2));
+        Assert.Equal(13, size);
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_MapTransition, packetId);
+        Assert.Equal((ushort)18, packetId);
+    }
 }

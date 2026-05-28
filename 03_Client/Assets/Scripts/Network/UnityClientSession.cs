@@ -1,5 +1,6 @@
 using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.Net;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Input;
@@ -8,6 +9,7 @@ using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using Shared.Protocol;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Dawnholder.Client.Network
 {
@@ -18,16 +20,16 @@ namespace Dawnholder.Client.Network
     /// PacketSession 상속으로 교체. framing 자동, OnRecvPacket은 *완전한 한 패킷*.
     /// **Phase 03 변경**: S_EnterMap 핸들러 추가 — 서버 결정 spawn 좌표 적용.
     /// **Phase 04 변경**: S_Snapshot 핸들러 + Instance singleton (LocalPlayerController가 Send용으로 참조).
-    /// **M4.1 Phase 02 변경**: OnHandshakeOkEvent 추가 — NetworkBootstrap이 event 기반으로
-    ///   C_CharacterSelect 송신 (race 봉합, 옵션 A).
+    /// **M4.1 Phase 02 변경**: OnHandshakeOkEvent 추가 — NetworkService가 event 기반으로
+    ///   C_CharacterSelect 송신 (race 봉합, 옵션 A). (ADR-027: NetworkBootstrap→NetworkService 재정의)
     ///
     /// 콜백 모두 socket 워커 스레드 → Unity API는 main-thread queue 경유.
     /// </summary>
     public class UnityClientSession : PacketSession
     {
         // Phase 04: LocalPlayerController가 매 frame C_MoveIntent를 Send하려면 정적 접근점 필요.
-        // 일회 설정. NetworkBootstrap이 connect 콜백에서 본 객체를 만들 때 등록.
-        public static UnityClientSession? Instance { get; private set; }
+        // 일회 설정. NetworkService가 connect 콜백에서 본 객체를 만들 때 등록.
+        public static UnityClientSession Instance { get; private set; }
 
         // M3 Phase 02 (Codex review #2): handshake 완료 게이트.
         // OnConnected가 socket 워커 스레드에서 C_Handshake를 자동 Send하지만,
@@ -36,9 +38,9 @@ namespace Dawnholder.Client.Network
         // SendIntent에서 visibility 보장. ok 회신 도착 전 송신은 drop (헌법 #2 first-packet 정합).
         public bool HandshakeOk { get; private set; }
 
-        // M4.1 Phase 02 5-B: handshake OK event. NetworkBootstrap이 등록 후 S_HandshakeResult(ok=true)
+        // M4.1 Phase 02 5-B: handshake OK event. NetworkService가 등록 후 S_HandshakeResult(ok=true)
         // 수신 시 main thread에서 호출됨. C_CharacterSelect 송신 race 봉합 핵심.
-        // event 패턴: 구독자 없어도 null check로 안전 (NetworkBootstrap 미박힘 씬 단독 Play 방어).
+        // event 패턴: 구독자 없어도 null check로 안전 (PersistentServices 미생성 씬 단독 Play 방어).
         public event Action OnHandshakeOkEvent;
 
         // M3 Phase 05: 본인 entityId. HandleEnterMap에서 박음 (main thread).
@@ -53,6 +55,61 @@ namespace Dawnholder.Client.Network
         // 본인/타인 Snapshot 모두 갱신 (어느 것이든 서버 현재 tick을 표현하므로 기준점으로 유효).
         public int LastReceivedServerTick { get; private set; }
 
+        // ========================================================================
+        // P1 봉합 (2026-05-28 β cross-review): roster buffer 패턴.
+        //
+        // **문제**: HandleMapTransition은 SceneTransition.LoadScene(페이드 코루틴) 시작 후
+        //   즉시 return. 서버는 S_MapTransition 직후 즉시 S_PlayerJoin/S_EntitySpawn/S_Snapshot
+        //   전송 (페이드 0.3~0.5s × 서버 tick 50ms = 최소 6 tick 사이). 그 사이 클라는
+        //   *옛 씬*에 있어 roster 패킷이 옛 씬 레지스트리에 박힘 → SceneManager.LoadScene(Single)
+        //   로 옛 씬 destroy → 새 씬에 enemy/remote player 없음.
+        //
+        // **해결**: 전환 중 roster 패킷을 버퍼에 캐싱 → 새 씬 sceneLoaded 콜백에서 drain.
+        //   - HandleMapTransition에서 _pendingMapTransition = true + 목적 씬 이름 보관.
+        //   - HandlePlayerJoin / HandleEntitySpawn / HandleSnapshot 타인 분기에서
+        //     _pendingMapTransition 시 _rosterBuffer에 Action 캐싱 (드롭 X).
+        //   - sceneLoaded 콜백에서 씬 이름 매치 시 _pendingMapTransition = false + drain.
+        //   - main thread에서만 접근하므로 lock 불필요.
+        //   - overflow 가드: 100개 초과 시 경고 + drop (비정상 상황 보호).
+        // ========================================================================
+
+        // 맵 전환 진행 중 플래그 (main thread 전용).
+        bool _pendingMapTransition;
+
+        // 전환 목적 씬 이름 — sceneLoaded에서 매치 기준.
+        string _pendingDestSceneName = string.Empty;
+
+        // 전환 중 도착한 roster 패킷의 재실행 Action 목록.
+        // Action 패턴: 패킷 파싱은 socket 워커에서 이미 완료 → main thread에서 registry에 적용만.
+        readonly List<Action> _rosterBuffer = new();
+
+        // overflow 가드 상한 — 비정상 상황(서버가 전환 완료 전 수백 패킷 폭주) 방어.
+        const int RosterBufferMaxSize = 100;
+
+        // sceneLoaded 핸들러 등록 (생성자에서 1회).
+        // 헌법 §1: 씬 전환은 서버가 지시 — 클라는 렌더링 타이밍 처리만.
+        public UnityClientSession()
+        {
+            Instance = this;
+            SceneManager.sceneLoaded += OnSceneLoadedForRosterDrain;
+        }
+
+        // 새 씬 로드 완료 시 호출 (main thread — Unity 보장).
+        // 목적 씬 이름 매치 시 buffer drain 후 플래그 해제.
+        void OnSceneLoadedForRosterDrain(Scene scene, LoadSceneMode mode)
+        {
+            if (!_pendingMapTransition) return;
+            if (scene.name != _pendingDestSceneName) return;
+
+            _pendingMapTransition = false;
+            _pendingDestSceneName = string.Empty;
+
+            Debug.Log($"[Unity] RosterBuffer drain: {_rosterBuffer.Count}개 패킷 재실행 (씬='{scene.name}')");
+            foreach (Action action in _rosterBuffer)
+                action();
+            _rosterBuffer.Clear();
+        }
+
         // Phase 05: Editor only 송신 latency 시뮬레이션.
         //   0이면 직통 (Release/일반 Play 동작).
         //   >0이면 SendIntent 경로에 한해 N ms 지연 후 실제 Send.
@@ -61,8 +118,6 @@ namespace Dawnholder.Client.Network
 #if UNITY_EDITOR
         public static int SimulatedLatencyMs = 0;
 #endif
-
-        public UnityClientSession() => Instance = this;
 
         /// <summary>
         /// Phase 05: 입력 intent 송신용 wrapper. Editor에선 SimulatedLatencyMs 적용.
@@ -179,6 +234,11 @@ namespace Dawnholder.Client.Network
                     HandleStageClear(buffer);
                     break;
 
+                // M4.2 Phase 04: 맵 전환 패킷.
+                case PacketID.S_MapTransition:
+                    HandleMapTransition(buffer);
+                    break;
+
                 default:
                     int unknownId = packetId;
                     MainThreadDispatcher.Enqueue(() =>
@@ -192,7 +252,7 @@ namespace Dawnholder.Client.Network
         // ok=false → 에러 로그 + 명시적 Disconnect (서버가 이미 끊을 거지만 클라 측 cleanup 일관성).
         //
         // M4.1 Phase 02 5-B: OnHandshakeOkEvent 발화 시점 = HandshakeOk = true 박힌 직후 (같은 main thread).
-        // NetworkBootstrap.OnHandshakeOk()가 이 이벤트를 받아 C_CharacterSelect 송신.
+        // NetworkService.OnHandshakeOk()가 이 이벤트를 받아 C_CharacterSelect 송신.
         void HandleHandshakeResult(ArraySegment<byte> buffer)
         {
             S_HandshakeResult pkt = new S_HandshakeResult();
@@ -211,7 +271,7 @@ namespace Dawnholder.Client.Network
                     Debug.Log($"[Unity] Handshake OK (server version={sv})");
 
                     // M4.1 Phase 02 5-B: event 기반 C_CharacterSelect 송신 트리거.
-                    // 구독자(NetworkBootstrap) 없는 씬 단독 Play에서도 null이라 안전.
+                    // 구독자(NetworkService) 없는 씬 단독 Play에서도 null이라 안전.
                     OnHandshakeOkEvent?.Invoke();
                 }
                 else
@@ -237,9 +297,18 @@ namespace Dawnholder.Client.Network
                 LocalEntityId = eid; // M3 Phase 05: 본인 entityId 박음 — Snapshot 분기 기준점.
                 Debug.Log($"[Unity] EnterMap as entity {eid} at server spawn ({x}, {y})");
                 if (LocalPlayerController.Instance != null)
+                {
                     LocalPlayerController.Instance.SetServerPosition(new Vector3(x, y, 0f));
+                }
                 else
-                    Debug.LogWarning("[Unity] LocalPlayerController.Instance가 없음 — Player GameObject 미배치?");
+                {
+                    // M4.2: LocalPlayerSpawner가 아직 Instantiate 전(초기 진입 race) →
+                    // PendingSpawn에 보관 → 곧 spawn될 LocalPlayerController.Start()가 소비.
+                    // 맵 전환(HandleMapTransition) 경로와 동일 메커니즘으로 대칭.
+                    PendingSpawnX = x;
+                    PendingSpawnY = y;
+                    HasPendingSpawn = true;
+                }
             });
         }
 
@@ -282,6 +351,24 @@ namespace Dawnholder.Client.Network
                 else
                 {
                     // 타인 path — registry 위임 (지연 spawn 포함).
+                    // P1 봉합: 전환 중 도착한 roster 패킷 → buffer 캐싱.
+                    if (_pendingMapTransition)
+                    {
+                        if (_rosterBuffer.Count >= RosterBufferMaxSize)
+                        {
+                            Debug.LogWarning($"[Unity] RosterBuffer overflow (>{RosterBufferMaxSize}) — S_Snapshot entity={eid} dropped.");
+                            return;
+                        }
+                        float capturedX = x;
+                        float capturedY = y;
+                        int capturedEid = eid;
+                        _rosterBuffer.Add(() =>
+                        {
+                            if (RemoteEntityRegistry.Instance != null)
+                                RemoteEntityRegistry.Instance.UpdateSnapshot(capturedEid, capturedX, capturedY);
+                        });
+                        return;
+                    }
                     if (RemoteEntityRegistry.Instance != null)
                         RemoteEntityRegistry.Instance.UpdateSnapshot(eid, x, y);
                 }
@@ -290,6 +377,7 @@ namespace Dawnholder.Client.Network
 
         // M3 Phase 05: 타인 entity spawn. Phase 04 broadcast 인프라 (S_PlayerJoin) 수신측 dispatch.
         // 본인 entityId가 잘못 박혀 도착해도 무시 (idempotent 안전망 — 정상 흐름엔 X).
+        // P1 봉합: _pendingMapTransition 시 roster buffer에 캐싱 (드롭 X).
         void HandlePlayerJoin(ArraySegment<byte> buffer)
         {
             S_PlayerJoin pkt = new S_PlayerJoin();
@@ -302,6 +390,23 @@ namespace Dawnholder.Client.Network
             MainThreadDispatcher.Enqueue(() =>
             {
                 if (LocalEntityId != null && eid == LocalEntityId.Value) return;
+
+                // P1 봉합: 전환 중 도착한 roster 패킷 → buffer 캐싱.
+                if (_pendingMapTransition)
+                {
+                    if (_rosterBuffer.Count >= RosterBufferMaxSize)
+                    {
+                        Debug.LogWarning($"[Unity] RosterBuffer overflow (>{RosterBufferMaxSize}) — S_PlayerJoin entity={eid} dropped.");
+                        return;
+                    }
+                    _rosterBuffer.Add(() =>
+                    {
+                        if (RemoteEntityRegistry.Instance != null)
+                            RemoteEntityRegistry.Instance.Spawn(eid, x, y);
+                    });
+                    return;
+                }
+
                 if (RemoteEntityRegistry.Instance != null)
                     RemoteEntityRegistry.Instance.Spawn(eid, x, y);
             });
@@ -342,6 +447,7 @@ namespace Dawnholder.Client.Network
         // ========================================================================
 
         // S_EntitySpawn (ID 12) — enemy/boss 새 spawn. entityKind 분기.
+        // P1 봉합: _pendingMapTransition 시 roster buffer에 캐싱 (드롭 X).
         void HandleEntitySpawn(ArraySegment<byte> buffer)
         {
             S_EntitySpawn pkt = new S_EntitySpawn();
@@ -356,6 +462,32 @@ namespace Dawnholder.Client.Network
 
             MainThreadDispatcher.Enqueue(() =>
             {
+                // P1 봉합: 전환 중 도착한 roster 패킷 → buffer 캐싱.
+                if (_pendingMapTransition)
+                {
+                    if (_rosterBuffer.Count >= RosterBufferMaxSize)
+                    {
+                        Debug.LogWarning($"[Unity] RosterBuffer overflow (>{RosterBufferMaxSize}) — S_EntitySpawn entity={eid} dropped.");
+                        return;
+                    }
+                    int capturedEid = eid;
+                    byte capturedKind = kind;
+                    float capturedX = x;
+                    float capturedY = y;
+                    int capturedHp = hp;
+                    int capturedMaxHp = maxHp;
+                    _rosterBuffer.Add(() =>
+                    {
+                        if (EnemyRegistry.Instance == null)
+                        {
+                            Debug.LogWarning($"[Unity] EnemyRegistry 미박힘 (roster drain) — entity {capturedEid} spawn drop.");
+                            return;
+                        }
+                        EnemyRegistry.Instance.Spawn(capturedEid, capturedKind, capturedX, capturedY, capturedHp, capturedMaxHp);
+                    });
+                    return;
+                }
+
                 if (EnemyRegistry.Instance == null)
                 {
                     Debug.LogWarning($"[Unity] EnemyRegistry 미박힘 — entity {eid} spawn drop. CombatBootstrap 누락?");
@@ -421,5 +553,113 @@ namespace Dawnholder.Client.Network
                 StageClearUI.Instance.Show(bossId);
             });
         }
+
+        // ========================================================================
+        // M4.2 Phase 04: 맵 전환 dispatch.
+        // 헌법 #1 (Server Authority): S_MapTransition이 도착해야 비로소 scene 전환.
+        //   클라 스스로 "portal에 도달했다" 판정 X. 서버 통보 후 렌더러 역할만 함.
+        // ========================================================================
+
+        // S_MapTransition (ID 18) — 맵 전환. destMapId → scene 전환 + spawn 배치.
+        //
+        // **흐름**:
+        //   1. IOCP 워커 스레드에서 패킷 디코드 → main thread 큐 push.
+        //   2. Main thread에서: prediction 버퍼 리셋 → remote entity 정리(씬 파괴 자동) →
+        //      SceneTransition.Instance.LoadScene(씬이름) 호출 (페이드아웃→LoadAsync→페이드인).
+        //   3. 씬 로드 완료 후 새 씬의 LocalPlayerController.Start/Awake에서 Instance 재등록.
+        //      S_EnterMap 없이도 spawn 좌표는 S_MapTransition.spawnX/Y로 적용.
+        //
+        // **prediction 버퍼 리셋 이유**:
+        //   좌표계가 맵마다 다름(서버도 맵별 독립 좌표). 이전 맵 입력이 버퍼에 남아있으면
+        //   새 맵의 서버 snapshot과 reconcile 시 엉뚱한 좌표로 snap됨. 리셋 의무.
+        //
+        // **LocalEntityId 유지 (ADR-026)**:
+        //   entity id는 migration 내내 유지. 재배정 X. entityId 필드가 패킷에 없음.
+        //
+        // **remote entity 정리**:
+        //   SceneManager.LoadScene(Single)이 옛 씬 GameObject를 모두 파괴 →
+        //   RemoteEntityRegistry/EnemyRegistry의 OnDestroy가 Clear()를 자동 호출.
+        //   단 씬 전환 전에 Instance가 null이 되는 창이 생기므로 null 가드 필수.
+        void HandleMapTransition(ArraySegment<byte> buffer)
+        {
+            S_MapTransition pkt = new S_MapTransition();
+            pkt.Read(buffer);
+
+            byte destMapId = pkt.destMapId;
+            float spawnX = pkt.spawnX;
+            float spawnY = pkt.spawnY;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                string sceneName = MapIdToSceneName(destMapId);
+                Debug.Log($"[Unity] MapTransition → destMapId={destMapId} scene='{sceneName}' spawn=({spawnX:F2},{spawnY:F2})");
+
+                if (string.IsNullOrEmpty(sceneName))
+                {
+                    Debug.LogError($"[Unity] S_MapTransition: 알 수 없는 destMapId={destMapId} — 전환 취소.");
+                    return;
+                }
+
+                // P1 봉합: roster buffer 활성화.
+                // 이 시점부터 sceneLoaded 콜백(씬 로드 완료) 전까지 도착하는
+                // S_PlayerJoin / S_EntitySpawn / S_Snapshot 타인 분기를 버퍼에 캐싱.
+                // 이전 전환 중 잔류 버퍼 보호: 이미 pending이면 drain 없이 씬 이름만 교체
+                // (연속 전환은 이론상 불가 — 서버가 confirm 전 두 번 보내지 않음).
+                if (_pendingMapTransition)
+                {
+                    Debug.LogWarning($"[Unity] 이전 맵 전환 roster buffer 미drain 상태에서 새 MapTransition 도착 — buffer 초기화 후 재시작.");
+                    _rosterBuffer.Clear();
+                }
+                _pendingMapTransition = true;
+                _pendingDestSceneName = sceneName;
+
+                // prediction 버퍼 리셋: 이전 맵 입력이 새 맵 좌표계에서 replay되면 캐릭터가 튐.
+                // LocalPlayerController 씬 파괴 전 미리 리셋 (SetInitialPosition(Vector2.zero)로 클리어).
+                if (LocalPlayerController.Instance != null)
+                    LocalPlayerController.Instance.ResetPredictionForMapTransition();
+
+                // spawn 좌표 보관 — 씬 로드 완료 후 새 LocalPlayerController가 읽어 적용.
+                PendingSpawnX = spawnX;
+                PendingSpawnY = spawnY;
+                HasPendingSpawn = true;
+
+                // SceneTransition(페이드) 경유 씬 전환. Instance null 시 직접 LoadScene으로 fallback.
+                if (SceneTransition.Instance != null)
+                    SceneTransition.Instance.LoadScene(sceneName);
+                else
+                {
+                    Debug.LogWarning("[Unity] SceneTransition.Instance null — direct LoadScene fallback (페이드 없음).");
+                    SceneManager.LoadScene(sceneName);
+                }
+            });
+        }
+
+        // M4.2 Phase 04: 씬 로드 완료 후 새 LocalPlayerController가 참조하는 pending spawn 좌표.
+        // UnityClientSession은 DontDestroyOnLoad 없이 IOCP 스레드에서 계속 살아있으므로 static 공유.
+        // LocalPlayerController.Awake()에서 HasPendingSpawn 확인 → SetServerPosition 호출 → Clear.
+        public static float PendingSpawnX { get; private set; }
+        public static float PendingSpawnY { get; private set; }
+        public static bool HasPendingSpawn { get; private set; }
+
+        // LocalPlayerController.Start()에서 pending spawn 소비 후 호출.
+        public static void ConsumePendingSpawn()
+        {
+            HasPendingSpawn = false;
+            PendingSpawnX = 0f;
+            PendingSpawnY = 0f;
+        }
+
+        // M4.2 Phase 04: destMapId(byte) → Unity 씬 이름 매핑.
+        // 서버 MapId enum 값과 정합 (Town=0/HuntingGround=1/BossRoom=2/Ending=3).
+        // 씬 이름은 Build Settings의 파일명 기준 (폴더 경로 무관).
+        // 매핑이 클라 표현(렌더링 책임)이라 헌법 #1 위반 아님.
+        static string MapIdToSceneName(byte mapId) => mapId switch
+        {
+            0 => "Town",
+            1 => "HuntingGround",
+            2 => "BossRoom",
+            3 => "Ending",
+            _ => string.Empty
+        };
     }
 }

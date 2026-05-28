@@ -19,6 +19,7 @@
 | ADR-011 | 기존 ServerDev 코드 부분 채택 (시나리오 B) | [tech-stack/ADR-011-serverdev-scenario-b.md](tech-stack/ADR-011-serverdev-scenario-b.md) |
 | ADR-012 | Unity 클라 socket 분리 클라용 라이브러리 (Y2) | [tech-stack/ADR-012-socket-y2.md](tech-stack/ADR-012-socket-y2.md) |
 | ADR-017 | 프로젝트 폴더 ASCII 경로 이동 | [tech-stack/ADR-017-ascii-path.md](tech-stack/ADR-017-ascii-path.md) |
+| ADR-026 | entity id 전역 풀 (맵 간 id 유지) | [tech-stack/ADR-026-entity-id-global-pool.md](tech-stack/ADR-026-entity-id-global-pool.md) |
 
 ## gameplay/ — 게임 디자인·스코프
 
@@ -45,6 +46,7 @@
 | ADR-023 | work-pin/CONTEXT 동기화 결함 — 진행 단계 stale hole 봉합 (M3.7 — 옵션 C 게이트 보강, `/session:start` drift 발견 단계 신설) *(CONTEXT 절반 superseded — ADR-025, drift 게이트는 work-pin 단독으로 유지)* | [harness/ADR-023-sync-gate-progress-stale-hole.md](harness/ADR-023-sync-gate-progress-stale-hole.md) |
 | ADR-024 | false-promise 주기적 감사 cadence (M3.7 — 누적 12건+ Rule of Three 3회 통과, 마일스톤 마감 + ad-hoc X건 트리거) | [harness/ADR-024-false-promise-cadence.md](harness/ADR-024-false-promise-cadence.md) |
 | ADR-025 | CONTEXT 3종 + 학습 일지 트랙 B 은퇴, work-pin 단일 핸드오프 (M4.1 — ADR-013 회고/ADR-023 CONTEXT/ADR-022 트랙 B 부분 supersede) | [harness/ADR-025-retire-context-trio-and-learning-track.md](harness/ADR-025-retire-context-trio-and-learning-track.md) |
+| ADR-027 | 클라 Bootstrap(코드 주도 RuntimeInitialize) + Persistent Services + 연결 생명주기 A안 (M4.2 — ADR-021 scene-lifecycle 확장, ① DontDestroyOnLoad-per-service WIP supersede, B/로그인은 M5 이월) | [harness/ADR-027-client-bootstrap-persistent-services.md](harness/ADR-027-client-bootstrap-persistent-services.md) |
 
 ---
 

@@ -40,6 +40,14 @@ namespace Dawnholder.Client.State
             Instance = this;
         }
 
+        // P2 봉합 (2026-05-28): CombatBootstrap.BuildRemoteEntityRegistry가 코드 주도로 생성할 때
+        // Inspector 드래그 대신 Resources.Load로 prefab을 주입하기 위한 공개 메서드.
+        // Inspector 드래그 경로(기존 수동 박힘 씬)도 여전히 동작 — [SerializeField] 유지.
+        public void SetRemotePlayerPrefab(GameObject prefab)
+        {
+            _remotePlayerPrefab = prefab;
+        }
+
         void OnDestroy()
         {
             Clear();

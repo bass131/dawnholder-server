@@ -8,10 +8,10 @@ namespace Dawnholder.Client.Scenes
     /// 캐릭터 선택 화면 컨트롤러 (M3.8 Phase 03 → M4.1 Phase 02 개정).
     ///
     /// **M4.1 Phase 02 변경 (5-A)**: 패킷 즉시 송신 제거. 선택값을 PlayerPrefs에만 저장 후
-    /// Gameplay Scene 로드. 실제 `C_CharacterSelect` 송신은 Gameplay Scene의
-    /// NetworkBootstrap이 S_HandshakeResult(ok=true) 수신 후 event 기반으로 처리.
+    /// Gameplay Scene 로드. 실제 `C_CharacterSelect` 송신은 Town 씬의
+    /// NetworkService가 S_HandshakeResult(ok=true) 수신 후 event 기반으로 처리.
     ///
-    /// **왜 변경했나**: CharacterSelect 씬에서는 TCP 연결(NetworkBootstrap)이 아직 시작
+    /// **왜 변경했나**: CharacterSelect 씬에서는 TCP 연결(NetworkService)이 아직 시작
     /// 되지 않아 UnityClientSession.Instance가 null임. 연결 전 패킷 송신 시도 = race 위험.
     /// event 기반(S_HandshakeResult 수신 후 송신) = 헌법 #3 정합 (handshake 완료 전 입력 = untrusted).
     ///
@@ -19,14 +19,14 @@ namespace Dawnholder.Client.Scenes
     /// 서버가 PlayerStats 박음. 클라가 stats(HP/Attack) 직접 박지 않음.
     ///
     /// **PlayerPrefs key**: "SelectedCharacterClass" (byte, 0=Warrior / 1=Ranger).
-    /// 미박힘(key 없음) 또는 값 invalid(0/1 외) 시 NetworkBootstrap이 MainMenu로 돌려보냄.
+    /// 미박힘(key 없음) 또는 값 invalid(0/1 외) 시 NetworkService가 MainMenu로 돌려보냄.
     ///
     /// **SceneTransition Singleton 활용** (정유현 Phase 05 박은 fade 패턴).
     /// </summary>
     public class CharacterSelectController : MonoBehaviour
     {
-        // M4.1 Phase 02 5-A: PlayerPrefs key. NetworkBootstrap + CharacterSelectController 동일 상수.
-        // NetworkBootstrap에서도 동일 key 읽으므로 상수명 일치 필수.
+        // M4.1 Phase 02 5-A: PlayerPrefs key. NetworkService + CharacterSelectController 동일 상수.
+        // NetworkService에서도 동일 key 읽으므로 상수명 일치 필수.
         public const string SelectedClassPrefsKey = "SelectedCharacterClass";
 
         public void OnWarriorClicked()
@@ -46,21 +46,22 @@ namespace Dawnholder.Client.Scenes
             PlayerPrefs.SetInt(SelectedClassPrefsKey, (int)(byte)characterClass);
             PlayerPrefs.Save();
 
-            Debug.Log($"[CharacterSelect] Saved SelectedCharacterClass={characterClass} ({(byte)characterClass}) to PlayerPrefs → loading Gameplay Scene");
+            Debug.Log($"[CharacterSelect] Saved SelectedCharacterClass={characterClass} ({(byte)characterClass}) to PlayerPrefs → loading Town Scene");
 
             LoadGameplayScene();
         }
 
         void LoadGameplayScene()
         {
+            // M4.2: 진입 맵은 "Town" (옛 단일 "Gameplay" 씬은 Town/HuntingGround/BossRoom로 분리 — ADR-027).
             if (SceneTransition.Instance != null)
             {
-                SceneTransition.Instance.LoadScene("Gameplay");
+                SceneTransition.Instance.LoadScene("Town");
             }
             else
             {
                 Debug.LogWarning("[CharacterSelect] SceneTransition.Instance is null — direct LoadScene fallback");
-                UnityEngine.SceneManagement.SceneManager.LoadScene("Gameplay");
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Town");
             }
         }
     }

@@ -42,6 +42,12 @@ public class EmergencyCombatSmoke
 
     // M4.1 Phase 06 (7단계): simulatedLatencyMs — 봇이 C_Attack 송신 시 attackerClientTick에
     // "N ms 전 서버 tick"을 박아 lag 환경을 시뮬. 0 = zero-lag (기본, 회귀 호환).
+    // M4.2 Phase 05: portal 좌표 상수 (서버 PortalTable.cs와 정합 — 변경 시 양쪽 동기화 의무).
+    // Town portal: x=20 → HuntingGround destSpawn x=2.
+    // HuntingGround portal: x=25 → BossRoom destSpawn x=22 (BossProbe에서만 사용).
+    const float TownPortalX = 20f;
+    const int TownPortalId = 1;
+
     public static async Task<Result> Run(
         string host, int port,
         int simulatedLatencyMs = 0,
@@ -65,6 +71,21 @@ public class EmergencyCombatSmoke
 
             if (!bot.WaitEnterMap(DefaultTimeout))
                 return Fail(result, "S_EnterMap timeout (5s)");
+
+            // M4.2 Phase 05: Town → HuntingGround portal 이동 흐름.
+            // Town = 빈 맵이므로 portal로 HuntingGround까지 이동 후 전투 시작.
+            // ADR-026: entityId는 맵 이동 시 유지 — LocalEntityId 변경 X.
+            // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X).
+            // S_MapTransition 수신 = 새 맵 진입 완료 신호 (SpawnX도 갱신됨).
+            await bot.MoveToPortal(TownPortalX, ct);
+            bot.SendEnterPortal(TownPortalId);
+            bool transitioned = await bot.WaitMapTransition(DefaultTimeout, ct);
+            if (!transitioned)
+                return Fail(result, "S_MapTransition timeout (5s) — Town→HuntingGround portal");
+
+            // S_MapTransition 후 서버가 enemy roster(S_EntitySpawn)를 발송하기까지 짧은 대기.
+            // tick thread에서 EnqueueJob으로 처리되므로 최소 1 tick(50ms) 대기 필요.
+            await Task.Delay(Constants.TickIntervalMs * 2, ct);
 
             S_EntitySpawn? spawn = await bot.WaitForFirstSpawn(DefaultTimeout, ct);
             if (spawn == null)
@@ -309,6 +330,9 @@ public class EmergencyCombatSmoke
         readonly ManualResetEventSlim _connected = new(false);
         readonly ManualResetEventSlim _handshake = new(false);
         readonly ManualResetEventSlim _enterMap = new(false);
+        // M4.2 Phase 05: S_MapTransition 수신 대기용. portal 이동 흐름 추가.
+        // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X) — S_MapTransition만으로 완료 판정.
+        readonly ManualResetEventSlim _mapTransition = new(false);
         readonly List<S_EntitySpawn> _spawns = new();
         readonly List<HitEvent> _hits = new();
         readonly List<int> _deaths = new();
@@ -349,6 +373,36 @@ public class EmergencyCombatSmoke
         public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
         public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
         public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
+
+        // M4.2 Phase 05: portal 이동 후 S_MapTransition 수신 대기.
+        // 서버는 S_MapTransition만 발송 — 이 이벤트 수신으로 맵 진입 완료 판정.
+        public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
+            => await WaitUntil(() => _mapTransition.IsSet, timeout, ct);
+
+        // M4.2 Phase 05: portal 위치(portalX)까지 C_MoveIntent 기반 이동.
+        // 서버 PortalTable.cs와 정합 — portal x 좌표는 호출부 const로 박음.
+        public async Task<int> MoveToPortal(float portalX, CancellationToken ct)
+        {
+            float delta = portalX - SpawnX;
+            sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
+            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (Constants.MoveSpeed * Constants.TickDuration));
+            ticks = Math.Clamp(ticks, 0, 160);
+            for (int i = 0; i < ticks; i++)
+            {
+                SendMove(direction);
+                await Task.Delay(Constants.TickIntervalMs, ct);
+            }
+            SendMove(0);
+            await Task.Delay(150, ct);
+            return ticks + 1;
+        }
+
+        // M4.2 Phase 05: C_EnterPortal 송신.
+        public void SendEnterPortal(int portalId)
+        {
+            C_EnterPortal packet = new() { portalId = portalId };
+            _session?.Send(packet.Write());
+        }
 
         public async Task<S_EntitySpawn?> WaitForFirstSpawn(TimeSpan timeout, CancellationToken ct)
         {
@@ -477,11 +531,22 @@ public class EmergencyCombatSmoke
                     break;
 
                 case PacketID.S_EnterMap:
+                    // 서버는 최초 진입 시에만 S_EnterMap 발송. 맵 전환 시엔 S_MapTransition만 발송.
+                    // ADR-026: entityId는 맵 이동 시 유지 — S_EnterMap은 최초 1회만 수신.
                     S_EnterMap enterMap = new();
                     enterMap.Read(buffer);
                     LocalEntityId = enterMap.entityId;
                     SpawnX = enterMap.spawnX;
                     _enterMap.Set();
+                    break;
+
+                case PacketID.S_MapTransition:
+                    // M4.2 Phase 05: 맵 전환 패킷 수신 — destMapId/spawnX/spawnY 캡처.
+                    // SpawnX를 목적지 spawn 좌표로 갱신. 봇은 서버 권위 좌표만 사용 (헌법 #1).
+                    S_MapTransition mapTransition = new();
+                    mapTransition.Read(buffer);
+                    SpawnX = mapTransition.spawnX;
+                    _mapTransition.Set();
                     break;
 
                 case PacketID.S_EntitySpawn:

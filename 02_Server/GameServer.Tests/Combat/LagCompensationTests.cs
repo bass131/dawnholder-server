@@ -45,6 +45,10 @@ public class LagCompensationTests : IDisposable
     const int BossEntityId = 2;
     const int PlayerEntityId = 3;
 
+    // M4.2 Phase 01 (결정 2 모듈화 갱신): MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
+    static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
+    static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
+
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
         PlayerStats.Warrior(), default, baseDamage: 10);
 
@@ -75,7 +79,13 @@ public class LagCompensationTests : IDisposable
 
     public LagCompensationTests()
     {
-        _map = new GameMap();
+        // M4.2 Phase 01: HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2).
+        // LagCompensationTests는 NormalEnemyId=1 + BossEntityId=2 둘 다 참조.
+        // SpawnEnemy(EnemyKind.Boss, ...) InternalsVisibleTo로 접근.
+        // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴.
+        _map = new GameMap(MapId.HuntingGround);
+        _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);
+
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
         Console.SetOut(_consoleCapture);
@@ -115,7 +125,7 @@ public class LagCompensationTests : IDisposable
     ///   겹침 → Intersects=true → hit.
     /// </summary>
     static void PlaceInRange(PlayerEntity player)
-        => player.Position = new Vector2(GameMap.NormalEnemySpawnX - 1f, GameMap.NormalEnemySpawnY);
+        => player.Position = new Vector2(NormalDef.X - 1f, NormalDef.Y);
 
     static ArraySegment<byte> AttackPacketBytes(int targetEntityId, long attackerClientTick)
     {
@@ -157,7 +167,7 @@ public class LagCompensationTests : IDisposable
         _map.Tick(2);
 
         Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
-        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedDamage, _map.Enemies[NormalEnemyId].Hp);
+        Assert.Equal(NormalDef.MaxHp - ExpectedDamage, _map.Enemies[NormalEnemyId].Hp);
     }
 
     /// <summary>
@@ -197,7 +207,7 @@ public class LagCompensationTests : IDisposable
         _map.Tick(6);
 
         Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
-        Assert.Equal(GameMap.NormalEnemyMaxHp - ExpectedDamage, _map.Enemies[NormalEnemyId].Hp);
+        Assert.Equal(NormalDef.MaxHp - ExpectedDamage, _map.Enemies[NormalEnemyId].Hp);
     }
 
     /// <summary>
@@ -224,7 +234,7 @@ public class LagCompensationTests : IDisposable
 
         Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
         Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_EntityDeath));
-        Assert.Equal(GameMap.NormalEnemyMaxHp, _map.Enemies[NormalEnemyId].Hp);
+        Assert.Equal(NormalDef.MaxHp, _map.Enemies[NormalEnemyId].Hp);
     }
 
     /// <summary>
@@ -247,7 +257,7 @@ public class LagCompensationTests : IDisposable
         _map.Tick(2);
 
         Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
-        Assert.Equal(GameMap.NormalEnemyMaxHp, _map.Enemies[NormalEnemyId].Hp);
+        Assert.Equal(NormalDef.MaxHp, _map.Enemies[NormalEnemyId].Hp);
     }
 
     /// <summary>
@@ -268,6 +278,6 @@ public class LagCompensationTests : IDisposable
         _map.Tick(2);
 
         Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
-        Assert.Equal(GameMap.NormalEnemyMaxHp, _map.Enemies[NormalEnemyId].Hp);
+        Assert.Equal(NormalDef.MaxHp, _map.Enemies[NormalEnemyId].Hp);
     }
 }

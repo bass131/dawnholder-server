@@ -8,8 +8,8 @@ namespace Dawnholder.Client.Network
     /// <summary>
     /// 서버 연결 가용성 짧게 점검 (MainMenu Start 버튼 게이트용).
     ///
-    /// **목적**: 게임 본 흐름(NetworkBootstrap → Gameplay Scene) 진입 전에 *서버 가용성*만 점검.
-    /// connect 시도 → 즉시 close (1ms급). 게임 본 connection은 NetworkBootstrap이 Gameplay Scene에서 별도로 박음.
+    /// **목적**: 게임 본 흐름(GameEntryPoint → NetworkService.Connect()) 진입 전에 *서버 가용성*만 점검.
+    /// connect 시도 → 즉시 close (1ms급). 게임 본 connection은 Town 씬의 GameEntryPoint가 NetworkService.Connect()로 박음.
     ///
     /// **왜 필요한가** (M3.8 Phase 05 5-B 안전망):
     /// 발표장 환경에서 Hamachi IP 오타 / 서버 다운 / 방화벽 차단 등으로 연결 실패 시,
@@ -92,7 +92,7 @@ namespace Dawnholder.Client.Network
                         return;
                     }
 
-                    // 성공 — 즉시 close. 게임 본 connection은 NetworkBootstrap이 Gameplay Scene에서 박음.
+                    // 성공 — 즉시 close. 게임 본 connection은 Town 씬 GameEntryPoint → NetworkService.Connect()가 박음.
                     try { socket.Shutdown(SocketShutdown.Both); } catch { /* swallow */ }
                     socket.Close();
                     MainThreadDispatcher.Enqueue(() => callback(true, ""));

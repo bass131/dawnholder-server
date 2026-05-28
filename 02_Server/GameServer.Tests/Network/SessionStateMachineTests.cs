@@ -3,6 +3,8 @@ using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
+// M4.2 Phase 01 (결정 2 모듈화 갱신): GameMap.NormalEnemyMaxHp 제거 → MapSpawnTable 조회로 대체.
+
 namespace GameServer.Tests.Network;
 
 /// <summary>
@@ -236,7 +238,9 @@ public class SessionStateMachineTests : IDisposable
 
         // attack이 처리되지 않았으므로 enemy HP 변동 없음 (Normal enemy=1 기본 HP 확인).
         Assert.True(_map.Enemies.ContainsKey(1)); // enemy 여전히 살아있음
-        Assert.Equal(GameMap.NormalEnemyMaxHp, _map.Enemies[1].Hp); // HP 변동 없음
+        // Normal enemy 기본 HP: MapSpawnTable 단일 진실 공급원에서 조회.
+        int normalMaxHp = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0].MaxHp;
+        Assert.Equal(normalMaxHp, _map.Enemies[1].Hp); // HP 변동 없음
         Assert.Equal(0, s.DisconnectCalls);
     }
 

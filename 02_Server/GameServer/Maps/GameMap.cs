@@ -23,7 +23,27 @@ public class GameMap
     // M3 Phase 06 Step 2: enemy 보관소. player와 *분리* — broadcast 대상은 players만 (enemy는
     // owner session X). 같은 entity id 풀에서 발급해 id collision 차단.
     readonly Dictionary<int, EnemyEntity> _enemies = new();
-    int _nextEntityId = 1;
+
+    // M4.2 Phase 02: entity id 발급기.
+    //
+    // **두 가지 동작 모드**:
+    //   (A) GameWorld 경유 생성: _idAllocator = GameWorld.NextEntityId — 전역 풀에서 발급.
+    //       4맵 간 id가 globally-unique (같은 id가 두 맵에 동시 존재 X).
+    //       ADR-026: 맵 이동 시 entity id 유지 → S_MapTransition에 entityId 필드 불필요.
+    //   (B) 단독 생성 (테스트 / 미래 확장): _idAllocator = null → 로컬 _localNextId 사용 (1부터 시작).
+    //       GameMap을 GameWorld 없이 독립 사용 가능 — 테스트 격리 보장.
+    //
+    // **Func<int> vs GameWorld 직접 참조**:
+    //   Func<int>를 주입하면 GameMap이 GameWorld에 직접 의존하지 않음 → 순환 참조 없음.
+    //   테스트에서 GameWorld singleton 없이도 GameMap 단독 생성 가능 (테스트 친화적).
+    //   Interlocked.Increment는 GameWorld 안에서 처리 — GameMap은 "번호 뽑기 함수"만 받음.
+    readonly Func<int>? _idAllocator;
+
+    // (B) 모드 전용 로컬 카운터. (A) 모드에서는 _idAllocator()를 호출하므로 이 필드는 불사용.
+    int _localNextId = 1;
+
+    // entity id 발급 단일 경로. (A)/(B) 분기를 여기에만 박음 — SpawnEnemy/AddPlayer는 AllocId() 호출만.
+    int AllocId() => _idAllocator != null ? _idAllocator() : _localNextId++;
 
     readonly ConcurrentQueue<Action> _pendingJobs = new();
 
@@ -33,21 +53,10 @@ public class GameMap
     // 다발 전송(S_EntitySpawn) 시 순회용 + Step 5 AttackHandler가 target lookup 보조용.
     public IReadOnlyDictionary<int, EnemyEntity> Enemies => _enemies;
 
-    // M3 Phase 06 Step 2 (응급 전투): 단일 맵 3-zone trick (좌=마을 / 중=전투 / 우=보스).
-    // ground y=0 가정(Physics.cs 정의 정합) + player spawn (0,0)에서 우측으로 충분히 떨어진
-    // 위치로 박음. 진짜 zone 경계 좌표는 클라(Phase 08b)에서 시각화 박힘 — 서버는 위치만 정의.
-    // `MoveSpeed = 5 units/sec`이므로 (10, 0)은 정상 도보 2초 거리 = 시연 흐름 자연.
-    public const float NormalEnemySpawnX = 10f;
-    public const float NormalEnemySpawnY = 0f;
-    public const int NormalEnemyMaxHp = 30;
-
-    // M3 Phase 07 (보스 + Stage Clear): 우측 zone 보스 placeholder.
-    // 3-zone 좌표 약속 = 좌 마을 (x<0) / 중 전투 (Normal=10) / 우 보스 (Boss=30). player spawn=0 정합.
-    // HP 100 = damage 10 × 10회 사망. 본 마감엔 보스 전용 데미지 공식 + 페이즈 — M4 backlog.
-    // AI 없음, 패시브 dummy (Phase 06 Normal과 동일 모델 — `EnemyKind.Boss` 분기만 다름).
-    public const float BossSpawnX = 30f;
-    public const float BossSpawnY = 0f;
-    public const int BossMaxHp = 100;
+    // M4.2 Phase 01 (결정 2 — Spawn 모듈화):
+    // 옛 NormalEnemySpawnX/Y/MaxHp · BossSpawnX/Y/MaxHp const 제거.
+    // 좌표/HP 정의는 MapSpawnTable.cs로 이동 (단일 진실 공급원).
+    // 테스트 참조: GameMapContentTests가 GameMap.const 대신 MapSpawnTable에서 값 확인.
 
     // M3 Phase 07: Stage Clear 1회 보장 flag. tick thread invariant 안에서만 읽기/쓰기.
     // **헌법 #1 (Server Authority)**: 클라가 stage clear 자체 판정 X — 서버가 본 flag로 1회 broadcast.
@@ -66,39 +75,59 @@ public class GameMap
     /// </summary>
     public bool IsStageCleared => _stageCleared;
 
-    public GameMap()
-    {
-        // M3 Phase 06 Step 2: 서버 시작 시 Normal enemy 1마리 즉시 spawn.
-        // 응급 단순화 — respawn 없음, AI 없음, 고정 위치. Step 3에서 신규 client 접속 시
-        // 본 enemy를 S_EntitySpawn으로 다발 전송 (initial roster 패턴, Phase 04 정합).
-        //
-        // 헌법 #5 (틱 블로킹 금지) 정합: ctor는 tick 진입 전이라 동기 코드 OK. await 없음.
-        SpawnNormalEnemy(NormalEnemySpawnX, NormalEnemySpawnY, NormalEnemyMaxHp);
+    // M4.2 Phase 01: 맵 ID. 어느 맵인지 식별 + GetMap 라우팅 + 로그용.
+    // readonly — ctor 이후 변경 X (맵 identity는 불변).
+    public MapId MapId { get; }
 
-        // M3 Phase 07: 서버 시작 시 Boss 1마리 즉시 spawn (우측 zone). Normal과 같은 entity id 풀
-        // 공유 (`_nextEntityId++`) → S_HitResult.targetEntityId 라우팅 단순화 (Step 5 ProcessAttack에서
-        // GetEnemyById 한 번에 lookup). 별 BossEntity 모델 분리 X (Codex β 권장 — combat 로직 재사용,
-        // StageClear trigger만 EnemyKind.Boss 분기).
-        SpawnBoss(BossSpawnX, BossSpawnY, BossMaxHp);
+    // M4.2 Phase 02: 맵에 속한 portal 목록. PortalTable 단일 진실 공급원에서 가져옴.
+    // IReadOnlyList — 외부에서 추가/제거 불가 (헌법 #1 Server Authority: portal 정의는 서버 권위).
+    // Phase 03에서 C_EnterPortal 핸들러가 portalId로 이 목록을 lookup.
+    public IReadOnlyList<Portal> Portals { get; }
+
+    // M4.2 Phase 01 (결정 2 — Spawn 모듈화): ctor switch 분기 제거.
+    // MapSpawnTable.GetSpawnsFor(mapId) → spawn 정의 목록을 받아 순서대로 spawn.
+    //
+    // **변경 전**: ctor 안에 switch(mapId) { HuntingGround: SpawnNormalEnemy(...); BossRoom: SpawnBoss(...); }
+    // **변경 후**: foreach(def in MapSpawnTable.GetSpawnsFor(mapId)) SpawnEnemy(def);
+    //
+    // **이점**:
+    //   - ctor에 맵별 로직 없음 — spawn 내용 변경 시 MapSpawnTable만 수정.
+    //   - 맵 추가 시 MapSpawnTable에 항목 추가 + GameMap ctor는 변경 없음.
+    //   - EnemyKind 분기(Normal/Boss 별도 helper) 통합 → SpawnEnemy(kind, x, y, hp) 단일 경로.
+    //
+    // **헌법 #5**: ctor는 tick 진입 전 → 동기 코드 OK. await/Task.Delay/Thread.Sleep 없음.
+    //
+    // M4.2 Phase 02: idAllocator 선택적 주입 (Func<int>? = null).
+    // GameWorld 경유 생성 시 GameWorld.NextEntityId 전달 → 전역 풀.
+    // 단독 생성 시 null → 로컬 카운터 (테스트 격리 보장).
+    public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null)
+    {
+        MapId = mapId;
+        _idAllocator = idAllocator;
+
+        // M4.2 Phase 02: portal 목록 초기화. PortalTable 단일 진실 공급원.
+        Portals = PortalTable.GetPortalsFor(mapId);
+
+        // MapSpawnTable이 단일 진실 공급원 — 맵별 spawn 목록 반환.
+        // Town/Ending은 Empty 목록 → foreach 본문 진입 X (빈 맵).
+        foreach (EnemySpawnDef def in MapSpawnTable.GetSpawnsFor(mapId))
+        {
+            SpawnEnemy(def.Kind, def.X, def.Y, def.MaxHp);
+        }
     }
 
-    // M3 Phase 06 Step 2: tick thread (또는 ctor) 에서만 호출 invariant.
+    // M4.2 Phase 01 (결정 2 — Spawn 모듈화): SpawnNormalEnemy + SpawnBoss 통합.
+    // 옛 두 helper는 kind 인자 하나 차이밖에 없었음 → 통합 SpawnEnemy(kind, x, y, maxHp).
+    //
+    // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).
     // 헌법 #5 — 동기 코드만, await/Task.Delay/Thread.Sleep 금지.
-    EnemyEntity SpawnNormalEnemy(float x, float y, int maxHp)
+    //
+    // **internal 유지 이유**: 테스트 픽스처가 직접 enemy 구성 가능 (InternalsVisibleTo).
+    //   ex. AttackHandlerTests가 임의 맵에 enemy를 추가할 때 호출.
+    internal EnemyEntity SpawnEnemy(EnemyKind kind, float x, float y, int maxHp)
     {
-        int id = _nextEntityId++;
-        EnemyEntity e = new EnemyEntity(id, EnemyKind.Normal, x, y, maxHp);
-        _enemies.Add(id, e);
-        return e;
-    }
-
-    // M3 Phase 07: tick thread (또는 ctor)에서만 호출 invariant.
-    // Normal과 분리 helper로 박은 이유 = 호출처 명확화 (`SpawnBoss(30, 0, 100)`가 `SpawnEnemy(Boss, 30, 0, 100)`보다
-    // 의도 표현 명확). 본 마감 시 통합 SpawnEnemy(kind, ...)로 합치는 게 정석이지만 응급 = 명시 helper 2개로 유지.
-    EnemyEntity SpawnBoss(float x, float y, int maxHp)
-    {
-        int id = _nextEntityId++;
-        EnemyEntity e = new EnemyEntity(id, EnemyKind.Boss, x, y, maxHp);
+        int id = AllocId();
+        EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp);
         _enemies.Add(id, e);
         return e;
     }
@@ -110,7 +139,29 @@ public class GameMap
     // M4.1 Phase 05 (3단계): stats 옵션 인자 추가. null 시 PlayerEntity ctor가 Warrior() 응급 default 박음.
     public PlayerEntity AddPlayer(GameSession? owner, Vector2 spawnPos, PlayerStats? stats = null)
     {
-        PlayerEntity entity = new PlayerEntity(_nextEntityId++, spawnPos, owner, stats);
+        PlayerEntity entity = new PlayerEntity(AllocId(), spawnPos, owner, stats);
+        _players.Add(entity);
+        return entity;
+    }
+
+    // M4.2 Phase 03: migration 전용 AddPlayer 오버로드 — 기존 entity id 유지 (ADR-026).
+    //
+    // **ADR-026 핵심**: 맵 이동 시 player의 entity id를 재배정하지 않는다.
+    //   이 메서드가 새 id를 AllocId()로 발급하는 대신 호출자가 제공한 entityId를 그대로 사용.
+    //
+    // **왜 별도 오버로드인가?**
+    //   기존 AddPlayer(owner, spawnPos, stats)에 entityId 옵션을 추가하면
+    //   "생성 경로"와 "migration 경로"의 의도 구분이 모호해짐.
+    //   오버로드로 명확히 분리 → 코드 읽는 사람이 migration임을 즉시 알 수 있음.
+    //
+    // **HP 복원**: stats와 별도로 currentHp를 받음. stats.Hp는 *최대* HP 기준이고
+    //   migration 시 실제 HP는 전투로 깎인 상태일 수 있음.
+    //
+    // **호출 invariant**: tick thread에서만 (맵 B의 EnqueueJob 람다 안).
+    public PlayerEntity AddPlayerWithId(int entityId, GameSession? owner, Vector2 spawnPos, PlayerStats stats, int currentHp)
+    {
+        PlayerEntity entity = new PlayerEntity(entityId, spawnPos, owner, stats);
+        entity.Hp = currentHp;
         _players.Add(entity);
         return entity;
     }
