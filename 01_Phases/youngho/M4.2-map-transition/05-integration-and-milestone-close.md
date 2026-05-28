@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.2
 phase: 05
 title: 통합 검증 + 봇 맵 이동 시나리오 + 마일스톤 마감
-status: pending
+status: done
 grade: 보통
 estimated: 1.5~2h
 domain: cross
@@ -108,4 +108,5 @@ M4.2 마일스톤을 마감(`-DONE.md` + CHANGELOG)한다.
 ## 작업 로그
 
 - 2026-05-25: 계획 수립 (`/work:plan M4.2`)
+- 2026-05-28: 마감 완료. qa SubAgent 위임으로 4 묶음(봇 portal 흐름 / `MapTransitionScenario` 신설 / smoke 2건 Skip 해제 / 통합 테스트) 박음. reviewer Tier 2-A 통합 점검 🔴0/🟡3 통과(🟡 1·2 ARCHITECTURE.md L212 stale + M4.2 결과 절 누락 → 본 마감 commit 동반 봉합, 🟡 3 봇 portal const 중복 → M4.3 backlog). `dotnet test` 300통과 / 0실패 / 4Skip (M4.1 baseline 221 → +79). `_milestone-DONE.md` 박제 완료.
 </content>

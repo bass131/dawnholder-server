@@ -13,6 +13,12 @@ obj/
 # 2026-05-18 박힘 — Phase 02 마감 시점 codex-notion-session-log-prompt.tmp.md 사고로 표면화
 *.tmp.md
 
+# MCP 전 백업 트리 (Unity scene/prefab 편집 전 본인이 박은 안전망)
+# 2026-05-28 박힘 — M4.2 Phase 05 β cross-review P3-A 결함 봉합:
+# `.backups/20260525-pre-mcp-scene/` 같은 트리가 .gitignore 미박힘이라 `git add .` 시 폭탄 위험
+# (Unity scene/prefab 통째 중복 stage). work-pin "의도된 제외" baseline 정합 + defense in depth.
+.backups/
+
 # Build output for 98_Shared/ DLL pipeline (ADR-010)
 # **/*는 모든 깊이 매칭 — Plugins/Shared/Shared.dll 같이 한 단계 더 들어간 것도 잡음
 03_Client/Assets/Plugins/**/*.dll

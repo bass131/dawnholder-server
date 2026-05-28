@@ -2,7 +2,7 @@
 owner: youngho
 milestone: M4.2
 title: Map Transition (진짜 4맵 분리 + portal handoff + 클라 scene dispatch)
-status: planned
+status: done
 grade: 복잡
 risk: trust-boundary
 estimated: 11~16h (총합, 5 Phase 확정)

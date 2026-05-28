@@ -209,7 +209,7 @@ PDL 신규 패킷은 append-only ID로 추가됐다.
 | 14 | `S_EntityDeath` | entity lifecycle death/despawn |
 | 15 | `S_StageClear` | boss death 이후 game event |
 
-`ProtocolVersion.Current = 5`. M3.8 Phase 03에서 3→4 bump됐고 (캐릭터 선택 도입 = `C_CharacterSelect` 박힘), M4.1 Phase 06에서 4→5 bump됐다 (`C_Attack.attackerClientTick` 필드 추가, lag compensation rewind 도입). M3 Phase 07의 `S_StageClear`는 같은 emergency PR 안의 additive packet이라 그 시점 v3 유지 박혔다.
+`ProtocolVersion.Current = 6`. M3.8 Phase 03에서 3→4 bump됐고 (캐릭터 선택 도입 = `C_CharacterSelect` 박힘), M4.1 Phase 06에서 4→5 bump됐다 (`C_Attack.attackerClientTick` 필드 추가, lag compensation rewind 도입). M4.2 Phase 02에서 5→6 bump됐다 (`C_EnterPortal` + `S_MapTransition` 신규 추가, 맵 전환 + entity id 전역 풀 도입 — ADR-026). M3 Phase 07의 `S_StageClear`는 같은 emergency PR 안의 additive packet이라 그 시점 v3 유지 박혔다.
 
 Combat packet 처리 경로:
 
@@ -315,6 +315,76 @@ M4에서는 응급 전투를 본 마감용 전투로 승격한다.
 
 ---
 
+## M4.2 결과 종합 — Map Transition
+
+M3 응급 단일 맵 3-zone trick(`Town/HuntingGround/BossRoom`을 한 `GameMap`에 좌표 분할로 박았던 패턴)을 진짜 4맵 분리로 승격. `GameWorld._map` 단일 참조가 `Dictionary<MapId, GameMap>` 레지스트리로 바뀌고, 맵 간 portal handoff가 서버 권위로 박힌다.
+
+### 신규 패킷 (PDL append-only)
+
+| ID | Packet | 역할 |
+|---:|---|---|
+| 17 | `C_EnterPortal` | client portal 진입 *의도만* (portalId only). 좌표/목적지 X — teleport 핵 차단 |
+| 18 | `S_MapTransition` | server 권위 맵 전환 통보. `destMapId + spawnX + spawnY` (entityId 필드 없음 — ADR-026 정합) |
+
+### Map Registry + Static Tables
+
+```
+MapId enum: Town(0) / HuntingGround(1) / BossRoom(2) / Ending(3)  -- stable id, append-only
+GameWorld._maps: Dictionary<MapId, GameMap>  -- 다맵 tick
+MapSpawnTable: MapId -> EnemySpawnDef[]   -- HG=Normal(x=10) / BossRoom=Boss(x=30)
+PortalTable:   MapId -> Portal[]          -- Town(x=20) -> HG(spawn x=2) -> ... -> Ending(x=5) -> Town(루프)
+```
+
+옛 `GameMap` ctor 안의 const 좌표/HP/switch 분기 전부 `MapSpawnTable.GetSpawnsFor(mapId)`로 단일 진실 공급원화. `PortalTable.GetPortalsFor(mapId)`도 동일 패턴. M4.3+ 콘텐츠 확장이 GameMap 코드 변경 없이 가능.
+
+### Player Migration 흐름 (`SubmitEnterPortal`)
+
+```text
+C_EnterPortal { portalId }
+  -> EnterPortalHandler (handshake/class 게이트만)
+  -> GameSession.SubmitEnterPortal(portalId)
+  -> mapA.EnqueueJob(...)
+    - 4단 trust-boundary 검증 (handshake / class / portalId 범위 / portal 근접 ≤ 2 unit)
+    - mapA.RemovePlayer + S_PlayerLeave broadcast
+    - mapB.EnqueueJob(...)
+      - mapB.AddPlayerWithId(entityId, ...)   -- ADR-026 entity id 유지
+      - S_PlayerJoin broadcast (mapB)
+      - S_MapTransition (본인에게만)
+```
+
+`_migrating` Volatile 플래그가 socket↔tick 가시성을 보장하고, migration 중 도착한 C_Attack/C_MoveIntent는 *transient drop*으로 no-op. `GetDestMap() == null` race도 fail-safe로 silent drop (cheat-flag 후보는 M4.3 이월).
+
+### ADR-026 — Entity ID 전역 풀
+
+옛 패턴은 맵별로 entity id를 새로 발급했지만, M4.2 진입 시 *맵 이동 시 id 유지*를 단일 진실로 박았다. `S_MapTransition`에 entityId 필드를 박지 *않은* 이유 — 패킷에 박는 순간 ADR-026의 약속이 중복되고 클라가 둘이 다를 때 누가 옳은지 모호해진다. 봇/클라가 직접 wire-level로 entityId 보존을 검증할 수는 없고, "최초 `S_EnterMap`에서 받은 entityId가 모든 후속 맵에서 동일하다"는 *간접 검증* + `MapMigrationTests.EntityId_Preserved` 단위 테스트로 보장한다. 한국 게임 회사가 흔히 쓰는 패턴.
+
+### ADR-027 — Client Bootstrap + Persistent Services
+
+옛 `NetworkBootstrap`이 `DontDestroyOnLoad` + 중복 가드 + `OnSceneLoaded` 자동 teardown으로 *암묵적 lifecycle*을 가졌던 걸, 코드 주도 부트스트래퍼 + Persistent Services + A안 연결 생명주기로 명시화. `PersistentServicesBootstrap`가 `RuntimeInitializeOnLoadMethod(BeforeSceneLoad)`로 `Resources/PersistentServices` prefab을 1회 spawn → `NetworkService.Instance`가 `Connect()/Disconnect()` 명시 API 보유. 맵 전환 시 네트워크 세션은 *그대로 유지* (재연결 X).
+
+### Headless Bot 회귀 안전망
+
+M4.2 Phase 05에서 `EmergencyCombatSmoke` / `BossStageClearSmoke`에 portal 이동 흐름 추가 (Town spawn → x=20 이동 → `C_EnterPortal` → `S_MapTransition` 수신 → HG/BossRoom에서 전투). 새 `MapTransitionScenario`가 4맵 루프(Town → HG → BossRoom → Ending → Town) 결정론 시나리오로 entity id 보존 + state 보존을 검증. `LagSimIntegrationTests`의 옛 M4.2 Phase 01 Skip 2건(`CombatSmoke_ZeroLag_Succeeds` / `BossSmoke_ZeroLag_Succeeds`)도 복구.
+
+```text
+MapTransitionScenario
+  4맵 루프 결정론
+  entityId 동일 유지 (ADR-026 간접 검증)
+  HP/PlayerStats 보존
+```
+
+### M4.3 이월 (의도된 제외)
+
+- **cheat-flag table** — portal 근접 검증 실패 등 silent drop 이벤트 기록 (헌법 #3 강화)
+- **Serilog 도입** — Console.WriteLine → 구조화 로깅
+- **맵 간 enemy respawn 정책** — 현재 맵 인스턴스는 평생 한 번 spawn (Phase 03 결정)
+- **봇 portal 좌표 const 공유 헬퍼** — 3 시나리오 파일이 `TownPortalX=20f` 등을 각자 박음 (서버 `PortalTable.cs` 동기화 의무 주석)
+- **reconcile drift 튜닝** — 클라 가변 dt vs 서버 고정 20 TPS tick 누적 오차 (SnapThreshold 1.5 근처)
+
+캡스톤 1 발표 데모 화면에 안 보이는 인프라 + 1주 일정 안전 마진 이유로 M4.2 scope에서 제외.
+
+---
+
 ## 외부 의존성
 
 | 의존성 | 버전 | 용도 | 라이선스 |
@@ -340,3 +410,4 @@ M4에서는 응급 전투를 본 마감용 전투로 승격한다.
 | 2026-05-11 | Phase 06/07 활성화 반영 + ADR-012 진화 | Protocol 구조 갱신: 옛 `PacketId.cs`/`Packets/`/`ProtocolVersion.cs` (Phase 07에서 삭제·미작성) 대신 `Generated/GenPackets.cs` (PDL 자동 생성)로 정정. PacketGenerator "이주 예정" → "이주 완료". headless-bot은 M2 이후로 시점 재조정. ADR-012는 "전부 분리"에서 *책임 단위 분리/통합*으로 진화(Phase 07 사용자 통찰). |
 | 2026-05-14 | DB 결정 정정 (PostgreSQL → MSSQL/LocalDB, Windows 통합 인증) | 한국 게임 업계 표준 정합 + Rookiss 학습 자료 정합 + .NET 1군 조합 + 학부생 팀원 온보딩 비용 최소화. ADR-005 v2로 박제. 코드 진입 전 시점 발견이라 변경 비용은 문서 텍스트만. |
 | 2026-05-19 | M3 Phase 06+07 combat/stage clear 결과 반영 | `C_Attack`/enemy spawn/hit/death/stage clear PDL 5패킷, `EnemyKind` 통합 boss 모델, `S_EntityDeath`와 `S_StageClear` 분리, headless smoke 2종 PASS, Phase 08a prefab variant 결과, M4 전투 backlog를 ARCHITECTURE에 종합. |
+| 2026-05-28 | M4.2 Map Transition 마일스톤 결과 종합 | `ProtocolVersion 5→6` (M4.2 Phase 02 — `C_EnterPortal`/`S_MapTransition` 추가). 새 `## M4.2 결과 종합` 절 신설: MapId enum 4맵 + `GameWorld._maps` 레지스트리 + `MapSpawnTable`/`PortalTable` 단일 진실 + Player migration 흐름(`SubmitEnterPortal` 4단 trust-boundary + `_migrating` Volatile 가시성) + ADR-026 entity id 전역 풀(`S_MapTransition`에 entityId 필드 *없음* 이유) + ADR-027 Client Bootstrap Persistent Services + Headless bot portal 이동 회귀 안전망. M4.3 이월 명시(cheat-flag/Serilog/맵간 respawn/봇 portal const 공유 헬퍼/reconcile drift). reviewer Tier 2-A 🟡 1·2(L212 stale + M4.2 종합 절 누락)에 대한 응답으로 마감 commit에 동반. |

@@ -24,27 +24,27 @@ namespace Dawnholder.Client.Bootstrap
     ///   3. SceneTransition      — 씬 전환 페이드 (CanvasGroup 필요)
     ///
     /// **중복 방어**:
-    /// 정적 bool _spawned가 1회 박히면 재호출 시 no-op.
-    /// (도메인 리로드 Off 에디터 환경에서 Play/Stop/Play 반복 시 두 번 호출 가능 — 이 가드가 막음.)
+    /// instance 존재 여부를 단일 진실로 판단. (아래 P3 봉합 주석 참조)
     /// </summary>
     public static class PersistentServicesBootstrap
     {
-        // 도메인 리로드 Off 환경(Enter Play Mode 가속) 대비 정적 가드.
-        // 도메인 리로드 On 이면 Play 시작마다 정적 필드가 초기화되어 가드 불필요하지만,
-        // 양쪽 모두 안전하게 동작한다.
-        static bool _spawned;
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void SpawnPersistentServices()
         {
-            if (_spawned) return;
-
-            // DontDestroyOnLoad 오브젝트가 이미 존재하는지 확인 (도메인 리로드 Off 중 재시작 방어).
-            // FindObjectsByType은 BeforeSceneLoad 단계에서도 안전하게 호출 가능.
+            // P3 봉합 (2026-05-28 β cross-review):
+            // 옛 코드는 _spawned static 가드를 instance check *앞*에 두었기 때문에
+            // "도메인 리로드 Off + Play/Stop/Play" 시나리오에서 결함이 생겼다.
+            //   흐름: Play1 → _spawned=true + DDOL instance 생성
+            //         Stop  → DDOL instance destroy (Play 종료 시 Unity가 파괴)
+            //              → _spawned는 static이라 *그대로 true* (도메인 리로드 Off)
+            //         Play2 → line 40 early return → NetworkService 없는 채 시작
+            //
+            // 해결 (옵션 A): _spawned 가드 제거 + instance check를 단일 진실로.
+            // FindAnyObjectByType은 BeforeSceneLoad 단계에서도 안전하게 호출 가능.
             var existing = Object.FindAnyObjectByType<NetworkService>();
             if (existing != null)
             {
-                _spawned = true;
+                // 이미 살아있는 instance 있음 — noop.
                 return;
             }
 
@@ -64,7 +64,6 @@ namespace Dawnholder.Client.Bootstrap
             instance.name = "PersistentServices"; // Clone 접미사 제거 (Hierarchy 가독성)
             Object.DontDestroyOnLoad(instance);
 
-            _spawned = true;
             Debug.Log("[PersistentServicesBootstrap] PersistentServices 생성 완료 (DontDestroyOnLoad). 앱 전체에 1개 유지.");
         }
     }

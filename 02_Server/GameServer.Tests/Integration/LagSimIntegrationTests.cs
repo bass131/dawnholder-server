@@ -68,11 +68,14 @@ public class LagSimIntegrationTests
     ///   S_EntitySpawn을 수신하지 못하고 timeout 실패함.
     ///   봇이 portal로 HuntingGround로 이동하는 흐름은 Phase 02~03에서 구현 예정.
     ///   Phase 05 통합 검증에서 봇 맵 이동 시나리오로 복구 예정.
+    ///
+    /// **M4.2 Phase 05 복구**: portal 이동 흐름 추가됨.
+    ///   EmergencyCombatSmoke.Run이 Town→HuntingGround portal 이동 후 전투를 진행하도록 수정.
+    ///   Skip 해제 — 자동 회귀 테스트로 복귀.
     /// </summary>
-    // M4.2 Phase 01: Town = 빈 맵 (맵 분리). 봇이 portal로 HuntingGround 이동하는 흐름은
-    // Phase 02~03에서 생김. Phase 05 통합 검증에서 봇 맵 이동 시나리오로 복구 예정.
-    [Fact(Skip = "M4.2 Phase 01 맵 분리로 Town = 빈 맵. 봇이 portal로 HuntingGround 이동하는 흐름은 " +
-                 "Phase 02~03에서 구현. Phase 05 통합 검증에서 봇 맵 이동 시나리오로 복구 예정.")]
+    // M4.2 Phase 05 복구: portal 이동 흐름 추가됨 (EmergencyCombatSmoke: Town→HG portal).
+    // Skip 해제 — 자동 회귀 테스트로 복귀.
+    [Fact]
     public async Task CombatSmoke_ZeroLag_Succeeds()
     {
         EmergencyCombatSmoke.Result r = await EmergencyCombatSmoke.Run(
@@ -96,11 +99,14 @@ public class LagSimIntegrationTests
     ///   boss S_EntitySpawn을 수신하지 못하고 timeout 실패함.
     ///   봇이 portal로 BossRoom으로 이동하는 흐름은 Phase 02~03에서 구현 예정.
     ///   Phase 05 통합 검증에서 봇 맵 이동 시나리오로 복구 예정.
+    ///
+    /// **M4.2 Phase 05 복구**: portal 이동 흐름 추가됨.
+    ///   BossStageClearSmoke.Run이 Town→HG→BossRoom 2회 portal 이동 후 보스 전투를 진행하도록 수정.
+    ///   Skip 해제 — 자동 회귀 테스트로 복귀.
     /// </summary>
-    // M4.2 Phase 01: Town = 빈 맵 (맵 분리). 봇이 portal로 BossRoom 이동하는 흐름은
-    // Phase 02~03에서 구현. Phase 05 통합 검증에서 봇 맵 이동 시나리오로 복구 예정.
-    [Fact(Skip = "M4.2 Phase 01 맵 분리로 Town = 빈 맵. 봇이 portal로 BossRoom 이동하는 흐름은 " +
-                 "Phase 02~03에서 구현. Phase 05 통합 검증에서 봇 맵 이동 시나리오로 복구 예정.")]
+    // M4.2 Phase 05 복구: portal 이동 흐름 추가됨 (BossStageClearSmoke: Town→HG→BossRoom 2회 portal).
+    // Skip 해제 — 자동 회귀 테스트로 복귀.
+    [Fact]
     public async Task BossSmoke_ZeroLag_Succeeds()
     {
         BossStageClearSmoke.Result r = await BossStageClearSmoke.Run(
