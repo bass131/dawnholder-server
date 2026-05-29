@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace Dawnholder.Client.UI
 {
@@ -24,23 +25,26 @@ namespace Dawnholder.Client.UI
     {
         [Header("Canvas")]
         [Tooltip("이 컨트롤러가 토글할 PauseMenu 루트. 시작 시 SetActive(false)여야 정상.")]
-        [SerializeField] GameObject pauseCanvas;
+        [FormerlySerializedAs("pauseCanvas")]
+        [SerializeField] GameObject _pauseCanvas;
 
         [Header("Input")]
         [Tooltip("InputSystem_Actions의 UI/TogglePauseMenu 액션 참조 (Binding: <Keyboard>/escape).")]
-        [SerializeField] InputActionReference togglePauseAction;
+        [FormerlySerializedAs("togglePauseAction")]
+        [SerializeField] InputActionReference _togglePauseAction;
 
         [Header("Scenes")]
-        [SerializeField] string mainMenuSceneName = "MainMenu";
+        [FormerlySerializedAs("mainMenuSceneName")]
+        [SerializeField] string _mainMenuSceneName = "MainMenu";
 
-        bool isPaused;
+        bool _isPaused;
 
         void OnEnable()
         {
-            if (togglePauseAction != null && togglePauseAction.action != null)
+            if (_togglePauseAction != null && _togglePauseAction.action != null)
             {
-                togglePauseAction.action.performed += OnTogglePerformed;
-                togglePauseAction.action.Enable();
+                _togglePauseAction.action.performed += OnTogglePerformed;
+                _togglePauseAction.action.Enable();
             }
             else
             {
@@ -50,10 +54,10 @@ namespace Dawnholder.Client.UI
 
         void OnDisable()
         {
-            if (togglePauseAction != null && togglePauseAction.action != null)
+            if (_togglePauseAction != null && _togglePauseAction.action != null)
             {
-                togglePauseAction.action.performed -= OnTogglePerformed;
-                togglePauseAction.action.Disable();
+                _togglePauseAction.action.performed -= OnTogglePerformed;
+                _togglePauseAction.action.Disable();
             }
         }
 
@@ -61,18 +65,18 @@ namespace Dawnholder.Client.UI
 
         public void Toggle()
         {
-            isPaused = !isPaused;
-            if (pauseCanvas != null)
+            _isPaused = !_isPaused;
+            if (_pauseCanvas != null)
             {
-                pauseCanvas.SetActive(isPaused);
+                _pauseCanvas.SetActive(_isPaused);
             }
             // timeScale은 *Realtime* 기반 입력(InputSystem)은 영향 X — ESC 재누름으로 닫기 보장.
-            Time.timeScale = isPaused ? 0f : 1f;
+            Time.timeScale = _isPaused ? 0f : 1f;
         }
 
         public void OnResumeClicked()
         {
-            if (!isPaused) return;
+            if (!_isPaused) return;
             Toggle();
         }
 
@@ -80,14 +84,14 @@ namespace Dawnholder.Client.UI
         {
             // 함정 방지: timeScale 0인 상태로 씬 로드하면 새 씬도 정지된 채 로드됨.
             Time.timeScale = 1f;
-            isPaused = false;
+            _isPaused = false;
 
             // Phase 05 — SceneTransition Singleton 경유(페이드). 단 에디터에서 Gameplay 씬 직접 Play
             // 시엔 MainMenu의 FadeCanvas가 생성된 적 없어 Instance == null → 직접 LoadScene fallback.
             if (SceneTransition.Instance != null)
-                SceneTransition.Instance.LoadScene(mainMenuSceneName);
+                SceneTransition.Instance.LoadScene(_mainMenuSceneName);
             else
-                SceneManager.LoadScene(mainMenuSceneName);
+                SceneManager.LoadScene(_mainMenuSceneName);
         }
 
         public void OnQuitClicked()

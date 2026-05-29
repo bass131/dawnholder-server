@@ -5,6 +5,7 @@ using Dawnholder.Client.Scenes;
 using Dawnholder.Client.UI;
 using Shared.Protocol;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dawnholder.Client.Network
 {
@@ -45,9 +46,12 @@ namespace Dawnholder.Client.Network
     {
         public static NetworkService Instance { get; private set; }
 
-        [SerializeField] string serverHost = "127.0.0.1";
-        [SerializeField] int serverPort = 7777;
-        [SerializeField] float pingIntervalSeconds = 1.0f;
+        [FormerlySerializedAs("serverHost")]
+        [SerializeField] string _serverHost = "127.0.0.1";
+        [FormerlySerializedAs("serverPort")]
+        [SerializeField] int _serverPort = 7777;
+        [FormerlySerializedAs("pingIntervalSeconds")]
+        [SerializeField] float _pingIntervalSeconds = 1.0f;
 
         const string ServerHostPrefsKey = "ServerHost";
         const int ClassPrefsInvalid = -1;
@@ -117,8 +121,8 @@ namespace Dawnholder.Client.Network
                 return;
             }
 
-            string host = hostOverride ?? PlayerPrefs.GetString(ServerHostPrefsKey, serverHost);
-            if (string.IsNullOrWhiteSpace(host)) host = serverHost;
+            string host = hostOverride ?? PlayerPrefs.GetString(ServerHostPrefsKey, _serverHost);
+            if (string.IsNullOrWhiteSpace(host)) host = _serverHost;
 
             // PlayerPrefs는 디스크 영속이라 손상/변조된 host 문자열이 박힐 수 있음 (신뢰 경계 밖).
             // Parse 실패 시 connect 흐름이 죽고 fallback도 못 타므로 방어적으로 잡아 MainMenu로 복귀.
@@ -128,7 +132,7 @@ namespace Dawnholder.Client.Network
                 ReturnToMainMenu();
                 return;
             }
-            IPEndPoint endPoint = new IPEndPoint(ip, serverPort);
+            IPEndPoint endPoint = new IPEndPoint(ip, _serverPort);
 
             _connector = new Connector();
             _connector.Connect(endPoint, () =>
@@ -234,7 +238,7 @@ namespace Dawnholder.Client.Network
             if (!_isConnected || _session == null) return;
 
             _accumSec += Time.deltaTime;
-            if (_accumSec < pingIntervalSeconds) return;
+            if (_accumSec < _pingIntervalSeconds) return;
             _accumSec = 0f;
 
             C_Ping ping = new C_Ping

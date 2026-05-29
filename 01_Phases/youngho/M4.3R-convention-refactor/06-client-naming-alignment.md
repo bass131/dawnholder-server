@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.3R
 phase: 06
 title: 클라 네이밍 정합 (isPaused + SerializeField 규칙)
-status: pending
+status: done
 grade: 보통
 domain: client
 estimated: 1h

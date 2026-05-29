@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.3R
 phase: 05
 title: 클라 구조 기회성 (EnemyViewFactory 추출 + PlayerPredictorTests)
-status: pending
+status: done
 grade: 보통
 domain: client
 estimated: 2~3h

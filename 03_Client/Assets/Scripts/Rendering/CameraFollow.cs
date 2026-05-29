@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dawnholder.Client.Rendering
 {
@@ -13,14 +14,17 @@ namespace Dawnholder.Client.Rendering
     // 보정이 가능하지만, 학습 단계라 단순 Lerp으로 시작.
     public class CameraFollow : MonoBehaviour
     {
+        [FormerlySerializedAs("target")]
         [SerializeField, Tooltip("따라갈 대상 (Player Transform)")]
-        Transform target;
+        Transform _target;
 
+        [FormerlySerializedAs("offset")]
         [SerializeField, Tooltip("target 기준 카메라 오프셋. 2D는 z=-10이 표준.")]
-        Vector3 offset = new Vector3(0f, 1f, -10f);
+        Vector3 _offset = new Vector3(0f, 1f, -10f);
 
+        [FormerlySerializedAs("smoothing")]
         [SerializeField, Range(0.01f, 1f), Tooltip("0.15 정도가 부드러움 적당")]
-        float smoothing = 0.15f;
+        float _smoothing = 0.15f;
 
         // M4.2 Phase 04: 동적 spawn 대상 연결.
         //   LocalPlayer는 런타임 spawn(LocalPlayerSpawner)이라 씬 Inspector에서 target을 미리
@@ -29,15 +33,15 @@ namespace Dawnholder.Client.Rendering
         //   부터 Lerp로 주르륵 이동해 "위치 렉"처럼 보임 (맵 전환 직후).
         public void SetTarget(Transform t)
         {
-            target = t;
-            if (t != null) transform.position = t.position + offset; // 즉시 snap
+            _target = t;
+            if (t != null) transform.position = t.position + _offset; // 즉시 snap
         }
 
         void LateUpdate()
         {
-            if (target == null) return;
-            Vector3 desired = target.position + offset;
-            transform.position = Vector3.Lerp(transform.position, desired, smoothing);
+            if (_target == null) return;
+            Vector3 desired = _target.position + _offset;
+            transform.position = Vector3.Lerp(transform.position, desired, _smoothing);
         }
     }
 }

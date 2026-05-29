@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace Dawnholder.Client.Bootstrap
 {
@@ -15,16 +16,17 @@ namespace Dawnholder.Client.Bootstrap
     /// </summary>
     public class SceneBootstrap : MonoBehaviour
     {
-        [SerializeField] string uiSceneName = "UI";
+        [FormerlySerializedAs("uiSceneName")]
+        [SerializeField] string _uiSceneName = "UI";
 
         void Awake()
         {
-            var existing = SceneManager.GetSceneByName(uiSceneName);
+            var existing = SceneManager.GetSceneByName(_uiSceneName);
             if (existing.IsValid() && existing.isLoaded)
             {
                 return;
             }
-            SceneManager.LoadSceneAsync(uiSceneName, LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync(_uiSceneName, LoadSceneMode.Additive);
         }
     }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Dawnholder.Client.Gameplay
@@ -24,10 +25,14 @@ namespace Dawnholder.Client.Gameplay
     {
         static NpcDialogPanel _instance;
 
-        [SerializeField] GameObject root;          // 본 패널 GameObject (활성/비활성 토글)
-        [SerializeField] Text dialogText;          // 대화 텍스트 컴포넌트
-        [SerializeField] string defaultCloseHint = "[E] 또는 [ESC] — 닫기";
-        [SerializeField] Text closeHintText;       // 닫기 안내 (옵션)
+        [FormerlySerializedAs("root")]
+        [SerializeField] GameObject _root;          // 본 패널 GameObject (활성/비활성 토글)
+        [FormerlySerializedAs("dialogText")]
+        [SerializeField] Text _dialogText;          // 대화 텍스트 컴포넌트
+        [FormerlySerializedAs("defaultCloseHint")]
+        [SerializeField] string _defaultCloseHint = "[E] 또는 [ESC] — 닫기";
+        [FormerlySerializedAs("closeHintText")]
+        [SerializeField] Text _closeHintText;       // 닫기 안내 (옵션)
 
         bool _isShown;
         InputAction _closeAction;
@@ -35,8 +40,8 @@ namespace Dawnholder.Client.Gameplay
         void Awake()
         {
             _instance = this;
-            if (root != null) root.SetActive(false);
-            if (closeHintText != null) closeHintText.text = defaultCloseHint;
+            if (_root != null) _root.SetActive(false);
+            if (_closeHintText != null) _closeHintText.text = _defaultCloseHint;
 
             _closeAction = new InputAction("NpcDialogClose", InputActionType.Button);
             _closeAction.AddBinding("<Keyboard>/escape");
@@ -70,8 +75,8 @@ namespace Dawnholder.Client.Gameplay
             }
             if (_instance._isShown) return;
             _instance._isShown = true;
-            if (_instance.dialogText != null) _instance.dialogText.text = text;
-            if (_instance.root != null) _instance.root.SetActive(true);
+            if (_instance._dialogText != null) _instance._dialogText.text = text;
+            if (_instance._root != null) _instance._root.SetActive(true);
             _instance._closeAction?.Enable();
         }
 
@@ -79,7 +84,7 @@ namespace Dawnholder.Client.Gameplay
         {
             if (_instance == null) return;
             _instance._isShown = false;
-            if (_instance.root != null) _instance.root.SetActive(false);
+            if (_instance._root != null) _instance._root.SetActive(false);
             _instance._closeAction?.Disable();
         }
 

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Dawnholder.Client.Network;
 
@@ -29,12 +30,18 @@ namespace Dawnholder.Client.UI
     public class MainMenuController : MonoBehaviour
     {
         [Header("서버 연결 게이트 (M3.8 Phase 05 5-B)")]
-        [SerializeField] TMP_InputField serverHostInputField;
-        [SerializeField] TMP_Text errorMessageText;
-        [SerializeField] Button startButton;
-        [SerializeField] int serverPort = 7777;
-        [SerializeField] int connectTimeoutMs = 3000;
-        [SerializeField] string defaultHost = "127.0.0.1";
+        [FormerlySerializedAs("serverHostInputField")]
+        [SerializeField] TMP_InputField _serverHostInputField;
+        [FormerlySerializedAs("errorMessageText")]
+        [SerializeField] TMP_Text _errorMessageText;
+        [FormerlySerializedAs("startButton")]
+        [SerializeField] Button _startButton;
+        [FormerlySerializedAs("serverPort")]
+        [SerializeField] int _serverPort = 7777;
+        [FormerlySerializedAs("connectTimeoutMs")]
+        [SerializeField] int _connectTimeoutMs = 3000;
+        [FormerlySerializedAs("defaultHost")]
+        [SerializeField] string _defaultHost = "127.0.0.1";
 
         const string ServerHostPrefsKey = "ServerHost";
         bool _probing;
@@ -50,16 +57,16 @@ namespace Dawnholder.Client.UI
 
         void Start()
         {
-            // PlayerPrefs에 박힌 옛 값 → InputField 자동 채움. 없으면 인스펙터 defaultHost.
-            if (serverHostInputField != null)
+            // PlayerPrefs에 박힌 옛 값 → InputField 자동 채움. 없으면 인스펙터 _defaultHost.
+            if (_serverHostInputField != null)
             {
-                string saved = PlayerPrefs.GetString(ServerHostPrefsKey, defaultHost);
-                if (string.IsNullOrWhiteSpace(saved)) saved = defaultHost;
-                serverHostInputField.text = saved;
+                string saved = PlayerPrefs.GetString(ServerHostPrefsKey, _defaultHost);
+                if (string.IsNullOrWhiteSpace(saved)) saved = _defaultHost;
+                _serverHostInputField.text = saved;
             }
 
-            if (errorMessageText != null)
-                errorMessageText.text = "";
+            if (_errorMessageText != null)
+                _errorMessageText.text = "";
         }
 
         public void OnStartClicked()
@@ -74,18 +81,18 @@ namespace Dawnholder.Client.UI
             }
 
             _probing = true;
-            if (startButton != null) startButton.interactable = false;
+            if (_startButton != null) _startButton.interactable = false;
             ShowError("");  // 옛 오류 메시지 지움
 
-            Debug.Log($"[MainMenu] Server probe 시도 → {host}:{serverPort}");
+            Debug.Log($"[MainMenu] Server probe 시도 → {host}:{_serverPort}");
 
-            ConnectionProbe.TryConnect(host, serverPort, OnProbeResult, connectTimeoutMs);
+            ConnectionProbe.TryConnect(host, _serverPort, OnProbeResult, _connectTimeoutMs);
         }
 
         void OnProbeResult(bool success, string errorMessage)
         {
             _probing = false;
-            if (startButton != null) startButton.interactable = true;
+            if (_startButton != null) _startButton.interactable = true;
 
             if (success)
             {
@@ -106,15 +113,15 @@ namespace Dawnholder.Client.UI
 
         string ResolveHost()
         {
-            if (serverHostInputField != null && !string.IsNullOrWhiteSpace(serverHostInputField.text))
-                return serverHostInputField.text.Trim();
-            return defaultHost;
+            if (_serverHostInputField != null && !string.IsNullOrWhiteSpace(_serverHostInputField.text))
+                return _serverHostInputField.text.Trim();
+            return _defaultHost;
         }
 
         void ShowError(string message)
         {
-            if (errorMessageText != null)
-                errorMessageText.text = message;
+            if (_errorMessageText != null)
+                _errorMessageText.text = message;
         }
 
         public void OnQuitClicked()
