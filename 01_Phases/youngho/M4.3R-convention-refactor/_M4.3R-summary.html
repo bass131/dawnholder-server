@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.3R — Code Convention 전체 리팩토링 마감 보고</title>
+<style>
+  :root { --bg:#0f1117; --card:#1a1d27; --fg:#e6e8ee; --mut:#9aa0ad; --acc:#7aa2f7; --ok:#9ece6a; --warn:#e0af68; --bad:#f7768e; --line:#2a2e3a; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:2rem 1rem; background:var(--bg); color:var(--fg); font-family:-apple-system,'Segoe UI',Roboto,'Malgun Gothic',sans-serif; line-height:1.65; }
+  .wrap { max-width:860px; margin:0 auto; }
+  h1 { font-size:1.7rem; margin:0 0 .3rem; }
+  .sub { color:var(--mut); font-size:.92rem; margin-bottom:1.5rem; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:1.2rem 1.4rem; margin:1rem 0; }
+  h2 { font-size:1.15rem; margin:.2rem 0 .8rem; border-bottom:1px solid var(--line); padding-bottom:.4rem; }
+  table { width:100%; border-collapse:collapse; font-size:.88rem; margin:.5rem 0; }
+  th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+  th { color:var(--acc); font-weight:600; }
+  code { background:#10131b; padding:.1rem .4rem; border-radius:5px; font-size:.85em; color:var(--acc); }
+  .ok { color:var(--ok); font-weight:600; } .warn { color:var(--warn); } .bad { color:var(--bad); }
+  ul { margin:.4rem 0; padding-left:1.3rem; } li { margin:.25rem 0; }
+  .pill { display:inline-block; background:#10131b; border:1px solid var(--line); border-radius:999px; padding:.15rem .7rem; font-size:.78rem; color:var(--mut); margin:.15rem .2rem .15rem 0; }
+  .metric { font-size:1.5rem; font-weight:700; color:var(--ok); }
+  .arrow { color:var(--mut); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>M4.3R — Code Convention 전체 리팩토링</h1>
+  <div class="sub">대규모 마일스톤 마감 보고 · 2026-05-29 · owner: youngho · 순수 리팩토링(동작 보존, PDL/Protocol 변경 0)</div>
+
+  <div class="card">
+    <span class="pill">convention-audit 워크플로우 5에이전트/73파일</span>
+    <span class="pill">9 백로그 → 7 Phase</span>
+    <span class="pill">plan-auditor 🔴0 GO</span>
+    <span class="pill">commit 8개</span>
+    <span class="pill ok">server test 322/0/4</span>
+    <span class="pill ok">size-guard 경고 0</span>
+  </div>
+
+  <div class="card">
+    <h2>🎯 무엇을 만들었나 — God class 3개 분리</h2>
+    <table>
+      <tr><th>대상</th><th>before</th><th>after</th><th>추출물</th></tr>
+      <tr><td><code>GameMap</code> (서버)</td><td>665줄 · 4도메인</td><td class="ok">260줄</td><td>CombatSystem / EnemyAISystem / RespawnSystem</td></tr>
+      <tr><td><code>UnityClientSession</code> (클라)</td><td>665줄 · switch11+5책임</td><td class="ok">224줄</td><td>IClientPacketHandler+dispatch / RosterTransitionBuffer / SceneRouter</td></tr>
+      <tr><td><code>GameSession</code> (서버, trust-boundary)</td><td>700줄</td><td class="ok">566줄</td><td>IntentRateLimiter / MapMigration</td></tr>
+    </table>
+    <ul>
+      <li><b>§3.3 네이밍 정합</b>: 네트워크 <code>m_</code> 헝가리안 → <code>_camelCase</code>(필드 17종) + 파라미터 <code>_prefix</code> → <code>camelCase</code> + 클라 <code>[SerializeField]</code> 9파일(FormerlySerializedAs)</li>
+      <li><b>테스트 자산</b>: PlayerPredictorTests 13개 + IntentRateLimiterTests 7개</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🤔 왜 필요한가</h2>
+    <ul>
+      <li><b>부채 무게중심 제거</b> — 600줄+ God class = 한 도메인 보려 전체 읽기(§0.2 위배). 패킷 추가 전 dispatch 전환이 부채 누적 차단.</li>
+      <li><b>테스트 가능성 회수</b> — rate-limit이 socket과 묶여 단독 테스트 불가 → 추출로 격리 검증. PlayerPredictor 테스트로 §3.1 의도 완성.</li>
+      <li><b>캡스톤 서사</b> — "Convention 자가 측정 → 백로그 → 리팩토링".</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ 어떻게 만들었나 — 7 Phase (의존/위험 순서)</h2>
+    <ul>
+      <li><b>01</b> 베이스라인 — §3.3 v4 명문화 + 정책 결정 + 회귀 스냅샷(코드 0)</li>
+      <li><b>02 ∥ 03 (R1, 병렬)</b> 클라 dispatch + GameMap System — reviewer 🔴 <span class="bad">CS0070</span>(event 외부 raise) 봉합</li>
+      <li><b>04</b> GameSession trust-boundary — reviewer 정밀 🔴 <span class="ok">0</span>: invariant 4항목 byte-for-byte 보존, split-validation 안티패턴 회피, handshake §0.3 잔류</li>
+      <li><b>05+06</b> EnemyViewFactory + PlayerPredictorTests + 네이밍</li>
+      <li><b>07</b> 네트워크 m_ + 파라미터 정규화 (서버+ClientNet 자매, ADR-012)</li>
+    </ul>
+    <p style="color:var(--warn);font-size:.88rem;">★ Phase 07 발견: m_필드 → _camelCase가 <code>_sessionFactory</code> 필드/파라미터 충돌(CS1717 자기할당 → null → 테스트 크래시) 유발 → 파라미터 정규화 <b>강제</b>. "필드와 파라미터 rename은 분리 불가" = 사용자의 "params도 camelCase" 지시가 옳았음을 코드가 증명.</p>
+    <p style="color:var(--mut);font-size:.85rem;">§0.3 과분할 금지 준수: handshake state / pending spawn static / PacketFormat 템플릿 / _heap 필드 = 분리하지 않음(사유 박음).</p>
+  </div>
+
+  <div class="card">
+    <h2>🧪 테스트 결과</h2>
+    <p><span class="metric">322</span> 통과 / <span class="ok">0</span> 실패 / 4 skip &nbsp;<span class="arrow">·</span>&nbsp; build 경고 0 / 오류 0</p>
+    <ul>
+      <li><b>기존 테스트 무수정 통과 = 순수 리팩토링 동작 보존 증명</b> (베이스라인 315 + 신규 RateLimiter 7)</li>
+      <li>trust-boundary 22개(RateLimit/Handshake/StateMachine/EnterPortal/Lifecycle) 무수정 통과</li>
+      <li class="warn">⚠️ 클라(Unity)는 헤드리스 컴파일 불가 → reviewer 정적 분석 + 사용자 Play-test 의무</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>➡️ 다음 스텝</h2>
+    <ol>
+      <li><b class="warn">클라 Play-test (사용자)</b> — 컴파일 0 / SerializeField Inspector 값 보존 / roster drain·적 spawn / Pause 토글</li>
+      <li><b>PR 생성</b> — 사용자 명시 GO 의무(irreversible)</li>
+      <li><b>Discord 공지</b> 누적 6→7</li>
+      <li><b>M4.4 이월</b>: 파라미터 <i>casing</i> 전면 정규화(§4 .editorconfig+Roslyn) / target rewind 등</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>커밋 이력</h2>
+    <table>
+      <tr><th>커밋</th><th>내용</th></tr>
+      <tr><td><code>400b6b0</code></td><td>Phase 01 §3.3 v4 + 계획 + 베이스라인</td></tr>
+      <tr><td><code>0c2b59b</code> / <code>cdb39a2</code></td><td>R1 (02 dispatch + 03 GameMap System) + -DONE.md</td></tr>
+      <tr><td><code>c24d26e</code> / <code>dc959fa</code></td><td>Phase 04 GameSession trust-boundary + -DONE.md</td></tr>
+      <tr><td><code>a80bb37</code></td><td>Phase 05+06 클라 (Factory/Tests/네이밍)</td></tr>
+      <tr><td><code>cd1fe38</code></td><td>Phase 07 네트워크 네이밍 정합</td></tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>

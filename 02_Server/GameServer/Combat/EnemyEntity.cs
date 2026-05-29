@@ -15,6 +15,13 @@ namespace Dawnholder.Server.GameServer.Combat;
 //
 // **IsDead derived**: `Hp <= 0`. 음수 보호 자동(예: 데미지 overflow로 Hp=-5여도 IsDead true).
 // 본 Step에선 spawn 시 Hp = MaxHp = 30 박힘 (Phase 정의 박제). 데미지 인입은 Step 5.
+//
+// M4.3 Phase 07: AI 상태 필드 추가 (FSM 필드).
+//   Normal enemy는 Patrol 시작. Boss는 Idle 고정 (Phase 09에서 별도 behavior).
+//   SpawnX = 스폰 위치 기준점 (patrol 왕복 중심).
+//   PatrolDir = 현재 순찰 방향 (+1 = 오른쪽, -1 = 왼쪽).
+//   TargetEntityId = Chase 대상 player entityId (null = 타겟 없음).
+//   RespawnTicksRemaining = 0이면 살아있음, >0이면 respawn 대기 카운트다운.
 public class EnemyEntity
 {
     public int EntityId { get; }
@@ -36,16 +43,64 @@ public class EnemyEntity
     // M4+ 몬스터 테이블 도입 시 hitbox 크기도 테이블에서 로드 backlog.
     public AABB Hitbox => new AABB(new Vector2(X, Y), new Vector2(0.5f, 0.5f));
 
+    // ── M4.3 Phase 07: AI 상태 필드 ─────────────────────────────────────────
+    // tick thread invariant 안에서만 읽기/쓰기 (GameMap 단일 actor 보장 — lock 불필요).
+
+    /// <summary>현재 AI 상태. Normal = Patrol 시작, Boss = Idle 고정.</summary>
+    public EnemyState State { get; set; }
+
+    /// <summary>
+    /// Chase 대상 player entityId. null = 타겟 없음 (Patrol/Idle 상태).
+    /// Chase 도중 target이 사라지거나 de-aggro 시 null로 초기화 후 Patrol 복귀.
+    /// </summary>
+    public int? TargetEntityId { get; set; }
+
+    /// <summary>
+    /// 스폰 좌표의 X. Patrol 왕복의 중심점.
+    /// ctor에서 x 값으로 초기화 — respawn 시 이 좌표로 되돌아옴.
+    /// </summary>
+    public float SpawnX { get; }
+
+    /// <summary>
+    /// 스폰 좌표의 Y. Patrol/Idle 기준 Y.
+    /// 이번 scope에서 AI는 X축 수평 이동만 — Y는 고정.
+    /// </summary>
+    public float SpawnY { get; }
+
+    /// <summary>
+    /// 현재 순찰 방향. +1 = 오른쪽, -1 = 왼쪽.
+    /// Patrol 경계 닿으면 반전. Chase에서 Patrol 복귀 시에도 유지.
+    /// </summary>
+    public int PatrolDir { get; set; }
+
+    /// <summary>
+    /// Respawn 대기 카운트다운 (tick 단위).
+    /// 0 = 살아있음 또는 respawn 대기 없음.
+    /// >0 = 죽은 후 카운트다운 중. 매 tick 감소 → 0 도달 시 respawn.
+    /// Boss는 respawn 없음 (StageClear 1회성) — 이 필드 불사용.
+    /// </summary>
+    public int RespawnTicksRemaining { get; set; }
+
     // M4.1 Phase 05 (2단계): stats 옵션 인자 추가. 옛 시그니처 (entityId, kind, x, y, maxHp) 보존 —
     // 기존 SpawnNormalEnemy/SpawnBoss 호출지 변경 X (default 인자 패턴).
+    //
+    // M4.3 Phase 07: Normal enemy는 NormalDefault() stats로 AI 파라미터 포함.
+    // Boss는 default stats (AI 파라미터 = 0) — Phase 09에서 별도 처리.
+    // State 초기화: Normal → Patrol (AI 즉시 시작), Boss → Idle.
     public EnemyEntity(int entityId, EnemyKind kind, float x, float y, int maxHp, EnemyStats stats = default)
     {
         EntityId = entityId;
         Kind = kind;
         X = x;
         Y = y;
+        SpawnX = x;
+        SpawnY = y;
         MaxHp = maxHp;
         Hp = maxHp;
         Stats = stats;
+
+        // AI 초기 상태: Normal = Patrol 시작, Boss = Idle (Phase 09 이전).
+        State = kind == EnemyKind.Normal ? EnemyState.Patrol : EnemyState.Idle;
+        PatrolDir = 1; // 기본 오른쪽 출발
     }
 }

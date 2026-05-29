@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Dawnholder.Client.Gameplay
 {
@@ -18,10 +19,12 @@ namespace Dawnholder.Client.Gameplay
     [RequireComponent(typeof(Collider2D))]
     public class NpcInteractable : MonoBehaviour
     {
+        [FormerlySerializedAs("dialogText")]
         [SerializeField, TextArea(2, 5)]
-        string dialogText = "보스가 마을을 위협하고 있어요. 도와주세요!\n사냥터는 오른쪽에 있습니다.";
+        string _dialogText = "보스가 마을을 위협하고 있어요. 도와주세요!\n사냥터는 오른쪽에 있습니다.";
 
-        [SerializeField] string playerTag = "Player";
+        [FormerlySerializedAs("playerTag")]
+        [SerializeField] string _playerTag = "Player";
 
         bool _isPlayerNear;
         InputAction _interactAction;
@@ -46,7 +49,7 @@ namespace Dawnholder.Client.Gameplay
 
         void OnTriggerEnter2D(Collider2D other)
         {
-            if (other.CompareTag(playerTag))
+            if (other.CompareTag(_playerTag))
             {
                 _isPlayerNear = true;
             }
@@ -55,7 +58,7 @@ namespace Dawnholder.Client.Gameplay
         void OnTriggerStay2D(Collider2D other)
         {
             // OnTriggerEnter 못 잡힌 케이스 보완 (처음부터 trigger 안에 있는 경우 — 데모용 LocalPlayer 미이동 시점)
-            if (!_isPlayerNear && other.CompareTag(playerTag))
+            if (!_isPlayerNear && other.CompareTag(_playerTag))
             {
                 _isPlayerNear = true;
             }
@@ -63,7 +66,7 @@ namespace Dawnholder.Client.Gameplay
 
         void OnTriggerExit2D(Collider2D other)
         {
-            if (other.CompareTag(playerTag))
+            if (other.CompareTag(_playerTag))
             {
                 _isPlayerNear = false;
                 if (NpcDialogPanel.IsShown) NpcDialogPanel.Hide();
@@ -74,7 +77,7 @@ namespace Dawnholder.Client.Gameplay
         {
             if (!_isPlayerNear) return;
             if (NpcDialogPanel.IsShown) return;
-            NpcDialogPanel.Show(dialogText);
+            NpcDialogPanel.Show(_dialogText);
         }
     }
 }

@@ -13,15 +13,16 @@
 - 테스트 커버리지 (도메인 특성상 필수인 영역)
 - 도메인 적합 패턴 (학습 포인트)
 
-**점검 대상 *아님* — 코드 스타일**:
+**구조/SRP는 점검한다 (ADR-028로 변경)**:
+- 클래스 구조 / God class / 도메인 분리 / 패턴 오용 → **축 6 Code Convention으로 편입**. 옛 "메서드·파일 길이 등 코드 크기 = 도구 책임" 제외 조항은 ADR-028이 *구조/SRP에 한해* 뒤집음 (Phase 07 God class를 놓친 근원 봉합).
+
+**점검 대상 *아님* — 순수 포매팅만 (도구 위임)**:
 - 네이밍 컨벤션 (camelCase / PascalCase / `_field` 등)
 - 들여쓰기, 줄바꿈, using 정렬, brace 위치 등 *포매팅*
-- 메서드 길이, 파일 길이 등 *코드 크기*
 - 예외 처리 스타일 (throw vs Result<T> 등 *합의 안 된 영역*)
 
-→ 이 영역은 *학부생 1인 + 합류 직전 팀원 1명* 현실에서 *아직 굳지 않은 합의*.
-   미래에 **Roslyn analyzer + .editorconfig**로 도입 예정 (ADR-019의 후속 ADR 후보).
-   reviewer 에이전트도 코드 스타일은 "도구 책임, 나는 모름"으로 명시함.
+→ *순수 포매팅*만 **`.editorconfig` + Roslyn**으로 도구 위임 (CODE_CONVENTION §4, M4.4+ 도입).
+   reviewer는 포매팅은 "도구 책임"으로 두되, **구조·God class·패턴은 축 6으로 직접 점검**한다.
 
 > **이 문서와 `/harness-review` 슬래시 커맨드의 차이** (ADR-022 정합):
 > - 본 체크리스트 = Tier 2 (자동, 매 코드 변경 후, reviewer SubAgent 호출, 요약 보고)
@@ -172,6 +173,23 @@
 | 5.7 | **명시된 안전망의 코드 동작 일치** — 주석/상수/문서로 박힌 약속 (`rate-limit`, `ProtocolVersion`, cooldown 등)이 실제 코드에서 *차단/검증을 수행*하는지 점검. 약속만 박히고 호출/적용 누락 시 *silent 우회* 위험. 출처: 2026-05-18 ad-hoc 감사 (Codex 발견 rate-limit "기록만" + Claude 발견 ProtocolVersion 호출처 0건). | 🟡 (헌법 §3 정신 위반에 가까움) |
 
 이 축은 *위반이 아니라 학습 기회*. 학부생이 SOLID 같은 추상 원칙을 외우는 것보다 실제 코드에서 만나는 게 효과적이라는 학습 철학을 따름 (`/harness-review` 슬래시 커맨드 정신 유지 — ADR-022 정합).
+
+---
+
+## 축 6: Code Convention (ADR-028)
+
+[`00_Document/conventions/`](conventions/INDEX.md)(CODE_CONVENTION + refs) 위반 점검. **ADR-028이 옛 "코드 크기/구조 = 도구 책임" 제외 조항을 구조/SRP에 한해 뒤집음** — God class·패턴 위반은 reviewer가 직접 본다(순수 포매팅만 도구 위임).
+
+| # | 점검 항목 | 출처 | 등급 |
+|---|----------|------|------|
+| 6.1 | 한 클래스가 2+ 도메인(전투+AI+네트워크 등) — God class | CODE_CONVENTION §2.2 | 🔴 |
+| 6.2 | 게임 로직이 컨테이너(`GameMap`/`GameSession`/MonoBehaviour)에 직접 박힘 — System 미분리 | §2.2 | 🟡 |
+| 6.3 | 콘텐츠(게임 규칙)가 엔진(`02_Server/Network/` 인프라)에 혼재 | §1.2 | 🔴 |
+| 6.4 | 과한 추상화 — 호출자 0개 확장 hook / 단일 도메인 억지 분할 (과분할도 부채) | §0.3 | 🟡 |
+| 6.5 | 채택 패턴 오용 (Singleton mutable 상태 / 보간 대신 extrapolation 등) | refs 해당 패턴 | 🟡 |
+| 6.6 | 핵심 파일(`GameMap`/`GameSession`/`UnityClientSession`) 600줄+ 비대 (size-guard hook 연동) | §2.3 | 🟡 |
+
+위반 시 `CODE_CONVENTION` 해당 § + `refs/` 파일을 인용해 보고. 작업 유형별 라우팅 = [`conventions/INDEX.md`](conventions/INDEX.md).
 
 ---
 

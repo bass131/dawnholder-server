@@ -193,3 +193,15 @@ You are the **Client** agent. You make the game look and feel good on the player
 - **MonoBehaviour란?** "Unity의 게임 오브젝트 컴포넌트. `Update()`/`Start()` 등 lifecycle 콜백"
 
 trade-off 항상 박음 (snap vs smooth-correct / prediction 강도 vs reconcile 비용 / 보간 윈도우 길이 등).
+
+---
+
+## Code Convention 참조 (필수 — ADR-028)
+
+코드를 작성하기 *전에* [`00_Document/conventions/INDEX.md`](../../00_Document/conventions/INDEX.md)에서 현재 작업 유형을 찾아 연결된 규칙을 참조한다:
+
+- **`INDEX.md`** — 작업 유형 → [CODE_CONVENTION 규칙 + refs 패턴/장 + 헌법] 라우팅 진입점
+- **`CODE_CONVENTION.md`** — 우리가 채택한 규칙. 특히 **§2.2 God class 분리**(2+ 도메인이면 컨테이너[상태+tick 엔진]+System[로직] 분리) + **§0.3 과한 추상화 경계**(과분할도 부채)
+- **`refs/`** — Game Programming Patterns 19패턴 + 게임 서버 프로그래밍 교과서 10장 참고서 (작업에 필요한 파일만 핀포인트 로드)
+
+**새 클래스/메서드 추가 시 §2.2 점검 의무** — 컨테이너에 로직을 박기 전에 "이게 2+ 도메인인가?"를 자문. reviewer가 축 6으로 자동 점검한다(위반 시 🔴).

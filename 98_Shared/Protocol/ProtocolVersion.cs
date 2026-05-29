@@ -22,6 +22,9 @@ namespace Shared.Protocol;
 ///   - v6: M4.2 Phase 02 — C_EnterPortal / S_MapTransition 2패킷 추가 (맵 전환 프로토콜).
 ///         새 패킷에 의존하는 맵 이동 기능이 핵심이라 옛 클라 빠른 cutoff 위해 bump.
 ///         S_MapTransition에 entityId 없음 (ADR-026: 전역 id 풀, 맵 이동 시 id 유지).
+///   - v7: M4.3 Phase 07 — S_EntityState 추가 (enemy AI 위치/상태 주기 브로드캐스트).
+///         Phase 09 S_EnemyAttack도 이 Version 7에 포함(한 PR 묶음, 추가 bump 없음).
+///         enemy AI FSM이 S_EntityState 의존이라 옛 클라 빠른 cutoff 위해 bump.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -35,6 +38,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.2 Phase 02 = v6 (C_EnterPortal / S_MapTransition 추가, 맵 전환).</summary>
-    public const ushort Current = 6;
+    /// <summary>현재 프로토콜 버전. M4.3 Phase 07 = v7 (S_EntityState 추가, enemy AI 위치/상태 브로드캐스트).</summary>
+    public const ushort Current = 7;
 }

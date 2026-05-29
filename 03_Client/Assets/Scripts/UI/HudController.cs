@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
@@ -18,21 +19,27 @@ namespace Dawnholder.Client.UI
     public class HudController : MonoBehaviour
     {
         [Header("HP")]
-        [SerializeField] Slider hpSlider;
-        [SerializeField] TMP_Text hpText;
+        [FormerlySerializedAs("hpSlider")]
+        [SerializeField] Slider _hpSlider;
+        [FormerlySerializedAs("hpText")]
+        [SerializeField] TMP_Text _hpText;
 
         [Header("Resources")]
-        [SerializeField] TMP_Text goldText;
+        [FormerlySerializedAs("goldText")]
+        [SerializeField] TMP_Text _goldText;
 
         [Header("Mock Initial Values (Phase 03)")]
-        [SerializeField] int mockHpCurrent = 100;
-        [SerializeField] int mockHpMax = 100;
-        [SerializeField] int mockGold = 0;
+        [FormerlySerializedAs("mockHpCurrent")]
+        [SerializeField] int _mockHpCurrent = 100;
+        [FormerlySerializedAs("mockHpMax")]
+        [SerializeField] int _mockHpMax = 100;
+        [FormerlySerializedAs("mockGold")]
+        [SerializeField] int _mockGold = 0;
 
         void Start()
         {
-            UpdateHP(mockHpCurrent, mockHpMax);
-            UpdateGold(mockGold);
+            UpdateHP(_mockHpCurrent, _mockHpMax);
+            UpdateGold(_mockGold);
         }
 
         public void UpdateHP(int current, int max)
@@ -40,21 +47,21 @@ namespace Dawnholder.Client.UI
             if (max <= 0) max = 1;
             current = Mathf.Clamp(current, 0, max);
 
-            if (hpSlider != null)
+            if (_hpSlider != null)
             {
-                hpSlider.value = (float)current / max;
+                _hpSlider.value = (float)current / max;
             }
-            if (hpText != null)
+            if (_hpText != null)
             {
-                hpText.text = $"HP {current} / {max}";
+                _hpText.text = $"HP {current} / {max}";
             }
         }
 
         public void UpdateGold(int amount)
         {
-            if (goldText != null)
+            if (_goldText != null)
             {
-                goldText.text = $"Gold: {amount}";
+                _goldText.text = $"Gold: {amount}";
             }
         }
     }

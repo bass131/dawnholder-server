@@ -23,50 +23,50 @@ namespace Dawnholder.Server.Network
 {
     public class SendBufferHelper
     {
-        public static ThreadLocal<SendBuffer?> m_CurrentBuffer = new ThreadLocal<SendBuffer?>(() => null);
+        public static ThreadLocal<SendBuffer?> s_currentBuffer = new ThreadLocal<SendBuffer?>(() => null);
 
         public static int ChunkSize {get; set;} = 65535 * 1000;
 
-        public static ArraySegment<byte> Open(int _ReserveSize)
+        public static ArraySegment<byte> Open(int reserveSize)
         {
-            if(m_CurrentBuffer.Value == null)
+            if(s_currentBuffer.Value == null)
             {
-                m_CurrentBuffer.Value = new SendBuffer(ChunkSize);
+                s_currentBuffer.Value = new SendBuffer(ChunkSize);
             }
 
-            if(m_CurrentBuffer.Value!.FreeSize < _ReserveSize)
+            if(s_currentBuffer.Value!.FreeSize < reserveSize)
             {
-                m_CurrentBuffer.Value = new SendBuffer(ChunkSize);
+                s_currentBuffer.Value = new SendBuffer(ChunkSize);
             }
 
-            return m_CurrentBuffer.Value!.Open(_ReserveSize);
+            return s_currentBuffer.Value!.Open(reserveSize);
         }
 
-        public static ArraySegment<byte> Close(int _UsedSize)
+        public static ArraySegment<byte> Close(int usedSize)
         {
-            return m_CurrentBuffer.Value!.Close(_UsedSize);
+            return s_currentBuffer.Value!.Close(usedSize);
         }
 
-        public SendBuffer? Current { get { return m_CurrentBuffer.Value; } }
+        public SendBuffer? Current { get { return s_currentBuffer.Value; } }
 
-        public SendBuffer? New(int _BufferSize)
+        public SendBuffer? New(int bufferSize)
         {
-            if(_BufferSize > 10000)
+            if(bufferSize > 10000)
             {
                 Console.WriteLine("SendBuffer Error : Buffer Size is too large");
                 return null;
             }
 
-            SendBuffer? sendBuffer = m_CurrentBuffer.Value;
+            SendBuffer? sendBuffer = s_currentBuffer.Value;
             if(sendBuffer == null)
             {
-                sendBuffer = new SendBuffer(_BufferSize);
-                m_CurrentBuffer.Value = sendBuffer;
+                sendBuffer = new SendBuffer(bufferSize);
+                s_currentBuffer.Value = sendBuffer;
             }
-            else if(sendBuffer.FreeSize < _BufferSize)
+            else if(sendBuffer.FreeSize < bufferSize)
             {
-                sendBuffer = new SendBuffer(_BufferSize);
-                m_CurrentBuffer.Value = sendBuffer;
+                sendBuffer = new SendBuffer(bufferSize);
+                s_currentBuffer.Value = sendBuffer;
             }
 
             return sendBuffer;
@@ -78,28 +78,28 @@ namespace Dawnholder.Server.Network
     {
         // [u][][][][][][][][][] : 사용하지 않음
         // [][][][][u][][][][][] : 사용
-        byte[] m_Buffer;
-        int m_UsedSize = 0;
+        byte[] _buffer;
+        int _usedSize = 0;
 
-        public int FreeSize { get { return m_Buffer.Length - m_UsedSize; } } // 남은 공간
+        public int FreeSize { get { return _buffer.Length - _usedSize; } } // 남은 공간
 
-        public SendBuffer(int _ChunkSize)
+        public SendBuffer(int chunkSize)
         {
-            m_Buffer = new byte[_ChunkSize];
+            _buffer = new byte[chunkSize];
         }
 
-        public ArraySegment<byte> Open(int _ReserveSize)
+        public ArraySegment<byte> Open(int reserveSize)
         {
-            if(_ReserveSize > FreeSize)
+            if(reserveSize > FreeSize)
                 return default;
 
-            return new ArraySegment<byte>(m_Buffer, m_UsedSize, _ReserveSize);
+            return new ArraySegment<byte>(_buffer, _usedSize, reserveSize);
         }
 
-        public ArraySegment<byte> Close(int _UsedSize)
+        public ArraySegment<byte> Close(int usedSize)
         {
-            ArraySegment<byte> segment = new ArraySegment<byte>(m_Buffer, m_UsedSize, _UsedSize);
-            m_UsedSize += _UsedSize;
+            ArraySegment<byte> segment = new ArraySegment<byte>(_buffer, _usedSize, usedSize);
+            _usedSize += usedSize;
 
             return segment;
         }

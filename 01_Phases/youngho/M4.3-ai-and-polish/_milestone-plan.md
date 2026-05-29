@@ -1,96 +1,113 @@
 ---
 owner: youngho
 milestone: M4.3
-title: AI + Polish (enemy AI + boss behavior + jump Y mispredict 봉합 + PvP ADR + M4 마감 의례)
-status: placeholder
+title: Enemy AI + Boss Behavior + 움직임/외관 Polish (발표용)
+status: planned
 grade: 복잡
-risk: low
-estimated: 5~10h (총합, 3 Phase 추정)
-domain: server+client
+risk: irreversible
+estimated: 14~22h (총합, 6 Phase)
+domain: server+shared+client
 ---
 
-# M4.3 — AI + Polish (placeholder)
+# M4.3 — Enemy AI + Boss Behavior + Polish (발표용)
 
-> **상태**: placeholder — **본격 Phase 분해는 M4.2 마감 시점에**
-> **시작 예정**: 2026-07월 (캡스톤 1 발표 후)
-> **마감 목표**: 2026-10월 (본 마감 11/19 1달 전)
-
----
-
-## 🎯 마일스톤 목표 (예정)
-
-**M3 응급 박힌 패시브 dummy enemy를 AI 박힘 + 보스 behavior 패턴 박음** + M2 잔존 jump Y mispredict 봉합 + PvP 지원 여부 ADR 박제 + M4 전체 마감 의례 (5단계 보고 MD/HTML 캡스톤 평가 자산).
-
-**예정 Phase 분해 (3개, M4.2 마감 시점에 확정)**:
-
-1. **Phase 07** — enemy AI (Normal: patrol/chase FSM) + boss behavior (다단 attack pattern, 페이즈 1/2)
-2. **Phase 08** — M2 Phase 05 jump Y mispredict 봉합 + PvP 지원 여부 ADR 박제
-3. **Phase 09** — M4 전체 종합 마감 의례 (5단계 보고 MD + HTML, 본 마감 데모 영상 가능 상태)
+> **상태**: planned — 2026-05-29 `/work:plan M4.3`로 확정 (placeholder → 본격 분해)
+> **시작**: 2026-05-29
+> **목표 마감**: 캡스톤 1 발표(2026-06-10) 직전 — 발표 데모에 enemy AI + boss 포함
 
 ---
 
-## ⚠️ placeholder 사유
+## 🎯 마일스톤 목표
 
-본 마일스톤은 **M4.2 마감 시점에 본격 Phase 분해**. 사유:
+M3에서 응급으로 박은 **고정 위치 더미 enemy/boss를 살아 움직이게** 만든다 — patrol/chase AI + 보스 다단 attack 패턴. 여기에 **움직임 체감 polish**(클래스별 이동속도 + 점프 mispredict 봉합 + reconcile 부드러움)와 **RemotePlayer 외관 봉합**(Animator/prefab)을 더해 **캡스톤 1 발표 데모를 화려하게** 만드는 것이 목표.
 
-- **M4.2 결과 정합** — 4맵 분리 후 enemy AI scope가 *맵별 spawn pattern*까지 확장 가능. M4.2 마감 시점에 맵 인프라 봤을 때 AI scope 명확화
-- **캡스톤 1 발표 결과 정합** — 6/10 발표 후 *발견된 문제점*이 본 마일스톤 Phase 정의에 반영 가능 (예: 발표 청중 피드백 = AI 부족, PvP 욕심 등)
-- **본 마감 일정 정합** — 11/19까지 5~6개월 = 본 마일스톤 외 M5(영속화) + M6(길드) + M7(거점) + M8(부하 테스트) 균등 분담 필요. M4.3 scope는 *과하지 않게* 절제
-- **stale 위험 ↓** — 옛 Phase 정의가 M4.2 마감 + 캡스톤 발표 후 변경된 인프라와 어긋날 위험. M3.7 stale hole 봉합 학습 정합
+### ⚠️ 이 마일스톤은 "M4 마감"이 아니다 (2026-05-29 의논)
 
-본 placeholder는 **목적 + 예정 Phase 개략 + 사유**만 박음. 본격 정의는 M4.2 마감 + 캡스톤 1 발표 직후 `/work:plan M4.3` 호출로 박음.
+M4.3는 **발표용 polish 마일스톤**이지 M4 전체 종료가 아니다. 보안 hardening(cheat-flag/Serilog/PvP ADR)을 통째로 뒤로 미뤘기 때문에, **5단계 마감 의례 + M4 전체 종합 보고는 박지 않는다**. M4.3는 PR 머지 + work-pin 갱신 수준으로 가볍게 닫는다. 진짜 M4 마감 의례는 보안까지 끝난 끝물에.
 
 ---
 
-## 📋 예정 Phase 개략 (확정 X)
+## 📋 Phase 분해 (6개)
 
-| # | Phase 예정 | 등급 추정 | 도메인 | 예상 |
-|---|---|---|---|---|
-| 07 | enemy AI + boss behavior | 복잡 | server | 3~5h |
-| 08 | M2 jump Y mispredict 봉합 + PvP ADR | 보통 | server+client | 1~2h |
-| 09 | M4 전체 마감 의례 (5단계 보고 MD/HTML) | 복잡 | meta | 2~3h |
+| # | Phase | 등급 | 도메인 | 예상 | risk |
+|---|---|---|---|---|---|
+| 07 | enemy AI 서버 (patrol/chase FSM + tick 루프 + 위치 브로드캐스트 패킷) | 복잡 | server+shared | 4~6h | irreversible (PDL bump 6→7) |
+| 08 | enemy AI 클라 (위치 보간 + 이동 렌더 + Animator) | 복잡 | client | 3~4h | unity-asset |
+| 09 | boss behavior (다단 attack 패턴 페이즈 1/2 + 적→플레이어 공격 패킷 + HUD HP mock 제거) | 복잡 | server+shared+client | 4~6h | irreversible (S_EnemyAttack append-only — Version은 07의 7에 포함) |
+| 10 | 움직임 체감 polish (β10 MoveSpeed dead + jump Y mispredict + reconcile drift) | 복잡 | shared+server+client | 2~3h | — |
+| 11 | RemotePlayer 외관 봉합 (Animator 미작동 + prefab 3개 정합) | 보통 | client (본인 외관 분담) | 1~2h | unity-asset |
+| 12 | M4.3 회귀 테스트 + 가벼운 마감 (5단계 보고 X) | 보통 | qa+메타 | 1~2h | — |
 
-**총 등급 = 복잡** (마일스톤 자체, 추정). 단 본 마일스톤 = *M4 전체 마감 마일스톤*이라 **5단계 보고 의무 (대규모 등급)** 가능 — M4.1 + M4.2 + M4.3 종합 보고.
+**총 등급 = 복잡** (마일스톤 자체). irreversible 깃발(PDL 변경)이 잡혀 있으나, reviewer Tier 2-A + 신중한 append-only 처리.
+
+> **PDL bump 정책 (2026-05-29 MAX effort 재검토 결정)**: M4.3 전체를 한 PR로 발표 데모 묶음 머지 → 패킷 2개(`S_EntityState`@07, `S_EnemyAttack`@09)를 append-only 추가하되 **`ProtocolVersion` 6→7 한 번만 bump** (둘 다 Version 7). M3 boss DONE.md 선례(같은 PR 연속 additive = bump 1회) 정합. 07/09를 별도 PR로 분리 머지할 경우에만 09에서 7→8 추가.
 
 ---
 
-## 🔗 예정 의존성 그래프
+## 🔗 의존성 그래프
 
 ```
-Phase 07 (enemy AI + boss behavior)
+Phase 07 (enemy AI 서버 — FSM + 위치 패킷)
    │
-   │  Phase 07 산출물이 본 마감 데모 영상에 핵심 어필
    ↓
-Phase 08 (jump Y mispredict + PvP ADR)
+Phase 08 (enemy AI 클라 — 받아서 렌더)
    │
-   │  Phase 08 = 잔존 결함 봉합 + 결정 박음
    ↓
-Phase 09 (M4 전체 마감 의례)
+Phase 09 (boss behavior — enemy 인프라 위에 보스 패턴)
+
+Phase 10 (움직임 polish)  ←── 07~09와 독립 (다른 코드 경로)
+Phase 11 (RemotePlayer 외관) ←── 독립 (본인 외관 분담)
+
+Phase 12 (회귀 + 마감) ←── 07~11 전부 완료 후
 ```
 
-병렬 가능 = Phase 07 ↔ Phase 08 (다른 영역 — 보스 vs 클라 정합).
+**병렬 가능**: Phase 10 ↔ 11 (서버 체감 vs 클라 외관, 영역 다름). 07→08→09는 순차 (enemy 인프라 위에 보스가 얹힘).
 
 ---
 
-## ✅ 예정 마일스톤 완료 조건 (확정 X)
+## ✅ 마일스톤 완료 조건
 
-- [ ] enemy Normal patrol/chase FSM 박힘 (헌법 #5 동기, tick thread)
-- [ ] boss behavior 다단 attack pattern (페이즈 1/2)
-- [ ] M2 Phase 05 jump Y mispredict 봉합 (잔존 결함 0)
-- [ ] PvP 지원 여부 ADR 박힘 (헌법 #1 정합 — "지원 X" 또는 "지원, trust-boundary 강화")
-- [ ] M4 전체 5단계 보고 MD + HTML 박음 (캡스톤 평가 자산)
-- [ ] dotnet test green (회귀 0 + 신규 테스트)
-- [ ] CHANGELOG entry ([M] or [H] — AI 도입 + PvP 결정 + 모든 팀원 영향)
-- [ ] **본 마감 데모 영상 가능 상태** (M4 전체 + M5/M6/M7/M8 진행 중)
+- [ ] enemy Normal patrol/chase FSM 동작 (서버 권위, tick thread — 헌법 #5)
+- [ ] enemy 위치가 클라 화면에서 보간되어 움직임 (Play 실측)
+- [ ] boss 다단 attack 패턴 + 페이즈 1/2 전환 (HP 임계 기준)
+- [ ] 적→플레이어 데미지 = 서버 권위 (헌법 #1), 클라는 표시만
+- [ ] 클래스별 이동속도 체감 (Warrior 4 / Ranger 6), 점프 Y mispredict 0, reconcile 부드러움
+- [ ] RemotePlayer Animator 정상 + prefab 1개로 정합
+- [ ] `dotnet test` green (회귀 0 + 신규 테스트)
+- [ ] `ProtocolVersion` 6→7 bump 1회 (한 PR 묶음 — S_EntityState + S_EnemyAttack 둘 다 Version 7, append-only, ID 재사용 0)
+- [ ] CHANGELOG entry ([M] — enemy AI 도입 + 패킷 2개 추가, 모든 팀원 영향)
+- [ ] (적 MoveSpeed 보수적 — target rewind 미적용 어긋남 회피. 정밀 전투는 M4.4)
+- [ ] 캡스톤 1 발표 데모 흐름 정상 (마을 → 사냥터 적 처치 → 보스방 패턴전 → 엔딩)
 
 ---
 
-## ➡️ 다음 마일스톤
+## 🚫 이번에 명시적으로 뺀 것 (M4.4+ 이월)
 
-- **M5 — Persistence** (DB 연결 + 캐릭터/인벤토리 영속화 + 재접속 복원). PRD.md 정합.
+- **보안 hardening**: cheat-flag table + Serilog + PvP 지원 ADR + β7 reconnect 죽은 세션 + β9/β4 (LOW) → 별도 보안 마일스톤(M4.4 가칭)
+- **🔴 정밀 전투(M4.4) — MAX effort 재검토 발견**: **target rewind** (`EnemyEntity` position history 추가 + `ProcessAttack`에서 target도 `GetPositionAtTick`으로 rewind). 적이 움직이면 "클라 본 위치(보간 150ms 지연)"와 "서버 판정 위치"가 어긋나 조준-판정 빗맞음. M4.3는 적 MoveSpeed 보수적으로 *회피*만 → M4.4에서 근본 봉합. (M4.1 이월 "target도 rewind"가 enemy 이동 도입으로 *필수*가 됨)
+- **하네스 잡일**: 봇 portal const 공유 헬퍼 + PendingSpawn EditMode 테스트 + 하네스 문서 sweep + β1 PDL explicit-id ADR
+- **M4.1 이월**: target rewind + capsule hitbox + 04_ClientNet.Tests + 봇 lag 종단간
+
+---
+
+## ➡️ 발표 후 로드맵 (2026-05-29 의논 — 큰 마일스톤들)
+
+```
+M4.3 (지금)  발표용 enemy AI + boss + 움직임/외관 polish
+   ↓ [캡스톤 1 발표 2026-06-10]
+M4.4(가칭)   보안 hardening (cheat-flag + Serilog + PvP ADR + γ10 잔여)  ← 이번에 미룬 것
+M?  컨텐츠     퀘스트 + 컷신 + 인벤토리/아이템 (★ 런타임 메모리 휘발 버전, DB X)
+M?  외관       애니메이터 + Sprite + UI 본격 작업
+M5  영속화     DB 추가 → 인벤토리/아이템/캐릭터 영속 + 재접속 복원
+M?  외부연결   하마치 통한 실제 외부 연결 테스트 (마무리)
+```
+
+> ⚠️ 위 로드맵은 **발표 후 PRD 재정합 대상**. 기존 PRD의 M5 영속화/M6 길드/M7 거점과 합쳐 순서·번호를 다시 박아야 함. 인벤토리/아이템은 "휘발 버전(컨텐츠) → DB 영속화(M5)" 2단계로 분리 (서버 권위는 휘발 버전부터 사수 — 헌법 #1).
 
 ---
 
 ## 갱신 이력
 
-- 2026-05-22 — placeholder 박힘 (M4.1 plan 박는 시점, M4 3토막 분할 정합)
+- 2026-05-22 — placeholder 박힘 (M4.1 plan 시점, M4 3토막 분할 정합)
+- 2026-05-29 — **본격 분해 확정** (`/work:plan M4.3`). placeholder의 AI+polish+마감 3 Phase → 6 Phase로 확장. enemy AI를 서버/클라 2 Phase로 분리(3도메인+PDL bump), Phase 12를 마감 의례→회귀 테스트로 격하, 보안 통째 M4.4 이월, 발표 후 로드맵 구체화.
+- 2026-05-29 — **MAX effort 재검토 봉합** (plan-auditor GO 후 코드 직접 감사). ① 🔴 target rewind 누락 발견 — 적 이동 시 lag comp 비대칭(조준-판정 어긋남) → M4.3는 적 MoveSpeed 보수적 회피 + M4.4 근본 봉합 이월(사용자 결정). ② PDL bump 2회→1회(한 PR 묶음, 보스 선례 정합). ③ Phase 09에 HUD mock 제거 명시(클라 피격 인프라는 이미 준비됨 확인). ④ 보스 공격 telegraph 권장(보스→플레이어 판정 비대칭).

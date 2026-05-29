@@ -21,28 +21,28 @@ namespace Dawnholder.Client.Net;
 /// </summary>
 public class RecvBuffer
 {
-    ArraySegment<byte> m_buffer;
-    int m_readPos;
-    int m_writePos;
+    ArraySegment<byte> _buffer;
+    int _readPos;
+    int _writePos;
 
     public RecvBuffer(int bufferSize)
     {
-        m_buffer = new ArraySegment<byte>(new byte[bufferSize], 0, bufferSize);
+        _buffer = new ArraySegment<byte>(new byte[bufferSize], 0, bufferSize);
     }
 
     /// <summary>아직 처리되지 않은 데이터의 크기 (write - read).</summary>
-    public int DataSize => m_writePos - m_readPos;
+    public int DataSize => _writePos - _readPos;
 
     /// <summary>버퍼 끝까지 남은 빈 공간 (write 가능량).</summary>
-    public int FreeSize => m_buffer.Count - m_writePos;
+    public int FreeSize => _buffer.Count - _writePos;
 
     /// <summary>처리해야 할 데이터의 슬라이스 (OnRecv에 넘김).</summary>
     public ArraySegment<byte> ReadSegment =>
-        new ArraySegment<byte>(m_buffer.Array!, m_buffer.Offset + m_readPos, DataSize);
+        new ArraySegment<byte>(_buffer.Array!, _buffer.Offset + _readPos, DataSize);
 
     /// <summary>다음 ReceiveAsync가 쓸 수 있는 슬라이스 (SetBuffer에 넘김).</summary>
     public ArraySegment<byte> WriteSegment =>
-        new ArraySegment<byte>(m_buffer.Array!, m_buffer.Offset + m_writePos, FreeSize);
+        new ArraySegment<byte>(_buffer.Array!, _buffer.Offset + _writePos, FreeSize);
 
     /// <summary>
     /// 버퍼 끝에 가까워졌으면 미처리 데이터를 앞으로 당김.
@@ -54,20 +54,20 @@ public class RecvBuffer
 
         if (dataSize == 0)
         {
-            m_readPos = 0;
-            m_writePos = 0;
+            _readPos = 0;
+            _writePos = 0;
             return;
         }
 
         Array.Copy(
-            sourceArray: m_buffer.Array!,
-            sourceIndex: m_buffer.Offset + m_readPos,
-            destinationArray: m_buffer.Array!,
-            destinationIndex: m_buffer.Offset,
+            sourceArray: _buffer.Array!,
+            sourceIndex: _buffer.Offset + _readPos,
+            destinationArray: _buffer.Array!,
+            destinationIndex: _buffer.Offset,
             length: dataSize);
 
-        m_readPos = 0;
-        m_writePos = dataSize;
+        _readPos = 0;
+        _writePos = dataSize;
     }
 
     /// <summary>처리 완료한 바이트 수만큼 read 커서 전진. 음수/초과면 false.</summary>
@@ -76,7 +76,7 @@ public class RecvBuffer
         if (numOfBytes > DataSize)
             return false;
 
-        m_readPos += numOfBytes;
+        _readPos += numOfBytes;
         return true;
     }
 
@@ -86,7 +86,7 @@ public class RecvBuffer
         if (numOfBytes > FreeSize)
             return false;
 
-        m_writePos += numOfBytes;
+        _writePos += numOfBytes;
         return true;
     }
 }

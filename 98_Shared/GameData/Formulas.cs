@@ -51,6 +51,10 @@ public static class Formulas
 /// <para>value type <c>struct</c> 선택 이유: 단순 스탯 홀더라 힙 할당 불필요.
 /// default Defense=0은 struct 기본값으로 자연 충족 — 무방어 적 표현에 명시 초기화 불필요.</para>
 ///
+/// <para>M4.3 Phase 07 추가: AI 이동 파라미터 3종 (MoveSpeed/AggroRange/PatrolRange).
+/// 서버 FSM이 이 값을 읽어 patrol/chase 반경·속도를 결정. 클라는 읽기 전용 hint 용도.
+/// 정밀 튜닝은 server Phase 단계에서; 여기선 Normal enemy 합리적 초기값만.</para>
+///
 /// <para>Worker B가 <c>EnemyEntity</c> 통합 시 본 struct를 wrapping 또는 직접 사용.</para>
 /// </summary>
 public struct EnemyStats
@@ -60,4 +64,42 @@ public struct EnemyStats
 
     /// <summary>최대 HP. 스폰 시 CurrentHp 초기화 기준.</summary>
     public int MaxHp;
+
+    // ── M4.3 Phase 07: AI 이동 파라미터 ──────────────────────────────────────
+
+    /// <summary>
+    /// 적 이동 속도 (유닛/초). Normal enemy 기본값 ~2.0.
+    ///
+    /// <para>⚠️ target rewind 미적용 상태(M4.4 이월)라 적이 빠르면 클라 보간 지연과
+    /// 서버 판정 위치가 어긋나 조준-판정 빗맞음 발생 → Normal enemy는 플레이어보다
+    /// 느리게 설정(Warrior=4 / Ranger=6 대비 ~2.0). 빠른 적은 rewind 구현 후 조정.</para>
+    /// </summary>
+    public float MoveSpeed;
+
+    /// <summary>
+    /// 적이 플레이어를 감지해 추격을 시작하는 반경 (유닛). Normal enemy 기본값 ~6.0.
+    /// 이 반경 안에 플레이어가 들어오면 FSM: Idle/Patrol → Chase 전환.
+    /// </summary>
+    public float AggroRange;
+
+    /// <summary>
+    /// 적이 순찰하는 반경 (유닛). Normal enemy 기본값 ~4.0.
+    /// 스폰 좌표 기준 ±PatrolRange 범위를 왕복. AggroRange보다 작게 유지.
+    /// </summary>
+    public float PatrolRange;
+
+    // ── Normal enemy 기본값 factory ──────────────────────────────────────────
+
+    /// <summary>
+    /// Normal enemy 기본 스탯 (M4.3 Phase 07 박힘).
+    /// 서버 Phase에서 몬스터 테이블 데이터로 교체 전까지의 합리적 초기값.
+    /// </summary>
+    public static EnemyStats NormalDefault() => new EnemyStats
+    {
+        Defense = 0,
+        MaxHp = 30,
+        MoveSpeed = 2.0f,
+        AggroRange = 6.0f,
+        PatrolRange = 4.0f,
+    };
 }

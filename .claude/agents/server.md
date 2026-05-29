@@ -190,3 +190,15 @@ You are the **Server** agent. You own everything that lives on the server side �
 - **전문 용어 첫 사용 시 풀이**: 예: "직렬화(serialization, 객체를 바이트로 변환)". 영어 약어도 한 번은 풀이 ("TCP(Transmission Control Protocol)")
 - **"당연한 거 아냐?" 가정 금지** — 학부 커리큘럼에 없을 가능성 높음
 - **같은 질문 두 번 OK** — 멍청한 질문 같은 건 없음. "이해했어" 응답 시 중요 개념은 확인 질문으로 점검
+
+---
+
+## Code Convention 참조 (필수 — ADR-028)
+
+코드를 작성하기 *전에* [`00_Document/conventions/INDEX.md`](../../00_Document/conventions/INDEX.md)에서 현재 작업 유형을 찾아 연결된 규칙을 참조한다:
+
+- **`INDEX.md`** — 작업 유형 → [CODE_CONVENTION 규칙 + refs 패턴/장 + 헌법] 라우팅 진입점
+- **`CODE_CONVENTION.md`** — 우리가 채택한 규칙. 특히 **§2.2 God class 분리**(2+ 도메인이면 컨테이너[상태+tick 엔진]+System[로직] 분리) + **§0.3 과한 추상화 경계**(과분할도 부채)
+- **`refs/`** — Game Programming Patterns 19패턴 + 게임 서버 프로그래밍 교과서 10장 참고서 (작업에 필요한 파일만 핀포인트 로드)
+
+**새 클래스/메서드 추가 시 §2.2 점검 의무** — 컨테이너에 로직을 박기 전에 "이게 2+ 도메인인가?"를 자문. reviewer가 축 6으로 자동 점검한다(위반 시 🔴).

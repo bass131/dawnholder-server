@@ -3,6 +3,7 @@ using Dawnholder.Client.Input;
 using Dawnholder.Client.Network;
 using Shared.Protocol;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dawnholder.Client.Gameplay
 {
@@ -35,11 +36,13 @@ namespace Dawnholder.Client.Gameplay
         // 서버 PortalTable의 portalId. Inspector에서 설정.
         // 현재 서버 Phase 03 기준 Town→HuntingGround=1, HuntingGround→BossRoom=2 등.
         // 정확한 id는 서버 PortalTable 참조 (Phase 04 작업 메모: 현재 서버는 portalId=1 단일).
-        [SerializeField] int portalId = 1;
+        [FormerlySerializedAs("portalId")]
+        [SerializeField] int _portalId = 1;
 
         // 중복 송신 방지 쿨다운 (초). 빠른 재진입 스팸 차단.
         // 서버에서 근접 검증 실패 시 S_MapTransition이 안 오므로 클라 스팸 차단이 주 목적.
-        [SerializeField] float cooldownSeconds = 2.0f;
+        [FormerlySerializedAs("cooldownSeconds")]
+        [SerializeField] float _cooldownSeconds = 2.0f;
 
         float _lastSentTime = -999f;
 
@@ -53,9 +56,9 @@ namespace Dawnholder.Client.Gameplay
 
             // 쿨다운 가드 — 빠른 재진입 스팸 차단.
             float now = Time.unscaledTime;
-            if (now - _lastSentTime < cooldownSeconds)
+            if (now - _lastSentTime < _cooldownSeconds)
             {
-                Debug.Log($"[PortalTrigger] 쿨다운 중 — 재송신 차단 ({cooldownSeconds - (now - _lastSentTime):F1}초 남음).");
+                Debug.Log($"[PortalTrigger] 쿨다운 중 — 재송신 차단 ({_cooldownSeconds - (now - _lastSentTime):F1}초 남음).");
                 return;
             }
 
@@ -75,11 +78,11 @@ namespace Dawnholder.Client.Gameplay
             }
 
             // C_EnterPortal 의도 송신. 헌법 #1: 위치 판정/이동은 서버가 함.
-            var pkt = new C_EnterPortal { portalId = this.portalId };
+            var pkt = new C_EnterPortal { portalId = _portalId };
             session.SendIntent(pkt.Write());
 
             _lastSentTime = now;
-            Debug.Log($"[PortalTrigger] C_EnterPortal 송신 — portalId={portalId}. 서버 근접 검증 대기 중.");
+            Debug.Log($"[PortalTrigger] C_EnterPortal 송신 — portalId={_portalId}. 서버 근접 검증 대기 중.");
         }
     }
 }

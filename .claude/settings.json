@@ -1,5 +1,5 @@
 {
-  "$schema_comment": "New_Harness v1 — Claude Code project settings (proposed). 본 파일 안내·디테일·옛 → 새 매핑은 hooks/README.md 참조. 옛 .claude/settings.json은 Phase 06 전환 시점에 본 파일로 교체 (옛 운영 깨뜨림 금지 원칙). 2026-05-24: hook command 경로를 상대경로 → $CLAUDE_PROJECT_DIR 절대화 (cwd 드리프트 시 hook No-such-file 결함 봉합).",
+  "$schema_comment": "New_Harness v1 — Claude Code project settings (proposed). 본 파일 안내·디테일·옛 → 새 매핑은 hooks/README.md 참조. 옛 .claude/settings.json은 Phase 06 전환 시점에 본 파일로 교체 (옛 운영 깨뜨림 금지 원칙). 2026-05-24: hook command 경로를 상대경로 → $CLAUDE_PROJECT_DIR 절대화 (cwd 드리프트 시 hook No-such-file 결함 봉합). 2026-05-29: convention-size-guard.sh 추가 (PostToolUse Edit|Write — Code Convention §2.3 God class 줄수 경고, ADR-028).",
 
   "permissions": {
     "allow": [
@@ -66,7 +66,8 @@
         "matcher": "Edit|Write",
         "hooks": [
           { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/phase-gate-validator.sh" },
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/reviewer-auto-trigger.sh" }
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/reviewer-auto-trigger.sh" },
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/convention-size-guard.sh" }
         ]
       },
       {

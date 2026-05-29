@@ -67,6 +67,17 @@ if (string.Equals(scenarioName, "BossStageClearSmoke", StringComparison.OrdinalI
     return r.Success ? 0 : 1;
 }
 
+if (string.Equals(scenarioName, "EnemyAiSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    EnemyAiSmoke.Result r = await EnemyAiSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] EnemyAiSmoke: success={r.Success} " +
+                      $"entity={r.LocalEntityId} enemy={r.EnemyEntityId}");
+    Console.WriteLine($"      enemy x: initial={r.EnemyInitialX:F2} atChase={r.EnemyXAtChase:F2} " +
+                      $"patrol={r.SawPatrolState} chase={r.SawChaseState} xMoved={r.SawXMovement}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
 if (scenarioName == "M2BasicMovement")
 {
     M2BasicMovement.Result r = await M2BasicMovement.Run(host, port);

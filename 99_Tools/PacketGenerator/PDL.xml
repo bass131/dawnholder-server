@@ -54,7 +54,7 @@
         <uint name="clientTick"/>
     </packet>
 
-    <!-- Phase 04 (M2): S_Snapshot — 서버가 권위 좌표를 매 SnapshotTickInterval(=5)마다 브로드캐스트.
+    <!-- Phase 04 (M2): S_Snapshot — 서버가 권위 좌표를 매 SnapshotTickInterval(=2)마다 브로드캐스트.
          lastAckedClientTick = 서버가 "여기까지 처리했다" ack 값. Phase 06부터 클라 replay reconcile의 기준점.
          타입은 uint (Phase 06에서 int→uint 정합, tick은 비음수 카운터).
 
@@ -215,5 +215,24 @@
         <byte name="destMapId"/>
         <float name="spawnX"/>
         <float name="spawnY"/>
+    </packet>
+
+    <!-- M4.3 Phase 07 (enemy AI): 움직이는 적의 위치/상태 주기적 브로드캐스트.
+         S_EntitySpawn(ID 12)이 최초 1회 spawn 알림이라면, 본 패킷은 매 틱(또는 N틱 간격)마다
+         서버가 적 위치·FSM 상태를 갱신해 클라에 전송하는 *업데이트* 패킷.
+
+         **state(byte) 의미** — server Phase에서 정의될 EnemyState enum의 byte cast:
+           0 = Idle    (대기 — spawn 직후, 플레이어 없음)
+           1 = Patrol  (순찰 — PatrolRange 내 왕복)
+           2 = Chase   (추격 — AggroRange 내 플레이어 감지)
+         클라 측 디코드 책임 (S_EntitySpawn.entityKind 패턴 정합).
+
+         **ProtocolVersion 7 동반**: M4.3 Phase 07 bump. Phase 09 S_EnemyAttack도 v7에 포함 예정
+         (한 PR 묶음 — 추가 bump 없음). -->
+    <packet name="S_EntityState">
+        <int name="entityId"/>
+        <float name="x"/>
+        <float name="y"/>
+        <byte name="state"/>
     </packet>
 </PDL>
