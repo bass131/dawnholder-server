@@ -78,6 +78,16 @@ namespace Dawnholder.Client.Combat
             Debug.Log($"[EnemyRegistry] Spawned {kind} entity {entityId} at ({x:F2}, {y:F2}) hp={currentHp}/{maxHp}");
         }
 
+        // S_EntityState 핸들러에서 호출 — 서버 권위 위치 갱신.
+        // 최소 봉합 (M4.3R Phase β): 직접 transform 세팅.
+        // 보간 버퍼(RemoteEntity 패턴)는 Phase 08 몫 — §0.3 과분할 금지.
+        public void UpdatePosition(int entityId, float x, float y)
+        {
+            if (!_enemies.TryGetValue(entityId, out RemoteEnemy? enemy)) return;
+            if (enemy == null) return;
+            enemy.transform.position = new Vector3(x, y, 0f);
+        }
+
         // S_HitResult 핸들러에서 호출.
         public void ApplyHit(int targetEntityId, int currentHp, int maxHp)
         {

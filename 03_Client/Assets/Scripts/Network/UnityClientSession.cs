@@ -81,6 +81,7 @@ namespace Dawnholder.Client.Network
                 { PacketID.S_EntityDeath,     new EntityDeathHandler() },
                 { PacketID.S_StageClear,      new StageClearHandler() },
                 { PacketID.S_MapTransition,   new MapTransitionHandler() },
+                { PacketID.S_EntityState,     new EntityStateHandler() },
             };
 
         // Phase 05: Editor only 송신 latency 시뮬레이션.
@@ -150,6 +151,8 @@ namespace Dawnholder.Client.Network
                 // M3 Phase 08c: enemy/boss도 동일 cleanup. StageClearUI는 누적 표시 OK라 유지.
                 if (EnemyRegistry.Instance != null)
                     EnemyRegistry.Instance.Clear();
+                // M4.3R Phase β: sceneLoaded 구독 해제 — stale 구독 누수 차단.
+                RosterBuffer.Teardown();
                 if (Instance == this) Instance = null;
             });
         }

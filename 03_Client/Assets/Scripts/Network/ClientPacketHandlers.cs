@@ -323,6 +323,31 @@ namespace Dawnholder.Client.Network
         }
     }
 
+    // S_EntityState (ID 19) — M4.3R Phase β: 적 AI 위치/상태 주기적 갱신.
+    // 서버가 SnapshotTickInterval(=2틱=100ms)마다 broadcast.
+    // 최소 봉합 목표: LogWarning 스팸 제거 + 적 위치 갱신.
+    // 보간(RemoteEntity 패턴 미러)은 Phase 08 몫 — §0.3 과분할 금지.
+    internal sealed class EntityStateHandler : IClientPacketHandler
+    {
+        public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
+        {
+            S_EntityState pkt = new S_EntityState();
+            pkt.Read(buffer);
+
+            int eid = pkt.entityId;
+            float x = pkt.x;
+            float y = pkt.y;
+            // state(byte)는 현재 클라 시각 미사용 — Phase 08에서 Animator 연결 예정.
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (EnemyRegistry.Instance == null) return;
+                // spawn 전 도착(race)이면 EnemyRegistry.UpdatePosition이 silent skip.
+                EnemyRegistry.Instance.UpdatePosition(eid, x, y);
+            });
+        }
+    }
+
     // S_MapTransition (ID 18) — M4.2 Phase 04: 맵 전환.
     // 헌법 #1: S_MapTransition 도착 후 비로소 scene 전환. 클라 자체 portal 판정 X.
     internal sealed class MapTransitionHandler : IClientPacketHandler

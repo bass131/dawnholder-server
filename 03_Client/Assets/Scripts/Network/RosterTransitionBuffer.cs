@@ -80,6 +80,18 @@ namespace Dawnholder.Client.Network
             return true;
         }
 
+        /// <summary>
+        /// disconnect/teardown 시 sceneLoaded 구독 해제.
+        /// UnityClientSession.OnDisconnected(main thread dispatch 안)에서 호출.
+        /// 재연결 시 new RosterTransitionBuffer()로 재생성 — 재구독 필요 없음.
+        /// </summary>
+        public void Teardown()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoadedForRosterDrain;
+            _pendingMapTransition = false;
+            _buffer.Clear();
+        }
+
         // 새 씬 로드 완료 시 호출 (main thread — Unity 보장).
         // 목적 씬 이름 매치 시 buffer drain 후 플래그 해제.
         void OnSceneLoadedForRosterDrain(Scene scene, LoadSceneMode mode)
