@@ -5,7 +5,7 @@
 >
 > **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. **M3.6 Phase 03-A 첫 실측 사이클 (2026-05-22)** — 5 항목 모두 0건 또는 간접 증명 박힘 (위임 false hit 0 / 재귀 마찰 0 — 단 재귀 차단 Hook 부재 발견 = work-pin 별 시점 / 에스컬레이션 0 / plan-auditor 가치 M3.6 plan 통과로 증명 / unity-bridge 영역 효과 간접 증명). 본문 수정 항목 없음.
 
-본 문서는 SubAgent 풀 9개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02/04 산출물(`../agents/<name>.md`).
+본 문서는 SubAgent 풀 9개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02/04 산출물(`../../.claude/agents/<name>.md`).
 
 ---
 
@@ -25,7 +25,7 @@
 
 옛 6 도메인(`netcode`/`gameplay`/`client`/`content`/`persistence`/`qa-sim`) → 새 9 SubAgent 매핑은 `../README.md` 옛 → 새 매핑 표 참조 (`knowledge-gc`는 옛 대응 없음, Phase 04 신설).
 
-각 SubAgent 디테일(입력/출력/툴 권한) = [`../agents/<name>.md`](../agents/) (Phase 02 산출물).
+각 SubAgent 디테일(입력/출력/툴 권한) = [`../../.claude/agents/<name>.md`](../../.claude/agents/) (Phase 02 산출물).
 
 ---
 
@@ -98,7 +98,7 @@ Codex γ 방식(4~7회 실측)에서 *코드 박기 전 설계 검증* 패턴 �
   - `/harness-review` 슬래시 (수동) — 본인이 점검 중 권유 시
   - `/session:end` 마감 시 권유 (사용자가 GO 줄 때만)
   - 사용자 명시 요청 ("knowledge 정리 부탁")
-- 작업: 비활성화 / 응축 / 승격 후보 식별 / 분해 (Phase 04 산출물 명세 = `../agents/knowledge-gc.md` + `../knowledge/_usage.md`)
+- 작업: 비활성화 / 응축 / 승격 후보 식별 / 분해 (Phase 04 산출물 명세 = `../../.claude/agents/knowledge-gc.md` + `../knowledge/_usage.md`)
 
 ### 4-4. 그 외 (수동 위임)
 
@@ -178,10 +178,10 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 본 정책 수정 시 *반드시* 함께 갱신:
 
 - [`../CLAUDE.md`](../CLAUDE.md) "🤖 SubAgent 풀" 섹션 (헌법 본문 표와 정합)
-- [`../agents/`](../agents/) (SubAgent 정의 9개 — Phase 02 산출물 8 + Phase 04 신설 `knowledge-gc` 1)
+- [`../../.claude/agents/`](../../.claude/agents/) (SubAgent 정의 9개 — Phase 02 산출물 8 + Phase 04 신설 `knowledge-gc` 1)
 - [`grade-and-risk.md`](grade-and-risk.md) (등급 → 처리 패턴 매핑)
 - [`review-tiering.md`](review-tiering.md) (reviewer 자동 호출 트리거)
-- [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 산출물 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 coordinator 단독 위임 구조로 강제 — line 6 신선도 주석 정합)
+- [`../../.claude/hooks/circuit-breaker.sh`](../../.claude/hooks/circuit-breaker.sh) (Phase 03 산출물 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 coordinator 단독 위임 구조로 강제 — line 6 신선도 주석 정합)
 
 ---
 

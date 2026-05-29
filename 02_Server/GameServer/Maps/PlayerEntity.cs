@@ -43,11 +43,14 @@ public class PlayerEntity
     public bool PendingJumpPressed { get; set; }
     public uint LastClientTick { get; set; }
 
-    // M3 Phase 06 Step 1 (combat state): 응급 전투 HP. 헌법 #1 — 서버만 mutate.
-    // 기본 100/100. `IsDead`는 derived: `Hp <= 0`. 음수 보호는 derived가 흡수
+    // M3 Phase 06 Step 1 (combat state): 서버 권위 전투 HP. 헌법 #1 — 서버만 mutate.
+    // Cross-review γ10 (β2 봉합): 옛 `= 100` 하드코딩 → 생성자에서 Stats.MaxHp/Hp로 초기화.
+    //   클래스별 HP(전사 150 / 원거리 80)가 권위 전투에 실제 반영됨 (옛 이중 진실 제거 —
+    //   Stats.Hp/MaxHp는 살아있는데 전투용 Hp/MaxHp는 100 고정이던 결함).
+    // `IsDead`는 derived: `Hp <= 0`. 음수 보호는 derived가 흡수
     // (`Hp = -5` 직접 set도 IsDead true이므로 후속 attack job이 idempotent하게 no-op).
-    public int Hp { get; set; } = 100;
-    public int MaxHp { get; set; } = 100;
+    public int Hp { get; set; }
+    public int MaxHp { get; set; }
     public bool IsDead => Hp <= 0;
 
     // M3 Phase 06 Step 1 (rate-limit hook): 마지막 공격 발생 tick(ms 단위) 기록.
@@ -112,5 +115,10 @@ public class PlayerEntity
         Position = position;
         Owner = owner;
         Stats = stats ?? PlayerStats.Warrior();
+        // Cross-review γ10 (β2 봉합): 권위 전투 HP를 클래스 스탯에서 초기화.
+        // migration(GameMap.AddPlayerWithId)은 이 직후 Hp를 이월 값으로 덮음 — MaxHp는 여기서 확정되어
+        // 옛 "MaxHp 100 고정" 결함도 함께 해소.
+        MaxHp = Stats.MaxHp;
+        Hp = Stats.Hp;
     }
 }
