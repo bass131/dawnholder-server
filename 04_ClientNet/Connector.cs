@@ -22,16 +22,16 @@ namespace Dawnholder.Client.Net;
 /// </summary>
 public class Connector
 {
-    // m_SessionFactory: Connect() 한 번 호출에 한 번 set. 같은 Connector 인스턴스로
+    // _sessionFactory: Connect() 한 번 호출에 한 번 set. 같은 Connector 인스턴스로
     // 다중 Connect를 부르는 시나리오는 정의되지 않음 (필요 시 별도 인스턴스).
-    Func<ClientSession>? m_SessionFactory;
+    Func<ClientSession>? _sessionFactory;
 
     /// <summary>
     /// 지정된 EndPoint로 비동기 connect 시도. count는 같은 endpoint로 N번 동시 시도.
     /// </summary>
     public void Connect(IPEndPoint endPoint, Func<ClientSession> sessionFactory, int count = 1)
     {
-        m_SessionFactory = sessionFactory;
+        _sessionFactory = sessionFactory;
 
         for (int i = 0; i < count; i++)
         {
@@ -72,7 +72,7 @@ public class Connector
     {
         if (args.SocketError == SocketError.Success)
         {
-            ClientSession session = m_SessionFactory!.Invoke();
+            ClientSession session = _sessionFactory!.Invoke();
             session.Start(args.ConnectSocket!);
             session.OnConnected(args.RemoteEndPoint!);
         }

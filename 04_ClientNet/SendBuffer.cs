@@ -48,19 +48,19 @@ public class SendBufferHelper
 }
 
 /// <summary>
-/// 단순 chunk 버퍼: 앞에서부터 m_UsedSize 만큼 채워나가는 방식.
+/// 단순 chunk 버퍼: 앞에서부터 _usedSize 만큼 채워나가는 방식.
 /// Open()으로 자리 예약 → 직렬화 → Close()로 실제 사용량 커밋.
 /// </summary>
 public class SendBuffer
 {
-    readonly byte[] m_Buffer;
-    int m_UsedSize;
+    readonly byte[] _buffer;
+    int _usedSize;
 
-    public int FreeSize => m_Buffer.Length - m_UsedSize;
+    public int FreeSize => _buffer.Length - _usedSize;
 
     public SendBuffer(int chunkSize)
     {
-        m_Buffer = new byte[chunkSize];
+        _buffer = new byte[chunkSize];
     }
 
     /// <summary>reserveSize 만큼의 자리를 *예약만* (커서는 안 움직임).</summary>
@@ -69,14 +69,14 @@ public class SendBuffer
         if (reserveSize > FreeSize)
             return default;
 
-        return new ArraySegment<byte>(m_Buffer, m_UsedSize, reserveSize);
+        return new ArraySegment<byte>(_buffer, _usedSize, reserveSize);
     }
 
     /// <summary>예약한 영역 중 실제 usedSize 만큼 사용 확정 → 커서 전진.</summary>
     public ArraySegment<byte> Close(int usedSize)
     {
-        var segment = new ArraySegment<byte>(m_Buffer, m_UsedSize, usedSize);
-        m_UsedSize += usedSize;
+        var segment = new ArraySegment<byte>(_buffer, _usedSize, usedSize);
+        _usedSize += usedSize;
         return segment;
     }
 }

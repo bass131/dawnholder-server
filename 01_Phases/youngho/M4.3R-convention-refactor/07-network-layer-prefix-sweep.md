@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.3R
 phase: 07
 title: 네트워크 레이어 m_ prefix 일괄 (서버 Network/ + ClientNet 자매)
-status: pending
+status: done
 grade: 보통
 domain: cross
 estimated: 1~2h
@@ -11,7 +11,7 @@ estimated: 1~2h
 
 # Phase 07: 네트워크 레이어 m_ prefix 일괄 (rank 7)
 
-> **상태**: pending
+> **상태**: done (2026-05-29 — m_ 필드 → _camelCase + 파라미터 → camelCase 정규화, build 0/0 test 322/0/4)
 > **마일스톤**: M4.3R
 > **등급**: 보통 (기계적 rename, cross 도메인 자매 동시변경)
 > **담당**: server SubAgent + client SubAgent (ADR-012 자매 — 동시 변경, Coordinator 조율)

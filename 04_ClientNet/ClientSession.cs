@@ -103,18 +103,18 @@ public abstract class ClientSession
 {
     #region Private Member Variables
 
-    protected Socket? m_Socket;
-    protected int m_disconnected = 0; // 0 = 연결됨, 1 = 끊김. Interlocked로만 변경.
+    protected Socket? _socket;
+    protected int _disconnected = 0; // 0 = 연결됨, 1 = 끊김. Interlocked로만 변경.
 
-    readonly RecvBuffer m_recvBuffer = new RecvBuffer(65535);
+    readonly RecvBuffer _recvBuffer = new RecvBuffer(65535);
 
-    // m_lock: Send 호출이 main thread / socket worker thread 양쪽에서 들어올 수
+    // _lock: Send 호출이 main thread / socket worker thread 양쪽에서 들어올 수
     // 있어 큐 보호 필요. 클라라고 단순화 안 한 이유 = 위 메모의 두 스레드 시나리오.
-    protected readonly object m_lock = new object();
-    protected readonly Queue<ArraySegment<byte>> m_SendQueue = new Queue<ArraySegment<byte>>();
-    protected readonly List<ArraySegment<byte>> m_PendingList = new List<ArraySegment<byte>>();
-    protected readonly SocketAsyncEventArgs m_SendArgs = new SocketAsyncEventArgs();
-    protected readonly SocketAsyncEventArgs m_RecvArgs = new SocketAsyncEventArgs();
+    protected readonly object _lock = new object();
+    protected readonly Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
+    protected readonly List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
+    protected readonly SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
+    protected readonly SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
 
     #endregion
 
@@ -125,20 +125,20 @@ public abstract class ClientSession
 
     void Clear()
     {
-        lock (m_lock)
+        lock (_lock)
         {
-            m_SendQueue.Clear();
-            m_PendingList.Clear();
+            _sendQueue.Clear();
+            _pendingList.Clear();
         }
     }
 
     /// <summary>Connector가 connect 성공 후 호출. 비동기 수신 시작.</summary>
     public void Start(Socket socket)
     {
-        m_Socket = socket;
+        _socket = socket;
 
-        m_RecvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
-        m_SendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
+        _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
+        _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
 
         RegisterRecv();
     }
@@ -146,11 +146,11 @@ public abstract class ClientSession
     /// <summary>패킷 1개를 전송 큐에 넣고, 대기 중이 없으면 즉시 전송 시작.</summary>
     public void Send(ArraySegment<byte> sendBuff)
     {
-        lock (m_lock)
+        lock (_lock)
         {
-            m_SendQueue.Enqueue(sendBuff);
+            _sendQueue.Enqueue(sendBuff);
 
-            if (m_PendingList.Count == 0)
+            if (_pendingList.Count == 0)
                 RegisterSend();
         }
     }
@@ -161,12 +161,12 @@ public abstract class ClientSession
         if (sendBuffList.Count == 0)
             return;
 
-        lock (m_lock)
+        lock (_lock)
         {
             foreach (ArraySegment<byte> sendBuff in sendBuffList)
-                m_SendQueue.Enqueue(sendBuff);
+                _sendQueue.Enqueue(sendBuff);
 
-            if (m_PendingList.Count == 0)
+            if (_pendingList.Count == 0)
                 RegisterSend();
         }
     }
@@ -175,18 +175,18 @@ public abstract class ClientSession
     public void Disconnect()
     {
         // Interlocked로 0→1 전이를 원자적으로 보장. 다른 스레드가 동시에 호출해도 1회만 실행.
-        if (Interlocked.Exchange(ref m_disconnected, 1) == 1)
+        if (Interlocked.Exchange(ref _disconnected, 1) == 1)
             return;
 
-        OnDisconnected(m_Socket!.RemoteEndPoint!);
+        OnDisconnected(_socket!.RemoteEndPoint!);
 
         // Cross-review γ10 (β13/A5 봉합 + 2라운드 정제): Shutdown / Close / Clear 각 단계 독립 보호.
         // Shutdown throw → Close 여전히 실행(FD 누수 차단), Close throw → Clear 여전히 실행.
         // 서버 Session.cs와 자매 봉합 (ADR-012 Y2 분리 정합 — 양쪽 동시 수정).
-        try { m_Socket!.Shutdown(SocketShutdown.Both); }
+        try { _socket!.Shutdown(SocketShutdown.Both); }
         catch (Exception e) { Console.WriteLine($"[ClientSession] socket Shutdown 예외 (이미 reset?) — 무시: {e.Message}"); }
 
-        try { m_Socket!.Close(); }
+        try { _socket!.Close(); }
         catch (Exception e) { Console.WriteLine($"[ClientSession] socket Close 예외 — 무시: {e.Message}"); }
 
         Clear();
@@ -196,25 +196,25 @@ public abstract class ClientSession
 
     void RegisterSend()
     {
-        if (m_disconnected == 1)
+        if (_disconnected == 1)
             return;
 
         // 큐에 쌓인 모든 segment를 PendingList로 옮김 → 한 번의 SendAsync 호출로 묶어 보냄.
-        while (m_SendQueue.Count > 0)
+        while (_sendQueue.Count > 0)
         {
-            ArraySegment<byte> buffer = m_SendQueue.Dequeue();
-            m_PendingList.Add(buffer);
+            ArraySegment<byte> buffer = _sendQueue.Dequeue();
+            _pendingList.Add(buffer);
         }
 
-        m_SendArgs.BufferList = m_PendingList;
+        _sendArgs.BufferList = _pendingList;
 
         try
         {
-            bool pending = m_Socket!.SendAsync(m_SendArgs);
+            bool pending = _socket!.SendAsync(_sendArgs);
 
             // SendAsync가 즉시 완료(=동기 처리)된 경우엔 Completed 이벤트가 안 뜸 → 직접 호출.
             if (pending == false)
-                OnSendCompleted(null, m_SendArgs);
+                OnSendCompleted(null, _sendArgs);
         }
         catch (Exception e)
         {
@@ -224,18 +224,18 @@ public abstract class ClientSession
 
     void OnSendCompleted(object? sender, SocketAsyncEventArgs args)
     {
-        lock (m_lock)
+        lock (_lock)
         {
             if (args.BytesTransferred > 0 && args.SocketError == SocketError.Success)
             {
                 try
                 {
-                    m_SendArgs.BufferList = null;
-                    m_PendingList.Clear();
+                    _sendArgs.BufferList = null;
+                    _pendingList.Clear();
 
-                    OnSend(m_SendArgs.BytesTransferred);
+                    OnSend(_sendArgs.BytesTransferred);
 
-                    if (m_SendQueue.Count > 0)
+                    if (_sendQueue.Count > 0)
                         RegisterSend();
                 }
                 catch (Exception ex)
@@ -252,19 +252,19 @@ public abstract class ClientSession
 
     void RegisterRecv()
     {
-        if (m_disconnected == 1)
+        if (_disconnected == 1)
             return;
 
-        m_recvBuffer.Clean();
-        ArraySegment<byte> segment = m_recvBuffer.WriteSegment;
-        m_RecvArgs.SetBuffer(segment.Array, segment.Offset, segment.Count);
+        _recvBuffer.Clean();
+        ArraySegment<byte> segment = _recvBuffer.WriteSegment;
+        _recvArgs.SetBuffer(segment.Array, segment.Offset, segment.Count);
 
         try
         {
-            bool pending = m_Socket!.ReceiveAsync(m_RecvArgs);
+            bool pending = _socket!.ReceiveAsync(_recvArgs);
 
             if (pending == false)
-                OnRecvCompleted(null, m_RecvArgs);
+                OnRecvCompleted(null, _recvArgs);
         }
         catch (Exception e)
         {
@@ -279,20 +279,20 @@ public abstract class ClientSession
             try
             {
                 // Write 커서 이동. 실패 = 버퍼 invariant 깨짐 = 즉시 끊고 종료.
-                if (m_recvBuffer.OnWrite(args.BytesTransferred) == false)
+                if (_recvBuffer.OnWrite(args.BytesTransferred) == false)
                 {
                     Disconnect();
                     return;
                 }
 
-                int processedSize = OnRecv(m_recvBuffer.ReadSegment);
-                if (processedSize < 0 || processedSize > m_recvBuffer.DataSize)
+                int processedSize = OnRecv(_recvBuffer.ReadSegment);
+                if (processedSize < 0 || processedSize > _recvBuffer.DataSize)
                 {
                     Disconnect();
                     return;
                 }
 
-                if (m_recvBuffer.OnRead(processedSize) == false)
+                if (_recvBuffer.OnRead(processedSize) == false)
                 {
                     Disconnect();
                     return;

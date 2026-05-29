@@ -13,21 +13,21 @@ namespace Dawnholder.Server.Network
 
     public class JobQueue : IJobQueue
     {
-        Queue<Action> _JobQueue = new Queue<Action>();
-        object m_Lock = new object();
-        bool m_Flush = false;
+        Queue<Action> _jobQueue = new Queue<Action>();
+        object _lock = new object();
+        bool _flush = false;
 
         public void Push(Action job)
         {
             bool flush = false;
 
-            lock (m_Lock)
+            lock (_lock)
             {
-                _JobQueue.Enqueue(job);
+                _jobQueue.Enqueue(job);
 
-                if(m_Flush == false)
+                if(_flush == false)
                 {
-                    flush = m_Flush = true;
+                    flush = _flush = true;
                 }
             }
 
@@ -37,14 +37,14 @@ namespace Dawnholder.Server.Network
 
         Action? Pop()
         {
-            lock (m_Lock)
+            lock (_lock)
             {
-                if (_JobQueue.Count == 0)
+                if (_jobQueue.Count == 0)
                 {
-                    m_Flush = false;
+                    _flush = false;
                     return null;
                 }
-                return _JobQueue.Dequeue();
+                return _jobQueue.Dequeue();
             }
         }
 
