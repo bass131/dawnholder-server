@@ -9,7 +9,7 @@ namespace Dawnholder.Server.GameServer.Maps;
 
 // Phase 02 (M2): 단일 GameMap actor. 단일 thread Tick → lock 없음.
 // Phase 03: IOCP→tick 마샬링 ConcurrentQueue + AddPlayer/RemovePlayer.
-// Phase 04: intent 적용 + 매 SnapshotTickInterval(=5) tick마다 S_Snapshot 브로드캐스트.
+// Phase 04: intent 적용 + 매 SnapshotTickInterval(=2) tick마다 S_Snapshot 브로드캐스트.
 // M3 Phase 06 Step 2 (응급 전투): `_enemies` Dictionary 분리 보관 +
 //   ctor에서 Normal enemy 1마리 spawn(맵 중간 zone 고정 위치). entity id는 player와
 //   공유 풀(`_nextEntityId`)에서 발급 — collision 방지 + S_HitResult.targetEntityId 라우팅
@@ -23,6 +23,29 @@ public class GameMap
     // M3 Phase 06 Step 2: enemy 보관소. player와 *분리* — broadcast 대상은 players만 (enemy는
     // owner session X). 같은 entity id 풀에서 발급해 id collision 차단.
     readonly Dictionary<int, EnemyEntity> _enemies = new();
+
+    // M4.3 Phase 07: Normal enemy respawn 대기 큐.
+    //
+    // **설계 결정 — 별도 리스트 vs _enemies 안 IsWaitingRespawn 필드**:
+    //   별도 리스트를 선택한 이유: IsDead enemy가 _enemies에 남아있으면 ProcessAttack의
+    //   GetEnemyById → IsDead silent drop 경로에 걸려 respawn 대기 중인 적에게
+    //   공격 메시지가 계속 들어올 때 O(1) drop은 유지되지만 _enemies 순회 비용이 늘어남.
+    //   분리 보관이 "살아있는 적만 _enemies" invariant를 유지 — ProcessAttack/aggro 판정 등
+    //   모든 기존 로직이 respawn 대기 entity를 자연스럽게 무시.
+    //
+    // **Boss 미포함 이유**: Boss는 StageClear 1회 이후 respawn 없음. 이 큐에 넣지 않음.
+    //   죽은 Boss는 ProcessAttack의 _enemies.Remove로 완전 소멸 (기존 동작 유지).
+    //
+    // **헌법 #5**: tick thread invariant — lock 없음 (단일 actor 보장).
+    readonly List<EnemyEntity> _respawnQueue = new();
+
+    // M4.3 Phase 07: Normal enemy respawn 대기 틱 수 (tick 기반 타이머 — 헌법 #5 await 금지).
+    // 20 TPS 기준 5초 = 100 tick.
+    // **설계 결정 — 왜 100tick(5초)인가**:
+    //   발표 데모 반복 시연 위해 "금방 다시 나타나는" 것이 필요. 1초(20tick)는 너무 짧아
+    //   플레이어가 respawn 충격을 받을 수 있고, 10초(200tick)는 너무 길어 데모 흐름 끊김.
+    //   5초는 플레이어가 respawn 위치로 걸어오는 시간과 비슷한 자연스러운 값.
+    const int NormalEnemyRespawnTicks = 100; // 5초 @ 20TPS
 
     // M4.2 Phase 02: entity id 발급기.
     //
@@ -119,6 +142,9 @@ public class GameMap
     // M4.2 Phase 01 (결정 2 — Spawn 모듈화): SpawnNormalEnemy + SpawnBoss 통합.
     // 옛 두 helper는 kind 인자 하나 차이밖에 없었음 → 통합 SpawnEnemy(kind, x, y, maxHp).
     //
+    // M4.3 Phase 07: Normal enemy에 EnemyStats.NormalDefault() 자동 주입.
+    // Boss는 default stats (MoveSpeed/AggroRange/PatrolRange = 0) — AI 미적용 (Phase 09).
+    //
     // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).
     // 헌법 #5 — 동기 코드만, await/Task.Delay/Thread.Sleep 금지.
     //
@@ -127,7 +153,9 @@ public class GameMap
     internal EnemyEntity SpawnEnemy(EnemyKind kind, float x, float y, int maxHp)
     {
         int id = AllocId();
-        EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp);
+        // Normal enemy는 AI 파라미터 포함 stats 주입. Boss는 default (AI 없음).
+        EnemyStats stats = kind == EnemyKind.Normal ? EnemyStats.NormalDefault() : default;
+        EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp, stats);
         _enemies.Add(id, e);
         return e;
     }
@@ -307,6 +335,16 @@ public class GameMap
             }
 
             _enemies.Remove(target.EntityId);
+
+            // M4.3 Phase 07: Normal enemy respawn 큐 등록.
+            // Boss는 StageClear 1회성 → respawn 없음 (위 분기에서 처리 완료).
+            // _respawnQueue에 원본 entity 보관 — SpawnX/SpawnY/Stats 재사용.
+            // RespawnTicksRemaining 세팅 = tick 카운트다운 시작.
+            if (target.Kind == EnemyKind.Normal)
+            {
+                target.RespawnTicksRemaining = NormalEnemyRespawnTicks;
+                _respawnQueue.Add(target);
+            }
         }
     }
 
@@ -320,7 +358,7 @@ public class GameMap
     ///   - owner == except (발신자 자기 자신 제외 — broadcast except self 패턴)
     ///   - owner.IsClosing (Phase 10 lifecycle race 재발 봉합 — disconnect 중인 세션에 Send X)
     ///
-    /// **N² 비용 인지**: 응급 모드 데모(N≤4) 환경에선 무시 가능 (250ms마다 16 패킷 = 64/s).
+    /// **N² 비용 인지**: 응급 모드 데모(N≤4) 환경에선 무시 가능 (100ms마다 16 패킷 = 160/s).
     /// M4+ 다인 환경에선 S_Snapshot 배열 형태 + PDL 도구 확장 필요.
     /// </summary>
     public void BroadcastToAll(ArraySegment<byte> payload, GameSession? except = null)
@@ -383,7 +421,7 @@ public class GameMap
             p.RecordPosition(tickNumber, p.Position);
         }
 
-        // 3) Snapshot 브로드캐스트. 매 5 tick(=250ms).
+        // 3) Snapshot 브로드캐스트. 매 2 tick(=100ms).
         //    헌법 #3 (Trust Boundary): 좌표는 *서버가 정한 것만* 전송. 클라 보고 받지 않음.
         //    **M3 Phase 04**: 각 entity별 packet을 *전원에게* broadcast (자기 자신 포함).
         //      - 자기 entity packet: reconcile 진입 (lastAckedClientTick 본인 것만 의미)
@@ -404,6 +442,223 @@ public class GameMap
                     lastAckedClientTick = p.LastClientTick
                 };
                 BroadcastToAll(pkt.Write()); // 자기 자신 포함 전원
+            }
+        }
+
+        // 4) M4.3 Phase 07: Enemy FSM update 루프 (Normal enemy만 AI 적용).
+        //
+        // **헌법 #1 (Server Authority)**: enemy 위치/상태 판정은 서버 전담.
+        // **헌법 #5 (틱 블로킹 금지)**: 동기 O(N) 처리만. await/Sleep/DB 없음.
+        //
+        // **2D 사이드스크롤 단순화**: X축 수평 이동만. Y/중력은 이번 scope 밖(적은 지상 고정).
+        //
+        // **SnapshotTickInterval 활용**: 플레이어 snapshot과 동일 주기(100ms@2tick)로 broadcast.
+        //   적이 느리므로 100ms 간격으로도 클라에서 보간 충분. Phase 08에서 조정 예정.
+        UpdateEnemies(tickNumber);
+
+        // 5) M4.3 Phase 07: Respawn 처리 (Normal enemy 전용).
+        ProcessRespawns(tickNumber);
+    }
+
+    /// <summary>
+    /// M4.3 Phase 07: Normal enemy AI FSM 1틱 진행.
+    ///
+    /// **FSM 전이 규칙**:
+    ///   Patrol → Chase: 같은 맵 player 중 |dx| <= AggroRange인 가장 가까운 player 발견 시.
+    ///   Chase → Patrol: target이 사라지거나 |dx| > AggroRange * 1.5 (de-aggro 히스테리시스).
+    ///   Patrol 경계: SpawnX ± PatrolRange 도달 시 PatrolDir 반전.
+    ///
+    /// **히스테리시스(hysteresis)**: aggro 진입/이탈 거리를 같게 두면 경계에서 Chase↔Patrol가
+    ///   1틱마다 토글(flickering). de-aggro 거리를 1.5× 더 크게 두면 안정화.
+    ///
+    /// **S_EntityState broadcast**: SnapshotTickInterval 마다 모든 Normal enemy 위치/상태 전송.
+    ///   100ms 시작 — Phase 08 클라 보간 체감 보고 주기 조정 예정.
+    /// </summary>
+    void UpdateEnemies(long tickNumber)
+    {
+        float dt = Constants.TickDuration; // 1틱 시간 (초)
+        bool shouldBroadcast = tickNumber % Constants.SnapshotTickInterval == 0;
+
+        foreach (EnemyEntity enemy in _enemies.Values)
+        {
+            // Boss는 이번 Phase에서 AI 없음 (Idle 고정). Phase 09에서 별도 behavior.
+            if (enemy.Kind != EnemyKind.Normal) continue;
+
+            float moveSpeed = enemy.Stats.MoveSpeed;
+            float aggroRange = enemy.Stats.AggroRange;
+            float patrolRange = enemy.Stats.PatrolRange;
+
+            // --- aggro 판정 (Patrol 및 Chase 상태 모두에서 매 tick 재판정) ---
+            // 같은 맵 player 중 |dx| <= AggroRange인 가장 가까운 player를 탐색.
+            // "같은 맵"은 이미 _players가 이 맵 소속이므로 별도 필터 불필요.
+            PlayerEntity? closest = null;
+            float closestDist = float.MaxValue;
+            foreach (PlayerEntity p in _players)
+            {
+                float dx = p.Position.X - enemy.X;
+                float absDx = dx < 0 ? -dx : dx;
+                if (absDx <= aggroRange && absDx < closestDist)
+                {
+                    closest = p;
+                    closestDist = absDx;
+                }
+            }
+
+            // --- 상태 전이 ---
+            if (enemy.State == EnemyState.Patrol)
+            {
+                if (closest != null)
+                {
+                    // aggro 진입 → Chase 전환
+                    enemy.State = EnemyState.Chase;
+                    enemy.TargetEntityId = closest.EntityId;
+                }
+            }
+            else if (enemy.State == EnemyState.Chase)
+            {
+                // 타겟 유효성 재확인
+                // (1) TargetEntityId가 아직 _players에 있는지 (portal 이동/disconnect 대응)
+                // (2) 거리가 de-aggro 임계 초과하지 않는지
+                PlayerEntity? target = null;
+                if (enemy.TargetEntityId.HasValue)
+                {
+                    // _players에서 targetId로 찾기 (GetPlayer 사용)
+                    target = GetPlayer(enemy.TargetEntityId.Value);
+                }
+
+                bool targetLost = target == null;
+                bool deAggro = false;
+                if (target != null)
+                {
+                    float dx = target.Position.X - enemy.X;
+                    float absDx = dx < 0 ? -dx : dx;
+                    deAggro = absDx > aggroRange * 1.5f;
+                }
+
+                if (targetLost || deAggro)
+                {
+                    // de-aggro → Patrol 복귀
+                    enemy.State = EnemyState.Patrol;
+                    enemy.TargetEntityId = null;
+                    target = null;
+                }
+                else if (closest != null && closest.EntityId != enemy.TargetEntityId)
+                {
+                    // 더 가까운 target으로 교체 (선택적 최적화 — 현재 target은 이미 범위 안)
+                    enemy.TargetEntityId = closest.EntityId;
+                    target = closest;
+                }
+            }
+
+            // --- 이동 처리 ---
+            float step = moveSpeed * dt;
+
+            if (enemy.State == EnemyState.Patrol)
+            {
+                // SpawnX 중심 ±PatrolRange 왕복
+                enemy.X += enemy.PatrolDir * step;
+
+                // 경계 clamp + 방향 반전
+                float leftBound  = enemy.SpawnX - patrolRange;
+                float rightBound = enemy.SpawnX + patrolRange;
+                if (enemy.X <= leftBound)
+                {
+                    enemy.X = leftBound;
+                    enemy.PatrolDir = 1;
+                }
+                else if (enemy.X >= rightBound)
+                {
+                    enemy.X = rightBound;
+                    enemy.PatrolDir = -1;
+                }
+            }
+            else if (enemy.State == EnemyState.Chase && enemy.TargetEntityId.HasValue)
+            {
+                PlayerEntity? target = GetPlayer(enemy.TargetEntityId.Value);
+                if (target != null)
+                {
+                    float dx = target.Position.X - enemy.X;
+                    if (dx > 0f)
+                        enemy.X += step;
+                    else if (dx < 0f)
+                        enemy.X -= step;
+                    // dx == 0f 정확히 겹치면 이동 없음 (공격 판정은 ProcessAttack에서)
+                }
+            }
+
+            // --- S_EntityState broadcast ---
+            // SnapshotTickInterval 마다 전원에게 전송.
+            // **trade-off**: 매 틱 전체 vs 변경분만 vs SnapshotTickInterval 주기.
+            //   현재 = SnapshotTickInterval 주기(100ms)로 전체 Normal enemy broadcast.
+            //   매 틱 전체는 20×N 패킷/s — Normal enemy 1~5마리 수준이면 40~100/s으로
+            //   데모 환경에서도 부담. SnapshotTickInterval 맞춤으로 player snapshot과 동기.
+            //   Phase 08 클라 보간 체감 보고 후 조정 예정.
+            if (shouldBroadcast)
+            {
+                S_EntityState statePacket = new S_EntityState
+                {
+                    entityId = enemy.EntityId,
+                    x = enemy.X,
+                    y = enemy.Y,
+                    state = (byte)enemy.State,
+                };
+                BroadcastToAll(statePacket.Write());
+            }
+        }
+    }
+
+    /// <summary>
+    /// M4.3 Phase 07: Normal enemy respawn 처리 (tick 카운트다운 기반 — 헌법 #5 정합).
+    ///
+    /// **tick 카운트다운 패턴**:
+    ///   await/Task.Delay/Thread.Sleep 금지 (헌법 #5). 대신 RespawnTicksRemaining 필드를
+    ///   매 tick 감소 — 0 도달 시 SpawnX/SpawnY 위치에 새 entity 생성.
+    ///
+    /// **새 entityId 발급**:
+    ///   respawn = 논리적으로 새 적 출현. 기존 entityId는 S_EntityDeath로 이미 클라에서
+    ///   despawn됐으므로 재사용 X (헌법 #2 "은퇴 ID 재사용 금지" 정합).
+    ///   AllocId()로 새 id 발급 → 클라에게 S_EntitySpawn 전송 (살아있는 적으로 인식).
+    ///
+    /// **S_EntitySpawn broadcast**:
+    ///   respawn 시 전원에게 new S_EntitySpawn 브로드캐스트. 클라는 이를 받아
+    ///   새 적 sprite를 생성 (Phase 08 처리).
+    /// </summary>
+    void ProcessRespawns(long tickNumber)
+    {
+        // 역방향 순회 — 리스트에서 항목 제거 시 인덱스 어긋남 방지
+        for (int i = _respawnQueue.Count - 1; i >= 0; i--)
+        {
+            EnemyEntity dead = _respawnQueue[i];
+            dead.RespawnTicksRemaining--;
+
+            if (dead.RespawnTicksRemaining <= 0)
+            {
+                _respawnQueue.RemoveAt(i);
+
+                // 새 entity 생성 (새 entityId, SpawnX/SpawnY 위치, 원본 MaxHp + Stats)
+                int newId = AllocId();
+                EnemyEntity respawned = new EnemyEntity(
+                    newId,
+                    dead.Kind,
+                    dead.SpawnX,
+                    dead.SpawnY,
+                    dead.MaxHp,
+                    dead.Stats);
+                _enemies.Add(newId, respawned);
+
+                Console.WriteLine($"[Map] Enemy respawned: newId={newId} at ({respawned.SpawnX},{respawned.SpawnY})");
+
+                // 전원에게 S_EntitySpawn — 클라는 새 적 sprite 생성
+                S_EntitySpawn spawnPacket = new S_EntitySpawn
+                {
+                    entityId = respawned.EntityId,
+                    entityKind = (byte)respawned.Kind,
+                    x = respawned.X,
+                    y = respawned.Y,
+                    currentHp = respawned.Hp,
+                    maxHp = respawned.MaxHp,
+                };
+                BroadcastToAll(spawnPacket.Write());
             }
         }
     }
