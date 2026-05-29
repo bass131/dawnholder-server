@@ -2,7 +2,8 @@
 
 > **우리가 채택한 규칙**의 단일 진실. 책 이론·함정은 [`refs/`](refs/) 참고서(GPP 19 + 교과서 10)로 분리했다(섞지 않음). 작업별 라우팅 진입점은 [`INDEX.md`](INDEX.md).
 > 모든 SubAgent는 코드 작성 *전* `INDEX.md`에서 작업 유형을 찾아 본 문서의 해당 규칙 + refs를 참조한다 (강제 = §5).
-> **우선순위**: 헌법(`CLAUDE.md`) > 본 문서 > refs. **성격**: 이상적 도착점 — 기존 코드를 정당화하지 않고 본 기준으로 측정·리팩토링한다 (현재 갭 = 부록 A).
+> **우선순위**: 헌법(`CLAUDE.md`) > 본 문서 > refs. 
+> **성격**: 이상적 도착점 — 기존 코드를 정당화하지 않고 본 기준으로 측정·리팩토링한다 (현재 갭 = 부록 A).
 
 ---
 
@@ -74,12 +75,12 @@
 
 ## 부록 A. 현재 갭 (본 Convention 기준 리팩토링 대상)
 
-| 대상 | 현재 | 위반 | 분리안 | 타이밍 |
-|------|------|------|--------|--------|
-| `GameMap` (665줄) | 전투+AI+respawn+broadcast (4 도메인) | §2.2 | CombatSystem / AISystem / RespawnSystem | 리팩토링 Phase |
-| `UnityClientSession` (665줄) | 패킷 핸들러 12 inline | §3.2 | IPacketHandler + dispatch | 리팩토링 Phase |
-| `GameSession` (700줄) | rate-limit/handshake 등 ~95줄 추출 가능 (migration 160줄 잔류) | §2.2 부분 | 부분 추출 | M4.4 |
-| `EnemyRegistry` (240줄) | GameObject 빌더 결합 | §3.1 | 빌더 추출 | 선택 |
+| 대상                         | 현재                                                           | 위반      | 분리안                                  | 타이밍         |
+| ---------------------------- | -------------------------------------------------------------- | --------- | --------------------------------------- | -------------- |
+| `GameMap` (665줄)            | 전투+AI+respawn+broadcast (4 도메인)                           | §2.2      | CombatSystem / AISystem / RespawnSystem | 리팩토링 Phase |
+| `UnityClientSession` (665줄) | 패킷 핸들러 12 inline                                          | §3.2      | IPacketHandler + dispatch               | 리팩토링 Phase |
+| `GameSession` (700줄)        | rate-limit/handshake 등 ~95줄 추출 가능 (migration 160줄 잔류) | §2.2 부분 | 부분 추출                               | M4.4           |
+| `EnemyRegistry` (240줄)      | GameObject 빌더 결합                                           | §3.1      | 빌더 추출                               | 선택           |
 
 → 리팩토링은 본 Convention 확정 + 강제(§5) 적용 후 별도 Phase에서.
 
@@ -87,8 +88,8 @@
 
 ## 변경 이력
 
-| 날짜 | 버전 | 변경 |
-|------|------|------|
-| 2026-05-29 | v1 | 최초 — God class(GameMap) 발견, 4 권위서 정독 |
-| 2026-05-29 | v2 | refs 33파일 + INDEX 연결, `ServerCore` 가공경로 정정 |
-| 2026-05-29 | v3 | **슬림화** — 책 이론/인용 → refs 링크 위임, 우리 규칙 선언만 (≈218→130줄). prefix `_camelCase` 확정. |
+| 날짜       | 버전 | 변경                                                                                                 |
+| ---------- | ---- | ---------------------------------------------------------------------------------------------------- |
+| 2026-05-29 | v1   | 최초 — God class(GameMap) 발견, 4 권위서 정독                                                        |
+| 2026-05-29 | v2   | refs 33파일 + INDEX 연결, `ServerCore` 가공경로 정정                                                 |
+| 2026-05-29 | v3   | **슬림화** — 책 이론/인용 → refs 링크 위임, 우리 규칙 선언만 (≈218→130줄). prefix `_camelCase` 확정. |

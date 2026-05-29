@@ -47,6 +47,7 @@
 | ADR-024 | false-promise 주기적 감사 cadence (M3.7 — 누적 12건+ Rule of Three 3회 통과, 마일스톤 마감 + ad-hoc X건 트리거) | [harness/ADR-024-false-promise-cadence.md](harness/ADR-024-false-promise-cadence.md) |
 | ADR-025 | CONTEXT 3종 + 학습 일지 트랙 B 은퇴, work-pin 단일 핸드오프 (M4.1 — ADR-013 회고/ADR-023 CONTEXT/ADR-022 트랙 B 부분 supersede) | [harness/ADR-025-retire-context-trio-and-learning-track.md](harness/ADR-025-retire-context-trio-and-learning-track.md) |
 | ADR-027 | 클라 Bootstrap(코드 주도 RuntimeInitialize) + Persistent Services + 연결 생명주기 A안 (M4.2 — ADR-021 scene-lifecycle 확장, ① DontDestroyOnLoad-per-service WIP supersede, B/로그인은 M5 이월) | [harness/ADR-027-client-bootstrap-persistent-services.md](harness/ADR-027-client-bootstrap-persistent-services.md) |
+| ADR-028 | Code Convention 수립 (GPP 19 + 게임서버 교과서 10 참고서 + 우리 규칙 + 강제 4중) — God class 분리 결정 기준, refs/CODE_CONVENTION/INDEX 3층 | [harness/ADR-028-code-convention.md](harness/ADR-028-code-convention.md) |
 
 ---
 

@@ -194,3 +194,15 @@ PDL 변경이 박힌 commit은 *반드시* commit message에 명시:
 - **NET Standard 2.1 vs .NET 10**: "Standard = API 호환 baseline. 2.1은 Unity .NET Standard 2.1 컴파일 호환. 10은 서버 전용"
 
 trade-off 항상 박음 — 결정의 두 길 + 안 고른 이유.
+
+---
+
+## Code Convention 참조 (필수 — ADR-028)
+
+코드를 작성하기 *전에* [`00_Document/conventions/INDEX.md`](../../00_Document/conventions/INDEX.md)에서 현재 작업 유형을 찾아 연결된 규칙을 참조한다:
+
+- **`INDEX.md`** — 작업 유형 → [CODE_CONVENTION 규칙 + refs 패턴/장 + 헌법] 라우팅 진입점
+- **`CODE_CONVENTION.md`** — 우리가 채택한 규칙. 특히 **§2.2 God class 분리**(2+ 도메인이면 컨테이너[상태+tick 엔진]+System[로직] 분리) + **§0.3 과한 추상화 경계**(과분할도 부채)
+- **`refs/`** — Game Programming Patterns 19패턴 + 게임 서버 프로그래밍 교과서 10장 참고서 (작업에 필요한 파일만 핀포인트 로드)
+
+**새 클래스/메서드 추가 시 §2.2 점검 의무** — 컨테이너에 로직을 박기 전에 "이게 2+ 도메인인가?"를 자문. reviewer가 축 6으로 자동 점검한다(위반 시 🔴).
