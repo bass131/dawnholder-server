@@ -2,7 +2,7 @@
 owner: youngho
 milestone: M4.3R
 title: Code Convention 전체 리팩토링 (God class 분리 + 네이밍 정합)
-status: planned
+status: done
 grade: 대규모
 risk: trust-boundary
 estimated: 14~21h (총합, 7 Phase)
