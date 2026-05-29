@@ -295,7 +295,7 @@ public class EnemyAiTests
     ///   - 새 entity는 SpawnX/SpawnY에 배치, HP는 MaxHp.
     ///   - 새 entityId != 옛 entityId (헌법 #2 ID 재사용 금지).
     ///
-    /// **NormalEnemyRespawnTicks**: GameMap 내부 const(100). 리플렉션으로 읽거나
+    /// **NormalEnemyRespawnTicks**: RespawnSystem 내부 const(100, M4.3R Phase 03에서 GameMap→RespawnSystem 이동). 리플렉션으로 읽거나
     ///   상수값 그대로 박음. 여기서는 100을 리터럴로 사용 (const는 internal — 테스트에서 직접 접근 불가).
     ///   값이 바뀌면 이 테스트도 갱신 필요 (의도적 coupling — 정책 값의 변경을 테스트가 잡음).
     /// </summary>

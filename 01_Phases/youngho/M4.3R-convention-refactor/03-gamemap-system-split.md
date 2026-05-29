@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.3R
 phase: 03
 title: GameMap System 분리 (CombatSystem / EnemyAISystem / RespawnSystem)
-status: pending
+status: done
 grade: 복잡
 domain: server
 estimated: 3~4h

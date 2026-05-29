@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.3R
 phase: 02
 title: 클라 패킷 dispatch 분리 (UnityClientSession → IPacketHandler + RosterTransitionBuffer + SceneRouter)
-status: pending
+status: done
 grade: 복잡
 domain: client
 estimated: 3~4h
