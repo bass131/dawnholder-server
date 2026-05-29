@@ -179,8 +179,15 @@ public abstract class ClientSession
             return;
 
         OnDisconnected(m_Socket!.RemoteEndPoint!);
-        m_Socket!.Shutdown(SocketShutdown.Both);
-        m_Socket!.Close();
+
+        // Cross-review γ10 (β13/A5 봉합 + 2라운드 정제): Shutdown / Close / Clear 각 단계 독립 보호.
+        // Shutdown throw → Close 여전히 실행(FD 누수 차단), Close throw → Clear 여전히 실행.
+        // 서버 Session.cs와 자매 봉합 (ADR-012 Y2 분리 정합 — 양쪽 동시 수정).
+        try { m_Socket!.Shutdown(SocketShutdown.Both); }
+        catch (Exception e) { Console.WriteLine($"[ClientSession] socket Shutdown 예외 (이미 reset?) — 무시: {e.Message}"); }
+
+        try { m_Socket!.Close(); }
+        catch (Exception e) { Console.WriteLine($"[ClientSession] socket Close 예외 — 무시: {e.Message}"); }
 
         Clear();
     }

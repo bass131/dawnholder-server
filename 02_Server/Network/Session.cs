@@ -151,12 +151,20 @@ namespace Dawnholder.Server.Network
             // 연결이 끊어진 상태를 나타내는 플래그를 원자적으로 설정
             if (Interlocked.Exchange(ref m_disconnected, 1) == 1)
                 return; // 이미 연결이 끊어진 상태라면 종료
-            
-            OnDisconnected(m_Socket!.RemoteEndPoint!); // 연결이 끊어졌음을 알림
-            m_Socket!.Shutdown(SocketShutdown.Both); // 소켓의 송수신을 모두 종료
-            m_Socket!.Close(); // 소켓 닫기
 
-            Clear(); // 세션 초기화
+            OnDisconnected(m_Socket!.RemoteEndPoint!); // 연결이 끊어졌음을 알림 (player cleanup enqueue 포함)
+
+            // Cross-review γ10 (β13/A5 봉합 + 2라운드 정제): Shutdown / Close / Clear 각 단계 독립 보호.
+            // Shutdown이 throw해도 Close가 socket handle을 반드시 닫고(FD 누수 차단),
+            // Close가 throw해도 Clear가 SendQueue/PendingList를 반드시 정리. 어느 단계 예외도 다음 단계를 막지 않음.
+            // (옛 코드는 Shutdown 예외 시 Close+Clear 둘 다 skip, 1라운드 봉합은 Shutdown 예외 시 Close만 skip이었음.)
+            try { m_Socket!.Shutdown(SocketShutdown.Both); } // 소켓의 송수신을 모두 종료
+            catch (Exception e) { Console.WriteLine($"[Session] socket Shutdown 예외 (이미 reset?) — 무시: {e.Message}"); }
+
+            try { m_Socket!.Close(); } // 소켓 닫기 — Shutdown 예외와 무관하게 반드시 시도
+            catch (Exception e) { Console.WriteLine($"[Session] socket Close 예외 — 무시: {e.Message}"); }
+
+            Clear(); // 세션 초기화 — 위 예외들과 무관하게 항상 실행
         }
 
         #region Network Connection Recv

@@ -27,7 +27,10 @@ public static class Formulas
     /// <para>공식: <c>Max(1, baseDamage + attacker.Attack - target.Defense)</c></para>
     /// <list type="bullet">
     ///   <item>최소 1 데미지 보장 — 방어력이 공격력+기본 데미지를 초과해도 0 이하 불가.</item>
-    ///   <item><c>Math.Max</c> 분기로 int overflow 안전 (baseDamage + Attack이 int.MaxValue에 근접해도 Max가 잡음).</item>
+    ///   <item>결과는 항상 ≥1 (<c>Math.Max(1, ...)</c>) — 방어력이 공격력+기본 데미지를 초과해도 *음수 데미지 불가*.</item>
+    ///   <item>주의 (Cross-review γ10 β11 분석): 중간 <c>int</c> 덧셈은 이론상 wrap 가능하나 baseDamage는 작은 서버
+    ///       상수라 현실 입력에선 무발생. wrap돼도 <c>Math.Max</c>가 ≥1로 잡아 *음수는 절대 반환 안 함*(거대 입력 시
+    ///       magnitude만 부정확 — 비현실적). 콘텐츠 스탯이 int 한계에 근접하는 M5+엔 long 격상 재검토.</item>
     ///   <item>결과는 <c>int</c> — <c>S_HitResult.damage</c> 필드 타입과 직접 호환 (PDL 정합, Protocol.Version bump X).</item>
     /// </list>
     ///
