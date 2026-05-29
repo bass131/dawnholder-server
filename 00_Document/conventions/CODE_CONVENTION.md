@@ -53,7 +53,12 @@
 
 - **[3.1] MonoBehaviour는 한 개념만** — 순수 로직(prediction/보간/상태)은 plain C#로 추출(EditMode 테스트 가능). MonoBehaviour = 생명주기 연결 + 호출만.
 - **[3.2] 패킷 핸들러 = 서버 `Handlers/` 패턴 미러** — `UnityClientSession`의 inline switch → `IPacketHandler` + dispatch 테이블 (서버와 대칭). 갭 = 부록 A.
-- **[3.3] 네이밍 prefix** — private field `_camelCase` (전 코드 정합) / const `PascalCase` / static 필요 시 `s_`. **혼용 금지**(일관성만 지키면 됨).
+- **[3.3] 네이밍 prefix** (prefix *규율* — 우리 규칙, 수동 적용. casing 자체는 §4 도구 영역) — **서버·클라 production 코드 공통 적용** (2026-05-29 결정):
+  - **field**(private/instance): `_camelCase` (밑줄). `m_` 헝가리안 금지(ServerCore 레거시 = 정리 대상), bare `camelCase`(밑줄 누락) 금지.
+  - **`[SerializeField]` 직렬화 field**: `_camelCase` **동일** (designer-facing이지만 일관성 우선). ⚠️ rename 시 `[FormerlySerializedAs("old")]`로 Inspector/prefab 값 보존.
+  - **method 매개변수 / 지역 변수**: `camelCase` (**밑줄 prefix 금지** — `_endPoint` 류는 §3.3 위반. casing은 §4).
+  - **const** `PascalCase` / static 필요 시 `s_`.
+  - **혼용 금지** — 한 종류는 한 표기로 (코드베이스 전체 일관).
 - **[3.4] SRP** — §2.2를 클라에도 동일 적용.
 
 ---
@@ -93,3 +98,4 @@
 | 2026-05-29 | v1   | 최초 — God class(GameMap) 발견, 4 권위서 정독                                                        |
 | 2026-05-29 | v2   | refs 33파일 + INDEX 연결, `ServerCore` 가공경로 정정                                                 |
 | 2026-05-29 | v3   | **슬림화** — 책 이론/인용 → refs 링크 위임, 우리 규칙 선언만 (≈218→130줄). prefix `_camelCase` 확정. |
+| 2026-05-29 | v4   | §3.3 확장 — **서버·클라 공통 적용** 명문화(`m_` 헝가리안 금지) + `[SerializeField]`도 `_camelCase`(designer-facing 예외 두지 않음) + **매개변수/지역변수 `camelCase`(밑줄 금지)**. `_`-prefix 매개변수(`_endPoint` 류)를 §4 casing이 아닌 §3.3 prefix 위반으로 재분류. M4.3R Phase 01 (사용자 결정). |
