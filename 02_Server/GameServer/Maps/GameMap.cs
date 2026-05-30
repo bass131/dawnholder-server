@@ -131,6 +131,54 @@ public class GameMap
     internal EnemyEntity? GetEnemyById(int entityId)
         => _enemies.TryGetValue(entityId, out EnemyEntity? e) ? e : null;
 
+    // ── AnimState 계산 (M4.3 Phase 08a) ─────────────────────────────────────
+
+    /// <summary>
+    /// 플레이어의 현재 시각 애니메이션 상태를 계산. 서버 권위 (헌법 #1).
+    ///
+    /// **우선순위 (높을수록 우선)**: Death > Hit > Attack > Jump > Walk > Idle.
+    ///
+    /// **latch**: Attack/Hit는 1틱 순간 이벤트. AttackLatchTicks/HitLatchTicks > 0이면
+    ///   해당 상태를 유지. 카운터는 Physics 루프 뒤에서 매 tick 감소.
+    ///
+    /// **grounded 판정**: OnGround == false → Jump (공중).
+    ///   Y속도가 양수(상승 중)이든 음수(하강 중)이든 공중이면 Jump.
+    ///
+    /// **Walk 판정**: 수평 속도 절대값 > Epsilon → Walk.
+    ///   Epsilon = 0.01f (floating point noise 제거).
+    ///
+    /// **tick thread invariant**: GameMap.Tick 안에서만 호출 (단일 thread).
+    /// </summary>
+    static byte ComputePlayerAnimState(PlayerEntity p)
+    {
+        // Death — HP <= 0. 최우선. 한번 사망하면 고정.
+        if (p.IsDead || p.IsDeadAnimState)
+        {
+            p.IsDeadAnimState = true;
+            return (byte)Shared.GameData.AnimState.Death;
+        }
+
+        // Hit — 피격 latch 중
+        if (p.HitLatchTicks > 0)
+            return (byte)Shared.GameData.AnimState.Hit;
+
+        // Attack — 공격 latch 중
+        if (p.AttackLatchTicks > 0)
+            return (byte)Shared.GameData.AnimState.Attack;
+
+        // Jump — 공중 (grounded=false)
+        if (!p.OnGround)
+            return (byte)Shared.GameData.AnimState.Jump;
+
+        // Walk — 수평 이동 중
+        const float VxEpsilon = 0.01f;
+        if (p.Velocity.X > VxEpsilon || p.Velocity.X < -VxEpsilon)
+            return (byte)Shared.GameData.AnimState.Walk;
+
+        // Idle — 기본
+        return (byte)Shared.GameData.AnimState.Idle;
+    }
+
     // ── CombatSystem용 internal mutator (§0.3 최소 surface) ──────────────────
 
     /// <summary>
@@ -230,6 +278,12 @@ public class GameMap
             p.PendingJumpPressed = false;
             // Physics.Step 완료 후 위치 기록 — "그 tick에 실제로 있던 위치" (M4.1 Phase 06).
             p.RecordPosition(tickNumber, p.Position);
+
+            // M4.3 Phase 08a: animState latch 카운터 매 tick 감소 (헌법 #5 — blocking call 0).
+            // 순간 이벤트(Attack/Hit)를 최소 AnimLatchTicks 동안 유지.
+            // Death는 latch 없음 — IsDeadAnimState가 true이면 항상 Death.
+            if (p.AttackLatchTicks > 0) p.AttackLatchTicks--;
+            if (p.HitLatchTicks > 0) p.HitLatchTicks--;
         }
 
         // 3) Snapshot 브로드캐스트. 매 2 tick(=100ms).
@@ -237,6 +291,11 @@ public class GameMap
         {
             foreach (PlayerEntity p in _players)
             {
+                // M4.3 Phase 08a: 플레이어 animState 계산 (헌법 #1 — 서버 권위 결정).
+                // 우선순위: Death > Hit > Attack > Jump > Walk > Idle.
+                // latch 감소는 physics 루프(2단계)에서 매 tick 처리됨 — 여기선 계산·주입만.
+                byte animState = ComputePlayerAnimState(p);
+
                 S_Snapshot pkt = new S_Snapshot
                 {
                     entityId = p.EntityId,
@@ -245,7 +304,8 @@ public class GameMap
                     vx = p.Velocity.X,
                     vy = p.Velocity.Y,
                     serverTick = (int)tickNumber,
-                    lastAckedClientTick = p.LastClientTick
+                    lastAckedClientTick = p.LastClientTick,
+                    animState = animState
                 };
                 BroadcastToAll(pkt.Write());
             }

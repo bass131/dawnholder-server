@@ -1,5 +1,5 @@
 using Dawnholder.Server.GameServer.Combat;
-using Shared.GameData;
+using Shared.GameData; // AnimState, EnemyStats, Constants
 using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps;
@@ -32,7 +32,28 @@ internal sealed class EnemyAISystem
         foreach (EnemyEntity enemy in map.Enemies.Values)
         {
             // Boss는 이번 Phase에서 AI 없음 (Idle 고정). Phase 09에서 별도 behavior.
-            if (enemy.Kind != EnemyKind.Normal) continue;
+            // Boss도 animState latch 감소 + S_EntityState broadcast는 수행.
+            if (enemy.Kind != EnemyKind.Normal)
+            {
+                // Boss: latch 감소 후 broadcast
+                if (enemy.HitLatchTicks > 0) enemy.HitLatchTicks--;
+                if (enemy.AttackLatchTicks > 0) enemy.AttackLatchTicks--;
+
+                if (shouldBroadcast)
+                {
+                    byte bossAnimState = ComputeEnemyAnimState(enemy);
+                    S_EntityState bossPacket = new S_EntityState
+                    {
+                        entityId = enemy.EntityId,
+                        x = enemy.X,
+                        y = enemy.Y,
+                        state = (byte)enemy.State,
+                        animState = bossAnimState,
+                    };
+                    map.BroadcastToAll(bossPacket.Write());
+                }
+                continue;
+            }
 
             float moveSpeed = enemy.Stats.MoveSpeed;
             float aggroRange = enemy.Stats.AggroRange;
@@ -134,19 +155,60 @@ internal sealed class EnemyAISystem
                 }
             }
 
+            // M4.3 Phase 08a: Normal enemy latch 카운터 매 tick 감소 (헌법 #5).
+            if (enemy.HitLatchTicks > 0) enemy.HitLatchTicks--;
+            if (enemy.AttackLatchTicks > 0) enemy.AttackLatchTicks--;
+
             // --- S_EntityState broadcast ---
             // SnapshotTickInterval 마다 전원에게 전송.
             if (shouldBroadcast)
             {
+                // M4.3 Phase 08a: animState 계산 후 패킷에 주입 (헌법 #1 서버 권위).
+                byte animState = ComputeEnemyAnimState(enemy);
+
                 S_EntityState statePacket = new S_EntityState
                 {
                     entityId = enemy.EntityId,
                     x = enemy.X,
                     y = enemy.Y,
                     state = (byte)enemy.State,
+                    animState = animState,
                 };
                 map.BroadcastToAll(statePacket.Write());
             }
         }
+    }
+
+    /// <summary>
+    /// 적 entity의 현재 시각 애니메이션 상태를 계산. 서버 권위 (헌법 #1).
+    ///
+    /// **우선순위**: Death > Hit > Attack > Walk(Patrol/Chase) > Idle.
+    /// 적은 Jump 없음 (수평 이동만 — 현재 scope).
+    ///
+    /// **Walk 매핑**: EnemyState.Patrol / EnemyState.Chase → AnimState.Walk.
+    ///   AI 행동 상태(EnemyState)와 시각 표현(AnimState) 분리 핵심.
+    ///
+    /// **tick thread invariant**: EnemyAISystem.Update 안에서만 호출.
+    /// </summary>
+    static byte ComputeEnemyAnimState(EnemyEntity enemy)
+    {
+        // Death — HP <= 0. 최우선.
+        if (enemy.IsDead)
+            return (byte)Shared.GameData.AnimState.Death;
+
+        // Hit — 피격 latch 중 (CombatSystem이 피격 시 HitLatchTicks 설정)
+        if (enemy.HitLatchTicks > 0)
+            return (byte)Shared.GameData.AnimState.Hit;
+
+        // Attack — 공격 latch 중 (Phase 09 S_EnemyAttack 도입 시 AttackLatchTicks 설정 예정)
+        if (enemy.AttackLatchTicks > 0)
+            return (byte)Shared.GameData.AnimState.Attack;
+
+        // Walk — Patrol 또는 Chase (AI가 이동 중)
+        if (enemy.State == EnemyState.Patrol || enemy.State == EnemyState.Chase)
+            return (byte)Shared.GameData.AnimState.Walk;
+
+        // Idle — 기본 (EnemyState.Idle, 또는 Boss)
+        return (byte)Shared.GameData.AnimState.Idle;
     }
 }

@@ -81,6 +81,13 @@ public class EnemyEntity
     /// </summary>
     public int RespawnTicksRemaining { get; set; }
 
+    // M4.3 Phase 08a: 애니메이션 상태 latch 카운터 (tick 단위).
+    // PlayerEntity latch 설계와 동일 — Attack/Hit는 1틱 이벤트라 최소 8틱 유지.
+    // 우선순위: Death > Hit > Attack > Walk > Idle (적은 Jump 없음).
+    // tick thread invariant — EnemyAISystem.Update 안에서만 읽기/쓰기.
+    public int AttackLatchTicks { get; set; }    // Attack 상태 남은 latch 틱 수
+    public int HitLatchTicks    { get; set; }    // Hit 상태 남은 latch 틱 수
+
     // M4.1 Phase 05 (2단계): stats 옵션 인자 추가. 옛 시그니처 (entityId, kind, x, y, maxHp) 보존 —
     // 기존 SpawnNormalEnemy/SpawnBoss 호출지 변경 X (default 인자 패턴).
     //

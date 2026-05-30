@@ -420,20 +420,21 @@ public class PacketRoundTripTests
     [Fact]
     public void S_Snapshot_Write_ProducesCorrectSizeHeader()
     {
-        // [size:2][id:2][entityId:4][x:4][y:4][vx:4][vy:4][serverTick:4][lastAckedClientTick:4] = 32 bytes.
-        // Phase 04: 24 byte (x/y만). Phase 07: vx/vy 추가로 32 byte (8 byte 증가).
+        // [size:2][id:2][entityId:4][x:4][y:4][vx:4][vy:4][serverTick:4][lastAckedClientTick:4][animState:1] = 33 bytes.
+        // Phase 04: 24 byte (x/y만). Phase 07 (M2): vx/vy 추가로 32 byte.
+        // Phase 08a (M4.3): animState(byte) 추가로 33 byte (Protocol.Version v7→v8).
         var snap = new S_Snapshot
         {
             entityId = 0, x = 0f, y = 0f, vx = 0f, vy = 0f,
-            serverTick = 0, lastAckedClientTick = 0
+            serverTick = 0, lastAckedClientTick = 0, animState = 0
         };
 
         ArraySegment<byte> bytes = snap.Write();
 
-        Assert.Equal(32, bytes.Count);
+        Assert.Equal(33, bytes.Count);
         ushort size = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset, 2));
-        Assert.Equal(32, size);
+        Assert.Equal(33, size);
     }
 
     [Fact]

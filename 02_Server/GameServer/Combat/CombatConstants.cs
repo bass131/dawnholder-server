@@ -37,4 +37,19 @@ internal static class CombatConstants
     // 500ms = 1초에 2회 한도. cheat가 매 frame 공격 보내도 silent drop으로 잘림.
     // PlayerEntity.LastAttackTickMs와 함께 사용 — `Environment.TickCount64 - last < 500`이면 drop.
     public const long AttackCooldownMs = 500;
+
+    // M4.3 Phase 08a: AnimState latch 지속 틱 수.
+    //
+    // **latch 필요성**: Attack/Hit는 1틱 순간 이벤트. 20TPS에서 단 1번만 보내면
+    //   클라가 50ms 윈도우 안에 패킷을 놓칠 수 있음. 최소 N틱 유지해 클라가 확실히 수신.
+    //
+    // **8틱 선택 근거**:
+    //   메이플 스타일 공격/피격 모션은 보통 0.4~0.5초.
+    //   8틱 × 50ms = 400ms (0.4초) → 클라가 여러 스냅샷(최소 4회)을 받아 모션 재생 가능.
+    //   10틱(0.5초)도 가능하나 8틱이 실제 애니 길이에 더 근접한 최소값.
+    //
+    // **tick 단위 기반 이유 (헌법 #5 정합)**:
+    //   ms 타이머를 tick 루프 안에 박으면 Thread.Sleep/DateTime 의존 발생.
+    //   tick 카운터는 순수 정수 감소 — blocking call 0 보장.
+    public const int AnimLatchTicks = 8; // Attack/Hit latch 지속 틱 수 (8틱 = 400ms @20TPS)
 }

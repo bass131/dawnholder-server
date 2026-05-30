@@ -369,6 +369,7 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
 	public float vy;
 	public int serverTick;
 	public uint lastAckedClientTick;
+	public byte animState;
     public ushort Protocol { get { return (ushort)PacketID.S_Snapshot; } }
 
     public void Read(ArraySegment<byte> _Segment)
@@ -409,6 +410,10 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
 		// lastAckedClientTick 읽기 (LittleEndian 명시 — wire format 약속)
 		this.lastAckedClientTick = BinaryPrimitives.ReadUInt32LittleEndian(s.Slice(count, s.Length - count));
 		count += sizeof(uint);
+		
+		// animState 읽기
+		this.animState = (byte)s[count];
+		count += sizeof(byte);
 		
     }
 
@@ -456,6 +461,10 @@ public class S_Snapshot : IPacket // S_Snapshot 패킷
 		// lastAckedClientTick 쓰기 (LittleEndian 명시 — wire format 약속)
 		success &= BinaryPrimitives.TryWriteUInt32LittleEndian(s.Slice(count, s.Length - count), this.lastAckedClientTick);
 		count += sizeof(uint);
+		
+		// animState 쓰기
+		s[count] = (byte)this.animState;
+		count += sizeof(byte);
 		
 
         // 최종 size 기록
@@ -1284,6 +1293,7 @@ public class S_EntityState : IPacket // S_EntityState 패킷
 	public float x;
 	public float y;
 	public byte state;
+	public byte animState;
     public ushort Protocol { get { return (ushort)PacketID.S_EntityState; } }
 
     public void Read(ArraySegment<byte> _Segment)
@@ -1311,6 +1321,10 @@ public class S_EntityState : IPacket // S_EntityState 패킷
 		
 		// state 읽기
 		this.state = (byte)s[count];
+		count += sizeof(byte);
+		
+		// animState 읽기
+		this.animState = (byte)s[count];
 		count += sizeof(byte);
 		
     }
@@ -1346,6 +1360,10 @@ public class S_EntityState : IPacket // S_EntityState 패킷
 		
 		// state 쓰기
 		s[count] = (byte)this.state;
+		count += sizeof(byte);
+		
+		// animState 쓰기
+		s[count] = (byte)this.animState;
 		count += sizeof(byte);
 		
 

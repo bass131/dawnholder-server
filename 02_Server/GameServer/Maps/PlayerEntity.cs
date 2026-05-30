@@ -58,6 +58,25 @@ public class PlayerEntity
     // 본 Step에선 필드 박힘만 — 갱신/검사 로직은 Step 5에서 추가.
     public long LastAttackTickMs { get; set; }
 
+    // M4.3 Phase 08a: 애니메이션 상태 latch 카운터 (tick 단위).
+    //
+    // **latch 필요성**: Attack/Hit는 1틱 순간 이벤트. 20TPS에서 1번만 보내면
+    //   클라이언트가 50ms 윈도우 안에 놓칠 수 있음. 최소 N틱 유지(latch)해 안정 전달.
+    //
+    // **latch 기본값 = 8틱 (=0.4초 @20TPS)**:
+    //   메이플스타일 공격/피격 모션이 보통 0.4~0.5초.
+    //   8틱 × 50ms = 0.4초 → 클라가 여러 스냅샷을 받아도 모션을 놓치지 않음.
+    //   Death는 latch 없음 — entity 사망 후 despawn 전까지 고정 상태.
+    //
+    // **tick thread invariant**: GameMap.Tick 안에서만 읽기/쓰기.
+    //   헌법 #5 (blocking call 0) 정합 — ms 아닌 tick 수 기반.
+    //
+    // **우선순위 (Death > Hit > Attack > Jump > Walk > Idle)**:
+    //   latch 중에도 더 높은 우선순위 상태가 들어오면 즉시 교체(우선순위 숫자가 높을수록 우선).
+    public int AttackLatchTicks { get; set; }    // Attack 상태 남은 latch 틱 수
+    public int HitLatchTicks    { get; set; }    // Hit 상태 남은 latch 틱 수
+    public bool IsDeadAnimState { get; set; }    // Death animState 진입 여부 (고정 상태)
+
     // M4.1 Phase 06 (1단계): position history ring buffer.
     //
     // **구조 선택 이유** — 별도 (long tick, Vector2 pos) 쌍 배열 vs 단일 struct 배열:
