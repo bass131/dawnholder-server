@@ -3,7 +3,7 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Loop;
 
-// Phase 02 (M2): 50ms 고정 간격으로 OnTick 콜백을 부르는 스케줄러.
+// 50ms 고정 간격으로 OnTick 콜백을 부르는 스케줄러.
 //
 // **헌법 #5** ("틱 루프 블로킹 금지"): Task.Delay / Thread.Sleep 사용 금지.
 // 대신 SpinWait.SpinUntil — 내부적으로 짧은 spin → Thread.Yield 패턴이라
@@ -24,7 +24,6 @@ public class TickScheduler
     long _tickNumber;
     public long CurrentTick => Interlocked.Read(ref _tickNumber);
 
-    // Phase 08 Step 4: 통합 테스트에서 p99 검증 가능하도록 외부 hook 노출.
     // 매 1초마다(= ServerTickRate tick) snapshot 발화. 콘솔 출력과 동시.
     public event Action<TickMetrics.Stats>? OnMetricsSnapshot;
 
@@ -60,7 +59,6 @@ public class TickScheduler
         Stopwatch tickWork = new Stopwatch();
 
         // 메트릭: 최근 ~1초 분량의 tick 소요시간 측정 (PRD: tick p99 < 10ms).
-        // Phase 08: TickMetrics로 책임 분리 (SRP). avg/max만 → p50/p95/p99/max/avg.
         TickMetrics metrics = new TickMetrics();
 
         long intervalMs = Constants.TickIntervalMs;

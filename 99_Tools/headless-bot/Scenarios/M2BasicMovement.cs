@@ -8,9 +8,9 @@ using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// Phase 08 Step 3: M2 회귀 안전망 — 1000 intent + 봇 자체 시뮬 + 종료 시 위치 desync 측정.
+// M2 회귀 안전망 — 1000 intent + 봇 자체 시뮬 + 종료 시 위치 desync 측정.
 //
-// **목적**: M2(Phase 01~07) 통째 회귀 검증. 서버 권위 결과(snapshot)와 봇 클라 권위
+// **목적**: 서버 권위 결과(snapshot)와 봇 클라 권위
 // 결정 시뮬(98_Shared/Physics.Step) 결과가 일정 범위 안에 있는지.
 //
 // **결정론 시퀀스** (5 phase × 200 tick = 1000 tick):
@@ -59,7 +59,6 @@ public class M2BasicMovement
         Vector2 spawnPos = Vector2.Zero;
         S_Snapshot? lastSnapshot = null;
         int snapshotCount = 0;
-        // M3 Phase 02: handshake 결과 캡처 — Run 메서드 본문에서 ok/reason 검사.
         bool handshakeOk = false;
         string handshakeReason = "";
         BotSession? session = null;
@@ -112,7 +111,7 @@ public class M2BasicMovement
             return result;
         }
 
-        // M3 Phase 02 (헌법 #2 봉합): 첫 패킷 = 반드시 C_Handshake. 다른 거 먼저 보내면 서버가 Disconnect.
+        // 헌법 #2: 첫 패킷 = 반드시 C_Handshake. 다른 거 먼저 보내면 서버가 Disconnect.
         C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
         session?.Send(handshake.Write());
 
@@ -129,9 +128,8 @@ public class M2BasicMovement
             return result;
         }
 
-        // M4.1 Phase 02 (P0-1/P0-2 봉합): handshake 후 C_CharacterSelect 의무 송신.
+        // handshake 후 C_CharacterSelect 의무 송신.
         // 서버가 class 선택 없이 월드 진입을 차단하므로 S_EnterMap은 이 패킷 후에야 옴.
-        // Warrior(0) 선택 — 봇은 클래스 무관하게 movement만 검증.
         C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
         session?.Send(charSelect.Write());
 

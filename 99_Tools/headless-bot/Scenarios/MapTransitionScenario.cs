@@ -7,7 +7,7 @@ using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// M4.2 Phase 05: 맵 전환 결정론 왕복 시나리오.
+// 맵 전환 결정론 왕복 시나리오.
 //
 // **목적**:
 //   Town → HuntingGround → BossRoom → Ending → Town 4맵 루프를 한 사이클 완주하고
@@ -212,8 +212,7 @@ public class MapTransitionScenario
         readonly ManualResetEventSlim _handshake = new(false);
         readonly ManualResetEventSlim _enterMap = new(false);
 
-        // M4.2 Phase 05: S_MapTransition 수신 횟수 카운터 기반 추적.
-        // 맵 이동 횟수 = 4회 (Town→HG→Boss→Ending→Town).
+        // S_MapTransition 수신 횟수 카운터 기반 추적. 맵 이동 횟수 = 4회 (Town→HG→Boss→Ending→Town).
         // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X).
         volatile int _mapTransitionCount = 0;
 
@@ -254,13 +253,10 @@ public class MapTransitionScenario
 
         // 다음 S_MapTransition 수신 대기 (카운터 기반).
         //
-        // **race 안전 설계 (P4 봉합 — 2026-05-28)**:
-        //   옛 설계: 함수 내부에서 스냅샷 → SendEnterPortal 후 서버 응답이 WaitForMapTransition
-        //   진입 전 도착하면 before가 이미 증가한 값을 잡아 영원히 false.
-        //
-        //   새 설계: 호출부가 SendEnterPortal 전에 expectedCount = MapTransitionCount + 1을 캡처,
-        //   그 값을 인자로 전달. 함수는 카운터가 expectedCount에 도달할 때까지만 대기.
+        // **race 안전 설계**: 호출부가 SendEnterPortal 전에 expectedCount = MapTransitionCount + 1을
+        //   캡처해 인자로 전달. 함수는 카운터가 expectedCount에 도달할 때까지만 대기.
         //   서버 응답이 몇 microsecond 먼저 와도 카운터는 이미 expectedCount이므로 즉시 반환.
+        //   (함수 내부 스냅샷 방식이면 서버 응답이 진입 전 도착 시 영원히 false — 그래서 호출부 캡처.)
         //
         // **단조증가 불변식**: expectedCount는 항상 이전 expectedCount보다 1 크다.
         //   4회 호출 시 expectedCount = 1, 2, 3, 4 순서. 역순 또는 건너뜀 없음.
@@ -327,7 +323,7 @@ public class MapTransitionScenario
                     handshake.Read(buffer);
                     HandshakeOk = handshake.ok;
                     HandshakeReason = handshake.reason;
-                    // M4.1 Phase 02 (P0-1/P0-2 봉합): handshake OK 후 즉시 C_CharacterSelect 송신.
+                    // handshake OK 후 즉시 C_CharacterSelect 송신 (서버가 class 선택 전 월드 진입 차단).
                     if (handshake.ok)
                     {
                         C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };

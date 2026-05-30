@@ -1,8 +1,8 @@
-# REVIEW_CHECKLIST — 5축 리뷰 매핑
+# REVIEW_CHECKLIST — 6축 리뷰 매핑
 
 > **이 문서의 역할**: `reviewer` 에이전트가 매번 로드하는 *축약·매핑 체크리스트*.
 > 헌법(`CLAUDE.md`), ADR, ARCHITECTURE, layer별 CLAUDE.md에 흩어진 규칙을
-> 한 파일에 모아 reviewer가 *최소 토큰으로 5축 점검*할 수 있게 함.
+> 한 파일에 모아 reviewer가 *최소 토큰으로 6축 점검*할 수 있게 함.
 
 ## ⚠️ 책임 범위 (Scope)
 
@@ -195,7 +195,7 @@
 
 ## reviewer 에이전트 출력 포맷
 
-reviewer 에이전트는 본 체크리스트를 기준으로 5축 점검 후 다음 포맷으로 *메인 세션에만* 요약 반환:
+reviewer 에이전트는 본 체크리스트를 기준으로 6축 점검 후 다음 포맷으로 *메인 세션에만* 요약 반환:
 
 ```
 🔍 Tier 2 자동 리뷰 결과
@@ -232,3 +232,5 @@ reviewer 에이전트는 본 체크리스트를 기준으로 5축 점검 후 다
 |------|------|------|
 | 2026-05-15 | 최초 작성 | ADR-019 (시니어 피드백: 리뷰어 에이전트 도입) 결과물. Tier 2 자동 리뷰 기반 자료. 책임 범위(아키텍처만, 코드 스타일 제외) 명시 + 옵션 4 동기화 절차 박음. analyzer 도입은 ADR 후보로 미룸. |
 | 2026-05-18 | 축 5에 5.7 추가 (명시된 안전망의 코드 동작 일치 검증, 🟡) | Pre-M3 ad-hoc 전체 감사 (γ 방식)에서 Codex가 잡은 rate-limit "기록만" 패턴 + Claude가 잡은 ProtocolVersion 호출처 0건 패턴이 동형 — *약속이 코드 동작까지 박혀야 안전망 진짜*. 본인 헌법 §3 정신 위반에 가까움 (Trust Boundary), 학습 가치 큼 (`CONTEXT_LearningJournalCandidates.md` ★★★ 신규 항목과 정합). Rule of Three까지 ADR 신설은 보류. |
+| 2026-05-29 | 축 6 (Code Convention, ADR-028) 추가 | God class·구조/SRP 점검을 reviewer 직접 책임으로 편입 (옛 "코드 크기=도구" 제외 조항을 구조/SRP에 한해 뒤집음). M4.3R. |
+| 2026-05-30 | 제목·설명 "5축"→"6축" stale 정정 | 축 6 추가 후 표현 미갱신 (Codex read-only 감사 발견). |

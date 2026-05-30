@@ -3,14 +3,14 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Tests;
 
-// Phase 07 (M2): 공유 물리 공식의 결정론 + 함정 회피 검증.
+// 공유 물리 공식의 결정론 + 함정 회피 검증.
 // 양쪽이 호출하는 단일 출처라 본 테스트가 통과하면 prediction drift 0 보장 (헌법 #1).
 //
 // 테스트 카테고리:
 //   1) 정지 + ground 정상 (회귀)
-//   2) 좌우 이동 (Phase 04 회귀)
+//   2) 좌우 이동
 //   3) Jump 정상 동작
-//   4) Jump 차단 (더블점프 — 정의 파일 #83)
+//   4) Jump 차단 (더블점프)
 //   5) 중력 (낙하 가속)
 //   6) Ground clamp
 //   7) 결정론 (반복 시뮬)
@@ -34,7 +34,7 @@ public class PhysicsTests
         Assert.True(next.OnGround);
     }
 
-    // === 2) 좌우 이동 (Phase 04 회귀) ===
+    // === 2) 좌우 이동 ===
     [Fact]
     public void RightInputOnGround_MovesRightOnly()
     {
@@ -77,7 +77,7 @@ public class PhysicsTests
         Assert.False(next.OnGround); // 점프 직후 공중
     }
 
-    // === 4) Jump 차단 (더블점프 차단) — 정의 파일 #83 함정 회피 ===
+    // === 4) Jump 차단 (더블점프 차단) ===
     [Fact]
     public void JumpInAir_Ignored_NoDoubleJump()
     {

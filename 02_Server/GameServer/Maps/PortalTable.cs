@@ -2,18 +2,12 @@ using System.Numerics;
 
 namespace Dawnholder.Server.GameServer.Maps;
 
-// M4.2 Phase 02: portal 정의 + 맵별 portal 목록 테이블.
-//
-// **설계 결정 — MapSpawnTable과 동일한 static table 패턴**:
-//   MapSpawnTable이 enemy spawn 정의의 단일 진실 공급원이듯,
-//   PortalTable은 portal 정의의 단일 진실 공급원.
-//   GameMap이 자기 맵의 portal 목록을 PortalTable에서 가져옴.
+// portal 정의 + 맵별 portal 목록 테이블 (portal 정의의 단일 진실 공급원).
 //
 // **Portal record 선택 이유 (EnemySpawnDef와 같은 이유)**:
 //   Portal은 순수 데이터 운반체(로직 없음, identity 없음) → record(불변 + 값 비교) 적합.
-//   class였으면 new Portal(...)마다 heap 할당 + Equals 재정의 필요 — 불필요한 overhead.
 //
-// **좌표 기준**: M3 3-zone 경계 좌표 계승.
+// **좌표 기준**: 3-zone 경계 좌표 계승.
 //   Town 우측 portal = x=20 (마을 끝 / 전투구역 경계).
 //   HuntingGround 우측 portal = x=25 (전투구역 끝 / 보스방 경계 — boss는 x=30).
 //   DestSpawn은 목적지 맵의 좌측 입구 지점 (플레이어가 오른쪽에서 진입하는 자연스러운 흐름).
@@ -21,8 +15,6 @@ namespace Dawnholder.Server.GameServer.Maps;
 // **헌법 #1 (Server Authority)**:
 //   portal 목적지/spawn 좌표는 서버 권위 — 클라가 C_EnterPortal(portalId)만 보내면 서버가 결정.
 //   클라는 이 파일을 직접 참조할 수 없음 (02_Server 안, DLL 공유 대상 아님).
-//
-// **범위**: 데이터 정의까지만 (Phase 02). 실제 이동 로직은 Phase 03.
 
 /// <summary>
 /// 맵 사이를 잇는 portal 단일 정의.
@@ -43,10 +35,10 @@ namespace Dawnholder.Server.GameServer.Maps;
 public record Portal(int PortalId, Vector2 Position, MapId Dest, Vector2 DestSpawn);
 
 /// <summary>
-/// M4.2 Phase 02: MapId → Portal 목록 매핑 (단일 진실 공급원).
+/// MapId → Portal 목록 매핑 (단일 진실 공급원).
 ///
 /// <para>
-/// <b>현재 portal 흐름 (Phase 02 시점):</b><br/>
+/// <b>현재 portal 흐름:</b><br/>
 /// Town          → HuntingGround: Town 우측(x=20) → HuntingGround 좌측 spawn(x=2)<br/>
 /// HuntingGround → BossRoom:      HuntingGround 우측(x=25) → BossRoom 좌측 spawn(x=22)<br/>
 /// BossRoom      → Ending:        BossRoom 우측(x=35) → Ending spawn(x=0) [결과 화면]<br/>
@@ -55,11 +47,7 @@ public record Portal(int PortalId, Vector2 Position, MapId Dest, Vector2 DestSpa
 ///
 /// <para>
 /// <b>데모 핵심 흐름</b>: Town → HuntingGround → BossRoom (전진 3단계).
-/// BossRoom/Ending 연결은 흐름상 자연스러운 마무리 + 루프 제공.
-/// </para>
-///
-/// <para>
-/// M4.3+ 콘텐츠 확장 시 이 테이블에 항목 추가 (GameMap 코드 변경 불필요).
+/// 콘텐츠 확장 시 이 테이블에 항목 추가 (GameMap 코드 변경 불필요).
 /// </para>
 /// </summary>
 public static class PortalTable

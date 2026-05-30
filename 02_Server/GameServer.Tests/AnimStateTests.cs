@@ -7,7 +7,7 @@ using Shared.Protocol;
 namespace GameServer.Tests;
 
 /// <summary>
-/// M4.3 Phase 08a: AnimState 서버 권위 결정 단위 테스트.
+/// AnimState 서버 권위 결정 단위 테스트.
 ///
 /// **검증 대상**:
 ///   1. 플레이어 Idle — 정지 + OnGround
@@ -309,7 +309,7 @@ public class AnimStateTests
 
     /// <summary>
     /// 적 EnemyState.Idle → AnimState.Idle.
-    /// Boss는 Idle 고정 (Phase 09 이전). BossRoom 맵으로 검증.
+    /// Boss는 Idle 고정 (AI 미적용). BossRoom 맵으로 검증.
     /// </summary>
     [Fact]
     public void Enemy_Idle_WhenAiStateIsIdle()

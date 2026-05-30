@@ -10,21 +10,14 @@ using UnityEngine.SceneManagement;
 
 namespace Dawnholder.Client.Network
 {
-    // S2C 패킷 핸들러 12개 — IClientPacketHandler 구현체.
-    // 서버 02_Server/GameServer/Handlers/ 미러 (§3.2).
-    //
-    // **파일 내 12 핸들러 묶음 이유 (§0.3)**:
-    //   각 핸들러는 "파싱 → MainThreadDispatcher.Enqueue" 패턴으로 10~20줄 수준.
-    //   모두 Network 도메인의 단일 책임(S2C 디코딩+dispatch). 12개 별도 파일로 쪼개면
-    //   "두 파일 열어야 이해 가능" 없이 탐색 비용만 늘어남 → §0.3 과분할 경고.
+    // S2C 패킷 핸들러 — IClientPacketHandler 구현체. 서버 02_Server/GameServer/Handlers/ 미러.
     //
     // **Handle 진입 시점**: socket 워커 스레드.
     //   Unity API 직접 접근 금지. MainThreadDispatcher.Enqueue 경유 의무.
     // ========================================================================
 
     // S_HandshakeResult (ID 1)
-    // M3 Phase 02: ok=true → HandshakeOk 박음 + OnHandshakeOkEvent 호출.
-    // ok=false → 에러 로그 + Disconnect.
+    // ok=true → HandshakeOk 박음 + OnHandshakeOkEvent 호출. ok=false → 에러 로그 + Disconnect.
     internal sealed class HandshakeResultHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -72,7 +65,7 @@ namespace Dawnholder.Client.Network
     }
 
     // S_EnterMap (ID 3)
-    // Phase 03: 서버가 정한 spawn 좌표로 Player GameObject 배치. 헌법 #1 첫 실전.
+    // 서버가 정한 spawn 좌표로 Player GameObject 배치 (헌법 #1).
     internal sealed class EnterMapHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -94,8 +87,8 @@ namespace Dawnholder.Client.Network
                 }
                 else
                 {
-                    // M4.2: LocalPlayerSpawner가 아직 Instantiate 전(초기 진입 race) →
-                    // PendingSpawn에 보관 → 곧 spawn될 LocalPlayerController.Start()가 소비.
+                    // LocalPlayerSpawner가 아직 Instantiate 전(초기 진입 race) →
+                    // PendingSpawn에 보관 → 곧 spawn될 LocalPlayerController.Awake()가 소비.
                     UnityClientSession.PendingSpawnX = x;
                     UnityClientSession.PendingSpawnY = y;
                     UnityClientSession.HasPendingSpawn = true;
@@ -105,7 +98,7 @@ namespace Dawnholder.Client.Network
     }
 
     // S_Snapshot (ID 4)
-    // Phase 05: entityId 분기 — 본인 → reconcile, 타인 → RemoteEntityRegistry 보간 buffer push.
+    // entityId 분기 — 본인 → reconcile, 타인 → RemoteEntityRegistry 보간 buffer push.
     internal sealed class SnapshotHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -123,21 +116,21 @@ namespace Dawnholder.Client.Network
 
             MainThreadDispatcher.Enqueue(() =>
             {
-                // M4.1 Phase 06: 본인/타인 무관 최신 serverTick 갱신 (lag comp 기준점).
+                // 본인/타인 무관 최신 serverTick 갱신 (lag comp 기준점).
                 session.SetLastReceivedServerTick(sTick);
 
-                // M3 Phase 05: LocalEntityId 모르면 (EnterMap 전 Snapshot race) drop.
+                // LocalEntityId 모르면 (EnterMap 전 Snapshot race) drop.
                 if (session.LocalEntityId == null) return;
 
                 if (eid == session.LocalEntityId.Value)
                 {
-                    // 본인 path — 기존 reconcile flow 그대로.
+                    // 본인 path — reconcile flow.
                     if (LocalPlayerController.Instance != null)
                         LocalPlayerController.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
                 }
                 else
                 {
-                    // 타인 path — P1 봉합: 전환 중이면 roster buffer 캐싱.
+                    // 타인 path — 전환 중이면 roster buffer 캐싱.
                     float capturedX = x;
                     float capturedY = y;
                     int capturedEid = eid;
@@ -158,7 +151,7 @@ namespace Dawnholder.Client.Network
     }
 
     // S_PlayerJoin (ID 5)
-    // M3 Phase 05: 타인 entity spawn. P1 봉합: _pendingMapTransition 시 roster buffer 캐싱.
+    // 타인 entity spawn. 전환 중이면 roster buffer 캐싱.
     internal sealed class PlayerJoinHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -174,7 +167,7 @@ namespace Dawnholder.Client.Network
             {
                 if (session.LocalEntityId != null && eid == session.LocalEntityId.Value) return;
 
-                // P1 봉합: 전환 중이면 roster buffer 캐싱.
+                // 전환 중이면 roster buffer 캐싱.
                 if (session.RosterBuffer.TryBuffer(
                         $"S_PlayerJoin entity={eid}",
                         () =>
@@ -191,7 +184,7 @@ namespace Dawnholder.Client.Network
     }
 
     // S_PlayerLeave (ID 6)
-    // M3 Phase 05: 타인 entity despawn.
+    // 타인 entity despawn.
     internal sealed class PlayerLeaveHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -209,8 +202,7 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_EntitySpawn (ID 12) — M3 Phase 08c: enemy/boss spawn. entityKind 분기.
-    // P1 봉합: 전환 중 roster buffer 캐싱.
+    // S_EntitySpawn (ID 12) — enemy/boss spawn. entityKind 분기. 전환 중 roster buffer 캐싱.
     internal sealed class EntitySpawnHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -227,7 +219,7 @@ namespace Dawnholder.Client.Network
 
             MainThreadDispatcher.Enqueue(() =>
             {
-                // P1 봉합: 전환 중이면 roster buffer 캐싱.
+                // 전환 중이면 roster buffer 캐싱.
                 int capturedEid = eid;
                 byte capturedKind = kind;
                 float capturedX = x;
@@ -257,7 +249,7 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_HitResult (ID 13) — M3 Phase 08c: damage 적용 + HP 갱신 표시.
+    // S_HitResult (ID 13) — damage 적용 + HP 갱신 표시.
     // 헌법 #1: 클라는 서버 결과 표시만. 판정 X.
     internal sealed class HitResultHandler : IClientPacketHandler
     {
@@ -281,7 +273,7 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_EntityDeath (ID 14) — M3 Phase 08c: entity 사라짐.
+    // S_EntityDeath (ID 14) — entity 사라짐.
     internal sealed class EntityDeathHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -300,7 +292,7 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_StageClear (ID 15) — M3 Phase 08c: 보스 처치 → UI 표시.
+    // S_StageClear (ID 15) — 보스 처치 → UI 표시.
     internal sealed class StageClearHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -323,10 +315,8 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_EntityState (ID 19) — M4.3R Phase β: 적 AI 위치/상태 주기적 갱신.
+    // S_EntityState (ID 19) — 적 AI 위치/상태 주기적 갱신.
     // 서버가 SnapshotTickInterval(=2틱=100ms)마다 broadcast.
-    // 최소 봉합 목표: LogWarning 스팸 제거 + 적 위치 갱신.
-    // 보간(RemoteEntity 패턴 미러)은 Phase 08 몫 — §0.3 과분할 금지.
     internal sealed class EntityStateHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -337,7 +327,7 @@ namespace Dawnholder.Client.Network
             int eid = pkt.entityId;
             float x = pkt.x;
             float y = pkt.y;
-            // state(byte)는 현재 클라 시각 미사용 — Phase 08에서 Animator 연결 예정.
+            // state(byte)는 현재 클라 시각 미사용.
 
             MainThreadDispatcher.Enqueue(() =>
             {
@@ -348,7 +338,7 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_MapTransition (ID 18) — M4.2 Phase 04: 맵 전환.
+    // S_MapTransition (ID 18) — 맵 전환.
     // 헌법 #1: S_MapTransition 도착 후 비로소 scene 전환. 클라 자체 portal 판정 X.
     internal sealed class MapTransitionHandler : IClientPacketHandler
     {
@@ -372,7 +362,7 @@ namespace Dawnholder.Client.Network
                     return;
                 }
 
-                // P1 봉합: roster buffer 활성화.
+                // roster buffer 활성화 — 전환 중 도착하는 roster 패킷 캐싱.
                 session.RosterBuffer.BeginTransition(sceneName);
 
                 // prediction 버퍼 리셋: 이전 맵 입력이 새 맵 좌표계에서 replay되면 캐릭터가 튐.

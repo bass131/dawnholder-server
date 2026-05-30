@@ -79,7 +79,6 @@ public class Connector
         else
         {
             // 실패 사유 예: ConnectionRefused (서버 안 떠있음), HostUnreachable, TimedOut.
-            // Phase 04에서 재시도/백오프 정책 도입 예정. 지금은 로그만.
             Console.WriteLine($"[Connector] OnConnectCompleted Error : {args.SocketError}");
         }
     }

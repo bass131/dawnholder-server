@@ -4,7 +4,7 @@ using Dawnholder.Server.GameServer.Combat;
 namespace GameServer.Tests.Combat;
 
 /// <summary>
-/// M4.1 Phase 06 (6단계): AABB hitbox 단위 테스트 3건.
+/// AABB hitbox 단위 테스트 3건.
 ///
 /// **검증 대상** (Hitbox.cs의 AABB.Intersects + AABB.Contains):
 ///   1. AABB_Intersects_HappyPath — 겹치는 두 박스 → Intersects=true

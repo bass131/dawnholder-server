@@ -2,12 +2,9 @@ using UnityEngine;
 
 namespace Dawnholder.Client.Rendering
 {
-    // M2 Phase 04: 캐릭터 이동 시각 wiring.
-    // LocalPlayerController(prediction)가 갱신한 transform.position 변화를
-    // 감지해 Animator.SetBool("IsMoving", ...) + flipX 적용.
-    //
-    // 위치 변경 자체는 LocalPlayerController가 처리 (헌법 #1 prediction layer).
-    // 본 컴포넌트는 *시각만* 갱신 — 권한 분리 + 본인 영역 자체 완결.
+    // 캐릭터 이동 시각 wiring: LocalPlayerController(prediction)가 갱신한 transform.position
+    // 변화를 감지해 Animator.SetBool("IsMoving", ...) + flipX 적용. 위치 변경 자체는
+    // LocalPlayerController가 처리 (헌법 #1 prediction layer). 본 컴포넌트는 *시각만* 갱신.
     [RequireComponent(typeof(Animator), typeof(SpriteRenderer))]
     public class PlayerAnimatorSync : MonoBehaviour
     {

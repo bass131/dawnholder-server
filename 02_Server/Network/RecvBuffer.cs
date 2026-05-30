@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace Dawnholder.Server.Network
 {
-    // RecvBuffer : 수신된 데이터를 저장하는 버퍼
     public class RecvBuffer
     {
         // Receive Buffer의 동작 원리
@@ -17,37 +16,36 @@ namespace Dawnholder.Server.Network
         // [][][r/][w][][][]        : 이상태에서 대기 // 각 2바이트 경우
         // [r][w][][][][][]         : 유효 범위를 바꿔줌 // 다시 처음으로 옮김
 
-        ArraySegment<byte> _buffer; // 실제 데이터가 저장되는 버퍼
-        int _readPos; // 읽기 시작 위치
-        int _writePos; // 쓰기 시작 위치
+        ArraySegment<byte> _buffer;
+        int _readPos;
+        int _writePos;
 
         public RecvBuffer(int bufferSize)
         {
-            _buffer = new ArraySegment<byte>(new byte[bufferSize], 0, bufferSize); // 버퍼 생성
+            _buffer = new ArraySegment<byte>(new byte[bufferSize], 0, bufferSize);
         }
 
-        public int DataSize { get {return _writePos - _readPos;} } // 현재 버퍼에 저장된 데이터 크기
-        public int FreeSize { get {return _buffer.Count - _writePos;} } // 현재 버퍼에 남은 공간
+        public int DataSize { get {return _writePos - _readPos;} }
+        public int FreeSize { get {return _buffer.Count - _writePos;} }
 
-        public ArraySegment<byte> ReadSegment // 읽을 수 있는 데이터의 크기
+        public ArraySegment<byte> ReadSegment
         {
             get {return new ArraySegment<byte>(_buffer.Array!, _buffer.Offset + _readPos, DataSize);}
         }
-        public ArraySegment<byte> WriteSegment // 쓸 수 있는 공간의 크기
+        public ArraySegment<byte> WriteSegment
         {
             get {return new ArraySegment<byte>(_buffer.Array!, _buffer.Offset + _writePos, FreeSize);}
         }
 
-        // 버퍼 정리
         public void Clean()
         {
-            int dataSize = DataSize; // 현재 버퍼에 저장된 데이터 크기
-            
+            int dataSize = DataSize;
+
             if (dataSize == 0)
             {
                 // 남은 데이터가 없으면 복사하지 않고 커서 위치만 리셋
-                _readPos = 0; // 읽기 시작 위치
-                _writePos = 0; // 쓰기 시작 위치
+                _readPos = 0;
+                _writePos = 0;
                 return;
             }
             else
@@ -57,41 +55,37 @@ namespace Dawnholder.Server.Network
                 // [r/w][][][][][][][][][]  : 전송 완료 후 다시 초기화
 
                 Array.Copy(
-                _buffer.Array!, // 원본 배열
-                _buffer.Offset + _readPos, // 원본 시작 위치
-                _buffer.Array!, // 복사할 배열
-                _buffer.Offset, // 복사할 시작 위치
-                dataSize); // 복사할 크기
+                _buffer.Array!,
+                _buffer.Offset + _readPos,
+                _buffer.Array!,
+                _buffer.Offset,
+                dataSize);
 
-                _readPos = 0; // 읽기 시작 위치
-                _writePos = dataSize; // 쓰기 시작 위치
+                _readPos = 0;
+                _writePos = dataSize;
             }
         }
 
-        // 읽기 커서 이동
         public bool OnRead(int numOfBytes)
         {
-            // 읽을 수 있는 데이터의 크기보다 더 큰 값을 읽으려고 하면
             if (numOfBytes > DataSize)
-            {   
-                return false; // 실패
+            {
+                return false;
             }
 
-            _readPos += numOfBytes; // 읽기 커서 이동
-            return true; // 성공
+            _readPos += numOfBytes;
+            return true;
         }
 
-        // 쓰기 커서 이동
         public bool OnWrite(int numOfBytes)
         {
-            // 쓸 수 있는 공간의 크기보다 더 큰 값을 쓰려고 하면
             if (numOfBytes > FreeSize)
             {
-                return false; // 실패
+                return false;
             }
 
-            _writePos += numOfBytes; // 쓰기 커서 이동
-            return true; // 성공
+            _writePos += numOfBytes;
+            return true;
         }
     }
 }

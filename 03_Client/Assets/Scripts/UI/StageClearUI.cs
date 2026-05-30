@@ -6,18 +6,13 @@ using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
 {
-    // M3 Phase 08b: Stage Clear UI. S_StageClear 수신 → 화면 중앙 "Stage Clear!" 표시.
+    // Stage Clear UI. S_StageClear 수신 → 화면 중앙 "Stage Clear!" 표시.
     //
     // **헌법 #1 (Server Authority)**: 본 UI는 *서버 신호를 표시만* 합니다. 보스 사망 판정 / 진행도
-    // 산정 *클라가 절대 하지 않음*. UnityClientSession.HandleStageClear가 본 컴포넌트 Show 호출.
+    // 산정 *클라가 절대 하지 않음*. 서버 S_StageClear 경로가 본 컴포넌트 Show 호출.
     //
-    // **런타임 자동 생성**:
-    //   응급 약속에 따라 prefab/씬 YAML 편집 없이 코드로 Canvas+Text 만듦. 정유현 UI 영역
-    //   (UI.unity 씬, FadeCanvas.prefab 등)과 격리 — 씬 conflict 차단.
-    //   미래 UI 정리 단계에서 UI.unity 씬 안 prefab으로 마이그레이션 권장.
-    //
-    // **싱글톤 사용 이유**: UnityClientSession이 정적 접근으로 Show 호출. Instance가 없으면
-    // (씬 진입 race) 큐 없이 silent drop — 응급 단순화. 정상 흐름엔 CombatBootstrap이 씬 진입
+    // **싱글톤 사용 이유**: 패킷 핸들러가 정적 접근으로 Show 호출. Instance가 없으면
+    // (씬 진입 race) 큐 없이 silent drop. 정상 흐름엔 CombatBootstrap이 씬 진입
     // 직후 박아서 race window 거의 0.
     [DisallowMultipleComponent]
     public class StageClearUI : MonoBehaviour
@@ -46,7 +41,7 @@ namespace Dawnholder.Client.UI
             if (Instance == this) Instance = null;
         }
 
-        // UnityClientSession.HandleStageClear 경로 (main thread).
+        // 서버 S_StageClear 경로 (main thread).
         // bossEntityId는 로깅용 — UI에는 단순히 텍스트만 표시.
         public void Show(int bossEntityId)
         {
@@ -61,9 +56,7 @@ namespace Dawnholder.Client.UI
             _activeFade = StartCoroutine(FadeRoutine());
         }
 
-        // 응급 페이드: 0 → 1 (0.4s) → stay 5s → 1 (manual close — 면담 종료 시 Stop)
-        // Phase 정의 함정 "alpha 1로 박힌 채 다음 stage 가면 데모 깨짐"은 *데모 시연 중엔* 의도된 동작
-        // (clear가 마지막 비주얼). 다음 Stage는 M4+에서 reset 절차 박을 때 다룸.
+        // 페이드 인: 0 → 1 (0.4s) 후 유지 (manual close).
         IEnumerator FadeRoutine()
         {
             if (_group == null) yield break;
@@ -114,7 +107,7 @@ namespace Dawnholder.Client.UI
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = new Color(1f, 0.92f, 0.2f, 1f);
             tmp.fontStyle = FontStyles.Bold;
-            // M3 Phase 08b hardening (5/20): TMP Font Asset 명시 할당 — 자동 fallback 경고 봉합.
+            // TMP Font Asset 명시 할당 — 자동 fallback 경고 봉합.
             var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
 #if UNITY_EDITOR
             if (font == null)

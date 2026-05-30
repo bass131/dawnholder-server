@@ -7,7 +7,7 @@ using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// M3 Phase 06 emergency combat smoke.
+// Emergency combat smoke.
 //
 // The server owns enemy spawn, range checks, damage, cooldown, and death. The bot
 // only performs the same client-visible flow as Unity: handshake, enter map,
@@ -40,9 +40,9 @@ public class EmergencyCombatSmoke
         public bool UsedOptionBDeathEquivalent;
     }
 
-    // M4.1 Phase 06 (7단계): simulatedLatencyMs — 봇이 C_Attack 송신 시 attackerClientTick에
+    // simulatedLatencyMs — 봇이 C_Attack 송신 시 attackerClientTick에
     // "N ms 전 서버 tick"을 박아 lag 환경을 시뮬. 0 = zero-lag (기본, 회귀 호환).
-    // M4.2 Phase 05: portal 좌표 상수 (서버 PortalTable.cs와 정합 — 변경 시 양쪽 동기화 의무).
+    // portal 좌표 상수 — 서버 PortalTable.cs와 정합. 변경 시 양쪽 동기화 의무(불일치=전환 실패).
     // Town portal: x=20 → HuntingGround destSpawn x=2.
     // HuntingGround portal: x=25 → BossRoom destSpawn x=22 (BossProbe에서만 사용).
     const float TownPortalX = 20f;
@@ -72,11 +72,9 @@ public class EmergencyCombatSmoke
             if (!bot.WaitEnterMap(DefaultTimeout))
                 return Fail(result, "S_EnterMap timeout (5s)");
 
-            // M4.2 Phase 05: Town → HuntingGround portal 이동 흐름.
-            // Town = 빈 맵이므로 portal로 HuntingGround까지 이동 후 전투 시작.
+            // Town → HuntingGround portal 이동 흐름. Town = 빈 맵이라 portal로 HG 이동 후 전투 시작.
             // ADR-026: entityId는 맵 이동 시 유지 — LocalEntityId 변경 X.
-            // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X).
-            // S_MapTransition 수신 = 새 맵 진입 완료 신호 (SpawnX도 갱신됨).
+            // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X) — 수신 = 새 맵 진입 완료 (SpawnX 갱신).
             await bot.MoveToPortal(TownPortalX, ct);
             bot.SendEnterPortal(TownPortalId);
             bool transitioned = await bot.WaitMapTransition(DefaultTimeout, ct);
@@ -103,7 +101,7 @@ public class EmergencyCombatSmoke
 
             result.MoveIntentsSent = await bot.MoveIntoAttackRange(spawn.x, ct);
 
-            // M4.1 Phase 06 (7단계): lag 시뮬 시 _lastReceivedServerTick이 갱신돼야 함.
+            // lag 시뮬 시 _lastReceivedServerTick이 갱신돼야 함.
             // 이동 중 S_Snapshot을 받지 못한 경우를 대비해 명시적 대기.
             // zero-lag(simulatedLatencyMs=0)도 serverTick 추적을 보장하므로 항상 기다림.
             bool gotSnapshot = await bot.WaitForFirstSnapshot(DefaultTimeout, ct);
@@ -330,7 +328,6 @@ public class EmergencyCombatSmoke
         readonly ManualResetEventSlim _connected = new(false);
         readonly ManualResetEventSlim _handshake = new(false);
         readonly ManualResetEventSlim _enterMap = new(false);
-        // M4.2 Phase 05: S_MapTransition 수신 대기용. portal 이동 흐름 추가.
         // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X) — S_MapTransition만으로 완료 판정.
         readonly ManualResetEventSlim _mapTransition = new(false);
         readonly List<S_EntitySpawn> _spawns = new();
@@ -340,7 +337,7 @@ public class EmergencyCombatSmoke
         BotSession? _session;
         uint _clientTick;
 
-        // M4.1 Phase 06 (7단계): 서버 tick 추적 — S_Snapshot 수신 시 갱신.
+        // 서버 tick 추적 — S_Snapshot 수신 시 갱신.
         // C_Attack.attackerClientTick에 박아야 서버 rewind 범위 검증(diff ≤ 4)을 통과.
         // volatile: network thread(HandlePacket)에서 쓰고 메인 시나리오 thread(SendAttack)에서 읽음.
         volatile int _lastReceivedServerTick = 0;
@@ -374,13 +371,11 @@ public class EmergencyCombatSmoke
         public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
         public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
 
-        // M4.2 Phase 05: portal 이동 후 S_MapTransition 수신 대기.
-        // 서버는 S_MapTransition만 발송 — 이 이벤트 수신으로 맵 진입 완료 판정.
+        // 서버는 맵 전환 시 S_MapTransition만 발송 — 이 이벤트 수신으로 맵 진입 완료 판정.
         public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition.IsSet, timeout, ct);
 
-        // M4.2 Phase 05: portal 위치(portalX)까지 C_MoveIntent 기반 이동.
-        // 서버 PortalTable.cs와 정합 — portal x 좌표는 호출부 const로 박음.
+        // portal 위치(portalX)까지 C_MoveIntent 기반 이동. portal x 좌표는 호출부 const(PortalTable.cs와 정합).
         public async Task<int> MoveToPortal(float portalX, CancellationToken ct)
         {
             float delta = portalX - SpawnX;
@@ -397,7 +392,6 @@ public class EmergencyCombatSmoke
             return ticks + 1;
         }
 
-        // M4.2 Phase 05: C_EnterPortal 송신.
         public void SendEnterPortal(int portalId)
         {
             C_EnterPortal packet = new() { portalId = portalId };
@@ -440,14 +434,12 @@ public class EmergencyCombatSmoke
             return ticks + 1;
         }
 
-        // M4.1 Phase 06 (7단계): 서버에서 최소 1개 S_Snapshot 수신 대기.
         // simulatedLatencyMs > 0이면 lastReceivedServerTick이 0인 채 공격하면 항상 silent drop.
         // 이동 완료 후 이 메서드로 serverTick이 갱신될 때까지 기다려야 함.
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
 
-        // M4.1 Phase 06 (7단계): simulatedLatencyMs 옵션.
-        // 0이면 최신 serverTick 그대로 사용 (zero-lag 시뮬).
+        // simulatedLatencyMs 옵션. 0이면 최신 serverTick 그대로 사용 (zero-lag 시뮬).
         // 양수이면 "N ms 전에 본 serverTick"을 보냄 — 서버 rewind 시뮬.
         //   20 TPS = 1 tick 50ms → latencyTicks = latencyMs / 50.
         //   음수 방지 클램프: Math.Max(0, ...).
@@ -521,7 +513,7 @@ public class EmergencyCombatSmoke
                     handshake.Read(buffer);
                     HandshakeOk = handshake.ok;
                     HandshakeReason = handshake.reason;
-                    // M4.1 Phase 02 (P0-1/P0-2 봉합): handshake OK 후 즉시 C_CharacterSelect 송신.
+                    // handshake OK 후 즉시 C_CharacterSelect 송신 (서버가 class 선택 전 월드 진입 차단).
                     if (handshake.ok)
                     {
                         C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
@@ -541,7 +533,6 @@ public class EmergencyCombatSmoke
                     break;
 
                 case PacketID.S_MapTransition:
-                    // M4.2 Phase 05: 맵 전환 패킷 수신 — destMapId/spawnX/spawnY 캡처.
                     // SpawnX를 목적지 spawn 좌표로 갱신. 봇은 서버 권위 좌표만 사용 (헌법 #1).
                     S_MapTransition mapTransition = new();
                     mapTransition.Read(buffer);
@@ -576,7 +567,6 @@ public class EmergencyCombatSmoke
                     break;
 
                 case PacketID.S_Snapshot:
-                    // M4.1 Phase 06 (7단계): 최신 서버 tick 갱신.
                     // SendAttack이 이 값을 attackerClientTick에 박아 서버 rewind 범위 검증 통과.
                     S_Snapshot snapshot = new();
                     snapshot.Read(buffer);

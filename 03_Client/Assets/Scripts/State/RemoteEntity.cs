@@ -4,35 +4,25 @@ using UnityEngine;
 
 namespace Dawnholder.Client.State
 {
-    // M3 Phase 05: 타인 entity placeholder. 본인 entity는 LocalPlayerController + PlayerPredictor가 담당.
+    // 타인 entity placeholder. 본인 entity는 LocalPlayerController + PlayerPredictor가 담당.
     //
-    // **시그니처 불변 약속** (정유현 Phase 08a 비주얼 교체 시 보존 — 영역 분리 핵심):
-    //   - public int EntityId { get; }
-    //   - public void Initialize(int entityId, float x, float y)
-    //   - public void EnqueueSnapshot(float x, float y)
-    //   - public void ClearBuffer()
-    //   비주얼 컴포넌트(SpriteRenderer/Animator/Sprite swap)는 prefab Inspector에서
-    //   *추가/교체 자유* — 본 컴포넌트는 시그니처만 보존하면 됨.
-    //
-    // **보간 알고리즘** (응급 모드 — 200ms 지연 보간):
+    // **보간 알고리즘** (지연 보간):
     //   1. now = Time.realtimeSinceStartup (main thread)
     //   2. target = now - InterpolationDelay (= jitter 흡수 윈도우)
     //   3. buffer에서 target을 *둘러싼* 2개 snapshot 찾기 → 선형 보간
-    //   4. target이 buffer 최신보다 미래 → last-known 유지 (extrapolation 안 함 — 응급 약속)
+    //   4. target이 buffer 최신보다 미래 → last-known 유지 (extrapolation 안 함)
     //   5. target이 buffer 최古보다 과거 → 최古 snapshot 위치 (rare — buffer 비어가는 중)
     //
-    // **timesource = Time.realtimeSinceStartup** (Phase 05 결정):
-    //   서버 tick 기반 정밀 lag-comp는 M4+. 응급 모드는 클라 수신 시각 기반 jitter 흡수만.
-    //   장점: 단순. 단점: RTT 변동에 영향 (jitter 흡수엔 충분, 정밀 lag-comp X).
+    // **timesource = Time.realtimeSinceStartup**: 서버 tick 기반 정밀 lag-comp가 아니라
+    //   클라 수신 시각 기반 jitter 흡수. 단순하지만 RTT 변동에 영향 (jitter 흡수엔 충분).
     [DisallowMultipleComponent]
     public class RemoteEntity : MonoBehaviour
     {
-        // 150ms 지연 — packet jitter 흡수 윈도우. 서버 SnapshotTickInterval(=2 × 50ms = 100ms)보다 살짝 길게
-        // 잡아 buffer 1~2개 항상 풍부 + 보간 자연. 옛 200ms(서버 250ms 시절)은 buffer 매번 빔 → 정지 패턴 결함.
-        // M3.8 Phase 05 시연 검증 시점에 100ms broadcast + 150ms 보간 콤보로 봉합. 정밀 튜닝은 M4+ 별 시점.
+        // 150ms 지연 — packet jitter 흡수 윈도우. 서버 broadcast 간격(100ms)보다 살짝 길게
+        // 잡아 buffer 1~2개 항상 풍부 + 보간 자연. 너무 짧으면 buffer 매번 빔 → 정지 패턴 결함.
         const float InterpolationDelay = 0.15f;
 
-        // 메모리 위생: receivedAt - BufferRetention 이전 항목 제거. 보간 윈도우(0.2s) + 여유(0.8s).
+        // 메모리 위생: receivedAt - BufferRetention 이전 항목 제거. 보간 윈도우 + 여유.
         const float BufferRetention = 1.0f;
 
         public int EntityId { get; private set; }
@@ -48,7 +38,7 @@ namespace Dawnholder.Client.State
         }
 
         // Registry.UpdateSnapshot에서 매 S_Snapshot 도착 시 호출 (main thread 큐 dispatch 안).
-        // 내부에서 Time.realtimeSinceStartup 박음 — caller 부담 X, 응급 모드 단순화.
+        // 내부에서 Time.realtimeSinceStartup 박음 — caller 부담 X.
         public void EnqueueSnapshot(float x, float y)
         {
             float now = Time.realtimeSinceStartup;
@@ -61,7 +51,7 @@ namespace Dawnholder.Client.State
             if (removeCount > 0) _buffer.RemoveRange(0, removeCount);
         }
 
-        // Registry.Despawn/Clear에서 호출 — 메모리 누수 차단 (Phase 정의 함정 #4).
+        // Registry.Despawn/Clear에서 호출 — 메모리 누수 차단.
         public void ClearBuffer() => _buffer.Clear();
 
         void Update()
@@ -78,7 +68,7 @@ namespace Dawnholder.Client.State
                 return;
             }
 
-            // target이 최新보다 미래 — extrapolation 안 함 (응급 모드 약속), last-known 유지.
+            // target이 최新보다 미래 — extrapolation 안 함, last-known 유지.
             int last = _buffer.Count - 1;
             if (target >= _buffer[last].Time)
             {

@@ -147,7 +147,7 @@ public class PacketRoundTripTests
     }
 
     // ──────────────────────────────────────────────────────────────────
-    // Phase 03 (M2): S_EnterMap / S_LeaveMap 라운드트립.
+    // S_EnterMap / S_LeaveMap 라운드트립.
     //
     // 접속 핸드셰이크 패킷의 wire format 회귀 가드. spawnX/spawnY는 float이라
     // .NET Standard 2.1 호환 경유(SingleToInt32Bits) 경로를 같이 검증.
@@ -169,7 +169,7 @@ public class PacketRoundTripTests
 
     [Theory]
     [InlineData(0f, 0f)]
-    [InlineData(3.0f, 0f)]            // Phase 03 검증 단계 spawn 좌표
+    [InlineData(3.0f, 0f)]            // 대표 spawn 좌표
     [InlineData(-100f, 100f)]
     [InlineData(float.MaxValue, float.MinValue)]
     public void S_EnterMap_RoundTrip_HandlesFloatEdgeValues(float x, float y)
@@ -270,9 +270,9 @@ public class PacketRoundTripTests
     }
 
     // ──────────────────────────────────────────────────────────────────
-    // Phase 04 (M2): C_MoveIntent / S_Snapshot 라운드트립.
-    // Phase 07 (M2): sbyte inputX → byte input 비트필드 (InputBits 단일 출처).
-    //                S_Snapshot에 vx/vy 추가 (prediction velocity 동기화).
+    // C_MoveIntent / S_Snapshot 라운드트립.
+    // inputX는 byte input 비트필드 (InputBits 단일 출처).
+    // S_Snapshot에 vx/vy 포함 (prediction velocity 동기화).
     //
     // 본 묶음의 의도: PacketGenerator의 byte/uint/float 템플릿 *wire round-trip* 회귀 안전망.
     // 비트필드 의미(인코딩 매핑) 자체는 InputBitsTests가 검증 — 본 테스트는 byte 그대로 보존만.
@@ -318,7 +318,7 @@ public class PacketRoundTripTests
     [InlineData(1u)]
     [InlineData((uint)int.MaxValue)]  // 21억 — signed/unsigned 경계
     [InlineData(uint.MaxValue)]       // 42억 — uint 최대 (wrap 직전)
-    // 음수 케이스는 Phase 06에서 uint으로 정합 — 컴파일러가 원천 차단.
+    // 음수 케이스는 uint이라 컴파일러가 원천 차단.
     public void C_MoveIntent_RoundTrip_HandlesClientTickEdgeValues(uint tick)
     {
         var intent = new C_MoveIntent { input = 0x01, clientTick = tick };
@@ -333,7 +333,7 @@ public class PacketRoundTripTests
     [Fact]
     public void C_MoveIntent_Write_ProducesCorrectSizeHeader()
     {
-        // [size:2][id:2][input:1][clientTick:4] = 9 bytes 총. Phase 04→07에서 byte 그대로 1byte.
+        // [size:2][id:2][input:1][clientTick:4] = 9 bytes 총.
         var intent = new C_MoveIntent { input = 0x02, clientTick = 0 };
 
         ArraySegment<byte> bytes = intent.Write();
@@ -366,8 +366,8 @@ public class PacketRoundTripTests
             entityId = 42,
             x = 1.25f,            // GameMap.Tick 5회 = MoveSpeed(5) * TickDuration(0.05) * 5 = 1.25
             y = -3.5f,
-            vx = 5.0f,            // Phase 07: 우측 이동 중 속도 = MoveSpeed
-            vy = 8.0f,            // Phase 07: 점프 직후 vy = JumpSpeed
+            vx = 5.0f,            // 우측 이동 중 속도 = MoveSpeed
+            vy = 8.0f,            // 점프 직후 vy = JumpSpeed
             serverTick = 1000,
             lastAckedClientTick = 999
         };
@@ -397,7 +397,7 @@ public class PacketRoundTripTests
         // float 직렬화는 .NET Standard 2.1 호환을 위해
         // BitConverter.SingleToInt32Bits / Int32BitsToSingle 경유 (PacketFormat.cs WriteFloatFormat).
         // 본 테스트가 깨지면 = float 직렬화 경로가 회귀한 것.
-        // Phase 07: vx/vy도 같은 float 템플릿으로 직렬화 — 같은 경로 검증.
+        // vx/vy도 같은 float 템플릿으로 직렬화 — 같은 경로 검증.
         var snap = new S_Snapshot
         {
             entityId = 0,
@@ -421,8 +421,6 @@ public class PacketRoundTripTests
     public void S_Snapshot_Write_ProducesCorrectSizeHeader()
     {
         // [size:2][id:2][entityId:4][x:4][y:4][vx:4][vy:4][serverTick:4][lastAckedClientTick:4][animState:1] = 33 bytes.
-        // Phase 04: 24 byte (x/y만). Phase 07 (M2): vx/vy 추가로 32 byte.
-        // Phase 08a (M4.3): animState(byte) 추가로 33 byte (Protocol.Version v7→v8).
         var snap = new S_Snapshot
         {
             entityId = 0, x = 0f, y = 0f, vx = 0f, vy = 0f,
@@ -456,10 +454,10 @@ public class PacketRoundTripTests
     }
 
     // ──────────────────────────────────────────────────────────────────
-    // M3 Phase 02: C_Handshake / S_HandshakeResult 라운드트립.
+    // C_Handshake / S_HandshakeResult 라운드트립.
     //
-    // **본 묶음의 가치** (Codex review 2026-05-18 #4):
-    //   - PacketGenerator의 bool / string 템플릿 fix 직접 회귀 안전망 (S_HandshakeResult가 두 타입의 첫 실수요자)
+    // **본 묶음의 가치**:
+    //   - PacketGenerator의 bool / string 템플릿 직접 회귀 안전망 (S_HandshakeResult가 두 타입의 첫 실수요자)
     //   - empty / ASCII / Unicode reason 포함 → string wire format 정합 (UTF-16 LE, GetByteCount + GetBytes(span,span))
     //   - bool 0/1 양쪽 라운드트립
     // ──────────────────────────────────────────────────────────────────
@@ -558,7 +556,7 @@ public class PacketRoundTripTests
     [InlineData("✨ emoji 🚀")]                            // surrogate pair (4 byte UTF-16)
     public void S_HandshakeResult_RoundTrip_HandlesReasonStringEdgeValues(string reason)
     {
-        // string wire format = UTF-16 LE + UInt16 LE length prefix. PacketGenerator fix(M3 Phase 02) 회귀 안전망.
+        // string wire format = UTF-16 LE + UInt16 LE length prefix. PacketGenerator string 템플릿 회귀 안전망.
         var pkt = new S_HandshakeResult
         {
             ok = false,
@@ -590,10 +588,9 @@ public class PacketRoundTripTests
     }
 
     // ──────────────────────────────────────────────────────────────────
-    // M4.2 Phase 02: C_EnterPortal / S_MapTransition 라운드트립.
+    // C_EnterPortal / S_MapTransition 라운드트립.
     //
-    // 맵 전환 패킷 2종 (PacketID 17/18, ProtocolVersion 6). reviewer Tier 2-A 권고로
-    // 핸들러 배선(Phase 03) *전* 추가. S_MapTransition.spawnX/Y의 float 직렬화는
+    // 맵 전환 패킷 2종 (PacketID 17/18). S_MapTransition.spawnX/Y의 float 직렬화는
     // .NET Standard 2.1 ↔ .NET 10 cross-runtime 경로(SingleToInt32Bits)라 회귀 가치 큼.
     // entityId 필드 없음 (ADR-026: entity id 전역 유지).
     // ──────────────────────────────────────────────────────────────────

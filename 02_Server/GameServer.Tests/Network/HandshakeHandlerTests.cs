@@ -7,23 +7,20 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M3 Phase 02 (헌법 #2 "Protocol is Sacred" 가짜 약속 1번째 봉합): handshake 핸들러 회귀 안전망.
+/// handshake 핸들러 회귀 안전망.
 ///
-/// **검증 invariant** (Phase 02 완료 조건):
+/// **검증 invariant**:
 ///   - happy: C_Handshake(version=Current) → S_HandshakeResult(ok=true) 회신 + 게임 진입 (AddPlayer)
 ///   - mismatch: clientVersion != Current → S_HandshakeResult(ok=false, reason) 회신 + 즉시 Disconnect (헌법 #3 정합)
 ///   - non-handshake 첫 패킷: handshake 외 패킷으로 시작하면 즉시 Disconnect (first-packet 강제)
 ///
 /// **버전 이력 추적**: `ProtocolVersion.Current` 상수를 직접 참조하므로 bump 시 본 테스트 자동 갱신.
-///   - v3 = M3 Phase 06 Combat 4패킷 추가 (C_Attack/S_EntitySpawn/S_HitResult/S_EntityDeath).
-///     mismatch 케이스는 Current+1(=4) 사용하므로 추가 갱신 불필요.
+///   mismatch 케이스는 Current+1 사용하므로 추가 갱신 불필요.
 ///
-/// **테스트 전략** (lifecycle/rate-limit 테스트 패턴 정합):
+/// **테스트 전략**:
 ///   - GameSession.GetMap() override로 GameMap 주입 (singleton race 차단)
 ///   - Send() override로 회신 패킷 캡처 (실제 socket I/O 차단)
 ///   - Disconnect() override로 호출 카운트 추적
-///
-/// **새 패킷 추가 규칙(02_Server/CLAUDE.md)**: happy + invalid input 두 갈래 + first-packet 강제 (Phase 02 특수).
 /// </summary>
 [Collection("ConsoleSerial")]
 public class HandshakeHandlerTests : IDisposable
@@ -92,8 +89,7 @@ public class HandshakeHandlerTests : IDisposable
     [Fact]
     public void Happy_MatchingVersion_AcksOnly_NotEnteringWorld()
     {
-        // M4.1 Phase 02 변경: C_Handshake(version=Current) → S_HandshakeResult(ok=true) 회신만.
-        // handshake 후 EnterGameWorld 직접 호출 제거 (P0-1 봉합).
+        // C_Handshake(version=Current) → S_HandshakeResult(ok=true) 회신만.
         // 월드 진입은 CharacterSelect 완료 후 EnterGameWorldIfReady()를 통해서만.
         _session.OnRecvPacket(MakeHandshakeBytes(ProtocolVersion.Current));
 
@@ -107,8 +103,7 @@ public class HandshakeHandlerTests : IDisposable
         // Disconnect 호출 X.
         Assert.Equal(0, _session.DisconnectCalls);
 
-        // 핵심: handshake 후 class 선택 없으면 tick 후에도 player=0 (P0-1 봉합 검증).
-        // 이전엔 이 시점에 AddPlayer job이 enqueue되었지만 이제 아님.
+        // 핵심: handshake 후 class 선택 없으면 tick 후에도 player=0.
         _map.Tick(1);
         Assert.Empty(_map.Players);
 
@@ -143,7 +138,7 @@ public class HandshakeHandlerTests : IDisposable
     [Fact]
     public void DuplicateHandshake_AfterCompleted_RejectsAsProtocolViolation()
     {
-        // Codex review (2026-05-18) 권장 #5: handshake 통과 후 재-handshake는 protocol violation.
+        // handshake 통과 후 재-handshake는 protocol violation.
         // 1) 첫 handshake → 정상 통과, Disconnect 0회
         _session.OnRecvPacket(MakeHandshakeBytes(ProtocolVersion.Current));
         Assert.Equal(0, _session.DisconnectCalls);

@@ -6,18 +6,18 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M3 Phase 04: Multi-player broadcast + initial roster + PlayerLeave 회귀 안전망.
+/// Multi-player broadcast + initial roster + PlayerLeave 회귀 안전망.
 ///
 /// **검증 invariant**:
 ///   - S_PlayerJoin: 신규 entity 접속 시 *기존 player 전원*에게 broadcast (자기 제외) +
 ///                   *자기*에게 기존 entity 다발 Send (initial roster)
 ///   - S_PlayerLeave: disconnect 시 *남은 player 전원*에게 broadcast (자기 제외)
 ///   - S_Snapshot broadcast: tick 시 *전원에게* (자기 자신 포함, remote view 정합)
-///   - **Lifecycle race 재발 봉합** (Codex Phase 04 risk 1순위): closing 중인 세션에는
-///       broadcast Send X. Phase 10 봉합 패턴 일반화 (`IsClosing` getter + BroadcastToAll skip)
+///   - **Lifecycle race 봉합**: closing 중인 세션에는
+///       broadcast Send X (`IsClosing` getter + BroadcastToAll skip)
 ///
 /// **테스트 전략**:
-///   - HandshakeHandlerTests 패턴 정합 — Send/Disconnect/GetMap override로 캡처
+///   - Send/Disconnect/GetMap override로 캡처
 ///   - 두 TestGameSession 인스턴스 + 단일 GameMap 주입 + tick 직접 제어
 /// </summary>
 [Collection("ConsoleSerial")]
@@ -27,7 +27,7 @@ public class BroadcastTests : IDisposable
     readonly StringWriter _consoleCapture;
     readonly TextWriter _originalOut;
 
-    // M4.2 Phase 01 (결정 2 모듈화 갱신): MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
+    // MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
     static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
     static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
 
@@ -40,8 +40,7 @@ public class BroadcastTests : IDisposable
         public TestGameSession(GameMap map) { _injectedMap = map; }
         protected override GameMap GetMap() => _injectedMap;
 
-        // M4.1 Phase 02: handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
-        // 본 테스트는 broadcast 로직 검증 목적 — state machine 순서는 테스트 대상 X.
+        // handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
         public override void OnConnected(EndPoint endPoint)
         {
             CompleteHandshakeAndEnter();   // _handshakeCompleted = true
@@ -60,9 +59,9 @@ public class BroadcastTests : IDisposable
 
     public BroadcastTests()
     {
-        // M4.2 Phase 01: HuntingGround(Normal id=1) + Boss 수동 spawn(id=2).
-        // NewSession_ReceivesActiveEnemyRoster_OnEnter가 Normal(id=1)+Boss(id=2) 2마리 roster를 검증하므로
-        // 두 enemy 모두 필요. 결과적으로 플레이어 entityId = 3부터 (기존 가정 유지).
+        // HuntingGround(Normal id=1) + Boss 수동 spawn(id=2).
+        // NewSession_ReceivesActiveEnemyRoster_OnEnter가 Normal+Boss 2마리 roster를 검증하므로
+        // 두 enemy 모두 필요. 결과적으로 플레이어 entityId = 3부터.
         // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴.
         _map = new GameMap(MapId.HuntingGround);
         _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);
@@ -104,7 +103,7 @@ public class BroadcastTests : IDisposable
         // s1이 s2의 PlayerJoin 1건 받았는지 검증
         List<byte[]> s1New = s1.SentPackets.Skip(s1BaselineCount).ToList();
         Assert.Equal(1, CountPacketsOfType(s1New, PacketID.S_PlayerJoin));
-        // Phase 06 enemy(1) + Phase 07 Boss(2) ctor spawn에 따른 player id offset 갱신 — s1=3, s2=4.
+        // enemy(1) + Boss(2) ctor spawn에 따른 player id offset — s1=3, s2=4.
         S_PlayerJoin parsed = new S_PlayerJoin();
         byte[] joinPacket = s1New.First(p => PacketIdOf(p) == PacketID.S_PlayerJoin);
         parsed.Read(new ArraySegment<byte>(joinPacket));
@@ -114,9 +113,7 @@ public class BroadcastTests : IDisposable
     [Fact]
     public void NewSession_ReceivesActiveEnemyRoster_OnEnter()
     {
-        // M3 Phase 06 Step 4: 신규 client EnterGameWorld 시 active enemy roster(`S_EntitySpawn`)
-        // 다발 전송 검증. Phase 04 player initial roster 패턴과 정합.
-        // M3 Phase 07: Boss spawn 추가 — Normal(id=1) + Boss(id=2) 2마리 roster 전송.
+        // 신규 client EnterGameWorld 시 active enemy roster(`S_EntitySpawn`) 다발 전송 검증.
         //
         // **검증 invariant**:
         //   - GameMap ctor가 Normal enemy 1마리 spawn (entityId=1, Normal/(10,0)/HP 30) +
@@ -143,7 +140,7 @@ public class BroadcastTests : IDisposable
             else if (tmp.entityId == 2) parsedBoss = tmp;
         }
 
-        // Normal (Phase 06 ctor 박힘)
+        // Normal
         Assert.Equal(1, parsedNormal.entityId);
         Assert.Equal((byte)Dawnholder.Server.GameServer.Combat.EnemyKind.Normal, parsedNormal.entityKind);
         Assert.Equal(NormalDef.X, parsedNormal.x);
@@ -151,7 +148,7 @@ public class BroadcastTests : IDisposable
         Assert.Equal(NormalDef.MaxHp, parsedNormal.currentHp);
         Assert.Equal(NormalDef.MaxHp, parsedNormal.maxHp);
 
-        // Boss (Phase 07 ctor 박힘)
+        // Boss
         Assert.Equal(2, parsedBoss.entityId);
         Assert.Equal((byte)Dawnholder.Server.GameServer.Combat.EnemyKind.Boss, parsedBoss.entityKind);
         Assert.Equal(BossDef.X, parsedBoss.x);
@@ -179,7 +176,7 @@ public class BroadcastTests : IDisposable
         S_PlayerJoin parsed = new S_PlayerJoin();
         byte[] rosterPacket = s2.SentPackets.First(p => PacketIdOf(p) == PacketID.S_PlayerJoin);
         parsed.Read(new ArraySegment<byte>(rosterPacket));
-        // Phase 06 enemy(1) + Phase 07 Boss(2) ctor spawn에 따른 player id offset 갱신 — s1=entityId 3.
+        // enemy(1) + Boss(2) ctor spawn에 따른 player id offset — s1=entityId 3.
         Assert.Equal(3, parsed.entityId);
     }
 
@@ -207,7 +204,7 @@ public class BroadcastTests : IDisposable
         S_PlayerLeave parsed = new S_PlayerLeave();
         byte[] leavePacket = s2New.First(p => PacketIdOf(p) == PacketID.S_PlayerLeave);
         parsed.Read(new ArraySegment<byte>(leavePacket));
-        // Phase 06 enemy(1) + Phase 07 Boss(2) ctor spawn에 따른 player id offset 갱신 — s1=entityId 3.
+        // enemy(1) + Boss(2) ctor spawn에 따른 player id offset — s1=entityId 3.
         Assert.Equal(3, parsed.entityId);
     }
 
@@ -236,14 +233,7 @@ public class BroadcastTests : IDisposable
     [Fact]
     public void LifecycleRace_NewJoinBroadcastSkipsClosingSession()
     {
-        // Codex Phase 03+04 review (γ 5회차) #1 권장 보강 — IsClosing skip *분기 자체*를 때림.
-        //
-        // **이전 시나리오 (Codex 발견 약점)**:
-        //   s1.OnDisconnected() → s2.OnConnected() → Tick 1회
-        //   FIFO 순서상 s1 cleanup이 *먼저* 실행 → _players=[] 상태에서 s2 enter → roster 0건 자동
-        //   → IsClosing skip 코드가 깨져도 테스트 통과 = false confidence
-        //
-        // **본 보강 시나리오** (실제 skip 분기 강제 trigger):
+        // IsClosing skip *분기 자체*를 때리는 시나리오 (실제 skip 분기 강제 trigger):
         //   1) s1 정상 접속 + tick → _players=[s1] 안정
         //   2) s2.OnConnected() → s2 EnterGameWorld job *먼저* enqueue
         //   3) s1.OnDisconnected() → s1 cleanup job 나중 enqueue + IsClosing=true *즉시 세팅*
@@ -273,12 +263,8 @@ public class BroadcastTests : IDisposable
         Assert.Equal(0, s2RosterCount);
 
         // 검증 3: tick 후 s1만 사라지고 s2는 정상 add됨 (s2는 closing 아님).
-        // **Phase 06 정정**: 옛 주석 "_players는 0"은 잘못된 가정 — s2 EnterGameWorld 람다는
-        // `self=s2`의 _closing(=0)만 보고 add 진행한다. s1만 cleanup으로 제거되고 s2는 남는다.
-        // (옛 main에서도 같은 결과였을 텐데 `Assert.Empty` 통과한 건 enemy ctor가 없어
-        // _players=[s2 entityId=2]일 때 어떤 우연으로 통과… 본 Phase 06 enemy ctor 도입으로
-        // s2.entityId=3 박히며 표면화. Phase 07 Boss spawn 추가로 s2.entityId=4. 운영 invariant는
-        // *s2는 남는 게 맞음* — 검증 정정.)
+        // s2 EnterGameWorld 람다는 `self=s2`의 _closing(=0)만 보고 add 진행한다.
+        // s1만 cleanup으로 제거되고 s2는 남는다.
         Assert.Single(_map.Players);
         Assert.Same(s2, _map.Players[0].Owner);
     }

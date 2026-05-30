@@ -19,7 +19,6 @@ internal sealed class CombatSystem
 {
     /// <summary>
     /// tick thread 안에서 attack 1건 처리.
-    /// GameMap.ProcessAttack이 이 메서드로 위임 — 기존 시그니처·동작 완전 보존.
     ///
     /// **검증 순서 (헌법 #3 Trust Boundary — fail-closed silent drop)**:
     ///   1. attacker player 존재 — 없으면 silent drop.

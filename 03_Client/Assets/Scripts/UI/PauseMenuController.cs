@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 namespace Dawnholder.Client.UI
 {
     /// <summary>
-    /// 일시정지 메뉴 핸들러. Phase 04 — ESC 토글로 메뉴 표시/숨김 + Time.timeScale 0/1 전환.
+    /// 일시정지 메뉴 핸들러. ESC 토글로 메뉴 표시/숨김 + Time.timeScale 0/1 전환.
     /// 재개 / 메인 메뉴로 / 게임 종료 3 버튼 처리.
     ///
     /// **헌법 #1 (Server Authority)**: Time.timeScale 0는 *본인 클라만* 정지합니다.
@@ -15,11 +15,6 @@ namespace Dawnholder.Client.UI
     ///
     /// **InputAction 참조**: <see cref="InputActionReference"/>로 외부(InputSystem_Actions
     /// asset)의 액션을 참조. OnEnable/OnDisable에서 Enable/Disable + performed 콜백 토글.
-    ///
-    /// **씬 배치**: ADR-021 영역 분리 정책에 따라 `UI.unity`에 인스턴스. Gameplay.unity는
-    /// 팀장 영역이므로 .unity 머지 충돌 차단.
-    ///
-    /// **Phase 05+에선** 메인 메뉴 전환을 SceneTransition Singleton(페이드)으로 교체 예정.
     /// </summary>
     public class PauseMenuController : MonoBehaviour
     {
@@ -86,7 +81,7 @@ namespace Dawnholder.Client.UI
             Time.timeScale = 1f;
             _isPaused = false;
 
-            // Phase 05 — SceneTransition Singleton 경유(페이드). 단 에디터에서 Gameplay 씬 직접 Play
+            // SceneTransition Singleton 경유(페이드). 단 에디터에서 게임플레이 씬 직접 Play
             // 시엔 MainMenu의 FadeCanvas가 생성된 적 없어 Instance == null → 직접 LoadScene fallback.
             if (SceneTransition.Instance != null)
                 SceneTransition.Instance.LoadScene(_mainMenuSceneName);

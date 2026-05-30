@@ -3,18 +3,18 @@ using Dawnholder.Server.GameServer.Maps;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
-// M4.2 Phase 02: PortalTable 단위 테스트.
+// PortalTable 단위 테스트.
 //
 // **검증 범위**: PortalTable.GetPortalsFor(MapId) 반환값 정합 + GameMap.Portals 노출.
 //   MapSpawnTableTests와 층위 분리 정합:
 //     - 본 파일 = PortalTable 자체 (portal 정의 선언 정합) + GameMap.Portals 노출 검증.
-//     - 실제 포탈 이동(C_EnterPortal 핸들러) 검증은 Phase 03 담당.
+//     - 실제 포탈 이동(C_EnterPortal 핸들러) 검증은 EnterPortalHandlerTests 담당.
 //
 // **헌법 #1**: portal 목적지/spawn 좌표는 서버 권위 — 이 테스트가 올바른 값이 선언됐는지 보장.
 //   클라는 C_EnterPortal.portalId만 보내고, 서버가 이 테이블로 목적지/spawn을 결정.
 //
-// **헌법 #3 (Trust Boundary)**: portalId는 클라가 보내는 untrusted 값 (Phase 03에서 검증).
-//   본 테스트는 테이블 *정의* 정합만 — 클라 입력 검증은 Phase 03 핸들러 테스트 담당.
+// **헌법 #3 (Trust Boundary)**: portalId는 클라가 보내는 untrusted 값.
+//   본 테스트는 테이블 *정의* 정합만 — 클라 입력 검증은 핸들러 테스트 담당.
 public class PortalTableTests
 {
     // --- Town ---

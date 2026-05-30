@@ -3,7 +3,7 @@ using Dawnholder.Server.Network;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// Phase 03 (M4.1 Trust-boundary symmetry): FrameValidator 단위 테스트.
+/// FrameValidator 단위 테스트.
 ///
 /// FrameValidator는 04_ClientNet/FrameValidator.cs와 동기화 약속된 서버 측 helper.
 /// 본 테스트가 상수·분기 회귀를 commit 시점에 검출.

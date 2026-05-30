@@ -3,7 +3,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 namespace Dawnholder.Server.GameServer.Tests.Integration;
 
 /// <summary>
-/// M4.2 Phase 05: 맵 전환 end-to-end 통합 테스트 — 회귀 안전망.
+/// 맵 전환 end-to-end 통합 테스트 — 회귀 안전망.
 ///
 /// <para>
 /// <b>검증 목적 3가지</b>:<br/>
@@ -21,11 +21,6 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 /// <para>
 /// <b>결정론</b>: MapTransitionScenario는 tick 기반 이동 (Constants.TickIntervalMs),
 /// 실시간 sleep 최소화, 서버 권위 좌표만 사용. 매 실행 동일 결과 보장.
-/// </para>
-///
-/// <para>
-/// <b>M4.1 baseline 회귀 0 보장</b>: 본 파일은 신규 테스트만 추가.
-/// 기존 통과 테스트(221개) 영향 없음.
 /// </para>
 /// </summary>
 [Collection("IntegrationTests")]

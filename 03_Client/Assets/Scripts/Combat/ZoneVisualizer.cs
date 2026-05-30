@@ -4,18 +4,13 @@ using UnityEngine;
 
 namespace Dawnholder.Client.Combat
 {
-    // M3 Phase 08b: 3-zone 시각 분할. *비주얼만* — 실제 zone 로직(서버 검사)은 M4+.
+    // 3-zone 시각 분할. *비주얼만* — 실제 zone 로직(서버 검사)은 별도.
+    //   - 좌 마을: 푸른 배경 + "VILLAGE" 표지판
+    //   - 중 전투: 갈색 배경 + "COMBAT" 표지판 (enemy spawn x=10 포함)
+    //   - 우 보스: 어두운 자주 + "BOSS" 표지판 (boss spawn x=30 포함)
     //
-    // **응급 단순화** (정의 약속):
-    //   - 좌 마을 (x ≈ -10 ~ 5): 푸른 배경 + "마을" 표지판
-    //   - 중 전투 (x ≈ 5 ~ 20): 갈색 배경 + "전투구역" 표지판 (enemy spawn x=10 포함)
-    //   - 우 보스 (x ≈ 20 ~ 40): 어두운 자주 + "보스방" 표지판 (boss spawn x=30 포함)
-    //
-    // **런타임 코드 생성** (씬 YAML 편집 회피, 정유현 씬 영역 격리):
-    //   각 zone = SpriteRenderer(white square × tint color × scale) + TMP_Text 표지판.
+    // 각 zone = SpriteRenderer(white square × tint color × scale) + TMP_Text 표지판.
     //   sortingOrder = -10 (Player/Enemy(1~4)보다 아래, 진짜 *배경* 레이어).
-    //
-    // **면담 어필 포인트**: 단일 맵 안 zone 트릭 → 4맵 분리 인프라 부담 회피. M4에서 진짜 4맵.
     [DisallowMultipleComponent]
     public class ZoneVisualizer : MonoBehaviour
     {
@@ -33,7 +28,6 @@ namespace Dawnholder.Client.Combat
             return _whiteSquare;
         }
 
-        // M3 Phase 08b hardening (5/20): Fantasy Forest 배경 sprite 활용 + TMP Font Asset 명시 할당.
         // Sprite는 Editor only (AssetDatabase), Font는 Resources.Load (런타임 동작).
         // Sprite null이면 흰 사각형 + tint fallback.
         Sprite? _villageBg;

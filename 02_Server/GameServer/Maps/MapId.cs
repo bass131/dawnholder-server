@@ -1,6 +1,6 @@
 namespace Dawnholder.Server.GameServer.Maps;
 
-// M4.2 Phase 01: 맵 레지스트리 골격 — MapId enum.
+// 맵 레지스트리 — MapId enum.
 //
 // 각 값은 stable numeric id (헌법 #2 "Protocol is Sacred" 정합 — 은퇴 id 재사용 X).
 // 순서/값은 append-only. 제거 X, 숫자 변경 X.

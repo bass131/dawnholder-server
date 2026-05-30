@@ -33,8 +33,8 @@ namespace Dawnholder.Client.Network
     {
         static readonly ConcurrentQueue<Action> _queue = new ConcurrentQueue<Action>();
 
-        // Phase 05: 지연 작업 큐 (SimulatedLatencyMs 송신 지연 등).
-        // 동일 delay만 들어오면 FIFO 보존 → Queue 충분. 다양 delay 섞이면 priority queue 필요(미래).
+        // 지연 작업 큐 (SimulatedLatencyMs 송신 지연 등).
+        // 동일 delay만 들어오면 FIFO 보존 → Queue 충분. 다양 delay 섞이면 priority queue 필요.
         static readonly Queue<DelayedAction> _delayedQueue = new Queue<DelayedAction>();
         static readonly object _delayedLock = new object();
 
@@ -52,7 +52,7 @@ namespace Dawnholder.Client.Network
         }
 
         /// <summary>
-        /// Phase 05: <paramref name="delaySeconds"/> 후 main thread에서 실행.
+        /// <paramref name="delaySeconds"/> 후 main thread에서 실행.
         /// Editor only 송신 latency 시뮬레이션 용도. main thread에서 호출 가정(Time API).
         /// </summary>
         public static void EnqueueDelayed(Action action, float delaySeconds)

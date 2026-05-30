@@ -7,17 +7,16 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 
 namespace Dawnholder.Server.GameServer.Tests.Integration;
 
-// Phase 08 Step 4: M2 회귀 안전망 — in-process 서버 spawn + 봇 호출 + 안정성·p99 검증.
+// M2 회귀 안전망 — in-process 서버 spawn + 봇 호출 + 안정성·p99 검증.
 //
 // **포트 전략**: 매 fixture 인스턴스마다 OS가 free port 할당 (port 0 bind 후 실제 포트 추출).
 // Listener.Stop 없음 → 테스트 process 종료 시 GC가 socket 정리. Fixture 1회 spawn.
 //
-// **시나리오 크기 절충**: 정의 파일 "100회 반복"은 1000 intent×100회=87분 비현실.
+// **시나리오 크기 절충**: "100회 반복"은 1000 intent×100회=87분 비현실.
 // 자동 테스트 = 50 intent×10회 (~25초). 100회 풀스케일 회귀는 별도 [Trait("Category","LongRunning")]
 // + 수동 트리거 (`dotnet test --filter "Category=LongRunning"`).
 //
-// M4.1 Phase 06 (7단계): ICollectionFixture로 전환.
-// LagSimIntegrationTests도 동일 서버 인스턴스를 공유 → GameWorld 싱글톤 위반 방지.
+// ICollectionFixture로 LagSimIntegrationTests도 동일 서버 인스턴스를 공유 → GameWorld 싱글톤 위반 방지.
 // Collection "IntegrationTests" = 모든 통합 테스트 sequential 실행 + 서버 1회 spawn.
 
 [CollectionDefinition("IntegrationTests")]

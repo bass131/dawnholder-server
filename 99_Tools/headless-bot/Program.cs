@@ -3,7 +3,7 @@ using Dawnholder.Client.Net;
 using Dawnholder.Tools.HeadlessBot;
 using Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// Phase 08 봇 콘솔 entry. 인자 파싱 → 시나리오 분기 → 결과 출력 + exit code.
+// 봇 콘솔 entry. 인자 파싱 → 시나리오 분기 → 결과 출력 + exit code.
 //
 // 사용 예:
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario M2BasicMovement
@@ -29,7 +29,6 @@ for (int i = 0; i < args.Length - 1; i++)
 Console.WriteLine($"=== HeadlessBot ===");
 Console.WriteLine($"target: {host}:{port}  scenario: {scenarioName}");
 
-// 시나리오 분기.
 if (string.Equals(scenarioName, "MultiRosterSmoke", StringComparison.OrdinalIgnoreCase))
 {
     MultiRosterSmoke.Result r = await MultiRosterSmoke.Run(host, port);
@@ -113,21 +112,19 @@ connector.Connect(
             },
             OnPacketCallback = buffer =>
             {
-                // Step 2는 받은 패킷 수만 카운트 (시나리오는 Step 3에서 디코드).
                 Console.WriteLine($"[Bot] recv packet: {buffer.Count} bytes");
             }
         };
         return session;
     });
 
-// connect 5초 대기 → 못 받으면 실패 종료.
 if (!connectedEvent.Wait(TimeSpan.FromSeconds(5)))
 {
     Console.WriteLine("[Bot] FAIL: connect timeout (5s)");
     return 1;
 }
 
-// Step 2 smoke: 2초간 서버 S_EnterMap 등 패킷 받아보고 우아하게 종료.
+// 2초간 서버 패킷 받아보고 우아하게 종료.
 await Task.Delay(TimeSpan.FromSeconds(2));
 
 session?.Disconnect();

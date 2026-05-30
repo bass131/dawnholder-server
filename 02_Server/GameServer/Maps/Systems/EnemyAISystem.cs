@@ -13,7 +13,7 @@ namespace Dawnholder.Server.GameServer.Maps;
 ///   EnemyEntity 필드 직접 변경 (enemy는 mutable value-typed fields 노출).
 /// **System 간 직접 호출 X(§2.2)**: 다른 System 직접 참조 없음.
 ///
-/// **FSM 전이 규칙** (GameMap.UpdateEnemies 본문 그대로 옮김 — 동작 보존):
+/// **FSM 전이 규칙**:
 ///   Patrol → Chase: 같은 맵 player 중 |dx| <= AggroRange인 가장 가까운 player 발견 시.
 ///   Chase → Patrol: target이 사라지거나 |dx| > AggroRange * 1.5 (de-aggro 히스테리시스).
 ///   Patrol 경계: SpawnX ± PatrolRange 도달 시 PatrolDir 반전.
@@ -22,7 +22,6 @@ internal sealed class EnemyAISystem
 {
     /// <summary>
     /// Normal enemy AI FSM 1틱 진행.
-    /// GameMap.UpdateEnemies(tickNumber) 본문을 그대로 옮김 — 동작 완전 보존.
     /// </summary>
     internal void Update(GameMap map, long tickNumber)
     {
@@ -155,7 +154,7 @@ internal sealed class EnemyAISystem
                 }
             }
 
-            // M4.3 Phase 08a: Normal enemy latch 카운터 매 tick 감소 (헌법 #5).
+            // Normal enemy latch 카운터 매 tick 감소 (헌법 #5).
             if (enemy.HitLatchTicks > 0) enemy.HitLatchTicks--;
             if (enemy.AttackLatchTicks > 0) enemy.AttackLatchTicks--;
 
@@ -163,7 +162,7 @@ internal sealed class EnemyAISystem
             // SnapshotTickInterval 마다 전원에게 전송.
             if (shouldBroadcast)
             {
-                // M4.3 Phase 08a: animState 계산 후 패킷에 주입 (헌법 #1 서버 권위).
+                // animState 계산 후 패킷에 주입 (헌법 #1 서버 권위).
                 byte animState = ComputeEnemyAnimState(enemy);
 
                 S_EntityState statePacket = new S_EntityState
@@ -200,7 +199,7 @@ internal sealed class EnemyAISystem
         if (enemy.HitLatchTicks > 0)
             return (byte)Shared.GameData.AnimState.Hit;
 
-        // Attack — 공격 latch 중 (Phase 09 S_EnemyAttack 도입 시 AttackLatchTicks 설정 예정)
+        // Attack — 공격 latch 중
         if (enemy.AttackLatchTicks > 0)
             return (byte)Shared.GameData.AnimState.Attack;
 

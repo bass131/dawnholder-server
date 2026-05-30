@@ -7,9 +7,9 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M4.2 Phase 03: C_EnterPortal 핸들러 단위 테스트.
+/// C_EnterPortal 핸들러 단위 테스트.
 ///
-/// **검증 invariant** (Phase 03 완료 조건 정합):
+/// **검증 invariant**:
 ///   1. happy — portal 근처에서 올바른 portalId 전송 → 맵 이동 실행 (S_MapTransition 수신)
 ///   2. reject_far — portal에서 멀리 떨어진 위치에서 전송 → silent drop (맵 이동 없음)
 ///   3. reject_invalid — 현재 맵에 없는 portalId 전송 → silent drop

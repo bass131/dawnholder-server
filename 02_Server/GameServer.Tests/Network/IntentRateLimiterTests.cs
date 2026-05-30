@@ -3,7 +3,7 @@ using Dawnholder.Server.GameServer.Network;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// IntentRateLimiter 단독 테스트 (M4.3R Phase 04).
+/// IntentRateLimiter 단독 테스트.
 ///
 /// **이 테스트의 핵심 이득**: 추출 전에는 rate-limit 로직을 검증하려면 GameSession 전체
 /// (socket lifecycle + handshake state + GameMap + tick 처리)를 세워야 했음.

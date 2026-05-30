@@ -24,22 +24,16 @@ namespace Dawnholder.Client.Bootstrap
     ///   3. SceneTransition      — 씬 전환 페이드 (CanvasGroup 필요)
     ///
     /// **중복 방어**:
-    /// instance 존재 여부를 단일 진실로 판단. (아래 P3 봉합 주석 참조)
+    /// instance 존재 여부를 단일 진실로 판단. (아래 주석 참조)
     /// </summary>
     public static class PersistentServicesBootstrap
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void SpawnPersistentServices()
         {
-            // P3 봉합 (2026-05-28 β cross-review):
-            // 옛 코드는 _spawned static 가드를 instance check *앞*에 두었기 때문에
-            // "도메인 리로드 Off + Play/Stop/Play" 시나리오에서 결함이 생겼다.
-            //   흐름: Play1 → _spawned=true + DDOL instance 생성
-            //         Stop  → DDOL instance destroy (Play 종료 시 Unity가 파괴)
-            //              → _spawned는 static이라 *그대로 true* (도메인 리로드 Off)
-            //         Play2 → line 40 early return → NetworkService 없는 채 시작
-            //
-            // 해결 (옵션 A): _spawned 가드 제거 + instance check를 단일 진실로.
+            // 중복 방어는 instance check 단독을 단일 진실로 둔다.
+            // static bool 가드를 두면 "도메인 리로드 Off + Play/Stop/Play"에서 DDOL instance는
+            // Stop 시 파괴되지만 static 가드는 true로 남아 → Play2에서 early return → NetworkService 없이 시작.
             // FindAnyObjectByType은 BeforeSceneLoad 단계에서도 안전하게 호출 가능.
             var existing = Object.FindAnyObjectByType<NetworkService>();
             if (existing != null)

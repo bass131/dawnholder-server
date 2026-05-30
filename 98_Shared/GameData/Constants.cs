@@ -29,18 +29,13 @@ public static class Constants
 
     /// <summary>
     /// S_Snapshot 브로드캐스트 주기 (tick 단위). 2 tick = 100ms (10Hz).
-    /// 옛 5 tick (250ms, 4Hz)은 시연 보간 어색 (buffer 매번 50ms 빔 → last-known 정지 패턴).
-    /// M3.8 Phase 05 시연 검증 시점에 2로 낮춤 (4배 부드러움 ↑, N≤4 시연 대역폭 무시).
-    /// 본 마감(11/19) 클라우드 환경 전환 시 N+ 동시접속 대역폭 재검토 필요 (M5+).
+    /// 너무 길면 클라 보간 buffer가 빔 → last-known 정지 패턴으로 어색해짐.
     /// </summary>
     public const int SnapshotTickInterval = 2;
 
     /// <summary>
-    /// 단일 패킷 frame 최대 크기 (byte). Phase 09 (M2.5 Trust-boundary) 도입.
-    /// PacketSession.OnRecv가 length 헤더 상한으로 사용 — 초과 시 fail-closed disconnect.
-    /// 현재 가장 큰 패킷 (S_Snapshot ~24B) 기준 175배 여유. M3 broadcast 도입 후에도
-    /// 단일 frame 4KB 한도는 정상 (broadcast batch는 별도 frame). 추후 packet-id별 min/max
-    /// 테이블 도입은 M5+ 자리잡이. 헌법 #3 (Trust Boundary) 코드 실현의 핵심 상수.
+    /// 단일 패킷 frame 최대 크기 (byte). PacketSession.OnRecv가 length 헤더 상한으로
+    /// 사용 — 초과 시 fail-closed disconnect. 헌법 #3 (Trust Boundary) 코드 실현의 핵심 상수.
     /// </summary>
     public const int MaxPacketSize = 4096;
 }

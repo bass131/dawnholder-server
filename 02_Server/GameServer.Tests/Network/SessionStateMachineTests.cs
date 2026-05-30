@@ -3,26 +3,24 @@ using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
-// M4.2 Phase 01 (결정 2 모듈화 갱신): GameMap.NormalEnemyMaxHp 제거 → MapSpawnTable 조회로 대체.
-
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M4.1 Phase 02 (P0-1 + P0-2 봉합 — 세션 상태 머신 회귀 안전망):
+/// 세션 상태 머신 회귀 안전망:
 /// handshake → class 선택 → 월드 진입 순서 강제 + 선택 전 입력 silent drop 검증.
 ///
-/// **P0-1 봉합**: handshake 후 class 선택 없이 월드 진입 불가 (옛 결함 = handshake만 해도 입장됨).
-/// **P0-2 봉합**: C_CharacterSelect 없이 C_MoveIntent/C_Attack 보내면 서버가 silent drop.
+/// **불변식 1**: handshake 후 class 선택 없이 월드 진입 불가.
+/// **불변식 2**: C_CharacterSelect 없이 C_MoveIntent/C_Attack 보내면 서버가 silent drop.
 ///
-/// **검증 invariant** (Phase 02 완료 조건 6건 1:1 정합):
+/// **검증 invariant** (6건):
 ///   1. EnterGameWorld_WithoutHandshake_Rejected — handshake 안 박힘 + class 선택 시도 = silent reject
-///   2. EnterGameWorld_WithoutCharacterSelect_Rejected — handshake OK 후 월드 미진입 (P0-1 핵심 회귀 방어)
+///   2. EnterGameWorld_WithoutCharacterSelect_Rejected — handshake OK 후 월드 미진입 (핵심 회귀 방어)
 ///   3. EnterGameWorld_AfterCharacterSelect_Success — handshake → CharacterSelect → 월드 진입 정상 transition
 ///   4. MoveIntent_BeforeCharacterSelect_Dropped — class 선택 전 C_MoveIntent silent drop
 ///   5. Attack_BeforeCharacterSelect_Dropped — class 선택 전 C_Attack silent drop
 ///   6. CharacterSelect_DuplicateAfterEnter_Rejected — class 선택 후 두 번째 C_CharacterSelect 차단
 ///
-/// **테스트 전략** (AttackHandlerTests / CharacterSelectHandlerTests 패턴 정합):
+/// **테스트 전략**:
 ///   - GameMap 직접 주입(GetMap override) → singleton race 차단
 ///   - Send/Disconnect override로 I/O 차단
 ///   - handshake는 OnRecvPacket으로 실제 핸들러 경유 (state machine 검증이 목적이라 우회 X)
@@ -136,9 +134,8 @@ public class SessionStateMachineTests : IDisposable
     }
 
     /// <summary>
-    /// 테스트 2: handshake OK 후 class 선택 없이 — 월드 진입 안 됨 (P0-1 핵심 회귀 방어).
-    /// 옛 코드 = handshake 후 바로 EnterGameWorld 호출 → 클래스 없이 입장.
-    /// 새 코드 = handshake는 상태 전이만, EnterGameWorld는 CharacterSelect 후.
+    /// 테스트 2: handshake OK 후 class 선택 없이 — 월드 진입 안 됨 (핵심 회귀 방어).
+    /// handshake는 상태 전이만, EnterGameWorld는 CharacterSelect 후.
     /// </summary>
     [Fact]
     public void EnterGameWorld_WithoutCharacterSelect_Rejected()
@@ -188,7 +185,7 @@ public class SessionStateMachineTests : IDisposable
     }
 
     /// <summary>
-    /// 테스트 4: class 선택 전 C_MoveIntent silent drop (P0-2 봉합).
+    /// 테스트 4: class 선택 전 C_MoveIntent silent drop.
     /// handshake 완료 후 class 선택 전 상태에서 C_MoveIntent 수신 시 [Trust] 로그 + drop.
     /// </summary>
     [Fact]
@@ -215,7 +212,7 @@ public class SessionStateMachineTests : IDisposable
     }
 
     /// <summary>
-    /// 테스트 5: class 선택 전 C_Attack silent drop (P0-2 봉합, MoveIntent 정합 패턴).
+    /// 테스트 5: class 선택 전 C_Attack silent drop (MoveIntent 정합 패턴).
     /// handshake 완료 후 class 선택 전 상태에서 C_Attack 수신 시 [Trust] 로그 + drop.
     /// </summary>
     [Fact]
@@ -245,7 +242,7 @@ public class SessionStateMachineTests : IDisposable
     }
 
     /// <summary>
-    /// 테스트 6: class 선택 후 두 번째 C_CharacterSelect 차단 (M3.8 Phase 03 정신 회귀 방어).
+    /// 테스트 6: class 선택 후 두 번째 C_CharacterSelect 차단.
     /// 첫 선택 완료 후 두 번째 선택 시도 = silent drop + 기존 stats 유지.
     /// idempotent 보장 — 두 번째 EnterGameWorldIfReady()도 _enteredWorld=true라 no-op.
     /// </summary>

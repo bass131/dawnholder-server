@@ -25,13 +25,11 @@ internal sealed class RespawnSystem
     readonly List<EnemyEntity> _respawnQueue = new();
 
     // Normal enemy respawn 대기 틱 수 (tick 기반 타이머 — 헌법 #5 await 금지).
-    // 20 TPS 기준 5초 = 100 tick.
     // **설계 결정**: 5초는 데모 반복 시연 시 자연스러운 재출현 간격 (1초=너무 짧음, 10초=흐름 끊김).
     internal const int NormalEnemyRespawnTicks = 100; // 5초 @ 20TPS
 
     /// <summary>
-    /// respawn 대기 큐에 사망한 enemy 등록.
-    /// GameMap.EnqueueRespawn(enemy) 내부에서 호출됨 — RespawnTicksRemaining 세팅 포함.
+    /// respawn 대기 큐에 사망한 enemy 등록 — RespawnTicksRemaining 세팅 포함.
     /// </summary>
     internal void Enqueue(EnemyEntity dead)
     {
@@ -41,7 +39,6 @@ internal sealed class RespawnSystem
 
     /// <summary>
     /// Normal enemy respawn 처리 1틱.
-    /// GameMap.ProcessRespawns(tickNumber) 본문을 그대로 옮김 — 동작 완전 보존.
     /// </summary>
     internal void Process(GameMap map, long tickNumber)
     {

@@ -1,4 +1,4 @@
-# Dawnholder Code Convention v3
+# Dawnholder Code Convention v5
 
 > **우리가 채택한 규칙**의 단일 진실. 책 이론·함정은 [`refs/`](refs/) 참고서(GPP 19 + 교과서 10)로 분리했다(섞지 않음). 작업별 라우팅 진입점은 [`INDEX.md`](INDEX.md).
 > 모든 SubAgent는 코드 작성 *전* `INDEX.md`에서 작업 유형을 찾아 본 문서의 해당 규칙 + refs를 참조한다 (강제 = §5).
@@ -44,6 +44,7 @@
 - **[2.3] 클래스 크기** — ~300줄 초과 = 분리 *검토* 신호(강제 아님). 단 2+ 도메인이면 줄 수 무관 분리. 600줄+ 단일 클래스 = 거의 확실히 God class.
 
 - **[2.4] Composition over Inheritance** — 상속 깊이 ≤ 1. "X이기도 Y이기도"면 상속 말고 Component. → [`12-type-object`](refs/game-programming-patterns/12-type-object.md), [`11-subclass-sandbox`](refs/game-programming-patterns/11-subclass-sandbox.md)
+  - **예외: 네트워크 세션 프레이밍 템플릿** — `Session → PacketSession → {Game/Unity/Bot}Session` (서버 `GameSession` / 클라 `UnityClientSession` / 봇 `BotSession` 공통)은 깊이 2를 허용한다. 중간 `PacketSession`은 length-prefixed framing(수신 버퍼 누적 → 완성 패킷 단위 절단)을 담당하는 *재사용 기반 계층*이고, 말단은 도메인 콜백만 구현한다 — 이는 "X이기도 Y이기도"가 아니라 *프레이밍 인프라 ↔ 도메인 핸들러*의 의도된 역할 분리(Rookiss 표준)다. **단 깊이 3+는 금지.**
 
 ---
 
@@ -78,6 +79,24 @@
 
 ---
 
+## 6. 주석 (Comments)
+
+> 근거: §0.2 (좋은 코드 = 읽는 사람이 뇌에 담을 지식이 최소인 코드). **주석 노이즈는 코드를 가린다** — 주석이 코드보다 많으면(예: `EnemyEntity` 코드 40줄 / 주석 70줄) 읽는 사람이 코드를 못 본다.
+
+- **[6.1] 코드가 말하게 (self-documenting)** — 이름·구조로 드러나는 건 주석 금지. **"무엇/어떻게"는 코드, 주석은 "왜"만.** 좋은 이름 하나 > 설명 주석 세 줄.
+- **[6.2] 금지 주석** (제거 대상):
+  - (a) **자명한 재진술** — `// PatrolDir = 현재 순찰 방향` (이름이 이미 말함)
+  - (b) **역사·Phase 박제** — `// M3 Phase 06 Step 2`, `// M4.1 Phase 05` (언제 추가했는지는 `git blame`의 일)
+  - (c) **폐기된 사고과정·대안검토** — `// 800ms 우려... → 결정:` 류 (커밋 메시지 / `-DONE.md`로)
+  - (d) **backlog·TODO 남발** — `// M4+ backlog` 반복 (이슈 트래커 / work-pin으로)
+  - (e) **internal 멤버에 기계적 XML doc** — `/// <summary>X 필드</summary>` (public API 계약에만)
+- **[6.3] 허용 (그 5%)** — 코드만 봐선 *왜*인지 모르고 **안 적으면 누가 잘못 고쳐 사고나는 비자명한 결정 근거**. 특히 보안·프로토콜·헌법 함정:
+  - 예: `C_Attack`에 `attacker` 필드 *없는* 이유 (도용 방지, 헌법 #3) / tick 스레드 invariant (lock-free 전제) / PDL append-only (재정렬 = desync).
+  - 위치 = 해당 코드 **바로 위 1~2줄**, 간결히. 파일 상단 대형 블록 지양.
+- **[6.4] 강제** (§5 패턴) — reviewer `REVIEW_CHECKLIST` 축 6에 "주석 노이즈(§6.2)" 점검 편입 + SubAgent(server/client/shared) 정의에 §6 준수 명시 (`.claude/` self-mod → 스테이징 → 본인 적용).
+
+---
+
 ## 부록 A. 현재 갭 (본 Convention 기준 리팩토링 대상)
 
 | 대상                         | 현재                                                           | 위반      | 분리안                                  | 타이밍         |
@@ -99,3 +118,4 @@
 | 2026-05-29 | v2   | refs 33파일 + INDEX 연결, `ServerCore` 가공경로 정정                                                 |
 | 2026-05-29 | v3   | **슬림화** — 책 이론/인용 → refs 링크 위임, 우리 규칙 선언만 (≈218→130줄). prefix `_camelCase` 확정. |
 | 2026-05-29 | v4   | §3.3 확장 — **서버·클라 공통 적용** 명문화(`m_` 헝가리안 금지) + `[SerializeField]`도 `_camelCase`(designer-facing 예외 두지 않음) + **매개변수/지역변수 `camelCase`(밑줄 금지)**. `_`-prefix 매개변수(`_endPoint` 류)를 §4 casing이 아닌 §3.3 prefix 위반으로 재분류. M4.3R Phase 01 (사용자 결정). |
+| 2026-05-30 | v5   | §2.4 **네트워크 세션 프레이밍 템플릿 깊이 2 예외** 명문화 (`Session→PacketSession→GameSession`은 의도된 framing↔handler 분리 — Codex read-only 감사). **§6 주석 정책 신설** (self-documenting — §6.2 금지 5종 + §6.3 안전 예외 5%; M4.3X 대정리 기준). 제목 v3→v5 stale 정정. 동반 코드 정합: PacketGenerator 매개변수/템플릿 prefix(§3.3) + SceneTransition `[SerializeField]` rename. |

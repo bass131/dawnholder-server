@@ -73,7 +73,6 @@ namespace Dawnholder.Server.Network
         }
     }
 
-    // SendBuffer : 전송할 데이터를 저장하는 버퍼
     public class SendBuffer
     {
         // [u][][][][][][][][][] : 사용하지 않음
@@ -81,7 +80,7 @@ namespace Dawnholder.Server.Network
         byte[] _buffer;
         int _usedSize = 0;
 
-        public int FreeSize { get { return _buffer.Length - _usedSize; } } // 남은 공간
+        public int FreeSize { get { return _buffer.Length - _usedSize; } }
 
         public SendBuffer(int chunkSize)
         {

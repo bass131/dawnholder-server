@@ -7,7 +7,7 @@ using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// M3 Phase 07 boss/stage-clear smoke.
+// Boss/stage-clear smoke.
 //
 // This intentionally drives the public client protocol only. The bot moves into
 // boss range with C_MoveIntent, attacks with C_Attack, then verifies server-owned
@@ -42,7 +42,7 @@ public class BossStageClearSmoke
         public bool UsedOptionBDeathEquivalent;
     }
 
-    // M4.2 Phase 05: portal 좌표 상수 (서버 PortalTable.cs와 정합 — 변경 시 양쪽 동기화 의무).
+    // portal 좌표 상수 — 서버 PortalTable.cs와 정합. 변경 시 양쪽 동기화 의무(불일치=전환 실패).
     // Town portal: x=20 → HuntingGround destSpawn x=2.
     // HuntingGround portal: x=25 → BossRoom destSpawn x=22.
     const float TownPortalX = 20f;
@@ -50,7 +50,6 @@ public class BossStageClearSmoke
     const float HGPortalX = 25f;
     const int HGPortalId = 1;
 
-    // M4.1 Phase 06 (7단계): simulatedLatencyMs — EmergencyCombatSmoke와 동일 패턴.
     public static async Task<Result> Run(
         string host, int port,
         int simulatedLatencyMs = 0,
@@ -75,10 +74,8 @@ public class BossStageClearSmoke
             if (!bot.WaitEnterMap(DefaultTimeout))
                 return Fail(result, "S_EnterMap timeout (5s)");
 
-            // M4.2 Phase 05: 1회차 portal — Town → HuntingGround.
-            // Town = 빈 맵이므로 HG를 경유해 BossRoom으로 가야 함.
-            // ADR-026: entityId는 맵 이동 시 유지.
-            // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X).
+            // 1회차 portal — Town → HuntingGround. Town = 빈 맵이라 HG 경유 후 BossRoom으로.
+            // ADR-026: entityId는 맵 이동 시 유지. 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X).
             await bot.MoveToPortal(TownPortalX, ct);
             bot.SendEnterPortal(TownPortalId);
             if (!await bot.WaitMapTransition(DefaultTimeout, ct))
@@ -87,7 +84,7 @@ public class BossStageClearSmoke
             // S_MapTransition 후 서버 tick thread가 다음 맵 job을 처리하기까지 대기.
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
 
-            // M4.2 Phase 05: 2회차 portal — HuntingGround → BossRoom.
+            // 2회차 portal — HuntingGround → BossRoom.
             // BossRoom portal(x=25)까지 이동. HG destSpawn(x=2)에서 시작.
             await bot.MoveToPortal(HGPortalX, ct);
             bot.SendEnterPortal(HGPortalId);
@@ -113,7 +110,7 @@ public class BossStageClearSmoke
 
             result.MoveIntentsSent = await bot.MoveIntoAttackRange(bossSpawn.x, ct);
 
-            // M4.1 Phase 06 (7단계): lag 시뮬 시 serverTick 추적 보장.
+            // lag 시뮬 시 serverTick 추적 보장.
             bool gotSnapshot = await bot.WaitForFirstSnapshot(DefaultTimeout, ct);
             if (!gotSnapshot)
                 return Fail(result, "S_Snapshot timeout — serverTick 추적 불가");
@@ -316,7 +313,7 @@ public class BossStageClearSmoke
         readonly ManualResetEventSlim _connected = new(false);
         readonly ManualResetEventSlim _handshake = new(false);
         readonly ManualResetEventSlim _enterMap = new(false);
-        // M4.2 Phase 05: 2회 portal 흐름 — 1회차/2회차 S_MapTransition 각각 관리.
+        // 1회차/2회차 S_MapTransition 각각 관리.
         // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X).
         readonly ManualResetEventSlim _mapTransition1 = new(false);
         readonly ManualResetEventSlim _mapTransition2 = new(false);
@@ -328,7 +325,7 @@ public class BossStageClearSmoke
         BotSession? _session;
         uint _clientTick;
 
-        // M4.1 Phase 06 (7단계): 서버 tick 추적 — S_Snapshot 수신 시 갱신.
+        // 서버 tick 추적 — S_Snapshot 수신 시 갱신.
         // C_Attack.attackerClientTick에 박아야 서버 rewind 범위 검증(diff ≤ 4)을 통과.
         // volatile: network thread(HandlePacket)에서 쓰고 메인 시나리오 thread(SendAttack)에서 읽음.
         volatile int _lastReceivedServerTick = 0;
@@ -362,15 +359,13 @@ public class BossStageClearSmoke
         public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
         public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
 
-        // M4.2 Phase 05: 1회차/2회차 S_MapTransition 수신 대기.
-        // 서버는 S_MapTransition만 발송 — 이 이벤트 수신으로 맵 진입 완료 판정.
+        // 서버는 맵 전환 시 S_MapTransition만 발송 — 이 이벤트 수신으로 맵 진입 완료 판정.
         public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition1.IsSet, timeout, ct);
         public async Task<bool> WaitSecondMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition2.IsSet, timeout, ct);
 
-        // M4.2 Phase 05: portal 위치까지 C_MoveIntent 기반 이동.
-        // 서버 PortalTable.cs와 정합 — portal x 좌표는 호출부 const로 박음.
+        // portal 위치까지 C_MoveIntent 기반 이동. portal x 좌표는 호출부 const(PortalTable.cs와 정합).
         public async Task<int> MoveToPortal(float portalX, CancellationToken ct)
         {
             float delta = portalX - SpawnX;
@@ -387,7 +382,6 @@ public class BossStageClearSmoke
             return ticks + 1;
         }
 
-        // M4.2 Phase 05: C_EnterPortal 송신.
         public void SendEnterPortal(int portalId)
         {
             C_EnterPortal packet = new() { portalId = portalId };
@@ -430,13 +424,9 @@ public class BossStageClearSmoke
             return ticks + 1;
         }
 
-        // M4.1 Phase 06 (7단계): 서버에서 최소 1개 S_Snapshot 수신 대기.
-        // EmergencyCombatSmoke.CombatProbe와 동일 패턴.
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
 
-        // M4.1 Phase 06 (7단계): simulatedLatencyMs 옵션.
-        // EmergencyCombatSmoke.CombatProbe와 동일 패턴.
         public void SendAttack(int targetEntityId, int simulatedLatencyMs = 0)
         {
             int latencyTicks = simulatedLatencyMs / Constants.TickIntervalMs;
@@ -528,7 +518,7 @@ public class BossStageClearSmoke
                     handshake.Read(buffer);
                     HandshakeOk = handshake.ok;
                     HandshakeReason = handshake.reason;
-                    // M4.1 Phase 02 (P0-1/P0-2 봉합): handshake OK 후 즉시 C_CharacterSelect 송신.
+                    // handshake OK 후 즉시 C_CharacterSelect 송신.
                     // 서버가 class 선택 없이 월드 진입을 차단하므로 S_EnterMap은 이 패킷 후에야 옴.
                     if (handshake.ok)
                     {
@@ -549,7 +539,6 @@ public class BossStageClearSmoke
                     break;
 
                 case PacketID.S_MapTransition:
-                    // M4.2 Phase 05: 맵 전환 패킷 수신 — 1회차/2회차 순서로 처리.
                     // SpawnX를 목적지 spawn 좌표로 갱신. 봇은 서버 권위 좌표만 사용 (헌법 #1).
                     S_MapTransition mapTransition = new();
                     mapTransition.Read(buffer);
@@ -594,7 +583,6 @@ public class BossStageClearSmoke
                     break;
 
                 case PacketID.S_Snapshot:
-                    // M4.1 Phase 06 (7단계): 최신 서버 tick 갱신.
                     S_Snapshot snapshot = new();
                     snapshot.Read(buffer);
                     _lastReceivedServerTick = snapshot.serverTick;

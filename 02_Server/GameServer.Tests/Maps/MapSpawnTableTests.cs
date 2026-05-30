@@ -3,7 +3,7 @@ using Dawnholder.Server.GameServer.Maps;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
-// M4.2 Phase 01 (결정 2 — Spawn 모듈화): MapSpawnTable 단위 테스트.
+// MapSpawnTable 단위 테스트.
 //
 // **검증 범위**: MapSpawnTable.GetSpawnsFor(MapId) 반환값 정합.
 //   GameMapContentTests와 층위 분리:
@@ -52,7 +52,7 @@ public class MapSpawnTableTests
     [Fact]
     public void HuntingGround_NormalEntry_HasExpectedMaxHp()
     {
-        // HP 30 = 설계 약속 (damage 10 × 3회 사망 기준, M4.1에서 Warrior 25 dmg로 2회로 변경됨).
+        // HP 30 = 설계 약속 (Warrior 25 dmg 기준 2회 사망).
         EnemySpawnDef def = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
         Assert.Equal(30, def.MaxHp);
     }
@@ -79,7 +79,7 @@ public class MapSpawnTableTests
     [Fact]
     public void BossRoom_BossEntry_HasExpectedMaxHp()
     {
-        // HP 100 = 설계 약속 (M3 Phase 07 박힘).
+        // HP 100 = 설계 약속.
         EnemySpawnDef def = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
         Assert.Equal(100, def.MaxHp);
     }
