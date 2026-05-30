@@ -113,6 +113,7 @@ namespace Dawnholder.Client.Network
             float vy = pkt.vy;
             int sTick = pkt.serverTick;
             uint ackedTick = pkt.lastAckedClientTick;
+            byte animState = pkt.animState;
 
             MainThreadDispatcher.Enqueue(() =>
             {
@@ -134,17 +135,18 @@ namespace Dawnholder.Client.Network
                     float capturedX = x;
                     float capturedY = y;
                     int capturedEid = eid;
+                    byte capturedAnimState = animState;
                     if (session.RosterBuffer.TryBuffer(
                             $"S_Snapshot entity={eid}",
                             () =>
                             {
                                 if (RemoteEntityRegistry.Instance != null)
-                                    RemoteEntityRegistry.Instance.UpdateSnapshot(capturedEid, capturedX, capturedY);
+                                    RemoteEntityRegistry.Instance.UpdateSnapshot(capturedEid, capturedX, capturedY, capturedAnimState);
                             }))
                         return;
 
                     if (RemoteEntityRegistry.Instance != null)
-                        RemoteEntityRegistry.Instance.UpdateSnapshot(eid, x, y);
+                        RemoteEntityRegistry.Instance.UpdateSnapshot(eid, x, y, animState);
                 }
             });
         }
@@ -327,13 +329,15 @@ namespace Dawnholder.Client.Network
             int eid = pkt.entityId;
             float x = pkt.x;
             float y = pkt.y;
-            // state(byte)는 현재 클라 시각 미사용.
+            // state(byte) = 서버 AI FSM 상태 — 시각 미사용.
+            // animState(byte) = 시각 애니 상태 — AnimatorDriver 경로로 전달.
+            byte animState = pkt.animState;
 
             MainThreadDispatcher.Enqueue(() =>
             {
                 if (EnemyRegistry.Instance == null) return;
                 // spawn 전 도착(race)이면 EnemyRegistry.UpdatePosition이 silent skip.
-                EnemyRegistry.Instance.UpdatePosition(eid, x, y);
+                EnemyRegistry.Instance.UpdatePosition(eid, x, y, animState);
             });
         }
     }

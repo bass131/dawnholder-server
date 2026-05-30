@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using Dawnholder.Client.Rendering;
 using UnityEngine;
 
 namespace Dawnholder.Client.State
@@ -19,6 +20,7 @@ namespace Dawnholder.Client.State
         [SerializeField] GameObject? _remotePlayerPrefab;
 
         readonly Dictionary<int, RemoteEntity> _entities = new();
+        readonly Dictionary<int, RemotePlayerMotion> _motions = new();
 
         void Awake()
         {
@@ -69,6 +71,14 @@ namespace Dawnholder.Client.State
             }
             entity.Initialize(entityId, spawnX, spawnY);
             _entities[entityId] = entity;
+
+            // animState 공급원 + driver — prefab에 없으면 AddComponent로 런타임 주입.
+            RemotePlayerMotion motion = go.GetComponent<RemotePlayerMotion>()
+                                        ?? go.AddComponent<RemotePlayerMotion>();
+            if (go.GetComponent<AnimatorDriver>() == null)
+                go.AddComponent<AnimatorDriver>();
+            _motions[entityId] = motion;
+
             Debug.Log($"[Registry] Spawned entity {entityId} at ({spawnX:F2}, {spawnY:F2})");
         }
 
@@ -81,13 +91,14 @@ namespace Dawnholder.Client.State
             }
             entity.ClearBuffer();
             _entities.Remove(entityId);
+            _motions.Remove(entityId);
             Destroy(entity.gameObject);
             Debug.Log($"[Registry] Despawned entity {entityId}");
         }
 
         // S_Snapshot 핸들러에서 호출 (entityId가 본인이 아닌 경우만).
         // 지연 spawn — entity 없으면 Snapshot 좌표(이미 이동한 좌표)로 Spawn 후 buffer push.
-        public void UpdateSnapshot(int entityId, float x, float y)
+        public void UpdateSnapshot(int entityId, float x, float y, byte animState)
         {
             if (!_entities.TryGetValue(entityId, out RemoteEntity? entity))
             {
@@ -99,6 +110,8 @@ namespace Dawnholder.Client.State
                 }
             }
             entity.EnqueueSnapshot(x, y);
+            if (_motions.TryGetValue(entityId, out RemotePlayerMotion? motion))
+                motion.SetAnimState(animState);
         }
 
         // OnDisconnected에서 호출 — 메모리 누수 차단.
@@ -109,6 +122,7 @@ namespace Dawnholder.Client.State
                 if (entity != null) Destroy(entity.gameObject);
             }
             _entities.Clear();
+            _motions.Clear();
         }
     }
 }

@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.3
 phase: 08b
 title: 애니 상태머신 — 클라 구조 (IMotionState + AnimatorDriver + 소스 3종 + enemy 위치 보간)
-status: pending
+status: done
 grade: 복잡
 risk: unity-asset
 estimated: 3~4h
@@ -125,3 +125,4 @@ summary: 서버 animState를 Animator로 렌더하는 공통 구조(전략 패�
 ## 작업 로그
 
 - 2026-05-30: 계획 수립 (`/work:plan` 애니 상태머신 재편 — 기존 08 enemy-ai-client를 08a/08b로 분리)
+- 2026-05-30: 구현 완료 (client SubAgent). 신규 5 + 수정 5. dotnet build 0/0, reviewer 🔴0, Unity Play 실측(enemy 보간+flip 정상). 박제 → `08b-anim-client-structure-DONE.md`. 로컬 플레이어 rubber-band(선재)는 Phase 10 이월.
