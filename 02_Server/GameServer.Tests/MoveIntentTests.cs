@@ -15,14 +15,14 @@ public class MoveIntentTests
     {
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
-        e.PendingInputX = 1;
+        e.EnqueueInput(1, false, 1u);
 
         map.Tick(1);
 
         // 1 tick = 1 * MoveSpeed * TickDuration = 5 * 0.05 = 0.25
         float expected = Constants.MoveSpeed * Constants.TickDuration;
         Assert.Equal(expected, e.Position.X, 4);
-        Assert.Equal((sbyte)0, e.PendingInputX); // 적용 후 리셋
+        Assert.Equal(0, e.InputQueueCount); // 적용 후 큐 비어있음
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class MoveIntentTests
     {
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
-        e.PendingInputX = -1;
+        e.EnqueueInput(-1, false, 1u);
 
         map.Tick(1);
 
@@ -58,7 +58,7 @@ public class MoveIntentTests
         // 클라가 키를 계속 누르고 있는 시나리오: 매 tick 새 intent 도착.
         for (int i = 0; i < 20; i++)
         {
-            e.PendingInputX = 1;
+            e.EnqueueInput(1, false, (uint)(i + 1));
             map.Tick(i + 1);
         }
 
@@ -71,7 +71,7 @@ public class MoveIntentTests
     {
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
-        e.PendingInputX = 1;
+        e.EnqueueInput(1, false, 1u);
 
         map.Tick(1);
 
@@ -84,10 +84,10 @@ public class MoveIntentTests
     [Fact]
     public void Tick_JumpPressed_OnGround_AppliesJumpVelocity()
     {
-        // PendingJumpPressed=true + OnGround=true (기본값) → vy=JumpSpeed
+        // jumpPressed=true + OnGround=true (기본값) → vy=JumpSpeed
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
-        e.PendingJumpPressed = true;
+        e.EnqueueInput(0, true, 1u);
 
         map.Tick(1);
 
@@ -105,7 +105,7 @@ public class MoveIntentTests
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 1f));
         e.Velocity = new Vector2(0f, 5f);  // 점프 상승 중
         e.OnGround = false;
-        e.PendingJumpPressed = true;
+        e.EnqueueInput(0, true, 1u);
 
         map.Tick(1);
 
@@ -115,18 +115,16 @@ public class MoveIntentTests
     }
 
     [Fact]
-    public void Tick_ResetsPendingFlags_AfterStep()
+    public void Tick_ConsumesOneInputPerTick()
     {
-        // PendingInputX + PendingJumpPressed 모두 reset (다음 tick 누적 차단)
+        // 큐에 입력 1개 → 적용 후 큐 비어있음. 단일 소비 불변식.
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
-        e.PendingInputX = 1;
-        e.PendingJumpPressed = true;
+        e.EnqueueInput(1, false, 1u);
 
         map.Tick(1);
 
-        Assert.Equal((sbyte)0, e.PendingInputX);
-        Assert.False(e.PendingJumpPressed);  // 에지 처리 — 1tick 후 false (D4 (a))
+        Assert.Equal(0, e.InputQueueCount);
     }
 
     [Fact]

@@ -108,35 +108,20 @@ public class GameSessionRateLimitTests : IDisposable
     }
 
     [Fact]
-    public void Drop_PreventsEntityStateChange_AfterTick()
+    public void Drop_PreventsQueueGrowthBeyondRateLimit()
     {
-        // drop된 intent가 *실제로* entity state를 안 바꾸는지 tick 결과로 검증.
-        // enqueue 카운트만 보는 게 아니라 invariant 끝까지 추적.
-        //
-        // 시나리오:
-        // 1. 500개 +1 input → enqueue
-        // 2. tick → entity.Position.X += MoveSpeed * TickDuration (PendingInputX 마지막 값=+1 적용)
-        // 3. entity.PendingInputX는 tick 후 0 리셋
-        // 4. 501번째 -1 input → drop
-        // 5. tick → PendingInputX는 0(이전 tick에서 리셋)이라 Position 변경 X
-        //    만약 drop이 안 됐다면 501번째 -1이 PendingInputX 박혀서 좌측 이동했을 것
+        // rate-limit drop된 intent는 입력 큐에 진입하지 않는다.
+        // 500개 enqueue 후 501번째 drop → EnqueueJobCalls 불변 확인.
         for (int i = 0; i < 500; i++)
             _session.OnRecvPacket(MakeMoveIntent(0b00_0_0_0_010, (uint)(i + 1))); // +1
 
-        _map.Tick(2); // 첫 tick은 ctor에서 Tick(1) — 본 tick은 2번째
-        // Town 맵(빈 맵) → enemy 없음 → player=entityId 1 (첫 발급).
-        PlayerEntity? entity = _map.GetPlayer(1);
-        Assert.NotNull(entity);
-        float posAfterFirstTick = entity!.Position.X;
-        Assert.True(posAfterFirstTick > 0, $"+1 input 적용 안 됨 — Position.X={posAfterFirstTick}");
+        int callsAfter500 = _map.EnqueueJobCalls;
 
-        // 501번째 drop
-        _session.OnRecvPacket(MakeMoveIntent(0b00_0_0_0_010, 501)); // -1
+        // 501번째: rate-limit drop
+        _session.OnRecvPacket(MakeMoveIntent(0b00_0_0_0_010, 501));
 
-        _map.Tick(3);
-        // drop됐으면 PendingInputX는 0 (이전 tick에서 리셋된 상태). Position 변경 X.
-        // 만약 drop 안 됐으면 PendingInputX = -1 적용 → Position 좌측 이동.
-        Assert.Equal(posAfterFirstTick, entity.Position.X);
+        // EnqueueJob 추가 호출 없음 — drop됐으면 tick thread에 job 안 들어감.
+        Assert.Equal(callsAfter500, _map.EnqueueJobCalls);
     }
 
     [Fact]
