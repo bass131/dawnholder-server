@@ -8,27 +8,19 @@ using Shared.Protocol;
 namespace Dawnholder.Server.GameServer.Network;
 
 /// <summary>
-/// 맵 간 플레이어 이동(migration) 로직 헬퍼.
+/// 맵 간 플레이어 이동(migration) 로직 헬퍼. 검증 단계와 transfer 단계로 분리.
 ///
-/// **추출 사유**: SubmitEnterPortal의 EnqueueJob 람다 본문(~160줄)을 검증 단계와 transfer 단계로
-/// 가독 분리. 추출 전에는 160줄짜리 단일 람다라 검증 실패 경로와 성공 경로가 섞여 있었음.
-///
-/// **trust-boundary invariant 보존**: 검증 로직(portal lookup, 근접 검증)은 byte-for-byte 동일.
-/// 검증 실패 시 silent drop, 성공 시 migration 실행 — 동일 입력에 동일 판정 (헌법 #3).
+/// **trust-boundary invariant**: 검증 실패 시 silent drop, 성공 시 migration 실행 —
+/// 동일 입력에 동일 판정 (헌법 #3).
 ///
 /// **헌법 #5 정합**: Execute(...)는 항상 EnqueueJob 람다 *안*에서 호출됨 (tick thread).
-/// Execute 자체가 EnqueueJob을 호출하지 않고, 호출 위치(GameSession.SubmitEnterPortal)가 감싼다.
-/// 단, 맵 B EnqueueJob은 Execute 내부에서 호출 — Map=Actor 원칙 정합.
-///
-/// **§2.2 God class 분리**: GameSession은 컨테이너(socket lifecycle + state 소유),
-/// MapMigration은 System(로직만 — GameSession을 인자로 받음). System이 컨테이너를 직접 변경하는
-/// 방식은 §2.2 "공유 상태(System이 컨테이너 데이터를 읽고 변경)" 패턴 정합.
+/// 호출 위치(GameSession.SubmitEnterPortal)가 감싼다. 맵 B EnqueueJob은 Execute 내부에서
+/// 호출 — Map=Actor 원칙 정합 (한 맵의 tick thread가 다른 맵을 직접 mutate 금지).
 /// </summary>
 internal static class MapMigration
 {
     // 근접 임계 2 unit (헌법 #3 — 텔레포트 핵 차단).
     // PortalTable 좌표에서 네트워크 지연 1-2 tick(50-100ms) 내 위치 오차 최대 ~1.5 unit 흡수.
-    // private — Execute 내부 전용(아래 근접 검증). EnterPortalHandlerTests는 거리값을 자체 보유(결합 회피).
     private const float ProximityThreshold = 2f;
 
     /// <summary>

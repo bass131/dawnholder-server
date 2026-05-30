@@ -20,7 +20,7 @@ namespace Dawnholder.Client.Net;
 /// </para>
 ///
 /// <para>
-/// <b>결함 3종 봉합 (M4.1 Phase 03)</b>:
+/// <b>봉합한 결함 3종</b>:
 /// <list type="bullet">
 /// <item>dataSize = 0 → buffer.Count 검사를 통과해 zero-size 루프 무한 반복</item>
 /// <item>dataSize &lt; 4 (헤더 미만) → packetId 슬롯까지 읽으려다 깨진 frame 해석</item>

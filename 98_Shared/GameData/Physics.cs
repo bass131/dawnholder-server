@@ -3,29 +3,23 @@ namespace Shared.GameData;
 using System.Numerics;
 
 /// <summary>
-/// Phase 07 (M2): 결정론적 물리 공식. 양쪽이 같은 함수 호출 → 같은 결과.
+/// 결정론적 물리 공식. 양쪽이 같은 함수 호출 → 같은 결과.
 ///
 /// **헌법 #1 (Server Authority) 정합**: 공식 = Shared, 실행 = 서버. 클라 prediction도
 /// 같은 함수를 호출해 양쪽 결과 일치 → drift 0. 클라 별도 const/공식 박으면 무한 drift.
 ///
 /// **결정론**: 같은 입력 → 같은 출력. float은 동일 플랫폼 + 같은 컴파일 옵션이면 충분히
-/// 결정론적. Unity Burst/SIMD 컴파일 옵션 다르면 미세 drift 가능 (Phase 07 단계는 무시).
+/// 결정론적. Unity Burst/SIMD 컴파일 옵션 다르면 미세 drift 가능.
 ///
 /// **fixed timestep 가정**: dt = Constants.TickDuration (50ms 고정). 가변 dt 들어오면
 /// 결정론 깨짐 — 호출자 책임. 클라가 Time.deltaTime 그대로 넘기면 fps 의존이라 금지.
-///
-/// **SOLID 설계 의도** (struct 묶음):
-///   - PhysicsInput / PhysicsState로 호출 시그니처 응집 — 미래 입력 추가 시
-///     Step 시그니처 변경 X (Open/Closed 정신).
-///   - static class라 LSP/DIP 직접 적용 X. 미래 다양한 맵별 다른 중력 필요 시
-///     IPhysics interface로 확장 — 그 시점에 strategy pattern으로 박을 후보.
 /// </summary>
 public static class Physics
 {
     /// <summary>중력 가속도 (units/s²). Y up = 양수, gravity는 음수 (내림).</summary>
     public const float Gravity = -20.0f;
 
-    /// <summary>점프 시작 시 부여되는 vy (units/s). Phase 07 = 8.0 (포물선 약 0.8초).</summary>
+    /// <summary>점프 시작 시 부여되는 vy (units/s). 8.0 = 포물선 약 0.8초.</summary>
     public const float JumpSpeed = 8.0f;
 
     /// <summary>지면 Y 좌표. 캐릭터 발바닥이 닿는 높이.</summary>
@@ -37,8 +31,8 @@ public static class Physics
     /// <summary>
     /// 1 step 결정론 시뮬레이션. 같은 (state, input) → 같은 PhysicsState.
     ///
-    /// **순서** (Phase 07 정의 파일 #80~85 함정 회피):
-    ///   1. 수평 velocity = inputX * MoveSpeed (즉시 반응, 관성 X — Phase 04 패턴 그대로)
+    /// **순서** (재정렬 시 점프 물리 깨짐):
+    ///   1. 수평 velocity = inputX * MoveSpeed (즉시 반응, 관성 X)
     ///   2. 시작 시점 ground 판정 (pos.Y와 vy 둘 다 확인)
     ///   3. jumpPressed && startedOnGround → vy = JumpSpeed (점프 시작)
     ///      그 외 공중일 때 → vy += Gravity * dt (낙하 가속)
@@ -91,8 +85,7 @@ public static class Physics
 
 /// <summary>
 /// 시뮬레이션 한 step의 입력. inputX(-1/0/1) + jumpPressed + dt.
-/// readonly struct → 값 전달, GC 압박 0. SOLID Open/Closed — 미래 입력 추가 시
-/// 본 struct에 필드 추가, Physics.Step 시그니처는 그대로.
+/// readonly struct → 값 전달, GC 압박 0.
 /// </summary>
 public readonly struct PhysicsInput
 {

@@ -4,16 +4,16 @@ using Dawnholder.Server.Network;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// Phase 09 (M2.5 Trust-boundary): PacketSession.OnRecv length 검증 fail-closed 회귀 안전망.
+/// PacketSession.OnRecv length 검증 fail-closed 회귀 안전망.
 ///
-/// **왜 이 테스트가 헌법 §3 핵심인가**: γ 감사(Claude α + Codex β)에서 발견된 위반 1순위.
+/// **왜 이 테스트가 헌법 §3 핵심인가**:
 /// dataSize=0/1/3 같은 invalid frame은 부분 무한 루프 또는 잘못된 PacketID dispatch로 갈 수 있고,
 /// dataSize=70000 같은 oversize는 메모리 폭주 표적. 본 테스트가 *commit 시점*에 회귀 검출.
 ///
 /// **테스트 전략**: TestPacketSession 서브클래스가 Disconnect/OnRecvPacket 호출을 카운트.
 /// 실제 socket 없이 OnRecv 직접 호출 — Disconnect는 virtual로 표시되어 override 가능.
 ///
-/// **Codex β 추가 발견**: 정상 분할 패킷(dataSize > buffer.Count)은 disconnect가 아닌
+/// 정상 분할 패킷(dataSize > buffer.Count)은 disconnect가 아닌
 /// break + 다음 recv 대기. 케이스 F가 이 invariant 보존 검증.
 /// </summary>
 public class PacketSessionLengthValidationTests
@@ -125,7 +125,7 @@ public class PacketSessionLengthValidationTests
     [Fact]
     public void Case_F_PartialPacket_BreaksWithoutDisconnect()
     {
-        // Codex β 추가 발견: 정상 분할 패킷 invariant 보존.
+        // 정상 분할 패킷 invariant 보존.
         // dataSize=10 (valid frame size), buffer.Count=5 (헤더는 왔지만 payload 일부만 도착).
         // → disconnect X, OnRecvPacket 호출 X, break 후 다음 recv 대기.
         var s = new TestPacketSession();
@@ -152,7 +152,7 @@ public class PacketSessionLengthValidationTests
     [Fact]
     public void MaxFrameSize_MatchesSharedConstants_DriftGuard()
     {
-        // Codex β 권장(Phase 09): PacketSession.MaxFrameSize와 Shared.GameData.Constants.MaxPacketSize는
+        // PacketSession.MaxFrameSize와 Shared.GameData.Constants.MaxPacketSize는
         // *주석 컨벤션 동기화*라 drift 위험 — 둘 중 하나만 바뀌면 client/server가 다른 값 봄.
         // 본 자가-verify 테스트가 drift commit 시점에 즉시 검출.
         Assert.Equal(Shared.GameData.Constants.MaxPacketSize, PacketSession.MaxFrameSize);

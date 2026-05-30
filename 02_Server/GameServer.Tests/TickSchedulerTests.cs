@@ -2,8 +2,6 @@ using Dawnholder.Server.GameServer.Loop;
 
 namespace Dawnholder.Server.GameServer.Tests;
 
-// Phase 02 (M2): TickScheduler 동작 검증.
-//
 // 시간 의존 테스트라 ±2~3 tick 정도 flaky 위험 있어 허용 오차 넉넉히.
 // CI에서도 통과해야 하므로 18~22 범위 (PRD 20 TPS ±10%).
 public class TickSchedulerTests

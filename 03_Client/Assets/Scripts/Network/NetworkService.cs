@@ -33,14 +33,6 @@ namespace Dawnholder.Client.Network
     /// **인스펙터 노출**:
     ///   - serverHost / serverPort : PlayerPrefs 미박힘 시 fallback
     ///   - pingIntervalSeconds     : Ping 송신 주기 (기본 1초)
-    ///
-    /// **비교 — 제거된 ① 땜질 코드 목록**:
-    ///   - DontDestroyOnLoad(gameObject) in Awake        → PersistentServicesBootstrap로 일원화
-    ///   - Instance != null 중복 가드 + _isDuplicate     → PersistentServicesBootstrap 1회 생성으로 불필요
-    ///   - SceneManager.sceneLoaded += OnSceneLoaded     → 씬 감지 자동 teardown 제거
-    ///   - OnSceneLoaded() (MainMenu/CharacterSelect 감지) → 제거
-    ///   - Start()의 auto-connect 흐름                   → Connect() 명시 호출로 이전
-    ///   - MenuSceneNames 상수 + foreach 씬 이름 비교     → 제거
     /// </summary>
     public class NetworkService : MonoBehaviour
     {
@@ -140,9 +132,8 @@ namespace Dawnholder.Client.Network
                 _session = new UnityClientSession();
                 _isConnected = true;
 
-                // event 기반 race 봉합 (M4.1 Phase 02 패턴 유지):
-                // S_HandshakeResult(ok=true) 수신 후 main thread에서 OnHandshakeOk 호출됨.
-                // C_CharacterSelect 송신 race 봉합 핵심.
+                // event 기반 race 봉합: S_HandshakeResult(ok=true) 수신 후 main thread에서
+                // OnHandshakeOk 호출됨. C_CharacterSelect 송신 race 봉합 핵심.
                 _session.OnHandshakeOkEvent += OnHandshakeOk;
 
                 return _session;
@@ -179,8 +170,8 @@ namespace Dawnholder.Client.Network
             _isConnected = false;
             _characterSelectSent = false;
 
-            // PendingSpawn 잔류 방어 (reviewer 🟡): pending spawn은 *현 세션 한정* 유효.
-            // 세션 종료(MainMenu 복귀/끊김) 시 비워서, 다음 세션이 옛 좌표를 1회 오소비하는 stale 잔류 차단.
+            // PendingSpawn 잔류 방어: pending spawn은 *현 세션 한정* 유효.
+            // 세션 종료 시 비워서, 다음 세션이 옛 좌표를 1회 오소비하는 stale 잔류 차단.
             UnityClientSession.ConsumePendingSpawn();
         }
 

@@ -6,20 +6,16 @@ using UnityEngine.UI;
 namespace Dawnholder.Client.Gameplay
 {
     /// <summary>
-    /// NPC 대화 박스 UI (M3.8 Phase 04 — 캡스톤 1 데모용 단순 텍스트 출력).
+    /// NPC 대화 박스 UI (단순 텍스트 출력).
     ///
-    /// **클라 단독 hardcoded** — 서버 패킷 X. PRD MVP 제외 항목 "퀘스트/NPC" 정합 (캡스톤 데모용 흡수,
-    /// 본 마감 후 M6 길드 진입 시 정식화).
-    ///
+    /// **클라 단독 hardcoded** — 서버 패킷 X.
     /// **헌법 #1 (Server Authority)**: 본 패널은 *상태 변경 없음* (텍스트 출력만) → 클라 단독 OK.
     /// 만약 *퀘스트 진행도* / *보상 지급* 같은 상태 변경이면 서버 권위 의무.
     ///
-    /// **위치 = `Scripts/Gameplay/`** (plan-auditor 결함 봉합 결정, `Scripts/UI/`는 정유현 영역 침범 차단).
-    ///
-    /// **새 InputSystem 활용** (헌법 03_Client/CLAUDE.md "레거시 Input.GetKey 금지" 정합).
+    /// **새 InputSystem 활용** (헌법 "레거시 Input.GetKey 금지" 정합).
     /// ESC 또는 E 재입력 → Hide. 직접 InputAction 박음 (Inspector reference 없이 작동).
     ///
-    /// **Static Show 패턴** — Scene 안 인스턴스 1개 가정 (Gameplay.unity에 비활성 상태로 배치).
+    /// **Static Show 패턴** — Scene 안 인스턴스 1개 가정.
     /// </summary>
     public class NpcDialogPanel : MonoBehaviour
     {

@@ -2,7 +2,7 @@ using Dawnholder.Server.GameServer.Loop;
 
 namespace Dawnholder.Server.GameServer.Tests.Loop;
 
-// Phase 08 Step 1: TickMetrics 단독 테스트.
+// TickMetrics 단독 테스트.
 // 알려진 입력 → 알려진 percentile 출력. tick 루프 실제로 안 돌림 (분리의 가치).
 public class TickMetricsTests
 {

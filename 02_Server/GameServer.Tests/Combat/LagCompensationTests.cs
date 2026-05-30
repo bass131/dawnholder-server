@@ -9,7 +9,7 @@ using Shared.Protocol;
 namespace GameServer.Tests.Combat;
 
 /// <summary>
-/// M4.1 Phase 06 (6단계): lag compensation rewind 단위 테스트 5건.
+/// lag compensation rewind 단위 테스트 5건.
 ///
 /// **검증 대상** (ProcessAttack step 4.5 — rewind 범위 검증):
 ///   1. Rewind_HappyPath — attackerClientTick = currentTick (diff=0) → hit 정합
@@ -45,7 +45,7 @@ public class LagCompensationTests : IDisposable
     const int BossEntityId = 2;
     const int PlayerEntityId = 3;
 
-    // M4.2 Phase 01 (결정 2 모듈화 갱신): MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
+    // MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
     static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
     static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
 
@@ -79,9 +79,8 @@ public class LagCompensationTests : IDisposable
 
     public LagCompensationTests()
     {
-        // M4.2 Phase 01: HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2).
-        // LagCompensationTests는 NormalEnemyId=1 + BossEntityId=2 둘 다 참조.
-        // SpawnEnemy(EnemyKind.Boss, ...) InternalsVisibleTo로 접근.
+        // HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2).
+        // NormalEnemyId=1 + BossEntityId=2 둘 다 참조. SpawnEnemy(Boss)는 InternalsVisibleTo로 접근.
         // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴.
         _map = new GameMap(MapId.HuntingGround);
         _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);

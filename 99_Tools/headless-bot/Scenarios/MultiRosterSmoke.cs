@@ -7,10 +7,9 @@ using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// M3 Phase 09 prep: 기존 멀티 접속 골격 회귀 시나리오.
+// 멀티 접속 골격(roster join/leave) 회귀 시나리오.
 //
-// Combat/PDL Phase 06과 겹치지 않도록 현재 이미 존재하는 패킷만 사용한다:
-// C_Handshake, S_HandshakeResult, S_EnterMap, S_PlayerJoin, S_PlayerLeave.
+// 사용 패킷: C_Handshake, S_HandshakeResult, S_EnterMap, S_PlayerJoin, S_PlayerLeave.
 public class MultiRosterSmoke
 {
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(5);
@@ -188,7 +187,7 @@ public class MultiRosterSmoke
                     handshake.Read(buffer);
                     HandshakeOk = handshake.ok;
                     HandshakeReason = handshake.reason;
-                    // M4.1 Phase 02 (P0-1/P0-2 봉합): handshake OK 후 즉시 C_CharacterSelect 송신.
+                    // handshake OK 후 즉시 C_CharacterSelect 송신 (서버가 class 선택 전 월드 진입 차단).
                     if (handshake.ok)
                     {
                         C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };

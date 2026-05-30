@@ -8,9 +8,9 @@ using Shared.Protocol;
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
 /// <summary>
-/// M4.2 Phase 03: 맵 간 player migration 단위 테스트.
+/// 맵 간 player migration 단위 테스트.
 ///
-/// **검증 invariant** (ADR-026 + Phase 03 완료 조건):
+/// **검증 invariant** (ADR-026 정합):
 ///   1. entity id 유지 — 맵 이동 후에도 entity id 동일 (ADR-026 핵심)
 ///   2. state 보존 — HP / PlayerStats(class) 맵 이동 후 유지
 ///   3. 맵 A에서 제거 — migration 후 맵 A.Players에 없음
@@ -473,7 +473,7 @@ public class MapMigrationTests : IDisposable
         ts.SimulateMigrationComplete();
     }
 
-    // --- 12. transient drop: migration 중 공격 패킷 no-op (M4.2 Phase 03 리뷰어 🟡 2 추가 검증) ---
+    // --- 12. transient drop: migration 중 공격 패킷 no-op ---
 
     [Fact]
     public void TransientDrop_AttackDuringMigration_IsNoOp()
@@ -511,7 +511,7 @@ public class MapMigrationTests : IDisposable
         ts.SimulateMigrationComplete();
     }
 
-    // --- 13. 이동 중 disconnect — ghost entity 없음 (M4.2 Phase 03 리뷰어 🟡 2 핵심) ---
+    // --- 13. 이동 중 disconnect — ghost entity 없음 ---
 
     [Fact]
     public void DisconnectDuringMigration_NoGhostEntity()

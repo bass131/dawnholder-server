@@ -19,7 +19,6 @@ internal sealed class CombatSystem
 {
     /// <summary>
     /// tick thread 안에서 attack 1건 처리.
-    /// GameMap.ProcessAttack이 이 메서드로 위임 — 기존 시그니처·동작 완전 보존.
     ///
     /// **검증 순서 (헌법 #3 Trust Boundary — fail-closed silent drop)**:
     ///   1. attacker player 존재 — 없으면 silent drop.
@@ -62,8 +61,18 @@ internal sealed class CombatSystem
 
         // 통과 → 권위 mutation 진입
         attacker.LastAttackTickMs = now;
+
+        // M4.3 Phase 08a: Attack latch 설정 — attacker의 AnimState.Attack이 AnimLatchTicks 동안 유지.
+        // 헌법 #5: tick 단위 카운터 (ms 타이머 X).
+        attacker.AttackLatchTicks = CombatConstants.AnimLatchTicks;
+
         int damage = Formulas.ComputeDamage(attacker.Stats, target.Stats, CombatConstants.BaseDamage);
         target.Hp -= damage;
+
+        // M4.3 Phase 08a: Hit latch 설정 — target(enemy)의 AnimState.Hit이 AnimLatchTicks 동안 유지.
+        // Death 우선순위(> Hit)이므로 아래 IsDead 체크 이전에 latch 먼저 세팅 — target이 죽어도
+        // latch는 해가 없음 (despawn 후 entity 사라지므로 카운터 감소 경로 없음).
+        target.HitLatchTicks = CombatConstants.AnimLatchTicks;
 
         S_HitResult hit = new S_HitResult
         {

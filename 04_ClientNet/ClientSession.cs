@@ -12,12 +12,10 @@ namespace Dawnholder.Client.Net;
 //
 //   - GameObject / Transform / MonoBehaviour 등 Unity API 직접 호출 금지.
 //   - 받은 데이터/이벤트는 main-thread queue에 박아두고 Unity의 Update()에서
-//     drain 하는 패턴을 Phase 04에서 도입 예정.
+//     drain 하는 패턴을 사용한다.
 //
 // 위반 시 런타임 예외:
 //   UnityException: get_isActiveAndEnabled can only be called from the main thread
-//
-// 이 경고는 Phase 03 학습 포인트 #2와 직결됨.
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// <summary>
@@ -49,10 +47,10 @@ public abstract class PacketSession : ClientSession
             // 패킷이 통째로 도착했는지 확인.
             ushort dataSize = BitConverter.ToUInt16(buffer.Array!, buffer.Offset);
 
-            // M4.1 Phase 03 (Trust Boundary): invalid frame size fail-closed.
+            // Trust Boundary: invalid frame size는 fail-closed.
             // 순서 중요 — 정상 분할 패킷(buffer.Count < dataSize) 체크보다 *먼저*.
             // 안 그러면 dataSize=0(무한루프) / dataSize=70000(attack frame)이
-            // wait에 잡혀 disconnect 안 됨 — 결함 3종 봉합.
+            // wait에 잡혀 disconnect 안 됨.
             if (!FrameValidator.TryValidateFrameHeader(dataSize, out var reason))
             {
                 Console.WriteLine($"[Trust] invalid frame size {dataSize} ({reason}) — disconnect");
@@ -77,8 +75,7 @@ public abstract class PacketSession : ClientSession
 
         if (packetCount > 1)
         {
-            // 클라에선 거의 안 일어나야 정상 (서버 push가 burst로 올 때만).
-            // Phase 04 이후 진단 로그용으로 유지.
+            // 클라에선 거의 안 일어나야 정상 (서버 push가 burst로 올 때만) — 진단 로그.
             Console.WriteLine($"[ClientPacketSession] 모아받기 {packetCount} Packets");
         }
 
@@ -180,7 +177,7 @@ public abstract class ClientSession
 
         OnDisconnected(_socket!.RemoteEndPoint!);
 
-        // Cross-review γ10 (β13/A5 봉합 + 2라운드 정제): Shutdown / Close / Clear 각 단계 독립 보호.
+        // Shutdown / Close / Clear 각 단계 독립 보호.
         // Shutdown throw → Close 여전히 실행(FD 누수 차단), Close throw → Clear 여전히 실행.
         // 서버 Session.cs와 자매 봉합 (ADR-012 Y2 분리 정합 — 양쪽 동시 수정).
         try { _socket!.Shutdown(SocketShutdown.Both); }

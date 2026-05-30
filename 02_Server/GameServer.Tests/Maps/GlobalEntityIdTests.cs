@@ -5,9 +5,9 @@ using Dawnholder.Server.GameServer.Maps;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
-// M4.2 Phase 02: 전역 entity id 풀 단위 테스트 (ADR-026 핵심).
+// 전역 entity id 풀 단위 테스트 (ADR-026 핵심).
 //
-// **검증 범위** (ADR-026 완료 조건 정합):
+// **검증 범위** (ADR-026 정합):
 //   - GameWorld.NextEntityId()가 단조 증가하며 globally-unique id 발급
 //   - 4맵 생성 후 AddPlayer가 전역 발급기에서 id 받음 (맵별 1 재시작 X)
 //   - SpawnEnemy도 전역 발급기에서 id 받음

@@ -3,7 +3,7 @@ using System;
 namespace Shared.GameData;
 
 /// <summary>
-/// 서버 권위 전투 공식 모음 (M4.1 Phase 05 신설).
+/// 서버 권위 전투 공식 모음.
 ///
 /// **헌법 #1 (Server Authority)**:
 /// 본 클래스의 공식은 <em>서버가 권위 판정에 사용</em>하는 유일한 출처.
@@ -27,11 +27,10 @@ public static class Formulas
     /// <para>공식: <c>Max(1, baseDamage + attacker.Attack - target.Defense)</c></para>
     /// <list type="bullet">
     ///   <item>최소 1 데미지 보장 — 방어력이 공격력+기본 데미지를 초과해도 0 이하 불가.</item>
-    ///   <item>결과는 항상 ≥1 (<c>Math.Max(1, ...)</c>) — 방어력이 공격력+기본 데미지를 초과해도 *음수 데미지 불가*.</item>
-    ///   <item>주의 (Cross-review γ10 β11 분석): 중간 <c>int</c> 덧셈은 이론상 wrap 가능하나 baseDamage는 작은 서버
+    ///   <item>주의: 중간 <c>int</c> 덧셈은 이론상 wrap 가능하나 baseDamage는 작은 서버
     ///       상수라 현실 입력에선 무발생. wrap돼도 <c>Math.Max</c>가 ≥1로 잡아 *음수는 절대 반환 안 함*(거대 입력 시
     ///       magnitude만 부정확 — 비현실적). 콘텐츠 스탯이 int 한계에 근접하는 M5+엔 long 격상 재검토.</item>
-    ///   <item>결과는 <c>int</c> — <c>S_HitResult.damage</c> 필드 타입과 직접 호환 (PDL 정합, Protocol.Version bump X).</item>
+    ///   <item>결과는 <c>int</c> — <c>S_HitResult.damage</c> 필드 타입과 직접 호환 (PDL 정합).</item>
     /// </list>
     ///
     /// <para><strong>서버 사용 예</strong>: <c>int dmg = Formulas.ComputeDamage(attacker.Stats, enemyStats, CombatConstants.BaseDamage);</c></para>
@@ -46,16 +45,13 @@ public static class Formulas
 }
 
 /// <summary>
-/// 적 엔티티 스탯 컨테이너 (M4.1 Phase 05 신설).
+/// 적 엔티티 스탯 컨테이너.
 ///
 /// <para>value type <c>struct</c> 선택 이유: 단순 스탯 홀더라 힙 할당 불필요.
 /// default Defense=0은 struct 기본값으로 자연 충족 — 무방어 적 표현에 명시 초기화 불필요.</para>
 ///
-/// <para>M4.3 Phase 07 추가: AI 이동 파라미터 3종 (MoveSpeed/AggroRange/PatrolRange).
-/// 서버 FSM이 이 값을 읽어 patrol/chase 반경·속도를 결정. 클라는 읽기 전용 hint 용도.
-/// 정밀 튜닝은 server Phase 단계에서; 여기선 Normal enemy 합리적 초기값만.</para>
-///
-/// <para>Worker B가 <c>EnemyEntity</c> 통합 시 본 struct를 wrapping 또는 직접 사용.</para>
+/// <para>AI 이동 파라미터 3종 (MoveSpeed/AggroRange/PatrolRange):
+/// 서버 FSM이 이 값을 읽어 patrol/chase 반경·속도를 결정. 클라는 읽기 전용 hint 용도.</para>
 /// </summary>
 public struct EnemyStats
 {
@@ -65,7 +61,7 @@ public struct EnemyStats
     /// <summary>최대 HP. 스폰 시 CurrentHp 초기화 기준.</summary>
     public int MaxHp;
 
-    // ── M4.3 Phase 07: AI 이동 파라미터 ──────────────────────────────────────
+    // ── AI 이동 파라미터 ──────────────────────────────────────
 
     /// <summary>
     /// 적 이동 속도 (유닛/초). Normal enemy 기본값 ~2.0.
@@ -91,8 +87,8 @@ public struct EnemyStats
     // ── Normal enemy 기본값 factory ──────────────────────────────────────────
 
     /// <summary>
-    /// Normal enemy 기본 스탯 (M4.3 Phase 07 박힘).
-    /// 서버 Phase에서 몬스터 테이블 데이터로 교체 전까지의 합리적 초기값.
+    /// Normal enemy 기본 스탯.
+    /// 서버가 몬스터 테이블 데이터로 교체 전까지의 합리적 초기값.
     /// </summary>
     public static EnemyStats NormalDefault() => new EnemyStats
     {

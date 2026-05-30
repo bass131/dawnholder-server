@@ -7,10 +7,10 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// Phase 09 (M2.5 Trust-boundary): rate-limit fail-closed 회귀 안전망.
+/// rate-limit fail-closed 회귀 안전망.
 ///
 /// **검증 invariant**: 1초 윈도우 안 IntentRateLimitPerSecond(=500) 초과 intent는
-/// map job 큐에 진입하지 *않는다*. 이전엔 로그만 찍고 진행 (γ 감사 위반 1순위).
+/// map job 큐에 진입하지 *않는다*.
 ///
 /// **테스트 전략**:
 /// - GameSession.GetMap() override로 GameMap 직접 주입 (singleton 의존 차단)
@@ -20,7 +20,7 @@ namespace GameServer.Tests.Network;
 /// - 500번 정상 enqueue, 501번 drop, 윈도우 reset 후 재개 검증
 /// - Console.Out 캡처로 [Cheat] 로그 윈도우당 1회 박히는지 확증
 ///
-/// **Codex β 권장(Phase 09)**: Console.SetOut 전역 캡처 + Thread.Sleep은 병렬 flake 위험 →
+/// Console.SetOut 전역 캡처 + Thread.Sleep은 병렬 flake 위험 →
 /// [Collection("ConsoleSerial")]로 다른 Console-capture 테스트와 직렬화.
 /// </summary>
 [Collection("ConsoleSerial")]
@@ -36,7 +36,6 @@ public class GameSessionRateLimitTests : IDisposable
     {
         public int EnqueueJobCalls;
 
-        // M4.2 Phase 01: base의 mapId 인자 전달 ctor 추가.
         public CountingGameMap(MapId mapId = MapId.HuntingGround) : base(mapId) { }
 
         public override void EnqueueJob(Action job)
@@ -47,16 +46,15 @@ public class GameSessionRateLimitTests : IDisposable
     }
 
     // 테스트용 GameSession — GameMap 직접 주입 + Send/Disconnect 차단.
-    // Codex β 검토(Phase 09): Send를 `new`로 hide하면 base에서 호출 시 base.Send가 실행됨
-    // (compile-time type binding) → m_Socket NRE. 정정: Session.Send를 virtual로 → override.
+    // Send를 `new`로 hide하면 base에서 호출 시 base.Send가 실행됨
+    // (compile-time type binding) → m_Socket NRE. Session.Send를 virtual로 → override.
     class TestGameSession : GameSession
     {
         readonly GameMap _injectedMap;
         public TestGameSession(GameMap map) { _injectedMap = map; }
         protected override GameMap GetMap() => _injectedMap;
 
-        // M4.1 Phase 02: handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
-        // 본 테스트는 rate-limit 검증 목적 — state machine 순서는 테스트 대상 X.
+        // handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
         // HasSelectedClass=true 없으면 MoveIntentHandler에서 class 선택 전 drop → rate-limit 카운트 X.
         public override void OnConnected(EndPoint endPoint)
         {
@@ -72,9 +70,7 @@ public class GameSessionRateLimitTests : IDisposable
 
     public GameSessionRateLimitTests()
     {
-        // M4.2 Phase 01: CountingGameMap은 GameMap 상속 — 기본 mapId=HuntingGround(Normal=1).
         // rate-limit 테스트는 enemy 불필요. Town(빈 맵) → player=entityId 1 (enemy 없음).
-        // Drop_PreventsEntityStateChange_AfterTick가 GetPlayer(3) → 1로 갱신.
         _map = new CountingGameMap(MapId.Town);
         _session = new TestGameSession(_map);
         _consoleCapture = new StringWriter();
@@ -114,8 +110,8 @@ public class GameSessionRateLimitTests : IDisposable
     [Fact]
     public void Drop_PreventsEntityStateChange_AfterTick()
     {
-        // Codex β 추가 권장(Phase 09): drop된 intent가 *실제로* entity state를 안 바꾸는지
-        // tick 결과로 검증. enqueue 카운트만 보는 게 아니라 invariant 끝까지 추적.
+        // drop된 intent가 *실제로* entity state를 안 바꾸는지 tick 결과로 검증.
+        // enqueue 카운트만 보는 게 아니라 invariant 끝까지 추적.
         //
         // 시나리오:
         // 1. 500개 +1 input → enqueue
@@ -128,7 +124,7 @@ public class GameSessionRateLimitTests : IDisposable
             _session.OnRecvPacket(MakeMoveIntent(0b00_0_0_0_010, (uint)(i + 1))); // +1
 
         _map.Tick(2); // 첫 tick은 ctor에서 Tick(1) — 본 tick은 2번째
-        // M4.2 Phase 01: Town 맵(빈 맵) → enemy 없음 → player=entityId 1 (첫 발급).
+        // Town 맵(빈 맵) → enemy 없음 → player=entityId 1 (첫 발급).
         PlayerEntity? entity = _map.GetPlayer(1);
         Assert.NotNull(entity);
         float posAfterFirstTick = entity!.Position.X;

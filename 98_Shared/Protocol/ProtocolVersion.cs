@@ -23,8 +23,11 @@ namespace Shared.Protocol;
 ///         새 패킷에 의존하는 맵 이동 기능이 핵심이라 옛 클라 빠른 cutoff 위해 bump.
 ///         S_MapTransition에 entityId 없음 (ADR-026: 전역 id 풀, 맵 이동 시 id 유지).
 ///   - v7: M4.3 Phase 07 — S_EntityState 추가 (enemy AI 위치/상태 주기 브로드캐스트).
-///         Phase 09 S_EnemyAttack도 이 Version 7에 포함(한 PR 묶음, 추가 bump 없음).
 ///         enemy AI FSM이 S_EntityState 의존이라 옛 클라 빠른 cutoff 위해 bump.
+///   - v8: M4.3 Phase 08a — animState byte 필드 추가 (S_Snapshot + S_EntityState 각 맨 끝 append).
+///         AnimState enum 신설 (Idle/Walk/Jump/Attack/Hit/Death) — 시각 애니 상태 서버 권위 결정.
+///         Phase 09 S_EnemyAttack도 이 Version 8에 포함(한 PR 묶음, 추가 bump 없음).
+///         append-only이지만 옛 클라가 animState 없이 파싱하면 오프셋 desync → 빠른 cutoff 위해 bump.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -38,6 +41,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.3 Phase 07 = v7 (S_EntityState 추가, enemy AI 위치/상태 브로드캐스트).</summary>
-    public const ushort Current = 7;
+    /// <summary>현재 프로토콜 버전. M4.3 Phase 08a = v8 (animState byte 추가 — S_Snapshot + S_EntityState, 시각 애니 상태 서버 권위 결정).</summary>
+    public const ushort Current = 8;
 }

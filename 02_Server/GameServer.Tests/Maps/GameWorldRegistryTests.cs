@@ -3,7 +3,7 @@ using Dawnholder.Server.GameServer.Maps;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
-// M4.2 Phase 01: 맵 레지스트리 골격 단위 테스트.
+// 맵 레지스트리 골격 단위 테스트.
 //
 // **검증 범위**:
 //   - 4맵 등록 (_maps.Count == 4)

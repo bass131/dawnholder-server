@@ -9,10 +9,10 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M3 Phase 06 Step 6 (응급 전투 — AttackHandler 회귀 안전망):
+/// AttackHandler 회귀 안전망:
 /// `C_Attack` 수신 → `GameMap.ProcessAttack` 6단계 검증 → `S_HitResult` / `S_EntityDeath` broadcast.
 ///
-/// **검증 invariant** (Phase 06 완료 조건 6건 1:1 정합):
+/// **검증 invariant** (6건):
 ///   - Happy: 정상 범위 안 공격 → enemy Hp 감소 + S_HitResult 전원 broadcast (attacker 자기 포함)
 ///   - OutOfRange: 서버 권위 position `dist² >= range²` → silent drop (no HP change + no broadcast)
 ///   - RateLimitViolation: 500ms 안 2회 → 1회만 적용, 2회차 silent drop
@@ -20,7 +20,7 @@ namespace GameServer.Tests.Network;
 ///   - KillBroadcast: HP 30 + damage 10 × 3 → 3회차에 S_EntityDeath 1회 + _enemies에서 제거
 ///   - DuplicateDeath: kill 후 추가 공격 → idempotent no-op (HitResult/Death 추가 broadcast X)
 ///
-/// **테스트 전략** (PingHandlerTests / MoveIntentHandlerTests 패턴 정합):
+/// **테스트 전략**:
 ///   - GameMap 직접 주입(GetMap override) → GameWorld.Instance singleton race 차단
 ///   - Send override로 broadcast 패킷 캡처 (`SentPackets`) → 회신 byte 검증
 ///   - Disconnect override로 호출 카운트 추적 (AuthFailure 검증)
@@ -29,11 +29,6 @@ namespace GameServer.Tests.Network;
 /// **rate-limit time 조작 결정**: production code 변경 *0건*. `PlayerEntity.LastAttackTickMs`가
 ///   *이미 public setter*라 fixture가 직접 `entity.LastAttackTickMs = 0`으로 reset해 cooldown 우회.
 ///   500ms `Thread.Sleep`은 (a) 느린 테스트 (b) 병렬 flake → 직접 reset 채택.
-///   `CombatConstants.AttackCooldownMs`에 testing hook 추가 안 함 — 본문 변경 폭 최소화.
-///
-/// **handshake mock 재사용**: HandshakeHandlerTests의 `NonHandshakeFirstPacket_Rejected_NoEntry`가
-///   *C_MoveIntent* 경로로 first-packet 게이트를 박아둔 게 있지만, *C_Attack* 경로도 같은 게이트를
-///   타는지 본 파일 4번 테스트에서 *명시적 회귀* (헌법 #3 ad-hoc 박제 → 회귀 안전망 박제).
 /// </summary>
 [Collection("ConsoleSerial")]
 public class AttackHandlerTests : IDisposable
@@ -43,20 +38,16 @@ public class AttackHandlerTests : IDisposable
     readonly TextWriter _originalOut;
 
     // GameMap ctor가 Normal enemy=1 + Boss=2를 박음 → 다음 발급은 player=3.
-    // 본 상수는 매직 넘버 회피용 — Phase 04/05 테스트와 같은 컨벤션.
-    // Phase 06 도입 (Normal enemy entityId=1) + Phase 07 추가 (Boss entityId=2) → player offset 갱신.
-    const int EnemyEntityId = 1;       // Normal enemy (Phase 06)
-    const int BossEntityId = 2;        // Boss (Phase 07)
+    // 본 상수는 매직 넘버 회피용.
+    const int EnemyEntityId = 1;       // Normal enemy
+    const int BossEntityId = 2;        // Boss
     const int PlayerEntityId = 3;
 
-    // M4.2 Phase 01 (결정 2 모듈화 갱신): MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
-    // 옛 GameMap.NormalEnemySpawnX/Y/MaxHp · BossSpawnX/Y/MaxHp const 대체.
+    // MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
     static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
     static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
 
-    // M4.1 Phase 05 (회귀 갱신): Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = Max(1, 10+15-0) = 25.
-    // PlayerStats.Warrior() Attack=15, EnemyStats default Defense=0, CombatConstants.BaseDamage=10.
-    // 옛 mirror 상수 10 → 실제 Formulas 기반 기대값으로 교체.
+    // Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = Max(1, 10+15-0) = 25.
     // 두 곳 drift 방지: 이 값은 Warrior factory + EnemyStats default + CombatConstants.BaseDamage 3곳 기반.
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
         PlayerStats.Warrior(), default, baseDamage: 10);
@@ -82,7 +73,6 @@ public class AttackHandlerTests : IDisposable
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
 
-        // M4.1 Phase 02: CompleteHandshakeAndEnter()가 더 이상 EnterGameWorld를 직접 호출 안 함.
         // 월드 진입 = handshake + class 선택 양쪽 충족 필요. class 선택도 우회 (Warrior=0).
         public void BypassHandshake()
         {
@@ -94,10 +84,9 @@ public class AttackHandlerTests : IDisposable
 
     public AttackHandlerTests()
     {
-        // M4.2 Phase 01: HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2).
-        // 옛 단일맵 ctor는 Normal+Boss 둘 다 박았지만, 맵 분리 후 HuntingGround는 Normal만.
+        // HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2).
         // 전투 테스트는 둘 다 필요 → SpawnEnemy(EnemyKind.Boss, ...) 직접 호출 (InternalsVisibleTo).
-        // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴 (옛 GameMap.BossSpawnX 대체).
+        // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴.
         _map = new GameMap(MapId.HuntingGround);
         _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);
 
@@ -110,7 +99,7 @@ public class AttackHandlerTests : IDisposable
 
     // --- 헬퍼 ---
 
-    // PacketID 헤더(offset 2~3)에서 ID 추출 — BroadcastTests 정합 패턴.
+    // PacketID 헤더(offset 2~3)에서 ID 추출.
     static PacketID PacketIdOf(byte[] payload)
     {
         ushort id = (ushort)(payload[2] | (payload[3] << 8));
@@ -141,9 +130,8 @@ public class AttackHandlerTests : IDisposable
     static void PlaceOutOfRange(PlayerEntity player)
         => player.Position = new Vector2(0f, 0f);
 
-    // M4.1 Phase 06 (회귀 갱신): attackerClientTick 인자 추가.
     // zero-lag 시뮬 = attackerClientTick을 현재 서버 tick과 동일하게 설정 → diff=0 → rewind 없음.
-    // 이렇게 하면 ProcessAttack의 rewind 범위 검증을 통과하면서 옛 동작과 동일한 결과.
+    // ProcessAttack의 rewind 범위 검증을 통과하면서 zero-lag와 동일한 결과.
     static ArraySegment<byte> AttackPacketBytes(int targetEntityId, long attackerClientTick = 0)
     {
         C_Attack pkt = new C_Attack { targetEntityId = targetEntityId, attackerClientTick = (int)attackerClientTick };
@@ -178,7 +166,7 @@ public class AttackHandlerTests : IDisposable
         parsed.Read(new ArraySegment<byte>(hitPacket));
         Assert.Equal(PlayerEntityId, parsed.attackerEntityId);
         Assert.Equal(EnemyEntityId, parsed.targetEntityId);
-        // M4.1 Phase 05 회귀 갱신: Warrior(Attack=15) + BaseDamage=10 - Defense=0 = 25.
+        // Warrior(Attack=15) + BaseDamage=10 - Defense=0 = 25.
         Assert.Equal(ExpectedDamage, parsed.damage);
         Assert.Equal(NormalDef.MaxHp - ExpectedDamage, parsed.currentHp); // 30 - 25 = 5
         Assert.Equal(NormalDef.MaxHp, parsed.maxHp);                      // 30
@@ -245,7 +233,7 @@ public class AttackHandlerTests : IDisposable
         Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_EntityDeath));
 
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        // M4.1 Phase 05 회귀 갱신: 첫 hit 후 Hp = 30 - 25 = 5 (한 번만).
+        // 첫 hit 후 Hp = 30 - 25 = 5 (한 번만).
         Assert.Equal(NormalDef.MaxHp - ExpectedDamage, enemy.Hp);
     }
 
@@ -275,7 +263,7 @@ public class AttackHandlerTests : IDisposable
     [Fact]
     public void KillBroadcast_HpZero_BroadcastsDeath_RemovesFromMap()
     {
-        // M4.1 Phase 05 회귀 갱신: HP 30 + damage 25 → 2회 공격 필요 (옛 3회).
+        // HP 30 + damage 25 → 2회 공격 필요.
         // 1번째: 30 - 25 = 5. 2번째: 5 - 25 = -20 → IsDead. currentHp = -20 (Math.Max는 데미지에만 적용, Hp 자체는 음수 가능).
         // rate-limit 우회: 매 공격 후 `player.LastAttackTickMs = 0`으로 reset (production code 변경 X, public setter).
         TestGameSession s = SetupHandshakedSession();
@@ -285,7 +273,7 @@ public class AttackHandlerTests : IDisposable
         s.SentPackets.Clear();
 
         // 2회 공격 루프 — 매번 LastAttackTickMs reset으로 cooldown 우회.
-        // M4.1 Phase 06 회귀: attackerClientTick=tick과 동일 → diff=0 → rewind 없음 = 옛 동작 정합.
+        // attackerClientTick=tick과 동일 → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)NormalDef.MaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
@@ -325,8 +313,7 @@ public class AttackHandlerTests : IDisposable
         PlaceInRange(player!);
         s.SentPackets.Clear();
 
-        // M4.1 Phase 05 회귀 갱신: 2회 hit으로 Normal enemy 사망 (옛 3회).
-        // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음.
+        // 2회 hit으로 Normal enemy 사망. attackerClientTick=tick → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)NormalDef.MaxHp / ExpectedDamage);
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)

@@ -5,14 +5,13 @@ using Dawnholder.Server.GameServer.Sessions;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// Phase 10 (M2.5 Session lifecycle race): connect/disconnect race window 봉합 회귀 안전망.
+/// connect/disconnect race window 봉합 회귀 안전망.
 ///
 /// **검증 invariant**: connect 직후 tick 전에 disconnect가 와도 ghost player가 맵에 남지 않는다.
-/// γ 감사 Codex β 발견 — `OnConnected`의 queued AddPlayer job과 `OnDisconnected`의
-/// `_entityId<0` early-return이 race. accept 직후 끊기면 cleanup 누락 + queued AddPlayer가
-/// 닫힌 세션을 owner로 player 박음.
+/// `OnConnected`의 queued AddPlayer job과 `OnDisconnected`의 `_entityId<0` early-return이 race.
+/// accept 직후 끊기면 cleanup 누락 + queued AddPlayer가 닫힌 세션을 owner로 player 박음.
 ///
-/// **테스트 전략 (Codex β 권장: deterministic)**:
+/// **테스트 전략 (deterministic)**:
 /// - GameSession.GetMap() override로 GameMap 직접 주입 (singleton race 차단)
 /// - GameMap.Tick() 호출 시점 직접 제어 → race window를 *결정론적*으로 재현
 /// - rapid smoke 100회는 추가 안전망 (deterministic은 아니지만 회귀 보호)
@@ -31,11 +30,9 @@ public class GameSessionLifecycleTests : IDisposable
         public TestGameSession(GameMap map) { _injectedMap = map; }
         protected override GameMap GetMap() => _injectedMap;
 
-        // M3 Phase 02 (handshake mock): 본 테스트는 *handshake 이후*의 race 흐름 검증.
-        // M4.1 Phase 02 변경: CompleteHandshakeAndEnter()가 EnterGameWorld를 직접 호출 안 함.
-        // 월드 진입 = handshake + class 선택 양쪽 충족 필요 (P0-1 봉합).
-        // 본 테스트 mock = lifecycle race 검증 목적이라 두 조건 모두 우회 (state machine 검증 X).
-        // SetCharacterClass(Warrior=0) + EnterGameWorldIfReady() 연속 호출로 월드 진입 흉내냄.
+        // handshake mock: 본 테스트는 *handshake 이후*의 race 흐름 검증.
+        // 월드 진입 = handshake + class 선택 양쪽 충족 필요.
+        // lifecycle race 검증 목적이라 두 조건 모두 우회.
         public override void OnConnected(EndPoint endPoint)
         {
             CompleteHandshakeAndEnter();     // handshake 우회 (_handshakeCompleted = true)
@@ -49,7 +46,7 @@ public class GameSessionLifecycleTests : IDisposable
 
     public GameSessionLifecycleTests()
     {
-        // M4.2 Phase 01: Town(빈 맵) — lifecycle 테스트는 enemy 불필요.
+        // Town(빈 맵) — lifecycle 테스트는 enemy 불필요.
         // 플레이어 entityId = 1 (enemy 없음 → 첫 발급 = 1).
         _map = new GameMap(MapId.Town);
         _consoleCapture = new StringWriter();
@@ -145,7 +142,7 @@ public class GameSessionLifecycleTests : IDisposable
     [Fact]
     public void ScenarioA2_DisconnectThenConnect_OrderReversed_NoGhostPlayer()
     {
-        // Codex β 권장(Phase 10): ScenarioA는 OnConnected → OnDisconnected 순서.
+        // ScenarioA는 OnConnected → OnDisconnected 순서.
         // 역순(OnDisconnected → OnConnected)도 안전한지 별도 검증.
         // 실 운영엔 거의 없을 케이스지만 race 안전망의 대칭성 확증.
         TestGameSession session = new(_map);
@@ -163,7 +160,7 @@ public class GameSessionLifecycleTests : IDisposable
     [Fact]
     public void EntityId_ResetAfterCleanup()
     {
-        // Codex β 권장(Phase 10): cleanup 후 _entityId reset. 낡은 id 잔존 방지.
+        // cleanup 후 _entityId reset. 낡은 id 잔존 방지.
         // session 객체에서 직접 _entityId를 보는 방법은 없으므로 (private),
         // cleanup 로그에 "entityId={_entityId}"가 박혀있는데 *cleanup 후* 박는 게 -1이면
         // OK. 다만 Console.WriteLine은 reset 전에 박힘 (구조상). 그래서 다음 cleanup 시
@@ -177,7 +174,7 @@ public class GameSessionLifecycleTests : IDisposable
         _map.Tick(2);
 
         // 첫 cleanup 로그는 _entityId=1 (reset 전).
-        // M4.2 Phase 01: Town 맵(빈 맵) 사용 → enemy 없음 → player = 첫 발급 entityId=1.
+        // Town 맵(빈 맵) 사용 → enemy 없음 → player = 첫 발급 entityId=1.
         Assert.Contains("entityId=1", _consoleCapture.ToString());
         // reset 이후의 검증 — direct access 불가하므로, 두 번째 OnDisconnected를 무시(_closing=1)
         // 후 _entityId 직접 reflection으로 확인하는 대신 _closing 멱등성으로 간접 검증.

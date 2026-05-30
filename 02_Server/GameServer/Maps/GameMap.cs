@@ -7,14 +7,11 @@ using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps;
 
-// Phase 02 (M2): 단일 GameMap actor. 단일 thread Tick → lock 없음.
-// Phase 03: IOCP→tick 마샬링 ConcurrentQueue + AddPlayer/RemovePlayer.
-// Phase 04: intent 적용 + 매 SnapshotTickInterval(=2) tick마다 S_Snapshot 브로드캐스트.
-// M3 Phase 06 Step 2 (응급 전투): `_enemies` Dictionary 분리 보관.
+// 단일 GameMap actor. 단일 thread Tick → lock 없음.
 //
-// M4.3R Phase 03 (§2.2 컨테이너 + System 분리):
-//   CombatSystem / EnemyAISystem / RespawnSystem 3개로 로직 추출.
-//   GameMap = 상태(_players/_enemies/_pendingJobs/AllocId) + Tick 엔진 + actor 경계만 잔류.
+// §2.2 컨테이너 + System 분리:
+//   GameMap = 상태(_players/_enemies/_pendingJobs/AllocId) + Tick 엔진 + actor 경계.
+//   로직은 CombatSystem / EnemyAISystem / RespawnSystem 3개로 추출.
 //   Tick에서 System 호출 순서 명문화: physics → CombatSystem(EnqueueJob 경유) → EnemyAISystem → RespawnSystem.
 //
 // **살아있는 적만 _enemies** invariant:
@@ -29,7 +26,7 @@ public class GameMap
     readonly List<PlayerEntity> _players = new();
     readonly Dictionary<int, EnemyEntity> _enemies = new();
 
-    // M4.2 Phase 02: entity id 발급기.
+    // entity id 발급기.
     // (A) GameWorld 경유 생성: _idAllocator = GameWorld.NextEntityId → 전역 풀 (globally-unique).
     // (B) 단독 생성 (테스트 / 미래 확장): null → 로컬 _localNextId (1부터 시작, 테스트 격리 보장).
     readonly Func<int>? _idAllocator;
@@ -38,7 +35,7 @@ public class GameMap
 
     readonly ConcurrentQueue<Action> _pendingJobs = new();
 
-    // M4.3R Phase 03: System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
+    // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly CombatSystem _combatSystem = new();
     readonly EnemyAISystem _enemyAISystem = new();
     readonly RespawnSystem _respawnSystem = new();
@@ -46,10 +43,10 @@ public class GameMap
     public IReadOnlyList<PlayerEntity> Players => _players;
     public IReadOnlyDictionary<int, EnemyEntity> Enemies => _enemies;
 
-    // M3 Phase 07: Stage Clear 1회 보장 flag.
+    // Stage Clear 1회 보장 flag.
     bool _stageCleared = false;
 
-    // M4.1 Phase 06 (4단계): ProcessAttack이 rewind 범위 검증에 사용하는 현재 서버 tick.
+    // ProcessAttack이 rewind 범위 검증에 사용하는 현재 서버 tick.
     // Tick(long tickNumber) 진입 직후 갱신 — job 처리 *전*에 갱신해야 job 안에서 올바른 tick 읽힘.
     // tick thread invariant 안에서만 읽기/쓰기.
     long _currentTick;
@@ -61,15 +58,14 @@ public class GameMap
     internal long CurrentTick => _currentTick;
 
     /// <summary>
-    /// M3 Phase 07: Stage Clear 상태 read-only 노출. 단위 테스트 + Phase 09 리허설 진단용.
+    /// Stage Clear 상태 read-only 노출.
     /// flag 자체는 *서버 권위* — 외부에서 강제 set 불가 (헌법 #1).
     /// </summary>
     public bool IsStageCleared => _stageCleared;
 
-    // M4.2 Phase 01: 맵 ID.
     public MapId MapId { get; }
 
-    // M4.2 Phase 02: 맵에 속한 portal 목록. PortalTable 단일 진실 공급원.
+    // 맵에 속한 portal 목록. PortalTable 단일 진실 공급원.
     public IReadOnlyList<Portal> Portals { get; }
 
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null)
@@ -85,7 +81,6 @@ public class GameMap
     }
 
     // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).
-    // **internal 유지 이유**: 테스트 픽스처가 직접 enemy 구성 가능 (InternalsVisibleTo).
     //
     // stats 오버라이드 규칙:
     //   - stats == null (기본) → kind==Normal이면 EnemyStats.NormalDefault() 자동 주입, Boss이면 default.
@@ -109,7 +104,7 @@ public class GameMap
         return entity;
     }
 
-    // M4.2 Phase 03: migration 전용 AddPlayer 오버로드 — 기존 entity id 유지 (ADR-026).
+    // migration 전용 AddPlayer 오버로드 — 기존 entity id 유지 (ADR-026).
     public PlayerEntity AddPlayerWithId(int entityId, GameSession? owner, Vector2 spawnPos, PlayerStats stats, int currentHp)
     {
         PlayerEntity entity = new PlayerEntity(entityId, spawnPos, owner, stats);
@@ -121,7 +116,7 @@ public class GameMap
     public bool RemovePlayer(int entityId)
         => _players.RemoveAll(p => p.EntityId == entityId) > 0;
 
-    // Phase 10 (M2.5 lifecycle race): owner reference 기반 cleanup.
+    // owner reference 기반 cleanup.
     public bool RemovePlayerBySession(GameSession owner)
         => _players.RemoveAll(p => ReferenceEquals(p.Owner, owner)) > 0;
 
@@ -130,6 +125,54 @@ public class GameMap
 
     internal EnemyEntity? GetEnemyById(int entityId)
         => _enemies.TryGetValue(entityId, out EnemyEntity? e) ? e : null;
+
+    // ── AnimState 계산 ───────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 플레이어의 현재 시각 애니메이션 상태를 계산. 서버 권위 (헌법 #1).
+    ///
+    /// **우선순위 (높을수록 우선)**: Death > Hit > Attack > Jump > Walk > Idle.
+    ///
+    /// **latch**: Attack/Hit는 1틱 순간 이벤트. AttackLatchTicks/HitLatchTicks > 0이면
+    ///   해당 상태를 유지. 카운터는 Physics 루프 뒤에서 매 tick 감소.
+    ///
+    /// **grounded 판정**: OnGround == false → Jump (공중).
+    ///   Y속도가 양수(상승 중)이든 음수(하강 중)이든 공중이면 Jump.
+    ///
+    /// **Walk 판정**: 수평 속도 절대값 > Epsilon → Walk.
+    ///   Epsilon = 0.01f (floating point noise 제거).
+    ///
+    /// **tick thread invariant**: GameMap.Tick 안에서만 호출 (단일 thread).
+    /// </summary>
+    static byte ComputePlayerAnimState(PlayerEntity p)
+    {
+        // Death — HP <= 0. 최우선. 한번 사망하면 고정.
+        if (p.IsDead || p.IsDeadAnimState)
+        {
+            p.IsDeadAnimState = true;
+            return (byte)Shared.GameData.AnimState.Death;
+        }
+
+        // Hit — 피격 latch 중
+        if (p.HitLatchTicks > 0)
+            return (byte)Shared.GameData.AnimState.Hit;
+
+        // Attack — 공격 latch 중
+        if (p.AttackLatchTicks > 0)
+            return (byte)Shared.GameData.AnimState.Attack;
+
+        // Jump — 공중 (grounded=false)
+        if (!p.OnGround)
+            return (byte)Shared.GameData.AnimState.Jump;
+
+        // Walk — 수평 이동 중
+        const float VxEpsilon = 0.01f;
+        if (p.Velocity.X > VxEpsilon || p.Velocity.X < -VxEpsilon)
+            return (byte)Shared.GameData.AnimState.Walk;
+
+        // Idle — 기본
+        return (byte)Shared.GameData.AnimState.Idle;
+    }
 
     // ── CombatSystem용 internal mutator (§0.3 최소 surface) ──────────────────
 
@@ -208,7 +251,6 @@ public class GameMap
         _currentTick = tickNumber;
 
         // 1) 외부 thread가 push한 job들 처리 (AddPlayer/RemovePlayer/SubmitAttack 등).
-        //    CombatSystem 처리는 여기서 일어남 (SubmitAttack → EnqueueJob 람다).
         while (_pendingJobs.TryDequeue(out Action? job))
         {
             try { job(); }
@@ -228,8 +270,14 @@ public class GameMap
             p.OnGround = after.OnGround;
             p.PendingInputX = 0;
             p.PendingJumpPressed = false;
-            // Physics.Step 완료 후 위치 기록 — "그 tick에 실제로 있던 위치" (M4.1 Phase 06).
+            // Physics.Step 완료 후 위치 기록 — "그 tick에 실제로 있던 위치".
             p.RecordPosition(tickNumber, p.Position);
+
+            // animState latch 카운터 매 tick 감소 (헌법 #5 — blocking call 0).
+            // 순간 이벤트(Attack/Hit)를 최소 AnimLatchTicks 동안 유지.
+            // Death는 latch 없음 — IsDeadAnimState가 true이면 항상 Death.
+            if (p.AttackLatchTicks > 0) p.AttackLatchTicks--;
+            if (p.HitLatchTicks > 0) p.HitLatchTicks--;
         }
 
         // 3) Snapshot 브로드캐스트. 매 2 tick(=100ms).
@@ -237,6 +285,10 @@ public class GameMap
         {
             foreach (PlayerEntity p in _players)
             {
+                // 플레이어 animState 계산 (헌법 #1 — 서버 권위 결정).
+                // latch 감소는 physics 루프(2단계)에서 매 tick 처리됨 — 여기선 계산·주입만.
+                byte animState = ComputePlayerAnimState(p);
+
                 S_Snapshot pkt = new S_Snapshot
                 {
                     entityId = p.EntityId,
@@ -245,7 +297,8 @@ public class GameMap
                     vx = p.Velocity.X,
                     vy = p.Velocity.Y,
                     serverTick = (int)tickNumber,
-                    lastAckedClientTick = p.LastClientTick
+                    lastAckedClientTick = p.LastClientTick,
+                    animState = animState
                 };
                 BroadcastToAll(pkt.Write());
             }

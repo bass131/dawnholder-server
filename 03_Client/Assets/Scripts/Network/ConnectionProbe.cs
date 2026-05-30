@@ -11,10 +11,9 @@ namespace Dawnholder.Client.Network
     /// **목적**: 게임 본 흐름(GameEntryPoint → NetworkService.Connect()) 진입 전에 *서버 가용성*만 점검.
     /// connect 시도 → 즉시 close (1ms급). 게임 본 connection은 Town 씬의 GameEntryPoint가 NetworkService.Connect()로 박음.
     ///
-    /// **왜 필요한가** (M3.8 Phase 05 5-B 안전망):
-    /// 발표장 환경에서 Hamachi IP 오타 / 서버 다운 / 방화벽 차단 등으로 연결 실패 시,
-    /// CharacterSelect → Gameplay Scene 진입 후에야 발견되면 사용자 혼란.
-    /// MainMenu에서 즉시 차단 + 오류 메시지가 학부생 시연 안전망.
+    /// **왜 필요한가**:
+    /// IP 오타 / 서버 다운 / 방화벽 차단 등으로 연결 실패 시 씬 진입 후에야 발견되면 혼란.
+    /// MainMenu에서 즉시 차단 + 오류 메시지로 안전망.
     ///
     /// **스레드 모델**: Task.Run 워커 스레드에서 socket connect 시도 → 결과는
     /// MainThreadDispatcher.Enqueue로 main thread 콜백 (UnityEngine API 안전 호출 보장).

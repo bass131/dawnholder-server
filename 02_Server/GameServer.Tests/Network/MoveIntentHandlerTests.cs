@@ -7,9 +7,9 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M3 Phase 03 (헌법 #4 "Shared Code Discipline" 가짜 약속 2번째 봉합): MoveIntentHandler 단위 회귀 안전망.
+/// MoveIntentHandler 단위 회귀 안전망.
 ///
-/// **검증 invariant** (Phase 03 완료 조건 — 모든 기존 핸들러 invalid+auth 페어):
+/// **검증 invariant**:
 ///   - happy: 정상 InputBits → tick 후 entity 이동 + LastClientTick 기록
 ///   - invalid: 11 reserved 비트 → [Cheat] 로그 + inputX 정규화(0) + Position 변경 X
 ///
@@ -18,7 +18,6 @@ namespace GameServer.Tests.Network;
 /// **Rate-limit drop은 GameSessionRateLimitTests가 커버**.
 ///
 /// **테스트 전략**: dispatcher 통과 → SubmitMoveIntent 호출까지 통합 검증.
-/// 핸들러 instance 격리 호출은 internal 접근 필요 → 본 마감 후 InternalsVisibleTo 박을 때 분리.
 /// </summary>
 [Collection("ConsoleSerial")]
 public class MoveIntentHandlerTests : IDisposable
@@ -34,8 +33,7 @@ public class MoveIntentHandlerTests : IDisposable
         public TestGameSession(GameMap map) { _injectedMap = map; }
         protected override GameMap GetMap() => _injectedMap;
 
-        // M4.1 Phase 02: handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
-        // 본 테스트는 MoveIntentHandler 로직 검증 목적 — state machine 순서는 테스트 대상 X.
+        // handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
         public override void OnConnected(EndPoint endPoint)
         {
             CompleteHandshakeAndEnter();   // _handshakeCompleted = true
@@ -49,7 +47,7 @@ public class MoveIntentHandlerTests : IDisposable
 
     public MoveIntentHandlerTests()
     {
-        // M4.2 Phase 01: Town(빈 맵) — intent handler 테스트는 enemy 불필요.
+        // Town(빈 맵) — intent handler 테스트는 enemy 불필요.
         // 플레이어 entityId = 1 (enemy 없음 → 첫 발급 = 1).
         _map = new GameMap(MapId.Town);
         _session = new TestGameSession(_map);
@@ -73,7 +71,7 @@ public class MoveIntentHandlerTests : IDisposable
 
         _map.Tick(2); // tick에서 PendingInputX/Jump 적용
 
-        // M4.2 Phase 01: Town 맵(빈 맵) → enemy 없음 → player=entityId 1 (첫 발급).
+        // Town 맵(빈 맵) → enemy 없음 → player=entityId 1 (첫 발급).
         PlayerEntity? entity = _map.GetPlayer(1);
         Assert.NotNull(entity);
         Assert.Equal((uint)42, entity!.LastClientTick);
@@ -98,7 +96,7 @@ public class MoveIntentHandlerTests : IDisposable
         Assert.Contains("invalid input bits 0x03", log);
 
         // inputX 정규화 → Position 변경 X (안전 default).
-        // M4.2 Phase 01: Town 맵(빈 맵) → enemy 없음 → player=entityId 1 (첫 발급).
+        // Town 맵(빈 맵) → enemy 없음 → player=entityId 1 (첫 발급).
         PlayerEntity? entity = _map.GetPlayer(1);
         Assert.NotNull(entity);
         Assert.Equal(0f, entity!.Position.X);

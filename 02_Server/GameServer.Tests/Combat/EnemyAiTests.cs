@@ -7,7 +7,7 @@ using Shared.Protocol;
 namespace GameServer.Tests.Combat;
 
 /// <summary>
-/// M4.3 Phase 07: Enemy AI FSM 단위 테스트.
+/// Enemy AI FSM 단위 테스트.
 ///
 /// **검증 대상**:
 ///   1. Patrol_BounceAtLeftBoundary  — 좌측 경계 도달 시 PatrolDir 반전 (왼→오)
@@ -257,7 +257,7 @@ public class EnemyAiTests
     // ── 테스트: Boss는 Idle 유지 ───────────────────────────────────────────────
 
     /// <summary>
-    /// Boss는 player가 AggroRange 안에 들어와도 Idle 유지 (Phase 09 이전 AI 없음).
+    /// Boss는 player가 AggroRange 안에 들어와도 Idle 유지 (Boss는 AI 미적용).
     ///
     /// BossRoom 맵 생성 → Boss spawn 확인 → player를 보스 바로 옆에 배치 → tick → Idle 유지.
     /// </summary>
@@ -295,8 +295,8 @@ public class EnemyAiTests
     ///   - 새 entity는 SpawnX/SpawnY에 배치, HP는 MaxHp.
     ///   - 새 entityId != 옛 entityId (헌법 #2 ID 재사용 금지).
     ///
-    /// **NormalEnemyRespawnTicks**: RespawnSystem 내부 const(100, M4.3R Phase 03에서 GameMap→RespawnSystem 이동). 리플렉션으로 읽거나
-    ///   상수값 그대로 박음. 여기서는 100을 리터럴로 사용 (const는 internal — 테스트에서 직접 접근 불가).
+    /// **NormalEnemyRespawnTicks**: RespawnSystem 내부 const(100). 여기서는 100을 리터럴로 사용
+    ///   (const는 internal — 테스트에서 직접 접근 불가).
     ///   값이 바뀌면 이 테스트도 갱신 필요 (의도적 coupling — 정책 값의 변경을 테스트가 잡음).
     /// </summary>
     [Fact]
@@ -312,29 +312,12 @@ public class EnemyAiTests
         float spawnY = enemy.SpawnY;
         int maxHp = enemy.MaxHp;
 
-        // HP를 0으로 강제 설정 (사망 처리는 ProcessAttack에서만 일어나므로
-        // respawn 큐 직접 접근 대신: player를 배치하고 attack으로 사망 처리)
-        // → 여기서는 ProcessAttack 경로를 통해 사망시키고 respawn 검증.
-        //
-        // 테스트 단순화: player null 패킷 없이도 GameMap.Tick을 이용하는 대신,
-        // internal 메서드를 통해 직접 ProcessRespawn 검증은 어려우므로
-        // ProcessAttack 경로 사용.
-        //
-        // **AttackHandlerTests 패턴 정합**: GameSession null owner 없는 null-session으로 player 추가.
-        // 하지만 ProcessAttack은 GetPlayer(attackerId)가 존재해야 함.
-        // 따라서 여기서는 직접 HP 조작 후 사망 경로를 검증.
-        //
-        // **대안**: 실제 ProcessAttack 호출 vs HP 직접 조작.
-        //   ProcessAttack은 검증 6단계(PlayerEntity 존재, EnemyEntity 존재, alive, rate-limit,
-        //   rewind, AABB)가 있어 테스트 셋업이 복잡. HP 직접 조작 후 respawn 큐 등록은
-        //   GameMap 내부 패턴을 우회하므로 대신 ProcessAttack을 사용하되
-        //   null-owner player로 단순화.
-        //
-        // **단순화 결정**: player null owner → Send 호출 없음 (BroadcastToAll owner null skip).
-        //   ProcessAttack은 GetPlayer(attackerId) 성공 필요 → null owner도 AddPlayer로 player 생성.
-        //   rate-limit 우회: player.LastAttackTickMs = 0.
-        //   rewind 범위 검증 우회: tick을 1 이상으로 설정하고 attackerClientTick=1.
-        //   AABB 범위 검증: attacker를 enemy 바로 옆에 배치 (AttackHalfExtent=1.5 → 3×3 박스).
+        // 사망 처리는 ProcessAttack 경로로만 일어나므로 null-owner player를 enemy 옆에 배치하고
+        // 공격해 사망 → respawn 검증. ProcessAttack은 GetPlayer(attackerId) 성공이 전제.
+        //   - player null owner → Send 호출 없음 (BroadcastToAll owner null skip).
+        //   - rate-limit 우회: player.LastAttackTickMs = 0.
+        //   - rewind 범위 검증 우회: tick을 1 이상으로 설정하고 attackerClientTick=1.
+        //   - AABB 범위 검증: attacker를 enemy 바로 옆에 배치 (AttackHalfExtent=1.5 → 3×3 박스).
 
         // 1) null-owner player 추가 (enemy 바로 옆)
         float attackerX = enemy.X + 1f; // AABB 3×3 안에 들어옴 (AttackHalfExtent=1.5)

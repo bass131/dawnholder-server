@@ -9,26 +9,26 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M3 Phase 07 (응급 보스 + Stage Clear — 회귀 안전망):
+/// 보스 + Stage Clear 회귀 안전망:
 /// 보스(`EnemyKind.Boss`) HP 0 → `S_EntityDeath` 1회 + `S_StageClear` 1회 broadcast 후
 /// 추가 attack 도달 시 idempotent no-op (HitResult/Death/StageClear 추가 broadcast X).
 ///
-/// **검증 invariant** (Phase 07 완료 조건 1:1 정합):
+/// **검증 invariant**:
 ///   - Boss_Death_BroadcastsStageClearOnce — Boss HP 100 + damage 10 × 10 → S_HitResult 10건 +
 ///     S_EntityDeath 1건 + S_StageClear 1건 (bossEntityId=Boss) + `GameMap.IsStageCleared == true`
 ///   - BossDuplicateAttack_NoExtraStageClear — Boss 죽인 후 추가 C_Attack 송신 시 HitResult/Death/
 ///     StageClear 추가 broadcast 0건 (idempotent — 이중 안전망: target Remove + flag).
 ///   - NormalEnemy_Death_NoStageClear — Normal enemy 죽여도 S_StageClear 안 보냄 (Boss 전용 검증).
 ///
-/// **테스트 전략** (AttackHandlerTests 패턴 정합 — 본 파일의 entity id offset도 동일):
+/// **테스트 전략**:
 ///   - GameMap 직접 주입 (`GetMap` override) → singleton race 차단
 ///   - Send override로 broadcast 패킷 캡처 (`SentPackets`) → 회신 byte 검증
 ///   - `BypassHandshake()` 명시 호출 — handshake 우회 (combat 흐름 isolation)
 ///   - rate-limit 우회: `player.LastAttackTickMs = 0` 직접 reset (public setter, production 변경 0)
 ///
-/// **entity id 풀 약속** (ctor 박힘 — AttackHandlerTests와 같은 컨벤션):
-///   - Normal enemy entityId=1 (Phase 06)
-///   - Boss entityId=2 (Phase 07)
+/// **entity id 풀 약속** (ctor 박힘):
+///   - Normal enemy entityId=1
+///   - Boss entityId=2
 ///   - Player entityId=3 (다음 발급)
 /// </summary>
 [Collection("ConsoleSerial")]
@@ -42,12 +42,11 @@ public class BossStageClearTests : IDisposable
     const int BossEntityId = 2;
     const int PlayerEntityId = 3;
 
-    // M4.1 Phase 05 회귀 갱신: Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = 25.
-    // AttackHandlerTests와 같은 패턴 — Formulas 직접 참조로 drift 방지.
+    // Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = 25. Formulas 직접 참조로 drift 방지.
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
         PlayerStats.Warrior(), default, baseDamage: 10);
 
-    // M4.2 Phase 01 (결정 2 모듈화 갱신): MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
+    // MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
     static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
     static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
 
@@ -69,8 +68,7 @@ public class BossStageClearTests : IDisposable
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
 
-        // M4.1 Phase 02: handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
-        // 본 테스트는 Boss/StageClear 전투 흐름 검증 목적 — state machine 순서는 테스트 대상 X.
+        // handshake + class 선택 양쪽 우회 (월드 진입까지 mock).
         public void BypassHandshake()
         {
             CompleteHandshakeAndEnter();   // _handshakeCompleted = true
@@ -81,8 +79,7 @@ public class BossStageClearTests : IDisposable
 
     public BossStageClearTests()
     {
-        // M4.2 Phase 01: HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2).
-        // BossStageClearTests는 Normal(id=1)과 Boss(id=2) 둘 다 참조.
+        // HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2). Normal+Boss 둘 다 참조.
         // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴.
         _map = new GameMap(MapId.HuntingGround);
         _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);
@@ -118,11 +115,10 @@ public class BossStageClearTests : IDisposable
     static void PlaceInRangeOfBoss(PlayerEntity player)
         => player.Position = new Vector2(BossDef.X - 1f, BossDef.Y);
 
-    // Normal enemy 사거리 안 좌표 (Phase 06 정합).
+    // Normal enemy 사거리 안 좌표.
     static void PlaceInRangeOfNormalEnemy(PlayerEntity player)
         => player.Position = new Vector2(NormalDef.X - 1f, NormalDef.Y);
 
-    // M4.1 Phase 06 (회귀 갱신): attackerClientTick 인자 추가.
     // zero-lag 시뮬 = attackerClientTick을 현재 서버 tick과 동일하게 → diff=0 → rewind 없음.
     static ArraySegment<byte> AttackPacketBytes(int targetEntityId, long attackerClientTick = 0)
     {
@@ -150,8 +146,8 @@ public class BossStageClearTests : IDisposable
 
         s.SentPackets.Clear();
 
-        // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 4회 attack으로 Boss HP 100 → 0 (옛 10회).
-        // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음 = 옛 동작 정합.
+        // 25 dmg/hit → 4회 attack으로 Boss HP 100 → 0.
+        // attackerClientTick=tick → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)BossDef.MaxHp / ExpectedDamage); // 4
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
@@ -204,8 +200,7 @@ public class BossStageClearTests : IDisposable
         PlaceInRangeOfBoss(player!);
         s.SentPackets.Clear();
 
-        // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 4회 attack (옛 10회).
-        // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음.
+        // 25 dmg/hit → 4회 attack. attackerClientTick=tick → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)BossDef.MaxHp / ExpectedDamage); // 4
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
@@ -254,8 +249,7 @@ public class BossStageClearTests : IDisposable
         PlaceInRangeOfNormalEnemy(player!);
         s.SentPackets.Clear();
 
-        // M4.1 Phase 05 회귀 갱신: 25 dmg/hit → 2회 attack으로 Normal HP 30 → 0 이하 (옛 3회).
-        // M4.1 Phase 06 회귀: attackerClientTick=tick → diff=0 → rewind 없음.
+        // 25 dmg/hit → 2회 attack으로 Normal HP 30 → 0 이하. attackerClientTick=tick → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)NormalDef.MaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)

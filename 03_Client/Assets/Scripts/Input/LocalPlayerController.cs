@@ -9,24 +9,16 @@ using UnityEngine.InputSystem;
 
 namespace Dawnholder.Client.Input
 {
-    // Phase 01~04: 입력 → C_MoveIntent 송신 골격.
-    // Phase 05: prediction 도입 — predictor 매 frame 누적, transform 따라감.
-    // Phase 06 Step 4: 50ms 송신 throttle (서버 20 TPS와 1:1 align, framerate-bound 차단).
-    // Phase 07 (M2): 점프 + 비트필드 + 매 frame Predict (Phase 06 패턴 + jumpPressed).
+    // 입력 → C_MoveIntent 송신 + client-side prediction.
     //
-    // **흐름 (Phase 07 사후 정정 2026-05-17 — A 채택)**:
-    //   - **매 frame**: Predict (Time.deltaTime 가변) + transform 갱신.
-    //     - 시뮬 자체가 부드러움 (240Hz 12 frame 모두 다른 위치).
-    //     - 클라 가변 dt + 서버 fixed dt 차이는 reconcile로 흡수 (Phase 06 패턴).
+    // **흐름**:
+    //   - **매 frame**: Predict (Time.deltaTime 가변) + transform 갱신. 시뮬 자체가 부드러움.
+    //     클라 가변 dt + 서버 fixed dt 차이는 reconcile로 흡수.
     //   - **50ms cadence** (송신 throttle): C_MoveIntent 송신 + InputHistory push.
-    //     - 정의 파일 #82 "fps 의존 차단" = *송신 cadence* 의미. Predict 자체는 가변 OK.
-    //   - **OnJump 에지 검출** (D4 (a)): "started" phase만 캡처 → 송신 cycle까지 보관 후 reset.
+    //     fps 의존 차단 = *송신 cadence* 의미. Predict 자체는 가변 OK.
+    //   - **OnJump 에지 검출**: "started" phase만 캡처 → 송신 cycle까지 보관 후 reset.
     //
-    // **장르 정합 — MMORPG/캐주얼 RPG (ADR-006/009)**:
-    //   부드러움 > 결정론 정확도 (Source/Quake/Overwatch 패턴). fixed-step + visual lerp는
-    //   격투/콘솔 RTS 패턴이라 over-engineering. 사후 정정 commit (Step 4 → Step 4-fix).
-    //
-    // **비트필드 인코드** (D2 b 현업 정석): InputBits.Encode 단일 출처. 양쪽 같은 헬퍼 호출.
+    // **비트필드 인코드**: InputBits.Encode 단일 출처 — 양쪽 같은 헬퍼 호출.
     [RequireComponent(typeof(PlayerInput))]
     public class LocalPlayerController : MonoBehaviour
     {
@@ -35,26 +27,22 @@ namespace Dawnholder.Client.Input
         readonly PlayerPredictor _predictor = new PlayerPredictor();
 
         Vector2 _moveInput;
-        bool _jumpEdgeThisTick; // Phase 07: 송신 cycle까지 jump 에지 보관. 송신 후 reset.
+        bool _jumpEdgeThisTick; // 송신 cycle까지 jump 에지 보관. 송신 후 reset.
 
-        uint _localTickCounter; // 송신 일련번호 (송신 시점에만 ++). Phase 06 replay reconcile 기준점.
+        uint _localTickCounter; // 송신 일련번호 (송신 시점에만 ++). replay reconcile 기준점.
         float _sendAccumulator; // 50ms 송신 throttle 누적기.
 
         void Awake()
         {
             Instance = this;
 
-            // M4.2 Phase 04: 맵 전환 후 pending spawn 좌표 소비.
-            // S_MapTransition 핸들러가 박아둔 spawn 좌표를 읽어 본인 위치 설정.
-            // S_EnterMap(첫 접속) 흐름과 달리 이미 entityId는 유지됨(ADR-026).
+            // 맵 전환 후 pending spawn 좌표 소비. S_MapTransition 핸들러가 박아둔 spawn 좌표를 읽어 위치 설정.
             //
-            // **Awake에서 소비하는 이유 (M4.2 Phase 04 Play 검증 후 봉합)**:
+            // **Awake에서 소비하는 이유 (race 봉합)**:
             //   Start()에서 하면 서버의 첫 S_Snapshot이 Start()보다 먼저 처리되는 race가 생김.
-            //   그 순간 predictor가 아직 (0,0)이라 서버 spawn 좌표(예: HuntingGround x=2)로
-            //   reconcile snap이 발생 → 맵 전환 직후 캐릭터가 2 unit 튐(로그 d=(2.00,0) ack=0).
-            //   Awake는 Instantiate 즉시(같은 프레임) 호출 → 첫 snapshot 처리(MainThreadDispatcher.Update)
-            //   보다 확실히 먼저 위치를 잡아 snap을 제거. (HandleEnterMap이 Instance를 늦게 보는
-            //   초기 진입 race는 그쪽에서 직접 SetServerPosition으로 이미 커버.)
+            //   그 순간 predictor가 아직 (0,0)이라 서버 spawn 좌표로 reconcile snap이 발생 →
+            //   맵 전환 직후 캐릭터가 튐. Awake는 Instantiate 즉시(같은 프레임) 호출 → 첫 snapshot
+            //   처리보다 확실히 먼저 위치를 잡아 snap을 제거.
             if (UnityClientSession.HasPendingSpawn)
             {
                 float x = UnityClientSession.PendingSpawnX;
@@ -67,36 +55,33 @@ namespace Dawnholder.Client.Input
 
         void OnDestroy() { if (Instance == this) Instance = null; }
 
-        // Input System "Move" 액션 콜백 (Phase 01~ 박힘).
+        // Input System "Move" 액션 콜백.
         void OnMove(InputValue value) => _moveInput = value.Get<Vector2>();
 
-        // Phase 07 신설: "Jump" 액션 콜백. D4 (a) 클라 에지 — "started" phase만 캡처.
+        // "Jump" 액션 콜백 — 클라 에지 ("started" phase만 캡처).
         // PlayerInput component의 Behavior=Send Messages 모드에서 이 메서드명이 자동 wire.
-        // value.isPressed == true: 키 down (에지), false: 키 up (무시).
         // 송신 cycle 전에 다시 누르면 같은 에지로 합쳐짐 (정상 — cadence별 1 점프).
         //
-        // M3.8 Phase 05 봉합: 공중 점프 시도 차단 — 점프 입력 *시점* OnGround 검사.
-        // 옛 봉합(cadence 게이트)은 Predict 후 OnGround=false 박혀서 *지면 점프*도 차단됨.
-        // 본 위치는 *점프 시도 시점* OnGround = 정확 (착지 직후 재점프 OK, 공중 점프 차단).
+        // 공중 점프 차단은 점프 입력 *시점* OnGround 검사 (착지 직후 재점프 OK, 공중 점프 차단).
+        // cadence 시점에 검사하면 Predict 후 OnGround=false 박혀서 지면 점프도 차단됨.
         // 헌법 #1 영향 X — 서버가 어차피 권위적으로 재검증, 본 게이트는 UX + 송신 절감용.
         void OnJump(InputValue value)
         {
             if (value.isPressed && _predictor.OnGround) _jumpEdgeThisTick = true;
         }
 
-        // M3 Phase 08c: "Attack" 액션 콜백 (Space 또는 좌클릭 — InputSystem_Actions.inputactions 박힘).
+        // "Attack" 액션 콜백 (Space 또는 좌클릭).
         //
         // **클라 책임 = target 추천 + intent 송신만** (헌법 #1):
         //   - 가장 가까운 enemy/boss → C_Attack { targetEntityId, attackerClientTick } 송신.
         //   - 데미지/range/cooldown *서버가 최종 검사* — 클라 자체 판정 X.
-        //   - 자체 rate-limit 없음 (서버가 silent drop, 응급 단순).
+        //   - 자체 rate-limit 없음 (서버가 silent drop).
         //
         // **TargetingRangeSquared = 9.0f** — 클라 측 *타게팅 힌트* (3.0f 사거리의 제곱).
         //   어느 적을 C_Attack target으로 지명할지 결정하는 UX 용도.
         //   서버 권위 판정(AABB hitbox in CombatConstants)과 *의도적으로 분리*된 별개 개념 —
         //   서버가 최종 hit/miss 결정. 헌법 #1/#4 정합 — 밸런스 수식 복붙 X, 클라 UX 힌트.
         //   서버 AABB halfExtent(1.5) + 적 반경(0.5) ≈ 2 units 기준 TargetingRange 3.0f는 여유분 포함.
-        //   M4.1 Phase 06 sweep: 매직 리터럴 제거, 명명 + 주석으로 의도 명확화.
         const float TargetingRangeSquared = 9.0f;
 
         void OnAttack(InputValue value)
@@ -115,8 +100,8 @@ namespace Dawnholder.Client.Input
                 return;
             }
 
-            // M4.1 Phase 06 (lag comp 3단계): attackerClientTick = 마지막으로 수신한 S_Snapshot의
-            // serverTick. 서버 ProcessAttack이 이 tick으로 position history를 rewind해 hitbox 판정.
+            // attackerClientTick = 마지막으로 수신한 S_Snapshot의 serverTick (lag comp 기준점).
+            // 서버 ProcessAttack이 이 tick으로 position history를 rewind해 hitbox 판정.
             // 검증 규칙: tick < 0 || > 현재서버tick || (현재서버tick - tick) > 4 → silent drop.
             // 첫 Snapshot 수신 전(= 0) 공격은 drop되지만 게임 극초반이라 실전 영향 없음.
             C_Attack pkt = new C_Attack
@@ -130,7 +115,7 @@ namespace Dawnholder.Client.Input
 
         void Update()
         {
-            // Phase 07: 매 frame Predict (Phase 06 패턴 + jumpPressed). 시뮬 자체가 부드러움.
+            // 매 frame Predict. 시뮬 자체가 부드러움.
             // jumpEdge는 송신 cycle까지 *보관* (송신 시점에 한 번 더 사용) — Predict는 매 frame이라
             // OnJump 이후 50ms 안 모든 frame에 jumpEdge=true 들어가면 *재점프* 시도. 단 Physics.Step의
             // OnGround 안전망이 1tick만 적용 — 점프 후 즉시 onGround=false라 자연 차단.
@@ -138,7 +123,7 @@ namespace Dawnholder.Client.Input
             _predictor.Predict(encoded, _jumpEdgeThisTick, Time.deltaTime);
             transform.position = new Vector3(_predictor.Position.x, _predictor.Position.y, 0f);
 
-            // 50ms 송신 throttle — fps 의존 차단 (240Hz도 20 packet/s, Phase 06 패턴).
+            // 50ms 송신 throttle — fps 의존 차단 (고프레임도 20 packet/s).
             _sendAccumulator += Time.deltaTime;
             if (_sendAccumulator < Constants.TickDuration) return;
             _sendAccumulator -= Constants.TickDuration;
@@ -148,29 +133,26 @@ namespace Dawnholder.Client.Input
 
             // 50ms cadence: 송신 + InputHistory push + jumpEdge reset.
             // 점프 게이트는 OnJump에서 박힘 (입력 시점 OnGround 검사 = 정확).
-            // cadence 시점에 다시 검사하면 Predict 후 OnGround=false 박혀서 지면 점프도 차단됨 (옛 결함).
             bool jumpEdge = _jumpEdgeThisTick;
             _jumpEdgeThisTick = false; // 송신 후 reset — 다음 cycle은 새 OnJump 캡처.
 
             _localTickCounter++;
 
-            // Phase 07: 비트필드 인코드 (InputBits.Encode 단일 출처).
+            // 비트필드 인코드 (InputBits.Encode 단일 출처).
             byte input = InputBits.Encode(encoded, jumpEdge);
             C_MoveIntent pkt = new C_MoveIntent
             {
                 input = input,
                 clientTick = _localTickCounter
             };
-            // Phase 05: SendIntent 경유 — Editor에서 SimulatedLatencyMs 적용 가능.
+            // SendIntent 경유 — Editor에서 SimulatedLatencyMs 적용 가능.
             session.SendIntent(pkt.Write());
 
-            // Phase 06: 송신 *직후* InputHistory push (정의 파일 #83 함정 회피).
-            // Phase 07: jumpEdge 함께 박음 — replay 시 점프 시도 재현.
+            // 송신 *직후* InputHistory push (ack 전 빔 함정 회피). jumpEdge 함께 박아 replay 시 재현.
             _predictor.NotifySent(_localTickCounter, encoded, jumpEdge);
         }
 
-        // Phase 03 S_EnterMap → 서버가 정한 spawn 좌표 적용.
-        // Phase 05: transform 직접 갱신 대신 predictor 초기화 — 다음 Update에서 transform 자동 동기.
+        // S_EnterMap → 서버가 정한 spawn 좌표 적용. predictor 초기화 — 다음 Update에서 transform 자동 동기.
         // 단 spawn 첫 frame 깜빡임 방지를 위해 즉시 transform도 한 번 설정.
         public void SetServerPosition(Vector3 worldPos)
         {
@@ -178,21 +160,14 @@ namespace Dawnholder.Client.Input
             transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
         }
 
-        // M4.2 Phase 04: 맵 전환 시 옛 LocalPlayer를 snapshot/Update에서 분리.
-        // HandleMapTransition이 씬 전환(페이드) 시작 전 호출.
+        // 맵 전환 시 옛 LocalPlayer를 snapshot/Update에서 분리. HandleMapTransition이 씬 전환 시작 전 호출.
         //
-        // **Play 검증 후 봉합 (2026-05-28)**:
-        //   옛 구현은 _predictor.SetInitialPosition(Vector2.zero)로 위치를 (0,0)에 박았는데,
-        //   이 GameObject는 페이드 동안 *아직 살아있어* (a) Update가 transform을 (0,0)으로 점프시키고
-        //   (b) 그 사이 도착한 S_Snapshot이 서버의 새 맵 좌표(예: HuntingGround x=2)로 reconcile snap
-        //   → 전환 직후 캐릭터가 튐 (Play 로그: [Reconcile] d=(2.00,0) ack=0).
-        //   새 맵의 LocalPlayer는 *별도 인스턴스 + 깨끗한 predictor*라 옛 버퍼 리셋 자체가 불필요했음.
-        //
-        //   → 위치는 건드리지 않고:
-        //     1) Instance 등록 해제 — HandleSnapshot의 `Instance != null` 가드로 이후 snapshot이 drop
-        //        (옛 캐릭터가 서버 좌표로 snap하지 않음).
-        //     2) enabled=false — Update 정지 (predict/transform 갱신 중단).
-        //   곧 씬 전환(LoadScene Single)이 이 GameObject를 파괴하고, 새 맵에서 새로 spawn됨.
+        // 이 GameObject는 페이드 동안 아직 살아있어, 위치를 (0,0)으로 박으면 도착한 S_Snapshot이
+        // 서버의 새 맵 좌표로 reconcile snap → 전환 직후 캐릭터가 튐. 새 맵 LocalPlayer는 별도 인스턴스 +
+        // 깨끗한 predictor라 옛 버퍼 리셋 자체가 불필요. 위치는 건드리지 않고:
+        //   1) Instance 등록 해제 — HandleSnapshot의 `Instance != null` 가드로 이후 snapshot이 drop.
+        //   2) enabled=false — Update 정지 (predict/transform 갱신 중단).
+        // 곧 씬 전환(LoadScene Single)이 이 GameObject를 파괴하고, 새 맵에서 새로 spawn됨.
         public void ResetPredictionForMapTransition()
         {
             if (Instance == this) Instance = null;
@@ -200,8 +175,7 @@ namespace Dawnholder.Client.Input
             Debug.Log("[LocalPlayer] 맵 전환 — 옛 LocalPlayer를 snapshot/Update에서 분리 (곧 파괴).");
         }
 
-        // Phase 05~06: S_Snapshot → predictor의 reconcile 판단에 위임.
-        // Phase 07: vx/vy 추가 — Y축 prediction 정합. Predictor가 X+Y 둘 다 비교.
+        // S_Snapshot → predictor의 reconcile 판단에 위임. Predictor가 X+Y 둘 다 비교.
         public void OnServerSnapshot(float serverX, float serverY,
                                      float serverVx, float serverVy,
                                      int serverTick, uint ackedClientTick)

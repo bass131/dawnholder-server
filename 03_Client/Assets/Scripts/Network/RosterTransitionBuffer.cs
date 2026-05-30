@@ -5,23 +5,18 @@ using UnityEngine.SceneManagement;
 
 namespace Dawnholder.Client.Network
 {
-    // P1 봉합 (2026-05-28 β cross-review): 맵 전환 중 roster 패킷 버퍼링.
+    // 맵 전환 중 roster 패킷 버퍼링.
     //
     // **문제**: HandleMapTransition은 SceneTransition.LoadScene(페이드 코루틴) 시작 후
     //   즉시 return. 서버는 S_MapTransition 직후 즉시 S_PlayerJoin/S_EntitySpawn/S_Snapshot
-    //   전송 (페이드 0.3~0.5s × 서버 tick 50ms = 최소 6 tick 사이). 그 사이 클라는
-    //   *옛 씬*에 있어 roster 패킷이 옛 씬 레지스트리에 박힘 → SceneManager.LoadScene(Single)
-    //   로 옛 씬 destroy → 새 씬에 enemy/remote player 없음.
+    //   전송. 그 사이 클라는 *옛 씬*에 있어 roster 패킷이 옛 씬 레지스트리에 박힘 →
+    //   LoadScene(Single)로 옛 씬 destroy → 새 씬에 enemy/remote player 없음.
     //
     // **해결**: 전환 중 roster 패킷을 버퍼에 캐싱 → 새 씬 sceneLoaded 콜백에서 drain.
     //   - BeginTransition에서 _pendingMapTransition = true + 목적 씬 이름 보관.
-    //   - TryBuffer로 진입 직후 공통 overflow 가드 1곳에서 검사 (옛 3곳 복붙 응축).
+    //   - TryBuffer로 진입 직후 공통 overflow 가드 1곳에서 검사.
     //   - sceneLoaded 콜백에서 씬 이름 매치 시 _pendingMapTransition = false + drain.
     //   - main thread에서만 접근하므로 lock 불필요.
-    //
-    // **§0.3 분리 이유**: roster buffer 상태머신("대기→씬 로드→drain")은
-    //   UnityClientSession(framing·dispatch 컨테이너)과 명확히 다른 도메인.
-    //   추출 후 두 파일을 열지 않아도 각각 독립 이해 가능 = 올바른 분리.
     internal sealed class RosterTransitionBuffer
     {
         // overflow 가드 상한 — 비정상 상황(서버가 전환 완료 전 수백 패킷 폭주) 방어.

@@ -7,10 +7,10 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M3.8 Phase 03 (캡스톤 1 데모 — 캐릭터 선택 핸들러 단위 테스트):
+/// 캐릭터 선택 핸들러 단위 테스트:
 /// `C_CharacterSelect` 수신 → 검증 → `PlayerStats` 박힘 흐름 전체 커버.
 ///
-/// **검증 invariant** (Phase 03 완료 조건 5건 1:1 정합):
+/// **검증 invariant** (5건):
 ///   1. happy_warrior: characterClass=0 → Warrior stats 박힘 (`Class==Warrior`, `Hp==150`)
 ///   2. happy_ranger: characterClass=1 → Ranger stats 박힘 (`Class==Ranger`, `Hp==80`)
 ///   3. invalid_2: characterClass=2 → silent drop + `_stats` null 유지
@@ -52,8 +52,7 @@ public class CharacterSelectHandlerTests : IDisposable
         public override void Disconnect() { DisconnectCalls++; }
 
         // CompleteHandshakeAndEnter는 protected internal — handshake 우회용.
-        // M4.1 Phase 02: CompleteHandshakeAndEnter()가 EnterGameWorld를 직접 호출 안 함.
-        // CharacterSelectHandlerTests는 class 선택 핸들러 검증 목적 — handshake만 우회, class 선택은 테스트 대상.
+        // class 선택 핸들러 검증 목적 — handshake만 우회, class 선택은 테스트 대상.
         // EnterGameWorldIfReady() 호출 안 함 (class 선택 후 월드 진입이 테스트 대상).
         public void BypassHandshake() => CompleteHandshakeAndEnter();
 

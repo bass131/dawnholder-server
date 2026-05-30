@@ -60,7 +60,8 @@
 
          Phase 06 (M2): clientTick / lastAckedClientTick uint 정합 — int 음수 사고 차단.
          Phase 07 (M2) [Protocol.Version v1→v2]: vx, vy 추가 — prediction reconcile 시 velocity 동기화.
-         클라가 점프 후 공중에서 reconcile 발생하면 서버 권위 vy까지 받아야 자연 정정 (Y축 prediction 정합). -->
+         클라가 점프 후 공중에서 reconcile 발생하면 서버 권위 vy까지 받아야 자연 정정 (Y축 prediction 정합).
+         M4.3 Phase 08a [Protocol.Version v7→v8]: animState 추가 — 플레이어 시각 애니 상태 (RemotePlayer 렌더용). -->
     <packet name="S_Snapshot">
         <int name="entityId"/>
         <float name="x"/>
@@ -69,6 +70,7 @@
         <float name="vy"/>
         <int name="serverTick"/>
         <uint name="lastAckedClientTick"/>
+        <byte name="animState"/>
     </packet>
 
     <!-- Phase 02 (M3): Application-layer handshake. 헌법 #2 "Protocol is Sacred" 가짜 약속 1번째 봉합.
@@ -227,12 +229,15 @@
            2 = Chase   (추격 — AggroRange 내 플레이어 감지)
          클라 측 디코드 책임 (S_EntitySpawn.entityKind 패턴 정합).
 
-         **ProtocolVersion 7 동반**: M4.3 Phase 07 bump. Phase 09 S_EnemyAttack도 v7에 포함 예정
-         (한 PR 묶음 — 추가 bump 없음). -->
+         **ProtocolVersion 8 동반**: M4.3 Phase 08a bump. Phase 09 S_EnemyAttack도 v8에 포함
+         (한 PR 묶음 — 추가 bump 없음).
+         M4.3 Phase 08a: animState 추가 — 기존 state(AI: Patrol/Chase 시각구분용) 뒤에 append.
+         클라(08b)는 animState로 모션 결정, state로 선택적 AI 상태 강조. -->
     <packet name="S_EntityState">
         <int name="entityId"/>
         <float name="x"/>
         <float name="y"/>
         <byte name="state"/>
+        <byte name="animState"/>
     </packet>
 </PDL>

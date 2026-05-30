@@ -3,12 +3,8 @@ using Dawnholder.Server.GameServer.Maps;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
-// M4.2 Phase 01 (결정 2 모듈화 갱신):
-// GameMap.NormalEnemySpawnX/Y/MaxHp · BossSpawnX/Y/MaxHp const 제거 →
-// MapSpawnTable.GetSpawnsFor 단일 진실 공급원으로 대체.
-// spawn 정의 확인은 아래 헬퍼를 통해 MapSpawnTable에서 가져옴.
-
-// M4.2 Phase 01: 맵별 콘텐츠(enemy spawn) 단위 테스트.
+// 맵별 콘텐츠(enemy spawn) 단위 테스트.
+// spawn 정의 확인은 아래 헬퍼를 통해 MapSpawnTable 단일 진실 공급원에서 가져옴.
 //
 // **검증 범위**:
 //   - Town:          Enemies.Count == 0 (빈 맵)
@@ -20,7 +16,6 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 public class GameMapContentTests
 {
     // MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출 (헬퍼).
-    // 옛 GameMap.NormalEnemySpawnX/Y/MaxHp · BossSpawnX/Y/MaxHp 대체.
     static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
     static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
     [Fact]
@@ -74,7 +69,6 @@ public class GameMapContentTests
     public void BossRoom_Boss_EntityId_Is_One()
     {
         // BossRoom도 독립 풀 → Boss = 첫 번째 발급 = 1.
-        // (옛 단일맵 Boss=2와 다름 — 맵별 독립 풀 Phase 03 결정 사전 검증)
         GameMap map = new GameMap(MapId.BossRoom);
         EnemyEntity boss = map.Enemies.Values.Single();
         Assert.Equal(1, boss.EntityId);

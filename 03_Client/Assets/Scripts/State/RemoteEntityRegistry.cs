@@ -4,27 +4,18 @@ using UnityEngine;
 
 namespace Dawnholder.Client.State
 {
-    // M3 Phase 05: 타인 entity Spawn/Despawn/Snapshot dispatch 매니저.
-    // 본인 entity는 등록 X — UnityClientSession.HandleSnapshot이 entityId 분기로 막음.
+    // 타인 entity Spawn/Despawn/Snapshot dispatch 매니저.
+    // 본인 entity는 등록 X — SnapshotHandler가 entityId 분기로 막음.
     //
-    // **위치**: Gameplay 씬의 GameObject에 컴포넌트로 박힘 (Inspector에서 _remotePlayerPrefab 드래그).
-    // Static singleton — LocalPlayerController.Instance 패턴과 일관.
-    //
-    // **지연 spawn 패턴** (Phase 정의 함정 #3, 5/19 합의):
+    // **지연 spawn 패턴**:
     //   PlayerJoin 도착 *전* Snapshot이 먼저 도착해도 UpdateSnapshot이 *그 자리에서* Spawn 호출.
-    //   이후 PlayerJoin 도착 시 이미 있으면 noop (idempotent — PDL.xml S_PlayerJoin 주석 약속).
-    //
-    // **시그니처 약속** (UnityClientSession이 호출 — 본인 영역):
-    //   - Spawn(int entityId, float spawnX, float spawnY)   ← S_PlayerJoin
-    //   - Despawn(int entityId)                              ← S_PlayerLeave
-    //   - UpdateSnapshot(int entityId, float x, float y)     ← S_Snapshot (타인 분기)
-    //   - Clear()                                            ← OnDisconnected
+    //   이후 PlayerJoin 도착 시 이미 있으면 noop (idempotent — initial roster 재전송 안전).
     [DisallowMultipleComponent]
     public class RemoteEntityRegistry : MonoBehaviour
     {
         public static RemoteEntityRegistry? Instance { get; private set; }
 
-        // 본인 Unity Editor에서 Inspector로 RemotePlayer.prefab 드래그. null이면 spawn 시 에러 로그.
+        // Inspector로 RemotePlayer.prefab 드래그. null이면 spawn 시 에러 로그.
         [SerializeField] GameObject? _remotePlayerPrefab;
 
         readonly Dictionary<int, RemoteEntity> _entities = new();
@@ -40,9 +31,9 @@ namespace Dawnholder.Client.State
             Instance = this;
         }
 
-        // P2 봉합 (2026-05-28): CombatBootstrap.BuildRemoteEntityRegistry가 코드 주도로 생성할 때
+        // CombatBootstrap.BuildRemoteEntityRegistry가 코드 주도로 생성할 때
         // Inspector 드래그 대신 Resources.Load로 prefab을 주입하기 위한 공개 메서드.
-        // Inspector 드래그 경로(기존 수동 박힘 씬)도 여전히 동작 — [SerializeField] 유지.
+        // Inspector 드래그 경로도 여전히 동작 — [SerializeField] 유지.
         public void SetRemotePlayerPrefab(GameObject prefab)
         {
             _remotePlayerPrefab = prefab;
@@ -110,7 +101,7 @@ namespace Dawnholder.Client.State
             entity.EnqueueSnapshot(x, y);
         }
 
-        // OnDisconnected에서 호출 — 메모리 누수 차단 (Phase 정의 완료 조건 5번).
+        // OnDisconnected에서 호출 — 메모리 누수 차단.
         public void Clear()
         {
             foreach (RemoteEntity entity in _entities.Values)

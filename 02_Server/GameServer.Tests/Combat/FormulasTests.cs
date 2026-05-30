@@ -3,7 +3,7 @@ using Shared.GameData;
 namespace GameServer.Tests.Combat;
 
 /// <summary>
-/// M4.1 Phase 05 (5단계): Formulas.ComputeDamage 단위 테스트 6건.
+/// Formulas.ComputeDamage 단위 테스트 6건.
 ///
 /// **테스트 원칙**:
 ///   - 순수 함수 검증 — IO 없음, GameMap/GameSession 의존 없음. 단순 input → output 확인.

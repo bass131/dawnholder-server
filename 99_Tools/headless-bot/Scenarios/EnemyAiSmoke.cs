@@ -7,7 +7,7 @@ using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// M4.3 Phase 07 enemy AI smoke.
+// Enemy AI smoke.
 //
 // 시나리오:
 //   1. 서버에 접속 + handshake + Town 진입

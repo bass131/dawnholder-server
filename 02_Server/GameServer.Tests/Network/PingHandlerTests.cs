@@ -6,9 +6,9 @@ using Shared.Protocol;
 namespace GameServer.Tests.Network;
 
 /// <summary>
-/// M3 Phase 03 (헌법 #4 "Shared Code Discipline" 가짜 약속 2번째 봉합): PingHandler 단위 회귀 안전망.
+/// PingHandler 단위 회귀 안전망.
 ///
-/// **검증 invariant** (Phase 03 완료 조건 — 모든 기존 핸들러 invalid+auth 페어):
+/// **검증 invariant**:
 ///   - happy: handshake 완료 후 C_Ping → S_Pong 회신, clientTimestampMs 보존
 ///   - auth: handshake 미완료 상태에서 C_Ping → first-packet 게이트가 차단 + Disconnect (Send X)
 ///

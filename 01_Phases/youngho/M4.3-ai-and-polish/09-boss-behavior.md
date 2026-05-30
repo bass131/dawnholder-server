@@ -30,7 +30,8 @@ domain: server+shared+client
 ## ⏪ 사전 조건
 
 - [ ] **Phase 07 완료** — enemy AI 인프라(FSM, tick update 루프, 위치 패킷)
-- [ ] **Phase 08 완료** — enemy 클라 렌더 (보스도 enemy 렌더 재사용)
+- [ ] **Phase 08a 완료** — animState 프로토콜 + 서버 상태 결정 (boss attack을 animState 채널로 송신)
+- [ ] **Phase 08b 완료** — enemy 클라 렌더 + AnimatorDriver (보스도 enemy 렌더/driver 재사용)
 - [x] M3 Phase 07 boss 골격 (`EnemyKind.Boss`, `S_StageClear`, `GameMap.cs:302` stage clear)
 
 ---
@@ -49,13 +50,13 @@ domain: server+shared+client
 
 ### 공유 (shared)
 - [ ] **PDL: `S_EnemyAttack` 패킷 신설** (append-only) — `attackerId, targetId, damage, targetCurrentHp, attackPattern(byte)` (클라 이펙트 분기용)
-- [ ] `Protocol.Version` — **추가 bump 없음** (M4.3 한 PR 묶음 전제: 07의 6→7 Version 7 안에 본 패킷도 포함). ⚠️ 07/09를 *별도 PR로 분리* 머지할 경우에만 여기서 7→8 (그 경우 07 완료조건도 재검토)
+- [ ] `Protocol.Version` — **추가 bump 없음** (M4.3 한 PR 묶음 전제: 08a의 7→8 Version 8 안에 S_EnemyAttack도 포함). ⚠️ 애니 상태머신(08a)과 *별도 PR로 분리* 머지할 경우에만 여기서 8→9
 - [ ] PacketGenerator 재생성 + Shared.dll 복사
 
 ### 클라 (03_Client + 04_ClientNet)
 - [ ] `S_EnemyAttack` 핸들러 — 보스 공격 이펙트(패턴별) + 플레이어 피격 표시(HP 바 감소 — 서버 값)
 - [ ] **HUD HP mock 제거** (MAX effort 재검토 발견): `HudController`가 현재 `mockHpCurrent=100` 고정. `S_EnemyAttack`(또는 피격 패킷)에서 `HudController.UpdateHP(current, max)` 실제 호출로 연결 — 메서드는 이미 존재하므로 핸들러에서 호출만. (work-pin "HUD 영구 mock" 봉합)
-- [ ] 보스 attack 애니메이션 트리거 (Animator) — **본인 외관 분담**
+- [ ] 보스 attack 애니 = **08a animState 채널로 송신** (서버가 boss attack 틱에 animState=Attack 설정) → `AnimatorDriver`가 렌더. 별도 트리거 코드 X. Attack 클립/전이는 11(본인 외관 분담)
 - [ ] 페이즈 2 전환 시각 연출(옵션, 여유 시 — 발표 어필)
 
 ### 테스트
@@ -98,7 +99,7 @@ domain: server+shared+client
 
 ## ⚠️ 함정 / 주의사항
 
-- **PDL append-only** (헌법 #2): `S_EnemyAttack` 맨 끝 추가. **Version 추가 bump 없음** — 07의 6→7 Version 7에 본 패킷도 포함(한 PR 묶음, 2026-05-29 결정). 별도 PR 분리 시에만 7→8. CHANGELOG엔 M4.3 패킷 2개 추가를 한 항목으로 기록.
+- **PDL append-only** (헌법 #2): `S_EnemyAttack` 맨 끝 추가. **Version 추가 bump 없음** — 08a의 7→8 Version 8에 본 패킷도 포함(한 PR 묶음). 애니 상태머신(08a)과 별도 PR 분리 시에만 8→9. CHANGELOG엔 M4.3 프로토콜 변경(animState 필드 + S_EnemyAttack)을 한 항목으로 기록.
 - **보스 공격 판정 비대칭 (MAX effort 재검토)**: 보스→플레이어 데미지는 서버가 플레이어 *권위 위치*로 판정. 플레이어는 prediction으로 이미 움직였을 수 있어 "피했는데 맞았다" 가능. 보스 공격에 **telegraph(예고 모션/짧은 딜레이)**를 넣으면 회피가 시각적으로 공정해 보여 발표 체감 ↑ (07 target rewind 비대칭과 짝 — 둘 다 M4.4 정밀 전투 대상).
 - **플레이어 사망 처리 미정의 위험**: 보스가 때려서 플레이어 HP 0이 되면? 발표 데모가 멈추지 않게 최소 정책(리스폰/무적 토글) 필요. 본 Phase에서 결정.
 - **데미지 신뢰 경계 (헌법 #3)**: 적 데미지는 서버 계산. 클라는 S_EnemyAttack의 currentHp를 표시만. 클라가 "안 맞았다" 주장 불가.

@@ -2,22 +2,16 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Loop;
 
-// Phase 08 (M2): TickScheduler에서 측정 책임만 분리한 SRP 클래스.
-//
-// **왜 별도 클래스로 뽑았나** (Phase 07 InputBits.cs 패턴 정합):
-// - TickScheduler는 "정확한 간격으로 콜백 부르기"가 본질.
-// - 측정 + 통계 + 출력은 별개 책임. 섞으면 둘 다 테스트 어려워짐.
-// - 분리하면 TickMetrics만 단독 xUnit 가능 (실제 tick 안 돌리고 알려진 입력으로).
+// TickScheduler에서 측정 책임만 분리한 SRP 클래스.
 //
 // **왜 percentile?** (avg는 거짓말, max는 outlier 휘둘림)
 // - avg=0.05ms 인데 사용자가 끊김 느낀다면? → 가끔 100ms 튄 tick이 avg에 묻힌 것.
 // - p99 = "최악의 1%도 이 정도" — 진짜 체감 기준.
 // - PRD 박힌 기준: tick p99 < 10ms.
 //
-// **알고리즘**: nearest-rank percentile (가장 단순, 학습 친화).
+// **알고리즘**: nearest-rank percentile.
 // - 100개 sample → 정렬 → p99 = 99번째 값.
 // - 9개 sample → p99 = ceil(0.99 * 9) = 9번째 값 (= max).
-// - HDR histogram 같은 고급 알고리즘은 오버킬 (1초당 20 sample뿐).
 public class TickMetrics
 {
     readonly List<long> _samples;

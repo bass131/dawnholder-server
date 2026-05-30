@@ -2,13 +2,12 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Tests;
 
-// Phase 07 (M2): InputBits 비트필드 인코딩/디코딩 검증.
-// D2 결정 (현업 정석) + Codex 5규칙 (상의 결과) + Codex 함정 3건 반영.
+// InputBits 비트필드 인코딩/디코딩 검증.
 //
 // 테스트 카테고리:
 //   1) Round-trip (정상 사용 — Encode → Decode 보존)
 //   2) 비트 위치 검증 (jumpPressed 독립성)
-//   3) invalid 방어 (Codex 함정 #1 — 11 reserved 코드)
+//   3) invalid 방어 (11 reserved 코드)
 //   4) Encode 예외 (호출자 책임 — 프로그래밍 에러)
 //   5) 미래 예약 비트 (bit 3~7) 무시 검증
 public class InputBitsTests
@@ -31,7 +30,7 @@ public class InputBitsTests
         Assert.True(valid); // 정상 인코드는 항상 valid
     }
 
-    // === 2) 비트 위치 검증 (PDL 주석 일치 — Codex 함정 #3) ===
+    // === 2) 비트 위치 검증 (PDL 주석 일치) ===
     [Fact]
     public void Encode_InputXNeg_NoJump_ProducesZero()
     {
@@ -67,7 +66,7 @@ public class InputBitsTests
         Assert.Equal((byte)0x06, InputBits.Encode(1, true));
     }
 
-    // === 3) invalid 방어 (Codex 함정 #1) ===
+    // === 3) invalid 방어 ===
     [Fact]
     public void Decode_ReservedCode_NormalizesToZero_FlagsInvalid()
     {

@@ -4,10 +4,10 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Tests;
 
-// Phase 04 (M2): GameMap의 intent 적용 + snapshot 브로드캐스트 동작 검증.
+// GameMap의 intent 적용 + snapshot 브로드캐스트 동작 검증.
 //
 // GameSession 측 검증(rate-limit, range cheat-log)은 PacketSession 상속 + ServerCore
-// 의존이라 단위 테스트보단 통합 테스트 영역. 본 Phase는 manual 검증으로 갈음.
+// 의존이라 단위 테스트보단 통합 테스트 영역.
 public class MoveIntentTests
 {
     [Fact]
@@ -78,13 +78,13 @@ public class MoveIntentTests
         Assert.Equal(0f, e.Position.Y);
     }
 
-    // === Phase 07 통합 회귀 — GameMap.Tick의 Physics.Step 위임 검증 ===
+    // === GameMap.Tick의 Physics.Step 위임 검증 ===
     // (단위 시나리오는 PhysicsTests가 검증, 본 묶음은 GameMap.Tick wire 회귀)
 
     [Fact]
     public void Tick_JumpPressed_OnGround_AppliesJumpVelocity()
     {
-        // Phase 07: PendingJumpPressed=true + OnGround=true (기본값) → vy=JumpSpeed
+        // PendingJumpPressed=true + OnGround=true (기본값) → vy=JumpSpeed
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
         e.PendingJumpPressed = true;
@@ -100,7 +100,7 @@ public class MoveIntentTests
     [Fact]
     public void Tick_JumpInAir_Ignored()
     {
-        // Phase 07 (정의 파일 #83 함정): 공중에서 jumpPressed 무시
+        // 공중에서 jumpPressed 무시 (더블점프 차단)
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 1f));
         e.Velocity = new Vector2(0f, 5f);  // 점프 상승 중
@@ -117,7 +117,7 @@ public class MoveIntentTests
     [Fact]
     public void Tick_ResetsPendingFlags_AfterStep()
     {
-        // Phase 07 통합 회귀: PendingInputX + PendingJumpPressed 모두 reset (다음 tick 누적 차단)
+        // PendingInputX + PendingJumpPressed 모두 reset (다음 tick 누적 차단)
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
         e.PendingInputX = 1;

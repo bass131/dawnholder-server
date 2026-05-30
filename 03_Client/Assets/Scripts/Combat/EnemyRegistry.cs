@@ -4,37 +4,21 @@ using UnityEngine;
 
 namespace Dawnholder.Client.Combat
 {
-    // M3 Phase 08c: Enemy/Boss 전담 registry. Player(RemoteEntityRegistry)와 영역 분리.
+    // Enemy/Boss 전담 registry. Player(RemoteEntityRegistry)와 영역 분리.
     //
-    // **분리 이유** (응급 결정 — 5/19):
+    // **분리 이유**:
     //   1. lookup 분리 — Player entityId와 enemy entityId가 서버 같은 풀이라
     //      RemoteEntityRegistry에 섞으면 type 분기 위해 매 frame switch 필요.
     //   2. 컴포넌트 타입 다름 — RemoteEntity (보간 buffer) vs RemoteEnemy (HP+kind).
-    //   3. 정유현 영역 격리 — RemoteEntityRegistry는 정유현이 Prefab variant 박는 영역.
     //
-    // **prefab 파일 안 쓰는 이유** (응급 placeholder 약속):
-    //   디자인 0 + 정유현 prefab 영역 보존 + 씬 YAML 편집 회피 위해 *런타임 코드 생성*.
-    //   spawn 시점에 EnemyViewFactory.BuildPlaceholder로 GameObject 조립.
-    //   미래 정유현 prefab 박으면 _normalPrefab/_bossPrefab SerializeField로 교체.
-    //
-    // **M4.3R Phase 05 (rank 3) 리팩토링**:
-    //   BuildPlaceholder + sprite 로딩 로직(GetWhiteSquare/TryLoadEnemySprites/LoadFirstSpriteAt
-    //   + static 캐시 4개)를 EnemyViewFactory 정적 클래스로 추출.
-    //   본 클래스는 dict 관리(Spawn/ApplyHit/Despawn/TryGetNearest/Clear) + factory 호출만 담당.
-    //
-    // **시그니처 약속** (UnityClientSession 호출):
-    //   - Spawn(int entityId, byte entityKind, float x, float y, int currentHp, int maxHp)
-    //   - ApplyHit(int targetEntityId, int currentHp, int maxHp)
-    //   - Despawn(int entityId)
-    //   - TryGetNearest(Vector3 origin, float maxRangeSq, out int targetEntityId)
-    //   - Clear()
+    // 본 클래스는 dict 관리(Spawn/ApplyHit/Despawn/TryGetNearest/Clear)만 담당,
+    // GameObject 조립은 EnemyViewFactory.BuildPlaceholder로 위임.
     [DisallowMultipleComponent]
     public class EnemyRegistry : MonoBehaviour
     {
         public static EnemyRegistry? Instance { get; private set; }
 
-        // 미래 prefab 교체 약속 (정유현 영역 — M4.3R Phase 05 주석 보존):
-        // 정유현이 prefab 박으면 아래 SerializeField를 활성화하고
+        // 미래 prefab 교체 시 아래 SerializeField를 활성화하고
         // Spawn에서 EnemyViewFactory.BuildPlaceholder 대신 Instantiate 분기로 전환.
         // [SerializeField] GameObject _normalPrefab;
         // [SerializeField] GameObject _bossPrefab;
@@ -78,9 +62,7 @@ namespace Dawnholder.Client.Combat
             Debug.Log($"[EnemyRegistry] Spawned {kind} entity {entityId} at ({x:F2}, {y:F2}) hp={currentHp}/{maxHp}");
         }
 
-        // S_EntityState 핸들러에서 호출 — 서버 권위 위치 갱신.
-        // 최소 봉합 (M4.3R Phase β): 직접 transform 세팅.
-        // 보간 버퍼(RemoteEntity 패턴)는 Phase 08 몫 — §0.3 과분할 금지.
+        // S_EntityState 핸들러에서 호출 — 서버 권위 위치 갱신. 직접 transform 세팅.
         public void UpdatePosition(int entityId, float x, float y)
         {
             if (!_enemies.TryGetValue(entityId, out RemoteEnemy? enemy)) return;
@@ -93,7 +75,7 @@ namespace Dawnholder.Client.Combat
         {
             if (!_enemies.TryGetValue(targetEntityId, out RemoteEnemy? enemy))
             {
-                // Death packet이 먼저 도착했거나 spawn 전 race — 응급 단순: silent drop.
+                // Death packet이 먼저 도착했거나 spawn 전 race — silent drop.
                 return;
             }
             enemy.ApplyHpUpdate(currentHp, maxHp);

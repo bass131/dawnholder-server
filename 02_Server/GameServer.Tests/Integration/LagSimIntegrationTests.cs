@@ -3,19 +3,19 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 namespace Dawnholder.Server.GameServer.Tests.Integration;
 
 /// <summary>
-/// M4.1 Phase 06 (7단계): lag 시뮬 봇 회귀 + 검증 통합 테스트.
+/// lag 시뮬 봇 회귀 + 검증 통합 테스트.
 ///
 /// **목적 3가지**:
-///   1. 봇 회귀 봉합 — EmergencyCombatSmoke / BossStageClearSmoke가 attackerClientTick=0(기본값)
-///      대신 _lastReceivedServerTick을 사용하게 수정됐으므로, 기존 smoke 흐름(zero-lag)이
-///      여전히 green인지 검증 (회귀 안전망).
+///   1. 봇 회귀 봉합 — EmergencyCombatSmoke / BossStageClearSmoke가 _lastReceivedServerTick을
+///      사용하므로, 기존 smoke 흐름(zero-lag)이 여전히 green인지 검증 (회귀 안전망).
 ///   2. lag 200ms 허용 — diff = 4 ≤ 4 → 서버 통과 → enemy kill 성공. "공정한 hit 판정" 정합.
 ///   3. lag 250ms silent drop — diff ≥ 5 → 서버 silent drop → enemy kill 불가 →
 ///      cheat 차단 정합. LongRunning Skip 처리 (타이밍 의존 + 실시간 서버 제어 불가).
 ///      단위 테스트 LagCompensationTests.Rewind_BeyondRange_SilentDrop이 동일 로직 검증.
 ///
 /// **ServerFixture 재사용**: M2BasicMovementIntegrationTests.cs에서 정의한 ServerFixture
-/// (port 0 bind + GameWorld.Start). IClassFixture 공유 — 같은 서버 인스턴스.
+/// (port 0 bind + GameWorld.Start). GameWorld 싱글톤 위반 방지 위해 같은 컬렉션 공유 +
+/// sequential 실행. Enemy 상태 격리: CombatSmoke는 Normal kill, BossSmoke는 Boss kill → 독립.
 ///
 /// **타이밍 trade-off**:
 ///   - zero-lag (simulatedLatencyMs=0): 항상 통과 (diff ≈ 0).
@@ -29,21 +29,7 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 /// **단위 테스트 배분**:
 ///   - LagCompensationTests (5건): diff=0/4/5/음수/미래 — ProcessAttack 직접 검증 (환경 무관).
 ///   - HitboxTests (3건): AABB 기하 검증.
-///   - 본 파일 (2건 + 1 Skip): 실제 서버-봇 wire 경로 종단간 검증.
-/// </summary>
-/// <summary>
-/// M4.1 Phase 06 (7단계): lag 시뮬 봇 회귀 + 검증 통합 테스트.
-///
-/// **[Collection("IntegrationTests")] 공유 이유**:
-///   GameWorld는 단일 인스턴스만 허용 (singleton invariant). M2BasicMovementIntegrationTests와
-///   같은 컬렉션 = 동일 ServerFixture 인스턴스 공유 + sequential 실행 → 싱글톤 위반 방지.
-///   Enemy 상태 격리: CombatSmoke는 Normal enemy kill, BossSmoke는 Boss kill → 서로 독립.
-///   M2 이동 테스트는 enemy와 전투하지 않으므로 상태 오염 없음.
-///
-/// **단위 테스트 배분**:
-///   - LagCompensationTests (5건): diff=0/4/5/음수/미래 — ProcessAttack 직접 검증 (환경 무관).
-///   - HitboxTests (3건): AABB 기하 검증.
-///   - 본 파일 (2건 자동 + 2건 Skip): 실제 서버-봇 wire 경로 종단간 검증.
+///   - 본 파일: 실제 서버-봇 wire 경로 종단간 검증.
 /// </summary>
 [Collection("IntegrationTests")]
 public class LagSimIntegrationTests
@@ -58,23 +44,11 @@ public class LagSimIntegrationTests
     /// <summary>
     /// 1. 봇 회귀 봉합: EmergencyCombatSmoke zero-lag (simulatedLatencyMs=0) → Success=true.
     ///
-    /// **검증 의도**: 봇이 _lastReceivedServerTick 추적 + attackerClientTick 박음으로 수정됐지만,
-    /// zero-lag(기본값) 경로에서 기존 동작 그대로인지 확인.
+    /// **검증 의도**: zero-lag(기본값) 경로에서 봇이 정상 동작하는지 확인.
     ///   - MoveIntoAttackRange(~2초) + WaitForFirstSnapshot 동안 S_Snapshot 수신 →
     ///     _lastReceivedServerTick 갱신 → diff ≈ 0 → 통과.
-    ///
-    /// **M4.2 Phase 01 Skip 사유**:
-    ///   맵 분리로 Town = 빈 맵 (Normal enemy 없음). 봇은 접속 후 Town에 spawn되므로
-    ///   S_EntitySpawn을 수신하지 못하고 timeout 실패함.
-    ///   봇이 portal로 HuntingGround로 이동하는 흐름은 Phase 02~03에서 구현 예정.
-    ///   Phase 05 통합 검증에서 봇 맵 이동 시나리오로 복구 예정.
-    ///
-    /// **M4.2 Phase 05 복구**: portal 이동 흐름 추가됨.
-    ///   EmergencyCombatSmoke.Run이 Town→HuntingGround portal 이동 후 전투를 진행하도록 수정.
-    ///   Skip 해제 — 자동 회귀 테스트로 복귀.
+    ///   - EmergencyCombatSmoke.Run이 Town→HuntingGround portal 이동 후 전투를 진행.
     /// </summary>
-    // M4.2 Phase 05 복구: portal 이동 흐름 추가됨 (EmergencyCombatSmoke: Town→HG portal).
-    // Skip 해제 — 자동 회귀 테스트로 복귀.
     [Fact]
     public async Task CombatSmoke_ZeroLag_Succeeds()
     {
@@ -91,21 +65,9 @@ public class LagSimIntegrationTests
     /// <summary>
     /// 2. 봇 회귀 봉합: BossStageClearSmoke zero-lag → Success=true.
     ///
-    /// **검증 의도**: BossStageClearSmoke도 _lastReceivedServerTick 추적 + attackerClientTick
-    /// 박음으로 수정됐으므로 zero-lag 회귀 검증.
-    ///
-    /// **M4.2 Phase 01 Skip 사유**:
-    ///   맵 분리로 Town = 빈 맵 (Boss 없음). 봇은 접속 후 Town에 spawn되므로
-    ///   boss S_EntitySpawn을 수신하지 못하고 timeout 실패함.
-    ///   봇이 portal로 BossRoom으로 이동하는 흐름은 Phase 02~03에서 구현 예정.
-    ///   Phase 05 통합 검증에서 봇 맵 이동 시나리오로 복구 예정.
-    ///
-    /// **M4.2 Phase 05 복구**: portal 이동 흐름 추가됨.
-    ///   BossStageClearSmoke.Run이 Town→HG→BossRoom 2회 portal 이동 후 보스 전투를 진행하도록 수정.
-    ///   Skip 해제 — 자동 회귀 테스트로 복귀.
+    /// **검증 의도**: zero-lag 경로에서 보스 전투 회귀 검증.
+    ///   BossStageClearSmoke.Run이 Town→HG→BossRoom 2회 portal 이동 후 보스 전투를 진행.
     /// </summary>
-    // M4.2 Phase 05 복구: portal 이동 흐름 추가됨 (BossStageClearSmoke: Town→HG→BossRoom 2회 portal).
-    // Skip 해제 — 자동 회귀 테스트로 복귀.
     [Fact]
     public async Task BossSmoke_ZeroLag_Succeeds()
     {

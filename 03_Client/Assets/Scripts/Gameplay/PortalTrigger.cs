@@ -33,9 +33,7 @@ namespace Dawnholder.Client.Gameplay
     [DisallowMultipleComponent]
     public class PortalTrigger : MonoBehaviour
     {
-        // 서버 PortalTable의 portalId. Inspector에서 설정.
-        // 현재 서버 Phase 03 기준 Town→HuntingGround=1, HuntingGround→BossRoom=2 등.
-        // 정확한 id는 서버 PortalTable 참조 (Phase 04 작업 메모: 현재 서버는 portalId=1 단일).
+        // 서버 PortalTable의 portalId. Inspector에서 설정. 정확한 id는 서버 PortalTable 참조.
         [FormerlySerializedAs("portalId")]
         [SerializeField] int _portalId = 1;
 

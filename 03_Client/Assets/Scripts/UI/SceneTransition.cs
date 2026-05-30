@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace Dawnholder.Client.UI
 {
@@ -11,7 +12,7 @@ namespace Dawnholder.Client.UI
     /// **헌법 #1 (Server Authority)**: 페이드는 *본인 클라 시각* 효과만.
     /// 서버 권위 타임라인엔 영향 X (멀티게임 시 다른 플레이어는 보지 못함).
     ///
-    /// **Phase 04와의 짝**: PauseMenuController에서 timeScale=0인 채 호출될 위험을
+    /// **timeScale=0 안전망**: PauseMenuController에서 timeScale=0인 채 호출될 위험을
     /// 대비해 Fade Coroutine은 Time.unscaledDeltaTime을 사용. PauseMenuController가
     /// timeScale=1 복원 먼저 하지만 안전망 이중.
     /// </summary>
@@ -21,9 +22,11 @@ namespace Dawnholder.Client.UI
 
         [Header("Fade")]
         [Tooltip("화면 검은 천 — CanvasGroup α 0↔1로 토글.")]
-        [SerializeField] CanvasGroup fadeGroup;
+        [FormerlySerializedAs("fadeGroup")]
+        [SerializeField] CanvasGroup _fadeGroup;
         [Tooltip("페이드 한 방향 시간 (초). 0.3~0.5 권장.")]
-        [SerializeField] float fadeDuration = 0.5f;
+        [FormerlySerializedAs("fadeDuration")]
+        [SerializeField] float _fadeDuration = 0.5f;
 
         bool isTransitioning;
 
@@ -43,10 +46,10 @@ namespace Dawnholder.Client.UI
             if (transform.parent == null)
                 DontDestroyOnLoad(gameObject);
 
-            if (fadeGroup != null)
+            if (_fadeGroup != null)
             {
-                fadeGroup.alpha = 0f;
-                fadeGroup.blocksRaycasts = false;
+                _fadeGroup.alpha = 0f;
+                _fadeGroup.blocksRaycasts = false;
             }
         }
 
@@ -58,19 +61,19 @@ namespace Dawnholder.Client.UI
 
         IEnumerator LoadSceneRoutine(string sceneName)
         {
-            // 방어: fadeGroup Inspector 슬롯이 비었으면 페이드 스킵 + 즉시 로드 (검은 화면 멈춤 방지)
-            if (fadeGroup == null)
+            // 방어: _fadeGroup Inspector 슬롯이 비었으면 페이드 스킵 + 즉시 로드 (검은 화면 멈춤 방지)
+            if (_fadeGroup == null)
             {
-                Debug.LogError("[SceneTransition] fadeGroup is NULL — Inspector slot empty. Skipping fade.");
+                Debug.LogError("[SceneTransition] _fadeGroup is NULL — Inspector slot empty. Skipping fade.");
                 SceneManager.LoadScene(sceneName);
                 isTransitioning = false;
                 yield break;
             }
 
             isTransitioning = true;
-            fadeGroup.blocksRaycasts = true;
+            _fadeGroup.blocksRaycasts = true;
 
-            yield return Fade(0f, 1f, fadeDuration);
+            yield return Fade(0f, 1f, _fadeDuration);
 
             var op = SceneManager.LoadSceneAsync(sceneName);
             if (op == null)
@@ -84,9 +87,9 @@ namespace Dawnholder.Client.UI
                     yield return null;
             }
 
-            yield return Fade(1f, 0f, fadeDuration);
+            yield return Fade(1f, 0f, _fadeDuration);
 
-            fadeGroup.blocksRaycasts = false;
+            _fadeGroup.blocksRaycasts = false;
             isTransitioning = false;
         }
 
@@ -96,10 +99,10 @@ namespace Dawnholder.Client.UI
             while (elapsed < duration)
             {
                 elapsed += Time.unscaledDeltaTime;
-                fadeGroup.alpha = Mathf.Lerp(from, to, elapsed / duration);
+                _fadeGroup.alpha = Mathf.Lerp(from, to, elapsed / duration);
                 yield return null;
             }
-            fadeGroup.alpha = to;
+            _fadeGroup.alpha = to;
         }
     }
 }

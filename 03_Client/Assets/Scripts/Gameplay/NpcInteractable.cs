@@ -5,16 +5,14 @@ using UnityEngine.Serialization;
 namespace Dawnholder.Client.Gameplay
 {
     /// <summary>
-    /// NPC 인터랙션 컴포넌트 (M3.8 Phase 04 — 캡스톤 1 데모용).
-    /// 플레이어가 NPC 옆 trigger 안에서 E 키 누르면 NpcDialogPanel.Show(dialogText) 호출.
+    /// NPC 인터랙션 컴포넌트. 플레이어가 NPC 옆 trigger 안에서 E 키 누르면 NpcDialogPanel.Show(dialogText) 호출.
     ///
     /// **헌법 #1 (Server Authority)**: 본 컴포넌트 = 클라 단독 hardcoded 텍스트, 서버 패킷 X.
-    /// NPC 위치/존재는 *서버 spawn 데이터* 차원 (M6 길드 진입 시 정식화).
     ///
     /// **요구 컴포넌트**: BoxCollider2D (isTrigger=true), 플레이어는 "Player" 태그 박혀있어야 함.
     ///
-    /// **새 InputSystem 활용** (헌법 03_Client/CLAUDE.md "새 Input System 패키지 사용. 레거시 Input.GetKey 금지" 정합).
-    /// 직접 InputAction 박음 (Inspector reference 없이 작동 = 데모용 단순) — 정식 패턴은 PauseMenuController.cs 정합.
+    /// **새 InputSystem 활용** (헌법 "레거시 Input.GetKey 금지" 정합).
+    /// 직접 InputAction 박음 (Inspector reference 없이 작동).
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class NpcInteractable : MonoBehaviour
@@ -57,7 +55,7 @@ namespace Dawnholder.Client.Gameplay
 
         void OnTriggerStay2D(Collider2D other)
         {
-            // OnTriggerEnter 못 잡힌 케이스 보완 (처음부터 trigger 안에 있는 경우 — 데모용 LocalPlayer 미이동 시점)
+            // OnTriggerEnter 못 잡힌 케이스 보완 (처음부터 trigger 안에 있는 경우).
             if (!_isPlayerNear && other.CompareTag(_playerTag))
             {
                 _isPlayerNear = true;

@@ -5,7 +5,6 @@ namespace PacketGenerator
 {
     internal class Program
     {
-        // 누적 string concatenation 패턴 — 빈 문자열로 초기화 (nullable 가드).
         static string genPackets = "";
         static ushort packetID;
         static string packetEnums = "";
@@ -23,7 +22,6 @@ namespace PacketGenerator
             // --no-wait (CI/스크립트용, ReadKey 대기 안 함).
             string pdlPath = "PDL.xml";
             // 기본 true: manager 인프라(ServerCore namespace + PacketHandler 타입) 부재라 안전 default.
-            // Codex pre-M3 감사 발견 #3 / 99_Tools/CLAUDE.md 결함 #1 fix (M3 Phase 01).
             bool noManager = true;
             bool noWait = false;
             foreach (string a in args)
@@ -52,8 +50,7 @@ namespace PacketGenerator
 
             string fileText = string.Format(PacketFormat.fileFormat, packetEnums, genPackets);
 
-            // 출력 디렉토리 = PDL.xml 위치 기준 ../../ (= 프로젝트 루트).
-            // Phase 07 책임 단위 분리 채택:
+            // 출력 디렉토리 = PDL.xml 위치 기준 ../../ (= 프로젝트 루트). 출력 대상:
             //   - GenPackets.cs (패킷 정의) → 98_Shared/Protocol/Generated/  (양쪽 통합)
             //   - ServerPacketManager.cs   → 02_Server/GameServer/Network/Generated/  (서버 분리)
             //   - ClientPacketManager.cs   → 04_ClientNet/Generated/  (클라 분리)
@@ -103,17 +100,17 @@ namespace PacketGenerator
         }
 
 
-        public static void ParsePacket(XmlReader _r)
+        public static void ParsePacket(XmlReader r)
         {
-            if (_r.NodeType == XmlNodeType.EndElement)
+            if (r.NodeType == XmlNodeType.EndElement)
                 return;
 
-            if (_r.Name.ToLower() != "packet")
+            if (r.Name.ToLower() != "packet")
             {
                 Console.WriteLine("[Gen] - Invalid packet node.");
                 return;
             }
-            string? packetName = _r["name"];
+            string? packetName = r["name"];
 
             if (string.IsNullOrEmpty(packetName))
             {
@@ -121,7 +118,6 @@ namespace PacketGenerator
             }
 
             // PDL schema validation: 같은 패킷 이름 재사용 차단 (헌법 #2 정합).
-            // M3.7 후속 (M4 진입 전 처리 묶음 #3) 박힘.
             if (!seenPacketNames.Add(packetName))
             {
                 throw new InvalidDataException(
@@ -129,7 +125,7 @@ namespace PacketGenerator
                     "헌법 #2: 은퇴한 패킷 ID는 절대 재사용 금지.");
             }
 
-            Tuple<string, string, string> t = ParseMembers(_r);
+            Tuple<string, string, string> t = ParseMembers(r);
             genPackets += string.Format(PacketFormat.packetFormat,
                 packetName, t.Item1, t.Item2, t.Item3);
             packetEnums += string.Format(PacketFormat.packetEnumFormat, packetName, ++packetID) + Environment.NewLine + "\t";
@@ -145,21 +141,21 @@ namespace PacketGenerator
         // {1} : 패킷 멤버 변수들
         // {2} : 멤버 변수 Read
         // {3} : 멤버 변수 Write
-        public static Tuple<string, string, string> ParseMembers(XmlReader _r)
+        public static Tuple<string, string, string> ParseMembers(XmlReader r)
         {
-            string? packetName = _r["name"];
+            string? packetName = r["name"];
 
             string memberCode = "";
             string readCode = "";
             string writeCode = "";
 
-            int depth = _r.Depth + 1;
-            while (_r.Read())
+            int depth = r.Depth + 1;
+            while (r.Read())
             {
-                if (_r.Depth != depth)
+                if (r.Depth != depth)
                     break;
 
-                string? memberName = _r["name"];
+                string? memberName = r["name"];
                 if (string.IsNullOrEmpty(memberName))
                 {
                     // 잘못된 PDL → 즉시 throw. null 반환은 호출자에 nullable 부담.
@@ -173,7 +169,7 @@ namespace PacketGenerator
                 if (string.IsNullOrEmpty(memberCode) == false)
                     writeCode += Environment.NewLine;
 
-                string memberType = _r.Name.ToLower();
+                string memberType = r.Name.ToLower();
 
                 // PDL schema validation: member type 빈 문자열 차단.
                 // XML 파서가 element 이름 없는 노드를 흘려보내는 케이스 방어 (현실 시나리오 X지만 안전망).
@@ -193,8 +189,7 @@ namespace PacketGenerator
                         break;
                     case "bool":
                         // bool은 1바이트지만 BinaryPrimitives에 LittleEndian 변종 없음 (Read/WriteBooleanLittleEndian 부재).
-                        // M3 Phase 02 fix (Codex pre-M3 감사 결함 박제): 옛 ToMemberType("Boolean") 경로는 broken code 생성 →
-                        // byte 패턴 별도 분기 (0=false, 1=true 매핑). S_HandshakeResult.ok가 첫 실수요자.
+                        // byte 패턴 별도 분기 (0=false, 1=true 매핑).
                         memberCode += string.Format(PacketFormat.MemberFormat, memberType, memberName);
                         readCode += string.Format(PacketFormat.ReadBoolFormat, memberName);
                         writeCode += string.Format(PacketFormat.WriteBoolFormat, memberName);
@@ -223,16 +218,15 @@ namespace PacketGenerator
                         writeCode += string.Format(PacketFormat.WriteStringFormat, memberName);
                         break;
                     case "list":
-                        Tuple<string, string, string> t = ParseList(_r);
+                        Tuple<string, string, string> t = ParseList(r);
                         memberCode += t.Item1;
                         readCode += t.Item2;
                         writeCode += t.Item3;
                         break;
                     default:
                         // PDL schema validation: 알 수 없는 타입 silent skip 차단.
-                        // 옛 동작: `<unit name="x"/>` 같은 오타 무시 + 빌드 통과 + 런타임 시점에야 발견.
-                        // 새 동작: 즉시 throw로 PDL 작성 시점 표면화.
-                        // 99_Tools/CLAUDE.md "PDL schema validation 약함" 봉합 (M3.7 후속).
+                        // silent skip이면 `<unit name="x"/>` 같은 오타가 빌드 통과 후 런타임에야 발견 →
+                        // 즉시 throw로 PDL 작성 시점 표면화.
                         throw new InvalidDataException(
                             $"[Gen] Unknown member type '<{memberType}>' for member '{memberName}' " +
                             $"in packet '{packetName}'. " +
@@ -246,16 +240,16 @@ namespace PacketGenerator
             return new Tuple<string, string, string>(memberCode, readCode, writeCode);
         }
 
-        public static Tuple<string, string, string> ParseList(XmlReader _r)
+        public static Tuple<string, string, string> ParseList(XmlReader r)
         {
-            string? listName = _r["name"];
+            string? listName = r["name"];
 
             if (string.IsNullOrEmpty(listName))
             {
                 throw new InvalidDataException("[GEN] List without name");
             }
 
-            Tuple<string, string, string> t = ParseMembers(_r);
+            Tuple<string, string, string> t = ParseMembers(r);
 
             string memberCode = string.Format(PacketFormat.MemberListFormat,
                 FirstCharToUpper(listName),
@@ -277,10 +271,10 @@ namespace PacketGenerator
 
         // BinaryPrimitives.Read*LittleEndian / TryWrite*LittleEndian 의 * 부분 반환.
         // 예: long → "Int64" → BinaryPrimitives.ReadInt64LittleEndian / TryWriteInt64LittleEndian
-        // M3 Phase 02 정정: bool은 별도 ReadBoolFormat/WriteBoolFormat 경로 (byte 패턴) — 본 메서드 호출 X.
-        public static string ToMemberType(string _memberType)
+        // bool은 별도 ReadBoolFormat/WriteBoolFormat 경로 (byte 패턴) — 본 메서드 호출 X.
+        public static string ToMemberType(string memberType)
         {
-            switch (_memberType.ToLower())
+            switch (memberType.ToLower())
             {
                 case "short":
                     return "Int16";
@@ -301,20 +295,20 @@ namespace PacketGenerator
             }
         }
 
-        public static string FirstCharToUpper(string _s)
+        public static string FirstCharToUpper(string s)
         {
-            if (string.IsNullOrEmpty(_s))
+            if (string.IsNullOrEmpty(s))
                 return "";
 
-            return _s[0].ToString().ToUpper() + _s.Substring(1);
+            return s[0].ToString().ToUpper() + s.Substring(1);
         }
 
-        public static string FirstCharToLower(string _s)
+        public static string FirstCharToLower(string s)
         {
-            if (string.IsNullOrEmpty(_s))
+            if (string.IsNullOrEmpty(s))
                 return "";
 
-            return _s[0].ToString().ToLower() + _s.Substring(1);
+            return s[0].ToString().ToLower() + s.Substring(1);
         }
     }
 }
