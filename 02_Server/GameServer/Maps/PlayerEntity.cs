@@ -26,6 +26,29 @@ public class PlayerEntity
     public Vector2 Velocity { get; set; } = Vector2.Zero;
     public bool OnGround { get; set; } = true;
 
+    // jump buffer: 공중에서 받은 점프 입력을 착지 틱까지 보관 (최대 1개).
+    // TTL = JumpBufferTicks 이후 자연 소멸 — max1+유한TTL로 무한/유령 점프 불가 (헌법 #3).
+    const int JumpBufferTicks = 3; // ~150ms @20TPS
+    int _jumpBufferRemaining;
+
+    // 테스트용 read-only 노출.
+    public bool HasBufferedJump => _jumpBufferRemaining > 0;
+
+    // 이번 틱 실제 점프 여부 결정 + 버퍼 상태 갱신.
+    // Physics.cs는 수정 금지(공유 공식) — 서버가 Physics.Step에 넘기는 jumpPressed를 여기서 정한다.
+    public bool ResolveJump(bool rawJumpPressed)
+    {
+        if (OnGround)
+        {
+            bool fire = rawJumpPressed || _jumpBufferRemaining > 0;
+            _jumpBufferRemaining = 0;
+            return fire;
+        }
+        if (rawJumpPressed) _jumpBufferRemaining = JumpBufferTicks; // 공중 입력 → 착지까지 보관 (최신 1개)
+        else if (_jumpBufferRemaining > 0) _jumpBufferRemaining--;   // TTL 감소, 만료 시 자연 소멸
+        return false;
+    }
+
     // 입력 FIFO 큐. EnqueueJob 경유 network thread→tick thread 단방향이라 lock 불필요.
     // 상한 MaxInputQueue: DoS 방어 (헌법 #3) + 위상 지터 누적 상한.
     // 초과 시 oldest drop (drop-oldest): 최신 입력을 우선해 응답성 유지.

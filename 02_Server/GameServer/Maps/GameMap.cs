@@ -267,7 +267,8 @@ public class GameMap
         {
             bool hasInput = p.TryDequeueInput(out PlayerEntity.InputCommand cmd);
             sbyte inputX = hasInput ? cmd.InputX : (sbyte)0;
-            bool jumpPressed = hasInput ? cmd.JumpPressed : false;
+            bool rawJump = hasInput && cmd.JumpPressed;
+            bool jumpPressed = p.ResolveJump(rawJump); // jump buffer: 공중 입력 → 착지 틱 발사
 
             PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration);
             PhysicsState before = new PhysicsState(p.Position, p.Velocity, p.OnGround);
