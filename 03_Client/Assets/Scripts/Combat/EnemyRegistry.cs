@@ -1,5 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
+using Dawnholder.Client.Rendering;
+using Dawnholder.Client.State;
 using UnityEngine;
 
 namespace Dawnholder.Client.Combat
@@ -7,7 +9,7 @@ namespace Dawnholder.Client.Combat
     // Enemy/Boss 전담 registry. Player(RemoteEntityRegistry)와 영역 분리.
     //
     // **분리 이유**:
-    //   1. lookup 분리 — Player entityId와 enemy entityId가 서버 같은 풀이라
+    //   1. lookup 분기 — Player entityId와 enemy entityId가 서버 같은 풀이라
     //      RemoteEntityRegistry에 섞으면 type 분기 위해 매 frame switch 필요.
     //   2. 컴포넌트 타입 다름 — RemoteEntity (보간 buffer) vs RemoteEnemy (HP+kind).
     //
@@ -23,7 +25,20 @@ namespace Dawnholder.Client.Combat
         // [SerializeField] GameObject _normalPrefab;
         // [SerializeField] GameObject _bossPrefab;
 
-        readonly Dictionary<int, RemoteEnemy> _enemies = new();
+        readonly struct EnemyEntry
+        {
+            public readonly RemoteEnemy Enemy;
+            public readonly RemoteEntity Interp;
+            public readonly EnemyMotion? Motion;
+            public EnemyEntry(RemoteEnemy enemy, RemoteEntity interp, EnemyMotion? motion)
+            {
+                Enemy = enemy;
+                Interp = interp;
+                Motion = motion;
+            }
+        }
+
+        readonly Dictionary<int, EnemyEntry> _enemies = new();
 
         void Awake()
         {
@@ -55,38 +70,51 @@ namespace Dawnholder.Client.Combat
             GameObject go = EnemyViewFactory.BuildPlaceholder(entityId, kind, x, y,
                                                                out RemoteEnemy comp,
                                                                out Transform hpFill,
-                                                               out float fullWidth);
-            comp.Initialize(entityId, kind, currentHp, maxHp);
+                                                               out float fullWidth,
+                                                               out float visualFootOffset);
+            comp.Initialize(entityId, kind, currentHp, maxHp, visualFootOffset);
             comp.SetHpBar(hpFill, fullWidth);
-            _enemies[entityId] = comp;
+
+            RemoteEntity? interp = go.GetComponent<RemoteEntity>();
+            EnemyMotion? motion = go.GetComponent<EnemyMotion>();
+            if (interp == null)
+            {
+                Debug.LogError($"[EnemyRegistry] RemoteEntity 없음 — entity {entityId} 보간 불가.");
+                Destroy(go);
+                return;
+            }
+            _enemies[entityId] = new EnemyEntry(comp, interp, motion);
             Debug.Log($"[EnemyRegistry] Spawned {kind} entity {entityId} at ({x:F2}, {y:F2}) hp={currentHp}/{maxHp}");
         }
 
-        // S_EntityState 핸들러에서 호출 — 서버 권위 위치 갱신. 직접 transform 세팅.
-        public void UpdatePosition(int entityId, float x, float y)
+        // S_EntityState 핸들러에서 호출 — 서버 권위 위치 + 시각 animState 갱신.
+        // transform 직접 세팅 제거 → RemoteEntity 보간 buffer로 전환.
+        public void UpdatePosition(int entityId, float x, float y, byte animState)
         {
-            if (!_enemies.TryGetValue(entityId, out RemoteEnemy? enemy)) return;
-            if (enemy == null) return;
-            enemy.transform.position = new Vector3(x, y, 0f);
+            if (!_enemies.TryGetValue(entityId, out EnemyEntry entry)) return;
+            // visualFootOffset 포함 좌표를 EnqueueSnapshot에 전달 — sprite 바닥 정합 유지.
+            entry.Interp.EnqueueSnapshot(x, y + entry.Enemy.VisualFootOffset);
+            entry.Motion?.SetAnimState(animState);
         }
 
         // S_HitResult 핸들러에서 호출.
         public void ApplyHit(int targetEntityId, int currentHp, int maxHp)
         {
-            if (!_enemies.TryGetValue(targetEntityId, out RemoteEnemy? enemy))
+            if (!_enemies.TryGetValue(targetEntityId, out EnemyEntry entry))
             {
                 // Death packet이 먼저 도착했거나 spawn 전 race — silent drop.
                 return;
             }
-            enemy.ApplyHpUpdate(currentHp, maxHp);
+            entry.Enemy.ApplyHpUpdate(currentHp, maxHp);
         }
 
         // S_EntityDeath 핸들러에서 호출.
         public void Despawn(int entityId)
         {
-            if (!_enemies.TryGetValue(entityId, out RemoteEnemy? enemy)) return;
+            if (!_enemies.TryGetValue(entityId, out EnemyEntry entry)) return;
             _enemies.Remove(entityId);
-            if (enemy != null) Destroy(enemy.gameObject);
+            entry.Interp.ClearBuffer();
+            Destroy(entry.Enemy.gameObject);
             Debug.Log($"[EnemyRegistry] Despawned entity {entityId}");
         }
 
@@ -98,9 +126,9 @@ namespace Dawnholder.Client.Combat
             targetEntityId = 0;
             float bestSq = maxRangeSq;
             bool found = false;
-            foreach (KeyValuePair<int, RemoteEnemy> kv in _enemies)
+            foreach (KeyValuePair<int, EnemyEntry> kv in _enemies)
             {
-                RemoteEnemy enemy = kv.Value;
+                RemoteEnemy enemy = kv.Value.Enemy;
                 if (enemy == null) continue;
                 Vector3 diff = enemy.transform.position - origin;
                 float dSq = diff.x * diff.x + diff.y * diff.y; // 2D — z 무시
@@ -116,9 +144,10 @@ namespace Dawnholder.Client.Combat
 
         public void Clear()
         {
-            foreach (RemoteEnemy enemy in _enemies.Values)
+            foreach (EnemyEntry entry in _enemies.Values)
             {
-                if (enemy != null) Destroy(enemy.gameObject);
+                entry.Interp.ClearBuffer();
+                if (entry.Enemy != null) Destroy(entry.Enemy.gameObject);
             }
             _enemies.Clear();
         }

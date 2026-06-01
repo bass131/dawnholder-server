@@ -294,9 +294,8 @@ public class GameSession : PacketSession
         {
             PlayerEntity? entity = map.GetPlayer(eid);
             if (entity == null) return; // 이미 RemovePlayer 됐을 수도
-            entity.PendingInputX = capturedInputX;
-            entity.PendingJumpPressed = capturedJump;
-            entity.LastClientTick = capturedClientTick;
+            entity.EnqueueInput(capturedInputX, capturedJump, capturedClientTick);
+            // LastClientTick은 틱 루프에서 실제 적용 시점에 set (ack = 적용 시점).
         });
     }
 

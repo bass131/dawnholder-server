@@ -1,4 +1,6 @@
 #nullable enable
+using Dawnholder.Client.Rendering;
+using Dawnholder.Client.State;
 using UnityEngine;
 
 namespace Dawnholder.Client.Combat
@@ -58,7 +60,8 @@ namespace Dawnholder.Client.Combat
                                                    float x, float y,
                                                    out RemoteEnemy comp,
                                                    out Transform hpFill,
-                                                   out float fullWidth)
+                                                   out float fullWidth,
+                                                   out float visualFootOffset)
         {
             bool isBoss = kind == RemoteEnemy.EnemyKind.Boss;
             // sprite scale 정합: Mushroom (2.5x2.0) → size=1 (world 2.5x2.0),
@@ -72,7 +75,10 @@ namespace Dawnholder.Client.Combat
             // sprite bottom pivot 기준 + sprite 내부 발 위치 보정.
             // Mushroom: 발이 sprite bottom과 일치 → offset 0.
             // ToxicFrogBlueBlue: sprite 안 발 아래 투명 여백 ~약 0.4 unit (size 2.5 적용 시 1.0 world) → offset -1.0.
-            float visualFootOffset = isBoss ? -1.0f : 0f;
+            // RemoteEntity가 EnqueueSnapshot(x, y)로 transform을 덮어쓰므로
+            // offset은 서버 좌표에 더해 EnqueueSnapshot/Initialize에 전달해야 sprite가 바닥 정합.
+            // out 파라미터로 노출 → EnemyRegistry가 UpdatePosition에서도 동일 offset 적용.
+            visualFootOffset = isBoss ? -1.0f : 0f;
             go.transform.position = new Vector3(x, y + visualFootOffset, 0f);
 
             TryLoadEnemySprites();
@@ -91,6 +97,13 @@ namespace Dawnholder.Client.Combat
             sr.sortingOrder = 2; // Player(1)보다 위
 
             comp = go.AddComponent<RemoteEnemy>();
+
+            // 보간 + 애니 컴포넌트. EnemyMotion이 IMotionState를 구현하므로 AnimatorDriver가 Awake에서 찾음.
+            RemoteEntity remoteEntity = go.AddComponent<RemoteEntity>();
+            remoteEntity.Initialize(entityId, x, y + visualFootOffset);
+            go.AddComponent<EnemyMotion>();
+            // Mushroom/ToxicFrog placeholder sprite는 좌향 기본 → flip 기준 반전.
+            go.AddComponent<AnimatorDriver>().SpriteDefaultFacesLeft = true;
 
             // HP bar 부모 (offset) + 배경 + fill. localScale.x 깎는 단순 패턴.
             // sprite *그림 안 실제 머리 위치* hardcode (sprite asset 마다 그림 영역 다름).

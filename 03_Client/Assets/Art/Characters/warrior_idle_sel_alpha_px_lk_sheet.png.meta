@@ -1,0 +1,533 @@
+fileFormatVersion: 2
+guid: f4782c98d23ffce4bb0f5dae6316b15b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5088742813071856073
+    second: warrior_idle_sel_alpha_px_lk_sheet_0
+  - first:
+      213: 9070283922146117606
+    second: warrior_idle_sel_alpha_px_lk_sheet_1
+  - first:
+      213: -3662739876063130891
+    second: warrior_idle_sel_alpha_px_lk_sheet_2
+  - first:
+      213: -5388868094027415755
+    second: warrior_idle_sel_alpha_px_lk_sheet_3
+  - first:
+      213: 7236800850809115765
+    second: warrior_idle_sel_alpha_px_lk_sheet_4
+  - first:
+      213: -3418465275655245312
+    second: warrior_idle_sel_alpha_px_lk_sheet_5
+  - first:
+      213: -8549230182621236421
+    second: warrior_idle_sel_alpha_px_lk_sheet_6
+  - first:
+      213: 4382704791510098068
+    second: warrior_idle_sel_alpha_px_lk_sheet_7
+  - first:
+      213: 2164179171758101804
+    second: warrior_idle_sel_alpha_px_lk_sheet_8
+  - first:
+      213: 4743531298991769645
+    second: warrior_idle_sel_alpha_px_lk_sheet_9
+  - first:
+      213: 8558786549096470997
+    second: warrior_idle_sel_alpha_px_lk_sheet_10
+  - first:
+      213: -8995451133144948946
+    second: warrior_idle_sel_alpha_px_lk_sheet_11
+  - first:
+      213: -4778732490005224268
+    second: warrior_idle_sel_alpha_px_lk_sheet_12
+  - first:
+      213: -9098152146011967200
+    second: warrior_idle_sel_alpha_px_lk_sheet_13
+  - first:
+      213: -491359793176030136
+    second: warrior_idle_sel_alpha_px_lk_sheet_14
+  - first:
+      213: 6224119400796656664
+    second: warrior_idle_sel_alpha_px_lk_sheet_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_0
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 402
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c1587e80a8de9640800000000000000
+      internalID: 5088742813071856073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 402
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e7c477bb2f10ed70800000000000000
+      internalID: 9070283922146117606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_2
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 402
+        width: 48
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fa499e1d755b2dc0800000000000000
+      internalID: -3662739876063130891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_3
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 402
+        width: 48
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53f3f0a1505e635b0800000000000000
+      internalID: -5388868094027415755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_4
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 274
+        width: 47
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 574d8b618084e6460800000000000000
+      internalID: 7236800850809115765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_5
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 274
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 002bf8f81fb2f80d0800000000000000
+      internalID: -3418465275655245312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_6
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 274
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3330d5d1780b5980800000000000000
+      internalID: -8549230182621236421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_7
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 274
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 490ac5d89ce72dc30800000000000000
+      internalID: 4382704791510098068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_8
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 146
+        width: 47
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c25d0fa8d75b80e10800000000000000
+      internalID: 2164179171758101804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_9
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 146
+        width: 48
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d280a59859864d140800000000000000
+      internalID: 4743531298991769645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 146
+        width: 48
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d9594f150be6c670800000000000000
+      internalID: 8558786549096470997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 146
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2f9286badcb92380800000000000000
+      internalID: -8995451133144948946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 18
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b4ee908e188eadb0800000000000000
+      internalID: -4778732490005224268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 18
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 021bf78c3dedcb180800000000000000
+      internalID: -9098152146011967200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 18
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84455d61fd65e29f0800000000000000
+      internalID: -491359793176030136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warrior_idle_sel_alpha_px_lk_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 18
+        width: 47
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8141a144e93806650800000000000000
+      internalID: 6224119400796656664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      warrior_idle_sel_alpha_px_lk_sheet_0: 5088742813071856073
+      warrior_idle_sel_alpha_px_lk_sheet_1: 9070283922146117606
+      warrior_idle_sel_alpha_px_lk_sheet_10: 8558786549096470997
+      warrior_idle_sel_alpha_px_lk_sheet_11: -8995451133144948946
+      warrior_idle_sel_alpha_px_lk_sheet_12: -4778732490005224268
+      warrior_idle_sel_alpha_px_lk_sheet_13: -9098152146011967200
+      warrior_idle_sel_alpha_px_lk_sheet_14: -491359793176030136
+      warrior_idle_sel_alpha_px_lk_sheet_15: 6224119400796656664
+      warrior_idle_sel_alpha_px_lk_sheet_2: -3662739876063130891
+      warrior_idle_sel_alpha_px_lk_sheet_3: -5388868094027415755
+      warrior_idle_sel_alpha_px_lk_sheet_4: 7236800850809115765
+      warrior_idle_sel_alpha_px_lk_sheet_5: -3418465275655245312
+      warrior_idle_sel_alpha_px_lk_sheet_6: -8549230182621236421
+      warrior_idle_sel_alpha_px_lk_sheet_7: 4382704791510098068
+      warrior_idle_sel_alpha_px_lk_sheet_8: 2164179171758101804
+      warrior_idle_sel_alpha_px_lk_sheet_9: 4743531298991769645
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

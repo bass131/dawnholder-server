@@ -37,7 +37,8 @@ M4.3는 **발표용 polish 마일스톤**이지 M4 전체 종료가 아니다. �
 | 08a | 애니 상태머신 프로토콜+서버 (AnimState enum + animState 필드 append + 서버 상태결정 broadcast) | 복잡 | shared+server | 3~4h | irreversible (PDL 7→8) |
 | 08b | 애니 상태머신 클라 구조 (IMotionState + AnimatorDriver + 소스 3종 + enemy 위치 보간) | 복잡 | client | 3~4h | unity-asset |
 | 09 | boss behavior (다단 attack + 페이즈 1/2 + S_EnemyAttack + HUD mock 제거 + attack animState 연동) | 복잡 | server+shared+client | 4~6h | irreversible (S_EnemyAttack — Version은 08a의 8에 포함) |
-| 10 | 움직임 체감 polish (β10 MoveSpeed dead + jump Y mispredict + reconcile drift) | 복잡 | shared+server+client | 2~3h | — |
+| 10 | **서버 입력 큐 fix** — rubber-band 근본 해결 (단일 슬롯 coalescing + 빈 틱 input=0 + ack-on-receive → FIFO 큐 + 드레인 + ack=적용시점). 측정으로 재정의(클라 polish 아님). | 복잡 | server (클라/프로토콜 변경 0) | 2~3h | trust-boundary |
+| 10b | β10 MoveSpeed dead + M2 jump Y mispredict (Phase 10에서 분리 — 독립 root cause). **10 머지 직후 측정 1순위** (발표 데모 MoveSpeed 체감 필요). 10 머지로 입력 경로 바뀌므로 *그 후* 측정이 정확. | 미정(측정 후) | server+client | — | — |
 | 11 | 애니 외관 완성 (Animator 6상태 클립 × 3객체 + RemotePlayer prefab 정합) | 복잡 | client (본인 외관 **critical path**) | 4~6h | unity-asset |
 | 12 | M4.3 회귀 테스트 + 가벼운 마감 (5단계 보고 X) | 보통 | qa+메타 | 1~2h | — |
 

@@ -3,7 +3,7 @@ name: knowledge-cross-cutting-index
 description: 도메인 횡단 (보안/툴 함정/마이그/환경 사고) 학습 캐시 인덱스
 domain: cross-cutting
 maintainer: youngho
-last_updated: 2026-05-20
+last_updated: 2026-05-31
 ---
 
 # Cross-Cutting Knowledge — _index.md
@@ -23,6 +23,7 @@ last_updated: 2026-05-20
 | `projectsettings-cloud-ping-pong` | Unity Cloud Services 다인 함정, pre-commit hook으로 cloud 라인 자동 unstage | Unity Editor 켤 때 / ProjectSettings.asset stage 시 | CHANGELOG 5/19 (모든 commit 영향) |
 | `gamma-pre-validation-pattern` | Phase 정의·핵심 분기점에 외부 검증 (Codex γ → plan-auditor SubAgent 내재화) | `_milestone-plan.md` 박을 때 / Phase 정의 `.md` Write 시 | M3 누적 (γ 6/7회차) + `plan-auditor` agent |
 | `riot-vanguard-spawn-unknown` | 사용자 PC 상주 Vanguard 드라이버가 Node child_process.spawn 차단 | VSCode C# Dev Kit "No Solution" / Docker WSL2 spawn 사고 | 5/16 1회 실측 (Rule of Three 미달) |
+| `jump-buffer-ack-vs-apply-split` | 권위서버+client prediction에서 입력 버퍼링 시 ack(소비)≠효과(적용) 시점 분리 → 클라가 ack로 입력 evict해 reconcile replay 불가, 발산하면 snap | 입력 버퍼링(jump buffer/공격 버퍼/coyote) 추가 / prediction reconcile 설계 시 | M4.3 Phase 10b (`324dfb3`) Unity Play 실측 무해 (Rule of Three 미달) |
 
 ---
 
@@ -96,6 +97,18 @@ cloud 라인 *만* stage → 자동 unstage (워킹 디렉토리 보존 = 머신
 **사례**: 5/16 1회 실측 (본인 머신).
 **확신도**: 실측 1건. Rule of Three 미달. 다음 합류 팀원(인규/정우)에서 동일 사고 발생 시 ★★★ 승격 후보. 한국 학부생 + Valorant/LoL 인기 조합이라 빈도 ↑ 예상.
 **관련 키워드**: [[sac-dotnet-test-block]] (둘 다 머신 정책 사고), ONBOARDING.md "한국 게이밍 PC 주의사항" 박제 후보
+
+### `jump-buffer-ack-vs-apply-split`
+
+**증상**: 권위 서버 + client prediction 환경에서 입력을 버퍼링(지연 적용)하면, "입력을 *받았다(consumed/ack)*"는 시점과 "입력 *효과*가 서버 상태에 반영됐다"는 시점이 갈림. 클라는 ack를 받으면 그 입력을 history에서 evict → 서버가 아직 효과를 안 냈으면 reconcile이 그 입력을 *replay 못 해* → 예측을 잃고 snap할 *이론적* 창.
+
+**패턴**: jump buffer는 "입력 누락 → 입력 지연 적용"으로 바꾸는 표준 기법인데, prediction 환경에선 두 가지를 분리해 봐야 함 — (1) "consumed"는 ack로 *즉시* 알려야 클라 InputHistory 무한 누적 차단, (2) "effect 반영"은 *또 다른(나중)* 시점. 버퍼는 (2)를 미뤄 둘이 벌어짐. 일반화: *모든 지연-적용 입력*(공격 버퍼, coyote-time 등)에 동일 구조 잠복.
+
+**봉합/판단**: 발산 폭이 SnapThreshold 안이면 self-correct(곧 후속 snapshot에 effect 반영)이라 무시 가능. **코드로 더 막기 전 런타임 1회 측정이 정답** (premature 봉합 회피). 발산 관측 시 옵션: (a) 버퍼된 입력은 *발사 시점까지 ack 보류* (history 증가 비용) / (b) 클라도 동일 버퍼 로직을 prediction에 미러 (양쪽 결정론 유지 비용).
+
+**사례**: M4.3 Phase 10b (commit `324dfb3`) — 서버 jump buffer. reviewer가 설계 단계에서 ack/deferred 미스매치 깃발 → Unity Play 재검증으로 발산 0(reconcile snap 4→0) 확정 → 추가 봉합 불요.
+**확신도**: 실측 1건. Rule of Three 미달 — 다른 지연-적용 입력(공격 버퍼 등)에서 재발 시 ★★★ 승격.
+**관련 키워드**: [[gamma-pre-validation-pattern]] (설계 단계 사전 검증으로 깃발 → 측정으로 확정)
 
 ---
 

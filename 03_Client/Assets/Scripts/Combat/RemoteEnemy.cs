@@ -24,16 +24,22 @@ namespace Dawnholder.Client.Combat
         public int CurrentHp { get; private set; }
         public int MaxHp { get; private set; }
 
+        // 서버 좌표 → 화면 좌표 변환에 쓰이는 y 오프셋.
+        // RemoteEntity가 transform.position을 서버 좌표로 덮어쓰므로
+        // EnqueueSnapshot/Initialize 호출 전에 offset을 더해야 sprite가 바닥 정합.
+        public float VisualFootOffset { get; private set; }
+
         // HP bar 자식 — Registry가 SetHpBar로 wire. 본 컴포넌트가 SpriteRenderer scale.x 줄이는 방식.
         Transform? _hpBarFill;
         float _hpBarFullWidth;
 
-        public void Initialize(int entityId, EnemyKind kind, int currentHp, int maxHp)
+        public void Initialize(int entityId, EnemyKind kind, int currentHp, int maxHp, float visualFootOffset = 0f)
         {
             EntityId = entityId;
             Kind = kind;
             CurrentHp = currentHp;
             MaxHp = maxHp > 0 ? maxHp : 1; // div-by-zero 차단
+            VisualFootOffset = visualFootOffset;
         }
 
         // Registry가 HP bar 자식 만들고 wire. fullWidth = scale.x 기준 100%.

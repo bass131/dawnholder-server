@@ -1,0 +1,9 @@
+﻿Lucid Editor
+
+1.1.0
+	- Add ability to set tooltip in editor scripts.
+	- Add foldout group animtion.
+
+1.0.0
+	- First Release.
+	- Making it only work locally within my assets.

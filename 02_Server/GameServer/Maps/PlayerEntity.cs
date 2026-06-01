@@ -26,10 +26,74 @@ public class PlayerEntity
     public Vector2 Velocity { get; set; } = Vector2.Zero;
     public bool OnGround { get; set; } = true;
 
-    // 다음 tick에 적용할 입력. 단일 thread(tick) mutation 보장 +
-    // OnRecvPacket이 EnqueueJob으로 set하므로 동시성 안전.
-    public sbyte PendingInputX { get; set; }
-    public bool PendingJumpPressed { get; set; }
+    // jump buffer: 공중에서 받은 점프 입력을 착지 틱까지 보관 (최대 1개).
+    // TTL = JumpBufferTicks 이후 자연 소멸 — max1+유한TTL로 무한/유령 점프 불가 (헌법 #3).
+    const int JumpBufferTicks = 3; // ~150ms @20TPS
+    int _jumpBufferRemaining;
+
+    // 테스트용 read-only 노출.
+    public bool HasBufferedJump => _jumpBufferRemaining > 0;
+
+    // 이번 틱 실제 점프 여부 결정 + 버퍼 상태 갱신.
+    // Physics.cs는 수정 금지(공유 공식) — 서버가 Physics.Step에 넘기는 jumpPressed를 여기서 정한다.
+    public bool ResolveJump(bool rawJumpPressed)
+    {
+        if (OnGround)
+        {
+            bool fire = rawJumpPressed || _jumpBufferRemaining > 0;
+            _jumpBufferRemaining = 0;
+            return fire;
+        }
+        if (rawJumpPressed) _jumpBufferRemaining = JumpBufferTicks; // 공중 입력 → 착지까지 보관 (최신 1개)
+        else if (_jumpBufferRemaining > 0) _jumpBufferRemaining--;   // TTL 감소, 만료 시 자연 소멸
+        return false;
+    }
+
+    // 입력 FIFO 큐. EnqueueJob 경유 network thread→tick thread 단방향이라 lock 불필요.
+    // 상한 MaxInputQueue: DoS 방어 (헌법 #3) + 위상 지터 누적 상한.
+    // 초과 시 oldest drop (drop-oldest): 최신 입력을 우선해 응답성 유지.
+    public readonly struct InputCommand
+    {
+        public readonly sbyte InputX;
+        public readonly bool JumpPressed;
+        public readonly uint ClientTick;
+
+        public InputCommand(sbyte inputX, bool jumpPressed, uint clientTick)
+        {
+            InputX = inputX;
+            JumpPressed = jumpPressed;
+            ClientTick = clientTick;
+        }
+    }
+
+    const int MaxInputQueue = 6;
+    readonly Queue<InputCommand> _inputQueue = new();
+
+    // 큐 크기 read-only 노출 (단위 테스트용).
+    public int InputQueueCount => _inputQueue.Count;
+
+    // 입력 enqueue. 상한 초과 시 oldest drop-oldest (DoS 방어).
+    public void EnqueueInput(sbyte inputX, bool jumpPressed, uint clientTick)
+    {
+        if (_inputQueue.Count >= MaxInputQueue)
+        {
+            _inputQueue.Dequeue(); // oldest drop (DoS 방어, 헌법 #3)
+        }
+        _inputQueue.Enqueue(new InputCommand(inputX, jumpPressed, clientTick));
+    }
+
+    // 틱 루프에서 1개 dequeue. 없으면 neutral(0,false) 반환, hasInput=false.
+    // hasInput=false 틱은 ack 불변 — 적용 안 한 입력을 ack하면 클라 reconcile 무력화.
+    public bool TryDequeueInput(out InputCommand cmd)
+    {
+        if (_inputQueue.TryDequeue(out cmd))
+            return true;
+        cmd = default;
+        return false;
+    }
+
+    // ack = 적용 시점 clientTick (받은 시점 아님).
+    // 빈 틱(starvation)에는 set 안 함 — 클라 replay할 미-ack 입력 보존 (reconcile 정합).
     public uint LastClientTick { get; set; }
 
     // 서버 권위 전투 HP. 헌법 #1 — 서버만 mutate. 생성자에서 Stats.MaxHp/Hp로 초기화.

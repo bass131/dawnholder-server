@@ -91,7 +91,7 @@ public class AnimStateTests
 
     /// <summary>
     /// 수평 속도 있음 + OnGround=true → Walk.
-    /// PendingInputX를 설정해 Physics.Step이 vx를 만들도록 유도.
+    /// EnqueueInput으로 inputX=1을 큐에 박아 Physics.Step이 vx를 만들도록 유도.
     /// </summary>
     [Fact]
     public void Player_Walk_WhenMovingHorizontally()
@@ -106,10 +106,10 @@ public class AnimStateTests
         p.HitLatchTicks = 0;
 
         // inputX=+1 적용 → vx가 생김
-        p.PendingInputX = 1;
+        p.EnqueueInput(1, false, 1u);
 
         map.Tick(1);
-        p.PendingInputX = 1;
+        p.EnqueueInput(1, false, 2u);
         map.Tick(2); // broadcast
 
         byte[]? snapForP = sink.FirstOrDefault(pkt => IsSnapshotForEntity(pkt, p.EntityId));
@@ -290,10 +290,10 @@ public class AnimStateTests
         p.HitLatchTicks = CombatConstants.AnimLatchTicks; // Hit latch
 
         // 이동 입력 동시 제공
-        p.PendingInputX = 1;
+        p.EnqueueInput(1, false, 1u);
 
         map.Tick(1);
-        p.PendingInputX = 1;
+        p.EnqueueInput(1, false, 2u);
         p.HitLatchTicks = System.Math.Max(1, p.HitLatchTicks); // 아직 latch 중
         map.Tick(2);
 

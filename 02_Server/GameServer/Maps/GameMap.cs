@@ -259,17 +259,28 @@ public class GameMap
 
         // 2) Physics.Step + RecordPosition (플레이어 이동).
         //    헌법 #1: 서버 권위 이동. 클라 prediction은 서버 snapshot으로 reconcile.
+        //
+        //    틱당 정확히 Physics.Step 1회 불변식: 물리 시간 = 벽시계 시간 (50ms/tick).
+        //    큐에 N개 쌓여도 이 틱에는 1개만 소비 — 멀티 드레인 금지.
+        //    큐 비면(starvation) neutral (0, false) 적용 — 세계는 계속 흐름(중력/마찰).
         foreach (PlayerEntity p in _players)
         {
-            PhysicsInput input = new PhysicsInput(
-                p.PendingInputX, p.PendingJumpPressed, Constants.TickDuration);
+            bool hasInput = p.TryDequeueInput(out PlayerEntity.InputCommand cmd);
+            sbyte inputX = hasInput ? cmd.InputX : (sbyte)0;
+            bool rawJump = hasInput && cmd.JumpPressed;
+            bool jumpPressed = p.ResolveJump(rawJump); // jump buffer: 공중 입력 → 착지 틱 발사
+
+            PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration);
             PhysicsState before = new PhysicsState(p.Position, p.Velocity, p.OnGround);
             PhysicsState after = Physics.Step(before, input);
             p.Position = after.Position;
             p.Velocity = after.Velocity;
             p.OnGround = after.OnGround;
-            p.PendingInputX = 0;
-            p.PendingJumpPressed = false;
+
+            // ack = 적용 시점 clientTick. 빈 틱(starvation)은 불변 — 클라 reconcile 정합.
+            if (hasInput)
+                p.LastClientTick = cmd.ClientTick;
+
             // Physics.Step 완료 후 위치 기록 — "그 tick에 실제로 있던 위치".
             p.RecordPosition(tickNumber, p.Position);
 
