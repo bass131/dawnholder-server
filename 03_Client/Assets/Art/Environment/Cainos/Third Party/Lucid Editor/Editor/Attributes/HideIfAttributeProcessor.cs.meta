@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 869bf746267a8451984148ee2382bcee
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 166114
+  packageName: Pixel Art Platformer - Village Props
+  packageVersion: 2.3.1
+  assetPath: Assets/Cainos/Third Party/Lucid Editor/Editor/Attributes/HideIfAttributeProcessor.cs
+  uploadId: 910790

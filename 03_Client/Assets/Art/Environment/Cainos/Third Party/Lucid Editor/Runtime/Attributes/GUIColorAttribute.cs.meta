@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6f1c19d7edf314e8bbf3f7ce9acc4fc1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 166114
+  packageName: Pixel Art Platformer - Village Props
+  packageVersion: 2.3.1
+  assetPath: Assets/Cainos/Third Party/Lucid Editor/Runtime/Attributes/GUIColorAttribute.cs
+  uploadId: 910790

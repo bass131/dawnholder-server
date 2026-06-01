@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 3a24d5c4bf91846fab0bb55cd9ccf693
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 166114
+  packageName: Pixel Art Platformer - Village Props
+  packageVersion: 2.3.1
+  assetPath: Assets/Cainos/Third Party/Lucid Editor/Editor/Attributes/DisableInPlayModeAttributeProcessor.cs
+  uploadId: 910790

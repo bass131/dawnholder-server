@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: decb355dc5cd8c549ac690cc13f9386e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 166114
+  packageName: Pixel Art Platformer - Village Props
+  packageVersion: 2.3.1
+  assetPath: Assets/Cainos/Pixel Art Platformer - Village Props/Script/Elevator.cs
+  uploadId: 910790

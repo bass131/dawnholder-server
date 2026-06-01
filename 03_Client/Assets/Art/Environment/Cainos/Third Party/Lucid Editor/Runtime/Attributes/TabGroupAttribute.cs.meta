@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: bd24e90d1e8cd4890817d3b694309716
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 166114
+  packageName: Pixel Art Platformer - Village Props
+  packageVersion: 2.3.1
+  assetPath: Assets/Cainos/Third Party/Lucid Editor/Runtime/Attributes/TabGroupAttribute.cs
+  uploadId: 910790
