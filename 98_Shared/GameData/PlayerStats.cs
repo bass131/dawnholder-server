@@ -43,4 +43,9 @@ public sealed class PlayerStats
     // 원거리 — 저체력/저방어/고속. 기동형 딜러 컨셉.
     public static PlayerStats Ranger()
         => new(CharacterClass.Ranger, hp: 80, maxHp: 80, attack: 12, defense: 2, moveSpeed: 6f, jumpVel: 8f);
+
+    // 클래스 → 스탯 매핑 단일 출처. invalid byte도 Warrior fallback — 서버/클라 동일 fallback 약속
+    // (헌법 #3: 클라가 보낸 class byte는 untrusted — 범위 밖 값도 안전한 기본값으로 수렴).
+    public static PlayerStats ForClass(CharacterClass cls)
+        => cls == CharacterClass.Ranger ? Ranger() : Warrior();
 }
