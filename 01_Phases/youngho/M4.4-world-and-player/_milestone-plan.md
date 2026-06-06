@@ -85,6 +85,7 @@ domain: shared+server+client
 - **맵 에디터 저작 도구** — 기존 이월 유지 (이번엔 bake 추출 + 바이너리 파이프라인까지 — 에디터 *제작*은 여전히 이월)
 - **포탈 bake** — `PortalTable` 보존 (M4.2 race 검증 완료 코드), 포탈의 데이터 파일 이행은 M4.5+ 이월
 - **멀티 AI 오케스트레이터 도구** — 본인 제작 백로그 (세션13 의논 — 99_Tools/ 후보, 게임 외 도구 프로젝트)
+- **GitHub Actions CI 테스트 안전망** — SAC 간헐 차단(0x800711C7)이 로컬 `dotnet test`를 반복적으로 끊음 (세션16 Phase 05 마감 지연 실측). CI 러너는 SAC 무관 + PR마다 자동 회귀 검증. 본인 머신 = 빌드+봇 확정 / 테스트 안전망 = CI 분담 구도. 서명 대안은 비실용 판정 (공인 인증서 유료, self-signed는 SAC 미통과 — memory smart-app-control 참조)
 - **원격 플레이어 직업 표시** — S_PlayerJoin class append 필요 (PDL bump) → M4.5 보스 Phase의 v9 묶음
 - **NetworkService SRP 분리** — 이번에 안 건드림 → 이후 이월
 - **몬스터 prefab 전환 + 골렘 / UI 5묶음 / 보스** → M4.5 content-and-boss
