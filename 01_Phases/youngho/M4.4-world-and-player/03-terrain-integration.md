@@ -86,7 +86,11 @@ domain: shared+server+client+qa
 
 **kill-plane은 마커 없이 자동 유도**: `min(솔리드 MinY) - 10f` → terrain.bin에 박음 (저작 부담 0, 구멍 낙하 = 맵 밖 추락만 처리).
 
-**bake 가드 (plan-auditor P1-①)**: 스폰 마커 Y가 솔리드 윗면 ±eps 밖이면 **bake 에러** — 공중스폰/지형 매몰 저작 실수를 도구가 강제 차단 (`Spawn_Player` 부재 에러와 같은 정신).
+**bake 가드 (plan-auditor P1-① — 2026-06-06 사용자 의도 반영, 실저작 3회 반복으로 확정)**:
+- 공통 해석 = **받침 면(아래 방향 가장 높은 솔리드 윗면)** — bake 시점 "중력 낙하" 등가. 에러 2종만: 깊은 매몰(SinkEps 0.5 초과) / 받침 면 없음(낙하 시 kill-plane행)
+- `Spawn_Player` = **공중 배치 허용**, 저작 y 보존(max(y, faceY) — 살짝 가라앉음만 면으로 올림). 런타임 StepWithTerrain 중력이 착지
+- `Spawn_Enemy_*` = **faceY 고정 스냅** (적은 지형 물리 미적용 scope 컷 — 공중 배치 = 영원히 부유라 도구가 착지값 박음)
+- Unity 복제 suffix `이름 (n)` **정규화 허용** (Ctrl+D 저작 흐름 — `Spawn_Enemy_Normal (1)` = Normal 한 마리)
 
 ### D6. 런타임 배선
 

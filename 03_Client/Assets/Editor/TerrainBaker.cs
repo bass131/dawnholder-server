@@ -45,6 +45,17 @@ namespace Dawnholder.Client.EditorTools
             return false;
         }
 
+        // Unity 복제 자동 suffix "Name (1)" 정규화 — 복제(Ctrl+D)가 자연스러운 마커 저작 흐름.
+        static string NormalizeMarkerName(string name)
+        {
+            if (!name.EndsWith(")")) return name;
+            int open = name.LastIndexOf(" (", System.StringComparison.Ordinal);
+            if (open < 0 || open + 2 >= name.Length - 1) return name;
+            for (int i = open + 2; i < name.Length - 1; i++)
+                if (!char.IsDigit(name[i])) return name;
+            return name.Substring(0, open);
+        }
+
         // mapId는 서버 MapId enum / 클라 SceneRouter와 정합 의무 — 맵 추가 시 세 곳 동반 갱신.
         static readonly (int MapId, string MapName, string ScenePath)[] Targets =
         {
@@ -217,10 +228,12 @@ namespace Dawnholder.Client.EditorTools
             if (!playerGos[0].activeInHierarchy)
                 Debug.LogWarning($"[TerrainBaker] {mapName}: '{MarkerPlayer}' 비활성 상태지만 bake에 포함.");
 
+            // 플레이어는 공중 배치 허용 — 중력이 착지시킴 (StepWithTerrain, 사용자 의도 2026-06-06).
+            // 살짝 가라앉은 손 저작 오차는 면으로 올림 (max).
             Vector3 pp = playerGos[0].transform.position;
-            if (!TrySnapToSolidFace(terrain, pp.x, pp.y, mapName, MarkerPlayer, out float snappedPY))
+            if (!TryResolveSupportFace(terrain, pp.x, pp.y, mapName, MarkerPlayer, out float pFace))
                 return false;
-            playerSpawn = new Vector2(pp.x, snappedPY);
+            playerSpawn = new Vector2(pp.x, Mathf.Max(pp.y, pFace));
 
             // 적 마커 — 0개+ 허용. 고정 배열 순서 순회 (결정론).
             foreach ((string markerName, byte kindId) in EnemyMarkers)
@@ -232,10 +245,11 @@ namespace Dawnholder.Client.EditorTools
                     if (!go.activeInHierarchy)
                         Debug.LogWarning($"[TerrainBaker] {mapName}: '{go.name}' 비활성 상태지만 bake에 포함.");
 
+                    // 적은 지형 물리 미적용(scope 컷) → bake 시점 "중력 낙하" 등가 = 받침 면에 스냅.
                     Vector3 ep = go.transform.position;
-                    if (!TrySnapToSolidFace(terrain, ep.x, ep.y, mapName, go.name, out float snappedEY))
+                    if (!TryResolveSupportFace(terrain, ep.x, ep.y, mapName, go.name, out float eFace))
                         return false;
-                    enemies.Add(new EnemySpawnPoint(kindId, ep.x, snappedEY));
+                    enemies.Add(new EnemySpawnPoint(kindId, ep.x, eFace));
                 }
             }
 
@@ -243,45 +257,42 @@ namespace Dawnholder.Client.EditorTools
         }
 
         /// <summary>
-        /// 마커 x를 포함하는 솔리드의 윗면(MaxY) 중 마커 y와 가장 가까운 것을 찾아 스냅.
-        /// |marker.y - faceY| > 0.5f 또는 후보 없으면 LogError + false 반환.
+        /// 마커의 받침 면(아래 방향 가장 높은 솔리드 윗면) 해석 — bake 시점 "중력 낙하" 등가.
+        /// 허용: 공중 배치(받침이 아래 있으면 OK) + 살짝 가라앉음(SinkEps 이내).
+        /// 에러 2종: 솔리드 깊은 매몰 / 받침 면 없음(낙하 시 kill-plane행 저작 실수).
+        /// 소비: 플레이어 = max(저작 y, faceY) — 공중 의도 보존 / 적 = faceY 고정 (지형 물리 미적용 scope 컷).
         /// </summary>
-        static bool TrySnapToSolidFace(MapTerrain terrain, float markerX, float markerY,
-                                        string mapName, string markerName, out float snappedY)
+        static bool TryResolveSupportFace(MapTerrain terrain, float markerX, float markerY,
+                                          string mapName, string markerName, out float faceY)
         {
-            const float SnapEps = 0.5f;
+            const float SinkEps = 0.5f;
 
-            snappedY = markerY;
-            float bestFace = float.NaN;
-            float bestDist = float.MaxValue;
+            faceY = markerY;
+            float best = float.NaN;
 
             foreach (TerrainAabb aabb in terrain.Solids)
             {
                 if (markerX < aabb.MinX || markerX > aabb.MaxX) continue;
-                float dist = Math.Abs(markerY - aabb.MaxY);
-                if (dist < bestDist)
+
+                if (markerY > aabb.MinY && markerY < aabb.MaxY - SinkEps)
                 {
-                    bestDist = dist;
-                    bestFace = aabb.MaxY;
+                    Debug.LogError($"[TerrainBaker] {mapName}: 마커 '{markerName}' ({markerX:F2}, {markerY:F2}) — " +
+                                   $"솔리드({aabb.MinX:F1},{aabb.MinY:F1}~{aabb.MaxX:F1},{aabb.MaxY:F1}) 내부 깊은 매몰. bake 중단.");
+                    return false;
                 }
+
+                if (aabb.MaxY <= markerY + SinkEps && (float.IsNaN(best) || aabb.MaxY > best))
+                    best = aabb.MaxY;
             }
 
-            if (float.IsNaN(bestFace))
+            if (float.IsNaN(best))
             {
                 Debug.LogError($"[TerrainBaker] {mapName}: 마커 '{markerName}' ({markerX:F2}, {markerY:F2}) — " +
-                               "x 범위를 포함하는 솔리드 없음. 솔리드 위에 배치하세요. bake 중단.");
+                               "아래에 받침 솔리드 없음 (낙하 시 kill-plane행). 솔리드 위쪽에 배치하세요. bake 중단.");
                 return false;
             }
 
-            if (bestDist > SnapEps)
-            {
-                Debug.LogError($"[TerrainBaker] {mapName}: 마커 '{markerName}' ({markerX:F2}, {markerY:F2}) — " +
-                               $"가장 가까운 솔리드 윗면 y={bestFace:F2}, 거리={bestDist:F3} > eps={SnapEps}. " +
-                               "솔리드 윗면 바로 위에 배치하세요. bake 중단.");
-                return false;
-            }
-
-            snappedY = bestFace;
+            faceY = best;
             return true;
         }
 
@@ -295,16 +306,16 @@ namespace Dawnholder.Client.EditorTools
 
         static void CollectByNameRecursive(Transform t, string name, List<GameObject> result)
         {
-            if (t.gameObject.name == name)
+            if (NormalizeMarkerName(t.gameObject.name) == name)
                 result.Add(t.gameObject);
             for (int i = 0; i < t.childCount; i++)
                 CollectByNameRecursive(t.GetChild(i), name, result);
         }
 
-        // "Spawn_Enemy_" 접두이지만 EnemyMarkers에 없는 이름 → 오타 fail-closed.
+        // "Spawn_Enemy_" 접두이지만 EnemyMarkers에 없는 이름 → 오타 fail-closed. (복제 suffix 정규화 후 판정)
         static void CheckUnknownEnemyMarkers(Transform t, string mapName, ref bool found)
         {
-            string n = t.gameObject.name;
+            string n = NormalizeMarkerName(t.gameObject.name);
             if (n.StartsWith(MarkerEnemyPrefix) && !IsKnownEnemyMarker(n))
             {
                 Debug.LogError($"[TerrainBaker] {mapName}: 알 수 없는 마커 '{n}' — " +
