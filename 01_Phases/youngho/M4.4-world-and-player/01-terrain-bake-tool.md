@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.4
 phase: 01
 title: 지형 bake 도구 — TerrainBaker 에디터 스크립트 + 98_Shared 생성 데이터
-status: pending
+status: done
 grade: 복잡
 estimated: 2~4h
 domain: client+shared
@@ -12,7 +12,7 @@ summary: Unity 타일맵 솔리드 셀을 읽어 98_Shared 생성 C# 지형 데�
 
 # Phase 01: 지형 bake 도구
 
-> **상태**: pending
+> **상태**: done (2026-06-06 — `7fd8dc0`, -DONE.md 참조)
 > **마일스톤**: M4.4
 > **등급**: 복잡 (2 도메인 — 클라 에디터 도구 + shared 생성 산출물)
 > **담당**: 메인 세션 직접 (에디터 스크립트 = Unity API + 코드젠 — client/shared 경계라 SubAgent 분담 비효율) + 본인 (레이어 약속 확인)
