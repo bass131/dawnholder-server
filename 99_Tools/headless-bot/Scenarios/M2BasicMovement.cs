@@ -130,6 +130,8 @@ public class M2BasicMovement
 
         // handshake 후 C_CharacterSelect 의무 송신.
         // 서버가 class 선택 없이 월드 진입을 차단하므로 S_EnterMap은 이 패킷 후에야 옴.
+        // stats는 CharacterSelect와 동일 출처 — 봇 시뮬 스탯이 선택 직업과 일치해야 desync 검증 유효.
+        PlayerStats stats = PlayerStats.Warrior();
         C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
         session?.Send(charSelect.Write());
 
@@ -157,10 +159,10 @@ public class M2BasicMovement
             C_MoveIntent pkt = new() { input = inputByte, clientTick = clientTick };
             session?.Send(pkt.Write());
 
-            // 봇 측 자체 시뮬 (서버와 동일 입력·동일 dt·동일 terrain).
+            // 봇 측 자체 시뮬 (서버와 동일 입력·동일 dt·동일 terrain·동일 직업 스탯).
             // terrain 오버로드 사용 — 서버가 지형 경로를 타면 봇도 같은 경로. desync 검증 유효성 유지.
             PhysicsInput physInput = new(inputX, jump, Constants.TickDuration);
-            botState = Physics.Step(botState, physInput, terrain);
+            botState = Physics.Step(botState, physInput, terrain, new MoveParams(stats.MoveSpeed, stats.JumpVel));
 
             await Task.Delay(Constants.TickIntervalMs, ct);
         }

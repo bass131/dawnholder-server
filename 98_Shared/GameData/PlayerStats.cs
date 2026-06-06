@@ -23,8 +23,9 @@ public sealed class PlayerStats
     public int Attack { get; }
     public int Defense { get; }
     public float MoveSpeed { get; }
+    public float JumpVel { get; }
 
-    private PlayerStats(CharacterClass cls, int hp, int maxHp, int attack, int defense, float moveSpeed)
+    private PlayerStats(CharacterClass cls, int hp, int maxHp, int attack, int defense, float moveSpeed, float jumpVel)
     {
         Class = cls;
         Hp = hp;
@@ -32,13 +33,14 @@ public sealed class PlayerStats
         Attack = attack;
         Defense = defense;
         MoveSpeed = moveSpeed;
+        JumpVel = jumpVel;
     }
 
     // 전사 — 고체력/고방어/저속. 근접 탱커 컨셉.
     public static PlayerStats Warrior()
-        => new(CharacterClass.Warrior, hp: 150, maxHp: 150, attack: 15, defense: 5, moveSpeed: 4f);
+        => new(CharacterClass.Warrior, hp: 150, maxHp: 150, attack: 15, defense: 5, moveSpeed: 4f, jumpVel: 8f);
 
     // 원거리 — 저체력/저방어/고속. 기동형 딜러 컨셉.
     public static PlayerStats Ranger()
-        => new(CharacterClass.Ranger, hp: 80, maxHp: 80, attack: 12, defense: 2, moveSpeed: 6f);
+        => new(CharacterClass.Ranger, hp: 80, maxHp: 80, attack: 12, defense: 2, moveSpeed: 6f, jumpVel: 8f);
 }

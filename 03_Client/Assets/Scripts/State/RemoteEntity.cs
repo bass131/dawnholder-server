@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Dawnholder.Client.State
 {
-    // 타인 entity placeholder. 본인 entity는 LocalPlayerController + PlayerPredictor가 담당.
+    // 타인 entity placeholder. 본인 entity는 LocalPlayerMovement + PlayerPredictor가 담당.
     //
     // **보간 알고리즘** (지연 보간):
     //   1. now = Time.realtimeSinceStartup (main thread)

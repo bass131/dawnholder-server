@@ -26,6 +26,9 @@ public class TerrainPhysicsTests
     const float DtClient = 0.016f;               // 클라 디스플레이 dt (60 fps)
     const float Eps    = 0.001f;                 // 어서션 tolerance
 
+    // 지형 의미론 테스트용 — 좌표/기하를 5.0/8.0 기준으로 만들었으므로 유지.
+    static readonly MoveParams Move = new MoveParams(5f, 8f);
+
     // ── 헬퍼 ──────────────────────────────────────────────────────────────────
 
     /// <summary>솔리드만 있는 미니 지형 팩토리.</summary>
@@ -40,7 +43,7 @@ public class TerrainPhysicsTests
     static PhysicsState SimN(PhysicsState state, PhysicsInput input, MapTerrain? terrain, int ticks)
     {
         for (int i = 0; i < ticks; i++)
-            state = Physics.Step(state, input, terrain);
+            state = Physics.Step(state, input, terrain, Move);
         return state;
     }
 
@@ -79,8 +82,8 @@ public class TerrainPhysicsTests
 
         foreach (PhysicsInput inp in seq)
         {
-            s2 = Physics.Step(s2, inp);
-            s3 = Physics.Step(s3, inp, null);
+            s2 = Physics.Step(s2, inp, Move);
+            s3 = Physics.Step(s3, inp, null, Move);
         }
 
         // float 완전 동일 — 같은 코드 경로이므로 epsilon 마진 불필요
@@ -107,8 +110,8 @@ public class TerrainPhysicsTests
         {
             bool jump = (i == 2);
             var inp = new PhysicsInput(1, jump, Dt);
-            s2 = Physics.Step(s2, inp);
-            s3 = Physics.Step(s3, inp, emptyTerrain);
+            s2 = Physics.Step(s2, inp, Move);
+            s3 = Physics.Step(s3, inp, emptyTerrain, Move);
         }
 
         Assert.Equal(s2.Position.X, s3.Position.X);
@@ -135,7 +138,7 @@ public class TerrainPhysicsTests
         bool landed = false;
         for (int i = 0; i < 60; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(0, false, dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(0, false, dt), terrain, Move);
             if (state.OnGround)
             {
                 landed = true;
@@ -161,7 +164,7 @@ public class TerrainPhysicsTests
 
         for (int i = 0; i < 10; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
             Assert.Equal(2f, state.Position.Y, 3);
             Assert.True(state.OnGround, $"tick {i+1}: onGround=false (불안정)");
         }
@@ -186,13 +189,13 @@ public class TerrainPhysicsTests
 
         // inputX=+1로 충분히 이동
         for (int i = 0; i < 30; i++)
-            state = Physics.Step(state, new PhysicsInput(1, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(1, false, Dt), terrain, Move);
 
         Assert.Equal(5f, state.Position.X, 3);
         Assert.Equal(0f, state.Velocity.X, 3);
 
         // 추가 틱에도 x=5 유지
-        state = Physics.Step(state, new PhysicsInput(1, false, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(1, false, Dt), terrain, Move);
         Assert.Equal(5f, state.Position.X, 3);
     }
 
@@ -210,12 +213,12 @@ public class TerrainPhysicsTests
             onGround: true);
 
         for (int i = 0; i < 30; i++)
-            state = Physics.Step(state, new PhysicsInput(-1, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(-1, false, Dt), terrain, Move);
 
         Assert.Equal(-5f, state.Position.X, 3);
         Assert.Equal(0f, state.Velocity.X, 3);
 
-        state = Physics.Step(state, new PhysicsInput(-1, false, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(-1, false, Dt), terrain, Move);
         Assert.Equal(-5f, state.Position.X, 3);
     }
 
@@ -237,9 +240,9 @@ public class TerrainPhysicsTests
             onGround: true);
 
         // jumpPressed 1틱
-        state = Physics.Step(state, new PhysicsInput(0, true, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(0, true, Dt), terrain, Move);
 
-        Assert.Equal(Physics.JumpSpeed, state.Velocity.Y, 3);
+        Assert.Equal(Move.JumpVel, state.Velocity.Y, 3);
         Assert.True(state.Position.Y > 0f, $"점프 후 y가 0에 박힘 (vy={state.Velocity.Y})");
         Assert.False(state.OnGround);
     }
@@ -268,14 +271,14 @@ public class TerrainPhysicsTests
             onGround: true);
 
         // 점프
-        state = Physics.Step(state, new PhysicsInput(0, true, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(0, true, Dt), terrain, Move);
         Assert.True(state.Velocity.Y > 0f, "점프 미적용");
 
         // 최대 30틱 — 천장 충돌 후 vy==0이 되는 틱 탐지 (충돌 직후 y≈1.4)
         bool hitCeiling = false;
         for (int i = 0; i < 30; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
             if (state.Velocity.Y == 0f && state.Position.Y >= 1.3f && !state.OnGround)
             {
                 hitCeiling = true;
@@ -289,7 +292,7 @@ public class TerrainPhysicsTests
         Assert.False(state.OnGround);
 
         // 이후 낙하
-        state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
         Assert.True(state.Velocity.Y < 0f, "천장 충돌 후 중력 미적용");
     }
 
@@ -313,14 +316,14 @@ public class TerrainPhysicsTests
             onGround: true);
 
         // 점프
-        state = Physics.Step(state, new PhysicsInput(0, true, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(0, true, Dt), terrain, Move);
         Assert.True(state.Velocity.Y > 0f, "점프 미적용");
 
         // 상승 중 매 틱 y > 1.5 구간에서도 차단이 없어야 한다
         bool passingAbovePlatform = false;
         for (int i = 0; i < 20; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
             if (state.Position.Y > 1.5f && state.Velocity.Y > 0f)
                 passingAbovePlatform = true;
             if (state.Velocity.Y <= 0f) break; // 최고점 도달
@@ -343,12 +346,12 @@ public class TerrainPhysicsTests
             onGround: true);
 
         // 점프 + 최대 60틱 — 발판 착지 대기
-        state = Physics.Step(state, new PhysicsInput(0, true, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(0, true, Dt), terrain, Move);
 
         bool landedOnPlatform = false;
         for (int i = 0; i < 60; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
             // 발판 y=1.5에 착지하면 성공
             if (state.OnGround && System.MathF.Abs(state.Position.Y - 1.5f) < Eps)
             {
@@ -383,7 +386,7 @@ public class TerrainPhysicsTests
             Vector2.Zero,
             onGround: false);
 
-        PhysicsState next = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain);
+        PhysicsState next = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
 
         // 1틱 후 발판 착지가 아닌 낙하
         Assert.False(next.OnGround, "발판 면 아래에서 착지 판정됨 (오류)");
@@ -405,7 +408,7 @@ public class TerrainPhysicsTests
         bool landed = false;
         for (int i = 0; i < 60; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
             if (state.OnGround)
             {
                 landed = true;
@@ -431,7 +434,7 @@ public class TerrainPhysicsTests
             new Vector2(0f, -40f),  // 고속 낙하
             onGround: false);
 
-        state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
 
         Assert.Equal(2f, state.Position.Y, 3);
         Assert.Equal(0f, state.Velocity.Y, 3);
@@ -456,7 +459,7 @@ public class TerrainPhysicsTests
         bool fellOff = false;
         for (int i = 0; i < 20; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(1, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(1, false, Dt), terrain, Move);
             if (!state.OnGround && state.Position.X > 4f)
             {
                 fellOff = true;
@@ -483,11 +486,11 @@ public class TerrainPhysicsTests
             Vector2.Zero,
             onGround: true);
 
-        state = Physics.Step(state, new PhysicsInput(1, true, Dt), terrain);
+        state = Physics.Step(state, new PhysicsInput(1, true, Dt), terrain, Move);
 
         Assert.Equal(5f, state.Position.X, 3);            // X: 벽 면에 스냅
         Assert.Equal(0f, state.Velocity.X, 3);            //    vx=0
-        Assert.Equal(Physics.JumpSpeed, state.Velocity.Y, 3); // Y: 점프 정상 (머리충돌 X)
+        Assert.Equal(Move.JumpVel, state.Velocity.Y, 3); // Y: 점프 정상 (머리충돌 X)
         Assert.True(state.Position.Y > 0f, "벽 모서리 대각 점프가 상승하지 않음");
     }
 
@@ -505,7 +508,7 @@ public class TerrainPhysicsTests
         bool landed = false;
         for (int i = 0; i < 10; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(1, false, Dt), terrain);
+            state = Physics.Step(state, new PhysicsInput(1, false, Dt), terrain, Move);
             if (state.OnGround) { landed = true; break; }
         }
 

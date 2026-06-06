@@ -22,12 +22,6 @@ public static class Constants
     public const float TickDuration = 1.0f / ServerTickRate;
 
     /// <summary>
-    /// 캐릭터 좌우 이동 속도 (units/sec). Phase 04 도입.
-    /// 클라/서버 단일 출처 — 다르면 prediction 즉시 깨짐.
-    /// </summary>
-    public const float MoveSpeed = 5.0f;
-
-    /// <summary>
     /// S_Snapshot 브로드캐스트 주기 (tick 단위). 2 tick = 100ms (10Hz).
     /// 너무 길면 클라 보간 buffer가 빔 → last-known 정지 패턴으로 어색해짐.
     /// </summary>

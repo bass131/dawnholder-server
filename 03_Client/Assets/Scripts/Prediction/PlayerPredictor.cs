@@ -39,11 +39,19 @@ namespace Dawnholder.Client.Prediction
         public bool OnGround { get; private set; } = true;
         public int SnapCount { get; private set; }
 
+        // 직업별 이동 파라미터 — PlayerStats factory 단일 출처(헌법 #4). fail-loud: 기본값 없음.
+        readonly MoveParams _move;
+
         // 송신된 입력의 (clientTick, inputX, jumpPressed) 보관 → snapshot의 ackedTick
         // 받으면 미-ack 입력만 replay.
         readonly InputHistory _history = new InputHistory();
 
         MapTerrain? _terrain;
+
+        public PlayerPredictor(MoveParams move)
+        {
+            _move = move;
+        }
 
         // 맵 전환 시 새 맵 terrain 주입. null 전달 시 평지 fallback (Physics.Step null 경로).
         public void SetTerrain(MapTerrain? terrain) => _terrain = terrain;
@@ -77,7 +85,7 @@ namespace Dawnholder.Client.Prediction
             _history.Clear();
         }
 
-        // LocalPlayerController가 C_MoveIntent 송신 직후 호출. jumpPressed 동봉 — replay 시 점프 시도 재현.
+        // LocalPlayerMovement가 C_MoveIntent 송신 직후 호출. jumpPressed 동봉 — replay 시 점프 시도 재현.
         public void NotifySent(uint clientTick, sbyte inputX, bool jumpPressed)
         {
             _history.Push(clientTick, inputX, jumpPressed);
@@ -88,7 +96,7 @@ namespace Dawnholder.Client.Prediction
         public void Predict(sbyte inputX, bool jumpPressed, float dt)
         {
             PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
-                new PhysicsInput(inputX, jumpPressed, dt), _terrain);
+                new PhysicsInput(inputX, jumpPressed, dt), _terrain, _move);
             ApplyPhysicsState(after);
         }
 
@@ -119,7 +127,7 @@ namespace Dawnholder.Client.Prediction
                 foreach (InputRecord rec in _history.ReplayFrom(ackedClientTick))
                 {
                     PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
-                        new PhysicsInput(rec.InputX, rec.JumpPressed, Constants.TickDuration), _terrain);
+                        new PhysicsInput(rec.InputX, rec.JumpPressed, Constants.TickDuration), _terrain, _move);
                     ApplyPhysicsState(after);
                 }
                 SnapCount++;

@@ -1,5 +1,5 @@
 #nullable enable
-using Dawnholder.Client.Input;
+using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,13 +19,13 @@ namespace Dawnholder.Client.Bootstrap
     //
     // **spawn 책임 범위 (헌법 §1 Server Authority)**:
     //   Spawner = GameObject 생성만. 위치/entityId/스탯 = 서버 권위 경로가 처리:
-    //     - 초기 진입: HandleEnterMap → LocalPlayerController.Instance.SetServerPosition()
+    //     - 초기 진입: HandleEnterMap → LocalPlayerMovement.Instance.SetServerPosition()
     //     - 맵 전환:   HandleMapTransition → PendingSpawn 세팅 → Awake()에서 소비
     //
     // **초기 진입 race**:
-    //   sceneLoaded에서 Instantiate → LocalPlayerController.Awake() → Instance 등록.
+    //   sceneLoaded에서 Instantiate → LocalPlayerMovement.Awake() → Instance 등록.
     //   S_EnterMap이 Instance 등록보다 *먼저* 처리되는 경우, HandleEnterMap이 Instance null을 보고
-    //   좌표를 PendingSpawn에 보관 → 곧 spawn될 LocalPlayerController.Awake()가 소비.
+    //   좌표를 PendingSpawn에 보관 → 곧 spawn될 LocalPlayerMovement.Awake()가 소비.
     [DisallowMultipleComponent]
     public class LocalPlayerSpawner : MonoBehaviour
     {
@@ -56,9 +56,9 @@ namespace Dawnholder.Client.Bootstrap
 
             // 이미 살아있는 Instance가 있으면 중복 spawn 차단.
             // DontDestroyOnLoad 씬에서 Play 중 같은 씬을 Reload해도 안전.
-            if (LocalPlayerController.Instance != null)
+            if (LocalPlayerMovement.Instance != null)
             {
-                Debug.Log($"[LocalPlayerSpawner] '{scene.name}': LocalPlayerController.Instance 이미 존재 — spawn 생략 (중복 방지).");
+                Debug.Log($"[LocalPlayerSpawner] '{scene.name}': LocalPlayerMovement.Instance 이미 존재 — spawn 생략 (중복 방지).");
                 return;
             }
 
@@ -72,14 +72,14 @@ namespace Dawnholder.Client.Bootstrap
 
             // Instantiate: 위치는 origin (0,0,0). 서버 권위 좌표 적용은 이후 흐름에 위임.
             // - 초기 진입: HandleEnterMap → SetServerPosition()
-            // - 맵 전환:   LocalPlayerController.Awake() → PendingSpawn 소비 → SetServerPosition()
+            // - 맵 전환:   LocalPlayerMovement.Awake() → PendingSpawn 소비 → SetServerPosition()
             // Spawner는 GameObject 생성만 — 헌법 §1 Server Authority 정합.
             GameObject go = Instantiate(_localPlayerPrefab, Vector3.zero, Quaternion.identity);
             go.name = "LocalPlayer"; // "LocalPlayer(Clone)" → "LocalPlayer" (Hierarchy 가독성)
 
             // 로드된 게임플레이 씬에 소속시킴 (DontDestroyOnLoad 씬에 박히지 않게).
             // 씬 전환 시 SceneManager.LoadScene(Single)이 이 GameObject를 자동 파괴 →
-            // LocalPlayerController.OnDestroy가 Instance 정리 → 다음 씬 로드 시 재spawn.
+            // LocalPlayerMovement.OnDestroy가 Instance 정리 → 다음 씬 로드 시 재spawn.
             SceneManager.MoveGameObjectToScene(go, scene);
 
             // 카메라 연결 ("생성 후 셋업").

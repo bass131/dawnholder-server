@@ -15,9 +15,13 @@ namespace Dawnholder.Server.GameServer.Tests;
 //   6) Ground clamp
 //   7) 결정론 (반복 시뮬)
 //   8) 포물선 (점프 → 자연 낙하 → ground 복귀)
+//   C) 직업값 단위 테스트 (Warrior vs Ranger 이동·점프·factory 고정)
 public class PhysicsTests
 {
     const float Dt = Constants.TickDuration; // 0.05
+
+    // 지형 의미론 테스트용 — 좌표/기하를 5.0/8.0 기준으로 만들었으므로 유지.
+    static readonly MoveParams FlatParams = new MoveParams(5f, 8f);
 
     // === 1) 정지 + ground ===
     [Fact]
@@ -26,7 +30,7 @@ public class PhysicsTests
         PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
         PhysicsInput input = new PhysicsInput(0, false, Dt);
 
-        PhysicsState next = Physics.Step(state, input);
+        PhysicsState next = Physics.Step(state, input, FlatParams);
 
         Assert.Equal(0f, next.Position.X, 4);
         Assert.Equal(0f, next.Position.Y, 4);
@@ -41,9 +45,9 @@ public class PhysicsTests
         PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
         PhysicsInput input = new PhysicsInput(1, false, Dt);
 
-        PhysicsState next = Physics.Step(state, input);
+        PhysicsState next = Physics.Step(state, input, FlatParams);
 
-        float expectedDx = Constants.MoveSpeed * Dt; // 5 * 0.05 = 0.25
+        float expectedDx = FlatParams.MoveSpeed * Dt; // 5 * 0.05 = 0.25
         Assert.Equal(expectedDx, next.Position.X, 4);
         Assert.Equal(0f, next.Position.Y, 4);
         Assert.True(next.OnGround);
@@ -55,9 +59,9 @@ public class PhysicsTests
         PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
         PhysicsInput input = new PhysicsInput(-1, false, Dt);
 
-        PhysicsState next = Physics.Step(state, input);
+        PhysicsState next = Physics.Step(state, input, FlatParams);
 
-        float expectedDx = -Constants.MoveSpeed * Dt;
+        float expectedDx = -FlatParams.MoveSpeed * Dt;
         Assert.Equal(expectedDx, next.Position.X, 4);
         Assert.True(next.OnGround);
     }
@@ -69,12 +73,12 @@ public class PhysicsTests
         PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
         PhysicsInput input = new PhysicsInput(0, true, Dt);
 
-        PhysicsState next = Physics.Step(state, input);
+        PhysicsState next = Physics.Step(state, input, FlatParams);
 
-        // vy = JumpSpeed (8) → newY = 8 * 0.05 = 0.4
-        Assert.Equal(Physics.JumpSpeed * Dt, next.Position.Y, 4);
-        Assert.Equal(Physics.JumpSpeed, next.Velocity.Y, 4);
-        Assert.False(next.OnGround); // 점프 직후 공중
+        // vy = JumpVel (8) → newY = 8 * 0.05 = 0.4
+        Assert.Equal(FlatParams.JumpVel * Dt, next.Position.Y, 4);
+        Assert.Equal(FlatParams.JumpVel, next.Velocity.Y, 4);
+        Assert.False(next.OnGround);
     }
 
     // === 4) Jump 차단 (더블점프 차단) ===
@@ -88,9 +92,9 @@ public class PhysicsTests
             onGround: false);
         PhysicsInput input = new PhysicsInput(0, true, Dt);
 
-        PhysicsState next = Physics.Step(state, input);
+        PhysicsState next = Physics.Step(state, input, FlatParams);
 
-        // vy가 JumpSpeed로 *덮어쓰여지지 않음*. 중력만 적용.
+        // vy가 JumpVel로 *덮어쓰여지지 않음*. 중력만 적용.
         float expectedVy = 5f + Physics.Gravity * Dt; // 5 + (-20)*0.05 = 4.0
         Assert.Equal(expectedVy, next.Velocity.Y, 4);
         Assert.False(next.OnGround);
@@ -106,7 +110,7 @@ public class PhysicsTests
             onGround: false);
         PhysicsInput input = new PhysicsInput(0, false, Dt);
 
-        PhysicsState next = Physics.Step(state, input);
+        PhysicsState next = Physics.Step(state, input, FlatParams);
 
         // vy = 0 + (-20) * 0.05 = -1.0
         Assert.Equal(Physics.Gravity * Dt, next.Velocity.Y, 4);
@@ -126,10 +130,10 @@ public class PhysicsTests
             onGround: false);
         PhysicsInput input = new PhysicsInput(0, false, Dt);
 
-        PhysicsState next = Physics.Step(state, input);
+        PhysicsState next = Physics.Step(state, input, FlatParams);
 
         Assert.Equal(Physics.GroundY, next.Position.Y, 4);
-        Assert.Equal(0f, next.Velocity.Y, 4); // vy 리셋
+        Assert.Equal(0f, next.Velocity.Y, 4);
         Assert.True(next.OnGround);
     }
 
@@ -140,10 +144,10 @@ public class PhysicsTests
         PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
         PhysicsInput input = new PhysicsInput(1, true, Dt);
 
-        PhysicsState next = Physics.Step(state, input);
+        PhysicsState next = Physics.Step(state, input, FlatParams);
 
-        Assert.Equal(Constants.MoveSpeed * Dt, next.Position.X, 4);
-        Assert.Equal(Physics.JumpSpeed * Dt, next.Position.Y, 4);
+        Assert.Equal(FlatParams.MoveSpeed * Dt, next.Position.X, 4);
+        Assert.Equal(FlatParams.JumpVel * Dt, next.Position.Y, 4);
         Assert.False(next.OnGround);
     }
 
@@ -157,7 +161,7 @@ public class PhysicsTests
         // 100 step → 5초간 우측 이동 (ground 유지, vy 항상 0)
         for (int i = 0; i < 100; i++)
         {
-            state = Physics.Step(state, input);
+            state = Physics.Step(state, input, FlatParams);
         }
 
         // 5 unit/s * 5s = 25
@@ -172,14 +176,14 @@ public class PhysicsTests
         PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
 
         // tick 0: 점프 시작
-        state = Physics.Step(state, new PhysicsInput(0, true, Dt));
+        state = Physics.Step(state, new PhysicsInput(0, true, Dt), FlatParams);
         Assert.False(state.OnGround);
 
         // jump 후 jumpPressed=false 유지 — 자연 낙하 시뮬 (최대 50 tick = 2.5초)
         bool landedAtSomePoint = false;
         for (int i = 0; i < 50; i++)
         {
-            state = Physics.Step(state, new PhysicsInput(0, false, Dt));
+            state = Physics.Step(state, new PhysicsInput(0, false, Dt), FlatParams);
             if (state.OnGround)
             {
                 landedAtSomePoint = true;
@@ -198,13 +202,65 @@ public class PhysicsTests
         PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
 
         // tick 1: 점프 (ground → 공중)
-        state = Physics.Step(state, new PhysicsInput(0, true, Dt));
-        Assert.Equal(Physics.JumpSpeed, state.Velocity.Y, 4);
+        state = Physics.Step(state, new PhysicsInput(0, true, Dt), FlatParams);
+        Assert.Equal(FlatParams.JumpVel, state.Velocity.Y, 4);
 
         // tick 2: 공중에서 다시 점프 시도 → 무시되고 중력만 적용
-        state = Physics.Step(state, new PhysicsInput(0, true, Dt));
+        state = Physics.Step(state, new PhysicsInput(0, true, Dt), FlatParams);
 
-        // vy = JumpSpeed + Gravity*dt = 8 + (-1) = 7.0 (재점프 X)
-        Assert.Equal(Physics.JumpSpeed + Physics.Gravity * Dt, state.Velocity.Y, 4);
+        // vy = JumpVel + Gravity*dt = 8 + (-1) = 7.0 (재점프 X)
+        Assert.Equal(FlatParams.JumpVel + Physics.Gravity * Dt, state.Velocity.Y, 4);
+    }
+
+    // ── C) 직업값 단위 테스트 ────────────────────────────────────────────────────
+
+    // C-1: 같은 N틱 입력으로 Warrior(4) vs Ranger(6) 이동 거리 4:6 비례.
+    [Fact]
+    public void ClassParams_WarriorVsRanger_MoveDistanceRatio_4to6()
+    {
+        const int Ticks = 20; // 1초 (20 TPS)
+        PhysicsInput input = new PhysicsInput(1, false, Dt);
+
+        var warrior = new MoveParams(PlayerStats.Warrior().MoveSpeed, PlayerStats.Warrior().JumpVel);
+        var ranger  = new MoveParams(PlayerStats.Ranger().MoveSpeed,  PlayerStats.Ranger().JumpVel);
+
+        PhysicsState ws = PhysicsState.AtRest(Vector2.Zero);
+        PhysicsState rs = PhysicsState.AtRest(Vector2.Zero);
+
+        for (int i = 0; i < Ticks; i++)
+        {
+            ws = Physics.Step(ws, input, warrior);
+            rs = Physics.Step(rs, input, ranger);
+        }
+
+        // 1초 이동 거리: Warrior=4.0, Ranger=6.0
+        Assert.Equal(4f, ws.Position.X, 3);
+        Assert.Equal(6f, rs.Position.X, 3);
+    }
+
+    // C-2: jumpVel 파라미터가 점프 초속에 반영됨.
+    [Fact]
+    public void ClassParams_JumpVel_AppliedAsInitialVy()
+    {
+        PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
+        float jumpVel = 8f;
+        var move = new MoveParams(4f, jumpVel);
+
+        PhysicsState next = Physics.Step(state, new PhysicsInput(0, true, Dt), move);
+
+        Assert.Equal(jumpVel, next.Velocity.Y, 4);
+    }
+
+    // C-3: PlayerStats factory의 MoveSpeed/JumpVel 고정 값 단언 (4/6/8/8).
+    [Fact]
+    public void PlayerStats_Factory_FixedValues_4_6_8_8()
+    {
+        PlayerStats warrior = PlayerStats.Warrior();
+        PlayerStats ranger  = PlayerStats.Ranger();
+
+        Assert.Equal(4f, warrior.MoveSpeed, 4);
+        Assert.Equal(8f, warrior.JumpVel,   4);
+        Assert.Equal(6f, ranger.MoveSpeed,  4);
+        Assert.Equal(8f, ranger.JumpVel,    4);
     }
 }

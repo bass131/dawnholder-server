@@ -8,8 +8,14 @@ namespace Dawnholder.Server.GameServer.Tests;
 //
 // GameSession 측 검증(rate-limit, range cheat-log)은 PacketSession 상속 + ServerCore
 // 의존이라 단위 테스트보단 통합 테스트 영역.
+//
+// AddPlayer(null stats) → PlayerStats.Warrior() 기본값 → MoveSpeed=4, JumpVel=8.
+// 기존 5.0 기준 기대값은 4.0 기준으로 정직 재계산 (명세 §E 지침).
 public class MoveIntentTests
 {
+    // Warrior 기본 스탯 (테스트 기준값 단일화)
+    static readonly PlayerStats WarriorStats = PlayerStats.Warrior();
+
     [Fact]
     public void Tick_AppliesPendingInputX_RightDirection()
     {
@@ -19,10 +25,10 @@ public class MoveIntentTests
 
         map.Tick(1);
 
-        // 1 tick = 1 * MoveSpeed * TickDuration = 5 * 0.05 = 0.25
-        float expected = Constants.MoveSpeed * Constants.TickDuration;
+        // 1 tick = 1 * MoveSpeed * TickDuration = 4 * 0.05 = 0.20
+        float expected = WarriorStats.MoveSpeed * Constants.TickDuration;
         Assert.Equal(expected, e.Position.X, 4);
-        Assert.Equal(0, e.InputQueueCount); // 적용 후 큐 비어있음
+        Assert.Equal(0, e.InputQueueCount);
     }
 
     [Fact]
@@ -34,7 +40,7 @@ public class MoveIntentTests
 
         map.Tick(1);
 
-        float expected = -Constants.MoveSpeed * Constants.TickDuration;
+        float expected = -WarriorStats.MoveSpeed * Constants.TickDuration;
         Assert.Equal(expected, e.Position.X, 4);
     }
 
@@ -62,8 +68,27 @@ public class MoveIntentTests
             map.Tick(i + 1);
         }
 
-        // 20 tick (=1초) 동안 누적 = MoveSpeed * 1.0s = 5.0
-        Assert.Equal(Constants.MoveSpeed * 1.0f, e.Position.X, 3);
+        // 20 tick (=1초) 동안 누적 = MoveSpeed * 1.0s = 4.0
+        Assert.Equal(WarriorStats.MoveSpeed * 1.0f, e.Position.X, 3);
+    }
+
+    // 같은 맵·같은 입력에서 직업별 MoveParams가 엔티티 단위로 주입되는지 (Phase 04 완료 조건).
+    [Fact]
+    public void Tick_SameInput_WarriorAndRanger_MoveAtClassSpeed()
+    {
+        GameMap map = new GameMap();
+        PlayerEntity warrior = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Warrior());
+        PlayerEntity ranger  = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Ranger());
+
+        for (int i = 0; i < 20; i++)
+        {
+            warrior.EnqueueInput(1, false, (uint)(i + 1));
+            ranger.EnqueueInput(1, false, (uint)(i + 1));
+            map.Tick(i + 1);
+        }
+
+        Assert.Equal(4f, warrior.Position.X, 3);
+        Assert.Equal(6f, ranger.Position.X, 3);
     }
 
     [Fact]
@@ -84,16 +109,16 @@ public class MoveIntentTests
     [Fact]
     public void Tick_JumpPressed_OnGround_AppliesJumpVelocity()
     {
-        // jumpPressed=true + OnGround=true (기본값) → vy=JumpSpeed
+        // jumpPressed=true + OnGround=true (기본값) → vy=JumpVel
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
         e.EnqueueInput(0, true, 1u);
 
         map.Tick(1);
 
-        // vy = JumpSpeed (8) → newY = 8 * 0.05 = 0.4
-        Assert.Equal(Shared.GameData.Physics.JumpSpeed, e.Velocity.Y, 4);
-        Assert.Equal(Shared.GameData.Physics.JumpSpeed * Constants.TickDuration, e.Position.Y, 4);
+        // vy = JumpVel (8) → newY = 8 * 0.05 = 0.4
+        Assert.Equal(WarriorStats.JumpVel, e.Velocity.Y, 4);
+        Assert.Equal(WarriorStats.JumpVel * Constants.TickDuration, e.Position.Y, 4);
         Assert.False(e.OnGround);
     }
 
@@ -135,7 +160,7 @@ public class MoveIntentTests
         bool jobRan = false;
 
         map.EnqueueJob(() => jobRan = true);
-        Assert.False(jobRan); // Tick 호출 전엔 실행 X
+        Assert.False(jobRan);
 
         map.Tick(1);
         Assert.True(jobRan);
