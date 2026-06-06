@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.4
 phase: 03
 title: 맵 데이터 파이프라인 전환(바이너리 bake) + 지형 통합 실측
-status: pending
+status: done
 grade: 대규모
 risk: unity-asset
 estimated: 8~12h
@@ -12,7 +12,7 @@ domain: shared+server+client+qa
 
 # Phase 03: 맵 데이터 파이프라인 전환 + 지형 통합 실측
 
-> **상태**: pending
+> **상태**: done (2026-06-06 세션14 — 박제 = 03-terrain-integration-DONE.md / 시각 보고 = 03-terrain-integration-DONE.html)
 > **마일스톤**: M4.4
 > **등급**: 대규모 (4 도메인 + 데이터 포맷 신설 비가역 + 씬 unity-asset) — 옛 정의(복잡)에서 상향
 > **담당**: Coordinator 분해 — shared(포맷/loader) + client(baker/predictor) + server(GameWorld/GameMap) + qa(봇/회귀) + 본인(씬 마커 저작·발판·Play 실측)
@@ -174,3 +174,4 @@ domain: shared+server+client+qa
 - 2026-06-06 (세션13): **재정의** — 사용자 의논 결정 4건 반영 (바이너리 파이프라인 전환 + bake 범위 확장 + 무결성 헤더/암호화 X + 단독 진행). 등급 복잡 → 대규모 상향. 오케스트레이터 도구는 본인 제작 백로그 분리
 - 2026-06-06 (세션13): **plan-auditor 조건부 GO → GO** — P0(kill-plane 정책) 사용자 확정 = 스폰 재배치(HP 무변화) / P1 2건 문서 봉합(마커 Y bake 가드 + 스테이지 C 착수 게이트) / P2 임계 정량화 반영. 구현 착수
 - 2026-06-06 (세션13): **스테이지 A~D 완료** — A 포맷(`9f6fd53`) / B baker(`3a35f08`) / C 서버(`fa58fdd`+`741a89c`) / bake(`28a0d2c`) / D 클라+봇(`52ebdea`). E 게이트 ①SAC 재검증 392/0/4skip ✅ ②서버 실로드 기동 ✅. **Play 실측 = Phase 05 묶음 이월 확정** (사용자 결정 — 위 완료 조건 수정). E 잔여 = ③봇 상수 보정+실행 ⑤IsGroundedAt EditMode 테스트 → 다음 세션
+- 2026-06-06 (세션14): **E 잔여 ③⑤ 완료 = Phase 마감** (`7cff593`) — ③ EnemyAiSmoke 적응형 타겟 선정(상수 은퇴) + 실행에서 EmergencyCombatSmoke stale-좌표 race 발본·봉합 + 봇 6시나리오 신선 서버 일괄 PASS. ⑤ IsGroundedAt 4분기 8테스트 + 스테이지 D stale 단언 봉합, EditMode 36/0 (TestRunnerApi MCP 실행). reviewer 🔴0/🟡2(이월). 박제 = -DONE.md + -DONE.html(bin 실데이터 지형 렌더링)
