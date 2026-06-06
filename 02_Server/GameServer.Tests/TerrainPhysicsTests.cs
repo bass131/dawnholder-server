@@ -525,14 +525,24 @@ public class TerrainPhysicsTests
         Assert.Equal(2, (int)Dawnholder.Server.GameServer.Maps.MapId.BossRoom);
     }
 
-    // M-2: MapTerrain.ForMap(0).Solids가 MapTerrainData.GetSolids(0)과 같은 참조(ReferenceEquals).
+    // M-2: MapTerrain.ForMap(0).Solids가 MapTerrainData.GetSolids(0)와 값이 동일.
+    //
+    // 방어 복사(β P3) 도입으로 ReferenceEquals 불변식은 폐기.
+    // 대신 값 동등 검증 — 맵 로드 1회, 틱 루프는 Span 순회만(무할당 invariant는
+    // Span 프로퍼티 노출 + 소비자 1회 로드로 이전).
     [Fact]
-    public void MapTerrain_ForMap_Solids_SameReferenceAsTerrainData()
+    public void MapTerrain_ForMap_Solids_ValuesMatchTerrainData()
     {
-        TerrainAabb[] fromForMap  = MapTerrain.ForMap(0).Solids;
-        TerrainAabb[] fromGetSolids = MapTerrainData.GetSolids(0);
+        MapTerrain terrain = MapTerrain.ForMap(0);
+        TerrainAabb[] expected = MapTerrainData.GetSolids(0);
 
-        Assert.True(ReferenceEquals(fromForMap, fromGetSolids),
-            "MapTerrain.ForMap(0).Solids가 MapTerrainData.GetSolids(0)과 다른 배열 (새 할당 발생)");
+        Assert.Equal(expected.Length, terrain.Solids.Length);
+        for (int i = 0; i < expected.Length; i++)
+        {
+            Assert.Equal(expected[i].MinX, terrain.Solids[i].MinX);
+            Assert.Equal(expected[i].MinY, terrain.Solids[i].MinY);
+            Assert.Equal(expected[i].MaxX, terrain.Solids[i].MaxX);
+            Assert.Equal(expected[i].MaxY, terrain.Solids[i].MaxY);
+        }
     }
 }
