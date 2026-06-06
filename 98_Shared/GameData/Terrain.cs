@@ -37,3 +37,25 @@ public readonly struct TerrainPlatform
         MaxX = maxX;
     }
 }
+
+/// <summary>
+/// 맵 1개의 솔리드 + 발판 지형 데이터를 묶는 조회 타입.
+///
+/// <para>맵 로드 시 <see cref="ForMap"/>으로 1회 생성 — 틱 루프에서는 배열 순회만.
+/// 헌법 #5 (No Blocking in Game Loop) 정합: 틱 루프 안에서 할당 0.</para>
+/// </summary>
+public sealed class MapTerrain
+{
+    public readonly TerrainAabb[] Solids;
+    public readonly TerrainPlatform[] Platforms;
+
+    public MapTerrain(TerrainAabb[] solids, TerrainPlatform[] platforms)
+    {
+        Solids    = solids    ?? System.Array.Empty<TerrainAabb>();
+        Platforms = platforms ?? System.Array.Empty<TerrainPlatform>();
+    }
+
+    /// <summary>mapId에 해당하는 지형 데이터를 <see cref="MapTerrainData"/>에서 조회해 반환.</summary>
+    public static MapTerrain ForMap(int mapId)
+        => new MapTerrain(MapTerrainData.GetSolids(mapId), MapTerrainData.GetPlatforms(mapId));
+}
