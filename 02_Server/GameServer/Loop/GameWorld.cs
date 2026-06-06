@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Maps;
+using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Loop;
 
@@ -44,28 +45,44 @@ public class GameWorld
 
     public TickScheduler Scheduler => _scheduler;
 
-    public GameWorld()
+    /// <summary>
+    /// 맵별 terrain/content 쌍을 주입받는 생성자 — **필수 인자** (default 없음).
+    /// <para>
+    /// 프로덕션은 MapDataLoader.LoadAll() 산출 주입. 테스트는 인라인 구성 또는 빈 딕셔너리
+    /// (디스크/저작 데이터 비종속). 필수로 박은 이유: 주입 누락이 "조용한 빈 월드"로
+    /// 굴러가는 경로 차단 (fail loud).
+    /// </para>
+    /// </summary>
+    public GameWorld(IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
     {
+        if (provider == null) throw new ArgumentNullException(nameof(provider));
+
         // 첫 인스턴스 = 공식 singleton. 두 번째 생성은 테스트/오용 신호 → 예외.
         if (Instance != null!)
             throw new InvalidOperationException("GameWorld는 단일 인스턴스만 허용");
         Instance = this;
 
-        // 4맵 생성 + 등록. 맵별 콘텐츠는 MapSpawnTable 단일 진실 공급원이 결정.
-        // idAllocator = NextEntityId 주입 → 전역 풀 (ADR-026).
+        // 4맵 생성 + 등록. provider가 있으면 맵별 terrain/content 주입.
         //
         // **생성 순서 결정론적 고정**: Town → HuntingGround → BossRoom → Ending.
-        //   ctor 순서가 id 발급 순서를 결정. enemy 1마리당 id 1개 소비 →
-        //   HuntingGround Normal=1, BossRoom Boss=2, 첫 player(Town 진입)=3.
+        //   ctor 순서가 id 발급 순서를 결정. enemy 1마리당 id 1개 소비.
         _maps = new Dictionary<MapId, GameMap>
         {
-            { MapId.Town,           new GameMap(MapId.Town,          NextEntityId) },
-            { MapId.HuntingGround,  new GameMap(MapId.HuntingGround, NextEntityId) },
-            { MapId.BossRoom,       new GameMap(MapId.BossRoom,      NextEntityId) },
-            { MapId.Ending,         new GameMap(MapId.Ending,        NextEntityId) },
+            { MapId.Town,          MakeMap(MapId.Town,          provider) },
+            { MapId.HuntingGround, MakeMap(MapId.HuntingGround, provider) },
+            { MapId.BossRoom,      MakeMap(MapId.BossRoom,      provider) },
+            { MapId.Ending,        MakeMap(MapId.Ending,        provider) },
         };
 
         _scheduler = new TickScheduler(OnTick);
+    }
+
+    GameMap MakeMap(MapId id,
+        IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
+    {
+        if (provider.TryGetValue(id, out var pair))
+            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content);
+        return new GameMap(id, NextEntityId);
     }
 
     public void Start() => _scheduler.Start();

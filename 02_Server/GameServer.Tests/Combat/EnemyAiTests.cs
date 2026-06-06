@@ -40,10 +40,26 @@ public class EnemyAiTests
     }
 
     /// <summary>
-    /// HuntingGround(Normal enemy 1마리) 맵 생성.
+    /// HuntingGround(Normal enemy 1마리) 맵 생성 — content 주입 (MapSpawnTable 은퇴, M4.4 Phase 03).
     /// Normal enemy entityId=1 (로컬 카운터 1부터 시작 — GameWorld 없으므로).
     /// </summary>
-    static GameMap MakeHuntingGround() => new GameMap(MapId.HuntingGround);
+    static GameMap MakeHuntingGround()
+    {
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f),
+        });
+        return new GameMap(MapId.HuntingGround, content: content);
+    }
+
+    static GameMap MakeBossRoom()
+    {
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Boss, 30f, 0f),
+        });
+        return new GameMap(MapId.BossRoom, content: content);
+    }
 
     // ── 테스트: Patrol 왕복 경계 반전 ──────────────────────────────────────────
 
@@ -265,7 +281,7 @@ public class EnemyAiTests
     public void Boss_StaysIdle_WhenPlayerNearby()
     {
         // BossRoom 맵 (Boss 1마리 spawn)
-        GameMap map = new GameMap(MapId.BossRoom);
+        GameMap map = MakeBossRoom();
         EnemyEntity? boss = null;
         foreach (EnemyEntity e in map.Enemies.Values) { boss = e; break; }
         Assert.NotNull(boss);
@@ -400,7 +416,7 @@ public class EnemyAiTests
     [Fact]
     public void Respawn_Boss_NeverRespawns()
     {
-        GameMap map = new GameMap(MapId.BossRoom);
+        GameMap map = MakeBossRoom();
         EnemyEntity? boss = null;
         foreach (EnemyEntity e in map.Enemies.Values) { boss = e; break; }
         Assert.NotNull(boss);

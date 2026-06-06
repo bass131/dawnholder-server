@@ -23,6 +23,10 @@ public class EmergencyCombatSmoke
     const int RateLimitBurstCount = 5;
     const int RateLimitBurstIntervalMs = 50;
 
+    // 타겟이 Chase로 봇 근접까지 수렴하길 기다리는 상한.
+    // worst case = patrol 반대편 끝에서 aggro 재진입(half-cycle ~4s) + Chase 접근(~7유닛/2u/s ≈ 3.5s).
+    static readonly TimeSpan ChaseConvergeTimeout = TimeSpan.FromSeconds(15);
+
     public class Result
     {
         public bool Success;
@@ -107,6 +111,19 @@ public class EmergencyCombatSmoke
             bool gotSnapshot = await bot.WaitForFirstSnapshot(DefaultTimeout, ct);
             if (!gotSnapshot)
                 return Fail(result, "S_Snapshot timeout — serverTick 추적 불가");
+
+            // 첫 공격 전 타겟 근접 수렴 대기 (M4.4-03 bake 배치에서 표면화된 race 봉합):
+            // 스폰 패킷 x = 관측 시점 patrol 위치(stale). 접근 완료 시점에 타겟이 aggro 밖
+            // (patrol 반대편)일 수 있어, 즉시 공격하면 AABB 미스 → S_HitResult 없음.
+            // 봇이 patrol 범위 안에 서 있으므로 타겟이 aggro → Chase로 알아서 붙어옴 —
+            // live S_EntityState 좌표로 공격 AABB 안 진입을 보장한 뒤 공격.
+            bool targetNear = await bot.WaitForTargetWithin(
+                result.TargetEntityId, PreferredAttackDistance, ChaseConvergeTimeout, ct);
+            if (!targetNear)
+                return Fail(result,
+                    $"target {result.TargetEntityId} did not converge into attack range " +
+                    $"({PreferredAttackDistance}) within {ChaseConvergeTimeout.TotalSeconds}s — " +
+                    "aggro/Chase 미동작 또는 스폰 배치 변경 의심");
 
             HitEvent? firstHit = await SendAttackAndWaitForHit(
                 bot,
@@ -334,6 +351,9 @@ public class EmergencyCombatSmoke
         readonly List<HitEvent> _hits = new();
         readonly List<int> _deaths = new();
 
+        // entityId → 최신 live x (S_EntityState) — 타겟 근접 수렴 대기용.
+        readonly Dictionary<int, float> _entityX = new();
+
         BotSession? _session;
         uint _clientTick;
 
@@ -438,6 +458,17 @@ public class EmergencyCombatSmoke
         // 이동 완료 후 이 메서드로 serverTick이 갱신될 때까지 기다려야 함.
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+
+        // 타겟의 live 위치(S_EntityState)가 봇 현재 위치 기준 maxDist 안에 들어올 때까지 대기.
+        public async Task<bool> WaitForTargetWithin(int entityId, float maxDist, TimeSpan timeout, CancellationToken ct)
+            => await WaitUntil(
+                () =>
+                {
+                    lock (_gate)
+                        return _entityX.TryGetValue(entityId, out float x)
+                            && Math.Abs(x - SpawnX) <= maxDist;
+                },
+                timeout, ct);
 
         // simulatedLatencyMs 옵션. 0이면 최신 serverTick 그대로 사용 (zero-lag 시뮬).
         // 양수이면 "N ms 전에 본 serverTick"을 보냄 — 서버 rewind 시뮬.
@@ -571,6 +602,16 @@ public class EmergencyCombatSmoke
                     S_Snapshot snapshot = new();
                     snapshot.Read(buffer);
                     _lastReceivedServerTick = snapshot.serverTick;
+                    // 자기 자신 snapshot → 봇 현재 위치 갱신 (근접 수렴 대기의 기준 좌표).
+                    if (snapshot.entityId == LocalEntityId)
+                        SpawnX = snapshot.x;
+                    break;
+
+                case PacketID.S_EntityState:
+                    // enemy live 위치 — 타겟 근접 수렴 대기용.
+                    S_EntityState entityState = new();
+                    entityState.Read(buffer);
+                    lock (_gate) _entityX[entityState.entityId] = entityState.x;
                     break;
             }
         }

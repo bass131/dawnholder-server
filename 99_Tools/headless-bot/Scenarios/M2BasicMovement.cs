@@ -141,6 +141,8 @@ public class M2BasicMovement
         }
 
         // 봇 자체 시뮬 초기화 (서버 spawn과 동일 시작점).
+        // 초기 맵 = Town(0). terrain 로드 실패 시 fail loud (BotTerrainLoader 정책).
+        MapTerrain? terrain = BotTerrainLoader.Load(mapId: 0);
         PhysicsState botState = new(spawnPos, Vector2.Zero, onGround: true);
         uint clientTick = 0;
 
@@ -155,9 +157,10 @@ public class M2BasicMovement
             C_MoveIntent pkt = new() { input = inputByte, clientTick = clientTick };
             session?.Send(pkt.Write());
 
-            // 봇 측 자체 시뮬 (서버와 동일 입력·동일 dt).
+            // 봇 측 자체 시뮬 (서버와 동일 입력·동일 dt·동일 terrain).
+            // terrain 오버로드 사용 — 서버가 지형 경로를 타면 봇도 같은 경로. desync 검증 유효성 유지.
             PhysicsInput physInput = new(inputX, jump, Constants.TickDuration);
-            botState = Physics.Step(botState, physInput);
+            botState = Physics.Step(botState, physInput, terrain);
 
             await Task.Delay(Constants.TickIntervalMs, ct);
         }

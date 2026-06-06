@@ -1,5 +1,6 @@
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
+using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
@@ -21,7 +22,8 @@ public class GameWorldRegistryTests : IDisposable
 
     public GameWorldRegistryTests()
     {
-        _world = new GameWorld();
+        // 레지스트리 골격만 검증 — 빈 provider (평지+빈 콘텐츠 4맵, GameWorld provider 필수 인자)
+        _world = new GameWorld(new Dictionary<MapId, (MapTerrain?, MapContent?)>());
     }
 
     public void Dispose()

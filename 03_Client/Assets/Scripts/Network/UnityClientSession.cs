@@ -192,12 +192,17 @@ namespace Dawnholder.Client.Network
         public static float PendingSpawnY { get; internal set; }
         public static bool HasPendingSpawn { get; internal set; }
 
+        // terrain 주입용 mapId. EnterMapHandler는 0(Town 고정), MapTransitionHandler는 destMapId 박음.
+        // LocalPlayerController.Awake()에서 pending spawn 소비 시 함께 읽어 ClientTerrainStore.Load 호출.
+        public static int PendingMapId { get; internal set; }
+
         // LocalPlayerController.Awake()에서 pending spawn 소비 후 호출.
         public static void ConsumePendingSpawn()
         {
             HasPendingSpawn = false;
             PendingSpawnX = 0f;
             PendingSpawnY = 0f;
+            PendingMapId = 0;
         }
     }
 }

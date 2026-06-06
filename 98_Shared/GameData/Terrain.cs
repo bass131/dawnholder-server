@@ -39,23 +39,35 @@ public readonly struct TerrainPlatform
 }
 
 /// <summary>
-/// 맵 1개의 솔리드 + 발판 지형 데이터를 묶는 조회 타입.
+/// 맵 1개의 솔리드 + 발판 지형 데이터 + killPlaneY.
 ///
-/// <para>맵 로드 시 <see cref="ForMap"/>으로 1회 생성 — 틱 루프에서는 배열 순회만.
-/// 헌법 #5 (No Blocking in Game Loop) 정합: 틱 루프 안에서 할당 0.</para>
+/// <para>맵 로드 시 1회 생성 — 틱 루프에서는 Span 순회만 (할당 0, 헌법 #5).</para>
+/// <para>방어 복사: 외부 배열 참조를 보관하지 않아 외부 변조를 차단.</para>
 /// </summary>
 public sealed class MapTerrain
 {
-    public readonly TerrainAabb[] Solids;
-    public readonly TerrainPlatform[] Platforms;
+    private readonly TerrainAabb[] _solids;
+    private readonly TerrainPlatform[] _platforms;
 
-    public MapTerrain(TerrainAabb[] solids, TerrainPlatform[] platforms)
+    /// <summary>
+    /// 구멍 낙하 경계 Y. killPlaneY 미사용 맵은 float.NegativeInfinity (= 영원히 미발동).
+    /// </summary>
+    public readonly float KillPlaneY;
+
+    public System.ReadOnlySpan<TerrainAabb> Solids => _solids;
+    public System.ReadOnlySpan<TerrainPlatform> Platforms => _platforms;
+
+    public MapTerrain(TerrainAabb[] solids, TerrainPlatform[] platforms,
+                      float killPlaneY = float.NegativeInfinity)
     {
-        Solids    = solids    ?? System.Array.Empty<TerrainAabb>();
-        Platforms = platforms ?? System.Array.Empty<TerrainPlatform>();
+        // 방어 복사 — 호출자가 배열을 나중에 수정해도 이 객체 상태는 불변.
+        _solids    = solids    == null || solids.Length    == 0
+            ? System.Array.Empty<TerrainAabb>()
+            : (TerrainAabb[])solids.Clone();
+        _platforms = platforms == null || platforms.Length == 0
+            ? System.Array.Empty<TerrainPlatform>()
+            : (TerrainPlatform[])platforms.Clone();
+        KillPlaneY = killPlaneY;
     }
 
-    /// <summary>mapId에 해당하는 지형 데이터를 <see cref="MapTerrainData"/>에서 조회해 반환.</summary>
-    public static MapTerrain ForMap(int mapId)
-        => new MapTerrain(MapTerrainData.GetSolids(mapId), MapTerrainData.GetPlatforms(mapId));
 }

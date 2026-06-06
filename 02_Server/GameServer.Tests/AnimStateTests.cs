@@ -37,8 +37,15 @@ public class AnimStateTests
 {
     // ── 헬퍼 ──────────────────────────────────────────────────────────────────
 
-    /// <summary>HuntingGround 맵 (Normal enemy 1마리 포함).</summary>
-    static GameMap MakeHuntingGround() => new GameMap(MapId.HuntingGround);
+    /// <summary>HuntingGround 맵 (Normal enemy 1마리 포함 — content 주입).</summary>
+    static GameMap MakeHuntingGround()
+    {
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f),
+        });
+        return new GameMap(MapId.HuntingGround, content: content);
+    }
 
     /// <summary>빈 맵 (Town — enemy 없음). 플레이어 전용 테스트용.</summary>
     static GameMap MakeTownMap() => new GameMap(MapId.Town);
@@ -314,7 +321,10 @@ public class AnimStateTests
     [Fact]
     public void Enemy_Idle_WhenAiStateIsIdle()
     {
-        GameMap map = new GameMap(MapId.BossRoom);
+        GameMap map = new GameMap(MapId.BossRoom, content: new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Boss, 30f, 0f),
+        }));
         EnemyEntity? boss = null;
         foreach (EnemyEntity e in map.Enemies.Values) { boss = e; break; }
         Assert.NotNull(boss);

@@ -525,14 +525,29 @@ public class TerrainPhysicsTests
         Assert.Equal(2, (int)Dawnholder.Server.GameServer.Maps.MapId.BossRoom);
     }
 
-    // M-2: MapTerrain.ForMap(0).Solids가 MapTerrainData.GetSolids(0)과 같은 참조(ReferenceEquals).
+    // M-2: MapTerrain round-trip 후 Solids 값 동등 (MapDataFile.WriteTerrain/ReadTerrain).
+    // ForMap(코드 생성 정적 데이터)은 M4.4 Phase 03 은퇴 → bin 파일 로드로 전환.
+    // 본 테스트는 "bin 왕복 후 값 보존" 계약을 검증 (MapDataFileTests R-1의 회귀 정합).
     [Fact]
-    public void MapTerrain_ForMap_Solids_SameReferenceAsTerrainData()
+    public void MapTerrain_BinRoundTrip_SolidsValuesPreserved()
     {
-        TerrainAabb[] fromForMap  = MapTerrain.ForMap(0).Solids;
-        TerrainAabb[] fromGetSolids = MapTerrainData.GetSolids(0);
+        TerrainAabb[] solids = new[]
+        {
+            new TerrainAabb(-43f, -4f, 56f, 0f),
+            new TerrainAabb(-43f, 0f, -35f, 10f),
+        };
+        MapTerrain src = new MapTerrain(solids, System.Array.Empty<TerrainPlatform>());
 
-        Assert.True(ReferenceEquals(fromForMap, fromGetSolids),
-            "MapTerrain.ForMap(0).Solids가 MapTerrainData.GetSolids(0)과 다른 배열 (새 할당 발생)");
+        byte[] bytes = MapDataFile.WriteTerrain(0, src);
+        MapTerrain dst = MapDataFile.ReadTerrain(bytes, 0);
+
+        Assert.Equal(src.Solids.Length, dst.Solids.Length);
+        for (int i = 0; i < src.Solids.Length; i++)
+        {
+            Assert.Equal(src.Solids[i].MinX, dst.Solids[i].MinX);
+            Assert.Equal(src.Solids[i].MinY, dst.Solids[i].MinY);
+            Assert.Equal(src.Solids[i].MaxX, dst.Solids[i].MaxX);
+            Assert.Equal(src.Solids[i].MaxY, dst.Solids[i].MaxY);
+        }
     }
 }

@@ -46,9 +46,13 @@ public class BossStageClearTests : IDisposable
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
         PlayerStats.Warrior(), default, baseDamage: 10);
 
-    // MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
-    static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
-    static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
+    // 옛 MapSpawnTable 값 보존 — inlined (MapSpawnTable 은퇴, M4.4 Phase 03).
+    const float NormalX    = 10f;
+    const float NormalY    = 0f;
+    const int   NormalMaxHp = 30;
+    const float BossX      = 30f;
+    const float BossY      = 0f;
+    const int   BossMaxHp   = 100;
 
     class TestGameSession : GameSession
     {
@@ -79,10 +83,13 @@ public class BossStageClearTests : IDisposable
 
     public BossStageClearTests()
     {
-        // HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2). Normal+Boss 둘 다 참조.
-        // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴.
-        _map = new GameMap(MapId.HuntingGround);
-        _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);
+        // HuntingGround(Normal enemy id=1) + Boss(id=2) content 주입.
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Normal, NormalX, NormalY),
+            new EnemySpawnPoint((byte)EnemyKind.Boss,   BossX,   BossY),
+        });
+        _map = new GameMap(MapId.HuntingGround, content: content);
 
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
@@ -113,11 +120,11 @@ public class BossStageClearTests : IDisposable
 
     // Boss 사거리 안 좌표. Boss는 (30, 0)에 박혀있고 AttackRangeSquared=9 → distance < 3 필요.
     static void PlaceInRangeOfBoss(PlayerEntity player)
-        => player.Position = new Vector2(BossDef.X - 1f, BossDef.Y);
+        => player.Position = new Vector2(BossX - 1f, BossY);
 
     // Normal enemy 사거리 안 좌표.
     static void PlaceInRangeOfNormalEnemy(PlayerEntity player)
-        => player.Position = new Vector2(NormalDef.X - 1f, NormalDef.Y);
+        => player.Position = new Vector2(NormalX - 1f, NormalY);
 
     // zero-lag 시뮬 = attackerClientTick을 현재 서버 tick과 동일하게 → diff=0 → rewind 없음.
     static ArraySegment<byte> AttackPacketBytes(int targetEntityId, long attackerClientTick = 0)
@@ -141,14 +148,14 @@ public class BossStageClearTests : IDisposable
         Assert.True(_map.Enemies.ContainsKey(BossEntityId));
         EnemyEntity boss = _map.Enemies[BossEntityId];
         Assert.Equal(EnemyKind.Boss, boss.Kind);
-        Assert.Equal(BossDef.MaxHp, boss.Hp);
+        Assert.Equal(BossMaxHp, boss.Hp);
         Assert.False(_map.IsStageCleared);
 
         s.SentPackets.Clear();
 
         // 25 dmg/hit → 4회 attack으로 Boss HP 100 → 0.
         // attackerClientTick=tick → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)BossDef.MaxHp / ExpectedDamage); // 4
+        int hitsNeeded = (int)Math.Ceiling((double)BossMaxHp / ExpectedDamage); // 4
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
@@ -201,7 +208,7 @@ public class BossStageClearTests : IDisposable
         s.SentPackets.Clear();
 
         // 25 dmg/hit → 4회 attack. attackerClientTick=tick → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)BossDef.MaxHp / ExpectedDamage); // 4
+        int hitsNeeded = (int)Math.Ceiling((double)BossMaxHp / ExpectedDamage); // 4
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
@@ -250,7 +257,7 @@ public class BossStageClearTests : IDisposable
         s.SentPackets.Clear();
 
         // 25 dmg/hit → 2회 attack으로 Normal HP 30 → 0 이하. attackerClientTick=tick → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)NormalDef.MaxHp / ExpectedDamage); // 2
+        int hitsNeeded = (int)Math.Ceiling((double)NormalMaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {

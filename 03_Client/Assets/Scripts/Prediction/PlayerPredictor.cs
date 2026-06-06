@@ -43,11 +43,37 @@ namespace Dawnholder.Client.Prediction
         // 받으면 미-ack 입력만 replay.
         readonly InputHistory _history = new InputHistory();
 
+        MapTerrain? _terrain;
+
+        // 맵 전환 시 새 맵 terrain 주입. null 전달 시 평지 fallback (Physics.Step null 경로).
+        public void SetTerrain(MapTerrain? terrain) => _terrain = terrain;
+
+        // 서버 권위 상태 리셋 시점의 접지 판정 — 옛 평지 가정(y<=0)은 지형 단차 위에서 오판 →
+        // replay 점프 입력이 서버와 어긋남. 착지 스냅이 face 정확값을 주므로 등호 포함 eps 비교
+        // (등호 경계 = 일상 도달 상태 — 벽점프 사례 carry-over). 의미론 출처 = Physics.StepWithTerrain
+        // 착지 스냅. 세 번째 유사 구현 등장 시 Shared 추출 (Rule of Three).
+        bool IsGroundedAt(float x, float y, float vy)
+        {
+            if (vy > 0f) return false;
+            if (_terrain == null) return y <= 0.0001f;
+
+            const float Eps = 0.0001f;
+            foreach (TerrainAabb s in _terrain.Solids)
+                if (x >= s.MinX && x <= s.MaxX && y >= s.MaxY - Eps && y <= s.MaxY + Eps)
+                    return true;
+            foreach (TerrainPlatform p in _terrain.Platforms)
+                if (x >= p.MinX && x <= p.MaxX && y >= p.Y - Eps && y <= p.Y + Eps)
+                    return true;
+            return false;
+        }
+
         public void SetInitialPosition(Vector2 pos)
         {
             Position = pos;
             Velocity = Vector2.zero;
-            OnGround = pos.y <= 0.0001f; // ground 가정 (Physics.GroundY = 0)
+            // 지형 모드에서 spawnY가 지형 위(예: Town y=1.39)이므로 평지 가정 불가.
+            // false로 시작하면 서버도 같은 Step에서 중력을 적용해 함께 낙하 → 첫 몇 틱 drift를 reconcile이 흡수.
+            OnGround = false;
             _history.Clear();
         }
 
@@ -58,11 +84,11 @@ namespace Dawnholder.Client.Prediction
         }
 
         // *매 frame* Time.deltaTime 가변 호출. 클라 가변 dt + 서버 fixed dt 차이는 reconcile 흡수.
-        // Physics.Step 단일 출처 호출 → 양쪽 공식 일치 (헌법 #1).
+        // Physics.Step 단일 출처 호출 → 양쪽 공식 일치 (헌법 #1). terrain 주입 경로 동일.
         public void Predict(sbyte inputX, bool jumpPressed, float dt)
         {
             PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
-                new PhysicsInput(inputX, jumpPressed, dt));
+                new PhysicsInput(inputX, jumpPressed, dt), _terrain);
             ApplyPhysicsState(after);
         }
 
@@ -86,13 +112,14 @@ namespace Dawnholder.Client.Prediction
                 // 서버 권위 상태에서 출발 — 위치 + 속도 + ground (위치로 추정)
                 Position = new Vector2(serverX, serverY);
                 Velocity = new Vector2(serverVx, serverVy);
-                OnGround = serverY <= 0.0001f && serverVy <= 0f;
+                OnGround = IsGroundedAt(serverX, serverY, serverVy);
 
-                // 미-ack 입력 재시뮬 (서버 권위 → 클라 현재까지)
+                // 미-ack 입력 재시뮬 (서버 권위 → 클라 현재까지).
+                // terrain 오버로드 동일 — replay가 평지로 돌면 서버-클라 대칭이 깨져 reconcile 자체가 어긋남.
                 foreach (InputRecord rec in _history.ReplayFrom(ackedClientTick))
                 {
                     PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
-                        new PhysicsInput(rec.InputX, rec.JumpPressed, Constants.TickDuration));
+                        new PhysicsInput(rec.InputX, rec.JumpPressed, Constants.TickDuration), _terrain);
                     ApplyPhysicsState(after);
                 }
                 SnapCount++;
