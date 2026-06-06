@@ -43,12 +43,9 @@ public class GameSession : PacketSession
     protected internal bool HasSelectedClass => _stats != null;
 
     // 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑 (헌법 #1).
-    // 범위 검증은 CharacterSelectHandler에서 이미 완료 (0 또는 1만 도달) — 여기선 매핑만.
     protected internal void SetCharacterClass(byte characterClass)
     {
-        _stats = characterClass == (byte)CharacterClass.Warrior
-            ? PlayerStats.Warrior()
-            : PlayerStats.Ranger();
+        _stats = PlayerStats.ForClass((CharacterClass)characterClass);
         Console.WriteLine(
             $"[GameSession] CharacterClass set to {_stats.Class} — Hp:{_stats.Hp} Atk:{_stats.Attack} Def:{_stats.Defense} Spd:{_stats.MoveSpeed}");
     }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1788872575727458014}
   - component: {fileID: 863521332043161295}
   m_Layer: 0
-  m_Name: RemotePlayer.backup
+  m_Name: RemotePlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

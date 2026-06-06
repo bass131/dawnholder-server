@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.4
 phase: 05
 title: 직업 장착 구조 — ClassConfig SO + IAttackStrategy + AnimatorDriver 교체
-status: pending
+status: done
 grade: 복잡
 risk: unity-asset
 estimated: 3~5h
@@ -13,7 +13,7 @@ summary: 캐릭터 선택값으로 Animator·이동값·공격 전략이 데이�
 
 # Phase 05: 직업 장착 구조
 
-> **상태**: pending
+> **상태**: done (2026-06-06 — 박제는 `05-class-loadout-DONE.md`)
 > **마일스톤**: M4.4
 > **등급**: 복잡 (1 도메인이지만 prefab+SO 자산 동반 — unity-asset 깃발)
 > **담당**: client SubAgent (코드) + 본인 (ClassConfig 에셋 생성·prefab 연결·체감 튜닝 — Unity 외관 분담)
@@ -98,3 +98,4 @@ summary: 캐릭터 선택값으로 Animator·이동값·공격 전략이 데이�
 ## 작업 로그
 
 - 2026-06-06: 계획 수립 (`/work:plan M4.4`)
+- 2026-06-06: 완료 (세션16, 4 commits) — Mage 투사체 연출은 Animation Event 타이밍 작업과 묶어 명시 이월, CI 테스트 안전망 신설 부수. 상세 = -DONE.md

@@ -65,9 +65,6 @@ PrefabInstance:
       addedObject: {fileID: 2282280317488370086}
     - targetCorrespondingSourceObject: {fileID: 3056698000475167370, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4809020682521351699}
-    - targetCorrespondingSourceObject: {fileID: 3056698000475167370, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4798063517206282761}
     - targetCorrespondingSourceObject: {fileID: 3056698000475167370, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
       insertIndex: -1
@@ -78,6 +75,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3056698000475167370, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3910706306134452821}
+    - targetCorrespondingSourceObject: {fileID: 3056698000475167370, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 777979302737393482}
+    - targetCorrespondingSourceObject: {fileID: 3056698000475167370, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3773043923303225599}
   m_SourcePrefab: {fileID: 100100000, guid: e2d92ec10fcbbf249b8f5da68d842b2c, type: 3}
 --- !u!1 &9128795103526622887 stripped
 GameObject:
@@ -114,18 +117,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &4809020682521351699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9128795103526622887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0544a010f2197f54bbc00b85b2e905c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.Rendering.PlayerAnimatorSync
 --- !u!114 &4798063517206282761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,3 +214,28 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.8, y: 1.2}
   m_EdgeRadius: 0
+--- !u!114 &777979302737393482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9128795103526622887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfa1f3e6f6f6fe146a1de2557d643527, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.Rendering.LocalPlayerMotion
+--- !u!114 &3773043923303225599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9128795103526622887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d005c429b4d6a44aae541ae3a2de110, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.Rendering.AnimatorDriver
+  SpriteDefaultFacesLeft: 0

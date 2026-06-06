@@ -2,6 +2,7 @@ using System;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.Prediction;
+using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using Shared.Protocol;
@@ -130,9 +131,13 @@ namespace Dawnholder.Client.Network
 
                 if (eid == session.LocalEntityId.Value)
                 {
-                    // 본인 path — reconcile flow.
+                    // 본인 path — reconcile + 서버 animState 전달.
                     if (LocalPlayerMovement.Instance != null)
+                    {
                         LocalPlayerMovement.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
+                        LocalPlayerMovement.Instance.GetComponent<LocalPlayerMotion>()
+                            ?.SetServerAnimState(animState);
+                    }
                 }
                 else
                 {
