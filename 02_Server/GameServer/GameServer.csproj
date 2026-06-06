@@ -22,4 +22,13 @@
     </AssemblyAttribute>
   </ItemGroup>
 
+  <!-- 맵 바이너리 파일 — bake 산출물을 출력 Maps/ 폴더로 복사 (D2 배포 경로).
+       파일 0개여도 빌드 통과 (glob). PreserveNewest = 변경된 파일만 갱신. -->
+  <ItemGroup>
+    <Content Include="..\..\98_Shared\GameData\Maps\*.bin">
+      <Link>Maps\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

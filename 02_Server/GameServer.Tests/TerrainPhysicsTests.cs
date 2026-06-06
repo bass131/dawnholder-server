@@ -525,24 +525,29 @@ public class TerrainPhysicsTests
         Assert.Equal(2, (int)Dawnholder.Server.GameServer.Maps.MapId.BossRoom);
     }
 
-    // M-2: MapTerrain.ForMap(0).Solids가 MapTerrainData.GetSolids(0)와 값이 동일.
-    //
-    // 방어 복사(β P3) 도입으로 ReferenceEquals 불변식은 폐기.
-    // 대신 값 동등 검증 — 맵 로드 1회, 틱 루프는 Span 순회만(무할당 invariant는
-    // Span 프로퍼티 노출 + 소비자 1회 로드로 이전).
+    // M-2: MapTerrain round-trip 후 Solids 값 동등 (MapDataFile.WriteTerrain/ReadTerrain).
+    // ForMap(코드 생성 정적 데이터)은 M4.4 Phase 03 은퇴 → bin 파일 로드로 전환.
+    // 본 테스트는 "bin 왕복 후 값 보존" 계약을 검증 (MapDataFileTests R-1의 회귀 정합).
     [Fact]
-    public void MapTerrain_ForMap_Solids_ValuesMatchTerrainData()
+    public void MapTerrain_BinRoundTrip_SolidsValuesPreserved()
     {
-        MapTerrain terrain = MapTerrain.ForMap(0);
-        TerrainAabb[] expected = MapTerrainData.GetSolids(0);
-
-        Assert.Equal(expected.Length, terrain.Solids.Length);
-        for (int i = 0; i < expected.Length; i++)
+        TerrainAabb[] solids = new[]
         {
-            Assert.Equal(expected[i].MinX, terrain.Solids[i].MinX);
-            Assert.Equal(expected[i].MinY, terrain.Solids[i].MinY);
-            Assert.Equal(expected[i].MaxX, terrain.Solids[i].MaxX);
-            Assert.Equal(expected[i].MaxY, terrain.Solids[i].MaxY);
+            new TerrainAabb(-43f, -4f, 56f, 0f),
+            new TerrainAabb(-43f, 0f, -35f, 10f),
+        };
+        MapTerrain src = new MapTerrain(solids, System.Array.Empty<TerrainPlatform>());
+
+        byte[] bytes = MapDataFile.WriteTerrain(0, src);
+        MapTerrain dst = MapDataFile.ReadTerrain(bytes, 0);
+
+        Assert.Equal(src.Solids.Length, dst.Solids.Length);
+        for (int i = 0; i < src.Solids.Length; i++)
+        {
+            Assert.Equal(src.Solids[i].MinX, dst.Solids[i].MinX);
+            Assert.Equal(src.Solids[i].MinY, dst.Solids[i].MinY);
+            Assert.Equal(src.Solids[i].MaxX, dst.Solids[i].MaxX);
+            Assert.Equal(src.Solids[i].MaxY, dst.Solids[i].MaxY);
         }
     }
 }

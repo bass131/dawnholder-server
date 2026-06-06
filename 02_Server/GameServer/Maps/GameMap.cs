@@ -7,6 +7,23 @@ using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps;
 
+// EnemyKind → (MaxHp) 기본값 테이블. content.bin은 위치+kind만 담고 HP는 서버 권위 코드 결정.
+// append-only: 새 종류 추가 시 이 배열에 항목 추가 (EnemyKind.cs 값과 index 정합 유지).
+file static class EnemyDefaultHp
+{
+    // index = (int)EnemyKind
+    internal static readonly int[] ByKind = { 30, 100 }; // Normal=30, Boss=100
+
+    internal static int For(EnemyKind kind)
+    {
+        int idx = (int)kind;
+        if (idx < 0 || idx >= ByKind.Length)
+            throw new ArgumentOutOfRangeException(nameof(kind),
+                $"알 수 없는 EnemyKind 값 {(byte)kind} — content.bin에 정의되지 않은 kindId.");
+        return ByKind[idx];
+    }
+}
+
 // 단일 GameMap actor. 단일 thread Tick → lock 없음.
 //
 // §2.2 컨테이너 + System 분리:
@@ -34,6 +51,16 @@ public class GameMap
     int AllocId() => _idAllocator != null ? _idAllocator() : _localNextId++;
 
     readonly ConcurrentQueue<Action> _pendingJobs = new();
+
+    // 지형 + 콘텐츠. null terrain = 평지 물리(Physics.Step 2-인자 fallback).
+    readonly MapTerrain? _terrain;
+    readonly MapContent? _content;
+
+    // 플레이어 스폰 좌표 — content가 있으면 content 기준, 없으면 원점 fallback.
+    internal Vector2 PlayerSpawnPosition =>
+        _content != null
+            ? new Vector2(_content.PlayerSpawnX, _content.PlayerSpawnY)
+            : Vector2.Zero;
 
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly CombatSystem _combatSystem = new();
@@ -68,15 +95,29 @@ public class GameMap
     // 맵에 속한 portal 목록. PortalTable 단일 진실 공급원.
     public IReadOnlyList<Portal> Portals { get; }
 
-    public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null)
+    public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
+                   MapTerrain? terrain = null, MapContent? content = null)
     {
         MapId = mapId;
         _idAllocator = idAllocator;
+        _terrain = terrain;
+        _content = content;
         Portals = PortalTable.GetPortalsFor(mapId);
 
-        foreach (EnemySpawnDef def in MapSpawnTable.GetSpawnsFor(mapId))
+        if (content != null)
         {
-            SpawnEnemy(def.Kind, def.X, def.Y, def.MaxHp);
+            foreach (EnemySpawnPoint sp in content.Enemies)
+            {
+                // kindId 범위 검증 — 알 수 없는 kindId = 저작 오류 → fail loud.
+                if (sp.KindId >= EnemyDefaultHp.ByKind.Length)
+                    throw new InvalidOperationException(
+                        $"[GameMap:{mapId}] 알 수 없는 kindId={sp.KindId} in content.bin. " +
+                        "EnemyKind enum과 EnemyDefaultHp 테이블을 확인하세요.");
+
+                EnemyKind kind = (EnemyKind)sp.KindId;
+                int maxHp = EnemyDefaultHp.For(kind);
+                SpawnEnemy(kind, sp.X, sp.Y, maxHp);
+            }
         }
     }
 
@@ -272,10 +313,20 @@ public class GameMap
 
             PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration);
             PhysicsState before = new PhysicsState(p.Position, p.Velocity, p.OnGround);
-            PhysicsState after = Physics.Step(before, input);
+            PhysicsState after = Physics.Step(before, input, _terrain);
             p.Position = after.Position;
             p.Velocity = after.Velocity;
             p.OnGround = after.OnGround;
+
+            // kill-plane: 낙하로 맵 밖 벗어나면 PlayerSpawn 재배치. HP 무변화 (낙사 데미지 M4.5 이월).
+            // terrain null이면 체크 skip (평지 맵은 낙사 없음).
+            if (_terrain != null && p.Position.Y < _terrain.KillPlaneY)
+            {
+                Vector2 spawn = PlayerSpawnPosition;
+                p.Position = spawn;
+                p.Velocity = Vector2.Zero;
+                p.OnGround = false;
+            }
 
             // ack = 적용 시점 clientTick. 빈 틱(starvation)은 불변 — 클라 reconcile 정합.
             if (hasInput)

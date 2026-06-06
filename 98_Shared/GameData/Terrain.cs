@@ -70,7 +70,4 @@ public sealed class MapTerrain
         KillPlaneY = killPlaneY;
     }
 
-    /// <summary>mapId에 해당하는 지형 데이터를 <see cref="MapTerrainData"/>에서 조회해 반환.</summary>
-    public static MapTerrain ForMap(int mapId)
-        => new MapTerrain(MapTerrainData.GetSolids(mapId), MapTerrainData.GetPlatforms(mapId));
 }

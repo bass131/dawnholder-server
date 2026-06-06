@@ -2,62 +2,64 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Tests;
 
-// TerrainBaker 생성 데이터 sanity 검증 (M4.4-01).
-// bake 재실행으로 데이터가 갈려도 항상 성립해야 하는 불변식만 검사 —
-// 구체 좌표는 레벨 디자인 소관이라 박지 않음 (디자인 변경 = 테스트 회귀 아님).
-public class MapTerrainDataTests
+// MapTerrainData(코드 생성 정적 클래스)는 M4.4 Phase 03에서 은퇴.
+// 지형 데이터는 terrain.bin 런타임 로드로 전환 (MapDataFile.ReadTerrain).
+//
+// 본 파일은 MapDataFile round-trip 불변식 검증으로 교체:
+//   - 빈 terrain round-trip (지형 없는 맵 = Ending 등)
+//   - killPlaneY = NegativeInfinity round-trip (미사용 맵 약속)
+//   - MapId enum 값 정합 (Town=0 / HuntingGround=1 / BossRoom=2)
+//
+// 구체 지형 데이터 테스트는 MapDataFileTests(round-trip/무결성)와 TerrainPhysicsTests(물리 계약)에서 커버.
+public class MapTerrainDataReplacementTests
 {
-    // 서버 MapId enum 정합: Town=0 / HuntingGround=1 / BossRoom=2
-    public static readonly TheoryData<int> PlayMapIds = new() { 0, 1, 2 };
-
-    [Theory]
-    [MemberData(nameof(PlayMapIds))]
-    public void GetSolids_PlayMaps_NonEmpty(int mapId)
-    {
-        Assert.NotEmpty(MapTerrainData.GetSolids(mapId));
-    }
-
-    [Theory]
-    [MemberData(nameof(PlayMapIds))]
-    public void Solids_MinStrictlyLessThanMax(int mapId)
-    {
-        foreach (TerrainAabb a in MapTerrainData.GetSolids(mapId))
-        {
-            Assert.True(a.MinX < a.MaxX, $"map {mapId}: MinX {a.MinX} >= MaxX {a.MaxX}");
-            Assert.True(a.MinY < a.MaxY, $"map {mapId}: MinY {a.MinY} >= MaxY {a.MaxY}");
-        }
-    }
-
-    [Theory]
-    [MemberData(nameof(PlayMapIds))]
-    public void Solids_WithinSaneWorldBounds(int mapId)
-    {
-        // 좌표 폭주(좌표 변환 결함 등) 조기 검출용 느슨한 경계.
-        const float Limit = 10_000f;
-        foreach (TerrainAabb a in MapTerrainData.GetSolids(mapId))
-        {
-            Assert.InRange(a.MinX, -Limit, Limit);
-            Assert.InRange(a.MaxX, -Limit, Limit);
-            Assert.InRange(a.MinY, -Limit, Limit);
-            Assert.InRange(a.MaxY, -Limit, Limit);
-        }
-    }
-
-    [Theory]
-    [MemberData(nameof(PlayMapIds))]
-    public void Platforms_RangesValid(int mapId)
-    {
-        // 발판은 미저작 시 빈 배열이 정상 — 비어있지 않을 때만 불변식 검사.
-        foreach (TerrainPlatform p in MapTerrainData.GetPlatforms(mapId))
-        {
-            Assert.True(p.MinX < p.MaxX, $"map {mapId}: platform MinX {p.MinX} >= MaxX {p.MaxX}");
-        }
-    }
+    // MapId enum 값 정합 — 코드와 파일명 약속이 일치하는지 회귀 안전망.
+    // (bin 파일명 = map_{id}.terrain.bin, id = (int)MapId enum)
+    [Fact]
+    public void MapId_Town_IsZero()
+        => Assert.Equal(0, (int)Dawnholder.Server.GameServer.Maps.MapId.Town);
 
     [Fact]
-    public void UnknownMap_ReturnsEmpty_NotThrow()
+    public void MapId_HuntingGround_IsOne()
+        => Assert.Equal(1, (int)Dawnholder.Server.GameServer.Maps.MapId.HuntingGround);
+
+    [Fact]
+    public void MapId_BossRoom_IsTwo()
+        => Assert.Equal(2, (int)Dawnholder.Server.GameServer.Maps.MapId.BossRoom);
+
+    // 빈 terrain round-trip (Ending 맵 등 지형 없는 맵).
+    [Fact]
+    public void EmptyTerrain_RoundTrip_Stable()
     {
-        Assert.Empty(MapTerrainData.GetSolids(99));
-        Assert.Empty(MapTerrainData.GetPlatforms(99));
+        MapTerrain src = new MapTerrain(
+            System.Array.Empty<TerrainAabb>(),
+            System.Array.Empty<TerrainPlatform>(),
+            killPlaneY: float.NegativeInfinity);
+
+        byte[] bytes = MapDataFile.WriteTerrain(3, src); // id=3 (Ending)
+        MapTerrain dst = MapDataFile.ReadTerrain(bytes, 3);
+
+        Assert.Equal(0, dst.Solids.Length);
+        Assert.Equal(0, dst.Platforms.Length);
+        Assert.Equal(float.NegativeInfinity, dst.KillPlaneY);
+    }
+
+    // 솔리드 범위 불변식 — MinX < MaxX, MinY < MaxY.
+    [Fact]
+    public void Solids_MinStrictlyLessThanMax()
+    {
+        MapTerrain terrain = new MapTerrain(
+            new[]
+            {
+                new TerrainAabb(-10f, 0f, 10f, 2f),
+                new TerrainAabb(5f, 2f, 15f, 4f),
+            },
+            System.Array.Empty<TerrainPlatform>());
+
+        foreach (TerrainAabb a in terrain.Solids)
+        {
+            Assert.True(a.MinX < a.MaxX, $"MinX {a.MinX} >= MaxX {a.MaxX}");
+            Assert.True(a.MinY < a.MaxY, $"MinY {a.MinY} >= MaxY {a.MaxY}");
+        }
     }
 }

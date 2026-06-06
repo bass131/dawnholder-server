@@ -136,8 +136,8 @@ public class GameSession : PacketSession
                 return;
             }
 
-            // 헌법 #1: spawn 좌표를 서버가 정함.
-            Vector2 spawnPos = new Vector2(0f, 0f);
+            // 헌법 #1: spawn 좌표를 서버가 정함 (content.bin PlayerSpawn 기준).
+            Vector2 spawnPos = map.PlayerSpawnPosition;
 
             // initial roster 순서: AddPlayer *전에* 기존 player 목록을 snapshot.
             // 자기 자신이 _players에 들어간 다음에 initial roster 만들면 자기에게 자기 PlayerJoin 보내게 됨.
