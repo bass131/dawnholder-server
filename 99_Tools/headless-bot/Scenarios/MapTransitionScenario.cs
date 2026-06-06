@@ -219,6 +219,12 @@ public class MapTransitionScenario
         // 최신 S_MapTransition 패킷 — WaitForMapTransition이 꺼내 감.
         S_MapTransition? _lastTransition;
 
+        // 현재 맵 terrain — Physics.Step 자체 시뮬에 사용.
+        // S_EnterMap 수신 시 초기화(Town=0), S_MapTransition 수신 시 목적지 맵으로 갱신.
+        // 갱신 누락 = 이전 맵 지형으로 시뮬 → desync 폭증 함정 (Phase 03 D6 설계 주의사항).
+        // Ending(3)은 terrain.bin 없음 — Ending 맵 이동 시 null 허용(Physics.Step flat fallback).
+        MapTerrain? _currentTerrain;
+
         BotSession? _session;
         uint _clientTick;
 
@@ -226,6 +232,9 @@ public class MapTransitionScenario
         public string HandshakeReason { get; private set; } = "";
         public int LocalEntityId { get; private set; } = -1;
         public float SpawnX { get; private set; }
+
+        // 현재 맵 terrain 노출 (시나리오 검증용).
+        public MapTerrain? CurrentTerrain => _currentTerrain;
 
         public void Connect(string host, int port)
         {
@@ -339,15 +348,23 @@ public class MapTransitionScenario
                     enterMap.Read(buffer);
                     LocalEntityId = enterMap.entityId;
                     SpawnX = enterMap.spawnX;
+                    // 초기 맵 terrain 로드 (Town=0). fail loud 정책 — BotTerrainLoader 참조.
+                    _currentTerrain = BotTerrainLoader.Load(mapId: 0);
                     if (!_enterMap.IsSet) _enterMap.Set();
                     break;
 
                 case PacketID.S_MapTransition:
                     // 맵 전환 패킷 수신 — SpawnX를 목적지 spawn 좌표로 갱신.
                     // 봇은 서버 권위 좌표만 사용 (헌법 #1).
+                    // terrain도 목적지 맵으로 갱신 — 갱신 누락 시 이전 맵 지형으로 시뮬 (desync 폭증 함정).
                     S_MapTransition transition = new();
                     transition.Read(buffer);
                     SpawnX = transition.spawnX;
+                    // Ending(mapId=3)은 terrain.bin 없음 — null 허용, Physics.Step flat fallback.
+                    // 그 외 맵은 파일 부재 시 예외 (fail loud).
+                    _currentTerrain = transition.destMapId < 3
+                        ? BotTerrainLoader.Load(transition.destMapId)
+                        : null;
                     lock (_gate) _lastTransition = transition;
                     _mapTransitionCount++;
                     break;
