@@ -5,7 +5,7 @@ title: World & Player — 타일맵 지형 충돌(서버 권위) + 직업 조작
 status: planned
 grade: 대규모
 risk: unity-asset
-estimated: 14~24h (총합, 6 Phase)
+estimated: 20~32h (총합, 6 Phase — 세션13 Phase 03 대규모 상향 반영)
 domain: shared+server+client
 ---
 
@@ -23,6 +23,7 @@ domain: shared+server+client
 
 **핵심 설계 (세션11 승인)**:
 - **지형**: Unity 타일맵 = 저작 도구, 충돌 데이터 = 98_Shared 단일 진실. 에디터 bake 스크립트(`TerrainBaker`)가 솔리드 셀 → **98_Shared 생성 C# 데이터** 출력 (PacketGenerator 코드젠 문화 정합). `Physics.Step` 평지(GroundY=0) → 솔리드 AABB + one-way 플랫폼. 서버·클라 prediction이 같은 생성 데이터 → drift 0, **프로토콜 변경 0**.
+  - **세션13 전환 (2026-06-06)**: 산출물을 생성 C# → **바이너리 파일(무결성 헤더) + 런타임 로드**로 전환 + bake 범위를 오브젝트 위치(스폰 마커·kill-plane)까지 확장. `MapSpawnTable`/`MapTerrainData.cs` 은퇴. 상세 = Phase 03 문서 D1~D6 (미래 맵 에디터 마일스톤의 기반).
 - **직업**: 단일 prefab + `ClassConfig` ScriptableObject (CharacterClass → AnimatorController + MoveSpeed/JumpVel + 공격 전략). `LocalPlayerController`(206줄 God class 4책임) → Input/Movement/AttackStrategy 분리. `PlayerAnimatorSync`(옛 IsMoving) → `LocalPlayerMotion`+`AnimatorDriver`(08b 계약) 교체 완성.
 - **과추상 경계(§0.3)**: SO 2종(ClassConfig) + 전략 인터페이스 1까지. 그 이상 금지.
 
@@ -34,7 +35,7 @@ domain: shared+server+client
 |---|---|---|---|---|---|
 | 01 | 지형 bake 도구 (TerrainBaker → 98_Shared 생성 데이터) | 복잡 | client(에디터)+shared | 2~4h | — |
 | 02 | 지형 물리 (Physics.Step 솔리드 AABB + one-way 플랫폼 + 단위 테스트) | 복잡 | shared | 3~5h | — (기술 난도 최고 — /cross-review 후보) |
-| 03 | 지형 통합 실측 (서버+prediction 연결 + 스폰 조정 + 봇 회귀 + 상호작용 지형 범위 확정) | 복잡 | server+client | 2~4h | unity-asset(씬) |
+| 03 | 맵 데이터 파이프라인 전환(바이너리 bake + 런타임 로드 + 스폰/kill-plane bake) + 지형 통합 실측 | **대규모** (세션13 상향) | shared+server+client+qa | 8~12h | unity-asset(씬) |
 | 04 | 직업 이동 분리 (PlayerStats.JumpVel + 파라미터 주입 + LocalPlayerController 4분할) | 복잡 | shared+server+client (shared/server는 ~20줄 연결) | 3~4h | — |
 | 05 | 직업 장착 구조 (ClassConfig SO + IAttackStrategy + AnimatorDriver 교체 + Mage 투사체 연출) | 복잡 | client | 3~5h | unity-asset(prefab) |
 | 06 | 회귀 + 마감 | 보통 | qa | 1~2h | irreversible(PR) |
@@ -81,7 +82,9 @@ domain: shared+server+client
 
 - **drop-through**(아래로 내려가기)·**이동 플랫폼** — 지형 v2 후보, 이월
 - **적 AI 지형 추적 이동** — 적은 평탄 구간 스폰 배치로 해결 (M4.5 몬스터 Phase에서 스폰 좌표만)
-- **맵 에디터 저작 도구** — 기존 이월 유지 (이번엔 bake 추출만)
+- **맵 에디터 저작 도구** — 기존 이월 유지 (이번엔 bake 추출 + 바이너리 파이프라인까지 — 에디터 *제작*은 여전히 이월)
+- **포탈 bake** — `PortalTable` 보존 (M4.2 race 검증 완료 코드), 포탈의 데이터 파일 이행은 M4.5+ 이월
+- **멀티 AI 오케스트레이터 도구** — 본인 제작 백로그 (세션13 의논 — 99_Tools/ 후보, 게임 외 도구 프로젝트)
 - **원격 플레이어 직업 표시** — S_PlayerJoin class append 필요 (PDL bump) → M4.5 보스 Phase의 v9 묶음
 - **NetworkService SRP 분리** — 이번에 안 건드림 → 이후 이월
 - **몬스터 prefab 전환 + 골렘 / UI 5묶음 / 보스** → M4.5 content-and-boss
@@ -97,3 +100,4 @@ domain: shared+server+client
 ## 갱신 이력
 
 - 2026-06-06 — 신설 (세션11 마일스톤 재편 — M4.3 입자 초과분 분리, 승인 plan 기반 6 Phase 분해)
+- 2026-06-06 (세션13) — **Phase 03 재정의**: 맵 데이터 관리 방식 의논 결과 반영 — 바이너리 bake + 런타임 로드 + 스폰/kill-plane bake 확장, 등급 복잡→대규모 (총 예상 14~24h → 20~32h)
