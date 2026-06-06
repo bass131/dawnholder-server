@@ -173,3 +173,11 @@ logs/
 # Unity Recovery (auto-generated on Editor crash, M2 P06 TMP NRE 잔재)
 03_Client/Assets/_Recovery/
 03_Client/Assets/_Recovery.meta
+
+# ─────────────────────────────────────────────
+# BgmComposer 렌더 산출물 (WAV) — 도구로 언제든 재생성 가능, commit X
+# 게임에 채택된 트랙만 03_Client/Assets/Audio/로 복사해 커밋 (Shared.dll 화이트리스트와 같은 정신)
+# soundfont/ = 38MB 외부 바이너리 (MuseScore_General.sf3) — 각자 다운로드, README 참조
+# ─────────────────────────────────────────────
+99_Tools/BgmComposer/out/
+99_Tools/BgmComposer/soundfont/
