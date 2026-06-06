@@ -11,17 +11,22 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 //
 // 시나리오:
 //   1. 서버에 접속 + handshake + Town 진입
-//   2. portal 2회 타고 HuntingGround 진입 (Town → HG 경유 없이 HG 바로 진입)
-//      HG에 Normal enemy spawn 대기
-//   3. enemy가 Patrol 상태로 시작하는 것을 S_EntityState로 확인
-//   4. 봇이 AggroRange(6) 안으로 진입
-//   5. 다음 S_EntityState에서 state=Chase(2)로 전환됨을 확인
-//   6. enemy.x가 봇 방향으로 이동하는 것을 좌표 변화로 검증
+//   2. Town portal로 HuntingGround 진입 → 초기 roster의 Normal enemy 수집
+//   3. 타겟 선정: 같은 높이(점프 없이 도달) + 현재 aggro 밖(Patrol 관측 보장) 중 가장 가까운 Normal
+//   4. 타겟이 Patrol 상태로 도는 것을 S_EntityState로 확인
+//   5. 봇이 타겟의 스폰 보고 좌표로 접근 → 서버 |dx| aggro 판정 진입
+//   6. S_EntityState에서 state=Chase(2) 전환 확인
+//   7. Chase 중 |enemy.x - bot.x| 감소(봇 방향 접근)를 좌표 변화로 검증 (soft)
 //
 // **검증 전략**:
 //   - S_EntityState 패킷(PacketID=19) 수신 후 state 필드 확인
 //   - state byte: 0=Idle, 1=Patrol, 2=Chase (EnemyState enum 정합)
 //   - 서버 로그는 봇에서 직접 볼 수 없으므로 클라 패킷 수신으로 간접 검증
+//
+// **좌표 하드코딩 X (M4.4-03)**:
+//   적 스폰은 bake 산출 content.bin이 단일 진실(서버 전용) — 봇은 S_EntitySpawn 수신값으로
+//   타겟/접근 좌표를 런타임 결정. 재bake로 배치가 바뀌어도 시나리오 수정 불필요.
+//   aggro 판정은 서버가 |dx| 단독 사용(EnemyAISystem) — 접근 좌표도 X축만 계산.
 public class EnemyAiSmoke
 {
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(8);
@@ -29,14 +34,12 @@ public class EnemyAiSmoke
     const byte StatePatrol = 1;
     const byte StateChase  = 2;
 
-    // HG portal (Town → HG)
+    // HG portal (Town → HG) — 서버 PortalTable.cs와 정합 (포탈 bake 이행은 M4.5+ 이월).
     const float TownPortalX = 20f;
     const int   TownPortalId = 1;
 
-    // enemy AggroRange = 6. 봇이 aggro 범위 안에 들어가려면 enemy 근처로 이동.
-    // HG enemy SpawnX=10. 봇이 HG destSpawn=x=2에서 시작.
-    // enemy.X는 Patrol 중 (10 ± 4 범위) — 봇이 x=6~7 근처로 가면 |dx|≤6 만족.
-    const float AggroEntryX = 7f;   // enemy SpawnX(10) - AggroRange(6) + 여유 = 약 5~7
+    // 같은 높이 판정 허용 오차 — 점프 없이 접근 가능한 타겟만 고름 (발판 위 적 제외).
+    const float SamePlaneTolerance = 1.5f;
 
     public class Result
     {
@@ -48,7 +51,7 @@ public class EnemyAiSmoke
         public float EnemyXAtChase;
         public bool SawPatrolState;
         public bool SawChaseState;
-        public bool SawXMovement; // Chase 중 X가 봇 방향으로 이동했는지
+        public bool SawXMovement; // Chase 중 |enemy.x - bot.x|가 감소했는지 (방향 무관 접근 검증)
     }
 
     public static async Task<Result> Run(
@@ -85,56 +88,74 @@ public class EnemyAiSmoke
             // 서버 tick thread가 다음 맵 job 처리까지 대기
             await Task.Delay(Constants.TickIntervalMs * 3, ct);
 
-            // HG Normal enemy spawn 대기 (S_EntitySpawn with kind=0=Normal)
-            S_EntitySpawn? enemySpawn = await bot.WaitForNormalEnemySpawn(DefaultTimeout, ct);
-            if (enemySpawn == null)
+            // HG 초기 roster의 Normal enemy 수집 (S_EntitySpawn with kind=0=Normal).
+            // 초기 spawn 묶음은 진입 직후 함께 도착 — 첫 마리 수신 후 짧은 유예로 전부 수집.
+            IReadOnlyList<S_EntitySpawn> normals = await bot.CollectNormalSpawns(
+                DefaultTimeout, TimeSpan.FromMilliseconds(Constants.TickIntervalMs * 4), ct);
+            if (normals.Count == 0)
                 return Fail(result, "Normal enemy S_EntitySpawn timeout in HuntingGround");
 
-            result.EnemyEntityId = enemySpawn.entityId;
-            result.EnemyInitialX = enemySpawn.x;
+            // 타겟 선정: 같은 높이 + 현재 aggro 밖 중 |dx| 최소.
+            // aggro 밖 조건 = Patrol 상태를 먼저 관측할 수 있다는 보장 (진입 즉시 Chase면 4단계 검증 불가).
+            float aggroRange = EnemyStats.NormalDefault().AggroRange;
+            float botX = bot.BotX;
+            float botY = bot.BotY;
+
+            S_EntitySpawn? target = normals
+                .Where(s => Math.Abs(s.y - botY) <= SamePlaneTolerance
+                         && Math.Abs(s.x - botX) > aggroRange)
+                .OrderBy(s => Math.Abs(s.x - botX))
+                .FirstOrDefault();
+            if (target == null)
+                return Fail(result,
+                    $"적합한 타겟 없음 — 같은 높이(±{SamePlaneTolerance}) + aggro({aggroRange}) 밖 Normal이 0마리. " +
+                    $"수집 {normals.Count}마리: {string.Join(", ", normals.Select(s => $"({s.x:F2},{s.y:F2})"))} " +
+                    $"/ bot=({botX:F2},{botY:F2}). 재bake로 스폰 배치가 바뀌었으면 시나리오 전제 재검토.");
+
+            result.EnemyEntityId = target.entityId;
+            result.EnemyInitialX = target.x;
 
             // Patrol 상태 S_EntityState 대기 (enemy가 움직이고 있을 것)
             // SnapshotTickInterval(=2) * 50ms = 100ms 주기로 broadcast됨
-            // 최대 5초 대기
             bool gotPatrol = await bot.WaitForEnemyState(
-                enemySpawn.entityId, StatePatrol, DefaultTimeout, ct);
+                target.entityId, StatePatrol, DefaultTimeout, ct);
             if (!gotPatrol)
-                return Fail(result, $"S_EntityState(Patrol) not received for enemy {enemySpawn.entityId} within timeout. " +
-                                    $"Last known state: {bot.LastStateFor(enemySpawn.entityId)}");
+                return Fail(result, $"S_EntityState(Patrol) not received for enemy {target.entityId} within timeout. " +
+                                    $"Last known state: {bot.LastStateFor(target.entityId)}");
 
             result.SawPatrolState = true;
 
-            // 봇이 AggroRange 안으로 진입 — enemy SpawnX(10) 기준 6 이내
-            // 현재 봇 위치는 HG destSpawn x=2. AggroEntryX(7)까지 이동.
-            await bot.MoveToX(AggroEntryX, ct);
+            // 봇이 타겟의 스폰 보고 좌표로 접근. 보고 x = 관측 시점 patrol 위치(센터 아님)지만,
+            // patrol 왕복(±PatrolRange)이 매 주기 |dx|<=AggroRange 영역을 통과하므로 Chase 전환 보장.
+            await bot.MoveToX(target.x, ct);
 
             // Chase 전환 대기 — 봇이 aggro 범위 안에 들어간 후 다음 S_EntityState에서 Chase
             bool gotChase = await bot.WaitForEnemyState(
-                enemySpawn.entityId, StateChase, DefaultTimeout, ct);
+                target.entityId, StateChase, DefaultTimeout, ct);
             if (!gotChase)
                 return Fail(result, $"S_EntityState(Chase) not received after aggro entry. " +
-                                    $"Last known state: {bot.LastStateFor(enemySpawn.entityId)}, " +
-                                    $"Last known x: {bot.LastXFor(enemySpawn.entityId):F2}");
+                                    $"Last known state: {bot.LastStateFor(target.entityId)}, " +
+                                    $"Last known x: {bot.LastXFor(target.entityId):F2}");
 
             result.SawChaseState = true;
-            result.EnemyXAtChase = bot.LastXFor(enemySpawn.entityId);
+            result.EnemyXAtChase = bot.LastXFor(target.entityId);
 
-            // X 변화 검증: enemy가 Chase 상태에서 봇 방향(왼쪽)으로 이동했어야 함.
-            // enemy SpawnX=10, 봇은 x≈7. enemy.X < SpawnX(10) 이면 봇 방향으로 이동 중.
-            // 단 첫 Chase 틱이라면 아직 이동 안 했을 수 있으므로 여유 줌.
-            // 대신 여러 패킷 관찰 후 최솟값이 초기값보다 감소했는지 확인.
+            // 접근 검증: Chase 중 적이 봇 방향으로 이동 → |enemy.x - bot.x| 감소 (방향 무관).
+            // 첫 Chase 틱이라면 아직 이동량이 작을 수 있으므로 몇 tick 더 관찰 후 비교.
+            float chaseDistInitial = Math.Abs(result.EnemyXAtChase - bot.BotX);
             await Task.Delay(500, ct); // 몇 tick 더 관찰
 
-            float enemyCurrentX = bot.LastXFor(enemySpawn.entityId);
-            // enemy가 봇(x≈7) 방향으로 이동했다면 enemy.X < 초기값(SpawnX=10)
-            result.SawXMovement = enemyCurrentX < result.EnemyInitialX;
+            float enemyCurrentX = bot.LastXFor(target.entityId);
+            float chaseDistFinal = Math.Abs(enemyCurrentX - bot.BotX);
+            result.SawXMovement = chaseDistFinal < chaseDistInitial;
 
             if (!result.SawXMovement)
             {
-                // X 이동이 없어도 Chase 상태 전환 자체는 검증 완료이므로 경고 수준
-                Console.WriteLine($"[AiSmoke] Warning: enemy X did not decrease. initial={result.EnemyInitialX:F2}, current={enemyCurrentX:F2}");
-                Console.WriteLine($"  This may happen if enemy just transitioned to Chase — not a failure.");
-                // X 이동은 soft check — Chase 상태 전환이 핵심 검증
+                // 접근이 안 보여도 Chase 상태 전환 자체는 검증 완료이므로 경고 수준
+                Console.WriteLine($"[AiSmoke] Warning: enemy did not approach. " +
+                                  $"dist atChase={chaseDistInitial:F2}, after={chaseDistFinal:F2}");
+                Console.WriteLine($"  This may happen if enemy just transitioned to Chase or already overlaps the bot — not a failure.");
+                // 접근은 soft check — Chase 상태 전환이 핵심 검증
             }
 
             result.LocalEntityId = bot.LocalEntityId;
@@ -171,10 +192,15 @@ public class EnemyAiSmoke
         BotSession? _session;
         uint _clientTick;
         float _botSpawnX;
+        float _botSpawnY;
 
         public bool HandshakeOk { get; private set; }
         public string HandshakeReason { get; private set; } = "";
         public int LocalEntityId { get; private set; } = -1;
+
+        // 봇 현재 위치 추정 (서버 권위 S_Snapshot으로 보정됨) — 타겟 선정/접근 거리 계산용.
+        public float BotX => _botSpawnX;
+        public float BotY => _botSpawnY;
 
         public byte LastStateFor(int entityId)
         {
@@ -215,15 +241,20 @@ public class EnemyAiSmoke
         public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition.IsSet, timeout, ct);
 
-        public async Task<S_EntitySpawn?> WaitForNormalEnemySpawn(TimeSpan timeout, CancellationToken ct)
+        // 첫 Normal spawn 수신까지 대기 후, grace 동안 추가 수집해 전부 반환.
+        // "첫 마리" 단일 반환이 아닌 목록 반환 — 타겟 선정은 호출부 책임 (재bake 내성).
+        public async Task<IReadOnlyList<S_EntitySpawn>> CollectNormalSpawns(
+            TimeSpan firstTimeout, TimeSpan grace, CancellationToken ct)
         {
             // Normal enemy kind = 0
             const byte NormalKind = 0;
             bool ok = await WaitUntil(
                 () => { lock (_gate) return _spawns.Any(s => s.entityKind == NormalKind); },
-                timeout, ct);
-            if (!ok) return null;
-            lock (_gate) return _spawns.First(s => s.entityKind == NormalKind);
+                firstTimeout, ct);
+            if (!ok) return Array.Empty<S_EntitySpawn>();
+
+            await Task.Delay(grace, ct);
+            lock (_gate) return _spawns.Where(s => s.entityKind == NormalKind).ToList();
         }
 
         public async Task<bool> WaitForEnemyState(int entityId, byte targetState, TimeSpan timeout, CancellationToken ct)
@@ -296,6 +327,7 @@ public class EnemyAiSmoke
                     enterMap.Read(buffer);
                     LocalEntityId = enterMap.entityId;
                     _botSpawnX = enterMap.spawnX;
+                    _botSpawnY = enterMap.spawnY;
                     _enterMap.Set();
                     break;
 
@@ -303,6 +335,13 @@ public class EnemyAiSmoke
                     S_MapTransition mapTransition = new();
                     mapTransition.Read(buffer);
                     _botSpawnX = mapTransition.spawnX;
+                    _botSpawnY = mapTransition.spawnY;
+                    // 새 맵 roster로 교체 — 이전 맵 spawn/state가 타겟 선정에 섞이지 않게 초기화.
+                    lock (_gate)
+                    {
+                        _spawns.Clear();
+                        _entityStates.Clear();
+                    }
                     _mapTransition.Set();
                     break;
 
@@ -319,11 +358,14 @@ public class EnemyAiSmoke
                     break;
 
                 case PacketID.S_Snapshot:
-                    // 봇 SpawnX 업데이트 (자기 자신 snapshot 시)
+                    // 봇 위치 업데이트 (자기 자신 snapshot 시)
                     S_Snapshot snapshot = new();
                     snapshot.Read(buffer);
                     if (snapshot.entityId == LocalEntityId)
+                    {
                         _botSpawnX = snapshot.x;
+                        _botSpawnY = snapshot.y;
+                    }
                     break;
             }
         }
