@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.3
 phase: 12
 title: M4.3 회귀 테스트 + 가벼운 마감 (5단계 보고 X)
-status: pending
+status: done
 grade: 보통
 risk: irreversible
 estimated: 1~2h
@@ -12,7 +12,7 @@ domain: qa
 
 # Phase 12: M4.3 회귀 테스트 + 가벼운 마감
 
-> **상태**: pending
+> **상태**: done (2026-06-06 — PR #62 머지, `_milestone-DONE.md` 참조)
 > **마일스톤**: M4.3
 > **등급**: 보통 (qa + 마감. PR 머지 시 irreversible 깃발)
 > **담당**: qa SubAgent + 메인 세션 (마감 의례)
@@ -21,25 +21,24 @@ domain: qa
 
 ## 🎯 목표
 
-M4.3 전체(Phase 07~11)를 통합 회귀 검증하고 **가볍게 마감**한다. **5단계 보고/M4 종합 마감 의례는 박지 않는다** (2026-05-29 의논 — M4.3는 "M4 마감"이 아니라 발표용 polish 마일스톤). 전체 테스트 green + 발표 데모 시나리오 한 번 통째로 돌려보고, PR 머지 + work-pin 갱신으로 닫는다.
+M4.3 완료분(Phase 07/08a/08b/10/10b/11)을 통합 회귀 검증하고 **경량 마감**한다. **2026-06-06 마일스톤 재편**으로 09(boss)는 M4.5 이월 — 본 Phase는 잔여 작업물(`b4ff1b2` 자산 + `2940f2f` Animator wiring) 브랜치를 main에 박는 것이 핵심. 발표 데모 풀 리허설은 M4.5 마감으로 이월 (보스 + 새 지형 동선 포함 버전이 진짜).
 
 ---
 
 ## ⏪ 사전 조건
 
-- [ ] **Phase 07~11 전부 완료** (enemy AI 서버/클라 + boss + 움직임 polish + RemotePlayer 외관)
+- [x] **Phase 07/08a/08b/10/10b/11 완료** (09는 M4.5 이월 — 2026-06-06 재편)
 
 ---
 
 ## 📝 작업 내용
 
-- [ ] 전체 회귀 — `dotnet build Dawnholder.slnx` + `dotnet test --no-incremental` (※ 증분빌드 거짓실패 주의 — work-pin 학습)
-- [ ] 헤드리스 봇 시나리오 통합 점검 — `EnemyAiSmoke` + `BossFightSmoke` + 기존 시나리오 전부 PASS
-- [ ] **발표 데모 시나리오 1회 풀 리허설** (Play): 마을 → 사냥터(적 patrol/chase 처치) → 보스방(보스 패턴전 → 페이즈 2 → 처치 → StageClear) → 엔딩. 클래스별 속도 + 점프 + 멀티 RemotePlayer 애니 체감
-- [ ] `Protocol.Version` 최종 == 8 확인 (07: 6→7, 09: 7→8)
-- [ ] CHANGELOG entry 박음 ([M] — enemy AI 도입 + boss behavior + PDL 6→8, 모든 팀원 영향)
-- [ ] PR 생성 — **사용자 명시 GO 게이트** (irreversible, 헌법). PvP/cloud 등 보안 키워드 literal 금지
-- [ ] work-pin 갱신 (M4.3 MERGED + M4.4 보안 마일스톤 진입 대기)
+- [x] 전체 회귀 — `dotnet build Dawnholder.slnx --no-incremental` + `dotnet test --no-build` (경고0/오류0 + 349/0/4skip)
+- [x] 헤드리스 봇 기존 시나리오 전부 PASS (6/6 — boss 시나리오는 M4.5)
+- [x] `Protocol.Version` 최종 == 8 확인 (07: 6→7, 08a: 7→8. 09 bump는 M4.5에서 8→9)
+- [x] CHANGELOG entry 박음 ([M] `834aead` — 애니 상태머신 풀세트 + Animator wiring 5종 + 마일스톤 재편)
+- [x] PR 생성·머지 — PR #62 (사용자 GO 게이트 통과 + admin bypass 사유 코멘트) → main `954e028`
+- [x] work-pin 갱신 (M4.3 MERGED + M4.4 world-and-player 진입)
 
 ### 박지 않는 것 (명시)
 - ❌ 5단계 보고 MD/HTML (대규모 마감 의례 — M4.3는 보통 마감)
@@ -50,11 +49,10 @@ M4.3 전체(Phase 07~11)를 통합 회귀 검증하고 **가볍게 마감**한�
 
 ## ✅ 완료 조건
 
-- [ ] `dotnet test --no-incremental` 전부 green (회귀 0)
-- [ ] 헤드리스 봇 enemy AI + boss fight 시나리오 PASS
-- [ ] 발표 데모 풀 시나리오 Play 1회 무사고 (멈춤/크래시 0)
-- [ ] CHANGELOG 갱신 + PR 머지 (사용자 GO 후)
-- [ ] work-pin = M4.3 MERGED 반영
+- [x] `dotnet test` 전부 green (회귀 0 — 클린빌드 후)
+- [x] 헤드리스 봇 기존 시나리오 PASS (boss는 M4.5)
+- [x] CHANGELOG 갱신 + PR 머지 (사용자 GO 후 — PR #62)
+- [x] work-pin = M4.3 MERGED + M4.4 진입 반영
 
 ---
 
@@ -86,7 +84,7 @@ M4.3 전체(Phase 07~11)를 통합 회귀 검증하고 **가볍게 마감**한�
 
 ## ➡️ 다음 마일스톤
 
-- **M4.4(가칭) — 보안 hardening** (cheat-flag + Serilog + PvP ADR + γ10 잔여). 또는 발표 후 PRD 재정합으로 로드맵 확정.
+- **M4.4 — world-and-player** (타일맵 지형 충돌 + 직업 조작 분리 — 2026-06-06 재편 확정, `M4.4-world-and-player/_milestone-plan.md` 참조). 보안 hardening은 그 뒤 별도 마일스톤으로 계속 이월.
 
 ---
 

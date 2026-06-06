@@ -37,7 +37,9 @@ namespace Dawnholder.Client.Tests.Prediction
 
             Assert.AreEqual(new Vector2(3f, 0f), predictor.Position);
             Assert.AreEqual(Vector2.zero, predictor.Velocity);
-            Assert.IsTrue(predictor.OnGround, "y=0 → OnGround true");
+            // 지형 모드(M4.4-03)부터 spawn 직후는 항상 공중 출발 — 서버도 같은 Step에서
+            // 중력을 적용해 함께 낙하하므로 첫 틱 drift는 reconcile이 흡수.
+            Assert.IsFalse(predictor.OnGround, "spawn 직후는 항상 OnGround false (지형 모드 낙하 출발)");
         }
 
         [Test]
@@ -249,6 +251,132 @@ namespace Dawnholder.Client.Tests.Prediction
 
             Assert.AreEqual(2, predictor.SnapCount,
                 "mispredict 2회 → SnapCount=2");
+        }
+
+        // === IsGroundedAt — reconcile 시 접지 판정 (M4.4-03 reviewer 🟡) ===
+        //
+        // IsGroundedAt은 private — mispredict OnSnapshot 경로(서버 권위 리셋 시
+        // OnGround = IsGroundedAt(serverX, serverY, serverVy))로 간접 검증.
+        // 미-ack 입력이 없으면 replay가 돌지 않아 판정 결과가 OnGround에 그대로 보존됨.
+        // 4분기: 평지(terrain null) / 솔리드 윗면 / one-way 발판 / 상승 중(vy>0).
+
+        static MapTerrain SolidOnlyTerrain()
+            => new MapTerrain(
+                new[] { new TerrainAabb(0f, 0f, 10f, 2f) },
+                System.Array.Empty<TerrainPlatform>());
+
+        static MapTerrain PlatformOnlyTerrain()
+            => new MapTerrain(
+                System.Array.Empty<TerrainAabb>(),
+                new[] { new TerrainPlatform(3f, 0f, 10f) });
+
+        [Test]
+        public void OnSnapshot_FlatFallback_AtGroundLevel_OnGroundTrue()
+        {
+            var predictor = new PlayerPredictor(); // terrain 미주입 = 평지 fallback
+            predictor.SetInitialPosition(Vector2.zero);
+
+            bool mispredict = predictor.OnSnapshot(10f, 0f, 0f, 0f, ackedClientTick: 0);
+
+            Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
+            Assert.IsTrue(predictor.OnGround, "평지 모드 y=0 → 접지");
+        }
+
+        [Test]
+        public void OnSnapshot_FlatFallback_InAir_OnGroundFalse()
+        {
+            var predictor = new PlayerPredictor();
+            predictor.SetInitialPosition(Vector2.zero);
+
+            bool mispredict = predictor.OnSnapshot(10f, 5f, 0f, 0f, ackedClientTick: 0);
+
+            Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
+            Assert.IsFalse(predictor.OnGround, "평지 모드 y=5 → 공중");
+        }
+
+        [Test]
+        public void OnSnapshot_OnSolidTop_OnGroundTrue()
+        {
+            var predictor = new PlayerPredictor();
+            predictor.SetTerrain(SolidOnlyTerrain());
+            predictor.SetInitialPosition(Vector2.zero);
+
+            // 솔리드 (0,0)-(10,2) 윗면 y=2 위 — 착지 스냅 정확값.
+            bool mispredict = predictor.OnSnapshot(5f, 2f, 0f, 0f, ackedClientTick: 0);
+
+            Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
+            Assert.IsTrue(predictor.OnGround, "솔리드 윗면 y=MaxY → 접지");
+        }
+
+        [Test]
+        public void OnSnapshot_BesideSolid_SameHeight_OnGroundFalse()
+        {
+            var predictor = new PlayerPredictor();
+            predictor.SetTerrain(SolidOnlyTerrain());
+            predictor.SetInitialPosition(Vector2.zero);
+
+            // 같은 높이(y=2)지만 솔리드 x 범위(0..10) 밖 — 받침 없음.
+            bool mispredict = predictor.OnSnapshot(20f, 2f, 0f, 0f, ackedClientTick: 0);
+
+            Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
+            Assert.IsFalse(predictor.OnGround, "솔리드 수평 범위 밖 → 공중");
+        }
+
+        [Test]
+        public void OnSnapshot_AboveSolid_OnGroundFalse()
+        {
+            var predictor = new PlayerPredictor();
+            predictor.SetTerrain(SolidOnlyTerrain());
+            predictor.SetInitialPosition(Vector2.zero);
+
+            // 솔리드 위 공중 (y=4 > MaxY=2) — 지형 모드에서 평지 y<=0 가정이 사라졌는지도 겸검증.
+            bool mispredict = predictor.OnSnapshot(5f, 4f, 0f, 0f, ackedClientTick: 0);
+
+            Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
+            Assert.IsFalse(predictor.OnGround, "솔리드 위 공중 → 비접지");
+        }
+
+        [Test]
+        public void OnSnapshot_OnPlatform_OnGroundTrue()
+        {
+            var predictor = new PlayerPredictor();
+            predictor.SetTerrain(PlatformOnlyTerrain());
+            predictor.SetInitialPosition(Vector2.zero);
+
+            // one-way 발판 y=3 위 — 착지 스냅 정확값.
+            bool mispredict = predictor.OnSnapshot(5f, 3f, 0f, 0f, ackedClientTick: 0);
+
+            Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
+            Assert.IsTrue(predictor.OnGround, "발판 윗면 y=P.Y → 접지");
+        }
+
+        [Test]
+        public void OnSnapshot_BelowPlatform_OnGroundFalse()
+        {
+            var predictor = new PlayerPredictor();
+            predictor.SetTerrain(PlatformOnlyTerrain());
+            predictor.SetInitialPosition(new Vector2(50f, 0f)); // x 차이로 mispredict 유도
+
+            // 발판 아래 (y=1) — one-way 발판은 그 높이가 아니면 받침 아님.
+            bool mispredict = predictor.OnSnapshot(5f, 1f, 0f, 0f, ackedClientTick: 0);
+
+            Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
+            Assert.IsFalse(predictor.OnGround, "발판 아래 → 공중");
+        }
+
+        [Test]
+        public void OnSnapshot_RisingOnSolidTop_OnGroundFalse()
+        {
+            var predictor = new PlayerPredictor();
+            predictor.SetTerrain(SolidOnlyTerrain());
+            predictor.SetInitialPosition(Vector2.zero);
+
+            // 좌표는 솔리드 윗면과 일치하지만 vy>0 (점프 상승 통과 중) — 접지 아님.
+            // 상승 분기가 면 일치 검사보다 먼저 끊어야 replay 점프 입력이 서버와 정합.
+            bool mispredict = predictor.OnSnapshot(5f, 2f, 0f, 5f, ackedClientTick: 0);
+
+            Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
+            Assert.IsFalse(predictor.OnGround, "vy>0 상승 중 → 면 위라도 비접지");
         }
     }
 }

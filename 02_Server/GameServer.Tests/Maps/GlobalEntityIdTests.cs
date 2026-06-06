@@ -2,6 +2,7 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
+using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Tests.Maps;
 
@@ -22,7 +23,16 @@ public class GlobalEntityIdTests : IDisposable
 
     public GlobalEntityIdTests()
     {
-        _world = new GameWorld();
+        // HuntingGround Normal + BossRoom Boss content 주입 (옛 MapSpawnTable 값 보존).
+        // 생성 순서 결정론: Town→HG→BR→Ending → HG Normal=id1, BR Boss=id2.
+        var provider = new Dictionary<MapId, (MapTerrain? Terrain, MapContent? Content)>
+        {
+            [MapId.Town]          = (null, MapContent.Empty),
+            [MapId.HuntingGround] = (null, new MapContent(0f, 0f, new[] { new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f) })),
+            [MapId.BossRoom]      = (null, new MapContent(0f, 0f, new[] { new EnemySpawnPoint((byte)EnemyKind.Boss,   30f, 0f) })),
+            [MapId.Ending]        = (null, MapContent.Empty),
+        };
+        _world = new GameWorld(provider);
     }
 
     public void Dispose()
@@ -139,12 +149,17 @@ public class GlobalEntityIdTests : IDisposable
 // "단독 GameMap = id 1부터" 동작이 유지됨을 회귀 안전망으로 확인.
 public class LocalEntityIdTests
 {
+    static MapContent NormalContent() => new MapContent(0f, 0f, new[]
+    {
+        new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f),
+    });
+
     [Fact]
     public void StandaloneGameMap_Enemy_StartsAtOne()
     {
-        // new GameMap(mapId) 단독 생성 (idAllocator=null) → 로컬 카운터 1부터.
+        // content 주입 GameMap (idAllocator=null) → 로컬 카운터 1부터.
         // AttackHandlerTests.EnemyEntityId=1 기대값의 근거.
-        GameMap map = new GameMap(MapId.HuntingGround); // idAllocator=null → 로컬 모드
+        GameMap map = new GameMap(MapId.HuntingGround, content: NormalContent());
         EnemyEntity enemy = map.Enemies.Values.Single();
         Assert.Equal(1, enemy.EntityId);
     }
@@ -152,13 +167,16 @@ public class LocalEntityIdTests
     [Fact]
     public void StandaloneGameMap_AddPlayer_AfterEnemy_Gets_IncrementalId()
     {
-        // HuntingGround + Boss 수동 spawn(id=2) 후 AddPlayer → id=3.
+        // HuntingGround Normal(id=1) + Boss 수동 spawn(id=2) 후 AddPlayer → id=3.
         // AttackHandlerTests.PlayerEntityId=3 기대값의 근거.
-        GameMap map = new GameMap(MapId.HuntingGround);
-        // id=1 (Normal, ctor에서 자동 spawn)
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f),
+        });
+        GameMap map = new GameMap(MapId.HuntingGround, content: content);
+        // id=1 (Normal, ctor에서 content 주입 spawn)
 
-        EnemySpawnDef bossDef = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
-        map.SpawnEnemy(bossDef.Kind, bossDef.X, bossDef.Y, bossDef.MaxHp);
+        map.SpawnEnemy(EnemyKind.Boss, 30f, 0f, 100);
         // id=2 (Boss, 수동 spawn)
 
         PlayerEntity player = map.AddPlayer(owner: null, spawnPos: Vector2.Zero);
@@ -175,9 +193,13 @@ public class LocalEntityIdTests
         int counter = 100; // 100부터 시작하는 커스텀 발급기
         Func<int> allocator = () => ++counter;
 
-        GameMap map = new GameMap(MapId.HuntingGround, allocator);
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f),
+        });
+        GameMap map = new GameMap(MapId.HuntingGround, allocator, content: content);
 
-        // HuntingGround ctor에서 Normal enemy 1마리 spawn → allocator() 1회 호출 → id=101.
+        // content 주입 Normal enemy 1마리 spawn → allocator() 1회 호출 → id=101.
         EnemyEntity enemy = map.Enemies.Values.Single();
         Assert.Equal(101, enemy.EntityId);
 

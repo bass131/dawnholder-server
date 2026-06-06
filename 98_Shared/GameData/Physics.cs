@@ -29,7 +29,38 @@ public static class Physics
     private const float GroundEpsilon = 0.0001f;
 
     /// <summary>
-    /// 1 step 결정론 시뮬레이션. 같은 (state, input) → 같은 PhysicsState.
+    /// 1 step 결정론 시뮬레이션 (평지 fallback). terrain=null 이면 이 경로.
+    /// 기존 2-인자 호출자가 이 오버로드로 자동 라우팅됨 — 거동 바이트 동일.
+    /// </summary>
+    public static PhysicsState Step(PhysicsState state, PhysicsInput input)
+        => Step(state, input, null);
+
+    /// <summary>
+    /// 1 step 결정론 시뮬레이션. 같은 (state, input, terrain) → 같은 PhysicsState.
+    ///
+    /// <para><b>분기 규칙</b>:
+    /// terrain이 null이거나 지형이 하나도 없으면 <see cref="StepFlat"/>으로 위임 (평지 fallback).
+    /// 그 외엔 지형 경로 (솔리드 AABB + one-way 발판).</para>
+    ///
+    /// <para><b>지형 경로 순서</b> (재정렬 금지 — 결과가 달라짐):
+    ///   1. vx = inputX * MoveSpeed
+    ///   2. 지지 판정: vy≤0 &amp;&amp; 솔리드 윗면 or 발판 면 위에 서 있으면 startedOnGround=true
+    ///   3. 점프/중력 (StepFlat 동일 구조)
+    ///   4. X축 스윕 — 솔리드 측면 차단 (y 범위 [MinY, MaxY) 조건으로 바닥 위 보행 간섭 방지)
+    ///   5. Y축 스윕 — 하강: 솔리드 윗면+발판 중 가장 높은 면에 착지. 상승: 솔리드 아랫면 충돌.
+    ///      one-way 의미: "시작이 면 위" 조건이 아래→위 통과를 자연 허용.
+    ///   6. GroundY clamp 없음 — 지형 구멍 낙하는 Phase 03 kill-plane이 처리.</para>
+    /// </summary>
+    public static PhysicsState Step(PhysicsState state, PhysicsInput input, MapTerrain? terrain)
+    {
+        if (terrain == null || (terrain.Solids.Length == 0 && terrain.Platforms.Length == 0))
+            return StepFlat(state, input);
+
+        return StepWithTerrain(state, input, terrain);
+    }
+
+    /// <summary>
+    /// 평지 시뮬레이션 (GroundY=0 clamp). 기존 Step 본문 그대로 — 한 글자도 변경 금지.
     ///
     /// **순서** (재정렬 시 점프 물리 깨짐):
     ///   1. 수평 velocity = inputX * MoveSpeed (즉시 반응, 관성 X)
@@ -44,7 +75,7 @@ public static class Physics
     ///     같은 tick 안에서 재점프 시도해도 startedOnGround였던 시점 상태로만 판단 (한 번만 적용)
     ///   - 중력은 *공중일 때만* 적용 → ground에서 vy가 음수로 누적되지 않음
     /// </summary>
-    public static PhysicsState Step(PhysicsState state, PhysicsInput input)
+    private static PhysicsState StepFlat(PhysicsState state, PhysicsInput input)
     {
         float vx = input.InputX * Constants.MoveSpeed;
 
@@ -74,6 +105,173 @@ public static class Physics
         else
         {
             onGround = false;
+        }
+
+        return new PhysicsState(
+            new Vector2(newX, newY),
+            new Vector2(vx, vy),
+            onGround);
+    }
+
+    /// <summary>
+    /// 지형 경로 — 솔리드 AABB + one-way 발판 충돌. terrain은 non-null, 비어 있지 않음.
+    ///
+    /// <para><b>X 차단 조건</b>: y가 [MinY, MaxY) 범위일 때만 측면 차단.
+    /// 바닥 윗면(y==MaxY)에서 보행 중 같은 솔리드가 벽으로 작용하지 않도록 윗경계 제외.</para>
+    ///
+    /// <para><b>착지 조건 (vy≤0)</b>: "시작 y &gt;= faceY-eps" + "newY &lt;= faceY".
+    /// one-way 발판은 같은 조건으로 아래서 출발하면 후보 제외 = 위로 통과 자연 허용.</para>
+    ///
+    /// <para><b>GroundY clamp 없음</b>: 지형 구멍 낙하 허용. kill-plane / 스폰 보정은 Phase 03 소관.</para>
+    /// </summary>
+    private static PhysicsState StepWithTerrain(PhysicsState state, PhysicsInput input, MapTerrain terrain)
+    {
+        float x  = state.Position.X;
+        float y  = state.Position.Y;
+        float vy = state.Velocity.Y;
+        float dt = input.Dt;
+        float eps = GroundEpsilon;
+
+        // 1. 수평 velocity
+        float vx = input.InputX * Constants.MoveSpeed;
+
+        // 2. 지지 판정: vy≤0이고 어떤 솔리드 윗면(MaxY) 또는 발판 면(Y) 위에 서 있는지
+        bool startedOnGround = false;
+        if (vy <= 0f)
+        {
+            for (int i = 0; i < terrain.Solids.Length; i++)
+            {
+                TerrainAabb s = terrain.Solids[i];
+                float faceY = s.MaxY;
+                if (System.MathF.Abs(y - faceY) <= eps && s.MinX - eps <= x && x <= s.MaxX + eps)
+                {
+                    startedOnGround = true;
+                    break;
+                }
+            }
+            if (!startedOnGround)
+            {
+                for (int i = 0; i < terrain.Platforms.Length; i++)
+                {
+                    TerrainPlatform p = terrain.Platforms[i];
+                    float faceY = p.Y;
+                    if (System.MathF.Abs(y - faceY) <= eps && p.MinX - eps <= x && x <= p.MaxX + eps)
+                    {
+                        startedOnGround = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 3. 점프/중력 (StepFlat과 동일 구조)
+        if (input.JumpPressed && startedOnGround)
+        {
+            vy = JumpSpeed;
+        }
+        else if (!startedOnGround)
+        {
+            vy += Gravity * dt;
+        }
+
+        // 4. X축 스윕: y가 [MinY, MaxY) 범위인 솔리드 측면만 차단 (윗경계 제외)
+        float newX = x + vx * dt;
+        if (vx > 0f)
+        {
+            float bestFace = float.MaxValue;
+            for (int i = 0; i < terrain.Solids.Length; i++)
+            {
+                TerrainAabb s = terrain.Solids[i];
+                if (y >= s.MinY && y < s.MaxY && x <= s.MinX && newX > s.MinX)
+                {
+                    if (s.MinX < bestFace) bestFace = s.MinX;
+                }
+            }
+            if (bestFace < float.MaxValue)
+            {
+                newX = bestFace;
+                vx   = 0f;
+            }
+        }
+        else if (vx < 0f)
+        {
+            float bestFace = float.MinValue;
+            for (int i = 0; i < terrain.Solids.Length; i++)
+            {
+                TerrainAabb s = terrain.Solids[i];
+                if (y >= s.MinY && y < s.MaxY && x >= s.MaxX && newX < s.MaxX)
+                {
+                    if (s.MaxX > bestFace) bestFace = s.MaxX;
+                }
+            }
+            if (bestFace > float.MinValue)
+            {
+                newX = bestFace;
+                vx   = 0f;
+            }
+        }
+
+        // 5. Y축 스윕
+        float newY = y + vy * dt;
+        bool onGround = false;
+
+        if (vy <= 0f)
+        {
+            // 하강/정지: 솔리드 윗면 + 발판 면 중 가장 높은 면에 착지
+            float bestFace = float.MinValue;
+            for (int i = 0; i < terrain.Solids.Length; i++)
+            {
+                TerrainAabb s = terrain.Solids[i];
+                float faceY = s.MaxY;
+                if (s.MinX - eps <= newX && newX <= s.MaxX + eps
+                    && y >= faceY - eps
+                    && newY <= faceY)
+                {
+                    if (faceY > bestFace) bestFace = faceY;
+                }
+            }
+            for (int i = 0; i < terrain.Platforms.Length; i++)
+            {
+                TerrainPlatform p = terrain.Platforms[i];
+                float faceY = p.Y;
+                if (p.MinX - eps <= newX && newX <= p.MaxX + eps
+                    && y >= faceY - eps
+                    && newY <= faceY)
+                {
+                    if (faceY > bestFace) bestFace = faceY;
+                }
+            }
+            if (bestFace > float.MinValue)
+            {
+                newY     = bestFace;
+                vy       = 0f;
+                onGround = true;
+            }
+        }
+        else
+        {
+            // 상승: 솔리드 아랫면(MinY)만 충돌. 발판은 위로 통과 허용 (검사 제외)
+            // y < faceY (등호 제외): 바닥에 서서 벽에 붙은 상태(y == 벽.MinY == 바닥 윗면)에서
+            // 점프 시 바닥에 묻힌 벽 아랫면이 머리 충돌로 잡히면 점프 불가 — 시작이 면보다
+            // 엄격히 아래일 때만 진짜 천장.
+            float bestFace = float.MaxValue;
+            for (int i = 0; i < terrain.Solids.Length; i++)
+            {
+                TerrainAabb s = terrain.Solids[i];
+                float faceY = s.MinY;
+                if (s.MinX - eps <= newX && newX <= s.MaxX + eps
+                    && y < faceY
+                    && newY >= faceY)
+                {
+                    if (faceY < bestFace) bestFace = faceY;
+                }
+            }
+            if (bestFace < float.MaxValue)
+            {
+                newY     = bestFace;
+                vy       = 0f;
+                onGround = false;
+            }
         }
 
         return new PhysicsState(

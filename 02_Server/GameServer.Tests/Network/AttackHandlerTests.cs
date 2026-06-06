@@ -43,9 +43,13 @@ public class AttackHandlerTests : IDisposable
     const int BossEntityId = 2;        // Boss
     const int PlayerEntityId = 3;
 
-    // MapSpawnTable 단일 진실 공급원에서 spawn 정의 추출.
-    static readonly EnemySpawnDef NormalDef = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0];
-    static readonly EnemySpawnDef BossDef   = MapSpawnTable.GetSpawnsFor(MapId.BossRoom)[0];
+    // 옛 MapSpawnTable 값 보존 — inlined (MapSpawnTable 은퇴, M4.4 Phase 03).
+    const float NormalX    = 10f;
+    const float NormalY    = 0f;
+    const int   NormalMaxHp = 30;
+    const float BossX      = 30f;
+    const float BossY      = 0f;
+    const int   BossMaxHp   = 100;
 
     // Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = Max(1, 10+15-0) = 25.
     // 두 곳 drift 방지: 이 값은 Warrior factory + EnemyStats default + CombatConstants.BaseDamage 3곳 기반.
@@ -84,11 +88,13 @@ public class AttackHandlerTests : IDisposable
 
     public AttackHandlerTests()
     {
-        // HuntingGround(Normal enemy id=1) + Boss 수동 spawn(id=2).
-        // 전투 테스트는 둘 다 필요 → SpawnEnemy(EnemyKind.Boss, ...) 직접 호출 (InternalsVisibleTo).
-        // 좌표/HP는 MapSpawnTable 단일 진실 공급원에서 가져옴.
-        _map = new GameMap(MapId.HuntingGround);
-        _map.SpawnEnemy(BossDef.Kind, BossDef.X, BossDef.Y, BossDef.MaxHp);
+        // HuntingGround(Normal enemy id=1) + Boss(id=2) content 주입.
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Normal, NormalX, NormalY),
+            new EnemySpawnPoint((byte)EnemyKind.Boss,   BossX,   BossY),
+        });
+        _map = new GameMap(MapId.HuntingGround, content: content);
 
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
@@ -123,7 +129,7 @@ public class AttackHandlerTests : IDisposable
     // enemy는 (10, 0)에 박혀있고 AttackRangeSquared=9 → distance < 3 필요.
     // (9, 0)이면 distance=1 = 안전 in-range.
     static void PlaceInRange(PlayerEntity player)
-        => player.Position = new Vector2(NormalDef.X - 1f, NormalDef.Y);
+        => player.Position = new Vector2(NormalX - 1f, NormalY);
 
     // 공격 사거리 *밖*: enemy (10, 0)에서 거리 10 → dist² = 100 ≥ 9.
     // spawn 좌표 그대로(0, 0)면 자동 out-of-range지만 명시적 박음 = 의도 표현.
@@ -168,12 +174,12 @@ public class AttackHandlerTests : IDisposable
         Assert.Equal(EnemyEntityId, parsed.targetEntityId);
         // Warrior(Attack=15) + BaseDamage=10 - Defense=0 = 25.
         Assert.Equal(ExpectedDamage, parsed.damage);
-        Assert.Equal(NormalDef.MaxHp - ExpectedDamage, parsed.currentHp); // 30 - 25 = 5
-        Assert.Equal(NormalDef.MaxHp, parsed.maxHp);                      // 30
+        Assert.Equal(NormalMaxHp - ExpectedDamage, parsed.currentHp); // 30 - 25 = 5
+        Assert.Equal(NormalMaxHp, parsed.maxHp);                      // 30
 
         // 권위 상태(enemy.Hp)도 같이 갱신됨 — broadcast와 정합.
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        Assert.Equal(NormalDef.MaxHp - ExpectedDamage, enemy.Hp);
+        Assert.Equal(NormalMaxHp - ExpectedDamage, enemy.Hp);
         Assert.False(enemy.IsDead);
 
         // Death broadcast 없어야 — Hp=20 > 0이라 kill 분기 미진입.
@@ -203,7 +209,7 @@ public class AttackHandlerTests : IDisposable
 
         // enemy Hp 변동 없음 — server 권위 상태 보존 검증.
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        Assert.Equal(NormalDef.MaxHp, enemy.Hp);
+        Assert.Equal(NormalMaxHp, enemy.Hp);
         Assert.False(enemy.IsDead);
     }
 
@@ -234,7 +240,7 @@ public class AttackHandlerTests : IDisposable
 
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
         // 첫 hit 후 Hp = 30 - 25 = 5 (한 번만).
-        Assert.Equal(NormalDef.MaxHp - ExpectedDamage, enemy.Hp);
+        Assert.Equal(NormalMaxHp - ExpectedDamage, enemy.Hp);
     }
 
     [Fact]
@@ -257,7 +263,7 @@ public class AttackHandlerTests : IDisposable
 
         // enemy Hp 변동 없음 — handler 도달 전 차단 검증.
         EnemyEntity enemy = _map.Enemies[EnemyEntityId];
-        Assert.Equal(NormalDef.MaxHp, enemy.Hp);
+        Assert.Equal(NormalMaxHp, enemy.Hp);
     }
 
     [Fact]
@@ -274,7 +280,7 @@ public class AttackHandlerTests : IDisposable
 
         // 2회 공격 루프 — 매번 LastAttackTickMs reset으로 cooldown 우회.
         // attackerClientTick=tick과 동일 → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)NormalDef.MaxHp / ExpectedDamage); // 2
+        int hitsNeeded = (int)Math.Ceiling((double)NormalMaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
@@ -314,7 +320,7 @@ public class AttackHandlerTests : IDisposable
         s.SentPackets.Clear();
 
         // 2회 hit으로 Normal enemy 사망. attackerClientTick=tick → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)NormalDef.MaxHp / ExpectedDamage);
+        int hitsNeeded = (int)Math.Ceiling((double)NormalMaxHp / ExpectedDamage);
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {

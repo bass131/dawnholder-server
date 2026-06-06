@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
@@ -47,9 +48,30 @@ namespace Dawnholder.Client.Input
             {
                 float x = UnityClientSession.PendingSpawnX;
                 float y = UnityClientSession.PendingSpawnY;
+                int mapId = UnityClientSession.PendingMapId;
                 UnityClientSession.ConsumePendingSpawn();
+
+                InjectTerrain(mapId);
                 SetServerPosition(new Vector3(x, y, 0f));
-                Debug.Log($"[LocalPlayer] 맵 전환 spawn 적용: ({x:F2}, {y:F2})");
+                Debug.Log($"[LocalPlayer] spawn 적용: ({x:F2}, {y:F2}) mapId={mapId}");
+            }
+        }
+
+        // terrain 주입 단일 경로 — Awake pending 소비 + EnterMapHandler instance 분기(ADR-027
+        // 첫 진입 두 순서 모두 관측) 둘 다 여기로. fail loud: 파일 부재/CRC 실패 시 예외 전파
+        // (이전 맵 terrain으로 예측하는 드리프트보다 시끄러운 실패 우선).
+        public void InjectTerrain(int mapId)
+        {
+            try
+            {
+                MapTerrain terrain = ClientTerrainStore.Load(mapId);
+                _predictor.SetTerrain(terrain);
+                Debug.Log($"[LocalPlayer] terrain 주입 mapId={mapId} (solids={terrain.Solids.Length})");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[LocalPlayer] terrain 로드 실패 mapId={mapId}: {ex.Message}");
+                throw;
             }
         }
 

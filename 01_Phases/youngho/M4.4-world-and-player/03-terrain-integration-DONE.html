@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.4 Phase 03 — 맵 데이터 바이너리 파이프라인 전환</title>
+<style>
+  :root {
+    --bg: #0f1219; --panel: #181d28; --panel2: #1f2533;
+    --ink: #dde3ee; --dim: #8a93a8; --line: #2c3447;
+    --accent: #5ab0f7; --green: #5ad18b; --red: #f76a6a; --amber: #f7c95a; --purple: #b08af7;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font-family: "Pretendard", "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.65; }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 20px; margin: 48px 0 12px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--accent); }
+  h3 { font-size: 15px; margin: 20px 0 8px; color: var(--ink); }
+  p, li { font-size: 14.5px; color: var(--ink); }
+  .dim { color: var(--dim); }
+  .small { font-size: 12.5px; }
+  code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; font-size: 12.5px;
+         font-family: Consolas, monospace; color: #9fd0ff; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 6px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; flex: 1 1 140px; }
+  .card .num { font-size: 21px; font-weight: 700; }
+  .card .lbl { font-size: 12px; color: var(--dim); }
+  .green { color: var(--green); } .red { color: var(--red); } .amber { color: var(--amber); } .purple { color: var(--purple); } .blue { color: var(--accent); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin: 14px 0; }
+  .flow { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .node { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px;
+          font-size: 13px; flex: 1 1 120px; text-align: center; }
+  .node b { display: block; font-size: 13.5px; }
+  .arrow { align-self: center; color: var(--dim); font-size: 18px; }
+  .bad  { border-color: #5a3030; background: #241a1d; }
+  .good { border-color: #2e5a40; background: #16231c; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 13px; }
+  th, td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--dim); font-weight: 600; }
+  .bytes { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0; }
+  .byte { border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; background: var(--panel2);
+          font-family: Consolas, monospace; font-size: 12px; text-align: center; }
+  .byte .sz { display: block; color: var(--dim); font-size: 10.5px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--dim); margin: 8px 0 2px; }
+  .legend span::before { content: "■ "; }
+  .lg-solid::before { color: #3d4a63; } .lg-elev::before { color: #54678f; }
+  .lg-enemy::before  { color: #f76a6a; } .lg-boss::before { color: #d14fd1; }
+  .lg-spawn::before  { color: #5ad18b; } .lg-portal::before { color: #b08af7; }
+  .lg-dest::before   { color: #5ab0f7; } .lg-kill::before { color: #f76a6a; }
+  .mapbox { background: #0b0e14; border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin: 12px 0; }
+  .mapbox h3 { margin: 4px 6px 8px; }
+  svg text { font-family: "Pretendard", "Segoe UI", sans-serif; }
+  .callout { border-left: 3px solid var(--accent); padding: 8px 14px; background: var(--panel2);
+             border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 13.5px; }
+  .callout.warn { border-left-color: var(--amber); }
+  .callout.bug  { border-left-color: var(--red); }
+  ul { padding-left: 22px; margin: 8px 0; }
+  .commit { font-family: Consolas, monospace; font-size: 12px; color: #9fd0ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>맵 데이터 바이너리 파이프라인 전환</h1>
+<p class="dim">M4.4 world-and-player · Phase 03 · 대규모 등급 · 2026-06-06 (세션 13~14) · 브랜치 <code>feature/m4.4-03-terrain-integration</code></p>
+
+<div class="meta">
+  <div class="card"><div class="num">10</div><div class="lbl">commits</div></div>
+  <div class="card"><div class="num">71</div><div class="lbl">변경 파일 (+3,030 / −620)</div></div>
+  <div class="card"><div class="num green">388 / 0</div><div class="lbl">dotnet test 통과/실패 (4 skip)</div></div>
+  <div class="card"><div class="num green">6 / 6</div><div class="lbl">헤드리스 봇 시나리오 PASS</div></div>
+  <div class="card"><div class="num green">36 / 0</div><div class="lbl">Unity EditMode 테스트</div></div>
+  <div class="card"><div class="num green">🔴 0</div><div class="lbl">reviewer 4회 차단 사유</div></div>
+</div>
+
+<!-- ============================================================ -->
+<h2>1. 한 장 요약 — 무엇이 바뀌었나</h2>
+
+<p>이번 Phase의 핵심은 한 문장입니다: <b>맵의 진실(지형·스폰 좌표)이 코드에서 파일로 이사했다.</b></p>
+
+<div class="panel">
+  <h3 class="red">Before — 진실이 두 군데 (drift 위험)</h3>
+  <div class="flow">
+    <div class="node bad"><b>Unity 씬</b>눈에 보이는 지형<br><span class="dim small">(저작물)</span></div>
+    <div class="arrow">≠</div>
+    <div class="node bad"><b>생성 C# 코드</b>MapTerrainData.cs<br><span class="dim small">(컴파일 필요)</span></div>
+    <div class="arrow">+</div>
+    <div class="node bad"><b>하드코딩 테이블</b>MapSpawnTable.cs<br><span class="dim small">적 위치 = 코드 상수</span></div>
+  </div>
+  <p class="small dim">씬을 고치면 코드도 사람이 따라 고쳐야 했고, 잊으면 "보이는 지형"과 "서버가 아는 지형"이 어긋났습니다(drift).</p>
+
+  <h3 class="green" style="margin-top:22px">After — 진실은 한 군데 (씬 → bake → 바이너리)</h3>
+  <div class="flow">
+    <div class="node good"><b>Unity 씬</b>타일맵 + 마커 저작</div>
+    <div class="arrow">→</div>
+    <div class="node good"><b>TerrainBaker</b>에디터 도구가 추출<br><span class="dim small">(bake 1회)</span></div>
+    <div class="arrow">→</div>
+    <div class="node good"><b>map_N.terrain.bin<br>map_N.content.bin</b><span class="dim small">무결성 헤더 포함</span></div>
+    <div class="arrow">→</div>
+    <div class="node good"><b>런타임 로드</b>서버 · 클라 · 봇<br><span class="dim small">(재컴파일 불필요)</span></div>
+  </div>
+  <p class="small dim">씬을 고치면 재bake만 하면 됩니다. 세 실행 주체가 <b>같은 파일</b>을 읽으니 어긋날 틈이 없습니다.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2>2. 왜 파일을 두 개로 쪼갰나 — 신뢰 경계 (헌법 #1)</h2>
+
+<p>맵 데이터를 하나의 파일로 만들 수도 있었지만, 일부러 둘로 나눴습니다.
+<b>"클라이언트에게 줄 정보"와 "서버만 알아야 할 정보"의 경계</b>가 파일 경계와 일치하도록요.</p>
+
+<div class="flow">
+  <div class="node" style="flex:2">
+    <b class="blue">map_N.terrain.bin — 공유</b>
+    솔리드 AABB · one-way 발판 · kill-plane
+    <div class="dim small" style="margin-top:6px">서버 물리 + 클라 prediction + 봇 시뮬 모두에게 필요.<br>클라 빌드(StreamingAssets)에 실림.</div>
+  </div>
+  <div class="node" style="flex:2">
+    <b class="red">map_N.content.bin — 서버 전용</b>
+    플레이어 스폰 좌표 · 적 스폰 목록(종류+좌표)
+    <div class="dim small" style="margin-top:6px">클라는 적의 존재를 <b>S_EntitySpawn 패킷으로만</b> 안다.<br>클라 빌드에 아예 배포되지 않음.</div>
+  </div>
+</div>
+
+<div class="callout">
+  <b>trade-off — 무결성(CRC32)은 넣고, 암호화는 뺐습니다.</b><br>
+  손상된 파일을 조용히 읽다가 이상 동작하는 것보다 시끄럽게 즉시 실패(fail-closed)하는 게 낫기에 CRC32 검증은 필수로 박았습니다.
+  반면 암호화는 뺐는데 — 서버 권위 구조라 클라이언트가 자기 terrain.bin을 변조해도 <b>자기 prediction만 깨질 뿐</b>
+  서버 판정은 흔들리지 않기 때문입니다. 보호할 가치가 없는 걸 보호하는 비용은 부채가 됩니다.
+</div>
+
+<!-- ============================================================ -->
+<h2>3. 바이너리 포맷 해부 — 20바이트 헤더</h2>
+
+<p>모든 맵 파일은 같은 헤더로 시작합니다. 읽기 전에 다섯 가지를 검증하고, 하나라도 어긋나면
+"어떤 검증이 왜 실패했는지" 메시지와 함께 예외를 던집니다(fail-closed).</p>
+
+<div class="bytes">
+  <div class="byte">"DWMP"<span class="sz">4B magic</span></div>
+  <div class="byte">version=1<span class="sz">u16 포맷 버전</span></div>
+  <div class="byte">fileKind<span class="sz">u16 1=terrain 2=content</span></div>
+  <div class="byte">mapId<span class="sz">u16 파일명과 교차검증</span></div>
+  <div class="byte">reserved<span class="sz">u16</span></div>
+  <div class="byte">payloadLen<span class="sz">u32 본문 길이</span></div>
+  <div class="byte">crc32<span class="sz">u32 본문 체크섬</span></div>
+</div>
+
+<table>
+  <tr><th>payload (terrain)</th><th>payload (content)</th></tr>
+  <tr>
+    <td><code>solidCount</code> + 솔리드별 (MinX,MinY,MaxX,MaxY)<br>
+        <code>platCount</code> + 발판별 (Y,MinX,MaxX)<br>
+        <code>killPlaneY</code> (min 솔리드 MinY − 10, 자동 유도)</td>
+    <td><code>playerSpawnX/Y</code><br>
+        <code>enemyCount</code> + 적별 (kindId u8, X, Y)<br>
+        <span class="dim">스탯은 안 박음 — 위치는 저작 데이터, 수치는 서버 코드 권위</span></td>
+  </tr>
+</table>
+
+<p class="small dim">writer와 reader가 <code>MapDataFile</code> 한 클래스에 같이 있어서(baker도 Shared.dll의 writer를 직접 사용)
+"쓰는 쪽과 읽는 쪽이 다르게 해석하는" 포맷 drift가 구조적으로 불가능합니다.
+참고로 이 포맷 버전(v1)은 네트워크 <code>ProtocolVersion 8</code>과 <b>별개의 축</b>입니다 — 파일이 바뀌어도 패킷 호환성은 무관.</p>
+
+<!-- ============================================================ -->
+<h2>4. 실제 bake된 세 맵 — bin을 그대로 그림으로</h2>
+
+<p>아래 그림은 개념도가 아니라 <b>commit된 bin 파일을 디코드한 실데이터</b>를 그대로 렌더링한 것입니다.
+이 문서의 그림과 게임 서버가 같은 숫자를 보고 있습니다.</p>
+
+<div class="legend">
+  <span class="lg-solid">바닥/벽 (솔리드)</span>
+  <span class="lg-elev">고가 솔리드 (머리 위 블록·계단)</span>
+  <span class="lg-enemy">Normal 적</span>
+  <span class="lg-boss">Boss</span>
+  <span class="lg-spawn">플레이어 스폰 (content)</span>
+  <span class="lg-dest">포탈 도착 지점 (PortalTable)</span>
+  <span class="lg-portal">포탈 위치</span>
+  <span class="lg-kill">kill-plane</span>
+</div>
+
+<div id="maps"></div>
+
+<div class="callout">
+  <b>그림에서 바로 보이는 설계 결정들</b>
+  <ul>
+    <li><b>Town 스폰 (5.97, 1.39)는 공중</b>입니다 — bake 도구가 저작 y를 보존하고, 접속하면 서버 중력이 착지시킵니다.
+        도구가 저작자를 괴롭히지 않도록 "공중 배치 허용"으로 가드 의미론을 확정한 결과예요.</li>
+    <li><b>HG의 적 4마리 중 2마리는 y=5 고가 위</b>에 있습니다 — 적 마커는 받침 면에 스냅(faceY)됩니다.
+        적은 지형 물리를 안 타기 때문에 공중에 떠 있으면 영원히 떠 있게 되니, 도구가 착지값을 박아줍니다.</li>
+    <li><b>kill-plane은 마커 없이 자동</b>(최저 바닥 −10)입니다 — 떨어지면 초록 스폰 지점으로 재배치되고 HP는 그대로입니다(낙사 데미지는 M4.5 검토).</li>
+    <li><b>포탈(보라)과 도착 지점(파랑)은 아직 PortalTable 하드코딩</b>입니다 — M4.2에서 race 검증까지 끝난 코드라 보존하고, 포탈 bake 이행은 M4.5+로 이월했습니다.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<h2>5. 3경로 대칭 — 서버·클라·봇이 같은 지형을 본다</h2>
+
+<div class="flow">
+  <div class="node"><b>서버</b><code>MapDataLoader</code><br><span class="dim small">terrain + content<br>파일 없으면 기동 자체가 실패 (fail loud)</span></div>
+  <div class="node"><b>클라</b><code>ClientTerrainStore</code><br><span class="dim small">StreamingAssets에서 terrain만<br>→ PlayerPredictor에 주입</span></div>
+  <div class="node"><b>봇</b><code>BotTerrainLoader</code><br><span class="dim small">terrain만 (클라 역할 시뮬레이터)<br>→ 자체 Physics.Step 시뮬</span></div>
+</div>
+
+<p>왜 "대칭"이 중요할까요? 클라이언트는 입력 즉시 자기 화면에서 먼저 움직이고(prediction),
+서버 확정값이 도착하면 맞춰 봅니다(reconcile). 이때 클라가 <b>다른 지형</b>으로 예측하면
+매 걸음마다 서버와 어긋나서 화면이 덜덜 떨리게 됩니다. 봇도 마찬가지 — 봇 자체 시뮬과 서버 결과의 차이(desync)를
+재는 회귀 테스트가 의미를 가지려면 같은 지형이어야 합니다. 그래서 셋 다 <b>같은 bin, 같은 <code>Physics.Step</code></b>입니다.</p>
+
+<div class="callout warn">
+  <b>함정으로 박아둔 것</b> — 맵을 전환할 때 terrain 갱신을 잊으면 "이전 맵 지형으로 예측"하게 되어 drift가 폭증합니다.
+  클라(S_MapTransition 수신 시 교체)와 봇 모두 전환 시점 갱신을 의무로 박았고, 지형 파일이 없으면 조용한 평지 fallback이 아니라
+  <b>즉시 예외</b>를 던지게 했습니다. 조용히 틀리는 것보다 시끄럽게 죽는 게 디버깅이 쉽습니다.
+</div>
+
+<!-- ============================================================ -->
+<h2>6. 스테이지 타임라인 — A부터 E까지</h2>
+
+<table>
+  <tr><th style="width:90px">스테이지</th><th>내용</th><th style="width:90px">commit</th></tr>
+  <tr><td>재정의</td><td>사용자 의논 4건 반영해 Phase 03을 바이너리 파이프라인으로 재정의 → plan-auditor 조건부 GO → P0/P1 봉합 후 GO</td><td class="commit">370a160</td></tr>
+  <tr><td><b>A</b> 포맷</td><td><code>MapDataFile</code> 신설 — 헤더+CRC32 fail-closed, round-trip 테스트, β P3 봉합(배열 캡슐화)</td><td class="commit">9f6fd53</td></tr>
+  <tr><td><b>B</b> baker</td><td><code>TerrainBaker</code> 바이너리 출력으로 재작성 — 마커 추출, 생성 C# 은퇴, terrain.bin 두 벌 동시 출력(98_Shared + StreamingAssets)</td><td class="commit">3a35f08</td></tr>
+  <tr><td><b>C</b> 서버</td><td><code>MapDataLoader</code> + GameMap terrain/content 주입 + kill-plane 처리 + <code>MapSpawnTable</code>·<code>MapTerrainData</code> 삭제</td><td class="commit">fa58fdd<br>741a89c</td></tr>
+  <tr><td>bake</td><td>첫 실산출 bin + 세 씬 마커 저작 — 가드 의미론을 실저작 3회 반복으로 확정</td><td class="commit">28a0d2c</td></tr>
+  <tr><td><b>D</b> 클라+봇</td><td><code>ClientTerrainStore</code> + predictor 지형 주입 + <code>IsGroundedAt</code> + <code>BotTerrainLoader</code> — 3경로 대칭 완성</td><td class="commit">52ebdea</td></tr>
+  <tr><td><b>E</b> 검증</td><td>봇 시나리오를 bake 배치 적응형으로 전환 + 실행 + IsGroundedAt EditMode 테스트 (세션14, 아래 §7)</td><td class="commit">7cff593</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>7. 검증이 일을 한 순간 — 세션14에서 발본한 결함 2건</h2>
+
+<p>"테스트를 돌려본다"가 형식이 아니라는 걸 보여준 게 이번 E 스테이지였습니다.
+시나리오를 실제로 실행했더니 정적으로는 안 보이던 결함이 둘 나왔습니다.</p>
+
+<div class="callout bug">
+  <b>① EmergencyCombatSmoke — stale 좌표 race</b><br>
+  봇은 적의 <b>스폰 패킷에 박힌 좌표</b>(= 관측 순간의 순찰 위치)로 걸어가서 즉시 첫 공격을 박는 구조였습니다.
+  옛 배치(적 x=10, 접근점 8)에서는 순찰 범위 전체가 항상 감지 범위(aggro) 안이라 적이 무조건 붙어와서 우연히 통과했지만,
+  새 배치(적 x=−8.78)에서는 순찰 위상에 따라 적이 범위 밖에 있을 수 있어 첫 공격이 허공을 쳤습니다.
+  <div style="margin:10px 0 4px">
+  <svg viewBox="0 0 720 110" width="100%" style="max-width:720px">
+    <line x1="30" y1="70" x2="690" y2="70" stroke="#2c3447" stroke-width="2"/>
+    <rect x="80" y="62" width="320" height="16" fill="#f76a6a22" stroke="#f76a6a" stroke-dasharray="4 3" rx="3"/>
+    <text x="240" y="100" fill="#8a93a8" font-size="11" text-anchor="middle">적 순찰 범위 (스폰 ±4)</text>
+    <circle cx="360" cy="70" r="7" fill="#5ad18b"/>
+    <text x="360" y="48" fill="#5ad18b" font-size="11" text-anchor="middle">봇 (stale 좌표 기준 접근)</text>
+    <circle cx="110" cy="70" r="6" fill="#f76a6a"/>
+    <text x="110" y="48" fill="#f76a6a" font-size="11" text-anchor="middle">적 (반대편 순찰 중)</text>
+    <line x1="180" y1="70" x2="540" y2="70" stroke="#5ab0f7" stroke-width="3" opacity="0.45"/>
+    <text x="560" y="58" fill="#5ab0f7" font-size="11">aggro 범위(±6) — 적이 이 밖이면 안 붙어옴</text>
+  </svg>
+  </div>
+  <b>봉합:</b> 첫 공격 전에 적의 <b>live 좌표(S_EntityState)</b>가 공격 범위 안으로 수렴할 때까지 기다리게 변경.
+  적의 순찰이 매 주기 aggro 영역을 통과하므로 Chase 전환이 보장되고, 이후 3회 연속 + 리스폰 적 케이스까지 PASS.
+</div>
+
+<div class="callout bug">
+  <b>② EditMode stale 단언 — 테스트가 코드를 안 따라감</b><br>
+  스테이지 D에서 <code>SetInitialPosition</code>이 "스폰 직후는 항상 공중 출발(OnGround=false)"로 바뀌었는데
+  기존 테스트는 여전히 "y=0이면 접지"를 기대하고 있었습니다. EditMode 스위트는 <code>dotnet test</code>에 안 잡혀서
+  (Unity Test Runner 전용) 아무도 못 본 상태 — 이번에 IsGroundedAt 테스트를 추가하러 들어갔다가 발견·봉합했습니다.
+  <b>"커버리지가 있다"와 "커버리지가 돌아간다"는 다른 명제</b>라는 걸 몸으로 배운 케이스.
+</div>
+
+<p>그 외에 EnemyAiSmoke는 하드코딩 상수(<code>AggroEntryX=7</code>) 자체를 은퇴시키고
+수신한 스폰 목록에서 <b>"같은 높이 + aggro 밖 중 가장 가까운 적"을 런타임에 고르도록</b> 바꿨습니다.
+다음에 발판을 저작하고 재bake해서 배치가 또 바뀌어도 시나리오는 수정 없이 적응합니다.
+(이때도 봇은 content.bin을 읽지 않고 패킷 관측만 씁니다 — 신뢰 경계 유지.)</p>
+
+<!-- ============================================================ -->
+<h2>8. 최종 검증 대시보드</h2>
+
+<div class="meta">
+  <div class="card"><div class="num green">0 / 0</div><div class="lbl">클린 빌드 경고/오류</div></div>
+  <div class="card"><div class="num green">388 / 0 / 4</div><div class="lbl">dotnet test 통과/실패/skip</div></div>
+  <div class="card"><div class="num green">6 / 6</div><div class="lbl">봇 시나리오 (신선 서버 일괄)</div></div>
+  <div class="card"><div class="num green">36 / 0</div><div class="lbl">Unity EditMode</div></div>
+  <div class="card"><div class="num">GO</div><div class="lbl">plan-auditor (착수 전)</div></div>
+  <div class="card"><div class="num">🔴0 🟡2</div><div class="lbl">reviewer 4회 누적 (🟡=선택 이월)</div></div>
+</div>
+
+<ul class="small dim">
+  <li>bake idempotent: 같은 씬 재bake → bin byte-identical (git diff 0) 확인</li>
+  <li>bin 9개 실디코드로 좌표 전수 검증 (이 문서 §4 그림 = 그 데이터)</li>
+  <li>보스는 StageClear 1회성 설계라 같은 서버 부팅에서 BossStageClearSmoke 재실행 시 스폰 timeout이 정상 동작</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2>9. 의도적으로 안 한 것 / 다음으로 넘긴 것</h2>
+
+<table>
+  <tr><th>항목</th><th>왜 지금 안 했나</th><th>언제</th></tr>
+  <tr><td>Play 모드 실측 (언덕·단차·발판·낙하)</td><td>플레이어 prefab + 직업 분기 세팅 후 한 번에 도는 게 효율적 (사용자 결정)</td><td>Phase 05 묶음</td></tr>
+  <tr><td>발판(one-way platform) 저작</td><td>현재 세 씬에 발판 0개 — 저작은 본인 담당, 재bake와 함께</td><td>Phase 05 시점</td></tr>
+  <tr><td>PortalTable bake 이행</td><td>M4.2 race 검증까지 끝난 코드 — 굴러가는 걸 다시 굽는 위험 &gt; 이득</td><td>M4.5+</td></tr>
+  <tr><td>낙사 데미지/사망 정책</td><td>kill-plane은 스폰 재배치(HP 무변화)로 확정 — 데미지는 전투 밸런스와 함께</td><td>M4.5 검토</td></tr>
+  <tr><td>reviewer 🟡 2건 (봇 probe lock 비대칭 / EmergencyCombat 공간 전제)</td><td>smoke 도구 실해 낮음 — 해당 파일 다음 작업 시 대칭화</td><td>이월</td></tr>
+</table>
+
+<p class="small dim" style="margin-top:40px">생성: 2026-06-06 · Dawnholder 캡스톤 · 외부 의존성 0 (단일 HTML)<br>
+지형 그림 데이터 출처: <code>98_Shared/GameData/Maps/map_{0,1,2}.{terrain,content}.bin</code> (commit <span class="commit">28a0d2c</span> bake 산출) 디코드 값</p>
+
+</div>
+
+<script>
+// bin 디코드 실데이터 (98_Shared/GameData/Maps/*.bin, 2026-06-06 bake 산출)
+const MAPS = [
+  {
+    name: "Town (mapId 0)", kill: -14,
+    solids: [[-43,-4,56,0],[-43,0,-35,10],[51,0,56,11]],
+    enemies: [],
+    spawn: [5.97,1.39,"첫 입장 스폰 (5.97, 1.39) — 공중 저작, 중력 착지"],
+    portals: [[20,0,"포탈 x=20 → 사냥터"]],
+    dests: [[0,0,"Ending→Town 도착 (0,0)"]]
+  },
+  {
+    name: "HuntingGround (mapId 1)", kill: -16,
+    solids: [[-51,-6,61,0],[-51,0,-45,11],[53,0,60,12],
+             [-17,1,-16,2],[-16,2,-15,3],[-15,3,-12,4],
+             [-2,3,-1,5],[0,3,2,5],[3,3,4,5],
+             [17,3,20,4],[-11,4,-3,5],[5,4,14,5]],
+    enemies: [[-8.78,0,0],[11.52,0,0],[9.87,5,0],[-8.35,5,0]],
+    spawn: [1.06,0.95,"kill-plane 복귀점 (1.06, 0.95)"],
+    portals: [[25,0,"포탈 x=25 → 보스방"]],
+    dests: [[2,0,"Town→HG 도착 (2,0)"]]
+  },
+  {
+    name: "BossRoom (mapId 2)", kill: -18,
+    solids: [[-32,-8,60,0],[-20,0,-16,6],[54,0,60,10],
+             [-4,2,-3,3],[-3,3,-2,4],[15,3,16,5],[18,3,20,5],
+             [-2,4,14,5],[22,4,25,5]],
+    enemies: [[11.82,0,1]],
+    spawn: [-12.83,0.92,"kill-plane 복귀점 (−12.83, 0.92)"],
+    portals: [[35,0,"포탈 x=35 → 엔딩"]],
+    dests: [[22,0,"HG→Boss 도착 (22,0)"]]
+  }
+];
+
+function render(m) {
+  const PAD = 3, S = 7.2;
+  let minX =  1e9, maxX = -1e9, maxY = -1e9;
+  m.solids.forEach(s => { minX = Math.min(minX, s[0]); maxX = Math.max(maxX, s[2]); maxY = Math.max(maxY, s[3]); });
+  minX -= PAD; maxX += PAD; maxY += 3.5;
+  const minY = m.kill - 2.5;
+  const W = (maxX - minX) * S, H = (maxY - minY) * S;
+  const X = x => ((x - minX) * S).toFixed(1);
+  const Y = y => ((maxY - y) * S).toFixed(1);
+  let p = [];
+
+  // kill-plane
+  p.push(`<line x1="0" y1="${Y(m.kill)}" x2="${W}" y2="${Y(m.kill)}" stroke="#f76a6a" stroke-width="1.5" stroke-dasharray="7 5" opacity="0.8"/>`);
+  p.push(`<text x="6" y="${Y(m.kill) - 5}" fill="#f76a6a" font-size="10">kill-plane y=${m.kill} — 닿으면 초록 지점으로 재배치 (HP 무변화)</text>`);
+
+  // solids: 지면(MinY<=0이고 폭 큰 것) vs 고가 구분은 단순히 MinY>0 여부
+  m.solids.forEach(s => {
+    const elev = s[1] > 0;
+    p.push(`<rect x="${X(s[0])}" y="${Y(s[3])}" width="${((s[2]-s[0])*S).toFixed(1)}" height="${((s[3]-s[1])*S).toFixed(1)}"
+      fill="${elev ? "#54678f" : "#3d4a63"}" stroke="#1b2230" stroke-width="1" rx="1.5"/>`);
+  });
+
+  // 포탈 도착 지점 (파랑 ▼)
+  m.dests.forEach(d => {
+    p.push(`<path d="M ${X(d[0])} ${Y(d[1])} l -5 -9 l 10 0 z" fill="#5ab0f7"/>`);
+    p.push(`<text x="${X(d[0])}" y="${Y(d[1]) - 14}" fill="#5ab0f7" font-size="10" text-anchor="middle">${d[2]}</text>`);
+  });
+
+  // 포탈 (보라 기둥)
+  m.portals.forEach(d => {
+    p.push(`<rect x="${X(d[0]) - 3.5}" y="${Y(d[1]) - 26}" width="7" height="26" fill="#b08af7" opacity="0.85" rx="2"/>`);
+    p.push(`<text x="${X(d[0])}" y="${Y(d[1]) - 32}" fill="#b08af7" font-size="10" text-anchor="middle">${d[2]}</text>`);
+  });
+
+  // 적
+  m.enemies.forEach(e => {
+    const boss = e[2] === 1;
+    p.push(`<circle cx="${X(e[0])}" cy="${Y(e[1]) - 5}" r="${boss ? 7 : 5}" fill="${boss ? "#d14fd1" : "#f76a6a"}" stroke="#0b0e14" stroke-width="1.5"/>`);
+    p.push(`<text x="${X(e[0])}" y="${Y(e[1]) - 16}" fill="${boss ? "#d14fd1" : "#f76a6a"}" font-size="10" text-anchor="middle">${boss ? "Boss" : "N"} (${e[0]}, ${e[1]})</text>`);
+  });
+
+  // 플레이어 스폰 (초록 ●)
+  const sp = m.spawn;
+  p.push(`<circle cx="${X(sp[0])}" cy="${Y(sp[1]) - 5}" r="5.5" fill="#5ad18b" stroke="#0b0e14" stroke-width="1.5"/>`);
+  p.push(`<text x="${X(sp[0])}" y="${Y(sp[1]) - 16}" fill="#5ad18b" font-size="10" text-anchor="middle">${sp[2]}</text>`);
+
+  // y=0 기준선 살짝
+  p.push(`<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" stroke="#8a93a8" stroke-width="0.5" opacity="0.25"/>`);
+
+  const box = document.createElement("div");
+  box.className = "mapbox";
+  box.innerHTML = `<h3>${m.name} <span class="dim small">— 솔리드 ${m.solids.length}개 · 적 ${m.enemies.length}마리</span></h3>
+    <svg viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" width="100%">${p.join("\n")}</svg>`;
+  document.getElementById("maps").appendChild(box);
+}
+MAPS.forEach(render);
+</script>
+</body>
+</html>

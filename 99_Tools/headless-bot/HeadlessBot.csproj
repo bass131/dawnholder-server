@@ -21,4 +21,14 @@
     <ProjectReference Include="..\..\98_Shared\Shared.csproj" />
   </ItemGroup>
 
+  <!-- 맵 terrain 바이너리 파일 — bake 산출물을 출력 Maps/ 폴더로 복사 (D2 배포 경로).
+       헌법 #1 정합: 봇은 클라 역할 시뮬레이터이므로 terrain.bin만 실음.
+       content.bin (적 스폰/플레이어 스폰 좌표)은 서버 전용 — 봇에 미실음. -->
+  <ItemGroup>
+    <Content Include="..\..\98_Shared\GameData\Maps\*.terrain.bin">
+      <Link>Maps\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -6,9 +6,9 @@ namespace Dawnholder.Server.GameServer.Maps;
 // 순서/값은 append-only. 제거 X, 숫자 변경 X.
 //
 // Town    = 0: 마을. 플레이어 spawn 지점. 적 없음.
-// HuntingGround = 1: 전투 구역. Normal enemy 1마리.
-// BossRoom = 2: 보스 방. Boss 1마리. Stage Clear 트리거.
-// Ending   = 3: 결과 화면 골격. 빈 맵.
+// HuntingGround = 1: 전투 구역. Normal enemy 스폰 (배치/마릿수 = map_1.content.bin 권위).
+// BossRoom = 2: 보스 방. Boss 스폰 (map_2.content.bin 권위). Stage Clear 트리거.
+// Ending   = 3: 결과 화면 골격. 빈 맵 (terrain/content 없음 — MapDataLoader 명시 등록).
 public enum MapId
 {
     Town = 0,

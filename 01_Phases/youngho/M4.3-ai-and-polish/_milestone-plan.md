@@ -36,7 +36,7 @@ M4.3는 **발표용 polish 마일스톤**이지 M4 전체 종료가 아니다. �
 | 07✅ | enemy AI 서버 (FSM + tick 루프 + S_EntityState) — **merged (PR #56)** | 복잡 | server+shared | — | irreversible (PDL 6→7 완료) |
 | 08a | 애니 상태머신 프로토콜+서버 (AnimState enum + animState 필드 append + 서버 상태결정 broadcast) | 복잡 | shared+server | 3~4h | irreversible (PDL 7→8) |
 | 08b | 애니 상태머신 클라 구조 (IMotionState + AnimatorDriver + 소스 3종 + enemy 위치 보간) | 복잡 | client | 3~4h | unity-asset |
-| 09 | boss behavior (다단 attack + 페이즈 1/2 + S_EnemyAttack + HUD mock 제거 + attack animState 연동) | 복잡 | server+shared+client | 4~6h | irreversible (S_EnemyAttack — Version은 08a의 8에 포함) |
+| 09⏩ | boss behavior — **M4.5로 이월** (2026-06-06 마일스톤 재편. S_EnemyAttack은 08a v8에 못 묶임 — 08a 단독 머지로 v8 닫혀서 M4.5에서 8→9 bump) | 복잡 | server+shared+client | 4~6h | irreversible (M4.5에서 PDL 8→9) |
 | 10 | **서버 입력 큐 fix** — rubber-band 근본 해결 (단일 슬롯 coalescing + 빈 틱 input=0 + ack-on-receive → FIFO 큐 + 드레인 + ack=적용시점). 측정으로 재정의(클라 polish 아님). | 복잡 | server (클라/프로토콜 변경 0) | 2~3h | trust-boundary |
 | 10b | β10 MoveSpeed dead + M2 jump Y mispredict (Phase 10에서 분리 — 독립 root cause). **10 머지 직후 측정 1순위** (발표 데모 MoveSpeed 체감 필요). 10 머지로 입력 경로 바뀌므로 *그 후* 측정이 정확. | 미정(측정 후) | server+client | — | — |
 | 11 | 애니 외관 완성 (Animator 6상태 클립 × 3객체 + RemotePlayer prefab 정합) | 복잡 | client (본인 외관 **critical path**) | 4~6h | unity-asset |
@@ -77,18 +77,18 @@ Phase 12 (회귀 + 마감) ←── 08a~11 전부 완료 후
 
 ## ✅ 마일스톤 완료 조건
 
-- [ ] enemy Normal patrol/chase FSM 동작 (서버 권위, tick thread — 헌법 #5)
-- [ ] enemy 위치가 클라 화면에서 보간되어 움직임 (Play 실측)
-- [ ] boss 다단 attack 패턴 + 페이즈 1/2 전환 (HP 임계 기준)
-- [ ] 적→플레이어 데미지 = 서버 권위 (헌법 #1), 클라는 표시만
-- [ ] 클래스별 이동속도 체감 (Warrior 4 / Ranger 6), 점프 Y mispredict 0, reconcile 부드러움
-- [ ] **애니 상태머신**: 서버 animState 권위 결정·broadcast → 클라 `AnimatorDriver` 렌더 (전략 패턴, `IMotionState` 3종 — Local/Remote/Enemy)
-- [ ] **3객체 6상태**(Idle/Walk/Jump/Attack/Hit/Death) Play 동작 + RemotePlayer prefab 1개 정합
-- [ ] `dotnet test` green (회귀 0 + 신규 테스트 — `AnimStateTests` 등)
-- [ ] `ProtocolVersion` 7→8 bump (08a animState 필드 + 09 S_EnemyAttack, 한 PR 묶음 둘 다 v8, append-only, ID 재사용 0). 07의 6→7은 PR #56 머지 완료
-- [ ] CHANGELOG entry ([M] — enemy AI 도입 + 패킷 2개 추가, 모든 팀원 영향)
-- [ ] (적 MoveSpeed 보수적 — target rewind 미적용 어긋남 회피. 정밀 전투는 M4.4)
-- [ ] 캡스톤 1 발표 데모 흐름 정상 (마을 → 사냥터 적 처치 → 보스방 패턴전 → 엔딩)
+- [x] enemy Normal patrol/chase FSM 동작 (서버 권위, tick thread — 헌법 #5) — Phase 07 ✅
+- [x] enemy 위치가 클라 화면에서 보간되어 움직임 (Play 실측) — Phase 08b ✅
+- ⏩ boss 다단 attack 패턴 + 페이즈 1/2 전환 — **M4.5 이월** (2026-06-06 재편)
+- ⏩ 적→플레이어 데미지 서버 권위 — **M4.5 이월** (boss 묶음)
+- ⏩ 클래스별 이동속도 체감 — **M4.4 이월** (직업 조작 분리 Phase로 확대 — Physics 파라미터 주입)
+- [x] **애니 상태머신**: 서버 animState 권위 결정·broadcast → 클라 `AnimatorDriver` 렌더 — 08a/08b ✅
+- [x] **Animator 계약 wiring 5종** (Knight/Mage/Slime/Golem/Boss — AnimState+전이+Loop, `2940f2f`) — Phase 11 ✅ (Play 실측은 M4.4 직업 장착 후 병행 — 2026-06-06 본인 결정: Art prefab 단독 조작 불가가 정상)
+- [ ] `dotnet test` green (회귀 0) — Phase 12
+- [x] `ProtocolVersion` 7→8 bump (08a 단독 머지로 v8 완료. 09 S_EnemyAttack은 M4.5에서 8→9)
+- [ ] CHANGELOG entry — Phase 12
+- [x] (적 MoveSpeed 보수적 — target rewind 미적용 어긋남 회피. 정밀 전투는 이월)
+- ⏩ 캡스톤 발표 데모 풀 흐름 — **M4.5 마감으로 이월** (보스 + 새 지형 동선 포함 버전)
 
 ---
 
@@ -123,3 +123,4 @@ M?  외부연결   하마치 통한 실제 외부 연결 테스트 (마무리)
 - 2026-05-29 — **본격 분해 확정** (`/work:plan M4.3`). placeholder의 AI+polish+마감 3 Phase → 6 Phase로 확장. enemy AI를 서버/클라 2 Phase로 분리(3도메인+PDL bump), Phase 12를 마감 의례→회귀 테스트로 격하, 보안 통째 M4.4 이월, 발표 후 로드맵 구체화.
 - 2026-05-29 — **MAX effort 재검토 봉합** (plan-auditor GO 후 코드 직접 감사). ① 🔴 target rewind 누락 발견 — 적 이동 시 lag comp 비대칭(조준-판정 어긋남) → M4.3는 적 MoveSpeed 보수적 회피 + M4.4 근본 봉합 이월(사용자 결정). ② PDL bump 2회→1회(한 PR 묶음, 보스 선례 정합). ③ Phase 09에 HUD mock 제거 명시(클라 피격 인프라는 이미 준비됨 확인). ④ 보스 공격 telegraph 권장(보스→플레이어 판정 비대칭).
 - 2026-05-30 — **애니메이션 상태머신 재편** (사용자 결정, `/work:plan`). 발표 데모에 메이플 스타일 풀 상태머신(Idle/Walk/Jump/Attack/Hit/Death) 도입. **A안 채택**(서버 권위 `animState` byte 통일 — 원격/적 클라 구현이 "byte 읽기"로 통일, 전략 패턴). 기존 08(enemy 클라)→**08a(프로토콜+서버)/08b(클라 구조)** 분리, 11(RemotePlayer 외관)→**애니 외관 완성(3객체 6상태)** 확대. PDL 7→8(`animState` 필드 append + S_EnemyAttack). 6→7 Phase, 마일스톤 등급 복잡→**대규모**. 클라는 `IMotionState`/`AnimatorDriver` 전략 패턴 + enemy 보간은 기존 `RemoteEntity` 컴포넌트 재사용(종속 최소 — 사용자 의논). 본인 Animator 6상태 클립이 발표 critical path.
+- 2026-06-06 — **마일스톤 분리 재편** (사용자 결정, 세션11). 잔여 신규 수요(유현 타일맵 지형 충돌=데모 필수 / 직업 조작 전반 분리 / 몬스터 prefab 전환+골렘 / 신규 UI 5묶음)가 대규모 3개 포함 6 Phase 분량 → M4.3 입자 초과. **M4.3는 Phase 12 경량 마감만 남기고 닫음** (09 boss → M4.5 이월, 11은 wiring 완료 `2940f2f`로 종료 — Play 실측은 M4.4 병행). 신설: **M4.4 world-and-player**(지형 bake/물리/통합 + 직업 이동 분리 + 직업 장착 구조) → **M4.5 content-and-boss**(몬스터 prefab+골렘 + UI 결정 게이트 + 보스 v9 bump + 발표 마감). 설계 상세 = 세션11 plan(승인됨): ClassConfig SO 장착(if-분기 0) / TerrainBaker→98_Shared 생성 코드(저작·진실 분리) / EnemyVisualTable SO.

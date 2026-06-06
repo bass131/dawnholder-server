@@ -1,6 +1,8 @@
 using System.Net;
+using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
+using Shared.GameData;
 using Shared.Protocol;
 
 namespace GameServer.Tests.Network;
@@ -61,7 +63,12 @@ public class SessionStateMachineTests : IDisposable
 
     public SessionStateMachineTests()
     {
-        _map = new GameMap();
+        // content 주입: Normal 1마리 — Attack_BeforeCharacterSelect_Dropped가 enemy id=1 존재 필요.
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f),
+        });
+        _map = new GameMap(MapId.HuntingGround, content: content);
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
         Console.SetOut(_consoleCapture);
@@ -235,8 +242,8 @@ public class SessionStateMachineTests : IDisposable
 
         // attack이 처리되지 않았으므로 enemy HP 변동 없음 (Normal enemy=1 기본 HP 확인).
         Assert.True(_map.Enemies.ContainsKey(1)); // enemy 여전히 살아있음
-        // Normal enemy 기본 HP: MapSpawnTable 단일 진실 공급원에서 조회.
-        int normalMaxHp = MapSpawnTable.GetSpawnsFor(MapId.HuntingGround)[0].MaxHp;
+        // Normal enemy 기본 HP: EnemyDefaultHp 테이블 값 (MapSpawnTable 은퇴, M4.4 Phase 03).
+        const int normalMaxHp = 30;
         Assert.Equal(normalMaxHp, _map.Enemies[1].Hp); // HP 변동 없음
         Assert.Equal(0, s.DisconnectCalls);
     }

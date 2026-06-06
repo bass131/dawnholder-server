@@ -1,0 +1,492 @@
+fileFormatVersion: 2
+guid: e57445ab2844a4a449589a98f900b8dc
+labels:
+- UnityAI
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -785439404215381338
+    second: Shop_NPC_Talk_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 140
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Glocery_Talk_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 892
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93a2f7aed0fca0540a73beb04a6b2aa8
+      internalID: 1405140588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_1
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 892
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54a46c7886359da4399f0b59a465928b
+      internalID: 448495556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_2
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 892
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ebd3440b0737594eb0602bf20d61af2
+      internalID: 1028900133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_3
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 892
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b838ab4439b430148bf78923a595a7a7
+      internalID: -686401890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 594
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53c556278c507514192f718cc6b72d31
+      internalID: 1377260872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_5
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 594
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c24ea12538181fb458336e8ed8b3438b
+      internalID: -1159554125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_6
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 594
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e97ca8251b1f9964593770fda1c41c62
+      internalID: 86416604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_7
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 594
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b74ef69ef93703488b8159db8826835
+      internalID: -547091163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 296
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e74a97c5d31c5443b7a4771a4fb7e1b
+      internalID: 830026149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_9
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 296
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c9e8fc129517c842bf2b15ac01a63a3
+      internalID: 1429374187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_10
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 296
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78327212fbfd5e445b6baa298b45fd34
+      internalID: 2125177237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_11
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 296
+        width: 512
+        height: 298
+      alignment: 9
+      pivot: {x: 0.5, y: 0.004617985}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0763cbeda8114d4582cb72c449296d6
+      internalID: 1544492473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 512
+        height: 296
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eadd9a0e88faaa04fa053940277ea3d1
+      internalID: -238841597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_13
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 512
+        height: 296
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0444140c7036367498cb32193e8a76aa
+      internalID: -1157508715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_14
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 512
+        height: 296
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f7dc1093e02a5e44886bb9ef66a29d2
+      internalID: 830492353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glocery_Talk_15
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 512
+        height: 296
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32bc749a72b7ec84ea09812244739d5c
+      internalID: 1019671608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: fa986fd995c7d6f43af2b4358b6d05ac
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":512.0,"y":298.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.004617984872311354},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Glocery_Talk_0: 1405140588
+      Glocery_Talk_1: 448495556
+      Glocery_Talk_10: 2125177237
+      Glocery_Talk_11: 1544492473
+      Glocery_Talk_12: -238841597
+      Glocery_Talk_13: -1157508715
+      Glocery_Talk_14: 830492353
+      Glocery_Talk_15: 1019671608
+      Glocery_Talk_2: 1028900133
+      Glocery_Talk_3: -686401890
+      Glocery_Talk_4: 1377260872
+      Glocery_Talk_5: -1159554125
+      Glocery_Talk_6: 86416604
+      Glocery_Talk_7: -547091163
+      Glocery_Talk_8: 830026149
+      Glocery_Talk_9: 1429374187
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

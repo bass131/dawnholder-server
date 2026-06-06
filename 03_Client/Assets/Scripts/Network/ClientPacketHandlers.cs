@@ -83,14 +83,19 @@ namespace Dawnholder.Client.Network
                 Debug.Log($"[Unity] EnterMap as entity {eid} at server spawn ({x}, {y})");
                 if (LocalPlayerController.Instance != null)
                 {
+                    // 이 분기도 terrain 주입 — ADR-027 (첫 진입 race 두 순서 모두 관측,
+                    // controller가 먼저 깨어난 경우 pending 경로를 안 타서 주입 누락됨).
+                    LocalPlayerController.Instance.InjectTerrain(0); // S_EnterMap = Town 고정
                     LocalPlayerController.Instance.SetServerPosition(new Vector3(x, y, 0f));
                 }
                 else
                 {
                     // LocalPlayerSpawner가 아직 Instantiate 전(초기 진입 race) →
                     // PendingSpawn에 보관 → 곧 spawn될 LocalPlayerController.Awake()가 소비.
+                    // S_EnterMap에 mapId 없음 → Town(0) 고정. MapTransition 경로는 destMapId 박음.
                     UnityClientSession.PendingSpawnX = x;
                     UnityClientSession.PendingSpawnY = y;
+                    UnityClientSession.PendingMapId = 0;
                     UnityClientSession.HasPendingSpawn = true;
                 }
             });
@@ -373,9 +378,12 @@ namespace Dawnholder.Client.Network
                 if (LocalPlayerController.Instance != null)
                     LocalPlayerController.Instance.ResetPredictionForMapTransition();
 
-                // spawn 좌표 보관 — 씬 로드 완료 후 새 LocalPlayerController가 읽어 적용.
+                // spawn 좌표 + mapId 보관 — 씬 로드 완료 후 새 LocalPlayerController.Awake()가 읽어 적용.
+                // PendingMapId: Awake에서 ClientTerrainStore.Load(mapId) 호출 → predictor terrain 주입.
+                // 갱신 누락 시 이전 맵 지형으로 예측 → 드리프트 폭증.
                 UnityClientSession.PendingSpawnX = spawnX;
                 UnityClientSession.PendingSpawnY = spawnY;
+                UnityClientSession.PendingMapId = destMapId;
                 UnityClientSession.HasPendingSpawn = true;
 
                 // SceneTransition(페이드) 경유 씬 전환. Instance null 시 직접 LoadScene으로 fallback.
