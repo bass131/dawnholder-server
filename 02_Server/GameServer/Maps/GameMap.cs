@@ -9,19 +9,13 @@ namespace Dawnholder.Server.GameServer.Maps;
 
 // EnemyKind → (MaxHp) 기본값 테이블. content.bin은 위치+kind만 담고 HP는 서버 권위 코드 결정.
 // append-only: 새 종류 추가 시 이 배열에 항목 추가 (EnemyKind.cs 값과 index 정합 유지).
+// kindId 범위 검증은 GameMap ctor 단일 지점 (reviewer 🟡 — 중복 검증 단일화).
 file static class EnemyDefaultHp
 {
     // index = (int)EnemyKind
     internal static readonly int[] ByKind = { 30, 100 }; // Normal=30, Boss=100
 
-    internal static int For(EnemyKind kind)
-    {
-        int idx = (int)kind;
-        if (idx < 0 || idx >= ByKind.Length)
-            throw new ArgumentOutOfRangeException(nameof(kind),
-                $"알 수 없는 EnemyKind 값 {(byte)kind} — content.bin에 정의되지 않은 kindId.");
-        return ByKind[idx];
-    }
+    internal static int For(EnemyKind kind) => ByKind[(int)kind];
 }
 
 // 단일 GameMap actor. 단일 thread Tick → lock 없음.

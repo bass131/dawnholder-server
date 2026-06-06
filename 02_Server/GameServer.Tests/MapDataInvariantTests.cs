@@ -2,16 +2,13 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Tests;
 
-// MapTerrainData(코드 생성 정적 클래스)는 M4.4 Phase 03에서 은퇴.
-// 지형 데이터는 terrain.bin 런타임 로드로 전환 (MapDataFile.ReadTerrain).
+// 맵 데이터 불변식 검증 (옛 MapTerrainDataTests — 생성 C# 은퇴 후 bin 런타임 로드 전환, M4.4 Phase 03):
+//   - MapId enum 값 정합 (bin 파일명 약속: map_{id}.terrain.bin = (int)MapId)
+//   - 빈 terrain round-trip (지형 없는 맵 = Ending 등) + killPlaneY NegativeInfinity 약속
+//   - 솔리드 Min < Max 불변식
 //
-// 본 파일은 MapDataFile round-trip 불변식 검증으로 교체:
-//   - 빈 terrain round-trip (지형 없는 맵 = Ending 등)
-//   - killPlaneY = NegativeInfinity round-trip (미사용 맵 약속)
-//   - MapId enum 값 정합 (Town=0 / HuntingGround=1 / BossRoom=2)
-//
-// 구체 지형 데이터 테스트는 MapDataFileTests(round-trip/무결성)와 TerrainPhysicsTests(물리 계약)에서 커버.
-public class MapTerrainDataReplacementTests
+// 구체 포맷 테스트는 MapDataFileTests(round-trip/무결성), 물리 계약은 TerrainPhysicsTests에서 커버.
+public class MapDataInvariantTests
 {
     // MapId enum 값 정합 — 코드와 파일명 약속이 일치하는지 회귀 안전망.
     // (bin 파일명 = map_{id}.terrain.bin, id = (int)MapId enum)

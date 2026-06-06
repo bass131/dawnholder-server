@@ -142,6 +142,26 @@ public class GameMapContentInjectionTests
         Assert.NotEqual(3f, player.Position.X); // spawn X로 이동하지 않음
     }
 
+    // terrain != null + content == null 조합 — 재배치 목표가 Vector2.Zero fallback임을 박제.
+    // 프로덕션 4맵엔 없는 조합이지만 ctor가 허용하므로 의도 동작을 회귀 안전망으로 (reviewer 🟡).
+    [Fact]
+    public void KillPlane_ContentNull_ReplacedAtOrigin()
+    {
+        MapTerrain terrain = new MapTerrain(
+            new[] { new TerrainAabb(-100f, 0f, 100f, 2f) },
+            System.Array.Empty<TerrainPlatform>(),
+            killPlaneY: -5f);
+
+        GameMap map = new GameMap(MapId.Town, terrain: terrain);
+        PlayerEntity player = map.AddPlayer(owner: null, spawnPos: new Vector2(0f, 2f));
+
+        player.Position = new Vector2(7f, -10f);
+        map.Tick(1);
+
+        Assert.Equal(0f, player.Position.X, 3);
+        Assert.Equal(0f, player.Position.Y, 3);
+    }
+
     // ④ terrain null GameMap = 기존 평지 동작 (회귀)
     [Fact]
     public void TerrainNull_PlayerFalls_NotReplaced()
