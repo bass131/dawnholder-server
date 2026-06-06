@@ -1,6 +1,6 @@
 #nullable enable
-using Dawnholder.Client.Input;
 using Dawnholder.Client.Network;
+using Dawnholder.Client.Prediction;
 using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -48,9 +48,9 @@ namespace Dawnholder.Client.Gameplay
         // 로컬 플레이어만 처리 — 다른 플레이어/적의 충돌은 무시.
         void OnTriggerEnter2D(Collider2D other)
         {
-            // 로컬 플레이어 확인 — LocalPlayerController 컴포넌트 보유 여부로 판별.
-            // 타인 플레이어는 RemoteEntity 컴포넌트를 가짐 (LocalPlayerController X).
-            if (other.GetComponent<LocalPlayerController>() == null) return;
+            // 로컬 플레이어 확인 — LocalPlayerMovement 컴포넌트 보유 여부로 판별.
+            // 타인 플레이어는 RemoteEntity 컴포넌트를 가짐 (LocalPlayerMovement X).
+            if (other.GetComponent<LocalPlayerMovement>() == null) return;
 
             // 쿨다운 가드 — 빠른 재진입 스팸 차단.
             float now = Time.unscaledTime;

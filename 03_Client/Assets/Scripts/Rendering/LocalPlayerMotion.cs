@@ -15,8 +15,8 @@ namespace Dawnholder.Client.Rendering
         AnimState _animState = AnimState.Idle;
         int _facing = 1;
 
-        // PlayerPredictor에 직접 의존하지 않고 LocalPlayerController에서 읽는 설계:
-        // LocalPlayerController가 predictor를 private으로 감싸므로 transform 델타로 추론.
+        // PlayerPredictor에 직접 의존하지 않고 LocalPlayerMovement에서 읽는 설계:
+        // LocalPlayerMovement가 predictor를 private으로 감싸므로 transform 델타로 추론.
         float _lastX;
 
         public AnimState CurrentAnimState => _animState;

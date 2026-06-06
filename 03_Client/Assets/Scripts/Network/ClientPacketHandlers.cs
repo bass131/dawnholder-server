@@ -1,7 +1,7 @@
 using System;
 using Dawnholder.Client.Combat;
-using Dawnholder.Client.Input;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Prediction;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using Shared.Protocol;
@@ -81,17 +81,17 @@ namespace Dawnholder.Client.Network
             {
                 session.SetLocalEntityId(eid);
                 Debug.Log($"[Unity] EnterMap as entity {eid} at server spawn ({x}, {y})");
-                if (LocalPlayerController.Instance != null)
+                if (LocalPlayerMovement.Instance != null)
                 {
                     // 이 분기도 terrain 주입 — ADR-027 (첫 진입 race 두 순서 모두 관측,
-                    // controller가 먼저 깨어난 경우 pending 경로를 안 타서 주입 누락됨).
-                    LocalPlayerController.Instance.InjectTerrain(0); // S_EnterMap = Town 고정
-                    LocalPlayerController.Instance.SetServerPosition(new Vector3(x, y, 0f));
+                    // movement가 먼저 깨어난 경우 pending 경로를 안 타서 주입 누락됨).
+                    LocalPlayerMovement.Instance.InjectTerrain(0); // S_EnterMap = Town 고정
+                    LocalPlayerMovement.Instance.SetServerPosition(new Vector3(x, y, 0f));
                 }
                 else
                 {
                     // LocalPlayerSpawner가 아직 Instantiate 전(초기 진입 race) →
-                    // PendingSpawn에 보관 → 곧 spawn될 LocalPlayerController.Awake()가 소비.
+                    // PendingSpawn에 보관 → 곧 spawn될 LocalPlayerMovement.Awake()가 소비.
                     // S_EnterMap에 mapId 없음 → Town(0) 고정. MapTransition 경로는 destMapId 박음.
                     UnityClientSession.PendingSpawnX = x;
                     UnityClientSession.PendingSpawnY = y;
@@ -131,8 +131,8 @@ namespace Dawnholder.Client.Network
                 if (eid == session.LocalEntityId.Value)
                 {
                     // 본인 path — reconcile flow.
-                    if (LocalPlayerController.Instance != null)
-                        LocalPlayerController.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
+                    if (LocalPlayerMovement.Instance != null)
+                        LocalPlayerMovement.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
                 }
                 else
                 {
@@ -375,10 +375,10 @@ namespace Dawnholder.Client.Network
                 session.RosterBuffer.BeginTransition(sceneName);
 
                 // prediction 버퍼 리셋: 이전 맵 입력이 새 맵 좌표계에서 replay되면 캐릭터가 튐.
-                if (LocalPlayerController.Instance != null)
-                    LocalPlayerController.Instance.ResetPredictionForMapTransition();
+                if (LocalPlayerMovement.Instance != null)
+                    LocalPlayerMovement.Instance.ResetPredictionForMapTransition();
 
-                // spawn 좌표 + mapId 보관 — 씬 로드 완료 후 새 LocalPlayerController.Awake()가 읽어 적용.
+                // spawn 좌표 + mapId 보관 — 씬 로드 완료 후 새 LocalPlayerMovement.Awake()가 읽어 적용.
                 // PendingMapId: Awake에서 ClientTerrainStore.Load(mapId) 호출 → predictor terrain 주입.
                 // 갱신 누락 시 이전 맵 지형으로 예측 → 드리프트 폭증.
                 UnityClientSession.PendingSpawnX = spawnX;

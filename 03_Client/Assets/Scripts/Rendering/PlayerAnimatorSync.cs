@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Dawnholder.Client.Rendering
 {
-    // 캐릭터 이동 시각 wiring: LocalPlayerController(prediction)가 갱신한 transform.position
+    // 캐릭터 이동 시각 wiring: LocalPlayerMovement(prediction)가 갱신한 transform.position
     // 변화를 감지해 Animator.SetBool("IsMoving", ...) + flipX 적용. 위치 변경 자체는
-    // LocalPlayerController가 처리 (헌법 #1 prediction layer). 본 컴포넌트는 *시각만* 갱신.
+    // LocalPlayerMovement가 처리 (헌법 #1 prediction layer). 본 컴포넌트는 *시각만* 갱신.
     [RequireComponent(typeof(Animator), typeof(SpriteRenderer))]
     public class PlayerAnimatorSync : MonoBehaviour
     {

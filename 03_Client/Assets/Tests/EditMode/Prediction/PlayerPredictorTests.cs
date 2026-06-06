@@ -5,12 +5,7 @@ using UnityEngine;
 
 namespace Dawnholder.Client.Tests.Prediction
 {
-    // M4.3R Phase 05 (rank 5): PlayerPredictor reconcile 알고리즘 EditMode 단위 테스트.
-    //
-    // **목적 (Phase 05 스펙)**:
-    //   PlayerPredictor는 이미 순수 C#로 추출돼 있지만 테스트가 없었음.
-    //   §3.1 "순수 C# 추출 = EditMode 테스트 가능성 보존"의 의도를 완성.
-    //   OnSnapshot mispredict 판정 + 미-ack 입력 replay 경로 박제.
+    // M4.4 Phase 04: PlayerPredictor reconcile 알고리즘 EditMode 단위 테스트.
     //
     // **테스트 범위**:
     //   - mispredict 판정 (|dX| 또는 |dY| > SnapThreshold)
@@ -18,20 +13,27 @@ namespace Dawnholder.Client.Tests.Prediction
     //   - mispredict 시 미-ack 입력 replay (Physics.Step 재실행)
     //   - 정상 범위 내 snapshot (no-mispredict) → Position 그대로 유지
     //   - 항상 InputHistory 정리 (mispredict 여부 무관)
+    //   - 직업 MoveParams 비례 검증 (Warrior 4 vs Ranger 6 거리 비례)
     //
     // **헌법 #1 유지 검증**: mispredict 시 클라 예측 위치가 아닌
     //   서버 권위 좌표에서 replay 출발 (cheat 흡수 X).
+    //
+    // **생성자 규칙**: new PlayerPredictor(MoveParams) 필수 인자 — fail-loud 정합.
+    //   기존 reconcile 의미론 테스트는 MoveParams(5f, 8f) 명시 주입으로 수치 보존.
     //
     // **Unity 의존**: UnityEngine.Vector2 (PlayerPredictor 타입) 사용.
     //   noEngineReferences: false이므로 EditMode에서 허용.
     public class PlayerPredictorTests
     {
+        // 기존 reconcile 테스트의 물리 기준. 직업값 테스트 아님 — reconcile 의미론 테스트.
+        static readonly MoveParams DefaultMove = new MoveParams(5f, 8f);
+
         // === 기본 초기화 ===
 
         [Test]
         public void SetInitialPosition_SetsPositionAndResetsVelocity()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
 
             predictor.SetInitialPosition(new Vector2(3f, 0f));
 
@@ -45,7 +47,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void SetInitialPosition_AboveGround_OnGroundFalse()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
 
             predictor.SetInitialPosition(new Vector2(0f, 5f));
 
@@ -57,21 +59,21 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void Predict_HorizontalMove_UpdatesPositionX()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(Vector2.zero);
             float dt = Constants.TickDuration;
 
             predictor.Predict(inputX: 1, jumpPressed: false, dt: dt);
 
-            // 예상: x = MoveSpeed * dt
-            float expectedX = Constants.MoveSpeed * dt;
+            // 예상: x = MoveSpeed * dt (DefaultMove.MoveSpeed = 5f)
+            float expectedX = 5f * dt;
             Assert.AreEqual(expectedX, predictor.Position.x, 0.0001f);
         }
 
         [Test]
         public void Predict_NoInput_PositionUnchangedX()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(5f, 0f));
             float dt = Constants.TickDuration;
 
@@ -85,7 +87,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_WithinThreshold_ReturnsFalse_PositionUnchanged()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(10f, 0f));
 
             // 서버 위치가 threshold 이내 — mispredict 아님
@@ -101,7 +103,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_WithinThresholdY_ReturnsFalse()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(0f, 3f));
 
             bool mispredict = predictor.OnSnapshot(0f, 3f + (PlayerPredictor.SnapThreshold * 0.4f),
@@ -115,7 +117,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_ExceedThresholdX_ReturnsTrue_SnapCountIncremented()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(0f, 0f));
 
             float serverX = PlayerPredictor.SnapThreshold + 1f; // 명백히 초과
@@ -128,7 +130,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_MispredictX_PositionSnapsToServerAuthority()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(0f, 0f));
 
             float serverX = 99f; // 클라 위치(0)와 큰 차이
@@ -144,7 +146,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_ExceedThresholdY_ReturnsTrue()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(0f, 0f));
 
             float serverY = PlayerPredictor.SnapThreshold + 0.5f; // Y 초과
@@ -156,7 +158,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_MispredictY_VelocityApplied()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(Vector2.zero);
 
             predictor.OnSnapshot(0f, 5f, 0f, serverVy: 3f, ackedClientTick: 0);
@@ -170,7 +172,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_Mispredict_WithUnackedInputs_ReplaysInputs()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(0f, 0f));
 
             // tick 1, 2, 3 입력 보냄 (우측 이동)
@@ -184,8 +186,8 @@ namespace Dawnholder.Client.Tests.Prediction
                                   serverVx: 0f, serverVy: 0f,
                                   ackedClientTick: 1);
 
-            // replay 후 위치: 서버 999 + tick2 step + tick3 step
-            float stepDx = Constants.MoveSpeed * Constants.TickDuration;
+            // replay 후 위치: 서버 999 + tick2 step + tick3 step (DefaultMove.MoveSpeed=5f)
+            float stepDx = 5f * Constants.TickDuration;
             float expectedX = 999f + stepDx + stepDx;
             Assert.AreEqual(expectedX, predictor.Position.x, 0.001f,
                 "미-ack 입력(tick 2, 3) replay로 서버 권위 기준에서 누적 이동");
@@ -194,7 +196,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_Mispredict_AllInputsAcked_NoReplay()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(0f, 0f));
 
             predictor.NotifySent(1, inputX: 1, jumpPressed: false);
@@ -218,7 +220,7 @@ namespace Dawnholder.Client.Tests.Prediction
             // no-mispredict여도 EvictUpTo는 호출돼야 함 (메모리 위생).
             // PlayerPredictor 내부 _history.Count는 노출 안 됨 → 간접 검증:
             // 이전 ack된 입력이 다음 snapshot replay에서 포함되지 않음을 확인.
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(0f, 0f));
 
             predictor.NotifySent(1, inputX: 1, jumpPressed: false);
@@ -243,7 +245,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_MultipleSnapshots_SnapCountAccumulates()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(Vector2.zero);
 
             predictor.OnSnapshot(999f, 0f, 0f, 0f, ackedClientTick: 0);
@@ -251,6 +253,36 @@ namespace Dawnholder.Client.Tests.Prediction
 
             Assert.AreEqual(2, predictor.SnapCount,
                 "mispredict 2회 → SnapCount=2");
+        }
+
+        // === 직업 MoveParams 비례 검증 (M4.4 Phase 04 신설) ===
+        //
+        // Warrior(MoveSpeed=4) vs Ranger(MoveSpeed=6) — 같은 입력 1 tick Predict 시
+        // X 이동 거리가 moveSpeed 비율(4:6 = 2:3)에 정확히 비례해야 함.
+        // 헌법 #4: 클라 예측이 PlayerStats factory 단일 출처를 경유하는지 간접 검증.
+
+        [Test]
+        public void Predict_WarriorVsRanger_XDistanceProportionalToMoveSpeed()
+        {
+            // PlayerStats factory 단일 출처 — 클라 로컬 하드코딩 금지 (헌법 #4).
+            var warrior = PlayerStats.Warrior();
+            var ranger  = PlayerStats.Ranger();
+            var warriorMove = new MoveParams(warrior.MoveSpeed, warrior.JumpVel);
+            var rangerMove  = new MoveParams(ranger.MoveSpeed, ranger.JumpVel);
+
+            var predictorW = new PlayerPredictor(warriorMove);
+            var predictorR = new PlayerPredictor(rangerMove);
+            predictorW.SetInitialPosition(Vector2.zero);
+            predictorR.SetInitialPosition(Vector2.zero);
+
+            float dt = Constants.TickDuration;
+            predictorW.Predict(inputX: 1, jumpPressed: false, dt: dt);
+            predictorR.Predict(inputX: 1, jumpPressed: false, dt: dt);
+
+            // Warrior MoveSpeed=4, Ranger MoveSpeed=6 → 비율 4:6 = 2:3
+            float ratio = predictorR.Position.x / predictorW.Position.x;
+            Assert.AreEqual(ranger.MoveSpeed / warrior.MoveSpeed, ratio, 0.0001f,
+                "Ranger/Warrior X 이동 비율이 MoveSpeed 비율(6/4=1.5)과 일치해야 함");
         }
 
         // === IsGroundedAt — reconcile 시 접지 판정 (M4.4-03 reviewer 🟡) ===
@@ -273,7 +305,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_FlatFallback_AtGroundLevel_OnGroundTrue()
         {
-            var predictor = new PlayerPredictor(); // terrain 미주입 = 평지 fallback
+            var predictor = new PlayerPredictor(DefaultMove); // terrain 미주입 = 평지 fallback
             predictor.SetInitialPosition(Vector2.zero);
 
             bool mispredict = predictor.OnSnapshot(10f, 0f, 0f, 0f, ackedClientTick: 0);
@@ -285,7 +317,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_FlatFallback_InAir_OnGroundFalse()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(Vector2.zero);
 
             bool mispredict = predictor.OnSnapshot(10f, 5f, 0f, 0f, ackedClientTick: 0);
@@ -297,7 +329,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_OnSolidTop_OnGroundTrue()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetTerrain(SolidOnlyTerrain());
             predictor.SetInitialPosition(Vector2.zero);
 
@@ -311,7 +343,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_BesideSolid_SameHeight_OnGroundFalse()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetTerrain(SolidOnlyTerrain());
             predictor.SetInitialPosition(Vector2.zero);
 
@@ -325,7 +357,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_AboveSolid_OnGroundFalse()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetTerrain(SolidOnlyTerrain());
             predictor.SetInitialPosition(Vector2.zero);
 
@@ -339,7 +371,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_OnPlatform_OnGroundTrue()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetTerrain(PlatformOnlyTerrain());
             predictor.SetInitialPosition(Vector2.zero);
 
@@ -353,7 +385,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_BelowPlatform_OnGroundFalse()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetTerrain(PlatformOnlyTerrain());
             predictor.SetInitialPosition(new Vector2(50f, 0f)); // x 차이로 mispredict 유도
 
@@ -367,7 +399,7 @@ namespace Dawnholder.Client.Tests.Prediction
         [Test]
         public void OnSnapshot_RisingOnSolidTop_OnGroundFalse()
         {
-            var predictor = new PlayerPredictor();
+            var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetTerrain(SolidOnlyTerrain());
             predictor.SetInitialPosition(Vector2.zero);
 

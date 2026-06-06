@@ -19,7 +19,7 @@ namespace Dawnholder.Client.Network
     /// </summary>
     public class UnityClientSession : PacketSession
     {
-        // LocalPlayerController가 매 frame C_MoveIntent를 Send하려면 정적 접근점 필요.
+        // LocalPlayerMovement가 매 frame C_MoveIntent를 Send하려면 정적 접근점 필요.
         // NetworkService가 connect 콜백에서 본 객체를 만들 때 등록.
         public static UnityClientSession Instance { get; private set; }
 
@@ -87,7 +87,7 @@ namespace Dawnholder.Client.Network
         /// 입력 intent 송신용 wrapper. Editor에선 SimulatedLatencyMs 적용.
         /// Release/일반 Play에선 Send 직통 — 컴파일 시 분기 사라짐(<c>#if UNITY_EDITOR</c>).
         ///
-        /// LocalPlayerController가 C_MoveIntent를 이 경로로 보냄.
+        /// LocalPlayerMovement가 C_MoveIntent를 이 경로로 보냄.
         /// 다른 패킷(Ping 등)은 그대로 Send 직통 — RTT 측정 시 latency 영향 분리 가능.
         /// </summary>
         public void SendIntent(ArraySegment<byte> buf)
@@ -183,9 +183,9 @@ namespace Dawnholder.Client.Network
         internal void SetLastReceivedServerTick(int tick) => LastReceivedServerTick = tick;
 
         // ========================================================================
-        // 씬 로드 완료 후 새 LocalPlayerController가 참조하는 pending spawn 좌표.
+        // 씬 로드 완료 후 새 LocalPlayerMovement가 참조하는 pending spawn 좌표.
         // UnityClientSession은 DontDestroyOnLoad 없이 IOCP 스레드에서 계속 살아있으므로 static 공유.
-        // LocalPlayerController.Awake()에서 HasPendingSpawn 확인 → SetServerPosition 호출 → Clear.
+        // LocalPlayerMovement.Awake()에서 HasPendingSpawn 확인 → SetServerPosition 호출 → Clear.
         // ========================================================================
 
         public static float PendingSpawnX { get; internal set; }
@@ -193,10 +193,10 @@ namespace Dawnholder.Client.Network
         public static bool HasPendingSpawn { get; internal set; }
 
         // terrain 주입용 mapId. EnterMapHandler는 0(Town 고정), MapTransitionHandler는 destMapId 박음.
-        // LocalPlayerController.Awake()에서 pending spawn 소비 시 함께 읽어 ClientTerrainStore.Load 호출.
+        // LocalPlayerMovement.Awake()에서 pending spawn 소비 시 함께 읽어 ClientTerrainStore.Load 호출.
         public static int PendingMapId { get; internal set; }
 
-        // LocalPlayerController.Awake()에서 pending spawn 소비 후 호출.
+        // LocalPlayerMovement.Awake()에서 pending spawn 소비 후 호출.
         public static void ConsumePendingSpawn()
         {
             HasPendingSpawn = false;
