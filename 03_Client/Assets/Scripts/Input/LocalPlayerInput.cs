@@ -17,8 +17,6 @@ namespace Dawnholder.Client.Input
     [RequireComponent(typeof(LocalPlayerMovement))]
     public class LocalPlayerInput : MonoBehaviour
     {
-        // Phase 05 ClassConfig SO가 직업별 공격 전략을 주입 예정.
-        // 현재는 Awake에서 NearestTargetAttackStrategy 임시 고정.
         IAttackStrategy _attackStrategy = null!;
 
         LocalPlayerMovement _movement = null!;
@@ -26,7 +24,14 @@ namespace Dawnholder.Client.Input
         void Awake()
         {
             _movement = GetComponent<LocalPlayerMovement>();
-            _attackStrategy = new NearestTargetAttackStrategy();
+            // ClassConfig 미장착 시 fallback — Resolve 실패는 ClassLoadout.Resolve()가 fail-loud 처리.
+            _attackStrategy = new KnightMeleeAttack();
+        }
+
+        // LocalPlayerSpawner가 ClassConfig 장착 시 호출해 전략 교체.
+        public void SetAttackStrategy(IAttackStrategy strategy)
+        {
+            _attackStrategy = strategy;
         }
 
         // Input System "Move" 액션 콜백.

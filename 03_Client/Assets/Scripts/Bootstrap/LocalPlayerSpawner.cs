@@ -1,4 +1,6 @@
 #nullable enable
+using Dawnholder.Client.Combat;
+using Dawnholder.Client.Input;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using UnityEngine;
@@ -81,6 +83,18 @@ namespace Dawnholder.Client.Bootstrap
             // 씬 전환 시 SceneManager.LoadScene(Single)이 이 GameObject를 자동 파괴 →
             // LocalPlayerMovement.OnDestroy가 Instance 정리 → 다음 씬 로드 시 재spawn.
             SceneManager.MoveGameObjectToScene(go, scene);
+
+            // 직업 ClassConfig 장착 — Animator controller 교체 + 공격 전략 주입.
+            // config == null이면 Awake fallback(KnightMeleeAttack)으로 동작 유지.
+            ClassConfig? config = ClassLoadout.Resolve();
+            if (config != null)
+            {
+                Animator? animator = go.GetComponent<Animator>();
+                if (animator != null && config.Controller != null)
+                    animator.runtimeAnimatorController = config.Controller;
+
+                go.GetComponent<LocalPlayerInput>()?.SetAttackStrategy(config.CreateStrategy());
+            }
 
             // 카메라 연결 ("생성 후 셋업").
             //   CameraFollow.target은 [SerializeField]라 보통 씬에서 Inspector로 연결하지만,

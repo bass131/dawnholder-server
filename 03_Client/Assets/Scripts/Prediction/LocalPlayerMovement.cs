@@ -17,9 +17,8 @@ namespace Dawnholder.Client.Prediction
     //     fps 의존 차단 = *송신 cadence* 의미. Predict 자체는 가변 OK.
     //   - **OnJump 에지 검출**: "started" phase만 캡처 → 송신 cycle까지 보관 후 reset.
     //
-    // **직업 이동값**: PlayerStats factory 단일 출처 (헌법 #4).
-    //   PlayerPrefs "SelectedCharacterClass" 읽어 Warrior/Ranger 분기.
-    //   Phase 05 ClassConfig SO 도입 후 정식 주입 경로로 교체 예정.
+    // **직업 이동값**: PlayerStats.ForClass 단일 출처 (헌법 #4).
+    //   PlayerPrefs "SelectedCharacterClass" 읽어 ForClass에 전달.
     public class LocalPlayerMovement : MonoBehaviour
     {
         public static LocalPlayerMovement? Instance { get; private set; }
@@ -37,9 +36,6 @@ namespace Dawnholder.Client.Prediction
         {
             Instance = this;
 
-            // 직업 이동값: PlayerStats factory 단일 출처 (헌법 #4).
-            // PlayerPrefs에 저장된 CharacterClass로 Warrior/Ranger 분기.
-            // Phase 05 ClassConfig SO가 정식 주입 통로가 되면 이 경로 교체 예정.
             MoveParams move = ResolveClassMoveParams();
             _predictor = new PlayerPredictor(move);
 
@@ -177,16 +173,13 @@ namespace Dawnholder.Client.Prediction
         }
 
         // PlayerPrefs 선택 클래스 → MoveParams 변환.
-        // PlayerStats factory 단일 출처 (헌법 #4) — 클라 로컬에 4/6/8 하드코딩 금지.
+        // PlayerStats.ForClass 단일 출처 (헌법 #4) — 직업 분기 책임은 ForClass에 위임.
         static MoveParams ResolveClassMoveParams()
         {
             int classValue = UnityEngine.PlayerPrefs.GetInt(
                 CharacterSelectController.SelectedClassPrefsKey, (int)Shared.Protocol.CharacterClass.Warrior);
 
-            PlayerStats stats = (Shared.Protocol.CharacterClass)classValue == Shared.Protocol.CharacterClass.Ranger
-                ? PlayerStats.Ranger()
-                : PlayerStats.Warrior(); // invalid 값도 Warrior 기본 (서버와 동일 fallback)
-
+            PlayerStats stats = PlayerStats.ForClass((Shared.Protocol.CharacterClass)classValue);
             return new MoveParams(stats.MoveSpeed, stats.JumpVel);
         }
     }

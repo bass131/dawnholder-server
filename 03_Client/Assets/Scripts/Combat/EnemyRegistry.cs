@@ -118,7 +118,20 @@ namespace Dawnholder.Client.Combat
             Debug.Log($"[EnemyRegistry] Despawned entity {entityId}");
         }
 
-        // NearestTargetAttackStrategy 공격 입력에서 호출.
+        // 투사체 시각 연출용 — entityId에 해당하는 Transform 반환. 없으면 false.
+        // 헌법 #1: 판정/데미지와 무관. 순수 시각 경로 전용.
+        public bool TryGetTransform(int entityId, out Transform? target)
+        {
+            if (_enemies.TryGetValue(entityId, out EnemyEntry entry) && entry.Enemy != null)
+            {
+                target = entry.Enemy.transform;
+                return true;
+            }
+            target = null;
+            return false;
+        }
+
+        // AttackIntent 공격 입력에서 호출.
         // origin 기준 maxRangeSq 안 가장 가까운 enemy/boss entityId 반환. 없으면 false.
         // 헌법 #1 — *클라는 target 추천*만, 서버가 최종 검증 (range/cooldown/dead 모두 서버 재검사).
         public bool TryGetNearest(Vector3 origin, float maxRangeSq, out int targetEntityId)
