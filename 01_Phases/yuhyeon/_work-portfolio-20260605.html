@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>정유현 작업 포트폴리오 — Dawnholder (2026-05-16 ~ 06-05)</title>
+<style>
+  :root {
+    --bg: #0f1115; --card: #1a1d23; --line: #2c313a;
+    --text: #e6e8eb; --dim: #9aa1ab; --accent: #6cb6ff;
+    --m1: #3fb950; --m2: #d2a8ff; --m3: #ffa657; --m4: #f778ba;
+    --ok: #3fb950; --skip: #8b949e; --star: #e3b341;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Pretendard', 'Malgun Gothic', sans-serif; margin: 0; padding: 36px 24px; line-height: 1.65; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 36px; }
+  header h1 { font-size: 28px; margin: 0 0 6px 0; }
+  header .sub { color: var(--dim); font-size: 15px; }
+  header .role { display: inline-block; margin-top: 10px; background: rgba(108,182,255,.12); border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 4px 16px; font-size: 14px; font-weight: 600; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 28px 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; text-align: center; }
+  .stat .num { font-size: 30px; font-weight: 800; color: var(--accent); }
+  .stat .lbl { font-size: 13px; color: var(--dim); margin-top: 2px; }
+
+  h2 { font-size: 21px; margin: 44px 0 16px 0; color: var(--accent); }
+
+  /* timeline */
+  .tl { position: relative; padding-left: 28px; }
+  .tl::before { content: ''; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 3px; background: var(--line); border-radius: 2px; }
+  .ms { position: relative; margin-bottom: 28px; }
+  .ms::before { content: ''; position: absolute; left: -27px; top: 8px; width: 13px; height: 13px; border-radius: 50%; background: var(--dot); border: 3px solid var(--bg); }
+  .ms.m1 { --dot: var(--m1); --tint: var(--m1); }
+  .ms.m2 { --dot: var(--m2); --tint: var(--m2); }
+  .ms.m3 { --dot: var(--m3); --tint: var(--m3); }
+  .ms.m4 { --dot: var(--m4); --tint: var(--m4); }
+  .ms .card { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--tint); border-radius: 10px; padding: 18px 22px; }
+  .ms h3 { margin: 0; font-size: 18px; }
+  .ms h3 .date { font-size: 13px; color: var(--dim); font-weight: 400; margin-left: 10px; }
+  .ms .prs { font-size: 13px; color: var(--dim); margin: 4px 0 10px 0; }
+  .ms .prs b { color: var(--tint); }
+
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 4px 0; font-size: 14px; }
+  th, td { border: 1px solid var(--line); padding: 6px 12px; text-align: left; vertical-align: top; }
+  th { background: #22262e; font-size: 13px; }
+  .st { font-size: 12px; font-weight: 700; padding: 1px 9px; border-radius: 999px; white-space: nowrap; }
+  .st-ok { background: rgba(63,185,80,.15); color: var(--ok); border: 1px solid var(--ok); }
+  .st-skip { background: rgba(139,148,158,.15); color: var(--skip); border: 1px solid var(--skip); }
+  .st-part { background: rgba(255,166,87,.15); color: var(--m3); border: 1px solid var(--m3); }
+  td code, p code, li code { font-family: Consolas, monospace; font-size: 13px; color: #b8cfff; }
+
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 14px 0; }
+  .shot { background: #0a0c0f; border: 1px solid var(--line); border-radius: 8px; padding: 8px; text-align: center; }
+  .shot img { max-width: 100%; max-height: 110px; image-rendering: pixelated; }
+  .shot .cap { font-size: 11px; color: var(--dim); margin-top: 4px; font-family: Consolas, monospace; word-break: break-all; }
+
+  .learn { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
+  .learn h4 { margin: 0 0 6px 0; font-size: 15px; }
+  .learn h4 .stars { color: var(--star); }
+  .learn p { margin: 4px 0; font-size: 14px; color: #c9d1d9; }
+
+  footer { text-align: center; color: var(--dim); font-size: 13px; margin-top: 48px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>⚔️ Dawnholder — 정유현 작업 포트폴리오</h1>
+  <div class="sub">2D 사이드스크롤 MMORPG 캡스톤 · 2026-05-16 ~ 2026-06-05 (3주) · 4인 팀</div>
+  <div class="role">클라이언트 UI · 비주얼 · 씬 담당 (Unity 6.4 / URP 2D)</div>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="num">21</div><div class="lbl">작업 커밋</div></div>
+  <div class="stat"><div class="num">7</div><div class="lbl">머지된 PR</div></div>
+  <div class="stat"><div class="num">13</div><div class="lbl">완료 Phase (-DONE 박제)</div></div>
+  <div class="stat"><div class="num">~160k</div><div class="lbl">추가 라인 (씬·에셋 포함)</div></div>
+  <div class="stat"><div class="num">1</div><div class="lbl">ADR 기여 (ADR-021)</div></div>
+</div>
+
+<h2>📅 마일스톤 타임라인</h2>
+<div class="tl">
+
+  <div class="ms m1"><div class="card">
+    <h3>M1 — Client Foundations <span class="date">5/16 ~ 5/18 · 6/6 Phase 완료</span></h3>
+    <div class="prs">PR <b>#21</b> 일시정지 메뉴 · <b>#23</b> 씬 전환 페이드 · <b>#27</b> 회귀+데모 (M1 마감)</div>
+    <table>
+      <tr><th style="width:40px">P</th><th>내용</th><th style="width:90px">상태</th></tr>
+      <tr><td>01</td><td>MainMenu 씬 + Hello UI — Unity 6.4 환경 검증, Build Profiles 등록</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>02</td><td>메인 메뉴 Start/Quit 버튼 + <code>MainMenuController</code> — 첫 상호작용 UI (4/4)</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>03</td><td>HUD 골격 — HP 슬라이더 + Gold + 미니맵 자리 + <code>HudController</code> 서버 데이터 진입점 API (4/4)</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>04</td><td>일시정지 메뉴 — 새 InputSystem <code>TogglePauseMenu</code> 액션 + <code>PauseMenuController</code> (5/5)</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>05</td><td>씬 전환 페이드 — <code>SceneTransition</code> Singleton + DontDestroyOnLoad + 비동기 로드 (7/7)</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>06</td><td>회귀 6/6 + demo.mp4 박제 + M1 학습 일지 — 마일스톤 정식 마감</td><td><span class="st st-ok">DONE</span></td></tr>
+    </table>
+    <p style="font-size:13px; color:var(--dim); margin:8px 0 0 0;">+ ad-hoc: <b>ADR-021</b> — UI 전용 씬 분리 + Additive Load 패턴 제안·박제, CODEOWNERS 영역 분리 (아키텍처 결정 기여)</p>
+  </div></div>
+
+  <div class="ms m2"><div class="card">
+    <h3>M2 — Client Visuals <span class="date">5/16 ~ 5/18 · 6/8 완료 + 2 의도적 스킵</span></h3>
+    <div class="prs">PR <b>#32</b> M2 마일스톤 (Phase 01~06 + ad-hoc)</div>
+    <table>
+      <tr><th style="width:40px">P</th><th>내용</th><th style="width:90px">상태</th></tr>
+      <tr><td>01</td><td>Sprite Import 컨벤션 — 36 PNG 일괄 PPU 64/Point/Uncompressed, drift 5건 자동 fix</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>02</td><td>Idle 애니메이션 — 4 frame clip + Animator Controller 구성</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>03</td><td>Run 애니메이션 + Idle↔Run 전환 — <code>IsMoving</code> 파라미터, AnimatorController API 자동화</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>04</td><td>캐릭터 이동 시각 wiring — <code>PlayerAnimatorSync</code> (이동→SetBool+flipX), spritesheet hard reset</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>05</td><td>4-레이어 패럴랙스 배경 + Sorting Layer 체계 (Background/Default/Foreground/UI)</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>06</td><td>TMP 한글 폰트 — Pretendard SDF Atlas 2048² 자동 생성 + 프로젝트 Default 지정</td><td><span class="st st-ok">DONE</span></td></tr>
+      <tr><td>07</td><td>메뉴/HUD 한글화 — 면담 임박, 시각 임팩트 대비 비용 커서 보류 판단</td><td><span class="st st-skip">SKIP</span></td></tr>
+      <tr><td>08</td><td>회귀+데모 — Phase별 자연 검증으로 이미 충족, M3 데모에 흡수 판단</td><td><span class="st st-skip">SKIP</span></td></tr>
+    </table>
+  </div></div>
+
+  <div class="ms m3"><div class="card">
+    <h3>M3 — First Multiplayer 합류 (Phase 08a) <span class="date">5/19 · partial</span></h3>
+    <div class="prs">PR <b>#37</b> Asset + Prefab Variant (Step 1~4) — 251 files</div>
+    <p style="font-size:14px; margin:6px 0;">멀티플레이어 마일스톤에 에셋·프리팹 담당으로 합류.
+    <code>PlayerBase.prefab</code> + Local/Remote variant 패턴 작업 — 영호의 Network/Input/State 작업과 <b>완전 병렬</b>로 진행하도록 의존성 0 설계 (5/18 핸드오프 합의).
+    RemotePlayer 비주얼 교체 시 <code>RemoteEntity</code> 컴포넌트 보존 약속 준수.</p>
+  </div></div>
+
+  <div class="ms m4"><div class="card">
+    <h3>M4.3 — Art &amp; Stage <span class="date">6/5 · 머지 완료</span></h3>
+    <div class="prs">PR <b>#59</b> 타운 타일맵 스테이지 + UI/캐릭터 아트 (86 files, +46k) · <b>#61</b> UI 핸드오프 문서</div>
+    <table>
+      <tr><th>작업</th><th>내용</th></tr>
+      <tr><td>타일맵 스테이지</td><td>Town / HuntingGround / BossRoom 씬 타일맵 구성 + Town 건물 프리팹 (대장간·집)</td></tr>
+      <tr><td>캐릭터 Status</td><td>HP / MP / EXP 슬라이더 + 캐릭터 아이콘 — <code>1_status_hud_frame</code> 프레임 배치</td></tr>
+      <tr><td>UI 패널</td><td>퀘스트 바 · 스킬 슬롯 ×5 · 다이얼로그 템플릿 · 미니맵 프레임 · 인벤토리 시작점</td></tr>
+      <tr><td>핸드오프</td><td>팀장 기능 구현용 시각화 문서 — 요소별 연결 상태 + 구현 가이드 (<a href="M4.3-ui-art/_handoff-ui-art-20260605.html" style="color:var(--m4)">바로가기</a>)</td></tr>
+    </table>
+    <div class="gallery">
+      <div class="shot"><img src="../../03_Client/Assets/Art/UI/UI_files/1_status_hud_frame.png" alt=""><div class="cap">status_hud_frame</div></div>
+      <div class="shot"><img src="../../03_Client/Assets/Art/UI/UI_files/4_quest_panel_frame.png" alt=""><div class="cap">quest_panel</div></div>
+      <div class="shot"><img src="../../03_Client/Assets/Art/UI/UI_files/6_skill_slot_frame.png" alt=""><div class="cap">skill_slot</div></div>
+      <div class="shot"><img src="../../03_Client/Assets/Art/UI/UI_files/dialogue_template.png" alt=""><div class="cap">dialogue</div></div>
+      <div class="shot"><img src="../../03_Client/Assets/Art/UI/3_minimap_frame.png" alt=""><div class="cap">minimap</div></div>
+      <div class="shot"><img src="../../03_Client/Assets/Art/town/Blacksmith's shop0.png" alt=""><div class="cap">대장간</div></div>
+      <div class="shot"><img src="../../03_Client/Assets/Art/town/home.png" alt=""><div class="cap">집</div></div>
+      <div class="shot"><img src="../../03_Client/Assets/Art/Characters/UI_character/knight_icon.png" alt=""><div class="cap">knight_icon</div></div>
+    </div>
+  </div></div>
+
+</div>
+
+<h2>🧠 학습 사건 하이라이트 (면접 결정타)</h2>
+
+<div class="learn">
+  <h4><span class="stars">★★★</span> Rule of Six — "Unit correctness ≠ end-to-end"</h4>
+  <p>M1 P04(worldPositionStays 음수 RectTransform) → M2 P01(36 PNG import drift) → P02(드래그 워크플로우 부산물) → P03(controller 잔재 재발) → P04(Auto Slice mesh 함정) → P05(URP Light Target Sorting Layers).
+  <b>6개 사건이 전부 같은 패턴</b>: 한 단위가 맞아도 끝까지 검증하지 않으면 어긋난다. 이후 모든 Phase에 "의도 vs 실제 결과 검증" 단계를 기본 탑재.</p>
+</div>
+
+<div class="learn">
+  <h4><span class="stars">★★★</span> 데이터 기반 진단 — 1.5시간 손작업 vs 5분 자동화</h4>
+  <p>M1 P04에서 MenuRoot RectTransform에 음수 sizeDelta(-1211, -681)가 박힌 사건.
+  손으로 1.5시간 헤매다 MCP dump 1회로 정확한 값이 잡혀 5분 만에 해결.
+  <b>데이터 손상은 사용자 행동의 흔적</b>이고, 추측보다 측정이 빠르다는 걸 체득.</p>
+</div>
+
+<div class="learn">
+  <h4><span class="stars">★★★</span> Phase plan ≠ code reality — "기존 코드 read first"</h4>
+  <p>M2 P04에서 옛 Phase 정의가 현재 코드 구조(이미 완성된 prediction layer)와 어긋남을 발견하고 Phase를 전면 재작성.
+  이후 마일스톤 분해 전 <b>기존 코드부터 읽는 룰</b>을 팀 프로세스에 반영.</p>
+</div>
+
+<div class="learn">
+  <h4><span class="stars">★★</span> 아키텍처 기여 — ADR-021 (UI 씬 분리 + Additive Load)</h4>
+  <p>UI를 전용 씬으로 분리하고 <code>SceneBootstrap</code>에서 Additive Load하는 패턴을 제안·박제.
+  CODEOWNERS 영역 분리와 함께 팀의 병렬 작업 충돌을 구조적으로 줄임.</p>
+</div>
+
+<h2>🔧 만든 코드 (표시 전용 — 헌법 #1 Server Authority 준수)</h2>
+<table>
+  <tr><th>스크립트</th><th>역할</th></tr>
+  <tr><td><code>Scripts/UI/MainMenuController.cs</code></td><td>시작/종료 버튼 → 씬 로드 라우팅</td></tr>
+  <tr><td><code>Scripts/UI/HudController.cs</code></td><td>HP/Gold 표시 — 서버 패킷이 호출할 <code>UpdateHP/UpdateGold</code> API 설계</td></tr>
+  <tr><td><code>Scripts/UI/PauseMenuController.cs</code></td><td>ESC 토글 (InputActionReference) + Resume/MainMenu/Quit</td></tr>
+  <tr><td><code>Scripts/UI/SceneTransition.cs</code></td><td>페이드 Singleton — DontDestroyOnLoad + 비동기 씬 로드 + <code>unscaledDeltaTime</code></td></tr>
+  <tr><td><code>Scripts/Rendering/PlayerAnimatorSync.cs</code></td><td>이동 델타 → Animator SetBool + flipX (30줄, 단일 책임)</td></tr>
+</table>
+
+<footer>
+  Dawnholder 캡스톤 · 정유현 (jungyoohyun0105) · 생성 2026-06-05 · 데이터 출처: git 히스토리 (커밋 21 · PR #21 #23 #27 #32 #37 #59 #61) + 01_Phases/yuhyeon/ -DONE.md 13건
+</footer>
+
+</div>
+</body>
+</html>

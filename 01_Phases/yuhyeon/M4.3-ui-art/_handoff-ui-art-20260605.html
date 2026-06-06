@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>UI 아트 핸드오프 — 유현 → 팀장 (2026-06-05)</title>
+<style>
+  :root {
+    --bg: #14161a; --card: #1d2026; --line: #2e323a;
+    --text: #e6e8eb; --dim: #9aa1ab; --accent: #6cb6ff;
+    --ok: #3fb950; --todo: #d29922; --off: #8b949e;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Pretendard', 'Malgun Gothic', sans-serif; margin: 0; padding: 32px; line-height: 1.6; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+  h1 { font-size: 26px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+  h2 { font-size: 20px; color: var(--accent); margin-top: 40px; }
+  .meta { color: var(--dim); font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px 24px; margin: 18px 0; }
+  .card h3 { margin: 0 0 4px 0; font-size: 18px; }
+  .path { font-family: Consolas, monospace; font-size: 13px; color: var(--dim); background: #15171b; padding: 3px 8px; border-radius: 5px; display: inline-block; margin: 4px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid var(--line); padding: 7px 12px; text-align: left; vertical-align: top; }
+  th { background: #23262d; }
+  td code, li code, p code { font-family: Consolas, monospace; font-size: 13px; color: #b8cfff; }
+  .badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; vertical-align: middle; margin-left: 8px; }
+  .b-ok { background: rgba(63,185,80,.15); color: var(--ok); border: 1px solid var(--ok); }
+  .b-todo { background: rgba(210,153,34,.15); color: var(--todo); border: 1px solid var(--todo); }
+  .b-off { background: rgba(139,148,158,.15); color: var(--off); border: 1px solid var(--off); }
+  .preview { background: #0d0f12; border: 1px solid var(--line); border-radius: 8px; padding: 12px; text-align: center; margin: 12px 0; }
+  .preview img { max-width: 100%; max-height: 260px; image-rendering: pixelated; }
+  .preview.small img { max-height: 120px; }
+  .preview .cap { font-size: 12px; color: var(--dim); margin-top: 6px; font-family: Consolas, monospace; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row .preview { flex: 1; min-width: 200px; }
+  ul.todo { margin: 8px 0; padding-left: 20px; }
+  ul.todo li { margin: 4px 0; }
+  .note { border-left: 3px solid var(--todo); background: rgba(210,153,34,.07); padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+  .law { border-left: 3px solid #f85149; background: rgba(248,81,73,.07); padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 14px; }
+  .tree { font-family: Consolas, monospace; font-size: 13px; background: #0d0f12; border: 1px solid var(--line); border-radius: 8px; padding: 16px 20px; white-space: pre; overflow-x: auto; line-height: 1.5; color: #c9d1d9; }
+  .tree .on { color: var(--ok); } .tree .off2 { color: var(--off); } .tree .spr { color: #d2a8ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🎨 UI 아트 핸드오프 — 이미지 배치 완료, 기능 연결 대기</h1>
+<p class="meta">
+  작성: 유현 (시각 자산 + 씬 배치) → 인수: 팀장 (기능 구현) · 2026-06-05<br>
+  대상 씬: <span class="path">03_Client/Assets/Scenes/99.UI/UI.unity</span> (PR #59로 main 머지 완료, d3c8531 기준)
+</p>
+
+<h2>📋 한눈에 보기 — 무엇이 어디까지 됐나</h2>
+<table>
+  <tr><th>UI 요소</th><th>씬 위치 (계층 경로)</th><th>아트</th><th>기능 연결</th></tr>
+  <tr><td><b>HP 바</b></td><td>HUD &gt; status_hud &gt; HpSlider</td><td>✅ 배치</td><td><span class="badge b-ok">연결됨 — HudController.UpdateHP()</span></td></tr>
+  <tr><td><b>Gold 표시</b></td><td>HUD &gt; Gold_bar &gt; GoldText</td><td>✅ 배치</td><td><span class="badge b-ok">연결됨 — HudController.UpdateGold()</span></td></tr>
+  <tr><td><b>MP 바</b></td><td>HUD &gt; status_hud &gt; MpSlider</td><td>✅ 배치</td><td><span class="badge b-todo">미연결 — 스크립트 훅 없음</span></td></tr>
+  <tr><td><b>EXP 바</b></td><td>HUD &gt; status_hud &gt; ExpSlider</td><td>✅ 배치</td><td><span class="badge b-todo">미연결 — 스크립트 훅 없음</span></td></tr>
+  <tr><td><b>퀘스트 패널</b></td><td>HUD &gt; quest</td><td>✅ 배치</td><td><span class="badge b-todo">미연결 — 텍스트 placeholder</span></td></tr>
+  <tr><td><b>스킬 패널</b></td><td>HUD &gt; skill_panel (슬롯 ×5)</td><td>✅ 배치</td><td><span class="badge b-todo">미연결 — 프레임만</span></td></tr>
+  <tr><td><b>다이얼로그</b></td><td>HUD &gt; dialogue_template</td><td>✅ 배치</td><td><span class="badge b-off">미연결 · 기본 비활성</span></td></tr>
+  <tr><td><b>미니맵</b></td><td>PauseMenuCanvas &gt; … &gt; MinimapPlaceholder</td><td>✅ 배치</td><td><span class="badge b-off">미연결 · placeholder</span></td></tr>
+  <tr><td><b>인벤토리</b></td><td>HUD &gt; inventory_panel</td><td>🔶 일부 (탭+슬롯 1개)</td><td><span class="badge b-off">미연결 · 기본 비활성</span></td></tr>
+</table>
+
+<div class="law">
+  <b>⚠️ 헌법 #1 (Server Authority)</b> — 모든 UI는 <b>서버가 알려준 값을 표시만</b> 합니다.
+  HP/MP/EXP/Gold/퀘스트 진행도 <i>계산</i>은 절대 클라 UI 코드에 넣지 않습니다.
+  기존 <code>HudController</code>가 이 패턴의 본보기: 패킷 핸들러가 <code>UpdateHP(current, max)</code>를 호출하는 구조입니다.
+</div>
+
+<h2>🌳 UI.unity 전체 계층 구조</h2>
+<div class="tree"><span class="on">HUD</span>  (Canvas + HudController.cs)
+├─ HpText                  <span class="off2">[비활성]</span>  TMP "HP 100 / 100"
+├─ Gold_bar                <span class="spr">← Goldbar.png</span>
+│  └─ GoldText             TMP "Gold: 0"
+├─ status_hud              <span class="spr">← 1_status_hud_frame.png</span>
+│  ├─ HpSlider             (Slider — HudController 연결됨)
+│  ├─ MpSlider             (Slider — 미연결)
+│  ├─ ExpSlider            (Slider — 미연결)
+│  ├─ status_icon1         <span class="spr">← knight_icon.png</span>
+│  └─ status_icon2         <span class="spr">← character_icon2.png</span>
+├─ skill_panel
+│  ├─ skill_slot1          <span class="spr">← 6_skill_slot_frame.png</span>
+│  ├─ skill_slot1 (1)      <span class="spr">← 6_skill_slot_frame.png</span>
+│  ├─ skill_slot1 (2)      <span class="spr">← 6_skill_slot_frame.png</span>
+│  ├─ skill_slot1 (3)      <span class="spr">← 6_skill_slot_frame.png</span>
+│  └─ skill_slot1 (4)      <span class="spr">← 6_skill_slot_frame.png</span>
+├─ quest                   <span class="spr">← 4_quest_panel_frame.png</span>
+│  ├─ quest_name1          TMP "New Text"
+│  ├─ quest_name2          TMP "New Text"
+│  ├─ quest_name3          TMP "New Text"
+│  └─ quest_text           TMP "New Text"
+├─ dialogue_template       <span class="off2">[비활성]</span>  <span class="spr">← dialogue_template.png</span>
+│  ├─ character_icon1      <span class="spr">← knight_icon.png</span>
+│  ├─ character_icon2      <span class="spr">← character_icon2.png</span>
+│  ├─ dialogue_text        TMP (placeholder)
+│  └─ entitiy_name         TMP "Knight"  ※ 오타: entity
+└─ inventory_panel         <span class="off2">[비활성]</span>  <span class="spr">← tab_inactive.png</span>
+   └─ Image                <span class="spr">← slot.png</span>
+
+<span class="on">PauseMenuCanvas</span>  (Canvas + PauseMenuController.cs — ESC 토글 동작함)
+└─ MenuPanel
+   └─ MenuRoot             <span class="off2">[비활성]</span>
+      ├─ Backdrop / Background
+      ├─ ResumeButton · MainMenuButton · QuitButton   (Button — 동작함)
+      └─ MinimapPlaceholder  <span class="spr">← 3_minimap_frame.png</span>
+         ├─ Background (4)
+         └─ map_name        TMP "New Text"
+
+<span class="on">EventSystem</span>  (InputSystemUIInputModule)</div>
+
+<h2>1️⃣ 캐릭터 Status — HP / MP / EXP <span class="badge b-todo">MP·EXP 연결 필요</span></h2>
+<div class="card">
+  <span class="path">HUD &gt; status_hud</span>
+  <div class="row">
+    <div class="preview"><img src="../../../03_Client/Assets/Art/UI/UI_files/1_status_hud_frame.png" alt="status frame"><div class="cap">Art/UI/UI_files/1_status_hud_frame.png — 프레임</div></div>
+    <div class="preview small"><img src="../../../03_Client/Assets/Art/Characters/UI_character/knight_icon.png" alt="knight icon"><div class="cap">knight_icon.png — status_icon1</div></div>
+    <div class="preview small"><img src="../../../03_Client/Assets/Art/Characters/UI_character/character_icon2.png" alt="char icon2"><div class="cap">character_icon2.png — status_icon2</div></div>
+  </div>
+  <table>
+    <tr><th>오브젝트</th><th>컴포넌트</th><th>현재 상태</th></tr>
+    <tr><td><code>HpSlider</code></td><td>Slider (Fill = 내장 white)</td><td>✅ <code>HudController._hpSlider</code>에 연결, mock 100/100</td></tr>
+    <tr><td><code>MpSlider</code></td><td>Slider</td><td>⬜ 미연결 — 인스펙터 참조도 없음</td></tr>
+    <tr><td><code>ExpSlider</code></td><td>Slider</td><td>⬜ 미연결 — 인스펙터 참조도 없음</td></tr>
+    <tr><td><code>HpText</code></td><td>TMP (HUD 직속)</td><td>⬜ <b>비활성</b> 상태, "HP 100 / 100"</td></tr>
+  </table>
+  <b>구현 가이드 (팀장)</b>
+  <ul class="todo">
+    <li><code>Scripts/UI/HudController.cs</code>에 <code>UpdateMP(int, int)</code> / <code>UpdateEXP(long, long)</code> 추가 — 기존 <code>UpdateHP</code> 패턴 복붙 수준</li>
+    <li>인스펙터에서 <code>MpSlider</code>/<code>ExpSlider</code> SerializeField 연결</li>
+    <li>Fill 이미지가 내장 white라 색만 지정하면 됨 (HP 빨강 / MP 파랑 / EXP 노랑 등)</li>
+    <li>서버 패킷 (예: <code>StatSnapshot</code>) 수신 핸들러 → Update* 호출. 패킷 신설 필요 시 PDL.xml append-only + Protocol.Version bump (헌법 #2)</li>
+  </ul>
+</div>
+
+<h2>2️⃣ 퀘스트 패널 <span class="badge b-todo">연결 필요</span></h2>
+<div class="card">
+  <span class="path">HUD &gt; quest</span>
+  <div class="preview"><img src="../../../03_Client/Assets/Art/UI/UI_files/4_quest_panel_frame.png" alt="quest frame"><div class="cap">Art/UI/UI_files/4_quest_panel_frame.png</div></div>
+  <table>
+    <tr><th>오브젝트</th><th>용도 (의도)</th><th>현재 텍스트</th></tr>
+    <tr><td><code>quest_name1~3</code></td><td>퀘스트 제목 슬롯 3개 (동시 표시 최대 3건)</td><td>"New Text" placeholder</td></tr>
+    <tr><td><code>quest_text</code></td><td>선택된 퀘스트의 목표 설명 (예: "슬라임 처치 3/5")</td><td>"New Text" placeholder</td></tr>
+  </table>
+  <b>구현 가이드 (팀장)</b>
+  <ul class="todo">
+    <li><code>QuestPanelController</code> 신설 추천 — <code>SetQuests(IReadOnlyList&lt;QuestView&gt;)</code> 식의 표시 전용 API</li>
+    <li>퀘스트 수락/진행/완료 판정은 전부 서버 — 클라는 서버가 보낸 퀘스트 목록 스냅샷 표시만</li>
+  </ul>
+</div>
+
+<h2>3️⃣ 스킬 패널 — 슬롯 ×5 <span class="badge b-todo">연결 필요</span></h2>
+<div class="card">
+  <span class="path">HUD &gt; skill_panel &gt; skill_slot1 ~ skill_slot1 (4)</span>
+  <div class="preview"><img src="../../../03_Client/Assets/Art/UI/UI_files/6_skill_slot_frame.png" alt="skill slot frame"><div class="cap">Art/UI/UI_files/6_skill_slot_frame.png — 슬롯 5개가 같은 프레임 공유</div></div>
+  <b>구현 가이드 (팀장)</b>
+  <ul class="todo">
+    <li>슬롯 이름이 <code>skill_slot1 (1)</code>식 복제 네이밍 — 기능 붙이기 전에 <code>skill_slot_1~5</code>로 정리 추천</li>
+    <li>각 슬롯에 자식으로 <b>스킬 아이콘 Image + 쿨다운 오버레이(radial fill) + 키 바인딩 TMP</b> 추가 필요 (현재 프레임만 있음)</li>
+    <li>쿨다운은 서버 tick 기준 — 클라 <code>Time.time</code> 사용 금지 (03_Client/CLAUDE.md 금지 사항)</li>
+  </ul>
+</div>
+
+<h2>4️⃣ 다이얼로그 <span class="badge b-off">기본 비활성</span></h2>
+<div class="card">
+  <span class="path">HUD &gt; dialogue_template</span> — <b>m_IsActive = false</b>로 배치 (필요 시 SetActive로 표시)
+  <div class="preview"><img src="../../../03_Client/Assets/Art/UI/UI_files/dialogue_template.png" alt="dialogue"><div class="cap">Art/UI/UI_files/dialogue_template.png</div></div>
+  <table>
+    <tr><th>오브젝트</th><th>용도</th><th>비고</th></tr>
+    <tr><td><code>character_icon1/2</code></td><td>화자 초상화 (좌: 플레이어, 우: NPC 의도)</td><td>knight_icon / character_icon2 임시 배치</td></tr>
+    <tr><td><code>dialogue_text</code></td><td>대사 본문</td><td>placeholder 텍스트 박혀 있음 (지워도 됨)</td></tr>
+    <tr><td><code>entitiy_name</code></td><td>화자 이름표</td><td>⚠️ 오브젝트명 오타 (<code>entitiy</code> → <code>entity</code>) — 기능 작업 시 같이 정리 추천</td></tr>
+  </table>
+  <b>구현 가이드 (팀장)</b>
+  <ul class="todo">
+    <li><code>DialogueController</code> 신설 — <code>Show(speakerName, portrait, text)</code> / <code>Hide()</code> 표시 API + 타이핑 효과는 선택</li>
+    <li>NPC 상호작용 트리거(E키 등)와 연결 — 상호작용 가능 여부 판정은 서버 (거리 검증, 헌법 #3)</li>
+  </ul>
+</div>
+
+<h2>5️⃣ 미니맵 <span class="badge b-off">placeholder</span></h2>
+<div class="card">
+  <span class="path">PauseMenuCanvas &gt; MenuPanel &gt; MenuRoot &gt; MinimapPlaceholder</span>
+  <div class="preview"><img src="../../../03_Client/Assets/Art/UI/3_minimap_frame.png" alt="minimap frame"><div class="cap">Art/UI/3_minimap_frame.png</div></div>
+  <div class="note">
+    ⚠️ <b>위치 주의</b>: 현재 미니맵 프레임이 <b>일시정지 메뉴(MenuRoot) 안</b>에 있어서 ESC를 눌러야만 보입니다.
+    상시 표시 미니맵이 목표라면 <b>HUD 캔버스로 옮기는 게 먼저</b>입니다. 어디에 둘지는 팀장 판단에 맡깁니다 (이미지 자체는 앵커만 다시 잡으면 됨).
+  </div>
+  <b>구현 가이드 (팀장)</b>
+  <ul class="todo">
+    <li>프레임 안에 RawImage 추가 → 미니맵 전용 ortho 카메라의 RenderTexture 연결이 정석 코스</li>
+    <li><code>map_name</code> TMP는 현재 맵 이름 표시용 (서버의 맵 핸드오프 패킷에서 받아오기)</li>
+  </ul>
+</div>
+
+<h2>6️⃣ 기타 — Gold 바 / 인벤토리 시작점</h2>
+<div class="card">
+  <div class="row">
+    <div class="preview small"><img src="../../../03_Client/Assets/Art/UI/Goldbar.png" alt="goldbar"><div class="cap">Goldbar.png — HUD &gt; Gold_bar ✅ UpdateGold() 연결됨</div></div>
+    <div class="preview small"><img src="../../../03_Client/Assets/Art/UI/inventory_files/slot.png" alt="slot"><div class="cap">inventory_files/slot.png — 슬롯 1개 샘플 배치</div></div>
+    <div class="preview small"><img src="../../../03_Client/Assets/Art/UI/inventory_files/tab_inactive.png" alt="tab"><div class="cap">inventory_files/tab_inactive.png — 패널 배경 임시</div></div>
+  </div>
+  <p><code>inventory_panel</code>은 비활성 + 슬롯 1개만 둔 <b>시작점</b>입니다. 본격 인벤토리 작업 시
+  <code>Art/UI/inventory_files/</code>에 9-slice 프레임(<code>panel_frame_9slice</code>, <code>window_frame_9slice</code>, <code>portrait_frame_9slice</code>),
+  탭(active/inactive), 슬롯(기본/선택), 닫기 버튼이 전부 준비돼 있습니다.</p>
+</div>
+
+<h2>📦 에셋 인덱스 (이번 핸드오프 관련)</h2>
+<table>
+  <tr><th>경로</th><th>내용</th></tr>
+  <tr><td><code>Art/UI/UI_files/</code></td><td>HUD 프레임 7종 + 다이얼로그 템플릿 + 전체 조감도(<code>ui_assets_overview.png</code>)</td></tr>
+  <tr><td><code>Art/UI/inventory_files/</code></td><td>인벤토리 9-slice 세트 (프레임/탭/슬롯/버튼)</td></tr>
+  <tr><td><code>Art/Characters/UI_character/</code></td><td>캐릭터 선택·초상화 아이콘 4종</td></tr>
+  <tr><td><code>Art/UI/</code> 루트</td><td>Goldbar, hpbar, 미니맵 프레임, 메뉴 버튼류</td></tr>
+  <tr><td><code>Scripts/UI/HudController.cs</code></td><td>HP/Gold 표시 — <b>확장 기준점</b> (Update* 패턴)</td></tr>
+  <tr><td><code>Scripts/UI/PauseMenuController.cs</code></td><td>ESC 토글 + Resume/MainMenu/Quit — 동작 완료</td></tr>
+</table>
+
+<p class="meta">생성: 2026-06-05 · 씬 분석 기준 commit d3c8531 (main) · 작성 보조: Claude Code</p>
+
+</div>
+</body>
+</html>
