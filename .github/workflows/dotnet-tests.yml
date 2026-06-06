@@ -1,0 +1,28 @@
+# .NET 테스트 안전망 — 로컬 SAC(Smart App Control) 간헐 차단과 무관한 회귀 검증.
+# 본인 머신 = build + 봇 확정 / 테스트 = CI 분담 (M4.4 세션16 결정).
+name: dotnet-tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - main
+      - "feature/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # build → test 분리: dotnet test --no-incremental은 .slnx에서 MSB1001 (SDK 10.0.203+)
+      - name: Build
+        run: dotnet build Dawnholder.slnx --no-incremental
+
+      - name: Test
+        run: dotnet test Dawnholder.slnx --no-build --logger "console;verbosity=normal"
