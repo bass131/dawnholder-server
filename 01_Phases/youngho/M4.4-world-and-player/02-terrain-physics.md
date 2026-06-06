@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.4
 phase: 02
 title: 지형 물리 — Physics.Step 솔리드 AABB + one-way 플랫폼
-status: pending
+status: done
 grade: 복잡
 estimated: 3~5h
 domain: shared
@@ -12,7 +12,7 @@ summary: 평지(GroundY=0) 물리를 지형 충돌(솔리드 AABB + one-way 플�
 
 # Phase 02: 지형 물리
 
-> **상태**: pending
+> **상태**: done (2026-06-06 — -DONE.md 참조)
 > **마일스톤**: M4.4
 > **등급**: 복잡 (1 도메인이지만 물리 코어 교체 — 전 entity 이동 영향. **마일스톤 내 기술 난도 최고, 머지 전 /cross-review 후보**)
 > **담당**: shared SubAgent (98_Shared 단독) + qa (단위 테스트)
@@ -33,24 +33,24 @@ summary: 평지(GroundY=0) 물리를 지형 충돌(솔리드 AABB + one-way 플�
 
 ## 📝 작업 내용
 
-- [ ] 지형 조회 타입 정의 (`MapTerrain` — 솔리드 AABB 목록 + one-way 세그먼트, 맵별)
-- [ ] `Physics.Step` 시그니처 확장 — 지형 파라미터 추가 (기존 호출부 호환: 지형 null/empty = 평지 fallback)
-- [ ] 수평 이동: 진행 방향 솔리드 변과 교차 시 벽에 스냅 (vx=0)
-- [ ] 수직 하강: 솔리드 윗면 or one-way 윗면(시작 Y가 면 위 + vy≤0일 때만) 착지 → `onGround=true`
-- [ ] 수직 상승: 솔리드 아랫면 머리 충돌 → vy=0. one-way는 통과
-- [ ] tunneling 검토: 틱당 최대 이동량(이동·점프·낙하 최대 속도 × dt) vs 최소 지형 두께 — 초과 가능 조합이면 스윕(이동 경로 분할) 추가
-- [ ] 단위 테스트 8~12건: 평지 회귀(fallback) / 단차 착지 / 벽 차단 / 머리 충돌 / one-way 상향 통과 / one-way 착지 / 모서리(epsilon) / 낙하 고속 tunneling 경계
-- [ ] 기존 물리 테스트 전부 green (시그니처 변경 호출부 일괄 수정 — 02_Server·클라·봇·테스트)
+- [x] 지형 조회 타입 정의 (`MapTerrain` — Terrain.cs, ForMap(int) 1회 생성·틱 루프 배열 순회만)
+- [x] `Physics.Step` 시그니처 확장 — **오버로드** 방식 (2-인자 유지 → 3-인자 위임, 호출부 12파일 무변경. null/빈 지형 = StepFlat fallback)
+- [x] 수평 이동: 교차 판정 + 벽 스냅 (vx=0). 측면 차단 y∈[MinY,MaxY) — 바닥 윗면 보행 간섭 방지
+- [x] 수직 하강: 솔리드 윗면+발판 면 중 최고 면 착지 (시작 y≥faceY−eps + newY≤faceY)
+- [x] 수직 상승: 솔리드 아랫면 충돌 (**y<faceY 등호 제외 — 벽 모서리 점프 결함 봉합, 메인 세션 검수 발견**). 발판 통과
+- [x] tunneling 검토: 점 모델 + 교차(crossing) 판정이라 스윕 불요 — 빠른 이동도 면 통과 시점을 잡음 (E-2 vy=-40 테스트 고정)
+- [x] 단위 테스트 **19건** (계획 8~12 초과): fallback float 완전동일 2 / 착지·서기 / 벽 2 + 벽점프 회귀 / 천장 / one-way 3 / eps·tunneling·ledge / **대각 2 (reviewer 🟡 봉합)** / MapId 정합 2 (Phase 01 reviewer 🟡 봉합)
+- [x] 기존 물리 테스트 전부 green — 오버로드라 호출부 수정 0 (전체 suite 381 통과 / 0 실패 / 4 skip)
 
 ---
 
 ## ✅ 완료 조건
 
-- [ ] 신규 지형 테스트 8건+ green + 기존 테스트 회귀 0
-- [ ] **이동속도/점프 상수 불변** — `Constants.MoveSpeed`(5.0)/`JumpSpeed` 파라미터화는 Phase 04 소관, 본 Phase는 지형만 (plan-auditor 경계 명시)
-- [ ] `dotnet build Dawnholder.slnx` green (서버·봇·테스트 호출부 포함)
-- [ ] 지형 미주입 경로 = 기존 평지와 바이트 단위 동일 거동 (fallback 검증 테스트)
-- [ ] ProtocolVersion 8 불변 (프로토콜 무관 확인)
+- [x] 신규 지형 테스트 19건 green + 기존 테스트 회귀 0 (suite 362→381)
+- [x] **이동속도/점프 상수 불변** — Constants/JumpSpeed 무변경 (Phase 04 소관 유지)
+- [x] `dotnet build Dawnholder.slnx` green (경고 0/오류 0 — 호출부 무변경)
+- [x] 지형 미주입 경로 = 기존 평지와 바이트 단위 동일 거동 (F-1/F-2 — float == 정확 비교 20틱)
+- [x] ProtocolVersion 8 불변 (Protocol/ 무변경)
 
 ---
 
@@ -94,3 +94,4 @@ summary: 평지(GroundY=0) 물리를 지형 충돌(솔리드 AABB + one-way 플�
 ## 작업 로그
 
 - 2026-06-06: 계획 수립 (`/work:plan M4.4`)
+- 2026-06-06 (세션12, 구현): shared SubAgent 구현(오버로드+StepFlat 보존+StepWithTerrain) → 메인 세션 검수에서 **벽 모서리 점프 불가 결함 발견·봉합**(상승 등호 제외 y<faceY) → qa SubAgent 테스트 17건 → reviewer 🔴0/🟡3(대각 테스트 권고 채택→2건 추가, dt Theory 확대·구조 분리는 보류 판정대로) → 최종 19건 + 전체 381/0/4skip. 점 모델 채택(캐릭터 폭 무시 — 발 위치 점), GroundY clamp 제거(구멍 낙하 = Phase 03 kill-plane 소관).

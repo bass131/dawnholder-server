@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.3
 phase: 12
 title: M4.3 회귀 테스트 + 가벼운 마감 (5단계 보고 X)
-status: pending
+status: done
 grade: 보통
 risk: irreversible
 estimated: 1~2h
@@ -12,7 +12,7 @@ domain: qa
 
 # Phase 12: M4.3 회귀 테스트 + 가벼운 마감
 
-> **상태**: pending
+> **상태**: done (2026-06-06 — PR #62 머지, `_milestone-DONE.md` 참조)
 > **마일스톤**: M4.3
 > **등급**: 보통 (qa + 마감. PR 머지 시 irreversible 깃발)
 > **담당**: qa SubAgent + 메인 세션 (마감 의례)
@@ -33,12 +33,12 @@ M4.3 완료분(Phase 07/08a/08b/10/10b/11)을 통합 회귀 검증하고 **경�
 
 ## 📝 작업 내용
 
-- [ ] 전체 회귀 — `dotnet build Dawnholder.slnx --no-incremental` + `dotnet test --no-build` (※ 증분빌드 거짓실패 주의 — work-pin 학습)
-- [ ] 헤드리스 봇 기존 시나리오 전부 PASS (boss 시나리오는 M4.5)
-- [ ] `Protocol.Version` 최종 == 8 확인 (07: 6→7, 08a: 7→8. 09 bump는 M4.5에서 8→9)
-- [ ] CHANGELOG entry 박음 ([M] — 애니 상태머신 풀세트 + Animator wiring 5종 + 마일스톤 재편, 모든 팀원 영향)
-- [ ] PR 생성 — 브랜치 `feature/m4.3-phase11-anim-polish` (**사용자 명시 GO 게이트**, irreversible). 보안 키워드 literal 금지
-- [ ] work-pin 갱신 (M4.3 MERGED + M4.4 world-and-player 진입)
+- [x] 전체 회귀 — `dotnet build Dawnholder.slnx --no-incremental` + `dotnet test --no-build` (경고0/오류0 + 349/0/4skip)
+- [x] 헤드리스 봇 기존 시나리오 전부 PASS (6/6 — boss 시나리오는 M4.5)
+- [x] `Protocol.Version` 최종 == 8 확인 (07: 6→7, 08a: 7→8. 09 bump는 M4.5에서 8→9)
+- [x] CHANGELOG entry 박음 ([M] `834aead` — 애니 상태머신 풀세트 + Animator wiring 5종 + 마일스톤 재편)
+- [x] PR 생성·머지 — PR #62 (사용자 GO 게이트 통과 + admin bypass 사유 코멘트) → main `954e028`
+- [x] work-pin 갱신 (M4.3 MERGED + M4.4 world-and-player 진입)
 
 ### 박지 않는 것 (명시)
 - ❌ 5단계 보고 MD/HTML (대규모 마감 의례 — M4.3는 보통 마감)
@@ -49,10 +49,10 @@ M4.3 완료분(Phase 07/08a/08b/10/10b/11)을 통합 회귀 검증하고 **경�
 
 ## ✅ 완료 조건
 
-- [ ] `dotnet test` 전부 green (회귀 0 — 클린빌드 후)
-- [ ] 헤드리스 봇 기존 시나리오 PASS (boss는 M4.5)
-- [ ] CHANGELOG 갱신 + PR 머지 (사용자 GO 후)
-- [ ] work-pin = M4.3 MERGED + M4.4 진입 반영
+- [x] `dotnet test` 전부 green (회귀 0 — 클린빌드 후)
+- [x] 헤드리스 봇 기존 시나리오 PASS (boss는 M4.5)
+- [x] CHANGELOG 갱신 + PR 머지 (사용자 GO 후 — PR #62)
+- [x] work-pin = M4.3 MERGED + M4.4 진입 반영
 
 ---
 
