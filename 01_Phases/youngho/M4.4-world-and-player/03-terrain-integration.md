@@ -118,7 +118,7 @@ domain: shared+server+client+qa
 - [ ] bake 산출물 = 바이너리 파일만 (생성 C# 0건) + 재실행 idempotent + StreamingAssets/98_Shared 두 벌 byte-identical
 - [ ] 무결성 테스트: 정상 round-trip + CRC 변조 + 버전 mismatch + magic 오염 전부 명시 실패 (silent 통과 0)
 - [ ] 클라 빌드 산출물에 content.bin 미포함 (terrain.bin만)
-- [ ] 세 씬 Play 실측 체크리스트 전 항목 통과 (멈춤/벽끼임/공중부양 0) + 구멍 낙하 시 spawn 재배치
+- [ ] ~~세 씬 Play 실측 체크리스트~~ → **Phase 05 묶음 Play 실측으로 이월** (2026-06-06 사용자 결정 — 플레이어 prefab + 직업 분기 세팅 전 조작 불가. M4.3 Phase 11 → 04-05 이월 선례. 03~05 묶음으로 언덕/단차/발판/공중 스폰 착지/낙하 재배치/맵 전환/dt reconcile 흡수 일괄 실측)
 - [ ] 봇 이동 시나리오 PASS — SnapCount가 평지 baseline 동일 수준 (임계값은 스테이지 D 착수 시 baseline 실측으로 박제 — "0건" 요구는 가변 dt 간헐 snap 특성상 false-fail 위험, plan-auditor P2-①)
 - [ ] 서버 단독 진실 확인: 클라 prediction을 죽여도(스냅만) 서버 위치가 지형 위 정상
 - [ ] 상호작용 지형 범위 결정이 본 문서 작업 로그에 박힘
@@ -173,3 +173,4 @@ domain: shared+server+client+qa
 - 2026-06-06: 계획 수립 (`/work:plan M4.4`)
 - 2026-06-06 (세션13): **재정의** — 사용자 의논 결정 4건 반영 (바이너리 파이프라인 전환 + bake 범위 확장 + 무결성 헤더/암호화 X + 단독 진행). 등급 복잡 → 대규모 상향. 오케스트레이터 도구는 본인 제작 백로그 분리
 - 2026-06-06 (세션13): **plan-auditor 조건부 GO → GO** — P0(kill-plane 정책) 사용자 확정 = 스폰 재배치(HP 무변화) / P1 2건 문서 봉합(마커 Y bake 가드 + 스테이지 C 착수 게이트) / P2 임계 정량화 반영. 구현 착수
+- 2026-06-06 (세션13): **스테이지 A~D 완료** — A 포맷(`9f6fd53`) / B baker(`3a35f08`) / C 서버(`fa58fdd`+`741a89c`) / bake(`28a0d2c`) / D 클라+봇(`52ebdea`). E 게이트 ①SAC 재검증 392/0/4skip ✅ ②서버 실로드 기동 ✅. **Play 실측 = Phase 05 묶음 이월 확정** (사용자 결정 — 위 완료 조건 수정). E 잔여 = ③봇 상수 보정+실행 ⑤IsGroundedAt EditMode 테스트 → 다음 세션
