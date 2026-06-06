@@ -25,6 +25,16 @@ internal static class Program
         for (int i = 0; i < args.Length - 1; i++)
             if (args[i] == "--out") outDir = Path.GetFullPath(args[i + 1]);
 
+        if (track == "analyze")
+        {
+            if (args.Length < 2)
+            {
+                Console.Error.WriteLine("사용법: dotnet run -- analyze <오디오 파일 경로>");
+                return 1;
+            }
+            return RefAnalyzer.Analyze(args[1]);
+        }
+
         if (track == "sfx")
         {
             string sfxDir = Path.Combine(outDir, "sfx");
