@@ -400,7 +400,7 @@ public class EmergencyCombatSmoke
         {
             float delta = portalX - SpawnX;
             sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
-            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (Constants.MoveSpeed * Constants.TickDuration));
+            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Warrior().MoveSpeed * Constants.TickDuration));
             ticks = Math.Clamp(ticks, 0, 160);
             for (int i = 0; i < ticks; i++)
             {
@@ -440,7 +440,7 @@ public class EmergencyCombatSmoke
             float delta = desiredX - SpawnX;
             sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
 
-            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (Constants.MoveSpeed * Constants.TickDuration));
+            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Warrior().MoveSpeed * Constants.TickDuration));
             ticks = Math.Clamp(ticks, 0, 80);
 
             for (int i = 0; i < ticks; i++)

@@ -19,9 +19,6 @@ public static class Physics
     /// <summary>중력 가속도 (units/s²). Y up = 양수, gravity는 음수 (내림).</summary>
     public const float Gravity = -20.0f;
 
-    /// <summary>점프 시작 시 부여되는 vy (units/s). 8.0 = 포물선 약 0.8초.</summary>
-    public const float JumpSpeed = 8.0f;
-
     /// <summary>지면 Y 좌표. 캐릭터 발바닥이 닿는 높이.</summary>
     public const float GroundY = 0.0f;
 
@@ -29,14 +26,13 @@ public static class Physics
     private const float GroundEpsilon = 0.0001f;
 
     /// <summary>
-    /// 1 step 결정론 시뮬레이션 (평지 fallback). terrain=null 이면 이 경로.
-    /// 기존 2-인자 호출자가 이 오버로드로 자동 라우팅됨 — 거동 바이트 동일.
+    /// 1 step 결정론 시뮬레이션 (terrain null 위임). move 파라미터 필수 — silent fallback 없음.
     /// </summary>
-    public static PhysicsState Step(PhysicsState state, PhysicsInput input)
-        => Step(state, input, null);
+    public static PhysicsState Step(PhysicsState state, PhysicsInput input, MoveParams move)
+        => Step(state, input, null, move);
 
     /// <summary>
-    /// 1 step 결정론 시뮬레이션. 같은 (state, input, terrain) → 같은 PhysicsState.
+    /// 1 step 결정론 시뮬레이션. 같은 (state, input, terrain, move) → 같은 PhysicsState.
     ///
     /// <para><b>분기 규칙</b>:
     /// terrain이 null이거나 지형이 하나도 없으면 <see cref="StepFlat"/>으로 위임 (평지 fallback).
@@ -51,33 +47,33 @@ public static class Physics
     ///      one-way 의미: "시작이 면 위" 조건이 아래→위 통과를 자연 허용.
     ///   6. GroundY clamp 없음 — 지형 구멍 낙하는 Phase 03 kill-plane이 처리.</para>
     /// </summary>
-    public static PhysicsState Step(PhysicsState state, PhysicsInput input, MapTerrain? terrain)
+    public static PhysicsState Step(PhysicsState state, PhysicsInput input, MapTerrain? terrain, MoveParams move)
     {
         if (terrain == null || (terrain.Solids.Length == 0 && terrain.Platforms.Length == 0))
-            return StepFlat(state, input);
+            return StepFlat(state, input, move);
 
-        return StepWithTerrain(state, input, terrain);
+        return StepWithTerrain(state, input, terrain, move);
     }
 
     /// <summary>
-    /// 평지 시뮬레이션 (GroundY=0 clamp). 기존 Step 본문 그대로 — 한 글자도 변경 금지.
+    /// 평지 시뮬레이션 (GroundY=0 clamp). 물리 로직 불변 — MoveSpeed/JumpVel만 파라미터로.
     ///
     /// **순서** (재정렬 시 점프 물리 깨짐):
     ///   1. 수평 velocity = inputX * MoveSpeed (즉시 반응, 관성 X)
     ///   2. 시작 시점 ground 판정 (pos.Y와 vy 둘 다 확인)
-    ///   3. jumpPressed && startedOnGround → vy = JumpSpeed (점프 시작)
+    ///   3. jumpPressed && startedOnGround → vy = JumpVel (점프 시작)
     ///      그 외 공중일 때 → vy += Gravity * dt (낙하 가속)
     ///   4. 위치 적분 (Euler explicit)
     ///   5. 적분 후 newY <= GroundY → clamp + vy=0 + onGround=true
     ///
     /// **함정 회피**:
-    ///   - jump 적용 후 적분에 vy=JumpSpeed가 박혀 newY > GroundY로 즉시 위로 → onGround=false
+    ///   - jump 적용 후 적분에 vy=JumpVel가 박혀 newY > GroundY로 즉시 위로 → onGround=false
     ///     같은 tick 안에서 재점프 시도해도 startedOnGround였던 시점 상태로만 판단 (한 번만 적용)
     ///   - 중력은 *공중일 때만* 적용 → ground에서 vy가 음수로 누적되지 않음
     /// </summary>
-    private static PhysicsState StepFlat(PhysicsState state, PhysicsInput input)
+    private static PhysicsState StepFlat(PhysicsState state, PhysicsInput input, MoveParams move)
     {
-        float vx = input.InputX * Constants.MoveSpeed;
+        float vx = input.InputX * move.MoveSpeed;
 
         bool startedOnGround = state.Position.Y <= GroundY + GroundEpsilon
                             && state.Velocity.Y <= 0f;
@@ -85,7 +81,7 @@ public static class Physics
         float vy = state.Velocity.Y;
         if (input.JumpPressed && startedOnGround)
         {
-            vy = JumpSpeed;
+            vy = move.JumpVel;
         }
         else if (!startedOnGround)
         {
@@ -124,7 +120,7 @@ public static class Physics
     ///
     /// <para><b>GroundY clamp 없음</b>: 지형 구멍 낙하 허용. kill-plane / 스폰 보정은 Phase 03 소관.</para>
     /// </summary>
-    private static PhysicsState StepWithTerrain(PhysicsState state, PhysicsInput input, MapTerrain terrain)
+    private static PhysicsState StepWithTerrain(PhysicsState state, PhysicsInput input, MapTerrain terrain, MoveParams move)
     {
         float x  = state.Position.X;
         float y  = state.Position.Y;
@@ -133,7 +129,7 @@ public static class Physics
         float eps = GroundEpsilon;
 
         // 1. 수평 velocity
-        float vx = input.InputX * Constants.MoveSpeed;
+        float vx = input.InputX * move.MoveSpeed;
 
         // 2. 지지 판정: vy≤0이고 어떤 솔리드 윗면(MaxY) 또는 발판 면(Y) 위에 서 있는지
         bool startedOnGround = false;
@@ -167,7 +163,7 @@ public static class Physics
         // 3. 점프/중력 (StepFlat과 동일 구조)
         if (input.JumpPressed && startedOnGround)
         {
-            vy = JumpSpeed;
+            vy = move.JumpVel;
         }
         else if (!startedOnGround)
         {
@@ -278,6 +274,23 @@ public static class Physics
             new Vector2(newX, newY),
             new Vector2(vx, vy),
             onGround);
+    }
+}
+
+/// <summary>
+/// 직업별 이동 파라미터. 두 float을 낱개로 넘기지 않는 이유: 둘 다 float이라
+/// 호출부에서 자리 바꿈 실수가 컴파일에 안 잡힘 — 필드명으로 방지.
+/// readonly struct → 값 전달, GC 압박 0.
+/// </summary>
+public readonly struct MoveParams
+{
+    public readonly float MoveSpeed;
+    public readonly float JumpVel;
+
+    public MoveParams(float moveSpeed, float jumpVel)
+    {
+        MoveSpeed = moveSpeed;
+        JumpVel   = jumpVel;
     }
 }
 

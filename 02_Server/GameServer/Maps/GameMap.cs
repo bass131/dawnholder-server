@@ -307,7 +307,8 @@ public class GameMap
 
             PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration);
             PhysicsState before = new PhysicsState(p.Position, p.Velocity, p.OnGround);
-            PhysicsState after = Physics.Step(before, input, _terrain);
+            MoveParams move = new MoveParams(p.Stats.MoveSpeed, p.Stats.JumpVel);
+            PhysicsState after = Physics.Step(before, input, _terrain, move);
             p.Position = after.Position;
             p.Velocity = after.Velocity;
             p.OnGround = after.OnGround;
