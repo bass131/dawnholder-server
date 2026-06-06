@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Text;
+using Shared.GameData;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -11,35 +11,60 @@ using UnityEngine.Tilemaps;
 namespace Dawnholder.Client.EditorTools
 {
     /// <summary>
-    /// 씬 타일맵 → 98_Shared 생성 C# 지형 데이터 bake 파이프라인 (M4.4-01).
+    /// 씬 타일맵 + 마커 → terrain.bin / content.bin bake 파이프라인 (M4.4-03B).
     ///
-    /// 레이어 약속 (2026-06-06): "Tilemap_Solid" = 바닥·벽 / "Tilemap_Platform" = one-way 발판.
-    /// 그 외 이름의 타일맵은 무시 (장식 레이어 자유).
+    /// 레이어 약속: "Tilemap_Solid" = 바닥·벽 / "Tilemap_Platform" = one-way 발판.
+    /// 마커 약속: "Spawn_Player"(맵당 1개 의무) / "Spawn_Enemy_Normal" / "Spawn_Enemy_Boss".
     ///
-    /// Unity = 저작 도구, 생성 데이터 = 단일 진실 (헌법 #1·#4) — 서버는 씬을 모르고
-    /// 생성된 Shared 코드만 소비. 재생성 절차는 PacketGenerator와 동일: bake → diff 확인
-    /// → dotnet build → 생성 .cs + Shared.dll 동반 commit (drift 함정).
+    /// 출력:
+    ///   98_Shared/GameData/Maps/map_{id}.terrain.bin  — 서버 + 클라 공유
+    ///   03_Client/Assets/StreamingAssets/Maps/map_{id}.terrain.bin  — 클라 전용 (byte-identical)
+    ///   98_Shared/GameData/Maps/map_{id}.content.bin  — 서버 전용 (StreamingAssets 출력 X)
+    ///
+    /// 씬 수정 시 재bake → bin 두 벌 + 씬 동반 commit.
     /// </summary>
     public static class TerrainBaker
     {
-        const string SolidTilemapName = "Tilemap_Solid";
+        const string SolidTilemapName    = "Tilemap_Solid";
         const string PlatformTilemapName = "Tilemap_Platform";
+        const string MarkerPlayer        = "Spawn_Player";
+        const string MarkerEnemyPrefix   = "Spawn_Enemy_";
+
+        // EnemyKind 매핑 — append-only (값 변경·제거 X, 서버 EnemyKind byte 약속).
+        // 고정 배열 순회 = content.bin 항목 순서 결정론 (bake idempotent — Dictionary 순서 비보장 회피).
+        static readonly (string Name, byte KindId)[] EnemyMarkers =
+        {
+            ("Spawn_Enemy_Normal", 0),
+            ("Spawn_Enemy_Boss",   1),
+        };
+
+        static bool IsKnownEnemyMarker(string name)
+        {
+            foreach ((string known, _) in EnemyMarkers)
+                if (known == name) return true;
+            return false;
+        }
 
         // mapId는 서버 MapId enum / 클라 SceneRouter와 정합 의무 — 맵 추가 시 세 곳 동반 갱신.
         static readonly (int MapId, string MapName, string ScenePath)[] Targets =
         {
-            (0, "Town", "Assets/Scenes/01.PlayArea/Town.unity"),
+            (0, "Town",          "Assets/Scenes/01.PlayArea/Town.unity"),
             (1, "HuntingGround", "Assets/Scenes/01.PlayArea/HuntingGround.unity"),
-            (2, "BossRoom", "Assets/Scenes/01.PlayArea/BossRoom.unity"),
+            (2, "BossRoom",      "Assets/Scenes/01.PlayArea/BossRoom.unity"),
         };
 
-        static string OutputPath => Path.GetFullPath(Path.Combine(
-            Application.dataPath, "..", "..", "98_Shared", "GameData", "Generated", "MapTerrainData.cs"));
+        // Application.dataPath = "…/03_Client/Assets"
+        static string SharedMapsPath =>
+            Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "98_Shared", "GameData", "Maps"));
+
+        static string StreamingAssetsMapsPath =>
+            Path.GetFullPath(Path.Combine(Application.dataPath, "StreamingAssets", "Maps"));
+
+        // ── 메뉴 진입점 ──────────────────────────────────────────────────────────
 
         [MenuItem("Tools/Dawnholder/Bake Terrain")]
         public static void Bake()
         {
-            // 미저장 씬 보호 — 사용자가 저장 프롬프트를 취소하면 bake 전체 중단.
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             {
                 Debug.LogWarning("[TerrainBaker] 미저장 변경 저장 취소 — bake 중단.");
@@ -49,45 +74,248 @@ namespace Dawnholder.Client.EditorTools
             SceneSetup[] restore = EditorSceneManager.GetSceneManagerSetup();
             try
             {
-                var body = new StringBuilder();
-                var summaries = new List<string>();
-
+                // 1단계: 전 맵 검증 + bytes 생성 (파일 IO 없음).
+                // 2단계: 전부 통과한 뒤에만 일괄 쓰기 — 중간 맵 실패 시 부분 출력(맵 간 drift) 차단.
+                var outputs = new List<(int MapId, byte[] TerrainBytes, byte[] ContentBytes, string Summary)>();
                 foreach ((int mapId, string mapName, string scenePath) in Targets)
                 {
-                    Scene scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-
-                    List<Tilemap> solids = FindTilemaps(scene, SolidTilemapName);
-                    if (solids.Count == 0)
-                    {
-                        Debug.LogError($"[TerrainBaker] {mapName}: '{SolidTilemapName}' 없음 — " +
-                                       "레이어 분리(M4.4-01 약속)가 선행돼야 합니다. bake 중단 (파일 미변경).");
-                        return;
-                    }
-                    List<Tilemap> platforms = FindTilemaps(scene, PlatformTilemapName);
-                    if (platforms.Count == 0)
-                    {
-                        Debug.LogWarning($"[TerrainBaker] {mapName}: '{PlatformTilemapName}' 없음 — " +
-                                         "발판 0개로 진행 (미저작 상태면 정상).");
-                    }
-
-                    List<CellRect> solidRects = ExtractSolidRects(solids);
-                    List<Segment> platformSegs = ExtractPlatformSegments(platforms);
-
-                    AppendSolidArray(body, mapName, solidRects);
-                    AppendPlatformArray(body, mapName, platformSegs);
-                    summaries.Add($"{mapName}(mapId={mapId}): solids={solidRects.Count} platforms={platformSegs.Count}");
+                    if (!TryBuildMap(mapId, mapName, scenePath,
+                                     out byte[] terrainBytes, out byte[] contentBytes, out string summary))
+                        return; // 오류 시 파일 미변경 상태로 중단
+                    outputs.Add((mapId, terrainBytes, contentBytes, summary));
                 }
 
-                WriteGeneratedFile(body);
-                Debug.Log("[TerrainBaker] bake 완료 → " + OutputPath + "\n  " +
-                          string.Join("\n  ", summaries) +
-                          "\n  다음: dotnet build Dawnholder.slnx (Shared.dll 재빌드) + 생성 .cs/.dll 동반 commit");
+                Directory.CreateDirectory(SharedMapsPath);
+                Directory.CreateDirectory(StreamingAssetsMapsPath);
+                foreach ((int mapId, byte[] terrainBytes, byte[] contentBytes, string summary) in outputs)
+                {
+                    File.WriteAllBytes(Path.Combine(SharedMapsPath,          $"map_{mapId}.terrain.bin"), terrainBytes);
+                    File.WriteAllBytes(Path.Combine(StreamingAssetsMapsPath, $"map_{mapId}.terrain.bin"), terrainBytes); // byte-identical 두 벌
+                    File.WriteAllBytes(Path.Combine(SharedMapsPath,          $"map_{mapId}.content.bin"), contentBytes);
+                    Debug.Log(summary);
+                }
             }
             finally
             {
                 EditorSceneManager.RestoreSceneManagerSetup(restore);
+                AssetDatabase.Refresh(); // StreamingAssets .bin + .meta Unity 인식
             }
         }
+
+        // ── 맵 1개 검증 + bytes 생성 (파일 IO 없음 — 쓰기는 Bake()의 2단계 일괄) ──
+
+        static bool TryBuildMap(int mapId, string mapName, string scenePath,
+                                out byte[] terrainBytes, out byte[] contentBytes, out string summary)
+        {
+            terrainBytes = null;
+            contentBytes = null;
+            summary      = null;
+
+            EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+            Scene scene = EditorSceneManager.GetSceneByPath(scenePath);
+
+            // ── 타일맵 추출 ──────────────────────────────────────────────────────
+
+            List<Tilemap> solids = FindTilemaps(scene, SolidTilemapName);
+            if (solids.Count == 0)
+            {
+                Debug.LogError($"[TerrainBaker] {mapName}: '{SolidTilemapName}' 없음 — " +
+                               "레이어 분리(M4.4-01 약속)가 선행돼야 합니다. bake 중단 (파일 미변경).");
+                return false;
+            }
+            List<Tilemap> platforms = FindTilemaps(scene, PlatformTilemapName);
+            if (platforms.Count == 0)
+                Debug.LogWarning($"[TerrainBaker] {mapName}: '{PlatformTilemapName}' 없음 — 발판 0개로 진행.");
+
+            List<CellRect> solidRects   = ExtractSolidRects(solids);
+            List<Segment>  platformSegs = ExtractPlatformSegments(platforms);
+
+            // ── Shared 타입으로 직접 변환 ────────────────────────────────────────
+
+            TerrainAabb[] terrainSolids = new TerrainAabb[solidRects.Count];
+            for (int i = 0; i < solidRects.Count; i++)
+            {
+                CellRect r = solidRects[i];
+                terrainSolids[i] = new TerrainAabb(r.MinX, r.MinY, r.MaxX, r.MaxY);
+            }
+
+            TerrainPlatform[] terrainPlatforms = new TerrainPlatform[platformSegs.Count];
+            for (int i = 0; i < platformSegs.Count; i++)
+            {
+                Segment s = platformSegs[i];
+                terrainPlatforms[i] = new TerrainPlatform(s.Y, s.MinX, s.MaxX);
+            }
+
+            // ── killPlaneY = min(솔리드 MinY) - 10 ──────────────────────────────
+
+            float minSolidY = float.PositiveInfinity;
+            for (int i = 0; i < terrainSolids.Length; i++)
+            {
+                if (terrainSolids[i].MinY < minSolidY)
+                    minSolidY = terrainSolids[i].MinY;
+            }
+            float killPlaneY = terrainSolids.Length > 0 ? minSolidY - 10f : float.NegativeInfinity;
+
+            var terrain = new MapTerrain(terrainSolids, terrainPlatforms, killPlaneY);
+
+            // ── 마커 추출 + Y 스냅 검증 ──────────────────────────────────────────
+
+            if (!CollectMarkers(scene, mapName, terrain,
+                                out Vector2 playerSpawn, out List<EnemySpawnPoint> enemies))
+                return false;
+
+            // ── bytes 생성 (쓰기는 호출자 일괄) ──────────────────────────────────
+
+            terrainBytes = MapDataFile.WriteTerrain(mapId, terrain);
+            contentBytes = MapDataFile.WriteContent(mapId,
+                               new MapContent(playerSpawn.x, playerSpawn.y, enemies.ToArray()));
+
+            summary =
+                $"[TerrainBaker] {mapName} (mapId={mapId}) bake 완료\n" +
+                $"  solids={terrainSolids.Length}  platforms={terrainPlatforms.Length}" +
+                $"  killPlaneY={killPlaneY:F2}\n" +
+                $"  playerSpawn=({playerSpawn.x:F2}, {playerSpawn.y:F2})  enemies={enemies.Count}\n" +
+                $"  → {Path.Combine(SharedMapsPath, $"map_{mapId}.terrain.bin")} (+ content.bin)\n" +
+                $"  → {Path.Combine(StreamingAssetsMapsPath, $"map_{mapId}.terrain.bin")}\n" +
+                "  씬 수정 시 재bake → bin 두 벌 + 씬 동반 commit.";
+
+            return true;
+        }
+
+        // ── 마커 수집 + Y 스냅 검증 ──────────────────────────────────────────────
+
+        /// <returns>성공 시 true. false 반환 시 bake 중단 (파일 미변경).</returns>
+        static bool CollectMarkers(Scene scene, string mapName, MapTerrain terrain,
+                                   out Vector2 playerSpawn, out List<EnemySpawnPoint> enemies)
+        {
+            playerSpawn = default;
+            enemies     = new List<EnemySpawnPoint>();
+
+            // unknown suffix 오타 → fail-closed
+            bool hasBadMarker = false;
+            foreach (GameObject root in scene.GetRootGameObjects())
+                CheckUnknownEnemyMarkers(root.transform, mapName, ref hasBadMarker);
+            if (hasBadMarker)
+                return false; // LogError는 CheckUnknownEnemyMarkers 안에서 이미 출력
+
+            // Spawn_Player — 정확히 1개 의무
+            var playerGos = new List<GameObject>();
+            CollectByName(scene, MarkerPlayer, playerGos);
+            if (playerGos.Count == 0)
+            {
+                Debug.LogError($"[TerrainBaker] {mapName}: '{MarkerPlayer}' 마커 없음 — bake 중단.");
+                return false;
+            }
+            if (playerGos.Count > 1)
+            {
+                Debug.LogError($"[TerrainBaker] {mapName}: '{MarkerPlayer}' 마커 {playerGos.Count}개 — " +
+                               "정확히 1개 배치 필요. bake 중단.");
+                return false;
+            }
+
+            // 비활성 마커 경고 (기존 타일맵 처리와 동일 정신 — 경고 후 포함)
+            if (!playerGos[0].activeInHierarchy)
+                Debug.LogWarning($"[TerrainBaker] {mapName}: '{MarkerPlayer}' 비활성 상태지만 bake에 포함.");
+
+            Vector3 pp = playerGos[0].transform.position;
+            if (!TrySnapToSolidFace(terrain, pp.x, pp.y, mapName, MarkerPlayer, out float snappedPY))
+                return false;
+            playerSpawn = new Vector2(pp.x, snappedPY);
+
+            // 적 마커 — 0개+ 허용. 고정 배열 순서 순회 (결정론).
+            foreach ((string markerName, byte kindId) in EnemyMarkers)
+            {
+                var gos = new List<GameObject>();
+                CollectByName(scene, markerName, gos);
+                foreach (GameObject go in gos)
+                {
+                    if (!go.activeInHierarchy)
+                        Debug.LogWarning($"[TerrainBaker] {mapName}: '{go.name}' 비활성 상태지만 bake에 포함.");
+
+                    Vector3 ep = go.transform.position;
+                    if (!TrySnapToSolidFace(terrain, ep.x, ep.y, mapName, go.name, out float snappedEY))
+                        return false;
+                    enemies.Add(new EnemySpawnPoint(kindId, ep.x, snappedEY));
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 마커 x를 포함하는 솔리드의 윗면(MaxY) 중 마커 y와 가장 가까운 것을 찾아 스냅.
+        /// |marker.y - faceY| > 0.5f 또는 후보 없으면 LogError + false 반환.
+        /// </summary>
+        static bool TrySnapToSolidFace(MapTerrain terrain, float markerX, float markerY,
+                                        string mapName, string markerName, out float snappedY)
+        {
+            const float SnapEps = 0.5f;
+
+            snappedY = markerY;
+            float bestFace = float.NaN;
+            float bestDist = float.MaxValue;
+
+            foreach (TerrainAabb aabb in terrain.Solids)
+            {
+                if (markerX < aabb.MinX || markerX > aabb.MaxX) continue;
+                float dist = Math.Abs(markerY - aabb.MaxY);
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    bestFace = aabb.MaxY;
+                }
+            }
+
+            if (float.IsNaN(bestFace))
+            {
+                Debug.LogError($"[TerrainBaker] {mapName}: 마커 '{markerName}' ({markerX:F2}, {markerY:F2}) — " +
+                               "x 범위를 포함하는 솔리드 없음. 솔리드 위에 배치하세요. bake 중단.");
+                return false;
+            }
+
+            if (bestDist > SnapEps)
+            {
+                Debug.LogError($"[TerrainBaker] {mapName}: 마커 '{markerName}' ({markerX:F2}, {markerY:F2}) — " +
+                               $"가장 가까운 솔리드 윗면 y={bestFace:F2}, 거리={bestDist:F3} > eps={SnapEps}. " +
+                               "솔리드 윗면 바로 위에 배치하세요. bake 중단.");
+                return false;
+            }
+
+            snappedY = bestFace;
+            return true;
+        }
+
+        // ── 마커 씬 탐색 헬퍼 ────────────────────────────────────────────────────
+
+        static void CollectByName(Scene scene, string name, List<GameObject> result)
+        {
+            foreach (GameObject root in scene.GetRootGameObjects())
+                CollectByNameRecursive(root.transform, name, result);
+        }
+
+        static void CollectByNameRecursive(Transform t, string name, List<GameObject> result)
+        {
+            if (t.gameObject.name == name)
+                result.Add(t.gameObject);
+            for (int i = 0; i < t.childCount; i++)
+                CollectByNameRecursive(t.GetChild(i), name, result);
+        }
+
+        // "Spawn_Enemy_" 접두이지만 EnemyMarkers에 없는 이름 → 오타 fail-closed.
+        static void CheckUnknownEnemyMarkers(Transform t, string mapName, ref bool found)
+        {
+            string n = t.gameObject.name;
+            if (n.StartsWith(MarkerEnemyPrefix) && !IsKnownEnemyMarker(n))
+            {
+                Debug.LogError($"[TerrainBaker] {mapName}: 알 수 없는 마커 '{n}' — " +
+                               "EnemyMarkers에 없는 suffix. 오타 확인. bake 중단.");
+                found = true;
+            }
+            for (int i = 0; i < t.childCount; i++)
+                CheckUnknownEnemyMarkers(t.GetChild(i), mapName, ref found);
+        }
+
+        // ── 타일맵 탐색 ──────────────────────────────────────────────────────────
 
         static List<Tilemap> FindTilemaps(Scene scene, string name)
         {
@@ -98,12 +326,14 @@ namespace Dawnholder.Client.EditorTools
                 {
                     if (tm.gameObject.name != name) continue;
                     if (!tm.gameObject.activeInHierarchy)
-                        Debug.LogWarning($"[TerrainBaker] '{name}'이 비활성 상태지만 bake에 포함합니다 — 의도 확인.");
+                        Debug.LogWarning($"[TerrainBaker] '{name}' 비활성 상태지만 bake에 포함합니다 — 의도 확인.");
                     found.Add(tm);
                 }
             }
             return found;
         }
+
+        // ── 지형 추출 알고리즘 (검증 완료 — 산출 경로만 교체) ───────────────────
 
         readonly struct CellRect
         {
@@ -119,7 +349,7 @@ namespace Dawnholder.Client.EditorTools
         }
 
         // 같은 행 연속 셀 run → 동일 x-range가 연속 행으로 이어지면 수직 병합 → AABB.
-        // (수천 셀 → 수십~수백 AABB. 정렬 순회라 출력 결정론 = bake idempotent.)
+        // 정렬 순회 → 출력 결정론 = bake idempotent.
         static List<CellRect> ExtractSolidRects(List<Tilemap> tilemaps)
         {
             var rects = new List<CellRect>();
@@ -127,10 +357,9 @@ namespace Dawnholder.Client.EditorTools
             {
                 List<(int y, int x0, int x1)> runs = CollectRowRuns(tm);
 
-                // 수직 병합: 직전 행에서 같은 (x0,x1)로 열린 사각형이 있으면 연장.
-                var open = new List<(int x0, int x1, int y0, int y1)>();
+                var open   = new List<(int x0, int x1, int y0, int y1)>();
                 var closed = new List<(int x0, int x1, int y0, int y1)>();
-                foreach ((int y, int x0, int x1) in runs) // runs는 y 오름차순, 행 안 x 오름차순
+                foreach ((int y, int x0, int x1) in runs)
                 {
                     bool extended = false;
                     for (int i = 0; i < open.Count; i++)
@@ -157,7 +386,7 @@ namespace Dawnholder.Client.EditorTools
             return rects;
         }
 
-        // 발판은 행 run의 윗면만 세그먼트로 추출 (수직 병합 무의미 — 착지 면만 데이터).
+        // 발판은 행 run의 윗면만 세그먼트로 추출 (착지 면만 데이터).
         static List<Segment> ExtractPlatformSegments(List<Tilemap> tilemaps)
         {
             var segs = new List<Segment>();
@@ -165,7 +394,7 @@ namespace Dawnholder.Client.EditorTools
             {
                 foreach ((int y, int x0, int x1) in CollectRowRuns(tm))
                 {
-                    Vector3 left = tm.CellToWorld(new Vector3Int(x0, y + 1, 0));
+                    Vector3 left  = tm.CellToWorld(new Vector3Int(x0,     y + 1, 0));
                     Vector3 right = tm.CellToWorld(new Vector3Int(x1 + 1, y + 1, 0));
                     segs.Add(new Segment(left.y, left.x, right.x));
                 }
@@ -204,51 +433,6 @@ namespace Dawnholder.Client.EditorTools
                 runs.Add((row.Key, x0, x1));
             }
             return runs;
-        }
-
-        // 좌표는 "R"(round-trip) + InvariantCulture — 머신 로케일 무관 동일 출력 (idempotent 약속).
-        static string F(float v) => v.ToString("R", CultureInfo.InvariantCulture) + "f";
-
-        static void AppendSolidArray(StringBuilder sb, string mapName, List<CellRect> rects)
-        {
-            sb.Append("    public static readonly TerrainAabb[] ").Append(mapName).Append("Solids =\n    {\n");
-            foreach (CellRect r in rects)
-                sb.Append("        new TerrainAabb(").Append(F(r.MinX)).Append(", ").Append(F(r.MinY))
-                  .Append(", ").Append(F(r.MaxX)).Append(", ").Append(F(r.MaxY)).Append("),\n");
-            sb.Append("    };\n\n");
-        }
-
-        static void AppendPlatformArray(StringBuilder sb, string mapName, List<Segment> segs)
-        {
-            sb.Append("    public static readonly TerrainPlatform[] ").Append(mapName).Append("Platforms =\n    {\n");
-            foreach (Segment s in segs)
-                sb.Append("        new TerrainPlatform(").Append(F(s.Y)).Append(", ").Append(F(s.MinX))
-                  .Append(", ").Append(F(s.MaxX)).Append("),\n");
-            sb.Append("    };\n\n");
-        }
-
-        static void WriteGeneratedFile(StringBuilder body)
-        {
-            var sb = new StringBuilder();
-            sb.Append("// <auto-generated />\n");
-            sb.Append("// 본 파일은 TerrainBaker(03_Client/Assets/Editor/TerrainBaker.cs)가 씬 타일맵에서 자동 생성. 직접 수정 X.\n");
-            sb.Append("// 재생성: Unity 메뉴 Tools/Dawnholder/Bake Terrain → dotnet build Dawnholder.slnx\n");
-            sb.Append("//   (생성 .cs + 재빌드 Shared.dll 동반 commit — 생성기-산출물 drift 함정, PacketGenerator와 동일)\n");
-            sb.Append("// 좌표 = 월드 좌표. mapId = 서버 MapId enum 값 정합 (Town=0 / HuntingGround=1 / BossRoom=2).\n");
-            sb.Append("\nnamespace Shared.GameData;\n\n");
-            sb.Append("public static class MapTerrainData\n{\n");
-            sb.Append(body);
-            sb.Append("    public static TerrainAabb[] GetSolids(int mapId) => mapId switch\n    {\n");
-            foreach ((int mapId, string mapName, _) in Targets)
-                sb.Append("        ").Append(mapId).Append(" => ").Append(mapName).Append("Solids,\n");
-            sb.Append("        _ => System.Array.Empty<TerrainAabb>(),\n    };\n\n");
-            sb.Append("    public static TerrainPlatform[] GetPlatforms(int mapId) => mapId switch\n    {\n");
-            foreach ((int mapId, string mapName, _) in Targets)
-                sb.Append("        ").Append(mapId).Append(" => ").Append(mapName).Append("Platforms,\n");
-            sb.Append("        _ => System.Array.Empty<TerrainPlatform>(),\n    };\n}\n");
-
-            Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
-            File.WriteAllText(OutputPath, sb.ToString(), new UTF8Encoding(false));
         }
     }
 }
