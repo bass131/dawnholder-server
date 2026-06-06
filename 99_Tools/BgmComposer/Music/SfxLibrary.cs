@@ -23,16 +23,19 @@ public static class SfxLibrary
         SfxKit.NoiseSweep(m, sr, 2200, 5500, 600, 1600, 0.9, 0.04, 0.06, seed: 12);
         yield return ("AttackWarriorB", SfxKit.Finish(m, sr));
 
-        // ── 2. 레인저 공격 — 시위 "팅" + 화살 바람소리 ──
-        m = SfxKit.Buf(0.30, sr);
-        SfxKit.Tone(m, sr, 1700, 1100, 0.55, 0.002, 0.05, triangle: true);
-        SfxKit.NoiseSweep(m, sr, 2500, 7000, 1200, 3500, 0.4, 0.002, 0.08, seed: 21);
-        yield return ("AttackRangerA", SfxKit.Finish(m, sr));
+        // ── 2. 마법사 공격 — 마법 시전 "포로롱" + 마법탄 발사 "슈웅" ──
+        // 상승 톤 2겹(기음 + 5도 위)이 마법의 반짝임, 고역 노이즈가 발사 바람.
+        m = SfxKit.Buf(0.35, sr);
+        SfxKit.Tone(m, sr, 600, 1500, 0.5, 0.015, 0.09);
+        SfxKit.Tone(m, sr, 900, 2250, 0.22, 0.025, 0.07, triangle: true); // 5도 위 — 마법 색채
+        SfxKit.NoiseSweep(m, sr, 3000, 8000, 5000, 12000, 0.30, 0.03, 0.08, seed: 21);
+        yield return ("AttackMageA", SfxKit.Finish(m, sr));
 
-        m = SfxKit.Buf(0.26, sr);
-        SfxKit.Tone(m, sr, 1400, 900, 0.55, 0.002, 0.045, triangle: true);
-        SfxKit.NoiseSweep(m, sr, 2200, 6000, 1000, 3000, 0.4, 0.002, 0.07, seed: 22);
-        yield return ("AttackRangerB", SfxKit.Finish(m, sr));
+        m = SfxKit.Buf(0.30, sr);
+        SfxKit.Tone(m, sr, 480, 1150, 0.5, 0.012, 0.08);
+        SfxKit.Tone(m, sr, 720, 1725, 0.22, 0.02, 0.06, triangle: true);
+        SfxKit.NoiseSweep(m, sr, 2500, 7000, 4000, 10000, 0.30, 0.025, 0.07, seed: 22);
+        yield return ("AttackMageB", SfxKit.Finish(m, sr));
 
         // ── 3. 몬스터 공격 — 으르렁 + 무는 스냅 ──
         m = SfxKit.Buf(0.38, sr);
