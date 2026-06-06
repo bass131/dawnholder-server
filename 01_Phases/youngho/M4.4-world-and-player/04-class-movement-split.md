@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.4
 phase: 04
 title: 직업 이동 분리 — Physics 파라미터 주입 + LocalPlayerController 4분할
-status: pending
+status: done
 grade: 복잡
 estimated: 3~4h
 domain: shared+server+client
@@ -12,7 +12,7 @@ summary: 직업별 MoveSpeed/JumpVel을 98_Shared 단일 출처로 양쪽 주입
 
 # Phase 04: 직업 이동 분리
 
-> **상태**: pending
+> **상태**: done (2026-06-06, 세션15 — 박제 = 04-class-movement-split-DONE.md)
 > **마일스톤**: M4.4
 > **등급**: 복잡 (3 도메인 터치이나 shared/server 측은 ~20줄 연결 수준 — 본질은 클라 구조 분리. 대규모 상향 여부는 plan-auditor 판단 위임)
 > **담당**: shared SubAgent (PlayerStats/Physics) + server SubAgent (GameMap 연결) + client SubAgent (LPC 분할)
@@ -95,3 +95,4 @@ summary: 직업별 MoveSpeed/JumpVel을 98_Shared 단일 출처로 양쪽 주입
 ## 작업 로그
 
 - 2026-06-06: 계획 수립 (`/work:plan M4.4`)
+- 2026-06-06: 완료 (세션15) — 3 commits (`6673dbc` shared+server+bot / `94a7340` client 분할 / `29ebc45` prefab). 검증 = test 392/0/4 + 봇 5/5 + EditMode 37/0 + Play sanity + reviewer 🔴0. 상세 = -DONE.md
