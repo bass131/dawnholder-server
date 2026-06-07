@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.5
 phase: 02
 title: 골렘 추가 — EnemyKind=2, 데이터만 (엔진 변경 0 검증)
-status: in-progress
+status: done
 grade: 복잡
 risk: unity-asset
 estimated: 1.5~2h
@@ -92,3 +92,4 @@ domain: shared+server+client
 ## 작업 로그
 
 - 2026-06-07: 계획 수립 (`/work:plan M4.5`, 세션18)
+- 2026-06-07: 완료 (세션19) — EnemyKind 98_Shared 이사(사용자 결정, 02 동승 — Shared.dll 이중 흔들림 전제 깨짐) + 화석 분기 3곳 정정(사유 = -DONE.md). dotnet 399/0/4 + EditMode 63/63 + bake idempotent + 봇 PASS + Play 실측. ProtocolVersion 8 유지
