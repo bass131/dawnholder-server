@@ -18,12 +18,19 @@ namespace Dawnholder.Client.Combat
 
         void Awake()
         {
-            _sr = GetComponent<SpriteRenderer>();
+            Rebind();
+        }
+
+        // 비주얼이 "Visual" 자식으로 장착되는 구조(v2) — 자식 탐색 + 늦은 장착 대비 지연 재바인딩.
+        void Rebind()
+        {
+            _sr = GetComponentInChildren<SpriteRenderer>();
             if (_sr != null) _originalColor = _sr.color;
         }
 
         public void Flash()
         {
+            if (_sr == null) Rebind();
             if (_sr == null) return;
             if (_activeFlash != null) StopCoroutine(_activeFlash);
             _activeFlash = StartCoroutine(FlashRoutine());
