@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.5
 phase: 01
 title: 몬스터 prefab 전환 — EnemyVisualTable SO + 외관 디테일
-status: pending
+status: done
 grade: 복잡
 risk: unity-asset
 estimated: 2~3h
@@ -12,7 +12,7 @@ domain: client
 
 # Phase 01: 몬스터 prefab 전환 — EnemyVisualTable SO
 
-> **상태**: pending
+> **상태**: done (2026-06-07, commit f224cd0 + 5ce2c17 — 박제는 -DONE.md)
 > **마일스톤**: M4.5
 > **등급**: 복잡 (보통 + unity-asset 상향 — prefab 신설)
 > **담당**: client SubAgent + unity-bridge (prefab/SO 에셋) + 메인 검수
@@ -94,3 +94,4 @@ domain: client
 
 - 2026-06-07: 계획 수립 (`/work:plan M4.5`, 세션18)
 - 2026-06-07: 비주얼 교체 결정 반영 — Mushroom/ToxicFrog 은퇴(아트 스타일 불일치, 사용자 결정), Slime/Boss_Vampire 채택. 일반 몬스터 = 슬라임+골렘 통일
+- 2026-06-07: 완료 (세션19) — 전 체크리스트 이행, EditMode 59/59 + dotnet 392/0/4 + Play 4항목 + reviewer 🔴0. 발견: 적 중력 부재(서버 물리 제약, 이월). 상세 = `-DONE.md`
