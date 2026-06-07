@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.5 Phase 04 — 보스 프로토콜 + 서버 행동 (5단계 보고)</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2129; --panel2: #212a35; --line: #2e3a48;
+    --text: #d8e0e8; --dim: #8a98a8; --accent: #e8734a; --green: #4ec77a;
+    --yellow: #e8c14a; --blue: #5aa7e8; --purple: #b58ae8; --red: #e85a6a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; line-height: 1.65; padding: 40px 20px; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h1 .v { color: var(--accent); }
+  .sub { color: var(--dim); font-size: 14px; margin-bottom: 28px; }
+  h2 { font-size: 19px; margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+  h2 .emoji { margin-right: 8px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 10px 0; }
+  th, td { padding: 8px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--blue); font-weight: 600; }
+  code, .mono { font-family: 'Cascadia Code', Consolas, monospace; font-size: 12.5px; }
+  code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; color: var(--yellow); }
+  .tag { display: inline-block; padding: 1px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  .tag.red { background: #3a2026; color: var(--red); }
+  .tag.green { background: #1d3328; color: var(--green); }
+  .tag.blue { background: #1d2a3a; color: var(--blue); }
+  .tag.purple { background: #2c2238; color: var(--purple); }
+  .big { font-size: 30px; font-weight: 700; }
+  .kpi { text-align: center; padding: 16px 8px; }
+  .kpi .l { color: var(--dim); font-size: 12.5px; margin-top: 4px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0; }
+  @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  .flow .step { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 13px; text-align: center; }
+  .flow .step b { display: block; color: var(--blue); font-size: 13.5px; }
+  .flow .arrow { color: var(--accent); font-size: 18px; }
+  .timeline { position: relative; margin: 18px 0 6px; height: 84px; background: var(--panel2); border-radius: 8px; overflow: hidden; display: flex; }
+  .tseg { display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 12px; border-right: 2px dashed var(--line); }
+  .tseg b { font-size: 13px; }
+  ul { padding-left: 22px; } li { margin: 5px 0; }
+  .note { color: var(--dim); font-size: 13px; }
+  .ok::before { content: "✅ "; } .warn::before { content: "🟡 "; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>M4.5 Phase 04 — 보스 프로토콜 + 서버 행동 <span class="v">v8→v9</span></h1>
+<div class="sub">2026-06-07 · 등급 대규모 (irreversible + trust-boundary 깃발 2) · Coordinator 4구획 분해 (shared → server → qa) + 메인 검수 · 브랜치 feature/m4.5-04-boss-protocol-server</div>
+
+<h2><span class="emoji">🎯</span>1. 무엇을 만들었나</h2>
+<div class="panel">
+  맞기만 하던 보스가 <b>스스로 공격하는 보스</b>가 됐다. 페이즈 1/2(HP 50% 임계) 패턴 FSM + tick 카운터 쿨다운 +
+  서버 권위 범위 데미지 + 플레이어 사망 시 스폰 리스폰(HP full). 프로토콜은 마일스톤 유일 bump <b>v8→v9 한 묶음</b>:
+  <code>S_EnemyAttack</code> 신설(ID 20) + <code>S_PlayerJoin.characterClass</code> append.
+</div>
+<div class="kpis">
+  <div class="panel kpi"><div class="big" style="color:var(--accent)">v9</div><div class="l">ProtocolVersion (마일스톤 유일 bump)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--green)">417/0</div><div class="l">dotnet test 통과/실패 (+18 신규)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--blue)">15</div><div class="l">보스 데미지 실측 (봇 S_EnemyAttack 관측)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--purple)">🔴 0</div><div class="l">reviewer 통합 리뷰 (🟡 3 선택)</div></div>
+</div>
+
+<h2><span class="emoji">🤔</span>2. 왜 필요한가</h2>
+<div class="grid2">
+  <div class="panel">
+    <b style="color:var(--blue)">양방향 권위 전투의 완성</b>
+    <p>지금까지 전투는 플레이어→적 단방향이었다. 적→플레이어도 서버가 판정하면서
+    "누가 누굴 언제 때렸나"의 진실이 완전히 서버에 모인다 (헌법 #1).
+    보스→플레이어 데미지는 권위 위치 판정이라 prediction으로 피한 플레이어가 맞을 수 있는데,
+    <b>telegraph(공격 예고)</b>가 체감 공정성을 보완한다.</p>
+  </div>
+  <div class="panel">
+    <b style="color:var(--blue)">bump 묶음 + 깨진 약속 정정</b>
+    <p>프로토콜 변경 2건을 한 버전에 실은 이유: 팀원 재빌드 비용이 bump 횟수에 비례 (M4.2 학습).
+    옛 v8 주석의 "Phase 09 S_EnemyAttack도 v8에 포함" 약속은 마일스톤 재편으로 깨진 false-promise —
+    <code>ProtocolVersion.cs</code> + <code>PDL.xml</code> 두 곳을 같은 commit에서 정정했다.</p>
+  </div>
+</div>
+
+<h2><span class="emoji">🛠️</span>3. 어떻게 만들었나</h2>
+
+<div class="panel">
+  <b>보스 공격 1사이클 (페이즈 1 기준, 20 TPS)</b>
+  <div class="timeline">
+    <div class="tseg" style="width:50%; background:#1d2a3a;"><b style="color:var(--blue)">쿨다운 40틱</b>2.0초 — 대기</div>
+    <div class="tseg" style="width:20%; background:#3a3220;"><b style="color:var(--yellow)">telegraph 16틱</b>0.8초 — 예고 (animState=Attack)</div>
+    <div class="tseg" style="width:6%; background:#3a2026;"><b style="color:var(--red)">판정</b>1틱</div>
+    <div class="tseg" style="width:24%; background:#1d3328;"><b style="color:var(--green)">S_EnemyAttack</b>범위 내만 broadcast</div>
+  </div>
+  <div class="note">페이즈 2 (HP ≤ 50%, 1회성 전환): 쿨다운 24틱(1.2초) + telegraph 10틱(0.5초)으로 가속. telegraph 정량값은 사람 시각 반응(~250ms) + 회피 이동 여유 기준으로 사용자 확정 — <code>CombatConstants.cs</code> 박제.</div>
+</div>
+
+<div class="panel">
+  <b>Coordinator 4구획 순차 분해</b>
+  <div class="flow">
+    <div class="step"><b>CP-1 shared</b>PDL v9 bump 묶음<br>+ 화석 주석 정정</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>CP-2 server</b>BossBehaviorSystem FSM<br>+ EnemyStats.Attack</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>CP-3 server</b>사망/리스폰 HP full<br>+ characterClass 4곳</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>CP-4 qa</b>테스트 18 신설<br>+ BossFightSmoke 봇</div>
+  </div>
+  <div class="note">CP-1이 Shared.dll을 먼저 갱신해야 CP-2가 S_EnemyAttack을 참조 가능 — 의존성 순서가 분해의 뼈대.</div>
+</div>
+
+<table>
+  <tr><th style="width:32%">변경</th><th>요지</th></tr>
+  <tr><td><code>PDL.xml</code> + <code>ProtocolVersion.cs</code></td><td>S_EnemyAttack(attackerId/targetId/damage/targetCurrentHp/attackPattern) append + S_PlayerJoin characterClass byte 맨 끝 append + <b>8→9</b> + 화석 주석 2곳 정정 + GenPackets 재생성 + dll 동반</td></tr>
+  <tr><td><code>BossBehaviorSystem.cs</code> 신설 (206줄)</td><td>Boss 전담 System — 쿨다운→telegraph→AABB 권위 판정→S_EnemyAttack. EnemyAISystem의 Boss 분기 완전 이관 (broadcast 단일화). Tick 순서: physics→Combat→EnemyAI→<b>Boss</b>→Respawn</td></tr>
+  <tr><td><code>Formulas.cs</code> (98_Shared)</td><td>EnemyStats.Attack 신설(Normal 5/Golem 8/Boss 12) + BossDefault factory(Def3/HP100) + ComputeDamage(EnemyStats→PlayerStats) <b>오버로드</b> — 기존 호출처 무변경으로 회귀 면적 0</td></tr>
+  <tr><td>사망 정책</td><td>HP ≤ 0 → 스폰 재배치 + <b>HP full</b> + IsDeadAnimState 명시 리셋(부활 후 Death 애니 고정 함정 봉합). 통지는 다음 S_Snapshot(≤100ms)</td></tr>
+  <tr><td>characterClass wiring</td><td>GameSession 2곳 + MapMigration 2곳 전부 <code>(byte)entity.Stats.Class</code> — 서버 권위값만, 클라 raw echo 경로 0 (헌법 #3)</td></tr>
+  <tr><td>메인 검수 정정 1건</td><td>BossFightSmoke 가짜 리스폰 감지(_lastKnownHp=-1 초기값 false positive) → _sawDeath 패턴 + EnemyAttackCount≥1 성공 게이트</td></tr>
+</table>
+
+<h2><span class="emoji">🧪</span>4. 테스트 결과</h2>
+<div class="panel">
+  <ul>
+    <li class="ok"><b>dotnet test 417 통과 / 0 실패 / 4 skip</b> (WSL2, ADR-029) — 신규 BossBehaviorTests 18: 페이즈 전환 경계(51/50/49%) + 1회성, 쿨다운/telegraph 틱 정확성(40+16, 24/10 가속), 범위 내/밖, 데미지=Formulas 공식, 사망→리스폰 HP full, MaxHp drift 가드, ProtocolVersion==9 + 패킷 왕복</li>
+    <li class="ok"><b>봇 BossFightSmoke PASS</b> — S_EnemyAttack 관측 damage=15 = ComputeDamage(Boss12, Warrior방어5, base8) 계산 정확 일치. 정정 후 정직한 수치(respawn=False — 봇이 안 죽었으니 0이 진실)</li>
+    <li class="ok">기존 BossStageClearSmoke 회귀 0 + StageClear 1회성 불변 + tick p99 &lt; 1ms (50ms 예산 침범 0)</li>
+    <li class="ok">reviewer 통합 리뷰 <b>🔴 0</b> — 헌법 #1/#2/#3/#5 + ADR + 구조 + 테스트 + 컨벤션 6축 통과</li>
+    <li class="warn">🟡 3건 선택 이월 — 리스폰 직후 position history 잔존(~200ms, 측정 후 판단) / 봇 getter lock 비대칭 / 테스트 주석 명확화</li>
+  </ul>
+</div>
+
+<h2><span class="emoji">➡️</span>5. 다음 스텝</h2>
+<div class="panel">
+  <ul>
+    <li><b>Phase 05 — 보스 클라 연출 + 원격 직업 표시</b>: 본 Phase의 S_EnemyAttack(이펙트 분기 = attackPattern) + characterClass 소비. telegraph 0.8초/0.5초가 클라 이펙트 타이밍의 진실</li>
+    <li>Phase 06 — 회귀 + 마일스톤 마감</li>
+    <li>이월: reviewer 🟡 3건(선택) / CI actions v5 bump(6/16 임박) / 적 중력 부재</li>
+  </ul>
+</div>
+
+<div class="sub" style="margin-top:30px">박제 페어: <code>04-boss-protocol-and-server-DONE.md</code> · 생성 2026-06-07 (세션21)</div>
+</div>
+</body>
+</html>

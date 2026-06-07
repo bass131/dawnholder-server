@@ -154,6 +154,7 @@ public class GameSession : PacketSession
 
             // Initial roster — 자기에게 기존 entity 전원의 S_PlayerJoin 다발 Send.
             // race 안전: closing 중인 owner의 entity는 skip (race window에서 곧 disappear).
+            // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3 — 클라 raw byte echo 절대 금지).
             foreach (PlayerEntity existingEntity in existing)
             {
                 if (existingEntity.Owner != null && existingEntity.Owner.IsClosing) continue;
@@ -162,17 +163,20 @@ public class GameSession : PacketSession
                     entityId = existingEntity.EntityId,
                     spawnX = existingEntity.Position.X,
                     spawnY = existingEntity.Position.Y,
+                    characterClass = (byte)existingEntity.Stats.Class,
                 };
                 self.Send(rosterEntry.Write());
             }
 
             // 자기 외 모든 player에게 신규 entity broadcast.
             // BroadcastToAll의 IsClosing skip이 race window 방어.
+            // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3).
             S_PlayerJoin joinNotice = new S_PlayerJoin
             {
                 entityId = entity.EntityId,
                 spawnX = entity.Position.X,
                 spawnY = entity.Position.Y,
+                characterClass = (byte)entity.Stats.Class,
             };
             map.BroadcastToAll(joinNotice.Write(), except: self);
 

@@ -42,6 +42,20 @@ public static class Formulas
     /// <returns>최소 1 이상의 최종 데미지 값.</returns>
     public static int ComputeDamage(PlayerStats attacker, EnemyStats target, int baseDamage)
         => Math.Max(1, baseDamage + attacker.Attack - target.Defense);
+
+    /// <summary>
+    /// 적→플레이어 데미지 계산 (보스 공격 판정용 오버로드).
+    ///
+    /// <para>공식: <c>Max(1, baseDamage + attacker.Attack - target.Defense)</c></para>
+    /// <para>기존 PlayerStats→EnemyStats 오버로드와 공식 동일 — 양방향 전투 대칭.</para>
+    ///
+    /// <para><strong>헌법 #1</strong>: 서버만 호출. 클라는 HP 감소에 절대 사용 X.</para>
+    /// </summary>
+    /// <param name="attacker">공격자 적 스탯 (Attack 필드 사용).</param>
+    /// <param name="target">대상 플레이어 스탯 (Defense 필드 사용).</param>
+    /// <param name="baseDamage">기본 공격력 (CombatConstants 보스 상수).</param>
+    public static int ComputeDamage(EnemyStats attacker, PlayerStats target, int baseDamage)
+        => Math.Max(1, baseDamage + attacker.Attack - target.Defense);
 }
 
 /// <summary>
@@ -60,6 +74,12 @@ public struct EnemyStats
 
     /// <summary>최대 HP. 스폰 시 CurrentHp 초기화 기준.</summary>
     public int MaxHp;
+
+    /// <summary>
+    /// 공격력. default=0 (무공격 — 기존 Normal/Golem/default 회귀 0).
+    /// 보스 공격 판정: ComputeDamage(EnemyStats, PlayerStats, baseDamage)에서 사용.
+    /// </summary>
+    public int Attack;
 
     // ── AI 이동 파라미터 ──────────────────────────────────────
 
@@ -94,6 +114,7 @@ public struct EnemyStats
     {
         Defense = 0,
         MaxHp = 30,
+        Attack = 5,
         MoveSpeed = 2.0f,
         AggroRange = 6.0f,
         PatrolRange = 4.0f,
@@ -116,8 +137,32 @@ public struct EnemyStats
     {
         Defense = 5,
         MaxHp = 60,
+        Attack = 8,
         MoveSpeed = 1.2f,
         AggroRange = 4.0f,
         PatrolRange = 2.5f,
+    };
+
+    // ── Boss 기본값 factory ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Boss 기본 스탯.
+    ///
+    /// <list type="bullet">
+    ///   <item>MaxHp=100: EnemyDefaultHp.ByKind[Boss]=100과 일치 의무.</item>
+    ///   <item>Attack=12: 페이즈1 CombatConstants.BossBaseDamage(8) + Attack(12) - 플레이어 Defense.
+    ///       Warrior Defense=5 기준 데미지 = Max(1, 8+12-5) = 15.</item>
+    ///   <item>Defense=3: 플레이어→보스 방향은 CombatSystem이 처리 (PlayerStats→EnemyStats 오버로드).</item>
+    ///   <item>MoveSpeed/AggroRange/PatrolRange=0: 보스는 이동 없는 고정형 (BossBehaviorSystem 전담).</item>
+    /// </list>
+    /// </summary>
+    public static EnemyStats BossDefault() => new EnemyStats
+    {
+        Defense = 3,
+        MaxHp = 100,
+        Attack = 12,
+        MoveSpeed = 0f,
+        AggroRange = 0f,
+        PatrolRange = 0f,
     };
 }

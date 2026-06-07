@@ -100,11 +100,14 @@
          **수신측 동작 (Phase 05 클라 remote entity)**: entityId 일치하는 remote entity가 없으면 spawn,
          있으면 무시 (idempotent — initial roster 재전송 안전).
          **자기 자신은 받지 않음** — sender의 OnConnected 흐름에서 자기 외 모든 세션에 broadcast.
-         spawnX/Y는 *서버가 정한* 좌표 (헌법 #1 Server Authority). -->
+         spawnX/Y는 *서버가 정한* 좌표 (헌법 #1 Server Authority).
+         M4.5 Phase 04 [Protocol.Version v8→v9]: characterClass byte 맨 끝 append (원격 플레이어 직업 표시용).
+         서버 권위 값. Warrior=0 / Ranger=1. -->
     <packet name="S_PlayerJoin">
         <int name="entityId"/>
         <float name="spawnX"/>
         <float name="spawnY"/>
+        <byte name="characterClass"/>
     </packet>
 
     <!-- Phase 04 (M3): Player leave broadcast. multi-player 환경에서 *남은 플레이어들에게* 이탈 entity 알림.
@@ -229,8 +232,8 @@
            2 = Chase   (추격 — AggroRange 내 플레이어 감지)
          클라 측 디코드 책임 (S_EntitySpawn.entityKind 패턴 정합).
 
-         **ProtocolVersion 8 동반**: M4.3 Phase 08a bump. Phase 09 S_EnemyAttack도 v8에 포함
-         (한 PR 묶음 — 추가 bump 없음).
+         **ProtocolVersion 8 동반**: M4.3 Phase 08a bump.
+         S_EnemyAttack은 v9 신설 (M4.5 Phase 04 — 옛 Phase 09가 v8 묶음에서 이월되며 깨진 약속, 본 묶음에서 정정).
          M4.3 Phase 08a: animState 추가 — 기존 state(AI: Patrol/Chase 시각구분용) 뒤에 append.
          클라(08b)는 animState로 모션 결정, state로 선택적 AI 상태 강조. -->
     <packet name="S_EntityState">
@@ -239,5 +242,21 @@
         <float name="y"/>
         <byte name="state"/>
         <byte name="animState"/>
+    </packet>
+
+    <!-- M4.5 Phase 04 [Protocol.Version v8→v9]: 적→플레이어 권위 데미지 통지.
+         telegraph 예고는 S_EntityState animState 채널, 본 패킷은 히트 확정 통지.
+         **attackerId**: 보스 entityId (서버 권위, 클라가 결정 X).
+         **targetId**: 피격 플레이어 entityId.
+         **damage**: 확정 데미지 값 (양수).
+         **targetCurrentHp**: 피격 후 플레이어 HP. 음수 가능(사망 처리용) — 클라는 max(0, value)로 표시.
+         **attackPattern**: 클라 이펙트 분기 힌트. 0=페이즈1 기본, 1=페이즈2 강화.
+         수신측은 S_EntityDeath 별도 broadcast로 사망 lifecycle 처리 (본 패킷 = 데미지 통지만). -->
+    <packet name="S_EnemyAttack">
+        <int name="attackerId"/>
+        <int name="targetId"/>
+        <int name="damage"/>
+        <int name="targetCurrentHp"/>
+        <byte name="attackPattern"/>
     </packet>
 </PDL>

@@ -66,6 +66,19 @@ if (string.Equals(scenarioName, "BossStageClearSmoke", StringComparison.OrdinalI
     return r.Success ? 0 : 1;
 }
 
+if (string.Equals(scenarioName, "BossFightSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    BossFightSmoke.Result r = await BossFightSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] BossFightSmoke: success={r.Success} " +
+                      $"entity={r.LocalEntityId} boss={r.BossEntityId} " +
+                      $"hits={r.HitCount} stageClear={r.SawStageClear}");
+    Console.WriteLine($"      boss hp: {r.InitialBossHp} -> {r.FinalBossHp} " +
+                      $"enemyAttacks={r.EnemyAttackCount} lastDamage={r.LastEnemyAttackDamage} " +
+                      $"respawn={r.SawRespawn} respawnCount={r.RespawnCount}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
 if (string.Equals(scenarioName, "EnemyAiSmoke", StringComparison.OrdinalIgnoreCase))
 {
     EnemyAiSmoke.Result r = await EnemyAiSmoke.Run(host, port);

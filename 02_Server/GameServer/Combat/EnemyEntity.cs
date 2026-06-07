@@ -72,6 +72,25 @@ public class EnemyEntity
     public int AttackLatchTicks { get; set; }    // Attack 상태 남은 latch 틱 수
     public int HitLatchTicks    { get; set; }    // Hit 상태 남은 latch 틱 수
 
+    // ── 보스 FSM 상태 필드 ───────────────────────────────────────────────────
+    // BossBehaviorSystem 전용. Normal/Golem은 이 필드를 사용하지 않음.
+    // tick thread invariant — BossBehaviorSystem.Update 안에서만 읽기/쓰기.
+
+    /// <summary>페이즈 2 전환 여부. HP ≤ 50% 시 true로 1회 전환 (idempotent).</summary>
+    public bool IsPhase2 { get; set; }
+
+    /// <summary>
+    /// 공격 쿨다운 남은 틱 수. 0이 되면 telegraph 시작.
+    /// ctor에서 초기 쿨다운 값으로 초기화 — 스폰 즉시 공격 방지.
+    /// </summary>
+    public int AttackCooldownTicks { get; set; }
+
+    /// <summary>
+    /// telegraph(예고) 남은 틱 수. 0보다 크면 예고 중.
+    /// 0 도달 틱에 실제 데미지 판정 실행 → 쿨다운 리셋.
+    /// </summary>
+    public int TelegraphTicksRemaining { get; set; }
+
     // State 초기화: Normal → Patrol (AI 즉시 시작), Boss → Idle.
     public EnemyEntity(int entityId, EnemyKind kind, float x, float y, int maxHp, EnemyStats stats = default)
     {
@@ -85,9 +104,13 @@ public class EnemyEntity
         Hp = maxHp;
         Stats = stats;
 
-        // AI 초기 상태: Boss = Idle (Phase 09 이전), 나머지(Normal/Golem) = Patrol 시작.
-        // "적은 2종" 가정 화석 정정: Golem 추가로 Boss 명시 비교 필요 (M4.5-02).
+        // AI 초기 상태: Boss = Idle (BossBehaviorSystem 전담), 나머지(Normal/Golem) = Patrol 시작.
         State = kind == EnemyKind.Boss ? EnemyState.Idle : EnemyState.Patrol;
         PatrolDir = 1; // 기본 오른쪽 출발
+
+        // 보스 초기 쿨다운: 스폰 직후 즉시 telegraph 방지.
+        // 페이즈 1 쿨다운으로 시작 — 스폰 후 2초 후 첫 공격 (헌법 #5: ms 타이머 X).
+        if (kind == EnemyKind.Boss)
+            AttackCooldownTicks = CombatConstants.BossPhase1CooldownTicks;
     }
 }

@@ -26,8 +26,10 @@ namespace Shared.Protocol;
 ///         enemy AI FSM이 S_EntityState 의존이라 옛 클라 빠른 cutoff 위해 bump.
 ///   - v8: M4.3 Phase 08a — animState byte 필드 추가 (S_Snapshot + S_EntityState 각 맨 끝 append).
 ///         AnimState enum 신설 (Idle/Walk/Jump/Attack/Hit/Death) — 시각 애니 상태 서버 권위 결정.
-///         Phase 09 S_EnemyAttack도 이 Version 8에 포함(한 PR 묶음, 추가 bump 없음).
+///         (옛 약속 'Phase 09 S_EnemyAttack도 v8 포함'은 깨짐 — M4.5 Phase 04에서 v9로 신설 정정.)
 ///         append-only이지만 옛 클라가 animState 없이 파싱하면 오프셋 desync → 빠른 cutoff 위해 bump.
+///   - v9: M4.5 Phase 04 — S_EnemyAttack 신설(적→플레이어 권위 데미지) + S_PlayerJoin.characterClass byte
+///         맨 끝 append(원격 직업 표시). 두 변경 한 묶음 bump.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -41,6 +43,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.3 Phase 08a = v8 (animState byte 추가 — S_Snapshot + S_EntityState, 시각 애니 상태 서버 권위 결정).</summary>
-    public const ushort Current = 8;
+    /// <summary>현재 프로토콜 버전. M4.5 Phase 04 = v9 (S_EnemyAttack 신설 + S_PlayerJoin.characterClass append).</summary>
+    public const ushort Current = 9;
 }

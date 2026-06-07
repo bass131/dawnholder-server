@@ -31,4 +31,42 @@ internal static class CombatConstants
     //   ms 타이머를 tick 루프 안에 박으면 Thread.Sleep/DateTime 의존 발생.
     //   tick 카운터는 순수 정수 감소 — blocking call 0 보장.
     public const int AnimLatchTicks = 8; // Attack/Hit latch 지속 틱 수 (8틱 = 400ms @20TPS)
+
+    // ── 보스 전투 상수 ────────────────────────────────────────────────────────
+    //
+    // 값은 사용자 확정 정량값 (M4.5 Phase 04 CP-2 명세). 임의 변경 금지.
+    // 틱 단위 = ms 환산 시 20TPS 기준 (1틱=50ms).
+
+    /// <summary>보스 기본 공격 데미지. Formulas.ComputeDamage의 baseDamage 인자로 전달.</summary>
+    public const int BossBaseDamage = 8;
+
+    /// <summary>보스 공격 AABB half-extent (x/y 동일). 중심 ±2.5f → 전체 5×5 unit.</summary>
+    public const float BossAttackHalfExtent = 2.5f;
+
+    /// <summary>
+    /// 페이즈 1 공격 예고 틱 (telegraph).
+    /// 16틱 = 800ms @20TPS — 클라이언트가 이펙트 보고 회피할 여유.
+    /// </summary>
+    public const int BossTelegraphTicks = 16;
+
+    /// <summary>
+    /// 페이즈 2 공격 예고 틱 (telegraph). 페이즈 2 전환 후 적용.
+    /// 10틱 = 500ms @20TPS — 페이즈 1보다 짧아 난이도 상승.
+    /// </summary>
+    public const int BossPhase2TelegraphTicks = 10;
+
+    /// <summary>
+    /// 페이즈 1 공격 쿨다운 (틱 단위).
+    /// 40틱 = 2초 @20TPS — 판정 완료 후 다음 telegraph 시작까지.
+    /// </summary>
+    public const int BossPhase1CooldownTicks = 40;
+
+    /// <summary>
+    /// 페이즈 2 공격 쿨다운 (틱 단위).
+    /// 24틱 = 1.2초 @20TPS — 페이즈 2 전환 후 가속.
+    /// </summary>
+    public const int BossPhase2CooldownTicks = 24;
+
+    /// <summary>HP ≤ MaxHp * 0.5 이하로 내려가면 페이즈 2 전환. 1회성.</summary>
+    public const float BossPhase2HpThreshold = 0.5f;
 }
