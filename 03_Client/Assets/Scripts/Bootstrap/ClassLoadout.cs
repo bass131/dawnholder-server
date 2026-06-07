@@ -20,6 +20,17 @@ namespace Dawnholder.Client.Bootstrap
             return null;
         }
 
+        // byte → CharacterClass 변환 + 미유효 처리 (Warrior fallback). 순수 함수 — 테스트 대상.
+        // invalid byte: 서버 trusted 값이지만 확장 가능성을 고려해 방어적으로 Warrior 수렴.
+        public static CharacterClass ByteToClass(byte raw)
+        {
+            CharacterClass cls = (CharacterClass)raw;
+            if (cls == CharacterClass.Warrior || cls == CharacterClass.Ranger)
+                return cls;
+            Debug.LogWarning($"[ClassLoadout] 알 수 없는 characterClass byte={raw} — Warrior fallback.");
+            return CharacterClass.Warrior;
+        }
+
         // PlayerPrefs 선택값 → Resources.LoadAll → FindConfig.
         // 못 찾으면 fail-loud (Debug.LogError) + null 반환 — 조건부 장착 실패는 LocalPlayerSpawner가 처리.
         public static ClassConfig? Resolve()

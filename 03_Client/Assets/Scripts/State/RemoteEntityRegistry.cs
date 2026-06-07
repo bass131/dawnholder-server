@@ -1,6 +1,9 @@
 #nullable enable
 using System.Collections.Generic;
+using Dawnholder.Client.Bootstrap;
+using Dawnholder.Client.Combat;
 using Dawnholder.Client.Rendering;
+using Shared.Protocol;
 using UnityEngine;
 
 namespace Dawnholder.Client.State
@@ -47,11 +50,20 @@ namespace Dawnholder.Client.State
             if (Instance == this) Instance = null;
         }
 
-        // S_PlayerJoin 핸들러에서 호출. 이미 있으면 noop (idempotent — initial roster 재전송 안전).
-        public void Spawn(int entityId, float spawnX, float spawnY)
+        // S_PlayerJoin 핸들러에서 호출 — 직업 정보 포함.
+        //
+        // **idempotent 보강 (핵심 함정 봉합)**:
+        //   Snapshot이 PlayerJoin보다 먼저 도착하면 UpdateSnapshot의 지연 spawn이
+        //   characterClass=Warrior(기본) 상태로 GO를 생성한다.
+        //   이후 PlayerJoin 도착 시 이미 ContainsKey → **Animator controller만 갱신**하고 return.
+        //   RemoteEntity/RemotePlayerMotion/AnimatorDriver는 절대 교체/제거 X.
+        public void Spawn(int entityId, float spawnX, float spawnY,
+                          CharacterClass characterClass = CharacterClass.Warrior)
         {
             if (_entities.ContainsKey(entityId))
             {
+                // 이미 spawn됨 (Snapshot 선도착 지연 spawn 경로). controller만 갱신.
+                ApplyAnimatorController(entityId, characterClass);
                 return;
             }
             if (_remotePlayerPrefab == null)
@@ -79,7 +91,35 @@ namespace Dawnholder.Client.State
                 go.AddComponent<AnimatorDriver>();
             _motions[entityId] = motion;
 
-            Debug.Log($"[Registry] Spawned entity {entityId} at ({spawnX:F2}, {spawnY:F2})");
+            // 직업 Animator controller 장착.
+            ApplyAnimatorController(entityId, characterClass);
+
+            Debug.Log($"[Registry] Spawned entity {entityId} class={characterClass} at ({spawnX:F2}, {spawnY:F2})");
+        }
+
+        // 직업 → Animator controller 교체. prefab 기본 controller 유지가 항상 fail-soft.
+        // GO나 controller 찾기 실패 시 경고 1회 + skip (원격 표시 안전 폴백).
+        void ApplyAnimatorController(int entityId, CharacterClass characterClass)
+        {
+            if (!_entities.TryGetValue(entityId, out RemoteEntity? entity) || entity == null) return;
+
+            ClassConfig[] configs = Resources.LoadAll<ClassConfig>("ClassConfigs");
+            ClassConfig? config = ClassLoadout.FindConfig(configs, characterClass);
+            if (config == null || config.Controller == null)
+            {
+                Debug.LogWarning(
+                    $"[Registry] entity {entityId} class={characterClass} — ClassConfig/Controller 미발견. prefab 기본 controller 유지.");
+                return;
+            }
+
+            Animator? animator = entity.GetComponent<Animator>();
+            if (animator == null)
+            {
+                Debug.LogWarning($"[Registry] entity {entityId} — Animator 없음. controller 장착 스킵.");
+                return;
+            }
+            animator.runtimeAnimatorController = config.Controller;
+            Debug.Log($"[Registry] entity {entityId} Animator controller 갱신 → {config.Controller.name} (class={characterClass})");
         }
 
         // S_PlayerLeave 핸들러에서 호출. 없으면 noop.

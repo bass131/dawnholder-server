@@ -1,10 +1,13 @@
 using System;
+using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
+using Dawnholder.Client.Scenes;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
+using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -175,6 +178,7 @@ namespace Dawnholder.Client.Network
             int eid = pkt.entityId;
             float x = pkt.spawnX;
             float y = pkt.spawnY;
+            CharacterClass cls = ClassLoadout.ByteToClass(pkt.characterClass);
 
             MainThreadDispatcher.Enqueue(() =>
             {
@@ -186,12 +190,12 @@ namespace Dawnholder.Client.Network
                         () =>
                         {
                             if (RemoteEntityRegistry.Instance != null)
-                                RemoteEntityRegistry.Instance.Spawn(eid, x, y);
+                                RemoteEntityRegistry.Instance.Spawn(eid, x, y, cls);
                         }))
                     return;
 
                 if (RemoteEntityRegistry.Instance != null)
-                    RemoteEntityRegistry.Instance.Spawn(eid, x, y);
+                    RemoteEntityRegistry.Instance.Spawn(eid, x, y, cls);
             });
         }
     }
@@ -324,6 +328,91 @@ namespace Dawnholder.Client.Network
                     return;
                 }
                 StageClearUI.Instance.Show(bossId);
+            });
+        }
+    }
+
+    // S_EnemyAttack (ID 20, v9) — 보스/적 → 플레이어 피격 결과.
+    // 헌법 #1: targetCurrentHp는 서버 권위값 그대로 표시. 데미지 계산 0줄.
+    // maxHp 필드 없음 — PlayerStats.ForClass(선택 직업)에서 조회.
+    internal sealed class EnemyAttackHandler : IClientPacketHandler
+    {
+        public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
+        {
+            S_EnemyAttack pkt = new S_EnemyAttack();
+            pkt.Read(buffer);
+
+            int attackerId = pkt.attackerId;
+            int targetId = pkt.targetId;
+            int targetCurrentHp = pkt.targetCurrentHp;
+            byte attackPattern = pkt.attackPattern;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (session.LocalEntityId == null) return;
+                bool isLocalPlayer = targetId == session.LocalEntityId.Value;
+
+                // 이펙트 위치: 본인 피격 = LocalPlayer 앵커, 그 외 = 공격자(보스) 앵커.
+                // EffectAnchor = 발-pivot 보정 컨벤션 (없으면 root 폴백).
+                Vector3 fxPos = Vector3.zero;
+                int fxFacing = 1;
+                bool hasFxPos = false;
+                if (isLocalPlayer && LocalPlayerMovement.Instance != null)
+                {
+                    Transform playerTf = LocalPlayerMovement.Instance.transform;
+                    // LocalPlayer는 단일 prefab + 런타임 직업 분기 — 자식 앵커 대신
+                    // ClassConfig.EffectAnchorOffset(직업별 SO 저작) 사용. 미발견 시 자식 앵커/root 폴백.
+                    ClassConfig playerConfig = ClassLoadout.Resolve();
+                    fxPos = playerConfig != null
+                        ? EffectAnchor.ResolvePosition(playerTf, playerConfig.EffectAnchorOffset)
+                        : EffectAnchor.ResolvePosition(playerTf);
+                    // 피격 이펙트는 공격이 날아온 쪽을 향함 — 공격자 위치 알면 상대 x 부호.
+                    if (EnemyRegistry.Instance != null &&
+                        EnemyRegistry.Instance.TryGetTransform(attackerId, out Transform atkTf) &&
+                        atkTf != null)
+                        fxFacing = atkTf.position.x >= playerTf.position.x ? 1 : -1;
+                    hasFxPos = true;
+                }
+                else if (EnemyRegistry.Instance != null &&
+                         EnemyRegistry.Instance.TryGetTransform(attackerId, out Transform attackerTf) &&
+                         attackerTf != null)
+                {
+                    fxPos = EffectAnchor.ResolvePosition(attackerTf);
+                    EnemyRegistry.Instance.TryGetFacing(attackerId, out fxFacing);
+                    hasFxPos = true;
+                }
+
+                if (hasFxPos)
+                    BossAttackEffectSpawner.Spawn(attackPattern, fxPos, fxFacing);
+
+                if (!isLocalPlayer) return;
+
+                // 본인 피격 — HUD 갱신 (서버 권위값 그대로).
+                int classValue = PlayerPrefs.GetInt(
+                    CharacterSelectController.SelectedClassPrefsKey,
+                    (int)CharacterClass.Warrior);
+                PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
+                int maxHp = stats.MaxHp;
+
+                if (HudController.Instance != null)
+                    HudController.Instance.UpdateHP(targetCurrentHp, maxHp);
+
+                // 피격 플래시 — LocalPlayer GameObject에서 DamageFlash 조회 또는 런타임 주입.
+                if (LocalPlayerMovement.Instance != null)
+                {
+                    DamageFlash flash = LocalPlayerMovement.Instance.GetComponent<DamageFlash>()
+                                       ?? LocalPlayerMovement.Instance.gameObject.AddComponent<DamageFlash>();
+                    flash.Flash();
+                }
+
+                // 사망 처리 — 리스폰 페이드.
+                if (targetCurrentHp <= 0)
+                {
+                    if (SceneTransition.Instance != null)
+                        SceneTransition.Instance.PlayRespawnFade();
+                    else
+                        Debug.LogWarning("[EnemyAttack] SceneTransition.Instance null — 리스폰 페이드 스킵.");
+                }
             });
         }
     }

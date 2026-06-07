@@ -68,6 +68,7 @@ namespace Dawnholder.Client.Network
                 { PacketID.S_StageClear,      new StageClearHandler() },
                 { PacketID.S_MapTransition,   new MapTransitionHandler() },
                 { PacketID.S_EntityState,     new EntityStateHandler() },
+                { PacketID.S_EnemyAttack,     new EnemyAttackHandler() },
             };
 
         // Editor only 송신 latency 시뮬레이션.

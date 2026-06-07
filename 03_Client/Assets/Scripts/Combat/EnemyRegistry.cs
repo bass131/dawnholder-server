@@ -115,6 +115,18 @@ namespace Dawnholder.Client.Combat
             Debug.Log($"[EnemyRegistry] Despawned entity {entityId}");
         }
 
+        // 이펙트 flip용 — entityId의 시각 facing(1=우/-1=좌) 반환. Motion 없으면 1.
+        public bool TryGetFacing(int entityId, out int facing)
+        {
+            if (_enemies.TryGetValue(entityId, out EnemyEntry entry) && entry.Motion != null)
+            {
+                facing = entry.Motion.Facing;
+                return true;
+            }
+            facing = 1;
+            return false;
+        }
+
         // 투사체 시각 연출용 — entityId에 해당하는 Transform 반환. 없으면 false.
         // 헌법 #1: 판정/데미지와 무관. 순수 시각 경로 전용.
         public bool TryGetTransform(int entityId, out Transform? target)

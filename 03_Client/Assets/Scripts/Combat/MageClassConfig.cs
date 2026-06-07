@@ -8,6 +8,6 @@ namespace Dawnholder.Client.Combat
     {
         [SerializeField] GameObject? _projectilePrefab;
 
-        public override IAttackStrategy CreateStrategy() => new MageRangedAttack(_projectilePrefab);
+        public override IAttackStrategy CreateStrategy() => new MageRangedAttack(_projectilePrefab, EffectAnchorOffset);
     }
 }

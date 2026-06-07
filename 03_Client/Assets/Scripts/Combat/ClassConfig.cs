@@ -15,6 +15,11 @@ namespace Dawnholder.Client.Combat
         public CharacterClass Class;
         public RuntimeAnimatorController? Controller;
 
+        // 이펙트/투사체 생성 오프셋 (발-pivot 기준 로컬, 우향 저작).
+        // LocalPlayer는 단일 prefab + 런타임 직업 분기라 자식 앵커를 미리 못 박음 →
+        // 직업별 데이터인 여기서 저작 (좌향 시 x 반전은 EffectAnchor가 처리).
+        public Vector2 EffectAnchorOffset = new Vector2(0f, 0.5f);
+
         public abstract IAttackStrategy CreateStrategy();
     }
 }
