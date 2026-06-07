@@ -49,7 +49,7 @@
 - **ADR-024**: 채팅 시스템 (TCP로 전송 vs 별도 채널)
 - **ADR-025**: 로그 저장 (로컬 파일 vs 외부 sink)
 - **ADR-026**: 헤드리스 봇의 자동화 방식
-- **ADR 후보**: WDAC 미서명 DLL 차단 정책 정리 (Burst 등 도구 활성화 필요 시점에)
+- **ADR-029 채택 (2026-06-07)**: 옛 후보 "WDAC 미서명 DLL 차단 정책 정리" — SAC가 dotnet test에 이어 서버 실행까지 차단 확대돼 Burst 시점보다 앞당겨 채택. WSL2 실행 표준 (`harness/ADR-029`).
 - **ADR-028 채택 (2026-05-29)**: Code Convention 수립 (`00_Document/conventions/`). *구조/SRP*(God class 분리 등 판단 영역)는 Convention + reviewer 축 6으로 **지금 실현**. ***.editorconfig + Roslyn(포매팅, 기계적 영역)*은 CODE_CONVENTION §4로 M4.4 이월** — 옛 'Reviewer 후속 Roslyn' 후보 중 도구 위임이 *가능한* 포매팅 부분만 남긴 것(구조/SRP는 도구로 자동 감지 불가라 사람/reviewer 판단).
 - ...
 
