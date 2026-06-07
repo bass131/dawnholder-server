@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.4 — World &amp; Player 마일스톤 마감 보고</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2129; --panel2: #212a35; --line: #2e3a47;
+    --text: #d8e1ea; --dim: #8a99a8; --accent: #4fc3f7; --green: #66bb6a;
+    --amber: #ffca28; --red: #ef5350; --purple: #b39ddb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 20px; background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; line-height: 1.65;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header {
+    border: 1px solid var(--line); border-radius: 12px; padding: 28px 32px;
+    background: linear-gradient(135deg, #16202b 0%, #1a2433 100%);
+  }
+  .badge {
+    display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 12px;
+    font-weight: 700; margin-right: 6px;
+  }
+  .badge.grade { background: #4a2c3a; color: #ff8a9e; }
+  .badge.done { background: #1e3a2a; color: var(--green); }
+  .badge.proto { background: #1d3346; color: var(--accent); }
+  h1 { margin: 14px 0 6px; font-size: 26px; }
+  .sub { color: var(--dim); font-size: 14px; }
+  h2 {
+    font-size: 19px; margin: 44px 0 16px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--line); color: var(--accent);
+  }
+  h3 { font-size: 15px; color: var(--purple); margin: 22px 0 8px; }
+  .report5 { display: grid; gap: 12px; margin-top: 18px; }
+  .r5card {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 8px; padding: 14px 18px;
+  }
+  .r5card b { color: var(--accent); }
+  .r5card.why { border-left-color: var(--amber); } .r5card.why b { color: var(--amber); }
+  .r5card.how { border-left-color: var(--purple); } .r5card.how b { color: var(--purple); }
+  .r5card.test { border-left-color: var(--green); } .r5card.test b { color: var(--green); }
+  .r5card.next { border-left-color: #ff8a65; } .r5card.next b { color: #ff8a65; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--accent); white-space: nowrap; }
+  td:first-child { white-space: nowrap; }
+  code {
+    background: #25303c; padding: 1px 6px; border-radius: 4px;
+    font-family: Consolas, monospace; font-size: 12.5px; color: #a5d6ff;
+  }
+  .pass { color: var(--green); font-weight: 700; }
+  .pipeline {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px;
+  }
+  .pipe-node {
+    background: var(--panel2); border: 1px solid #3b4a5a; border-radius: 6px;
+    padding: 8px 14px; font-size: 13px; text-align: center;
+  }
+  .pipe-node small { display: block; color: var(--dim); font-size: 11px; }
+  .pipe-arrow { color: var(--dim); font-size: 16px; }
+  ul { padding-left: 22px; } li { margin: 6px 0; }
+  .note {
+    background: #2a2417; border: 1px solid #5a4a1e; border-radius: 8px;
+    padding: 12px 16px; font-size: 13.5px; color: #e8d9a0; margin: 14px 0;
+  }
+  .checklist li::marker { content: "✅ "; }
+  .checklist li.defer::marker { content: "↪️ "; }
+  footer { margin-top: 50px; color: var(--dim); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <span class="badge grade">대규모</span>
+    <span class="badge done">2026-06-07 마감</span>
+    <span class="badge proto">ProtocolVersion 8 불변 (bump 0)</span>
+  </div>
+  <h1>📋 M4.4 — World &amp; Player 마일스톤 마감 보고</h1>
+  <div class="sub">
+    타일맵 지형(서버 권위 물리 + 바이너리 파이프라인) + 직업 조작 분리(데이터 장착) ·
+    6 Phase 직렬 완주 · WORK-ID: <code>m4.4-world-and-player</code> ·
+    MD 원본: <code>_milestone-DONE.md</code>
+  </div>
+</header>
+
+<h2>5단계 보고</h2>
+<div class="report5">
+  <div class="r5card">
+    <b>🎯 무엇을 만들었나</b> — ① 유현이 깔아둔 타일맵 지형(언덕·단차·공중·발판)이 서버 권위 물리로
+    동작하는 데이터 파이프라인(씬 저작 → bake → 바이너리 → 서버·클라·봇 3경로 런타임 로드).
+    ② 직업(전사/원거리)별 이동·점프·공격이 ScriptableObject 데이터 장착으로 갈리는 구조
+    (조작 코드 직업 분기 0).
+  </div>
+  <div class="r5card why">
+    <b>🤔 왜 필요한가</b> — 옛 구조는 맵의 진실이 코드 두 군데(생성 C# + 하드코딩 테이블)에 흩어져
+    씬 수정마다 drift 위험이었고, 직업은 죽은 값(전 직업 5.0)으로 사실상 한 직업이었다.
+    콘텐츠(M4.5 몬스터/보스)가 늘기 전에 바닥 구조를 데이터 주도로 바꿔야 했다.
+  </div>
+  <div class="r5card how">
+    <b>🛠️ 어떻게 만들었나</b> — 6 Phase 직렬: bake 도구(01) → 지형 물리(02) → 바이너리
+    파이프라인(03, 대규모) → 직업 이동 분리(04) → 직업 장착 구조(05) → 회귀+마감(06).
+    핵심 선택은 아래 "결정 흐름" 5건. 부수로 GitHub Actions CI 신설 + WSL2 실행 표준(ADR-029)
+    인프라 2건이 SAC 사고에서 파생됐다.
+  </div>
+  <div class="r5card test">
+    <b>🧪 테스트 결과</b> — 최종 회귀(세션18): 클린빌드 경고 0/오류 0 + <code>dotnet test</code>
+    <span class="pass">392 통과 / 0 실패 / 4 skip</span>(WSL2 로컬 = CI 동일) + 헤드리스 봇 5종
+    전부 PASS(desync 0.00) + Play 실측 직업 2종 × 세 씬 매트릭스 이상 무 +
+    <code>ProtocolVersion == 8</code> 불변(전 마일스톤 bump 0 약속 이행).
+  </div>
+  <div class="r5card next">
+    <b>➡️ 다음 스텝</b> — M4.5 content-and-boss 정식 분해(<code>/work:plan</code>, 유현 UI 문서
+    입수 후): 몬스터 prefab 전환 → 골렘 → UI 게이트 → 보스(8→9 유일 bump) → 마감.
+    몬스터/보스 외관 디테일은 M4.5-01/04에서 흡수.
+  </div>
+</div>
+
+<h2>1. 무엇이 바뀌었나 — 한눈에</h2>
+<div class="pipeline">
+  <div class="pipe-node">Unity 씬 저작<small>타일맵 + 마커 (저작 도구일 뿐)</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node">TerrainBaker<small>에디터 bake (idempotent)</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node">terrain.bin / content.bin<small>DWMP + CRC32 fail-closed</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node">서버 · 클라 · 봇<small>같은 파일 + 같은 Physics.Step = desync 0</small></div>
+</div>
+<div class="note">
+  <b>파일 경계 = 신뢰 경계 (헌법 #1)</b> — <code>terrain.bin</code>(솔리드/발판/kill-plane)은
+  3경로 공유, <code>content.bin</code>(플레이어/적 스폰)은 서버 전용 · 클라 빌드 미배포.
+  클라는 적의 존재를 <code>S_EntitySpawn</code> 패킷으로만 안다.
+</div>
+<p>
+  직업 쪽은 <code>PlayerStats.MoveSpeed</code>(4/6)가 정의만 있고 전 직업이 5.0을 쓰던
+  <b>죽은 값을 실연결</b>하고(<code>MoveParams</code> 필수 인자 — silent fallback 타입 차단),
+  Animator·공격 전략을 <code>ClassConfig</code> SO lookup으로 장착해 조작 코드 직업 분기를
+  0으로 만들었다. Warrior(4) vs Ranger(6) 체감 차이는 의도된 정정.
+</p>
+
+<h2>2. Phase 박제 요약</h2>
+<table>
+  <tr><th>Phase</th><th>제목</th><th>핵심</th><th>머지</th></tr>
+  <tr><td>01</td><td>지형 bake 도구</td><td>레이어 약속(Tilemap_Solid/Platform) + TerrainBaker(행 run+수직 병합) + 씬 3분리</td><td>PR #63</td></tr>
+  <tr><td>02</td><td>지형 물리</td><td><code>Physics.StepWithTerrain</code> — 솔리드 AABB(축 분리+교차 판정 tunneling 방지) + one-way 발판. 호출부 12파일 무변경(오버로드)</td><td>PR #63</td></tr>
+  <tr><td>03 ★대규모</td><td>맵 데이터 바이너리 파이프라인</td><td><code>MapDataFile</code>(DWMP+CRC32) + terrain/content.bin + 서버 MapDataLoader+kill-plane + 3경로 대칭 + 옛 테이블 2종 은퇴 (71파일)</td><td>PR #64</td></tr>
+  <tr><td>04</td><td>직업 이동 분리</td><td><code>MoveParams</code> 필수 인자 + 죽은 값 4/6 실연결 + LocalPlayerController 228줄 4분할</td><td>PR #65</td></tr>
+  <tr><td>05</td><td>직업 장착 구조</td><td><code>ClassConfig</code> SO lookup(분기 0) + 로컬 애니 hybrid + <code>PlayerStats.ForClass</code> + <b>CI 신설</b></td><td>PR #66</td></tr>
+  <tr><td>06</td><td>회귀 + 마감</td><td>one-way 발판 저작(HG 5 + BR 6) + <b>ADR-029 WSL2 실행 표준</b> + 회귀 풀세트 + 본 박제</td><td>본 마감 PR</td></tr>
+</table>
+
+<h3>Phase 06 포함분 (세션17~18)</h3>
+<ul>
+  <li><b>one-way 발판 저작</b> — PlatformPlank Tile 신설(Cainos sprite) + HG 5발판 11셀 +
+    BR 6발판 12셀(섬 보물상자 도달 가능화) + 재bake idempotent(Town 무변경 3회째).
+    두 맵 공중 지형은 발판 전까지 전부 도달 불가였음(진입 단차 +2~5 vs 최대 점프 1.6u).</li>
+  <li><b>ADR-029 WSL2 실행 표준</b> — SAC(Smart App Control)가 풀 리빌드 후 fresh unsigned dll의
+    CoreCLR 로드를 차단(차단 대상 비결정 "빌드 룰렛") → WSL2 Ubuntu를 로컬 dotnet 실행
+    (서버/봇/test) 표준 경로로 채택. 세션16에 포기했던 로컬 테스트 부활(392/0/4 = CI 동일).</li>
+</ul>
+
+<h2>3. 결정 흐름 (회고 참고용)</h2>
+<table>
+  <tr><th>결정</th><th>택한 것 / 버린 것</th><th>이유 · 단점 흡수</th></tr>
+  <tr><td>맵 데이터 산출물</td><td>바이너리 bake / 생성 C# 유지</td><td>재컴파일 불필요 + 한 로더 공유 + 포맷 버전 축 분리. 단점(diff 불가)은 CRC32 fail-closed + 실디코드 검증으로 흡수</td></tr>
+  <tr><td>MoveParams 주입</td><td>필수 인자 / 옵셔널+fallback</td><td>옵셔널이면 죽은 값이 또 조용히 살아남음 — 타입 시스템이 silent fallback 원천 차단</td></tr>
+  <tr><td>직업 추상화 수위</td><td>SO 2종 + 전략 인터페이스 1 / 직업 프레임워크</td><td>과추상도 부채(§0.3). 직업 2개 시점에 맞는 입자</td></tr>
+  <tr><td>발판 도달 스펙</td><td>출발면 +1 (계단식) / 하향 점프 구현</td><td>최대 점프 1.6u 물리 제약. 하향 점프(↓+점프)는 지형 v2 명시 이월. 판자 비주얼 = one-way 시각 언어</td></tr>
+  <tr><td>SAC 차단 대응</td><td>WSL2 표준화 / 응급 우회 유지</td><td>PoC 5항목 게이트 통과 후 채택. 로컬-CI 검증 환경이 같은 ubuntu 계열로 수렴하는 부수 이득</td></tr>
+</table>
+
+<h2>4. AC 검증 결과 — 마일스톤 완료 조건 대조</h2>
+<ul class="checklist">
+  <li>세 씬 bake 산출물 + idempotent — bin 두벌 byte-identical, Town 무변경 3회째</li>
+  <li>언덕·단차·공중 지형 Play 실측 — 직업 2종 × Town/HG/BR × 이동/점프/발판/공격/맵 전환 이상 무</li>
+  <li>reconcile drift 봇 회귀 0 — M2BasicMovement desync (0.00, 0.00)</li>
+  <li class="defer">상호작용 지형 — 명시 이월 (Phase 01에서 Interact 레이어 기각, 상호작용은 오브젝트 축)</li>
+  <li>전사 vs 원거리 이동속도(4 vs 6) 체감 + 조작 코드 if-class 분기 0</li>
+  <li>Knight 점프체인/공격랜덤/직업별 모션 관측 (M4.3 이월 체크리스트 소화)</li>
+  <li>클린빌드 경고 0/오류 0 + <code>dotnet test</code> <span class="pass">392/0/4 skip</span> (WSL2 = CI 동일)</li>
+  <li>헤드리스 봇 5종 일괄 PASS — M2/MultiRoster/EmergencyCombat(rate-limit drop)/BossStageClear(중복 억제)/EnemyAi(patrol→chase)</li>
+  <li><code>ProtocolVersion.Current == 8</code> — 전 마일스톤 bump 0 약속 이행 (다음 = M4.5-04 8→9 유일)</li>
+  <li>CHANGELOG entry + PR 머지 (사용자 GO 게이트)</li>
+</ul>
+
+<h2>5. 이월 명시</h2>
+<ul>
+  <li><b>M4.5 정식 분해 트리거</b> — 본 PR 머지 + 유현 UI 문서 입수 → <code>/work:plan</code></li>
+  <li><b>몬스터/보스 디테일</b> — Phase 06 Play 실측 본인 확인: 외관·연출 미흡 = M4.5-01/04 흡수 (기본 동작은 전부 정상)</li>
+  <li>Mage(Ranger) 투사체 연출 (판정은 서버 권위로 동작 중) / 지형 v2(drop-through·이동 플랫폼·적 AI 지형 추적)</li>
+  <li>reviewer 🟡 봇 2건 / CI actions v5 bump(Node20 deprecated, 6/16~) / LocalDB Linux 부재(M5 결정) / 옛 브랜치 6 정리</li>
+  <li>원격 플레이어 직업 표시(S_PlayerJoin append — M4.5-04 v9 묶음) / NetworkService SRP / PortalTable bake(M4.5+)</li>
+</ul>
+
+<footer>
+  Dawnholder — 2D 사이드스크롤 MMORPG 캡스톤 · M4.4 World &amp; Player 마일스톤 마감 박제 (2026-06-07) ·
+  본 HTML은 <code>_milestone-DONE.md</code>의 시각판이며 내용 동기화 책임은 MD가 진실.
+</footer>
+
+</div>
+</body>
+</html>
