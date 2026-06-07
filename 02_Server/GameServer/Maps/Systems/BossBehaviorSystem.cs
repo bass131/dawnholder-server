@@ -190,17 +190,19 @@ internal sealed class BossBehaviorSystem
     }
 
     /// <summary>
-    /// 보스 animState 계산. 우선순위: Death > Hit > Attack > Idle.
+    /// 보스 animState 계산. 우선순위: Death > Attack > Hit > Idle.
+    /// Attack이 Hit보다 높음 — telegraph/공격 모션이 피격에 끊기지 않게.
+    /// 피격 피드백은 클라 DamageFlash(S_HitResult 경로)가 담당.
     /// 보스는 Walk 없음 (이동 없는 고정형).
     /// </summary>
     static byte ComputeBossAnimState(EnemyEntity boss)
     {
         if (boss.IsDead)
             return (byte)AnimState.Death;
-        if (boss.HitLatchTicks > 0)
-            return (byte)AnimState.Hit;
         if (boss.AttackLatchTicks > 0)
             return (byte)AnimState.Attack;
+        if (boss.HitLatchTicks > 0)
+            return (byte)AnimState.Hit;
         return (byte)AnimState.Idle;
     }
 }

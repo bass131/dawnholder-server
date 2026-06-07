@@ -418,6 +418,73 @@ public class BossBehaviorTests : IDisposable
         Assert.Equal(EnemyStats.BossDefault().MaxHp, boss.MaxHp);
     }
 
+    // ─── 항목 8: animState 우선순위 — Attack > Hit (Phase 06 봉합) ─────────────────
+
+    [Fact]
+    public void AnimState_DuringTelegraph_HitDoesNotOverrideAttack()
+    {
+        // telegraph 진입 후 HitLatchTicks 세팅 → broadcast animState는 Attack 유지 (Hit 아님).
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+
+        // 쿨다운 소진 → telegraph 시작.
+        for (long t = 2; t <= CombatConstants.BossPhase1CooldownTicks; t++)
+            _map.Tick(t);
+
+        Assert.True(boss.TelegraphTicksRemaining > 0, "telegraph 진입 확인");
+        Assert.True(boss.AttackLatchTicks > 0, "AttackLatchTicks 세팅 확인");
+
+        // 피격 세팅 — telegraph 중 플레이어가 보스를 때린 상황 시뮬.
+        boss.HitLatchTicks = CombatConstants.AnimLatchTicks;
+
+        s.SentPackets.Clear();
+
+        // SnapshotTickInterval 주기 broadcast 틱 진행.
+        long nextTick = CombatConstants.BossPhase1CooldownTicks + 1;
+        long broadcastTick = nextTick + (Constants.SnapshotTickInterval - (nextTick % Constants.SnapshotTickInterval));
+        _map.Tick(broadcastTick);
+
+        byte[] statePkt = s.SentPackets
+            .Where(p => PacketIdOf(p) == PacketID.S_EntityState)
+            .Select(p => { S_EntityState d = new(); d.Read(new ArraySegment<byte>(p)); return d; })
+            .Where(d => d.entityId == BossEntityId)
+            .Select(d => new byte[] { d.animState })
+            .LastOrDefault() ?? Array.Empty<byte>();
+
+        Assert.True(statePkt.Length > 0, "S_EntityState broadcast 발생 필요");
+        Assert.Equal((byte)AnimState.Attack, statePkt[0]);
+    }
+
+    [Fact]
+    public void AnimState_OutsideTelegraph_HitShowsCorrectly()
+    {
+        // telegraph/AttackLatch 없는 상태(쿨다운 중)에서 HitLatchTicks 세팅 → animState == Hit (회귀 보장).
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+
+        // 쿨다운 중 상태 확인 (AttackLatchTicks == 0).
+        Assert.Equal(0, boss.AttackLatchTicks);
+
+        // 피격 세팅.
+        boss.HitLatchTicks = CombatConstants.AnimLatchTicks;
+
+        s.SentPackets.Clear();
+
+        // 다음 SnapshotTickInterval 경계 틱 진행.
+        long broadcastTick = 2 + (Constants.SnapshotTickInterval - (2 % Constants.SnapshotTickInterval));
+        _map.Tick(broadcastTick);
+
+        byte[] statePkt = s.SentPackets
+            .Where(p => PacketIdOf(p) == PacketID.S_EntityState)
+            .Select(p => { S_EntityState d = new(); d.Read(new ArraySegment<byte>(p)); return d; })
+            .Where(d => d.entityId == BossEntityId)
+            .Select(d => new byte[] { d.animState })
+            .LastOrDefault() ?? Array.Empty<byte>();
+
+        Assert.True(statePkt.Length > 0, "S_EntityState broadcast 발생 필요");
+        Assert.Equal((byte)AnimState.Hit, statePkt[0]);
+    }
+
     // ─── 항목 7: ProtocolVersion + 직렬화 왕복 ────────────────────────────────────
 
     [Fact]
