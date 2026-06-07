@@ -1,4 +1,5 @@
 #nullable enable
+using Shared.GameData;
 using UnityEngine;
 
 namespace Dawnholder.Client.Combat
@@ -12,16 +13,10 @@ namespace Dawnholder.Client.Combat
     // **prefab 방식**: visualFootOffset / HP바 참조를 prefab에서 직렬화.
     //   EnemyViewFactory가 Instantiate 후 Initialize만 호출 — 런타임 조립 없음.
     //
-    // **EntityKind**: 0=Normal, 1=Boss (서버 enum 정합).
+    // **EnemyKind** = 98_Shared 단일 정의 (M4.5-02 이사).
     [DisallowMultipleComponent]
     public class RemoteEnemy : MonoBehaviour
     {
-        public enum EnemyKind : byte
-        {
-            Normal = 0,
-            Boss = 1,
-        }
-
         public int EntityId { get; private set; }
         public EnemyKind Kind { get; private set; }
         public int CurrentHp { get; private set; }
