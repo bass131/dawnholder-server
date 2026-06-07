@@ -3,13 +3,16 @@ using UnityEngine;
 
 namespace Dawnholder.Client.Combat
 {
-    // Enemy/Boss placeholder visual + 서버 권위 HP 미러.
+    // Enemy/Boss 시각 미러 + 서버 권위 HP 표시.
     //
-    // **헌법 #1 (Server Authority)** — 본 컴포넌트는 *표시만* 합니다. HP/사망 자체 판정 X.
-    //   - HP 갱신: 서버 S_HitResult 경로가 ApplyHpUpdate(currentHp, maxHp) 호출.
-    //   - 사망: 서버 S_EntityDeath 경로가 EnemyRegistry.Despawn 호출 → 본 GO Destroy.
+    // **헌법 #1 (Server Authority)** — 표시만 합니다. HP/사망 판정 X.
+    //   - HP 갱신: 서버 S_HitResult 경로 → ApplyHpUpdate(currentHp, maxHp) 호출.
+    //   - 사망: 서버 S_EntityDeath 경로 → EnemyRegistry.Despawn → GO Destroy.
     //
-    // **EntityKind**: 0=Normal, 1=Boss (서버 enum 정합). byte로 받음 → C# enum cast.
+    // **prefab 방식**: visualFootOffset / HP바 참조를 prefab에서 직렬화.
+    //   EnemyViewFactory가 Instantiate 후 Initialize만 호출 — 런타임 조립 없음.
+    //
+    // **EntityKind**: 0=Normal, 1=Boss (서버 enum 정합).
     [DisallowMultipleComponent]
     public class RemoteEnemy : MonoBehaviour
     {
@@ -24,29 +27,25 @@ namespace Dawnholder.Client.Combat
         public int CurrentHp { get; private set; }
         public int MaxHp { get; private set; }
 
-        // 서버 좌표 → 화면 좌표 변환에 쓰이는 y 오프셋.
-        // RemoteEntity가 transform.position을 서버 좌표로 덮어쓰므로
-        // EnqueueSnapshot/Initialize 호출 전에 offset을 더해야 sprite가 바닥 정합.
-        public float VisualFootOffset { get; private set; }
+        // 서버 좌표 → 화면 좌표 변환 y 오프셋.
+        // sprite bottom pivot 기준으로 sprite 내부 발 위치까지의 world 단위 보정값.
+        // RemoteEntity.EnqueueSnapshot/Initialize 호출 전에 y에 더해야 sprite 바닥이 타일과 정합.
+        [SerializeField] float _visualFootOffset;
+        public float VisualFootOffset => _visualFootOffset;
 
-        // HP bar 자식 — Registry가 SetHpBar로 wire. 본 컴포넌트가 SpriteRenderer scale.x 줄이는 방식.
-        Transform? _hpBarFill;
-        float _hpBarFullWidth;
+        // HP bar Fill Transform. localScale.x를 [0, fullWidth] 범위로 줄여 HP 표시.
+        [SerializeField] Transform? _hpBarFill;
 
-        public void Initialize(int entityId, EnemyKind kind, int currentHp, int maxHp, float visualFootOffset = 0f)
+        // Fill Transform이 HP 100%일 때의 localScale.x.
+        // prefab 저작 시 fill.localScale.x = 원하는 최대 폭으로 세팅하면 여기서 읽어 기준값으로 씀.
+        [SerializeField] float _hpBarFullWidth = 1f;
+
+        public void Initialize(int entityId, EnemyKind kind, int currentHp, int maxHp)
         {
             EntityId = entityId;
             Kind = kind;
             CurrentHp = currentHp;
-            MaxHp = maxHp > 0 ? maxHp : 1; // div-by-zero 차단
-            VisualFootOffset = visualFootOffset;
-        }
-
-        // Registry가 HP bar 자식 만들고 wire. fullWidth = scale.x 기준 100%.
-        public void SetHpBar(Transform hpBarFill, float fullWidth)
-        {
-            _hpBarFill = hpBarFill;
-            _hpBarFullWidth = fullWidth;
+            MaxHp = maxHp > 0 ? maxHp : 1;
             RefreshHpBar();
         }
 
