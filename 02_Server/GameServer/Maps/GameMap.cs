@@ -12,8 +12,8 @@ namespace Dawnholder.Server.GameServer.Maps;
 // kindId 범위 검증은 GameMap ctor 단일 지점 (reviewer 🟡 — 중복 검증 단일화).
 file static class EnemyDefaultHp
 {
-    // index = (int)EnemyKind
-    internal static readonly int[] ByKind = { 30, 100 }; // Normal=30, Boss=100
+    // index = (int)EnemyKind. GolemDefault().MaxHp와 일치 의무 — drift 방지는 테스트가 잡음.
+    internal static readonly int[] ByKind = { 30, 100, 60 }; // Normal=30, Boss=100, Golem=60
 
     internal static int For(EnemyKind kind) => ByKind[(int)kind];
 }
@@ -123,7 +123,14 @@ public class GameMap
     internal EnemyEntity SpawnEnemy(EnemyKind kind, float x, float y, int maxHp, EnemyStats? stats = null)
     {
         int id = AllocId();
-        EnemyStats resolvedStats = stats ?? (kind == EnemyKind.Normal ? EnemyStats.NormalDefault() : default);
+        // kind별 stats 결정. stats != null이면 RespawnSystem이 원본 유지 목적으로 전달한 것 — 그대로 사용.
+        // default 분기 = fail-safe (알 수 없는 미래 종류 — Defense/MaxHp/Speed 모두 0, 동작하되 허약).
+        EnemyStats resolvedStats = stats ?? kind switch
+        {
+            EnemyKind.Normal => EnemyStats.NormalDefault(),
+            EnemyKind.Golem  => EnemyStats.GolemDefault(),
+            _                => default,
+        };
         EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp, resolvedStats);
         _enemies.Add(id, e);
         return e;

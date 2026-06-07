@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.5
 phase: 02
 title: 골렘 추가 — EnemyKind=2, 데이터만 (엔진 변경 0 검증)
-status: pending
+status: in-progress
 grade: 복잡
 risk: unity-asset
 estimated: 1.5~2h

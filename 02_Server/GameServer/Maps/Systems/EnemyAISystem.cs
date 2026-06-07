@@ -32,7 +32,8 @@ internal sealed class EnemyAISystem
         {
             // Boss는 이번 Phase에서 AI 없음 (Idle 고정). Phase 09에서 별도 behavior.
             // Boss도 animState latch 감소 + S_EntityState broadcast는 수행.
-            if (enemy.Kind != EnemyKind.Normal)
+            // "적은 2종" 가정 화석 정정: Golem 추가로 Boss 명시 비교 필요 (M4.5-02).
+            if (enemy.Kind == EnemyKind.Boss)
             {
                 // Boss: latch 감소 후 broadcast
                 if (enemy.HitLatchTicks > 0) enemy.HitLatchTicks--;

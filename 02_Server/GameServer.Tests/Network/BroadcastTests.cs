@@ -151,7 +151,7 @@ public class BroadcastTests : IDisposable
 
         // Normal
         Assert.Equal(1, parsedNormal.entityId);
-        Assert.Equal((byte)Dawnholder.Server.GameServer.Combat.EnemyKind.Normal, parsedNormal.entityKind);
+        Assert.Equal((byte)EnemyKind.Normal, parsedNormal.entityKind);
         Assert.Equal(NormalX, parsedNormal.x);
         Assert.Equal(NormalY, parsedNormal.y);
         Assert.Equal(NormalMaxHp, parsedNormal.currentHp);
@@ -159,7 +159,7 @@ public class BroadcastTests : IDisposable
 
         // Boss
         Assert.Equal(2, parsedBoss.entityId);
-        Assert.Equal((byte)Dawnholder.Server.GameServer.Combat.EnemyKind.Boss, parsedBoss.entityKind);
+        Assert.Equal((byte)EnemyKind.Boss, parsedBoss.entityKind);
         Assert.Equal(BossX, parsedBoss.x);
         Assert.Equal(BossY, parsedBoss.y);
         Assert.Equal(BossMaxHp, parsedBoss.currentHp);
