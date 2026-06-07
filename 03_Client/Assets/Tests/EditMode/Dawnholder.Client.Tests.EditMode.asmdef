@@ -4,7 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Dawnholder.Client"
+        "Dawnholder.Client",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
