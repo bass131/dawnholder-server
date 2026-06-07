@@ -14,16 +14,11 @@ namespace Dawnholder.Client.Combat
     //   2. 컴포넌트 타입 다름 — RemoteEntity (보간 buffer) vs RemoteEnemy (HP+kind).
     //
     // 본 클래스는 dict 관리(Spawn/ApplyHit/Despawn/TryGetNearest/Clear)만 담당,
-    // GameObject 조립은 EnemyViewFactory.BuildPlaceholder로 위임.
+    // GO 조립은 EnemyViewFactory.Spawn으로 위임.
     [DisallowMultipleComponent]
     public class EnemyRegistry : MonoBehaviour
     {
         public static EnemyRegistry? Instance { get; private set; }
-
-        // 미래 prefab 교체 시 아래 SerializeField를 활성화하고
-        // Spawn에서 EnemyViewFactory.BuildPlaceholder 대신 Instantiate 분기로 전환.
-        // [SerializeField] GameObject _normalPrefab;
-        // [SerializeField] GameObject _bossPrefab;
 
         readonly struct EnemyEntry
         {
@@ -67,32 +62,33 @@ namespace Dawnholder.Client.Combat
             }
 
             RemoteEnemy.EnemyKind kind = (RemoteEnemy.EnemyKind)entityKind;
-            GameObject go = EnemyViewFactory.BuildPlaceholder(entityId, kind, x, y,
-                                                               out RemoteEnemy comp,
-                                                               out Transform hpFill,
-                                                               out float fullWidth,
-                                                               out float visualFootOffset);
-            comp.Initialize(entityId, kind, currentHp, maxHp, visualFootOffset);
-            comp.SetHpBar(hpFill, fullWidth);
+            GameObject? go = EnemyViewFactory.Spawn(entityId, kind, x, y);
+            if (go == null)
+            {
+                Debug.LogError($"[EnemyRegistry] entity {entityId} spawn 실패 — EnemyViewFactory null 반환. prefab/테이블 설정 확인.");
+                return;
+            }
 
+            RemoteEnemy? comp = go.GetComponent<RemoteEnemy>();
             RemoteEntity? interp = go.GetComponent<RemoteEntity>();
             EnemyMotion? motion = go.GetComponent<EnemyMotion>();
-            if (interp == null)
+
+            if (comp == null || interp == null)
             {
-                Debug.LogError($"[EnemyRegistry] RemoteEntity 없음 — entity {entityId} 보간 불가.");
+                Debug.LogError($"[EnemyRegistry] prefab 필수 컴포넌트 누락 — entity {entityId} 보간 불가.");
                 Destroy(go);
                 return;
             }
+
+            comp.Initialize(entityId, kind, currentHp, maxHp);
             _enemies[entityId] = new EnemyEntry(comp, interp, motion);
             Debug.Log($"[EnemyRegistry] Spawned {kind} entity {entityId} at ({x:F2}, {y:F2}) hp={currentHp}/{maxHp}");
         }
 
         // S_EntityState 핸들러에서 호출 — 서버 권위 위치 + 시각 animState 갱신.
-        // transform 직접 세팅 제거 → RemoteEntity 보간 buffer로 전환.
         public void UpdatePosition(int entityId, float x, float y, byte animState)
         {
             if (!_enemies.TryGetValue(entityId, out EnemyEntry entry)) return;
-            // visualFootOffset 포함 좌표를 EnqueueSnapshot에 전달 — sprite 바닥 정합 유지.
             entry.Interp.EnqueueSnapshot(x, y + entry.Enemy.VisualFootOffset);
             entry.Motion?.SetAnimState(animState);
         }
@@ -144,7 +140,7 @@ namespace Dawnholder.Client.Combat
                 RemoteEnemy enemy = kv.Value.Enemy;
                 if (enemy == null) continue;
                 Vector3 diff = enemy.transform.position - origin;
-                float dSq = diff.x * diff.x + diff.y * diff.y; // 2D — z 무시
+                float dSq = diff.x * diff.x + diff.y * diff.y;
                 if (dSq <= bestSq)
                 {
                     bestSq = dSq;
