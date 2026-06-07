@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.5 — Content &amp; Boss 마일스톤 마감 보고</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2129; --panel2: #212a35; --line: #2e3a47;
+    --text: #d8e1ea; --dim: #8a99a8; --accent: #4fc3f7; --green: #66bb6a;
+    --amber: #ffca28; --red: #ef5350; --purple: #b39ddb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 20px; background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; line-height: 1.65;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header {
+    border: 1px solid var(--line); border-radius: 12px; padding: 28px 32px;
+    background: linear-gradient(135deg, #16202b 0%, #1a2433 100%);
+  }
+  .badge {
+    display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 12px;
+    font-weight: 700; margin-right: 6px;
+  }
+  .badge.grade { background: #4a2c3a; color: #ff8a9e; }
+  .badge.done { background: #1e3a2a; color: var(--green); }
+  .badge.proto { background: #1d3346; color: var(--accent); }
+  h1 { margin: 14px 0 6px; font-size: 26px; }
+  .sub { color: var(--dim); font-size: 14px; }
+  h2 {
+    font-size: 19px; margin: 44px 0 16px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--line); color: var(--accent);
+  }
+  h3 { font-size: 15px; color: var(--purple); margin: 22px 0 8px; }
+  .report5 { display: grid; gap: 12px; margin-top: 18px; }
+  .r5card {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 8px; padding: 14px 18px;
+  }
+  .r5card b { color: var(--accent); }
+  .r5card.why { border-left-color: var(--amber); } .r5card.why b { color: var(--amber); }
+  .r5card.how { border-left-color: var(--purple); } .r5card.how b { color: var(--purple); }
+  .r5card.test { border-left-color: var(--green); } .r5card.test b { color: var(--green); }
+  .r5card.next { border-left-color: #ff8a65; } .r5card.next b { color: #ff8a65; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--accent); white-space: nowrap; }
+  td:first-child { white-space: nowrap; }
+  code {
+    background: #25303c; padding: 1px 6px; border-radius: 4px;
+    font-family: Consolas, monospace; font-size: 12.5px; color: #a5d6ff;
+  }
+  .pass { color: var(--green); font-weight: 700; }
+  .pipeline {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px;
+  }
+  .pipe-node {
+    background: var(--panel2); border: 1px solid #3b4a5a; border-radius: 6px;
+    padding: 8px 14px; font-size: 13px; text-align: center;
+  }
+  .pipe-node small { display: block; color: var(--dim); font-size: 11px; }
+  .pipe-arrow { color: var(--dim); font-size: 16px; }
+  ul { padding-left: 22px; } li { margin: 6px 0; }
+  .note {
+    background: #2a2417; border: 1px solid #5a4a1e; border-radius: 8px;
+    padding: 12px 16px; font-size: 13.5px; color: #e8d9a0; margin: 14px 0;
+  }
+  .checklist li::marker { content: "✅ "; }
+  .checklist li.defer::marker { content: "↪️ "; }
+  footer { margin-top: 50px; color: var(--dim); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <span class="badge grade">대규모</span>
+    <span class="badge done">2026-06-07 마감</span>
+    <span class="badge proto">ProtocolVersion 8→9 (M4.5 유일 bump — 팀원 재빌드 의무)</span>
+  </div>
+  <h1>📋 M4.5 — Content &amp; Boss 마일스톤 마감 보고</h1>
+  <div class="sub">
+    보스 양방향 전투(서버 권위 FSM + telegraph 2채널) + 콘텐츠 데이터 구조(적 prefab · 골렘 · HUD 실연결 · 직업 비주얼 분리) ·
+    6 Phase 직렬 완주 · WORK-ID: <code>m4.5-content-and-boss</code> ·
+    MD 원본: <code>_milestone-DONE.md</code>
+  </div>
+</header>
+
+<h2>5단계 보고</h2>
+<div class="report5">
+  <div class="r5card">
+    <b>🎯 무엇을 만들었나</b> — ① 보스 양방향 전투: 서버 권위 FSM(쿨다운 40/24틱 → telegraph 16/10틱
+    예고 → AABB 판정 → 사망/리스폰, 페이즈2 HP50%)이 돌고 클라는 준비→발동 모션·패턴 이펙트·HP 실감소·
+    리스폰 페이드로 연출만(판정 0줄). ② 콘텐츠 구조: 적 prefab 데이터 전환(새 적 = prefab 1 + 테이블 1행) +
+    골렘 + HUD 실연결 + 직업 로직/비주얼 분리(직업 모습 수정 = ClassVisuals 한 파일).
+    합쳐서 발표 데모 풀 루프(메인→마을→사냥터→보스방 StageClear) 완성.
+  </div>
+  <div class="r5card why">
+    <b>🤔 왜 필요한가</b> — M4.4까지 적은 맞기만 했고(전투 절반), HUD는 mock 값이었고, 적 외관은
+    런타임 조립 placeholder였다. 발표 데모에 "전투다운 전투"가 필요했고, 보스 = 서버 권위 적 행동
+    FSM의 첫 사례라 M5(영속화) 전에 전투 계약(공격 이벤트 wire 모양)을 확정해야 했다.
+  </div>
+  <div class="r5card how">
+    <b>🛠️ 어떻게 만들었나</b> — 6 Phase 직렬: 적 prefab 구조(01) → 골렘+EnemyKind 이사(02) →
+    HUD 게이트(03) → 보스 프로토콜+서버, v9 유일 bump(04) → 보스 클라 연출+직업 비주얼 분리(05, 대규모) →
+    회귀+마감(06). 핵심 선택은 아래 "결정 흐름" 6건 — telegraph 전원 broadcast vs 임팩트 targeted
+    2채널 분리, v9 한 묶음 bump, Animator 속도를 서버 틱 상수에서 역산.
+  </div>
+  <div class="r5card test">
+    <b>🧪 테스트 결과</b> — 최종 회귀(세션23): 클린빌드 0 경고/0 오류 + <code>dotnet test</code>
+    <span class="pass">419 통과 / 0 실패 / 4 skip</span>(WSL2 = ADR-029 표준) + 헤드리스 봇
+    <span class="pass">7종 전부 PASS</span>(M2 desync 0.00, BossFight/BossStageClear 처치+StageClear) +
+    <code>ProtocolVersion == 9</code>(04 유일 bump 약속 이행, 마감 브랜치 98_Shared diff 0) +
+    cross-review γ 3라운드 수렴 GO + <b>발표 데모 풀 루프 Play 2클라 이상 무</b>
+    (사망 HP 0 표시→암전→부활 full 포함).
+  </div>
+  <div class="r5card next">
+    <b>➡️ 다음 스텝</b> — M5 Persistence 정식 분해(<code>/work:plan</code>) — 선행 결정 =
+    LocalDB Linux 부재(ADR-029 트레이드오프 ④). 구조급 이월 = 플레이어 HP 동기화 + 공격 이벤트
+    패킷(v10 후보 한 묶음).
+  </div>
+</div>
+
+<h2>1. 무엇이 바뀌었나 — 보스 전투 한눈에</h2>
+<div class="pipeline">
+  <div class="pipe-node">쿨다운<small>40틱 P1 / 24틱 P2 (서버 카운터)</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node">telegraph 예고<small>S_EntityState animState=Attack · 전원 broadcast</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node">권위 AABB 판정<small>16/10틱 후 · player.Position(서버 권위)만</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node">S_EnemyAttack (ID 20)<small>피격자 있을 때만 · 데미지/잔여HP/패턴</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node">클라 연출<small>발동 모션 + 임팩트 이펙트 + HUD + 리스폰 페이드</small></div>
+</div>
+<div class="note">
+  <b>2채널 broadcast 분리 (헌법 #1)</b> — 예고(telegraph)는 <i>모든 클라의 회피 판단</i>에 필요해
+  히트 여부와 무관하게 전원 broadcast, 임팩트는 <i>피격자 HP reconcile</i>이 목적이라 히트 시에만.
+  빗나간 공격 = 모션만 보이고 임팩트 0이 정확한 동작. 클라 판정 코드 0줄.
+</div>
+<p>
+  콘텐츠 쪽은 적 외관이 <code>EnemyVisualTable</code> SO + prefab(149줄 런타임 조립 은퇴),
+  직업 모습이 <code>ClassConfig.VisualPrefab</code> → <code>ClassVisuals/*.prefab</code> 단일 출처
+  (런타임 "Visual" 자식 장착)가 됐다. <code>EnemyKind</code>는 서버/클라 중복 정의를 98_Shared
+  단일 정의로 이사(헌법 #4 봉합). <b>mock HP 은퇴</b> — HUD는 서버 권위값만 표시.
+</p>
+
+<h2>2. Phase 박제 요약</h2>
+<table>
+  <tr><th>Phase</th><th>제목</th><th>핵심</th><th>머지</th></tr>
+  <tr><td>01</td><td>적 시각 prefab 전환</td><td>BuildPlaceholder(149줄) 은퇴 → <code>EnemyVisualTable</code> SO + prefab. 본인 제작 Slime/Boss_Vampire 통일, 외부 placeholder 113파일 삭제(참조 0 전수)</td><td>PR #68</td></tr>
+  <tr><td>02</td><td>골렘 + EnemyKind 이사</td><td>골렘(HP60/방어5/속도1.2) + HG 재bake + <code>EnemyKind</code> 98_Shared 단일 정의 + 화석 분기 3곳(<code>!= Normal</code> → <code>== Boss</code>) 정정</td><td>PR #69</td></tr>
+  <tr><td>03</td><td>HUD UI 연결</td><td><code>UpdateMP</code> + MP 슬라이더 / <code>MapNameDisplay</code>(UI 씬 재로드 생존) / 맵 표시명 한 파일 봉인</td><td>PR #70</td></tr>
+  <tr><td>04</td><td>보스 프로토콜+서버</td><td><code>BossBehaviorSystem</code> FSM + <code>EnemyStats.Attack</code>(5/8/12) + <b>v9 한 묶음 bump</b>(S_EnemyAttack ID 20 + characterClass append) + BossFightSmoke 봇</td><td>PR #71</td></tr>
+  <tr><td>05 ★대규모</td><td>보스 클라 연출 + 직업 비주얼 분리</td><td><code>EnemyAttackHandler</code>(HP바 실연결 <b>mock HP 은퇴</b> + DamageFlash + 패턴 이펙트 + 리스폰 페이드) + 원격 직업 표시 + Mage 투사체 + <b>로직/비주얼 분리</b>(ClassVisuals 단일 출처 + EffectAnchor flipX 거울상)</td><td>PR #72</td></tr>
+  <tr><td>06</td><td>회귀 + 마감</td><td>보스 모션 Start→End 봉합 + cross-review β 봉합(사망 HUD 0 고착) + 회귀 풀세트 + 데모 풀 루프 + 본 박제</td><td>본 마감 PR</td></tr>
+</table>
+
+<h3>Phase 06 포함분 (세션23)</h3>
+<ul>
+  <li><b>보스 모션 Start→End 미전이 봉합</b> (<code>897a90d</code>) — 원인 실측: Start 클립 1.333s &gt;
+    서버 AttackLatch 1.2s(16+8틱) → Any State→Idle 전이가 Start를 90% 지점에서 끊어 End(발동) 영원히
+    미도달. 봉합 = Animator 속도를 서버 틱 상수에서 역산(Start 1.6667→0.8s / End 3.3333→0.4s) +
+    <code>ComputeBossAnimState</code> 우선순위 Death &gt; <b>Attack &gt; Hit</b>(보스 한정 — telegraph 중
+    피격이 Start 리셋시키는 공범 차단). P2(0.5s)는 동적 배율로 이월.</li>
+  <li><b>cross-review γ 봉합</b> (<code>2271025</code>) — β(Codex)가 잡은 진짜 결함: 사망 후
+    S_Snapshot에 HP가 없어 <b>HUD 0 고착</b>(리스폰 복구 경로 부재 — reviewer 2회 통과를 뚫고 잠복).
+    봉합 = <code>PlayRespawnFade(onCovered)</code> 암전 시점 콜백으로 HUD 복구(98_Shared 표시 미러,
+    v9 불변 유지). β 2차가 봉합 1차의 신규 결함(같은 프레임 0→full 덮어쓰기 = 사망 피드백 소실)을
+    또 잡음 — <b>재실측 의무 두 마일스톤 연속 실증</b>. β 3차 수렴.</li>
+</ul>
+
+<h2>3. 결정 흐름 (회고 참고용)</h2>
+<table>
+  <tr><th>결정</th><th>택한 것 / 버린 것</th><th>이유 · 단점 흡수</th></tr>
+  <tr><td>보스 공격 통지</td><td>2채널 분리 / 단일 패킷</td><td>예고 = 전원(회피 판단), 임팩트 = 피격자만(reconcile + 대역폭). 합치면 "빗나가도 임팩트" 또는 "범위 밖은 예고 못 봄" 강요</td></tr>
+  <tr><td>v9 bump 시점</td><td>04 한 묶음 / 패킷별 분산 bump</td><td>같은 PR의 wire 변경 2건 = 단일 bump. 분산하면 팀원 재빌드 의무만 2회</td></tr>
+  <tr><td>보스 모션 정합</td><td>서버 상수 역산 속도 / 클립 자연 종료 대기</td><td>"클라 애니 길이 &gt; 서버 latch = 시각 상태 영원히 미도달" 함정. 서버 진실(16+8틱)에 클라 재생 속도를 맞춤. P2는 동적 배율 이월</td></tr>
+  <tr><td>리스폰 HP 복구</td><td>98_Shared 표시 미러 / HP 동기화 패킷 신설</td><td>패킷 신설 = v10 bump = "M4.5 bump는 04 유일" 약속 위반. 서버 규칙과 같은 Stats.MaxHp 미러로 임시 + v10 구조급 이월 명시. 복구 시점 = 암전 콜백(같은 프레임 복구는 사망 표시를 지움 — β 2차 발견)</td></tr>
+  <tr><td>animState 우선순위</td><td>보스만 Attack&gt;Hit / 전역 변경</td><td>일반 적은 피격 반응이 주 정보(Hit 우선 유지), 보스는 telegraph가 회피 정보(Attack 우선). BossBehaviorSystem 내부에 격리</td></tr>
+  <tr><td>직업 외형 구조</td><td>로직/비주얼 분리(Prefab Variant) / controller swap 코드</td><td>직업 모습 = ClassVisuals 한 파일 단일 출처. PlayerBase 수술로 variant 자동 전파 — 에디터에서 모습 없는 게 정상(런타임 장착)</td></tr>
+</table>
+
+<h2>4. AC 검증 결과 — 마일스톤 완료 조건 대조</h2>
+<ul class="checklist">
+  <li>보스 모션 Start→End 전이 = 이펙트 타이밍 정합 — Play 실측 (준비 0.8s → 발동+임팩트 동시 → Idle, 때리면서도 telegraph 안정)</li>
+  <li>클린빌드 0/0 + <code>dotnet test</code> <span class="pass">419/0/4 skip</span> (기존 417 + 신규 3: 우선순위 2 + 경계값 1)</li>
+  <li>헤드리스 봇 7종 PASS — smoke/M2(desync 0.00)/MultiRoster/EmergencyCombat/BossStageClear/BossFight/EnemyAi. 캐비앗: 보스 무리스폰 → 보스 시나리오는 서버당 1회</li>
+  <li>발표 데모 풀 루프 무사고 (2클라) — 메인→캐릭터 선택→마을→사냥터→보스방(telegraph→양방향 전투→사망 HP 0→암전→부활 full→처치→StageClear) + 원격 직업 상호 확인</li>
+  <li><code>ProtocolVersion.Current == 9</code> — 04 유일 bump 약속 이행 (마감 브랜치 98_Shared diff 0)</li>
+  <li>/cross-review — α 🔴0/🟡1 + β 3라운드 수렴 GO (산출물 3건 박힘)</li>
+  <li>CHANGELOG entry [M] — v9 bump 팀원 재빌드 의무 명시</li>
+  <li class="defer">PR 생성·머지 — 사용자 명시 GO 게이트 (본 박제 commit 후 진행)</li>
+</ul>
+
+<h2>5. 이월 명시</h2>
+<ul>
+  <li><b>M5 Persistence 분해 트리거</b> — 본 마감 PR 머지 → LocalDB Linux 결정(ADR-029 ④) → <code>/work:plan</code></li>
+  <li><b>구조급 (v10 후보 한 묶음)</b> — 플레이어 HP 동기화 전용 패킷(현 표시 미러는 임시) + 원격 공격 이벤트 패킷(원격 Ranger 투사체의 뿌리)</li>
+  <li>보스 P2 애니 정합 — telegraph 상수 98_Shared 이동 + 동적 속도 배율(P1/P2 자동 정합)</li>
+  <li>qa — BossFightSmoke 리스폰 단언 / EffectAnchor 거울상 PlayMode 테스트 / MapNameDisplay flaky</li>
+  <li>GenPackets Write 64KB 풀링(M5 부하) / CI actions v5 bump(6/16 임박) / reviewer 🟡 누적 7건 / 옛 브랜치 정리 / 적 중력 부재 / 유현 BgmComposer</li>
+</ul>
+
+<footer>
+  Dawnholder — 2D 사이드스크롤 MMORPG 캡스톤 · M4.5 Content &amp; Boss 마일스톤 마감 박제 (2026-06-07) ·
+  본 HTML은 <code>_milestone-DONE.md</code>의 시각판이며 내용 동기화 책임은 MD가 진실.
+</footer>
+
+</div>
+</body>
+</html>

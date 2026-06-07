@@ -71,22 +71,26 @@ namespace Dawnholder.Client.UI
         Coroutine _respawnFade;
 
         // 리스폰 시 씬 로드 없는 짧은 페이드 왕복 (out→in). LoadScene 호출 0.
-        public void PlayRespawnFade()
+        // onCovered = 화면이 완전히 덮인 시점 콜백 (HUD 복구 등 — 덮이기 전 갱신은 사망 표시를 지움).
+        // 반환 false = 페이드 시작 불가 (전환 중/중복/_fadeGroup null) — 콜백 미발화, 호출자가 즉시 처리.
+        public bool PlayRespawnFade(System.Action onCovered = null)
         {
-            if (isTransitioning || _respawnFade != null) return;
+            if (isTransitioning || _respawnFade != null) return false;
             if (_fadeGroup == null)
             {
                 Debug.LogWarning("[SceneTransition] PlayRespawnFade: _fadeGroup null — 페이드 스킵.");
-                return;
+                return false;
             }
-            _respawnFade = StartCoroutine(RespawnFadeRoutine());
+            _respawnFade = StartCoroutine(RespawnFadeRoutine(onCovered));
+            return true;
         }
 
-        IEnumerator RespawnFadeRoutine()
+        IEnumerator RespawnFadeRoutine(System.Action onCovered)
         {
             _fadeGroup.blocksRaycasts = true;
 
             yield return Fade(0f, 1f, _fadeDuration);
+            onCovered?.Invoke();
             yield return Fade(1f, 0f, _fadeDuration);
 
             _fadeGroup.blocksRaycasts = false;
