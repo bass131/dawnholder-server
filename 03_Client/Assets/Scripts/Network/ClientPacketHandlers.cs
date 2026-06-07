@@ -82,6 +82,7 @@ namespace Dawnholder.Client.Network
             {
                 session.SetLocalEntityId(eid);
                 Debug.Log($"[Unity] EnterMap as entity {eid} at server spawn ({x}, {y})");
+                MapNameDisplay.SetMapId(0); // S_EnterMap = Town 고정
                 if (LocalPlayerMovement.Instance != null)
                 {
                     // 이 분기도 terrain 주입 — ADR-027 (첫 진입 race 두 순서 모두 관측,
@@ -375,6 +376,8 @@ namespace Dawnholder.Client.Network
                     Debug.LogError($"[Unity] S_MapTransition: 알 수 없는 destMapId={destMapId} — 전환 취소.");
                     return;
                 }
+
+                MapNameDisplay.SetMapId(destMapId);
 
                 // roster buffer 활성화 — 전환 중 도착하는 roster 패킷 캐싱.
                 session.RosterBuffer.BeginTransition(sceneName);

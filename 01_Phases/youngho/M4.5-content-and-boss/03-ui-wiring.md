@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.5
 phase: 03
 title: UI 연결 — 미니맵 HUD 이동 + 맵 이름 + MP 훅
-status: pending
+status: done
 grade: 보통
 risk: unity-asset
 estimated: 1.5~2h
@@ -93,3 +93,4 @@ domain: client
 ## 작업 로그
 
 - 2026-06-07: 계획 수립 (`/work:plan M4.5`, 세션18 — UI 범위 사용자 의논 4항목 확정 반영)
+- 2026-06-07: 완료 (세션20) — **미니맵은 실측 결과 이미 HUD 직속** (정의의 "PauseMenu→HUD 이동" 전제 stale, 이동 0건 + Play 상시 표시 확인). UpdateMP + MapIdToDisplayName(영어, SceneRouter 한 파일 봉인) + MapNameDisplay 신규(static 저장 + Start 복원 — UI 씬 재로드 생존) + 핸들러 훅 2곳. 씬 = _mpSlider 연결 + map_name 폰트 Pretendard 할당(NULL이었음, 기능 필수) + skill_slot_1~5/entity_name 리네임. 예정 외 = Tests.EditMode asmdef에 Unity.TextMeshPro 참조 추가(TMPro 미해결 → 컴파일 실패 → 도메인 리로드 차단 봉합). 검증 = EditMode 75/75(신규 12) + Play 4항목 + reviewer 🔴0/🟡1(null label 분기 테스트 — 이월)
