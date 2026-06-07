@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.5
 phase: 04
 title: 보스 프로토콜 + 서버 행동 — S_EnemyAttack + class append + 8→9 bump + BossBehavior
-status: pending
+status: done
 grade: 대규모
 risk: irreversible
 estimated: 4~6h
@@ -12,7 +12,7 @@ domain: shared+server
 
 # Phase 04: 보스 프로토콜 + 서버 행동
 
-> **상태**: pending
+> **상태**: done (2026-06-07 — 박제 = `04-boss-protocol-and-server-DONE.md` + `.html`)
 > **마일스톤**: M4.5
 > **등급**: 대규모 (복잡 기본 + irreversible[8→9 bump] + trust-boundary[적→플레이어 데미지] 깃발 2개 상향)
 > **담당**: shared (PDL) + server (behavior) SubAgent + Coordinator 분해 + 메인 검수
@@ -114,3 +114,4 @@ domain: shared+server
 ## 작업 로그
 
 - 2026-06-07: 계획 수립 (`/work:plan M4.5`, 세션18 — 옛 M4.3-09 설계 계승 + S_PlayerJoin append 묶음 + 대규모 상향[깃발 2])
+- 2026-06-07: 완료 (세션21 — Coordinator 4구획 분해 + 메인 검수 정정 1건. v9 bump 한 묶음 + BossBehaviorSystem + 리스폰 HP full. test 417/0 + 봇 BossFightSmoke PASS + reviewer 🔴0. telegraph 정량 = P1 16틱/P2 10틱 박제)

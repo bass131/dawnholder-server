@@ -30,30 +30,9 @@ internal sealed class EnemyAISystem
 
         foreach (EnemyEntity enemy in map.Enemies.Values)
         {
-            // Boss는 이번 Phase에서 AI 없음 (Idle 고정). Phase 09에서 별도 behavior.
-            // Boss도 animState latch 감소 + S_EntityState broadcast는 수행.
-            // "적은 2종" 가정 화석 정정: Golem 추가로 Boss 명시 비교 필요 (M4.5-02).
-            if (enemy.Kind == EnemyKind.Boss)
-            {
-                // Boss: latch 감소 후 broadcast
-                if (enemy.HitLatchTicks > 0) enemy.HitLatchTicks--;
-                if (enemy.AttackLatchTicks > 0) enemy.AttackLatchTicks--;
-
-                if (shouldBroadcast)
-                {
-                    byte bossAnimState = ComputeEnemyAnimState(enemy);
-                    S_EntityState bossPacket = new S_EntityState
-                    {
-                        entityId = enemy.EntityId,
-                        x = enemy.X,
-                        y = enemy.Y,
-                        state = (byte)enemy.State,
-                        animState = bossAnimState,
-                    };
-                    map.BroadcastToAll(bossPacket.Write());
-                }
-                continue;
-            }
+            // Boss는 BossBehaviorSystem이 전담 (latch 감소 + FSM + broadcast 모두).
+            // EnemyAISystem은 Normal/Golem만 처리.
+            if (enemy.Kind == EnemyKind.Boss) continue;
 
             float moveSpeed = enemy.Stats.MoveSpeed;
             float aggroRange = enemy.Stats.AggroRange;

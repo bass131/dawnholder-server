@@ -42,9 +42,15 @@ public class BossStageClearTests : IDisposable
     const int BossEntityId = 2;
     const int PlayerEntityId = 3;
 
-    // Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = 25. Formulas 직접 참조로 drift 방지.
-    static readonly int ExpectedDamage = Formulas.ComputeDamage(
-        PlayerStats.Warrior(), default, baseDamage: 10);
+    // Warrior가 Boss에 가하는 데미지. Formulas 직접 참조로 drift 방지.
+    // BossDefault().Defense=3: Max(1, 10+15-3) = 22.
+    static readonly int ExpectedDamageToBoss = Formulas.ComputeDamage(
+        PlayerStats.Warrior(), EnemyStats.BossDefault(), baseDamage: 10);
+
+    // Warrior가 Normal enemy에 가하는 데미지.
+    // NormalDefault().Defense=0: Max(1, 10+15-0) = 25.
+    static readonly int ExpectedDamageToNormal = Formulas.ComputeDamage(
+        PlayerStats.Warrior(), EnemyStats.NormalDefault(), baseDamage: 10);
 
     // 옛 MapSpawnTable 값 보존 — inlined (MapSpawnTable 은퇴, M4.4 Phase 03).
     const float NormalX    = 10f;
@@ -153,9 +159,9 @@ public class BossStageClearTests : IDisposable
 
         s.SentPackets.Clear();
 
-        // 25 dmg/hit → 4회 attack으로 Boss HP 100 → 0.
+        // 22 dmg/hit (BossDefault.Defense=3) → 5회 attack으로 Boss HP 100 → 0.
         // attackerClientTick=tick → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)BossMaxHp / ExpectedDamage); // 4
+        int hitsNeeded = (int)Math.Ceiling((double)BossMaxHp / ExpectedDamageToBoss); // 5
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
@@ -164,7 +170,7 @@ public class BossStageClearTests : IDisposable
             _map.Tick(tick++);
         }
 
-        // 검증: S_HitResult 4건 + S_EntityDeath 1건 + S_StageClear 1건.
+        // 검증: S_HitResult 5건 + S_EntityDeath 1건 + S_StageClear 1건.
         Assert.Equal(hitsNeeded, CountPacketsOfType(s.SentPackets, PacketID.S_HitResult));
         Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_EntityDeath));
         Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_StageClear));
@@ -207,8 +213,8 @@ public class BossStageClearTests : IDisposable
         PlaceInRangeOfBoss(player!);
         s.SentPackets.Clear();
 
-        // 25 dmg/hit → 4회 attack. attackerClientTick=tick → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)BossMaxHp / ExpectedDamage); // 4
+        // 22 dmg/hit → 5회 attack으로 Boss 처치. attackerClientTick=tick → diff=0 → rewind 없음.
+        int hitsNeeded = (int)Math.Ceiling((double)BossMaxHp / ExpectedDamageToBoss); // 5
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
@@ -256,8 +262,8 @@ public class BossStageClearTests : IDisposable
         PlaceInRangeOfNormalEnemy(player!);
         s.SentPackets.Clear();
 
-        // 25 dmg/hit → 2회 attack으로 Normal HP 30 → 0 이하. attackerClientTick=tick → diff=0 → rewind 없음.
-        int hitsNeeded = (int)Math.Ceiling((double)NormalMaxHp / ExpectedDamage); // 2
+        // 25 dmg/hit (NormalDefault.Defense=0) → 2회 attack으로 Normal HP 30 → 0 이하. attackerClientTick=tick → diff=0 → rewind 없음.
+        int hitsNeeded = (int)Math.Ceiling((double)NormalMaxHp / ExpectedDamageToNormal); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {

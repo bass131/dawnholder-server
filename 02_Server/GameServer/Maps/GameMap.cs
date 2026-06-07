@@ -59,6 +59,7 @@ public class GameMap
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly CombatSystem _combatSystem = new();
     readonly EnemyAISystem _enemyAISystem = new();
+    readonly BossBehaviorSystem _bossBehaviorSystem = new();
     readonly RespawnSystem _respawnSystem = new();
 
     public IReadOnlyList<PlayerEntity> Players => _players;
@@ -129,6 +130,7 @@ public class GameMap
         {
             EnemyKind.Normal => EnemyStats.NormalDefault(),
             EnemyKind.Golem  => EnemyStats.GolemDefault(),
+            EnemyKind.Boss   => EnemyStats.BossDefault(),
             _                => default,
         };
         EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp, resolvedStats);
@@ -279,8 +281,9 @@ public class GameMap
     /// System 호출 순서 (§2.2 명문화):
     ///   1. physics (PlayerEntity Physics.Step + RecordPosition)
     ///   2. CombatSystem (EnqueueJob 경유 attack job 처리)
-    ///   3. EnemyAISystem (UpdateEnemies → EnemyAISystem.Update)
-    ///   4. RespawnSystem (ProcessRespawns → RespawnSystem.Process)
+    ///   3. EnemyAISystem (Normal/Golem FSM)
+    ///   4. BossBehaviorSystem (Boss 패턴 FSM + 데미지 판정)
+    ///   5. RespawnSystem
     ///
     /// physics가 1순위인 이유: 이 틱의 player 최종 위치를 RecordPosition으로 기록한 뒤
     ///   CombatSystem이 rewind lookup을 해야 하기 때문 — 단, job은 _currentTick 갱신 후 physics 전에 처리.
@@ -368,10 +371,13 @@ public class GameMap
             }
         }
 
-        // 4) EnemyAISystem: Normal enemy FSM 1틱 (aggro·Patrol↔Chase·이동·S_EntityState broadcast).
+        // 4) EnemyAISystem: Normal/Golem FSM 1틱 (aggro·Patrol↔Chase·이동·S_EntityState broadcast).
         _enemyAISystem.Update(this, tickNumber);
 
-        // 5) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
+        // 5) BossBehaviorSystem: Boss FSM 1틱 (쿨다운→telegraph→데미지판정→리셋, latch, broadcast).
+        _bossBehaviorSystem.Update(this, tickNumber);
+
+        // 6) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
         _respawnSystem.Process(this, tickNumber);
     }
 }

@@ -139,6 +139,7 @@ internal static class MapMigration
             session.Send(transition.Write());
 
             // 본인에게 맵 B 기존 player roster (initial roster — EnterGameWorld 패턴 정합)
+            // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3 — 클라 raw byte echo 절대 금지).
             foreach (PlayerEntity existing in existingInDest)
             {
                 if (existing.Owner == null) continue;
@@ -148,6 +149,7 @@ internal static class MapMigration
                     entityId = existing.EntityId,
                     spawnX = existing.Position.X,
                     spawnY = existing.Position.Y,
+                    characterClass = (byte)existing.Stats.Class,
                 };
                 session.Send(rosterEntry.Write());
             }
@@ -169,11 +171,13 @@ internal static class MapMigration
             }
 
             // 맵 B 기존 플레이어에게 신규 진입자 S_PlayerJoin broadcast
+            // characterClass: 서버 newEntity.Stats.Class byte cast (헌법 #3).
             S_PlayerJoin joinNotice = new S_PlayerJoin
             {
                 entityId = newEntity.EntityId,
                 spawnX = newEntity.Position.X,
                 spawnY = newEntity.Position.Y,
+                characterClass = (byte)newEntity.Stats.Class,
             };
             destMap.BroadcastToAll(joinNotice.Write(), except: session);
 
