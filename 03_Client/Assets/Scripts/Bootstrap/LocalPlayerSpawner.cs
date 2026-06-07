@@ -84,17 +84,12 @@ namespace Dawnholder.Client.Bootstrap
             // LocalPlayerMovement.OnDestroy가 Instance 정리 → 다음 씬 로드 시 재spawn.
             SceneManager.MoveGameObjectToScene(go, scene);
 
-            // 직업 ClassConfig 장착 — Animator controller 교체 + 공격 전략 주입.
-            // config == null이면 Awake fallback(KnightMeleeAttack)으로 동작 유지.
+            // 직업 비주얼 장착 + 공격 전략 주입 (v2 로직/비주얼 분리).
+            // config == null이면 비주얼 미장착 경고 + Awake fallback(KnightMeleeAttack)으로 동작 유지.
             ClassConfig? config = ClassLoadout.Resolve();
+            ClassVisualMount.Attach(go.transform, config != null ? config.VisualPrefab : null);
             if (config != null)
-            {
-                Animator? animator = go.GetComponent<Animator>();
-                if (animator != null && config.Controller != null)
-                    animator.runtimeAnimatorController = config.Controller;
-
                 go.GetComponent<LocalPlayerInput>()?.SetAttackStrategy(config.CreateStrategy());
-            }
 
             // 카메라 연결 ("생성 후 셋업").
             //   CameraFollow.target은 [SerializeField]라 보통 씬에서 Inspector로 연결하지만,

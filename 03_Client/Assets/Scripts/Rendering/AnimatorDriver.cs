@@ -30,9 +30,20 @@ namespace Dawnholder.Client.Rendering
 
         void Awake()
         {
-            _anim = GetComponent<Animator>();
-            _sr = GetComponent<SpriteRenderer>();
             _source = GetComponent<IMotionState>();
+            Rebind();
+        }
+
+        // 비주얼 자식 장착/교체 후 ClassVisualMount가 호출 — Awake 캐시는 장착 전이라 stale.
+        // InChildren은 self 포함 — 적 prefab(root에 SR/Animator)도 동일 경로로 무영향.
+        // 비활성 자식은 건너뜀 (교체 시 파괴 대기 중인 옛 비주얼 회피).
+        public void Rebind()
+        {
+            _anim = GetComponentInChildren<Animator>();
+            _sr = GetComponentInChildren<SpriteRenderer>();
+            // controller가 바뀌었을 수 있음 — AttackVariant 파라미터 보유 여부 재조회.
+            _variantChecked = false;
+            _hasAttackVariant = false;
         }
 
         void LateUpdate()

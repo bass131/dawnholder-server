@@ -1,4 +1,7 @@
 using TMPro;
+using Dawnholder.Client.Scenes;
+using Shared.GameData;
+using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -9,12 +12,13 @@ namespace Dawnholder.Client.UI
     /// HUD 표시 핸들러. HP/MP 슬라이더 + 자원 텍스트(HP/Gold) 표시.
     ///
     /// **헌법 #1 (Server Authority)**: HUD는 *서버가 알려준* 값만 표시합니다.
-    /// 현재는 mock(클라 자체값)이지만, 패킷 수신 핸들러가
-    /// <see cref="UpdateHP"/> / <see cref="UpdateMP"/> / <see cref="UpdateGold"/>를 호출해 데이터 갱신합니다.
+    /// EnemyAttackHandler가 <see cref="UpdateHP"/>를 호출해 피격 결과를 반영합니다.
     /// 데미지/획득 *계산* 로직은 절대 이 클래스에 들어오지 않습니다.
     /// </summary>
     public class HudController : MonoBehaviour
     {
+        public static HudController? Instance { get; private set; }
+
         [Header("HP")]
         [FormerlySerializedAs("hpSlider")]
         [SerializeField] Slider _hpSlider;
@@ -28,19 +32,37 @@ namespace Dawnholder.Client.UI
         [FormerlySerializedAs("goldText")]
         [SerializeField] TMP_Text _goldText;
 
-        [Header("Mock Initial Values (Phase 03)")]
-        [FormerlySerializedAs("mockHpCurrent")]
-        [SerializeField] int _mockHpCurrent = 100;
-        [FormerlySerializedAs("mockHpMax")]
-        [SerializeField] int _mockHpMax = 100;
+        [Header("Mock Initial Values (MP/Gold — 서버 채널 미박힘)")]
         [FormerlySerializedAs("mockGold")]
         [SerializeField] int _mockGold = 0;
         [SerializeField] int _mockMpCurrent = 50;
         [SerializeField] int _mockMpMax = 50;
 
+        void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Debug.LogWarning("[HudController] 중복 인스턴스 감지 — 신규 인스턴스 파괴.");
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+        }
+
+        void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         void Start()
         {
-            UpdateHP(_mockHpCurrent, _mockHpMax);
+            // HP 초기값 = 선택 직업 full HP (서버 spawn = full HP 약속).
+            int classValue = PlayerPrefs.GetInt(
+                CharacterSelectController.SelectedClassPrefsKey,
+                (int)CharacterClass.Warrior);
+            PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
+            UpdateHP(stats.MaxHp, stats.MaxHp);
+
             UpdateMP(_mockMpCurrent, _mockMpMax);
             UpdateGold(_mockGold);
         }

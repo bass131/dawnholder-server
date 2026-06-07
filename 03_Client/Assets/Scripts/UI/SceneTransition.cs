@@ -56,7 +56,41 @@ namespace Dawnholder.Client.UI
         public void LoadScene(string sceneName)
         {
             if (isTransitioning) return;
+            // 리스폰 페이드 진행 중 씬 전환 도착 — 권위 전환이 이김 (헌법 #1). 페이드 중단 후 전환 진행.
+            if (_respawnFade != null)
+            {
+                StopCoroutine(_respawnFade);
+                _respawnFade = null;
+            }
             StartCoroutine(LoadSceneRoutine(sceneName));
+        }
+
+        // 리스폰 페이드 코루틴 핸들. isTransitioning과 별도 —
+        // isTransitioning을 점유하면 페이드 1초 동안 도착한 S_MapTransition의 LoadScene이
+        // silent drop돼 서버/클라 씬 desync (서버는 맵을 옮겼는데 클라는 옛 씬에 잔류).
+        Coroutine _respawnFade;
+
+        // 리스폰 시 씬 로드 없는 짧은 페이드 왕복 (out→in). LoadScene 호출 0.
+        public void PlayRespawnFade()
+        {
+            if (isTransitioning || _respawnFade != null) return;
+            if (_fadeGroup == null)
+            {
+                Debug.LogWarning("[SceneTransition] PlayRespawnFade: _fadeGroup null — 페이드 스킵.");
+                return;
+            }
+            _respawnFade = StartCoroutine(RespawnFadeRoutine());
+        }
+
+        IEnumerator RespawnFadeRoutine()
+        {
+            _fadeGroup.blocksRaycasts = true;
+
+            yield return Fade(0f, 1f, _fadeDuration);
+            yield return Fade(1f, 0f, _fadeDuration);
+
+            _fadeGroup.blocksRaycasts = false;
+            _respawnFade = null;
         }
 
         IEnumerator LoadSceneRoutine(string sceneName)

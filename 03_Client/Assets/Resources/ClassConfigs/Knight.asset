@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Knight
   m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.Combat.KnightClassConfig
   Class: 0
-  Controller: {fileID: 9100000, guid: 773c44320e43abd49951c4c75ea3367f, type: 2}
+  VisualPrefab: {fileID: 7313497731269262884, guid: 9bb45a6a141484a4bb050d2a1b605cb0, type: 3}

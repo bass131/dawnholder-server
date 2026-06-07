@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Mage
   m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.Combat.MageClassConfig
   Class: 1
-  Controller: {fileID: 9100000, guid: f9c9e8f719eb8864fa8e719a383fb519, type: 2}
-  _projectilePrefab: {fileID: 0}
+  VisualPrefab: {fileID: 2261113615859951642, guid: e8fbc85220738c3459df610f8c62bdd7, type: 3}
+  _projectilePrefab: {fileID: 4535537493898913132, guid: ab6ba800dc653204c83108fc488388f3, type: 3}

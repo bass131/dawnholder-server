@@ -1,6 +1,9 @@
 #nullable enable
 using System.Collections.Generic;
+using Dawnholder.Client.Bootstrap;
+using Dawnholder.Client.Combat;
 using Dawnholder.Client.Rendering;
+using Shared.Protocol;
 using UnityEngine;
 
 namespace Dawnholder.Client.State
@@ -8,19 +11,29 @@ namespace Dawnholder.Client.State
     // 타인 entity Spawn/Despawn/Snapshot dispatch 매니저.
     // 본인 entity는 등록 X — SnapshotHandler가 entityId 분기로 막음.
     //
+    // **로직/비주얼 분리 (M4.5 Phase 05 v2)**:
+    //   root = base prefab(로직: RemoteEntity/보간) 고정, 직업 시각은 "Visual" 자식
+    //   (ClassConfig.VisualPrefab — 직업당 1개)을 ClassVisualMount로 장착.
+    //   직업 기록(_spawnedClasses, null=미상)을 보관 — 늦은 직업 정보는 *비주얼 자식만 교체*
+    //   (root 보존 → RemoteEntity/보간 버퍼/entityId 매핑 자연 유지, 유현 M3 컴포넌트 보존 약속 정합).
+    //
     // **지연 spawn 패턴**:
-    //   PlayerJoin 도착 *전* Snapshot이 먼저 도착해도 UpdateSnapshot이 *그 자리에서* Spawn 호출.
-    //   이후 PlayerJoin 도착 시 이미 있으면 noop (idempotent — initial roster 재전송 안전).
+    //   PlayerJoin 도착 전 Snapshot이 먼저 도착해도 UpdateSnapshot이 그 자리에서 Spawn 호출
+    //   (직업 미상 → Warrior 비주얼 기본). 이후 PlayerJoin 도착 시 NeedsVisualSwap 판정 →
+    //   직업 다름/미상이면 비주얼 교체, 같으면 noop.
     [DisallowMultipleComponent]
     public class RemoteEntityRegistry : MonoBehaviour
     {
         public static RemoteEntityRegistry? Instance { get; private set; }
 
-        // Inspector로 RemotePlayer.prefab 드래그. null이면 spawn 시 에러 로그.
+        // Inspector로 RemotePlayer.prefab 드래그 (base prefab 폴백).
         [SerializeField] GameObject? _remotePlayerPrefab;
 
         readonly Dictionary<int, RemoteEntity> _entities = new();
         readonly Dictionary<int, RemotePlayerMotion> _motions = new();
+
+        // null = 직업 미상 (Snapshot 선도착 지연 spawn). Warrior 기본값과 구분 필수.
+        readonly Dictionary<int, CharacterClass?> _spawnedClasses = new();
 
         void Awake()
         {
@@ -33,8 +46,7 @@ namespace Dawnholder.Client.State
             Instance = this;
         }
 
-        // CombatBootstrap.BuildRemoteEntityRegistry가 코드 주도로 생성할 때
-        // Inspector 드래그 대신 Resources.Load로 prefab을 주입하기 위한 공개 메서드.
+        // CombatBootstrap.BuildRemoteEntityRegistry가 코드 주도로 생성할 때 주입.
         // Inspector 드래그 경로도 여전히 동작 — [SerializeField] 유지.
         public void SetRemotePlayerPrefab(GameObject prefab)
         {
@@ -47,67 +59,54 @@ namespace Dawnholder.Client.State
             if (Instance == this) Instance = null;
         }
 
-        // S_PlayerJoin 핸들러에서 호출. 이미 있으면 noop (idempotent — initial roster 재전송 안전).
-        public void Spawn(int entityId, float spawnX, float spawnY)
+        // S_PlayerJoin 핸들러에서 호출 — 직업 정보 항상 있음 (non-null).
+        //
+        // **비주얼 교체 판단 (NeedsVisualSwap)**:
+        //   기록 없음 → 신규 spawn.
+        //   기록 있음 + NeedsVisualSwap → 비주얼 자식만 교체 (root/보간 버퍼 보존).
+        //   기록 있음 + !NeedsVisualSwap → noop (idempotent).
+        public void Spawn(int entityId, float spawnX, float spawnY, CharacterClass? characterClass)
         {
-            if (_entities.ContainsKey(entityId))
+            if (_entities.TryGetValue(entityId, out RemoteEntity? existing))
             {
-                return;
-            }
-            if (_remotePlayerPrefab == null)
-            {
-                Debug.LogError($"[Registry] _remotePlayerPrefab null — Inspector에 prefab 드래그 누락. entity {entityId} spawn 실패.");
+                CharacterClass? recorded = _spawnedClasses.TryGetValue(entityId, out CharacterClass? r) ? r : null;
+                if (!NeedsVisualSwap(recorded, characterClass))
+                    return; // 동일 직업 이미 spawn 중 — noop.
+
+                // 늦은 직업 정보 — root GameObject는 보존, 비주얼 자식만 교체 (v2).
+                // NeedsVisualSwap=true는 incoming non-null 보장 (null이면 false 반환).
+                ClassVisualMount.Attach(existing.transform, ResolveVisual(characterClass!.Value, entityId));
+                _spawnedClasses[entityId] = characterClass;
+                Debug.Log($"[Registry] entity {entityId} 비주얼 교체 → class={characterClass}");
                 return;
             }
 
-            GameObject go = Instantiate(_remotePlayerPrefab, new Vector3(spawnX, spawnY, 0f), Quaternion.identity);
-            go.name = $"RemotePlayer_{entityId}";
-            RemoteEntity? entity = go.GetComponent<RemoteEntity>();
-            if (entity == null)
-            {
-                Debug.LogError($"[Registry] RemotePlayer.prefab에 RemoteEntity 컴포넌트 없음. entity {entityId} spawn 실패.");
-                Destroy(go);
-                return;
-            }
-            entity.Initialize(entityId, spawnX, spawnY);
-            _entities[entityId] = entity;
-
-            // animState 공급원 + driver — prefab에 없으면 AddComponent로 런타임 주입.
-            RemotePlayerMotion motion = go.GetComponent<RemotePlayerMotion>()
-                                        ?? go.AddComponent<RemotePlayerMotion>();
-            if (go.GetComponent<AnimatorDriver>() == null)
-                go.AddComponent<AnimatorDriver>();
-            _motions[entityId] = motion;
-
-            Debug.Log($"[Registry] Spawned entity {entityId} at ({spawnX:F2}, {spawnY:F2})");
+            SpawnInternal(entityId, spawnX, spawnY, characterClass);
         }
 
         // S_PlayerLeave 핸들러에서 호출. 없으면 noop.
         public void Despawn(int entityId)
         {
             if (!_entities.TryGetValue(entityId, out RemoteEntity? entity))
-            {
                 return;
-            }
+
             entity.ClearBuffer();
             _entities.Remove(entityId);
             _motions.Remove(entityId);
+            _spawnedClasses.Remove(entityId);
             Destroy(entity.gameObject);
             Debug.Log($"[Registry] Despawned entity {entityId}");
         }
 
         // S_Snapshot 핸들러에서 호출 (entityId가 본인이 아닌 경우만).
-        // 지연 spawn — entity 없으면 Snapshot 좌표(이미 이동한 좌표)로 Spawn 후 buffer push.
+        // 지연 spawn — entity 없으면 Snapshot 좌표로 Spawn(직업 미상=null).
         public void UpdateSnapshot(int entityId, float x, float y, byte animState)
         {
             if (!_entities.TryGetValue(entityId, out RemoteEntity? entity))
             {
-                Spawn(entityId, x, y);
+                Spawn(entityId, x, y, null); // 직업 미상
                 if (!_entities.TryGetValue(entityId, out entity))
-                {
-                    // Spawn 실패 (prefab null 등) — 위 Debug.LogError가 이미 박힘.
-                    return;
-                }
+                    return; // Spawn 실패 (prefab null 등) — 위 LogError가 이미 박힘.
             }
             entity.EnqueueSnapshot(x, y);
             if (_motions.TryGetValue(entityId, out RemotePlayerMotion? motion))
@@ -123,6 +122,70 @@ namespace Dawnholder.Client.State
             }
             _entities.Clear();
             _motions.Clear();
+            _spawnedClasses.Clear();
+        }
+
+        // 비주얼 교체 판단 순수 함수 — EditMode 테스트 대상.
+        // incoming=null(직업 정보 없음) → false — 정보 부재는 교체 사유가 아님
+        //   (기존 직업 비주얼을 기본으로 강등시키는 지뢰 차단).
+        // recorded=null(미상) + incoming 있음 → true(교체).
+        // 둘 다 있음 → 다르면 true, 같으면 false(noop).
+        public static bool NeedsVisualSwap(CharacterClass? recorded, CharacterClass? incoming)
+        {
+            if (incoming == null) return false;
+            if (recorded == null) return true;
+            return recorded.Value != incoming.Value;
+        }
+
+        // 신규 조립 — base(로직 껍데기) Instantiate 후 직업 비주얼 자식 장착 (v2).
+        void SpawnInternal(int entityId, float x, float y, CharacterClass? characterClass)
+        {
+            if (_remotePlayerPrefab == null)
+            {
+                Debug.LogError($"[Registry] _remotePlayerPrefab null — entity {entityId} spawn 실패. Inspector에 RemotePlayer.prefab 드래그 연결 확인.");
+                return;
+            }
+
+            GameObject go = Instantiate(_remotePlayerPrefab, new Vector3(x, y, 0f), Quaternion.identity);
+            go.name = $"RemotePlayer_{entityId}";
+            RemoteEntity? entity = go.GetComponent<RemoteEntity>();
+            if (entity == null)
+            {
+                Debug.LogError($"[Registry] RemoteEntity 컴포넌트 없음 — entity {entityId} spawn 실패.");
+                Destroy(go);
+                return;
+            }
+            entity.Initialize(entityId, x, y);
+            _entities[entityId] = entity;
+            _spawnedClasses[entityId] = characterClass;
+
+            RemotePlayerMotion motion = go.GetComponent<RemotePlayerMotion>()
+                                        ?? go.AddComponent<RemotePlayerMotion>();
+            if (go.GetComponent<AnimatorDriver>() == null)
+                go.AddComponent<AnimatorDriver>();
+            _motions[entityId] = motion;
+
+            // 비주얼 장착은 driver 준비 *후* — ClassVisualMount가 Rebind까지 수행 (순서 불변식).
+            // 직업 미상(null)은 Warrior 비주얼 기본 — 투명 잔상 방지. PlayerJoin 도착 시 교체됨.
+            ClassVisualMount.Attach(go.transform,
+                ResolveVisual(characterClass ?? CharacterClass.Warrior, entityId));
+
+            Debug.Log($"[Registry] Spawned entity {entityId} class={characterClass?.ToString() ?? "unknown"} at ({x:F2}, {y:F2})");
+        }
+
+        // 직업 → 비주얼 prefab 해석. 미연결/미발견이면 null + 경고 (Attach가 no-op 처리 — fail-soft).
+        GameObject? ResolveVisual(CharacterClass characterClass, int entityId)
+        {
+            ClassConfig[] configs = Resources.LoadAll<ClassConfig>("ClassConfigs");
+            ClassConfig? config = ClassLoadout.FindConfig(configs, characterClass);
+            if (config?.VisualPrefab != null)
+                return config.VisualPrefab;
+
+            if (config != null)
+                Debug.LogWarning($"[Registry] entity {entityId} class={characterClass} — ClassConfig.VisualPrefab 미연결. 비주얼 미장착.");
+            else
+                Debug.LogWarning($"[Registry] entity {entityId} class={characterClass} — ClassConfig 미발견. 비주얼 미장착.");
+            return null;
         }
     }
 }

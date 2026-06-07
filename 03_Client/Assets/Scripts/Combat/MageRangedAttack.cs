@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Prediction;
 using UnityEngine;
 
 namespace Dawnholder.Client.Combat
@@ -39,7 +40,13 @@ namespace Dawnholder.Client.Combat
             if (EnemyRegistry.Instance == null) return;
             if (!EnemyRegistry.Instance.TryGetTransform(targetId, out Transform? target)) return;
 
-            GameObject proj = Object.Instantiate(_projectilePrefab, origin, Quaternion.identity);
+            // 발사 위치 = variant prefab의 EffectAnchor 자식 (없으면 root 폴백).
+            // origin은 intent 기준점이라 분리 — 시각 위치에만 앵커 적용.
+            Vector3 spawnPos = origin;
+            if (LocalPlayerMovement.Instance != null)
+                spawnPos = EffectAnchor.ResolvePosition(LocalPlayerMovement.Instance.transform);
+
+            GameObject proj = Object.Instantiate(_projectilePrefab, spawnPos, Quaternion.identity);
             ProjectileVisual visual = proj.GetComponent<ProjectileVisual>()
                                      ?? proj.AddComponent<ProjectileVisual>();
             visual.Launch(target);
