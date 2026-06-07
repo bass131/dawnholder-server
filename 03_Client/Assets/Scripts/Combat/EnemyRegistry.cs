@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
+using Shared.GameData;
 using UnityEngine;
 
 namespace Dawnholder.Client.Combat
@@ -61,7 +62,7 @@ namespace Dawnholder.Client.Combat
                 return;
             }
 
-            RemoteEnemy.EnemyKind kind = (RemoteEnemy.EnemyKind)entityKind;
+            EnemyKind kind = (EnemyKind)entityKind;
             GameObject? go = EnemyViewFactory.Spawn(entityId, kind, x, y);
             if (go == null)
             {

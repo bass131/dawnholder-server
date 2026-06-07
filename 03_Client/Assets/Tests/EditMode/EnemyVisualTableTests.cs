@@ -1,6 +1,7 @@
 #nullable enable
 using Dawnholder.Client.Combat;
 using NUnit.Framework;
+using Shared.GameData;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -37,11 +38,11 @@ namespace Dawnholder.Client.Tests
             GameObject normalPrefab = MakeDummyPrefab("TestPrefab_Normal");
             var table = CreateTable(new EnemyVisualTable.Entry
             {
-                Kind = RemoteEnemy.EnemyKind.Normal,
+                Kind = EnemyKind.Normal,
                 Prefab = normalPrefab
             });
 
-            GameObject? result = table.GetPrefab(RemoteEnemy.EnemyKind.Normal);
+            GameObject? result = table.GetPrefab(EnemyKind.Normal);
 
             Assert.IsNotNull(result);
             Assert.AreSame(normalPrefab, result);
@@ -53,13 +54,13 @@ namespace Dawnholder.Client.Tests
             GameObject normalPrefab = MakeDummyPrefab("TestPrefab_Normal");
             var table = CreateTable(new EnemyVisualTable.Entry
             {
-                Kind = RemoteEnemy.EnemyKind.Normal,
+                Kind = EnemyKind.Normal,
                 Prefab = normalPrefab
             });
 
             LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex(@"\[EnemyVisualTable\].*Boss.*미등록"));
 
-            GameObject? result = table.GetPrefab(RemoteEnemy.EnemyKind.Boss);
+            GameObject? result = table.GetPrefab(EnemyKind.Boss);
 
             Assert.IsNotNull(result, "Normal prefab 폴백 결과가 null이면 안 됩니다.");
             Assert.AreSame(normalPrefab, result);
@@ -74,7 +75,7 @@ namespace Dawnholder.Client.Tests
             LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex(@"\[EnemyVisualTable\].*Boss.*미등록"));
             LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex(@"\[EnemyVisualTable\].*Normal.*없습니다"));
 
-            GameObject? result = table.GetPrefab(RemoteEnemy.EnemyKind.Boss);
+            GameObject? result = table.GetPrefab(EnemyKind.Boss);
 
             Assert.IsNull(result);
         }
@@ -85,12 +86,29 @@ namespace Dawnholder.Client.Tests
             GameObject normalPrefab = MakeDummyPrefab("TestPrefab_Normal");
             GameObject bossPrefab = MakeDummyPrefab("TestPrefab_Boss");
             var table = CreateTable(
-                new EnemyVisualTable.Entry { Kind = RemoteEnemy.EnemyKind.Normal, Prefab = normalPrefab },
-                new EnemyVisualTable.Entry { Kind = RemoteEnemy.EnemyKind.Boss, Prefab = bossPrefab }
+                new EnemyVisualTable.Entry { Kind = EnemyKind.Normal, Prefab = normalPrefab },
+                new EnemyVisualTable.Entry { Kind = EnemyKind.Boss, Prefab = bossPrefab }
             );
 
-            Assert.AreSame(normalPrefab, table.GetPrefab(RemoteEnemy.EnemyKind.Normal));
-            Assert.AreSame(bossPrefab, table.GetPrefab(RemoteEnemy.EnemyKind.Boss));
+            Assert.AreSame(normalPrefab, table.GetPrefab(EnemyKind.Normal));
+            Assert.AreSame(bossPrefab, table.GetPrefab(EnemyKind.Boss));
+        }
+
+        [Test]
+        public void GetPrefab_AllThreeKindsRegistered_GolemReturnsGolemPrefab()
+        {
+            GameObject normalPrefab = MakeDummyPrefab("TestPrefab_Normal");
+            GameObject bossPrefab   = MakeDummyPrefab("TestPrefab_Boss");
+            GameObject golemPrefab  = MakeDummyPrefab("TestPrefab_Golem");
+            var table = CreateTable(
+                new EnemyVisualTable.Entry { Kind = EnemyKind.Normal, Prefab = normalPrefab },
+                new EnemyVisualTable.Entry { Kind = EnemyKind.Boss,   Prefab = bossPrefab   },
+                new EnemyVisualTable.Entry { Kind = EnemyKind.Golem,  Prefab = golemPrefab  }
+            );
+
+            Assert.AreSame(golemPrefab,  table.GetPrefab(EnemyKind.Golem),  "Golem은 등록된 golemPrefab을 반환해야 합니다.");
+            Assert.AreSame(normalPrefab, table.GetPrefab(EnemyKind.Normal), "Normal은 영향받지 않아야 합니다.");
+            Assert.AreSame(bossPrefab,   table.GetPrefab(EnemyKind.Boss),   "Boss는 영향받지 않아야 합니다.");
         }
     }
 }

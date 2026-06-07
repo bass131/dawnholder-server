@@ -85,8 +85,9 @@ public class EnemyEntity
         Hp = maxHp;
         Stats = stats;
 
-        // AI 초기 상태: Normal = Patrol 시작, Boss = Idle (Phase 09 이전).
-        State = kind == EnemyKind.Normal ? EnemyState.Patrol : EnemyState.Idle;
+        // AI 초기 상태: Boss = Idle (Phase 09 이전), 나머지(Normal/Golem) = Patrol 시작.
+        // "적은 2종" 가정 화석 정정: Golem 추가로 Boss 명시 비교 필요 (M4.5-02).
+        State = kind == EnemyKind.Boss ? EnemyState.Idle : EnemyState.Patrol;
         PatrolDir = 1; // 기본 오른쪽 출발
     }
 }

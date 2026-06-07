@@ -237,13 +237,14 @@ C_Attack
 
 ### EnemyKind 통합 패턴
 
-M3 enemy model은 별도 `BossEntity`를 만들지 않는다.
+M3 enemy model은 별도 `BossEntity`를 만들지 않는다. enum은 M4.5-02에서 서버/클라 중복 정의를 `98_Shared/GameData/EnemyKind.cs` 단일 정의로 이사했다 (헌법 #4).
 
 ```csharp
-enum EnemyKind : byte
+enum EnemyKind : byte  // 98_Shared/GameData — append-only (값 영구 고정)
 {
     Normal = 0,
     Boss = 1,
+    Golem = 2,  // M4.5-02
 }
 ```
 

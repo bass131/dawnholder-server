@@ -98,4 +98,26 @@ public struct EnemyStats
         AggroRange = 6.0f,
         PatrolRange = 4.0f,
     };
+
+    // ── Golem enemy 기본값 factory ────────────────────────────────────────────
+
+    /// <summary>
+    /// Golem enemy 기본 스탯. 느리고 단단한 탱커 컨셉.
+    ///
+    /// <list type="bullet">
+    ///   <item>MaxHp=60: Normal(30)의 2배 — Warrior 3타/Ranger 4타 분량.</item>
+    ///   <item>Defense=5: Warrior 데미지 25→20, Ranger 22→17 (ComputeDamage Max(1, base10+Attack-Def)).</item>
+    ///   <item>MoveSpeed=1.2f: Normal(2.0)보다 느림 — 스펙 "MoveSpeed &lt; 2.0".</item>
+    ///   <item>AggroRange=4.0f: Normal(6.0)보다 좁음 — 시야가 짧은 둔한 골렘.</item>
+    ///   <item>PatrolRange=2.5f: AggroRange(4.0)보다 작게 유지 (invariant: PatrolRange &lt; AggroRange).</item>
+    /// </list>
+    /// </summary>
+    public static EnemyStats GolemDefault() => new EnemyStats
+    {
+        Defense = 5,
+        MaxHp = 60,
+        MoveSpeed = 1.2f,
+        AggroRange = 4.0f,
+        PatrolRange = 2.5f,
+    };
 }

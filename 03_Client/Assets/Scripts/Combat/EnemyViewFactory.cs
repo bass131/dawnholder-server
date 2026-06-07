@@ -1,6 +1,7 @@
 #nullable enable
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
+using Shared.GameData;
 using UnityEngine;
 
 namespace Dawnholder.Client.Combat
@@ -26,7 +27,7 @@ namespace Dawnholder.Client.Combat
 
         // prefab lookup → Instantiate → RemoteEntity.Initialize(entityId, x, y+footOffset).
         // 실패(테이블/prefab 없음) 시 null 반환 + 에러 로그. EnemyRegistry가 null 체크 후 drop.
-        public static GameObject? Spawn(int entityId, RemoteEnemy.EnemyKind kind, float x, float y)
+        public static GameObject? Spawn(int entityId, EnemyKind kind, float x, float y)
         {
             EnemyVisualTable? table = GetTable();
             if (table == null) return null;

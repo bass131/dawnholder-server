@@ -14,7 +14,7 @@ namespace Dawnholder.Client.EditorTools
     /// 씬 타일맵 + 마커 → terrain.bin / content.bin bake 파이프라인 (M4.4-03B).
     ///
     /// 레이어 약속: "Tilemap_Solid" = 바닥·벽 / "Tilemap_Platform" = one-way 발판.
-    /// 마커 약속: "Spawn_Player"(맵당 1개 의무) / "Spawn_Enemy_Normal" / "Spawn_Enemy_Boss".
+    /// 마커 약속: "Spawn_Player"(맵당 1개 의무) / "Spawn_Enemy_Normal" / "Spawn_Enemy_Boss" / "Spawn_Enemy_Golem".
     ///
     /// 출력:
     ///   98_Shared/GameData/Maps/map_{id}.terrain.bin  — 서버 + 클라 공유
@@ -36,6 +36,7 @@ namespace Dawnholder.Client.EditorTools
         {
             ("Spawn_Enemy_Normal", 0),
             ("Spawn_Enemy_Boss",   1),
+            ("Spawn_Enemy_Golem",  2),
         };
 
         static bool IsKnownEnemyMarker(string name)

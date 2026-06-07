@@ -1,4 +1,5 @@
 #nullable enable
+using Shared.GameData;
 using UnityEngine;
 
 namespace Dawnholder.Client.Combat
@@ -11,7 +12,7 @@ namespace Dawnholder.Client.Combat
         [System.Serializable]
         public struct Entry
         {
-            public RemoteEnemy.EnemyKind Kind;
+            public EnemyKind Kind;
             public GameObject? Prefab;
         }
 
@@ -20,7 +21,7 @@ namespace Dawnholder.Client.Combat
         // kind에 등록된 prefab 반환.
         // 미등록 kind → 에러 로그 + Normal prefab으로 폴백.
         // Normal도 없으면 null 반환 (silent 빈 GameObject 금지 — fail-loud).
-        public GameObject? GetPrefab(RemoteEnemy.EnemyKind kind)
+        public GameObject? GetPrefab(EnemyKind kind)
         {
             foreach (Entry e in _entries)
                 if (e.Kind == kind) return e.Prefab;
@@ -31,7 +32,7 @@ namespace Dawnholder.Client.Combat
 
             // Normal 폴백
             foreach (Entry e in _entries)
-                if (e.Kind == RemoteEnemy.EnemyKind.Normal) return e.Prefab;
+                if (e.Kind == EnemyKind.Normal) return e.Prefab;
 
             Debug.LogError(
                 "[EnemyVisualTable] Normal prefab도 없습니다. " +
