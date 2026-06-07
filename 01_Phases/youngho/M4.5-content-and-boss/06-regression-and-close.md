@@ -33,6 +33,7 @@ M4.5 전체(콘텐츠 2 + UI 1 + 보스 2)를 통합 회귀 검증하고 PR 머�
 
 ## 📝 작업 내용
 
+- [ ] **보스 공격 모션 Start→End 미전이 봉합** (Phase 05 Play 실측 발견 — 사용자 박제 2026-06-07): 보스 Attack이 Start(준비자세)에서 End(발동) 모션으로 안 넘어가는데 공격 이펙트는 생성됨 — Animator 전이 조건/클립 길이 vs telegraph 틱(P1 16틱=0.8s) 정합 + AnimState 경로 점검. 애니 의도 = Start 준비자세 / End 발동
 - [ ] 전체 회귀 (WSL2 = ADR-029 표준): 클린 빌드 + `dotnet test --no-build` + 헤드리스 봇 전 시나리오 (BossFightSmoke 포함)
 - [ ] `/cross-review` — Phase 04 양방향 전투 + bump 묶음 외부 시각 재검증 (옛 09 plan-auditor 🟡 계승 권장)
 - [ ] **발표 데모 풀 루프 Play 실측**: 메인 → 캐릭터 선택 → 마을(미니맵/맵 이름) → 사냥터(슬라임+골렘, HP 실감소) → 보스방(telegraph → 양방향 전투 → 사망/리스폰 → 처치 → StageClear) — 2클라(원격 직업 상호 확인) 포함
@@ -46,6 +47,7 @@ M4.5 전체(콘텐츠 2 + UI 1 + 보스 2)를 통합 회귀 검증하고 PR 머�
 
 ## ✅ 완료 조건
 
+- [ ] 보스 공격 모션 Start→End 전이가 이펙트 타이밍과 정합 (Play 실측)
 - [ ] `dotnet test` 전부 green (회귀 0) + 봇 전 시나리오 PASS
 - [ ] 발표 데모 풀 루프 무사고 (2클라 포함)
 - [ ] ProtocolVersion == 9 + CHANGELOG + PR 머지 (사용자 GO) + 5단계 보고 박힘
@@ -89,3 +91,4 @@ M4.5 전체(콘텐츠 2 + UI 1 + 보스 2)를 통합 회귀 검증하고 PR 머�
 ## 작업 로그
 
 - 2026-06-07: 계획 수립 (`/work:plan M4.5`, 세션18)
+- 2026-06-07: Phase 05 Play 실측 발견분 흡수 (세션22) — 보스 모션 Start→End 미전이 봉합 항목 추가 (사용자 지시 "다음 phase에서 잡자")
