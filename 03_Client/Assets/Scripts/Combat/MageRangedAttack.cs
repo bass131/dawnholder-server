@@ -11,13 +11,11 @@ namespace Dawnholder.Client.Combat
     public sealed class MageRangedAttack : IAttackStrategy
     {
         readonly GameObject? _projectilePrefab;
-        readonly Vector2 _spawnOffset; // ClassConfig.EffectAnchorOffset — 직업별 발사 위치 (우향 저작).
         bool _warnedMissingPrefab;
 
-        public MageRangedAttack(GameObject? projectilePrefab, Vector2 spawnOffset = default)
+        public MageRangedAttack(GameObject? projectilePrefab)
         {
             _projectilePrefab = projectilePrefab;
-            _spawnOffset = spawnOffset;
         }
 
         public void TryAttack(Vector3 origin)
@@ -42,10 +40,11 @@ namespace Dawnholder.Client.Combat
             if (EnemyRegistry.Instance == null) return;
             if (!EnemyRegistry.Instance.TryGetTransform(targetId, out Transform? target)) return;
 
-            // 발사 위치 = 직업별 오프셋 (ClassConfig 저작, 좌향 시 x 반전). origin은 intent 기준점이라 분리.
+            // 발사 위치 = variant prefab의 EffectAnchor 자식 (없으면 root 폴백).
+            // origin은 intent 기준점이라 분리 — 시각 위치에만 앵커 적용.
             Vector3 spawnPos = origin;
             if (LocalPlayerMovement.Instance != null)
-                spawnPos = EffectAnchor.ResolvePosition(LocalPlayerMovement.Instance.transform, _spawnOffset);
+                spawnPos = EffectAnchor.ResolvePosition(LocalPlayerMovement.Instance.transform);
 
             GameObject proj = Object.Instantiate(_projectilePrefab, spawnPos, Quaternion.identity);
             ProjectileVisual visual = proj.GetComponent<ProjectileVisual>()

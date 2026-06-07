@@ -27,13 +27,6 @@ namespace Dawnholder.Client.Combat
             return MirrorByFlip(entityRoot, anchor.localPosition);
         }
 
-        // ClassConfig.EffectAnchorOffset 경로 — LocalPlayer처럼 단일 prefab + 런타임
-        // 직업 분기 엔티티용. 자식 앵커 대신 직업별 SO 데이터로 오프셋 저작.
-        public static Vector3 ResolvePosition(Transform entityRoot, Vector2 authoredOffset)
-        {
-            return MirrorByFlip(entityRoot, new Vector3(authoredOffset.x, authoredOffset.y, 0f));
-        }
-
         static Vector3 MirrorByFlip(Transform entityRoot, Vector3 localOffset)
         {
             SpriteRenderer? sr = entityRoot.GetComponent<SpriteRenderer>();

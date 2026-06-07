@@ -72,11 +72,23 @@ namespace Dawnholder.Client.Bootstrap
                 return;
             }
 
+            // variant prefab 해석 — ClassConfig 미연결 시 Inspector base prefab 폴백 (fail-soft).
+            ClassConfig? config = ClassLoadout.Resolve();
+            GameObject prefabToSpawn = _localPlayerPrefab;
+            if (config?.LocalPlayerPrefab != null)
+            {
+                prefabToSpawn = config.LocalPlayerPrefab;
+            }
+            else if (config != null)
+            {
+                Debug.LogWarning($"[LocalPlayerSpawner] '{scene.name}': ClassConfig({config.Class}).LocalPlayerPrefab 미연결 — base prefab 폴백. Inspector에서 variant prefab을 드래그 연결하세요.");
+            }
+
             // Instantiate: 위치는 origin (0,0,0). 서버 권위 좌표 적용은 이후 흐름에 위임.
             // - 초기 진입: HandleEnterMap → SetServerPosition()
             // - 맵 전환:   LocalPlayerMovement.Awake() → PendingSpawn 소비 → SetServerPosition()
             // Spawner는 GameObject 생성만 — 헌법 §1 Server Authority 정합.
-            GameObject go = Instantiate(_localPlayerPrefab, Vector3.zero, Quaternion.identity);
+            GameObject go = Instantiate(prefabToSpawn, Vector3.zero, Quaternion.identity);
             go.name = "LocalPlayer"; // "LocalPlayer(Clone)" → "LocalPlayer" (Hierarchy 가독성)
 
             // 로드된 게임플레이 씬에 소속시킴 (DontDestroyOnLoad 씬에 박히지 않게).
@@ -84,17 +96,10 @@ namespace Dawnholder.Client.Bootstrap
             // LocalPlayerMovement.OnDestroy가 Instance 정리 → 다음 씬 로드 시 재spawn.
             SceneManager.MoveGameObjectToScene(go, scene);
 
-            // 직업 ClassConfig 장착 — Animator controller 교체 + 공격 전략 주입.
+            // 공격 전략 주입 — variant prefab이 controller/앵커를 직접 보유하므로 controller swap 불필요.
             // config == null이면 Awake fallback(KnightMeleeAttack)으로 동작 유지.
-            ClassConfig? config = ClassLoadout.Resolve();
             if (config != null)
-            {
-                Animator? animator = go.GetComponent<Animator>();
-                if (animator != null && config.Controller != null)
-                    animator.runtimeAnimatorController = config.Controller;
-
                 go.GetComponent<LocalPlayerInput>()?.SetAttackStrategy(config.CreateStrategy());
-            }
 
             // 카메라 연결 ("생성 후 셋업").
             //   CameraFollow.target은 [SerializeField]라 보통 씬에서 Inspector로 연결하지만,

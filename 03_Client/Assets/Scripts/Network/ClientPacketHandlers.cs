@@ -360,12 +360,8 @@ namespace Dawnholder.Client.Network
                 if (isLocalPlayer && LocalPlayerMovement.Instance != null)
                 {
                     Transform playerTf = LocalPlayerMovement.Instance.transform;
-                    // LocalPlayer는 단일 prefab + 런타임 직업 분기 — 자식 앵커 대신
-                    // ClassConfig.EffectAnchorOffset(직업별 SO 저작) 사용. 미발견 시 자식 앵커/root 폴백.
-                    ClassConfig playerConfig = ClassLoadout.Resolve();
-                    fxPos = playerConfig != null
-                        ? EffectAnchor.ResolvePosition(playerTf, playerConfig.EffectAnchorOffset)
-                        : EffectAnchor.ResolvePosition(playerTf);
+                    // variant prefab이 EffectAnchor 자식을 직접 보유 — 자식 앵커 경로 단일화.
+                    fxPos = EffectAnchor.ResolvePosition(playerTf);
                     // 피격 이펙트는 공격이 날아온 쪽을 향함 — 공격자 위치 알면 상대 x 부호.
                     if (EnemyRegistry.Instance != null &&
                         EnemyRegistry.Instance.TryGetTransform(attackerId, out Transform atkTf) &&
