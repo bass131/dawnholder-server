@@ -132,6 +132,7 @@ logs/
 .claude/settings.local.json
 .claude/worktrees/
 .claude/state/
+.claude/scheduled_tasks.lock
 
 # ─────────────────────────────────────────────
 # 개인 워킹 메모 (각자 보유) — 협업 셋업 파트 1 결정
