@@ -2,7 +2,7 @@
 owner: youngho
 milestone: M4.4
 title: World & Player — 타일맵 지형 충돌(서버 권위) + 직업 조작 분리
-status: planned
+status: done
 grade: 대규모
 risk: unity-asset
 estimated: 20~32h (총합, 6 Phase — 세션13 Phase 03 대규모 상향 반영)

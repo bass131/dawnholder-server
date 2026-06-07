@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.4
 phase: 06
 title: M4.4 회귀 + 마감
-status: pending
+status: done
 grade: 보통
 risk: irreversible
 estimated: 1~2h
@@ -13,7 +13,7 @@ summary: 지형+직업 통합 회귀 + 체감 실측 + PR 머지로 M4.4를 닫�
 
 # Phase 06: M4.4 회귀 + 마감
 
-> **상태**: pending
+> **상태**: done (2026-06-07 세션18 — 박제 = `_milestone-DONE.md` + `.html`)
 > **마일스톤**: M4.4
 > **등급**: 보통 (qa + 마감. PR 머지 시 irreversible 깃발)
 > **담당**: qa SubAgent + 메인 세션
@@ -91,3 +91,5 @@ M4.4 전체(지형 3 + 직업 2)를 통합 회귀 검증하고 PR 머지로 닫�
 ## 작업 로그
 
 - 2026-06-06: 계획 수립 (`/work:plan M4.4`)
+- 2026-06-07 (세션17): 선행 결정 해소 — one-way 발판 저작(`b66b3b5`) + ADR-029 WSL2 실행 표준 채택(`7ad3d16`). CI run 27081200536 green
+- 2026-06-07 (세션18): 회귀 풀세트 (WSL2 = ADR-029 표준 경로) — 클린빌드 0/0 + test 392/0/4(CI 동일) + 봇 5종 PASS(desync 0.00) + ProtocolVersion 8 확인 + Play 실측 직업 2종×세 씬 매트릭스 이상 무(몬스터/보스 디테일 = M4.5 이월). `_milestone-DONE.md`+`.html` 박제. PR 머지 = 사용자 GO 게이트
