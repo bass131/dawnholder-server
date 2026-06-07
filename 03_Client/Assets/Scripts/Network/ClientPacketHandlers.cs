@@ -166,7 +166,7 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_PlayerJoin (ID 5)
+    // S_PlayerJoin (ID 9)
     // 타인 entity spawn. 전환 중이면 roster buffer 캐싱.
     internal sealed class PlayerJoinHandler : IClientPacketHandler
     {
@@ -401,13 +401,22 @@ namespace Dawnholder.Client.Network
                     flash.Flash();
                 }
 
-                // 사망 처리 — 리스폰 페이드.
+                // 사망 처리 — 리스폰 페이드 + HUD 복구.
+                // 복구는 화면이 완전히 덮인 시점 콜백 — 같은 프레임 복구는 사망 0 표시가 안 보임.
+                // 서버 리스폰 규칙(Stats.MaxHp)의 표시 미러: S_Snapshot에 HP가 없어
+                // 복구 안 하면 다음 피격 전까지 HUD 0 고착. HP 동기화 패킷(v10 후보) 전 임시.
                 if (targetCurrentHp <= 0)
                 {
-                    if (SceneTransition.Instance != null)
-                        SceneTransition.Instance.PlayRespawnFade();
-                    else
-                        Debug.LogWarning("[EnemyAttack] SceneTransition.Instance null — 리스폰 페이드 스킵.");
+                    System.Action restoreHud = () =>
+                    {
+                        if (HudController.Instance != null)
+                            HudController.Instance.UpdateHP(maxHp, maxHp);
+                    };
+
+                    bool fadeStarted = SceneTransition.Instance != null
+                        && SceneTransition.Instance.PlayRespawnFade(restoreHud);
+                    if (!fadeStarted)
+                        restoreHud(); // 페이드 불가(전환 중/Instance null) — 즉시 복구가 0 고착보다 낫다.
                 }
             });
         }

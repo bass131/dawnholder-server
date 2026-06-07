@@ -518,6 +518,30 @@ public class BossBehaviorTests : IDisposable
     }
 
     [Fact]
+    public void S_EnemyAttack_RoundTrip_BoundaryValues()
+    {
+        // 사망 직후 음수 HP + attackPattern byte 최대값 경계 왕복.
+        S_EnemyAttack pkt = new S_EnemyAttack
+        {
+            attackerId = int.MaxValue,
+            targetId = 1,
+            damage = 9999,
+            targetCurrentHp = -10,
+            attackPattern = 255,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        S_EnemyAttack decoded = new S_EnemyAttack();
+        decoded.Read(bytes);
+
+        Assert.Equal(int.MaxValue, decoded.attackerId);
+        Assert.Equal(1, decoded.targetId);
+        Assert.Equal(9999, decoded.damage);
+        Assert.Equal(-10, decoded.targetCurrentHp);
+        Assert.Equal((byte)255, decoded.attackPattern);
+    }
+
+    [Fact]
     public void S_EnemyAttack_Write_ProducesCorrectPacketId()
     {
         // PDL.xml 20번째 정의 = PacketID 20.

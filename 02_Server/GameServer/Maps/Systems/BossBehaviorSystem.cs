@@ -52,8 +52,8 @@ internal sealed class BossBehaviorSystem
             if (!enemy.IsPhase2 && enemy.Hp <= (int)(enemy.MaxHp * CombatConstants.BossPhase2HpThreshold))
             {
                 enemy.IsPhase2 = true;
-                // 기존 쿨다운/telegraph를 페이즈 2 속도로 강제 전환.
-                // 현재 쿨다운 중이면 페이즈 2 쿨다운으로 clamp (남은 틱이 더 크면 교체).
+                // 쿨다운 중이면 페이즈 2 쿨다운으로 clamp (남은 틱이 더 크면 교체).
+                // 진행 중 telegraph는 의도적으로 유지 — 이미 예고한 타이밍을 단축하면 회피 공정성 깨짐.
                 if (enemy.TelegraphTicksRemaining == 0 &&
                     enemy.AttackCooldownTicks > CombatConstants.BossPhase2CooldownTicks)
                 {
