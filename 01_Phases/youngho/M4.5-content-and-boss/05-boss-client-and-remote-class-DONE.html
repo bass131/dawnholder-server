@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.5 Phase 05 — 보스 클라 연출 + 원격 직업 표시 (5단계 보고)</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2129; --panel2: #212a35; --line: #2e3a48;
+    --text: #d8e0e8; --dim: #8a98a8; --accent: #e8734a; --green: #4ec77a;
+    --yellow: #e8c14a; --blue: #5aa7e8; --purple: #b58ae8; --red: #e85a6a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; line-height: 1.65; padding: 40px 20px; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h1 .v { color: var(--accent); }
+  .sub { color: var(--dim); font-size: 14px; margin-bottom: 28px; }
+  h2 { font-size: 19px; margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+  h2 .emoji { margin-right: 8px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 10px 0; }
+  th, td { padding: 8px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--blue); font-weight: 600; }
+  code, .mono { font-family: 'Cascadia Code', Consolas, monospace; font-size: 12.5px; }
+  code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; color: var(--yellow); }
+  .tag { display: inline-block; padding: 1px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  .tag.red { background: #3a2026; color: var(--red); }
+  .tag.green { background: #1d3328; color: var(--green); }
+  .tag.blue { background: #1d2a3a; color: var(--blue); }
+  .tag.purple { background: #2c2238; color: var(--purple); }
+  .big { font-size: 30px; font-weight: 700; }
+  .kpi { text-align: center; padding: 16px 8px; }
+  .kpi .l { color: var(--dim); font-size: 12.5px; margin-top: 4px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0; }
+  @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  .flow .step { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 13px; text-align: center; }
+  .flow .step b { display: block; color: var(--blue); font-size: 13.5px; }
+  .flow .arrow { color: var(--accent); font-size: 18px; }
+  ul { padding-left: 22px; } li { margin: 5px 0; }
+  .note { color: var(--dim); font-size: 13px; }
+  .ok::before { content: "✅ "; } .warn::before { content: "🟡 "; }
+  .tree { font-family: 'Cascadia Code', Consolas, monospace; font-size: 13px; background: var(--panel2); border-radius: 8px; padding: 14px 18px; margin: 10px 0; white-space: pre; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>M4.5 Phase 05 — 보스 클라 연출 + 원격 직업 표시 <span class="v">3회 구조 진화</span></h1>
+<div class="sub">2026-06-07 · 등급 대규모 (unity-asset 깃발 + 누적 1,500줄+ + prefab 수술/신설) · client Worker + Unity MCP prefab 수술 + 메인 검수 · 브랜치 feature/m4.5-05-boss-client-and-remote-class</div>
+
+<h2><span class="emoji">🎯</span>1. 무엇을 만들었나</h2>
+<div class="panel">
+  Phase 04가 만든 패킷을 클라가 소비해 <b>보스방 양방향 전투가 화면에서 완성</b>됐다 — 발표 데모 클라이맥스.
+  <code>S_EnemyAttack</code>(ID 20) 핸들러로 HP 바 실연결(mock 은퇴) + 피격 플래시 + 패턴별 이펙트(P1 주황/P2 보라) +
+  사망→리스폰 페이드, <code>S_PlayerJoin.characterClass</code>로 원격 플레이어가 <b>상대 직업 모습</b>으로 보임,
+  Mage(Ranger) 투사체 연출(시각 전용 — 판정 변화 0). 구조 산출 = <b>v2 로직/비주얼 분리</b>:
+  직업 시각 정체성이 <code>ClassConfig.VisualPrefab</code> 한 곳(KnightVisual/MageVisual.prefab)으로 모임.
+</div>
+<div class="kpis">
+  <div class="panel kpi"><div class="big">4</div><div class="l">commits (구조 진화 경계 박제)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--green)">84/84</div><div class="l">EditMode green ×2 (신규 12)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--green)">🔴 0</div><div class="l">reviewer ×3회 / plan-auditor 🔴4 선봉합</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--green)">PASS</div><div class="l">2클라 Play 실측 (보스전 풀 루프)</div></div>
+</div>
+
+<h2><span class="emoji">🤔</span>2. 왜 필요한가</h2>
+<div class="grid2">
+  <div class="panel">
+    <b style="color:var(--blue)">화면의 완성 — 데모 클라이맥스</b><br>
+    Phase 04까지 보스 전투의 <i>논리</i>는 서버에 완성됐지만 화면엔 아무것도 안 보였다.
+    HP 바는 mock 값(M3부터 세 마일스톤 생존), 원격 플레이어는 직업 무관 단일 모습.
+    이번 Phase로 "맞고 / 보이고 / 죽고 / 살아나는" 루프 전체가 시각화됐다.
+  </div>
+  <div class="panel">
+    <b style="color:var(--purple)">직업 시각의 단일 출처 — drift 구조 차단</b><br>
+    중간 산출이던 v1(직업×Local/Remote = variant 4개)은 Knight 모습이 <b>두 prefab에 중복</b> —
+    한쪽만 고치면 본인 화면과 타인 화면이 달라지는 drift 구조였다. 사용자 지적으로 재설계:
+    <b>로직 껍데기(base) / 직업 비주얼(직업당 1개)</b> 분리. 헌법 #1 정합 — 클라는 표시만, 데미지/HP 계산 코드 0줄.
+  </div>
+</div>
+
+<h2><span class="emoji">🛠️</span>3. 어떻게 만들었나</h2>
+<div class="panel">
+  <b>3회 구조 진화 — 각 단계가 commit 경계로 박제</b>
+  <table>
+    <tr><th>차수</th><th>commit</th><th>구조</th><th>운명</th></tr>
+    <tr><td>1차</td><td class="mono">16e0af4</td><td>controller swap — 패킷 소비 + HP 실연결 + 리스폰 페이드 (런타임 Animator controller 교체)</td><td>패킷/HUD/페이드 코드는 생존, swap 전략만 은퇴</td></tr>
+    <tr><td>2차 (v1)</td><td class="mono">d1a1bc1</td><td>Prefab Variant 4개 (Knight/Mage × Local/Remote) — 에디터 저작 그릇 확보</td><td>시각 중복 drift 지적 → v2로 대체 (variant 4개 rm)</td></tr>
+    <tr><td>3차 (v2)</td><td class="mono">0dac4f9</td><td><b>로직/비주얼 분리</b> — VisualPrefab 단일 슬롯 + ClassVisualMount + Rebind + world 거울상</td><td>✅ 최종 구조</td></tr>
+    <tr><td>4차</td><td class="mono">0d849bf</td><td>본인 에셋 작업분 — 보스 EffectAnchor 저작(0.698, 1.216) + Test_Character 78파일 정리 + 진짜 아트</td><td>✅ Play 통과 후 분리 commit</td></tr>
+  </table>
+</div>
+<div class="panel">
+  <b>v2 런타임 조립 흐름</b>
+  <div class="flow">
+    <div class="step"><b>base Instantiate</b>LocalPlayer/RemotePlayer<br>(로직 껍데기 — SR/Animator 없음)</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>ClassConfig lookup</b>characterClass →<br>VisualPrefab (직업당 1개)</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>ClassVisualMount</b>옛 자식 비활성→파괴 →<br>"Visual" 자식 장착 (localPosition zero)</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>AnimatorDriver.Rebind</b>InChildren 재캐시<br>(stale 캐시 함정 봉합)</div>
+  </div>
+  <ul>
+    <li><b>PlayerBase 수술 한 곳 전파</b> — LocalPlayer/RemotePlayer가 둘 다 PlayerBase.prefab의 Unity Prefab Variant라는 실측 발견 → root SR+Animator 제거를 base 한 곳에서 수행 (MCP <code>LoadPrefabContents</code> 수술)</li>
+    <li><b>EffectAnchor world 거울상</b> — <code>anchor.localPosition</code>은 직속 부모(Visual) 기준이라 root에서 곱하면 중첩 깊이에서 깨짐 → world 좌표 직접 + flipX 시 <code>2·root.x − anchor.x</code> 반사 (깊이 무관, plan-auditor 🔴 봉합)</li>
+    <li><b>늦은 직업 정보 = 비주얼 자식 교체만</b> — Snapshot 선도착(직업 미상 → Warrior 기본) 후 PlayerJoin 도착 시 <code>NeedsVisualSwap</code> 판정 → root/RemoteEntity/보간 버퍼 보존 (v1의 destroy+재생성 긴장 해소, 유현 M3 컴포넌트 보존 약속 정합)</li>
+    <li><b>incoming null → false</b> — 직업 정보 없는 호출이 기존 직업 비주얼을 기본으로 강등시키는 지뢰를 메인 검수에서 발견·차단 (테스트 5종)</li>
+  </ul>
+</div>
+
+<h2><span class="emoji">🧪</span>4. 테스트 결과</h2>
+<div class="panel">
+  <table>
+    <tr><th>완료 조건</th><th>검증</th></tr>
+    <tr><td>보스 피격 → HP 바 실시간 감소 (mock 코드 0줄)</td><td class="ok">2클라 Play — <code>_mockHp*</code> 필드 은퇴, max = <code>PlayerStats.ForClass</code> (98_Shared 단일 출처)</td></tr>
+    <tr><td>보스 패턴별 이펙트 + telegraph 표시</td><td class="ok">P1 주황(0.8s 예고)/P2 보라(0.5s) Play 실측</td></tr>
+    <tr><td>사망 → 리스폰 → 전투 재개 무중단</td><td class="ok">리스폰 페이드 — <code>isTransitioning</code> 비점유 설계로 S_MapTransition silent drop 봉합</td></tr>
+    <tr><td>2클라 상대 직업 모습 + 모션</td><td class="ok">Knight↔Mage 상호 확인 (에디터 Play + 스탠드얼론 빌드, PlayerPrefs 분리 활용)</td></tr>
+    <tr><td>Mage 투사체 (판정 변화 0)</td><td class="ok">시각 전용 — 서버/98_Shared diff <b>0</b></td></tr>
+    <tr><td>클라 데미지/HP 계산 코드 0 + EditMode green</td><td class="ok">표시만(헌법 #1) + <b>84/84</b> green ×2 (거울상 수학 3 + NeedsVisualSwap 5 + ByteToClass 4 신규)</td></tr>
+    <tr><td>(v2) 비주얼 단일 출처 + 늦은 직업 시나리오</td><td class="ok">controller swap 코드 grep 0줄 + 자식 교체·Rebind Play 통과</td></tr>
+  </table>
+  <div class="note">게이트 통과 이력: plan-auditor 🔴 총 4건 전부 코드 착수 <i>전</i> 선봉합 (grade 상향 / spawnOffset 연쇄 / 거울상 수학 / 순서 불변식) · reviewer 🔴 0 ×3회 (1·2·3차 각각) · 사용자 최종 확인 "전부 기능적으로 괜찮다"</div>
+</div>
+
+<h2><span class="emoji">➡️</span>5. 다음 스텝</h2>
+<div class="panel">
+  <ul>
+    <li><b>Phase 06 — 회귀 + 마일스톤 마감</b> (M4.5 마지막 Phase)</li>
+    <li>이월(구조급): 원격 Ranger 투사체 — 타 클라 공격 <i>이벤트</i> 패킷 자체가 없음 (스냅샷 결과만 전파). 공격 이벤트 패킷 신설 = 별도 마일스톤급</li>
+    <li>이월: 보스 P2 0.5s 애니 속도 배율 — telegraph 상수 98_Shared 이동 필요 / EffectAnchor 거울상 PlayMode 통합 테스트 / reviewer 🟡 누적분</li>
+  </ul>
+</div>
+
+<div class="sub" style="margin-top:32px">박제 쌍둥이 = <span class="mono">05-boss-client-and-remote-class-DONE.md</span> (사실 박제 본문) · 본 HTML = 5단계 보고 시각판 (캡스톤 평가 자산)</div>
+
+</div>
+</body>
+</html>
