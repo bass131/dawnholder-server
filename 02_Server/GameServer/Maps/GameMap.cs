@@ -338,6 +338,11 @@ public class GameMap
                 p.OnGround = false;
             }
 
+            // 이동 방향 갱신 — inputX가 0이 아닐 때만. 0이면 마지막 방향 유지.
+            // FacingDir은 S_PlayerAttack.facing 직렬화에 사용 (공격 연출 방향 결정).
+            if (inputX != 0)
+                p.FacingDir = inputX > 0 ? (sbyte)1 : (sbyte)-1;
+
             // ack = 적용 시점 clientTick. 빈 틱(starvation)은 불변 — 클라 reconcile 정합.
             if (hasInput)
                 p.LastClientTick = cmd.ClientTick;

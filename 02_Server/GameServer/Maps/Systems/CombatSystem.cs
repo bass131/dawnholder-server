@@ -22,11 +22,16 @@ internal sealed class CombatSystem
     ///
     /// **검증 순서 (헌법 #3 Trust Boundary — fail-closed silent drop)**:
     ///   1. attacker player 존재 — 없으면 silent drop.
-    ///   2. target enemy 존재 — null이면 silent drop.
-    ///   3. target alive — IsDead면 silent drop (idempotent).
-    ///   4. rate-limit 500ms — AttackCooldownMs 안 재공격 silent drop.
-    ///   4.5. rewind 범위 검증 (음수/미래/200ms 초과).
-    ///   5. AABB precision hitbox.
+    ///   2. rate-limit 500ms — AttackCooldownMs 안 재공격 silent drop.
+    ///   3. rewind 범위 검증 (음수/미래/200ms 초과).
+    ///   ↳ 여기까지 통과 = 유효 스윙 시도 → EnterAttackState + S_PlayerAttack broadcast.
+    ///   4. target enemy 조회 (선택) + alive 확인.
+    ///   5. AABB precision hitbox → 명중 시에만 데미지 + S_HitResult.
+    ///
+    /// **연출/명중 분리 정책 (M4.7 Phase 03)**:
+    ///   rate-limit/rewind 통과 = 유효 스윙. 명중 무관하게 스윙 상태 진입.
+    ///   데미지는 AABB 명중 시에만 적용 — 서버 권위 불변(헌법 #1).
+    ///   rate-limit 카운트는 스윙 시도 기준 유지 — 스팸 차단 불변(헌법 #3).
     /// </summary>
     internal void ProcessAttack(GameMap map, int attackerEntityId, int targetEntityId, long attackerClientTick)
     {
@@ -34,37 +39,52 @@ internal sealed class CombatSystem
         PlayerEntity? attacker = map.GetPlayer(attackerEntityId);
         if (attacker == null) return;
 
-        // 2) target enemy exists (player id 던지면 자동 silent drop — PvP 미지원)
-        EnemyEntity? target = map.GetEnemyById(targetEntityId);
-        if (target == null) return;
-
-        // 3) target alive (idempotent — kill broadcast 후 후속 attack no-op)
-        if (target.IsDead) return;
-
-        // 4) rate-limit 500ms silent drop
+        // 2) rate-limit 500ms silent drop — target 유무와 무관하게 앞단에서 검증.
         long now = Environment.TickCount64;
         if (now - attacker.LastAttackTickMs < CombatConstants.AttackCooldownMs) return;
 
-        // 4.5) rewind 범위 검증 (헌법 #3 Trust Boundary — 3분기 silent drop)
+        // 3) rewind 범위 검증 (헌법 #3 Trust Boundary — 3분기 silent drop)
         long currentTick = map.CurrentTick;
-        if (attackerClientTick < 0) return;                           // (a) 음수
-        if (attackerClientTick > currentTick) return;                  // (b) 미래
-        if (currentTick - attackerClientTick > 4) return;             // (c) 200ms 초과
+        if (attackerClientTick < 0) return;                     // (a) 음수
+        if (attackerClientTick > currentTick) return;            // (b) 미래
+        if (currentTick - attackerClientTick > 4) return;       // (c) 200ms 초과
 
         // rewind: attacker가 공격 버튼을 눌렀을 당시 tick의 서버 저장 위치로 되돌림.
         // target은 현재 위치 사용 (target rewind는 M4.4 backlog).
         Vector2 rewindedPos = attacker.GetPositionAtTick(attackerClientTick);
-
-        // 5) AABB precision hitbox (옛 dist² < range² 교체)
         AABB attackBox = GetAttackHitbox(rewindedPos);
-        if (!attackBox.Intersects(target.Hitbox)) return;
 
-        // 통과 → 권위 mutation 진입
+        // 통과 → 스윙 권위 mutation 진입 (명중 여부 무관).
+        // rate-limit 카운트는 스윙 시도 기준 — 빈 스윙도 쿨다운 소비(스팸 차단 불변, 헌법 #3).
         attacker.LastAttackTickMs = now;
 
         // 공격 commit window 진입 — ActionFsm이 AnimState.Attack 상태를 유지하며 이동을 잠금.
         attacker.EnterAttackState();
 
+        // S_PlayerAttack broadcast: 공격 연출(스윙) 알림. attacker 본인 제외 — 로컬 선예측 중.
+        // attackType: Mage=1(원거리 연출), Knight=0(근접 연출) — CharacterClass enum 정합.
+        // facing: FacingDir(마지막 이동 방향). target 있으면 target 방향으로 snap 가능하지만
+        //         목표물 없는 허공 스윙도 방향을 유지하려면 FacingDir이 더 안전 — 통일.
+        byte attackType = attacker.Stats.Class == CharacterClass.Mage ? (byte)1 : (byte)0;
+        byte facingByte = attacker.FacingDir >= 0 ? (byte)1 : (byte)0; // 1=오른쪽, 0=왼쪽
+        S_PlayerAttack swing = new S_PlayerAttack
+        {
+            attackerEntityId = attacker.EntityId,
+            attackType       = attackType,
+            targetEntityId   = targetEntityId, // sentinel(0) 또는 stale id도 그대로 전달 — 클라가 처리
+            facing           = facingByte,
+        };
+        map.BroadcastToAll(swing.Write(), except: attacker.Owner);
+
+        // 4) target 조회 (선택) — null이면 허공 스윙, 데미지 없음.
+        // targetEntityId=0 sentinel 또는 이미 죽은 stale id면 null 반환.
+        EnemyEntity? target = map.GetEnemyById(targetEntityId);
+        if (target == null || target.IsDead) return;
+
+        // 5) AABB precision hitbox — miss면 데미지 스킵 (스윙·S_PlayerAttack은 이미 나감).
+        if (!attackBox.Intersects(target.Hitbox)) return;
+
+        // 명중 → 데미지 권위 mutation 진입.
         int damage = Formulas.ComputeDamage(attacker.Stats, target.Stats, CombatConstants.BaseDamage);
         target.Hp -= damage;
 

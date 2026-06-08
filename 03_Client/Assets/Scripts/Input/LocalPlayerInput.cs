@@ -58,8 +58,10 @@ namespace Dawnholder.Client.Input
         void OnAttack(InputValue value)
         {
             if (!value.isPressed) return; // up edge 무시 — down 시점 한 번만.
-            // 송신 성공(타겟 잡힘) 시에만 로컬 commit window 예측 시작 — 헛스윙은 잠금 X.
-            // 서버가 rate-limit으로 거부해도 source-gating이라 발산 0 (송신 입력이 0 → 서버도 0 적용).
+            // TryAttack: 쿨다운 통과 + 세션 준비 시 C_Attack 송신(타겟 없으면 0 sentinel = 허공 스윙).
+            // 송신 성공 여부와 무관하게 NotifyAttack — 허공 스윙도 commit window 예측 시작.
+            // 서버가 rate-limit으로 거부(쿨다운 중 연타)해도 commit window가 자연 만료 → rubber-band 0.
+            // 세션 미준비(false) 시에만 NotifyAttack 생략 — 연결 전 입력은 아무 예측도 안 함.
             if (_attackStrategy.TryAttack(transform.position))
                 _movement.NotifyAttack();
         }

@@ -34,7 +34,11 @@ namespace Dawnholder.Client.Prediction
 
         // 로컬 공격 commit window 예측 잔여 시간(초). OnAttack 송신 성공 시 세팅, 매 frame 감쇠.
         // 서버 AttackState(이동 잠금)를 같은 98_Shared 상수로 클라가 선예측 → reconcile rubber-band 0.
+        // LocalPlayerMotion이 Attack 선예측 판단에 읽음 (getter로만 노출 — 외부 쓰기 차단).
         float _commitWindowRemaining;
+
+        // LocalPlayerMotion의 Attack 선예측 판단용 — 로컬 타이머 잔여 노출.
+        public float CommitWindowRemaining => _commitWindowRemaining;
 
         // 피격 hit-bridge 게이트 잔여(초). S_EnemyAttack(피격 *즉시* 신호) 도착 시 세팅 →
         // animState==Hit 스냅샷이 도착하기 전 갭 동안 입력을 미리 잠가 onset 당김을 줄인다.

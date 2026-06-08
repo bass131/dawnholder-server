@@ -11,6 +11,7 @@ using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace Dawnholder.Client.Network
 {
@@ -403,6 +404,94 @@ namespace Dawnholder.Client.Network
                 {
                     if (SceneTransition.Instance != null)
                         SceneTransition.Instance.PlayRespawnFade();
+                }
+            });
+        }
+    }
+
+    // S_PlayerAttack (ID 22) — 플레이어(로컬/원격) 공격 이벤트.
+    // 로컬 플레이어 분기: commit window 선예측이 이미 스윙을 재생 → 2중 스폰 방지용 즉시 return.
+    // 원격 플레이어 분기: attackType으로 연출 결정.
+    //   attackType=1(Ranged) → 투사체 시각.
+    //   attackType=0(Melee)  → 근접 스윙 이펙트 (기존 prefab 재사용 우선, 없으면 warn+skip).
+    // 헌법 #1: 연출만. 데미지/판정은 서버(S_HitResult/S_PlayerHp).
+    internal sealed class PlayerAttackHandler : IClientPacketHandler
+    {
+        // 근접 스윙 이펙트 Resources 경로. 저작은 사용자 영역.
+        const string MeleeSwingEffectPath = "Effects/MeleeSwing";
+        static bool _warnedMissingMeleeEffect;
+        // 투사체 prefab Resources 경로 (원격 Mage 연출용). 로컬 MageRangedAttack은 ClassConfig에서 직접 참조.
+        const string RemoteProjectilePath = "Effects/RemoteProjectile";
+        static bool _warnedMissingProjectile;
+
+        public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
+        {
+            S_PlayerAttack pkt = new S_PlayerAttack();
+            pkt.Read(buffer);
+
+            int attackerId = pkt.attackerEntityId;
+            byte attackType = pkt.attackType;
+            int targetId = pkt.targetEntityId;
+            byte facingByte = pkt.facing;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (session.LocalEntityId == null) return;
+
+                // 로컬 플레이어 — commit window 선예측이 스윙 모션을 이미 처리. 연출 중복 스폰 차단.
+                if (attackerId == session.LocalEntityId.Value) return;
+
+                // 원격 attacker Transform 조회.
+                Transform? attackerTf = null;
+                int facing = facingByte == 1 ? 1 : -1; // 서버 인코딩: 1=오른쪽, 0=왼쪽 (CombatSystem.cs 기준)
+
+                if (RemoteEntityRegistry.Instance != null)
+                    RemoteEntityRegistry.Instance.TryGetTransform(attackerId, out attackerTf);
+
+                // 원격 attacker 미존재(despawn race) — 연출 생략.
+                if (attackerTf == null) return;
+
+                if (attackType == 1) // Ranged
+                {
+                    // 타겟 Transform 조회 (없으면 null → facing 방향 직진).
+                    Transform? target = null;
+                    if (targetId != 0 && EnemyRegistry.Instance != null)
+                        EnemyRegistry.Instance.TryGetTransform(targetId, out target);
+
+                    GameObject? projPrefab = Resources.Load<GameObject>(RemoteProjectilePath);
+                    if (projPrefab == null && !_warnedMissingProjectile)
+                    {
+                        Debug.LogWarning(
+                            $"[PlayerAttackHandler] 원격 투사체 prefab 미존재: Resources/{RemoteProjectilePath}. " +
+                            "Assets/Resources/Effects/ 에 추가하면 자동 적용됩니다.");
+                        _warnedMissingProjectile = true;
+                    }
+                    ProjectileSpawner.Spawn(projPrefab, attackerTf, target, facing);
+                }
+                else // Melee (attackType=0)
+                {
+                    Vector3 fxPos = EffectAnchor.ResolvePosition(attackerTf);
+                    GameObject? meleePrefab = Resources.Load<GameObject>(MeleeSwingEffectPath);
+                    if (meleePrefab == null)
+                    {
+                        if (!_warnedMissingMeleeEffect)
+                        {
+                            Debug.LogWarning(
+                                $"[PlayerAttackHandler] 근접 스윙 이펙트 미존재: Resources/{MeleeSwingEffectPath}. " +
+                                "Assets/Resources/Effects/ 에 추가하면 자동 적용됩니다.");
+                            _warnedMissingMeleeEffect = true;
+                        }
+                        return;
+                    }
+                    GameObject fx = Object.Instantiate(meleePrefab, fxPos, Quaternion.identity);
+                    if (facing < 0)
+                    {
+                        Vector3 s = fx.transform.localScale;
+                        s.x = -Mathf.Abs(s.x);
+                        fx.transform.localScale = s;
+                    }
+                    if (fx.GetComponent<EffectLifetime>() == null)
+                        fx.AddComponent<EffectLifetime>();
                 }
             });
         }

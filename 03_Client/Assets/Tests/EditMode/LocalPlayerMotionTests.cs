@@ -14,21 +14,21 @@ namespace Dawnholder.Client.Tests
         [Test]
         public void ResolveAnimState_ServerAttack_ReturnsAttack()
         {
-            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Attack, onGround: true, moving: false);
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Attack, localAttackPredicted: false, onGround:true, moving: false);
             Assert.AreEqual(AnimState.Attack, result);
         }
 
         [Test]
         public void ResolveAnimState_ServerHit_ReturnsHit()
         {
-            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Hit, onGround: true, moving: true);
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Hit, localAttackPredicted: false, onGround:true, moving: true);
             Assert.AreEqual(AnimState.Hit, result);
         }
 
         [Test]
         public void ResolveAnimState_ServerDeath_ReturnsDeath()
         {
-            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Death, onGround: false, moving: false);
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Death, localAttackPredicted: false, onGround:false, moving: false);
             Assert.AreEqual(AnimState.Death, result);
         }
 
@@ -37,21 +37,21 @@ namespace Dawnholder.Client.Tests
         [Test]
         public void ResolveAnimState_ServerIdle_NotOnGround_ReturnsJump()
         {
-            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Idle, onGround: false, moving: false);
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Idle, localAttackPredicted: false, onGround:false, moving: false);
             Assert.AreEqual(AnimState.Jump, result);
         }
 
         [Test]
         public void ResolveAnimState_ServerIdle_OnGround_Moving_ReturnsWalk()
         {
-            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Idle, onGround: true, moving: true);
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Idle, localAttackPredicted: false, onGround:true, moving: true);
             Assert.AreEqual(AnimState.Walk, result);
         }
 
         [Test]
         public void ResolveAnimState_ServerIdle_OnGround_NotMoving_ReturnsIdle()
         {
-            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Idle, onGround: true, moving: false);
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Idle, localAttackPredicted: false, onGround:true, moving: false);
             Assert.AreEqual(AnimState.Idle, result);
         }
 
@@ -59,15 +59,32 @@ namespace Dawnholder.Client.Tests
         public void ResolveAnimState_ServerWalk_NotOnGround_ReturnsJump()
         {
             // serverState=Walk도 서버 latch 아님 — 예측 우선.
-            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Walk, onGround: false, moving: true);
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Walk, localAttackPredicted: false, onGround:false, moving: true);
             Assert.AreEqual(AnimState.Jump, result);
         }
 
         [Test]
         public void ResolveAnimState_ServerWalk_OnGround_Moving_ReturnsWalk()
         {
-            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Walk, onGround: true, moving: true);
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Walk, localAttackPredicted: false, onGround:true, moving: true);
             Assert.AreEqual(AnimState.Walk, result);
+        }
+
+        // 로컬 Attack 선예측 — serverState가 아직 Idle이어도 commit window 동안 Attack 표시 (M4.7 허공 스윙).
+
+        [Test]
+        public void ResolveAnimState_LocalAttackPredicted_ServerIdle_ReturnsAttack()
+        {
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Idle, localAttackPredicted: true, onGround: true, moving: false);
+            Assert.AreEqual(AnimState.Attack, result);
+        }
+
+        [Test]
+        public void ResolveAnimState_ServerHit_BeatsLocalAttackPredict()
+        {
+            // 피격은 로컬 Attack 예측보다 우선 — 서버 Hit 반응이 더 중요.
+            AnimState result = LocalPlayerMotion.ResolveAnimState(AnimState.Hit, localAttackPredicted: true, onGround: true, moving: false);
+            Assert.AreEqual(AnimState.Hit, result);
         }
     }
 }

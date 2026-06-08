@@ -8,8 +8,9 @@ namespace Dawnholder.Client.Rendering
     // 로컬 플레이어의 IMotionState 공급원 — hybrid 방식.
     //
     // Idle/Walk/Jump = 로컬 prediction 즉각 반영 (반응성 우선).
-    // Attack/Hit/Death = 서버 animState 우선 (클라가 추측 불가 — 헌법 #1.
-    //   서버가 latch 8틱으로 지속 보장).
+    // Attack = commit window 동안 로컬 선예측 (서버 확인 전 스윙 모션 즉시 재생).
+    //   서버 Attack animState가 도착하면 이어받아 latch 연장 — 예측보다 서버 window가 길어도 OK.
+    // Hit/Death = 서버 animState 우선 (클라가 예측 불가 — 헌법 #1).
     [DisallowMultipleComponent]
     public class LocalPlayerMotion : MonoBehaviour, IMotionState
     {
@@ -37,13 +38,18 @@ namespace Dawnholder.Client.Rendering
             _serverState = (AnimState)raw;
         }
 
-        // 우선순위 순수 함수 — serverState가 Attack/Hit/Death면 그대로, 아니면 예측 상태로 도출.
-        public static AnimState ResolveAnimState(AnimState serverState, bool onGround, bool moving)
+        // 우선순위 순수 함수 — serverState Hit/Death 최우선, 그 다음 로컬 Attack 선예측, 나머지 예측.
+        // localAttackPredicted: NotifyAttack() 후 commit window 잔여가 있음 (Movement.IsMovementLocked 거울).
+        // - 보수적 방향: 로컬 Attack 예측은 "서버보다 먼저 잠금"이라 오예측해도 window 만료로 자연 복구.
+        // - 서버 Attack 도착 전에도 모션 재생 → 반응성 향상 (rubber-band 0 유지).
+        public static AnimState ResolveAnimState(AnimState serverState, bool localAttackPredicted, bool onGround, bool moving)
         {
-            if (serverState == AnimState.Attack
-                || serverState == AnimState.Hit
-                || serverState == AnimState.Death)
+            if (serverState == AnimState.Hit || serverState == AnimState.Death)
                 return serverState;
+
+            // 로컬 commit window OR 서버 Attack 중 Attack 우선.
+            if (localAttackPredicted || serverState == AnimState.Attack)
+                return AnimState.Attack;
 
             if (!onGround) return AnimState.Jump;
             if (moving) return AnimState.Walk;
@@ -55,10 +61,11 @@ namespace Dawnholder.Client.Rendering
             float dx = transform.position.x - _lastX;
             bool moving = Mathf.Abs(dx) > MoveEpsilon;
 
-            // Movement 컴포넌트 없으면 onGround=true 취급 (테스트 씬 안전).
+            // Movement 컴포넌트 없으면 onGround=true, 로컬 attack 예측=false 취급 (테스트 씬 안전).
             bool onGround = _movement != null ? _movement.OnGround : true;
+            bool localAttackPredicted = _movement != null && _movement.CommitWindowRemaining > 0f;
 
-            _animState = ResolveAnimState(_serverState, onGround, moving);
+            _animState = ResolveAnimState(_serverState, localAttackPredicted, onGround, moving);
 
             if (moving)
             {

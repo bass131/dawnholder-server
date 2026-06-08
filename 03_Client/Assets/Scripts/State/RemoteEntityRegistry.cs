@@ -113,6 +113,31 @@ namespace Dawnholder.Client.State
                 motion.SetAnimState(animState);
         }
 
+        // S_PlayerAttack 핸들러가 원격 공격자 위치 조회 시 사용.
+        // entityId 없거나 GameObject가 이미 파괴됐으면 false.
+        public bool TryGetTransform(int entityId, out Transform? t)
+        {
+            if (_entities.TryGetValue(entityId, out RemoteEntity? entity) && entity != null)
+            {
+                t = entity.transform;
+                return true;
+            }
+            t = null;
+            return false;
+        }
+
+        // 원격 공격자의 facing(-1/1) 조회. motion 없으면 1 폴백.
+        public bool TryGetFacing(int entityId, out int facing)
+        {
+            if (_motions.TryGetValue(entityId, out RemotePlayerMotion? motion) && motion != null)
+            {
+                facing = motion.Facing;
+                return true;
+            }
+            facing = 1;
+            return false;
+        }
+
         // OnDisconnected에서 호출 — 메모리 누수 차단.
         public void Clear()
         {
