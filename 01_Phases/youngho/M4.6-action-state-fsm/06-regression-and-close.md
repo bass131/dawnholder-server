@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.6
 phase: 06
 title: 회귀 + 마감 (cross-review + 봇 시나리오 + Play 실측 + PR + 5단계 보고)
-status: pending
+status: done
 risk: irreversible
 grade: 보통
 estimated: 1~2h
