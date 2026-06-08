@@ -18,7 +18,7 @@ namespace GameServer.Tests.Maps;
 ///      → +BossTelegraphTicks(16) 후 S_EnemyAttack 송신. 페이즈 2 가속(24/10틱) 검증
 ///   3. 범위 내/밖 데미지: 범위 내 플레이어만 S_EnemyAttack + HP 감소 / 범위 밖 무변화
 ///   4. 데미지 = 서버 계산: damage == Formulas.ComputeDamage(BossDefault(), 플레이어 Stats, BossBaseDamage)
-///   5. 사망→리스폰: HP 낮게 세팅 → 보스 공격 → Position==PlayerSpawnPosition + Hp==Stats.MaxHp + IsDeadAnimState==false
+///   5. 사망→리스폰: HP 낮게 세팅 → 보스 공격 → Position==PlayerSpawnPosition + Hp==Stats.MaxHp + ActionFsm != DeathState
 ///   6. drift 방지: BossDefault().MaxHp == EnemyDefaultHp Boss 값(100) 일치 (spawn된 boss.MaxHp 간접 검증)
 ///   7. ProtocolVersion == 9 assert + S_EnemyAttack/S_PlayerJoin(characterClass 포함) 직렬화 왕복
 ///
@@ -362,7 +362,7 @@ public class BossBehaviorTests : IDisposable
     public void BossAttack_PlayerDies_Respawns()
     {
         // 플레이어 HP를 보스 1격으로 죽을 만큼 낮게 세팅 → 보스 공격 →
-        // Position==PlayerSpawnPosition + Hp==Stats.MaxHp + IsDeadAnimState==false.
+        // Position==PlayerSpawnPosition + Hp==Stats.MaxHp + ActionFsm != DeathState.
         TestGameSession s = SetupSession();
         PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
         Assert.NotNull(player);
@@ -382,7 +382,9 @@ public class BossBehaviorTests : IDisposable
         // 리스폰 검증.
         Assert.Equal(expectedSpawn, player.Position);
         Assert.Equal(player.Stats.MaxHp, player.Hp);
-        Assert.False(player.IsDeadAnimState, "리스폰 후 IsDeadAnimState가 false로 리셋 필요");
+        // Phase 02: IsDeadAnimState 제거됨. Revive()로 ActionFsm이 DeathState 아님을 확인.
+        Assert.False(player.ActionFsm.CurrentState is Dawnholder.Server.GameServer.Maps.States.DeathState,
+            "리스폰 후 ActionFsm이 DeathState면 안 됨 — Revive()로 Idle로 복귀해야 함");
     }
 
     [Fact]

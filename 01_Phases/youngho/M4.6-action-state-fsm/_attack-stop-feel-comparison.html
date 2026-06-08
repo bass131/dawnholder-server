@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공격 정지 감각 비교 — commit window (M4.6 Phase 02)</title>
+<style>
+  :root{
+    --bg:#0f1320; --panel:#171c2e; --panel2:#1e2540; --ink:#e8ecf6; --sub:#9aa6c4;
+    --line:#2a3354; --bug:#e5484d; --commit:#46c08a; --friction:#e0a000; --accent:#5b8cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,#0d1120,#141a2e 60%);color:var(--ink);
+    font-family:"Pretendard","Apple SD Gothic Neo","Segoe UI",sans-serif;line-height:1.7;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:980px;margin:0 auto;padding:40px 28px 80px}
+  h1{font-size:25px;margin:0 0 6px;letter-spacing:-.4px}
+  .tag{display:inline-block;font-size:12px;color:var(--sub);border:1px solid var(--line);
+    border-radius:999px;padding:3px 11px;margin:0 6px 14px 0}
+  .lead{color:var(--sub);font-size:15px;margin:8px 0 30px}
+  h2{font-size:18px;margin:38px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:16px 0}
+  .panel.warn{border-color:#7a4a1c;background:linear-gradient(180deg,#241a10,#1a1626)}
+  .panel.good{border-color:#2c6b50}
+  code{background:#0c1020;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px;color:#bcd0ff}
+  .kbd{font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+  .small{font-size:13px;color:var(--sub)}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--sub);font-weight:600;font-size:13px}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin:6px 0 2px;font-size:13px}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:22px;height:3px;border-radius:2px;display:inline-block}
+  .opt{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+  .opt .card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .opt .card h3{margin:0 0 8px;font-size:16px}
+  .opt .card.pick{border-color:var(--commit);box-shadow:0 0 0 1px var(--commit) inset}
+  .pill{font-size:11px;border-radius:6px;padding:2px 8px;font-weight:700}
+  .pill.rec{background:#173d2c;color:#7fe3b4}
+  .pill.no{background:#3a1518;color:#f0a0a3}
+  ul{margin:8px 0 0;padding-left:20px}
+  li{margin:4px 0}
+  .chip{font-size:11px;background:#0c1020;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--sub)}
+  .num{font-variant-numeric:tabular-nums}
+  .foot{margin-top:40px;font-size:12px;color:#6b769a;border-top:1px solid var(--line);padding-top:16px}
+  .hl-bug{color:var(--bug);font-weight:600}
+  .hl-commit{color:var(--commit);font-weight:600}
+  .hl-fric{color:var(--friction);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="tag">M4.6 · Phase 02</span>
+  <span class="tag">전투 상태 + commit window</span>
+  <span class="tag">설계 보고서</span>
+  <h1>공격을 누르면 어떻게 멈출 것인가?</h1>
+  <p class="lead">
+    "공격 중 이동 잠금(commit window)"을 넣을 때, 멈추는 <b>감각</b>을 어떻게 만들지 결정합니다.
+    제가 처음 드린 선택지("콱 정지" vs "마찰로 자연 감속")가 공정한 비교였는지,
+    실제 <code>Physics.cs</code>를 실측해서 정정합니다.
+  </p>
+
+  <div class="panel warn">
+    <h2 style="border:0;margin:0 0 6px;padding:0">⚠️ 먼저 정정 — 이 게임엔 "마찰"이 없어요</h2>
+    <p style="margin:6px 0 10px">
+      실측 결과, 수평 속도는 매 틱 이렇게 결정돼요 (<code>Physics.StepFlat</code>):
+    </p>
+    <p style="margin:6px 0 12px;text-align:center">
+      <code class="kbd" style="font-size:15px;padding:8px 14px">vx = inputX × MoveSpeed</code>
+    </p>
+    <p style="margin:6px 0 0">
+      관성·가속도 항이 <b>아예 없습니다</b> (코드 주석 그대로: <i>"수평 velocity = inputX × MoveSpeed (즉시 반응, 관성 X)"</i>).
+      입력이 0이 되면 <b>다음 틱에 vx도 즉시 0</b>이에요. 그래서—
+    </p>
+    <ul>
+      <li><span class="hl-commit">콱 정지</span>는 입력만 0으로 막으면 <b>저절로</b> 됩니다. 추가 코드 0줄.</li>
+      <li><span class="hl-fric">마찰 감속</span>은 <b>고를 수 있는 옵션이 아니라</b>, <code>Physics.cs</code>에 관성 모델을 <b>새로 추가</b>해야 하는 별도 작업이에요.</li>
+    </ul>
+    <p class="small" style="margin:10px 0 0">
+      → 즉, 진짜 결정은 "콱 정지 vs 마찰"이 아니라 <b>"입력 게이트(공짜) vs 관성 시스템 신규 도입(별도 마일스톤)"</b>입니다.
+    </p>
+  </div>
+
+  <h2>📈 같은 상황, 세 가지 결과</h2>
+  <p class="small">
+    전사(Warrior, <span class="num">MoveSpeed=4</span>)가 오른쪽으로 달리는 중 <b>틱 3</b>에서 공격 버튼을 누름.
+    이후에도 오른쪽 키는 계속 누르고 있다고 가정. 틱 간격 <span class="num">50ms</span>(20 TPS), commit window <span class="num">8틱</span>(틱 3~10).
+  </p>
+
+  <div class="legend">
+    <span><i class="sw" style="background:var(--bug)"></i><span class="hl-bug">현재 (버그)</span> — 공격해도 안 멈춤</span>
+    <span><i class="sw" style="background:var(--commit)"></i><span class="hl-commit">commit window (콱 정지)</span> — 입력 게이트</span>
+    <span><i class="sw" style="background:var(--friction);height:0;border-top:3px dashed var(--friction)"></i><span class="hl-fric">마찰 (가정)</span> — 관성 신규 도입 시</span>
+  </div>
+
+  <!-- ── Chart 1: 수평 속도 vx ── -->
+  <div class="panel">
+    <div class="small" style="margin-bottom:4px"><b>① 수평 속도 (vx)</b> — 틱마다의 속도</div>
+    <svg viewBox="0 0 760 290" width="100%" role="img" aria-label="틱별 수평 속도 비교">
+      <!-- grid -->
+      <g stroke="var(--line)" stroke-width="1">
+        <line x1="70" y1="250" x2="710" y2="250"/>
+        <line x1="70" y1="43"  x2="70"  y2="250"/>
+      </g>
+      <g fill="var(--sub)" font-size="11" font-family="ui-monospace,monospace">
+        <text x="40" y="70">4</text><text x="40" y="162">2</text><text x="58" y="254">0</text>
+        <text x="62" y="270">0</text><text x="190" y="270">3</text>
+        <text x="490" y="270">10</text><text x="670" y="270">14</text>
+        <text x="350" y="286" fill="var(--sub)">틱 →</text>
+        <text x="14" y="150" transform="rotate(-90 14 150)">vx (units/s)</text>
+      </g>
+      <!-- commit window band (tick 3..11) -->
+      <rect x="202" y="43" width="352" height="207" fill="#46c08a" opacity="0.08"/>
+      <line x1="202" y1="43" x2="202" y2="250" stroke="var(--commit)" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+      <line x1="554" y1="43" x2="554" y2="250" stroke="var(--commit)" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+      <text x="218" y="58" fill="var(--commit)" font-size="11">commit window (8틱)</text>
+      <!-- attack marker -->
+      <text x="186" y="40" fill="var(--accent)" font-size="11">⚔ 공격</text>
+
+      <!-- bug: vx=4 flat -->
+      <polyline fill="none" stroke="var(--bug)" stroke-width="2.5"
+        points="70,66 710,66"/>
+      <!-- friction (dashed) -->
+      <polyline fill="none" stroke="var(--friction)" stroke-width="2.5" stroke-dasharray="6 4"
+        points="70,66 158,66 202,66 246,139 290,184 334,210 378,226 422,236 466,241 510,250 710,250"/>
+      <!-- commit (step) -->
+      <polyline fill="none" stroke="var(--commit)" stroke-width="2.5"
+        points="70,66 202,66 202,250 554,250 554,66 710,66"/>
+    </svg>
+    <p class="small" style="margin:6px 0 0">
+      <span class="hl-commit">commit</span>: 공격 순간 vx가 <b>즉시 0</b> → 8틱 뒤 입력이 살아있으면 다시 4로 복귀.
+      <span class="hl-bug">버그</span>: 공격해도 vx=4 그대로. <span class="hl-fric">마찰</span>: 4→0으로 ~7틱에 걸쳐 미끄러짐.
+    </p>
+  </div>
+
+  <!-- ── Chart 2: 위치 x ── -->
+  <div class="panel">
+    <div class="small" style="margin-bottom:4px"><b>② 실제 위치 (x)</b> — "공격 중에 얼마나 미끄러지나"</div>
+    <svg viewBox="0 0 760 280" width="100%" role="img" aria-label="틱별 x 위치 비교">
+      <g stroke="var(--line)" stroke-width="1">
+        <line x1="70" y1="250" x2="710" y2="250"/>
+        <line x1="70" y1="50"  x2="70"  y2="250"/>
+      </g>
+      <g fill="var(--sub)" font-size="11" font-family="ui-monospace,monospace">
+        <text x="40" y="58">3</text><text x="40" y="122">2</text><text x="40" y="186">1</text><text x="50" y="254">0</text>
+        <text x="62" y="270">0</text><text x="190" y="270">3</text>
+        <text x="490" y="270">10</text><text x="670" y="270">14</text>
+        <text x="350" y="286">틱 →</text>
+        <text x="14" y="160" transform="rotate(-90 14 160)">x (units)</text>
+      </g>
+      <rect x="202" y="50" width="352" height="200" fill="#46c08a" opacity="0.08"/>
+      <line x1="202" y1="50" x2="202" y2="250" stroke="var(--commit)" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+      <text x="186" y="46" fill="var(--accent)" font-size="11">⚔ 공격</text>
+
+      <!-- bug: linear rise to ~2.8 -->
+      <polyline fill="none" stroke="var(--bug)" stroke-width="2.5"
+        points="70,250 202,212 510,122 710,71"/>
+      <!-- friction: rises to ~0.89 then flat -->
+      <polyline fill="none" stroke="var(--friction)" stroke-width="2.5" stroke-dasharray="6 4"
+        points="70,250 158,224 202,212 246,204 290,199 334,196 510,193 710,193"/>
+      <!-- commit: rise to 0.4 then flat then rise -->
+      <polyline fill="none" stroke="var(--commit)" stroke-width="2.5"
+        points="70,250 158,224 554,224 710,173"/>
+
+      <!-- slide annotation for bug -->
+      <line x1="510" y1="122" x2="510" y2="224" stroke="var(--bug)" stroke-width="1" stroke-dasharray="2 3" opacity="0.7"/>
+      <text x="518" y="180" fill="var(--bug)" font-size="11">공격 중 1.4u 미끄러짐</text>
+    </svg>
+    <p class="small" style="margin:6px 0 0">
+      <span class="hl-bug">버그</span>: 공격 애니는 도는데 캐릭터는 <b>~1.4 units</b> 계속 전진 (= "공격중에 이동").
+      <span class="hl-commit">commit</span>: 공격 구간 동안 위치 <b>완전 고정</b>(0 미끄러짐).
+      <span class="hl-fric">마찰</span>: ~0.3u 미끄러진 뒤 정지.
+    </p>
+  </div>
+
+  <h2>⚖️ 그래서 실제 선택지는 둘</h2>
+  <div class="opt">
+    <div class="card pick">
+      <h3><span class="hl-commit">① 입력 게이트 = 콱 정지</span> <span class="pill rec">추천</span></h3>
+      <p class="small" style="margin:4px 0 8px">commit window 동안 입력을 <code>inputX=0</code>으로 막음. 끝.</p>
+      <ul>
+        <li>물리에 관성이 없어 <b>저절로 즉시 정지</b> — 추가 코드 0</li>
+        <li>이 게임 이동 자체가 무관성 → <b>일관된 감각</b> (걷기 멈춤도 즉시)</li>
+        <li>클라 예측이 같은 규칙(상수 1개)만 따르면 끝 → <b>고무줄 0</b></li>
+        <li>회귀 면적 작음 — 기존 이동 물리 <b>안 건드림</b></li>
+      </ul>
+      <p class="small" style="margin:8px 0 0;color:var(--sub)">
+        단점: 공중 공격 시 수평 vx도 즉시 0(뚝). 단, 무관성 게임이라 점프 이동도 원래 그래서 이질감 적음.
+      </p>
+    </div>
+    <div class="card">
+      <h3><span class="hl-fric">② 관성/마찰 시스템 도입</span> <span class="pill no">범위 밖</span></h3>
+      <p class="small" style="margin:4px 0 8px"><code>Physics.cs</code>에 가속/마찰 항을 새로 넣어 4→0 감속.</p>
+      <ul>
+        <li><b>모든 이동</b>에 영향 — 걷기·점프·공격 정지 전부 바뀜</li>
+        <li>클라 예측 공식도 <b>똑같이</b> 바꿔야 (헌법 #1 결정론)</li>
+        <li>기존 이동/물리 테스트 <b>대거 회귀</b> 가능 (Physics는 단일 진실)</li>
+        <li>새 상수(마찰계수) + 튜닝 → "이동 감각" 그 자체가 <b>별도 마일스톤</b>감</li>
+      </ul>
+      <p class="small" style="margin:8px 0 0;color:var(--sub)">
+        가치: 더 묵직한 손맛. 단 Phase 02(전투 구조 통일) 범위를 한참 넘음.
+      </p>
+    </div>
+  </div>
+
+  <div class="panel good">
+    <p style="margin:0">
+      <b>제 추천 = ①</b>. 이번 Phase는 <i>"공격 중 이동 잠금"이라는 규칙을 서버 권위로 도입</i>하는 게 목표예요.
+      무관성 물리에서는 입력 게이트만으로 의도한 "콱 정지"가 공짜로 나오고, 회귀 위험도 가장 작습니다.
+      "묵직한 감속 손맛"은 나중에 <b>이동 감각 전용</b>으로 다룰 가치가 있는 별도 주제예요 (외관/연출 마일스톤 옆 주차).
+    </p>
+  </div>
+
+  <h2>🔢 곡선 근거 (실측값)</h2>
+  <table>
+    <tr><th>항목</th><th>값 / 출처</th></tr>
+    <tr><td>수평 속도 공식</td><td><code>vx = inputX × MoveSpeed</code> — <code>Physics.StepFlat</code> (관성 항 없음)</td></tr>
+    <tr><td>MoveSpeed (전사)</td><td class="num">4 units/s — <code>PlayerStats.Warrior()</code></td></tr>
+    <tr><td>틱 간격 (dt)</td><td class="num">0.05 s (20 TPS) — <code>Constants.TickDuration</code></td></tr>
+    <tr><td>틱당 이동 거리</td><td class="num">4 × 0.05 = 0.2 units/틱</td></tr>
+    <tr><td>버그: 8틱 공격 중 미끄럼</td><td class="num">8 × 0.2 = 1.6 units (그래프는 틱3~10 구간 ~1.4u)</td></tr>
+    <tr><td>commit window 지속</td><td class="num">8틱 = 400ms (<code>AttackCommitWindowTicks</code> 신규 · 98_Shared)</td></tr>
+    <tr><td>마찰 곡선(가정)</td><td>vx ×0.6/틱 감쇠 — <b>현재 코드에 없음</b>, 비교용 가상</td></tr>
+  </table>
+
+  <div class="foot">
+    M4.6 Phase 02 · 공격 정지 감각 비교 · 2026-06-08 (세션24)<br>
+    실측 출처: <span class="kbd">98_Shared/GameData/Physics.cs · PlayerStats.cs · Constants.cs</span> ·
+    상위 설계: <span class="kbd">_milestone-plan.md · _fsm-design-discussion.html</span>
+  </div>
+
+</div>
+</body>
+</html>

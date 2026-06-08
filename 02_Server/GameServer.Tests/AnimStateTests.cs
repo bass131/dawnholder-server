@@ -1,6 +1,7 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.States;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -13,8 +14,8 @@ namespace GameServer.Tests;
 ///   1. 플레이어 Idle — 정지 + OnGround
 ///   2. 플레이어 Walk — 수평 속도 있음
 ///   3. 플레이어 Jump — OnGround=false
-///   4. 플레이어 Attack latch — AttackLatchTicks > 0
-///   5. 플레이어 Hit latch — HitLatchTicks > 0
+///   4. 플레이어 Attack — EnterAttackState() → ActionFsm = AttackState
+///   5. 플레이어 Hit — EnterHitState() → ActionFsm = HitState
 ///   6. 플레이어 Death — HP <= 0
 ///   7. 우선순위: Hit 중 이동 입력 → Hit 우선
 ///   8. 우선순위: Death > Hit (HP 0이면 latch 중에도 Death)
@@ -67,11 +68,9 @@ public class AnimStateTests
         GameMap map = MakeTownMap();
         PlayerEntity p = AddPlayerAt(map, 0f, 0f);
 
-        // velocity=0, OnGround=true, latch=0, HP>0 → Idle
+        // velocity=0, OnGround=true, HP>0 → Idle (FSM 초기 상태는 이미 Idle)
         p.Velocity = Vector2.Zero;
         p.OnGround = true;
-        p.AttackLatchTicks = 0;
-        p.HitLatchTicks = 0;
 
         // Tick을 돌려 snapshot 생성 (SnapshotTickInterval=2 주기)
         var sink = new List<byte[]>();
@@ -109,8 +108,6 @@ public class AnimStateTests
         var session = new FakeCapturingSession(sink);
         PlayerEntity p = map.AddPlayer(session, new Vector2(0f, 0f));
         p.OnGround = true;
-        p.AttackLatchTicks = 0;
-        p.HitLatchTicks = 0;
 
         // inputX=+1 적용 → vx가 생김
         p.EnqueueInput(1, false, 1u);
@@ -139,8 +136,6 @@ public class AnimStateTests
         PlayerEntity p = map.AddPlayer(session, new Vector2(0f, 0f));
         p.OnGround = false; // 공중 강제
         p.Velocity = new Vector2(0f, 5f); // 수직 속도 (상승 중)
-        p.AttackLatchTicks = 0;
-        p.HitLatchTicks = 0;
 
         map.Tick(1);
         // Tick(1) 후 Physics.Step이 OnGround를 변경할 수 있으므로 다시 강제
@@ -155,9 +150,8 @@ public class AnimStateTests
     }
 
     /// <summary>
-    /// AttackLatchTicks > 0 → Attack.
-    /// CombatSystem이 공격 성공 시 AttackLatchTicks = AnimLatchTicks를 설정.
-    /// 직접 필드 설정으로 latch 상태 검증.
+    /// EnterAttackState() 호출 후 ActionFsm이 AttackState → animState=Attack.
+    /// Phase 02: latch 필드 직접 set 대신 FSM API 경유.
     /// </summary>
     [Fact]
     public void Player_Attack_WhenAttackLatchActive()
@@ -169,8 +163,9 @@ public class AnimStateTests
         PlayerEntity p = map.AddPlayer(session, new Vector2(0f, 0f));
         p.OnGround = true;
         p.Velocity = Vector2.Zero;
-        p.HitLatchTicks = 0;
-        p.AttackLatchTicks = CombatConstants.AnimLatchTicks; // 공격 latch 직접 설정
+
+        // FSM API 경유 — AttackState 진입
+        p.EnterAttackState();
 
         map.Tick(1);
         map.Tick(2); // broadcast
@@ -183,8 +178,9 @@ public class AnimStateTests
     }
 
     /// <summary>
-    /// HitLatchTicks > 0 → Hit.
-    /// Hit 상태는 이동 중에도 Hit 우선 (우선순위 검증 포함).
+    /// EnterHitState() 호출 후 ActionFsm이 HitState → animState=Hit.
+    /// LocksMovement=true이므로 이동 입력이 있어도 Hit 유지.
+    /// Phase 02: latch 필드 직접 set 대신 FSM API 경유.
     /// </summary>
     [Fact]
     public void Player_Hit_WhenHitLatchActive_EvenWhileMoving()
@@ -196,26 +192,27 @@ public class AnimStateTests
         PlayerEntity p = map.AddPlayer(session, new Vector2(0f, 0f));
         p.OnGround = true;
         p.Velocity = new Vector2(5f, 0f); // 이동 중
-        p.AttackLatchTicks = 0;
-        p.HitLatchTicks = CombatConstants.AnimLatchTicks; // Hit latch 직접 설정
 
+        // FSM API 경유 — HitState 진입 (dirX=1: 오른쪽에서 피격)
+        p.EnterHitState(1f);
+
+        // 이동 입력 제공 → LocksMovement=true이므로 GameMap.Tick이 inputX=0으로 강제
+        p.EnqueueInput(1, false, 1u);
         map.Tick(1);
-        // Tick 후 velocity가 남아있으면 Walk가 되지만 HitLatch가 우선
-        p.Velocity = new Vector2(5f, 0f); // Physics.Step 후 감속될 수 있어 재설정
-        p.HitLatchTicks = CombatConstants.AnimLatchTicks; // 감소 전 재설정
+        p.EnqueueInput(1, false, 2u);
         map.Tick(2); // broadcast
 
         byte[]? snapForP = sink.FirstOrDefault(pkt => IsSnapshotForEntity(pkt, p.EntityId));
         Assert.NotNull(snapForP);
         S_Snapshot snap = new S_Snapshot();
         snap.Read(new ArraySegment<byte>(snapForP!));
-        // Hit 우선순위 > Walk
+        // HitState가 LocksMovement=true이므로 Walk보다 Hit 우선
         Assert.Equal((byte)AnimState.Hit, snap.animState);
     }
 
     /// <summary>
-    /// HP <= 0 → Death. latch 상태보다 Death 우선 (Death > Hit > Attack).
-    /// IsDead = true이면 어떤 상태(latch 포함)여도 Death 반환.
+    /// Hp=0 → GameMap.Tick death-guard가 ActionFsm을 DeathState로 전이 → animState=Death.
+    /// Phase 02: FSM API 경유. IsDead=true이면 death-guard가 DeathState로 강제 전이.
     /// </summary>
     [Fact]
     public void Player_Death_WhenHpZero_OverridesAllLatch()
@@ -227,9 +224,7 @@ public class AnimStateTests
         PlayerEntity p = map.AddPlayer(session, new Vector2(0f, 0f));
         p.OnGround = true;
         p.Velocity = Vector2.Zero;
-        p.HitLatchTicks = CombatConstants.AnimLatchTicks; // Hit latch 중
-        p.AttackLatchTicks = CombatConstants.AnimLatchTicks; // Attack latch 중
-        p.Hp = 0; // 사망
+        p.Hp = 0; // 사망 — GameMap.Tick death-guard가 DeathState로 전이
 
         map.Tick(1);
         map.Tick(2); // broadcast
@@ -238,18 +233,14 @@ public class AnimStateTests
         Assert.NotNull(snapForP);
         S_Snapshot snap = new S_Snapshot();
         snap.Read(new ArraySegment<byte>(snapForP!));
-        // Death 최우선 — Hit/Attack latch 무시
+        // Death 최우선 — death-guard가 FSM을 DeathState로 강제 전이
         Assert.Equal((byte)AnimState.Death, snap.animState);
     }
 
     /// <summary>
-    /// Attack latch가 AnimLatchTicks 틱 이상 지나면 Idle/Walk로 복귀.
-    ///
-    /// 검증: AttackLatchTicks=AnimLatchTicks 설정 → AnimLatchTicks 틱 tick() 반복
-    ///   → latch 해제 후 Idle 반환.
-    ///
-    /// **주의**: latch는 Physics 루프(2번 단계)에서 매 tick 감소.
-    ///   AnimLatchTicks 만큼 tick을 돌리면 0이 됨.
+    /// AttackState가 AttackCommitWindowTicks 틱 후 ResolveGrounded로 복귀.
+    /// 정지 상태이면 Idle로 복귀.
+    /// Phase 02: FSM API 경유. AttackState.Tick이 StateTicksRemaining을 감소.
     /// </summary>
     [Fact]
     public void Player_AttackLatch_ExpiresAfterLatchTicks()
@@ -261,19 +252,19 @@ public class AnimStateTests
         PlayerEntity p = map.AddPlayer(session, new Vector2(0f, 0f));
         p.OnGround = true;
         p.Velocity = Vector2.Zero;
-        p.HitLatchTicks = 0;
-        p.AttackLatchTicks = CombatConstants.AnimLatchTicks;
 
-        // AnimLatchTicks 만큼 tick 진행 → latch 감소
-        // 마지막 broadcast가 짝수 tick에 일어나도록 (2의 배수)
-        int latch = CombatConstants.AnimLatchTicks;
-        for (int i = 1; i <= latch + 2; i++)
+        // FSM API 경유 — AttackState 진입
+        p.EnterAttackState();
+
+        // AttackCommitWindowTicks 이상 tick 진행 → StateTicksRemaining 감소 → Idle 복귀
+        // 마지막 broadcast가 짝수 tick에 일어나도록 +2
+        int window = Constants.AttackCommitWindowTicks;
+        for (int i = 1; i <= window + 2; i++)
         {
             map.Tick(i);
         }
 
-        // latch 해제 후 broadcast: 정지 상태 → Idle이어야 함
-        // 가장 최근 broadcast 패킷에서 p의 animState 확인
+        // window 종료 후 broadcast: 정지 상태 → Idle이어야 함
         byte[]? lastSnapForP = sink.LastOrDefault(pkt => IsSnapshotForEntity(pkt, p.EntityId));
         Assert.NotNull(lastSnapForP);
         S_Snapshot snap = new S_Snapshot();
@@ -282,8 +273,8 @@ public class AnimStateTests
     }
 
     /// <summary>
-    /// 우선순위 검증: Hit latch 중 이동 입력이 들어와도 Hit 유지.
-    /// 피격 = Hit 우선(> Walk). 이 테스트는 정책 값을 명시적으로 확인.
+    /// HitState.LocksMovement=true → 이동 입력이 있어도 Walk가 아닌 Hit 유지.
+    /// Phase 02: FSM API 경유. LocksMovement 메커니즘이 우선순위를 보장.
     /// </summary>
     [Fact]
     public void Player_HitPriority_OverridesWalk()
@@ -294,21 +285,21 @@ public class AnimStateTests
         var session = new FakeCapturingSession(sink);
         PlayerEntity p = map.AddPlayer(session, new Vector2(0f, 0f));
         p.OnGround = true;
-        p.HitLatchTicks = CombatConstants.AnimLatchTicks; // Hit latch
 
-        // 이동 입력 동시 제공
+        // FSM API 경유 — HitState 진입 (dirX=1)
+        p.EnterHitState(1f);
+
+        // 이동 입력 제공 → LocksMovement=true이므로 GameMap.Tick이 inputX=0으로 강제
         p.EnqueueInput(1, false, 1u);
-
         map.Tick(1);
         p.EnqueueInput(1, false, 2u);
-        p.HitLatchTicks = System.Math.Max(1, p.HitLatchTicks); // 아직 latch 중
         map.Tick(2);
 
         byte[]? snapForP = sink.FirstOrDefault(pkt => IsSnapshotForEntity(pkt, p.EntityId));
         Assert.NotNull(snapForP);
         S_Snapshot snap = new S_Snapshot();
         snap.Read(new ArraySegment<byte>(snapForP!));
-        // Walk보다 Hit 우선
+        // LocksMovement=true → Walk보다 Hit 우선
         Assert.Equal((byte)AnimState.Hit, snap.animState);
     }
 
@@ -529,8 +520,9 @@ public class AnimStateTests
     }
 
     /// <summary>
-    /// CombatSystem 공격 성공 시 attacker의 AttackLatchTicks가 설정됨.
-    /// ProcessAttack 경로를 통해 latch가 실제로 박히는지 end-to-end 확인.
+    /// CombatSystem 공격 성공 시 attacker가 AttackState로 전이됨.
+    /// Phase 02: AttackLatchTicks 직접 확인 → ActionFsm 상태 확인으로 변경.
+    /// ProcessAttack 경로를 통해 EnterAttackState()가 실제로 호출되는지 end-to-end 확인.
     /// </summary>
     [Fact]
     public void CombatSystem_Attack_SetsAttackLatchOnAttacker()
@@ -553,8 +545,10 @@ public class AnimStateTests
         // 공격 실행
         map.ProcessAttack(attacker.EntityId, enemy.EntityId, attackerClientTick: 1);
 
-        // attacker의 AttackLatchTicks = AnimLatchTicks여야 함
-        Assert.Equal(CombatConstants.AnimLatchTicks, attacker.AttackLatchTicks);
+        // attacker가 AttackState로 전이되었어야 함
+        Assert.IsType<AttackState>(attacker.ActionFsm.CurrentState);
+        // StateTicksRemaining이 AttackCommitWindowTicks로 세팅되었어야 함
+        Assert.Equal(Constants.AttackCommitWindowTicks, attacker.StateTicksRemaining);
     }
 
     /// <summary>

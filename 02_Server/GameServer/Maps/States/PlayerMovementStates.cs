@@ -18,6 +18,18 @@ internal static class PlayerMovementStates
 
     // 기존 ComputePlayerAnimState와 동일한 임계값.
     internal const float VxEpsilon = 0.01f;
+
+    // 착지 후 또는 commit window 종료 후 이동 물리 상태를 보고 다음 State를 결정하는 헬퍼.
+    // DRY: JumpState 착지 분기 + AttackState/HitState 종료 분기가 모두 이 헬퍼를 재사용한다.
+    // 전환 로직 값은 기존 ComputePlayerAnimState와 완전히 동일 — 절대 변경 금지.
+    internal static ActorState ResolveGrounded(PlayerEntity p)
+    {
+        if (!p.OnGround)
+            return Jump;
+        if (p.Velocity.X > VxEpsilon || p.Velocity.X < -VxEpsilon)
+            return Move;
+        return Idle;
+    }
 }
 
 // ── Idle ─────────────────────────────────────────────────────────────────────
@@ -63,13 +75,7 @@ internal sealed class JumpState : ActorState
     public override ActorState? Tick(PlayerEntity player)
     {
         if (player.OnGround)
-        {
-            // 착지 후: 수평 속도에 따라 Idle/Move 분기
-            if (player.Velocity.X > PlayerMovementStates.VxEpsilon ||
-                player.Velocity.X < -PlayerMovementStates.VxEpsilon)
-                return PlayerMovementStates.Move;
-            return PlayerMovementStates.Idle;
-        }
+            return PlayerMovementStates.ResolveGrounded(player);
         return null;
     }
 }

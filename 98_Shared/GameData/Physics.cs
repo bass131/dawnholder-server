@@ -73,7 +73,7 @@ public static class Physics
     /// </summary>
     private static PhysicsState StepFlat(PhysicsState state, PhysicsInput input, MoveParams move)
     {
-        float vx = input.InputX * move.MoveSpeed;
+        float vx = input.InputX * move.MoveSpeed + input.ExternalVelX;
 
         bool startedOnGround = state.Position.Y <= GroundY + GroundEpsilon
                             && state.Velocity.Y <= 0f;
@@ -129,7 +129,7 @@ public static class Physics
         float eps = GroundEpsilon;
 
         // 1. 수평 velocity
-        float vx = input.InputX * move.MoveSpeed;
+        float vx = input.InputX * move.MoveSpeed + input.ExternalVelX;
 
         // 2. 지지 판정: vy≤0이고 어떤 솔리드 윗면(MaxY) 또는 발판 면(Y) 위에 서 있는지
         bool startedOnGround = false;
@@ -295,20 +295,35 @@ public readonly struct MoveParams
 }
 
 /// <summary>
-/// 시뮬레이션 한 step의 입력. inputX(-1/0/1) + jumpPressed + dt.
+/// 시뮬레이션 한 step의 입력. inputX(-1/0/1) + jumpPressed + dt + externalVelX(넉백 임펄스).
 /// readonly struct → 값 전달, GC 압박 0.
+///
+/// ExternalVelX: 기본값 0. 0이면 기존 이동 동작과 완전히 동일 (기존 호출자 전부 불변).
+/// 넉백 등 외부 임펄스가 있을 때 3인자 ctor 대신 4인자 ctor을 사용한다.
 /// </summary>
 public readonly struct PhysicsInput
 {
     public readonly sbyte InputX;
     public readonly bool JumpPressed;
     public readonly float Dt;
+    /// <summary>
+    /// 넉백 등 외부 수평 임펄스 (units/s). 0이면 동작 변화 없음.
+    /// InputX * MoveSpeed에 *더해져* 최종 vx를 만든다.
+    /// 지형 X-스윕이 vx를 사용하므로 넉백도 자동으로 벽에 막힌다.
+    /// </summary>
+    public readonly float ExternalVelX;
 
+    // 기존 3인자 ctor — ExternalVelX=0 위임. 기존 호출자 전부 이 ctor을 그대로 쓴다.
     public PhysicsInput(sbyte inputX, bool jumpPressed, float dt)
+        : this(inputX, jumpPressed, dt, 0f) { }
+
+    // 4인자 ctor — 넉백 임펄스 있을 때 사용.
+    public PhysicsInput(sbyte inputX, bool jumpPressed, float dt, float externalVelX)
     {
         InputX = inputX;
         JumpPressed = jumpPressed;
         Dt = dt;
+        ExternalVelX = externalVelX;
     }
 }
 

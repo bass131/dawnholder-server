@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>플레이어 ActionFsm 클래스 계층 — M4.6 Phase 02</title>
+<style>
+  :root{
+    --bg:#0f1320; --panel:#171c2e; --panel2:#1e2540; --ink:#e8ecf6; --sub:#9aa6c4;
+    --line:#2a3354; --accent:#5b8cff; --new:#46c08a; --edit:#e0a000; --keep:#6b769a;
+    --atk:#e5484d; --hit:#e0a000; --death:#7b86a8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,#0d1120,#141a2e 60%);color:var(--ink);
+    font-family:"Pretendard","Apple SD Gothic Neo","Segoe UI",sans-serif;line-height:1.7;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:40px 28px 80px}
+  h1{font-size:25px;margin:0 0 6px;letter-spacing:-.4px}
+  .tag{display:inline-block;font-size:12px;color:var(--sub);border:1px solid var(--line);
+    border-radius:999px;padding:3px 11px;margin:0 6px 14px 0}
+  .lead{color:var(--sub);font-size:15px;margin:8px 0 26px}
+  h2{font-size:18px;margin:40px 0 6px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px;margin:16px 0}
+  code{background:#0c1020;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px;color:#bcd0ff}
+  .mono{font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+  .small{font-size:13px;color:var(--sub)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 0;font-size:13px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--sub);font-weight:600;font-size:12.5px}
+  td.mono,th.mono{font-family:ui-monospace,monospace;font-size:12.5px}
+  .b-new{color:var(--new);font-weight:700}
+  .b-edit{color:var(--edit);font-weight:700}
+  .b-keep{color:var(--keep);font-weight:700}
+  ul{margin:8px 0 0;padding-left:20px}li{margin:5px 0}
+  .foot{margin-top:42px;font-size:12px;color:#6b769a;border-top:1px solid var(--line);padding-top:16px}
+  .cap{font-size:12.5px;color:var(--sub);margin:2px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="tag">M4.6 · Phase 02</span>
+  <span class="tag">플레이어 전투 State</span>
+  <span class="tag">클래스 계층 설계</span>
+  <h1>플레이어 ActionFsm — 클래스 계층</h1>
+  <p class="lead">
+    누더기 latch 카운터 3개를 걷어내고, 플레이어 행동을 <b>하나의 추상 베이스(<code>ActorState</code>)에서
+    파생된 6개 State 클래스</b>로 통일한다. 상태는 클래스로 캡슐화되고, <code>StateMachine</code>이 스왑한다.
+  </p>
+
+  <div class="legend">
+    <span><i class="dot" style="background:var(--new)"></i><span class="b-new">🆕 신규</span></span>
+    <span><i class="dot" style="background:var(--edit)"></i><span class="b-edit">✏️ 수정</span></span>
+    <span><i class="dot" style="background:var(--keep)"></i><span class="b-keep">✅ 기존 유지</span></span>
+    <span><i class="dot" style="background:var(--atk)"></i>commit·불가침</span>
+  </div>
+
+  <!-- ───────────────── SVG B: 상속 계층 ───────────────── -->
+  <h2>① 상속 계층 — <code>ActorState</code> 추상 베이스</h2>
+  <div class="panel">
+    <svg viewBox="0 0 960 440" width="100%" role="img" aria-label="ActorState 상속 트리">
+      <!-- ActorState base -->
+      <rect x="340" y="14" width="280" height="142" rx="10" fill="#1a2138" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="480" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)" font-style="italic">ActorState  «abstract»</text>
+      <line x1="356" y1="46" x2="604" y2="46" stroke="var(--line)"/>
+      <g font-size="11.5" font-family="ui-monospace,monospace" fill="var(--sub)">
+        <text x="356" y="66">abstract AnimState AnimState {get}</text>
+        <text x="356" y="84">virtual  Enter(PlayerEntity)</text>
+        <text x="356" y="102">abstract ActorState? Tick(PlayerEntity)</text>
+        <text x="356" y="120">virtual  Exit(PlayerEntity)</text>
+      </g>
+      <line x1="356" y1="128" x2="604" y2="128" stroke="var(--line)" stroke-dasharray="3 3"/>
+      <g font-size="11.5" font-family="ui-monospace,monospace" fill="var(--new)">
+        <text x="356" y="146">🆕 LocksMovement=false · InterruptibleByHit=true</text>
+      </g>
+
+      <!-- inheritance triangle + spine + bus -->
+      <polygon points="470,170 490,170 480,156" fill="#0f1320" stroke="var(--accent)" stroke-width="1.5"/>
+      <line x1="480" y1="170" x2="480" y2="190" stroke="var(--accent)" stroke-width="1.3"/>
+      <line x1="110" y1="190" x2="870" y2="190" stroke="var(--accent)" stroke-width="1.3"/>
+      <g stroke="var(--accent)" stroke-width="1.3">
+        <line x1="110" y1="190" x2="110" y2="212"/>
+        <line x1="262" y1="190" x2="262" y2="212"/>
+        <line x1="414" y1="190" x2="414" y2="212"/>
+        <line x1="566" y1="190" x2="566" y2="212"/>
+        <line x1="718" y1="190" x2="718" y2="212"/>
+        <line x1="870" y1="190" x2="870" y2="212"/>
+      </g>
+
+      <!-- 6 derived boxes (y=212, w=140, h=200) -->
+      <!-- IdleState -->
+      <rect x="40" y="212" width="140" height="120" rx="8" fill="var(--panel2)" stroke="var(--keep)"/>
+      <text x="110" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">IdleState ✅</text>
+      <g font-size="11" font-family="ui-monospace,monospace" fill="var(--sub)">
+        <text x="110" y="256" text-anchor="middle">→ AnimState.Idle</text>
+        <text x="110" y="278" text-anchor="middle">(기본 플래그)</text>
+        <text x="110" y="300" text-anchor="middle" fill="var(--keep)">이동 계열</text>
+      </g>
+      <!-- MoveState -->
+      <rect x="192" y="212" width="140" height="120" rx="8" fill="var(--panel2)" stroke="var(--keep)"/>
+      <text x="262" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">MoveState ✅</text>
+      <g font-size="11" font-family="ui-monospace,monospace" fill="var(--sub)">
+        <text x="262" y="256" text-anchor="middle">→ AnimState.Walk</text>
+        <text x="262" y="278" text-anchor="middle">(기본 플래그)</text>
+        <text x="262" y="300" text-anchor="middle" fill="var(--keep)">이동 계열</text>
+      </g>
+      <!-- JumpState -->
+      <rect x="344" y="212" width="140" height="120" rx="8" fill="var(--panel2)" stroke="var(--keep)"/>
+      <text x="414" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">JumpState ✅</text>
+      <g font-size="11" font-family="ui-monospace,monospace" fill="var(--sub)">
+        <text x="414" y="256" text-anchor="middle">→ AnimState.Jump</text>
+        <text x="414" y="278" text-anchor="middle">(기본 플래그)</text>
+        <text x="414" y="300" text-anchor="middle" fill="var(--keep)">이동 계열</text>
+      </g>
+      <!-- AttackState -->
+      <rect x="496" y="212" width="140" height="170" rx="8" fill="#241620" stroke="var(--atk)" stroke-width="1.5"/>
+      <text x="566" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">AttackState 🆕</text>
+      <g font-size="10.5" font-family="ui-monospace,monospace">
+        <text x="566" y="254" text-anchor="middle" fill="var(--sub)">→ AnimState.Attack</text>
+        <text x="566" y="276" text-anchor="middle" fill="var(--atk)">LocksMovement=true</text>
+        <text x="566" y="294" text-anchor="middle" fill="var(--atk)">!InterruptibleByHit</text>
+        <text x="566" y="316" text-anchor="middle" fill="var(--sub)">Enter: 8틱 세팅</text>
+        <text x="566" y="334" text-anchor="middle" fill="var(--sub)">Tick: 카운트다운</text>
+        <text x="566" y="352" text-anchor="middle" fill="var(--sub)">→0 이동복귀</text>
+        <text x="566" y="372" text-anchor="middle" fill="var(--atk)">commit window</text>
+      </g>
+      <!-- HitState -->
+      <rect x="648" y="212" width="140" height="140" rx="8" fill="#241f12" stroke="var(--hit)" stroke-width="1.3"/>
+      <text x="718" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">HitState 🆕</text>
+      <g font-size="10.5" font-family="ui-monospace,monospace">
+        <text x="718" y="254" text-anchor="middle" fill="var(--sub)">→ AnimState.Hit</text>
+        <text x="718" y="276" text-anchor="middle" fill="var(--hit)">LocksMovement=true</text>
+        <text x="718" y="298" text-anchor="middle" fill="var(--hit)">+ 넉백 감쇠</text>
+        <text x="718" y="320" text-anchor="middle" fill="var(--sub)">지속 8틱 →복귀</text>
+      </g>
+      <!-- DeathState -->
+      <rect x="800" y="212" width="140" height="140" rx="8" fill="#1b1f2c" stroke="var(--death)" stroke-width="1.3"/>
+      <text x="870" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--ink)">DeathState 🆕</text>
+      <g font-size="10.5" font-family="ui-monospace,monospace">
+        <text x="870" y="254" text-anchor="middle" fill="var(--sub)">→ AnimState.Death</text>
+        <text x="870" y="276" text-anchor="middle" fill="var(--death)">terminal</text>
+        <text x="870" y="298" text-anchor="middle" fill="var(--sub)">Tick → null</text>
+        <text x="870" y="320" text-anchor="middle" fill="var(--death)">구조용*</text>
+      </g>
+    </svg>
+    <p class="cap">▲ 6개 State가 모두 <code>ActorState</code> 한 베이스에서 파생. 빨강=AttackState만 이동잠금+불가침을 <b>스스로 소유</b>.
+      <span class="small">*Death는 즉시부활이라 실게임엔 거의 안 뜸(구조 완성용).</span></p>
+  </div>
+
+  <!-- ───────────────── SVG A: 구성/소유 ───────────────── -->
+  <h2>② 구성/소유 — <code>PlayerEntity</code> ◇ <code>StateMachine</code> ◇ <code>ActorState</code></h2>
+  <div class="panel">
+    <svg viewBox="0 0 960 270" width="100%" role="img" aria-label="구성 관계">
+      <!-- PlayerEntity -->
+      <rect x="20" y="50" width="240" height="150" rx="10" fill="var(--panel2)" stroke="var(--edit)" stroke-width="1.5"/>
+      <text x="140" y="72" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">PlayerEntity ✏️</text>
+      <line x1="36" y1="82" x2="244" y2="82" stroke="var(--line)"/>
+      <g font-size="11" font-family="ui-monospace,monospace" fill="var(--sub)">
+        <text x="36" y="102">+ ActionFsm : StateMachine ◆</text>
+        <text x="36" y="120" fill="var(--new)">+ StateTicksRemaining · KnockbackVx 🆕</text>
+        <text x="36" y="138" fill="var(--atk)">✂ AttackLatch/HitLatch/IsDead 제거</text>
+      </g>
+      <line x1="36" y1="146" x2="244" y2="146" stroke="var(--line)" stroke-dasharray="3 3"/>
+      <g font-size="11" font-family="ui-monospace,monospace" fill="var(--new)">
+        <text x="36" y="166">+ EnterAttackState() 🆕</text>
+        <text x="36" y="182">+ EnterHitState() · Revive() 🆕</text>
+      </g>
+
+      <!-- composition diamond + line to StateMachine -->
+      <line x1="260" y1="120" x2="360" y2="120" stroke="var(--accent)" stroke-width="1.3"/>
+      <polygon points="260,120 273,114 286,120 273,126" fill="var(--accent)"/>
+
+      <!-- StateMachine -->
+      <rect x="360" y="62" width="220" height="120" rx="10" fill="var(--panel2)" stroke="var(--keep)" stroke-width="1.3"/>
+      <text x="470" y="84" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--ink)">StateMachine ✅</text>
+      <text x="470" y="100" text-anchor="middle" font-size="10.5" fill="var(--keep)" font-style="italic">generic 유지 (Phase 04서 일반화)</text>
+      <line x1="376" y1="108" x2="564" y2="108" stroke="var(--line)"/>
+      <g font-size="11" font-family="ui-monospace,monospace" fill="var(--sub)">
+        <text x="376" y="128">- _current : ActorState ◆</text>
+        <text x="376" y="146">+ AnimState · CurrentState</text>
+        <text x="376" y="164">+ Tick() · ChangeState()</text>
+      </g>
+
+      <!-- composition diamond + line to ActorState -->
+      <line x1="580" y1="120" x2="690" y2="120" stroke="var(--accent)" stroke-width="1.3"/>
+      <polygon points="580,120 593,114 606,120 593,126" fill="var(--accent)"/>
+
+      <!-- ActorState (current) -->
+      <rect x="690" y="74" width="250" height="96" rx="10" fill="#1a2138" stroke="var(--accent)" stroke-width="1.3"/>
+      <text x="815" y="96" text-anchor="middle" font-size="13" font-weight="700" font-style="italic" fill="var(--ink)">ActorState «abstract»</text>
+      <text x="815" y="120" text-anchor="middle" font-size="11" fill="var(--sub)">현재 활성 상태 1개</text>
+      <text x="815" y="142" text-anchor="middle" font-size="10.5" font-family="ui-monospace,monospace" fill="var(--sub)">Idle|Move|Jump|Attack|Hit|Death</text>
+
+      <!-- Flyweight holders -->
+      <rect x="360" y="216" width="270" height="40" rx="7" fill="#12182a" stroke="var(--line)" stroke-dasharray="4 3"/>
+      <text x="495" y="240" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="var(--sub)">PlayerMovementStates · PlayerCombatStates</text>
+      <line x1="600" y1="216" x2="760" y2="170" stroke="var(--keep)" stroke-width="1" stroke-dasharray="4 3"/>
+      <text x="648" y="208" font-size="10" fill="var(--keep)">정적 인스턴스 제공 (Flyweight, new 0)</text>
+    </svg>
+    <p class="cap">▲ <code>◆</code> = 합성(소유). PlayerEntity가 StateMachine을, StateMachine이 현재 ActorState를 소유.
+      6개 상태는 정적 홀더가 1개씩만 들고 있어 틱 루프에 <code>new</code>가 없다(헌법 #5).</p>
+  </div>
+
+  <!-- ───────────────── 멤버 표 ───────────────── -->
+  <h2>③ 클래스별 변경 명세</h2>
+
+  <div class="panel">
+    <table>
+      <tr><th>클래스 / 파일</th><th>구분</th><th class="mono">핵심 멤버 변화</th></tr>
+      <tr>
+        <td class="mono">ActorState<br><span class="small">States/ActorState.cs</span></td>
+        <td><span class="b-edit">✏️ 수정</span></td>
+        <td class="mono">+ virtual bool <b>LocksMovement</b> => false<br>+ virtual bool <b>InterruptibleByHit</b> => true</td>
+      </tr>
+      <tr>
+        <td class="mono">IdleState / MoveState / JumpState<br><span class="small">States/PlayerMovementStates.cs</span></td>
+        <td><span class="b-keep">✅ 유지</span></td>
+        <td class="mono">전환 로직 불변. + static <b>ResolveGrounded(p)</b> 헬퍼 추출<br><span class="small">(!OnGround→Jump / |vx|&gt;ε→Move / else→Idle, DRY)</span></td>
+      </tr>
+      <tr>
+        <td class="mono"><b>AttackState</b><br><span class="small">States/PlayerCombatStates.cs</span></td>
+        <td><span class="b-new">🆕 신규</span></td>
+        <td class="mono">LocksMovement=<b>true</b> · InterruptibleByHit=<b>false</b><br>Enter: StateTicksRemaining = AttackCommitWindowTicks<br>Tick: --카운트 → 0이면 ResolveGrounded(p)</td>
+      </tr>
+      <tr>
+        <td class="mono"><b>HitState</b><br><span class="small">States/PlayerCombatStates.cs</span></td>
+        <td><span class="b-new">🆕 신규</span></td>
+        <td class="mono">LocksMovement=<b>true</b> · InterruptibleByHit=true<br>Enter: StateTicksRemaining = AnimLatchTicks(8)<br>Tick: KnockbackVx 감쇠 → --카운트 → ResolveGrounded(p)<br>Exit: KnockbackVx = 0</td>
+      </tr>
+      <tr>
+        <td class="mono"><b>DeathState</b><br><span class="small">States/PlayerCombatStates.cs</span></td>
+        <td><span class="b-new">🆕 신규</span></td>
+        <td class="mono">AnimState.Death · Tick → null (terminal)<br><span class="small">부활 경로(Revive)가 빼냄</span></td>
+      </tr>
+      <tr>
+        <td class="mono">PlayerEntity<br><span class="small">Maps/PlayerEntity.cs</span></td>
+        <td><span class="b-edit">✏️ 수정</span></td>
+        <td class="mono"><span style="color:var(--atk)">− AttackLatchTicks / HitLatchTicks / IsDeadAnimState</span><br>+ int StateTicksRemaining · float KnockbackVx · MovementFsm→<b>ActionFsm</b><br>+ EnterAttackState() / EnterHitState(<b>dirX</b>) / Revive()</td>
+      </tr>
+      <tr>
+        <td class="mono">StateMachine<br><span class="small">States/StateMachine.cs</span></td>
+        <td><span class="b-keep">✅ 유지</span></td>
+        <td class="mono">구조 그대로 (generic). CurrentState로 .LocksMovement 노출만 활용</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ───────────────── 핵심 정신 ───────────────── -->
+  <h2>④ 이 계층의 핵심 정신 3가지</h2>
+  <div class="panel">
+    <ul>
+      <li><b>단일 베이스 <code>ActorState</code></b> — 6개 상태가 전부 같은 추상 계층에서 파생. "지금 무슨 상태"가
+        <b>타입으로 드러남</b> (옛 카운터 3개와 정반대).</li>
+      <li><b>규칙은 State가 소유</b> — <code>LocksMovement</code>/<code>InterruptibleByHit</code>를 State가 들고,
+        틱 루프·전투 시스템은 그 플래그만 읽음. "공격 중 이동잠금/불가침"이 <code>AttackState</code> 안에 캡슐화 →
+        새 상태(구르기 등) 추가 시 그 클래스만 보면 됨.</li>
+      <li><b><code>StateMachine</code>은 generic 유지</b> — 특정 상태를 모름. 설익은 추상화 회피 차원에서
+        Phase 04(적)에서 두 번째 케이스로 검증된 뒤 인터페이스화 검토 (지금 미리 일반화 X).</li>
+    </ul>
+  </div>
+
+  <!-- ───────────────── 넉백 채널 ───────────────── -->
+  <h2>⑤ 넉백 — <code>Physics</code> 임펄스 채널 (HitState 전용)</h2>
+  <div class="panel">
+    <p class="small" style="margin:2px 0 12px">
+      이 게임 물리는 <b>관성이 없다</b> (<code>vx = inputX × MoveSpeed</code>, 매 틱 덮어씀) →
+      넉백 속도를 <code>Velocity.X</code>에 박으면 다음 틱에 사라진다. 그래서 <b>틱을 넘어 유지·감쇠하는
+      좁은 임펄스 채널</b>을 <code>Physics</code>에 추가한다.
+    </p>
+    <table>
+      <tr><th>요소</th><th>구분</th><th class="mono">내용</th></tr>
+      <tr>
+        <td class="mono">PhysicsInput.ExternalVelX<br><span class="small">98_Shared/Physics.cs</span></td>
+        <td><span class="b-edit">✏️ 수정</span></td>
+        <td class="mono"><b>vx = inputX×MoveSpeed + ExternalVelX</b> (기본 0)<br><span class="small">기본 0 = 일반 이동 영향 0 (전면 관성 ②안은 여전히 주차). 지형 X-스윕이 vx를 쓰므로 넉백도 자동으로 벽에 막힘.</span></td>
+      </tr>
+      <tr>
+        <td class="mono">Knockback 상수<br><span class="small">98_Shared/Constants.cs</span></td>
+        <td><span class="b-new">🆕 신규</span></td>
+        <td class="mono">KnockbackInitialVx(≈7f) · KnockbackDecayPerTick(≈0.75f)<br><span class="small">98_Shared = 클라가 Phase 03서 같은 값으로 예측.</span></td>
+      </tr>
+    </table>
+    <p class="small mono" style="margin:14px 0 2px;background:#0c1020;border:1px solid var(--line);border-radius:8px;padding:12px 14px;line-height:1.9">
+      <span style="color:var(--hit)">EnterHitState(dirX)</span> → KnockbackVx = KnockbackInitialVx × sign(dirX)  <span style="color:var(--sub)">// 공격자 반대 방향</span><br>
+      틱 루프 → PhysicsInput(.. , <span style="color:var(--hit)">externalVelX = KnockbackVx</span>) → Physics가 지형 충돌까지 처리<br>
+      <span style="color:var(--hit)">HitState.Tick</span> → KnockbackVx ×= Decay  <span style="color:var(--sub)">// hitstun(8틱) 동안 감쇠 → 정지</span><br>
+      <span style="color:var(--hit)">HitState.Exit</span> → KnockbackVx = 0  <span style="color:var(--sub)">// 채널 닫음</span>
+    </p>
+    <ul>
+      <li><b>불가침 commit 중엔 넉백 X</b> — <code>EnterHitState</code>가 <code>!InterruptibleByHit</code>면 no-op → 공격 중엔 안 밀림(rooted).</li>
+      <li><b>서버 권위 = Phase 02</b> (서버가 넉백 계산·broadcast) / <b>클라 부드러운 예측 = Phase 03</b> (미러, 같은 상수로 역산).</li>
+      <li>수평 only(수직 팝업 X). 밀림 거리·감쇠는 playtest 튜닝값.</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    M4.6 Phase 02 · 플레이어 ActionFsm 클래스 계층 · 2026-06-08 (세션24)<br>
+    관련: <span class="mono">_milestone-plan.md · _fsm-design-discussion.html · _attack-stop-feel-comparison.html</span> ·
+    승인 계획: <span class="mono">~/.claude/plans/declarative-hatching-snail.md</span>
+  </div>
+
+</div>
+</body>
+</html>

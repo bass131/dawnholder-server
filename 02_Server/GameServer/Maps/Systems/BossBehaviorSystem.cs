@@ -135,7 +135,7 @@ internal sealed class BossBehaviorSystem
     /// **범위 판정**: 보스 중심 ±BossAttackHalfExtent AABB ∩ 플레이어 현재 권위 위치.
     ///   범위 밖 = 데미지 0 (판정 skip).
     ///
-    /// **사망 처리**: HP ≤ 0 → 스폰 재배치 + HP full + IsDeadAnimState 리셋.
+    /// **사망 처리**: HP ≤ 0 → 스폰 재배치 + HP full + Revive() 호출(ActionFsm을 Idle로 복귀).
     ///   리스폰 통지는 다음 S_Snapshot에 맡김 (snapshot이 100ms 주기라 체감 즉각).
     ///
     /// tick thread invariant — BossBehaviorSystem.Update 안에서만 호출.
@@ -160,8 +160,10 @@ internal sealed class BossBehaviorSystem
             int damage = Formulas.ComputeDamage(boss.Stats, player.Stats, CombatConstants.BossBaseDamage);
             player.Hp -= damage;
 
-            // Hit latch
-            player.HitLatchTicks = CombatConstants.AnimLatchTicks;
+            // 피격 hitstun 진입. 보스 X와 플레이어 X 비교로 넉백 방향 결정.
+            // dirX = 보스가 어느 쪽에 있냐 (플레이어가 보스보다 오른쪽 → dirX 양수 → 오른쪽으로 날아감).
+            float dirX = player.Position.X >= boss.X ? 1f : -1f;
+            player.EnterHitState(dirX);
 
             // S_EnemyAttack broadcast (데미지 적용 직후 값, 0 이하 가능)
             S_EnemyAttack attackPkt = new S_EnemyAttack
@@ -183,8 +185,8 @@ internal sealed class BossBehaviorSystem
                 player.OnGround = false;
                 player.Hp = player.Stats.MaxHp;
 
-                // IsDeadAnimState 명시 리셋 — 안 돌리면 부활 후 영원히 Death 애니 고정 (최대 함정).
-                player.IsDeadAnimState = false;
+                // Revive()로 ActionFsm을 Idle로 초기화 — 안 하면 부활 후 DeathState에서 이동 불가.
+                player.Revive();
             }
         }
     }

@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
@@ -175,39 +176,13 @@ public class GameMap
     /// <summary>
     /// 플레이어의 현재 시각 애니메이션 상태를 계산. 서버 권위 (헌법 #1).
     ///
-    /// **우선순위 (높을수록 우선)**: Death > Hit > Attack > Jump > Walk > Idle.
-    ///
-    /// **latch**: Attack/Hit는 1틱 순간 이벤트. AttackLatchTicks/HitLatchTicks > 0이면
-    ///   해당 상태를 유지. 카운터는 Physics 루프 뒤에서 매 tick 감소.
-    ///
-    /// **grounded 판정**: OnGround == false → Jump (공중).
-    ///   Y속도가 양수(상승 중)이든 음수(하강 중)이든 공중이면 Jump.
-    ///
-    /// **Walk 판정**: 수평 속도 절대값 > Epsilon → Walk.
-    ///   Epsilon = 0.01f (floating point noise 제거).
+    /// ActionFsm이 단일 출처 — Death/Hit/Attack/Jump/Walk/Idle 우선순위는
+    /// FSM 전이 규칙으로 보장. 이 메서드는 FSM 현재 상태의 AnimState를 반환한다.
     ///
     /// **tick thread invariant**: GameMap.Tick 안에서만 호출 (단일 thread).
     /// </summary>
     static byte ComputePlayerAnimState(PlayerEntity p)
-    {
-        // Death — HP <= 0. 최우선. 한번 사망하면 고정.
-        if (p.IsDead || p.IsDeadAnimState)
-        {
-            p.IsDeadAnimState = true;
-            return (byte)Shared.GameData.AnimState.Death;
-        }
-
-        // Hit — 피격 latch 중
-        if (p.HitLatchTicks > 0)
-            return (byte)Shared.GameData.AnimState.Hit;
-
-        // Attack — 공격 latch 중
-        if (p.AttackLatchTicks > 0)
-            return (byte)Shared.GameData.AnimState.Attack;
-
-        // Jump / Walk / Idle — MovementFsm이 물리 상태를 반영한 최신 AnimState를 보유.
-        return (byte)p.MovementFsm.AnimState;
-    }
+        => (byte)p.ActionFsm.AnimState;
 
     // ── CombatSystem용 internal mutator (§0.3 최소 surface) ──────────────────
 
@@ -301,12 +276,27 @@ public class GameMap
         //    큐 비면(starvation) neutral (0, false) 적용 — 세계는 계속 흐름(중력/마찰).
         foreach (PlayerEntity p in _players)
         {
+            // death-guard: IsDead인데 DeathState가 아니면 즉시 전이.
+            // BossBehaviorSystem.ApplyBossAttack이 Hp를 0으로 내린 직후에도 안전하게 잡힘.
+            if (p.IsDead && p.ActionFsm.CurrentState is not DeathState)
+                p.ActionFsm.ChangeState(PlayerCombatStates.Death, p);
+
             bool hasInput = p.TryDequeueInput(out PlayerEntity.InputCommand cmd);
             sbyte inputX = hasInput ? cmd.InputX : (sbyte)0;
             bool rawJump = hasInput && cmd.JumpPressed;
+
+            // movement-gate: LocksMovement=true인 State(Attack/Hit/Death)면 이동 입력 무효.
+            bool locked = p.ActionFsm.CurrentState.LocksMovement;
+            if (locked)
+            {
+                inputX = 0;
+                rawJump = false;
+            }
+
             bool jumpPressed = p.ResolveJump(rawJump); // jump buffer: 공중 입력 → 착지 틱 발사
 
-            PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration);
+            // KnockbackVx를 ExternalVelX 채널로 전달. 0이면 기존 이동 동작과 동일.
+            PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration, p.KnockbackVx);
             PhysicsState before = new PhysicsState(p.Position, p.Velocity, p.OnGround);
             MoveParams move = new MoveParams(p.Stats.MoveSpeed, p.Stats.JumpVel);
             PhysicsState after = Physics.Step(before, input, _terrain, move);
@@ -331,16 +321,10 @@ public class GameMap
             // Physics.Step 완료 후 위치 기록 — "그 tick에 실제로 있던 위치".
             p.RecordPosition(tickNumber, p.Position);
 
-            // animState latch 카운터 매 tick 감소 (헌법 #5 — blocking call 0).
-            // 순간 이벤트(Attack/Hit)를 최소 AnimLatchTicks 동안 유지.
-            // Death는 latch 없음 — IsDeadAnimState가 true이면 항상 Death.
-            if (p.AttackLatchTicks > 0) p.AttackLatchTicks--;
-            if (p.HitLatchTicks > 0) p.HitLatchTicks--;
-
-            // 이동 계열 State 전환 판정 (Physics.Step + latch 감소 완료 후).
-            // 전투 latch(AttackLatchTicks/HitLatchTicks)가 이미 감소된 시점이므로
-            // MovementFsm은 순수 물리 상태(OnGround/Velocity)만 보고 전환.
-            p.MovementFsm.Tick(p);
+            // ActionFsm Tick: 전투 State(Attack/Hit)의 카운터 감소 + 이동 State 전환 판정을 통합 처리.
+            // Attack/HitState는 내부에서 StateTicksRemaining을 감소시키고 0이면 ResolveGrounded 반환.
+            // 이동 State(Idle/Move/Jump)는 물리 상태(OnGround/Velocity)를 보고 전환.
+            p.ActionFsm.Tick(p);
         }
 
         // 3) Snapshot 브로드캐스트. 매 2 tick(=100ms).
