@@ -6,19 +6,25 @@ using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps.States;
 
-// 보스 AI State 3종 (Idle / Telegraph / Attack). Flyweight(GPP-06) 정적 인스턴스 — 틱 루프 new 0 (헌법 #5).
+// 보스 AI State 4종(Idle/Move/Telegraph/Attack). Flyweight(GPP-06) 정적 인스턴스 — 틱 루프 new 0 (헌법 #5).
 //
-// wire State enum은 Idle 고정 (BossIdleState.Enter만 세팅, Telegraph/Attack은 안 건드림).
-// EnemyState enum에 신규값 추가 금지 — 보스 시각은 animState(AttackLatch)가 구동
+// wire State enum은 Idle 고정 (BossIdleState.Enter만 세팅, Move/Telegraph/Attack은 미변경).
+// EnemyState enum에 신규값 추가 금지 — 보스 시각은 animState(AttackLatch/Walk)가 구동
 // (BossBehaviorSystem.Update의 주기 broadcast). "명시적 State"의 이점은 Fsm 클래스 구조에 있음.
+// blind-timer(쿨다운만으로 telegraph 반복) 폐기 → 탐지/이동 구동으로 교체.
 //
-// 사이클 (옛 BossBehaviorSystem 조건 분기와 비트 동일):
-//   Idle:      쿨다운 감소 → 0 도달 틱에 telegraph 시작 broadcast + Telegraph 전환.
-//   Telegraph: 예고 카운트다운 → 0 도달 틱에 Attack 전환(데미지는 AttackState가 같은 틱 실행).
-//   Attack:    Enter에서 데미지 판정 + 쿨다운 리셋, Tick에서 쿨다운 1회 감소 후 Idle 복귀.
+// 사이클:
+//   Idle(dwell+탐지) → Move(접근/배회) → {사거리→Telegraph→Attack→Idle | 배회종료→Idle}.
+//   Idle:      AttackCooldownTicks 카운트다운 → 0 도달 시 탐지 후 Move 전환.
+//   Move:      타겟 有 → MoveChase(접근), 사거리 도달 시 BeginTelegraph → Telegraph.
+//              타겟 無 → MovePatrol(배회) BossWanderTicks 소진 → Idle(짧은 pause).
+//              매 틱 재탐지(배회 중 진입한 player 포착).
+//   Telegraph: 예고 카운트다운 → 0 도달 틱에 Attack 전환.
+//   Attack:    Enter에서 데미지 판정 + 쿨다운 리셋, Tick에서 Idle 복귀.
 internal static class BossStates
 {
     internal static readonly BossIdleState      Idle      = new();
+    internal static readonly BossMoveState      Move      = new();
     internal static readonly BossTelegraphState Telegraph = new();
     internal static readonly BossAttackState    Attack    = new();
 
@@ -66,9 +72,31 @@ internal static class BossStates
             }
         }
     }
+
+    // telegraph 시작: 예고 틱 결정 + AttackLatch 세팅 + 즉시 broadcast → Telegraph 반환.
+    // 옛 BossIdleState의 쿨다운-0 셋업과 동일 — 트리거가 "Move 사거리 도달"로 바뀌었을 뿐.
+    internal static ActorState<EnemyEntity> BeginTelegraph(EnemyEntity enemy)
+    {
+        enemy.TelegraphTicksRemaining = enemy.IsPhase2
+            ? Constants.BossPhase2TelegraphTicks
+            : Constants.BossTelegraphTicks;
+        enemy.AttackLatchTicks = enemy.TelegraphTicksRemaining + CombatConstants.AnimLatchTicks;
+
+        S_EntityState telegraphPkt = new S_EntityState
+        {
+            entityId  = enemy.EntityId,
+            x         = enemy.X,
+            y         = enemy.Y,
+            state     = (byte)enemy.State,
+            animState = (byte)AnimState.Attack,
+        };
+        enemy.OwningMap!.BroadcastToAll(telegraphPkt.Write());
+        return BossStates.Telegraph;
+    }
 }
 
-// 보스 Idle State: 공격 쿨다운 감소. 0 도달 틱에 telegraph 시작 broadcast + Telegraph 전환.
+// 보스 Idle State: post-attack 쿨다운 또는 배회 후 짧은 pause 카운트다운.
+// 0 도달 시 탐지(초기 타겟 세팅) 후 Move 전환.
 internal sealed class BossIdleState : ActorState<EnemyEntity>
 {
     public override AnimState AnimState => AnimState.Idle;
@@ -77,33 +105,68 @@ internal sealed class BossIdleState : ActorState<EnemyEntity>
 
     public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy)
     {
+        // dwell 카운트다운(= AttackCooldownTicks). post-attack=긴 쿨다운, 배회후=짧은 pause.
         if (enemy.AttackCooldownTicks > 0)
-            enemy.AttackCooldownTicks--;
-
-        if (enemy.AttackCooldownTicks == 0)
         {
-            // telegraph 시작: 틱 수 결정 + AttackLatch 세팅 + 즉시 broadcast (쿨다운 0 도달 틱).
-            // 카운트다운은 다음 틱 BossTelegraphState부터 — 이 틱엔 셋업만(옛 코드와 동일 타이밍).
-            enemy.TelegraphTicksRemaining = enemy.IsPhase2
-                ? Constants.BossPhase2TelegraphTicks
-                : Constants.BossTelegraphTicks;
+            enemy.AttackCooldownTicks--;
+            return null;
+        }
+        // dwell 끝 → 탐지(초기 타겟 세팅) 후 Move 전환. (Move가 매 틱 재탐지도 함.)
+        enemy.TargetEntityId = EnemyStates.FindClosestInAggro(enemy)?.EntityId;
+        return BossStates.Move;
+    }
+}
 
-            enemy.AttackLatchTicks = enemy.TelegraphTicksRemaining + CombatConstants.AnimLatchTicks;
+// 보스 Move: 타겟 有 → 접근(MoveChase), 사거리 도달 시 Telegraph. 타겟 상실(de-aggro) → 배회로.
+//   타겟 無 → 배회(MovePatrol) N틱 후 Idle. 매 틱 재탐지(배회 중 진입한 player 포착).
+// wire State는 건드리지 않음 → Idle 고정 유지(v9 안전). 걷는 시각은 animState=Walk(ComputeBossAnimState).
+internal sealed class BossMoveState : ActorState<EnemyEntity>
+{
+    public override AnimState AnimState => AnimState.Walk;
 
-            S_EntityState telegraphPkt = new S_EntityState
-            {
-                entityId  = enemy.EntityId,
-                x         = enemy.X,
-                y         = enemy.Y,
-                state     = (byte)enemy.State,
-                animState = (byte)AnimState.Attack,
-            };
-            // 보스는 OwningMap 없이 존재 불가 — SpawnEnemy에서 반드시 세팅.
-            enemy.OwningMap!.BroadcastToAll(telegraphPkt.Write());
+    public override void Enter(EnemyEntity enemy) => enemy.MoveTicksRemaining = CombatConstants.BossWanderTicks;
 
-            return BossStates.Telegraph;
+    public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy)
+    {
+        // 타겟 해석 / 없으면 재탐지(배회 중 진입 포착).
+        PlayerEntity? target = enemy.TargetEntityId.HasValue
+            ? enemy.OwningMap!.GetPlayer(enemy.TargetEntityId.Value)
+            : null;
+        if (target == null)
+        {
+            target = EnemyStates.FindClosestInAggro(enemy);
+            enemy.TargetEntityId = target?.EntityId;
         }
 
+        if (target != null)
+        {
+            float dx = target.Position.X - enemy.X;
+            float absDx = dx < 0 ? -dx : dx;
+
+            if (absDx > enemy.Stats.AggroRange * 1.5f)   // de-aggro 히스테리시스(몬스터와 동일)
+            {
+                enemy.TargetEntityId = null;
+                // 아래 배회 블록으로 fall-through
+            }
+            else if (absDx <= CombatConstants.BossAttackTriggerRange)
+            {
+                return BossStates.BeginTelegraph(enemy);  // 사거리 도달 → 예고 시작
+            }
+            else
+            {
+                EnemyStates.MoveChase(enemy);   // 접근 (추격은 타임아웃 없음)
+                return null;
+            }
+        }
+
+        // 타겟 없음 → 배회. N틱 소진 시 Idle(짧은 pause 세팅).
+        EnemyStates.MovePatrol(enemy);
+        if (enemy.MoveTicksRemaining > 0) enemy.MoveTicksRemaining--;
+        if (enemy.MoveTicksRemaining == 0)
+        {
+            enemy.AttackCooldownTicks = CombatConstants.BossIdlePauseTicks;
+            return BossStates.Idle;
+        }
         return null;
     }
 }
@@ -123,12 +186,9 @@ internal sealed class BossTelegraphState : ActorState<EnemyEntity>
     }
 }
 
-// 보스 Attack State: 데미지 판정 + 쿨다운 리셋(Enter) → 쿨다운 1회 감소 후 Idle 복귀(Tick).
-//
-// ⚠️ Tick의 cooldown-- 1회가 비트 보존 핵심: 안 하면 Attack→Idle 전환이 틱 1개를 "소비"해
-//   쿨다운 감소가 1틱 밀림 → 다음 telegraph 영구 지연(누적 drift). 공격 틱(S)에 cooldown=N set →
-//   다음 틱(S+1) AttackState.Tick이 첫 감소(N→N-1) → 그 다음(S+2)부터 IdleState.Tick이 이어받음
-//   = 옛 조건분기 코드(공격 틱엔 감소 X, 다음 틱부터 else 분기 감소)와 동일 타이밍.
+// 보스 Attack State: 데미지 판정 + 쿨다운 리셋(Enter) → Idle 복귀(Tick).
+// 쿨다운 카운트다운은 Idle dwell이 담당 → 여기선 Idle 복귀만.
+// (옛 off-by-one cooldown-- 제거: blind-timer 폐기로 불필요.)
 internal sealed class BossAttackState : ActorState<EnemyEntity>
 {
     public override AnimState AnimState => AnimState.Attack;
@@ -141,10 +201,5 @@ internal sealed class BossAttackState : ActorState<EnemyEntity>
             : CombatConstants.BossPhase1CooldownTicks;
     }
 
-    public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy)
-    {
-        if (enemy.AttackCooldownTicks > 0)
-            enemy.AttackCooldownTicks--;
-        return BossStates.Idle;
-    }
+    public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy) => BossStates.Idle;
 }

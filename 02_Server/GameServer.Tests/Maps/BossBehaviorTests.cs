@@ -3,6 +3,7 @@ using System.Net;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
@@ -12,21 +13,24 @@ namespace GameServer.Tests.Maps;
 /// <summary>
 /// BossBehaviorSystem 회귀 안전망.
 ///
-/// **검증 invariant** (M4.5 Phase 04 완료 조건 7항목):
+/// **검증 invariant**:
 ///   1. 페이즈 전환: HP 51% → IsPhase2 false 유지 / HP ≤ 50% → true / 1회성 idempotent
-///   2. 쿨다운 tick 정확성: BossPhase1CooldownTicks(40) 후 telegraph 시작 (S_EntityState animState=Attack)
-///      → +BossTelegraphTicks(16) 후 S_EnemyAttack 송신. 페이즈 2 가속(24/10틱) 검증
+///   2. 공격 시퀀스: player in range + 충분 틱 → S_EnemyAttack ≥1 검증 (옛 정확 틱 산술 하드코딩 제거)
 ///   3. 범위 내/밖 데미지: 범위 내 플레이어만 S_EnemyAttack + HP 감소 / 범위 밖 무변화
+///      ⚠️ 배회 가장자리 고려: BossX=22, PatrolRange=4 → 배회 x∈[18,26].
+///         "범위 밖" = BossX+15(x=37). 배회 가장자리(x=26)서도 |dx|=11>AggroRange(7) → aggro 없음.
 ///   4. 데미지 = 서버 계산: damage == Formulas.ComputeDamage(BossDefault(), 플레이어 Stats, BossBaseDamage)
 ///   5. 사망→리스폰: HP 낮게 세팅 → 보스 공격 → Position==PlayerSpawnPosition + Hp==Stats.MaxHp + ActionFsm != DeathState
 ///   6. drift 방지: BossDefault().MaxHp == EnemyDefaultHp Boss 값(100) 일치 (spawn된 boss.MaxHp 간접 검증)
 ///   7. ProtocolVersion == 9 assert + S_EnemyAttack/S_PlayerJoin(characterClass 포함) 직렬화 왕복
+///   8. animState 우선순위 — Attack > Hit
+///   9. 보스 이동 행동: 배회(aggro 밖), 접근 후 공격, Walk animState
 ///
 /// **테스트 전략**:
 ///   - GameMap 직접 주입 → singleton race 차단.
 ///   - Send override로 broadcast 패킷 캡처.
-///   - BossStageClearTests 픽스처 패턴 정합.
-///   - 시간 의존 X — GameMap.Tick(n)을 정확한 횟수만큼 호출하는 tick 카운터 방식.
+///   - 시간 의존 X — 충분한 틱(80~120) 돌리고 결과 검증 (옛 정확 산술 하드코딩 제거).
+///   - 이유: blind-timer 폐기로 공격 시점이 탐지/Move 전환 틱 추가로 가변적.
 ///
 /// **entity id 풀 약속** (BossRoom 맵, Normal 없이 Boss만):
 ///   - Boss entityId=1 (첫 AllocId)
@@ -114,9 +118,12 @@ public class BossBehaviorTests : IDisposable
     static void PlaceInBossRange(PlayerEntity player)
         => player.Position = new Vector2(BossX + 1f, BossY); // x=23, 범위 안
 
-    // 보스 범위 밖 좌표 — BossAttackHalfExtent=2.5f이므로 |dx|>3 이상이면 AABB miss.
+    // 보스 범위 밖 좌표.
+    // ⚠️ 배회 가장자리 고려: BossX=22, PatrolRange=4 → 배회 x∈[18,26].
+    // BossX+10(x=32)은 배회 가장자리(x=26)서 dx=6 < AggroRange(7) → aggro 발생 → 테스트 깨짐.
+    // BossX+15(x=37): 배회 가장자리(x=26)서도 dx=11 > AggroRange(7) → 안전.
     static void PlaceOutsideBossRange(PlayerEntity player)
-        => player.Position = new Vector2(BossX + 10f, BossY); // x=32, 범위 밖
+        => player.Position = new Vector2(BossX + 15f, BossY); // x=37, 배회 가장자리서도 aggro 밖
 
     // ─── 항목 1: 페이즈 전환 ────────────────────────────────────────────────────
 
@@ -181,28 +188,24 @@ public class BossBehaviorTests : IDisposable
         Assert.True(boss.IsPhase2, "Phase2 전환은 1회성 — HP가 다시 올라가도 false로 되돌아가지 않음");
     }
 
-    // ─── 항목 2: 쿨다운 tick 정확성 ──────────────────────────────────────────────
+    // ─── 항목 2: 공격 시퀀스 ─────────────────────────────────────────────────
 
     [Fact]
     public void Phase1_TelegraphStartsAfterCooldown_SendsEntityStateAttack()
     {
-        // BossPhase1CooldownTicks(40) 후 telegraph 시작 → S_EntityState animState=Attack broadcast.
-        // ctor에서 AttackCooldownTicks=40으로 초기화. tick 1회당 1씩 감소.
+        // player를 trigger 사거리에 두고 80틱 → S_EntityState animState=Attack broadcast ≥1
+        // + TelegraphTicksRemaining>0 또는 AttackLatchTicks>0 (telegraph 진입 확인).
         TestGameSession s = SetupSession();
         EnemyEntity boss = _map.Enemies[BossEntityId];
-
-        // Setup에서 Tick(1)이 이미 1번 감소 → 39 남음.
-        Assert.Equal(CombatConstants.BossPhase1CooldownTicks - 1, boss.AttackCooldownTicks);
-        Assert.Equal(0, boss.TelegraphTicksRemaining);
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
 
         s.SentPackets.Clear();
 
-        // 잔여 39번 감소 후 0 도달 → telegraph 시작.
-        // tick 2~40(39번) 감소 → 0 도달 tick=40에서 telegraph 시작 + S_EntityState broadcast.
-        for (long t = 2; t <= CombatConstants.BossPhase1CooldownTicks; t++)
+        for (long t = 2; t <= 80; t++)
             _map.Tick(t);
 
-        // tick 41에서 telegraph 시작 → S_EntityState(animState=Attack) broadcast.
         bool hasTelegraphSignal = s.SentPackets
             .Where(p => PacketIdOf(p) == PacketID.S_EntityState)
             .Any(p =>
@@ -213,15 +216,13 @@ public class BossBehaviorTests : IDisposable
             });
 
         Assert.True(hasTelegraphSignal,
-            "쿨다운 종료 tick에 S_EntityState(entityId=Boss, animState=Attack) broadcast 필요");
-        Assert.Equal(Constants.BossTelegraphTicks, boss.TelegraphTicksRemaining);
+            "80틱 이내에 S_EntityState(entityId=Boss, animState=Attack) broadcast 필요");
     }
 
     [Fact]
     public void Phase1_S_EnemyAttackSentAfterTelegraph()
     {
-        // 쿨다운(40) + telegraph(16) 후 S_EnemyAttack broadcast.
-        // 범위 안 플레이어가 있어야 broadcast 발생.
+        // player in range + 충분 틱(80) → S_EnemyAttack ≥1 + 페이로드 검증.
         TestGameSession s = SetupSession();
         EnemyEntity boss = _map.Enemies[BossEntityId];
         PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
@@ -230,16 +231,12 @@ public class BossBehaviorTests : IDisposable
 
         s.SentPackets.Clear();
 
-        // tick 1 이미 소비(쿨다운 39 남음). 잔여 39 + telegraph 16 = 55틱.
-        // tick 2~56(55번) 추가 → 쿨다운 소진 후 telegraph 완료 → S_EnemyAttack.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
-        for (long t = 2; t <= totalTicks + 1; t++)
+        for (long t = 2; t <= 80; t++)
             _map.Tick(t);
 
         int attackCount = CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack);
-        Assert.Equal(1, attackCount);
+        Assert.True(attackCount >= 1, "80틱 이내에 S_EnemyAttack ≥1 필요");
 
-        // S_EnemyAttack 페이로드 검증.
         byte[] attackPkt = s.SentPackets.First(p => PacketIdOf(p) == PacketID.S_EnemyAttack);
         S_EnemyAttack parsed = new S_EnemyAttack();
         parsed.Read(new ArraySegment<byte>(attackPkt));
@@ -251,7 +248,7 @@ public class BossBehaviorTests : IDisposable
     [Fact]
     public void Phase2_TelegraphAndCooldownAccelerated()
     {
-        // 페이즈 2 전환 후 쿨다운=24, telegraph=10으로 가속.
+        // player in range + 강제 phase2 → 충분 틱(80) → S_EnemyAttack attackPattern=1 검증.
         TestGameSession s = SetupSession();
         EnemyEntity boss = _map.Enemies[BossEntityId];
         PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
@@ -260,21 +257,16 @@ public class BossBehaviorTests : IDisposable
 
         // 페이즈 2 강제 전환.
         boss.Hp = 50;
-        // AttackCooldownTicks를 페이즈 2 쿨다운으로 직접 설정 (쿨다운 중일 때 전환 clamp 검증).
+        boss.IsPhase2 = true;
         boss.AttackCooldownTicks = CombatConstants.BossPhase2CooldownTicks;
-        boss.IsPhase2 = true; // 이미 전환된 상태 시뮬
 
         s.SentPackets.Clear();
 
-        // tick 1 이미 소비 → boss.AttackCooldownTicks를 페이즈 2 값으로 직접 세팅했으므로
-        // 세팅 이후 1번 감소는 다음 Tick에서. 쿨다운 24 + telegraph 10 = 34틱.
-        // boss.AttackCooldownTicks를 직접 세팅했으므로 tick 2~35(34번)면 됨.
-        int totalTicks = CombatConstants.BossPhase2CooldownTicks + Constants.BossPhase2TelegraphTicks;
-        for (long t = 2; t <= totalTicks + 1; t++)
+        for (long t = 2; t <= 80; t++)
             _map.Tick(t);
 
         int attackCount = CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack);
-        Assert.Equal(1, attackCount);
+        Assert.True(attackCount >= 1, "페이즈 2 가속 후 80틱 이내에 S_EnemyAttack ≥1 필요");
 
         byte[] attackPkt = s.SentPackets.First(p => PacketIdOf(p) == PacketID.S_EnemyAttack);
         S_EnemyAttack parsed = new S_EnemyAttack();
@@ -296,29 +288,26 @@ public class BossBehaviorTests : IDisposable
 
         int hpBefore = player!.Hp;
 
-        // tick 1 소비됨 → 잔여 쿨다운 39 + telegraph 16 = 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
-        for (long t = 2; t <= totalTicks + 1; t++)
+        for (long t = 2; t <= 80; t++)
             _map.Tick(t);
 
         Assert.True(player.Hp < hpBefore, "범위 안 플레이어 HP가 감소해야 함");
-        Assert.Equal(1, CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack));
+        Assert.True(CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack) >= 1);
     }
 
     [Fact]
     public void BossAttack_PlayerOutOfRange_NoDamage()
     {
         // 범위 밖 플레이어는 S_EnemyAttack 수신 X, HP 무변화.
+        // ⚠️ BossX+15(x=37): 배회 가장자리(x=26)서도 dx=11>AggroRange(7) → aggro 없음 (배회 함정 봉합).
         TestGameSession s = SetupSession();
         PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
         Assert.NotNull(player);
-        PlaceOutsideBossRange(player!);
+        PlaceOutsideBossRange(player!); // x=37
 
         int hpBefore = player!.Hp;
 
-        // tick 1 소비됨 → 잔여 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
-        for (long t = 2; t <= totalTicks + 1; t++)
+        for (long t = 2; t <= 100; t++)
             _map.Tick(t);
 
         Assert.Equal(hpBefore, player.Hp);
@@ -339,19 +328,14 @@ public class BossBehaviorTests : IDisposable
 
         int hpBefore = player!.Hp;
 
-        // tick 1 소비됨 → 잔여 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
-        for (long t = 2; t <= totalTicks + 1; t++)
+        for (long t = 2; t <= 80; t++)
             _map.Tick(t);
 
         byte[] attackPkt = s.SentPackets.First(p => PacketIdOf(p) == PacketID.S_EnemyAttack);
         S_EnemyAttack parsed = new S_EnemyAttack();
         parsed.Read(new ArraySegment<byte>(attackPkt));
 
-        // wire damage == Formula 계산 (drift 방지).
         Assert.Equal(ExpectedBossDamage, parsed.damage);
-
-        // HP = 이전 HP - 데미지 (targetCurrentHp 정합).
         Assert.Equal(hpBefore - ExpectedBossDamage, parsed.targetCurrentHp);
         Assert.Equal(hpBefore - ExpectedBossDamage, player.Hp);
     }
@@ -361,28 +345,21 @@ public class BossBehaviorTests : IDisposable
     [Fact]
     public void BossAttack_PlayerDies_Respawns()
     {
-        // 플레이어 HP를 보스 1격으로 죽을 만큼 낮게 세팅 → 보스 공격 →
-        // Position==PlayerSpawnPosition + Hp==Stats.MaxHp + ActionFsm != DeathState.
+        // 플레이어 HP를 보스 1격으로 죽을 만큼 낮게 세팅 → 보스 공격 → 리스폰 검증.
         TestGameSession s = SetupSession();
         PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
         Assert.NotNull(player);
         PlaceInBossRange(player!);
 
-        // HP를 보스 1격 데미지(15) 이하로 세팅 (반드시 사망하도록).
-        player!.Hp = ExpectedBossDamage - 1; // 14 → 1격으로 HP <= 0
+        player!.Hp = ExpectedBossDamage - 1; // 1격에 사망
 
-        // 스폰 위치는 content에서 설정한 (22, 0).
         Vector2 expectedSpawn = new Vector2(22f, 0f);
 
-        // tick 1 소비됨 → 잔여 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
-        for (long t = 2; t <= totalTicks + 1; t++)
+        for (long t = 2; t <= 80; t++)
             _map.Tick(t);
 
-        // 리스폰 검증.
         Assert.Equal(expectedSpawn, player.Position);
         Assert.Equal(player.Stats.MaxHp, player.Hp);
-        // Phase 02: IsDeadAnimState 제거됨. Revive()로 ActionFsm이 DeathState 아님을 확인.
         Assert.False(player.ActionFsm.CurrentState is Dawnholder.Server.GameServer.Maps.States.DeathState,
             "리스폰 후 ActionFsm이 DeathState면 안 됨 — Revive()로 Idle로 복귀해야 함");
     }
@@ -396,11 +373,9 @@ public class BossBehaviorTests : IDisposable
         Assert.NotNull(player);
         PlaceInBossRange(player!);
 
-        player!.Hp = 1; // 최소 HP
+        player!.Hp = 1;
 
-        // tick 1 소비됨 → 잔여 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
-        for (long t = 2; t <= totalTicks + 1; t++)
+        for (long t = 2; t <= 80; t++)
             _map.Tick(t);
 
         Assert.Equal(player.Stats.MaxHp, player.Hp);
@@ -412,7 +387,6 @@ public class BossBehaviorTests : IDisposable
     public void BossMaxHp_MatchesEnemyDefaultHpTable()
     {
         // spawn된 boss.MaxHp == 100 (EnemyDefaultHp.ByKind[Boss]) 일치 검증.
-        // BossDefault().MaxHp와 GameMap 스폰 HP가 같은지 확인 — drift 방지.
         SetupSession();
         EnemyEntity boss = _map.Enemies[BossEntityId];
 
@@ -420,20 +394,27 @@ public class BossBehaviorTests : IDisposable
         Assert.Equal(EnemyStats.BossDefault().MaxHp, boss.MaxHp);
     }
 
-    // ─── 항목 8: animState 우선순위 — Attack > Hit (Phase 06 봉합) ─────────────────
+    // ─── 항목 8: animState 우선순위 — Attack > Hit ─────────────────────────────
 
     [Fact]
     public void AnimState_DuringTelegraph_HitDoesNotOverrideAttack()
     {
         // telegraph 진입 후 HitLatchTicks 세팅 → broadcast animState는 Attack 유지 (Hit 아님).
+        // 새 모델: player를 trigger 사거리에 두고 TelegraphTicksRemaining>0 될 때까지 틱 진행.
         TestGameSession s = SetupSession();
         EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
 
-        // 쿨다운 소진 → telegraph 시작.
-        for (long t = 2; t <= CombatConstants.BossPhase1CooldownTicks; t++)
+        // Telegraph 진입까지 틱 진행 (최대 80틱).
+        for (long t = 2; t <= 80; t++)
+        {
             _map.Tick(t);
+            if (boss.TelegraphTicksRemaining > 0 && boss.AttackLatchTicks > 0) break;
+        }
 
-        Assert.True(boss.TelegraphTicksRemaining > 0, "telegraph 진입 확인");
+        Assert.True(boss.TelegraphTicksRemaining > 0, "telegraph 진입 확인 (80틱 내)");
         Assert.True(boss.AttackLatchTicks > 0, "AttackLatchTicks 세팅 확인");
 
         // 피격 세팅 — telegraph 중 플레이어가 보스를 때린 상황 시뮬.
@@ -441,10 +422,10 @@ public class BossBehaviorTests : IDisposable
 
         s.SentPackets.Clear();
 
-        // SnapshotTickInterval 주기 broadcast 틱 진행.
-        long nextTick = CombatConstants.BossPhase1CooldownTicks + 1;
-        long broadcastTick = nextTick + (Constants.SnapshotTickInterval - (nextTick % Constants.SnapshotTickInterval));
-        _map.Tick(broadcastTick);
+        // 현재 tick에서 다음 SnapshotTickInterval 경계 틱 찾기.
+        long currentTick = 80;
+        while (currentTick % Constants.SnapshotTickInterval != 0) currentTick++;
+        _map.Tick(currentTick);
 
         byte[] statePkt = s.SentPackets
             .Where(p => PacketIdOf(p) == PacketID.S_EntityState)
@@ -594,5 +575,151 @@ public class BossBehaviorTests : IDisposable
         ushort size = BinaryPrimitives.ReadUInt16LittleEndian(
             new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset, 2));
         Assert.Equal(17, size);
+    }
+
+    // ─── 항목 9: 보스 이동 행동 ──────────────────────────────────────────────────
+
+    [Fact]
+    public void Boss_NoTargetInAggro_WandersWithoutAttacking()
+    {
+        // player를 BossX+15(aggro 밖)로. 100틱 → boss.X != BossX(이동했음) + S_EnemyAttack 0회.
+        // 배회 가장자리(x=26)서도 |dx|=11 > AggroRange(7) → aggro 없음.
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceOutsideBossRange(player!); // x=37
+
+        float initialX = boss.X;
+        s.SentPackets.Clear();
+
+        for (long t = 2; t <= 100; t++)
+            _map.Tick(t);
+
+        Assert.NotEqual(initialX, boss.X);  // 배회로 이동했음
+        Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack)); // 공격 없음
+    }
+
+    [Fact]
+    public void Boss_DetectsAndApproaches_ThenAttacks()
+    {
+        // player를 aggro 안·trigger 밖(BossX+5=x=27, dx=5: AggroRange(7) 안, TriggerRange(2.5) 밖).
+        // 120틱 → 도중 boss.X가 player 쪽으로 이동(접근) + 최종 S_EnemyAttack ≥1.
+        // (MoveChase 0.075/틱: dx=5→2.5 좁히는 데 ~33틱 + telegraph16 → 넉넉히 120틱.)
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        player!.Position = new Vector2(BossX + 5f, BossY); // x=27, aggro 안 trigger 밖
+
+        float initialX = boss.X;
+        s.SentPackets.Clear();
+
+        for (long t = 2; t <= 120; t++)
+            _map.Tick(t);
+
+        // 보스가 player 쪽으로 이동했음 (초기 위치에서 오른쪽으로 이동).
+        Assert.True(boss.X > initialX, "보스가 player 방향(우)으로 접근 이동해야 함");
+        Assert.True(CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack) >= 1,
+            "120틱 이내에 S_EnemyAttack ≥1 필요");
+    }
+
+    [Fact]
+    public void Boss_StaysInRange_AttacksRepeatedly()
+    {
+        // player가 trigger 사거리에 계속 머물면 쿨다운(40)+dwell 소비 후 재탐지→재telegraph→2회차 공격.
+        // 1회차 ~t58, 쿨다운40 카운트(Idle dwell) 후 2회차 ~t117. 200틱이면 ≥2회 확정.
+        // 회귀망: 쿨다운/dwell 통합이 깨져(예: cooldown 리셋 누락) 2회차 영구 정지 시 이 테스트가 잡음.
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
+
+        // 1격사 방지 — player HP를 충분히 높게(여러 대 버티게).
+        player!.Hp = 9999;
+
+        s.SentPackets.Clear();
+
+        for (long t = 2; t <= 200; t++)
+            _map.Tick(t);
+
+        Assert.True(CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack) >= 2,
+            "200틱 내 연속 공격 ≥2회 (Attack→Idle→Move→Telegraph→Attack 루프 재순환)");
+    }
+
+    [Fact]
+    public void Boss_TargetFleesBeyondDeAggro_StopsChasingAndReturnsToWander()
+    {
+        // player가 aggro 안(x27)서 탐지·추격되다 de-aggro 거리(>AggroRange*1.5=10.5) 밖으로 도주 →
+        // 보스가 TargetEntityId 해제 + 더는 공격 안 함(배회 복귀). 회귀: 도주 player 영원히 추격 버그 방지.
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        player!.Position = new Vector2(BossX + 5f, BossY); // x=27, aggro(7) 안 trigger(2.5) 밖 → 추격 시작
+
+        // 보스가 Move로 추격 시작할 때까지 틱 진행 (타겟 획득 확인).
+        for (long t = 2; t <= 60; t++)
+        {
+            _map.Tick(t);
+            if (boss.Fsm!.CurrentState is BossMoveState && boss.TargetEntityId.HasValue) break;
+        }
+        Assert.True(boss.TargetEntityId.HasValue, "추격 시작(타겟 획득) 확인");
+
+        // player를 de-aggro 거리 밖으로 도주(x=50: 보스 어디서든 dx>10.5).
+        player.Position = new Vector2(50f, BossY);
+        s.SentPackets.Clear();
+
+        for (long t = 61; t <= 160; t++)
+            _map.Tick(t);
+
+        // 타겟 해제 + 도주 후 공격 0 (배회로 복귀, x50은 배회 가장자리서도 aggro 밖).
+        Assert.Null(boss.TargetEntityId);
+        Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack));
+    }
+
+    [Fact]
+    public void Boss_InMoveState_BroadcastsWalkAnimState()
+    {
+        // player BossX+15(배회 유도). Move 상태 진입까지 틱 진행 후,
+        // AttackLatch=0·HitLatch=0인 broadcast 경계 틱에서 animState==Walk 확인.
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceOutsideBossRange(player!); // x=37, 배회 유도
+
+        // Move 상태 진입까지 틱 (최대 60틱 — Idle dwell 40 + 여유).
+        long moveTick = 1;
+        for (long t = 2; t <= 60; t++)
+        {
+            _map.Tick(t);
+            moveTick = t;
+            if (boss.Fsm!.CurrentState is BossMoveState) break;
+        }
+
+        Assert.IsType<BossMoveState>(boss.Fsm!.CurrentState);
+
+        // AttackLatch=0, HitLatch=0 확인 (배회 중엔 없어야).
+        Assert.Equal(0, boss.AttackLatchTicks);
+        Assert.Equal(0, boss.HitLatchTicks);
+
+        s.SentPackets.Clear();
+
+        // 다음 SnapshotTickInterval 경계 틱에서 broadcast.
+        long broadcastTick = moveTick + 1;
+        while (broadcastTick % Constants.SnapshotTickInterval != 0) broadcastTick++;
+        _map.Tick(broadcastTick);
+
+        byte[] statePkt = s.SentPackets
+            .Where(p => PacketIdOf(p) == PacketID.S_EntityState)
+            .Select(p => { S_EntityState d = new(); d.Read(new ArraySegment<byte>(p)); return d; })
+            .Where(d => d.entityId == BossEntityId)
+            .Select(d => new byte[] { d.animState })
+            .LastOrDefault() ?? Array.Empty<byte>();
+
+        Assert.True(statePkt.Length > 0, "S_EntityState broadcast 발생 필요");
+        Assert.Equal((byte)AnimState.Walk, statePkt[0]);
     }
 }

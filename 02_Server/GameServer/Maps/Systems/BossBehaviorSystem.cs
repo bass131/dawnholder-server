@@ -17,7 +17,8 @@ namespace Dawnholder.Server.GameServer.Maps;
 /// **헌법 #5 정합**: Task.Delay / Thread.Sleep / DateTime 타이머 전혀 없음.
 ///   모든 타이밍은 State 내부 tick 카운터(int) 감소만.
 ///
-/// **State 머신 전략**: BossIdleState(쿨다운) → BossTelegraphState(예고) → BossAttackState(판정+리셋) → BossIdleState.
+/// **State 머신 전략**: 4-State + 탐지 구동.
+///   BossIdleState(dwell+탐지) → BossMoveState(접근/배회) → {사거리→BossTelegraphState(예고)→BossAttackState(판정+리셋)→Idle | 배회종료→Idle}.
 ///   ApplyBossAttack은 BossStates 정적 헬퍼 — BossAttackState.Enter가 호출(telegraph 완료 틱).
 ///
 /// **페이즈 2 전환**: HP 구동 병렬 관심사 — State에 분산하지 않고 여기서 단독 처리.
@@ -72,18 +73,18 @@ internal sealed class BossBehaviorSystem
     }
 
     /// <summary>
-    /// 보스 animState 계산. 우선순위: Death > Attack > Hit > Idle.
+    /// 보스 animState 계산. 우선순위: Death > Attack > Hit > Walk/Idle.
     /// Attack이 Hit보다 높음 — telegraph/공격 모션이 피격에 끊기지 않게.
-    /// 보스는 Walk 없음 (이동 없는 고정형).
+    /// 이동 중이면 Walk — FSM 현재 상태 AnimState 사용(BossMoveState→Walk, 그 외→Idle).
+    /// Telegraph/Attack의 AnimState=Attack은 위 AttackLatch 분기가 먼저 잡으므로 여기 도달 X.
     /// </summary>
     static byte ComputeBossAnimState(EnemyEntity boss)
     {
-        if (boss.IsDead)
-            return (byte)AnimState.Death;
-        if (boss.AttackLatchTicks > 0)
-            return (byte)AnimState.Attack;
-        if (boss.HitLatchTicks > 0)
-            return (byte)AnimState.Hit;
-        return (byte)AnimState.Idle;
+        if (boss.IsDead)               return (byte)AnimState.Death;
+        if (boss.AttackLatchTicks > 0) return (byte)AnimState.Attack;
+        if (boss.HitLatchTicks > 0)    return (byte)AnimState.Hit;
+        // 이동 중이면 Walk — FSM 현재 상태 AnimState 사용(BossMoveState→Walk, 그 외→Idle).
+        // Telegraph/Attack의 AnimState=Attack은 위 AttackLatch 분기가 먼저 잡으므로 여기 도달 X.
+        return (byte)boss.Fsm!.AnimState;
     }
 }

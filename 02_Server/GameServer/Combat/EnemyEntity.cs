@@ -84,17 +84,22 @@ public class EnemyEntity
     internal StateMachine<EnemyEntity>? Fsm { get; set; }
 
     // ── 보스 FSM 상태 필드 ───────────────────────────────────────────────────
-    // BossStates(Idle/Telegraph/Attack) 전용. Normal/Golem은 이 필드를 사용하지 않음.
+    // BossStates(Idle/Move/Telegraph/Attack) 전용. Normal/Golem은 이 필드를 사용하지 않음.
     // tick thread invariant — BossBehaviorSystem.Update → Fsm.Tick 경로 안에서만 읽기/쓰기.
 
     /// <summary>페이즈 2 전환 여부. HP ≤ 50% 시 true로 1회 전환 (idempotent).</summary>
     public bool IsPhase2 { get; set; }
 
     /// <summary>
-    /// 공격 쿨다운 남은 틱 수. 0이 되면 telegraph 시작.
+    /// 공격 쿨다운 남은 틱 수. 0이 되면 탐지 후 Move 전환.
+    /// post-attack은 쿨다운(긴 리듬), 배회 종료 후엔 BossIdlePauseTicks(짧은 숨) — Idle dwell로 통합.
     /// ctor에서 초기 쿨다운 값으로 초기화 — 스폰 즉시 공격 방지.
     /// </summary>
     public int AttackCooldownTicks { get; set; }
+
+    /// <summary>보스 Move(배회) 남은 틱. 타겟 없이 배회 중 0 도달 시 Idle 복귀.
+    /// 타겟 추격 중엔 감소 안 함(추격은 사거리 도달/타겟 상실까지 지속).</summary>
+    public int MoveTicksRemaining { get; set; }
 
     /// <summary>
     /// telegraph(예고) 남은 틱 수. 0보다 크면 예고 중.

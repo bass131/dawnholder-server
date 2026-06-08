@@ -163,8 +163,10 @@ public struct EnemyStats
     ///   <item>Attack=12: 페이즈1 CombatConstants.BossBaseDamage(8) + Attack(12) - 플레이어 Defense.
     ///       Knight Defense=5 기준 데미지 = Max(1, 8+12-5) = 15.</item>
     ///   <item>Defense=3: 플레이어→보스 방향은 CombatSystem이 처리 (PlayerStats→EnemyStats 오버로드).</item>
-    ///   <item>MoveSpeed/AggroRange/PatrolRange=0: 보스는 이동 없는 고정형 (BossBehaviorSystem 전담).</item>
-    ///   <item>AggroOnSight=false: 보스는 FSM 미사용 (BossBehaviorSystem 전담) — 이 필드 무해.</item>
+    ///   <item>MoveSpeed=1.5f: 느리고 위압적 (Golem 1.2 ~ Normal 2.0 사이). 보스 이동형.</item>
+    ///   <item>AggroRange=7.0f: 넓은 감지 반경. invariant PatrolRange(4) &lt; AggroRange(7) 보장.</item>
+    ///   <item>PatrolRange=4.0f: 스폰 좌표 기준 ±4 배회. AggroRange(7.0)보다 작게 유지.</item>
+    ///   <item>AggroOnSight=true: 보스 = 능동 탐지(선공). 시야에 들어오면 즉시 추격.</item>
     /// </list>
     /// </summary>
     public static EnemyStats BossDefault() => new EnemyStats
@@ -172,9 +174,9 @@ public struct EnemyStats
         Defense = 3,
         MaxHp = 100,
         Attack = 12,
-        MoveSpeed = 0f,
-        AggroRange = 0f,
-        PatrolRange = 0f,
-        AggroOnSight = false,
+        MoveSpeed = 1.5f,      // 느리고 위압적 (Golem 1.2 ~ Normal 2.0 사이)
+        AggroRange = 7.0f,     // 넓은 감지
+        PatrolRange = 4.0f,    // 배회 폭. invariant PatrolRange(4) < AggroRange(7) ✓
+        AggroOnSight = true,   // 보스 = 능동 탐지(선공)
     };
 }
