@@ -52,6 +52,20 @@ Phase 02가 서버에 깐 **이동 잠금(공격 commit window + 피격 hitstun)
 했으나, *살아있는 서버 + Play 실측*(공격 연타 제자리, 2클라 원격, 직업 2종)은 사용자 Unity 검증 영역
 (`unity-visual-work-user-owned`). EditMode 14케이스는 컴파일 검증 + 로직 확정 — Test Runner green은 원클릭.
 
+## Play 실측 결과 (WSL2 서버 + Unity Play, 사용자 검증 완료)
+
+- **rubber-band 0 확인**: `[Reconcile]` 콘솔 로그 전부 `count=0`(SnapCount 미증가 = 진짜 mispredict 아님).
+  공격 중 튕김 없음 — source-gating이 의도대로 동작. (사망→리스폰 1건만 `count=1` = 정상 텔레포트)
+- **넉백 체감 양호** (force-adopt로 화면에 보임).
+- **사용자 피드백 2건 → 즉시 봉합** (커밋 `0025526`):
+  1. **피격 시 공격자 바라보기**: HitState 중 facing을 넉백(이동) 방향 *반대*로 → 공격자를 향함(자연스러운 피격 반응).
+  2. **피격 onset 당김 축소**: 콘솔 분석 결과 피격 첫 스냅샷 dx~1.37(클라가 피격을 1스냅샷 늦게 알아 그 사이
+     입력 예측분이 force-adopt로 당겨짐). `S_EnemyAttack`(피격 즉시 신호)로 입력을 ~1스냅샷 먼저 잠그는
+     **hit-bridge 게이트**(클라 로컬 휴리스틱 3틱)로 onset 축소. 재Play 체감 개선 확인.
+  - **설계 정신**: 예측을 *보수적 방향(서버보다 먼저 멈춤)*으로만 틀어 틀려도 rubber-band 0 (헌법 #1 안전).
+- **남은 레버(미적용, 선택)**: 넉백 staircase(스냅샷 100ms 간격 계단)는 피격 중 시각 보간으로 더 부드럽게
+  가능하나 "타격감 ↔ 부드러움" feel 트레이드오프 → 사용자 만족으로 보류.
+
 ## 결정 흐름
 
 1. **source-gating (게이트 위치)**: 잠금을 `Predict()` 안에 넣으면 reconcile replay 경로
