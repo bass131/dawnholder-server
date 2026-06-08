@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 143950777}
   - component: {fileID: 143950778}
   m_Layer: 0
-  m_Name: RangerDescription
+  m_Name: MageDescription
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -423,7 +423,7 @@ GameObject:
   - component: {fileID: 558169836}
   - component: {fileID: 558169835}
   m_Layer: 0
-  m_Name: RangerButton
+  m_Name: MageButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -496,7 +496,7 @@ MonoBehaviour:
       - m_Target: {fileID: 721055152}
         m_TargetAssemblyTypeName: Dawnholder.Client.Scenes.CharacterSelectController,
           Dawnholder.Client
-        m_MethodName: OnRangerClicked
+        m_MethodName: OnMageClicked
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -632,7 +632,7 @@ GameObject:
   - component: {fileID: 663401116}
   - component: {fileID: 663401115}
   m_Layer: 0
-  m_Name: WarriorButton
+  m_Name: KnightButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -705,7 +705,7 @@ MonoBehaviour:
       - m_Target: {fileID: 721055152}
         m_TargetAssemblyTypeName: Dawnholder.Client.Scenes.CharacterSelectController,
           Dawnholder.Client
-        m_MethodName: OnWarriorClicked
+        m_MethodName: OnKnightClicked
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -765,7 +765,7 @@ GameObject:
   - component: {fileID: 712251257}
   - component: {fileID: 712251258}
   m_Layer: 0
-  m_Name: WarriorDescription
+  m_Name: KnightDescription
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

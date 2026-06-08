@@ -9,7 +9,7 @@ namespace Dawnholder.Server.GameServer.Handlers;
 //   클라가 보낸 것은 `characterClass` byte(선택 의도)만.
 //   서버가 PlayerStats 팩토리로 스탯 박음 — 클라가 스탯 수치를 보낼 경로 없음.
 //
-// **헌법 #3 (Trust Boundary)**: 중복 선택 차단 + 범위 검증(Warrior/Ranger 외 silent drop).
+// **헌법 #3 (Trust Boundary)**: 중복 선택 차단 + 범위 검증(Knight/Mage 외 silent drop).
 internal sealed class CharacterSelectHandler : IPacketHandler
 {
     public void Handle(GameSession session, ArraySegment<byte> buffer)
@@ -24,9 +24,9 @@ internal sealed class CharacterSelectHandler : IPacketHandler
         C_CharacterSelect pkt = new C_CharacterSelect();
         pkt.Read(buffer);
 
-        // 범위 검증 (헌법 #3): Warrior=0, Ranger=1 외 = cheat-flag + silent drop.
-        if (pkt.characterClass != (byte)CharacterClass.Warrior
-            && pkt.characterClass != (byte)CharacterClass.Ranger)
+        // 범위 검증 (헌법 #3): Knight=0, Mage=1 외 = cheat-flag + silent drop.
+        if (pkt.characterClass != (byte)CharacterClass.Knight
+            && pkt.characterClass != (byte)CharacterClass.Mage)
         {
             Console.WriteLine(
                 $"[Trust] CharacterSelect: invalid characterClass=0x{pkt.characterClass:X2} — cheat-flag, dropped");

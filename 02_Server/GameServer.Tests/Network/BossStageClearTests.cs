@@ -42,15 +42,15 @@ public class BossStageClearTests : IDisposable
     const int BossEntityId = 2;
     const int PlayerEntityId = 3;
 
-    // Warrior가 Boss에 가하는 데미지. Formulas 직접 참조로 drift 방지.
+    // Knight가 Boss에 가하는 데미지. Formulas 직접 참조로 drift 방지.
     // BossDefault().Defense=3: Max(1, 10+15-3) = 22.
     static readonly int ExpectedDamageToBoss = Formulas.ComputeDamage(
-        PlayerStats.Warrior(), EnemyStats.BossDefault(), baseDamage: 10);
+        PlayerStats.Knight(), EnemyStats.BossDefault(), baseDamage: 10);
 
-    // Warrior가 Normal enemy에 가하는 데미지.
+    // Knight가 Normal enemy에 가하는 데미지.
     // NormalDefault().Defense=0: Max(1, 10+15-0) = 25.
     static readonly int ExpectedDamageToNormal = Formulas.ComputeDamage(
-        PlayerStats.Warrior(), EnemyStats.NormalDefault(), baseDamage: 10);
+        PlayerStats.Knight(), EnemyStats.NormalDefault(), baseDamage: 10);
 
     // 옛 MapSpawnTable 값 보존 — inlined (MapSpawnTable 은퇴, M4.4 Phase 03).
     const float NormalX    = 10f;
@@ -82,7 +82,7 @@ public class BossStageClearTests : IDisposable
         public void BypassHandshake()
         {
             CompleteHandshakeAndEnter();   // _handshakeCompleted = true
-            SetCharacterClass(0);           // HasSelectedClass = true (Warrior)
+            SetCharacterClass(0);           // HasSelectedClass = true (Knight)
             EnterGameWorldIfReady();        // → EnterGameWorld() 호출
         }
     }

@@ -54,7 +54,7 @@ public class LagCompensationTests : IDisposable
     const int   BossMaxHp   = 100;
 
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
-        PlayerStats.Warrior(), default, baseDamage: 10);
+        PlayerStats.Knight(), default, baseDamage: 10);
 
     class TestGameSession : GameSession
     {
@@ -76,7 +76,7 @@ public class LagCompensationTests : IDisposable
         public void BypassHandshake()
         {
             CompleteHandshakeAndEnter();
-            SetCharacterClass(0); // Warrior
+            SetCharacterClass(0); // Knight
             EnterGameWorldIfReady();
         }
     }

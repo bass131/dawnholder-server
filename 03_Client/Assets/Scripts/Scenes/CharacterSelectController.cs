@@ -16,7 +16,7 @@ namespace Dawnholder.Client.Scenes
     /// **헌법 #1 (Server Authority)**: 클라는 *선택 의도만* PlayerPrefs 저장.
     /// 서버가 PlayerStats 박음. 클라가 stats(HP/Attack) 직접 박지 않음.
     ///
-    /// **PlayerPrefs key**: "SelectedCharacterClass" (byte, 0=Warrior / 1=Ranger).
+    /// **PlayerPrefs key**: "SelectedCharacterClass" (byte, 0=Knight / 1=Mage).
     /// 미박힘(key 없음) 또는 값 invalid(0/1 외) 시 NetworkService가 MainMenu로 돌려보냄.
     /// </summary>
     public class CharacterSelectController : MonoBehaviour
@@ -24,19 +24,19 @@ namespace Dawnholder.Client.Scenes
         // NetworkService에서도 동일 key 읽으므로 상수명 일치 필수.
         public const string SelectedClassPrefsKey = "SelectedCharacterClass";
 
-        public void OnWarriorClicked()
+        public void OnKnightClicked()
         {
-            SaveSelectAndLoad(CharacterClass.Warrior);
+            SaveSelectAndLoad(CharacterClass.Knight);
         }
 
-        public void OnRangerClicked()
+        public void OnMageClicked()
         {
-            SaveSelectAndLoad(CharacterClass.Ranger);
+            SaveSelectAndLoad(CharacterClass.Mage);
         }
 
         void SaveSelectAndLoad(CharacterClass characterClass)
         {
-            // PlayerPrefs에 선택값 저장. 실제 패킷 송신은 Town 씬에서. byte 0=Warrior / 1=Ranger.
+            // PlayerPrefs에 선택값 저장. 실제 패킷 송신은 Town 씬에서. byte 0=Knight / 1=Mage.
             PlayerPrefs.SetInt(SelectedClassPrefsKey, (int)(byte)characterClass);
             PlayerPrefs.Save();
 

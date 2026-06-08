@@ -9,7 +9,7 @@ namespace Dawnholder.Client.Combat
     // 이동값(MoveSpeed/JumpVel)은 여기에 두지 않음:
     //   PlayerStats.ForClass()가 단일 출처 — SO에 중복 보유 시 서버와 영구 mispredict drift 발생.
     //
-    // 아트 컨셉(Knight/Mage) ↔ 프로토콜 직업(Warrior/Ranger) 매핑은 에셋의 Class 필드가 연결.
+    // 아트 컨셉(Knight/Mage) ↔ 프로토콜 직업(Knight/Mage) 매핑은 에셋의 Class 필드가 연결.
     //
     // **로직/비주얼 분리 (M4.5 Phase 05 v2)**:
     //   LocalPlayer/RemotePlayer = 로직 껍데기. 직업 시각 정체성(스프라이트/Animator/EffectAnchor)은

@@ -356,7 +356,7 @@ public class MapTransitionScenario
                     // handshake OK 후 즉시 C_CharacterSelect 송신 (서버가 class 선택 전 월드 진입 차단).
                     if (handshake.ok)
                     {
-                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
+                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
                         _session?.Send(charSelect.Write());
                     }
                     _handshake.Set();

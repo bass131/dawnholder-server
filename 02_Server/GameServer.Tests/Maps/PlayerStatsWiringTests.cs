@@ -15,18 +15,18 @@ namespace GameServer.Tests.Maps;
 public class PlayerStatsWiringTests
 {
     [Fact]
-    public void PlayerEntity_Warrior_UsesClassHp()
+    public void PlayerEntity_Knight_UsesClassHp()
     {
-        var e = new PlayerEntity(1, Vector2.Zero, owner: null, stats: PlayerStats.Warrior());
+        var e = new PlayerEntity(1, Vector2.Zero, owner: null, stats: PlayerStats.Knight());
 
         Assert.Equal(150, e.MaxHp);
         Assert.Equal(150, e.Hp);
     }
 
     [Fact]
-    public void PlayerEntity_Ranger_UsesClassHp()
+    public void PlayerEntity_Mage_UsesClassHp()
     {
-        var e = new PlayerEntity(1, Vector2.Zero, owner: null, stats: PlayerStats.Ranger());
+        var e = new PlayerEntity(1, Vector2.Zero, owner: null, stats: PlayerStats.Mage());
 
         Assert.Equal(80, e.MaxHp);
         Assert.Equal(80, e.Hp);
@@ -37,7 +37,7 @@ public class PlayerStatsWiringTests
     {
         var map = new GameMap(MapId.Town);
 
-        PlayerEntity e = map.AddPlayer(owner: null, spawnPos: Vector2.Zero, stats: PlayerStats.Ranger());
+        PlayerEntity e = map.AddPlayer(owner: null, spawnPos: Vector2.Zero, stats: PlayerStats.Mage());
 
         Assert.Equal(80, e.MaxHp);
         Assert.Equal(80, e.Hp);

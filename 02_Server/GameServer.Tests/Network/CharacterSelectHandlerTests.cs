@@ -11,8 +11,8 @@ namespace GameServer.Tests.Network;
 /// `C_CharacterSelect` 수신 → 검증 → `PlayerStats` 박힘 흐름 전체 커버.
 ///
 /// **검증 invariant** (5건):
-///   1. happy_warrior: characterClass=0 → Warrior stats 박힘 (`Class==Warrior`, `Hp==150`)
-///   2. happy_ranger: characterClass=1 → Ranger stats 박힘 (`Class==Ranger`, `Hp==80`)
+///   1. happy_knight: characterClass=0 → Knight stats 박힘 (`Class==Knight`, `Hp==150`)
+///   2. happy_mage: characterClass=1 → Mage stats 박힘 (`Class==Mage`, `Hp==80`)
 ///   3. invalid_2: characterClass=2 → silent drop + `_stats` null 유지
 ///   4. invalid_255: characterClass=255 → silent drop + `_stats` null 유지
 ///   5. duplicate: 이미 선택 후 재전송 → silent drop + 옛 stats 유지
@@ -92,38 +92,38 @@ public class CharacterSelectHandlerTests : IDisposable
     // --- 5건 회귀 ---
 
     [Fact]
-    public void Happy_Warrior_StatsSet_WarriorClass()
+    public void Happy_Knight_StatsSet_KnightClass()
     {
         // arrange: handshake 통과 상태.
         TestGameSession s = SetupHandshakedSession();
         Assert.False(s.StatsSet); // 선택 전 = null
 
-        // act: characterClass=0 (Warrior) 전송.
+        // act: characterClass=0 (Knight) 전송.
         s.OnRecvPacket(CharacterSelectPacket(0));
 
-        // assert: HasSelectedClass = true + 로그에 Warrior 박힘.
+        // assert: HasSelectedClass = true + 로그에 Knight 박힘.
         Assert.True(s.StatsSet);
         string log = _consoleCapture.ToString();
-        Assert.Contains("Warrior", log);
-        // Warrior MaxHp=150 로그 검증 (SetCharacterClass 로그 정합).
+        Assert.Contains("Knight", log);
+        // Knight MaxHp=150 로그 검증 (SetCharacterClass 로그 정합).
         Assert.Contains("Hp:150", log);
     }
 
     [Fact]
-    public void Happy_Ranger_StatsSet_RangerClass()
+    public void Happy_Mage_StatsSet_MageClass()
     {
         // arrange
         TestGameSession s = SetupHandshakedSession();
         Assert.False(s.StatsSet);
 
-        // act: characterClass=1 (Ranger) 전송.
+        // act: characterClass=1 (Mage) 전송.
         s.OnRecvPacket(CharacterSelectPacket(1));
 
-        // assert: HasSelectedClass = true + 로그에 Ranger 박힘.
+        // assert: HasSelectedClass = true + 로그에 Mage 박힘.
         Assert.True(s.StatsSet);
         string log = _consoleCapture.ToString();
-        Assert.Contains("Ranger", log);
-        // Ranger MaxHp=80 로그 검증.
+        Assert.Contains("Mage", log);
+        // Mage MaxHp=80 로그 검증.
         Assert.Contains("Hp:80", log);
     }
 
@@ -163,22 +163,22 @@ public class CharacterSelectHandlerTests : IDisposable
     [Fact]
     public void Duplicate_Select_SilentDrop_OldStatsPreserved()
     {
-        // arrange: Warrior로 첫 선택 완료.
+        // arrange: Knight로 첫 선택 완료.
         TestGameSession s = SetupHandshakedSession();
-        s.OnRecvPacket(CharacterSelectPacket(0)); // Warrior 선택
+        s.OnRecvPacket(CharacterSelectPacket(0)); // Knight 선택
         Assert.True(s.StatsSet);
         _consoleCapture.GetStringBuilder().Clear(); // 로그 초기화 (첫 선택 로그 제거)
 
-        // act: 두 번째 선택 시도 (Ranger로 바꾸려는 시도 = 중복).
+        // act: 두 번째 선택 시도 (Mage로 바꾸려는 시도 = 중복).
         s.OnRecvPacket(CharacterSelectPacket(1));
 
-        // assert: silent drop + [Trust] 로그 박힘 + Warrior stats 유지 (Ranger로 교체 X).
+        // assert: silent drop + [Trust] 로그 박힘 + Knight stats 유지 (Mage로 교체 X).
         // HasSelectedClass는 여전히 true (null → non-null 전환 X).
         Assert.True(s.StatsSet);
         string log = _consoleCapture.ToString();
         Assert.Contains("[Trust] CharacterSelect: already selected", log);
         Assert.Contains("duplicate dropped", log);
-        // Ranger 선택 로그가 없어야 — 두 번째 SetCharacterClass 호출 X.
+        // Mage 선택 로그가 없어야 — 두 번째 SetCharacterClass 호출 X.
         Assert.DoesNotContain("Hp:80", log);
     }
 }

@@ -14,13 +14,13 @@ namespace GameServer.Tests.Combat;
 /// </summary>
 public class FormulasTests
 {
-    // --- 1. Warrior 정상 경로 ---
-    // Warrior Attack=15 / EnemyStats Defense=2 / baseDamage=10
+    // --- 1. Knight 정상 경로 ---
+    // Knight Attack=15 / EnemyStats Defense=2 / baseDamage=10
     // → Max(1, 10 + 15 - 2) = Max(1, 23) = 23
     [Fact]
-    public void ComputeDamage_WarriorHappyPath()
+    public void ComputeDamage_KnightHappyPath()
     {
-        PlayerStats attacker = PlayerStats.Warrior(); // Attack=15
+        PlayerStats attacker = PlayerStats.Knight(); // Attack=15
         EnemyStats target = new EnemyStats { Defense = 2, MaxHp = 30 };
 
         int result = Formulas.ComputeDamage(attacker, target, baseDamage: 10);
@@ -28,13 +28,13 @@ public class FormulasTests
         Assert.Equal(23, result);
     }
 
-    // --- 2. Ranger 정상 경로 ---
-    // Ranger Attack=12 / EnemyStats Defense=2 / baseDamage=10
+    // --- 2. Mage 정상 경로 ---
+    // Mage Attack=12 / EnemyStats Defense=2 / baseDamage=10
     // → Max(1, 10 + 12 - 2) = Max(1, 20) = 20
     [Fact]
-    public void ComputeDamage_RangerHappyPath()
+    public void ComputeDamage_MageHappyPath()
     {
-        PlayerStats attacker = PlayerStats.Ranger(); // Attack=12
+        PlayerStats attacker = PlayerStats.Mage(); // Attack=12
         EnemyStats target = new EnemyStats { Defense = 2, MaxHp = 30 };
 
         int result = Formulas.ComputeDamage(attacker, target, baseDamage: 10);
@@ -43,12 +43,12 @@ public class FormulasTests
     }
 
     // --- 3. 방어력이 높아 계산 결과가 0 이하 → 최소 1 보장 ---
-    // Warrior Attack=15 / EnemyStats Defense=30 / baseDamage=10
+    // Knight Attack=15 / EnemyStats Defense=30 / baseDamage=10
     // → Max(1, 10 + 15 - 30) = Max(1, -5) = 1
     [Fact]
     public void ComputeDamage_TargetDefenseHigh_ReturnsMinimumOne()
     {
-        PlayerStats attacker = PlayerStats.Warrior(); // Attack=15
+        PlayerStats attacker = PlayerStats.Knight(); // Attack=15
         EnemyStats target = new EnemyStats { Defense = 30 };
 
         int result = Formulas.ComputeDamage(attacker, target, baseDamage: 10);
@@ -58,12 +58,12 @@ public class FormulasTests
 
     // --- 4. EnemyStats default(Defense=0) 자연 입력 경로 ---
     // struct default가 공식에 그대로 흘러 들어가는지 검증.
-    // PlayerStats는 private ctor + factory 패턴이라 Attack=0 임의 박기 불가 → Warrior factory 활용.
+    // PlayerStats는 private ctor + factory 패턴이라 Attack=0 임의 박기 불가 → Knight factory 활용.
     // → Max(1, 10 + 15 - 0) = 25
     [Fact]
     public void ComputeDamage_DefenseZero_BaseDamagePlusAttack()
     {
-        PlayerStats attacker = PlayerStats.Warrior(); // Attack=15
+        PlayerStats attacker = PlayerStats.Knight(); // Attack=15
         EnemyStats target = default; // Defense=0 (struct default)
 
         int result = Formulas.ComputeDamage(attacker, target, baseDamage: 10);
@@ -74,7 +74,7 @@ public class FormulasTests
     // --- 5. 공격자 Attack이 매우 작은 음수에 가까운 값 (overflow 안전망) ---
     // attacker.Attack = int.MinValue + 1 시 baseDamage(10) + Attack(int.MinValue+1) = int.MinValue+11 → 음수 (overflow 없이 통과).
     // → Max(1, int.MinValue + 11 - 0) = Max(1, 매우 큰 음수) = 1
-    // PlayerStats private ctor이라 직접 박기 불가 → Warrior (Attack=15)로 대체하되
+    // PlayerStats private ctor이라 직접 박기 불가 → Knight (Attack=15)로 대체하되
     // baseDamage를 int.MinValue에 가까운 값으로 설정해 음수 wrap 시뮬레이션.
     //
     // 실질 구현: baseDamage = int.MinValue + 1, Attack=15, Defense=0
@@ -83,7 +83,7 @@ public class FormulasTests
     [Fact]
     public void ComputeDamage_NegativeBaseDamageEdge_ReturnsMinimumOne()
     {
-        PlayerStats attacker = PlayerStats.Warrior(); // Attack=15
+        PlayerStats attacker = PlayerStats.Knight(); // Attack=15
         EnemyStats target = default; // Defense=0
 
         // int.MinValue+1 + 15 = int.MinValue+16 → 여전히 음수 (no overflow, 2의 보수 안전)
@@ -103,7 +103,7 @@ public class FormulasTests
     [Fact]
     public void ComputeDamage_LargeBaseDamage_OverflowSafe()
     {
-        PlayerStats attacker = PlayerStats.Warrior(); // Attack=15
+        PlayerStats attacker = PlayerStats.Knight(); // Attack=15
         EnemyStats target = default; // Defense=0
 
         // unchecked: int.MaxValue + 15 → 음수 wrap → Math.Max(1, ...) = 1

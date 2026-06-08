@@ -400,7 +400,7 @@ public class EmergencyCombatSmoke
         {
             float delta = portalX - SpawnX;
             sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
-            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Warrior().MoveSpeed * Constants.TickDuration));
+            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Knight().MoveSpeed * Constants.TickDuration));
             ticks = Math.Clamp(ticks, 0, 160);
             for (int i = 0; i < ticks; i++)
             {
@@ -440,7 +440,7 @@ public class EmergencyCombatSmoke
             float delta = desiredX - SpawnX;
             sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
 
-            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Warrior().MoveSpeed * Constants.TickDuration));
+            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Knight().MoveSpeed * Constants.TickDuration));
             ticks = Math.Clamp(ticks, 0, 80);
 
             for (int i = 0; i < ticks; i++)
@@ -547,7 +547,7 @@ public class EmergencyCombatSmoke
                     // handshake OK 후 즉시 C_CharacterSelect 송신 (서버가 class 선택 전 월드 진입 차단).
                     if (handshake.ok)
                     {
-                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
+                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
                         _session?.Send(charSelect.Write());
                     }
                     _handshake.Set();

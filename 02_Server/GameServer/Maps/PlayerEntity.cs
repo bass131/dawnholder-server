@@ -194,13 +194,13 @@ public class PlayerEntity
         KnockbackVx = 0f;
     }
 
-    // stats null 시 PlayerStats.Warrior() default (전사 기본값).
+    // stats null 시 PlayerStats.Knight() default (전사 기본값).
     public PlayerEntity(int entityId, Vector2 position, GameSession? owner = null, PlayerStats? stats = null)
     {
         EntityId = entityId;
         Position = position;
         Owner = owner;
-        Stats = stats ?? PlayerStats.Warrior();
+        Stats = stats ?? PlayerStats.Knight();
         // 권위 전투 HP를 클래스 스탯에서 초기화.
         // migration(GameMap.AddPlayerWithId)은 이 직후 Hp를 이월 값으로 덮음 — MaxHp는 여기서 확정.
         MaxHp = Stats.MaxHp;

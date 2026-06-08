@@ -8,6 +8,6 @@ namespace Shared.Protocol;
 /// </summary>
 public enum CharacterClass : byte
 {
-    Warrior = 0,
-    Ranger = 1,
+    Knight = 0,
+    Mage = 1,
 }
