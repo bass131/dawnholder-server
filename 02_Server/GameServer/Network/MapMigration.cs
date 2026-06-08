@@ -138,6 +138,10 @@ internal static class MapMigration
             };
             session.Send(transition.Write());
 
+            // 맵 전환 입장도 "진입" — 캐리된 HP(full 아님)를 권위 통지해 HUD 표시 미러 갭 봉합.
+            // 누락 시 데미지 입은 채 맵 넘으면 클라가 Start() placeholder(full HP) 고착 (reviewer 🟡①).
+            destMap.SendPlayerHp(newEntity);
+
             // 본인에게 맵 B 기존 player roster (initial roster — EnterGameWorld 패턴 정합)
             // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3 — 클라 raw byte echo 절대 금지).
             foreach (PlayerEntity existing in existingInDest)

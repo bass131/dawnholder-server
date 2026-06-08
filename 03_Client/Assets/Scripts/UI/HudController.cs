@@ -56,7 +56,7 @@ namespace Dawnholder.Client.UI
 
         void Start()
         {
-            // HP 초기값 = 선택 직업 full HP (서버 spawn = full HP 약속).
+            // HP 초기값 = 선택 직업 full HP — 서버 S_PlayerHp 도착 전 임시 표시 (곧 서버 권위값이 덮음).
             int classValue = PlayerPrefs.GetInt(
                 CharacterSelectController.SelectedClassPrefsKey,
                 (int)CharacterClass.Knight);

@@ -152,6 +152,9 @@ public class GameSession : PacketSession
             };
             self.Send(pkt.Write());
 
+            // 진입 직후 권위 HP 1회 송신 — 클라 HUD 초기화. Owner 연결 완료 후 즉시.
+            map.SendPlayerHp(entity);
+
             // Initial roster — 자기에게 기존 entity 전원의 S_PlayerJoin 다발 Send.
             // race 안전: closing 중인 owner의 entity는 skip (race window에서 곧 disappear).
             // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3 — 클라 raw byte echo 절대 금지).

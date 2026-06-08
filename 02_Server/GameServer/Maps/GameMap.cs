@@ -207,7 +207,28 @@ public class GameMap
     /// </summary>
     internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
 
-    // ── Broadcast ────────────────────────────────────────────────────────────
+    // ── Broadcast / 1:1 송신 ─────────────────────────────────────────────────
+
+    /// <summary>
+    /// 플레이어 본인에게만 S_PlayerHp 1:1 송신.
+    ///
+    /// **호출 invariant**: tick thread에서만. player.Hp가 mutate되는 *모든 지점*에서 동반 호출이 규율
+    ///   (진입 EnterGameWorld / 피격·부활 ApplyBossAttack / 맵 전환 MapMigration). 누락 시 HUD 표시 갭.
+    /// **논블로킹 보장**: Owner.Send는 Session.Send → lock + queue enqueue (헌법 #5).
+    /// currentHp는 Math.Max(0, p.Hp) floor — 음수 방어 (표시 전용, 사망 lifecycle은 S_EntityDeath 채널).
+    /// entityId 필드는 미래 원격/파티 HP 바 확장 대비 — 이번 마일스톤은 본인에게만 송신.
+    /// </summary>
+    internal void SendPlayerHp(PlayerEntity p)
+    {
+        if (p.Owner == null || p.Owner.IsClosing) return;
+        S_PlayerHp pkt = new S_PlayerHp
+        {
+            entityId  = p.EntityId,
+            currentHp = Math.Max(0, p.Hp),
+            maxHp     = p.MaxHp,
+        };
+        p.Owner.Send(pkt.Write());
+    }
 
     /// <summary>
     /// 같은 맵 전원에게 packet 전송.

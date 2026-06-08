@@ -334,8 +334,7 @@ namespace Dawnholder.Client.Network
     }
 
     // S_EnemyAttack (ID 20, v9) — 보스/적 → 플레이어 피격 결과.
-    // 헌법 #1: targetCurrentHp는 서버 권위값 그대로 표시. 데미지 계산 0줄.
-    // maxHp 필드 없음 — PlayerStats.ForClass(선택 직업)에서 조회.
+    // 헌법 #1: 연출(이펙트/플래시/페이드)만 담당. HP 표시는 S_PlayerHp(ID 21)가 권위 통지.
     internal sealed class EnemyAttackHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -391,16 +390,6 @@ namespace Dawnholder.Client.Network
                 // 본인 피격 *즉시* 신호 → hit-bridge 게이트 시작 (animState==Hit 스냅샷 전 입력 예측 갭 축소).
                 LocalPlayerMovement.Instance?.NotifyHit();
 
-                // 본인 피격 — HUD 갱신 (서버 권위값 그대로).
-                int classValue = PlayerPrefs.GetInt(
-                    CharacterSelectController.SelectedClassPrefsKey,
-                    (int)CharacterClass.Knight);
-                PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
-                int maxHp = stats.MaxHp;
-
-                if (HudController.Instance != null)
-                    HudController.Instance.UpdateHP(targetCurrentHp, maxHp);
-
                 // 피격 플래시 — LocalPlayer GameObject에서 DamageFlash 조회 또는 런타임 주입.
                 if (LocalPlayerMovement.Instance != null)
                 {
@@ -409,23 +398,36 @@ namespace Dawnholder.Client.Network
                     flash.Flash();
                 }
 
-                // 사망 처리 — 리스폰 페이드 + HUD 복구.
-                // 복구는 화면이 완전히 덮인 시점 콜백 — 같은 프레임 복구는 사망 0 표시가 안 보임.
-                // 서버 리스폰 규칙(Stats.MaxHp)의 표시 미러: S_Snapshot에 HP가 없어
-                // 복구 안 하면 다음 피격 전까지 HUD 0 고착. HP 동기화 패킷(v10 후보) 전 임시.
+                // 사망 처리 — 리스폰 페이드 연출. HP 복구는 S_PlayerHp 권위 통지가 담당.
                 if (targetCurrentHp <= 0)
                 {
-                    System.Action restoreHud = () =>
-                    {
-                        if (HudController.Instance != null)
-                            HudController.Instance.UpdateHP(maxHp, maxHp);
-                    };
-
-                    bool fadeStarted = SceneTransition.Instance != null
-                        && SceneTransition.Instance.PlayRespawnFade(restoreHud);
-                    if (!fadeStarted)
-                        restoreHud(); // 페이드 불가(전환 중/Instance null) — 즉시 복구가 0 고착보다 낫다.
+                    if (SceneTransition.Instance != null)
+                        SceneTransition.Instance.PlayRespawnFade();
                 }
+            });
+        }
+    }
+
+    // S_PlayerHp (ID 21) — 서버 권위 플레이어 HP 통지.
+    // 헌법 #1: 클라는 이 값을 신뢰해 HUD에 표시만. HP 직접 계산 X.
+    // entityId == LocalEntityId일 때만 소비 (원격 플레이어 HP 바는 미래 범위).
+    internal sealed class PlayerHpHandler : IClientPacketHandler
+    {
+        public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
+        {
+            S_PlayerHp pkt = new S_PlayerHp();
+            pkt.Read(buffer);
+
+            int entityId = pkt.entityId;
+            int currentHp = pkt.currentHp;
+            int maxHp = pkt.maxHp;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (session.LocalEntityId == null) return;
+                if (entityId != session.LocalEntityId.Value) return;
+
+                HudController.Instance?.UpdateHP(currentHp, maxHp);
             });
         }
     }
