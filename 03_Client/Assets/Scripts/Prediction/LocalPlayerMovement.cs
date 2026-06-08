@@ -32,6 +32,14 @@ namespace Dawnholder.Client.Prediction
 
         sbyte _currentMoveX; // LocalPlayerInput이 SetMoveX로 갱신.
 
+        // 로컬 공격 commit window 예측 잔여 시간(초). OnAttack 송신 성공 시 세팅, 매 frame 감쇠.
+        // 서버 AttackState(이동 잠금)를 같은 98_Shared 상수로 클라가 선예측 → reconcile rubber-band 0.
+        float _commitWindowRemaining;
+
+        // 서버 권위 animState 최신값(S_Snapshot). Hit/Death는 클라가 예측 불가 → 이 값으로 게이트.
+        // Attack은 로컬 타이머가 선예측하되, 서버 window가 더 길면 이 값이 잠금을 연장(거울 보정).
+        AnimState _serverAnimState = AnimState.Idle;
+
         void Awake()
         {
             Instance = this;
@@ -92,13 +100,54 @@ namespace Dawnholder.Client.Prediction
         // LocalPlayerInput의 점프 게이트용. 입력 *시점* 접지 여부를 정확히 반영.
         public bool OnGround => _predictor.OnGround;
 
+        // LocalPlayerInput이 공격 송신 성공 시 호출 — 로컬 commit window 예측 시작.
+        // 지속 = 서버와 동일한 98_Shared 상수(AttackCommitWindowTicks × TickDuration 초).
+        // 재공격 시 갱신(연장). 서버 AttackState 진입과 같은 규칙을 클라가 선예측 → rubber-band 0.
+        public void NotifyAttack()
+        {
+            _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
+        }
+
+        // 이동 잠금 판정 순수 함수 — 서버 AttackState/HitState/DeathState(LocksMovement)의 클라 거울.
+        //   - commit window 잔여 > 0: 로컬 공격 예측 (서버 확인 전 즉시 잠금 = "콱 정지").
+        //   - serverAnimState Attack: 서버 window가 로컬 타이머보다 길면 잠금 연장(거울 보정).
+        //   - serverAnimState Hit/Death: 클라가 예측 불가한 서버 전용 상태 → 서버 신뢰 잠금.
+        public static bool IsMovementLocked(float commitWindowRemaining, AnimState serverAnimState)
+        {
+            if (commitWindowRemaining > 0f) return true;
+            return serverAnimState == AnimState.Attack
+                || serverAnimState == AnimState.Hit
+                || serverAnimState == AnimState.Death;
+        }
+
+        // **source-gating 산출 순수 함수** — 잠금 시 이동/점프 입력을 *근원에서* 0으로 막는다.
+        // 이 출력이 Predict / C_MoveIntent 송신 / NotifySent(replay) 세 곳에 *동일하게* 흘러가야
+        // reconcile이 서버와 정확히 일치(rubber-band 0). 그 핵심 불변식을 회귀로부터 박기 위해
+        // MonoBehaviour Update에서 분리해 단위 테스트 가능하게 추출.
+        public static (sbyte moveX, bool jumpEdge) ResolveGatedInput(bool locked, sbyte rawMoveX, bool rawJumpEdge)
+        {
+            if (locked) return ((sbyte)0, false);
+            return (rawMoveX, rawJumpEdge);
+        }
+
         void Update()
         {
+            // commit window 예측 타이머 감쇠. 서버 animState와 함께 이동 잠금 판정.
+            if (_commitWindowRemaining > 0f)
+                _commitWindowRemaining = Mathf.Max(0f, _commitWindowRemaining - Time.deltaTime);
+
+            // **source-gating** (헌법 #1 정합): 잠금 시 입력을 *근원에서* 0으로 막는다.
+            //   Predict / 송신(C_MoveIntent) / InputHistory(replay) 셋이 같은 gated 입력을 쓰므로
+            //   reconcile replay가 서버와 정확히 일치 — 별도 replay 게이트 불필요.
+            //   서버가 공격을 거부(rate-limit)해도 송신 입력이 0 → 서버도 0 적용 → 발산 0.
+            bool locked = IsMovementLocked(_commitWindowRemaining, _serverAnimState);
+            (sbyte moveX, bool jumpEdge) = ResolveGatedInput(locked, _currentMoveX, _jumpEdgeThisTick);
+
             // 매 frame Predict. 시뮬 자체가 부드러움.
             // jumpEdge는 송신 cycle까지 *보관* (송신 시점에 한 번 더 사용) — Predict는 매 frame이라
             // OnJump 이후 50ms 안 모든 frame에 jumpEdge=true 들어가면 *재점프* 시도. 단 Physics.Step의
             // OnGround 안전망이 1tick만 적용 — 점프 후 즉시 onGround=false라 자연 차단.
-            _predictor.Predict(_currentMoveX, _jumpEdgeThisTick, Time.deltaTime);
+            _predictor.Predict(moveX, jumpEdge, Time.deltaTime);
             transform.position = new Vector3(_predictor.Position.x, _predictor.Position.y, 0f);
 
             // 50ms 송신 throttle — fps 의존 차단 (고프레임도 20 packet/s).
@@ -110,14 +159,13 @@ namespace Dawnholder.Client.Prediction
             if (session == null) return;
 
             // 50ms cadence: 송신 + InputHistory push + jumpEdge reset.
-            // 점프 게이트는 LocalPlayerInput.OnJump에서 박힘 (입력 시점 OnGround 검사 = 정확).
-            bool jumpEdge = _jumpEdgeThisTick;
+            // 잠금 중이면 jumpEdge=false(드롭) — 서버가 rawJump=false로 게이트하는 것과 정합.
             _jumpEdgeThisTick = false; // 송신 후 reset — 다음 cycle은 새 OnJump 캡처.
 
             _localTickCounter++;
 
-            // 비트필드 인코드 (InputBits.Encode 단일 출처).
-            byte input = InputBits.Encode(_currentMoveX, jumpEdge);
+            // 비트필드 인코드 (InputBits.Encode 단일 출처). gated 입력 송신 = 서버 게이트와 합치.
+            byte input = InputBits.Encode(moveX, jumpEdge);
             C_MoveIntent pkt = new C_MoveIntent
             {
                 input = input,
@@ -126,8 +174,8 @@ namespace Dawnholder.Client.Prediction
             // SendIntent 경유 — Editor에서 SimulatedLatencyMs 적용 가능.
             session.SendIntent(pkt.Write());
 
-            // 송신 *직후* InputHistory push (ack 전 빔 함정 회피). jumpEdge 함께 박아 replay 시 재현.
-            _predictor.NotifySent(_localTickCounter, _currentMoveX, jumpEdge);
+            // 송신 *직후* InputHistory push (ack 전 빔 함정 회피). gated 입력 그대로 박아 replay 일치.
+            _predictor.NotifySent(_localTickCounter, moveX, jumpEdge);
         }
 
         // S_EnterMap → 서버가 정한 spawn 좌표 적용. predictor 초기화 — 다음 Update에서 transform 자동 동기.
@@ -154,14 +202,19 @@ namespace Dawnholder.Client.Prediction
         }
 
         // S_Snapshot → predictor의 reconcile 판단에 위임. Predictor가 X+Y 둘 다 비교.
+        // animState = 서버 권위 시각 상태 — 이동 게이트(Hit/Death/Attack) + 넉백 force-adopt 판정용.
         public void OnServerSnapshot(float serverX, float serverY,
                                      float serverVx, float serverVy,
-                                     int serverTick, uint ackedClientTick)
+                                     int serverTick, uint ackedClientTick, byte animState)
         {
+            _serverAnimState = (AnimState)animState;
             float prevX = _predictor.Position.x;
             float prevY = _predictor.Position.y;
+            // 피격(Hit) 중엔 넉백(서버 권위 임펄스)을 클라가 예측 못 함 → 임계 이내라도 서버 위치 채택
+            //   (force-adopt)해 넉백을 시각화 + sub-threshold offset 누적 방지.
             bool reconciled = _predictor.OnSnapshot(
-                serverX, serverY, serverVx, serverVy, ackedClientTick);
+                serverX, serverY, serverVx, serverVy, ackedClientTick,
+                forceAdopt: _serverAnimState == AnimState.Hit);
             if (reconciled)
             {
                 float dx = serverX - prevX;

@@ -135,10 +135,11 @@ namespace Dawnholder.Client.Network
 
                 if (eid == session.LocalEntityId.Value)
                 {
-                    // 본인 path — reconcile + 서버 animState 전달.
+                    // 본인 path — reconcile(+넉백 force-adopt) + 서버 animState 전달.
+                    // animState는 두 소비자: 이동 게이트(LocalPlayerMovement) + 시각 애니(LocalPlayerMotion).
                     if (LocalPlayerMovement.Instance != null)
                     {
-                        LocalPlayerMovement.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
+                        LocalPlayerMovement.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick, animState);
                         LocalPlayerMovement.Instance.GetComponent<LocalPlayerMotion>()
                             ?.SetServerAnimState(animState);
                     }

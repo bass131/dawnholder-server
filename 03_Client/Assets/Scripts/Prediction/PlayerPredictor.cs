@@ -106,16 +106,20 @@ namespace Dawnholder.Client.Prediction
         //   3. 항상 InputHistory.EvictUpTo(ackedClientTick) — 메모리 위생
         //
         // **헌법 #1 유지**: cheat 시뮬도 서버 권위 좌표 기준 → cheat 흡수 X.
+        //
+        // **forceAdopt** (HitState 넉백 표시): 클라는 서버 권위 넉백 임펄스(ExternalVelX)를 예측 못 함.
+        //   피격 중엔 임계(SnapThreshold) 이내여도 서버 위치를 채택해 넉백을 시각화하고
+        //   sub-threshold offset 누적(영구 어긋남)을 막는다. SnapCount는 *진짜 mispredict*에만 증가.
         public bool OnSnapshot(float serverX, float serverY,
                                float serverVx, float serverVy,
-                               uint ackedClientTick)
+                               uint ackedClientTick, bool forceAdopt = false)
         {
             float dx = serverX - Position.x;
             float dy = serverY - Position.y;
             bool mispredict = Mathf.Abs(dx) > SnapThreshold
                            || Mathf.Abs(dy) > SnapThreshold;
 
-            if (mispredict)
+            if (mispredict || forceAdopt)
             {
                 // 서버 권위 상태에서 출발 — 위치 + 속도 + ground (위치로 추정)
                 Position = new Vector2(serverX, serverY);
@@ -124,18 +128,19 @@ namespace Dawnholder.Client.Prediction
 
                 // 미-ack 입력 재시뮬 (서버 권위 → 클라 현재까지).
                 // terrain 오버로드 동일 — replay가 평지로 돌면 서버-클라 대칭이 깨져 reconcile 자체가 어긋남.
+                // 피격 중 입력은 source-gating으로 0이라 replay는 물리(중력)만 적용.
                 foreach (InputRecord rec in _history.ReplayFrom(ackedClientTick))
                 {
                     PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
                         new PhysicsInput(rec.InputX, rec.JumpPressed, Constants.TickDuration), _terrain, _move);
                     ApplyPhysicsState(after);
                 }
-                SnapCount++;
+                if (mispredict) SnapCount++;
             }
 
             // 항상 ack된 입력 정리 — 메모리 위생.
             _history.EvictUpTo(ackedClientTick);
-            return mispredict;
+            return mispredict || forceAdopt;
         }
 
         // === Vector2 변환 헬퍼 (System.Numerics ↔ UnityEngine) ===
