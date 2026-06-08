@@ -37,7 +37,7 @@ public class MoveIntentHandlerTests : IDisposable
         public override void OnConnected(EndPoint endPoint)
         {
             CompleteHandshakeAndEnter();   // _handshakeCompleted = true
-            SetCharacterClass(0);           // HasSelectedClass = true (Warrior)
+            SetCharacterClass(0);           // HasSelectedClass = true (Knight)
             EnterGameWorldIfReady();        // → EnterGameWorld() 호출
         }
         public override void Send(ArraySegment<byte> _) { /* socket I/O 차단 */ }

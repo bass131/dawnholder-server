@@ -390,7 +390,7 @@ namespace Dawnholder.Client.Network
                 // 본인 피격 — HUD 갱신 (서버 권위값 그대로).
                 int classValue = PlayerPrefs.GetInt(
                     CharacterSelectController.SelectedClassPrefsKey,
-                    (int)CharacterClass.Warrior);
+                    (int)CharacterClass.Knight);
                 PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
                 int maxHp = stats.MaxHp;
 

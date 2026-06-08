@@ -131,8 +131,8 @@ public class M2BasicMovement
         // handshake 후 C_CharacterSelect 의무 송신.
         // 서버가 class 선택 없이 월드 진입을 차단하므로 S_EnterMap은 이 패킷 후에야 옴.
         // stats는 CharacterSelect와 동일 출처 — 봇 시뮬 스탯이 선택 직업과 일치해야 desync 검증 유효.
-        PlayerStats stats = PlayerStats.Warrior();
-        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Warrior };
+        PlayerStats stats = PlayerStats.Knight();
+        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
         session?.Send(charSelect.Write());
 
         if (!enterMapEv.Wait(TimeSpan.FromSeconds(5)))

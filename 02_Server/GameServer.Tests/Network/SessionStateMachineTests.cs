@@ -170,7 +170,7 @@ public class SessionStateMachineTests : IDisposable
     [Fact]
     public void EnterGameWorld_AfterCharacterSelect_Success()
     {
-        // arrange + act: handshake → class 선택 (Warrior).
+        // arrange + act: handshake → class 선택 (Knight).
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
 
@@ -179,7 +179,7 @@ public class SessionStateMachineTests : IDisposable
         Assert.Empty(_map.Players);
 
         // class 선택 → EnterGameWorldIfReady() 호출 → EnterGameWorld() 실행.
-        s.OnRecvPacket(CharacterSelectPacket(0)); // Warrior
+        s.OnRecvPacket(CharacterSelectPacket(0)); // Knight
 
         // tick 후 player=1 — 정상 월드 진입.
         _map.Tick(2);
@@ -256,10 +256,10 @@ public class SessionStateMachineTests : IDisposable
     [Fact]
     public void CharacterSelect_DuplicateAfterEnter_Rejected()
     {
-        // arrange: 정상 handshake + Warrior 선택 + 월드 진입.
+        // arrange: 정상 handshake + Knight 선택 + 월드 진입.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
-        s.OnRecvPacket(CharacterSelectPacket(0)); // Warrior
+        s.OnRecvPacket(CharacterSelectPacket(0)); // Knight
         _map.Tick(1);
         Assert.Single(_map.Players);
         Assert.True(s.ClassSelected);
@@ -268,8 +268,8 @@ public class SessionStateMachineTests : IDisposable
         _consoleCapture.GetStringBuilder().Clear();
         int playersBefore = _map.Players.Count;
 
-        // act: 두 번째 선택 시도 (Ranger로 교체 의도).
-        s.OnRecvPacket(CharacterSelectPacket(1)); // Ranger
+        // act: 두 번째 선택 시도 (Mage로 교체 의도).
+        s.OnRecvPacket(CharacterSelectPacket(1)); // Mage
         _map.Tick(2);
 
         // assert: duplicate drop 로그 박힘 + player 수 변동 없음 + 두 번째 EnterGameWorld no-op.

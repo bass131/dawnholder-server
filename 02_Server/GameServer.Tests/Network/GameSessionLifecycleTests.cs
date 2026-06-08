@@ -36,7 +36,7 @@ public class GameSessionLifecycleTests : IDisposable
         public override void OnConnected(EndPoint endPoint)
         {
             CompleteHandshakeAndEnter();     // handshake 우회 (_handshakeCompleted = true)
-            SetCharacterClass(0);             // class 선택 우회 (Warrior)
+            SetCharacterClass(0);             // class 선택 우회 (Knight)
             EnterGameWorldIfReady();          // 두 조건 충족 → EnterGameWorld() 호출
         }
         public override void Send(ArraySegment<byte> _) { }

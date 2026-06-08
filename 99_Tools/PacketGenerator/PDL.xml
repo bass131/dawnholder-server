@@ -102,7 +102,7 @@
          **자기 자신은 받지 않음** — sender의 OnConnected 흐름에서 자기 외 모든 세션에 broadcast.
          spawnX/Y는 *서버가 정한* 좌표 (헌법 #1 Server Authority).
          M4.5 Phase 04 [Protocol.Version v8→v9]: characterClass byte 맨 끝 append (원격 플레이어 직업 표시용).
-         서버 권위 값. Warrior=0 / Ranger=1. -->
+         서버 권위 값. Knight=0 / Mage=1. -->
     <packet name="S_PlayerJoin">
         <int name="entityId"/>
         <float name="spawnX"/>

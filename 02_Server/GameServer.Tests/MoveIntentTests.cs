@@ -9,12 +9,12 @@ namespace Dawnholder.Server.GameServer.Tests;
 // GameSession 측 검증(rate-limit, range cheat-log)은 PacketSession 상속 + ServerCore
 // 의존이라 단위 테스트보단 통합 테스트 영역.
 //
-// AddPlayer(null stats) → PlayerStats.Warrior() 기본값 → MoveSpeed=4, JumpVel=8.
+// AddPlayer(null stats) → PlayerStats.Knight() 기본값 → MoveSpeed=4, JumpVel=8.
 // 기존 5.0 기준 기대값은 4.0 기준으로 정직 재계산 (명세 §E 지침).
 public class MoveIntentTests
 {
-    // Warrior 기본 스탯 (테스트 기준값 단일화)
-    static readonly PlayerStats WarriorStats = PlayerStats.Warrior();
+    // Knight 기본 스탯 (테스트 기준값 단일화)
+    static readonly PlayerStats KnightStats = PlayerStats.Knight();
 
     [Fact]
     public void Tick_AppliesPendingInputX_RightDirection()
@@ -26,7 +26,7 @@ public class MoveIntentTests
         map.Tick(1);
 
         // 1 tick = 1 * MoveSpeed * TickDuration = 4 * 0.05 = 0.20
-        float expected = WarriorStats.MoveSpeed * Constants.TickDuration;
+        float expected = KnightStats.MoveSpeed * Constants.TickDuration;
         Assert.Equal(expected, e.Position.X, 4);
         Assert.Equal(0, e.InputQueueCount);
     }
@@ -40,7 +40,7 @@ public class MoveIntentTests
 
         map.Tick(1);
 
-        float expected = -WarriorStats.MoveSpeed * Constants.TickDuration;
+        float expected = -KnightStats.MoveSpeed * Constants.TickDuration;
         Assert.Equal(expected, e.Position.X, 4);
     }
 
@@ -69,26 +69,26 @@ public class MoveIntentTests
         }
 
         // 20 tick (=1초) 동안 누적 = MoveSpeed * 1.0s = 4.0
-        Assert.Equal(WarriorStats.MoveSpeed * 1.0f, e.Position.X, 3);
+        Assert.Equal(KnightStats.MoveSpeed * 1.0f, e.Position.X, 3);
     }
 
     // 같은 맵·같은 입력에서 직업별 MoveParams가 엔티티 단위로 주입되는지 (Phase 04 완료 조건).
     [Fact]
-    public void Tick_SameInput_WarriorAndRanger_MoveAtClassSpeed()
+    public void Tick_SameInput_KnightAndMage_MoveAtClassSpeed()
     {
         GameMap map = new GameMap();
-        PlayerEntity warrior = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Warrior());
-        PlayerEntity ranger  = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Ranger());
+        PlayerEntity knight = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Knight());
+        PlayerEntity mage  = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Mage());
 
         for (int i = 0; i < 20; i++)
         {
-            warrior.EnqueueInput(1, false, (uint)(i + 1));
-            ranger.EnqueueInput(1, false, (uint)(i + 1));
+            knight.EnqueueInput(1, false, (uint)(i + 1));
+            mage.EnqueueInput(1, false, (uint)(i + 1));
             map.Tick(i + 1);
         }
 
-        Assert.Equal(4f, warrior.Position.X, 3);
-        Assert.Equal(6f, ranger.Position.X, 3);
+        Assert.Equal(4f, knight.Position.X, 3);
+        Assert.Equal(6f, mage.Position.X, 3);
     }
 
     [Fact]
@@ -117,8 +117,8 @@ public class MoveIntentTests
         map.Tick(1);
 
         // vy = JumpVel (8) → newY = 8 * 0.05 = 0.4
-        Assert.Equal(WarriorStats.JumpVel, e.Velocity.Y, 4);
-        Assert.Equal(WarriorStats.JumpVel * Constants.TickDuration, e.Position.Y, 4);
+        Assert.Equal(KnightStats.JumpVel, e.Velocity.Y, 4);
+        Assert.Equal(KnightStats.JumpVel * Constants.TickDuration, e.Position.Y, 4);
         Assert.False(e.OnGround);
     }
 

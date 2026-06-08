@@ -46,10 +46,10 @@ public class BossBehaviorTests : IDisposable
     const int BossMaxHp = 100;
 
     // 보스 데미지 계산 — Formulas 직접 참조로 drift 방지.
-    // BossDefault().Attack=12, Warrior().Defense=5, BossBaseDamage=8
+    // BossDefault().Attack=12, Knight().Defense=5, BossBaseDamage=8
     // Max(1, 8 + 12 - 5) = 15.
     static readonly int ExpectedBossDamage = Formulas.ComputeDamage(
-        EnemyStats.BossDefault(), PlayerStats.Warrior(), CombatConstants.BossBaseDamage);
+        EnemyStats.BossDefault(), PlayerStats.Knight(), CombatConstants.BossBaseDamage);
 
     class TestGameSession : GameSession
     {
@@ -71,7 +71,7 @@ public class BossBehaviorTests : IDisposable
         public void BypassHandshake()
         {
             CompleteHandshakeAndEnter();
-            SetCharacterClass(0); // Warrior
+            SetCharacterClass(0); // Knight
             EnterGameWorldIfReady();
         }
     }
@@ -330,8 +330,8 @@ public class BossBehaviorTests : IDisposable
     [Fact]
     public void BossAttack_DamageMatchesFormula()
     {
-        // damage == Formulas.ComputeDamage(BossDefault(), PlayerStats.Warrior(), BossBaseDamage).
-        // Warrior Defense=5: Max(1, 8+12-5)=15.
+        // damage == Formulas.ComputeDamage(BossDefault(), PlayerStats.Knight(), BossBaseDamage).
+        // Knight Defense=5: Max(1, 8+12-5)=15.
         TestGameSession s = SetupSession();
         PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
         Assert.NotNull(player);
@@ -390,7 +390,7 @@ public class BossBehaviorTests : IDisposable
     [Fact]
     public void BossAttack_PlayerRespawns_HpFull()
     {
-        // 리스폰 후 HP == Stats.MaxHp (Warrior MaxHp=100).
+        // 리스폰 후 HP == Stats.MaxHp (Knight MaxHp=100).
         TestGameSession s = SetupSession();
         PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
         Assert.NotNull(player);
@@ -566,7 +566,7 @@ public class BossBehaviorTests : IDisposable
             entityId = 5,
             spawnX = 22f,
             spawnY = 0f,
-            characterClass = (byte)CharacterClass.Warrior,
+            characterClass = (byte)CharacterClass.Knight,
         };
 
         ArraySegment<byte> bytes = pkt.Write();
@@ -576,7 +576,7 @@ public class BossBehaviorTests : IDisposable
         Assert.Equal(5, decoded.entityId);
         Assert.Equal(22f, decoded.spawnX);
         Assert.Equal(0f, decoded.spawnY);
-        Assert.Equal((byte)CharacterClass.Warrior, decoded.characterClass);
+        Assert.Equal((byte)CharacterClass.Knight, decoded.characterClass);
     }
 
     [Fact]

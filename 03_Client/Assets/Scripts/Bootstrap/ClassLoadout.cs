@@ -20,15 +20,15 @@ namespace Dawnholder.Client.Bootstrap
             return null;
         }
 
-        // byte → CharacterClass 변환 + 미유효 처리 (Warrior fallback). 순수 함수 — 테스트 대상.
-        // invalid byte: 서버 trusted 값이지만 확장 가능성을 고려해 방어적으로 Warrior 수렴.
+        // byte → CharacterClass 변환 + 미유효 처리 (Knight fallback). 순수 함수 — 테스트 대상.
+        // invalid byte: 서버 trusted 값이지만 확장 가능성을 고려해 방어적으로 Knight 수렴.
         public static CharacterClass ByteToClass(byte raw)
         {
             CharacterClass cls = (CharacterClass)raw;
-            if (cls == CharacterClass.Warrior || cls == CharacterClass.Ranger)
+            if (cls == CharacterClass.Knight || cls == CharacterClass.Mage)
                 return cls;
-            Debug.LogWarning($"[ClassLoadout] 알 수 없는 characterClass byte={raw} — Warrior fallback.");
-            return CharacterClass.Warrior;
+            Debug.LogWarning($"[ClassLoadout] 알 수 없는 characterClass byte={raw} — Knight fallback.");
+            return CharacterClass.Knight;
         }
 
         // PlayerPrefs 선택값 → Resources.LoadAll → FindConfig.
@@ -37,7 +37,7 @@ namespace Dawnholder.Client.Bootstrap
         {
             int classValue = PlayerPrefs.GetInt(
                 CharacterSelectController.SelectedClassPrefsKey,
-                (int)CharacterClass.Warrior);
+                (int)CharacterClass.Knight);
 
             CharacterClass cls = (CharacterClass)classValue;
 

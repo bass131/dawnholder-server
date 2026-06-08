@@ -88,7 +88,7 @@ public struct EnemyStats
     ///
     /// <para>⚠️ target rewind 미적용 상태(M4.4 이월)라 적이 빠르면 클라 보간 지연과
     /// 서버 판정 위치가 어긋나 조준-판정 빗맞음 발생 → Normal enemy는 플레이어보다
-    /// 느리게 설정(Warrior=4 / Ranger=6 대비 ~2.0). 빠른 적은 rewind 구현 후 조정.</para>
+    /// 느리게 설정(Knight=4 / Mage=6 대비 ~2.0). 빠른 적은 rewind 구현 후 조정.</para>
     /// </summary>
     public float MoveSpeed;
 
@@ -126,8 +126,8 @@ public struct EnemyStats
     /// Golem enemy 기본 스탯. 느리고 단단한 탱커 컨셉.
     ///
     /// <list type="bullet">
-    ///   <item>MaxHp=60: Normal(30)의 2배 — Warrior 3타/Ranger 4타 분량.</item>
-    ///   <item>Defense=5: Warrior 데미지 25→20, Ranger 22→17 (ComputeDamage Max(1, base10+Attack-Def)).</item>
+    ///   <item>MaxHp=60: Normal(30)의 2배 — Knight 3타/Mage 4타 분량.</item>
+    ///   <item>Defense=5: Knight 데미지 25→20, Mage 22→17 (ComputeDamage Max(1, base10+Attack-Def)).</item>
     ///   <item>MoveSpeed=1.2f: Normal(2.0)보다 느림 — 스펙 "MoveSpeed &lt; 2.0".</item>
     ///   <item>AggroRange=4.0f: Normal(6.0)보다 좁음 — 시야가 짧은 둔한 골렘.</item>
     ///   <item>PatrolRange=2.5f: AggroRange(4.0)보다 작게 유지 (invariant: PatrolRange &lt; AggroRange).</item>
@@ -151,7 +151,7 @@ public struct EnemyStats
     /// <list type="bullet">
     ///   <item>MaxHp=100: EnemyDefaultHp.ByKind[Boss]=100과 일치 의무.</item>
     ///   <item>Attack=12: 페이즈1 CombatConstants.BossBaseDamage(8) + Attack(12) - 플레이어 Defense.
-    ///       Warrior Defense=5 기준 데미지 = Max(1, 8+12-5) = 15.</item>
+    ///       Knight Defense=5 기준 데미지 = Max(1, 8+12-5) = 15.</item>
     ///   <item>Defense=3: 플레이어→보스 방향은 CombatSystem이 처리 (PlayerStats→EnemyStats 오버로드).</item>
     ///   <item>MoveSpeed/AggroRange/PatrolRange=0: 보스는 이동 없는 고정형 (BossBehaviorSystem 전담).</item>
     /// </list>

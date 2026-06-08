@@ -207,7 +207,7 @@ namespace Dawnholder.Client.Network
 
         static bool IsValidClassValue(int classValue)
         {
-            return classValue == (int)CharacterClass.Warrior || classValue == (int)CharacterClass.Ranger;
+            return classValue == (int)CharacterClass.Knight || classValue == (int)CharacterClass.Mage;
         }
 
         void ReturnToMainMenu()

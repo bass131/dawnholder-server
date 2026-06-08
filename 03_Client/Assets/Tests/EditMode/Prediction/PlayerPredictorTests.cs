@@ -13,7 +13,7 @@ namespace Dawnholder.Client.Tests.Prediction
     //   - mispredict 시 미-ack 입력 replay (Physics.Step 재실행)
     //   - 정상 범위 내 snapshot (no-mispredict) → Position 그대로 유지
     //   - 항상 InputHistory 정리 (mispredict 여부 무관)
-    //   - 직업 MoveParams 비례 검증 (Warrior 4 vs Ranger 6 거리 비례)
+    //   - 직업 MoveParams 비례 검증 (Knight 4 vs Mage 6 거리 비례)
     //
     // **헌법 #1 유지 검증**: mispredict 시 클라 예측 위치가 아닌
     //   서버 권위 좌표에서 replay 출발 (cheat 흡수 X).
@@ -316,21 +316,21 @@ namespace Dawnholder.Client.Tests.Prediction
 
         // === 직업 MoveParams 비례 검증 (M4.4 Phase 04 신설) ===
         //
-        // Warrior(MoveSpeed=4) vs Ranger(MoveSpeed=6) — 같은 입력 1 tick Predict 시
+        // Knight(MoveSpeed=4) vs Mage(MoveSpeed=6) — 같은 입력 1 tick Predict 시
         // X 이동 거리가 moveSpeed 비율(4:6 = 2:3)에 정확히 비례해야 함.
         // 헌법 #4: 클라 예측이 PlayerStats factory 단일 출처를 경유하는지 간접 검증.
 
         [Test]
-        public void Predict_WarriorVsRanger_XDistanceProportionalToMoveSpeed()
+        public void Predict_KnightVsMage_XDistanceProportionalToMoveSpeed()
         {
             // PlayerStats factory 단일 출처 — 클라 로컬 하드코딩 금지 (헌법 #4).
-            var warrior = PlayerStats.Warrior();
-            var ranger  = PlayerStats.Ranger();
-            var warriorMove = new MoveParams(warrior.MoveSpeed, warrior.JumpVel);
-            var rangerMove  = new MoveParams(ranger.MoveSpeed, ranger.JumpVel);
+            var knight = PlayerStats.Knight();
+            var mage  = PlayerStats.Mage();
+            var knightMove = new MoveParams(knight.MoveSpeed, knight.JumpVel);
+            var mageMove  = new MoveParams(mage.MoveSpeed, mage.JumpVel);
 
-            var predictorW = new PlayerPredictor(warriorMove);
-            var predictorR = new PlayerPredictor(rangerMove);
+            var predictorW = new PlayerPredictor(knightMove);
+            var predictorR = new PlayerPredictor(mageMove);
             predictorW.SetInitialPosition(Vector2.zero);
             predictorR.SetInitialPosition(Vector2.zero);
 
@@ -338,10 +338,10 @@ namespace Dawnholder.Client.Tests.Prediction
             predictorW.Predict(inputX: 1, jumpPressed: false, dt: dt);
             predictorR.Predict(inputX: 1, jumpPressed: false, dt: dt);
 
-            // Warrior MoveSpeed=4, Ranger MoveSpeed=6 → 비율 4:6 = 2:3
+            // Knight MoveSpeed=4, Mage MoveSpeed=6 → 비율 4:6 = 2:3
             float ratio = predictorR.Position.x / predictorW.Position.x;
-            Assert.AreEqual(ranger.MoveSpeed / warrior.MoveSpeed, ratio, 0.0001f,
-                "Ranger/Warrior X 이동 비율이 MoveSpeed 비율(6/4=1.5)과 일치해야 함");
+            Assert.AreEqual(mage.MoveSpeed / knight.MoveSpeed, ratio, 0.0001f,
+                "Mage/Knight X 이동 비율이 MoveSpeed 비율(6/4=1.5)과 일치해야 함");
         }
 
         // === IsGroundedAt — reconcile 시 접지 판정 (M4.4-03 reviewer 🟡) ===

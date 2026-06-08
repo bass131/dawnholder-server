@@ -59,7 +59,7 @@ namespace Dawnholder.Client.UI
             // HP 초기값 = 선택 직업 full HP (서버 spawn = full HP 약속).
             int classValue = PlayerPrefs.GetInt(
                 CharacterSelectController.SelectedClassPrefsKey,
-                (int)CharacterClass.Warrior);
+                (int)CharacterClass.Knight);
             PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
             UpdateHP(stats.MaxHp, stats.MaxHp);
 

@@ -19,7 +19,7 @@ namespace Dawnholder.Client.State
     //
     // **지연 spawn 패턴**:
     //   PlayerJoin 도착 전 Snapshot이 먼저 도착해도 UpdateSnapshot이 그 자리에서 Spawn 호출
-    //   (직업 미상 → Warrior 비주얼 기본). 이후 PlayerJoin 도착 시 NeedsVisualSwap 판정 →
+    //   (직업 미상 → Knight 비주얼 기본). 이후 PlayerJoin 도착 시 NeedsVisualSwap 판정 →
     //   직업 다름/미상이면 비주얼 교체, 같으면 noop.
     [DisallowMultipleComponent]
     public class RemoteEntityRegistry : MonoBehaviour
@@ -32,7 +32,7 @@ namespace Dawnholder.Client.State
         readonly Dictionary<int, RemoteEntity> _entities = new();
         readonly Dictionary<int, RemotePlayerMotion> _motions = new();
 
-        // null = 직업 미상 (Snapshot 선도착 지연 spawn). Warrior 기본값과 구분 필수.
+        // null = 직업 미상 (Snapshot 선도착 지연 spawn). Knight 기본값과 구분 필수.
         readonly Dictionary<int, CharacterClass?> _spawnedClasses = new();
 
         void Awake()
@@ -166,9 +166,9 @@ namespace Dawnholder.Client.State
             _motions[entityId] = motion;
 
             // 비주얼 장착은 driver 준비 *후* — ClassVisualMount가 Rebind까지 수행 (순서 불변식).
-            // 직업 미상(null)은 Warrior 비주얼 기본 — 투명 잔상 방지. PlayerJoin 도착 시 교체됨.
+            // 직업 미상(null)은 Knight 비주얼 기본 — 투명 잔상 방지. PlayerJoin 도착 시 교체됨.
             ClassVisualMount.Attach(go.transform,
-                ResolveVisual(characterClass ?? CharacterClass.Warrior, entityId));
+                ResolveVisual(characterClass ?? CharacterClass.Knight, entityId));
 
             Debug.Log($"[Registry] Spawned entity {entityId} class={characterClass?.ToString() ?? "unknown"} at ({x:F2}, {y:F2})");
         }

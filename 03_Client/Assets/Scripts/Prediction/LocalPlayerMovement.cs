@@ -249,7 +249,7 @@ namespace Dawnholder.Client.Prediction
         static MoveParams ResolveClassMoveParams()
         {
             int classValue = UnityEngine.PlayerPrefs.GetInt(
-                CharacterSelectController.SelectedClassPrefsKey, (int)Shared.Protocol.CharacterClass.Warrior);
+                CharacterSelectController.SelectedClassPrefsKey, (int)Shared.Protocol.CharacterClass.Knight);
 
             PlayerStats stats = PlayerStats.ForClass((Shared.Protocol.CharacterClass)classValue);
             return new MoveParams(stats.MoveSpeed, stats.JumpVel);

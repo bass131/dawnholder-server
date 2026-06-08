@@ -124,7 +124,7 @@ public class MapMigrationTests : IDisposable
         public void BypassHandshake()
         {
             CompleteHandshakeAndEnter();
-            SetCharacterClass(0); // Warrior
+            SetCharacterClass(0); // Knight
             EnterGameWorldIfReady();
         }
     }

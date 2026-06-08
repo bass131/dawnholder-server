@@ -15,7 +15,7 @@ namespace Dawnholder.Server.GameServer.Tests;
 //   6) Ground clamp
 //   7) 결정론 (반복 시뮬)
 //   8) 포물선 (점프 → 자연 낙하 → ground 복귀)
-//   C) 직업값 단위 테스트 (Warrior vs Ranger 이동·점프·factory 고정)
+//   C) 직업값 단위 테스트 (Knight vs Mage 이동·점프·factory 고정)
 public class PhysicsTests
 {
     const float Dt = Constants.TickDuration; // 0.05
@@ -214,26 +214,26 @@ public class PhysicsTests
 
     // ── C) 직업값 단위 테스트 ────────────────────────────────────────────────────
 
-    // C-1: 같은 N틱 입력으로 Warrior(4) vs Ranger(6) 이동 거리 4:6 비례.
+    // C-1: 같은 N틱 입력으로 Knight(4) vs Mage(6) 이동 거리 4:6 비례.
     [Fact]
-    public void ClassParams_WarriorVsRanger_MoveDistanceRatio_4to6()
+    public void ClassParams_KnightVsMage_MoveDistanceRatio_4to6()
     {
         const int Ticks = 20; // 1초 (20 TPS)
         PhysicsInput input = new PhysicsInput(1, false, Dt);
 
-        var warrior = new MoveParams(PlayerStats.Warrior().MoveSpeed, PlayerStats.Warrior().JumpVel);
-        var ranger  = new MoveParams(PlayerStats.Ranger().MoveSpeed,  PlayerStats.Ranger().JumpVel);
+        var knight = new MoveParams(PlayerStats.Knight().MoveSpeed, PlayerStats.Knight().JumpVel);
+        var mage  = new MoveParams(PlayerStats.Mage().MoveSpeed,  PlayerStats.Mage().JumpVel);
 
         PhysicsState ws = PhysicsState.AtRest(Vector2.Zero);
         PhysicsState rs = PhysicsState.AtRest(Vector2.Zero);
 
         for (int i = 0; i < Ticks; i++)
         {
-            ws = Physics.Step(ws, input, warrior);
-            rs = Physics.Step(rs, input, ranger);
+            ws = Physics.Step(ws, input, knight);
+            rs = Physics.Step(rs, input, mage);
         }
 
-        // 1초 이동 거리: Warrior=4.0, Ranger=6.0
+        // 1초 이동 거리: Knight=4.0, Mage=6.0
         Assert.Equal(4f, ws.Position.X, 3);
         Assert.Equal(6f, rs.Position.X, 3);
     }
@@ -255,12 +255,12 @@ public class PhysicsTests
     [Fact]
     public void PlayerStats_Factory_FixedValues_4_6_8_8()
     {
-        PlayerStats warrior = PlayerStats.Warrior();
-        PlayerStats ranger  = PlayerStats.Ranger();
+        PlayerStats knight = PlayerStats.Knight();
+        PlayerStats mage  = PlayerStats.Mage();
 
-        Assert.Equal(4f, warrior.MoveSpeed, 4);
-        Assert.Equal(8f, warrior.JumpVel,   4);
-        Assert.Equal(6f, ranger.MoveSpeed,  4);
-        Assert.Equal(8f, ranger.JumpVel,    4);
+        Assert.Equal(4f, knight.MoveSpeed, 4);
+        Assert.Equal(8f, knight.JumpVel,   4);
+        Assert.Equal(6f, mage.MoveSpeed,  4);
+        Assert.Equal(8f, mage.JumpVel,    4);
     }
 }

@@ -51,10 +51,10 @@ public class AttackHandlerTests : IDisposable
     const float BossY      = 0f;
     const int   BossMaxHp   = 100;
 
-    // Formulas.ComputeDamage(Warrior, default, BaseDamage=10) = Max(1, 10+15-0) = 25.
-    // 두 곳 drift 방지: 이 값은 Warrior factory + EnemyStats default + CombatConstants.BaseDamage 3곳 기반.
+    // Formulas.ComputeDamage(Knight, default, BaseDamage=10) = Max(1, 10+15-0) = 25.
+    // 두 곳 drift 방지: 이 값은 Knight factory + EnemyStats default + CombatConstants.BaseDamage 3곳 기반.
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
-        PlayerStats.Warrior(), default, baseDamage: 10);
+        PlayerStats.Knight(), default, baseDamage: 10);
 
     class TestGameSession : GameSession
     {
@@ -77,11 +77,11 @@ public class AttackHandlerTests : IDisposable
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
 
-        // 월드 진입 = handshake + class 선택 양쪽 충족 필요. class 선택도 우회 (Warrior=0).
+        // 월드 진입 = handshake + class 선택 양쪽 충족 필요. class 선택도 우회 (Knight=0).
         public void BypassHandshake()
         {
             CompleteHandshakeAndEnter();  // _handshakeCompleted = true
-            SetCharacterClass(0);          // HasSelectedClass = true (Warrior)
+            SetCharacterClass(0);          // HasSelectedClass = true (Knight)
             EnterGameWorldIfReady();       // 두 조건 충족 → EnterGameWorld() 호출
         }
     }
@@ -172,7 +172,7 @@ public class AttackHandlerTests : IDisposable
         parsed.Read(new ArraySegment<byte>(hitPacket));
         Assert.Equal(PlayerEntityId, parsed.attackerEntityId);
         Assert.Equal(EnemyEntityId, parsed.targetEntityId);
-        // Warrior(Attack=15) + BaseDamage=10 - Defense=0 = 25.
+        // Knight(Attack=15) + BaseDamage=10 - Defense=0 = 25.
         Assert.Equal(ExpectedDamage, parsed.damage);
         Assert.Equal(NormalMaxHp - ExpectedDamage, parsed.currentHp); // 30 - 25 = 5
         Assert.Equal(NormalMaxHp, parsed.maxHp);                      // 30
