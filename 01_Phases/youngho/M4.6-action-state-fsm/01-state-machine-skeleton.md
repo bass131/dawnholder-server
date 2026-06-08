@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.6
 phase: 01
 title: State 머신 골격 + 플레이어 이동 상태 이주 (행동 불변)
-status: pending
+status: done
 grade: 복잡
 estimated: 2~3h
 domain: server
