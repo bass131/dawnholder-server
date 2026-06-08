@@ -16,7 +16,7 @@
 
 빠른 탐색:
 - **[ADR/tech-stack/](ADR/tech-stack/)** — 스택·도구체인·환경 (9개: 001 002 003 004 005 010 011 012 017)
-- **[ADR/gameplay/](ADR/gameplay/)** — 게임 디자인·스코프 (4개: 006 007 008 009)
+- **[ADR/gameplay/](ADR/gameplay/)** — 게임 디자인·스코프 (5개: 006 007 008 009 030)
 - **[ADR/harness/](ADR/harness/)** — 작업 흐름·문서·훅 (8개: 013 014 015 016 018 019 020 021)
 
 ---
@@ -50,6 +50,7 @@
 - **ADR-025**: 로그 저장 (로컬 파일 vs 외부 sink)
 - **ADR-026**: 헤드리스 봇의 자동화 방식
 - **ADR-029 채택 (2026-06-07)**: 옛 후보 "WDAC 미서명 DLL 차단 정책 정리" — SAC가 dotnet test에 이어 서버 실행까지 차단 확대돼 Burst 시점보다 앞당겨 채택. WSL2 실행 표준 (`harness/ADR-029`).
+- **ADR-030 채택 (2026-06-08)**: 행동 상태 규칙의 서버 권위 — M4.5 telegraph 상수 + M4.6 commit window에서 반복된 "게임플레이 규칙=서버 진실, Animator Exit Time=시각 거울" 원칙 박제 (`gameplay/ADR-030`). plan-auditor 라우팅 제안 발화.
 - **ADR-028 채택 (2026-05-29)**: Code Convention 수립 (`00_Document/conventions/`). *구조/SRP*(God class 분리 등 판단 영역)는 Convention + reviewer 축 6으로 **지금 실현**. ***.editorconfig + Roslyn(포매팅, 기계적 영역)*은 CODE_CONVENTION §4로 M4.4 이월** — 옛 'Reviewer 후속 Roslyn' 후보 중 도구 위임이 *가능한* 포매팅 부분만 남긴 것(구조/SRP는 도구로 자동 감지 불가라 사람/reviewer 판단).
 - ...
 
