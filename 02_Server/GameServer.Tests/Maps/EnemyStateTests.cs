@@ -298,7 +298,7 @@ public class EnemyStateTests
     /// <summary>
     /// BossRoom boss에 EnterHitState 호출 시:
     ///   - HitLatchTicks > 0 (애니 latch 세팅됨)
-    ///   - Fsm == null (Boss는 FSM 없음)
+    ///   - Fsm이 BossIdleState에 머묾 (EnemyStates.Hit로 전환 금지 — 보스는 BossStates 전용 FSM)
     ///   - 예외 없음
     ///   - boss.State == Idle 유지
     ///   - map.Tick 여러 번에도 정상 동작
@@ -311,13 +311,14 @@ public class EnemyStateTests
         foreach (EnemyEntity e in map.Enemies.Values) { boss = e; break; }
         Assert.NotNull(boss);
         Assert.Equal(EnemyKind.Boss, boss!.Kind);
-        Assert.Null(boss.Fsm);
+        Assert.NotNull(boss.Fsm); // Phase 05: 보스에 BossStates FSM 추가됨
 
         // 예외 없이 호출 가능해야 함
         boss.EnterHitState(+1f);
 
         Assert.True(boss.HitLatchTicks > 0, "Boss: HitLatchTicks should be set by EnterHitState");
-        Assert.Null(boss.Fsm);
+        // Kind==Boss 가드 — EnemyStates.Hit 전환 금지. FSM은 BossIdleState 유지.
+        Assert.IsType<Dawnholder.Server.GameServer.Maps.States.BossIdleState>(boss.Fsm!.CurrentState);
         Assert.Equal(EnemyState.Idle, boss.State);
 
         // 여러 tick 진행해도 정상 (BossBehaviorSystem이 Boss 처리 — EnemyAISystem은 Boss skip)

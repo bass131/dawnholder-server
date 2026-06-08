@@ -52,4 +52,17 @@ public static class Constants
     /// 0.75^8 ≈ 0.1 → 8틱(= HitState 지속) 후 초기 속도의 10% 이하로 수렴.
     /// </summary>
     public const float KnockbackDecayPerTick = 0.75f;
+
+    /// <summary>
+    /// 보스 페이즈 1 공격 예고 틱 (telegraph). 16틱 = 800ms @20TPS.
+    /// telegraph 타이밍 단일 출처 (M4.6 Phase 05, 서버 CombatConstants에서 이동).
+    /// 플레이어向 공정성 신호라 클라 예고 UI 등이 참조 가능 = 양쪽 공유. 서버 BossStates가 이 값으로 판정.
+    /// </summary>
+    public const int BossTelegraphTicks = 16;
+
+    /// <summary>
+    /// 보스 페이즈 2 공격 예고 틱 (telegraph). 10틱 = 500ms @20TPS — P1보다 짧아 난이도 상승.
+    /// telegraph 타이밍 단일 출처 (M4.6 Phase 05) — BossTelegraphTicks(P1)와 한 곳.
+    /// </summary>
+    public const int BossPhase2TelegraphTicks = 10;
 }

@@ -136,8 +136,9 @@ public class GameMap
         EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp, resolvedStats);
         _enemies.Add(id, e);
         e.OwningMap = this;
-        if (kind != EnemyKind.Boss)
-            e.Fsm = new StateMachine<EnemyEntity>(EnemyStates.Patrol, e);
+        // Fsm은 OwningMap 세팅 후 생성 — kind별 초기 State (Boss=BossStates.Idle, 그외=EnemyStates.Patrol).
+        e.Fsm = new StateMachine<EnemyEntity>(
+            kind == EnemyKind.Boss ? BossStates.Idle : EnemyStates.Patrol, e);
         return e;
     }
 

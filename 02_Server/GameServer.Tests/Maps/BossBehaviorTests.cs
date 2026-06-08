@@ -214,7 +214,7 @@ public class BossBehaviorTests : IDisposable
 
         Assert.True(hasTelegraphSignal,
             "쿨다운 종료 tick에 S_EntityState(entityId=Boss, animState=Attack) broadcast 필요");
-        Assert.Equal(CombatConstants.BossTelegraphTicks, boss.TelegraphTicksRemaining);
+        Assert.Equal(Constants.BossTelegraphTicks, boss.TelegraphTicksRemaining);
     }
 
     [Fact]
@@ -232,7 +232,7 @@ public class BossBehaviorTests : IDisposable
 
         // tick 1 이미 소비(쿨다운 39 남음). 잔여 39 + telegraph 16 = 55틱.
         // tick 2~56(55번) 추가 → 쿨다운 소진 후 telegraph 완료 → S_EnemyAttack.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + CombatConstants.BossTelegraphTicks;
+        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
         for (long t = 2; t <= totalTicks + 1; t++)
             _map.Tick(t);
 
@@ -269,7 +269,7 @@ public class BossBehaviorTests : IDisposable
         // tick 1 이미 소비 → boss.AttackCooldownTicks를 페이즈 2 값으로 직접 세팅했으므로
         // 세팅 이후 1번 감소는 다음 Tick에서. 쿨다운 24 + telegraph 10 = 34틱.
         // boss.AttackCooldownTicks를 직접 세팅했으므로 tick 2~35(34번)면 됨.
-        int totalTicks = CombatConstants.BossPhase2CooldownTicks + CombatConstants.BossPhase2TelegraphTicks;
+        int totalTicks = CombatConstants.BossPhase2CooldownTicks + Constants.BossPhase2TelegraphTicks;
         for (long t = 2; t <= totalTicks + 1; t++)
             _map.Tick(t);
 
@@ -297,7 +297,7 @@ public class BossBehaviorTests : IDisposable
         int hpBefore = player!.Hp;
 
         // tick 1 소비됨 → 잔여 쿨다운 39 + telegraph 16 = 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + CombatConstants.BossTelegraphTicks;
+        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
         for (long t = 2; t <= totalTicks + 1; t++)
             _map.Tick(t);
 
@@ -317,7 +317,7 @@ public class BossBehaviorTests : IDisposable
         int hpBefore = player!.Hp;
 
         // tick 1 소비됨 → 잔여 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + CombatConstants.BossTelegraphTicks;
+        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
         for (long t = 2; t <= totalTicks + 1; t++)
             _map.Tick(t);
 
@@ -340,7 +340,7 @@ public class BossBehaviorTests : IDisposable
         int hpBefore = player!.Hp;
 
         // tick 1 소비됨 → 잔여 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + CombatConstants.BossTelegraphTicks;
+        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
         for (long t = 2; t <= totalTicks + 1; t++)
             _map.Tick(t);
 
@@ -375,7 +375,7 @@ public class BossBehaviorTests : IDisposable
         Vector2 expectedSpawn = new Vector2(22f, 0f);
 
         // tick 1 소비됨 → 잔여 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + CombatConstants.BossTelegraphTicks;
+        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
         for (long t = 2; t <= totalTicks + 1; t++)
             _map.Tick(t);
 
@@ -399,7 +399,7 @@ public class BossBehaviorTests : IDisposable
         player!.Hp = 1; // 최소 HP
 
         // tick 1 소비됨 → 잔여 55틱.
-        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + CombatConstants.BossTelegraphTicks;
+        int totalTicks = (CombatConstants.BossPhase1CooldownTicks - 1) + Constants.BossTelegraphTicks;
         for (long t = 2; t <= totalTicks + 1; t++)
             _map.Tick(t);
 
