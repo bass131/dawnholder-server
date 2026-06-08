@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FSM 리팩토링 — 현황 실측 + 설계 방향 (논의용)</title>
+<style>
+  :root{
+    --srv:#d6453f; --srv-bg:#fdecea;
+    --cli:#2e8b57; --cli-bg:#e8f6ed;
+    --shd:#7a52c5; --shd-bg:#f0eafa;
+    --warn:#c77700; --warn-bg:#fff4e0;
+    --ink:#1f2430; --muted:#69707d; --line:#e3e6ec; --card:#fff; --bg:#f5f6f8;
+    --ok:#2e8b57; --bad:#d6453f;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Pretendard","Malgun Gothic",sans-serif;
+    line-height:1.65;font-size:15px}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px 80px}
+  header{background:linear-gradient(135deg,#202a3c,#2d3a52);color:#fff;padding:34px 22px 30px;margin-bottom:30px}
+  header .inner{max-width:1040px;margin:0 auto}
+  header h1{margin:0 0 6px;font-size:25px;letter-spacing:-.3px}
+  header .sub{opacity:.82;font-size:14px}
+  header .meta{margin-top:14px;font-size:12.5px;opacity:.7}
+  h2{font-size:19px;margin:38px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:9px}
+  h2 .n{display:inline-flex;width:26px;height:26px;border-radius:7px;background:#202a3c;color:#fff;
+    font-size:14px;align-items:center;justify-content:center;flex:0 0 auto}
+  h3{font-size:15.5px;margin:20px 0 8px}
+  p{margin:9px 0}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle}
+  .t-srv{background:var(--srv-bg);color:var(--srv)}
+  .t-cli{background:var(--cli-bg);color:var(--cli)}
+  .t-shd{background:var(--shd-bg);color:var(--shd)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0;
+    box-shadow:0 1px 2px rgba(20,30,50,.04)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
+  code{background:#eef0f4;border-radius:5px;padding:1px 6px;font-size:13px;
+    font-family:"SF Mono","Consolas","Cascadia Code",monospace}
+  .file{color:var(--muted);font-size:12.5px;font-family:"Consolas",monospace}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#eef0f4;font-size:12.5px;color:#3a4150}
+  tr:last-child td{border-bottom:none}
+  .pill{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:6px;white-space:nowrap}
+  .p-switch{background:#eaeef5;color:#3a4a66}
+  .p-class{background:#e7f0ff;color:#1c5fc4}
+  .p-field{background:#fdf0e6;color:#b3640f}
+  .lines{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+  .tldr{background:#fff;border:1px solid var(--line);border-left:4px solid #202a3c;border-radius:10px;padding:16px 20px}
+  .callout{border-radius:10px;padding:14px 18px;margin:14px 0}
+  .c-bad{background:var(--srv-bg);border:1px solid #f3c9c5}
+  .c-warn{background:var(--warn-bg);border:1px solid #f0dcae}
+  .c-ok{background:var(--cli-bg);border:1px solid #c3e6d0}
+  .big{font-size:16px;font-weight:700}
+  ul{margin:8px 0;padding-left:20px}
+  li{margin:5px 0}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .vs>div{padding:16px 18px}
+  .vs .rule{background:#fbfcfe}
+  .vs .struct{background:#fafbf8;border-left:1px solid var(--line)}
+  .vs h3{margin-top:0}
+  .yes{color:var(--ok);font-weight:700}
+  .no{color:var(--bad);font-weight:700}
+  .phase{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+  .phase .ph-tag{position:absolute;top:0;right:0;background:#202a3c;color:#fff;font-size:11px;font-weight:700;
+    padding:3px 12px;border-bottom-left-radius:9px}
+  .phase h3{margin:4px 0 8px}
+  .svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin:14px 0;overflow-x:auto}
+  .q{background:#202a3c;color:#fff;border-radius:12px;padding:20px 24px;margin-top:8px}
+  .q h2{color:#fff;border:none;margin-top:0}
+  .q .opt{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:9px;
+    padding:12px 16px;margin:9px 0}
+  .q .rec{border-color:#6fd49a}
+  .q .rec b{color:#9fe9bd}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:6px 0 2px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  small.note{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <h1>FSM 리팩토링 — 현황 실측 + 설계 방향</h1>
+    <div class="sub">새 마일스톤(가칭 M4.6 "플레이 디테일") 사전 논의 자료 · 코드 변경 전 단계</div>
+    <div class="meta">작성 2026-06-08 · 출처 = 02_Server / 03_Client / 98_Shared 실측 (추측 없음) · <b>결정 대기 상태</b></div>
+  </div>
+</header>
+<div class="wrap">
+
+  <div class="tldr">
+    <span class="big">한 줄 요약</span>
+    <p style="margin:8px 0 0">본인이 느낀 <b>"공격 중 이동 가능 = 동작이 안 딱 떨어짐"</b>은 코드로 확인됐습니다. 그런데 이건 사실 <b>두 개의 다른 문제</b>가 겹친 거예요 —
+    ① <b>규칙</b>이 빠진 것(공격 커밋/이동 잠금 = <span class="tag t-srv">서버 권위</span>)과 ② <b>구조</b>가 안 깔끔한 것(State 클래스화 = 코드 품질).
+    <b>본인이 말한 "Exit Time"의 진짜 정체는 ①</b>이고, "State 추상화"는 ②입니다. 둘을 분리해야 설계가 풀려요.</p>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--srv)"></span> 서버 권위 (02_Server)</span>
+    <span><span class="dot" style="background:var(--cli)"></span> 클라 미러 (03_Client)</span>
+    <span><span class="dot" style="background:var(--shd)"></span> 공유 정의 (98_Shared)</span>
+  </div>
+
+  <!-- ===== 1. 현황 ===== -->
+  <h2><span class="n">1</span> 현황 실측 — 지금 FSM이 어떻게 생겼나</h2>
+
+  <table>
+    <thead><tr><th>영역</th><th>현재 패턴</th><th>상태 종류</th><th>핵심 파일</th><th class="lines">줄</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="tag t-srv">서버</span> 일반/골렘 AI</td>
+        <td><span class="pill p-switch">enum + switch</span></td>
+        <td>Idle · Patrol · Chase <small class="note">(실질 2상태)</small></td>
+        <td class="file">Combat/EnemyState.cs<br>Maps/Systems/EnemyAISystem.cs</td>
+        <td class="lines">16<br>193</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-srv">서버</span> 보스 AI</td>
+        <td><span class="pill p-field">필드 조건 분기</span></td>
+        <td>Phase1/2 · Telegraph · Cooldown</td>
+        <td class="file">Maps/Systems/BossBehaviorSystem.cs</td>
+        <td class="lines">208</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-srv">서버</span> 플레이어 전투</td>
+        <td><span class="pill p-field">latch 카운터</span></td>
+        <td><b>전용 상태 없음</b> — latch만</td>
+        <td class="file">Maps/PlayerEntity.cs<br>Combat/CombatSystem.cs</td>
+        <td class="lines">175<br>—</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-cli">클라</span> 애니메이션</td>
+        <td><span class="pill p-class">hybrid 미러</span></td>
+        <td>서버 AnimState + 로컬 예측</td>
+        <td class="file">.../Motion/AnimatorDriver.cs<br>.../Motion/LocalPlayerMotion.cs</td>
+        <td class="lines">78<br>69</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-shd">공유</span> 상태 enum</td>
+        <td><span class="pill p-switch">byte enum</span></td>
+        <td>AnimState(0~5) · EnemyKind(0~2)</td>
+        <td class="file">GameData/AnimState.cs<br>GameData/EnemyKind.cs</td>
+        <td class="lines">35<br>12</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>✅ 이미 잘 돼 있는 것</h3>
+      <ul>
+        <li><b>AnimState(시각) ↔ EnemyState(AI) 분리</b> — 클라는 AI 상태를 아예 모르고 애니만 받음. 이 경계는 <b>리팩토링 후에도 유지</b>.</li>
+        <li><b>Tick 루프 순서 명문화</b> — <code>GameMap.Tick()</code>에 System 호출 순서가 박혀 있음.</li>
+        <li><b>보스가 독립 System</b> — 일반 AI와 격리돼 있어 난이도 손대도 번짐 없음.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>⚠️ 손볼 여지</h3>
+      <ul>
+        <li><b>플레이어엔 "행동 상태" 개념 자체가 없음</b> — 공격은 그냥 <code>AttackLatchTicks=8</code> 카운터(애니 전용).</li>
+        <li><b>타이밍 메커니즘 2개 혼재</b> — rate-limit(ms) vs latch(tick).</li>
+        <li>적 AI는 아직 <b>2상태뿐</b> — 풀 클래스 계층이 <i>당장은</i> 과할 수 있음.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== 2. 핵심 발견 ===== -->
+  <h2><span class="n">2</span> 핵심 발견 — "공격 중 이동"은 왜 일어나나</h2>
+
+  <div class="callout c-bad">
+    <p style="margin:0"><span class="big">🔍 확인 사실</span> &nbsp; 서버 <code>SubmitMoveIntent()</code>에 <b>공격 상태 체크가 0줄</b>입니다.
+    <code>AttackLatchTicks</code>(8틱=400ms)는 <b>Attack 애니메이션만</b> 구동하고, 이동을 전혀 막지 않아요.
+    → 지금 "공격"은 <b>겉모습(애니)만 있고 게임플레이 커밋(이동 잠금)은 없는</b> 상태.</p>
+  </div>
+
+  <div class="svgwrap">
+  <svg viewBox="0 0 920 240" width="920" height="240" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,sans-serif">
+    <defs>
+      <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#69707d"/></marker>
+      <marker id="arR" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#d6453f"/></marker>
+    </defs>
+    <!-- move row -->
+    <text x="12" y="40" font-size="12" fill="#69707d">이동 입력</text>
+    <rect x="12" y="50" width="120" height="44" rx="8" fill="#e8f6ed" stroke="#2e8b57"/><text x="72" y="77" font-size="12.5" text-anchor="middle" fill="#1f2430">C_MoveIntent</text>
+    <line x1="132" y1="72" x2="178" y2="72" stroke="#69707d" stroke-width="1.6" marker-end="url(#ar)"/>
+    <rect x="180" y="50" width="150" height="44" rx="8" fill="#fff" stroke="#d6453f"/><text x="255" y="70" font-size="12.5" text-anchor="middle" fill="#1f2430">SubmitMoveIntent()</text><text x="255" y="86" font-size="10.5" text-anchor="middle" fill="#69707d">02_Server</text>
+    <!-- missing gate -->
+    <line x1="330" y1="72" x2="392" y2="72" stroke="#d6453f" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#arR)"/>
+    <rect x="394" y="44" width="150" height="56" rx="8" fill="#fdecea" stroke="#d6453f" stroke-dasharray="5 4"/>
+    <text x="469" y="66" font-size="12" text-anchor="middle" fill="#d6453f" font-weight="700">❌ 공격 체크</text>
+    <text x="469" y="83" font-size="11" text-anchor="middle" fill="#d6453f">(지금 없음)</text>
+    <line x1="544" y1="72" x2="606" y2="72" stroke="#69707d" stroke-width="1.6" marker-end="url(#ar)"/>
+    <rect x="608" y="50" width="150" height="44" rx="8" fill="#fff" stroke="#69707d"/><text x="683" y="70" font-size="12.5" text-anchor="middle" fill="#1f2430">Physics.Step</text><text x="683" y="86" font-size="10.5" text-anchor="middle" fill="#69707d">이동 즉시 적용</text>
+    <!-- attack row -->
+    <text x="12" y="160" font-size="12" fill="#69707d">공격 입력</text>
+    <rect x="12" y="170" width="120" height="44" rx="8" fill="#e8f6ed" stroke="#2e8b57"/><text x="72" y="197" font-size="12.5" text-anchor="middle" fill="#1f2430">C_Attack</text>
+    <line x1="132" y1="192" x2="178" y2="192" stroke="#69707d" stroke-width="1.6" marker-end="url(#ar)"/>
+    <rect x="180" y="170" width="150" height="44" rx="8" fill="#fff" stroke="#d6453f"/><text x="255" y="190" font-size="12.5" text-anchor="middle" fill="#1f2430">ProcessAttack()</text><text x="255" y="206" font-size="10.5" text-anchor="middle" fill="#69707d">데미지 판정</text>
+    <line x1="330" y1="192" x2="606" y2="192" stroke="#cfd4dd" stroke-width="1.4" marker-end="url(#ar)"/>
+    <rect x="608" y="170" width="150" height="44" rx="8" fill="#fff7f0" stroke="#c77700"/><text x="683" y="190" font-size="12.5" text-anchor="middle" fill="#1f2430">AttackLatchTicks=8</text><text x="683" y="206" font-size="10.5" text-anchor="middle" fill="#c77700">애니메이션 전용</text>
+    <text x="772" y="135" font-size="11.5" fill="#69707d" transform="rotate(90 772 135)">두 흐름이 서로 모름 →</text>
+  </svg>
+  </div>
+  <p><small class="note">두 입력(이동·공격)이 서버에서 <b>완전히 따로</b> 처리돼요. 공격이 이동에게 "나 지금 공격 중이야, 멈춰" 하고 말을 거는 길이 아예 없습니다. 그래서 동시에 일어나요.</small></p>
+
+  <!-- ===== 3. 규칙 vs 구조 ===== -->
+  <h2><span class="n">3</span> 개념 분리 — 규칙 vs 구조</h2>
+  <p>본인이 한 덩어리로 말한 걸 둘로 쪼개야 합니다. 이게 이번 논의의 핵심이에요.</p>
+
+  <div class="vs">
+    <div class="rule">
+      <h3>① 규칙 <span class="tag t-srv">서버 권위</span></h3>
+      <p style="margin:6px 0"><b>"공격은 끝까지 커밋 → N틱 동안 이동 잠금"</b></p>
+      <p style="margin:6px 0"><small class="note">= 본인이 말한 <b>"Exit Time"의 진짜 정체.</b> 게임플레이 규칙이라 서버가 진실의 원천이어야 함 (헌법 #1). 클라 Animator의 Exit Time은 이걸 <i>따라가는 거울</i>일 뿐.</small></p>
+      <p style="margin:8px 0 0"><span class="yes">이게 "동작이 딱 떨어지는 느낌"을 실제로 만듦.</span></p>
+    </div>
+    <div class="struct">
+      <h3>② 구조 <span class="tag t-srv">코드 품질</span></h3>
+      <p style="margin:6px 0"><b>"State를 추상 베이스 + 클래스로, 전환 시 행동 분기"</b></p>
+      <p style="margin:6px 0"><small class="note">= State 패턴 / 계층형 FSM. enum+switch가 비대해질 때 가는 정석. <b>코드 정리·확장성</b> 문제지 동작 자체는 안 바꿈.</small></p>
+      <p style="margin:8px 0 0"><span class="no">이것만 해선 여전히 공격 중 움직임.</span></p>
+    </div>
+  </div>
+
+  <div class="callout c-warn" style="margin-top:14px">
+    <p style="margin:0"><b>왜 중요하냐면</b> — ②(구조)만 멋지게 리팩토링해도 ①(규칙)이 없으면 <b>공격 중 이동은 그대로</b>예요. 반대로 ①만 넣어도 동작은 딱 떨어집니다. <b>"느낌"을 고치는 건 ①, "코드"를 고치는 건 ②.</b> 둘 다 가치 있지만 별개의 일.</p>
+  </div>
+
+  <!-- ===== 4. 서버 권위 ===== -->
+  <h2><span class="n">4</span> 서버 권위 경계 — FSM은 사실 "두 개"</h2>
+  <p>플레이어 한정으로 가장 조심할 부분. "Exit Time"을 Unity Animator 전환 조건으로만 두면 <b>핵 취약점</b>이에요 — 조작된 클라가 공격 중에 그냥 움직여버립니다.</p>
+
+  <div class="svgwrap">
+  <svg viewBox="0 0 920 220" width="920" height="220" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,sans-serif">
+    <defs><marker id="ar2" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#7a52c5"/></marker></defs>
+    <!-- server box -->
+    <rect x="10" y="20" width="400" height="180" rx="12" fill="#fdecea" stroke="#d6453f" stroke-width="1.5"/>
+    <text x="28" y="46" font-size="13" font-weight="700" fill="#d6453f">서버 — 논리 FSM (진실의 원천)</text>
+    <g font-size="11.5">
+      <rect x="34" y="62" width="78" height="34" rx="7" fill="#fff" stroke="#d6453f"/><text x="73" y="84" text-anchor="middle">Idle</text>
+      <rect x="128" y="62" width="78" height="34" rx="7" fill="#fff" stroke="#d6453f"/><text x="167" y="84" text-anchor="middle">Move</text>
+      <rect x="222" y="62" width="150" height="34" rx="7" fill="#fff7f0" stroke="#c77700"/><text x="297" y="78" text-anchor="middle" font-weight="700">Attack</text><text x="297" y="91" text-anchor="middle" font-size="9.5" fill="#c77700">N틱 이동 잠금</text>
+      <rect x="34" y="120" width="78" height="34" rx="7" fill="#fff" stroke="#d6453f"/><text x="73" y="142" text-anchor="middle">Hit</text>
+      <rect x="128" y="120" width="78" height="34" rx="7" fill="#fff" stroke="#d6453f"/><text x="167" y="142" text-anchor="middle">Dead</text>
+    </g>
+    <text x="34" y="182" font-size="11" fill="#69707d">이동 입력은 Attack 상태일 때 게이트로 막힘 ✔</text>
+    <!-- wire -->
+    <line x1="410" y1="110" x2="508" y2="110" stroke="#7a52c5" stroke-width="2" marker-end="url(#ar2)"/>
+    <rect x="430" y="84" width="62" height="30" rx="15" fill="#f0eafa" stroke="#7a52c5"/><text x="461" y="103" font-size="10.5" text-anchor="middle" fill="#7a52c5">AnimState</text>
+    <text x="461" y="130" font-size="10" text-anchor="middle" fill="#69707d">byte (공유)</text>
+    <!-- client box -->
+    <rect x="510" y="20" width="400" height="180" rx="12" fill="#e8f6ed" stroke="#2e8b57" stroke-width="1.5"/>
+    <text x="528" y="46" font-size="13" font-weight="700" fill="#2e8b57">클라 — 시각 FSM (거울)</text>
+    <g font-size="11.5">
+      <rect x="534" y="66" width="170" height="34" rx="7" fill="#fff" stroke="#2e8b57"/><text x="619" y="88" text-anchor="middle">Animator (AnimState int)</text>
+      <rect x="534" y="116" width="170" height="34" rx="7" fill="#fff" stroke="#2e8b57"/><text x="619" y="138" text-anchor="middle">로컬 예측 (이동/점프)</text>
+    </g>
+    <text x="724" y="86" font-size="10.5" fill="#69707d">서버가 시킨</text>
+    <text x="724" y="100" font-size="10.5" fill="#69707d">애니만 재생</text>
+    <text x="528" y="182" font-size="11" fill="#69707d">Exit Time = 시각 타이밍일 뿐, <b>권위 아님</b></text>
+  </svg>
+  </div>
+  <p><small class="note">규칙(이동 잠금)은 <b>왼쪽 빨강(서버)</b>에 살고, 오른쪽 초록(클라)은 그걸 보고 애니만 맞춰요. 몬스터·보스는 아예 오른쪽에 예측조차 없이 100% 서버가 시키는 대로.</small></p>
+
+  <!-- ===== 5. 제안 ===== -->
+  <h2><span class="n">5</span> 제안 — 플레이어부터 "수직 슬라이스"</h2>
+  <p>셋(플레이어·몬스터·보스)을 한 번에 갈아엎는 대신, <b>플레이어 한 줄기를 끝까지 먼저</b> 만들어 패턴을 증명하고 확장합니다. 위험 ↓, 학습 호흡 유지.</p>
+
+  <div class="grid3">
+    <div class="phase"><div class="ph-tag">Phase 1</div>
+      <h3>플레이어 ActionState</h3>
+      <p><small class="note">서버에 클래스 기반 ActionState FSM + <b>commit window</b> 도입 → "공격 중 이동 잠금" 규칙 구현. 클라 Animator는 미러.</small></p>
+      <p style="margin:6px 0 0"><span class="tag t-srv">서버</span> <span class="tag t-cli">클라</span><br>
+      <small class="note">→ State 패턴 + 서버 권위를 <b>한 슬라이스</b>에서 동시 증명</small></p>
+    </div>
+    <div class="phase"><div class="ph-tag">Phase 2</div>
+      <h3>몬스터 AI 확장</h3>
+      <p><small class="note">검증된 State 베이스를 일반/골렘 AI에 적용 (Patrol/Chase + 공격 커밋). 상태가 늘 때 클래스화 값어치 발생.</small></p>
+      <p style="margin:6px 0 0"><span class="tag t-srv">서버</span></p>
+    </div>
+    <div class="phase"><div class="ph-tag">Phase 3</div>
+      <h3>보스 FSM 정리</h3>
+      <p><small class="note">필드 분기 → 명시적 State(Idle/Telegraph/Attack/Phase전환)로. P2 0.5s 애니 배율 이월 건도 여기서 흡수 가능.</small></p>
+      <p style="margin:6px 0 0"><span class="tag t-srv">서버</span></p>
+    </div>
+  </div>
+
+  <!-- ===== 6. 트레이드오프 ===== -->
+  <h2><span class="n">6</span> 트레이드오프 — 솔직하게</h2>
+  <table>
+    <thead><tr><th>축</th><th>장점</th><th>단점 / 위험</th></tr></thead>
+    <tbody>
+      <tr><td><b>규칙만 빠르게</b><br><small class="note">commit window만</small></td>
+        <td>"공격 중 이동" 즉시 해결, 변경 범위 최소</td>
+        <td>코드 구조는 그대로(enum+switch 잔존), 학습 가치 ↓</td></tr>
+      <tr><td><b>구조 리팩토링</b><br><small class="note">State 클래스 계층</small></td>
+        <td>확장성·가독성 ↑, 백엔드 구조 <b>학습 가치 ↑</b></td>
+        <td>적 AI는 2상태라 <b>당장은 과할 수</b> 있음(오버엔지니어링)</td></tr>
+      <tr><td><b>수직 슬라이스</b> <span class="pill p-class">추천</span><br><small class="note">플레이어 먼저</small></td>
+        <td>위험 분산(도메인 1개씩), 규칙+구조 둘 다, 학습 호흡 유지</td>
+        <td>Phase 3개로 호흡이 김(빠른 한 방은 아님)</td></tr>
+      <tr><td><b>빅뱅</b><br><small class="note">셋 동시</small></td>
+        <td>한 번에 통일된 구조</td>
+        <td>변경 범위 큼(<code>GameMap</code>/<code>GameSession</code> 동시), 회귀 위험 ↑</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 7. 결정 대기 ===== -->
+  <div class="q">
+    <h2 style="border:none"><span class="n" style="background:#fff;color:#202a3c">?</span> 지금 정할 것 — 범위/순서</h2>
+    <div class="opt rec"><b>A. 수직 슬라이스 (추천)</b> — 플레이어 먼저(규칙+구조) → 몬스터 → 보스. Phase 3개.</div>
+    <div class="opt"><b>B. 규칙만 먼저</b> — commit window로 "공격 중 이동"만 빠르게 막고, 구조 리팩토링은 나중에.</div>
+    <div class="opt"><b>C. 빅뱅</b> — 플레이어+몬스터+보스 State 클래스를 한 마일스톤에 동시 통일.</div>
+    <p style="margin:14px 0 0;font-size:13.5px;opacity:.85">정해지면 <code>/work:plan</code>으로 Phase를 쪼개고, plan-auditor 검증까지 돌립니다. — 아직 코드는 안 건드린 상태예요.</p>
+  </div>
+
+  <p style="margin-top:30px;color:var(--muted);font-size:12.5px">이 문서는 논의용 임시 자산입니다 (<code>01_Phases/youngho/_fsm-design-discussion.html</code>). 방향 확정 후 정식 Phase 정의로 옮겨갑니다.</p>
+
+</div>
+</body>
+</html>
