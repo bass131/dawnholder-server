@@ -68,10 +68,9 @@ internal sealed class CombatSystem
         int damage = Formulas.ComputeDamage(attacker.Stats, target.Stats, CombatConstants.BaseDamage);
         target.Hp -= damage;
 
-        // M4.3 Phase 08a: Hit latch 설정 — target(enemy)의 AnimState.Hit이 AnimLatchTicks 동안 유지.
-        // Death 우선순위(> Hit)이므로 아래 IsDead 체크 이전에 latch 먼저 세팅 — target이 죽어도
-        // latch는 해가 없음 (despawn 후 entity 사라지므로 카운터 감소 경로 없음).
-        target.HitLatchTicks = CombatConstants.AnimLatchTicks;
+        // 피격 aggro 트리거 (후공 포함): 공격자를 target으로 등록.
+        // Boss는 Fsm=null라 ResolveAfterHit 미호출이므로 무해.
+        target.TargetEntityId = attacker.EntityId;
 
         S_HitResult hit = new S_HitResult
         {
@@ -85,26 +84,25 @@ internal sealed class CombatSystem
 
         if (target.Hp <= 0)
         {
+            // 즉시 사망. 죽음 연출은 클라 VFX(S_EntityDeath 수신 시) — 서버는 확정+제거만(헌법 #1).
             S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
             map.BroadcastToAll(death.Write());
 
-            // Boss 사망 시 S_StageClear 1회 broadcast.
-            // 순서 약속: S_EntityDeath → S_StageClear (lifecycle → game event).
             if (target.Kind == EnemyKind.Boss && !map.IsStageCleared)
             {
                 map.SetStageCleared();
                 S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
                 map.BroadcastToAll(stageClear.Write());
             }
-
             map.RemoveEnemy(target.EntityId);
-
-            // Normal enemy respawn 큐 등록.
-            // Boss는 StageClear 1회성 → respawn 없음.
             if (target.Kind == EnemyKind.Normal)
-            {
                 map.EnqueueRespawn(target);
-            }
+        }
+        else
+        {
+            // 생존 = HitState(멈칫 + 넉백). Boss는 EnterHitState 내부에서 latch만 세팅.
+            float knockbackDir = target.X >= attacker.Position.X ? 1f : -1f;
+            target.EnterHitState(knockbackDir);
         }
     }
 

@@ -161,7 +161,7 @@ public class PlayerEntity
     // 플레이어 전체 행동(이동 + 전투) State 머신.
     // Phase 02: 이동 계열(Idle/Move/Jump) + 전투 계열(Attack/Hit/Death) 통합.
     // tick thread invariant: StateMachine.Tick은 GameMap.Tick 안에서만 호출.
-    public StateMachine ActionFsm { get; private set; } = null!;
+    public StateMachine<PlayerEntity> ActionFsm { get; private set; } = null!;
 
     // ── 전투 전이 API ──────────────────────────────────────────────────────
 
@@ -206,6 +206,6 @@ public class PlayerEntity
         MaxHp = Stats.MaxHp;
         Hp = Stats.Hp;
         // spawn 시점 OnGround=true, Velocity=0 → Idle이 초기 상태.
-        ActionFsm = new StateMachine(PlayerMovementStates.Idle, this);
+        ActionFsm = new StateMachine<PlayerEntity>(PlayerMovementStates.Idle, this);
     }
 }

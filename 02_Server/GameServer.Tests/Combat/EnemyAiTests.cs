@@ -1,6 +1,7 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.States;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -119,46 +120,54 @@ public class EnemyAiTests
     // ── 테스트: Aggro 진입 → Chase 전환 ───────────────────────────────────────
 
     /// <summary>
-    /// AggroRange 안에 player 진입 시 enemy.State = Chase + TargetEntityId 설정.
+    /// 선공(AggroOnSight=true) enemy — AggroRange 안에 player 진입 시 Chase 전환 + TargetEntityId 설정.
     ///
-    /// NormalDefault AggroRange=6. enemy.X=10, player.X=13 (|dx|=3 < 6) → aggro 진입.
+    /// GolemDefault AggroRange=4. enemy.X=10, player.X=12 (|dx|=2 ≤ 4) → 선공 aggro 진입.
     /// </summary>
     [Fact]
-    public void Aggro_TransitionsToChase()
+    public void Aggro_ProactiveEnemy_TransitionsToChase()
     {
-        GameMap map = MakeHuntingGround();
+        // Golem = 선공(AggroOnSight=true)
+        var content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Golem, 10f, 0f),
+        });
+        GameMap map = new GameMap(MapId.HuntingGround, content: content);
         EnemyEntity? enemy = null;
         foreach (EnemyEntity e in map.Enemies.Values) { enemy = e; break; }
         Assert.NotNull(enemy);
+        Assert.True(enemy!.Stats.AggroOnSight, "Golem should be AggroOnSight=true");
 
-        // enemy를 X=10(SpawnX)에 유지, player를 AggroRange(6) 안 X=13에 배치
         enemy.X = enemy.SpawnX; // 10
-        PlayerEntity player = AddPlayerAt(map, enemy.X + 3f, 0f); // |dx|=3 < AggroRange=6
+        PlayerEntity player = AddPlayerAt(map, enemy.X + 2f, 0f); // |dx|=2 ≤ AggroRange=4
 
         map.Tick(1);
 
-        Assert.Equal(EnemyState.Chase, enemy!.State);
+        Assert.Equal(EnemyState.Chase, enemy.State);
         Assert.Equal(player.EntityId, enemy.TargetEntityId);
     }
 
     /// <summary>
-    /// AggroRange 밖 player는 aggro 미진입 — Patrol 유지.
-    /// |dx| = AggroRange + 1 → threshold 초과.
+    /// 후공(AggroOnSight=false) Normal enemy — player가 AggroRange 안에 들어와도 시야 aggro 없음 → Patrol 유지.
+    /// 맞아야 추격하는 슬라임 계열 동작 검증.
     /// </summary>
     [Fact]
-    public void Aggro_OutOfRange_StaysPatrol()
+    public void Aggro_ReactiveEnemy_StaysPatrol_WhenNotHit()
     {
         GameMap map = MakeHuntingGround();
         EnemyEntity? enemy = null;
         foreach (EnemyEntity e in map.Enemies.Values) { enemy = e; break; }
         Assert.NotNull(enemy);
+        Assert.False(enemy!.Stats.AggroOnSight, "Normal should be AggroOnSight=false");
 
-        float outsideX = enemy.X + enemy.Stats.AggroRange + 1f; // 범위 밖
-        AddPlayerAt(map, outsideX, 0f);
+        // AggroRange 안에 player 배치 (|dx| < AggroRange)
+        float insideX = enemy.X + enemy.Stats.AggroRange * 0.5f;
+        AddPlayerAt(map, insideX, 0f);
 
         map.Tick(1);
 
-        Assert.Equal(EnemyState.Patrol, enemy!.State);
+        // 후공 = 시야 aggro 없음 → Patrol 유지
+        Assert.Equal(EnemyState.Patrol, enemy.State);
         Assert.Null(enemy.TargetEntityId);
     }
 
@@ -184,7 +193,7 @@ public class EnemyAiTests
         PlayerEntity player = AddPlayerAt(map, farAwayX, 0f);
 
         // Chase 상태로 강제 설정 (aggro 진입 없이 de-aggro 경로 직접 검증)
-        enemy.State = EnemyState.Chase;
+        enemy.Fsm!.ChangeState(EnemyStates.Chase, enemy);
         enemy.TargetEntityId = player.EntityId;
 
         map.Tick(1);
@@ -210,7 +219,7 @@ public class EnemyAiTests
         float insideX = enemy.X + enemy.Stats.AggroRange * 1.2f;
         PlayerEntity player = AddPlayerAt(map, insideX, 0f);
 
-        enemy.State = EnemyState.Chase;
+        enemy.Fsm!.ChangeState(EnemyStates.Chase, enemy);
         enemy.TargetEntityId = player.EntityId;
 
         map.Tick(1);
@@ -236,7 +245,7 @@ public class EnemyAiTests
         float targetX = enemy.X + enemy.Stats.AggroRange * 0.5f;
         PlayerEntity player = AddPlayerAt(map, targetX, 0f);
 
-        enemy.State = EnemyState.Chase;
+        enemy.Fsm!.ChangeState(EnemyStates.Chase, enemy);
         enemy.TargetEntityId = player.EntityId;
         float beforeX = enemy.X;
 
@@ -261,7 +270,7 @@ public class EnemyAiTests
         float targetX = enemy.X - enemy.Stats.AggroRange * 0.5f;
         PlayerEntity player = AddPlayerAt(map, targetX, 0f);
 
-        enemy.State = EnemyState.Chase;
+        enemy.Fsm!.ChangeState(EnemyStates.Chase, enemy);
         enemy.TargetEntityId = player.EntityId;
         float beforeX = enemy.X;
 
@@ -303,17 +312,15 @@ public class EnemyAiTests
     // ── 테스트: Respawn ────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Normal enemy 사망 → NormalEnemyRespawnTicks 경과 후 새 entity 출현.
+    /// Normal enemy 사망 → 즉시 제거 + NormalEnemyRespawnTicks 후 재출현.
     ///
     /// 검증:
-    ///   - 사망 후 _enemies에서 제거됨.
-    ///   - NormalEnemyRespawnTicks tick 진행 후 _enemies.Count == 1 (새 entity).
-    ///   - 새 entity는 SpawnX/SpawnY에 배치, HP는 MaxHp.
-    ///   - 새 entityId != 옛 entityId (헌법 #2 ID 재사용 금지).
+    ///   - 사망 직후 _enemies에서 즉시 제거 (ContainsKey=false + Empty).
+    ///   - NormalEnemyRespawnTicks(100) tick 후 새 entity 출현.
+    ///   - 새 entity: SpawnX/SpawnY 위치, HP=MaxHp, State=Patrol, 새 entityId.
     ///
-    /// **NormalEnemyRespawnTicks**: RespawnSystem 내부 const(100). 여기서는 100을 리터럴로 사용
-    ///   (const는 internal — 테스트에서 직접 접근 불가).
-    ///   값이 바뀌면 이 테스트도 갱신 필요 (의도적 coupling — 정책 값의 변경을 테스트가 잡음).
+    /// **상수 리터럴**: NormalEnemyRespawnTicks=100 (internal — 직접 접근 불가).
+    ///   값이 바뀌면 이 테스트도 갱신 필요 (의도적 coupling).
     /// </summary>
     [Fact]
     public void Respawn_NormalEnemy_ReappearsAfterTicks()
@@ -328,68 +335,33 @@ public class EnemyAiTests
         float spawnY = enemy.SpawnY;
         int maxHp = enemy.MaxHp;
 
-        // 사망 처리는 ProcessAttack 경로로만 일어나므로 null-owner player를 enemy 옆에 배치하고
-        // 공격해 사망 → respawn 검증. ProcessAttack은 GetPlayer(attackerId) 성공이 전제.
-        //   - player null owner → Send 호출 없음 (BroadcastToAll owner null skip).
-        //   - rate-limit 우회: player.LastAttackTickMs = 0.
-        //   - rewind 범위 검증 우회: tick을 1 이상으로 설정하고 attackerClientTick=1.
-        //   - AABB 범위 검증: attacker를 enemy 바로 옆에 배치 (AttackHalfExtent=1.5 → 3×3 박스).
-
-        // 1) null-owner player 추가 (enemy 바로 옆)
-        float attackerX = enemy.X + 1f; // AABB 3×3 안에 들어옴 (AttackHalfExtent=1.5)
+        // 1) null-owner attacker 추가 (enemy 바로 옆 — AABB 3×3 안)
+        float attackerX = enemy.X + 1f;
         PlayerEntity attacker = map.AddPlayer(null, new Vector2(attackerX, 0f));
 
-        // 2) 충분한 damage로 enemy HP 0 만들기 — BaseDamage 여러 번 또는 HP 직접 조작
-        // 직접 HP 1로 설정 (다음 attack에서 확실히 사망)
+        // 2) Tick(1) 먼저 → _currentTick=1 + RecordPosition
         enemy.Hp = 1;
-
-        // 3) Tick(1) 전 rate-limit 우회
         attacker.LastAttackTickMs = 0;
-
-        // 4) ProcessAttack 직접 호출 (tick thread 동기 — 테스트에서 직접 OK)
-        // map.ProcessAttack은 internal — InternalsVisibleTo 허용
-        map.ProcessAttack(attacker.EntityId, originalId, attackerClientTick: 1);
-        // 이 시점에서 Tick이 아직 안 됐으므로 _currentTick = 0.
-        // attackerClientTick=1 > _currentTick=0 → (b) 미래 tick silent drop 발생!
-        // → Tick을 먼저 돌려 _currentTick을 1 이상으로 설정.
-
-        // 재설정: Tick(1) 먼저 돌림 → _currentTick=1 → 그 다음 ProcessAttack
-        // Tick이 돌면 Physics.Step도 돌지만 AI 루프가 player null owner는 Send 없으므로 OK.
-        enemy.Hp = 1; // 다시 1로 (위 ProcessAttack이 실패했으므로 hp는 그대로)
-        attacker.LastAttackTickMs = 0;
-
-        // Tick(1) 호출 — _currentTick = 1 세팅 + enemy FSM 진행
-        // (이 tick에서 aggro 체크 가능하지만 attack은 아직 없음)
         map.Tick(1);
 
-        // Tick(2) 안에서 ProcessAttack EnqueueJob 방식이 아니라 직접 호출 방식으로 테스트
-        // → Tick(1) 이후 _currentTick=1. ProcessAttack(attackerClientTick=1) 호출.
-        // rate-limit 재우회
+        // 3) ProcessAttack — attacker 위치 재배치(Physics.Step 이동 보정)
         attacker.LastAttackTickMs = 0;
-        // RecordPosition은 Tick(1)에서 이미 완료됨 → GetPositionAtTick(1) 가능.
-        // 단 attacker 위치가 enemy AABB 안에 있어야 함.
-        // attacker.Position은 Physics.Step으로 이동했을 수 있으므로 재배치.
         attacker.Position = new Vector2(enemy.X + 1f, 0f);
-        attacker.RecordPosition(1, attacker.Position); // 수동으로 tick=1 위치 기록
-
+        attacker.RecordPosition(1, attacker.Position);
         map.ProcessAttack(attacker.EntityId, originalId, attackerClientTick: 1);
 
-        // enemy가 사망했어야 함 (Hp 1 → 데미지 ≥ 1 → Hp ≤ 0)
-        Assert.True(map.Enemies.ContainsKey(originalId) == false,
-            $"Enemy should be removed after death. Enemies: {string.Join(",", map.Enemies.Keys)}");
-
-        // respawn 대기 중 (아직 새 entity 없음)
+        // 사망 직후: 즉시 제거
+        Assert.False(map.Enemies.ContainsKey(originalId),
+            $"Enemy should be immediately removed on death. Enemies: {string.Join(",", map.Enemies.Keys)}");
         Assert.Empty(map.Enemies);
 
-        // NormalEnemyRespawnTicks = 100. 100틱 진행.
-        // 플레이어는 여전히 맵에 있고 null owner → BroadcastToAll Send 없음.
+        // 4) NormalEnemyRespawnTicks(100) tick 경과 → respawn
         const int RespawnTicks = 100;
-        for (int i = 2; i <= RespawnTicks + 1; i++)
-        {
+        int startTick = 2;
+        for (int i = startTick; i <= startTick + RespawnTicks; i++)
             map.Tick(i);
-        }
 
-        // respawn 완료 — _enemies에 새 entity 1마리
+        // respawn 완료 — 새 entity 1마리
         Assert.Single(map.Enemies);
 
         EnemyEntity? respawned = null;
@@ -398,8 +370,9 @@ public class EnemyAiTests
 
         // 새 ID (헌법 #2 은퇴 ID 재사용 금지)
         Assert.NotEqual(originalId, respawned!.EntityId);
-        // SpawnX/SpawnY 위치
-        Assert.Equal(spawnX, respawned.X, precision: 2);
+        // SpawnX 근처 — 리스폰 직후 곧바로 순찰을 시작하므로 정확히 SpawnX가 아니라 ±PatrolRange 안.
+        Assert.True(System.Math.Abs(respawned.X - spawnX) <= respawned.Stats.PatrolRange + 0.01f,
+            $"respawned X={respawned.X} should be within PatrolRange of SpawnX={spawnX}");
         Assert.Equal(spawnY, respawned.Y, precision: 2);
         // HP 초기화
         Assert.Equal(maxHp, respawned.Hp);
