@@ -82,10 +82,13 @@ if (string.Equals(scenarioName, "BossFightSmoke", StringComparison.OrdinalIgnore
 if (string.Equals(scenarioName, "EnemyAiSmoke", StringComparison.OrdinalIgnoreCase))
 {
     EnemyAiSmoke.Result r = await EnemyAiSmoke.Run(host, port);
-    Console.WriteLine($"[Bot] EnemyAiSmoke: success={r.Success} " +
-                      $"entity={r.LocalEntityId} enemy={r.EnemyEntityId}");
-    Console.WriteLine($"      enemy x: initial={r.EnemyInitialX:F2} atChase={r.EnemyXAtChase:F2} " +
-                      $"patrol={r.SawPatrolState} chase={r.SawChaseState} xMoved={r.SawXMovement}");
+    Console.WriteLine($"[Bot] EnemyAiSmoke: success={r.Success} entity={r.LocalEntityId}");
+    Console.WriteLine($"      [A] golem={r.GolemEntityId} x={r.GolemInitialX:F2} " +
+                      $"patrol={r.SawGolemPatrol} chaseAfterApproach={r.SawGolemChaseAfterApproach}");
+    Console.WriteLine($"      [B] slime={r.SlimeEntityId} x={r.SlimeInitialX:F2} " +
+                      $"patrolBeforeHit={r.SawSlimePatrolBeforeHit} " +
+                      $"stayedPatrolAfterApproach={r.SlimeStayedPatrolAfterApproach} " +
+                      $"chaseAfterHit={r.SawSlimeChaseAfterHit}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }
