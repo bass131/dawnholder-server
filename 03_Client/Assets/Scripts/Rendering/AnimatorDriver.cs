@@ -17,6 +17,11 @@ namespace Dawnholder.Client.Rendering
         // Attack 진입 순간 0/1 랜덤 — 시각 전용. 판정은 서버가 이미 확정(헌법 #1)이라 클라 랜덤 무해.
         public const string AttackVariantParam = "AttackVariant";
 
+        // 보스 찌르기(Stabbing_End)를 서버 권위 타격(S_EnemyAttack) 순간에 발동하는 트리거.
+        // 텔레그래프 동안 준비동작 유지 → 히트 도착 시 찌르기 → 모션이 데미지와 동기(클립-시계 jitter 제거).
+        // EnemyRegistry.NotifyStrike → FireStrike로 세팅. 이 param 없는 적(몬스터)은 무시.
+        public const string StrikeTriggerParam = "Strike";
+
         // sprite가 기본으로 왼쪽을 보고 그려졌으면 true → flip 기준 반전.
         // 우향 기본 sprite(Player)는 false, 좌향 기본(Mushroom/ToxicFrog placeholder)은 spawn 시 set.
         public bool SpriteDefaultFacesLeft;
@@ -27,6 +32,8 @@ namespace Dawnholder.Client.Rendering
         AnimState _prevState;
         bool _variantChecked;
         bool _hasAttackVariant;
+        bool _hasStrike;
+        bool _strikePending;
 
         void Awake()
         {
@@ -41,10 +48,15 @@ namespace Dawnholder.Client.Rendering
         {
             _anim = GetComponentInChildren<Animator>();
             _sr = GetComponentInChildren<SpriteRenderer>();
-            // controller가 바뀌었을 수 있음 — AttackVariant 파라미터 보유 여부 재조회.
+            // controller가 바뀌었을 수 있음 — AttackVariant/Strike 파라미터 보유 여부 재조회.
             _variantChecked = false;
             _hasAttackVariant = false;
+            _hasStrike = false;
         }
+
+        // EnemyRegistry.NotifyStrike가 S_EnemyAttack(보스 권위 타격) 수신 시 호출.
+        // 다음 LateUpdate에서 Strike 트리거 세팅(controller가 param 보유 시) → 찌르기 발동.
+        public void FireStrike() => _strikePending = true;
 
         void LateUpdate()
         {
@@ -61,11 +73,21 @@ namespace Dawnholder.Client.Rendering
                 {
                     _variantChecked = true;
                     foreach (var p in _anim.parameters)
-                        if (p.name == AttackVariantParam) { _hasAttackVariant = true; break; }
+                    {
+                        if (p.name == AttackVariantParam) _hasAttackVariant = true;
+                        else if (p.name == StrikeTriggerParam) _hasStrike = true;
+                    }
                 }
 
                 if (_hasAttackVariant && state == AnimState.Attack && _prevState != AnimState.Attack)
                     _anim.SetInteger(AttackVariantParam, Random.Range(0, 2));
+
+                // 서버 히트(S_EnemyAttack) 도착 시 찌르기 발동 — 모션을 권위 타격 순간에 동기.
+                if (_strikePending)
+                {
+                    _strikePending = false;
+                    if (_hasStrike) _anim.SetTrigger(StrikeTriggerParam);
+                }
 
                 _anim.SetInteger(AnimStateParam, (int)state);
             }

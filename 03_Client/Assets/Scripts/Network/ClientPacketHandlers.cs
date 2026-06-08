@@ -353,6 +353,10 @@ namespace Dawnholder.Client.Network
                 if (session.LocalEntityId == null) return;
                 bool isLocalPlayer = targetId == session.LocalEntityId.Value;
 
+                // 보스 찌르기(Stabbing_End)를 권위 타격 순간에 동기 — 텔레그래프 준비동작 유지 후 여기서 발동.
+                // animState 클립-시계와 서버 히트 사이 jitter 제거. Strike param 없는 적은 무시.
+                EnemyRegistry.Instance?.NotifyStrike(attackerId);
+
                 // 이펙트 위치: 본인 피격 = LocalPlayer 앵커, 그 외 = 공격자(보스) 앵커.
                 // EffectAnchor = 발-pivot 보정 컨벤션 (없으면 root 폴백).
                 Vector3 fxPos = Vector3.zero;

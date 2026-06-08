@@ -61,4 +61,15 @@ internal static class CombatConstants
 
     /// <summary>HP ≤ MaxHp * 0.5 이하로 내려가면 페이즈 2 전환. 1회성.</summary>
     public const float BossPhase2HpThreshold = 0.5f;
+
+    /// <summary>보스가 telegraph(예고)를 시작하는 사거리. |player.X - boss.X| ≤ 이 값이면 공격 시작.
+    /// BossAttackHalfExtent(2.5)와 같게 — 예고 시작 시점에 공격 AABB가 닿을 거리.</summary>
+    public const float BossAttackTriggerRange = 2.5f;
+
+    /// <summary>배회 사이클의 Idle 짧은 dwell (틱). 10틱=0.5초. 배회 종료 후 다음 탐지까지의 숨.
+    /// (post-attack dwell은 BossPhase1/2CooldownTicks가 담당 — Idle이 AttackCooldownTicks를 카운트다운.)</summary>
+    public const int BossIdlePauseTicks = 10;
+
+    /// <summary>타겟 없을 때 한 번의 Move 배회 지속 틱. 20틱=1초 배회 후 Idle 복귀.</summary>
+    public const int BossWanderTicks = 20;
 }
