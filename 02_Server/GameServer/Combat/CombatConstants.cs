@@ -43,17 +43,9 @@ internal static class CombatConstants
     /// <summary>보스 공격 AABB half-extent (x/y 동일). 중심 ±2.5f → 전체 5×5 unit.</summary>
     public const float BossAttackHalfExtent = 2.5f;
 
-    /// <summary>
-    /// 페이즈 1 공격 예고 틱 (telegraph).
-    /// 16틱 = 800ms @20TPS — 클라이언트가 이펙트 보고 회피할 여유.
-    /// </summary>
-    public const int BossTelegraphTicks = 16;
-
-    /// <summary>
-    /// 페이즈 2 공격 예고 틱 (telegraph). 페이즈 2 전환 후 적용.
-    /// 10틱 = 500ms @20TPS — 페이즈 1보다 짧아 난이도 상승.
-    /// </summary>
-    public const int BossPhase2TelegraphTicks = 10;
+    // telegraph 예고 틱(P1=16/P2=10)은 98_Shared/Constants.cs로 이동 (M4.6 Phase 05, 단일 출처).
+    //   사유: telegraph는 플레이어向 공정성 신호 → 클라 예고 UI 등에 참조 가능 = 양쪽 공유 OK.
+    //   나머지(cooldown/damage/range/threshold)는 순수 서버 판정값이라 여기 유지 (least-exposure).
 
     /// <summary>
     /// 페이즈 1 공격 쿨다운 (틱 단위).

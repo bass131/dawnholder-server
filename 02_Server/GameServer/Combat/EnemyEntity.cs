@@ -74,18 +74,18 @@ public class EnemyEntity
     public int AttackLatchTicks { get; set; }    // Attack 상태 남은 latch 틱 수
     public int HitLatchTicks    { get; set; }    // Hit 상태 남은 latch 틱 수
 
-    // 피격 넉백 속도(X). HitState에서만 적용/감쇠. Boss는 Fsm 없어 미사용.
+    // 피격 넉백 속도(X). Normal/Golem EnemyHitState에서만 적용/감쇠.
     // 적은 지형 물리 없이 순수 X 적분 (기존 적 이동 모델과 동일).
     public float KnockbackVx { get; set; }
 
-    // AI State machine + 소속 맵 back-ref. Normal/Golem만 사용 (Boss=null, BossBehaviorSystem 전담).
-    // OwningMap: State가 aggro 판정 위해 같은 맵 player를 스캔하는 통로. GameMap.SpawnEnemy에서 세팅.
+    // AI State machine + 소속 맵 back-ref. Normal/Golem = EnemyStates, Boss = BossStates.
+    // OwningMap: State가 같은 맵 player를 스캔하는 통로. GameMap.SpawnEnemy에서 세팅.
     internal GameMap? OwningMap { get; set; }
     internal StateMachine<EnemyEntity>? Fsm { get; set; }
 
     // ── 보스 FSM 상태 필드 ───────────────────────────────────────────────────
-    // BossBehaviorSystem 전용. Normal/Golem은 이 필드를 사용하지 않음.
-    // tick thread invariant — BossBehaviorSystem.Update 안에서만 읽기/쓰기.
+    // BossStates(Idle/Telegraph/Attack) 전용. Normal/Golem은 이 필드를 사용하지 않음.
+    // tick thread invariant — BossBehaviorSystem.Update → Fsm.Tick 경로 안에서만 읽기/쓰기.
 
     /// <summary>페이즈 2 전환 여부. HP ≤ 50% 시 true로 1회 전환 (idempotent).</summary>
     public bool IsPhase2 { get; set; }
@@ -102,16 +102,20 @@ public class EnemyEntity
     /// </summary>
     public int TelegraphTicksRemaining { get; set; }
 
-    // 피격 진입. Normal/Golem → 진짜 HitState(AI 멈춤 + 넉백). Boss(Fsm==null) → 애니 latch만(기존 동작 유지).
+    // 피격 진입. Normal/Golem → 진짜 HitState(AI 멈춤 + 넉백). Boss → latch만(이동 없는 고정형, FSM 전환 불가).
+    //
+    // 보스에 Fsm이 생긴 뒤에도 EnemyStates.Hit로 전환되면 안 됨 — 보스는 BossStates 전용 FSM.
+    // Kind==Boss 가드로 latch만 적용(헌법 #1: 보스 피격 피드백은 HitLatchTicks로만).
     public void EnterHitState(float dirX)
     {
         HitLatchTicks = CombatConstants.AnimLatchTicks;
-        if (Fsm == null) return;
+        if (Kind == EnemyKind.Boss || Fsm == null) return;
         KnockbackVx = Constants.KnockbackInitialVx * (dirX < 0f ? -1f : 1f);
         Fsm.ChangeState(EnemyStates.Hit, this);
     }
 
-    // State 초기화: Normal → Patrol (AI 즉시 시작), Boss → Idle.
+    // State 초기화: Boss = Idle, Normal/Golem = Patrol. Fsm은 GameMap.SpawnEnemy에서 생성
+    // (OwningMap 세팅 후) — kind별 초기 State(BossStates.Idle / EnemyStates.Patrol).
     public EnemyEntity(int entityId, EnemyKind kind, float x, float y, int maxHp, EnemyStats stats = default)
     {
         EntityId = entityId;
@@ -124,12 +128,10 @@ public class EnemyEntity
         Hp = maxHp;
         Stats = stats;
 
-        // AI 초기 상태: Boss = Idle (BossBehaviorSystem 전담), 나머지(Normal/Golem) = Patrol 시작.
         State = kind == EnemyKind.Boss ? EnemyState.Idle : EnemyState.Patrol;
-        PatrolDir = 1; // 기본 오른쪽 출발
+        PatrolDir = 1;
 
-        // 보스 초기 쿨다운: 스폰 직후 즉시 telegraph 방지.
-        // 페이즈 1 쿨다운으로 시작 — 스폰 후 2초 후 첫 공격 (헌법 #5: ms 타이머 X).
+        // 보스 초기 쿨다운: 스폰 직후 즉시 telegraph 방지 (페이즈 1 쿨다운으로 시작).
         if (kind == EnemyKind.Boss)
             AttackCooldownTicks = CombatConstants.BossPhase1CooldownTicks;
     }
