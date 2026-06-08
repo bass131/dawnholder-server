@@ -73,14 +73,25 @@ wsl -e bash -lc 'cd /mnt/c/Dev/ClaudeDev && ~/.dotnet/dotnet test 02_Server/Game
   → Passed! Failed: 0, Passed: 471, Skipped: 4, Total: 475
 ```
 
-## Play 실측
+## Play 실측 (완료, 2026-06-08)
 
-**대기 — 사용자 직접(Unity)**. 사용자 결정("한번에 전부 완성되면 실측")에 따라 Phase 05 고정형은 실측 생략했고,
-이동형 보스 완성(본 Phase)까지 와서 일괄 실측 예정. 체크 포인트:
-- 보스가 배회(걷는 Walk 애니) → 플레이어 접근 시 탐지→추격→예고→공격 → HP50% 페이즈2 가속.
-- 클라 무수정이라 보스가 *걷는 모습* + Walk 애니가 바로 보여야 함(렌더 경로 재사용 실증).
-- 관찰 권고(reviewer #4): de-aggro 시 MovePatrol patrol-bound snap(몬스터와 동일 기존 동작) 시각 어색함 여부 — 1회 관측 후 봉합 판단(premature 회피).
-> 실측 후 본 섹션 보완 예정.
+사용자 직접(Unity) 실측 — 이동형 보스 **체감 OK**: 배회(걷는 Walk 애니) → 접근 시 탐지→추격→예고→공격.
+클라 무수정인데 보스가 *걷는 모습* + Walk 애니 바로 보임 = **렌더 경로 재사용 실증**.
+
+**Play 봉합 2건** (커밋 `2a67308`, 순수 클라, v9 불변):
+1. **공격 시 플레이어 바라보기(facing)** — 정지 상태로 공격 중엔 이동 dx가 없어 facing이 옛 추격 방향에
+   멈춤(공격 끝→즉시 재공격 시 플레이어 반대편 봄). `EnemyMotion`이 animState=Attack·정지일 때 로컬 플레이어
+   쪽으로 보정. facing은 시각 전용(판정 AABB는 서버 좌우 대칭이라 데미지 무영향). client 결정(A안: v9 불변 vs B안 v10 서버권위 facing 중 A).
+2. **찌르기↔히트 동기** — 옛 Animator가 Stabbing_Start→End를 exit-time 자동전환(클립-시계)이라 서버 히트와
+   jitter로 어긋남("가끔 판정이 찌르기보다 먼저"). **Strike 트리거**로 교체 → S_EnemyAttack(권위 타격) 도착
+   순간 찌르기 발동 → 모션이 데미지와 동기. 경로: EnemyAttackHandler→EnemyRegistry.NotifyStrike→
+   AnimatorDriver.FireStrike→SetTrigger. Boss_Animator.controller = netcode 동기 기능 wiring(MCP, 백업 떠둠).
+   핵심 교훈: **애니메이션 시계(클라 클립) ≠ 권위 시계(서버 히트)** — 둘을 묶어야 동기. (이건 Phase 05 고정 보스
+   때부터 있던 잠복 이슈, 첫 Play에서 발현. 이동 로직과 무관.)
+
+**후속 polish (deferred, 사용자: "나중에 더 다듬자")**:
+- 미스(닷지) 시 허공 찌르기 — 현재는 히트 없으면 준비자세→Idle(찌르기 X). 빗나가도 찌르려면 서버 miss 신호 필요.
+- de-aggro MovePatrol patrol-bound snap(reviewer #4) — Play에서 사용자 미플래그(눈에 안 띔). 관찰 종료.
 
 ## 결정 흐름
 
