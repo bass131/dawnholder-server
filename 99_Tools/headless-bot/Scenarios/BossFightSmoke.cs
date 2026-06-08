@@ -22,6 +22,9 @@ public class BossFightSmoke
 
     const byte BossEntityKind = 1;
     const float PreferredAttackDistance = 1.5f; // 보스 범위(±2.5f) 안에 머물기 위해 타이트하게
+    // 재접근 임계값: AttackHalfExtent=1.5보다 여유를 두어 넉백(~1.26) 후에도 확실히 재진입.
+    const float ReapproachThreshold = 1.0f;
+    const int MaxReapproachTicks = 30;
     const int MaxKillAttempts = 40;
     const int DeadTargetRetargetCount = 3;
 
@@ -111,6 +114,11 @@ public class BossFightSmoke
 
             for (int attempt = 0; currentHp > 0 && attempt < MaxKillAttempts; attempt++)
             {
+                // 넉백(~1.26유닛)으로 공격 범위(1.5) 밖으로 밀려났을 수 있으므로 공격 전 재접근.
+                bool inRange = await bot.EnsureInAttackRange(ct);
+                if (!inRange)
+                    return Fail(result, $"reapproach timeout at attempt {attempt + 1} — bot could not close to boss");
+
                 bot.SendAttack(result.BossEntityId);
                 HitEvent? hit = await bot.WaitForHitCount(result.BossEntityId, prevHitCount + 1, CooldownWait, ct);
 
@@ -189,6 +197,13 @@ public class BossFightSmoke
         BotSession? _session;
         uint _clientTick;
         volatile int _lastReceivedServerTick = 0;
+
+        // 봇 서버 권위 X — S_Snapshot(entityId==LocalEntityId) 수신 시 갱신.
+        volatile float _serverX = 0f;
+
+        // 보스 서버 권위 X — S_EntityState 수신 시 갱신.
+        volatile float _bossX = 0f;
+        volatile bool _bossXInitialized = false;
 
         // 리스폰 추적: S_EnemyAttack.targetCurrentHp ≤ 0 (사망) 관측 후
         // 다음 공격에서 HP 양수면 리스폰으로 판정.
@@ -282,6 +297,28 @@ public class BossFightSmoke
             await Task.Delay(250, ct);
         }
 
+        // 공격 전 재접근 보장. 넉백으로 범위 밖에 있으면 보스 쪽으로 조향해 ReapproachThreshold 안에 들어온다.
+        public async Task<bool> EnsureInAttackRange(CancellationToken ct)
+        {
+            for (int t = 0; t < MaxReapproachTicks; t++)
+            {
+                float playerX = _serverX;
+                float targetX = _bossXInitialized ? _bossX : playerX;
+                float dist = Math.Abs(playerX - targetX);
+                if (dist <= ReapproachThreshold)
+                    return true;
+
+                sbyte dir = (targetX >= playerX) ? (sbyte)1 : (sbyte)-1;
+                SendMove(dir);
+                await Task.Delay(Constants.TickIntervalMs, ct);
+            }
+
+            SendMove(0);
+            await Task.Delay(Constants.TickIntervalMs, ct);
+            float finalDist = Math.Abs(_serverX - (_bossXInitialized ? _bossX : 0f));
+            return finalDist <= ReapproachThreshold;
+        }
+
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
 
@@ -371,7 +408,16 @@ public class BossFightSmoke
                 case PacketID.S_EntitySpawn:
                     S_EntitySpawn spawn = new();
                     spawn.Read(buffer);
-                    lock (_gate) _spawns.Add(spawn);
+                    lock (_gate)
+                    {
+                        _spawns.Add(spawn);
+                        // 보스 스폰 시 초기 좌표 캐시 — S_EntityState 수신 전에도 재접근 기준으로 활용.
+                        if (spawn.entityKind == BossEntityKind)
+                        {
+                            _bossX = spawn.x;
+                            _bossXInitialized = true;
+                        }
+                    }
                     break;
 
                 case PacketID.S_HitResult:
@@ -395,6 +441,24 @@ public class BossFightSmoke
                     S_Snapshot snapshot = new();
                     snapshot.Read(buffer);
                     _lastReceivedServerTick = snapshot.serverTick;
+                    // 자기 자신 snapshot → 봇 서버 권위 위치 갱신 (재접근 헬퍼 기준 좌표).
+                    if (snapshot.entityId == LocalEntityId)
+                        _serverX = snapshot.x;
+                    break;
+
+                case PacketID.S_EntityState:
+                    // 보스 live 위치 — 재접근 헬퍼가 최신 보스 좌표로 방향 계산.
+                    S_EntityState entityState = new();
+                    entityState.Read(buffer);
+                    lock (_gate)
+                    {
+                        bool isBoss = _spawns.Any(s => s.entityId == entityState.entityId && s.entityKind == BossEntityKind);
+                        if (isBoss)
+                        {
+                            _bossX = entityState.x;
+                            _bossXInitialized = true;
+                        }
+                    }
                     break;
 
                 case PacketID.S_EnemyAttack:
