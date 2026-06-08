@@ -36,6 +36,15 @@ namespace Dawnholder.Client.Prediction
         // 서버 AttackState(이동 잠금)를 같은 98_Shared 상수로 클라가 선예측 → reconcile rubber-band 0.
         float _commitWindowRemaining;
 
+        // 피격 hit-bridge 게이트 잔여(초). S_EnemyAttack(피격 *즉시* 신호) 도착 시 세팅 →
+        // animState==Hit 스냅샷이 도착하기 전 갭 동안 입력을 미리 잠가 onset 당김을 줄인다.
+        // 짧게만 — 진짜 hitstun 길이는 서버 전용이라 serverAnimState==Hit가 곧 이어받아 잠금 연장.
+        float _hitGateRemaining;
+
+        // hit-bridge 지속(틱). S_EnemyAttack~animState==Hit 스냅샷 사이 갭(≤1스냅샷)을 메우는 *클라 휴리스틱*.
+        // 게임플레이 규칙 아님(서버 hitstun과 별개) → 98_Shared 아닌 클라 로컬 상수.
+        const int HitGateBridgeTicks = 3; // ~150ms
+
         // 서버 권위 animState 최신값(S_Snapshot). Hit/Death는 클라가 예측 불가 → 이 값으로 게이트.
         // Attack은 로컬 타이머가 선예측하되, 서버 window가 더 길면 이 값이 잠금을 연장(거울 보정).
         AnimState _serverAnimState = AnimState.Idle;
@@ -108,13 +117,20 @@ namespace Dawnholder.Client.Prediction
             _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
         }
 
+        // EnemyAttackHandler가 본인 피격(S_EnemyAttack) 시 호출 — hit-bridge 게이트 시작.
+        // animState==Hit 스냅샷이 도착하기 전까지 입력을 미리 잠가 onset 당김을 줄인다.
+        public void NotifyHit()
+        {
+            _hitGateRemaining = HitGateBridgeTicks * Constants.TickDuration;
+        }
+
         // 이동 잠금 판정 순수 함수 — 서버 AttackState/HitState/DeathState(LocksMovement)의 클라 거울.
-        //   - commit window 잔여 > 0: 로컬 공격 예측 (서버 확인 전 즉시 잠금 = "콱 정지").
+        //   - localLockRemaining > 0: 로컬 잠금 타이머(공격 commit 선예측 OR 피격 hit-bridge) = 서버 확인 전 즉시 잠금.
         //   - serverAnimState Attack: 서버 window가 로컬 타이머보다 길면 잠금 연장(거울 보정).
         //   - serverAnimState Hit/Death: 클라가 예측 불가한 서버 전용 상태 → 서버 신뢰 잠금.
-        public static bool IsMovementLocked(float commitWindowRemaining, AnimState serverAnimState)
+        public static bool IsMovementLocked(float localLockRemaining, AnimState serverAnimState)
         {
-            if (commitWindowRemaining > 0f) return true;
+            if (localLockRemaining > 0f) return true;
             return serverAnimState == AnimState.Attack
                 || serverAnimState == AnimState.Hit
                 || serverAnimState == AnimState.Death;
@@ -132,15 +148,18 @@ namespace Dawnholder.Client.Prediction
 
         void Update()
         {
-            // commit window 예측 타이머 감쇠. 서버 animState와 함께 이동 잠금 판정.
+            // 로컬 잠금 타이머 감쇠 (공격 commit 선예측 + 피격 hit-bridge). 서버 animState와 함께 잠금 판정.
             if (_commitWindowRemaining > 0f)
                 _commitWindowRemaining = Mathf.Max(0f, _commitWindowRemaining - Time.deltaTime);
+            if (_hitGateRemaining > 0f)
+                _hitGateRemaining = Mathf.Max(0f, _hitGateRemaining - Time.deltaTime);
 
             // **source-gating** (헌법 #1 정합): 잠금 시 입력을 *근원에서* 0으로 막는다.
             //   Predict / 송신(C_MoveIntent) / InputHistory(replay) 셋이 같은 gated 입력을 쓰므로
             //   reconcile replay가 서버와 정확히 일치 — 별도 replay 게이트 불필요.
             //   서버가 공격을 거부(rate-limit)해도 송신 입력이 0 → 서버도 0 적용 → 발산 0.
-            bool locked = IsMovementLocked(_commitWindowRemaining, _serverAnimState);
+            float localLock = Mathf.Max(_commitWindowRemaining, _hitGateRemaining);
+            bool locked = IsMovementLocked(localLock, _serverAnimState);
             (sbyte moveX, bool jumpEdge) = ResolveGatedInput(locked, _currentMoveX, _jumpEdgeThisTick);
 
             // 매 frame Predict. 시뮬 자체가 부드러움.

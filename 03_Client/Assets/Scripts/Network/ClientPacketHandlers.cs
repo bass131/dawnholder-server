@@ -384,6 +384,9 @@ namespace Dawnholder.Client.Network
 
                 if (!isLocalPlayer) return;
 
+                // 본인 피격 *즉시* 신호 → hit-bridge 게이트 시작 (animState==Hit 스냅샷 전 입력 예측 갭 축소).
+                LocalPlayerMovement.Instance?.NotifyHit();
+
                 // 본인 피격 — HUD 갱신 (서버 권위값 그대로).
                 int classValue = PlayerPrefs.GetInt(
                     CharacterSelectController.SelectedClassPrefsKey,

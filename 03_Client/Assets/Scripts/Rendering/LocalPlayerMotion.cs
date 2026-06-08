@@ -61,7 +61,14 @@ namespace Dawnholder.Client.Rendering
             _animState = ResolveAnimState(_serverState, onGround, moving);
 
             if (moving)
-                _facing = dx > 0f ? 1 : -1;
+            {
+                // 피격 중엔 넉백이 *공격자 반대 방향*으로 날아가므로, 이동(넉백)의 반대로 바라보면
+                // 공격자를 향함 — "맞은 쪽을 쳐다보는" 자연스러운 반응. (별도 배선 불필요)
+                if (_serverState == AnimState.Hit)
+                    _facing = dx > 0f ? -1 : 1;
+                else
+                    _facing = dx > 0f ? 1 : -1;
+            }
 
             _lastX = transform.position.x;
         }
