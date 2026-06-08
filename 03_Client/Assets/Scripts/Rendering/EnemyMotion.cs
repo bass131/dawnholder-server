@@ -31,11 +31,22 @@ namespace Dawnholder.Client.Rendering
             _animState = (AnimState)raw;
         }
 
+        // S_EntityDeath 수신 시 클라가 직접 호출 — 서버가 더이상 animState를 보내지 않으므로
+        // Death 클립 전환을 클라 측에서 강제 주입.
+        public void ForceDeathState()
+        {
+            _animState = AnimState.Death;
+        }
+
         void LateUpdate()
         {
             float dx = transform.position.x - _lastX;
             if (Mathf.Abs(dx) > FacingEpsilon)
-                _facing = dx > 0f ? 1 : -1;
+            {
+                int moveFacing = dx > 0f ? 1 : -1;
+                // 피격 중 넉백은 공격자 반대 방향 → 역방향이 공격자.
+                _facing = _animState == AnimState.Hit ? -moveFacing : moveFacing;
+            }
             _lastX = transform.position.x;
         }
     }

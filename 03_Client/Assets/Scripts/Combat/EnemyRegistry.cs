@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections;
 using System.Collections.Generic;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
@@ -106,13 +107,25 @@ namespace Dawnholder.Client.Combat
         }
 
         // S_EntityDeath 핸들러에서 호출.
+        // 레지스트리에서 즉시 제거(이후 도착하는 S_HitResult/S_EntityState는 silently drop) +
+        // Death 클립 재생 후 GO destroy.
         public void Despawn(int entityId)
         {
             if (!_enemies.TryGetValue(entityId, out EnemyEntry entry)) return;
             _enemies.Remove(entityId);
             entry.Interp.ClearBuffer();
-            Destroy(entry.Enemy.gameObject);
-            Debug.Log($"[EnemyRegistry] Despawned entity {entityId}");
+            entry.Motion?.ForceDeathState();
+            StartCoroutine(DestroyAfterDeathVfx(entry.Enemy.gameObject));
+            Debug.Log($"[EnemyRegistry] Despawn(death vfx) entity {entityId}");
+        }
+
+        // Death 클립 길이(~0.8s)만큼 대기 후 GO destroy.
+        // 연출 타이머 — 서버 tick 동기 불필요한 순수 시각 지연.
+        IEnumerator DestroyAfterDeathVfx(GameObject go)
+        {
+            yield return new WaitForSeconds(0.8f);
+            if (go != null)
+                Destroy(go);
         }
 
         // 이펙트 flip용 — entityId의 시각 facing(1=우/-1=좌) 반환. Motion 없으면 1.
