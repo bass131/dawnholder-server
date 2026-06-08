@@ -1,4 +1,5 @@
 using System.Numerics;
+using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 
@@ -160,6 +161,11 @@ public class PlayerEntity
         return Position;
     }
 
+    // 이동 계열 State 머신 (Phase 01 — Idle/Move/Jump).
+    // 전투 계열(Attack/Hit/Death) 통합은 Phase 02.
+    // tick thread invariant: StateMachine.Tick은 GameMap.Tick 안에서만 호출.
+    public StateMachine MovementFsm { get; private set; } = null!;
+
     // stats null 시 PlayerStats.Warrior() default (전사 기본값).
     public PlayerEntity(int entityId, Vector2 position, GameSession? owner = null, PlayerStats? stats = null)
     {
@@ -171,5 +177,7 @@ public class PlayerEntity
         // migration(GameMap.AddPlayerWithId)은 이 직후 Hp를 이월 값으로 덮음 — MaxHp는 여기서 확정.
         MaxHp = Stats.MaxHp;
         Hp = Stats.Hp;
+        // spawn 시점 OnGround=true, Velocity=0 → Idle이 초기 상태.
+        MovementFsm = new StateMachine(PlayerMovementStates.Idle, this);
     }
 }

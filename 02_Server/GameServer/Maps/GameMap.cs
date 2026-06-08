@@ -205,17 +205,8 @@ public class GameMap
         if (p.AttackLatchTicks > 0)
             return (byte)Shared.GameData.AnimState.Attack;
 
-        // Jump — 공중 (grounded=false)
-        if (!p.OnGround)
-            return (byte)Shared.GameData.AnimState.Jump;
-
-        // Walk — 수평 이동 중
-        const float VxEpsilon = 0.01f;
-        if (p.Velocity.X > VxEpsilon || p.Velocity.X < -VxEpsilon)
-            return (byte)Shared.GameData.AnimState.Walk;
-
-        // Idle — 기본
-        return (byte)Shared.GameData.AnimState.Idle;
+        // Jump / Walk / Idle — MovementFsm이 물리 상태를 반영한 최신 AnimState를 보유.
+        return (byte)p.MovementFsm.AnimState;
     }
 
     // ── CombatSystem용 internal mutator (§0.3 최소 surface) ──────────────────
@@ -345,6 +336,11 @@ public class GameMap
             // Death는 latch 없음 — IsDeadAnimState가 true이면 항상 Death.
             if (p.AttackLatchTicks > 0) p.AttackLatchTicks--;
             if (p.HitLatchTicks > 0) p.HitLatchTicks--;
+
+            // 이동 계열 State 전환 판정 (Physics.Step + latch 감소 완료 후).
+            // 전투 latch(AttackLatchTicks/HitLatchTicks)가 이미 감소된 시점이므로
+            // MovementFsm은 순수 물리 상태(OnGround/Velocity)만 보고 전환.
+            p.MovementFsm.Tick(p);
         }
 
         // 3) Snapshot 브로드캐스트. 매 2 tick(=100ms).
