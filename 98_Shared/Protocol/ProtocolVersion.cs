@@ -30,6 +30,10 @@ namespace Shared.Protocol;
 ///         append-only이지만 옛 클라가 animState 없이 파싱하면 오프셋 desync → 빠른 cutoff 위해 bump.
 ///   - v9: M4.5 Phase 04 — S_EnemyAttack 신설(적→플레이어 권위 데미지) + S_PlayerJoin.characterClass byte
 ///         맨 끝 append(원격 직업 표시). 두 변경 한 묶음 bump.
+///   - v10: M4.7 Phase 01 — S_PlayerHp(플레이어 HP 권위 동기화 전용 이벤트) + S_PlayerAttack(원격 공격
+///         발동 이벤트 — 허공 스윙 포함) 두 패킷 신설. 신기능(HP 동기화·원격 투사체·허공 스윙)이 신규
+///         패킷 의존이라 옛 클라 빠른 cutoff 위해 한 묶음 bump. C_Attack 모양 불변(targetEntityId 의미만
+///         "필수 타겟"→"선택 힌트 0=없음"). PDL append-only, ID 21/22 — 기존 enum 시프트 0.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -43,6 +47,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.5 Phase 04 = v9 (S_EnemyAttack 신설 + S_PlayerJoin.characterClass append).</summary>
-    public const ushort Current = 9;
+    /// <summary>현재 프로토콜 버전. M4.7 Phase 01 = v10 (S_PlayerHp + S_PlayerAttack 신설 — HP 동기화 + 원격 공격 이벤트).</summary>
+    public const ushort Current = 10;
 }
