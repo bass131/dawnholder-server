@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.6
 phase: 05
 title: 보스를 명시적 State로 정리 + P2 telegraph 상수 단일화
-status: pending
+status: done
 grade: 복잡
 estimated: 3~4h
 domain: server+shared
@@ -11,7 +11,7 @@ domain: server+shared
 
 # Phase 05: 보스를 명시적 State로 정리 + P2 telegraph 상수 단일화
 
-> **상태**: pending
+> **상태**: done (상세=[`05-boss-state-cleanup-DONE.md`](05-boss-state-cleanup-DONE.md))
 > **마일스톤**: M4.6 — ActionState FSM
 > **등급**: 복잡 (server + shared — 보스 FSM 재구성, 회귀 민감)
 > **담당**: server + shared
@@ -96,3 +96,4 @@ domain: server+shared
 ## 작업 로그
 
 - 2026-06-08: 신설 (plan)
+- 2026-06-08: 완료 (세션27). 보스 3-State(BossIdle/BossTelegraph/BossAttack) 이주 — 옛 조건분기와 비트 동일(회귀 0). telegraph 상수 98_Shared 단일화. 커밋 `4365551`. **메인 검수가 Worker 2-State 일탈 + telegraph 중복미제거 + 이중Fsm 정정**. build 0/0 · test 466/0/4skip · reviewer 🔴0/🟡0. v9 불변. 상세=`05-boss-state-cleanup-DONE.md`. (Stage 2 보스 이동 = 별도 phase, plan 저장)
