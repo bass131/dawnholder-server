@@ -255,6 +255,65 @@ namespace Dawnholder.Client.Tests.Prediction
                 "mispredict 2회 → SnapCount=2");
         }
 
+        // === OnSnapshot — forceAdopt (HitState 넉백 표시, M4.6 Phase 03) ===
+        //
+        // 피격 중 클라는 서버 권위 넉백 임펄스(ExternalVelX)를 예측 못 함 → 임계 이내여도
+        // 서버 위치를 채택(force-adopt)해 넉백 시각화 + sub-threshold offset 누적 방지.
+
+        [Test]
+        public void OnSnapshot_ForceAdopt_WithinThreshold_AdoptsServerPosition()
+        {
+            var predictor = new PlayerPredictor(DefaultMove);
+            predictor.SetInitialPosition(new Vector2(10f, 0f));
+
+            // 임계 이내(0.3 < 1.5)지만 forceAdopt=true → 서버 위치 채택해야 함.
+            float serverX = 10f + 0.3f;
+            bool reconciled = predictor.OnSnapshot(serverX, 0f, 0f, 0f,
+                                                    ackedClientTick: 0, forceAdopt: true);
+
+            Assert.IsTrue(reconciled, "forceAdopt=true → 임계 이내여도 reconcile true 반환");
+            Assert.AreEqual(serverX, predictor.Position.x, 0.0001f,
+                "넉백 표시: 임계 이내여도 서버 위치를 채택해야 함");
+        }
+
+        [Test]
+        public void OnSnapshot_ForceAdopt_WithinThreshold_SnapCountNotIncremented()
+        {
+            var predictor = new PlayerPredictor(DefaultMove);
+            predictor.SetInitialPosition(new Vector2(10f, 0f));
+
+            predictor.OnSnapshot(10f + 0.3f, 0f, 0f, 0f, ackedClientTick: 0, forceAdopt: true);
+
+            Assert.AreEqual(0, predictor.SnapCount,
+                "force-adopt(임계 이내)은 진짜 mispredict 아님 — SnapCount 증가 X");
+        }
+
+        [Test]
+        public void OnSnapshot_ForceAdopt_AlsoMispredict_SnapCountIncremented()
+        {
+            var predictor = new PlayerPredictor(DefaultMove);
+            predictor.SetInitialPosition(new Vector2(0f, 0f));
+
+            // 임계 초과 + forceAdopt — 진짜 mispredict이므로 SnapCount 증가.
+            predictor.OnSnapshot(99f, 0f, 0f, 0f, ackedClientTick: 0, forceAdopt: true);
+
+            Assert.AreEqual(1, predictor.SnapCount,
+                "임계 초과는 forceAdopt 여부와 무관하게 진짜 mispredict → SnapCount=1");
+        }
+
+        [Test]
+        public void OnSnapshot_NoForceAdopt_WithinThreshold_PositionUnchanged()
+        {
+            // forceAdopt 기본값(false) — 기존 동작 보존: 임계 이내면 예측 위치 유지.
+            var predictor = new PlayerPredictor(DefaultMove);
+            predictor.SetInitialPosition(new Vector2(10f, 0f));
+
+            bool reconciled = predictor.OnSnapshot(10f + 0.3f, 0f, 0f, 0f, ackedClientTick: 0);
+
+            Assert.IsFalse(reconciled, "forceAdopt 없음 + 임계 이내 → reconcile 안 함");
+            Assert.AreEqual(10f, predictor.Position.x, 0.0001f, "예측 위치 그대로 유지");
+        }
+
         // === 직업 MoveParams 비례 검증 (M4.4 Phase 04 신설) ===
         //
         // Warrior(MoveSpeed=4) vs Ranger(MoveSpeed=6) — 같은 입력 1 tick Predict 시

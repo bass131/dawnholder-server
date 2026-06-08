@@ -58,7 +58,10 @@ namespace Dawnholder.Client.Input
         void OnAttack(InputValue value)
         {
             if (!value.isPressed) return; // up edge 무시 — down 시점 한 번만.
-            _attackStrategy.TryAttack(transform.position);
+            // 송신 성공(타겟 잡힘) 시에만 로컬 commit window 예측 시작 — 헛스윙은 잠금 X.
+            // 서버가 rate-limit으로 거부해도 source-gating이라 발산 0 (송신 입력이 0 → 서버도 0 적용).
+            if (_attackStrategy.TryAttack(transform.position))
+                _movement.NotifyAttack();
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.

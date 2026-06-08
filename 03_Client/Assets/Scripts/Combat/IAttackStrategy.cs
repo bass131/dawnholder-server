@@ -10,6 +10,8 @@ namespace Dawnholder.Client.Combat
     public interface IAttackStrategy
     {
         // origin: 공격자 월드 위치. 타게팅 힌트 계산 기준점.
-        void TryAttack(Vector3 origin);
+        // 반환: C_Attack을 실제로 송신했으면 true (타겟 잡힘) — 호출자가 로컬 commit window
+        //   예측 게이트 시작 신호로 사용. 헛스윙(타겟 없음)은 false → 이동 잠금 안 함.
+        bool TryAttack(Vector3 origin);
     }
 }

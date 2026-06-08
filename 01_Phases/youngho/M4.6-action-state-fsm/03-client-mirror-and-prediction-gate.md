@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.6
 phase: 03
 title: 클라 미러 정합 — 예측 게이트(reconcile 방지) + 시각 상태 검증
-status: pending
+status: done
 grade: 복잡
 risk: unity-asset
 estimated: 2~3h

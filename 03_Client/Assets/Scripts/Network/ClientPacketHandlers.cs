@@ -135,10 +135,11 @@ namespace Dawnholder.Client.Network
 
                 if (eid == session.LocalEntityId.Value)
                 {
-                    // 본인 path — reconcile + 서버 animState 전달.
+                    // 본인 path — reconcile(+넉백 force-adopt) + 서버 animState 전달.
+                    // animState는 두 소비자: 이동 게이트(LocalPlayerMovement) + 시각 애니(LocalPlayerMotion).
                     if (LocalPlayerMovement.Instance != null)
                     {
-                        LocalPlayerMovement.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick);
+                        LocalPlayerMovement.Instance.OnServerSnapshot(x, y, vx, vy, sTick, ackedTick, animState);
                         LocalPlayerMovement.Instance.GetComponent<LocalPlayerMotion>()
                             ?.SetServerAnimState(animState);
                     }
@@ -382,6 +383,9 @@ namespace Dawnholder.Client.Network
                     BossAttackEffectSpawner.Spawn(attackPattern, fxPos, fxFacing);
 
                 if (!isLocalPlayer) return;
+
+                // 본인 피격 *즉시* 신호 → hit-bridge 게이트 시작 (animState==Hit 스냅샷 전 입력 예측 갭 축소).
+                LocalPlayerMovement.Instance?.NotifyHit();
 
                 // 본인 피격 — HUD 갱신 (서버 권위값 그대로).
                 int classValue = PlayerPrefs.GetInt(

@@ -18,11 +18,21 @@ namespace Dawnholder.Client.Combat
             _projectilePrefab = projectilePrefab;
         }
 
-        public void TryAttack(Vector3 origin)
+        public bool TryAttack(Vector3 origin)
         {
             if (!AttackIntent.TrySend(origin, out int targetId))
-                return;
+                return false;
 
+            // 여기 이후는 전부 *투사체 시각* 분기 — C_Attack은 이미 송신됨.
+            // 시각 생략 사유(prefab 미연결/타겟 race)가 있어도 공격 자체는 성립 →
+            // commit window 시작을 위해 true 반환 (서버 AttackState와 정합).
+            SpawnProjectileVisual(origin, targetId);
+            return true;
+        }
+
+        // 투사체 시각 연출 — best-effort. 실패해도 공격 성립엔 영향 없음.
+        void SpawnProjectileVisual(Vector3 origin, int targetId)
+        {
             if (_projectilePrefab == null)
             {
                 if (!_warnedMissingPrefab)
