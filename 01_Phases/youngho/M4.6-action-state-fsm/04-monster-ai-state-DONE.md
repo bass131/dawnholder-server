@@ -108,3 +108,38 @@ summary: EnemyAISystem(enum+switch Patrol/Chase)을 플레이어와 공유하는
 - 봇 soft-deferred: 라이브 flaky 행동(움직이는 타겟 명중/respawn 타이밍)은 **결정론적 단위 테스트에 위임**, no silent caps로 위임 사실 로깅
 - `EnemyStats` struct 가산 필드 = 프로토콜 무관(패킷 아님) — wire 영향 없이 서버 행동 데이터 확장
 - false-promise 정정: 계획 "순수 이주"가 Play로 무효화될 때 DONE.md가 *정직하게* "신규 기능"으로 박제(reviewer 게이트)
+
+---
+
+## 5단계 보고 (대규모 캡스톤)
+
+> 본 Phase는 계획상 복잡(server)이었으나 Play 피드백으로 3도메인(server/shared/client)+봇 = **대규모**로 확장 → 5단계 보고 박음. HTML 캡스톤: `00_Document/reports/M4.6-04.html`.
+
+### 🎯 무엇을 만들었나
+
+플레이어와 몬스터가 **하나의 제네릭 State 베이스**(ActorState&lt;TActor&gt; / StateMachine&lt;TActor&gt;) 위에서 행동하도록 몬스터 AI를 이주하고, Play 피드백을 받아 적의 피격 반응(AI 멈춤 + 넉백), 선공/후공 성향, 피격 시 공격자 바라보기, 죽음 연출까지 붙였다.
+
+### 🤔 왜 필요한가
+
+플레이어 전용이던 *검증된* State 프레임워크를 두 번째 actor에 재사용 = 추상화가 실제로 값어치를 내는 순간. 이게 없으면 몬스터 AI가 enum+switch로 따로 굴러 보스까지 가면 세 벌의 행동 코드가 갈라진다. 마일스톤 종착점(완전한 통일 구조)으로 수렴하는 두 번째 조각.
+
+### 🛠️ 어떻게 만들었나
+
+- **행동 비트 보존**(핵심 선택): "더 우아한 순수 FSM(전환만 하고 이동은 다음 틱)"의 유혹을 거부하고, 옛 절차형 코드가 전환 틱에 *이미 한 발 이동*하던 trajectory를 그대로 재현 → 추격 1틱 영구지연(desync) 0. 우아함보다 *비트 동일성 + 그걸 고정하는 회귀 테스트*를 택함.
+- **선공/후공 = 데이터 플래그**(EnemyStats.AggroOnSight): 종류별 if 분기 0, 행동 차이를 코드가 아니라 데이터로.
+- **죽음 = 클라 코스메틱**(안 고른 대안: 서버 DeathState): 서버 지연 0.8s가 테스트 5개를 깨서 → 게임플레이 상태(HP/죽음 판정)는 서버 즉시 권위 유지, *연출만* 클라로(플레이어 사망 페이드와 동형).
+- 새 개념: **Flyweight State** — 틱루프 0-allocation(헌법#5)을 위해 State를 정적 싱글톤으로 공유(매 틱 new 금지).
+
+### 🧪 테스트 결과
+
+- 풀 테스트 **461/0/4skip** (WSL2) + **CI test pass ×2런**
+- reviewer **🔴0 / 🟡0** (7 핵심 불변식: 서버 권위 / 프로토콜 v9 불변 / 틱루프 규율 / 행동 비트 보존 / 선공후공 정합)
+- 봇 EnemyAiSmoke **GREEN**(Option A — 슬라임 후공 hard, 골렘 선공·hit→Chase는 결정론적 단위 테스트에 위임)
+- Play 실측 ✅ (슬라임 후공 / 골렘 선공 / 피격 facing / 죽음 연출)
+- 머지: **PR #79** (co-review = admin established 사유로 우회, CI green은 정상 통과)
+
+### ➡️ 다음 스텝
+
+- **Phase 05**: 보스를 명시적 State로 정리 + telegraph(예고 동작) 상수(server+shared 양쪽)
+- (연기) 공격이 타겟 근접에 결합된 구조 → 허공 스윙 + 서버 AABB 별도 판정(memory `future-attack-decouple-swing-from-hitdetection`)
+- (선택) 봇 골렘 선공 라이브 hard 승격 / 죽음 모션 Animator(슬라임·골렘) 연결
