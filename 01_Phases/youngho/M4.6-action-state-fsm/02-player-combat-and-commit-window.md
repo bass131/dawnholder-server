@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.6
 phase: 02
 title: 플레이어 전투 상태 + commit window 규칙 + 공유 상수
-status: pending
+status: done
 grade: 복잡
 risk: trust-boundary
 estimated: 3~4h

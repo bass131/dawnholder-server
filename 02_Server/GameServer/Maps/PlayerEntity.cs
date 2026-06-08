@@ -1,4 +1,5 @@
 using System.Numerics;
+using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
@@ -107,19 +108,15 @@ public class PlayerEntity
     // 마지막 공격 발생 tick(ms 단위) 기록. AttackHandler rate-limit(500ms silent drop) 판정용.
     public long LastAttackTickMs { get; set; }
 
-    // 애니메이션 상태 latch 카운터 (tick 단위).
-    //
-    // **latch 필요성**: Attack/Hit는 1틱 순간 이벤트. 20TPS에서 1번만 보내면
-    //   클라이언트가 50ms 윈도우 안에 놓칠 수 있음. 최소 N틱 유지(latch)해 안정 전달.
-    //   Death는 latch 없음 — entity 사망 후 despawn 전까지 고정 상태.
-    //
-    // **tick thread invariant**: GameMap.Tick 안에서만 읽기/쓰기 (헌법 #5 — ms 아닌 tick 수 기반).
-    //
-    // **우선순위 (Death > Hit > Attack > Jump > Walk > Idle)**:
-    //   latch 중에도 더 높은 우선순위 상태가 들어오면 즉시 교체.
-    public int AttackLatchTicks { get; set; }    // Attack 상태 남은 latch 틱 수
-    public int HitLatchTicks    { get; set; }    // Hit 상태 남은 latch 틱 수
-    public bool IsDeadAnimState { get; set; }    // Death animState 진입 여부 (고정 상태)
+    // ActionFsm에서 현재 State가 사용하는 남은 틱 카운터.
+    // AttackState: 공격 commit window 잔여 틱. HitState: hitstun 잔여 틱.
+    // tick thread invariant (헌법 #5).
+    public int StateTicksRemaining { get; set; }
+
+    // 피격 넉백 수평 속도 (units/s). HitState.Tick에서 매 틱 감쇠.
+    // 양수=오른쪽, 음수=왼쪽. 0이면 넉백 없음.
+    // tick thread invariant (헌법 #5).
+    public float KnockbackVx { get; set; }
 
     // position history ring buffer.
     //
@@ -161,10 +158,41 @@ public class PlayerEntity
         return Position;
     }
 
-    // 이동 계열 State 머신 (Phase 01 — Idle/Move/Jump).
-    // 전투 계열(Attack/Hit/Death) 통합은 Phase 02.
+    // 플레이어 전체 행동(이동 + 전투) State 머신.
+    // Phase 02: 이동 계열(Idle/Move/Jump) + 전투 계열(Attack/Hit/Death) 통합.
     // tick thread invariant: StateMachine.Tick은 GameMap.Tick 안에서만 호출.
-    public StateMachine MovementFsm { get; private set; } = null!;
+    public StateMachine ActionFsm { get; private set; } = null!;
+
+    // ── 전투 전이 API ──────────────────────────────────────────────────────
+
+    // 공격 commit window 진입. IsDead면 no-op.
+    // CombatSystem이 공격 성공 직후 호출한다.
+    public void EnterAttackState()
+    {
+        if (IsDead) return;
+        ActionFsm.ChangeState(PlayerCombatStates.Attack, this);
+    }
+
+    // 피격 hitstun 진입. IsDead 또는 불가침 commit 중이면 no-op (넉백도 없음).
+    // dirX: 넉백이 날아갈 방향(= 공격자 반대쪽). 양수=오른쪽, 음수=왼쪽, 0=오른쪽 기본.
+    //   호출자(BossBehaviorSystem)가 `player.X >= boss.X ? +1 : -1`로 "공격자 반대 방향"을 계산해 넘긴다.
+    public void EnterHitState(float dirX)
+    {
+        if (IsDead) return;
+        if (!ActionFsm.CurrentState.InterruptibleByHit) return;
+        // KnockbackVx는 dirX와 같은 부호 — dirX 자체가 이미 "공격자 반대 방향"이다.
+        KnockbackVx = Constants.KnockbackInitialVx * MathF.Sign(dirX == 0f ? 1f : dirX);
+        ActionFsm.ChangeState(PlayerCombatStates.Hit, this);
+    }
+
+    // 부활. ActionFsm을 Idle로 초기화 + 카운터 정리.
+    // BossBehaviorSystem의 respawn 처리에서 호출한다.
+    public void Revive()
+    {
+        ActionFsm.ChangeState(PlayerMovementStates.Idle, this);
+        StateTicksRemaining = 0;
+        KnockbackVx = 0f;
+    }
 
     // stats null 시 PlayerStats.Warrior() default (전사 기본값).
     public PlayerEntity(int entityId, Vector2 position, GameSession? owner = null, PlayerStats? stats = null)
@@ -178,6 +206,6 @@ public class PlayerEntity
         MaxHp = Stats.MaxHp;
         Hp = Stats.Hp;
         // spawn 시점 OnGround=true, Velocity=0 → Idle이 초기 상태.
-        MovementFsm = new StateMachine(PlayerMovementStates.Idle, this);
+        ActionFsm = new StateMachine(PlayerMovementStates.Idle, this);
     }
 }

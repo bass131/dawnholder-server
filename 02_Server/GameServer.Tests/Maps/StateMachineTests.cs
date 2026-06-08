@@ -16,7 +16,7 @@ namespace GameServer.Tests.Maps;
 ///   5. IdleState — Idle 유지 / Move 전환 / Jump 전환
 ///   6. MoveState — Move 유지 / Idle 전환 / Jump 전환
 ///   7. JumpState — Jump 유지 / 착지 후 Idle or Move 전환
-///   8. PlayerEntity ctor 시 MovementFsm이 Idle로 초기화
+///   8. PlayerEntity ctor 시 ActionFsm이 Idle로 초기화
 /// </summary>
 public class StateMachineTests
 {
@@ -161,10 +161,10 @@ public class StateMachineTests
         p.Velocity = Vector2.Zero;
 
         // PlayerEntity ctor이 Idle로 초기화. 추가 Tick으로 확인.
-        p.MovementFsm.Tick(p);
+        p.ActionFsm.Tick(p);
 
-        Assert.IsType<IdleState>(p.MovementFsm.CurrentState);
-        Assert.Equal(AnimState.Idle, p.MovementFsm.AnimState);
+        Assert.IsType<IdleState>(p.ActionFsm.CurrentState);
+        Assert.Equal(AnimState.Idle, p.ActionFsm.AnimState);
     }
 
     [Fact]
@@ -174,10 +174,10 @@ public class StateMachineTests
         p.OnGround = true;
         p.Velocity = new Vector2(0.02f, 0f); // > VxEpsilon(0.01f)
 
-        p.MovementFsm.Tick(p);
+        p.ActionFsm.Tick(p);
 
-        Assert.IsType<MoveState>(p.MovementFsm.CurrentState);
-        Assert.Equal(AnimState.Walk, p.MovementFsm.AnimState);
+        Assert.IsType<MoveState>(p.ActionFsm.CurrentState);
+        Assert.Equal(AnimState.Walk, p.ActionFsm.AnimState);
     }
 
     [Fact]
@@ -187,10 +187,10 @@ public class StateMachineTests
         p.OnGround = false;
         p.Velocity = Vector2.Zero;
 
-        p.MovementFsm.Tick(p);
+        p.ActionFsm.Tick(p);
 
-        Assert.IsType<JumpState>(p.MovementFsm.CurrentState);
-        Assert.Equal(AnimState.Jump, p.MovementFsm.AnimState);
+        Assert.IsType<JumpState>(p.ActionFsm.CurrentState);
+        Assert.Equal(AnimState.Jump, p.ActionFsm.AnimState);
     }
 
     // ── 6. MoveState 전환 ─────────────────────────────────────────────────
@@ -202,12 +202,12 @@ public class StateMachineTests
         p.OnGround = true;
         p.Velocity = new Vector2(2f, 0f);
         // Idle→Move 전환 먼저
-        p.MovementFsm.Tick(p);
-        Assert.IsType<MoveState>(p.MovementFsm.CurrentState);
+        p.ActionFsm.Tick(p);
+        Assert.IsType<MoveState>(p.ActionFsm.CurrentState);
 
         // 그 상태에서 유지 확인
-        p.MovementFsm.Tick(p);
-        Assert.IsType<MoveState>(p.MovementFsm.CurrentState);
+        p.ActionFsm.Tick(p);
+        Assert.IsType<MoveState>(p.ActionFsm.CurrentState);
     }
 
     [Fact]
@@ -216,12 +216,12 @@ public class StateMachineTests
         PlayerEntity p = MakePlayer();
         p.OnGround = true;
         p.Velocity = new Vector2(2f, 0f);
-        p.MovementFsm.Tick(p); // → Move
+        p.ActionFsm.Tick(p); // → Move
 
         p.Velocity = Vector2.Zero; // 정지
-        p.MovementFsm.Tick(p);
+        p.ActionFsm.Tick(p);
 
-        Assert.IsType<IdleState>(p.MovementFsm.CurrentState);
+        Assert.IsType<IdleState>(p.ActionFsm.CurrentState);
     }
 
     [Fact]
@@ -230,12 +230,12 @@ public class StateMachineTests
         PlayerEntity p = MakePlayer();
         p.OnGround = true;
         p.Velocity = new Vector2(2f, 0f);
-        p.MovementFsm.Tick(p); // → Move
+        p.ActionFsm.Tick(p); // → Move
 
         p.OnGround = false;
-        p.MovementFsm.Tick(p);
+        p.ActionFsm.Tick(p);
 
-        Assert.IsType<JumpState>(p.MovementFsm.CurrentState);
+        Assert.IsType<JumpState>(p.ActionFsm.CurrentState);
     }
 
     // ── 7. JumpState 전환 ─────────────────────────────────────────────────
@@ -245,11 +245,11 @@ public class StateMachineTests
     {
         PlayerEntity p = MakePlayer();
         p.OnGround = false;
-        p.MovementFsm.Tick(p); // → Jump
-        Assert.IsType<JumpState>(p.MovementFsm.CurrentState);
+        p.ActionFsm.Tick(p); // → Jump
+        Assert.IsType<JumpState>(p.ActionFsm.CurrentState);
 
-        p.MovementFsm.Tick(p); // 여전히 공중
-        Assert.IsType<JumpState>(p.MovementFsm.CurrentState);
+        p.ActionFsm.Tick(p); // 여전히 공중
+        Assert.IsType<JumpState>(p.ActionFsm.CurrentState);
     }
 
     [Fact]
@@ -257,13 +257,13 @@ public class StateMachineTests
     {
         PlayerEntity p = MakePlayer();
         p.OnGround = false;
-        p.MovementFsm.Tick(p); // → Jump
+        p.ActionFsm.Tick(p); // → Jump
 
         p.OnGround = true;
         p.Velocity = Vector2.Zero;
-        p.MovementFsm.Tick(p);
+        p.ActionFsm.Tick(p);
 
-        Assert.IsType<IdleState>(p.MovementFsm.CurrentState);
+        Assert.IsType<IdleState>(p.ActionFsm.CurrentState);
     }
 
     [Fact]
@@ -271,24 +271,24 @@ public class StateMachineTests
     {
         PlayerEntity p = MakePlayer();
         p.OnGround = false;
-        p.MovementFsm.Tick(p); // → Jump
+        p.ActionFsm.Tick(p); // → Jump
 
         p.OnGround = true;
         p.Velocity = new Vector2(2f, 0f);
-        p.MovementFsm.Tick(p);
+        p.ActionFsm.Tick(p);
 
-        Assert.IsType<MoveState>(p.MovementFsm.CurrentState);
+        Assert.IsType<MoveState>(p.ActionFsm.CurrentState);
     }
 
     // ── 8. PlayerEntity ctor 초기화 ───────────────────────────────────────
 
     [Fact]
-    public void PlayerEntity_Ctor_InitializesMovementFsmToIdle()
+    public void PlayerEntity_Ctor_InitializesActionFsmToIdle()
     {
         PlayerEntity p = new PlayerEntity(42, new Vector2(5f, 0f));
 
-        Assert.NotNull(p.MovementFsm);
-        Assert.IsType<IdleState>(p.MovementFsm.CurrentState);
-        Assert.Equal(AnimState.Idle, p.MovementFsm.AnimState);
+        Assert.NotNull(p.ActionFsm);
+        Assert.IsType<IdleState>(p.ActionFsm.CurrentState);
+        Assert.Equal(AnimState.Idle, p.ActionFsm.AnimState);
     }
 }

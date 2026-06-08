@@ -62,9 +62,8 @@ internal sealed class CombatSystem
         // 통과 → 권위 mutation 진입
         attacker.LastAttackTickMs = now;
 
-        // M4.3 Phase 08a: Attack latch 설정 — attacker의 AnimState.Attack이 AnimLatchTicks 동안 유지.
-        // 헌법 #5: tick 단위 카운터 (ms 타이머 X).
-        attacker.AttackLatchTicks = CombatConstants.AnimLatchTicks;
+        // 공격 commit window 진입 — ActionFsm이 AnimState.Attack 상태를 유지하며 이동을 잠금.
+        attacker.EnterAttackState();
 
         int damage = Formulas.ComputeDamage(attacker.Stats, target.Stats, CombatConstants.BaseDamage);
         target.Hp -= damage;

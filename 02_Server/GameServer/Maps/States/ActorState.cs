@@ -15,6 +15,14 @@ public abstract class ActorState
     // 현재 상태의 시각 표현을 읽는 단일 접점.
     public abstract AnimState AnimState { get; }
 
+    // true이면 틱 루프가 이동 입력(inputX, rawJump)을 0으로 강제.
+    // 기본 false — 이동 계열 State는 재정의 불필요.
+    public virtual bool LocksMovement => false;
+
+    // false이면 피격(EnterHitState)으로 이 상태를 끊을 수 없음(불가침 commit).
+    // 기본 true — 대부분의 상태는 피격에 의해 끊어질 수 있음.
+    public virtual bool InterruptibleByHit => true;
+
     // 상태 진입 시 1회. 기본 no-op.
     public virtual void Enter(PlayerEntity player) { }
 
