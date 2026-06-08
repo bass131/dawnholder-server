@@ -27,11 +27,13 @@ namespace Dawnholder.Client.Combat
             public readonly RemoteEnemy Enemy;
             public readonly RemoteEntity Interp;
             public readonly EnemyMotion? Motion;
-            public EnemyEntry(RemoteEnemy enemy, RemoteEntity interp, EnemyMotion? motion)
+            public readonly AnimatorDriver? Driver;
+            public EnemyEntry(RemoteEnemy enemy, RemoteEntity interp, EnemyMotion? motion, AnimatorDriver? driver)
             {
                 Enemy = enemy;
                 Interp = interp;
                 Motion = motion;
+                Driver = driver;
             }
         }
 
@@ -74,6 +76,7 @@ namespace Dawnholder.Client.Combat
             RemoteEnemy? comp = go.GetComponent<RemoteEnemy>();
             RemoteEntity? interp = go.GetComponent<RemoteEntity>();
             EnemyMotion? motion = go.GetComponent<EnemyMotion>();
+            AnimatorDriver? driver = go.GetComponent<AnimatorDriver>();
 
             if (comp == null || interp == null)
             {
@@ -83,7 +86,7 @@ namespace Dawnholder.Client.Combat
             }
 
             comp.Initialize(entityId, kind, currentHp, maxHp);
-            _enemies[entityId] = new EnemyEntry(comp, interp, motion);
+            _enemies[entityId] = new EnemyEntry(comp, interp, motion, driver);
             Debug.Log($"[EnemyRegistry] Spawned {kind} entity {entityId} at ({x:F2}, {y:F2}) hp={currentHp}/{maxHp}");
         }
 
@@ -126,6 +129,14 @@ namespace Dawnholder.Client.Combat
             yield return new WaitForSeconds(0.8f);
             if (go != null)
                 Destroy(go);
+        }
+
+        // S_EnemyAttack 핸들러에서 호출 — 보스 찌르기(Stabbing_End)를 권위 타격 순간에 동기.
+        // Strike 트리거 없는 적(몬스터)은 AnimatorDriver가 무시(param 가드).
+        public void NotifyStrike(int attackerId)
+        {
+            if (_enemies.TryGetValue(attackerId, out EnemyEntry entry))
+                entry.Driver?.FireStrike();
         }
 
         // 이펙트 flip용 — entityId의 시각 facing(1=우/-1=좌) 반환. Motion 없으면 1.

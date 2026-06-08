@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Prediction;
 using Shared.GameData;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace Dawnholder.Client.Rendering
     // enemy/boss의 IMotionState 공급원.
     // S_EntityState.animState(서버 권위)를 노출 — state 필드가 아님(AI FSM 상태라 시각 미사용).
     // Facing은 RemoteEntity가 보간한 transform.x 변화로 추론.
+    // 예외: 정지 상태로 공격 중(보스 telegraph/strike)이면 이동이 없어 facing이 멈추므로
+    //   공격 대상(로컬 플레이어) 쪽을 바라본다 — facing은 시각 전용(판정 AABB는 서버에서 좌우 대칭).
     [DisallowMultipleComponent]
     public class EnemyMotion : MonoBehaviour, IMotionState
     {
@@ -46,6 +49,17 @@ namespace Dawnholder.Client.Rendering
                 int moveFacing = dx > 0f ? 1 : -1;
                 // 피격 중 넉백은 공격자 반대 방향 → 역방향이 공격자.
                 _facing = _animState == AnimState.Hit ? -moveFacing : moveFacing;
+            }
+            else if (_animState == AnimState.Attack)
+            {
+                // 정지 + 공격 중: 이동이 없어 facing이 옛 추격 방향에 멈춤 → 대상을 바라보게 보정.
+                LocalPlayerMovement? lp = LocalPlayerMovement.Instance;
+                if (lp != null)
+                {
+                    float pdx = lp.transform.position.x - transform.position.x;
+                    if (Mathf.Abs(pdx) > FacingEpsilon)
+                        _facing = pdx > 0f ? 1 : -1;
+                }
             }
             _lastX = transform.position.x;
         }
