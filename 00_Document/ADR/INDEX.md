@@ -29,6 +29,7 @@
 | ADR-007 | 거점 시설 = "구매 → 기능 제공" 모델 | [gameplay/ADR-007-stronghold-model.md](gameplay/ADR-007-stronghold-model.md) |
 | ADR-008 | 단일 서버 프로세스 (분산/샤딩 없음) | [gameplay/ADR-008-single-process.md](gameplay/ADR-008-single-process.md) |
 | ADR-009 | 포트폴리오 타겟 = 게임 회사 백엔드 | [gameplay/ADR-009-portfolio-target.md](gameplay/ADR-009-portfolio-target.md) |
+| ADR-030 | 행동 상태 규칙 = 서버 권위 (클라 Animator Exit Time = 시각 거울) | [gameplay/ADR-030-server-authoritative-action-rules.md](gameplay/ADR-030-server-authoritative-action-rules.md) |
 
 ## harness/ — 작업 흐름·문서·훅
 
