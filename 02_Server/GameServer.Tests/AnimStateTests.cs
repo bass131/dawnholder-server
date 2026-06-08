@@ -24,7 +24,7 @@ namespace GameServer.Tests;
 ///  11. 적 Walk — EnemyState.Patrol → AnimState.Walk
 ///  12. 적 Walk — EnemyState.Chase → AnimState.Walk
 ///  13. 적 Hit latch — HitLatchTicks > 0
-///  14. 적 Death — IsDead
+///  14. 적 Hp=0 직접 조작 — 무크래시 방어
 ///  15. 적 AI/AnimState 분리 확인 — EnemyState와 AnimState는 다른 레이어
 ///  16. S_Snapshot에 animState 포함 확인 (broadcast 패킷 검증)
 ///  17. S_EntityState에 animState 포함 확인 (Patrol→Walk 확인)
@@ -428,52 +428,35 @@ public class AnimStateTests
     }
 
     /// <summary>
-    /// 적 HP <= 0 → AnimState.Death (IsDead derived).
+    /// 적 HP <= 0 — 죽은 적은 S_EntityState broadcast 대상에서 제외됨.
     ///
-    /// **주의**: _enemies에서 제거된 enemy는 EnemyAISystem에서 처리되지 않으므로
-    ///   "살아있는 적만 _enemies" invariant 정합 — 사망한 적의 animState는
-    ///   마지막 broadcast에서 Death로 전송되고 이후 entity는 _enemies에서 Remove됨.
+    /// 즉시사망 모델: CombatSystem이 사망 시 즉시 RemoveEnemy(헌법 #1 — 서버 확정+제거, 죽음 연출은 클라 VFX).
+    /// Hp=0 직접 조작은 CombatSystem 경로를 우회하므로 적이 맵에 잔류하지만,
+    /// IsDead인 채로 Fsm.Tick을 받는 것은 방어적으로 허용(패닉 없음) — 어떤 animState든 OK.
+    /// 여기서는 enemy가 맵에서 제거(IsDead체크 없으므로 잔류할 수 있음)하는 것을 주로 검증하지 않고,
+    /// Hp>0 시 Walk/Hit가 정상 broadcast됨을 이 테스트에서 벗어나 기존 테스트들이 커버함을 확인.
     ///
-    ///   이 테스트는 IsDead=true인 enemy가 latch보다 Death를 반환하는지 검증.
-    ///   (실제 despawn은 CombatSystem.ProcessAttack이 처리 — 여기서는 animState 로직만)
+    /// 이 테스트 = 방어적 무크래시 검증: Hp=0 적을 tick 돌려도 예외 없음.
     /// </summary>
     [Fact]
-    public void Enemy_Death_WhenHpZero()
+    public void Enemy_Death_WhenHpZero_NoCrash()
     {
-        // 이 테스트는 EnemyAISystem 내부 ComputeEnemyAnimState의 IsDead 분기를 직접 검증.
-        // "살아있는 적만 _enemies" invariant 때문에 사망 후 entity는 즉시 제거됨.
-        // 따라서 ProcessAttack 경로 없이 Hp 직접 조작 후 snapshot tick 전에 확인.
-        //
-        // 간접 검증: HitLatch > 0 + IsDead → Death가 Hit보다 우선.
         GameMap map = MakeHuntingGround();
         EnemyEntity? enemy = null;
         foreach (EnemyEntity e in map.Enemies.Values) { enemy = e; break; }
         Assert.NotNull(enemy);
 
-        // HitLatch 중에 Hp=0 → Death 우선
+        // Hp=0 직접 조작 — CombatSystem 경로 우회 (IsDead=true이나 _enemies에 잔류).
         enemy.HitLatchTicks = CombatConstants.AnimLatchTicks;
-        enemy.Hp = 0; // IsDead = true
+        enemy.Hp = 0;
 
         var sink = new List<byte[]>();
         var session = new FakeCapturingSession(sink);
         map.AddPlayer(session, new Vector2(999f, 0f));
 
-        // Tick(1): EnemyAISystem.Update가 IsDead enemy를 처리하지만
-        // "살아있는 적만 _enemies"는 CombatSystem이 Remove — Tick 안에서 직접 제거 X.
-        // IsDead인 채 _enemies에 있을 때 broadcast 패킷의 animState 확인.
-        map.Tick(1);
-        map.Tick(2); // broadcast (enemy가 아직 _enemies에 있다면 전송)
-
-        byte[]? entityStatePkt = sink.FirstOrDefault(pkt => IsEntityStateForEntity(pkt, enemy.EntityId));
-        if (entityStatePkt != null)
-        {
-            // enemy가 broadcast된 경우: animState = Death (Hit latch보다 우선)
-            S_EntityState pkt = new S_EntityState();
-            pkt.Read(new ArraySegment<byte>(entityStatePkt));
-            Assert.Equal((byte)AnimState.Death, pkt.animState);
-        }
-        // enemy가 이미 제거된 경우(entityStatePkt == null)도 테스트 통과 — _enemies 비어있음 확인
-        // 이 경우 "살아있는 적만 _enemies" invariant 작동 중 — death animState가 마지막 패킷에 실렸을 것
+        // 예외 없이 tick 진행 가능해야 함 (방어적 무크래시).
+        var ex = Record.Exception(() => { map.Tick(1); map.Tick(2); });
+        Assert.Null(ex);
     }
 
     /// <summary>

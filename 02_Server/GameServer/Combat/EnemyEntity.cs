@@ -1,4 +1,6 @@
 using System.Numerics;
+using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.States;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Combat;
@@ -72,6 +74,15 @@ public class EnemyEntity
     public int AttackLatchTicks { get; set; }    // Attack 상태 남은 latch 틱 수
     public int HitLatchTicks    { get; set; }    // Hit 상태 남은 latch 틱 수
 
+    // 피격 넉백 속도(X). HitState에서만 적용/감쇠. Boss는 Fsm 없어 미사용.
+    // 적은 지형 물리 없이 순수 X 적분 (기존 적 이동 모델과 동일).
+    public float KnockbackVx { get; set; }
+
+    // AI State machine + 소속 맵 back-ref. Normal/Golem만 사용 (Boss=null, BossBehaviorSystem 전담).
+    // OwningMap: State가 aggro 판정 위해 같은 맵 player를 스캔하는 통로. GameMap.SpawnEnemy에서 세팅.
+    internal GameMap? OwningMap { get; set; }
+    internal StateMachine<EnemyEntity>? Fsm { get; set; }
+
     // ── 보스 FSM 상태 필드 ───────────────────────────────────────────────────
     // BossBehaviorSystem 전용. Normal/Golem은 이 필드를 사용하지 않음.
     // tick thread invariant — BossBehaviorSystem.Update 안에서만 읽기/쓰기.
@@ -90,6 +101,15 @@ public class EnemyEntity
     /// 0 도달 틱에 실제 데미지 판정 실행 → 쿨다운 리셋.
     /// </summary>
     public int TelegraphTicksRemaining { get; set; }
+
+    // 피격 진입. Normal/Golem → 진짜 HitState(AI 멈춤 + 넉백). Boss(Fsm==null) → 애니 latch만(기존 동작 유지).
+    public void EnterHitState(float dirX)
+    {
+        HitLatchTicks = CombatConstants.AnimLatchTicks;
+        if (Fsm == null) return;
+        KnockbackVx = Constants.KnockbackInitialVx * (dirX < 0f ? -1f : 1f);
+        Fsm.ChangeState(EnemyStates.Hit, this);
+    }
 
     // State 초기화: Normal → Patrol (AI 즉시 시작), Boss → Idle.
     public EnemyEntity(int entityId, EnemyKind kind, float x, float y, int maxHp, EnemyStats stats = default)

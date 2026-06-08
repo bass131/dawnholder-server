@@ -22,7 +22,7 @@ internal static class PlayerCombatStates
 // 공격 commit window. 이동 잠금 + 불가침(피격 불가).
 // Enter에서 StateTicksRemaining = AttackCommitWindowTicks 세팅.
 // Tick에서 카운터 감소 → 0이면 ResolveGrounded로 복귀.
-internal sealed class AttackState : ActorState
+internal sealed class AttackState : ActorState<PlayerEntity>
 {
     public override AnimState AnimState => AnimState.Attack;
     public override bool LocksMovement     => true;
@@ -33,7 +33,7 @@ internal sealed class AttackState : ActorState
         player.StateTicksRemaining = Constants.AttackCommitWindowTicks;
     }
 
-    public override ActorState? Tick(PlayerEntity player)
+    public override ActorState<PlayerEntity>? Tick(PlayerEntity player)
     {
         if (--player.StateTicksRemaining > 0)
             return null;
@@ -47,7 +47,7 @@ internal sealed class AttackState : ActorState
 // Enter에서 StateTicksRemaining = AnimLatchTicks 세팅 (KnockbackVx는 EnterHitState에서 먼저 세팅됨).
 // Tick에서 넉백 감쇠 후 카운터 감소 → 0이면 ResolveGrounded로 복귀.
 // Exit에서 KnockbackVx=0 보장.
-internal sealed class HitState : ActorState
+internal sealed class HitState : ActorState<PlayerEntity>
 {
     public override AnimState AnimState => AnimState.Hit;
     public override bool LocksMovement     => true;
@@ -58,7 +58,7 @@ internal sealed class HitState : ActorState
         player.StateTicksRemaining = CombatConstants.AnimLatchTicks;
     }
 
-    public override ActorState? Tick(PlayerEntity player)
+    public override ActorState<PlayerEntity>? Tick(PlayerEntity player)
     {
         // 넉백 감쇠: 매 틱 계수를 곱해 지수 감소. 매우 작아지면 0으로 정리.
         player.KnockbackVx *= Constants.KnockbackDecayPerTick;
@@ -79,9 +79,9 @@ internal sealed class HitState : ActorState
 // ── DeathState ────────────────────────────────────────────────────────────────
 
 // 사망 terminal state. Tick → null (전환 없음 — Revive()로만 탈출).
-internal sealed class DeathState : ActorState
+internal sealed class DeathState : ActorState<PlayerEntity>
 {
     public override AnimState AnimState => AnimState.Death;
 
-    public override ActorState? Tick(PlayerEntity player) => null;
+    public override ActorState<PlayerEntity>? Tick(PlayerEntity player) => null;
 }

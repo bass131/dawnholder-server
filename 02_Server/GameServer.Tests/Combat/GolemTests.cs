@@ -27,6 +27,7 @@ public class GolemTests
         Assert.Equal(1.2f, s.MoveSpeed, precision: 4);
         Assert.Equal(4.0f, s.AggroRange, precision: 4);
         Assert.Equal(2.5f, s.PatrolRange, precision: 4);
+        Assert.True(s.AggroOnSight, "Golem should be AggroOnSight=true (선공)");
     }
 
     [Fact]

@@ -26,10 +26,9 @@ file static class EnemyDefaultHp
 //   로직은 CombatSystem / EnemyAISystem / RespawnSystem 3개로 추출.
 //   Tick에서 System 호출 순서 명문화: physics → CombatSystem(EnqueueJob 경유) → EnemyAISystem → RespawnSystem.
 //
-// **살아있는 적만 _enemies** invariant:
-//   EnemyEntity는 사망하면 _enemies에서 즉시 Remove (CombatSystem.ProcessAttack 경유).
-//   죽은 enemy는 RespawnSystem._respawnQueue에만 보관 → aggro 판정/공격 대상 자동 제외.
-//   Boss는 StageClear 후 완전 소멸 (respawn 없음 — _respawnQueue 미등록).
+// **_enemies invariant**: 살아있는 적만 _enemies에 잔류.
+//   사망 시 CombatSystem이 즉시 S_EntityDeath broadcast + RemoveEnemy + (Normal only) EnqueueRespawn.
+//   죽음 연출은 클라 VFX 담당 (헌법 #1 — 서버는 확정+제거만).
 //
 // ARCHITECTURE "Map = Actor": 한 맵의 모든 mutation을 단일 thread에 가두면
 // 동시성 버그의 90%가 사라진다. 외부 → EnqueueJob 경유 마샬링.
@@ -136,6 +135,9 @@ public class GameMap
         };
         EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp, resolvedStats);
         _enemies.Add(id, e);
+        e.OwningMap = this;
+        if (kind != EnemyKind.Boss)
+            e.Fsm = new StateMachine<EnemyEntity>(EnemyStates.Patrol, e);
         return e;
     }
 

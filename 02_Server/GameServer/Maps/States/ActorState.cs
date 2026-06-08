@@ -2,17 +2,15 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Maps.States;
 
-// 행동 State 패턴 추상 베이스 (GPP-06 State).
+// 행동 State 패턴 추상 베이스 (GPP-06 State). TActor = PlayerEntity 또는 EnemyEntity.
 //
-// 왜 PlayerEntity가 아닌 참조 전달: State 클래스가 PlayerEntity 필드를
-// 직접 mutate하려면 인자로 받아야 함. "데이터 소유 = 컨테이너" 원칙(§2.2).
+// 왜 참조 전달: State 클래스가 actor 필드를 직접 mutate하려면 인자로 받아야 함.
+// "데이터 소유 = 컨테이너" 원칙(§2.2).
 //
-// 왜 abstract class가 아닌 virtual: 기본 구현이 "no-op"인 Enter/Exit는
-// 모든 State가 반드시 재정의하지 않아도 됨. Tick만 필수.
-public abstract class ActorState
+// Enter/Exit 기본 no-op: 모든 State가 반드시 재정의하지 않아도 됨. Tick만 필수.
+public abstract class ActorState<TActor>
 {
-    // AnimState 노출 — StateMachine 외부(GameMap.ComputePlayerAnimState)가
-    // 현재 상태의 시각 표현을 읽는 단일 접점.
+    // AnimState 노출 — StateMachine 외부가 현재 상태의 시각 표현을 읽는 단일 접점.
     public abstract AnimState AnimState { get; }
 
     // true이면 틱 루프가 이동 입력(inputX, rawJump)을 0으로 강제.
@@ -24,12 +22,12 @@ public abstract class ActorState
     public virtual bool InterruptibleByHit => true;
 
     // 상태 진입 시 1회. 기본 no-op.
-    public virtual void Enter(PlayerEntity player) { }
+    public virtual void Enter(TActor actor) { }
 
     // 매 tick 호출. 다음 상태로 전환할 필요가 있으면 비-null 반환.
     // null 반환 = 상태 유지.
-    public abstract ActorState? Tick(PlayerEntity player);
+    public abstract ActorState<TActor>? Tick(TActor actor);
 
     // 상태 이탈 시 1회. 기본 no-op.
-    public virtual void Exit(PlayerEntity player) { }
+    public virtual void Exit(TActor actor) { }
 }

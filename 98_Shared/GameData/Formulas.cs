@@ -93,16 +93,23 @@ public struct EnemyStats
     public float MoveSpeed;
 
     /// <summary>
-    /// 적이 플레이어를 감지해 추격을 시작하는 반경 (유닛). Normal enemy 기본값 ~6.0.
-    /// 이 반경 안에 플레이어가 들어오면 FSM: Idle/Patrol → Chase 전환.
+    /// 적이 플레이어를 감지해 추격을 시작하는 반경 (유닛). Normal enemy 기본값 ~4.0.
+    /// AggroOnSight=true일 때 이 반경 안에 플레이어가 들어오면 FSM: Patrol → Chase 전환.
     /// </summary>
     public float AggroRange;
 
     /// <summary>
-    /// 적이 순찰하는 반경 (유닛). Normal enemy 기본값 ~4.0.
+    /// 적이 순찰하는 반경 (유닛). Normal enemy 기본값 ~3.0.
     /// 스폰 좌표 기준 ±PatrolRange 범위를 왕복. AggroRange보다 작게 유지.
     /// </summary>
     public float PatrolRange;
+
+    /// <summary>
+    /// 선공/후공 플래그.
+    /// true = 선공: 시야(AggroRange)에 플레이어가 들어오면 즉시 추격 (PatrolState → Chase).
+    /// false = 후공: 시야 aggro 없음. 피격(CombatSystem이 TargetEntityId 세팅) 시에만 추격.
+    /// </summary>
+    public bool AggroOnSight;
 
     // ── Normal enemy 기본값 factory ──────────────────────────────────────────
 
@@ -116,8 +123,9 @@ public struct EnemyStats
         MaxHp = 30,
         Attack = 5,
         MoveSpeed = 2.0f,
-        AggroRange = 6.0f,
-        PatrolRange = 4.0f,
+        AggroRange = 4.0f,
+        PatrolRange = 3.0f,
+        AggroOnSight = false,   // 슬라임 계열 = 후공 (맞아야 추격)
     };
 
     // ── Golem enemy 기본값 factory ────────────────────────────────────────────
@@ -129,8 +137,9 @@ public struct EnemyStats
     ///   <item>MaxHp=60: Normal(30)의 2배 — Knight 3타/Mage 4타 분량.</item>
     ///   <item>Defense=5: Knight 데미지 25→20, Mage 22→17 (ComputeDamage Max(1, base10+Attack-Def)).</item>
     ///   <item>MoveSpeed=1.2f: Normal(2.0)보다 느림 — 스펙 "MoveSpeed &lt; 2.0".</item>
-    ///   <item>AggroRange=4.0f: Normal(6.0)보다 좁음 — 시야가 짧은 둔한 골렘.</item>
+    ///   <item>AggroRange=4.0f: 시야가 짧은 둔한 골렘.</item>
     ///   <item>PatrolRange=2.5f: AggroRange(4.0)보다 작게 유지 (invariant: PatrolRange &lt; AggroRange).</item>
+    ///   <item>AggroOnSight=true: 골렘 = 선공 (시야에 들어오면 즉시 추격).</item>
     /// </list>
     /// </summary>
     public static EnemyStats GolemDefault() => new EnemyStats
@@ -141,6 +150,7 @@ public struct EnemyStats
         MoveSpeed = 1.2f,
         AggroRange = 4.0f,
         PatrolRange = 2.5f,
+        AggroOnSight = true,    // 골렘 = 선공 (시야에 플레이어 들어오면 즉시 추격)
     };
 
     // ── Boss 기본값 factory ────────────────────────────────────────────────────
@@ -154,6 +164,7 @@ public struct EnemyStats
     ///       Knight Defense=5 기준 데미지 = Max(1, 8+12-5) = 15.</item>
     ///   <item>Defense=3: 플레이어→보스 방향은 CombatSystem이 처리 (PlayerStats→EnemyStats 오버로드).</item>
     ///   <item>MoveSpeed/AggroRange/PatrolRange=0: 보스는 이동 없는 고정형 (BossBehaviorSystem 전담).</item>
+    ///   <item>AggroOnSight=false: 보스는 FSM 미사용 (BossBehaviorSystem 전담) — 이 필드 무해.</item>
     /// </list>
     /// </summary>
     public static EnemyStats BossDefault() => new EnemyStats
@@ -164,5 +175,6 @@ public struct EnemyStats
         MoveSpeed = 0f,
         AggroRange = 0f,
         PatrolRange = 0f,
+        AggroOnSight = false,
     };
 }

@@ -22,7 +22,7 @@ internal static class PlayerMovementStates
     // 착지 후 또는 commit window 종료 후 이동 물리 상태를 보고 다음 State를 결정하는 헬퍼.
     // DRY: JumpState 착지 분기 + AttackState/HitState 종료 분기가 모두 이 헬퍼를 재사용한다.
     // 전환 로직 값은 기존 ComputePlayerAnimState와 완전히 동일 — 절대 변경 금지.
-    internal static ActorState ResolveGrounded(PlayerEntity p)
+    internal static ActorState<PlayerEntity> ResolveGrounded(PlayerEntity p)
     {
         if (!p.OnGround)
             return Jump;
@@ -34,11 +34,11 @@ internal static class PlayerMovementStates
 
 // ── Idle ─────────────────────────────────────────────────────────────────────
 
-internal sealed class IdleState : ActorState
+internal sealed class IdleState : ActorState<PlayerEntity>
 {
     public override AnimState AnimState => AnimState.Idle;
 
-    public override ActorState? Tick(PlayerEntity player)
+    public override ActorState<PlayerEntity>? Tick(PlayerEntity player)
     {
         if (!player.OnGround)
             return PlayerMovementStates.Jump;
@@ -51,11 +51,11 @@ internal sealed class IdleState : ActorState
 
 // ── Move (Walk) ───────────────────────────────────────────────────────────────
 
-internal sealed class MoveState : ActorState
+internal sealed class MoveState : ActorState<PlayerEntity>
 {
     public override AnimState AnimState => AnimState.Walk;
 
-    public override ActorState? Tick(PlayerEntity player)
+    public override ActorState<PlayerEntity>? Tick(PlayerEntity player)
     {
         if (!player.OnGround)
             return PlayerMovementStates.Jump;
@@ -68,11 +68,11 @@ internal sealed class MoveState : ActorState
 
 // ── Jump ─────────────────────────────────────────────────────────────────────
 
-internal sealed class JumpState : ActorState
+internal sealed class JumpState : ActorState<PlayerEntity>
 {
     public override AnimState AnimState => AnimState.Jump;
 
-    public override ActorState? Tick(PlayerEntity player)
+    public override ActorState<PlayerEntity>? Tick(PlayerEntity player)
     {
         if (player.OnGround)
             return PlayerMovementStates.ResolveGrounded(player);

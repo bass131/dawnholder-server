@@ -22,20 +22,20 @@ public class StateMachineTests
 {
     // ── 호출 추적 State (Enter/Exit 순서 검증용) ────────────────────────────
 
-    sealed class TrackingState : ActorState
+    sealed class TrackingState : ActorState<PlayerEntity>
     {
         public AnimState _animState;
         public override AnimState AnimState => _animState;
 
         public int EnterCount;
         public int ExitCount;
-        public ActorState? NextState;
+        public ActorState<PlayerEntity>? NextState;
 
         public TrackingState(AnimState anim) => _animState = anim;
 
         public override void Enter(PlayerEntity p) => EnterCount++;
         public override void Exit(PlayerEntity p)  => ExitCount++;
-        public override ActorState? Tick(PlayerEntity p) => NextState;
+        public override ActorState<PlayerEntity>? Tick(PlayerEntity p) => NextState;
     }
 
     static PlayerEntity MakePlayer() =>
@@ -49,7 +49,7 @@ public class StateMachineTests
         PlayerEntity p = MakePlayer();
         var initial = new TrackingState(AnimState.Idle);
 
-        _ = new StateMachine(initial, p);
+        _ = new StateMachine<PlayerEntity>(initial, p);
 
         Assert.Equal(1, initial.EnterCount);
     }
@@ -62,7 +62,7 @@ public class StateMachineTests
         PlayerEntity p = MakePlayer();
         var stateA = new TrackingState(AnimState.Idle);
         var stateB = new TrackingState(AnimState.Walk);
-        var sm = new StateMachine(stateA, p);
+        var sm = new StateMachine<PlayerEntity>(stateA, p);
 
         var order = new List<string>();
         // override를 쓸 수 없으므로 TrackingState 대신 직접 카운트로 순서 추론.
@@ -83,7 +83,7 @@ public class StateMachineTests
 
         var stateA = new LoggingState("A", callLog);
         var stateB = new LoggingState("B", callLog);
-        var sm = new StateMachine(stateA, p); // A.Enter 기록
+        var sm = new StateMachine<PlayerEntity>(stateA, p); // A.Enter 기록
 
         callLog.Clear(); // ctor 로그 초기화
         sm.ChangeState(stateB, p);
@@ -92,7 +92,7 @@ public class StateMachineTests
         Assert.Equal(new[] { "A.Exit", "B.Enter" }, callLog);
     }
 
-    sealed class LoggingState : ActorState
+    sealed class LoggingState : ActorState<PlayerEntity>
     {
         readonly string _name;
         readonly List<string> _log;
@@ -103,7 +103,7 @@ public class StateMachineTests
 
         public override void Enter(PlayerEntity p) => _log.Add($"{_name}.Enter");
         public override void Exit(PlayerEntity p)  => _log.Add($"{_name}.Exit");
-        public override ActorState? Tick(PlayerEntity p) => null;
+        public override ActorState<PlayerEntity>? Tick(PlayerEntity p) => null;
     }
 
     // ── 3. 자기전이 가드 ──────────────────────────────────────────────────
@@ -113,7 +113,7 @@ public class StateMachineTests
     {
         PlayerEntity p = MakePlayer();
         var state = new TrackingState(AnimState.Idle);
-        var sm = new StateMachine(state, p);
+        var sm = new StateMachine<PlayerEntity>(state, p);
         int enterAfterCtor = state.EnterCount; // = 1
 
         sm.ChangeState(state, p); // 자기전이
@@ -132,7 +132,7 @@ public class StateMachineTests
         var stateB = new TrackingState(AnimState.Walk);
         stateA.NextState = stateB; // Tick 시 stateB 반환
 
-        var sm = new StateMachine(stateA, p);
+        var sm = new StateMachine<PlayerEntity>(stateA, p);
         sm.Tick(p);
 
         Assert.Same(stateB, sm.CurrentState);
@@ -145,7 +145,7 @@ public class StateMachineTests
         var stateA = new TrackingState(AnimState.Idle);
         stateA.NextState = null;
 
-        var sm = new StateMachine(stateA, p);
+        var sm = new StateMachine<PlayerEntity>(stateA, p);
         sm.Tick(p);
 
         Assert.Same(stateA, sm.CurrentState);
