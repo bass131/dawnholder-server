@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.7 — HP 동기화 + 공격 모델 정비 마일스톤 마감 보고</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2129; --panel2: #212a35; --line: #2e3a47;
+    --text: #d8e1ea; --dim: #8a99a8; --accent: #4fc3f7; --green: #66bb6a;
+    --amber: #ffca28; --red: #ef5350; --purple: #b39ddb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 20px; background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; line-height: 1.65;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header {
+    border: 1px solid var(--line); border-radius: 12px; padding: 28px 32px;
+    background: linear-gradient(135deg, #16202b 0%, #1a2433 100%);
+  }
+  .badge {
+    display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 12px;
+    font-weight: 700; margin-right: 6px;
+  }
+  .badge.grade { background: #4a2c3a; color: #ff8a9e; }
+  .badge.done { background: #1e3a2a; color: var(--green); }
+  .badge.proto { background: #1d3346; color: var(--accent); }
+  h1 { margin: 14px 0 6px; font-size: 26px; }
+  .sub { color: var(--dim); font-size: 14px; }
+  h2 {
+    font-size: 19px; margin: 44px 0 16px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--line); color: var(--accent);
+  }
+  h3 { font-size: 15px; color: var(--purple); margin: 22px 0 8px; }
+  .report5 { display: grid; gap: 12px; margin-top: 18px; }
+  .r5card {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 8px; padding: 14px 18px;
+  }
+  .r5card b { color: var(--accent); }
+  .r5card.why { border-left-color: var(--amber); } .r5card.why b { color: var(--amber); }
+  .r5card.how { border-left-color: var(--purple); } .r5card.how b { color: var(--purple); }
+  .r5card.test { border-left-color: var(--green); } .r5card.test b { color: var(--green); }
+  .r5card.next { border-left-color: #ff8a65; } .r5card.next b { color: #ff8a65; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--accent); white-space: nowrap; }
+  td:first-child { white-space: nowrap; }
+  code {
+    background: #25303c; padding: 1px 6px; border-radius: 4px;
+    font-family: Consolas, monospace; font-size: 12.5px; color: #a5d6ff;
+  }
+  .pass { color: var(--green); font-weight: 700; }
+  .pipeline {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px;
+  }
+  .pipe-node {
+    background: var(--panel2); border: 1px solid #3b4a5a; border-radius: 6px;
+    padding: 8px 14px; font-size: 13px; text-align: center;
+  }
+  .pipe-node small { display: block; color: var(--dim); font-size: 11px; }
+  .pipe-arrow { color: var(--dim); font-size: 16px; }
+  .branch-label { color: var(--accent); font-weight: 700; font-size: 12px; margin-right: 4px; }
+  ul { padding-left: 22px; } li { margin: 6px 0; }
+  .note {
+    background: #2a2417; border: 1px solid #5a4a1e; border-radius: 8px;
+    padding: 12px 16px; font-size: 13.5px; color: #e8d9a0; margin: 14px 0;
+  }
+  .checklist li::marker { content: "✅ "; }
+  .checklist li.defer::marker { content: "↪️ "; }
+  footer { margin-top: 50px; color: var(--dim); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <span class="badge grade">대규모</span>
+    <span class="badge done">2026-06-09 마감</span>
+    <span class="badge proto">ProtocolVersion 9 → 10 (S_PlayerHp 21 + S_PlayerAttack 22)</span>
+  </div>
+  <h1>📋 M4.7 — HP 동기화 + 공격 모델 정비 마일스톤 마감 보고</h1>
+  <div class="sub">
+    플레이어 HP를 전용 <code>S_PlayerHp</code> 이벤트로 권위 동기화(표시 미러 은퇴) +
+    공격 스윙↔명중 분리(허공 스윙) + 원격 공격 <code>S_PlayerAttack</code> 이벤트 ·
+    6 Phase + Play 봉합(쿨다운 게이트 · Knight lunge) · WORK-ID: <code>m4.7-hp-sync-and-combat-events</code> ·
+    MD 원본: <code>_milestone-DONE.md</code>
+  </div>
+</header>
+
+<h2>5단계 보고</h2>
+<div class="report5">
+  <div class="r5card">
+    <b>🎯 무엇을 만들었나</b> — 두 구조급 결함을 한 묶음으로 봉합했다. ① <b>플레이어 HP 권위 동기화</b> — 변할 때만
+    송신하는 전용 <code>S_PlayerHp</code>(on-change) 이벤트를 신설하고 클라 표시 미러(클라가 <code>PlayerStats</code>로 maxHp 추론)를 은퇴.
+    ② <b>공격 스윙↔명중 분리</b> — 공격 연출(스윙)을 명중 판정에서 떼어내 타겟이 없어도 허공 스윙이 나가고, 다른 플레이어의 공격을
+    순간 이벤트 <code>S_PlayerAttack</code>으로 화면에 보이게 했다. ProtocolVersion 9→10. + Play 피드백 봉합 2건
+    (공격 입력 쿨다운 게이트 · Knight 전방 lunge).
+  </div>
+  <div class="r5card why">
+    <b>🤔 왜 필요한가</b> — 주기 <code>S_Snapshot</code>엔 HP 필드가 없어 플레이어 자기 HP는 피격 패킷으로만 흘러왔고,
+    사망→부활·회복은 채널이 없어 클라가 <b>표시 미러</b>로 때웠다(<i>사망 후 HUD 0 고착</i>의 근본 원인). 또 공격은
+    <b>4겹 직렬 게이트가 전부 타겟 존재에 묶여</b> 사거리 내 적이 없으면 클라가 공격 패킷 자체를 안 보냈다 — 빗나가면
+    로컬조차 자기 스윙을 못 봤다. 원격 공격은 지속상태 미러로만 보여 투사체 같은 <i>순간 이벤트</i>를 표현할 수 없었다.
+  </div>
+  <div class="r5card how">
+    <b>🛠️ 어떻게 만들었나</b> — 수직 슬라이스 <b>2갈래</b>: <code>P1</code> 프로토콜 신설 후 HP갈래(<code>P2</code> 서버 송신 →
+    <code>P4</code> 클라 신뢰)와 공격갈래(<code>P3</code> 서버 스윙분리 → <code>P5</code> 클라 예측·원격 연출)가 병렬로 떨어진다.
+    핵심은 <b>스윙↔명중 분리</b> — <code>EnterAttackState</code>를 AABB 명중 <i>앞으로</i> 옮겨 명중 무관하게 스윙·이벤트가 나가되,
+    rate-limit/rewind 검증은 그대로 앞단에 두어 스팸 차단을 지켰다(<span style="color:#ff8a9e">trust-boundary</span> 불변).
+    <b>예측 가능/불가능 비대칭</b>: 클라가 아는 것(자기 공격 시점)은 선예측, 모르는 것(명중·HP·lunge)은 서버 신뢰.
+  </div>
+  <div class="r5card test">
+    <b>🧪 테스트 결과</b> — 클린빌드 <span class="pass">0 경고/0 오류</span> + <code>dotnet test</code>
+    <span class="pass">479 통과/0 실패/4 skip</span>(WSL2 = ADR-029) + 신규 헤드리스 봇 <span class="pass">3종 PASS</span>
+    (HpSync = S_PlayerHp 4단계 초기full/감소/사망0/부활full · RemoteAttack = except 가드 B수신·A미수신 · WhiffSwing = 허공 데미지 0) +
+    기존 봇(EmergencyCombat·BossFight) <span class="pass">회귀 0</span> + <code>ProtocolVersion == 10</code>(enum 시프트 0:
+    <code>S_EnemyAttack 20</code>·<code>C_Attack 11</code> 불변, 신규 21/22) + Unity 클라 컴파일 0 err.
+  </div>
+  <div class="r5card next">
+    <b>➡️ 다음 스텝</b> — Item 2(Mage 진짜 원거리)는 구조상 마일스톤급이라 <b>M4.8로 승격</b>:
+    메이플식 서버 확정 투사체 + 도착 시 지연 데미지 + 도착까지 몬스터 freeze — 추후 썬더볼트 광역기(AoE)의 토대.
+    백로그(비차단): <code>CombatSwingTests</code> auth 거부 / facing round-trip / <code>PlayerAttackHandler</code> Resources.Load 캐시 /
+    lunge 단위 테스트. 차기 가닥(외관·연출 또는 M4.8 또는 M5 Persistence)은 사용자 결정.
+  </div>
+</div>
+
+<h2>구조 — HP갈래 + 공격갈래 2갈래 수직 슬라이스</h2>
+<div class="pipeline">
+  <div class="pipe-node">P1 프로토콜<small>S_PlayerHp 21 + S_PlayerAttack 22 · v10</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node"><span class="branch-label">HP</span>P2 서버 송신<small>SendPlayerHp 3트리거</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node"><span class="branch-label">HP</span>P4 클라 신뢰<small>PlayerHpHandler · 미러 은퇴</small></div>
+  <div class="pipe-arrow">·</div>
+  <div class="pipe-node"><span class="branch-label">공격</span>P3 스윙분리<small>EnterAttackState 앞당김</small></div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-node"><span class="branch-label">공격</span>P5 클라 예측·원격<small>항상 스윙 · S_PlayerAttack</small></div>
+</div>
+<div class="note">
+  두 갈래는 P1(프로토콜) 이후 독립 — 갈래별 중간 상태도 헌법 정합(half-shipped 안전)이라
+  <b>PR1(HP갈래) #83 → PR2(공격갈래+Play봉합) #84 → PR3(회귀+마감)</b> 스택 머지로 떨어졌다.
+  HP는 변할 때만 송신하는 <b>on-change 이벤트</b>(snapshot 비대화 회피, 헌법 #5), 원격 공격은
+  <b>순간 이벤트</b>(except: attacker.Owner)로 지속상태 미러와 역할 분리.
+</div>
+
+<h2>Phase 지도</h2>
+<table>
+  <tr><th>Phase</th><th>제목</th><th>핵심</th><th>머지</th></tr>
+  <tr><td>01</td><td>프로토콜 신설</td><td>PDL append-only로 <code>S_PlayerHp</code>(21)+<code>S_PlayerAttack</code>(22) 신설, PacketGenerator 재생성, <b>ProtocolVersion 9→10</b>, Shared.dll 재빌드. enum 시프트 0 확인 <span style="color:#ff8a9e">[irreversible]</span></td><td>PR #83</td></tr>
+  <tr><td>02</td><td>서버 HP 송신</td><td><code>SendPlayerHp</code> 헬퍼 + 3트리거(진입/피격/부활) — HP가 mutate되는 모든 지점에 동반. 음수는 <code>Max(0,Hp)</code> floor 송신</td><td>PR #83</td></tr>
+  <tr><td>04</td><td>클라 HP 신뢰 경로</td><td><code>PlayerHpHandler</code> 신설 + <b>표시 미러 제거</b>(클라 <code>PlayerStats</code> maxHp 추론 은퇴). 사망 후 HUD 0 고착 근본 봉합. (reviewer 🟡 맵전환 HP송신 갭 동반 봉합)</td><td>PR #83</td></tr>
+  <tr><td>03 ★</td><td>서버 공격 모델 정비</td><td><b>스윙↔명중 분리</b> — <code>EnterAttackState</code>를 AABB 명중 앞으로 이동 + <code>S_PlayerAttack</code> broadcast(except: attacker.Owner). AABB 명중은 데미지+<code>S_HitResult</code>만 게이트. rate-limit/rewind 앞단 유지 <span style="color:#ff8a9e">[trust-boundary]</span></td><td>PR #84</td></tr>
+  <tr><td>05 ★</td><td>클라 공격 입력+예측+원격 연출</td><td>타겟 게이트 제거(항상 스윙) + 로컬 Attack 선예측(commit window) + <code>PlayerAttackHandler</code> 원격 투사체/스윙. 로컬 중복 0 · reconcile rubber-band 0</td><td>PR #84</td></tr>
+  <tr><td>—</td><td><i>(Play 봉합) 쿨다운 게이트 + Knight lunge</i></td><td>Item 1 = 공격 입력 쿨다운 게이트(<code>AttackCooldownTicks=10</code> 98_Shared 단일, 클라 <code>CanAttack</code>) — 유령 스윙 차단. Item 3 = Knight 전방 lunge(<code>ExternalVelX</code> 채널 · force-adopt 렌더 = 서버 권위)</td><td>PR #84</td></tr>
+  <tr><td>06</td><td>회귀 + 마감</td><td>신규 봇 3종 + 전체 회귀(빌드/test/기존봇/v10) + 본 박제 + PR</td><td>본 마감 PR</td></tr>
+</table>
+
+<h2>마일스톤 완료 조건 (AC)</h2>
+<ul class="checklist">
+  <li>플레이어 HP가 <b>전용 <code>S_PlayerHp</code> 이벤트</b>로 권위 동기화 — 클라 표시 미러(maxHp 추론) 은퇴, 사망→부활 HUD 권위 full</li>
+  <li>HP 송신이 <b>변경 지점마다 동반</b> — 진입/피격/부활(+맵전환 갭 봉합). 음수는 <code>Max(0,Hp)</code> floor</li>
+  <li><b>허공 스윙</b> — 타겟 없어도 공격 버튼이 스윙을 냄(스윙↔명중 분리). 명중은 서버 AABB 별도 판정(데미지 0이어도 스윙 연출)</li>
+  <li><b>원격 공격</b>이 <code>S_PlayerAttack</code> 순간 이벤트로 broadcast — 공격자 제외(except: attacker.Owner), 봇으로 except 가드 실증</li>
+  <li>스윙 분리해도 <b>rate-limit/rewind 검증 앞단 유지</b> — 스팸·조작 차단 불변(헌법 #3). 데미지 AABB 게이트 불변</li>
+  <li>클라 로컬 Attack <b>선예측</b> + 서버 유효시도 진입 일치 → <b>rubber-band 0</b>(보수적 예측)</li>
+  <li><code>ProtocolVersion == 10</code> — enum 시프트 0(<code>S_EnemyAttack 20</code>·<code>C_Attack 11</code> 불변, 신규 21/22)</li>
+  <li><code>dotnet test</code> green(<b>479/0/4 skip</b>) + 신규 봇 3종 PASS + 기존 봇(EmergencyCombat·BossFight) 회귀 0</li>
+  <li>Unity 클라 컴파일 0 err(<code>PlayerHpHandler</code>·<code>PlayerAttackHandler</code>·<code>ProjectileSpawner</code> 로드)</li>
+  <li class="defer">Item 2(Mage 진짜 원거리) — 구조상 마일스톤급이라 <b>M4.8로 승격</b>(메이플식 서버확정 투사체+지연데미지+freeze, 썬더볼트 AoE 토대)</li>
+  <li class="defer">CHANGELOG [M](v10 bump 재빌드 의무) + PR 머지(사용자 GO) — 본 마감서 진행</li>
+</ul>
+
+<h2>결정 흐름 (🛠️ 어떻게 — 회고 참고용)</h2>
+<ul>
+  <li><b>HP = 전용 on-change 이벤트</b> — 주기 snapshot에 HP를 끼우면 고빈도 비대화(헌법 #5)이고 위치 reconcile과 엉킨다. HP는 변할 때만(진입+피격+부활) 보내는 전용 <code>S_PlayerHp</code>로 분리 — TCP 신뢰 전송이라 on-change 손실 약점이 무효. <code>entityId</code> 필드를 미리 박아 미래 파티/원격 HP 바로 <b>패킷 모양 불변 확장</b> 개방.</li>
+  <li><b>스윙(연출) ↔ 명중(데미지) 분리</b> — 데미지 모델(단일 타겟 AABB)은 그대로 두고 스윙 <i>이벤트</i>만 명중에서 뗐다. <code>EnterAttackState</code>를 AABB 판정 앞으로 옮기되 <b>rate-limit/rewind는 앞단 유지</b> — "연출만 분리, 권위 판정 불변"이라 trust-boundary가 안 흔들린다(스윙 시도 기준 rate-limit으로 스팸 차단 유지).</li>
+  <li><b>예측 가능/불가능 비대칭</b> — 클라는 <i>자기 공격 시점</i>을 아니까 commit window 동안 Attack을 선예측(서버도 유효 시도 시 진입 → 일치 = 보수적, 틀려도 rubber-band 0). <i>언제 맞을지·HP·lunge</i>는 서버가 정하니 신뢰(force-adopt). 낙관적으로 위치를 먼저 움직이면 틀릴 때 튕긴다.</li>
+  <li><b>Knight lunge = 넉백 패턴 재활용 + force-adopt</b> — 새 이동 채널을 만들지 않고 넉백이 흐르던 <code>ExternalVelX</code>(Physics.Step)에 lunge 임펄스를 실어 <code>AttackState.Tick</code>이 감쇠. 클라는 force-adopt로 렌더만 = 100% 서버 권위. lunge 세기는 서버 전용 상수(헌법 #1) — 98_Shared 불변.</li>
+  <li><b>Play 봉합도 보수적 방향</b> — 공격 입력 쿨다운 게이트(<code>AttackCooldownTicks</code> 10틱)는 commit window(8틱)보다 길게 잡아 "한 번 공격은 끝까지 커밋" + 유령 스윙(400~500ms 갭) 차단. 클라 게이트는 권위가 아닌 <b>예측 거울</b>(서버 rate-limit과 같은 값).</li>
+  <li><b>Item 2 = M4.8 승격 판단</b> — Mage는 구조상 근접(<code>GetAttackHitbox</code>에 class 분기 없음, 투사체 콜라이더 0). "진짜 원거리"는 서버 확정 투사체 + 지연 데미지 + 몬스터 freeze = 마일스톤급. 단일 타겟 하드코딩 대신 "도착 시 범위 내 N 타겟"으로 일반화하는 토대를 처음부터 깔아야 추후 썬더볼트 AoE가 같은 모델의 확장이 된다 → M4.7에 안 넣고 승격.</li>
+</ul>
+
+<footer>
+  M4.7 HP 동기화 + 공격 모델 정비 — 2026-06-09 마감 · PR #83(HP갈래) + #84(공격갈래+Play봉합) + 본 마감 PR ·
+  ProtocolVersion 9→10(S_PlayerHp 21 + S_PlayerAttack 22) · 클린빌드 0/0 · test 479/0/4 · 신규 봇 3종 + 기존 봇 회귀 0 ·
+  Item 2(Mage 원거리) → M4.8 승격 · 5단계 보고 MD 원본: <code>_milestone-DONE.md</code>
+</footer>
+
+</div>
+</body>
+</html>

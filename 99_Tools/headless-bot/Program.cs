@@ -10,6 +10,9 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario MultiRosterSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario EmergencyCombatSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario BossStageClearSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario HpSyncSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario RemoteAttackSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario WhiffSwingSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -75,6 +78,36 @@ if (string.Equals(scenarioName, "BossFightSmoke", StringComparison.OrdinalIgnore
     Console.WriteLine($"      boss hp: {r.InitialBossHp} -> {r.FinalBossHp} " +
                       $"enemyAttacks={r.EnemyAttackCount} lastDamage={r.LastEnemyAttackDamage} " +
                       $"respawn={r.SawRespawn} respawnCount={r.RespawnCount}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "HpSyncSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    HpSyncSmoke.Result r = await HpSyncSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] HpSyncSmoke: success={r.Success} " +
+                      $"entity={r.LocalEntityId} boss={r.BossEntityId} maxHp={r.MaxHp}");
+    Console.WriteLine($"      initialFull={r.SawInitialFull} damage={r.SawDamage} " +
+                      $"zero={r.SawZero} reviveFull={r.SawReviveFull} events={r.HpEventCount}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "RemoteAttackSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    RemoteAttackSmoke.Result r = await RemoteAttackSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] RemoteAttackSmoke: success={r.Success} " +
+                      $"botA={r.BotAEntityId} botB={r.BotBEntityId}");
+    Console.WriteLine($"      bReceived={r.BReceivedCount} aReceived={r.AReceivedCount}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "WhiffSwingSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    WhiffSwingSmoke.Result r = await WhiffSwingSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] WhiffSwingSmoke: success={r.Success} " +
+                      $"entity={r.LocalEntityId} attacksSent={r.AttacksSent} hitResults={r.HitResultCount}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }
