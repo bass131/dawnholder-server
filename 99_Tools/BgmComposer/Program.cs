@@ -25,15 +25,42 @@ internal static class Program
         for (int i = 0; i < args.Length - 1; i++)
             if (args[i] == "--out") outDir = Path.GetFullPath(args[i + 1]);
 
+        if (track == "analyze")
+        {
+            if (args.Length < 2)
+            {
+                Console.Error.WriteLine("사용법: dotnet run -- analyze <오디오 파일 경로>");
+                return 1;
+            }
+            return RefAnalyzer.Analyze(args[1]);
+        }
+
+        if (track == "sfx")
+        {
+            string sfxDir = Path.Combine(outDir, "sfx");
+            Directory.CreateDirectory(sfxDir);
+            Console.WriteLine("=== BgmComposer — SFX 14종 ===");
+            foreach (var (name, pcm) in SfxLibrary.BuildAll(SampleRate))
+            {
+                string p = Path.Combine(sfxDir, name + ".wav");
+                WavWriter.Write(p, pcm, SampleRate);
+                Console.WriteLine($"→ {p} ({pcm.Length / 2.0 / SampleRate:F2}s)");
+            }
+            return 0;
+        }
+
         Score? score = track switch
         {
             "town" => TownTheme.Build(),
             "village" => VillageTheme.Build(),
+            "mainmenu" => MainMenuTheme.Build(),
+            "hunting" => HuntingTheme.Build(),
+            "boss" => BossTheme.Build(),
             _ => null,
         };
         if (score is null)
         {
-            Console.Error.WriteLine($"알 수 없는 트랙: '{track}' (사용 가능: town, village)");
+            Console.Error.WriteLine($"알 수 없는 트랙: '{track}' (사용 가능: town, village, mainmenu, hunting, boss)");
             return 1;
         }
 
