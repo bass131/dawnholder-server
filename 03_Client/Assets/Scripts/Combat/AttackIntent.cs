@@ -20,12 +20,11 @@ namespace Dawnholder.Client.Combat
     //   사거리 안 타겟이 없어도 C_Attack을 송신해 서버가 허공 스윙으로 처리.
     public static class AttackIntent
     {
-        const float TargetingRangeSquared = 9.0f;
-
         // 가장 가까운 적을 타게팅해 C_Attack 송신. 세션/handshake 준비 안 됐으면 false.
+        // rangeSquared: 클라 타게팅 힌트 범위(제곱 거리) — 직업별 전략이 주입.
         // targetEntityId = 타겟 entity id (없으면 0 = 허공 sentinel).
         // attackerClientTick = 마지막 S_Snapshot serverTick (lag comp 기준점).
-        public static bool TrySend(Vector3 origin, out int targetEntityId)
+        public static bool TrySend(Vector3 origin, float rangeSquared, out int targetEntityId)
         {
             targetEntityId = 0;
 
@@ -34,7 +33,7 @@ namespace Dawnholder.Client.Combat
 
             // 타겟은 *선택적 힌트* — 없으면 0으로 송신 (허공 스윙). 서버가 최종 hit/miss 결정.
             if (EnemyRegistry.Instance != null)
-                EnemyRegistry.Instance.TryGetNearest(origin, TargetingRangeSquared, out targetEntityId);
+                EnemyRegistry.Instance.TryGetNearest(origin, rangeSquared, out targetEntityId);
 
             C_Attack pkt = new C_Attack
             {

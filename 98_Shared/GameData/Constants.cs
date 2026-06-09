@@ -52,6 +52,14 @@ public static class Constants
     /// </summary>
     public const int AttackCooldownTicks = 10;
 
+    /// <summary>
+    /// 썬더볼트 스킬 쿨다운(틱). 평타 쿨다운(AttackCooldownTicks)과 *독립* — 스킬은 별도 쿨다운.
+    /// 서버 SkillSystem이 권위 판정(쿨다운 중 발동 silent drop), 클라는 *같은 값*으로 입력 게이트 거울 →
+    /// 쿨다운 중 키 입력 시 송신·캐스팅 모션 둘 다 억제(모션만 나가고 서버가 drop하는 불일치 차단).
+    /// 40틱 = 2초 @20TPS. 타이밍만 공유 — 박스 크기/데미지는 서버 전용(CombatConstants) 유지.
+    /// </summary>
+    public const int ThunderboltCooldownTicks = 40;
+
     /// <summary>피격 넉백 초기 수평 속도 (units/s). EnterHitState에서 방향 부호와 함께 적용.</summary>
     public const float KnockbackInitialVx = 7f;
 

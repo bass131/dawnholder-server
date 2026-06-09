@@ -40,9 +40,20 @@ namespace Dawnholder.Client.Prediction
         // LocalPlayerMotion의 Attack 선예측 판단용 — 로컬 타이머 잔여 노출.
         public float CommitWindowRemaining => _commitWindowRemaining;
 
+        // 현재 commit window가 스킬 시전(채널링)인지 평타인지 구분. NotifyChannel→true, NotifyAttack→false.
+        // LocalPlayerMotion이 읽어 Attack 스윙 대신 Channeling 모션을 선예측. window 만료 시 자동 해제.
+        bool _channelingWindow;
+        public bool IsChannelingWindow => _channelingWindow && _commitWindowRemaining > 0f;
+
         // 공격 쿨다운(서버 rate-limit 거울) 잔여 — 0이면 재공격 가능. commit window(8틱)보다 길다(10틱).
         float _attackCooldownRemaining;
         public bool CanAttack => _attackCooldownRemaining <= 0f;
+
+        // 스킬(썬더볼트) 쿨다운(서버 ThunderboltCooldownTicks 거울) 잔여 — 평타 쿨다운과 *독립*.
+        // 0이면 재시전 가능. 쿨다운 중 Q 입력은 LocalPlayerInput이 이 게이트로 차단 → 송신+채널링 모션 둘 다 억제
+        //   (서버가 silent drop하는 동안 모션만 나가는 불일치 방지).
+        float _skillCooldownRemaining;
+        public bool CanUseSkill => _skillCooldownRemaining <= 0f;
 
         // 피격 hit-bridge 게이트 잔여(초). S_EnemyAttack(피격 *즉시* 신호) 도착 시 세팅 →
         // animState==Hit 스냅샷이 도착하기 전 갭 동안 입력을 미리 잠가 onset 당김을 줄인다.
@@ -124,6 +135,17 @@ namespace Dawnholder.Client.Prediction
         {
             _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
             _attackCooldownRemaining = Constants.AttackCooldownTicks * Constants.TickDuration;
+            _channelingWindow = false; // 평타 — Attack 스윙 모션.
+        }
+
+        // 스킬 시전 송신 성공 시 호출. 이동잠금 commit window는 평타와 공유하되, 쿨다운은 *스킬 독립*
+        // (ThunderboltCooldownTicks 거울 — 평타 쿨다운 미소비). 이 window를 채널링으로 표시 →
+        // LocalPlayerMotion이 Attack 대신 Channeling 모션을 선예측.
+        public void NotifyChannel()
+        {
+            _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
+            _skillCooldownRemaining = Constants.ThunderboltCooldownTicks * Constants.TickDuration;
+            _channelingWindow = true;
         }
 
         // EnemyAttackHandler가 본인 피격(S_EnemyAttack) 시 호출 — hit-bridge 게이트 시작.
@@ -164,6 +186,8 @@ namespace Dawnholder.Client.Prediction
                 _hitGateRemaining = Mathf.Max(0f, _hitGateRemaining - Time.deltaTime);
             if (_attackCooldownRemaining > 0f)
                 _attackCooldownRemaining = Mathf.Max(0f, _attackCooldownRemaining - Time.deltaTime);
+            if (_skillCooldownRemaining > 0f)
+                _skillCooldownRemaining = Mathf.Max(0f, _skillCooldownRemaining - Time.deltaTime);
 
             // **source-gating** (헌법 #1 정합): 잠금 시 입력을 *근원에서* 0으로 막는다.
             //   Predict / 송신(C_MoveIntent) / InputHistory(replay) 셋이 같은 gated 입력을 쓰므로

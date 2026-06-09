@@ -9,11 +9,14 @@ namespace Dawnholder.Client.Combat
     // 클라 선예측 스폰 금지 — 서버 miss 시 "그림만 나가고 데미지 0" 위험 제거 (M4.8 기둥1).
     public sealed class MageRangedAttack : IAttackStrategy
     {
+        // 8 units 사거리 — 서버 MageAttackHalfExtent 기준 여유분 포함.
+        public float TargetingRangeSquared => 64.0f;
+
         public bool TryAttack(Vector3 origin)
         {
             // C_Attack 송신 — 서버가 명중 판정 후 S_ProjectileLaunch로 발사 연출 통보.
             // 투사체 시각은 해당 패킷 수신 시 생성 (로컬/원격 동일 경로).
-            return AttackIntent.TrySend(origin, out _);
+            return AttackIntent.TrySend(origin, TargetingRangeSquared, out _);
         }
     }
 }

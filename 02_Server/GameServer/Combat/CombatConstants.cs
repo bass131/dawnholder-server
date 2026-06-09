@@ -49,7 +49,8 @@ internal static class CombatConstants
     public const int StunTicks = 8;
 
     // Mage 공격 AABB half-extent. Knight(1.5f)보다 넓어 더 긴 사거리 제공.
-    public const float MageAttackHalfExtent = 4.0f;
+    // 8.0f = ±8 units 사거리(클라 MageTargetingRangeSquared=64와 맞춤). 영호 Play 튜닝(2026-06-09: 사거리 짧아 2배).
+    public const float MageAttackHalfExtent = 8.0f;
 
     // 투사체 이동 속도 (unit/tick). 거리를 이 값으로 나눠 travelTicks 산출.
     public const float ProjectileSpeedPerTick = 2.0f;
@@ -64,7 +65,8 @@ internal static class CombatConstants
     // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
 
     // 공격자 중심 AABB 박스 X축 절반 크기 (unit). 전방/후방 대칭.
-    public const float ThunderboltBoxHalfX = 6.0f;
+    // 13.0f = ±13 units 박스. 영호 Play 튜닝(2026-06-09: 가로 범위 조금 더 확대).
+    public const float ThunderboltBoxHalfX = 13.0f;
 
     // 공격자 중심 AABB 박스 Y축 절반 크기 (unit). 점프 적 포함 여유.
     public const float ThunderboltBoxHalfY = 3.0f;
@@ -72,11 +74,10 @@ internal static class CombatConstants
     // 썬더볼트 발동 → 낙뢰 도착까지의 지연 틱 수. freeze 지속과 동일.
     public const int LightningDelayTicks = 4; // 4틱 = 200ms @20TPS
 
-    // 썬더볼트 쿨다운 (틱 단위). Rate-limit과 달리 ms 아닌 tick 기반.
-    // 이유: 헌법 #5 정합 — ms 타이머를 tick 루프 안에 박으면 DateTime 의존 발생.
-    //   틱 카운터는 순수 정수 비교 — blocking call 0 보장. LastAttackTickMs(ms 기반)과
-    //   의도적으로 다른 단위 선택 — 스킬별 tick 기반 쿨다운이 미래 여러 스킬 확장에 일관성.
-    public const int ThunderboltCooldownTicks = 40; // 40틱 = 2초 @20TPS
+    // 썬더볼트 쿨다운 (틱 단위). 98_Shared 단일 진실에서 가져옴 — 클라가 같은 값으로 입력 게이트 거울
+    //   (평타 AttackCooldown과 동형, 타이밍만 공유 / 박스·데미지는 서버 전용 유지 = least-exposure).
+    // tick 기반 이유: 헌법 #5 — ms 타이머를 tick 루프에 박으면 DateTime 의존. 순수 정수 비교 = blocking 0.
+    public const int ThunderboltCooldownTicks = Shared.GameData.Constants.ThunderboltCooldownTicks;
 
     // ── 보스 전투 상수 ────────────────────────────────────────────────────────
     //
