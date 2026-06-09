@@ -18,9 +18,17 @@ internal static class CombatConstants
 
     public const int BaseDamage = 10;
 
-    // 500ms = 1초에 2회 한도. cheat가 매 frame 공격 보내도 silent drop으로 잘림.
-    // PlayerEntity.LastAttackTickMs와 함께 사용 — `Environment.TickCount64 - last < 500`이면 drop.
-    public const long AttackCooldownMs = 500;
+    // 근접(Knight) 스윙 시 전방 lunge 초기 수평 속도 (units/s). FacingDir 부호와 함께 적용.
+    // AttackState 동안 Constants.KnockbackDecayPerTick로 감쇠(넉백과 동형) → 스윙당 짧은 전진 후 정지.
+    // 서버 전용(헌법 #1): 클라는 결과 위치를 force-adopt로 렌더만 — lunge 값 자체는 모름.
+    // 원거리 Mage는 제외(전진 없음). 값은 사용자 Play 튜닝 대상.
+    public const float AttackLungeInitialVx = 3.0f;
+
+    // 1초에 2회 한도. cheat가 매 frame 공격 보내도 silent drop으로 잘림.
+    // PlayerEntity.LastAttackTickMs와 함께 사용 — `Environment.TickCount64 - last < AttackCooldownMs`이면 drop.
+    // 값은 98_Shared 단일 진실(AttackCooldownTicks)에서 역산 — 클라 입력 게이트가 같은 값을 거울로 사용.
+    // (타이밍만 공유. range/damage는 위 AttackRange/BaseDamage처럼 서버 전용 유지.)
+    public const long AttackCooldownMs = Shared.GameData.Constants.AttackCooldownTicks * Shared.GameData.Constants.TickIntervalMs;
 
     // AnimState latch 지속 틱 수.
     //

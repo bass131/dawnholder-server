@@ -108,6 +108,11 @@ public class PlayerEntity
     // 마지막 공격 발생 tick(ms 단위) 기록. AttackHandler rate-limit(500ms silent drop) 판정용.
     public long LastAttackTickMs { get; set; }
 
+    // 플레이어가 마지막으로 이동한 수평 방향. +1=오른쪽, -1=왼쪽.
+    // 초기값은 +1(오른쪽 기본). Physics.Step에서 inputX != 0인 틱마다 갱신.
+    // S_PlayerAttack.facing 필드 직렬화용 (공격 연출 방향) — 위치 권위는 Position 기준.
+    public sbyte FacingDir { get; set; } = 1;
+
     // ActionFsm에서 현재 State가 사용하는 남은 틱 카운터.
     // AttackState: 공격 commit window 잔여 틱. HitState: hitstun 잔여 틱.
     // tick thread invariant (헌법 #5).
@@ -117,6 +122,11 @@ public class PlayerEntity
     // 양수=오른쪽, 음수=왼쪽. 0이면 넉백 없음.
     // tick thread invariant (헌법 #5).
     public float KnockbackVx { get; set; }
+
+    // 근접 공격 스윙 전방 lunge 수평 속도 (units/s). AttackState.Tick에서 매 틱 감쇠.
+    // KnockbackVx와 상호배타(Attack vs Hit state는 동시 진입 불가) — GameMap.Tick이 둘을 합산해
+    // Physics.Step의 ExternalVelX로 전달. 양수=오른쪽, 음수=왼쪽. tick thread invariant (헌법 #5).
+    public float AttackLungeVx { get; set; }
 
     // position history ring buffer.
     //
@@ -192,6 +202,7 @@ public class PlayerEntity
         ActionFsm.ChangeState(PlayerMovementStates.Idle, this);
         StateTicksRemaining = 0;
         KnockbackVx = 0f;
+        AttackLungeVx = 0f;
     }
 
     // stats null 시 PlayerStats.Knight() default (전사 기본값).

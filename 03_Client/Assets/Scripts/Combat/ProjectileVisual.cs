@@ -32,6 +32,13 @@ namespace Dawnholder.Client.Combat
                 _direction = Vector3.right;
         }
 
+        // 타겟 없이 방향 벡터 직접 지정 — facing 방향 허공 스윙 연출용.
+        public void LaunchDirection(Vector3 direction)
+        {
+            _target = null;
+            _direction = direction.sqrMagnitude > 0f ? direction.normalized : Vector3.right;
+        }
+
         void Update()
         {
             _elapsed += Time.deltaTime;

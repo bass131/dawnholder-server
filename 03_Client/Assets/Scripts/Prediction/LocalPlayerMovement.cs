@@ -34,7 +34,15 @@ namespace Dawnholder.Client.Prediction
 
         // 로컬 공격 commit window 예측 잔여 시간(초). OnAttack 송신 성공 시 세팅, 매 frame 감쇠.
         // 서버 AttackState(이동 잠금)를 같은 98_Shared 상수로 클라가 선예측 → reconcile rubber-band 0.
+        // LocalPlayerMotion이 Attack 선예측 판단에 읽음 (getter로만 노출 — 외부 쓰기 차단).
         float _commitWindowRemaining;
+
+        // LocalPlayerMotion의 Attack 선예측 판단용 — 로컬 타이머 잔여 노출.
+        public float CommitWindowRemaining => _commitWindowRemaining;
+
+        // 공격 쿨다운(서버 rate-limit 거울) 잔여 — 0이면 재공격 가능. commit window(8틱)보다 길다(10틱).
+        float _attackCooldownRemaining;
+        public bool CanAttack => _attackCooldownRemaining <= 0f;
 
         // 피격 hit-bridge 게이트 잔여(초). S_EnemyAttack(피격 *즉시* 신호) 도착 시 세팅 →
         // animState==Hit 스냅샷이 도착하기 전 갭 동안 입력을 미리 잠가 onset 당김을 줄인다.
@@ -115,6 +123,7 @@ namespace Dawnholder.Client.Prediction
         public void NotifyAttack()
         {
             _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
+            _attackCooldownRemaining = Constants.AttackCooldownTicks * Constants.TickDuration;
         }
 
         // EnemyAttackHandler가 본인 피격(S_EnemyAttack) 시 호출 — hit-bridge 게이트 시작.
@@ -153,6 +162,8 @@ namespace Dawnholder.Client.Prediction
                 _commitWindowRemaining = Mathf.Max(0f, _commitWindowRemaining - Time.deltaTime);
             if (_hitGateRemaining > 0f)
                 _hitGateRemaining = Mathf.Max(0f, _hitGateRemaining - Time.deltaTime);
+            if (_attackCooldownRemaining > 0f)
+                _attackCooldownRemaining = Mathf.Max(0f, _attackCooldownRemaining - Time.deltaTime);
 
             // **source-gating** (헌법 #1 정합): 잠금 시 입력을 *근원에서* 0으로 막는다.
             //   Predict / 송신(C_MoveIntent) / InputHistory(replay) 셋이 같은 gated 입력을 쓰므로
@@ -229,11 +240,12 @@ namespace Dawnholder.Client.Prediction
             _serverAnimState = (AnimState)animState;
             float prevX = _predictor.Position.x;
             float prevY = _predictor.Position.y;
-            // 피격(Hit) 중엔 넉백(서버 권위 임펄스)을 클라가 예측 못 함 → 임계 이내라도 서버 위치 채택
-            //   (force-adopt)해 넉백을 시각화 + sub-threshold offset 누적 방지.
+            // 넉백(Hit)·근접 공격 전방 lunge(Attack)는 서버 권위 ExternalVelX 임펄스라 클라가 예측 안 함
+            //   → 임계 이내라도 서버 위치 채택(force-adopt)해 시각화 + sub-threshold offset 누적 방지.
+            //   Attack 중 입력은 commit window로 0이라 lunge가 위치의 유일한 서버-클라 차이 → 깔끔 채택.
             bool reconciled = _predictor.OnSnapshot(
                 serverX, serverY, serverVx, serverVy, ackedClientTick,
-                forceAdopt: _serverAnimState == AnimState.Hit);
+                forceAdopt: _serverAnimState == AnimState.Hit || _serverAnimState == AnimState.Attack);
             if (reconciled)
             {
                 float dx = serverX - prevX;
