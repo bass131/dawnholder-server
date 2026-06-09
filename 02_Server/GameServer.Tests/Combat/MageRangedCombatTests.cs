@@ -181,7 +181,7 @@ public class MageRangedCombatTests : IDisposable
 
         // freeze 세팅 확인 (FrozenUntilTick > 0)
         Assert.True(enemy.FrozenUntilTick > 0, "투사체 발사 후 freeze가 세팅돼야 함");
-        Assert.Equal(2L + expectedTravelTicks, enemy.FrozenUntilTick);
+        Assert.Equal(2L + expectedTravelTicks + CombatConstants.StunTicks, enemy.FrozenUntilTick);
     }
 
     // ── 테스트 2: travelTicks 후 DeferredDamageSystem → HP 적용 + S_HitResult(hitEffect=1) ──

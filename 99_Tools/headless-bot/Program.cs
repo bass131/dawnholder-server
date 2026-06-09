@@ -13,6 +13,10 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario HpSyncSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario RemoteAttackSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario WhiffSwingSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario RangedHitSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario FreezeSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario ThunderboltAoeSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario RangedWhiffSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -108,6 +112,51 @@ if (string.Equals(scenarioName, "WhiffSwingSmoke", StringComparison.OrdinalIgnor
     WhiffSwingSmoke.Result r = await WhiffSwingSmoke.Run(host, port);
     Console.WriteLine($"[Bot] WhiffSwingSmoke: success={r.Success} " +
                       $"entity={r.LocalEntityId} attacksSent={r.AttacksSent} hitResults={r.HitResultCount}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "RangedHitSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    RangedHitSmoke.Result r = await RangedHitSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] RangedHitSmoke: success={r.Success} " +
+                      $"entity={r.LocalEntityId} target={r.TargetEntityId} initialHp={r.InitialHp}");
+    Console.WriteLine($"      projectileLaunch={r.SawProjectileLaunch} travelTicks={r.ProjectileTravelTicks} " +
+                      $"hitResult={r.SawHitResult} hitEffect={r.HitEffect} hpAfter={r.HpAfterHit}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "FreezeSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    FreezeSmoke.Result r = await FreezeSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] FreezeSmoke: success={r.Success} entity={r.LocalEntityId}");
+    Console.WriteLine($"      normal={r.NormalEntityId} froze={r.NormalFrozeAfterShot} resumed={r.NormalResumedAfterFreeze}");
+    Console.WriteLine($"      boss={r.BossEntityId} bossMovedDuringExpectedFreeze={r.BossMovedDuringExpectedFreeze} " +
+                      $"bossSkippedLowHp={r.BossSkippedLowHp}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "ThunderboltAoeSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    ThunderboltAoeSmoke.Result r = await ThunderboltAoeSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] ThunderboltAoeSmoke: success={r.Success} entity={r.LocalEntityId}");
+    Console.WriteLine($"      skillCast={r.SawSkillCast} normalTargets={r.NormalTargetCount} " +
+                      $"normalHits={r.NormalHitCount} allHpDecreased={r.AllNormalHpDecreased}");
+    Console.WriteLine($"      bossAoeAttempted={r.BossAoeAttempted} bossHit={r.BossReceivedHitResult} " +
+                      $"bossMoved={r.BossMovedAfterAoe} bossSkippedLowHp={r.BossSkippedLowHp}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "RangedWhiffSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    RangedWhiffSmoke.Result r = await RangedWhiffSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] RangedWhiffSmoke: success={r.Success} entity={r.LocalEntityId} " +
+                      $"attacksSent={r.AttacksSent}");
+    Console.WriteLine($"      playerAttacks={r.PlayerAttackCount} projectiles={r.ProjectileLaunchCount} " +
+                      $"hitResults={r.HitResultCount}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }

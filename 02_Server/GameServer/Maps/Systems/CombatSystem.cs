@@ -113,8 +113,8 @@ internal sealed class CombatSystem
                 HitEffect        = 1,
             });
 
-            // freeze: 투사체 도착까지 대상 이동 봉쇄 (Boss는 ApplyFreeze 호출돼도 면역 — EnemyEntity 설계)
-            target.ApplyFreeze(map.CurrentTick + travelTicks);
+            // freeze: 투사체 도착 + StunTicks 동안 이동 봉쇄(stun). Boss는 ApplyFreeze 호출돼도 면역(EnemyEntity 설계).
+            target.ApplyFreeze(map.CurrentTick + travelTicks + CombatConstants.StunTicks);
 
             // 발사 연출 broadcast — 전원(S_HitResult와 동일 except=null)
             S_ProjectileLaunch launch = new S_ProjectileLaunch

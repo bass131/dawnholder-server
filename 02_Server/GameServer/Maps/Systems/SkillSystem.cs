@@ -70,7 +70,7 @@ internal sealed class SkillSystem
             // freeze: Normal/Golem만. Boss는 ApplyFreeze 호출돼도 BossBehaviorSystem에 가드 없으니 면역.
             // 명시적 Kind 분기로 설계 의도 표현 — "Boss는 데미지만, 이동은 계속".
             if (target.Kind != EnemyKind.Boss)
-                target.ApplyFreeze(impactTick);
+                target.ApplyFreeze(impactTick + CombatConstants.StunTicks);
         }
 
         // 7) S_SkillCast broadcast — 캐스팅 연출(목록 없음). 빈 박스도 캐스팅 모션은 나감.

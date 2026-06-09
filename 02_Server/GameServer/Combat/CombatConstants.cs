@@ -43,6 +43,11 @@ internal static class CombatConstants
     // ── Mage 평타 원거리 상수 (서버 전용 — 헌법 #1) ─────────────────────────
     // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
 
+    // 도착(투사체/낙뢰) 후 추가 freeze(스턴) 틱. 평타·썬더볼트 공통.
+    //   데미지는 도착 시 적용, freeze는 도착 + 이 값만큼 더 정지 → 진짜 stun-lock(연사로 묶기).
+    //   8틱=400ms. 임시값 Play 튜닝 대상(2026-06-09 영호 결정: 도착 후 추가 freeze로 stun 강화).
+    public const int StunTicks = 8;
+
     // Mage 공격 AABB half-extent. Knight(1.5f)보다 넓어 더 긴 사거리 제공.
     public const float MageAttackHalfExtent = 4.0f;
 
