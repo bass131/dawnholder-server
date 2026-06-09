@@ -41,6 +41,11 @@ internal sealed class DeferredDamageSystem
             // 도착 전 사망/디스폰 — skip (헌법 #2 은퇴 ID 재사용 금지로 stale id 무효 자동 처리).
             if (target == null || target.IsDead) continue;
 
+            // 피격 aggro — 도착 시점에 공격자 등록. Knight 즉시 경로(CombatSystem)와 대칭.
+            // 후공(AggroOnSight=false) 적은 이 세팅이 유일한 Chase 트리거 → freeze 풀린 뒤 추격.
+            // 평타·썬더볼트 모두 deferred 경유라 여기 한 곳에서 일관 처리. Boss는 Fsm=null이라 무해.
+            target.TargetEntityId = impact.AttackerEntityId;
+
             target.Hp -= impact.Damage;
 
             S_HitResult hit = new S_HitResult

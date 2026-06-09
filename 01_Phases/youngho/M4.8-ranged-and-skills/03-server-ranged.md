@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.8
 phase: 03
 title: 서버 평타 원거리 — Mage 사거리 분리 + 서버확정 투사체 + 지연 데미지
-status: pending
+status: done
 grade: 복잡
 risk: trust-boundary(명중 판정 서버 권위)
 estimated: 2~3h

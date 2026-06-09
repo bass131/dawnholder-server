@@ -40,6 +40,21 @@ internal static class CombatConstants
     //   tick 카운터는 순수 정수 감소 — blocking call 0 보장.
     public const int AnimLatchTicks = 8; // Attack/Hit latch 지속 틱 수 (8틱 = 400ms @20TPS)
 
+    // ── Mage 평타 원거리 상수 (서버 전용 — 헌법 #1) ─────────────────────────
+    // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
+
+    // Mage 공격 AABB half-extent. Knight(1.5f)보다 넓어 더 긴 사거리 제공.
+    public const float MageAttackHalfExtent = 4.0f;
+
+    // 투사체 이동 속도 (unit/tick). 거리를 이 값으로 나눠 travelTicks 산출.
+    public const float ProjectileSpeedPerTick = 2.0f;
+
+    // travelTicks 최솟값. 0틱 즉시 도착 방지 (발사 연출 최소 보장).
+    public const int MinTravelTicks = 2;
+
+    // travelTicks 최댓값. 극단적으로 먼 거리의 freeze 시간 상한.
+    public const int MaxTravelTicks = 10;
+
     // ── 보스 전투 상수 ────────────────────────────────────────────────────────
     //
     // 값은 사용자 확정 정량값 (M4.5 Phase 04 CP-2 명세). 임의 변경 금지.
