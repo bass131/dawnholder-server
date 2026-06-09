@@ -55,6 +55,24 @@ internal static class CombatConstants
     // travelTicks 최댓값. 극단적으로 먼 거리의 freeze 시간 상한.
     public const int MaxTravelTicks = 10;
 
+    // ── 썬더볼트 AoE 상수 (서버 전용 — 헌법 #1) ─────────────────────────────
+    // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
+
+    // 공격자 중심 AABB 박스 X축 절반 크기 (unit). 전방/후방 대칭.
+    public const float ThunderboltBoxHalfX = 6.0f;
+
+    // 공격자 중심 AABB 박스 Y축 절반 크기 (unit). 점프 적 포함 여유.
+    public const float ThunderboltBoxHalfY = 3.0f;
+
+    // 썬더볼트 발동 → 낙뢰 도착까지의 지연 틱 수. freeze 지속과 동일.
+    public const int LightningDelayTicks = 4; // 4틱 = 200ms @20TPS
+
+    // 썬더볼트 쿨다운 (틱 단위). Rate-limit과 달리 ms 아닌 tick 기반.
+    // 이유: 헌법 #5 정합 — ms 타이머를 tick 루프 안에 박으면 DateTime 의존 발생.
+    //   틱 카운터는 순수 정수 비교 — blocking call 0 보장. LastAttackTickMs(ms 기반)과
+    //   의도적으로 다른 단위 선택 — 스킬별 tick 기반 쿨다운이 미래 여러 스킬 확장에 일관성.
+    public const int ThunderboltCooldownTicks = 40; // 40틱 = 2초 @20TPS
+
     // ── 보스 전투 상수 ────────────────────────────────────────────────────────
     //
     // 값은 사용자 확정 정량값 (M4.5 Phase 04 CP-2 명세). 임의 변경 금지.

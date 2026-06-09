@@ -62,6 +62,7 @@ public class GameMap
     readonly BossBehaviorSystem _bossBehaviorSystem = new();
     readonly RespawnSystem _respawnSystem = new();
     readonly DeferredDamageSystem _deferredDamageSystem = new();
+    readonly SkillSystem _skillSystem = new();
 
     public IReadOnlyList<PlayerEntity> Players => _players;
     public IReadOnlyDictionary<int, EnemyEntity> Enemies => _enemies;
@@ -270,6 +271,16 @@ public class GameMap
     /// </summary>
     internal void ProcessAttack(int attackerEntityId, int targetEntityId, long attackerClientTick)
         => _combatSystem.ProcessAttack(this, attackerEntityId, targetEntityId, attackerClientTick);
+
+    // ── ProcessSkill (썬더볼트 AoE — P4) ──────────────────────────────────────
+
+    /// <summary>
+    /// tick thread 안에서 스킬 1건 처리. SkillSystem.ProcessThunderbolt에 위임.
+    ///
+    /// **호출 invariant**: tick thread에서만. GameSession.SubmitSkillUse가 EnqueueJob 람다로 박음.
+    /// </summary>
+    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick)
+        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick);
 
     // ── Tick 엔진 ─────────────────────────────────────────────────────────────
 

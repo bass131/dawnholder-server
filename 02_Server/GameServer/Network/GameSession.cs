@@ -326,6 +326,27 @@ public class GameSession : PacketSession
         map.EnqueueJob(() => map.ProcessAttack(attackerEntityId, targetId, clientTick));
     }
 
+    // skill use: C_SkillUse의 tick thread 마샬링 책임.
+    //
+    // **헌법 #3 (Trust Boundary) — caster 강제**: attacker와 동일하게 caster entityId는
+    //   _entityId에서 강제 — 클라가 다른 플레이어를 사칭해 스킬 발동 차단.
+    // skillId 범위 검증은 C_SkillUseHandler에서 이미 완료. attackerClientTick은 untrusted — ProcessSkill에서 검증.
+    internal void SubmitSkillUse(byte skillId, int attackerClientTick)
+    {
+        if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
+
+        GameMap? map = GetMap();
+        if (map == null)
+        {
+            Console.WriteLine($"[Trust] GameSession.SubmitSkillUse: GetMap() returned null — config/shutdown race?");
+            return;
+        }
+        int casterEntityId = _entityId;
+        byte capturedSkillId = skillId;
+        long capturedClientTick = attackerClientTick;
+        map.EnqueueJob(() => map.ProcessSkill(casterEntityId, capturedSkillId, capturedClientTick));
+    }
+
     // Pong 회신: serverTimestampMs 박고 Send.
     internal void RespondPong(long clientTimestampMs)
     {

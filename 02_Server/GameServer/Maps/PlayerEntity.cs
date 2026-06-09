@@ -108,6 +108,13 @@ public class PlayerEntity
     // 마지막 공격 발생 tick(ms 단위) 기록. AttackHandler rate-limit(500ms silent drop) 판정용.
     public long LastAttackTickMs { get; set; }
 
+    // 마지막 스킬 발동 서버 tick(CurrentTick 기준) 기록. ThunderboltCooldownTicks 미경과 시 silent drop.
+    // ms가 아닌 tick 기반 선택 이유: 헌법 #5 정합 — tick 루프 안에서 DateTime/ms 타이머 의존 차단.
+    //   스킬 쿨다운은 map.CurrentTick과 같은 틱 기준으로 비교하면 blocking call 0 보장.
+    // 초기값 = -(ThunderboltCooldownTicks+1) → 스폰 직후 첫 발동 허용.
+    //   long.MinValue 회피 이유: currentTick - long.MinValue는 long 오버플로우 → 음수 결과 → 쿨다운 오판.
+    public long LastSkillTick { get; set; } = -(CombatConstants.ThunderboltCooldownTicks + 1L);
+
     // 플레이어가 마지막으로 이동한 수평 방향. +1=오른쪽, -1=왼쪽.
     // 초기값은 +1(오른쪽 기본). Physics.Step에서 inputX != 0인 틱마다 갱신.
     // S_PlayerAttack.facing 필드 직렬화용 (공격 연출 방향) — 위치 권위는 Position 기준.

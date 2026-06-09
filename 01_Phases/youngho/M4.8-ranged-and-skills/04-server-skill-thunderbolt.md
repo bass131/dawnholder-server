@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.8
 phase: 04
 title: 서버 스킬 시스템 + 썬더볼트 AoE — C_SkillUse + 박스 스캔 + 광역 지연 데미지
-status: pending
+status: done
 grade: 복잡
 risk: trust-boundary(쿨다운·박스 판정 서버 권위)
 estimated: 3~4h
