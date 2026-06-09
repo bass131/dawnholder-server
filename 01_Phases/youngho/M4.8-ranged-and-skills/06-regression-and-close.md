@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.8
 phase: 06
 title: 회귀 + 마감 — 봇 4종 + xUnit 회귀 + 2클라 매트릭스 + 5단계 보고 + PR
-status: pending
+status: done
 grade: 보통
 risk: irreversible(PR)
 estimated: 2~3h
