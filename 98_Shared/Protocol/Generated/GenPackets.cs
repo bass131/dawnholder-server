@@ -39,6 +39,9 @@ public enum PacketID : ushort
 	S_EnemyAttack = 20,
 	S_PlayerHp = 21,
 	S_PlayerAttack = 22,
+	S_ProjectileLaunch = 23,
+	C_SkillUse = 24,
+	S_SkillCast = 25,
 	
 }
 
@@ -922,6 +925,7 @@ public class S_HitResult : IPacket // S_HitResult 패킷
 	public int damage;
 	public int currentHp;
 	public int maxHp;
+	public byte hitEffect;
     public ushort Protocol { get { return (ushort)PacketID.S_HitResult; } }
 
     public void Read(ArraySegment<byte> segment)
@@ -954,6 +958,10 @@ public class S_HitResult : IPacket // S_HitResult 패킷
 		// maxHp 읽기 (LittleEndian 명시 — wire format 약속)
 		this.maxHp = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
 		count += sizeof(int);
+		
+		// hitEffect 읽기
+		this.hitEffect = (byte)s[count];
+		count += sizeof(byte);
 		
     }
 
@@ -993,6 +1001,10 @@ public class S_HitResult : IPacket // S_HitResult 패킷
 		// maxHp 쓰기 (LittleEndian 명시 — wire format 약속)
 		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.maxHp);
 		count += sizeof(int);
+		
+		// hitEffect 쓰기
+		s[count] = (byte)this.hitEffect;
+		count += sizeof(byte);
 		
 
         // 최종 size 기록
@@ -1618,6 +1630,234 @@ public class S_PlayerAttack : IPacket // S_PlayerAttack 패킷
 		
 		// targetEntityId 쓰기 (LittleEndian 명시 — wire format 약속)
 		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.targetEntityId);
+		count += sizeof(int);
+		
+		// facing 쓰기
+		s[count] = (byte)this.facing;
+		count += sizeof(byte);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class S_ProjectileLaunch : IPacket // S_ProjectileLaunch 패킷
+{
+    // 멤버 변수들
+    public int attackerEntityId;
+	public int targetEntityId;
+	public byte projectileType;
+	public int travelTicks;
+    public ushort Protocol { get { return (ushort)PacketID.S_ProjectileLaunch; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // attackerEntityId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.attackerEntityId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// targetEntityId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.targetEntityId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// projectileType 읽기
+		this.projectileType = (byte)s[count];
+		count += sizeof(byte);
+		
+		// travelTicks 읽기 (LittleEndian 명시 — wire format 약속)
+		this.travelTicks = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.S_ProjectileLaunch);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // attackerEntityId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.attackerEntityId);
+		count += sizeof(int);
+		
+		// targetEntityId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.targetEntityId);
+		count += sizeof(int);
+		
+		// projectileType 쓰기
+		s[count] = (byte)this.projectileType;
+		count += sizeof(byte);
+		
+		// travelTicks 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.travelTicks);
+		count += sizeof(int);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class C_SkillUse : IPacket // C_SkillUse 패킷
+{
+    // 멤버 변수들
+    public byte skillId;
+	public int attackerClientTick;
+    public ushort Protocol { get { return (ushort)PacketID.C_SkillUse; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // skillId 읽기
+		this.skillId = (byte)s[count];
+		count += sizeof(byte);
+		
+		// attackerClientTick 읽기 (LittleEndian 명시 — wire format 약속)
+		this.attackerClientTick = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.C_SkillUse);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // skillId 쓰기
+		s[count] = (byte)this.skillId;
+		count += sizeof(byte);
+		
+		// attackerClientTick 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.attackerClientTick);
+		count += sizeof(int);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class S_SkillCast : IPacket // S_SkillCast 패킷
+{
+    // 멤버 변수들
+    public int casterEntityId;
+	public byte skillId;
+	public int strikeDelayTicks;
+	public byte facing;
+    public ushort Protocol { get { return (ushort)PacketID.S_SkillCast; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // casterEntityId 읽기 (LittleEndian 명시 — wire format 약속)
+		this.casterEntityId = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// skillId 읽기
+		this.skillId = (byte)s[count];
+		count += sizeof(byte);
+		
+		// strikeDelayTicks 읽기 (LittleEndian 명시 — wire format 약속)
+		this.strikeDelayTicks = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
+		
+		// facing 읽기
+		this.facing = (byte)s[count];
+		count += sizeof(byte);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.S_SkillCast);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // casterEntityId 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.casterEntityId);
+		count += sizeof(int);
+		
+		// skillId 쓰기
+		s[count] = (byte)this.skillId;
+		count += sizeof(byte);
+		
+		// strikeDelayTicks 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.strikeDelayTicks);
 		count += sizeof(int);
 		
 		// facing 쓰기
