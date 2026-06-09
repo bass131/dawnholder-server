@@ -1,6 +1,9 @@
 #nullable enable
 using Dawnholder.Client.Combat;
+using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
+using Shared.GameData;
+using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,6 +16,7 @@ namespace Dawnholder.Client.Input
     //
     // **콜백 wire**: PlayerInput component의 Behavior=Send Messages 모드에서
     //   OnMove/OnJump/OnAttack 메서드명이 자동 wire됨.
+    // **스킬 키(Q)**: Input System 액션이 아닌 Update 폴링 — 임시 바인딩(리바인딩 UI는 범위 밖).
     [RequireComponent(typeof(PlayerInput))]
     [RequireComponent(typeof(LocalPlayerMovement))]
     public class LocalPlayerInput : MonoBehaviour
@@ -67,6 +71,30 @@ namespace Dawnholder.Client.Input
             //   세션 미준비(false) 시에만 생략 — 연결 전 입력은 아무 예측도 안 함.
             if (_attackStrategy.TryAttack(transform.position))
                 _movement.NotifyAttack();
+        }
+
+        // 스킬 키 Q — 임시 바인딩 (정식 리바인딩 UI는 범위 밖). down 에지 폴링.
+        // C_SkillUse 송신 + 로컬 캐스팅 commit window(이동 잠금) — 공격 쿨다운 공유.
+        // 서버가 쿨다운·사거리·박스 대상 확정 → 쿨다운 중 재발동 시 silent drop.
+        void Update()
+        {
+            if (Keyboard.current == null) return;
+            if (!Keyboard.current.qKey.wasPressedThisFrame) return;
+            if (!_movement.CanAttack) return;
+
+            UnityClientSession? session = UnityClientSession.Instance;
+            if (session == null) return;
+
+            C_SkillUse pkt = new C_SkillUse
+            {
+                skillId = (byte)SkillId.Thunderbolt,
+                attackerClientTick = session.LastReceivedServerTick
+            };
+            session.SendIntent(pkt.Write());
+            Debug.Log($"[Skill] → Thunderbolt clientTick={pkt.attackerClientTick}");
+
+            // 공격 commit window 재사용 — 캐스팅 중 이동 잠금 (서버 AttackState 정합).
+            _movement.NotifyAttack();
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.

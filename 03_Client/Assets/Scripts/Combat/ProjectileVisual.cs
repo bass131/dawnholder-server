@@ -23,6 +23,17 @@ namespace Dawnholder.Client.Combat
             _sr = GetComponent<SpriteRenderer>();
         }
 
+        // travelTicks 기반 비행 속도 보정 — 서버 도착 틱과 클라 투사체 도착 시각을 맞춤.
+        // Launch() 호출 전에 설정해야 반영됨.
+        public void SetTravelDuration(float distance, float durationSeconds)
+        {
+            if (durationSeconds > 0f && distance > 0f)
+            {
+                _speed = distance / durationSeconds;
+                _maxLifetime = durationSeconds + 0.2f; // 약간의 여유 — 호밍 추적 중 overshoot 방지
+            }
+        }
+
         public void Launch(Transform? target)
         {
             _target = target;

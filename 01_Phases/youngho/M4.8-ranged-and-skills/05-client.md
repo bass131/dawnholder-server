@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.8
 phase: 05
 title: 클라 서버확정 투사체 + 스킬 입력/연출 — 선예측 제거 + 핸들러 + 낙뢰 VFX
-status: pending
+status: done
 grade: 복잡
 risk: unity-asset(VFX는 사용자/유현 placeholder)
 estimated: 3~4h
