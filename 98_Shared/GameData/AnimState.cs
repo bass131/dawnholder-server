@@ -26,10 +26,19 @@ namespace Shared.GameData;
 //   = Protocol.Version bump 의무.
 public enum AnimState : byte
 {
-    Idle   = 0,  // 정지 — 기본 대기 상태
-    Walk   = 1,  // 이동 — 수평 이동 중 (vx != 0 또는 Patrol/Chase)
-    Jump   = 2,  // 공중 — OnGround=false (플레이어 전용; 적은 현재 미사용)
-    Attack = 3,  // 공격 — 공격 수행 틱 + latch 지속
-    Hit    = 4,  // 피격 — 피격 틱 + latch 지속
-    Death  = 5,  // 사망 — HP <= 0 (latch 없음 — 고정 상태)
+    Idle       = 0,  // 정지 — 기본 대기 상태
+    Walk       = 1,  // 이동 — 수평 이동 중 (vx != 0 또는 Patrol/Chase)
+    Jump       = 2,  // 공중 — OnGround=false (플레이어 전용; 적은 현재 미사용)
+    Attack     = 3,  // 공격 — 공격 수행 틱 + latch 지속
+    Hit        = 4,  // 피격 — 피격 틱 + latch 지속
+    Death      = 5,  // 사망 — HP <= 0 (latch 없음 — 고정 상태)
+
+    // 스킬 시전 — 평타 스윙(Attack)과 구분되는 캐스팅 모션.
+    //
+    // **wire 미전송 (호환 핵심)**: 현재 서버는 스킬 시전 시 캐스터를 AttackState에 넣지 않아
+    //   이 값을 S_Snapshot/S_EntityState에 *브로드캐스트하지 않음*. 오직 *로컬 캐스터의 클라 선예측*
+    //   (LocalPlayerMovement.NotifyChannel → ResolveAnimState)에서만 생성됨.
+    //   따라서 append이지만 옛 피어가 0~5만 받는 wire 약속은 불변 = Protocol.Version bump 불필요.
+    //   (서버 권위 채널링이 필요해지면 — 원격도 시전 모션 — 그때 서버가 이 값을 emit + 버전 정합.)
+    Channeling = 6,
 }

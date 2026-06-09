@@ -268,10 +268,18 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_HitResult (ID 13) — damage 적용 + HP 갱신 표시.
+    // S_HitResult (ID 13) — damage 적용 + HP 갱신 표시 + hitEffect별 VFX.
     // 헌법 #1: 클라는 서버 결과 표시만. 판정 X.
+    // hitEffect: 0=근접(기존), 1=투사체 도착 임팩트, 2=낙뢰(썬더볼트).
     internal sealed class HitResultHandler : IClientPacketHandler
     {
+        // 투사체 도착 임팩트 VFX 경로. 기존 Resources/Effects/ 규칙 정합.
+        const string ProjectileImpactPath = "Effects/ProjectileImpact";
+        // 낙뢰 VFX 경로. 에셋 미존재 시 placeholder 로그 후 skip.
+        const string LightningVfxPath = "Effects/LightningStrike";
+        static bool _warnedMissingImpact;
+        static bool _warnedMissingLightning;
+
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
         {
             S_HitResult pkt = new S_HitResult();
@@ -282,12 +290,53 @@ namespace Dawnholder.Client.Network
             int dmg = pkt.damage;
             int hp = pkt.currentHp;
             int maxHp = pkt.maxHp;
+            byte hitEffect = pkt.hitEffect;
 
             MainThreadDispatcher.Enqueue(() =>
             {
-                Debug.Log($"[Unity] Hit: attacker={attackerId} target={targetId} dmg={dmg} hp={hp}/{maxHp}");
+                Debug.Log($"[Unity] Hit: attacker={attackerId} target={targetId} dmg={dmg} hp={hp}/{maxHp} effect={hitEffect}");
                 if (EnemyRegistry.Instance == null) return;
+
+                // 데미지 텍스트 + 적 HP 갱신 — 모든 hitEffect 공통.
                 EnemyRegistry.Instance.ApplyHit(targetId, hp, maxHp);
+
+                // hitEffect별 VFX — target 위치에 스폰.
+                if (hitEffect == 1 || hitEffect == 2)
+                {
+                    Vector3 fxPos = Vector3.zero;
+                    bool hasFxPos = false;
+                    if (EnemyRegistry.Instance.TryGetTransform(targetId, out Transform? targetTf) && targetTf != null)
+                    {
+                        fxPos = EffectAnchor.ResolvePosition(targetTf);
+                        hasFxPos = true;
+                    }
+
+                    if (hasFxPos)
+                    {
+                        string vfxPath = hitEffect == 1 ? ProjectileImpactPath : LightningVfxPath;
+                        GameObject? vfxPrefab = Resources.Load<GameObject>(vfxPath);
+                        if (vfxPrefab != null)
+                        {
+                            GameObject fx = Object.Instantiate(vfxPrefab, fxPos, Quaternion.identity);
+                            if (fx.GetComponent<EffectLifetime>() == null)
+                                fx.AddComponent<EffectLifetime>();
+                        }
+                        else
+                        {
+                            // TODO: VFX prefab 없음 — 유현/영호가 Assets/Resources/Effects/ 에 추가 필요.
+                            if (hitEffect == 1 && !_warnedMissingImpact)
+                            {
+                                Debug.LogWarning($"[HitResultHandler] 투사체 임팩트 VFX 미존재: Resources/{ProjectileImpactPath}");
+                                _warnedMissingImpact = true;
+                            }
+                            else if (hitEffect == 2 && !_warnedMissingLightning)
+                            {
+                                Debug.LogWarning($"[HitResultHandler] 낙뢰 VFX 미존재: Resources/{LightningVfxPath}");
+                                _warnedMissingLightning = true;
+                            }
+                        }
+                    }
+                }
             });
         }
     }
@@ -409,20 +458,14 @@ namespace Dawnholder.Client.Network
         }
     }
 
-    // S_PlayerAttack (ID 22) — 플레이어(로컬/원격) 공격 이벤트.
-    // 로컬 플레이어 분기: commit window 선예측이 이미 스윙을 재생 → 2중 스폰 방지용 즉시 return.
-    // 원격 플레이어 분기: attackType으로 연출 결정.
-    //   attackType=1(Ranged) → 투사체 시각.
-    //   attackType=0(Melee)  → 근접 스윙 이펙트 (기존 prefab 재사용 우선, 없으면 warn+skip).
+    // S_PlayerAttack (ID 22) — 플레이어(로컬/원격) 공격 연출.
+    // 로컬: commit window 선예측이 스윙 모션 이미 처리 → 즉시 return.
+    // 원격: attackType=0(Melee) 근접 스윙 이펙트만. attackType=1(Ranged) 투사체는 S_ProjectileLaunch 경로로 이관.
     // 헌법 #1: 연출만. 데미지/판정은 서버(S_HitResult/S_PlayerHp).
     internal sealed class PlayerAttackHandler : IClientPacketHandler
     {
-        // 근접 스윙 이펙트 Resources 경로. 저작은 사용자 영역.
         const string MeleeSwingEffectPath = "Effects/MeleeSwing";
         static bool _warnedMissingMeleeEffect;
-        // 투사체 prefab Resources 경로 (원격 Mage 연출용). 로컬 MageRangedAttack은 ClassConfig에서 직접 참조.
-        const string RemoteProjectilePath = "Effects/RemoteProjectile";
-        static bool _warnedMissingProjectile;
 
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
         {
@@ -431,68 +474,50 @@ namespace Dawnholder.Client.Network
 
             int attackerId = pkt.attackerEntityId;
             byte attackType = pkt.attackType;
-            int targetId = pkt.targetEntityId;
             byte facingByte = pkt.facing;
 
             MainThreadDispatcher.Enqueue(() =>
             {
                 if (session.LocalEntityId == null) return;
 
-                // 로컬 플레이어 — commit window 선예측이 스윙 모션을 이미 처리. 연출 중복 스폰 차단.
+                // 로컬 플레이어 — commit window 선예측이 이미 스윙 모션 처리. 중복 차단.
                 if (attackerId == session.LocalEntityId.Value) return;
 
-                // 원격 attacker Transform 조회.
+                // Ranged(attackType=1) 투사체 연출은 S_ProjectileLaunch 수신 시 처리(ProjectileLaunchHandler).
+                // S_PlayerAttack에서는 캐스팅 스윙 모션 플리퍼(원격 Mage 스윙 연출)만 트리거 가능하나
+                // 현재 연출 에셋 미정 → Melee(0)만 실처리.
+                if (attackType != 0) return;
+
                 Transform? attackerTf = null;
-                int facing = facingByte == 1 ? 1 : -1; // 서버 인코딩: 1=오른쪽, 0=왼쪽 (CombatSystem.cs 기준)
+                int facing = facingByte == 1 ? 1 : -1;
 
                 if (RemoteEntityRegistry.Instance != null)
                     RemoteEntityRegistry.Instance.TryGetTransform(attackerId, out attackerTf);
 
-                // 원격 attacker 미존재(despawn race) — 연출 생략.
                 if (attackerTf == null) return;
 
-                if (attackType == 1) // Ranged
+                Vector3 fxPos = EffectAnchor.ResolvePosition(attackerTf);
+                GameObject? meleePrefab = Resources.Load<GameObject>(MeleeSwingEffectPath);
+                if (meleePrefab == null)
                 {
-                    // 타겟 Transform 조회 (없으면 null → facing 방향 직진).
-                    Transform? target = null;
-                    if (targetId != 0 && EnemyRegistry.Instance != null)
-                        EnemyRegistry.Instance.TryGetTransform(targetId, out target);
-
-                    GameObject? projPrefab = Resources.Load<GameObject>(RemoteProjectilePath);
-                    if (projPrefab == null && !_warnedMissingProjectile)
+                    if (!_warnedMissingMeleeEffect)
                     {
                         Debug.LogWarning(
-                            $"[PlayerAttackHandler] 원격 투사체 prefab 미존재: Resources/{RemoteProjectilePath}. " +
+                            $"[PlayerAttackHandler] 근접 스윙 이펙트 미존재: Resources/{MeleeSwingEffectPath}. " +
                             "Assets/Resources/Effects/ 에 추가하면 자동 적용됩니다.");
-                        _warnedMissingProjectile = true;
+                        _warnedMissingMeleeEffect = true;
                     }
-                    ProjectileSpawner.Spawn(projPrefab, attackerTf, target, facing);
+                    return;
                 }
-                else // Melee (attackType=0)
+                GameObject fx = Object.Instantiate(meleePrefab, fxPos, Quaternion.identity);
+                if (facing < 0)
                 {
-                    Vector3 fxPos = EffectAnchor.ResolvePosition(attackerTf);
-                    GameObject? meleePrefab = Resources.Load<GameObject>(MeleeSwingEffectPath);
-                    if (meleePrefab == null)
-                    {
-                        if (!_warnedMissingMeleeEffect)
-                        {
-                            Debug.LogWarning(
-                                $"[PlayerAttackHandler] 근접 스윙 이펙트 미존재: Resources/{MeleeSwingEffectPath}. " +
-                                "Assets/Resources/Effects/ 에 추가하면 자동 적용됩니다.");
-                            _warnedMissingMeleeEffect = true;
-                        }
-                        return;
-                    }
-                    GameObject fx = Object.Instantiate(meleePrefab, fxPos, Quaternion.identity);
-                    if (facing < 0)
-                    {
-                        Vector3 s = fx.transform.localScale;
-                        s.x = -Mathf.Abs(s.x);
-                        fx.transform.localScale = s;
-                    }
-                    if (fx.GetComponent<EffectLifetime>() == null)
-                        fx.AddComponent<EffectLifetime>();
+                    Vector3 s = fx.transform.localScale;
+                    s.x = -Mathf.Abs(s.x);
+                    fx.transform.localScale = s;
                 }
+                if (fx.GetComponent<EffectLifetime>() == null)
+                    fx.AddComponent<EffectLifetime>();
             });
         }
     }
@@ -594,6 +619,147 @@ namespace Dawnholder.Client.Network
                 {
                     Debug.LogWarning("[Unity] SceneTransition.Instance null — direct LoadScene fallback (페이드 없음).");
                     SceneManager.LoadScene(sceneName);
+                }
+            });
+        }
+    }
+
+    // S_ProjectileLaunch (ID 23) — 서버 확정 투사체 발사 연출 통보.
+    // 로컬/원격 공통 경로 — 클라 선예측 스폰 제거(M4.8 기둥1) 후 모든 투사체가 이 핸들러로 스폰.
+    // travelTicks: 발사~서버 도착 틱 수. 비행 속도를 역산해 클라 투사체 도착 시각과 서버 도착 틱을 맞춤.
+    internal sealed class ProjectileLaunchHandler : IClientPacketHandler
+    {
+        const string LocalProjectilePath = "Effects/Projectile";
+        const string RemoteProjectilePath = "Effects/RemoteProjectile";
+        static bool _warnedMissingLocal;
+        static bool _warnedMissingRemote;
+
+        public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
+        {
+            S_ProjectileLaunch pkt = new S_ProjectileLaunch();
+            pkt.Read(buffer);
+
+            int attackerId = pkt.attackerEntityId;
+            int targetId = pkt.targetEntityId;
+            int travelTicks = pkt.travelTicks;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (session.LocalEntityId == null) return;
+
+                bool isLocal = attackerId == session.LocalEntityId.Value;
+
+                // 발사 위치: 로컬=LocalPlayer, 원격=RemoteEntityRegistry.
+                Transform? spawnRoot = null;
+                int facing = 1;
+                if (isLocal)
+                {
+                    spawnRoot = LocalPlayerMovement.Instance?.transform;
+                    if (spawnRoot != null)
+                    {
+                        LocalPlayerMotion? motion = spawnRoot.GetComponent<LocalPlayerMotion>();
+                        if (motion != null) facing = motion.Facing;
+                    }
+                }
+                else
+                {
+                    if (RemoteEntityRegistry.Instance != null)
+                        RemoteEntityRegistry.Instance.TryGetTransform(attackerId, out spawnRoot);
+                }
+
+                // 타겟 Transform (없으면 facing 방향 직진 폴백).
+                Transform? target = null;
+                if (targetId != 0 && EnemyRegistry.Instance != null)
+                    EnemyRegistry.Instance.TryGetTransform(targetId, out target);
+
+                // 발사자 미존재(despawn race) — 스폰 생략.
+                if (!isLocal && spawnRoot == null) return;
+
+                string path = isLocal ? LocalProjectilePath : RemoteProjectilePath;
+                GameObject? prefab = Resources.Load<GameObject>(path);
+                if (prefab == null)
+                {
+                    // TODO: 투사체 prefab 없음 — 유현/영호가 Assets/Resources/Effects/ 에 추가 필요.
+                    bool warned = isLocal ? _warnedMissingLocal : _warnedMissingRemote;
+                    if (!warned)
+                    {
+                        Debug.LogWarning($"[ProjectileLaunchHandler] 투사체 prefab 미존재: Resources/{path}");
+                        if (isLocal) _warnedMissingLocal = true;
+                        else _warnedMissingRemote = true;
+                    }
+                    return;
+                }
+
+                Vector3 spawnPos = spawnRoot != null
+                    ? EffectAnchor.ResolvePosition(spawnRoot)
+                    : (target?.position ?? Vector3.zero);
+
+                GameObject proj = Object.Instantiate(prefab, spawnPos, Quaternion.identity);
+                ProjectileVisual visual = proj.GetComponent<ProjectileVisual>()
+                                         ?? proj.AddComponent<ProjectileVisual>();
+
+                // travelTicks로 비행 속도 역산 — 도착 ≈ 서버 도착 틱.
+                // 거리 / (travelTicks × TickDuration) = 픽셀속도. travelTicks=0이면 즉발(Destroy).
+                if (travelTicks > 0 && target != null)
+                {
+                    float dist = Vector3.Distance(spawnPos, target.position);
+                    float duration = travelTicks * Constants.TickDuration;
+                    visual.SetTravelDuration(dist, duration);
+                }
+
+                if (target != null)
+                    visual.Launch(target);
+                else
+                    visual.LaunchDirection(new Vector3(facing >= 0 ? 1f : -1f, 0f, 0f));
+            });
+        }
+    }
+
+    // S_SkillCast (ID 25) — 스킬 캐스팅 연출 통보.
+    // caster 위치에 캐스팅 모션/연출(placeholder). 개별 낙뢰·데미지는 S_HitResult(hitEffect=2)가 담당.
+    internal sealed class SkillCastHandler : IClientPacketHandler
+    {
+        // TODO: 캐스팅 이펙트 prefab — 유현/영호가 Assets/Resources/Effects/ 에 추가 필요.
+        const string CastEffectPath = "Effects/SkillCast";
+        static bool _warnedMissingCast;
+
+        public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
+        {
+            S_SkillCast pkt = new S_SkillCast();
+            pkt.Read(buffer);
+
+            int casterId = pkt.casterEntityId;
+            byte skillId = pkt.skillId;
+
+            MainThreadDispatcher.Enqueue(() =>
+            {
+                if (session.LocalEntityId == null) return;
+
+                // caster 위치 조회 (로컬/원격 분기).
+                Transform? casterTf = null;
+                if (casterId == session.LocalEntityId.Value)
+                    casterTf = LocalPlayerMovement.Instance?.transform;
+                else if (RemoteEntityRegistry.Instance != null)
+                    RemoteEntityRegistry.Instance.TryGetTransform(casterId, out casterTf);
+
+                if (casterTf == null) return;
+
+                Debug.Log($"[Unity] SkillCast: caster={casterId} skill={skillId}");
+
+                // 캐스팅 연출 — placeholder. 에셋 없으면 warn+skip(연출 없이 낙뢰는 정상 동작).
+                Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf);
+                GameObject? castPrefab = Resources.Load<GameObject>(CastEffectPath);
+                if (castPrefab != null)
+                {
+                    GameObject fx = Object.Instantiate(castPrefab, fxPos, Quaternion.identity);
+                    if (fx.GetComponent<EffectLifetime>() == null)
+                        fx.AddComponent<EffectLifetime>();
+                }
+                else if (!_warnedMissingCast)
+                {
+                    // TODO: 캐스팅 VFX placeholder — Resources/Effects/SkillCast 추가 시 자동 적용.
+                    Debug.LogWarning($"[SkillCastHandler] 캐스팅 VFX 미존재: Resources/{CastEffectPath} — 연출 생략 (낙뢰는 S_HitResult로 별도 처리).");
+                    _warnedMissingCast = true;
                 }
             });
         }

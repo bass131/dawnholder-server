@@ -9,6 +9,10 @@ namespace Dawnholder.Client.Combat
     // **직업별 구현체**: KnightMeleeAttack / MageRangedAttack. ClassConfig SO가 주입.
     public interface IAttackStrategy
     {
+        // 클라 측 타게팅 힌트 범위(제곱 거리) — 전략별로 다름.
+        // LocalPlayerInput이 facing 봉합 시 동일 범위를 재사용해 "타겟 = 바라보는 방향" 일관성 유지.
+        float TargetingRangeSquared { get; }
+
         // origin: 공격자 월드 위치. 타게팅 힌트 계산 기준점.
         // 반환: C_Attack을 실제로 송신했으면 true (타겟 잡힘) — 호출자가 로컬 commit window
         //   예측 게이트 시작 신호로 사용. 헛스윙(타겟 없음)은 false → 이동 잠금 안 함.

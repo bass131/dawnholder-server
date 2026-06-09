@@ -21,6 +21,16 @@ internal sealed class EnemyAISystem
         {
             if (enemy.Kind == EnemyKind.Boss) continue;
 
+            // freeze 가드: FrozenUntilTick 동안 AI(Fsm.Tick)·latch 감소 스킵 = 이동 봉쇄.
+            // 만료 틱에 도달하면 즉시 해제. Boss는 이 가드 없음 → freeze 면역(헌법 #1).
+            if (enemy.FrozenUntilTick > 0)
+            {
+                if (tickNumber >= enemy.FrozenUntilTick)
+                    enemy.FrozenUntilTick = 0;
+                else
+                    continue;
+            }
+
             enemy.Fsm!.Tick(enemy);
             if (enemy.HitLatchTicks > 0) enemy.HitLatchTicks--;
             if (enemy.AttackLatchTicks > 0) enemy.AttackLatchTicks--;

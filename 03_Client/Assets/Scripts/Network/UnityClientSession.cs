@@ -56,21 +56,23 @@ namespace Dawnholder.Client.Network
         static readonly IReadOnlyDictionary<PacketID, IClientPacketHandler> _handlers =
             new Dictionary<PacketID, IClientPacketHandler>
             {
-                { PacketID.S_HandshakeResult, new HandshakeResultHandler() },
-                { PacketID.S_Pong,            new PongHandler() },
-                { PacketID.S_EnterMap,        new EnterMapHandler() },
-                { PacketID.S_Snapshot,        new SnapshotHandler() },
-                { PacketID.S_PlayerJoin,      new PlayerJoinHandler() },
-                { PacketID.S_PlayerLeave,     new PlayerLeaveHandler() },
-                { PacketID.S_EntitySpawn,     new EntitySpawnHandler() },
-                { PacketID.S_HitResult,       new HitResultHandler() },
-                { PacketID.S_EntityDeath,     new EntityDeathHandler() },
-                { PacketID.S_StageClear,      new StageClearHandler() },
-                { PacketID.S_MapTransition,   new MapTransitionHandler() },
-                { PacketID.S_EntityState,     new EntityStateHandler() },
-                { PacketID.S_EnemyAttack,     new EnemyAttackHandler() },
-                { PacketID.S_PlayerHp,        new PlayerHpHandler() },
-                { PacketID.S_PlayerAttack,    new PlayerAttackHandler() },
+                { PacketID.S_HandshakeResult,   new HandshakeResultHandler() },
+                { PacketID.S_Pong,              new PongHandler() },
+                { PacketID.S_EnterMap,          new EnterMapHandler() },
+                { PacketID.S_Snapshot,          new SnapshotHandler() },
+                { PacketID.S_PlayerJoin,        new PlayerJoinHandler() },
+                { PacketID.S_PlayerLeave,       new PlayerLeaveHandler() },
+                { PacketID.S_EntitySpawn,       new EntitySpawnHandler() },
+                { PacketID.S_HitResult,         new HitResultHandler() },
+                { PacketID.S_EntityDeath,       new EntityDeathHandler() },
+                { PacketID.S_StageClear,        new StageClearHandler() },
+                { PacketID.S_MapTransition,     new MapTransitionHandler() },
+                { PacketID.S_EntityState,       new EntityStateHandler() },
+                { PacketID.S_EnemyAttack,       new EnemyAttackHandler() },
+                { PacketID.S_PlayerHp,          new PlayerHpHandler() },
+                { PacketID.S_PlayerAttack,      new PlayerAttackHandler() },
+                { PacketID.S_ProjectileLaunch,  new ProjectileLaunchHandler() },
+                { PacketID.S_SkillCast,         new SkillCastHandler() },
             };
 
         // Editor only 송신 latency 시뮬레이션.

@@ -1,6 +1,10 @@
 #nullable enable
 using Dawnholder.Client.Combat;
+using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
+using Dawnholder.Client.Rendering;
+using Shared.GameData;
+using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,6 +17,7 @@ namespace Dawnholder.Client.Input
     //
     // **콜백 wire**: PlayerInput component의 Behavior=Send Messages 모드에서
     //   OnMove/OnJump/OnAttack 메서드명이 자동 wire됨.
+    // **스킬 키(Q)**: Input System 액션이 아닌 Update 폴링 — 임시 바인딩(리바인딩 UI는 범위 밖).
     [RequireComponent(typeof(PlayerInput))]
     [RequireComponent(typeof(LocalPlayerMovement))]
     public class LocalPlayerInput : MonoBehaviour
@@ -20,10 +25,12 @@ namespace Dawnholder.Client.Input
         IAttackStrategy _attackStrategy = null!;
 
         LocalPlayerMovement _movement = null!;
+        LocalPlayerMotion? _motion;
 
         void Awake()
         {
             _movement = GetComponent<LocalPlayerMovement>();
+            _motion = GetComponent<LocalPlayerMotion>();
             // ClassConfig 미장착 시 fallback — Resolve 실패는 ClassLoadout.Resolve()가 fail-loud 처리.
             _attackStrategy = new KnightMeleeAttack();
         }
@@ -66,7 +73,45 @@ namespace Dawnholder.Client.Input
             //   송신 성공 시 NotifyAttack — 허공 스윙도 commit window + 쿨다운 예측 시작.
             //   세션 미준비(false) 시에만 생략 — 연결 전 입력은 아무 예측도 안 함.
             if (_attackStrategy.TryAttack(transform.position))
+            {
                 _movement.NotifyAttack();
+                TryFaceNearestTarget();
+            }
+        }
+
+        // 공격 발동 후 가장 가까운 타겟 방향으로 facing 보정 — 로컬 연출 전용 (헌법 #1).
+        // 타겟 없으면 현재 이동 방향 유지. 전략별 TargetingRangeSquared 재사용 — 타겟 잡히는 적 = 바라보는 적.
+        void TryFaceNearestTarget()
+        {
+            if (_motion == null || EnemyRegistry.Instance == null) return;
+            if (!EnemyRegistry.Instance.TryGetNearest(transform.position, _attackStrategy.TargetingRangeSquared, out int tid)) return;
+            if (tid == 0) return;
+            if (!EnemyRegistry.Instance.TryGetTransform(tid, out Transform? et) || et == null) return;
+            _motion.FaceToward(et.position.x);
+        }
+
+        // 스킬 키 Q — 임시 바인딩 (정식 리바인딩 UI는 범위 밖). down 에지 폴링.
+        // C_SkillUse 송신 + 로컬 캐스팅 commit window(이동 잠금). 게이트 = *스킬 독립 쿨다운*(CanUseSkill).
+        // 쿨다운 중 입력은 여기서 차단 → 송신·채널링 모션 둘 다 억제(서버 silent drop과 불일치 방지).
+        void Update()
+        {
+            if (Keyboard.current == null) return;
+            if (!Keyboard.current.qKey.wasPressedThisFrame) return;
+            if (!_movement.CanUseSkill) return;
+
+            UnityClientSession? session = UnityClientSession.Instance;
+            if (session == null) return;
+
+            C_SkillUse pkt = new C_SkillUse
+            {
+                skillId = (byte)SkillId.Thunderbolt,
+                attackerClientTick = session.LastReceivedServerTick
+            };
+            session.SendIntent(pkt.Write());
+            Debug.Log($"[Skill] → Thunderbolt clientTick={pkt.attackerClientTick}");
+
+            // 캐스팅 commit window — 이동 잠금 + 채널링 모션 선예측(Attack 스윙 대신 Channeling).
+            _movement.NotifyChannel();
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.

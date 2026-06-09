@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Shared.GameData;
@@ -52,7 +53,7 @@ internal sealed class CombatSystem
         // rewind: attacker가 공격 버튼을 눌렀을 당시 tick의 서버 저장 위치로 되돌림.
         // target은 현재 위치 사용 (target rewind는 M4.4 backlog).
         Vector2 rewindedPos = attacker.GetPositionAtTick(attackerClientTick);
-        AABB attackBox = GetAttackHitbox(rewindedPos);
+        AABB attackBox = GetAttackHitbox(rewindedPos, attacker.Stats.Class);
 
         // 통과 → 스윙 권위 mutation 진입 (명중 여부 무관).
         // rate-limit 카운트는 스윙 시도 기준 — 빈 스윙도 쿨다운 소비(스팸 차단 불변, 헌법 #3).
@@ -92,51 +93,113 @@ internal sealed class CombatSystem
 
         // 명중 → 데미지 권위 mutation 진입.
         int damage = Formulas.ComputeDamage(attacker.Stats, target.Stats, CombatConstants.BaseDamage);
-        target.Hp -= damage;
 
-        // 피격 aggro 트리거 (후공 포함): 공격자를 target으로 등록.
-        // Boss는 Fsm=null라 ResolveAfterHit 미호출이므로 무해.
-        target.TargetEntityId = attacker.EntityId;
-
-        S_HitResult hit = new S_HitResult
+        if (attacker.Stats.Class == CharacterClass.Mage)
         {
-            attackerEntityId = attacker.EntityId,
-            targetEntityId = target.EntityId,
-            damage = damage,
-            currentHp = target.Hp,
-            maxHp = target.MaxHp,
-        };
-        map.BroadcastToAll(hit.Write()); // 전원 (attacker 자기 포함) — except=null
+            // Mage 원거리: 즉발 명중 판정 후 지연 데미지(헌법 #5). 사거리 비례 travelTicks.
+            // 사이드스크롤 특성상 Y 이동이 제한적이므로 수평 |dx| 기준 계산 — 투사체 시각 이동과 일치.
+            float dx = Math.Abs(target.X - rewindedPos.X);
+            int travelTicks = Math.Clamp(
+                (int)Math.Round(dx / CombatConstants.ProjectileSpeedPerTick),
+                CombatConstants.MinTravelTicks,
+                CombatConstants.MaxTravelTicks);
 
-        if (target.Hp <= 0)
-        {
-            // 즉시 사망. 죽음 연출은 클라 VFX(S_EntityDeath 수신 시) — 서버는 확정+제거만(헌법 #1).
-            S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
-            map.BroadcastToAll(death.Write());
-
-            if (target.Kind == EnemyKind.Boss && !map.IsStageCleared)
+            map.EnqueueDeferredDamage(new DeferredImpact
             {
-                map.SetStageCleared();
-                S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
-                map.BroadcastToAll(stageClear.Write());
-            }
-            map.RemoveEnemy(target.EntityId);
-            if (target.Kind == EnemyKind.Normal)
-                map.EnqueueRespawn(target);
+                AttackerEntityId = attacker.EntityId,
+                TargetEntityId   = target.EntityId,
+                Damage           = damage,
+                ImpactTick       = map.CurrentTick + travelTicks,
+                HitEffect        = 1,
+            });
+
+            // freeze: 투사체 도착 + StunTicks 동안 이동 봉쇄(stun). Boss는 ApplyFreeze 호출돼도 면역(EnemyEntity 설계).
+            target.ApplyFreeze(map.CurrentTick + travelTicks + CombatConstants.StunTicks);
+
+            // 발사 연출 broadcast — 전원(S_HitResult와 동일 except=null)
+            S_ProjectileLaunch launch = new S_ProjectileLaunch
+            {
+                attackerEntityId = attacker.EntityId,
+                targetEntityId   = target.EntityId,
+                projectileType   = 0, // 0 = Mage 평타
+                travelTicks      = travelTicks,
+            };
+            map.BroadcastToAll(launch.Write());
+            // S_HitResult는 도착 시 DeferredDamageSystem이 발송 — 여기서 보내지 않음
         }
         else
         {
-            // 생존 = HitState(멈칫 + 넉백). Boss는 EnterHitState 내부에서 latch만 세팅.
-            float knockbackDir = target.X >= attacker.Position.X ? 1f : -1f;
-            target.EnterHitState(knockbackDir);
+            // Knight 즉시 데미지 경로 유지(hitEffect=0 근접).
+            // currentHp raw(음수 가능) — LagSim 봇/테스트의 사망 신호 계약(음수=사망). 건드리지 마라.
+            target.Hp -= damage;
+
+            // 피격 aggro 트리거 (후공 포함): 공격자를 target으로 등록.
+            // Boss는 Fsm=null라 ResolveAfterHit 미호출이므로 무해.
+            target.TargetEntityId = attacker.EntityId;
+
+            S_HitResult hit = new S_HitResult
+            {
+                attackerEntityId = attacker.EntityId,
+                targetEntityId   = target.EntityId,
+                damage           = damage,
+                currentHp        = target.Hp,  // raw(음수 가능) — 음수=사망 신호 계약
+                maxHp            = target.MaxHp,
+                hitEffect        = 0,           // 근접
+            };
+            map.BroadcastToAll(hit.Write());
+
+            if (target.Hp <= 0)
+            {
+                S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
+                map.BroadcastToAll(death.Write());
+
+                if (target.Kind == EnemyKind.Boss && !map.IsStageCleared)
+                {
+                    map.SetStageCleared();
+                    S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
+                    map.BroadcastToAll(stageClear.Write());
+                }
+                map.RemoveEnemy(target.EntityId);
+                if (target.Kind == EnemyKind.Normal)
+                    map.EnqueueRespawn(target);
+            }
+            else
+            {
+                // 생존 = HitState(멈칫 + 넉백). Boss는 EnterHitState 내부에서 latch만 세팅.
+                float knockbackDir = target.X >= attacker.Position.X ? 1f : -1f;
+                target.EnterHitState(knockbackDir);
+            }
         }
     }
 
     /// <summary>
     /// attacker 위치 중심으로 공격 AABB 박스를 생성.
     /// static 순수 함수 — GameMap 상태 의존 X.
-    /// AttackHalfExtent = 1.5f → 전체 3×3 unit.
+    /// Mage면 MageAttackHalfExtent(4.0f), 그 외 AttackHalfExtent(1.5f).
     /// </summary>
-    internal static AABB GetAttackHitbox(Vector2 origin)
-        => new AABB(origin, new Vector2(CombatConstants.AttackHalfExtent, CombatConstants.AttackHalfExtent));
+    internal static AABB GetAttackHitbox(Vector2 origin, CharacterClass cls)
+    {
+        float half = cls == CharacterClass.Mage
+            ? CombatConstants.MageAttackHalfExtent
+            : CombatConstants.AttackHalfExtent;
+        return new AABB(origin, new Vector2(half, half));
+    }
+
+    /// <summary>
+    /// origin 중심 AABB ∩ 살아있는 적 목록 반환.
+    ///
+    /// P3(단일 평타)는 List에서 첫 1개만 사용. P4(썬더볼트 AoE)가 N개 반환으로 동일 헬퍼 확장 — AoE-ready.
+    /// halfExtents: (x, y) 각축 절반 크기. 호출자가 class별/스킬별 값으로 전달.
+    /// </summary>
+    internal static List<EnemyEntity> ResolveImpactTargets(GameMap map, Vector2 origin, Vector2 halfExtents)
+    {
+        AABB box = new AABB(origin, halfExtents);
+        List<EnemyEntity> results = new();
+        foreach (EnemyEntity e in map.Enemies.Values)
+        {
+            if (!e.IsDead && box.Intersects(e.Hitbox))
+                results.Add(e);
+        }
+        return results;
+    }
 }

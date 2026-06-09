@@ -78,6 +78,19 @@ public class EnemyEntity
     // 적은 지형 물리 없이 순수 X 적분 (기존 적 이동 모델과 동일).
     public float KnockbackVx { get; set; }
 
+    // tick thread invariant — EnemyAISystem.Update 안에서만 R/W.
+    // >0: 이 tick 이후까지 이동/AI 봉쇄. 0 도달 시 자동 해제.
+    // Boss는 이 필드를 세팅해도 BossBehaviorSystem에 가드 없음 → 면역(설계 의도).
+    public long FrozenUntilTick { get; set; }
+
+    /// <summary>
+    /// freeze 중첩 규칙: max(기존, 신규) 적용 — 더 늦은 만료가 우선.
+    /// 평타(긴 freeze) + 썬더볼트(짧은 freeze) 중첩 시 조기 해제 방지 (plan-auditor 우려 B).
+    /// Boss에 호출돼도 BossBehaviorSystem에 가드가 없으므로 데미지 지연만 발동, 이동은 계속.
+    /// </summary>
+    public void ApplyFreeze(long untilTick)
+        => FrozenUntilTick = Math.Max(FrozenUntilTick, untilTick);
+
     // AI State machine + 소속 맵 back-ref. Normal/Golem = EnemyStates, Boss = BossStates.
     // OwningMap: State가 같은 맵 player를 스캔하는 통로. GameMap.SpawnEnemy에서 세팅.
     internal GameMap? OwningMap { get; set; }

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.8 — 원거리 전투 모델 + 스킬 시스템 마일스톤 박제</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff; --accent2:#bc8cff;
+    --green:#3fb950; --yellow:#d29922; --red:#f85149; --pink:#f778ba;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Pretendard','Segoe UI',-apple-system,sans-serif;line-height:1.7;padding:0 0 80px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  header{background:linear-gradient(135deg,#1c2330,#161b22);border-bottom:1px solid var(--border);
+    padding:48px 0 36px;margin-bottom:36px;}
+  h1{font-size:30px;margin:0 0 8px;color:#fff;letter-spacing:-.5px;}
+  .sub{color:var(--muted);font-size:15px;margin-bottom:18px;}
+  .badges{display:flex;gap:10px;flex-wrap:wrap;}
+  .badge{display:inline-block;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:600;
+    border:1px solid var(--border);background:var(--panel2);}
+  .badge.lg{color:var(--accent2);border-color:var(--accent2);}
+  .badge.date{color:var(--green);border-color:var(--green);}
+  .badge.proto{color:var(--accent);border-color:var(--accent);}
+  h2{font-size:21px;margin:40px 0 16px;color:#fff;border-left:3px solid var(--accent);padding-left:12px;}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;}
+  .card.full{grid-column:1/-1;}
+  .card h3{margin:0 0 10px;font-size:16px;color:#fff;}
+  .card .icon{font-size:18px;margin-right:6px;}
+  .card p{margin:0;font-size:14px;color:var(--text);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--panel);
+    border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--border);vertical-align:top;}
+  th{background:var(--panel2);color:#fff;font-weight:600;}
+  tr:last-child td{border-bottom:none;}
+  td code,p code,li code{background:#0d1117;border:1px solid var(--border);border-radius:4px;
+    padding:1px 5px;font-size:12.5px;color:var(--pink);}
+  .star{color:var(--yellow);}
+  ul.ac{list-style:none;padding:0;}
+  ul.ac li{padding:7px 0 7px 30px;position:relative;font-size:14px;border-bottom:1px solid #21262d;}
+  ul.ac li:before{position:absolute;left:0;top:7px;font-weight:700;}
+  ul.ac li.ok:before{content:"✅";}
+  ul.ac li.part:before{content:"🔶";color:var(--yellow);}
+  ul.ac li.todo:before{content:"⬜";}
+  ol.flow{padding-left:22px;}
+  ol.flow li{margin-bottom:14px;font-size:14px;}
+  ol.flow li b{color:var(--accent);}
+  .commit{font-family:ui-monospace,monospace;color:var(--green);font-size:12px;}
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--border);
+    color:var(--muted);font-size:13px;text-align:center;}
+  @media(max-width:720px){.cards{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>M4.8 — 원거리 전투 모델 + 최소 스킬 시스템 + 썬더볼트 AoE</h1>
+    <div class="sub">서버 확정 투사체 + 지연 데미지 + freeze(Boss 면역) · 6 Phase 단일 브랜치 완전 마감</div>
+    <div class="badges">
+      <span class="badge lg">대규모 · 4도메인 관통</span>
+      <span class="badge date">2026-06-09 마감 (세션28)</span>
+      <span class="badge proto">ProtocolVersion 10 → 11</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <h2>🗂️ 5단계 보고</h2>
+  <div class="cards">
+    <div class="card">
+      <h3><span class="icon">🎯</span>무엇을 만들었나</h3>
+      <p>Mage를 진짜 원거리 직업으로 만들고 첫 스킬을 붙였다. ① <b>평타 원거리</b> — 서버가 명중을 즉발 확정(lag-comp)한 뒤 <code>S_ProjectileLaunch</code>(23)로 발사 통보, 클라가 그때 스폰(선예측 폐지). 도착 틱에 지연 데미지 + 도착 후 <code>StunTicks</code> freeze. ② <b>최소 스킬 시스템 + 썬더볼트 AoE</b> — <code>C_SkillUse</code>(24, 쿨다운만 서버 권위) → 공격자 중심 X,Y 박스 스캔 → 박스 내 적 각자 위치 낙뢰 + 광역 지연 데미지, <code>S_SkillCast</code>(25) 캐스팅 연출.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🤔</span>왜 필요한가</h3>
+      <p>M4.7 시점 Mage는 <b>구조상 근접</b>이었다. <code>GetAttackHitbox</code>에 class 분기가 없어 Knight·Mage 둘 다 ±1.5f AABB로 판정했고, 클라 투사체는 콜라이더 0이라 멀리 쏘면 <b>그림만 나가고 데미지 0</b>. 평타 1종뿐이라 스킬 발동 채널도 없었다. 추후 광역기를 붙이려면 "도착 시 범위 내 N개 판정"으로 일반화된 토대가 처음부터 필요했다.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🛠️</span>어떻게 만들었나</h3>
+      <p>토대 우선 슬라이스: P1 프로토콜 → P2 <b>인프라</b>(<code>DeferredDamageSystem</code> = RespawnSystem 틱 카운트다운 패턴 = 헌법 #5 논블로킹 / <code>FrozenUntilTick</code> + EnemyAISystem 가드, Boss 면역) → P3 평타(<code>ResolveImpactTargets</code> 헬퍼) → P4 스킬+썬더볼트(박스 스캔 = 헬퍼 첫 호출) → P5 클라 → P6 마감. 핵심 = <code>ResolveImpactTargets</code>가 단일·박스 공용 = AoE-ready. PDL list 미지원을 만나 적별 <code>S_HitResult</code>(hitEffect)로 회피.</p>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🧪</span>테스트 결과</h3>
+      <p>클린빌드 <b>0/0</b> + <code>dotnet test</code> <b>508/0/4skip</b> + 신규 봇 <b>4종 PASS</b>(RangedHit·RangedWhiff·ThunderboltAoe·Freeze) + 기존 봇(EmergencyCombat·BossFight) <b>v11 회귀 0</b> + <code>ProtocolVersion==11</code>(시프트 0) + Unity 컴파일 0err(MCP isCompiling=False) + reviewer P2~P5 전부 <b>🔴0</b>. Boss 면역·박스 다수는 dotnet 결정적 검증, 봇은 통합 흐름. LagSim 1 flaky(동시 실행, 단독 green=코드 무관).</p>
+    </div>
+    <div class="card full">
+      <h3><span class="icon">➡️</span>다음 스텝</h3>
+      <p>① <b>AoE 실 광역기 확장</b> — <code>ResolveImpactTargets</code> 토대 위에 원형 장판 등 모양만 추가. ② <b>텔레포트(블링크) = M4.9</b> — 이동 권위/prediction 갈래라 분리. ③ <b>밸런스 Play 튜닝</b> — MageAttackHalfExtent·ProjectileSpeedPerTick·StunTicks·ThunderboltBox·Cooldown 전부 임시값. ④ 백로그(reviewer 🟡, 비차단) — 평타↔스킬 쿨다운 게이트 입력 유실 측정·rewind 매직넘버 상수화·freeze 가드 표현 통일·death-path 헬퍼 추출.</p>
+    </div>
+  </div>
+
+  <h2>🧩 Phase 박제 요약</h2>
+  <table>
+    <tr><th>Phase</th><th>핵심</th><th>commit</th></tr>
+    <tr><td>P1 프로토콜</td><td>S_ProjectileLaunch(23)+C_SkillUse(24)+S_SkillCast(25) + S_HitResult.hitEffect append, ProtocolVersion 11, SkillId enum. 시프트 0 [irreversible]</td><td class="commit">0d9ae77</td></tr>
+    <tr><td>P2 서버 인프라</td><td>DeferredDamageSystem(틱 큐) + FrozenUntilTick/ApplyFreeze(max 중첩) + EnemyAISystem freeze 가드(Boss 면역) [trust-boundary]</td><td class="commit">44f8383</td></tr>
+    <tr><td>P3 서버 평타</td><td>GetAttackHitbox Mage 사거리 + ProcessAttack deferred 전환 + ResolveImpactTargets(단일) + aggro 봉합(reviewer 🔴)</td><td class="commit">8ade57e</td></tr>
+    <tr><td>P4 <span class="star">★</span> 스킬+썬더볼트</td><td>C_SkillUseHandler(검증+auth) + SkillSystem.ProcessThunderbolt(쿨다운 tick + 박스 스캔 + deferred N개 + S_SkillCast)</td><td class="commit">96f12a4</td></tr>
+    <tr><td>P5 <span class="star">★</span> 클라</td><td>선예측 스폰 폐지 + ProjectileLaunchHandler(로컬/원격 단일) + 스킬키 + SkillCastHandler + hitEffect VFX 분기. Unity 0err</td><td class="commit">d770e6a</td></tr>
+    <tr><td>P6 회귀+마감</td><td>봇 4종 + 기존 봇 v11 회귀 + freeze 강화(도착 후 StunTicks, 영호 결정) + 박제 + PR</td><td class="commit">d854a8d</td></tr>
+  </table>
+
+  <h2>🔀 결정 흐름</h2>
+  <ol class="flow">
+    <li><b>서버 확정 후 발사</b> — 클라 선예측 스폰 폐지("그림은 맞았는데 데미지 0" 구조적 제거). 명중 즉발 확정 → S_ProjectileLaunch 통보 → 클라 스폰. 로컬/원격 단일 경로 = 중복 0.</li>
+    <li><b>지연 데미지 = RespawnSystem 패턴 재사용</b> — "N틱 뒤 데미지"를 틱 카운트다운으로(await/Sleep 0 = 헌법 #5). 도착 시 id 재조회 + null/IsDead 재확인(late binding) = stale impact 자동 무효.</li>
+    <li><b>freeze 서버 권위 + Boss 면역</b> — FrozenUntilTick + EnemyAISystem 가드. Boss는 가드 앞에서 continue + BossBehaviorSystem 가드 없음 = 면역. ApplyFreeze max(기존,신규) 중첩.</li>
+    <li><b>PDL list 미지원 → 적별 S_HitResult 회피</b> — PacketGenerator 고정 필드만. 썬더볼트 타격을 적별 S_HitResult(hitEffect byte append)로 = 도구 확장 0 + 평타·썬더볼트 도착 처리 공유. append-only = 바이트 오프셋 안정성.</li>
+    <li><b>최소 스킬 시스템 = 쿨다운만 서버 권위</b> — C_SkillUse(skillId 검증+auth, caster entityId session 강제). 쿨다운 tick 기반(ms 시계 의존 회피), 초기값 -(쿨다운+1)로 long.MinValue 오버플로우 회피.</li>
+    <li><b>freeze 강화 (도착 후 StunTicks)</b> — 영호 결정: "도착까지"는 stun이 거의 없어 도착 + StunTicks(8틱=400ms) 더 = 진짜 stun-lock. 부수 효과로 봇 측정도 안정화.</li>
+    <li><b>봇 검증 경계</b> — Boss freeze 면역(이동)은 보스 FSM Idle dwell로 비결정 → dotnet 위임. 봇은 통합 흐름(C_SkillUse→S_SkillCast→S_HitResult hitEffect=2)만. "봇으로 뭘 측정하지 말지"의 경계.</li>
+  </ol>
+
+  <h2>✅ AC 검증 결과</h2>
+  <ul class="ac">
+    <li class="ok">Mage 평타 = 서버 확정 투사체 + 지연 데미지 — RangedHitSmoke(projectileLaunch·travelTicks=2·hitEffect=1·HP 30→8)</li>
+    <li class="ok">사거리 밖 = 캐스팅 스윙만 — RangedWhiffSmoke(투사체 0·데미지 0)</li>
+    <li class="ok">썬더볼트 박스 AoE — ThunderboltAoeSmoke(skillCast·hitEffect=2·bossHit) + dotnet BoxScan</li>
+    <li class="ok">freeze (Normal 정지 / Boss 면역) — FreezeSmoke(froze·resumed) + dotnet Freeze/Boss 면역 결정적</li>
+    <li class="ok">쿨다운 서버 권위 (tick 기반, 오버플로우 회피) — dotnet Cooldown_SecondCastDropped</li>
+    <li class="ok">trust-boundary (skillId 검증·auth·entityId 강제·rate-limit/rewind) — handler 3종</li>
+    <li class="ok">ProtocolVersion==11 (enum 시프트 0) — PacketRoundTrip 신규 4건 + 클린빌드 0/0</li>
+    <li class="ok">dotnet test 508/0/4skip (LagSim 1 flaky 분리)</li>
+    <li class="ok">신규 봇 4종 PASS + 기존 봇 v11 회귀 0 (EmergencyCombat·BossFight)</li>
+    <li class="ok">Unity 컴파일 0err (MCP) · 새 에셋 0건 (VFX placeholder)</li>
+    <li class="ok">reviewer P2~P5 전부 🔴0 (P3 aggro 🔴 봉합)</li>
+    <li class="ok">freeze 강화 StunTicks (영호 결정)</li>
+    <li class="part">2클라 Play 매트릭스 — 봇 4종 + dotnet 508 자동 검증 커버, 시각 Play(placeholder VFX)는 영호 직접</li>
+    <li class="todo">CHANGELOG [M] + PR 생성·머지 — 영호 명시 GO 게이트</li>
+  </ul>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    Dawnholder · M4.8 원거리 전투 모델 + 스킬 시스템 · 2026-06-09 마감 (세션28)<br>
+    commit 0d9ae77 → 44f8383 → 8ade57e → 96f12a4 → d770e6a → d854a8d · feature/m4.8-ranged-and-skills
+  </div>
+</footer>
+</body>
+</html>

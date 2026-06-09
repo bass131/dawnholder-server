@@ -694,4 +694,150 @@ public class PacketRoundTripTests
         Assert.Equal((ushort)PacketID.S_MapTransition, packetId);
         Assert.Equal((ushort)18, packetId);
     }
+
+    // ──────────────────────────────────────────────────────────────────
+    // M4.8 v11: S_ProjectileLaunch(23) / C_SkillUse(24) / S_SkillCast(25) 신설 +
+    // S_HitResult.hitEffect(byte) append. 원거리 평타 + 최소 스킬 + 썬더볼트 AoE.
+    // ID 23~25 신규 + 기존 ≤22 시프트 0 회귀 가드.
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void S_ProjectileLaunch_RoundTrip_PreservesAllFields()
+    {
+        var pkt = new S_ProjectileLaunch
+        {
+            attackerEntityId = 7,
+            targetEntityId = 99,
+            projectileType = 0,
+            travelTicks = 6,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_ProjectileLaunch();
+        decoded.Read(bytes);
+
+        Assert.Equal(7, decoded.attackerEntityId);
+        Assert.Equal(99, decoded.targetEntityId);
+        Assert.Equal((byte)0, decoded.projectileType);
+        Assert.Equal(6, decoded.travelTicks);
+    }
+
+    [Fact]
+    public void S_ProjectileLaunch_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 23번째 정의 = PacketID 23 (M4.8 신설, 기존 ≤22 시프트 0).
+        var pkt = new S_ProjectileLaunch { attackerEntityId = 0, targetEntityId = 0, projectileType = 0, travelTicks = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_ProjectileLaunch, packetId);
+        Assert.Equal((ushort)23, packetId);
+    }
+
+    [Fact]
+    public void C_SkillUse_RoundTrip_PreservesAllFields()
+    {
+        var pkt = new C_SkillUse { skillId = 1, attackerClientTick = 4242 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new C_SkillUse();
+        decoded.Read(bytes);
+
+        Assert.Equal((byte)1, decoded.skillId);
+        Assert.Equal(4242, decoded.attackerClientTick);
+    }
+
+    [Fact]
+    public void C_SkillUse_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 24번째 정의 = PacketID 24.
+        var pkt = new C_SkillUse { skillId = 1, attackerClientTick = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.C_SkillUse, packetId);
+        Assert.Equal((ushort)24, packetId);
+    }
+
+    [Fact]
+    public void S_SkillCast_RoundTrip_PreservesAllFields()
+    {
+        var pkt = new S_SkillCast
+        {
+            casterEntityId = 5,
+            skillId = 1,
+            strikeDelayTicks = 4,
+            facing = 1,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_SkillCast();
+        decoded.Read(bytes);
+
+        Assert.Equal(5, decoded.casterEntityId);
+        Assert.Equal((byte)1, decoded.skillId);
+        Assert.Equal(4, decoded.strikeDelayTicks);
+        Assert.Equal((byte)1, decoded.facing);
+    }
+
+    [Fact]
+    public void S_SkillCast_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 25번째 정의 = PacketID 25.
+        var pkt = new S_SkillCast { casterEntityId = 0, skillId = 1, strikeDelayTicks = 0, facing = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_SkillCast, packetId);
+        Assert.Equal((ushort)25, packetId);
+    }
+
+    [Theory]
+    [InlineData((byte)0)]   // 기본/근접
+    [InlineData((byte)1)]   // 투사체 도착
+    [InlineData((byte)2)]   // 낙뢰
+    public void S_HitResult_RoundTrip_PreservesHitEffectAppend(byte hitEffect)
+    {
+        // M4.8 v11: hitEffect byte append. 기존 5필드 + hitEffect 모두 보존(오프셋 불변 검증).
+        var pkt = new S_HitResult
+        {
+            attackerEntityId = 3,
+            targetEntityId = 88,
+            damage = 25,
+            currentHp = 75,
+            maxHp = 100,
+            hitEffect = hitEffect,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_HitResult();
+        decoded.Read(bytes);
+
+        Assert.Equal(3, decoded.attackerEntityId);
+        Assert.Equal(88, decoded.targetEntityId);
+        Assert.Equal(25, decoded.damage);
+        Assert.Equal(75, decoded.currentHp);
+        Assert.Equal(100, decoded.maxHp);
+        Assert.Equal(hitEffect, decoded.hitEffect);
+    }
+
+    [Fact]
+    public void S_HitResult_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 13번째 정의 = PacketID 13 (hitEffect append 후에도 ID 불변 — 시프트 0).
+        var pkt = new S_HitResult { attackerEntityId = 0, targetEntityId = 0, damage = 0, currentHp = 0, maxHp = 0, hitEffect = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_HitResult, packetId);
+        Assert.Equal((ushort)13, packetId);
+    }
 }

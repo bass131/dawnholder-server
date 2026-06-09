@@ -34,6 +34,12 @@ namespace Shared.Protocol;
 ///         발동 이벤트 — 허공 스윙 포함) 두 패킷 신설. 신기능(HP 동기화·원격 투사체·허공 스윙)이 신규
 ///         패킷 의존이라 옛 클라 빠른 cutoff 위해 한 묶음 bump. C_Attack 모양 불변(targetEntityId 의미만
 ///         "필수 타겟"→"선택 힌트 0=없음"). PDL append-only, ID 21/22 — 기존 enum 시프트 0.
+///   - v11: M4.8 Phase 01 — S_ProjectileLaunch(23) + C_SkillUse(24) + S_SkillCast(25) 신설 +
+///         S_HitResult 끝에 hitEffect(byte) append. 원거리 평타(서버 확정 투사체 + 지연 데미지) ·
+///         최소 스킬 시스템(C_SkillUse 쿨다운 권위) · 썬더볼트 AoE가 신규 패킷 의존이라 옛 클라 빠른
+///         cutoff 위해 한 묶음 bump. S_HitResult는 *끝에* byte append(기존 5필드 오프셋 불변).
+///         PDL이 가변 길이 list 미지원이라 썬더볼트 타격은 적별 S_HitResult(hitEffect=2)로 회피.
+///         ID 23~25 — 기존 enum 시프트 0.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -47,6 +53,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.7 Phase 01 = v10 (S_PlayerHp + S_PlayerAttack 신설 — HP 동기화 + 원격 공격 이벤트).</summary>
-    public const ushort Current = 10;
+    /// <summary>현재 프로토콜 버전. M4.8 Phase 01 = v11 (S_ProjectileLaunch + C_SkillUse + S_SkillCast 신설 + S_HitResult.hitEffect append — 원거리 투사체·최소 스킬·썬더볼트 AoE).</summary>
+    public const ushort Current = 11;
 }

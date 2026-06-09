@@ -40,6 +40,45 @@ internal static class CombatConstants
     //   tick 카운터는 순수 정수 감소 — blocking call 0 보장.
     public const int AnimLatchTicks = 8; // Attack/Hit latch 지속 틱 수 (8틱 = 400ms @20TPS)
 
+    // ── Mage 평타 원거리 상수 (서버 전용 — 헌법 #1) ─────────────────────────
+    // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
+
+    // 도착(투사체/낙뢰) 후 추가 freeze(스턴) 틱. 평타·썬더볼트 공통.
+    //   데미지는 도착 시 적용, freeze는 도착 + 이 값만큼 더 정지 → 진짜 stun-lock(연사로 묶기).
+    //   8틱=400ms. 임시값 Play 튜닝 대상(2026-06-09 영호 결정: 도착 후 추가 freeze로 stun 강화).
+    public const int StunTicks = 8;
+
+    // Mage 공격 AABB half-extent. Knight(1.5f)보다 넓어 더 긴 사거리 제공.
+    // 8.0f = ±8 units 사거리(클라 MageTargetingRangeSquared=64와 맞춤). 영호 Play 튜닝(2026-06-09: 사거리 짧아 2배).
+    public const float MageAttackHalfExtent = 8.0f;
+
+    // 투사체 이동 속도 (unit/tick). 거리를 이 값으로 나눠 travelTicks 산출.
+    public const float ProjectileSpeedPerTick = 2.0f;
+
+    // travelTicks 최솟값. 0틱 즉시 도착 방지 (발사 연출 최소 보장).
+    public const int MinTravelTicks = 2;
+
+    // travelTicks 최댓값. 극단적으로 먼 거리의 freeze 시간 상한.
+    public const int MaxTravelTicks = 10;
+
+    // ── 썬더볼트 AoE 상수 (서버 전용 — 헌법 #1) ─────────────────────────────
+    // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
+
+    // 공격자 중심 AABB 박스 X축 절반 크기 (unit). 전방/후방 대칭.
+    // 13.0f = ±13 units 박스. 영호 Play 튜닝(2026-06-09: 가로 범위 조금 더 확대).
+    public const float ThunderboltBoxHalfX = 13.0f;
+
+    // 공격자 중심 AABB 박스 Y축 절반 크기 (unit). 점프 적 포함 여유.
+    public const float ThunderboltBoxHalfY = 3.0f;
+
+    // 썬더볼트 발동 → 낙뢰 도착까지의 지연 틱 수. freeze 지속과 동일.
+    public const int LightningDelayTicks = 4; // 4틱 = 200ms @20TPS
+
+    // 썬더볼트 쿨다운 (틱 단위). 98_Shared 단일 진실에서 가져옴 — 클라가 같은 값으로 입력 게이트 거울
+    //   (평타 AttackCooldown과 동형, 타이밍만 공유 / 박스·데미지는 서버 전용 유지 = least-exposure).
+    // tick 기반 이유: 헌법 #5 — ms 타이머를 tick 루프에 박으면 DateTime 의존. 순수 정수 비교 = blocking 0.
+    public const int ThunderboltCooldownTicks = Shared.GameData.Constants.ThunderboltCooldownTicks;
+
     // ── 보스 전투 상수 ────────────────────────────────────────────────────────
     //
     // 값은 사용자 확정 정량값 (M4.5 Phase 04 CP-2 명세). 임의 변경 금지.
