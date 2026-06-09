@@ -103,7 +103,7 @@ internal sealed class CombatSystem
             attackerEntityId = attacker.EntityId,
             targetEntityId = target.EntityId,
             damage = damage,
-            currentHp = target.Hp,
+            currentHp = target.Hp,  // raw(음수 가능) — 음수 currentHp = 사망 신호로 LagSim 봇/테스트가 의존하는 기존 계약. floor 통일은 봇 S_EntityDeath 전환 동반 별도 작업
             maxHp = target.MaxHp,
         };
         map.BroadcastToAll(hit.Write()); // 전원 (attacker 자기 포함) — except=null

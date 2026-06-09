@@ -61,6 +61,7 @@ public class GameMap
     readonly EnemyAISystem _enemyAISystem = new();
     readonly BossBehaviorSystem _bossBehaviorSystem = new();
     readonly RespawnSystem _respawnSystem = new();
+    readonly DeferredDamageSystem _deferredDamageSystem = new();
 
     public IReadOnlyList<PlayerEntity> Players => _players;
     public IReadOnlyDictionary<int, EnemyEntity> Enemies => _enemies;
@@ -207,6 +208,13 @@ public class GameMap
     /// </summary>
     internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
 
+    /// <summary>
+    /// DeferredDamageSystem에 지연 데미지 1건 등록. P3(평타)/P4(썬더볼트)가 호출.
+    /// impactTick = CurrentTick + delayTicks — 호출자가 계산 후 전달.
+    /// tick thread invariant: EnqueueJob 람다 안 또는 Tick 안에서만 호출.
+    /// </summary>
+    internal void EnqueueDeferredDamage(DeferredImpact impact) => _deferredDamageSystem.Enqueue(impact);
+
     // ── Broadcast / 1:1 송신 ─────────────────────────────────────────────────
 
     /// <summary>
@@ -273,7 +281,8 @@ public class GameMap
     ///   2. CombatSystem (EnqueueJob 경유 attack job 처리)
     ///   3. EnemyAISystem (Normal/Golem FSM)
     ///   4. BossBehaviorSystem (Boss 패턴 FSM + 데미지 판정)
-    ///   5. RespawnSystem
+    ///   5. DeferredDamageSystem (impactTick 도달 데미지 + 사망 처리)
+    ///   6. RespawnSystem
     ///
     /// physics가 1순위인 이유: 이 틱의 player 최종 위치를 RecordPosition으로 기록한 뒤
     ///   CombatSystem이 rewind lookup을 해야 하기 때문 — 단, job은 _currentTick 갱신 후 physics 전에 처리.
@@ -387,7 +396,10 @@ public class GameMap
         // 5) BossBehaviorSystem: Boss FSM 1틱 (쿨다운→telegraph→데미지판정→리셋, latch, broadcast).
         _bossBehaviorSystem.Update(this, tickNumber);
 
-        // 6) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
+        // 6) DeferredDamageSystem: impactTick 도달 항목 HP 적용 + S_HitResult broadcast + 사망 처리.
+        _deferredDamageSystem.Process(this, tickNumber);
+
+        // 7) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
         _respawnSystem.Process(this, tickNumber);
     }
 }
