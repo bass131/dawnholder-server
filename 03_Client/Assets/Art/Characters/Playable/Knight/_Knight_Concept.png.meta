@@ -1,12 +1,10 @@
 fileFormatVersion: 2
-guid: 96599f16577553d47a9289680083802f
-labels:
-- UnityAI
+guid: 718f9611a999a004fbe72c9d051a19b1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6891217839633544822
-    second: Gemini_Generated_Image_6ku9ga6ku9ga6ku9_0
+      213: 6506482343043887914
+    second: _Knight_Concept_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -53,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 700
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -102,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Knight_0
+      name: _Knight_Concept_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,10 +113,10 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: cbf725290908af94593ba9dd180474ab
-      internalID: 1202320548
+      spriteID: a237b7ad73bab4a50800000000000000
+      internalID: 6506482343043887914
       vertices: []
       indices: 
       edges: []
@@ -127,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: ce842355b027d0e46b93c2fa46bbd514
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -137,23 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Knight_0: 1202320548
-      frame_0: -1566274423
-      frame_1: 1115926430
-      frame_10: -2146884957
-      frame_11: -1020062860
-      frame_12: -1066186527
-      frame_13: 1726418551
-      frame_14: 2085514109
-      frame_15: 1453679656
-      frame_2: 525185455
-      frame_3: 107160357
-      frame_4: 1574088356
-      frame_5: 918944004
-      frame_6: 493871666
-      frame_7: 1100823320
-      frame_8: 722366219
-      frame_9: 1491989278
+      _Knight_Concept_0: 6506482343043887914
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
