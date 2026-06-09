@@ -259,4 +259,31 @@
         <int name="targetCurrentHp"/>
         <byte name="attackPattern"/>
     </packet>
+
+    <!-- M4.7 Phase 01 [Protocol.Version v9→v10]: 플레이어 HP 권위 동기화 (전용 이벤트).
+         S_Snapshot에 HP가 없어 사망/부활 HP를 클라가 PlayerStats.MaxHp 표시 미러로 때우던 것(M4.5 임시)을 교체.
+         on-change 송신(진입/피격/부활) — 고빈도 snapshot 비대화 회피(헌법 #5), TCP 신뢰전송이라 손실 약점 무효.
+         **entityId**: 어느 플레이어 HP인가. 이번엔 본인에게만 1:1 송신(HUD)이나, 미래 원격/파티 HP 바 확장 키로 미리 박음
+                       — 미래 전원 broadcast 승격 시 패킷 모양 불변 → 추가 bump 불필요.
+         **currentHp**: 서버 권위 현재 HP. 0 floor로 송신(표시 전용 — 사망 lifecycle은 별도 채널).
+         **maxHp**: 서버 권위 maxHp — 클라 PlayerStats.ForClass 추론 제거. -->
+    <packet name="S_PlayerHp">
+        <int name="entityId"/>
+        <int name="currentHp"/>
+        <int name="maxHp"/>
+    </packet>
+
+    <!-- M4.7 Phase 01 [Protocol.Version v9→v10]: 원격 플레이어 공격 "발동 순간" 이벤트.
+         원격 공격은 S_Snapshot animState=Attack(지속상태 미러)로만 보여 투사체 같은 순간 이벤트 표현 불가였음.
+         서버는 rate-limit/rewind 통과한 유효 시도 시 broadcast(attacker 제외) — 허공 스윙 포함(스윙↔명중 분리).
+         **attackerEntityId**: 공격 발동 플레이어 (서버 권위, 클라 도용 X).
+         **attackType**: 연출 종류. 0=Melee(Knight 근접 스윙), 1=Ranged(Mage 투사체). class 미러 아닌 연출 분기(미래 스킬 확장).
+         **targetEntityId**: 투사체 호밍/스윙 대상. 0=허공(타겟 없음).
+         **facing**: 0=left, 1=right. target 소실 race·허공 스윙 시 폴백 방향. -->
+    <packet name="S_PlayerAttack">
+        <int name="attackerEntityId"/>
+        <byte name="attackType"/>
+        <int name="targetEntityId"/>
+        <byte name="facing"/>
+    </packet>
 </PDL>

@@ -51,6 +51,9 @@ internal static class BossStates
             float dirX = player.Position.X >= boss.X ? 1f : -1f;
             player.EnterHitState(dirX);
 
+            // 피격 직후 권위 HP 통지 — 음수면 SendPlayerHp 내부에서 0 floor.
+            map.SendPlayerHp(player);
+
             S_EnemyAttack attackPkt = new S_EnemyAttack
             {
                 attackerId = boss.EntityId,
@@ -69,6 +72,8 @@ internal static class BossStates
                 player.OnGround = false;
                 player.Hp = player.Stats.MaxHp;
                 player.Revive();
+                // 부활 직후 full HP 권위 통지 — 클라 HUD 표시 미러 제거의 핵심.
+                map.SendPlayerHp(player);
             }
         }
     }

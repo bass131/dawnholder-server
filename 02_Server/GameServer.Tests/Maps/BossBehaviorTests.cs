@@ -22,7 +22,7 @@ namespace GameServer.Tests.Maps;
 ///   4. 데미지 = 서버 계산: damage == Formulas.ComputeDamage(BossDefault(), 플레이어 Stats, BossBaseDamage)
 ///   5. 사망→리스폰: HP 낮게 세팅 → 보스 공격 → Position==PlayerSpawnPosition + Hp==Stats.MaxHp + ActionFsm != DeathState
 ///   6. drift 방지: BossDefault().MaxHp == EnemyDefaultHp Boss 값(100) 일치 (spawn된 boss.MaxHp 간접 검증)
-///   7. ProtocolVersion == 9 assert + S_EnemyAttack/S_PlayerJoin(characterClass 포함) 직렬화 왕복
+///   7. ProtocolVersion == 10 assert + S_EnemyAttack/S_PlayerJoin(characterClass 포함) 직렬화 왕복
 ///   8. animState 우선순위 — Attack > Hit
 ///   9. 보스 이동 행동: 배회(aggro 밖), 접근 후 공격, Walk animState
 ///
@@ -471,9 +471,9 @@ public class BossBehaviorTests : IDisposable
     // ─── 항목 7: ProtocolVersion + 직렬화 왕복 ────────────────────────────────────
 
     [Fact]
-    public void ProtocolVersion_Is9()
+    public void ProtocolVersion_Is10()
     {
-        Assert.Equal(9, ProtocolVersion.Current);
+        Assert.Equal(10, ProtocolVersion.Current);
     }
 
     [Fact]
@@ -622,6 +622,94 @@ public class BossBehaviorTests : IDisposable
         Assert.True(boss.X > initialX, "보스가 player 방향(우)으로 접근 이동해야 함");
         Assert.True(CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack) >= 1,
             "120틱 이내에 S_EnemyAttack ≥1 필요");
+    }
+
+    // ─── S_PlayerHp 송신 검증 ────────────────────────────────────────────────────
+
+    static S_PlayerHp? LastPlayerHpPacket(List<byte[]> sent)
+    {
+        byte[]? raw = sent.LastOrDefault(p => PacketIdOf(p) == PacketID.S_PlayerHp);
+        if (raw == null) return null;
+        S_PlayerHp pkt = new S_PlayerHp();
+        pkt.Read(new ArraySegment<byte>(raw));
+        return pkt;
+    }
+
+    [Fact]
+    public void BossAttack_PlayerHit_SendsS_PlayerHpWithReducedHp()
+    {
+        // 피격 직후 S_PlayerHp(currentHp < before) 송신 검증.
+        TestGameSession s = SetupSession();
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
+
+        int hpBefore = player!.Hp;
+        s.SentPackets.Clear();
+
+        for (long t = 2; t <= 80; t++)
+            _map.Tick(t);
+
+        // S_EnemyAttack ≥1 전제 (피격 발생 확인).
+        Assert.True(CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack) >= 1,
+            "피격 전제: S_EnemyAttack ≥1 필요");
+
+        S_PlayerHp? hpPkt = LastPlayerHpPacket(s.SentPackets);
+        Assert.NotNull(hpPkt);
+        Assert.Equal(PlayerEntityId, hpPkt!.entityId);
+        Assert.True(hpPkt.currentHp < hpBefore,
+            $"피격 후 currentHp({hpPkt.currentHp}) < before({hpBefore}) 필요");
+        Assert.Equal(player.MaxHp, hpPkt.maxHp);
+    }
+
+    [Fact]
+    public void BossAttack_PlayerDies_SendsS_PlayerHpWithFullHpOnRevive()
+    {
+        // 부활 시 S_PlayerHp(currentHp == maxHp) 송신 검증 — 표시 미러 제거의 핵심.
+        TestGameSession s = SetupSession();
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
+
+        player!.Hp = ExpectedBossDamage - 1; // 1격 사망 세팅
+        s.SentPackets.Clear();
+
+        for (long t = 2; t <= 80; t++)
+            _map.Tick(t);
+
+        // 부활 확인 (HP full 복구).
+        Assert.Equal(player.Stats.MaxHp, player.Hp);
+
+        // 마지막 S_PlayerHp = 부활 full HP 통지.
+        S_PlayerHp? hpPkt = LastPlayerHpPacket(s.SentPackets);
+        Assert.NotNull(hpPkt);
+        Assert.Equal(PlayerEntityId, hpPkt!.entityId);
+        Assert.Equal(player.MaxHp, hpPkt.currentHp);
+        Assert.Equal(player.MaxHp, hpPkt.maxHp);
+    }
+
+    [Fact]
+    public void BossAttack_PlayerHit_CurrentHpIsNonNegative()
+    {
+        // 음수 HP 피격(1격 사망 포함)에도 S_PlayerHp.currentHp >= 0 보장 (floor 검증).
+        TestGameSession s = SetupSession();
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
+
+        player!.Hp = 1; // 어떤 피격에도 음수 HP 발생 가능
+        s.SentPackets.Clear();
+
+        for (long t = 2; t <= 80; t++)
+            _map.Tick(t);
+
+        foreach (byte[] raw in s.SentPackets.Where(p => PacketIdOf(p) == PacketID.S_PlayerHp))
+        {
+            S_PlayerHp pkt = new S_PlayerHp();
+            pkt.Read(new ArraySegment<byte>(raw));
+            Assert.True(pkt.currentHp >= 0,
+                $"S_PlayerHp.currentHp={pkt.currentHp} 음수 불가 — Math.Max(0, Hp) floor 필요");
+        }
     }
 
     [Fact]

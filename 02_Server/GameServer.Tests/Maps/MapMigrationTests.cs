@@ -346,6 +346,31 @@ public class MapMigrationTests : IDisposable
         Assert.Equal(0f, parsed.spawnY);
     }
 
+    // --- 6b. S_PlayerHp 수신 (맵 전환도 "진입" — 캐리된 HP 권위 통지) ---
+
+    [Fact]
+    public void Player_Receives_S_PlayerHp_After_Migration()
+    {
+        TestMigrationSession s = SetupMigratingSession();
+
+        PlayerEntity? playerBefore = _mapA.Players.FirstOrDefault(p => p.Owner == s);
+        Assert.NotNull(playerBefore);
+        int reducedHp = 50; // 전투로 깎인 HP 시뮬 (맵 넘어도 보존)
+        playerBefore!.Hp = reducedHp;
+        s.SentPackets.Clear();
+
+        TriggerMigration(s, _mapA, _mapB, NearTownPortal, tickA: 2, tickB: 2);
+
+        // 맵 전환 입장도 권위 HP 1회 통지 — 없으면 클라 HUD가 placeholder(full HP) 고착(표시 미러 갭).
+        bool hasHp = s.SentPackets.Any(p => PacketIdOf(p) == PacketID.S_PlayerHp);
+        Assert.True(hasHp, "맵 전환한 플레이어가 S_PlayerHp를 받아야 함 (HUD 표시 미러 갭 봉합)");
+
+        byte[] pkt = s.SentPackets.First(p => PacketIdOf(p) == PacketID.S_PlayerHp);
+        S_PlayerHp parsed = new S_PlayerHp();
+        parsed.Read(new ArraySegment<byte>(pkt));
+        Assert.Equal(reducedHp, parsed.currentHp); // 캐리된 HP 그대로 (full 리셋 X)
+    }
+
     // --- 7. 맵 A의 다른 플레이어가 S_PlayerLeave 수신 ---
 
     [Fact]
