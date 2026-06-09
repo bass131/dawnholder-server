@@ -35,9 +35,19 @@ internal sealed class AttackState : ActorState<PlayerEntity>
 
     public override ActorState<PlayerEntity>? Tick(PlayerEntity player)
     {
+        // 전방 lunge 감쇠: 매 틱 계수 곱(넉백과 동형). 매우 작아지면 0 정리.
+        player.AttackLungeVx *= Constants.KnockbackDecayPerTick;
+        if (System.MathF.Abs(player.AttackLungeVx) < 0.05f)
+            player.AttackLungeVx = 0f;
+
         if (--player.StateTicksRemaining > 0)
             return null;
         return PlayerMovementStates.ResolveGrounded(player);
+    }
+
+    public override void Exit(PlayerEntity player)
+    {
+        player.AttackLungeVx = 0f;
     }
 }
 

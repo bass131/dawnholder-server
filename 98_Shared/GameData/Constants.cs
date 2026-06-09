@@ -44,6 +44,14 @@ public static class Constants
     /// </summary>
     public const int AttackCommitWindowTicks = 8;
 
+    /// <summary>
+    /// 연속 공격 최소 간격(틱). 서버 rate-limit 권위 판정 + 클라 입력 게이트가 *같은 값*을 쓰는 단일 진실.
+    /// commit window(8틱=이동 잠금)보다 길어(10틱=500ms @20TPS) 스윙 종료 후에도 재공격까지 추가 대기.
+    /// → "한 번 들어간 공격은 끝까지 커밋" + 유령 스윙(클라 예측-서버 거부 갭) 차단.
+    /// 주의: range/damage는 여전히 서버 전용(CombatConstants) — *타이밍*만 공유(commit window와 동형).
+    /// </summary>
+    public const int AttackCooldownTicks = 10;
+
     /// <summary>피격 넉백 초기 수평 속도 (units/s). EnterHitState에서 방향 부호와 함께 적용.</summary>
     public const float KnockbackInitialVx = 7f;
 

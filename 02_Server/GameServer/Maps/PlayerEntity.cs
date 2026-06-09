@@ -123,6 +123,11 @@ public class PlayerEntity
     // tick thread invariant (헌법 #5).
     public float KnockbackVx { get; set; }
 
+    // 근접 공격 스윙 전방 lunge 수평 속도 (units/s). AttackState.Tick에서 매 틱 감쇠.
+    // KnockbackVx와 상호배타(Attack vs Hit state는 동시 진입 불가) — GameMap.Tick이 둘을 합산해
+    // Physics.Step의 ExternalVelX로 전달. 양수=오른쪽, 음수=왼쪽. tick thread invariant (헌법 #5).
+    public float AttackLungeVx { get; set; }
+
     // position history ring buffer.
     //
     // **tick thread invariant**: RecordPosition / GetPositionAtTick 은 GameMap.Tick 안에서만 호출.
@@ -197,6 +202,7 @@ public class PlayerEntity
         ActionFsm.ChangeState(PlayerMovementStates.Idle, this);
         StateTicksRemaining = 0;
         KnockbackVx = 0f;
+        AttackLungeVx = 0f;
     }
 
     // stats null 시 PlayerStats.Knight() default (전사 기본값).

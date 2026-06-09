@@ -61,6 +61,12 @@ internal sealed class CombatSystem
         // 공격 commit window 진입 — ActionFsm이 AnimState.Attack 상태를 유지하며 이동을 잠금.
         attacker.EnterAttackState();
 
+        // 근접 스윙 전방 lunge — Knight만(원거리 Mage 제외). FacingDir 방향으로 임펄스 박고
+        //   AttackState.Tick이 감쇠. 서버 권위 이동(헌법 #1), 클라는 force-adopt로 렌더.
+        //   EnterAttackState 직후 세팅 — ChangeState의 이전 상태 Exit(lunge 0 정리) 다음에 박혀야 유지.
+        if (attacker.Stats.Class != CharacterClass.Mage)
+            attacker.AttackLungeVx = CombatConstants.AttackLungeInitialVx * attacker.FacingDir;
+
         // S_PlayerAttack broadcast: 공격 연출(스윙) 알림. attacker 본인 제외 — 로컬 선예측 중.
         // attackType: Mage=1(원거리 연출), Knight=0(근접 연출) — CharacterClass enum 정합.
         // facing: FacingDir(마지막 이동 방향). target 있으면 target 방향으로 snap 가능하지만
