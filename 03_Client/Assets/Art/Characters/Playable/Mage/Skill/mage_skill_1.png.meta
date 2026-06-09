@@ -1,0 +1,354 @@
+fileFormatVersion: 2
+guid: c71a93e691d3a544dbd7bc8fde5273d8
+labels:
+- UnityAI
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6155371162941027852
+    second: mage_skill_1_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 150
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: mage_skill_1_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 913
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f987343a8ab39aa0800000000000000
+      internalID: -6155371162941027852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_1
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 913
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a03b96f4bb697fa4ab6fc47e6108ddb6
+      internalID: 1719271365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_2
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 913
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95235a4328006624b9b7515736469965
+      internalID: -1857905757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_3
+      rect:
+        serializedVersion: 2
+        x: 1395
+        y: 913
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfdf5295cd246f44181e3754be954c76
+      internalID: 2100196470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_4
+      rect:
+        serializedVersion: 2
+        x: 1860
+        y: 913
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9532a76661cb9d4bb47d80e93dabdc4
+      internalID: 1501174143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d613b20cd3f93d4ca8be88d1d490be6
+      internalID: 8688068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_6
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 0
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5681d3a64db491d49a5eaba2dba06162
+      internalID: 413375813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_7
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 2
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b79a8449a8a7f9846a9283a88f081e15
+      internalID: 1125736659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_8
+      rect:
+        serializedVersion: 2
+        x: 1395
+        y: 2
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ec92f0752902e349b398585c526ec4f
+      internalID: 1107215855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mage_skill_1_9
+      rect:
+        serializedVersion: 2
+        x: 1860
+        y: 2
+        width: 465
+        height: 911
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1735139}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5c5308a2b83d30429cc65b3b34744f8
+      internalID: 939829055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: cd4da5568fb78154eb8c8073cd8fe5b6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":465.0,"y":911.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.17351390421390534},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":9,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      mage_skill_1_0: -6155371162941027852
+      mage_skill_1_1: 1719271365
+      mage_skill_1_2: -1857905757
+      mage_skill_1_3: 2100196470
+      mage_skill_1_4: 1501174143
+      mage_skill_1_5: 8688068
+      mage_skill_1_6: 413375813
+      mage_skill_1_7: 1125736659
+      mage_skill_1_8: 1107215855
+      mage_skill_1_9: 939829055
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
