@@ -280,12 +280,12 @@ namespace Dawnholder.Client.Prediction
             }
         }
 
-        // PlayerPrefs 선택 클래스 → MoveParams 변환.
+        // 선택 클래스 → MoveParams 변환 (ClassLoadout 경유 — process-local 캐시 우선).
         // PlayerStats.ForClass 단일 출처 (헌법 #4) — 직업 분기 책임은 ForClass에 위임.
         static MoveParams ResolveClassMoveParams()
         {
-            int classValue = UnityEngine.PlayerPrefs.GetInt(
-                CharacterSelectController.SelectedClassPrefsKey, (int)Shared.Protocol.CharacterClass.Knight);
+            int classValue = Bootstrap.ClassLoadout.GetSelectedClassValue(
+                (int)Shared.Protocol.CharacterClass.Knight);
 
             PlayerStats stats = PlayerStats.ForClass((Shared.Protocol.CharacterClass)classValue);
             return new MoveParams(stats.MoveSpeed, stats.JumpVel);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
+using Dawnholder.Client.Network;
 using Dawnholder.Client.Rendering;
 using Shared.Protocol;
 using UnityEngine;
@@ -35,6 +36,17 @@ namespace Dawnholder.Client.State
         // null = 직업 미상 (Snapshot 선도착 지연 spawn). Knight 기본값과 구분 필수.
         readonly Dictionary<int, CharacterClass?> _spawnedClasses = new();
 
+        // 로컬 entity 누수 차단 경고 1회만 (드레인 중 매 패킷 스팸 방지).
+        bool _warnedLocalLeak;
+
+        // 로컬 플레이어 entityId 판정. UnityClientSession.LocalEntityId(최초 EnterMap에서 set,
+        // 이후 불변)와 비교 — 이게 원격 등록 경로의 단일 self 가드.
+        static bool IsLocalEntity(int entityId)
+        {
+            UnityClientSession session = UnityClientSession.Instance;
+            return session != null && session.LocalEntityId.HasValue && session.LocalEntityId.Value == entityId;
+        }
+
         void Awake()
         {
             if (Instance != null && Instance != this)
@@ -67,6 +79,19 @@ namespace Dawnholder.Client.State
         //   기록 있음 + !NeedsVisualSwap → noop (idempotent).
         public void Spawn(int entityId, float spawnX, float spawnY, CharacterClass? characterClass)
         {
+            // 로컬 플레이어는 절대 원격 엔티티가 아니다 (불변식). 맵 전환 중 RosterBuffer에
+            // 캐싱됐던 self 패킷이 drain되며 누수돼도 이 길목에서 차단 — self가 직업 미상(Knight)
+            // 유령으로 spawn돼 진짜 캐릭터 위에 겹쳐 "법사가 전사로 보이는" 버그 방지.
+            if (IsLocalEntity(entityId))
+            {
+                if (!_warnedLocalLeak)
+                {
+                    _warnedLocalLeak = true;
+                    Debug.LogWarning($"[Registry] 로컬 entity {entityId}를 원격으로 spawn 시도 — 차단 (맵 전환 self 누수 가드).");
+                }
+                return;
+            }
+
             if (_entities.TryGetValue(entityId, out RemoteEntity? existing))
             {
                 CharacterClass? recorded = _spawnedClasses.TryGetValue(entityId, out CharacterClass? r) ? r : null;
@@ -102,6 +127,10 @@ namespace Dawnholder.Client.State
         // 지연 spawn — entity 없으면 Snapshot 좌표로 Spawn(직업 미상=null).
         public void UpdateSnapshot(int entityId, float x, float y, byte animState)
         {
+            // self 가드 (Spawn과 동일 불변식) — 전환 중 누수된 본인 Snapshot이 지연 spawn으로
+            // Knight 유령을 만드는 경로 차단.
+            if (IsLocalEntity(entityId)) return;
+
             if (!_entities.TryGetValue(entityId, out RemoteEntity? entity))
             {
                 Spawn(entityId, x, y, null); // 직업 미상

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.UI;
 using Shared.Protocol;
 
@@ -36,6 +37,10 @@ namespace Dawnholder.Client.Scenes
 
         void SaveSelectAndLoad(CharacterClass characterClass)
         {
+            // 프로세스 로컬 캐시가 1순위 진실 — PlayerPrefs는 같은 PC 다중 인스턴스 간
+            // 공유돼 덮어쓰기 오염 가능 (ClassLoadout.GetSelectedClassValue 주석 참조).
+            ClassLoadout.SessionSelectedClass = characterClass;
+
             // PlayerPrefs에 선택값 저장. 실제 패킷 송신은 Town 씬에서. byte 0=Knight / 1=Mage.
             PlayerPrefs.SetInt(SelectedClassPrefsKey, (int)(byte)characterClass);
             PlayerPrefs.Save();
