@@ -93,8 +93,10 @@ internal sealed class SkillSystem
 
         // 5) 전방 lunge 부여: AttackLungeVx 채널 재활용 (M4.7 근접 스윙과 동일 채널, 더 큰 값).
         //    EnterAttackState → AttackState.Enter에서 StateTicksRemaining = AttackCommitWindowTicks(8틱).
-        //    AttackState.Tick이 매 틱 KnockbackDecayPerTick로 감쇠 → 8틱 동안 전방 이동.
+        //    LungeDecayPerTick를 Dash 전용 값(0.85)으로 덮어써 평타(0.75)보다 완만하게 감쇠
+        //    → 더 긴 전진 + 끝이 부드럽게 잦아드는 느낌. AttackState.Exit에서 0.75로 자동 리셋.
         caster.EnterAttackState();
+        caster.LungeDecayPerTick = CombatConstants.DashLungeDecayPerTick;
         caster.AttackLungeVx = CombatConstants.DashLungeInitialVx * caster.FacingDir;
 
         // 6) 경로 타격: rewind 위치 중심 AABB — facing 방향으로 편심 박스.

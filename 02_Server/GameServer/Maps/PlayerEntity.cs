@@ -144,6 +144,13 @@ public class PlayerEntity
     // Physics.Step의 ExternalVelX로 전달. 양수=오른쪽, 음수=왼쪽. tick thread invariant (헌법 #5).
     public float AttackLungeVx { get; set; }
 
+    // AttackState.Tick이 AttackLungeVx에 곱하는 틱당 감쇠 계수.
+    // 기본값 = Constants.KnockbackDecayPerTick(0.75, 평타 스윙용).
+    // Dash 시전 시 CombatConstants.DashLungeDecayPerTick(0.85)으로 덮어씀 →
+    // 평타보다 완만하게 잦아들어 더 긴 전진 느낌.
+    // AttackState.Exit에서 기본값(0.75)으로 자동 리셋 — 다음 평타 스윙이 오염되지 않음.
+    public float LungeDecayPerTick { get; set; } = Constants.KnockbackDecayPerTick;
+
     // position history ring buffer.
     //
     // **tick thread invariant**: RecordPosition / GetPositionAtTick 은 GameMap.Tick 안에서만 호출.
@@ -219,6 +226,7 @@ public class PlayerEntity
         StateTicksRemaining = 0;
         KnockbackVx = 0f;
         AttackLungeVx = 0f;
+        LungeDecayPerTick = Constants.KnockbackDecayPerTick;
     }
 
     // stats null 시 PlayerStats.Knight() default (전사 기본값).

@@ -215,4 +215,30 @@ public class KnightDashTests : IDisposable
         Assert.Contains("[Trust]", log);
         Assert.Contains("class mismatch", log);
     }
+
+    [Fact]
+    public void Dash_CommitWindow_NormalAttack_LungeDecay_IsBaseline()
+    {
+        // 회귀(reviewer 🟡 봉합): Dash commit window(8틱) 안에 평타 입력이 들어오면
+        // self-transition no-op으로 AttackState.Exit가 실행되지 않는다.
+        // 수정 전: LungeDecayPerTick=0.85(Dash 잔류) → 평타 lunge가 의도보다 멀리 전진.
+        // 수정 후: ProcessAttack이 EnterAttackState 직후 기본값(0.75)으로 명시 세팅.
+        var (session, caster, _, map) = SetupKnight();
+
+        // Tick 2: Dash 시전 → AttackState 진입 + LungeDecayPerTick=0.85 덮어씀.
+        session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1));
+        map.Tick(2);
+        Assert.Equal(CombatConstants.DashLungeDecayPerTick, caster.LungeDecayPerTick,
+            precision: 4);
+
+        // Tick 3(commit window 안): 평타 입력 → rate-limit 통과 위해 LastAttackTickMs 초기화.
+        caster.LastAttackTickMs = 0;
+        C_Attack atkPkt = new C_Attack { targetEntityId = 0, attackerClientTick = 3 };
+        session.OnRecvPacket(atkPkt.Write());
+        map.Tick(3);
+
+        // 평타 진입 후 LungeDecayPerTick은 기본값(0.75)이어야 함.
+        Assert.Equal(Constants.KnockbackDecayPerTick, caster.LungeDecayPerTick,
+            precision: 4);
+    }
 }

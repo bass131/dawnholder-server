@@ -93,13 +93,20 @@ internal static class CombatConstants
     // 클라이언트는 쿨다운(98_Shared Constants.DashCooldownTicks)만 공유 — lunge/박스/데미지는 여기.
 
     // Dash 전방 lunge 초기 수평 속도 (units/s). AttackLungeInitialVx(3.0f)보다 커 더 긴 전진.
-    // AttackState.Tick이 KnockbackDecayPerTick(0.75)로 매 틱 감쇠 — AttackLungeVx 채널 재활용.
+    // AttackState.Tick이 DashLungeDecayPerTick(0.85)로 매 틱 감쇠 → 8틱 동안 부드럽게 잦아드는 전진.
     // 서버 권위(헌법 #1): 클라는 결과 위치를 force-adopt로 렌더만.
     public const float DashLungeInitialVx = 10.0f;
 
+    // Dash 전방 lunge 틱당 감쇠 계수. 평타 lunge(KnockbackDecayPerTick=0.75)보다 완만해
+    // 더 오래 전진 속도를 유지 → 부드럽게 잦아드는 긴 대쉬 느낌.
+    // 0.85^8 ≈ 0.272 → 8틱 후 초기 속도의 27%로 수렴.
+    // 넉백(KnockbackDecayPerTick) + 평타 lunge(KnockbackDecayPerTick)와는 독립 — Dash 전용.
+    public const float DashLungeDecayPerTick = 0.85f;
+
     // Dash 경로 AABB 박스 반폭 (unit). 전방 이동 경로를 스윕하는 박스 — X 방향이 핵심.
     // FacingDir 방향으로 쏘는 앞 공간 스캔. DashBoxHalfY는 평타(1.5f)와 동일.
-    public const float DashBoxHalfX = 4.0f;
+    // DashLungeDecayPerTick=0.85 기준 실전진 거리 ~2.43 unit(기하급수 합 계산)에 맞게 조정.
+    public const float DashBoxHalfX = 2.5f;
     public const float DashBoxHalfY = 1.5f;
 
     // Dash 쿨다운 (틱). 98_Shared 단일 진실에서 가져옴 (ThunderboltCooldownTicks와 동형).

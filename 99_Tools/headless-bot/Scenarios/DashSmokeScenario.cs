@@ -13,6 +13,7 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 //   ① S_SkillCast(skillId=Dash=2) 수신 (casterEntityId == 자기 자신).
 //   ② 이후 S_Snapshot에서 자기 위치가 전방으로 이동 확인 (시전 직전 X 대비 DashBoxHalfX 이상 증가).
 //   ③ 경로 적 있으면 S_HitResult(hitEffect=3) 수신.
+//   ③-neg 경로 밖 적(x 거리 2.5~4.0 사이)은 S_HitResult 미수신 — 부정 케이스.
 //   ④ 쿨다운 중 재시전 무반응 — S_SkillCast 추가 수신 없음.
 //   ⑤ (게이트 회귀) Mage 클래스로 Dash 송신 → S_SkillCast 미수신.
 //
@@ -54,9 +55,12 @@ public class DashSmokeScenario
         public float PositionBeforeDash;
         public float PositionAfterDash;
         public bool PositionAdvanced;
-        // ③
+        // ③ 경로 내 적 타격
         public bool PathEnemyFound;
         public bool SawHitResultDash;
+        // ③-neg 경로 밖 적 미타격 (부정 케이스 — x 거리 2.5~4.0 사이)
+        public bool OutsidePathEnemyFound;
+        public bool OutsidePathEnemyNotHit;
         // ④
         public bool CooldownRejectedRecast;
         // ⑤
@@ -103,16 +107,28 @@ public class DashSmokeScenario
             if (!await bot.WaitForFirstSnapshot(DefaultTimeout, ct))
                 return Fail(result, "S_Snapshot timeout");
 
-            // 적 근처 이동 (경로 AABB halfX=4.0f 안쪽)
-            float firstNormalX = bot.GetFirstNormalSpawnX();
-            await bot.MoveNearTarget(firstNormalX, approachDist: 3.0f, ct);
-            if (!await bot.WaitForFirstSnapshot(DefaultTimeout, ct))
+            // 적 근처 이동 — 실시간 추적으로 FacingDir=+1(오른쪽) Dash 타격 위치 확보.
+            //
+            // TrackAndApproachEnemy: 매 iteration GetFirstNormalCurrentX()로 적 현재 위치 갱신,
+            //   봇이 항상 적 왼쪽 1 unit에 수렴하도록 이동. AI 이동 중인 적도 추적 가능.
+            //
+            // DashBox 타격 범위 (FacingDir=+1):
+            //   boxOrigin.x = botX + 2.5, 범위 = [botX, botX + 5.0]
+            // 봇이 enemyX - 1.0에 있으면 enemyX ∈ [botX, botX + 5.0] → 반드시 타격.
+            await bot.TrackAndApproachEnemy(ct);
+            // WaitForNextSnapshot: 이동 후 서버 최신 위치 Snapshot 대기.
+            if (!await bot.WaitForNextSnapshot(DefaultTimeout, ct))
                 return Fail(result, "S_Snapshot timeout (after approach)");
 
-            // Snapshot 갱신 대기 — 이 위치가 Dash 직전 기준점
-            await Task.Delay(Constants.TickIntervalMs * 2, ct);
+            // 추가 1틱 대기 — AI 이동 등으로 _entityCurrentX 최신화 여유
+            await Task.Delay(Constants.TickIntervalMs, ct);
             result.PositionBeforeDash = bot.CurrentX;
+            float firstNormalX = bot.GetFirstNormalCurrentX(); // 하드 게이트 오류 메시지용
             result.PathEnemyFound = bot.HasNormalInDashPath();
+
+            // ③ 하드 게이트: 경로 내 적이 없으면 FAIL (스킵-PASS 금지).
+            if (!result.PathEnemyFound)
+                return Fail(result, $"③ hard gate: no Normal enemy inside server DashBox after approach — botX={result.PositionBeforeDash:F2} facingDir={bot.FacingDir} enemyCurrentX={firstNormalX:F2}. spawn layout changed or enemy moved out of range.");
 
             // ① C_SkillUse(Dash) 발사
             bot.SendSkillUse(DashSkillId);
@@ -145,13 +161,28 @@ public class DashSmokeScenario
             if (!result.PositionAdvanced)
                 return Fail(result, $"Dash position advance too small: before={result.PositionBeforeDash:F2} after={result.PositionAfterDash:F2} advance={advance:F2} min={MinPositionAdvanceX}");
 
-            // ③ 경로 적이 있었으면 S_HitResult(hitEffect=3) 확인
-            if (result.PathEnemyFound)
+            // ③ 경로 내 적 타격 확인 — 하드 게이트 통과 후 PathEnemyFound는 항상 True.
+            // 서버가 S_HitResult(hitEffect=3)를 보내야 Dash 타격 경로가 동작한 것.
             {
                 S_HitResult? hr = bot.GetHitResultByEffect(HitEffectDash);
                 if (hr == null)
                     return Fail(result, "Path enemy found but no S_HitResult(hitEffect=3) received");
                 result.SawHitResultDash = true;
+            }
+
+            // ③-neg 경로 밖 적(x 거리 2.5~4.0 사이) 미타격 부정 케이스.
+            // 이 케이스가 존재하고 Dash 후 S_HitResult가 도착했다면 서버 DashBoxHalfX가 4.0f로 되돌아간 것.
+            // 스폰 배치상 이 범위에 적이 없으면 OutsidePathEnemyFound=false → skip (배치 의존, PASS 유지).
+            // skip 시 로그: "[③-neg skip] no outside-path enemy in dist 2.5~4.0 — skipping negative case"
+            result.OutsidePathEnemyFound = bot.HasNormalOutsideDashPath();
+            if (!result.OutsidePathEnemyFound)
+                Console.WriteLine("[③-neg skip] no outside-path enemy in dist 2.5~4.0 — skipping negative case");
+            if (result.OutsidePathEnemyFound)
+            {
+                bool anyOutsideHit = bot.HasDashHitOutsidePath(result.PositionBeforeDash, HitEffectDash);
+                result.OutsidePathEnemyNotHit = !anyOutsideHit;
+                if (anyOutsideHit)
+                    return Fail(result, "Outside-path enemy (dist 2.5~4.0) received S_HitResult(Dash) — DashBoxHalfX regression (was 4.0f)");
             }
 
             // ④ 쿨다운 중 재시전 무반응 검증
@@ -237,6 +268,8 @@ public class DashSmokeScenario
         volatile int _lastReceivedServerTick;
         volatile int _snapshotGeneration;
         volatile float _currentX;
+        // 마지막 비-0 이동 방향. +1=오른쪽, -1=왼쪽. 초기 +1(오른쪽).
+        volatile int _lastFacingDir = 1;
 
         BotSession? _session;
         uint _moveTick;
@@ -247,6 +280,7 @@ public class DashSmokeScenario
         public int LocalEntityId { get; private set; } = -1;
         public float SpawnX { get; private set; }
         public float CurrentX => _currentX;
+        public int FacingDir => _lastFacingDir;
 
         public DashProbe(CharacterClass cls) { _class = cls; }
 
@@ -291,26 +325,83 @@ public class DashSmokeScenario
                 () => { lock (_gate) return _spawns.Count(s => s.entityKind == kind && s.currentHp > 0) >= minCount; },
                 timeout, ct);
 
-        public float GetFirstNormalSpawnX()
+        // Dash 타격 가능한 Normal 적 X를 반환.
+        // 봇 SpawnX 오른쪽 Normal 우선 선택 — 봇이 왼쪽에서 오른쪽(FacingDir=+1)으로 Dash해 타격.
+        // 오른쪽 Normal 없으면 왼쪽 Normal 폴백.
+        // _entityCurrentX 우선(AI 이동 반영), 없으면 S_EntitySpawn.x 폴백.
+        public float GetFirstNormalCurrentX()
         {
             lock (_gate)
             {
-                S_EntitySpawn? sp = _spawns.FirstOrDefault(s => s.entityKind == 0 && s.currentHp > 0);
-                return sp?.x ?? SpawnX;
+                float botSpawnX = SpawnX;
+                IEnumerable<S_EntitySpawn> alive = _spawns.Where(s => s.entityKind == 0 && s.currentHp > 0);
+
+                // 오른쪽 Normal 우선
+                S_EntitySpawn? sp = alive
+                    .Select(s => (spawn: s, x: _entityCurrentX.TryGetValue(s.entityId, out float ex) ? ex : s.x))
+                    .Where(t => t.x > botSpawnX)
+                    .OrderBy(t => t.x)
+                    .Select(t => t.spawn)
+                    .FirstOrDefault()
+                    ?? alive.FirstOrDefault();
+
+                if (sp == null) return SpawnX;
+                return _entityCurrentX.TryGetValue(sp.entityId, out float cur) ? cur : sp.x;
             }
         }
 
-        // DashBoxHalfX=4.0f. 봇 현재 위치 기준 반폭 안에 살아있는 Normal 적이 있으면 true.
+        // 서버 Dash 박스 판정 미러링: boxOrigin = _currentX + DashBoxHalfX * FacingDir, 범위 ± DashBoxHalfX.
+        // 서버 02_Server/GameServer/Maps/Systems/SkillSystem.cs ProcessDash 로직과 1:1 대응.
+        // DashBoxHalfX 변경 시 여기도 수동 동기화 필수 (봇은 서버 어셈블리 미참조).
         // 적 최신 위치는 _entityCurrentX로 추적 (S_EntitySpawn 초기값 대신 S_EntityState 갱신).
         public bool HasNormalInDashPath()
         {
-            const float DashBoxHalfX = 4.0f;
+            const float DashBoxHalfX = 2.5f; // 서버 CombatConstants.DashBoxHalfX와 수동 동기화
+            float boxOriginX = _currentX + DashBoxHalfX * _lastFacingDir;
             lock (_gate)
                 return _spawns.Any(s =>
                     s.entityKind == 0 &&
                     s.currentHp > 0 &&
                     (_entityCurrentX.TryGetValue(s.entityId, out float ex) ? ex : s.x) is float enemyX &&
-                    Math.Abs(enemyX - _currentX) <= DashBoxHalfX);
+                    Math.Abs(enemyX - boxOriginX) <= DashBoxHalfX);
+        }
+
+        // 서버 Dash 박스 바로 밖(boxOriginX 기준 dist 2.5~4.0)에 살아있는 Normal 적이 있으면 true.
+        // 부정 케이스 검증용 — Dash가 이 범위의 적을 타격하면 DashBoxHalfX가 다시 4.0으로 퇴행한 것.
+        // 서버 CombatConstants.DashBoxHalfX / boxOriginX 계산 변경 시 여기도 검토.
+        public bool HasNormalOutsideDashPath()
+        {
+            const float DashBoxHalfX = 2.5f;
+            const float OuterBound   = 4.0f;
+            float boxOriginX = _currentX + DashBoxHalfX * _lastFacingDir;
+            lock (_gate)
+                return _spawns.Any(s =>
+                    s.entityKind == 0 &&
+                    s.currentHp > 0 &&
+                    (_entityCurrentX.TryGetValue(s.entityId, out float ex) ? ex : s.x) is float enemyX &&
+                    Math.Abs(enemyX - boxOriginX) > DashBoxHalfX &&
+                    Math.Abs(enemyX - boxOriginX) <= OuterBound);
+        }
+
+        // S_HitResult 버퍼에서 hitEffect == dashHitEffect 이고 타격 대상이 박스 밖(dist 2.5~4.0)이면 true.
+        // casterX는 Dash 시전 직전 봇 위치 (PositionBeforeDash) — boxOriginX 계산 기준점.
+        // FacingDir은 시전 시점 _lastFacingDir 사용 (호출 시점과 동일 — Dash 직후 호출).
+        public bool HasDashHitOutsidePath(float casterX, byte dashHitEffect)
+        {
+            const float DashBoxHalfX = 2.5f;
+            const float OuterBound   = 4.0f;
+            float boxOriginX = casterX + DashBoxHalfX * _lastFacingDir;
+            lock (_gate)
+            {
+                foreach (S_HitResult hr in _hitResults)
+                {
+                    if (hr.hitEffect != dashHitEffect) continue;
+                    if (!_entityCurrentX.TryGetValue(hr.targetEntityId, out float hx)) continue;
+                    float dist = Math.Abs(hx - boxOriginX);
+                    if (dist > DashBoxHalfX && dist <= OuterBound) return true;
+                }
+                return false;
+            }
         }
 
         public async Task<S_SkillCast?> WaitForSkillCast(int casterEntityId, byte skillId, TimeSpan timeout, CancellationToken ct)
@@ -373,6 +464,66 @@ public class DashSmokeScenario
             await Task.Delay(150, ct);
         }
 
+        // EnsurePositionedAt: closed-loop 위치 보정.
+        //
+        // open-loop tick 계산(MoveNearTarget)은 Task.Delay 타이밍 오차 + 서버 물리 추가 틱으로
+        // 목적지를 ±2~3 unit 오버슛할 수 있음. 이 메서드는 실시간 _currentX 기반 루프.
+        //
+        // 종료 조건: |_currentX - destX| ≤ Tolerance(0.3f).
+        // 안전 상한: MaxIterations(60) 초과 시 루프 탈출 (hang 방지).
+        public async Task EnsurePositionedAt(float destX, CancellationToken ct)
+        {
+            const float Tolerance = 0.3f;
+            const int MaxIterations = 60;
+
+            int iter = 0;
+            while (iter < MaxIterations)
+            {
+                float err = destX - _currentX;
+                if (Math.Abs(err) <= Tolerance)
+                {
+                    SendMove(0);
+                    await Task.Delay(150, ct);
+                    break;
+                }
+
+                sbyte dir = err >= 0f ? (sbyte)1 : (sbyte)-1;
+                SendMove(dir);
+                await Task.Delay(Constants.TickIntervalMs, ct);
+                iter++;
+            }
+        }
+
+        // TrackAndApproachEnemy: 적의 현재 위치를 실시간으로 추적해 왼쪽 1 unit에 위치.
+        // EnsurePositionedAt과 달리 destX를 매 iteration 갱신해 이동하는 적을 추적.
+        // 종료 조건: |_currentX - (enemyCurrentX - 1.0)| ≤ Tolerance 또는 최대 100 iteration.
+        public async Task TrackAndApproachEnemy(CancellationToken ct)
+        {
+            const float ApproachOffset = 1.0f; // 적 왼쪽 1 unit
+            const float Tolerance = 0.5f;
+            const int MaxIterations = 100; // 5초 상한
+
+            int iter = 0;
+            while (iter < MaxIterations)
+            {
+                float enemyX = GetFirstNormalCurrentX();
+                float destX = enemyX - ApproachOffset;
+                float err = destX - _currentX;
+
+                if (Math.Abs(err) <= Tolerance)
+                {
+                    SendMove(0);
+                    await Task.Delay(150, ct);
+                    break;
+                }
+
+                sbyte dir = err >= 0f ? (sbyte)1 : (sbyte)-1;
+                SendMove(dir);
+                await Task.Delay(Constants.TickIntervalMs, ct);
+                iter++;
+            }
+        }
+
         public void SendEnterPortal(int portalId)
         {
             C_EnterPortal p = new() { portalId = portalId };
@@ -393,6 +544,7 @@ public class DashSmokeScenario
 
         void SendMove(sbyte inputX)
         {
+            if (inputX != 0) _lastFacingDir = inputX;
             _moveTick++;
             C_MoveIntent m = new()
             {

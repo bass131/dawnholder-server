@@ -61,6 +61,9 @@ internal sealed class CombatSystem
 
         // 공격 commit window 진입 — ActionFsm이 AnimState.Attack 상태를 유지하며 이동을 잠금.
         attacker.EnterAttackState();
+        // 평타 진입 시 감쇠 계수를 기본값으로 명시 세팅 — Dash commit window 중 평타가 들어와
+        // self-transition no-op(Exit 미실행)이 발생해도 0.85 잔류를 막음 (reviewer 🟡 봉합).
+        attacker.LungeDecayPerTick = Constants.KnockbackDecayPerTick;
 
         // 근접 스윙 전방 lunge — Knight만(원거리 Mage 제외). FacingDir 방향으로 임펄스 박고
         //   AttackState.Tick이 감쇠. 서버 권위 이동(헌법 #1), 클라는 force-adopt로 렌더.

@@ -801,7 +801,7 @@ namespace Dawnholder.Client.Network
                         break;
 
                     case SkillId.Dash:
-                        HandleDash(casterTf, facing);
+                        HandleDash(isLocal, casterTf, facing);
                         break;
 
                     case SkillId.Teleport:
@@ -812,13 +812,30 @@ namespace Dawnholder.Client.Network
         }
 
         // Dash 연출: Dash 이펙트 스폰 + facing 반영.
+        // 스폰 위치: Visual 계층에서 Anchor_DashEffect 우선, 없으면 EffectAnchor fallback.
         // 공격 모션은 서버 S_Snapshot(animState=Attack) force-adopt 경로에서 자동 처리됨.
         // 이동 자체도 S_Snapshot force-adopt(Attack 채널) — 예측 불필요.
-        static void HandleDash(Transform casterTf, byte facing)
+        //
+        // facing 출처: 로컬=화면 진실(LocalPlayerMotion.Facing — flipX 기준) / 원격=패킷.
+        //   ProjectileLaunchHandler(685-695)와 동형 — 로컬은 입력 직후 방향 전환 시 패킷이 한 박자
+        //   늦으므로 클라 화면 방향을 직접 읽어 어긋남 차단.
+        static void HandleDash(bool isLocal, Transform casterTf, byte facing)
         {
-            int facingSign = facing == 1 ? 1 : -1;
-            Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf);
-            SpawnEffect(DashSkillPath, fxPos, facingSign, ref _warnedMissingDash, "Dash 이펙트");
+            int facingSign;
+            if (isLocal)
+            {
+                LocalPlayerMotion? motion = casterTf.GetComponent<LocalPlayerMotion>();
+                facingSign = motion != null ? motion.Facing : (facing == 1 ? 1 : -1);
+            }
+            else
+            {
+                facingSign = facing == 1 ? 1 : -1;
+            }
+
+            Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf, "Anchor_DashEffect");
+            // DashSkill 스프라이트는 좌향 기본 저작 → flip 기준 반전(SpriteDefaultFacesLeft 동형).
+            SpawnEffect(DashSkillPath, fxPos, facingSign, ref _warnedMissingDash, "Dash 이펙트",
+                spriteDefaultFacesLeft: true);
         }
 
         // Teleport 연출: 출발 이펙트 → 보간 끊기 → 도착 이펙트 콜백 등록.
@@ -861,15 +878,19 @@ namespace Dawnholder.Client.Network
                 0, ref _warnedMissingTeleportArrive, "Teleport 도착 이펙트");
         }
 
-        // 공통 이펙트 스폰 helper. facingSign=0이면 flip 없음.
+        // 공통 이펙트 스폰 helper. facingSign=0이면 flip 없음(방향 무관 이펙트).
+        // spriteDefaultFacesLeft=true면 좌향 기본 저작 prefab — flip 조건 반전(AnimatorDriver 동형).
+        //   기본 false = 우향 기본 전제(facingSign<0=왼쪽일 때만 거울상).
         static void SpawnEffect(string resourcePath, Vector3 pos, int facingSign,
-                                ref bool warnedFlag, string displayName)
+                                ref bool warnedFlag, string displayName,
+                                bool spriteDefaultFacesLeft = false)
         {
             GameObject? prefab = Resources.Load<GameObject>(resourcePath);
             if (prefab != null)
             {
                 GameObject fx = Object.Instantiate(prefab, pos, Quaternion.identity);
-                if (facingSign < 0)
+                // facingSign=0(방향 무관)은 flip 생략. 그 외 (왼쪽) XOR (좌향 기본) = 거울상 여부.
+                if (facingSign != 0 && ((facingSign < 0) ^ spriteDefaultFacesLeft))
                 {
                     Vector3 s = fx.transform.localScale;
                     s.x = -Mathf.Abs(s.x);
