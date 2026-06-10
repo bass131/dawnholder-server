@@ -166,9 +166,9 @@ namespace Dawnholder.Client.Prediction
             _channelingWindow = true;
         }
 
-        // Dash 송신 성공 시 호출. 쿨다운만 세팅 — 이동 자체는 서버 force-adopt(Attack animState 경로).
+        // Dash 송신 성공 시 호출. 쿨다운만 세팅 — 이동은 서버 force-adopt 경로(ShouldForceAdopt)가 흡수.
         // commit window / 채널링은 없음: Dash는 strikeDelayTicks=0이라 서버가 즉시 Attack 상태로 전환,
-        // 해당 S_Snapshot의 forceAdopt=Attack 경로가 위치를 흡수한다.
+        // Attack + serverVx≠0 조건으로 해당 S_Snapshot이 위치를 흡수한다.
         public void NotifyDash()
         {
             _dashCooldownRemaining = Constants.DashCooldownTicks * Constants.TickDuration;
@@ -212,6 +212,21 @@ namespace Dawnholder.Client.Prediction
             return (rawMoveX, rawJumpEdge);
         }
 
+        // force-adopt 판정 순수 함수 — 임계 이내여도 서버 위치를 즉시 채택할지 결정.
+        //   - teleportSnap: Teleport 스킬 후 첫 snapshot — 무조건 채택.
+        //   - Hit(넉백): 서버 권위 임펄스라 클라가 예측 불가 — 무조건 채택.
+        //   - Attack + serverVx≠0: Dash/lunge처럼 서버가 전방 임펄스를 준 경우만 채택.
+        //     Attack이지만 serverVx≈0인 평타(Mage 등)는 채택하지 않음 — rubber-band 밀림 봉합.
+        public static bool ShouldForceAdopt(bool teleportSnap, AnimState serverAnimState, float serverVx)
+        {
+            if (teleportSnap) return true;
+            if (serverAnimState == AnimState.Hit) return true;
+            if (serverAnimState == AnimState.Attack)
+                // eps는 서버가 lunge를 |vx|<0.05f에서 정확히 0으로 정리(PlayerCombatStates)하는 간극 아래면 충분.
+                return Mathf.Abs(serverVx) > 0.0001f;
+            return false;
+        }
+
         void Update()
         {
             // 로컬 잠금 타이머 감쇠 (공격 commit 선예측 + 피격 hit-bridge). 서버 animState와 함께 잠금 판정.
@@ -241,9 +256,6 @@ namespace Dawnholder.Client.Prediction
             // OnJump 이후 50ms 안 모든 frame에 jumpEdge=true 들어가면 *재점프* 시도. 단 Physics.Step의
             // OnGround 안전망이 1tick만 적용 — 점프 후 즉시 onGround=false라 자연 차단.
             float dt = Time.deltaTime;
-            // 임시 진단 — 버그 확정 후 제거 ([ReconDiag] 태그로 grep 가능)
-            if (dt > MaxPredictStep * 1.5f)
-                Debug.Log($"[ReconDiag] dt-spike dt={dt:F3} frame={Time.frameCount}");
             // 예측 적분에만 clamp — 쿨다운/송신 누적기는 실제 시간 그대로(아래 _sendAccumulator 참고).
             float predictDt = Mathf.Min(dt, MaxPredictStep);
             _predictor.Predict(moveX, jumpEdge, predictDt);
@@ -322,13 +334,13 @@ namespace Dawnholder.Client.Prediction
                 _teleportArriveCallback = null;
             }
 
-            // 넉백(Hit)·근접 공격 전방 lunge(Attack)·Teleport는 서버 권위 임펄스라 클라가 예측 안 함
+            // 넉백(Hit)·전방 임펄스가 있는 공격(Dash/lunge)·Teleport는 서버 권위 임펄스라 클라가 예측 안 함
             //   → 임계 이내라도 서버 위치 채택(force-adopt)해 시각화 + sub-threshold offset 누적 방지.
+            // Attack이지만 serverVx≈0(Mage 평타 등)은 force-adopt 제외 — 스냅샷마다 임계 이내 서버 위치를
+            //   채택하면 rubber-band 밀림 발생.
             bool reconciled = _predictor.OnSnapshot(
                 serverX, serverY, serverVx, serverVy, ackedClientTick,
-                forceAdopt: teleportSnap
-                         || _serverAnimState == AnimState.Hit
-                         || _serverAnimState == AnimState.Attack);
+                forceAdopt: ShouldForceAdopt(teleportSnap, _serverAnimState, serverVx));
             if (reconciled)
             {
                 float dx = serverX - prevX;

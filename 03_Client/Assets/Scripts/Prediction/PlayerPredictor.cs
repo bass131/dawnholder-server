@@ -121,12 +121,6 @@ namespace Dawnholder.Client.Prediction
 
             if (mispredict || forceAdopt)
             {
-                // 임시 진단 — 버그 확정 후 제거 ([ReconDiag] 태그로 grep 가능)
-                UnityEngine.Debug.Log(
-                    $"[ReconDiag] snap dx={dx:F3} dy={dy:F3} thr={SnapThreshold}" +
-                    $" mispredict={mispredict} forceAdopt={forceAdopt}" +
-                    $" ackedTick={ackedClientTick} snapCount={SnapCount}");
-
                 // 서버 권위 상태에서 출발 — 위치 + 속도 + ground (위치로 추정)
                 Position = new Vector2(serverX, serverY);
                 Velocity = new Vector2(serverVx, serverVy);
