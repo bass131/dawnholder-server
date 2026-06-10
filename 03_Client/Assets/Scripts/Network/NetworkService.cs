@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.Scenes;
 using Dawnholder.Client.UI;
@@ -102,9 +103,10 @@ namespace Dawnholder.Client.Network
             }
 
             // 캐릭터 클래스 검증 — 미선택/invalid면 MainMenu로 돌려보냄.
+            // ClassLoadout 경유: process-local 캐시 우선 (다중 인스턴스 PlayerPrefs 오염 차단).
             int classValue = characterClassOverride != ClassPrefsInvalid
                 ? characterClassOverride
-                : PlayerPrefs.GetInt(CharacterSelectController.SelectedClassPrefsKey, ClassPrefsInvalid);
+                : ClassLoadout.GetSelectedClassValue(ClassPrefsInvalid);
 
             if (!IsValidClassValue(classValue))
             {
@@ -183,7 +185,9 @@ namespace Dawnholder.Client.Network
             if (_characterSelectSent) return; // idempotent 가드
             _characterSelectSent = true;
 
-            int classValue = PlayerPrefs.GetInt(CharacterSelectController.SelectedClassPrefsKey, ClassPrefsInvalid);
+            // ClassLoadout 경유: 서버에 등록될 클래스가 다른 인스턴스의 PlayerPrefs 덮어쓰기에
+            // 오염되지 않게 — 이 값이 서버 권위 Stats.Class의 출발점이라 가장 중요한 읽기.
+            int classValue = ClassLoadout.GetSelectedClassValue(ClassPrefsInvalid);
             if (!IsValidClassValue(classValue))
             {
                 Debug.LogWarning("[NetworkService] OnHandshakeOk: SelectedCharacterClass invalid → MainMenu로 돌려보냄.");

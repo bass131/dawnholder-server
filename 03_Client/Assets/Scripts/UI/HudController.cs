@@ -57,9 +57,8 @@ namespace Dawnholder.Client.UI
         void Start()
         {
             // HP 초기값 = 선택 직업 full HP — 서버 S_PlayerHp 도착 전 임시 표시 (곧 서버 권위값이 덮음).
-            int classValue = PlayerPrefs.GetInt(
-                CharacterSelectController.SelectedClassPrefsKey,
-                (int)CharacterClass.Knight);
+            // ClassLoadout 경유 — process-local 캐시 우선 (다중 인스턴스 PlayerPrefs 오염 차단).
+            int classValue = Bootstrap.ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
             PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
             UpdateHP(stats.MaxHp, stats.MaxHp);
 
