@@ -49,11 +49,24 @@ namespace Dawnholder.Client.Prediction
         float _attackCooldownRemaining;
         public bool CanAttack => _attackCooldownRemaining <= 0f;
 
-        // 스킬(썬더볼트) 쿨다운(서버 ThunderboltCooldownTicks 거울) 잔여 — 평타 쿨다운과 *독립*.
-        // 0이면 재시전 가능. 쿨다운 중 Q 입력은 LocalPlayerInput이 이 게이트로 차단 → 송신+채널링 모션 둘 다 억제
-        //   (서버가 silent drop하는 동안 모션만 나가는 불일치 방지).
-        float _skillCooldownRemaining;
-        public bool CanUseSkill => _skillCooldownRemaining <= 0f;
+        // 스킬별 쿨다운(서버 쿨다운 거울) 잔여.
+        // 각각 독립 — 한 스킬 쿨다운 중 다른 스킬은 사용 가능.
+        float _thunderboltCooldownRemaining;
+        float _dashCooldownRemaining;
+        float _teleportCooldownRemaining;
+
+        // 하위 호환 프로퍼티 — 기존 Thunderbolt 게이트 코드가 CanUseSkill을 직접 참조.
+        public bool CanUseSkill => _thunderboltCooldownRemaining <= 0f;
+        public bool CanUseDash => _dashCooldownRemaining <= 0f;
+        public bool CanUseTeleport => _teleportCooldownRemaining <= 0f;
+
+        // Teleport: 다음 S_Snapshot 수신 시 보간 없이 즉시 force-adopt 스냅 플래그.
+        // SkillCastHandler(Teleport)가 세팅 → OnServerSnapshot에서 소비.
+        bool _teleportSnapPending;
+
+        // 텔레포트 도착 이펙트 콜백 — _teleportSnapPending 소비(새 위치 확정) 시 1회 발동 후 null.
+        // 다음 시전 시 덮어쓰기 — 스냅샷 미도착 시 pending 영구 잔류해도 무해.
+        Action? _teleportArriveCallback;
 
         // 피격 hit-bridge 게이트 잔여(초). S_EnemyAttack(피격 *즉시* 신호) 도착 시 세팅 →
         // animState==Hit 스냅샷이 도착하기 전 갭 동안 입력을 미리 잠가 onset 당김을 줄인다.
@@ -144,8 +157,25 @@ namespace Dawnholder.Client.Prediction
         public void NotifyChannel()
         {
             _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
-            _skillCooldownRemaining = Constants.ThunderboltCooldownTicks * Constants.TickDuration;
+            _thunderboltCooldownRemaining = Constants.ThunderboltCooldownTicks * Constants.TickDuration;
             _channelingWindow = true;
+        }
+
+        // Dash 송신 성공 시 호출. 쿨다운만 세팅 — 이동 자체는 서버 force-adopt(Attack animState 경로).
+        // commit window / 채널링은 없음: Dash는 strikeDelayTicks=0이라 서버가 즉시 Attack 상태로 전환,
+        // 해당 S_Snapshot의 forceAdopt=Attack 경로가 위치를 흡수한다.
+        public void NotifyDash()
+        {
+            _dashCooldownRemaining = Constants.DashCooldownTicks * Constants.TickDuration;
+        }
+
+        // Teleport 송신 성공 시 호출. 쿨다운 세팅 + 다음 snapshot을 즉시 스냅으로 처리하도록 플래그.
+        // arriveCallback: 스냅 채택(새 위치 확정) 직후 main thread에서 1회 호출 — 도착 이펙트 스폰용.
+        public void NotifyTeleport(Action? arriveCallback = null)
+        {
+            _teleportCooldownRemaining = Constants.TeleportCooldownTicks * Constants.TickDuration;
+            _teleportSnapPending = true;
+            _teleportArriveCallback = arriveCallback; // 이전 미소비 콜백은 덮어쓰기 (무해 — 다음 시전)
         }
 
         // EnemyAttackHandler가 본인 피격(S_EnemyAttack) 시 호출 — hit-bridge 게이트 시작.
@@ -186,8 +216,12 @@ namespace Dawnholder.Client.Prediction
                 _hitGateRemaining = Mathf.Max(0f, _hitGateRemaining - Time.deltaTime);
             if (_attackCooldownRemaining > 0f)
                 _attackCooldownRemaining = Mathf.Max(0f, _attackCooldownRemaining - Time.deltaTime);
-            if (_skillCooldownRemaining > 0f)
-                _skillCooldownRemaining = Mathf.Max(0f, _skillCooldownRemaining - Time.deltaTime);
+            if (_thunderboltCooldownRemaining > 0f)
+                _thunderboltCooldownRemaining = Mathf.Max(0f, _thunderboltCooldownRemaining - Time.deltaTime);
+            if (_dashCooldownRemaining > 0f)
+                _dashCooldownRemaining = Mathf.Max(0f, _dashCooldownRemaining - Time.deltaTime);
+            if (_teleportCooldownRemaining > 0f)
+                _teleportCooldownRemaining = Mathf.Max(0f, _teleportCooldownRemaining - Time.deltaTime);
 
             // **source-gating** (헌법 #1 정합): 잠금 시 입력을 *근원에서* 0으로 막는다.
             //   Predict / 송신(C_MoveIntent) / InputHistory(replay) 셋이 같은 gated 입력을 쓰므로
@@ -264,20 +298,37 @@ namespace Dawnholder.Client.Prediction
             _serverAnimState = (AnimState)animState;
             float prevX = _predictor.Position.x;
             float prevY = _predictor.Position.y;
-            // 넉백(Hit)·근접 공격 전방 lunge(Attack)는 서버 권위 ExternalVelX 임펄스라 클라가 예측 안 함
+
+            // Teleport 스냅: S_SkillCast(Teleport) 수신 후 최초 Snapshot을 즉시 force-adopt.
+            // reconcile 임계 우연 의존 금지 — 명시적 플래그로 보간 없이 즉시 스냅(Phase 06 계획 확정).
+            bool teleportSnap = _teleportSnapPending;
+            Action? arriveCallback = null;
+            if (_teleportSnapPending)
+            {
+                _teleportSnapPending = false;
+                arriveCallback = _teleportArriveCallback;
+                _teleportArriveCallback = null;
+            }
+
+            // 넉백(Hit)·근접 공격 전방 lunge(Attack)·Teleport는 서버 권위 임펄스라 클라가 예측 안 함
             //   → 임계 이내라도 서버 위치 채택(force-adopt)해 시각화 + sub-threshold offset 누적 방지.
-            //   Attack 중 입력은 commit window로 0이라 lunge가 위치의 유일한 서버-클라 차이 → 깔끔 채택.
             bool reconciled = _predictor.OnSnapshot(
                 serverX, serverY, serverVx, serverVy, ackedClientTick,
-                forceAdopt: _serverAnimState == AnimState.Hit || _serverAnimState == AnimState.Attack);
+                forceAdopt: teleportSnap
+                         || _serverAnimState == AnimState.Hit
+                         || _serverAnimState == AnimState.Attack);
             if (reconciled)
             {
                 float dx = serverX - prevX;
                 float dy = serverY - prevY;
                 Debug.Log(
                     $"[Reconcile] d=({dx:F2}, {dy:F2}) at serverTick={serverTick} " +
-                    $"ack={ackedClientTick} (count={_predictor.SnapCount})");
+                    $"ack={ackedClientTick} teleportSnap={teleportSnap} (count={_predictor.SnapCount})");
             }
+
+            // 텔레포트 도착 이펙트 — 스냅 채택으로 새 위치가 transform에 박힌 직후.
+            // arriveCallback은 teleportSnap=true일 때만 non-null이므로 중복 발동 없음.
+            arriveCallback?.Invoke();
         }
 
         // 선택 클래스 → MoveParams 변환 (ClassLoadout 경유 — process-local 캐시 우선).

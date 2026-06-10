@@ -17,6 +17,8 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario FreezeSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario ThunderboltAoeSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario RangedWhiffSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario DashSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario TeleportSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -157,6 +159,35 @@ if (string.Equals(scenarioName, "RangedWhiffSmoke", StringComparison.OrdinalIgno
                       $"attacksSent={r.AttacksSent}");
     Console.WriteLine($"      playerAttacks={r.PlayerAttackCount} projectiles={r.ProjectileLaunchCount} " +
                       $"hitResults={r.HitResultCount}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "DashSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    DashSmokeScenario.Result r = await DashSmokeScenario.Run(host, port);
+    Console.WriteLine($"[Bot] DashSmoke: success={r.Success} entity={r.LocalEntityId}");
+    Console.WriteLine($"      skillCast={r.SawSkillCast} skillId={r.SkillCastSkillId}");
+    Console.WriteLine($"      position: before={r.PositionBeforeDash:F2} after={r.PositionAfterDash:F2} " +
+                      $"advanced={r.PositionAdvanced}");
+    Console.WriteLine($"      pathEnemy={r.PathEnemyFound} hitEffect3={r.SawHitResultDash}");
+    Console.WriteLine($"      cooldownRejected={r.CooldownRejectedRecast} mageGateBlocked={r.MageClassGateBlocked}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "TeleportSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    TeleportSmokeScenario.Result r = await TeleportSmokeScenario.Run(host, port);
+    Console.WriteLine($"[Bot] TeleportSmoke: success={r.Success} entity={r.LocalEntityId}");
+    Console.WriteLine($"      skillCast={r.SawSkillCast}");
+    Console.WriteLine($"      position: before={r.PositionBeforeTeleport:F2} " +
+                      $"expected≈{r.ExpectedPositionAfterTeleport:F2} actual={r.PositionAfterTeleport:F2} " +
+                      $"matches={r.PositionMatchesExpected}");
+    Console.WriteLine($"      hitResults={r.HitResultCount}(expect 0) " +
+                      $"cooldownRejected={r.CooldownRejectedRecast}");
+    Console.WriteLine($"      boundsClamp={r.BoundsClampVerified} boundsTestX={r.BoundsTestPositionAfterTeleport:F2} " +
+                      $"knightGateBlocked={r.KnightClassGateBlocked}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }

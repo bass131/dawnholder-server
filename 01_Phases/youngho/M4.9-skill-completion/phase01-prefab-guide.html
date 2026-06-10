@@ -64,7 +64,7 @@
 <header>
   <div class="wrap">
     <h1>M4.9 Phase 01 — 스킬 이펙트 Prefab 제작 가이드</h1>
-    <div class="sub">Unity 에디터에서 직접 만드는 5개 이펙트 prefab + MageVisual 채널링 — 옆에 띄워놓고 따라 만드는 설명서</div>
+    <div class="sub">Unity 에디터에서 직접 만드는 이펙트 prefab 9개(기존 5 + Dash·Teleport 4) + MageVisual 채널링 — 옆에 띄워놓고 따라 만드는 설명서</div>
     <div class="badges">
       <span class="badge lg">영호 직접 작업 (외관)</span>
       <span class="badge date">M4.9 Phase 01</span>
@@ -187,6 +187,52 @@
   <div class="note">
     <p><b>끝나면:</b> Claude 세션에 <b>"Phase 01 검증해줘"</b> 라고 알려주세요. 그러면 MCP로 콘솔 게이트(경고/에러 0건)를 함께 확인하고, 2클라 실측까지 동행하겠습니다.</p>
   </div>
+
+  <h2>➕ Phase 04/06 추가분: Dash·Teleport 이펙트 prefab 4개</h2>
+  <div class="lead">
+    <p>위 5개(썬더볼트·평타 계열)에 더해, <b>Knight 대쉬(Q)와 Mage 텔레포트(E)</b> 연출용 prefab 4개를 같은 방식으로 추가합니다. 저장 위치·이름 규칙·제작 패턴은 위와 <b>완전히 동일</b>합니다 — <span class="path">Assets/Resources/Effects/</span> 폴더에 표의 이름 그대로.</p>
+    <p>이 4개도 코드는 이미 다 wiring되어 있습니다 (이번 커밋). prefab만 채우면 즉시 연출로 바뀝니다.</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>prefab 이름<br><span class="path" style="font-weight:400">Assets/Resources/Effects/</span></th><th>쓸 에셋</th><th>언제 / 어디서 뜨나</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="pname">DashSkill</span></td>
+        <td><code>Knight_Dash_Skill_Effect</code><br><span class="path" style="font-weight:400">Art/.../Knight/Skill_Effect/</span></td>
+        <td>Knight 대쉬 시전하는 <b>순간 시전자 위치</b>.<br><span style="color:var(--muted)">코드: SkillCastHandler <code>skillId == 2</code></span></td>
+      </tr>
+      <tr>
+        <td><span class="pname">DashHit</span></td>
+        <td><code>Knight_Dash_Hit_Effect</code><br><span class="path" style="font-weight:400">Art/.../Knight/Skill_Effect/</span></td>
+        <td>대쉬 <b>경로상 적이 맞은 위치</b>에 적마다 1개씩.<br><span style="color:var(--muted)">코드: <code>hitEffect == 3</code></span></td>
+      </tr>
+      <tr>
+        <td><span class="pname">TeleportDepart</span></td>
+        <td><code>Mage_Teleport</code><br><span class="path" style="font-weight:400">Art/.../Mage/Skill_Effect/</span></td>
+        <td>텔레포트 <b>출발 지점</b>(사라지는 위치).<br><span style="color:var(--muted)">코드: SkillCastHandler 텔레포트 분기</span></td>
+      </tr>
+      <tr>
+        <td><span class="pname">TeleportArrive</span></td>
+        <td><code>Mage_Teleport</code><br>(<b>동일 에셋 복제 OK</b>)</td>
+        <td>텔레포트 <b>도착 지점</b>(스냅 후 위치).<br><span style="color:var(--muted)">코드: 도착 콜백</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <p><b>제작 패턴은 위 5개와 동일합니다.</b> <code>EffectLifetime</code> 수명 = 애니메이션 클립 길이로 맞추고, 클립의 <code>Loop Time</code>은 끄고, prefab을 같은 폴더로 드래그해 이름을 정확히 맞추세요. <b>좌우 방향성:</b> 대쉬 이펙트는 facing(좌/우)을 <b>코드가 처리</b>하니 스프라이트는 <b>기본 오른쪽(→) 향하게</b> 만들면 됩니다.</p>
+  </div>
+
+  <h2>✅ Phase 04/06 추가 체크리스트</h2>
+  <ul class="ac">
+    <li><b>Knight Q 대쉬:</b> 시전 순간 <code>DashSkill</code> 이펙트가 시전자 위치에 표시된다.</li>
+    <li><b>Knight Q 대쉬 피격:</b> 경로상 적이 맞으면 <code>DashHit</code> 이펙트가 맞은 적 위치에 표시된다.</li>
+    <li><b>Mage E 텔레포트 출발:</b> 출발 지점에 <code>TeleportDepart</code> 이펙트가 표시된다.</li>
+    <li><b>Mage E 텔레포트 도착:</b> 도착(스냅 후) 지점에 <code>TeleportArrive</code> 이펙트가 표시된다.</li>
+  </ul>
 
   <footer>
     M4.9 Phase 01 · 스킬 이펙트 Prefab 제작 가이드 · 외관 작업은 영호 직접, 기능 wiring·코드는 Claude

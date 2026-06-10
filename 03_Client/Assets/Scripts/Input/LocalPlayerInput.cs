@@ -129,17 +129,25 @@ namespace Dawnholder.Client.Input
         }
 
         // 스킬 송신 공통 경로.
-        // 게이트 순서: None 필터 → 클래스 자격(CanCast) → 쿨다운(Thunderbolt만 CanUseSkill 적용) → 세션 준비.
-        // Dash/Teleport는 쿨다운 선예측 없음 — Phase 03/05에서 NotifyDash/NotifyTeleport 추가 예정.
-        // Phase 04/06 Worker 인터페이스: skillId 분기 후 NotifyXxx 호출 자리는 아래 switch 확장.
+        // 게이트 순서: None 필터 → 클래스 자격(CanCast) → 스킬별 쿨다운 게이트 → 세션 준비.
         void TrySendSkill(SkillId skillId, CharacterClass myClass)
         {
             if (skillId == SkillId.None) return;
             if (!SkillCatalog.CanCast(myClass, skillId)) return;
 
-            // Thunderbolt: 스킬 독립 쿨다운 게이트 적용.
-            // Dash/Teleport: 서버 미구현(Phase 03/05) — 클라 쿨다운 예측 없음. 쿨다운 게이트 생략.
-            if (skillId == SkillId.Thunderbolt && !_movement.CanUseSkill) return;
+            // 스킬별 쿨다운 게이트 — Constants 상수 거울. 서버도 별도 검증(헌법 §1). 클라 게이트는 UX + 트래픽 절감.
+            switch (skillId)
+            {
+                case SkillId.Thunderbolt:
+                    if (!_movement.CanUseSkill) return;
+                    break;
+                case SkillId.Dash:
+                    if (!_movement.CanUseDash) return;
+                    break;
+                case SkillId.Teleport:
+                    if (!_movement.CanUseTeleport) return;
+                    break;
+            }
 
             UnityClientSession? session = UnityClientSession.Instance;
             if (session == null) return;
@@ -152,10 +160,22 @@ namespace Dawnholder.Client.Input
             session.SendIntent(pkt.Write());
             Debug.Log($"[Skill] → {skillId} clientTick={pkt.attackerClientTick}");
 
-            // 선예측 커밋: Thunderbolt만 채널링 모션 + 쿨다운 예측.
-            // Dash/Teleport는 Phase 03/05에서 NotifyDash/NotifyTeleport로 확장.
-            if (skillId == SkillId.Thunderbolt)
-                _movement.NotifyChannel();
+            // 선예측 커밋: 스킬별로 분기.
+            // Thunderbolt: 채널링 모션 + 쿨다운 예측.
+            // Dash: 쿨다운만 예측. 이동/모션은 서버 S_SkillCast(Dash) + S_Snapshot(Attack) 수신 연출로 충분.
+            // Teleport: 쿨다운 예측 + 다음 Snapshot force-adopt 플래그(보간 끊기).
+            switch (skillId)
+            {
+                case SkillId.Thunderbolt:
+                    _movement.NotifyChannel();
+                    break;
+                case SkillId.Dash:
+                    _movement.NotifyDash();
+                    break;
+                case SkillId.Teleport:
+                    _movement.NotifyTeleport();
+                    break;
+            }
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.
