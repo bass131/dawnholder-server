@@ -406,21 +406,27 @@ namespace Dawnholder.Client.Network
                 // animState 클립-시계와 서버 히트 사이 jitter 제거. Strike param 없는 적은 무시.
                 EnemyRegistry.Instance?.NotifyStrike(attackerId);
 
+                // targetId 기반 대상 Transform 해석 — 로컬 플레이어면 LocalPlayerMovement,
+                // 원격 플레이어면 RemoteEntityRegistry에서 조회. 해석 실패 시 null(폴백).
+                Transform? targetTf = ResolveTargetTransform(session, targetId);
+
+                // EnemyMotion facing을 서버 targetId 기반 실제 대상 쪽으로 고정.
+                // targetTf=null이면 EnemyMotion이 기존 _facing을 유지(폴백).
+                EnemyRegistry.Instance?.SetAttackTarget(attackerId, targetTf);
+
                 // 이펙트 위치: 본인 피격 = LocalPlayer 앵커, 그 외 = 공격자(보스) 앵커.
                 // EffectAnchor = 발-pivot 보정 컨벤션 (없으면 root 폴백).
                 Vector3 fxPos = Vector3.zero;
                 int fxFacing = 1;
                 bool hasFxPos = false;
-                if (isLocalPlayer && LocalPlayerMovement.Instance != null)
+                if (isLocalPlayer && targetTf != null)
                 {
-                    Transform playerTf = LocalPlayerMovement.Instance.transform;
-                    // variant prefab이 EffectAnchor 자식을 직접 보유 — 자식 앵커 경로 단일화.
-                    fxPos = EffectAnchor.ResolvePosition(playerTf);
+                    fxPos = EffectAnchor.ResolvePosition(targetTf);
                     // 피격 이펙트는 공격이 날아온 쪽을 향함 — 공격자 위치 알면 상대 x 부호.
                     if (EnemyRegistry.Instance != null &&
                         EnemyRegistry.Instance.TryGetTransform(attackerId, out Transform atkTf) &&
                         atkTf != null)
-                        fxFacing = atkTf.position.x >= playerTf.position.x ? 1 : -1;
+                        fxFacing = atkTf.position.x >= targetTf.position.x ? 1 : -1;
                     hasFxPos = true;
                 }
                 else if (EnemyRegistry.Instance != null &&
@@ -455,6 +461,24 @@ namespace Dawnholder.Client.Network
                         SceneTransition.Instance.PlayRespawnFade();
                 }
             });
+        }
+
+        // targetId → Transform 해석 단일 진입점.
+        // 로컬 플레이어면 LocalPlayerMovement.transform, 원격 플레이어면 RemoteEntityRegistry 조회.
+        // 해석 실패(미등록/씬 없음) 시 null 반환 → 호출 측이 폴백 처리.
+        static Transform? ResolveTargetTransform(UnityClientSession session, int targetId)
+        {
+            if (session.LocalEntityId.HasValue && targetId == session.LocalEntityId.Value)
+                return LocalPlayerMovement.Instance != null
+                    ? LocalPlayerMovement.Instance.transform
+                    : null;
+
+            if (RemoteEntityRegistry.Instance != null &&
+                RemoteEntityRegistry.Instance.TryGetTransform(targetId, out Transform? t) &&
+                t != null)
+                return t;
+
+            return null;
         }
     }
 
