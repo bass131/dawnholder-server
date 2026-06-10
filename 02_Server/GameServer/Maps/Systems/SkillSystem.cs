@@ -18,11 +18,140 @@ internal sealed class SkillSystem
 {
     internal void ProcessSkill(GameMap map, int casterEntityId, byte skillId, long attackerClientTick)
     {
-        // skillId 분기. Phase 03(Dash)/05(Teleport) 구현 시 여기에 case 추가.
-        // Dash(2)/Teleport(3)는 클래스 게이트는 통과하지만 아직 미구현 — 방어적 drop (null 참조 방지).
         if (skillId == (byte)SkillId.Thunderbolt)
             ProcessThunderbolt(map, casterEntityId, attackerClientTick);
-        // else: 미구현 스킬 = 핸들러 통과 후 여기서 무해하게 drop.
+        else if (skillId == (byte)SkillId.Dash)
+            ProcessDash(map, casterEntityId, attackerClientTick);
+        else if (skillId == (byte)SkillId.Teleport)
+            ProcessTeleport(map, casterEntityId, attackerClientTick);
+        // else: 미구현 스킬 = 무해 drop.
+    }
+
+    void ProcessTeleport(GameMap map, int casterEntityId, long attackerClientTick)
+    {
+        // 1) caster 조회
+        PlayerEntity? caster = map.GetPlayer(casterEntityId);
+        if (caster == null) return;
+
+        // 2) 쿨다운 검증 (헌법 #3 — tick 기반, blocking call 0)
+        long currentTick = map.CurrentTick;
+        if (currentTick - caster.GetLastSkillTick((byte)SkillId.Teleport) < CombatConstants.TeleportCooldownTicks) return;
+
+        // 3) rewind 범위 검증 (ProcessDash/ProcessThunderbolt 동형 — 헌법 #3 Trust Boundary)
+        if (attackerClientTick < 0) return;               // (a) 음수
+        if (attackerClientTick > currentTick) return;     // (b) 미래
+        if (currentTick - attackerClientTick > 4) return; // (c) 200ms 초과
+
+        // 4) 쿨다운 소비 — 검증 통과 직후 (경계 밖 clamp 후에도 쿨다운 소비, 허공 시전 정합).
+        caster.SetLastSkillTick((byte)SkillId.Teleport, currentTick);
+
+        // 5) 목적지 계산: facing 방향 × TeleportDistance.
+        //    Teleport는 속도 채널이 아닌 위치 즉시 set — Velocity 불변, ExternalVelX 채널 안 씀.
+        float rawDestX = caster.Position.X + CombatConstants.TeleportDistance * caster.FacingDir;
+
+        // 6) 맵 경계 clamp (헌법 §3 서버 권위 — 클라가 좌표 보내면 벽 뚫기 핵이 됨).
+        //    MapBoundsX는 terrain Solids 전체의 MinX/MaxX 합산 — terrain null이면 ±∞(평지 맵).
+        (float boundsMin, float boundsMax) = map.MapBoundsX;
+        float destX = MathF.Max(boundsMin, MathF.Min(boundsMax, rawDestX));
+
+        // 7) 위치 즉시 set + position history 갱신.
+        //    Velocity와 OnGround는 점프 전 상태 유지 — 이동 채널이 아닌 순간이동이므로 물리 연속성 유지.
+        //    position history(rewind 버퍼)는 새 위치로 갱신 — 텔레포트 후 틱에서 lag-comp가 새 위치 참조.
+        caster.Position = new Vector2(destX, caster.Position.Y);
+        caster.RecordPosition(currentTick, caster.Position);
+
+        // 8) S_SkillCast broadcast — 클라 "보간 끊기" 신호 (Phase 06 클라가 이 신호로 스냅).
+        //    데미지/타격 없음 — 순수 이동 스킬. DeferredDamage/HitResult 경로 안 탐.
+        byte facingByte = caster.FacingDir >= 0 ? (byte)1 : (byte)0;
+        S_SkillCast castPkt = new S_SkillCast
+        {
+            casterEntityId   = caster.EntityId,
+            skillId          = (byte)SkillId.Teleport,
+            strikeDelayTicks = 0,
+            facing           = facingByte,
+        };
+        map.BroadcastToAll(castPkt.Write());
+    }
+
+    void ProcessDash(GameMap map, int casterEntityId, long attackerClientTick)
+    {
+        // 1) caster 조회
+        PlayerEntity? caster = map.GetPlayer(casterEntityId);
+        if (caster == null) return;
+
+        // 2) 쿨다운 검증 (헌법 #3 — tick 기반, blocking call 0)
+        long currentTick = map.CurrentTick;
+        if (currentTick - caster.GetLastSkillTick((byte)SkillId.Dash) < CombatConstants.DashCooldownTicks) return;
+
+        // 3) rewind 범위 검증 (ProcessThunderbolt 동형 — 헌법 #3 Trust Boundary)
+        if (attackerClientTick < 0) return;               // (a) 음수
+        if (attackerClientTick > currentTick) return;     // (b) 미래
+        if (currentTick - attackerClientTick > 4) return; // (c) 200ms 초과
+
+        // 4) 쿨다운 소비 — 검증 통과 직후.
+        caster.SetLastSkillTick((byte)SkillId.Dash, currentTick);
+
+        // 5) 전방 lunge 부여: AttackLungeVx 채널 재활용 (M4.7 근접 스윙과 동일 채널, 더 큰 값).
+        //    EnterAttackState → AttackState.Enter에서 StateTicksRemaining = AttackCommitWindowTicks(8틱).
+        //    AttackState.Tick이 매 틱 KnockbackDecayPerTick로 감쇠 → 8틱 동안 전방 이동.
+        caster.EnterAttackState();
+        caster.AttackLungeVx = CombatConstants.DashLungeInitialVx * caster.FacingDir;
+
+        // 6) 경로 타격: rewind 위치 중심 AABB — facing 방향으로 편심 박스.
+        //    FacingDir(+1=오른쪽 / -1=왼쪽)으로 박스 origin을 전방에 배치.
+        //    halfX 범위 안 적에게 즉시 데미지(대쉬는 짧아 지연 필요 없음 — 썬더볼트와의 trade-off).
+        Vector2 rewindedPos = caster.GetPositionAtTick(attackerClientTick);
+        // 박스 center를 전방 halfX 만큼 이동시켜 "전방 스윕" 효과.
+        Vector2 boxOrigin = rewindedPos + new Vector2(CombatConstants.DashBoxHalfX * caster.FacingDir, 0f);
+        List<EnemyEntity> targets = CombatSystem.ResolveImpactTargets(
+            map,
+            boxOrigin,
+            new Vector2(CombatConstants.DashBoxHalfX, CombatConstants.DashBoxHalfY));
+
+        foreach (EnemyEntity target in targets)
+        {
+            int damage = Formulas.ComputeDamage(caster.Stats, target.Stats, CombatConstants.BaseDamage);
+            target.Hp -= damage;
+            target.TargetEntityId = caster.EntityId; // 피격 aggro
+
+            S_HitResult hit = new S_HitResult
+            {
+                attackerEntityId = caster.EntityId,
+                targetEntityId   = target.EntityId,
+                damage           = damage,
+                currentHp        = target.Hp,  // raw(음수 가능) — 음수=사망 신호 계약
+                maxHp            = target.MaxHp,
+                hitEffect        = 3,           // Dash hit
+            };
+            map.BroadcastToAll(hit.Write());
+
+            if (target.Hp <= 0)
+            {
+                S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
+                map.BroadcastToAll(death.Write());
+
+                if (target.Kind == EnemyKind.Boss && !map.IsStageCleared)
+                {
+                    map.SetStageCleared();
+                    S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
+                    map.BroadcastToAll(stageClear.Write());
+                }
+                map.RemoveEnemy(target.EntityId);
+                if (target.Kind == EnemyKind.Normal)
+                    map.EnqueueRespawn(target);
+            }
+        }
+
+        // 7) S_SkillCast broadcast — 클라 연출 신호. strikeDelayTicks=0 (즉시 적용).
+        byte facingByte = caster.FacingDir >= 0 ? (byte)1 : (byte)0;
+        S_SkillCast castPkt = new S_SkillCast
+        {
+            casterEntityId   = caster.EntityId,
+            skillId          = (byte)SkillId.Dash,
+            strikeDelayTicks = 0,
+            facing           = facingByte,
+        };
+        map.BroadcastToAll(castPkt.Write());
     }
 
     void ProcessThunderbolt(GameMap map, int casterEntityId, long attackerClientTick)

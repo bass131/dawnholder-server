@@ -195,10 +195,10 @@ public class ClassSkillGateTests : IDisposable
     }
 
     [Fact]
-    public void ClassGate_KnightCastsDash_GatePassButUnimplemented_NoCrash()
+    public void ClassGate_KnightCastsDash_GatePassAndImplemented()
     {
-        // Knight가 Dash(2) 시전: 클래스 게이트 통과 → SkillSystem의 미구현 drop → 예외 없음.
-        // Phase 03 구현 전 안전망 검증: null 참조 오류나 예외가 발생하지 않아야 한다.
+        // Phase 03 완료: Knight가 Dash(2) 시전 시 게이트 통과 + 정상 처리 → S_SkillCast 수신.
+        // (Phase 02 시점 "미구현 drop" 안전망 → Phase 03 "정상 처리" 회귀로 교체)
         var (session, map) = Setup(charClass: (byte)CharacterClass.Knight);
 
         Exception? caught = Record.Exception(() =>
@@ -207,12 +207,13 @@ public class ClassSkillGateTests : IDisposable
             map.Tick(2);
         });
 
-        Assert.Null(caught); // 예외 없이 무해하게 처리되어야 함
+        Assert.Null(caught); // 예외 없음
 
-        // Dash 미구현이라 S_SkillCast 없음 (SkillSystem에서 else branch = silent drop)
-        Assert.Equal(0, CountPacketsOfType(session.SentPackets, PacketID.S_SkillCast));
+        // Dash 구현됨 → S_SkillCast 1건 이상
+        Assert.True(CountPacketsOfType(session.SentPackets, PacketID.S_SkillCast) >= 1,
+            "Knight Dash: S_SkillCast 없음 — ProcessDash 미진입 의심");
 
-        // cheat-flag 없어야 (클래스 게이트는 통과)
+        // cheat-flag 없어야 (클래스 게이트 정상 통과)
         Assert.DoesNotContain("class mismatch", _consoleCapture.ToString());
     }
 }

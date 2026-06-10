@@ -56,6 +56,26 @@ public class GameMap
             ? new Vector2(_content.PlayerSpawnX, _content.PlayerSpawnY)
             : Vector2.Zero;
 
+    // 맵 X축 경계 (minX, maxX). Teleport 착지 clamp 및 서버 권위 범위 검증(헌법 §3)에 사용.
+    // terrain이 있으면 Solids 전체의 MinX/MaxX를 합산 — 텔레포트가 솔리드 바깥으로 나가는 것을 차단.
+    // terrain이 null이면 float.MinValue/MaxValue (평지 테스트 맵 — 경계 없음).
+    internal (float MinX, float MaxX) MapBoundsX
+    {
+        get
+        {
+            if (_terrain == null || _terrain.Solids.Length == 0)
+                return (float.MinValue, float.MaxValue);
+            float min = float.MaxValue;
+            float max = float.MinValue;
+            foreach (TerrainAabb s in _terrain.Solids)
+            {
+                if (s.MinX < min) min = s.MinX;
+                if (s.MaxX > max) max = s.MaxX;
+            }
+            return (min, max);
+        }
+    }
+
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly CombatSystem _combatSystem = new();
     readonly EnemyAISystem _enemyAISystem = new();

@@ -79,6 +79,32 @@ internal static class CombatConstants
     // tick 기반 이유: 헌법 #5 — ms 타이머를 tick 루프에 박으면 DateTime 의존. 순수 정수 비교 = blocking 0.
     public const int ThunderboltCooldownTicks = Shared.GameData.Constants.ThunderboltCooldownTicks;
 
+    // ── Teleport 스킬 상수 (서버 전용 — 헌법 #1) ────────────────────────────────────
+    // 클라이언트는 쿨다운(98_Shared Constants.TeleportCooldownTicks)만 공유 — 거리/경계는 여기.
+
+    // Teleport 이동 거리 (unit). FacingDir 방향으로 이 거리만큼 위치 즉시 점프.
+    // 15.0f = 한 화면 절반 정도의 거리. Play 튜닝 대상.
+    public const float TeleportDistance = 15.0f;
+
+    // Teleport 쿨다운 (틱). 98_Shared 단일 진실에서 가져옴 (DashCooldownTicks와 동형).
+    public const int TeleportCooldownTicks = Shared.GameData.Constants.TeleportCooldownTicks;
+
+    // ── Dash 스킬 상수 (서버 전용 — 헌법 #1) ─────────────────────────────────────
+    // 클라이언트는 쿨다운(98_Shared Constants.DashCooldownTicks)만 공유 — lunge/박스/데미지는 여기.
+
+    // Dash 전방 lunge 초기 수평 속도 (units/s). AttackLungeInitialVx(3.0f)보다 커 더 긴 전진.
+    // AttackState.Tick이 KnockbackDecayPerTick(0.75)로 매 틱 감쇠 — AttackLungeVx 채널 재활용.
+    // 서버 권위(헌법 #1): 클라는 결과 위치를 force-adopt로 렌더만.
+    public const float DashLungeInitialVx = 10.0f;
+
+    // Dash 경로 AABB 박스 반폭 (unit). 전방 이동 경로를 스윕하는 박스 — X 방향이 핵심.
+    // FacingDir 방향으로 쏘는 앞 공간 스캔. DashBoxHalfY는 평타(1.5f)와 동일.
+    public const float DashBoxHalfX = 4.0f;
+    public const float DashBoxHalfY = 1.5f;
+
+    // Dash 쿨다운 (틱). 98_Shared 단일 진실에서 가져옴 (ThunderboltCooldownTicks와 동형).
+    public const int DashCooldownTicks = Shared.GameData.Constants.DashCooldownTicks;
+
     // ── 보스 전투 상수 ────────────────────────────────────────────────────────
     //
     // 값은 사용자 확정 정량값 (M4.5 Phase 04 CP-2 명세). 임의 변경 금지.

@@ -60,6 +60,20 @@ public static class Constants
     /// </summary>
     public const int ThunderboltCooldownTicks = 40;
 
+    /// <summary>
+    /// Dash 스킬 쿨다운(틱). ThunderboltCooldownTicks와 *독립* — Knight 전용 쿨다운.
+    /// 서버 SkillSystem이 권위 판정, 클라는 *같은 값*으로 입력 게이트 거울(Phase 04+ 연결 시).
+    /// 20틱 = 1초 @20TPS. 타이밍만 공유 — lunge 세기/박스/데미지는 서버 전용(CombatConstants) 유지.
+    /// </summary>
+    public const int DashCooldownTicks = 20;
+
+    /// <summary>
+    /// Teleport 스킬 쿨다운(틱). Mage 전용 순간이동 쿨다운.
+    /// 서버 SkillSystem이 권위 판정, 클라는 *같은 값*으로 입력 게이트 거울(Phase 06 연결 시).
+    /// 30틱 = 1.5초 @20TPS. 타이밍만 공유 — 이동 거리/경계 clamp는 서버 전용(CombatConstants) 유지.
+    /// </summary>
+    public const int TeleportCooldownTicks = 30;
+
     /// <summary>피격 넉백 초기 수평 속도 (units/s). EnterHitState에서 방향 부호와 함께 적용.</summary>
     public const float KnockbackInitialVx = 7f;
 
