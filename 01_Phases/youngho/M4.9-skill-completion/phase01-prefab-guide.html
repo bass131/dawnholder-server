@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.9 Phase 01 — 스킬 이펙트 Prefab 제작 가이드</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff; --accent2:#bc8cff;
+    --green:#3fb950; --yellow:#d29922; --red:#f85149; --pink:#f778ba;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Pretendard','Segoe UI',-apple-system,sans-serif;line-height:1.75;padding:0 0 80px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  header{background:linear-gradient(135deg,#1c2330,#161b22);border-bottom:1px solid var(--border);
+    padding:48px 0 36px;margin-bottom:36px;}
+  h1{font-size:30px;margin:0 0 8px;color:#fff;letter-spacing:-.5px;}
+  .sub{color:var(--muted);font-size:15px;margin-bottom:18px;}
+  .badges{display:flex;gap:10px;flex-wrap:wrap;}
+  .badge{display:inline-block;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:600;
+    border:1px solid var(--border);background:var(--panel2);}
+  .badge.lg{color:var(--accent2);border-color:var(--accent2);}
+  .badge.date{color:var(--green);border-color:var(--green);}
+  .badge.proto{color:var(--accent);border-color:var(--accent);}
+  h2{font-size:21px;margin:44px 0 16px;color:#fff;border-left:3px solid var(--accent);padding-left:12px;}
+  h3{font-size:16px;color:#fff;margin:24px 0 10px;}
+  p{font-size:14.5px;margin:0 0 14px;}
+  .lead{background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:20px 22px;font-size:14.5px;}
+  .lead b{color:var(--accent);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--panel);
+    border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:8px 0;}
+  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--border);vertical-align:top;}
+  th{background:var(--panel2);color:#fff;font-weight:600;}
+  tr:last-child td{border-bottom:none;}
+  td code,p code,li code,.lead code{background:#0d1117;border:1px solid var(--border);border-radius:4px;
+    padding:1px 5px;font-size:12.5px;color:var(--pink);}
+  .pname{color:var(--accent2);font-weight:600;}
+  ol.flow{padding-left:22px;}
+  ol.flow li{margin-bottom:16px;font-size:14.5px;}
+  ol.flow li b{color:var(--accent);}
+  ul.plain{padding-left:20px;}
+  ul.plain li{margin-bottom:8px;font-size:14px;}
+  ul.ac{list-style:none;padding:0;margin:8px 0;}
+  ul.ac li{padding:9px 0 9px 32px;position:relative;font-size:14.5px;border-bottom:1px solid #21262d;}
+  ul.ac li:last-child{border-bottom:none;}
+  ul.ac li:before{content:"⬜";position:absolute;left:0;top:8px;}
+  .trap{border:1px solid var(--yellow);background:#1f1b0e;border-radius:10px;padding:16px 20px;margin:14px 0;}
+  .trap h4{margin:0 0 8px;color:var(--yellow);font-size:15px;}
+  .trap h4:before{content:"⚠️ ";}
+  .trap p{font-size:14px;margin:0 0 8px;}
+  .trap p:last-child{margin-bottom:0;}
+  .note{border:1px solid var(--accent);background:#0e1726;border-radius:10px;padding:14px 18px;margin:14px 0;font-size:14px;}
+  .note b{color:var(--accent);}
+  .path{font-family:ui-monospace,monospace;color:var(--green);font-size:13px;}
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--border);
+    color:var(--muted);font-size:13px;text-align:center;}
+  @media(max-width:760px){table{font-size:12.5px;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>M4.9 Phase 01 — 스킬 이펙트 Prefab 제작 가이드</h1>
+    <div class="sub">Unity 에디터에서 직접 만드는 5개 이펙트 prefab + MageVisual 채널링 — 옆에 띄워놓고 따라 만드는 설명서</div>
+    <div class="badges">
+      <span class="badge lg">영호 직접 작업 (외관)</span>
+      <span class="badge date">M4.9 Phase 01</span>
+      <span class="badge proto">코드 변경 없음 · 에셋만</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <h2>🎯 지금 무슨 상태이고, 왜 이걸 하나</h2>
+  <div class="lead">
+    <p>썬더볼트와 Mage 평타의 <b>서버 로직은 이미 다 돌아갑니다.</b> 데미지도 들어가고, 적도 맞고, freeze도 걸립니다. 그런데 화면에는 아무것도 안 보입니다.</p>
+    <p>이유는 단순합니다. 클라이언트 코드가 이펙트를 그릴 때 <code>Resources.Load&lt;GameObject&gt;("Effects/이름")</code> 으로 <b>prefab을 런타임에 이름으로 찾아 불러옵니다.</b> 그런데 그 prefab이 아직 없어서, 코드는 <b>"VFX 미존재" 경고만 콘솔에 찍고 조용히 넘어갑니다.</b> 게임은 안 멈추지만 연출이 빠진 거죠.</p>
+    <p>그래서 이번 Phase의 일은 <b>"코드가 찾는 이름 그대로, 그 폴더에 prefab 5개를 만들어 채워 넣는 것"</b>입니다. 코드는 한 줄도 안 건드립니다. 영호가 Unity 에디터에서 스프라이트·애니메이터를 prefab으로 묶기만 하면, 그 즉시 경고가 연출로 바뀝니다.</p>
+  </div>
+
+  <h2>📋 만들 prefab 5개</h2>
+  <p>저장 위치는 <b>전부 동일</b>합니다 — <span class="path">Assets/Resources/Effects/</span> 폴더, 정확히 이 경로. prefab 이름도 표에 적힌 글자 그대로여야 합니다 (대소문자 포함).</p>
+
+  <table>
+    <thead>
+      <tr><th>prefab 이름</th><th>쓸 에셋<br><span class="path" style="font-weight:400">Art/Characters/Playable/Mage/Skill_Effect/</span></th><th>언제 / 어디서 뜨나</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="pname">LightningStrike</span></td>
+        <td><code>ThunderVolt</code></td>
+        <td>썬더볼트 적중 시, <b>맞은 적 각자의 위치</b>에 적마다 1개씩 (낙뢰).<br><span style="color:var(--muted)">코드: HitResultHandler <code>hitEffect == 2</code></span></td>
+      </tr>
+      <tr>
+        <td><span class="pname">SkillCast</span></td>
+        <td>캐스팅용 에셋<br>(<code>EnergyVolt_Flow_Version</code> 추천 후보 — <b>최종 선택은 영호</b>)</td>
+        <td>스킬 시전하는 <b>순간 시전자 위치</b>에 1개 (캐스팅 연출).<br><span style="color:var(--muted)">코드: SkillCastHandler</span></td>
+      </tr>
+      <tr>
+        <td><span class="pname">Projectile</span></td>
+        <td><code>EnergyVolt</code></td>
+        <td>Mage 평타 — <b>내 캐릭터가 발사</b>할 때 날아가는 투사체.<br><span style="color:var(--muted)">코드: ProjectileLaunchHandler (로컬)</span></td>
+      </tr>
+      <tr>
+        <td><span class="pname">RemoteProjectile</span></td>
+        <td><code>EnergyVolt</code><br>(<b>Projectile과 내용 동일한 복제본</b>)</td>
+        <td>Mage 평타 — <b>다른 플레이어가 발사</b>할 때의 투사체 (원격).<br><span style="color:var(--muted)">코드: 원격 경로</span></td>
+      </tr>
+      <tr>
+        <td><span class="pname">ProjectileImpact</span></td>
+        <td><code>EnergyVolt_Hit_Effect</code></td>
+        <td>평타 적중 시, <b>맞은 적 위치</b>에 터지는 임팩트.<br><span style="color:var(--muted)">코드: <code>hitEffect == 1</code></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <p><b>왜 하필 Resources 폴더여야 하나?</b> 코드가 <code>Resources.Load&lt;GameObject&gt;("Effects/이름")</code> 으로 <b>문자열을 써서 런타임에 로드</b>하기 때문입니다. Unity는 <span class="path">Resources/</span> 라는 이름의 폴더 안에 있는 것만 이 방식으로 찾을 수 있어요. 그래서 폴더 이름이 <b>한 글자라도 다르면</b> (예: <code>Effect</code> vs <code>Effects</code>, 또는 prefab 이름 오타) 코드가 못 찾고 <b>warn만 찍고 끝납니다</b> — 에러도 안 나서 눈치채기 어렵습니다.</p>
+    <p><b>참고 기준점:</b> 같은 폴더에 이미 <code>BossAttackPattern0.prefab</code> 이 있습니다. SpriteRenderer 설정(특히 <b>Sorting Layer / Order in Layer</b>)을 어떻게 맞춰야 캐릭터 위/아래로 자연스럽게 깔리는지, 그 prefab을 열어 그대로 복사 기준으로 삼으세요.</p>
+  </div>
+
+  <h2>🛠️ prefab 만드는 순서 (5개 공통 패턴)</h2>
+  <p>아래 4단계를 5개 prefab 각각에 반복합니다. 한 개 만들어 보면 나머지는 똑같습니다.</p>
+
+  <ol class="flow">
+    <li>
+      <b>빈 GameObject를 만들고 컴포넌트를 붙입니다.</b><br>
+      씬(Hierarchy)에 빈 GameObject 생성 → <code>SpriteRenderer</code> 추가 + <code>Animator</code> 추가 →
+      Animator의 Controller 칸에 해당 <b>.controller</b>를 할당합니다. 컨트롤러는 이미 만들어져 있어요:
+      <span class="path">Art/Characters/Playable/Mage/Skill_Effect/Animator/</span> 폴더에서 이펙트에 맞는 걸 고르면 됩니다.
+    </li>
+    <li>
+      <b>EffectLifetime 컴포넌트를 직접 붙이고 수명을 맞춥니다.</b><br>
+      <code>EffectLifetime</code> 컴포넌트를 추가하고, <code>_lifetime</code> 값을 <b>애니메이션 클립 길이에 맞춰</b> 설정합니다.
+      이걸 안 붙이면 코드가 자동으로 부착해 주긴 하는데 <b>기본값 1.5초로 고정</b>됩니다 —
+      클립이 1.5초보다 <b>짧으면</b> 마지막 프레임이 멈춘 채 남아 있고(잔상), <b>길면</b> 중간에 뚝 잘립니다. 그래서 직접 맞추는 게 좋습니다.<br>
+      <span style="color:var(--yellow)">예외:</span> <span class="pname">Projectile</span> / <span class="pname">RemoteProjectile</span> 둘은 <b>EffectLifetime이 필요 없습니다.</b>
+      투사체는 <code>ProjectileVisual</code>이 <b>목표에 도착하는 순간 직접 파괴</b>하기 때문입니다.
+    </li>
+    <li>
+      <b>애니메이션 클립의 Loop Time이 꺼져 있는지 확인합니다.</b><br>
+      이펙트는 한 번 재생하고 사라져야 합니다. Loop Time이 켜져 있으면 이펙트가 <b>무한 반복</b>되며 화면에 계속 남습니다.
+      클립을 클릭해 Inspector에서 <code>Loop Time</code> 체크가 <b>해제</b>되어 있는지 보세요.
+    </li>
+    <li>
+      <b>Prefab으로 만들고 임시 원본을 지웁니다.</b><br>
+      Hierarchy의 GameObject를 Project 창의 <span class="path">Assets/Resources/Effects/</span> 폴더로 <b>드래그</b>하면 prefab이 됩니다.
+      이름을 표의 이름과 <b>정확히</b> 맞춘 뒤, 씬에 남아 있던 임시 원본 GameObject는 삭제하세요 (prefab만 파일로 남으면 됩니다).
+    </li>
+  </ol>
+
+  <div class="trap">
+    <h4>방향성(좌우 반전) 함정</h4>
+    <p>이펙트는 코드가 <b>회전·반전 없이</b> <code>Quaternion.identity</code> 로 그대로 스폰합니다. 그래서:</p>
+    <p>• <span class="pname">LightningStrike</span> / <span class="pname">SkillCast</span> / <span class="pname">ProjectileImpact</span> 는
+    <b>좌우 방향성이 없는 그림</b>이어야 자연스럽습니다 (낙뢰·캐스팅·폭발은 어느 방향이든 똑같이 보이게).</p>
+    <p>• <span class="pname">Projectile</span> / <span class="pname">RemoteProjectile</span> <b>투사체만</b> <code>ProjectileVisual</code>이 방향을 처리합니다.
+    스프라이트는 <b>기본적으로 오른쪽(→)을 향하게</b> 만드세요. 왼쪽으로 쏠 때의 반전이 제대로 되는지는 <b>검증 단계에서 실측</b>으로 확인합니다.</p>
+  </div>
+
+  <h2>🎞️ MageVisual 본체에 채널링 애니메이션 추가</h2>
+  <p>위 5개는 별도 이펙트 prefab이고, 이건 <b>캐릭터 본체</b>(<code>MageVisual.prefab</code>)에 시전 자세를 추가하는 작업입니다.</p>
+  <p>코드(<code>AnimatorDriver</code>)가 하는 일은 단 하나 — Animator의 <code>AnimState</code> 라는 <b>int 파라미터를 6(Channeling)으로 바꿔주는 것</b>뿐입니다. 그러니 영호 쪽에서는 그 6번 상태에 들어갈 <b>클립과 전이(transition)</b>만 만들어 주면 됩니다.</p>
+  <ul class="plain">
+    <li><code>MageVisual</code>의 Animator Controller를 엽니다.</li>
+    <li>캐스팅 클립을 재생할 <b>새 State</b>를 추가합니다 (예: Channeling).</li>
+    <li>기존 Walk / Attack 상태들이 쓰던 <b><code>AnimState == N</code> 전이 패턴을 그대로 흉내</b> 내서,
+    새 상태로 들어가는 전이 조건을 <code>AnimState</code> <b>Equals 6</b> 으로 추가합니다.</li>
+  </ul>
+  <div class="note">
+    <p>핵심은 <b>"기존에 이미 쓰고 있는 패턴을 그대로 한 줄 더 복제한다"</b>는 점입니다. Walk 상태가 어떤 조건으로 전이되는지 먼저 살펴본 뒤, 그 조건에서 숫자만 <b>6</b>으로 바꾼 전이를 새 상태에 걸어주면 됩니다.</p>
+  </div>
+
+  <h2>✅ Phase 01 완료 체크리스트 (게이트)</h2>
+  <p>아래가 전부 충족되면 Phase 01 통과입니다. 다 끝나면 Claude 세션에서 함께 검증합니다.</p>
+  <ul class="ac">
+    <li><b>Q 썬더볼트 시전:</b> 캐스팅 이펙트(시전자 위치) + 낙뢰(맞은 적들 각자 위치)가 화면에 표시된다.</li>
+    <li><b>Mage 평타:</b> <code>EnergyVolt</code> 투사체가 날아가고, 적중 시 임팩트가 표시된다.</li>
+    <li><b>콘솔 깨끗함:</b> "VFX 미존재" 경고 <b>0건</b> + <code>error CS</code> 컴파일 에러 <b>0건</b>.</li>
+    <li><b>2클라(클라이언트 2개) 동시 실행:</b> 원격(다른 플레이어) 화면에도 동일한 연출이 보인다.</li>
+  </ul>
+
+  <div class="note">
+    <p><b>끝나면:</b> Claude 세션에 <b>"Phase 01 검증해줘"</b> 라고 알려주세요. 그러면 MCP로 콘솔 게이트(경고/에러 0건)를 함께 확인하고, 2클라 실측까지 동행하겠습니다.</p>
+  </div>
+
+  <footer>
+    M4.9 Phase 01 · 스킬 이펙트 Prefab 제작 가이드 · 외관 작업은 영호 직접, 기능 wiring·코드는 Claude
+  </footer>
+
+</div>
+</body>
+</html>
