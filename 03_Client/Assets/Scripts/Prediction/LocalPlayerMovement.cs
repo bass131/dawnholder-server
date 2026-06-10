@@ -77,6 +77,11 @@ namespace Dawnholder.Client.Prediction
         // 게임플레이 규칙 아님(서버 hitstun과 별개) → 98_Shared 아닌 클라 로컬 상수.
         const int HitGateBridgeTicks = 3; // ~150ms
 
+        // 해상도 전환/GC 등 프레임 스파이크로 deltaTime이 비정상적으로 커지면 Predict 적분이 서버(고정 dt)와
+        // 크게 벌어져 SnapThreshold 초과 → reconcile snap(밀림). 예측 적분만 clamp해 서버와의 괴리를 줄인다.
+        // 2틱분(0.1s)으로 설정 — 너무 작으면 저fps 환경 예측이 뒤처져 체감 끊김 증가.
+        const float MaxPredictStep = 0.1f;
+
         // 서버 권위 animState 최신값(S_Snapshot). Hit/Death는 클라가 예측 불가 → 이 값으로 게이트.
         // Attack은 로컬 타이머가 선예측하되, 서버 window가 더 길면 이 값이 잠금을 연장(거울 보정).
         AnimState _serverAnimState = AnimState.Idle;
@@ -235,11 +240,18 @@ namespace Dawnholder.Client.Prediction
             // jumpEdge는 송신 cycle까지 *보관* (송신 시점에 한 번 더 사용) — Predict는 매 frame이라
             // OnJump 이후 50ms 안 모든 frame에 jumpEdge=true 들어가면 *재점프* 시도. 단 Physics.Step의
             // OnGround 안전망이 1tick만 적용 — 점프 후 즉시 onGround=false라 자연 차단.
-            _predictor.Predict(moveX, jumpEdge, Time.deltaTime);
+            float dt = Time.deltaTime;
+            // 임시 진단 — 버그 확정 후 제거 ([ReconDiag] 태그로 grep 가능)
+            if (dt > MaxPredictStep * 1.5f)
+                Debug.Log($"[ReconDiag] dt-spike dt={dt:F3} frame={Time.frameCount}");
+            // 예측 적분에만 clamp — 쿨다운/송신 누적기는 실제 시간 그대로(아래 _sendAccumulator 참고).
+            float predictDt = Mathf.Min(dt, MaxPredictStep);
+            _predictor.Predict(moveX, jumpEdge, predictDt);
             transform.position = new Vector3(_predictor.Position.x, _predictor.Position.y, 0f);
 
             // 50ms 송신 throttle — fps 의존 차단 (고프레임도 20 packet/s).
-            _sendAccumulator += Time.deltaTime;
+            // clamp 전 실제 dt — 송신 cadence는 실제 경과 시간 기반이어야 함.
+            _sendAccumulator += dt;
             if (_sendAccumulator < Constants.TickDuration) return;
             _sendAccumulator -= Constants.TickDuration;
 
