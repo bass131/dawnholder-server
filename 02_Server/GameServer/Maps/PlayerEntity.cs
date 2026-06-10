@@ -108,12 +108,21 @@ public class PlayerEntity
     // 마지막 공격 발생 tick(ms 단위) 기록. AttackHandler rate-limit(500ms silent drop) 판정용.
     public long LastAttackTickMs { get; set; }
 
-    // 마지막 스킬 발동 서버 tick(CurrentTick 기준) 기록. ThunderboltCooldownTicks 미경과 시 silent drop.
-    // ms가 아닌 tick 기반 선택 이유: 헌법 #5 정합 — tick 루프 안에서 DateTime/ms 타이머 의존 차단.
-    //   스킬 쿨다운은 map.CurrentTick과 같은 틱 기준으로 비교하면 blocking call 0 보장.
-    // 초기값 = -(ThunderboltCooldownTicks+1) → 스폰 직후 첫 발동 허용.
-    //   long.MinValue 회피 이유: currentTick - long.MinValue는 long 오버플로우 → 음수 결과 → 쿨다운 오판.
-    public long LastSkillTick { get; set; } = -(CombatConstants.ThunderboltCooldownTicks + 1L);
+    // 스킬별 마지막 발동 서버 tick 배열. index = SkillId byte 값.
+    // tick 기반: 헌법 #5 — DateTime/ms 타이머 의존 차단. blocking call 0 보장.
+    // 고정 배열(per-tick 할당 0, 헌법 §5 정합) — Dictionary는 GC pressure 발생.
+    // 초기값 = long.MinValue/2: 스폰 직후 첫 발동 허용 + 오버플로우 회피(MinValue는 currentTick-MinValue가 음수).
+    // **신뢰 경계(헌법 §3)**: 미등록 skillId(배열 범위 밖)는 SkillSystem 진입 전 C_SkillUseHandler에서 drop.
+    const int SkillSlotCount = 4; // SkillId.Teleport=3이 현재 최대값 + 1
+    readonly long[] _lastSkillTick;
+
+    public long GetLastSkillTick(byte skillId)
+        => skillId < SkillSlotCount ? _lastSkillTick[skillId] : long.MinValue / 2;
+
+    public void SetLastSkillTick(byte skillId, long tick)
+    {
+        if (skillId < SkillSlotCount) _lastSkillTick[skillId] = tick;
+    }
 
     // 플레이어가 마지막으로 이동한 수평 방향. +1=오른쪽, -1=왼쪽.
     // 초기값은 +1(오른쪽 기본). Physics.Step에서 inputX != 0인 틱마다 갱신.
@@ -219,11 +228,13 @@ public class PlayerEntity
         Position = position;
         Owner = owner;
         Stats = stats ?? PlayerStats.Knight();
-        // 권위 전투 HP를 클래스 스탯에서 초기화.
-        // migration(GameMap.AddPlayerWithId)은 이 직후 Hp를 이월 값으로 덮음 — MaxHp는 여기서 확정.
         MaxHp = Stats.MaxHp;
         Hp = Stats.Hp;
-        // spawn 시점 OnGround=true, Velocity=0 → Idle이 초기 상태.
+        // 스킬 쿨다운 배열 초기화: 스폰 직후 첫 발동 허용 + 오버플로우 회피.
+        _lastSkillTick = new long[SkillSlotCount];
+        long allowFirst = long.MinValue / 2;
+        for (int i = 0; i < SkillSlotCount; i++)
+            _lastSkillTick[i] = allowFirst;
         ActionFsm = new StateMachine<PlayerEntity>(PlayerMovementStates.Idle, this);
     }
 }

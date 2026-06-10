@@ -42,6 +42,10 @@ public class GameSession : PacketSession
     // protected internal: 같은 어셈블리(CharacterSelectHandler) + 서브클래스(테스트 TestGameSession) 양쪽 접근.
     protected internal bool HasSelectedClass => _stats != null;
 
+    // C_SkillUseHandler가 클래스 게이트 검증에 사용. _stats는 HasSelectedClass 체크 후 호출 보장.
+    // **헌법 §3 (Trust Boundary)**: 반드시 서버 측 _stats에서 가져옴 — 클라가 보낸 값 사용 절대 금지.
+    internal CharacterClass GetCasterClass() => _stats?.Class ?? CharacterClass.Knight;
+
     // 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑 (헌법 #1).
     protected internal void SetCharacterClass(byte characterClass)
     {

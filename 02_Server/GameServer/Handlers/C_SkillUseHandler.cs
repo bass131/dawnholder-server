@@ -4,14 +4,14 @@ using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Handlers;
 
-// C_SkillUse 핸들러: decode + skillId 범위 검증 + session 캡슐화 메서드 호출만.
+// C_SkillUse 핸들러: decode + 신뢰 경계 검증 + session 캡슐화 메서드 호출만.
 //   mutation / 쿨다운 / 박스 판정은 session.SubmitSkillUse → GameMap.ProcessSkill 안에서.
 //
-// **헌법 #3 (Trust Boundary)**:
-//   1. class 선택 전(HasSelectedClass) = silent drop(cheat 후보 로그).
-//   2. skillId 범위 검증: SkillId.None(0) 또는 미정의 = silent drop(cheat 후보).
-//      현재 서버가 아는 유효 스킬은 Thunderbolt(1)뿐 — 확장 시 이 목록에 추가.
-//   3. caster entityId는 session._entityId에서 강제 — 클라가 다른 entityId 도용 차단(AttackHandler 동형).
+// **헌법 #3 (Trust Boundary) — 3단계 검증**:
+//   1. class 선택 전(HasSelectedClass) = silent drop + cheat-flag 로그.
+//   2. skillId 범위 검증: None(0) 또는 카탈로그에 없는 값 = silent drop + cheat-flag 로그.
+//   3. 캐스터 클래스 검증: SkillCatalog.CanCast(caster.Class, skillId) false = silent drop + cheat-flag 로그.
+//      caster 클래스는 session.GetCasterClass()에서 강제 — 클라가 보낸 값 절대 신뢰 X.
 internal sealed class C_SkillUseHandler : IPacketHandler
 {
     public void Handle(GameSession session, ArraySegment<byte> buffer)
@@ -27,11 +27,23 @@ internal sealed class C_SkillUseHandler : IPacketHandler
         C_SkillUse pkt = new C_SkillUse();
         pkt.Read(buffer);
 
-        // skillId 범위 검증 — None(0) 또는 알 수 없는 값은 cheat 후보.
-        if (pkt.skillId != (byte)SkillId.Thunderbolt)
+        // skillId 범위 검증 — None(0) 또는 카탈로그 미등록 값은 cheat 후보.
+        // SkillCatalog.GetRequiredClass는 미등록 skillId에 null 반환.
+        if (SkillCatalog.GetRequiredClass((SkillId)pkt.skillId) == null)
         {
             Console.WriteLine(
                 $"[Trust] C_SkillUse unknown skillId={pkt.skillId} — silent drop (cheat-flag candidate)");
+            return;
+        }
+
+        // 클래스 게이트 (헌법 §3 신뢰 경계 핵심):
+        //   caster 클래스는 서버 측 session에서 가져옴 — 클라가 보낸 값 신뢰 X.
+        //   Knight가 Thunderbolt, Mage가 Dash 등 클래스 불일치 시전은 치터 의심.
+        CharacterClass casterClass = session.GetCasterClass();
+        if (!SkillCatalog.CanCast(casterClass, (SkillId)pkt.skillId))
+        {
+            Console.WriteLine(
+                $"[Trust] C_SkillUse class mismatch: {casterClass} cannot cast skillId={pkt.skillId} — silent drop (cheat-flag candidate)");
             return;
         }
 

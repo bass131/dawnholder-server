@@ -1,4 +1,6 @@
 #nullable enable
+using System.Collections.Generic;
+using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
@@ -17,7 +19,7 @@ namespace Dawnholder.Client.Input
     //
     // **콜백 wire**: PlayerInput component의 Behavior=Send Messages 모드에서
     //   OnMove/OnJump/OnAttack 메서드명이 자동 wire됨.
-    // **스킬 키(Q)**: Input System 액션이 아닌 Update 폴링 — 임시 바인딩(리바인딩 UI는 범위 밖).
+    // **스킬 키(Q/E)**: Input System 액션이 아닌 Update 폴링 — 임시 바인딩(리바인딩 UI는 범위 밖).
     [RequireComponent(typeof(PlayerInput))]
     [RequireComponent(typeof(LocalPlayerMovement))]
     public class LocalPlayerInput : MonoBehaviour
@@ -26,6 +28,23 @@ namespace Dawnholder.Client.Input
 
         LocalPlayerMovement _movement = null!;
         LocalPlayerMotion? _motion;
+
+        // 클래스별 스킬 키 매핑 단일 진실.
+        // 키 배치 변경 시 이 테이블 한 곳만 수정. Phase 04/06에서 연출 추가 시도 여기서 SkillId 조회.
+        //
+        // | 클래스 | Q 키         | E 키      |
+        // |--------|--------------|-----------|
+        // | Mage   | Thunderbolt  | Teleport  |
+        // | Knight | Dash         | (없음)    |
+        //
+        // SkillCatalog.CanCast 게이트로 내 클래스가 못 쓰는 스킬은 송신 차단 (UX + 트래픽 절감).
+        // 헌법 §1: 클라 게이트는 편의, 진짜 권위는 서버 — 서버도 별도 검증.
+        static readonly Dictionary<CharacterClass, (SkillId q, SkillId e)> SkillKeyMap =
+            new Dictionary<CharacterClass, (SkillId q, SkillId e)>
+            {
+                { CharacterClass.Mage,   (SkillId.Thunderbolt, SkillId.Teleport) },
+                { CharacterClass.Knight, (SkillId.Dash,        SkillId.None)     },
+            };
 
         void Awake()
         {
@@ -90,28 +109,53 @@ namespace Dawnholder.Client.Input
             _motion.FaceToward(et.position.x);
         }
 
-        // 스킬 키 Q — 임시 바인딩 (정식 리바인딩 UI는 범위 밖). down 에지 폴링.
-        // C_SkillUse 송신 + 로컬 캐스팅 commit window(이동 잠금). 게이트 = *스킬 독립 쿨다운*(CanUseSkill).
-        // 쿨다운 중 입력은 여기서 차단 → 송신·채널링 모션 둘 다 억제(서버 silent drop과 불일치 방지).
+        // 스킬 키 Q / E — 임시 바인딩 (정식 리바인딩 UI는 범위 밖). down 에지 폴링.
+        // 클래스별 SkillKeyMap에서 SkillId 조회 → SkillCatalog.CanCast 게이트 → C_SkillUse 송신.
         void Update()
         {
             if (Keyboard.current == null) return;
-            if (!Keyboard.current.qKey.wasPressedThisFrame) return;
-            if (!_movement.CanUseSkill) return;
+
+            bool qDown = Keyboard.current.qKey.wasPressedThisFrame;
+            bool eDown = Keyboard.current.eKey.wasPressedThisFrame;
+            if (!qDown && !eDown) return;
+
+            CharacterClass myClass = ClassLoadout.SessionSelectedClass
+                ?? (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
+
+            if (!SkillKeyMap.TryGetValue(myClass, out (SkillId q, SkillId e) mapping)) return;
+
+            SkillId skillId = qDown ? mapping.q : mapping.e;
+            TrySendSkill(skillId, myClass);
+        }
+
+        // 스킬 송신 공통 경로.
+        // 게이트 순서: None 필터 → 클래스 자격(CanCast) → 쿨다운(Thunderbolt만 CanUseSkill 적용) → 세션 준비.
+        // Dash/Teleport는 쿨다운 선예측 없음 — Phase 03/05에서 NotifyDash/NotifyTeleport 추가 예정.
+        // Phase 04/06 Worker 인터페이스: skillId 분기 후 NotifyXxx 호출 자리는 아래 switch 확장.
+        void TrySendSkill(SkillId skillId, CharacterClass myClass)
+        {
+            if (skillId == SkillId.None) return;
+            if (!SkillCatalog.CanCast(myClass, skillId)) return;
+
+            // Thunderbolt: 스킬 독립 쿨다운 게이트 적용.
+            // Dash/Teleport: 서버 미구현(Phase 03/05) — 클라 쿨다운 예측 없음. 쿨다운 게이트 생략.
+            if (skillId == SkillId.Thunderbolt && !_movement.CanUseSkill) return;
 
             UnityClientSession? session = UnityClientSession.Instance;
             if (session == null) return;
 
             C_SkillUse pkt = new C_SkillUse
             {
-                skillId = (byte)SkillId.Thunderbolt,
+                skillId = (byte)skillId,
                 attackerClientTick = session.LastReceivedServerTick
             };
             session.SendIntent(pkt.Write());
-            Debug.Log($"[Skill] → Thunderbolt clientTick={pkt.attackerClientTick}");
+            Debug.Log($"[Skill] → {skillId} clientTick={pkt.attackerClientTick}");
 
-            // 캐스팅 commit window — 이동 잠금 + 채널링 모션 선예측(Attack 스윙 대신 Channeling).
-            _movement.NotifyChannel();
+            // 선예측 커밋: Thunderbolt만 채널링 모션 + 쿨다운 예측.
+            // Dash/Teleport는 Phase 03/05에서 NotifyDash/NotifyTeleport로 확장.
+            if (skillId == SkillId.Thunderbolt)
+                _movement.NotifyChannel();
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.

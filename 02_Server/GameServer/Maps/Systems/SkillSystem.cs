@@ -18,10 +18,11 @@ internal sealed class SkillSystem
 {
     internal void ProcessSkill(GameMap map, int casterEntityId, byte skillId, long attackerClientTick)
     {
-        // skillId 분기. 현재는 Thunderbolt(1)만. 미래 스킬 추가 시 여기에 case 추가.
+        // skillId 분기. Phase 03(Dash)/05(Teleport) 구현 시 여기에 case 추가.
+        // Dash(2)/Teleport(3)는 클래스 게이트는 통과하지만 아직 미구현 — 방어적 drop (null 참조 방지).
         if (skillId == (byte)SkillId.Thunderbolt)
             ProcessThunderbolt(map, casterEntityId, attackerClientTick);
-        // else: 이미 핸들러에서 걸렸어야 함 — defensive silent drop (이중 가드).
+        // else: 미구현 스킬 = 핸들러 통과 후 여기서 무해하게 drop.
     }
 
     void ProcessThunderbolt(GameMap map, int casterEntityId, long attackerClientTick)
@@ -32,7 +33,7 @@ internal sealed class SkillSystem
 
         // 2) 쿨다운 검증 (헌법 #3 — tick 기반, blocking call 0)
         long currentTick = map.CurrentTick;
-        if (currentTick - caster.LastSkillTick < CombatConstants.ThunderboltCooldownTicks) return;
+        if (currentTick - caster.GetLastSkillTick((byte)SkillId.Thunderbolt) < CombatConstants.ThunderboltCooldownTicks) return;
 
         // 3) rewind 범위 검증 (ProcessAttack 동형 — 헌법 #3 Trust Boundary)
         if (attackerClientTick < 0) return;               // (a) 음수
@@ -50,7 +51,7 @@ internal sealed class SkillSystem
 
         // 5) 쿨다운 소비 — 쿨다운 통과 후 박스 스캔 성립 시점에 소비.
         //    빈 박스여도 캐스팅했으면 쿨다운 소비 (허공 시전도 의도한 행동).
-        caster.LastSkillTick = currentTick;
+        caster.SetLastSkillTick((byte)SkillId.Thunderbolt, currentTick);
 
         // 6) 각 타겟에 지연 데미지 + freeze (Normal/Golem만)
         long impactTick = currentTick + CombatConstants.LightningDelayTicks;
