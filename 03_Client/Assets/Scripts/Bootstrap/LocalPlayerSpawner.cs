@@ -103,6 +103,11 @@ namespace Dawnholder.Client.Bootstrap
                 Debug.LogWarning($"[LocalPlayerSpawner] '{scene.name}': CameraFollow를 찾지 못했습니다 — " +
                                  "카메라가 플레이어를 따라가지 못합니다. 씬에 CameraFollow가 붙은 Main Camera가 있는지 확인하세요.");
 
+            // 배경 패럴랙스를 플레이어 위치에 재정렬. 카메라가 방금 플레이어에 snap됐으니(SetTarget),
+            // 배경 합성 구도를 플레이어 중심으로 맞춘다(spawn 위치는 서버 권위 → 씬 authored 위치와 다름).
+            foreach (ParallaxLayer layer in FindObjectsByType<ParallaxLayer>(FindObjectsSortMode.None))
+                layer.AnchorToCameraX();
+
             Debug.Log($"[LocalPlayerSpawner] '{scene.name}': LocalPlayer Instantiate 완료. " +
                       "위치는 서버 권위 경로(HandleEnterMap / PendingSpawn)가 설정합니다.");
         }

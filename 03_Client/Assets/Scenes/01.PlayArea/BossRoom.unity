@@ -422,6 +422,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6930122694965717509, guid: f98d0f39fcc67a34f844abd8a50f2c03, type: 3}
   m_PrefabInstance: {fileID: 727449987}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &794147973
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446080449947794274, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_Name
+      value: Parallax_CastleValley
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
 --- !u!1 &836397610
 GameObject:
   m_ObjectHideFlags: 0
@@ -9452,6 +9509,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1958540816401457415, guid: ab3e98f75d82095469ac9276e2ba381c, type: 3}
+      propertyPath: orthographic size
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 2876423326157370536, guid: ab3e98f75d82095469ac9276e2ba381c, type: 3}
       propertyPath: m_Name
       value: Main Camera
@@ -9912,7 +9973,7 @@ TilemapRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
-  m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
+  m_ChunkCullingBounds: {x: 0.5, y: 0.3125, z: 0}
   m_MaxChunkCount: 16
   m_MaxFrameAge: 16
   m_SortOrder: 0
@@ -10238,3 +10299,4 @@ SceneRoots:
   - {fileID: 1705234382}
   - {fileID: 1056314594}
   - {fileID: 1985689546}
+  - {fileID: 794147973}

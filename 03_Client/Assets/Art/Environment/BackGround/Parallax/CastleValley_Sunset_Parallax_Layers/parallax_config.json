@@ -1,0 +1,56 @@
+{
+  "pack": "CastleValley_Sunset",
+  "resolution": {
+    "width": 2172,
+    "height": 724,
+    "aspect": "3:1"
+  },
+  "layers": [
+    {
+      "file": "01_Sky_SunGlow.png",
+      "sortingOrder": 0,
+      "parallaxSpeed": 0.0,
+      "notes": "fixed base sky"
+    },
+    {
+      "file": "02_Far_Clouds.png",
+      "sortingOrder": 10,
+      "parallaxSpeed": 0.02
+    },
+    {
+      "file": "03_Distant_Mountains.png",
+      "sortingOrder": 20,
+      "parallaxSpeed": 0.05
+    },
+    {
+      "file": "04_Mid_Mountains_Hills.png",
+      "sortingOrder": 30,
+      "parallaxSpeed": 0.09
+    },
+    {
+      "file": "05_Castle_City.png",
+      "sortingOrder": 40,
+      "parallaxSpeed": 0.14
+    },
+    {
+      "file": "06_Valley_Fields_Ruins.png",
+      "sortingOrder": 50,
+      "parallaxSpeed": 0.22
+    },
+    {
+      "file": "07_Foreground_Foliage.png",
+      "sortingOrder": 60,
+      "parallaxSpeed": 0.35
+    },
+    {
+      "file": "Gameplay_Terrain",
+      "sortingOrder": 100,
+      "parallaxSpeed": 1.0
+    },
+    {
+      "file": "Player",
+      "sortingOrder": 200,
+      "parallaxSpeed": 1.0
+    }
+  ]
+}

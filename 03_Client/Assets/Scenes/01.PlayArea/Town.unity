@@ -5890,6 +5890,63 @@ Transform:
   - {fileID: 1722695646}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &794147973
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6262267060346732030, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6446080449947794274, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
+      propertyPath: m_Name
+      value: Parallax_CastleValley
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 375a2c30d30be6947ad5292c1b5fe41a, type: 3}
 --- !u!1001 &1164878584
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6107,6 +6164,10 @@ PrefabInstance:
     - target: {fileID: 203247392443297968, guid: ab3e98f75d82095469ac9276e2ba381c, type: 3}
       propertyPath: m_LocalPosition.z
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1958540816401457415, guid: ab3e98f75d82095469ac9276e2ba381c, type: 3}
+      propertyPath: orthographic size
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2876423326157370536, guid: ab3e98f75d82095469ac9276e2ba381c, type: 3}
       propertyPath: m_Name
@@ -7003,3 +7064,4 @@ SceneRoots:
   - {fileID: 1920403858}
   - {fileID: 716738260}
   - {fileID: 6620005908849614914}
+  - {fileID: 794147973}
