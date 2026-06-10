@@ -139,6 +139,15 @@ namespace Dawnholder.Client.Combat
                 entry.Driver?.FireStrike();
         }
 
+        // S_EnemyAttack.targetId 기반 공격 대상 Transform을 EnemyMotion에 주입.
+        // 정지 + 공격 중 facing을 서버가 내린 실제 대상 쪽으로 고정 — 로컬 플레이어 추측 제거.
+        // target=null이면 EnemyMotion이 기존 _facing을 그대로 유지(폴백).
+        public void SetAttackTarget(int attackerId, Transform? target)
+        {
+            if (_enemies.TryGetValue(attackerId, out EnemyEntry entry))
+                entry.Motion?.SetAttackTarget(target);
+        }
+
         // 이펙트 flip용 — entityId의 시각 facing(1=우/-1=좌) 반환. Motion 없으면 1.
         public bool TryGetFacing(int entityId, out int facing)
         {

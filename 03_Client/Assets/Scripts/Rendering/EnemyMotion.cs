@@ -9,7 +9,8 @@ namespace Dawnholder.Client.Rendering
     // S_EntityState.animState(서버 권위)를 노출 — state 필드가 아님(AI FSM 상태라 시각 미사용).
     // Facing은 RemoteEntity가 보간한 transform.x 변화로 추론.
     // 예외: 정지 상태로 공격 중(보스 telegraph/strike)이면 이동이 없어 facing이 멈추므로
-    //   공격 대상(로컬 플레이어) 쪽을 바라본다 — facing은 시각 전용(판정 AABB는 서버에서 좌우 대칭).
+    //   서버 S_EnemyAttack.targetId 기반으로 공격 대상 Transform을 받아 그쪽을 바라본다.
+    //   facing은 시각 전용(판정 AABB는 서버에서 좌우 대칭).
     [DisallowMultipleComponent]
     public class EnemyMotion : MonoBehaviour, IMotionState
     {
@@ -18,6 +19,9 @@ namespace Dawnholder.Client.Rendering
         AnimState _animState;
         int _facing = 1;
         float _lastX;
+
+        // S_EnemyAttack 수신 시 EnemyRegistry.SetAttackTarget이 주입 — null이면 폴백으로 기존 _facing 유지.
+        Transform? _attackTarget;
 
         public AnimState CurrentAnimState => _animState;
         public int Facing => _facing;
@@ -41,6 +45,13 @@ namespace Dawnholder.Client.Rendering
             _animState = AnimState.Death;
         }
 
+        // S_EnemyAttack 수신 시 EnemyRegistry 경유로 주입 — 서버 targetId 기반 대상 Transform.
+        // 공격 애니메이션이 끝나면(AnimState가 Attack 아닐 때) 다음 LateUpdate 틱에서 자연히 무시됨.
+        public void SetAttackTarget(Transform? target)
+        {
+            _attackTarget = target;
+        }
+
         void LateUpdate()
         {
             float dx = transform.position.x - _lastX;
@@ -52,11 +63,11 @@ namespace Dawnholder.Client.Rendering
             }
             else if (_animState == AnimState.Attack)
             {
-                // 정지 + 공격 중: 이동이 없어 facing이 옛 추격 방향에 멈춤 → 대상을 바라보게 보정.
-                LocalPlayerMovement? lp = LocalPlayerMovement.Instance;
-                if (lp != null)
+                // 정지 + 공격 중: 이동이 없어 facing이 옛 추격 방향에 멈춤 → 서버 targetId 기반 대상을 바라봄.
+                // _attackTarget이 null이면(패킷 미도착/대상 소멸) 기존 _facing을 그대로 유지.
+                if (_attackTarget != null)
                 {
-                    float pdx = lp.transform.position.x - transform.position.x;
+                    float pdx = _attackTarget.position.x - transform.position.x;
                     if (Mathf.Abs(pdx) > FacingEpsilon)
                         _facing = pdx > 0f ? 1 : -1;
                 }
