@@ -277,7 +277,7 @@ public class GameMap
             p.ActionFsm.Tick(p);
         }
 
-        // 3) Snapshot 브로드캐스트. 매 2 tick(=100ms).
+        // 3) Snapshot 브로드캐스트. 매 1 tick(=50ms, 20Hz).
         if (tickNumber % Constants.SnapshotTickInterval == 0)
         {
             foreach (PlayerEntity p in _players)

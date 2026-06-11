@@ -22,10 +22,11 @@ public static class Constants
     public const float TickDuration = 1.0f / ServerTickRate;
 
     /// <summary>
-    /// S_Snapshot 브로드캐스트 주기 (tick 단위). 2 tick = 100ms (10Hz).
-    /// 너무 길면 클라 보간 buffer가 빔 → last-known 정지 패턴으로 어색해짐.
+    /// S_Snapshot 브로드캐스트 주기 (tick 단위). 1 tick = 50ms (20Hz).
+    /// M4.11 P1: RemotePlayer 보간 궤적 부드러움을 위해 10Hz(=2) → 20Hz(=1)로 상향.
+    /// trade-off: 대역폭 2배 증가이나 로컬/발표 규모(≤10명)에서 무시 가능.
     /// </summary>
-    public const int SnapshotTickInterval = 2;
+    public const int SnapshotTickInterval = 1;
 
     /// <summary>
     /// 단일 패킷 frame 최대 크기 (byte). PacketSession.OnRecv가 length 헤더 상한으로
