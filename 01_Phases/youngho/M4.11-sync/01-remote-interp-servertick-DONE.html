@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.11 Phase 01 — 원격 보간 serverTick + facing 정돈 (DONE)</title>
+<style>
+  :root { --bg:#0f1117; --card:#181b24; --line:#2a2f3a; --fg:#e6e9ef; --muted:#9aa3b2; --accent:#5aa9ff; --ok:#4ade80; --warn:#fbbf24; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans KR",sans-serif; line-height:1.7; }
+  .wrap { max-width:920px; margin:0 auto; padding:40px 24px 80px; }
+  h1 { font-size:1.7rem; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:.95rem; margin-bottom:24px; }
+  .badges span { display:inline-block; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:3px 12px; font-size:.8rem; margin:0 6px 6px 0; color:var(--muted); }
+  .tldr { background:linear-gradient(135deg,#1a2440,#181b24); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px; padding:18px 22px; margin:24px 0; }
+  h2 { font-size:1.15rem; margin:34px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:6px 22px; margin:12px 0; }
+  .step { margin:14px 0; }
+  .step b { color:var(--accent); }
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.92rem; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:600; }
+  .ok { color:var(--ok); }
+  .warn { color:var(--warn); }
+  pre { background:#0b0d12; border:1px solid var(--line); border-radius:8px; padding:14px 16px; overflow-x:auto; font-size:.84rem; color:#cdd3df; }
+  code { font-family:"JetBrains Mono",Consolas,monospace; }
+  ul { padding-left:20px; } li { margin:5px 0; }
+  .commits { font-size:.84rem; color:var(--muted); }
+  footer { margin-top:40px; color:var(--muted); font-size:.82rem; border-top:1px solid var(--line); padding-top:16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>M4.11 Phase 01 — 원격 보간 serverTick 전환 + 부드러움 + facing 정돈</h1>
+  <div class="sub">완료 박제 (DONE) · 2026-06-11 · feature/m4.11-sync</div>
+  <div class="badges">
+    <span>owner: youngho</span><span>grade: 대규모</span>
+    <span>domains: shared · server · client</span><span>ProtocolVersion 11→12</span>
+    <span>commit: 5f928c4</span>
+  </div>
+
+  <div class="tldr">
+    <strong>TL;DR</strong> — 원격 엔티티 보간이 서버 <code>serverTick</code>(권위 시각)을 버리고 클라 벽시계로
+    타임스탬프를 재도장해, 창 드래그로 <code>Update</code>가 멈췄다 재개되면 쌓인 스냅샷이 같은 벽시계 값으로
+    뭉쳐 desync(백로그 #5)가 났다. serverTick 시간축으로 전환해 봉합했고, 그 과정에서 매-snapshot 재기준이
+    stutter 회귀를 일으켜 clock smoothing(연속 재생 시계 + drift 흡수 + 큰 갭 snap)으로 2차 봉합했다. 이어
+    broadcast 20Hz·서버 vx facing·공격 타겟 facing 스냅까지 정돈해 RemotePlayer가 Local과 동일한 방향·부드러움으로
+    그려진다. <span class="ok">WSL2 556 passed</span> · 영호 2클라 실측 통과 · reviewer 6축 통과(blocker 0).
+  </div>
+
+  <h2>5단계 보고</h2>
+  <div class="card">
+    <p class="step"><b>무엇을 만들었나</b> — 원격 보간 4종 정돈: ①serverTick 시간축 전환(플레이어+적, 적은 <code>S_EntityState</code>에 serverTick append → ProtocolVersion 11→12) + clock smoothing, ②snapshot broadcast 10Hz→20Hz, ③RemotePlayer facing을 서버 vx 부호 기반으로, ④피격/공격 facing 가드(피격=공격자 향함, 공격=서버 타겟 방향 스냅).</p>
+    <p class="step"><b>왜 필요한가</b> — 발표 전 기반 정돈. 타 클라에서 보이는 캐릭터가 ⓐ창드래그 후 천천히 회복되는 desync, ⓑ뚝뚝 끊김(stutter), ⓒ정지 중 좌우 떨림, ⓓ피격 시 잘못된 방향 플립, ⓔ공격 시 Local과 다른 방향 — 다섯 결함. 모두 "서버 권위를 클라가 버리거나 추측"해 생긴 것.</p>
+    <p class="step"><b>어떻게 만들었나</b> — 보간 버퍼 타임스탬프를 <code>serverTick * TickDuration</code>으로(벽시계 폐기). 재생 시점은 <code>_renderTime</code> 연속 전진 + <code>targetRender</code>와의 drift를 <code>CatchupRate 0.1</code>로 부드럽게 추종 + <code>ResyncThreshold 0.5</code> 초과(freeze 복귀)면 즉시 snap. facing은 서버 vx 부호 + 특수 상태 가드(피격 넉백 vx 반전, 공격은 <code>CombatSystem</code>이 <code>FacingDir</code>을 타겟 방향 스냅한 값을 <code>S_PlayerAttack.facing</code>으로 latch). LocalPlayerMotion 우선순위(피격&gt;공격&gt;이동)를 RemotePlayerMotion에 거울 복제.</p>
+    <p class="step"><b>테스트 결과</b> — WSL2 <code>dotnet test</code> 556 passed / 4 skip. Unity 컴파일 clean, BuildPlayer Succeeded(7씬, errors 0). 영호 2클라 실측: 다섯 결함 전부 봉합 확인. reviewer 6축 통과(🔴 0).</p>
+    <p class="step"><b>다음 스텝</b> — M4.11 P2~P5는 P1이 실제 결함을 다 해소해 contingency로 남음(마일스톤 마감 영호 판단). 백로그: facing 스냅 회귀 테스트(<code>ProcessAttack</code> 단위) 미박음.</p>
+  </div>
+
+  <h2>AC 검증 결과</h2>
+  <pre><code># 서버 테스트 (WSL2, ADR-029 — SAC가 Windows dotnet test 차단)
+$ dotnet test 02_Server/GameServer.Tests/...  --no-build
+  Passed!  - Failed: 0, Passed: 556, Skipped: 4, Total: 560  (1m 40s)
+
+# 서버 빌드 (Windows — 실행만 차단, build 가능)
+$ dotnet build 02_Server/GameServer/GameServer.csproj
+  경고 0개  오류 0개
+
+# 클라 (Unity MCP)
+  scriptCompilationFailed=False
+  BUILD result=Succeeded errors=0 out=C:/Dev/Build/Client/03_Client.exe scenes=7
+
+# 틱 예산 (20Hz broadcast — §5)
+  p50=0.02ms  p99=0.03ms  max=0.30ms  n=20   (예산 50ms 대비 무시)</code></pre>
+  <table>
+    <tr><th>실측 항목 (영호 2클라)</th><th>결과</th></tr>
+    <tr><td>창드래그 desync (백로그 #5)</td><td class="ok">✅ 봉합</td></tr>
+    <tr><td>RemotePlayer stutter</td><td class="ok">✅ 사라짐</td></tr>
+    <tr><td>이동 궤적 부드러움 (20Hz)</td><td class="ok">✅ 개선</td></tr>
+    <tr><td>정지 중 좌우 떨림 (vx facing)</td><td class="ok">✅ 사라짐</td></tr>
+    <tr><td>피격 시 방향 (공격자 향함)</td><td class="ok">✅ 플립 0</td></tr>
+    <tr><td>공격 방향 Local↔Remote</td><td class="ok">✅ 일치</td></tr>
+  </table>
+
+  <h2>결정 흐름</h2>
+  <ul>
+    <li><b>적 보간도 같이 (v12 bump)</b> → 했음. <code>RemoteEntity</code>가 플레이어/적 공용이라 반쪽 봉합 불가 + 공용 시그니처 변경이 적 경로 컴파일을 깸. append-only + 라운드트립 안전망으로 안전.</li>
+    <li><b>stutter: 벽시계 복귀 vs clock smoothing</b> → clock smoothing. 벽시계 되돌리면 백로그 #5 재발. serverTick 유지 + 재생 시점만 연속 시계 = 두 마리 토끼.</li>
+    <li><b>facing: 클라만 vs 서버 타겟 스냅</b> → 서버 타겟 스냅(영호 선택). 3자(Local·서버·Remote) 일치엔 서버가 타겟 방향 권위를 잡아야 함. trade-off: 이동 반대편 적 칠 때 lunge가 적 쪽으로(의도된 "몬스터 따라가기").</li>
+    <li><b>broadcast 20Hz 부하</b> → 로컬/발표 규모 무관. 틱예산 p99 ~1ms 실측으로 §5 정합 확인.</li>
+  </ul>
+
+  <h2>막혔던 지점</h2>
+  <ul>
+    <li>BuildPlayer "compile errors" but 콘솔 CS 0 → Editor.log 역추적으로 <code>EnemyRegistry.cs:97</code> 발견. <code>scriptCompilationFailed</code> 플래그가 진짜 상태.</li>
+    <li>SAC가 GameServer.exe 실행 차단 → WSL2 실행 표준(ADR-029).</li>
+    <li><code>pkill -f 'dotnet GameServer'</code>가 자기 부모 bash까지 죽임 → kill과 build를 분리된 호출로.</li>
+  </ul>
+
+  <h2>학습 일지 후보 키워드</h2>
+  <ul>
+    <li>snapshot interpolation · server-authoritative time axis (serverTick vs wall-clock)</li>
+    <li>client-side clock / playout delay buffer · drift catch-up vs snap-on-discontinuity</li>
+    <li>ProtocolVersion bump (append-only) · PacketRoundTrip 안전망</li>
+    <li>server-authoritative facing · Local↔Remote 표현 일치 · knockback 방향 반전</li>
+    <li>SAC + WSL2 실행 표준(ADR-029) · pkill -f self-match 함정</li>
+  </ul>
+
+  <footer>
+    <div class="commits">commits: 5cf33ce · 3208602 · 7931e91 · 0c2eeb3 · d845e19 · 9933740 · 5f928c4</div>
+    Dawnholder · M4.11-sync Phase 01 · 사실 박제 (회고/면접 자료는 learning-journal + Codex 재편집 영역)
+  </footer>
+</div>
+</body>
+</html>
