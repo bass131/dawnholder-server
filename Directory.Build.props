@@ -1,0 +1,10 @@
+<Project>
+
+  <!-- StyleCop.Analyzers: 멤버 정렬(SA1201/SA1202)을 빌드 경고로 강제 — CODE_CONVENTION §7.1. -->
+  <!-- 03_Client(Unity)는 03_Client/Directory.Build.props 차단막으로 격리한다: -->
+  <!-- Unity는 NuGet PackageReference를 자체 처리하지 않아 끼면 IDE/빌드가 깨진다. -->
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

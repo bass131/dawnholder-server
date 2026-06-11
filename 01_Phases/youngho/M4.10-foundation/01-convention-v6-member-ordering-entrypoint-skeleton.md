@@ -1,14 +1,14 @@
 ---
 owner: youngho
 phase: 01
-status: pending
+status: done
 grade: 복잡
 summary: CODE_CONVENTION v5→v6(DRY·멤버정렬·진입점·책임헤더 4보강) + 부록 A 실측 갱신 + .editorconfig 멤버정렬 룰 + ENTRY_POINTS.md 골격
 ---
 
 # Phase 01: 컨벤션 v6 확정 + Roslyn 멤버정렬 + 진입점맵 골격
 
-> **상태**: pending
+> **상태**: done
 > **마일스톤**: M4.10
 > **등급**: 복잡 (문서 + .editorconfig 설정, 코드 변경 0)
 > **담당**: shared Worker(Sonnet)
