@@ -125,7 +125,7 @@ namespace Dawnholder.Client.State
 
         // S_Snapshot 핸들러에서 호출 (entityId가 본인이 아닌 경우만).
         // 지연 spawn — entity 없으면 Snapshot 좌표로 Spawn(직업 미상=null).
-        public void UpdateSnapshot(int entityId, int serverTick, float x, float y, byte animState)
+        public void UpdateSnapshot(int entityId, int serverTick, float x, float y, float vx, byte animState)
         {
             // self 가드 (Spawn과 동일 불변식) — 전환 중 누수된 본인 Snapshot이 지연 spawn으로
             // Knight 유령을 만드는 경로 차단.
@@ -139,7 +139,10 @@ namespace Dawnholder.Client.State
             }
             entity.EnqueueSnapshot(serverTick, x, y);
             if (_motions.TryGetValue(entityId, out RemotePlayerMotion? motion))
+            {
                 motion.SetAnimState(animState);
+                motion.SetVelocityX(vx);
+            }
         }
 
         // S_PlayerAttack 핸들러가 원격 공격자 위치 조회 시 사용.

@@ -57,6 +57,7 @@ namespace Dawnholder.Client.Network
                     // 타인 path — 전환 중이면 roster buffer 캐싱.
                     float capturedX = x;
                     float capturedY = y;
+                    float capturedVx = vx;
                     int capturedEid = eid;
                     byte capturedAnimState = animState;
                     int capturedTick = sTick;
@@ -65,12 +66,12 @@ namespace Dawnholder.Client.Network
                             () =>
                             {
                                 if (RemoteEntityRegistry.Instance != null)
-                                    RemoteEntityRegistry.Instance.UpdateSnapshot(capturedEid, capturedTick, capturedX, capturedY, capturedAnimState);
+                                    RemoteEntityRegistry.Instance.UpdateSnapshot(capturedEid, capturedTick, capturedX, capturedY, capturedVx, capturedAnimState);
                             }))
                         return;
 
                     if (RemoteEntityRegistry.Instance != null)
-                        RemoteEntityRegistry.Instance.UpdateSnapshot(eid, sTick, x, y, animState);
+                        RemoteEntityRegistry.Instance.UpdateSnapshot(eid, sTick, x, y, vx, animState);
                 }
             });
         }
