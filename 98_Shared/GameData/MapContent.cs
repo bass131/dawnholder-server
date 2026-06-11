@@ -27,12 +27,10 @@ public sealed class MapContent
     public readonly float PlayerSpawnX;
     public readonly float PlayerSpawnY;
 
-    private readonly EnemySpawnPoint[] _enemies;
-
-    public System.ReadOnlySpan<EnemySpawnPoint> Enemies => _enemies;
-
     public static readonly MapContent Empty
         = new MapContent(0f, 0f, System.Array.Empty<EnemySpawnPoint>());
+
+    private readonly EnemySpawnPoint[] _enemies;
 
     public MapContent(float playerSpawnX, float playerSpawnY, EnemySpawnPoint[] enemies)
     {
@@ -43,4 +41,6 @@ public sealed class MapContent
             ? System.Array.Empty<EnemySpawnPoint>()
             : (EnemySpawnPoint[])enemies.Clone();
     }
+
+    public System.ReadOnlySpan<EnemySpawnPoint> Enemies => _enemies;
 }

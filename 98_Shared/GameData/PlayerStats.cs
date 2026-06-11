@@ -17,14 +17,6 @@ namespace Shared.GameData;
 /// </summary>
 public sealed class PlayerStats
 {
-    public CharacterClass Class { get; }
-    public int Hp { get; set; }
-    public int MaxHp { get; }
-    public int Attack { get; }
-    public int Defense { get; }
-    public float MoveSpeed { get; }
-    public float JumpVel { get; }
-
     private PlayerStats(CharacterClass cls, int hp, int maxHp, int attack, int defense, float moveSpeed, float jumpVel)
     {
         Class = cls;
@@ -35,6 +27,14 @@ public sealed class PlayerStats
         MoveSpeed = moveSpeed;
         JumpVel = jumpVel;
     }
+
+    public CharacterClass Class { get; }
+    public int Hp { get; set; }
+    public int MaxHp { get; }
+    public int Attack { get; }
+    public int Defense { get; }
+    public float MoveSpeed { get; }
+    public float JumpVel { get; }
 
     // 전사 — 고체력/고방어/저속. 근접 탱커 컨셉.
     public static PlayerStats Knight()

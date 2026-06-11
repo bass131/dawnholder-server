@@ -1,4 +1,4 @@
-# Dawnholder Code Convention v6
+# Dawnholder Code Convention v6.1
 
 > **우리가 채택한 규칙**의 단일 진실. 책 이론·함정은 [`refs/`](refs/) 참고서(GPP 19 + 교과서 10)로 분리했다(섞지 않음). 작업별 라우팅 진입점은 [`INDEX.md`](INDEX.md).
 > 모든 SubAgent는 코드 작성 *전* `INDEX.md`에서 작업 유형을 찾아 본 문서의 해당 규칙 + refs를 참조한다 (강제 = §5).
@@ -121,9 +121,9 @@
 
 C# 클래스 내 멤버 선언 순서를 고정한다. 일관된 순서 = 읽는 사람이 "이 멤버 어디 있지?" 탐색 비용 0.
 
-**강제 순서**: 상수(const) → static 필드 → 인스턴스 필드 → 프로퍼티 → 생성자 → public 메서드 → private 메서드 → 중첩 타입(nested type)
+**강제 순서(SA1201)**: 필드 → 생성자 → event → 프로퍼티 → 메서드 → 중첩 타입. 같은 종류 안에서는 접근성 순(**SA1202**): public → internal → protected internal → protected → private. 파일(네임스페이스) 레벨은 struct → class. 필드 안에서 상수 → static → 인스턴스 순은 *권장*(SA1203/1204 미강제 — 도구가 검사하지 않으므로 재량).
 
-**강제 도구**: StyleCop.Analyzers **SA1201**(멤버 종류 순서) + **SA1202**(접근성 순서)를 `.editorconfig`에 `warning` 레벨로 박는다 — 빌드 시 경고로 노출(`.editorconfig` 설정은 메인이 박는다; 전체 코드 경고 0 스윕은 Phase 05).
+**강제 도구**: StyleCop.Analyzers **SA1201**(멤버 종류 순서) + **SA1202**(접근성 순서)를 `.editorconfig`에 `warning` 레벨로 박는다 — 빌드 시 경고로 노출. **적용 범위 = production 게임 코드**(02_Server / 98_Shared / 04_ClientNet, 경고 0 스윕 완료 — M4.10 Phase 05). `GameServer.Tests/`·`99_Tools/`는 하위 `.editorconfig`로 완화(비상 가독성 가치 낮음), `03_Client`는 Unity NuGet 비호환으로 도구 미적용(차단막 — 발표 후 별도).
 
 **`#region` 수동 구획 금지** — 사람이 `#region Fields`, `#region Methods`로 구획해도 컴파일러가 순서를 검사하지 않는다(drift). SA1201/1202가 자동 강제하므로 `#region` 구획에 의존하지 않는다.
 
@@ -178,3 +178,4 @@ C# 클래스 내 멤버 선언 순서를 고정한다. 일관된 순서 = 읽는
 | 2026-05-29 | v4   | §3.3 확장 — **서버·클라 공통 적용** 명문화(`m_` 헝가리안 금지) + `[SerializeField]`도 `_camelCase`(designer-facing 예외 두지 않음) + **매개변수/지역변수 `camelCase`(밑줄 금지)**. `_`-prefix 매개변수(`_endPoint` 류)를 §4 casing이 아닌 §3.3 prefix 위반으로 재분류. M4.3R Phase 01 (사용자 결정). |
 | 2026-05-30 | v5   | §2.4 **네트워크 세션 프레이밍 템플릿 깊이 2 예외** 명문화 (`Session→PacketSession→GameSession`은 의도된 framing↔handler 분리 — Codex read-only 감사). **§6 주석 정책 신설** (self-documenting — §6.2 금지 5종 + §6.3 안전 예외 5%; M4.3X 대정리 기준). 제목 v3→v5 stale 정정. 동반 코드 정합: PacketGenerator 매개변수/템플릿 prefix(§3.3) + SceneTransition `[SerializeField]` rename. |
 | 2026-06-11 | v6   | **4보강**: §2.5 DRY(중복 2회=신호/3회=의무, 우연한 중복 예외) + §6.5 클래스 1줄 책임 헤더(public 클래스 의무, GameMap 헤더 모범) + §7.1 멤버 정렬(상수→static→필드→프로퍼티→생성자→public→private→중첩, StyleCop SA1201/SA1202 경고 강제, `#region` 의존 금지) + §7.2 진입점 내비게이션(ENTRY_POINTS.md + 파일 흐름 1줄 헤더). **부록 A 실측 갱신**: GameMap(665→436, 6 System 분리 완료) 졸업, ClientPacketHandlers 909줄을 진짜 미실행 대상으로 기재(M4.12), 전수조사 중복 7건 편입. M4.10 Phase 01. |
+| 2026-06-11 | v6.1 | **§7.1 정정 + 범위 확정** (M4.10 Phase 05): v6 초안의 "프로퍼티→생성자" 순서가 SA1201 실강제("생성자→프로퍼티")와 반대 — 도구가 검사하는 순서가 진실이므로 문서를 도구에 맞춤(선언=실재). 적용 범위 명문화: production(02_Server/98_Shared/04_ClientNet)만 강제, Tests·99_Tools는 하위 `.editorconfig` 완화, 03_Client는 도구 미적용(Unity NuGet 비호환). production 경고 189→0 스윕 동반. ENTRY_POINTS.md 본문 작성(§7.2 (a) 이행). |

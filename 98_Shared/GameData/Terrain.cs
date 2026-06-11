@@ -46,16 +46,13 @@ public readonly struct TerrainPlatform
 /// </summary>
 public sealed class MapTerrain
 {
-    private readonly TerrainAabb[] _solids;
-    private readonly TerrainPlatform[] _platforms;
-
     /// <summary>
     /// 구멍 낙하 경계 Y. killPlaneY 미사용 맵은 float.NegativeInfinity (= 영원히 미발동).
     /// </summary>
     public readonly float KillPlaneY;
 
-    public System.ReadOnlySpan<TerrainAabb> Solids => _solids;
-    public System.ReadOnlySpan<TerrainPlatform> Platforms => _platforms;
+    private readonly TerrainAabb[] _solids;
+    private readonly TerrainPlatform[] _platforms;
 
     public MapTerrain(TerrainAabb[] solids, TerrainPlatform[] platforms,
                       float killPlaneY = float.NegativeInfinity)
@@ -69,5 +66,8 @@ public sealed class MapTerrain
             : (TerrainPlatform[])platforms.Clone();
         KillPlaneY = killPlaneY;
     }
+
+    public System.ReadOnlySpan<TerrainAabb> Solids => _solids;
+    public System.ReadOnlySpan<TerrainPlatform> Platforms => _platforms;
 
 }

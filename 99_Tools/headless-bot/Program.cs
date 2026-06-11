@@ -206,6 +206,20 @@ if (string.Equals(scenarioName, "EnemyAiSmoke", StringComparison.OrdinalIgnoreCa
     return r.Success ? 0 : 1;
 }
 
+if (string.Equals(scenarioName, "MapTransition", StringComparison.OrdinalIgnoreCase))
+{
+    MapTransitionScenario.Result r = await MapTransitionScenario.Run(host, port);
+    Console.WriteLine($"[Bot] MapTransition: success={r.Success} entity={r.EntityId}");
+    Console.WriteLine($"      HG={r.EnteredHuntingGround}(spawnX={r.SpawnXOnHG:F2}) " +
+                      $"Boss={r.EnteredBossRoom}(spawnX={r.SpawnXOnBossRoom:F2}) " +
+                      $"Ending={r.EnteredEnding}(spawnX={r.SpawnXOnEnding:F2}) " +
+                      $"Town={r.ReturnedToTown}(spawnX={r.SpawnXOnTown:F2})");
+    Console.WriteLine($"      entityIdPreserved={r.EntityIdPreservedAcrossAllMaps} " +
+                      $"spawnCoordinatesCorrect={r.SpawnCoordinatesCorrect}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
 if (scenarioName == "M2BasicMovement")
 {
     M2BasicMovement.Result r = await M2BasicMovement.Run(host, port);

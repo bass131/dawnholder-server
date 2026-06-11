@@ -1,0 +1,8 @@
+# GameServer.Tests — 멤버정렬(SA1201/SA1202) 강제 제외 (M4.10 Phase 05 사용자 결정)
+# 사유: 멤버정렬의 목적은 비상 디버깅 시 위치 예측(production 게임 코드)인데,
+#       테스트 코드는 그 가치가 낮고 재배치 노동·회귀 위험 대비 이득이 없다.
+# 루트 .editorconfig의 나머지 설정은 그대로 상속된다 (root 선언 없음 — 이 2룰만 덮어씀).
+
+[*.cs]
+dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1202.severity = none

@@ -1,0 +1,7 @@
+# 99_Tools(헤드리스 봇/PacketGenerator/BgmComposer) — 멤버정렬(SA1201/SA1202) 강제 제외 (M4.10 Phase 05 사용자 결정)
+# 사유: 도구·봇 시나리오는 비상 디버깅 가독성 대상이 아니다 — 강제는 production 게임 코드만.
+# 루트 .editorconfig의 나머지 설정은 그대로 상속된다 (root 선언 없음 — 이 2룰만 덮어씀).
+
+[*.cs]
+dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1202.severity = none

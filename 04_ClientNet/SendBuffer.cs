@@ -56,12 +56,12 @@ public class SendBuffer
     readonly byte[] _buffer;
     int _usedSize;
 
-    public int FreeSize => _buffer.Length - _usedSize;
-
     public SendBuffer(int chunkSize)
     {
         _buffer = new byte[chunkSize];
     }
+
+    public int FreeSize => _buffer.Length - _usedSize;
 
     /// <summary>reserveSize 만큼의 자리를 *예약만* (커서는 안 움직임).</summary>
     public ArraySegment<byte> Open(int reserveSize)

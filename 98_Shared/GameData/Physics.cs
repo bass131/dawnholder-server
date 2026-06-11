@@ -3,6 +3,78 @@ namespace Shared.GameData;
 using System.Numerics;
 
 /// <summary>
+/// 직업별 이동 파라미터. 두 float을 낱개로 넘기지 않는 이유: 둘 다 float이라
+/// 호출부에서 자리 바꿈 실수가 컴파일에 안 잡힘 — 필드명으로 방지.
+/// readonly struct → 값 전달, GC 압박 0.
+/// </summary>
+public readonly struct MoveParams
+{
+    public readonly float MoveSpeed;
+    public readonly float JumpVel;
+
+    public MoveParams(float moveSpeed, float jumpVel)
+    {
+        MoveSpeed = moveSpeed;
+        JumpVel   = jumpVel;
+    }
+}
+
+/// <summary>
+/// 시뮬레이션 한 step의 입력. inputX(-1/0/1) + jumpPressed + dt + externalVelX(넉백 임펄스).
+/// readonly struct → 값 전달, GC 압박 0.
+///
+/// ExternalVelX: 기본값 0. 0이면 기존 이동 동작과 완전히 동일 (기존 호출자 전부 불변).
+/// 넉백 등 외부 임펄스가 있을 때 3인자 ctor 대신 4인자 ctor을 사용한다.
+/// </summary>
+public readonly struct PhysicsInput
+{
+    public readonly sbyte InputX;
+    public readonly bool JumpPressed;
+    public readonly float Dt;
+    /// <summary>
+    /// 넉백 등 외부 수평 임펄스 (units/s). 0이면 동작 변화 없음.
+    /// InputX * MoveSpeed에 *더해져* 최종 vx를 만든다.
+    /// 지형 X-스윕이 vx를 사용하므로 넉백도 자동으로 벽에 막힌다.
+    /// </summary>
+    public readonly float ExternalVelX;
+
+    // 기존 3인자 ctor — ExternalVelX=0 위임. 기존 호출자 전부 이 ctor을 그대로 쓴다.
+    public PhysicsInput(sbyte inputX, bool jumpPressed, float dt)
+        : this(inputX, jumpPressed, dt, 0f) { }
+
+    // 4인자 ctor — 넉백 임펄스 있을 때 사용.
+    public PhysicsInput(sbyte inputX, bool jumpPressed, float dt, float externalVelX)
+    {
+        InputX = inputX;
+        JumpPressed = jumpPressed;
+        Dt = dt;
+        ExternalVelX = externalVelX;
+    }
+}
+
+/// <summary>
+/// 시뮬레이션 한 step의 상태. 위치/속도/ground 플래그.
+/// readonly struct → 결정론 안정성 + GC 압박 0.
+/// </summary>
+public readonly struct PhysicsState
+{
+    public readonly Vector2 Position;
+    public readonly Vector2 Velocity;
+    public readonly bool OnGround;
+
+    public PhysicsState(Vector2 position, Vector2 velocity, bool onGround)
+    {
+        Position = position;
+        Velocity = velocity;
+        OnGround = onGround;
+    }
+
+    /// <summary>spawn / 초기화용 — 위치 외 velocity=0, OnGround는 위치로 추정.</summary>
+    public static PhysicsState AtRest(Vector2 position)
+        => new PhysicsState(position, Vector2.Zero, position.Y <= 0.0001f);
+}
+
+/// <summary>
 /// 결정론적 물리 공식. 양쪽이 같은 함수 호출 → 같은 결과.
 ///
 /// **헌법 #1 (Server Authority) 정합**: 공식 = Shared, 실행 = 서버. 클라 prediction도
@@ -275,76 +347,4 @@ public static class Physics
             new Vector2(vx, vy),
             onGround);
     }
-}
-
-/// <summary>
-/// 직업별 이동 파라미터. 두 float을 낱개로 넘기지 않는 이유: 둘 다 float이라
-/// 호출부에서 자리 바꿈 실수가 컴파일에 안 잡힘 — 필드명으로 방지.
-/// readonly struct → 값 전달, GC 압박 0.
-/// </summary>
-public readonly struct MoveParams
-{
-    public readonly float MoveSpeed;
-    public readonly float JumpVel;
-
-    public MoveParams(float moveSpeed, float jumpVel)
-    {
-        MoveSpeed = moveSpeed;
-        JumpVel   = jumpVel;
-    }
-}
-
-/// <summary>
-/// 시뮬레이션 한 step의 입력. inputX(-1/0/1) + jumpPressed + dt + externalVelX(넉백 임펄스).
-/// readonly struct → 값 전달, GC 압박 0.
-///
-/// ExternalVelX: 기본값 0. 0이면 기존 이동 동작과 완전히 동일 (기존 호출자 전부 불변).
-/// 넉백 등 외부 임펄스가 있을 때 3인자 ctor 대신 4인자 ctor을 사용한다.
-/// </summary>
-public readonly struct PhysicsInput
-{
-    public readonly sbyte InputX;
-    public readonly bool JumpPressed;
-    public readonly float Dt;
-    /// <summary>
-    /// 넉백 등 외부 수평 임펄스 (units/s). 0이면 동작 변화 없음.
-    /// InputX * MoveSpeed에 *더해져* 최종 vx를 만든다.
-    /// 지형 X-스윕이 vx를 사용하므로 넉백도 자동으로 벽에 막힌다.
-    /// </summary>
-    public readonly float ExternalVelX;
-
-    // 기존 3인자 ctor — ExternalVelX=0 위임. 기존 호출자 전부 이 ctor을 그대로 쓴다.
-    public PhysicsInput(sbyte inputX, bool jumpPressed, float dt)
-        : this(inputX, jumpPressed, dt, 0f) { }
-
-    // 4인자 ctor — 넉백 임펄스 있을 때 사용.
-    public PhysicsInput(sbyte inputX, bool jumpPressed, float dt, float externalVelX)
-    {
-        InputX = inputX;
-        JumpPressed = jumpPressed;
-        Dt = dt;
-        ExternalVelX = externalVelX;
-    }
-}
-
-/// <summary>
-/// 시뮬레이션 한 step의 상태. 위치/속도/ground 플래그.
-/// readonly struct → 결정론 안정성 + GC 압박 0.
-/// </summary>
-public readonly struct PhysicsState
-{
-    public readonly Vector2 Position;
-    public readonly Vector2 Velocity;
-    public readonly bool OnGround;
-
-    public PhysicsState(Vector2 position, Vector2 velocity, bool onGround)
-    {
-        Position = position;
-        Velocity = velocity;
-        OnGround = onGround;
-    }
-
-    /// <summary>spawn / 초기화용 — 위치 외 velocity=0, OnGround는 위치로 추정.</summary>
-    public static PhysicsState AtRest(Vector2 position)
-        => new PhysicsState(position, Vector2.Zero, position.Y <= 0.0001f);
 }
