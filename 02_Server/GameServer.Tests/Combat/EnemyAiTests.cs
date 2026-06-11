@@ -188,7 +188,7 @@ public class EnemyAiTests
         Assert.NotNull(enemy);
 
         // player를 de-aggro 임계 밖에 배치
-        float deAggroThreshold = enemy.Stats.AggroRange * 1.5f;
+        float deAggroThreshold = enemy.Stats.AggroRange * CombatConstants.DeAggroHysteresis;
         float farAwayX = enemy.X + deAggroThreshold + 1f;
         PlayerEntity player = AddPlayerAt(map, farAwayX, 0f);
 

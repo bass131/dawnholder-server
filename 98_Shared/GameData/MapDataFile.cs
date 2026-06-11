@@ -33,104 +33,6 @@ public static class MapDataFile
 
     private static readonly uint[] s_crcTable = BuildCrcTable();
 
-    private static uint[] BuildCrcTable()
-    {
-        uint[] table = new uint[256];
-        for (uint i = 0; i < 256; i++)
-        {
-            uint c = i;
-            for (int k = 0; k < 8; k++)
-                c = (c & 1) != 0 ? (0xEDB88320u ^ (c >> 1)) : (c >> 1);
-            table[i] = c;
-        }
-        return table;
-    }
-
-    private static uint ComputeCrc32(byte[] data, int offset, int length)
-    {
-        uint crc = 0xFFFFFFFFu;
-        for (int i = offset; i < offset + length; i++)
-            crc = s_crcTable[(crc ^ data[i]) & 0xFF] ^ (crc >> 8);
-        return crc ^ 0xFFFFFFFFu;
-    }
-
-    // ── 헬퍼 ─────────────────────────────────────────────────────────────────
-
-    private static float ReadF32LE(byte[] buf, int offset)
-        => BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(
-               new ReadOnlySpan<byte>(buf, offset, 4)));
-
-    private static int WriteF32LE(byte[] buf, int offset, float value)
-    {
-        BinaryPrimitives.WriteInt32LittleEndian(
-            new Span<byte>(buf, offset, 4),
-            BitConverter.SingleToInt32Bits(value));
-        return offset + 4;
-    }
-
-    // ── 헤더 쓰기 / 읽기 ─────────────────────────────────────────────────────
-
-    private static void WriteHeader(byte[] buf, ushort fileKind, ushort mapId,
-                                    int payloadLength, uint crc32)
-    {
-        // magic "DWMP"
-        buf[0] = (byte)'D'; buf[1] = (byte)'W'; buf[2] = (byte)'M'; buf[3] = (byte)'P';
-        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(buf, 4, 2), FormatVersion);
-        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(buf, 6, 2), fileKind);
-        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(buf, 8, 2), mapId);
-        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(buf, 10, 2), 0); // reserved
-        BinaryPrimitives.WriteUInt32LittleEndian(new Span<byte>(buf, 12, 4), (uint)payloadLength);
-        BinaryPrimitives.WriteUInt32LittleEndian(new Span<byte>(buf, 16, 4), crc32);
-    }
-
-    /// <summary>
-    /// 헤더 검증. 실패 항목마다 InvalidDataException — 어떤 검증이 왜 실패했는지 메시지에 명시.
-    /// </summary>
-    private static void ValidateHeader(byte[] data, ushort expectedKind, int expectedMapId)
-    {
-        if (data.Length < HeaderSize)
-            throw new InvalidDataException(
-                $"MapDataFile: 파일 크기 {data.Length}B가 헤더 최소 크기 {HeaderSize}B 미만.");
-
-        // magic
-        if (data[0] != 'D' || data[1] != 'W' || data[2] != 'M' || data[3] != 'P')
-        {
-            string found = $"0x{data[0]:X2}{data[1]:X2}{data[2]:X2}{data[3]:X2}";
-            throw new InvalidDataException(
-                $"MapDataFile: magic 불일치 — expected 'DWMP', found {found}.");
-        }
-
-        ushort version = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 4, 2));
-        if (version != FormatVersion)
-            throw new InvalidDataException(
-                $"MapDataFile: formatVersion 불일치 — expected {FormatVersion}, found {version}.");
-
-        ushort kind = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 6, 2));
-        if (kind != expectedKind)
-            throw new InvalidDataException(
-                $"MapDataFile: fileKind 불일치 — expected {expectedKind}, found {kind}. " +
-                "terrain 파일을 ReadContent로(또는 반대로) 읽은 것은 아닌지 확인.");
-
-        ushort mapId = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 8, 2));
-        if (mapId != (ushort)expectedMapId)
-            throw new InvalidDataException(
-                $"MapDataFile: mapId 불일치 — expected {expectedMapId}, found {mapId}.");
-
-        uint payloadLen = BinaryPrimitives.ReadUInt32LittleEndian(new ReadOnlySpan<byte>(data, 12, 4));
-        int actualPayload = data.Length - HeaderSize;
-        if ((int)payloadLen != actualPayload)
-            throw new InvalidDataException(
-                $"MapDataFile: payloadLength 불일치 — 헤더 기록값 {payloadLen}B, " +
-                $"실제 payload {actualPayload}B. 파일이 잘렸거나 손상됐을 가능성.");
-
-        uint storedCrc = BinaryPrimitives.ReadUInt32LittleEndian(new ReadOnlySpan<byte>(data, 16, 4));
-        uint actualCrc = ComputeCrc32(data, HeaderSize, actualPayload);
-        if (storedCrc != actualCrc)
-            throw new InvalidDataException(
-                $"MapDataFile: CRC32 불일치 — 헤더 기록값 0x{storedCrc:X8}, " +
-                $"계산값 0x{actualCrc:X8}. payload 데이터가 변조됐거나 손상됐을 가능성.");
-    }
-
     // ── terrain ──────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -292,5 +194,105 @@ public static class MapDataFile
         }
 
         return new MapContent(spawnX, spawnY, enemies);
+    }
+
+    // ── CRC32 helper ─────────────────────────────────────────────────────────
+
+    private static uint[] BuildCrcTable()
+    {
+        uint[] table = new uint[256];
+        for (uint i = 0; i < 256; i++)
+        {
+            uint c = i;
+            for (int k = 0; k < 8; k++)
+                c = (c & 1) != 0 ? (0xEDB88320u ^ (c >> 1)) : (c >> 1);
+            table[i] = c;
+        }
+        return table;
+    }
+
+    private static uint ComputeCrc32(byte[] data, int offset, int length)
+    {
+        uint crc = 0xFFFFFFFFu;
+        for (int i = offset; i < offset + length; i++)
+            crc = s_crcTable[(crc ^ data[i]) & 0xFF] ^ (crc >> 8);
+        return crc ^ 0xFFFFFFFFu;
+    }
+
+    // ── 헬퍼 ─────────────────────────────────────────────────────────────────
+
+    private static float ReadF32LE(byte[] buf, int offset)
+        => BitConverter.Int32BitsToSingle(BinaryPrimitives.ReadInt32LittleEndian(
+               new ReadOnlySpan<byte>(buf, offset, 4)));
+
+    private static int WriteF32LE(byte[] buf, int offset, float value)
+    {
+        BinaryPrimitives.WriteInt32LittleEndian(
+            new Span<byte>(buf, offset, 4),
+            BitConverter.SingleToInt32Bits(value));
+        return offset + 4;
+    }
+
+    // ── 헤더 쓰기 / 읽기 ─────────────────────────────────────────────────────
+
+    private static void WriteHeader(byte[] buf, ushort fileKind, ushort mapId,
+                                    int payloadLength, uint crc32)
+    {
+        // magic "DWMP"
+        buf[0] = (byte)'D'; buf[1] = (byte)'W'; buf[2] = (byte)'M'; buf[3] = (byte)'P';
+        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(buf, 4, 2), FormatVersion);
+        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(buf, 6, 2), fileKind);
+        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(buf, 8, 2), mapId);
+        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(buf, 10, 2), 0); // reserved
+        BinaryPrimitives.WriteUInt32LittleEndian(new Span<byte>(buf, 12, 4), (uint)payloadLength);
+        BinaryPrimitives.WriteUInt32LittleEndian(new Span<byte>(buf, 16, 4), crc32);
+    }
+
+    /// <summary>
+    /// 헤더 검증. 실패 항목마다 InvalidDataException — 어떤 검증이 왜 실패했는지 메시지에 명시.
+    /// </summary>
+    private static void ValidateHeader(byte[] data, ushort expectedKind, int expectedMapId)
+    {
+        if (data.Length < HeaderSize)
+            throw new InvalidDataException(
+                $"MapDataFile: 파일 크기 {data.Length}B가 헤더 최소 크기 {HeaderSize}B 미만.");
+
+        // magic
+        if (data[0] != 'D' || data[1] != 'W' || data[2] != 'M' || data[3] != 'P')
+        {
+            string found = $"0x{data[0]:X2}{data[1]:X2}{data[2]:X2}{data[3]:X2}";
+            throw new InvalidDataException(
+                $"MapDataFile: magic 불일치 — expected 'DWMP', found {found}.");
+        }
+
+        ushort version = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 4, 2));
+        if (version != FormatVersion)
+            throw new InvalidDataException(
+                $"MapDataFile: formatVersion 불일치 — expected {FormatVersion}, found {version}.");
+
+        ushort kind = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 6, 2));
+        if (kind != expectedKind)
+            throw new InvalidDataException(
+                $"MapDataFile: fileKind 불일치 — expected {expectedKind}, found {kind}. " +
+                "terrain 파일을 ReadContent로(또는 반대로) 읽은 것은 아닌지 확인.");
+
+        ushort mapId = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 8, 2));
+        if (mapId != (ushort)expectedMapId)
+            throw new InvalidDataException(
+                $"MapDataFile: mapId 불일치 — expected {expectedMapId}, found {mapId}.");
+
+        uint payloadLen = BinaryPrimitives.ReadUInt32LittleEndian(new ReadOnlySpan<byte>(data, 12, 4));
+        int actualPayload = data.Length - HeaderSize;
+        if ((int)payloadLen != actualPayload)
+            throw new InvalidDataException(
+                $"MapDataFile: payloadLength 불일치 — 헤더 기록값 {payloadLen}B, " +
+                $"실제 payload {actualPayload}B. 파일이 잘렸거나 손상됐을 가능성.");
+
+        uint storedCrc = BinaryPrimitives.ReadUInt32LittleEndian(new ReadOnlySpan<byte>(data, 16, 4));
+        uint actualCrc = ComputeCrc32(data, HeaderSize, actualPayload);
+        if (storedCrc != actualCrc)
+            throw new InvalidDataException(
+                $"MapDataFile: CRC32 불일치 — 헤더 기록값 0x{storedCrc:X8}, " +
+                $"계산값 0x{actualCrc:X8}. payload 데이터가 변조됐거나 손상됐을 가능성.");
     }
 }

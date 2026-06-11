@@ -30,7 +30,7 @@ internal static class EnemyStates
         if (enemy.TargetEntityId.HasValue)
         {
             PlayerEntity? t = enemy.OwningMap!.GetPlayer(enemy.TargetEntityId.Value);
-            if (t != null && System.MathF.Abs(t.Position.X - enemy.X) <= enemy.Stats.AggroRange * 1.5f)
+            if (t != null && System.MathF.Abs(t.Position.X - enemy.X) <= enemy.Stats.AggroRange * CombatConstants.DeAggroHysteresis)
                 return Chase;
         }
 
@@ -142,7 +142,7 @@ internal sealed class ChaseState : ActorState<EnemyEntity>
         {
             float dx = target.Position.X - enemy.X;
             float absDx = dx < 0 ? -dx : dx;
-            deAggro = absDx > enemy.Stats.AggroRange * 1.5f;
+            deAggro = absDx > enemy.Stats.AggroRange * CombatConstants.DeAggroHysteresis;
         }
 
         if (targetLost || deAggro)
@@ -171,7 +171,7 @@ internal sealed class EnemyHitState : ActorState<EnemyEntity>
     {
         enemy.X += enemy.KnockbackVx * Constants.TickDuration;
         enemy.KnockbackVx *= Constants.KnockbackDecayPerTick;
-        if (System.MathF.Abs(enemy.KnockbackVx) < 0.05f)
+        if (System.MathF.Abs(enemy.KnockbackVx) < CombatConstants.VelocityEpsilon)
             enemy.KnockbackVx = 0f;
 
         if (enemy.HitLatchTicks > 0)

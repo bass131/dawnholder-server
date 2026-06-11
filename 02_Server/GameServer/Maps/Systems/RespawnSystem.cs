@@ -20,13 +20,13 @@ namespace Dawnholder.Server.GameServer.Maps;
 /// </summary>
 internal sealed class RespawnSystem
 {
-    // Normal enemy respawn 대기 큐.
-    // **살아있는 적만 _enemies** invariant(컨테이너 주석)를 유지하기 위해 별도 보관.
-    readonly List<EnemyEntity> _respawnQueue = new();
-
     // Normal enemy respawn 대기 틱 수 (tick 기반 타이머 — 헌법 #5 await 금지).
     // **설계 결정**: 5초는 데모 반복 시연 시 자연스러운 재출현 간격 (1초=너무 짧음, 10초=흐름 끊김).
     internal const int NormalEnemyRespawnTicks = 100; // 5초 @ 20TPS
+
+    // Normal enemy respawn 대기 큐.
+    // **살아있는 적만 _enemies** invariant(컨테이너 주석)를 유지하기 위해 별도 보관.
+    readonly List<EnemyEntity> _respawnQueue = new();
 
     /// <summary>
     /// respawn 대기 큐에 사망한 enemy 등록 — RespawnTicksRemaining 세팅 포함.

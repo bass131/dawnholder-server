@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -49,10 +50,37 @@ namespace Dawnholder.Client.State
             while (removeCount < _buffer.Count && _buffer[removeCount].Time < cutoff)
                 removeCount++;
             if (removeCount > 0) _buffer.RemoveRange(0, removeCount);
+
+            // 텔레포트 도착 이펙트 — SnapInterpolation 후 첫 새 위치 snapshot이 여기서 확정.
+            if (_teleportArriveCallback != null)
+            {
+                Action cb = _teleportArriveCallback;
+                _teleportArriveCallback = null;
+                cb();
+            }
         }
 
         // Registry.Despawn/Clear에서 호출 — 메모리 누수 차단.
         public void ClearBuffer() => _buffer.Clear();
+
+        // Teleport 보간 끊기 — S_SkillCast(Teleport) 수신 시 호출.
+        // 이전 스냅샷(구 위치)을 모두 버리고, 다음 S_Snapshot(새 위치)을 기다린다.
+        // 버리지 않으면 Update가 구 위치→새 위치를 보간으로 미끄러뜨려 순간이동이 슬라이드로 뭉개진다.
+        public void SnapInterpolation()
+        {
+            _buffer.Clear();
+            // transform은 현재 위치 유지(마지막 렌더 위치) — 다음 snapshot 도착 전 teleport 진행 중 상태.
+        }
+
+        // 텔레포트 도착 이펙트 콜백 — SnapInterpolation 후 첫 EnqueueSnapshot(새 위치 확정) 시 1회 발동.
+        // 다음 시전 시 덮어쓰기 — 스냅샷 미도착/despawn race 시 영구 잔류해도 무해.
+        Action? _teleportArriveCallback;
+
+        // S_SkillCast(Teleport) 수신 시 SnapInterpolation과 함께 호출 — 도착 이펙트 등록.
+        public void SetTeleportArriveCallback(Action? callback)
+        {
+            _teleportArriveCallback = callback;
+        }
 
         void Update()
         {

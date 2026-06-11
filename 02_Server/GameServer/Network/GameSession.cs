@@ -39,17 +39,6 @@ public class GameSession : PacketSession
     // null = 아직 선택 안 함 (handshake 통과 후, 선택 전 상태).
     PlayerStats? _stats;
 
-    // protected internal: 같은 어셈블리(CharacterSelectHandler) + 서브클래스(테스트 TestGameSession) 양쪽 접근.
-    protected internal bool HasSelectedClass => _stats != null;
-
-    // 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑 (헌법 #1).
-    protected internal void SetCharacterClass(byte characterClass)
-    {
-        _stats = PlayerStats.ForClass((CharacterClass)characterClass);
-        Console.WriteLine(
-            $"[GameSession] CharacterClass set to {_stats.Class} — Hp:{_stats.Hp} Atk:{_stats.Attack} Def:{_stats.Defense} Spd:{_stats.MoveSpeed}");
-    }
-
     // rate-limit (헌법 #3 fail-closed): 임계 초과 intent는 drop.
     //   카운트는 임계 이상이어도 *계속 증가* (oscillation attack 방지).
     //   drop만 — disconnect는 안 함 (정상 클라가 일시적 framerate spike로 임계 초과해도 게임 잘림 X).
@@ -64,41 +53,28 @@ public class GameSession : PacketSession
     //   MapId는 int 기반 enum이라 Volatile.Read/Write 직접 불가 → int 백킹 필드(_currentMapIdValue) 패턴.
     int _currentMapIdValue = (int)MapId.Town; // Volatile.Read/Write용 int 백킹 필드
 
-    MapId CurrentMapId
-    {
-        get => (MapId)Volatile.Read(ref _currentMapIdValue);
-        set => Volatile.Write(ref _currentMapIdValue, (int)value);
-    }
-
     // Migration 중간 상태 플래그. 0=정상, 1=이동중(어느 맵에도 없는 순간).
     // 이 사이 도착하는 게임플레이 패킷(attack/move)은 GetMap()이 null 반환 → 핸들러 안전 no-op.
     // **동시성 가정**: 쓰기=tick thread (EnqueueJob 람다), 읽기=socket thread (GetMap() / OnDisconnected).
     // 단일 writer(tick) + 단순 대입 → Volatile.Read/Write로 가시성 보장. Interlocked/lock 불필요.
     int _migrating;
 
-    // MapMigration이 사용하는 migration 상태 조작 internal hooks.
-    // _migrating / _closing은 private — MapMigration(같은 어셈블리지만 별 클래스)이 직접
-    // ref 접근할 수 없으므로 래퍼 메서드로 캡슐화.
-    internal void SetMigrating(int value) => Volatile.Write(ref _migrating, value);
-    internal int ReadClosing() => Volatile.Read(ref _closing);
-    internal void SetCurrentMapId(MapId mapId) => CurrentMapId = mapId;
-
-    // 테스트가 GameMap을 주입할 수 있는 hook + 셧다운 race null-safe.
-    //   _migrating == 1 이면 null 반환 → 핸들러 안전 no-op (transient drop 핵심).
-    //   GameWorld.Instance가 null인 race 시에도 null 반환 (셧다운 race 안전망).
-    protected virtual GameMap? GetMap()
-    {
-        if (Volatile.Read(ref _migrating) == 1) return null;
-        return GameWorld.Instance?.GetMap(CurrentMapId);
-    }
-
-    // 목적지 맵 조회 hook. 테스트가 다중 맵 주입 시 override.
-    protected virtual GameMap? GetDestMap(MapId destMapId)
-        => GameWorld.Instance?.GetMap(destMapId);
+    // idempotent 월드 진입 게이트. 두 조건 모두 충족 시에만 EnterGameWorld() 호출.
+    // **idempotent**: 두 번 호출해도 EnterGameWorld가 한 번만 실행됨 (_enteredWorld flag).
+    bool _enteredWorld;
 
     // GameMap.BroadcastToAll에서 closing 중인 세션 skip 판별용 internal getter.
     // broadcast 발신은 tick thread에서만 호출되므로 Volatile.Read로 memory barrier 보장.
     internal bool IsClosing => Volatile.Read(ref _closing) == 1;
+
+    // protected internal: 같은 어셈블리(CharacterSelectHandler) + 서브클래스(테스트 TestGameSession) 양쪽 접근.
+    protected internal bool HasSelectedClass => _stats != null;
+
+    MapId CurrentMapId
+    {
+        get => (MapId)Volatile.Read(ref _currentMapIdValue);
+        set => Volatile.Write(ref _currentMapIdValue, (int)value);
+    }
 
     public override void OnConnected(EndPoint endPoint)
     {
@@ -107,134 +83,115 @@ public class GameSession : PacketSession
         // 권한 미부여 상태에서 서버 리소스(맵 entity)를 미리 박지 않음 = trust boundary 강화.
     }
 
-    // handshake 통과 시 게임 월드 진입.
-    // protected — TestGameSession이 handshake 우회(mock) 시 직접 호출 가능 (lifecycle 테스트 호환).
-    // 최초 진입 맵은 Town으로 명시 고정 (CurrentMapId Town 초기값과 정합).
-    protected void EnterGameWorld()
+    // *항상* map job 보내고 owner reference 기반으로 cleanup (entityId 모를 때 안전).
+    // Interlocked.Exchange로 _closing 박고 이중 호출 멱등성 보장 — 두 번째 OnDisconnected가 와도 enqueue 1회만.
+    public override void OnDisconnected(EndPoint endPoint)
     {
-        CurrentMapId = MapId.Town; // 최초 진입은 항상 Town (헌법 #1 서버 권위)
+        // Exchange 반환값이 1이면 *직전*에 이미 1이었다는 뜻 = 이중 호출 → enqueue 안 함.
+        if (Interlocked.Exchange(ref _closing, 1) == 1) return;
+
+        Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
+
         GameMap? map = GetMap();
         if (map == null)
         {
-            // silent no-op은 shutdown race에는 맞지만 startup/config 버그(GameWorld 초기화 누락)를
-            // 은폐 가능. 명시 로그로 표면화.
-            Console.WriteLine($"[Trust] GameSession.EnterGameWorld: GetMap() returned null — config/shutdown race?");
+            // _migrating=1이면 "맵 간 이동 중 disconnect" — 맵 A에서 이미 RemovePlayer됨.
+            // 맵 B 람다가 _closing=1 보고 AddPlayerWithId skip → entity 어느 맵에도 없이 정리 (ghost 없음).
+            // shutdown race는 GetMap이 null 반환하는 다른 경로 (GameWorld.Instance == null).
+            if (Volatile.Read(ref _migrating) == 1)
+                Console.WriteLine($"[GameSession] OnDisconnected during migration (player={_entityId}) — cleanup handled by migration lambda");
+            else
+                Console.WriteLine($"[Trust] GameSession.OnDisconnected: GetMap() returned null — config/shutdown race?");
             return;
         }
         GameSession self = this;
         map.EnqueueJob(() =>
         {
-            // job 실행 시점에 이미 disconnect 왔으면 skip.
-            // 안 그러면 닫힌 세션을 owner로 가진 player가 맵에 남아 ghost entity 발생.
-            // tick thread에서 실행되므로 Volatile.Read로 충분 (memory barrier 보장).
-            if (Volatile.Read(ref self._closing) == 1)
+            // PlayerLeave broadcast를 위해 *cleanup 전*에 entityId 캡처.
+            // 이미 -1이면 (AddPlayer 안 끝남 race) leave broadcast skip.
+            int leavingEntityId = self._entityId;
+
+            // owner reference 기반 cleanup — entityId가 race window 안 -1이어도 안전.
+            // AddPlayer가 같은 batch에 들어왔으면 그 entity도 같이 제거 (멱등).
+            bool removed = map.RemovePlayerBySession(self);
+
+            // 자기 외 남은 player 전원에게 leave broadcast.
+            // 자기 자신은 BroadcastToAll의 except로 차단 + 이미 _players에서 빠진 상태(자기 owner X).
+            if (removed && leavingEntityId >= 0)
             {
-                Console.WriteLine("[Map] AddPlayer skipped — session already closing (lifecycle race window)");
-                return;
+                S_PlayerLeave leaveNotice = new S_PlayerLeave { entityId = leavingEntityId };
+                map.BroadcastToAll(leaveNotice.Write(), except: self);
             }
 
-            // 헌법 #1: spawn 좌표를 서버가 정함 (content.bin PlayerSpawn 기준).
-            Vector2 spawnPos = map.PlayerSpawnPosition;
-
-            // initial roster 순서: AddPlayer *전에* 기존 player 목록을 snapshot.
-            // 자기 자신이 _players에 들어간 다음에 initial roster 만들면 자기에게 자기 PlayerJoin 보내게 됨.
-            List<PlayerEntity> existing = new(map.Players);
-
-            // _stats는 EnterGameWorldIfReady 가드로 non-null 보장 (HasSelectedClass=true 충족 후에만 진입).
-            PlayerEntity entity = map.AddPlayer(self, spawnPos, self._stats);
-            self._entityId = entity.EntityId;
-
-            S_EnterMap pkt = new S_EnterMap
-            {
-                entityId = entity.EntityId,
-                spawnX = entity.Position.X,
-                spawnY = entity.Position.Y
-            };
-            self.Send(pkt.Write());
-
-            // 진입 직후 권위 HP 1회 송신 — 클라 HUD 초기화. Owner 연결 완료 후 즉시.
-            map.SendPlayerHp(entity);
-
-            // Initial roster — 자기에게 기존 entity 전원의 S_PlayerJoin 다발 Send.
-            // race 안전: closing 중인 owner의 entity는 skip (race window에서 곧 disappear).
-            // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3 — 클라 raw byte echo 절대 금지).
-            foreach (PlayerEntity existingEntity in existing)
-            {
-                if (existingEntity.Owner != null && existingEntity.Owner.IsClosing) continue;
-                S_PlayerJoin rosterEntry = new S_PlayerJoin
-                {
-                    entityId = existingEntity.EntityId,
-                    spawnX = existingEntity.Position.X,
-                    spawnY = existingEntity.Position.Y,
-                    characterClass = (byte)existingEntity.Stats.Class,
-                };
-                self.Send(rosterEntry.Write());
-            }
-
-            // 자기 외 모든 player에게 신규 entity broadcast.
-            // BroadcastToAll의 IsClosing skip이 race window 방어.
-            // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3).
-            S_PlayerJoin joinNotice = new S_PlayerJoin
-            {
-                entityId = entity.EntityId,
-                spawnX = entity.Position.X,
-                spawnY = entity.Position.Y,
-                characterClass = (byte)entity.Stats.Class,
-            };
-            map.BroadcastToAll(joinNotice.Write(), except: self);
-
-            // 헌법 #1 server-only spawn: 신규 client에게 active enemy roster 다발 전송.
-            // 클라가 spawn 요청 보낼 권한 X — 모두 EnterGameWorld 시점 서버 단발.
-            // byte cast (EnemyKind → byte) = wire format 1:1 매핑 (S_EntitySpawn.entityKind 약속).
-            foreach (EnemyEntity enemy in map.Enemies.Values)
-            {
-                if (enemy.IsDead) continue;
-                S_EntitySpawn enemySpawn = new S_EntitySpawn
-                {
-                    entityId = enemy.EntityId,
-                    entityKind = (byte)enemy.Kind,
-                    x = enemy.X,
-                    y = enemy.Y,
-                    currentHp = enemy.Hp,
-                    maxHp = enemy.MaxHp,
-                };
-                self.Send(enemySpawn.Write());
-            }
-
-            Console.WriteLine(
-                $"[Map] Player {entity.EntityId} entered at ({entity.Position.X}, {entity.Position.Y}) — roster:{existing.Count}, enemies:{map.Enemies.Count}, broadcasted join");
+            Console.WriteLine($"[Map] Session cleanup (entityId={leavingEntityId}, removed={removed})");
+            // cleanup 후 _entityId reset — 낡은 id가 로그/방어 로직에 남는 것 차단.
+            self._entityId = -1;
         });
     }
 
-    // handshake 통과 후 lifecycle 전이 = `_handshakeCompleted` 박힘 + S_HandshakeResult(ok=true) 회신.
-    // **handshake = 상태 전이만** — EnterGameWorld() 직접 호출 X. 클라이언트 선택 전 월드 진입 차단(P0-1).
-    //   EnterGameWorld 호출은 EnterGameWorldIfReady()로만.
-    // protected internal — HandshakeHandler(internal) + 테스트 서브클래스(protected) 양쪽.
-    protected internal void CompleteHandshakeAndEnter()
+    public override void OnSend(int numOfBytes)
     {
-        _handshakeCompleted = true;
-        S_HandshakeResult ok = new S_HandshakeResult
+        // 의도적 no-op: send 로그는 콘솔 spam이라 제거 (호출 빈도 자체는 정상).
+    }
+
+    public override void OnRecvPacket(ArraySegment<byte> buffer)
+    {
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
+        PacketID id = (PacketID)packetId;
+
+        // 패킷 종류 추적 로그. spam 패킷(C_MoveIntent 20Hz / C_Ping)은 제외 — 드문 패킷만 박음.
+        if (id != PacketID.C_MoveIntent && id != PacketID.C_Ping)
         {
-            ok = true,
-            serverVersion = ProtocolVersion.Current,
-            reason = "",
-        };
-        Send(ok.Write());
-        // 월드 진입은 CharacterSelectHandler → EnterGameWorldIfReady() 경로로만 허용.
+            Console.WriteLine($"[GameSession] OnRecv {id} ({buffer.Count} bytes)");
+        }
+
+        // 헌법 #2: first-packet 강제. handshake 통과 전엔 다른 dispatch X (게이트는 session 책임).
+        if (!_handshakeCompleted)
+        {
+            if (id == PacketID.C_Handshake && HandlerRegistry.TryGet(id, out IPacketHandler handshake))
+            {
+                handshake.Handle(this, buffer);
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"[Trust] First packet was {id} (not C_Handshake) — disconnecting");
+                Disconnect();
+            }
+            return;
+        }
+
+        // handshake 통과 후 재-handshake는 protocol violation (헌법 #2).
+        // silent drop보다 명시적 거절이 진단 가치 ↑.
+        if (id == PacketID.C_Handshake)
+        {
+            Console.WriteLine($"[Trust] Duplicate C_Handshake after handshake completed — protocol violation, disconnecting");
+            Disconnect();
+            return;
+        }
+
+        // Dictionary dispatch. 새 핸들러 추가 = HandlerRegistry._handlers에 한 줄 등록. 누락 시 unknown drop.
+        if (HandlerRegistry.TryGet(id, out IPacketHandler handler))
+        {
+            handler.Handle(this, buffer);
+        }
+        else
+        {
+            Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
+        }
     }
 
-    // idempotent 월드 진입 게이트.
-    // handshake 완료 + class 선택 완료, 두 조건 *모두* 충족 시에만 EnterGameWorld() 호출.
-    // **idempotent**: 두 번 호출해도 EnterGameWorld가 한 번만 실행됨 (_enteredWorld flag).
-    // **race 안전**: 두 패킷(C_Handshake, C_CharacterSelect)이 다른 순서로 도착해도 두 조건 모두 충족 후에만 진입.
-    bool _enteredWorld;
+    // C_SkillUseHandler가 클래스 게이트 검증에 사용. _stats는 HasSelectedClass 체크 후 호출 보장.
+    // **헌법 §3 (Trust Boundary)**: 반드시 서버 측 _stats에서 가져옴 — 클라가 보낸 값 사용 절대 금지.
+    internal CharacterClass GetCasterClass() => _stats?.Class ?? CharacterClass.Knight;
 
-    protected internal void EnterGameWorldIfReady()
-    {
-        if (!_handshakeCompleted || !HasSelectedClass || _enteredWorld) return;
-        _enteredWorld = true;
-        EnterGameWorld();
-    }
+    // MapMigration이 사용하는 migration 상태 조작 internal hooks.
+    // _migrating / _closing은 private — MapMigration(같은 어셈블리지만 별 클래스)이 직접
+    // ref 접근할 수 없으므로 래퍼 메서드로 캡슐화.
+    internal void SetMigrating(int value) => Volatile.Write(ref _migrating, value);
+    internal int ReadClosing() => Volatile.Read(ref _closing);
+    internal void SetCurrentMapId(MapId mapId) => CurrentMapId = mapId;
 
     // handshake version mismatch 거절: S_HandshakeResult(ok=false) Send + Disconnect.
     // 헌법 #3 정합 — timeout 안 기다리고 즉시 Disconnect (rate-limit 무효화 차단).
@@ -399,102 +356,116 @@ public class GameSession : PacketSession
                 getDestMap: self.GetDestMap));
     }
 
-    // *항상* map job 보내고 owner reference 기반으로 cleanup (entityId 모를 때 안전).
-    // Interlocked.Exchange로 _closing 박고 이중 호출 멱등성 보장 — 두 번째 OnDisconnected가 와도 enqueue 1회만.
-    public override void OnDisconnected(EndPoint endPoint)
+    // 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑 (헌법 #1).
+    protected internal void SetCharacterClass(byte characterClass)
     {
-        // Exchange 반환값이 1이면 *직전*에 이미 1이었다는 뜻 = 이중 호출 → enqueue 안 함.
-        if (Interlocked.Exchange(ref _closing, 1) == 1) return;
+        _stats = PlayerStats.ForClass((CharacterClass)characterClass);
+        Console.WriteLine(
+            $"[GameSession] CharacterClass set to {_stats.Class} — Hp:{_stats.Hp} Atk:{_stats.Attack} Def:{_stats.Defense} Spd:{_stats.MoveSpeed}");
+    }
 
-        Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
+    // handshake 통과 후 lifecycle 전이 = `_handshakeCompleted` 박힘 + S_HandshakeResult(ok=true) 회신.
+    // **handshake = 상태 전이만** — EnterGameWorld() 직접 호출 X. 클라이언트 선택 전 월드 진입 차단(P0-1).
+    //   EnterGameWorld 호출은 EnterGameWorldIfReady()로만.
+    // protected internal — HandshakeHandler(internal) + 테스트 서브클래스(protected) 양쪽.
+    protected internal void CompleteHandshakeAndEnter()
+    {
+        _handshakeCompleted = true;
+        S_HandshakeResult ok = new S_HandshakeResult
+        {
+            ok = true,
+            serverVersion = ProtocolVersion.Current,
+            reason = "",
+        };
+        Send(ok.Write());
+        // 월드 진입은 CharacterSelectHandler → EnterGameWorldIfReady() 경로로만 허용.
+    }
 
+    // idempotent 월드 진입 게이트.
+    // handshake 완료 + class 선택 완료, 두 조건 *모두* 충족 시에만 EnterGameWorld() 호출.
+    // **race 안전**: 두 패킷(C_Handshake, C_CharacterSelect)이 다른 순서로 도착해도 두 조건 모두 충족 후에만 진입.
+    protected internal void EnterGameWorldIfReady()
+    {
+        if (!_handshakeCompleted || !HasSelectedClass || _enteredWorld) return;
+        _enteredWorld = true;
+        EnterGameWorld();
+    }
+
+    // handshake 통과 시 게임 월드 진입.
+    // protected — TestGameSession이 handshake 우회(mock) 시 직접 호출 가능 (lifecycle 테스트 호환).
+    // 최초 진입 맵은 Town으로 명시 고정 (CurrentMapId Town 초기값과 정합).
+    protected void EnterGameWorld()
+    {
+        CurrentMapId = MapId.Town; // 최초 진입은 항상 Town (헌법 #1 서버 권위)
         GameMap? map = GetMap();
         if (map == null)
         {
-            // _migrating=1이면 "맵 간 이동 중 disconnect" — 맵 A에서 이미 RemovePlayer됨.
-            // 맵 B 람다가 _closing=1 보고 AddPlayerWithId skip → entity 어느 맵에도 없이 정리 (ghost 없음).
-            // shutdown race는 GetMap이 null 반환하는 다른 경로 (GameWorld.Instance == null).
-            if (Volatile.Read(ref _migrating) == 1)
-                Console.WriteLine($"[GameSession] OnDisconnected during migration (player={_entityId}) — cleanup handled by migration lambda");
-            else
-                Console.WriteLine($"[Trust] GameSession.OnDisconnected: GetMap() returned null — config/shutdown race?");
+            // silent no-op은 shutdown race에는 맞지만 startup/config 버그(GameWorld 초기화 누락)를
+            // 은폐 가능. 명시 로그로 표면화.
+            Console.WriteLine($"[Trust] GameSession.EnterGameWorld: GetMap() returned null — config/shutdown race?");
             return;
         }
         GameSession self = this;
         map.EnqueueJob(() =>
         {
-            // PlayerLeave broadcast를 위해 *cleanup 전*에 entityId 캡처.
-            // 이미 -1이면 (AddPlayer 안 끝남 race) leave broadcast skip.
-            int leavingEntityId = self._entityId;
-
-            // owner reference 기반 cleanup — entityId가 race window 안 -1이어도 안전.
-            // AddPlayer가 같은 batch에 들어왔으면 그 entity도 같이 제거 (멱등).
-            bool removed = map.RemovePlayerBySession(self);
-
-            // 자기 외 남은 player 전원에게 leave broadcast.
-            // 자기 자신은 BroadcastToAll의 except로 차단 + 이미 _players에서 빠진 상태(자기 owner X).
-            if (removed && leavingEntityId >= 0)
+            // job 실행 시점에 이미 disconnect 왔으면 skip.
+            // 안 그러면 닫힌 세션을 owner로 가진 player가 맵에 남아 ghost entity 발생.
+            // tick thread에서 실행되므로 Volatile.Read로 충분 (memory barrier 보장).
+            if (Volatile.Read(ref self._closing) == 1)
             {
-                S_PlayerLeave leaveNotice = new S_PlayerLeave { entityId = leavingEntityId };
-                map.BroadcastToAll(leaveNotice.Write(), except: self);
+                Console.WriteLine("[Map] AddPlayer skipped — session already closing (lifecycle race window)");
+                return;
             }
 
-            Console.WriteLine($"[Map] Session cleanup (entityId={leavingEntityId}, removed={removed})");
-            // cleanup 후 _entityId reset — 낡은 id가 로그/방어 로직에 남는 것 차단.
-            self._entityId = -1;
+            // 헌법 #1: spawn 좌표를 서버가 정함 (content.bin PlayerSpawn 기준).
+            Vector2 spawnPos = map.PlayerSpawnPosition;
+
+            // initial roster 순서: AddPlayer *전에* 기존 player 목록을 snapshot.
+            // 자기 자신이 _players에 들어간 다음에 initial roster 만들면 자기에게 자기 PlayerJoin 보내게 됨.
+            List<PlayerEntity> existing = new(map.Players);
+
+            // _stats는 EnterGameWorldIfReady 가드로 non-null 보장 (HasSelectedClass=true 충족 후에만 진입).
+            PlayerEntity entity = map.AddPlayer(self, spawnPos, self._stats);
+            self._entityId = entity.EntityId;
+
+            S_EnterMap pkt = new S_EnterMap
+            {
+                entityId = entity.EntityId,
+                spawnX = entity.Position.X,
+                spawnY = entity.Position.Y
+            };
+            self.Send(pkt.Write());
+
+            // 진입 직후 권위 HP 1회 송신 — 클라 HUD 초기화. Owner 연결 완료 후 즉시.
+            map.SendPlayerHp(entity);
+
+            // self에게 기존 roster(player + 살아있는 enemy) 1:1 Send — 통합 메서드.
+            map.SendInitialRosterTo(self, existing);
+
+            // 자기 외 모든 player에게 신규 entity broadcast (except self — 본인은 로컬 선예측).
+            S_PlayerJoin joinNotice = new S_PlayerJoin
+            {
+                entityId = entity.EntityId,
+                spawnX = entity.Position.X,
+                spawnY = entity.Position.Y,
+                characterClass = (byte)entity.Stats.Class,
+            };
+            map.BroadcastToAll(joinNotice.Write(), except: self);
+
+            Console.WriteLine($"[Map] Player {entity.EntityId} entered — roster:{existing.Count}, enemies:{map.Enemies.Count}");
         });
     }
 
-    public override void OnSend(int numOfBytes)
+    // 테스트가 GameMap을 주입할 수 있는 hook + 셧다운 race null-safe.
+    //   _migrating == 1 이면 null 반환 → 핸들러 안전 no-op (transient drop 핵심).
+    //   GameWorld.Instance가 null인 race 시에도 null 반환 (셧다운 race 안전망).
+    protected virtual GameMap? GetMap()
     {
-        // 의도적 no-op: send 로그는 콘솔 spam이라 제거 (호출 빈도 자체는 정상).
+        if (Volatile.Read(ref _migrating) == 1) return null;
+        return GameWorld.Instance?.GetMap(CurrentMapId);
     }
 
-    public override void OnRecvPacket(ArraySegment<byte> buffer)
-    {
-        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
-            new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
-        PacketID id = (PacketID)packetId;
-
-        // 패킷 종류 추적 로그. spam 패킷(C_MoveIntent 20Hz / C_Ping)은 제외 — 드문 패킷만 박음.
-        if (id != PacketID.C_MoveIntent && id != PacketID.C_Ping)
-        {
-            Console.WriteLine($"[GameSession] OnRecv {id} ({buffer.Count} bytes)");
-        }
-
-        // 헌법 #2: first-packet 강제. handshake 통과 전엔 다른 dispatch X (게이트는 session 책임).
-        if (!_handshakeCompleted)
-        {
-            if (id == PacketID.C_Handshake && HandlerRegistry.TryGet(id, out IPacketHandler handshake))
-            {
-                handshake.Handle(this, buffer);
-            }
-            else
-            {
-                Console.WriteLine(
-                    $"[Trust] First packet was {id} (not C_Handshake) — disconnecting");
-                Disconnect();
-            }
-            return;
-        }
-
-        // handshake 통과 후 재-handshake는 protocol violation (헌법 #2).
-        // silent drop보다 명시적 거절이 진단 가치 ↑.
-        if (id == PacketID.C_Handshake)
-        {
-            Console.WriteLine($"[Trust] Duplicate C_Handshake after handshake completed — protocol violation, disconnecting");
-            Disconnect();
-            return;
-        }
-
-        // Dictionary dispatch. 새 핸들러 추가 = HandlerRegistry._handlers에 한 줄 등록. 누락 시 unknown drop.
-        if (HandlerRegistry.TryGet(id, out IPacketHandler handler))
-        {
-            handler.Handle(this, buffer);
-        }
-        else
-        {
-            Console.WriteLine($"[GameSession] Unknown PacketId {packetId} — dropped");
-        }
-    }
+    // 목적지 맵 조회 hook. 테스트가 다중 맵 주입 시 override.
+    protected virtual GameMap? GetDestMap(MapId destMapId)
+        => GameWorld.Instance?.GetMap(destMapId);
 }

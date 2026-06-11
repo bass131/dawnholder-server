@@ -802,6 +802,7 @@ public class PacketRoundTripTests
     [InlineData((byte)0)]   // 기본/근접
     [InlineData((byte)1)]   // 투사체 도착
     [InlineData((byte)2)]   // 낙뢰
+    [InlineData((byte)3)]   // Dash
     public void S_HitResult_RoundTrip_PreservesHitEffectAppend(byte hitEffect)
     {
         // M4.8 v11: hitEffect byte append. 기존 5필드 + hitEffect 모두 보존(오프셋 불변 검증).
@@ -839,5 +840,145 @@ public class PacketRoundTripTests
             new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
         Assert.Equal((ushort)PacketID.S_HitResult, packetId);
         Assert.Equal((ushort)13, packetId);
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // S_EntityDeath(14) / S_StageClear(15) 라운드트립.
+    //
+    // HandleEnemyDeath DRY 추출(M4.10 Phase 03) 후 wire format 불변 회귀 가드.
+    // 추출은 패킷 정의를 건드리지 않으므로 ID·필드·크기 모두 불변이어야 한다.
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void S_EntityDeath_RoundTrip_PreservesEntityId()
+    {
+        var pkt = new S_EntityDeath { entityId = 42 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_EntityDeath();
+        decoded.Read(bytes);
+
+        Assert.Equal(42, decoded.entityId);
+    }
+
+    [Fact]
+    public void S_EntityDeath_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 14번째 정의 = PacketID 14.
+        var pkt = new S_EntityDeath { entityId = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_EntityDeath, packetId);
+        Assert.Equal((ushort)14, packetId);
+    }
+
+    [Fact]
+    public void S_StageClear_RoundTrip_PreservesBossEntityId()
+    {
+        var pkt = new S_StageClear { bossEntityId = 99 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_StageClear();
+        decoded.Read(bytes);
+
+        Assert.Equal(99, decoded.bossEntityId);
+    }
+
+    [Fact]
+    public void S_StageClear_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 15번째 정의 = PacketID 15.
+        var pkt = new S_StageClear { bossEntityId = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_StageClear, packetId);
+        Assert.Equal((ushort)15, packetId);
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // S_PlayerJoin(9) / S_EntitySpawn(12) 라운드트립.
+    //
+    // roster 전송 통합(M4.10 Phase 04) 후 wire format 불변 회귀 가드.
+    // SendInitialRosterTo 추출은 패킷 정의를 건드리지 않으므로 ID·필드·크기 모두 불변이어야 한다.
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void S_PlayerJoin_RoundTrip_PreservesAllFields()
+    {
+        var pkt = new S_PlayerJoin
+        {
+            entityId = 7,
+            spawnX = 3.0f,
+            spawnY = -1.5f,
+            characterClass = 1,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_PlayerJoin();
+        decoded.Read(bytes);
+
+        Assert.Equal(7, decoded.entityId);
+        Assert.Equal(3.0f, decoded.spawnX);
+        Assert.Equal(-1.5f, decoded.spawnY);
+        Assert.Equal((byte)1, decoded.characterClass);
+    }
+
+    [Fact]
+    public void S_PlayerJoin_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 9번째 정의 = PacketID 9.
+        var pkt = new S_PlayerJoin { entityId = 0, spawnX = 0f, spawnY = 0f, characterClass = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_PlayerJoin, packetId);
+        Assert.Equal((ushort)9, packetId);
+    }
+
+    [Fact]
+    public void S_EntitySpawn_RoundTrip_PreservesAllFields()
+    {
+        var pkt = new S_EntitySpawn
+        {
+            entityId = 42,
+            entityKind = 1,
+            x = 5.5f,
+            y = 0f,
+            currentHp = 80,
+            maxHp = 100,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_EntitySpawn();
+        decoded.Read(bytes);
+
+        Assert.Equal(42, decoded.entityId);
+        Assert.Equal((byte)1, decoded.entityKind);
+        Assert.Equal(5.5f, decoded.x);
+        Assert.Equal(0f, decoded.y);
+        Assert.Equal(80, decoded.currentHp);
+        Assert.Equal(100, decoded.maxHp);
+    }
+
+    [Fact]
+    public void S_EntitySpawn_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 12번째 정의 = PacketID 12.
+        var pkt = new S_EntitySpawn { entityId = 0, entityKind = 0, x = 0f, y = 0f, currentHp = 0, maxHp = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_EntitySpawn, packetId);
+        Assert.Equal((ushort)12, packetId);
     }
 }

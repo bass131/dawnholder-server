@@ -10,7 +10,7 @@ namespace Dawnholder.Client.Rendering
     [DisallowMultipleComponent]
     public class RemotePlayerMotion : MonoBehaviour, IMotionState
     {
-        const float FacingEpsilon = 0.001f;
+        const float FacingEpsilon = MotionConstants.FacingEpsilon;
 
         AnimState _animState;
         int _facing = 1;

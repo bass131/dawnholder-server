@@ -8,17 +8,6 @@ using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps;
 
-// EnemyKind → (MaxHp) 기본값 테이블. content.bin은 위치+kind만 담고 HP는 서버 권위 코드 결정.
-// append-only: 새 종류 추가 시 이 배열에 항목 추가 (EnemyKind.cs 값과 index 정합 유지).
-// kindId 범위 검증은 GameMap ctor 단일 지점 (reviewer 🟡 — 중복 검증 단일화).
-file static class EnemyDefaultHp
-{
-    // index = (int)EnemyKind. GolemDefault().MaxHp와 일치 의무 — drift 방지는 테스트가 잡음.
-    internal static readonly int[] ByKind = { 30, 100, 60 }; // Normal=30, Boss=100, Golem=60
-
-    internal static int For(EnemyKind kind) => ByKind[(int)kind];
-}
-
 // 단일 GameMap actor. 단일 thread Tick → lock 없음.
 //
 // §2.2 컨테이너 + System 분리:
@@ -27,7 +16,7 @@ file static class EnemyDefaultHp
 //   Tick에서 System 호출 순서 명문화: physics → CombatSystem(EnqueueJob 경유) → EnemyAISystem → RespawnSystem.
 //
 // **_enemies invariant**: 살아있는 적만 _enemies에 잔류.
-//   사망 시 CombatSystem이 즉시 S_EntityDeath broadcast + RemoveEnemy + (Normal only) EnqueueRespawn.
+//   사망 시 HandleEnemyDeath가 S_EntityDeath broadcast + RemoveEnemy + (Normal only) EnqueueRespawn.
 //   죽음 연출은 클라 VFX 담당 (헌법 #1 — 서버는 확정+제거만).
 //
 // ARCHITECTURE "Map = Actor": 한 맵의 모든 mutation을 단일 thread에 가두면
@@ -42,19 +31,12 @@ public class GameMap
     // (B) 단독 생성 (테스트 / 미래 확장): null → 로컬 _localNextId (1부터 시작, 테스트 격리 보장).
     readonly Func<int>? _idAllocator;
     int _localNextId = 1;
-    int AllocId() => _idAllocator != null ? _idAllocator() : _localNextId++;
 
     readonly ConcurrentQueue<Action> _pendingJobs = new();
 
     // 지형 + 콘텐츠. null terrain = 평지 물리(Physics.Step 2-인자 fallback).
     readonly MapTerrain? _terrain;
     readonly MapContent? _content;
-
-    // 플레이어 스폰 좌표 — content가 있으면 content 기준, 없으면 원점 fallback.
-    internal Vector2 PlayerSpawnPosition =>
-        _content != null
-            ? new Vector2(_content.PlayerSpawnX, _content.PlayerSpawnY)
-            : Vector2.Zero;
 
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly CombatSystem _combatSystem = new();
@@ -64,9 +46,6 @@ public class GameMap
     readonly DeferredDamageSystem _deferredDamageSystem = new();
     readonly SkillSystem _skillSystem = new();
 
-    public IReadOnlyList<PlayerEntity> Players => _players;
-    public IReadOnlyDictionary<int, EnemyEntity> Enemies => _enemies;
-
     // Stage Clear 1회 보장 flag.
     bool _stageCleared = false;
 
@@ -74,23 +53,6 @@ public class GameMap
     // Tick(long tickNumber) 진입 직후 갱신 — job 처리 *전*에 갱신해야 job 안에서 올바른 tick 읽힘.
     // tick thread invariant 안에서만 읽기/쓰기.
     long _currentTick;
-
-    /// <summary>
-    /// CombatSystem이 rewind 범위 검증에 사용하는 현재 서버 tick.
-    /// tick thread invariant 안에서만 유효 (§1.1).
-    /// </summary>
-    internal long CurrentTick => _currentTick;
-
-    /// <summary>
-    /// Stage Clear 상태 read-only 노출.
-    /// flag 자체는 *서버 권위* — 외부에서 강제 set 불가 (헌법 #1).
-    /// </summary>
-    public bool IsStageCleared => _stageCleared;
-
-    public MapId MapId { get; }
-
-    // 맵에 속한 portal 목록. PortalTable 단일 진실 공급원.
-    public IReadOnlyList<Portal> Portals { get; }
 
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
                    MapTerrain? terrain = null, MapContent? content = null)
@@ -106,43 +68,70 @@ public class GameMap
             foreach (EnemySpawnPoint sp in content.Enemies)
             {
                 // kindId 범위 검증 — 알 수 없는 kindId = 저작 오류 → fail loud.
-                if (sp.KindId >= EnemyDefaultHp.ByKind.Length)
+                if (!Enum.IsDefined(typeof(EnemyKind), sp.KindId))
                     throw new InvalidOperationException(
                         $"[GameMap:{mapId}] 알 수 없는 kindId={sp.KindId} in content.bin. " +
-                        "EnemyKind enum과 EnemyDefaultHp 테이블을 확인하세요.");
+                        "EnemyKind enum을 확인하세요.");
 
                 EnemyKind kind = (EnemyKind)sp.KindId;
-                int maxHp = EnemyDefaultHp.For(kind);
+                // HP 단일 출처 = Formulas factory MaxHp (EnemyDefaultHp 배열 폐기 — M4.10 Phase 02).
+                int maxHp = kind switch
+                {
+                    EnemyKind.Normal => EnemyStats.NormalDefault().MaxHp,
+                    EnemyKind.Boss   => EnemyStats.BossDefault().MaxHp,
+                    EnemyKind.Golem  => EnemyStats.GolemDefault().MaxHp,
+                    _                => 0,
+                };
                 SpawnEnemy(kind, sp.X, sp.Y, maxHp);
             }
         }
     }
 
-    // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).
-    //
-    // stats 오버라이드 규칙:
-    //   - stats == null (기본) → kind==Normal이면 EnemyStats.NormalDefault() 자동 주입, Boss이면 default.
-    //   - stats != null → 그대로 사용 (RespawnSystem이 원본 stats 유지 목적으로 전달).
-    internal EnemyEntity SpawnEnemy(EnemyKind kind, float x, float y, int maxHp, EnemyStats? stats = null)
+    public IReadOnlyList<PlayerEntity> Players => _players;
+    public IReadOnlyDictionary<int, EnemyEntity> Enemies => _enemies;
+
+    /// <summary>
+    /// Stage Clear 상태 read-only 노출.
+    /// flag 자체는 *서버 권위* — 외부에서 강제 set 불가 (헌법 #1).
+    /// </summary>
+    public bool IsStageCleared => _stageCleared;
+
+    public MapId MapId { get; }
+
+    // 맵에 속한 portal 목록. PortalTable 단일 진실 공급원.
+    public IReadOnlyList<Portal> Portals { get; }
+
+    // 플레이어 스폰 좌표 — content가 있으면 content 기준, 없으면 원점 fallback.
+    internal Vector2 PlayerSpawnPosition =>
+        _content != null
+            ? new Vector2(_content.PlayerSpawnX, _content.PlayerSpawnY)
+            : Vector2.Zero;
+
+    // 맵 X축 경계 (minX, maxX). Teleport 착지 clamp 및 서버 권위 범위 검증(헌법 §3)에 사용.
+    // terrain이 있으면 Solids 전체의 MinX/MaxX를 합산 — 텔레포트가 솔리드 바깥으로 나가는 것을 차단.
+    // terrain이 null이면 float.MinValue/MaxValue (평지 테스트 맵 — 경계 없음).
+    internal (float MinX, float MaxX) MapBoundsX
     {
-        int id = AllocId();
-        // kind별 stats 결정. stats != null이면 RespawnSystem이 원본 유지 목적으로 전달한 것 — 그대로 사용.
-        // default 분기 = fail-safe (알 수 없는 미래 종류 — Defense/MaxHp/Speed 모두 0, 동작하되 허약).
-        EnemyStats resolvedStats = stats ?? kind switch
+        get
         {
-            EnemyKind.Normal => EnemyStats.NormalDefault(),
-            EnemyKind.Golem  => EnemyStats.GolemDefault(),
-            EnemyKind.Boss   => EnemyStats.BossDefault(),
-            _                => default,
-        };
-        EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp, resolvedStats);
-        _enemies.Add(id, e);
-        e.OwningMap = this;
-        // Fsm은 OwningMap 세팅 후 생성 — kind별 초기 State (Boss=BossStates.Idle, 그외=EnemyStates.Patrol).
-        e.Fsm = new StateMachine<EnemyEntity>(
-            kind == EnemyKind.Boss ? BossStates.Idle : EnemyStates.Patrol, e);
-        return e;
+            if (_terrain == null || _terrain.Solids.Length == 0)
+                return (float.MinValue, float.MaxValue);
+            float min = float.MaxValue;
+            float max = float.MinValue;
+            foreach (TerrainAabb s in _terrain.Solids)
+            {
+                if (s.MinX < min) min = s.MinX;
+                if (s.MaxX > max) max = s.MaxX;
+            }
+            return (min, max);
+        }
     }
+
+    /// <summary>
+    /// CombatSystem이 rewind 범위 검증에 사용하는 현재 서버 tick.
+    /// tick thread invariant 안에서만 유효 (§1.1).
+    /// </summary>
+    internal long CurrentTick => _currentTick;
 
     // virtual: 테스트 subclass에서 EnqueueJob 호출 카운트 추적 가능.
     public virtual void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
@@ -173,72 +162,6 @@ public class GameMap
     public PlayerEntity? GetPlayer(int entityId)
         => _players.Find(p => p.EntityId == entityId);
 
-    internal EnemyEntity? GetEnemyById(int entityId)
-        => _enemies.TryGetValue(entityId, out EnemyEntity? e) ? e : null;
-
-    // ── AnimState 계산 ───────────────────────────────────────────────────────
-
-    /// <summary>
-    /// 플레이어의 현재 시각 애니메이션 상태를 계산. 서버 권위 (헌법 #1).
-    ///
-    /// ActionFsm이 단일 출처 — Death/Hit/Attack/Jump/Walk/Idle 우선순위는
-    /// FSM 전이 규칙으로 보장. 이 메서드는 FSM 현재 상태의 AnimState를 반환한다.
-    ///
-    /// **tick thread invariant**: GameMap.Tick 안에서만 호출 (단일 thread).
-    /// </summary>
-    static byte ComputePlayerAnimState(PlayerEntity p)
-        => (byte)p.ActionFsm.AnimState;
-
-    // ── CombatSystem용 internal mutator (§0.3 최소 surface) ──────────────────
-
-    /// <summary>
-    /// Stage Clear flag를 true로 설정. CombatSystem이 Boss 사망 시 1회만 호출.
-    /// 외부에서 직접 set 불가 (헌법 #1 Server Authority).
-    /// </summary>
-    internal void SetStageCleared() => _stageCleared = true;
-
-    /// <summary>
-    /// 살아있는 적 목록에서 제거. CombatSystem이 enemy 사망 처리 후 호출.
-    /// "살아있는 적만 _enemies" invariant 유지 책임 — 이 mutator 1곳만.
-    /// </summary>
-    internal void RemoveEnemy(int entityId) => _enemies.Remove(entityId);
-
-    /// <summary>
-    /// RespawnSystem에 죽은 enemy 등록. CombatSystem이 Normal enemy 사망 후 호출.
-    /// RespawnSystem._respawnQueue 직접 접근 대신 이 경유로 단일화.
-    /// </summary>
-    internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
-
-    /// <summary>
-    /// DeferredDamageSystem에 지연 데미지 1건 등록. P3(평타)/P4(썬더볼트)가 호출.
-    /// impactTick = CurrentTick + delayTicks — 호출자가 계산 후 전달.
-    /// tick thread invariant: EnqueueJob 람다 안 또는 Tick 안에서만 호출.
-    /// </summary>
-    internal void EnqueueDeferredDamage(DeferredImpact impact) => _deferredDamageSystem.Enqueue(impact);
-
-    // ── Broadcast / 1:1 송신 ─────────────────────────────────────────────────
-
-    /// <summary>
-    /// 플레이어 본인에게만 S_PlayerHp 1:1 송신.
-    ///
-    /// **호출 invariant**: tick thread에서만. player.Hp가 mutate되는 *모든 지점*에서 동반 호출이 규율
-    ///   (진입 EnterGameWorld / 피격·부활 ApplyBossAttack / 맵 전환 MapMigration). 누락 시 HUD 표시 갭.
-    /// **논블로킹 보장**: Owner.Send는 Session.Send → lock + queue enqueue (헌법 #5).
-    /// currentHp는 Math.Max(0, p.Hp) floor — 음수 방어 (표시 전용, 사망 lifecycle은 S_EntityDeath 채널).
-    /// entityId 필드는 미래 원격/파티 HP 바 확장 대비 — 이번 마일스톤은 본인에게만 송신.
-    /// </summary>
-    internal void SendPlayerHp(PlayerEntity p)
-    {
-        if (p.Owner == null || p.Owner.IsClosing) return;
-        S_PlayerHp pkt = new S_PlayerHp
-        {
-            entityId  = p.EntityId,
-            currentHp = Math.Max(0, p.Hp),
-            maxHp     = p.MaxHp,
-        };
-        p.Owner.Send(pkt.Write());
-    }
-
     /// <summary>
     /// 같은 맵 전원에게 packet 전송.
     ///
@@ -258,29 +181,6 @@ public class GameMap
             p.Owner.Send(payload);
         }
     }
-
-    // ── ProcessAttack (internal 래퍼 — 기존 테스트 인터페이스 보존) ───────────
-
-    /// <summary>
-    /// tick thread 안에서 attack 1건 처리. CombatSystem에 위임.
-    ///
-    /// **인터페이스 보존**: 테스트가 이 메서드를 직접 호출하므로 시그니처 유지.
-    ///   실제 로직은 CombatSystem.ProcessAttack(map, ...) — §2.2 컨테이너+System 구조.
-    ///
-    /// **호출 invariant**: tick thread에서만. GameSession.SubmitAttack이 EnqueueJob 람다로 박음.
-    /// </summary>
-    internal void ProcessAttack(int attackerEntityId, int targetEntityId, long attackerClientTick)
-        => _combatSystem.ProcessAttack(this, attackerEntityId, targetEntityId, attackerClientTick);
-
-    // ── ProcessSkill (썬더볼트 AoE — P4) ──────────────────────────────────────
-
-    /// <summary>
-    /// tick thread 안에서 스킬 1건 처리. SkillSystem.ProcessThunderbolt에 위임.
-    ///
-    /// **호출 invariant**: tick thread에서만. GameSession.SubmitSkillUse가 EnqueueJob 람다로 박음.
-    /// </summary>
-    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick)
-        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick);
 
     // ── Tick 엔진 ─────────────────────────────────────────────────────────────
 
@@ -413,4 +313,186 @@ public class GameMap
         // 7) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
         _respawnSystem.Process(this, tickNumber);
     }
+
+    // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).
+    //
+    // stats 오버라이드 규칙:
+    //   - stats == null (기본) → kind==Normal이면 EnemyStats.NormalDefault() 자동 주입, Boss이면 default.
+    //   - stats != null → 그대로 사용 (RespawnSystem이 원본 stats 유지 목적으로 전달).
+    internal EnemyEntity SpawnEnemy(EnemyKind kind, float x, float y, int maxHp, EnemyStats? stats = null)
+    {
+        int id = AllocId();
+        // kind별 stats 결정. stats != null이면 RespawnSystem이 원본 유지 목적으로 전달한 것 — 그대로 사용.
+        // default 분기 = fail-safe (알 수 없는 미래 종류 — Defense/MaxHp/Speed 모두 0, 동작하되 허약).
+        EnemyStats resolvedStats = stats ?? kind switch
+        {
+            EnemyKind.Normal => EnemyStats.NormalDefault(),
+            EnemyKind.Golem  => EnemyStats.GolemDefault(),
+            EnemyKind.Boss   => EnemyStats.BossDefault(),
+            _                => default,
+        };
+        EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp, resolvedStats);
+        _enemies.Add(id, e);
+        e.OwningMap = this;
+        // Fsm은 OwningMap 세팅 후 생성 — kind별 초기 State (Boss=BossStates.Idle, 그외=EnemyStates.Patrol).
+        e.Fsm = new StateMachine<EnemyEntity>(
+            kind == EnemyKind.Boss ? BossStates.Idle : EnemyStates.Patrol, e);
+        return e;
+    }
+
+    internal EnemyEntity? GetEnemyById(int entityId)
+        => _enemies.TryGetValue(entityId, out EnemyEntity? e) ? e : null;
+
+    // ── CombatSystem용 internal mutator (§0.3 최소 surface) ──────────────────
+
+    /// <summary>
+    /// 살아있는 적 목록에서 제거. HandleEnemyDeath가 사망 처리 시 호출 (+테스트).
+    /// "살아있는 적만 _enemies" invariant 유지 책임 — 이 mutator 1곳만.
+    /// </summary>
+    internal void RemoveEnemy(int entityId) => _enemies.Remove(entityId);
+
+    /// <summary>
+    /// RespawnSystem에 죽은 enemy 등록. HandleEnemyDeath가 Normal enemy 사망 시 호출 (+테스트).
+    /// RespawnSystem._respawnQueue 직접 접근 대신 이 경유로 단일화.
+    /// </summary>
+    internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
+
+    /// <summary>
+    /// 적 사망 후처리: S_EntityDeath broadcast → (Boss) StageClear → 제거 → (Normal) respawn 큐잉.
+    /// CombatSystem(즉시) / DeferredDamageSystem(지연) / SkillSystem(Dash) 3 경로 공통 — DRY 단일 출처.
+    /// HP 게이트(target.Hp &lt;= 0)와 S_HitResult 송신은 호출처에 남는다 — 적용 타이밍이 경로마다 다르므로.
+    ///
+    /// **순서 계약(BossStageClearTests)**: S_EntityDeath → S_StageClear 순서 보존 필수.
+    /// **tick thread invariant**: GameMap.Tick 안에서만 호출.
+    /// </summary>
+    internal void HandleEnemyDeath(EnemyEntity target)
+    {
+        S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
+        BroadcastToAll(death.Write());
+
+        if (target.Kind == EnemyKind.Boss && !IsStageCleared)
+        {
+            SetStageCleared();
+            S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
+            BroadcastToAll(stageClear.Write());
+        }
+        RemoveEnemy(target.EntityId);
+        if (target.Kind == EnemyKind.Normal)
+            EnqueueRespawn(target);
+    }
+
+    /// <summary>
+    /// DeferredDamageSystem에 지연 데미지 1건 등록. P3(평타)/P4(썬더볼트)가 호출.
+    /// impactTick = CurrentTick + delayTicks — 호출자가 계산 후 전달.
+    /// tick thread invariant: EnqueueJob 람다 안 또는 Tick 안에서만 호출.
+    /// </summary>
+    internal void EnqueueDeferredDamage(DeferredImpact impact) => _deferredDamageSystem.Enqueue(impact);
+
+    // ── Broadcast / 1:1 송신 ─────────────────────────────────────────────────
+
+    /// <summary>
+    /// 플레이어 본인에게만 S_PlayerHp 1:1 송신.
+    ///
+    /// **호출 invariant**: tick thread에서만. player.Hp가 mutate되는 *모든 지점*에서 동반 호출이 규율
+    ///   (진입 EnterGameWorld / 피격·부활 ApplyBossAttack / 맵 전환 MapMigration). 누락 시 HUD 표시 갭.
+    /// **논블로킹 보장**: Owner.Send는 Session.Send → lock + queue enqueue (헌법 #5).
+    /// currentHp는 Math.Max(0, p.Hp) floor — 음수 방어 (표시 전용, 사망 lifecycle은 S_EntityDeath 채널).
+    /// entityId 필드는 미래 원격/파티 HP 바 확장 대비 — 이번 마일스톤은 본인에게만 송신.
+    /// </summary>
+    internal void SendPlayerHp(PlayerEntity p)
+    {
+        if (p.Owner == null || p.Owner.IsClosing) return;
+        S_PlayerHp pkt = new S_PlayerHp
+        {
+            entityId  = p.EntityId,
+            currentHp = Math.Max(0, p.Hp),
+            maxHp     = p.MaxHp,
+        };
+        p.Owner.Send(pkt.Write());
+    }
+
+    /// <summary>
+    /// 새로 진입한 세션에게 이 맵의 현재 roster를 1:1 Send — 기존 player(S_PlayerJoin) + 살아있는 enemy(S_EntitySpawn).
+    /// EnterGameWorld(최초 진입) / MapMigration(맵 이동) 두 경로 공통 — DRY 단일 출처.
+    ///
+    /// existingPlayers: AddPlayer *전에* 호출부가 찍은 snapshot(자기 자신 제외 — self에게 self PlayerJoin 보내는 것 방지).
+    ///   snapshot 순서 의존성은 호출부 책임 — 전송 루프만 여기로.
+    /// closing-skip: Owner null(유효 연결 없음) + IsClosing(닫히는 중) 둘 다 skip — BroadcastToAll 정책 정합.
+    /// **§2 wire**: S_PlayerJoin/S_EntitySpawn 필드·순서는 통합 전 원본과 byte 단위 동일.
+    /// </summary>
+    internal void SendInitialRosterTo(GameSession target, List<PlayerEntity> existingPlayers)
+    {
+        foreach (PlayerEntity existing in existingPlayers)
+        {
+            if (existing.Owner == null) continue;
+            if (existing.Owner.IsClosing) continue;
+            S_PlayerJoin rosterEntry = new S_PlayerJoin
+            {
+                entityId = existing.EntityId,
+                spawnX = existing.Position.X,
+                spawnY = existing.Position.Y,
+                characterClass = (byte)existing.Stats.Class,
+            };
+            target.Send(rosterEntry.Write());
+        }
+
+        foreach (EnemyEntity enemy in Enemies.Values)
+        {
+            if (enemy.IsDead) continue;
+            S_EntitySpawn enemySpawn = new S_EntitySpawn
+            {
+                entityId = enemy.EntityId,
+                entityKind = (byte)enemy.Kind,
+                x = enemy.X,
+                y = enemy.Y,
+                currentHp = enemy.Hp,
+                maxHp = enemy.MaxHp,
+            };
+            target.Send(enemySpawn.Write());
+        }
+    }
+
+    // ── ProcessAttack (internal 래퍼 — 기존 테스트 인터페이스 보존) ───────────
+
+    /// <summary>
+    /// tick thread 안에서 attack 1건 처리. CombatSystem에 위임.
+    ///
+    /// **인터페이스 보존**: 테스트가 이 메서드를 직접 호출하므로 시그니처 유지.
+    ///   실제 로직은 CombatSystem.ProcessAttack(map, ...) — §2.2 컨테이너+System 구조.
+    ///
+    /// **호출 invariant**: tick thread에서만. GameSession.SubmitAttack이 EnqueueJob 람다로 박음.
+    /// </summary>
+    internal void ProcessAttack(int attackerEntityId, int targetEntityId, long attackerClientTick)
+        => _combatSystem.ProcessAttack(this, attackerEntityId, targetEntityId, attackerClientTick);
+
+    // ── ProcessSkill (썬더볼트 AoE — P4) ──────────────────────────────────────
+
+    /// <summary>
+    /// tick thread 안에서 스킬 1건 처리. SkillSystem.ProcessThunderbolt에 위임.
+    ///
+    /// **호출 invariant**: tick thread에서만. GameSession.SubmitSkillUse가 EnqueueJob 람다로 박음.
+    /// </summary>
+    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick)
+        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick);
+
+    // ── AnimState 계산 ───────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 플레이어의 현재 시각 애니메이션 상태를 계산. 서버 권위 (헌법 #1).
+    ///
+    /// ActionFsm이 단일 출처 — Death/Hit/Attack/Jump/Walk/Idle 우선순위는
+    /// FSM 전이 규칙으로 보장. 이 메서드는 FSM 현재 상태의 AnimState를 반환한다.
+    ///
+    /// **tick thread invariant**: GameMap.Tick 안에서만 호출 (단일 thread).
+    /// </summary>
+    static byte ComputePlayerAnimState(PlayerEntity p)
+        => (byte)p.ActionFsm.AnimState;
+
+    /// <summary>
+    /// Stage Clear flag를 true로 설정. HandleEnemyDeath가 Boss 사망 시 1회만 호출.
+    /// 외부에서 직접 set 불가 (헌법 #1 Server Authority).
+    /// </summary>
+    private void SetStageCleared() => _stageCleared = true;
+
+    private int AllocId() => _idAllocator != null ? _idAllocator() : _localNextId++;
 }

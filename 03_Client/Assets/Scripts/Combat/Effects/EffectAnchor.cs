@@ -31,8 +31,15 @@ namespace Dawnholder.Client.Combat
         // facing 부호 대신 flipX를 기준 삼는 이유: SpriteDefaultFacesLeft 스프라이트는
         // facing(+1)에서 flipX=true라 "facing<0 = 거울상"이 항상 참이 아님. 화면 진실 = flipX.
         public static Vector3 ResolvePosition(Transform entityRoot)
+            => ResolvePosition(entityRoot, ChildName);
+
+        // primaryName anchor 우선 탐색 → 없으면 EffectAnchor fallback → 없으면 root 폴백.
+        // 직업별 용도 anchor(예: Anchor_DashEffect)를 먼저 보고 공용 EffectAnchor로 내려옴.
+        public static Vector3 ResolvePosition(Transform entityRoot, string primaryName)
         {
-            Transform? anchor = FindRecursive(entityRoot, ChildName);
+            Transform? anchor = primaryName != ChildName
+                ? (FindRecursive(entityRoot, primaryName) ?? FindRecursive(entityRoot, ChildName))
+                : FindRecursive(entityRoot, ChildName);
             if (anchor == null) return entityRoot.position;
 
             Vector3 world = anchor.position;

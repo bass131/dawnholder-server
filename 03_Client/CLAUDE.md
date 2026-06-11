@@ -9,6 +9,7 @@ client/Assets/
 │   ├── Network/        TCP 클라이언트, 패킷 read 루프, dispatch
 │   ├── Prediction/     클라이언트 prediction + reconciliation
 │   ├── Rendering/      Sprite, Animator 훅, Camera
+│   ├── Combat/         전투 — Attack(전략·ClassConfig)/Effects(이펙트)/Enemies(적 표현) 하위 분할 (M4.10). 루트엔 CombatBootstrap
 │   ├── Input/          Input → intent packet
 │   ├── UI/             HUD, 메뉴 (UI 전용 씬 — ADR-021)
 │   └── State/          서버 상태의 로컬 미러 (read-only view)

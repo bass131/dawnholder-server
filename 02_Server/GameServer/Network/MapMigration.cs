@@ -142,37 +142,8 @@ internal static class MapMigration
             // 누락 시 데미지 입은 채 맵 넘으면 클라가 Start() placeholder(full HP) 고착 (reviewer 🟡①).
             destMap.SendPlayerHp(newEntity);
 
-            // 본인에게 맵 B 기존 player roster (initial roster — EnterGameWorld 패턴 정합)
-            // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3 — 클라 raw byte echo 절대 금지).
-            foreach (PlayerEntity existing in existingInDest)
-            {
-                if (existing.Owner == null) continue;
-                if (existing.Owner.IsClosing) continue;
-                S_PlayerJoin rosterEntry = new S_PlayerJoin
-                {
-                    entityId = existing.EntityId,
-                    spawnX = existing.Position.X,
-                    spawnY = existing.Position.Y,
-                    characterClass = (byte)existing.Stats.Class,
-                };
-                session.Send(rosterEntry.Write());
-            }
-
-            // 본인에게 맵 B active enemy roster (S_EntitySpawn — EnterGameWorld 패턴 정합)
-            foreach (EnemyEntity enemy in destMap.Enemies.Values)
-            {
-                if (enemy.IsDead) continue;
-                S_EntitySpawn enemySpawn = new S_EntitySpawn
-                {
-                    entityId = enemy.EntityId,
-                    entityKind = (byte)enemy.Kind,
-                    x = enemy.X,
-                    y = enemy.Y,
-                    currentHp = enemy.Hp,
-                    maxHp = enemy.MaxHp,
-                };
-                session.Send(enemySpawn.Write());
-            }
+            // 본인에게 맵 B 기존 roster(player + 살아있는 enemy) 1:1 Send — 통합 메서드.
+            destMap.SendInitialRosterTo(session, existingInDest);
 
             // 맵 B 기존 플레이어에게 신규 진입자 S_PlayerJoin broadcast
             // characterClass: 서버 newEntity.Stats.Class byte cast (헌법 #3).

@@ -167,6 +167,22 @@ namespace Dawnholder.Client.State
             return false;
         }
 
+        // Teleport 보간 끊기 — S_SkillCast(Teleport) 수신 시 해당 원격 entity의 보간 버퍼 reset.
+        // entity가 아직 등록 안 됐으면(race) noop — 다음 Snapshot에서 지연 spawn하면 buffer가 비어 있으므로 슬라이드 없음.
+        public void SnapEntity(int entityId)
+        {
+            if (_entities.TryGetValue(entityId, out RemoteEntity? entity) && entity != null)
+                entity.SnapInterpolation();
+        }
+
+        // 텔레포트 도착 이펙트 콜백 등록 — SnapEntity 호출 *전에* 반드시 먼저 등록.
+        // entity 미등록(race) 시 noop — 지연 spawn된 entity는 buffer가 비어 있으므로 이펙트 없이 정상 동작.
+        public void SetTeleportArriveCallback(int entityId, System.Action? callback)
+        {
+            if (_entities.TryGetValue(entityId, out RemoteEntity? entity) && entity != null)
+                entity.SetTeleportArriveCallback(callback);
+        }
+
         // OnDisconnected에서 호출 — 메모리 누수 차단.
         public void Clear()
         {

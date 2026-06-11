@@ -270,15 +270,18 @@ namespace Dawnholder.Client.Network
 
     // S_HitResult (ID 13) — damage 적용 + HP 갱신 표시 + hitEffect별 VFX.
     // 헌법 #1: 클라는 서버 결과 표시만. 판정 X.
-    // hitEffect: 0=근접(기존), 1=투사체 도착 임팩트, 2=낙뢰(썬더볼트).
+    // hitEffect: 0=근접(기존), 1=투사체 도착 임팩트, 2=낙뢰(썬더볼트), 3=Dash 임팩트.
     internal sealed class HitResultHandler : IClientPacketHandler
     {
         // 투사체 도착 임팩트 VFX 경로. 기존 Resources/Effects/ 규칙 정합.
         const string ProjectileImpactPath = "Effects/ProjectileImpact";
         // 낙뢰 VFX 경로. 에셋 미존재 시 placeholder 로그 후 skip.
         const string LightningVfxPath = "Effects/LightningStrike";
+        // Dash 임팩트 VFX 경로. 영호가 Assets/Resources/Effects/DashHit.prefab 추가 시 자동 적용.
+        const string DashHitVfxPath = "Effects/DashHit";
         static bool _warnedMissingImpact;
         static bool _warnedMissingLightning;
+        static bool _warnedMissingDashHit;
 
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
         {
@@ -290,7 +293,7 @@ namespace Dawnholder.Client.Network
             int dmg = pkt.damage;
             int hp = pkt.currentHp;
             int maxHp = pkt.maxHp;
-            byte hitEffect = pkt.hitEffect;
+            HitEffect hitEffect = (HitEffect)pkt.hitEffect;
 
             MainThreadDispatcher.Enqueue(() =>
             {
@@ -301,7 +304,7 @@ namespace Dawnholder.Client.Network
                 EnemyRegistry.Instance.ApplyHit(targetId, hp, maxHp);
 
                 // hitEffect별 VFX — target 위치에 스폰.
-                if (hitEffect == 1 || hitEffect == 2)
+                if (hitEffect == HitEffect.Projectile || hitEffect == HitEffect.Lightning || hitEffect == HitEffect.Dash)
                 {
                     Vector3 fxPos = Vector3.zero;
                     bool hasFxPos = false;
@@ -313,7 +316,9 @@ namespace Dawnholder.Client.Network
 
                     if (hasFxPos)
                     {
-                        string vfxPath = hitEffect == 1 ? ProjectileImpactPath : LightningVfxPath;
+                        string vfxPath = hitEffect == HitEffect.Projectile ? ProjectileImpactPath
+                                       : hitEffect == HitEffect.Lightning ? LightningVfxPath
+                                       : DashHitVfxPath;
                         GameObject? vfxPrefab = Resources.Load<GameObject>(vfxPath);
                         if (vfxPrefab != null)
                         {
@@ -323,16 +328,20 @@ namespace Dawnholder.Client.Network
                         }
                         else
                         {
-                            // TODO: VFX prefab 없음 — 유현/영호가 Assets/Resources/Effects/ 에 추가 필요.
-                            if (hitEffect == 1 && !_warnedMissingImpact)
+                            if (hitEffect == HitEffect.Projectile && !_warnedMissingImpact)
                             {
                                 Debug.LogWarning($"[HitResultHandler] 투사체 임팩트 VFX 미존재: Resources/{ProjectileImpactPath}");
                                 _warnedMissingImpact = true;
                             }
-                            else if (hitEffect == 2 && !_warnedMissingLightning)
+                            else if (hitEffect == HitEffect.Lightning && !_warnedMissingLightning)
                             {
                                 Debug.LogWarning($"[HitResultHandler] 낙뢰 VFX 미존재: Resources/{LightningVfxPath}");
                                 _warnedMissingLightning = true;
+                            }
+                            else if (hitEffect == HitEffect.Dash && !_warnedMissingDashHit)
+                            {
+                                Debug.LogWarning($"[HitResultHandler] Dash 임팩트 VFX 미존재: Resources/{DashHitVfxPath}");
+                                _warnedMissingDashHit = true;
                             }
                         }
                     }
@@ -740,12 +749,22 @@ namespace Dawnholder.Client.Network
     }
 
     // S_SkillCast (ID 25) — 스킬 캐스팅 연출 통보.
-    // caster 위치에 캐스팅 모션/연출(placeholder). 개별 낙뢰·데미지는 S_HitResult(hitEffect=2)가 담당.
+    // skillId 분기: 1=Thunderbolt, 2=Dash, 3=Teleport.
+    // 데미지/판정은 S_HitResult가 담당 — 이 핸들러는 연출 + (Teleport) 보간 끊기만.
     internal sealed class SkillCastHandler : IClientPacketHandler
     {
-        // TODO: 캐스팅 이펙트 prefab — 유현/영호가 Assets/Resources/Effects/ 에 추가 필요.
-        const string CastEffectPath = "Effects/SkillCast";
-        static bool _warnedMissingCast;
+        // Thunderbolt: 기존 캐스팅 이펙트.
+        const string ThunderboltCastPath = "Effects/SkillCast";
+        // Dash: 시전자에 재생. 영호가 Assets/Resources/Effects/DashSkill.prefab 추가 시 자동 적용.
+        const string DashSkillPath = "Effects/DashSkill";
+        // Teleport: 출발/도착 이펙트. 에셋 1종(Mage_Teleport)을 영호가 2경로로 복제 배치 예정.
+        const string TeleportDepartPath = "Effects/TeleportDepart";
+        const string TeleportArrivePath = "Effects/TeleportArrive";
+
+        static bool _warnedMissingThunderbolt;
+        static bool _warnedMissingDash;
+        static bool _warnedMissingTeleportDepart;
+        static bool _warnedMissingTeleportArrive;
 
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
         {
@@ -754,38 +773,137 @@ namespace Dawnholder.Client.Network
 
             int casterId = pkt.casterEntityId;
             byte skillId = pkt.skillId;
+            byte facing = pkt.facing; // 0=좌, 1=우
 
             MainThreadDispatcher.Enqueue(() =>
             {
                 if (session.LocalEntityId == null) return;
 
+                bool isLocal = casterId == session.LocalEntityId.Value;
+
                 // caster 위치 조회 (로컬/원격 분기).
                 Transform? casterTf = null;
-                if (casterId == session.LocalEntityId.Value)
+                if (isLocal)
                     casterTf = LocalPlayerMovement.Instance?.transform;
                 else if (RemoteEntityRegistry.Instance != null)
                     RemoteEntityRegistry.Instance.TryGetTransform(casterId, out casterTf);
 
                 if (casterTf == null) return;
 
-                Debug.Log($"[Unity] SkillCast: caster={casterId} skill={skillId}");
+                Debug.Log($"[Unity] SkillCast: caster={casterId} skill={skillId} facing={facing} local={isLocal}");
 
-                // 캐스팅 연출 — placeholder. 에셋 없으면 warn+skip(연출 없이 낙뢰는 정상 동작).
-                Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf);
-                GameObject? castPrefab = Resources.Load<GameObject>(CastEffectPath);
-                if (castPrefab != null)
+                SkillId skill = (SkillId)skillId;
+                switch (skill)
                 {
-                    GameObject fx = Object.Instantiate(castPrefab, fxPos, Quaternion.identity);
-                    if (fx.GetComponent<EffectLifetime>() == null)
-                        fx.AddComponent<EffectLifetime>();
-                }
-                else if (!_warnedMissingCast)
-                {
-                    // TODO: 캐스팅 VFX placeholder — Resources/Effects/SkillCast 추가 시 자동 적용.
-                    Debug.LogWarning($"[SkillCastHandler] 캐스팅 VFX 미존재: Resources/{CastEffectPath} — 연출 생략 (낙뢰는 S_HitResult로 별도 처리).");
-                    _warnedMissingCast = true;
+                    case SkillId.Thunderbolt:
+                        SpawnEffect(ThunderboltCastPath, EffectAnchor.ResolvePosition(casterTf),
+                            facingSign: 0, ref _warnedMissingThunderbolt, "Thunderbolt 캐스팅 VFX");
+                        break;
+
+                    case SkillId.Dash:
+                        HandleDash(isLocal, casterTf, facing);
+                        break;
+
+                    case SkillId.Teleport:
+                        HandleTeleport(isLocal, casterId, casterTf);
+                        break;
                 }
             });
+        }
+
+        // Dash 연출: Dash 이펙트 스폰 + facing 반영.
+        // 스폰 위치: Visual 계층에서 Anchor_DashEffect 우선, 없으면 EffectAnchor fallback.
+        // 공격 모션은 서버 S_Snapshot(animState=Attack) force-adopt 경로에서 자동 처리됨.
+        // 이동 자체도 S_Snapshot force-adopt(Attack 채널) — 예측 불필요.
+        //
+        // facing 출처: 로컬=화면 진실(LocalPlayerMotion.Facing — flipX 기준) / 원격=패킷.
+        //   ProjectileLaunchHandler(685-695)와 동형 — 로컬은 입력 직후 방향 전환 시 패킷이 한 박자
+        //   늦으므로 클라 화면 방향을 직접 읽어 어긋남 차단.
+        static void HandleDash(bool isLocal, Transform casterTf, byte facing)
+        {
+            int facingSign;
+            if (isLocal)
+            {
+                LocalPlayerMotion? motion = casterTf.GetComponent<LocalPlayerMotion>();
+                facingSign = motion != null ? motion.Facing : (facing == 1 ? 1 : -1);
+            }
+            else
+            {
+                facingSign = facing == 1 ? 1 : -1;
+            }
+
+            Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf, "Anchor_DashEffect");
+            // DashSkill 스프라이트는 좌향 기본 저작 → flip 기준 반전(SpriteDefaultFacesLeft 동형).
+            SpawnEffect(DashSkillPath, fxPos, facingSign, ref _warnedMissingDash, "Dash 이펙트",
+                spriteDefaultFacesLeft: true);
+        }
+
+        // Teleport 연출: 출발 이펙트 → 보간 끊기 → 도착 이펙트 콜백 등록.
+        // 도착 이펙트는 새 위치가 확정되는 시점(스냅 채택 직후)에 발동 — 출발 위치 placeholder 제거.
+        static void HandleTeleport(bool isLocal, int casterId, Transform casterTf)
+        {
+            Vector3 departPos = casterTf.position; // 출발 위치 — casterTf가 아직 갱신 전.
+
+            SpawnEffect(TeleportDepartPath, departPos, 0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
+
+            if (isLocal)
+            {
+                LocalPlayerMovement.Instance?.NotifyTeleport(arriveCallback: () =>
+                {
+                    if (LocalPlayerMovement.Instance != null)
+                        SpawnArriveEffect(LocalPlayerMovement.Instance.transform);
+                });
+            }
+            else
+            {
+                // 원격: 보간 끊기 + 다음 snapshot 확정 시 1회 발동할 콜백 등록.
+                if (RemoteEntityRegistry.Instance != null)
+                {
+                    int capturedId = casterId;
+                    RemoteEntityRegistry.Instance.SetTeleportArriveCallback(capturedId, () =>
+                    {
+                        if (RemoteEntityRegistry.Instance != null &&
+                            RemoteEntityRegistry.Instance.TryGetTransform(capturedId, out Transform? tf) && tf != null)
+                            SpawnArriveEffect(tf);
+                    });
+                    RemoteEntityRegistry.Instance.SnapEntity(casterId);
+                }
+            }
+        }
+
+        // 도착 위치에서 TeleportArrive 이펙트 스폰.
+        static void SpawnArriveEffect(Transform entityTf)
+        {
+            SpawnEffect(TeleportArrivePath, EffectAnchor.ResolvePosition(entityTf),
+                0, ref _warnedMissingTeleportArrive, "Teleport 도착 이펙트");
+        }
+
+        // 공통 이펙트 스폰 helper. facingSign=0이면 flip 없음(방향 무관 이펙트).
+        // spriteDefaultFacesLeft=true면 좌향 기본 저작 prefab — flip 조건 반전(AnimatorDriver 동형).
+        //   기본 false = 우향 기본 전제(facingSign<0=왼쪽일 때만 거울상).
+        static void SpawnEffect(string resourcePath, Vector3 pos, int facingSign,
+                                ref bool warnedFlag, string displayName,
+                                bool spriteDefaultFacesLeft = false)
+        {
+            GameObject? prefab = Resources.Load<GameObject>(resourcePath);
+            if (prefab != null)
+            {
+                GameObject fx = Object.Instantiate(prefab, pos, Quaternion.identity);
+                // facingSign=0(방향 무관)은 flip 생략. 그 외 (왼쪽) XOR (좌향 기본) = 거울상 여부.
+                if (facingSign != 0 && ((facingSign < 0) ^ spriteDefaultFacesLeft))
+                {
+                    Vector3 s = fx.transform.localScale;
+                    s.x = -Mathf.Abs(s.x);
+                    fx.transform.localScale = s;
+                }
+                if (fx.GetComponent<EffectLifetime>() == null)
+                    fx.AddComponent<EffectLifetime>();
+            }
+            else if (!warnedFlag)
+            {
+                Debug.LogWarning($"[SkillCastHandler] {displayName} 미존재: Resources/{resourcePath} — 연출 생략.");
+                warnedFlag = true;
+            }
         }
     }
 }
