@@ -1,7 +1,7 @@
 ---
 owner: youngho
 phase: 04
-status: pending
+status: done
 grade: 복잡
 summary: roster 전송 중복(EnterGameWorld/MapMigration)을 GameMap.SendInitialRosterTo()로 통합(closing-skip 가드 일치) + rewind/facingByte 검증 헬퍼 추출
 ---

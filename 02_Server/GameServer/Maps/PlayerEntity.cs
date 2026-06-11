@@ -129,6 +129,9 @@ public class PlayerEntity
     // S_PlayerAttack.facing 필드 직렬화용 (공격 연출 방향) — 위치 권위는 Position 기준.
     public sbyte FacingDir { get; set; } = 1;
 
+    /// <summary>facing 1비트 wire 약속: 오른쪽(>=0)=1, 왼쪽=0. S_PlayerAttack/S_SkillCast facing 필드 공유.</summary>
+    internal byte FacingByte => FacingDir >= 0 ? (byte)1 : (byte)0;
+
     // ActionFsm에서 현재 State가 사용하는 남은 틱 카운터.
     // AttackState: 공격 commit window 잔여 틱. HitState: hitstun 잔여 틱.
     // tick thread invariant (헌법 #5).

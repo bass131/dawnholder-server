@@ -46,9 +46,7 @@ internal sealed class CombatSystem
 
         // 3) rewind 범위 검증 (헌법 #3 Trust Boundary — 3분기 silent drop)
         long currentTick = map.CurrentTick;
-        if (attackerClientTick < 0) return;                     // (a) 음수
-        if (attackerClientTick > currentTick) return;            // (b) 미래
-        if (currentTick - attackerClientTick > 4) return;       // (c) 200ms 초과
+        if (!ValidateRewind(attackerClientTick, currentTick)) return;
 
         // rewind: attacker가 공격 버튼을 눌렀을 당시 tick의 서버 저장 위치로 되돌림.
         // target은 현재 위치 사용 (target rewind는 M4.4 backlog).
@@ -76,7 +74,7 @@ internal sealed class CombatSystem
         // facing: FacingDir(마지막 이동 방향). target 있으면 target 방향으로 snap 가능하지만
         //         목표물 없는 허공 스윙도 방향을 유지하려면 FacingDir이 더 안전 — 통일.
         byte attackType = attacker.Stats.Class == CharacterClass.Mage ? (byte)1 : (byte)0;
-        byte facingByte = attacker.FacingDir >= 0 ? (byte)1 : (byte)0; // 1=오른쪽, 0=왼쪽
+        byte facingByte = attacker.FacingByte;
         S_PlayerAttack swing = new S_PlayerAttack
         {
             attackerEntityId = attacker.EntityId,
@@ -175,6 +173,18 @@ internal sealed class CombatSystem
             ? CombatConstants.MageAttackHalfExtent
             : CombatConstants.AttackHalfExtent;
         return new AABB(origin, new Vector2(half, half));
+    }
+
+    /// <summary>
+    /// rewind(lag-comp) 범위 검증 (헌법 §3 Trust Boundary). 3분기 — 음수/미래/상한 초과면 false(reject).
+    /// ProcessAttack + SkillSystem 3개 Process*가 공유. 부등호·경계 1:1 보존(거동 불변).
+    /// </summary>
+    internal static bool ValidateRewind(long clientTick, long serverTick)
+    {
+        if (clientTick < 0) return false;                              // (a) 음수
+        if (clientTick > serverTick) return false;                    // (b) 미래
+        if (serverTick - clientTick > CombatConstants.MaxRewindTicks) return false; // (c) 상한 초과
+        return true;
     }
 
     /// <summary>

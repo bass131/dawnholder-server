@@ -280,6 +280,47 @@ public class GameMap
     }
 
     /// <summary>
+    /// 새로 진입한 세션에게 이 맵의 현재 roster를 1:1 Send — 기존 player(S_PlayerJoin) + 살아있는 enemy(S_EntitySpawn).
+    /// EnterGameWorld(최초 진입) / MapMigration(맵 이동) 두 경로 공통 — DRY 단일 출처.
+    ///
+    /// existingPlayers: AddPlayer *전에* 호출부가 찍은 snapshot(자기 자신 제외 — self에게 self PlayerJoin 보내는 것 방지).
+    ///   snapshot 순서 의존성은 호출부 책임 — 전송 루프만 여기로.
+    /// closing-skip: Owner null(유효 연결 없음) + IsClosing(닫히는 중) 둘 다 skip — BroadcastToAll 정책 정합.
+    /// **§2 wire**: S_PlayerJoin/S_EntitySpawn 필드·순서는 통합 전 원본과 byte 단위 동일.
+    /// </summary>
+    internal void SendInitialRosterTo(GameSession target, List<PlayerEntity> existingPlayers)
+    {
+        foreach (PlayerEntity existing in existingPlayers)
+        {
+            if (existing.Owner == null) continue;
+            if (existing.Owner.IsClosing) continue;
+            S_PlayerJoin rosterEntry = new S_PlayerJoin
+            {
+                entityId = existing.EntityId,
+                spawnX = existing.Position.X,
+                spawnY = existing.Position.Y,
+                characterClass = (byte)existing.Stats.Class,
+            };
+            target.Send(rosterEntry.Write());
+        }
+
+        foreach (EnemyEntity enemy in Enemies.Values)
+        {
+            if (enemy.IsDead) continue;
+            S_EntitySpawn enemySpawn = new S_EntitySpawn
+            {
+                entityId = enemy.EntityId,
+                entityKind = (byte)enemy.Kind,
+                x = enemy.X,
+                y = enemy.Y,
+                currentHp = enemy.Hp,
+                maxHp = enemy.MaxHp,
+            };
+            target.Send(enemySpawn.Write());
+        }
+    }
+
+    /// <summary>
     /// 같은 맵 전원에게 packet 전송.
     ///
     /// **호출 invariant**: tick thread에서만 (EnqueueJob 람다 안 또는 Tick 안).

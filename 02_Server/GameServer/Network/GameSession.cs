@@ -159,25 +159,10 @@ public class GameSession : PacketSession
             // 진입 직후 권위 HP 1회 송신 — 클라 HUD 초기화. Owner 연결 완료 후 즉시.
             map.SendPlayerHp(entity);
 
-            // Initial roster — 자기에게 기존 entity 전원의 S_PlayerJoin 다발 Send.
-            // race 안전: closing 중인 owner의 entity는 skip (race window에서 곧 disappear).
-            // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3 — 클라 raw byte echo 절대 금지).
-            foreach (PlayerEntity existingEntity in existing)
-            {
-                if (existingEntity.Owner != null && existingEntity.Owner.IsClosing) continue;
-                S_PlayerJoin rosterEntry = new S_PlayerJoin
-                {
-                    entityId = existingEntity.EntityId,
-                    spawnX = existingEntity.Position.X,
-                    spawnY = existingEntity.Position.Y,
-                    characterClass = (byte)existingEntity.Stats.Class,
-                };
-                self.Send(rosterEntry.Write());
-            }
+            // self에게 기존 roster(player + 살아있는 enemy) 1:1 Send — 통합 메서드.
+            map.SendInitialRosterTo(self, existing);
 
-            // 자기 외 모든 player에게 신규 entity broadcast.
-            // BroadcastToAll의 IsClosing skip이 race window 방어.
-            // characterClass: 서버 entity.Stats.Class byte cast (헌법 #3).
+            // 자기 외 모든 player에게 신규 entity broadcast (except self — 본인은 로컬 선예측).
             S_PlayerJoin joinNotice = new S_PlayerJoin
             {
                 entityId = entity.EntityId,
@@ -187,26 +172,7 @@ public class GameSession : PacketSession
             };
             map.BroadcastToAll(joinNotice.Write(), except: self);
 
-            // 헌법 #1 server-only spawn: 신규 client에게 active enemy roster 다발 전송.
-            // 클라가 spawn 요청 보낼 권한 X — 모두 EnterGameWorld 시점 서버 단발.
-            // byte cast (EnemyKind → byte) = wire format 1:1 매핑 (S_EntitySpawn.entityKind 약속).
-            foreach (EnemyEntity enemy in map.Enemies.Values)
-            {
-                if (enemy.IsDead) continue;
-                S_EntitySpawn enemySpawn = new S_EntitySpawn
-                {
-                    entityId = enemy.EntityId,
-                    entityKind = (byte)enemy.Kind,
-                    x = enemy.X,
-                    y = enemy.Y,
-                    currentHp = enemy.Hp,
-                    maxHp = enemy.MaxHp,
-                };
-                self.Send(enemySpawn.Write());
-            }
-
-            Console.WriteLine(
-                $"[Map] Player {entity.EntityId} entered at ({entity.Position.X}, {entity.Position.Y}) — roster:{existing.Count}, enemies:{map.Enemies.Count}, broadcasted join");
+            Console.WriteLine($"[Map] Player {entity.EntityId} entered — roster:{existing.Count}, enemies:{map.Enemies.Count}");
         });
     }
 

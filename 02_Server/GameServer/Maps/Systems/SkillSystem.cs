@@ -38,9 +38,7 @@ internal sealed class SkillSystem
         if (currentTick - caster.GetLastSkillTick((byte)SkillId.Teleport) < CombatConstants.TeleportCooldownTicks) return;
 
         // 3) rewind 범위 검증 (ProcessDash/ProcessThunderbolt 동형 — 헌법 #3 Trust Boundary)
-        if (attackerClientTick < 0) return;               // (a) 음수
-        if (attackerClientTick > currentTick) return;     // (b) 미래
-        if (currentTick - attackerClientTick > 4) return; // (c) 200ms 초과
+        if (!CombatSystem.ValidateRewind(attackerClientTick, currentTick)) return;
 
         // 4) 쿨다운 소비 — 검증 통과 직후 (경계 밖 clamp 후에도 쿨다운 소비, 허공 시전 정합).
         caster.SetLastSkillTick((byte)SkillId.Teleport, currentTick);
@@ -62,7 +60,7 @@ internal sealed class SkillSystem
 
         // 8) S_SkillCast broadcast — 클라 "보간 끊기" 신호 (Phase 06 클라가 이 신호로 스냅).
         //    데미지/타격 없음 — 순수 이동 스킬. DeferredDamage/HitResult 경로 안 탐.
-        byte facingByte = caster.FacingDir >= 0 ? (byte)1 : (byte)0;
+        byte facingByte = caster.FacingByte;
         S_SkillCast castPkt = new S_SkillCast
         {
             casterEntityId   = caster.EntityId,
@@ -84,9 +82,7 @@ internal sealed class SkillSystem
         if (currentTick - caster.GetLastSkillTick((byte)SkillId.Dash) < CombatConstants.DashCooldownTicks) return;
 
         // 3) rewind 범위 검증 (ProcessThunderbolt 동형 — 헌법 #3 Trust Boundary)
-        if (attackerClientTick < 0) return;               // (a) 음수
-        if (attackerClientTick > currentTick) return;     // (b) 미래
-        if (currentTick - attackerClientTick > 4) return; // (c) 200ms 초과
+        if (!CombatSystem.ValidateRewind(attackerClientTick, currentTick)) return;
 
         // 4) 쿨다운 소비 — 검증 통과 직후.
         caster.SetLastSkillTick((byte)SkillId.Dash, currentTick);
@@ -132,7 +128,7 @@ internal sealed class SkillSystem
         }
 
         // 7) S_SkillCast broadcast — 클라 연출 신호. strikeDelayTicks=0 (즉시 적용).
-        byte facingByte = caster.FacingDir >= 0 ? (byte)1 : (byte)0;
+        byte facingByte = caster.FacingByte;
         S_SkillCast castPkt = new S_SkillCast
         {
             casterEntityId   = caster.EntityId,
@@ -154,9 +150,7 @@ internal sealed class SkillSystem
         if (currentTick - caster.GetLastSkillTick((byte)SkillId.Thunderbolt) < CombatConstants.ThunderboltCooldownTicks) return;
 
         // 3) rewind 범위 검증 (ProcessAttack 동형 — 헌법 #3 Trust Boundary)
-        if (attackerClientTick < 0) return;               // (a) 음수
-        if (attackerClientTick > currentTick) return;     // (b) 미래
-        if (currentTick - attackerClientTick > 4) return; // (c) 200ms 초과
+        if (!CombatSystem.ValidateRewind(attackerClientTick, currentTick)) return;
 
         // rewind: 공격 버튼 눌렀을 당시 위치로 되돌림 → 박스 origin으로 사용.
         Vector2 rewindedOrigin = caster.GetPositionAtTick(attackerClientTick);
@@ -194,7 +188,7 @@ internal sealed class SkillSystem
 
         // 7) S_SkillCast broadcast — 캐스팅 연출(목록 없음). 빈 박스도 캐스팅 모션은 나감.
         //    facing: FacingDir>=0이면 1(오른쪽), 0(왼쪽). 1비트 약속(S_PlayerAttack facing과 동형).
-        byte facingByte = caster.FacingDir >= 0 ? (byte)1 : (byte)0;
+        byte facingByte = caster.FacingByte;
         S_SkillCast castPkt = new S_SkillCast
         {
             casterEntityId   = caster.EntityId,
