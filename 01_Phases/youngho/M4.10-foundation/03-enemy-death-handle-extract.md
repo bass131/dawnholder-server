@@ -1,7 +1,7 @@
 ---
 owner: youngho
 phase: 03
-status: pending
+status: done
 grade: 복잡
 summary: 적 사망처리 13~15줄 블록 3중복붙(CombatSystem/DeferredDamageSystem/SkillSystem)을 GameMap.HandleEnemyDeath() 한 메서드로 추출
 ---

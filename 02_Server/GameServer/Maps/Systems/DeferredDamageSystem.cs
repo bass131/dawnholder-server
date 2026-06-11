@@ -60,20 +60,7 @@ internal sealed class DeferredDamageSystem
             map.BroadcastToAll(hit.Write());
 
             if (target.Hp <= 0)
-            {
-                S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
-                map.BroadcastToAll(death.Write());
-
-                if (target.Kind == EnemyKind.Boss && !map.IsStageCleared)
-                {
-                    map.SetStageCleared();
-                    S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
-                    map.BroadcastToAll(stageClear.Write());
-                }
-                map.RemoveEnemy(target.EntityId);
-                if (target.Kind == EnemyKind.Normal)
-                    map.EnqueueRespawn(target);
-            }
+                map.HandleEnemyDeath(target);
         }
     }
 }

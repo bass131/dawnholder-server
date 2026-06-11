@@ -841,4 +841,63 @@ public class PacketRoundTripTests
         Assert.Equal((ushort)PacketID.S_HitResult, packetId);
         Assert.Equal((ushort)13, packetId);
     }
+
+    // ──────────────────────────────────────────────────────────────────
+    // S_EntityDeath(14) / S_StageClear(15) 라운드트립.
+    //
+    // HandleEnemyDeath DRY 추출(M4.10 Phase 03) 후 wire format 불변 회귀 가드.
+    // 추출은 패킷 정의를 건드리지 않으므로 ID·필드·크기 모두 불변이어야 한다.
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void S_EntityDeath_RoundTrip_PreservesEntityId()
+    {
+        var pkt = new S_EntityDeath { entityId = 42 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_EntityDeath();
+        decoded.Read(bytes);
+
+        Assert.Equal(42, decoded.entityId);
+    }
+
+    [Fact]
+    public void S_EntityDeath_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 14번째 정의 = PacketID 14.
+        var pkt = new S_EntityDeath { entityId = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_EntityDeath, packetId);
+        Assert.Equal((ushort)14, packetId);
+    }
+
+    [Fact]
+    public void S_StageClear_RoundTrip_PreservesBossEntityId()
+    {
+        var pkt = new S_StageClear { bossEntityId = 99 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_StageClear();
+        decoded.Read(bytes);
+
+        Assert.Equal(99, decoded.bossEntityId);
+    }
+
+    [Fact]
+    public void S_StageClear_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 15번째 정의 = PacketID 15.
+        var pkt = new S_StageClear { bossEntityId = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_StageClear, packetId);
+        Assert.Equal((ushort)15, packetId);
+    }
 }

@@ -226,6 +226,30 @@ public class GameMap
     internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
 
     /// <summary>
+    /// 적 사망 후처리: S_EntityDeath broadcast → (Boss) StageClear → 제거 → (Normal) respawn 큐잉.
+    /// CombatSystem(즉시) / DeferredDamageSystem(지연) / SkillSystem(Dash) 3 경로 공통 — DRY 단일 출처.
+    /// HP 게이트(target.Hp &lt;= 0)와 S_HitResult 송신은 호출처에 남는다 — 적용 타이밍이 경로마다 다르므로.
+    ///
+    /// **순서 계약(BossStageClearTests)**: S_EntityDeath → S_StageClear 순서 보존 필수.
+    /// **tick thread invariant**: GameMap.Tick 안에서만 호출.
+    /// </summary>
+    internal void HandleEnemyDeath(EnemyEntity target)
+    {
+        S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
+        BroadcastToAll(death.Write());
+
+        if (target.Kind == EnemyKind.Boss && !IsStageCleared)
+        {
+            SetStageCleared();
+            S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
+            BroadcastToAll(stageClear.Write());
+        }
+        RemoveEnemy(target.EntityId);
+        if (target.Kind == EnemyKind.Normal)
+            EnqueueRespawn(target);
+    }
+
+    /// <summary>
     /// DeferredDamageSystem에 지연 데미지 1건 등록. P3(평타)/P4(썬더볼트)가 호출.
     /// impactTick = CurrentTick + delayTicks — 호출자가 계산 후 전달.
     /// tick thread invariant: EnqueueJob 람다 안 또는 Tick 안에서만 호출.
