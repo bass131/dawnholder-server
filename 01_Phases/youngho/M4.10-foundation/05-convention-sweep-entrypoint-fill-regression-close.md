@@ -1,7 +1,7 @@
 ---
 owner: youngho
 phase: 05
-status: pending
+status: done
 grade: 복잡 (마일스톤 마감이므로 보고 양식 = 대규모: `_milestone-DONE.md` + 5단계 보고 MD/HTML)
 summary: Roslyn 멤버정렬 전체 스윕(경고 0) + 클래스 책임 헤더 보강 + ENTRY_POINTS.md 실제 작성 + 전체 회귀 + 마일스톤 마감
 ---

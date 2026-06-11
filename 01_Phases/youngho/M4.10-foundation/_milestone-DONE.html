@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.10 — 기반 정돈 마일스톤 박제</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff; --accent2:#bc8cff;
+    --green:#3fb950; --yellow:#d29922; --red:#f85149; --pink:#f778ba;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Pretendard','Segoe UI',-apple-system,sans-serif;line-height:1.7;padding:0 0 80px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  header{background:linear-gradient(135deg,#1c2330,#161b22);border-bottom:1px solid var(--border);
+    padding:48px 0 36px;margin-bottom:36px;}
+  h1{font-size:30px;margin:0 0 8px;color:#fff;letter-spacing:-.5px;}
+  .sub{color:var(--muted);font-size:15px;margin-bottom:18px;}
+  .badges{display:flex;gap:10px;flex-wrap:wrap;}
+  .badge{display:inline-block;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:600;
+    border:1px solid var(--border);background:var(--panel2);}
+  .badge.lg{color:var(--accent2);border-color:var(--accent2);}
+  .badge.date{color:var(--green);border-color:var(--green);}
+  .badge.ver{color:var(--accent);border-color:var(--accent);}
+  h2{font-size:21px;color:#fff;margin:44px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:14px;}
+  .card h3{margin:0 0 8px;font-size:16px;color:var(--accent);}
+  .card.what h3{color:var(--accent);} .card.why h3{color:var(--yellow);}
+  .card.how h3{color:var(--accent2);} .card.test h3{color:var(--green);} .card.next h3{color:var(--pink);}
+  .card p{margin:6px 0;font-size:14.5px;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0;}
+  th,td{border:1px solid var(--border);padding:8px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--panel2);color:#fff;}
+  td code,p code,li code{background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:12.5px;color:var(--accent);}
+  .pass{color:var(--green);font-weight:700;}
+  .warn{color:var(--yellow);font-weight:700;}
+  ul{margin:8px 0;padding-left:22px;} li{margin:5px 0;font-size:14.5px;}
+  .muted{color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>M4.10 — 기반 정돈 (foundation)</h1>
+  <div class="sub">컨벤션 v6 강제 + 복붙 발산 봉합(적사망·roster) + 매직넘버 SSOT + 진입점 맵 — 새 기능 0, 전부 wire·거동 불변</div>
+  <div class="badges">
+    <span class="badge lg">대규모</span>
+    <span class="badge date">2026-06-11 마감</span>
+    <span class="badge ver">ProtocolVersion 11 불변 (bump 0)</span>
+    <span class="badge">5 Phase + 곁다리 1 · 7 commits</span>
+  </div>
+</div></header>
+<div class="wrap">
+
+<h2>5단계 보고</h2>
+
+<div class="card what"><h3>🎯 무엇을 만들었나</h3>
+<p>새 기능 0의 <b>순수 기반 정돈</b>. ① 적 사망 후처리 13줄 × 3파일 byte 복붙 → <code>GameMap.HandleEnemyDeath()</code> 단일 출처. ② roster 전송 2중복 + <b>이미 발산한 closing-skip 가드</b> → <code>GameMap.SendInitialRosterTo()</code> + 가드 통일. ③ 매직넘버 SSOT(<code>CombatConstants</code> 9그룹) + <code>HitEffect</code> enum(wire 불변) + <code>EnemyDefaultHp</code> 이중관리 폐기. ④ rewind 검증 4벌 → <code>ValidateRewind</code>, facingByte 4벌 → <code>FacingByte</code>. ⑤ 컨벤션 v6 선언 → StyleCop SA1201/1202 <b>production 경고 189→0 강제 스윕</b> + v6.1 모순 정정. ⑥ <code>ENTRY_POINTS.md</code> 증상→파일·함수 룩업표 5카테고리.</p></div>
+
+<div class="card why"><h3>🤔 왜 필요한가</h3>
+<p>발표 전 정돈 시퀀스(M4.10 기반 → M4.11 동기화 → M4.12 스킬 마감)의 토대. 전수조사 진단 = <b>"골격은 건강, 진짜 병은 중복(복붙)"</b> — 그리고 그 위험이 이론이 아니라 실증이었다: roster 복붙의 가드가 이미 두 버전으로 갈라져(<code>Owner != null && IsClosing</code> vs <code>Owner == null skip</code>) "맵 이동 시엔 되는데 첫 입장 시엔 안 되는" 유령 버그의 씨앗이 박혀 있었다. 사망·roster 정책을 미래에 바꿀 때 한 곳만 고치면 전 경로가 자동 일관 + M4.11 디버깅 자산(진입점 맵·멤버 위치 예측) 확보.</p></div>
+
+<div class="card how"><h3>🛠️ 어떻게 만들었나</h3>
+<p>전 Phase 공통 = <b>behavior-preserving(거동 불변) 추출</b>. (a) <b>경계 설정</b>: 공통(사망 후 블록·전송 루프)만 옮기고 경로별 차이(HP 게이트 타이밍·currentHp floor·생존 HitState·snapshot 순서)는 호출처에 남김. (b) <b>데이터 소유자에 추출</b>: <code>_enemies</code>/<code>_stageCleared</code>/broadcast를 소유한 GameMap의 메서드로(§2.2 정합). (c) <b>wire 불변 증명 2갈래</b>: 패킷 struct diff 0 = 구조적 보장 + PacketRoundTrip = 미래 회귀 그물, broadcast 위치 이동은 수신 집합 disjoint 논증. (d) 가드 통일은 추측 금지 — 기존 정책(BroadcastToAll)을 Read로 확정 후 수렴. 스윕은 <code>dotnet format</code>이 SA1201/1202 fixer 미제공이라 도메인 Worker 3개 병렬 수동 재배치 + 메인 일괄 검증.</p></div>
+
+<div class="card test"><h3>🧪 테스트 결과</h3>
+<p>SA1201/1202 잔존 <span class="pass">0</span> · 클린빌드 <span class="pass">0 Error</span> · dotnet test <span class="pass">541 passed / 0 failed</span>(시작 523 → 신규 가드 +18) · 헤드리스 봇 <span class="pass">16 시나리오 회귀 0</span>(MapTransition 신규 등록 첫 PASS — 4맵 루프 entityId 유지; HpSync·BossFight 연속실행 실패는 보스 상태 누적 <i>기존</i> 한계, fresh PASS) · Unity 콘솔 <span class="pass">error 0</span> · reviewer <span class="pass">🟢×3</span>(P04 trust-boundary 포함, 🔴 0) · ProtocolVersion <span class="pass">11 불변</span>(PDL 무변경 + RoundTrip assert).</p></div>
+
+<div class="card next"><h3>➡️ 다음 스텝</h3>
+<p>① <b>M4.11-sync</b> — 근본 = 클라-서버 공유 시계 부재. ENTRY_POINTS 동기화 항목에 좌표 박힘(<code>RemoteEntity.EnqueueSnapshot</code>의 serverTick 버림 = 창드래그 desync 유력 범인). 회귀 안전망 먼저, 고정스텝은 그 후. ② <b>M4.12-skill-finish</b> — M4.9 잔여 회수(클래스게이트·쿨다운UI) + ClientPacketHandlers 909줄 17파일 분리 + 발표 재빌드. ③ <b>PR = main 한 방</b>(M4.9 8커밋 + M4.10 7커밋 — 영호 결정). ④ backlog: ProcessAttack Strategy 추출(Rule of Three) · DeferredImpact.HitEffect enum 승격 · 봇 suite 상태 격리.</p></div>
+
+<h2>Phase 박제 요약</h2>
+<table>
+<tr><th>Phase</th><th>제목</th><th>핵심</th><th>commit</th></tr>
+<tr><td>P01</td><td>컨벤션 v6 + StyleCop</td><td>§2.5 DRY + §6.5 책임헤더 + §7.1 멤버정렬(SA1201/1202) + §7.2 진입점. 03_Client 빈 차단막(Unity NuGet 격리)</td><td><code>5e771ad</code></td></tr>
+<tr><td>P02</td><td>매직넘버 + HitEffect enum</td><td>CombatConstants 9그룹 SSOT + <code>HitEffect : byte</code>(wire 불변) + EnemyDefaultHp 폐기. Enum.IsDefined byte 함정 봉합(156 연쇄실패→0)</td><td><code>7cd3d12</code></td></tr>
+<tr><td>곁다리</td><td>클라 Combat 폴더 분할</td><td>19파일 → Attack/Effects/Enemies (guid 보존, 코드 0)</td><td><code>6e0ab6c</code></td></tr>
+<tr><td>P03</td><td>적사망 3중복 통합</td><td>13줄×3 → <code>HandleEnemyDeath()</code>. 순서 계약(S_EntityDeath→StageClear) 보존. 봇 5경로 + RoundTrip 4케이스</td><td><code>78f7f90</code></td></tr>
+<tr><td>P04 ★</td><td>roster 통합 + 헬퍼 (trust-boundary)</td><td>발산 가드 봉합 + <code>SendInitialRosterTo()</code> + <code>ValidateRewind</code>/<code>FacingByte</code>. 수신집합 disjoint 논증. reviewer 🟢</td><td><code>8d53419</code></td></tr>
+<tr><td>P05</td><td>강제 스윕 + 진입점맵 + 마감</td><td>production 189→0(Tests/Tools 완화) + v6.1 모순 정정 + ENTRY_POINTS 본문 + MapTransition 봇 등록 + 전체 회귀</td><td><code>1dfd267</code> + <code>3f4adcf</code></td></tr>
+</table>
+
+<h2>최종 게이트</h2>
+<table>
+<tr><th>게이트</th><th>결과</th></tr>
+<tr><td>SA1201/1202 멤버정렬 경고</td><td class="pass">189 → 0 (production 55 수동 스윕 + Tests 109/Tools 25 완화)</td></tr>
+<tr><td>dotnet test</td><td class="pass">541 / 541 passed</td></tr>
+<tr><td>헤드리스 봇</td><td class="pass">16 시나리오 회귀 0 (+MapTransition 신규 첫 PASS)</td></tr>
+<tr><td>Unity 콘솔</td><td class="pass">error CS 0</td></tr>
+<tr><td>reviewer</td><td class="pass">🟢×3 — 🔴 0 (P04 trust-boundary 포함)</td></tr>
+<tr><td>ProtocolVersion</td><td class="pass">11 불변 (bump 0 마일스톤)</td></tr>
+</table>
+
+<h2>학습 하이라이트</h2>
+<ul>
+<li><b>복붙은 언젠가 발산한다(실증)</b> — roster 가드가 한쪽만 고쳐져 두 버전으로. 통합 = 발산을 물리적으로 불가능하게.</li>
+<li><b>추출의 핵심은 "무엇을 남기나"</b> — 공통만 옮기고 경로별 차이는 호출처에. 차이를 끌고 들어가면 거동이 뭉개진다.</li>
+<li><b>wire 불변 증명 2갈래</b> — struct diff 0(구조적, 현재 증명) + RoundTrip 테스트(미래 회귀 차단). 부수효과 순서는 수신 집합 disjoint를 손으로.</li>
+<li><b>선언=실재는 도구에도</b> — 문서가 SA1201과 반대 순서를 선언한 모순 발견 → 빌드가 검사하는 쪽이 진실(v6.1).</li>
+<li><b>analyzer ≠ code-fix</b> — dotnet format은 fixer 등록된 진단만 자동 수정. 멤버 이동은 의도적 미제공 → 수동.</li>
+<li><b>DLL drift vs 정당 갱신</b> — 소스 무변경 재빌드 = drift(복원) / 소스 동반 = 정당(commit). 직전 git status가 판별 절차.</li>
+</ul>
+
+<p class="muted">박제: 2026-06-11 · WORK-ID m4.10-foundation · branch feature/m4.10-foundation · 상세 = _milestone-DONE.md</p>
+</div>
+</body>
+</html>
