@@ -1,12 +1,52 @@
 fileFormatVersion: 2
 guid: 1310162cca6e74c4fa3560f52e74fc51
-labels:
-- UnityAI
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3027720894737066909
-    second: kinght_skill_1 (1)_0
+      213: -8039665395086976626
+    second: Knight_Dash_Skill_Effect_0
+  - first:
+      213: -786922559327331148
+    second: Knight_Dash_Skill_Effect_1
+  - first:
+      213: -7482710412995990598
+    second: Knight_Dash_Skill_Effect_2
+  - first:
+      213: 3689836003892168255
+    second: Knight_Dash_Skill_Effect_3
+  - first:
+      213: -2637725538672011052
+    second: Knight_Dash_Skill_Effect_4
+  - first:
+      213: -3192714159666887473
+    second: Knight_Dash_Skill_Effect_5
+  - first:
+      213: -7599906964882106409
+    second: Knight_Dash_Skill_Effect_6
+  - first:
+      213: -1373557157874461578
+    second: Knight_Dash_Skill_Effect_7
+  - first:
+      213: 21344405740383038
+    second: Knight_Dash_Skill_Effect_8
+  - first:
+      213: 3462408482857783892
+    second: Knight_Dash_Skill_Effect_9
+  - first:
+      213: 8664819484255092539
+    second: Knight_Dash_Skill_Effect_10
+  - first:
+      213: -201860700074152759
+    second: Knight_Dash_Skill_Effect_11
+  - first:
+      213: -1256486241006963995
+    second: Knight_Dash_Skill_Effect_12
+  - first:
+      213: -8793385746942265800
+    second: Knight_Dash_Skill_Effect_13
+  - first:
+      213: 5146539690687281576
+    second: Knight_Dash_Skill_Effect_14
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -106,19 +146,19 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 198
-        width: 409
-        height: 198
+        y: 280
+        width: 600
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: da5586998ab29c04b8032713bb603895
-      internalID: 1599571605
+      spriteID: e8917dc4bee5d6090800000000000000
+      internalID: -8039665395086976626
       vertices: []
       indices: 
       edges: []
@@ -127,20 +167,20 @@ TextureImporter:
       name: Knight_Dash_Skill_Effect_1
       rect:
         serializedVersion: 2
-        x: 409
-        y: 198
-        width: 409
-        height: 198
+        x: 600
+        y: 280
+        width: 600
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 57361e79021b384428148af2dea9f4fc
-      internalID: 282423806
+      spriteID: 4bc9d810a1a4415f0800000000000000
+      internalID: -786922559327331148
       vertices: []
       indices: 
       edges: []
@@ -149,20 +189,20 @@ TextureImporter:
       name: Knight_Dash_Skill_Effect_2
       rect:
         serializedVersion: 2
-        x: 818
-        y: 198
-        width: 409
-        height: 198
+        x: 1200
+        y: 280
+        width: 600
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: bb21ecf67e75ad343b43fc22707f9c28
-      internalID: 490082184
+      spriteID: abbe1444682182890800000000000000
+      internalID: -7482710412995990598
       vertices: []
       indices: 
       edges: []
@@ -171,20 +211,20 @@ TextureImporter:
       name: Knight_Dash_Skill_Effect_3
       rect:
         serializedVersion: 2
-        x: 1227
-        y: 198
-        width: 409
-        height: 198
+        x: 1800
+        y: 280
+        width: 600
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 3b750db9429b6014f9eb28e2a8b9318c
-      internalID: -1124656158
+      spriteID: f368073cb4ee43330800000000000000
+      internalID: 3689836003892168255
       vertices: []
       indices: 
       edges: []
@@ -193,20 +233,20 @@ TextureImporter:
       name: Knight_Dash_Skill_Effect_4
       rect:
         serializedVersion: 2
-        x: 1636
-        y: 198
-        width: 409
-        height: 198
+        x: 2400
+        y: 280
+        width: 600
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 568ffb4b255c9c142a7ecdde86ed9fa3
-      internalID: -560234215
+      spriteID: 4d89a7c099ae46bd0800000000000000
+      internalID: -2637725538672011052
       vertices: []
       indices: 
       edges: []
@@ -217,18 +257,18 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 409
-        height: 198
+        width: 600
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 1c862953c27d54f4aa039e9133e981c7
-      internalID: 1199429800
+      spriteID: fc402b3336331b3d0800000000000000
+      internalID: -3192714159666887473
       vertices: []
       indices: 
       edges: []
@@ -237,20 +277,20 @@ TextureImporter:
       name: Knight_Dash_Skill_Effect_6
       rect:
         serializedVersion: 2
-        x: 409
+        x: 600
         y: 0
-        width: 409
-        height: 198
+        width: 600
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: d23d980e99d787f42a0248637570d058
-      internalID: 419933789
+      spriteID: 7d75f28a1e4b78690800000000000000
+      internalID: -7599906964882106409
       vertices: []
       indices: 
       edges: []
@@ -259,20 +299,42 @@ TextureImporter:
       name: Knight_Dash_Skill_Effect_7
       rect:
         serializedVersion: 2
-        x: 818
+        x: 1200
         y: 0
-        width: 409
-        height: 198
+        width: 600
+        height: 280
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 8e3587c8ad8554146968056b37e17b95
-      internalID: -1696875201
+      spriteID: 6749236da0520fce0800000000000000
+      internalID: -1373557157874461578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Knight_Dash_Skill_Effect_8
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 0
+        width: 600
+        height: 280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3be81abf94db4000800000000000000
+      internalID: 21344405740383038
       vertices: []
       indices: 
       edges: []
@@ -281,7 +343,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 54001eeecbe66594eaf53ff6c9e24ba9
+    spriteID: 927cd58ef7822b94a8e771276ee15077
     internalID: 0
     vertices: []
     indices: 
@@ -291,16 +353,17 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":409.0,"y":198.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":600.0,"y":280.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Knight_Dash_Skill_Effect_0: 1599571605
-      Knight_Dash_Skill_Effect_1: 282423806
-      Knight_Dash_Skill_Effect_2: 490082184
-      Knight_Dash_Skill_Effect_3: -1124656158
-      Knight_Dash_Skill_Effect_4: -560234215
-      Knight_Dash_Skill_Effect_5: 1199429800
-      Knight_Dash_Skill_Effect_6: 419933789
-      Knight_Dash_Skill_Effect_7: -1696875201
+      Knight_Dash_Skill_Effect_0: -8039665395086976626
+      Knight_Dash_Skill_Effect_1: -786922559327331148
+      Knight_Dash_Skill_Effect_2: -7482710412995990598
+      Knight_Dash_Skill_Effect_3: 3689836003892168255
+      Knight_Dash_Skill_Effect_4: -2637725538672011052
+      Knight_Dash_Skill_Effect_5: -3192714159666887473
+      Knight_Dash_Skill_Effect_6: -7599906964882106409
+      Knight_Dash_Skill_Effect_7: -1373557157874461578
+      Knight_Dash_Skill_Effect_8: 21344405740383038
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
