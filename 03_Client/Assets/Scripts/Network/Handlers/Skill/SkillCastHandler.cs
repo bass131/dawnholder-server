@@ -105,9 +105,10 @@ namespace Dawnholder.Client.Network
             }
 
             Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf, "Anchor_DashEffect");
-            // DashSkill 스프라이트는 좌향 기본 저작 → flip 기준 반전(SpriteDefaultFacesLeft 동형).
+            // DashSkill 스프라이트는 우향 기본 저작(895c3fb 재익스포트) → spriteDefaultFacesLeft=false.
+            // facingSign<0(좌향)일 때만 localScale.x 반전 — SpawnEffect 기본 동작.
             SpawnEffect(DashSkillPath, fxPos, facingSign, ref _warnedMissingDash, "Dash 이펙트",
-                spriteDefaultFacesLeft: true);
+                spriteDefaultFacesLeft: false);
         }
 
         // Teleport 연출: 출발 이펙트 → 보간 끊기 → 도착 이펙트 콜백 등록.
