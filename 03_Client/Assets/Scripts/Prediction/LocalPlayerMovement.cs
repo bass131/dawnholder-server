@@ -222,8 +222,8 @@ namespace Dawnholder.Client.Prediction
             if (teleportSnap) return true;
             if (serverAnimState == AnimState.Hit) return true;
             if (serverAnimState == AnimState.Attack)
-                // eps는 서버가 lunge를 |vx|<0.05f에서 정확히 0으로 정리(PlayerCombatStates)하는 간극 아래면 충분.
-                return Mathf.Abs(serverVx) > 0.0001f;
+                // 서버가 |임펄스 vx| < ExternalImpulseEpsilon 을 0 으로 클램프하므로 살아남은 vx 는 항상 >= ε — 이 게이트는 그 클램프의 보색.
+                return Mathf.Abs(serverVx) >= Constants.ExternalImpulseEpsilon;
             return false;
         }
 

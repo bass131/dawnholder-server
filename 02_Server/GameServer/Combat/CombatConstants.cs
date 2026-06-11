@@ -167,12 +167,6 @@ internal static class CombatConstants
     // 1.5f = 추격 개시 범위보다 50% 더 벗어나야 이탈 — 진입·이탈 경계 분리로 떨림 방지.
     public const float DeAggroHysteresis = 1.5f;
 
-    // ── 물리 감쇠 공통 ────────────────────────────────────────────────────────
-
-    // 넉백/lunge 감쇠 near-zero 종료 임계값. |velocity| < 이 값이면 0으로 정리.
-    // PlayerCombatStates(AttackState/HitState) + EnemyHitState 공통 사용.
-    public const float VelocityEpsilon = 0.05f;
-
     // ── Lag-comp rewind 검증 ──────────────────────────────────────────────────
 
     internal const long MaxRewindTicks = 4; // 200ms @ 20TPS — lag-comp rewind 상한

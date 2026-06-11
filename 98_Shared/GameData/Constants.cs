@@ -79,6 +79,14 @@ public static class Constants
     public const float KnockbackInitialVx = 7f;
 
     /// <summary>
+    /// 임펄스(lunge/넉백) 감쇠 near-zero 클램프 임계값.
+    /// 서버는 |임펄스 velocity| &lt; ε 이면 0f로 정리 — 살아남은 임펄스는 항상 |vx| >= ε.
+    /// 클라 force-adopt 게이트는 이 약속의 보색(complement): |serverVx| >= ε 이면 임펄스 활성으로 판정.
+    /// 두 곳이 독립 매직넘버를 쓰면 silent break(M4.11 P2 계약 명시).
+    /// </summary>
+    public const float ExternalImpulseEpsilon = 0.05f;
+
+    /// <summary>
     /// 틱당 넉백 감쇠 계수. KnockbackVx에 매 틱 곱해 지수 감쇠.
     /// 0.75^8 ≈ 0.1 → 8틱(= HitState 지속) 후 초기 속도의 10% 이하로 수렴.
     /// </summary>
