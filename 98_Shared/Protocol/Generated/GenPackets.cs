@@ -1318,6 +1318,7 @@ public class S_EntityState : IPacket // S_EntityState 패킷
 	public float y;
 	public byte state;
 	public byte animState;
+	public int serverTick;
     public ushort Protocol { get { return (ushort)PacketID.S_EntityState; } }
 
     public void Read(ArraySegment<byte> segment)
@@ -1350,6 +1351,10 @@ public class S_EntityState : IPacket // S_EntityState 패킷
 		// animState 읽기
 		this.animState = (byte)s[count];
 		count += sizeof(byte);
+		
+		// serverTick 읽기 (LittleEndian 명시 — wire format 약속)
+		this.serverTick = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
+		count += sizeof(int);
 		
     }
 
@@ -1389,6 +1394,10 @@ public class S_EntityState : IPacket // S_EntityState 패킷
 		// animState 쓰기
 		s[count] = (byte)this.animState;
 		count += sizeof(byte);
+		
+		// serverTick 쓰기 (LittleEndian 명시 — wire format 약속)
+		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.serverTick);
+		count += sizeof(int);
 		
 
         // 최종 size 기록

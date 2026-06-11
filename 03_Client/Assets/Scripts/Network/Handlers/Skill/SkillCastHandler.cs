@@ -68,6 +68,11 @@ namespace Dawnholder.Client.Network
                         break;
 
                     case SkillId.Dash:
+                        // 원격: 서버가 Dash 중 Attack animState를 보냄 → facing latch 갱신.
+                        // 스킬은 타겟 스냅 없으므로 facing = 이동 방향 = Local 연출과 일치.
+                        // 직전 평타의 stale facing이 Dash에 잘못 적용되는 것을 방지.
+                        if (!isLocal)
+                            RemoteEntityRegistry.Instance?.SetAttackFacing(casterId, facing == 1 ? 1 : -1);
                         HandleDash(isLocal, casterTf, facing);
                         break;
 
@@ -100,9 +105,10 @@ namespace Dawnholder.Client.Network
             }
 
             Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf, "Anchor_DashEffect");
-            // DashSkill 스프라이트는 좌향 기본 저작 → flip 기준 반전(SpriteDefaultFacesLeft 동형).
+            // DashSkill 스프라이트는 우향 기본 저작(895c3fb 재익스포트) → spriteDefaultFacesLeft=false.
+            // facingSign<0(좌향)일 때만 localScale.x 반전 — SpawnEffect 기본 동작.
             SpawnEffect(DashSkillPath, fxPos, facingSign, ref _warnedMissingDash, "Dash 이펙트",
-                spriteDefaultFacesLeft: true);
+                spriteDefaultFacesLeft: false);
         }
 
         // Teleport 연출: 출발 이펙트 → 보간 끊기 → 도착 이펙트 콜백 등록.

@@ -40,13 +40,18 @@ namespace Dawnholder.Client.Network
                 // 로컬 플레이어 — commit window 선예측이 이미 스윙 모션 처리. 중복 차단.
                 if (attackerId == session.LocalEntityId.Value) return;
 
+                int facing = facingByte == 1 ? 1 : -1;
+
+                // 몸통 facing latch — melee/ranged 공통. attackType 체크보다 먼저.
+                // Hit 우선순위는 RemotePlayerMotion.ResolveFacing이 처리하므로 여기선 무조건 latch.
+                RemoteEntityRegistry.Instance?.SetAttackFacing(attackerId, facing);
+
                 // Ranged(attackType=1) 투사체 연출은 S_ProjectileLaunch 수신 시 처리(ProjectileLaunchHandler).
                 // S_PlayerAttack에서는 캐스팅 스윙 모션 플리퍼(원격 Mage 스윙 연출)만 트리거 가능하나
                 // 현재 연출 에셋 미정 → Melee(0)만 실처리.
                 if (attackType != 0) return;
 
                 Transform? attackerTf = null;
-                int facing = facingByte == 1 ? 1 : -1;
 
                 if (RemoteEntityRegistry.Instance != null)
                     RemoteEntityRegistry.Instance.TryGetTransform(attackerId, out attackerTf);

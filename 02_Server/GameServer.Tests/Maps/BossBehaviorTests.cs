@@ -471,9 +471,9 @@ public class BossBehaviorTests : IDisposable
     // ─── 항목 7: ProtocolVersion + 직렬화 왕복 ────────────────────────────────────
 
     [Fact]
-    public void ProtocolVersion_Is11()
+    public void ProtocolVersion_Is12()
     {
-        Assert.Equal(11, ProtocolVersion.Current);
+        Assert.Equal(12, ProtocolVersion.Current);
     }
 
     [Fact]

@@ -91,10 +91,10 @@ namespace Dawnholder.Client.Combat
         }
 
         // S_EntityState 핸들러에서 호출 — 서버 권위 위치 + 시각 animState 갱신.
-        public void UpdatePosition(int entityId, float x, float y, byte animState)
+        public void UpdatePosition(int entityId, int serverTick, float x, float y, byte animState)
         {
             if (!_enemies.TryGetValue(entityId, out EnemyEntry entry)) return;
-            entry.Interp.EnqueueSnapshot(x, y + entry.Enemy.VisualFootOffset);
+            entry.Interp.EnqueueSnapshot(serverTick, x, y + entry.Enemy.VisualFootOffset);
             entry.Motion?.SetAnimState(animState);
         }
 

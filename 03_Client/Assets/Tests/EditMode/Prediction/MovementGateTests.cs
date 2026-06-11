@@ -161,5 +161,48 @@ namespace Dawnholder.Client.Tests.Prediction
             Assert.IsFalse(LocalPlayerMovement.ShouldForceAdopt(
                 teleportSnap: false, serverAnimState: AnimState.Walk, serverVx: 0f));
         }
+
+        // === ExternalImpulseEpsilon 경계값 케이스 (M4.11 P2) ===
+        //
+        // 서버 클램프: |임펄스 vx| < ε → 0f. 따라서 Attack 스냅샷에서
+        //   - vx < ε : 서버가 이미 0으로 정리했어야 할 구간 → force-adopt 불필요.
+        //   - vx >= ε : 살아남은 임펄스 활성 → force-adopt.
+
+        [Test]
+        public void ShouldForceAdopt_Attack_VxBelowEpsilon_ReturnsFalse()
+        {
+            // 0.049f < ε(0.05f): 서버 클램프 구간 — 정상 경로에서 이 값은 도달 불가(서버가 0으로 정리).
+            // 만약 도달하면 force-adopt를 켜지 않아야 rubber-band가 재발하지 않는다.
+            Assert.IsFalse(LocalPlayerMovement.ShouldForceAdopt(
+                teleportSnap: false, serverAnimState: AnimState.Attack,
+                serverVx: 0.049f));
+        }
+
+        [Test]
+        public void ShouldForceAdopt_Attack_VxExactlyEpsilon_ReturnsTrue()
+        {
+            // ε = 살아남은 최소 임펄스. 게이트는 >= ε 이므로 정확히 ε 도 발동.
+            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
+                teleportSnap: false, serverAnimState: AnimState.Attack,
+                serverVx: Constants.ExternalImpulseEpsilon));
+        }
+
+        [Test]
+        public void ShouldForceAdopt_Attack_VxNegativeEpsilon_ReturnsTrue()
+        {
+            // 역방향 최소 임펄스 — Abs 대칭 확인.
+            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
+                teleportSnap: false, serverAnimState: AnimState.Attack,
+                serverVx: -Constants.ExternalImpulseEpsilon));
+        }
+
+        [Test]
+        public void ShouldForceAdopt_Attack_VxZero_Epsilon_ReturnsFalse()
+        {
+            // 0f: 서버 클램프 후 완전 소멸 — force-adopt 없음 (기존 케이스 보완).
+            Assert.IsFalse(LocalPlayerMovement.ShouldForceAdopt(
+                teleportSnap: false, serverAnimState: AnimState.Attack,
+                serverVx: 0f));
+        }
     }
 }

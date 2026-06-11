@@ -125,7 +125,7 @@ namespace Dawnholder.Client.State
 
         // S_Snapshot 핸들러에서 호출 (entityId가 본인이 아닌 경우만).
         // 지연 spawn — entity 없으면 Snapshot 좌표로 Spawn(직업 미상=null).
-        public void UpdateSnapshot(int entityId, float x, float y, byte animState)
+        public void UpdateSnapshot(int entityId, int serverTick, float x, float y, float vx, byte animState)
         {
             // self 가드 (Spawn과 동일 불변식) — 전환 중 누수된 본인 Snapshot이 지연 spawn으로
             // Knight 유령을 만드는 경로 차단.
@@ -137,9 +137,12 @@ namespace Dawnholder.Client.State
                 if (!_entities.TryGetValue(entityId, out entity))
                     return; // Spawn 실패 (prefab null 등) — 위 LogError가 이미 박힘.
             }
-            entity.EnqueueSnapshot(x, y);
+            entity.EnqueueSnapshot(serverTick, x, y);
             if (_motions.TryGetValue(entityId, out RemotePlayerMotion? motion))
+            {
                 motion.SetAnimState(animState);
+                motion.SetVelocityX(vx);
+            }
         }
 
         // S_PlayerAttack 핸들러가 원격 공격자 위치 조회 시 사용.
@@ -165,6 +168,14 @@ namespace Dawnholder.Client.State
             }
             facing = 1;
             return false;
+        }
+
+        // S_PlayerAttack / S_SkillCast 수신 시 원격 공격자 몸통 facing을 latch.
+        // _motions에는 원격 entity만 등록되므로 self 가드 불필요.
+        public void SetAttackFacing(int entityId, int facing)
+        {
+            if (_motions.TryGetValue(entityId, out RemotePlayerMotion? motion) && motion != null)
+                motion.SetAttackFacing(facing);
         }
 
         // Teleport 보간 끊기 — S_SkillCast(Teleport) 수신 시 해당 원격 entity의 보간 버퍼 reset.

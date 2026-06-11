@@ -171,7 +171,7 @@ internal sealed class EnemyHitState : ActorState<EnemyEntity>
     {
         enemy.X += enemy.KnockbackVx * Constants.TickDuration;
         enemy.KnockbackVx *= Constants.KnockbackDecayPerTick;
-        if (System.MathF.Abs(enemy.KnockbackVx) < CombatConstants.VelocityEpsilon)
+        if (System.MathF.Abs(enemy.KnockbackVx) < Constants.ExternalImpulseEpsilon)
             enemy.KnockbackVx = 0f;
 
         if (enemy.HitLatchTicks > 0)

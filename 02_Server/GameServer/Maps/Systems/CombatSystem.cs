@@ -57,13 +57,24 @@ internal sealed class CombatSystem
         // rate-limit 카운트는 스윙 시도 기준 — 빈 스윙도 쿨다운 소비(스팸 차단 불변, 헌법 #3).
         attacker.LastAttackTickMs = now;
 
+        // 4) target 조회 (선택) — null이면 허공 스윙, 데미지 없음.
+        // targetEntityId=0 sentinel 또는 이미 죽은 stale id면 null 반환.
+        // lunge/facing 스냅 계산에 필요하므로 EnterAttackState 전에 조회.
+        EnemyEntity? target = map.GetEnemyById(targetEntityId);
+        bool hasLiveTarget = target != null && !target.IsDead;
+
+        // facing 스냅 — 타겟 있으면 타겟 방향으로 snap(Local FaceToward 거울),
+        //   허공 스윙(sentinel 또는 stale id)은 FacingDir(마지막 이동 방향) 유지.
+        if (hasLiveTarget)
+            attacker.FacingDir = target!.X >= attacker.Position.X ? (sbyte)1 : (sbyte)-1;
+
         // 공격 commit window 진입 — ActionFsm이 AnimState.Attack 상태를 유지하며 이동을 잠금.
         attacker.EnterAttackState();
         // 평타 진입 시 감쇠 계수를 기본값으로 명시 세팅 — Dash commit window 중 평타가 들어와
         // self-transition no-op(Exit 미실행)이 발생해도 0.85 잔류를 막음 (reviewer 🟡 봉합).
         attacker.LungeDecayPerTick = Constants.KnockbackDecayPerTick;
 
-        // 근접 스윙 전방 lunge — Knight만(원거리 Mage 제외). FacingDir 방향으로 임펄스 박고
+        // 근접 스윙 전방 lunge — Knight만(원거리 Mage 제외). 스냅된 FacingDir 방향으로 임펄스 박고
         //   AttackState.Tick이 감쇠. 서버 권위 이동(헌법 #1), 클라는 force-adopt로 렌더.
         //   EnterAttackState 직후 세팅 — ChangeState의 이전 상태 Exit(lunge 0 정리) 다음에 박혀야 유지.
         if (attacker.Stats.Class != CharacterClass.Mage)
@@ -71,8 +82,7 @@ internal sealed class CombatSystem
 
         // S_PlayerAttack broadcast: 공격 연출(스윙) 알림. attacker 본인 제외 — 로컬 선예측 중.
         // attackType: Mage=1(원거리 연출), Knight=0(근접 연출) — CharacterClass enum 정합.
-        // facing: FacingDir(마지막 이동 방향). target 있으면 target 방향으로 snap 가능하지만
-        //         목표물 없는 허공 스윙도 방향을 유지하려면 FacingDir이 더 안전 — 통일.
+        // facing: 타겟 있으면 타겟 방향 스냅, 허공 스윙만 FacingDir(이동 방향) 유지.
         byte attackType = attacker.Stats.Class == CharacterClass.Mage ? (byte)1 : (byte)0;
         byte facingByte = attacker.FacingByte;
         S_PlayerAttack swing = new S_PlayerAttack
@@ -84,13 +94,11 @@ internal sealed class CombatSystem
         };
         map.BroadcastToAll(swing.Write(), except: attacker.Owner);
 
-        // 4) target 조회 (선택) — null이면 허공 스윙, 데미지 없음.
-        // targetEntityId=0 sentinel 또는 이미 죽은 stale id면 null 반환.
-        EnemyEntity? target = map.GetEnemyById(targetEntityId);
-        if (target == null || target.IsDead) return;
+        // hasLiveTarget=false면 허공 스윙 — 데미지 없음. 스윙 연출(S_PlayerAttack)은 이미 나감.
+        if (!hasLiveTarget) return;
 
         // 5) AABB precision hitbox — miss면 데미지 스킵 (스윙·S_PlayerAttack은 이미 나감).
-        if (!attackBox.Intersects(target.Hitbox)) return;
+        if (!attackBox.Intersects(target!.Hitbox)) return;
 
         // 명중 → 데미지 권위 mutation 진입.
         int damage = Formulas.ComputeDamage(attacker.Stats, target.Stats, CombatConstants.BaseDamage);
