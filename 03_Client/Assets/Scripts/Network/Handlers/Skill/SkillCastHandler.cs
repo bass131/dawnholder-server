@@ -68,6 +68,11 @@ namespace Dawnholder.Client.Network
                         break;
 
                     case SkillId.Dash:
+                        // 원격: 서버가 Dash 중 Attack animState를 보냄 → facing latch 갱신.
+                        // 스킬은 타겟 스냅 없으므로 facing = 이동 방향 = Local 연출과 일치.
+                        // 직전 평타의 stale facing이 Dash에 잘못 적용되는 것을 방지.
+                        if (!isLocal)
+                            RemoteEntityRegistry.Instance?.SetAttackFacing(casterId, facing == 1 ? 1 : -1);
                         HandleDash(isLocal, casterTf, facing);
                         break;
 

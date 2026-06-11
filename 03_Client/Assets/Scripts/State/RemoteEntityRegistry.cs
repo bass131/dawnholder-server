@@ -170,6 +170,14 @@ namespace Dawnholder.Client.State
             return false;
         }
 
+        // S_PlayerAttack / S_SkillCast 수신 시 원격 공격자 몸통 facing을 latch.
+        // _motions에는 원격 entity만 등록되므로 self 가드 불필요.
+        public void SetAttackFacing(int entityId, int facing)
+        {
+            if (_motions.TryGetValue(entityId, out RemotePlayerMotion? motion) && motion != null)
+                motion.SetAttackFacing(facing);
+        }
+
         // Teleport 보간 끊기 — S_SkillCast(Teleport) 수신 시 해당 원격 entity의 보간 버퍼 reset.
         // entity가 아직 등록 안 됐으면(race) noop — 다음 Snapshot에서 지연 spawn하면 buffer가 비어 있으므로 슬라이드 없음.
         public void SnapEntity(int entityId)
