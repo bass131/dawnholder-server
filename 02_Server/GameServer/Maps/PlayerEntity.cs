@@ -30,7 +30,7 @@ public class PlayerEntity
     // tick 기반: 헌법 #5 — DateTime/ms 타이머 의존 차단. blocking call 0 보장.
     // 고정 배열(per-tick 할당 0, 헌법 §5 정합) — Dictionary는 GC pressure 발생.
     // 초기값 = long.MinValue/2: 스폰 직후 첫 발동 허용 + 오버플로우 회피(MinValue는 currentTick-MinValue가 음수).
-    // **신뢰 경계(헌법 §3)**: 미등록 skillId(배열 범위 밖)는 SkillSystem 진입 전 C_SkillUseHandler에서 drop.
+    // **신뢰 경계(헌법 §3)**: 미등록 skillId(배열 범위 밖)는 SkillSystem 진입 전 SkillUseHandler에서 drop.
     const int SkillSlotCount = 4; // SkillId.Teleport=3이 현재 최대값 + 1
     readonly long[] _lastSkillTick;
 

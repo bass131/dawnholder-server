@@ -182,7 +182,7 @@ public class GameSession : PacketSession
         }
     }
 
-    // C_SkillUseHandler가 클래스 게이트 검증에 사용. _stats는 HasSelectedClass 체크 후 호출 보장.
+    // SkillUseHandler가 클래스 게이트 검증에 사용. _stats는 HasSelectedClass 체크 후 호출 보장.
     // **헌법 §3 (Trust Boundary)**: 반드시 서버 측 _stats에서 가져옴 — 클라가 보낸 값 사용 절대 금지.
     internal CharacterClass GetCasterClass() => _stats?.Class ?? CharacterClass.Knight;
 
@@ -287,7 +287,7 @@ public class GameSession : PacketSession
     //
     // **헌법 #3 (Trust Boundary) — caster 강제**: attacker와 동일하게 caster entityId는
     //   _entityId에서 강제 — 클라가 다른 플레이어를 사칭해 스킬 발동 차단.
-    // skillId 범위 검증은 C_SkillUseHandler에서 이미 완료. attackerClientTick은 untrusted — ProcessSkill에서 검증.
+    // skillId 범위 검증은 SkillUseHandler에서 이미 완료. attackerClientTick은 untrusted — ProcessSkill에서 검증.
     internal void SubmitSkillUse(byte skillId, int attackerClientTick)
     {
         if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
