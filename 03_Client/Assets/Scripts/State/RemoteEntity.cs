@@ -8,15 +8,22 @@ namespace Dawnholder.Client.State
 {
     // 타인 entity placeholder. 본인 entity는 LocalPlayerMovement + PlayerPredictor가 담당.
     //
-    // **보간 알고리즘** (지연 보간):
-    //   1. Snapshot.Time = serverTick * Constants.TickDuration (서버 시간축)
-    //   2. target = estimatedServerTime - InterpolationDelay
-    //      estimatedServerTime = 마지막 수신 서버 시각 + 그 후 경과한 realtime
-    //      → freeze(창 드래그) 후 N개 스냅샷이 한 프레임에 몰려도 각자 고유한 serverTick으로
-    //        버퍼에 펼쳐져 적재 → 벽시계 재도장 뭉침(백로그 #5) 봉합.
-    //   3. buffer에서 target을 *둘러싼* 2개 snapshot 찾기 → 선형 보간
-    //   4. target이 buffer 최신보다 미래 → last-known 유지 (extrapolation 안 함)
-    //   5. target이 buffer 最古보다 과거 → 最古 snapshot 위치 (rare — buffer 비어가는 중)
+    // **보간 알고리즘** (clock smoothing + 지연 보간):
+    //   목표: (A) 평상시 부드러움  (B) freeze(창 드래그) 봉합 — 두 속성 동시 달성.
+    //
+    //   [버퍼 적재] Snapshot.Time = serverTick * Constants.TickDuration (서버 시간축).
+    //     freeze 후 N개 snapshot이 한 프레임에 몰려도 각자 고유 serverTick으로 펼쳐져 적재.
+    //     → 이것이 freeze 봉합의 핵심. 벽시계 재도장 뭉침 제거.
+    //
+    //   [렌더 시계 _renderTime] Update마다 Time.deltaTime으로 연속 전진 → target이 프레임마다
+    //     부드럽게 이동 (snapshot 도착 기준점 리셋 없음 → stutter 제거).
+    //     targetRender = latestServerTime - InterpolationDelay 를 이상값으로 삼아:
+    //       · 평상시 드리프트 → CatchupRate 비율로 부드럽게 흡수 (rubber-band).
+    //       · freeze 후 큰 갭(> ResyncThreshold) → 즉시 snap 재동기.
+    //
+    //   [보간] _renderTime 위치를 buffer에서 둘러싼 두 snapshot 사이 선형 보간.
+    //     · target이 최新보다 미래 → last-known 유지 (extrapolation 금지).
+    //     · target이 最古보다 과거 → 最古 위치.
     [DisallowMultipleComponent]
     public class RemoteEntity : MonoBehaviour
     {
@@ -27,14 +34,20 @@ namespace Dawnholder.Client.State
         // 메모리 위생: 서버 시각 기준 BufferRetention 이전 항목 제거.
         const float BufferRetention = 1.0f;
 
+        // freeze 후 _renderTime과 targetRender 갭이 이 값 이상이면 즉시 snap 재동기.
+        // InterpolationDelay(0.15)의 ~3배 — 창 드래그·일시 정지 복귀 감지 임계.
+        const float ResyncThreshold = 0.5f;
+
+        // 평상시 드리프트를 프레임당 이 비율만큼 흡수 (rubber-band). 0.1 = 10%/frame.
+        const float CatchupRate = 0.1f;
+
         public int EntityId { get; private set; }
 
         readonly List<Snapshot> _buffer = new(capacity: 16);
 
-        // 서버 시간축 추정에 필요한 기준점 — 마지막 수신 snapshot의 서버 시각 + 그 시점의 realtime.
-        // 초기값 -1 → 아직 snapshot 없음 (Update에서 early-exit).
-        float _latestSnapshotServerTime = -1f;
-        float _latestSnapshotRealtime;
+        // 연속 렌더 시계 — Update마다 deltaTime으로 전진. snapshot 도착 기준점 리셋 없음.
+        float _renderTime;
+        bool _renderTimeInit;
 
         // Registry.Spawn에서 1회 호출. transform 즉시 박아 첫 frame 깜빡임 방지.
         public void Initialize(int entityId, float initialX, float initialY)
@@ -42,7 +55,7 @@ namespace Dawnholder.Client.State
             EntityId = entityId;
             transform.position = new Vector3(initialX, initialY, 0f);
             _buffer.Clear();
-            _latestSnapshotServerTime = -1f;
+            _renderTimeInit = false;
         }
 
         // Registry.UpdateSnapshot에서 매 S_Snapshot 도착 시 호출 (main thread 큐 dispatch 안).
@@ -50,11 +63,6 @@ namespace Dawnholder.Client.State
         public void EnqueueSnapshot(int serverTick, float x, float y)
         {
             float serverTime = serverTick * Constants.TickDuration;
-            float now = Time.realtimeSinceStartup;
-
-            // 기준점 갱신 — 마지막 수신 서버 시각 + 그 시점 realtime 보존.
-            _latestSnapshotServerTime = serverTime;
-            _latestSnapshotRealtime = now;
 
             _buffer.Add(new Snapshot(serverTime, x, y));
 
@@ -82,6 +90,7 @@ namespace Dawnholder.Client.State
         public void SnapInterpolation()
         {
             _buffer.Clear();
+            _renderTimeInit = false; // 다음 첫 snapshot에서 _renderTime 재동기.
             // transform은 현재 위치 유지(마지막 렌더 위치) — 다음 snapshot 도착 전 teleport 진행 중 상태.
         }
 
@@ -98,12 +107,27 @@ namespace Dawnholder.Client.State
         void Update()
         {
             if (_buffer.Count == 0) return; // last-known 유지 (transform 그대로)
-            if (_latestSnapshotServerTime < 0f) return; // 첫 snapshot 아직 미도착
 
-            // 추정 현재 서버 시각 = 마지막 수신 서버 시각 + 그 후 경과한 realtime.
-            // realtime 경과분은 틱 사이 프레임 간 미소 전진을 메운다.
-            float estimatedServerTime = _latestSnapshotServerTime + (Time.realtimeSinceStartup - _latestSnapshotRealtime);
-            float target = estimatedServerTime - InterpolationDelay;
+            float latestServerTime = _buffer[_buffer.Count - 1].Time;
+            float targetRender = latestServerTime - InterpolationDelay;
+
+            if (!_renderTimeInit)
+            {
+                _renderTime = targetRender;
+                _renderTimeInit = true;
+            }
+            else
+            {
+                _renderTime += Time.deltaTime; // 연속 전진 — snapshot 기준점 리셋 없음 → stutter 제거
+
+                float drift = targetRender - _renderTime;
+                if (Mathf.Abs(drift) > ResyncThreshold)
+                    _renderTime = targetRender;          // freeze 복귀 등 큰 갭 → 즉시 snap
+                else
+                    _renderTime += drift * CatchupRate;  // 평상시 드리프트 부드럽게 흡수
+            }
+
+            float target = _renderTime;
 
             // target이 최古보다 과거 (또는 buffer 1개뿐) — 최古 위치 유지.
             if (_buffer.Count == 1 || target <= _buffer[0].Time)

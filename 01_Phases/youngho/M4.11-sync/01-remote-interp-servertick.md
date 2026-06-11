@@ -3,11 +3,11 @@ owner: youngho
 milestone: M4.11
 phase: 01
 title: 원격 보간 serverTick 전환 — 창드래그 desync(백로그 #5) 봉합
-status: planned
-grade: 복잡
+status: in_progress
+grade: 대규모
 slug: 01-remote-interp-servertick
 created: 2026-06-11
-domains: [client]
+domains: [shared, server, client]
 prior_phases: []
 depends_on: []
 ---
@@ -77,6 +77,16 @@ depends_on: []
 
 ---
 
+## 적 경로 확대 (v12 bump — 영호 GO 2026-06-11)
+
+`RemoteEntity`가 플레이어/적 **공용** 보간 컴포넌트임이 착수 중 드러남(client Worker가 적 경로를 놓쳐 컴파일 에러 `EnemyRegistry.cs:97` → BuildPlayer 거부 → Editor.log 역추적으로 발견). 적도 같은 desync를 가지므로 같은 serverTick 보간으로 통일. **wire 변경 = 의존 순서 엄수**:
+
+1. **shared** — `99_Tools/PacketGenerator/PDL.xml`의 `S_EntityState`(ID 19)에 `<int name="serverTick"/>` **append-only**(맨 끝, `animState` 뒤). `ProtocolVersion.Current` 11→12 bump. PacketGenerator 재생성 → `98_Shared` Shared.dll 재빌드 → `03_Client/Assets/Plugins/Shared.dll` 갱신. 헌법 §4(양쪽 컴파일) + §2(은퇴 ID 재사용 금지, append-only).
+2. **server** — `S_EntityState` 송신부에서 `serverTick` = 현재 서버 틱 채우기(서버는 tick 보유). 송신 경로 = 적 AI broadcast(SnapshotTickInterval=2틱=100ms).
+3. **client** — `Handlers/Sync/EntityStateHandler.cs`가 `pkt.serverTick` 읽어 `EnemyRegistry.UpdatePosition(eid, serverTick, x, y, animState)` 전달. `EnemyRegistry.UpdatePosition` 시그니처에 serverTick 추가 → `entry.Interp.EnqueueSnapshot(serverTick, x, y + footOffset)`. **이게 컴파일 에러(`EnemyRegistry.cs:97`) 봉합.**
+
+PacketRoundTrip 테스트에 `S_EntityState.serverTick` 케이스 추가. 봇 회귀 desync 0 유지.
+
 ## 완료 조건 / 게이트
 
 - [ ] `EnqueueSnapshot`/`UpdateSnapshot`/`SnapshotHandler` serverTick 경로 연결 — 벽시계 재도장 제거.
@@ -91,7 +101,7 @@ depends_on: []
 
 ## 위험 / 헌법 약속
 
-- **§2 프로토콜 — wire 무변경**: `serverTick`은 이미 `S_Snapshot`(PDL `:71`)에 실려 있다. 클라가 *버리던 걸 쓰는* 변경 → **ProtocolVersion 11 유지**. 새 필드 필요해지면 STOP → 사용자 의논(irreversible 경로).
+- **§2 프로토콜 — 플레이어 wire 무변경 / 적 v12 bump (영호 GO 2026-06-11)**: 플레이어 `serverTick`은 이미 `S_Snapshot`(PDL `:71`)에 있어 무변경. **그러나 착수 중 `RemoteEntity`가 적(`EnemyRegistry`)과 공용임이 드러남** — 적은 `S_EntityState`(ID 19)로 위치 갱신하는데 거기엔 serverTick *없음* → 컴파일 에러(`EnemyRegistry.cs:97`). 적도 봉합하려면 `S_EntityState`에 serverTick append(헌법 §2 append-only) + **ProtocolVersion 11→12 bump** + 서버 송신부. 영호 명시 GO 받음(irreversible 깃발). 상세 = 아래 "적 경로 확대" 섹션.
 - **§1 서버 권위 불변**: 보간은 순수 시각 표현. 서버 권위 상태 변경 없음. 클라 CLAUDE.md "원격 = 서버 broadcast 순수 미러, 보간만" 정합.
 - **⚠️ LocalPlayerMovement/PlayerPredictor 절대 금지(이 Phase)**: 이 Phase는 *원격* 엔티티 보간만. 로컬 예측 심장부(force-adopt 등)는 **안 건드린다**. SnapshotHandler의 본인 path(`:48-53` `OnServerSnapshot`)는 **무변경**.
 - **Teleport 보간 끊기 정합**: `SnapInterpolation`/`SetTeleportArriveCallback` 경로(스킬 텔레포트)는 버퍼 clear 기반 — 시간축 변경과 독립이지만, 새 시간축에서도 첫 EnqueueSnapshot 콜백이 정상 발동하는지 확인.

@@ -25,6 +25,7 @@ namespace Dawnholder.Client.Network
             pkt.Read(buffer);
 
             int eid = pkt.entityId;
+            int sTick = pkt.serverTick;
             float x = pkt.x;
             float y = pkt.y;
             // state(byte) = 서버 AI FSM 상태 — 시각 미사용.
@@ -35,7 +36,7 @@ namespace Dawnholder.Client.Network
             {
                 if (EnemyRegistry.Instance == null) return;
                 // spawn 전 도착(race)이면 EnemyRegistry.UpdatePosition이 silent skip.
-                EnemyRegistry.Instance.UpdatePosition(eid, x, y, animState);
+                EnemyRegistry.Instance.UpdatePosition(eid, sTick, x, y, animState);
             });
         }
     }

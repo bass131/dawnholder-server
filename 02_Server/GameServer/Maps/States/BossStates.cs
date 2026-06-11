@@ -89,13 +89,14 @@ internal static class BossStates
 
         S_EntityState telegraphPkt = new S_EntityState
         {
-            entityId  = enemy.EntityId,
-            x         = enemy.X,
-            y         = enemy.Y,
-            state     = (byte)enemy.State,
-            animState = (byte)AnimState.Attack,
+            entityId   = enemy.EntityId,
+            x          = enemy.X,
+            y          = enemy.Y,
+            state      = (byte)enemy.State,
+            animState  = (byte)AnimState.Attack,
+            serverTick = (int)enemy.OwningMap!.CurrentTick,
         };
-        enemy.OwningMap!.BroadcastToAll(telegraphPkt.Write());
+        enemy.OwningMap.BroadcastToAll(telegraphPkt.Write());
         return BossStates.Telegraph;
     }
 }
