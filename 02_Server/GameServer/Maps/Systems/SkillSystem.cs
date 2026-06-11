@@ -123,7 +123,7 @@ internal sealed class SkillSystem
                 damage           = damage,
                 currentHp        = target.Hp,  // raw(음수 가능) — 음수=사망 신호 계약
                 maxHp            = target.MaxHp,
-                hitEffect        = 3,           // Dash hit
+                hitEffect        = (byte)HitEffect.Dash,
             };
             map.BroadcastToAll(hit.Write());
 
@@ -196,7 +196,7 @@ internal sealed class SkillSystem
                 TargetEntityId   = target.EntityId,
                 Damage           = damage,
                 ImpactTick       = impactTick,
-                HitEffect        = 2, // 낙뢰
+                HitEffect        = (byte)HitEffect.Lightning,
             });
 
             // freeze: Normal/Golem만. Boss는 ApplyFreeze 호출돼도 BossBehaviorSystem에 가드 없으니 면역.

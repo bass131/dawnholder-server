@@ -113,7 +113,7 @@ internal sealed class CombatSystem
                 TargetEntityId   = target.EntityId,
                 Damage           = damage,
                 ImpactTick       = map.CurrentTick + travelTicks,
-                HitEffect        = 1,
+                HitEffect        = (byte)HitEffect.Projectile,
             });
 
             // freeze: 투사체 도착 + StunTicks 동안 이동 봉쇄(stun). Boss는 ApplyFreeze 호출돼도 면역(EnemyEntity 설계).
@@ -147,7 +147,7 @@ internal sealed class CombatSystem
                 damage           = damage,
                 currentHp        = target.Hp,  // raw(음수 가능) — 음수=사망 신호 계약
                 maxHp            = target.MaxHp,
-                hitEffect        = 0,           // 근접
+                hitEffect        = (byte)HitEffect.Melee,
             };
             map.BroadcastToAll(hit.Write());
 

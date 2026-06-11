@@ -37,7 +37,7 @@ internal sealed class AttackState : ActorState<PlayerEntity>
     {
         // 전방 lunge 감쇠: 매 틱 LungeDecayPerTick 곱. 평타=0.75, Dash=0.85(더 완만).
         player.AttackLungeVx *= player.LungeDecayPerTick;
-        if (System.MathF.Abs(player.AttackLungeVx) < 0.05f)
+        if (System.MathF.Abs(player.AttackLungeVx) < CombatConstants.VelocityEpsilon)
             player.AttackLungeVx = 0f;
 
         if (--player.StateTicksRemaining > 0)
@@ -73,7 +73,7 @@ internal sealed class HitState : ActorState<PlayerEntity>
     {
         // 넉백 감쇠: 매 틱 계수를 곱해 지수 감소. 매우 작아지면 0으로 정리.
         player.KnockbackVx *= Constants.KnockbackDecayPerTick;
-        if (System.MathF.Abs(player.KnockbackVx) < 0.05f)
+        if (System.MathF.Abs(player.KnockbackVx) < CombatConstants.VelocityEpsilon)
             player.KnockbackVx = 0f;
 
         if (--player.StateTicksRemaining > 0)

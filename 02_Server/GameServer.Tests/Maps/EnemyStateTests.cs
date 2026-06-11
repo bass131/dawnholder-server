@@ -108,7 +108,7 @@ public class EnemyStateTests
         EnemyEntity enemy = GetEnemy(map);
 
         // de-aggro 임계 밖에 player 배치
-        float deAggroThreshold = enemy.Stats.AggroRange * 1.5f;
+        float deAggroThreshold = enemy.Stats.AggroRange * CombatConstants.DeAggroHysteresis;
         float farX = enemy.X + deAggroThreshold + 1f;
         PlayerEntity player = AddPlayerAt(map, farX, 0f);
 

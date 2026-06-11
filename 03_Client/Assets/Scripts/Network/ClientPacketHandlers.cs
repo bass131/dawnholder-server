@@ -293,7 +293,7 @@ namespace Dawnholder.Client.Network
             int dmg = pkt.damage;
             int hp = pkt.currentHp;
             int maxHp = pkt.maxHp;
-            byte hitEffect = pkt.hitEffect;
+            HitEffect hitEffect = (HitEffect)pkt.hitEffect;
 
             MainThreadDispatcher.Enqueue(() =>
             {
@@ -304,7 +304,7 @@ namespace Dawnholder.Client.Network
                 EnemyRegistry.Instance.ApplyHit(targetId, hp, maxHp);
 
                 // hitEffect별 VFX — target 위치에 스폰.
-                if (hitEffect == 1 || hitEffect == 2 || hitEffect == 3)
+                if (hitEffect == HitEffect.Projectile || hitEffect == HitEffect.Lightning || hitEffect == HitEffect.Dash)
                 {
                     Vector3 fxPos = Vector3.zero;
                     bool hasFxPos = false;
@@ -316,8 +316,8 @@ namespace Dawnholder.Client.Network
 
                     if (hasFxPos)
                     {
-                        string vfxPath = hitEffect == 1 ? ProjectileImpactPath
-                                       : hitEffect == 2 ? LightningVfxPath
+                        string vfxPath = hitEffect == HitEffect.Projectile ? ProjectileImpactPath
+                                       : hitEffect == HitEffect.Lightning ? LightningVfxPath
                                        : DashHitVfxPath;
                         GameObject? vfxPrefab = Resources.Load<GameObject>(vfxPath);
                         if (vfxPrefab != null)
@@ -328,17 +328,17 @@ namespace Dawnholder.Client.Network
                         }
                         else
                         {
-                            if (hitEffect == 1 && !_warnedMissingImpact)
+                            if (hitEffect == HitEffect.Projectile && !_warnedMissingImpact)
                             {
                                 Debug.LogWarning($"[HitResultHandler] 투사체 임팩트 VFX 미존재: Resources/{ProjectileImpactPath}");
                                 _warnedMissingImpact = true;
                             }
-                            else if (hitEffect == 2 && !_warnedMissingLightning)
+                            else if (hitEffect == HitEffect.Lightning && !_warnedMissingLightning)
                             {
                                 Debug.LogWarning($"[HitResultHandler] 낙뢰 VFX 미존재: Resources/{LightningVfxPath}");
                                 _warnedMissingLightning = true;
                             }
-                            else if (hitEffect == 3 && !_warnedMissingDashHit)
+                            else if (hitEffect == HitEffect.Dash && !_warnedMissingDashHit)
                             {
                                 Debug.LogWarning($"[HitResultHandler] Dash 임팩트 VFX 미존재: Resources/{DashHitVfxPath}");
                                 _warnedMissingDashHit = true;

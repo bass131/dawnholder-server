@@ -802,6 +802,7 @@ public class PacketRoundTripTests
     [InlineData((byte)0)]   // 기본/근접
     [InlineData((byte)1)]   // 투사체 도착
     [InlineData((byte)2)]   // 낙뢰
+    [InlineData((byte)3)]   // Dash
     public void S_HitResult_RoundTrip_PreservesHitEffectAppend(byte hitEffect)
     {
         // M4.8 v11: hitEffect byte append. 기존 5필드 + hitEffect 모두 보존(오프셋 불변 검증).

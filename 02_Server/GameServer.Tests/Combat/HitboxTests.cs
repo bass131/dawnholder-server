@@ -35,7 +35,7 @@ public class HitboxTests
         // 3×3 attack box (center 0,0)
         AABB attackBox = new AABB(new Vector2(0f, 0f), new Vector2(1.5f, 1.5f));
         // 1×1 enemy box (center 1,0 — attack box 안에 완전히 포함)
-        AABB targetBox = new AABB(new Vector2(1f, 0f), new Vector2(0.5f, 0.5f));
+        AABB targetBox = new AABB(new Vector2(1f, 0f), new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
 
         Assert.True(attackBox.Intersects(targetBox));
         Assert.True(targetBox.Intersects(attackBox)); // 대칭성 검증
@@ -58,7 +58,7 @@ public class HitboxTests
         // 3×3 attack box (center 0,0)
         AABB attackBox = new AABB(new Vector2(0f, 0f), new Vector2(1.5f, 1.5f));
         // 1×1 enemy box (center 5,0 — 완전 분리)
-        AABB targetBox = new AABB(new Vector2(5f, 0f), new Vector2(0.5f, 0.5f));
+        AABB targetBox = new AABB(new Vector2(5f, 0f), new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
 
         Assert.False(attackBox.Intersects(targetBox));
         Assert.False(targetBox.Intersects(attackBox)); // 대칭성 검증
@@ -84,7 +84,7 @@ public class HitboxTests
         // 3×3 attack box (center 0,0) → x[-1.5, 1.5]
         AABB attackBox = new AABB(new Vector2(0f, 0f), new Vector2(1.5f, 1.5f));
         // 1×1 enemy box (center 2,0) → x[1.5, 2.5] : edge-contact at x=1.5
-        AABB targetBox = new AABB(new Vector2(2f, 0f), new Vector2(0.5f, 0.5f));
+        AABB targetBox = new AABB(new Vector2(2f, 0f), new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
 
         // edge 접촉 → Intersects=true (≤ 비교 약속).
         Assert.True(attackBox.Intersects(targetBox));

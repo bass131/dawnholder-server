@@ -1,14 +1,14 @@
 ---
 owner: youngho
 phase: 02
-status: pending
+status: done
 grade: 복잡
 summary: 흩어진 게임플레이 매직넘버(히트박스 0.5f·de-aggro 1.5f·epsilon 등)를 98_Shared 단일 출처로 + HitEffect enum 신설(wire 무변경)
 ---
 
 # Phase 02: 흩어진 매직넘버 98_Shared 단일화 + HitEffect enum
 
-> **상태**: pending
+> **상태**: done
 > **마일스톤**: M4.10
 > **등급**: 복잡 (shared + server 2 도메인)
 > **담당**: shared + server Worker(Sonnet)

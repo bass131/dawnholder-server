@@ -28,7 +28,7 @@ public class EnemyEntity
     public EnemyStats Stats { get; }
 
     // 적 entity의 피격 판정 AABB. 1×1 unit 박스 (center = X/Y, halfExtent = 0.5×0.5).
-    public AABB Hitbox => new AABB(new Vector2(X, Y), new Vector2(0.5f, 0.5f));
+    public AABB Hitbox => new AABB(new Vector2(X, Y), new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
 
     // ── AI 상태 필드 ─────────────────────────────────────────────────────────
     // tick thread invariant 안에서만 읽기/쓰기 (GameMap 단일 actor 보장 — lock 불필요).

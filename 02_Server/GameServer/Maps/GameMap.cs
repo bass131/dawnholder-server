@@ -8,17 +8,6 @@ using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps;
 
-// EnemyKind → (MaxHp) 기본값 테이블. content.bin은 위치+kind만 담고 HP는 서버 권위 코드 결정.
-// append-only: 새 종류 추가 시 이 배열에 항목 추가 (EnemyKind.cs 값과 index 정합 유지).
-// kindId 범위 검증은 GameMap ctor 단일 지점 (reviewer 🟡 — 중복 검증 단일화).
-file static class EnemyDefaultHp
-{
-    // index = (int)EnemyKind. GolemDefault().MaxHp와 일치 의무 — drift 방지는 테스트가 잡음.
-    internal static readonly int[] ByKind = { 30, 100, 60 }; // Normal=30, Boss=100, Golem=60
-
-    internal static int For(EnemyKind kind) => ByKind[(int)kind];
-}
-
 // 단일 GameMap actor. 단일 thread Tick → lock 없음.
 //
 // §2.2 컨테이너 + System 분리:
@@ -126,13 +115,20 @@ public class GameMap
             foreach (EnemySpawnPoint sp in content.Enemies)
             {
                 // kindId 범위 검증 — 알 수 없는 kindId = 저작 오류 → fail loud.
-                if (sp.KindId >= EnemyDefaultHp.ByKind.Length)
+                if (!Enum.IsDefined(typeof(EnemyKind), sp.KindId))
                     throw new InvalidOperationException(
                         $"[GameMap:{mapId}] 알 수 없는 kindId={sp.KindId} in content.bin. " +
-                        "EnemyKind enum과 EnemyDefaultHp 테이블을 확인하세요.");
+                        "EnemyKind enum을 확인하세요.");
 
                 EnemyKind kind = (EnemyKind)sp.KindId;
-                int maxHp = EnemyDefaultHp.For(kind);
+                // HP 단일 출처 = Formulas factory MaxHp (EnemyDefaultHp 배열 폐기 — M4.10 Phase 02).
+                int maxHp = kind switch
+                {
+                    EnemyKind.Normal => EnemyStats.NormalDefault().MaxHp,
+                    EnemyKind.Boss   => EnemyStats.BossDefault().MaxHp,
+                    EnemyKind.Golem  => EnemyStats.GolemDefault().MaxHp,
+                    _                => 0,
+                };
                 SpawnEnemy(kind, sp.X, sp.Y, maxHp);
             }
         }

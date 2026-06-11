@@ -14,7 +14,7 @@ namespace Dawnholder.Client.Rendering
     [DisallowMultipleComponent]
     public class LocalPlayerMotion : MonoBehaviour, IMotionState
     {
-        const float MoveEpsilon = 0.001f;
+        const float MoveEpsilon = MotionConstants.FacingEpsilon;
 
         AnimState _animState = AnimState.Idle;
         AnimState _serverState = AnimState.Idle;
