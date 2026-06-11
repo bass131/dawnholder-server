@@ -12,7 +12,7 @@ namespace Dawnholder.Server.GameServer.Handlers;
 //   2. skillId 범위 검증: None(0) 또는 카탈로그에 없는 값 = silent drop + cheat-flag 로그.
 //   3. 캐스터 클래스 검증: SkillCatalog.CanCast(caster.Class, skillId) false = silent drop + cheat-flag 로그.
 //      caster 클래스는 session.GetCasterClass()에서 강제 — 클라가 보낸 값 절대 신뢰 X.
-internal sealed class C_SkillUseHandler : IPacketHandler
+internal sealed class SkillUseHandler : IPacketHandler
 {
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
