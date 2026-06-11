@@ -59,17 +59,18 @@ namespace Dawnholder.Client.Network
                     float capturedY = y;
                     int capturedEid = eid;
                     byte capturedAnimState = animState;
+                    int capturedTick = sTick;
                     if (session.RosterBuffer.TryBuffer(
                             $"S_Snapshot entity={eid}",
                             () =>
                             {
                                 if (RemoteEntityRegistry.Instance != null)
-                                    RemoteEntityRegistry.Instance.UpdateSnapshot(capturedEid, capturedX, capturedY, capturedAnimState);
+                                    RemoteEntityRegistry.Instance.UpdateSnapshot(capturedEid, capturedTick, capturedX, capturedY, capturedAnimState);
                             }))
                         return;
 
                     if (RemoteEntityRegistry.Instance != null)
-                        RemoteEntityRegistry.Instance.UpdateSnapshot(eid, x, y, animState);
+                        RemoteEntityRegistry.Instance.UpdateSnapshot(eid, sTick, x, y, animState);
                 }
             });
         }

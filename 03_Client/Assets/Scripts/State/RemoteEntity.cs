@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using Shared.GameData;
 using UnityEngine;
 
 namespace Dawnholder.Client.State
@@ -8,14 +9,14 @@ namespace Dawnholder.Client.State
     // 타인 entity placeholder. 본인 entity는 LocalPlayerMovement + PlayerPredictor가 담당.
     //
     // **보간 알고리즘** (지연 보간):
-    //   1. now = Time.realtimeSinceStartup (main thread)
-    //   2. target = now - InterpolationDelay (= jitter 흡수 윈도우)
+    //   1. Snapshot.Time = serverTick * Constants.TickDuration (서버 시간축)
+    //   2. target = estimatedServerTime - InterpolationDelay
+    //      estimatedServerTime = 마지막 수신 서버 시각 + 그 후 경과한 realtime
+    //      → freeze(창 드래그) 후 N개 스냅샷이 한 프레임에 몰려도 각자 고유한 serverTick으로
+    //        버퍼에 펼쳐져 적재 → 벽시계 재도장 뭉침(백로그 #5) 봉합.
     //   3. buffer에서 target을 *둘러싼* 2개 snapshot 찾기 → 선형 보간
     //   4. target이 buffer 최신보다 미래 → last-known 유지 (extrapolation 안 함)
-    //   5. target이 buffer 최古보다 과거 → 최古 snapshot 위치 (rare — buffer 비어가는 중)
-    //
-    // **timesource = Time.realtimeSinceStartup**: 서버 tick 기반 정밀 lag-comp가 아니라
-    //   클라 수신 시각 기반 jitter 흡수. 단순하지만 RTT 변동에 영향 (jitter 흡수엔 충분).
+    //   5. target이 buffer 最古보다 과거 → 最古 snapshot 위치 (rare — buffer 비어가는 중)
     [DisallowMultipleComponent]
     public class RemoteEntity : MonoBehaviour
     {
@@ -23,12 +24,17 @@ namespace Dawnholder.Client.State
         // 잡아 buffer 1~2개 항상 풍부 + 보간 자연. 너무 짧으면 buffer 매번 빔 → 정지 패턴 결함.
         const float InterpolationDelay = 0.15f;
 
-        // 메모리 위생: receivedAt - BufferRetention 이전 항목 제거. 보간 윈도우 + 여유.
+        // 메모리 위생: 서버 시각 기준 BufferRetention 이전 항목 제거.
         const float BufferRetention = 1.0f;
 
         public int EntityId { get; private set; }
 
         readonly List<Snapshot> _buffer = new(capacity: 16);
+
+        // 서버 시간축 추정에 필요한 기준점 — 마지막 수신 snapshot의 서버 시각 + 그 시점의 realtime.
+        // 초기값 -1 → 아직 snapshot 없음 (Update에서 early-exit).
+        float _latestSnapshotServerTime = -1f;
+        float _latestSnapshotRealtime;
 
         // Registry.Spawn에서 1회 호출. transform 즉시 박아 첫 frame 깜빡임 방지.
         public void Initialize(int entityId, float initialX, float initialY)
@@ -36,16 +42,23 @@ namespace Dawnholder.Client.State
             EntityId = entityId;
             transform.position = new Vector3(initialX, initialY, 0f);
             _buffer.Clear();
+            _latestSnapshotServerTime = -1f;
         }
 
         // Registry.UpdateSnapshot에서 매 S_Snapshot 도착 시 호출 (main thread 큐 dispatch 안).
-        // 내부에서 Time.realtimeSinceStartup 박음 — caller 부담 X.
-        public void EnqueueSnapshot(float x, float y)
+        // serverTick → 서버 시간축으로 버퍼에 적재 (벽시계 재도장 제거).
+        public void EnqueueSnapshot(int serverTick, float x, float y)
         {
+            float serverTime = serverTick * Constants.TickDuration;
             float now = Time.realtimeSinceStartup;
-            _buffer.Add(new Snapshot(now, x, y));
 
-            float cutoff = now - BufferRetention;
+            // 기준점 갱신 — 마지막 수신 서버 시각 + 그 시점 realtime 보존.
+            _latestSnapshotServerTime = serverTime;
+            _latestSnapshotRealtime = now;
+
+            _buffer.Add(new Snapshot(serverTime, x, y));
+
+            float cutoff = serverTime - BufferRetention;
             int removeCount = 0;
             while (removeCount < _buffer.Count && _buffer[removeCount].Time < cutoff)
                 removeCount++;
@@ -85,8 +98,12 @@ namespace Dawnholder.Client.State
         void Update()
         {
             if (_buffer.Count == 0) return; // last-known 유지 (transform 그대로)
+            if (_latestSnapshotServerTime < 0f) return; // 첫 snapshot 아직 미도착
 
-            float target = Time.realtimeSinceStartup - InterpolationDelay;
+            // 추정 현재 서버 시각 = 마지막 수신 서버 시각 + 그 후 경과한 realtime.
+            // realtime 경과분은 틱 사이 프레임 간 미소 전진을 메운다.
+            float estimatedServerTime = _latestSnapshotServerTime + (Time.realtimeSinceStartup - _latestSnapshotRealtime);
+            float target = estimatedServerTime - InterpolationDelay;
 
             // target이 최古보다 과거 (또는 buffer 1개뿐) — 최古 위치 유지.
             if (_buffer.Count == 1 || target <= _buffer[0].Time)
@@ -124,6 +141,7 @@ namespace Dawnholder.Client.State
 
         readonly struct Snapshot
         {
+            // Time = serverTick * Constants.TickDuration (서버 시간축 — 벽시계 아님).
             public readonly float Time;
             public readonly float X;
             public readonly float Y;
