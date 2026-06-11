@@ -469,5 +469,149 @@ namespace Dawnholder.Client.Tests.Prediction
             Assert.IsTrue(mispredict, "전제: mispredict 경로 진입");
             Assert.IsFalse(predictor.OnGround, "vy>0 상승 중 → 면 위라도 비접지");
         }
+
+        // ── P3 안전망 — computed-expectation + baseline + 불변식 (M4.11 Phase 03) ──────
+        //
+        // 두 종류를 명확히 구분해 박는다 (스펙 §안전망 설계):
+        //   [P3 baseline]  — P4가 의도적으로 바꿀 수 있는 거동(가변 dt Predict 궤적).
+        //                    P4에서 바뀌면 *의식적 갱신 + 사유 박제* 의무.
+        //   [P3 invariant] — P4 후에도 절대 green 유지 (replay=고정 dt라 P4 무관).
+
+        // P3-1(baseline): Predict 가변 dt 궤적 computed-expectation.
+        //
+        // [P3 baseline — P4 재검토 대상] 가변 dt Predict == 직접 Physics.Step fold (현재 거동).
+        // P4에서 Predict가 고정 서브스텝으로 바뀌면 아래 기댓값이 달라진다.
+        // P4에서 갱신 시: 변경 전 값 → 후 값 + 사유 1줄을 아래에 기입.
+        // (P4 기입란)
+        //
+        // computed-expectation 패턴: golden 하드코딩 대신 "Predict == Physics.Step fold"를
+        // 런타임에 검증 → 런타임 간 float 재현성 함정 원천 회피.
+        // Predict는 현재 얇은 래퍼라 일치가 당연 = *지금 거동의 박제*.
+        [Test]
+        public void P3_Baseline_Predict_VariableDt_EqualsPhysicsStepFold()
+        {
+            // [P3 baseline — P4 재검토 대상] 가변 dt Predict == 직접 Physics.Step fold (현재 거동).
+            // P4에서 갱신 시: 변경 전 값 → 후 값 + 사유 1줄을 아래에 기입.
+            // (P4 기입란)
+            const float Eps = 1e-4f;
+
+            // dt 시퀀스 — 명시값 (Time.deltaTime 금지, 결정론 보장).
+            // 실제 게임 프레임 패턴을 흉내낸 비균등 값.
+            float[] dtSeq = { 0.016f, 0.020f, 0.033f, 0.014f, 0.025f };
+
+            // Predict 경로
+            var predictor = new PlayerPredictor(DefaultMove);
+            predictor.SetInitialPosition(Vector2.zero);
+            foreach (float dt in dtSeq)
+                predictor.Predict(inputX: 1, jumpPressed: false, dt: dt);
+
+            // Physics.Step 직접 fold 경로 (기댓값)
+            // PlayerPredictor.Predict는 Physics.Step의 얇은 래퍼이므로 지금은 일치.
+            // Shared.GameData.Physics.Step 사용 — System.Numerics.Vector2 기준.
+            var physState = new Shared.GameData.PhysicsState(
+                new System.Numerics.Vector2(0f, 0f),
+                System.Numerics.Vector2.Zero,
+                onGround: false); // SetInitialPosition → OnGround=false
+            foreach (float dt in dtSeq)
+            {
+                physState = Shared.GameData.Physics.Step(
+                    physState,
+                    new Shared.GameData.PhysicsInput(1, false, dt),
+                    DefaultMove);
+            }
+
+            Assert.AreEqual(physState.Position.X, predictor.Position.x, Eps,
+                "P3 baseline: Predict x == Physics.Step fold x");
+            Assert.AreEqual(physState.Position.Y, predictor.Position.y, Eps,
+                "P3 baseline: Predict y == Physics.Step fold y");
+        }
+
+        // P3-2(baseline): Predict 점프 포함 가변 dt 궤적 computed-expectation.
+        //
+        // [P3 baseline — P4 재검토 대상] 점프 포함 가변 dt Predict == Physics.Step fold.
+        // P4에서 갱신 시: 변경 전 값 → 후 값 + 사유 1줄을 아래에 기입.
+        // (P4 기입란)
+        [Test]
+        public void P3_Baseline_Predict_WithJump_EqualsPhysicsStepFold()
+        {
+            // [P3 baseline — P4 재검토 대상] 점프 포함 가변 dt Predict == Physics.Step fold (현재 거동).
+            // P4에서 갱신 시: 변경 전 값 → 후 값 + 사유 1줄을 아래에 기입.
+            // (P4 기입란)
+            const float Eps = 1e-4f;
+
+            // (inputX, jumpPressed, dt) 튜플 시퀀스
+            var seq = new (sbyte ix, bool jump, float dt)[]
+            {
+                (0, true,  0.016f), // 점프 시도 (OnGround=false라 점프 불가 → 중력만)
+                (1, false, 0.020f), // 우이동
+                (1, false, 0.033f),
+                (0, false, 0.016f),
+            };
+
+            var predictor = new PlayerPredictor(DefaultMove);
+            predictor.SetInitialPosition(Vector2.zero); // OnGround=false
+            foreach (var (ix, jump, dt) in seq)
+                predictor.Predict(inputX: ix, jumpPressed: jump, dt: dt);
+
+            var physState = new Shared.GameData.PhysicsState(
+                System.Numerics.Vector2.Zero,
+                System.Numerics.Vector2.Zero,
+                onGround: false);
+            foreach (var (ix, jump, dt) in seq)
+            {
+                physState = Shared.GameData.Physics.Step(
+                    physState,
+                    new Shared.GameData.PhysicsInput(ix, jump, dt),
+                    DefaultMove);
+            }
+
+            Assert.AreEqual(physState.Position.X, predictor.Position.x, Eps,
+                "P3 baseline: 점프 포함 Predict x == Physics.Step fold x");
+            Assert.AreEqual(physState.Position.Y, predictor.Position.y, Eps,
+                "P3 baseline: 점프 포함 Predict y == Physics.Step fold y");
+        }
+
+        // P3-3(불변식): SetInitialPosition + 미-ack 입력 replay 후 최종 위치
+        //   == 서버 모사(고정 TickDuration으로 Physics.Step fold).
+        //
+        // replay 경로는 Constants.TickDuration 고정 dt를 사용하므로 P4 무관 → 불변식.
+        // (PlayerPredictor.cs:135 참조 — replay는 이미 고정 dt)
+        [Test]
+        public void P3_Invariant_Replay_FixedDt_MatchesServerSim()
+        {
+            const float Eps = 1e-4f;
+            const int ReplaySteps = 3;
+
+            // 서버 모사: 고정 TickDuration으로 Physics.Step fold
+            var serverSim = new Shared.GameData.PhysicsState(
+                new System.Numerics.Vector2(5f, 0f), // 서버 권위 초기 위치
+                System.Numerics.Vector2.Zero,
+                onGround: true);
+            sbyte[] replayInputs = { 1, 1, -1 };
+            foreach (sbyte ix in replayInputs)
+            {
+                serverSim = Shared.GameData.Physics.Step(
+                    serverSim,
+                    new Shared.GameData.PhysicsInput(ix, false, Shared.GameData.Constants.TickDuration),
+                    DefaultMove);
+            }
+
+            // 클라 predictor: 서버 스냅샷 수신 후 미-ack 입력 replay
+            var predictor = new PlayerPredictor(DefaultMove);
+            predictor.SetInitialPosition(new Vector2(0f, 0f)); // 클라 예측 위치(다름 → mispredict 유도)
+
+            // tick 1,2,3을 미-ack 입력으로 등록
+            for (int i = 0; i < ReplaySteps; i++)
+                predictor.NotifySent((uint)(i + 1), replayInputs[i], false);
+
+            // 서버 스냅샷: (5,0) 권위 위치 + ackedTick=0 (tick 1,2,3 전부 미-ack)
+            predictor.OnSnapshot(serverX: 5f, serverY: 0f, serverVx: 0f, serverVy: 0f, ackedClientTick: 0);
+
+            // replay 후 위치 == 서버 모사 최종 위치 (고정 dt라 P4 무관, 불변식)
+            Assert.AreEqual(serverSim.Position.X, predictor.Position.x, Eps,
+                "P3 invariant: replay(고정 dt) x == 서버 모사 x");
+            Assert.AreEqual(serverSim.Position.Y, predictor.Position.y, Eps,
+                "P3 invariant: replay(고정 dt) y == 서버 모사 y");
+        }
     }
 }

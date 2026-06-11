@@ -43,6 +43,30 @@ public class M2BasicMovement
         public Vector2 ServerFinal;
     }
 
+    // ── 불변식: 서버 스냅샷 간 위치 연속성 (P3 추가 — P4 무관) ─────────────────
+    //
+    // 연속 S_Snapshot 간 위치 델타가 물리 상한을 넘으면 서버가 순간이동을 일으킨 것 — fail.
+    //
+    // 상한 도출 (매직넘버 금지):
+    //   - 최대 수평 속도 = max(MoveSpeed, DashLungeInitialVx, KnockbackInitialVx) × dt
+    //     Knight MoveSpeed=4.0, DashLungeInitialVx=10.0, KnockbackInitialVx=7.0 중 최대 = 10.0
+    //     → 1틱 최대 Δx = 10.0 × 0.05 = 0.50 units
+    //   - 최대 수직 속도 = max(JumpVel) × dt = 8.0 × 0.05 = 0.40 units
+    //   - 임펄스 여유 계수 2.0: 두 틱이 묶여 처리되거나 spawn/텔레포트 직후 첫 스냅샷 등
+    //     정상 범위 이벤트를 허용하면서도 진짜 순간이동(수십 unit) 탐지 가능.
+    //
+    // 이 값은 상수에서 도출되므로 서버가 Physics 상수를 바꾸면 함께 바뀐다.
+    //
+    // ⚠️ 맵 전환(S_MapTransition)은 이 시나리오에서 발생하지 않으므로 예외 처리 불필요.
+    static readonly float MaxDeltaPerTickX =
+        (float)Math.Max(
+            Math.Max(PlayerStats.Knight().MoveSpeed, Constants.KnockbackInitialVx),
+            10.0f) // DashLungeInitialVx — 서버 전용 상수 직접 참조 불가 → 리터럴로 박고 주석으로 출처 명시
+        * Constants.TickDuration * 2.0f; // 임펄스 여유 계수
+
+    static readonly float MaxDeltaPerTickY =
+        PlayerStats.Knight().JumpVel * Constants.TickDuration * 2.0f;
+
     public static async Task<Result> Run(
         string host, int port,
         int intentCount = DefaultIntentCount,
@@ -58,6 +82,7 @@ public class M2BasicMovement
 
         Vector2 spawnPos = Vector2.Zero;
         S_Snapshot? lastSnapshot = null;
+        S_Snapshot? prevSnapshot = null; // 연속 스냅샷 간 델타 검사용 (P3 추가)
         int snapshotCount = 0;
         bool handshakeOk = false;
         string handshakeReason = "";
@@ -95,6 +120,23 @@ public class M2BasicMovement
                             case (ushort)PacketID.S_Snapshot:
                                 S_Snapshot sn = new();
                                 sn.Read(buffer);
+                                // P3 불변식: 연속 스냅샷 간 위치 점프 탐지.
+                                // prev가 있으면 델타 검사 — 물리 상한 초과 시 result에 기록.
+                                if (prevSnapshot != null && string.IsNullOrEmpty(result.Reason))
+                                {
+                                    float dx = Math.Abs(sn.x - prevSnapshot.x);
+                                    float dy = Math.Abs(sn.y - prevSnapshot.y);
+                                    if (dx > MaxDeltaPerTickX || dy > MaxDeltaPerTickY)
+                                    {
+                                        result.Reason =
+                                            $"[P3] 스냅샷 위치 점프 탐지: " +
+                                            $"dx={dx:F3}(limit={MaxDeltaPerTickX:F3}), " +
+                                            $"dy={dy:F3}(limit={MaxDeltaPerTickY:F3}), " +
+                                            $"prev=({prevSnapshot.x:F2},{prevSnapshot.y:F2}), " +
+                                            $"curr=({sn.x:F2},{sn.y:F2})";
+                                    }
+                                }
+                                prevSnapshot = sn;
                                 lastSnapshot = sn;
                                 Interlocked.Increment(ref snapshotCount);
                                 break;
@@ -183,10 +225,14 @@ public class M2BasicMovement
         result.ServerFinal = new Vector2(lastSnapshot.x, lastSnapshot.y);
         result.FinalDesyncX = Math.Abs(result.ServerFinal.X - result.BotSimFinal.X);
         result.FinalDesyncY = Math.Abs(result.ServerFinal.Y - result.BotSimFinal.Y);
+
+        // P3 불변식: 위치 점프 탐지 실패가 이미 result.Reason에 박혔으면 Success=false.
+        bool noTeleportDetected = string.IsNullOrEmpty(result.Reason);
         result.Success =
+            noTeleportDetected &&
             result.FinalDesyncX < tolerancePixels &&
             result.FinalDesyncY < tolerancePixels;
-        if (!result.Success)
+        if (!result.Success && noTeleportDetected)
         {
             result.Reason =
                 $"desync exceeded (tolerance={tolerancePixels}px): " +
