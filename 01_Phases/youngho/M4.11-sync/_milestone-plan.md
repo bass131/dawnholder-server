@@ -31,6 +31,30 @@ domains: [client, shared, qa]
 
 ---
 
+## 증거 사슬 (코드 실측 확정 — 2026-06-11)
+
+> 위 "도미노 2"는 계획서 작성 시점엔 *강한 가설*이었다. 2026-06-11 client Worker가 현재 코드를 한 줄씩 떠서 **3링크 전부 코드로 확정**했다(런타임 재현 *전*, 정적 실측). 다음 세션 컨텍스트 유실 방지를 위해 박제한다.
+
+**가설**: 창 드래그/포커스 상실 시 원격 엔티티가 어긋났다가 천천히 회복(desync). 범인 = `S_Snapshot.serverTick`을 보간 시간축으로 쓰지 않고 클라 벽시계(`Time.realtimeSinceStartup`)로 재도장.
+
+| 링크 | 판정 | 결정적 증거 (`파일:줄`) | 내용 |
+|---|---|---|---|
+| 1. RemoteEntity 재도장 | ✅확정 | `03_Client/Assets/Scripts/State/RemoteEntity.cs:43-46` | `EnqueueSnapshot(float x, float y)` — serverTick 파라미터 *없음*. 본문 `float now = Time.realtimeSinceStartup; _buffer.Add(new Snapshot(now, x, y));` — 클라 벽시계로 도장. 보간 소비도 같은 시계(`:89` `target = realtimeSinceStartup - InterpolationDelay`, `:113` 버퍼 `Time` 비교) |
+| 2. 디스패치 일괄 드레인 | ✅확정 | `03_Client/Assets/Scripts/Network/MainThreadDispatcher.cs:34,72-76` | 소켓 워커가 `ConcurrentQueue<Action>` 적체 → `Update`가 `while(TryDequeue) action();`로 한 프레임에 전부 드레인. freeze 후 재개 시 N개 `EnqueueSnapshot`이 거의 동일 벽시계 값으로 몰림 |
+| 3. 핸들러가 serverTick 버림 | ✅확정 | `03_Client/Assets/Scripts/Network/ClientPacketHandlers.cs:125,131,160-165` | `int sTick = pkt.serverTick;`로 *읽지만*, `session.SetLastReceivedServerTick(sTick)`(lag-comp 기준점)에만 쓰고 `RemoteEntityRegistry.UpdateSnapshot(eid,x,y,animState)`엔 안 넘김. `UpdateSnapshot` 시그니처도 tick 없음. PDL엔 존재(`99_Tools/PacketGenerator/PDL.xml:71` `<int name="serverTick"/>`) |
+
+**메커니즘**: 창 드래그 → `Update` 정지 → 소켓 워커는 계속 수신해 `_queue` 적체 → 드래그 끝 → `Update` 재개가 쌓인 N개를 몰아 드레인 → N개 스냅샷이 거의 같은 `realtimeSinceStartup`으로 버퍼 적재 → 보간 `target = now - 0.15f`가 시간상 뭉친 점들을 옛 위치부터 재생 → desync.
+
+**견고성 단서**: freeze 중 `realtimeSinceStartup`이 계속 흘러도 버그는 성립한다 — `Update`가 안 도는 동안 `EnqueueSnapshot` 자체가 호출되지 않으므로, 패킷은 큐에만 쌓이고 재개 한 프레임에 몰리는 구조는 불변. **→ fix 방향(serverTick을 보간 시간축으로)이 freeze 세부 동작과 무관하게 견고.**
+
+**코드로 못 박은 것 (Phase 1 런타임 게이트로 확인)**:
+1. Windows 창 드래그 시 `realtimeSinceStartup` 실제 정지 여부 (뭉침 *폭*에만 영향, 버그 성립엔 무관)
+2. desync 회복이 InterpolationDelay(150ms)로 수렴하는지 / 더 긴지
+
+**Phase 1 fix 형상(예정, 착수 시 확정)**: 핸들러 → `UpdateSnapshot` → `EnqueueSnapshot` 경로에 serverTick(int tick)을 실어 내려, 버퍼 타임스탬프를 `tick * 0.05f`(서버 시간축, 20 TPS) 기반으로 전환. 벽시계 재도장 제거. **wire 무변경**(serverTick은 이미 패킷에 있음 → 11 유지).
+
+---
+
 ## Phase 분해 (예정 — 개별 .md는 M4.11 착수 시 분해, stale 방지)
 
 위험 오름차순 게이트식. 저위험(국소 봉합)부터 시작해, 안전망을 깐 뒤에야 심장부(로컬 예측)를 건드린다.
