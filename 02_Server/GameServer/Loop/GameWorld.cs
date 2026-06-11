@@ -12,8 +12,6 @@ namespace Dawnholder.Server.GameServer.Loop;
 // 독립 actor로 관리. 매 틱 모든 맵 tick (foreach). GetMap(MapId)으로 맵 단건 조회.
 public class GameWorld
 {
-    public static GameWorld Instance { get; private set; } = null!;
-
     // readonly Dictionary — 외부 set 금지 (헌법: 정적 mutable 게임 상태 금지).
     // 4맵은 ctor에서 1회 생성 + 등록. 이후 추가/제거 X (맵간 이동도 맵 내용 변경이지 레지스트리 변경 아님).
     readonly Dictionary<MapId, GameMap> _maps;
@@ -30,20 +28,7 @@ public class GameWorld
     //   헌법 #5: Interlocked.Increment는 non-blocking lock-free — tick loop 내 허용.
     int _nextEntityId;
 
-    /// <summary>
-    /// 전역 entity id 발급. 각 GameMap이 ctor에서 주입받는 Func&lt;int&gt;.
-    /// Interlocked.Increment atomic — 두 맵이 동시 호출해도 같은 id 발급 X.
-    /// </summary>
-    public int NextEntityId() => Interlocked.Increment(ref _nextEntityId);
-
     readonly TickScheduler _scheduler;
-
-    // 호환용 프로퍼티 — GameWorld.Instance?.Map으로 Town 맵을 반환하던 흐름 보존.
-    public GameMap Map => _maps[MapId.Town];
-
-    public long CurrentTick => _scheduler.CurrentTick;
-
-    public TickScheduler Scheduler => _scheduler;
 
     /// <summary>
     /// 맵별 terrain/content 쌍을 주입받는 생성자 — **필수 인자** (default 없음).
@@ -77,13 +62,20 @@ public class GameWorld
         _scheduler = new TickScheduler(OnTick);
     }
 
-    GameMap MakeMap(MapId id,
-        IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
-    {
-        if (provider.TryGetValue(id, out var pair))
-            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content);
-        return new GameMap(id, NextEntityId);
-    }
+    public static GameWorld Instance { get; private set; } = null!;
+
+    // 호환용 프로퍼티 — GameWorld.Instance?.Map으로 Town 맵을 반환하던 흐름 보존.
+    public GameMap Map => _maps[MapId.Town];
+
+    public long CurrentTick => _scheduler.CurrentTick;
+
+    public TickScheduler Scheduler => _scheduler;
+
+    /// <summary>
+    /// 전역 entity id 발급. 각 GameMap이 ctor에서 주입받는 Func&lt;int&gt;.
+    /// Interlocked.Increment atomic — 두 맵이 동시 호출해도 같은 id 발급 X.
+    /// </summary>
+    public int NextEntityId() => Interlocked.Increment(ref _nextEntityId);
 
     public void Start() => _scheduler.Start();
 
@@ -97,6 +89,14 @@ public class GameWorld
     // 없는 MapId를 요청하면 null 반환 (등록 안 된 맵 = 조용한 실패, 호출자가 null 체크 필요).
     public GameMap? GetMap(MapId id)
         => _maps.TryGetValue(id, out GameMap? map) ? map : null;
+
+    GameMap MakeMap(MapId id,
+        IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
+    {
+        if (provider.TryGetValue(id, out var pair))
+            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content);
+        return new GameMap(id, NextEntityId);
+    }
 
     void OnTick(long tickNumber)
     {

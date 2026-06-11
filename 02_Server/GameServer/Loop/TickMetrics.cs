@@ -15,7 +15,6 @@ namespace Dawnholder.Server.GameServer.Loop;
 public class TickMetrics
 {
     readonly List<long> _samples;
-    public int BucketSize { get; }
 
     /// <param name="bucketSize">자동 출력 임계 (sample 개수). 기본 = 1초 분량 = ServerTickRate.</param>
     public TickMetrics(int bucketSize = Constants.ServerTickRate)
@@ -25,17 +24,19 @@ public class TickMetrics
         _samples = new List<long>(capacity: bucketSize);
     }
 
-    /// <summary>매 tick 호출. 단위 = 마이크로초 (microsecond).</summary>
-    public void Record(long elapsedMicros)
-    {
-        _samples.Add(elapsedMicros);
-    }
+    public int BucketSize { get; }
 
     /// <summary>버킷이 찼는지 (자동 출력 트리거 판정용).</summary>
     public bool IsBucketFull => _samples.Count >= BucketSize;
 
     /// <summary>현재 sample 개수.</summary>
     public int Count => _samples.Count;
+
+    /// <summary>매 tick 호출. 단위 = 마이크로초 (microsecond).</summary>
+    public void Record(long elapsedMicros)
+    {
+        _samples.Add(elapsedMicros);
+    }
 
     /// <summary>통계 계산 후 buffer 비움. 일정 간격으로 호출.</summary>
     public Stats SnapshotAndReset()

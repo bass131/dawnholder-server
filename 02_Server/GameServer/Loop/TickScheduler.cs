@@ -22,15 +22,16 @@ public class TickScheduler
     Task? _runTask;
 
     long _tickNumber;
-    public long CurrentTick => Interlocked.Read(ref _tickNumber);
-
-    // 매 1초마다(= ServerTickRate tick) snapshot 발화. 콘솔 출력과 동시.
-    public event Action<TickMetrics.Stats>? OnMetricsSnapshot;
 
     public TickScheduler(Action<long> onTick)
     {
         _onTick = onTick ?? throw new ArgumentNullException(nameof(onTick));
     }
+
+    // 매 1초마다(= ServerTickRate tick) snapshot 발화. 콘솔 출력과 동시.
+    public event Action<TickMetrics.Stats>? OnMetricsSnapshot;
+
+    public long CurrentTick => Interlocked.Read(ref _tickNumber);
 
     public void Start()
     {

@@ -5,6 +5,22 @@ using Shared.Protocol;
 namespace Dawnholder.Server.GameServer.Maps;
 
 /// <summary>
+/// 지연 데미지 1건의 데이터. tick thread invariant — 생성 후 불변.
+///
+/// attackerEntityId: S_HitResult.attackerEntityId에 그대로 사용. 처음부터 포함 필수.
+///   (S_HitResult PDL에 attackerEntityId 있음 — 나중에 추가하면 P3 struct 재수정 필요, plan-auditor 우려 D)
+/// hitEffect: 0=근접, 1=투사체 도착, 2=낙뢰 — 클라 VFX 분기용.
+/// </summary>
+internal readonly struct DeferredImpact
+{
+    internal int AttackerEntityId { get; init; }
+    internal int TargetEntityId   { get; init; }
+    internal int Damage            { get; init; }
+    internal long ImpactTick       { get; init; }
+    internal byte HitEffect        { get; init; }
+}
+
+/// <summary>
 /// §2.2 DeferredDamageSystem — "N틱 뒤 데미지 적용" 큐.
 ///
 /// **단일 책임**: DeferredImpact 큐 관리 + tick 카운트다운 + 도착 시 HP 변경·broadcast·사망 처리.
@@ -63,20 +79,4 @@ internal sealed class DeferredDamageSystem
                 map.HandleEnemyDeath(target);
         }
     }
-}
-
-/// <summary>
-/// 지연 데미지 1건의 데이터. tick thread invariant — 생성 후 불변.
-///
-/// attackerEntityId: S_HitResult.attackerEntityId에 그대로 사용. 처음부터 포함 필수.
-///   (S_HitResult PDL에 attackerEntityId 있음 — 나중에 추가하면 P3 struct 재수정 필요, plan-auditor 우려 D)
-/// hitEffect: 0=근접, 1=투사체 도착, 2=낙뢰 — 클라 VFX 분기용.
-/// </summary>
-internal readonly struct DeferredImpact
-{
-    internal int AttackerEntityId { get; init; }
-    internal int TargetEntityId   { get; init; }
-    internal int Damage            { get; init; }
-    internal long ImpactTick       { get; init; }
-    internal byte HitEffect        { get; init; }
 }

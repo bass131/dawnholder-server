@@ -7,10 +7,6 @@ namespace Dawnholder.Server.GameServer.Combat;
 // (한 파일에 모아두면 형평성 점검 쉬움).
 internal static class CombatConstants
 {
-    // ── Lag-comp rewind 검증 ──────────────────────────────────────────────────
-
-    internal const long MaxRewindTicks = 4; // 200ms @ 20TPS — lag-comp rewind 상한
-
     // ── 근접 평타 (Knight) ────────────────────────────────────────────────────
 
     // 3.0f units = ground level 2 unit 간격 + 약간의 여유 = 점프 공격 miss 위험 완화.
@@ -176,4 +172,8 @@ internal static class CombatConstants
     // 넉백/lunge 감쇠 near-zero 종료 임계값. |velocity| < 이 값이면 0으로 정리.
     // PlayerCombatStates(AttackState/HitState) + EnemyHitState 공통 사용.
     public const float VelocityEpsilon = 0.05f;
+
+    // ── Lag-comp rewind 검증 ──────────────────────────────────────────────────
+
+    internal const long MaxRewindTicks = 4; // 200ms @ 20TPS — lag-comp rewind 상한
 }
