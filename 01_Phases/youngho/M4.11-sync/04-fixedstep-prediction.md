@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.11
 phase: 04-fixedstep-prediction
 title: 로컬 예측 고정스텝 전환 — 가변 dt 뿌리 제거 + 시각 보간
-status: planned
+status: done
 grade: 복잡
 slug: 04-fixedstep-prediction
 created: 2026-06-12
