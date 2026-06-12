@@ -64,6 +64,23 @@ namespace Dawnholder.Client.Prediction
         public bool CanUseDash => _dashCooldownRemaining <= 0f;
         public bool CanUseTeleport => _teleportCooldownRemaining <= 0f;
 
+        // HUD 폴링용 쿨다운 읽기 API.
+        // 반환: (남은 초, 총 쿨다운 초). 미해당 스킬 또는 쿨다운 없음이면 (0, 0).
+        // total은 Constants에서 계산 — 매핑을 한 곳에 두어 HUD가 Constants를 직접 읽지 않게 함(SRP).
+        public (float remaining, float total) GetCooldown(SkillId skill)
+        {
+            return skill switch
+            {
+                SkillId.Thunderbolt => (_thunderboltCooldownRemaining,
+                    Constants.ThunderboltCooldownTicks * Constants.TickDuration),
+                SkillId.Dash        => (_dashCooldownRemaining,
+                    Constants.DashCooldownTicks * Constants.TickDuration),
+                SkillId.Teleport    => (_teleportCooldownRemaining,
+                    Constants.TeleportCooldownTicks * Constants.TickDuration),
+                _                   => (0f, 0f),
+            };
+        }
+
         // Teleport: 다음 S_Snapshot 수신 시 보간 없이 즉시 force-adopt 스냅 플래그.
         // SkillCastHandler(Teleport)가 세팅 → OnServerSnapshot에서 소비.
         bool _teleportSnapPending;

@@ -39,7 +39,7 @@ namespace Dawnholder.Client.Input
         //
         // SkillCatalog.CanCast 게이트로 내 클래스가 못 쓰는 스킬은 송신 차단 (UX + 트래픽 절감).
         // 헌법 §1: 클라 게이트는 편의, 진짜 권위는 서버 — 서버도 별도 검증.
-        static readonly Dictionary<CharacterClass, (SkillId q, SkillId e)> SkillKeyMap =
+        internal static readonly Dictionary<CharacterClass, (SkillId q, SkillId e)> SkillKeyMap =
             new Dictionary<CharacterClass, (SkillId q, SkillId e)>
             {
                 { CharacterClass.Mage,   (SkillId.Thunderbolt, SkillId.Teleport) },

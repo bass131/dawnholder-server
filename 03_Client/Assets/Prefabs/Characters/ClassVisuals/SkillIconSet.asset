@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8f8e37292394ef4cae997539d90722a, type: 3}
+  m_Name: SkillIconSet
+  m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.UI.SkillIconSet
+  _entries:
+  - skillId: 1
+    icon: {fileID: -5825461904107468619, guid: f7fdb881a78085f4eb90c412b14acf51, type: 3}
+  - skillId: 2
+    icon: {fileID: -8039665395086976626, guid: 1310162cca6e74c4fa3560f52e74fc51, type: 3}
+  - skillId: 3
+    icon: {fileID: -5672738562988688265, guid: cfc5ac067d5dbdc4eb3fa1459f05e375, type: 3}
