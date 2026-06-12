@@ -1,8 +1,8 @@
 # 슬래시 커맨드 빠른 참조
 
-총 **10개**. 3 카테고리 폴더(`work/` `session/`) + 점검 슬래시 2개 + 단독 진입점(`setup.md`) (2026-05-21 M3.5 Phase 06 갱신 — ADR-022 새 하네스 v1).
+총 **11개**. 3 카테고리 폴더(`work/` `session/`) + 점검 슬래시 3개 + 단독 진입점(`setup.md`) (2026-06-12 `/refactor-sweep` 신설 — 첫 무인 리팩토링).
 
-호출 형식: `/<카테고리>:<이름>` (예: `/work:plan`, `/session:end`) 또는 단독 진입점 (`/setup`, `/harness-review`, `/cross-review`).
+호출 형식: `/<카테고리>:<이름>` (예: `/work:plan`, `/session:end`) 또는 단독 진입점 (`/setup`, `/harness-review`, `/cross-review`, `/refactor-sweep`).
 
 > **옛 학습 5 (`/learn:*`) + 일지 3 (`/journal:*`) 슬래시 = M3.5에서 제거** (5/20 의논 — KPI 전환 "학습 박제 중심 → Planning + 구현 + 보고"). 그 슬래시들이 떠받치던 학습 추적 트랙 B 자체도 **ADR-025로 은퇴** — 회고는 대화/노션 자유 양식으로 자율. 잔존 `00_Document/learning-journal/{본인}/` 디렉토리는 *각자 작업물*이라 보존 (신규 박제 안 강제).
 
@@ -29,12 +29,13 @@
 
 ---
 
-## 🔍 점검 (2) — 하네스 정합 + 외부 cross-check
+## 🔍 점검 (3) — 하네스 정합 + 외부 cross-check + 무인 리팩토링
 
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
-| [`/harness-review`](../.claude/commands/harness-review.md) | **Tier 3** 수동 깊은 리뷰 — 본인 하네스 자체 점검 (헌법 / SubAgent / Hook / Knowledge / 슬래시 정합 + 옛 약속 가짜화 여부 + 양식 비용 평가). 옛 `/work:review` rename + 책임 확장 (코드 리뷰는 Tier 2 reviewer SubAgent가 자동 흡수). `reviewer` + `plan-auditor` + (옵션) `knowledge-gc` 동원 | `[scope]` (기본 all) |
-| [`/cross-review`](../.claude/commands/cross-review.md) | 외부 시각 cross-check — 본인 작업 결과를 Codex β 또는 외부 도구로 재검증 (큰 PR 머지 전, 비가역 변경 전 권유). Rule of Three 통과 후 슬래시화 (5/18 pre-m3 감사 + γ 방식 4~7회차 실측 누적) | `<scope>` (예: PR # 또는 brancn) |
+| [`/harness-review`](../.claude/commands/harness-review.md) | **Tier 3** 수동 깊은 리뷰 — 본인 하네스 자체 점검 (헌법 / SubAgent / Hook / Knowledge / 슬래시 정합 + 옛 약속 가짜화 여부 + 양식 비용 평가). 옛 `/work:review` rename + 책임 확장 (코드 리뷰는 Tier 2 reviewer SubAgent가 자동 흡수). `reviewer` + `plan-auditor` + (옵션) `knowledge-gc` 동원. **읽기 전용** | `[scope]` (기본 all) |
+| [`/cross-review`](../.claude/commands/cross-review.md) | 외부 시각 cross-check — 본인 작업 결과를 Codex β 또는 외부 도구로 재검증 (큰 PR 머지 전, 비가역 변경 전 권유). Rule of Three 통과 후 슬래시화 (5/18 pre-m3 감사 + γ 방식 4~7회차 실측 누적). **읽기 전용** | `<scope>` (예: PR # 또는 branch) |
+| [`/refactor-sweep`](../.claude/commands/refactor-sweep.md) | **자기 전 무인 자동 리팩토링** — production(server/shared/clientnet) CODE_CONVENTION/SOLID 진단 후 안전 범위(저위험 ✅ + 고위험 🔶) 자동 수정 → WSL2 회귀 게이트 통과분만 **전용 브랜치 atomic commit**. ⛔ trust-boundary(보안)·📋 03_Client(Unity 검증 불가) 제안만. **push/PR 없음**(아침 영호 GO). reviewer×N 병렬 진단 → Worker 직렬 리팩 → reviewer 재검증. *코드 수정+commit하는 유일한 슬래시* | `[--dry-run] [--max=N] [--domains=…]` |
 
 ---
 
@@ -59,6 +60,10 @@
 ### `/harness-review` vs `/cross-review`
 - **`/harness-review`** — *본인 머리 + 본인 자산*만으로 하네스 자체 정합 점검. Claude 단독.
 - **`/cross-review`** — *외부 시각* 도입 (보통 Codex β, 옵션). 본인 사각 발견 + 큰 PR 머지 전 안전망.
+
+### `/refactor-sweep` vs `/harness-review`·`/cross-review` (코드 수정 여부)
+- **`/harness-review`·`/cross-review`** — **읽기 전용**. 발견·제안만, 코드 미수정.
+- **`/refactor-sweep`** — **점검 + 코드 수정 + commit**. production을 무인 자동 리팩토링 → 전용 브랜치(`refactor/auto-YYYYMMDD`)에 atomic commit까지. 셋 중 *유일하게 코드를 바꾸는* 슬래시. 안전 = 전용 브랜치 + WSL2 회귀 게이트(통과분만 commit) + 아침 선별 revert + push/PR 금지(영호 GO). trust-boundary(보안)·03_Client(Unity 검증 불가)는 제안만.
 
 ### `/work:plan` vs `plan-auditor` SubAgent
 - **`/work:plan <목표>`** — *새* Phase 묶음 생성. 사용자 명시 호출.
