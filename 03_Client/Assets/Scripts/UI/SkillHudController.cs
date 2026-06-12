@@ -6,6 +6,7 @@ using Shared.GameData;
 using Shared.Protocol;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
@@ -24,12 +25,19 @@ namespace Dawnholder.Client.UI
         public static SkillHudController? Instance { get; private set; }
 
         [Header("Q 슬롯 (클래스별 — Mage: Thunderbolt / Knight: Dash)")]
-        [SerializeField] Image? _qSlotImage;
+        [FormerlySerializedAs("_qSlotImage")]
+        [SerializeField] Image? _qCooldownImage;
+        [SerializeField] Image? _qIconImage;
         [SerializeField] TMP_Text? _qCooldownText;
 
         [Header("E 슬롯 (Mage: Teleport / Knight: 미사용 — 숨김)")]
-        [SerializeField] Image? _eSlotImage;
+        [FormerlySerializedAs("_eSlotImage")]
+        [SerializeField] Image? _eCooldownImage;
+        [SerializeField] Image? _eIconImage;
         [SerializeField] TMP_Text? _eCooldownText;
+
+        [Header("스킬 아이콘 매핑 에셋")]
+        [SerializeField] SkillIconSet? _iconSet;
 
         // 세션 내 고정 — 클래스는 로그인 후 바뀌지 않으므로 Start에서 1회 결정.
         SkillId _qSkill;
@@ -77,9 +85,22 @@ namespace Dawnholder.Client.UI
             // None 슬롯(Knight E)은 즉시 숨김 — GameObject 비활성으로 레이아웃에서도 제거.
             if (_eSkill == SkillId.None)
             {
-                if (_eSlotImage != null) _eSlotImage.gameObject.SetActive(false);
+                if (_eCooldownImage != null) _eCooldownImage.gameObject.SetActive(false);
                 if (_eCooldownText != null) _eCooldownText.gameObject.SetActive(false);
             }
+
+            // 아이콘 적용 — _iconSet 미할당이면 sprite null → enabled false(빈 칸).
+            ApplyIcon(_qIconImage, _qSkill);
+            ApplyIcon(_eIconImage, _eSkill);
+        }
+
+        // SkillIconSet에서 sprite를 꺼내 icon Image에 적용. 매핑 없으면 Image 숨김.
+        void ApplyIcon(Image? iconImage, SkillId skill)
+        {
+            if (iconImage == null) return;
+            Sprite? s = _iconSet != null ? _iconSet.GetIcon(skill) : null;
+            iconImage.sprite = s;
+            iconImage.enabled = s != null;
         }
 
         void Update()
@@ -87,8 +108,8 @@ namespace Dawnholder.Client.UI
             LocalPlayerMovement? movement = LocalPlayerMovement.Instance;
             if (movement == null) return;
 
-            UpdateSlot(_qSlotImage, _qCooldownText, movement, _qSkill);
-            UpdateSlot(_eSlotImage, _eCooldownText, movement, _eSkill);
+            UpdateSlot(_qCooldownImage, _qCooldownText, movement, _qSkill);
+            UpdateSlot(_eCooldownImage, _eCooldownText, movement, _eSkill);
         }
 
         // fill 방향 = remaining/total (쿨다운 중 fill이 가득 찼다 0으로 비워지는 "잠금 표시" 컨벤션).
