@@ -24,7 +24,7 @@ namespace Dawnholder.Client.Network
         const string ThunderboltCastPath = "Effects/SkillCast";
         // Dash: 시전자에 재생. 영호가 Assets/Resources/Effects/DashSkill.prefab 추가 시 자동 적용.
         const string DashSkillPath = "Effects/DashSkill";
-        // Teleport: 출발/도착 이펙트. 에셋 1종(Mage_Teleport)을 영호가 2경로로 복제 배치 예정.
+        // Teleport: 출발/도착 2지점 이펙트.
         const string TeleportDepartPath = "Effects/TeleportDepart";
         const string TeleportArrivePath = "Effects/TeleportArrive";
 
