@@ -13,25 +13,20 @@ namespace Dawnholder.Client.Prediction
     //
     // **흐름**:
     //   1. spawn 시점: SetInitialPosition(spawnPos)
-    //   2. *매 frame* (Time.deltaTime 가변): Predict(inputX, jumpPressed, dt)
-    //      → Physics.Step 호출 → Position/Velocity/OnGround 갱신. 시뮬 자체가 부드러움.
-    //   3. *50ms cadence* (송신 throttle): C_MoveIntent 송신 + InputHistory push.
+    //   2. *50ms 고정 서브스텝* (accumulator 기반): Predict(inputX, jumpPressed)
+    //      → Physics.Step(dt=TickDuration) 호출 → Position/Velocity/OnGround 갱신.
+    //   3. *50ms cadence* (서브스텝과 1:1): C_MoveIntent 송신 + InputHistory push.
     //   4. S_Snapshot 도착 시: OnSnapshot(serverX/Y, serverVx/Vy, ackedTick)
     //      → mispredict (X 또는 Y > SnapThreshold) 시 서버 권위 상태에서 미-ack 입력 replay
     //      → 부드러운 정정 (snap 텔레포트 X)
     //
     // **양쪽 공식 일치 (헌법 #1 / ADR-010)**:
-    //   Physics.Step은 Shared.GameData. 클라/서버 같은 함수 호출 → drift 0.
-    //   *클라 가변 dt + 서버 fixed dt* 차이는 누적 결과상 근사 → 미세 drift는 reconcile로 흡수.
-    //
-    // **장르 결정 (매 frame 가변 Predict + reconcile, fixed cadence X)**:
-    //   fixed cadence Predict는 고프레임에서 끊김 발생. MMORPG/캐주얼 RPG 장르
-    //   (ADR-006/009)는 fairness보다 부드러움 우선 — Source/Quake/Overwatch 패턴 정합.
-    //   fixed-step + visual lerp는 격투/콘솔 RTS 패턴이라 우리 게임에 over-engineering.
+    //   Physics.Step은 Shared.GameData. 클라/서버 같은 함수 호출 + 같은 TickDuration → drift 0.
+    //   고정 서브스텝이 "dt-drift 덤불(SnapThreshold 확장 + force-adopt 게이트)"의 뿌리를 제거.
     public class PlayerPredictor
     {
-        // 점프 중 클라 가변 dt vs 서버 fixed dt drift 누적이 1.0f를 자주 초과 → reconcile snap 끊김.
-        // 1.5f로 작은 drift 흡수. 헌법 #1 영향 X — 큰 cheat (텔레포트)은 여전히 reconcile, 서버 권위 그대로.
+        // P4 고정 서브스텝으로 dt-drift가 구조적으로 제거됨. 1.5f는 Dash lunge 등 서버 임펄스 오차 흡수 여지 보존 —
+        // 축소는 고정스텝 효과 실측 후 별도 결정(STOP 포인트). 헌법 #1 영향 X.
         public const float SnapThreshold = 1.5f;
 
         public Vector2 Position { get; private set; }
@@ -91,12 +86,12 @@ namespace Dawnholder.Client.Prediction
             _history.Push(clientTick, inputX, jumpPressed);
         }
 
-        // *매 frame* Time.deltaTime 가변 호출. 클라 가변 dt + 서버 fixed dt 차이는 reconcile 흡수.
-        // Physics.Step 단일 출처 호출 → 양쪽 공식 일치 (헌법 #1). terrain 주입 경로 동일.
-        public void Predict(sbyte inputX, bool jumpPressed, float dt)
+        // 50ms 고정 서브스텝 호출 — dt = Constants.TickDuration 고정.
+        // 가변 dt 진입 원천 차단 ("illegal state unrepresentable"). 헌법 #1: 서버와 동일 dt → drift 0.
+        public void Predict(sbyte inputX, bool jumpPressed)
         {
             PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
-                new PhysicsInput(inputX, jumpPressed, dt), _terrain, _move);
+                new PhysicsInput(inputX, jumpPressed, Constants.TickDuration), _terrain, _move);
             ApplyPhysicsState(after);
         }
 

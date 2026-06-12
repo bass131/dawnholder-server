@@ -51,7 +51,7 @@ domains: [client, shared, qa]
 1. Windows 창 드래그 시 `realtimeSinceStartup` 실제 정지 여부 (뭉침 *폭*에만 영향, 버그 성립엔 무관)
 2. desync 회복이 InterpolationDelay(150ms)로 수렴하는지 / 더 긴지
 
-**Phase 1 fix 형상(예정, 착수 시 확정)**: 핸들러 → `UpdateSnapshot` → `EnqueueSnapshot` 경로에 serverTick(int tick)을 실어 내려, 버퍼 타임스탬프를 `tick * 0.05f`(서버 시간축, 20 TPS) 기반으로 전환. 벽시계 재도장 제거. **wire 무변경**(serverTick은 이미 패킷에 있음 → 11 유지).
+**Phase 1 fix 형상(예정, 착수 시 확정)**: 핸들러 → `UpdateSnapshot` → `EnqueueSnapshot` 경로에 serverTick(int tick)을 실어 내려, 버퍼 타임스탬프를 `tick * 0.05f`(서버 시간축, 20 TPS) 기반으로 전환. 벽시계 재도장 제거. **wire 무변경**(serverTick은 이미 패킷에 있음 → 11 유지). *[정정 2026-06-12: 플레이어 `S_Snapshot`은 예상대로 무변경이었으나, 적 `S_EntityState`엔 serverTick이 없어 P1에서 append → **ProtocolVersion 11→12 bump로 실행됨** — `01-remote-interp-servertick-DONE.md` 참조]*
 
 ---
 
@@ -73,7 +73,7 @@ domains: [client, shared, qa]
 
 - **Phase 4가 이 마일스톤의 칼날이다.** `PlayerPredictor`/`LocalPlayerMovement`는 **방금(M4.9) force-adopt·dash·reconcile을 봉합한 따끈한 심장부**다. 그래서 Phase 4는 **안전망(Phase 3) 통과 후에만** 착수한다 — 그물 없이 심장부를 건드리면 reconcile 발산을 다시 부른다.
 - **"부드러움이 깨지지 않을까" 우려 해소.** 고정스텝이 화면을 끊기게 만들 거라는 직관은 틀렸다. **계산 박자(고정스텝)와 그림 부드러움(시각 보간)은 분리**된다 — 물리/예측은 50ms 고정 서브스텝으로 *결정론적으로* 돌리고, 화면에는 두 스텝 사이를 보간해 *프레임 Hz로 부드럽게* 그린다. 이게 Unity의 FixedUpdate(고정 물리)↔Update(가변 렌더) 철학이자 게임 루프 정석("Fix Your Timestep")이다. `PlayerPredictor` 주석에 박힌 "over-engineering(과설계)" 판정은, 고정스텝이 *dt-drift 덤불 전체를 제거*하는 값어치 앞에서 **재평가**한다 — 그땐 과설계였을지 몰라도, 덤불이 쌓인 지금은 토대 정리의 핵심 수단이다.
-- **ProtocolVersion**: serverTick은 **이미 `S_Snapshot`에 실려 있다** → 클라가 *버리던 걸 쓰는* 변경이라 **wire 무변경 예상**(현 11 유지). 단 Phase 1/4에서 정말 새 필드가 필요해지면 그 시점에 STOP → 사용자 의논(irreversible 경로).
+- **ProtocolVersion**: serverTick은 **이미 `S_Snapshot`에 실려 있다** → 클라가 *버리던 걸 쓰는* 변경이라 **wire 무변경 예상**(현 11 유지). 단 Phase 1/4에서 정말 새 필드가 필요해지면 그 시점에 STOP → 사용자 의논(irreversible 경로). *[정정 2026-06-12: P1에서 적 `S_EntityState` serverTick append로 **11→12 bump 완료**(사용자 GO 거침) — P2 이후는 **12 유지**가 기준]*
 
 ---
 

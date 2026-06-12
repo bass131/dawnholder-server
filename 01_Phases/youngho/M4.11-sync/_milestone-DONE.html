@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.11 — 클라-서버 동기화 정돈 마일스톤 박제</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff; --accent2:#bc8cff;
+    --green:#3fb950; --yellow:#d29922; --red:#f85149; --pink:#f778ba;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Pretendard','Segoe UI',-apple-system,sans-serif;line-height:1.7;padding:0 0 80px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  header{background:linear-gradient(135deg,#1c2330,#161b22);border-bottom:1px solid var(--border);
+    padding:48px 0 36px;margin-bottom:36px;}
+  h1{font-size:30px;margin:0 0 8px;color:#fff;letter-spacing:-.5px;}
+  .sub{color:var(--muted);font-size:15px;margin-bottom:18px;}
+  .badges{display:flex;gap:10px;flex-wrap:wrap;}
+  .badge{display:inline-block;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:600;
+    border:1px solid var(--border);background:var(--panel2);}
+  .badge.lg{color:var(--accent2);border-color:var(--accent2);}
+  .badge.date{color:var(--green);border-color:var(--green);}
+  .badge.ver{color:var(--accent);border-color:var(--accent);}
+  h2{font-size:21px;color:#fff;margin:44px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:14px;}
+  .card h3{margin:0 0 8px;font-size:16px;color:var(--accent);}
+  .card.what h3{color:var(--accent);} .card.why h3{color:var(--yellow);}
+  .card.how h3{color:var(--accent2);} .card.test h3{color:var(--green);} .card.next h3{color:var(--pink);}
+  .card p{margin:6px 0;font-size:14.5px;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0;}
+  th,td{border:1px solid var(--border);padding:8px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--panel2);color:#fff;}
+  td code,p code,li code{background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:12.5px;color:var(--accent);}
+  .pass{color:var(--green);font-weight:700;}
+  .warn{color:var(--yellow);font-weight:700;}
+  ul{margin:8px 0;padding-left:22px;} li{margin:5px 0;font-size:14.5px;}
+  .muted{color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>M4.11 — 클라-서버 동기화 정돈 (sync)</h1>
+  <div class="sub">공유 시계 일치 + force-adopt 덤불 정리 — 도미노(가변 dt 뿌리 → dead-zone/매직넘버 → 원격 보간 벽시계 → 시계 2원화)를 위험 오름차순 게이트식 5 Phase로 역순 해체</div>
+  <div class="badges">
+    <span class="badge lg">대규모</span>
+    <span class="badge date">2026-06-12 마감</span>
+    <span class="badge ver">ProtocolVersion 11 → 12 (P1 유일 wire 변경)</span>
+    <span class="badge">5 Phase · PR #100(P1~P3) + feature/m4.11-p4-fixedstep(P4~P5, PR 대기)</span>
+  </div>
+</div></header>
+<div class="wrap">
+
+<h2>5단계 보고</h2>
+
+<div class="card what"><h3>🎯 무엇을 만들었나</h3>
+<p>동기화를 <b>갈아엎지 않고 시계를 일치</b>시킨 마일스톤. ① <b>P1</b> 원격 보간 <code>serverTick</code> 시간축 전환 + clock smoothing(<code>RemoteEntity._renderTime</code> 연속 전진 + drift×0.1 흡수 + 0.5s 갭 snap) + 적 <code>S_EntityState</code> serverTick append → <b>ProtocolVersion 11→12</b>(마일스톤 유일 wire 변경) + snapshot 20Hz(<code>SnapshotTickInterval 2→1</code>) + facing 정돈(서버 타겟 스냅 + 클라 우선순위 피격&gt;공격&gt;이동) → <b>창드래그 desync(백로그 #5) + RemotePlayer stutter 봉합</b>. ② <b>P2</b> <code>Constants.ExternalImpulseEpsilon=0.05f</code> 공유 상수 신설 — 서버 클램프(<code>CombatConstants.VelocityEpsilon</code>)↔클라 force-adopt 게이트(<code>0.0001f</code> 리터럴)의 숨은 결합을 한 상수로 봉합(wire 무변경·동작 불변). ③ <b>P3</b> 회귀 그물 5건 — <b>불변식(P4 후 절대 green) vs baseline 이원 설계</b>. ④ <b>P4</b>(심장부) <b>고정스텝 전환</b> — <code>Predict(dt)</code>→<code>Predict()</code>로 가변 dt 물리적 차단 + accumulator 고정 서브스텝 루프 + 시각 보간(prev/curr lerp). ⑤ <b>P5</b> 재빌드 + 전체 회귀.</p></div>
+
+<div class="card why"><h3>🤔 왜 필요한가</h3>
+<p>발표 전 정돈 시퀀스(M4.10 기반 → M4.11 동기화 → M4.12 스킬 마감)의 2번. 동기화 토대(서버 권위·클라 예측·reconcile·보간)는 <b>건강했으나</b> 그 위에 패치들이 <b>덤불(thicket)</b>을 이뤘고, 근본 원인은 단 하나 — <b>"클라-서버 공유 시계가 없다."</b> 도미노를 끝까지 따라가면: <b>(뿌리)</b> 클라 가변 <code>Time.deltaTime</code> vs 서버 고정 50ms 틱 → 구조적 drift → <b>(도미노1)</b> drift를 덮으려 <code>SnapThreshold</code>를 1.5f로 키워 dead-zone(불감대) 생성, 그 위에 <code>serverVx==0.0001f</code> 가드가 서버 lunge 임펄스 <code>0.05f</code>에 묶임(한쪽 숫자 바꾸면 조용히 깨짐) → <b>(도미노2, 가장 구체적)</b> <code>RemoteEntity.EnqueueSnapshot</code>이 serverTick을 버리고 <code>realtimeSinceStartup</code> 벽시계로 재도장 → freeze 후 스냅샷 뭉침 → 백로그 #5 → <b>(도미노3)</b> 로컬은 틱 시계, 원격은 벽시계 — 같은 화면 두 객체가 다른 시간 축. 서버가 이미 serverTick을 실어 보내니 <b>클라가 버리지 않고 쓰면</b> 공유 시계가 서고, 그 위에서 예측을 고정스텝으로 바꾸면 dt-drift 뿌리가 뽑힌다 — 도미노를 <b>역순으로</b> 무너뜨림.</p></div>
+
+<div class="card how"><h3>🛠️ 어떻게 만들었나</h3>
+<p>전 Phase 공통 = <b>위험 오름차순 게이트식</b>. 저위험(국소 봉합)부터 시작해, 안전망을 깐 뒤에야 심장부(로컬 예측)를 건드림. (a) <b>P3 이원 회귀 설계</b>: <b>불변식</b>(<code>Physics.Step</code> golden 궤적 / replay 동치 / 봇 연속성 / FacingSnap — P4 후 절대 green) vs <b>baseline</b>(<code>[P3 baseline</code> 마커 + 사유 기입 슬롯 — P4가 의도적으로 갱신). computed-expectation으로 cross-runtime float 함정 회피(하드코딩 기대값 X). (b) <b>illegal state unrepresentable</b>(P4 핵심): 가변 dt 차단을 런타임 clamp(방어 코드)가 아니라 <code>Predict(dt)</code>→<code>Predict()</code> <i>시그니처 제거</i>로 — 잘못된 dt가 들어갈 자리 자체를 없앰. (c) <b>서버 거울</b>: accumulator 고정 서브스텝 루프 {입력→Predict→C_MoveIntent 송신→NotifySent} 4종 1:1 = 서버 GameMap "틱당 입력 1개 소비 → Step 1회"의 정확한 거울 → 같은 입력×같은 dt → drift 0. (d) <b>Fix Your Timestep</b>: 계산 박자(고정 서브스텝)와 그림 부드러움(시각 보간 prev/curr lerp)을 분리, 위치 점프 4경로(spawn/reconcile/맵전환/사망리스폰)에서 보간 버퍼 양쪽 리셋(텔레포트 가로질러 보간 금지). (e) cap 초과 = 통째 틱 드랍(<code>MaxSubstepsPerFrame=4</code>) — 서버 <code>MaxInputQueue=6</code> drop-oldest 정합(메인 검수 정정 1건).</p></div>
+
+<div class="card test"><h3>🧪 테스트 결과</h3>
+<p>WSL2 서버 테스트 <span class="pass">561 passed / 0 failed</span>(불변식 全: golden 궤적/replay/봇 연속성/FacingSnap) · Unity EditMode <span class="pass">119 passed</span>(baseline 2건 사유 기입 후 갱신 — P3 이원 설계 작동 실증) · 봇 16 시나리오 = <span class="pass">13 연속 PASS + 3 fresh PASS</span>(BossFight·HpSync = M4.10 전례의 연속실행 보스 상태 누적 한계, <b>Freeze = 동류 한계 신규 관측 — fresh PASS = 회귀 아님</b>, 정직 기록) · BuildPlayer <span class="pass">Succeeded errors=0</span> 7씬(<code>C:/Dev/Build/Client/03_Client.exe</code>, DLL mtime 신선) · Unity 콘솔 <span class="pass">error 0</span> · 봇 M2BasicMovement desync <span class="pass">(0.00, 0.00)</span> · reviewer 6축 <span class="pass">🔴 0</span>(P4 🟡1 = SnapThreshold 실측 메모) · plan-auditor(P4 조건부GO→D2/D3 봉합, P5 GO) · <b>영호 2클라 최종 실측</b>(양쪽 P4 신코드) <span class="pass">전부 이상 무</span> — 창드래그 백로그 #5 봉합이 빌드 클라에서도 유지. ProtocolVersion <span class="pass">12 유지</span>(P1 bump 후 무손, PacketRoundTrip 안전망).</p></div>
+
+<div class="card next"><h3>➡️ 다음 스텝</h3>
+<p>① <b>PR</b>(영호 GO 게이트 — P4~P5분, <code>feature/m4.11-p4-fixedstep</code>). ② <b>M4.12-skill-finish</b> — 행동 입력 게이트 시스템화(클린코드 의무) + 쿨다운 UI + 발표 재빌드. ③ <b>백로그(이월)</b>: SnapThreshold 1.5f 축소(<code>[Reconcile]</code> 로그 정량 후 영호 의논, STOP①) · <code>reviewer.md</code>→<code>REVIEW_CHECKLIST.md</code> 경로 drift(실재 <code>00_Document/</code>) · 봇 임펄스 여유 계수 2.0f 재측정 · <code>98_Shared/CLAUDE.md:19</code> ProtocolVersion 주석 Current=8→12 stale 정정 · 디테일 폴리싱(영호 지목).</p></div>
+
+<h2>Phase 박제 요약</h2>
+<table>
+<tr><th>Phase</th><th>제목</th><th>위험</th><th>핵심</th><th>경로</th></tr>
+<tr><td>P1</td><td>원격 보간 serverTick 전환 + facing 정돈</td><td>저위험</td><td>벽시계 재도장 → <code>serverTick</code> 시간축 + clock smoothing(<code>_renderTime</code> 연속전진 + drift×0.1 + 0.5s snap). 적 <code>S_EntityState</code> serverTick append → <b>v11→12</b>. snapshot 20Hz. facing 서버 타겟 스냅 + 우선순위. 백로그 #5 + stutter 봉합</td><td>PR #100 (<code>0774695</code>)</td></tr>
+<tr><td>P2</td><td>force-adopt 덤불 정리</td><td>저위험</td><td><code>Constants.ExternalImpulseEpsilon=0.05f</code> 공유 상수 — 서버 클램프↔클라 force-adopt 게이트(<code>0.0001f</code> 리터럴)의 숨은 결합 봉합. wire 무변경·동작 불변</td><td>PR #100 (<code>0774695</code>)</td></tr>
+<tr><td>P3</td><td>reconcile/보간 회귀 안전망</td><td>중위험</td><td>회귀 5건 — <b>불변식(<code>Physics.Step</code> golden/replay/봇 연속성/FacingSnap) vs baseline(<code>[P3 baseline</code> 마커) 이원 설계</b>. computed-expectation(cross-runtime float 함정 회피). WSL2 561/EditMode 119 기준점 + 2클라 "P4 전 거동" 박제</td><td>PR #100 (<code>0774695</code>)</td></tr>
+<tr><td>P4 ★</td><td>로컬 예측 고정스텝 전환 (심장부)</td><td><b>고위험</b></td><td><code>Predict(dt)</code>→<code>Predict()</code>(가변 dt 물리 차단). accumulator 고정 서브스텝 {입력→Predict→송신→NotifySent} 4종 1:1 = 서버 거울. 시각 보간(prev/curr lerp + 점프 4경로 버퍼 리셋). <code>MaxPredictStep</code> 은퇴→<code>MaxSubstepsPerFrame=4</code> + 통째 틱 드랍. baseline 2건 갱신(이원 설계 실증). STOP 3건 미발동</td><td><code>0f5977c</code></td></tr>
+<tr><td>P5</td><td>재빌드 + 전체 회귀</td><td>중위험(보통 등급)</td><td>BuildPlayer Succeeded errors=0 7씬 + 봇 16(13 연속 + 3 fresh PASS, Freeze 신규 한계 정직 기록) + WSL2 561 재실행 + Unity 0err + 영호 2클라 최종 실측(양쪽 P4 신코드) 이상 무. 러너 2벌 신설. -DONE 생략(본 문서 흡수)</td><td><code>dcb3fd8</code> + <code>65a6a97</code></td></tr>
+</table>
+
+<h2>최종 게이트</h2>
+<table>
+<tr><th>게이트</th><th>결과</th></tr>
+<tr><td>WSL2 서버 테스트</td><td class="pass">561 passed / 0 failed (불변식 全 green)</td></tr>
+<tr><td>Unity EditMode</td><td class="pass">119 passed (baseline 2건 사유 기입 후 갱신 — 이원 설계 실증)</td></tr>
+<tr><td>헤드리스 봇 16 시나리오</td><td class="pass">13 연속 PASS + 3 fresh PASS</td><td class="warn"> (BossFight·HpSync 연속실행 한계 + Freeze 동류 신규 관측 — fresh PASS = 회귀 아님)</td></tr>
+<tr><td>BuildPlayer</td><td class="pass">Succeeded errors=0 — 7씬, DLL mtime 신선</td></tr>
+<tr><td>Unity 콘솔</td><td class="pass">error 0 (빌드 후)</td></tr>
+<tr><td>reviewer (P4 6축)</td><td class="pass">🔴 0 / 🟡 1 (SnapThreshold 실측 메모 — 수정 불요)</td></tr>
+<tr><td>plan-auditor</td><td class="pass">P4 조건부GO→D2/D3 봉합 · P5 GO</td></tr>
+<tr><td>영호 2클라 최종 실측 (양쪽 P4 신코드)</td><td class="pass">전부 이상 무 — 창드래그 백로그 #5 봉합 빌드 클라에서도 유지</td></tr>
+<tr><td>ProtocolVersion</td><td class="pass">11 → 12 (P1 bump, 이후 12 유지 — PacketRoundTrip 안전망)</td></tr>
+</table>
+
+<h2>학습 하이라이트</h2>
+<ul>
+<li><b>도미노 역순 해체(위험 오름차순 게이트식)</b> — 뿌리(가변 dt)를 직접 안 치고, 잎사귀부터 안전망을 깐 뒤 심장부를 마지막에. 그물 없이 심장부를 건드리면 reconcile 발산 재발.</li>
+<li><b>불변식 vs baseline 이원 회귀 설계</b> — 절대 깨지면 안 되는 것(불변식)과 의도적으로 바뀔 것(baseline)을 마커로 분리. P4가 baseline 2건만 갱신 = 설계 의도대로 작동 실증.</li>
+<li><b>illegal state unrepresentable</b> — 가변 dt 차단을 런타임 검증이 아니라 시그니처 제거(<code>Predict(dt)</code>→<code>Predict()</code>)로. 잘못된 상태가 들어갈 자리 자체를 없애면 방어 코드가 불요.</li>
+<li><b>Fix Your Timestep</b> — 계산 박자(고정 서브스텝)와 그림 부드러움(시각 보간)은 분리. "고정스텝이 화면을 끊기게 만든다"는 직관은 틀림.</li>
+<li><b>clock smoothing</b> — serverTick 시간축 유지 + 재생 시점만 연속 시계(drift catch-up vs snap-on-discontinuity). 벽시계 복귀하면 백로그 #5 재발 — 두 마리 토끼.</li>
+<li><b>연속 봇 실행 = 몬스터 상태 누적 한계(fresh 재검 패턴)</b> — BossFight·HpSync에 이어 Freeze도 동류 한계로 신규 관측. fresh 단독 PASS면 회귀 아님 — 정직 기록.</li>
+<li><b>wsl 변수 전개 함정 = 스크립트 파일 실행식</b> — 중첩 따옴표로 셸 변수 전개가 깨지므로 러너를 <code>99_Tools/*.sh</code> 파일로 박아 실행. Unity MCP RunCommand 중첩 클래스 CS1527은 콜백을 별도 internal로.</li>
+</ul>
+
+<p class="muted">박제: 2026-06-12 · WORK-ID m4.11-sync · branch feature/m4.11-p4-fixedstep (P4~P5, PR 대기) / P1~P3 = PR #100 머지(0774695) · 상세 = _milestone-DONE.md</p>
+</div>
+</body>
+</html>

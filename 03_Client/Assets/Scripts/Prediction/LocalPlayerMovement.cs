@@ -11,11 +11,10 @@ namespace Dawnholder.Client.Prediction
     // 로컬 플레이어 이동 + 예측 + 서버 응답 흡수 전담 컴포넌트.
     //
     // **흐름**:
-    //   - **매 frame**: Predict (Time.deltaTime 가변) + transform 갱신. 시뮬 자체가 부드러움.
-    //     클라 가변 dt + 서버 fixed dt 차이는 reconcile로 흡수.
-    //   - **50ms cadence** (송신 throttle): C_MoveIntent 송신 + InputHistory push.
-    //     fps 의존 차단 = *송신 cadence* 의미. Predict 자체는 가변 OK.
-    //   - **OnJump 에지 검출**: "started" phase만 캡처 → 송신 cycle까지 보관 후 reset.
+    //   - **매 50ms 고정 서브스텝** (accumulator 기반): Predict + C_MoveIntent 송신 + InputHistory push 1:1.
+    //     서버 "틱당 입력 1개 소비 → Step 1회" 의 정확한 거울 — dt-drift 0.
+    //   - **시각 보간**: substep prev/curr 두 끝점을 lerp → 고fps에서도 부드러운 렌더링.
+    //   - **OnJump 에지 검출**: "started" phase만 캡처 → 서브스텝 소비 시 클리어 (0-substep 프레임 유실 방지).
     //
     // **직업 이동값**: PlayerStats.ForClass 단일 출처 (헌법 #4).
     //   PlayerPrefs "SelectedCharacterClass" 읽어 ForClass에 전달.
@@ -25,14 +24,19 @@ namespace Dawnholder.Client.Prediction
 
         PlayerPredictor _predictor = null!; // Awake에서 초기화
 
-        bool _jumpEdgeThisTick; // 송신 cycle까지 jump 에지 보관. 송신 후 reset.
+        bool _jumpEdgeThisTick; // 다음 서브스텝 소비까지 jump 에지 보관. 소비 시 즉시 클리어.
 
         uint _localTickCounter; // 송신 일련번호 (송신 시점에만 ++). replay reconcile 기준점.
-        float _sendAccumulator; // 50ms 송신 throttle 누적기.
+        float _sendAccumulator; // 고정 서브스텝 accumulator (예측 박자 + 송신 throttle 겸용).
 
         sbyte _currentMoveX; // LocalPlayerInput이 SetMoveX로 갱신.
 
-        // 로컬 공격 commit window 예측 잔여 시간(초). OnAttack 송신 성공 시 세팅, 매 frame 감쇠.
+        // 시각 보간용 — 매 서브스텝 직전 위치(prev)와 직후 위치(curr).
+        // reconcile/teleport 스냅 시 둘 다 새 위치로 리셋해 유령 미끄러짐 방지.
+        Vector2 _prevPredictPos;
+        Vector2 _currPredictPos;
+
+        // 로컬 공격 commit window 예측 잔여 시간(초). 서브스텝 박자(TickDuration씩) 감쇠.
         // 서버 AttackState(이동 잠금)를 같은 98_Shared 상수로 클라가 선예측 → reconcile rubber-band 0.
         // LocalPlayerMotion이 Attack 선예측 판단에 읽음 (getter로만 노출 — 외부 쓰기 차단).
         float _commitWindowRemaining;
@@ -77,10 +81,10 @@ namespace Dawnholder.Client.Prediction
         // 게임플레이 규칙 아님(서버 hitstun과 별개) → 98_Shared 아닌 클라 로컬 상수.
         const int HitGateBridgeTicks = 3; // ~150ms
 
-        // 해상도 전환/GC 등 프레임 스파이크로 deltaTime이 비정상적으로 커지면 Predict 적분이 서버(고정 dt)와
-        // 크게 벌어져 SnapThreshold 초과 → reconcile snap(밀림). 예측 적분만 clamp해 서버와의 괴리를 줄인다.
-        // 2틱분(0.1s)으로 설정 — 너무 작으면 저fps 환경 예측이 뒤처져 체감 끊김 증가.
-        const float MaxPredictStep = 0.1f;
+        // 프레임당 최대 서브스텝 횟수 cap. 초과분은 버리고 다음 reconcile에 위임.
+        // spiral of death(긴 프레임 → 다수 substep → 더 긴 프레임) 방지.
+        // 4 = 200ms = 4 × TickDuration — 저fps 환경에서도 실용적 상한.
+        const int MaxSubstepsPerFrame = 4;
 
         // 서버 권위 animState 최신값(S_Snapshot). Hit/Death는 클라가 예측 불가 → 이 값으로 게이트.
         // Attack은 로컬 타이머가 선예측하되, 서버 window가 더 길면 이 값이 잠금을 연장(거울 보정).
@@ -140,7 +144,7 @@ namespace Dawnholder.Client.Prediction
         public void SetMoveX(sbyte x) => _currentMoveX = x;
 
         // LocalPlayerInput이 점프 입력 시점 접지 게이트 통과 후 호출.
-        // 송신 cycle까지 에지를 보관 — Update가 바로 reset하지 않도록 이 메서드가 박기만 함.
+        // 다음 서브스텝이 소비할 때까지 latch 유지 — 0-substep 프레임에서 유실 방지.
         public void RequestJump() => _jumpEdgeThisTick = true;
 
         // LocalPlayerInput의 점프 게이트용. 입력 *시점* 접지 여부를 정확히 반영.
@@ -229,72 +233,87 @@ namespace Dawnholder.Client.Prediction
 
         void Update()
         {
-            // 로컬 잠금 타이머 감쇠 (공격 commit 선예측 + 피격 hit-bridge). 서버 animState와 함께 잠금 판정.
-            if (_commitWindowRemaining > 0f)
-                _commitWindowRemaining = Mathf.Max(0f, _commitWindowRemaining - Time.deltaTime);
-            if (_hitGateRemaining > 0f)
-                _hitGateRemaining = Mathf.Max(0f, _hitGateRemaining - Time.deltaTime);
-            if (_attackCooldownRemaining > 0f)
-                _attackCooldownRemaining = Mathf.Max(0f, _attackCooldownRemaining - Time.deltaTime);
-            if (_thunderboltCooldownRemaining > 0f)
-                _thunderboltCooldownRemaining = Mathf.Max(0f, _thunderboltCooldownRemaining - Time.deltaTime);
-            if (_dashCooldownRemaining > 0f)
-                _dashCooldownRemaining = Mathf.Max(0f, _dashCooldownRemaining - Time.deltaTime);
-            if (_teleportCooldownRemaining > 0f)
-                _teleportCooldownRemaining = Mathf.Max(0f, _teleportCooldownRemaining - Time.deltaTime);
-
-            // **source-gating** (헌법 #1 정합): 잠금 시 입력을 *근원에서* 0으로 막는다.
-            //   Predict / 송신(C_MoveIntent) / InputHistory(replay) 셋이 같은 gated 입력을 쓰므로
-            //   reconcile replay가 서버와 정확히 일치 — 별도 replay 게이트 불필요.
-            //   서버가 공격을 거부(rate-limit)해도 송신 입력이 0 → 서버도 0 적용 → 발산 0.
-            float localLock = Mathf.Max(_commitWindowRemaining, _hitGateRemaining);
-            bool locked = IsMovementLocked(localLock, _serverAnimState);
-            (sbyte moveX, bool jumpEdge) = ResolveGatedInput(locked, _currentMoveX, _jumpEdgeThisTick);
-
-            // 매 frame Predict. 시뮬 자체가 부드러움.
-            // jumpEdge는 송신 cycle까지 *보관* (송신 시점에 한 번 더 사용) — Predict는 매 frame이라
-            // OnJump 이후 50ms 안 모든 frame에 jumpEdge=true 들어가면 *재점프* 시도. 단 Physics.Step의
-            // OnGround 안전망이 1tick만 적용 — 점프 후 즉시 onGround=false라 자연 차단.
             float dt = Time.deltaTime;
-            // 예측 적분에만 clamp — 쿨다운/송신 누적기는 실제 시간 그대로(아래 _sendAccumulator 참고).
-            float predictDt = Mathf.Min(dt, MaxPredictStep);
-            _predictor.Predict(moveX, jumpEdge, predictDt);
-            transform.position = new Vector3(_predictor.Position.x, _predictor.Position.y, 0f);
 
-            // 50ms 송신 throttle — fps 의존 차단 (고프레임도 20 packet/s).
-            // clamp 전 실제 dt — 송신 cadence는 실제 경과 시간 기반이어야 함.
+            // UI·쿨다운 타이머는 frame dt 감쇠 — 송신 박자와 무관한 표시용.
+            if (_attackCooldownRemaining > 0f)
+                _attackCooldownRemaining = Mathf.Max(0f, _attackCooldownRemaining - dt);
+            if (_thunderboltCooldownRemaining > 0f)
+                _thunderboltCooldownRemaining = Mathf.Max(0f, _thunderboltCooldownRemaining - dt);
+            if (_dashCooldownRemaining > 0f)
+                _dashCooldownRemaining = Mathf.Max(0f, _dashCooldownRemaining - dt);
+            if (_teleportCooldownRemaining > 0f)
+                _teleportCooldownRemaining = Mathf.Max(0f, _teleportCooldownRemaining - dt);
+
             _sendAccumulator += dt;
-            if (_sendAccumulator < Constants.TickDuration) return;
-            _sendAccumulator -= Constants.TickDuration;
 
-            UnityClientSession? session = UnityClientSession.Instance;
-            if (session == null) return;
-
-            // 50ms cadence: 송신 + InputHistory push + jumpEdge reset.
-            // 잠금 중이면 jumpEdge=false(드롭) — 서버가 rawJump=false로 게이트하는 것과 정합.
-            _jumpEdgeThisTick = false; // 송신 후 reset — 다음 cycle은 새 OnJump 캡처.
-
-            _localTickCounter++;
-
-            // 비트필드 인코드 (InputBits.Encode 단일 출처). gated 입력 송신 = 서버 게이트와 합치.
-            byte input = InputBits.Encode(moveX, jumpEdge);
-            C_MoveIntent pkt = new C_MoveIntent
+            // 고정 서브스텝 루프 — spiral of death 방지를 위해 최대 MaxSubstepsPerFrame 회.
+            // 서버 "틱당 입력 1개 소비 → Step 1회" 의 정확한 거울.
+            int substeps = 0;
+            while (_sendAccumulator >= Constants.TickDuration && substeps < MaxSubstepsPerFrame)
             {
-                input = input,
-                clientTick = _localTickCounter
-            };
-            // SendIntent 경유 — Editor에서 SimulatedLatencyMs 적용 가능.
-            session.SendIntent(pkt.Write());
+                _sendAccumulator -= Constants.TickDuration;
+                substeps++;
 
-            // 송신 *직후* InputHistory push (ack 전 빔 함정 회피). gated 입력 그대로 박아 replay 일치.
-            _predictor.NotifySent(_localTickCounter, moveX, jumpEdge);
+                // source-gating 타이머를 서브스텝 박자로 감쇠 — 게이트 깜빡임 방지.
+                if (_commitWindowRemaining > 0f)
+                    _commitWindowRemaining = Mathf.Max(0f, _commitWindowRemaining - Constants.TickDuration);
+                if (_hitGateRemaining > 0f)
+                    _hitGateRemaining = Mathf.Max(0f, _hitGateRemaining - Constants.TickDuration);
+
+                // **source-gating** (헌법 #1 정합): 잠금 시 입력을 *근원에서* 0으로 막는다.
+                // Predict / 송신(C_MoveIntent) / InputHistory(replay) 셋이 같은 gated 입력을 쓰므로
+                // reconcile replay가 서버와 정확히 일치.
+                float localLock = Mathf.Max(_commitWindowRemaining, _hitGateRemaining);
+                bool locked = IsMovementLocked(localLock, _serverAnimState);
+                (sbyte moveX, bool jumpEdge) = ResolveGatedInput(locked, _currentMoveX, _jumpEdgeThisTick);
+
+                // 점프 latch 소비 — 이 서브스텝이 jumpEdge를 사용했으므로 클리어.
+                // 고fps 서브스텝 0번 프레임 유실 방지: 다음 서브스텝 전까지 RequestJump가 재세팅 가능.
+                if (_jumpEdgeThisTick) _jumpEdgeThisTick = false;
+
+                // prev/curr 기록 후 Predict — 시각 보간의 두 끝점.
+                _prevPredictPos = _predictor.Position;
+                _predictor.Predict(moveX, jumpEdge);
+                _currPredictPos = _predictor.Position;
+
+                UnityClientSession? session = UnityClientSession.Instance;
+                if (session == null) continue;
+
+                _localTickCounter++;
+
+                byte input = InputBits.Encode(moveX, jumpEdge);
+                C_MoveIntent pkt = new C_MoveIntent
+                {
+                    input = input,
+                    clientTick = _localTickCounter
+                };
+                session.SendIntent(pkt.Write());
+
+                // 송신 직후 InputHistory push — gated 입력 그대로 박아 replay 일치.
+                _predictor.NotifySent(_localTickCounter, moveX, jumpEdge);
+            }
+
+            // cap 도달 후 남은 통째 틱은 버림 — 서버 입력 큐가 drop-oldest(MaxInputQueue=6)라
+            // backlog 추격 버스트는 어차피 버려지고 reconcile 대상만 늘린다. freeze 복구 = reconcile 담당.
+            if (_sendAccumulator >= Constants.TickDuration)
+                _sendAccumulator %= Constants.TickDuration;
+
+            // 시각 보간 — substep 박자 사이를 부드럽게 렌더링.
+            // accumulator / TickDuration = 현재 substep 구간 내 진행률(0..1).
+            float alpha = _sendAccumulator / Constants.TickDuration;
+            Vector2 renderPos = Vector2.Lerp(_prevPredictPos, _currPredictPos, alpha);
+            transform.position = new Vector3(renderPos.x, renderPos.y, 0f);
         }
 
         // S_EnterMap → 서버가 정한 spawn 좌표 적용. predictor 초기화 — 다음 Update에서 transform 자동 동기.
         // 단 spawn 첫 frame 깜빡임 방지를 위해 즉시 transform도 한 번 설정.
+        // 보간 버퍼(prev/curr)도 새 위치로 리셋 — 점프 위치를 가로질러 보간하는 유령 미끄러짐 방지.
         public void SetServerPosition(Vector3 worldPos)
         {
             _predictor.SetInitialPosition(new Vector2(worldPos.x, worldPos.y));
+            _prevPredictPos = new Vector2(worldPos.x, worldPos.y);
+            _currPredictPos = _prevPredictPos;
             transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
         }
 
@@ -348,6 +367,11 @@ namespace Dawnholder.Client.Prediction
                 Debug.Log(
                     $"[Reconcile] d=({dx:F2}, {dy:F2}) at serverTick={serverTick} " +
                     $"ack={ackedClientTick} teleportSnap={teleportSnap} (count={_predictor.SnapCount})");
+
+                // 보간 버퍼(prev/curr)를 reconcile 후 위치로 리셋 — 점프(teleport/snap)를
+                // 가로질러 보간하면 유령 미끄러짐 발생. 소폭 정상 reconcile은 다음 서브스텝이 자연 흡수.
+                _prevPredictPos = _predictor.Position;
+                _currPredictPos = _predictor.Position;
             }
 
             // 텔레포트 도착 이펙트 — 스냅 채택으로 새 위치가 transform에 박힌 직후.
