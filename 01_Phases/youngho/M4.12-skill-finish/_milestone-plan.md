@@ -2,7 +2,7 @@
 owner: youngho
 milestone: M4.12
 title: 발표 데모 빌드 준비 — 스킬 쿨다운 UI + 재빌드 + 마감 박제 (경량)
-status: planned
+status: done
 grade: 복잡
 slug: M4.12-skill-finish
 created: 2026-06-11

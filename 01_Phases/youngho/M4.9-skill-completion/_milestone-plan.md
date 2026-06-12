@@ -2,7 +2,7 @@
 owner: youngho
 milestone: M4.9
 title: 스킬 시스템 완성 — 비주얼 연결 + 클래스 게이트 + Knight Dash + Mage Teleport + 쿨다운 UI
-status: planned
+status: done
 grade: 대규모
 slug: M4.9-skill-completion
 created: 2026-06-10

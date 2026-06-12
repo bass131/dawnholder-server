@@ -3,10 +3,11 @@ owner: youngho
 milestone: M4.12
 phase: 02-rebuild-and-finalize
 title: 발표 재빌드 + 전체 회귀 + M4.9·M4.12 마감 박제
-status: pending
+status: done
 grade: 복잡
 slug: 02-rebuild-and-finalize
 created: 2026-06-12
+completed: 2026-06-12
 domains: [qa]
 risk_flags: [irreversible]
 prior_phases: [01-skill-cooldown-hud]
