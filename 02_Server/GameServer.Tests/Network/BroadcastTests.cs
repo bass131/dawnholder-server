@@ -229,7 +229,7 @@ public class BroadcastTests : IDisposable
         int s1Baseline = s1.SentPackets.Count;
         int s2Baseline = s2.SentPackets.Count;
 
-        // SnapshotTickInterval=5 → tick 5의 배수에서 broadcast
+        // SnapshotTickInterval=1(20Hz) → 매 tick broadcast
         _map.Tick(Shared.GameData.Constants.SnapshotTickInterval);
 
         // 두 entity 각각의 snapshot이 두 session 양쪽에 도달 (N=2 환경 → 2 packets per session)

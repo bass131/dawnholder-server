@@ -22,10 +22,11 @@ public static class Constants
     public const float TickDuration = 1.0f / ServerTickRate;
 
     /// <summary>
-    /// S_Snapshot 브로드캐스트 주기 (tick 단위). 2 tick = 100ms (10Hz).
-    /// 너무 길면 클라 보간 buffer가 빔 → last-known 정지 패턴으로 어색해짐.
+    /// S_Snapshot 브로드캐스트 주기 (tick 단위). 1 tick = 50ms (20Hz).
+    /// M4.11 P1: RemotePlayer 보간 궤적 부드러움을 위해 10Hz(=2) → 20Hz(=1)로 상향.
+    /// trade-off: 대역폭 2배 증가이나 로컬/발표 규모(≤10명)에서 무시 가능.
     /// </summary>
-    public const int SnapshotTickInterval = 2;
+    public const int SnapshotTickInterval = 1;
 
     /// <summary>
     /// 단일 패킷 frame 최대 크기 (byte). PacketSession.OnRecv가 length 헤더 상한으로
@@ -60,8 +61,30 @@ public static class Constants
     /// </summary>
     public const int ThunderboltCooldownTicks = 40;
 
+    /// <summary>
+    /// Dash 스킬 쿨다운(틱). ThunderboltCooldownTicks와 *독립* — Knight 전용 쿨다운.
+    /// 서버 SkillSystem이 권위 판정, 클라는 *같은 값*으로 입력 게이트 거울(Phase 04+ 연결 시).
+    /// 20틱 = 1초 @20TPS. 타이밍만 공유 — lunge 세기/박스/데미지는 서버 전용(CombatConstants) 유지.
+    /// </summary>
+    public const int DashCooldownTicks = 20;
+
+    /// <summary>
+    /// Teleport 스킬 쿨다운(틱). Mage 전용 순간이동 쿨다운.
+    /// 서버 SkillSystem이 권위 판정, 클라는 *같은 값*으로 입력 게이트 거울(Phase 06 연결 시).
+    /// 30틱 = 1.5초 @20TPS. 타이밍만 공유 — 이동 거리/경계 clamp는 서버 전용(CombatConstants) 유지.
+    /// </summary>
+    public const int TeleportCooldownTicks = 30;
+
     /// <summary>피격 넉백 초기 수평 속도 (units/s). EnterHitState에서 방향 부호와 함께 적용.</summary>
     public const float KnockbackInitialVx = 7f;
+
+    /// <summary>
+    /// 임펄스(lunge/넉백) 감쇠 near-zero 클램프 임계값.
+    /// 서버는 |임펄스 velocity| &lt; ε 이면 0f로 정리 — 살아남은 임펄스는 항상 |vx| >= ε.
+    /// 클라 force-adopt 게이트는 이 약속의 보색(complement): |serverVx| >= ε 이면 임펄스 활성으로 판정.
+    /// 두 곳이 독립 매직넘버를 쓰면 silent break(M4.11 P2 계약 명시).
+    /// </summary>
+    public const float ExternalImpulseEpsilon = 0.05f;
 
     /// <summary>
     /// 틱당 넉백 감쇠 계수. KnockbackVx에 매 틱 곱해 지수 감쇠.

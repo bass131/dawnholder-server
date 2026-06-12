@@ -21,7 +21,7 @@ internal static class HandlerRegistry
             { PacketID.C_Attack, new AttackHandler() },
             { PacketID.C_CharacterSelect, new CharacterSelectHandler() },
             { PacketID.C_EnterPortal,    new EnterPortalHandler() },
-            { PacketID.C_SkillUse,       new C_SkillUseHandler() },
+            { PacketID.C_SkillUse,       new SkillUseHandler() },
         };
 
     public static bool TryGet(PacketID id, out IPacketHandler handler)

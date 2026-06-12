@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Dawnholder.Server.Network
 {
+    /// <summary>
+    /// TCP accept 루프. 신규 연결을 받아 <see cref="Session"/> 인스턴스를 생성·시작한다.
+    /// </summary>
     public class Listener
     {
         Socket? _listenSocket;
@@ -37,6 +40,11 @@ namespace Dawnholder.Server.Network
                 args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
                 RegisterAccept(args);
             }
+        }
+
+        public Socket Accept()
+        {
+            return _listenSocket!.Accept();
         }
 
         void RegisterAccept(SocketAsyncEventArgs args)
@@ -91,11 +99,6 @@ namespace Dawnholder.Server.Network
             }
 
             RegisterAccept(args); // race 분기에서도 다음 accept 재등록 의무
-        }
-
-        public Socket Accept()
-        {
-            return _listenSocket!.Accept();
         }
     }
 }

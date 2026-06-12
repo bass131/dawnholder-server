@@ -40,11 +40,12 @@ internal sealed class EnemyAISystem
                 byte animState = ComputeEnemyAnimState(enemy);
                 S_EntityState statePacket = new S_EntityState
                 {
-                    entityId = enemy.EntityId,
-                    x = enemy.X,
-                    y = enemy.Y,
-                    state = (byte)enemy.State,
-                    animState = animState,
+                    entityId   = enemy.EntityId,
+                    x          = enemy.X,
+                    y          = enemy.Y,
+                    state      = (byte)enemy.State,
+                    animState  = animState,
+                    serverTick = (int)tickNumber,
                 };
                 map.BroadcastToAll(statePacket.Write());
             }

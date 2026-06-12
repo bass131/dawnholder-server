@@ -103,8 +103,6 @@ public abstract class ClientSession
     protected Socket? _socket;
     protected int _disconnected = 0; // 0 = 연결됨, 1 = 끊김. Interlocked로만 변경.
 
-    readonly RecvBuffer _recvBuffer = new RecvBuffer(65535);
-
     // _lock: Send 호출이 main thread / socket worker thread 양쪽에서 들어올 수
     // 있어 큐 보호 필요. 클라라고 단순화 안 한 이유 = 위 메모의 두 스레드 시나리오.
     protected readonly object _lock = new object();
@@ -113,21 +111,14 @@ public abstract class ClientSession
     protected readonly SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
     protected readonly SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
 
+    readonly RecvBuffer _recvBuffer = new RecvBuffer(65535);
+
     #endregion
 
     public abstract void OnConnected(EndPoint endPoint);
     public abstract void OnDisconnected(EndPoint endPoint);
     public abstract int OnRecv(ArraySegment<byte> buffer);
     public abstract void OnSend(int numOfBytes);
-
-    void Clear()
-    {
-        lock (_lock)
-        {
-            _sendQueue.Clear();
-            _pendingList.Clear();
-        }
-    }
 
     /// <summary>Connector가 connect 성공 후 호출. 비동기 수신 시작.</summary>
     public void Start(Socket socket)
@@ -187,6 +178,15 @@ public abstract class ClientSession
         catch (Exception e) { Console.WriteLine($"[ClientSession] socket Close 예외 — 무시: {e.Message}"); }
 
         Clear();
+    }
+
+    void Clear()
+    {
+        lock (_lock)
+        {
+            _sendQueue.Clear();
+            _pendingList.Clear();
+        }
     }
 
     #region Network Connection Send / Recv

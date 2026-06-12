@@ -24,10 +24,18 @@
 │   ├── Handlers/       IPacketHandler 단위 + dispatch 테이블 (M3 Phase 03 신설)
 │   │   ├── IPacketHandler.cs       internal 인터페이스 (decode + 검증 + session 호출)
 │   │   ├── HandlerRegistry.cs      Dictionary<PacketID, IPacketHandler> (한 줄 등록)
-│   │   ├── HandshakeHandler.cs     C_Handshake → version 검증 → session 캡슐화 메서드
-│   │   ├── MoveIntentHandler.cs    C_MoveIntent → InputBits.Decode → session 캡슐화 메서드
-│   │   ├── PingHandler.cs          C_Ping → session 캡슐화 메서드
-│   │   └── AttackHandler.cs        C_Attack → targetEntityId 전달 (M3 Phase 06 신설)
+│   │   ├── Session/                연결 수명주기 관련 핸들러
+│   │   │   ├── HandshakeHandler.cs     C_Handshake → version 검증 → session 캡슐화 메서드
+│   │   │   ├── PingHandler.cs          C_Ping → session 캡슐화 메서드
+│   │   │   └── CharacterSelectHandler.cs  C_CharacterSelect → 클래스 선택 + session 상태
+│   │   ├── Movement/               이동 입력 핸들러
+│   │   │   └── MoveIntentHandler.cs    C_MoveIntent → InputBits.Decode → session 캡슐화 메서드
+│   │   ├── Combat/                 전투 입력 핸들러
+│   │   │   └── AttackHandler.cs        C_Attack → targetEntityId 전달 (M3 Phase 06 신설)
+│   │   ├── Skill/                  스킬 입력 핸들러
+│   │   │   └── SkillUseHandler.cs      C_SkillUse → 신뢰 경계 3단계 검증 → session 캡슐화 메서드
+│   │   └── Zone/                   맵 이동 핸들러
+│   │       └── EnterPortalHandler.cs   C_EnterPortal → 포털 진입 처리
 │   ├── Loop/           Tick scheduler, world simulation
 │   ├── Maps/           맵별 actor, spatial query, PlayerEntity
 │   ├── Combat/         M3 응급 단순화 (CombatConstants/EnemyKind/EnemyEntity) — M4 정밀화 대기

@@ -7,6 +7,8 @@ namespace Dawnholder.Server.GameServer.Combat;
 // (한 파일에 모아두면 형평성 점검 쉬움).
 internal static class CombatConstants
 {
+    // ── 근접 평타 (Knight) ────────────────────────────────────────────────────
+
     // 3.0f units = ground level 2 unit 간격 + 약간의 여유 = 점프 공격 miss 위험 완화.
     public const float AttackRange = 3.0f;
 
@@ -40,7 +42,7 @@ internal static class CombatConstants
     //   tick 카운터는 순수 정수 감소 — blocking call 0 보장.
     public const int AnimLatchTicks = 8; // Attack/Hit latch 지속 틱 수 (8틱 = 400ms @20TPS)
 
-    // ── Mage 평타 원거리 상수 (서버 전용 — 헌법 #1) ─────────────────────────
+    // ── Mage 평타 원거리 ──────────────────────────────────────────────────────
     // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
 
     // 도착(투사체/낙뢰) 후 추가 freeze(스턴) 틱. 평타·썬더볼트 공통.
@@ -61,7 +63,7 @@ internal static class CombatConstants
     // travelTicks 최댓값. 극단적으로 먼 거리의 freeze 시간 상한.
     public const int MaxTravelTicks = 10;
 
-    // ── 썬더볼트 AoE 상수 (서버 전용 — 헌법 #1) ─────────────────────────────
+    // ── 썬더볼트 AoE ──────────────────────────────────────────────────────────
     // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
 
     // 공격자 중심 AABB 박스 X축 절반 크기 (unit). 전방/후방 대칭.
@@ -79,7 +81,40 @@ internal static class CombatConstants
     // tick 기반 이유: 헌법 #5 — ms 타이머를 tick 루프에 박으면 DateTime 의존. 순수 정수 비교 = blocking 0.
     public const int ThunderboltCooldownTicks = Shared.GameData.Constants.ThunderboltCooldownTicks;
 
-    // ── 보스 전투 상수 ────────────────────────────────────────────────────────
+    // ── Teleport 스킬 ─────────────────────────────────────────────────────────
+    // 클라이언트는 쿨다운(98_Shared Constants.TeleportCooldownTicks)만 공유 — 거리/경계는 여기.
+
+    // Teleport 이동 거리 (unit). FacingDir 방향으로 이 거리만큼 위치 즉시 점프.
+    // 15.0f = 한 화면 절반 정도의 거리. Play 튜닝 대상.
+    public const float TeleportDistance = 15.0f;
+
+    // Teleport 쿨다운 (틱). 98_Shared 단일 진실에서 가져옴 (DashCooldownTicks와 동형).
+    public const int TeleportCooldownTicks = Shared.GameData.Constants.TeleportCooldownTicks;
+
+    // ── Dash 스킬 ─────────────────────────────────────────────────────────────
+    // 클라이언트는 쿨다운(98_Shared Constants.DashCooldownTicks)만 공유 — lunge/박스/데미지는 여기.
+
+    // Dash 전방 lunge 초기 수평 속도 (units/s). AttackLungeInitialVx(3.0f)보다 커 더 긴 전진.
+    // AttackState.Tick이 DashLungeDecayPerTick(0.85)로 매 틱 감쇠 → 8틱 동안 부드럽게 잦아드는 전진.
+    // 서버 권위(헌법 #1): 클라는 결과 위치를 force-adopt로 렌더만.
+    public const float DashLungeInitialVx = 10.0f;
+
+    // Dash 전방 lunge 틱당 감쇠 계수. 평타 lunge(KnockbackDecayPerTick=0.75)보다 완만해
+    // 더 오래 전진 속도를 유지 → 부드럽게 잦아드는 긴 대쉬 느낌.
+    // 0.85^8 ≈ 0.272 → 8틱 후 초기 속도의 27%로 수렴.
+    // 넉백(KnockbackDecayPerTick) + 평타 lunge(KnockbackDecayPerTick)와는 독립 — Dash 전용.
+    public const float DashLungeDecayPerTick = 0.85f;
+
+    // Dash 경로 AABB 박스 반폭 (unit). 전방 이동 경로를 스윕하는 박스 — X 방향이 핵심.
+    // FacingDir 방향으로 쏘는 앞 공간 스캔. DashBoxHalfY는 평타(1.5f)와 동일.
+    // DashLungeDecayPerTick=0.85 기준 실전진 거리 ~2.43 unit(기하급수 합 계산)에 맞게 조정.
+    public const float DashBoxHalfX = 2.5f;
+    public const float DashBoxHalfY = 1.5f;
+
+    // Dash 쿨다운 (틱). 98_Shared 단일 진실에서 가져옴 (ThunderboltCooldownTicks와 동형).
+    public const int DashCooldownTicks = Shared.GameData.Constants.DashCooldownTicks;
+
+    // ── 보스 전투 ─────────────────────────────────────────────────────────────
     //
     // 값은 사용자 확정 정량값 (M4.5 Phase 04 CP-2 명세). 임의 변경 금지.
     // 틱 단위 = ms 환산 시 20TPS 기준 (1틱=50ms).
@@ -119,4 +154,20 @@ internal static class CombatConstants
 
     /// <summary>타겟 없을 때 한 번의 Move 배회 지속 틱. 20틱=1초 배회 후 Idle 복귀.</summary>
     public const int BossWanderTicks = 20;
+
+    // ── 엔티티 히트박스 ───────────────────────────────────────────────────────
+
+    // 적·플레이어 피격 판정 AABB half-extent (x/y 동일). 1×1 unit 박스.
+    // EnemyEntity.Hitbox / BossStates.ApplyBossAttack playerBox 공통 단일 출처.
+    public const float HitboxHalfExtent = 0.5f;
+
+    // ── 적 AI ─────────────────────────────────────────────────────────────────
+
+    // de-aggro 히스테리시스 계수. Chase/BossMove 중 |dx| > AggroRange * DeAggroHysteresis이면 Patrol 복귀.
+    // 1.5f = 추격 개시 범위보다 50% 더 벗어나야 이탈 — 진입·이탈 경계 분리로 떨림 방지.
+    public const float DeAggroHysteresis = 1.5f;
+
+    // ── Lag-comp rewind 검증 ──────────────────────────────────────────────────
+
+    internal const long MaxRewindTicks = 4; // 200ms @ 20TPS — lag-comp rewind 상한
 }

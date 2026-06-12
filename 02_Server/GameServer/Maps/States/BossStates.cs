@@ -42,7 +42,7 @@ internal static class BossStates
 
         foreach (PlayerEntity player in map.Players)
         {
-            AABB playerBox = new AABB(player.Position, new Vector2(0.5f, 0.5f));
+            AABB playerBox = new AABB(player.Position, new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
             if (!bossAttackBox.Intersects(playerBox)) continue;
 
             int damage = Formulas.ComputeDamage(boss.Stats, player.Stats, CombatConstants.BossBaseDamage);
@@ -89,13 +89,14 @@ internal static class BossStates
 
         S_EntityState telegraphPkt = new S_EntityState
         {
-            entityId  = enemy.EntityId,
-            x         = enemy.X,
-            y         = enemy.Y,
-            state     = (byte)enemy.State,
-            animState = (byte)AnimState.Attack,
+            entityId   = enemy.EntityId,
+            x          = enemy.X,
+            y          = enemy.Y,
+            state      = (byte)enemy.State,
+            animState  = (byte)AnimState.Attack,
+            serverTick = (int)enemy.OwningMap!.CurrentTick,
         };
-        enemy.OwningMap!.BroadcastToAll(telegraphPkt.Write());
+        enemy.OwningMap.BroadcastToAll(telegraphPkt.Write());
         return BossStates.Telegraph;
     }
 }
@@ -148,7 +149,7 @@ internal sealed class BossMoveState : ActorState<EnemyEntity>
             float dx = target.Position.X - enemy.X;
             float absDx = dx < 0 ? -dx : dx;
 
-            if (absDx > enemy.Stats.AggroRange * 1.5f)   // de-aggro 히스테리시스(몬스터와 동일)
+            if (absDx > enemy.Stats.AggroRange * CombatConstants.DeAggroHysteresis)   // de-aggro 히스테리시스(몬스터와 동일)
             {
                 enemy.TargetEntityId = null;
                 // 아래 배회 블록으로 fall-through

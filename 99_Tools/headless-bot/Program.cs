@@ -17,6 +17,8 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario FreezeSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario ThunderboltAoeSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario RangedWhiffSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario DashSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario TeleportSmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -161,6 +163,35 @@ if (string.Equals(scenarioName, "RangedWhiffSmoke", StringComparison.OrdinalIgno
     return r.Success ? 0 : 1;
 }
 
+if (string.Equals(scenarioName, "DashSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    DashSmokeScenario.Result r = await DashSmokeScenario.Run(host, port);
+    Console.WriteLine($"[Bot] DashSmoke: success={r.Success} entity={r.LocalEntityId}");
+    Console.WriteLine($"      skillCast={r.SawSkillCast} skillId={r.SkillCastSkillId}");
+    Console.WriteLine($"      position: before={r.PositionBeforeDash:F2} after={r.PositionAfterDash:F2} " +
+                      $"advanced={r.PositionAdvanced}");
+    Console.WriteLine($"      pathEnemy={r.PathEnemyFound} hitEffect3={r.SawHitResultDash}");
+    Console.WriteLine($"      cooldownRejected={r.CooldownRejectedRecast} mageGateBlocked={r.MageClassGateBlocked}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "TeleportSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    TeleportSmokeScenario.Result r = await TeleportSmokeScenario.Run(host, port);
+    Console.WriteLine($"[Bot] TeleportSmoke: success={r.Success} entity={r.LocalEntityId}");
+    Console.WriteLine($"      skillCast={r.SawSkillCast}");
+    Console.WriteLine($"      position: before={r.PositionBeforeTeleport:F2} " +
+                      $"expected≈{r.ExpectedPositionAfterTeleport:F2} actual={r.PositionAfterTeleport:F2} " +
+                      $"matches={r.PositionMatchesExpected}");
+    Console.WriteLine($"      hitResults={r.HitResultCount}(expect 0) " +
+                      $"cooldownRejected={r.CooldownRejectedRecast}");
+    Console.WriteLine($"      boundsClamp={r.BoundsClampVerified} boundsTestX={r.BoundsTestPositionAfterTeleport:F2} " +
+                      $"knightGateBlocked={r.KnightClassGateBlocked}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
 if (string.Equals(scenarioName, "EnemyAiSmoke", StringComparison.OrdinalIgnoreCase))
 {
     EnemyAiSmoke.Result r = await EnemyAiSmoke.Run(host, port);
@@ -175,6 +206,20 @@ if (string.Equals(scenarioName, "EnemyAiSmoke", StringComparison.OrdinalIgnoreCa
     return r.Success ? 0 : 1;
 }
 
+if (string.Equals(scenarioName, "MapTransition", StringComparison.OrdinalIgnoreCase))
+{
+    MapTransitionScenario.Result r = await MapTransitionScenario.Run(host, port);
+    Console.WriteLine($"[Bot] MapTransition: success={r.Success} entity={r.EntityId}");
+    Console.WriteLine($"      HG={r.EnteredHuntingGround}(spawnX={r.SpawnXOnHG:F2}) " +
+                      $"Boss={r.EnteredBossRoom}(spawnX={r.SpawnXOnBossRoom:F2}) " +
+                      $"Ending={r.EnteredEnding}(spawnX={r.SpawnXOnEnding:F2}) " +
+                      $"Town={r.ReturnedToTown}(spawnX={r.SpawnXOnTown:F2})");
+    Console.WriteLine($"      entityIdPreserved={r.EntityIdPreservedAcrossAllMaps} " +
+                      $"spawnCoordinatesCorrect={r.SpawnCoordinatesCorrect}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
 if (scenarioName == "M2BasicMovement")
 {
     M2BasicMovement.Result r = await M2BasicMovement.Run(host, port);
@@ -183,6 +228,11 @@ if (scenarioName == "M2BasicMovement")
     Console.WriteLine($"      bot=({r.BotSimFinal.X:F2},{r.BotSimFinal.Y:F2}) " +
                       $"server=({r.ServerFinal.X:F2},{r.ServerFinal.Y:F2}) " +
                       $"desync=(dx={r.FinalDesyncX:F2}, dy={r.FinalDesyncY:F2})");
+    float headroomX = r.BoundX / Math.Max(r.MaxObservedDeltaX, 0.0001f);
+    float headroomY = r.BoundY / Math.Max(r.MaxObservedDeltaY, 0.0001f);
+    Console.WriteLine($"      maxObsDelta=(x={r.MaxObservedDeltaX:F3}, y={r.MaxObservedDeltaY:F3}) " +
+                      $"bound=(x={r.BoundX:F3}, y={r.BoundY:F3}) " +
+                      $"headroom=(x={headroomX:F1}x, y={headroomY:F1}x)");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }

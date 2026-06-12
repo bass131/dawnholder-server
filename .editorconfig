@@ -1,0 +1,26 @@
+# Dawnholder — 리포 루트 .editorconfig
+# CODE_CONVENTION §7.1 멤버 정렬을 StyleCop SA1201/SA1202로 빌드 경고 강제한다.
+# 이 Phase(M4.10 Phase 01)는 룰을 "박기만" 한다 — 전체 경고 0 스윕은 Phase 05.
+# StyleCop의 나머지 카테고리는 전부 끄고 멤버 정렬 2룰만 켠다.
+
+root = true
+
+[*.cs]
+
+# --- StyleCop 카테고리 전체 비활성 (멤버 정렬만 남기려고 끈다) ---
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpecialRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpacingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.ReadabilityRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.OrderingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.NamingRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.MaintainabilityRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.LayoutRules.severity = none
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
+
+# SA0001(XML 주석 분석 비활성)은 특수 룰이라 category none으로 안 꺼진다 — 개별로 끈다.
+dotnet_diagnostic.SA0001.severity = none
+
+# --- 멤버 정렬만 warning (more-specific 룰이 위 category none을 이긴다) ---
+# 적용 범위: production 게임 코드만 — GameServer.Tests/·99_Tools/는 하위 .editorconfig가 none으로 완화 (Phase 05 결정).
+dotnet_diagnostic.SA1201.severity = warning   # 멤버 종류 순서: 필드→생성자→event→프로퍼티→메서드→중첩타입 (파일 레벨: struct→class)
+dotnet_diagnostic.SA1202.severity = warning   # 접근성 순서: public→internal→protected internal→protected→private

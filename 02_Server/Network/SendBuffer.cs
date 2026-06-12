@@ -21,11 +21,16 @@ using System.Threading.Tasks;
 
 namespace Dawnholder.Server.Network
 {
+    /// <summary>
+    /// 스레드-로컬 <see cref="SendBuffer"/> 풀 관리자. Open/Close 패턴으로 송신 버퍼 슬라이스를 대여한다.
+    /// </summary>
     public class SendBufferHelper
     {
         public static ThreadLocal<SendBuffer?> s_currentBuffer = new ThreadLocal<SendBuffer?>(() => null);
 
         public static int ChunkSize {get; set;} = 65535 * 1000;
+
+        public SendBuffer? Current { get { return s_currentBuffer.Value; } }
 
         public static ArraySegment<byte> Open(int reserveSize)
         {
@@ -46,8 +51,6 @@ namespace Dawnholder.Server.Network
         {
             return s_currentBuffer.Value!.Close(usedSize);
         }
-
-        public SendBuffer? Current { get { return s_currentBuffer.Value; } }
 
         public SendBuffer? New(int bufferSize)
         {
@@ -73,6 +76,9 @@ namespace Dawnholder.Server.Network
         }
     }
 
+    /// <summary>
+    /// 단일 고정 크기 바이트 배열을 슬라이스해 재사용하는 송신 버퍼. GC 압력 최소화 목적.
+    /// </summary>
     public class SendBuffer
     {
         // [u][][][][][][][][][] : 사용하지 않음
@@ -80,12 +86,12 @@ namespace Dawnholder.Server.Network
         byte[] _buffer;
         int _usedSize = 0;
 
-        public int FreeSize { get { return _buffer.Length - _usedSize; } }
-
         public SendBuffer(int chunkSize)
         {
             _buffer = new byte[chunkSize];
         }
+
+        public int FreeSize { get { return _buffer.Length - _usedSize; } }
 
         public ArraySegment<byte> Open(int reserveSize)
         {

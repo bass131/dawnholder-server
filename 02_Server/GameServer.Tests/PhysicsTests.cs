@@ -263,4 +263,116 @@ public class PhysicsTests
         Assert.Equal(6f, mage.MoveSpeed,  4);
         Assert.Equal(8f, mage.JumpVel,    4);
     }
+
+    // ── P3 불변식 — 서버 궤적 golden (P4 후에도 절대 green) ─────────────────────
+    //
+    // 서버는 Physics.Step을 고정 TickDuration(50ms)으로 호출한다.
+    // P4가 클라 Predict 경로를 고정스텝으로 바꿔도 *서버 궤적*은 변하지 않는다.
+    // 따라서 이 두 케이스는 P4 완료 후에도 반드시 green이어야 하는 불변식이다.
+
+    // P3-GoldenTrajectory-1: 우이동 10틱 → 점프 1회 → 착지 궤적 golden.
+    //
+    // 입력 시퀀스:
+    //   tick 1-10 : inputX=+1, jump=false  (우이동, 지상)
+    //   tick 11   : inputX=0,  jump=true   (점프 시작)
+    //   tick 12-27: inputX=0,  jump=false  (자유낙하, tick 27에 착지)
+    //
+    // golden 채굴: StepFlat 공식을 수식으로 전개해 산출. 아래 값은 C# CoreCLR 실행
+    // 결과와 일치하며 float 재현성은 이 런타임(xUnit/WSL2 CoreCLR) 안에서만 보장.
+    // ⚠️ Unity Mono EditMode와 직접 비교 금지 (D3 정책 — 런타임 간 golden 비교 금지).
+    [Fact]
+    public void P3_Invariant_GoldenTrajectory_RightThenJumpThenLand()
+    {
+        const float Eps = 1e-4f;
+
+        PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
+
+        // Phase 1: 우이동 10틱
+        for (int i = 0; i < 10; i++)
+            state = Physics.Step(state, new PhysicsInput(1, false, Dt), FlatParams);
+
+        // 키프레임 A — 10틱 우이동 후: x=2.5, y=0, 지상
+        Assert.Equal(2.5f, state.Position.X, 4);
+        Assert.Equal(0.0f, state.Position.Y, 4);
+        Assert.True(state.OnGround);
+
+        // tick 11: 점프 시작
+        state = Physics.Step(state, new PhysicsInput(0, true, Dt), FlatParams);
+
+        // 키프레임 B — 점프 직후: x=2.5, y=0.4(=JumpVel*dt), vy=8.0, 공중
+        Assert.InRange(state.Position.Y, 0.4f - Eps, 0.4f + Eps);
+        Assert.InRange(state.Velocity.Y, 8.0f - Eps, 8.0f + Eps);
+        Assert.Equal(2.5f, state.Position.X, 4);
+        Assert.False(state.OnGround);
+
+        // tick 12-18: 자유낙하 7틱 → tick 18 상태 (y=1.80, vy=1.0)
+        for (int i = 0; i < 7; i++)
+            state = Physics.Step(state, new PhysicsInput(0, false, Dt), FlatParams);
+
+        // 키프레임 C — tick 18: y=1.8 (apex 직전), vy=1.0
+        // StepFlat Euler 결과: 매 틱 1.0씩 vy 감소. apex = tick 19(vy=0, y=1.8).
+        Assert.InRange(state.Position.Y, 1.8f - Eps, 1.8f + Eps);
+        Assert.False(state.OnGround);
+
+        // tick 19-27: 착지까지 자유낙하 9틱 (tick 27 착지)
+        for (int i = 0; i < 9; i++)
+            state = Physics.Step(state, new PhysicsInput(0, false, Dt), FlatParams);
+
+        // 키프레임 D — 착지 후(tick 27): y=0, 지상, x 변화 없음(입력 0)
+        Assert.InRange(state.Position.Y, -Eps, Eps); // y=0 (GroundY)
+        Assert.Equal(2.5f, state.Position.X, 4);     // x 불변
+        Assert.True(state.OnGround);
+        Assert.InRange(state.Velocity.Y, -Eps, Eps);  // vy=0 (착지 clamp)
+    }
+
+    // P3-GoldenTrajectory-2: 좌이동 20틱 + 매 10틱 점프 궤적 중간 키프레임.
+    //
+    // 입력 시퀀스:
+    //   tick 1-10  : inputX=-1, jump=false
+    //   tick 11    : inputX=-1, jump=true   (지상에서 점프 + 좌이동)
+    //   tick 12-20 : inputX=-1, jump=false  (공중 좌이동)
+    //   tick 21    : inputX=-1, jump=false  (착지 전후 — 자연 착지)
+    //
+    // golden: 각 틱에 StepFlat 공식을 전개해 산출.
+    // 불변식 — P4 무관 (서버 경로).
+    [Fact]
+    public void P3_Invariant_GoldenTrajectory_LeftWithJump()
+    {
+        const float Eps = 1e-4f;
+        // MoveSpeed=5f, dt=0.05 → 1틱 dx = -0.25
+        // 10틱 좌이동: x = -2.5
+        PhysicsState state = PhysicsState.AtRest(Vector2.Zero);
+
+        for (int i = 0; i < 10; i++)
+            state = Physics.Step(state, new PhysicsInput(-1, false, Dt), FlatParams);
+
+        // 키프레임 A: x=-2.5, y=0, 지상
+        Assert.InRange(state.Position.X, -2.5f - Eps, -2.5f + Eps);
+        Assert.Equal(0.0f, state.Position.Y, 4);
+        Assert.True(state.OnGround);
+
+        // tick 11: 좌이동 + 점프
+        state = Physics.Step(state, new PhysicsInput(-1, true, Dt), FlatParams);
+
+        // 키프레임 B: x=-2.75(=-2.5-0.25), y=0.4, 공중
+        Assert.InRange(state.Position.X, -2.75f - Eps, -2.75f + Eps);
+        Assert.InRange(state.Position.Y, 0.4f - Eps, 0.4f + Eps);
+        Assert.False(state.OnGround);
+
+        // tick 12-26: 착지 완료까지
+        bool landed = false;
+        for (int i = 0; i < 20; i++)
+        {
+            state = Physics.Step(state, new PhysicsInput(-1, false, Dt), FlatParams);
+            if (state.OnGround) { landed = true; break; }
+        }
+
+        // 착지 확인 + 좌이동 누적
+        Assert.True(landed, "20틱 내 착지 실패");
+        Assert.InRange(state.Position.Y, -Eps, Eps);
+        Assert.True(state.OnGround);
+        // 착지 후 x < -2.5 (계속 좌이동 중)
+        Assert.True(state.Position.X < -2.5f,
+            $"좌이동 누적 실패: x={state.Position.X}");
+    }
 }

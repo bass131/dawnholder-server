@@ -61,11 +61,12 @@ internal sealed class BossBehaviorSystem
                 byte bossAnimState = ComputeBossAnimState(enemy);
                 S_EntityState statePkt = new S_EntityState
                 {
-                    entityId  = enemy.EntityId,
-                    x         = enemy.X,
-                    y         = enemy.Y,
-                    state     = (byte)enemy.State,
-                    animState = bossAnimState,
+                    entityId   = enemy.EntityId,
+                    x          = enemy.X,
+                    y          = enemy.Y,
+                    state      = (byte)enemy.State,
+                    animState  = bossAnimState,
+                    serverTick = (int)tickNumber,
                 };
                 map.BroadcastToAll(statePkt.Write());
             }

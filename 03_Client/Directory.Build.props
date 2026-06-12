@@ -1,0 +1,8 @@
+<Project>
+
+  <!-- 의도적 빈 차단막. 루트 Directory.Build.props(StyleCop.Analyzers)가 -->
+  <!-- Unity 자동생성 csproj로 전파되는 것을 막는다 — Unity는 NuGet PackageReference 비호환. -->
+  <!-- MSBuild는 트리 상위로 올라가며 가장 가까운 Directory.Build.props 하나만 import하므로 -->
+  <!-- 이 빈 파일이 03_Client/ 하위 모든 csproj에서 루트 props를 가로챈다. -->
+
+</Project>

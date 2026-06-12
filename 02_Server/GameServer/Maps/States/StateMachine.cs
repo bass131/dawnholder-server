@@ -13,16 +13,16 @@ public sealed class StateMachine<TActor>
 {
     ActorState<TActor> _current;
 
-    public ActorState<TActor> CurrentState => _current;
-
-    // 현재 상태의 시각 표현. ComputePlayerAnimState(이동 계열 분기)가 이 값 사용.
-    public AnimState AnimState => _current.AnimState;
-
     public StateMachine(ActorState<TActor> initialState, TActor actor)
     {
         _current = initialState;
         _current.Enter(actor);
     }
+
+    public ActorState<TActor> CurrentState => _current;
+
+    // 현재 상태의 시각 표현. ComputePlayerAnimState(이동 계열 분기)가 이 값 사용.
+    public AnimState AnimState => _current.AnimState;
 
     // 현재 상태를 next로 교체.
     // 자기전이 가드: same instance면 no-op.

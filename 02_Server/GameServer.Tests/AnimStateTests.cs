@@ -72,7 +72,7 @@ public class AnimStateTests
         p.Velocity = Vector2.Zero;
         p.OnGround = true;
 
-        // Tick을 돌려 snapshot 생성 (SnapshotTickInterval=2 주기)
+        // Tick을 돌려 snapshot 생성 (SnapshotTickInterval=1, 20Hz)
         var sink = new List<byte[]>();
         var session = new FakeCapturingSession(sink);
         PlayerEntity capturePlayer = map.AddPlayer(session, new Vector2(99f, 0f));
@@ -83,9 +83,9 @@ public class AnimStateTests
         // null-owner player(p)는 broadcast 대상이지만 자신에게 보내지 않음. 캡처는 session 소유 player.
         // 대신 null-owner player의 animState를 snapshot에서 읽으려면 capturePlayer를 통해 확인.
         // 단순화: p의 animState를 직접 GameMap.ComputePlayerAnimState에 해당하는 Tick 로직 통해 검증.
-        // Tick(2)에서 SnapshotTickInterval(2) 도달 → broadcast.
+        // SnapshotTickInterval=1(20Hz) → 매 tick broadcast. Tick(1)부터 snapshot 발생.
         map.Tick(1);
-        map.Tick(2); // broadcast 발생
+        map.Tick(2);
 
         // p 자신의 스냅샷 찾기 (entityId == p.EntityId)
         byte[]? snapForP = sink.FirstOrDefault(pkt => IsSnapshotForEntity(pkt, p.EntityId));

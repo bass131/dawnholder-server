@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Dawnholder.Server.Network
 {
+    /// <summary>
+    /// length-prefixed 프레임 분할을 처리하는 추상 패킷 세션. 완성된 패킷을 <see cref="OnRecvPacket"/>으로 전달한다.
+    /// </summary>
     public abstract class PacketSession : Session
     {
         public static readonly int HeaderSize = 2;
@@ -63,35 +66,27 @@ namespace Dawnholder.Server.Network
 
         public abstract void OnRecvPacket(ArraySegment<byte> buffer);
     }
+    /// <summary>
+    /// 비동기 TCP 소켓 I/O를 추상화하는 기반 세션. IOCP 기반 send/recv 루프와 연결 생명주기를 관리한다.
+    /// </summary>
     public abstract class Session
     {
         #region Private Member Variables
         protected Socket? _socket;
         protected int _disconnected = 0; // 0: 연결됨, 1: 끊김
-
-        RecvBuffer _recvBuffer = new RecvBuffer(65535);
-
         protected object _lock = new object();
         protected Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
-
         protected List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
         protected SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
         protected SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
+
+        RecvBuffer _recvBuffer = new RecvBuffer(65535);
         #endregion
 
         public abstract void OnConnected(EndPoint endPoint);
         public abstract void OnDisconnected(EndPoint endPoint);
         public abstract int  OnRecv(ArraySegment<byte> buffer);
         public abstract void OnSend(int numOfBytes);
-
-        void Clear()
-        {
-            lock (_lock)
-            {
-                _sendQueue.Clear();
-                _pendingList.Clear();
-            }
-        }
 
         public void Start(Socket socket)
         {
@@ -102,6 +97,7 @@ namespace Dawnholder.Server.Network
 
             RegisterRecv();
         }
+
         // virtual: 테스트 subclass에서 실제 socket I/O 차단 가능 (testability hook).
         public virtual void Send(ArraySegment<byte> sendBuff)
         {
@@ -148,6 +144,15 @@ namespace Dawnholder.Server.Network
             catch (Exception e) { Console.WriteLine($"[Session] socket Close 예외 — 무시: {e.Message}"); }
 
             Clear();
+        }
+
+        void Clear()
+        {
+            lock (_lock)
+            {
+                _sendQueue.Clear();
+                _pendingList.Clear();
+            }
         }
 
         #region Network Connection Recv

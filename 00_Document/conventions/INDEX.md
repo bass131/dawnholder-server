@@ -12,6 +12,7 @@
 00_Document/conventions/
 ├── INDEX.md                  ← (이 파일) 작업 유형 → 참조 라우팅
 ├── CODE_CONVENTION.md        ← 우리가 채택한 규칙 (결정적). 근거는 refs를 가리킴
+├── ENTRY_POINTS.md           ← 증상→시작점 룩업 (비상 디버깅). 골격 확정, 본문은 Phase 05에서 채움
 └── refs/                     ← 두 권위서를 정독한 참고서 (이론 + 우리 적용 + 함정)
     ├── game-programming-patterns/   _index.md + 19개 패턴 (01~19)
     └── game-server-programming/     _index.md + 10개 장 (01~10)

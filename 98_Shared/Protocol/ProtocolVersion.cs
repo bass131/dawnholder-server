@@ -40,6 +40,10 @@ namespace Shared.Protocol;
 ///         cutoff 위해 한 묶음 bump. S_HitResult는 *끝에* byte append(기존 5필드 오프셋 불변).
 ///         PDL이 가변 길이 list 미지원이라 썬더볼트 타격은 적별 S_HitResult(hitEffect=2)로 회피.
 ///         ID 23~25 — 기존 enum 시프트 0.
+///   - v12: M4.11 Phase 01 — S_EntityState 끝에 serverTick(int) append. 적 보간 시간축 통일
+///         (RemoteEntity가 S_Snapshot의 serverTick 보간을 쓰지만 S_EntityState엔 미박힘 → desync 봉합).
+///         S_EntityState ID(19) 불변, 기존 5필드 오프셋 불변. 옛 클라가 serverTick 없이 파싱하면
+///         오프셋 desync → 빠른 cutoff 위해 bump.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -53,6 +57,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.8 Phase 01 = v11 (S_ProjectileLaunch + C_SkillUse + S_SkillCast 신설 + S_HitResult.hitEffect append — 원거리 투사체·최소 스킬·썬더볼트 AoE).</summary>
-    public const ushort Current = 11;
+    /// <summary>현재 프로토콜 버전. M4.11 Phase 01 = v12 (S_EntityState.serverTick append — 적 보간 시간축 통일, 창드래그 desync 봉합).</summary>
+    public const ushort Current = 12;
 }

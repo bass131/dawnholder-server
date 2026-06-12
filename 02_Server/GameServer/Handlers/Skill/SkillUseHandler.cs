@@ -1,0 +1,53 @@
+using Dawnholder.Server.GameServer.Sessions;
+using Shared.GameData;
+using Shared.Protocol;
+
+namespace Dawnholder.Server.GameServer.Handlers;
+
+// C_SkillUse 핸들러: decode + 신뢰 경계 검증 + session 캡슐화 메서드 호출만.
+//   mutation / 쿨다운 / 박스 판정은 session.SubmitSkillUse → GameMap.ProcessSkill 안에서.
+//
+// **헌법 #3 (Trust Boundary) — 3단계 검증**:
+//   1. class 선택 전(HasSelectedClass) = silent drop + cheat-flag 로그.
+//   2. skillId 범위 검증: None(0) 또는 카탈로그에 없는 값 = silent drop + cheat-flag 로그.
+//   3. 캐스터 클래스 검증: SkillCatalog.CanCast(caster.Class, skillId) false = silent drop + cheat-flag 로그.
+//      caster 클래스는 session.GetCasterClass()에서 강제 — 클라가 보낸 값 절대 신뢰 X.
+internal sealed class SkillUseHandler : IPacketHandler
+{
+    public void Handle(GameSession session, ArraySegment<byte> buffer)
+    {
+        // 헌법 #3: class 선택 전 스킬 입력은 신뢰 경계 위반.
+        if (!session.HasSelectedClass)
+        {
+            Console.WriteLine(
+                "[Trust] C_SkillUse before CharacterSelect — silent drop (cheat-flag candidate)");
+            return;
+        }
+
+        C_SkillUse pkt = new C_SkillUse();
+        pkt.Read(buffer);
+
+        // skillId 범위 검증 — None(0) 또는 카탈로그 미등록 값은 cheat 후보.
+        // SkillCatalog.GetRequiredClass는 미등록 skillId에 null 반환.
+        if (SkillCatalog.GetRequiredClass((SkillId)pkt.skillId) == null)
+        {
+            Console.WriteLine(
+                $"[Trust] C_SkillUse unknown skillId={pkt.skillId} — silent drop (cheat-flag candidate)");
+            return;
+        }
+
+        // 클래스 게이트 (헌법 §3 신뢰 경계 핵심):
+        //   caster 클래스는 서버 측 session에서 가져옴 — 클라가 보낸 값 신뢰 X.
+        //   Knight가 Thunderbolt, Mage가 Dash 등 클래스 불일치 시전은 치터 의심.
+        CharacterClass casterClass = session.GetCasterClass();
+        if (!SkillCatalog.CanCast(casterClass, (SkillId)pkt.skillId))
+        {
+            Console.WriteLine(
+                $"[Trust] C_SkillUse class mismatch: {casterClass} cannot cast skillId={pkt.skillId} — silent drop (cheat-flag candidate)");
+            return;
+        }
+
+        // attackerClientTick은 untrusted — ProcessSkill에서 rewind 범위 검증.
+        session.SubmitSkillUse(pkt.skillId, pkt.attackerClientTick);
+    }
+}

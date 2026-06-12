@@ -802,6 +802,7 @@ public class PacketRoundTripTests
     [InlineData((byte)0)]   // 기본/근접
     [InlineData((byte)1)]   // 투사체 도착
     [InlineData((byte)2)]   // 낙뢰
+    [InlineData((byte)3)]   // Dash
     public void S_HitResult_RoundTrip_PreservesHitEffectAppend(byte hitEffect)
     {
         // M4.8 v11: hitEffect byte append. 기존 5필드 + hitEffect 모두 보존(오프셋 불변 검증).
@@ -839,5 +840,251 @@ public class PacketRoundTripTests
             new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
         Assert.Equal((ushort)PacketID.S_HitResult, packetId);
         Assert.Equal((ushort)13, packetId);
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // S_EntityDeath(14) / S_StageClear(15) 라운드트립.
+    //
+    // HandleEnemyDeath DRY 추출(M4.10 Phase 03) 후 wire format 불변 회귀 가드.
+    // 추출은 패킷 정의를 건드리지 않으므로 ID·필드·크기 모두 불변이어야 한다.
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void S_EntityDeath_RoundTrip_PreservesEntityId()
+    {
+        var pkt = new S_EntityDeath { entityId = 42 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_EntityDeath();
+        decoded.Read(bytes);
+
+        Assert.Equal(42, decoded.entityId);
+    }
+
+    [Fact]
+    public void S_EntityDeath_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 14번째 정의 = PacketID 14.
+        var pkt = new S_EntityDeath { entityId = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_EntityDeath, packetId);
+        Assert.Equal((ushort)14, packetId);
+    }
+
+    [Fact]
+    public void S_StageClear_RoundTrip_PreservesBossEntityId()
+    {
+        var pkt = new S_StageClear { bossEntityId = 99 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_StageClear();
+        decoded.Read(bytes);
+
+        Assert.Equal(99, decoded.bossEntityId);
+    }
+
+    [Fact]
+    public void S_StageClear_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 15번째 정의 = PacketID 15.
+        var pkt = new S_StageClear { bossEntityId = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_StageClear, packetId);
+        Assert.Equal((ushort)15, packetId);
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // S_PlayerJoin(9) / S_EntitySpawn(12) 라운드트립.
+    //
+    // roster 전송 통합(M4.10 Phase 04) 후 wire format 불변 회귀 가드.
+    // SendInitialRosterTo 추출은 패킷 정의를 건드리지 않으므로 ID·필드·크기 모두 불변이어야 한다.
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void S_PlayerJoin_RoundTrip_PreservesAllFields()
+    {
+        var pkt = new S_PlayerJoin
+        {
+            entityId = 7,
+            spawnX = 3.0f,
+            spawnY = -1.5f,
+            characterClass = 1,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_PlayerJoin();
+        decoded.Read(bytes);
+
+        Assert.Equal(7, decoded.entityId);
+        Assert.Equal(3.0f, decoded.spawnX);
+        Assert.Equal(-1.5f, decoded.spawnY);
+        Assert.Equal((byte)1, decoded.characterClass);
+    }
+
+    [Fact]
+    public void S_PlayerJoin_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 9번째 정의 = PacketID 9.
+        var pkt = new S_PlayerJoin { entityId = 0, spawnX = 0f, spawnY = 0f, characterClass = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_PlayerJoin, packetId);
+        Assert.Equal((ushort)9, packetId);
+    }
+
+    [Fact]
+    public void S_EntitySpawn_RoundTrip_PreservesAllFields()
+    {
+        var pkt = new S_EntitySpawn
+        {
+            entityId = 42,
+            entityKind = 1,
+            x = 5.5f,
+            y = 0f,
+            currentHp = 80,
+            maxHp = 100,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_EntitySpawn();
+        decoded.Read(bytes);
+
+        Assert.Equal(42, decoded.entityId);
+        Assert.Equal((byte)1, decoded.entityKind);
+        Assert.Equal(5.5f, decoded.x);
+        Assert.Equal(0f, decoded.y);
+        Assert.Equal(80, decoded.currentHp);
+        Assert.Equal(100, decoded.maxHp);
+    }
+
+    [Fact]
+    public void S_EntitySpawn_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 12번째 정의 = PacketID 12.
+        var pkt = new S_EntitySpawn { entityId = 0, entityKind = 0, x = 0f, y = 0f, currentHp = 0, maxHp = 0 };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_EntitySpawn, packetId);
+        Assert.Equal((ushort)12, packetId);
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // S_EntityState(19) 라운드트립 — M4.11 Phase 01 v12 안전망.
+    //
+    // serverTick(int)이 v12에서 append-only로 추가됨. 본 묶음이 커버하는 것:
+    //   - 6개 필드 전부(entityId/x/y/state/animState/serverTick) 비-0 값 → Write→Read 보존.
+    //   - serverTick 비-0 값이 오프셋 올바르게 읽히는지 (append 위치 회귀).
+    //   - wire 크기 = 22 bytes ([size:2][id:2][entityId:4][x:4][y:4][state:1][animState:1][serverTick:4]).
+    //   - PacketID 19 불변 (시프트 0 검증).
+    // ──────────────────────────────────────────────────────────────────
+
+    [Fact]
+    public void S_EntityState_RoundTrip_PreservesAllFields_IncludingServerTick()
+    {
+        // serverTick에 비-0 값 세팅 — v12 append 필드가 올바른 오프셋에서 읽히는지 핵심 검증.
+        var pkt = new S_EntityState
+        {
+            entityId = 42,
+            x = 3.5f,
+            y = -1.25f,
+            state = 2,
+            animState = 1,
+            serverTick = 9999,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_EntityState();
+        decoded.Read(bytes);
+
+        Assert.Equal(42, decoded.entityId);
+        Assert.Equal(3.5f, decoded.x);
+        Assert.Equal(-1.25f, decoded.y);
+        Assert.Equal((byte)2, decoded.state);
+        Assert.Equal((byte)1, decoded.animState);
+        Assert.Equal(9999, decoded.serverTick);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(-1)]
+    [InlineData(int.MaxValue)]
+    [InlineData(int.MinValue)]
+    public void S_EntityState_RoundTrip_HandlesServerTickEdgeValues(int tick)
+    {
+        // serverTick은 int — 음수/최댓값/최솟값 경계에서도 LittleEndian 보존 검증.
+        var pkt = new S_EntityState
+        {
+            entityId = 1,
+            x = 0f,
+            y = 0f,
+            state = 0,
+            animState = 0,
+            serverTick = tick,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+        var decoded = new S_EntityState();
+        decoded.Read(bytes);
+
+        Assert.Equal(tick, decoded.serverTick);
+    }
+
+    [Fact]
+    public void S_EntityState_Write_ProducesCorrectSizeHeader()
+    {
+        // [size:2][id:2][entityId:4][x:4][y:4][state:1][animState:1][serverTick:4] = 22 bytes.
+        var pkt = new S_EntityState
+        {
+            entityId = 0,
+            x = 0f,
+            y = 0f,
+            state = 0,
+            animState = 0,
+            serverTick = 0,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        Assert.Equal(22, bytes.Count);
+        ushort size = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset, 2));
+        Assert.Equal(22, size);
+    }
+
+    [Fact]
+    public void S_EntityState_Write_ProducesCorrectPacketId()
+    {
+        // PDL.xml 19번째 정의 = PacketID 19 (serverTick append 후에도 ID 불변 — 시프트 0).
+        var pkt = new S_EntityState
+        {
+            entityId = 0,
+            x = 0f,
+            y = 0f,
+            state = 0,
+            animState = 0,
+            serverTick = 0,
+        };
+
+        ArraySegment<byte> bytes = pkt.Write();
+
+        ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
+            new ReadOnlySpan<byte>(bytes.Array!, bytes.Offset + 2, 2));
+        Assert.Equal((ushort)PacketID.S_EntityState, packetId);
+        Assert.Equal((ushort)19, packetId);
     }
 }

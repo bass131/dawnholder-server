@@ -188,7 +188,7 @@ public class EnemyAiTests
         Assert.NotNull(enemy);
 
         // player를 de-aggro 임계 밖에 배치
-        float deAggroThreshold = enemy.Stats.AggroRange * 1.5f;
+        float deAggroThreshold = enemy.Stats.AggroRange * CombatConstants.DeAggroHysteresis;
         float farAwayX = enemy.X + deAggroThreshold + 1f;
         PlayerEntity player = AddPlayerAt(map, farAwayX, 0f);
 
@@ -428,7 +428,8 @@ public class EnemyAiTests
     // ── 테스트: S_EntityState broadcast 검증 ─────────────────────────────────
 
     /// <summary>
-    /// SnapshotTickInterval(=2) 마다 Normal enemy의 S_EntityState가 broadcast됨.
+    /// SnapshotTickInterval(=1) 마다 Normal enemy의 S_EntityState가 broadcast됨.
+    /// interval=1(20Hz)이므로 매 tick broadcast 발생 — tick=1에서 즉시 검증.
     ///
     /// null-owner player를 사용하면 BroadcastToAll이 owner null skip → Send 안 됨.
     /// 대신 TestSession(Send override)으로 패킷 캡처.
@@ -447,16 +448,10 @@ public class EnemyAiTests
 
         // player 추가 (null owner 대신 fake session)
         PlayerEntity player = map.AddPlayer(session, new Vector2(0f, 0f));
-        map.Tick(1); // tick=1 → SnapshotTickInterval=2이면 broadcast X (1%2 != 0)
-        // Snapshot 패킷만 있을 수 있음 (tick=1 % 2 != 0이면 아무것도 없음)
-        int countBeforeInterval = sentPackets.Count(p => IsEntityStatePacket(p));
-        Assert.Equal(0, countBeforeInterval); // tick=1은 broadcast 안 함
-
-        sentPackets.Clear();
-        map.Tick(2); // tick=2 → 2%2 == 0 → broadcast
+        map.Tick(1); // tick=1 → SnapshotTickInterval=1(20Hz)이면 1%1 == 0 → broadcast 발생
 
         int entityStateCount = sentPackets.Count(p => IsEntityStatePacket(p));
-        Assert.True(entityStateCount >= 1, $"Expected at least 1 S_EntityState packet at tick=2, got {entityStateCount}");
+        Assert.True(entityStateCount >= 1, $"Expected at least 1 S_EntityState packet at tick=1, got {entityStateCount}");
 
         // 패킷 내용 검증: entityId 정합
         byte[]? statePkt = sentPackets.FirstOrDefault(p => IsEntityStatePacket(p));

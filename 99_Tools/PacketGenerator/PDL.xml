@@ -245,6 +245,8 @@
         <float name="y"/>
         <byte name="state"/>
         <byte name="animState"/>
+        <!-- M4.11 Phase01 [v11→v12]: 적 보간 serverTick 시간축(창드래그 desync 봉합) -->
+        <int name="serverTick"/>
     </packet>
 
     <!-- M4.5 Phase 04 [Protocol.Version v8→v9]: 적→플레이어 권위 데미지 통지.

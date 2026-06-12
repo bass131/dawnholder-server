@@ -16,6 +16,28 @@ namespace Dawnholder.Server.GameServer.Combat;
 // **IsDead derived**: `Hp <= 0`. 음수 보호 자동(예: 데미지 overflow로 Hp=-5여도 IsDead true).
 public class EnemyEntity
 {
+    // State 초기화: Boss = Idle, Normal/Golem = Patrol. Fsm은 GameMap.SpawnEnemy에서 생성
+    // (OwningMap 세팅 후) — kind별 초기 State(BossStates.Idle / EnemyStates.Patrol).
+    public EnemyEntity(int entityId, EnemyKind kind, float x, float y, int maxHp, EnemyStats stats = default)
+    {
+        EntityId = entityId;
+        Kind = kind;
+        X = x;
+        Y = y;
+        SpawnX = x;
+        SpawnY = y;
+        MaxHp = maxHp;
+        Hp = maxHp;
+        Stats = stats;
+
+        State = kind == EnemyKind.Boss ? EnemyState.Idle : EnemyState.Patrol;
+        PatrolDir = 1;
+
+        // 보스 초기 쿨다운: 스폰 직후 즉시 telegraph 방지 (페이즈 1 쿨다운으로 시작).
+        if (kind == EnemyKind.Boss)
+            AttackCooldownTicks = CombatConstants.BossPhase1CooldownTicks;
+    }
+
     public int EntityId { get; }
     public EnemyKind Kind { get; }
     public float X { get; set; }
@@ -28,7 +50,7 @@ public class EnemyEntity
     public EnemyStats Stats { get; }
 
     // 적 entity의 피격 판정 AABB. 1×1 unit 박스 (center = X/Y, halfExtent = 0.5×0.5).
-    public AABB Hitbox => new AABB(new Vector2(X, Y), new Vector2(0.5f, 0.5f));
+    public AABB Hitbox => new AABB(new Vector2(X, Y), new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
 
     // ── AI 상태 필드 ─────────────────────────────────────────────────────────
     // tick thread invariant 안에서만 읽기/쓰기 (GameMap 단일 actor 보장 — lock 불필요).
@@ -83,19 +105,6 @@ public class EnemyEntity
     // Boss는 이 필드를 세팅해도 BossBehaviorSystem에 가드 없음 → 면역(설계 의도).
     public long FrozenUntilTick { get; set; }
 
-    /// <summary>
-    /// freeze 중첩 규칙: max(기존, 신규) 적용 — 더 늦은 만료가 우선.
-    /// 평타(긴 freeze) + 썬더볼트(짧은 freeze) 중첩 시 조기 해제 방지 (plan-auditor 우려 B).
-    /// Boss에 호출돼도 BossBehaviorSystem에 가드가 없으므로 데미지 지연만 발동, 이동은 계속.
-    /// </summary>
-    public void ApplyFreeze(long untilTick)
-        => FrozenUntilTick = Math.Max(FrozenUntilTick, untilTick);
-
-    // AI State machine + 소속 맵 back-ref. Normal/Golem = EnemyStates, Boss = BossStates.
-    // OwningMap: State가 같은 맵 player를 스캔하는 통로. GameMap.SpawnEnemy에서 세팅.
-    internal GameMap? OwningMap { get; set; }
-    internal StateMachine<EnemyEntity>? Fsm { get; set; }
-
     // ── 보스 FSM 상태 필드 ───────────────────────────────────────────────────
     // BossStates(Idle/Move/Telegraph/Attack) 전용. Normal/Golem은 이 필드를 사용하지 않음.
     // tick thread invariant — BossBehaviorSystem.Update → Fsm.Tick 경로 안에서만 읽기/쓰기.
@@ -120,6 +129,19 @@ public class EnemyEntity
     /// </summary>
     public int TelegraphTicksRemaining { get; set; }
 
+    // AI State machine + 소속 맵 back-ref. Normal/Golem = EnemyStates, Boss = BossStates.
+    // OwningMap: State가 같은 맵 player를 스캔하는 통로. GameMap.SpawnEnemy에서 세팅.
+    internal GameMap? OwningMap { get; set; }
+    internal StateMachine<EnemyEntity>? Fsm { get; set; }
+
+    /// <summary>
+    /// freeze 중첩 규칙: max(기존, 신규) 적용 — 더 늦은 만료가 우선.
+    /// 평타(긴 freeze) + 썬더볼트(짧은 freeze) 중첩 시 조기 해제 방지 (plan-auditor 우려 B).
+    /// Boss에 호출돼도 BossBehaviorSystem에 가드가 없으므로 데미지 지연만 발동, 이동은 계속.
+    /// </summary>
+    public void ApplyFreeze(long untilTick)
+        => FrozenUntilTick = Math.Max(FrozenUntilTick, untilTick);
+
     // 피격 진입. Normal/Golem → 진짜 HitState(AI 멈춤 + 넉백). Boss → latch만(이동 없는 고정형, FSM 전환 불가).
     //
     // 보스에 Fsm이 생긴 뒤에도 EnemyStates.Hit로 전환되면 안 됨 — 보스는 BossStates 전용 FSM.
@@ -130,27 +152,5 @@ public class EnemyEntity
         if (Kind == EnemyKind.Boss || Fsm == null) return;
         KnockbackVx = Constants.KnockbackInitialVx * (dirX < 0f ? -1f : 1f);
         Fsm.ChangeState(EnemyStates.Hit, this);
-    }
-
-    // State 초기화: Boss = Idle, Normal/Golem = Patrol. Fsm은 GameMap.SpawnEnemy에서 생성
-    // (OwningMap 세팅 후) — kind별 초기 State(BossStates.Idle / EnemyStates.Patrol).
-    public EnemyEntity(int entityId, EnemyKind kind, float x, float y, int maxHp, EnemyStats stats = default)
-    {
-        EntityId = entityId;
-        Kind = kind;
-        X = x;
-        Y = y;
-        SpawnX = x;
-        SpawnY = y;
-        MaxHp = maxHp;
-        Hp = maxHp;
-        Stats = stats;
-
-        State = kind == EnemyKind.Boss ? EnemyState.Idle : EnemyState.Patrol;
-        PatrolDir = 1;
-
-        // 보스 초기 쿨다운: 스폰 직후 즉시 telegraph 방지 (페이즈 1 쿨다운으로 시작).
-        if (kind == EnemyKind.Boss)
-            AttackCooldownTicks = CombatConstants.BossPhase1CooldownTicks;
     }
 }
