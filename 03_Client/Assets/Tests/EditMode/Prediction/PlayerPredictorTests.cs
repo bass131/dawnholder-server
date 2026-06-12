@@ -61,12 +61,11 @@ namespace Dawnholder.Client.Tests.Prediction
         {
             var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(Vector2.zero);
-            float dt = Constants.TickDuration;
 
-            predictor.Predict(inputX: 1, jumpPressed: false, dt: dt);
+            predictor.Predict(inputX: 1, jumpPressed: false);
 
-            // 예상: x = MoveSpeed * dt (DefaultMove.MoveSpeed = 5f)
-            float expectedX = 5f * dt;
+            // 예상: x = MoveSpeed * TickDuration (DefaultMove.MoveSpeed = 5f)
+            float expectedX = 5f * Constants.TickDuration;
             Assert.AreEqual(expectedX, predictor.Position.x, 0.0001f);
         }
 
@@ -75,9 +74,8 @@ namespace Dawnholder.Client.Tests.Prediction
         {
             var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(new Vector2(5f, 0f));
-            float dt = Constants.TickDuration;
 
-            predictor.Predict(inputX: 0, jumpPressed: false, dt: dt);
+            predictor.Predict(inputX: 0, jumpPressed: false);
 
             Assert.AreEqual(5f, predictor.Position.x, 0.0001f);
         }
@@ -334,9 +332,8 @@ namespace Dawnholder.Client.Tests.Prediction
             predictorW.SetInitialPosition(Vector2.zero);
             predictorR.SetInitialPosition(Vector2.zero);
 
-            float dt = Constants.TickDuration;
-            predictorW.Predict(inputX: 1, jumpPressed: false, dt: dt);
-            predictorR.Predict(inputX: 1, jumpPressed: false, dt: dt);
+            predictorW.Predict(inputX: 1, jumpPressed: false);
+            predictorR.Predict(inputX: 1, jumpPressed: false);
 
             // Knight MoveSpeed=4, Mage MoveSpeed=6 → 비율 4:6 = 2:3
             float ratio = predictorR.Position.x / predictorW.Position.x;
@@ -477,98 +474,98 @@ namespace Dawnholder.Client.Tests.Prediction
         //                    P4에서 바뀌면 *의식적 갱신 + 사유 박제* 의무.
         //   [P3 invariant] — P4 후에도 절대 green 유지 (replay=고정 dt라 P4 무관).
 
-        // P3-1(baseline): Predict 가변 dt 궤적 computed-expectation.
+        // P3-1(baseline): Predict 고정 dt 궤적 computed-expectation.
         //
-        // [P3 baseline — P4 재검토 대상] 가변 dt Predict == 직접 Physics.Step fold (현재 거동).
-        // P4에서 Predict가 고정 서브스텝으로 바뀌면 아래 기댓값이 달라진다.
-        // P4에서 갱신 시: 변경 전 값 → 후 값 + 사유 1줄을 아래에 기입.
-        // (P4 기입란)
+        // [P3 baseline — P4 재검토 대상]
+        // 변경 전: 가변 dt 시퀀스({0.016f, 0.020f, 0.033f, 0.014f, 0.025f})로 Predict를 돌려
+        //          각각 다른 dt를 Physics.Step에 직접 전달하는 거동.
+        // 변경 후: Predict 시그니처에서 dt 파라미터 제거 — 내부에서 Constants.TickDuration 고정.
+        //          "가변 dt가 물리적으로 못 들어가는 구조(illegal state unrepresentable)" 정합.
+        //          5회 Predict == TickDuration × 5회 Physics.Step fold. 가변 dt 시나리오는 폐기.
+        // 사유: P4 고정 서브스텝 전환 — 클라 Predict와 서버 Step이 동일 dt를 사용해 drift 0.
         //
-        // computed-expectation 패턴: golden 하드코딩 대신 "Predict == Physics.Step fold"를
-        // 런타임에 검증 → 런타임 간 float 재현성 함정 원천 회피.
-        // Predict는 현재 얇은 래퍼라 일치가 당연 = *지금 거동의 박제*.
+        // computed-expectation 패턴 유지: "Predict N회 == TickDuration으로 N회 Step fold" 런타임 검증.
         [Test]
-        public void P3_Baseline_Predict_VariableDt_EqualsPhysicsStepFold()
+        public void P3_Baseline_Predict_FixedDt_EqualsPhysicsStepFold()
         {
-            // [P3 baseline — P4 재검토 대상] 가변 dt Predict == 직접 Physics.Step fold (현재 거동).
-            // P4에서 갱신 시: 변경 전 값 → 후 값 + 사유 1줄을 아래에 기입.
-            // (P4 기입란)
+            // [P3 baseline — P4 재검토 대상]
+            // 변경 전: 가변 dt 시퀀스({0.016f, 0.020f, 0.033f, 0.014f, 0.025f}) 기반 Predict 궤적.
+            // 변경 후: 고정 TickDuration × 5회 Predict 궤적. dt 파라미터 제거 → 고정 dt 강제.
+            // 사유: P4 고정 서브스텝 전환 — Predict 내부에서 TickDuration 고정 사용.
             const float Eps = 1e-4f;
+            const int Steps = 5;
 
-            // dt 시퀀스 — 명시값 (Time.deltaTime 금지, 결정론 보장).
-            // 실제 게임 프레임 패턴을 흉내낸 비균등 값.
-            float[] dtSeq = { 0.016f, 0.020f, 0.033f, 0.014f, 0.025f };
-
-            // Predict 경로
+            // Predict 경로 — dt 파라미터 없음, 내부에서 TickDuration 고정.
             var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(Vector2.zero);
-            foreach (float dt in dtSeq)
-                predictor.Predict(inputX: 1, jumpPressed: false, dt: dt);
+            for (int i = 0; i < Steps; i++)
+                predictor.Predict(inputX: 1, jumpPressed: false);
 
-            // Physics.Step 직접 fold 경로 (기댓값)
-            // PlayerPredictor.Predict는 Physics.Step의 얇은 래퍼이므로 지금은 일치.
-            // Shared.GameData.Physics.Step 사용 — System.Numerics.Vector2 기준.
+            // Physics.Step 직접 fold 경로 (기댓값) — TickDuration 고정.
             var physState = new Shared.GameData.PhysicsState(
                 new System.Numerics.Vector2(0f, 0f),
                 System.Numerics.Vector2.Zero,
-                onGround: false); // SetInitialPosition → OnGround=false
-            foreach (float dt in dtSeq)
+                onGround: false);
+            for (int i = 0; i < Steps; i++)
             {
                 physState = Shared.GameData.Physics.Step(
                     physState,
-                    new Shared.GameData.PhysicsInput(1, false, dt),
+                    new Shared.GameData.PhysicsInput(1, false, Shared.GameData.Constants.TickDuration),
                     DefaultMove);
             }
 
             Assert.AreEqual(physState.Position.X, predictor.Position.x, Eps,
-                "P3 baseline: Predict x == Physics.Step fold x");
+                "P4 baseline: Predict(fixed dt) x == Physics.Step(TickDuration) fold x");
             Assert.AreEqual(physState.Position.Y, predictor.Position.y, Eps,
-                "P3 baseline: Predict y == Physics.Step fold y");
+                "P4 baseline: Predict(fixed dt) y == Physics.Step(TickDuration) fold y");
         }
 
-        // P3-2(baseline): Predict 점프 포함 가변 dt 궤적 computed-expectation.
+        // P3-2(baseline): Predict 점프 포함 고정 dt 궤적 computed-expectation.
         //
-        // [P3 baseline — P4 재검토 대상] 점프 포함 가변 dt Predict == Physics.Step fold.
-        // P4에서 갱신 시: 변경 전 값 → 후 값 + 사유 1줄을 아래에 기입.
-        // (P4 기입란)
+        // [P3 baseline — P4 재검토 대상]
+        // 변경 전: (inputX, jumpPressed, dt) 튜플 시퀀스 — 각 스텝마다 다른 dt 사용.
+        // 변경 후: dt 파라미터 제거. (inputX, jumpPressed) 시퀀스 × TickDuration 고정.
+        //          가변 dt 시나리오가 물리적으로 불가능한 구조 — P4 고정 서브스텝 전환 결과.
+        // 사유: Predict는 이제 TickDuration 고정 → 점프 포함 궤적도 고정 dt fold와 일치해야 함.
         [Test]
         public void P3_Baseline_Predict_WithJump_EqualsPhysicsStepFold()
         {
-            // [P3 baseline — P4 재검토 대상] 점프 포함 가변 dt Predict == Physics.Step fold (현재 거동).
-            // P4에서 갱신 시: 변경 전 값 → 후 값 + 사유 1줄을 아래에 기입.
-            // (P4 기입란)
+            // [P3 baseline — P4 재검토 대상]
+            // 변경 전: (ix, jump, dt) 시퀀스 — {(0,true,0.016f), (1,false,0.020f), ...} 가변 dt.
+            // 변경 후: (ix, jump) 시퀀스 — dt 파라미터 제거, TickDuration 고정 사용.
+            // 사유: P4 Predict 시그니처 변경(dt 제거) — 고정 서브스텝 전환.
             const float Eps = 1e-4f;
 
-            // (inputX, jumpPressed, dt) 튜플 시퀀스
-            var seq = new (sbyte ix, bool jump, float dt)[]
+            // (inputX, jumpPressed) 튜플 시퀀스 — dt는 TickDuration으로 고정
+            var seq = new (sbyte ix, bool jump)[]
             {
-                (0, true,  0.016f), // 점프 시도 (OnGround=false라 점프 불가 → 중력만)
-                (1, false, 0.020f), // 우이동
-                (1, false, 0.033f),
-                (0, false, 0.016f),
+                (0, true),  // 점프 시도 (OnGround=false라 점프 불가 → 중력만)
+                (1, false), // 우이동
+                (1, false),
+                (0, false),
             };
 
             var predictor = new PlayerPredictor(DefaultMove);
             predictor.SetInitialPosition(Vector2.zero); // OnGround=false
-            foreach (var (ix, jump, dt) in seq)
-                predictor.Predict(inputX: ix, jumpPressed: jump, dt: dt);
+            foreach (var (ix, jump) in seq)
+                predictor.Predict(inputX: ix, jumpPressed: jump);
 
             var physState = new Shared.GameData.PhysicsState(
                 System.Numerics.Vector2.Zero,
                 System.Numerics.Vector2.Zero,
                 onGround: false);
-            foreach (var (ix, jump, dt) in seq)
+            foreach (var (ix, jump) in seq)
             {
                 physState = Shared.GameData.Physics.Step(
                     physState,
-                    new Shared.GameData.PhysicsInput(ix, jump, dt),
+                    new Shared.GameData.PhysicsInput(ix, jump, Shared.GameData.Constants.TickDuration),
                     DefaultMove);
             }
 
             Assert.AreEqual(physState.Position.X, predictor.Position.x, Eps,
-                "P3 baseline: 점프 포함 Predict x == Physics.Step fold x");
+                "P4 baseline: 점프 포함 Predict(fixed dt) x == Physics.Step(TickDuration) fold x");
             Assert.AreEqual(physState.Position.Y, predictor.Position.y, Eps,
-                "P3 baseline: 점프 포함 Predict y == Physics.Step fold y");
+                "P4 baseline: 점프 포함 Predict(fixed dt) y == Physics.Step(TickDuration) fold y");
         }
 
         // P3-3(불변식): SetInitialPosition + 미-ack 입력 replay 후 최종 위치
