@@ -3,10 +3,11 @@ owner: youngho
 milestone: M4.12
 phase: 01-skill-cooldown-hud
 title: 스킬 쿨다운 UI HUD — 클래스별 Q/E 슬롯 fill
-status: pending
+status: done
 grade: 복잡
 slug: 01-skill-cooldown-hud
 created: 2026-06-12
+completed: 2026-06-12
 domains: [client]
 risk_flags: [unity-asset]
 depends_on: []
