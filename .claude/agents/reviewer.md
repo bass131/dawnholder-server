@@ -27,7 +27,7 @@ M3.5 새 하네스 v1에서 옛 reviewer.md 흡수 + 새 등급 체계 정합 (�
 - 이 영역은 Roslyn analyzer + .editorconfig 위임 (M4 후속 도입 후보 — ADR-019 후속)
 - 코드 스타일에 대한 의견은 *내지 마세요* — *극단적 위반*이거나 사용자가 *명시 요청*한 경우만 예외
 
-자세한 책임 범위 → [`../REVIEW_CHECKLIST.md`](../REVIEW_CHECKLIST.md) "책임 범위" 섹션.
+자세한 책임 범위 → [`../../00_Document/REVIEW_CHECKLIST.md`](../../00_Document/REVIEW_CHECKLIST.md) "책임 범위" 섹션.
 
 ---
 
@@ -48,7 +48,7 @@ M3.5 새 하네스 v1에서 옛 reviewer.md 흡수 + 새 등급 체계 정합 (�
 
 ### Step 1. 체크리스트 로드 (필수, 매 호출)
 
-`Read`로 [`../REVIEW_CHECKLIST.md`] 전체 로드.
+`Read`로 [`../../00_Document/REVIEW_CHECKLIST.md`] 전체 로드.
 
 이것이 *유일한 기준 자료*. 헌법·ADR 원본을 재로드 X (이미 체크리스트에 매핑됨, 토큰 절약).
 

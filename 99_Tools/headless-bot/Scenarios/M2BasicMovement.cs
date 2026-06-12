@@ -41,6 +41,12 @@ public class M2BasicMovement
         public double FinalDesyncY;
         public Vector2 BotSimFinal;
         public Vector2 ServerFinal;
+
+        // 연속 스냅샷 간 관측 최대 |Δ| + 텔레포트 탐지 한계 — 여유 계수(2.0f) 정량용 진단.
+        public float MaxObservedDeltaX;
+        public float MaxObservedDeltaY;
+        public float BoundX;
+        public float BoundY;
     }
 
     // ── 불변식: 서버 스냅샷 간 위치 연속성 (P3 추가 — P4 무관) ─────────────────
@@ -52,8 +58,11 @@ public class M2BasicMovement
     //     Knight MoveSpeed=4.0, DashLungeInitialVx=10.0, KnockbackInitialVx=7.0 중 최대 = 10.0
     //     → 1틱 최대 Δx = 10.0 × 0.05 = 0.50 units
     //   - 최대 수직 속도 = max(JumpVel) × dt = 8.0 × 0.05 = 0.40 units
-    //   - 임펄스 여유 계수 2.0: 두 틱이 묶여 처리되거나 spawn/텔레포트 직후 첫 스냅샷 등
-    //     정상 범위 이벤트를 허용하면서도 진짜 순간이동(수십 unit) 탐지 가능.
+    //   - 임펄스 여유 계수 2.0: 2026-06-12 봇 3런 실측 — clean 로컬 관측 최대 Δ는 정확히 1틱분
+    //     (y=0.400=JumpVel×dt×1.0, bundling 0회. P4 "틱당 입력 1개 소비" 정합). 2.0의 1배 여유는
+    //     스냅샷 coalescing(지연/드랍으로 한 델타에 2틱이 묶임) + spawn 첫 스냅 대비. 진짜 순간이동
+    //     (수십 unit)은 계수 무관 탐지되므로, 하향은 단일 coalescing false-positive 위험만 늘고 탐지
+    //     이득 0 → 2.0 유지. (관측 최대 Δ = Result.MaxObservedDeltaX/Y로 매 런 자기보고 → 재측정 봇 1회.)
     //
     // 이 값은 상수에서 도출되므로 서버가 Physics 상수를 바꾸면 함께 바뀐다.
     //
@@ -83,6 +92,7 @@ public class M2BasicMovement
         Vector2 spawnPos = Vector2.Zero;
         S_Snapshot? lastSnapshot = null;
         S_Snapshot? prevSnapshot = null; // 연속 스냅샷 간 델타 검사용 (P3 추가)
+        float maxObsDeltaX = 0f, maxObsDeltaY = 0f; // 여유 계수 정량용 — 한계 대비 실제 근접도
         int snapshotCount = 0;
         bool handshakeOk = false;
         string handshakeReason = "";
@@ -122,11 +132,15 @@ public class M2BasicMovement
                                 sn.Read(buffer);
                                 // P3 불변식: 연속 스냅샷 간 위치 점프 탐지.
                                 // prev가 있으면 델타 검사 — 물리 상한 초과 시 result에 기록.
-                                if (prevSnapshot != null && string.IsNullOrEmpty(result.Reason))
+                                // 관측 최대 Δ는 Reason 상태와 무관하게 누적 (여유 계수 정량).
+                                if (prevSnapshot != null)
                                 {
                                     float dx = Math.Abs(sn.x - prevSnapshot.x);
                                     float dy = Math.Abs(sn.y - prevSnapshot.y);
-                                    if (dx > MaxDeltaPerTickX || dy > MaxDeltaPerTickY)
+                                    if (dx > maxObsDeltaX) maxObsDeltaX = dx;
+                                    if (dy > maxObsDeltaY) maxObsDeltaY = dy;
+                                    if (string.IsNullOrEmpty(result.Reason)
+                                        && (dx > MaxDeltaPerTickX || dy > MaxDeltaPerTickY))
                                     {
                                         result.Reason =
                                             $"[P3] 스냅샷 위치 점프 탐지: " +
@@ -225,6 +239,10 @@ public class M2BasicMovement
         result.ServerFinal = new Vector2(lastSnapshot.x, lastSnapshot.y);
         result.FinalDesyncX = Math.Abs(result.ServerFinal.X - result.BotSimFinal.X);
         result.FinalDesyncY = Math.Abs(result.ServerFinal.Y - result.BotSimFinal.Y);
+        result.MaxObservedDeltaX = maxObsDeltaX;
+        result.MaxObservedDeltaY = maxObsDeltaY;
+        result.BoundX = MaxDeltaPerTickX;
+        result.BoundY = MaxDeltaPerTickY;
 
         // P3 불변식: 위치 점프 탐지 실패가 이미 result.Reason에 박혔으면 Success=false.
         bool noTeleportDetected = string.IsNullOrEmpty(result.Reason);
