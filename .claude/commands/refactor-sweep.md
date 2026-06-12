@@ -225,6 +225,8 @@ baseline: test <N> → <M> (비감소 ✅)
 - **commit 폭주** — `--max=N`(기본 8) 상한. 한 번에 다 갈아엎지 않음.
 - **봇 비결정** — BossFight/HpSync 연속 실패는 기존 한계 → fresh 서버 단독 + 핵심 시나리오만.
 - **🔶 고위험의 진짜 안전망은 테스트 커버리지** — 테스트가 약한 영역의 큰 리팩토링은 미묘한 버그 가능 → 리포트 강조 + 아침 우선검토가 2차망.
+- **★진단 힌트는 진단 대상 브랜치에서 실측** — Step 0에서 브랜치 확정 *후* 그 트리에서만 줄수·좌표 측정. **전환 전 브랜치의 1차 스캔 값을 reviewer 힌트로 주입 금지**(stale). 2026-06-12 첫 dry-run에서 feature/m4.12 줄수(LocalPlayerMovement 410)가 main 기준 진단(393)에 섞여 Codex가 적발. carry-over "박제/추천 전 file:line 실측" 정합.
+- **★self-assessment bias = 고위험 cross-check 게이트** — Claude reviewer가 *자기 슬래시로 자기 코드*를 진단하면 후하게 볼 수 있음(첫 dry-run에서 `LocalPlayerMovement.Update()` 책임 과다를 reviewer가 "🟢 분리X"로 놓침 → Codex가 🟡로 적발). **🔶 고위험 무인 자동수정 전, 특히 commit 모드 *첫 회차*는 외부 시각 cross-check(`/cross-review` 또는 Codex β) 1회 권장** — reviewer 단독 진단을 무인 commit의 유일 게이트로 삼지 말 것.
 
 ---
 
