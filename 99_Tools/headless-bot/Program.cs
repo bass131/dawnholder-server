@@ -228,6 +228,11 @@ if (scenarioName == "M2BasicMovement")
     Console.WriteLine($"      bot=({r.BotSimFinal.X:F2},{r.BotSimFinal.Y:F2}) " +
                       $"server=({r.ServerFinal.X:F2},{r.ServerFinal.Y:F2}) " +
                       $"desync=(dx={r.FinalDesyncX:F2}, dy={r.FinalDesyncY:F2})");
+    float headroomX = r.BoundX / Math.Max(r.MaxObservedDeltaX, 0.0001f);
+    float headroomY = r.BoundY / Math.Max(r.MaxObservedDeltaY, 0.0001f);
+    Console.WriteLine($"      maxObsDelta=(x={r.MaxObservedDeltaX:F3}, y={r.MaxObservedDeltaY:F3}) " +
+                      $"bound=(x={r.BoundX:F3}, y={r.BoundY:F3}) " +
+                      $"headroom=(x={headroomX:F1}x, y={headroomY:F1}x)");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }
