@@ -104,11 +104,16 @@ namespace Dawnholder.Client.Network
                 facingSign = facing == 1 ? 1 : -1;
             }
 
+            // 대쉬는 빠르게 이동(D=4.0 / 8틱)하므로 이펙트를 시전 위치에 *고정*하면 캐릭터가 떠나
+            //   이펙트만 제자리에 남아 끊겨 보인다(영호 실측). → 스폰 위치는 ResolvePosition(앵커 + flipX
+            //   위치 미러)로 잡되, casterTf에 *부모로 묶어* 엔티티 Transform을 공유해 따라가게 한다.
+            //   facing 고정(대쉬 중 P1 게이트)이라 스폰 시 1회 미러로 충분. (Thunderbolt/Teleport는 정지/
+            //   월드 고정이라 무부모 SpawnEffect 유지 — 대쉬만 parenting.)
             Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf, "Anchor_DashEffect");
             // DashSkill 스프라이트는 우향 기본 저작(895c3fb 재익스포트) → spriteDefaultFacesLeft=false.
-            // facingSign<0(좌향)일 때만 localScale.x 반전 — SpawnEffect 기본 동작.
-            SpawnEffect(DashSkillPath, fxPos, facingSign, ref _warnedMissingDash, "Dash 이펙트",
-                spriteDefaultFacesLeft: false);
+            // facingSign<0(좌향)일 때만 localScale.x 반전 — 부모 flipX는 sprite-only라 transform 미전파.
+            SpawnEffectParented(DashSkillPath, fxPos, casterTf, facingSign, ref _warnedMissingDash,
+                "Dash 이펙트", spriteDefaultFacesLeft: false);
         }
 
         // Teleport 연출: 출발 이펙트 → 보간 끊기 → 도착 이펙트 콜백 등록.
@@ -163,6 +168,35 @@ namespace Dawnholder.Client.Network
             {
                 GameObject fx = Object.Instantiate(prefab, pos, Quaternion.identity);
                 // facingSign=0(방향 무관)은 flip 생략. 그 외 (왼쪽) XOR (좌향 기본) = 거울상 여부.
+                if (facingSign != 0 && ((facingSign < 0) ^ spriteDefaultFacesLeft))
+                {
+                    Vector3 s = fx.transform.localScale;
+                    s.x = -Mathf.Abs(s.x);
+                    fx.transform.localScale = s;
+                }
+                if (fx.GetComponent<EffectLifetime>() == null)
+                    fx.AddComponent<EffectLifetime>();
+            }
+            else if (!warnedFlag)
+            {
+                Debug.LogWarning($"[SkillCastHandler] {displayName} 미존재: Resources/{resourcePath} — 연출 생략.");
+                warnedFlag = true;
+            }
+        }
+
+        // 부모에 자식으로 묶어 스폰 — 엔티티 Transform을 따라가는 이펙트(대쉬)용.
+        //   worldPos = ResolvePosition(앵커 + flipX 위치 미러) 결과를 그대로 사용 → 미러 보존 +
+        //   parent에 묶여 엔티티 따라감(Instantiate가 world 위치를 유지하며 부모의 local로 변환).
+        //   flip 규칙은 SpawnEffect와 동형(localScale.x — 부모 flipX는 sprite-only라 transform 미전파).
+        //   정지/월드 이펙트는 무부모 SpawnEffect 사용.
+        static void SpawnEffectParented(string resourcePath, Vector3 worldPos, Transform parent, int facingSign,
+                                        ref bool warnedFlag, string displayName,
+                                        bool spriteDefaultFacesLeft = false)
+        {
+            GameObject? prefab = Resources.Load<GameObject>(resourcePath);
+            if (prefab != null)
+            {
+                GameObject fx = Object.Instantiate(prefab, worldPos, Quaternion.identity, parent);
                 if (facingSign != 0 && ((facingSign < 0) ^ spriteDefaultFacesLeft))
                 {
                     Vector3 s = fx.transform.localScale;
