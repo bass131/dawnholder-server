@@ -517,13 +517,13 @@ public class AnimStateTests
 
         // attacker를 enemy 바로 옆에 배치 (AABB 안)
         PlayerEntity attacker = map.AddPlayer(null, new Vector2(enemy.X + 1f, 0f));
-        attacker.LastAttackTickMs = 0;
+        attacker.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
         enemy.Hp = 1000; // 안 죽게
 
         // Tick(1) → _currentTick=1 + RecordPosition 박힘
         map.Tick(1);
         attacker.RecordPosition(1, attacker.Position);
-        attacker.LastAttackTickMs = 0;
+        attacker.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
 
         // 공격 실행
         map.ProcessAttack(attacker.EntityId, enemy.EntityId, attackerClientTick: 1);
@@ -546,12 +546,12 @@ public class AnimStateTests
         Assert.NotNull(enemy);
 
         PlayerEntity attacker = map.AddPlayer(null, new Vector2(enemy.X + 1f, 0f));
-        attacker.LastAttackTickMs = 0;
+        attacker.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
         enemy.Hp = 1000; // 안 죽게
 
         map.Tick(1);
         attacker.RecordPosition(1, attacker.Position);
-        attacker.LastAttackTickMs = 0;
+        attacker.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
 
         map.ProcessAttack(attacker.EntityId, enemy.EntityId, attackerClientTick: 1);
 

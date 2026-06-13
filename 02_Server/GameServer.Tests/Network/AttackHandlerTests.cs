@@ -2,6 +2,7 @@ using System.Net;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
@@ -278,13 +279,14 @@ public class AttackHandlerTests : IDisposable
         PlaceInRange(player!);
         s.SentPackets.Clear();
 
-        // 2회 공격 루프 — 매번 LastAttackTickMs reset으로 cooldown 우회.
+        // 2회 공격 루프 — 쿨다운 + AttackState 우회로 매 틱 공격 허용.
         // attackerClientTick=tick과 동일 → diff=0 → rewind 없음.
         int hitsNeeded = (int)Math.Ceiling((double)NormalMaxHp / ExpectedDamage); // 2
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
-            player!.LastAttackTickMs = 0; // cooldown 우회 (테스트 hook = public setter 직접 사용)
+            player!.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
+            player!.ActionFsm.ChangeState(PlayerMovementStates.Idle, player!); // AttackState 우회
             s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
@@ -324,7 +326,8 @@ public class AttackHandlerTests : IDisposable
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
-            player!.LastAttackTickMs = 0;
+            player!.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
+            player!.ActionFsm.ChangeState(PlayerMovementStates.Idle, player!); // AttackState 우회
             s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
@@ -335,8 +338,10 @@ public class AttackHandlerTests : IDisposable
         Assert.Equal(hitsNeeded, hitsAfterKill);
         Assert.Equal(1, deathsAfterKill);
 
-        // act: kill 후 추가 attack → idempotent 검증. cooldown reset해서 *최대한* 통과 시도.
-        player!.LastAttackTickMs = 0;
+        // act: kill 후 추가 attack → idempotent 검증. FSM 리셋 + cooldown reset으로 *최대한* 통과 시도.
+        // target(enemy)이 이미 사망 → target lookup(step 2)에서 silent drop.
+        player!.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
+        player!.ActionFsm.ChangeState(PlayerMovementStates.Idle, player!); // AttackState 우회
         s.OnRecvPacket(AttackPacketBytes(EnemyEntityId, attackerClientTick: tick));
         _map.Tick(tick++);
 

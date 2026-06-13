@@ -21,6 +21,11 @@ public abstract class ActorState<TActor>
     // 기본 true — 대부분의 상태는 피격에 의해 끊어질 수 있음.
     public virtual bool InterruptibleByHit => true;
 
+    // 이 상태에서 지정 행동을 받아들이는가. ActionGate가 상태 허용 여부를 이 단일 접점에서 조회.
+    // 기본 true — 이동 계열 State(Idle/Move/Jump)는 모든 행동 허용.
+    // Attack/Hit/Death는 false override — commit window·hitstun·사망 중 행동 거부.
+    public virtual bool AcceptsAction(ActionKind kind) => true;
+
     // 상태 진입 시 1회. 기본 no-op.
     public virtual void Enter(TActor actor) { }
 

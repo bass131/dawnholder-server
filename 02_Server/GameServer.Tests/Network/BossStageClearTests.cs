@@ -2,6 +2,7 @@ using System.Net;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
@@ -165,7 +166,8 @@ public class BossStageClearTests : IDisposable
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
-            player!.LastAttackTickMs = 0;
+            player!.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
+            player!.ActionFsm.ChangeState(PlayerMovementStates.Idle, player!); // AttackState 우회
             s.OnRecvPacket(AttackPacketBytes(BossEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
@@ -218,7 +220,8 @@ public class BossStageClearTests : IDisposable
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
-            player!.LastAttackTickMs = 0;
+            player!.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
+            player!.ActionFsm.ChangeState(PlayerMovementStates.Idle, player!); // AttackState 우회
             s.OnRecvPacket(AttackPacketBytes(BossEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
@@ -233,11 +236,12 @@ public class BossStageClearTests : IDisposable
         Assert.Equal(1, deathsAfterKill);
         Assert.Equal(1, stageClearsAfterKill);
 
-        // act: kill 후 추가 attack — cooldown 우회로 *최대한 통과 시도* → idempotent 검증.
+        // act: kill 후 추가 attack — FSM 리셋 + cooldown 우회로 *최대한 통과 시도* → idempotent 검증.
         // Boss가 이미 사망 → step 2(GetEnemyById null) silent drop. rewind 검증엔 도달 X.
         for (int i = 0; i < 3; i++)
         {
-            player!.LastAttackTickMs = 0;
+            player!.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
+            player!.ActionFsm.ChangeState(PlayerMovementStates.Idle, player!); // AttackState 우회
             s.OnRecvPacket(AttackPacketBytes(BossEntityId, attackerClientTick: tick));
             _map.Tick(tick++);
         }
@@ -267,7 +271,8 @@ public class BossStageClearTests : IDisposable
         long tick = 2;
         for (int i = 0; i < hitsNeeded; i++)
         {
-            player!.LastAttackTickMs = 0;
+            player!.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
+            player!.ActionFsm.ChangeState(PlayerMovementStates.Idle, player!); // AttackState 우회
             s.OnRecvPacket(AttackPacketBytes(NormalEnemyId, attackerClientTick: tick));
             _map.Tick(tick++);
         }

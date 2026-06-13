@@ -217,28 +217,27 @@ public class KnightDashTests : IDisposable
     }
 
     [Fact]
-    public void Dash_CommitWindow_NormalAttack_LungeDecay_IsBaseline()
+    public void Dash_CommitWindow_NormalAttack_Rejected_LungeDecayRetainsDash()
     {
-        // 회귀(reviewer 🟡 봉합): Dash commit window(8틱) 안에 평타 입력이 들어오면
-        // self-transition no-op으로 AttackState.Exit가 실행되지 않는다.
-        // 수정 전: LungeDecayPerTick=0.85(Dash 잔류) → 평타 lunge가 의도보다 멀리 전진.
-        // 수정 후: ProcessAttack이 EnterAttackState 직후 기본값(0.75)으로 명시 세팅.
+        // AcceptsAction 구멍 봉합(M4.13 P1): Dash commit window 안에 평타 입력이 들어오면
+        // ActionGate가 AcceptsAction=false(AttackState)로 거부 → 평타 진입 없음.
+        // LungeDecayPerTick은 0.85(Dash 전용값) 그대로 유지 — 호출자 직접 세팅 패턴 제거.
         var (session, caster, _, map) = SetupKnight();
 
-        // Tick 2: Dash 시전 → AttackState 진입 + LungeDecayPerTick=0.85 덮어씀.
+        // Tick 2: Dash 시전 → AttackState 진입 + PendingDecayPerTick=0.85 → Enter 세팅.
         session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1));
         map.Tick(2);
         Assert.Equal(CombatConstants.DashLungeDecayPerTick, caster.LungeDecayPerTick,
             precision: 4);
 
-        // Tick 3(commit window 안): 평타 입력 → rate-limit 통과 위해 LastAttackTickMs 초기화.
-        caster.LastAttackTickMs = 0;
+        // Tick 3(commit window 안): 평타 입력 → ActionGate AcceptsAction=false로 거부.
+        caster.SetLastActionTick(ActionKind.Melee, 0L); // 쿨다운 우회해도 AcceptsAction이 막음
         C_Attack atkPkt = new C_Attack { targetEntityId = 0, attackerClientTick = 3 };
         session.OnRecvPacket(atkPkt.Write());
         map.Tick(3);
 
-        // 평타 진입 후 LungeDecayPerTick은 기본값(0.75)이어야 함.
-        Assert.Equal(Constants.KnockbackDecayPerTick, caster.LungeDecayPerTick,
+        // 평타가 거부되었으므로 LungeDecayPerTick은 여전히 Dash 값(0.85).
+        Assert.Equal(CombatConstants.DashLungeDecayPerTick, caster.LungeDecayPerTick,
             precision: 4);
     }
 }

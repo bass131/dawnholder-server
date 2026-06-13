@@ -3,6 +3,7 @@ using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
+using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps;
 
@@ -26,13 +27,13 @@ public class PlayerEntity
     const int MaxInputQueue = 6;
     readonly Queue<InputCommand> _inputQueue = new();
 
-    // 스킬별 마지막 발동 서버 tick 배열. index = SkillId byte 값.
+    // 행동별 마지막 발동 서버 tick 배열. index = ActionKind byte 값.
+    // 평타(Melee) + 스킬(Dash/Teleport/Thunderbolt) 쿨다운 통합 — 옛 _lastSkillTick + LastAttackTickMs 대체.
     // tick 기반: 헌법 #5 — DateTime/ms 타이머 의존 차단. blocking call 0 보장.
-    // 고정 배열(per-tick 할당 0, 헌법 §5 정합) — Dictionary는 GC pressure 발생.
-    // 초기값 = long.MinValue/2: 스폰 직후 첫 발동 허용 + 오버플로우 회피(MinValue는 currentTick-MinValue가 음수).
-    // **신뢰 경계(헌법 §3)**: 미등록 skillId(배열 범위 밖)는 SkillSystem 진입 전 SkillUseHandler에서 drop.
-    const int SkillSlotCount = 4; // SkillId.Teleport=3이 현재 최대값 + 1
-    readonly long[] _lastSkillTick;
+    // 초기값 = long.MinValue/2: 스폰 직후 첫 발동 허용 + 오버플로우 회피.
+    // **신뢰 경계(헌법 §3)**: 미등록 ActionKind는 ActionGate 진입 전 핸들러/Registry에서 drop.
+    const int ActionSlotCount = 4; // ActionKind.Thunderbolt=3이 현재 최대값 + 1
+    readonly long[] _lastActionTick;
 
     // position history ring buffer.
     //
@@ -56,11 +57,11 @@ public class PlayerEntity
         Stats = stats ?? PlayerStats.Knight();
         MaxHp = Stats.MaxHp;
         Hp = Stats.Hp;
-        // 스킬 쿨다운 배열 초기화: 스폰 직후 첫 발동 허용 + 오버플로우 회피.
-        _lastSkillTick = new long[SkillSlotCount];
+        // 행동 쿨다운 배열 초기화: 스폰 직후 첫 발동 허용 + 오버플로우 회피.
+        _lastActionTick = new long[ActionSlotCount];
         long allowFirst = long.MinValue / 2;
-        for (int i = 0; i < SkillSlotCount; i++)
-            _lastSkillTick[i] = allowFirst;
+        for (int i = 0; i < ActionSlotCount; i++)
+            _lastActionTick[i] = allowFirst;
         ActionFsm = new StateMachine<PlayerEntity>(PlayerMovementStates.Idle, this);
     }
 
@@ -94,7 +95,9 @@ public class PlayerEntity
     public int MaxHp { get; set; }
     public bool IsDead => Hp <= 0;
 
-    // 마지막 공격 발생 tick(ms 단위) 기록. AttackHandler rate-limit(500ms silent drop) 판정용.
+    // 하위 호환: 옛 ms 기반 공격 쿨다운 필드. ActionGate tick 통일 후 직접 사용 금지.
+    // CombatSystem.ProcessAttack 경로는 ActionGate로 대체됨 — 이 필드는 legacy 테스트 접근용으로만 잔류.
+    [System.Obsolete("ActionGate._lastActionTick(Melee)로 통일. 직접 세팅은 테스트 전용.")]
     public long LastAttackTickMs { get; set; }
 
     // 플레이어가 마지막으로 이동한 수평 방향. +1=오른쪽, -1=왼쪽.
@@ -167,12 +170,30 @@ public class PlayerEntity
         return false;
     }
 
+    // 행동별 마지막 발동 tick 조회. ActionGate 쿨다운 판정용.
+    public long GetLastActionTick(ActionKind kind)
+    {
+        int idx = (int)kind;
+        return idx < ActionSlotCount ? _lastActionTick[idx] : long.MinValue / 2;
+    }
+
+    public void SetLastActionTick(ActionKind kind, long tick)
+    {
+        int idx = (int)kind;
+        if (idx < ActionSlotCount) _lastActionTick[idx] = tick;
+    }
+
+    // 하위 호환 래퍼. SkillId byte → ActionKind 변환. 갱신할 테스트가 GetLastActionTick을 직접 사용 가능.
     public long GetLastSkillTick(byte skillId)
-        => skillId < SkillSlotCount ? _lastSkillTick[skillId] : long.MinValue / 2;
+    {
+        ActionKind? kind = ActionKindExtensions.FromSkillId(skillId);
+        return kind.HasValue ? GetLastActionTick(kind.Value) : long.MinValue / 2;
+    }
 
     public void SetLastSkillTick(byte skillId, long tick)
     {
-        if (skillId < SkillSlotCount) _lastSkillTick[skillId] = tick;
+        ActionKind? kind = ActionKindExtensions.FromSkillId(skillId);
+        if (kind.HasValue) SetLastActionTick(kind.Value, tick);
     }
 
     /// <summary>
@@ -205,10 +226,16 @@ public class PlayerEntity
     // ── 전투 전이 API ──────────────────────────────────────────────────────
 
     // 공격 commit window 진입. IsDead면 no-op.
-    // CombatSystem이 공격 성공 직후 호출한다.
-    public void EnterAttackState()
+    // lungeVx/decayPerTick: Action.Execute가 계산해 전달 → AttackState.Enter가 세팅(§8 상태 소유).
+    // 호출자가 필드를 직접 세팅하던 패턴 제거 — AttackState가 파라미터를 통해 자기 데이터를 소유.
+    public void EnterAttackState(float lungeVx = 0f, float decayPerTick = -1f)
     {
         if (IsDead) return;
+        PlayerCombatStates.Attack.PendingLungeVx = lungeVx;
+        // decayPerTick < 0 = sentinel: 기본값(KnockbackDecayPerTick) 사용. 테스트 인자 없는 호출 호환.
+        PlayerCombatStates.Attack.PendingDecayPerTick = decayPerTick < 0f
+            ? Constants.KnockbackDecayPerTick
+            : decayPerTick;
         ActionFsm.ChangeState(PlayerCombatStates.Attack, this);
     }
 

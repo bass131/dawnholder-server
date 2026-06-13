@@ -27,10 +27,13 @@ internal static class CombatConstants
     public const float AttackLungeInitialVx = 3.0f;
 
     // 1초에 2회 한도. cheat가 매 frame 공격 보내도 silent drop으로 잘림.
-    // PlayerEntity.LastAttackTickMs와 함께 사용 — `Environment.TickCount64 - last < AttackCooldownMs`이면 drop.
     // 값은 98_Shared 단일 진실(AttackCooldownTicks)에서 역산 — 클라 입력 게이트가 같은 값을 거울로 사용.
     // (타이밍만 공유. range/damage는 위 AttackRange/BaseDamage처럼 서버 전용 유지.)
     public const long AttackCooldownMs = Shared.GameData.Constants.AttackCooldownTicks * Shared.GameData.Constants.TickIntervalMs;
+
+    // ActionGate 쿨다운 tick 통일용. AttackCooldownMs(500ms) → tick 환산 = 10틱 @20TPS.
+    // 단일 진실은 98_Shared.Constants.AttackCooldownTicks — 여기서 참조만.
+    public const int MeleeCooldownTicks = Shared.GameData.Constants.AttackCooldownTicks;
 
     // AnimState latch 지속 틱 수.
     //
