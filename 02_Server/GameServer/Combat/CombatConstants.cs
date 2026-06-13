@@ -116,7 +116,7 @@ internal static class CombatConstants
 
     // ── 보스 전투 ─────────────────────────────────────────────────────────────
     //
-    // 값은 사용자 확정 정량값 (M4.5 Phase 04 CP-2 명세). 임의 변경 금지.
+    // 값은 사용자 확정 정량값. 임의 변경 금지.
     // 틱 단위 = ms 환산 시 20TPS 기준 (1틱=50ms).
 
     /// <summary>보스 기본 공격 데미지. Formulas.ComputeDamage의 baseDamage 인자로 전달.</summary>
@@ -125,7 +125,7 @@ internal static class CombatConstants
     /// <summary>보스 공격 AABB half-extent (x/y 동일). 중심 ±2.5f → 전체 5×5 unit.</summary>
     public const float BossAttackHalfExtent = 2.5f;
 
-    // telegraph 예고 틱(P1=16/P2=10)은 98_Shared/Constants.cs로 이동 (M4.6 Phase 05, 단일 출처).
+    // telegraph 예고 틱(P1=16/P2=10)은 98_Shared/Constants.cs로 이동 (단일 출처).
     //   사유: telegraph는 플레이어向 공정성 신호 → 클라 예고 UI 등에 참조 가능 = 양쪽 공유 OK.
     //   나머지(cooldown/damage/range/threshold)는 순수 서버 판정값이라 여기 유지 (least-exposure).
 
