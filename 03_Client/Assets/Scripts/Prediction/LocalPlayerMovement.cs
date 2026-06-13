@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using Dawnholder.Client.Network;
+using Dawnholder.Client.Rendering;
 using Dawnholder.Client.Scenes;
 using Shared.GameData;
 using Shared.Protocol;
@@ -24,7 +25,25 @@ namespace Dawnholder.Client.Prediction
 
         PlayerPredictor _predictor = null!; // Awake에서 초기화
 
+        LocalPlayerMotion? _motion; // 임펄스 방향(facing) 출처 — 같은 GameObject. Awake에서 캐시.
+
+        // 선택 클래스 — lunge 임펄스 예측 자격(non-Mage만 전진)에 쓰임. Awake에서 한 번 해석.
+        CharacterClass _selectedClass = CharacterClass.Knight;
+
         bool _jumpEdgeThisTick; // 다음 서브스텝 소비까지 jump 에지 보관. 소비 시 즉시 클리어.
+
+        // 임펄스 시작 latch (M4.13 P5a) — NotifyDash/NotifyAttack(non-Mage)이 세팅, 다음 서브스텝이 소비.
+        //
+        // **★시작 틱 정렬**: NotifyDash는 LocalPlayerInput.Update에서 호출되는데, Update 컴포넌트 실행 순서
+        //   (LocalPlayerInput vs LocalPlayerMovement)에 따라 같은 프레임 substep이 이미 돌았을 수도 있다.
+        //   StartImpulse를 즉시 박으면 실행 순서가 임펄스 시작 substep을 ±1틱 흔든다(영구 offset 위험).
+        //   latch로 흡수해 "임펄스는 *다음 서브스텝*(= C_MoveIntent 송신 = _localTickCounter 증가 틱)부터 시작"
+        //   으로 일원화 — jumpEdge latch와 동형. 그 _localTickCounter가 reconcile ack 기준이라
+        //   서버 입력 소비 틱과 같은 틱 번호에 임펄스 위상이 정렬된다.
+        bool _impulsePending;
+        float _impulseStartVx;
+        float _impulseDecay;
+        int _impulseDurationTicks;
 
         uint _localTickCounter; // 송신 일련번호 (송신 시점에만 ++). replay reconcile 기준점.
         float _sendAccumulator; // 고정 서브스텝 accumulator (예측 박자 + 송신 throttle 겸용).
@@ -111,8 +130,11 @@ namespace Dawnholder.Client.Prediction
         {
             Instance = this;
 
+            _selectedClass = (CharacterClass)Bootstrap.ClassLoadout.GetSelectedClassValue(
+                (int)CharacterClass.Knight);
             MoveParams move = ResolveClassMoveParams();
             _predictor = new PlayerPredictor(move);
+            _motion = GetComponent<LocalPlayerMotion>(); // 임펄스 facing 출처 (없을 수 있음 — 테스트 씬).
 
             // 맵 전환 후 pending spawn 좌표 소비. S_MapTransition 핸들러가 박아둔 spawn 좌표를 읽어 위치 설정.
             //
@@ -181,6 +203,13 @@ namespace Dawnholder.Client.Prediction
             _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
             _attackCooldownRemaining = Constants.AttackCooldownTicks * Constants.TickDuration;
             _channelingWindow = false; // 평타 — Attack 스윙 모션.
+
+            // lunge 임펄스 예측 (M4.13 P5a) — non-Mage 평타만 전방 전진(서버 EnterAttackState lunge 거울).
+            //   Mage 평타는 전진 없음(StartImpulse 호출 안 함). durationTicks = AttackCommitWindowTicks
+            //   (서버 평타 default = 이 값). decay = KnockbackDecayPerTick(0.75).
+            if (_selectedClass != CharacterClass.Mage)
+                QueueImpulse(Constants.AttackLungeInitialVx, Constants.KnockbackDecayPerTick,
+                    Constants.AttackCommitWindowTicks);
         }
 
         // 스킬 시전 송신 성공 시 호출. 이동잠금 commit window는 평타와 공유하되, 쿨다운은 *스킬 독립*
@@ -193,12 +222,37 @@ namespace Dawnholder.Client.Prediction
             _channelingWindow = true;
         }
 
-        // Dash 송신 성공 시 호출. 쿨다운만 세팅 — 이동은 서버 force-adopt 경로(ShouldForceAdopt)가 흡수.
-        // commit window / 채널링은 없음: Dash는 strikeDelayTicks=0이라 서버가 즉시 Attack 상태로 전환,
-        // Attack + serverVx≠0 조건으로 해당 S_Snapshot이 위치를 흡수한다.
+        // Dash 송신 성공 시 호출. 쿨다운 세팅 + 대쉬 임펄스 예측 큐.
+        //
+        // M4.13 P5a: 옛 "이동=서버 force-adopt 흡수"(스터터 원인)를 클라 직접 예측으로 전환.
+        //   서버는 대쉬 입력 소비 틱에 EnterAttackState(DashSpeed×facing, decay=1.0, DashTravelTicks) →
+        //   등속 대쉬(decay=1.0). 클라도 같은 P4 공식으로 예측 → forceAdopt 불요(5b에서 크러치 제거).
+        //   (5a 동안 ShouldForceAdopt가 살아있어도 정상 — 예측 정확하면 snap이 작아질 뿐.)
         public void NotifyDash()
         {
             _dashCooldownRemaining = Constants.DashCooldownTicks * Constants.TickDuration;
+
+            // 대쉬 중 이동 잠금 (서버 AttackState 거울, M4.13 P5a) — moveX를 source-gating으로 0 처리해
+            //   vx = 대쉬 임펄스만(서버와 일치). 없으면 첫 ~RTT 동안 방향키가 임펄스에 더해져 발산.
+            //   지속 = DashTravelTicks × TickDuration = 서버 대쉬 AttackState durationTicks(DashTravelTicks)와
+            //   동일 = 임펄스 지속과 정렬. _channelingWindow=false: 대쉬는 Attack 모션(서버가 Dash 중 Attack
+            //   animState) — 채널링 아님. (CommitWindowRemaining>0 → LocalPlayerMotion이 Attack 선예측 = 서버 거울.)
+            _commitWindowRemaining = Constants.DashTravelTicks * Constants.TickDuration;
+            _channelingWindow = false;
+
+            QueueImpulse(Constants.DashSpeed, 1.0f, Constants.DashTravelTicks);
+        }
+
+        // 임펄스 시작 latch 세팅 — 다음 서브스텝이 소비해 PlayerPredictor.StartImpulse 호출.
+        // startVxMagnitude는 *부호 없는* 크기 — facing 부호는 소비 시점에 곱한다(NotifyDash 호출 시점이
+        // 아니라 서브스텝에서 facing을 읽어 latest 방향 반영, SkillCastHandler.HandleDash 패턴과 동형).
+        // 재호출 시 덮어쓰기(연속 대쉬는 최신 임펄스로 갱신) — 마지막 latch만 다음 서브스텝에 적용.
+        void QueueImpulse(float startVxMagnitude, float decayPerTick, int durationTicks)
+        {
+            _impulsePending = true;
+            _impulseStartVx = startVxMagnitude;
+            _impulseDecay = decayPerTick;
+            _impulseDurationTicks = durationTicks;
         }
 
         // Teleport 송신 성공 시 호출. 쿨다운 세팅 + 다음 snapshot을 즉시 스냅으로 처리하도록 플래그.
@@ -295,6 +349,17 @@ namespace Dawnholder.Client.Prediction
                 // 고fps 서브스텝 0번 프레임 유실 방지: 다음 서브스텝 전까지 RequestJump가 재세팅 가능.
                 if (_jumpEdgeThisTick) _jumpEdgeThisTick = false;
 
+                // 임펄스 latch 소비 (M4.13 P5a) — Predict 직전에 StartImpulse → 이 서브스텝의 Predict가
+                //   임펄스를 첫 적용 + 같은 서브스텝이 _localTickCounter++ / C_MoveIntent 송신 / NotifySent.
+                //   → "임펄스 시작 = 그 입력을 담은 C_MoveIntent 틱" 정렬(★시작 틱 정렬 단일 지점).
+                //   facing 부호는 소비 시점에 곱함 — NotifyDash 호출 후 방향 전환 시 최신 화면 방향 반영.
+                if (_impulsePending)
+                {
+                    _impulsePending = false;
+                    int facing = _motion != null ? _motion.Facing : 1;
+                    _predictor.StartImpulse(_impulseStartVx * facing, _impulseDecay, _impulseDurationTicks);
+                }
+
                 // prev/curr 기록 후 Predict — 시각 보간의 두 끝점.
                 _prevPredictPos = _predictor.Position;
                 _predictor.Predict(moveX, jumpEdge);
@@ -313,8 +378,9 @@ namespace Dawnholder.Client.Prediction
                 };
                 session.SendIntent(pkt.Write());
 
-                // 송신 직후 InputHistory push — gated 입력 그대로 박아 replay 일치.
-                _predictor.NotifySent(_localTickCounter, moveX, jumpEdge);
+                // 송신 직후 InputHistory push — gated 입력 + 그 서브스텝 Predict가 *실제 쓴* 임펄스 vx 동봉.
+                //   저장값 = live 적용값(LastAppliedImpulseVx) — 재계산 금지(하이브리드 함정 차단). replay는 이 값 재생.
+                _predictor.NotifySent(_localTickCounter, moveX, jumpEdge, _predictor.LastAppliedImpulseVx);
             }
 
             // cap 도달 후 남은 통째 틱은 버림 — 서버 입력 큐가 drop-oldest(MaxInputQueue=6)라
