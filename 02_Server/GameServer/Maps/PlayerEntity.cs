@@ -125,7 +125,7 @@ public class PlayerEntity
     public float LungeDecayPerTick { get; set; } = Constants.KnockbackDecayPerTick;
 
     // 플레이어 전체 행동(이동 + 전투) State 머신.
-    // Phase 02: 이동 계열(Idle/Move/Jump) + 전투 계열(Attack/Hit/Death) 통합.
+    // 이동 계열(Idle/Move/Jump) + 전투 계열(Attack/Hit/Death) 통합.
     // tick thread invariant: StateMachine.Tick은 GameMap.Tick 안에서만 호출.
     public StateMachine<PlayerEntity> ActionFsm { get; private set; } = null!;
 
