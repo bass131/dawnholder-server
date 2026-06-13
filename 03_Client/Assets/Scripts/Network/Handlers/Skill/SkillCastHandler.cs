@@ -65,6 +65,11 @@ namespace Dawnholder.Client.Network
                     case SkillId.Thunderbolt:
                         SpawnEffect(ThunderboltCastPath, EffectAnchor.ResolvePosition(casterTf),
                             facingSign: 0, ref _warnedMissingThunderbolt, "Thunderbolt 캐스팅 VFX");
+                        // 원격 캐스팅 모션: 서버는 Channeling을 animState로 안 보냄(ThunderboltAction이 AttackState
+                        //   미진입) → S_SkillCast로 원격 캐스팅 모션 연출. 로컬은 LocalPlayerInput.NotifyChannel이 선예측.
+                        if (!isLocal)
+                            RemoteEntityRegistry.Instance?.SetChanneling(casterId,
+                                Constants.AttackCommitWindowTicks * Constants.TickDuration);
                         break;
 
                     case SkillId.Dash:

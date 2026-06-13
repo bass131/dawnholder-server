@@ -178,6 +178,14 @@ namespace Dawnholder.Client.State
                 motion.SetAttackFacing(facing);
         }
 
+        // S_SkillCast(Thunderbolt) 수신 시 원격 캐스팅 모션 latch — 서버가 Channeling animState를 안 보내는
+        //   분(AttackState 미진입)을 클라가 연출(로컬 NotifyChannel 선예측의 원격 거울).
+        public void SetChanneling(int entityId, float seconds)
+        {
+            if (_motions.TryGetValue(entityId, out RemotePlayerMotion? motion) && motion != null)
+                motion.SetChanneling(seconds);
+        }
+
         // Teleport 보간 끊기 — S_SkillCast(Teleport) 수신 시 해당 원격 entity의 보간 버퍼 reset.
         // entity가 아직 등록 안 됐으면(race) noop — 다음 Snapshot에서 지연 spawn하면 buffer가 비어 있으므로 슬라이드 없음.
         public void SnapEntity(int entityId)

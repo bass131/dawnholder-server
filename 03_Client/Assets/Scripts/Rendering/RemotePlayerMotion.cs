@@ -19,8 +19,15 @@ namespace Dawnholder.Client.Rendering
         float _vx;
         int _attackFacing;  // 0=미설정, 1=오른쪽, -1=왼쪽
         int _facing = 1;
+        float _channelingRemaining; // S_SkillCast(Thunderbolt) 캐스팅 모션 latch 잔여(초). >0이면 서버 animState 오버라이드.
 
-        public AnimState CurrentAnimState => _animState;
+        // 캐스팅 연출 우선순위 (LocalPlayerMotion.ResolveAnimState 거울):
+        //   Hit/Death(서버 권위)가 캐스팅보다 우선 — 피격이 캐스팅을 가린다. 그 외엔 latch 동안 Channeling.
+        //   서버는 Channeling을 animState로 안 보냄(ThunderboltAction이 AttackState 미진입) → 클라가 S_SkillCast로 연출.
+        public AnimState CurrentAnimState =>
+            (_animState == AnimState.Hit || _animState == AnimState.Death) ? _animState
+            : _channelingRemaining > 0f ? AnimState.Channeling
+            : _animState;
         public int Facing => _facing;
 
         // RemoteEntityRegistry.UpdateSnapshot 경로에서 호출.
@@ -43,6 +50,19 @@ namespace Dawnholder.Client.Rendering
         {
             _attackFacing = facing;
             ResolveFacing();
+        }
+
+        // S_SkillCast(Thunderbolt) 수신 시 RemoteEntityRegistry.SetChanneling 경유 호출.
+        // 캐스팅 모션을 지속시간 동안 latch — 로컬 NotifyChannel 선예측(commit window)의 원격 거울.
+        public void SetChanneling(float seconds)
+        {
+            _channelingRemaining = seconds;
+        }
+
+        void Update()
+        {
+            if (_channelingRemaining > 0f)
+                _channelingRemaining -= Time.deltaTime;
         }
 
         // facing 결정 순수 함수 — LocalPlayerMotion.LateUpdate facing 블록의 거울.
