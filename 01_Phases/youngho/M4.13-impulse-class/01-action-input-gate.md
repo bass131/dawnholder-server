@@ -49,6 +49,44 @@ risk_flags: [trust-boundary]
 
 ---
 
+## 확정 설계 (2026-06-13 — 영호 결정: B full 통합 + 풀 전략 패턴)
+
+**범위 = B (full)**: 단일 입구가 ①상태 허용 ②쿨다운 ③클래스 ④rewind 전부 검사. 공격 ms 쿨다운도 tick 통일. **확장성 위해 풀 전략 패턴**(행동 = 다형성 객체) 채택 — 새 행동 = 구현 클래스 1개 + 레지스트리 한 줄(if-else 분기 0, OCP 만족). 영호: "미래 행동 많이 늘 예정 → 확장성 우선."
+
+### 구조
+
+1. **`ActionKind` enum** (98_Shared) — `Melee`/`Dash`/`Teleport`/`Thunderbolt`. 평타+스킬 통합 개념. 클라 거울 위해 shared. (직렬화 안 됨 — wire 무관)
+2. **`IGameAction`** (02_Server) — 행동 1개 = 다형성 객체. 멤버: `ActionKind Kind` · `int CooldownTicks` · `CharacterClass? RequiredClass`(null=평타) · `bool Execute(GameMap, PlayerEntity, long clientTick)`.
+3. **구현 클래스** (02_Server) — `MeleeAction`/`DashAction`/`TeleportAction`/`ThunderboltAction`. 각 `Execute`에 현재 `ProcessAttack`/`ProcessDash`/`ProcessTeleport`/`ProcessThunderbolt` **본체 1:1 이관**(거동 보존). Flyweight(상태 없는 정적 인스턴스 — 틱 루프 new 0, `PlayerCombatStates` 패턴 정합).
+4. **`ActionRegistry`** (02_Server) — `IReadOnlyDictionary<ActionKind, IGameAction>` 단일 진실.
+5. **`ActionGate`** (02_Server, 새 클래스/System) — 단일 입구, **분기 0**:
+   - `action = Registry[kind]`
+   - ① `player.ActionFsm.CurrentState.AcceptsAction(kind)` — 상태 허용
+   - ② `currentTick - player.LastActionTick(kind) < action.CooldownTicks` — 쿨다운(tick)
+   - ③ `action.RequiredClass is {} rc && player.Stats.Class != rc` — 클래스
+   - ④ `CombatSystem.ValidateRewind(clientTick, currentTick)` — rewind
+   - 통과 → `SetLastActionTick(kind)` + `action.Execute(...)`
+6. **`ActorState.AcceptsAction(ActionKind)`** (02_Server) — 상태 정책. 베이스 `=> true`(이동 상태 전부 허용). `AttackState`/`HitState`/`DeathState` override `=> false`(commit window/hitstun/사망 중 행동 거부). 미래 세분(예: "공격 중 이동스킬만")은 비트마스크 확장 여지.
+7. **쿨다운 tick 통일** (`PlayerEntity`) — `_lastSkillTick[]`(스킬) + `LastAttackTickMs`(공격 ms) → 통합 `_lastActionTick[ActionKind]`(tick). 공격 `AttackCooldownMs(500)` → `MeleeCooldownTicks(10)` 환산 상수. `GetLastSkillTick/SetLastSkillTick` → `LastActionTick(kind)/SetLastActionTick(kind)`. ⚠️ ms→tick = rate-limit 환산(평소 20TPS 동등, 테스트 갱신).
+8. **`LungeDecayPerTick`/`AttackLungeVx` 상태 소유** — `EnterAttackState(float lungeVx, float decayPerTick)` 파라미터화. `Action.Execute`가 *값을 계산해 넘기되* `AttackState.Enter`가 *세팅 책임*. 호출자 직접 필드 세팅(`CombatSystem.cs:75,81`/`SkillSystem.cs:95,96`) **제거** = `0.85` 잔류 사고 구조적 봉합.
+
+### trust-boundary 결정 (reviewer 점검 대상)
+
+- **핸들러(network thread) 1차 검증 유지** — `SkillUseHandler`/`AttackHandler`의 `HasSelectedClass`·skillId 범위·cheat-flag 로그는 *빠른 거부 + 로깅* layer로 유지(헌법 §3). **decode + submit**.
+- **`ActionGate`(tick thread) = 권위 검증** — 상태+쿨다운+클래스+rewind 최종 권위. `SkillSystem` 각 `Process*`에 흩어진 쿨다운/클래스 검증이 여기로 **흡수**(tick thread 내 중복 제거 = 위 단일 입구 흡수). 클래스 검증이 핸들러+게이트 양쪽이면 defense-in-depth(network 1차 / tick 권위 = 다른 layer라 정당) — reviewer가 과잉 판정 시 핸들러 축소 검토.
+
+### wire / 거동
+
+- **wire v12 무변경** — `ActionKind`/`IGameAction`/`Registry`/`ActionGate` 전부 서버 내부 + shared enum(직렬화 안 됨). `C_SkillUse`는 여전히 skillId byte. PDL/`ProtocolVersion` 무손상.
+- **거동 보존** — `Execute` 본체는 현재 `Process*` 1:1 이관. 단 쿨다운 ms→tick은 *동등 환산*(평소 거동 동일).
+
+### 단계 분할 (server 먼저, client 후)
+
+- **P1-server** (이번): §1~8 + trust-boundary. server+shared 구현 → reviewer → 회귀.
+- **P1-client** (server 권위 확정 후): 클라 입력 측이 `ActionKind` 허용 표 참조해 헛입력 차단(UX). shared 공유.
+
+---
+
 ## 변경 대상 (파일별 — 착수 시 확정)
 
 1. **`Maps/States/ActorState.cs`** — `AcceptsAction(ActionKind)` 정책 추가(베이스 기본). 상태별 override는 `PlayerCombatStates.cs`.
