@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.13 Phase 01 — 행동 입력 게이트 (5단계 보고)</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2129; --panel2: #212a35; --line: #2e3a48;
+    --text: #d8e0e8; --dim: #8a98a8; --accent: #e8734a; --green: #4ec77a;
+    --yellow: #e8c14a; --blue: #5aa7e8; --purple: #b58ae8; --red: #e85a6a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; line-height: 1.65; padding: 40px 20px; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h1 .v { color: var(--accent); }
+  .sub { color: var(--dim); font-size: 14px; margin-bottom: 28px; }
+  h2 { font-size: 19px; margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+  h2 .emoji { margin-right: 8px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 10px 0; }
+  th, td { padding: 8px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--blue); font-weight: 600; }
+  code, .mono { font-family: 'Cascadia Code', Consolas, monospace; font-size: 12.5px; }
+  code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; color: var(--yellow); }
+  .tag { display: inline-block; padding: 1px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  .tag.red { background: #3a2026; color: var(--red); }
+  .tag.green { background: #1d3328; color: var(--green); }
+  .tag.blue { background: #1d2a3a; color: var(--blue); }
+  .big { font-size: 30px; font-weight: 700; }
+  .kpi { text-align: center; padding: 16px 8px; }
+  .kpi .l { color: var(--dim); font-size: 12.5px; margin-top: 4px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0; }
+  @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  .flow .step { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 13px; text-align: center; }
+  .flow .step b { display: block; color: var(--blue); font-size: 13.5px; }
+  .flow .arrow { color: var(--accent); font-size: 18px; }
+  ul { padding-left: 22px; } li { margin: 5px 0; }
+  .note { color: var(--dim); font-size: 13px; }
+  .ok::before { content: "✅ "; } .warn::before { content: "🟡 "; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>M4.13 Phase 01 — 행동 입력 게이트 시스템화 <span class="v">wire v12 유지</span></h1>
+<div class="sub">2026-06-13 · 등급 대규모 (trust-boundary 깃발) · server(<code>11b5baf</code>) + client(<code>b2a7677</code>) + docs(<code>3e9b8de</code>) · 브랜치 feature/m4.13-impulse-class (push 안함)</div>
+
+<h2><span class="emoji">🎯</span>1. 무엇을 만들었나</h2>
+<div class="panel">
+  "지금 이 상태에서 이 행동(평타/스킬)을 받아도 되는가"를 판정하는 <b>단일 입구</b>를 서버에 세웠다 — <code>ActionGate</code>(풀 전략 패턴). 모든 행동 진입이 게이트 하나를 통과하며 <b>분기 없이</b> ①상태 허용 ②쿨다운 ③클래스 ④rewind를 검사한다. 클라는 그 거부를 <code>IsActionLocked</code>로 미리 거울 비춰 헛입력을 송신 전에 차단한다. 새 행동 = 구현 1개 + 레지스트리 1줄(OCP).
+</div>
+<div class="kpis">
+  <div class="panel kpi"><div class="big" style="color:var(--accent)">0</div><div class="l">ActionGate if-else 분기 (OCP)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--green)">561/0</div><div class="l">서버 WSL2 test (비감소)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--blue)">123/0</div><div class="l">클라 EditMode (1.8s)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--purple)">🔴 0</div><div class="l">reviewer (server+client)</div></div>
+</div>
+
+<h2><span class="emoji">🤔</span>2. 왜 필요한가</h2>
+<div class="grid2">
+  <div class="panel">
+    <b style="color:var(--blue)">분산된 입력 차단 → 시스템적 게이트</b>
+    <p>동작 State가 끝나야 다음 입력을 받는 예외가 <b>기술마다 재발</b>했고, 차단 장치가 세 곳(이동 잠금 / 쿨다운 / 클래스)에 흩어져 있었다. 그 틈으로 <b>Dash commit window 중 평타 진입</b> → <code>Attack→Attack</code> self-transition no-op → <code>LungeDecayPerTick 0.85</code> 잔류 버그.</p>
+  </div>
+  <div class="panel">
+    <b style="color:var(--blue)">상태가 자기 데이터를 소유</b>
+    <p>봉합이 "호출자가 평타 진입마다 기본값을 직접 세팅"이라 — 호출자가 상태 내부값을 찔러 넣는 구조 자체가 원인이었다. 게이트 + 상태 소유가 <b>임펄스 재설계(P2~P6)의 서버 토대</b>다.</p>
+  </div>
+</div>
+
+<h2><span class="emoji">🛠️</span>3. 어떻게 만들었나</h2>
+<div class="panel">
+  <b>ActionGate 단일 입구 (분기 0)</b>
+  <div class="flow">
+    <div class="step"><b>① AcceptsAction</b>상태 허용<br>(Attack/Hit/Death=false)</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>② 쿨다운(tick)</b>ms→tick 통일</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>③ RequiredClass</b>클래스 자격</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>④ ValidateRewind</b>lag-comp</div>
+    <div class="arrow">→</div>
+    <div class="step" style="border-color:var(--green)"><b style="color:var(--green)">Execute</b>IGameAction 다형성</div>
+  </div>
+  <div class="note">행동 = 다형성 객체(<code>IGameAction</code> + Melee/Dash/Teleport/Thunderbolt). 기존 <code>Process*</code> 본체 1:1 이관(거동 보존) + Flyweight(틱 루프 new 0). <code>ActionRegistry</code> Dictionary 단일 진실.</div>
+</div>
+<div class="panel">
+  <b>클라 거울 — 기존 IsMovementLocked 재사용</b>
+  <p>행동 잠금 = 이동 잠금과 <b>완전히 같은 조건</b>(서버에서 <code>LocksMovement</code>와 <code>AcceptsAction=false</code>가 같은 Attack/Hit/Death 셋에서 동시 발동 — reviewer 교차검증 입증). <code>LocalPlayerMovement.IsActionLocked</code>(기존 <code>IsMovementLocked</code> 1줄 위임) → <code>OnAttack</code>:91 / <code>TrySendSkill</code>:138 송신 게이트. 평타/스킬 친 순간 로컬 타이머 즉시 세팅 → <b>ghost 없음</b>(serverTick 추정 불필요).</p>
+</div>
+<div class="panel">
+  <b class="note">trust-boundary 2층 방어</b>
+  <div class="note">핸들러(network thread) = 빠른 거부 + cheat-flag 1차 / <code>ActionGate</code>(tick thread) = 상태·쿨다운·클래스·rewind 최종 권위. 클라 게이트는 UX 편의(우회해도 서버가 막음 — 헌법 #1).</div>
+</div>
+
+<h2><span class="emoji">🧪</span>4. 테스트 결과</h2>
+<table>
+  <tr><th style="width:20%">축</th><th>서버 (P1-server)</th><th>클라 (P1-client)</th></tr>
+  <tr><td>reviewer</td><td><span class="tag green">🔴0</span> 🟡3(봉합)</td><td><span class="tag green">🔴0</span> 🟡1(서버 교차검증)</td></tr>
+  <tr><td>회귀</td><td>WSL2 <b>561/0</b> 비감소</td><td>EditMode <b>123/0</b> (1.8s)</td></tr>
+  <tr><td>구멍 봉합</td><td><code>KnightDashTests</code> — Dash 중 평타 거부 직접 증명</td><td>—</td></tr>
+  <tr><td>빌드/통합</td><td>—</td><td>client Succeeded(0err) + <b>2-client Play 통과</b>(평타 commit window 중 헛입력 송신0, 영호 실측)</td></tr>
+</table>
+<div class="note ok">wire v12 무변경 — <code>ActionKind</code>/<code>ActionGate</code> 전부 서버 내부 + shared enum(직렬화 안 됨). PDL/ProtocolVersion 무손상.</div>
+
+<h2><span class="emoji">➡️</span>5. 다음 스텝</h2>
+<div class="panel">
+  <b style="color:var(--accent)">P2 — 서버 임펄스 모델 통일</b> (<code>02-server-impulse-model.md</code>)
+  <p>dash/knockback/lunge <code>ExternalVelX</code> 일관화, 대쉬 모멘텀 감속(매틱 ×0.85) → <b>고정거리 등속</b>. P1이 깔아둔 "상태 데이터 소유" 구조 위에 올라간다. 단방향 P1→P2→P4→P5→P6.</p>
+  <div class="note"><b>이월</b>: Dash 중 ghost(NotifyDash가 로컬 commit window 미세팅) → P2 임펄스 모델 재정의와 한 묶음. working tree dll 2개 미commit → P1 PR 시 98_Shared 재빌드 sync.</div>
+</div>
+
+</div>
+</body>
+</html>
