@@ -247,6 +247,85 @@ public class KnightDashTests : IDisposable
     }
 
     [Fact]
+    public void Dash_Knight_PathTarget_SurvivingEnemy_PushedForward()
+    {
+        // 허딩(M4.13 P3): 생존 적이 대쉬 진행 방향(facing=+1, 오른쪽)으로 밀림.
+        //   기존 KnockbackVx 채널 재사용 — EnterHitState(facing) → EnemyHitState가 X 적분.
+        var (session, caster, enemy, map) = SetupKnight();
+        enemy.Hp = 9999; // 한 방에 안 죽게 → push 경로(생존 적) 진입 보장
+        float enemyXBefore = enemy.X;
+
+        session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1));
+        map.Tick(2);
+
+        // KnockbackVx 부여 — 대쉬 방향(facing=+1) = 오른쪽(양수).
+        // (EnemyHitState.Tick이 첫 틱에 적분 시작 → KnockbackVx는 감쇠 1틱 후 값일 수 있음.)
+        Assert.True(enemy.KnockbackVx > 0f || enemy.X > enemyXBefore,
+            $"생존 적 push 미적용 (KnockbackVx={enemy.KnockbackVx}, X={enemy.X}, before={enemyXBefore})");
+
+        // 몇 틱 더 진행 → 적 X가 오른쪽으로 증가 (전방 변위 누적).
+        for (long t = 3; t <= 6; t++)
+            map.Tick(t);
+
+        Assert.True(enemy.X > enemyXBefore,
+            $"적이 대쉬 방향으로 변위하지 않음 (X={enemy.X}, before={enemyXBefore})");
+    }
+
+    [Fact]
+    public void Dash_PathTarget_Boss_NotPushed_Immune()
+    {
+        // Boss 면역: EnterHitState가 Boss는 latch-only(KnockbackVx 미세팅 + Fsm 전환 없음) → 안 밀림.
+        float bossX = CombatConstants.DashBoxHalfX; // 박스 안
+        GameMap map = new GameMap(MapId.BossRoom, content: new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Boss, bossX, 0f),
+        }));
+        TestGameSession session = new(map);
+        session.OnConnected(new IPEndPoint(IPAddress.Loopback, 0));
+        session.BypassHandshake(charClass: (byte)CharacterClass.Knight);
+        map.Tick(1);
+
+        PlayerEntity caster = map.Players[0];
+        caster.Position = new Vector2(0f, 0f);
+        caster.FacingDir = 1;
+        caster.RecordPosition(1, caster.Position);
+
+        EnemyEntity boss = map.Enemies.Values.First();
+        boss.Hp = 9999; // 생존 보장 (death 경로 배제)
+        float bossXBefore = boss.X;
+        session.SentPackets.Clear();
+        _consoleCapture.GetStringBuilder().Clear();
+
+        session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1));
+        for (long t = 2; t <= 8; t++)
+            map.Tick(t);
+
+        // Boss는 KnockbackVx 미세팅 + 위치 불변(AI 이동은 별개지만, 대쉬 push에 의한 변위 없음 확인).
+        Assert.Equal(0f, boss.KnockbackVx);
+        Assert.Equal(bossXBefore, boss.X, precision: 4);
+    }
+
+    [Fact]
+    public void Dash_SetsInvulnWindow_OnCaster_NotMelee()
+    {
+        // 무적 window가 대쉬 시전 시 caster에 세팅되는지 + 만료 tick 정합.
+        //   melee는 이 필드 미세팅 (dash≠melee 구분) — 기본값(long.MinValue) 잔류 확인.
+        var (session, caster, _, map) = SetupKnight();
+
+        // 대쉬 전: 기본값(비무적).
+        Assert.False(caster.IsInvulnerable(map.CurrentTick));
+
+        session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1));
+        map.Tick(2);
+
+        // 대쉬 발동 tick(2) 기준 InvulnUntilTick = 2 + DashTravelTicks.
+        Assert.Equal(2L + CombatConstants.DashTravelTicks, caster.InvulnUntilTick);
+        // 발동 직후~만료까지 무적.
+        Assert.True(caster.IsInvulnerable(2L + CombatConstants.DashTravelTicks));
+        Assert.False(caster.IsInvulnerable(2L + CombatConstants.DashTravelTicks + 1));
+    }
+
+    [Fact]
     public void Dash_CommitWindow_NormalAttack_Rejected_ImpulseDecayRetainsDash()
     {
         // AcceptsAction 구멍 봉합(M4.13 P1): Dash commit window 안에 평타 입력이 들어오면

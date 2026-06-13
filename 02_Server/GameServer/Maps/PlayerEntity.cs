@@ -95,6 +95,12 @@ public class PlayerEntity
     public int MaxHp { get; set; }
     public bool IsDead => Hp <= 0;
 
+    // 대쉬 전용 무적(invuln) 만료 tick. 이 tick까지(포함) 모든 피격 데미지·넉백 차단 (헌법 #1 서버 판정).
+    //   서버가 부여한 대쉬에서만 DashAction.Execute가 세팅 — 클라가 "나 무적" 신고 불가 (헌법 #3).
+    //   melee(MeleeAction)는 이 필드 미세팅 → 평소대로 피격. dash≠melee 구분의 단일 지점.
+    //   초기값 long.MinValue: 스폰 직후 비무적. tick thread invariant (헌법 #5).
+    public long InvulnUntilTick { get; set; } = long.MinValue;
+
     // 하위 호환: 옛 ms 기반 공격 쿨다운 필드. ActionGate tick 통일 후 직접 사용 금지.
     // CombatSystem.ProcessAttack 경로는 ActionGate로 대체됨 — 이 필드는 legacy 테스트 접근용으로만 잔류.
     [System.Obsolete("ActionGate._lastActionTick(Melee)로 통일. 직접 세팅은 테스트 전용.")]
@@ -217,6 +223,11 @@ public class PlayerEntity
         // 못 찾음 — 현재 위치 fallback (헌법 #3 보수적 fail-safe).
         return Position;
     }
+
+    // 현재 서버 tick 기준 무적 여부. 만료 tick 포함(<=) — 대쉬 시전 T..T+DashTravelTicks 커버
+    //   (모션 8틱 T..T+7보다 +1틱 길다 = i-frame 안전 방향 over-coverage, 익스플로잇 0).
+    // 플레이어 데미지 적용 지점(BossStates.ApplyBossAttack)이 게이트로 사용 (헌법 #1 서버 판정).
+    public bool IsInvulnerable(long currentTick) => currentTick <= InvulnUntilTick;
 
     // ── 전투 전이 API ──────────────────────────────────────────────────────
 

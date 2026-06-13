@@ -45,6 +45,11 @@ internal static class BossStates
             AABB playerBox = new AABB(player.Position, new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
             if (!bossAttackBox.Intersects(playerBox)) continue;
 
+            // 무적 게이트(헌법 #1 서버 판정): 대쉬 active window 중이면 데미지·넉백·broadcast 전부 skip.
+            //   InterruptibleByHit=false가 넉백/hitstun은 이미 차단 → 여기 게이트는 데미지 0을 보장.
+            //   ApplyBossAttack = 유일한 플레이어 데미지 경로(전수 grep 확인) → 한 곳 게이트로 무적 완성.
+            if (player.IsInvulnerable(map.CurrentTick)) continue;
+
             int damage = Formulas.ComputeDamage(boss.Stats, player.Stats, CombatConstants.BossBaseDamage);
             player.Hp -= damage;
 
