@@ -48,6 +48,9 @@ internal sealed class SkillUseHandler : IPacketHandler
         }
 
         // attackerClientTick은 untrusted — ProcessSkill에서 rewind 범위 검증.
-        session.SubmitSkillUse(pkt.skillId, pkt.attackerClientTick);
+        // facing(M4.13 v13): 클라 화면 방향 — 대쉬 방향 권위. 헌법 #3 정규화 (1=right, 그 외=left=-1).
+        //   cheat 무해(거리 고정·벽통과 불가)지만 trust-boundary 규율상 부호 정규화.
+        sbyte facing = pkt.facing == 1 ? (sbyte)1 : (sbyte)-1;
+        session.SubmitSkillUse(pkt.skillId, pkt.attackerClientTick, facing);
     }
 }

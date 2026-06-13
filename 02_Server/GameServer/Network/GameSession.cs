@@ -288,7 +288,8 @@ public class GameSession : PacketSession
     // **헌법 #3 (Trust Boundary) — caster 강제**: attacker와 동일하게 caster entityId는
     //   _entityId에서 강제 — 클라가 다른 플레이어를 사칭해 스킬 발동 차단.
     // skillId 범위 검증은 SkillUseHandler에서 이미 완료. attackerClientTick은 untrusted — ProcessSkill에서 검증.
-    internal void SubmitSkillUse(byte skillId, int attackerClientTick)
+    // facing(M4.13 v13): 핸들러가 §3 정규화한 대쉬 방향(±1). 대쉬 적용 시 FacingDir 권위로 사용(ActionGate).
+    internal void SubmitSkillUse(byte skillId, int attackerClientTick, sbyte facing)
     {
         if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
 
@@ -301,7 +302,8 @@ public class GameSession : PacketSession
         int casterEntityId = _entityId;
         byte capturedSkillId = skillId;
         long capturedClientTick = attackerClientTick;
-        map.EnqueueJob(() => map.ProcessSkill(casterEntityId, capturedSkillId, capturedClientTick));
+        sbyte capturedFacing = facing;
+        map.EnqueueJob(() => map.ProcessSkill(casterEntityId, capturedSkillId, capturedClientTick, capturedFacing));
     }
 
     // Pong 회신: serverTimestampMs 박고 Send.

@@ -44,6 +44,11 @@ namespace Shared.Protocol;
 ///         (RemoteEntity가 S_Snapshot의 serverTick 보간을 쓰지만 S_EntityState엔 미박힘 → desync 봉합).
 ///         S_EntityState ID(19) 불변, 기존 5필드 오프셋 불변. 옛 클라가 serverTick 없이 파싱하면
 ///         오프셋 desync → 빠른 cutoff 위해 bump.
+///   - v13: M4.13 P5 — C_SkillUse 끝에 facing(byte) append. 방향전환 직후 대쉬 시 서버 FacingDir이
+///         C_MoveIntent 입력 큐 지연으로 옛 방향이라 클라 예측(화면 방향)과 반대로 튀어 reconcile 클러스터
+///         발생 → 클라 화면 방향을 동봉해 서버가 대쉬 임펄스 방향 권위로 사용(부호 정규화, cheat 무해).
+///         C_SkillUse ID(24) 불변, skillId/attackerClientTick 오프셋 불변. 옛 클라가 facing 없이 보내면
+///         서버 파싱 오프셋 desync → 빠른 cutoff 위해 bump.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -57,6 +62,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.11 Phase 01 = v12 (S_EntityState.serverTick append — 적 보간 시간축 통일, 창드래그 desync 봉합).</summary>
-    public const ushort Current = 12;
+    /// <summary>현재 프로토콜 버전. M4.13 P5 = v13 (C_SkillUse.facing append — 대쉬 방향 권위, 방향전환 직후 대쉬 reconcile 클러스터 봉합).</summary>
+    public const ushort Current = 13;
 }

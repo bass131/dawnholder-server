@@ -1743,6 +1743,7 @@ public class C_SkillUse : IPacket // C_SkillUse 패킷
     // 멤버 변수들
     public byte skillId;
 	public int attackerClientTick;
+	public byte facing;
     public ushort Protocol { get { return (ushort)PacketID.C_SkillUse; } }
 
     public void Read(ArraySegment<byte> segment)
@@ -1763,6 +1764,10 @@ public class C_SkillUse : IPacket // C_SkillUse 패킷
 		// attackerClientTick 읽기 (LittleEndian 명시 — wire format 약속)
 		this.attackerClientTick = BinaryPrimitives.ReadInt32LittleEndian(s.Slice(count, s.Length - count));
 		count += sizeof(int);
+		
+		// facing 읽기
+		this.facing = (byte)s[count];
+		count += sizeof(byte);
 		
     }
 
@@ -1790,6 +1795,10 @@ public class C_SkillUse : IPacket // C_SkillUse 패킷
 		// attackerClientTick 쓰기 (LittleEndian 명시 — wire format 약속)
 		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.attackerClientTick);
 		count += sizeof(int);
+		
+		// facing 쓰기
+		s[count] = (byte)this.facing;
+		count += sizeof(byte);
 		
 
         // 최종 size 기록

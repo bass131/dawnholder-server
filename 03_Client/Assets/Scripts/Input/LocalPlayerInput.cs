@@ -154,10 +154,15 @@ namespace Dawnholder.Client.Input
             UnityClientSession? session = UnityClientSession.Instance;
             if (session == null) return;
 
+            // facing(M4.13 v13): 클라 화면 방향(0=left/1=right) — 서버가 대쉬 방향 권위로 사용.
+            //   대쉬 예측(NotifyDash→StartImpulse)과 동일 출처(_motion.Facing)라 클라/서버 대쉬 방향 일치 →
+            //   방향전환 직후 대쉬가 서버 입력 큐 지연으로 반대로 튀던 reconcile 클러스터 봉합.
+            int facingSign = _motion != null ? _motion.Facing : 1;
             C_SkillUse pkt = new C_SkillUse
             {
                 skillId = (byte)skillId,
-                attackerClientTick = session.LastReceivedServerTick
+                attackerClientTick = session.LastReceivedServerTick,
+                facing = (byte)(facingSign == 1 ? 1 : 0)
             };
             session.SendIntent(pkt.Write());
             Debug.Log($"[Skill] → {skillId} clientTick={pkt.attackerClientTick}");
