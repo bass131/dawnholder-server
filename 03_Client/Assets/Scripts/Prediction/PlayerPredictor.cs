@@ -164,7 +164,8 @@ namespace Dawnholder.Client.Prediction
         //
         // **헌법 #1 유지**: cheat 시뮬도 서버 권위 좌표 기준 → cheat 흡수 X.
         //
-        // **forceAdopt** (HitState 넉백 표시): 클라는 서버 권위 넉백 임펄스(ExternalVelX)를 예측 못 함.
+        // **forceAdopt** (HitState 넉백 표시): 넉백은 server-reactive 임펄스라 클라가 시작점(틱·방향·
+        //   지속)을 몰라 예측 안 함 (대쉬/lunge처럼 StartImpulse 직접 예측하는 self-initiated 임펄스와 대비).
         //   피격 중엔 임계(SnapThreshold) 이내여도 서버 위치를 채택해 넉백을 시각화하고
         //   sub-threshold offset 누적(영구 어긋남)을 막는다. SnapCount는 *진짜 mispredict*에만 증가.
         public bool OnSnapshot(float serverX, float serverY,

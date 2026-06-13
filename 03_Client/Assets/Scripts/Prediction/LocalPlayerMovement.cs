@@ -295,12 +295,14 @@ namespace Dawnholder.Client.Prediction
 
         // force-adopt 판정 순수 함수 — 임계 이내여도 서버 위치를 즉시 채택할지 결정.
         //   - teleportSnap: Teleport 스킬 후 첫 snapshot — 무조건 채택.
-        //   - Hit(넉백): 서버 권위 임펄스라 클라가 *아직* 예측 안 함(1차 범위 밖) — 무조건 채택.
+        //   - Hit(넉백): server-reactive 임펄스 — 채택이 표준(아래 원리).
         //
-        // **M4.13 P5b — Attack(대쉬/lunge) 분기 제거**: 5a에서 클라가 P4 공유 공식으로 임펄스를
-        //   직접 예측하므로 force-adopt 불요. 진짜 mispredict(벽 충돌 등 드묾)는 OnSnapshot의
-        //   SnapThreshold가 잡고, 보간은 자동 복원(매 스냅샷 버퍼 리셋 사라져 대쉬 스터터 소멸).
-        //   serverVx 인자도 제거 — Attack vx-게이팅이 사라져 무용. (넉백 예측 도입 시 Hit 분기 재검토.)
+        // **임펄스 클래스 통일 원리 (M4.13)**: 서버는 대쉬/lunge/넉백을 한 경로
+        //   (ExternalImpulseVx + DecayImpulse, EnterAttackState/EnterHitState)로 처리한다. 클라는
+        //   *시작점을 아는* 임펄스만 예측한다 — 대쉬/lunge는 self-initiated라 시전 틱·방향·지속을 알아
+        //   StartImpulse로 직접 예측(force-adopt 불요). 넉백은 server-reactive(피격 신호가 RTT 후 도착 →
+        //   시작 틱 정렬 불가 + 방향은 추론 + hitstun 지속은 서버 전용)라 예측 근거가 없어 force-adopt로
+        //   서버 위치를 채택. "예측이냐 채택이냐"는 우연이 아니라 클라가 시작점을 아느냐의 원리.
         public static bool ShouldForceAdopt(bool teleportSnap, AnimState serverAnimState)
         {
             if (teleportSnap) return true;
@@ -442,10 +444,8 @@ namespace Dawnholder.Client.Prediction
                 _teleportArriveCallback = null;
             }
 
-            // force-adopt 대상 (M4.13 P5b 이후): Teleport(teleportSnap) + 넉백(Hit) 뿐.
-            //   대쉬/lunge(Attack)는 5a에서 클라가 P4 공유 공식으로 직접 예측하므로 force-adopt 불요 →
-            //   매 스냅샷 버퍼 리셋이 사라져 보간 복원(대쉬 스터터 소멸). 진짜 mispredict(벽 충돌 등)는
-            //   OnSnapshot SnapThreshold가 잡음. 넉백은 아직 예측 안 해(1차 범위 밖) force-adopt 유지.
+            // force-adopt 대상: Teleport(teleportSnap) + 넉백(Hit). 대쉬/lunge(Attack)는 클라가
+            //   직접 예측하므로 불요 — 넉백만 채택하는 근거는 ShouldForceAdopt의 통일 원리 주석 참조.
             bool reconciled = _predictor.OnSnapshot(
                 serverX, serverY, serverVx, serverVy, ackedClientTick,
                 forceAdopt: ShouldForceAdopt(teleportSnap, _serverAnimState));
