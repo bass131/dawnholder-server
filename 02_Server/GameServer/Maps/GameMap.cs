@@ -74,7 +74,7 @@ public class GameMap
                         "EnemyKind enum을 확인하세요.");
 
                 EnemyKind kind = (EnemyKind)sp.KindId;
-                // HP 단일 출처 = Formulas factory MaxHp (EnemyDefaultHp 배열 폐기 — M4.10 Phase 02).
+                // HP 단일 출처 = Formulas factory MaxHp.
                 int maxHp = kind switch
                 {
                     EnemyKind.Normal => EnemyStats.NormalDefault().MaxHp,

@@ -23,7 +23,7 @@ public static class Constants
 
     /// <summary>
     /// S_Snapshot 브로드캐스트 주기 (tick 단위). 1 tick = 50ms (20Hz).
-    /// M4.11 P1: RemotePlayer 보간 궤적 부드러움을 위해 10Hz(=2) → 20Hz(=1)로 상향.
+    /// RemotePlayer 보간 궤적 부드러움을 위해 10Hz(=2) → 20Hz(=1)로 상향.
     /// trade-off: 대역폭 2배 증가이나 로컬/발표 규모(≤10명)에서 무시 가능.
     /// </summary>
     public const int SnapshotTickInterval = 1;
@@ -82,7 +82,7 @@ public static class Constants
     /// 임펄스(lunge/넉백) 감쇠 near-zero 클램프 임계값.
     /// 서버는 |임펄스 velocity| &lt; ε 이면 0f로 정리 — 살아남은 임펄스는 항상 |vx| >= ε.
     /// 클라 force-adopt 게이트는 이 약속의 보색(complement): |serverVx| >= ε 이면 임펄스 활성으로 판정.
-    /// 두 곳이 독립 매직넘버를 쓰면 silent break(M4.11 P2 계약 명시).
+    /// 두 곳이 독립 매직넘버를 쓰면 silent break.
     /// </summary>
     public const float ExternalImpulseEpsilon = 0.05f;
 
@@ -94,14 +94,14 @@ public static class Constants
 
     /// <summary>
     /// 보스 페이즈 1 공격 예고 틱 (telegraph). 16틱 = 800ms @20TPS.
-    /// telegraph 타이밍 단일 출처 (M4.6 Phase 05, 서버 CombatConstants에서 이동).
+    /// telegraph 타이밍 단일 출처.
     /// 플레이어向 공정성 신호라 클라 예고 UI 등이 참조 가능 = 양쪽 공유. 서버 BossStates가 이 값으로 판정.
     /// </summary>
     public const int BossTelegraphTicks = 16;
 
     /// <summary>
     /// 보스 페이즈 2 공격 예고 틱 (telegraph). 10틱 = 500ms @20TPS — P1보다 짧아 난이도 상승.
-    /// telegraph 타이밍 단일 출처 (M4.6 Phase 05) — BossTelegraphTicks(P1)와 한 곳.
+    /// telegraph 타이밍 단일 출처 — BossTelegraphTicks(P1)와 한 곳.
     /// </summary>
     public const int BossPhase2TelegraphTicks = 10;
 }

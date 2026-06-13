@@ -2,7 +2,7 @@ namespace Shared.GameData;
 
 /// <summary>
 /// 월드 좌표 솔리드 지형 AABB. TerrainBaker(에디터) 생성 데이터의 단위 —
-/// Physics가 소비 (M4.4-02). readonly struct → 결정론 안정성 + GC 압박 0.
+/// Physics가 소비. readonly struct → 결정론 안정성 + GC 압박 0.
 /// </summary>
 public readonly struct TerrainAabb
 {
