@@ -295,16 +295,16 @@ namespace Dawnholder.Client.Prediction
 
         // force-adopt 판정 순수 함수 — 임계 이내여도 서버 위치를 즉시 채택할지 결정.
         //   - teleportSnap: Teleport 스킬 후 첫 snapshot — 무조건 채택.
-        //   - Hit(넉백): 서버 권위 임펄스라 클라가 예측 불가 — 무조건 채택.
-        //   - Attack + serverVx≠0: Dash/lunge처럼 서버가 전방 임펄스를 준 경우만 채택.
-        //     Attack이지만 serverVx≈0인 평타(Mage 등)는 채택하지 않음 — rubber-band 밀림 봉합.
-        public static bool ShouldForceAdopt(bool teleportSnap, AnimState serverAnimState, float serverVx)
+        //   - Hit(넉백): 서버 권위 임펄스라 클라가 *아직* 예측 안 함(1차 범위 밖) — 무조건 채택.
+        //
+        // **M4.13 P5b — Attack(대쉬/lunge) 분기 제거**: 5a에서 클라가 P4 공유 공식으로 임펄스를
+        //   직접 예측하므로 force-adopt 불요. 진짜 mispredict(벽 충돌 등 드묾)는 OnSnapshot의
+        //   SnapThreshold가 잡고, 보간은 자동 복원(매 스냅샷 버퍼 리셋 사라져 대쉬 스터터 소멸).
+        //   serverVx 인자도 제거 — Attack vx-게이팅이 사라져 무용. (넉백 예측 도입 시 Hit 분기 재검토.)
+        public static bool ShouldForceAdopt(bool teleportSnap, AnimState serverAnimState)
         {
             if (teleportSnap) return true;
             if (serverAnimState == AnimState.Hit) return true;
-            if (serverAnimState == AnimState.Attack)
-                // 서버가 |임펄스 vx| < ExternalImpulseEpsilon 을 0 으로 클램프하므로 살아남은 vx 는 항상 >= ε — 이 게이트는 그 클램프의 보색.
-                return Mathf.Abs(serverVx) >= Constants.ExternalImpulseEpsilon;
             return false;
         }
 
@@ -442,13 +442,13 @@ namespace Dawnholder.Client.Prediction
                 _teleportArriveCallback = null;
             }
 
-            // 넉백(Hit)·전방 임펄스가 있는 공격(Dash/lunge)·Teleport는 서버 권위 임펄스라 클라가 예측 안 함
-            //   → 임계 이내라도 서버 위치 채택(force-adopt)해 시각화 + sub-threshold offset 누적 방지.
-            // Attack이지만 serverVx≈0(Mage 평타 등)은 force-adopt 제외 — 스냅샷마다 임계 이내 서버 위치를
-            //   채택하면 rubber-band 밀림 발생.
+            // force-adopt 대상 (M4.13 P5b 이후): Teleport(teleportSnap) + 넉백(Hit) 뿐.
+            //   대쉬/lunge(Attack)는 5a에서 클라가 P4 공유 공식으로 직접 예측하므로 force-adopt 불요 →
+            //   매 스냅샷 버퍼 리셋이 사라져 보간 복원(대쉬 스터터 소멸). 진짜 mispredict(벽 충돌 등)는
+            //   OnSnapshot SnapThreshold가 잡음. 넉백은 아직 예측 안 해(1차 범위 밖) force-adopt 유지.
             bool reconciled = _predictor.OnSnapshot(
                 serverX, serverY, serverVx, serverVy, ackedClientTick,
-                forceAdopt: ShouldForceAdopt(teleportSnap, _serverAnimState, serverVx));
+                forceAdopt: ShouldForceAdopt(teleportSnap, _serverAnimState));
             if (reconciled)
             {
                 float dx = serverX - prevX;
