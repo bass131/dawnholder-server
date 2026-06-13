@@ -30,7 +30,7 @@ public struct EnemyStats
     /// <summary>
     /// 적 이동 속도 (유닛/초). Normal enemy 기본값 ~2.0.
     ///
-    /// <para>⚠️ target rewind 미적용 상태(M4.4 이월)라 적이 빠르면 클라 보간 지연과
+    /// <para>⚠️ target rewind 미적용 상태라 적이 빠르면 클라 보간 지연과
     /// 서버 판정 위치가 어긋나 조준-판정 빗맞음 발생 → Normal enemy는 플레이어보다
     /// 느리게 설정(Knight=4 / Mage=6 대비 ~2.0). 빠른 적은 rewind 구현 후 조정.</para>
     /// </summary>
