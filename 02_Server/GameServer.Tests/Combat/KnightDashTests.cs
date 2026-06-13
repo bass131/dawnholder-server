@@ -128,7 +128,7 @@ public class KnightDashTests : IDisposable
 
         // Tick 후: 등속(decay=1.0)이므로 DecayImpulse 후에도 ExternalImpulseVx = DashSpeed.
         // AttackState.Tick 순서: DecayImpulse() → StateTicksRemaining--. decay=1.0 → vx 변화 없음.
-        Assert.Equal(CombatConstants.DashSpeed, caster.ExternalImpulseVx,
+        Assert.Equal(Constants.DashSpeed, caster.ExternalImpulseVx,
             precision: 4);
 
         // S_SkillCast(skillId=Dash) 확인
@@ -319,10 +319,10 @@ public class KnightDashTests : IDisposable
         map.Tick(2);
 
         // 대쉬 발동 tick(2) 기준 InvulnUntilTick = 2 + DashTravelTicks.
-        Assert.Equal(2L + CombatConstants.DashTravelTicks, caster.InvulnUntilTick);
+        Assert.Equal(2L + Constants.DashTravelTicks, caster.InvulnUntilTick);
         // 발동 직후~만료까지 무적.
-        Assert.True(caster.IsInvulnerable(2L + CombatConstants.DashTravelTicks));
-        Assert.False(caster.IsInvulnerable(2L + CombatConstants.DashTravelTicks + 1));
+        Assert.True(caster.IsInvulnerable(2L + Constants.DashTravelTicks));
+        Assert.False(caster.IsInvulnerable(2L + Constants.DashTravelTicks + 1));
     }
 
     [Fact]

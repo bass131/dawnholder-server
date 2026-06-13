@@ -247,7 +247,7 @@ public class BossStateTests : IDisposable
         PlaceInBossRange(player!);
 
         // 무적 window: 현재 tick(1) 포함 만료 tick을 충분히 미래로.
-        player!.InvulnUntilTick = _map.CurrentTick + CombatConstants.DashTravelTicks;
+        player!.InvulnUntilTick = _map.CurrentTick + Constants.DashTravelTicks;
         int hpBefore = player.Hp;
         player.ExternalImpulseVx = 0f;
         s.SentPackets.Clear();

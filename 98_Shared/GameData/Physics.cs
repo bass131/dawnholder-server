@@ -98,6 +98,19 @@ public static class Physics
     private const float GroundEpsilon = 0.0001f;
 
     /// <summary>
+    /// 임펄스(lunge/넉백/대쉬) 1틱 감쇠 — 순수 함수. 클라 replay·서버 틱 공용 단일 출처.
+    /// vx에 decayPerTick을 곱하고, |결과| &lt; ExternalImpulseEpsilon이면 0으로 클램프(M4.11 P2 force-adopt 계약).
+    /// 대쉬는 decayPerTick=1.0(감쇠 없음), lunge/넉백은 KnockbackDecayPerTick(0.75).
+    /// </summary>
+    public static float DecayImpulse(float vx, float decayPerTick)
+    {
+        vx *= decayPerTick;
+        if (System.MathF.Abs(vx) < Constants.ExternalImpulseEpsilon)
+            vx = 0f;
+        return vx;
+    }
+
+    /// <summary>
     /// 1 step 결정론 시뮬레이션 (terrain null 위임). move 파라미터 필수 — silent fallback 없음.
     /// </summary>
     public static PhysicsState Step(PhysicsState state, PhysicsInput input, MoveParams move)

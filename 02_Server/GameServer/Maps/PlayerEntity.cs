@@ -272,12 +272,10 @@ public class PlayerEntity
     }
 
     // 임펄스 1틱 감쇠. AttackState.Tick + HitState.Tick의 단일 경로.
-    // vx *= decay; |vx| < ε → 0. M4.11 P2 force-adopt 계약(ExternalImpulseEpsilon) 비트단위 보존.
+    // 공식은 Shared.Physics.DecayImpulse 단일 출처 — 클라 replay와 비트단위 동일 보장.
     public void DecayImpulse()
     {
-        ExternalImpulseVx *= ImpulseDecayPerTick;
-        if (MathF.Abs(ExternalImpulseVx) < Constants.ExternalImpulseEpsilon)
-            ExternalImpulseVx = 0f;
+        ExternalImpulseVx = Physics.DecayImpulse(ExternalImpulseVx, ImpulseDecayPerTick);
     }
 
     // 입력 FIFO 큐. EnqueueJob 경유 network thread→tick thread 단방향이라 lock 불필요.

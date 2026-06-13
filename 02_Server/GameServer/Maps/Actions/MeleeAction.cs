@@ -45,7 +45,7 @@ internal sealed class MeleeAction : IGameAction
 
         // AttackState 진입 — lunge 파라미터를 상태에 위임 (§8).
         float lungeVx = attacker.Stats.Class != CharacterClass.Mage
-            ? CombatConstants.AttackLungeInitialVx * attacker.FacingDir
+            ? Constants.AttackLungeInitialVx * attacker.FacingDir
             : 0f;
         attacker.EnterAttackState(lungeVx, Constants.KnockbackDecayPerTick);
 

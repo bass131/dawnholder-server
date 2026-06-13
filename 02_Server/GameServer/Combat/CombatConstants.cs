@@ -20,11 +20,7 @@ internal static class CombatConstants
 
     public const int BaseDamage = 10;
 
-    // 근접(Knight) 스윙 시 전방 lunge 초기 수평 속도 (units/s). FacingDir 부호와 함께 적용.
-    // AttackState 동안 Constants.KnockbackDecayPerTick로 감쇠(넉백과 동형) → 스윙당 짧은 전진 후 정지.
-    // 서버 전용(헌법 #1): 클라는 결과 위치를 force-adopt로 렌더만 — lunge 값 자체는 모름.
-    // 원거리 Mage는 제외(전진 없음). 값은 사용자 Play 튜닝 대상.
-    public const float AttackLungeInitialVx = 3.0f;
+    // AttackLungeInitialVx는 98_Shared.Constants로 이전(M4.13 P4 — 클라 replay 공유). 참조는 Constants.AttackLungeInitialVx 사용.
 
     // 1초에 2회 한도. cheat가 매 frame 공격 보내도 silent drop으로 잘림.
     // 값은 98_Shared 단일 진실(AttackCooldownTicks)에서 역산 — 클라 입력 게이트가 같은 값을 거울로 사용.
@@ -95,18 +91,7 @@ internal static class CombatConstants
     public const int TeleportCooldownTicks = Shared.GameData.Constants.TeleportCooldownTicks;
 
     // ── Dash 스킬 ─────────────────────────────────────────────────────────────
-    // 클라이언트는 쿨다운(98_Shared Constants.DashCooldownTicks)만 공유 — 속도/박스/데미지는 여기.
-
-    // 대쉬 등속 이동 속도 (units/s). 감쇠 없이 DashTravelTicks 동안 이 속도를 유지.
-    // AttackState.Exit 시 임펄스를 0으로 정리 → 정확히 고정거리 이동.
-    // 서버 권위(헌법 #1): 클라는 결과 위치를 force-adopt로 렌더만.
-    public const float DashSpeed = 10.0f;
-
-    // 대쉬 등속 이동 지속 틱 수. AttackCommitWindowTicks(행동 잠금 window)와 우연히 같은 값(8)이지만
-    // 의미가 다름 — 이 값은 "대쉬가 앞으로 나아가는 시간", commit window는 "행동 입력을 거부하는 시간".
-    // DashAction → EnterAttackState(durationTicks: DashTravelTicks) 경로로 실제 AttackState 지속을 제어.
-    // 이제 두 값을 독립적으로 튜닝 가능. 고정 이동 거리 D = DashSpeed × DashTravelTicks × TickDuration = 10 × 8 × 0.05 = 4.0 unit.
-    public const int DashTravelTicks = 8;
+    // DashSpeed/DashTravelTicks는 98_Shared.Constants로 이전(M4.13 P4 — 클라 replay 공유). 박스(DashBoxHalfX/Y)·데미지는 서버 전용 유지(least-exposure).
 
     // Dash 경로 AABB 박스 반폭 (unit). 전방 이동 경로를 스윕하는 박스 — X 방향이 핵심.
     // FacingDir 방향으로 쏘는 앞 공간 스캔. DashBoxHalfY는 평타(1.5f)와 동일.

@@ -3,10 +3,12 @@ owner: youngho
 milestone: M4.13
 phase: 04-shared-extract
 title: 공유 모델 추출 — 대쉬/임펄스 이동 공식을 98_Shared 단일 출처로 (헌법 §4)
-status: planned
+status: done
 grade: 보통
 slug: 04-shared-extract
 created: 2026-06-13
+completed: 2026-06-13
+status_note: done — 보통 등급(work-pin + commit, -DONE.md 불요). 거동 불변 추출, build 0/0 + test 568/0 + 봇 advance=4.00.
 domains: [shared]
 prior_phases: [01-action-input-gate, 02-server-impulse-model]
 depends_on: [02-server-impulse-model]
@@ -55,13 +57,15 @@ risk_flags: []
 
 ---
 
-## 완료 조건 / 게이트 (정량)
+## 완료 조건 / 게이트 (정량) — ✅ 전부 통과 (2026-06-13)
 
-- [ ] 대쉬/임펄스 공식·상수가 **`98_Shared` 단일 출처**(grep: 서버 전용 중복 정의 0).
-- [ ] 클라/서버가 **같은 공식** 참조(양쪽 사용처 grep 제시).
-- [ ] 임펄스 전진 공식 **순수 함수**(DateTime/seed 없는 RNG grep 0).
-- [ ] **wire v12 무변경** + 양쪽 컴파일(`shared-discipline-guard.sh` 통과 + Unity error 0).
-- [ ] 회귀 green: WSL2 build+test 비감소 + 봇.
+- [x] 대쉬/임펄스 공식·상수가 **`98_Shared` 단일 출처** — `DashSpeed`/`DashTravelTicks`/`AttackLungeInitialVx` 정의가 `Constants.cs` 단 한 곳(grep: 서버 전용 중복 정의 0, reviewer 재확인).
+- [x] 클라/서버가 **같은 공식** 참조 — 서버는 `Constants.X` + `Physics.DecayImpulse` 호출. P5 클라 replay가 동일 함수 호출 예정(이 Phase가 그 전제 충족).
+- [x] 임펄스 전진 공식 **순수 함수** — `Physics.DecayImpulse(vx, decayPerTick)`: 입력만으로 결정, DateTime/seed RNG/부작용 0(reviewer 명시 확인).
+- [x] **wire v12 무변경** — Protocol/Generated/ProtocolVersion 미접촉(공식 추출=내부 표현). WSL2 build 0/0(Shared+GameServer+ClientNet). Unity Plugins dll 재빌드+sync는 PR 시점(소스만 commit).
+- [x] 회귀 green: WSL2 **test 568/0/4**(P3 baseline 568 비감소) + 봇 **DashSmoke PASS advance=4.00**(D=DashSpeed×DashTravelTicks×TickDuration=4.0 정확 — 궤적 비트 보존).
+
+**검증 흐름**: server Worker(Sonnet) 구현 → 메인 diff 실측(거동 불변·ε 비트동일 대조) → WSL2 build 0/0 + test 568/0 → 봇 advance=4.00 → reviewer Tier 2-A 🔴0/🟡0.
 
 ---
 

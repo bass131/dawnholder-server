@@ -22,15 +22,15 @@ internal sealed class DashAction : IGameAction
         // 이동 거리 D = DashSpeed × DashTravelTicks × TickDuration = 10 × 8 × 0.05 = 4.0 unit.
         // durationTicks=DashTravelTicks: 대쉬 지속이 이 상수로 실제 제어됨 (AttackCommitWindowTicks 독립).
         caster.EnterAttackState(
-            CombatConstants.DashSpeed * caster.FacingDir,
+            Constants.DashSpeed * caster.FacingDir,
             decayPerTick: 1.0f,
-            durationTicks: CombatConstants.DashTravelTicks);
+            durationTicks: Constants.DashTravelTicks);
 
         // 완전 무적: 시전 tick T부터 T+DashTravelTicks까지(포함) 피격 데미지·넉백 0.
         //   대쉬 모션(AttackState)은 T..T+(DashTravelTicks-1) = 8틱이고, 무적은 만료 tick 포함(<=)이라
         //   모션 종료 후 +1틱(50ms) 더 길다 — i-frame은 안전 방향(over-coverage)이 정석(under면 모션 중 노출).
         //   서버 발동 대쉬에서만 세팅 = dash≠melee 구분 (헌법 #3: 클라 무적 신고 경로 없음).
-        caster.InvulnUntilTick = map.CurrentTick + CombatConstants.DashTravelTicks;
+        caster.InvulnUntilTick = map.CurrentTick + Constants.DashTravelTicks;
 
         // 경로 타격: rewind 위치 중심 AABB.
         Vector2 rewindedPos = caster.GetPositionAtTick(clientTick);
