@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.13 P1 — 행동 입력 게이트 아키텍처 A vs B</title>
+<style>
+  :root{
+    --bg:#0f1419; --card:#1a2029; --card2:#222b36; --ink:#e6edf3; --dim:#8b98a5;
+    --line:#30363d; --blue:#4493f8; --green:#3fb950; --orange:#e3873c; --red:#f85149;
+    --purple:#a371f7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI","Malgun Gothic",sans-serif;line-height:1.65;font-size:15px}
+  .wrap{max-width:1040px;margin:0 auto;padding:32px 24px 80px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+  h2{font-size:20px;margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:16px;margin:0 0 10px}
+  .sub{color:var(--dim);font-size:14px;margin:0 0 6px}
+  .lead{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--blue);
+    border-radius:10px;padding:16px 20px;margin:18px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:14px 0}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.grid3,.grid2{grid-template-columns:1fr}}
+  .chk{border-radius:10px;padding:14px 16px;border:1px solid var(--line);background:var(--card2)}
+  .chk .tag{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+  .ok{border-left:4px solid var(--green)} .ok .tag{color:var(--green)}
+  .no{border-left:4px solid var(--red)} .no .tag{color:var(--red)}
+  .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;
+    border-radius:50%;background:#2d333b;font-size:12px;font-weight:700;margin-right:6px}
+  code,.mono{font-family:"Cascadia Code",Consolas,monospace}
+  pre{background:#0b0f14;border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow:auto;font-size:13px;margin:10px 0}
+  .flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .node{background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:10px 13px;
+    font-size:13.5px;display:flex;flex-direction:column;justify-content:center;min-width:96px}
+  .node .t{font-weight:700;font-size:13px} .node .d{color:var(--dim);font-size:12px;margin-top:2px}
+  .node.new{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
+  .node.gate{border-color:var(--purple);box-shadow:0 0 0 1px var(--purple) inset}
+  .node.exec{border-color:var(--blue)}
+  .arrow{align-self:center;color:var(--dim);font-size:20px;padding:0 2px}
+  .badgeA{color:var(--green);font-weight:700}
+  .badgeB{color:var(--orange);font-weight:700}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:var(--card2)}
+  td.a{background:rgba(63,185,80,.07)} td.b{background:rgba(227,135,60,.07)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}
+  .pill.low{background:rgba(63,185,80,.16);color:var(--green)}
+  .pill.mid{background:rgba(227,135,60,.16);color:var(--orange)}
+  .pill.high{background:rgba(248,81,73,.16);color:var(--red)}
+  .rec{background:linear-gradient(135deg,rgba(68,147,248,.12),rgba(163,113,247,.10));
+    border:1px solid var(--blue);border-radius:12px;padding:20px 22px;margin:22px 0}
+  .twoclock{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0}
+  .clock{flex:1;min-width:240px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .clock h4{margin:0 0 4px;font-size:14px}
+  .small{font-size:13px;color:var(--dim)}
+  .em{color:var(--orange);font-weight:600}
+  .emr{color:var(--red);font-weight:600}
+  .emg{color:var(--green);font-weight:600}
+  hr{border:none;border-top:1px solid var(--line);margin:30px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>M4.13 · P1 — 행동 입력 게이트</h1>
+  <p class="sub">아키텍처 결정 자료 · 옵션 A(점진) vs B(full) · 2026-06-13</p>
+
+  <div class="lead">
+    <b>한 줄 요약.</b> 플레이어가 공격·스킬을 쓸 때 서버가 하는 "<b>지금 이 행동 해도 되나?</b>" 검사를
+    어디까지 한 곳에 모을지 정하는 문제예요. 지금 <b class="emr">"상태 검사"가 빠져 있어</b> 버그가 나는데,
+    그 빈칸만 메울지(A) / 검사 전부를 통합할지(B)의 갈림입니다.
+  </div>
+
+  <h2>1. 지금 무슨 일이 벌어지나</h2>
+  <p>플레이어가 공격/스킬 패킷을 보내면 서버는 바로 실행하지 않고 <b>3가지를 검사</b>해요.
+     건물 정문의 <b>검문소</b>라고 생각하면 됩니다.</p>
+
+  <div class="grid3">
+    <div class="chk no">
+      <div class="tag">① 상태 검사 · 없음 ❌</div>
+      <p style="margin:8px 0 0">"지금 다른 동작 중이라 새 행동 못 받는 상황 아닌가?"<br>
+        <span class="small">예: 대쉬 중엔 평타를 막아야 함 — <b class="emr">이 검문이 통째로 빠짐</b></span></p>
+    </div>
+    <div class="chk ok">
+      <div class="tag">② 쿨다운 검사 · 있음 ✅</div>
+      <p style="margin:8px 0 0">"이 기술 쿨타임 다 찼나?"<br>
+        <span class="small">단, 공격은 <b>밀리초</b>·스킬은 <b>게임 틱</b> — 시계가 둘</span></p>
+    </div>
+    <div class="chk ok">
+      <div class="tag">③ 클래스 검사 · 있음 ✅</div>
+      <p style="margin:8px 0 0">"이 직업이 이 스킬 쓸 자격 있나?"<br>
+        <span class="small">Knight는 Thunderbolt 못 씀 (<code>SkillCatalog</code>)</span></p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>🐛 그래서 생기는 버그 — "대쉬 중 평타"</h3>
+    <p style="margin:0 0 6px">대쉬는 <b>자기 전용 상태가 없어요.</b> 평타용 <code>AttackState</code>에 들어간 뒤
+       속도·감속값만 대쉬용으로 덮어쓰는 식으로 <b>재활용</b>합니다(<code>SkillSystem.cs:94-96</code>).</p>
+    <div class="flow">
+      <div class="node"><span class="t">대쉬 시전</span><span class="d">AttackState 진입<br>감속 0.85 세팅</span></div>
+      <div class="arrow">→</div>
+      <div class="node no" style="border-left:4px solid var(--red)"><span class="t">평타 입력 (막혔어야!)</span><span class="d">상태 검사 없음<br>→ 또 AttackState 진입</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><span class="t">같은 상태로 재진입</span><span class="d">self-transition<br>Exit() 안 돎</span></div>
+      <div class="arrow">→</div>
+      <div class="node no" style="border-left:4px solid var(--red)"><span class="t">0.85 잔류</span><span class="d">대쉬값이 평타에<br>남아 오작동</span></div>
+    </div>
+    <p class="small" style="margin:8px 0 0">현재는 호출자가 평타 진입마다 기본값 <code>0.75</code>를 <b>손으로 박아</b> 임시 봉합 중
+       (<code>CombatSystem.cs:75</code>). 이게 plan이 말한 <b class="em">"상태가 자기 데이터를 못 가져서"</b> 생긴 문제예요.</p>
+  </div>
+
+  <p>게다가 검사들이 <b>여기저기 흩어져</b> 있어요(공격은 <code>CombatSystem</code>, 스킬은 <code>SkillUseHandler</code>+<code>SkillSystem</code>).
+     그래서 새 기술을 추가할 때마다 검사를 손으로 다시 끼워 넣어야 합니다. <b>"단일 입구"</b>는 이걸 정문 하나로 모으자는 거예요.</p>
+
+  <h2>2. 옵션 A — <span class="badgeA">빠진 검사만 추가 (점진)</span></h2>
+  <div class="card">
+    <p style="margin:0 0 10px">지금 빠진 <b>① 상태 검사만</b> 정문에 새로 세우고, 모든 공격·스킬이 그걸 먼저 거치게 해요.
+      쿨다운·클래스는 <b>지금 자리에서 잘 돌고 있으니 그대로</b> 둡니다.</p>
+    <div class="flow">
+      <div class="node"><span class="t">패킷</span><span class="d">공격/스킬</span></div>
+      <div class="arrow">→</div>
+      <div class="node new"><span class="t">🆕 상태 검사</span><span class="d">AcceptsAction<br>(공통 첫 관문)</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><span class="t">공격 경로</span><span class="d">쿨다운(ms)<br>그대로</span></div>
+      <div class="node"><span class="t">스킬 경로</span><span class="d">클래스+쿨다운(tick)<br>그대로</span></div>
+      <div class="arrow">→</div>
+      <div class="node exec"><span class="t">실행</span></div>
+    </div>
+    <p class="small" style="margin:8px 0 0"><b class="emg">새로 만드는 것:</b> <code>ActorState.AcceptsAction()</code> 정책 +
+      두 진입 경로 맨 앞의 공통 한 줄. <b class="emg">건드리는 것:</b> 거의 없음(쿨다운·클래스 무손상).</p>
+  </div>
+
+  <h2>3. 옵션 B — <span class="badgeB">검사 전부 한 곳으로 통합 (full)</span></h2>
+  <div class="card">
+    <p style="margin:0 0 10px">①②③을 <b>정문 하나</b>(<code>ActionGate.TryPerform</code>)로 모읍니다. plan 원안 모양이에요.</p>
+    <div class="flow">
+      <div class="node"><span class="t">패킷</span><span class="d">공격/스킬</span></div>
+      <div class="arrow">→</div>
+      <div class="node gate" style="min-width:200px">
+        <span class="t">🛂 ActionGate.TryPerform</span>
+        <span class="d">① 상태 &nbsp; ② 쿨다운(틱 통일)<br>③ 클래스 &nbsp; ④ rewind</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node exec"><span class="t">Execute*</span><span class="d">순수 실행<br>(검증 분리)</span></div>
+    </div>
+    <p class="small" style="margin:6px 0 10px">↑ 쿨다운·클래스 값은 <b>메타 테이블 하나</b>(행동별 쿨다운+요구 클래스 단일 진실)에서 읽음.</p>
+    <pre>enum ActionKind { Melee, Dash, Teleport, Thunderbolt }
+
+// 행동 메타 단일 진실
+Melee       → 쿨다운 10틱(=500ms),  클래스 무관
+Dash        → DashCooldownTicks,    Knight
+Thunderbolt → ...,                  Mage
+
+bool TryPerform(player, kind, clientTick):
+    if (!player.CurrentState.AcceptsAction(kind))            return false;  // ①
+    if (currentTick - player.LastActionTick(kind) &lt; CD(kind)) return false;  // ② 틱 통일
+    if (kind.RequiredClass != null
+            &amp;&amp; player.Class != kind.RequiredClass)           return false;  // ③
+    if (!ValidateRewind(clientTick, currentTick))           return false;  // ④
+    player.SetLastActionTick(kind, currentTick);
+    return true;   // 통과 → 호출자는 Execute*(실행)만</pre>
+    <p class="small" style="margin:0">SRP: <b>상태</b>=정책 선언 / <b>게이트</b>=검사 / <b>실행</b>=mutation 으로 책임 3분할.
+       지금 검증+실행이 섞인 <code>ProcessAttack</code>/<code>ProcessDash</code>를 쪼개야 함.</p>
+  </div>
+
+  <h2>4. 진짜 갈림목 — 공격 쿨다운의 "시계"</h2>
+  <p>B가 위험한 단 하나의 이유예요. 두 검사가 <b>서로 다른 시계</b>를 씁니다:</p>
+  <div class="twoclock">
+    <div class="clock">
+      <h4>⏱️ 공격 쿨다운 = 벽시계(밀리초)</h4>
+      <p class="small" style="margin:0"><code>Environment.TickCount64</code>로 "정확히 500ms 지났나"를 잼.
+        서버 컴퓨터의 <b>실제 시간</b> 기준 (<code>CombatSystem.cs:45</code>).</p>
+    </div>
+    <div class="clock">
+      <h4>🎮 스킬 쿨다운 = 게임 틱</h4>
+      <p class="small" style="margin:0"><code>map.CurrentTick</code>으로 "몇 틱 지났나"를 잼.
+        게임 진행 기준 (<code>SkillSystem.cs:82</code>).</p>
+    </div>
+  </div>
+  <p>B로 한 입구에 합치려면 <b>공격도 게임 틱(10틱)으로 바꿔야</b> 해요. 평소 20TPS면 10틱=500ms로 같지만,
+     서버가 순간 버벅여 틱이 밀리면 체감 간격이 살짝 달라질 수 있어요. 무엇보다 이 코드가
+     <b class="emr">공격 스팸을 막는 rate-limit(핵 방어)</b>이라, 손대면 관련 테스트를 전부 다시 맞춰야 합니다.
+     <b>← P1에서 가장 위험한 한 수.</b></p>
+
+  <h2>5. 한눈에 비교</h2>
+  <table>
+    <tr><th>항목</th><th>A · 점진 (상태 검사만)</th><th>B · full (전부 통합)</th></tr>
+    <tr><td>새로 만드는 것</td><td class="a">상태 게이트 1개</td><td class="b">입구 + 메타테이블 + 실행분리</td></tr>
+    <tr><td>쿨다운 시계</td><td class="a">그대로 (ms·틱 공존)</td><td class="b">틱 통일 (공격 rate-limit 수술)</td></tr>
+    <tr><td>일관성·확장성</td><td class="a">보통 — 새 기술 시 2곳 손봄</td><td class="b">최고 — 새 기술 = 테이블 한 줄</td></tr>
+    <tr><td>신뢰 경계(보안) 위험</td><td class="a"><span class="pill low">작음</span></td><td class="b"><span class="pill high">큼</span></td></tr>
+    <tr><td>회귀 테스트 표면</td><td class="a"><span class="pill low">좁음</span></td><td class="b"><span class="pill mid">넓음</span></td></tr>
+    <tr><td>"버그 봉합"(대쉬 중 평타)</td><td class="a">✅ 해결</td><td class="b">✅ 해결</td></tr>
+    <tr><td>P1 무게</td><td class="a">가벼움</td><td class="b">무거움</td></tr>
+  </table>
+
+  <div class="rec">
+    <h3 style="margin-top:0">💡 추천 — A로 깔고, '쿨다운 통일'은 따로</h3>
+    <p style="margin:0 0 8px">진짜 빠진 건 <b>① 상태 검사 하나</b>뿐이고 ②③은 멀쩡히 돌아요. 이 코드는
+      <b>신뢰 경계(클라가 보낸 걸 못 믿고 검증하는 보안 코드)</b>라 적게 건드릴수록 안전합니다.</p>
+    <p style="margin:0 0 8px">B의 "한 테이블·한 입구"는 분명 더 이상적인 <b>최종 형태</b>예요. 하지만 그 매력의 대부분은
+      <b>'쿨다운 일원화'</b>에서 오는데, SRP로 보면 그건 '상태 게이트'와 <b>다른 관심사</b>라 별도 리팩토링으로 떼는 게 맞아요.
+      P1에서 공격 rate-limit까지 통째로 뜯으면 위험·회귀가 같이 커집니다.</p>
+    <p style="margin:0"><b>제안:</b> <span class="badgeA">P1 = A</span>(상태 게이트 + <code>LungeDecayPerTick</code> 상태 소유 봉합)로 토대를 깔고,
+      <b>'쿨다운 단일 입구 통합'은 나중에 작은 독립 리팩토링</b>으로. 그래도 "이왕 하는 거 한 번에"가 좋으면
+      <span class="badgeB">B</span>도 합리적 — 대신 P1이 무거워지는 걸 감수하면 됩니다.</p>
+  </div>
+
+  <hr>
+  <p class="small">이 문서는 P1 착수 전 의사결정 자료입니다. 결정되면 그 방향으로 설계를 확정하고
+     server/shared/client Worker에 구현을 위임합니다. — <code>01_Phases/youngho/M4.13-impulse-class/p1-gate-architecture.html</code></p>
+
+</div>
+</body>
+</html>

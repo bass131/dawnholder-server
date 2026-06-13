@@ -82,8 +82,8 @@ risk_flags: [trust-boundary]
 
 ### 단계 분할 (server 먼저, client 후)
 
-- **P1-server** (이번): §1~8 + trust-boundary. server+shared 구현 → reviewer → 회귀.
-- **P1-client** (server 권위 확정 후): 클라 입력 측이 `ActionKind` 허용 표 참조해 헛입력 차단(UX). shared 공유.
+- **P1-server** ✅완료 (`11b5baf`): §1~8 + trust-boundary. server+shared 구현 → reviewer 🔴0 → WSL2 561/0.
+- **P1-client** (이번 — 아래 "P1-client 확정 범위" 참조): 행동 입력 통합 게이트 = 서버 `AcceptsAction`의 클라 거울.
 
 ---
 
@@ -93,19 +93,58 @@ risk_flags: [trust-boundary]
 2. **서버 단일 입구** — `TryPerformAction`(위치: Systems 신설 또는 GameMap 경로 — 착수 시 SRP로 결정). `ProcessAttack`/`SkillSystem` 진입을 이 입구 뒤로.
 3. **`Maps/Systems/CombatSystem.cs`** — 평타 진입을 단일 입구 경유로. `:75` LungeDecayPerTick 직접 세팅 제거(상태 Enter/Exit 소유로 이관).
 4. **`98_Shared`** — 행동 허용 표(`SkillCatalog` 확장 또는 신설). **wire 무변경 점검(§2, v12 유지)** — 상수/표만 추가면 직렬화 형상 불변.
-5. **클라 거울** — 클라 입력 측(`LocalPlayerInput`/`SkillCastHandler`)이 같은 표 참조해 헛입력 차단.
+5. **클라 거울** (P1-client) — `LocalPlayerInput` 송신 게이트(`OnAttack`/`TrySendSkill`)에 행동 잠금 판정 추가. 상세 = 아래 "P1-client 확정 범위".
+
+---
+
+## P1-client 확정 범위 (2026-06-13 — 실측 후 영호 확정)
+
+> P1-server 완료 후 클라 거울 범위를 정하려 클라 입력/예측 코드 실측(`LocalPlayerInput.cs`·`LocalPlayerMovement.cs`). **compact 전 "(2) ghost = serverTick 추정 필요 → P5 예측과 닿을 수 있음" 진단은 실측으로 정정됨** — 이동 게이트가 이미 로컬 타이머로 ghost 없이 작동 중이라 그 영역을 안 건드린다.
+
+### 실측 — 이미 작동 중인 거울
+
+- **클래스 거울** ✅ — `SkillCatalog.CanCast` @ `LocalPlayerInput.cs:136` (내 클래스 못 쓰는 스킬 송신 차단).
+- **쿨다운 거울** ✅ — 평타 `CanAttack`(`LocalPlayerMovement.cs:54`) + 스킬별 `CanUseDash/Skill/Teleport`(`:63-65`), 로컬 타이머 감쇠(`Constants` 거울).
+- **이동 잠금 거울** ✅ — `_commitWindowRemaining`(`:42`, `NotifyAttack`이 즉시 세팅 `:175`) + `IsMovementLocked(localLock, serverAnimState)`(`:218-224`) **로컬 타이머 OR 서버 AnimState 하이브리드**. source-gating(`:281-286`)이 잠금 시 moveX/jumpEdge를 근원 0. **로컬 타이머가 즉시 잠그므로 ghost 없음** — 서버 AnimState는 "더 길면 연장"하는 보정용.
+
+### 진짜 갭 — 행동 입력 통합 게이트 부재
+
+- `OnAttack`(`LocalPlayerInput.cs:90`) = **평타 쿨다운(`CanAttack`)만** 검사.
+- `TrySendSkill`(`:139-150`) = **스킬별 쿨다운만** 검사 — 각 독립.
+- → **"지금 행동 중이니 _모든_ 행동입력 차단"** 통합 게이트가 없다. 평타 commit window 중 스킬이 나가고(`NotifyAttack`/`NotifyChannel`이 다른 쿨다운 미소비), 채널링 중 평타가 나간다. 서버 `ActionGate.AcceptsAction(kind)`의 클라 거울 부재.
+
+### 해법 (확정) — 기존 이동 잠금 조건 재사용
+
+- `LocalPlayerMovement`가 "행동 잠금 중?" 단일 판정을 프로퍼티로 노출(= `IsMovementLocked`와 **동일 조건**: 로컬 타이머 OR 서버 AnimState Attack/Hit/Death).
+- `OnAttack` + `TrySendSkill` 송신 게이트에 그 판정 추가 → 잠금 중이면 행동입력도 차단.
+- **ghost 없음**(평타/스킬 친 순간 `NotifyAttack`/`NotifyChannel`이 로컬 타이머 즉시 세팅), **wire 무변경**, **P5 위치 예측과 무관**(위치 reconciliation이 아니라 입력 게이팅 — 인프라는 M4.11에서 검증됨).
+- 서버 `AcceptsAction`이 현재 Attack/Hit/Death에서 _모든_ kind에 false → 클라 "잠금 중이면 모든 행동 차단"이 1:1 거울. `ActionKind`별 세분 게이트는 불필요(미래 비트마스크 확장 여지).
+
+### P2로 이월 — Dash 중 ghost
+
+- `NotifyDash`(`:193-196`)는 로컬 commit window 타이머를 **안 세팅**(주석: Dash는 서버 force-adopt 경로로 흡수). → Dash 중 행동입력 차단은 서버 AnimState=Attack 도착까지 lag만큼 ghost.
+- Dash 지속(고정거리 등속)이 **P2 임펄스 모델에서 재정의**되므로, Dash 로컬 잠금 타이머는 P2와 한 묶음(P1에서 안 건드림 — 영호 확정).
 
 ---
 
 ## 완료 조건 / 게이트 (정량)
 
-- [ ] `ActorState.AcceptsAction` 존재 + 상태별(Attack/Hit/Dash/Idle) 허용 표 명시.
-- [ ] 서버 행동 진입(평타·스킬)이 **단일 입구**를 거침 — grep으로 입구 1곳·우회 0건 제시.
-- [ ] **Dash commit window 중 평타 거부** EditMode 테스트 green(현재 허용되던 구멍 봉합 증명).
-- [ ] `LungeDecayPerTick` **호출자 직접 세팅 0건**(grep) — 상태 Enter/Exit 소유로 이관.
-- [ ] 클래스 게이트(M4.9 P02) 중복 검증 제거 — 단일 입구에 흡수.
-- [ ] 회귀 green: WSL2 build+test 비감소(baseline 561/0) + EditMode 기존 가드 통과 + 봇 회귀.
-- [ ] reviewer 재검증(trust-boundary): §1 입구 서버 권위 / §3 클래스·쿨다운·소유권 검증 유지 / 신뢰 경계 우회 0.
+### P1-server ✅완료 (`11b5baf`)
+
+- [x] `ActorState.AcceptsAction` 존재 + 상태별(Attack/Hit/Death override `=> false`) 허용 표.
+- [x] 서버 행동 진입(평타·스킬)이 **단일 입구**(`ActionGate`)를 거침 — 우회 0건.
+- [x] **Dash commit window 중 평타 거부** — `KnightDashTests` green(구멍 봉합 증명).
+- [x] `LungeDecayPerTick` **호출자 직접 세팅 0건** — `AttackState.Enter` 소유로 이관.
+- [x] 클래스 게이트(M4.9 P02) 중복 검증 제거 — `ActionGate`에 흡수.
+- [x] 회귀 green: WSL2 561/0 비감소. reviewer 재검증 🔴0(trust-boundary §1·§3 유지).
+
+### P1-client (이번)
+
+- [ ] `LocalPlayerMovement`가 "행동 잠금 중?" 단일 판정을 프로퍼티로 노출(= `IsMovementLocked` 동일 조건: 로컬 타이머 OR 서버 AnimState Attack/Hit/Death).
+- [ ] `OnAttack`/`TrySendSkill` 송신 게이트에 행동 잠금 판정 추가 — 잠금 중 행동입력(평타+스킬) 차단(grep으로 **두 게이트 모두** 적용 확인).
+- [ ] EditMode 테스트 — 행동 잠금 중 행동입력 차단(`ResolveGatedInput`처럼 순수 함수 추출, MovementGate 테스트와 동형).
+- [ ] 2-client Play 검증 — 평타 commit window 중 스킬/평타 헛입력이 서버로 **안 나감**(헛입력 즉시 차단 UX).
+- [ ] 클라 컴파일 green(헌법 §4 양쪽 컴파일) + `Shared.dll`/`ClientNet.dll` sync(co-review 판단은 PR 단계 — [[shared-dll-triggers-client-co-review]]).
 
 ---
 
