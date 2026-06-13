@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.13
 phase: 02-server-impulse-model
 title: 서버 임펄스 모델 통일 — dash/knockback/lunge ExternalVelX 일관화 + 대쉬 고정거리 등속
-status: planned
+status: in-progress
 grade: 복잡
 slug: 02-server-impulse-model
 created: 2026-06-13
@@ -26,33 +26,61 @@ risk_flags: [trust-boundary]
 
 ---
 
-## 증거 사슬 (현재 코드 실측 — 2026-06-13)
+## 증거 사슬 (현재 코드 실측 — 2026-06-13, **P1 적용 후 브랜치 `feature/m4.13-impulse-class` 기준 재실측**)
+
+> ⚠️ 옛 표는 main `2433ab5`(P1 전) 좌표라 stale이었음 — P1이 `ProcessDash`를 `DashAction`으로 이관하고 lunge/decay를 `AttackState.Enter` 소유로 옮기며 줄번호가 이동. 아래는 현재 브랜치 실측(carry-over "박제/추천 전 file:line 실측").
 
 | 링크 | 결정적 증거 (`파일:줄`) | 내용 |
 |---|---|---|
-| 1. 대쉬 모멘텀 감속 | `Maps/Systems/SkillSystem.cs:74-140`(ProcessDash) · `:95`(LungeDecayPerTick = DashLungeDecayPerTick) | Dash 진입 시 초기 vx 세팅 + 감쇠 계수 부여. |
-| 1b. 매 틱 곱셈 감속 | `Maps/States/PlayerCombatStates.cs:38-39`(AttackState.Tick: `*= LungeDecayPerTick`) | 매 틱 vx 곱셈 → 모멘텀 감속(고정거리 아님). |
-| 2. 대쉬 상수(서버 전용) | `Combat/CombatConstants.cs:100`(DashLungeInitialVx=10.0f)/`:106`(DashLungeDecayPerTick=0.85f)/`:27`(AttackLungeInitialVx=3.0f) | **02_Server 전용** — P4에서 공유 추출 대상. |
-| 3. 넉백 임펄스 | `Constants.cs:79`(KnockbackInitialVx=7f)/`:93`(KnockbackDecayPerTick=0.75f)/`:87`(ExternalImpulseEpsilon=0.05f) · `PlayerCombatStates.cs:72-77`(HitState 넉백 감쇠+클램프) | 넉백은 **이미 Shared 상수** + ε 클램프(M4.11 P2). |
-| 4. ExternalVelX 합성·채널 | `Maps/GameMap.cs:244`(`ExternalVelX = KnockbackVx + AttackLungeVx`) · `98_Shared/GameData/Physics.cs:148`(`vx = InputX*MoveSpeed + ExternalVelX`) | 임펄스 합성 + 물리 채널 **이미 존재**(통일의 토대). |
+| 1. 대쉬 진입(모멘텀 감속) | `Maps/Actions/DashAction.cs:22-24`(`EnterAttackState(DashLungeInitialVx×Facing, DashLungeDecayPerTick)`) | **P1에서 `ProcessDash`→`DashAction` 이관.** 대쉬 진입 시 초기 vx + 감쇠 계수를 AttackState에 위임. |
+| 1b. 매 틱 곱셈 감속 | `Maps/States/PlayerCombatStates.cs:50-52`(AttackState.Tick: `AttackLungeVx *= LungeDecayPerTick` + ε 클램프) | 매 틱 vx 곱셈 → 모멘텀 감속(고정거리 아님). `StateTicksRemaining`=`AttackCommitWindowTicks`(8) 윈도우. |
+| 2. 대쉬 상수(서버 전용) | `Combat/CombatConstants.cs:103`(DashLungeInitialVx=10.0f)/`:109`(DashLungeDecayPerTick=0.85f)/`:27`(AttackLungeInitialVx=3.0f)/`:114`(DashBoxHalfX=2.5f) | **02_Server 전용** — P4에서 공유 추출 대상. |
+| 3. 넉백 임펄스 | `98_Shared/GameData/Constants.cs:79`(KnockbackInitialVx=7f)/`:93`(KnockbackDecayPerTick=0.75f)/`:87`(ExternalImpulseEpsilon=0.05f) · `PlayerCombatStates.cs:89-91`(HitState 넉백 감쇠+ε 클램프) | 넉백은 **이미 Shared 상수** + ε 클램프(M4.11 P2 force-adopt 계약). |
+| 4. ExternalVelX 합성·채널 | `Maps/GameMap.cs:244`(`ExternalVelX = KnockbackVx + AttackLungeVx`) · `98_Shared/GameData/Physics.cs:148`(`vx = InputX*MoveSpeed + ExternalVelX`) · `PlayerEntity.cs:121`(AttackLungeVx)/`:128`(LungeDecayPerTick) | 임펄스 합성 + 물리 채널 **이미 존재**(통일의 토대). 두 필드는 상호배타 State(Hit vs Attack)라 합=활성값. |
 
 ---
 
-## 설계 방향 (착수 시 확정 — 골격)
+## 확정 설계 (영호 GO — 2026-06-13)
 
-- **고정거리 등속(영호 ②)** — 대쉬를 "초기 vx × 0.85^t 감속"에서 **"고정 거리 D를 빠른 등속 V로 N틱"**으로. D/V 상수 신설(매직넘버 금지). 거리 도달 또는 틱 카운트로 종료(상태 소유 — P1 위).
-- **임펄스 표현 일관화** — dash/knockback/lunge가 모두 `ExternalVelX` 채널 + "지속 틱/감속 정책"을 **상태가 소유**(P1 데이터 소유). 차이는 *시작 파라미터*(대쉬=등속 D/V, 넉백=감속 vx)만.
-- **`LungeDecayPerTick` 호출자 직접 세팅 잔재 제거** — P1에서 상태 소유로 옮긴 것 위에서, 대쉬 등속 전환으로 `DashLungeDecayPerTick` 자체가 의미를 잃으면 정리(착수 시 확정).
-- **wire 무변경** — 임펄스는 `S_Snapshot.vx`로 이미 실림(서버 권위 위치). 모델 통일이 패킷 형상 안 건드림(§2 v12 유지).
+### A. 임펄스 모델 통일 — 단일 필드 + 단일 감쇠 경로
+
+현재 `KnockbackVx`(HitState) + `AttackLungeVx`(AttackState)는 **상호배타**(둘 다 0 또는 하나만 활성)인데도 필드가 2개라 `GameMap.Tick:244`에서 합으로 더해 쓴다. 셋(평타 lunge/대쉬/넉백)이 전부 "초기 vx → 매 틱 감쇠 → ε 미만이면 0"의 **동일 기계**다.
+
+→ **두 필드를 단일 `ExternalImpulseVx` + `ImpulseDecayPerTick`으로 병합.** 감쇠 1틱 로직(`vx *= decay; if |vx| < ε → 0`)을 **단일 경로**(공유 헬퍼 또는 `PlayerEntity` 메서드)로 추출해 AttackState/HitState가 같은 것을 호출.
+- **왜**: P5(클라 예측 B)가 서버 임펄스 궤적을 *비트단위 재현*해야 함 → replay 기계가 하나면 결정성 계약도 하나. 두 필드/두 경로면 재현 버그 위험 2배(★마일스톤 핵심 리스크).
+- **DRY 정당성(§2.5)**: 두 감쇠는 *우연한 중복*이 아니라 **같은 임펄스 감쇠 계약**(같은 ε, 같은 force-adopt 계약) → 추출 정당.
+- **넉백 ε 계약 비트단위 보존**: HitState의 `KnockbackDecayPerTick(0.75)` + `ExternalImpulseEpsilon(0.05)` 클램프 거동은 **M4.11 P2 클라 force-adopt 계약**이므로 통일 후에도 *동일 결과* 보장(grep/테스트로 거동 불변 입증).
+
+### B. 대쉬 거동 — 모멘텀 감속 → 고정거리 등속 (영호 6결정 ②, 메이플 러시)
+
+통일 모델에서 **감쇠계수 = 1.0**을 주면 자연히 "등속" 케이스 → 대쉬는 감쇠 대신 고정 틱 동안 같은 속도 유지 후 상태 종료 시 정지(Exit가 임펄스 0).
+
+| 항목 | 값 | 근거 |
+|---|---|---|
+| 등속 속도 V | **10.0 u/s** (현행 `DashLungeInitialVx` 첫 틱 속도 그대로) | "감쇠를 빼고 첫 틱 속도를 끝까지 유지" = 직관적 전환 |
+| 지속 틱 N | **8틱** (= `AttackCommitWindowTicks`, 0.4s) | 현행 대쉬 지속과 동일 |
+| **고정 거리 D** | **= V × N × TickDuration = 10 × 8 × 0.05 = `4.0 unit`** (파생값, 매직넘버 아님) | 현행 모멘텀 ~2.43 → 4.0. 끝까지 안 느려지는 "확실히 꽂히는" 러시 |
+
+- **상수화**: `DashLungeInitialVx(10)` → 의미 재정의(`DashSpeed`, 등속). `DashLungeDecayPerTick(0.85)` → **등속이라 1.0(또는 의미 소멸 정리)**. `D=4.0`은 V·N·TickDuration 파생이므로 별도 매직넘버 박지 않음(주석으로 도출 명시).
+- **N 상수 분리 판단**: 대쉬 지속을 `AttackCommitWindowTicks`(commit window 의미)와 *결합 유지* vs *전용 `DashTravelTicks` 분리*는 Worker 판단(의미가 다르면 분리 — 클린코드 SRP). 단 D 도출식은 사용한 상수로 명시.
+- **`DashBoxHalfX(2.5)` 타격 박스**: 거리 4.0로 늘어도 박스는 시전 시점 1회성 임팩트 판정이라 독립. 거리 변경에 맞춰 키울지는 **Play 튜닝 후속**(이 Phase 비차단).
+
+### C. 불변식
+
+- **wire 무변경** — 임펄스 결과는 `S_Snapshot.vx`로 이미 실림(서버 권위 위치). 필드 병합/상수 재정의 전부 서버 내부. PDL/ProtocolVersion **v12 무손상**(§2). 건드리면 STOP.
+- **`LungeDecayPerTick` 호출자 직접 세팅 잔재** — P1에서 `AttackState.Enter` 소유로 이미 봉합. 대쉬 등속 전환 후 `DashLungeDecayPerTick` 잔재 0 확인.
+- **단일 도메인** — 본 Phase는 **server만**(98_Shared 상수는 *읽기*만, 공유 추출은 P4). Shared write 0.
 
 ---
 
-## 변경 대상 (파일별 — 착수 시 확정)
+## 변경 대상 (파일별 — post-P1 실측 좌표)
 
-1. **`SkillSystem.cs:74-140`(ProcessDash)** — 모멘텀 감속 → 고정거리 등속 진입 로직.
-2. **`Combat/CombatConstants.cs`** — `DashFixedDistance`/`DashSpeed`(또는 유사) 신설, `DashLungeInitialVx/Decay`는 P4 공유 추출까지 서버 유지(이 Phase는 거동, P4가 위치 이동).
-3. **`PlayerCombatStates.cs:38-39`** — 대쉬 상태의 감속 곱셈 → 등속/거리 종료 로직(상태 소유).
-4. **`GameMap.cs:244`** — ExternalVelX 합성 일관성 점검(대쉬 등속도 같은 채널 경유).
+1. **`Maps/PlayerEntity.cs:121/128`** — `AttackLungeVx` + `KnockbackVx` → 단일 `ExternalImpulseVx`, `LungeDecayPerTick` → `ImpulseDecayPerTick`. 리셋(`:261-262`) 동기화. 감쇠 1틱 헬퍼 메서드 후보 위치.
+2. **`Maps/States/PlayerCombatStates.cs:43-44/50-52`(AttackState) + `:89-91`(HitState)** — 두 State가 단일 필드 + 단일 감쇠 경로 호출. AttackState=등속(대쉬)/감속(평타) 파라미터, HitState=넉백 감속(ε 계약 보존).
+3. **`Maps/Actions/DashAction.cs:22-24`** — `EnterAttackState(DashSpeed×Facing, decay=1.0)` 등속 진입.
+4. **`Combat/CombatConstants.cs:103/109/114`** — `DashLungeInitialVx(10)`→`DashSpeed`(등속 의미), `DashLungeDecayPerTick(0.85)`→1.0/정리, `D=4.0` 도출 주석. (`DashLungeInitialVx/Decay` 공유 추출은 P4 — 이 Phase는 서버 유지.)
+5. **`Maps/GameMap.cs:244`** — `ExternalVelX = KnockbackVx + AttackLungeVx` → `ExternalVelX = ExternalImpulseVx`(단일 필드, 합 제거).
+6. **`GameServer.Tests/Combat/KnightDashTests.cs`** — 필드명/거동 변경 반영 + 고정거리 도달 거리(±오차) 검증 테스트 추가(또는 신규 DashDistance 테스트).
 
 ---
 
