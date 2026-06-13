@@ -307,10 +307,15 @@
     <!-- M4.8 Phase 01 [Protocol.Version v10→v11]: 스킬 발동 요청(클라→서버). 평타(C_Attack)와 별개 채널.
          **헌법 #3 (Trust Boundary)**: skillId는 untrusted — 서버가 범위 검증(1=Thunderbolt만, 그 외 silent drop=cheat 후보)
          + 쿨다운 서버 권위 판정. 패킷에 데미지/타겟 박지 않음 — 서버가 공격자 위치 기준 박스 스캔으로 대상 확정.
-         **attackerClientTick**: lag-comp rewind 기준(C_Attack 패턴 정합). -->
+         **attackerClientTick**: lag-comp rewind 기준(C_Attack 패턴 정합).
+         **facing** (M4.13 [Protocol.Version v12→v13] append, 0=left/1=right — S_SkillCast 컨벤션 재사용):
+         대쉬 방향 권위. 방향전환 직후 대쉬는 서버 FacingDir이 C_MoveIntent 입력 큐 지연으로 옛 방향이라
+         클라 예측(화면 방향)과 반대로 튀어 reconcile 클러스터 발생 → 클라 화면 방향을 동봉해 서버가 대쉬
+         임펄스 방향으로 사용(서버는 부호 정규화, cheat 무해 — 거리 고정·벽통과 불가). 대쉬만 사용. -->
     <packet name="C_SkillUse">
         <byte name="skillId"/>
         <int name="attackerClientTick"/>
+        <byte name="facing"/>
     </packet>
 
     <!-- M4.8 Phase 01 [Protocol.Version v10→v11]: 스킬 *캐스팅 연출* 통보(서버→클라). **타격 목록 없음**.

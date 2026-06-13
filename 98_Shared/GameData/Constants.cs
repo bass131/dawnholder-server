@@ -92,6 +92,18 @@ public static class Constants
     /// </summary>
     public const float KnockbackDecayPerTick = 0.75f;
 
+    /// <summary>대쉬 등속 이동 속도 (units/s). 감쇠 없이 DashTravelTicks 동안 유지.
+    /// 클라 prediction(P5)도 같은 값으로 replay — 서버 전용이면 무한 drift. 서버 권위(헌법 #1) 유지.</summary>
+    public const float DashSpeed = 10.0f;
+
+    /// <summary>대쉬 등속 이동 지속 틱 수. 고정 이동 거리 D = DashSpeed × DashTravelTicks × TickDuration = 10 × 8 × 0.05 = 4.0 unit.
+    /// DashAction → EnterAttackState(durationTicks: DashTravelTicks)로 AttackState 지속 제어.</summary>
+    public const int DashTravelTicks = 8;
+
+    /// <summary>근접(Knight) 스윙 전방 lunge 초기 수평 속도 (units/s). FacingDir 부호와 함께 적용, KnockbackDecayPerTick로 감쇠.
+    /// 클라 replay 공유 — Mage는 제외(전진 없음).</summary>
+    public const float AttackLungeInitialVx = 3.0f;
+
     /// <summary>
     /// 보스 페이즈 1 공격 예고 틱 (telegraph). 16틱 = 800ms @20TPS.
     /// telegraph 타이밍 단일 출처.

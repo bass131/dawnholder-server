@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>M4.13 — 임펄스 동작 클래스 재설계 마일스톤 마감</title>
+<style>
+ body { font-family: -apple-system, 'Segoe UI', 'Malgun Gothic', sans-serif; max-width: 940px; margin: 40px auto; padding: 0 24px; line-height: 1.75; color: #1a1a2e; }
+ h1 { border-bottom: 3px solid #16213e; padding-bottom: 12px; }
+ h2 { color: #0f3460; margin-top: 40px; border-left: 5px solid #e94560; padding-left: 12px; }
+ h3 { color: #16213e; margin-top: 24px; }
+ table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.95em; }
+ th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; vertical-align: top; }
+ th { background: #16213e; color: #fff; }
+ code { background: #f0f0f5; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; }
+ .tldr { background: #f0f7ff; border-left: 5px solid #0f3460; padding: 16px 20px; border-radius: 6px; }
+ .ok { color: #1a7f37; font-weight: bold; }
+ blockquote { border-left: 4px solid #aaa; margin-left: 0; padding-left: 16px; color: #555; }
+ .meta { color: #666; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<h1>M4.13 — 임펄스 동작 클래스 재설계 — ✅ 마일스톤 마감</h1>
+<p class="meta"><b>마감 일자</b>: 2026-06-14 · <b>Phase</b>: 6/6 완료 · <b>등급</b>: 대규모 · <b>브랜치</b>: <code>feature/m4.13-shared-extract</code> (P1~P3+하네스 main <code>#107</code> 위, P4~P6 7 commit)</p>
+
+<div class="tldr">
+<b>TL;DR</b> — "클라가 예측 못 하는 서버 임펄스 동작(대쉬·넉백·임펄스공격)"이 매 스냅샷 <code>forceAdopt</code>로 끌려와 50ms 시각 스터터를 내던 <b>클래스 공통 문제</b>를, 하나의 시스템으로 통일했다. 행동 입력 게이트(P1) → 서버 임펄스 단일 모델(P2) → 대쉬 거동 재설계(P3) → 공유 공식 추출(P4) → 클라 하이브리드 예측 + 크러치 제거(P5) → 통일 서사 완성(P6). <b>대쉬·lunge는 클라가 직접 예측</b>(forceAdopt 499/500 → 0, 손맛 "엄청 좋다"), <b>넉백은 server-reactive라 forceAdopt 채택이 표준</b>으로 원리를 닫았다. 회귀 WSL2 <span class="ok">569/0</span> + EditMode <span class="ok">122/0</span> + reviewer 6축 0위반.
+</div>
+
+<h2>5단계 보고</h2>
+
+<h3>1. 무엇을 만들었나</h3>
+<table>
+<tr><th>Phase</th><th>등급</th><th>핵심 산출물</th><th>commit</th></tr>
+<tr><td>P1 행동 입력 게이트</td><td>대규모·trust-boundary</td><td><code>ActionKind</code>+<code>IGameAction</code>+<code>ActionGate</code> 단일 입구(상태 허용·쿨다운·클래스·rewind 한 곳), <code>ActorState.AcceptsAction</code> 상태 정책, 상태가 임펄스 데이터 소유(<code>0.85</code> 잔류 사고 봉합)</td><td><code>11b5baf</code> 외</td></tr>
+<tr><td>P2 서버 임펄스 모델</td><td>복잡·trust-boundary</td><td>단일 <code>ExternalImpulseVx</code>+<code>DecayImpulse()</code> 경로, 대쉬 고정거리 등속 D=4.0(<code>DashTravelTicks</code>)</td><td><code>cf0f739</code>+<code>15ea8b8</code></td></tr>
+<tr><td>P3 대쉬 거동</td><td>복잡·trust-boundary</td><td>적 밀침(허딩 — <code>KnockbackVx</code> 채널 재사용, Boss 면역) + 완전 무적(<code>InvulnUntilTick</code> 데미지 전 게이트)</td><td><code>860f5a2</code>+<code>f35814c</code></td></tr>
+<tr><td>P4 공유 추출</td><td>보통</td><td><code>DashSpeed</code>/<code>AttackLungeInitialVx</code>→<code>Constants</code>, 감쇠→<code>Physics.DecayImpulse</code> 순수함수(복붙 silent drift 차단 = P5 안전망)</td><td><code>3403f38</code></td></tr>
+<tr><td>P5 클라 예측 통일</td><td>대규모·핵심 리스크</td><td>하이브리드 임펄스 예측(live=계산/replay=저장값) + forceAdopt 크러치 제거 + 대쉬 방향 정렬(<code>C_SkillUse.facing</code> v13) + 원격 스킬 모션</td><td>5 commit (~<code>fc50711</code>)</td></tr>
+<tr><td>P6 클래스 통합</td><td>복잡</td><td>통일 서사 완성 — 넉백 forceAdopt 영구 채택(안 B), 명문화 주석 3곳(거동 0), 전체 회귀 마감</td><td>명문화 1 commit</td></tr>
+</table>
+
+<h3>2. 왜 필요한가</h3>
+<p>M4.11 백로그 SnapThreshold Play 실측 중 대쉬에서 <b>20Hz 뚝뚝 끊김</b>(시각 스터터)이 발견됐다. 근본 원인은 대쉬 하나가 아니라 <b>클래스 공통</b> — 대쉬·넉백·임펄스공격이 모두 <i>클라가 예측 못 하는 서버 임펄스</i>라, 매 스냅샷 <code>forceAdopt</code>로 끌려오고 reconcile 보간 버퍼 리셋이 그걸 매번 지워 50ms 간격 스냅이 됐다(<code>[Reconcile]</code> 500 로그: 단순 이동 오차 0.2칸 vs 대쉬 forceAdopt 499/500). 동시에 "동작 State가 끝나야 입력을 받는 예외 처리가 스킬마다 재발"하는 구조 부재(<code>LungeDecayPerTick 0.85</code> 잔류 사고)도 같은 뿌리 — 상태가 자기 행동·데이터를 소유하지 못해서다.</p>
+
+<h3>3. 어떻게 만들었나</h3>
+<ul>
+<li><b>게이트 토대(P1)</b>: 상태가 <code>AcceptsAction(kind)</code>으로 입장 정책을 소유, 서버 <code>ActionGate</code>가 단일 입구에서 ①상태 허용 ②쿨다운 ③클래스 ④rewind 검사. 호출자가 상태 내부 파라미터를 찔러 넣던 구조 제거(상태 Enter/Exit가 임펄스 데이터 소유).</li>
+<li><b>서버 단일 모델(P2·P4)</b>: <code>EnterAttackState</code>(대쉬/lunge)·<code>EnterHitState</code>(넉백)가 모두 <code>ExternalImpulseVx</code>+<code>ImpulseDecayPerTick</code>을 세팅하고, <code>AttackState.Tick</code>·<code>HitState.Tick</code>이 <b>같은 <code>player.DecayImpulse()</code> 헬퍼</b>(=<code>Physics.DecayImpulse</code> 공유 공식)로 감쇠 → 세 임펄스가 서버에서 한 기계.</li>
+<li><b>클라 하이브리드 예측(P5)</b>: live는 <code>Physics.DecayImpulse</code>로 매 틱 전진(서버 <code>AttackState.Tick</code> 거울), replay는 <code>InputRecord.ExternalVelX</code> 저장값 재생(재계산 금지). <code>forceAdopt</code> Attack 분기 제거로 보간 복원(스터터 소멸). 방향전환 대쉬 클러스터는 <code>C_SkillUse.facing</code>(Protocol v13)으로, 원격 썬더볼트 모션은 Channeling latch로 봉합.</li>
+<li><b>통일 서사 완성(P6)</b>: 클라는 <i>시작점을 아는</i> 임펄스만 예측한다 — 대쉬/lunge는 self-initiated라 시전 틱·방향·지속을 알아 <code>StartImpulse</code>로 직접 예측. 넉백은 server-reactive(피격 신호 RTT 후 도착 + 방향 추론 + hitstun 서버 전용)라 예측 근거가 없어 <code>forceAdopt</code> 채택. "예측이냐 채택이냐"는 우연이 아니라 <b>클라가 시작점을 아느냐의 원리</b>.</li>
+</ul>
+
+<h3>4. 테스트 결과</h3>
+<table>
+<tr><th>게이트</th><th>결과</th></tr>
+<tr><td>WSL2 서버 회귀</td><td class="ok">569/0</td></tr>
+<tr><td>EditMode (클라 예측 결정성)</td><td class="ok">122/0 (state=Passed)</td></tr>
+<tr><td>Unity 컴파일 / 콘솔 error</td><td class="ok">0 / 0</td></tr>
+<tr><td>reviewer Tier 2-A</td><td class="ok">6축 0위반</td></tr>
+<tr><td>Play 검증 (영호, P5 2클라)</td><td>forceAdopt 499/500→0 + 손맛 "엄청 좋다" + 방향전환 대쉬 정상 + 원격 썬더볼트·대쉬 모션 정상</td></tr>
+</table>
+
+<h3>5. 다음 스텝</h3>
+<ul>
+<li><b>마일스톤 전체 PR</b>(영호 명시 GO 게이트): P4~P6 한 브랜치(<code>feature/m4.13-shared-extract</code>) push + <code>gh pr create</code> = irreversible. <code>Shared.dll</code>+<code>ClientNet.dll</code> commit 포함 → 03_Client CODEOWNERS(정유현) co-review 트리거 → admin bypass(사유 박기 + GO).</li>
+<li><b>후속 제안</b>: 임펄스 방향 정보가 필요한 미래 기능(방향 가변 넉백 등)이 생기면 <code>S_EnemyAttack</code> 방향 필드 추가를 별도 마일스톤으로 — 단 현재는 클라 추론으로 충분해 보류.</li>
+</ul>
+
+<h2>AC 검증 결과</h2>
+<table>
+<tr><th>마일스톤 완료 조건</th><th>결과</th></tr>
+<tr><td>임펄스 클래스(대쉬·넉백·임펄스공격) 시스템 통일</td><td class="ok">✅ 서버 단일 경로 + 클라 예측/채택 원리</td></tr>
+<tr><td>대쉬 거동 재설계(고정거리 등속·적 밀침·완전 무적, 영호 6결정)</td><td class="ok">✅ P2·P3</td></tr>
+<tr><td>forceAdopt 크러치 제거(대쉬/lunge) — 빈도 급감</td><td class="ok">✅ 499/500 → 0 (실측)</td></tr>
+<tr><td>공유 공식 단일 출처(§4) — 클라/서버 동일</td><td class="ok">✅ P4 <code>Physics.DecayImpulse</code></td></tr>
+<tr><td>wire 호환(§2) — Protocol</td><td class="ok">✅ v13(P5 facing append, append-only)</td></tr>
+<tr><td>전체 회귀 green</td><td class="ok">✅ WSL2 569/0 + EditMode 122/0 + Unity 0</td></tr>
+</table>
+<p class="meta">검증 명령: WSL2 <code>dotnet test Dawnholder.slnx --no-build</code> → <code>Failed: 0, Passed: 569, Skipped: 4, Total: 573</code>. EditMode = TestRunnerApi <code>[EDITMODE-DONE] passed=122 failed=0 state=Passed</code>.</p>
+
+<h2>결정 흐름</h2>
+<ol>
+<li><b>마일스톤 재구성(2026-06-12)</b>: 행동 입력 게이트를 옛 M4.12에서 본 마일스톤 P1으로 합류 → M4.12 ⟂ M4.13 독립, 자족적 마일스톤.</li>
+<li><b>P3 "신규 충돌 시스템" 오판 정정</b>: 적 밀침이 신규인 줄 알았으나 적 변위 채널(<code>KnockbackVx</code>)이 이미 존재 → 신규 시스템·wire bump 0.</li>
+<li><b>P5 핵심 리스크 = 크러치 제거</b>: forceAdopt 제거 = 안전망 제거. replay가 서버 임펄스 궤적을 비트단위 재현 못하면 영구 offset 누적(M4.11 P2 ε silent break 동류) → P4 공유 공식 + EditMode 결정성 테스트가 안전망.</li>
+<li><b>P5 잔여 클러스터 진단 2단계 진화</b>: 큐 깊이 가설 ❌기각(queueDepth 0~1, offset 로그는 서버틱 vs 클라 카운터 도메인 혼동) → 영호 단서("방향 틀고 대쉬하면 반대로")로 ②facing 불일치 확정 → <code>C_SkillUse.facing</code> v13.</li>
+<li><b>P6 넉백 안 A vs 안 B(영호 결정 B)</b>: 넉백을 예측까지 통일하려 했으나(안 A, 패킷 추가 없이 클라 추론 가능함도 확인), server-reactive 특성상 이득이 작고 방향추론 시각버그 위험. forceAdopt는 서버 권위 100%·위험 0 → <b>넉백 forceAdopt 영구 채택</b>. reviewer 🟡 "넉백 예측 재검토" = 별도 Phase 불필요로 해소.</li>
+</ol>
+
+<h2>학습 일지 후보 키워드</h2>
+<ul>
+<li><b>impulse-class-prediction-boundary</b> — 임펄스 예측 가능성의 경계 = 클라가 시작점(틱·방향·지속)을 아느냐. self-initiated(대쉬/lunge)=예측, server-reactive(넉백)=채택(forceAdopt). 서버 단일 경로 위에서 클라만 갈린다.</li>
+<li><b>dash-facing-client-authority</b> — "§1은 적용·판정 권위를 서버에 두라는 것이지 입력 출처를 서버가 만들라는 게 아니다." 방향/조준 같은 클라 입력 파생 값은 클라가 보내고 서버가 정규화·적용.</li>
+<li><b>진단 도메인 혼동 경계</b> — prediction 로그에서 서로 다른 tick 도메인(서버틱 vs 클라 로컬 카운터)을 섞어 빼면 무의미. 측정 설계 자체를 의심하는 게 1차.</li>
+<li><b>크러치 제거 = 비트단위 재현 계약</b> — forceAdopt 같은 안전망을 떼려면 클라 replay가 서버 궤적을 비트단위 재현해야 성립. 공유 공식 단일 출처가 그 전제.</li>
+<li><b>착수 후 실측이 Phase 범위를 재정의</b> — 정의서 골격이 선행 Phase 진행으로 이미 충족될 수 있음. plan은 현재 코드 실측 먼저.</li>
+</ul>
+
+<hr>
+<blockquote>M4.13 마감 — 임펄스 동작 클래스 통일 완성. 대쉬는 첫 적용 사례였고, 같은 기계가 lunge·넉백까지 원리적으로 닫혔다. 다음 = 마일스톤 전체 PR(영호 GO).</blockquote>
+
+</body>
+</html>

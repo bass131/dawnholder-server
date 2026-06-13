@@ -74,9 +74,10 @@ public class KnightDashTests : IDisposable
     static int CountPacketsOfType(List<byte[]> sent, PacketID type)
         => sent.Count(p => PacketIdOf(p) == type);
 
-    static ArraySegment<byte> DashPacketBytes(int attackerClientTick = 1)
+    // facing(M4.13 v13): 클라 화면 방향(0=left/1=right) — 대쉬 방향 권위. 기본 1=right(SetupKnight FacingDir=1 정합).
+    static ArraySegment<byte> DashPacketBytes(int attackerClientTick = 1, byte facing = 1)
     {
-        C_SkillUse pkt = new C_SkillUse { skillId = (byte)SkillId.Dash, attackerClientTick = attackerClientTick };
+        C_SkillUse pkt = new C_SkillUse { skillId = (byte)SkillId.Dash, attackerClientTick = attackerClientTick, facing = facing };
         return pkt.Write();
     }
 
@@ -128,7 +129,7 @@ public class KnightDashTests : IDisposable
 
         // Tick 후: 등속(decay=1.0)이므로 DecayImpulse 후에도 ExternalImpulseVx = DashSpeed.
         // AttackState.Tick 순서: DecayImpulse() → StateTicksRemaining--. decay=1.0 → vx 변화 없음.
-        Assert.Equal(CombatConstants.DashSpeed, caster.ExternalImpulseVx,
+        Assert.Equal(Constants.DashSpeed, caster.ExternalImpulseVx,
             precision: 4);
 
         // S_SkillCast(skillId=Dash) 확인
@@ -141,6 +142,23 @@ public class KnightDashTests : IDisposable
         Assert.Equal(caster.EntityId, parsed.casterEntityId);
         Assert.Equal((byte)SkillId.Dash, parsed.skillId);
         Assert.Equal(0, parsed.strikeDelayTicks); // 즉시 적용
+    }
+
+    [Fact]
+    public void Dash_Knight_ClientFacing_OverridesFacingDir()
+    {
+        // M4.13 v13: 클라 C_SkillUse.facing이 대쉬 방향 권위 — 서버 FacingDir을 덮는다(ActionGate).
+        //   방향전환 직후 대쉬는 서버 FacingDir이 C_MoveIntent 입력 큐 지연으로 옛 방향이라 클라 예측(화면
+        //   방향)과 반대로 튀어 reconcile 클러스터 발생 → 클라 방향을 권위로 정렬해 봉합. Dash 한정.
+        var (session, caster, _, map) = SetupKnight();
+        caster.FacingDir = 1; // 서버 옛 방향 = 오른쪽 (SetupKnight 기본, 명시)
+
+        // 클라가 왼쪽(facing=0) 의도로 대쉬 → FacingDir이 -1로 갱신되어 왼쪽 임펄스.
+        session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1, facing: 0));
+        map.Tick(2);
+
+        Assert.Equal((sbyte)-1, caster.FacingDir);
+        Assert.Equal(-Constants.DashSpeed, caster.ExternalImpulseVx, precision: 4);
     }
 
     [Fact]
@@ -319,10 +337,10 @@ public class KnightDashTests : IDisposable
         map.Tick(2);
 
         // 대쉬 발동 tick(2) 기준 InvulnUntilTick = 2 + DashTravelTicks.
-        Assert.Equal(2L + CombatConstants.DashTravelTicks, caster.InvulnUntilTick);
+        Assert.Equal(2L + Constants.DashTravelTicks, caster.InvulnUntilTick);
         // 발동 직후~만료까지 무적.
-        Assert.True(caster.IsInvulnerable(2L + CombatConstants.DashTravelTicks));
-        Assert.False(caster.IsInvulnerable(2L + CombatConstants.DashTravelTicks + 1));
+        Assert.True(caster.IsInvulnerable(2L + Constants.DashTravelTicks));
+        Assert.False(caster.IsInvulnerable(2L + Constants.DashTravelTicks + 1));
     }
 
     [Fact]

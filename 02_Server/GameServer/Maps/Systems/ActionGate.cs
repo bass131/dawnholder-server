@@ -23,13 +23,22 @@ internal sealed class ActionGate
     }
 
     // 스킬(Dash/Teleport/Thunderbolt)용 오버로드.
-    internal bool TryPerformSkill(GameMap map, PlayerEntity player, ActionKind kind, long clientTick)
+    // facing(M4.13 v13): 클라 화면 방향(±1, 핸들러 §3 정규화). 대쉬 방향 권위 — 아래 참조.
+    internal bool TryPerformSkill(GameMap map, PlayerEntity player, ActionKind kind, long clientTick, sbyte facing)
     {
         if (!ActionRegistry.TryGet(kind, out IGameAction action)) return false;
 
         if (!Validate(map, player, action, clientTick, out long currentTick)) return false;
 
         player.SetLastActionTick(kind, currentTick);
+
+        // 대쉬 방향 권위: 클라 화면 방향을 FacingDir로 갱신 후 Execute(EnterAttackState가 FacingDir로 임펄스).
+        //   방향전환 직후 대쉬는 서버 FacingDir이 C_MoveIntent 입력 큐 지연으로 옛 방향이라, 클라 예측(화면
+        //   방향)과 반대로 튀어 reconcile 클러스터 발생 → 클라 방향을 권위로 정렬해 봉합. Validate 통과 후만
+        //   적용(거부 시 FacingDir 부작용 0). Dash 한정 — Thunderbolt/Teleport는 기존 FacingDir(타겟/박스) 유지.
+        if (kind == ActionKind.Dash)
+            player.FacingDir = facing;
+
         return action.Execute(map, player, clientTick);
     }
 

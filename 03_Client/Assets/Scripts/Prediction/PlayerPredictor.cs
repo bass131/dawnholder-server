@@ -37,11 +37,23 @@ namespace Dawnholder.Client.Prediction
         // 직업별 이동 파라미터 — PlayerStats factory 단일 출처(헌법 #4). fail-loud: 기본값 없음.
         readonly MoveParams _move;
 
-        // 송신된 입력의 (clientTick, inputX, jumpPressed) 보관 → snapshot의 ackedTick
+        // 송신된 입력의 (clientTick, inputX, jumpPressed, externalVelX) 보관 → snapshot의 ackedTick
         // 받으면 미-ack 입력만 replay.
         readonly InputHistory _history = new InputHistory();
 
         MapTerrain? _terrain;
+
+        // === 임펄스 예측 상태 (M4.13 P5a — 서버 AttackState.Tick 클라 거울) ===
+        // 서버는 대쉬/lunge 진입 틱에 EnterAttackState(startVx, decay, durationTicks) → 매 틱 vx를
+        // Physics.Step ExternalVelX로 합성하고 DecayImpulse로 감쇠, durationTicks 후 0 정리(Exit).
+        // 클라 live Predict가 같은 P4 공식(Physics.DecayImpulse)으로 같은 궤적을 *직접 예측* → forceAdopt 불요.
+        float _impulseVx;            // 이번 틱 ExternalVelX로 주입할 임펄스 vx (0이면 임펄스 없음).
+        float _impulseDecay;         // 틱당 감쇠 계수 (대쉬 1.0=등속, lunge 0.75).
+        int _impulseTicksRemaining;  // 남은 임펄스 틱 — 0 도달 시 _impulseVx=0 정리 (서버 Exit 거울).
+
+        // 직전 Predict가 이번 틱 Physics.Step ExternalVelX로 *실제 주입한* 임펄스 vx.
+        // NotifySent가 이 값을 InputHistory에 저장 → "저장값 = live 적용값"(재계산 금지) 보장 단일 경로.
+        public float LastAppliedImpulseVx { get; private set; }
 
         public PlayerPredictor(MoveParams move)
         {
@@ -77,22 +89,72 @@ namespace Dawnholder.Client.Prediction
             // 지형 모드에서 spawnY가 지형 위(예: Town y=1.39)이므로 평지 가정 불가.
             // false로 시작하면 서버도 같은 Step에서 중력을 적용해 함께 낙하 → 첫 몇 틱 drift를 reconcile이 흡수.
             OnGround = false;
+            ClearImpulse();
+            LastAppliedImpulseVx = 0f;
             _history.Clear();
         }
 
+        // 임펄스 시작 — 대쉬/lunge 진입 시 LocalPlayerMovement가 호출 (서버 EnterAttackState 거울).
+        //
+        // **★시작 틱 정렬** (정의서 §확정 설계 plan-auditor 🟡 봉합):
+        //   서버는 입력을 *소비한 틱* 같은 Step에 임펄스를 합성한다. 클라는 이 호출 *직후 첫 Predict*
+        //   서브스텝부터 _impulseVx를 ExternalVelX로 주입 → "임펄스 시작 = 그 입력을 담아 보내는 C_MoveIntent
+        //   서브스텝(= _localTickCounter 증가 틱)". 그 _localTickCounter가 곧 reconcile ack 기준이므로,
+        //   서버가 같은 입력 틱에 임펄스를 시작하면 클라/서버 임펄스 위상이 *같은 틱 번호*에 정렬된다.
+        //   호출 박자를 latch로 흡수(LocalPlayerMovement._pendingImpulse) → Update 컴포넌트 실행 순서 의존 제거.
+        // startVx: 부호 포함 초기 vx (DashSpeed×facing 등). decayPerTick: 1.0(대쉬)/0.75(lunge).
+        // durationTicks: 임펄스 지속 (DashTravelTicks / AttackCommitWindowTicks) — 서버 Exit 틱 거울.
+        public void StartImpulse(float startVx, float decayPerTick, int durationTicks)
+        {
+            _impulseVx = startVx;
+            _impulseDecay = decayPerTick;
+            _impulseTicksRemaining = durationTicks;
+        }
+
+        void ClearImpulse()
+        {
+            _impulseVx = 0f;
+            _impulseDecay = 0f;
+            _impulseTicksRemaining = 0;
+        }
+
         // LocalPlayerMovement가 C_MoveIntent 송신 직후 호출. jumpPressed 동봉 — replay 시 점프 시도 재현.
+        // externalVelX = 그 서브스텝 Predict가 실제 쓴 임펄스 vx (LastAppliedImpulseVx) — 재계산 금지.
+        public void NotifySent(uint clientTick, sbyte inputX, bool jumpPressed, float externalVelX)
+        {
+            _history.Push(clientTick, inputX, jumpPressed, externalVelX);
+        }
+
+        // 임펄스 없는 평지 입력용 3-arg 오버로드 — externalVelX=0 위임. 기존 reconcile 의미론 테스트 불변.
         public void NotifySent(uint clientTick, sbyte inputX, bool jumpPressed)
         {
-            _history.Push(clientTick, inputX, jumpPressed);
+            _history.Push(clientTick, inputX, jumpPressed, 0f);
         }
 
         // 50ms 고정 서브스텝 호출 — dt = Constants.TickDuration 고정.
         // 가변 dt 진입 원천 차단 ("illegal state unrepresentable"). 헌법 #1: 서버와 동일 dt → drift 0.
+        //
+        // **임펄스 전진** (서버 AttackState.Tick 거울):
+        //   (a) 이번 틱 ExternalVelX = _impulseVx 를 Physics.Step 4-arg에 주입 (live 예측).
+        //   (b) Step 후 _impulseVx = DecayImpulse(_impulseVx, _impulseDecay) + ticksRemaining-- ;
+        //       0 도달 시 임펄스 정리(서버 Exit 거울). DecayImpulse는 P4 공유 공식 단일 출처.
+        //   이번 틱 적용한 vx를 LastAppliedImpulseVx에 보관 → NotifySent가 저장 (저장=적용값).
         public void Predict(sbyte inputX, bool jumpPressed)
         {
+            float appliedImpulseVx = _impulseVx;
+            LastAppliedImpulseVx = appliedImpulseVx;
+
             PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
-                new PhysicsInput(inputX, jumpPressed, Constants.TickDuration), _terrain, _move);
+                new PhysicsInput(inputX, jumpPressed, Constants.TickDuration, appliedImpulseVx), _terrain, _move);
             ApplyPhysicsState(after);
+
+            if (_impulseTicksRemaining > 0)
+            {
+                _impulseVx = SharedPhysics.DecayImpulse(_impulseVx, _impulseDecay);
+                _impulseTicksRemaining--;
+                if (_impulseTicksRemaining <= 0)
+                    ClearImpulse();
+            }
         }
 
         // **알고리즘**:
@@ -102,7 +164,8 @@ namespace Dawnholder.Client.Prediction
         //
         // **헌법 #1 유지**: cheat 시뮬도 서버 권위 좌표 기준 → cheat 흡수 X.
         //
-        // **forceAdopt** (HitState 넉백 표시): 클라는 서버 권위 넉백 임펄스(ExternalVelX)를 예측 못 함.
+        // **forceAdopt** (HitState 넉백 표시): 넉백은 server-reactive 임펄스라 클라가 시작점(틱·방향·
+        //   지속)을 몰라 예측 안 함 (대쉬/lunge처럼 StartImpulse 직접 예측하는 self-initiated 임펄스와 대비).
         //   피격 중엔 임계(SnapThreshold) 이내여도 서버 위치를 채택해 넉백을 시각화하고
         //   sub-threshold offset 누적(영구 어긋남)을 막는다. SnapCount는 *진짜 mispredict*에만 증가.
         public bool OnSnapshot(float serverX, float serverY,
@@ -124,10 +187,15 @@ namespace Dawnholder.Client.Prediction
                 // 미-ack 입력 재시뮬 (서버 권위 → 클라 현재까지).
                 // terrain 오버로드 동일 — replay가 평지로 돌면 서버-클라 대칭이 깨져 reconcile 자체가 어긋남.
                 // 피격 중 입력은 source-gating으로 0이라 replay는 물리(중력)만 적용.
+                //
+                // **임펄스 replay** (M4.13 P5a): rec.ExternalVelX = 그 틱 live가 실제 쓴 vx를 그대로 재생
+                //   (4-arg PhysicsInput). replay 중 _impulseVx를 *재전진시키지 않음* — live 전진과 replay
+                //   재생은 분리. 임펄스 위상은 이미 live가 InputRecord에 박았으므로 이중 적용 금지.
                 foreach (InputRecord rec in _history.ReplayFrom(ackedClientTick))
                 {
                     PhysicsState after = SharedPhysics.Step(ToPhysicsState(),
-                        new PhysicsInput(rec.InputX, rec.JumpPressed, Constants.TickDuration), _terrain, _move);
+                        new PhysicsInput(rec.InputX, rec.JumpPressed, Constants.TickDuration, rec.ExternalVelX),
+                        _terrain, _move);
                     ApplyPhysicsState(after);
                 }
                 if (mispredict) SnapCount++;

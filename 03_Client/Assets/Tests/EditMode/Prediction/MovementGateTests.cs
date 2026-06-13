@@ -100,109 +100,55 @@ namespace Dawnholder.Client.Tests.Prediction
         }
     }
 
-    // ShouldForceAdopt 순수 함수 단위 테스트 — M4.9 reconcile 밀림 봉합.
+    // ShouldForceAdopt 순수 함수 단위 테스트.
     //
-    // 핵심 불변식: Attack이지만 serverVx≈0인 Mage 평타는 force-adopt하지 않는다.
-    //   → 스냅샷마다 임계 이내 서버 위치를 채택하면 rubber-band 밀림이 재현된다.
+    // **M4.13 P5b 거동 변경**: Attack(대쉬/lunge)은 더 이상 force-adopt하지 않는다 —
+    //   5a에서 클라가 P4 공유 공식(Physics.DecayImpulse)으로 임펄스를 직접 예측하므로 크러치 불요.
+    //   진짜 mispredict(벽 충돌 등)는 OnSnapshot SnapThreshold가 잡음. force-adopt는 이제
+    //   Teleport(teleportSnap) + 넉백(Hit)만. 옛 "Attack + serverVx≥ε → force-adopt" vx-게이팅과
+    //   serverVx 인자는 제거됨(옛 ε 경계 케이스는 그 게이팅을 검증하던 것이라 함께 제거).
     public class ShouldForceAdoptTests
     {
         [Test]
-        public void ShouldForceAdopt_Attack_VxZero_ReturnsFalse()
+        public void ShouldForceAdopt_TeleportSnap_ReturnsTrue()
         {
-            // Mage 평타: Attack 상태지만 서버 vx 임펄스 없음 → force-adopt 제외 (밀림 봉합 핵심).
+            // Teleport: teleportSnap 플래그 → 항상 force-adopt (즉시 스냅).
+            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
+                teleportSnap: true, serverAnimState: AnimState.Idle));
+        }
+
+        [Test]
+        public void ShouldForceAdopt_Hit_ReturnsTrue()
+        {
+            // 넉백(Hit): 아직 클라 예측 안 함(1차 범위 밖) → force-adopt 유지.
+            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
+                teleportSnap: false, serverAnimState: AnimState.Hit));
+        }
+
+        [Test]
+        public void ShouldForceAdopt_Attack_ReturnsFalse()
+        {
+            // ★P5b: 대쉬/lunge(Attack)는 5a에서 클라가 직접 예측 → force-adopt 불요.
+            //   옛 "Attack + 전방 임펄스 → force-adopt"가 대쉬 스터터(매 스냅샷 버퍼 리셋)의 원인이었음.
+            //   5a 예측으로 대체 — 임계 이내 서버 위치를 더는 채택하지 않는다.
             Assert.IsFalse(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Attack, serverVx: 0f));
+                teleportSnap: false, serverAnimState: AnimState.Attack));
         }
 
         [Test]
-        public void ShouldForceAdopt_Attack_VxNonZero_ReturnsTrue()
+        public void ShouldForceAdopt_Idle_ReturnsFalse()
         {
-            // Knight Dash/lunge: Attack 상태 + 전방 임펄스 → force-adopt 유지.
-            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Attack, serverVx: 5f));
-        }
-
-        [Test]
-        public void ShouldForceAdopt_Attack_VxNegative_ReturnsTrue()
-        {
-            // 역방향 lunge도 vx≠0이면 force-adopt.
-            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Attack, serverVx: -3f));
-        }
-
-        [Test]
-        public void ShouldForceAdopt_Hit_VxZero_ReturnsTrue()
-        {
-            // 넉백: vx 무관 항상 force-adopt.
-            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Hit, serverVx: 0f));
-        }
-
-        [Test]
-        public void ShouldForceAdopt_TeleportSnap_VxZero_ReturnsTrue()
-        {
-            // Teleport: teleportSnap 플래그 → 항상 force-adopt.
-            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: true, serverAnimState: AnimState.Idle, serverVx: 0f));
-        }
-
-        [Test]
-        public void ShouldForceAdopt_Idle_VxZero_ReturnsFalse()
-        {
-            // Idle + vx 0: 일반 이동 중 → force-adopt 없음.
+            // Idle: 일반 이동 중 → force-adopt 없음.
             Assert.IsFalse(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Idle, serverVx: 0f));
+                teleportSnap: false, serverAnimState: AnimState.Idle));
         }
 
         [Test]
-        public void ShouldForceAdopt_Walk_VxZero_ReturnsFalse()
+        public void ShouldForceAdopt_Walk_ReturnsFalse()
         {
-            // Walk + vx 0 → force-adopt 없음.
+            // Walk → force-adopt 없음.
             Assert.IsFalse(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Walk, serverVx: 0f));
-        }
-
-        // === ExternalImpulseEpsilon 경계값 케이스 (M4.11 P2) ===
-        //
-        // 서버 클램프: |임펄스 vx| < ε → 0f. 따라서 Attack 스냅샷에서
-        //   - vx < ε : 서버가 이미 0으로 정리했어야 할 구간 → force-adopt 불필요.
-        //   - vx >= ε : 살아남은 임펄스 활성 → force-adopt.
-
-        [Test]
-        public void ShouldForceAdopt_Attack_VxBelowEpsilon_ReturnsFalse()
-        {
-            // 0.049f < ε(0.05f): 서버 클램프 구간 — 정상 경로에서 이 값은 도달 불가(서버가 0으로 정리).
-            // 만약 도달하면 force-adopt를 켜지 않아야 rubber-band가 재발하지 않는다.
-            Assert.IsFalse(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Attack,
-                serverVx: 0.049f));
-        }
-
-        [Test]
-        public void ShouldForceAdopt_Attack_VxExactlyEpsilon_ReturnsTrue()
-        {
-            // ε = 살아남은 최소 임펄스. 게이트는 >= ε 이므로 정확히 ε 도 발동.
-            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Attack,
-                serverVx: Constants.ExternalImpulseEpsilon));
-        }
-
-        [Test]
-        public void ShouldForceAdopt_Attack_VxNegativeEpsilon_ReturnsTrue()
-        {
-            // 역방향 최소 임펄스 — Abs 대칭 확인.
-            Assert.IsTrue(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Attack,
-                serverVx: -Constants.ExternalImpulseEpsilon));
-        }
-
-        [Test]
-        public void ShouldForceAdopt_Attack_VxZero_Epsilon_ReturnsFalse()
-        {
-            // 0f: 서버 클램프 후 완전 소멸 — force-adopt 없음 (기존 케이스 보완).
-            Assert.IsFalse(LocalPlayerMovement.ShouldForceAdopt(
-                teleportSnap: false, serverAnimState: AnimState.Attack,
-                serverVx: 0f));
+                teleportSnap: false, serverAnimState: AnimState.Walk));
         }
     }
 }

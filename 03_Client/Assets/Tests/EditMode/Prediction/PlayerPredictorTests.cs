@@ -610,5 +610,180 @@ namespace Dawnholder.Client.Tests.Prediction
             Assert.AreEqual(serverSim.Position.Y, predictor.Position.y, Eps,
                 "P3 invariant: replay(고정 dt) y == 서버 모사 y");
         }
+
+        // ── M4.13 P5a — 임펄스 예측 결정성 계약 (★마일스톤 성패 핵심) ──────────────
+        //
+        // 하이브리드 방식: live Predict는 P4 Physics.DecayImpulse로 임펄스를 전진(공식 계산),
+        //   replay는 InputRecord에 저장된 그 틱의 ExternalVelX를 재생(저장값 단순 재생).
+        //   결정성 보장의 뿌리 = "live가 쓴 vx == InputRecord 저장값 == replay가 재생하는 vx".
+        //
+        // **오차 0 요구**: float이라도 곱셈·덧셈·비교만이라 IEEE 정확 — 비트 다르면 로직 버그.
+        //   delta 인자 없는 Assert.AreEqual = NUnit 정확 비교(느슨한 precision 금지).
+
+        // live predictor를 임펄스 구간 동안 전진시키며 각 틱 입력 + 실제 적용 vx를 NotifySent에 동봉.
+        // (LocalPlayerMovement substep 루프의 단위 테스트 모사 — StartImpulse → Predict → NotifySent.)
+        static PlayerPredictor RunLiveImpulse(
+            Vector2 startPos, float startVx, float decay, int durationTicks,
+            sbyte inputX, int totalTicks)
+        {
+            var live = new PlayerPredictor(DefaultMove);
+            live.SetInitialPosition(startPos);
+            live.StartImpulse(startVx, decay, durationTicks);
+            for (int t = 1; t <= totalTicks; t++)
+            {
+                live.Predict(inputX, jumpPressed: false);
+                // 저장값 = live 적용값 (LocalPlayerMovement.cs substep과 동일 — 재계산 금지).
+                live.NotifySent((uint)t, inputX, jumpPressed: false, live.LastAppliedImpulseVx);
+            }
+            return live;
+        }
+
+        // ① 임펄스 구간 결정성 — live 최종 위치 == replay 최종 위치, 오차 0.
+        //   replay는 서버 권위 시작 위치에서 미-ack 입력(저장된 ExternalVelX 포함)을 전부 재생.
+        [Test]
+        public void P5a_Impulse_LiveTrajectory_EqualsReplay_BitExact()
+        {
+            var startPos = new Vector2(0f, 0f);
+            // 대쉬 거울: 등속(decay=1.0) DashTravelTicks 동안, 그 후 임펄스 0 — totalTicks로 정리 구간까지 포함.
+            float startVx = Constants.DashSpeed; // facing=+1
+            int duration = Constants.DashTravelTicks;
+            int total = Constants.DashTravelTicks + 4; // 임펄스 종료 후 평지 4틱까지 — Exit 정리 검증
+            sbyte inputX = 0;                          // 대쉬 중 이동 잠금 거울(서버 AttackState)
+
+            PlayerPredictor live = RunLiveImpulse(startPos, startVx, 1.0f, duration, inputX, total);
+
+            // 같은 입력+저장 vx 시퀀스를 들고 있는 predictor를 따로 만들어, OnSnapshot(ackedTick=0)으로
+            //   미-ack 입력 전부를 replay 트리거. replay는 StartImpulse 없이 InputRecord 저장값(ExternalVelX)만
+            //   재생 → live 직접 전진과 같은 궤적이 나와야 함(하이브리드 핵심: 저장값 재생 == 공식 계산).
+            PlayerPredictor liveForRecord = RunLiveImpulse(startPos, startVx, 1.0f, duration, inputX, total);
+            // 서버 권위 시작 위치 = startPos, ackedTick=0 → 전 구간 재생(임펄스 구간 저장값 포함).
+            liveForRecord.OnSnapshot(serverX: startPos.x, serverY: startPos.y,
+                                     serverVx: 0f, serverVy: 0f, ackedClientTick: 0);
+
+            // live(직접 전진) 최종 == replay(저장값 재생) 최종 — 비트 정확.
+            Assert.AreEqual(live.Position.x, liveForRecord.Position.x,
+                "P5a 결정성: 임펄스 구간 live 전진 x == replay 저장값 재생 x (오차 0)");
+            Assert.AreEqual(live.Position.y, liveForRecord.Position.y,
+                "P5a 결정성: 임펄스 구간 live 전진 y == replay 저장값 재생 y (오차 0)");
+        }
+
+        // ① 보강 — 서버 모사(P4 공식 직접 fold)와도 비트 일치. "클라 live도 서버와 같은 P4 공식"의 직접 증거.
+        //   서버: 매 틱 vx = DecayImpulse 전진값을 ExternalVelX로 Physics.Step. 클라 live와 같은 공식.
+        [Test]
+        public void P5a_Impulse_LiveTrajectory_EqualsServerSim_BitExact()
+        {
+            var startPos = new Vector2(0f, 0f);
+            float startVx = Constants.DashSpeed;
+            int duration = Constants.DashTravelTicks;
+            int total = Constants.DashTravelTicks + 4;
+            sbyte inputX = 0;
+
+            PlayerPredictor live = RunLiveImpulse(startPos, startVx, 1.0f, duration, inputX, total);
+
+            // 서버 모사: 같은 P4 공식으로 임펄스 vx를 매 틱 전진하며 Physics.Step ExternalVelX 주입.
+            var sim = new Shared.GameData.PhysicsState(
+                new System.Numerics.Vector2(startPos.x, startPos.y),
+                System.Numerics.Vector2.Zero, onGround: false);
+            float impulseVx = startVx;
+            int remaining = duration;
+            for (int t = 0; t < total; t++)
+            {
+                float applied = impulseVx;
+                sim = Shared.GameData.Physics.Step(
+                    sim,
+                    new Shared.GameData.PhysicsInput(inputX, false, Constants.TickDuration, applied),
+                    DefaultMove);
+                if (remaining > 0)
+                {
+                    impulseVx = Shared.GameData.Physics.DecayImpulse(impulseVx, 1.0f);
+                    remaining--;
+                    if (remaining <= 0) impulseVx = 0f;
+                }
+            }
+
+            Assert.AreEqual(sim.Position.X, live.Position.x,
+                "P5a 결정성: 클라 live 임펄스 궤적 x == 서버 모사(같은 P4 공식) x (오차 0)");
+            Assert.AreEqual(sim.Position.Y, live.Position.y,
+                "P5a 결정성: 클라 live 임펄스 궤적 y == 서버 모사(같은 P4 공식) y (오차 0)");
+        }
+
+        // ② 시작 틱 1틱 오프셋 주입 — 정렬 실패가 단위 테스트로 잡히는지 특성화 (plan-auditor 봉합).
+        //   ★중요 미묘함: 임펄스가 *완주*하면(등속/감속 무관) 총 변위 = 같은 vx 시퀀스의 합이라
+        //   **시작 틱과 무관하게 수렴** → off-by-one은 완주 시 self-healing(전이적 차이만, reconcile이 흡수).
+        //   따라서 발산은 임펄스 *진행 중* 시점에만 나타난다. total < duration 으로 진행 중을 샘플해
+        //   "정렬 실패가 그 순간 검출됨"을 특성화한다(최종 위치를 보면 수렴해 못 잡음 — 옛 버그).
+        [Test]
+        public void P5a_Impulse_StartTickOffByOne_DivergesMidFlight()
+        {
+            var startPos = new Vector2(0f, 0f);
+            float startVx = Constants.DashSpeed;
+            int duration = Constants.DashTravelTicks; // 8
+            int total = 4;                            // mid-flight: duration(8)보다 작아 둘 다 진행 중
+            sbyte inputX = 0;
+
+            // 정렬 케이스: 1틱부터 임펄스 시작 → 4틱 적용 (변위 4×DashSpeed×dt = 2.0).
+            PlayerPredictor aligned = RunLiveImpulse(startPos, startVx, 1.0f, duration, inputX, total);
+
+            // 오프셋 케이스: 첫 틱은 임펄스 없이 전진(1틱 지연), 둘째 틱부터 StartImpulse → 3틱만 적용 (1.5).
+            var off = new PlayerPredictor(DefaultMove);
+            off.SetInitialPosition(startPos);
+            off.Predict(inputX, jumpPressed: false);            // tick 1 — 임펄스 없음
+            off.StartImpulse(startVx, 1.0f, duration);          // 1틱 늦게 시작
+            for (int t = 2; t <= total; t++)
+                off.Predict(inputX, jumpPressed: false);
+
+            // 진행 중: aligned 4틱(2.0) vs off 3틱(1.5) → 발산. 정렬 실패가 진행 중 검출됨.
+            Assert.AreNotEqual(aligned.Position.x, off.Position.x,
+                "P5a 정렬 그물(진행 중): 임펄스 시작 1틱 오프셋 → 진행 중 위치 발산(정렬 실패 검출)");
+        }
+
+        // ②b 보강 — 완주 시 수렴(self-healing) 특성화. off-by-one이라도 임펄스가 다 적용되면
+        //   총 변위는 시작 틱 무관 → 최종 위치 동일. "완주형 등속 대쉬는 1틱 정렬 오차에 관대"의 박제.
+        //   (영구 offset 위험은 임펄스가 지형/중단과 *상호작용*할 때 — 순수 등속 완주는 transient만.)
+        [Test]
+        public void P5a_Impulse_StartTickOffByOne_ConvergesOnCompletion()
+        {
+            var startPos = new Vector2(0f, 0f);
+            float startVx = Constants.DashSpeed;
+            int duration = Constants.DashTravelTicks;
+            int total = Constants.DashTravelTicks + 2; // 둘 다 완주 후 추가 idle
+            sbyte inputX = 0;
+
+            PlayerPredictor aligned = RunLiveImpulse(startPos, startVx, 1.0f, duration, inputX, total);
+
+            var off = new PlayerPredictor(DefaultMove);
+            off.SetInitialPosition(startPos);
+            off.Predict(inputX, jumpPressed: false);
+            off.StartImpulse(startVx, 1.0f, duration);
+            for (int t = 2; t <= total; t++)
+                off.Predict(inputX, jumpPressed: false);
+
+            // 둘 다 8틱 완주 → 총 변위 4.0으로 수렴(시작 틱 무관). float 정확 일치.
+            Assert.AreEqual(aligned.Position.x, off.Position.x,
+                "P5a self-healing: 완주형 등속 대쉬는 1틱 오프셋이 최종 위치에 누적 안 됨(수렴)");
+        }
+
+        // 기본 거동 — StartImpulse 후 등속(decay=1.0) 대쉬가 D = DashSpeed×DashTravelTicks×TickDuration 이동.
+        //   서버 고정 이동 거리(Constants.cs:99 주석 4.0 unit)와 일치 — 임펄스 적용/정리 정확성 검증.
+        [Test]
+        public void P5a_Dash_FixedTravelDistance_MatchesConstantsComment()
+        {
+            const float Eps = 1e-4f;
+            var predictor = new PlayerPredictor(DefaultMove);
+            predictor.SetInitialPosition(new Vector2(0f, 0f));
+            predictor.StartImpulse(Constants.DashSpeed, 1.0f, Constants.DashTravelTicks);
+
+            // DashTravelTicks 동안 임펄스 적용 + 그 후 몇 틱은 임펄스 0(정리됨).
+            for (int t = 0; t < Constants.DashTravelTicks + 3; t++)
+                predictor.Predict(inputX: 0, jumpPressed: false);
+
+            float expectedDistance =
+                Constants.DashSpeed * Constants.DashTravelTicks * Constants.TickDuration;
+            Assert.AreEqual(expectedDistance, predictor.Position.x, Eps,
+                "등속 대쉬 이동 거리 = DashSpeed×DashTravelTicks×TickDuration (서버 거울)");
+            // 임펄스 종료 후 추가 이동 없음(이동 입력 0 + 임펄스 정리) — Exit 거울.
+            Assert.AreEqual(0f, predictor.Velocity.x, Eps,
+                "임펄스 정리(durationTicks 후 0) — 추가 vx 없음");
+        }
     }
 }

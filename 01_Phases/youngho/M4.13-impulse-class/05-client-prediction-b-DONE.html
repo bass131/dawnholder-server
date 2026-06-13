@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.13 Phase 05 — 클라 예측 통일 (DONE)</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.7; max-width: 920px; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 3px solid #2c6fbb; padding-bottom: .4rem; }
+  h2 { margin-top: 2rem; color: #2c6fbb; border-bottom: 1px solid #ddd; padding-bottom: .3rem; }
+  h3 { color: #444; margin-top: 1.4rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .94rem; }
+  th, td { border: 1px solid #ccc; padding: .5rem .7rem; text-align: left; vertical-align: top; }
+  th { background: #eef4fb; }
+  code { background: #f3f3f3; padding: .1rem .35rem; border-radius: 3px; font-family: "Consolas", monospace; font-size: .9em; }
+  .ok { color: #1a7f37; font-weight: bold; }
+  .tag { display: inline-block; background: #2c6fbb; color: #fff; padding: .1rem .5rem; border-radius: 4px; font-size: .8rem; }
+  blockquote { border-left: 4px solid #2c6fbb; margin: 1rem 0; padding: .3rem 1rem; background: #f7faff; color: #444; }
+</style>
+</head>
+<body>
+<h1>M4.13 Phase 05 — 클라 예측 통일 (방식 B 하이브리드) <span class="tag">DONE</span></h1>
+<blockquote>대규모 등급. 브랜치 <code>feature/m4.13-shared-extract</code>, P4 위 5 commit. 착수 범위(임펄스 예측 + 크러치 제거)에서 Play 실측으로 2건 추가 봉합(대쉬 방향 클러스터, 원격 스킬 모션).</blockquote>
+
+<h2>TL;DR</h2>
+<p>대쉬·평타 lunge의 <strong>클라 임펄스 예측</strong>을 도입해 <code>forceAdopt</code> 크러치(매 snapshot 서버 위치 강제 채택)를 제거하고 50ms 시각 스터터를 없앴다. 그 과정에서 드러난 <strong>방향전환 직후 대쉬 reconcile 클러스터</strong>(facing 불일치)를 <code>C_SkillUse.facing</code> 추가(Protocol v13)로, <strong>원격 플레이어 썬더볼트 모션 누락</strong>을 Channeling latch로 봉합했다. forceAdopt 499/500 → 0, 손맛 "엄청 좋다", 회귀 EditMode 122/0 + WSL2 569/0 + reviewer 6축 0위반.</p>
+
+<h2>5단계 보고</h2>
+
+<h3>1. 무엇을 만들었나</h3>
+<table>
+<tr><th>#</th><th>commit</th><th>내용</th></tr>
+<tr><td>5a</td><td><code>2e1b85e</code></td><td>하이브리드 임펄스 예측 (live=계산 / replay=저장값)</td></tr>
+<tr><td>5b</td><td><code>dcf3b12</code></td><td><code>ShouldForceAdopt</code> Attack 분기 제거 → 보간 복원</td></tr>
+<tr><td>이펙트</td><td><code>3c825e2</code></td><td>대쉬 이펙트를 캐스터에 parenting (follow + flip)</td></tr>
+<tr><td>facing v13</td><td><code>52e5042</code></td><td>대쉬 방향을 <code>C_SkillUse.facing</code>으로 정렬 (Protocol v12→v13)</td></tr>
+<tr><td>원격 모션</td><td><code>98134bf</code></td><td>원격 썬더볼트 캐스팅 모션 표시 (Channeling latch)</td></tr>
+</table>
+
+<h3>2. 왜 필요한가</h3>
+<ul>
+<li><strong>forceAdopt 스터터</strong>: 대쉬/lunge는 클라가 예측 못 하는 서버 임펄스라 매 snapshot 끌려오고, reconcile 보간 버퍼 리셋이 그걸 매번 지워 50ms 간격 시각 스터터(대쉬 forceAdopt 499/500).</li>
+<li><strong>핵심 계약 리스크</strong>: 크러치 제거 = 안전망 제거. replay가 서버 임펄스 궤적을 비트단위 재현 못하면 영구 offset 누적 → P4 공유 공식이 안전망.</li>
+<li><strong>(Play 발견) 방향전환 대쉬 클러스터</strong>: 방향 틀고 대쉬하면 의도 반대로 "빠바박" + 뚝뚝. 서버 <code>FacingDir</code>이 입력 큐 지연으로 옛 방향.</li>
+<li><strong>(Play 발견) 원격 썬더볼트 모션 누락</strong>: 타인 시점에서 마법사 캐스팅 모션 미표시.</li>
+</ul>
+
+<h3>3. 어떻게 만들었나</h3>
+<p><strong>5a 하이브리드</strong>: live는 <code>Physics.DecayImpulse</code>로 매 틱 전진(서버 <code>AttackState.Tick</code> 거울), replay는 <code>InputRecord.ExternalVelX</code> 저장값 재생(<code>LastAppliedImpulseVx</code> 단일 경로 = 재계산 금지). 결정성 뿌리 = "클라 live도 서버와 같은 P4 공식".</p>
+<p><strong>5b 크러치 제거</strong>: <code>ShouldForceAdopt</code>에서 <code>Attack &amp;&amp; |vx|≥ε</code> 분기 + <code>serverVx</code> 인자 제거 → <code>teleportSnap</code> + <code>Hit</code>만 잔류. 진짜 mispredict는 <code>SnapThreshold</code>가 잡음(§1 유지).</p>
+<p><strong>facing v13</strong>: 서버 <code>FacingDir</code>은 <code>C_MoveIntent.inputX</code>(입력 큐)로 파생되는데, 대쉬(<code>C_SkillUse</code>)는 잡으로 즉시 적용돼 방향 입력을 추월 → 옛 방향. 해법: <code>C_SkillUse.facing</code> append(v13) → 서버 <code>ActionGate</code>가 Dash일 때만 <code>FacingDir</code>=클라 facing 갱신(Validate 통과 후, 거부 시 부작용 0). <strong>§1 위반 아님</strong>: 방향은 원래도 클라 입력 파생 — 적용 권위만 서버가 행사.</p>
+<p><strong>원격 모션</strong>: 썬더볼트 Channeling은 클라 로컬 선예측(<code>NotifyChannel</code>) 전용이라 서버 animState에 미포함 → <code>RemotePlayerMotion._channelingRemaining</code> latch로 S_SkillCast 수신 시 캐스팅 지속 동안 Channeling 오버라이드(Hit/Death 우선). wire 무변경.</p>
+
+<h3>4. 테스트 결과</h3>
+<table>
+<tr><th>게이트</th><th>결과</th></tr>
+<tr><td>EditMode (클라 예측 결정성)</td><td class="ok">122/0</td></tr>
+<tr><td>WSL2 서버 회귀</td><td class="ok">569/0 (facing 거동 박제 테스트 + ProtocolVersion_Is13)</td></tr>
+<tr><td>reviewer Tier 2-A (facing)</td><td class="ok">6축 0위반 (§2 append-only, §3 정규화, §1 미위반)</td></tr>
+<tr><td>Play 검증 (영호)</td><td class="ok">forceAdopt 499/500→0 + 손맛 great + 방향전환 대쉬 정상 + 원격 모션 정상</td></tr>
+<tr><td>Unity 컴파일 / 빌드</td><td class="ok">0 에러 / 빌드 성공 (7씬, 551MB)</td></tr>
+</table>
+
+<h3>5. 다음 스텝</h3>
+<ul>
+<li><strong>PR</strong>: 영호 명시 GO 게이트. Shared.dll + ClientNet.dll commit 포함 → 03_Client CODEOWNERS(정유현) co-review → admin bypass(사유 + GO).</li>
+<li><strong>P6</strong>: 클래스 통합 + 전체 회귀 (넉백/임펄스 공격 같은 기계) + 마일스톤 마감.</li>
+<li><strong>추적 약속</strong>: "넉백 예측 시 Hit 분기 재검토" — 넉백 방향 정보가 <code>S_EnemyAttack</code>에 없어 패킷 변경 필요 → 별도 Phase 이월.</li>
+</ul>
+
+<h2>AC 검증 결과</h2>
+<table>
+<tr><th>완료 조건</th><th>결과</th></tr>
+<tr><td>(5a) <code>InputRecord.ExternalVelX</code> + replay 4-arg + <code>StartImpulse</code> + live 전진, 저장값=live 적용값</td><td class="ok">✅</td></tr>
+<tr><td>(5a) replay 결정성 — 오차 0, offset 누적 0</td><td class="ok">✅ EditMode</td></tr>
+<tr><td>(5a) 임펄스 시작 틱 정렬 + 1틱 오프셋 검출 테스트</td><td class="ok">✅</td></tr>
+<tr><td>(5b) forceAdopt 빈도 대쉬당 ≤2</td><td class="ok">✅ 실측 0</td></tr>
+<tr><td>(5b) 보간 복원 — 스터터 소멸, 손맛 실측</td><td class="ok">✅</td></tr>
+<tr><td>회귀 green (WSL2 + EditMode + Unity + reviewer)</td><td class="ok">✅</td></tr>
+<tr><td>(추가) 방향전환 대쉬 클러스터 봉합 (facing v13)</td><td class="ok">✅</td></tr>
+<tr><td>(추가) 원격 스킬 모션 전파</td><td class="ok">✅</td></tr>
+</table>
+<p>검증 명령: <code>dotnet test Dawnholder.slnx --no-build</code> → <code>Passed! Failed: 0, Passed: 569</code>. EditMode = TestRunnerApi 122/0. reviewer 6축 0위반. Play 2클라 실측(영호).</p>
+
+<h2>결정 흐름</h2>
+<p>잔여 대쉬 클러스터의 <strong>진단이 두 번 진화</strong>했다 (이 Phase의 핵심 학습):</p>
+<ol>
+<li><strong>큐 깊이 가설 → 기각</strong>: 서버 <code>DashAction</code>에 진단 로그를 박고 측정하니 <code>queueDepth</code>가 항상 0~1. 처음 만든 <code>offset</code> 로그는 <code>C_SkillUse.attackerClientTick</code>(서버틱 도메인)과 <code>C_MoveIntent.clientTick</code>(클라 로컬 카운터)을 뺀 <strong>무의미한 비교</strong>였음 — 도메인 혼동.</li>
+<li><strong>영호 단서로 핫스팟 확정</strong>: "방향 틀고 대쉬하면 반대로 간다". 클라 <code>[Reconcile]</code> 로그에 컨텍스트를 박아 재측정하니 서버 대쉬 <code>facingDir=1</code> vs 클라 <code>impulseVx=-10</code> — 방향 반대 명확.</li>
+<li><strong>근본</strong>: <code>C_SkillUse</code>(잡 즉시)가 <code>C_MoveIntent</code>(입력 큐) 방향 입력을 추월 → 서버가 옛 방향으로 대쉬. 위치(1차)가 아니라 facing에서 터진 동일 비대칭.</li>
+<li><strong>해법 A vs B</strong>: A(wire v13, 클라 방향 권위) vs B(서버 큐 정렬). B는 대쉬 적용 시점을 옮겨 무적/hitbox 타이밍을 흔드는 trust-boundary 리스크 → A 채택(방향은 원래 클라 입력, 신뢰 경계 불변).</li>
+</ol>
+
+<h2>학습 일지 후보 키워드</h2>
+<ul>
+<li><strong>dash-facing-client-authority</strong> (방향성 스킬 3번째 등장 시 박제): "§1은 적용·판정 권위를 서버에 두라는 것이지 입력 출처를 서버가 만들라는 게 아니다." 방향/조준 같은 클라 입력 파생 값은 클라가 보내고 서버가 정규화·적용.</li>
+<li><strong>진단 도메인 혼동 경계</strong>: prediction 로그에서 서로 다른 tick 도메인(서버틱 vs 클라 로컬 카운터)을 섞어 빼면 무의미. 측정 설계 자체를 의심하는 게 1차.</li>
+<li><strong>reconcile 스터터 = 다른 입력 출처로 같은 동작 계산</strong>: jump-buffer-ack-vs-apply-split과 같은 뿌리. 이번엔 "방향"이 그 출처.</li>
+</ul>
+
+</body>
+</html>

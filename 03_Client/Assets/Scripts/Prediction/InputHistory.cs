@@ -18,9 +18,17 @@ namespace Dawnholder.Client.Prediction
         public int Count => _records.Count;
 
         // 새 입력 push. clientTick은 strictly increasing 가정 (Invariant 참조).
+        // 기존 3-arg 시그니처 — externalVelX=0 위임 (임펄스 없는 평지 입력).
         public void Push(uint clientTick, sbyte inputX, bool jumpPressed)
         {
             _records.Add(new InputRecord(clientTick, inputX, jumpPressed));
+        }
+
+        // 임펄스(대쉬/lunge) 활성 틱용 4-arg. externalVelX = *그 서브스텝 live Predict가 실제 쓴 vx*
+        // (재계산 금지 — 하이브리드 함정 방지). replay가 이 저장값을 그대로 PhysicsInput에 재생.
+        public void Push(uint clientTick, sbyte inputX, bool jumpPressed, float externalVelX)
+        {
+            _records.Add(new InputRecord(clientTick, inputX, jumpPressed, externalVelX));
         }
 
         // ackedTick 이하의 입력을 모두 제거 (서버가 처리 완료한 입력은 더 이상 replay 대상 X).
@@ -67,11 +75,21 @@ namespace Dawnholder.Client.Prediction
         public readonly sbyte InputX;
         public readonly bool JumpPressed;
 
+        // 그 틱 live Predict가 Physics.Step ExternalVelX로 실제 주입한 임펄스 vx.
+        // replay는 이 저장값을 4-arg PhysicsInput으로 그대로 재생 → 재계산 X (결정성 뿌리).
+        // 임펄스 없는 평지 입력은 0 (기존 3-arg ctor 위임).
+        public readonly float ExternalVelX;
+
+        // 기존 3-arg ctor — ExternalVelX=0 위임. 기존 호출자 전부 불변.
         public InputRecord(uint clientTick, sbyte inputX, bool jumpPressed)
+            : this(clientTick, inputX, jumpPressed, 0f) { }
+
+        public InputRecord(uint clientTick, sbyte inputX, bool jumpPressed, float externalVelX)
         {
             ClientTick = clientTick;
             InputX = inputX;
             JumpPressed = jumpPressed;
+            ExternalVelX = externalVelX;
         }
     }
 }

@@ -472,8 +472,8 @@ public class GameMap
     ///
     /// **호출 invariant**: tick thread에서만. GameSession.SubmitSkillUse가 EnqueueJob 람다로 박음.
     /// </summary>
-    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick)
-        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick);
+    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick, sbyte facing)
+        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick, facing);
 
     // ── AnimState 계산 ───────────────────────────────────────────────────────
 
