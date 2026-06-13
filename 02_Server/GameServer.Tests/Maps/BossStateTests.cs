@@ -80,6 +80,9 @@ public class BossStateTests : IDisposable
         return (PacketID)id;
     }
 
+    static int CountPacketsOfType(List<byte[]> sent, PacketID type)
+        => sent.Count(p => PacketIdOf(p) == type);
+
     TestGameSession SetupSession()
     {
         TestGameSession s = new(_map);
@@ -229,5 +232,73 @@ public class BossStateTests : IDisposable
             boss.EnterHitState(-1f);
             Assert.IsType<BossTelegraphState>(boss.Fsm!.CurrentState);
         }
+    }
+
+    // ─── 시나리오 6: 대쉬 무적 게이트 (M4.13 P3) ─────────────────────────────
+
+    [Fact]
+    public void DashInvuln_DuringWindow_BossAttackDealsZeroDamageNoKnockback()
+    {
+        // 무적 window 안에서 보스 공격 → HP 불변 + 넉백 0 + S_EnemyAttack broadcast 없음.
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
+
+        // 무적 window: 현재 tick(1) 포함 만료 tick을 충분히 미래로.
+        player!.InvulnUntilTick = _map.CurrentTick + CombatConstants.DashTravelTicks;
+        int hpBefore = player.Hp;
+        player.ExternalImpulseVx = 0f;
+        s.SentPackets.Clear();
+
+        // 보스 공격 직접 트리거 (BossAttackState.Enter → ApplyBossAttack).
+        boss.Fsm!.ChangeState(BossStates.Attack, boss);
+
+        // 데미지 0 + 넉백 0 + broadcast 없음.
+        Assert.Equal(hpBefore, player.Hp);
+        Assert.Equal(0f, player.ExternalImpulseVx);
+        Assert.Equal(0, CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack));
+    }
+
+    [Fact]
+    public void DashInvuln_AfterWindowExpires_BossAttackDealsNormalDamage()
+    {
+        // window 만료 후엔 정상 피격 — 무적이 대쉬 지속만큼만 작동하는지 대조.
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
+
+        // 만료 tick을 과거로 → 현재 tick(1) > 만료 → 비무적.
+        player!.InvulnUntilTick = _map.CurrentTick - 1;
+        int hpBefore = player.Hp;
+        s.SentPackets.Clear();
+
+        boss.Fsm!.ChangeState(BossStates.Attack, boss);
+
+        // 정상 피격: HP 감소 + S_EnemyAttack broadcast.
+        Assert.True(player.Hp < hpBefore, $"window 만료 후엔 피격돼야 함 (hp={player.Hp}, before={hpBefore})");
+        Assert.True(CountPacketsOfType(s.SentPackets, PacketID.S_EnemyAttack) >= 1, "정상 피격 시 S_EnemyAttack 필요");
+    }
+
+    [Fact]
+    public void NoInvuln_Default_BossAttackDealsDamage()
+    {
+        // InvulnUntilTick 기본값(long.MinValue) = 비무적. melee 등 대쉬 외 행동은 이 필드 미세팅 → 평소 피격.
+        TestGameSession s = SetupSession();
+        EnemyEntity boss = _map.Enemies[BossEntityId];
+        PlayerEntity? player = _map.GetPlayer(PlayerEntityId);
+        Assert.NotNull(player);
+        PlaceInBossRange(player!);
+
+        // InvulnUntilTick을 건드리지 않음 — 기본값 그대로.
+        int hpBefore = player!.Hp;
+        s.SentPackets.Clear();
+
+        boss.Fsm!.ChangeState(BossStates.Attack, boss);
+
+        Assert.True(player.Hp < hpBefore, "무적 미세팅 시 정상 피격돼야 함");
     }
 }

@@ -6,7 +6,7 @@ status: planned
 grade: 대규모
 slug: M4.13-impulse-class
 created: 2026-06-12
-revised: 2026-06-12
+revised: 2026-06-13
 domains: [shared, server, client, qa]
 ---
 
@@ -106,7 +106,7 @@ M4.11 백로그 ① SnapThreshold Play 실측 중, 복합 동작(대쉬)에서 *
 **임펄스(P2~)**: `SkillSystem.cs:74-140`(ProcessDash) · `CombatConstants.cs`(DashLungeInitialVx/Decay, `02_Server/GameServer/Combat/`, 서버 전용) · `PlayerCombatStates.cs:38-39`(AttackState lunge 감쇠)/`64-82`(HitState 넉백) · `GameMap.cs:244`(임펄스 합성) · `PlayerEntity.cs:218-225`(EnterHitState).
 **공유**: `Physics.cs:148`(`vx=InputX*MoveSpeed+ExternalVelX` — 채널 존재) · `PhysicsInput`(4-arg ctor) · `Constants.cs`(Knockback 상수 이미 Shared).
 **클라**: `PlayerPredictor.cs:91-96`(Predict)/`108-139`(OnSnapshot) · `LocalPlayerMovement.cs:234-307`(Update substep)/`335-380`(forceAdopt+리셋)/`224-232`(ShouldForceAdopt) · `SkillCastHandler.cs:94-112`(HandleDash).
-**테스트**: `PlayerPredictorTests.cs`(~55케이스, Predict 시그니처 영향) · `MovementGateTests.cs`.
+**테스트**: `PlayerPredictorTests.cs`(30케이스, Predict 시그니처 영향) · `MovementGateTests.cs`(21케이스). ※둘 다 `03_Client/Assets/Tests/EditMode/Prediction/`. 옛 "~55" 추정은 6/13 실측으로 정정.
 **미조사**: 적 밀침(허딩) = 서버 적 변위 신규 — 착수 시 `EnemyEntity`(`02_Server/GameServer/Combat/EnemyEntity.cs`)/CombatSystem 경로 확인(P3 스파이크).
 
 ---
@@ -131,7 +131,7 @@ M4.11 백로그 ① SnapThreshold Play 실측 중, 복합 동작(대쉬)에서 *
 
 골격 견고 + 헌법 정합(§1 유지·§2 wire 위험 낮음·§4 위반을 P4가 봉합). 비가역 위험 없음 → 즉시 봉합 강제 아님. **착수(/work:plan) 시 봉합 2건** (게이트 합류로 Phase 번호 갱신):
 
-1. **[Phase 5 재분해] "InputHistory 임펄스 저장"은 단순 필드 추가가 아니라 *예측 결정성 계약 확장*.** 실측: 현 `InputRecord`=`(clientTick,inputX,jumpPressed)` 3필드뿐, `OnSnapshot` replay 루프는 `PhysicsInput`에 ExternalVelX를 **0**으로 넣어 평지 물리만 재현. 방식 B = ① `InputRecord`에 임펄스 채널 추가 ② `Push`/`NotifySent`/`ReplayFrom` 시그니처 변경 ③ replay가 매 틱 임펄스를 *시간 전진(감속/소진)*시키며 재현. 착수 시 Phase 5를 5a/5b로 쪼갤지 검토(테스트 ~55케이스 시그니처 영향 포함).
+1. **[Phase 5 재분해] "InputHistory 임펄스 저장"은 단순 필드 추가가 아니라 *예측 결정성 계약 확장*.** 실측: 현 `InputRecord`=`(clientTick,inputX,jumpPressed)` 3필드뿐, `OnSnapshot` replay 루프는 `PhysicsInput`에 ExternalVelX를 **0**으로 넣어 평지 물리만 재현. 방식 B = ① `InputRecord`에 임펄스 채널 추가 ② `Push`/`NotifySent`/`ReplayFrom` 시그니처 변경 ③ replay가 매 틱 임펄스를 *시간 전진(감속/소진)*시키며 재현. 착수 시 Phase 5를 5a/5b로 쪼갤지 검토(테스트 30케이스 시그니처 영향 포함 — 옛 ~55는 추정, 6/13 실측 30으로 정정. 케이스 수가 예상보다 적어도 *결정성 계약 확장*이라 분해 검토는 유지).
 2. **[Phase 3 선결 스파이크] 적 밀침(허딩) 미조사 → 완료 조건 정량 불가.** 착수 직전 적 변위 경로 스파이크(≈30분): `EnemyEntity`가 ExternalVelX 채널 갖는지 / 충돌 해석 주체 / 밀림 기댓값(칸수·벽 끼임·S_EntityState 브로드캐스트 영향). "신규 충돌 시스템 필요"로 나오면 Phase 3 분리 후보.
 
 **★핵심 리스크(§1) — forceAdopt 크러치 제거 = 안전망 제거.** 현 forceAdopt는 "예측 못 하는 임펄스를 매 스냅샷 서버 위치로 끌어와 *sub-threshold 누적 어긋남* 방지"하는 보험. 방식 B 등식("클라가 예측하니 보험 불필요")은 **클라 replay가 서버 임펄스 궤적을 비트단위 재현**해야 성립 — 감속 공식/시작 틱이 1틱이라도 어긋나면 보험 뗀 자리에 *영구 offset 누적* 재발(M4.11 P2 ε 공유상수 silent break와 동류 함정). **Phase 5 결함1의 결정적 재현 = 이 마일스톤 성패의 핵심 계약.**

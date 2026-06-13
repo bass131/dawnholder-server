@@ -341,11 +341,11 @@ public class EnemyAiTests
 
         // 2) Tick(1) 먼저 → _currentTick=1 + RecordPosition
         enemy.Hp = 1;
-        attacker.LastAttackTickMs = 0;
+        attacker.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
         map.Tick(1);
 
         // 3) ProcessAttack — attacker 위치 재배치(Physics.Step 이동 보정)
-        attacker.LastAttackTickMs = 0;
+        attacker.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
         attacker.Position = new Vector2(enemy.X + 1f, 0f);
         attacker.RecordPosition(1, attacker.Position);
         map.ProcessAttack(attacker.EntityId, originalId, attackerClientTick: 1);
@@ -404,7 +404,7 @@ public class EnemyAiTests
 
         // HP 1로 직접 설정 후 ProcessAttack
         boss.Hp = 1;
-        attacker.LastAttackTickMs = 0;
+        attacker.SetLastActionTick(ActionKind.Melee, long.MinValue / 2); // cooldown 우회
         attacker.Position = new Vector2(boss.X + 1f, 0f);
         attacker.RecordPosition(1, attacker.Position);
 

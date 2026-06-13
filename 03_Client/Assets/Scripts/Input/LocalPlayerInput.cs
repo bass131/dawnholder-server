@@ -88,6 +88,7 @@ namespace Dawnholder.Client.Input
             //   "한 번 들어간 공격은 끝까지 커밋". commit window(이동잠금 400ms)보다 긴 쿨다운으로 게이트해
             //   스윙 종료 후 재공격까지 대기 + 유령 스윙(클라 예측-서버 거부 갭) 차단. 서버 상수 단일 진실 거울.
             if (!_movement.CanAttack) return;
+            if (_movement.IsActionLocked) return; // 서버 ActionGate 클라 거울 — Attack/Hit/Death 중 차단.
             // TryAttack: 세션 준비 시 C_Attack 송신(타겟 없으면 0 sentinel = 허공 스윙).
             //   송신 성공 시 NotifyAttack — 허공 스윙도 commit window + 쿨다운 예측 시작.
             //   세션 미준비(false) 시에만 생략 — 연결 전 입력은 아무 예측도 안 함.
@@ -129,11 +130,12 @@ namespace Dawnholder.Client.Input
         }
 
         // 스킬 송신 공통 경로.
-        // 게이트 순서: None 필터 → 클래스 자격(CanCast) → 스킬별 쿨다운 게이트 → 세션 준비.
+        // 게이트 순서: None 필터 → 클래스 자격(CanCast) → 행동 잠금 → 스킬별 쿨다운 게이트 → 세션 준비.
         void TrySendSkill(SkillId skillId, CharacterClass myClass)
         {
             if (skillId == SkillId.None) return;
             if (!SkillCatalog.CanCast(myClass, skillId)) return;
+            if (_movement.IsActionLocked) return; // 서버 ActionGate 클라 거울 — Attack/Hit/Death 중 차단.
 
             // 스킬별 쿨다운 게이트 — Constants 상수 거울. 서버도 별도 검증(헌법 §1). 클라 게이트는 UX + 트래픽 절감.
             switch (skillId)

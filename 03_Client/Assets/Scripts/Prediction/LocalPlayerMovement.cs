@@ -167,6 +167,12 @@ namespace Dawnholder.Client.Prediction
         // LocalPlayerInput의 점프 게이트용. 입력 *시점* 접지 여부를 정확히 반영.
         public bool OnGround => _predictor.OnGround;
 
+        // 서버 ActionGate.AcceptsAction(kind)==false 의 클라 거울 — Attack/Hit/Death 중이면 행동 입력 차단.
+        // 이동 잠금(IsMovementLocked)과 완전히 같은 조건으로 동작하므로 해당 호출을 그대로 재사용.
+        // LocalPlayerInput이 OnAttack / TrySendSkill 송신 전 조회.
+        public bool IsActionLocked =>
+            IsMovementLocked(Mathf.Max(_commitWindowRemaining, _hitGateRemaining), _serverAnimState);
+
         // LocalPlayerInput이 공격 송신 성공 시 호출 — 로컬 commit window 예측 시작.
         // 지속 = 서버와 동일한 98_Shared 상수(AttackCommitWindowTicks × TickDuration 초).
         // 재공격 시 갱신(연장). 서버 AttackState 진입과 같은 규칙을 클라가 선예측 → rubber-band 0.
