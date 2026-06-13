@@ -3,7 +3,7 @@ name: knowledge-cross-cutting-index
 description: 도메인 횡단 (보안/툴 함정/마이그/환경 사고) 학습 캐시 인덱스
 domain: cross-cutting
 maintainer: youngho
-last_updated: 2026-05-31
+last_updated: 2026-06-14
 ---
 
 # Cross-Cutting Knowledge — _index.md
@@ -24,6 +24,8 @@ last_updated: 2026-05-31
 | `gamma-pre-validation-pattern` | Phase 정의·핵심 분기점에 외부 검증 (Codex γ → plan-auditor SubAgent 내재화) | `_milestone-plan.md` 박을 때 / Phase 정의 `.md` Write 시 | M3 누적 (γ 6/7회차) + `plan-auditor` agent |
 | `riot-vanguard-spawn-unknown` | 사용자 PC 상주 Vanguard 드라이버가 Node child_process.spawn 차단 | VSCode C# Dev Kit "No Solution" / Docker WSL2 spawn 사고 | 5/16 1회 실측 (Rule of Three 미달) |
 | `jump-buffer-ack-vs-apply-split` | 권위서버+client prediction에서 입력 버퍼링 시 ack(소비)≠효과(적용) 시점 분리 → 클라가 ack로 입력 evict해 reconcile replay 불가, 발산하면 snap | 입력 버퍼링(jump buffer/공격 버퍼/coyote) 추가 / prediction reconcile 설계 시 | M4.3 Phase 10b (`324dfb3`) Unity Play 실측 무해 (Rule of Three 미달) |
+| `impulse-class-prediction-boundary` | 임펄스 예측 가능성의 경계 = 클라가 시작점(틱·방향·지속)을 아느냐 — self-initiated=예측, server-reactive=forceAdopt 채택 | 임펄스 동작(대쉬·넉백·lunge) 추가 / prediction 설계 시 | M4.13 P5·P6 (`f151e55`) |
+| `dash-facing-client-authority` | §1은 적용·판정 권위지 입력 출처가 아님 — 방향/조준 등 클라 입력 파생값은 클라가 보내고 서버가 정규화·적용 | 방향성 스킬/조준 입력 추가 / §1 신뢰경계 판단 시 | M4.13 P5 (`52e5042`, Protocol v13) |
 
 ---
 
@@ -110,6 +112,24 @@ cloud 라인 *만* stage → 자동 unstage (워킹 디렉토리 보존 = 머신
 **확신도**: 실측 1건. Rule of Three 미달 — 다른 지연-적용 입력(공격 버퍼 등)에서 재발 시 ★★★ 승격.
 **관련 키워드**: [[gamma-pre-validation-pattern]] (설계 단계 사전 검증으로 깃발 → 측정으로 확정)
 
+### `impulse-class-prediction-boundary`
+
+**증상**: 클라가 예측 못 하는 서버 임펄스 동작(대쉬·넉백·임펄스공격)이 매 스냅샷 forceAdopt로 끌려와 50ms 시각 스터터. "전부 클라 예측으로 통일"하려다 넉백에서 막힘.
+**패턴**: 임펄스 예측 가능성의 경계 = *클라가 시작점(시전 틱·방향·지속)을 아느냐*. self-initiated(대쉬/lunge — 내가 시전)는 시작점을 알아 StartImpulse로 직접 예측 가능. server-reactive(넉백 — 서버가 피격 시점 결정)는 신호가 RTT 후 도착(시작 틱 정렬 불가) + 방향은 추론(근사) + hitstun 지속은 서버 전용 → 예측 근거 부족 → forceAdopt(서버 위치 채택)가 정석. "전부 예측"이 아니라 원리적 구분이 있다.
+**봉합**: 서버는 단일 경로(EnterAttackState/EnterHitState→DecayImpulse, P4 공유 공식). 클라만 갈림 — self-initiated=StartImpulse 예측(forceAdopt 불요), server-reactive=forceAdopt 채택. "예측이냐 채택이냐"는 우연이 아니라 클라가 시작점을 아느냐의 원리.
+**사례**: M4.13 P5(`2e1b85e`/`dcf3b12` 대쉬·lunge 예측+크러치 제거) + P6(`6ad70da` 넉백 forceAdopt 영구 결정, `f151e55` 머지).
+**확신도**: 실측 1건(M4.13). Rule of Three 미달 — 향후 방향성/신규 임펄스 동작 추가 시 재확인.
+**관련 키워드**: [[jump-buffer-ack-vs-apply-split]] (예측/reconcile 입력 출처·시점 분리 동류), [[dash-facing-client-authority]] (클라 입력 파생값 권위)
+
+### `dash-facing-client-authority`
+
+**증상**: 방향 틀고 대쉬하면 의도 반대로 "빠바박" + reconcile 클러스터. 서버 FacingDir이 C_MoveIntent(입력 큐, 지연) 파생인데 대쉬(C_SkillUse, 잡 즉시)가 방향 입력을 추월 → 서버는 옛 방향, 클라는 새 방향 예측 → 반대 대쉬.
+**패턴**: "§1 서버 권위"는 *적용·판정 권위*를 서버에 두라는 것이지 *입력 출처*를 서버가 만들라는 게 아니다. 방향/조준 같은 값은 *원래도 클라 입력 파생*이라, 클라가 보내고 서버가 정규화·적용하는 게 정석 — 신뢰 경계 안 넓힘.
+**봉합**: C_SkillUse.facing append(Protocol v12→v13). 서버 ActionGate가 Dash일 때만 FacingDir=클라 facing 갱신(Validate 통과 후, 거부 시 부작용 0). §3 정규화(pkt.facing==1?1:-1). **패킷 추가 전 "클라가 이미 아는 정보로 추론 가능?" 점검** — 넉백 방향은 attacker 위치로 추론 가능했음(wire bump 회피 가능 사례).
+**사례**: M4.13 P5(`52e5042` facing v13, `f151e55` 머지). reviewer 6축 0위반(§1 미위반 확인).
+**확신도**: 실측 1건(M4.13). Rule of Three 미달 — 조준/방향성 스킬 추가 시 재확인.
+**관련 키워드**: [[jump-buffer-ack-vs-apply-split]] (입력 출처/시점 분리 동류), [[impulse-class-prediction-boundary]] (클라 예측 경계)
+
 ---
 
 ## 비활성 / GC 대기 (3개월+ 무참조)
@@ -145,3 +165,4 @@ _(없음 — 본 캐시는 2026-05-20 신설)_
 ## 갱신 이력
 
 - 2026-05-20 — M3.5 Phase 04 (1/3) 골격 박힘. 시드 항목은 (2/3)에서 채움 — cross-cutting은 시드 가장 풍부 (5건 이상 예상).
+- 2026-06-14 — M4.13 마일스톤 마감 후속. `impulse-class-prediction-boundary` + `dash-facing-client-authority` 2건 박제 (사용자 확인 게이트 통과).
