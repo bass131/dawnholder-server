@@ -58,7 +58,7 @@ internal sealed class SkillSystem
         caster.Position = new Vector2(destX, caster.Position.Y);
         caster.RecordPosition(currentTick, caster.Position);
 
-        // 8) S_SkillCast broadcast — 클라 "보간 끊기" 신호 (Phase 06 클라가 이 신호로 스냅).
+        // 8) S_SkillCast broadcast — 클라 "보간 끊기" 신호 (클라가 이 신호로 스냅).
         //    데미지/타격 없음 — 순수 이동 스킬. DeferredDamage/HitResult 경로 안 탐.
         byte facingByte = caster.FacingByte;
         S_SkillCast castPkt = new S_SkillCast
@@ -87,7 +87,7 @@ internal sealed class SkillSystem
         // 4) 쿨다운 소비 — 검증 통과 직후.
         caster.SetLastSkillTick((byte)SkillId.Dash, currentTick);
 
-        // 5) 전방 lunge 부여: AttackLungeVx 채널 재활용 (M4.7 근접 스윙과 동일 채널, 더 큰 값).
+        // 5) 전방 lunge 부여: AttackLungeVx 채널 재활용 (근접 스윙과 동일 채널, 더 큰 값).
         //    EnterAttackState → AttackState.Enter에서 StateTicksRemaining = AttackCommitWindowTicks(8틱).
         //    LungeDecayPerTick를 Dash 전용 값(0.85)으로 덮어써 평타(0.75)보다 완만하게 감쇠
         //    → 더 긴 전진 + 끝이 부드럽게 잦아드는 느낌. AttackState.Exit에서 0.75로 자동 리셋.
