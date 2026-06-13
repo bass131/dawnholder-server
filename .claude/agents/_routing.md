@@ -29,6 +29,8 @@
 | **복잡** | Coordinator + Worker 1~2개 | + reviewer (조건부) |
 | **대규모** | Coordinator + Team | Worker 3~4개 + plan-auditor 사전 + reviewer 통합 |
 
+**구현 Worker 모델 (선택적 Opus, 2026-06-13 영구)**: 기본 Sonnet. **`복잡+trust-boundary` 또는 `대규모` → 구현 Worker도 Opus**(위험 깃발이 모델 티어 상향, 위임 시 `model` override). 그 외 Sonnet. 단 메인 `file:line` 실측 게이트는 모델 무관 유지. 상세 = [`../policies/subagent-routing.md`](../policies/subagent-routing.md) §5.5.
+
 ---
 
 ## 자동 호출 트리거

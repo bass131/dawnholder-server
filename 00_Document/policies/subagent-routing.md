@@ -11,7 +11,7 @@
 
 ## 1. SubAgent 풀 9 (요약)
 
-| # | 이름 | 역할 | 모델 | 권한 |
+| # | 이름 | 역할 | 기본 모델 | 권한 |
 |---|---|---|---|---|
 | 1 | `server` | 02_Server/ + 98_Shared/ 서버측 (게임플레이/네트워킹/영속화) | Sonnet | 02_Server/ + 98_Shared/ R/W |
 | 2 | `shared` | 98_Shared/ 단독 (Protocol/공식/공유 상수) | Sonnet | 98_Shared/ R/W, 04_ClientNet/ R |
@@ -145,18 +145,19 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 
 ---
 
-## 한시 운영 (2026-06-10 ~ 2026-06-22): Fable 메인 + 모델 분담
+## 5.5 선택적 Opus — 복잡도/위험 기반 구현 Worker 모델 상향 (영구, 2026-06-13)
 
-> **한시 방침**. 기한(2026-06-22, Fable 가용 종료) 후 본 섹션은 삭제됩니다. 아래 §1~§9 영구 룰은 그대로 유지되며, 본 섹션은 그 위에 잠시 덧씌우는 운영 레이어입니다.
->
-> **왜**: 메인 세션이 Fable 5(고단가 모델)로 운영되는 동안, 메인이 실코드 편집·commit·tool 실행까지 직접 하면 토큰 비용이 폭증합니다. 따라서 메인은 *조율 전담*으로 절제하고, 실작업은 더 저렴한 SubAgent에 위임해 비용을 통제합니다.
+> **배경**: 2026-06-10~22 "Fable 메인 + 메인 조율 전담" 한시 방침은 **2026-06-13 폐기**됨 — Fable 5 사용 제한으로 메인이 Fable로 운영되지 않음. §1~§9 원래 라우팅으로 복귀(메인 = 세션 오케스트레이터: 단순=직접 / 보통+=위임). 그 위에 아래 *선택적 Opus* 룰을 **영구** 추가한다(한시 아님).
 
-- **메인 세션 (Fable 5)** = 종합판단·검증·대화 전담. 실코드 편집 X, commit·tool 실행 작업까지 Opus 4.8 SubAgent에 위임.
-- **구현** = Sonnet Worker (`client`/`server`/`shared`/`qa` 등 기존 도메인 SubAgent — 기존 모델 배정 그대로).
-- **리뷰·고수준** = Opus (`reviewer`/`plan-auditor`/`coordinator` — 기존 배정 그대로).
-- **에스컬레이션** = 기존 룰 유지 (§5: Sonnet 2회 실패 → 3차 Opus → 사용자) + **추가**: Opus도 실패하거나 모호하면 메인(Fable)이 직접 파악하되 절제 (과한 직접 작업 금지 — 조율자 역할 유지).
+**원칙**: 구현 Worker는 §1 *기본 모델 배정*(server/shared/client/qa/unity-bridge = Sonnet)을 따르되, **작업 위험도가 높으면 모델 티어를 상향**한다. 위험 깃발이 *등급*뿐 아니라 *모델 티어*도 상향하는 셈.
 
-**3중 기록**: 같은 내용이 work-pin ⚙️ 섹션 + 사용자 memory에도 박혀 있습니다. **단일 진실은 본 정책 문서**(work-pin·memory는 미러).
+- **트리거**: `복잡 + trust-boundary` 또는 `대규모` Phase → 구현 Worker도 **Opus**로 위임 (`Agent` 도구 `model` override; agent 정의 frontmatter 기본값은 Sonnet 유지 — override는 위임 시점 결정).
+- **그 외**(단순 / 보통 / 복잡-non-tb) → 기본 **Sonnet**.
+- **근거**: 헌법 위험 깃발(trust-boundary)/대규모 선을 그대로 재사용 → 새 판정 규칙 0. 위험 높은 작업 = 더 강한 모델.
+- **불변 (핵심)**: 메인 `file:line` 실측 게이트는 **모델 무관 유지**. Opus Worker도 실수 0 보장 X — M4.13 P2에서 Sonnet이 만든 `DashTravelTicks` 죽은상수를 메인 실측이 잡은 게 근거. 선택적 Opus = "Worker 품질↑"이지 "메인 검증 생략"이 아님.
+- **에스컬레이션 상호작용 (§5)**: 복잡·tb/대규모는 *처음부터 Opus*라, §5 'Sonnet 2회 실패 → Opus' 흐름은 그 미만(단순/보통/복잡-non-tb)에만 적용된다.
+
+**3중 기록**: 같은 룰이 work-pin ⚙️ 섹션 + 사용자 memory(`opus-routing-by-complexity`)에도 미러. **단일 진실은 본 정책 문서.**
 
 ---
 
@@ -218,3 +219,4 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 
 - 2026-05-20 — M3.5 Phase 01 (2/2)에서 신설. 5/20 의논 결과(SubAgent 풀 8 + 모델 분담 + 에스컬레이션 룰) 박힘. 옛 헌법 6 도메인 라우팅 표를 본 정책으로 외부화 + 신설 4개(`shared`/`plan-auditor`/`unity-bridge`/`coordinator`) 흡수.
 - 2026-05-22 — M3.5 후속 봉합 (β cross-review #3). 풀 8 → 풀 9 갱신 (`knowledge-gc` Phase 04 신설 항목 누락 봉합) + §4-3 수동 트리거 명세 박음.
+- 2026-06-13 — 한시 운영(Fable 메인) 섹션 폐기 + §5.5 선택적 Opus(영구) 신설. Fable 5 사용 제한으로 'Fable 메인 조율 전담' 한시방침 종료 → §1~9 원래 라우팅 복귀. `복잡+trust-boundary` 또는 `대규모` = 구현 Worker도 Opus(위험 깃발이 모델 티어 상향, 위임 시 model override). §1 표 헤더 '모델'→'기본 모델'. 동기화: CLAUDE.md 헌법 포인터 + `_routing.md` + `_escalation.md` + work-pin + memory(`opus-routing-by-complexity` 신설, 옛 `main-session-coordination-only` 폐기).

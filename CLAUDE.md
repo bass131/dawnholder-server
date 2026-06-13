@@ -210,6 +210,8 @@
 **여러 도메인 작업**: Coordinator가 분해 → 도메인별 Worker 위임 → Reviewer 통합 점검.
 **서브에이전트끼리 호출 X**: 분해는 Coordinator가, 위임은 Coordinator → Worker 1단계만 (재귀 차단).
 
+**선택적 Opus (2026-06-13)**: 위 표 모델 = *기본 배정*. **`복잡+trust-boundary` 또는 `대규모` Phase는 구현 Worker도 Opus 위임** — 위험 깃발이 등급뿐 아니라 모델 티어도 상향 (메인 `file:line` 실측 게이트는 모델 무관 유지). 상세 → [`subagent-routing.md`](00_Document/policies/subagent-routing.md) §5.5. (※ 2026-06-10~22 'Fable 메인 조율 전담' 한시 방침은 Fable 5 사용 제한으로 **2026-06-13 폐기** — 원래 라우팅 복귀.)
+
 ### 자동 호출 트리거
 
 - **reviewer**: 도메인 Worker 코드 변경 후 (트리거 조건은 hook 명세)

@@ -6,6 +6,8 @@
 
 ## 1. Worker 작업 실패 (Sonnet 2회 → Opus → 사용자)
 
+> **선택적 Opus 상호작용 (2026-06-13 영구)**: `복잡+trust-boundary` / `대규모` Phase는 구현 Worker가 *처음부터 Opus*(routing §5.5). 따라서 아래 'Sonnet 2회 → Opus' 흐름은 그 미만(단순/보통/복잡-non-tb)에만 적용된다.
+
 ```
 [1차 시도 — Sonnet, Worker A]
    │
