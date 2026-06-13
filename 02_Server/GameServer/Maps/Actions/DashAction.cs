@@ -18,10 +18,13 @@ internal sealed class DashAction : IGameAction
 
     public bool Execute(GameMap map, PlayerEntity caster, long clientTick)
     {
-        // AttackState 진입 — Dash 전용 lunge + 감쇠 계수 상태에 위임 (§8).
+        // AttackState 진입 — 등속 대쉬: decay=1.0(감쇠 없음), Exit가 임펄스 0으로 정리.
+        // 이동 거리 D = DashSpeed × DashTravelTicks × TickDuration = 10 × 8 × 0.05 = 4.0 unit.
+        // durationTicks=DashTravelTicks: 대쉬 지속이 이 상수로 실제 제어됨 (AttackCommitWindowTicks 독립).
         caster.EnterAttackState(
-            CombatConstants.DashLungeInitialVx * caster.FacingDir,
-            CombatConstants.DashLungeDecayPerTick);
+            CombatConstants.DashSpeed * caster.FacingDir,
+            decayPerTick: 1.0f,
+            durationTicks: CombatConstants.DashTravelTicks);
 
         // 경로 타격: rewind 위치 중심 AABB.
         Vector2 rewindedPos = caster.GetPositionAtTick(clientTick);

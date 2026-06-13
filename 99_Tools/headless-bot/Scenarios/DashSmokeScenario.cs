@@ -36,9 +36,10 @@ public class DashSmokeScenario
     const byte HitEffectDash = 3;
 
     // Dash 이후 위치 이동 최소 임계.
-    // DashLungeInitialVx=10.0f, 감쇠 0.75/틱 → 8틱 합계 이론값 ≈ 3.6f.
-    // Snapshot 수신 타이밍 오차(2틱=100ms 주기)로 실측이 더 작을 수 있어 1.5f로 설정.
-    const float MinPositionAdvanceX = 1.5f;
+    // 고정거리 등속: DashSpeed(10) × DashTravelTicks(8) × TickDuration(0.05) = 4.0 unit.
+    // 하한 3.5f = 옛 모멘텀 감쇠 모델(~2.43 unit) 회귀 시 FAIL, 새 등속(4.0 unit) 시 PASS.
+    // Snapshot 수신 타이밍 여유로 정확히 4.0에 못 미칠 수 있어 3.5f로 설정 (네트워크 노이즈 허용).
+    const float MinPositionAdvanceX = 3.5f;
 
     // 쿨다운 재시전 무반응 검증 대기 (쿨다운 중인 1틱 내). 3틱 여유.
     const int CooldownCheckAfterTicks = 3;
@@ -154,8 +155,8 @@ public class DashSmokeScenario
             float advance = result.PositionAfterDash - result.PositionBeforeDash;
 
             // facing 방향에 따라 advance 부호가 다름 — 절댓값 판정.
-            // MinPositionAdvanceX = 1.5f: DashLungeInitialVx=10.0, 8틱 감쇠 합계 ≈ 3.6f.
-            // 하지만 Snapshot 수신 타이밍에 따라 실측이 더 작을 수 있어 1.5f로 설정.
+            // MinPositionAdvanceX = 3.5f: 고정거리 등속 4.0 unit 기준.
+            // 옛 모멘텀 감쇠 모델(~2.43 unit)로 회귀하면 2.43 < 3.5 → FAIL.
             result.PositionAdvanced = Math.Abs(advance) >= MinPositionAdvanceX;
 
             if (!result.PositionAdvanced)

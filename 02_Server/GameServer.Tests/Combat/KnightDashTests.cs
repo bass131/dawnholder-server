@@ -12,7 +12,7 @@ namespace GameServer.Tests.Combat;
 /// Knight Dash 스킬 단위 테스트 (M4.9 Phase 03).
 ///
 /// 검증 대상:
-///   1. Dash_Knight_ExternalVelX_Applied       — Dash 시전 후 AttackLungeVx 부여 확인
+///   1. Dash_Knight_ExternalVelX_Applied       — Dash 시전 후 ExternalImpulseVx 부여 확인
 ///   2. Dash_Knight_PathTarget_DamageHitEffect3 — 경로 적 데미지 + S_HitResult.hitEffect==3
 ///   3. Dash_Knight_Cooldown_SecondCastDropped  — 쿨다운 미경과 재발동 silent drop
 ///   4. Dash_Mage_ClassGate_Regression          — Mage가 Dash 시전 시 drop (Phase 02 게이트 정합)
@@ -81,7 +81,8 @@ public class KnightDashTests : IDisposable
     }
 
     // Knight 세션 setup: handshake 완료 + Tick(1) → entity 등록. 적 1마리 전방에 배치.
-    // 적 위치: caster x=0, FacingDir=+1(오른쪽), boxOrigin.x = DashBoxHalfX(4.0) → 적은 x=4에 배치.
+    // 적 위치: caster x=0, FacingDir=+1(오른쪽), boxOrigin.x = DashBoxHalfX(2.5) → 적은 x=2.5에 배치.
+    // DashBoxHalfX=2.5f(박스 반폭), 이동거리 D=4.0(DashSpeed×DashTravelTicks×TickDuration)과 별개.
     (TestGameSession session, PlayerEntity caster, EnemyEntity enemy, GameMap map) SetupKnight()
     {
         float enemyX = CombatConstants.DashBoxHalfX; // 박스 center = caster.x + DashBoxHalfX (facing=+1)
@@ -107,28 +108,28 @@ public class KnightDashTests : IDisposable
         return (session, caster, enemy, map);
     }
 
-    // ── 테스트 4종 ─────────────────────────────────────────────────────────────
+    // ── 테스트 5종 ─────────────────────────────────────────────────────────────
 
     [Fact]
     public void Dash_Knight_ExternalVelX_Applied()
     {
-        // Dash 시전 후 AttackLungeVx에 DashLungeInitialVx * FacingDir이 세팅되는지 확인.
+        // Dash 시전 후 ExternalImpulseVx에 DashSpeed * FacingDir이 세팅되는지 확인.
+        // 등속(decay=1.0)이므로 첫 틱 후에도 값 불변.
         // 동시에 S_SkillCast(skillId=Dash) broadcast도 확인 — 연출 신호 정합.
         var (session, caster, _, map) = SetupKnight();
 
         session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1));
 
         // ProcessDash는 EnqueueJob 경유로 Tick 안에서 실행.
-        // Tick 전: AttackLungeVx = 0.
-        Assert.Equal(0f, caster.AttackLungeVx);
+        // Tick 전: ExternalImpulseVx = 0.
+        Assert.Equal(0f, caster.ExternalImpulseVx);
 
         map.Tick(2);
 
-        // Tick 후: AttackLungeVx = DashLungeInitialVx * FacingDir(+1) = DashLungeInitialVx.
-        // 단, AttackState.Tick이 같은 Tick 안에서 1회 감쇠를 적용하므로 엄밀히는 조금 작아짐.
-        // 검증: lunge가 0보다 유의미하게 크다 (감쇠 후에도 첫 틱이라 충분히 큼).
-        Assert.True(caster.AttackLungeVx > CombatConstants.DashLungeInitialVx * 0.5f,
-            $"AttackLungeVx={caster.AttackLungeVx} 가 너무 작음 — Dash lunge 미적용 의심");
+        // Tick 후: 등속(decay=1.0)이므로 DecayImpulse 후에도 ExternalImpulseVx = DashSpeed.
+        // AttackState.Tick 순서: DecayImpulse() → StateTicksRemaining--. decay=1.0 → vx 변화 없음.
+        Assert.Equal(CombatConstants.DashSpeed, caster.ExternalImpulseVx,
+            precision: 4);
 
         // S_SkillCast(skillId=Dash) 확인
         int castCount = CountPacketsOfType(session.SentPackets, PacketID.S_SkillCast);
@@ -217,18 +218,46 @@ public class KnightDashTests : IDisposable
     }
 
     [Fact]
-    public void Dash_CommitWindow_NormalAttack_Rejected_LungeDecayRetainsDash()
+    public void Dash_Knight_FixedDistance_4Units()
+    {
+        // 대쉬 고정거리 등속 검증. 이론값: D = DashSpeed × DashTravelTicks × TickDuration = 10 × 8 × 0.05 = 4.0 unit.
+        // 실행 순서: job(DashAction) → Physics.Step(ExternalImpulseVx=10) → ActionFsm.Tick(DecayImpulse + StateTicksRemaining--).
+        //   decay=1.0이므로 매 틱 vx 불변. Tick 2~9(=8틱) 동안 0.5 unit/tick 이동 → 4.0 unit.
+        //   Tick 9에서 StateTicksRemaining=0 → Exit(ExternalImpulseVx=0). 그러나 해당 틱 Physics.Step은 이미 적용 완료.
+        // 실측 이동 거리: 4.0 unit (등속이라 결정적, 모멘텀 감속의 가변 거리 제거).
+        var (session, caster, _, map) = SetupKnight();
+        float startX = caster.Position.X; // x=0
+
+        // Tick 2: DashAction 실행 — AttackState 진입 + Physics.Step(ExternalImpulseVx=10).
+        session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1));
+        map.Tick(2);
+
+        // Tick 3~9: 나머지 7틱 진행 (총 8틱 = DashTravelTicks).
+        for (long t = 3; t <= 9; t++)
+            map.Tick(t);
+
+        float traveled = caster.Position.X - startX;
+        // 실측: 4.0 unit. ±0.01 허용 (float 누적 오차).
+        Assert.True(MathF.Abs(traveled - 4.0f) < 0.01f,
+            $"대쉬 이동 거리 실측={traveled:F4}, 기대=4.0 unit. 등속 4.0 미달성 — 임펄스 모델 이상.");
+
+        // 대쉬 종료 후 ExternalImpulseVx=0 확인 (Exit 정리).
+        // Tick 9에서 StateTicksRemaining이 0이 되어 AttackState.Exit 호출됨.
+        Assert.Equal(0f, caster.ExternalImpulseVx);
+    }
+
+    [Fact]
+    public void Dash_CommitWindow_NormalAttack_Rejected_ImpulseDecayRetainsDash()
     {
         // AcceptsAction 구멍 봉합(M4.13 P1): Dash commit window 안에 평타 입력이 들어오면
         // ActionGate가 AcceptsAction=false(AttackState)로 거부 → 평타 진입 없음.
-        // LungeDecayPerTick은 0.85(Dash 전용값) 그대로 유지 — 호출자 직접 세팅 패턴 제거.
+        // ImpulseDecayPerTick은 1.0(등속)으로 유지 — 호출자 직접 세팅 패턴 제거.
         var (session, caster, _, map) = SetupKnight();
 
-        // Tick 2: Dash 시전 → AttackState 진입 + PendingDecayPerTick=0.85 → Enter 세팅.
+        // Tick 2: Dash 시전 → AttackState 진입 + PendingDecayPerTick=1.0 → Enter 세팅.
         session.OnRecvPacket(DashPacketBytes(attackerClientTick: 1));
         map.Tick(2);
-        Assert.Equal(CombatConstants.DashLungeDecayPerTick, caster.LungeDecayPerTick,
-            precision: 4);
+        Assert.Equal(1.0f, caster.ImpulseDecayPerTick, precision: 4);
 
         // Tick 3(commit window 안): 평타 입력 → ActionGate AcceptsAction=false로 거부.
         caster.SetLastActionTick(ActionKind.Melee, 0L); // 쿨다운 우회해도 AcceptsAction이 막음
@@ -236,8 +265,7 @@ public class KnightDashTests : IDisposable
         session.OnRecvPacket(atkPkt.Write());
         map.Tick(3);
 
-        // 평타가 거부되었으므로 LungeDecayPerTick은 여전히 Dash 값(0.85).
-        Assert.Equal(CombatConstants.DashLungeDecayPerTick, caster.LungeDecayPerTick,
-            precision: 4);
+        // 평타가 거부되었으므로 ImpulseDecayPerTick은 여전히 등속 값(1.0).
+        Assert.Equal(1.0f, caster.ImpulseDecayPerTick, precision: 4);
     }
 }

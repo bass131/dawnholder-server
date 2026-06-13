@@ -239,9 +239,9 @@ public class GameMap
 
             bool jumpPressed = p.ResolveJump(rawJump); // jump buffer: 공중 입력 → 착지 틱 발사
 
-            // KnockbackVx(피격) + AttackLungeVx(근접 공격 전방 lunge)를 ExternalVelX로 전달.
-            //   둘은 상호배타 State(Hit vs Attack)라 합 = 활성값. 0이면 기존 이동과 동일.
-            PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration, p.KnockbackVx + p.AttackLungeVx);
+            // ExternalImpulseVx: 대쉬/lunge(AttackState) + 넉백(HitState) 통합 단일 필드.
+            //   두 State는 상호배타라 항상 하나만 활성. 0이면 기존 이동과 동일.
+            PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration, p.ExternalImpulseVx);
             PhysicsState before = new PhysicsState(p.Position, p.Velocity, p.OnGround);
             MoveParams move = new MoveParams(p.Stats.MoveSpeed, p.Stats.JumpVel);
             PhysicsState after = Physics.Step(before, input, _terrain, move);

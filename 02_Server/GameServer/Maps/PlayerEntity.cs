@@ -110,22 +110,17 @@ public class PlayerEntity
     // tick thread invariant (헌법 #5).
     public int StateTicksRemaining { get; set; }
 
-    // 피격 넉백 수평 속도 (units/s). HitState.Tick에서 매 틱 감쇠.
-    // 양수=오른쪽, 음수=왼쪽. 0이면 넉백 없음.
-    // tick thread invariant (헌법 #5).
-    public float KnockbackVx { get; set; }
+    // 외부 임펄스 수평 속도 (units/s). 대쉬/평타 lunge(AttackState) + 넉백(HitState) 통합 단일 필드.
+    // Attack vs Hit는 상호배타 State(동시 진입 불가) → 항상 하나만 활성.
+    // GameMap.Tick이 Physics.Step의 ExternalVelX에 직접 전달.
+    // 양수=오른쪽, 음수=왼쪽. tick thread invariant (헌법 #5).
+    public float ExternalImpulseVx { get; set; }
 
-    // 근접 공격 스윙 전방 lunge 수평 속도 (units/s). AttackState.Tick에서 매 틱 감쇠.
-    // KnockbackVx와 상호배타(Attack vs Hit state는 동시 진입 불가) — GameMap.Tick이 둘을 합산해
-    // Physics.Step의 ExternalVelX로 전달. 양수=오른쪽, 음수=왼쪽. tick thread invariant (헌법 #5).
-    public float AttackLungeVx { get; set; }
-
-    // AttackState.Tick이 AttackLungeVx에 곱하는 틱당 감쇠 계수.
-    // 기본값 = Constants.KnockbackDecayPerTick(0.75, 평타 스윙용).
-    // Dash 시전 시 CombatConstants.DashLungeDecayPerTick(0.85)으로 덮어씀 →
-    // 평타보다 완만하게 잦아들어 더 긴 전진 느낌.
-    // AttackState.Exit에서 기본값(0.75)으로 자동 리셋 — 다음 평타 스윙이 오염되지 않음.
-    public float LungeDecayPerTick { get; set; } = Constants.KnockbackDecayPerTick;
+    // 틱당 임펄스 감쇠 계수. DecayImpulse()가 이 값을 곱해 지수 감소.
+    // 평타 lunge / 넉백 = Constants.KnockbackDecayPerTick(0.75).
+    // 대쉬 등속 = 1.0f (감쇠 없음 — 상태 종료 시 Exit가 0으로 정리).
+    // AttackState.Exit에서 기본값(KnockbackDecayPerTick)으로 리셋 — 다음 평타 오염 방지.
+    public float ImpulseDecayPerTick { get; set; } = Constants.KnockbackDecayPerTick;
 
     // 플레이어 전체 행동(이동 + 전투) State 머신.
     // 이동 계열(Idle/Move/Jump) + 전투 계열(Attack/Hit/Death) 통합.
@@ -226,16 +221,19 @@ public class PlayerEntity
     // ── 전투 전이 API ──────────────────────────────────────────────────────
 
     // 공격 commit window 진입. IsDead면 no-op.
-    // lungeVx/decayPerTick: Action.Execute가 계산해 전달 → AttackState.Enter가 세팅(§8 상태 소유).
+    // impulseVx/decayPerTick/durationTicks: Action.Execute가 계산해 전달 → AttackState.Enter가 세팅(§8 상태 소유).
     // 호출자가 필드를 직접 세팅하던 패턴 제거 — AttackState가 파라미터를 통해 자기 데이터를 소유.
-    public void EnterAttackState(float lungeVx = 0f, float decayPerTick = -1f)
+    public void EnterAttackState(float impulseVx = 0f, float decayPerTick = -1f, int durationTicks = -1)
     {
         if (IsDead) return;
-        PlayerCombatStates.Attack.PendingLungeVx = lungeVx;
-        // decayPerTick < 0 = sentinel: 기본값(KnockbackDecayPerTick) 사용. 테스트 인자 없는 호출 호환.
+        PlayerCombatStates.Attack.PendingImpulseVx = impulseVx;
+        // sentinel < 0 → 기본값. 테스트·평타 호출자는 인자 없이 호출해도 기존 거동 유지.
         PlayerCombatStates.Attack.PendingDecayPerTick = decayPerTick < 0f
             ? Constants.KnockbackDecayPerTick
             : decayPerTick;
+        PlayerCombatStates.Attack.PendingDurationTicks = durationTicks < 0
+            ? Constants.AttackCommitWindowTicks
+            : durationTicks;
         ActionFsm.ChangeState(PlayerCombatStates.Attack, this);
     }
 
@@ -246,8 +244,9 @@ public class PlayerEntity
     {
         if (IsDead) return;
         if (!ActionFsm.CurrentState.InterruptibleByHit) return;
-        // KnockbackVx는 dirX와 같은 부호 — dirX 자체가 이미 "공격자 반대 방향"이다.
-        KnockbackVx = Constants.KnockbackInitialVx * MathF.Sign(dirX == 0f ? 1f : dirX);
+        // 넉백 임펄스: dirX 부호 방향으로 KnockbackInitialVx 세팅. M4.11 P2 force-adopt 계약 — 거동 불변.
+        ExternalImpulseVx     = Constants.KnockbackInitialVx * MathF.Sign(dirX == 0f ? 1f : dirX);
+        ImpulseDecayPerTick   = Constants.KnockbackDecayPerTick;
         ActionFsm.ChangeState(PlayerCombatStates.Hit, this);
     }
 
@@ -256,10 +255,18 @@ public class PlayerEntity
     public void Revive()
     {
         ActionFsm.ChangeState(PlayerMovementStates.Idle, this);
-        StateTicksRemaining = 0;
-        KnockbackVx = 0f;
-        AttackLungeVx = 0f;
-        LungeDecayPerTick = Constants.KnockbackDecayPerTick;
+        StateTicksRemaining  = 0;
+        ExternalImpulseVx    = 0f;
+        ImpulseDecayPerTick  = Constants.KnockbackDecayPerTick;
+    }
+
+    // 임펄스 1틱 감쇠. AttackState.Tick + HitState.Tick의 단일 경로.
+    // vx *= decay; |vx| < ε → 0. M4.11 P2 force-adopt 계약(ExternalImpulseEpsilon) 비트단위 보존.
+    public void DecayImpulse()
+    {
+        ExternalImpulseVx *= ImpulseDecayPerTick;
+        if (MathF.Abs(ExternalImpulseVx) < Constants.ExternalImpulseEpsilon)
+            ExternalImpulseVx = 0f;
     }
 
     // 입력 FIFO 큐. EnqueueJob 경유 network thread→tick thread 단방향이라 lock 불필요.
