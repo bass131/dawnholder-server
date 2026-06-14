@@ -44,12 +44,20 @@ namespace Dawnholder.Client.Network
                 // targetTf=null이면 EnemyMotion이 기존 _facing을 유지(폴백).
                 EnemyRegistry.Instance?.SetAttackTarget(attackerId, targetTf);
 
-                // 이펙트 위치: 본인 피격 = LocalPlayer 앵커, 그 외 = 공격자(보스) 앵커.
+                // 공격자 kind 먼저 해석 — 앵커 결정 + spawn 분기 공용.
+                EnemyKind attackerKind = default;
+                bool kindKnown = EnemyRegistry.Instance != null &&
+                                 EnemyRegistry.Instance.TryGetKind(attackerId, out attackerKind);
+
+                // 보스 stab은 "검에서 나오는" 공격자 이펙트 → 피격자(플레이어)가 아니라 보스(공격자)에 앵커.
+                // slime/golem 등 피격 이펙트는 기존대로 피격자(본인) 앵커.
+                bool anchorOnAttacker = kindKnown && attackerKind == EnemyKind.Boss;
+
                 // EffectAnchor = 발-pivot 보정 컨벤션 (없으면 root 폴백).
                 Vector3 fxPos = Vector3.zero;
                 int fxFacing = 1;
                 bool hasFxPos = false;
-                if (isLocalPlayer && targetTf != null)
+                if (isLocalPlayer && targetTf != null && !anchorOnAttacker)
                 {
                     fxPos = EffectAnchor.ResolvePosition(targetTf);
                     // 피격 이펙트는 공격이 날아온 쪽을 향함 — 공격자 위치 알면 상대 x 부호.
@@ -71,9 +79,8 @@ namespace Dawnholder.Client.Network
                 if (hasFxPos)
                 {
                     // kind 해석 성공 시 kind-aware 오버로드, 실패 시 기존 보스 경로 폴백.
-                    if (EnemyRegistry.Instance != null &&
-                        EnemyRegistry.Instance.TryGetKind(attackerId, out EnemyKind kind))
-                        BossAttackEffectSpawner.Spawn(kind, attackPattern, fxPos, fxFacing);
+                    if (kindKnown)
+                        BossAttackEffectSpawner.Spawn(attackerKind, attackPattern, fxPos, fxFacing);
                     else
                         BossAttackEffectSpawner.Spawn(attackPattern, fxPos, fxFacing);
                 }
