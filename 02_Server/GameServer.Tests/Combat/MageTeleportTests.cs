@@ -136,6 +136,17 @@ public class MageTeleportTests : IDisposable
         return new MapTerrain(new[] { left, right, floor }, Array.Empty<TerrainPlatform>());
     }
 
+    // 지형 인식 수직 텔레포트 검증용 — 지정 Y에 TerrainPlatform 삽입.
+    // platformY: 발판 표면 Y (= destY 기대값). 플레이어 X가 발판 X 범위에 포함되도록 넓게 생성.
+    // floors: 별도 solid floor 없음(플레이어는 공중 배치 — 물리 낙하 간섭 배제).
+    static MapTerrain MakeTerrainWithPlatforms(params float[] platformYValues)
+    {
+        TerrainPlatform[] platforms = new TerrainPlatform[platformYValues.Length];
+        for (int i = 0; i < platformYValues.Length; i++)
+            platforms[i] = new TerrainPlatform(platformYValues[i], minX: -200f, maxX: 200f);
+        return new MapTerrain(Array.Empty<TerrainAabb>(), platforms);
+    }
+
     // ── 위치 검증 ──────────────────────────────────────────────────────────────
 
     [Fact]
@@ -316,17 +327,59 @@ public class MageTeleportTests : IDisposable
         Assert.Equal((byte)1, parsed.facing);     // facingDir=+1 → 1(오른쪽)
     }
 
-    // ── 4방향 수직 텔레포트 (M4.15 P07) ─────────────────────────────────────────
+    // ── 지형 인식 수직 텔레포트 (M4.15 P09) ──────────────────────────────────────
+
+    // 발판 표면 Y 픽스처 상수 — 기대 destY 정확 검증용 단일 진실.
+    const float UpperPlatformY = 5f;  // 위 발판 (플레이어 시작 Y=0 기준 사거리 5 이내)
+    const float LowerPlatformY = -3f; // 아래 발판 (플레이어 시작 Y=0 기준 사거리 5 이내)
 
     [Fact]
-    public void Teleport_Vertical_Up_DestYIncreases_XUnchanged()
+    public void Teleport_Vertical_Up_SnapsToUpperPlatform_XUnchanged()
     {
-        // verticalDir=1(위): destY = Y + TeleportDistance, X 유지.
-        //   공중 배치(y=20, 무경계 맵) — 지면/천장 간섭 배제하고 4방향 로직만 검증.
-        //   물리(중력)가 같은 틱에 Y를 ~0.05 흔드므로 정확값 대신 "방향+개략 크기(>4)" + "X 정확 불변"으로 robust 검증.
-        //   정확한 거리 5.0은 Teleport_Distance_IsFive(수평, 중력 무관)가 핀.
-        var (session, caster, map) = SetupMage(startX: 20f, facingDir: 1);
-        caster.Position = new Vector2(20f, 20f);
+        // verticalDir=1(위): 사거리 안 위 발판 → 발판 표면 Y로 정확 snap.
+        //   발판 위 배치라 중력 중립(OnGround=true, 낙하 없음) — Execute 직후 Position이 정확값.
+        //   Execute → RecordPosition → BroadcastToAll 순서 이후 map.Tick이 물리를 1회 돌리지만
+        //   발판(Platform.Y=5f) 위에 있으면 중력이 표면에 재snap → 정확값 유지.
+        MapTerrain terrain = MakeTerrainWithPlatforms(UpperPlatformY);
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
+        caster.Position = new Vector2(0f, 0f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float startX = caster.Position.X;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
+        map.Tick(2);
+
+        Assert.Equal(UpperPlatformY, caster.Position.Y, precision: 3);
+        Assert.Equal(startX, caster.Position.X, precision: 3);
+    }
+
+    [Fact]
+    public void Teleport_Vertical_Down_SnapsToLowerPlatform_XUnchanged()
+    {
+        // verticalDir=2(아래): 사거리 안 아래 발판 → 발판 표면 Y로 정확 snap. X 불변.
+        MapTerrain terrain = MakeTerrainWithPlatforms(LowerPlatformY);
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
+        caster.Position = new Vector2(0f, 0f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float startX = caster.Position.X;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 2));
+        map.Tick(2);
+
+        Assert.Equal(LowerPlatformY, caster.Position.Y, precision: 3);
+        Assert.Equal(startX, caster.Position.X, precision: 3);
+    }
+
+    [Fact]
+    public void Teleport_Vertical_Up_OutOfRange_PositionUnchanged()
+    {
+        // 위 발판이 사거리 밖(TeleportVerticalRange=5f 초과) → 이동 없음.
+        float farPlatformY = CombatConstants.TeleportVerticalRange + 1f; // 사거리 밖
+        MapTerrain terrain = MakeTerrainWithPlatforms(farPlatformY);
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
+        caster.Position = new Vector2(0f, 0f);
         caster.RecordPosition(1, caster.Position);
         session.SentPackets.Clear();
         float startX = caster.Position.X;
@@ -335,30 +388,56 @@ public class MageTeleportTests : IDisposable
         session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
         map.Tick(2);
 
-        Assert.True(caster.Position.Y > startY + 4f,
-            $"위 텔레포트가 Y를 ~거리만큼 증가시켜야 함(중력 허용): startY={startY}, destY={caster.Position.Y}");
-        Assert.Equal(startX, caster.Position.X, precision: 3); // 수직 이동은 X 정확 불변
+        // 이동 없음: X 정확 불변, Y는 중력 낙하로 미세 감소할 수 있으나 startY 기준 ±0.2 이내.
+        Assert.Equal(startX, caster.Position.X, precision: 3);
+        Assert.True(MathF.Abs(caster.Position.Y - startY) < 0.2f,
+            $"이동 없어야 함(사거리 밖): startY={startY} Position.Y={caster.Position.Y}");
     }
 
     [Fact]
-    public void Teleport_Vertical_Down_DestYDecreases_NotFlattenedToHorizontal()
+    public void Teleport_Vertical_NoPlatform_PositionUnchanged()
     {
-        // verticalDir=2(아래): destY = Y - TeleportDistance, X 유지.
-        //   **핵심 회귀**: 2(아래)가 0(수평)으로 뭉개지면 X가 FacingDir 방향으로 이동 → X 정확 불변 Assert가 잡음.
-        //   공중 배치(y=20, 아래 5 가도 지면 y=0 안 닿음) — 지면 충돌 배제. 물리 중력은 Y robust 검증(>4)으로 흡수.
-        var (session, caster, map) = SetupMage(startX: 20f, facingDir: 1);
-        caster.Position = new Vector2(20f, 20f);
+        // 발판 없는 terrain(빈 MapTerrain) → 이동 없음. 이펙트(S_SkillCast) 1회 보장.
+        MapTerrain emptyTerrain = new MapTerrain(Array.Empty<TerrainAabb>(), Array.Empty<TerrainPlatform>());
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: emptyTerrain);
+        caster.Position = new Vector2(0f, 0f);
         caster.RecordPosition(1, caster.Position);
         session.SentPackets.Clear();
         float startX = caster.Position.X;
         float startY = caster.Position.Y;
 
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
+        map.Tick(2);
+
+        // 이동 없음
+        Assert.Equal(startX, caster.Position.X, precision: 3);
+        Assert.True(MathF.Abs(caster.Position.Y - startY) < 0.2f,
+            $"이동 없어야 함(발판 없음): startY={startY} Position.Y={caster.Position.Y}");
+        // 이펙트 신호(S_SkillCast) 무조건 1회 — early-return 회귀 차단.
+        Assert.Equal(1, CountPacketsOfType(session.SentPackets, PacketID.S_SkillCast));
+    }
+
+    [Fact]
+    public void Teleport_Vertical_NoPlatform_BroadcastsSkillCastAndPositionUnchanged()
+    {
+        // 아래 이동 불가(발판 없음) → Position 불변 + S_SkillCast 1회 동시 Assert.
+        // early-return이 있으면 broadcast가 빠짐 — 회귀 방지 전용 케이스.
+        MapTerrain emptyTerrain = new MapTerrain(Array.Empty<TerrainAabb>(), Array.Empty<TerrainPlatform>());
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: emptyTerrain);
+        caster.Position = new Vector2(0f, 0f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        Vector2 startPos = caster.Position;
+
         session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 2));
         map.Tick(2);
 
-        Assert.True(caster.Position.Y < startY - 4f,
-            $"아래 텔레포트가 Y를 ~거리만큼 감소시켜야 함: startY={startY}, destY={caster.Position.Y}");
-        Assert.Equal(startX, caster.Position.X, precision: 3); // 수평으로 안 뭉개짐 — X 정확 불변
+        // Position 불변 (X 정확, Y 중력 허용 ±0.2)
+        Assert.Equal(startPos.X, caster.Position.X, precision: 3);
+        Assert.True(MathF.Abs(caster.Position.Y - startPos.Y) < 0.2f,
+            $"아래 이동 불가 시 Y 변화 없어야 함: startY={startPos.Y} pos={caster.Position.Y}");
+        // S_SkillCast 1회 무조건 broadcast (이펙트 신호)
+        Assert.Equal(1, CountPacketsOfType(session.SentPackets, PacketID.S_SkillCast));
     }
 
     [Fact]
@@ -406,51 +485,6 @@ public class MageTeleportTests : IDisposable
         // 수평 거동: X = +거리, Y 불변.
         Assert.Equal(CombatConstants.TeleportDistance, caster.Position.X, precision: 3);
         Assert.Equal(startY, caster.Position.Y, precision: 3);
-    }
-
-    // ── 수직 경계 clamp + 영구 끼임 방지 ────────────────────────────────────────
-
-    [Fact]
-    public void Teleport_Vertical_Up_ClampedToMapBoundsY()
-    {
-        // 맵 상한(MakeBoundedTerrain solids MaxY=10) 근처에서 위로 텔레포트 → MaxY 초과 불가.
-        MapTerrain terrain = MakeBoundedTerrain(minX: -100f, maxX: 100f);
-        // solids MinY=-1, MaxY=10 → MapBoundsY=(-1,10). startY=8에서 위로 5 이동하면 13 의도 → 10으로 clamp.
-        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
-        caster.Position = new Vector2(0f, 8f);
-        caster.RecordPosition(1, caster.Position);
-        session.SentPackets.Clear();
-
-        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
-        map.Tick(2);
-
-        (float yMin, float yMax) = map.MapBoundsY;
-        Assert.True(caster.Position.Y <= yMax,
-            $"상한 초과(영구 끼임 위험): Position.Y={caster.Position.Y} > mapMaxY={yMax}");
-        Assert.Equal(10f, yMax, precision: 3); // MapBoundsY 상한 = solids MaxY
-    }
-
-    [Fact]
-    public void Teleport_Vertical_Down_ClampedToMapBoundsY()
-    {
-        // 맵 하한 clamp 검증: startY=2에서 아래 5 = raw -3 의도 → MapBoundsY 하한(-1)으로 clamp.
-        //   정량 게이트 = clamp가 raw 추락(-3)을 막았는지(Position.Y가 raw보다 훨씬 위) = 맵 밖 영구 이탈 차단.
-        //   ⚠️ MVP 옵션②: clamp 후 같은 틱 중력이 경계를 미세 초과(~-1.05)할 수 있음(물리 transient) — 정밀
-        //      착지(floor-top 안착)는 terrain-aware(옵션①) 후속 + 영호 Play 튜닝. 여기선 raw 추락 차단만 핀.
-        MapTerrain terrain = MakeBoundedTerrain(minX: -100f, maxX: 100f);
-        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
-        caster.Position = new Vector2(0f, 2f);
-        caster.RecordPosition(1, caster.Position);
-        session.SentPackets.Clear();
-        float rawTarget = 2f - CombatConstants.TeleportDistance; // -3 (clamp 안 했으면 갈 위치)
-
-        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 2));
-        map.Tick(2);
-
-        (float yMin, float yMax) = map.MapBoundsY;
-        Assert.Equal(-1f, yMin, precision: 3); // MapBoundsY 하한 = solids MinY
-        Assert.True(caster.Position.Y > rawTarget + 1f,
-            $"clamp가 raw 추락({rawTarget})을 막아야 함(맵 밖 이탈 차단): Position.Y={caster.Position.Y}");
     }
 
     // ── 회귀 ───────────────────────────────────────────────────────────────────

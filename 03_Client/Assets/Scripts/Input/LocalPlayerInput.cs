@@ -198,13 +198,9 @@ namespace Dawnholder.Client.Input
                     _movement.NotifyDash();
                     break;
                 case SkillId.Teleport:
-                    _movement.NotifyTeleport(
-                        departPos: transform.position,
-                        arriveCallback: () =>
-                        {
-                            if (LocalPlayerMovement.Instance != null)
-                                SkillCastHandler.SpawnTeleportArrive(LocalPlayerMovement.Instance.transform);
-                        });
+                    // 송신 시점: 출발 위치 stash + 쿨다운만. snap arming과 arrive 콜백 등록은
+                    // S_SkillCast 수신 시점(SkillCastHandler.HandleTeleport)에서 ArmTeleportSnap()으로 수행.
+                    _movement.NotifyTeleport(departPos: transform.position);
                     break;
             }
         }

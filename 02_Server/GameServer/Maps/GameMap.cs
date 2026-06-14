@@ -129,28 +129,6 @@ public class GameMap
         }
     }
 
-    // 맵 Y축 경계 (minY, maxY). 수직 Teleport(위/아래) 착지 clamp용 (M4.15 P07).
-    //   MapBoundsX와 동형 — terrain Solids 전체의 MinY/MaxY 합산으로 맵 수직 범위를 산출.
-    //   목적: 수직 텔레포트가 맵 밖(허공/지하)으로 영구 이탈하는 것을 차단(stranding 방지).
-    //   clamp는 1차 방어 — 도착 후에도 solid 내부면 다음 틱부터 기존 물리(중력/충돌)가 non-solid로 resolve.
-    //   terrain이 null이면 float.MinValue/MaxValue (평지 테스트 맵 — 수직 경계 없음).
-    internal (float MinY, float MaxY) MapBoundsY
-    {
-        get
-        {
-            if (_terrain == null || _terrain.Solids.Length == 0)
-                return (float.MinValue, float.MaxValue);
-            float min = float.MaxValue;
-            float max = float.MinValue;
-            foreach (TerrainAabb s in _terrain.Solids)
-            {
-                if (s.MinY < min) min = s.MinY;
-                if (s.MaxY > max) max = s.MaxY;
-            }
-            return (min, max);
-        }
-    }
-
     /// <summary>
     /// CombatSystem이 rewind 범위 검증에 사용하는 현재 서버 tick.
     /// tick thread invariant 안에서만 유효 (§1.1).
@@ -336,6 +314,85 @@ public class GameMap
 
         // 7) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
         _respawnSystem.Process(this, tickNumber);
+    }
+
+    // ── 지형 쿼리 ────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 수직 텔레포트 목적지 발판을 찾는다 (지형 인식 M4.15 P09).
+    ///
+    /// 후보: Solids[].MaxY + Platforms[].Y 중 x ∈ [MinX-eps, MaxX+eps].
+    ///   up=true  : surfaceY &gt; currentY+eps 중 가장 낮은 것(가장 가까운 위).
+    ///   up=false : surfaceY &lt; currentY-eps 중 가장 높은 것(가장 가까운 아래).
+    ///   가장 가까운 발판이 maxRange 이내면 destY=surfaceY → true.
+    ///   발판 없거나 사거리 밖이면 destY=currentY → false.
+    ///
+    /// **헌법 §5 정합**: span 순회만, alloc 0.
+    /// **_terrain==null(평지 맵)**: 발판 없음 → false.
+    /// </summary>
+    internal bool TryFindVerticalTeleportTarget(
+        float x, float currentY, bool up, float maxRange, out float destY)
+    {
+        destY = currentY;
+        if (_terrain == null)
+            return false;
+
+        const float eps = 0.0001f; // Terrain.cs GroundEpsilon 재사용
+
+        float best = up ? float.MaxValue : float.MinValue;
+        bool found = false;
+
+        foreach (TerrainAabb s in _terrain.Solids)
+        {
+            if (x < s.MinX - eps || x > s.MaxX + eps)
+                continue;
+            float surfaceY = s.MaxY;
+            if (up)
+            {
+                if (surfaceY > currentY + eps && surfaceY < best)
+                {
+                    best  = surfaceY;
+                    found = true;
+                }
+            }
+            else
+            {
+                if (surfaceY < currentY - eps && surfaceY > best)
+                {
+                    best  = surfaceY;
+                    found = true;
+                }
+            }
+        }
+
+        foreach (TerrainPlatform p in _terrain.Platforms)
+        {
+            if (x < p.MinX - eps || x > p.MaxX + eps)
+                continue;
+            float surfaceY = p.Y;
+            if (up)
+            {
+                if (surfaceY > currentY + eps && surfaceY < best)
+                {
+                    best  = surfaceY;
+                    found = true;
+                }
+            }
+            else
+            {
+                if (surfaceY < currentY - eps && surfaceY > best)
+                {
+                    best  = surfaceY;
+                    found = true;
+                }
+            }
+        }
+
+        if (!found || MathF.Abs(best - currentY) > maxRange)
+            return false;
+
+        destY = best;
+        return true;
     }
 
     // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).

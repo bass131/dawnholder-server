@@ -121,16 +121,15 @@ namespace Dawnholder.Client.Network
                 "Dash 이펙트", spriteDefaultFacesLeft: false);
         }
 
-        // Teleport 연출: 출발 이펙트 → (로컬) 스냅 예약 확인 / (원격) 보간 끊기 + 도착 콜백 등록.
+        // Teleport 연출: 출발 이펙트 → (로컬) snap arming + 도착 콜백 등록 / (원격) 보간 끊기 + 도착 콜백 등록.
         //
         // 로컬 경로:
-        //   출발 이펙트 위치 = LocalPlayerMovement.ConsumeTeleportDepartPos() stash.
-        //     stash는 LocalPlayerInput이 송신 시점(패킷 발송 직전) transform.position으로 캡처.
-        //     S_SkillCast vs S_Snapshot dispatch 순서에 무관 — 결정론적.
-        //   arriveCallback + _teleportSnapPending은 송신 시점(LocalPlayerInput.TrySendSkill)에서
-        //     NotifyTeleport로 이미 등록됨 — 여기서 중복 NotifyTeleport 호출 X.
+        //   출발 이펙트 위치 = LocalPlayerMovement.ConsumeTeleportDepartPos() stash (송신 시점 캡처).
+        //   S_SkillCast 수신 이 시점에 ArmTeleportSnap()으로 _teleportSnapPending + arriveCallback 등록.
+        //   → 텔레포트 반영된 첫 snapshot에서 force-adopt + arrive 발동(도착지에서 파티클).
+        //   (P08 버그: 송신 시점 arming → 네트워크 지연 동안 옛 위치 snapshot이 플래그 소비 → arrive가 잘못된 위치에서 발동.)
         //
-        // 원격 경로: S_SkillCast 수신 시점 casterTf.position을 출발 위치로 사용 (기존과 동일).
+        // 원격 경로: S_SkillCast 수신 시점 casterTf.position을 출발 위치로 사용 (기존과 동일, 무변경).
         static void HandleTeleport(bool isLocal, int casterId, Transform casterTf)
         {
             if (isLocal)
@@ -139,7 +138,18 @@ namespace Dawnholder.Client.Network
                 Vector3? departPos = LocalPlayerMovement.Instance?.ConsumeTeleportDepartPos();
                 if (departPos.HasValue)
                     SpawnEffect(TeleportDepartPath, departPos.Value, 0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
-                // arriveCallback은 이미 NotifyTeleport(LocalPlayerInput)에서 등록됨 — 재등록 X.
+
+                // S_SkillCast 수신 이 시점에 snap arming — 다음 snapshot(텔레포트 반영)에서 arrive 발동.
+                // arrive 콜백: 캐릭터 transform 자식으로 묶어 스폰(도착지에 글루).
+                LocalPlayerMovement? lpm = LocalPlayerMovement.Instance;
+                if (lpm != null)
+                {
+                    lpm.ArmTeleportSnap(arriveCallback: () =>
+                    {
+                        if (LocalPlayerMovement.Instance != null)
+                            SpawnTeleportArrive(LocalPlayerMovement.Instance.transform);
+                    });
+                }
             }
             else
             {
@@ -162,12 +172,14 @@ namespace Dawnholder.Client.Network
             }
         }
 
-        // 도착 위치에서 TeleportArrive 이펙트 스폰.
-        // LocalPlayerInput의 arriveCallback 클로저와 공유 — internal static으로 노출.
+        // 도착 위치에서 TeleportArrive 이펙트 스폰 — 캐릭터 transform에 자식으로 묶어 글루.
+        // facingSign=0: 텔레포트 도착은 방향 무관 이펙트. flip 없음.
+        // EffectLifetime(0.52초) 만료 시 자동 파괴 — 짧은 글루라 캐릭터 이동에 무관.
         internal static void SpawnTeleportArrive(Transform entityTf)
         {
-            SpawnEffect(TeleportArrivePath, EffectAnchor.ResolvePosition(entityTf),
-                0, ref _warnedMissingTeleportArrive, "Teleport 도착 이펙트");
+            Vector3 fxPos = EffectAnchor.ResolvePosition(entityTf);
+            SpawnEffectParented(TeleportArrivePath, fxPos, entityTf,
+                facingSign: 0, ref _warnedMissingTeleportArrive, "Teleport 도착 이펙트");
         }
 
         // 공통 이펙트 스폰 helper. facingSign=0이면 flip 없음(방향 무관 이펙트).

@@ -208,19 +208,27 @@ namespace Dawnholder.Client.Prediction
             _impulseDurationTicks = durationTicks;
         }
 
-        // Teleport 송신 성공 시 호출. 쿨다운 세팅 + 다음 snapshot을 즉시 스냅으로 처리하도록 플래그.
+        // Teleport 송신 성공 시 호출. 쿨다운 세팅 + 출발 위치 stash만.
         //
         // departPos: 텔레포트 *전* 위치 (송신 시점 transform.position). S_SkillCast vs S_Snapshot
         //   dispatch 순서에 무관하게 출발 이펙트가 결정론적으로 올바른 위치에 찍히도록 stash.
-        // arriveCallback: 스냅 채택(새 위치 확정) 직후 main thread에서 1회 호출 — 도착 이펙트 스폰용.
-        //   송신 시점 1회만 등록 — SkillCastHandler 로컬 분기는 이 콜백 중복 등록 X.
-        public void NotifyTeleport(Vector3 departPos, Action? arriveCallback = null)
+        //
+        // _teleportSnapPending / arriveCallback 등록은 S_SkillCast 수신 시점(SkillCastHandler 로컬 분기)에서
+        //   ArmTeleportSnap()으로 수행 — 송신 시점에 arming하면 네트워크 지연으로 옛 위치 snapshot이
+        //   플래그를 먼저 소비해 arrive 콜백이 잘못된 위치에서 발동되는 버그 차단.
+        public void NotifyTeleport(Vector3 departPos)
         {
             _timers.OnTeleport();
-            _teleportSnapPending = true;
-            _teleportArriveCallback = arriveCallback; // 이전 미소비 콜백은 덮어쓰기 (무해 — 다음 시전)
             _teleportDepartPos = departPos;
             _teleportDepartPosValid = true;
+        }
+
+        // S_SkillCast(Teleport) 수신 시점에 호출 — 다음 snapshot을 즉시 스냅으로 처리하도록 arming.
+        // arrive 콜백도 이 시점에 등록해 텔레포트 반영 snapshot에서 정확히 발동.
+        public void ArmTeleportSnap(Action? arriveCallback)
+        {
+            _teleportSnapPending = true;
+            _teleportArriveCallback = arriveCallback;
         }
 
         // SkillCastHandler가 로컬 출발 이펙트 위치 조회 시 사용.

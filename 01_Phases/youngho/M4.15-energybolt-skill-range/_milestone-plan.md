@@ -63,12 +63,13 @@ domains: [shared, server, client, qa]
 | 03 | freeze 적용 제거 (인프라 보존) | 보통 | server | 1~2h | — | ✅ 완료 (`40b6290`) |
 | 04 | 투사체 일정 속도 (서버 travelTicks 모델) | 보통 | server | 1~2h | — | ✅ 완료 (`a0a1589`) |
 | 05 | 투사체 클라 정합 + 호밍 polish | 보통 | client | 1~2h | — | ✅ 완료 (클라 무변경 — 서버 캐스케이드) |
-| 06 | **Protocol v14 — C_SkillUse verticalDir** | 복잡 | **shared** | 1h | **irreversible** | 워크스트림 D 토대. PDL append + 재생성 + v13→v14 bump |
-| 07 | **서버 4방향 텔레포트 + 거리 + 지형** | 복잡 | server | 2~3h | **trust-boundary** | Opus Worker. SkillUseHandler/TeleportAction/거리 5.0/Y 경계 |
-| 08 | **클라 4방향 입력 + 이펙트 버그** | 보통 | client | 1~2h | — | LocalPlayerInput 위/아래 송신 + depart/arrive 레이스 수정 |
-| 09 | 회귀 + 봇 시나리오 갱신 + 마일스톤 마감 | 복잡 | qa/메타 | 1~2h | irreversible | `FreezeSmoke` 전환 + 텔레포트 회귀, WSL2, -DONE.md+HTML, PR 게이트 |
+| 06 | **Protocol v14 — C_SkillUse verticalDir** | 복잡 | **shared** | 1h | **irreversible** | ✅ 완료 (`f9cb574`). PDL append + 재생성 + v13→v14 bump |
+| 07 | **서버 4방향 텔레포트 + 거리 + 지형** | 복잡 | server | 2~3h | **trust-boundary** | ✅ 완료 (`1161e3c`, Opus, reviewer🔴0, WSL2 579/0/5) |
+| 08 | **클라 4방향 입력 + 이펙트 버그** | 보통 | client | 1~2h | — | ✅ 완료 (`66f1e27`). 입력+출발이펙트 결정론(도착은 P09 재정) |
+| 09 | **텔레포트 폴리시 — 지형 수직 + 도착 이펙트** | 복잡 | server+client | 2~3h | — | 영호 Play 2차: 수직 지형인식 + 도착 이펙트 타이밍/parenting |
+| 10 | 회귀 + 봇 시나리오 갱신 + 마일스톤 마감 | 복잡 | qa/메타 | 1~2h | irreversible | `FreezeSmoke` 전환 + 텔레포트 회귀, WSL2, -DONE.md+HTML, PR 게이트 |
 
-**총 등급 = 대규모** (D 합류 — 4 도메인 + irreversible v14 + trust-boundary). 복잡+ Phase(02·06·07·09)는 각 `-DONE.md`. 마일스톤 마감 = `_milestone-DONE.md` + HTML(ADR-031).
+**총 등급 = 대규모** (D 합류 — 4 도메인 + irreversible v14 + trust-boundary). 복잡+ Phase(02·06·07·09·10)는 각 `-DONE.md`(또는 마일스톤 종합 흡수). 마일스톤 마감 = `_milestone-DONE.md` + HTML(ADR-031). **P09 = 영호 Play-test 2차 피드백 폴리시**(수직 거리기반→지형인식, 도착 이펙트 도착지 글루).
 
 ---
 
