@@ -44,7 +44,9 @@ internal sealed class IdleState : ActorState<PlayerEntity>
             return PlayerMovementStates.Jump;
         if (player.Velocity.X > PlayerMovementStates.VxEpsilon ||
             player.Velocity.X < -PlayerMovementStates.VxEpsilon)
+        {
             return PlayerMovementStates.Move;
+        }
         return null;
     }
 }
@@ -61,7 +63,9 @@ internal sealed class MoveState : ActorState<PlayerEntity>
             return PlayerMovementStates.Jump;
         if (player.Velocity.X <= PlayerMovementStates.VxEpsilon &&
             player.Velocity.X >= -PlayerMovementStates.VxEpsilon)
+        {
             return PlayerMovementStates.Idle;
+        }
         return null;
     }
 }

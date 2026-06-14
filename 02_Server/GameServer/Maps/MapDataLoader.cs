@@ -41,18 +41,22 @@ internal static class MapDataLoader
         string contentPath = Path.Combine(mapsDir, $"map_{id}.content.bin");
 
         if (!File.Exists(terrainPath))
+        {
             throw new FileNotFoundException(
                 $"[MapDataLoader] 맵 '{mapName}'(id={id}) terrain 파일이 없습니다. " +
                 $"경로: {terrainPath}\n" +
                 "bake 후 bin 파일을 commit했는지 확인하세요.",
                 terrainPath);
+        }
 
         if (!File.Exists(contentPath))
+        {
             throw new FileNotFoundException(
                 $"[MapDataLoader] 맵 '{mapName}'(id={id}) content 파일이 없습니다. " +
                 $"경로: {contentPath}\n" +
                 "bake 후 bin 파일을 commit했는지 확인하세요.",
                 contentPath);
+        }
 
         MapTerrain terrain;
         try

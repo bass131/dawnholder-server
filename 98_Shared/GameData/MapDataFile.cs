@@ -97,8 +97,10 @@ public static class MapDataFile
         // count 가드 — CRC 통과 파일이라도 구조 불일치는 InvalidDataException으로 일관 (할당 전 검증).
         // +8 = platCount(4) + killPlaneY(4) 최소 잔여.
         if (solidCount < 0 || (long)solidCount * 16 + 8 > data.Length - pos)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: solidCount {solidCount} 비정상 — 남은 payload {data.Length - pos}B에 수용 불가.");
+        }
         TerrainAabb[] solids = new TerrainAabb[solidCount];
         for (int i = 0; i < solidCount; i++)
         {
@@ -113,8 +115,10 @@ public static class MapDataFile
         pos += 4;
         // 등호 비교 = killPlaneY까지 정확히 소진하는지 (trailing 잔여 바이트도 구조 불일치로 거부).
         if (platCount < 0 || (long)platCount * 12 + 4 != data.Length - pos)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: platformCount {platCount} 비정상 — 남은 payload {data.Length - pos}B와 구조 불일치.");
+        }
         TerrainPlatform[] platforms = new TerrainPlatform[platCount];
         for (int i = 0; i < platCount; i++)
         {
@@ -182,8 +186,10 @@ public static class MapDataFile
         int enemyCount = BinaryPrimitives.ReadInt32LittleEndian(new ReadOnlySpan<byte>(data, pos, 4));
         pos += 4;
         if (enemyCount < 0 || (long)enemyCount * 9 != data.Length - pos)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: enemyCount {enemyCount} 비정상 — 남은 payload {data.Length - pos}B와 구조 불일치.");
+        }
         EnemySpawnPoint[] enemies = new EnemySpawnPoint[enemyCount];
         for (int i = 0; i < enemyCount; i++)
         {
@@ -254,8 +260,10 @@ public static class MapDataFile
     private static void ValidateHeader(byte[] data, ushort expectedKind, int expectedMapId)
     {
         if (data.Length < HeaderSize)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: 파일 크기 {data.Length}B가 헤더 최소 크기 {HeaderSize}B 미만.");
+        }
 
         // magic
         if (data[0] != 'D' || data[1] != 'W' || data[2] != 'M' || data[3] != 'P')
@@ -267,32 +275,42 @@ public static class MapDataFile
 
         ushort version = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 4, 2));
         if (version != FormatVersion)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: formatVersion 불일치 — expected {FormatVersion}, found {version}.");
+        }
 
         ushort kind = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 6, 2));
         if (kind != expectedKind)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: fileKind 불일치 — expected {expectedKind}, found {kind}. " +
                 "terrain 파일을 ReadContent로(또는 반대로) 읽은 것은 아닌지 확인.");
+        }
 
         ushort mapId = BinaryPrimitives.ReadUInt16LittleEndian(new ReadOnlySpan<byte>(data, 8, 2));
         if (mapId != (ushort)expectedMapId)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: mapId 불일치 — expected {expectedMapId}, found {mapId}.");
+        }
 
         uint payloadLen = BinaryPrimitives.ReadUInt32LittleEndian(new ReadOnlySpan<byte>(data, 12, 4));
         int actualPayload = data.Length - HeaderSize;
         if ((int)payloadLen != actualPayload)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: payloadLength 불일치 — 헤더 기록값 {payloadLen}B, " +
                 $"실제 payload {actualPayload}B. 파일이 잘렸거나 손상됐을 가능성.");
+        }
 
         uint storedCrc = BinaryPrimitives.ReadUInt32LittleEndian(new ReadOnlySpan<byte>(data, 16, 4));
         uint actualCrc = ComputeCrc32(data, HeaderSize, actualPayload);
         if (storedCrc != actualCrc)
+        {
             throw new InvalidDataException(
                 $"MapDataFile: CRC32 불일치 — 헤더 기록값 0x{storedCrc:X8}, " +
                 $"계산값 0x{actualCrc:X8}. payload 데이터가 변조됐거나 손상됐을 가능성.");
+        }
     }
 }

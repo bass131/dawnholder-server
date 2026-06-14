@@ -104,7 +104,9 @@ internal sealed class MeleeAction : IGameAction
             map.BroadcastToAll(hit.Write());
 
             if (target.Hp <= 0)
+            {
                 map.HandleEnemyDeath(target);
+            }
             else
             {
                 float knockbackDir = target.X >= attacker.Position.X ? 1f : -1f;
