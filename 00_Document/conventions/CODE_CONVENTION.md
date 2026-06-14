@@ -147,7 +147,7 @@ C# 클래스 내 멤버 선언 순서를 고정한다. 일관된 순서 = 읽는
 
 | 대상                                | 현재                                                                               | 위반      | 분리안                    | 타이밍 |
 | ----------------------------------- | ---------------------------------------------------------------------------------- | --------- | ------------------------- | ------ |
-| ~~`GameMap` (665줄)~~ **졸업** ✅   | 실측 436줄. 6 System(Combat/Boss/DeferredDamage/EnemyAI/Respawn/Skill) 분리 완료. `Maps/Systems/` 아래 각 System 독립 파일. `GameMap` 자체는 "container + 최소 surface mutator" 의도적 설계 — §2.2 기준 충족. | (해소)    | (완료)                    | 완료 |
+| ~~`GameMap` (665줄)~~ **졸업** ✅   | 실측 498줄(M4.13 Skill/Action 추가분 반영, 2026-06-14 M4.14 P01 정정). 6 System(Combat/Boss/DeferredDamage/EnemyAI/Respawn/Skill) 분리 완료. `Maps/Systems/` 아래 각 System 독립 파일. `GameMap` 자체는 "container + 최소 surface mutator" 의도적 설계 — §2.2 기준 충족. | (해소)    | (완료)                    | 완료 |
 | `ClientPacketHandlers.cs` (909줄)   | inline 핸들러 + VFX 보일러플레이트 대거 포함. **진짜 미실행 대상.** (옛 `UnityClientSession` 665줄은 실측 213줄로 이미 슬림 — 핸들러가 이 파일로 이동했기 때문) | §3.2      | `IPacketHandler` + dispatch 분리 | M4.12 |
 | `GameSession` (700줄)               | rate-limit/handshake 등 ~95줄 추출 가능 (migration 160줄 잔류)                     | §2.2 부분 | 부분 추출                 | 미정 |
 | `EnemyRegistry` (240줄)             | GameObject 빌더 결합                                                               | §3.1      | 빌더 추출                 | 선택 |
