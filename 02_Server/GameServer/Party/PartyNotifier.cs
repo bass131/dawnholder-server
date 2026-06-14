@@ -58,6 +58,20 @@ internal static class PartyNotifier
             world.SendToEntity(memberId, pkt.Write());
     }
 
+    // 퀘스트 킬카운트 진행상황을 단일 수신자에게 송신.
+    //   currentCount = 현재 누적 킬, targetCount = QuestConstants.BossUnlockKillCount(서버 SSOT).
+    //   파티원 전원 송신은 호출자(PartyRegistry.OnKill)가 foreach — 여기서는 1:1만 담당.
+    //   SendToEntity = 대상 맵 EnqueueJob 경유 마샬링 (헌법 §5, Map=Actor).
+    public static void SendQuestUpdate(GameWorld world, int recipientEntityId, int currentCount, int targetCount)
+    {
+        S_QuestUpdate pkt = new S_QuestUpdate
+        {
+            currentCount = currentCount,
+            targetCount  = targetCount,
+        };
+        world.SendToEntity(recipientEntityId, pkt.Write());
+    }
+
     // 해산 통보: partyId=0 빈 상태로 약속(클라는 partyId==0 = 파티 없음으로 해석).
     //   해산 전 캡처한 멤버 목록에 각각 1:1 송신. 멤버 entity가 떠났으면 SendToEntity가 silent 무시.
     public static void SendDisband(GameWorld world, IReadOnlyList<int> formerMembers)

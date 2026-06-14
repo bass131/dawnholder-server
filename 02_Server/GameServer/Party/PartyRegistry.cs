@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using Dawnholder.Server.GameServer.Loop;
+using Dawnholder.Server.GameServer.Quest;
 
 namespace Dawnholder.Server.GameServer.Party;
 
@@ -35,6 +37,10 @@ public sealed class PartyRegistry
 
     // entityId → partyId 역방향 인덱스. GetPartyByEntity O(1).
     readonly Dictionary<int, int> _entityToParty = new();
+
+    // 파티 없는 솔로 플레이어의 퀘스트 킬카운트. entityId → count.
+    // tick thread에서만 읽기/쓰기 — lock 없음 (actor 불변식).
+    readonly Dictionary<int, int> _soloProgress = new();
 
     // pending invite: targetEntityId → (inviterEntityId, 발급 tick). 피초대자 기준 키 = respond 시 O(1) 매칭.
     //   초대자가 보낸 invite를 피초대자가 응답할 때까지 보관. 응답(수락/거절) 시 소비(제거).
@@ -193,6 +199,48 @@ public sealed class PartyRegistry
         foreach (int targetId in sentToTargets)
             _pendingInvites.Remove(targetId);
     }
+
+    // ── 퀘스트 킬카운트 API (tick thread invariant) ───────────────────────────
+
+    /// <summary>
+    /// 적 1킬을 killerEntityId에게 적립. PartyRegistry tick thread 안에서만 직접 호출 가능.
+    /// 외부(소켓 thread) 경유 시 GameWorld.MakeMap에서 주입된 onEnemyKilled 콜백이
+    /// EnqueueJob으로 마샬링한 후 호출 — 직접 호출 금지.
+    /// </summary>
+    public void OnKill(int killerEntityId, GameWorld world)
+    {
+        // tick thread invariant: _parties/_soloProgress/_entityToParty 직접 접근 안전.
+        PartyState? party = GetPartyByEntity(killerEntityId);
+        if (party != null)
+        {
+            party.KillCount++;
+            foreach (int memberId in party.Members)
+                PartyNotifier.SendQuestUpdate(world, memberId, party.KillCount, QuestConstants.BossUnlockKillCount);
+        }
+        else
+        {
+            _soloProgress.TryGetValue(killerEntityId, out int prev);
+            int newCount = prev + 1;
+            _soloProgress[killerEntityId] = newCount;
+            PartyNotifier.SendQuestUpdate(world, killerEntityId, newCount, QuestConstants.BossUnlockKillCount);
+        }
+    }
+
+    /// <summary>
+    /// 모든 퀘스트 진행상황 초기화. 보스 킬 시 GameWorld.MakeMap 콜백이 EnqueueJob 경유로 호출.
+    /// MVP 전역 리셋 — 다중 파티 월드로 확장 시 killer 파티/솔로만 리셋하는 정밀화 필요.
+    /// 현재 2인 MVP는 파티가 고정 1개이므로 전역 OK.
+    /// </summary>
+    public void ResetAllQuestProgress()
+    {
+        _soloProgress.Clear();
+        foreach (PartyState p in _parties.Values)
+            p.KillCount = 0;
+    }
+
+    /// <summary>솔로 진행상황 조회 — 테스트 관측용.</summary>
+    internal int GetSoloProgress(int entityId)
+        => _soloProgress.TryGetValue(entityId, out int v) ? v : 0;
 
     // pending invite 1건: 발신자 + 발급 tick. 발급 tick으로 만료 판정.
     readonly record struct PendingInvite(int InviterEntityId, long IssuedTick);

@@ -38,6 +38,10 @@ public class GameMap
     readonly MapTerrain? _terrain;
     readonly MapContent? _content;
 
+    // Q2: 적 사망 시 호출되는 외부 콜백. GameWorld.MakeMap에서 PartyRegistry.OnKill 연결.
+    //   virtual OnEnemyKilled가 이 콜백을 invoke — SpyGameMap override는 base 미호출이므로 미영향(정상).
+    readonly Action<int, EnemyEntity>? _onEnemyKilled;
+
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly CombatSystem _combatSystem = new();
     readonly EnemyAISystem _enemyAISystem = new();
@@ -55,12 +59,14 @@ public class GameMap
     long _currentTick;
 
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
-                   MapTerrain? terrain = null, MapContent? content = null)
+                   MapTerrain? terrain = null, MapContent? content = null,
+                   Action<int, EnemyEntity>? onEnemyKilled = null)
     {
         MapId = mapId;
         _idAllocator = idAllocator;
         _terrain = terrain;
         _content = content;
+        _onEnemyKilled = onEnemyKilled;
         Portals = PortalTable.GetPortalsFor(mapId);
 
         if (content != null)
@@ -440,10 +446,12 @@ public class GameMap
 
     /// <summary>
     /// 사망 처리 시퀀스(S_EntityDeath broadcast → StageClear → RemoveEnemy → EnqueueRespawn) 완료 후 호출되는 훅.
-    /// Q1 기본 구현은 no-op. Q2에서 override해 PartyRegistry.OnKill을 연결한다.
+    /// 기본 구현은 생성자 주입 콜백(_onEnemyKilled)을 invoke — GameWorld.MakeMap이 PartyRegistry.OnKill을 연결.
+    /// virtual 유지: SpyGameMap override는 base 미호출 → 콜백 미실행(정상 — 테스트 spy 격리).
     /// tick thread invariant 안에서만 호출.
     /// </summary>
-    protected virtual void OnEnemyKilled(int killerEntityId, EnemyEntity target) { }
+    protected virtual void OnEnemyKilled(int killerEntityId, EnemyEntity target)
+        => _onEnemyKilled?.Invoke(killerEntityId, target);
 
     /// <summary>
     /// 적 사망 후처리: S_EntityDeath broadcast → (Boss) StageClear → 제거 → (Normal) respawn 큐잉.

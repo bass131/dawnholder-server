@@ -1,3 +1,4 @@
+using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
 using Shared.GameData;
@@ -156,9 +157,22 @@ public class GameWorld
     GameMap MakeMap(MapId id,
         IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
     {
+        // 킬 콜백: Boss 킬 → 전역 리셋, 그 외 → OnKill 적립.
+        //   EnqueueJob 마샬링: 모든 _parties/_soloProgress 변경을 Party 큐로 일원화.
+        //   맵 Tick과 Party.Tick은 같은 틱 스레드에서 순차 실행(GameWorld.OnTick).
+        //   미래 맵 멀티스레드화 대비 방어적 — 현재는 0~1틱 지연만 발생.
+        Action<int, EnemyEntity> onKill = (killerId, target) =>
+            _party.EnqueueJob(() =>
+            {
+                if (target.Kind == EnemyKind.Boss)
+                    _party.ResetAllQuestProgress();
+                else
+                    _party.OnKill(killerId, this);
+            });
+
         if (provider.TryGetValue(id, out var pair))
-            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content);
-        return new GameMap(id, NextEntityId);
+            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill);
+        return new GameMap(id, NextEntityId, onEnemyKilled: onKill);
     }
 
     void OnTick(long tickNumber)
