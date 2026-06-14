@@ -102,6 +102,15 @@ cross-map actor(PartyRegistry) / SendToEntity EnqueueJob 마샬링 / transfer-�
 | Npc_* | Animator.Controller | 비어있음 | Idle_0..5 순환 AnimatorController |
 | Npc_* | NpcInteractable.DialogText | 임시 대사 | Inspector에서 편집 |
 
+### C2·C3 이펙트 에셋 결선 — swap-ready 슬롯에 진짜 아트 (2026-06-15)
+
+야간엔 "placeholder는 throwaway"라 미배치했으나, 영호가 `Assets/Art/damage_effect`(slime/golem 애니) + `Boss_Vampire/Skills/Stabbing/Effect`(stab 애니) **진짜 아트 보유**를 알려줘 결선. 코드(C2/C3 swap-ready)는 이미 커밋됨 — Resources 슬롯만 채움.
+
+- **C2 일반몹 이펙트** (`be985e1`): `Resources/Effects/SlimeDamageEffect.prefab`(Normal/슬라임) + `GolemDamageEffect.prefab`(골렘). 각 = SpriteRenderer + Animator(damage 컨트롤러) + EffectLifetime(slime 1.0s/golem 1.25s, 1회 재생 후 파괴). 렌더 확인=파란 splash/회색 충격.
+- **C3 보스 stab** (`ce55022`): `Resources/Effects/BossAttackPattern0·1.prefab`(주황 knob placeholder→교체). Boss_Vampire `Stabbing_Effect` 컨트롤러+스프라이트, EffectLifetime 1.33s, sortingOrder 100. **meta guid 보존**(SaveAsPrefabAsset 덮어쓰기)→참조 깨짐 0. 패턴 0(페이즈1)·1(페이즈2) 둘 다. 렌더 확인=빨간 찌르기.
+- 전부 MCP RunCommand 제작, mid-frame Capture 렌더 확인, 콘솔 0err, 씬 무변경. **애니 풀재생은 Play 모드에서 확인**(에디터 정지 상태는 정지 프레임).
+- **C5 StageClear**: 스프라이트 시트 아트 부재 → TMP "Stage Clear!" 텍스트 폴백 유지(없는 아트로 throwaway 안 만듦). knight/base damage 아트는 해당 적 종류 없어 미사용.
+
 ### 남은 영호 육안/Play-test (실제 동작 확인)
 
 - 양방향 포탈 왕복(HG↔Town, Boss↔HG) — 포탈 위 ↑키 진입.
