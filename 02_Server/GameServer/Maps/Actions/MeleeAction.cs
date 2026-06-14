@@ -17,26 +17,18 @@ internal sealed class MeleeAction : IGameAction
     public int CooldownTicks => CombatConstants.MeleeCooldownTicks;
     public CharacterClass? RequiredClass => null;
 
-    public bool Execute(GameMap map, PlayerEntity attacker, long clientTick)
-    {
-        // targetEntityId는 Execute 호출 전에 MeleeContext로 전달됨.
-        // 단, 현재 설계에서 Execute 시그니처는 단일(clientTick만).
-        // → attacker 콘텍스트는 MeleeContext 래퍼가 보유 (아래 ExecuteWithTarget 참조).
-        return false; // 직접 호출 경로 없음 — ExecuteWithTarget 사용
-    }
-
-    // [흐름] ActionGate.TryPerform → ExecuteWithTarget(attacker, targetEntityId, clientTick)
-    // targetEntityId는 C_Attack 패킷에서만 들어오므로 IGameAction 계약 외 별도 오버로드.
-    internal bool ExecuteWithTarget(GameMap map, PlayerEntity attacker, int targetEntityId, long clientTick)
+    // [흐름] ActionGate가 ①상태 ②쿨다운 ③클래스 ④rewind 검증 후 단일 Execute 호출.
+    // ctx.TargetEntityId는 C_Attack 패킷에서만 들어오는 평타 전용 힌트 (스킬은 -1).
+    public bool Execute(GameMap map, PlayerEntity attacker, in ActionContext ctx)
     {
         // attacker 존재는 ActionGate에서 보장 — 여기선 mutation만.
 
         // rewind: attacker가 공격 버튼 눌렀을 당시 tick의 서버 저장 위치.
-        Vector2 rewindedPos = attacker.GetPositionAtTick(clientTick);
+        Vector2 rewindedPos = attacker.GetPositionAtTick(ctx.ClientTick);
         AABB attackBox = CombatSystem.GetAttackHitbox(rewindedPos, attacker.Stats.Class);
 
         // target 조회 (선택) — null이면 허공 스윙.
-        EnemyEntity? target = map.GetEnemyById(targetEntityId);
+        EnemyEntity? target = map.GetEnemyById(ctx.TargetEntityId);
         bool hasLiveTarget = target != null && !target.IsDead;
 
         // facing 스냅 — 타겟 방향, 허공 스윙은 FacingDir 유지.
@@ -55,7 +47,7 @@ internal sealed class MeleeAction : IGameAction
         {
             attackerEntityId = attacker.EntityId,
             attackType       = attackType,
-            targetEntityId   = targetEntityId,
+            targetEntityId   = ctx.TargetEntityId,
             facing           = attacker.FacingByte,
         };
         map.BroadcastToAll(swing.Write(), except: attacker.Owner);

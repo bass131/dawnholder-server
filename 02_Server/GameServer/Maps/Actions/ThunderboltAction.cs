@@ -16,9 +16,9 @@ internal sealed class ThunderboltAction : IGameAction
     public int CooldownTicks => CombatConstants.ThunderboltCooldownTicks;
     public CharacterClass? RequiredClass => CharacterClass.Mage;
 
-    public bool Execute(GameMap map, PlayerEntity caster, long clientTick)
+    public bool Execute(GameMap map, PlayerEntity caster, in ActionContext ctx)
     {
-        Vector2 rewindedOrigin = caster.GetPositionAtTick(clientTick);
+        Vector2 rewindedOrigin = caster.GetPositionAtTick(ctx.ClientTick);
 
         List<EnemyEntity> targets = CombatSystem.ResolveImpactTargets(
             map,

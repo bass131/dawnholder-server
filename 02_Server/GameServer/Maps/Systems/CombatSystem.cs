@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Maps.Actions;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -19,7 +20,7 @@ internal sealed class CombatSystem
     readonly ActionGate _gate = new();
 
     /// <summary>
-    /// tick thread 안에서 attack 1건 처리. ActionGate.TryPerformMelee에 위임.
+    /// tick thread 안에서 attack 1건 처리. ActionGate.TryPerform에 위임.
     ///
     /// **검증 순서(헌법 #3)**: attacker 존재 확인 후 ActionGate가 ①상태 ②쿨다운 ③클래스 ④rewind 전부 검사.
     /// </summary>
@@ -28,7 +29,7 @@ internal sealed class CombatSystem
         PlayerEntity? attacker = map.GetPlayer(attackerEntityId);
         if (attacker == null) return;
 
-        _gate.TryPerformMelee(map, attacker, targetEntityId, attackerClientTick);
+        _gate.TryPerform(map, attacker, ActionKind.Melee, new ActionContext(attackerClientTick, targetEntityId, 0));
     }
 
     /// <summary>
