@@ -80,9 +80,14 @@ public class MageTeleportTests : IDisposable
     static int CountPacketsOfType(List<byte[]> sent, PacketID type)
         => sent.Count(p => PacketIdOf(p) == type);
 
-    static ArraySegment<byte> TeleportPacketBytes(int attackerClientTick = 1)
+    static ArraySegment<byte> TeleportPacketBytes(int attackerClientTick = 1, byte verticalDir = 0)
     {
-        C_SkillUse pkt = new C_SkillUse { skillId = (byte)SkillId.Teleport, attackerClientTick = attackerClientTick };
+        C_SkillUse pkt = new C_SkillUse
+        {
+            skillId = (byte)SkillId.Teleport,
+            attackerClientTick = attackerClientTick,
+            verticalDir = verticalDir,
+        };
         return pkt.Write();
     }
 
@@ -309,6 +314,143 @@ public class MageTeleportTests : IDisposable
         Assert.Equal((byte)SkillId.Teleport, parsed.skillId);
         Assert.Equal(0, parsed.strikeDelayTicks); // 즉시 이동
         Assert.Equal((byte)1, parsed.facing);     // facingDir=+1 → 1(오른쪽)
+    }
+
+    // ── 4방향 수직 텔레포트 (M4.15 P07) ─────────────────────────────────────────
+
+    [Fact]
+    public void Teleport_Vertical_Up_DestYIncreases_XUnchanged()
+    {
+        // verticalDir=1(위): destY = Y + TeleportDistance, X 유지.
+        //   공중 배치(y=20, 무경계 맵) — 지면/천장 간섭 배제하고 4방향 로직만 검증.
+        //   물리(중력)가 같은 틱에 Y를 ~0.05 흔드므로 정확값 대신 "방향+개략 크기(>4)" + "X 정확 불변"으로 robust 검증.
+        //   정확한 거리 5.0은 Teleport_Distance_IsFive(수평, 중력 무관)가 핀.
+        var (session, caster, map) = SetupMage(startX: 20f, facingDir: 1);
+        caster.Position = new Vector2(20f, 20f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float startX = caster.Position.X;
+        float startY = caster.Position.Y;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
+        map.Tick(2);
+
+        Assert.True(caster.Position.Y > startY + 4f,
+            $"위 텔레포트가 Y를 ~거리만큼 증가시켜야 함(중력 허용): startY={startY}, destY={caster.Position.Y}");
+        Assert.Equal(startX, caster.Position.X, precision: 3); // 수직 이동은 X 정확 불변
+    }
+
+    [Fact]
+    public void Teleport_Vertical_Down_DestYDecreases_NotFlattenedToHorizontal()
+    {
+        // verticalDir=2(아래): destY = Y - TeleportDistance, X 유지.
+        //   **핵심 회귀**: 2(아래)가 0(수평)으로 뭉개지면 X가 FacingDir 방향으로 이동 → X 정확 불변 Assert가 잡음.
+        //   공중 배치(y=20, 아래 5 가도 지면 y=0 안 닿음) — 지면 충돌 배제. 물리 중력은 Y robust 검증(>4)으로 흡수.
+        var (session, caster, map) = SetupMage(startX: 20f, facingDir: 1);
+        caster.Position = new Vector2(20f, 20f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float startX = caster.Position.X;
+        float startY = caster.Position.Y;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 2));
+        map.Tick(2);
+
+        Assert.True(caster.Position.Y < startY - 4f,
+            $"아래 텔레포트가 Y를 ~거리만큼 감소시켜야 함: startY={startY}, destY={caster.Position.Y}");
+        Assert.Equal(startX, caster.Position.X, precision: 3); // 수평으로 안 뭉개짐 — X 정확 불변
+    }
+
+    [Fact]
+    public void Teleport_Horizontal_VerticalDirZero_MovesXOnly()
+    {
+        // verticalDir=0(수평): 기존 거동 — X축 FacingDir 방향, Y 유지.
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1);
+        float startY = caster.Position.Y;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 0));
+        map.Tick(2);
+
+        Assert.Equal(CombatConstants.TeleportDistance, caster.Position.X, precision: 3); // 0 + 거리
+        Assert.Equal(startY, caster.Position.Y, precision: 3); // 수평 이동은 Y 불변
+    }
+
+    [Fact]
+    public void Teleport_Distance_IsFive()
+    {
+        // 거리 1/3 축소(15→5) 반영 회귀. 수평/수직 공통.
+        Assert.Equal(5.0f, CombatConstants.TeleportDistance, precision: 3);
+
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1);
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 0));
+        map.Tick(2);
+        Assert.Equal(5.0f, caster.Position.X, precision: 3);
+    }
+
+    // ── whitelist 경계 (헌법 §3) ────────────────────────────────────────────────
+
+    [Theory]
+    [InlineData((byte)3)]    // 경계값 3 — off-by-one cheat (허용 집합 {0,1,2} 바로 밖). 필수 케이스.
+    [InlineData((byte)99)]
+    [InlineData((byte)255)]  // byte 최대값
+    public void Teleport_VerticalDir_OutOfWhitelist_NormalizesToHorizontal(byte cheatVerticalDir)
+    {
+        // {0,1,2} 밖의 값은 전부 0(수평)으로 정규화 — SkillUseHandler whitelist 술어 검증.
+        //   수평으로 정규화됐다면 X가 FacingDir 방향으로 이동하고 Y는 불변이어야 함.
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1);
+        float startY = caster.Position.Y;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: cheatVerticalDir));
+        map.Tick(2);
+
+        // 수평 거동: X = +거리, Y 불변.
+        Assert.Equal(CombatConstants.TeleportDistance, caster.Position.X, precision: 3);
+        Assert.Equal(startY, caster.Position.Y, precision: 3);
+    }
+
+    // ── 수직 경계 clamp + 영구 끼임 방지 ────────────────────────────────────────
+
+    [Fact]
+    public void Teleport_Vertical_Up_ClampedToMapBoundsY()
+    {
+        // 맵 상한(MakeBoundedTerrain solids MaxY=10) 근처에서 위로 텔레포트 → MaxY 초과 불가.
+        MapTerrain terrain = MakeBoundedTerrain(minX: -100f, maxX: 100f);
+        // solids MinY=-1, MaxY=10 → MapBoundsY=(-1,10). startY=8에서 위로 5 이동하면 13 의도 → 10으로 clamp.
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
+        caster.Position = new Vector2(0f, 8f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
+        map.Tick(2);
+
+        (float yMin, float yMax) = map.MapBoundsY;
+        Assert.True(caster.Position.Y <= yMax,
+            $"상한 초과(영구 끼임 위험): Position.Y={caster.Position.Y} > mapMaxY={yMax}");
+        Assert.Equal(10f, yMax, precision: 3); // MapBoundsY 상한 = solids MaxY
+    }
+
+    [Fact]
+    public void Teleport_Vertical_Down_ClampedToMapBoundsY()
+    {
+        // 맵 하한 clamp 검증: startY=2에서 아래 5 = raw -3 의도 → MapBoundsY 하한(-1)으로 clamp.
+        //   정량 게이트 = clamp가 raw 추락(-3)을 막았는지(Position.Y가 raw보다 훨씬 위) = 맵 밖 영구 이탈 차단.
+        //   ⚠️ MVP 옵션②: clamp 후 같은 틱 중력이 경계를 미세 초과(~-1.05)할 수 있음(물리 transient) — 정밀
+        //      착지(floor-top 안착)는 terrain-aware(옵션①) 후속 + 영호 Play 튜닝. 여기선 raw 추락 차단만 핀.
+        MapTerrain terrain = MakeBoundedTerrain(minX: -100f, maxX: 100f);
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
+        caster.Position = new Vector2(0f, 2f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float rawTarget = 2f - CombatConstants.TeleportDistance; // -3 (clamp 안 했으면 갈 위치)
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 2));
+        map.Tick(2);
+
+        (float yMin, float yMax) = map.MapBoundsY;
+        Assert.Equal(-1f, yMin, precision: 3); // MapBoundsY 하한 = solids MinY
+        Assert.True(caster.Position.Y > rawTarget + 1f,
+            $"clamp가 raw 추락({rawTarget})을 막아야 함(맵 밖 이탈 차단): Position.Y={caster.Position.Y}");
     }
 
     // ── 회귀 ───────────────────────────────────────────────────────────────────

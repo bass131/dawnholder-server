@@ -91,9 +91,10 @@ internal static class CombatConstants
     // ── Teleport 스킬 ─────────────────────────────────────────────────────────
     // 클라이언트는 쿨다운(98_Shared Constants.TeleportCooldownTicks)만 공유 — 거리/경계는 여기.
 
-    // Teleport 이동 거리 (unit). FacingDir 방향으로 이 거리만큼 위치 즉시 점프.
-    // 15.0f = 한 화면 절반 정도의 거리. Play 튜닝 대상.
-    public const float TeleportDistance = 15.0f;
+    // Teleport 이동 거리 (unit). 4방향(수평 FacingDir / 위 / 아래) 공통 거리.
+    // 5.0f = M4.15 P07에서 기존 15.0의 1/3로 축소 (영호 GO — 짧은 점멸 거동).
+    // 수직만 따로 줄일 여지 = TeleportDistanceY 분리(영호 Play 튜닝). 현재는 4방향 같은 거리.
+    public const float TeleportDistance = 5.0f;
 
     // Teleport 쿨다운 (틱). 98_Shared 단일 진실에서 가져옴 (DashCooldownTicks와 동형).
     public const int TeleportCooldownTicks = Shared.GameData.Constants.TeleportCooldownTicks;

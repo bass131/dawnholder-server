@@ -14,7 +14,7 @@ internal sealed class SkillSystem
 {
     readonly ActionGate _gate = new();
 
-    internal void ProcessSkill(GameMap map, int casterEntityId, byte skillId, long attackerClientTick, sbyte facing)
+    internal void ProcessSkill(GameMap map, int casterEntityId, byte skillId, long attackerClientTick, sbyte facing, byte verticalDir)
     {
         PlayerEntity? caster = map.GetPlayer(casterEntityId);
         if (caster == null) return;
@@ -22,6 +22,6 @@ internal sealed class SkillSystem
         ActionKind? kind = ActionRegistry.FromSkillId(skillId);
         if (kind == null) return; // 미구현 skillId — 무해 drop.
 
-        _gate.TryPerform(map, caster, kind.Value, new ActionContext(attackerClientTick, -1, facing));
+        _gate.TryPerform(map, caster, kind.Value, new ActionContext(attackerClientTick, -1, facing, verticalDir));
     }
 }

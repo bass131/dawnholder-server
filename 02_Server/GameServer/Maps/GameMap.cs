@@ -129,6 +129,28 @@ public class GameMap
         }
     }
 
+    // 맵 Y축 경계 (minY, maxY). 수직 Teleport(위/아래) 착지 clamp용 (M4.15 P07).
+    //   MapBoundsX와 동형 — terrain Solids 전체의 MinY/MaxY 합산으로 맵 수직 범위를 산출.
+    //   목적: 수직 텔레포트가 맵 밖(허공/지하)으로 영구 이탈하는 것을 차단(stranding 방지).
+    //   clamp는 1차 방어 — 도착 후에도 solid 내부면 다음 틱부터 기존 물리(중력/충돌)가 non-solid로 resolve.
+    //   terrain이 null이면 float.MinValue/MaxValue (평지 테스트 맵 — 수직 경계 없음).
+    internal (float MinY, float MaxY) MapBoundsY
+    {
+        get
+        {
+            if (_terrain == null || _terrain.Solids.Length == 0)
+                return (float.MinValue, float.MaxValue);
+            float min = float.MaxValue;
+            float max = float.MinValue;
+            foreach (TerrainAabb s in _terrain.Solids)
+            {
+                if (s.MinY < min) min = s.MinY;
+                if (s.MaxY > max) max = s.MaxY;
+            }
+            return (min, max);
+        }
+    }
+
     /// <summary>
     /// CombatSystem이 rewind 범위 검증에 사용하는 현재 서버 tick.
     /// tick thread invariant 안에서만 유효 (§1.1).
@@ -474,8 +496,8 @@ public class GameMap
     ///
     /// **호출 invariant**: tick thread에서만. GameSession.SubmitSkillUse가 EnqueueJob 람다로 박음.
     /// </summary>
-    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick, sbyte facing)
-        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick, facing);
+    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick, sbyte facing, byte verticalDir)
+        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick, facing, verticalDir);
 
     // ── AnimState 계산 ───────────────────────────────────────────────────────
 

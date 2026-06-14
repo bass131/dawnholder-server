@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.15
 phase: 06
 title: Protocol v14 — C_SkillUse verticalDir 필드 추가
-status: pending
+status: done
 grade: 복잡
 domain: shared
 summary: C_SkillUse에 verticalDir 바이트 append + PacketGenerator 재생성 + ProtocolVersion v13→v14 bump + Shared.dll 재배포 (4방향 텔레포트 와이어 기반)
@@ -100,3 +100,4 @@ summary: C_SkillUse에 verticalDir 바이트 append + PacketGenerator 재생성 
 ## 작업 로그
 
 - 2026-06-14: 생성 (영호 Option B GO 후 — v14 전용 필드 경로).
+- 2026-06-14: 완료 (`f9cb574`). PDL `C_SkillUse`에 `<byte name="verticalDir"/>` append(facing 뒤) → PacketGenerator 재생성(Windows `dotnet run`, SAC 미차단) → GenPackets.cs verticalDir Read/Write 추가(오프셋 불변 검증) → ProtocolVersion 13→14 + v14 이력 박제 → 98_Shared/CLAUDE.md Current 12→14 정정 → Shared.dll 재빌드(76288→76800, PostBuild가 클라 Plugins 복사). 전체 솔루션 빌드 0/0(서버+04_ClientNet+툴). ClientNet.dll 비결정 재빌드분 revert(append-only 호환). 무로직 토대 — Unity 컴파일 실질 검증은 P08. 메인 직접(irreversible 게이트).
