@@ -54,6 +54,7 @@ namespace Dawnholder.Client.Combat
             BuildRemoteEntityRegistry();
             BuildPartyMemberHud();
             BuildQuestProgressHud();
+            BuildPartyInvitePopup();
         }
 
         void BuildZoneVisualizer()
@@ -100,6 +101,12 @@ namespace Dawnholder.Client.Combat
         {
             if (QuestProgressHud.Instance != null) return;
             QuestProgressHud.BuildRuntime(parent: transform);
+        }
+
+        void BuildPartyInvitePopup()
+        {
+            if (PartyInvitePopup.Instance != null) return;
+            PartyInvitePopup.BuildRuntime(parent: transform);
         }
 
         void BuildRemoteEntityRegistry()

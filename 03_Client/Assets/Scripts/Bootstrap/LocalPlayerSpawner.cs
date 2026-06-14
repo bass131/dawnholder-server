@@ -1,5 +1,6 @@
 #nullable enable
 using Dawnholder.Client.Combat;
+using Dawnholder.Client.Gameplay;
 using Dawnholder.Client.Input;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
@@ -90,6 +91,10 @@ namespace Dawnholder.Client.Bootstrap
             ClassVisualMount.Attach(go.transform, config != null ? config.VisualPrefab : null);
             if (config != null)
                 go.GetComponent<LocalPlayerInput>()?.SetAttackStrategy(config.CreateStrategy());
+
+            // 파티 초대 송신 컴포넌트 — LocalPlayer에 AddComponent (프리팹 편집 없이 코드 주도).
+            if (go.GetComponent<PartyInviteSender>() == null)
+                go.AddComponent<PartyInviteSender>();
 
             // 카메라 연결 ("생성 후 셋업").
             //   CameraFollow.target은 [SerializeField]라 보통 씬에서 Inspector로 연결하지만,
