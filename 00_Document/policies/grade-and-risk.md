@@ -25,12 +25,14 @@ PDF NDREAM 패턴(Sonnet Worker + Opus Coordinator)을 본 프로젝트에 정�
 
 ## 2. 4등급 정의
 
-| 등급 | 정량 기준 | 처리 패턴 | work-pin | -DONE.md | 5단계 보고 |
+| 등급 | 정량 기준 | 처리 패턴 | work-pin | -DONE.md | HTML 시각화 |
 |---|---|---|---|---|---|
 | **단순** | 1 도메인 × 1 파일 / ≤10줄 / 가역적 | 메인 세션 직접 | ✅ | ❌ | ❌ |
 | **보통** | 1 도메인 × 2~3 파일 / ≤50줄 / 가역적 | Worker SubAgent 1개 | ✅ | ❌ | ❌ |
-| **복잡** | 2 도메인 / ~100~200줄 / 일부 비가역 | Coordinator + Worker 1~2개 | ✅ | ✅ | ❌ |
-| **대규모** | 3+ 도메인 또는 300줄+ / 비가역 | Coordinator + Team (Worker 3~4개 + Reviewer) | ✅ | ✅ | ✅ MD + HTML |
+| **복잡** | 2 도메인 / ~100~200줄 / 일부 비가역 | Coordinator + Worker 1~2개 | ✅ | ✅ | ✅ |
+| **대규모** | 3+ 도메인 또는 300줄+ / 비가역 | Coordinator + Team (Worker 3~4개 + Reviewer) | ✅ | ✅ | ✅ (+종합) |
+
+> **보고 = 비동기 문서** (ADR-031): 5단계 보고 구조(🎯/🤔/🛠️/🧪/➡️)는 인라인 출력이 아니라 **복잡 이상의 `-DONE.md` + HTML 시각화 문서 *안*에** 박힘. 작업은 흐름을 끊지 않고 자동 진행, 사용자는 추후 문서로 체크. 인라인 멈춤은 *영호 직접 확인 지점*(비가역·승인 게이트·육안)에서만.
 
 ### 정량 판정의 *순서*
 
@@ -44,8 +46,8 @@ PDF NDREAM 패턴(Sonnet Worker + Opus Coordinator)을 본 프로젝트에 정�
 
 - **단순**: 메인 세션이 Edit/Write 직접. SubAgent 위임 비용 > 작업 비용.
 - **보통**: 도메인 Worker 1개에 위임. 메인 세션은 결과 수신 + work-pin 갱신.
-- **복잡**: Coordinator가 Phase 분해 + Worker 1~2개 위임 + 결과 통합. Reviewer 자동 호출(트리거 충족 시).
-- **대규모**: Coordinator + 도메인 Worker 다수 + plan-auditor 사전 검증 + Reviewer 통합 점검 + 5단계 보고 MD/HTML 이중 박음(캡스톤 평가 자산).
+- **복잡**: Coordinator가 Phase 분해 + Worker 1~2개 위임 + 결과 통합. Reviewer 자동 호출(트리거 충족 시). 완료 = `-DONE.md` + HTML 시각화(5단계 보고 구조 내장, 캡스톤 평가 자산).
+- **대규모**: Coordinator + 도메인 Worker 다수 + plan-auditor 사전 검증 + Reviewer 통합 점검 + `-DONE.md` + HTML 시각화(+ 마일스톤 종합, 캡스톤 평가 자산).
 
 ---
 
@@ -114,7 +116,7 @@ Hook 명세 = [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03
 | work-pin 갱신 | ✅ | ✅ | ✅ | ✅ |
 | commit message | ✅ | ✅ | ✅ | ✅ |
 | `-DONE.md` 박제 | ❌ | ❌ | ✅ | ✅ |
-| 5단계 보고 | ❌ | ❌ | ❌ | ✅ MD + HTML |
+| HTML 시각화 (5단계 구조 내장) | ❌ | ❌ | ✅ | ✅ (+종합) |
 | Reviewer 자동 호출 | ❌ | 조건부 | ✅ | ✅ |
 | plan-auditor 사전 검증 | ❌ | ❌ | ✅ | ✅ |
 

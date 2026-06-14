@@ -8,8 +8,8 @@
 # 새 v1 정합 (Phase 03 산출물):
 #   1) frontmatter에 `grade:` 필수 추가 (단순/보통/복잡/대규모, 복잡|대규모만 valid)
 #   2) frontmatter에 `owner:` 필수 추가 (사람별 namespace 정합)
-#   3) 5단계 보고 섹션은 *대규모 등급만* 의무 (단순/보통은 -DONE.md 자체 박지 않음)
-#   4) MD/HTML 이중 박음 = 경고만 (캡스톤 평가 자산, 일부 Phase는 MD 단독 OK)
+#   3) 5단계 보고 섹션은 *복잡 이상* 의무 (ADR-031; 단순/보통은 -DONE.md 자체 박지 않음)
+#   4) MD/HTML 이중 박음 = *복잡 이상* 의무 (ADR-031 — 옛 대규모 한정에서 복잡으로 하향)
 #
 # 정책 참조: 00_Document/policies/pin-and-done.md + grade-and-risk.md
 
@@ -85,11 +85,11 @@ for SECTION in "## TL;DR" "## AC 검증 결과" "## 결정 흐름" "## 학습 �
 done
 
 # ─────────────────────────────────────────────
-# 5. 대규모 등급만 의무: 5단계 보고
+# 5. 복잡 이상 의무: 5단계 보고 (ADR-031 — 옛 대규모 한정 → 복잡 이상)
 # ─────────────────────────────────────────────
-if [ "$GRADE" = "대규모" ]; then
+if [ "$GRADE" = "복잡" ] || [ "$GRADE" = "대규모" ]; then
   if ! grep -qF "## 5단계 보고" "$TOOL_INPUT_FILE"; then
-    ERRORS+=("대규모 등급은 '## 5단계 보고' 섹션 의무 (캡스톤 평가 자산).")
+    ERRORS+=("복잡 이상 등급은 '## 5단계 보고' 섹션 의무 (캡스톤 평가 자산).")
     FAIL=1
   else
     # 5단계 보고 항목 5개 모두 등장
@@ -112,15 +112,15 @@ if [ -z "$AC_BODY" ]; then
 fi
 
 # ─────────────────────────────────────────────
-# 7. (대규모) MD/HTML 이중 박음 의무 (M3.6 Phase 03-B 4-3 강화)
+# 7. (복잡 이상) MD/HTML 이중 박음 의무 (ADR-031 — 옛 대규모 한정 → 복잡 이상)
 # ─────────────────────────────────────────────
-# 옛 = WARNINGS (권장). 새 = ERRORS (의무, 캡스톤 평가 자산).
-# 옛 자산(M3.5 대규모 -DONE.md 3건)은 Edit 안 하면 자연 회피 (PostToolUse Edit/Write 시점만 발동).
-# 새 대규모 -DONE.md = HTML 페어 박지 않으면 차단.
-if [ "$GRADE" = "대규모" ]; then
+# 옛 = WARNINGS (권장) → 대규모 ERRORS → ADR-031로 복잡 이상 ERRORS.
+# 옛 자산(이전 -DONE.md)은 Edit 안 하면 자연 회피 (PostToolUse Edit/Write 시점만 발동).
+# 복잡 이상 -DONE.md = HTML 페어 박지 않으면 차단 (HTML 먼저 박은 후 MD 박는 순서).
+if [ "$GRADE" = "복잡" ] || [ "$GRADE" = "대규모" ]; then
   HTML_SIBLING="${TOOL_INPUT_FILE%.md}.html"
   if [ ! -f "$HTML_SIBLING" ]; then
-    ERRORS+=("대규모 등급은 MD + HTML 이중 박음 의무 (캡스톤 평가 자산). 대응 .html 파일 없음: $HTML_SIBLING")
+    ERRORS+=("복잡 이상 등급은 MD + HTML 이중 박음 의무 (캡스톤 평가 자산). 대응 .html 파일 없음: $HTML_SIBLING")
     FAIL=1
   fi
 fi

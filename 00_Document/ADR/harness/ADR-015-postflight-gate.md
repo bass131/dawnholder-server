@@ -1,6 +1,6 @@
 ### ADR-015: Post-flight 게이트 (validate-phase-gate.sh 훅)
 **날짜**: 2026-05-11
 **상태**: 채택됨 (Pre-flight ①·Blocked ③ 게이트는 ② 실전 1회 검증 후 결정 — 보류)
-**결정**: `-DONE.md` Write/Edit 시 형식 검증 훅 `.claude/hooks/validate-phase-gate.sh` 자동 실행. 누락 시 `exit 2`로 차단. 강제 4가지: (1) frontmatter `summary`/`phase`/`status`, (2) 필수 H2 섹션 5개, (3) 5단계 보고 항목 라벨 5개, (4) `## AC 검증 결과` 본문 비어있지 않음. **자동 실행(Phase 자동 진행)은 비채택** — 학습 호흡 보존.
+**결정**: `-DONE.md` Write/Edit 시 형식 검증 훅 `.claude/hooks/validate-phase-gate.sh` 자동 실행. 누락 시 `exit 2`로 차단. 강제 4가지: (1) frontmatter `summary`/`phase`/`status`, (2) 필수 H2 섹션 5개, (3) 5단계 보고 항목 라벨 5개, (4) `## AC 검증 결과` 본문 비어있지 않음. **자동 실행(Phase 자동 진행)은 비채택** — 학습 호흡 보존. (※ 2026-06-14 **ADR-031**: '학습 호흡 보존' 명분 폐기 — AI는 이제 Phase 자동 진행. 단 *훅이 Phase를 자동 실행*하는 건 여전히 비채택 = 본 ADR의 형식 강제 훅 자체는 유효.)
 **이유**: `jha0313/harness_framework` 비교 결과, 자동 진행은 학습 깊이 손상 위험이라 비채택. 그러나 박제 자체를 빼먹는 것은 물리적으로 차단해야 면접 무기 누락 방지 → 형식 강제만 훅으로. 사용자 페이스는 보존, AI 빠뜨리기는 차단.
 **트레이드오프**: 훅 차단 시 AI 재시도 사이클 발생(시간 소모). 게이트 ①·③ 보류 → 향후 추가 시 하네스 비대화 우려. 형식 통과만 검사 — *내용의 질*은 검증 못 함.

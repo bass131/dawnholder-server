@@ -50,6 +50,7 @@
 | ADR-027 | 클라 Bootstrap(코드 주도 RuntimeInitialize) + Persistent Services + 연결 생명주기 A안 (M4.2 — ADR-021 scene-lifecycle 확장, ① DontDestroyOnLoad-per-service WIP supersede, B/로그인은 M5 이월) | [harness/ADR-027-client-bootstrap-persistent-services.md](harness/ADR-027-client-bootstrap-persistent-services.md) |
 | ADR-028 | Code Convention 수립 (GPP 19 + 게임서버 교과서 10 참고서 + 우리 규칙 + 강제 4중) — God class 분리 결정 기준, refs/CODE_CONVENTION/INDEX 3층 | [harness/ADR-028-code-convention.md](harness/ADR-028-code-convention.md) |
 | ADR-029 | SAC dotnet 실행 차단 — WSL2 실행 표준 (로컬 테스트 부활, 세션16 "SAC 게이트 은퇴 = CI 단독" 부분 supersede, PoC 5항목 게이트) | [harness/ADR-029-wsl2-dotnet-execution-standard.md](harness/ADR-029-wsl2-dotnet-execution-standard.md) |
+| ADR-031 | Phase 자동 진행 + 보고 비동기 문서화 (학습 호흡 수동 멈춤 폐기 = ADR-025 드리프트 봉합, HTML 임계 대규모→복잡, Stop=영호 직접확인 4종) *(ADR-015 "학습 호흡 보존"·ADR-022 "5단계 대규모 인라인" supersede)* | [harness/ADR-031-auto-phase-progression-async-reporting.md](harness/ADR-031-auto-phase-progression-async-reporting.md) |
 
 ---
 
