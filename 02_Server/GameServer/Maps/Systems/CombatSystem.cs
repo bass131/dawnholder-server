@@ -35,14 +35,17 @@ internal sealed class CombatSystem
     /// <summary>
     /// attacker 위치 중심으로 공격 AABB 박스를 생성.
     /// static 순수 함수 — GameMap 상태 의존 X.
-    /// Mage면 MageAttackHalfExtent(4.0f), 그 외 AttackHalfExtent(1.5f).
+    /// 클래스별 X/Y half-extent 분리(Phase 02):
+    ///   Mage: X=MageAttackHalfX(11.0f), Y=MageAttackHalfY(1.0f)
+    ///   Knight: X=KnightAttackHalfX(1.5f), Y=KnightAttackHalfY(1.0f)
+    /// Y를 X보다 좁게 설정해 사이드스크롤 위/아래 층 오판정 제거.
     /// </summary>
     internal static AABB GetAttackHitbox(Vector2 origin, CharacterClass cls)
     {
-        float half = cls == CharacterClass.Mage
-            ? CombatConstants.MageAttackHalfExtent
-            : CombatConstants.AttackHalfExtent;
-        return new AABB(origin, new Vector2(half, half));
+        (float halfX, float halfY) = cls == CharacterClass.Mage
+            ? (CombatConstants.MageAttackHalfX, CombatConstants.MageAttackHalfY)
+            : (CombatConstants.KnightAttackHalfX, CombatConstants.KnightAttackHalfY);
+        return new AABB(origin, new Vector2(halfX, halfY));
     }
 
     /// <summary>

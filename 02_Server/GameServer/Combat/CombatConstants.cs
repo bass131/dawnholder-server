@@ -15,8 +15,11 @@ internal static class CombatConstants
     // AABB 전환으로 ProcessAttack에서 직접 미사용. 박스 크기 산출 참고용 + 옛 dist² 비교 로직 추적용 보존.
     public const float AttackRangeSquared = AttackRange * AttackRange;
 
-    // AABB attack hitbox 크기. AttackRange=3.0f → halfExtent=1.5f → 전체 3×3 unit 박스.
-    public const float AttackHalfExtent = AttackRange / 2f;
+    // Knight 평타 AABB 박스 X/Y half-extent. X=사거리(1.5f), Y=층 분리(1.0f, 임시 시작값 Play 튜닝 대상).
+    // AttackRange=3.0f → KnightAttackHalfX=1.5f → X 전체 3 unit. Y를 X보다 좁게(1.0f)해 위아래 층 오판정 완화.
+    public const float AttackHalfExtent = AttackRange / 2f; // 하위 호환용 — KnightAttackHalfX와 동일값. 새 코드는 KnightAttackHalfX/Y 사용.
+    public const float KnightAttackHalfX = AttackRange / 2f; // 1.5f
+    public const float KnightAttackHalfY = 1.0f;             // 임시 시작값. Play 튜닝 대상.
 
     public const int BaseDamage = 10;
 
@@ -49,9 +52,12 @@ internal static class CombatConstants
     //   8틱=400ms. 임시값 Play 튜닝 대상(2026-06-09 영호 결정: 도착 후 추가 freeze로 stun 강화).
     public const int StunTicks = 8;
 
-    // Mage 공격 AABB half-extent. Knight(1.5f)보다 넓어 더 긴 사거리 제공.
-    // 8.0f = ±8 units 사거리(클라 MageTargetingRangeSquared=64와 맞춤). 영호 Play 튜닝(2026-06-09: 사거리 짧아 2배).
-    public const float MageAttackHalfExtent = 8.0f;
+    // Mage 평타 AABB 박스 X/Y half-extent. X=사거리, Y=층 분리(임시 시작값 Play 튜닝 대상).
+    // X=11.0f: ±11 units 사거리. 영호 승인값(2026-06-14, Phase 02).
+    // Y=1.0f: 층간격 초과 오판정 제거용. 임시 시작값 Play 튜닝 대상.
+    // (옛 MageAttackHalfExtent=8.0f 단일값 → X/Y 분리로 교체.)
+    public const float MageAttackHalfX = 11.0f;
+    public const float MageAttackHalfY = 1.0f;
 
     // 투사체 이동 속도 (unit/tick). 거리를 이 값으로 나눠 travelTicks 산출.
     public const float ProjectileSpeedPerTick = 2.0f;
@@ -69,8 +75,9 @@ internal static class CombatConstants
     // 13.0f = ±13 units 박스. 영호 Play 튜닝(2026-06-09: 가로 범위 조금 더 확대).
     public const float ThunderboltBoxHalfX = 13.0f;
 
-    // 공격자 중심 AABB 박스 Y축 절반 크기 (unit). 점프 적 포함 여유.
-    public const float ThunderboltBoxHalfY = 3.0f;
+    // 공격자 중심 AABB 박스 Y축 절반 크기 (unit). 층 분리 강화(3.0→1.5, 임시 시작값 Play 튜닝 대상).
+    // 영호 승인값(2026-06-14, Phase 02).
+    public const float ThunderboltBoxHalfY = 1.5f;
 
     // 썬더볼트 발동 → 낙뢰 도착까지의 지연 틱 수. freeze 지속과 동일.
     public const int LightningDelayTicks = 4; // 4틱 = 200ms @20TPS
@@ -94,10 +101,11 @@ internal static class CombatConstants
     // DashSpeed/DashTravelTicks는 98_Shared.Constants로 이전(M4.13 P4 — 클라 replay 공유). 박스(DashBoxHalfX/Y)·데미지는 서버 전용 유지(least-exposure).
 
     // Dash 경로 AABB 박스 반폭 (unit). 전방 이동 경로를 스윕하는 박스 — X 방향이 핵심.
-    // FacingDir 방향으로 쏘는 앞 공간 스캔. DashBoxHalfY는 평타(1.5f)와 동일.
-    // 박스 크기는 이동 거리(4.0)와 독립적인 시전 시점 1회성 임팩트 판정 — Play 튜닝 후속.
+    // FacingDir 방향으로 쏘는 앞 공간 스캔. DashBoxHalfY=1.0f (층 분리 강화, 1.5→1.0, 임시 시작값 Play 튜닝 대상).
+    // 박스 크기는 이동 거리(4.0)와 독립적인 시전 시점 1회성 임팩트 판정.
+    // 영호 승인값(2026-06-14, Phase 02).
     public const float DashBoxHalfX = 2.5f;
-    public const float DashBoxHalfY = 1.5f;
+    public const float DashBoxHalfY = 1.0f;
 
     // Dash 쿨다운 (틱). 98_Shared 단일 진실에서 가져옴 (ThunderboltCooldownTicks와 동형).
     public const int DashCooldownTicks = Shared.GameData.Constants.DashCooldownTicks;

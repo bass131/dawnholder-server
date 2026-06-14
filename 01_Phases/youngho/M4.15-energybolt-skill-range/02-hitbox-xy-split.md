@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.15
 phase: 02
 title: 히트박스 X/Y 분리 + 전 스킬 Y 재튜닝
-status: pending
+status: done
 grade: 복잡
 domain: server
 summary: GetAttackHitbox 정사각→비정사각(X/Y), Mage/Knight 박스 X/Y 분리 + Thunderbolt/Dash Y 재튜닝
@@ -11,7 +11,7 @@ summary: GetAttackHitbox 정사각→비정사각(X/Y), Mage/Knight 박스 X/Y �
 
 # Phase 02: 히트박스 X/Y 분리 + 전 스킬 Y 재튜닝
 
-> **상태**: pending
+> **상태**: done (2026-06-14, server Worker + 메인 게이트 + reviewer 🔴0)
 > **마일스톤**: M4.15
 > **등급**: 복잡 (구조 키스톤 — 공유 헬퍼 시그니처 변경 + 다중 호출부/테스트)
 > **담당**: server (Sonnet Worker)
@@ -93,3 +93,4 @@ summary: GetAttackHitbox 정사각→비정사각(X/Y), Mage/Knight 박스 X/Y �
 ## 작업 로그
 
 - 2026-06-14: 생성.
+- 2026-06-14: 완료. `GetAttackHitbox` 정사각→클래스별 `(halfX,halfY)` 튜플. `MageAttackHalfExtent`(8.0) → `MageAttackHalfX=11.0`/`MageAttackHalfY=1.0`, `KnightAttackHalfX=1.5`/`KnightAttackHalfY=1.0` 신설, `ThunderboltBoxHalfY` 3.0→1.5, `DashBoxHalfY` 1.5→1.0. 신규 `Mage_SameLayer_Hit_UpperLayer_Miss_YRangeRegression`(Y가 유일 판별축, 위층 Y=3.0 miss). WSL2 build 0/0 + test **569/0/5**(baseline+1). reviewer 🔴0. **cleanup 후보(미적용)**: `AttackHalfExtent`(L20)가 production 미참조 dead(KnightAttackHalfX와 중복) — reviewer "지금 과분할 부채, 3번째 클래스 시 Dictionary/struct 추상화" 권고로 유지.

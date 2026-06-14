@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.15
 phase: 01
 title: Baseline 회귀 그린 + 시작값 표 영호 확정
-status: pending
+status: done
 grade: 단순
 domain: qa
 summary: 변경 전 WSL2 회귀 green 스냅샷 + 박스/투사체 시작값 영호 승인 게이트
@@ -11,7 +11,7 @@ summary: 변경 전 WSL2 회귀 green 스냅샷 + 박스/투사체 시작값 영
 
 # Phase 01: Baseline 회귀 그린 + 시작값 표 영호 확정
 
-> **상태**: pending
+> **상태**: done (2026-06-14, commit `5beda1f`)
 > **마일스톤**: M4.15
 > **등급**: 단순
 > **담당**: qa (메인 세션 직접 가능)
@@ -95,3 +95,4 @@ summary: 변경 전 WSL2 회귀 green 스냅샷 + 박스/투사체 시작값 영
 ## 작업 로그
 
 - 2026-06-14: 생성.
+- 2026-06-14: 완료. WSL2 build 0/0 + test **568/0/5**(M4.14 마감값 정확 일치 — 브랜치 깨끗) + EditMode 147 inherited(클라 무변경). 시작값 표 영호 승인("그렇게 진행하자"): Mage X=11/Y=1.0, Knight X=1.5/Y=1.0, Thunderbolt X=13/Y=1.5, Dash X=2.5/Y=1.0, 투사체속도 2.0u/tick 유지(+P04 상한제거). 숫자는 Play 튜닝 후속. commit `5beda1f`.
