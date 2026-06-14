@@ -71,9 +71,11 @@
 
 ---
 
-## 4. 포매팅 / 네이밍 — 자동 (M4.4+)
+## 4. 포매팅 / 네이밍 — 자동 강제 (M4.14 P04 활성)
 
-사람·AI가 판단할 영역이 **아니다 — 도구가 강제한다.** 공개 `PascalCase` / 지역·매개 `camelCase` / Allman 중괄호 / 단일 문장도 중괄호 유지. **강제 = `.editorconfig` + Roslyn**(Microsoft 베이스). 도입 = M4.4+ (기계적이라 미뤄도 부채 아님).
+사람·AI가 판단할 영역이 **아니다 — 도구가 강제한다.** 공개 `PascalCase` / 지역·매개 `camelCase` / Allman 중괄호 / **중괄호 `when_multiline`** — 조건·본문이 여러 줄이거나 if-else 한쪽이 블록인 경우만 강제하고, **한 줄 가드절(`if (x) return;`)은 허용**. **강제 = `.editorconfig`(`csharp_prefer_braces = when_multiline` + `IDE0011` warning) + `EnforceCodeStyleInBuild=true`(Directory.Build.props)로 빌드/CI에서 검사**. 범위 = production만(02_Server/04_ClientNet/98_Shared; Tests·99_Tools·03_Client는 §7.1과 동일하게 경계).
+
+> **중괄호 = when_multiline 결정** (M4.14 P03 analyzer 실측): always("단일 문장도 무조건")는 production 168건 churn 대비 가치 낮아 기각. "goto fail" 류 사고(무중괄호 밑 문장 추가)는 본문이 multi-line일 때만 가능 → when_multiline이 위험 케이스(실측 15건)만 잡고 한 줄 가드절 가독성은 보존. casing(SA1300/1312/1313)·Allman(SA1500)은 실측 production 위반 0(이미 준수). P04에서 15건 기계 수정 + 룰 활성.
 
 ---
 
@@ -147,7 +149,7 @@ C# 클래스 내 멤버 선언 순서를 고정한다. 일관된 순서 = 읽는
 
 | 대상                                | 현재                                                                               | 위반      | 분리안                    | 타이밍 |
 | ----------------------------------- | ---------------------------------------------------------------------------------- | --------- | ------------------------- | ------ |
-| ~~`GameMap` (665줄)~~ **졸업** ✅   | 실측 436줄. 6 System(Combat/Boss/DeferredDamage/EnemyAI/Respawn/Skill) 분리 완료. `Maps/Systems/` 아래 각 System 독립 파일. `GameMap` 자체는 "container + 최소 surface mutator" 의도적 설계 — §2.2 기준 충족. | (해소)    | (완료)                    | 완료 |
+| ~~`GameMap` (665줄)~~ **졸업** ✅   | 실측 498줄(M4.13 Skill/Action 추가분 반영, 2026-06-14 M4.14 P01 정정). 6 System(Combat/Boss/DeferredDamage/EnemyAI/Respawn/Skill) 분리 완료. `Maps/Systems/` 아래 각 System 독립 파일. `GameMap` 자체는 "container + 최소 surface mutator" 의도적 설계 — §2.2 기준 충족. | (해소)    | (완료)                    | 완료 |
 | `ClientPacketHandlers.cs` (909줄)   | inline 핸들러 + VFX 보일러플레이트 대거 포함. **진짜 미실행 대상.** (옛 `UnityClientSession` 665줄은 실측 213줄로 이미 슬림 — 핸들러가 이 파일로 이동했기 때문) | §3.2      | `IPacketHandler` + dispatch 분리 | M4.12 |
 | `GameSession` (700줄)               | rate-limit/handshake 등 ~95줄 추출 가능 (migration 160줄 잔류)                     | §2.2 부분 | 부분 추출                 | 미정 |
 | `EnemyRegistry` (240줄)             | GameObject 빌더 결합                                                               | §3.1      | 빌더 추출                 | 선택 |
@@ -179,3 +181,4 @@ C# 클래스 내 멤버 선언 순서를 고정한다. 일관된 순서 = 읽는
 | 2026-05-30 | v5   | §2.4 **네트워크 세션 프레이밍 템플릿 깊이 2 예외** 명문화 (`Session→PacketSession→GameSession`은 의도된 framing↔handler 분리 — Codex read-only 감사). **§6 주석 정책 신설** (self-documenting — §6.2 금지 5종 + §6.3 안전 예외 5%; M4.3X 대정리 기준). 제목 v3→v5 stale 정정. 동반 코드 정합: PacketGenerator 매개변수/템플릿 prefix(§3.3) + SceneTransition `[SerializeField]` rename. |
 | 2026-06-11 | v6   | **4보강**: §2.5 DRY(중복 2회=신호/3회=의무, 우연한 중복 예외) + §6.5 클래스 1줄 책임 헤더(public 클래스 의무, GameMap 헤더 모범) + §7.1 멤버 정렬(상수→static→필드→프로퍼티→생성자→public→private→중첩, StyleCop SA1201/SA1202 경고 강제, `#region` 의존 금지) + §7.2 진입점 내비게이션(ENTRY_POINTS.md + 파일 흐름 1줄 헤더). **부록 A 실측 갱신**: GameMap(665→436, 6 System 분리 완료) 졸업, ClientPacketHandlers 909줄을 진짜 미실행 대상으로 기재(M4.12), 전수조사 중복 7건 편입. M4.10 Phase 01. |
 | 2026-06-11 | v6.1 | **§7.1 정정 + 범위 확정** (M4.10 Phase 05): v6 초안의 "프로퍼티→생성자" 순서가 SA1201 실강제("생성자→프로퍼티")와 반대 — 도구가 검사하는 순서가 진실이므로 문서를 도구에 맞춤(선언=실재). 적용 범위 명문화: production(02_Server/98_Shared/04_ClientNet)만 강제, Tests·99_Tools는 하위 `.editorconfig` 완화, 03_Client는 도구 미적용(Unity NuGet 비호환). production 경고 189→0 스윕 동반. ENTRY_POINTS.md 본문 작성(§7.2 (a) 이행). |
+| 2026-06-14 | v6.2 | **§4 중괄호 활성 = `when_multiline`** (M4.14 P03/P04). "M4.4+ 미뤄둠"을 analyzer로 강제 전환 — `EnforceCodeStyleInBuild=true` + `IDE0011`/`csharp_prefer_braces = when_multiline`. P03 실측이 결정: always는 production 168건(Codex 추정 288·검토 "~90" 둘 다 빗나감) churn 대비 가치 낮아 기각, when_multiline=15건만. casing/Allman은 실측 위반 0(이미 준수). P04에서 15건 기계 수정(거동 0 + WSL2 568/0/5) + Tests/99_Tools `IDE0011=none` 경계. 영호 결정. |

@@ -18,5 +18,5 @@ internal interface IGameAction
 
     // 권위 실행. 반환값: 실제로 행동이 적용됐으면 true, 거부면 false.
     // 호출 전제: ActionGate가 상태·쿨다운·클래스·rewind를 모두 통과시킨 뒤에만 호출.
-    bool Execute(GameMap map, PlayerEntity caster, long clientTick);
+    bool Execute(GameMap map, PlayerEntity caster, in ActionContext ctx);
 }

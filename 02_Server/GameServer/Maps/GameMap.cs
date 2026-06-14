@@ -69,9 +69,11 @@ public class GameMap
             {
                 // kindId 범위 검증 — 알 수 없는 kindId = 저작 오류 → fail loud.
                 if (!Enum.IsDefined(typeof(EnemyKind), sp.KindId))
+                {
                     throw new InvalidOperationException(
                         $"[GameMap:{mapId}] 알 수 없는 kindId={sp.KindId} in content.bin. " +
                         "EnemyKind enum을 확인하세요.");
+                }
 
                 EnemyKind kind = (EnemyKind)sp.KindId;
                 // HP 단일 출처 = Formulas factory MaxHp.

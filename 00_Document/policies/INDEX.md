@@ -17,7 +17,7 @@
 
 | 파일 | 한 줄 요약 | 헌법에서 참조하는 위치 | 상태 |
 |---|---|---|---|
-| [`reporting-format.md`](reporting-format.md) | 5단계 보고 양식 (대규모 등급 한정) + MD/HTML 이중 박음 | "응대 원칙 / 작업 보고" | 옛 갱신 (work-envelope 죽임) |
+| [`reporting-format.md`](reporting-format.md) | 5단계 보고 양식 (복잡 이상, 비동기 문서 박제 — ADR-031) + MD/HTML 시각화 | "응대 원칙 / 작업 보고" | ADR-031 갱신 (인라인 폐지 / HTML 임계 복잡) |
 | [`pin-and-done.md`](pin-and-done.md) | work-pin 압축본(5+1 필드) + -DONE.md 박제(복잡/대규모) + 두 액션 권유 | "작업 좌표 + Phase 완료 박제" | 옛 갱신 (work-pin 압축) |
 | [`doc-thresholds.md`](doc-thresholds.md) | 220줄·350줄 문서 세분화 정책 + 단위 작업 비대 시 등급 재산정 | "문서 운영 / 문서 세분화" | 옛 미세 정합 |
 | [`review-tiering.md`](review-tiering.md) | 3-Tier 리뷰 + Tier 2 = reviewer + plan-auditor 두 SubAgent | "SubAgent 풀 / 자동 호출 트리거" | 옛 재작성 (Tier 2-B 신설) |

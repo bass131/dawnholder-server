@@ -24,15 +24,15 @@
 
 ### 작업 보고
 
-- **대규모 등급 Phase 완료 시만**: 5단계 보고 출력 (🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음) + MD/HTML 이중 박음 (캡스톤 평가 자산)
-- **그 외 응답**: 양식 노이즈 X. 단순/보통/복잡 등급은 work-pin + commit message로 충분.
+- **보고는 흐름을 끊지 않는다** (ADR-031): 인라인 5단계 보고 폐지. 작업 보고는 *비동기 문서*로 — **복잡 이상 = `-DONE.md` + HTML 시각화**(사용자가 추후 체크). 5단계 보고 구조(🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음)는 그 문서 *안*에 박힘 (캡스톤 평가 자산).
+- **그 외 응답**: 양식 노이즈 X. 단순/보통 = work-pin + commit message로 충분.
 
 양식 디테일·등급별 보고 격차 → [`00_Document/policies/reporting-format.md`](00_Document/policies/reporting-format.md)
 
 ### 작업 좌표 + Phase 완료 박제
 
 - **작업 중**: `.claude/state/current-pin.txt`가 좌표 보존 (압축 양식, 목표 30~40줄). AI가 변경 시 갱신
-- **Phase 완료 시**: `-DONE.md` 작성 (AI가 사실 박제, 복잡/대규모 등급만) → 세션 마감 권유
+- **Phase 완료 시**: `-DONE.md` 작성 (AI가 사실 박제, 복잡 이상 = + HTML 시각화). 흐름 안 끊고 자동 진행 — 영호는 추후 문서로 체크 (ADR-031)
 - **역할 분담**: `-DONE.md` = AI가 *사실* 박제. (본인 회고 트랙은 ADR-025로 은퇴 — work-pin이 단일 핸드오프)
 
 라이프사이클·핀 필드·박제 게이트·권유 양식 → [`00_Document/policies/pin-and-done.md`](00_Document/policies/pin-and-done.md)
@@ -66,7 +66,7 @@
 - 새 작업 시작: `/work:plan <목표>` 로 Phase 분해 (plan-auditor SubAgent 자동 호출)
 - Phase 입자 = 5~7개/마일스톤 (옛 M3 9개는 과했음 — 5/20 의논 결과)
 - 한 Phase = 한 `.md` + 명확한 완료 조건
-- 다음 Phase로 **수동 이동** (자동 순차 실행 X — 학습 호흡 유지)
+- **Phase 자동 진행** (ADR-031 — 학습 호흡 수동 멈춤 폐기, ADR-025 "학습 명분 소멸" 정합). **Stop은 *영호 직접 확인/결정 지점*에서만**: ① 비가역(push/merge/`Protocol.Version` bump/DB 마이그) ② 설계 분기(영호 결정 필요) ③ 승인 게이트(예: convention sweep 적용 전 diff 승인) ④ 육안 검증(Unity 외관). 공학 게이트(회귀·drift)는 *자동 점검 후 진행*(멈추지 않음).
 
 ### 문서 세분화
 
@@ -174,8 +174,8 @@
 | ---------- | ------------------------------------ | -------------------------------------------- | -------------------------------------------- |
 | **단순**   | 1 도메인 × 1 파일 / ≤10줄 / 가역적   | 메인 세션 직접                               | work-pin + commit message                    |
 | **보통**   | 1 도메인 × 2~3 파일 / ≤50줄 / 가역적 | Worker SubAgent 1개                          | work-pin + commit message                    |
-| **복잡**   | 2 도메인 / ~100~200줄 / 일부 비가역  | Coordinator + Worker 1~2개                   | work-pin + -DONE.md                          |
-| **대규모** | 3+ 도메인 또는 300줄+ / 비가역       | Coordinator + Team (Worker 3~4개 + Reviewer) | work-pin + -DONE.md + **5단계 보고 MD/HTML** |
+| **복잡**   | 2 도메인 / ~100~200줄 / 일부 비가역  | Coordinator + Worker 1~2개                   | work-pin + -DONE.md + **HTML 시각화**        |
+| **대규모** | 3+ 도메인 또는 300줄+ / 비가역       | Coordinator + Team (Worker 3~4개 + Reviewer) | work-pin + -DONE.md + HTML 시각화 (+ 마일스톤 종합) |
 
 ### 위험 깃발 (자동 등급 상향)
 

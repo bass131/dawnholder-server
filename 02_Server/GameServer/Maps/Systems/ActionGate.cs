@@ -11,24 +11,13 @@ namespace Dawnholder.Server.GameServer.Maps;
 // tick thread invariant: GameMap.Tick 안에서만 호출 (§1.1).
 internal sealed class ActionGate
 {
-    // 평타(Melee)용 오버로드 — targetEntityId가 추가로 필요.
-    internal bool TryPerformMelee(GameMap map, PlayerEntity player, int targetEntityId, long clientTick)
-    {
-        if (!ActionRegistry.TryGet(ActionKind.Melee, out IGameAction action)) return false;
-
-        if (!Validate(map, player, action, clientTick, out long currentTick)) return false;
-
-        player.SetLastActionTick(ActionKind.Melee, currentTick);
-        return MeleeAction.Instance.ExecuteWithTarget(map, player, targetEntityId, clientTick);
-    }
-
-    // 스킬(Dash/Teleport/Thunderbolt)용 오버로드.
-    // facing(M4.13 v13): 클라 화면 방향(±1, 핸들러 §3 정규화). 대쉬 방향 권위 — 아래 참조.
-    internal bool TryPerformSkill(GameMap map, PlayerEntity player, ActionKind kind, long clientTick, sbyte facing)
+    // 서버 행동 단일 입구 — kind 분기 0. ①상태 ②쿨다운 ③클래스 ④rewind 검증 후 Execute 위임.
+    // ctx: ClientTick(rewind), TargetEntityId(평타 전용), Facing(대쉬 방향 권위).
+    internal bool TryPerform(GameMap map, PlayerEntity player, ActionKind kind, in ActionContext ctx)
     {
         if (!ActionRegistry.TryGet(kind, out IGameAction action)) return false;
 
-        if (!Validate(map, player, action, clientTick, out long currentTick)) return false;
+        if (!Validate(map, player, action, ctx.ClientTick, out long currentTick)) return false;
 
         player.SetLastActionTick(kind, currentTick);
 
@@ -37,9 +26,9 @@ internal sealed class ActionGate
         //   방향)과 반대로 튀어 reconcile 클러스터 발생 → 클라 방향을 권위로 정렬해 봉합. Validate 통과 후만
         //   적용(거부 시 FacingDir 부작용 0). Dash 한정 — Thunderbolt/Teleport는 기존 FacingDir(타겟/박스) 유지.
         if (kind == ActionKind.Dash)
-            player.FacingDir = facing;
+            player.FacingDir = ctx.Facing;
 
-        return action.Execute(map, player, clientTick);
+        return action.Execute(map, player, in ctx);
     }
 
     // 4단계 검증 (헌법 §3 fail-closed silent drop):

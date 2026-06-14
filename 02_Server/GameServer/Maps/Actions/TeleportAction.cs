@@ -16,7 +16,7 @@ internal sealed class TeleportAction : IGameAction
     public int CooldownTicks => CombatConstants.TeleportCooldownTicks;
     public CharacterClass? RequiredClass => CharacterClass.Mage;
 
-    public bool Execute(GameMap map, PlayerEntity caster, long clientTick)
+    public bool Execute(GameMap map, PlayerEntity caster, in ActionContext ctx)
     {
         float rawDestX = caster.Position.X + CombatConstants.TeleportDistance * caster.FacingDir;
 

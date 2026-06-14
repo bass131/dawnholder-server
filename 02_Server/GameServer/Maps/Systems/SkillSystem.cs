@@ -22,6 +22,6 @@ internal sealed class SkillSystem
         ActionKind? kind = ActionRegistry.FromSkillId(skillId);
         if (kind == null) return; // 미구현 skillId — 무해 drop.
 
-        _gate.TryPerformSkill(map, caster, kind.Value, attackerClientTick, facing);
+        _gate.TryPerform(map, caster, kind.Value, new ActionContext(attackerClientTick, -1, facing));
     }
 }

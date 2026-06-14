@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.14 Phase 02 — IGameAction 계약 통일 (5단계 보고)</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2129; --panel2: #212a35; --line: #2e3a48;
+    --text: #d8e0e8; --dim: #8a98a8; --accent: #e8734a; --green: #4ec77a;
+    --yellow: #e8c14a; --blue: #5aa7e8; --purple: #b58ae8; --red: #e85a6a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; line-height: 1.65; padding: 40px 20px; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h1 .v { color: var(--accent); }
+  .sub { color: var(--dim); font-size: 14px; margin-bottom: 28px; }
+  h2 { font-size: 19px; margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+  h2 .emoji { margin-right: 8px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 10px 0; }
+  th, td { padding: 8px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--blue); font-weight: 600; }
+  code, .mono { font-family: 'Cascadia Code', Consolas, monospace; font-size: 12.5px; }
+  code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; color: var(--yellow); }
+  .tag { display: inline-block; padding: 1px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  .tag.red { background: #3a2026; color: var(--red); }
+  .tag.green { background: #1d3328; color: var(--green); }
+  .tag.blue { background: #1d2a3a; color: var(--blue); }
+  .big { font-size: 30px; font-weight: 700; }
+  .kpi { text-align: center; padding: 16px 8px; }
+  .kpi .l { color: var(--dim); font-size: 12.5px; margin-top: 4px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0; }
+  @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .ba { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; margin: 12px 0; }
+  @media (max-width: 760px) { .ba { grid-template-columns: 1fr; } }
+  .ba .box { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; font-size: 13px; }
+  .ba .box.before { border-color: #4a3030; }
+  .ba .box.after { border-color: #1d3328; }
+  .ba .mid { display: flex; align-items: center; color: var(--accent); font-size: 22px; }
+  .ba h4 { font-size: 13px; margin-bottom: 8px; }
+  .ba .before h4 { color: var(--red); } .ba .after h4 { color: var(--green); }
+  ul { padding-left: 20px; } li { margin: 4px 0; }
+  .note { color: var(--dim); font-size: 13px; }
+  .ok::before { content: "✅ "; } .warn::before { content: "🟡 "; }
+  .struct { font-family: 'Cascadia Code', Consolas, monospace; font-size: 12.5px; background: var(--panel2); border-radius: 6px; padding: 10px 14px; margin: 8px 0; white-space: pre; overflow-x: auto; color: var(--text); }
+  .struct .k { color: var(--purple); } .struct .f { color: var(--blue); } .struct .c { color: var(--dim); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>M4.14 Phase 02 — IGameAction 계약 통일 <span class="v">wire v13 유지</span></h1>
+<div class="sub">2026-06-14 · 등급 복잡 (trust-boundary 깃발) · server Worker Opus · 8 modified + ActionContext.cs · 브랜치 feature/m4.14-architecture-followup (push 안함) · 순수 구조 리팩토링 (유저 비가시)</div>
+
+<h2><span class="emoji">🎯</span>1. 무엇을 만들었나</h2>
+<div class="panel">
+  4개 행동(평타/Dash/Teleport/Thunderbolt)의 실행 계약을 <b>하나로</b> 복원했다. 인터페이스는 <code>Execute(map, caster, long clientTick)</code>인데 <b>Melee만</b> 이걸 <code>return false</code>(죽은 코드)로 빠져나가 계약 밖 오버로드 <code>ExecuteWithTarget(..., targetEntityId, ...)</code>로 우회하고 있었다. per-action 입력을 값 컨텍스트 <code>ActionContext</code> 하나로 묶어 — 4행동 전부 <code>Execute(map, caster, in ActionContext)</code> 단일 계약. <code>ActionGate</code>도 진입 메서드 2개(<code>TryPerformMelee</code>/<code>TryPerformSkill</code>) → 1개(<code>TryPerform</code>), 구체 <code>MeleeAction</code> 비의존.
+</div>
+<div class="kpis">
+  <div class="panel kpi"><div class="big" style="color:var(--accent)">0</div><div class="l">Validate() git diff 라인 (trust-boundary)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--green)">568/0/5</div><div class="l">WSL2 test (baseline 동일)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--blue)">0</div><div class="l">죽은 코드 (ExecuteWithTarget grep)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--purple)">🔴 0</div><div class="l">reviewer Tier 2-A</div></div>
+</div>
+
+<h2><span class="emoji">🤔</span>2. 왜 필요한가</h2>
+<div class="grid2">
+  <div class="panel">
+    <b style="color:var(--blue)">Melee만 계약 일탈 = LSP/OCP 약화</b>
+    <p><code>targetEntityId</code>는 <code>C_Attack</code>(평타)에만 실리는 입력인데 공통 시그니처에 자리가 없어, Melee만 죽은 <code>Execute()</code> + 우회 오버로드로 샛길을 냈다. 자백 주석까지 박혀 있었다 — <i>"직접 호출 경로 없음"</i>.</p>
+  </div>
+  <div class="panel">
+    <b style="color:var(--blue)">활성 버그 아닌 잠재 트랩</b>
+    <p>지금은 <code>TryPerformMelee</code>가 항상 우회로 보내 죽은 <code>Execute()</code>에 안 닿아 정상. 하지만 ① 새 호출자가 다형 <code>Execute()</code>를 믿으면 조용히 <code>false</code>(silent fail) ② 게이트가 구체 <code>MeleeAction.Instance</code>를 직접 알아야 함(추상 위로 새는 의존).</p>
+  </div>
+</div>
+
+<h2><span class="emoji">🛠️</span>3. 어떻게 만들었나</h2>
+<div class="panel">
+  <b>핵심 = per-action 입력을 값 컨텍스트로 묶기</b>
+  <div class="struct"><span class="c">// readonly struct + in 전달 = 틱 루프 힙 alloc 0 (헌법 #5)</span>
+<span class="k">internal readonly struct</span> ActionContext {
+    <span class="k">long</span>  <span class="f">ClientTick</span>;      <span class="c">// rewind 기준 (4행동 중 3개 사용)</span>
+    <span class="k">int</span>   <span class="f">TargetEntityId</span>;  <span class="c">// C_Attack 타겟 (평타 전용; 스킬 = -1)</span>
+    <span class="k">sbyte</span> <span class="f">Facing</span>;          <span class="c">// 클라 화면 방향 (Dash 권위; 그 외 무시)</span>
+}</div>
+</div>
+<div class="ba">
+  <div class="box before">
+    <h4>BEFORE — 계약 일탈</h4>
+    <code>Execute(map, caster, long clientTick)</code>
+    <ul>
+      <li>Melee: <code>return false</code> (죽은 코드)</li>
+      <li>+ 우회 <code>ExecuteWithTarget(..., targetEntityId, ...)</code></li>
+      <li>게이트: <code>TryPerformMelee</code> + <code>TryPerformSkill</code> 2개</li>
+      <li>게이트 → 구체 <code>MeleeAction.Instance</code> 직접 의존</li>
+    </ul>
+  </div>
+  <div class="mid">→</div>
+  <div class="box after">
+    <h4>AFTER — 단일 계약</h4>
+    <code>Execute(map, caster, in ActionContext ctx)</code>
+    <ul>
+      <li>4행동 전부 동일 계약, 죽은 코드 0</li>
+      <li><code>ExecuteWithTarget</code> 소멸 (본체 흡수)</li>
+      <li>게이트: 단일 <code>TryPerform(map, player, kind, in ctx)</code></li>
+      <li>다형 <code>action.Execute</code> — 구체 의존 0 (OCP)</li>
+    </ul>
+  </div>
+</div>
+<div class="panel">
+  <b class="note">trust-boundary 보존 — facing 채택은 게이트에 유지</b>
+  <div class="note"><code>Validate()</code> 4단계(상태·쿨다운·클래스·rewind) 본문은 <b>한 글자도 안 바뀜</b>(시그니처 <code>long clientTick</code> 유지, 호출 시 <code>ctx.ClientTick</code> 전달). Dash facing 권위(<i>클라가 신고한 방향을 채택</i>)는 권위 단일 입구인 게이트에 그대로 — 액션으로 분산하지 않음. <span class="warn"></span><b>실측 보정</b>: 계획서는 2필드였으나 이 Dash facing 로직이 통합 시그니처에 facing 자리를 강제 → <code>Facing</code> 3번째 필드 추가(speculative 아닌 구체 입력, §0.3 정합).</div>
+</div>
+
+<h2><span class="emoji">🧪</span>4. 테스트 결과</h2>
+<table>
+  <tr><th style="width:24%">게이트</th><th>결과</th></tr>
+  <tr><td>메인 file:line 실측 + diff 거동 대조</td><td><span class="tag green">PASS</span> plumbing만, 로직 1:1 (패킷 필드값 동일)</td></tr>
+  <tr><td><code>Validate()</code> git diff (trust-boundary)</td><td><span class="tag green">라인 0</span> 메인 + reviewer 독립 2회</td></tr>
+  <tr><td>WSL2 build / test --no-build</td><td><span class="tag green">0/0</span> + <b>568/0/5</b> (Phase 01 baseline 동일)</td></tr>
+  <tr><td>98_Shared / Shared.dll drift</td><td><span class="tag green">0</span> server-only → EditMode 122 논리적 불변</td></tr>
+  <tr><td>죽은 코드 grep</td><td><span class="tag green">0</span> <code>ExecuteWithTarget</code>/<code>TryPerformMelee</code>/<code>TryPerformSkill</code> 잔존 0</td></tr>
+  <tr><td>reviewer Tier 2-A</td><td><span class="tag green">🔴0</span> sentinel 안전성 독립 검증(<code>GetEnemyById(-1)</code>→null fail-safe)</td></tr>
+</table>
+<div class="note ok">wire v13 무변경 — <code>IGameAction</code>/<code>ActionContext</code>/<code>ActionGate</code> 전부 02_Server 내부(98_Shared 아님). PDL 0 변경, <code>S_PlayerAttack.targetEntityId</code> 필드값 1:1. Shared.dll co-review 미트리거.</div>
+
+<h2><span class="emoji">➡️</span>5. 다음 스텝</h2>
+<div class="panel">
+  <b style="color:var(--accent)">Phase 03 — Convention analyzer report-only</b> (<code>03-convention-report.md</code>, 보통·cross)
+  <p>루트 <code>.editorconfig</code>에 중괄호(IDE0011/SA1503)·casing(IDE1006)을 <code>severity=suggestion</code>으로 켜 <b>진짜 카운트</b>를 산출(Codex 추정 288/57 → 실측 교체)하고 영호에게 보고. <b>승인 게이트</b> — 통과 전 Phase 04(기계 수정 apply) 금지. self-bias 회피 = analyzer 결정적 도구 카운트.</p>
+  <div class="note"><b>독립성</b>: P02(계약 통일, server)와 P03~04(convention, cross)는 도메인이 달라 병렬 가능. 부채 정리 두 갈래라 서로 의존 0.</div>
+</div>
+
+</div>
+</body>
+</html>

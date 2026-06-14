@@ -7,4 +7,11 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="all" />
   </ItemGroup>
 
+  <!-- M4.14 P04: .NET IDE 계열 code-style 분석기를 빌드/CI에서 강제 — CODE_CONVENTION §4. -->
+  <!-- 없으면 IDE0011(중괄호 when_multiline) 등은 IDE에서만 돌고 빌드/CI엔 안 잡힌다. -->
+  <!-- 활성 룰은 .editorconfig severity로 선택 (현재 IDE0011만 warning, 나머지 기본 silent). -->
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
 </Project>

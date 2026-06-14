@@ -24,7 +24,7 @@
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
 | [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력. git 게이트 (B+) 정책 + work-pin(`current-pin.txt`) 좌표 인지(현재 작업·다음 액션) + CHANGELOG 최근 변경 확인. | (인풋 없음) |
-| [`/session:end`](../.claude/commands/session/end.md) | Phase 완료 마감 절차. -DONE.md 박제 후 호출 → commit + PR + `/session:log`(선택) + **work-pin 갱신** (마감 상태 반영, ADR-025 — 단일 핸드오프) + 다음 액션 결정. 등급별 마감 분기 (단순/보통 = work-pin + commit message / 복잡 = work-pin + -DONE.md / 대규모 = +5단계 보고 MD/HTML). | (인풋 없음) |
+| [`/session:end`](../.claude/commands/session/end.md) | Phase 완료 마감 절차. -DONE.md 박제 후 호출 → commit + PR + `/session:log`(선택) + **work-pin 갱신** (마감 상태 반영, ADR-025 — 단일 핸드오프) + 다음 액션 결정. 등급별 마감 분기 (단순/보통 = work-pin + commit message / 복잡 이상 = work-pin + -DONE.md + HTML 시각화, ADR-031). | (인풋 없음) |
 | [`/session:log`](../.claude/commands/session/log.md) | 노션 박제 트리거. 보통 `/session:end`가 자동 호출. 실행자 분기: Codex 있으면 Codex가 박음 (본인 유영호 흐름), Codex 없으면 Claude가 mcp__notion 직접 호출 (인규/유현 fallback). | (인풋 없음) |
 
 ---
@@ -113,10 +113,10 @@ clone + Claude Code 설치 후 첫 호출
               └─ Phase 작업 진행
                     └─ 막히면 Claude한테 자연어로 질문
                     └─ 코드 변경 시 Tier 2 reviewer SubAgent 자동 호출 + 새 hooks 자동 검사
-                    └─ Phase 끝: 등급별 마감
+                    └─ Phase 끝: 등급별 박제 (흐름 안 끊고 자동 진행, ADR-031)
                           ├─ 단순/보통 = work-pin + commit message
-                          ├─ 복잡    = work-pin + -DONE.md
-                          └─ 대규모   = + 5단계 보고 MD/HTML
+                          ├─ 복잡    = work-pin + -DONE.md + HTML 시각화
+                          └─ 대규모   = + 마일스톤 종합 (5단계 보고 구조 = 문서 내장)
                           └─ 큰 PR 머지 전: /cross-review 권유 (옵션)
                           └─ (선택) 학습 회고: 본인 노션 자유 양식 (트랙 B 은퇴, ADR-025)
                           └─ 마감: /session:end  (commit + PR + /session:log 선택 + work-pin 갱신)

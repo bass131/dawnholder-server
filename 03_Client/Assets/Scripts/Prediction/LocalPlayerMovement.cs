@@ -32,6 +32,9 @@ namespace Dawnholder.Client.Prediction
 
         bool _jumpEdgeThisTick; // 다음 서브스텝 소비까지 jump 에지 보관. 소비 시 즉시 클리어.
 
+        // 타이머 위임 — 쿨다운/commitWindow/hitGate 상태 + 감쇠/getter/setter 전담.
+        readonly PlayerAbilityTimers _timers = new();
+
         // 임펄스 시작 latch (M4.13 P5a) — NotifyDash/NotifyAttack(non-Mage)이 세팅, 다음 서브스텝이 소비.
         //
         // **★시작 틱 정렬**: NotifyDash는 LocalPlayerInput.Update에서 호출되는데, Update 컴포넌트 실행 순서
@@ -55,50 +58,14 @@ namespace Dawnholder.Client.Prediction
         Vector2 _prevPredictPos;
         Vector2 _currPredictPos;
 
-        // 로컬 공격 commit window 예측 잔여 시간(초). 서브스텝 박자(TickDuration씩) 감쇠.
-        // 서버 AttackState(이동 잠금)를 같은 98_Shared 상수로 클라가 선예측 → reconcile rubber-band 0.
-        // LocalPlayerMotion이 Attack 선예측 판단에 읽음 (getter로만 노출 — 외부 쓰기 차단).
-        float _commitWindowRemaining;
-
-        // LocalPlayerMotion의 Attack 선예측 판단용 — 로컬 타이머 잔여 노출.
-        public float CommitWindowRemaining => _commitWindowRemaining;
-
-        // 현재 commit window가 스킬 시전(채널링)인지 평타인지 구분. NotifyChannel→true, NotifyAttack→false.
-        // LocalPlayerMotion이 읽어 Attack 스윙 대신 Channeling 모션을 선예측. window 만료 시 자동 해제.
-        bool _channelingWindow;
-        public bool IsChannelingWindow => _channelingWindow && _commitWindowRemaining > 0f;
-
-        // 공격 쿨다운(서버 rate-limit 거울) 잔여 — 0이면 재공격 가능. commit window(8틱)보다 길다(10틱).
-        float _attackCooldownRemaining;
-        public bool CanAttack => _attackCooldownRemaining <= 0f;
-
-        // 스킬별 쿨다운(서버 쿨다운 거울) 잔여.
-        // 각각 독립 — 한 스킬 쿨다운 중 다른 스킬은 사용 가능.
-        float _thunderboltCooldownRemaining;
-        float _dashCooldownRemaining;
-        float _teleportCooldownRemaining;
-
-        // 하위 호환 프로퍼티 — 기존 Thunderbolt 게이트 코드가 CanUseSkill을 직접 참조.
-        public bool CanUseSkill => _thunderboltCooldownRemaining <= 0f;
-        public bool CanUseDash => _dashCooldownRemaining <= 0f;
-        public bool CanUseTeleport => _teleportCooldownRemaining <= 0f;
-
-        // HUD 폴링용 쿨다운 읽기 API.
-        // 반환: (남은 초, 총 쿨다운 초). 미해당 스킬 또는 쿨다운 없음이면 (0, 0).
-        // total은 Constants에서 계산 — 매핑을 한 곳에 두어 HUD가 Constants를 직접 읽지 않게 함(SRP).
-        public (float remaining, float total) GetCooldown(SkillId skill)
-        {
-            return skill switch
-            {
-                SkillId.Thunderbolt => (_thunderboltCooldownRemaining,
-                    Constants.ThunderboltCooldownTicks * Constants.TickDuration),
-                SkillId.Dash        => (_dashCooldownRemaining,
-                    Constants.DashCooldownTicks * Constants.TickDuration),
-                SkillId.Teleport    => (_teleportCooldownRemaining,
-                    Constants.TeleportCooldownTicks * Constants.TickDuration),
-                _                   => (0f, 0f),
-            };
-        }
+        // 타이머 위임 getter — 외부 caller 시그니처 무변경 (PlayerAbilityTimers로 위임).
+        public float CommitWindowRemaining => _timers.CommitWindowRemaining;
+        public bool IsChannelingWindow => _timers.IsChannelingWindow;
+        public bool CanAttack => _timers.CanAttack;
+        public bool CanUseSkill => _timers.CanUseSkill;
+        public bool CanUseDash => _timers.CanUseDash;
+        public bool CanUseTeleport => _timers.CanUseTeleport;
+        public (float remaining, float total) GetCooldown(SkillId skill) => _timers.GetCooldown(skill);
 
         // Teleport: 다음 S_Snapshot 수신 시 보간 없이 즉시 force-adopt 스냅 플래그.
         // SkillCastHandler(Teleport)가 세팅 → OnServerSnapshot에서 소비.
@@ -107,15 +74,6 @@ namespace Dawnholder.Client.Prediction
         // 텔레포트 도착 이펙트 콜백 — _teleportSnapPending 소비(새 위치 확정) 시 1회 발동 후 null.
         // 다음 시전 시 덮어쓰기 — 스냅샷 미도착 시 pending 영구 잔류해도 무해.
         Action? _teleportArriveCallback;
-
-        // 피격 hit-bridge 게이트 잔여(초). S_EnemyAttack(피격 *즉시* 신호) 도착 시 세팅 →
-        // animState==Hit 스냅샷이 도착하기 전 갭 동안 입력을 미리 잠가 onset 당김을 줄인다.
-        // 짧게만 — 진짜 hitstun 길이는 서버 전용이라 serverAnimState==Hit가 곧 이어받아 잠금 연장.
-        float _hitGateRemaining;
-
-        // hit-bridge 지속(틱). S_EnemyAttack~animState==Hit 스냅샷 사이 갭(≤1스냅샷)을 메우는 *클라 휴리스틱*.
-        // 게임플레이 규칙 아님(서버 hitstun과 별개) → 98_Shared 아닌 클라 로컬 상수.
-        const int HitGateBridgeTicks = 3; // ~150ms
 
         // 프레임당 최대 서브스텝 횟수 cap. 초과분은 버리고 다음 reconcile에 위임.
         // spiral of death(긴 프레임 → 다수 substep → 더 긴 프레임) 방지.
@@ -193,16 +151,14 @@ namespace Dawnholder.Client.Prediction
         // 이동 잠금(IsMovementLocked)과 완전히 같은 조건으로 동작하므로 해당 호출을 그대로 재사용.
         // LocalPlayerInput이 OnAttack / TrySendSkill 송신 전 조회.
         public bool IsActionLocked =>
-            IsMovementLocked(Mathf.Max(_commitWindowRemaining, _hitGateRemaining), _serverAnimState);
+            IsMovementLocked(_timers.LocalLockRemaining, _serverAnimState);
 
         // LocalPlayerInput이 공격 송신 성공 시 호출 — 로컬 commit window 예측 시작.
         // 지속 = 서버와 동일한 98_Shared 상수(AttackCommitWindowTicks × TickDuration 초).
         // 재공격 시 갱신(연장). 서버 AttackState 진입과 같은 규칙을 클라가 선예측 → rubber-band 0.
         public void NotifyAttack()
         {
-            _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
-            _attackCooldownRemaining = Constants.AttackCooldownTicks * Constants.TickDuration;
-            _channelingWindow = false; // 평타 — Attack 스윙 모션.
+            _timers.OnAttack();
 
             // lunge 임펄스 예측 (M4.13 P5a) — non-Mage 평타만 전방 전진(서버 EnterAttackState lunge 거울).
             //   Mage 평타는 전진 없음(StartImpulse 호출 안 함). durationTicks = AttackCommitWindowTicks
@@ -217,9 +173,7 @@ namespace Dawnholder.Client.Prediction
         // LocalPlayerMotion이 Attack 대신 Channeling 모션을 선예측.
         public void NotifyChannel()
         {
-            _commitWindowRemaining = Constants.AttackCommitWindowTicks * Constants.TickDuration;
-            _thunderboltCooldownRemaining = Constants.ThunderboltCooldownTicks * Constants.TickDuration;
-            _channelingWindow = true;
+            _timers.OnChannel();
         }
 
         // Dash 송신 성공 시 호출. 쿨다운 세팅 + 대쉬 임펄스 예측 큐.
@@ -230,16 +184,9 @@ namespace Dawnholder.Client.Prediction
         //   (5a 동안 ShouldForceAdopt가 살아있어도 정상 — 예측 정확하면 snap이 작아질 뿐.)
         public void NotifyDash()
         {
-            _dashCooldownRemaining = Constants.DashCooldownTicks * Constants.TickDuration;
+            _timers.OnDash();
 
-            // 대쉬 중 이동 잠금 (서버 AttackState 거울, M4.13 P5a) — moveX를 source-gating으로 0 처리해
-            //   vx = 대쉬 임펄스만(서버와 일치). 없으면 첫 ~RTT 동안 방향키가 임펄스에 더해져 발산.
-            //   지속 = DashTravelTicks × TickDuration = 서버 대쉬 AttackState durationTicks(DashTravelTicks)와
-            //   동일 = 임펄스 지속과 정렬. _channelingWindow=false: 대쉬는 Attack 모션(서버가 Dash 중 Attack
-            //   animState) — 채널링 아님. (CommitWindowRemaining>0 → LocalPlayerMotion이 Attack 선예측 = 서버 거울.)
-            _commitWindowRemaining = Constants.DashTravelTicks * Constants.TickDuration;
-            _channelingWindow = false;
-
+            // 대쉬 임펄스 예측 (M4.13 P5a) — 등속 대쉬(decay=1.0, DashTravelTicks).
             QueueImpulse(Constants.DashSpeed, 1.0f, Constants.DashTravelTicks);
         }
 
@@ -259,7 +206,7 @@ namespace Dawnholder.Client.Prediction
         // arriveCallback: 스냅 채택(새 위치 확정) 직후 main thread에서 1회 호출 — 도착 이펙트 스폰용.
         public void NotifyTeleport(Action? arriveCallback = null)
         {
-            _teleportCooldownRemaining = Constants.TeleportCooldownTicks * Constants.TickDuration;
+            _timers.OnTeleport();
             _teleportSnapPending = true;
             _teleportArriveCallback = arriveCallback; // 이전 미소비 콜백은 덮어쓰기 (무해 — 다음 시전)
         }
@@ -268,7 +215,7 @@ namespace Dawnholder.Client.Prediction
         // animState==Hit 스냅샷이 도착하기 전까지 입력을 미리 잠가 onset 당김을 줄인다.
         public void NotifyHit()
         {
-            _hitGateRemaining = HitGateBridgeTicks * Constants.TickDuration;
+            _timers.OnHit();
         }
 
         // 이동 잠금 판정 순수 함수 — 서버 AttackState/HitState/DeathState(LocksMovement)의 클라 거울.
@@ -315,14 +262,7 @@ namespace Dawnholder.Client.Prediction
             float dt = Time.deltaTime;
 
             // UI·쿨다운 타이머는 frame dt 감쇠 — 송신 박자와 무관한 표시용.
-            if (_attackCooldownRemaining > 0f)
-                _attackCooldownRemaining = Mathf.Max(0f, _attackCooldownRemaining - dt);
-            if (_thunderboltCooldownRemaining > 0f)
-                _thunderboltCooldownRemaining = Mathf.Max(0f, _thunderboltCooldownRemaining - dt);
-            if (_dashCooldownRemaining > 0f)
-                _dashCooldownRemaining = Mathf.Max(0f, _dashCooldownRemaining - dt);
-            if (_teleportCooldownRemaining > 0f)
-                _teleportCooldownRemaining = Mathf.Max(0f, _teleportCooldownRemaining - dt);
+            _timers.TickFrame(dt);
 
             _sendAccumulator += dt;
 
@@ -335,15 +275,12 @@ namespace Dawnholder.Client.Prediction
                 substeps++;
 
                 // source-gating 타이머를 서브스텝 박자로 감쇠 — 게이트 깜빡임 방지.
-                if (_commitWindowRemaining > 0f)
-                    _commitWindowRemaining = Mathf.Max(0f, _commitWindowRemaining - Constants.TickDuration);
-                if (_hitGateRemaining > 0f)
-                    _hitGateRemaining = Mathf.Max(0f, _hitGateRemaining - Constants.TickDuration);
+                _timers.TickSubstep(Constants.TickDuration);
 
                 // **source-gating** (헌법 #1 정합): 잠금 시 입력을 *근원에서* 0으로 막는다.
                 // Predict / 송신(C_MoveIntent) / InputHistory(replay) 셋이 같은 gated 입력을 쓰므로
                 // reconcile replay가 서버와 정확히 일치.
-                float localLock = Mathf.Max(_commitWindowRemaining, _hitGateRemaining);
+                float localLock = _timers.LocalLockRemaining;
                 bool locked = IsMovementLocked(localLock, _serverAnimState);
                 (sbyte moveX, bool jumpEdge) = ResolveGatedInput(locked, _currentMoveX, _jumpEdgeThisTick);
 
