@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.14 마일스톤 마감 — 아키텍처 검토 후속 (5단계 보고)</title>
+<style>
+  :root {
+    --bg: #0f1419; --panel: #1a2129; --panel2: #212a35; --line: #2e3a48;
+    --text: #d8e0e8; --dim: #8a98a8; --accent: #e8734a; --green: #4ec77a;
+    --yellow: #e8c14a; --blue: #5aa7e8; --purple: #b58ae8; --red: #e85a6a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; line-height: 1.65; padding: 40px 20px; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; }
+  h1 .v { color: var(--accent); }
+  .sub { color: var(--dim); font-size: 14px; margin-bottom: 28px; }
+  h2 { font-size: 19px; margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+  h2 .emoji { margin-right: 8px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; margin: 14px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 10px 0; }
+  th, td { padding: 8px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--panel2); color: var(--blue); font-weight: 600; }
+  code, .mono { font-family: 'Cascadia Code', Consolas, monospace; font-size: 12.5px; }
+  code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; color: var(--yellow); }
+  .tag { display: inline-block; padding: 1px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .tag.green { background: #1d3328; color: var(--green); }
+  .tag.blue { background: #1d2a3a; color: var(--blue); }
+  .big { font-size: 28px; font-weight: 700; }
+  .kpi { text-align: center; padding: 16px 8px; }
+  .kpi .l { color: var(--dim); font-size: 12.5px; margin-top: 4px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0; }
+  @media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  ul { padding-left: 20px; } li { margin: 5px 0; }
+  .note { color: var(--dim); font-size: 13px; }
+  .ok::before { content: "✅ "; }
+  .phase { display: flex; gap: 10px; align-items: flex-start; margin: 8px 0; }
+  .phase .n { background: var(--panel2); color: var(--accent); font-weight: 700; border-radius: 6px; padding: 2px 10px; font-size: 13px; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>M4.14 마일스톤 마감 — 아키텍처 검토 후속 <span class="v">wire v13 유지</span></h1>
+<div class="sub">2026-06-14 · 등급 복잡 · 순수 내부 품질(유저 비가시, 부채 정리) · 브랜치 feature/m4.14-architecture-followup (push 안함, 영호 GO 대기) · Phase 01·01b·02·03·04·05·06</div>
+
+<h2><span class="emoji">🎯</span>1. 무엇을 만들었나</h2>
+<div class="panel">
+  2026-06-13 영호↔Codex 아키텍처 cross-review를 메인 세션이 ReadOnly 실측으로 전수 검증한 결과를 코드에 반영한 <b>순수 내부 품질 마일스톤</b>. 새 기능 0, 유저 비가시, wire v13 불변·거동 불변. 두 갈래: ① <b><code>IGameAction</code> 계약 통일</b>(Melee 일탈 봉합) ② <b>Convention 자동강제 보강</b>(중괄호 analyzer report→apply). + 부수입(01b flaky 근본수정, P05 client 타이머 추출).
+</div>
+<div class="kpis">
+  <div class="panel kpi"><div class="big" style="color:var(--green)">568/0/5</div><div class="l">WSL2 server test (불변)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--blue)">147/0/0</div><div class="l">Unity EditMode (122+25)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--accent)">v13</div><div class="l">ProtocolVersion (bump 0)</div></div>
+  <div class="panel kpi"><div class="big" style="color:var(--purple)">🔴 0</div><div class="l">reviewer (P02 trust-boundary)</div></div>
+</div>
+
+<h2><span class="emoji">🤔</span>2. 왜 필요한가</h2>
+<div class="grid2">
+  <div class="panel">
+    <b style="color:var(--blue)">계약 일탈 = LSP/OCP 잠재 트랩</b>
+    <p>전략 패턴에서 <code>MeleeAction</code>만 인터페이스 <code>Execute()</code>를 <code>return false</code>(죽은 코드)로 빠져나가 계약 밖 <code>ExecuteWithTarget</code>로 우회. 활성 버그는 아니나 새 호출자가 다형 <code>Execute()</code>를 믿으면 조용히 실패 + 게이트가 구체 타입에 의존(추상 위로 새는 의존).</p>
+  </div>
+  <div class="panel">
+    <b style="color:var(--blue)">"미뤄둔 §4"를 추정 아닌 실측으로</b>
+    <p>검토의 핵심 발견: Codex 정적 카운트가 체계적 과대(중괄호 288 추정). "정적 분석 = 출발점이지 결론 아님"을 카운트 자신이 증명 → analyzer(결정적 도구) report로 <b>진짜 수</b>를 받고 합의 규칙만 기계 강제.</p>
+  </div>
+</div>
+
+<h2><span class="emoji">🛠️</span>3. 어떻게 만들었나</h2>
+<div class="panel">
+  <div class="phase"><span class="n">P01·01b</span><div>baseline(WSL2 568/0/5, EditMode 122) + CODE_CONVENTION GameMap 줄수 정정. 측정 중 <code>CommitWindowTests</code> flaky 발견 → 근본원인 = <code>PlayerCombatStates.Attack</code> flyweight의 mutable <code>Pending*</code> 공유 필드 병렬 race → 제거(엔티티 직접 세팅, HitState 패턴 통일). <span class="tag green">commit 71e7237·228b82a</span></div></div>
+  <div class="phase"><span class="n">P02</span><div><b>복잡·trust-boundary·Opus.</b> <code>ActionContext</code>(readonly struct {ClientTick, TargetEntityId, Facing}) 도입 → 단일 <code>Execute(map,caster,in ctx)</code> + <code>ActionGate</code> 단일 <code>TryPerform</code>(구체 MeleeAction 비의존). <code>Validate()</code> 본문 verbatim. 실측 보정: 계획 2필드→3(Dash facing 권위). <span class="tag green">commit 4322677·b261864</span></div></div>
+  <div class="phase"><span class="n">P03·04</span><div>analyzer 실측: 중괄호 always <b>production 168</b>(추정 288·"~90" 빗나감) / casing·Allman 0(이미 준수). 영호 정책재고 → <b>when_multiline</b> 채택(한 줄 가드절 허용, multi-line 무중괄호만 = goto-fail류 위험만, <b>15건</b>). 15곳 수정 + <code>EnforceCodeStyleInBuild</code> + IDE0011 빌드강제 + §4 v6.2. <span class="tag green">commit e3b92a1·2e65619</span></div></div>
+  <div class="phase"><span class="n">P05</span><div>(선택) <code>LocalPlayerMovement</code> 타이머 7개 → plain C# <code>PlayerAbilityTimers</code> 추출(§3.1) + 25 EditMode. <span class="tag green">commit e91897a</span></div></div>
+  <div class="phase"><span class="n">P06</span><div>최종 WSL2 회귀(568/0/5) + EditMode(147/0/0) + CHANGELOG + 본 마감 문서.</div></div>
+</div>
+
+<h2><span class="emoji">🧪</span>4. 테스트 결과</h2>
+<table>
+  <tr><th style="width:26%">게이트</th><th>결과</th></tr>
+  <tr><td>WSL2 server (build + test)</td><td><span class="tag green">0/0 + 568/0/5</span> 통합 최종 상태(P02~05) 무회귀</td></tr>
+  <tr><td>Unity EditMode</td><td><span class="tag green">147/0/0</span> baseline 122 + 신규 25(PlayerAbilityTimers), 기존 무회귀</td></tr>
+  <tr><td>trust-boundary (P02)</td><td><span class="tag green">Validate() git diff 라인 0</span> 메인 + reviewer 독립 2회</td></tr>
+  <tr><td>convention 강제 (P04)</td><td><span class="tag green">IDE0011 production 잔존 0</span> + 빌드 노이즈 0(IDE0011 외 경고 0)</td></tr>
+  <tr><td>reviewer Tier 2-A (P02)</td><td><span class="tag green">🔴0</span> 헌법/ADR/거동 위반 0</td></tr>
+</table>
+<div class="note ok">wire v13 무변경 — PDL 0, ProtocolVersion bump 0. 98_Shared 소스 변경(MapDataFile 중괄호)은 Shared.dll 재빌드만 필요(거동 동일).</div>
+
+<h2><span class="emoji">➡️</span>5. 다음 스텝</h2>
+<div class="panel">
+  <b style="color:var(--accent)">PR (영호 명시 GO 게이트 — irreversible)</b>
+  <p>feature/m4.14-architecture-followup → main. 본 브랜치는 knowledge cherry-pick(<code>c6b3395</code>) + M4.14 commit 8건 포함, 미push. PR 생성·머지는 영호 명시 GO 후. 98_Shared 소스 변경 있어 PR 시 Shared.dll 재빌드 동반 검토(정유현 co-review = dll commit 포함 시).</p>
+  <div class="note"><b>이월/후보</b>: ① ADR-029 rsync에 <code>Directory.Build.props</code>+루트 <code>.editorconfig</code> 추가(WSL↔CI analyzer drift 봉합, 영호 승인 대기) ② M4.12 #104 정유현 NPC Village Props Unity 육안확인(영호 직접) 잔여.</div>
+</div>
+
+</div>
+</body>
+</html>
