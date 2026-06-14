@@ -131,13 +131,17 @@ public class MageRangedCombatTests : IDisposable
     }
 
     /// <summary>
-    /// travelTicks = clamp(round(|dx| / speed), min, max) 직접 산출 (테스트 기준값).
+    /// travelTicks = max(MinTravelTicks, ceil(2D-dist / speed)) 직접 산출 (테스트 기준값).
+    /// Phase 04: round+clamp(Min,Max) → ceil+max(Min) + 2D distance 로 교체.
     /// </summary>
-    static int ExpectedTravelTicks(float attackerX, float enemyX)
+    static int ExpectedTravelTicks(float attackerX, float enemyX, float attackerY = 0f, float enemyY = 0f)
     {
-        float dx = Math.Abs(enemyX - attackerX);
-        int raw = (int)Math.Round(dx / CombatConstants.ProjectileSpeedPerTick);
-        return Math.Clamp(raw, CombatConstants.MinTravelTicks, CombatConstants.MaxTravelTicks);
+        float dx = enemyX - attackerX;
+        float dy = enemyY - attackerY;
+        float dist = MathF.Sqrt(dx * dx + dy * dy);
+        return Math.Max(
+            CombatConstants.MinTravelTicks,
+            (int)Math.Ceiling(dist / CombatConstants.ProjectileSpeedPerTick));
     }
 
     // ── 테스트 1: Mage 사거리 내 명중 → S_ProjectileLaunch + deferred, 즉시 데미지 없음, freeze 없음 ──
@@ -328,6 +332,32 @@ public class MageRangedCombatTests : IDisposable
         // 두 번째 스윙도 rate-limit으로 drop
         Assert.Equal(0, CountPacketsOfType(observer.SentPackets, PacketID.S_PlayerAttack));
         Assert.Equal(0, CountPacketsOfType(knightSession.SentPackets, PacketID.S_HitResult));
+    }
+
+    // ── 테스트 6: travelTicks 단조증가 — 상한 폭증 없음 (Phase 04 acceptance) ─────────────
+
+    /// <summary>
+    /// 옛 MaxTravelTicks(10) 상한이 제거된 뒤, 거리가 멀수록 travelTicks가 단조증가(비감소)함을 검증.
+    /// 사거리 내(dist ≤ MageAttackHalfX=11) 여러 거리를 체크 — 상한 clamp로 속도 폭증이 재현되지 않음.
+    /// </summary>
+    [Fact]
+    public void Mage_TravelTicks_MonotonicallyIncreasing_NoUpperBoundSpike()
+    {
+        // 2D 거리 2, 4, 6, 8, 10 (사거리 내, 적 Y=attacker Y=0)
+        float[] distances = [2f, 4f, 6f, 8f, 10f];
+        int prev = -1;
+        foreach (float d in distances)
+        {
+            // enemy X = attacker X + d, 동일 Y
+            int ticks = ExpectedTravelTicks(0f, d, 0f, 0f);
+            Assert.True(ticks >= prev,
+                $"dist={d}: travelTicks={ticks} < prev={prev} — 단조 감소 발생");
+            prev = ticks;
+        }
+
+        // 거리 10일 때 travelTicks = ceil(10/2)=5 — 옛 상한(10)이 없으므로 clamp 영향 0
+        int far = ExpectedTravelTicks(0f, 10f, 0f, 0f);
+        Assert.Equal(5, far);
     }
 
     // ── 테스트 5: Y범위 회귀 — 같은 층 hit, 층간격 초과(Y=3.0) miss (Phase 02 핵심 acceptance) ──

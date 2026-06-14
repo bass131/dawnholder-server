@@ -64,8 +64,10 @@ internal static class CombatConstants
     // travelTicks 최솟값. 0틱 즉시 도착 방지 (발사 연출 최소 보장).
     public const int MinTravelTicks = 2;
 
-    // travelTicks 최댓값. 극단적으로 먼 거리의 freeze 시간 상한.
-    public const int MaxTravelTicks = 10;
+    // MaxTravelTicks 제거 (M4.15 Phase 04).
+    // 옛 상한(10틱) artifact 제거 — 사거리(MageAttackHalfX)가 비행 거리 bound.
+    // 상한이 클라 거리역산 속도를 폭증시키던 원인(먼 거리: dist/travelTicks↑)이라 제거.
+    // MinTravelTicks 하한만 유지 (발사 연출 최소 보장).
 
     // ── 썬더볼트 AoE ──────────────────────────────────────────────────────────
     // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.

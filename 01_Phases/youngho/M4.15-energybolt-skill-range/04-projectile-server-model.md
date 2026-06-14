@@ -3,15 +3,15 @@ owner: youngho
 milestone: M4.15
 phase: 04
 title: 투사체 일정 속도 (서버 travelTicks 모델)
-status: pending
+status: done
 grade: 보통
 domain: server
-summary: travelTicks MaxTravelTicks(10) 상한 artifact 제거 → ceil(거리÷고정속도), 속도 폭증 봉합
+summary: travelTicks MaxTravelTicks(10) 상한 artifact 제거 → ceil(2D거리÷고정속도), 속도 폭증 봉합
 ---
 
 # Phase 04: 투사체 일정 속도 (서버 travelTicks 모델)
 
-> **상태**: pending
+> **상태**: done (2026-06-14, server Worker + 메인 게이트, reviewer 스킵=보통)
 > **마일스톤**: M4.15
 > **등급**: 보통
 > **담당**: server (Sonnet Worker)
@@ -89,3 +89,4 @@ summary: travelTicks MaxTravelTicks(10) 상한 artifact 제거 → ceil(거리÷
 ## 작업 로그
 
 - 2026-06-14: 생성.
+- 2026-06-14: 완료. `MeleeAction.cs` Mage 분기 travelTicks: `clamp(round(dx/2),2,10)` → `max(MinTravelTicks, ceil(2D dist / ProjectileSpeedPerTick))`. 수평 dx→2D distance(클라 distance와 정합), round→ceil(단조), `MaxTravelTicks`(10) 제거(사거리 bound라 안전, 클라 속도 폭증 원인 봉합). ImpactTick/S_ProjectileLaunch.travelTicks/데미지 보존, wire 0. 테스트 `ExpectedTravelTicks` 헬퍼 갱신(ceil+2D+optional Y) + 신규 `Mage_TravelTicks_MonotonicallyIncreasing_NoUpperBoundSpike`. WSL2 build 0/0 + test **570/0/5**.
