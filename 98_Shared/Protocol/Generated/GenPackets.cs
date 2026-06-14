@@ -1744,6 +1744,7 @@ public class C_SkillUse : IPacket // C_SkillUse 패킷
     public byte skillId;
 	public int attackerClientTick;
 	public byte facing;
+	public byte verticalDir;
     public ushort Protocol { get { return (ushort)PacketID.C_SkillUse; } }
 
     public void Read(ArraySegment<byte> segment)
@@ -1767,6 +1768,10 @@ public class C_SkillUse : IPacket // C_SkillUse 패킷
 		
 		// facing 읽기
 		this.facing = (byte)s[count];
+		count += sizeof(byte);
+		
+		// verticalDir 읽기
+		this.verticalDir = (byte)s[count];
 		count += sizeof(byte);
 		
     }
@@ -1798,6 +1803,10 @@ public class C_SkillUse : IPacket // C_SkillUse 패킷
 		
 		// facing 쓰기
 		s[count] = (byte)this.facing;
+		count += sizeof(byte);
+		
+		// verticalDir 쓰기
+		s[count] = (byte)this.verticalDir;
 		count += sizeof(byte);
 		
 
