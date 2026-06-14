@@ -439,6 +439,13 @@ public class GameMap
     internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
 
     /// <summary>
+    /// 사망 처리 시퀀스(S_EntityDeath broadcast → StageClear → RemoveEnemy → EnqueueRespawn) 완료 후 호출되는 훅.
+    /// Q1 기본 구현은 no-op. Q2에서 override해 PartyRegistry.OnKill을 연결한다.
+    /// tick thread invariant 안에서만 호출.
+    /// </summary>
+    protected virtual void OnEnemyKilled(int killerEntityId, EnemyEntity target) { }
+
+    /// <summary>
     /// 적 사망 후처리: S_EntityDeath broadcast → (Boss) StageClear → 제거 → (Normal) respawn 큐잉.
     /// CombatSystem(즉시) / DeferredDamageSystem(지연) / SkillSystem(Dash) 3 경로 공통 — DRY 단일 출처.
     /// HP 게이트(target.Hp &lt;= 0)와 S_HitResult 송신은 호출처에 남는다 — 적용 타이밍이 경로마다 다르므로.
@@ -446,7 +453,7 @@ public class GameMap
     /// **순서 계약(BossStageClearTests)**: S_EntityDeath → S_StageClear 순서 보존 필수.
     /// **tick thread invariant**: GameMap.Tick 안에서만 호출.
     /// </summary>
-    internal void HandleEnemyDeath(EnemyEntity target)
+    internal void HandleEnemyDeath(EnemyEntity target, int killerEntityId)
     {
         S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
         BroadcastToAll(death.Write());
@@ -460,6 +467,8 @@ public class GameMap
         RemoveEnemy(target.EntityId);
         if (target.Kind == EnemyKind.Normal)
             EnqueueRespawn(target);
+
+        OnEnemyKilled(killerEntityId, target);
     }
 
     /// <summary>

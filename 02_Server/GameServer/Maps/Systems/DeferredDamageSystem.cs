@@ -76,7 +76,7 @@ internal sealed class DeferredDamageSystem
             map.BroadcastToAll(hit.Write());
 
             if (target.Hp <= 0)
-                map.HandleEnemyDeath(target);
+                map.HandleEnemyDeath(target, impact.AttackerEntityId);
         }
     }
 }

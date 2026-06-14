@@ -104,7 +104,7 @@ internal sealed class MeleeAction : IGameAction
 
             if (target.Hp <= 0)
             {
-                map.HandleEnemyDeath(target);
+                map.HandleEnemyDeath(target, attacker.EntityId);
             }
             else
             {
