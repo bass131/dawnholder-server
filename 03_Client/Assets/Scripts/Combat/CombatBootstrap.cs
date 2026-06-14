@@ -52,6 +52,8 @@ namespace Dawnholder.Client.Combat
             BuildStageClearUI();
             BuildToastUI();
             BuildRemoteEntityRegistry();
+            BuildPartyState();
+            BuildQuestState();
             BuildPartyMemberHud();
             BuildQuestProgressHud();
             BuildPartyInvitePopup();
@@ -91,6 +93,21 @@ namespace Dawnholder.Client.Combat
         // 코드 주도 패턴에서 Inspector 드래그가 없으므로 Resources.Load("RemotePlayer")로 주입.
         // ⚠️ 의무: Assets/Resources/RemotePlayer.prefab 이 존재해야 함.
         //   없으면 아래 경고가 박히고 registry 자체는 생성되나 spawn 시 또 에러.
+        // 파티/퀘스트 미러 State = DontDestroyOnLoad 싱글톤. 핸들러가 갱신, HUD가 구독·렌더.
+        // HUD 빌드보다 먼저 생성해야 HUD가 OnXxxUpdated 구독 성공(없으면 null guard로 미구독).
+        // root 레벨 생성(SetParent 금지) — 자식이면 DontDestroyOnLoad 안 먹고 씬과 함께 파괴.
+        void BuildPartyState()
+        {
+            if (PartyState.Instance != null) return;
+            new GameObject("_PartyState").AddComponent<PartyState>();
+        }
+
+        void BuildQuestState()
+        {
+            if (QuestState.Instance != null) return;
+            new GameObject("_QuestState").AddComponent<QuestState>();
+        }
+
         void BuildPartyMemberHud()
         {
             if (PartyMemberHud.Instance != null) return;
