@@ -6,3 +6,4 @@
 [*.cs]
 dotnet_diagnostic.SA1201.severity = none
 dotnet_diagnostic.SA1202.severity = none
+dotnet_diagnostic.IDE0011.severity = none   # 중괄호 강제는 production만 (M4.14 P04)

@@ -24,3 +24,11 @@ dotnet_diagnostic.SA0001.severity = none
 # 적용 범위: production 게임 코드만 — GameServer.Tests/·99_Tools/는 하위 .editorconfig가 none으로 완화 (Phase 05 결정).
 dotnet_diagnostic.SA1201.severity = warning   # 멤버 종류 순서: 필드→생성자→event→프로퍼티→메서드→중첩타입 (파일 레벨: struct→class)
 dotnet_diagnostic.SA1202.severity = warning   # 접근성 순서: public→internal→protected internal→protected→private
+
+# --- 중괄호 when_multiline (CODE_CONVENTION §4, M4.14 P04 결정) ---
+# 한 줄 가드절(if (x) return;)은 허용, 본문이 줄바꿈된 무중괄호 if/else/loop만 강제.
+# 명분 = "goto fail" 류 사고(무중괄호 밑 문장 추가)는 multi-line일 때만 발생 → 위험 케이스만 차단.
+# always(SA1503/IDE0011=true)는 production 168건 churn 대비 가치 낮아 기각 (M4.14 P03 실측: when_multiline=15).
+# IDE 계열이라 EnforceCodeStyleInBuild=true(Directory.Build.props) 전제. Tests/99_Tools는 하위 .editorconfig가 none.
+csharp_prefer_braces = when_multiline
+dotnet_diagnostic.IDE0011.severity = warning
