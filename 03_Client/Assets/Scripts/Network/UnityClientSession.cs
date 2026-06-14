@@ -73,6 +73,9 @@ namespace Dawnholder.Client.Network
                 { PacketID.S_PlayerAttack,      new PlayerAttackHandler() },
                 { PacketID.S_ProjectileLaunch,  new ProjectileLaunchHandler() },
                 { PacketID.S_SkillCast,         new SkillCastHandler() },
+                { PacketID.S_PartyInviteRecv,   new PartyInviteRecvHandler() },
+                { PacketID.S_PartyUpdate,        new PartyUpdateHandler() },
+                { PacketID.S_PartyError,         new PartyErrorHandler() },
             };
 
         // Editor only 송신 latency 시뮬레이션.
