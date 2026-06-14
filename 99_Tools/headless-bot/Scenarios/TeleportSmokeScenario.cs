@@ -7,11 +7,11 @@ using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// M4.9 Mage Teleport 회귀 스모크.
+// M4.9 Mage Teleport 회귀 스모크 (M4.15 워크스트림 D 정합: TeleportDistance 15f→3.5f).
 //
 // 검증 목표 (Phase 05 qa 명세 준수):
 //   ① S_SkillCast(skillId=Teleport=3) 수신 (casterEntityId == 자기 자신).
-//   ② 다음 S_Snapshot 위치 ≈ 시전 위치 + TeleportDistance(15f) × facing 방향.
+//   ② 다음 S_Snapshot 위치 ≈ 시전 위치 + TeleportDistance(3.5f) × facing 방향.
 //      허용 오차: ±1.0f (스냅샷 주기 내 보간 오차 여유).
 //   ③ S_HitResult 0건 (무데미지 스킬 — DeferredDamage/HitResult 경로 없음).
 //   ④ 쿨다운 중 재시전 무반응 — S_SkillCast 추가 수신 없음.
@@ -35,8 +35,8 @@ public class TeleportSmokeScenario
     const int   TownPortalId = 1;
     const byte  TeleportSkillId = (byte)SkillId.Teleport;
 
-    // 서버 TeleportDistance=15.0f. 허용 오차 ±1.0f.
-    const float TeleportDistance = 15.0f;
+    // 서버 TeleportDistance=3.5f (M4.15 워크스트림 D: 15.0f→3.5f 단축). 허용 오차 ±1.0f.
+    const float TeleportDistance = 3.5f;
     const float PositionTolerance = 1.0f;
 
     // 쿨다운=30틱. 재시전 무반응 확인 대기 (3틱 여유).
@@ -388,6 +388,8 @@ public class TeleportSmokeScenario
             {
                 skillId            = skillId,
                 attackerClientTick = _lastReceivedServerTick,
+                facing             = 1, // 오른쪽(PDL: 1=right). 기대 위치 계산(+TeleportDistance)과 정합.
+                verticalDir        = 0, // 수평 텔레포트 (M4.15 v14 신규 필드 — 0=수평, 기본).
             };
             _session?.Send(p.Write());
         }
