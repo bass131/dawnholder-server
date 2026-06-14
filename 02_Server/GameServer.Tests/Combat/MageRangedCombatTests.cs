@@ -12,7 +12,7 @@ namespace GameServer.Tests.Combat;
 /// Mage 평타 원거리 단위 테스트 (M4.8 Phase 03 + M4.15 Phase 02 X/Y 분리 갱신).
 ///
 /// 검증 대상:
-///   1. Mage_Hit_InRange — 사거리 내 명중: S_ProjectileLaunch 1회 + deferred enqueue + freeze 세팅, 즉시 S_HitResult 없음
+///   1. Mage_Hit_InRange — 사거리 내 명중: S_ProjectileLaunch 1회 + deferred enqueue, 즉시 S_HitResult 없음, freeze 없음 (M4.15 P03)
 ///   2. Mage_Hit_ImpactTick_DamageApplied — travelTicks 후 DeferredDamageSystem이 HP 적용 + S_HitResult(hitEffect=1)
 ///   3. Mage_Miss_OutOfRange — 사거리 밖: S_PlayerAttack만, S_ProjectileLaunch 없음, 데미지 0
 ///   4. Knight_ImmediateHit_HitEffect0 — Knight 즉시 데미지(hitEffect=0), 음수 currentHp 계약 유지 + rate-limit 차단 유지
@@ -140,10 +140,10 @@ public class MageRangedCombatTests : IDisposable
         return Math.Clamp(raw, CombatConstants.MinTravelTicks, CombatConstants.MaxTravelTicks);
     }
 
-    // ── 테스트 1: Mage 사거리 내 명중 → S_ProjectileLaunch + deferred + freeze, 즉시 데미지 없음 ──
+    // ── 테스트 1: Mage 사거리 내 명중 → S_ProjectileLaunch + deferred, 즉시 데미지 없음, freeze 없음 ──
 
     [Fact]
-    public void Mage_Hit_InRange_ProjectileLaunchAndDeferredAndFreeze_NoImmediateDamage()
+    public void Mage_Hit_InRange_ProjectileLaunchAndDeferred_NoImmediateDamage_NoFreeze()
     {
         var (attacker, observer, map) = SetupMageSession();
         PlayerEntity? attackerEntity = map.GetPlayer(AttackerEntityId);
@@ -184,9 +184,8 @@ public class MageRangedCombatTests : IDisposable
         // 즉시 HP 변화 없음
         Assert.Equal(hpBefore, enemy.Hp);
 
-        // freeze 세팅 확인 (FrozenUntilTick > 0)
-        Assert.True(enemy.FrozenUntilTick > 0, "투사체 발사 후 freeze가 세팅돼야 함");
-        Assert.Equal(2L + expectedTravelTicks + CombatConstants.StunTicks, enemy.FrozenUntilTick);
+        // freeze 없음 확인 (M4.15 P03 — 에너지볼트는 stun 없음, 인프라만 보존)
+        Assert.Equal(0L, enemy.FrozenUntilTick);
     }
 
     // ── 테스트 2: travelTicks 후 DeferredDamageSystem → HP 적용 + S_HitResult(hitEffect=1) ──

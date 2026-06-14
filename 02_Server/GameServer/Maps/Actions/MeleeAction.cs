@@ -76,8 +76,6 @@ internal sealed class MeleeAction : IGameAction
                 HitEffect        = (byte)HitEffect.Projectile,
             });
 
-            target.ApplyFreeze(map.CurrentTick + travelTicks + CombatConstants.StunTicks);
-
             S_ProjectileLaunch launch = new S_ProjectileLaunch
             {
                 attackerEntityId = attacker.EntityId,

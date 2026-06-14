@@ -47,10 +47,9 @@ internal static class CombatConstants
     // ── Mage 평타 원거리 ──────────────────────────────────────────────────────
     // 임시 시작값. P5 클라 연결 후 Play 튜닝 대상.
 
-    // 도착(투사체/낙뢰) 후 추가 freeze(스턴) 틱. 평타·썬더볼트 공통.
-    //   데미지는 도착 시 적용, freeze는 도착 + 이 값만큼 더 정지 → 진짜 stun-lock(연사로 묶기).
-    //   8틱=400ms. 임시값 Play 튜닝 대상(2026-06-09 영호 결정: 도착 후 추가 freeze로 stun 강화).
-    public const int StunTicks = 8;
+    // StunTicks — 빙결 계열 스킬 도입 시 부활. 도착 후 추가 정지 틱(stun-lock) 용도.
+    // 현재 호출자 0 (M4.15 P03 — 에너지볼트/번개 stun 제거). 빙결 스킬 시 여기에 재추가.
+    // public const int StunTicks = 8;
 
     // Mage 평타 AABB 박스 X/Y half-extent. X=사거리, Y=층 분리(임시 시작값 Play 튜닝 대상).
     // X=11.0f: ±11 units 사거리. 영호 승인값(2026-06-14, Phase 02).

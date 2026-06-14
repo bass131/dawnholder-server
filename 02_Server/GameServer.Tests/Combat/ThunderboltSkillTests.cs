@@ -20,7 +20,7 @@ namespace GameServer.Tests.Combat;
 ///   [시스템 5종]
 ///   4. BoxScan_TargetsInBox_AllEnqueued  — 박스 내 N개 전원 deferred enqueue, 박스 밖 0
 ///   5. LightningDelay_DamageAndHitEffect — 각 적 LightningDelayTicks 후 데미지 + S_HitResult(hitEffect=2)
-///   6. Boss_DamageApplied_NoFreeze       — Boss 데미지 O / FrozenUntilTick 세팅 X (면역)
+///   6. Boss_DamageApplied_NoFreeze       — Boss 데미지 O / FrozenUntilTick 세팅 X (M4.15 P03: 썬더볼트 stun 제거, 모든 적 freeze 없음)
 ///   7. Cooldown_SecondCastDropped        — ThunderboltCooldownTicks 미경과 재발동 silent drop
 ///   8. EmptyBox_SkillCastOnly_DeferredZero — 타격 적 0개: S_SkillCast 1회, deferred 0
 /// </summary>
@@ -322,8 +322,7 @@ public class ThunderboltSkillTests : IDisposable
 
         // Boss: 데미지 적용 O
         Assert.True(boss.Hp < hpBefore, "Boss에 썬더볼트 데미지가 적용돼야 함");
-        // Boss: freeze 세팅 X (면역 — BossBehaviorSystem에 가드 없음, 설계 의도)
-        // ApplyFreeze 자체를 호출 안 하므로 FrozenUntilTick은 0 그대로.
+        // Boss: freeze 세팅 X (M4.15 P03 — 썬더볼트 ApplyFreeze 호출 제거. 모든 적에 freeze 없음).
         Assert.Equal(0L, boss.FrozenUntilTick);
     }
 

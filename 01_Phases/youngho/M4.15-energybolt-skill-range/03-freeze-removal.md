@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.15
 phase: 03
 title: freeze 적용 제거 (인프라 보존)
-status: pending
+status: done
 grade: 보통
 domain: server
 summary: ApplyFreeze 호출 2곳(Melee 평타 + Thunderbolt) 제거, freeze 인프라는 미래 빙결 스킬용 보존
@@ -11,7 +11,7 @@ summary: ApplyFreeze 호출 2곳(Melee 평타 + Thunderbolt) 제거, freeze 인�
 
 # Phase 03: freeze 적용 제거 (인프라 보존)
 
-> **상태**: pending
+> **상태**: done (2026-06-14, server Worker + 메인 게이트, reviewer 스킵=보통 조건 미충족)
 > **마일스톤**: M4.15
 > **등급**: 보통
 > **담당**: server (Sonnet Worker)
@@ -92,3 +92,4 @@ Mage 평타와 Thunderbolt가 적을 얼리는 `ApplyFreeze` 호출을 제거해
 ## 작업 로그
 
 - 2026-06-14: 생성.
+- 2026-06-14: 완료. `MeleeAction.cs:79` + `ThunderboltAction.cs:42-43` ApplyFreeze 호출 제거. `StunTicks` 주석화(빙결 스킬 부활 의도). 인프라(FrozenUntilTick/ApplyFreeze 메서드/EnemyAISystem 가드/Boss면역) 미접촉 보존(diff에 EnemyEntity/EnemyAISystem 없음). 테스트 freeze assertion 플립(`>0`→`==0`, 커버리지 유지) + 리네임. DeferredDamageSystemTests 인프라 테스트 무변경 green. ApplyFreeze production 호출 0. WSL2 build 0/0 + test **569/0/5**.

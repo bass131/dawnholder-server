@@ -38,9 +38,6 @@ internal sealed class ThunderboltAction : IGameAction
                 ImpactTick       = impactTick,
                 HitEffect        = (byte)HitEffect.Lightning,
             });
-
-            if (target.Kind != EnemyKind.Boss)
-                target.ApplyFreeze(impactTick + CombatConstants.StunTicks);
         }
 
         S_SkillCast castPkt = new S_SkillCast
