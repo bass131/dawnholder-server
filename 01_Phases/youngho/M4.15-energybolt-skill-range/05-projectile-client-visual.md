@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.15
 phase: 05
 title: 투사체 클라 정합 + 호밍 polish
-status: pending
+status: done
 grade: 보통
 domain: client
 summary: ProjectileVisual 일정 속도 검증 + 움직이는 타겟 호밍 jank 완화 (서버 travelTicks 계약 정합)
@@ -11,7 +11,7 @@ summary: ProjectileVisual 일정 속도 검증 + 움직이는 타겟 호밍 jank
 
 # Phase 05: 투사체 클라 정합 + 호밍 polish
 
-> **상태**: pending
+> **상태**: done (2026-06-14, 클라 무변경 — P04 서버 캐스케이드가 클라 속도 정합. 영호 Play-test "투사체 이상무" 통과)
 > **마일스톤**: M4.15
 > **등급**: 보통
 > **담당**: client (Sonnet Worker)
@@ -88,3 +88,4 @@ summary: ProjectileVisual 일정 속도 검증 + 움직이는 타겟 호밍 jank
 ## 작업 로그
 
 - 2026-06-14: 생성.
+- 2026-06-14: 완료(클라 무변경). 실측 결론 = `ProjectileVisual.SetTravelDuration`이 속도를 `distance/(travelTicks×TickDuration)`로 서버 travelTicks 역산 → P04(ceil+2D)가 travelTicks를 정리하자 **클라 속도 자동 정합**(도착 틱 일치). truly-constant은 ProjectileSpeedPerTick의 98_Shared 이전 필요(co-review 마찰 + 클라 헌법 "balance 하드코딩 금지")라 플랜 스코프 밖 보류. 영호 Play-test "투사체 이상무" 통과 → 클라 코드 손 안 댐(YAGNI). 호밍 reliable 유지.
