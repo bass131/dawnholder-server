@@ -27,6 +27,8 @@ namespace Dawnholder.Client.Network
         // Teleport: 출발/도착 2지점 이펙트.
         const string TeleportDepartPath = "Effects/TeleportDepart";
         const string TeleportArrivePath = "Effects/TeleportArrive";
+        // 텔레포트 출발/도착 이펙트 Y 오프셋 — 캐릭터 root(발밑) 기준 살짝 아래(영호 Play 튜닝). 순수 시각(밸런스 X).
+        const float TeleportEffectYOffset = -0.5f;
 
         static bool _warnedMissingThunderbolt;
         static bool _warnedMissingDash;
@@ -137,7 +139,8 @@ namespace Dawnholder.Client.Network
                 // 로컬 출발 이펙트: 송신 시점 stash 위치 사용.
                 Vector3? departPos = LocalPlayerMovement.Instance?.ConsumeTeleportDepartPos();
                 if (departPos.HasValue)
-                    SpawnEffect(TeleportDepartPath, departPos.Value, 0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
+                    SpawnEffect(TeleportDepartPath, departPos.Value + new Vector3(0f, TeleportEffectYOffset, 0f),
+                        0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
 
                 // S_SkillCast 수신 이 시점에 snap arming — 다음 snapshot(텔레포트 반영)에서 arrive 발동.
                 // arrive 콜백: 캐릭터 transform 자식으로 묶어 스폰(도착지에 글루).
@@ -155,7 +158,8 @@ namespace Dawnholder.Client.Network
             {
                 // 원격: S_SkillCast 수신 시점 casterTf.position을 출발 위치로 사용.
                 Vector3 departPos = casterTf.position;
-                SpawnEffect(TeleportDepartPath, departPos, 0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
+                SpawnEffect(TeleportDepartPath, departPos + new Vector3(0f, TeleportEffectYOffset, 0f),
+                    0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
 
                 // 보간 끊기 + 다음 snapshot 확정 시 1회 발동할 콜백 등록.
                 if (RemoteEntityRegistry.Instance != null)
@@ -172,14 +176,28 @@ namespace Dawnholder.Client.Network
             }
         }
 
-        // 도착 위치에서 TeleportArrive 이펙트 스폰 — 캐릭터 transform에 자식으로 묶어 글루.
-        // facingSign=0: 텔레포트 도착은 방향 무관 이펙트. flip 없음.
-        // EffectLifetime(0.52초) 만료 시 자동 파괴 — 짧은 글루라 캐릭터 이동에 무관.
+        // 도착 TeleportArrive 이펙트 — 캐릭터 transform 자식 + localPosition (0,0,0) 글루.
+        // ⚠️ EffectAnchor.ResolvePosition 사용 금지: 그 앵커는 *방향성*(앞쪽 +X 오프셋 ~1.05) + flipX
+        //   미러라, 도착 이펙트가 캐릭터 옆으로 치우침(영호 실측: world (6.22,0.91) vs 캐릭터 (7.27,0)
+        //   → localPosition (-1.05, 0.91)). 도착은 방향 무관 *중심* 이펙트라 부모 원점에 직접 붙인다.
+        //   출발 이펙트(departPos = root)와 동일 기준(root/발밑) — 일관성. EffectLifetime(0.52초) 자동 파괴.
         internal static void SpawnTeleportArrive(Transform entityTf)
         {
-            Vector3 fxPos = EffectAnchor.ResolvePosition(entityTf);
-            SpawnEffectParented(TeleportArrivePath, fxPos, entityTf,
-                facingSign: 0, ref _warnedMissingTeleportArrive, "Teleport 도착 이펙트");
+            GameObject? prefab = Resources.Load<GameObject>(TeleportArrivePath);
+            if (prefab == null)
+            {
+                if (!_warnedMissingTeleportArrive)
+                {
+                    Debug.LogWarning($"[SkillCastHandler] Teleport 도착 이펙트 미존재: Resources/{TeleportArrivePath} — 연출 생략.");
+                    _warnedMissingTeleportArrive = true;
+                }
+                return;
+            }
+            GameObject fx = Object.Instantiate(prefab, entityTf);
+            fx.transform.localPosition = new Vector3(0f, TeleportEffectYOffset, 0f); // 캐릭터 기준 Y 오프셋(앵커·flipX 미러 제거)
+            fx.transform.localRotation = Quaternion.identity;
+            if (fx.GetComponent<EffectLifetime>() == null)
+                fx.AddComponent<EffectLifetime>();
         }
 
         // 공통 이펙트 스폰 helper. facingSign=0이면 flip 없음(방향 무관 이펙트).

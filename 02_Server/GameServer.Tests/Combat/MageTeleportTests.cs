@@ -183,7 +183,7 @@ public class MageTeleportTests : IDisposable
         // 맵 우측 끝(maxX=100) 근처에서 오른쪽으로 텔레포트 → 100을 초과해서는 안 됨.
         float mapMax = 100f;
         MapTerrain terrain = MakeBoundedTerrain(minX: -100f, maxX: mapMax);
-        float startX = mapMax - 5f; // 텔레포트 하면 100+10 초과 의도
+        float startX = mapMax - CombatConstants.TeleportDistance * 0.5f; // 텔레포트 시 절반 거리만큼 벽 초과 의도 → clamp 검증 (거리 상대값)
 
         var (session, caster, map) = SetupMage(startX, facingDir: 1, terrain: terrain);
 
@@ -200,7 +200,7 @@ public class MageTeleportTests : IDisposable
         // 맵 좌측 끝(minX=-100) 근처에서 왼쪽으로 텔레포트 → -100 미만 불가.
         float mapMin = -100f;
         MapTerrain terrain = MakeBoundedTerrain(minX: mapMin, maxX: 100f);
-        float startX = mapMin + 5f; // 텔레포트 하면 -100-10 미만 의도
+        float startX = mapMin + CombatConstants.TeleportDistance * 0.5f; // 텔레포트 시 절반 거리만큼 벽 초과 의도 → clamp 검증 (거리 상대값)
 
         var (session, caster, map) = SetupMage(startX, facingDir: -1, terrain: terrain);
 
@@ -330,8 +330,9 @@ public class MageTeleportTests : IDisposable
     // ── 지형 인식 수직 텔레포트 (M4.15 P09) ──────────────────────────────────────
 
     // 발판 표면 Y 픽스처 상수 — 기대 destY 정확 검증용 단일 진실.
-    const float UpperPlatformY = 5f;  // 위 발판 (플레이어 시작 Y=0 기준 사거리 5 이내)
-    const float LowerPlatformY = -3f; // 아래 발판 (플레이어 시작 Y=0 기준 사거리 5 이내)
+    // 플레이어 시작 Y=0 기준, TeleportVerticalRange(3.0) 이내로 배치(경계 fragile 회피 — 2.5).
+    const float UpperPlatformY = 2.5f;  // 위 발판 (거리 2.5 ≤ 사거리 3.0)
+    const float LowerPlatformY = -2.5f; // 아래 발판 (거리 2.5 ≤ 사거리 3.0)
 
     [Fact]
     public void Teleport_Vertical_Up_SnapsToUpperPlatform_XUnchanged()
@@ -375,7 +376,7 @@ public class MageTeleportTests : IDisposable
     [Fact]
     public void Teleport_Vertical_Up_OutOfRange_PositionUnchanged()
     {
-        // 위 발판이 사거리 밖(TeleportVerticalRange=5f 초과) → 이동 없음.
+        // 위 발판이 사거리 밖(TeleportVerticalRange 초과) → 이동 없음. (상수 상대값이라 튜닝에 자동 정합.)
         float farPlatformY = CombatConstants.TeleportVerticalRange + 1f; // 사거리 밖
         MapTerrain terrain = MakeTerrainWithPlatforms(farPlatformY);
         var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
@@ -455,15 +456,15 @@ public class MageTeleportTests : IDisposable
     }
 
     [Fact]
-    public void Teleport_Distance_IsFive()
+    public void Teleport_Distance_IsThreePointFive()
     {
-        // 거리 1/3 축소(15→5) 반영 회귀. 수평/수직 공통.
-        Assert.Equal(5.0f, CombatConstants.TeleportDistance, precision: 3);
+        // 수평 거리 축소(15→5→3.5, 영호 Play 튜닝) 반영 회귀.
+        Assert.Equal(3.5f, CombatConstants.TeleportDistance, precision: 3);
 
         var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1);
         session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 0));
         map.Tick(2);
-        Assert.Equal(5.0f, caster.Position.X, precision: 3);
+        Assert.Equal(3.5f, caster.Position.X, precision: 3);
     }
 
     // ── whitelist 경계 (헌법 §3) ────────────────────────────────────────────────
