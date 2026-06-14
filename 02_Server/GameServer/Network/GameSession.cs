@@ -6,6 +6,7 @@ using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Network;
+using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.Network;
 using Shared.GameData;
 using Shared.Protocol;
@@ -359,6 +360,83 @@ public class GameSession : PacketSession
                 currentMap: currentMap,
                 portalId: portalId,
                 getDestMap: self.GetDestMap));
+    }
+
+    // ── 파티 (M5 Phase 04) ───────────────────────────────────────────────────
+    //
+    // **헌법 #3 (Trust Boundary) — 행위자 강제**: 초대자/응답자/탈퇴자 entityId는 *항상*
+    //   `_entityId`(이 소켓이 누구인지)에서 가져온다 — 패킷엔 행위자 필드 없음(C_Attack 정합).
+    //   다른 entityId로 위장한 파티 조작 차단.
+    // **actor 경계**: 파티 상태 조작 + 송신은 PartyRegistry.EnqueueJob 람다(tick thread)에서만.
+    //   여기선 auth 게이트 + 마샬링만 — 직접 PartyRegistry 내부를 호출하지 않음.
+    // **happy path**: 거절 4종(자기초대/이미파티/정원/만료) + 응답 race는 A4(Phase 05).
+
+    internal void SubmitPartyInvite(int targetEntityId)
+    {
+        if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
+
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return; // shutdown race
+
+        int inviterEntityId = _entityId;
+        int target = targetEntityId;
+        world.Party.EnqueueJob(() =>
+        {
+            // happy: pending invite 기록 + 피초대자에게 1:1 통보.
+            //   거절(자기초대/이미파티 등) 검증은 A4가 여기에 확장.
+            world.Party.RecordInvite(inviterEntityId, target);
+            PartyNotifier.SendInviteRecv(world, inviterEntityId, target);
+        });
+    }
+
+    internal void SubmitPartyRespond(int inviterEntityId, byte accept)
+    {
+        if (_entityId < 0) return;
+
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return;
+
+        int responderEntityId = _entityId;
+        int claimedInviter = inviterEntityId;
+        bool accepted = accept == 1;
+        world.Party.EnqueueJob(() =>
+        {
+            // 보류 초대 매칭(존재 확인) + 소비. A4가 claimedInviter 일치/만료/race를 여기에 확장.
+            if (!world.Party.TryGetPendingInvite(responderEntityId, out int pendingInviter))
+                return; // 보류 초대 없음 — happy 흐름 밖
+            world.Party.ConsumeInvite(responderEntityId);
+
+            if (!accepted)
+                return; // 거절 happy: 초대 소비만(초대자 통보 형태는 A4에서 약속)
+
+            // 수락: 보류된 inviter로 파티 결성(claimedInviter 위장 검증은 A4 — 이번엔 서버 기록 우선).
+            PartyState? party = world.Party.CreateParty(pendingInviter, responderEntityId);
+            if (party == null) return; // 이미 파티 등 거부 — A4가 S_PartyError 통보
+
+            PartyNotifier.SendPartyUpdate(world, party);
+        });
+    }
+
+    internal void SubmitPartyLeave()
+    {
+        if (_entityId < 0) return;
+
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return;
+
+        int leaverEntityId = _entityId;
+        world.Party.EnqueueJob(() =>
+        {
+            PartyState? party = world.Party.GetPartyByEntity(leaverEntityId);
+            if (party == null) return; // 파티 없음 — no-op
+
+            // 해산 전 멤버 스냅샷 — Disband가 인덱스를 비우므로 통보 대상은 미리 캡처.
+            List<int> formerMembers = new(party.Members);
+            world.Party.Disband(party.PartyId);
+
+            // 남은 멤버 전원에게 해산 통보(partyId=0). 탈퇴자 본인 포함 — 클라가 파티 UI 정리.
+            PartyNotifier.SendDisband(world, formerMembers);
+        });
     }
 
     // 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑 (헌법 #1).

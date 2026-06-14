@@ -130,6 +130,29 @@ public class GameWorld
         // entityId 없음 = 오프라인 또는 맵 전환 중 — silent 무시.
     }
 
+    /// <summary>
+    /// entityId를 보유한 맵에서 그 플레이어의 CharacterClass를 byte로 조회한다.
+    ///
+    /// **헌법 #1 (Server Authority)**: 클래스는 서버 권위 PlayerStats에서만 읽는다 — 클라가 보낸 값 X.
+    /// 파티 패킷(S_PartyInviteRecv.inviterClass / S_PartyUpdate.memberNClass)을 채울 때
+    /// PartyRegistry job(tick thread)이 호출. entityId가 어느 맵에도 없으면 false 반환.
+    ///
+    /// 맵 4개 순회 = O(4) 상수 — SendToEntity와 동일 패턴(entityId→MapId 역인덱스 추가 시
+    /// 동기화 부채가 늘어나므로 현 규모에선 순회가 더 단순·안전).
+    /// </summary>
+    public bool TryGetEntityClass(int entityId, out byte characterClass)
+    {
+        foreach (GameMap map in _maps.Values)
+        {
+            PlayerEntity? player = map.GetPlayer(entityId);
+            if (player == null) continue;
+            characterClass = (byte)player.Stats.Class;
+            return true;
+        }
+        characterClass = 0;
+        return false;
+    }
+
     GameMap MakeMap(MapId id,
         IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
     {

@@ -24,6 +24,15 @@ public sealed class PartyRegistry
     // entityId → partyId 역방향 인덱스. GetPartyByEntity O(1).
     readonly Dictionary<int, int> _entityToParty = new();
 
+    // pending invite: targetEntityId → inviterEntityId. 피초대자 기준 키 = respond 시 O(1) 매칭.
+    //   초대자가 보낸 invite를 피초대자가 응답할 때까지 보관. 응답(수락/거절) 시 소비(제거).
+    //   **키를 target으로 잡은 이유**: respond 핸들러의 행위자(=피초대자=session._entityId)가 키 →
+    //     "이 응답자에게 온 초대가 있나" O(1). 저장된 inviter와 패킷의 inviterEntityId 비교로
+    //     A4가 위장/만료/race 검증을 확장(이번 happy엔 매칭 존재만 확인).
+    //   **A4 확장 여지**: 값을 (inviterEntityId, 발급 tick) 구조체로 승격하면 타임아웃 추가 가능.
+    //     이번엔 int 값으로 단순 유지 — append-only 확장 구조.
+    readonly Dictionary<int, int> _pendingInvites = new();
+
     int _nextPartyId;
 
     // ── actor 인터페이스 (GameMap.EnqueueJob + Tick 패턴 mirror) ─────────────
@@ -102,4 +111,24 @@ public sealed class PartyRegistry
         if (!_entityToParty.TryGetValue(entityId, out int partyId)) return null;
         return GetParty(partyId);
     }
+
+    // ── pending invite (초대 → 응답 매칭) ─────────────────────────────────────
+
+    /// <summary>
+    /// 초대 기록. targetEntityId(피초대자) 기준으로 inviterEntityId를 보관.
+    /// 같은 피초대자에게 새 초대가 오면 덮어쓴다(최신 초대 우선 — happy 단순화, 거절/race는 A4).
+    /// </summary>
+    public void RecordInvite(int inviterEntityId, int targetEntityId)
+        => _pendingInvites[targetEntityId] = inviterEntityId;
+
+    /// <summary>
+    /// 피초대자(responderEntityId)에게 보류 중인 초대의 발신자를 조회. 없으면 false.
+    /// A4가 inviter 일치/만료 검증을 여기에 확장. 이번엔 존재 여부만.
+    /// </summary>
+    public bool TryGetPendingInvite(int responderEntityId, out int inviterEntityId)
+        => _pendingInvites.TryGetValue(responderEntityId, out inviterEntityId);
+
+    /// <summary>응답(수락/거절) 처리 후 보류 초대를 소비(제거).</summary>
+    public void ConsumeInvite(int responderEntityId)
+        => _pendingInvites.Remove(responderEntityId);
 }
