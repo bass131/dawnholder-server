@@ -69,6 +69,8 @@ public class EnterPortalHandlerTests : IDisposable
         }
 
         protected override GameMap? GetDestMap(MapId destMapId) => _destMap;
+        // Town→HuntingGround 이동 — 게이트 미적용(BossRoom 아님). 단일 스레드 테스트 격리.
+        protected override int GetKillCount(int entityId) => 0;
 
         public override void Send(ArraySegment<byte> seg)
         {

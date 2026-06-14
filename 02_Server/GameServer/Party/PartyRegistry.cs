@@ -238,6 +238,18 @@ public sealed class PartyRegistry
             p.KillCount = 0;
     }
 
+    /// <summary>
+    /// 보스 게이트용 killCount 통합 조회. 파티면 공유(PartyState.KillCount), 솔로면 _soloProgress.
+    ///
+    /// tick thread invariant — MapMigration.Execute(맵 tick thread) 안에서 읽힌다.
+    /// Q2 OnKill 적립처(파티 KillCount / _soloProgress)와 정확히 정합.
+    /// </summary>
+    public int GetKillCount(int entityId)
+    {
+        PartyState? party = GetPartyByEntity(entityId);
+        return party != null ? party.KillCount : GetSoloProgress(entityId);
+    }
+
     /// <summary>솔로 진행상황 조회 — 테스트 관측용.</summary>
     internal int GetSoloProgress(int entityId)
         => _soloProgress.TryGetValue(entityId, out int v) ? v : 0;

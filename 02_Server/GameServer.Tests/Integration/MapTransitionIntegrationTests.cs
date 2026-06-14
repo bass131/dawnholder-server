@@ -1,3 +1,5 @@
+using Dawnholder.Server.GameServer.Loop;
+using Dawnholder.Server.GameServer.Quest;
 using Dawnholder.Tools.HeadlessBot.Scenarios;
 
 namespace Dawnholder.Server.GameServer.Tests.Integration;
@@ -47,7 +49,8 @@ public class MapTransitionIntegrationTests
     public async Task MapTransition_FullLoop_Succeeds()
     {
         MapTransitionScenario.Result r = await MapTransitionScenario.Run(
-            "127.0.0.1", _server.Port);
+            "127.0.0.1", _server.Port,
+            seedBossGate: SeedBossGate);
 
         Assert.True(r.Success, $"4맵 루프 실패: {r.Reason}");
         Assert.True(r.EnteredHuntingGround, "HuntingGround 진입 실패");
@@ -70,7 +73,8 @@ public class MapTransitionIntegrationTests
     public async Task MapTransition_EntityIdPreserved()
     {
         MapTransitionScenario.Result r = await MapTransitionScenario.Run(
-            "127.0.0.1", _server.Port);
+            "127.0.0.1", _server.Port,
+            seedBossGate: SeedBossGate);
 
         Assert.True(r.Success, $"시나리오 실패 (entityId 검증 전제 조건): {r.Reason}");
         Assert.True(r.EntityId > 0, $"초기 entityId 비정상: {r.EntityId}");
@@ -96,7 +100,8 @@ public class MapTransitionIntegrationTests
         for (int i = 0; i < 10; i++)
         {
             MapTransitionScenario.Result r = await MapTransitionScenario.Run(
-                "127.0.0.1", _server.Port);
+                "127.0.0.1", _server.Port,
+                seedBossGate: SeedBossGate);
             if (!r.Success)
             {
                 failureCount++;
@@ -106,5 +111,43 @@ public class MapTransitionIntegrationTests
         }
         Assert.True(failureCount == 0,
             $"10회 중 {failureCount}회 실패:\n  " + string.Join("\n  ", failures));
+    }
+
+    // ── 헬퍼 ─────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// BossRoom 게이트 전제조건 시드 — MapTransitionScenario.Run의 seedBossGate 훅용.
+    ///
+    /// <para>
+    /// <b>왜 시드가 필요한가</b>: BossRoom 진입에는 Q3에서 추가된 40킬 게이트가 걸린다.
+    /// 실제 40킬 그라인드는 리스폰 주기(100틱/마리)와 HG 적 수 제한으로 60~90초+ 소요 →
+    /// 타임아웃/flaky 위험. 이 테스트의 목적은 4맵 루프 전환 메커니즘(entityId 유지 + spawn
+    /// 좌표)이지 게이트 자체가 아니다. 게이트 검증은 BossPortalGateTests(stub) + R2
+    /// BossGateSmoke(별도)가 담당한다.
+    /// </para>
+    ///
+    /// <para>
+    /// <b>타이밍 정합</b>: EnqueueJob 잡이 완료될 때까지 await → 시나리오가
+    /// MoveToPortal/SendEnterPortal로 진행하기 전에 _soloProgress[eid]=40 확정.
+    /// MapMigration.Execute(게이트)는 이후 틱에서 GetKillCount=40을 읽어 정당 통과.
+    /// OnTick 순서상 map.Tick이 Party.Tick보다 먼저지만, 시드가 이미 이전 틱에 드레인
+    /// 완료이므로 순서 무관.
+    /// </para>
+    ///
+    /// <para>
+    /// <b>우회가 아님</b>: 게이트는 서버 권위 카운트(Party.GetKillCount)를 실제로 읽어
+    /// 정당 통과 — 클라이언트 주장 값을 신뢰하지 않는 헌법 §3 신뢰경계 그대로.
+    /// </para>
+    /// </summary>
+    Task SeedBossGate(int entityId)
+    {
+        TaskCompletionSource tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        GameWorld.Instance.Party.EnqueueJob(() =>
+        {
+            for (int i = 0; i < QuestConstants.BossUnlockKillCount; i++)
+                GameWorld.Instance.Party.OnKill(entityId, GameWorld.Instance);
+            tcs.SetResult();
+        });
+        return tcs.Task;
     }
 }

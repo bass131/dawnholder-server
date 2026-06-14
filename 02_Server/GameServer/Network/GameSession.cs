@@ -365,7 +365,8 @@ public class GameSession : PacketSession
                 entityId: eid,
                 currentMap: currentMap,
                 portalId: portalId,
-                getDestMap: self.GetDestMap));
+                getDestMap: self.GetDestMap,
+                getKillCount: self.GetKillCount));
     }
 
     // ── 파티 (M5 Phase 04) ───────────────────────────────────────────────────
@@ -620,4 +621,9 @@ public class GameSession : PacketSession
     // 목적지 맵 조회 hook. 테스트가 다중 맵 주입 시 override.
     protected virtual GameMap? GetDestMap(MapId destMapId)
         => GameWorld.Instance?.GetMap(destMapId);
+
+    // 보스 포탈 잠금 게이트용 killCount 조회 hook. 테스트가 stub 주입 시 override.
+    // 서버 권위: PartyRegistry에서 읽음 — 클라 주장 X (헌법 #3 정합).
+    protected virtual int GetKillCount(int entityId)
+        => GameWorld.Instance?.Party.GetKillCount(entityId) ?? 0;
 }

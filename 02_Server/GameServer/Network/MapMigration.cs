@@ -1,6 +1,7 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Quest;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
@@ -38,12 +39,14 @@ internal static class MapMigration
     /// <param name="currentMap">현재 맵 (맵 A). 호출자가 EnqueueJob으로 이 맵 tick thread에서 호출.</param>
     /// <param name="portalId">클라가 보낸 portalId (untrusted — 범위 검증 후 사용).</param>
     /// <param name="getDestMap">목적지 맵 조회 delegate (virtual hook 위임 — 테스트 override 지원).</param>
+    /// <param name="getKillCount">entityId → killCount 서버 권위 조회 delegate (테스트 override 지원).</param>
     public static void Execute(
         GameSession session,
         int entityId,
         GameMap currentMap,
         int portalId,
-        Func<MapId, GameMap?> getDestMap)
+        Func<MapId, GameMap?> getDestMap,
+        Func<int, int> getKillCount)
     {
         // ── 검증 단계 ────────────────────────────────────────────────────
 
@@ -73,6 +76,28 @@ internal static class MapMigration
             Console.WriteLine(
                 $"[Trust] Player {entityId}: portal proximity fail — dist²={distSq:F2} > threshold²={ProximityThreshold * ProximityThreshold} — silent drop");
             return;
+        }
+
+        // ── 보스 포탈 잠금 게이트 (trust-boundary, M5 Q3) ───────────────────
+        //
+        // RemovePlayer/SetMigrating *전*에 차단 — 거부 시 원래 맵 잔류(ghost 방지).
+        // killCount는 getKillCount delegate(PartyRegistry 서버 권위) — 클라 주장 X.
+        // Dest==BossRoom 진입 방향만 게이트: 역방향(Boss→HG)은 나갈 때 자유.
+        if (portal.Dest == MapId.BossRoom)
+        {
+            int killCount = getKillCount(entityId);
+            if (killCount < QuestConstants.BossUnlockKillCount)
+            {
+                S_PortalLocked locked = new S_PortalLocked
+                {
+                    requiredCount = QuestConstants.BossUnlockKillCount,
+                    currentCount = killCount,
+                };
+                session.Send(locked.Write());
+                Console.WriteLine(
+                    $"[Gate] Player {entityId}: BossRoom locked killCount={killCount}<{QuestConstants.BossUnlockKillCount} — entry denied");
+                return;
+            }
         }
 
         // ── transfer 단계 ─────────────────────────────────────────────────
