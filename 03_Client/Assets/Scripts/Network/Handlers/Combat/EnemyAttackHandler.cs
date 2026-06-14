@@ -10,8 +10,6 @@ using Dawnholder.Client.UI;
 using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace Dawnholder.Client.Network
 {
@@ -71,7 +69,14 @@ namespace Dawnholder.Client.Network
                 }
 
                 if (hasFxPos)
-                    BossAttackEffectSpawner.Spawn(attackPattern, fxPos, fxFacing);
+                {
+                    // kind 해석 성공 시 kind-aware 오버로드, 실패 시 기존 보스 경로 폴백.
+                    if (EnemyRegistry.Instance != null &&
+                        EnemyRegistry.Instance.TryGetKind(attackerId, out EnemyKind kind))
+                        BossAttackEffectSpawner.Spawn(kind, attackPattern, fxPos, fxFacing);
+                    else
+                        BossAttackEffectSpawner.Spawn(attackPattern, fxPos, fxFacing);
+                }
 
                 if (!isLocalPlayer) return;
 
