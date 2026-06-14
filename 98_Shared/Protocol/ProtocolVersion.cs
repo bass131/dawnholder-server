@@ -54,6 +54,12 @@ namespace Shared.Protocol;
 ///         정규화 — 3진 정의역이라 facing의 2진 `==1?1:-1` 패턴 금지). 영호 Option B(전용 필드, 의미 분리) GO.
 ///         C_SkillUse ID(24) 불변, skillId/attackerClientTick/facing 오프셋 불변(append-only). 옛 클라가
 ///         verticalDir 없이 보내면 서버 파싱 오프셋 desync → 빠른 cutoff 위해 bump.
+///   - v15: M5 A0 — 파티/퀘스트/보스게이트 8패킷 신설(C_PartyInvite/C_PartyRespond/C_PartyLeave/
+///         S_PartyInviteRecv/S_PartyUpdate/S_PartyError/S_QuestUpdate/S_PortalLocked, ID 26~33). 프로젝트 첫
+///         플레이어 간 협동(파티 초대/수락 2명 + 공유 40킬 + 보스 포탈 잠금)이 신규 패킷 의존이라 옛 클라 빠른
+///         cutoff 위해 한 묶음 bump. 기존 ID 25(S_SkillCast)까지 시프트 0(append-only, 맨 아래 추가).
+///         PDL 가변 list 미지원 → 파티 정원 2 고정(S_PartyUpdate member0/member1 2슬롯, 빈=0).
+///         모든 C_Party* 행위자=GameSession._entityId 강제(패킷에 행위자 필드 X — 도용 차단, 헌법 #3).
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -67,6 +73,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.15 P06 = v14 (C_SkillUse.verticalDir append — 텔레포트 4방향, 위/아래 수직 의도 전달).</summary>
-    public const ushort Current = 14;
+    /// <summary>현재 프로토콜 버전. M5 A0 = v15 (파티/퀘스트/보스게이트 8패킷 신설 — ID 26~33).</summary>
+    public const ushort Current = 15;
 }

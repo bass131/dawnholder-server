@@ -334,4 +334,76 @@
         <int name="strikeDelayTicks"/>
         <byte name="facing"/>
     </packet>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         M5 (v14→v15): 파티 시스템 + 공유 퀘스트 + 보스 포탈 잠금. ID 26~33.
+         프로젝트 첫 플레이어 간 협동 시스템. 8패킷 일괄 append + v15 단일 bump
+         (마일스톤 단위 함께 배포 — 중간 버전 무의미, 옛 클라 빠른 cutoff).
+         PDL 가변 list 미지원 → 파티 정원 2 고정(member0/member1 2슬롯, 빈=0).
+         모든 C_Party* 행위자 entityId는 GameSession._entityId에서 강제
+         (C_Attack 패턴 — 패킷에 행위자 필드 X = 도용 차단, 헌법 #3).
+         ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- M5: 파티 초대 요청(클라→서버). 헌법 #3 (Trust Boundary): targetEntityId untrusted —
+         서버가 (a)존재하는 플레이어 (b)자기 자신 아님 (c)이미 파티중 아님 검증 후
+         S_PartyInviteRecv(성공) 또는 S_PartyError(실패). 초대자=GameSession._entityId 강제. -->
+    <packet name="C_PartyInvite">
+        <int name="targetEntityId"/>
+    </packet>
+
+    <!-- M5: 파티 초대 응답(클라→서버). inviterEntityId = 누구의 초대에 응답하는지(race 방지 — 동시 초대 구분).
+         accept: 0=거절, 1=수락. 응답자=GameSession._entityId 강제. inviterEntityId가 실제 pending 초대자와
+         불일치하면 silent drop(헌법 #3). -->
+    <packet name="C_PartyRespond">
+        <int name="inviterEntityId"/>
+        <byte name="accept"/>
+    </packet>
+
+    <!-- M5: 파티 탈퇴/해산(클라→서버). 정원 2라 한 명 탈퇴 = 해산. reserved = 빈 패킷 회피용 더미
+         (필드 0개 패킷은 1 byte 자리잡이로 형식 유지). 행위자=GameSession._entityId 강제. -->
+    <packet name="C_PartyLeave">
+        <byte name="reserved"/>
+    </packet>
+
+    <!-- M5: 너에게 파티 초대가 왔다(서버→피초대자 1:1). inviterEntityId = 초대자(서버 권위).
+         inviterClass = UI 표시용 직업(서버 권위, 0=Knight/1=Mage — S_PlayerJoin.characterClass 컨벤션 재사용). -->
+    <packet name="S_PartyInviteRecv">
+        <int name="inviterEntityId"/>
+        <byte name="inviterClass"/>
+    </packet>
+
+    <!-- M5: 파티 상태 권위 통보(서버→멤버 전원). 결성/멤버변경/해산을 단일 패킷으로.
+         partyId: 0 = 파티 없음(해산/거절/탈퇴 통보 — 클라가 파티 UI 숨김). 0 아니면 활성 파티 id.
+         정원 2 고정 → member0/member1 2슬롯(빈 슬롯 entityId=0). PDL 가변 list 미지원이라 고정 필드.
+         leaderEntityId = 초대한 사람. memberNClass = 각 멤버 직업(UI). cross-map 송신(GameWorld.SendToEntity). -->
+    <packet name="S_PartyUpdate">
+        <int name="partyId"/>
+        <int name="leaderEntityId"/>
+        <int name="member0EntityId"/>
+        <int name="member1EntityId"/>
+        <byte name="member0Class"/>
+        <byte name="member1Class"/>
+    </packet>
+
+    <!-- M5: 파티 초대/응답 실패 피드백(서버→요청자 1:1). silent drop 대신 UX 명시.
+         reason: 0=상대없음, 1=이미파티중, 2=자기자신, 3=정원초과. -->
+    <packet name="S_PartyError">
+        <byte name="reason"/>
+    </packet>
+
+    <!-- M5: 퀘스트 진행도 통보(서버→플레이어). 파티 공유 또는 솔로 킬카운트 갱신 시 송신.
+         currentCount = 현재 처치 수, targetCount = 목표(서버 BossUnlockKillCount=40 — 클라 하드코딩 금지, SSOT).
+         파티면 양 멤버에게(SendToEntity), 솔로면 본인에게. -->
+    <packet name="S_QuestUpdate">
+        <int name="currentCount"/>
+        <int name="targetCount"/>
+    </packet>
+
+    <!-- M5: 보스 포탈 잠금 피드백(서버→진입 시도자 1:1). killCount<목표로 BossRoom 진입 거부 시 송신
+         (MapMigration 검증단계, transfer 전). requiredCount = 필요 킬(40), currentCount = 현재 킬.
+         클라가 "보스 입장: N/40" 토스트 표시. silent drop 대신 UX. -->
+    <packet name="S_PortalLocked">
+        <int name="requiredCount"/>
+        <int name="currentCount"/>
+    </packet>
 </PDL>
