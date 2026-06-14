@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.15
 phase: 08
 title: 클라 4방향 입력 송신 + depart/arrive 이펙트 버그 수정
-status: pending
+status: done
 grade: 보통
 domain: client
 summary: LocalPlayerInput 위/아래 폴링 + verticalDir 송신 + SkillCastHandler 출발/도착 이펙트 타이밍 레이스 결정론적 수정
@@ -104,3 +104,4 @@ summary: LocalPlayerInput 위/아래 폴링 + verticalDir 송신 + SkillCastHand
 ## 작업 로그
 
 - 2026-06-14: 생성.
+- 2026-06-14: 완료 (client Worker Sonnet + 메인 file:line 게이트 + Unity MCP 컴파일 검증). **작업1**: LocalPlayerInput L162-182 — Teleport에만 verticalDir 산출(W/↑=1, S/↓=2, 수직 우선, 그 외 0), C_SkillUse.verticalDir 송신. **작업2 레이스 수정**: LocalPlayerMovement.NotifyTeleport(departPos, arriveCallback) — 송신 시점 transform.position을 `_teleportDepartPos` stash + arrive 콜백 1회 등록(이중 호출 제거). SkillCastHandler.HandleTeleport 로컬/원격 분리 — 로컬은 `ConsumeTeleportDepartPos()` stash로 출발 이펙트(결정론), 원격은 수신시점 casterTf.position + SnapEntity 보존(L130 공유 함정 회피). `_teleportSnapPending` force-adopt 로직 불변. arrive 클로저는 콜백 발동(post-snap) 시점 live transform → 도착지점. 4방향 자동 정합(캐릭터 위치 기준). 검증: .NET 빌드 0/0 + Unity reimport 재컴파일 + RunCommand probe 2회 = 컴파일 0err. **다음 = 영호 Play-test(visual 게이트)**.

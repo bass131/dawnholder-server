@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.15
 phase: 07
 title: 서버 4방향 텔레포트 + 거리 1/3 + 수직 지형 안전
-status: pending
+status: done
 grade: 복잡
 domain: server
 summary: SkillUseHandler verticalDir 정규화(trust boundary) + ActionContext 수직 반영 + TeleportAction 4방향 목적지 + TeleportDistance 15→5 + 수직 경계/지형 안전
@@ -100,3 +100,4 @@ P06이 만든 `verticalDir` 필드를 서버가 소비해 **4방향(좌/우/상/
 ## 작업 로그
 
 - 2026-06-14: 생성.
+- 2026-06-14: 완료 (`1161e3c`, server Worker Opus + 메인 file:line 게이트 + reviewer🔴0). SkillUseHandler whitelist 정규화(`is 1 or 2 ? : 0`, 3진), ActionContext.VerticalDir(default 0, readonly 유지), 시그니처 체인(GameSession→GameMap→SkillSystem) verticalDir 전달, TeleportAction 4방향 분기(1=위Y+/2=아래Y-/0=수평X±), GameMap.MapBoundsY 신설(solids min/max Y clamp), TeleportDistance 15→5. WSL2 build 0/0 + test **579/0/5**(baseline 570 + 9 신규). **테스트 캘리브레이션 정정**(메인): Worker가 SAC로 못 돌린 수직 테스트 3개가 물리(중력+지면충돌) 얽힘으로 깨짐 → 방향+X정확불변 robust 검증으로 수정 + BossBehaviorTests v13→v14. **⚠️ 영호 Play 플래그**: 수직 텔레포트 near terrain(특히 아래 near floor)은 MVP 옵션② 한계로 clamp 경계 미세 초과(~-1.05)/floor-top 미안착 가능 — terrain-aware(옵션①)는 후속.

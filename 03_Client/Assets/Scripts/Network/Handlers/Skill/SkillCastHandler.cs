@@ -121,25 +121,33 @@ namespace Dawnholder.Client.Network
                 "Dash 이펙트", spriteDefaultFacesLeft: false);
         }
 
-        // Teleport 연출: 출발 이펙트 → 보간 끊기 → 도착 이펙트 콜백 등록.
-        // 도착 이펙트는 새 위치가 확정되는 시점(스냅 채택 직후)에 발동 — 출발 위치 placeholder 제거.
+        // Teleport 연출: 출발 이펙트 → (로컬) 스냅 예약 확인 / (원격) 보간 끊기 + 도착 콜백 등록.
+        //
+        // 로컬 경로:
+        //   출발 이펙트 위치 = LocalPlayerMovement.ConsumeTeleportDepartPos() stash.
+        //     stash는 LocalPlayerInput이 송신 시점(패킷 발송 직전) transform.position으로 캡처.
+        //     S_SkillCast vs S_Snapshot dispatch 순서에 무관 — 결정론적.
+        //   arriveCallback + _teleportSnapPending은 송신 시점(LocalPlayerInput.TrySendSkill)에서
+        //     NotifyTeleport로 이미 등록됨 — 여기서 중복 NotifyTeleport 호출 X.
+        //
+        // 원격 경로: S_SkillCast 수신 시점 casterTf.position을 출발 위치로 사용 (기존과 동일).
         static void HandleTeleport(bool isLocal, int casterId, Transform casterTf)
         {
-            Vector3 departPos = casterTf.position; // 출발 위치 — casterTf가 아직 갱신 전.
-
-            SpawnEffect(TeleportDepartPath, departPos, 0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
-
             if (isLocal)
             {
-                LocalPlayerMovement.Instance?.NotifyTeleport(arriveCallback: () =>
-                {
-                    if (LocalPlayerMovement.Instance != null)
-                        SpawnArriveEffect(LocalPlayerMovement.Instance.transform);
-                });
+                // 로컬 출발 이펙트: 송신 시점 stash 위치 사용.
+                Vector3? departPos = LocalPlayerMovement.Instance?.ConsumeTeleportDepartPos();
+                if (departPos.HasValue)
+                    SpawnEffect(TeleportDepartPath, departPos.Value, 0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
+                // arriveCallback은 이미 NotifyTeleport(LocalPlayerInput)에서 등록됨 — 재등록 X.
             }
             else
             {
-                // 원격: 보간 끊기 + 다음 snapshot 확정 시 1회 발동할 콜백 등록.
+                // 원격: S_SkillCast 수신 시점 casterTf.position을 출발 위치로 사용.
+                Vector3 departPos = casterTf.position;
+                SpawnEffect(TeleportDepartPath, departPos, 0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
+
+                // 보간 끊기 + 다음 snapshot 확정 시 1회 발동할 콜백 등록.
                 if (RemoteEntityRegistry.Instance != null)
                 {
                     int capturedId = casterId;
@@ -147,7 +155,7 @@ namespace Dawnholder.Client.Network
                     {
                         if (RemoteEntityRegistry.Instance != null &&
                             RemoteEntityRegistry.Instance.TryGetTransform(capturedId, out Transform? tf) && tf != null)
-                            SpawnArriveEffect(tf);
+                            SpawnTeleportArrive(tf);
                     });
                     RemoteEntityRegistry.Instance.SnapEntity(casterId);
                 }
@@ -155,7 +163,8 @@ namespace Dawnholder.Client.Network
         }
 
         // 도착 위치에서 TeleportArrive 이펙트 스폰.
-        static void SpawnArriveEffect(Transform entityTf)
+        // LocalPlayerInput의 arriveCallback 클로저와 공유 — internal static으로 노출.
+        internal static void SpawnTeleportArrive(Transform entityTf)
         {
             SpawnEffect(TeleportArrivePath, EffectAnchor.ResolvePosition(entityTf),
                 0, ref _warnedMissingTeleportArrive, "Teleport 도착 이펙트");

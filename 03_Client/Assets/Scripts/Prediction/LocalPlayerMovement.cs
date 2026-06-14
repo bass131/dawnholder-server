@@ -75,6 +75,12 @@ namespace Dawnholder.Client.Prediction
         // 다음 시전 시 덮어쓰기 — 스냅샷 미도착 시 pending 영구 잔류해도 무해.
         Action? _teleportArriveCallback;
 
+        // 텔레포트 출발 위치 stash — 송신 시점(NotifyTeleport 호출)에 캡처.
+        // S_SkillCast vs S_Snapshot dispatch 순서에 무관하게 출발 이펙트가 결정론적으로
+        // 텔레포트 *전* 위치에 찍히도록 한다. SkillCastHandler 로컬 분기가 이 값을 읽어 스폰.
+        Vector3 _teleportDepartPos;
+        bool _teleportDepartPosValid;
+
         // 프레임당 최대 서브스텝 횟수 cap. 초과분은 버리고 다음 reconcile에 위임.
         // spiral of death(긴 프레임 → 다수 substep → 더 긴 프레임) 방지.
         // 4 = 200ms = 4 × TickDuration — 저fps 환경에서도 실용적 상한.
@@ -203,12 +209,27 @@ namespace Dawnholder.Client.Prediction
         }
 
         // Teleport 송신 성공 시 호출. 쿨다운 세팅 + 다음 snapshot을 즉시 스냅으로 처리하도록 플래그.
+        //
+        // departPos: 텔레포트 *전* 위치 (송신 시점 transform.position). S_SkillCast vs S_Snapshot
+        //   dispatch 순서에 무관하게 출발 이펙트가 결정론적으로 올바른 위치에 찍히도록 stash.
         // arriveCallback: 스냅 채택(새 위치 확정) 직후 main thread에서 1회 호출 — 도착 이펙트 스폰용.
-        public void NotifyTeleport(Action? arriveCallback = null)
+        //   송신 시점 1회만 등록 — SkillCastHandler 로컬 분기는 이 콜백 중복 등록 X.
+        public void NotifyTeleport(Vector3 departPos, Action? arriveCallback = null)
         {
             _timers.OnTeleport();
             _teleportSnapPending = true;
             _teleportArriveCallback = arriveCallback; // 이전 미소비 콜백은 덮어쓰기 (무해 — 다음 시전)
+            _teleportDepartPos = departPos;
+            _teleportDepartPosValid = true;
+        }
+
+        // SkillCastHandler가 로컬 출발 이펙트 위치 조회 시 사용.
+        // 소비(읽기 후 클리어) — 중복 스폰 방지. 유효하지 않으면 null 반환.
+        public Vector3? ConsumeTeleportDepartPos()
+        {
+            if (!_teleportDepartPosValid) return null;
+            _teleportDepartPosValid = false;
+            return _teleportDepartPos;
         }
 
         // EnemyAttackHandler가 본인 피격(S_EnemyAttack) 시 호출 — hit-bridge 게이트 시작.

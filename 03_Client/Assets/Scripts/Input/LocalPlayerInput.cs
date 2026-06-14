@@ -158,19 +158,37 @@ namespace Dawnholder.Client.Input
             //   대쉬 예측(NotifyDash→StartImpulse)과 동일 출처(_motion.Facing)라 클라/서버 대쉬 방향 일치 →
             //   방향전환 직후 대쉬가 서버 입력 큐 지연으로 반대로 튀던 reconcile 클러스터 봉합.
             int facingSign = _motion != null ? _motion.Facing : 1;
+
+            // verticalDir: 텔레포트 4방향 수직 힌트(0=수평/1=위/2=아래). 텔레포트 전용 — 기타 스킬은 0.
+            //   MapleStory식 4-cardinal(대각 X): 수직 입력이 있으면 수직 우선, 없으면 0(수평).
+            //   위/아래 키: W + ↑ = 위(1), S + ↓ = 아래(2). 둘 다 또는 둘 다 없으면 0(수평).
+            byte verticalDir = 0;
+            if (skillId == SkillId.Teleport)
+            {
+                bool upPressed = Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed;
+                bool downPressed = Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed;
+                if (upPressed && !downPressed)
+                    verticalDir = 1;
+                else if (downPressed && !upPressed)
+                    verticalDir = 2;
+            }
+
             C_SkillUse pkt = new C_SkillUse
             {
                 skillId = (byte)skillId,
                 attackerClientTick = session.LastReceivedServerTick,
-                facing = (byte)(facingSign == 1 ? 1 : 0)
+                facing = (byte)(facingSign == 1 ? 1 : 0),
+                verticalDir = verticalDir
             };
             session.SendIntent(pkt.Write());
-            Debug.Log($"[Skill] → {skillId} clientTick={pkt.attackerClientTick}");
+            Debug.Log($"[Skill] → {skillId} clientTick={pkt.attackerClientTick} verticalDir={verticalDir}");
 
             // 선예측 커밋: 스킬별로 분기.
             // Thunderbolt: 채널링 모션 + 쿨다운 예측.
             // Dash: 쿨다운만 예측. 이동/모션은 서버 S_SkillCast(Dash) + S_Snapshot(Attack) 수신 연출로 충분.
-            // Teleport: 쿨다운 예측 + 다음 Snapshot force-adopt 플래그(보간 끊기).
+            // Teleport: 쿨다운 예측 + 다음 Snapshot force-adopt 플래그(보간 끊기) + 출발/도착 이펙트 콜백.
+            //   출발 이펙트용 departPos = 송신 시점 transform.position (S_SkillCast vs S_Snapshot
+            //   dispatch 순서에 무관하게 결정론적). 도착 이펙트 콜백은 1회만 여기서 등록.
             switch (skillId)
             {
                 case SkillId.Thunderbolt:
@@ -180,7 +198,13 @@ namespace Dawnholder.Client.Input
                     _movement.NotifyDash();
                     break;
                 case SkillId.Teleport:
-                    _movement.NotifyTeleport();
+                    _movement.NotifyTeleport(
+                        departPos: transform.position,
+                        arriveCallback: () =>
+                        {
+                            if (LocalPlayerMovement.Instance != null)
+                                SkillCastHandler.SpawnTeleportArrive(LocalPlayerMovement.Instance.transform);
+                        });
                     break;
             }
         }
