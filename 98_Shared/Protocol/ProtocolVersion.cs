@@ -49,6 +49,11 @@ namespace Shared.Protocol;
 ///         발생 → 클라 화면 방향을 동봉해 서버가 대쉬 임펄스 방향 권위로 사용(부호 정규화, cheat 무해).
 ///         C_SkillUse ID(24) 불변, skillId/attackerClientTick 오프셋 불변. 옛 클라가 facing 없이 보내면
 ///         서버 파싱 오프셋 desync → 빠른 cutoff 위해 bump.
+///   - v14: M4.15 P06 — C_SkillUse 끝에 verticalDir(byte) append. 텔레포트 4방향(위/아래 추가) — facing은
+///         좌우 스프라이트 방향 유지, verticalDir이 수직 의도 전달(whitelist 0=수평/1=위/2=아래, 그 외 서버 0
+///         정규화 — 3진 정의역이라 facing의 2진 `==1?1:-1` 패턴 금지). 영호 Option B(전용 필드, 의미 분리) GO.
+///         C_SkillUse ID(24) 불변, skillId/attackerClientTick/facing 오프셋 불변(append-only). 옛 클라가
+///         verticalDir 없이 보내면 서버 파싱 오프셋 desync → 빠른 cutoff 위해 bump.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -62,6 +67,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M4.13 P5 = v13 (C_SkillUse.facing append — 대쉬 방향 권위, 방향전환 직후 대쉬 reconcile 클러스터 봉합).</summary>
-    public const ushort Current = 13;
+    /// <summary>현재 프로토콜 버전. M4.15 P06 = v14 (C_SkillUse.verticalDir append — 텔레포트 4방향, 위/아래 수직 의도 전달).</summary>
+    public const ushort Current = 14;
 }

@@ -80,9 +80,14 @@ public class MageTeleportTests : IDisposable
     static int CountPacketsOfType(List<byte[]> sent, PacketID type)
         => sent.Count(p => PacketIdOf(p) == type);
 
-    static ArraySegment<byte> TeleportPacketBytes(int attackerClientTick = 1)
+    static ArraySegment<byte> TeleportPacketBytes(int attackerClientTick = 1, byte verticalDir = 0)
     {
-        C_SkillUse pkt = new C_SkillUse { skillId = (byte)SkillId.Teleport, attackerClientTick = attackerClientTick };
+        C_SkillUse pkt = new C_SkillUse
+        {
+            skillId = (byte)SkillId.Teleport,
+            attackerClientTick = attackerClientTick,
+            verticalDir = verticalDir,
+        };
         return pkt.Write();
     }
 
@@ -131,6 +136,17 @@ public class MageTeleportTests : IDisposable
         return new MapTerrain(new[] { left, right, floor }, Array.Empty<TerrainPlatform>());
     }
 
+    // 지형 인식 수직 텔레포트 검증용 — 지정 Y에 TerrainPlatform 삽입.
+    // platformY: 발판 표면 Y (= destY 기대값). 플레이어 X가 발판 X 범위에 포함되도록 넓게 생성.
+    // floors: 별도 solid floor 없음(플레이어는 공중 배치 — 물리 낙하 간섭 배제).
+    static MapTerrain MakeTerrainWithPlatforms(params float[] platformYValues)
+    {
+        TerrainPlatform[] platforms = new TerrainPlatform[platformYValues.Length];
+        for (int i = 0; i < platformYValues.Length; i++)
+            platforms[i] = new TerrainPlatform(platformYValues[i], minX: -200f, maxX: 200f);
+        return new MapTerrain(Array.Empty<TerrainAabb>(), platforms);
+    }
+
     // ── 위치 검증 ──────────────────────────────────────────────────────────────
 
     [Fact]
@@ -167,7 +183,7 @@ public class MageTeleportTests : IDisposable
         // 맵 우측 끝(maxX=100) 근처에서 오른쪽으로 텔레포트 → 100을 초과해서는 안 됨.
         float mapMax = 100f;
         MapTerrain terrain = MakeBoundedTerrain(minX: -100f, maxX: mapMax);
-        float startX = mapMax - 5f; // 텔레포트 하면 100+10 초과 의도
+        float startX = mapMax - CombatConstants.TeleportDistance * 0.5f; // 텔레포트 시 절반 거리만큼 벽 초과 의도 → clamp 검증 (거리 상대값)
 
         var (session, caster, map) = SetupMage(startX, facingDir: 1, terrain: terrain);
 
@@ -184,7 +200,7 @@ public class MageTeleportTests : IDisposable
         // 맵 좌측 끝(minX=-100) 근처에서 왼쪽으로 텔레포트 → -100 미만 불가.
         float mapMin = -100f;
         MapTerrain terrain = MakeBoundedTerrain(minX: mapMin, maxX: 100f);
-        float startX = mapMin + 5f; // 텔레포트 하면 -100-10 미만 의도
+        float startX = mapMin + CombatConstants.TeleportDistance * 0.5f; // 텔레포트 시 절반 거리만큼 벽 초과 의도 → clamp 검증 (거리 상대값)
 
         var (session, caster, map) = SetupMage(startX, facingDir: -1, terrain: terrain);
 
@@ -309,6 +325,167 @@ public class MageTeleportTests : IDisposable
         Assert.Equal((byte)SkillId.Teleport, parsed.skillId);
         Assert.Equal(0, parsed.strikeDelayTicks); // 즉시 이동
         Assert.Equal((byte)1, parsed.facing);     // facingDir=+1 → 1(오른쪽)
+    }
+
+    // ── 지형 인식 수직 텔레포트 (M4.15 P09) ──────────────────────────────────────
+
+    // 발판 표면 Y 픽스처 상수 — 기대 destY 정확 검증용 단일 진실.
+    // 플레이어 시작 Y=0 기준, TeleportVerticalRange(3.0) 이내로 배치(경계 fragile 회피 — 2.5).
+    const float UpperPlatformY = 2.5f;  // 위 발판 (거리 2.5 ≤ 사거리 3.0)
+    const float LowerPlatformY = -2.5f; // 아래 발판 (거리 2.5 ≤ 사거리 3.0)
+
+    [Fact]
+    public void Teleport_Vertical_Up_SnapsToUpperPlatform_XUnchanged()
+    {
+        // verticalDir=1(위): 사거리 안 위 발판 → 발판 표면 Y로 정확 snap.
+        //   발판 위 배치라 중력 중립(OnGround=true, 낙하 없음) — Execute 직후 Position이 정확값.
+        //   Execute → RecordPosition → BroadcastToAll 순서 이후 map.Tick이 물리를 1회 돌리지만
+        //   발판(Platform.Y=5f) 위에 있으면 중력이 표면에 재snap → 정확값 유지.
+        MapTerrain terrain = MakeTerrainWithPlatforms(UpperPlatformY);
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
+        caster.Position = new Vector2(0f, 0f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float startX = caster.Position.X;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
+        map.Tick(2);
+
+        Assert.Equal(UpperPlatformY, caster.Position.Y, precision: 3);
+        Assert.Equal(startX, caster.Position.X, precision: 3);
+    }
+
+    [Fact]
+    public void Teleport_Vertical_Down_SnapsToLowerPlatform_XUnchanged()
+    {
+        // verticalDir=2(아래): 사거리 안 아래 발판 → 발판 표면 Y로 정확 snap. X 불변.
+        MapTerrain terrain = MakeTerrainWithPlatforms(LowerPlatformY);
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
+        caster.Position = new Vector2(0f, 0f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float startX = caster.Position.X;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 2));
+        map.Tick(2);
+
+        Assert.Equal(LowerPlatformY, caster.Position.Y, precision: 3);
+        Assert.Equal(startX, caster.Position.X, precision: 3);
+    }
+
+    [Fact]
+    public void Teleport_Vertical_Up_OutOfRange_PositionUnchanged()
+    {
+        // 위 발판이 사거리 밖(TeleportVerticalRange 초과) → 이동 없음. (상수 상대값이라 튜닝에 자동 정합.)
+        float farPlatformY = CombatConstants.TeleportVerticalRange + 1f; // 사거리 밖
+        MapTerrain terrain = MakeTerrainWithPlatforms(farPlatformY);
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: terrain);
+        caster.Position = new Vector2(0f, 0f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float startX = caster.Position.X;
+        float startY = caster.Position.Y;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
+        map.Tick(2);
+
+        // 이동 없음: X 정확 불변, Y는 중력 낙하로 미세 감소할 수 있으나 startY 기준 ±0.2 이내.
+        Assert.Equal(startX, caster.Position.X, precision: 3);
+        Assert.True(MathF.Abs(caster.Position.Y - startY) < 0.2f,
+            $"이동 없어야 함(사거리 밖): startY={startY} Position.Y={caster.Position.Y}");
+    }
+
+    [Fact]
+    public void Teleport_Vertical_NoPlatform_PositionUnchanged()
+    {
+        // 발판 없는 terrain(빈 MapTerrain) → 이동 없음. 이펙트(S_SkillCast) 1회 보장.
+        MapTerrain emptyTerrain = new MapTerrain(Array.Empty<TerrainAabb>(), Array.Empty<TerrainPlatform>());
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: emptyTerrain);
+        caster.Position = new Vector2(0f, 0f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        float startX = caster.Position.X;
+        float startY = caster.Position.Y;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 1));
+        map.Tick(2);
+
+        // 이동 없음
+        Assert.Equal(startX, caster.Position.X, precision: 3);
+        Assert.True(MathF.Abs(caster.Position.Y - startY) < 0.2f,
+            $"이동 없어야 함(발판 없음): startY={startY} Position.Y={caster.Position.Y}");
+        // 이펙트 신호(S_SkillCast) 무조건 1회 — early-return 회귀 차단.
+        Assert.Equal(1, CountPacketsOfType(session.SentPackets, PacketID.S_SkillCast));
+    }
+
+    [Fact]
+    public void Teleport_Vertical_NoPlatform_BroadcastsSkillCastAndPositionUnchanged()
+    {
+        // 아래 이동 불가(발판 없음) → Position 불변 + S_SkillCast 1회 동시 Assert.
+        // early-return이 있으면 broadcast가 빠짐 — 회귀 방지 전용 케이스.
+        MapTerrain emptyTerrain = new MapTerrain(Array.Empty<TerrainAabb>(), Array.Empty<TerrainPlatform>());
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1, terrain: emptyTerrain);
+        caster.Position = new Vector2(0f, 0f);
+        caster.RecordPosition(1, caster.Position);
+        session.SentPackets.Clear();
+        Vector2 startPos = caster.Position;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 2));
+        map.Tick(2);
+
+        // Position 불변 (X 정확, Y 중력 허용 ±0.2)
+        Assert.Equal(startPos.X, caster.Position.X, precision: 3);
+        Assert.True(MathF.Abs(caster.Position.Y - startPos.Y) < 0.2f,
+            $"아래 이동 불가 시 Y 변화 없어야 함: startY={startPos.Y} pos={caster.Position.Y}");
+        // S_SkillCast 1회 무조건 broadcast (이펙트 신호)
+        Assert.Equal(1, CountPacketsOfType(session.SentPackets, PacketID.S_SkillCast));
+    }
+
+    [Fact]
+    public void Teleport_Horizontal_VerticalDirZero_MovesXOnly()
+    {
+        // verticalDir=0(수평): 기존 거동 — X축 FacingDir 방향, Y 유지.
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1);
+        float startY = caster.Position.Y;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 0));
+        map.Tick(2);
+
+        Assert.Equal(CombatConstants.TeleportDistance, caster.Position.X, precision: 3); // 0 + 거리
+        Assert.Equal(startY, caster.Position.Y, precision: 3); // 수평 이동은 Y 불변
+    }
+
+    [Fact]
+    public void Teleport_Distance_IsThreePointFive()
+    {
+        // 수평 거리 축소(15→5→3.5, 영호 Play 튜닝) 반영 회귀.
+        Assert.Equal(3.5f, CombatConstants.TeleportDistance, precision: 3);
+
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1);
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: 0));
+        map.Tick(2);
+        Assert.Equal(3.5f, caster.Position.X, precision: 3);
+    }
+
+    // ── whitelist 경계 (헌법 §3) ────────────────────────────────────────────────
+
+    [Theory]
+    [InlineData((byte)3)]    // 경계값 3 — off-by-one cheat (허용 집합 {0,1,2} 바로 밖). 필수 케이스.
+    [InlineData((byte)99)]
+    [InlineData((byte)255)]  // byte 최대값
+    public void Teleport_VerticalDir_OutOfWhitelist_NormalizesToHorizontal(byte cheatVerticalDir)
+    {
+        // {0,1,2} 밖의 값은 전부 0(수평)으로 정규화 — SkillUseHandler whitelist 술어 검증.
+        //   수평으로 정규화됐다면 X가 FacingDir 방향으로 이동하고 Y는 불변이어야 함.
+        var (session, caster, map) = SetupMage(startX: 0f, facingDir: 1);
+        float startY = caster.Position.Y;
+
+        session.OnRecvPacket(TeleportPacketBytes(attackerClientTick: 1, verticalDir: cheatVerticalDir));
+        map.Tick(2);
+
+        // 수평 거동: X = +거리, Y 불변.
+        Assert.Equal(CombatConstants.TeleportDistance, caster.Position.X, precision: 3);
+        Assert.Equal(startY, caster.Position.Y, precision: 3);
     }
 
     // ── 회귀 ───────────────────────────────────────────────────────────────────

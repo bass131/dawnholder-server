@@ -20,7 +20,7 @@ namespace GameServer.Tests.Combat;
 ///   [시스템 5종]
 ///   4. BoxScan_TargetsInBox_AllEnqueued  — 박스 내 N개 전원 deferred enqueue, 박스 밖 0
 ///   5. LightningDelay_DamageAndHitEffect — 각 적 LightningDelayTicks 후 데미지 + S_HitResult(hitEffect=2)
-///   6. Boss_DamageApplied_NoFreeze       — Boss 데미지 O / FrozenUntilTick 세팅 X (면역)
+///   6. Boss_DamageApplied_NoFreeze       — Boss 데미지 O / FrozenUntilTick 세팅 X (M4.15 P03: 썬더볼트 stun 제거, 모든 적 freeze 없음)
 ///   7. Cooldown_SecondCastDropped        — ThunderboltCooldownTicks 미경과 재발동 silent drop
 ///   8. EmptyBox_SkillCastOnly_DeferredZero — 타격 적 0개: S_SkillCast 1회, deferred 0
 /// </summary>
@@ -35,11 +35,11 @@ public class ThunderboltSkillTests : IDisposable
     const int BossEnemyId   = 2;
     const int CasterEntityId = 3;
 
-    const float NormalX    = 3f;   // 박스 내 (caster x=0, halfX=6.0 → 범위 [-6,6])
+    const float NormalX    = 3f;   // 박스 내 (caster x=0, ThunderboltBoxHalfX=13.0 → 범위 [-13,13])
     const float NormalY    = 0f;
     const float BossX      = 4f;   // 박스 내
     const float BossY      = 0f;
-    const float OutsideX   = 20f;  // 박스 밖 (halfX=6, origin=0 → 이 좌표 밖)
+    const float OutsideX   = 20f;  // 박스 밖 (halfX=13, origin=0 → x=20은 범위 밖)
 
     public ThunderboltSkillTests()
     {
@@ -131,7 +131,7 @@ public class ThunderboltSkillTests : IDisposable
         map.Tick(1); // AddPlayer 람다 처리 → entity 등록
 
         // caster 위치를 원점에 배치 — 박스 중심 = 원점.
-        // NormalX=3, BossX=4 → 원점 기준 halfX=6 박스 안에 들어옴.
+        // NormalX=3, BossX=4 → 원점 기준 ThunderboltBoxHalfX=13 박스 안에 들어옴.
         PlayerEntity? casterEntity = map.GetPlayer(CasterEntityId);
         Assert.NotNull(casterEntity);
         casterEntity!.Position = new Vector2(0f, 0f);
@@ -207,7 +207,7 @@ public class ThunderboltSkillTests : IDisposable
     [Fact]
     public void BoxScan_TargetsInBox_AllEnqueued_OutsideExcluded()
     {
-        // Normal(3,0) + Boss(4,0)는 박스 [-6,6]x[-3,3] 안. outside(20,0)은 밖.
+        // Normal(3,0) + Boss(4,0)는 박스 [-13,13]x[-1.5,1.5] 안. outside(20,0)은 밖.
         // 3개 enemy 맵: id=1(Normal inside), id=2(Boss inside), id=3(Normal outside).
         // SetupMageSession이 player 2명 추가 → caster=4, observer=5. CasterEntityId=3은 틀림.
         // 이 테스트는 별도로 직접 세션을 생성해서 id를 동적으로 구함.
@@ -322,8 +322,7 @@ public class ThunderboltSkillTests : IDisposable
 
         // Boss: 데미지 적용 O
         Assert.True(boss.Hp < hpBefore, "Boss에 썬더볼트 데미지가 적용돼야 함");
-        // Boss: freeze 세팅 X (면역 — BossBehaviorSystem에 가드 없음, 설계 의도)
-        // ApplyFreeze 자체를 호출 안 하므로 FrozenUntilTick은 0 그대로.
+        // Boss: freeze 세팅 X (M4.15 P03 — 썬더볼트 ApplyFreeze 호출 제거. 모든 적에 freeze 없음).
         Assert.Equal(0L, boss.FrozenUntilTick);
     }
 

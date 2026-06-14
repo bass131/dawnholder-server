@@ -316,6 +316,85 @@ public class GameMap
         _respawnSystem.Process(this, tickNumber);
     }
 
+    // ── 지형 쿼리 ────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 수직 텔레포트 목적지 발판을 찾는다 (지형 인식 M4.15 P09).
+    ///
+    /// 후보: Solids[].MaxY + Platforms[].Y 중 x ∈ [MinX-eps, MaxX+eps].
+    ///   up=true  : surfaceY &gt; currentY+eps 중 가장 낮은 것(가장 가까운 위).
+    ///   up=false : surfaceY &lt; currentY-eps 중 가장 높은 것(가장 가까운 아래).
+    ///   가장 가까운 발판이 maxRange 이내면 destY=surfaceY → true.
+    ///   발판 없거나 사거리 밖이면 destY=currentY → false.
+    ///
+    /// **헌법 §5 정합**: span 순회만, alloc 0.
+    /// **_terrain==null(평지 맵)**: 발판 없음 → false.
+    /// </summary>
+    internal bool TryFindVerticalTeleportTarget(
+        float x, float currentY, bool up, float maxRange, out float destY)
+    {
+        destY = currentY;
+        if (_terrain == null)
+            return false;
+
+        const float eps = 0.0001f; // Terrain.cs GroundEpsilon 재사용
+
+        float best = up ? float.MaxValue : float.MinValue;
+        bool found = false;
+
+        foreach (TerrainAabb s in _terrain.Solids)
+        {
+            if (x < s.MinX - eps || x > s.MaxX + eps)
+                continue;
+            float surfaceY = s.MaxY;
+            if (up)
+            {
+                if (surfaceY > currentY + eps && surfaceY < best)
+                {
+                    best  = surfaceY;
+                    found = true;
+                }
+            }
+            else
+            {
+                if (surfaceY < currentY - eps && surfaceY > best)
+                {
+                    best  = surfaceY;
+                    found = true;
+                }
+            }
+        }
+
+        foreach (TerrainPlatform p in _terrain.Platforms)
+        {
+            if (x < p.MinX - eps || x > p.MaxX + eps)
+                continue;
+            float surfaceY = p.Y;
+            if (up)
+            {
+                if (surfaceY > currentY + eps && surfaceY < best)
+                {
+                    best  = surfaceY;
+                    found = true;
+                }
+            }
+            else
+            {
+                if (surfaceY < currentY - eps && surfaceY > best)
+                {
+                    best  = surfaceY;
+                    found = true;
+                }
+            }
+        }
+
+        if (!found || MathF.Abs(best - currentY) > maxRange)
+            return false;
+
+        destY = best;
+        return true;
+    }
+
     // **호출 invariant**: tick thread 또는 ctor에서만 (단일 thread invariant 유지).
     //
     // stats 오버라이드 규칙:
@@ -474,8 +553,8 @@ public class GameMap
     ///
     /// **호출 invariant**: tick thread에서만. GameSession.SubmitSkillUse가 EnqueueJob 람다로 박음.
     /// </summary>
-    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick, sbyte facing)
-        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick, facing);
+    internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick, sbyte facing, byte verticalDir)
+        => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick, facing, verticalDir);
 
     // ── AnimState 계산 ───────────────────────────────────────────────────────
 

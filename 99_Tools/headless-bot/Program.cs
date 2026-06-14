@@ -133,8 +133,8 @@ if (string.Equals(scenarioName, "FreezeSmoke", StringComparison.OrdinalIgnoreCas
 {
     FreezeSmoke.Result r = await FreezeSmoke.Run(host, port);
     Console.WriteLine($"[Bot] FreezeSmoke: success={r.Success} entity={r.LocalEntityId}");
-    Console.WriteLine($"      normal={r.NormalEntityId} froze={r.NormalFrozeAfterShot} resumed={r.NormalResumedAfterFreeze}");
-    Console.WriteLine($"      boss={r.BossEntityId} bossMovedDuringExpectedFreeze={r.BossMovedDuringExpectedFreeze} " +
+    Console.WriteLine($"      normal={r.NormalEntityId} movedDuringObserve={r.NormalMovedDuringObserveWindow}");
+    Console.WriteLine($"      boss={r.BossEntityId} bossMovedAfterShot={r.BossMovedAfterShot} " +
                       $"bossSkippedLowHp={r.BossSkippedLowHp}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;

@@ -7,24 +7,31 @@ using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 
-// M4.8 freeze 회귀 스모크.
+// M4.15 no-freeze 회귀 스모크 (M4.8 freeze 검증 → "freeze 제거" 검증으로 전환).
+//
+// M4.15 워크스트림 C: ApplyFreeze 호출 제거 — Mage 평타·Thunderbolt가 더 이상 적을 얼리지 않음.
+// 인프라(FreezeComponent 등)는 보존, 실제 호출만 제거.
 //
 // 검증 목표:
-//   - Mage가 HuntingGround Normal 적 평타(C_Attack) → S_ProjectileLaunch 이후
-//     freeze 동안(travelTicks) S_EntityState.x 불변(이동 정지) 확인.
-//   - freeze 만료 후 S_EntityState.x 변화 재개(AI 활동 재개) 확인.
-//   - BossRoom 보스는 Mage 평타 후에도 S_EntityState.x가 계속 변화(freeze 면역) 확인.
+//   - Mage가 HuntingGround Normal 적 평타(C_Attack) → S_ProjectileLaunch 발사 후
+//     투사체 도착 시간 + 관측 창(FreezeObserveWindow) 동안 S_EntityState.x가 *계속 변화*함.
+//     (이전: 이동 정지 기대 → 새: 이동 지속 기대 — "freeze 안 됨" 박제)
+//   - Boss도 동일: 평타 1회 후에도 이동 계속(기존과 동일 결과, 이유가 "boss 면역"에서 "freeze 자체 제거"로 바뀜).
 //
 // 보스 안 죽이기: 봇은 보스를 딱 1회만 공격해 데미지만 확인. 보스 HP가 낮은 경우
 //   보스 HP 10 이하일 때 공격 생략 — 리스폰 없는 보스를 보호한다.
 //
 // 흐름:
-//   Normal 검증 — Town → HuntingGround → Normal 적 평타 → freeze 정지/재개 관측.
-//   Boss 면역 검증 — HuntingGround → BossRoom → 보스 살아있으면 평타 1회 → 이동 계속 확인.
+//   Normal 검증 — Town → HuntingGround → Normal 적 평타 → 투사체 도착 후 이동 지속 관측.
+//   Boss 검증   — HuntingGround → BossRoom → 보스 살아있으면 평타 1회 → 이동 계속 확인.
 public class FreezeSmoke
 {
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
+    // FreezeObserveWindow: 투사체 도착 후 이동 지속 여부를 관측하는 창.
+    // 옛 코드에서는 "이 창 동안 x 불변 = freeze" 를 기대했으나,
+    // M4.15부터 "이 창 동안 x 변화 지속 = no-freeze" 를 기대한다.
     static readonly TimeSpan FreezeObserveWindow = TimeSpan.FromMilliseconds(800);
+    // ResumeObserveWindow: 옛 freeze 만료 후 재개 관측 창. M4.15에서는 불필요하나 보스 후처리 대기용 보존.
     static readonly TimeSpan ResumeObserveWindow = TimeSpan.FromMilliseconds(1500);
 
     const float TownPortalX  = 20f;
@@ -43,14 +50,13 @@ public class FreezeSmoke
         public bool Success;
         public string Reason = "";
         public int LocalEntityId;
-        // Normal 검증
+        // Normal 검증 (M4.15: "freeze 안 됨" — 평타 후에도 이동 지속)
         public int NormalEntityId;
-        public bool NormalFrozeAfterShot;
-        public bool NormalResumedAfterFreeze;
-        // Boss 면역 검증
+        public bool NormalMovedDuringObserveWindow; // true = 이동 지속 확인 (freeze 없음)
+        // Boss 검증 (M4.15: freeze 제거로 이유 변경, 결과는 동일 — 이동 계속)
         public int BossEntityId;
         public bool BossSkippedLowHp;
-        public bool BossMovedDuringExpectedFreeze;
+        public bool BossMovedAfterShot;
     }
 
     public static async Task<Result> Run(
@@ -75,7 +81,7 @@ public class FreezeSmoke
 
             result.LocalEntityId = bot.LocalEntityId;
 
-            // ── Normal 적 freeze 검증 ──────────────────────────────────────────
+            // ── Normal 적 no-freeze 검증 (M4.15: 평타 후에도 이동 지속) ─────────
             await bot.MoveToPortal(TownPortalX, ct);
             bot.SendEnterPortal(TownPortalId);
             if (!await bot.WaitMapTransition(DefaultTimeout, ct))
@@ -97,38 +103,30 @@ public class FreezeSmoke
             // 적 접근 대기.
             await bot.WaitForEntityNearby(normalSpawn.entityId, maxDist: 4.5f, DefaultTimeout, ct);
 
-            // 공격 직전 x 스냅샷.
-            float xBeforeShot = bot.GetEntityX(normalSpawn.entityId);
             bot.ClearEntityPositionHistory(normalSpawn.entityId);
 
             // C_Attack → S_ProjectileLaunch 수신 → travelTicks 확보.
             bot.SendAttack(normalSpawn.entityId);
             S_ProjectileLaunch? launch = await bot.WaitForProjectileLaunch(TimeSpan.FromSeconds(5), ct);
             if (launch == null)
-                return Fail(result, "S_ProjectileLaunch not received — cannot verify freeze");
+                return Fail(result, "S_ProjectileLaunch not received — cannot verify no-freeze");
 
             int travelTicks = launch.travelTicks;
 
-            // freeze = 도착(travelTicks) + StunTicks(서버 8틱). freeze 만료 *전*(travelTicks+4틱)에
-            // 측정을 끝내 freeze 종료 후 이동이 섞이지 않게 한다(StunTicks 마진 안에서 관측).
-            TimeSpan freezeWindow = TimeSpan.FromMilliseconds((travelTicks + 4) * Constants.TickIntervalMs);
+            // M4.15: freeze 제거 — 투사체 도착(travelTicks) 후 FreezeObserveWindow 동안
+            // 적이 *계속 이동*(x 변화)해야 한다. 옛 로직과 반대 기대값.
+            // 관측 창 = 투사체 travelTicks + 여유 2틱(서버 틱 레이턴시 흡수).
+            TimeSpan observeDelay = TimeSpan.FromMilliseconds((travelTicks + 2) * Constants.TickIntervalMs);
+            await Task.Delay(observeDelay, ct);
             bot.StartTrackingEntity(normalSpawn.entityId);
-            await Task.Delay(freezeWindow, ct);
+            await Task.Delay(FreezeObserveWindow, ct);
 
-            float xDuringFreeze = bot.GetMaxPositionDelta(normalSpawn.entityId);
-            // 허용 오차 0.05f — 부동소수점 jitter 흡수.
-            result.NormalFrozeAfterShot = xDuringFreeze < 0.05f;
+            float xDeltaDuringObserve = bot.GetMaxPositionDelta(normalSpawn.entityId);
+            // 허용 오차 0.05f — AI가 이동 중이라면 이 값을 초과해야 한다.
+            result.NormalMovedDuringObserveWindow = xDeltaDuringObserve >= 0.05f;
 
-            // freeze 만료 후 AI 재개 대기 — 위치 변화 관측.
-            bot.ClearPositionDeltaTracking(normalSpawn.entityId);
-            await Task.Delay(ResumeObserveWindow, ct);
-            float xAfterFreeze = bot.GetMaxPositionDelta(normalSpawn.entityId);
-            result.NormalResumedAfterFreeze = xAfterFreeze >= 0.05f;
-
-            if (!result.NormalFrozeAfterShot)
-                return Fail(result, $"Normal enemy moved during freeze window (delta={xDuringFreeze:F3})");
-            if (!result.NormalResumedAfterFreeze)
-                return Fail(result, $"Normal enemy did not resume after freeze (delta={xAfterFreeze:F3})");
+            if (!result.NormalMovedDuringObserveWindow)
+                return Fail(result, $"Normal enemy did NOT move after Mage attack — freeze may still be active (delta={xDeltaDuringObserve:F3}). M4.15 removes ApplyFreeze.");
 
             // ── 보스 freeze 면역 검증 ─────────────────────────────────────────
             await bot.MoveToPortal(HGPortalX, ct);
@@ -161,15 +159,16 @@ public class FreezeSmoke
             if (!await bot.WaitForFirstSnapshot(DefaultTimeout, ct))
                 return Fail(result, "S_Snapshot timeout (BossRoom)");
 
-            // 보스 평타 1회 → 발사 확인. freeze 면역(이동 계속)은 보스 FSM의 Idle dwell
-            // (공격 쿨다운 정지) 때문에 봇 position 관측이 비결정적(Idle이면 freeze 아니어도 delta=0).
-            // → 이동 면역은 dotnet(Boss_ApplyFreeze_BossBehaviorSystemContinues)가 결정적 검증.
-            //   봇은 보스가 평타에 맞되(투사체 발사) 안 죽고 살아있음만 확인.
+            // 보스 평타 1회 → 발사 확인.
+            // M4.15: freeze 제거로 "보스 면역"이라는 개념이 사라짐. 보스도 일반 적도 모두 얼지 않음.
+            // 보스 FSM Idle dwell(공격 쿨다운 정지) 때문에 봇 position 관측이 비결정적이므로
+            // 봇은 보스가 평타에 맞되(투사체 발사) 안 죽고 살아있음만 확인.
+            // 이동 지속의 결정적 검증은 dotnet 단위 테스트(Boss_NoFreeze_BossBehaviorSystemContinues)로.
             bot.SendAttack(bossSpawn.entityId);
             await bot.WaitForProjectileLaunch(TimeSpan.FromSeconds(3), ct);
             await Task.Delay(Constants.TickIntervalMs * 6, ct);
 
-            result.BossMovedDuringExpectedFreeze = true; // 이동 면역 dotnet 위임
+            result.BossMovedAfterShot = true; // 이동 결정적 검증은 dotnet 위임
             result.Success = true;
             return result;
         }

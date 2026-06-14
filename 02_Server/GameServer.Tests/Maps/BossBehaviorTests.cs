@@ -471,10 +471,11 @@ public class BossBehaviorTests : IDisposable
     // ─── 항목 7: ProtocolVersion + 직렬화 왕복 ────────────────────────────────────
 
     [Fact]
-    public void ProtocolVersion_Is13()
+    public void ProtocolVersion_Is14()
     {
         // M4.13 P5: C_SkillUse.facing append (대쉬 방향 권위) → v12→v13.
-        Assert.Equal(13, ProtocolVersion.Current);
+        // M4.15 P06: C_SkillUse.verticalDir append (텔레포트 4방향) → v13→v14.
+        Assert.Equal(14, ProtocolVersion.Current);
     }
 
     [Fact]

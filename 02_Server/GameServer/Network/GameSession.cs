@@ -289,7 +289,9 @@ public class GameSession : PacketSession
     //   _entityId에서 강제 — 클라가 다른 플레이어를 사칭해 스킬 발동 차단.
     // skillId 범위 검증은 SkillUseHandler에서 이미 완료. attackerClientTick은 untrusted — ProcessSkill에서 검증.
     // facing(M4.13 v13): 핸들러가 §3 정규화한 대쉬 방향(±1). 대쉬 적용 시 FacingDir 권위로 사용(ActionGate).
-    internal void SubmitSkillUse(byte skillId, int attackerClientTick, sbyte facing)
+    // verticalDir(M4.15 v14): 핸들러가 §3 whitelist 정규화한 텔레포트 수직 의도(0=수평/1=위/2=아래).
+    //   facing(좌우, Dash 계약)과 의미 분리 — Dash는 verticalDir 무시. 텔레포트 4방향 목적지 산출에만 사용.
+    internal void SubmitSkillUse(byte skillId, int attackerClientTick, sbyte facing, byte verticalDir)
     {
         if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
 
@@ -303,7 +305,8 @@ public class GameSession : PacketSession
         byte capturedSkillId = skillId;
         long capturedClientTick = attackerClientTick;
         sbyte capturedFacing = facing;
-        map.EnqueueJob(() => map.ProcessSkill(casterEntityId, capturedSkillId, capturedClientTick, capturedFacing));
+        byte capturedVerticalDir = verticalDir;
+        map.EnqueueJob(() => map.ProcessSkill(casterEntityId, capturedSkillId, capturedClientTick, capturedFacing, capturedVerticalDir));
     }
 
     // Pong 회신: serverTimestampMs 박고 Send.

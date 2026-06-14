@@ -51,6 +51,12 @@ internal sealed class SkillUseHandler : IPacketHandler
         // facing(M4.13 v13): 클라 화면 방향 — 대쉬 방향 권위. 헌법 #3 정규화 (1=right, 그 외=left=-1).
         //   cheat 무해(거리 고정·벽통과 불가)지만 trust-boundary 규율상 부호 정규화.
         sbyte facing = pkt.facing == 1 ? (sbyte)1 : (sbyte)-1;
-        session.SubmitSkillUse(pkt.skillId, pkt.attackerClientTick, facing);
+
+        // verticalDir(M4.15 v14): 텔레포트 4방향 수직 의도 — 0=수평/1=위/2=아래 (PDL 단일 진실).
+        //   헌법 #3 whitelist 정규화: 허용 집합 {0,1,2}만 통과, 그 외(3·99·255 등 cheat)는 안전 기본 0(수평).
+        //   **3진 정의역** — facing의 2진 패턴(==1?1:-1) 모방 금지: "1 아니면 0"으로 짜면 2(아래)가 0으로
+        //   뭉개져 아래 텔레포트가 죽음. whitelist 술어(is 1 or 2) 필수.
+        byte verticalDir = pkt.verticalDir is 1 or 2 ? pkt.verticalDir : (byte)0;
+        session.SubmitSkillUse(pkt.skillId, pkt.attackerClientTick, facing, verticalDir);
     }
 }

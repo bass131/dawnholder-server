@@ -61,11 +61,12 @@ internal sealed class MeleeAction : IGameAction
 
         if (attacker.Stats.Class == CharacterClass.Mage)
         {
-            float dx = Math.Abs(target.X - rewindedPos.X);
-            int travelTicks = Math.Clamp(
-                (int)Math.Round(dx / CombatConstants.ProjectileSpeedPerTick),
+            float dx = target.X - rewindedPos.X;
+            float dy = target.Y - rewindedPos.Y;
+            float dist = MathF.Sqrt(dx * dx + dy * dy);
+            int travelTicks = Math.Max(
                 CombatConstants.MinTravelTicks,
-                CombatConstants.MaxTravelTicks);
+                (int)Math.Ceiling(dist / CombatConstants.ProjectileSpeedPerTick));
 
             map.EnqueueDeferredDamage(new DeferredImpact
             {
@@ -75,8 +76,6 @@ internal sealed class MeleeAction : IGameAction
                 ImpactTick       = map.CurrentTick + travelTicks,
                 HitEffect        = (byte)HitEffect.Projectile,
             });
-
-            target.ApplyFreeze(map.CurrentTick + travelTicks + CombatConstants.StunTicks);
 
             S_ProjectileLaunch launch = new S_ProjectileLaunch
             {
