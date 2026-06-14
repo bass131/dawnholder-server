@@ -20,6 +20,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario DashSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario TeleportSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario BossGate
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario PartyQuest
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -216,6 +217,20 @@ if (string.Equals(scenarioName, "BossGate", StringComparison.OrdinalIgnoreCase))
     Console.WriteLine($"      sawPortalLocked={r.SawPortalLocked} " +
                       $"requiredCount={r.RequiredCount} currentCount={r.CurrentCount}");
     Console.WriteLine($"      enteredBossRoom={r.EnteredBossRoom} (standalone=false — xUnit 전용)");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "PartyQuest", StringComparison.OrdinalIgnoreCase))
+{
+    // standalone 봇 런: seedPartyKills=null → 파티 결성 + cross-map 이동 + 해산까지만.
+    // 공유카운트 시드/검증은 xUnit 통합 테스트 전용.
+    PartyQuestSmoke.Result r = await PartyQuestSmoke.Run(host, port, seedPartyKills: null);
+    Console.WriteLine($"[Bot] PartyQuest: success={r.Success} " +
+                      $"entityA={r.EntityIdA} entityB={r.EntityIdB}");
+    Console.WriteLine($"      partyFormed={r.PartyFormed} " +
+                      $"sharedCountA={r.SharedCountA} sharedCountB={r.SharedCountB} " +
+                      $"targetCount={r.TargetCount} disbanded={r.Disbanded}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }
