@@ -76,6 +76,7 @@ namespace Dawnholder.Client.Network
                 { PacketID.S_PartyInviteRecv,   new PartyInviteRecvHandler() },
                 { PacketID.S_PartyUpdate,        new PartyUpdateHandler() },
                 { PacketID.S_PartyError,         new PartyErrorHandler() },
+                { PacketID.S_PortalLocked,       new PortalLockedHandler() },
             };
 
         // Editor only 송신 latency 시뮬레이션.

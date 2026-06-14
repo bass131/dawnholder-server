@@ -50,6 +50,7 @@ namespace Dawnholder.Client.Combat
             // BuildZoneVisualizer();
             BuildEnemyRegistry();
             BuildStageClearUI();
+            BuildToastUI();
             BuildRemoteEntityRegistry();
         }
 
@@ -74,6 +75,12 @@ namespace Dawnholder.Client.Combat
             if (StageClearUI.Instance != null) return;
             // 독립 root — Canvas는 자식보다 root로 두는 게 일반적.
             StageClearUI.BuildRuntime(parent: transform);
+        }
+
+        void BuildToastUI()
+        {
+            if (ToastUI.Instance != null) return;
+            ToastUI.BuildRuntime(parent: transform);
         }
 
         // **prefab 참조 전략 (Resources.Load)**:
