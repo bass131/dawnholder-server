@@ -33,9 +33,12 @@ public class EnemyEntity
         State = kind == EnemyKind.Boss ? EnemyState.Idle : EnemyState.Patrol;
         PatrolDir = 1;
 
-        // 보스 초기 쿨다운: 스폰 직후 즉시 telegraph 방지 (페이즈 1 쿨다운으로 시작).
+        // 초기 쿨다운: 스폰 직후 즉시 공격 방지.
+        // Boss = 페이즈 1 쿨다운(40틱=2초). Normal/Golem = 일반몹 쿨다운(30틱=1.5초).
         if (kind == EnemyKind.Boss)
             AttackCooldownTicks = CombatConstants.BossPhase1CooldownTicks;
+        else
+            AttackCooldownTicks = CombatConstants.NormalAttackCooldownTicks;
     }
 
     public int EntityId { get; }
@@ -113,8 +116,11 @@ public class EnemyEntity
     public bool IsPhase2 { get; set; }
 
     /// <summary>
-    /// 공격 쿨다운 남은 틱 수. 0이 되면 탐지 후 Move 전환.
-    /// post-attack은 쿨다운(긴 리듬), 배회 종료 후엔 BossIdlePauseTicks(짧은 숨) — Idle dwell로 통합.
+    /// 보스+일반몹 공통 공격 쿨다운 남은 틱 수.
+    /// Boss: 0이 되면 탐지 후 Move 전환(BossIdleState가 카운트다운).
+    ///       post-attack은 쿨다운(긴 리듬), 배회 종료 후엔 BossIdlePauseTicks(짧은 숨) — Idle dwell로 통합.
+    /// Normal/Golem: 0일 때 ChaseState.Tick이 Attack으로 전환. 공격 후 NormalAttackCooldownTicks 리셋.
+    ///               EnemyAISystem.Update가 매 틱 감소 (boss는 AI continue로 미도달 — 충돌 0).
     /// ctor에서 초기 쿨다운 값으로 초기화 — 스폰 즉시 공격 방지.
     /// </summary>
     public int AttackCooldownTicks { get; set; }
