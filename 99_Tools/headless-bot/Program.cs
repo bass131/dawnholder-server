@@ -19,6 +19,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario RangedWhiffSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario DashSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario TeleportSmoke
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario BossGate
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -202,6 +203,19 @@ if (string.Equals(scenarioName, "EnemyAiSmoke", StringComparison.OrdinalIgnoreCa
                       $"patrolBeforeHit={r.SawSlimePatrolBeforeHit} " +
                       $"stayedPatrolAfterApproach={r.SlimeStayedPatrolAfterApproach} " +
                       $"chaseAfterHit={r.SawSlimeChaseAfterHit}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "BossGate", StringComparison.OrdinalIgnoreCase))
+{
+    // standalone 봇 런: seedBossGate=null → 거부 경로(S_PortalLocked) 확인만.
+    // 통과 경로(killCount=40 시드 후 재시도)는 xUnit 통합 테스트 전용.
+    BossGateSmoke.Result r = await BossGateSmoke.Run(host, port, seedBossGate: null);
+    Console.WriteLine($"[Bot] BossGate: success={r.Success} entity={r.LocalEntityId}");
+    Console.WriteLine($"      sawPortalLocked={r.SawPortalLocked} " +
+                      $"requiredCount={r.RequiredCount} currentCount={r.CurrentCount}");
+    Console.WriteLine($"      enteredBossRoom={r.EnteredBossRoom} (standalone=false — xUnit 전용)");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }
