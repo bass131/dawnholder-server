@@ -42,6 +42,11 @@ public sealed class PartyRegistry
     // tick thread에서만 읽기/쓰기 — lock 없음 (actor 불변식).
     readonly Dictionary<int, int> _soloProgress = new();
 
+    // 보스 포탈 영구 해금 latch. 한 번 임계 킬 달성한 entityId 보관 — 이후 리셋(보스 킬)에도 유지.
+    // 영호 요청: 퀘스트 달성 후 재그라인드 금지(양방향 포탈 왕복 시 매번 재달성 X). tick thread 전용.
+    // 세션 한정(서버 재시작 시 비움) — entityId는 연결마다 신규라 disconnect 잔여는 무해.
+    readonly HashSet<int> _bossUnlocked = new();
+
     // pending invite: targetEntityId → (inviterEntityId, 발급 tick). 피초대자 기준 키 = respond 시 O(1) 매칭.
     //   초대자가 보낸 invite를 피초대자가 응답할 때까지 보관. 응답(수락/거절) 시 소비(제거).
     //   **키를 target으로 잡은 이유**: respond 핸들러의 행위자(=피초대자=session._entityId)가 키 →
@@ -214,15 +219,24 @@ public sealed class PartyRegistry
         if (party != null)
         {
             party.KillCount++;
+            if (party.KillCount >= QuestConstants.BossUnlockKillCount)
+                foreach (int memberId in party.Members) _bossUnlocked.Add(memberId);
+
+            // 임계 도달 후 표시는 N/target에서 멈춤(초과 누적 숨김) — 해금=영구라 더 셀 의미 없음.
+            int shown = Math.Min(party.KillCount, QuestConstants.BossUnlockKillCount);
             foreach (int memberId in party.Members)
-                PartyNotifier.SendQuestUpdate(world, memberId, party.KillCount, QuestConstants.BossUnlockKillCount);
+                PartyNotifier.SendQuestUpdate(world, memberId, shown, QuestConstants.BossUnlockKillCount);
         }
         else
         {
             _soloProgress.TryGetValue(killerEntityId, out int prev);
             int newCount = prev + 1;
             _soloProgress[killerEntityId] = newCount;
-            PartyNotifier.SendQuestUpdate(world, killerEntityId, newCount, QuestConstants.BossUnlockKillCount);
+            if (newCount >= QuestConstants.BossUnlockKillCount)
+                _bossUnlocked.Add(killerEntityId);
+
+            int shown = Math.Min(newCount, QuestConstants.BossUnlockKillCount);
+            PartyNotifier.SendQuestUpdate(world, killerEntityId, shown, QuestConstants.BossUnlockKillCount);
         }
     }
 
@@ -233,6 +247,7 @@ public sealed class PartyRegistry
     /// </summary>
     public void ResetAllQuestProgress()
     {
+        // _bossUnlocked는 의도적으로 비우지 않음 — 영구 해금 유지(보스 킬 후 재그라인드 방지, 영호 요청).
         _soloProgress.Clear();
         foreach (PartyState p in _parties.Values)
             p.KillCount = 0;
@@ -246,6 +261,10 @@ public sealed class PartyRegistry
     /// </summary>
     public int GetKillCount(int entityId)
     {
+        // 영구 해금 latch: 한 번 임계 달성 시 이후 리셋(보스 킬 등)에도 게이트 통과 유지(영호 요청).
+        // 게이트(MapMigration)는 이 값만 보므로 게이트 코드 변경 0 — latch는 서버 권위 OnKill만 세팅.
+        if (_bossUnlocked.Contains(entityId)) return QuestConstants.BossUnlockKillCount;
+
         PartyState? party = GetPartyByEntity(entityId);
         return party != null ? party.KillCount : GetSoloProgress(entityId);
     }
@@ -253,6 +272,9 @@ public sealed class PartyRegistry
     /// <summary>솔로 진행상황 조회 — 테스트 관측용.</summary>
     internal int GetSoloProgress(int entityId)
         => _soloProgress.TryGetValue(entityId, out int v) ? v : 0;
+
+    /// <summary>보스 포탈 영구 해금 여부 — 테스트 관측용.</summary>
+    internal bool IsBossUnlocked(int entityId) => _bossUnlocked.Contains(entityId);
 
     // pending invite 1건: 발신자 + 발급 tick. 발급 tick으로 만료 판정.
     readonly record struct PendingInvite(int InviterEntityId, long IssuedTick);

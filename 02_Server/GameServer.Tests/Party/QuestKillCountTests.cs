@@ -160,6 +160,28 @@ public class QuestKillCountTests : IDisposable
         Assert.Equal(0, _world.Party.GetSoloProgress(solo));
     }
 
+    // ── 3b. 영구 해금: 임계 달성 후 리셋(보스 킬)에도 게이트 통과 유지(재그라인드 X) ──────
+
+    [Fact]
+    public void BossUnlock_Persists_AfterReset_NoRegrind()
+    {
+        int solo = _world.NextEntityId();
+
+        // 솔로로 임계(20)까지 킬 → 영구 해금.
+        for (int i = 0; i < QuestConstants.BossUnlockKillCount; i++)
+            _world.Party.OnKill(solo, _world);
+
+        Assert.True(_world.Party.IsBossUnlocked(solo));
+        Assert.Equal(QuestConstants.BossUnlockKillCount, _world.Party.GetKillCount(solo));
+
+        // 보스 킬 = ResetAllQuestProgress → raw progress는 0이 되지만 해금 latch는 유지.
+        _world.Party.ResetAllQuestProgress();
+
+        Assert.Equal(0, _world.Party.GetSoloProgress(solo));                                // raw 카운트 리셋
+        Assert.True(_world.Party.IsBossUnlocked(solo));                                     // 해금 유지
+        Assert.Equal(QuestConstants.BossUnlockKillCount, _world.Party.GetKillCount(solo));  // 게이트 통과 유지(재그라인드 없음)
+    }
+
     // ── 4. targetCount SSOT 검증 ─────────────────────────────────────────────
 
     [Fact]
