@@ -10,5 +10,5 @@ public static class QuestConstants
 {
     // 보스 포탈 해금에 필요한 누적 킬(파티 공유 또는 솔로 개인).
     // S_QuestUpdate.targetCount로 클라에 전달 — 클라 하드코딩 금지.
-    public const int BossUnlockKillCount = 40;
+    public const int BossUnlockKillCount = 20;
 }

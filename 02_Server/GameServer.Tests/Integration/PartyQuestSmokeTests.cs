@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Loop;
+using Dawnholder.Server.GameServer.Quest;
 using Dawnholder.Tools.HeadlessBot.Scenarios;
 
 namespace Dawnholder.Server.GameServer.Tests.Integration;
@@ -12,7 +13,7 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 ///   2. Cross-map 이동 — A만 Town→HG, B는 Town 잔류.<br/>
 ///   3. 공유 킬카운트(시드) — in-process OnKill 2회 → 양측 S_QuestUpdate(currentCount>=2).<br/>
 ///   4. Cross-map 전달 — B가 Town 잔류해도 S_QuestUpdate 수신(GameWorld.SendToEntity 경로).<br/>
-///   5. targetCount SSOT — S_QuestUpdate.targetCount==40(QuestConstants.BossUnlockKillCount).<br/>
+///   5. targetCount SSOT — S_QuestUpdate.targetCount==20(QuestConstants.BossUnlockKillCount).<br/>
 ///   6. 해산 — B disconnect → A가 S_PartyUpdate(partyId==0) 수신.
 /// </para>
 ///
@@ -22,7 +23,7 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 /// R1의 고유 e2e 가치는 "파티 wire + 공유 카운트 cross-map 전달 + 해산"이므로
 /// SeedPartyKills가 Party.EnqueueJob으로 OnKill 2회를 직접 적립한다.
 /// 이는 실제 킬과 동일한 OnKill 코드 경로(파티면 KillCount++ → 양 멤버 SendQuestUpdate)를 탄다.
-/// 40킬 전투 그라인드 검증은 xUnit QuestKillCountTests가 담당.
+/// 20킬 전투 그라인드 검증은 xUnit QuestKillCountTests가 담당.
 /// </para>
 ///
 /// <para>
@@ -49,7 +50,7 @@ public class PartyQuestSmokeTests
     ///   - r.PartyFormed = true (초대→수락→S_PartyUpdate 양측 수신)<br/>
     ///   - r.SharedCountA >= 2 (A=HG, S_QuestUpdate currentCount)<br/>
     ///   - r.SharedCountB >= 2 (B=Town, cross-map 전달 증명)<br/>
-    ///   - r.TargetCount == 40 (QuestConstants.BossUnlockKillCount SSOT)<br/>
+    ///   - r.TargetCount == 20 (QuestConstants.BossUnlockKillCount SSOT)<br/>
     ///   - r.Disbanded = true (B disconnect → A가 partyId==0 수신)<br/>
     ///   - r.Success = true
     /// </para>
@@ -70,7 +71,7 @@ public class PartyQuestSmokeTests
         Assert.True(r.SharedCountB >= 2,
             $"probeB(Town) S_QuestUpdate cross-map 전달 실패: expected>=2, actual={r.SharedCountB}. reason={r.Reason}");
 
-        Assert.Equal(40, r.TargetCount);
+        Assert.Equal(QuestConstants.BossUnlockKillCount, r.TargetCount);
 
         Assert.True(r.Disbanded,
             $"파티 해산 실패 — B disconnect 후 A가 S_PartyUpdate(partyId==0) 미수신. reason={r.Reason}");

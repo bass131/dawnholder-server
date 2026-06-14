@@ -17,7 +17,7 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 //      HG 스폰(x≈2)에 그대로 머묾 — 적(x=10)과 거리>4=aggro 범위 밖이라 전투 없음.
 //   4. seedPartyKills 시드(xUnit 전용): A의 파티 공유 카운트를 2 적립.
 //   5. 공유 카운트 검증(핵심 e2e): A(HG)·B(Town) 양측이
-//      S_QuestUpdate(currentCount>=2, targetCount==40) 수신 — cross-map 전달 증명.
+//      S_QuestUpdate(currentCount>=2, targetCount==20) 수신 — cross-map 전달 증명.
 //   6. 해산(real e2e): B disconnect → A가 S_PartyUpdate(partyId==0) 수신.
 //
 // standalone vs xUnit:
@@ -32,7 +32,7 @@ public class PartyQuestSmoke
     static readonly TimeSpan DisbandTimeout = TimeSpan.FromSeconds(3);
 
     const int SeedKillCount = 2;
-    const int ExpectedTargetCount = 40;
+    const int ExpectedTargetCount = 20;
 
     // portal 좌표 상수 — 서버 PortalTable.cs와 정합.
     const float TownPortalX = 20f;

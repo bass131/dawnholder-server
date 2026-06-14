@@ -392,7 +392,7 @@
     </packet>
 
     <!-- M5: 퀘스트 진행도 통보(서버→플레이어). 파티 공유 또는 솔로 킬카운트 갱신 시 송신.
-         currentCount = 현재 처치 수, targetCount = 목표(서버 BossUnlockKillCount=40 — 클라 하드코딩 금지, SSOT).
+         currentCount = 현재 처치 수, targetCount = 목표(서버 BossUnlockKillCount=20 — 클라 하드코딩 금지, SSOT).
          파티면 양 멤버에게(SendToEntity), 솔로면 본인에게. -->
     <packet name="S_QuestUpdate">
         <int name="currentCount"/>
@@ -400,8 +400,8 @@
     </packet>
 
     <!-- M5: 보스 포탈 잠금 피드백(서버→진입 시도자 1:1). killCount<목표로 BossRoom 진입 거부 시 송신
-         (MapMigration 검증단계, transfer 전). requiredCount = 필요 킬(40), currentCount = 현재 킬.
-         클라가 "보스 입장: N/40" 토스트 표시. silent drop 대신 UX. -->
+         (MapMigration 검증단계, transfer 전). requiredCount = 필요 킬(20), currentCount = 현재 킬.
+         클라가 "보스 입장: N/20" 토스트 표시. silent drop 대신 UX. -->
     <packet name="S_PortalLocked">
         <int name="requiredCount"/>
         <int name="currentCount"/>

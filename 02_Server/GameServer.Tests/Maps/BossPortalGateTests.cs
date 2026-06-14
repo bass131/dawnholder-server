@@ -18,10 +18,10 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 ///   4. Dest==BossRoom 진입 방향만 게이트: 역방향(Boss→HG)은 게이트 X.
 ///
 /// <b>테스트 케이스:</b>
-///   1. killCount &lt; 40 → 거부 + S_PortalLocked 송신, 원래 맵 잔류 (ghost 미발생).
-///   2. killCount >= 40 → BossRoom 진입 성공 (RemovePlayer + AddPlayer 정상).
+///   1. killCount &lt; 20 → 거부 + S_PortalLocked 송신, 원래 맵 잔류 (ghost 미발생).
+///   2. killCount >= 20 → BossRoom 진입 성공 (RemovePlayer + AddPlayer 정상).
 ///   3. ghost 미발생: 거부 후 currentMap.GetPlayer(entityId) != null.
-///   4. S_PortalLocked 필드 검증: requiredCount=40, currentCount=N.
+///   4. S_PortalLocked 필드 검증: requiredCount=20, currentCount=N.
 ///   5. 역방향/비-BossRoom Dest: killCount=0이어도 게이트 X (통과).
 /// </summary>
 [Collection("ConsoleSerial")]
@@ -121,7 +121,7 @@ public class BossPortalGateTests : IDisposable
 
     // ── 테스트 ────────────────────────────────────────────────────────────────
 
-    // 1. killCount < 40 → 거부 + S_PortalLocked 송신
+    // 1. killCount < 20 → 거부 + S_PortalLocked 송신
     [Fact]
     public void BossRoom_Entry_Denied_When_KillCount_Below_Threshold()
     {
@@ -144,7 +144,7 @@ public class BossPortalGateTests : IDisposable
             "킬카운트 미달 시 S_MapTransition이 전송되면 안 됨");
     }
 
-    // 2. S_PortalLocked 필드 검증: requiredCount=40, currentCount=N
+    // 2. S_PortalLocked 필드 검증: requiredCount=20, currentCount=N
     [Fact]
     public void BossRoom_Denied_S_PortalLocked_Fields_Correct()
     {
@@ -164,7 +164,7 @@ public class BossPortalGateTests : IDisposable
         S_PortalLocked parsed = new S_PortalLocked();
         parsed.Read(new ArraySegment<byte>(lockedBytes!));
 
-        // SSOT: QuestConstants.BossUnlockKillCount = 40
+        // SSOT: QuestConstants.BossUnlockKillCount = 20
         Assert.Equal(QuestConstants.BossUnlockKillCount, parsed.requiredCount);
         Assert.Equal(stubKillCount, parsed.currentCount);
     }
@@ -199,11 +199,11 @@ public class BossPortalGateTests : IDisposable
         Assert.Equal(0, s.DisconnectCalls);
     }
 
-    // 4. killCount >= 40 → BossRoom 진입 성공
+    // 4. killCount >= 20 → BossRoom 진입 성공
     [Fact]
     public void BossRoom_Entry_Allowed_When_KillCount_At_Threshold()
     {
-        int stubKillCount = 40; // >= 40 (정확히 임계)
+        int stubKillCount = 20; // >= 20 (정확히 임계)
 
         GateTestSession s = SetupSession(_huntingGround, _bossRoom, stubKillCount, NearHgPortal);
         s.SentPackets.Clear();
@@ -228,11 +228,11 @@ public class BossPortalGateTests : IDisposable
             "킬카운트 충족 시 S_PortalLocked가 전송되면 안 됨");
     }
 
-    // 5. killCount 초과 (> 40)도 진입 성공
+    // 5. killCount 초과 (> 20)도 진입 성공
     [Fact]
     public void BossRoom_Entry_Allowed_When_KillCount_Above_Threshold()
     {
-        int stubKillCount = 99; // > 40
+        int stubKillCount = 99; // > 20
 
         GateTestSession s = SetupSession(_huntingGround, _bossRoom, stubKillCount, NearHgPortal);
         s.SentPackets.Clear();

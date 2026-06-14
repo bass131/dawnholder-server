@@ -211,7 +211,7 @@ if (string.Equals(scenarioName, "EnemyAiSmoke", StringComparison.OrdinalIgnoreCa
 if (string.Equals(scenarioName, "BossGate", StringComparison.OrdinalIgnoreCase))
 {
     // standalone 봇 런: seedBossGate=null → 거부 경로(S_PortalLocked) 확인만.
-    // 통과 경로(killCount=40 시드 후 재시도)는 xUnit 통합 테스트 전용.
+    // 통과 경로(killCount=20 시드 후 재시도)는 xUnit 통합 테스트 전용.
     BossGateSmoke.Result r = await BossGateSmoke.Run(host, port, seedBossGate: null);
     Console.WriteLine($"[Bot] BossGate: success={r.Success} entity={r.LocalEntityId}");
     Console.WriteLine($"      sawPortalLocked={r.SawPortalLocked} " +

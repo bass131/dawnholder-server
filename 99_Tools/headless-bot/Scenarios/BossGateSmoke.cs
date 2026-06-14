@@ -12,7 +12,7 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 // **검증 시나리오 2개**:
 //   [거부 경로] killCount=0 → HG→BossRoom 포탈 시도 → S_PortalLocked 수신
 //              (S_MapTransition 오지 않음) → 차단 확인.
-//   [통과 경로] seedBossGate 콜백으로 킬카운트 40 충족 → 재시도 → S_MapTransition 수신.
+//   [통과 경로] seedBossGate 콜백으로 킬카운트 20 충족 → 재시도 → S_MapTransition 수신.
 //
 // **standalone vs xUnit 분리**:
 //   seedBossGate=null (standalone, Program.cs): 거부 경로만 검증. 통과는 xUnit 전용.
@@ -55,7 +55,7 @@ public class BossGateSmoke
 
     /// <param name="seedBossGate">
     /// BossRoom 진입 전 killCount 충족용 테스트 훅. entityId를 받아 서버 in-process
-    /// killCount를 40으로 충족하고 완료를 알리는 Task를 반환한다.
+    /// killCount를 20으로 충족하고 완료를 알리는 Task를 반환한다.
     /// null이면 거부 경로만 검증하고 종료(standalone 봇 런).
     /// </param>
     public static async Task<Result> Run(
@@ -117,8 +117,8 @@ public class BossGateSmoke
             result.RequiredCount = bot.LastLockedRequiredCount;
             result.CurrentCount = bot.LastLockedCurrentCount;
 
-            if (result.RequiredCount != 40)
-                return Fail(result, $"S_PortalLocked.requiredCount expected=40, actual={result.RequiredCount}");
+            if (result.RequiredCount != 20)
+                return Fail(result, $"S_PortalLocked.requiredCount expected=20, actual={result.RequiredCount}");
 
             if (result.CurrentCount != 0)
                 return Fail(result, $"S_PortalLocked.currentCount expected=0, actual={result.CurrentCount}");
@@ -131,7 +131,7 @@ public class BossGateSmoke
             }
 
             // ── 3단계: killCount 시드 (xUnit 테스트 전용) ────────────────────
-            // in-process로 PartyRegistry에 40킬 적립 → 다음 틱에 게이트 통과 준비.
+            // in-process로 PartyRegistry에 20킬 적립 → 다음 틱에 게이트 통과 준비.
             // 우회 X — 게이트는 서버 권위 카운트를 실제 검사 (헌법 §1, §3 정합).
             await seedBossGate(bot.LocalEntityId);
 
@@ -143,7 +143,7 @@ public class BossGateSmoke
 
             S_MapTransition? t2 = await bot.WaitForMapTransition(expectedTransition, TransitionTimeout, ct);
             if (t2 == null)
-                return Fail(result, $"S_MapTransition timeout (5s) — HG→BossRoom after seed (killCount=40)");
+                return Fail(result, $"S_MapTransition timeout (5s) — HG→BossRoom after seed (killCount=20)");
 
             if (Math.Abs(t2.spawnX - BossRoomDestSpawnX) > SpawnXTolerance)
                 return Fail(result,

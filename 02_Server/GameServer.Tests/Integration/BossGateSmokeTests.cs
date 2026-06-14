@@ -10,8 +10,8 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 /// <para>
 /// <b>검증 목적 2가지</b>:<br/>
 ///   1. 거부 경로 — 봇이 killCount=0으로 HG→BossRoom 포탈 시도 시
-///      S_PortalLocked(requiredCount=40, currentCount=0)를 받고 S_MapTransition은 오지 않음.<br/>
-///   2. 통과 경로 — seedBossGate로 killCount=40 충족 후 재시도 시
+///      S_PortalLocked(requiredCount=20, currentCount=0)를 받고 S_MapTransition은 오지 않음.<br/>
+///   2. 통과 경로 — seedBossGate로 killCount=20 충족 후 재시도 시
 ///      S_MapTransition(destSpawnX≈22) 수신하여 BossRoom 진입 성공.
 /// </para>
 ///
@@ -22,8 +22,8 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 /// </para>
 ///
 /// <para>
-/// <b>시드 설계</b>: 실제 40킬 그라인드는 60~90초 이상 소요(리스폰 5s, HG 적 적음) → flaky.
-/// seedBossGate delegate가 Party.EnqueueJob을 통해 in-process로 _soloProgress[eid]=40 충족.
+/// <b>시드 설계</b>: 실제 20킬 그라인드는 일정 시간 소요(리스폰 5s, HG 적 적음) → flaky.
+/// seedBossGate delegate가 Party.EnqueueJob을 통해 in-process로 _soloProgress[eid]=20 충족.
 /// 게이트는 서버 권위 GetKillCount를 실제 검사 — 클라이언트 주장값 신뢰 X (헌법 §1·§3 정합).
 /// </para>
 /// </summary>
@@ -43,9 +43,9 @@ public class BossGateSmokeTests
     /// <para>
     /// <b>검증 항목</b>:<br/>
     ///   - r.SawPortalLocked = true (killCount=0 시 게이트 발동)<br/>
-    ///   - r.RequiredCount == 40 (서버 QuestConstants.BossUnlockKillCount SSOT)<br/>
+    ///   - r.RequiredCount == 20 (서버 QuestConstants.BossUnlockKillCount SSOT)<br/>
     ///   - r.CurrentCount == 0 (봇 킬카운트 초기값)<br/>
-    ///   - r.EnteredBossRoom = true (killCount=40 시드 후 재시도 성공)<br/>
+    ///   - r.EnteredBossRoom = true (killCount=20 시드 후 재시도 성공)<br/>
     ///   - r.Success = true
     /// </para>
     /// </summary>
@@ -57,9 +57,9 @@ public class BossGateSmokeTests
             seedBossGate: SeedBossGate);
 
         Assert.True(r.SawPortalLocked, $"killCount=0에서 S_PortalLocked 미수신 — 게이트 미발동. reason={r.Reason}");
-        Assert.Equal(40, r.RequiredCount);
+        Assert.Equal(QuestConstants.BossUnlockKillCount, r.RequiredCount);
         Assert.Equal(0, r.CurrentCount);
-        Assert.True(r.EnteredBossRoom, $"killCount=40 시드 후 BossRoom 진입 실패. reason={r.Reason}");
+        Assert.True(r.EnteredBossRoom, $"killCount={QuestConstants.BossUnlockKillCount} 시드 후 BossRoom 진입 실패. reason={r.Reason}");
         Assert.True(r.Success, $"시나리오 실패: {r.Reason}");
     }
 
@@ -80,7 +80,7 @@ public class BossGateSmokeTests
 
         Assert.True(r.Success, $"거부 경로 시나리오 실패: {r.Reason}");
         Assert.True(r.SawPortalLocked, "S_PortalLocked 미수신");
-        Assert.Equal(40, r.RequiredCount);
+        Assert.Equal(QuestConstants.BossUnlockKillCount, r.RequiredCount);
         Assert.Equal(0, r.CurrentCount);
         // seedBossGate 없으므로 BossRoom 진입은 없음.
         Assert.False(r.EnteredBossRoom, "seedBossGate 없이 BossRoom 진입 — 게이트 결함");
@@ -92,10 +92,10 @@ public class BossGateSmokeTests
     /// BossRoom 게이트 전제조건 시드.
     ///
     /// <para>
-    /// Party.EnqueueJob으로 QuestConstants.BossUnlockKillCount(40)회 OnKill 적립.
+    /// Party.EnqueueJob으로 QuestConstants.BossUnlockKillCount(20)회 OnKill 적립.
     /// TaskCompletionSource로 잡 완료를 await → 시나리오가 SendEnterPortal로
-    /// 진행하기 전에 _soloProgress[eid]=40 확정. 게이트는 이후 틱에서
-    /// GetKillCount=40을 읽어 정당 통과.
+    /// 진행하기 전에 _soloProgress[eid]=20 확정. 게이트는 이후 틱에서
+    /// GetKillCount=20을 읽어 정당 통과.
     /// </para>
     ///
     /// <para>

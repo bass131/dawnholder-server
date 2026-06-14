@@ -16,7 +16,7 @@ namespace Dawnholder.Server.GameServer.Tests.Party;
 //   1. 파티원이 킬 → PartyState.KillCount 누적 + 멤버 전원에게 S_QuestUpdate 송신
 //   2. 솔로 킬 → GetSoloProgress 증가 + 본인에게 S_QuestUpdate 송신
 //   3. ResetAllQuestProgress → 파티 KillCount 0 + 솔로 progress 0
-//   4. targetCount = QuestConstants.BossUnlockKillCount(40) SSOT 검증
+//   4. targetCount = QuestConstants.BossUnlockKillCount(20) SSOT 검증
 //   5. (통합) GameMap.HandleEnemyDeath → OnEnemyKilled → Party.EnqueueJob 드레인 → OnKill 적립
 //
 // 싱글톤 관리: GameWorld 단일 인스턴스 → [Collection] 직렬화 + IDisposable.
@@ -174,9 +174,8 @@ public class QuestKillCountTests : IDisposable
 
         S_QuestUpdate? pkt = ExtractQuestUpdate(session);
         Assert.NotNull(pkt);
-        // targetCount는 서버 QuestConstants.BossUnlockKillCount(40)에서 옴 — 클라 하드코딩 X
-        Assert.Equal(40, pkt!.targetCount);
-        Assert.Equal(QuestConstants.BossUnlockKillCount, pkt.targetCount);
+        // targetCount는 서버 QuestConstants.BossUnlockKillCount에서 옴 — 클라 하드코딩 X (SSOT=서버 상수)
+        Assert.Equal(QuestConstants.BossUnlockKillCount, pkt!.targetCount);
     }
 
     // ── 5. 통합: HandleEnemyDeath → OnEnemyKilled → EnqueueJob 드레인 → OnKill ─
