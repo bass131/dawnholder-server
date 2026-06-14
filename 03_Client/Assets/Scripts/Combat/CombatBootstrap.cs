@@ -52,6 +52,8 @@ namespace Dawnholder.Client.Combat
             BuildStageClearUI();
             BuildToastUI();
             BuildRemoteEntityRegistry();
+            BuildPartyMemberHud();
+            BuildQuestProgressHud();
         }
 
         void BuildZoneVisualizer()
@@ -88,6 +90,18 @@ namespace Dawnholder.Client.Combat
         // 코드 주도 패턴에서 Inspector 드래그가 없으므로 Resources.Load("RemotePlayer")로 주입.
         // ⚠️ 의무: Assets/Resources/RemotePlayer.prefab 이 존재해야 함.
         //   없으면 아래 경고가 박히고 registry 자체는 생성되나 spawn 시 또 에러.
+        void BuildPartyMemberHud()
+        {
+            if (PartyMemberHud.Instance != null) return;
+            PartyMemberHud.BuildRuntime(parent: transform);
+        }
+
+        void BuildQuestProgressHud()
+        {
+            if (QuestProgressHud.Instance != null) return;
+            QuestProgressHud.BuildRuntime(parent: transform);
+        }
+
         void BuildRemoteEntityRegistry()
         {
             if (RemoteEntityRegistry.Instance != null) return;
