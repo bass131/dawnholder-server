@@ -72,3 +72,38 @@ WSL2 643/0/5(build 0err/0warn). reviewer TB+민감 Phase 🔴0. Unity 컴파일 
 ## 학습 일지 후보 키워드
 
 cross-map actor(PartyRegistry) / SendToEntity EnqueueJob 마샬링 / transfer-전 게이트 ghost 방지 / fail-closed 신뢰경계 / SSOT=wire(targetCount) / Extract Method 회귀봉인(보스 헬퍼) / in-process 시드 vs 봇 그라인드 / swap-ready Resources 바인딩 / Unity MCP 컴파일체크 파이프 / 무인 완주 파이프(Worker→실측→WSL2→reviewer→commit).
+
+---
+
+## 후속 작업 — B3·C4 씬 배치 완료 (2026-06-15, 영호 깸 후 MCP)
+
+야간엔 취침 중 씬 손상 catastrophe 위험 + Unity 육안=영호 영역이라 B3·C4를 아침으로 연기했음. **2026-06-15 영호가 깨어 옆에서 즉시 육안 확인 가능한 상태**가 되어 Unity MCP `RunCommand`로 프로그래밍 배치 진행(손 YAML 편집 회피 = Unity가 직렬화 안전 처리). 백업 = git clean tree(편집 전 전부 커밋, 손상 시 `git checkout`으로 복원). 각 편집 후 git diff(삭제 0/헤더 정상) + `Capture2DScene` 육안으로 손상 0 검증.
+
+### B3 — 역방향 포탈 씬 배치 (서버 좌표 = 씬 좌표 1:1 확정)
+
+- **HuntingGround.unity**: `Portal_Reverse_ToTown` @ (5, 0, 0), portalId=2 → Town (서버 `PortalTable` HG 역방향 `Position(5,0)/DestSpawn(17,0)` 정합).
+- **BossRoom.unity**: `Portal_Reverse_ToHG` @ (18, 0, 0), portalId=2 → HuntingGround (서버 `Position(18,0)/DestSpawn(22,0)` 정합).
+- 둘 다 `Portal.prefab` 인스턴스 → SpriteRenderer(placeholder 시안 sprite) + BoxCollider2D(isTrigger) + PortalTrigger(portalId override) + **swap-ready Animator 슬롯(controller 비어있음)** 부착.
+- Town은 역방향 불필요(정방향 x=20만, Ending→Town은 정방향 루프).
+
+### C4 — 마을 NPC 배치 + 대사
+
+- **Town.unity**: `Npc_BlackSmith` @ (13.5, 0, 0), `Npc_Glocery` @ (16.5, 0, 0) — 석상(x=13)과 포탈(x=20) 사이.
+- 각 NPC = SpriteRenderer(BlackSmith_Idle_0 / Glocery_Idle_0, **bottom-pivot이라 y=0=발이 잔디에 정확히 닿음**) + BoxCollider2D(isTrigger, 2.2×2.4 offset y=1.2) + Animator(swap-ready) + NpcInteractable(대사 하드코딩, 헌법 §1 = 상태 변경 0).
+- 대사: BlackSmith="무기 손질 필요하면 들러…", Glocery="물약·식료품 곧 들어와요…" (상점 기능 0, 대화만 = 확정 결정 1).
+
+### swap 지점 (영호가 진짜 에셋 꽂는 곳 — 코드 변경 0)
+
+| GameObject | 슬롯 | 현재(placeholder) | 진짜 에셋 드롭 |
+|---|---|---|---|
+| Portal_Reverse_ToTown / _ToHG | SpriteRenderer.Sprite | 시안 반투명 포탈(Portal.prefab 공용) | 진짜 포탈 sprite |
+| Portal_Reverse_* | Animator.Controller | 비어있음 | 포탈 빛남 AnimatorController |
+| Npc_BlackSmith / Npc_Glocery | SpriteRenderer.Sprite | Idle_0 정지 프레임 | (선택) 다른 sprite |
+| Npc_* | Animator.Controller | 비어있음 | Idle_0..5 순환 AnimatorController |
+| Npc_* | NpcInteractable.DialogText | 임시 대사 | Inspector에서 편집 |
+
+### 남은 영호 육안/Play-test (실제 동작 확인)
+
+- 양방향 포탈 왕복(HG↔Town, Boss↔HG) — 포탈 위 ↑키 진입.
+- 마을 NPC 2종 E키 대사 (단, **플레이어에 "Player" 태그** 박혀있어야 `NpcInteractable` 트리거 작동 — 기존 플레이어 prefab 태그 확인 필요).
+- NPC/포탈 위치 미세 조정은 Inspector에서 자유(좌표 박제값은 swap-ready라 코드 무관).
