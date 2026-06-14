@@ -16,6 +16,14 @@ namespace Dawnholder.Server.GameServer.Party;
 // **헌법 #1 (Server Authority)**: memberNClass는 서버 권위 PlayerStats에서만 — GameWorld.TryGetEntityClass.
 internal static class PartyNotifier
 {
+    // 초대 거절을 행위자(초대자)에게 통보. reason byte는 PartyRegistry.Error* 상수와 정합.
+    //   거절은 *서버 판정*(헌법 §3) — 클라가 자기 자신을 거절 처리하지 않음.
+    public static void SendPartyError(GameWorld world, int targetEntityId, byte reason)
+    {
+        S_PartyError pkt = new S_PartyError { reason = reason };
+        world.SendToEntity(targetEntityId, pkt.Write());
+    }
+
     // 피초대자에게 초대 도착 통보. inviterClass는 서버 권위 조회(클라 신뢰 X).
     public static void SendInviteRecv(GameWorld world, int inviterEntityId, int targetEntityId)
     {

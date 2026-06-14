@@ -169,7 +169,7 @@ public class GameWorld
             map.Tick(tickNumber);
         }
 
-        // 파티 job 드레인 — 맵 tick 후 단일 thread 직렬화.
-        Party.Tick();
+        // 파티 job 드레인 — 맵 tick 후 단일 thread 직렬화. tickNumber = 초대 만료 판정 기준.
+        Party.Tick(tickNumber);
     }
 }

@@ -52,7 +52,7 @@ public class PartyHandlerHappyTests : IDisposable
     //   Party.Tick() 먼저 → 맵 Tick()으로 실제 Send 도달.
     void DrainAll(long tick)
     {
-        _world.Party.Tick();
+        _world.Party.Tick(tick);
         _town.Tick(tick);
     }
 

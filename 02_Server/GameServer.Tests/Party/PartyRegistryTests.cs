@@ -184,7 +184,7 @@ public class PartyRegistryTests
             captured = _registry.CreateParty(10, 20);
         });
 
-        _registry.Tick(); // job 드레인
+        _registry.Tick(currentTick: 1); // job 드레인
 
         Assert.NotNull(captured);
         Assert.Equal(2, captured!.Members.Count);
@@ -202,7 +202,7 @@ public class PartyRegistryTests
         _registry.EnqueueJob(() => order.Add(2));
         _registry.EnqueueJob(() => order.Add(3));
 
-        _registry.Tick();
+        _registry.Tick(currentTick: 1);
 
         Assert.Equal(new[] { 1, 2, 3 }, order);
     }

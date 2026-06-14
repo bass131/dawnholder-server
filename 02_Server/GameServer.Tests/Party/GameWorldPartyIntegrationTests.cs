@@ -56,7 +56,7 @@ public class GameWorldPartyIntegrationTests : IDisposable
 
         Assert.False(executed); // Tick 전: 미실행
 
-        _world.Party.Tick(); // OnTick 내부 Party.Tick() 경로와 동일
+        _world.Party.Tick(currentTick: 1); // OnTick 내부 Party.Tick(tickNumber) 경로와 동일
 
         Assert.True(executed); // Tick 후: 실행됨
     }
@@ -71,7 +71,7 @@ public class GameWorldPartyIntegrationTests : IDisposable
             captured = _world.Party.CreateParty(initiatorEntityId: 10, memberEntityId: 20);
         });
 
-        _world.Party.Tick();
+        _world.Party.Tick(currentTick: 1);
 
         Assert.NotNull(captured);
         Assert.Equal(2, captured!.Members.Count);
