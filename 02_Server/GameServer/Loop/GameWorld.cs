@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Party;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Loop;
@@ -29,6 +30,10 @@ public class GameWorld
     int _nextEntityId;
 
     readonly TickScheduler _scheduler;
+
+    // 파티 전역 actor. cross-map이라 특정 맵/세션에 둘 수 없음 — GameWorld 소유.
+    // 외부 → PartyRegistry.EnqueueJob → GameWorld.OnTick에서 드레인.
+    readonly PartyRegistry _party = new();
 
     /// <summary>
     /// 맵별 terrain/content 쌍을 주입받는 생성자 — **필수 인자** (default 없음).
@@ -67,6 +72,9 @@ public class GameWorld
     // 호환용 프로퍼티 — GameWorld.Instance?.Map으로 Town 맵을 반환하던 흐름 보존.
     public GameMap Map => _maps[MapId.Town];
 
+    // 파티 전역 actor 접근점.
+    public PartyRegistry Party => _party;
+
     public long CurrentTick => _scheduler.CurrentTick;
 
     public TickScheduler Scheduler => _scheduler;
@@ -90,6 +98,38 @@ public class GameWorld
     public GameMap? GetMap(MapId id)
         => _maps.TryGetValue(id, out GameMap? map) ? map : null;
 
+    /// <summary>
+    /// entityId를 보유한 맵을 찾아 그 맵의 EnqueueJob 경유로 payload를 송신한다.
+    ///
+    /// **thread 안전 보장**: 대상 맵의 EnqueueJob(람다)을 통해 그 맵의 tick thread 위에서
+    ///   session.Send를 호출한다. 직접 session.Send를 부르면 맵 tick thread를 침범(race) —
+    ///   반드시 이 경로를 사용해야 한다 (헌법 §5, Map=Actor 원칙).
+    ///
+    /// entityId가 어느 맵에도 없으면(로그아웃/전환 중) silent 무시 (예외 X).
+    /// 맵 4개 순회 = O(4) 상수 — entityId→MapId 역인덱스 추가 시 동기화 부채(MapMigration 등)가
+    ///   늘어나므로 현 규모에서 순회가 더 단순하고 안전하다.
+    /// </summary>
+    public void SendToEntity(int entityId, ArraySegment<byte> payload)
+    {
+        foreach (GameMap map in _maps.Values)
+        {
+            PlayerEntity? player = map.GetPlayer(entityId);
+            if (player == null) continue;
+
+            // 대상 맵의 tick thread 위에서 송신 — 직접 호출이면 이 맵(GameWorld) thread가
+            // 대상 맵 내부를 침범. EnqueueJob으로 대상 맵 thread에 마샬링.
+            GameMap captured = map;
+            captured.EnqueueJob(() =>
+            {
+                PlayerEntity? p = captured.GetPlayer(entityId);
+                if (p?.Owner == null || p.Owner.IsClosing) return;
+                p.Owner.Send(payload);
+            });
+            return;
+        }
+        // entityId 없음 = 오프라인 또는 맵 전환 중 — silent 무시.
+    }
+
     GameMap MakeMap(MapId id,
         IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
     {
@@ -105,5 +145,8 @@ public class GameWorld
         {
             map.Tick(tickNumber);
         }
+
+        // 파티 job 드레인 — 맵 tick 후 단일 thread 직렬화.
+        Party.Tick();
     }
 }
