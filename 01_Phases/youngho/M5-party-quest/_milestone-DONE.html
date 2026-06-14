@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M5 마일스톤 마감 — 파티·퀘스트·보스 포탈</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#181b22; --panel2:#1f232c; --ink:#e6e9ef; --mut:#9aa3b2;
+    --line:#2a2f3a; --acc:#7aa2ff; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171;
+    --A:#7aa2ff; --Q:#a78bfa; --B:#34d399; --C:#f472b6; --P:#fbbf24; --R:#22d3ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,"Malgun Gothic",sans-serif;line-height:1.6;font-size:15px}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 80px}
+  header.hero{border:1px solid var(--line);border-radius:16px;padding:28px 30px;background:linear-gradient(135deg,#1a1f2b,#141821);margin-bottom:26px}
+  .hero h1{margin:0 0 6px;font-size:26px;letter-spacing:-.4px}
+  .hero .sub{color:var(--mut);font-size:14px}
+  .badges{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .badge{padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--panel2)}
+  .badge.ok{color:#0b1a10;background:var(--ok);border-color:var(--ok)}
+  .badge.warn{color:#1a1405;background:var(--warn);border-color:var(--warn)}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 8px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .stat .n{font-size:24px;font-weight:700;letter-spacing:-.5px}
+  .stat .l{color:var(--mut);font-size:12.5px;margin-top:2px}
+  h2{font-size:19px;margin:34px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  h3{font-size:15.5px;margin:20px 0 8px}
+  p{margin:8px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0}
+  .track{border-left:4px solid var(--line)}
+  .track.A{border-left-color:var(--A)} .track.Q{border-left-color:var(--Q)}
+  .track.B{border-left-color:var(--B)} .track.C{border-left-color:var(--C)}
+  .track.P{border-left-color:var(--P)} .track.R{border-left-color:var(--R)}
+  .track .th{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+  .chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--mut)}
+  code{background:#11141b;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px;color:#cdd6f4;font-family:"Cascadia Code",Consolas,monospace}
+  ul{margin:8px 0;padding-left:22px} li{margin:4px 0}
+  .five{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px}
+  .five .step{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .five .step .h{font-weight:700;font-size:13px;margin-bottom:5px}
+  .five .step p{font-size:12.5px;color:var(--mut);margin:0}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-weight:600;font-size:12px}
+  td code{white-space:nowrap}
+  .morning{background:linear-gradient(135deg,#231a0a,#1c1810);border:1px solid #3a2f12}
+  .morning h2{border-color:#3a2f12}
+  .check{list-style:none;padding-left:0}
+  .check li{padding-left:26px;position:relative;margin:6px 0}
+  .check li::before{content:"☐";position:absolute;left:0;color:var(--warn);font-size:15px}
+  .gate li::before{content:"⛔";left:0}
+  .dim{color:var(--mut);font-size:13px}
+  .ok-text{color:var(--ok);font-weight:600}
+  footer{margin-top:40px;color:var(--mut);font-size:12.5px;text-align:center;border-top:1px solid var(--line);padding-top:18px}
+  @media(max-width:780px){.grid{grid-template-columns:repeat(2,1fr)}.five{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>M5 — 파티 · 퀘스트 · 보스 포탈 잠금 + 콘텐츠 결선</h1>
+    <div class="sub">2D 사이드스크롤 MMORPG · 마일스톤 마감 보고서 · 2026-06-15</div>
+    <div class="badges">
+      <span class="badge ok">✅ 코드 21 Phase 완주</span>
+      <span class="badge warn">🌙 무인 완주 (취침 중 자율, 멈춤 0)</span>
+      <span class="badge">WSL2 643 / 0 / 5</span>
+      <span class="badge">reviewer 🔴 0</span>
+      <span class="badge">Unity 컴파일 0err</span>
+      <span class="badge">ProtocolVersion v15</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="stat"><div class="n">21<span class="dim"> / 24</span></div><div class="l">코드 Phase 완주 (씬배치 2 = 아침 육안)</div></div>
+    <div class="stat"><div class="n">20</div><div class="l">커밋 (origin/main 이후)</div></div>
+    <div class="stat"><div class="n">+8,741</div><div class="l">줄 변경 (104 파일, −126)</div></div>
+    <div class="stat"><div class="n">+31</div><div class="l">신규 테스트 (612→643)</div></div>
+  </div>
+
+  <h2>🎯 무엇을 만들었나</h2>
+  <div class="card">
+    <p>영호 Play-test 동선에서 빠진 콘텐츠 7종을 한 마일스톤으로 묶었습니다. 핵심은 <b>파티 + 퀘스트 + 게이트</b> — 프로젝트 첫 <b>플레이어 간 협동 시스템</b>이며, 신규 프로토콜 <code>ProtocolVersion v14→v15</code>(비가역 bump, 8패킷)가 걸렸습니다.</p>
+    <ul>
+      <li><b>파티 시스템</b> — 초대/수락, 정원 2명 고정, cross-map(마을↔헌팅) 유지.</li>
+      <li><b>40킬 공유 퀘스트</b> — 파티원 합산 킬카운트 + <code>S_QuestUpdate</code> 진행 통보(양 멤버).</li>
+      <li><b>보스 포탈 잠금 게이트</b> — 40킬 미달 시 BossRoom 진입 거부(서버 권위, ghost 방지, fail-closed).</li>
+      <li><b>양방향 포탈</b> — 진입 = 충돌 자동 → "겹침 + 위 방향키 down-edge", 역방향 데이터 추가.</li>
+      <li><b>일반몹 공격</b> — 보스만 공격하던 것을 Normal/Golem도 사거리 내 공격(쿨다운 기반).</li>
+      <li><b>이펙트 결선</b> — 일반몹 kind별 피격 이펙트 라우팅 + 보스 stab 결선 실측.</li>
+      <li><b>StageClear 애니</b> — TMP 텍스트 → Image 애니 스프라이트(swap-ready).</li>
+    </ul>
+  </div>
+
+  <h2>🤔 왜 이렇게 — 핵심 설계 결정 + trade-off</h2>
+
+  <div class="card">
+    <h3>1. PartyRegistry = GameWorld 소유 actor (맵/세션 아님)</h3>
+    <p>파티는 cross-map(멤버가 서로 다른 맵에 있어도 유지)이라 특정 맵/세션에 둘 수 없습니다. <code>EnqueueJob</code> + 매 틱 드레인(lock 금지, 헌법 actor 정합). 멤버 식별 = <b>entityId</b>(session 참조 X → disconnect race 회피, ADR-026).<br>
+    <span class="dim">단점: GameWorld 책임 증가. vs 맵 소유(❌ cross-map 깨짐) / lock dict(❌ 헌법 위반).</span></p>
+  </div>
+
+  <div class="card">
+    <h3>2. 보스 게이트 = MapMigration.Execute 검증단계 (transfer 전)</h3>
+    <p><code>RemovePlayer</code>/<code>SetMigrating</code> <b>전</b>에 <code>portal.Dest==BossRoom && killCount&lt;40</code> 차단 → 거부 시 원래 맵 잔류(<b>ghost 0</b>). killCount=서버 권위(<code>PartyRegistry.GetKillCount</code>), 행위자=서버 <code>_entityId</code>(패킷 값 X), <b>fail-closed</b>(GameWorld null → 0킬 → 거부).<br>
+    <span class="dim">trust-boundary → reviewer 🔴0. vs transfer 후 검증(❌ 어느 맵에도 없는 ghost).</span></p>
+  </div>
+
+  <div class="card">
+    <h3>3. QuestConstants.BossUnlockKillCount=40 = 서버측 배치 (98_Shared 아님)</h3>
+    <p>targetCount를 <code>S_QuestUpdate</code> 패킷에 실어 보내 진짜 SSOT는 wire — 클라는 패킷값만 표시(하드코딩 0). 서버측 배치로 불필요한 <code>Shared.dll</code> co-review를 회피해 야간 헤드리스 완주 유지.<br>
+    <span class="dim">서버 권위(헌법 §1)의 작은 실천 — 클라는 렌더러.</span></p>
+  </div>
+
+  <div class="card">
+    <h3>4. C1 ApplyMeleeDamage 헬퍼 추출 — 순수 서버, 98_Shared 무변경</h3>
+    <p>보스/일반몹 공통 데미지 경로를 헬퍼로 추출(보스 <code>ApplyBossAttack</code> 본문 <b>byte-identical</b> 이식 → 보스 동작 회귀 0, 보스 테스트 전건 green이 가드). <code>EnemyStats.Attack</code>(Normal 5/Golem 8) <b>기존 재사용</b> + <code>S_EnemyAttack</code>(ID20) 재사용 = 신규 패킷 0, ProtocolVersion bump 0, <b>98_Shared 무변경</b>.<br>
+    <span class="dim">Extract Method로 회귀 위험을 테스트로 봉인. vs 복붙(❌) / 새 패킷(❌ v15 충돌).</span></p>
+  </div>
+
+  <div class="card">
+    <h3>5. 봇 e2e = in-process 시드 하이브리드</h3>
+    <p>40킬 실 그라인드는 리스폰 100틱(5초)·HG 적 제한으로 60~90s 느림/flaky. 게이트·공유전달 e2e는 ServerFixture <b>in-process 시드</b>(killCount 충족, 게이트는 서버 권위값 실검사 → 정당 통과)로 검증. 킬→카운트 wiring은 Q2 xUnit이 별도 검증. 봇 근접전투(위치/serverTick/aggro) finicky → R1을 시드로 재설계.<br>
+    <span class="dim">동일 결과를 빠르고 robust하게. 풀 40킬은 아침 play-test. MapTransition 회귀도 seedBossGate 훅으로 봉합.</span></p>
+  </div>
+
+  <h2>🛠️ 어떻게 만들었나 — 트랙별</h2>
+
+  <div class="card track A">
+    <div class="th">트랙 A · 파티 서버 <span class="chip">A0~A4 · 커밋 5</span></div>
+    <p>PDL 8패킷+v15(<code>4c5107d</code>) → PartyState+PartyRegistry actor(<code>60d5db8</code>) → GameWorld 통합+cross-map <code>SendToEntity</code>(<code>cb17e5c</code>) → 핸들러 happy(<code>f833eab</code>, rev🔴0) → 신뢰경계 거절4+초대만료+disconnect 정리(<code>cc509a0</code>, rev🔴0).</p>
+  </div>
+  <div class="card track Q">
+    <div class="th">트랙 Q · 퀘스트 + 보스 게이트 <span class="chip">Q1~Q3 · 커밋 3</span></div>
+    <p>HandleEnemyDeath killer 전파 + OnEnemyKilled seam(<code>5643fa0</code>) → 킬카운트 공유·솔로 + S_QuestUpdate(<code>f650fb1</code>) → 보스 포탈 잠금 게이트 TB(<code>6a583a9</code>, rev🔴0, fail-closed).</p>
+  </div>
+  <div class="card track B">
+    <div class="th">트랙 B · 포탈 메커니즘 <span class="chip">B1 서버 · B2 클라</span></div>
+    <p>역방향 포탈 데이터 portalId=2(<code>4c16468</code>) · PortalTrigger 겹침+위방향키 down-edge, 자동진입 폐지(<code>55d7c8f</code>).</p>
+  </div>
+  <div class="card track C">
+    <div class="th">트랙 C · 콘텐츠 <span class="chip">C1 서버 · C2/C3/C5 클라</span></div>
+    <p>일반몹 공격 EnemyAttackState(<code>b996cc7</code>, 복잡, rev🔴0) · 이펙트 kind 라우팅 + 보스 stab 결선 실측(<code>602fc19</code>) · StageClear Image swap-ready + TMP 폴백(<code>d599b91</code>).</p>
+  </div>
+  <div class="card track P">
+    <div class="th">트랙 P · 클라 파티/퀘스트 표현 <span class="chip">P1~P5 · 커밋 4</span></div>
+    <p>파티 핸들러 + PartyState 미러(<code>4a032c1</code>) · 멤버HUD + 퀘스트HUD + S_QuestUpdate 핸들러(<code>9355470</code>) · 잠금 토스트 + 범용 ToastUI(<code>7c6aa27</code>) · 초대 송신 + 수락/거절 팝업(<code>c7a2794</code>). 전부 런타임 빌드(StageClearUI 패턴) + CombatBootstrap 통합.</p>
+  </div>
+  <div class="card track R">
+    <div class="th">트랙 R · 회귀 봇 <span class="chip">R1 · R2</span></div>
+    <p>PartyQuestSmoke — 봇2 파티 결성 + 공유 카운트 cross-map 전달 + 해산(<code>fc05c79</code>) · BossGateSmoke — 0킬 거부 + 시드40 통과(<code>14bbf0e</code>).</p>
+  </div>
+
+  <h2>🧪 테스트 결과</h2>
+  <div class="card">
+    <table>
+      <tr><th>검증</th><th>결과</th></tr>
+      <tr><td>WSL2 build (ADR-029)</td><td class="ok-text">0 error / 0 warning</td></tr>
+      <tr><td>WSL2 test 전체</td><td class="ok-text">Passed! 643 / Failed 0 / Skipped 5</td></tr>
+      <tr><td>reviewer(Opus) — A3·A4·Q3(TB) + C1(§1 민감)</td><td class="ok-text">🔴 0 (fail-closed·보스 회귀0 확인)</td></tr>
+      <tr><td>Unity 컴파일 (클라 9 Phase, MCP)</td><td class="ok-text">error CS 0</td></tr>
+      <tr><td>신규 테스트</td><td>HandleEnemyDeathKiller(4)·QuestKillCount(7)·BossPortalGate(7)·EnemyAttack(8)·PortalTable(+2)·Party 단위·BossGateSmoke(2)·PartyQuestSmoke(1)</td></tr>
+      <tr><td>flaky</td><td class="dim">통합테스트 공유 ServerFixture 간헐 1실패 → 재실행 green. 봇 e2e 격리 통과(코드버그 아님)</td></tr>
+    </table>
+    <div class="five">
+      <div class="step"><div class="h">🎯 무엇</div><p>파티·퀘스트·게이트·포탈·일반몹공격·이펙트·StageClear + v15 8패킷</p></div>
+      <div class="step"><div class="h">🤔 왜</div><p>첫 협동 시스템. cross-map thread 안전 + 신뢰경계 게이트가 무게중심</p></div>
+      <div class="step"><div class="h">🛠️ 어떻게</div><p>A→Q→B→C→P→R. Worker→실측→WSL2→reviewer→commit 파이프</p></div>
+      <div class="step"><div class="h">🧪 테스트</div><p>WSL2 643/0/5 · reviewer🔴0 · Unity 0err · +31 테스트</p></div>
+      <div class="step"><div class="h">➡️ 다음</div><p>push/PR/공지(영호 GO) · B3/C4 씬배치 · 에셋 드롭 · Play-test</p></div>
+    </div>
+  </div>
+
+  <h2 class="morning-anchor">🌅 아침 영호 액션 목록</h2>
+  <div class="card morning">
+    <h3>⛔ 비가역 게이트 (영호 GO 의무)</h3>
+    <ul class="check gate">
+      <li><code>feature/m5-party-quest</code> → origin <b>push</b></li>
+      <li><b>PR 생성/머지</b> — 03_Client 변경 다수 → 정유현 CODEOWNERS co-review 트리거. Shared.dll(v15) commit 포함 → admin bypass 사유 박기</li>
+      <li><b>디스코드 v15 wire-break 공지</b>(영호 직접) — v15 미재빌드 클라(유현/인규) 접속 불가</li>
+    </ul>
+
+    <h3>🎨 순수 씬 배치 (야간 미실시 — 씬 손상 위험 + 시각영역, 아침 육안)</h3>
+    <ul class="check">
+      <li><b>B3</b> 역방향 포탈 GameObject 배치: 각 맵 씬에 <code>PortalTrigger</code>(portalId=2) + 스프라이트. <span class="dim">데이터(B1)·로직(B2)·서버게이트 완비. HG 역방향 x=5(→Town 17), Boss 역방향 x=18(→HG 22).</span></li>
+      <li><b>C4</b> NPC 배치: Town 씬에 BlackSmith/Glocery + <code>NpcInteractable</code>(dialogText) + 스프라이트(<code>Art/Characters/NPC/</code>). <span class="dim">스크립트 완비 — 배치+바인딩만. 대화만(상점/제작 X).</span></li>
+    </ul>
+
+    <h3>🔌 swap-ready 에셋 드롭 (코드 완비 — 에셋만, 코드 0 변경)</h3>
+    <ul class="check">
+      <li>일반몹 이펙트: <code>Resources/Effects/SlimeDamageEffect.prefab</code> · <code>GolemDamageEffect.prefab</code> <span class="dim">(에셋 Art/damage_effect/{slime,golem}/ 존재)</span></li>
+      <li>보스 stab: <code>Resources/Effects/BossAttackPattern0.prefab</code>(현 단색 플래시)을 진짜 Stabbing_Effect anim prefab으로 교체</li>
+      <li>StageClear 애니: <code>Resources/UI/StageClearAnim.controller</code>(+<code>StageClearPlaceholder.png</code>) — 미배치 시 TMP 폴백 유지</li>
+      <li>HUD 배경: <code>Resources/UI/Status_Frame</code>(멤버HUD) · <code>Resources/UI/Quest_Panel</code>(퀘스트HUD)</li>
+    </ul>
+
+    <h3>🎮 Play-test 육안 (기능 검증)</h3>
+    <ul class="check">
+      <li>파티 초대(P키)→팝업 수락→멤버HUD 2명 / 한쪽 disconnect→HUD 숨김</li>
+      <li>몹 처치→퀘스트 카운터 N/40 증가(파티 공유 합산)</li>
+      <li>40 미만 보스포탈 진입→잠금 토스트 / 40 후 진입 성공</li>
+      <li>포탈: 정지=진입X, ↑down-edge=진입, 양방향 왕복</li>
+      <li>일반몹 공격당함(Dash 회피) + kind별 피격 이펙트 / 보스 stab 이펙트 / StageClear 연출 / NPC 2종 E키 대사</li>
+      <li><b>야간 기본값 확인</b>: P2 초대타겟=근접최단 / Q2 카운트전환=결성 0부터·해산 공유소멸·솔로0 <span class="dim">(다르게 원하면 조정)</span></li>
+    </ul>
+  </div>
+
+  <footer>
+    Dawnholder · M5 무인 완주 보고서 · 무인 파이프(Worker 위임 → 메인 file:line 실측 → Plugins drift 복원 → WSL2 게이트 → TB reviewer → commit, 클라는 Unity MCP 컴파일체크) · 멈춤 0 / 확인질문 0
+  </footer>
+
+</div>
+</body>
+</html>
