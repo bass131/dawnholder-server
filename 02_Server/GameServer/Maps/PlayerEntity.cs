@@ -232,20 +232,16 @@ public class PlayerEntity
     // ── 전투 전이 API ──────────────────────────────────────────────────────
 
     // 공격 commit window 진입. IsDead면 no-op.
-    // impulseVx/decayPerTick/durationTicks: Action.Execute가 계산해 전달 → AttackState.Enter가 세팅(§8 상태 소유).
-    // 호출자가 필드를 직접 세팅하던 패턴 제거 — AttackState가 파라미터를 통해 자기 데이터를 소유.
+    // impulseVx/decayPerTick/durationTicks: sentinel < 0 → 기본값. 테스트·평타 호출자는 인자 없이 호출해도 기존 거동 유지.
     public void EnterAttackState(float impulseVx = 0f, float decayPerTick = -1f, int durationTicks = -1)
     {
         if (IsDead) return;
-        PlayerCombatStates.Attack.PendingImpulseVx = impulseVx;
-        // sentinel < 0 → 기본값. 테스트·평타 호출자는 인자 없이 호출해도 기존 거동 유지.
-        PlayerCombatStates.Attack.PendingDecayPerTick = decayPerTick < 0f
-            ? Constants.KnockbackDecayPerTick
-            : decayPerTick;
-        PlayerCombatStates.Attack.PendingDurationTicks = durationTicks < 0
-            ? Constants.AttackCommitWindowTicks
-            : durationTicks;
         ActionFsm.ChangeState(PlayerCombatStates.Attack, this);
+        // AttackState가 자기 데이터를 엔티티에 직접 소유 (flyweight 싱글톤 채널 제거).
+        // ChangeState 이후 세팅 — Exit(이전 상태)이 ExternalImpulseVx를 0으로 덮을 수 있으므로.
+        StateTicksRemaining = durationTicks < 0 ? Constants.AttackCommitWindowTicks : durationTicks;
+        ExternalImpulseVx   = impulseVx;
+        ImpulseDecayPerTick = decayPerTick < 0f ? Constants.KnockbackDecayPerTick : decayPerTick;
     }
 
     // 피격 hitstun 진입. IsDead 또는 불가침 commit 중이면 no-op (넉백도 없음).

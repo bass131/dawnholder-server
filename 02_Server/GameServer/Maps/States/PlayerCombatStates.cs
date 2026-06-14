@@ -21,7 +21,7 @@ internal static class PlayerCombatStates
 // ── AttackState ───────────────────────────────────────────────────────────────
 
 // 공격 commit window. 이동 잠금 + 불가침(피격 불가) + 행동 거부.
-// Enter에서 StateTicksRemaining + ExternalImpulseVx + ImpulseDecayPerTick 세팅 (§8 상태 소유).
+// EnterAttackState에서 ChangeState 후 StateTicksRemaining + ExternalImpulseVx + ImpulseDecayPerTick 엔티티에 직접 세팅.
 // Tick에서 DecayImpulse() 단일 경로로 감쇠 후 카운터 감소 → 0이면 ResolveGrounded로 복귀.
 internal sealed class AttackState : ActorState<PlayerEntity>
 {
@@ -29,22 +29,8 @@ internal sealed class AttackState : ActorState<PlayerEntity>
     public override bool LocksMovement      => true;
     public override bool InterruptibleByHit => false;
 
-    // impulseVx, decayPerTick, durationTicks: EnterAttackState가 계산해 전달 → Enter에서 세팅(§8 상태 소유).
-    // Flyweight 정적 인스턴스이므로 tick thread invariant(단일 스레드) 내에서만 유효.
-    internal float PendingImpulseVx { get; set; }
-    internal float PendingDecayPerTick { get; set; } = Constants.KnockbackDecayPerTick;
-    // 지속 틱: 평타=AttackCommitWindowTicks, 대쉬=DashTravelTicks — 이제 독립 튜닝 가능.
-    internal int PendingDurationTicks { get; set; } = Constants.AttackCommitWindowTicks;
-
     // commit window 중 모든 행동 거부 — Dash 중 평타 구멍 봉합.
     public override bool AcceptsAction(ActionKind kind) => false;
-
-    public override void Enter(PlayerEntity player)
-    {
-        player.StateTicksRemaining = PendingDurationTicks;
-        player.ExternalImpulseVx   = PendingImpulseVx;
-        player.ImpulseDecayPerTick = PendingDecayPerTick;
-    }
 
     public override ActorState<PlayerEntity>? Tick(PlayerEntity player)
     {
@@ -61,9 +47,6 @@ internal sealed class AttackState : ActorState<PlayerEntity>
     {
         player.ExternalImpulseVx   = 0f;
         player.ImpulseDecayPerTick = Constants.KnockbackDecayPerTick;
-        PendingImpulseVx           = 0f;
-        PendingDecayPerTick        = Constants.KnockbackDecayPerTick;
-        PendingDurationTicks       = Constants.AttackCommitWindowTicks;
     }
 }
 
