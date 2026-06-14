@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4.15 마감 — Energy Bolt / 히트박스 / freeze / 텔레포트 4방향·v14</title>
+<style>
+  :root{--bg:#0f1116;--card:#1a1d26;--ink:#e6e9ef;--mut:#9aa3b2;--line:#2a2f3a;
+    --a:#6ee7b7;--b:#93c5fd;--c:#fca5a5;--d:#fcd34d;--ok:#34d399;--warn:#fbbf24;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.6;padding:32px}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--mut);font-size:14px;margin-bottom:24px}
+  .grade{display:inline-block;background:#3b2f5e;color:#d8b4fe;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;margin-left:8px}
+  .row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;flex:1;min-width:230px}
+  .card h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .tag{font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px}
+  .tA{background:#064e3b;color:var(--a)} .tB{background:#1e3a5f;color:var(--b)}
+  .tC{background:#5b1d1d;color:var(--c)} .tD{background:#4d3c0a;color:var(--d)}
+  .card p{margin:6px 0;font-size:13px;color:var(--mut)}
+  .card b{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600}
+  .old{color:var(--c);text-decoration:line-through;opacity:.7}
+  .new{color:var(--ok);font-weight:600}
+  .arrow{color:var(--mut)}
+  .timeline{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:24px}
+  .ph{display:flex;gap:12px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .ph:last-child{border-bottom:none}
+  .ph .n{flex:0 0 34px;font-weight:700;color:var(--mut)}
+  .ph .t{flex:1}
+  .ph .h{flex:0 0 90px;font-family:ui-monospace,monospace;font-size:12px;color:#7dd3fc}
+  .done{color:var(--ok)}
+  .vbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .v{background:#11151c;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px}
+  .v .k{color:var(--mut);font-size:11px;display:block}
+  .v .val{font-weight:700;font-size:15px}
+  .foot{color:var(--mut);font-size:12px;margin-top:24px;border-top:1px solid var(--line);padding-top:12px}
+  .pill{display:inline-block;background:#11241c;color:var(--ok);border:1px solid #1f3d30;border-radius:8px;padding:4px 10px;font-size:13px;font-weight:600;margin:2px}
+  .pill.w{background:#2a230f;color:var(--warn);border-color:#43360f}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>M4.15 마감 <span class="grade">대규모 · 4도메인 · v14</span></h1>
+  <div class="sub">Energy Bolt 다듬기 + 전 스킬 히트박스 재정비 + freeze 제거 + 텔레포트 4방향/v14 · 2026-06-14 · 영호 Play-test 2회 반영</div>
+
+  <div class="row">
+    <div class="card">
+      <h2><span class="tag tA">A</span> 투사체 일정 속도</h2>
+      <p>멀수록 순간이동처럼 빨라지던 에너지 볼트 → <b>거리 비례 일정 속도</b>.</p>
+      <p>서버 <b>travelTicks = max(2, ceil(2D거리÷2.0))</b>, 상한(10) artifact 제거. 클라는 서버 travelTicks 역산이라 <b>무변경 자동 정합</b>.</p>
+    </div>
+    <div class="card">
+      <h2><span class="tag tB">B</span> 히트박스 X/Y 분리</h2>
+      <p>정사각이라 위아래 층 다 맞던 것 → <b>X 넓고 Y 얇은 비정사각</b>(층 분리).</p>
+      <p>GetAttackHitbox 정사각 <code>(half,half)</code> → 클래스별 <code>(halfX,halfY)</code>.</p>
+    </div>
+    <div class="card">
+      <h2><span class="tag tC">C</span> freeze 제거</h2>
+      <p>Mage 평타·Thunderbolt가 적을 얼리던 것 → <b>데미지만</b>(메이플 정합).</p>
+      <p>ApplyFreeze 호출 2곳 제거. <b>인프라(필드/가드/Boss면역)는 보존</b> — 미래 빙결 스킬용.</p>
+    </div>
+    <div class="card">
+      <h2><span class="tag tD">D</span> 텔레포트 4방향/v14</h2>
+      <p>좌우만 되던 것 → <b>위/아래 추가 + 지형 인식 + 도착 이펙트 결정론</b>.</p>
+      <p><b>Protocol v13→v14</b> (C_SkillUse.verticalDir). 수직=발판 탐지 snap, 도착 이펙트 캐릭터 글루.</p>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <h2 style="margin-top:0;font-size:15px">📦 Phase 타임라인 (10)</h2>
+    <div class="ph"><span class="n done">01</span><span class="t">baseline + 시작값 표</span><span class="h">5beda1f</span></div>
+    <div class="ph"><span class="n done">02</span><span class="t"><span class="tag tB">B</span> 히트박스 X/Y 분리 (reviewer 🔴0)</span><span class="h">baff561</span></div>
+    <div class="ph"><span class="n done">03</span><span class="t"><span class="tag tC">C</span> freeze 제거 (인프라 보존)</span><span class="h">40b6290</span></div>
+    <div class="ph"><span class="n done">04</span><span class="t"><span class="tag tA">A</span> 투사체 서버 모델 (상한 제거)</span><span class="h">a0a1589</span></div>
+    <div class="ph"><span class="n done">05</span><span class="t"><span class="tag tA">A</span> 투사체 클라 정합 (무변경 — 캐스케이드)</span><span class="h">—</span></div>
+    <div class="ph"><span class="n done">06</span><span class="t"><span class="tag tD">D</span> Protocol v14 verticalDir <span class="pill w">irreversible</span></span><span class="h">f9cb574</span></div>
+    <div class="ph"><span class="n done">07</span><span class="t"><span class="tag tD">D</span> 서버 4방향 (trust-boundary · Opus)</span><span class="h">1161e3c</span></div>
+    <div class="ph"><span class="n done">08</span><span class="t"><span class="tag tD">D</span> 클라 입력 + 출발 이펙트 결정론</span><span class="h">66f1e27</span></div>
+    <div class="ph"><span class="n done">09</span><span class="t"><span class="tag tD">D</span> 지형 수직 + 도착 이펙트 폴리시 (Play 2차)</span><span class="h">10ea28b·ed2bd3b</span></div>
+    <div class="ph"><span class="n done">10</span><span class="t"><span class="tag tD">D</span> 봇 정합 + 마감</span><span class="h">ac46760</span></div>
+  </div>
+
+  <div class="row">
+    <div class="card" style="flex:2;min-width:420px">
+      <h2>📐 히트박스 / 투사체 최종값 (before → after)</h2>
+      <table>
+        <tr><th>항목</th><th>before</th><th></th><th>after</th></tr>
+        <tr><td>Mage 평타</td><td class="old">정사각 ±8</td><td class="arrow">→</td><td class="new">X 11 / Y 1.0</td></tr>
+        <tr><td>Knight 평타</td><td class="old">정사각 ±1.5</td><td class="arrow">→</td><td class="new">X 1.5 / Y 1.0</td></tr>
+        <tr><td>Thunderbolt</td><td class="old">X 13 / Y 3</td><td class="arrow">→</td><td class="new">X 13 / Y 1.5</td></tr>
+        <tr><td>Dash</td><td class="old">X 2.5 / Y 1.5</td><td class="arrow">→</td><td class="new">X 2.5 / Y 1.0</td></tr>
+        <tr><td>투사체 속도</td><td class="old">가변(폭증)</td><td class="arrow">→</td><td class="new">2.0/tick 일정 (상한 제거)</td></tr>
+        <tr><td>freeze</td><td class="old">평타·번개 얼림</td><td class="arrow">→</td><td class="new">제거 (인프라 보존)</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>🌀 텔레포트 최종 튜닝 (영호 Play)</h2>
+      <div class="vbar">
+        <div class="v"><span class="k">수평 거리</span><span class="val">3.5</span></div>
+        <div class="v"><span class="k">수직 사거리</span><span class="val">3.0</span></div>
+        <div class="v"><span class="k">이펙트 Y오프셋</span><span class="val">-0.5</span></div>
+      </div>
+      <p style="margin-top:10px">방향: <b>0=수평 / 1=위 / 2=아래</b> (verticalDir whitelist). 수직 = 발판 탐지 snap, 없거나 사거리 밖이면 이동X(이펙트만). 도착 이펙트 = 캐릭터 transform 글루.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧪 검증</h2>
+    <span class="pill">WSL2 test 580 / 0 / 5</span>
+    <span class="pill">봇 16 / 16 (fresh)</span>
+    <span class="pill">빌드 0 / 0</span>
+    <span class="pill">Unity 컴파일 0err</span>
+    <span class="pill">reviewer 🔴0 (P02·P07)</span>
+    <span class="pill">plan-auditor 2회 GO</span>
+    <span class="pill w">ProtocolVersion v14 (append-only)</span>
+    <p style="margin-top:12px">헌법 §1 서버 권위 / §3 신뢰 경계(verticalDir whitelist 3진) / §5 틱 루프(지형 쿼리 alloc 0) 보존. 봇 연속런 BossFight/HpSync/Freeze FAIL = 보스상태 누적 flaky → fresh 단독 전부 success=True (carry-over "연속 FAIL≠회귀").</p>
+  </div>
+
+  <div class="card" style="margin-top:24px">
+    <h2>➡️ 다음</h2>
+    <p>· <b class="warn">PR 게이트</b>: v14 비가역(main 머지 시 클라 버전 매칭) + Shared.dll co-review(정유현 CODEOWNERS) = 영호 명시 GO 후 진행.</p>
+    <p>· 후속 후보: 수직 텔레포트 terrain-aware 정밀화 / 히트박스·거리 추가 Play 튜닝(단일 상수) / 미래 빙결 스킬(보존 인프라 재사용).</p>
+  </div>
+
+  <div class="foot">M4.15 · feature/m4.15-energybolt-skill-range · 상세 = <code>_milestone-DONE.md</code> · 재계획 <code>ad9c77c</code> · 생성 2026-06-14 (ADR-031 복잡+ HTML 페어)</div>
+</div>
+</body>
+</html>

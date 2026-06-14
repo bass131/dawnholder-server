@@ -3,7 +3,7 @@ owner: youngho
 milestone: M4.15
 phase: 09
 title: 텔레포트 폴리시 — 지형 인식 수직 이동 + 도착 이펙트 결정론
-status: pending
+status: done
 grade: 복잡
 domain: server+client
 summary: 수직 텔레포트 거리기반→지형 인식(발판 탐지·최대 사거리 snap·이동불가 시 이펙트만) + 도착 이펙트 타이밍(S_SkillCast 수신 arming) + 캐릭터 parenting
@@ -123,3 +123,4 @@ P07/P08 Play-test 2차 피드백 2종을 봉합한다:
 ## 작업 로그
 
 - 2026-06-14: 생성 (영호 Play-test 2차 피드백 → 지형 인식 수직 + 도착 이펙트 결정론. 승인 플랜 `buzzing-jingling-raccoon.md`).
+- 2026-06-14: 완료 (`10ea28b`, server+client Worker 병렬 + 메인 file:line 게이트 + plan-auditor 🔴3봉합). **server**: `GameMap.TryFindVerticalTeleportTarget`(Solids.MaxY+Platforms.Y 후보, up=최저/down=최고, 사거리 체크, alloc 0), TeleportAction 수직 분기 교체(early-return 없이 무조건 broadcast), MapBoundsY 제거, TeleportVerticalRange=5. **client**: arming 송신→S_SkillCast 수신 시점(NotifyTeleport/ArmTeleportSnap 분리), arrive parenting(SpawnEffectParented facingSign=0). **테스트**: MakeTerrainWithPlatforms 헬퍼 + 5 신규(발판 위/아래 정확착지 destY==표면Y, 사거리밖/없음 이동X+broadcast 동시 Assert). 솔루션 빌드 0/0 + WSL2 **580/0/5** + Unity reimport 재컴파일 0err. **다음 = 영호 Play 재확인**.
