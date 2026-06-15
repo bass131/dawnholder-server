@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -71,6 +72,7 @@ namespace Dawnholder.Client.Network
                     }
                     return;
                 }
+                AudioManager.Instance?.PlaySfx(SoundKeys.MeleeSwing, 1f, 0.05f);
                 GameObject fx = Object.Instantiate(meleePrefab, fxPos, Quaternion.identity);
                 if (facing < 0)
                 {

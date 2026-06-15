@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -78,6 +79,7 @@ namespace Dawnholder.Client.Network
 
                 if (hasFxPos)
                 {
+                    AudioManager.Instance?.PlaySfx(SoundKeys.EnemyAttack);
                     // kind 해석 성공 시 kind-aware 오버로드, 실패 시 기존 보스 경로 폴백.
                     if (kindKnown)
                         BossAttackEffectSpawner.Spawn(attackerKind, attackPattern, fxPos, fxFacing);
@@ -88,6 +90,7 @@ namespace Dawnholder.Client.Network
                 if (!isLocalPlayer) return;
 
                 // 본인 피격 *즉시* 신호 → hit-bridge 게이트 시작 (animState==Hit 스냅샷 전 입력 예측 갭 축소).
+                AudioManager.Instance?.PlaySfx(SoundKeys.HitPlayer);
                 LocalPlayerMovement.Instance?.NotifyHit();
 
                 // 피격 플래시 — LocalPlayer GameObject에서 DamageFlash 조회 또는 런타임 주입.

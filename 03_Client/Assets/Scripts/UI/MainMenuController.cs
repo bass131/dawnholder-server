@@ -1,8 +1,9 @@
+using Dawnholder.Client.Audio;
+using Dawnholder.Client.Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
-using Dawnholder.Client.Network;
 
 namespace Dawnholder.Client.UI
 {
@@ -56,6 +57,8 @@ namespace Dawnholder.Client.UI
 
         void Start()
         {
+            AudioManager.Instance?.PlayBgm(SoundKeys.BgmMainMenu);
+
             // PlayerPrefs에 박힌 옛 값 → InputField 자동 채움. 없으면 인스펙터 _defaultHost.
             if (_serverHostInputField != null)
             {
@@ -70,6 +73,7 @@ namespace Dawnholder.Client.UI
 
         public void OnStartClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             if (_probing) return;  // 중복 클릭 차단
 
             string host = ResolveHost();
@@ -125,6 +129,7 @@ namespace Dawnholder.Client.UI
 
         public void OnQuitClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             Debug.Log("[MainMenu] Quit clicked");
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;

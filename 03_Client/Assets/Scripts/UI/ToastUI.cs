@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections;
+using Dawnholder.Client.Audio;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,6 +50,7 @@ namespace Dawnholder.Client.UI
                 Debug.LogWarning("[ToastUI] _group 또는 _text null — BuildRuntime 누락?");
                 return;
             }
+            AudioManager.Instance?.PlaySfx(SoundKeys.Toast);
             _text.text = message;
 
             if (_activeFade != null) StopCoroutine(_activeFade);

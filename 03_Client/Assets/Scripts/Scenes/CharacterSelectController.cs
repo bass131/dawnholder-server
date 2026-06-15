@@ -1,7 +1,8 @@
-using UnityEngine;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.UI;
 using Shared.Protocol;
+using UnityEngine;
 
 namespace Dawnholder.Client.Scenes
 {
@@ -27,11 +28,13 @@ namespace Dawnholder.Client.Scenes
 
         public void OnKnightClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             SaveSelectAndLoad(CharacterClass.Knight);
         }
 
         public void OnMageClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             SaveSelectAndLoad(CharacterClass.Mage);
         }
 

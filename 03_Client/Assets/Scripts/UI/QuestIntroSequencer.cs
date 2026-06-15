@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Prediction;
 using UnityEngine;
 
@@ -57,6 +58,7 @@ namespace Dawnholder.Client.UI
                 yield return new WaitForSeconds(0.4f);
 
                 // ① "퀘스트 발생" 임팩트 — 배너 시트 애니 쾅! 등장 + 플래시
+                AudioManager.Instance?.PlaySfx(SoundKeys.Toast);
                 QuestAlert alert = QuestAlert.BuildRuntime(_parent!, QuestAlertKind.Available);
                 bool alertDone = false;
                 alert.PlayThenCallback(() => alertDone = true);

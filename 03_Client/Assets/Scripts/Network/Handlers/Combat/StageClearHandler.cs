@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -34,6 +35,7 @@ namespace Dawnholder.Client.Network
                     return;
                 }
                 StageClearUI.Instance.Show(bossId);
+                AudioManager.Instance?.PlaySfx(SoundKeys.StageClear);
             });
         }
     }

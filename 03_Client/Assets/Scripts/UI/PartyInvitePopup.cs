@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.State;
 using Shared.Protocol;
@@ -82,6 +83,7 @@ namespace Dawnholder.Client.UI
             if (_inviteText != null)
                 _inviteText.text = $"{className} 파티 초대";
 
+            AudioManager.Instance?.PlaySfx(SoundKeys.PartyInvite);
             ShowPopup();
             Debug.Log($"[PartyInvitePopup] 팝업 표시 — inviter={state.PendingInviterEntityId} class={className}");
         }
@@ -96,6 +98,7 @@ namespace Dawnholder.Client.UI
         // Accept 버튼 onClick — BuildRuntime에서 AddListener로 연결.
         void OnAcceptClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             SendRespond(accept: 1);
             HidePopup();
         }
@@ -103,6 +106,7 @@ namespace Dawnholder.Client.UI
         // Reject 버튼 onClick — BuildRuntime에서 AddListener로 연결.
         void OnRejectClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             SendRespond(accept: 0);
             HidePopup();
         }

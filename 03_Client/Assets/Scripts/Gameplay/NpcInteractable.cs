@@ -1,3 +1,4 @@
+using Dawnholder.Client.Audio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -67,7 +68,11 @@ namespace Dawnholder.Client.Gameplay
             if (other.CompareTag(_playerTag))
             {
                 _isPlayerNear = false;
-                if (NpcDialogPanel.IsShown) NpcDialogPanel.Hide();
+                if (NpcDialogPanel.IsShown)
+                {
+                    AudioManager.Instance?.PlaySfx(SoundKeys.PanelOpen);
+                    NpcDialogPanel.Hide();
+                }
             }
         }
 
@@ -75,6 +80,7 @@ namespace Dawnholder.Client.Gameplay
         {
             if (!_isPlayerNear) return;
             if (NpcDialogPanel.IsShown) return;
+            AudioManager.Instance?.PlaySfx(SoundKeys.PanelOpen);
             NpcDialogPanel.Show(_dialogText, _portrait);
         }
     }

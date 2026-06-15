@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -65,6 +66,7 @@ namespace Dawnholder.Client.Network
                 switch (skill)
                 {
                     case SkillId.Thunderbolt:
+                        AudioManager.Instance?.PlaySfx(SoundKeys.MagicCast);
                         SpawnEffect(ThunderboltCastPath, EffectAnchor.ResolvePosition(casterTf),
                             facingSign: 0, ref _warnedMissingThunderbolt, "Thunderbolt 캐스팅 VFX");
                         // 원격 캐스팅 모션: 서버는 Channeling을 animState로 안 보냄(ThunderboltAction이 AttackState
@@ -80,6 +82,7 @@ namespace Dawnholder.Client.Network
                         // 직전 평타의 stale facing이 Dash에 잘못 적용되는 것을 방지.
                         if (!isLocal)
                             RemoteEntityRegistry.Instance?.SetAttackFacing(casterId, facing == 1 ? 1 : -1);
+                        AudioManager.Instance?.PlaySfx(SoundKeys.Dash);
                         HandleDash(isLocal, casterTf, facing);
                         break;
 
@@ -134,6 +137,7 @@ namespace Dawnholder.Client.Network
         // 원격 경로: S_SkillCast 수신 시점 casterTf.position을 출발 위치로 사용 (기존과 동일, 무변경).
         static void HandleTeleport(bool isLocal, int casterId, Transform casterTf)
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.TeleportDepart);
             if (isLocal)
             {
                 // 로컬 출발 이펙트: 송신 시점 stash 위치 사용.
@@ -183,6 +187,7 @@ namespace Dawnholder.Client.Network
         //   출발 이펙트(departPos = root)와 동일 기준(root/발밑) — 일관성. EffectLifetime(0.52초) 자동 파괴.
         internal static void SpawnTeleportArrive(Transform entityTf)
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.TeleportArrive);
             GameObject? prefab = Resources.Load<GameObject>(TeleportArrivePath);
             if (prefab == null)
             {
