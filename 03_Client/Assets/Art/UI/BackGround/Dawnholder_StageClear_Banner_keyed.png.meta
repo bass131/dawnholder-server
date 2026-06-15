@@ -747,353 +747,353 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: StageClearKeyed_0
+      name: Dawnholder_StageClear_Banner_keyed_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 637
-        width: 512
-        height: 212
+        y: 1272
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5c4f7cf8ac6198450800000000000000
-      internalID: 6091425030246757573
+      spriteID: a9c4d51729d5a144fad928221feae02e
+      internalID: -4473672521714100471
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_1
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 637
-        width: 512
-        height: 212
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8fc95c4c1cfdb2b90800000000000000
-      internalID: -7265467550509196040
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: StageClearKeyed_2
+      name: Dawnholder_StageClear_Banner_keyed_1
       rect:
         serializedVersion: 2
         x: 1024
-        y: 637
-        width: 512
-        height: 212
+        y: 1272
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 57459a920fc1f6120800000000000000
-      internalID: 2409176143483196533
+      spriteID: 9ecc5f61fdb652a46807b760f675941f
+      internalID: 6285108987780770055
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_3
+      name: Dawnholder_StageClear_Banner_keyed_2
       rect:
         serializedVersion: 2
-        x: 1536
-        y: 637
-        width: 512
-        height: 212
+        x: 2048
+        y: 1272
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 406b73a2742480910800000000000000
-      internalID: 1803764524180289028
+      spriteID: 402a470d4ed8f3445bec726c164d2862
+      internalID: 3454411018909916023
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_4
+      name: Dawnholder_StageClear_Banner_keyed_3
+      rect:
+        serializedVersion: 2
+        x: 3072
+        y: 1272
+        width: 1024
+        height: 424
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0657fcf5df62bc14888f8cda9c9d9f8b
+      internalID: -1125349779972243077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_StageClear_Banner_keyed_4
       rect:
         serializedVersion: 2
         x: 0
-        y: 425
-        width: 512
-        height: 212
+        y: 848
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5427501b8619b0520800000000000000
-      internalID: 2669387082979701317
+      spriteID: f215f79926070c6459848d214981cbbd
+      internalID: -975872219946645777
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_5
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 425
-        width: 512
-        height: 212
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 14227fa951e940010800000000000000
-      internalID: 1154221220145078849
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: StageClearKeyed_6
+      name: Dawnholder_StageClear_Banner_keyed_5
       rect:
         serializedVersion: 2
         x: 1024
-        y: 425
-        width: 512
-        height: 212
+        y: 848
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 45f0700c3e3b0fa90800000000000000
-      internalID: -7282122806697455788
+      spriteID: bcaa68df417934749bcde2a17c89c6cc
+      internalID: -2451202638261875692
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_7
+      name: Dawnholder_StageClear_Banner_keyed_6
       rect:
         serializedVersion: 2
-        x: 1536
-        y: 425
-        width: 512
-        height: 212
+        x: 2048
+        y: 848
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0a2cb589d0f747290800000000000000
-      internalID: -7893544550506184032
+      spriteID: da8c5314778adc64796ee0d1419a30ab
+      internalID: 5430203669368524984
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_8
+      name: Dawnholder_StageClear_Banner_keyed_7
+      rect:
+        serializedVersion: 2
+        x: 3072
+        y: 848
+        width: 1024
+        height: 424
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbee8a20022721347af118b31ae544a2
+      internalID: -1904941360352585709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_StageClear_Banner_keyed_8
       rect:
         serializedVersion: 2
         x: 0
-        y: 213
-        width: 512
-        height: 212
+        y: 424
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 00706e7cb0e36b130800000000000000
-      internalID: 3582118773939111680
+      spriteID: 1eec2db9c8a6de746b81fa5bc4bed22c
+      internalID: -6335875977659853121
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_9
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 213
-        width: 512
-        height: 212
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 99a3c4c3cee592c10800000000000000
-      internalID: 2029257475824040601
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: StageClearKeyed_10
+      name: Dawnholder_StageClear_Banner_keyed_9
       rect:
         serializedVersion: 2
         x: 1024
-        y: 213
-        width: 512
-        height: 212
+        y: 424
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 90b52336eb39ccb90800000000000000
-      internalID: -7220233656664433911
+      spriteID: 8ebe6a17f30bc6a4bbb9ba8960df59ca
+      internalID: -7657695222526170748
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_11
+      name: Dawnholder_StageClear_Banner_keyed_10
       rect:
         serializedVersion: 2
-        x: 1536
-        y: 213
-        width: 512
-        height: 212
+        x: 2048
+        y: 424
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e6d46088f51ca3dd0800000000000000
-      internalID: -2505477626630091410
+      spriteID: 6694e583f89de0543b99627f4a632d14
+      internalID: 6470754837857913173
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_12
+      name: Dawnholder_StageClear_Banner_keyed_11
+      rect:
+        serializedVersion: 2
+        x: 3072
+        y: 424
+        width: 1024
+        height: 424
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cde77a27ecf3ac7439a15c9fe58cb4f8
+      internalID: 2361143679588963215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_StageClear_Banner_keyed_12
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 512
-        height: 212
+        y: 0
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 794a2612698c347a0800000000000000
-      internalID: -6394046498805209961
+      spriteID: 3bd34ee1cf8e7a14283591bbf85fba30
+      internalID: -4292131305802488265
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_13
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 1
-        width: 512
-        height: 212
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ac995d184e5facb50800000000000000
-      internalID: 6614369364526602698
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: StageClearKeyed_14
+      name: Dawnholder_StageClear_Banner_keyed_13
       rect:
         serializedVersion: 2
         x: 1024
-        y: 1
-        width: 512
-        height: 212
+        y: 0
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 095a3ad719a03f220800000000000000
-      internalID: 2518368236624651664
+      spriteID: 4d8b67b5d86e48c47a0453d757eccc1a
+      internalID: -69261703611159895
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: StageClearKeyed_15
+      name: Dawnholder_StageClear_Banner_keyed_14
       rect:
         serializedVersion: 2
-        x: 1536
-        y: 1
-        width: 512
-        height: 212
+        x: 2048
+        y: 0
+        width: 1024
+        height: 424
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5e48c832bdddd6800800000000000000
-      internalID: 607385458028872933
+      spriteID: efbee29bac9952c4b974627bd3662456
+      internalID: -2354217926891440131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_StageClear_Banner_keyed_15
+      rect:
+        serializedVersion: 2
+        x: 3072
+        y: 0
+        width: 1024
+        height: 424
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f41438d0964efb24cacda3a2a3ed0ef8
+      internalID: -9034144327127828007
       vertices: []
       indices: 
       edges: []
@@ -1102,7 +1102,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: f5097f0678ee00e41a442d16f7c9ffb8
     internalID: 0
     vertices: []
     indices: 
@@ -1110,224 +1110,26 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":1024.0,"y":424.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Dawnholder_StageClear_Banner_keyed_0: -4473672521714100471
       Dawnholder_StageClear_Banner_keyed_1: 6285108987780770055
       Dawnholder_StageClear_Banner_keyed_10: 6470754837857913173
-      Dawnholder_StageClear_Banner_keyed_100: 5104120510119995417
-      Dawnholder_StageClear_Banner_keyed_101: 1951467160713332845
-      Dawnholder_StageClear_Banner_keyed_102: -8029507177083030751
-      Dawnholder_StageClear_Banner_keyed_103: -6384337091604574358
-      Dawnholder_StageClear_Banner_keyed_104: 2414097523042657799
-      Dawnholder_StageClear_Banner_keyed_105: 6029385302564927152
-      Dawnholder_StageClear_Banner_keyed_106: 3321415905637151680
-      Dawnholder_StageClear_Banner_keyed_107: -1809886703894619275
-      Dawnholder_StageClear_Banner_keyed_108: 1278044977963549954
-      Dawnholder_StageClear_Banner_keyed_109: -8746916325251262466
       Dawnholder_StageClear_Banner_keyed_11: 2361143679588963215
-      Dawnholder_StageClear_Banner_keyed_110: -5355092147935130587
-      Dawnholder_StageClear_Banner_keyed_111: 8544957296157675731
-      Dawnholder_StageClear_Banner_keyed_112: -3254220961727170752
-      Dawnholder_StageClear_Banner_keyed_113: -6125443818695293761
-      Dawnholder_StageClear_Banner_keyed_114: 6145054194947097234
-      Dawnholder_StageClear_Banner_keyed_115: -3679529996729838139
-      Dawnholder_StageClear_Banner_keyed_116: 9159728578033404525
-      Dawnholder_StageClear_Banner_keyed_117: 8767597697449563556
-      Dawnholder_StageClear_Banner_keyed_118: 5775353602230485786
-      Dawnholder_StageClear_Banner_keyed_119: -1410150186216241806
       Dawnholder_StageClear_Banner_keyed_12: -4292131305802488265
-      Dawnholder_StageClear_Banner_keyed_120: 5842548020573728667
-      Dawnholder_StageClear_Banner_keyed_121: 2413494403828547471
-      Dawnholder_StageClear_Banner_keyed_122: -6198020213562499190
-      Dawnholder_StageClear_Banner_keyed_123: 7899572459419541620
-      Dawnholder_StageClear_Banner_keyed_124: -6857249883156865152
-      Dawnholder_StageClear_Banner_keyed_125: -7300994149008539097
-      Dawnholder_StageClear_Banner_keyed_126: -5665419909600333043
-      Dawnholder_StageClear_Banner_keyed_127: 7795297508959060954
-      Dawnholder_StageClear_Banner_keyed_128: -6259087359500811118
-      Dawnholder_StageClear_Banner_keyed_129: 7443993043382151814
       Dawnholder_StageClear_Banner_keyed_13: -69261703611159895
-      Dawnholder_StageClear_Banner_keyed_130: 4662080460551164706
-      Dawnholder_StageClear_Banner_keyed_131: -3488122120729716291
-      Dawnholder_StageClear_Banner_keyed_132: -4090882421034800632
-      Dawnholder_StageClear_Banner_keyed_133: 6003401876488064330
-      Dawnholder_StageClear_Banner_keyed_134: 3912784588014720493
-      Dawnholder_StageClear_Banner_keyed_135: -2066443050367008750
-      Dawnholder_StageClear_Banner_keyed_136: 594565681396284532
-      Dawnholder_StageClear_Banner_keyed_137: -6326622312669948847
-      Dawnholder_StageClear_Banner_keyed_138: 4104194573781399554
-      Dawnholder_StageClear_Banner_keyed_139: -1461139563251789987
       Dawnholder_StageClear_Banner_keyed_14: -2354217926891440131
-      Dawnholder_StageClear_Banner_keyed_140: -1679879497437855297
-      Dawnholder_StageClear_Banner_keyed_141: -8807114220264779992
-      Dawnholder_StageClear_Banner_keyed_142: -8175116289058544170
-      Dawnholder_StageClear_Banner_keyed_143: 7931588499437689966
-      Dawnholder_StageClear_Banner_keyed_144: -3915725613727486897
-      Dawnholder_StageClear_Banner_keyed_145: 8629493780859994763
-      Dawnholder_StageClear_Banner_keyed_146: 4945984574221034054
-      Dawnholder_StageClear_Banner_keyed_147: 7231023557799701093
-      Dawnholder_StageClear_Banner_keyed_148: 2143758275204465595
-      Dawnholder_StageClear_Banner_keyed_149: -1539395613479953896
       Dawnholder_StageClear_Banner_keyed_15: -9034144327127828007
-      Dawnholder_StageClear_Banner_keyed_150: 7827599222286190237
-      Dawnholder_StageClear_Banner_keyed_151: -8544049706039105526
-      Dawnholder_StageClear_Banner_keyed_152: 9203722627862203974
-      Dawnholder_StageClear_Banner_keyed_153: 4399347944028780241
-      Dawnholder_StageClear_Banner_keyed_154: 2437334761087928815
-      Dawnholder_StageClear_Banner_keyed_155: 6123205599410895247
-      Dawnholder_StageClear_Banner_keyed_156: -6322650323726142102
-      Dawnholder_StageClear_Banner_keyed_157: -4533467347067620392
-      Dawnholder_StageClear_Banner_keyed_158: 7747521314166987222
-      Dawnholder_StageClear_Banner_keyed_159: -529447282421287875
-      Dawnholder_StageClear_Banner_keyed_16: 6385497982627344848
-      Dawnholder_StageClear_Banner_keyed_160: 3804420847165313965
-      Dawnholder_StageClear_Banner_keyed_161: 656753397691381211
-      Dawnholder_StageClear_Banner_keyed_162: -3692113300695038402
-      Dawnholder_StageClear_Banner_keyed_163: 3466956336151850800
-      Dawnholder_StageClear_Banner_keyed_164: -3757874139748862816
-      Dawnholder_StageClear_Banner_keyed_165: 7002436882414165844
-      Dawnholder_StageClear_Banner_keyed_166: 4957932954125678598
-      Dawnholder_StageClear_Banner_keyed_167: 2638963841438765132
-      Dawnholder_StageClear_Banner_keyed_168: 5565013671564811115
-      Dawnholder_StageClear_Banner_keyed_169: -6461691150578163504
-      Dawnholder_StageClear_Banner_keyed_17: 1558506355096129110
-      Dawnholder_StageClear_Banner_keyed_170: -4322256072241897092
-      Dawnholder_StageClear_Banner_keyed_171: 701731691944567305
-      Dawnholder_StageClear_Banner_keyed_172: 4607630317008523414
-      Dawnholder_StageClear_Banner_keyed_173: -8333665310907736774
-      Dawnholder_StageClear_Banner_keyed_174: -6052382523517004946
-      Dawnholder_StageClear_Banner_keyed_175: -237741630048333546
-      Dawnholder_StageClear_Banner_keyed_176: -2118845575562872369
-      Dawnholder_StageClear_Banner_keyed_177: 8760742273713290171
-      Dawnholder_StageClear_Banner_keyed_178: -1115095203186227731
-      Dawnholder_StageClear_Banner_keyed_179: -3252654313975611984
-      Dawnholder_StageClear_Banner_keyed_18: 2154506531735669894
-      Dawnholder_StageClear_Banner_keyed_180: -430182217260546396
-      Dawnholder_StageClear_Banner_keyed_181: -7296578978152079990
-      Dawnholder_StageClear_Banner_keyed_182: 641676809663369932
-      Dawnholder_StageClear_Banner_keyed_183: -1038345476882201410
-      Dawnholder_StageClear_Banner_keyed_184: 3909159018624130506
-      Dawnholder_StageClear_Banner_keyed_185: 5702949364582244599
-      Dawnholder_StageClear_Banner_keyed_186: 4342153123735213726
-      Dawnholder_StageClear_Banner_keyed_187: -2858721958542563551
-      Dawnholder_StageClear_Banner_keyed_188: -8905750077981472090
-      Dawnholder_StageClear_Banner_keyed_189: -3442815052828346675
-      Dawnholder_StageClear_Banner_keyed_19: -8306896048090987680
-      Dawnholder_StageClear_Banner_keyed_190: -4508700636863354368
       Dawnholder_StageClear_Banner_keyed_2: 3454411018909916023
-      Dawnholder_StageClear_Banner_keyed_20: -1927001289290369561
-      Dawnholder_StageClear_Banner_keyed_21: -4531497002737006312
-      Dawnholder_StageClear_Banner_keyed_22: -8063800415841644760
-      Dawnholder_StageClear_Banner_keyed_23: -8570620956338060871
-      Dawnholder_StageClear_Banner_keyed_24: 7291186031845930502
-      Dawnholder_StageClear_Banner_keyed_25: 6950556742945094972
-      Dawnholder_StageClear_Banner_keyed_26: -4622244692366662519
-      Dawnholder_StageClear_Banner_keyed_27: 3314185152564633013
-      Dawnholder_StageClear_Banner_keyed_28: 1396785038677822196
-      Dawnholder_StageClear_Banner_keyed_29: -340164883540680679
       Dawnholder_StageClear_Banner_keyed_3: -1125349779972243077
-      Dawnholder_StageClear_Banner_keyed_30: 2573984977117258794
-      Dawnholder_StageClear_Banner_keyed_31: 1910727084961819270
-      Dawnholder_StageClear_Banner_keyed_32: 3172839314949994494
-      Dawnholder_StageClear_Banner_keyed_33: -2891597631085153333
-      Dawnholder_StageClear_Banner_keyed_34: 1967818887349530784
-      Dawnholder_StageClear_Banner_keyed_35: -8164063659890535339
-      Dawnholder_StageClear_Banner_keyed_36: 2485324282919799584
-      Dawnholder_StageClear_Banner_keyed_37: -7987877750677063550
-      Dawnholder_StageClear_Banner_keyed_38: -7137625836894021519
-      Dawnholder_StageClear_Banner_keyed_39: -2027842552292482897
       Dawnholder_StageClear_Banner_keyed_4: -975872219946645777
-      Dawnholder_StageClear_Banner_keyed_40: 6269424746968632650
-      Dawnholder_StageClear_Banner_keyed_41: -1132128053195652417
-      Dawnholder_StageClear_Banner_keyed_42: -9195005657747651465
-      Dawnholder_StageClear_Banner_keyed_43: -2238759285331065425
-      Dawnholder_StageClear_Banner_keyed_44: 4413463104611163267
-      Dawnholder_StageClear_Banner_keyed_45: -5469814163647357157
-      Dawnholder_StageClear_Banner_keyed_46: -2164017342640826177
-      Dawnholder_StageClear_Banner_keyed_47: 1564993098334480869
-      Dawnholder_StageClear_Banner_keyed_48: -7966119375735534685
-      Dawnholder_StageClear_Banner_keyed_49: 3890954156236883706
       Dawnholder_StageClear_Banner_keyed_5: -2451202638261875692
-      Dawnholder_StageClear_Banner_keyed_50: -7899585539416320922
-      Dawnholder_StageClear_Banner_keyed_51: 4165383145106392624
-      Dawnholder_StageClear_Banner_keyed_52: 6744951902596530014
-      Dawnholder_StageClear_Banner_keyed_53: -2696183531943325342
-      Dawnholder_StageClear_Banner_keyed_54: -830770257757240061
-      Dawnholder_StageClear_Banner_keyed_55: -6420223522229091711
-      Dawnholder_StageClear_Banner_keyed_56: 2423084463654627427
-      Dawnholder_StageClear_Banner_keyed_57: 1747307972087391318
-      Dawnholder_StageClear_Banner_keyed_58: 8476549611155768590
-      Dawnholder_StageClear_Banner_keyed_59: 3087522664939791951
       Dawnholder_StageClear_Banner_keyed_6: 5430203669368524984
-      Dawnholder_StageClear_Banner_keyed_60: -1781802288305256692
-      Dawnholder_StageClear_Banner_keyed_61: 6144092231502399678
-      Dawnholder_StageClear_Banner_keyed_62: 2512225806363833944
-      Dawnholder_StageClear_Banner_keyed_63: 7720978126694895597
-      Dawnholder_StageClear_Banner_keyed_64: 6542262582498096183
-      Dawnholder_StageClear_Banner_keyed_65: 2109295739242308245
-      Dawnholder_StageClear_Banner_keyed_66: -1906764920034360727
-      Dawnholder_StageClear_Banner_keyed_67: -7059120070046574932
-      Dawnholder_StageClear_Banner_keyed_68: -2002205855476764933
-      Dawnholder_StageClear_Banner_keyed_69: 9178050976200521915
       Dawnholder_StageClear_Banner_keyed_7: -1904941360352585709
-      Dawnholder_StageClear_Banner_keyed_70: -3573814948781071972
-      Dawnholder_StageClear_Banner_keyed_71: -5452278328576145286
-      Dawnholder_StageClear_Banner_keyed_72: -2521253316370872436
-      Dawnholder_StageClear_Banner_keyed_73: -4740512767211357948
-      Dawnholder_StageClear_Banner_keyed_74: -4148617336838875959
-      Dawnholder_StageClear_Banner_keyed_75: 6136982087495686856
-      Dawnholder_StageClear_Banner_keyed_76: -7906113315802987414
-      Dawnholder_StageClear_Banner_keyed_77: 5427565256231192351
-      Dawnholder_StageClear_Banner_keyed_78: 1697506096734820927
-      Dawnholder_StageClear_Banner_keyed_79: -129283488347611000
       Dawnholder_StageClear_Banner_keyed_8: -6335875977659853121
-      Dawnholder_StageClear_Banner_keyed_80: 7267023664690630735
-      Dawnholder_StageClear_Banner_keyed_81: -1236516110254895395
-      Dawnholder_StageClear_Banner_keyed_82: -8466306310341968859
-      Dawnholder_StageClear_Banner_keyed_83: -6879358311343806777
-      Dawnholder_StageClear_Banner_keyed_84: 8527797099185218342
-      Dawnholder_StageClear_Banner_keyed_85: 2204501388458122998
-      Dawnholder_StageClear_Banner_keyed_86: -5513655762111769338
-      Dawnholder_StageClear_Banner_keyed_87: 4874678468083099727
-      Dawnholder_StageClear_Banner_keyed_88: 7511847994075439166
-      Dawnholder_StageClear_Banner_keyed_89: -6217461935740244830
       Dawnholder_StageClear_Banner_keyed_9: -7657695222526170748
-      Dawnholder_StageClear_Banner_keyed_90: 1451953320743172461
-      Dawnholder_StageClear_Banner_keyed_91: -2973573918790163496
-      Dawnholder_StageClear_Banner_keyed_92: 2953928280461789343
-      Dawnholder_StageClear_Banner_keyed_93: -8338487417913396137
-      Dawnholder_StageClear_Banner_keyed_94: -9016096101005747426
-      Dawnholder_StageClear_Banner_keyed_95: -8262490416547123763
-      Dawnholder_StageClear_Banner_keyed_96: -4018855304547630245
-      Dawnholder_StageClear_Banner_keyed_97: 6144747174381608566
-      Dawnholder_StageClear_Banner_keyed_98: -5835598276144576056
-      Dawnholder_StageClear_Banner_keyed_99: 1828610885265990173
-      StageClearKeyed_0: 6091425030246757573
-      StageClearKeyed_1: -7265467550509196040
-      StageClearKeyed_10: -7220233656664433911
-      StageClearKeyed_11: -2505477626630091410
-      StageClearKeyed_12: -6394046498805209961
-      StageClearKeyed_13: 6614369364526602698
-      StageClearKeyed_14: 2518368236624651664
-      StageClearKeyed_15: 607385458028872933
-      StageClearKeyed_2: 2409176143483196533
-      StageClearKeyed_3: 1803764524180289028
-      StageClearKeyed_4: 2669387082979701317
-      StageClearKeyed_5: 1154221220145078849
-      StageClearKeyed_6: -7282122806697455788
-      StageClearKeyed_7: -7893544550506184032
-      StageClearKeyed_8: 3582118773939111680
-      StageClearKeyed_9: 2029257475824040601
-      frame_10: -7160256121808793437
-      frame_12: 4796077568799939233
-      frame_13: 3639709531645321581
-      frame_14: 1226774857465505551
-      frame_4: 4885123736680896423
-      frame_5: 6324591119161340219
-      frame_6: 1871951282191127577
-      frame_8: -6374213456928915919
-      frame_9: -369970159423461853
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
