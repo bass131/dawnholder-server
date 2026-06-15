@@ -50,6 +50,7 @@ public enum PacketID : ushort
 	S_PartyError = 31,
 	S_QuestUpdate = 32,
 	S_PortalLocked = 33,
+	C_CheatCommand = 34,
 	
 }
 
@@ -2419,6 +2420,61 @@ public class S_PortalLocked : IPacket // S_PortalLocked 패킷
 		// currentCount 쓰기 (LittleEndian 명시 — wire format 약속)
 		success &= BinaryPrimitives.TryWriteInt32LittleEndian(s.Slice(count, s.Length - count), this.currentCount);
 		count += sizeof(int);
+		
+
+        // 최종 size 기록
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s, count);
+
+        if (!success)
+            return default;
+
+        return new ArraySegment<byte>(segment, 0, count);
+    }
+}
+
+public class C_CheatCommand : IPacket // C_CheatCommand 패킷
+{
+    // 멤버 변수들
+    public byte cheatType;
+    public ushort Protocol { get { return (ushort)PacketID.C_CheatCommand; } }
+
+    public void Read(ArraySegment<byte> segment)
+    {
+        // segment = [size:2][id:2][payload...] 통째.
+        // PacketSession이 이미 size 헤더 검증 후 한 패킷 단위로 넘김.
+        ushort count = 0;
+        ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
+
+        count += sizeof(ushort); // size 헤더 skip
+        count += sizeof(ushort); // packet id 헤더 skip
+
+        // 멤버 읽기
+        // cheatType 읽기
+		this.cheatType = (byte)s[count];
+		count += sizeof(byte);
+		
+    }
+
+
+    public ArraySegment<byte> Write()
+    {
+        // SendBufferHelper 의존 X — 새 byte[] 직접 할당 후 반환.
+        // 호출자(서버 GameSession / Unity UnityClientSession)가 자기 SendBuffer로 marshalling.
+        // BinaryPrimitives.*LittleEndian 명시 (BitConverter는 호스트 endian 의존).
+        byte[] segment = new byte[ushort.MaxValue];
+        ushort count = 0;
+        bool success = true;
+        Span<byte> s = new Span<byte>(segment);
+
+        count += sizeof(ushort); // size 자리 예약 (마지막에 채움)
+
+        success &= BinaryPrimitives.TryWriteUInt16LittleEndian(s.Slice(count, s.Length - count), (ushort)PacketID.C_CheatCommand);
+        count += sizeof(ushort);
+
+        // 멤버 쓰기
+        // cheatType 쓰기
+		s[count] = (byte)this.cheatType;
+		count += sizeof(byte);
 		
 
         // 최종 size 기록

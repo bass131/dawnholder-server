@@ -471,12 +471,13 @@ public class BossBehaviorTests : IDisposable
     // ─── 항목 7: ProtocolVersion + 직렬화 왕복 ────────────────────────────────────
 
     [Fact]
-    public void ProtocolVersion_Is15()
+    public void ProtocolVersion_Is16()
     {
         // M4.13 P5: C_SkillUse.facing append (대쉬 방향 권위) → v12→v13.
         // M4.15 P06: C_SkillUse.verticalDir append (텔레포트 4방향) → v13→v14.
         // M5 A0: 파티/퀘스트/보스게이트 8패킷 신설 (ID 26~33) → v14→v15.
-        Assert.Equal(15, ProtocolVersion.Current);
+        // M5+: 시연용 디버그 치트 C_CheatCommand 신설 (ID 34) → v15→v16.
+        Assert.Equal(16, ProtocolVersion.Current);
     }
 
     [Fact]

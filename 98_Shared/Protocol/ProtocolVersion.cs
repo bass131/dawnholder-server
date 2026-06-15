@@ -60,6 +60,10 @@ namespace Shared.Protocol;
 ///         cutoff 위해 한 묶음 bump. 기존 ID 25(S_SkillCast)까지 시프트 0(append-only, 맨 아래 추가).
 ///         PDL 가변 list 미지원 → 파티 정원 2 고정(S_PartyUpdate member0/member1 2슬롯, 빈=0).
 ///         모든 C_Party* 행위자=GameSession._entityId 강제(패킷에 행위자 필드 X — 도용 차단, 헌법 #3).
+///   - v16: M5+ (시연용 디버그) — C_CheatCommand(34) 신설. 클라 F8 → 서버 AllowCheats 게이트 통과 시
+///         퀘스트 즉시완료(호출자 killCount=BossUnlockKillCount → S_QuestUpdate + 보스 해금). 빌드 클라 포함
+///         모든 빌드에 키+전송(가드 없음), 서버가 허용 결정(헌법 #3 — 클라 입력 untrusted). 시연 편의로
+///         AllowCheats 기본 ON(프로덕션 배포 시 false). append-only, ID 34 — 기존 ID 33(S_PortalLocked) 시프트 0.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -73,6 +77,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. M5 A0 = v15 (파티/퀘스트/보스게이트 8패킷 신설 — ID 26~33).</summary>
-    public const ushort Current = 15;
+    /// <summary>현재 프로토콜 버전. v16 = M5+ 시연용 디버그 치트 C_CheatCommand 신설 (ID 34).</summary>
+    public const ushort Current = 16;
 }

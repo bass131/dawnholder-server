@@ -478,6 +478,23 @@ public class GameSession : PacketSession
         });
     }
 
+    // [시연 디버그 치트] C_CheatCommand 처리. 행위자=_entityId 강제(헌법 #3 — 패킷에 대상 필드 없음).
+    //   AllowCheats 게이트는 CheatCommandHandler에서 이미 통과. cheatType 0 = 퀘스트 즉시완료.
+    internal void SubmitCheatCommand(byte cheatType)
+    {
+        if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
+
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return; // shutdown race
+
+        int entityId = _entityId;
+        world.Party.EnqueueJob(() =>
+        {
+            if (cheatType == 0) // 퀘스트 즉시완료(보스 포탈 해금)
+                world.Party.DebugCompleteQuest(entityId, world);
+        });
+    }
+
     // disconnect 시 파티/초대 정리. OnDisconnected에서만 호출(_closing 게이트 통과 후 = 세션당 1회).
     //
     // **actor 경계**: world.Party.EnqueueJob으로 마샬링 — PartyRegistry 내부 직접 호출 X(헌법 §5, race).

@@ -406,4 +406,11 @@
         <int name="requiredCount"/>
         <int name="currentCount"/>
     </packet>
+
+    <!-- M5+: 시연용 디버그 치트(클라→서버). 클라 키(F8) 발동. 서버 AllowCheats=true일 때만 처리,
+         아니면 무시(헌법 #3 — 클라 입력 untrusted, 서버가 허용 게이트). cheatType: 0=퀘스트 즉시완료
+         (호출자 killCount를 BossUnlockKillCount로 채움 → S_QuestUpdate + 보스 해금). 행위자=GameSession._entityId 강제. -->
+    <packet name="C_CheatCommand">
+        <byte name="cheatType"/>
+    </packet>
 </PDL>

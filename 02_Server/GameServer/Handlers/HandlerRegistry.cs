@@ -25,6 +25,7 @@ internal static class HandlerRegistry
             { PacketID.C_PartyInvite,    new PartyInviteHandler() },
             { PacketID.C_PartyRespond,   new PartyRespondHandler() },
             { PacketID.C_PartyLeave,     new PartyLeaveHandler() },
+            { PacketID.C_CheatCommand,   new CheatCommandHandler() },
         };
 
     public static bool TryGet(PacketID id, out IPacketHandler handler)

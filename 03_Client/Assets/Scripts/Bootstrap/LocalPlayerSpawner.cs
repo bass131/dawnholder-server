@@ -96,6 +96,10 @@ namespace Dawnholder.Client.Bootstrap
             if (go.GetComponent<PartyInviteSender>() == null)
                 go.AddComponent<PartyInviteSender>();
 
+            // [시연 디버그 치트] F8 → 퀘스트 즉시완료 송신 컴포넌트 (서버 AllowCheats 게이트).
+            if (go.GetComponent<CheatSender>() == null)
+                go.AddComponent<CheatSender>();
+
             // 카메라 연결 ("생성 후 셋업").
             //   CameraFollow.target은 [SerializeField]라 보통 씬에서 Inspector로 연결하지만,
             //   LocalPlayer는 런타임 동적 spawn이라 씬 카메라가 미리 가리킬 수 없음 → target이 비어

@@ -241,6 +241,32 @@ public sealed class PartyRegistry
     }
 
     /// <summary>
+    /// [시연 디버그 치트] 호출자의 퀘스트를 즉시 완료 — killCount를 임계로 채우고 보스 영구 해금.
+    /// CheatCommandHandler가 DebugConfig.AllowCheats 게이트 통과 시 EnqueueJob 경유로 호출(서버 권위 유지).
+    /// OnKill 임계 도달 분기와 동형 — 파티면 공유 카운트, 솔로면 _soloProgress.
+    /// </summary>
+    public void DebugCompleteQuest(int entityId, GameWorld world)
+    {
+        int target = QuestConstants.BossUnlockKillCount;
+        PartyState? party = GetPartyByEntity(entityId);
+        if (party != null)
+        {
+            party.KillCount = target;
+            foreach (int memberId in party.Members)
+            {
+                _bossUnlocked.Add(memberId);
+                PartyNotifier.SendQuestUpdate(world, memberId, target, target);
+            }
+        }
+        else
+        {
+            _soloProgress[entityId] = target;
+            _bossUnlocked.Add(entityId);
+            PartyNotifier.SendQuestUpdate(world, entityId, target, target);
+        }
+    }
+
+    /// <summary>
     /// 모든 퀘스트 진행상황 초기화. 보스 킬 시 GameWorld.MakeMap 콜백이 EnqueueJob 경유로 호출.
     /// MVP 전역 리셋 — 다중 파티 월드로 확장 시 killer 파티/솔로만 리셋하는 정밀화 필요.
     /// 현재 2인 MVP는 파티가 고정 1개이므로 전역 OK.
