@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 45f3f2e9a65739f42901827aaa2dc2d7
+guid: 69c9f929d4173254aaa2c46d031782dd
 labels:
 - UnityAI
 AudioImporter:
@@ -15,7 +15,7 @@ AudioImporter:
     conversionMode: 0
     preloadAudioData: 0
   platformSettingOverrides: {}
-  forceToMono: 1
+  forceToMono: 0
   normalize: 1
   loadInBackground: 0
   ambisonic: 0
