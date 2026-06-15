@@ -55,8 +55,8 @@ namespace Dawnholder.Client.Combat
             BuildRemoteEntityRegistry();
             BuildPartyState();
             BuildQuestState();
-            BuildPartyMemberHud();
-            BuildQuestProgressHud();
+            // 파티/퀘스트 HUD는 UI.unity 씬에 배치된 패널(PartyMemberHud/QuestProgressHud 컴포넌트)이
+            // PartyState/QuestState를 직접 구독 — 런타임 빌드 폐지(M6 Phase 05, 영호 UI.unity 정식 채택).
             BuildPartyInvitePopup();
             BuildNpcDialogPanel();
         }
@@ -108,18 +108,6 @@ namespace Dawnholder.Client.Combat
         {
             if (QuestState.Instance != null) return;
             new GameObject("_QuestState").AddComponent<QuestState>();
-        }
-
-        void BuildPartyMemberHud()
-        {
-            if (PartyMemberHud.Instance != null) return;
-            PartyMemberHud.BuildRuntime(parent: transform);
-        }
-
-        void BuildQuestProgressHud()
-        {
-            if (QuestProgressHud.Instance != null) return;
-            QuestProgressHud.BuildRuntime(parent: transform);
         }
 
         void BuildPartyInvitePopup()
