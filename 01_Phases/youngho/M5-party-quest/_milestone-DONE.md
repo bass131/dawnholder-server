@@ -140,25 +140,23 @@ cross-map actor(PartyRegistry) / SendToEntity EnqueueJob 마샬링 / transfer-�
 
 이펙트(slime/golem `be985e1`, 보스 stab `ce55022`) / HUD 배경(`2deed38`) / 포탈 애니(`ff9a21e`) / NPC 애니메이터(`2deed38`) / **StageClear = TMP 폴백 → 진짜 배너 애니** / 타이틀 배너 — **전부 채워짐**. 남은 placeholder 없음.
 
-### ★ 현재 남은 체크리스트 (이게 진짜 todo)
+### ✅ Play-test 완료 (2026-06-15, 영호 빌드클라 + 에디터 직접)
 
-**영호 외부 액션 (GO 게이트, 비가역)**:
+빌드클라(`C:\Dev\Build\Client\03_Client.exe`, v16) + 에디터 Play 2개로 플레이테스트. **핵심 기능 전부 정상**:
 
-- [ ] **push** — origin/main 대비 **37 커밋** 미푸시 (워킹트리 깨끗).
-- [ ] **PR 생성/머지** — 정유현 co-review + admin 경로 (Shared.dll commit 포함 시 03_Client CODEOWNERS 트리거).
-- [ ] **디스코드 공지** — ★ **v16** wire-break (v15 아님). 영호 직접 (AI 영역 아님).
+- [x] 파티 초대 → 수락 / 멤버HUD 2명 / disconnect → HUD 숨김 — **이상 무**
+- [x] 퀘스트 공유 카운트(20킬) + HUD 배경(Menu_Button)·한글 — **표현 잘됨**
+- [x] 보스 게이트: 20 미만 잠금 토스트 → 충족 진입 → 영구 해금 — **이상 무**
+- [x] 양방향 포탈 왕복(HG↔Town, Boss↔HG), ↑키 진입 — **잘 됨**
+- [x] **F8 치트**(퀘스트 즉시완료) — **잘 작동**
 
-**영호 Play-test / 육안 (1차 피드백 수정 후 전체 재플레이 미실시 — 핵심 남은 블록)**:
+→ M5의 *기능* 검증 완료. 발견된 폴리시 피드백 7건은 **신규 마일스톤(M6)으로 이관** (M5 기능 묶음과 성격이 다른 연마 작업이라 분리):
+A) 파티 멤버HUD를 Quest 목업 위치로 이동 / B) 퀘스트 이름+목표 텍스트 + 패널 확장 / C) 보스 피격복귀 Exit Time / D) 일반몹 공격모션 Exit Time / E) 렌더 소팅 체계 / F) NPC 대화 패널 신규(Menu_Button+초상화 — 기존 NpcDialogPanel이 런타임 생성 누락으로 무반응) / G) **전체 사운드 적용(대형)**.
 
-- [ ] 파티 초대 → 수락 / 정원 2 / cross-map 유지
-- [ ] 퀘스트 공유 카운트(**20**킬) + 파티·퀘스트 HUD 표시(Menu_Button 배경, 한글)
-- [ ] 보스 게이트: 20 미만 거부 → 충족 후 진입 → **영구 해금**(재그라인드 안 됨)
-- [ ] 양방향 포탈 왕복(HG↔Town, Boss↔HG) — 포탈 위 **↑키** 진입
-- [ ] 일반몹 공격 받기 + 피격 이펙트(slime/golem) + 보스 stab(검에서)
-- [ ] 마을 NPC 2종 **E키** 대사 — 플레이어 **"Player" 태그 확인됨**(prefab에 박힘) → 작동 조건 충족
-- [ ] StageClear 배너 / 타이틀 배너 (배너 재생 자체는 확인됨)
-- [ ] **F8 치트**(퀘스트 즉시완료) — 신규
-- [ ] 야간 기본값 의도 확인: P2 초대타겟 = 근접 최단 / Q2 카운트전환 = 결성 0부터·해산 시 공유 소멸
-- [ ] NPC/포탈 위치 미세 조정은 Inspector 자유(좌표 박제값은 swap-ready라 코드 무관)
+### 🏁 클로즈아웃 (영호 GO "머지까지 완주" — 2026-06-15)
 
-**현재 검증 baseline**: WSL2 **644/0/5**(build 0err/0warn), Unity 컴파일 0err.
+- [x] push `feature/m5-party-quest` → origin
+- [x] PR 생성 + **admin 머지**(정유현 03_Client CODEOWNERS bypass — 코드 PR이라 사유 박고 영호 명시 GO)
+- [ ] **디스코드 v16 wire-break 공지** — 영호 직접 (AI 영역 아님, 초안만 제공)
+
+**최종 검증 baseline**: WSL2 **644/0/5**(build 0err/0warn), Unity 컴파일 0err. (클로즈아웃 직전 회귀 게이트 재확인)

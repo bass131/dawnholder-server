@@ -202,34 +202,33 @@
     <p class="dim">이펙트(slime/golem <code>be985e1</code>, 보스 stab <code>ce55022</code>) · HUD 배경(<code>2deed38</code>) · 포탈 애니(<code>ff9a21e</code>) · NPC 애니메이터(<code>2deed38</code>) · <b>StageClear = TMP 폴백 → 진짜 배너</b> · 타이틀 배너 — 전부 채워짐. 남은 placeholder 없음.</p>
   </div>
 
-  <h2 class="morning-anchor">🌅 현재 남은 영호 액션 (이게 진짜 todo)</h2>
+  <h2 class="morning-anchor">🏁 M5 클로즈아웃 (영호 GO "머지까지 완주")</h2>
   <div class="card morning">
-    <h3>⛔ 비가역 게이트 (영호 GO 의무 — <span class="ok-text">미완</span>)</h3>
-    <ul class="check gate">
-      <li><code>feature/m5-party-quest</code> → origin <b>push</b> <span class="dim">(origin/main 대비 37 커밋 미푸시)</span></li>
-      <li><b>PR 생성/머지</b> — 03_Client 변경 다수 → 정유현 CODEOWNERS co-review 트리거. Shared.dll commit 포함 시 → admin bypass 사유 박기</li>
-      <li><b>디스코드 <u>v16</u> wire-break 공지</b>(영호 직접) — v16 미재빌드 클라(유현/인규) 접속 불가. <span class="dim">★v15 아님</span></li>
+    <h3>✅ Play-test 완료 (2026-06-15, 영호 빌드클라 + 에디터 직접)</h3>
+    <ul class="check">
+      <li class="done">파티 초대→수락→멤버HUD 2명 / disconnect→숨김 — <b>이상 무</b></li>
+      <li class="done">퀘스트 카운터 N/20 + HUD 배경(Menu_Button)·한글 — <b>표현 잘됨</b></li>
+      <li class="done">보스 게이트 20 잠금→해금→영구 — <b>이상 무</b></li>
+      <li class="done">양방향 포탈 왕복(HG↔Town, Boss↔HG), ↑키 진입 — <b>잘 됨</b></li>
+      <li class="done"><b>F8 치트</b>(퀘스트 즉시완료) — <b>잘 작동</b></li>
     </ul>
 
-    <h3>✅ 마감 이후 완료 (재확인 불필요)</h3>
+    <h3>🚚 폴리시 피드백 7건 → <b>신규 마일스톤 M6 이관</b> (성격 다른 연마 작업이라 분리)</h3>
     <ul class="check">
-      <li class="done"><b>B3 역방향 포탈 씬 배치</b> (<code>19b9f71</code>) — HG x=5, Boss x=18, Portal.prefab 인스턴스 + 회전 애니</li>
-      <li class="done"><b>C4 NPC 배치 + 위치조정</b> (<code>19b9f71</code>/<code>dd76d37</code>) — BlackSmith/Glocery, bottom-pivot 발 닿음, E키 대사</li>
-      <li class="done"><b>swap-ready 에셋 전부 드롭</b> — slime/golem 이펙트·보스 stab·HUD 배경·포탈 애니·NPC 애니메이터·StageClear/타이틀 배너</li>
-      <li class="done"><b>1차 피드백 5건</b> — NRE 수정·한글 폰트·퀘 20킬·보스 영구해금·stab 앵커</li>
-      <li class="done"><b>플레이어 "Player" 태그 확인</b> — LocalPlayer.prefab에 박힘 → NPC E키 대사 작동 조건 충족</li>
+      <li>A) 파티 멤버HUD를 Quest 목업 위치로 이동 / B) 퀘스트 이름+목표 텍스트 + 패널 확장</li>
+      <li>C) 보스 피격복귀 Exit Time / D) 일반몹 공격모션 Exit Time</li>
+      <li>E) 렌더 소팅 체계(BG→마을지형→세부지형→NPC→Player→UI)</li>
+      <li>F) NPC 대화 패널 신규(Menu_Button+초상화) — 기존 NpcDialogPanel이 런타임 생성 누락으로 무반응이라 폐기 후 재제작</li>
+      <li>G) <b>전체 사운드 적용(대형)</b> — Sound 폴더 + AI Generator + 분류 + 실적용</li>
     </ul>
 
-    <h3>🎮 Play-test 육안 (1차 피드백 수정 후 <b>전체 재플레이 미실시</b> — 핵심 남은 블록)</h3>
+    <h3>🏁 클로즈아웃 단계</h3>
     <ul class="check">
-      <li>파티 초대(P키)→팝업 수락→멤버HUD 2명 / 한쪽 disconnect→HUD 숨김</li>
-      <li>몹 처치→퀘스트 카운터 <b>N/20</b> 증가(파티 공유 합산) + HUD 배경(Menu_Button)·한글</li>
-      <li>20 미만 보스포탈 진입→잠금 토스트 / 20 후 진입 성공 → <b>영구 해금</b>(재그라인드 안 됨)</li>
-      <li>포탈: 정지=진입X, ↑down-edge=진입, <b>양방향 왕복</b>(HG↔Town, Boss↔HG)</li>
-      <li>일반몹 공격당함(Dash 회피) + kind별 피격 이펙트(slime/golem) / 보스 stab(검에서) / StageClear 배너 / NPC 2종 E키 대사</li>
-      <li><b>F8 치트</b>(퀘스트 즉시완료) — 신규, 빌드 클라 포함 작동</li>
-      <li><b>야간 기본값 확인</b>: P2 초대타겟=근접최단 / Q2 카운트전환=결성 0부터·해산 공유소멸·솔로0 <span class="dim">(다르게 원하면 조정)</span></li>
+      <li class="done">push <code>feature/m5-party-quest</code> → origin</li>
+      <li class="done">PR 생성 + <b>admin 머지</b>(정유현 03_Client CODEOWNERS bypass — 코드 PR, 사유 박고 영호 명시 GO)</li>
+      <li><b>디스코드 v16 wire-break 공지</b> — 영호 직접 (AI 영역 아님, 초안만 제공)</li>
     </ul>
+    <p class="dim">최종 검증: WSL2 644/0/5(0err/0warn), Unity 컴파일 0err — 클로즈아웃 직전 회귀 게이트 재확인.</p>
   </div>
 
   <footer>
