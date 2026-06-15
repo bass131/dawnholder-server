@@ -177,4 +177,5 @@ MonoBehaviour:
   _dialogText: "\uC5B4\uC11C \uC624\uC138\uC694! \uBB3C\uC57D\uC774\uB791 \uC2DD\uB8CC\uD488
     \uACE7 \uB4E4\uC5B4\uC640\uC694.\n\uC815\uC2DD \uAC1C\uC7A5\uD558\uBA74 \uB610
     \uB4E4\uB7EC \uC8FC\uC138\uC694!"
+  _portrait: {fileID: 672174881291312922, guid: 3342f56c4f4bf1d46be081e012eb81b5, type: 3}
   _playerTag: Player
