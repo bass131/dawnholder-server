@@ -1,5 +1,6 @@
 #nullable enable
 using Dawnholder.Client.Gameplay;
+using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using UnityEngine;
@@ -59,6 +60,19 @@ namespace Dawnholder.Client.Combat
             // PartyState/QuestState를 직접 구독 — 런타임 빌드 폐지(M6 Phase 05, 영호 UI.unity 정식 채택).
             BuildPartyInvitePopup();
             BuildNpcDialogPanel();
+            BuildMinimapCamera();
+        }
+
+        // 미니맵 카메라 — Resources/MinimapRT에 줌아웃 사이드뷰 렌더. UI.unity RawImage가 표시.
+        void BuildMinimapCamera()
+        {
+            RenderTexture? rt = Resources.Load<RenderTexture>("MinimapRT");
+            if (rt == null)
+            {
+                Debug.LogWarning("[CombatBootstrap] Resources/MinimapRT.renderTexture 없음 — 미니맵 비활성.");
+                return;
+            }
+            MinimapCamera.BuildRuntime(parent: transform, rt: rt);
         }
 
         void BuildZoneVisualizer()
