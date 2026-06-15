@@ -142,12 +142,22 @@ internal sealed class BossMoveState : ActorState<EnemyEntity>
 
 // 보스 Telegraph State: 예고 카운트다운. 0 도달 틱에 Attack 전환.
 // 데미지는 여기서 X — BossAttackState.Enter가 같은 틱(전환 트리거 틱)에 실행.
+//
+// **버그 1 봉합(M6)**: hit-stun(HitLatchTicks>0) 중에는 카운트다운을 정지(pause).
+//   옛 구현은 hit 중에도 telegraph가 계속 감겨, 보스를 활발히 때리는 동안 모든 공격의
+//   준비자세가 체감상 단축되는 *지속 손상*이 발생("이후 공격부터 계속 빨라짐").
+//   pause로 hit 후 남은 예고가 온전히 재생 → 회피 공정성 보장(헌법 #1 서버 권위 타이밍).
+//   BossBehaviorSystem이 동일 가드로 AttackLatchTicks 감소도 함께 멈춤 → 애니 latch와 정합.
 internal sealed class BossTelegraphState : ActorState<EnemyEntity>
 {
     public override AnimState AnimState => AnimState.Attack;
 
     public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy)
     {
+        // hit-stun 중에는 예고 카운트다운 정지 — 데미지 타이밍을 hit만큼 뒤로 미룸.
+        if (enemy.HitLatchTicks > 0)
+            return null;
+
         enemy.TelegraphTicksRemaining--;
         if (enemy.TelegraphTicksRemaining == 0)
             return BossStates.Attack;

@@ -99,6 +99,12 @@ public class EnemyEntity
     public int AttackLatchTicks { get; set; }    // Attack 상태 남은 latch 틱 수
     public int HitLatchTicks    { get; set; }    // Hit 상태 남은 latch 틱 수
 
+    // 공격 windup(준비/휘두르기) 남은 틱 수. EnemyAttackState.Enter가 kind별 windup으로 세팅,
+    // Tick에서 0 도달 시 ApplyMeleeDamage 실행. 0 = windup 없음(진입 즉시 타격, 옛 거동).
+    // 골렘은 swing 애니가 길어 windup>0 — "애니 끝나고 hit" 체감 보장(헌법 #5: 틱 카운터만).
+    // tick thread invariant — EnemyAISystem.Update 안에서만 읽기/쓰기.
+    public int AttackWindupTicks { get; set; }
+
     // 피격 넉백 속도(X). Normal/Golem EnemyHitState에서만 적용/감쇠.
     // 적은 지형 물리 없이 순수 X 적분 (기존 적 이동 모델과 동일).
     public float KnockbackVx { get; set; }

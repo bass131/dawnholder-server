@@ -245,9 +245,16 @@ internal sealed class EnemyHitState : ActorState<EnemyEntity>
     public override void Exit(EnemyEntity enemy) => enemy.KnockbackVx = 0f;
 }
 
-// Normal/Golem 공격 State. Enter에서 즉시 데미지 판정 + 쿨다운 리셋 → 1틱 후 Chase 복귀.
-// 보스와 달리 telegraph 없음 — 사거리 도달 + 쿨다운 0이면 ChaseState.Tick이 Attack으로 전환.
-// 쿨다운(AttackCooldownTicks)이 재공격을 차단 — Chase 복귀 직후 다시 공격 조건을 재평가.
+// Normal/Golem 공격 State. windup(휘두르기) 단계 후 데미지 판정 → Chase 복귀.
+//   windup=0(슬라임): Enter에서 즉시 타격 → 1틱 후 Chase 복귀. 옛 거동과 byte-동일.
+//   windup>0(골렘): Enter는 windup만 세팅, Tick에서 windup 소진 후 타격 → Chase 복귀.
+//     windup 동안 Attack 상태 유지(null 반환) → 클라는 swing 애니 재생, 데미지는 애니 후반에 떨어짐.
+// 쿨다운(AttackCooldownTicks)은 데미지 적중 시점에 세팅 → "적중 후부터 쿨다운" 자연스러운 리듬.
+//
+// **버그 2 봉합(M6)**: 옛 구현은 골렘도 Enter에서 즉시 데미지 → swing 애니 시작 시점에 이미 hit.
+//   골렘은 swing이 길어 "애니 끝나고 hit" 체감을 windup으로 맞춤(GolemAttackWindupTicks).
+//   슬라임(windup=0)은 즉시 타격 거동을 그대로 보존 — 회귀 0.
+// **헌법 #5**: Thread.Sleep/await 없음 — 순수 int 카운터 감소(EnemyAISystem이 매 틱 구동).
 //
 // attackPattern: slime(Normal)=0, golem=1. C2 이펙트 분기 힌트로 wire에 포함.
 internal sealed class EnemyAttackState : ActorState<EnemyEntity>
@@ -256,13 +263,40 @@ internal sealed class EnemyAttackState : ActorState<EnemyEntity>
 
     public override void Enter(EnemyEntity enemy)
     {
+        int windup = enemy.Kind == EnemyKind.Golem
+            ? CombatConstants.GolemAttackWindupTicks
+            : CombatConstants.NormalAttackWindupTicks;
+        enemy.AttackWindupTicks = windup;
+        // Attack 애니 latch: windup 내내 + 타격 후 AnimLatchTicks까지 유지(보스 BeginTelegraph 동형).
+        enemy.AttackLatchTicks = windup + CombatConstants.AnimLatchTicks;
+
+        // windup=0(슬라임): 진입 즉시 타격 — 옛 거동 보존(Enter 데미지 + 1틱 후 Chase).
+        if (windup == 0)
+            ApplyAttack(enemy);
+    }
+
+    // windup 카운트다운(골렘) → 0 도달 틱에 데미지 적용 → Chase 복귀.
+    // windup 진행 중(>0)이면 Attack 상태 유지(null). 쿨다운이 재공격 차단.
+    // windup=0(슬라임): 첫 Tick은 windup==0 + 이미 Enter에서 타격함 → 그대로 Chase 복귀.
+    public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy)
+    {
+        if (enemy.AttackWindupTicks > 0)
+        {
+            enemy.AttackWindupTicks--;
+            if (enemy.AttackWindupTicks == 0)
+                ApplyAttack(enemy); // windup 끝 — 이번 틱에 타격
+            else
+                return null;        // 아직 휘두르는 중
+        }
+        return EnemyStates.Chase;
+    }
+
+    // 데미지 판정 + 쿨다운 리셋. windup=0 경로(Enter)와 windup>0 경로(Tick) 공통 단일 출처.
+    static void ApplyAttack(EnemyEntity enemy)
+    {
         byte pattern = enemy.Kind == EnemyKind.Golem ? (byte)1 : (byte)0;
         EnemyStates.ApplyMeleeDamage(enemy.OwningMap!, enemy, CombatConstants.NormalAttackHalfExtent, CombatConstants.NormalBaseDamage, pattern);
         enemy.AttackCooldownTicks = CombatConstants.NormalAttackCooldownTicks;
-        enemy.AttackLatchTicks    = CombatConstants.AnimLatchTicks;
     }
-
-    // 1틱 후 Chase 복귀. 쿨다운이 재공격 차단 (Chase.Tick: 쿨다운 > 0이면 Attack 전환 불가).
-    public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy) => EnemyStates.Chase;
 }
 

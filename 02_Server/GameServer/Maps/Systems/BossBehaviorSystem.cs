@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Maps.States;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -49,11 +50,18 @@ internal sealed class BossBehaviorSystem
             }
 
             // ── 보스 State 머신 1틱 진행 ──────────────────────────────────────
+            // telegraph pause 판정은 Tick *전*에 스냅샷 — Tick이 상태를 바꾸기 전 시점 기준.
+            // (Telegraph 상태 + hit-stun 중이면 이번 틱 telegraph가 정지됨 → latch도 정지.)
+            bool telegraphPaused =
+                enemy.Fsm!.CurrentState is BossTelegraphState && enemy.HitLatchTicks > 0;
+
             enemy.Fsm!.Tick(enemy);
 
             // ── latch 카운터 감소 ──────────────────────────────────────────────
+            // HitLatchTicks는 항상 감소(hit 애니가 풀려야 다음 hit 표시 가능).
+            // AttackLatchTicks는 telegraph pause 중엔 정지 — 늘어난 예고와 Attack 애니 latch 정합(버그 1).
             if (enemy.HitLatchTicks > 0) enemy.HitLatchTicks--;
-            if (enemy.AttackLatchTicks > 0) enemy.AttackLatchTicks--;
+            if (enemy.AttackLatchTicks > 0 && !telegraphPaused) enemy.AttackLatchTicks--;
 
             // ── S_EntityState broadcast (SnapshotTickInterval 마다) ────────────
             if (shouldBroadcast)
