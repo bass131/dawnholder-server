@@ -48,6 +48,7 @@ namespace Dawnholder.Client.Audio
         public const string PanelClose = "ui.panel_close";        // M7 확장 — 전용 닫기음
         public const string UiError = "ui.error";                 // 거부/에러 (PortalLocked 등)
         public const string PartyFormed = "ui.party_formed";      // 파티 결성
+        public const string PartyDisbanded = "ui.party_disbanded";// 파티 해산
 
         // destMapId → BGM 키 (SceneRouter와 병렬). 0=Town,1=Hunting,2=Boss,3=Ending.
         public static string? BgmKeyForMap(byte mapId) => mapId switch

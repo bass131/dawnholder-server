@@ -28,7 +28,9 @@ namespace Dawnholder.Client.Network
                 if (partyId == 0)
                 {
                     Debug.Log("[Party] 파티 해산 수신 → 미러 클리어");
+                    bool wasInParty = PartyState.Instance.InParty;
                     PartyState.Instance.Clear();
+                    if (wasInParty) AudioManager.Instance?.PlaySfx(SoundKeys.PartyDisbanded);
                 }
                 else
                 {
