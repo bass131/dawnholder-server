@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections;
+using Dawnholder.Client.Prediction;
 using UnityEngine;
 
 namespace Dawnholder.Client.UI
@@ -49,6 +50,11 @@ namespace Dawnholder.Client.UI
             if (!_introShown)
             {
                 _introShown = true;
+
+                // 플레이어가 실제 월드에 등장 + 화면 안정화까지 대기 — 콜드 로드 중 연출이 묻히던 문제 방지.
+                float pw = 0f;
+                while (LocalPlayerMovement.Instance == null && pw < 3f) { pw += Time.deltaTime; yield return null; }
+                yield return new WaitForSeconds(0.4f);
 
                 // ① "퀘스트 발생!" 임팩트 — 쾅! 등장 + 플래시
                 QuestAlert alert = QuestAlert.BuildRuntime(_parent!, "퀘스트 발생!");

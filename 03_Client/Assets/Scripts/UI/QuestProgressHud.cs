@@ -14,12 +14,18 @@ namespace Dawnholder.Client.UI
     // **UI 씬 재로드 대응**: UI.unity는 맵 전환마다 내려갔다 재로드 → 이 컴포넌트도 매번 새로 Awake.
     //   QuestState는 DontDestroyOnLoad라 지속 → Start/Update에서 (재)구독 + 즉시 Refresh로 현재값 복원.
     //
+    // **reveal sticky + 자가치유(M6 Phase05)**: 첫 헌팅그라운드 진입의 콜드 로드 타이밍 race로 reveal이
+    //   묻혀 HUD가 안 뜨던 문제 해결. _revealed는 static — 한 번 reveal되면 씬 재로드(재Awake)에도
+    //   보이게 유지하고, Update에서 alpha가 도로 0이면 다시 fade(어떤 인스턴스/타이밍이든 결국 보임).
+    //
     // **자기-비활성 함정 회피**: SetActive 금지. CanvasGroup.alpha로만 표시/숨김.
-    //   GameObject는 항상 활성 → Update(재바인딩) + 이벤트 구독이 끊기지 않음.
     [DisallowMultipleComponent]
     public class QuestProgressHud : MonoBehaviour
     {
         public static QuestProgressHud? Instance { get; private set; }
+
+        // 세션 내 한 번 reveal되면 유지 — 인스턴스/씬 재로드와 무관하게 sticky.
+        static bool _revealed;
 
         // 영호 Phase 05 조정 지점 — 문구.
         internal const string QuestName      = "마을의 위협";
@@ -37,9 +43,7 @@ namespace Dawnholder.Client.UI
         {
             Instance = this;
             _group = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
-            _group.alpha          = 0f;
-            _group.interactable   = false;
-            _group.blocksRaycasts = false;
+            ApplyVisible(_revealed); // 이미 세션 내 reveal됐으면 곧바로 보이게(첫 진입 race 방어)
         }
 
         void OnDestroy()
@@ -50,10 +54,13 @@ namespace Dawnholder.Client.UI
         void OnEnable() => TryBind();
         void Start()    => TryBind();
 
-        // QuestState가 아직 없으면(씬 비동기 로드 레이스) 준비될 때까지 재시도.
         void Update()
         {
             if (!_subscribed) TryBind();
+
+            // 자가치유: reveal됐는데 아직 안 보이면(첫 진입 타이밍 race) 다시 fade in.
+            if (_revealed && _group != null && _group.alpha < 1f && _revealRoutine == null)
+                _revealRoutine = StartCoroutine(RevealRoutine());
         }
 
         void TryBind()
@@ -80,14 +87,13 @@ namespace Dawnholder.Client.UI
                 _progressText.text = $"{QuestState.Instance.CurrentCount} / {QuestState.Instance.TargetCount}";
         }
 
-        // QuestIntroSequencer가 팝업 완료 후 호출 — HUD를 부드럽게 출현시킴.
-        // 이미 보이는 상태면 noop.
+        // QuestIntroSequencer가 팝업 완료 후 호출 — HUD를 부드럽게 출현시킴. sticky 플래그 set.
         public void Reveal()
         {
+            _revealed = true;
             if (_group == null) return;
-            if (_group.alpha >= 1f) return;
-            if (_revealRoutine != null) StopCoroutine(_revealRoutine);
-            _revealRoutine = StartCoroutine(RevealRoutine());
+            if (_group.alpha >= 1f) { ApplyVisible(true); return; }
+            if (_revealRoutine == null) _revealRoutine = StartCoroutine(RevealRoutine());
         }
 
         IEnumerator RevealRoutine()
@@ -95,17 +101,23 @@ namespace Dawnholder.Client.UI
             if (_group == null) yield break;
 
             const float fadeIn = 0.3f;
-            float t = 0f;
+            float t = _group.alpha * fadeIn; // 현재 alpha에서 이어서 fade
             while (t < fadeIn)
             {
                 t += Time.deltaTime;
                 _group.alpha = Mathf.Clamp01(t / fadeIn);
                 yield return null;
             }
-            _group.alpha          = 1f;
-            _group.interactable   = true;
-            _group.blocksRaycasts = true;
+            ApplyVisible(true);
             _revealRoutine = null;
+        }
+
+        void ApplyVisible(bool visible)
+        {
+            if (_group == null) return;
+            _group.alpha          = visible ? 1f : 0f;
+            _group.interactable   = visible;
+            _group.blocksRaycasts = visible;
         }
     }
 }
