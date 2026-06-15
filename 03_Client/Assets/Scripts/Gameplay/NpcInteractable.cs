@@ -5,14 +5,11 @@ using UnityEngine.Serialization;
 namespace Dawnholder.Client.Gameplay
 {
     /// <summary>
-    /// NPC 인터랙션 컴포넌트. 플레이어가 NPC 옆 trigger 안에서 E 키 누르면 NpcDialogPanel.Show(dialogText) 호출.
+    /// NPC 인터랙션 컴포넌트. 플레이어가 NPC 옆 trigger 안에서 E 키 누르면 NpcDialogPanel.Show(dialogText, portrait) 호출.
     ///
-    /// **헌법 #1 (Server Authority)**: 본 컴포넌트 = 클라 단독 hardcoded 텍스트, 서버 패킷 X.
+    /// **헌법 §1**: 클라 단독 hardcoded 텍스트, 서버 패킷 X.
     ///
     /// **요구 컴포넌트**: BoxCollider2D (isTrigger=true), 플레이어는 "Player" 태그 박혀있어야 함.
-    ///
-    /// **새 InputSystem 활용** (헌법 "레거시 Input.GetKey 금지" 정합).
-    /// 직접 InputAction 박음 (Inspector reference 없이 작동).
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class NpcInteractable : MonoBehaviour
@@ -20,6 +17,9 @@ namespace Dawnholder.Client.Gameplay
         [FormerlySerializedAs("dialogText")]
         [SerializeField, TextArea(2, 5)]
         string _dialogText = "보스가 마을을 위협하고 있어요. 도와주세요!\n사냥터는 오른쪽에 있습니다.";
+
+        // 영호 Phase 05 조정 지점: 각 NPC prefab에서 Inspector로 초상화 sprite 배정.
+        [SerializeField] Sprite? _portrait;
 
         [FormerlySerializedAs("playerTag")]
         [SerializeField] string _playerTag = "Player";
@@ -75,7 +75,7 @@ namespace Dawnholder.Client.Gameplay
         {
             if (!_isPlayerNear) return;
             if (NpcDialogPanel.IsShown) return;
-            NpcDialogPanel.Show(_dialogText);
+            NpcDialogPanel.Show(_dialogText, _portrait);
         }
     }
 }

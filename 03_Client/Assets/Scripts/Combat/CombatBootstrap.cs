@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Gameplay;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using UnityEngine;
@@ -57,6 +58,7 @@ namespace Dawnholder.Client.Combat
             BuildPartyMemberHud();
             BuildQuestProgressHud();
             BuildPartyInvitePopup();
+            BuildNpcDialogPanel();
         }
 
         void BuildZoneVisualizer()
@@ -124,6 +126,12 @@ namespace Dawnholder.Client.Combat
         {
             if (PartyInvitePopup.Instance != null) return;
             PartyInvitePopup.BuildRuntime(parent: transform);
+        }
+
+        void BuildNpcDialogPanel()
+        {
+            if (NpcDialogPanel.Instance != null) return;
+            NpcDialogPanel.BuildRuntime(parent: transform);
         }
 
         void BuildRemoteEntityRegistry()
