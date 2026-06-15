@@ -71,7 +71,8 @@ namespace Dawnholder.Client.Combat
         {
             string sceneName = gameObject.scene.name;
             if (sceneName != "HuntingGround" && sceneName != "BossRoom") return;
-            QuestIntroSequencer.Run(transform);
+            QuestIntroSequencer.Run(transform);       // 진입: 발생 알림 → 팝업 → HUD
+            QuestCompleteWatcher.Install(transform);  // 완료 시: "퀘스트 완료!" 알림
         }
 
         // 미니맵 카메라 — Resources/MinimapRT에 줌아웃 사이드뷰 렌더. UI.unity RawImage가 표시.
@@ -84,6 +85,7 @@ namespace Dawnholder.Client.Combat
                 return;
             }
             MinimapCamera.BuildRuntime(parent: transform, rt: rt);
+            MinimapTerrainTint.Install(transform); // 밟는 지형을 미니맵에서만 평면 단색으로(가독성)
         }
 
         void BuildZoneVisualizer()

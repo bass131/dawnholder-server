@@ -50,12 +50,18 @@ namespace Dawnholder.Client.UI
             {
                 _introShown = true;
 
+                // ① "퀘스트 발생!" 임팩트 — 쾅! 등장 + 플래시
+                QuestAlert alert = QuestAlert.BuildRuntime(_parent!, "퀘스트 발생!");
+                bool alertDone = false;
+                alert.PlayThenCallback(() => alertDone = true);
+                while (!alertDone) yield return null;
+                Destroy(alert.gameObject);
+
+                // ② 상세 부여 팝업 (Fade in/out)
                 QuestGrantedPopup popup = QuestGrantedPopup.BuildRuntime(_parent!);
                 bool done = false;
                 popup.PlayThenCallback(() => done = true);
-
                 while (!done) yield return null;
-
                 Destroy(popup.gameObject);
             }
 
