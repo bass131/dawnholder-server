@@ -5,7 +5,7 @@ phase: milestone-closeout
 title: 파티·퀘스트·보스 포탈 잠금 + 콘텐츠 결선 — 마일스톤 마감
 status: done
 grade: 대규모
-summary: 파티 시스템 + 40킬 공유 퀘스트 + 보스 포탈 잠금 게이트(서버 권위) + 양방향 포탈 + 일반몹 공격 + 이펙트/StageClear 결선. ProtocolVersion v14→v15. 무인 완주(영호 취침 중 자율, 멈춤 0). 코드 Phase 21개 구현·검증·커밋(WSL2 643/0/5, reviewer 🔴0, Unity 컴파일 0err). 순수 씬 배치 2개(B3·C4) = 아침 육안. 다음 = push/PR/디스코드 v15공지(영호 GO) + Play-test.
+summary: 파티 시스템 + 공유 퀘스트(마감 40→피드백 20킬) + 보스 포탈 잠금 게이트(서버 권위, 영구 해금) + 양방향 포탈 + 일반몹 공격 + 이펙트/StageClear·타이틀 배너 결선. ProtocolVersion v14→v15(마감)→v16(F8 시연 치트). 무인 완주(영호 취침 중 자율, 멈춤 0) + 마감 이후 인터랙티브 2라운드(1차 피드백 5건 / 2차 외관·치트 6커밋). 검증 WSL2 644/0/5(0err/0warn), reviewer 🔴0, Unity 컴파일 0err. 다음 = push/PR/디스코드 **v16** 공지(영호 GO) + 1차 피드백 수정 후 전체 재Play-test. 상세 = 하단 "마감 이후 인터랙티브 갱신" 섹션.
 ---
 
 # M5 마일스톤 마감 — 파티·퀘스트·보스 포탈 + 콘텐츠 결선
@@ -65,7 +65,9 @@ WSL2 643/0/5(build 0err/0warn). reviewer TB+민감 Phase 🔴0. Unity 컴파일 
 
 ### ➡️ 다음 스텝
 
-**영호 GO 게이트**: push / PR(정유현 co-review + Shared.dll v15) / 디스코드 v15 wire-break 공지. **아침 육안 씬배치**: B3(역방향 포탈 GameObject) / C4(NPC 배치+대사). **swap-ready 에셋 드롭**: slime/golem 이펙트 prefab, 보스 stab, StageClear anim, HUD 배경. **Play-test**: 파티/퀘스트/게이트/포탈/공격/이펙트/NPC 전수 + P2 초대타겟(근접최단)·Q2 카운트전환(결성0/해산소멸) 야간기본 확인.
+**영호 GO 게이트**: push / PR(정유현 co-review + Shared.dll) / 디스코드 wire-break 공지. **아침 육안 씬배치**: B3(역방향 포탈 GameObject) / C4(NPC 배치+대사). **swap-ready 에셋 드롭**: slime/golem 이펙트 prefab, 보스 stab, StageClear anim, HUD 배경. **Play-test**: 파티/퀘스트/게이트/포탈/공격/이펙트/NPC 전수 + P2 초대타겟(근접최단)·Q2 카운트전환(결성0/해산소멸) 야간기본 확인.
+
+> ⚠️ **이 "다음 스텝"은 마감(v15) 시점 기준**입니다. 마감 이후 인터랙티브 세션에서 씬배치·에셋드롭 대부분 완료 + v16 bump + 퀘스트 20킬 조정이 일어났습니다 — **현재 남은 일은 하단 "마감 이후 인터랙티브 갱신 → 현재 남은 체크리스트" 참조.**
 
 ---
 
@@ -111,8 +113,52 @@ cross-map actor(PartyRegistry) / SendToEntity EnqueueJob 마샬링 / transfer-�
 - 전부 MCP RunCommand 제작, mid-frame Capture 렌더 확인, 콘솔 0err, 씬 무변경. **애니 풀재생은 Play 모드에서 확인**(에디터 정지 상태는 정지 프레임).
 - **C5 StageClear**: 스프라이트 시트 아트 부재 → TMP "Stage Clear!" 텍스트 폴백 유지(없는 아트로 throwaway 안 만듦). knight/base damage 아트는 해당 적 종류 없어 미사용.
 
-### 남은 영호 육안/Play-test (실제 동작 확인)
+---
 
-- 양방향 포탈 왕복(HG↔Town, Boss↔HG) — 포탈 위 ↑키 진입.
-- 마을 NPC 2종 E키 대사 (단, **플레이어에 "Player" 태그** 박혀있어야 `NpcInteractable` 트리거 작동 — 기존 플레이어 prefab 태그 확인 필요).
-- NPC/포탈 위치 미세 조정은 Inspector에서 자유(좌표 박제값은 swap-ready라 코드 무관).
+## 마감 이후 인터랙티브 갱신 (2026-06-15, 영호 직접 옆)
+
+무인 완주(v15) 이후 영호와 **인터랙티브 세션 2라운드**. 위 본문(AC 검증/결정 흐름/5단계)은 *마감 시점 박제*라 그대로 두고, **아래가 현재 상태**다.
+
+### 1차 — Play-test 피드백 수정 (`3cde9c2`~`57aa42d`)
+
+영호가 WSL2 서버로 직접 플레이 → 5건 반영:
+
+- `f603a47` **QuestState/PartyState 미러 NRE 수정** — CombatBootstrap이 HUD만 만들고 State를 미생성 → 첫 킬 시 NRE. *플레이로만 잡힌 런타임 버그*(BuildPartyState/BuildQuestState를 HUD보다 먼저 생성).
+- `5f651c6` 한글 폰트 `ㅁㅁ` 깨짐 → **Pretendard 전역 폴백**(TMP + 레거시 Text). LiberationSans 한글 글리프 0 → Pretendard 11,267 글리프.
+- `3e8b8f8` 보스 포탈 해금 킬 **40 → 20** (QuestConstants + 테스트/봇 정합).
+- `57aa42d` 보스 포탈 **영구 해금** — 임계 달성 후 재그라인드 방지(`_bossUnlocked` latch, GetKillCount만 고쳐 게이트 코드 변경 0).
+- `3cde9c2` 보스 stab 이펙트를 **보스(공격자) 앵커**로 — 검에서 나오게(EnemyAttackHandler anchorOnAttacker).
+
+### 2차 — 외관/치트 결선 (`e6eedcb`~`fd72101`)
+
+- `e6eedcb` **F8 시연 치트 — ProtocolVersion v15 → v16 (비가역)**. `C_CheatCommand`(ID 34) = 퀘스트 즉시완료. 서버 `DebugConfig.AllowCheats` 게이트(시연 ON / 프로덕션 false), **빌드 클라 포함** 작동(가드 없음, 허용은 서버가 결정). 헌법 §1(서버 권위)·§3(신뢰 경계) 정합.
+- `2deed38` **HUD Menu_Button 9-slice 재구성**(파티/퀘스트 HUD 배경) + **마을 NPC prefab**(BlackSmith/Glocery 애니메이터 연결).
+- `ff9a21e` **포탈 16프레임 회전 애니**(영호 제작 Portal_Image, 정/역 전체 포탈 반영, 균등 스케일).
+- `cc32aed` → `083d386` → `fd72101` **타이틀/StageClear 배너 애니 결선**: 마젠타 컬러키 → (영호가 시트 업스케일하며 배경이 회색으로 평탄화) **회색 거리기반 키 + de-spill**(4096 무압축, fringe 0) → 재슬라이스 후 클립이 SpriteRenderer를 타깃하던 것을 **UI Image 바인딩으로 수정**. 영호 "움직인다" Play 확인.
+
+### swap-ready → 실제 완료 (상단 "아침 에셋 드롭 대기"는 해소됨)
+
+이펙트(slime/golem `be985e1`, 보스 stab `ce55022`) / HUD 배경(`2deed38`) / 포탈 애니(`ff9a21e`) / NPC 애니메이터(`2deed38`) / **StageClear = TMP 폴백 → 진짜 배너 애니** / 타이틀 배너 — **전부 채워짐**. 남은 placeholder 없음.
+
+### ★ 현재 남은 체크리스트 (이게 진짜 todo)
+
+**영호 외부 액션 (GO 게이트, 비가역)**:
+
+- [ ] **push** — origin/main 대비 **37 커밋** 미푸시 (워킹트리 깨끗).
+- [ ] **PR 생성/머지** — 정유현 co-review + admin 경로 (Shared.dll commit 포함 시 03_Client CODEOWNERS 트리거).
+- [ ] **디스코드 공지** — ★ **v16** wire-break (v15 아님). 영호 직접 (AI 영역 아님).
+
+**영호 Play-test / 육안 (1차 피드백 수정 후 전체 재플레이 미실시 — 핵심 남은 블록)**:
+
+- [ ] 파티 초대 → 수락 / 정원 2 / cross-map 유지
+- [ ] 퀘스트 공유 카운트(**20**킬) + 파티·퀘스트 HUD 표시(Menu_Button 배경, 한글)
+- [ ] 보스 게이트: 20 미만 거부 → 충족 후 진입 → **영구 해금**(재그라인드 안 됨)
+- [ ] 양방향 포탈 왕복(HG↔Town, Boss↔HG) — 포탈 위 **↑키** 진입
+- [ ] 일반몹 공격 받기 + 피격 이펙트(slime/golem) + 보스 stab(검에서)
+- [ ] 마을 NPC 2종 **E키** 대사 — 플레이어 **"Player" 태그 확인됨**(prefab에 박힘) → 작동 조건 충족
+- [ ] StageClear 배너 / 타이틀 배너 (배너 재생 자체는 확인됨)
+- [ ] **F8 치트**(퀘스트 즉시완료) — 신규
+- [ ] 야간 기본값 의도 확인: P2 초대타겟 = 근접 최단 / Q2 카운트전환 = 결성 0부터·해산 시 공유 소멸
+- [ ] NPC/포탈 위치 미세 조정은 Inspector 자유(좌표 박제값은 swap-ready라 코드 무관)
+
+**현재 검증 baseline**: WSL2 **644/0/5**(build 0err/0warn), Unity 컴파일 0err.

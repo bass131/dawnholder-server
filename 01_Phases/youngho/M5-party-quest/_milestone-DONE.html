@@ -50,6 +50,11 @@
   .check li{padding-left:26px;position:relative;margin:6px 0}
   .check li::before{content:"☐";position:absolute;left:0;color:var(--warn);font-size:15px}
   .gate li::before{content:"⛔";left:0}
+  .check li.done::before{content:"✅";color:var(--ok)}
+  .check li.done{color:var(--mut)}
+  .update{background:linear-gradient(135deg,#0c1f17,#101a16);border:1px solid #1e3a2c}
+  .update h2{border-color:#1e3a2c}
+  .rnd{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#16271f;border:1px solid #1e3a2c;color:var(--ok);margin-right:8px}
   .dim{color:var(--mut);font-size:13px}
   .ok-text{color:var(--ok);font-weight:600}
   footer{margin-top:40px;color:var(--mut);font-size:12.5px;text-align:center;border-top:1px solid var(--line);padding-top:18px}
@@ -64,11 +69,11 @@
     <div class="sub">2D 사이드스크롤 MMORPG · 마일스톤 마감 보고서 · 2026-06-15</div>
     <div class="badges">
       <span class="badge ok">✅ 코드 21 Phase 완주</span>
-      <span class="badge warn">🌙 무인 완주 (취침 중 자율, 멈춤 0)</span>
-      <span class="badge">WSL2 643 / 0 / 5</span>
+      <span class="badge warn">🌙 무인 완주 + 인터랙티브 2R</span>
+      <span class="badge">WSL2 644 / 0 / 5</span>
       <span class="badge">reviewer 🔴 0</span>
       <span class="badge">Unity 컴파일 0err</span>
-      <span class="badge">ProtocolVersion v15</span>
+      <span class="badge">ProtocolVersion v16</span>
     </div>
   </header>
 
@@ -168,46 +173,67 @@
       <div class="step"><div class="h">🤔 왜</div><p>첫 협동 시스템. cross-map thread 안전 + 신뢰경계 게이트가 무게중심</p></div>
       <div class="step"><div class="h">🛠️ 어떻게</div><p>A→Q→B→C→P→R. Worker→실측→WSL2→reviewer→commit 파이프</p></div>
       <div class="step"><div class="h">🧪 테스트</div><p>WSL2 643/0/5 · reviewer🔴0 · Unity 0err · +31 테스트</p></div>
-      <div class="step"><div class="h">➡️ 다음</div><p>push/PR/공지(영호 GO) · B3/C4 씬배치 · 에셋 드롭 · Play-test</p></div>
+      <div class="step"><div class="h">➡️ 다음</div><p>씬배치·에셋·1차피드백 완료(↓갱신). 남음 = push/PR/공지 <b>v16</b>(영호 GO) · 전체 재Play-test</p></div>
     </div>
   </div>
 
-  <h2 class="morning-anchor">🌅 아침 영호 액션 목록</h2>
+  <h2>🔄 마감 이후 인터랙티브 갱신 (2026-06-15, 영호 직접 옆)</h2>
+  <div class="card update">
+    <p>무인 완주(v15) 이후 영호와 <b>인터랙티브 세션 2라운드</b>. 위 본문(AC/결정/트랙/테스트)은 <i>마감 시점 박제</i>라 그대로 두고, <b>아래가 현재 상태</b>입니다. 핵심 변화: <code>ProtocolVersion v15→v16</code> · 퀘스트 <b>40→20킬</b> · 아침으로 미뤘던 씬배치·에셋드롭 <b>대부분 완료</b>.</p>
+
+    <h3><span class="rnd">1R</span>Play-test 피드백 수정 (<code>3cde9c2</code>~<code>57aa42d</code>)</h3>
+    <ul>
+      <li><code>f603a47</code> <b>QuestState/PartyState 미러 NRE 수정</b> — HUD만 만들고 State 미생성 → 첫 킬 시 NRE. <span class="dim">플레이로만 잡힌 런타임 버그.</span></li>
+      <li><code>5f651c6</code> 한글 폰트 <code>ㅁㅁ</code> → <b>Pretendard 전역 폴백</b>(TMP + 레거시 Text).</li>
+      <li><code>3e8b8f8</code> 보스 포탈 해금 킬 <b>40 → 20</b>.</li>
+      <li><code>57aa42d</code> 보스 포탈 <b>영구 해금</b> — 임계 달성 후 재그라인드 방지(<code>_bossUnlocked</code> latch).</li>
+      <li><code>3cde9c2</code> 보스 stab 이펙트를 <b>보스(공격자) 앵커</b>로 — 검에서 나오게.</li>
+    </ul>
+
+    <h3><span class="rnd">2R</span>외관/치트 결선 (<code>e6eedcb</code>~<code>fd72101</code>)</h3>
+    <ul>
+      <li><code>e6eedcb</code> <b>F8 시연 치트 — v15→v16(비가역)</b>. <code>C_CheatCommand</code>(ID34)=퀘스트 즉시완료. 서버 <code>DebugConfig.AllowCheats</code> 게이트(시연 ON/프로덕션 false), 빌드 클라 포함 작동. 헌법 §1·§3 정합.</li>
+      <li><code>2deed38</code> HUD Menu_Button 9-slice 재구성 + 마을 NPC prefab(애니메이터 연결).</li>
+      <li><code>ff9a21e</code> 포탈 16프레임 회전 애니(영호 Portal_Image, 정/역 전체 반영).</li>
+      <li><code>cc32aed</code>→<code>083d386</code>→<code>fd72101</code> <b>타이틀/StageClear 배너 애니</b>: 마젠타키 → (시트 업스케일로 배경 회색화) 회색 거리키+de-spill(4096 무압축) → 재슬라이스 후 UI Image 바인딩 수정. <span class="ok-text">영호 "움직인다" 확인.</span></li>
+    </ul>
+
+    <h3>🔌 swap-ready → <span class="ok-text">실제 완료</span> (상단 "에셋 드롭 대기"는 해소)</h3>
+    <p class="dim">이펙트(slime/golem <code>be985e1</code>, 보스 stab <code>ce55022</code>) · HUD 배경(<code>2deed38</code>) · 포탈 애니(<code>ff9a21e</code>) · NPC 애니메이터(<code>2deed38</code>) · <b>StageClear = TMP 폴백 → 진짜 배너</b> · 타이틀 배너 — 전부 채워짐. 남은 placeholder 없음.</p>
+  </div>
+
+  <h2 class="morning-anchor">🌅 현재 남은 영호 액션 (이게 진짜 todo)</h2>
   <div class="card morning">
-    <h3>⛔ 비가역 게이트 (영호 GO 의무)</h3>
+    <h3>⛔ 비가역 게이트 (영호 GO 의무 — <span class="ok-text">미완</span>)</h3>
     <ul class="check gate">
-      <li><code>feature/m5-party-quest</code> → origin <b>push</b></li>
-      <li><b>PR 생성/머지</b> — 03_Client 변경 다수 → 정유현 CODEOWNERS co-review 트리거. Shared.dll(v15) commit 포함 → admin bypass 사유 박기</li>
-      <li><b>디스코드 v15 wire-break 공지</b>(영호 직접) — v15 미재빌드 클라(유현/인규) 접속 불가</li>
+      <li><code>feature/m5-party-quest</code> → origin <b>push</b> <span class="dim">(origin/main 대비 37 커밋 미푸시)</span></li>
+      <li><b>PR 생성/머지</b> — 03_Client 변경 다수 → 정유현 CODEOWNERS co-review 트리거. Shared.dll commit 포함 시 → admin bypass 사유 박기</li>
+      <li><b>디스코드 <u>v16</u> wire-break 공지</b>(영호 직접) — v16 미재빌드 클라(유현/인규) 접속 불가. <span class="dim">★v15 아님</span></li>
     </ul>
 
-    <h3>🎨 순수 씬 배치 (야간 미실시 — 씬 손상 위험 + 시각영역, 아침 육안)</h3>
+    <h3>✅ 마감 이후 완료 (재확인 불필요)</h3>
     <ul class="check">
-      <li><b>B3</b> 역방향 포탈 GameObject 배치: 각 맵 씬에 <code>PortalTrigger</code>(portalId=2) + 스프라이트. <span class="dim">데이터(B1)·로직(B2)·서버게이트 완비. HG 역방향 x=5(→Town 17), Boss 역방향 x=18(→HG 22).</span></li>
-      <li><b>C4</b> NPC 배치: Town 씬에 BlackSmith/Glocery + <code>NpcInteractable</code>(dialogText) + 스프라이트(<code>Art/Characters/NPC/</code>). <span class="dim">스크립트 완비 — 배치+바인딩만. 대화만(상점/제작 X).</span></li>
+      <li class="done"><b>B3 역방향 포탈 씬 배치</b> (<code>19b9f71</code>) — HG x=5, Boss x=18, Portal.prefab 인스턴스 + 회전 애니</li>
+      <li class="done"><b>C4 NPC 배치 + 위치조정</b> (<code>19b9f71</code>/<code>dd76d37</code>) — BlackSmith/Glocery, bottom-pivot 발 닿음, E키 대사</li>
+      <li class="done"><b>swap-ready 에셋 전부 드롭</b> — slime/golem 이펙트·보스 stab·HUD 배경·포탈 애니·NPC 애니메이터·StageClear/타이틀 배너</li>
+      <li class="done"><b>1차 피드백 5건</b> — NRE 수정·한글 폰트·퀘 20킬·보스 영구해금·stab 앵커</li>
+      <li class="done"><b>플레이어 "Player" 태그 확인</b> — LocalPlayer.prefab에 박힘 → NPC E키 대사 작동 조건 충족</li>
     </ul>
 
-    <h3>🔌 swap-ready 에셋 드롭 (코드 완비 — 에셋만, 코드 0 변경)</h3>
-    <ul class="check">
-      <li>일반몹 이펙트: <code>Resources/Effects/SlimeDamageEffect.prefab</code> · <code>GolemDamageEffect.prefab</code> <span class="dim">(에셋 Art/damage_effect/{slime,golem}/ 존재)</span></li>
-      <li>보스 stab: <code>Resources/Effects/BossAttackPattern0.prefab</code>(현 단색 플래시)을 진짜 Stabbing_Effect anim prefab으로 교체</li>
-      <li>StageClear 애니: <code>Resources/UI/StageClearAnim.controller</code>(+<code>StageClearPlaceholder.png</code>) — 미배치 시 TMP 폴백 유지</li>
-      <li>HUD 배경: <code>Resources/UI/Status_Frame</code>(멤버HUD) · <code>Resources/UI/Quest_Panel</code>(퀘스트HUD)</li>
-    </ul>
-
-    <h3>🎮 Play-test 육안 (기능 검증)</h3>
+    <h3>🎮 Play-test 육안 (1차 피드백 수정 후 <b>전체 재플레이 미실시</b> — 핵심 남은 블록)</h3>
     <ul class="check">
       <li>파티 초대(P키)→팝업 수락→멤버HUD 2명 / 한쪽 disconnect→HUD 숨김</li>
-      <li>몹 처치→퀘스트 카운터 N/40 증가(파티 공유 합산)</li>
-      <li>40 미만 보스포탈 진입→잠금 토스트 / 40 후 진입 성공</li>
-      <li>포탈: 정지=진입X, ↑down-edge=진입, 양방향 왕복</li>
-      <li>일반몹 공격당함(Dash 회피) + kind별 피격 이펙트 / 보스 stab 이펙트 / StageClear 연출 / NPC 2종 E키 대사</li>
+      <li>몹 처치→퀘스트 카운터 <b>N/20</b> 증가(파티 공유 합산) + HUD 배경(Menu_Button)·한글</li>
+      <li>20 미만 보스포탈 진입→잠금 토스트 / 20 후 진입 성공 → <b>영구 해금</b>(재그라인드 안 됨)</li>
+      <li>포탈: 정지=진입X, ↑down-edge=진입, <b>양방향 왕복</b>(HG↔Town, Boss↔HG)</li>
+      <li>일반몹 공격당함(Dash 회피) + kind별 피격 이펙트(slime/golem) / 보스 stab(검에서) / StageClear 배너 / NPC 2종 E키 대사</li>
+      <li><b>F8 치트</b>(퀘스트 즉시완료) — 신규, 빌드 클라 포함 작동</li>
       <li><b>야간 기본값 확인</b>: P2 초대타겟=근접최단 / Q2 카운트전환=결성 0부터·해산 공유소멸·솔로0 <span class="dim">(다르게 원하면 조정)</span></li>
     </ul>
   </div>
 
   <footer>
-    Dawnholder · M5 무인 완주 보고서 · 무인 파이프(Worker 위임 → 메인 file:line 실측 → Plugins drift 복원 → WSL2 게이트 → TB reviewer → commit, 클라는 Unity MCP 컴파일체크) · 멈춤 0 / 확인질문 0
+    Dawnholder · M5 무인 완주 보고서 (+ 2026-06-15 인터랙티브 2R 갱신: v16 / 퀘 20킬 / 씬배치·에셋·1차피드백 완료) · 무인 파이프(Worker 위임 → 메인 file:line 실측 → Plugins drift 복원 → WSL2 게이트 → TB reviewer → commit) · 멈춤 0 / 확인질문 0
   </footer>
 
 </div>
