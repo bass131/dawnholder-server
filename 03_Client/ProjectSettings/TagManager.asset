@@ -50,6 +50,21 @@ TagManager:
   - name: UI
     uniqueID: 457841070
     locked: 0
+  - name: TownTerrain
+    uniqueID: 1070125365
+    locked: 0
+  - name: DetailTerrain
+    uniqueID: 1409026723
+    locked: 0
+  - name: NPC
+    uniqueID: 3046916603
+    locked: 0
+  - name: Enemy
+    uniqueID: 1321618817
+    locked: 0
+  - name: Player
+    uniqueID: 430037135
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []
