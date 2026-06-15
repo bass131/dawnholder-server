@@ -50,14 +50,14 @@ d8bc29b Phase C — 기존 17 에셋 Resources/Audio 이관 + import
 1. **청음** — 실제 Play로 32개 사운드 들어보기. 톤/볼륨 밸런스 체크. 마음에 안 드는 키는 알려주면 그 키만 재생성(프롬프트 조정).
 2. **MISSING 1개**: `sfx.player.respawn` — 깔끔한 "리스폰 순간" 트리거가 없어 미wiring/미생성. 리스폰 신호 정의 방식 결정 필요.
 3. **미적용 컨텐츠(아트/prefab 측, 사운드 무관)**: 투사체 prefab + Slime/Golem DamageEffect prefab 미배치(코드 TODO 경고). 사운드는 prefab 없어도 재생됨.
-4. **확장 후보(미적용, 선택)**: party_disbanded / cooldown_ready / boss 패턴별 타격음 / 존 앰비언트 / 버튼 호버 — 발굴됐으나 스코프 가드로 보류.
+4. **확장 후보(미적용, 선택)**: cooldown_ready / boss 패턴별 타격음 / 존 앰비언트 / 버튼 호버 — 발굴됐으나 스코프 가드로 보류 (영호 결정). *(party_disbanded는 watch에서 추가 완료.)*
 5. **클로즈아웃**: 청음 OK → 볼륨 밸런싱 → 최종 `-DONE.md` + HTML → **영호 GO 시** push → PR(코드=admin 예외) → main 머지. (비가역 = GO 의무.)
 
-## 📋 사운드 키 32개 (RESOLVED) + 1 MISSING
+## 📋 사운드 키 33개 (RESOLVED) + 1 MISSING
 
 - **BGM(5)**: mainmenu, town, hunting, boss, ending
 - **Combat(14)**: melee_swing, magic_cast, projectile_launch, dash, teleport_depart, teleport_arrive, hit_enemy, hit_lightning, hit_player, enemy_attack, enemy_die, golem_die, boss_die, stage_clear
 - **Movement(3)**: jump_start, jump_land, footstep
 - **Player(1)**: death  · *(respawn = MISSING)*
 - **Zone(1)**: portal_enter
-- **UI(8)**: button_click, panel_open, toast, quest_complete, party_invite, panel_close, error, party_formed
+- **UI(9)**: button_click, panel_open, toast, quest_complete, party_invite, panel_close, error, party_formed, party_disbanded *(party_disbanded = 야간 watch 추가, ad66e65)*
