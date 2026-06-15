@@ -34,7 +34,11 @@ namespace Dawnholder.Client.UI
         {
             if (_root != null)
             {
-                _rootGroup = _root.GetComponent<CanvasGroup>() ?? _root.AddComponent<CanvasGroup>();
+                // ⚠️ `GetComponent ?? AddComponent`는 Unity null 의미(fake-null)와 안 맞아 CanvasGroup이
+                //    안 붙는 경우가 있다(MissingComponentException). TryGetComponent로 안전하게.
+                if (!_root.TryGetComponent<CanvasGroup>(out var cg))
+                    cg = _root.AddComponent<CanvasGroup>();
+                _rootGroup = cg;
                 _rootGroup.alpha = 0f; // 바인딩 전 빈 패널 깜빡임 방지
             }
         }

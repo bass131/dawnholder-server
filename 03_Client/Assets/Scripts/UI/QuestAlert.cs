@@ -107,14 +107,14 @@ namespace Dawnholder.Client.UI
             textRt.localScale       = Vector3.zero;
 
             TMP_Text text = textGo.AddComponent<TextMeshProUGUI>();
-            text.text         = message;
-            text.fontSize     = 80f;
-            text.fontStyle    = FontStyles.Bold;
-            text.alignment    = TextAlignmentOptions.Center;
-            text.color        = new Color(1f, 0.88f, 0.25f, 1f);
-            text.outlineWidth = 0.22f;
-            text.outlineColor = new Color32(40, 20, 0, 255);
+            text.text      = message;
+            text.fontSize  = 80f;
+            text.fontStyle = FontStyles.Bold;
+            text.alignment = TextAlignmentOptions.Center;
+            text.color     = new Color(1f, 0.88f, 0.25f, 1f);
 
+            // ⚠️ 폰트(머티리얼)를 outline보다 *먼저* 할당. outlineWidth는 폰트 머티리얼 인스턴스를
+            //    만드는데, 머티리얼이 없으면 ArgumentNullException으로 빌드 코루틴이 통째로 죽는다.
             TMP_FontAsset? font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
 #if UNITY_EDITOR
             if (font == null)
@@ -122,6 +122,13 @@ namespace Dawnholder.Client.UI
                     "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
 #endif
             if (font != null) text.font = font;
+
+            // 머티리얼 준비된 경우에만 외곽선(가독성). 없으면 안전 생략.
+            if (text.fontSharedMaterial != null)
+            {
+                text.outlineWidth = 0.22f;
+                text.outlineColor = new Color32(40, 20, 0, 255);
+            }
 
             QuestAlert alert = root.AddComponent<QuestAlert>();
             alert._group  = group;

@@ -42,8 +42,12 @@ namespace Dawnholder.Client.UI
         void Awake()
         {
             Instance = this;
-            _group = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
-            ApplyVisible(_revealed); // 이미 세션 내 reveal됐으면 곧바로 보이게(첫 진입 race 방어)
+            // `GetComponent ?? AddComponent`의 Unity null 함정 회피 — TryGetComponent.
+            if (!TryGetComponent<CanvasGroup>(out var cg))
+                cg = gameObject.AddComponent<CanvasGroup>();
+            _group = cg;
+            ApplyVisible(_revealed); // 이미 세션 내 reveal됐으면 곧바로 보이게
+
         }
 
         void OnDestroy()
