@@ -11,48 +11,21 @@ namespace Dawnholder.Client.Scenes
     /// <summary>
     /// 엔딩 화면 컨트롤러. 보스 처치 후 종료점.
     ///
-    /// 흐름: 진입 후 <see cref="_armDelay"/>초간 입력 잠금(연출 감상) → 이후 아무 키/마우스/패드
-    /// 입력 시 MainMenu Scene 로드. 기존 "메인으로" 버튼도 호환(<see cref="OnMainClicked"/>).
+    /// 배경 = 정적 고화질 이미지(씬 BackGround Image에 직접 배정). 흐름: 진입 후
+    /// <see cref="_armDelay"/>초간 입력 잠금 → 이후 아무 키/마우스/패드 입력 시 MainMenu Scene 로드.
+    /// 기존 "메인으로" 버튼도 호환(<see cref="OnMainClicked"/>).
     ///
     /// 헌법 #1 (Server Authority): 본 Scene은 단순 UI 흐름, 네트워크 X.
     /// </summary>
     public class EndingController : MonoBehaviour
     {
-        [SerializeField] float _armDelay = 1f;   // 입력 받기 전 잠금 시간
-        [SerializeField] Image? _background;      // 비우면 런타임 "BackGround" 탐색
-        [SerializeField] float _bgFps = 10f;      // 배경 시트 재생 속도
-
-        // 슬라이스된 엔딩 배경 시트(없으면 정적 배경 유지).
-        const string BackgroundFramesKey = "UI/Ending";
+        [SerializeField] float _armDelay = 1f; // 입력 받기 전 잠금 시간
 
         bool  _armed;
         bool  _exiting;
         float _t;
         float _hintClock;
         CanvasGroup? _hintGroup;
-
-        void Awake() => TrySetupBackground();
-
-        // 엔딩 배경을 스프라이트 시트 애니로 구동 — 시트 미준비 시 정적 배경 유지(graceful).
-        // 씬 편집 회피: BackGround Image를 런타임 탐색해 사이클러를 부착.
-        void TrySetupBackground()
-        {
-            Sprite[] frames = Resources.LoadAll<Sprite>(BackgroundFramesKey);
-            if (frames == null || frames.Length <= 1) return; // 시트 미준비 → 정적 유지
-            System.Array.Sort(frames, (a, b) => string.CompareOrdinal(a.name, b.name));
-
-            Image? bg = _background;
-            if (bg == null)
-            {
-                GameObject? bgGo = GameObject.Find("BackGround");
-                if (bgGo != null) bg = bgGo.GetComponent<Image>();
-            }
-            if (bg == null) { Debug.LogWarning("[Ending] BackGround Image 못 찾음 — 배경 애니 생략."); return; }
-
-            var anim = bg.gameObject.GetComponent<EndingBackgroundAnimator>();
-            if (anim == null) anim = bg.gameObject.AddComponent<EndingBackgroundAnimator>();
-            anim.Play(bg, frames, _bgFps);
-        }
 
         void Update()
         {
