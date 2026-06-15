@@ -17,8 +17,8 @@ namespace Dawnholder.Client.UI
     [DisallowMultipleComponent]
     public class QuestProgressHud : MonoBehaviour
     {
-        // swap-ready: 에셋 배치 경로.
-        const string BgSpritePath = "UI/Quest_Panel";
+        // 패널 배경 9-slice sprite (Menu_Button) 경로.
+        const string BgSpritePath = "UI/Menu_Button";
 
         public static QuestProgressHud? Instance { get; private set; }
 
@@ -97,11 +97,20 @@ namespace Dawnholder.Client.UI
             panelRt.sizeDelta = new Vector2(220f, 50f);
 
             Image panelImg = panelGo.AddComponent<Image>();
-            panelImg.color = new Color(0f, 0f, 0f, 0.55f);
 
-            // swap-ready: 배경 sprite 로드 시도.
+            // 배경 sprite 있으면 9-slice 패널, 없으면 반투명 폴백.
             Sprite? bgSprite = Resources.Load<Sprite>(BgSpritePath);
-            if (bgSprite != null) panelImg.sprite = bgSprite;
+            if (bgSprite != null)
+            {
+                panelImg.sprite = bgSprite;
+                panelImg.type   = Image.Type.Sliced;
+                panelImg.pixelsPerUnitMultiplier = 3f;
+                panelImg.color  = Color.white;
+            }
+            else
+            {
+                panelImg.color = new Color(0f, 0f, 0f, 0.55f);
+            }
 
             // TMP_Text — 상단 중앙 패널 내.
             GameObject textGo = new GameObject("CountText");
