@@ -56,8 +56,8 @@ namespace Dawnholder.Client.UI
                 while (LocalPlayerMovement.Instance == null && pw < 3f) { pw += Time.deltaTime; yield return null; }
                 yield return new WaitForSeconds(0.4f);
 
-                // ① "퀘스트 발생!" 임팩트 — 쾅! 등장 + 플래시
-                QuestAlert alert = QuestAlert.BuildRuntime(_parent!, "퀘스트 발생!");
+                // ① "퀘스트 발생" 임팩트 — 배너 시트 애니 쾅! 등장 + 플래시
+                QuestAlert alert = QuestAlert.BuildRuntime(_parent!, QuestAlertKind.Available);
                 bool alertDone = false;
                 alert.PlayThenCallback(() => alertDone = true);
                 while (!alertDone) yield return null;

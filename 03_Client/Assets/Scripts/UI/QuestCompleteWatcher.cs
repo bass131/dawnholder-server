@@ -51,7 +51,7 @@ namespace Dawnholder.Client.UI
             if (qs.CurrentCount < qs.TargetCount) return;
 
             _shown = true;
-            QuestAlert alert = QuestAlert.BuildRuntime(_alertParent, "퀘스트 완료!");
+            QuestAlert alert = QuestAlert.BuildRuntime(_alertParent, QuestAlertKind.Clear);
             alert.PlayThenCallback(() => { if (alert != null) Destroy(alert.gameObject); });
         }
     }
