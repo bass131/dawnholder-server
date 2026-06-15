@@ -51,11 +51,20 @@ namespace Dawnholder.Client.Network
                 // 데미지 텍스트 + 적 HP 갱신 — 모든 hitEffect 공통.
                 EnemyRegistry.Instance.ApplyHit(targetId, hp, maxHp);
 
-                // 피격 사운드 — hitEffect 분기별.
+                // 피격 사운드 — Lightning은 전용, 그 외엔 적 종류별 분리.
                 if (hitEffect == HitEffect.Lightning)
+                {
                     AudioManager.Instance?.PlaySfx(SoundKeys.HitLightning, 1f, 0.05f);
+                }
                 else
-                    AudioManager.Instance?.PlaySfx(SoundKeys.HitEnemy, 1f, 0.05f);
+                {
+                    string hitKey = SoundKeys.HitGeneric;
+                    if (EnemyRegistry.Instance.TryGetKind(targetId, out EnemyKind hitKind))
+                        hitKey = hitKind == EnemyKind.Normal ? SoundKeys.HitSlime
+                               : hitKind == EnemyKind.Golem ? SoundKeys.HitGolem
+                               : SoundKeys.HitGeneric;
+                    AudioManager.Instance?.PlaySfx(hitKey, 1f, 0.05f);
+                }
 
                 // hitEffect별 VFX — target 위치에 스폰.
                 if (hitEffect == HitEffect.Projectile || hitEffect == HitEffect.Lightning || hitEffect == HitEffect.Dash)

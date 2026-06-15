@@ -1,3 +1,4 @@
+#nullable enable
 namespace Dawnholder.Client.Audio
 {
     // M7 사운드 키 카탈로그. 콜사이트 매직스트링 방지 + 컴파일 타임 안전.
@@ -18,10 +19,22 @@ namespace Dawnholder.Client.Audio
         public const string Dash = "sfx.combat.dash";
         public const string TeleportDepart = "sfx.combat.teleport_depart";
         public const string TeleportArrive = "sfx.combat.teleport_arrive";
-        public const string HitEnemy = "sfx.combat.hit_enemy";
+        // 피격(플레이어→적) — 적 종류별 분리. Lightning은 별도.
+        public const string HitSlime = "sfx.combat.hit_slime";
+        public const string HitGolem = "sfx.combat.hit_golem";
+        public const string HitGeneric = "sfx.combat.hit_generic";
         public const string HitLightning = "sfx.combat.hit_lightning";
-        public const string HitPlayer = "sfx.combat.hit_player";
-        public const string EnemyAttack = "sfx.combat.enemy_attack";
+        // 피격(적→플레이어) — 직업별 분리.
+        public const string HitKnight = "sfx.combat.hit_knight";
+        public const string HitMage = "sfx.combat.hit_mage";
+        // 적 공격 모션 — 종류별 분리 + 울음(공격에 레이어).
+        public const string AttackSlime = "sfx.combat.attack_slime";
+        public const string AttackGolem = "sfx.combat.attack_golem";
+        public const string CrySlime = "sfx.combat.cry_slime";
+        public const string CryGolem = "sfx.combat.cry_golem";
+        // 보스(뱀파이어) — 준비자세(텔레그래프) + 찌르기.
+        public const string BossTelegraph = "sfx.combat.boss_telegraph";
+        public const string BossStab = "sfx.combat.boss_stab";
         public const string EnemyDie = "sfx.combat.enemy_die";    // Normal(슬라임)
         public const string GolemDie = "sfx.combat.golem_die";
         public const string BossDie = "sfx.combat.boss_die";      // Boss(뱀파이어)
@@ -32,8 +45,9 @@ namespace Dawnholder.Client.Audio
         public const string JumpLand = "sfx.movement.jump_land";
         public const string Footstep = "sfx.movement.footstep";
 
-        // ── SFX: Player 생명주기 ── (M7 확장 — 발굴된 미커버 이벤트)
-        public const string PlayerDeath = "sfx.player.death";
+        // ── SFX: Player 생명주기 ── (직업별 사망 분리)
+        public const string DeathKnight = "sfx.player.death_knight";
+        public const string DeathMage = "sfx.player.death_mage";
         public const string PlayerRespawn = "sfx.player.respawn";
 
         // ── SFX: Zone/포탈 ──
