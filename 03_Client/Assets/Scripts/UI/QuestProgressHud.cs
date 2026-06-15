@@ -6,9 +6,10 @@ using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
 {
-    // P4 퀘스트 진행 HUD. 화면 상단 중앙 — S_QuestUpdate 수신 시 "{currentCount}/{targetCount}" 표시.
+    // P4 퀘스트 진행 HUD. 화면 상단 중앙 — S_QuestUpdate 수신 시 이름/목표/카운트 3줄 표시.
     //
     // **헌법 §1**: 카운터·목표치 모두 서버 QuestState 미러값만 사용. 40 같은 리터럴 하드코딩 X.
+    //   이름·목표 텍스트는 표시용 클라 로컬 콘텐츠 — 서버 권위 대상 아님 (단일 퀘스트).
     //
     // **swap-ready**: 배경 Image는 Resources.Load<Sprite>("UI/Quest_Panel") 경로.
     //   에셋 미배치 시 배경 없이 텍스트만(graceful fallback).
@@ -20,10 +21,14 @@ namespace Dawnholder.Client.UI
         // 패널 배경 9-slice sprite (Menu_Button) 경로.
         const string BgSpritePath = "UI/Menu_Button";
 
+        // 영호 Phase05 조정 지점 — 플레이테스트 후 문구 미세조정.
+        const string QuestName      = "마을의 위협";
+        const string QuestObjective = "사냥터의 몬스터 처치";
+
         public static QuestProgressHud? Instance { get; private set; }
 
         [SerializeField] CanvasGroup? _group;
-        [SerializeField] TMP_Text?    _countText;
+        [SerializeField] TMP_Text?    _infoText;
         [SerializeField] Sprite?      _bgSprite;   // swap 슬롯
 
         void Awake()
@@ -57,10 +62,10 @@ namespace Dawnholder.Client.UI
 
         void Refresh()
         {
-            if (QuestState.Instance == null || _countText == null) return;
+            if (QuestState.Instance == null || _infoText == null) return;
 
-            // 서버값만 — targetCount 리터럴 금지 (헌법 §1).
-            _countText.text = $"{QuestState.Instance.CurrentCount}/{QuestState.Instance.TargetCount}";
+            // 서버값만 — targetCount 리터럴 금지 (헌법 §1). 이름·목표는 클라 로컬 const.
+            _infoText.text = $"{QuestName}\n{QuestObjective}\n{QuestState.Instance.CurrentCount} / {QuestState.Instance.TargetCount}";
 
             if (_group != null) _group.alpha = 1f;
         }
@@ -94,7 +99,7 @@ namespace Dawnholder.Client.UI
             panelRt.anchorMax = new Vector2(0.5f, 1f);
             panelRt.pivot     = new Vector2(0.5f, 1f);
             panelRt.anchoredPosition = new Vector2(0f, -20f);
-            panelRt.sizeDelta = new Vector2(220f, 50f);
+            panelRt.sizeDelta = new Vector2(360f, 120f);
 
             Image panelImg = panelGo.AddComponent<Image>();
 
@@ -112,8 +117,8 @@ namespace Dawnholder.Client.UI
                 panelImg.color = new Color(0f, 0f, 0f, 0.55f);
             }
 
-            // TMP_Text — 상단 중앙 패널 내.
-            GameObject textGo = new GameObject("CountText");
+            // TMP_Text — 패널 전체 채움. 이름/목표/카운트 3줄 멀티라인.
+            GameObject textGo = new GameObject("InfoText");
             textGo.transform.SetParent(panelGo.transform, worldPositionStays: false);
             RectTransform textRt = textGo.AddComponent<RectTransform>();
             textRt.anchorMin = Vector2.zero;
@@ -122,11 +127,12 @@ namespace Dawnholder.Client.UI
             textRt.offsetMax = Vector2.zero;
 
             TMP_Text tmp = textGo.AddComponent<TextMeshProUGUI>();
-            tmp.text      = string.Empty;
-            tmp.fontSize  = 24f;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color     = Color.white;
-            tmp.fontStyle = FontStyles.Bold;
+            tmp.text           = string.Empty;
+            tmp.fontSize       = 20f;
+            tmp.lineSpacing    = 4f;
+            tmp.alignment      = TextAlignmentOptions.Center;
+            tmp.color          = Color.white;
+            tmp.enableWordWrapping = false;
 
             var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
 #if UNITY_EDITOR
@@ -143,7 +149,7 @@ namespace Dawnholder.Client.UI
             var type  = typeof(QuestProgressHud);
             var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
             type.GetField("_group",     flags)!.SetValue(hud, group);
-            type.GetField("_countText", flags)!.SetValue(hud, tmp);
+            type.GetField("_infoText",  flags)!.SetValue(hud, tmp);
             if (bgSprite != null)
                 type.GetField("_bgSprite", flags)!.SetValue(hud, bgSprite);
 

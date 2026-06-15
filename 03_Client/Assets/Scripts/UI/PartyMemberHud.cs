@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Dawnholder.Client.UI
 {
-    // P3 파티 멤버 HUD. 화면 좌상단 — 파티 결성 시 멤버 슬롯 2개 표시, 해산 시 숨김.
+    // P3 파티 멤버 HUD. 화면 상단 중앙 하단 — 파티 결성 시 멤버 슬롯 2개 표시, 해산 시 숨김.
     //
     // **헌법 §1**: 파티 상태는 서버 S_PartyUpdate 통보(PartyState 미러)만 표시.
     //   클라가 파티 멤버를 임의로 추가·제거하지 않음.
@@ -117,14 +117,15 @@ namespace Dawnholder.Client.UI
             group.interactable = false;
             group.blocksRaycasts = false;
 
-            // 배경 패널 — 좌상단 고정.
+            // 배경 패널 — 상단 중앙 하단. 퀘스트 HUD(0,-20, 360×120) 아래 겹침 없이.
+            // M6: 영호 Phase05 육안 미세조정 지점
             GameObject panelGo = new GameObject("Panel");
             panelGo.transform.SetParent(root.transform, worldPositionStays: false);
             RectTransform panelRt = panelGo.AddComponent<RectTransform>();
-            panelRt.anchorMin = new Vector2(0f, 1f);
-            panelRt.anchorMax = new Vector2(0f, 1f);
-            panelRt.pivot     = new Vector2(0f, 1f);
-            panelRt.anchoredPosition = new Vector2(20f, -20f);
+            panelRt.anchorMin = new Vector2(0.5f, 1f);
+            panelRt.anchorMax = new Vector2(0.5f, 1f);
+            panelRt.pivot     = new Vector2(0.5f, 1f);
+            panelRt.anchoredPosition = new Vector2(0f, -150f);
             panelRt.sizeDelta = new Vector2(280f, 90f);
 
             Image panelImg = panelGo.AddComponent<Image>();
