@@ -70,7 +70,7 @@ namespace Dawnholder.Client.Gameplay
                 _isPlayerNear = false;
                 if (NpcDialogPanel.IsShown)
                 {
-                    AudioManager.Instance?.PlaySfx(SoundKeys.PanelOpen);
+                    AudioManager.Instance?.PlaySfx(SoundKeys.PanelClose);
                     NpcDialogPanel.Hide();
                 }
             }

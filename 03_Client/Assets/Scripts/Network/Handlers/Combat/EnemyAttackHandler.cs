@@ -104,6 +104,7 @@ namespace Dawnholder.Client.Network
                 // 사망 처리 — 리스폰 페이드 연출. HP 복구는 S_PlayerHp 권위 통지가 담당.
                 if (targetCurrentHp <= 0)
                 {
+                    AudioManager.Instance?.PlaySfx(SoundKeys.PlayerDeath);
                     if (SceneTransition.Instance != null)
                         SceneTransition.Instance.PlayRespawnFade();
                 }

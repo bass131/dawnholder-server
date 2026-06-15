@@ -66,6 +66,7 @@ namespace Dawnholder.Client.UI
             {
                 _pauseCanvas.SetActive(_isPaused);
                 if (_isPaused) AudioManager.Instance?.PlaySfx(SoundKeys.PanelOpen);
+                else           AudioManager.Instance?.PlaySfx(SoundKeys.PanelClose);
             }
             // timeScale은 *Realtime* 기반 입력(InputSystem)은 영향 X — ESC 재누름으로 닫기 보장.
             Time.timeScale = _isPaused ? 0f : 1f;

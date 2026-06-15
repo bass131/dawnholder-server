@@ -32,12 +32,22 @@ namespace Dawnholder.Client.Audio
         public const string JumpLand = "sfx.movement.jump_land";
         public const string Footstep = "sfx.movement.footstep";
 
+        // ── SFX: Player 생명주기 ── (M7 확장 — 발굴된 미커버 이벤트)
+        public const string PlayerDeath = "sfx.player.death";
+        public const string PlayerRespawn = "sfx.player.respawn";
+
+        // ── SFX: Zone/포탈 ──
+        public const string PortalEnter = "sfx.zone.portal_enter";
+
         // ── UI ── (콜사이트에서 'ui.' 접두 → AudioManager가 전용 UI 소스로 재생)
         public const string ButtonClick = "ui.button_click";
         public const string PanelOpen = "ui.panel_open";
         public const string Toast = "ui.toast";
         public const string QuestComplete = "ui.quest_complete";
         public const string PartyInvite = "ui.party_invite";
+        public const string PanelClose = "ui.panel_close";        // M7 확장 — 전용 닫기음
+        public const string UiError = "ui.error";                 // 거부/에러 (PortalLocked 등)
+        public const string PartyFormed = "ui.party_formed";      // 파티 결성
 
         // destMapId → BGM 키 (SceneRouter와 병렬). 0=Town,1=Hunting,2=Boss,3=Ending.
         public static string? BgmKeyForMap(byte mapId) => mapId switch

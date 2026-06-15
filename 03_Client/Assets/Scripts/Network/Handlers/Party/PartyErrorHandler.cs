@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.State;
 using Shared.Protocol;
@@ -21,6 +22,7 @@ namespace Dawnholder.Client.Network
             MainThreadDispatcher.Enqueue(() =>
             {
                 Debug.Log($"[Party] 에러 수신 — reason={reason}");
+                AudioManager.Instance?.PlaySfx(SoundKeys.UiError);
                 PartyState.Instance.SetLastError(reason);
             });
         }
