@@ -473,7 +473,8 @@ public class GameMap
             BroadcastToAll(stageClear.Write());
         }
         RemoveEnemy(target.EntityId);
-        if (target.Kind == EnemyKind.Normal)
+        // Normal(슬라임)은 원위치 재스폰, Golem은 1층 좌↔우 교차 재스폰(RespawnSystem이 위치 결정). Boss는 1회성.
+        if (target.Kind == EnemyKind.Normal || target.Kind == EnemyKind.Golem)
             EnqueueRespawn(target);
 
         OnEnemyKilled(killerEntityId, target);
