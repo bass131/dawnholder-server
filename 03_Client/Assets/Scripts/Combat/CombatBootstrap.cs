@@ -1,4 +1,6 @@
 #nullable enable
+using Dawnholder.Client.Gameplay;
+using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
 using UnityEngine;
@@ -54,9 +56,36 @@ namespace Dawnholder.Client.Combat
             BuildRemoteEntityRegistry();
             BuildPartyState();
             BuildQuestState();
-            BuildPartyMemberHud();
-            BuildQuestProgressHud();
+            // 파티/퀘스트 HUD는 UI.unity 씬에 배치된 패널(PartyMemberHud/QuestProgressHud 컴포넌트)이
+            // PartyState/QuestState를 직접 구독 — 런타임 빌드 폐지(M6 Phase 05, 영호 UI.unity 정식 채택).
             BuildPartyInvitePopup();
+            BuildNpcDialogPanel();
+            BuildMinimapCamera();
+            BuildQuestIntro();
+        }
+
+        // 퀘스트 부여 연출 — 사냥 구역(HuntingGround/BossRoom) 진입 시에만.
+        // QuestIntroSequencer가 세션 1회 팝업(Fade in/out) → 퀘스트 HUD 출현 순서를 조율.
+        // 마을(Town)에선 퀘스트 HUD를 띄우지 않음 — 퀘스트 목표가 사냥터 한정이라.
+        void BuildQuestIntro()
+        {
+            string sceneName = gameObject.scene.name;
+            if (sceneName != "HuntingGround" && sceneName != "BossRoom") return;
+            QuestIntroSequencer.Run(transform);       // 진입: 발생 알림 → 팝업 → HUD
+            QuestCompleteWatcher.Install(transform);  // 완료 시: "퀘스트 완료!" 알림
+        }
+
+        // 미니맵 카메라 — Resources/MinimapRT에 줌아웃 사이드뷰 렌더. UI.unity RawImage가 표시.
+        void BuildMinimapCamera()
+        {
+            RenderTexture? rt = Resources.Load<RenderTexture>("MinimapRT");
+            if (rt == null)
+            {
+                Debug.LogWarning("[CombatBootstrap] Resources/MinimapRT.renderTexture 없음 — 미니맵 비활성.");
+                return;
+            }
+            MinimapCamera.BuildRuntime(parent: transform, rt: rt);
+            MinimapTerrainTint.Install(transform); // 밟는 지형을 미니맵에서만 평면 단색으로(가독성)
         }
 
         void BuildZoneVisualizer()
@@ -108,22 +137,16 @@ namespace Dawnholder.Client.Combat
             new GameObject("_QuestState").AddComponent<QuestState>();
         }
 
-        void BuildPartyMemberHud()
-        {
-            if (PartyMemberHud.Instance != null) return;
-            PartyMemberHud.BuildRuntime(parent: transform);
-        }
-
-        void BuildQuestProgressHud()
-        {
-            if (QuestProgressHud.Instance != null) return;
-            QuestProgressHud.BuildRuntime(parent: transform);
-        }
-
         void BuildPartyInvitePopup()
         {
             if (PartyInvitePopup.Instance != null) return;
             PartyInvitePopup.BuildRuntime(parent: transform);
+        }
+
+        void BuildNpcDialogPanel()
+        {
+            if (NpcDialogPanel.Instance != null) return;
+            NpcDialogPanel.BuildRuntime(parent: transform);
         }
 
         void BuildRemoteEntityRegistry()

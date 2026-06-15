@@ -58,6 +58,10 @@ namespace Dawnholder.Client.State
             Instance = this;
         }
 
+        // MinimapMarkers 등 순회가 필요한 컴포넌트를 위한 읽기 전용 열거.
+        // 내부 dict를 직접 노출하지 않고 Values 스냅샷을 IEnumerable로 래핑 — 캡슐화 유지.
+        public IEnumerable<RemoteEntity> Entities => _entities.Values;
+
         // CombatBootstrap.BuildRemoteEntityRegistry가 코드 주도로 생성할 때 주입.
         // Inspector 드래그 경로도 여전히 동작 — [SerializeField] 유지.
         public void SetRemotePlayerPrefab(GameObject prefab)

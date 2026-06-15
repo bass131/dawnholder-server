@@ -249,13 +249,16 @@ public class EnemyAttackTests
     // ── 7. Golem 공격 — 스탯 차이 검증 ──────────────────────────────────────────
 
     /// <summary>
-    /// Golem이 사거리 안 플레이어에게 데미지를 준다.
+    /// Golem이 사거리 안 플레이어에게 데미지를 준다 — windup(휘두르기) 경과 후에.
     ///
     /// 기대 데미지 = Formulas.ComputeDamage(GolemDefault(), Knight(), NormalBaseDamage)
     ///            = Max(1, 4 + 8 - 0) = 12. (Golem.Defense=5는 enemy.Defense라 player→enemy 방향에만 적용.)
+    ///
+    /// **버그 2(M6) 회귀 안전망**: 골렘은 GolemAttackWindupTicks(6) 동안 데미지가 나오면 안 되고
+    ///   windup 경과 후 타격. swing 애니가 진행되는 동안 hit이 떨어지지 않게 보장.
     /// </summary>
     [Fact]
-    public void Golem_InRange_DealsDamage()
+    public void Golem_InRange_DealsDamageAfterWindup()
     {
         GameMap map = MakeGolemMap();
         EnemyEntity golem = GetFirstEnemy(map);
@@ -264,10 +267,20 @@ public class EnemyAttackTests
         int hpBefore = player.Hp;
 
         ForceChaseAndReadyAttack(golem, player);
-        map.Tick(1);
 
+        // Tick 1: Chase → Attack 전환 + Enter(windup 세팅). 이 틱엔 데미지 없음.
+        map.Tick(1);
+        Assert.Equal(hpBefore, player.Hp);
+
+        // windup 진행 중(Tick 2..6: windup 6→1) — 아직 타격 전, HP 불변이어야 함.
+        for (long t = 2; t <= CombatConstants.GolemAttackWindupTicks; t++)
+            map.Tick(t);
+        Assert.Equal(hpBefore, player.Hp);
+
+        // windup 0 도달 틱(Tick 7)에 타격 → HP 감소.
+        map.Tick(CombatConstants.GolemAttackWindupTicks + 1);
         Assert.True(player.Hp < hpBefore,
-            $"Expected HP to decrease. Before={hpBefore}, After={player.Hp}");
+            $"Expected HP to decrease after windup. Before={hpBefore}, After={player.Hp}");
     }
 
     // ── 8. 보스 데미지 회귀 — ApplyMeleeDamage 헬퍼 추출 후 보스 동작 불변 ────────

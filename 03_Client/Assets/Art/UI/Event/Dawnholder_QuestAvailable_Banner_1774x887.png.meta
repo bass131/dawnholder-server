@@ -1,0 +1,492 @@
+fileFormatVersion: 2
+guid: b70244897ada54e489be5458e2b54cc8
+labels:
+- UnityAI
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -115879297144567244
+    second: Dawnholder_QuestAvailable_Banner_1774x887_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1332
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16f72d7bcef09644887b0da98e76ae07
+      internalID: 2084805801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_1
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 1332
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2dc1183d61f83b74b8a824e0f469a8ee
+      internalID: 986834836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_2
+      rect:
+        serializedVersion: 2
+        x: 1776
+        y: 1332
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa8207cdc06ce3c4fb8023e10ee0f759
+      internalID: -578033099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_3
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 1332
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94a53324d096231448f542b46cab6a9c
+      internalID: -1293847702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 888
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68d44d48067f3584fa8fb342095a6602
+      internalID: -448256459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_5
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 888
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd5ece6f18c10c34aa0a6f7ad5a7ce68
+      internalID: -1547981734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_6
+      rect:
+        serializedVersion: 2
+        x: 1776
+        y: 888
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d98e9e3a4a4c05479ca6a9da85fb0fb
+      internalID: -270825274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_7
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 888
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a536f1277bde97442b733a25f13b6760
+      internalID: -1365568216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 444
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6889932bb96a76c4fbdc1d3e1569c248
+      internalID: 122557895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_9
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 444
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cca5b35949fc3e40a4cdf4ee96ba1b8
+      internalID: 282689377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_10
+      rect:
+        serializedVersion: 2
+        x: 1776
+        y: 444
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68b12ea1500becb4ca4c297307c33fe8
+      internalID: 1180627447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_11
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 444
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 157144443bf74cd428e8e6ab2e0cff46
+      internalID: 1453462566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80093ad1514218543970815066751567
+      internalID: 309391268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_13
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 0
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a2f5ed285d879445965ad51680350da
+      internalID: -2070531896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_14
+      rect:
+        serializedVersion: 2
+        x: 1776
+        y: 0
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cbe7e98ee7fd8a43b9eb8d69349eea4
+      internalID: 1502570723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dawnholder_QuestAvailable_Banner_1774x887_15
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 0
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 983b59fb8fc7643449bd876c3b8c8de7
+      internalID: -281023446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0740f35d742427b4d8447672b1c09d54
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":888.0,"y":444.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Dawnholder_QuestAvailable_Banner_1774x887_0: 2084805801
+      Dawnholder_QuestAvailable_Banner_1774x887_1: 986834836
+      Dawnholder_QuestAvailable_Banner_1774x887_10: 1180627447
+      Dawnholder_QuestAvailable_Banner_1774x887_11: 1453462566
+      Dawnholder_QuestAvailable_Banner_1774x887_12: 309391268
+      Dawnholder_QuestAvailable_Banner_1774x887_13: -2070531896
+      Dawnholder_QuestAvailable_Banner_1774x887_14: 1502570723
+      Dawnholder_QuestAvailable_Banner_1774x887_15: -281023446
+      Dawnholder_QuestAvailable_Banner_1774x887_2: -578033099
+      Dawnholder_QuestAvailable_Banner_1774x887_3: -1293847702
+      Dawnholder_QuestAvailable_Banner_1774x887_4: -448256459
+      Dawnholder_QuestAvailable_Banner_1774x887_5: -1547981734
+      Dawnholder_QuestAvailable_Banner_1774x887_6: -270825274
+      Dawnholder_QuestAvailable_Banner_1774x887_7: -1365568216
+      Dawnholder_QuestAvailable_Banner_1774x887_8: 122557895
+      Dawnholder_QuestAvailable_Banner_1774x887_9: 282689377
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

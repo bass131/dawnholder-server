@@ -1,0 +1,1085 @@
+fileFormatVersion: 2
+guid: 83e6686b782f1ef4da4d2e05814e450d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7892740570452530268
+    second: QuestClear_anim_0
+  - first:
+      213: -9034085012593653514
+    second: QuestClear_anim_1
+  - first:
+      213: 8767172306065876974
+    second: QuestClear_anim_2
+  - first:
+      213: 2302586810730976334
+    second: QuestClear_anim_3
+  - first:
+      213: -8861388637947881119
+    second: QuestClear_anim_4
+  - first:
+      213: -2877684748044368752
+    second: QuestClear_anim_5
+  - first:
+      213: -3666593039289773555
+    second: QuestClear_anim_6
+  - first:
+      213: -8060860302806732474
+    second: QuestClear_anim_7
+  - first:
+      213: -284981158562382319
+    second: QuestClear_anim_8
+  - first:
+      213: 1379015424269350773
+    second: QuestClear_anim_9
+  - first:
+      213: 4218040173290051364
+    second: QuestClear_anim_10
+  - first:
+      213: -5529135412286727980
+    second: QuestClear_anim_11
+  - first:
+      213: -8553044146151216943
+    second: QuestClear_anim_12
+  - first:
+      213: 6350195368362588847
+    second: QuestClear_anim_13
+  - first:
+      213: 7617760185577593421
+    second: QuestClear_anim_14
+  - first:
+      213: -401960919168752198
+    second: QuestClear_anim_15
+  - first:
+      213: -4279893738665249455
+    second: QuestClear_anim_16
+  - first:
+      213: 7299037816263560164
+    second: QuestClear_anim_17
+  - first:
+      213: 18002904210633523
+    second: QuestClear_anim_18
+  - first:
+      213: -3672772309380090973
+    second: QuestClear_anim_19
+  - first:
+      213: 1150744473751864995
+    second: QuestClear_anim_20
+  - first:
+      213: -7765759675228084355
+    second: QuestClear_anim_21
+  - first:
+      213: -3406343488503938837
+    second: QuestClear_anim_22
+  - first:
+      213: 4236431415763038492
+    second: QuestClear_anim_23
+  - first:
+      213: -1262564164618879954
+    second: QuestClear_anim_24
+  - first:
+      213: -2169657372204920288
+    second: QuestClear_anim_25
+  - first:
+      213: -6949238180929497179
+    second: QuestClear_anim_26
+  - first:
+      213: 1977747216676917528
+    second: QuestClear_anim_27
+  - first:
+      213: -1357021156420625467
+    second: QuestClear_anim_28
+  - first:
+      213: -7917968450710126894
+    second: QuestClear_anim_29
+  - first:
+      213: -5897511660471106862
+    second: QuestClear_anim_30
+  - first:
+      213: -22281686432470041
+    second: QuestClear_anim_31
+  - first:
+      213: -528282666555905196
+    second: QuestClear_anim_32
+  - first:
+      213: -3403594569891310303
+    second: QuestClear_anim_33
+  - first:
+      213: -9146527582390652899
+    second: QuestClear_anim_34
+  - first:
+      213: 7236251684411419914
+    second: QuestClear_anim_35
+  - first:
+      213: -7611122927747733863
+    second: QuestClear_anim_36
+  - first:
+      213: 4249094615272755317
+    second: QuestClear_anim_37
+  - first:
+      213: 6131057257020091945
+    second: QuestClear_anim_38
+  - first:
+      213: -3224392054973082234
+    second: QuestClear_anim_39
+  - first:
+      213: 7665531776620829283
+    second: QuestClear_anim_40
+  - first:
+      213: -5689124803698499664
+    second: QuestClear_anim_41
+  - first:
+      213: -783237385654223667
+    second: QuestClear_anim_42
+  - first:
+      213: 4116767480195158846
+    second: QuestClear_anim_43
+  - first:
+      213: 3249016927908944842
+    second: QuestClear_anim_44
+  - first:
+      213: 8805776869720739087
+    second: QuestClear_anim_45
+  - first:
+      213: -790921286866410365
+    second: QuestClear_anim_46
+  - first:
+      213: 7459635594920327516
+    second: QuestClear_anim_47
+  - first:
+      213: -1203503293429194816
+    second: QuestClear_anim_48
+  - first:
+      213: 4442289219926515954
+    second: QuestClear_anim_49
+  - first:
+      213: -5852898521838164813
+    second: QuestClear_anim_50
+  - first:
+      213: 5110406811662217435
+    second: QuestClear_anim_51
+  - first:
+      213: 3599746982571879302
+    second: QuestClear_anim_52
+  - first:
+      213: 2751278749646478908
+    second: QuestClear_anim_53
+  - first:
+      213: 759127139793603718
+    second: QuestClear_anim_54
+  - first:
+      213: 6332178700212537871
+    second: QuestClear_anim_55
+  - first:
+      213: -7676287955660296616
+    second: QuestClear_anim_56
+  - first:
+      213: 2584937785451539347
+    second: QuestClear_anim_57
+  - first:
+      213: 3501181262799505085
+    second: QuestClear_anim_58
+  - first:
+      213: 7650664630086701960
+    second: QuestClear_anim_59
+  - first:
+      213: 7727768485286953342
+    second: QuestClear_anim_60
+  - first:
+      213: 4351364436814085804
+    second: QuestClear_anim_61
+  - first:
+      213: 5091282332634504134
+    second: QuestClear_anim_62
+  - first:
+      213: 3944459288582148316
+    second: QuestClear_anim_63
+  - first:
+      213: -506483751385028692
+    second: QuestClear_anim_64
+  - first:
+      213: 8101535059678471823
+    second: QuestClear_anim_65
+  - first:
+      213: -3484286123842567109
+    second: QuestClear_anim_66
+  - first:
+      213: -3163625097668782837
+    second: QuestClear_anim_67
+  - first:
+      213: 3097630596422699834
+    second: QuestClear_anim_68
+  - first:
+      213: 8820201123195682987
+    second: QuestClear_anim_69
+  - first:
+      213: -3469463537706932456
+    second: QuestClear_anim_70
+  - first:
+      213: 3241078311953000574
+    second: QuestClear_anim_71
+  - first:
+      213: -1804678216466773143
+    second: QuestClear_anim_72
+  - first:
+      213: -114856130894632199
+    second: QuestClear_anim_73
+  - first:
+      213: 5313530016210847935
+    second: QuestClear_anim_74
+  - first:
+      213: 7018687978824933299
+    second: QuestClear_anim_75
+  - first:
+      213: 92402795398116252
+    second: QuestClear_anim_76
+  - first:
+      213: 2272574617341739398
+    second: QuestClear_anim_77
+  - first:
+      213: -3307233868256214854
+    second: QuestClear_anim_78
+  - first:
+      213: 5942616994872394158
+    second: QuestClear_anim_79
+  - first:
+      213: -6108229790665310950
+    second: QuestClear_anim_80
+  - first:
+      213: 7062823008773852813
+    second: QuestClear_anim_81
+  - first:
+      213: 5334116579190928746
+    second: QuestClear_anim_82
+  - first:
+      213: -3032046788213403374
+    second: QuestClear_anim_83
+  - first:
+      213: -1252027709498051198
+    second: QuestClear_anim_84
+  - first:
+      213: 391824287726198328
+    second: QuestClear_anim_85
+  - first:
+      213: 4622032191990773514
+    second: QuestClear_anim_86
+  - first:
+      213: -628445688425506215
+    second: QuestClear_anim_87
+  - first:
+      213: 2946866488290120972
+    second: QuestClear_anim_88
+  - first:
+      213: -5085379836923649799
+    second: QuestClear_anim_89
+  - first:
+      213: -4195869057642450824
+    second: QuestClear_anim_90
+  - first:
+      213: 7389258422158797977
+    second: QuestClear_anim_91
+  - first:
+      213: 6554657362111784001
+    second: QuestClear_anim_92
+  - first:
+      213: -4587493258561647088
+    second: QuestClear_anim_93
+  - first:
+      213: -6643974241759121155
+    second: QuestClear_anim_94
+  - first:
+      213: -7795057152340403374
+    second: QuestClear_anim_95
+  - first:
+      213: 8977155425588572274
+    second: QuestClear_anim_96
+  - first:
+      213: -2319874390557305543
+    second: QuestClear_anim_97
+  - first:
+      213: 8057987771662540632
+    second: QuestClear_anim_98
+  - first:
+      213: 1216328579988158694
+    second: QuestClear_anim_99
+  - first:
+      213: -39662763850570496
+    second: QuestClear_anim_100
+  - first:
+      213: 5220134379027585429
+    second: QuestClear_anim_101
+  - first:
+      213: 6524984639565491605
+    second: QuestClear_anim_102
+  - first:
+      213: -2455973269567048514
+    second: QuestClear_anim_103
+  - first:
+      213: -6616689930415066671
+    second: QuestClear_anim_104
+  - first:
+      213: -8526932792154534948
+    second: QuestClear_anim_105
+  - first:
+      213: 8569469183170625048
+    second: QuestClear_anim_106
+  - first:
+      213: -4367107974462715136
+    second: QuestClear_anim_107
+  - first:
+      213: -6510548594844226963
+    second: QuestClear_anim_108
+  - first:
+      213: 2697061278242256604
+    second: QuestClear_anim_109
+  - first:
+      213: 1704464097812709637
+    second: QuestClear_anim_110
+  - first:
+      213: -6657610387977348965
+    second: QuestClear_anim_111
+  - first:
+      213: -254824344337134805
+    second: QuestClear_anim_112
+  - first:
+      213: 4787993025206628804
+    second: QuestClear_anim_113
+  - first:
+      213: -2719203017660054105
+    second: QuestClear_anim_114
+  - first:
+      213: 2266533288462548473
+    second: QuestClear_anim_115
+  - first:
+      213: -2862336497335899158
+    second: QuestClear_anim_116
+  - first:
+      213: 2589416877396739537
+    second: QuestClear_anim_117
+  - first:
+      213: 5266824863555847279
+    second: QuestClear_anim_118
+  - first:
+      213: -5914784747437519238
+    second: QuestClear_anim_119
+  - first:
+      213: 3484969259163342150
+    second: QuestClear_anim_120
+  - first:
+      213: -7804061839458119094
+    second: QuestClear_anim_121
+  - first:
+      213: -3814694720531962097
+    second: QuestClear_anim_122
+  - first:
+      213: -927046744174187714
+    second: QuestClear_anim_123
+  - first:
+      213: 6620858725902119085
+    second: QuestClear_anim_124
+  - first:
+      213: -7008008453729020644
+    second: QuestClear_anim_125
+  - first:
+      213: -1782207560114391729
+    second: QuestClear_anim_126
+  - first:
+      213: -4445997398285976218
+    second: QuestClear_anim_127
+  - first:
+      213: -3167078549989823127
+    second: QuestClear_anim_128
+  - first:
+      213: -3872855361239089488
+    second: QuestClear_anim_129
+  - first:
+      213: -7164610977066998005
+    second: QuestClear_anim_130
+  - first:
+      213: -1007449492888495951
+    second: QuestClear_anim_131
+  - first:
+      213: -8006824798810611830
+    second: QuestClear_anim_132
+  - first:
+      213: -3387531992563090080
+    second: QuestClear_anim_133
+  - first:
+      213: -2610344764265214340
+    second: QuestClear_anim_134
+  - first:
+      213: -5142635208660019257
+    second: QuestClear_anim_135
+  - first:
+      213: -5954268211696153421
+    second: QuestClear_anim_136
+  - first:
+      213: -1667647345459726051
+    second: QuestClear_anim_137
+  - first:
+      213: 5104790933741243179
+    second: QuestClear_00
+  - first:
+      213: -2297604190872291678
+    second: QuestClear_01
+  - first:
+      213: 1231194408787409077
+    second: QuestClear_02
+  - first:
+      213: 4601801584882457997
+    second: QuestClear_03
+  - first:
+      213: -5615541885613394926
+    second: QuestClear_04
+  - first:
+      213: 3148701798521888721
+    second: QuestClear_05
+  - first:
+      213: -1170181888888266398
+    second: QuestClear_06
+  - first:
+      213: 7544517381846603496
+    second: QuestClear_07
+  - first:
+      213: -4895132893185860934
+    second: QuestClear_08
+  - first:
+      213: 283342713999135173
+    second: QuestClear_09
+  - first:
+      213: -7702912756884838249
+    second: QuestClear_10
+  - first:
+      213: -812726191823425929
+    second: QuestClear_11
+  - first:
+      213: -7925581978403806068
+    second: QuestClear_12
+  - first:
+      213: 2371460039152946446
+    second: QuestClear_13
+  - first:
+      213: -9218571434009411907
+    second: QuestClear_14
+  - first:
+      213: -2226086607708908810
+    second: QuestClear_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: QuestClear_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1332
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2b0842de4cd7d640800000000000000
+      internalID: 5104790933741243179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_01
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 1332
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a6bb9069254d10e0800000000000000
+      internalID: -2297604190872291678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_02
+      rect:
+        serializedVersion: 2
+        x: 1776
+        y: 1332
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b87839aac4161110800000000000000
+      internalID: 1231194408787409077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_03
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 1332
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8d9fb9f822ecdf30800000000000000
+      internalID: 4601801584882457997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_04
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 888
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 214bfae48669112b0800000000000000
+      internalID: -5615541885613394926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_05
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 888
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dfd78c6a9f62bb20800000000000000
+      internalID: 3148701798521888721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_06
+      rect:
+        serializedVersion: 2
+        x: 1776
+        y: 888
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 261283e95cda2cfe0800000000000000
+      internalID: -1170181888888266398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_07
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 888
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e61ab2169283b860800000000000000
+      internalID: 7544517381846603496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 444
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aba9355b19ef01cb0800000000000000
+      internalID: -4895132893185860934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_09
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 444
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c11d9972b2aee300800000000000000
+      internalID: 283342713999135173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_10
+      rect:
+        serializedVersion: 2
+        x: 1776
+        y: 444
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 798ed0ec8a1c91590800000000000000
+      internalID: -7702912756884838249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_11
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 444
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77e65b4a5dd98b4f0800000000000000
+      internalID: -812726191823425929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c84e003ae2da20290800000000000000
+      internalID: -7925581978403806068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_13
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 0
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0dceb0575e19e020800000000000000
+      internalID: 2371460039152946446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_14
+      rect:
+        serializedVersion: 2
+        x: 1776
+        y: 0
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbe3e437f1e011080800000000000000
+      internalID: -9218571434009411907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QuestClear_15
+      rect:
+        serializedVersion: 2
+        x: 2664
+        y: 0
+        width: 888
+        height: 444
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f2914c460a5b11e0800000000000000
+      internalID: -2226086607708908810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      QuestClear_00: 5104790933741243179
+      QuestClear_01: -2297604190872291678
+      QuestClear_02: 1231194408787409077
+      QuestClear_03: 4601801584882457997
+      QuestClear_04: -5615541885613394926
+      QuestClear_05: 3148701798521888721
+      QuestClear_06: -1170181888888266398
+      QuestClear_07: 7544517381846603496
+      QuestClear_08: -4895132893185860934
+      QuestClear_09: 283342713999135173
+      QuestClear_10: -7702912756884838249
+      QuestClear_11: -812726191823425929
+      QuestClear_12: -7925581978403806068
+      QuestClear_13: 2371460039152946446
+      QuestClear_14: -9218571434009411907
+      QuestClear_15: -2226086607708908810
+      QuestClear_anim_0: -7892740570452530268
+      QuestClear_anim_1: -9034085012593653514
+      QuestClear_anim_10: 4218040173290051364
+      QuestClear_anim_100: -39662763850570496
+      QuestClear_anim_101: 5220134379027585429
+      QuestClear_anim_102: 6524984639565491605
+      QuestClear_anim_103: -2455973269567048514
+      QuestClear_anim_104: -6616689930415066671
+      QuestClear_anim_105: -8526932792154534948
+      QuestClear_anim_106: 8569469183170625048
+      QuestClear_anim_107: -4367107974462715136
+      QuestClear_anim_108: -6510548594844226963
+      QuestClear_anim_109: 2697061278242256604
+      QuestClear_anim_11: -5529135412286727980
+      QuestClear_anim_110: 1704464097812709637
+      QuestClear_anim_111: -6657610387977348965
+      QuestClear_anim_112: -254824344337134805
+      QuestClear_anim_113: 4787993025206628804
+      QuestClear_anim_114: -2719203017660054105
+      QuestClear_anim_115: 2266533288462548473
+      QuestClear_anim_116: -2862336497335899158
+      QuestClear_anim_117: 2589416877396739537
+      QuestClear_anim_118: 5266824863555847279
+      QuestClear_anim_119: -5914784747437519238
+      QuestClear_anim_12: -8553044146151216943
+      QuestClear_anim_120: 3484969259163342150
+      QuestClear_anim_121: -7804061839458119094
+      QuestClear_anim_122: -3814694720531962097
+      QuestClear_anim_123: -927046744174187714
+      QuestClear_anim_124: 6620858725902119085
+      QuestClear_anim_125: -7008008453729020644
+      QuestClear_anim_126: -1782207560114391729
+      QuestClear_anim_127: -4445997398285976218
+      QuestClear_anim_128: -3167078549989823127
+      QuestClear_anim_129: -3872855361239089488
+      QuestClear_anim_13: 6350195368362588847
+      QuestClear_anim_130: -7164610977066998005
+      QuestClear_anim_131: -1007449492888495951
+      QuestClear_anim_132: -8006824798810611830
+      QuestClear_anim_133: -3387531992563090080
+      QuestClear_anim_134: -2610344764265214340
+      QuestClear_anim_135: -5142635208660019257
+      QuestClear_anim_136: -5954268211696153421
+      QuestClear_anim_137: -1667647345459726051
+      QuestClear_anim_14: 7617760185577593421
+      QuestClear_anim_15: -401960919168752198
+      QuestClear_anim_16: -4279893738665249455
+      QuestClear_anim_17: 7299037816263560164
+      QuestClear_anim_18: 18002904210633523
+      QuestClear_anim_19: -3672772309380090973
+      QuestClear_anim_2: 8767172306065876974
+      QuestClear_anim_20: 1150744473751864995
+      QuestClear_anim_21: -7765759675228084355
+      QuestClear_anim_22: -3406343488503938837
+      QuestClear_anim_23: 4236431415763038492
+      QuestClear_anim_24: -1262564164618879954
+      QuestClear_anim_25: -2169657372204920288
+      QuestClear_anim_26: -6949238180929497179
+      QuestClear_anim_27: 1977747216676917528
+      QuestClear_anim_28: -1357021156420625467
+      QuestClear_anim_29: -7917968450710126894
+      QuestClear_anim_3: 2302586810730976334
+      QuestClear_anim_30: -5897511660471106862
+      QuestClear_anim_31: -22281686432470041
+      QuestClear_anim_32: -528282666555905196
+      QuestClear_anim_33: -3403594569891310303
+      QuestClear_anim_34: -9146527582390652899
+      QuestClear_anim_35: 7236251684411419914
+      QuestClear_anim_36: -7611122927747733863
+      QuestClear_anim_37: 4249094615272755317
+      QuestClear_anim_38: 6131057257020091945
+      QuestClear_anim_39: -3224392054973082234
+      QuestClear_anim_4: -8861388637947881119
+      QuestClear_anim_40: 7665531776620829283
+      QuestClear_anim_41: -5689124803698499664
+      QuestClear_anim_42: -783237385654223667
+      QuestClear_anim_43: 4116767480195158846
+      QuestClear_anim_44: 3249016927908944842
+      QuestClear_anim_45: 8805776869720739087
+      QuestClear_anim_46: -790921286866410365
+      QuestClear_anim_47: 7459635594920327516
+      QuestClear_anim_48: -1203503293429194816
+      QuestClear_anim_49: 4442289219926515954
+      QuestClear_anim_5: -2877684748044368752
+      QuestClear_anim_50: -5852898521838164813
+      QuestClear_anim_51: 5110406811662217435
+      QuestClear_anim_52: 3599746982571879302
+      QuestClear_anim_53: 2751278749646478908
+      QuestClear_anim_54: 759127139793603718
+      QuestClear_anim_55: 6332178700212537871
+      QuestClear_anim_56: -7676287955660296616
+      QuestClear_anim_57: 2584937785451539347
+      QuestClear_anim_58: 3501181262799505085
+      QuestClear_anim_59: 7650664630086701960
+      QuestClear_anim_6: -3666593039289773555
+      QuestClear_anim_60: 7727768485286953342
+      QuestClear_anim_61: 4351364436814085804
+      QuestClear_anim_62: 5091282332634504134
+      QuestClear_anim_63: 3944459288582148316
+      QuestClear_anim_64: -506483751385028692
+      QuestClear_anim_65: 8101535059678471823
+      QuestClear_anim_66: -3484286123842567109
+      QuestClear_anim_67: -3163625097668782837
+      QuestClear_anim_68: 3097630596422699834
+      QuestClear_anim_69: 8820201123195682987
+      QuestClear_anim_7: -8060860302806732474
+      QuestClear_anim_70: -3469463537706932456
+      QuestClear_anim_71: 3241078311953000574
+      QuestClear_anim_72: -1804678216466773143
+      QuestClear_anim_73: -114856130894632199
+      QuestClear_anim_74: 5313530016210847935
+      QuestClear_anim_75: 7018687978824933299
+      QuestClear_anim_76: 92402795398116252
+      QuestClear_anim_77: 2272574617341739398
+      QuestClear_anim_78: -3307233868256214854
+      QuestClear_anim_79: 5942616994872394158
+      QuestClear_anim_8: -284981158562382319
+      QuestClear_anim_80: -6108229790665310950
+      QuestClear_anim_81: 7062823008773852813
+      QuestClear_anim_82: 5334116579190928746
+      QuestClear_anim_83: -3032046788213403374
+      QuestClear_anim_84: -1252027709498051198
+      QuestClear_anim_85: 391824287726198328
+      QuestClear_anim_86: 4622032191990773514
+      QuestClear_anim_87: -628445688425506215
+      QuestClear_anim_88: 2946866488290120972
+      QuestClear_anim_89: -5085379836923649799
+      QuestClear_anim_9: 1379015424269350773
+      QuestClear_anim_90: -4195869057642450824
+      QuestClear_anim_91: 7389258422158797977
+      QuestClear_anim_92: 6554657362111784001
+      QuestClear_anim_93: -4587493258561647088
+      QuestClear_anim_94: -6643974241759121155
+      QuestClear_anim_95: -7795057152340403374
+      QuestClear_anim_96: 8977155425588572274
+      QuestClear_anim_97: -2319874390557305543
+      QuestClear_anim_98: 8057987771662540632
+      QuestClear_anim_99: 1216328579988158694
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

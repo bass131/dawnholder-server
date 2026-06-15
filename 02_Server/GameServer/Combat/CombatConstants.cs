@@ -134,6 +134,22 @@ internal static class CombatConstants
     /// <summary>일반몹 공격 쿨다운 (틱 단위). 30틱 = 1.5초 @20TPS.</summary>
     public const int NormalAttackCooldownTicks = 30;
 
+    /// <summary>
+    /// 슬라임(Normal)의 공격 windup(준비/휘두르기) 틱 수. swing 애니가 짧아 windup 0 — 진입 즉시 타격.
+    /// windup = "Attack 진입 ~ 실제 데미지 판정"까지의 지연. 0이면 옛 거동(Enter 즉시 데미지)과 동일.
+    /// </summary>
+    public const int NormalAttackWindupTicks = 0;
+
+    /// <summary>
+    /// 골렘의 공격 windup(준비/휘두르기) 틱 수. 6틱 = 300ms @20TPS.
+    /// 골렘은 swing 모션이 길어 보이므로 휘두르기 애니가 진행되는 동안 데미지를 미뤘다가
+    /// windup 경과 후 타격 — "애니 끝나고 hit" 체감을 맞춤(플레이테스트 버그 2 봉합).
+    /// **튜닝 지점**: swing 애니 길이에 맞춰 영호가 Play에서 조정. AttackLatchTicks(8) 이내로 두면
+    ///   클라가 Attack 애니를 유지하는 latch 윈도우 안에서 타격이 떨어짐.
+    /// **헌법 #5 정합**: tick 카운터 감소만 — Thread.Sleep/await 없음.
+    /// </summary>
+    public const int GolemAttackWindupTicks = 6;
+
     // ── 보스 전투 ─────────────────────────────────────────────────────────────
     //
     // 값은 사용자 확정 정량값. 임의 변경 금지.

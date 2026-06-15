@@ -80,8 +80,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1248050693
+  m_SortingLayer: 5
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 728658604, guid: ce78a23998bc98342945fc8b43fb5950, type: 3}
@@ -177,4 +177,5 @@ MonoBehaviour:
   _dialogText: "\uC5B4\uC774, \uBAA8\uD5D8\uAC00! \uBB34\uAE30 \uC190\uC9C8\uC774
     \uD544\uC694\uD558\uBA74 \uB4E4\uB7EC.\n...\uAC00\uAC8C\uB294 \uC544\uC9C1 \uC900\uBE44
     \uC911\uC774\uC9C0\uB9CC \uB9D0\uC774\uC57C."
+  _portrait: {fileID: -6817705606190574746, guid: 8c7f012562451b44a9f00f53b493391e, type: 3}
   _playerTag: Player

@@ -175,6 +175,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Log Bench
       objectReference: {fileID: 0}
+    - target: {fileID: 8764381751610422876, guid: 28ae4e85426a2f54a98737a016d4cbc2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 8764381751610422878, guid: 28ae4e85426a2f54a98737a016d4cbc2, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.04
@@ -236,7 +240,7 @@ GameObject:
   - component: {fileID: 539705942}
   - component: {fileID: 539705944}
   - component: {fileID: 539705943}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tilemap_Solid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5858,7 +5862,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 716738260}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BG_obj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5982,6 +5986,7 @@ MonoBehaviour:
   _dialogText: "\uC5B4\uC774, \uBAA8\uD5D8\uAC00! \uBB34\uAE30 \uC190\uC9C8\uC774
     \uD544\uC694\uD558\uBA74 \uB4E4\uB7EC.\n...\uAC00\uAC8C\uB294 \uC544\uC9C1 \uC900\uBE44
     \uC911\uC774\uC9C0\uB9CC \uB9D0\uC774\uC57C."
+  _portrait: {fileID: -6817705606190574746, guid: 8c7f012562451b44a9f00f53b493391e, type: 3}
   _playerTag: Player
 --- !u!95 &1048209013
 Animator:
@@ -6133,9 +6138,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 716738260}
     m_Modifications:
+    - target: {fileID: 7471922056857359772, guid: bbde5b0f2fde63f47aab9703a1e8e784, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 7471922057008591172, guid: bbde5b0f2fde63f47aab9703a1e8e784, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Road Sign 01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7471922057008591172, guid: bbde5b0f2fde63f47aab9703a1e8e784, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7471922057008591194, guid: bbde5b0f2fde63f47aab9703a1e8e784, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6195,9 +6208,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 716738260}
     m_Modifications:
+    - target: {fileID: 335476072309450296, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3226521009140389271, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3226521009676847256, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Road Lamp (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3226521009676847256, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3226521009676847262, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6239,6 +6264,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3693432273548653689, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4093598472609808602, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4095109695023904825, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7793038299900132495, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314471940821381325, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6257,9 +6302,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 716738260}
     m_Modifications:
+    - target: {fileID: 335476072309450296, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3226521009140389271, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3226521009676847256, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Road Lamp (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3226521009676847256, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3226521009676847262, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6300,6 +6357,26 @@ PrefabInstance:
     - target: {fileID: 3226521009676847262, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3693432273548653689, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4093598472609808602, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4095109695023904825, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7793038299900132495, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314471940821381325, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6404,9 +6481,73 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 716738260}
     m_Modifications:
+    - target: {fileID: 724164531830669292, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4382483147025464257, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748770549160642478, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8731064917795236289, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890977455105449, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890977463174003, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890977736793459, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890977855780326, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890978000517116, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890978217765432, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890978261839355, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890978844414795, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890978935763843, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890979093333424, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890979124023393, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 8880890979157700241, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Stall
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890979157700241, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8880890979157700243, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6448,6 +6589,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8880890979189036120, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8880890979259085662, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1790980893991760848, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
     - {fileID: 1013087496987226934, guid: b18dcd3ee86986b469e9cfc64055704c, type: 3}
@@ -6468,9 +6617,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 716738260}
     m_Modifications:
+    - target: {fileID: 8893287330066116541, guid: 92a08448cd3527a4aaf11bc404e0f1a0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 8893287330390304263, guid: 92a08448cd3527a4aaf11bc404e0f1a0, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Statue
+      objectReference: {fileID: 0}
+    - target: {fileID: 8893287330390304263, guid: 92a08448cd3527a4aaf11bc404e0f1a0, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8893287330390304281, guid: 92a08448cd3527a4aaf11bc404e0f1a0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6532,7 +6689,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1788205022}
   - component: {fileID: 1788205021}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground_Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6624,7 +6781,7 @@ GameObject:
   - component: {fileID: 1898832785}
   - component: {fileID: 1898832787}
   - component: {fileID: 1898832786}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tilemap_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6878,6 +7035,7 @@ MonoBehaviour:
   _dialogText: "\uC5B4\uC11C \uC624\uC138\uC694! \uBB3C\uC57D\uC774\uB791 \uC2DD\uB8CC\uD488
     \uACE7 \uB4E4\uC5B4\uC640\uC694.\n\uC815\uC2DD \uAC1C\uC7A5\uD558\uBA74 \uB610
     \uB4E4\uB7EC \uC8FC\uC138\uC694!"
+  _portrait: {fileID: 672174881291312922, guid: 3342f56c4f4bf1d46be081e012eb81b5, type: 3}
   _playerTag: Player
 --- !u!95 &2076030540
 Animator:
@@ -7029,9 +7187,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 716738260}
     m_Modifications:
+    - target: {fileID: 335476072309450296, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3226521009140389271, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3226521009676847256, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Road Lamp (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3226521009676847256, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3226521009676847262, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7073,6 +7243,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3693432273548653689, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4093598472609808602, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4095109695023904825, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7793038299900132495, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314471940821381325, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7091,9 +7281,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 716738260}
     m_Modifications:
+    - target: {fileID: 335476072309450296, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3226521009140389271, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3226521009676847256, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Road Lamp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3226521009676847256, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3226521009676847262, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7134,6 +7336,26 @@ PrefabInstance:
     - target: {fileID: 3226521009676847262, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3693432273548653689, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4093598472609808602, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4095109695023904825, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7793038299900132495, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8314471940821381325, guid: c13263f1f05170f4e849875cee5c46d0, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7295,6 +7517,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Blacksmith's shop0_0
       objectReference: {fileID: 0}
+    - target: {fileID: 491404233700058614, guid: 39f8e351ffe30344788f78dd138141ee, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1075958675372221774, guid: 39f8e351ffe30344788f78dd138141ee, type: 3}
       propertyPath: m_LocalPosition.x
       value: -27.02
@@ -7396,6 +7622,10 @@ PrefabInstance:
     - target: {fileID: 8605106342944656208, guid: d8b54e7639529fd4491082d44c7972f1, type: 3}
       propertyPath: m_Name
       value: house0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8605106342944656208, guid: d8b54e7639529fd4491082d44c7972f1, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

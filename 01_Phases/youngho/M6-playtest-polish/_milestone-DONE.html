@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M6 — 플레이테스트 폴리시 (DONE)</title>
+<style>
+  :root{--bg:#0e1116;--panel:#171c24;--panel2:#1e2430;--line:#2a313c;--fg:#e6edf3;--mut:#8b949e;--ok:#3fb950;--warn:#d29922;--acc:#58a6ff;--purp:#bc8cff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--fg);font-family:"Segoe UI","Malgun Gothic",sans-serif;line-height:1.6;padding:32px 20px;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:26px;margin-bottom:4px;}
+  .sub{color:var(--mut);margin-bottom:24px;font-size:14px;}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;}
+  .badge{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12.5px;color:var(--mut);}
+  .badge b{color:var(--fg);}
+  .badge.ok{border-color:var(--ok);color:var(--ok);}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px;}
+  h2{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  h2 .em{font-size:18px;}
+  p{font-size:14px;color:#cdd5de;margin-bottom:8px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;}
+  .card .ph{font-size:12px;color:var(--acc);font-weight:600;letter-spacing:.3px;}
+  .card .t{font-size:14px;font-weight:600;margin:3px 0 6px;}
+  .card .d{font-size:12.5px;color:var(--mut);}
+  .card .c{font-family:Consolas,monospace;font-size:11.5px;color:var(--purp);margin-top:8px;}
+  .tl{position:relative;padding-left:22px;}
+  .tl::before{content:"";position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:var(--line);}
+  .ev{position:relative;margin-bottom:14px;}
+  .ev::before{content:"";position:absolute;left:-19px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--acc);border:2px solid var(--bg);}
+  .ev.warn::before{background:var(--warn);}
+  .ev .r{font-weight:700;font-size:13px;}
+  .ev .r small{color:var(--purp);font-family:Consolas,monospace;font-weight:400;margin-left:6px;}
+  .ev .x{font-size:13px;color:#cdd5de;}
+  ul{margin:6px 0 0 18px;}li{font-size:13.5px;color:#cdd5de;margin-bottom:5px;}
+  .next{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:640px){.next{grid-template-columns:1fr;}}
+  code{background:#0c0f14;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-family:Consolas,monospace;font-size:12px;color:var(--purp);}
+  .foot{color:var(--mut);font-size:12px;text-align:center;margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>M6 — 플레이테스트 폴리시</h1>
+  <div class="sub">M5(#111, v16) 머지 후 2차 플레이테스트 체감 품질 보정 · 2026-06-15 클로즈아웃</div>
+  <div class="badges">
+    <span class="badge ok">✅ DONE</span>
+    <span class="badge">Protocol <b>v16</b> (무변경)</span>
+    <span class="badge">커밋 <b>19</b> ahead</span>
+    <span class="badge">Phase <b>5</b> + 플레이테스트 <b>8R</b></span>
+    <span class="badge">신규기능 <b>0</b> · 체감보정</span>
+  </div>
+
+  <section>
+    <h2><span class="em">🎯</span> 무엇 / 🤔 왜</h2>
+    <p>M5에서 파티·퀘스트 <b>기능</b>은 들어갔으나 거동·렌더·UI 표현이 어색하던 6건을 한 마일스톤으로 묶음. 밸런스/프로토콜이 아닌 <b>표현 레이어 보정</b>이라 Unity 에셋 비중이 높고 영호 육안이 게이트. Phase 05 통합 테스트에서 8라운드로 확장되며 퀘스트/엔딩 AI 시트 애니까지 흡수.</p>
+  </section>
+
+  <section>
+    <h2><span class="em">🛠️</span> Phase별 1차 구현 (01~04)</h2>
+    <div class="grid">
+      <div class="card"><div class="ph">PHASE 01</div><div class="t">Animator 복귀</div><div class="d">Boss/Slime/Golem 전이 재구축 — AnyState=Hit/Death만, 공격/피격 완주복귀(HasExitTime)</div><div class="c">0dda445</div></div>
+      <div class="card"><div class="ph">PHASE 02</div><div class="t">렌더 소팅</div><div class="d">TagManager 5레이어 append + RenderLayers.cs + prefab 9개 배정. 캐릭터&gt;지형</div><div class="c">560eb96</div></div>
+      <div class="card"><div class="ph">PHASE 03</div><div class="t">상단 HUD</div><div class="d">파티 HUD→퀘스트 위치 + 이름/목표/카운트 3줄. 클라 로컬 콘텐츠(§1)</div><div class="c">68ab636</div></div>
+      <div class="card"><div class="ph">PHASE 04</div><div class="t">NPC 대화패널</div><div class="d">Text→TMP 재작성 + 초상화 + 하단 패널 BuildRuntime(idempotent)</div><div class="c">b95001a · a138594</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="em">🔁</span> Phase 05 — 플레이테스트 8라운드</h2>
+    <div class="tl">
+      <div class="ev"><div class="r">2R<small>2b2e7d5 · 42422a4</small></div><div class="x">보스 텔레그래프 피격취소 + 골렘 windup(6틱) / 파티UI 마을 즉시표시 + 미니맵 컬러 dot + 지형·데코만 렌더</div></div>
+      <div class="ev"><div class="r">3R<small>abee1d1</small></div><div class="x">퀘스트 발생/완료 임팩트(중앙 텍스트) + 미니맵 밟는지형 단색 셰이더(URP per-camera 스왑)</div></div>
+      <div class="ev"><div class="r">4R<small>1611b62</small></div><div class="x">골렘 추가스폰 버그 — 1층 좌↔우 교차 재스폰(항상 1마리)</div></div>
+      <div class="ev warn"><div class="r">5R<small>000ef85</small></div><div class="x">퀘스트UI race 추정 수정 — <b>오진</b>(실제 원인은 6R 예외)</div></div>
+      <div class="ev"><div class="r">6R<small>12d613b</small></div><div class="x"><b>콘솔 로그로 퀘스트UI 전멸 진짜 원인 2건 확정</b>: QuestAlert outline-before-font 예외 + PartyMemberHud GetComponent?? fake-null → TryGetComponent</div></div>
+      <div class="ev"><div class="r">7R<small>9b9ddb4</small></div><div class="x">퀘스트 발생/완료 배너 = AI 스프라이트시트(크로마키+슬라이스) 프레임사이클 코루틴(텍스트→배너Image)</div></div>
+      <div class="ev"><div class="r">8R~<small>정적 채택</small></div><div class="x">엔딩 = <b>정적 고화질 이미지</b> + 1초 후 아무키 탈출(버튼/타이틀 제거). AI 시트 애니 실험 후 "작은 인물 풀스크린 애니 어색" → 정적 채택, 애니 코드 폐기</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="em">🧪</span> 테스트 / 게이트</h2>
+    <ul>
+      <li><b>WSL2 회귀(.NET)</b>: ✅ <b>645 passed / 0 failed / 5 skipped</b>, build 0 error (baseline 644 +1). 서버 변경(2R·4R) 각 라운드 게이트 통과, 7R/8R 클라 전용이라 .NET 결과 불변.</li>
+      <li><b>Unity 컴파일</b>: 0 error (매 커밋 link-check)</li>
+      <li><b>영호 육안</b>: 8라운드 직접 Play 검증</li>
+      <li><b>알려진 flaky</b>: <code>CombatSmoke_ZeroLag</code> 전체 실행 시 간헐 timeout(격리 pass, 환경성)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="em">💡</span> 핵심 학습</h2>
+    <ul>
+      <li>런타임 UI "다 안 보임" = race 추측 ✕ → <b>Play(일시정지)+콘솔 예외부터</b>. 5R 오진 → 6R 정정.</li>
+      <li>Unity <code>GetComponent ?? AddComponent</code> = fake-null 함정 → <code>TryGetComponent</code>. TMP outline은 font 할당 <b>후</b>.</li>
+      <li>MCP 에셋 함정: 슬라이스=deprecated <code>spritesheet</code>(정식 API 차단) / maxTextureSize Standalone 클램프 / AI UpscaleImage in-place / 마젠타 크로마키 <code>m=min(R,B)−G</code>.</li>
+      <li>비-AI 업스케일은 디테일 추가 0 — 풀스크린 선명도 천장 = 소스 해상도.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="em">➡️</span> 다음</h2>
+    <div class="next">
+      <div class="card"><div class="t">M7 — 사운드</div><div class="d">계획 사전분해 완료. 머지 후 plan-auditor 재검 권장.</div></div>
+      <div class="card"><div class="t">future polish</div><div class="d">QuestGrantedPopup 텍스트→시트. 엔딩은 정적 고화질로 확정.</div></div>
+      <div class="card"><div class="t">영호 직접</div><div class="d">디스코드 v16 공지, MainMenu/배너 등 M6 외 변경분 커밋.</div></div>
+    </div>
+  </section>
+
+  <div class="foot">Dawnholder · M6 playtest-polish · feature/m6-playtest-polish → main</div>
+</div>
+</body>
+</html>

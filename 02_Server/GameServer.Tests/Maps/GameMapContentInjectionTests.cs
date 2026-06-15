@@ -236,3 +236,43 @@ public class RespawnSystemMultiNormalTests
         Assert.All(map.Enemies.Values, e => Assert.Equal(EnemyKind.Normal, e.Kind));
     }
 }
+
+// 골렘 1층 교차 재스폰 (M6) — 처치 시 좌↔우 번갈아 1마리 재출현
+public class GolemCrossRespawnTests
+{
+    [Fact]
+    public void Golem_RespawnsAlternatingLeftRightOnFloor1()
+    {
+        // 1층 중앙우측 골렘 1마리 스폰.
+        MapContent content = new MapContent(0f, 0f, new[]
+        {
+            new EnemySpawnPoint((byte)EnemyKind.Golem, 5.5f, 0f),
+        });
+        GameMap map = new GameMap(MapId.HuntingGround, content: content);
+        Assert.Single(map.Enemies);
+
+        // 1차 처치 → 좌측(-8.5) 재출현
+        KillAndRespawn(map);
+        EnemyEntity g1 = map.Enemies.Values.Single();
+        Assert.Equal(EnemyKind.Golem, g1.Kind);
+        Assert.Equal(-8.5f, g1.SpawnX, 3);
+
+        // 2차 처치 → 우측(9.5) 재출현 (교차)
+        KillAndRespawn(map);
+        EnemyEntity g2 = map.Enemies.Values.Single();
+        Assert.Equal(EnemyKind.Golem, g2.Kind);
+        Assert.Equal(9.5f, g2.SpawnX, 3);
+
+        // 항상 1마리 유지
+        Assert.Single(map.Enemies);
+    }
+
+    static void KillAndRespawn(GameMap map)
+    {
+        EnemyEntity golem = map.Enemies.Values.Single();
+        map.RemoveEnemy(golem.EntityId);
+        map.EnqueueRespawn(golem);
+        golem.RespawnTicksRemaining = 1; // 다음 tick에 만료 (Enqueue 후 세팅 — 덮어쓰기 주의)
+        map.Tick(1);
+    }
+}
