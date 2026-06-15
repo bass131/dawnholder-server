@@ -6,6 +6,7 @@ using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Network;
+using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.Network;
 using Shared.GameData;
 using Shared.Protocol;
@@ -91,6 +92,12 @@ public class GameSession : PacketSession
         if (Interlocked.Exchange(ref _closing, 1) == 1) return;
 
         Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
+
+        // ── 파티 정리 (M5 Phase 05) ──────────────────────────────────────────────
+        //   map cleanup과 독립 — 파티는 cross-map actor라 GetMap() null(migration/shutdown)이어도 정리 필요.
+        //   actor 경계 준수: world.Party.EnqueueJob으로 마샬링(직접 PartyRegistry 호출 X, 헌법 §5).
+        //   _closing Exchange 게이트를 이미 통과 → 이 정리는 세션당 한 번만(이중 해산 X).
+        CleanupPartyOnDisconnect();
 
         GameMap? map = GetMap();
         if (map == null)
@@ -358,7 +365,165 @@ public class GameSession : PacketSession
                 entityId: eid,
                 currentMap: currentMap,
                 portalId: portalId,
-                getDestMap: self.GetDestMap));
+                getDestMap: self.GetDestMap,
+                getKillCount: self.GetKillCount));
+    }
+
+    // ── 파티 (M5 Phase 04) ───────────────────────────────────────────────────
+    //
+    // **헌법 #3 (Trust Boundary) — 행위자 강제**: 초대자/응답자/탈퇴자 entityId는 *항상*
+    //   `_entityId`(이 소켓이 누구인지)에서 가져온다 — 패킷엔 행위자 필드 없음(C_Attack 정합).
+    //   다른 entityId로 위장한 파티 조작 차단.
+    // **actor 경계**: 파티 상태 조작 + 송신은 PartyRegistry.EnqueueJob 람다(tick thread)에서만.
+    //   여기선 auth 게이트 + 마샬링만 — 직접 PartyRegistry 내부를 호출하지 않음.
+    // **happy path**: 거절 4종(자기초대/이미파티/정원/만료) + 응답 race는 A4(Phase 05).
+
+    internal void SubmitPartyInvite(int targetEntityId)
+    {
+        if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
+
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return; // shutdown race
+
+        int inviterEntityId = _entityId;
+        int target = targetEntityId;
+        world.Party.EnqueueJob(() =>
+        {
+            // ── 거절 4종 검증 (헌법 §3 — 모두 서버 판정. 행위자=inviterEntity(_entityId 강제)) ──
+            //   RecordInvite 전에 fail-closed. 거절 통보는 초대자(행위자)에게 S_PartyError.
+
+            // 2 = 자기 자신 초대: target == 초대자.
+            if (target == inviterEntityId)
+            {
+                PartyNotifier.SendPartyError(world, inviterEntityId, PartyRegistry.ErrorSelfInvite);
+                return;
+            }
+
+            // 0 = 상대 없음: target이 현재 어느 맵에도 없는 entityId(오프라인/유령 id).
+            //   TryGetEntityClass = 어느 맵에든 존재하면 true(존재 확인 재활용).
+            if (!world.TryGetEntityClass(target, out _))
+            {
+                PartyNotifier.SendPartyError(world, inviterEntityId, PartyRegistry.ErrorTargetMissing);
+                return;
+            }
+
+            // 1 = 이미 파티 중: 초대자 또는 피초대자가 이미 파티 보유.
+            //   2인 고정이라 정원초과(3)는 사실상 이 케이스로 수렴 — reason 3은 AddMember 경로(가변정원 대비) 보존.
+            if (world.Party.GetPartyByEntity(inviterEntityId) != null
+                || world.Party.GetPartyByEntity(target) != null)
+            {
+                PartyNotifier.SendPartyError(world, inviterEntityId, PartyRegistry.ErrorAlreadyInParty);
+                return;
+            }
+
+            // happy: pending invite 기록(발급 tick = 만료 기준) + 피초대자에게 1:1 통보.
+            world.Party.RecordInvite(inviterEntityId, target, world.CurrentTick);
+            PartyNotifier.SendInviteRecv(world, inviterEntityId, target);
+        });
+    }
+
+    internal void SubmitPartyRespond(int inviterEntityId, byte accept)
+    {
+        if (_entityId < 0) return;
+
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return;
+
+        int responderEntityId = _entityId;
+        int claimedInviter = inviterEntityId;
+        bool accepted = accept == 1;
+        world.Party.EnqueueJob(() =>
+        {
+            // 보류 초대 매칭(존재 확인). 없음/만료(Tick이 청소) → silent drop(에러 X — 위조/지연 응답).
+            if (!world.Party.TryGetPendingInvite(responderEntityId, out int pendingInviter))
+                return; // 보류 초대 없음/만료 — 응답 race silent
+
+            // claimedInviter 일치 검증(헌법 §3 — 위장 차단): 패킷 주장과 서버 기록 불일치 → silent drop.
+            //   서버 기록(pendingInviter)이 진실. 에러도 안 보냄(공격자에게 정보 노출 차단).
+            if (claimedInviter != pendingInviter)
+                return;
+
+            world.Party.ConsumeInvite(responderEntityId);
+
+            if (!accepted)
+                return; // 거절: 초대 소비만(거절 측 통보 없음 — UX는 클라 timeout 처리)
+
+            // 수락: 보류된 inviter로 파티 결성. CreateParty가 null = 그새 한쪽이 파티 보유(race) → silent.
+            PartyState? party = world.Party.CreateParty(pendingInviter, responderEntityId);
+            if (party == null) return;
+
+            PartyNotifier.SendPartyUpdate(world, party);
+        });
+    }
+
+    internal void SubmitPartyLeave()
+    {
+        if (_entityId < 0) return;
+
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return;
+
+        int leaverEntityId = _entityId;
+        world.Party.EnqueueJob(() =>
+        {
+            PartyState? party = world.Party.GetPartyByEntity(leaverEntityId);
+            if (party == null) return; // 파티 없음 — no-op
+
+            // 해산 전 멤버 스냅샷 — Disband가 인덱스를 비우므로 통보 대상은 미리 캡처.
+            List<int> formerMembers = new(party.Members);
+            world.Party.Disband(party.PartyId);
+
+            // 남은 멤버 전원에게 해산 통보(partyId=0). 탈퇴자 본인 포함 — 클라가 파티 UI 정리.
+            PartyNotifier.SendDisband(world, formerMembers);
+        });
+    }
+
+    // [시연 디버그 치트] C_CheatCommand 처리. 행위자=_entityId 강제(헌법 #3 — 패킷에 대상 필드 없음).
+    //   AllowCheats 게이트는 CheatCommandHandler에서 이미 통과. cheatType 0 = 퀘스트 즉시완료.
+    internal void SubmitCheatCommand(byte cheatType)
+    {
+        if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
+
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return; // shutdown race
+
+        int entityId = _entityId;
+        world.Party.EnqueueJob(() =>
+        {
+            if (cheatType == 0) // 퀘스트 즉시완료(보스 포탈 해금)
+                world.Party.DebugCompleteQuest(entityId, world);
+        });
+    }
+
+    // disconnect 시 파티/초대 정리. OnDisconnected에서만 호출(_closing 게이트 통과 후 = 세션당 1회).
+    //
+    // **actor 경계**: world.Party.EnqueueJob으로 마샬링 — PartyRegistry 내부 직접 호출 X(헌법 §5, race).
+    // **멱등**: 파티 없으면 no-op, 초대 없으면 no-op. 끊긴 본인은 SendDisband 대상에서 제외(이미 소켓 닫힘).
+    // **entityId 캡처**: OnDisconnected 진입 시점 _entityId(map cleanup 람다가 -1로 reset하기 전). race로
+    //   -1이면 파티/초대도 없으므로 정리는 자연 no-op.
+    void CleanupPartyOnDisconnect()
+    {
+        GameWorld? world = GameWorld.Instance;
+        if (world == null) return; // shutdown race
+
+        int leaverEntityId = _entityId;
+        if (leaverEntityId < 0) return; // 아직 EnterGameWorld 안 끝남 — 파티/초대 무관
+
+        world.Party.EnqueueJob(() =>
+        {
+            // 1) 끊긴 본인이 얽힌 보류 초대 양방향 제거(받은 초대 + 보낸 초대).
+            world.Party.RemoveInvitesInvolving(leaverEntityId);
+
+            // 2) 파티 보유 시 해산 + 남은 멤버에게 partyId=0 통보.
+            PartyState? party = world.Party.GetPartyByEntity(leaverEntityId);
+            if (party == null) return; // 파티 없음 — 초대 정리만으로 끝
+
+            // 해산 전 멤버 스냅샷. 끊긴 본인은 통보 제외(소켓 닫힘 — SendToEntity가 silent skip하지만 명시 제외).
+            List<int> remaining = party.Members.Where(id => id != leaverEntityId).ToList();
+            world.Party.Disband(party.PartyId);
+
+            PartyNotifier.SendDisband(world, remaining);
+        });
     }
 
     // 클라가 보낸 characterClass byte를 서버가 PlayerStats로 매핑 (헌법 #1).
@@ -473,4 +638,9 @@ public class GameSession : PacketSession
     // 목적지 맵 조회 hook. 테스트가 다중 맵 주입 시 override.
     protected virtual GameMap? GetDestMap(MapId destMapId)
         => GameWorld.Instance?.GetMap(destMapId);
+
+    // 보스 포탈 잠금 게이트용 killCount 조회 hook. 테스트가 stub 주입 시 override.
+    // 서버 권위: PartyRegistry에서 읽음 — 클라 주장 X (헌법 #3 정합).
+    protected virtual int GetKillCount(int entityId)
+        => GameWorld.Instance?.Party.GetKillCount(entityId) ?? 0;
 }

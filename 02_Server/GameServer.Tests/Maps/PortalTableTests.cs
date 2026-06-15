@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Maps;
 
@@ -65,18 +66,33 @@ public class PortalTableTests
     // --- HuntingGround ---
 
     [Fact]
-    public void HuntingGround_ReturnsOnePortal()
+    public void HuntingGround_ReturnsTwoPortals()
     {
+        // M5 B1: 정방향(→BossRoom, id=1) + 역방향(→Town, id=2).
         IReadOnlyList<Portal> portals = PortalTable.GetPortalsFor(MapId.HuntingGround);
-        Assert.Single(portals);
+        Assert.Equal(2, portals.Count);
     }
 
     [Fact]
     public void HuntingGround_Portal_Dest_IsBossRoom()
     {
-        // 전진 흐름 2단계: HuntingGround → BossRoom.
+        // 전진 흐름 2단계: HuntingGround → BossRoom. 정방향(id=1)을 [0]에 유지.
         Portal p = PortalTable.GetPortalsFor(MapId.HuntingGround)[0];
+        Assert.Equal(1, p.PortalId);
         Assert.Equal(MapId.BossRoom, p.Dest);
+    }
+
+    [Fact]
+    public void HuntingGround_ReversePortal_Id2_DestIsTown()
+    {
+        // M5 B1 역방향: HuntingGround → Town, portalId=2.
+        Portal rev = PortalTable.GetPortalsFor(MapId.HuntingGround)
+            .Single(p => p.PortalId == 2);
+        Assert.Equal(MapId.Town, rev.Dest);
+        // Position x=5 (좌측 입구 안쪽 — Town 도착 x=2와 거리 3).
+        Assert.Equal(5f, rev.Position.X);
+        // DestSpawn x=17 (Town 정방향 포탈 x=20 안쪽 3 — 재겹침 방지).
+        Assert.Equal(17f, rev.DestSpawn.X);
     }
 
     [Fact]
@@ -91,18 +107,33 @@ public class PortalTableTests
     // --- BossRoom ---
 
     [Fact]
-    public void BossRoom_ReturnsOnePortal()
+    public void BossRoom_ReturnsTwoPortals()
     {
+        // M5 B1: 정방향(→Ending, id=1) + 역방향(→HuntingGround, id=2).
         IReadOnlyList<Portal> portals = PortalTable.GetPortalsFor(MapId.BossRoom);
-        Assert.Single(portals);
+        Assert.Equal(2, portals.Count);
     }
 
     [Fact]
     public void BossRoom_Portal_Dest_IsEnding()
     {
-        // 보스 클리어 후 결과 화면으로.
+        // 보스 클리어 후 결과 화면으로. 정방향(id=1)을 [0]에 유지.
         Portal p = PortalTable.GetPortalsFor(MapId.BossRoom)[0];
+        Assert.Equal(1, p.PortalId);
         Assert.Equal(MapId.Ending, p.Dest);
+    }
+
+    [Fact]
+    public void BossRoom_ReversePortal_Id2_DestIsHuntingGround()
+    {
+        // M5 B1 역방향: BossRoom → HuntingGround, portalId=2.
+        Portal rev = PortalTable.GetPortalsFor(MapId.BossRoom)
+            .Single(p => p.PortalId == 2);
+        Assert.Equal(MapId.HuntingGround, rev.Dest);
+        // Position x=18 (보스방 좌측 — HG 도착 x=22와 거리 4).
+        Assert.Equal(18f, rev.Position.X);
+        // DestSpawn x=22 (HG 정방향 포탈 x=25 안쪽 3 — 재겹침 방지).
+        Assert.Equal(22f, rev.DestSpawn.X);
     }
 
     // --- Ending ---
@@ -155,8 +186,9 @@ public class PortalTableTests
     public void GameMap_BossRoom_Portals_HasPortalToEnding()
     {
         GameMap map = new GameMap(MapId.BossRoom);
-        // portal 1개 + 목적지 Ending 검증.
-        Portal p = Assert.Single(map.Portals);
-        Assert.Equal(MapId.Ending, p.Dest);
+        // M5 B1: 정방향(→Ending) + 역방향(→HuntingGround) 2개. 정방향 목적지 검증.
+        Portal forward = map.Portals.Single(p => p.PortalId == 1);
+        Assert.Equal(MapId.Ending, forward.Dest);
+        Assert.Contains(map.Portals, p => p.PortalId == 2 && p.Dest == MapId.HuntingGround);
     }
 }

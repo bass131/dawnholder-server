@@ -115,6 +115,25 @@ internal static class CombatConstants
     // Dash 쿨다운 (틱). 98_Shared 단일 진실에서 가져옴 (ThunderboltCooldownTicks와 동형).
     public const int DashCooldownTicks = Shared.GameData.Constants.DashCooldownTicks;
 
+    // ── 일반몹 공격 (Normal / Golem) ──────────────────────────────────────────
+    // 시작값 — Play 튜닝 대상. 보스 상수(BossBaseDamage/BossAttackHalfExtent)와 병치해
+    // 형평성 점검 쉽게.
+
+    /// <summary>일반몹 기본 공격 데미지. EnemyStats.Attack(Normal=5/Golem=8)와 합산.</summary>
+    public const int NormalBaseDamage = 4;
+
+    /// <summary>일반몹 공격 AABB half-extent (x/y 동일). 보스(2.5)보다 작은 중형 박스.</summary>
+    public const float NormalAttackHalfExtent = 1.5f;
+
+    /// <summary>
+    /// |dx| ≤ 이 값 + 쿨다운 0 → 즉시 공격. NormalAttackHalfExtent와 같은 값으로
+    /// 트리거 거리와 공격 박스를 연결 보장.
+    /// </summary>
+    public const float NormalAttackTriggerRange = 1.5f;
+
+    /// <summary>일반몹 공격 쿨다운 (틱 단위). 30틱 = 1.5초 @20TPS.</summary>
+    public const int NormalAttackCooldownTicks = 30;
+
     // ── 보스 전투 ─────────────────────────────────────────────────────────────
     //
     // 값은 사용자 확정 정량값. 임의 변경 금지.

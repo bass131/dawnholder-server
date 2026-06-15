@@ -32,56 +32,14 @@ internal static class BossStates
     // BossAttackState.Enter(= telegraph 완료 틱)에서만 호출 — tick thread invariant 보장.
     //
     // 헌법 #1: player.Position = 서버 권위 위치만 사용. 클라 신고 위치 절대 금지.
+    // EnemyStates.ApplyMeleeDamage 공통 헬퍼에 위임 — 보스 파라미터만 전달.
+    // 보스 동작은 1비트도 변경 없음 (BossBehaviorTests/BossStageClearTests/LagSimIntegrationTests 전건이 guard).
     internal static void ApplyBossAttack(GameMap map, EnemyEntity boss)
-    {
-        AABB bossAttackBox = new AABB(
-            new Vector2(boss.X, boss.Y),
-            new Vector2(CombatConstants.BossAttackHalfExtent, CombatConstants.BossAttackHalfExtent));
-
-        byte attackPattern = boss.IsPhase2 ? (byte)1 : (byte)0;
-
-        foreach (PlayerEntity player in map.Players)
-        {
-            AABB playerBox = new AABB(player.Position, new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
-            if (!bossAttackBox.Intersects(playerBox)) continue;
-
-            // 무적 게이트(헌법 #1 서버 판정): 대쉬 active window 중이면 데미지·넉백·broadcast 전부 skip.
-            //   InterruptibleByHit=false가 넉백/hitstun은 이미 차단 → 여기 게이트는 데미지 0을 보장.
-            //   ApplyBossAttack = 유일한 플레이어 데미지 경로(전수 grep 확인) → 한 곳 게이트로 무적 완성.
-            if (player.IsInvulnerable(map.CurrentTick)) continue;
-
-            int damage = Formulas.ComputeDamage(boss.Stats, player.Stats, CombatConstants.BossBaseDamage);
-            player.Hp -= damage;
-
-            float dirX = player.Position.X >= boss.X ? 1f : -1f;
-            player.EnterHitState(dirX);
-
-            // 피격 직후 권위 HP 통지 — 음수면 SendPlayerHp 내부에서 0 floor.
-            map.SendPlayerHp(player);
-
-            S_EnemyAttack attackPkt = new S_EnemyAttack
-            {
-                attackerId = boss.EntityId,
-                targetId   = player.EntityId,
-                damage     = damage,
-                targetCurrentHp = player.Hp,
-                attackPattern   = attackPattern,
-            };
-            map.BroadcastToAll(attackPkt.Write());
-
-            if (player.Hp <= 0)
-            {
-                Vector2 spawn = map.PlayerSpawnPosition;
-                player.Position = spawn;
-                player.Velocity = Vector2.Zero;
-                player.OnGround = false;
-                player.Hp = player.Stats.MaxHp;
-                player.Revive();
-                // 부활 직후 full HP 권위 통지 — 클라 HUD 표시 미러 제거의 핵심.
-                map.SendPlayerHp(player);
-            }
-        }
-    }
+        => EnemyStates.ApplyMeleeDamage(
+            map, boss,
+            CombatConstants.BossAttackHalfExtent,
+            CombatConstants.BossBaseDamage,
+            boss.IsPhase2 ? (byte)1 : (byte)0);
 
     // telegraph 시작: 예고 틱 결정 + AttackLatch 세팅 + 즉시 broadcast → Telegraph 반환.
     // 옛 BossIdleState의 쿨다운-0 셋업과 동일 — 트리거가 "Move 사거리 도달"로 바뀌었을 뿐.

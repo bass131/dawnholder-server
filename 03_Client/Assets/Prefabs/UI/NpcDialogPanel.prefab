@@ -66,7 +66,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 02b07c2a2bcdcf64aba0e4c9f95a1fdc, type: 3}
+    m_Font: {fileID: 12800000, guid: 0fade8246f07c954795dbd9ec0b5af49, type: 3}
     m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
@@ -222,7 +222,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 02b07c2a2bcdcf64aba0e4c9f95a1fdc, type: 3}
+    m_Font: {fileID: 12800000, guid: 0fade8246f07c954795dbd9ec0b5af49, type: 3}
     m_FontSize: 32
     m_FontStyle: 0
     m_BestFit: 0
@@ -387,7 +387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d756e0a449a4b214cabb290335131db4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Dawnholder.Client::Dawnholder.Client.Gameplay.NpcDialogPanel
-  root: {fileID: 6541881962602188228}
-  dialogText: {fileID: 6506193792532520468}
-  defaultCloseHint: "[E] \uB610\uB294 [ESC] \u2014 \uB2EB\uAE30"
-  closeHintText: {fileID: 917862319334666408}
+  _root: {fileID: 6541881962602188228}
+  _dialogText: {fileID: 6506193792532520468}
+  _defaultCloseHint: "[E] \uB610\uB294 [ESC] \u2014 \uB2EB\uAE30"
+  _closeHintText: {fileID: 917862319334666408}

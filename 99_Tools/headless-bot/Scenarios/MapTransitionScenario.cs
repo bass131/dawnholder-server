@@ -30,6 +30,16 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 //
 // **헌법 #5**: 봇 시나리오라 await/Task.Delay OK. 단 tick 기반 결정론 유지.
 // **헌법 #1**: 봇은 서버 권위 위치(S_Snapshot.x)를 실시간 추적해 조향.
+//
+// **seedBossGate 파라미터 (테스트 훅)**:
+//   BossRoom 진입에는 20킬 게이트(Q3)가 걸린다. 이 시나리오는 4맵 루프 *전환 메커니즘*
+//   (entityId 유지 + spawn 좌표)을 검증하는 것이 목적이지 게이트 자체를 검증하지 않는다.
+//   게이트 e2e는 BossPortalGateTests(stub) + R2 BossGateSmoke(별도)가 담당한다.
+//
+//   null(기본, 표준 봇 런): 게이트를 자연히 만남 → killCount=0이면 S_PortalLocked로 차단.
+//   non-null(테스트 픽스처 전용): HuntingGround 진입 완료 직후 호출되어 in-process로
+//     killCount 전제조건을 충족 → 게이트는 서버 권위 카운트(20)를 읽어 정당 통과.
+//     *우회가 아니라 픽스처로 게이트 전제조건을 충족시키는 것.*
 public class MapTransitionScenario
 {
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
@@ -76,9 +86,16 @@ public class MapTransitionScenario
         public bool SpawnCoordinatesCorrect;
     }
 
+    /// <param name="seedBossGate">
+    /// BossRoom 진입 전 killCount 충족용 테스트 훅. entityId를 인자로 받아 서버 in-process
+    /// killCount를 적립하고 완료를 알리는 Task를 반환한다. null이면 skip(표준 봇 런).
+    /// 표준 봇 런(null)은 killCount=0이므로 20킬 게이트(Q3)에 막힌다.
+    /// 게이트 e2e는 BossPortalGateTests(stub) + R2 BossGateSmoke(별도)가 담당한다.
+    /// </param>
     public static async Task<Result> Run(
         string host, int port,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        Func<int, Task>? seedBossGate = null)
     {
         Result result = new();
         TransitionProbe bot = new();
@@ -126,6 +143,14 @@ public class MapTransitionScenario
 
             result.EnteredHuntingGround = true;
             result.SpawnXOnHG = bot.SpawnX;
+
+            // 보스 게이트 전제조건 시드 (테스트 픽스처 전용 — null이면 skip).
+            //   BossRoom 진입은 20킬 게이트(Q3)가 걸림. 순수 전환 테스트는 그라인드 대신
+            //   in-process로 killCount를 충족(게이트는 서버 권위 카운트를 실제 검사 → 정당 통과).
+            //   시드 delegate가 잡 완료를 await → 시나리오가 MoveToPortal/SendEnterPortal로
+            //   진행하기 전에 _soloProgress[eid]=20이 확정됨.
+            if (seedBossGate != null)
+                await seedBossGate(bot.LocalEntityId);
 
             // ── 2단계: HuntingGround → BossRoom ──────────────────────────────
             await bot.MoveToPortal(HGPortalX, ct);

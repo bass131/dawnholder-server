@@ -16,7 +16,7 @@
 ├── Protocol/
 │   ├── Generated/        ★ 자체 PDL이 자동 생성한 패킷 클래스 (ADR-002 v2)
 │   │   └── GenPackets.cs   PacketID enum + IPacket + C_Xxx/S_Xxx 클래스
-│   └── ProtocolVersion.cs  Current=14 정의 (상세 버전 이력 v1~v14 = 본 파일 헤더 주석이 단일 진실 — 패킷 모양 변경 시 bump, 헌법 #2)
+│   └── ProtocolVersion.cs  Current=15 정의 (상세 버전 이력 v1~v15 = 본 파일 헤더 주석이 단일 진실 — 패킷 모양 변경 시 bump, 헌법 #2)
 └── GameData/
     ├── Constants.cs      Tick rate, 최대 패킷 크기, 타임아웃
     ├── InputBits.cs      MoveIntent 입력 비트필드 인코딩/디코딩 (M2 Phase 07 박힘)

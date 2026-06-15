@@ -160,6 +160,18 @@ namespace Dawnholder.Client.Combat
             return false;
         }
 
+        // 이펙트 kind 분기용 — entityId의 EnemyKind 반환. 없으면 false.
+        public bool TryGetKind(int entityId, out EnemyKind kind)
+        {
+            if (_enemies.TryGetValue(entityId, out EnemyEntry entry))
+            {
+                kind = entry.Enemy.Kind;
+                return true;
+            }
+            kind = EnemyKind.Normal;
+            return false;
+        }
+
         // 투사체 시각 연출용 — entityId에 해당하는 Transform 반환. 없으면 false.
         // 헌법 #1: 판정/데미지와 무관. 순수 시각 경로 전용.
         public bool TryGetTransform(int entityId, out Transform? target)

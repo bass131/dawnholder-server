@@ -64,6 +64,8 @@ public class MapMigrationTests : IDisposable
         }
 
         protected override GameMap? GetMap() => _currentMap;
+        // Town→HuntingGround 이동 — 게이트 미적용(BossRoom 아님). 단일 스레드 테스트 격리.
+        protected override int GetKillCount(int entityId) => 0;
         protected override GameMap? GetDestMap(MapId destMapId)
         {
             // tick thread에서 호출되는 이 시점 = 맵 A RemovePlayer 완료 직후.
@@ -98,15 +100,19 @@ public class MapMigrationTests : IDisposable
         GameMap _destMapOverride;
         public List<byte[]> SentPackets { get; } = new();
         public int DisconnectCalls { get; private set; }
+        int _stubKillCount;
 
-        public TestMigrationSession(GameMap currentMap, GameMap destMap)
+        public TestMigrationSession(GameMap currentMap, GameMap destMap, int stubKillCount = 0)
         {
             _currentMap = currentMap;
             _destMapOverride = destMap;
+            _stubKillCount = stubKillCount;
         }
 
         protected override GameMap? GetMap() => _currentMap;
         protected override GameMap? GetDestMap(MapId destMapId) => _destMapOverride;
+        // 테스트 stub: 실제 GameWorld 없이 killCount 주입 (서버 권위 getKillCount delegate와 동일 계약).
+        protected override int GetKillCount(int entityId) => _stubKillCount;
 
         // 왕복 테스트에서 현재 맵/목적지 맵 교체용
         public void SetCurrentMap(GameMap map) => _currentMap = map;
@@ -432,7 +438,8 @@ public class MapMigrationTests : IDisposable
     public void RoundTrip_A_to_B_to_A_StatePreserved()
     {
         // 1차: Town → HuntingGround
-        TestMigrationSession s = new(_mapA, _mapB);
+        // stubKillCount=40: HG→BossRoom portal(2차 이동)이 게이트 통과가 되어야 왕복 state 검증 가능.
+        TestMigrationSession s = new(_mapA, _mapB, stubKillCount: 40);
         s.OnConnected(Ep());
         s.BypassHandshake();
         _mapA.Tick(1);

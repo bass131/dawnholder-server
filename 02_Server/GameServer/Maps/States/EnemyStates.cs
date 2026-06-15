@@ -1,21 +1,73 @@
+using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Shared.GameData;
+using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps.States;
 
-// 적(Normal/Golem) AI State 3종 (Patrol / Chase / Hit). Flyweight(GPP-06) 정적 인스턴스 — 틱 루프 new 0 (헌법 #5).
+// 적(Normal/Golem) AI State 4종 (Patrol / Chase / Attack / Hit). Flyweight(GPP-06) 정적 인스턴스 — 틱 루프 new 0 (헌법 #5).
 //
 // 행동 불변(옛 EnemyAISystem enum+switch와 비트 동일):
 //   aggro 진입: |dx| <= AggroRange 가장 가까운 player → Chase + Target.
 //   de-aggro: target이 AggroRange*1.5 초과 또는 소멸 → Patrol 복귀.
 //   전환되는 그 틱에 *전환 후 상태의 이동*까지 수행 (옛 구조: 전이 후 같은 틱 movement 실행).
 //   피격: HitState(AI 이동 멈춤 + 넉백 감쇠) → HitLatchTicks 소진 후 aggro 재판정.
+//   공격: |dx| <= NormalAttackTriggerRange + 쿨다운 0 → Attack → 1틱 후 Chase 복귀 (쿨다운이 재공격 차단).
 internal static class EnemyStates
 {
-    internal static readonly PatrolState     Patrol = new();
-    internal static readonly ChaseState      Chase  = new();
-    internal static readonly EnemyHitState   Hit    = new();
+    internal static readonly PatrolState        Patrol = new();
+    internal static readonly ChaseState         Chase  = new();
+    internal static readonly EnemyHitState      Hit    = new();
+    internal static readonly EnemyAttackState   Attack = new();
+
+    // Normal/Golem 공통 근접 데미지 적용. BossStates.ApplyBossAttack(보스)과 동형.
+    //
+    // 헌법 #1: 데미지·HP 감소·부활 전부 서버 판정. 클라는 S_EnemyAttack broadcast로만 수신.
+    // 헌법 #5: DB/await 없음 — 순수 동기 연산 + write queue는 별도 worker.
+    internal static void ApplyMeleeDamage(GameMap map, EnemyEntity attacker, float attackHalfExtent, int baseDamage, byte attackPattern)
+    {
+        AABB attackBox = new AABB(
+            new Vector2(attacker.X, attacker.Y),
+            new Vector2(attackHalfExtent, attackHalfExtent));
+
+        foreach (PlayerEntity player in map.Players)
+        {
+            AABB playerBox = new AABB(player.Position, new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
+            if (!attackBox.Intersects(playerBox)) continue;
+
+            if (player.IsInvulnerable(map.CurrentTick)) continue;
+
+            int damage = Formulas.ComputeDamage(attacker.Stats, player.Stats, baseDamage);
+            player.Hp -= damage;
+
+            float dirX = player.Position.X >= attacker.X ? 1f : -1f;
+            player.EnterHitState(dirX);
+
+            map.SendPlayerHp(player);
+
+            S_EnemyAttack attackPkt = new S_EnemyAttack
+            {
+                attackerId      = attacker.EntityId,
+                targetId        = player.EntityId,
+                damage          = damage,
+                targetCurrentHp = player.Hp,
+                attackPattern   = attackPattern,
+            };
+            map.BroadcastToAll(attackPkt.Write());
+
+            if (player.Hp <= 0)
+            {
+                Vector2 spawn = map.PlayerSpawnPosition;
+                player.Position = spawn;
+                player.Velocity = Vector2.Zero;
+                player.OnGround = false;
+                player.Hp = player.Stats.MaxHp;
+                player.Revive();
+                map.SendPlayerHp(player);
+            }
+        }
+    }
 
     // hit-stun 종료 후 복귀 State 결정.
     //
@@ -156,6 +208,15 @@ internal sealed class ChaseState : ActorState<EnemyEntity>
         if (closest != null && closest.EntityId != enemy.TargetEntityId)
             enemy.TargetEntityId = closest.EntityId;
 
+        // 현재 타겟이 사거리 안 + 쿨다운 0 → 즉시 공격 전환 (telegraph 없는 패턴).
+        PlayerEntity? cur = enemy.TargetEntityId.HasValue ? enemy.OwningMap!.GetPlayer(enemy.TargetEntityId.Value) : null;
+        if (cur != null)
+        {
+            float adx = System.MathF.Abs(cur.Position.X - enemy.X);
+            if (adx <= CombatConstants.NormalAttackTriggerRange && enemy.AttackCooldownTicks == 0)
+                return EnemyStates.Attack;
+        }
+
         EnemyStates.MoveChase(enemy);
         return null;
     }
@@ -182,5 +243,26 @@ internal sealed class EnemyHitState : ActorState<EnemyEntity>
     }
 
     public override void Exit(EnemyEntity enemy) => enemy.KnockbackVx = 0f;
+}
+
+// Normal/Golem 공격 State. Enter에서 즉시 데미지 판정 + 쿨다운 리셋 → 1틱 후 Chase 복귀.
+// 보스와 달리 telegraph 없음 — 사거리 도달 + 쿨다운 0이면 ChaseState.Tick이 Attack으로 전환.
+// 쿨다운(AttackCooldownTicks)이 재공격을 차단 — Chase 복귀 직후 다시 공격 조건을 재평가.
+//
+// attackPattern: slime(Normal)=0, golem=1. C2 이펙트 분기 힌트로 wire에 포함.
+internal sealed class EnemyAttackState : ActorState<EnemyEntity>
+{
+    public override AnimState AnimState => AnimState.Attack;
+
+    public override void Enter(EnemyEntity enemy)
+    {
+        byte pattern = enemy.Kind == EnemyKind.Golem ? (byte)1 : (byte)0;
+        EnemyStates.ApplyMeleeDamage(enemy.OwningMap!, enemy, CombatConstants.NormalAttackHalfExtent, CombatConstants.NormalBaseDamage, pattern);
+        enemy.AttackCooldownTicks = CombatConstants.NormalAttackCooldownTicks;
+        enemy.AttackLatchTicks    = CombatConstants.AnimLatchTicks;
+    }
+
+    // 1틱 후 Chase 복귀. 쿨다운이 재공격 차단 (Chase.Tick: 쿨다운 > 0이면 Attack 전환 불가).
+    public override ActorState<EnemyEntity>? Tick(EnemyEntity enemy) => EnemyStates.Chase;
 }
 

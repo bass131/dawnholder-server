@@ -22,6 +22,10 @@ internal static class HandlerRegistry
             { PacketID.C_CharacterSelect, new CharacterSelectHandler() },
             { PacketID.C_EnterPortal,    new EnterPortalHandler() },
             { PacketID.C_SkillUse,       new SkillUseHandler() },
+            { PacketID.C_PartyInvite,    new PartyInviteHandler() },
+            { PacketID.C_PartyRespond,   new PartyRespondHandler() },
+            { PacketID.C_PartyLeave,     new PartyLeaveHandler() },
+            { PacketID.C_CheatCommand,   new CheatCommandHandler() },
         };
 
     public static bool TryGet(PacketID id, out IPacketHandler handler)

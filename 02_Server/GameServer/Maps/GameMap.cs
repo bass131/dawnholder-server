@@ -38,6 +38,10 @@ public class GameMap
     readonly MapTerrain? _terrain;
     readonly MapContent? _content;
 
+    // Q2: 적 사망 시 호출되는 외부 콜백. GameWorld.MakeMap에서 PartyRegistry.OnKill 연결.
+    //   virtual OnEnemyKilled가 이 콜백을 invoke — SpyGameMap override는 base 미호출이므로 미영향(정상).
+    readonly Action<int, EnemyEntity>? _onEnemyKilled;
+
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
     readonly CombatSystem _combatSystem = new();
     readonly EnemyAISystem _enemyAISystem = new();
@@ -55,12 +59,14 @@ public class GameMap
     long _currentTick;
 
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
-                   MapTerrain? terrain = null, MapContent? content = null)
+                   MapTerrain? terrain = null, MapContent? content = null,
+                   Action<int, EnemyEntity>? onEnemyKilled = null)
     {
         MapId = mapId;
         _idAllocator = idAllocator;
         _terrain = terrain;
         _content = content;
+        _onEnemyKilled = onEnemyKilled;
         Portals = PortalTable.GetPortalsFor(mapId);
 
         if (content != null)
@@ -439,6 +445,15 @@ public class GameMap
     internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
 
     /// <summary>
+    /// 사망 처리 시퀀스(S_EntityDeath broadcast → StageClear → RemoveEnemy → EnqueueRespawn) 완료 후 호출되는 훅.
+    /// 기본 구현은 생성자 주입 콜백(_onEnemyKilled)을 invoke — GameWorld.MakeMap이 PartyRegistry.OnKill을 연결.
+    /// virtual 유지: SpyGameMap override는 base 미호출 → 콜백 미실행(정상 — 테스트 spy 격리).
+    /// tick thread invariant 안에서만 호출.
+    /// </summary>
+    protected virtual void OnEnemyKilled(int killerEntityId, EnemyEntity target)
+        => _onEnemyKilled?.Invoke(killerEntityId, target);
+
+    /// <summary>
     /// 적 사망 후처리: S_EntityDeath broadcast → (Boss) StageClear → 제거 → (Normal) respawn 큐잉.
     /// CombatSystem(즉시) / DeferredDamageSystem(지연) / SkillSystem(Dash) 3 경로 공통 — DRY 단일 출처.
     /// HP 게이트(target.Hp &lt;= 0)와 S_HitResult 송신은 호출처에 남는다 — 적용 타이밍이 경로마다 다르므로.
@@ -446,7 +461,7 @@ public class GameMap
     /// **순서 계약(BossStageClearTests)**: S_EntityDeath → S_StageClear 순서 보존 필수.
     /// **tick thread invariant**: GameMap.Tick 안에서만 호출.
     /// </summary>
-    internal void HandleEnemyDeath(EnemyEntity target)
+    internal void HandleEnemyDeath(EnemyEntity target, int killerEntityId)
     {
         S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
         BroadcastToAll(death.Write());
@@ -460,6 +475,8 @@ public class GameMap
         RemoveEnemy(target.EntityId);
         if (target.Kind == EnemyKind.Normal)
             EnqueueRespawn(target);
+
+        OnEnemyKilled(killerEntityId, target);
     }
 
     /// <summary>

@@ -34,6 +34,7 @@ internal sealed class EnemyAISystem
             enemy.Fsm!.Tick(enemy);
             if (enemy.HitLatchTicks > 0) enemy.HitLatchTicks--;
             if (enemy.AttackLatchTicks > 0) enemy.AttackLatchTicks--;
+            if (enemy.AttackCooldownTicks > 0) enemy.AttackCooldownTicks--;
 
             if (shouldBroadcast)
             {

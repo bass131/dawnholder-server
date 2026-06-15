@@ -1,4 +1,6 @@
+using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Party;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Loop;
@@ -29,6 +31,10 @@ public class GameWorld
     int _nextEntityId;
 
     readonly TickScheduler _scheduler;
+
+    // 파티 전역 actor. cross-map이라 특정 맵/세션에 둘 수 없음 — GameWorld 소유.
+    // 외부 → PartyRegistry.EnqueueJob → GameWorld.OnTick에서 드레인.
+    readonly PartyRegistry _party = new();
 
     /// <summary>
     /// 맵별 terrain/content 쌍을 주입받는 생성자 — **필수 인자** (default 없음).
@@ -67,6 +73,9 @@ public class GameWorld
     // 호환용 프로퍼티 — GameWorld.Instance?.Map으로 Town 맵을 반환하던 흐름 보존.
     public GameMap Map => _maps[MapId.Town];
 
+    // 파티 전역 actor 접근점.
+    public PartyRegistry Party => _party;
+
     public long CurrentTick => _scheduler.CurrentTick;
 
     public TickScheduler Scheduler => _scheduler;
@@ -90,12 +99,80 @@ public class GameWorld
     public GameMap? GetMap(MapId id)
         => _maps.TryGetValue(id, out GameMap? map) ? map : null;
 
+    /// <summary>
+    /// entityId를 보유한 맵을 찾아 그 맵의 EnqueueJob 경유로 payload를 송신한다.
+    ///
+    /// **thread 안전 보장**: 대상 맵의 EnqueueJob(람다)을 통해 그 맵의 tick thread 위에서
+    ///   session.Send를 호출한다. 직접 session.Send를 부르면 맵 tick thread를 침범(race) —
+    ///   반드시 이 경로를 사용해야 한다 (헌법 §5, Map=Actor 원칙).
+    ///
+    /// entityId가 어느 맵에도 없으면(로그아웃/전환 중) silent 무시 (예외 X).
+    /// 맵 4개 순회 = O(4) 상수 — entityId→MapId 역인덱스 추가 시 동기화 부채(MapMigration 등)가
+    ///   늘어나므로 현 규모에서 순회가 더 단순하고 안전하다.
+    /// </summary>
+    public void SendToEntity(int entityId, ArraySegment<byte> payload)
+    {
+        foreach (GameMap map in _maps.Values)
+        {
+            PlayerEntity? player = map.GetPlayer(entityId);
+            if (player == null) continue;
+
+            // 대상 맵의 tick thread 위에서 송신 — 직접 호출이면 이 맵(GameWorld) thread가
+            // 대상 맵 내부를 침범. EnqueueJob으로 대상 맵 thread에 마샬링.
+            GameMap captured = map;
+            captured.EnqueueJob(() =>
+            {
+                PlayerEntity? p = captured.GetPlayer(entityId);
+                if (p?.Owner == null || p.Owner.IsClosing) return;
+                p.Owner.Send(payload);
+            });
+            return;
+        }
+        // entityId 없음 = 오프라인 또는 맵 전환 중 — silent 무시.
+    }
+
+    /// <summary>
+    /// entityId를 보유한 맵에서 그 플레이어의 CharacterClass를 byte로 조회한다.
+    ///
+    /// **헌법 #1 (Server Authority)**: 클래스는 서버 권위 PlayerStats에서만 읽는다 — 클라가 보낸 값 X.
+    /// 파티 패킷(S_PartyInviteRecv.inviterClass / S_PartyUpdate.memberNClass)을 채울 때
+    /// PartyRegistry job(tick thread)이 호출. entityId가 어느 맵에도 없으면 false 반환.
+    ///
+    /// 맵 4개 순회 = O(4) 상수 — SendToEntity와 동일 패턴(entityId→MapId 역인덱스 추가 시
+    /// 동기화 부채가 늘어나므로 현 규모에선 순회가 더 단순·안전).
+    /// </summary>
+    public bool TryGetEntityClass(int entityId, out byte characterClass)
+    {
+        foreach (GameMap map in _maps.Values)
+        {
+            PlayerEntity? player = map.GetPlayer(entityId);
+            if (player == null) continue;
+            characterClass = (byte)player.Stats.Class;
+            return true;
+        }
+        characterClass = 0;
+        return false;
+    }
+
     GameMap MakeMap(MapId id,
         IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
     {
+        // 킬 콜백: Boss 킬 → 전역 리셋, 그 외 → OnKill 적립.
+        //   EnqueueJob 마샬링: 모든 _parties/_soloProgress 변경을 Party 큐로 일원화.
+        //   맵 Tick과 Party.Tick은 같은 틱 스레드에서 순차 실행(GameWorld.OnTick).
+        //   미래 맵 멀티스레드화 대비 방어적 — 현재는 0~1틱 지연만 발생.
+        Action<int, EnemyEntity> onKill = (killerId, target) =>
+            _party.EnqueueJob(() =>
+            {
+                if (target.Kind == EnemyKind.Boss)
+                    _party.ResetAllQuestProgress();
+                else
+                    _party.OnKill(killerId, this);
+            });
+
         if (provider.TryGetValue(id, out var pair))
-            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content);
-        return new GameMap(id, NextEntityId);
+            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill);
+        return new GameMap(id, NextEntityId, onEnemyKilled: onKill);
     }
 
     void OnTick(long tickNumber)
@@ -105,5 +182,8 @@ public class GameWorld
         {
             map.Tick(tickNumber);
         }
+
+        // 파티 job 드레인 — 맵 tick 후 단일 thread 직렬화. tickNumber = 초대 만료 판정 기준.
+        Party.Tick(tickNumber);
     }
 }

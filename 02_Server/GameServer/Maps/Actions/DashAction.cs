@@ -59,7 +59,7 @@ internal sealed class DashAction : IGameAction
 
             if (target.Hp <= 0)
             {
-                map.HandleEnemyDeath(target);
+                map.HandleEnemyDeath(target, caster.EntityId);
             }
             else
             {
