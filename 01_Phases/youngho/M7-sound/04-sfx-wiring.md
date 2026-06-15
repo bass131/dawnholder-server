@@ -3,7 +3,7 @@ owner: youngho
 milestone: M7
 phase: 04
 title: SFX wiring (전투/이동/UI 이벤트)
-status: pending
+status: in-progress
 grade: 복잡
 estimated: 3~5h
 domain: client
@@ -12,7 +12,7 @@ summary: 게임 이벤트(공격/피격/점프/대시/스킬/레벨업/UI/퀘스
 
 # Phase 04: SFX wiring (전투/이동/UI 이벤트)
 
-> **상태**: pending
+> **상태**: 🚧 진행 중 (2026-06-16). ★갱신: **발소리 포함**(영호) — `.anim` AnimationEvent 대신 **코드 티커(FootstepTicker)**로(무인 견고). 전 콜사이트 file:line wiring 맵 = 세션 플랜파일 §4. 사운드 호출은 `AudioManager.Instance?.PlaySfx` 표현 한 줄(서버/로직 무오염), hit/dot 스로틀 0.06s.
 > **마일스톤**: M7
 > **등급**: 복잡 (다수 이벤트 지점)
 > **담당**: client

@@ -3,7 +3,7 @@ owner: youngho
 milestone: M7
 phase: 02
 title: 오디오 재생 인프라 (AudioManager)
-status: pending
+status: in-progress
 grade: 복잡
 estimated: 2~4h
 domain: client
@@ -12,7 +12,7 @@ summary: 키 기반 사운드 재생/정지/볼륨 제어 인프라 — AudioSou
 
 # Phase 02: 오디오 재생 인프라 (AudioManager)
 
-> **상태**: pending
+> **상태**: 🚧 진행 중 (2026-06-16). 설계 = 세션 플랜파일 §1 — AudioManager를 `Resources/PersistentServices` 프리팹(DontDestroyOnLoad)에 설치, pool 12 + BGM 2채널 크로스페이드 + 코드 볼륨(PlayerPrefs), **누락 클립 no-op**(무인 NRE 0), Resources.Load 키→클립.
 > **마일스톤**: M7
 > **등급**: 복잡 (클라 신규 시스템)
 > **담당**: client

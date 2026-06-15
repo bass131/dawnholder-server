@@ -2,7 +2,7 @@
 owner: youngho
 milestone: M7
 title: 사운드 — 전면 사운드 적용 (인벤토리 / 오디오 인프라 / 에셋 생성 / SFX·BGM wiring)
-status: pending
+status: in-progress
 created: 2026-06-15
 ---
 
@@ -16,7 +16,15 @@ M5 인터랙티브 2차 플레이테스트 피드백 7번째 항목 = "Unity AI 
 게임에 현재 사운드가 사실상 없음 → 0→1 작업. 오디오 재생 인프라(코드) + 에셋 생성(영호/AI Generator) +
 이벤트 wiring(코드)이 섞인 cross 마일스톤. 사운드 *품질/선정*은 영호 청음 게이트.
 
-> **상태**: M6 완료 후 진입. 본 plan은 **사전 분해(영호 "M7는 사운드 마일스톤으로 분해" 지시)** — 착수는 M6 머지 후.
+> **상태**: 🚧 진행 중 (2026-06-16 AutoMode 착수, 영호 야간 무인 위임). M6 #112 머지 완료로 착수 조건 충족.
+>
+> **★ 착수 갱신 (2026-06-16, 영호 결정 반영)**:
+> - **생성 = AI 단독(`elevenlabs-sound-effects-v2`)**. **BgmComposer(칩튠) 전면 배제 — 폴백조차 X** (영호 "저품질 사운드 아예 배제"). 생성 실패 = **재시도 최대 3회 → MISSING 무음**(억지 무한 생성 금지). AudioManager 누락 클립 no-op이라 게임 정상.
+> - **기존 17개 처리**: 유지=BGM 4(OGG)+die 3(Slime/Golem/Vampire). **재생성=칩튠 의심 8 WAV**(공격/피격/점프/스테이지클리어/매직). 신규=빈칸 11. → **AI SFX 19개**.
+> - **die 매핑**: Normal→SlimeDie, Golem→GolemDie, **Boss(뱀파이어)→VampireDie**(영호 확정, 잉여 아님). 진짜 잉여=Frog/Mushroom만.
+> - **발소리 포함**(코드 티커, .anim 편집 회피). **공통 톤=모던 판타지·깔끔·타이트**.
+> - **실행=무인 1패스**(M6식 per-phase 게이트 X). 청크별 로컬 commit, **push/PR/청음은 아침 영호 GO**.
+> - 상세 실행계획·프롬프트 19개 초안 = 세션 플랜파일(`~/.claude/plans/nested-frolicking-pnueli.md`) + work-pin.
 
 ## Phase 순서 (5개)
 
