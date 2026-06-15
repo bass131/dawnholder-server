@@ -61,6 +61,17 @@ namespace Dawnholder.Client.Combat
             BuildPartyInvitePopup();
             BuildNpcDialogPanel();
             BuildMinimapCamera();
+            BuildQuestIntro();
+        }
+
+        // 퀘스트 부여 연출 — 사냥 구역(HuntingGround/BossRoom) 진입 시에만.
+        // QuestIntroSequencer가 세션 1회 팝업(Fade in/out) → 퀘스트 HUD 출현 순서를 조율.
+        // 마을(Town)에선 퀘스트 HUD를 띄우지 않음 — 퀘스트 목표가 사냥터 한정이라.
+        void BuildQuestIntro()
+        {
+            string sceneName = gameObject.scene.name;
+            if (sceneName != "HuntingGround" && sceneName != "BossRoom") return;
+            QuestIntroSequencer.Run(transform);
         }
 
         // 미니맵 카메라 — Resources/MinimapRT에 줌아웃 사이드뷰 렌더. UI.unity RawImage가 표시.

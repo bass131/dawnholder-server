@@ -131,6 +131,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Tree 02
       objectReference: {fileID: 0}
+    - target: {fileID: 5260572382779035082, guid: c5f8f079905bce04f945cd8ff4ba545a, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5260572382779035084, guid: c5f8f079905bce04f945cd8ff4ba545a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.51173
@@ -189,9 +193,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2083645876}
     m_Modifications:
+    - target: {fileID: 3008790804114293260, guid: 05d871b9365825b4ca356e1345739ee2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 3008790804299420976, guid: 05d871b9365825b4ca356e1345739ee2, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Road Sign 02
+      objectReference: {fileID: 0}
+    - target: {fileID: 3008790804299420976, guid: 05d871b9365825b4ca356e1345739ee2, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3008790804299420990, guid: 05d871b9365825b4ca356e1345739ee2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -232,6 +244,10 @@ PrefabInstance:
     - target: {fileID: 3008790804299420990, guid: 05d871b9365825b4ca356e1345739ee2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3008790805172985204, guid: 05d871b9365825b4ca356e1345739ee2, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -345,7 +361,7 @@ GameObject:
   - component: {fileID: 458325598}
   - component: {fileID: 458325600}
   - component: {fileID: 458325599}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tilemap_Solid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9223,6 +9239,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Bush 02 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 4815235850804891613, guid: e3ef72d9f2a941b479a3bda87147db32, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9342,6 +9362,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Spike
       objectReference: {fileID: 0}
+    - target: {fileID: 1049023302621363167, guid: c4728654af6c1b84fb5102e3f29ffb8f, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9420,6 +9444,10 @@ PrefabInstance:
     - target: {fileID: 2719227801452879220, guid: 0a84f54077193d3489d0de133048df37, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Bush 01 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719227801452879220, guid: 0a84f54077193d3489d0de133048df37, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2719227801452879243, guid: 0a84f54077193d3489d0de133048df37, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9675,6 +9703,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Tree 01
       objectReference: {fileID: 0}
+    - target: {fileID: 4653831799294361312, guid: 7903d081236f2304396572efb80b5f8f, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4653831799294361326, guid: 7903d081236f2304396572efb80b5f8f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -11.59827
@@ -9834,6 +9866,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Spike (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1049023302621363167, guid: c4728654af6c1b84fb5102e3f29ffb8f, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9961,6 +9997,10 @@ PrefabInstance:
     - target: {fileID: 6470441644502814734, guid: ab2f44b99adf358449c83b74c274b97b, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Sunflower 03
+      objectReference: {fileID: 0}
+    - target: {fileID: 6470441644502814734, guid: ab2f44b99adf358449c83b74c274b97b, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10143,7 +10183,7 @@ GameObject:
   - component: {fileID: 1898832785}
   - component: {fileID: 1898832787}
   - component: {fileID: 1898832786}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tilemap_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10449,6 +10489,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Bush 02 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4815235850804891613, guid: e3ef72d9f2a941b479a3bda87147db32, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10470,6 +10514,10 @@ PrefabInstance:
     - target: {fileID: 2719227801452879220, guid: 0a84f54077193d3489d0de133048df37, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Bush 01 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2719227801452879220, guid: 0a84f54077193d3489d0de133048df37, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2719227801452879243, guid: 0a84f54077193d3489d0de133048df37, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10530,7 +10578,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2043675602}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BG_spike
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10620,7 +10668,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2083645876}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BG_obj
   m_TagString: Untagged
   m_Icon: {fileID: 0}

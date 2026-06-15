@@ -56,6 +56,21 @@ namespace Dawnholder.Client.Combat
             if (Instance == this) Instance = null;
         }
 
+        // MinimapMarkers 등 순회가 필요한 컴포넌트를 위한 읽기 전용 열거.
+        // EnemyEntry는 private struct이므로 (entityId, Transform) 튜플로 노출 — 내부 타입 누수 방지.
+        // TryGetNearest가 읽는 동일 enemy.transform 경로를 재사용.
+        public IEnumerable<(int entityId, Transform transform)> EnemyTransforms
+        {
+            get
+            {
+                foreach (KeyValuePair<int, EnemyEntry> kv in _enemies)
+                {
+                    if (kv.Value.Enemy != null)
+                        yield return (kv.Key, kv.Value.Enemy.transform);
+                }
+            }
+        }
+
         // S_EntitySpawn 핸들러에서 호출.
         public void Spawn(int entityId, byte entityKind, float x, float y, int currentHp, int maxHp)
         {

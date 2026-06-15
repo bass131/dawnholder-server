@@ -188,6 +188,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Tree 02
       objectReference: {fileID: 0}
+    - target: {fileID: 5260572382779035082, guid: c5f8f079905bce04f945cd8ff4ba545a, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5260572382779035084, guid: c5f8f079905bce04f945cd8ff4ba545a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -9.25
@@ -368,9 +372,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1120436621}
     m_Modifications:
+    - target: {fileID: 1671459498715919559, guid: f98d0f39fcc67a34f844abd8a50f2c03, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 6930122694965717508, guid: f98d0f39fcc67a34f844abd8a50f2c03, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Chest Wooden
+      objectReference: {fileID: 0}
+    - target: {fileID: 6930122694965717508, guid: f98d0f39fcc67a34f844abd8a50f2c03, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6930122694965717509, guid: f98d0f39fcc67a34f844abd8a50f2c03, type: 3}
       propertyPath: m_LocalPosition.x
@@ -489,7 +501,7 @@ GameObject:
   m_Component:
   - component: {fileID: 836397612}
   - component: {fileID: 836397611}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground_Placeholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -579,7 +591,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 875345196}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BG_spike
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -671,7 +683,7 @@ GameObject:
   - component: {fileID: 1070148508}
   - component: {fileID: 1070148510}
   - component: {fileID: 1070148509}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tilemap_Solid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9666,7 +9678,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1120436621}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BG_obj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9744,6 +9756,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF Village Props - Spike (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1049023302621363167, guid: c4728654af6c1b84fb5102e3f29ffb8f, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9819,9 +9835,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1120436621}
     m_Modifications:
+    - target: {fileID: 7471922056857359772, guid: bbde5b0f2fde63f47aab9703a1e8e784, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 7471922057008591172, guid: bbde5b0f2fde63f47aab9703a1e8e784, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Road Sign 01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7471922057008591172, guid: bbde5b0f2fde63f47aab9703a1e8e784, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7471922057008591194, guid: bbde5b0f2fde63f47aab9703a1e8e784, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9884,6 +9908,10 @@ PrefabInstance:
     - target: {fileID: 5260572382779035082, guid: c5f8f079905bce04f945cd8ff4ba545a, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Tree 02 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5260572382779035082, guid: c5f8f079905bce04f945cd8ff4ba545a, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5260572382779035084, guid: c5f8f079905bce04f945cd8ff4ba545a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9992,7 +10020,7 @@ GameObject:
   - component: {fileID: 1898832785}
   - component: {fileID: 1898832787}
   - component: {fileID: 1898832786}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tilemap_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10364,6 +10392,10 @@ PrefabInstance:
     - target: {fileID: 1049023302621363167, guid: c4728654af6c1b84fb5102e3f29ffb8f, type: 3}
       propertyPath: m_Name
       value: PF Village Props - Spike
+      objectReference: {fileID: 0}
+    - target: {fileID: 1049023302621363167, guid: c4728654af6c1b84fb5102e3f29ffb8f, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
