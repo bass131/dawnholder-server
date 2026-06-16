@@ -75,7 +75,7 @@ public class EnemyEntity
 
     /// <summary>
     /// 스폰 좌표의 Y. Patrol/Idle 기준 Y.
-    /// 이번 scope에서 AI는 X축 수평 이동만 — Y는 고정.
+    /// 수직 물리(중력)가 적용되므로 Y는 고정이 아님 — 발판 끝에서 낙하 가능.
     /// </summary>
     public float SpawnY { get; }
 
@@ -108,6 +108,11 @@ public class EnemyEntity
     // 피격 넉백 속도(X). Normal/Golem EnemyHitState에서만 적용/감쇠.
     // 적은 지형 물리 없이 순수 X 적분 (기존 적 이동 모델과 동일).
     public float KnockbackVx { get; set; }
+
+    // 수직 물리 상태. GameMap.ApplyEnemyGravity가 매 틱 Physics.Step으로 갱신.
+    // FSM이 X를 세팅한 뒤 수직 패스에서 Y만 적용 (inputX=0 → X 불변).
+    public float Vy       { get; set; }
+    public bool  OnGround { get; set; }
 
     // tick thread invariant — EnemyAISystem.Update 안에서만 R/W.
     // >0: 이 tick 이후까지 이동/AI 봉쇄. 0 도달 시 자동 해제.
