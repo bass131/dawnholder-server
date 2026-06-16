@@ -51,7 +51,7 @@ public class LagCompensationTests : IDisposable
     const int   NormalMaxHp = 30;
     const float BossX      = 30f;
     const float BossY      = 0f;
-    const int   BossMaxHp   = 100;
+    const int   BossMaxHp   = 150;
 
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
         PlayerStats.Knight(), default, baseDamage: 10);

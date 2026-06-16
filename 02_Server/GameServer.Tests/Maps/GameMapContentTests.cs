@@ -22,7 +22,7 @@ public class GameMapContentTests
     const int   NormalMaxHp = 30;
     const float BossX      = 30f;
     const float BossY      = 0f;
-    const int   BossMaxHp   = 100;
+    const int   BossMaxHp   = 150;
 
     [Fact]
     public void Town_HasNoEnemies()

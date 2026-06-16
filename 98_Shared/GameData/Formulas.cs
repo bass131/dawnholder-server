@@ -103,7 +103,7 @@ public struct EnemyStats
     /// Boss 기본 스탯.
     ///
     /// <list type="bullet">
-    ///   <item>MaxHp=100: EnemyDefaultHp.ByKind[Boss]=100과 일치 의무.</item>
+    ///   <item>MaxHp=150: HP 단일 출처 = 이 factory (EnemyDefaultHp 배열은 M4.10에서 폐기 — 7cd3d12).</item>
     ///   <item>Attack=12: 페이즈1 CombatConstants.BossBaseDamage(8) + Attack(12) - 플레이어 Defense.
     ///       Knight Defense=5 기준 데미지 = Max(1, 8+12-5) = 15.</item>
     ///   <item>Defense=3: 플레이어→보스 방향은 CombatSystem이 처리 (PlayerStats→EnemyStats 오버로드).</item>
@@ -116,7 +116,7 @@ public struct EnemyStats
     public static EnemyStats BossDefault() => new EnemyStats
     {
         Defense = 3,
-        MaxHp = 100,
+        MaxHp = 150,
         Attack = 12,
         MoveSpeed = 1.5f,      // 느리고 위압적 (Golem 1.2 ~ Normal 2.0 사이)
         AggroRange = 7.0f,     // 넓은 감지
