@@ -47,7 +47,7 @@ public class BossBehaviorTests : IDisposable
     const int PlayerEntityId = 2;
     const float BossX = 22f;
     const float BossY = 0f;
-    const int BossMaxHp = 100;
+    const int BossMaxHp = 150;
 
     // 보스 데미지 계산 — Formulas 직접 참조로 drift 방지.
     // BossDefault().Attack=12, Knight().Defense=5, BossBaseDamage=8
@@ -134,36 +134,36 @@ public class BossBehaviorTests : IDisposable
         TestGameSession s = SetupSession();
         EnemyEntity boss = _map.Enemies[BossEntityId];
 
-        // 51% HP = 51. threshold = MaxHp * 0.5 = 50.
-        boss.Hp = 51;
+        // threshold = BossMaxHp * 0.5. 그 바로 위(+1)에선 페이즈2 전환 안 됨 (BossMaxHp 변경에 자동 추종).
+        boss.Hp = BossMaxHp / 2 + 1;
 
         _map.Tick(2);
 
-        Assert.False(boss.IsPhase2, "HP=51(51%) 구간에서 IsPhase2가 true로 전환되면 안 됨");
+        Assert.False(boss.IsPhase2, "임계(50%) 바로 위 HP에선 IsPhase2가 true로 전환되면 안 됨");
     }
 
     [Fact]
     public void Phase2Transition_AtThreshold_IsPhase2BecomesTrue()
     {
-        // HP = 50% (= 50) 시 IsPhase2 true 전환.
+        // HP = 임계(BossMaxHp * 0.5) 정확히 → IsPhase2 true 전환.
         TestGameSession s = SetupSession();
         EnemyEntity boss = _map.Enemies[BossEntityId];
 
-        boss.Hp = 50;
+        boss.Hp = BossMaxHp / 2;
 
         _map.Tick(2);
 
-        Assert.True(boss.IsPhase2, "HP=50(50%) 시 IsPhase2 true 전환 필요");
+        Assert.True(boss.IsPhase2, "HP=임계(50%) 정확히일 때 IsPhase2 true 전환 필요");
     }
 
     [Fact]
     public void Phase2Transition_BelowThreshold_IsPhase2BecomesTrue()
     {
-        // HP < 50% (= 49) 시 IsPhase2 true 전환.
+        // HP < 임계(BossMaxHp * 0.5) → IsPhase2 true 전환.
         TestGameSession s = SetupSession();
         EnemyEntity boss = _map.Enemies[BossEntityId];
 
-        boss.Hp = 49;
+        boss.Hp = BossMaxHp / 2 - 1;
 
         _map.Tick(2);
 

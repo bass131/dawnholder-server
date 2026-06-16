@@ -17,7 +17,7 @@ public class GameMapContentInjectionTests
 {
     // HP 기본값 (EnemyDefaultHp 테이블 정합 — MapSpawnTable 옛 값 보존).
     const int NormalMaxHp = 30;
-    const int BossMaxHp   = 100;
+    const int BossMaxHp   = 150;
 
     // ① content 주입 → N마리 스폰 + kind/HP 정합
     [Fact]

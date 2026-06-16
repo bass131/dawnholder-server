@@ -32,7 +32,7 @@ public class BossStateTests : IDisposable
     const int PlayerEntityId = 2;
     const float BossX = 22f;
     const float BossY = 0f;
-    const int BossMaxHp = 100;
+    const int BossMaxHp = 150;
 
     class TestGameSession : GameSession
     {
