@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -33,6 +34,7 @@ namespace Dawnholder.Client.Network
                 session.SetLocalEntityId(eid);
                 Debug.Log($"[Unity] EnterMap as entity {eid} at server spawn ({x}, {y})");
                 MapNameDisplay.SetMapId(0); // S_EnterMap = Town 고정
+                AudioManager.Instance?.PlayBgm(SoundKeys.BgmTown); // 최초 입장 = Town BGM (메뉴 BGM 이어짐 방지)
                 if (LocalPlayerMovement.Instance != null)
                 {
                     // 이 분기도 terrain 주입 — ADR-027 (첫 진입 race 두 순서 모두 관측,

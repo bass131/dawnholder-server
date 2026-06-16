@@ -142,7 +142,7 @@ namespace Dawnholder.Client.Audio
 
         IEnumerator CrossfadeBgm(AudioSource? prev, AudioSource next, float dur)
         {
-            float target = _bgmVol * _masterVol;
+            float target = BgmTargetVolume();
             float prevStart = prev != null ? prev.volume : 0f;
             if (dur <= 0f)
             {
@@ -193,8 +193,19 @@ namespace Dawnholder.Client.Audio
         {
             if (_bgmFade != null) return;  // 페이드 중이면 코루틴이 target 반영
             AudioSource? active = _bgmBActive ? _bgmB : _bgmA;
-            if (active != null && active.isPlaying) active.volume = _bgmVol * _masterVol;
+            if (active != null && active.isPlaying) active.volume = BgmTargetVolume();
         }
+
+        // BGM 최종 재생 볼륨 = 마스터·BGM 슬라이더 × 키별 보정, [0,1] 클램프.
+        float BgmTargetVolume() => Mathf.Min(1f, _bgmVol * _masterVol * BgmGain(_currentBgmKey));
+
+        // 키별 음량 보정. 원본 OGG 4곡이 ending보다 RMS 15~22dB 낮아 소스 자체를 -1dBFS로 증폭(WAV 교체).
+        // 이제 추가 부스트 불필요(1.0). hunting만 0.75로 한 단계 작게(영호 지시 4:3).
+        static float BgmGain(string? key) => key switch
+        {
+            SoundKeys.BgmHunting => 0.75f,
+            _ => 1f,
+        };
 
         static void Persist(string pref, float v) { PlayerPrefs.SetFloat(pref, v); PlayerPrefs.Save(); }
 
