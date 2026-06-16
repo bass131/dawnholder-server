@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.State;
 using Shared.Protocol;
@@ -27,12 +28,16 @@ namespace Dawnholder.Client.Network
                 if (partyId == 0)
                 {
                     Debug.Log("[Party] 파티 해산 수신 → 미러 클리어");
+                    bool wasInParty = PartyState.Instance.InParty;
                     PartyState.Instance.Clear();
+                    if (wasInParty) AudioManager.Instance?.PlaySfx(SoundKeys.PartyDisbanded);
                 }
                 else
                 {
                     Debug.Log($"[Party] 업데이트 수신 — partyId={partyId} leader={leaderId} m0={member0Id}(cls={member0Class}) m1={member1Id}(cls={member1Class})");
+                    bool wasInParty = PartyState.Instance.InParty;
                     PartyState.Instance.ApplyUpdate(partyId, leaderId, member0Id, member1Id, member0Class, member1Class);
+                    if (!wasInParty) AudioManager.Instance?.PlaySfx(SoundKeys.PartyFormed);
                 }
             });
         }

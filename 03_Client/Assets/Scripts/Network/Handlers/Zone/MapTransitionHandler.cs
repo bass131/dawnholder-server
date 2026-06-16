@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -55,6 +56,13 @@ namespace Dawnholder.Client.Network
                 UnityClientSession.PendingSpawnY = spawnY;
                 UnityClientSession.PendingMapId = destMapId;
                 UnityClientSession.HasPendingSpawn = true;
+
+                // BGM 전환 — 목적지 맵 BGM. null이면 현재 BGM 유지.
+                string? bgm = SoundKeys.BgmKeyForMap(destMapId);
+                if (bgm != null) AudioManager.Instance?.PlayBgm(bgm);
+
+                // 포탈 진입 whoosh — BGM 전환과 별개 1회성 효과음.
+                AudioManager.Instance?.PlaySfx(SoundKeys.PortalEnter);
 
                 // SceneTransition(페이드) 경유 씬 전환. Instance null 시 직접 LoadScene으로 fallback.
                 if (SceneTransition.Instance != null)

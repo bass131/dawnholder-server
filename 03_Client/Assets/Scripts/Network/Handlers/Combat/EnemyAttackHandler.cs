@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -78,6 +79,7 @@ namespace Dawnholder.Client.Network
 
                 if (hasFxPos)
                 {
+                    PlayAttackerSound(kindKnown, attackerKind);
                     // kind 해석 성공 시 kind-aware 오버로드, 실패 시 기존 보스 경로 폴백.
                     if (kindKnown)
                         BossAttackEffectSpawner.Spawn(attackerKind, attackPattern, fxPos, fxFacing);
@@ -88,6 +90,7 @@ namespace Dawnholder.Client.Network
                 if (!isLocalPlayer) return;
 
                 // 본인 피격 *즉시* 신호 → hit-bridge 게이트 시작 (animState==Hit 스냅샷 전 입력 예측 갭 축소).
+                AudioManager.Instance?.PlaySfx(LocalClassKey(SoundKeys.HitKnight, SoundKeys.HitMage));
                 LocalPlayerMovement.Instance?.NotifyHit();
 
                 // 피격 플래시 — LocalPlayer GameObject에서 DamageFlash 조회 또는 런타임 주입.
@@ -101,6 +104,7 @@ namespace Dawnholder.Client.Network
                 // 사망 처리 — 리스폰 페이드 연출. HP 복구는 S_PlayerHp 권위 통지가 담당.
                 if (targetCurrentHp <= 0)
                 {
+                    AudioManager.Instance?.PlaySfx(LocalClassKey(SoundKeys.DeathKnight, SoundKeys.DeathMage));
                     if (SceneTransition.Instance != null)
                         SceneTransition.Instance.PlayRespawnFade();
                 }
@@ -123,6 +127,34 @@ namespace Dawnholder.Client.Network
                 return t;
 
             return null;
+        }
+
+        // 공격자 종류별 사운드 — slime/golem = 공격 모션 + 짧은 울음 레이어, boss = 찌르기.
+        // kind 미해석 시 무음(과거 단일 enemy_attack은 분리로 대체).
+        static void PlayAttackerSound(bool kindKnown, EnemyKind kind)
+        {
+            if (!kindKnown) return;
+            switch (kind)
+            {
+                case EnemyKind.Normal:
+                    AudioManager.Instance?.PlaySfx(SoundKeys.AttackSlime);
+                    AudioManager.Instance?.PlaySfx(SoundKeys.CrySlime);
+                    break;
+                case EnemyKind.Golem:
+                    AudioManager.Instance?.PlaySfx(SoundKeys.AttackGolem);
+                    AudioManager.Instance?.PlaySfx(SoundKeys.CryGolem);
+                    break;
+                case EnemyKind.Boss:
+                    AudioManager.Instance?.PlaySfx(SoundKeys.BossStab);
+                    break;
+            }
+        }
+
+        // 로컬 플레이어 직업에 맞는 사운드 키 선택. ClassLoadout 단일 진입점 경유.
+        static string LocalClassKey(string knightKey, string mageKey)
+        {
+            CharacterClass cls = (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
+            return cls == CharacterClass.Mage ? mageKey : knightKey;
         }
     }
 }

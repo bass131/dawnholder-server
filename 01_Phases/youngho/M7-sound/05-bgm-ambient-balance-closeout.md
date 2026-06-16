@@ -13,7 +13,7 @@ summary: 마을/전투/보스 BGM 전환 + ambient + 볼륨 밸런싱 + 설정 +
 
 # Phase 05: BGM/Ambient + 볼륨 밸런싱 + 클로즈아웃
 
-> **상태**: pending
+> **상태**: ⏳ 대기 (무인 1패스 마지막 — BGM 존 전환[MapTransitionHandler 단일 훅]+볼륨 기본값+클로즈아웃). ambient는 시스템 없어 M8+. **push/PR/-DONE 박제/청음 = 아침 영호 GO** (야간엔 미실행).
 > **마일스톤**: M7
 > **등급**: 복잡 — irreversible 깃발은 영호 GO 게이트로 흡수. 도메인은 client 단일(서버/프로토콜 무변경)이고 변경 표면적이 좁아 *대규모* 미상향 (M5 closeout이 대규모였던 이유는 3+ 도메인 + 8패킷 + ProtocolVersion bump). Opus plan-auditor 권고대로 등급 근거 명시.
 > **담당**: client + 영호 청음

@@ -222,7 +222,8 @@ internal sealed class ChaseState : ActorState<EnemyEntity>
     }
 }
 
-// 피격 hitstun. AI 이동(Patrol/Chase) 멈춤 + 넉백 감쇠. 순수 X (적은 지형 물리 없음).
+// 피격 hitstun. AI 이동(Patrol/Chase) 멈춤 + 넉백 감쇠. 넉백은 순수 X.
+// 수직 중력은 GameMap.ApplyEnemyGravity가 FSM과 독립적으로 매 틱 적용 — Hit 상태에서도 낙하 가능.
 // stun 길이 = HitLatchTicks(EnterHitState가 AnimLatchTicks 세팅, EnemyAISystem이 매 틱 감소) → 0 도달 시 aggro 재판정 복귀.
 internal sealed class EnemyHitState : ActorState<EnemyEntity>
 {

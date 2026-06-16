@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Network;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.Scenes;
@@ -148,7 +149,11 @@ namespace Dawnholder.Client.Prediction
 
         // LocalPlayerInput이 점프 입력 시점 접지 게이트 통과 후 호출.
         // 다음 서브스텝이 소비할 때까지 latch 유지 — 0-substep 프레임에서 유실 방지.
-        public void RequestJump() => _jumpEdgeThisTick = true;
+        public void RequestJump()
+        {
+            _jumpEdgeThisTick = true;
+            AudioManager.Instance?.PlaySfx(SoundKeys.JumpStart);
+        }
 
         // LocalPlayerInput의 점프 게이트용. 입력 *시점* 접지 여부를 정확히 반영.
         public bool OnGround => _predictor.OnGround;
@@ -170,8 +175,11 @@ namespace Dawnholder.Client.Prediction
             //   Mage 평타는 전진 없음(StartImpulse 호출 안 함). durationTicks = AttackCommitWindowTicks
             //   (서버 평타 default = 이 값). decay = KnockbackDecayPerTick(0.75).
             if (_selectedClass != CharacterClass.Mage)
+            {
+                AudioManager.Instance?.PlaySfx(SoundKeys.MeleeSwing, 1f, 0.05f);
                 QueueImpulse(Constants.AttackLungeInitialVx, Constants.KnockbackDecayPerTick,
                     Constants.AttackCommitWindowTicks);
+            }
         }
 
         // 스킬 시전 송신 성공 시 호출. 이동잠금 commit window는 평타와 공유하되, 쿨다운은 *스킬 독립*

@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Gameplay;
 using Dawnholder.Client.Input;
@@ -91,6 +92,11 @@ namespace Dawnholder.Client.Bootstrap
             ClassVisualMount.Attach(go.transform, config != null ? config.VisualPrefab : null);
             if (config != null)
                 go.GetComponent<LocalPlayerInput>()?.SetAttackStrategy(config.CreateStrategy());
+
+            // 발소리/착지음 컴포넌트 — LocalPlayer에 AddComponent (프리팹 편집 없이 코드 주도).
+            // [DisallowMultipleComponent]라 이미 박혀있으면 GetComponent가 반환하므로 중복 없음.
+            if (go.GetComponent<FootstepTicker>() == null)
+                go.AddComponent<FootstepTicker>();
 
             // 파티 초대 송신 컴포넌트 — LocalPlayer에 AddComponent (프리팹 편집 없이 코드 주도).
             if (go.GetComponent<PartyInviteSender>() == null)

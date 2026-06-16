@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M7 — 게임 사운드 + 청음 튜닝 + 플레이테스트 폴리시 (DONE)</title>
+<style>
+  :root{--bg:#0e1116;--panel:#171c24;--panel2:#1e2430;--line:#2a313c;--fg:#e6edf3;--mut:#8b949e;--ok:#3fb950;--warn:#d29922;--acc:#58a6ff;--purp:#bc8cff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--fg);font-family:"Segoe UI","Malgun Gothic",sans-serif;line-height:1.6;padding:32px 20px;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:26px;margin-bottom:4px;}
+  .sub{color:var(--mut);margin-bottom:24px;font-size:14px;}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;}
+  .badge{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12.5px;color:var(--mut);}
+  .badge b{color:var(--fg);}
+  .badge.ok{border-color:var(--ok);color:var(--ok);}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px;}
+  h2{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  h2 .em{font-size:18px;}
+  p{font-size:14px;color:#cdd5de;margin-bottom:8px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;}
+  .card .ph{font-size:12px;color:var(--acc);font-weight:600;letter-spacing:.3px;}
+  .card .t{font-size:14px;font-weight:600;margin:3px 0 6px;}
+  .card .d{font-size:12.5px;color:var(--mut);}
+  .card .c{font-family:Consolas,monospace;font-size:11.5px;color:var(--purp);margin-top:8px;}
+  .tl{position:relative;padding-left:22px;}
+  .tl::before{content:"";position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:var(--line);}
+  .ev{position:relative;margin-bottom:14px;}
+  .ev::before{content:"";position:absolute;left:-19px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--acc);border:2px solid var(--bg);}
+  .ev.warn::before{background:var(--warn);}
+  .ev .r{font-weight:700;font-size:13px;}
+  .ev .r small{color:var(--purp);font-family:Consolas,monospace;font-weight:400;margin-left:6px;}
+  .ev .x{font-size:13px;color:#cdd5de;}
+  ul{margin:6px 0 0 18px;}li{font-size:13.5px;color:#cdd5de;margin-bottom:5px;}
+  .next{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:640px){.next{grid-template-columns:1fr;}}
+  code{background:#0c0f14;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-family:Consolas,monospace;font-size:12px;color:var(--purp);}
+  .foot{color:var(--mut);font-size:12px;text-align:center;margin-top:24px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;}
+  th{background:var(--panel2);color:var(--acc);font-weight:600;}
+  .ok-t{color:var(--ok);font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔊 M7 — 게임 사운드 + 청음 튜닝 + 플레이테스트 폴리시</h1>
+  <div class="sub">마일스톤 마감 · 2026-06-16 · 브랜치 <code>feature/m7-sound</code></div>
+
+  <div class="badges">
+    <span class="badge">등급 <b>대규모</b></span>
+    <span class="badge">도메인 <b>클라 사운드 · 클라 UI/씬 · 서버 게임플레이</b></span>
+    <span class="badge ok">WSL2 <b>657 / 0 / 5</b></span>
+    <span class="badge ok">reviewer 🔴 <b>0</b></span>
+    <span class="badge ok">Unity 컴파일 <b>0 err</b></span>
+    <span class="badge ok">ProtocolVersion <b>v16 무변경</b></span>
+    <span class="badge">origin/main <b>+16 커밋 · 182 파일</b></span>
+  </div>
+
+  <section>
+    <h2><span class="em">📌</span> TL;DR</h2>
+    <p>게임에 <b>사운드가 0</b>이던 상태에서 <b>사운드 시스템 + 33개 사운드</b>를 입혔다. 야간 AutoMode가 인프라·wiring·에셋 생성 1패스를 완주하고, 영호가 <b>인게임 청음</b>으로 직접 검수하며 대대적 재튜닝을 지시했다.</p>
+    <p>핵심 재튜닝 3축: <b>① 사운드 키 분리</b>(단일 hit/attack → 적종류·직업·보스별, 메이플스토리가 <i>각 이벤트에 어떤 성격의 소리를 쓰는지</i> 참고) · <b>② BGM 소스 증폭</b>(원본이 엔딩보다 15~22dB 작아 안 들리던 것을 Unity 내 샘플 정규화) · <b>③ town BGM 전환 버그</b>. 곁들여 플레이테스트 게임플레이 3건(보스 빈방 재출현 / 적 중력·낙사 / 캐릭터선택 포트레이트 애니)도 폴리시.</p>
+    <p><b>ProtocolVersion v16 무변경</b> — 사운드는 순수 클라 표현, 서버 게임플레이는 기존 패킷(S_EntityDeath/S_EntityState) 재사용. 영호 GO로 push/PR/admin merge.</p>
+  </section>
+
+  <section>
+    <h2><span class="em">🎯</span> 무엇을 만들었나</h2>
+    <div class="grid">
+      <div class="card"><div class="ph">사운드 인프라</div><div class="t">AudioManager</div><div class="d">자기-부트스트랩 싱글톤(프리팹 편집 0). PlaySfx/PlayBgm 크로스페이드, 볼륨 PlayerPrefs, 누락 클립 no-op.</div><div class="c">pool 12 + UI + BGM 2채널</div></div>
+      <div class="card"><div class="ph">키 적용</div><div class="t">33 사운드 키</div><div class="d">BGM 5 · 전투 14 · 이동 3 · 플레이어 1 · 존 1 · UI 9. 콜사이트 33곳.</div><div class="c">발소리=코드 티커</div></div>
+      <div class="card"><div class="ph">AI 생성</div><div class="t">에셋 25개</div><div class="d">ElevenLabs SFX 24 + Lyria 엔딩 BGM 1. 기존 17은 GUID 보존 이관(BGM 4 + die 3 재사용).</div><div class="c">elevenlabs-sound-effects-v2</div></div>
+      <div class="card"><div class="ph">청음 재튜닝</div><div class="t">키 분리 + 성격 재생성</div><div class="d">적종류/직업/보스별 13 신규. 마법사·기사 anime young(귀신화 원인 shimmer 제거), melee 순수 휘두름.</div><div class="c">durationInSeconds 지정</div></div>
+      <div class="card"><div class="ph">청음 재튜닝</div><div class="t">BGM 소스 증폭</div><div class="d">GetData→peak -1dBFS 정규화(hunting -3.4)→WAV 재작성. town 전환 버그 수정.</div><div class="c">RMS -16~-17dB로 엔딩 정렬</div></div>
+      <div class="card"><div class="ph">폴리시(서버)</div><div class="t">보스 재출현 + 적 중력/낙사</div><div class="d">빈방 보스 재출현, 적/보스 수직 중력, kill-plane 낙사 소멸.</div><div class="c">기존 패킷 재사용</div></div>
+      <div class="card"><div class="ph">폴리시(클라)</div><div class="t">캐릭터선택 포트레이트 애니</div><div class="d">직업 버튼 캐릭터 이미지 Animator 구동(UI Image 바인딩 재타겟).</div><div class="c">ClassSelect/ 클립</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="em">🤔</span> 왜 필요한가 — 결정 흐름</h2>
+    <div class="tl">
+      <div class="ev"><div class="r">키 분리 = 적종류·직업·보스별 <small>vs 단일 스탬프</small></div><div class="x">메이플이 이벤트마다 다른 성격의 소리를 쓰는 걸 참고. 청각이 대상을 구분 → 타격감. 단점=키·에셋 수 ↑(13 신규).</div></div>
+      <div class="ev"><div class="r">BGM 소스 증폭 <small>vs AudioSource.volume 상향</small></div><div class="x">volume은 [0,1] 천장이라 작은 클립은 못 키움. GetData(★LoadAudioData+Decompress)로 샘플 읽어 정규화 후 WAV 재작성. "town 안 들림 = 사실 너무 작음".</div></div>
+      <div class="ev"><div class="r">사운드 = 전량 클라, 서버 무변경 <small>vs 사운드 패킷 신설</small></div><div class="x">헌법 #1 — 사운드는 렌더 계층. 적 종류=EnemyRegistry, 직업=ClassLoadout 로컬 보유. ProtocolVersion 무변경 + co-review 회피.</div></div>
+      <div class="ev"><div class="r">적 중력 = FSM 독립 매 틱 <small>vs Chase 상태에 끼워넣기</small></div><div class="x">ApplyEnemyGravity가 Physics.Step(inputX=0) 재사용 → 수평 AI 보존 + 수직만. Hit 상태도 낙하. AI 무오염 + 결정론 물리 재사용.</div></div>
+      <div class="ev"><div class="r">적 낙사 = 소멸 + 책임 분리 <small>vs HandleEnemyDeath 재사용</small></div><div class="x">killer 없는 소멸 → DespawnEnemyByFall 별도 경로. Normal/Golem=재출현, Boss=제거. StageClear·OnEnemyKilled 오발동 X.</div></div>
+      <div class="ev warn"><div class="r">캐릭터선택 = UI Image 재타겟 <small>★사고+복구</small></div><div class="x">UI Image는 클립이 Image.m_Sprite에 바인딩돼야 함. 초기에 게임플레이 Idle 클립을 잘못 바꿔 인게임 캐릭터 정지 → git checkout 복원. 게임플레이=SpriteRenderer / select=ClassSelect/ 완전 분리.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="em">🛠️</span> 어떻게 만들었나 — 커밋 흐름</h2>
+    <p><b>야간 무인 1패스:</b> <code>4c378a4</code> docs → <code>4f49dd6</code> A 인프라 → <code>454e55b</code> B wiring(27키) → <code>492dfcd</code> 확장(5키) → <code>d8bc29b</code> C 에셋이관 → <code>0153fd3</code> D AI생성 25 → watch(party_disbanded).</p>
+    <p><b>영호 청음/폴리시 세션:</b> <code>77c762f</code> 분리 wiring → <code>d68d7e8</code> 30개 재생성 → <code>6351f52</code> 서버(보스재출현+중력/낙사) → <code>e9346ae</code> 사운드(BGM증폭+town+보이스) → <code>d0b7a76</code> 캐릭터선택 애니 → <code>94d7f7b</code> 잔여 정리. <code>75ccebb</code>=M6 마무리 아트 동반.</p>
+  </section>
+
+  <section>
+    <h2><span class="em">🧪</span> 테스트 결과</h2>
+    <table>
+      <tr><th>검증</th><th>결과</th></tr>
+      <tr><td>WSL2 회귀(격리 ~/dawnholder-poc)</td><td class="ok-t">Passed 657 / Failed 0 / Skipped 5 (baseline 645 → +12)</td></tr>
+      <tr><td>신규 테스트(서버)</td><td>BossEmptyRoomRespawnTests 4 + EnemyGravityTests 8(중력4+낙사4)</td></tr>
+      <tr><td>reviewer(Opus) Tier 2-A</td><td class="ok-t">🔴 0 (보스재출현/중력/낙사)</td></tr>
+      <tr><td>Unity 컴파일 + BuildPlayer</td><td class="ok-t">0 err / 0 warn · Succeeded 726MB · 씬 7</td></tr>
+      <tr><td>헌법 #1 (서버/프로토콜)</td><td class="ok-t">ProtocolVersion v16 무변경 · 98_Shared 무변경 · 패킷 신설 0</td></tr>
+      <tr><td>영호 인게임 청음/거동</td><td class="ok-t">사운드·BGM·캐릭터선택·중력·낙사·보스재출현 = 이상 무</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="em">➡️</span> 다음 스텝</h2>
+    <div class="next">
+      <div class="card"><div class="t">이번 마감 후</div><div class="d">push → PR → admin merge (영호 GO 완료). 비가역 = GO 게이트 통과.</div></div>
+      <div class="card"><div class="t">이월 (M7 범위 밖)</div><div class="d">sfx.player.respawn(트리거 신호 정의) · 투사체/슬라임/골렘 DamageEffect prefab(아트) · 존 앰비언트/버튼 호버 등 확장 후보.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="em">📚</span> 학습 일지 후보 키워드</h2>
+    <ul>
+      <li><b>GetData + LoadAudioData</b> — 에디터에서 AudioClip.GetData는 LoadAudioData() + DecompressOnLoad 필수(아니면 빈 샘플).</li>
+      <li><b>AudioSource 천장 → 소스 증폭</b> — volume [0,1]은 작은 클립을 못 키움. 샘플 정규화 후 WAV 재작성이 진짜 해법.</li>
+      <li><b>UI Image vs SpriteRenderer 애니 바인딩</b> — UI는 Image.m_Sprite, 게임플레이는 SpriteRenderer. AnimationUtility로 재타겟.</li>
+      <li><b>서버 keep-alive</b> — <code>sleep infinity | dotnet run</code>(stdin EOF 방지). 종료=<code>fuser -k 7777/tcp</code>.</li>
+      <li><b>WSL 중첩 셸 이중 전개</b> — $PATH/$() 이중 전개로 (x86) 괄호 syntax error. 리터럴 경로로 박기.</li>
+    </ul>
+  </section>
+
+  <div class="foot">Dawnholder · M7 사운드 마일스톤 마감 · AI 사실 박제 (ADR-031) · 2026-06-16</div>
+</div>
+</body>
+</html>

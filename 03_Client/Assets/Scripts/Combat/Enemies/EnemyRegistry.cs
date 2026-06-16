@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections;
 using System.Collections.Generic;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
 using Shared.GameData;
@@ -38,6 +39,9 @@ namespace Dawnholder.Client.Combat
         }
 
         readonly Dictionary<int, EnemyEntry> _enemies = new();
+
+        // 보스 텔레그래프(준비자세) 상승엣지 감지용 — entityId별 직전 animState.
+        readonly Dictionary<int, byte> _lastAnimState = new();
 
         void Awake()
         {
@@ -110,6 +114,18 @@ namespace Dawnholder.Client.Combat
         {
             if (!_enemies.TryGetValue(entityId, out EnemyEntry entry)) return;
             entry.Interp.EnqueueSnapshot(serverTick, x, y + entry.Enemy.VisualFootOffset);
+
+            // 보스 준비자세 사운드 — animState가 Attack로 상승엣지 전환하는 순간 1회.
+            // (일반 적은 무음. latch 동안 재진입 없음 → 공격 1회당 1번.)
+            byte last = _lastAnimState.TryGetValue(entityId, out byte prev) ? prev : (byte)AnimState.Idle;
+            if (animState != last)
+            {
+                _lastAnimState[entityId] = animState;
+                if (entry.Enemy.Kind == EnemyKind.Boss &&
+                    animState == (byte)AnimState.Attack && last != (byte)AnimState.Attack)
+                    AudioManager.Instance?.PlaySfx(SoundKeys.BossTelegraph);
+            }
+
             entry.Motion?.SetAnimState(animState);
         }
 
@@ -131,6 +147,7 @@ namespace Dawnholder.Client.Combat
         {
             if (!_enemies.TryGetValue(entityId, out EnemyEntry entry)) return;
             _enemies.Remove(entityId);
+            _lastAnimState.Remove(entityId);
             entry.Interp.ClearBuffer();
             entry.Motion?.ForceDeathState();
             StartCoroutine(DestroyAfterDeathVfx(entry.Enemy.gameObject));
@@ -232,6 +249,7 @@ namespace Dawnholder.Client.Combat
                 if (entry.Enemy != null) Destroy(entry.Enemy.gameObject);
             }
             _enemies.Clear();
+            _lastAnimState.Clear();
         }
     }
 }

@@ -1,4 +1,5 @@
 #nullable enable
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.State;
 using UnityEngine;
 
@@ -51,6 +52,7 @@ namespace Dawnholder.Client.UI
             if (qs.CurrentCount < qs.TargetCount) return;
 
             _shown = true;
+            AudioManager.Instance?.PlaySfx(SoundKeys.QuestComplete);
             QuestAlert alert = QuestAlert.BuildRuntime(_alertParent, QuestAlertKind.Clear);
             alert.PlayThenCallback(() => { if (alert != null) Destroy(alert.gameObject); });
         }

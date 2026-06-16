@@ -1,3 +1,4 @@
+using Dawnholder.Client.Audio;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -64,6 +65,8 @@ namespace Dawnholder.Client.UI
             if (_pauseCanvas != null)
             {
                 _pauseCanvas.SetActive(_isPaused);
+                if (_isPaused) AudioManager.Instance?.PlaySfx(SoundKeys.PanelOpen);
+                else           AudioManager.Instance?.PlaySfx(SoundKeys.PanelClose);
             }
             // timeScale은 *Realtime* 기반 입력(InputSystem)은 영향 X — ESC 재누름으로 닫기 보장.
             Time.timeScale = _isPaused ? 0f : 1f;
@@ -71,12 +74,14 @@ namespace Dawnholder.Client.UI
 
         public void OnResumeClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             if (!_isPaused) return;
             Toggle();
         }
 
         public void OnMainMenuClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             // 함정 방지: timeScale 0인 상태로 씬 로드하면 새 씬도 정지된 채 로드됨.
             Time.timeScale = 1f;
             _isPaused = false;
@@ -91,6 +96,7 @@ namespace Dawnholder.Client.UI
 
         public void OnQuitClicked()
         {
+            AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             Debug.Log("[PauseMenu] Quit clicked");
             Time.timeScale = 1f;
 #if UNITY_EDITOR

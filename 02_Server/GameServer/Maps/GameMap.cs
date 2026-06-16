@@ -53,6 +53,9 @@ public class GameMap
     // Stage Clear 1회 보장 flag.
     bool _stageCleared = false;
 
+    // 보스 초기 스폰 지점 — content에서 Boss 스폰 포인트 캡처(빈 방 리스폰용). Boss 없는 맵은 null.
+    readonly EnemySpawnPoint? _bossSpawnPoint;
+
     // ProcessAttack이 rewind 범위 검증에 사용하는 현재 서버 tick.
     // Tick(long tickNumber) 진입 직후 갱신 — job 처리 *전*에 갱신해야 job 안에서 올바른 tick 읽힘.
     // tick thread invariant 안에서만 읽기/쓰기.
@@ -91,6 +94,7 @@ public class GameMap
                     _                => 0,
                 };
                 SpawnEnemy(kind, sp.X, sp.Y, maxHp);
+                if (kind == EnemyKind.Boss) _bossSpawnPoint = sp;
             }
         }
     }
@@ -198,10 +202,11 @@ public class GameMap
     /// System 호출 순서 (§2.2 명문화):
     ///   1. physics (PlayerEntity Physics.Step + RecordPosition)
     ///   2. CombatSystem (EnqueueJob 경유 attack job 처리)
-    ///   3. EnemyAISystem (Normal/Golem FSM)
-    ///   4. BossBehaviorSystem (Boss 패턴 FSM + 데미지 판정)
-    ///   5. DeferredDamageSystem (impactTick 도달 데미지 + 사망 처리)
-    ///   6. RespawnSystem
+    ///   3. EnemyAISystem (Normal/Golem FSM — X 이동)
+    ///   4. BossBehaviorSystem (Boss 패턴 FSM — X 이동)
+    ///   5. ApplyEnemyGravity (모든 적 수직 중력 패스 — Y/Vy/OnGround 갱신)
+    ///   6. DeferredDamageSystem (impactTick 도달 데미지 + 사망 처리)
+    ///   7. RespawnSystem
     ///
     /// physics가 1순위인 이유: 이 틱의 player 최종 위치를 RecordPosition으로 기록한 뒤
     ///   CombatSystem이 rewind lookup을 해야 하기 때문 — 단, job은 _currentTick 갱신 후 physics 전에 처리.
@@ -315,11 +320,19 @@ public class GameMap
         // 5) BossBehaviorSystem: Boss FSM 1틱 (쿨다운→telegraph→데미지판정→리셋, latch, broadcast).
         _bossBehaviorSystem.Update(this, tickNumber);
 
-        // 6) DeferredDamageSystem: impactTick 도달 항목 HP 적용 + S_HitResult broadcast + 사망 처리.
+        // 6) 적 수직 물리: FSM이 X를 세팅한 뒤 수직 중력 패스 적용.
+        //    inputX=0 → Physics.Step이 X를 변경하지 않아 FSM 세팅 X 보존.
+        //    terrain==null 이면 Physics.Step이 자동으로 StepFlat(Y<=0 clamp) 으로 위임.
+        ApplyEnemyGravity();
+
+        // 7) DeferredDamageSystem: impactTick 도달 항목 HP 적용 + S_HitResult broadcast + 사망 처리.
         _deferredDamageSystem.Process(this, tickNumber);
 
-        // 7) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
+        // 8) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
         _respawnSystem.Process(this, tickNumber);
+
+        // 9) 보스 방 빈 상태 리스폰: 플레이어 0 + 보스 부재면 재출현(영호 지시). 빈 방에서만 리셋.
+        MaybeRespawnBoss();
     }
 
     // ── 지형 쿼리 ────────────────────────────────────────────────────────────────
@@ -586,6 +599,85 @@ public class GameMap
     /// </summary>
     static byte ComputePlayerAnimState(PlayerEntity p)
         => (byte)p.ActionFsm.AnimState;
+
+    /// <summary>
+    /// 보스 방이 비고(플레이어 0) 보스도 없으면 보스를 재출현 — 다음 입장자가 fresh 보스를 만남(영호 지시).
+    /// 빈 방에서만 리셋 → 전투 중/직후 갑작스런 재등장 없음. StageClear flag도 함께 리셋.
+    /// broadcast 불필요: 플레이어 0명일 때만 실행 → 수신자 0. 입장자는 SendInitialRosterTo로 받음.
+    /// tick thread invariant: Tick 안에서만 호출. 헌법 #5 정합(await/sleep 없음).
+    /// </summary>
+    private void MaybeRespawnBoss()
+    {
+        if (_bossSpawnPoint is not { } bsp) return;          // 보스 없는 맵 → 매 틱 최저비용 early-return
+        if (_players.Count != 0) return;                     // 누군가 있으면 대기(전투 중/직후 리스폰 금지)
+        foreach (EnemyEntity e in _enemies.Values)
+            if (e.Kind == EnemyKind.Boss) return;            // 이미 보스 존재 → 중복 방지
+        EnemyEntity boss = SpawnEnemy(EnemyKind.Boss, bsp.X, bsp.Y, EnemyStats.BossDefault().MaxHp);
+        _stageCleared = false;
+        Console.WriteLine($"[Map:{MapId}] 빈 방 보스 재출현: id={boss.EntityId}");
+    }
+
+    /// <summary>
+    /// 살아 있는 모든 적(Normal/Golem/Boss)에 수직 중력 패스 적용.
+    ///
+    /// FSM(EnemyAISystem/BossBehaviorSystem)이 X를 세팅한 *뒤*에 호출 —
+    /// inputX=0으로 Physics.Step을 호출하면 X 변화 없이 Y/Vy/OnGround만 갱신된다.
+    ///
+    /// terrain==null(평지 맵)이면 Physics.Step이 StepFlat으로 위임:
+    ///   Y&lt;=0 이면 clamp+onGround=true — 지면 아래로 꺼지지 않음.
+    ///
+    /// moveParams의 MoveSpeed/JumpVel은 inputX=0+jumpPressed=false라 사실상 미사용이지만
+    /// Physics.Step 시그니처 충족을 위해 실제 적 스탯 기반 값을 전달한다.
+    ///
+    /// 헌법 #5: async/await/Thread.Sleep 없음 — 순수 동기 연산.
+    /// </summary>
+    private void ApplyEnemyGravity()
+    {
+        PhysicsInput gravityInput = new PhysicsInput((sbyte)0, false, Constants.TickDuration);
+        List<EnemyEntity>? fallen = null; // 낙사 대상 — 순회 중 _enemies 수정 금지, collect-then-remove
+        foreach (EnemyEntity enemy in _enemies.Values)
+        {
+            MoveParams move = new MoveParams(enemy.Stats.MoveSpeed, 0f);
+            PhysicsState before = new PhysicsState(
+                new Vector2(enemy.X, enemy.Y),
+                new Vector2(0f, enemy.Vy),
+                enemy.OnGround);
+            PhysicsState after = Physics.Step(before, gravityInput, _terrain, move);
+            enemy.Y        = after.Position.Y;
+            enemy.Vy       = after.Velocity.Y;
+            enemy.OnGround = after.OnGround;
+
+            if (_terrain != null && enemy.Y < _terrain.KillPlaneY)
+            {
+                fallen ??= new List<EnemyEntity>();
+                fallen.Add(enemy);
+            }
+        }
+
+        if (fallen != null)
+        {
+            foreach (EnemyEntity enemy in fallen)
+                DespawnEnemyByFall(enemy);
+        }
+    }
+
+    /// <summary>
+    /// kill-plane 아래로 낙사한 적을 소멸시킨다.
+    ///
+    /// HandleEnemyDeath와의 차이:
+    ///   - killer 없음 → OnEnemyKilled 호출 X (파티 킬 크레딧 오발동 방지).
+    ///   - Boss → StageClear 발동 X (보스방에 낭떠러지 없으므로 실질 비발생, 안전망 차원).
+    ///   - Normal/Golem → EnqueueRespawn 호출로 사냥터 인구 유지.
+    ///
+    /// 헌법 §5: async/await/Thread.Sleep 없음 — 순수 동기.
+    /// </summary>
+    private void DespawnEnemyByFall(EnemyEntity enemy)
+    {
+        BroadcastToAll(new S_EntityDeath { entityId = enemy.EntityId }.Write());
+        RemoveEnemy(enemy.EntityId);
+        if (enemy.Kind == EnemyKind.Normal || enemy.Kind == EnemyKind.Golem)
+            EnqueueRespawn(enemy);
+    }
 
     /// <summary>
     /// Stage Clear flag를 true로 설정. HandleEnemyDeath가 Boss 사망 시 1회만 호출.

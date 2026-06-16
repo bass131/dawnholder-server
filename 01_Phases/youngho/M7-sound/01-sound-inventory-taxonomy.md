@@ -3,7 +3,7 @@ owner: youngho
 milestone: M7
 phase: 01
 title: 사운드 인벤토리 + 분류 체계 + 폴더 구조
-status: pending
+status: done
 grade: 보통
 estimated: 1~3h
 domain: client
@@ -12,7 +12,7 @@ summary: 게임 이벤트별 필요 사운드 목록화 + Sound 폴더 분류(BG
 
 # Phase 01: 사운드 인벤토리 + 분류 체계 + 폴더 구조
 
-> **상태**: pending
+> **상태**: ✅ 실측 완료 (2026-06-16) — 코드 트리거 전수조사 + 키 카탈로그 + 폴더 분류(Resources/Audio: BGM/SFX/UI) 확정. 산출물 = 세션 플랜파일 §2 키표. die 매핑 Normal→Slime/Golem→Golem/Boss(뱀파이어)→Vampire, 진짜 잉여=Frog/Mushroom.
 > **마일스톤**: M7
 > **등급**: 보통
 > **담당**: client + 영호 의논 (분류 체계 결정)

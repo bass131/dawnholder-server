@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -29,6 +30,16 @@ namespace Dawnholder.Client.Network
             {
                 Debug.Log($"[Unity] Entity {eid} died");
                 if (EnemyRegistry.Instance == null) return;
+
+                string dieKey = SoundKeys.EnemyDie;
+                if (EnemyRegistry.Instance.TryGetKind(eid, out EnemyKind kind))
+                {
+                    dieKey = kind == EnemyKind.Boss ? SoundKeys.BossDie
+                           : kind == EnemyKind.Golem ? SoundKeys.GolemDie
+                           : SoundKeys.EnemyDie;
+                }
+                AudioManager.Instance?.PlaySfx(dieKey);
+
                 EnemyRegistry.Instance.Despawn(eid);
             });
         }

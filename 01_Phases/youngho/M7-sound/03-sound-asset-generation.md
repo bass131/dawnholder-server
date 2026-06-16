@@ -3,7 +3,7 @@ owner: youngho
 milestone: M7
 phase: 03
 title: 사운드 에셋 생성 (Unity AI Generator) + import + 분류 배치
-status: pending
+status: in-progress
 grade: 복잡
 risk: unity-asset
 estimated: 3~5h
@@ -13,7 +13,9 @@ summary: AI Generator로 사운드 생성 + Sound 폴더 분류 배치 + import 
 
 # Phase 03: 사운드 에셋 생성 (Unity AI Generator) + import + 분류 배치
 
-> **상태**: pending
+> **상태**: 🚧 진행 중 (2026-06-16 AutoMode).
+>
+> **★ 갱신 (영호 결정)**: 생성 = **AI 단독(`elevenlabs-sound-effects-v2`)**. **BgmComposer(칩튠) 전면 배제 — 폴백조차 X**("저품질 사운드 아예 배제"). 실패 = **재시도 최대 3회 → MISSING 무음**(무한 생성 금지). 기존 처리: 유지=BGM 4+die 3(Slime/Golem/Vampire) / **재생성=칩튠 의심 8 WAV**(공격·피격·점프·스테이지클리어·매직, `_replaced/`로 치움) / 신규=빈칸 11 = **AI 19개**. 잉여=Frog/Mushroom만(`_unused/`). 프롬프트 골격=ElevenLabs 권장(묘사어 3~4 + 품질 태그, dry no music / 팡파레는 music sting), 19개 초안=플랜파일 §3. savePath 무시 시 `AssetDatabase.MoveAsset`. import: SFX=DecompressOnLoad/mono, BGM=Streaming/stereo.
 > **마일스톤**: M7
 > **등급**: 복잡 (unity-asset — 에셋 생성/import)
 > **담당**: 영호 주도 (AI Generator/청음) + client 보조 (import 설정/배치)

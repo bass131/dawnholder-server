@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -85,6 +86,7 @@ namespace Dawnholder.Client.Network
                     ? EffectAnchor.ResolvePosition(spawnRoot)
                     : (target?.position ?? Vector3.zero);
 
+                AudioManager.Instance?.PlaySfx(SoundKeys.ProjectileLaunch);
                 GameObject proj = Object.Instantiate(prefab, spawnPos, Quaternion.identity);
                 ProjectileVisual visual = proj.GetComponent<ProjectileVisual>()
                                          ?? proj.AddComponent<ProjectileVisual>();

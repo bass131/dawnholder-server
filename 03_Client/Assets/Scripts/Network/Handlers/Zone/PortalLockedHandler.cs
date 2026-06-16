@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.UI;
 using Shared.Protocol;
@@ -25,6 +26,7 @@ namespace Dawnholder.Client.Network
                     Debug.LogWarning("[PortalLockedHandler] ToastUI 미박힘 — 메시지 drop. CombatBootstrap 누락?");
                     return;
                 }
+                AudioManager.Instance?.PlaySfx(SoundKeys.UiError);
                 ToastUI.Instance.Show($"보스 입장: {required}킬 필요 (현재 {current})");
             });
         }
