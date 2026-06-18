@@ -14,7 +14,7 @@ description: 리뷰용(pull) 세션 시작 — 구현이 아니라 *깊은 학�
 
 ### 1. pending-comprehension 원장 열기
 
-`.claude/state/pending-comprehension.md`(P05 신설) 통독 → **"아직 깊게 안 판 항목" 목록**을 영호에게 제시:
+[`00_Document/ledgers/pending-comprehension.md`](../../../00_Document/ledgers/pending-comprehension.md) 통독 → **"아직 깊게 안 판 항목" 목록**을 영호에게 제시:
 
 ```
 📚 깊게 안 본 항목 (pending-comprehension):
@@ -49,5 +49,5 @@ description: 리뷰용(pull) 세션 시작 — 구현이 아니라 *깊은 학�
 ### 관련
 
 - 세션 2종 개념 → [`loop-driver.md`](../../../00_Document/policies/loop-driver.md) §6
-- pending-comprehension 원장 → `.claude/state/pending-comprehension.md` (P05 신설)
+- pending-comprehension 원장 → [`00_Document/ledgers/pending-comprehension.md`](../../../00_Document/ledgers/pending-comprehension.md)
 - 구현 세션 → [`/session:start`](start.md)

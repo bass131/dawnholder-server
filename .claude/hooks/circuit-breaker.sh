@@ -78,9 +78,15 @@ if [ -f "$LOG_FILE" ]; then
 fi
 
 # ─────────────────────────────────────────────
-# 임계 도달 시 알림 (Stop 아님 — 사용자 판단)
+# 임계 도달 시: halt 신호 기록 (loop-driven) + 알림 (Stop 아님)
 # ─────────────────────────────────────────────
 if [ "$COUNT" -ge "$THRESHOLD" ]; then
+  # ── loop-driven halt 신호 (M7.5, ADR-032) ──
+  # hook은 루프를 *직접 못 죽임* → halt 신호 파일 기록 → 루프 드라이버(/engine:goal)가
+  # 스텝 경계에서 폴링해 정지. v1(attended)=아래 stderr로 사람 판단 / v2(무인)=폴링 선결(미adopt).
+  # 신호 *기록*까지만 = v1 범위. circuit-breaker.sh 단독으론 차단 X (advisory).
+  echo "$NOW tool=$TOOL_NAME count=$COUNT threshold=$THRESHOLD grade=${GRADE:-불명}" >> ".claude/state/circuit-tripped.txt"
+
   cat <<EOF >&2
 ⚠️ Circuit breaker — $TOOL_NAME 도구 반복 호출 임계 도달
 

@@ -87,6 +87,10 @@ Phase 마감 시 `-DONE.md`에 *학습 일지 후보 키워드* 섹션 박힘 (�
 
 "이거 knowledge에 박아줘" 같은 명시 요청 → AI 즉시 박음. 별도 확인 X.
 
+### 3-4. 무인 루프 발견 (loop-driven, M7.5)
+
+루프 드라이버([`/engine:goal`](../commands/engine/goal.md))가 작업 중 학습 후보를 발견해도 **자율 박제 X** → [`pending-knowledge`](../../00_Document/ledgers/pending-knowledge.md) 큐에 *제안 누적*만. 영호 승인(아침 attended 게이트) 후 박제. ADR-025가 죽인 트랙 B "쌓이기만 하고 pull 안 됨" 함정을 pull-분리 + 가시 장부로 회피.
+
 ---
 
 ## 4. 박는 양식 (구조화 패턴)

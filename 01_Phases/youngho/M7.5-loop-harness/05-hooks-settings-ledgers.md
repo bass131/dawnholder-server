@@ -46,5 +46,13 @@ summary: circuit halt + 신규 가드 + settings 권한 승격(ask(pr) 보존) +
 - settings 권한 승격이 ask(pr) 게이트를 깨면 헌법 §3 위반 — diff 필수 검증.
 - circuit-breaker는 알림만 — 무인 폭주 차단은 v2 드라이버 폴링 선결(여기선 신호 기록까지).
 
+## ✅ 실행 결정 (2026-06-18, 영호 게이트 통과)
+
+- **미결 #4 (settings 권한)**: committed `settings.json` allow에 `git add*`/`git commit*` 추가(영호 결정 — commit=가역, 헌법 'commit OK'). **`ask(gh pr create/merge/--admin)` 매처 불변 보존 = git diff 기계 검증 통과**(trust-boundary). push/merge/무인 commit 전면 승격은 v2 defer. `settings.local.json`(gitignored 개인 파일)의 stale(`_TEMP_M25_*`·CONTEXT·learning-journal)은 영호 개인 영역이라 미편집 — 영호 직접 정리 권유.
+- **미결 #5 (원장 위치)**: **`00_Document/ledgers/` committed**(영호 결정) — 영속·감사 가시. **팀 유지 안 됨 = 영호 개인 작업**이라 "팀 공유" 명분 아닌 본인 추적용으로 framing. INDEX + pending-{art,comprehension,knowledge}.md 시드. P01~P04의 `.claude/state/pending-*` 가정 참조 → `00_Document/ledgers/`로 정정(session/review 2곳, loop-driver §9).
+- **circuit halt**: `circuit-breaker.sh` 임계 도달 시 `.claude/state/circuit-tripped.txt` 신호 기록 추가(루프 드라이버 폴링용, hook은 루프 직접 못 죽임). v1=신호 기록까지만.
+- **신규 가드 hook = 안 만듦**: loop-done-gate는 `/engine:goal` Hard rule(done=외부 기계 심판) + v1 attended로 강제 — 별도 hook 불요(risk-detector 확장도 불요). v2 무인 시 재검토.
+- **REVISE**: `hooks/README.md`(Hook 8→9 + convention-size-guard 등재 + circuit halt + 3버킷 judge 절 + settings 경로 현행화) / `knowledge/{README,_usage}.md`(무인 루프 발견 → pending-knowledge 큐, 자율 박제 X).
+
 ## ➡️ 다음 Phase
 - P06 (카탈로그 + drift 마감)

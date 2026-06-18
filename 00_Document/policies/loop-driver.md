@@ -117,10 +117,10 @@
 
 - [`work-judge.md`](work-judge.md) (3버킷 판정자 — 본 문서가 가리킴)
 - [`review-throughput.md`](review-throughput.md) (리뷰 처리량 — 본 문서가 가리킴)
-- `../../.claude/commands/{loop,goal}.md` (드라이버 슬래시 — P04 신설)
+- [`../../.claude/commands/engine/goal.md`](../../.claude/commands/engine/goal.md) (`/engine:goal` 드라이버 — 내장 `/loop`·`Workflow` 재사용)
 - `../../.claude/commands/session/{start,review}.md` (세션 2종 — P04)
 - [`pr-and-merge-gate.md`](pr-and-merge-gate.md) (정지 게이트 — ask(pr) 보존)
-- `../../.claude/state/pending-{art,comprehension,knowledge}.md` (원장 3종 — P05 신설)
+- [`../ledgers/`](../ledgers/INDEX.md) `pending-{art,comprehension,knowledge}.md` (원장 3종 — 00_Document/ledgers)
 - [`INDEX.md`](INDEX.md) (본 폴더 카탈로그)
 
 ---
