@@ -145,6 +145,17 @@ M3.5 새 하네스 v1에서 옛 reviewer.md 흡수 + 새 등급 체계 정합 (�
 
 ---
 
+## 루프 처리량 분기 (loop-driven, M7.5)
+
+reviewer 결과는 루프에서 *throughput 모델*로 소비됩니다 ([`../policies/review-throughput.md`](../policies/review-throughput.md)):
+
+- **🔴 위반** → 사람 게이트 도달 ([`../policies/work-judge.md`](../policies/work-judge.md) 버킷 c), 영호 확인 후 재위임.
+- **🟢 통과** → 루프 자율 통과 (사람 정독 없이 진행 가능).
+- **시선 배분 = `max(위험, 학습가치)`**: 보일러플레이트는 빠르게, 새 아키텍처·까다로운 네트워킹은 깊게.
+- **신뢰 졸업**: 안전 증명된 산출물 유형(N회 무위반)은 샘플링으로 강등 — 단 `trust-boundary`/`irreversible`는 영구 사람(졸업 불가).
+
+---
+
 ## 자주 하는 실수 피하기
 
 - **헌법 / ADR 원본을 또 로드** — 시간/토큰 낭비. 체크리스트에 매핑됨
@@ -229,6 +240,6 @@ M3.5 새 하네스 v1에서 옛 reviewer.md 흡수 + 새 등급 체계 정합 (�
 
 본 SubAgent는 ADR-019 (시니어 피드백: 리뷰어 에이전트 도입)의 산출물 + M3.5에서 새 등급 체계 정합 갱신.
 
-체크리스트와 *한 쌍* — 본 SubAgent 동작 변경 시 체크리스트 출력 포맷도 동기 갱신.
+체크리스트와 *한 쌍* — 본 SubAgent 동작 변경 시 체크리스트 출력 포맷도 동기 갱신. 루프 처리량 분기 변경 시 [`../policies/review-throughput.md`](../policies/review-throughput.md)도 동기.
 
 실측 1회 박힘 (2026-05-18 ad-hoc 모드 = γ 방식 α). M4 진입 후 자동 호출 false positive·누락 관찰 → 트리거 조건 재조정 ([`../policies/review-tiering.md`](../policies/review-tiering.md) "실측 후 재조정" 절).

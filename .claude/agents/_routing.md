@@ -31,9 +31,13 @@
 
 **구현 Worker 모델 (선택적 Opus, 2026-06-13 영구)**: 기본 Sonnet. **`복잡+trust-boundary` 또는 `대규모` → 구현 Worker도 Opus**(위험 깃발이 모델 티어 상향, 위임 시 `model` override). 그 외 Sonnet. 단 메인 `file:line` 실측 게이트는 모델 무관 유지. 상세 = [`../policies/subagent-routing.md`](../policies/subagent-routing.md) §5.5.
 
+**루프 버킷 (loop-driven, M7.5)**: 등급/깃발 → 루프 판정자 버킷. 깃발 0 + 가역 = **(a)** 루프 자율 / unity-asset = **(b)** 사람 트랙 / irreversible·trust-boundary = **(c)** 사람 게이트(Stop). 매핑 = [`../policies/work-judge.md`](../policies/work-judge.md).
+
 ---
 
 ## 자동 호출 트리거
+
+> 호출 주체 = 메인 세션 / coordinator / **루프 드라이버**(loop-driven, M7.5).
 
 ### Coordinator 자동 호출 (등급 결정 직후)
 - 복잡 / 대규모 → 무조건 호출
@@ -118,6 +122,7 @@ Coordinator → Worker 위임 시:
 본 문서 수정 시 *반드시* 함께 갱신:
 - [`../policies/subagent-routing.md`](../policies/subagent-routing.md) (원칙 정책)
 - [`../policies/grade-and-risk.md`](../policies/grade-and-risk.md) (등급 → 처리 패턴 매핑)
+- [`../policies/loop-driver.md`](../policies/loop-driver.md) · [`../policies/work-judge.md`](../policies/work-judge.md) (호출 주체 루프 드라이버 + 등급→버킷)
 - [`coordinator.md`](coordinator.md) (분해 패턴 카탈로그)
 - 각 SubAgent의 *권한 경계* 절
 

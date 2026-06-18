@@ -189,10 +189,23 @@ M4 진입 후 *Opus 발동 주간 카운트* 추적 → 잦으면 등급 체계 
 
 ---
 
+## 8. 무인 루프 분기 (loop-driven, M7.5)
+
+루프 엔진이 작업을 자율 구동할 때의 에스컬레이션:
+
+- **v1 (attended)**: 모든 escalate(Worker 3차 실패 / reviewer 🔴 / 권한 위반)는 *즉시 사람에게 도달* — 사람이 그 자리에 있어 GO/판단. v1은 본질적으로 attended라 §1~§7 흐름 그대로.
+- **비가역(버킷 c) 동반 실패 = 루프 정지**: push/PR/merge/`Protocol.Version`/trust-boundary 작업이 실패하면 자율 재시도 X → 즉시 사람 게이트 정지 ([`../policies/work-judge.md`](../policies/work-judge.md) 버킷 c 졸업 불가).
+- **circuit halt (v2 선결)**: 무인 토큰/시간 폭주는 `circuit-breaker.sh`가 halt 신호 파일 기록 → 드라이버가 폴링해 멈춤 (P05). hook은 루프를 직접 못 죽임. v2(무인)는 이 폴링이 선결이라 defer.
+
+엔진·정지 게이트 → [`../policies/loop-driver.md`](../policies/loop-driver.md) §3·§5.
+
+---
+
 ## 변경 시 동기화 책임
 
 본 문서 수정 시 *반드시* 함께 갱신:
 - [`../policies/subagent-routing.md`](../policies/subagent-routing.md) (에스컬레이션 룰 원칙)
+- [`../policies/loop-driver.md`](../policies/loop-driver.md) · [`../policies/work-judge.md`](../policies/work-judge.md) (무인 루프 분기 + 비가역 버킷 c 정지)
 - [`coordinator.md`](coordinator.md) (에스컬레이션 절차 카탈로그)
 - [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 산출물 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 구조/규율 강제)
 - 각 SubAgent의 "에스컬레이션 룰" 절
