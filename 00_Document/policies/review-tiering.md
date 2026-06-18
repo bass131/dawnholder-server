@@ -13,10 +13,13 @@
 
 | Tier | 누가 | 언제 | 무엇을 | 도입 상태 |
 |---|---|---|---|---|
+| **Tier 0** 기계 게이트 | 빌드·테스트·WSL2·정적분석·dangling | 모든 산출물 | 통과/실패 자동 판정 (사람 0) | **루프 자율** (work-judge 버킷 a, M7.5) |
 | **Tier 1** 도메인 셀프리뷰 | 도메인 SubAgent 자기 자신 | 코드 변경 직후, 결과 반환 전 | 자기 영역 헌법 위반 + 도메인 _index.md 패턴 점검 | **M4 진입 후 도입 예정** (미구현) |
 | **Tier 2-A** 자동 통합 리뷰 | `reviewer` SubAgent (Opus) | 메인 세션이 트리거 조건 충족 시 자동 호출 | [`../REVIEW_CHECKLIST.md`](../REVIEW_CHECKLIST.md) 기준 5축 점검 | **실측 1건 (2026-05-18 ad-hoc 모드)** |
 | **Tier 2-B** Phase 정의 사전 검증 | `plan-auditor` SubAgent (Opus) | `_milestone-plan.md` / Phase 정의 `.md` Write 후 자동 | 분해 적정성·의존성·완료 조건 명확성·등급 산정 | **M3.5 신설 (실측 0건)** |
 | **Tier 3** 수동 깊은 리뷰 | `/harness-review` 슬래시 (Phase 05 산출물) | 사용자 명시 호출 | 하네스 자체 점검 (헌법/정책/SubAgent 정합) | **신설 슬래시 (옛 `/work:review` 강화 rename)** |
+
+> **throughput 모델 (loop-driven, M7.5)**: 사람이 *모든* 산출물을 Tier 2로 보내지 않습니다 — 예외기반 + 신뢰졸업 + 시선 = `max(위험, 학습가치)`. §2의 정적 트리거 매트릭스(무조건/조건부/스킵)는 [`review-throughput.md`](review-throughput.md)가 governs (ADR-019 정적 매트릭스 → 예외기반·신뢰졸업 supersede). Tier 0(기계 게이트)는 항상 무조건 자율.
 
 ---
 
@@ -165,6 +168,7 @@
 - [`../../00_Document/ADR/harness/ADR-019-reviewer-agent.md`](../../00_Document/ADR/harness/ADR-019-reviewer-agent.md) (결정 박제 — M3.5 갱신 후속 또는 ADR-023 신설)
 - [`subagent-routing.md`](subagent-routing.md) (SubAgent 자동 호출 트리거 정합)
 - [`pin-and-done.md`](pin-and-done.md) (work-pin에 *리뷰 스킵 사유* / *리뷰 패스 사유* 라인 박는 정합)
+- [`review-throughput.md`](review-throughput.md) (예외기반·신뢰졸업 throughput 모델 — §2 정적 매트릭스 supersede 층)
 
 ---
 

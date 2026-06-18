@@ -20,6 +20,14 @@
 
 **왜 비동기 문서인가** (ADR-031): 옛 운영은 *대규모 Phase 완료 시 인라인 5단계 보고 출력* → 작업 흐름을 끊었음. 새 모델 = 보고를 흐름에서 분리해 **문서(`-DONE.md` + HTML)로 추후 박제**, 사용자가 원할 때 체크. 인라인 멈춤은 *영호 직접 확인 지점*(비가역·승인 게이트·육안)에서만. HTML 임계도 대규모 → **복잡 이상**으로 하향(복잡도 캡스톤 자산 가치 충분).
 
+### 루프 보고 분기 (loop-driven, M7.5)
+
+루프 자율분과 사람 게이트는 *보고 시점*이 다릅니다 ([`work-judge.md`](work-judge.md) 버킷):
+
+- **(a) 루프 자율** (기계 게이트 통과분): 원장/배치로 적재 → 추후 *pull 세션*(`/session:review`)에서 사람이 통합 검토. 즉시 멈추지 않음.
+- **(c) 사람 게이트** (비가역·설계 분기): *즉시 surface* — 영호 GO 없이 진행 X.
+- **통합 고도**: PR 100개가 아니라 *통합 이야기 하나*(`-DONE.md`)로 요약 ([`review-throughput.md`](review-throughput.md)).
+
 ---
 
 ## 2. 양식
@@ -114,6 +122,7 @@ WORK-ID 시스템은 [`pin-and-done.md`](pin-and-done.md)에서 통합 관리.
 - [`../templates/done-md-template.md`](../templates/done-md-template.md) (-DONE.md 양식 정합)
 - [`pin-and-done.md`](pin-and-done.md) (WORK-ID 일관성)
 - [`grade-and-risk.md`](grade-and-risk.md) (등급별 보고 양식 격차)
+- [`loop-driver.md`](loop-driver.md) · [`work-judge.md`](work-judge.md) · [`review-throughput.md`](review-throughput.md) (루프 보고 분기 — a 배치 / c 즉시)
 
 ---
 

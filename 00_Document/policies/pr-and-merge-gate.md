@@ -141,6 +141,13 @@ commit message도 동일. 본 사고 학습 = literal 박은 commit이 푸시되
 
 hook은 *literal 매칭*만, settings는 *권한 매처* — 두 자리 다름. 양쪽 다 작동해야 함.
 
+### 5.1 loop-driven 운영에서의 보존 (M7.5)
+
+루프 엔진이 작업을 자율 구동해도 **`ask(gh pr merge/create)` 사람 게이트는 절대 약화 X** — PR 생성/머지는 [`work-judge.md`](work-judge.md) 버킷 (c, 판단·비가역)라 *신뢰 졸업 불가*([`review-throughput.md`](review-throughput.md) §2). 엔진·정지 게이트 정의 → [`loop-driver.md`](loop-driver.md) §5.
+
+- v1(attended)는 사람이 그 자리에 있어 GO를 누름 → 물리적 강제 성립.
+- **P05 settings 권한 승격 시**: 무인 commit allow를 올리더라도 `ask` 매처(admin bypass + pr create/merge)는 *그대로 보존* — git diff로 기계 검증 (trust-boundary). 무인 commit 전면 승격은 v2 defer.
+
 ---
 
 ## 6. 사고 보고 — 본 정책의 *발단* 케이스
@@ -170,6 +177,7 @@ hook은 *literal 매칭*만, settings는 *권한 매처* — 두 자리 다름. 
 - [`../../.claude/commands/session/end.md`](../../.claude/commands/session/end.md) §4-D (PR 생성 게이트 절차)
 - [`../../.claude/hooks/dangerous-cmd-guard.sh`](../../.claude/hooks/dangerous-cmd-guard.sh) 패턴 7번 (admin bypass 매칭)
 - [`../../.claude/settings.json`](../../.claude/settings.json) `permissions.ask` 매처 (admin bypass 사용자 확인)
+- [`work-judge.md`](work-judge.md) · [`review-throughput.md`](review-throughput.md) · [`loop-driver.md`](loop-driver.md) (PR 게이트 = 버킷 c 졸업 불가 — 루프 보존)
 
 ---
 

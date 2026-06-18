@@ -26,6 +26,7 @@
 
 - **보고는 흐름을 끊지 않는다** (ADR-031): 인라인 5단계 보고 폐지. 작업 보고는 *비동기 문서*로 — **복잡 이상 = `-DONE.md` + HTML 시각화**(사용자가 추후 체크). 5단계 보고 구조(🎯 무엇 / 🤔 왜 / 🛠️ 어떻게 / 🧪 테스트 / ➡️ 다음)는 그 문서 *안*에 박힘 (캡스톤 평가 자산).
 - **그 외 응답**: 양식 노이즈 X. 단순/보통 = work-pin + commit message로 충분.
+- **루프 보고 분기**: 자율분(버킷 a)은 원장/배치로 적재(추후 pull 세션 검토), 사람 게이트(버킷 c)는 *즉시 surface*.
 
 양식 디테일·등급별 보고 격차 → [`00_Document/policies/reporting-format.md`](00_Document/policies/reporting-format.md)
 
@@ -34,12 +35,26 @@
 - **작업 중**: `.claude/state/current-pin.txt`가 좌표 보존 (압축 양식, 목표 30~40줄). AI가 변경 시 갱신
 - **Phase 완료 시**: `-DONE.md` 작성 (AI가 사실 박제, 복잡 이상 = + HTML 시각화). 흐름 안 끊고 자동 진행 — 영호는 추후 문서로 체크 (ADR-031)
 - **역할 분담**: `-DONE.md` = AI가 *사실* 박제. (본인 회고 트랙은 ADR-025로 은퇴 — work-pin이 단일 핸드오프)
+- **루프 상태**: 핀에 버킷(a/b/c)·사람대기 선택 표기 + `pending-*` 원장(아트/이해/knowledge) 참조 (P05 신설).
 
 라이프사이클·핀 필드·박제 게이트·권유 양식 → [`00_Document/policies/pin-and-done.md`](00_Document/policies/pin-and-done.md)
 
 ### 슬래시 커맨드
 
 작업 4 + 세션 3 + 점검 2 + 셋업 1 — 총 10개. 옛 학습 5 + 일지 3은 제거 (M3.5 KPI 전환 + ADR-025 학습 트랙 은퇴). 카탈로그 → [`00_Document/commands-index.md`](00_Document/commands-index.md).
+
+---
+
+## 🔄 운영 모드 — loop-driven (사람=방향+판단, 엔진=구동)
+
+작업은 *사람이 매 스텝 프롬프트*가 아니라 **사람 = 방향(목표·done 조건) + 판단(게이트), 엔진이 매 스텝 구동**으로 돈다 (ADR-032 — **v1 attended only**, v2 무인=defer).
+
+- **무엇을 루프에 맡기나 = 3버킷** ([work-judge](00_Document/policies/work-judge.md)): (a) 기계 판정(빌드·테스트·WSL2) = **루프 자율** / (b) 취향·육안(아트·사운드·Unity) = **사람 병행 트랙**(안 막음) / (c) 판단·비가역(설계 분기·push/PR/merge·trust-boundary) = **사람 게이트(Stop)**.
+- **리뷰 처리량** ([review-throughput](00_Document/policies/review-throughput.md)): 사람이 *모든* 산출물을 안 봄 — 예외기반 + 신뢰졸업 + 시선 = `max(위험, 학습가치)`.
+- **세션 2종**: `/session:start` = 구현(루프 구동) / `/session:review` = 깊은 학습·점검(pull 세션). 구현과 학습 분리 (ADR-032 §D).
+- **`ask(pr)` 사람 게이트는 절대 보존** — 루프가 약화 X (버킷 c, 졸업 불가).
+
+엔진·기동(/goal+Workflow)·done 판사(WSL2 게이트) → [`loop-driver.md`](00_Document/policies/loop-driver.md).
 
 ---
 
@@ -66,7 +81,7 @@
 - 새 작업 시작: `/work:plan <목표>` 로 Phase 분해 (plan-auditor SubAgent 자동 호출)
 - Phase 입자 = 5~7개/마일스톤 (옛 M3 9개는 과했음 — 5/20 의논 결과)
 - 한 Phase = 한 `.md` + 명확한 완료 조건
-- **Phase 자동 진행** (ADR-031 — 학습 호흡 수동 멈춤 폐기, ADR-025 "학습 명분 소멸" 정합). **Stop은 *영호 직접 확인/결정 지점*에서만**: ① 비가역(push/merge/`Protocol.Version` bump/DB 마이그) ② 설계 분기(영호 결정 필요) ③ 승인 게이트(예: convention sweep 적용 전 diff 승인) ④ 육안 검증(Unity 외관). 공학 게이트(회귀·drift)는 *자동 점검 후 진행*(멈추지 않음).
+- **Phase 자동 진행** (ADR-031 — 학습 호흡 수동 멈춤 폐기, ADR-025 "학습 명분 소멸" 정합). **Stop은 *영호 직접 확인/결정 지점*에서만**: ① 비가역(push/merge/`Protocol.Version` bump/DB 마이그) ② 설계 분기(영호 결정 필요) ③ 승인 게이트(예: convention sweep 적용 전 diff 승인) ④ 육안 검증(Unity 외관). 공학 게이트(회귀·drift)는 *자동 점검 후 진행*(멈추지 않음). 4종 Stop = [work-judge](00_Document/policies/work-judge.md) 버킷 (c), 공학 게이트 자동 진행 = 버킷 (a).
 
 ### 문서 세분화
 
@@ -187,13 +202,15 @@
 
 위험 깃발은 `risk-detector.sh` Hook이 자동 검출 → stderr 알림 + `.claude/state/risk-flags.txt` 누적. **work-pin 갱신은 본인이 수동** (Hook은 알림 전용 — 본인 인지를 거치는 게 정합, hook이 work-pin 자체를 안전 수정하기 어려움).
 
+**깃발 → 루프 버킷**: 무깃발=(a) 자율 / unity-asset=(b) 사람 트랙 / irreversible·trust-boundary=(c) 사람 게이트. 매핑 상세 → [`work-judge.md`](00_Document/policies/work-judge.md).
+
 등급 정의·위험 깃발 디테일 → [`00_Document/policies/grade-and-risk.md`](00_Document/policies/grade-and-risk.md)
 
 ---
 
 ## 🤖 SubAgent 풀 (9개) + 모델 분담
 
-작업이 들어오면 메인 세션이 등급 + 도메인 따라 SubAgent 위임:
+작업이 들어오면 **메인 세션(또는 루프 드라이버)**이 등급 + 도메인 따라 SubAgent 위임:
 
 | #   | SubAgent       | 도메인                                                               | 모델   | 권한                                         |
 | --- | -------------- | -------------------------------------------------------------------- | ------ | -------------------------------------------- |
@@ -229,6 +246,7 @@
 
 - **knowledge = AI 직접 활용용 캐시** (구조화 패턴). 본인 회고용 학습 트랙은 ADR-025로 은퇴 (knowledge만 유지).
 - **시드 + 유기적 누적**: 처음부터 풀세트 박지 않음. 작업 진행하며 새 학습 박을지 판단 (사용자 확인 후, AI 자율 박제 X)
+- **무인 루프에서도 자율 박제 X**: 발견은 `pending-knowledge` 큐에 적재(P05), 사람 승인 후 박제.
 
 상세 입출력 패턴·GC 정책·승격 룰 → [`00_Document/policies/knowledge-system.md`](00_Document/policies/knowledge-system.md)
 
