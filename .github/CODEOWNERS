@@ -1,83 +1,32 @@
-# CODEOWNERS — 폴더 단위 소유권 + PR 승인 강제
+# CODEOWNERS — 저장소 소유권 + PR 승인 강제
 #
-# 형식: <경로 패턴>    <@github-username 또는 @팀명>
+# 형식: <경로 패턴>    <@github-username>
 # 마지막 매칭 규칙이 이김 (위에서 아래로 평가).
 #
-# GitHub 작동:
-# - PR에서 변경된 파일이 매칭되는 owner의 승인 강제
-# - main 브랜치 보호 규칙과 함께 사용 (Settings > Branches > Add rule)
-# - 'Require review from Code Owners' 옵션 켜져야 작동
+# ───────────────────────────────────────────
+# 2026-06-18: 팀 해체 → 영호(@bass131) 단독 운영 확정
+# ───────────────────────────────────────────
+# 정유현(@jungyoohyun0105, UI/아트) + 인규(@ingyu, 미합류 placeholder) 팀 전제가
+# 더는 유지되지 않음 → 모든 경로를 @bass131 단독 소유로 통일.
 #
-# 본인 결정 (협업 셋업 작업, 2026-05-14):
-# - 본인(유영호 = @bass131)은 백엔드 코어 + 하네스 + 문서 단독 소유
-# - 인규/유현은 03_Client/ 통째로 공유 영역 (세부 영역은 작업하며 굳어짐)
-# - 모든 PR은 팀장(@bass131) 승인 필요
+# 왜 통일하나 (PR #117 교착에서 배움):
+# - GitHub ruleset이 require_code_owner_review=true.
+# - 변경 경로의 코드오너가 PR author 본인뿐이면 → 코드오너 리뷰가 *스킵*됨
+#   (요구할 다른 오너가 없으므로) → admin 없이 normal merge 가능.
+# - 반대로 *떠난 사람*(예: @jungyoohyun0105)이 오너인 경로를 건드리면 그 사람
+#   승인을 기다리다 BLOCKED → admin bypass 강제 (PR #117이 정확히 이 케이스:
+#   영호가 유현의 은퇴된 learning-journal/yuhyeon/를 삭제 → 유현 승인 요구).
+# - 따라서 단독 운영에선 *모든 오너 = @bass131*이 정답. 떠난/가짜 username을
+#   오너로 남기면 영호 본인 작업이 막힌다.
 #
-# ⚠️ TODO: 인규 합류 후 @ingyu 자리에 실제 GitHub username으로 교체 필요.
-#    정유현: 2026-05-17 @yuhyeon placeholder → @jungyoohyun0105 정정 완료 (본인 PR).
+# 미래 팀 재구성 시: 아래에 영역별 오너를 다시 박으면 됨. 옛 팀 분담 참조 —
+#   /03_Client/                     @bass131 @<client_dev>...   (Unity 클라 공유)
+#   /03_Client/Assets/Scripts/UI/   @<ui_owner>                 (UI 단독, ADR-021 = 정유현)
+#   /03_Client/Assets/Scripts/Bootstrap/  @<ui_owner>
+#   /01_Phases/<사람>/  ·  /00_Document/learning-journal/<사람>/   (사람별 네임스페이스)
+#   (옛 규칙 전문은 git history: 이 파일의 2026-06-18 이전 버전)
 
 # ───────────────────────────────────────────
-# 기본 규칙 — 명시 안 된 모든 파일은 팀장 승인
+# 모든 파일 — 영호 단독 소유 (단독 운영)
 # ───────────────────────────────────────────
-*                              @bass131
-
-# ───────────────────────────────────────────
-# 백엔드 코어 — 팀장 단독 (인규/유현 PR로도 못 만짐)
-# ───────────────────────────────────────────
-/02_Server/                    @bass131
-/98_Shared/                    @bass131
-/99_Tools/                     @bass131
-/04_ClientNet/                 @bass131
-/Dawnholder.slnx               @bass131
-/global.json                   @bass131
-
-# ───────────────────────────────────────────
-# 문서 / 하네스 — 팀장 단독
-# ───────────────────────────────────────────
-/CLAUDE.md                     @bass131
-/00_Document/                  @bass131
-/.claude/                      @bass131
-/.github/                      @bass131
-/.gitignore                    @bass131
-/.vscode/extensions.json       @bass131
-/.vscode/settings.json         @bass131
-
-# ───────────────────────────────────────────
-# Unity 클라 — 인규 + 유현 공유 영역
-# 세부 영역(Scripts/Network, Scripts/UI 등)은 작업하며 굳어짐
-# 추후 7월 중순쯤 굳어진 패턴을 여기 박을 예정
-# ───────────────────────────────────────────
-/03_Client/                    @bass131 @ingyu @jungyoohyun0105
-
-# ───────────────────────────────────────────
-# Unity 클라 UI — 정유현 단독 (ADR-021, 2026-05-17)
-# UI 전용 씬 + UI 스크립트 + 씬 진입점 부트스트랩
-# Gameplay.unity / MainMenu.unity는 캐릭터·맵 들어오므로 공유 유지
-# ───────────────────────────────────────────
-/03_Client/Assets/Scenes/UI.unity         @jungyoohyun0105
-/03_Client/Assets/Scripts/Bootstrap/      @jungyoohyun0105
-/03_Client/Assets/Scripts/UI/             @jungyoohyun0105
-
-# ───────────────────────────────────────────
-# 학습 일지 — 각자 자기 폴더만
-# (사람별 네임스페이스 — 협업 셋업 파트 1 결정)
-# ───────────────────────────────────────────
-/00_Document/learning-journal/youngho/   @bass131
-/00_Document/learning-journal/ingyu/     @ingyu
-/00_Document/learning-journal/yuhyeon/   @jungyoohyun0105
-
-# ───────────────────────────────────────────
-# Phase 파일 — 각자 자기 폴더만 (사람별 네임스페이스)
-# learning-journal과 같은 패턴 (협업 셋업 파트 1 결정)
-# 2026-05-18 박힘 — 정유현 PR #27 검토 중 누락 발견 (본인 영역인데
-# 기본 규칙 `* @bass131` 매칭 → 본인 승인 강제되던 결함)
-# ───────────────────────────────────────────
-/01_Phases/youngho/                      @bass131
-/01_Phases/yuhyeon/                      @jungyoohyun0105
-/01_Phases/ingyu/                        @ingyu
-
-# ───────────────────────────────────────────
-# 박정우 (MES) — 별도 레포라 여기 박힐 가능성 거의 X
-# ADR-011 참조
-# ───────────────────────────────────────────
-# (별도 레포라 매핑 없음)
+* @bass131
