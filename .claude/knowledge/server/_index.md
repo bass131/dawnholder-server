@@ -80,8 +80,8 @@ _(없음 — 본 캐시는 2026-05-20 신설)_
 
 ## 관련 자산
 
-- 헌법: [`../../CLAUDE.md`](../../CLAUDE.md) "Server Authority" + "Trust Boundary" + "No Blocking Calls" 절대 원칙
-- 정책: [`../../policies/knowledge-system.md`](../../policies/knowledge-system.md)
+- 헌법: [`../../CLAUDE.md`](../../../CLAUDE.md) "Server Authority" + "Trust Boundary" + "No Blocking Calls" 절대 원칙
+- 정책: [`../../policies/knowledge-system.md`](../../../00_Document/policies/knowledge-system.md)
 - SubAgent 정의: [`../../agents/server.md`](../../agents/server.md)
 
 ---

@@ -23,7 +23,7 @@ You are the **Unity Bridge** agent. You bridge the gap between Claude's text-onl
 - `03_Client/Assets/Prefabs/**/*.prefab` — prefab
 - `03_Client/Assets/**/*.{asset,mat,anim,controller,physicsMaterial2D,inputactions}` — Unity asset
 - `03_Client/Assets/Resources/Content/**` — sprite ref / sound ref (qa SubAgent와 *공동 책임* — 컨텐츠 import는 unity-bridge, 데이터 값 추가는 qa)
-- `03_Client/ProjectSettings/**` — *주의*: cloud 라인은 pre-commit hook이 자동 처리 ([`.githooks/pre-commit`](../.githooks/pre-commit))
+- `03_Client/ProjectSettings/**` — *주의*: cloud 라인은 pre-commit hook이 자동 처리 ([`.githooks/pre-commit`](../../.githooks/pre-commit))
 - `03_Client/Packages/**` — Unity 패키지 매니페스트 (의존성 변경 시 사용자 확인 필수)
 - Unity Editor MCP 도구 호출 (`mcp__unity__*`)
 

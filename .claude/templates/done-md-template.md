@@ -82,7 +82,7 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
 
 ### Notion 출력 형식 — STAR (메인) + 8단 (사고 체크리스트)
 
-**최종 출력 = STAR 4섹션 + 배운 것 3가지** — 기존 "Dawnholder 협업 히스토리" DB에 정착된 패턴. 분량 30~50줄. 자세한 STAR 명세·DB 스키마·페이지 생성 API는 [`.claude/commands/session:log.md`](../commands/session:log.md) 참조.
+**최종 출력 = STAR 4섹션 + 배운 것 3가지** — 기존 "Dawnholder 협업 히스토리" DB에 정착된 패턴. 분량 30~50줄. 자세한 STAR 명세·DB 스키마·페이지 생성 API는 [`.claude/commands/session/log.md`](../commands/session/log.md) 참조.
 
 **8단 = STAR 작성 시 빠뜨리면 안 될 사고 체크리스트** — Codex가 Phase 07 Before/After HTML에서 도출, 사용자가 "사람이 읽기 더 편하다" 판단한 항목 셋. STAR을 *형식*으로, 8단을 *항목 빠짐 체크*로 활용.
 
@@ -136,7 +136,7 @@ Codex는 STAR 4섹션 박을 때 위 8 항목이 다 들어갔나 점검 후 박
 - `.claude/state/current-pin.txt` (work-pin) + 최근 git/CHANGELOG ← 세션 맥락 (옛 `CONTEXT*`는 ADR-025로 은퇴)
 - `00_Document/ADR/` ← 관련 ADR-NNN 절
 - 본 템플릿 (`.claude/templates/done-md-template.md`) ← 분업 원칙·8단 구조 사양
-- `.claude/commands/session:log.md` ← Notion DB 스키마·페이지 생성 API 명세
+- `.claude/commands/session/log.md` ← Notion DB 스키마·페이지 생성 API 명세
 
 **Codex의 책임**:
 - readonly로 위 파일 읽기 → 8단 구조로 Notion 페이지 본문 작성

@@ -195,7 +195,7 @@ STAR 4섹션 박기 전 다음 8 항목이 *어딘가에* 들어가 있는지 �
 
 #### 7-A. `executor == "codex"` — 본인(유영호) 흐름
 
-**무조건 Claude가 Bash로 Codex CLI 호출**. Codex가 readonly로 ClaudeDev 읽고 본 명세 따라 박음. 분업 절차는 [`../templates/done-md-template.md`](../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
+**무조건 Claude가 Bash로 Codex CLI 호출**. Codex가 readonly로 ClaudeDev 읽고 본 명세 따라 박음. 분업 절차는 [`../templates/done-md-template.md`](../../templates/done-md-template.md) "Notion 협업 분업 원칙 / 핸드오프 절차" 참조.
 
 #### 7-B. `executor == "claude"` — Claude 단독
 

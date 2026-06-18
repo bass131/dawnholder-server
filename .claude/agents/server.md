@@ -126,7 +126,7 @@ You are the **Server** agent. You own everything that lives on the server side �
 - `.claude/knowledge/shared/_index.md` — Protocol·공식·공유 상수 패턴
 - `.claude/knowledge/cross-cutting/_index.md` — 도메인 횡단 (false promise / format cost / SAC env / Smart App Control 등)
 
-새 학습 박을 가치 발견 시 사용자 확인 후 박제 ([`knowledge-system.md`](../policies/knowledge-system.md) AI 자율 박제 금지).
+새 학습 박을 가치 발견 시 사용자 확인 후 박제 ([`knowledge-system.md`](../../00_Document/policies/knowledge-system.md) AI 자율 박제 금지).
 
 ---
 

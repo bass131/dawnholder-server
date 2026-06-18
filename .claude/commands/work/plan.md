@@ -73,7 +73,7 @@ summary: <한 줄 요약>
 
 ### 4.5. work-pin 자동 시드 (ADR-018 입구 안전망)
 
-Phase 파일 생성 직후 `.claude/state/current-pin.txt`를 마일스톤의 **첫 Phase 좌표**로 시드 ([`../../policies/pin-and-done.md`](../../policies/pin-and-done.md) "1번 절: pin 라이프사이클" 참조). 시드 필드 (M3.5 압축 양식, 목표 30~40줄):
+Phase 파일 생성 직후 `.claude/state/current-pin.txt`를 마일스톤의 **첫 Phase 좌표**로 시드 ([`../../policies/pin-and-done.md`](../../../00_Document/policies/pin-and-done.md) "1번 절: pin 라이프사이클" 참조). 시드 필드 (M3.5 압축 양식, 목표 30~40줄):
 
 ```
 WORK-ID: m{N}-{milestone-slug}

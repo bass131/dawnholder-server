@@ -14,7 +14,7 @@ M3.5 새 하네스 v1에서 신설. 옛 운영은 *메인 세션이 직접 분�
 > - `coordinator` = Phase 진행 *중* 분해·위임·통합
 > 둘 다 Opus + R only. plan-auditor는 *검증가*, coordinator는 *조율자*.
 
-> **loop-driven (M7.5)**: 호출자 = 메인 세션 **또는 루프 드라이버**. coordinator는 Workflow의 *부분 구현*으로 인용됨([`../policies/loop-driver.md`](../policies/loop-driver.md) §2). 통합 보고(Step 5)는 루프가 *소비* → done 신호 + 사람 게이트 플래그 포함. 비가역(push/PR/merge/`Protocol.Version`) = [`../policies/work-judge.md`](../policies/work-judge.md) 버킷 (c) 사람 게이트 *보존*(약화 X).
+> **loop-driven (M7.5)**: 호출자 = 메인 세션 **또는 루프 드라이버**. coordinator는 Workflow의 *부분 구현*으로 인용됨([`../policies/loop-driver.md`](../../00_Document/policies/loop-driver.md) §2). 통합 보고(Step 5)는 루프가 *소비* → done 신호 + 사람 게이트 플래그 포함. 비가역(push/PR/merge/`Protocol.Version`) = [`../policies/work-judge.md`](../../00_Document/policies/work-judge.md) 버킷 (c) 사람 게이트 *보존*(약화 X).
 
 ---
 
@@ -101,7 +101,7 @@ Phase 정의 또는 사용자 요청을 받으면:
 
 ### Step 4. Reviewer 자동 호출 (Tier 2-A)
 
-다음 조건 충족 시 `reviewer` 호출 ([`../policies/review-tiering.md`](../policies/review-tiering.md)):
+다음 조건 충족 시 `reviewer` 호출 ([`../policies/review-tiering.md`](../../00_Document/policies/review-tiering.md)):
 
 - `98_Shared/` 변경 포함
 - 새 핸들러 / 패킷 / 공식
@@ -203,7 +203,7 @@ Phase: <slug>
        3) Phase 분해 재검토 (작업 단위 너무 컸을 가능성)
 ```
 
-자세히 → [`../policies/subagent-routing.md`](../policies/subagent-routing.md).
+자세히 → [`../policies/subagent-routing.md`](../../00_Document/policies/subagent-routing.md).
 
 ### 경계 코드 정합 충돌
 
@@ -291,11 +291,11 @@ Phase: <slug>
 
 본 SubAgent는 M3.5 Phase 02 박힘 (신설). 옛 운영의 메인 세션 분해 책임을 흡수.
 
-실측 0건 (M3.5 박힘 시점). M4 진입 후 첫 대규모 Phase에서 자동 호출 → 분해 false hit / Worker 위임 효율 관찰 → 트리거 조건 + 분해 패턴 카탈로그 재조정 ([`../policies/subagent-routing.md`](../policies/subagent-routing.md) "실측 후 재조정" 절).
+실측 0건 (M3.5 박힘 시점). M4 진입 후 첫 대규모 Phase에서 자동 호출 → 분해 false hit / Worker 위임 효율 관찰 → 트리거 조건 + 분해 패턴 카탈로그 재조정 ([`../policies/subagent-routing.md`](../../00_Document/policies/subagent-routing.md) "실측 후 재조정" 절).
 
 본 SubAgent 동작 변경 시 동기화 책임:
-- [`../policies/subagent-routing.md`](../policies/subagent-routing.md) (라우팅 룰)
-- [`../policies/grade-and-risk.md`](../policies/grade-and-risk.md) (등급별 동원 패턴)
-- [`../policies/loop-driver.md`](../policies/loop-driver.md) · [`../policies/work-judge.md`](../policies/work-judge.md) (루프 호출자·통합 보고 소비·버킷 c 보존)
+- [`../policies/subagent-routing.md`](../../00_Document/policies/subagent-routing.md) (라우팅 룰)
+- [`../policies/grade-and-risk.md`](../../00_Document/policies/grade-and-risk.md) (등급별 동원 패턴)
+- [`../policies/loop-driver.md`](../../00_Document/policies/loop-driver.md) · [`../policies/work-judge.md`](../../00_Document/policies/work-judge.md) (루프 호출자·통합 보고 소비·버킷 c 보존)
 - [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 coordinator 단독 위임 구조로 강제)
 - ADR-023 후속 신설 (M4 진입 후 결정)
