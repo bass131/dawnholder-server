@@ -1,7 +1,7 @@
 ### ADR-023: work-pin/CONTEXT 동기화 결함 — 진행 단계 stale hole 봉합
 
 **날짜**: 2026-05-22
-**상태**: 채택됨 (발효 = M3.7 Phase 02 commit)
+**상태**: 채택됨 (발효 = M3.7 Phase 02 commit) — *동기 시점 부분 superseded ([ADR-032](ADR-032-loop-driven-operation.md), 2026-06-18): 자동 진행 중 work-pin drift 동기 시점 재정의(루프 엔진 스텝 경계). `/session:start` drift 발견 게이트 본체는 보존*
 
 **결정**: M3.5 Phase 05에서 박힌 옵션 C 게이트 (`work-pin → CONTEXT.md` 단방향 동기, `/session:end` 단일 게이트)는 **유지**. 옵션 C 게이트가 *세션 마감 시점*만 잡고 *세션 도중 진행 단계*(commit / push / PR 생성 / PR 머지)는 못 잡아 work-pin이 stale로 박히는 결함을 발견 게이트로 **보강**. 새 발견 게이트 = `/session:start` 0-부수 단계 (M3.7 Phase 01 산출물) — 세션 시작 시점에 `git log -3` + `gh pr list --head $(branch)` + `git status -sb` 자동 호출 → work-pin "현재 작업 / 다음 액션" 키워드 vs 실제 상태 대략 매칭 → 차이 발견 시 STOP + 본인 수동 갱신 안내. **자동 갱신 박지 않음** (헌법 정신 = `pin-and-done.md` §1 "갱신은 본인 수동" / Hook is for alert, not action). 사용자 명시 위임("drift 봉합해줘") 시 예외 허용.
 

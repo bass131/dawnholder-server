@@ -2,20 +2,20 @@
 
 > Phase 완료 시 AI가 작성하는 사실 박제 페어 ([`00_Document/policies/pin-and-done.md`](../../00_Document/policies/pin-and-done.md) 2번 절 참조).
 >
-> 5단계 보고를 출력한 직후 같은 응답 안에서 AI가 작성·commit.
+> 5단계 보고 구조를 *문서 안에* 박아 AI가 작성·commit (인라인 출력 폐지 — ADR-031 비동기 문서, 흐름 안 끊고 자동 진행).
 > 작성 위치: `01_Phases/<본인 네임스페이스>/M{N}-{slug}/{NN}-{phase-name}-DONE.md`
 
 ---
 
 ## 템플릿 본문 (이 아래를 그대로 가져다 채움)
 
-> **⚠️ Post-flight 게이트 적용 중** (ADR-022 새 운영). 아래 frontmatter 필드 + 5개 H2 섹션 + 등급별 의무 섹션 (대규모 = 5단계 보고 MD/HTML 의무, 복잡 = -DONE.md 본문 의무, 단순/보통 = work-pin + commit message만 충분 / -DONE.md 박지 않음)이 모두 채워져야 훅(`phase-gate-validator.sh` — 옛 `validate-phase-gate.sh` rename + 강화)을 통과해 commit 가능.
+> **⚠️ Post-flight 게이트 적용 중** (ADR-022 새 운영, ADR-031 갱신). 아래 frontmatter 필드 + 5개 H2 섹션 + 등급별 의무 섹션 (**복잡 이상 = 5단계 보고 + HTML 시각화 의무** — ADR-031로 HTML 임계 대규모→복잡 하향 / 대규모 = + 마일스톤 종합 / 단순·보통 = work-pin + commit message만, -DONE.md 박지 않음)이 모두 채워져야 훅(`phase-gate-validator.sh`)을 통과해 commit 가능.
 
 ```markdown
 ---
 summary: <1줄. 다음 Phase가 인용할 표준 입력. "무엇을 했고 무엇이 가능해졌는지" 압축>
 phase: {NN}-{phase-name}
-work-id: phase{NN}-{slug}   # ADR-018 합류 지점 — 봉투·핀·학습 일지와 동일 ID. grep으로 산출물 회수.
+work-id: phase{NN}-{slug}   # ADR-018 합류 지점 — work-pin·commit과 동일 ID (봉투·학습일지 은퇴). grep으로 산출물 회수.
 status: done
 completed_at: {YYYY-MM-DD}
 commit: {short hash}
@@ -63,7 +63,7 @@ $ ./scripts/headless-bot --connect 1 --duration 30s
 ## 작성 원칙
 
 - **사실 박제**, 본인 회고 X. 회고는 `learning-journal/`에서 본인이 쓰는 영역.
-- **잊히기 전에**. 5단계 보고 직후 같은 응답에서 작성.
+- **잊히기 전에**. Phase 완료 시 문서로 작성 (인라인 출력 X — ADR-031 비동기 박제).
 - **간결하게**. 회고의 *베이스*이지 회고 자체가 아님.
 - **검색 가능하게**. "학습 키워드"는 미래의 본인이 노션 자유 양식 또는 Claude 자연어 인터뷰("이 키워드 학습 인터뷰 도와줘")로 펼칠 단서 (자율 — 트랙 B 은퇴, ADR-025).
 - **Notion 분업 정합**. 아래 "Notion 협업 분업 원칙" 섹션 참조.

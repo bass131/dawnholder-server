@@ -1,16 +1,12 @@
 # 작업 좌표 핀 (current-pin.txt) — 빈 템플릿
-# 이 파일을 `.claude/state/current-pin.txt`로 복사 후 채워서 사용.
-# 매 사용자 입력 직전 pin-injector.sh (ADR-022 — 옛 inject-current-pin.sh rename, 본문 로직 동일)가 컨텍스트 상단에 주입.
-# 갱신 정책: 00_Document/policies/pin-and-done.md §1 (라이프사이클) + §5 (work-pin ↔ CONTEXT 정합 게이트 옵션 C, ADR-022 신설).
+# 이 파일을 `.claude/state/current-pin.txt`로 복사 후 채워서 사용 (gitignored).
+# 매 사용자 입력 직전 pin-injector.sh가 컨텍스트 상단에 주입.
+# 갱신 정책: 00_Document/policies/pin-and-done.md §1 (라이프사이클). work-pin = 단일 작업 좌표 (ADR-025 — CONTEXT 3종 은퇴, memory가 사용자 컨텍스트 보유).
 
-WORK-ID: <phase05-slug 또는 ad-hoc-YYYYMMDD-주제>
-PHASE: <NN/MM 또는 "ad-hoc">
-현재 작업: <한 줄. 지금 이 순간 무엇을 하고 있나>
-완료 조건: <X개 중 Y개 (남은: ...)>
+WORK-ID: <phase-slug 또는 ad-hoc-YYYYMMDD-주제>
+PHASE: <NN/MM> / 등급: <단순/보통/복잡/대규모, 자동 상향 표기>
+현재 작업: <한 줄. 지금 무엇을 하나>
 다음 액션: <구체적인 다음 한 걸음>
-주의할 약속:
-  - <헌법 절대 원칙 중 이 작업과 충돌 가능한 1>
-  - <2>
-  - <3>
-학습 보존: <키워드 콤마 구분 — 봉투의 "학습 포인트"가 누적될 자리>
-마지막 갱신: YYYY-MM-DD HH:MM
+주의할 약속: <빠뜨리면 안 되는 검증/제약, 없으면 생략 — 선택>
+루프 상태: <버킷 a/b/c · 사람대기 · pending-* 원장 참조 — loop 운영 시만 (work-judge), 선택>
+마지막 갱신: <YYYY-MM-DD 또는 commit hash>

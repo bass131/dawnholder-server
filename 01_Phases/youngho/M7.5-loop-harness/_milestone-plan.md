@@ -2,7 +2,7 @@
 owner: youngho
 milestone: M7.5
 title: Loop-driven 하네스 격상 (ADR-032 구현 sweep)
-status: planned
+status: done
 grade: 대규모
 risk: trust-boundary
 estimated: 12~18h (총합, 6 Phase)
@@ -109,3 +109,4 @@ P01 (신규 정책 3종 = 단일 진실 토대)
 
 - 2026-06-18 — **사전 작성** (메인 세션). ADR-032 accepted + ultracode 전면 파악 triage(harness ADR 재실행 포함) 위에 6 Phase 분해. v1만 adopt.
 - 2026-06-18 — **plan-auditor GO (🔴 0)** + 🟡 3건 봉합: ① knowledge/{README,_usage} REVISE를 P05에 추가(누락 봉합) ② P05 convention-size-guard "추가"→"등재" 문구 정정(이미 기존) ③ 헌법 §1/§2 N/A 한 줄 명시. 설계 변경 0 — 완료조건·범위 정밀화만.
+- 2026-06-18 — **마일스톤 마감 (6/6 done)**. commits: P01 `70533b7` / P02 `6fcb466`(reviewer🟢) / P03 `7c94e12` / P04 `a2e094d` / P05 `cea1e4f`(reviewer🟢 trust-boundary) / P06(본 closeout, reviewer🟢). 미결 #2~#6 전부 결정(영호 게이트). 게임 코드 0 변경 + dangling 0 + reviewer 🟢×3. 박제 = `_milestone-DONE.{md,html}`. 실행 중 플랜 보강: 세션 2종(/session:review 신설) + 팀 유지 안 됨=영호 단독 컨텍스트 전환. **PR/머지 = 영호 명시 GO 대기**(비가역).

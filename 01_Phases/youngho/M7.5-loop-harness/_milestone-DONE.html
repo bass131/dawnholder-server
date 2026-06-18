@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M7.5 — Loop-driven 하네스 격상 (마일스톤 마감)</title>
+<style>
+  :root { --bg:#0f1117; --card:#1a1d27; --ink:#e6e8ee; --muted:#9aa3b2; --accent:#7c9cff; --green:#4ade80; --amber:#fbbf24; --line:#2a2f3d; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans KR",sans-serif; background:var(--bg); color:var(--ink); line-height:1.65; }
+  .wrap { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+  header { border-bottom:2px solid var(--line); padding-bottom:20px; margin-bottom:28px; }
+  h1 { font-size:1.9rem; margin:0 0 6px; }
+  h1 .sub { color:var(--accent); }
+  .meta { color:var(--muted); font-size:.9rem; }
+  h2 { font-size:1.25rem; margin:34px 0 14px; padding-left:10px; border-left:4px solid var(--accent); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin:14px 0; }
+  .kpis { display:flex; flex-wrap:wrap; gap:12px; }
+  .kpi { flex:1 1 140px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+  .kpi .n { font-size:1.5rem; font-weight:700; color:var(--green); }
+  .kpi .l { color:var(--muted); font-size:.82rem; }
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.9rem; }
+  th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--accent); font-weight:600; }
+  code { background:#000; padding:1px 6px; border-radius:4px; font-size:.85em; color:#cbd5ff; }
+  .step { display:flex; gap:14px; margin:16px 0; }
+  .step .ic { font-size:1.5rem; flex:0 0 32px; text-align:center; }
+  .step .bd { flex:1; }
+  .step .bd h3 { margin:0 0 4px; font-size:1.02rem; }
+  .tag { display:inline-block; background:#23304d; color:#9db4ff; border-radius:5px; padding:1px 8px; font-size:.78rem; margin-right:5px; }
+  .ok { color:var(--green); } .amber { color:var(--amber); }
+  ul { margin:6px 0; padding-left:20px; } li { margin:3px 0; }
+  footer { margin-top:40px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.82rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>M7.5 — <span class="sub">Loop-driven 하네스 격상</span></h1>
+  <div class="meta">ADR-032 구현 sweep · 6 Phase · 대규모 · 2026-06-18 · owner: youngho · <b>게임 코드 0 변경 (문서·하네스 only)</b></div>
+</header>
+
+<h2>📊 핵심 지표</h2>
+<div class="kpis">
+  <div class="kpi"><div class="n">6/6</div><div class="l">Phase 완료</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">게임 코드 변경 (git diff)</div></div>
+  <div class="kpi"><div class="n">🟢×3</div><div class="l">reviewer (P02·P05·P06)</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">신규 dangling 참조</div></div>
+  <div class="kpi"><div class="n">5/5</div><div class="l">미결 #2~#6 결정</div></div>
+</div>
+
+<h2>📌 TL;DR</h2>
+<div class="card">
+하네스를 <b>"사람이 매 스텝 프롬프트" → "사람=방향+판단, 엔진=구동"</b>으로 격상 (Addy "Loop Engineering"). 실측 결과 우리 하네스는 <b>"loop-ready인데 loop-less"</b> — done 판사(WSL2 게이트)·정지 게이트·maker-checker·메모리·refactor-sweep 半구현이 이미 다 있고, <b>범용 드라이버 + "무엇을 루프에 맡기나" 분류</b>만 빠져 있었다. 이 둘을 채웠다. 엔진은 새로 만들지 않고 <b>내장 <code>/loop</code>·<code>Workflow</code> 재사용</b> + 어긋나는 핵심(외부 done 심판)만 <code>/engine:goal</code> 신규. <b>v1(attended)만 adopt</b>, v2 무인은 별도 ADR로 defer.
+</div>
+
+<h2>🗂️ 6 Phase 진행</h2>
+<table>
+  <tr><th>Phase</th><th>내용</th><th>commit</th><th>핵심</th></tr>
+  <tr><td>P01</td><td>신규 정책 3종 토대</td><td><code>70533b7</code></td><td>loop-driver·work-judge·review-throughput (둘 다 독립=#2)</td></tr>
+  <tr><td>P02</td><td>헌법 + 정책 5 atomic (키스톤)</td><td><code>6fcb466</code></td><td>운영모드 §신설 + 5정책이 토대를 포인터 참조. <span class="ok">reviewer 🟢</span></td></tr>
+  <tr><td>P03</td><td>agents 6 REVISE</td><td><code>7c94e12</code></td><td>SubAgent를 루프 Worker/checker로 인지 (권한·모델 표 불변)</td></tr>
+  <tr><td>P04</td><td>드라이버 슬래시 + commands</td><td><code>a2e094d</code></td><td><code>/engine:goal</code> + <code>/session:review</code> 신설 (#3)</td></tr>
+  <tr><td>P05</td><td>hooks + settings + 원장 3종</td><td><code>cea1e4f</code></td><td>settings #4 · 원장 #5 · circuit halt. <span class="ok">reviewer 🟢 (trust-boundary)</span></td></tr>
+  <tr><td>P06</td><td>카탈로그 + ADR 등록 + 마감</td><td>(본 commit)</td><td>ADR-032 등록 + 옛 ADR 상태줄 + DONE. <span class="ok">reviewer 🟢</span></td></tr>
+</table>
+
+<h2>🧩 미결 5종 결정 (영호 게이트)</h2>
+<table>
+  <tr><th>#</th><th>결정</th><th>근거</th></tr>
+  <tr><td>#2</td><td>work-judge·review-throughput = <b>둘 다 독립 파일</b></td><td>흡수 시 review-tiering 234줄(220 임계 초과) + 등급≠판정자 축 SRP</td></tr>
+  <tr><td>#3</td><td>내장 <code>/loop</code> 재사용 + <code>/engine:goal</code> 신규 (<code>engine/</code> 네임스페이스)</td><td>내장 self-pace는 AI 자기판단(편향) → 외부 done 심판만 커스텀</td></tr>
+  <tr><td>#4</td><td>settings allow에 <code>git add/commit</code> 추가, <b><code>ask(pr)</code> 불변 보존</b></td><td>commit=가역(헌법 OK). push/merge/무인 commit 전면=v2 defer</td></tr>
+  <tr><td>#5</td><td>원장 3종 = <code>00_Document/ledgers/</code> committed</td><td>영속·감사 가시 (팀 유지 안 됨 = 영호 개인 추적용)</td></tr>
+  <tr><td>#6</td><td>신뢰 졸업 <b>N=3 초안</b> (Rule of Three)</td><td>review-throughput에 박음 — 실측 후 영호 확정 대기</td></tr>
+</table>
+
+<h2>📝 5단계 보고</h2>
+
+<div class="step"><div class="ic">🎯</div><div class="bd">
+  <h3>무엇을 만들었나</h3>
+  하네스의 <b>운영 모드</b>를 loop-driven으로 격상. 루프 엔진(<code>/engine:goal</code> + 내장 <code>/loop</code>·<code>Workflow</code>), 판정자 3버킷(work-judge), 리뷰 처리량 모델(review-throughput), 세션 2종(작업/리뷰), 미룸 장부 3종(pending-art/comprehension/knowledge)을 추가하고, 헌법·정책·에이전트가 이를 가리키게 했다. <b>게임/기술 코드는 한 줄도 안 바꿈.</b>
+</div></div>
+
+<div class="step"><div class="ic">🤔</div><div class="bd">
+  <h3>왜 필요한가</h3>
+  AI 생산 속도를 사람이 못 따라가는 <b>throughput 병목</b>. 사람이 모든 산출물을 리뷰하면 직렬 병목이 된다. 역할을 <i>방향+판단</i>으로 전환해 천장을 높인다. 단 학부생 학습 목적 보존을 위해 <b>이해 게이트</b>를 박았다 — 깊은 학습은 별도 pull 세션(<code>/session:review</code>)으로 분리해 "engineer로 남되 button-pusher는 안 됨".
+</div></div>
+
+<div class="step"><div class="ic">🛠️</div><div class="bd">
+  <h3>어떻게 만들었나</h3>
+  <ul>
+    <li><b>엔진을 새로 안 만듦</b> — 내장 <code>/loop</code>(반복)·<code>Workflow</code>(병렬)를 몸통으로 재사용, 어긋나는 핵심(<b>외부 done 심판</b> = WSL2/dangling 게이트, AI 자기판단 X)만 <code>/engine:goal</code>로 글루. <code>refactor-sweep</code>은 그 첫 검증된 프리셋.</li>
+    <li><b>3버킷 판정</b>(work-judge) = ADR-031의 4종 Stop을 판정자 축으로 재서술 (a 기계=자율 / b 취향=사람 트랙 / c 비가역=사람 게이트). risk-detector 깃발이 1차 분류기.</li>
+    <li><b>append-only</b> — 옛 ADR(022/019/016/023) 본문 rewrite 0, 상태줄 한 줄만. ADR-031은 확장(supersede 아님).</li>
+    <li><b>안 고른 대안</b>: 커스텀 <code>/loop</code> 재구현(내장 shadow 위험) / 무인 v2(권한승격·circuit halt·trust-boundary 자율침범 3위험 동시 유입 → defer).</li>
+  </ul>
+</div></div>
+
+<div class="step"><div class="ic">🧪</div><div class="bd">
+  <h3>테스트 결과</h3>
+  docs-only라 WSL2 게임 회귀는 불요. done 판사 = <b>dangling 0 + hook smoke + reviewer 🔴0</b>.
+  <ul>
+    <li><b>게임 코드 git diff = 0</b> (02_Server/03_Client/98_Shared/04_ClientNet) ✅</li>
+    <li><b>신규 링크 dangling 0</b> (기존 systemic <code>../policies/</code> 깨진 링크는 post-M7.5 문서정리 이월)</li>
+    <li><b>reviewer 🟢 ×3</b>: P02(헌법+정책, 절대원칙 불변) / P05(trust-boundary, ask(pr) git diff 보존) / P06(append-only + ADR 등록 정합)</li>
+    <li>settings.json JSON 유효 ✅ / circuit-breaker.sh 문법 ✅</li>
+  </ul>
+</div></div>
+
+<div class="step"><div class="ic">➡️</div><div class="bd">
+  <h3>다음 스텝</h3>
+  <ul>
+    <li><b>PR 생성·머지 = 영호 명시 GO</b> (비가역 게이트 — 자동 진행 X). 팀 유지 안 됨 = admin 예외.</li>
+    <li><b>실측 후 조정</b>: #6 신뢰졸업 N · 사람 게이트 빈도("행동 잠금 자주 우려") · pending 장부 작동.</li>
+    <li><b>v2 항목</b>: circuit halt 경로 절대화(reviewer 🟡) · 무인 Desktop scheduled(별도 ADR).</li>
+    <li><b>post-M7.5 후보</b>: 00_Document 분류 정리(systemic 깨진 링크 일괄) · 팀 전제 하네스(CODEOWNERS·co-review·아트 트랙) 정리.</li>
+  </ul>
+</div></div>
+
+<footer>
+  근거: <code>00_Document/ADR/harness/ADR-032-loop-driven-operation.md</code> (accepted) · 계획: <code>01_Phases/youngho/M7.5-loop-harness/_milestone-plan.md</code> · plan-auditor GO 🔴0 · 캡스톤 평가 자산 (ADR-031 비동기 박제)
+</footer>
+</div>
+</body>
+</html>

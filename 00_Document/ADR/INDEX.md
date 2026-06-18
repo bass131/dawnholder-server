@@ -38,19 +38,20 @@
 | ADR-013 | -DONE.md 페어 박제 정책 (AI=사실 / 본인=회고 분업) *(회고 절반 superseded — ADR-025)* | [harness/ADR-013-done-md-pair.md](harness/ADR-013-done-md-pair.md) |
 | ADR-014 | 문서 세분화 정책 (220줄 임계 + 헌법 350줄 예외) | [harness/ADR-014-doc-length-thresholds.md](harness/ADR-014-doc-length-thresholds.md) |
 | ADR-015 | Post-flight 게이트 (validate-phase-gate.sh 훅) | [harness/ADR-015-postflight-gate.md](harness/ADR-015-postflight-gate.md) |
-| ADR-016 | Notion 협업 3자 분업 (Claude / Codex / 본인) | [harness/ADR-016-notion-3way.md](harness/ADR-016-notion-3way.md) |
+| ADR-016 | Notion 협업 3자 분업 (Claude / Codex / 본인) *(부분 superseded — ADR-032: 사실상 Claude 단독)* | [harness/ADR-016-notion-3way.md](harness/ADR-016-notion-3way.md) |
 | ADR-018 | 하네스 망각 안전망 — 작업 봉투 + 핀 + WORK-ID *(부분 superseded — ADR-022)* | [harness/ADR-018-forgetting-safety-net.md](harness/ADR-018-forgetting-safety-net.md) |
 | ADR-019 | Reviewer 에이전트 도입 (Tier 2 자동 리뷰) *(부분 갱신 — ADR-022)* | [harness/ADR-019-reviewer-agent.md](harness/ADR-019-reviewer-agent.md) |
 | ADR-020 | 훅 실행 환경 의존성 (Git Bash on Windows) + 검증 패턴 | [harness/ADR-020-hook-env-deps.md](harness/ADR-020-hook-env-deps.md) |
 | ADR-021 | 클라이언트 UI는 별도 Additive Scene으로 분리 | [harness/ADR-021-client-ui-additive-scene.md](harness/ADR-021-client-ui-additive-scene.md) |
 | ADR-022 | 새 하네스 v1 (M3.5 — 5/20 의논 + NDREAM 패턴 흡수 + KPI 전환) | [harness/ADR-022-new-harness-v1.md](harness/ADR-022-new-harness-v1.md) |
-| ADR-023 | work-pin/CONTEXT 동기화 결함 — 진행 단계 stale hole 봉합 (M3.7 — 옵션 C 게이트 보강, `/session:start` drift 발견 단계 신설) *(CONTEXT 절반 superseded — ADR-025, drift 게이트는 work-pin 단독으로 유지)* | [harness/ADR-023-sync-gate-progress-stale-hole.md](harness/ADR-023-sync-gate-progress-stale-hole.md) |
+| ADR-023 | work-pin/CONTEXT 동기화 결함 — 진행 단계 stale hole 봉합 (M3.7 — 옵션 C 게이트 보강, `/session:start` drift 발견 단계 신설) *(CONTEXT 절반 superseded — ADR-025, drift 게이트는 work-pin 단독으로 유지; 동기 시점 부분 superseded — ADR-032)* | [harness/ADR-023-sync-gate-progress-stale-hole.md](harness/ADR-023-sync-gate-progress-stale-hole.md) |
 | ADR-024 | false-promise 주기적 감사 cadence (M3.7 — 누적 12건+ Rule of Three 3회 통과, 마일스톤 마감 + ad-hoc X건 트리거) | [harness/ADR-024-false-promise-cadence.md](harness/ADR-024-false-promise-cadence.md) |
 | ADR-025 | CONTEXT 3종 + 학습 일지 트랙 B 은퇴, work-pin 단일 핸드오프 (M4.1 — ADR-013 회고/ADR-023 CONTEXT/ADR-022 트랙 B 부분 supersede) | [harness/ADR-025-retire-context-trio-and-learning-track.md](harness/ADR-025-retire-context-trio-and-learning-track.md) |
 | ADR-027 | 클라 Bootstrap(코드 주도 RuntimeInitialize) + Persistent Services + 연결 생명주기 A안 (M4.2 — ADR-021 scene-lifecycle 확장, ① DontDestroyOnLoad-per-service WIP supersede, B/로그인은 M5 이월) | [harness/ADR-027-client-bootstrap-persistent-services.md](harness/ADR-027-client-bootstrap-persistent-services.md) |
 | ADR-028 | Code Convention 수립 (GPP 19 + 게임서버 교과서 10 참고서 + 우리 규칙 + 강제 4중) — God class 분리 결정 기준, refs/CODE_CONVENTION/INDEX 3층 | [harness/ADR-028-code-convention.md](harness/ADR-028-code-convention.md) |
 | ADR-029 | SAC dotnet 실행 차단 — WSL2 실행 표준 (로컬 테스트 부활, 세션16 "SAC 게이트 은퇴 = CI 단독" 부분 supersede, PoC 5항목 게이트) | [harness/ADR-029-wsl2-dotnet-execution-standard.md](harness/ADR-029-wsl2-dotnet-execution-standard.md) |
 | ADR-031 | Phase 자동 진행 + 보고 비동기 문서화 (학습 호흡 수동 멈춤 폐기 = ADR-025 드리프트 봉합, HTML 임계 대규모→복잡, Stop=영호 직접확인 4종) *(ADR-015 "학습 호흡 보존"·ADR-022 "5단계 대규모 인라인" supersede)* | [harness/ADR-031-auto-phase-progression-async-reporting.md](harness/ADR-031-auto-phase-progression-async-reporting.md) |
+| ADR-032 | Loop-driven 운영 모드 (사람=방향+판단, 엔진=내장 /loop·Workflow + /engine:goal) — v1 attended adopt / v2 무인 defer. 3버킷 judge + 리뷰 throughput + 세션 2종 + pending 원장 3종 *(ADR-022 운영모드·019 정적매트릭스·016 3자분업·023 동기시점 부분 superseded / 031 확장)* | [harness/ADR-032-loop-driven-operation.md](harness/ADR-032-loop-driven-operation.md) |
 
 ---
 
