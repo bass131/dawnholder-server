@@ -201,17 +201,9 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 
 ---
 
-## 9. 실측 후 재조정 항목
+## 9. 실측 후 재조정 (완료)
 
-본 정책은 *추측 기반*. M4 진입 후 첫 1주 안에 다음 관찰 → 명세 갱신:
-
-- [ ] **위임 false hit** — 메인 직접이 더 빠른데 SubAgent 위임된 빈도
-- [ ] **재귀 차단 마찰** — Worker가 다른 도메인 작업 필요 발견 시 coordinator 거치는 비용
-- [ ] **에스컬레이션 빈도** — Sonnet 2회 실패 → Opus 발동 주간 카운트. 잦으면 처음부터 Opus 등급 후보
-- [ ] **plan-auditor 가치** — 사전 검증으로 봉합한 결함 vs 후속 사고 비율 (γ 6/7회차 가치 정량화)
-- [ ] **unity-bridge 단독 영역 효과** — prefab 사고 0건 유지 검증
-
-재조정 결과는 본 정책 직접 수정 또는 ADR-023 신설(변경 폭에 따라).
+본 정책 5축(위임 false hit / 재귀 차단 마찰 / 에스컬레이션 빈도 / plan-auditor 가치 / unity-bridge 효과)은 **M3.6 첫 실측 사이클(2026-05-22, line 6 신선도 주의)에서 모두 0건 또는 간접 증명** → 본문 재조정 불요. 이후 비용 가시화는 work-pin 에스컬레이션 박힘(§5)으로 상시 대체. 큰 변경은 ADR 신설.
 
 ---
 
@@ -220,3 +212,4 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 - 2026-05-20 — M3.5 Phase 01 (2/2)에서 신설. 5/20 의논 결과(SubAgent 풀 8 + 모델 분담 + 에스컬레이션 룰) 박힘. 옛 헌법 6 도메인 라우팅 표를 본 정책으로 외부화 + 신설 4개(`shared`/`plan-auditor`/`unity-bridge`/`coordinator`) 흡수.
 - 2026-05-22 — M3.5 후속 봉합 (β cross-review #3). 풀 8 → 풀 9 갱신 (`knowledge-gc` Phase 04 신설 항목 누락 봉합) + §4-3 수동 트리거 명세 박음.
 - 2026-06-13 — 한시 운영(Fable 메인) 섹션 폐기 + §5.5 선택적 Opus(영구) 신설. Fable 5 사용 제한으로 'Fable 메인 조율 전담' 한시방침 종료 → §1~9 원래 라우팅 복귀. `복잡+trust-boundary` 또는 `대규모` = 구현 Worker도 Opus(위험 깃발이 모델 티어 상향, 위임 시 model override). §1 표 헤더 '모델'→'기본 모델'. 동기화: CLAUDE.md 헌법 포인터 + `_routing.md` + `_escalation.md` + work-pin + memory(`opus-routing-by-complexity` 신설, 옛 `main-session-coordination-only` 폐기).
+- 2026-06-19 — §9 실측 체크리스트 응축(완료된 TODO → 결과는 line 6 신선도 주의가 SSOT). 222→214줄로 doc-thresholds 220 임계 회복. 라우팅 표·모델 배정·자동호출 트리거 *의미 변화 0* → §8 동기화 대상 문서 무변경.
