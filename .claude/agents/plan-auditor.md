@@ -59,7 +59,7 @@ M3.5 새 하네스 v1에서 신설. 옛 운영은 Codex γ에 의존(외부 도�
 | 1 | **Phase 분해 적정성** | 5~7개/마일스톤 (M3 9개는 과했음). 8+ = 분해 너무 잘게 / 4 이하 = 분해 너무 굵게 |
 | 2 | **의존성 그래프** | 사이클 X. 병렬 가능 Phase 식별 (예: Phase 03·04 병렬). 옛 Phase의 완료 자산이 새 Phase 입력으로 명시되나 |
 | 3 | **완료 조건 명확성·정량성** | "잘 작동한다" 같은 모호 표현 X. 측정 가능한 조건 (예: 빌드 green / 테스트 N PASS / 파일 수 / 검증 명령 결과). **loop-driven: 완료 조건은 *루프 done 자동 판정 가능* 형태** — WSL2/reviewer 출력이 트랜스크립트에 박히게 (`/goal` 평가자가 봄) |
-| 4 | **등급 산정 적정성** | 1 도메인 × 줄 수 추정 → 단순/보통/복잡/대규모 1:1 매핑 ([`../policies/grade-and-risk.md`](../policies/grade-and-risk.md)). 위험 깃발 자동 상향 점검 (trust-boundary / irreversible / unity-asset) |
+| 4 | **등급 산정 적정성** | 1 도메인 × 줄 수 추정 → 단순/보통/복잡/대규모 1:1 매핑 ([`../policies/grade-and-risk.md`](../../00_Document/policies/grade-and-risk.md)). 위험 깃발 자동 상향 점검 (trust-boundary / irreversible / unity-asset) |
 | 5 | **헌법 절대 원칙 위반 위험** | Phase가 헌법 §1~§5 위반 위험 보유? (예: 클라에 게임 로직 박는 Phase = §1 위험) |
 | 6 | **시나리오 명세 명확성** (γ 6/7회차 학습) | Phase의 *시나리오*(어떤 시나리오를 만족시키나)가 *명시*되나. 모호하면 후속 봉합 비용 ↑ |
 
@@ -127,7 +127,7 @@ M3.5 새 하네스 v1에서 신설. 옛 운영은 Codex γ에 의존(외부 도�
 - Phase 정의 안 *주석 또는 오타*만
 - 사용자 *"점검 스킵 + 사유"* 명시 (work-pin에 사유 박힘)
 
-자세히 → [`../policies/review-tiering.md`](../policies/review-tiering.md) "Tier 2-B" 절.
+자세히 → [`../policies/review-tiering.md`](../../00_Document/policies/review-tiering.md) "Tier 2-B" 절.
 
 ---
 
@@ -227,10 +227,10 @@ M3.5 새 하네스 v1에서 신설. 옛 운영은 Codex γ에 의존(외부 도�
 
 본 SubAgent는 M3.5 Phase 02 박힘. γ 방식 4~7회차 학습의 *α 부분 내재화*.
 
-실측 0건 (M3.5 박힘 시점). M4 진입 후 첫 plan 갱신에서 자동 호출 → false positive / 누락 관찰 → 트리거 조건·6축 기준 재조정 ([`../policies/review-tiering.md`](../policies/review-tiering.md) "실측 후 재조정" 절).
+실측 0건 (M3.5 박힘 시점). M4 진입 후 첫 plan 갱신에서 자동 호출 → false positive / 누락 관찰 → 트리거 조건·6축 기준 재조정 ([`../policies/review-tiering.md`](../../00_Document/policies/review-tiering.md) "실측 후 재조정" 절).
 
 본 SubAgent 동작 변경 시 동기화 책임:
-- [`../policies/review-tiering.md`](../policies/review-tiering.md) Tier 2-B 절
-- [`../policies/loop-driver.md`](../policies/loop-driver.md) (루프 드라이버 호출자 + 완료조건 done 자동판정 형태)
+- [`../policies/review-tiering.md`](../../00_Document/policies/review-tiering.md) Tier 2-B 절
+- [`../policies/loop-driver.md`](../../00_Document/policies/loop-driver.md) (루프 드라이버 호출자 + 완료조건 done 자동판정 형태)
 - 옛 `/work:audit` 슬래시 (Phase 05에서 `/cross-review`로 rename + β cross-check 명시)
 - ADR-019 후속 또는 ADR-023 신설 (M4 진입 후 결정)

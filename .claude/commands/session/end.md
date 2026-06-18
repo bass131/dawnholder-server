@@ -18,7 +18,7 @@ description: Phase 완료 마감 절차 — commit + PR + (선택)노션 박제 
 
 #### 1-A. `-DONE.md` 박제 존재 확인 (등급별 분기)
 
-작업 등급에 따라 -DONE.md 필요 여부 다름 ([`../../policies/grade-and-risk.md`](../../policies/grade-and-risk.md)):
+작업 등급에 따라 -DONE.md 필요 여부 다름 ([`../../policies/grade-and-risk.md`](../../../00_Document/policies/grade-and-risk.md)):
 
 | 등급 | -DONE.md | 5단계 보고 |
 |---|---|---|
@@ -105,7 +105,7 @@ git commit -m "<메시지>"
 
 ### 4. Push + PR 생성 (irreversible 깃발 — 사용자 명시 GO 게이트)
 
-> **헌법 정합**: `gh pr create/merge` = irreversible 깃발 ([`../../policies/pr-and-merge-gate.md`](../../policies/pr-and-merge-gate.md)). AI 자율 진행 X. 본 절차 모든 단계에서 *사용자 명시 GO*.
+> **헌법 정합**: `gh pr create/merge` = irreversible 깃발 ([`../../policies/pr-and-merge-gate.md`](../../../00_Document/policies/pr-and-merge-gate.md)). AI 자율 진행 X. 본 절차 모든 단계에서 *사용자 명시 GO*.
 
 #### 4-A. 현재 브랜치 확인
 

@@ -210,6 +210,6 @@ work-pin 마지막 갱신 이후 새로운 [H]/[M] 변경 있으면 응답에 �
 
 ### M3.5 새 하네스 변경 (옛 대비)
 
-- **work-pin 양식**: 옛 ~80줄 → 새 30~40줄 압축 ([`../../policies/pin-and-done.md`](../../policies/pin-and-done.md) 정합). 인지 확인 응답도 짧게
-- **등급별 보고**: 옛 "매 코드 응답마다 work-envelope" → 새 "단순/보통 = work-pin + commit, 복잡 = -DONE.md, 대규모만 5단계 보고" ([`../../policies/reporting-format.md`](../../policies/reporting-format.md))
+- **work-pin 양식**: 옛 ~80줄 → 새 30~40줄 압축 ([`../../policies/pin-and-done.md`](../../../00_Document/policies/pin-and-done.md) 정합). 인지 확인 응답도 짧게
+- **등급별 보고**: 옛 "매 코드 응답마다 work-envelope" → 새 "단순/보통 = work-pin + commit, 복잡 = -DONE.md, 대규모만 5단계 보고" ([`../../policies/reporting-format.md`](../../../00_Document/policies/reporting-format.md))
 - **CHANGELOG 확인은 동일** — 본 절차 변경 X (이미 검증된 협업 셋업)

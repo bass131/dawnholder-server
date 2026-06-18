@@ -54,8 +54,8 @@ _(없음 — 본 캐시는 2026-05-20 신설)_
 
 ## 관련 자산
 
-- 헌법: [`../../CLAUDE.md`](../../CLAUDE.md) — qa는 게임 코드 R only
-- 정책: [`../../policies/knowledge-system.md`](../../policies/knowledge-system.md)
+- 헌법: [`../../CLAUDE.md`](../../../CLAUDE.md) — qa는 게임 코드 R only
+- 정책: [`../../policies/knowledge-system.md`](../../../00_Document/policies/knowledge-system.md)
 - SubAgent 정의: [`../../agents/qa.md`](../../agents/qa.md)
 
 ---

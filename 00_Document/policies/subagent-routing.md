@@ -193,7 +193,7 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 
 본 정책 수정 시 *반드시* 함께 갱신:
 
-- [`../CLAUDE.md`](../CLAUDE.md) "🤖 SubAgent 풀" 섹션 (헌법 본문 표와 정합)
+- [`../CLAUDE.md`](../../CLAUDE.md) "🤖 SubAgent 풀" 섹션 (헌법 본문 표와 정합)
 - [`../../.claude/agents/`](../../.claude/agents/) (SubAgent 정의 9개 — Phase 02 산출물 8 + Phase 04 신설 `knowledge-gc` 1)
 - [`grade-and-risk.md`](grade-and-risk.md) (등급 → 처리 패턴 매핑) · [`work-judge.md`](work-judge.md) (등급/깃발 → 버킷) · [`loop-driver.md`](loop-driver.md) (진입 주체)
 - [`review-tiering.md`](review-tiering.md) (reviewer 자동 호출 트리거)

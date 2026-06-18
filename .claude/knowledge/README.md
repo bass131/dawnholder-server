@@ -9,8 +9,8 @@ last_updated: 2026-05-20
 
 각 SubAgent가 작업 시작 시 자동 통독하는 도메인별 *학습 캐시*. 옛 운영의 함정(매 세션 백지 시작 → 같은 사고 반복)을 차단하기 위한 인프라.
 
-> **헌법 참조**: [`../CLAUDE.md`](../CLAUDE.md) "📚 Knowledge 시스템" 섹션
-> **정책**: [`../policies/knowledge-system.md`](../policies/knowledge-system.md)
+> **헌법 참조**: [`../CLAUDE.md`](../../CLAUDE.md) "📚 Knowledge 시스템" 섹션
+> **정책**: [`../policies/knowledge-system.md`](../../00_Document/policies/knowledge-system.md)
 > **활용 가이드**: [`_usage.md`](_usage.md)
 
 ---

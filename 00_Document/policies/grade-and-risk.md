@@ -78,7 +78,7 @@ PDF NDREAM 패턴(Sonnet Worker + Opus Coordinator)을 본 프로젝트에 정�
 
 **work-pin 갱신은 본인 수동** — Hook이 work-pin 파일을 직접 안전하게 수정하기 어려움(동시 편집 충돌 위험) + 본인 인지를 거쳐야 등급 상향이 의미 있음. Hook 발동 = "주의 환기" 신호, 갱신 = 본인 책임.
 
-Hook 명세 = [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03 reference).
+Hook 명세 = [`../hooks/risk-detector.sh`](../../.claude/hooks/risk-detector.sh) (Phase 03 reference).
 
 ### 깃발 → 루프 버킷 (loop-driven, M7.5)
 
@@ -149,11 +149,11 @@ Hook 명세 = [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03
 
 본 정책 수정 시 *반드시* 함께 갱신:
 
-- [`../CLAUDE.md`](../CLAUDE.md) "📊 작업 등급" 섹션 (헌법 본문 표와 정합)
+- [`../CLAUDE.md`](../../CLAUDE.md) "📊 작업 등급" 섹션 (헌법 본문 표와 정합)
 - [`subagent-routing.md`](subagent-routing.md) (등급 → 처리 패턴 매핑)
 - [`reporting-format.md`](reporting-format.md) (등급별 5단계 보고 조건부화)
 - [`pin-and-done.md`](pin-and-done.md) (등급별 -DONE.md 박제 조건)
-- [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03 산출물 — 깃발 검출 패턴)
+- [`../hooks/risk-detector.sh`](../../.claude/hooks/risk-detector.sh) (Phase 03 산출물 — 깃발 검출 패턴)
 - [`work-judge.md`](work-judge.md) (깃발 → 루프 버킷 매핑 — 본 정책이 깃발 정의 원천)
 
 ---

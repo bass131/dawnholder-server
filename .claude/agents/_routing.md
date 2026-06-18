@@ -1,6 +1,6 @@
 # Agents Routing — SubAgent 풀 9 도메인 매핑
 
-> 본 문서는 *작업 → SubAgent* 빠른 매핑 표. **WHY/원칙은 [`../policies/subagent-routing.md`](../policies/subagent-routing.md), 본 문서는 HOW**.
+> 본 문서는 *작업 → SubAgent* 빠른 매핑 표. **WHY/원칙은 [`../policies/subagent-routing.md`](../../00_Document/policies/subagent-routing.md), 본 문서는 HOW**.
 
 ---
 
@@ -29,9 +29,9 @@
 | **복잡** | Coordinator + Worker 1~2개 | + reviewer (조건부) |
 | **대규모** | Coordinator + Team | Worker 3~4개 + plan-auditor 사전 + reviewer 통합 |
 
-**구현 Worker 모델 (선택적 Opus, 2026-06-13 영구)**: 기본 Sonnet. **`복잡+trust-boundary` 또는 `대규모` → 구현 Worker도 Opus**(위험 깃발이 모델 티어 상향, 위임 시 `model` override). 그 외 Sonnet. 단 메인 `file:line` 실측 게이트는 모델 무관 유지. 상세 = [`../policies/subagent-routing.md`](../policies/subagent-routing.md) §5.5.
+**구현 Worker 모델 (선택적 Opus, 2026-06-13 영구)**: 기본 Sonnet. **`복잡+trust-boundary` 또는 `대규모` → 구현 Worker도 Opus**(위험 깃발이 모델 티어 상향, 위임 시 `model` override). 그 외 Sonnet. 단 메인 `file:line` 실측 게이트는 모델 무관 유지. 상세 = [`../policies/subagent-routing.md`](../../00_Document/policies/subagent-routing.md) §5.5.
 
-**루프 버킷 (loop-driven, M7.5)**: 등급/깃발 → 루프 판정자 버킷. 깃발 0 + 가역 = **(a)** 루프 자율 / unity-asset = **(b)** 사람 트랙 / irreversible·trust-boundary = **(c)** 사람 게이트(Stop). 매핑 = [`../policies/work-judge.md`](../policies/work-judge.md).
+**루프 버킷 (loop-driven, M7.5)**: 등급/깃발 → 루프 판정자 버킷. 깃발 0 + 가역 = **(a)** 루프 자율 / unity-asset = **(b)** 사람 트랙 / irreversible·trust-boundary = **(c)** 사람 게이트(Stop). 매핑 = [`../policies/work-judge.md`](../../00_Document/policies/work-judge.md).
 
 ---
 
@@ -113,16 +113,16 @@ Coordinator → Worker 위임 시:
 - **Worker가 다른 도메인 작업 필요 발견** 시: 결과에 *분해 요청* 표기 → coordinator가 재분해
 - **Coordinator → 다른 Coordinator 호출 X**: 분해가 너무 깊으면 Phase 자체 잘못 추정 신호
 
-자세히 → [`../policies/subagent-routing.md`](../policies/subagent-routing.md) "위임 경계" 절.
+자세히 → [`../policies/subagent-routing.md`](../../00_Document/policies/subagent-routing.md) "위임 경계" 절.
 
 ---
 
 ## 변경 시 동기화 책임
 
 본 문서 수정 시 *반드시* 함께 갱신:
-- [`../policies/subagent-routing.md`](../policies/subagent-routing.md) (원칙 정책)
-- [`../policies/grade-and-risk.md`](../policies/grade-and-risk.md) (등급 → 처리 패턴 매핑)
-- [`../policies/loop-driver.md`](../policies/loop-driver.md) · [`../policies/work-judge.md`](../policies/work-judge.md) (호출 주체 루프 드라이버 + 등급→버킷)
+- [`../policies/subagent-routing.md`](../../00_Document/policies/subagent-routing.md) (원칙 정책)
+- [`../policies/grade-and-risk.md`](../../00_Document/policies/grade-and-risk.md) (등급 → 처리 패턴 매핑)
+- [`../policies/loop-driver.md`](../../00_Document/policies/loop-driver.md) · [`../policies/work-judge.md`](../../00_Document/policies/work-judge.md) (호출 주체 루프 드라이버 + 등급→버킷)
 - [`coordinator.md`](coordinator.md) (분해 패턴 카탈로그)
 - 각 SubAgent의 *권한 경계* 절
 

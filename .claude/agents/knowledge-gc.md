@@ -97,7 +97,7 @@ You are the **Knowledge GC Collector** agent. M3.5 새 하네스 v1에서 Specia
 | **분해** | 한 항목에 도메인 여러 개 섞임 | "도메인별 분리 또는 cross-cutting 이동 제안" | 사용자 확인 1회 |
 | **승격** | Rule of Three + 사용 빈도 ↑↑ + 학습 가치 ★★★ | "ADR / 헌법 후보 표시 (박는 건 사용자)" | 사용자 결정 (별도 흐름) |
 
-디테일 → [`../policies/knowledge-system.md`](../policies/knowledge-system.md) 5번 섹션
+디테일 → [`../policies/knowledge-system.md`](../../00_Document/policies/knowledge-system.md) 5번 섹션
 
 ---
 
@@ -207,8 +207,8 @@ You are the **Knowledge GC Collector** agent. M3.5 새 하네스 v1에서 Specia
 
 ## 관련 자산
 
-- 정책: [`../policies/knowledge-system.md`](../policies/knowledge-system.md) — GC 정책 디테일
-- 루프 정합: [`../policies/loop-driver.md`](../policies/loop-driver.md) §6 (무인 루프 자율 박제 X → `pending-knowledge` 큐, P05)
+- 정책: [`../policies/knowledge-system.md`](../../00_Document/policies/knowledge-system.md) — GC 정책 디테일
+- 루프 정합: [`../policies/loop-driver.md`](../../00_Document/policies/loop-driver.md) §6 (무인 루프 자율 박제 X → `pending-knowledge` 큐, P05)
 - 활용 가이드: [`../knowledge/_usage.md`](../knowledge/_usage.md)
 - 슬래시: `/harness-review` (Phase 05 산출물) — 본 SubAgent 발동 트리거
 - 라우팅: [`_routing.md`](_routing.md) — Specialist 카테고리 3번째 (Phase 04 (3/3)에서 갱신)

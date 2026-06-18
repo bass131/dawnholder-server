@@ -22,7 +22,7 @@ argument-hint: [branch 또는 file-list] - 선택. 없으면 현재 브랜치 �
 **(default) 본인 직접 호출** — 큰 cross-review (대규모 등급, 100+ 파일 diff, 전체 마일스톤 검토):
 - **Claude (α + γ 조율)** = (a) Claude reviewer SubAgent 호출 + (b) 본인 입력용 점검 자료 박음 (`00_Document/reviews/YYYY-MM-DD-claude-pre-review-{slug}.md`) + (c) 본인이 Codex 세션에 던질 prompt 박음 + (d) 본인이 가져온 Codex 결과 받아 γ 비교 + 산출물 박음
 - **본인 (β 직접 호출)** = 별 세션 터미널에서 `codex review --base main` (또는 `--uncommitted`) 직접 호출 + 결과 검토 후 Claude한테 요약 또는 raw 출력 전달
-- **사유**: (1) Claude Bash → Codex 호출 시 *Codex 출력이 Claude 컨텍스트 채움* = 토큰 비용 ↑ / (2) 본인이 Codex 결과 *직접 검토*하면 학부생 학습 호흡 ↑ / (3) sandbox/명령어 옵션 결함 본인 환경에서 즉시 조정 가능 / (4) Codex CLI는 본인 계정 사용 → Claude를 거쳐도 과금은 같음. 이 분담은 [`memory unity-visual-work-user-owned`](../../../Users/bass1/.claude/projects/C--Dev-ClaudeDev/memory/unity-visual-work-user-owned.md) "본인 직접 정신"의 외부 도구 호출 확장.
+- **사유**: (1) Claude Bash → Codex 호출 시 *Codex 출력이 Claude 컨텍스트 채움* = 토큰 비용 ↑ / (2) 본인이 Codex 결과 *직접 검토*하면 학부생 학습 호흡 ↑ / (3) sandbox/명령어 옵션 결함 본인 환경에서 즉시 조정 가능 / (4) Codex CLI는 본인 계정 사용 → Claude를 거쳐도 과금은 같음. 이 분담은 `memory: unity-visual-work-user-owned` "본인 직접 정신"의 외부 도구 호출 확장.
 
 **(γ 9회차 추가 허용) Claude 직접 호출 OK 시점** — 짧은 메타 질문 / 단일 파일 점검 / 빠른 sanity check / 봉합 후 재실측:
 - 사용자 명시 "Claude가 직접 호출해줘" 시점에 한정

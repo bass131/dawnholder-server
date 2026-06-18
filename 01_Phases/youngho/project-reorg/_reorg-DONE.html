@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>project-reorg — 전체 repo 문서 정리 (마감)</title>
+<style>
+  :root { --bg:#0f1117; --card:#1a1d27; --ink:#e6e8ee; --muted:#9aa3b2; --accent:#7c9cff; --green:#4ade80; --amber:#fbbf24; --line:#2a2f3d; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans KR",sans-serif; background:var(--bg); color:var(--ink); line-height:1.65; }
+  .wrap { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+  header { border-bottom:2px solid var(--line); padding-bottom:20px; margin-bottom:28px; }
+  h1 { font-size:1.9rem; margin:0 0 6px; }
+  h1 .sub { color:var(--accent); }
+  .meta { color:var(--muted); font-size:.9rem; }
+  h2 { font-size:1.25rem; margin:34px 0 14px; padding-left:10px; border-left:4px solid var(--accent); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin:14px 0; }
+  .kpis { display:flex; flex-wrap:wrap; gap:12px; }
+  .kpi { flex:1 1 140px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+  .kpi .n { font-size:1.5rem; font-weight:700; color:var(--green); }
+  .kpi .l { color:var(--muted); font-size:.82rem; }
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.9rem; }
+  th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--accent); font-weight:600; }
+  code { background:#000; padding:1px 6px; border-radius:4px; font-size:.85em; color:#cbd5ff; }
+  .step { display:flex; gap:14px; margin:16px 0; }
+  .step .ic { font-size:1.5rem; flex:0 0 32px; text-align:center; }
+  .step .bd { flex:1; }
+  .step .bd h3 { margin:0 0 4px; font-size:1.02rem; }
+  .ok { color:var(--green); } .amber { color:var(--amber); }
+  ul { margin:6px 0; padding-left:20px; } li { margin:3px 0; }
+  footer { margin-top:40px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.82rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>project-reorg — <span class="sub">전체 repo 문서 정리</span></h1>
+  <div class="meta">UltraCode 실측 + plan-auditor GO · 복잡 · 2026-06-19 · owner: youngho · <b>게임 코드 0 변경 (문서·하네스 only)</b></div>
+</header>
+
+<h2>📊 핵심 지표</h2>
+<div class="kpis">
+  <div class="kpi"><div class="n">~60</div><div class="l">깨진 링크 수정</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">게임 코드 변경 (git diff)</div></div>
+  <div class="kpi"><div class="n">0</div><div class="l">건드린 영역 dangling</div></div>
+  <div class="kpi"><div class="n">GO</div><div class="l">plan-auditor (위반 0)</div></div>
+  <div class="kpi"><div class="n">3</div><div class="l">신설 INDEX/README</div></div>
+</div>
+
+<h2>📌 TL;DR</h2>
+<div class="card">
+영호 "모든 프로젝트 UltraCode 실측해 깔끔하게 정리" → 7-에이전트 워크플로우로 전체 repo 실측. <b>핵심 발견: "정보 파편화"의 진짜 원인은 폴더 위치가 아니라 (1) 깨진 상대링크 ~60건 + (2) 마스터 INDEX 부재.</b> 폴더는 이미 카테고리별로 잘 나뉘어 있고, <b>이동하면 frozen 문서(ADR/-DONE/정책)가 참조하던 경로가 깨진다</b>. 따라서 <b>"이동 최소화 + 비파괴 최대화"</b> — 깨진 링크 depth별 일괄 수정 + 마스터/reviews INDEX 신설 + 미사용 정리(learning-journal 삭제·M4-backlog archive·state 백업 제거). 게임/기술 코드 0 변경.
+</div>
+
+<h2>🧩 결정 흐름 (영호 게이트)</h2>
+<table>
+  <tr><th>결정</th><th>내용</th><th>근거</th></tr>
+  <tr><td>스코프 전환</td><td>"넓게(폴더 이동)" → <b>비파괴</b></td><td>루트 코어 이동 = 92참조 + 헌법 본문 4곳 + frozen 충돌. 안전 이동은 gitignore 백업 4건뿐(refChurn 0)</td></tr>
+  <tr><td>learning-journal</td><td><b>삭제</b> (영호 "날리자")</td><td>ADR-025 은퇴 트랙 + 팀 해체. ADR-025 '보존' 결정은 상태줄 append-only로 철회 기록</td></tr>
+  <tr><td>M4-backlog</td><td>archive 이동 (삭제 X)</td><td>기술부채 스냅샷 보존 가치</td></tr>
+  <tr><td>reviews .tmp / state 백업</td><td>삭제</td><td>찌꺼기·gitignore (git 무관)</td></tr>
+</table>
+
+<h2>✅ AC 검증 결과</h2>
+<table>
+  <tr><th>항목</th><th>결과</th></tr>
+  <tr><td>게임 코드 0 변경 (02/03/98/04)</td><td class="ok">빈 출력 = 0 ✅</td></tr>
+  <tr><td>01_Phases 미변경 (잔여 8 dangling = frozen pre-existing)</td><td class="ok">✅</td></tr>
+  <tr><td>건드린 영역(00_Document·.claude·루트) dangling</td><td class="ok">0 ✅</td></tr>
+  <tr><td>plan-auditor 검증</td><td class="ok">verdict=GO, 위반 0 ✅</td></tr>
+  <tr><td>append-only (ADR-025 본문 rewrite 0, 상태줄 1줄)</td><td class="ok">✅</td></tr>
+</table>
+
+<h2>📝 5단계 보고</h2>
+
+<div class="step"><div class="ic">🎯</div><div class="bd">
+  <h3>무엇을 했나</h3>
+  흩어진 문서 길찾기를 복구. <code>.claude/</code> 깨진 상대링크 ~60건 depth별 일괄 수정 + <code>00_Document/INDEX.md</code> 마스터 네비 + <code>reviews/INDEX.md</code>(31개 분류) + <code>archive/README.md</code> 신설. 미사용 자산(learning-journal/ 16파일 삭제, M4-backlog→archive, state 백업·로그·씬백업, reviews .tmp 3개) 정리. ADR-025에 learning-journal 보존 철회 상태줄.
+</div></div>
+
+<div class="step"><div class="ic">🤔</div><div class="bd">
+  <h3>왜 했나</h3>
+  영호 "정보가 파편화·분리돼 실측이 불편할 정도". 직관은 "폴더를 옮겨 깔끔하게"였으나 UltraCode 실측이 <b>진짜 병목 = 위치 아니라 깨진 링크 + 마스터 목차 부재</b>임을 드러냄. 이동은 frozen 역사 참조를 깨뜨려 오히려 손해.
+</div></div>
+
+<div class="step"><div class="ic">🛠️</div><div class="bd">
+  <h3>어떻게 했나</h3>
+  <ul>
+    <li><b>실측 우선</b> — 7 에이전트 워크플로우(5영역 병렬) → 정리안 설계 → plan-auditor GO.</li>
+    <li><b>비파괴 전략</b> — 이동 11후보 중 안전(refChurn 0) 4건만, 나머지는 제자리 + INDEX/배너.</li>
+    <li><b>depth별 링크 수정</b> — agents/commands(<code>../../</code>)·knowledge 하위(<code>../../../</code>) 구분, 수정 후 <code>ls</code>-resolve 전수 검증.</li>
+    <li><b>append-only</b> — ADR-025 본문 무변경, 상태줄 1줄.</li>
+    <li><b>안 한 것</b> — 루트 코어 이동(헌법 앵커 92참조)·yuhyeon frontmatter·slug 오타(frozen)·게임 .cs(SOLID 별건).</li>
+  </ul>
+</div></div>
+
+<div class="step"><div class="ic">🧪</div><div class="bd">
+  <h3>테스트 결과</h3>
+  게임 코드 git diff <b>0</b> / 01_Phases 미변경 / 건드린 영역 dangling <b>0</b> / plan-auditor <b>GO·위반 0</b> / append-only 보존. docs-only라 WSL2 게임 회귀 불요.
+</div></div>
+
+<div class="step"><div class="ic">➡️</div><div class="bd">
+  <h3>다음 스텝</h3>
+  <ul>
+    <li><b>PR 생성·머지 = 영호 GO</b> (비가역). CODEOWNERS = 00_Document·.claude만 → @bass131 단독 추정 → normal merge.</li>
+    <li><b>post-reorg 후보</b>: 01_Phases frozen dangling(옛 경로)은 append-only 완화 결정 선행 시 / 팀 전제 하네스(CODEOWNERS·co-review·아트 트랙) 정리.</li>
+  </ul>
+</div></div>
+
+<footer>
+  근거: UltraCode 워크플로우 <code>project-structure-audit</code> (실측 5영역 + plan-auditor GO) · commits <code>1ba27d5</code> + <code>913b05d</code> · 캡스톤 평가 자산 (ADR-031 비동기 박제)
+</footer>
+</div>
+</body>
+</html>

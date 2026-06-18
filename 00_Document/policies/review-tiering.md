@@ -163,8 +163,8 @@
 본 정책 수정 시 *반드시* 함께 갱신:
 
 - [`../REVIEW_CHECKLIST.md`](../REVIEW_CHECKLIST.md) (5축 점검 기준 — M3.5 시점 갱신 검토)
-- [`../agents/reviewer.md`](../agents/reviewer.md) (Phase 02 산출물 — reviewer SubAgent 명세)
-- [`../agents/plan-auditor.md`](../agents/plan-auditor.md) (Phase 02 산출물 — 신설)
+- [`../agents/reviewer.md`](../../.claude/agents/reviewer.md) (Phase 02 산출물 — reviewer SubAgent 명세)
+- [`../agents/plan-auditor.md`](../../.claude/agents/plan-auditor.md) (Phase 02 산출물 — 신설)
 - [`../../00_Document/ADR/harness/ADR-019-reviewer-agent.md`](../../00_Document/ADR/harness/ADR-019-reviewer-agent.md) (결정 박제 — M3.5 갱신 후속 또는 ADR-023 신설)
 - [`subagent-routing.md`](subagent-routing.md) (SubAgent 자동 호출 트리거 정합)
 - [`pin-and-done.md`](pin-and-done.md) (work-pin에 *리뷰 스킵 사유* / *리뷰 패스 사유* 라인 박는 정합)

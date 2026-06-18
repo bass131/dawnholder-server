@@ -1,6 +1,6 @@
 # ADR-025 — CONTEXT 3종 + 학습 일지 트랙 B 은퇴, work-pin 단일 핸드오프
 
-- **상태**: accepted
+- **상태**: accepted — *learning-journal/ '보존' 결정 철회 (2026-06-18, 영호 지시): 팀 해체 + 트랙 은퇴로 보존 명분 소멸 → 폴더 전체 삭제. 아래 본문 33·39줄 '보존'은 *당시 결정의 역사 기록*으로 보존하되, 실제 디렉토리는 project-reorg에서 제거됨.*
 - **날짜**: 2026-05-24
 - **결정자**: 유영호 (하네스 단독 통제)
 - **관련**: ADR-013 (-DONE.md 페어 — 회고 절반 supersede) / ADR-022 (하네스 v1 — 학습 트랙 분리 정신 supersede) / ADR-023 (work-pin↔CONTEXT 동기 — CONTEXT 절반 supersede) / ADR-024 (false-promise cadence — 유지)

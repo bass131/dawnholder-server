@@ -9,7 +9,7 @@ last_updated: 2026-05-20
 
 본 문서는 *각 SubAgent가 어느 _index.md를 언제 통독하고*, *새 학습은 어떻게 박는지*, *사용자가 어느 시점에 확인 요청을 받는지*를 정의합니다.
 
-> **상위 정책**: [`../policies/knowledge-system.md`](../policies/knowledge-system.md)
+> **상위 정책**: [`../policies/knowledge-system.md`](../../00_Document/policies/knowledge-system.md)
 > **충돌 시**: 헌법 > 정책 > 본 가이드.
 
 ---
@@ -166,7 +166,7 @@ cat .claude/knowledge/cross-cutting/_index.md  # 횡단 (모든 도메인 영향
 - **트랙 A에 회고 박지 마라** — 회고는 트랙 B(Notion). 트랙 A는 *구조화 패턴*만
 - **GC 완전 삭제는 6개월 이후만** — 비활성 6개월 + 사용자 확인 필수. 즉시 삭제 금지
 - **AI 캐시 ≠ ADR** — ADR은 *결정의 기록*. 캐시는 *작업 시점 활용 패턴*. 같은 사건이 양쪽에 박힐 수 있음
-- **통독 부담 모니터링** — _index.md 200줄 초과 시 응축. 통독이 토큰 부담 큰가 1주차 실측 필요 ([`../policies/knowledge-system.md`](../policies/knowledge-system.md) 9번 항목)
+- **통독 부담 모니터링** — _index.md 200줄 초과 시 응축. 통독이 토큰 부담 큰가 1주차 실측 필요 ([`../policies/knowledge-system.md`](../../00_Document/policies/knowledge-system.md) 9번 항목)
 
 ---
 
@@ -174,9 +174,9 @@ cat .claude/knowledge/cross-cutting/_index.md  # 횡단 (모든 도메인 영향
 
 본 가이드 수정 시 *반드시* 함께 갱신:
 
-- [`../policies/knowledge-system.md`](../policies/knowledge-system.md) — 상위 정책
+- [`../policies/knowledge-system.md`](../../00_Document/policies/knowledge-system.md) — 상위 정책
 - [`../agents/<각 SubAgent>.md`](../agents/) — 통독 약속 박힘
-- [`../CLAUDE.md`](../CLAUDE.md) "📚 Knowledge 시스템" 섹션
+- [`../CLAUDE.md`](../../CLAUDE.md) "📚 Knowledge 시스템" 섹션
 
 ---
 

@@ -156,9 +156,9 @@ _(없음 — 본 캐시는 2026-05-20 신설)_
 
 ## 관련 자산
 
-- CHANGELOG: [`../../../../.claude/CHANGELOG.md`](../../../../.claude/CHANGELOG.md) — [H]/[M] 박힘 = 본 캐시 후보
+- CHANGELOG: [`../../../../.claude/CHANGELOG.md`](../../CHANGELOG.md) — [H]/[M] 박힘 = 본 캐시 후보
 - 옛 memory: `~/.claude/projects/C--Dev-ClaudeDev/memory/` — 흡수 후보 (Phase 04 (2/3))
-- 정책: [`../../policies/knowledge-system.md`](../../policies/knowledge-system.md)
+- 정책: [`../../policies/knowledge-system.md`](../../../00_Document/policies/knowledge-system.md)
 
 ---
 
