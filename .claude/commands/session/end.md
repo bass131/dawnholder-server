@@ -10,6 +10,8 @@ description: Phase 완료 마감 절차 — commit + PR + (선택)노션 박제 
 
 `-DONE.md` 박제 직후 호출 → commit + PR + (선택)노션 박제 + work-pin 갱신 + 다음 액션까지 한 흐름. 학부생 백지 팀원이 PR 누락하는 부담 자동화. (ADR-025로 옛 CONTEXT.md 자동 갱신 단계 은퇴 — work-pin이 단일 핸드오프.)
 
+> **루프 마감 경로 (loop-driven, M7.5)**: 본 커맨드 = 작업 세션([`/session:start`](start.md))의 마감 축. 마감 시 `pending-*` 원장(art/comprehension/knowledge, P05 신설) 잔여 항목을 점검 — 깊은 학습 미뤄둔 것은 `pending-comprehension`에 적재(추후 [`/session:review`](review.md) pull). PR 생성/머지는 **버킷 (c) 영호 GO 게이트 보존** ([`pr-and-merge-gate.md`](../../../00_Document/policies/pr-and-merge-gate.md)).
+
 ---
 
 ### 1. 사전 검증

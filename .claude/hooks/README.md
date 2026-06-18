@@ -8,7 +8,7 @@
 
 ---
 
-## Hook 8개 풀세트 (M3.6 Phase 03-B 4-5에서 reviewer-auto-trigger 신설로 7→8)
+## Hook 9개 풀세트 (+ convention-size-guard 등재 = 2026-05-29 기존 / 별도 `hook-common.sh` 헬퍼)
 
 | # | Hook | 단계 | 매처 | 동작 | 분류 |
 |---|------|------|------|------|------|
@@ -17,13 +17,18 @@
 | 3 | `phase-gate-validator.sh` | PostToolUse | Edit/Write | -DONE.md 박제 frontmatter (5 필드) + 등급별 의무 섹션 + **대규모 등급 MD+HTML 페어 의무** (M3.6 Phase 03-B 4-3 강화, exit 2) | **must-pass** |
 | 4 | `risk-detector.sh` | PreToolUse | Bash/Edit/Write | trust-boundary (Handlers/ 매처 stale 봉합, M3.6 Phase 03-B 4-4) / irreversible / unity-asset / **harness** (M3.6 Phase 03-B 4-4 신설) 4 깃발 → stderr 알림 + 누적 (exit 0) | advisory |
 | 5 | `tdd-guard.sh` | PreToolUse | Edit/Write | TDD 영역 4 (Handlers / GameSession / Protocol/Packets / GameData) 변경 시 테스트 부재 *경고만* + 누적 로그 | advisory |
-| 6 | `circuit-breaker.sh` | PostToolUse | (all) | 같은 도구 N회 반복 시 *알림* (Bash 제외, 등급별 임계 5/10/15/20, 윈도우 5분) | advisory |
+| 6 | `circuit-breaker.sh` | PostToolUse | (all) | 같은 도구 N회 반복 시 *알림* (Bash 제외, 등급별 임계 5/10/15/20, 윈도우 5분) + **halt 신호 기록** (M7.5 — `.claude/state/circuit-tripped.txt`, 루프 드라이버 폴링용) | advisory |
 | 7 | `pin-injector.sh` | UserPromptSubmit | (all) | 매 사용자 입력 직전 work-pin + 미commit -DONE.md 경고 주입 | advisory |
 | 8 | `reviewer-auto-trigger.sh` | PostToolUse | Edit/Write | **(신설 M3.6 Phase 03-B 4-5)** ADR-019 Hard hook — 98_Shared/ + Handlers/ + Protocol + GameSession.cs 변경 시 reviewer SubAgent 자동 호출 *알림 + 누적*. SubAgent 호출 자체는 메인 세션 책임. | advisory |
+| 9 | `convention-size-guard.sh` | PostToolUse | Edit/Write | (2026-05-29 기존, ADR-028) Code Convention §2.3 God class 줄수 경고 (production) | advisory |
 
 **must-pass / advisory 분리** (M3.6 Phase 03-B 4-2 정합 박힘):
 - **must-pass** = exit 2 차단. Phase 진입 의무. risk-detector는 옛 분류 "must-pass" 였으나 실제 동작 = exit 0 (알림만)이라 advisory로 재분류 정합.
 - **advisory** = exit 0 알림 + 누적. 사유 박고 통과 가능.
+
+### 루프 judge 매핑 (loop-driven, M7.5)
+
+hook = *기계 judge* ([`../../00_Document/policies/work-judge.md`](../../00_Document/policies/work-judge.md) 버킷 a). **must-pass(exit 2)**가 루프의 자동 done 게이트, **advisory**(risk-detector)는 깃발만 = 버킷 분류 1차 신호(차단 X). **무인 halt**는 hook이 루프를 *직접 못 죽이므로* `circuit-breaker.sh`가 `circuit-tripped.txt` 신호 기록 → 루프 드라이버([`/engine:goal`](../commands/engine/goal.md))가 폴링해 정지 (v1=attended 사람 판단 / v2=폴링 선결, 미adopt).
 
 **Python 의존성** (M3.6 Phase 03-B 4-1 명시 박힘): `hook-common.sh` + `dangerous-cmd-guard.sh`가 Python 3.6+ 호출. ADR-020 정합 = Hook 환경 = Git Bash + Python 3. setup-steps/02-common.md 9단계에 Python 검증 박힘.
 
@@ -63,9 +68,9 @@
 
 ## 설정 매핑
 
-본 폴더의 Hook 7개는 `New_Harness/settings.proposed.json`의 `hooks` 절에서 등록됨 (Phase 06 전환 후 `.claude/settings.json`으로 일괄 이동).
+본 폴더의 Hook 9개는 [`../settings.json`](../settings.json)의 `hooks` 절에서 등록됨 (M3.5 Phase 06 전환 `fc983ea`로 일괄 이동 완료 — `settings.proposed.json`은 옛 이름).
 
-상세 매핑·우회 정책 변경 책임 → 본 README + `settings.proposed.json` 동시 갱신 의무.
+상세 매핑·우회 정책 변경 책임 → 본 README + `settings.json` 동시 갱신 의무.
 
 ---
 

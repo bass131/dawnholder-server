@@ -180,6 +180,7 @@ You are the **Knowledge GC Collector** agent. M3.5 새 하네스 v1에서 Specia
 - knowledge 자율 변경 = 가짜 학습 누적 위험
 - 메인 세션이 *작업 중*에 GC 발동하면 컨텍스트 오염
 - GC는 *주기적 작업*이지 *즉시 작업*이 아님
+- **무인 루프에서도 자율 실행 X** (loop-driven, M7.5): 루프가 새 학습을 발견해도 자율 박제 X → `pending-knowledge` 큐(P05 신설)에 *제안 누적* → 사람 attended 게이트(아침 승인) 후만 박제. 정신은 ADR-025(트랙 B "쌓이기만 하고 pull 안 됨")의 정면 회피 — pull-분리 + 가시 원장.
 
 ---
 
@@ -207,6 +208,7 @@ You are the **Knowledge GC Collector** agent. M3.5 새 하네스 v1에서 Specia
 ## 관련 자산
 
 - 정책: [`../policies/knowledge-system.md`](../policies/knowledge-system.md) — GC 정책 디테일
+- 루프 정합: [`../policies/loop-driver.md`](../policies/loop-driver.md) §6 (무인 루프 자율 박제 X → `pending-knowledge` 큐, P05)
 - 활용 가이드: [`../knowledge/_usage.md`](../knowledge/_usage.md)
 - 슬래시: `/harness-review` (Phase 05 산출물) — 본 SubAgent 발동 트리거
 - 라우팅: [`_routing.md`](_routing.md) — Specialist 카테고리 3번째 (Phase 04 (3/3)에서 갱신)

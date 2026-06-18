@@ -80,6 +80,19 @@ PDF NDREAM 패턴(Sonnet Worker + Opus Coordinator)을 본 프로젝트에 정�
 
 Hook 명세 = [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03 reference).
 
+### 깃발 → 루프 버킷 (loop-driven, M7.5)
+
+위험 깃발은 *등급 상향*뿐 아니라 **루프 판정자(work-judge) 버킷**의 1차 분류기입니다:
+
+| 깃발 | 버킷 | 처리 |
+|---|---|---|
+| 무깃발 | (a) 기계 판정 | 루프 자율 |
+| `unity-asset` | (b) 취향·육안 | 사람 병행 트랙 |
+| `irreversible` / `trust-boundary` | (c) 판단·비가역 | 사람 게이트(Stop) |
+| `harness` | 기본 (a), 권한·게이트 변경 시 (c) | — |
+
+3버킷 정의·v1/v2 강제 차이 → [`work-judge.md`](work-judge.md). **본 정책이 깃발 *정의*의 단일 진실**, work-judge는 *매핑*만 (중복 0).
+
 ---
 
 ## 4. 등급 판정 흐름 (시각화)
@@ -141,6 +154,7 @@ Hook 명세 = [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03
 - [`reporting-format.md`](reporting-format.md) (등급별 5단계 보고 조건부화)
 - [`pin-and-done.md`](pin-and-done.md) (등급별 -DONE.md 박제 조건)
 - [`../hooks/risk-detector.sh`](../hooks/risk-detector.sh) (Phase 03 산출물 — 깃발 검출 패턴)
+- [`work-judge.md`](work-judge.md) (깃발 → 루프 버킷 매핑 — 본 정책이 깃발 정의 원천)
 
 ---
 

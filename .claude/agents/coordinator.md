@@ -14,6 +14,8 @@ M3.5 새 하네스 v1에서 신설. 옛 운영은 *메인 세션이 직접 분�
 > - `coordinator` = Phase 진행 *중* 분해·위임·통합
 > 둘 다 Opus + R only. plan-auditor는 *검증가*, coordinator는 *조율자*.
 
+> **loop-driven (M7.5)**: 호출자 = 메인 세션 **또는 루프 드라이버**. coordinator는 Workflow의 *부분 구현*으로 인용됨([`../policies/loop-driver.md`](../policies/loop-driver.md) §2). 통합 보고(Step 5)는 루프가 *소비* → done 신호 + 사람 게이트 플래그 포함. 비가역(push/PR/merge/`Protocol.Version`) = [`../policies/work-judge.md`](../policies/work-judge.md) 버킷 (c) 사람 게이트 *보존*(약화 X).
+
 ---
 
 ## 책임 범위 (Scope)
@@ -129,6 +131,10 @@ Phase: <slug>
   - 빌드: green / 깨짐 (사유)
   - 테스트: N PASS / FAIL
   - 경계 코드 정합: OK / 충돌 (재위임 결과)
+
+🔁 루프 신호 (loop-driven, 루프가 소비):
+  - done 판정: WSL2/reviewer 통과 = 자율 진행 가능 / 미통과 = 멈춤
+  - 사람 게이트: <버킷 c 도달 항목 또는 없음> (있으면 영호 GO 대기)
 
 ➡️ 다음 액션:
   - Phase 완료 권장 또는 추가 작업 필요
@@ -290,5 +296,6 @@ Phase: <slug>
 본 SubAgent 동작 변경 시 동기화 책임:
 - [`../policies/subagent-routing.md`](../policies/subagent-routing.md) (라우팅 룰)
 - [`../policies/grade-and-risk.md`](../policies/grade-and-risk.md) (등급별 동원 패턴)
+- [`../policies/loop-driver.md`](../policies/loop-driver.md) · [`../policies/work-judge.md`](../policies/work-judge.md) (루프 호출자·통합 보고 소비·버킷 c 보존)
 - [`../hooks/circuit-breaker.sh`](../hooks/circuit-breaker.sh) (Phase 03 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 coordinator 단독 위임 구조로 강제)
 - ADR-023 후속 신설 (M4 진입 후 결정)

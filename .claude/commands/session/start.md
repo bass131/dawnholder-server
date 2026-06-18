@@ -4,6 +4,8 @@ description: 새 세션 시작 — git 안전 점검 + work-pin drift 확인 + C
 
 사용자가 새 세션을 시작했습니다. 매번 시작 시 git 안전 + 작업 좌표(work-pin) 정합을 점검하는 커맨드. (work-pin은 `pin-injector.sh` 훅이 매 입력마다 자동 주입하므로 별도로 읽지 않음 — ADR-025로 옛 CONTEXT.md 통독 단계 은퇴.)
 
+> **세션 2종 (loop-driven, M7.5)**: 본 커맨드 = **작업용(구현) 세션** 진입(루프 구동). 깊은 학습·점검은 짝 커맨드 [`/session:review`](review.md)(pull 세션) — 구현과 학습 분리 (ADR-032 §D / [`loop-driver.md`](../../../00_Document/policies/loop-driver.md) §6).
+
 **중요**: 이 커맨드는 `git pull`보다 **먼저** 호출돼야 합니다. 0단계에서 git 상태를 게이트로 점검하고, 안전 확인 후에만 사용자에게 `git pull` 안내. 작업물 유실 방지 (2026-05-15 보강).
 
 ---

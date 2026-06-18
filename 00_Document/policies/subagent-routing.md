@@ -5,7 +5,7 @@
 >
 > **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. **M3.6 Phase 03-A 첫 실측 사이클 (2026-05-22)** — 5 항목 모두 0건 또는 간접 증명 박힘 (위임 false hit 0 / 재귀 마찰 0 — 단 재귀 차단 Hook 부재 발견 = work-pin 별 시점 / 에스컬레이션 0 / plan-auditor 가치 M3.6 plan 통과로 증명 / unity-bridge 영역 효과 간접 증명). 본문 수정 항목 없음.
 
-본 문서는 SubAgent 풀 9개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02/04 산출물(`../../.claude/agents/<name>.md`).
+본 문서는 SubAgent 풀 9개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02/04 산출물(`../../.claude/agents/<name>.md`). **진입 주체 = 메인 세션 또는 루프 드라이버**(loop-driven, M7.5); 작업 → 버킷(a/b/c) 분류는 [`work-judge.md`](work-judge.md), 엔진은 [`loop-driver.md`](loop-driver.md).
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## 2. 라우팅 — 도메인 → SubAgent
 
-작업이 들어오면 메인 세션(or coordinator)이 *도메인 → SubAgent* 매핑으로 위임:
+작업이 들어오면 메인 세션(또는 루프 드라이버, or coordinator)이 *도메인 → SubAgent* 매핑으로 위임:
 
 | 도메인 / 작업 | 위임 대상 | 비고 |
 |---|---|---|
@@ -195,7 +195,7 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 
 - [`../CLAUDE.md`](../CLAUDE.md) "🤖 SubAgent 풀" 섹션 (헌법 본문 표와 정합)
 - [`../../.claude/agents/`](../../.claude/agents/) (SubAgent 정의 9개 — Phase 02 산출물 8 + Phase 04 신설 `knowledge-gc` 1)
-- [`grade-and-risk.md`](grade-and-risk.md) (등급 → 처리 패턴 매핑)
+- [`grade-and-risk.md`](grade-and-risk.md) (등급 → 처리 패턴 매핑) · [`work-judge.md`](work-judge.md) (등급/깃발 → 버킷) · [`loop-driver.md`](loop-driver.md) (진입 주체)
 - [`review-tiering.md`](review-tiering.md) (reviewer 자동 호출 트리거)
 - [`../../.claude/hooks/circuit-breaker.sh`](../../.claude/hooks/circuit-breaker.sh) (Phase 03 산출물 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 coordinator 단독 위임 구조로 강제 — line 6 신선도 주석 정합)
 

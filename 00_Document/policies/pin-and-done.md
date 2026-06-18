@@ -24,7 +24,7 @@ current-pin 갱신    →    -DONE.md 박제          →    두 액션 권유
 - 역할: 현재 작업 좌표를 항시 보관 → 학습 질문 끼어들어도 *다음 턴*에 작업 복원
 - 주입: `UserPromptSubmit` 훅(`../hooks/pin-injector.sh`, Phase 03 산출물)이 *매 사용자 입력 직전* 핀 내용을 컨텍스트 상단에 주입
 
-### 핀 필드 (압축 5개 + 선택 1개)
+### 핀 필드 (압축 5개 + 선택: 주의할 약속 · 루프 상태)
 
 빈 템플릿: [`../templates/pin-template.txt`](../templates/pin-template.txt) (Phase 03 산출물)
 
@@ -34,6 +34,7 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 현재 작업:      <지금 무엇을 하는지 한 줄>
 다음 액션:      <바로 다음 한 스텝>
 주의할 약속:    <빠뜨리면 안 되는 검증/제약, 없으면 생략>
+루프 상태:      <버킷 a/b/c · 사람대기 여부 · pending-* 원장 참조 — loop 운영 시만 (work-judge)>
 마지막 갱신:    <YYYY-MM-DD 또는 commit hash>
 ```
 
@@ -61,6 +62,7 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 | 코드 변경 후 work-pin 갱신 시 | AI | *변경된 항목만* (현재 작업 / 다음 액션) |
 | 등급 자동 상향 시 | Hook (`../hooks/risk-detector.sh`) | PHASE 줄에 상향 사유 박음 |
 | 주의할 약속 변동 시 | **사용자 수동** | 갱신 |
+| 루프 스텝 경계 (loop-driven, M7.5) | 루프 엔진/드라이버 | 현재 작업/다음 액션 + 루프 상태(버킷·원장). 무인 시 `pin-injector` 미발동 → 드라이버 직접 주입 |
 | Phase 완료 시 | AI | archived 또는 cleared |
 
 **원칙**: 핀은 *잘못 박히면 가짜 좌표로 다음 응답을 오염*. *변경 항목만 최소 갱신* + *사용자 약속은 확인 후*.
@@ -189,7 +191,7 @@ Phase는 자동 진행(ADR-031 — 학습 호흡 수동 멈춤 폐기, ADR-025 �
 
 ## 6. 변경 시 동기화 책임
 
-본 정책 수정 시 *반드시* 함께 갱신: [`pin-injector.sh`](../hooks/pin-injector.sh) (핀 주입) / [`phase-gate-validator.sh`](../hooks/phase-gate-validator.sh) (-DONE.md 게이트) / [`pin-template.txt`](../templates/pin-template.txt) (압축 필드 5+1) / [`done-md-template.md`](../templates/done-md-template.md) (등급별 필수 섹션) / [`reporting-format.md`](reporting-format.md) (5단계 라벨 정합) / [`grade-and-risk.md`](grade-and-risk.md) (등급 박제 조건).
+본 정책 수정 시 *반드시* 함께 갱신: [`pin-injector.sh`](../hooks/pin-injector.sh) (핀 주입) / [`phase-gate-validator.sh`](../hooks/phase-gate-validator.sh) (-DONE.md 게이트) / [`pin-template.txt`](../templates/pin-template.txt) (압축 필드 + 루프 상태) / [`done-md-template.md`](../templates/done-md-template.md) (등급별 필수 섹션) / [`reporting-format.md`](reporting-format.md) (5단계 라벨 정합) / [`grade-and-risk.md`](grade-and-risk.md) (등급 박제 조건) / [`loop-driver.md`](loop-driver.md) · [`work-judge.md`](work-judge.md) (루프 상태 필드·갱신 주체).
 
 ---
 

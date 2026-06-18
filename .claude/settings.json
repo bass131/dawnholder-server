@@ -1,5 +1,5 @@
 {
-  "$schema_comment": "New_Harness v1 — Claude Code project settings (proposed). 본 파일 안내·디테일·옛 → 새 매핑은 hooks/README.md 참조. 옛 .claude/settings.json은 Phase 06 전환 시점에 본 파일로 교체 (옛 운영 깨뜨림 금지 원칙). 2026-05-24: hook command 경로를 상대경로 → $CLAUDE_PROJECT_DIR 절대화 (cwd 드리프트 시 hook No-such-file 결함 봉합). 2026-05-29: convention-size-guard.sh 추가 (PostToolUse Edit|Write — Code Convention §2.3 God class 줄수 경고, ADR-028).",
+  "$schema_comment": "New_Harness v1 — Claude Code project settings (proposed). 본 파일 안내·디테일·옛 → 새 매핑은 hooks/README.md 참조. 옛 .claude/settings.json은 Phase 06 전환 시점에 본 파일로 교체 (옛 운영 깨뜨림 금지 원칙). 2026-05-24: hook command 경로를 상대경로 → $CLAUDE_PROJECT_DIR 절대화 (cwd 드리프트 시 hook No-such-file 결함 봉합). 2026-05-29: convention-size-guard.sh 추가 (PostToolUse Edit|Write — Code Convention §2.3 God class 줄수 경고, ADR-028). 2026-06-18 (M7.5 P05, ADR-032 #4): loop-driven 자율 운영 위해 allow에 git add/commit 추가 (commit=가역, 헌법 'commit OK'). **ask(gh pr create/merge/--admin) 게이트는 불변 보존** — push/merge/PR은 영호 GO(버킷 c). 무인 commit 전면 승격은 v2 defer.",
 
   "permissions": {
     "allow": [
@@ -17,6 +17,8 @@
       "Bash(git branch*)",
       "Bash(git checkout -- *)",
       "Bash(git stash *)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
       "Bash(ls*)",
       "Bash(cat*)",
       "Bash(gh pr list*)",

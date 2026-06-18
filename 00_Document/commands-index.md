@@ -1,8 +1,8 @@
 # 슬래시 커맨드 빠른 참조
 
-총 **11개**. 3 카테고리 폴더(`work/` `session/`) + 점검 슬래시 3개 + 단독 진입점(`setup.md`) (2026-06-12 `/refactor-sweep` 신설 — 첫 무인 리팩토링).
+총 **13개**. 카테고리 폴더(`work/` `session/` `engine/`) + 점검 슬래시 3개 + 단독 진입점(`setup.md`) (2026-06-12 `/refactor-sweep`, 2026-06-18 M7.5 `/engine:goal`·`/session:review` 신설).
 
-호출 형식: `/<카테고리>:<이름>` (예: `/work:plan`, `/session:end`) 또는 단독 진입점 (`/setup`, `/harness-review`, `/cross-review`, `/refactor-sweep`).
+호출 형식: `/<카테고리>:<이름>` (예: `/work:plan`, `/session:end`, `/engine:goal`) 또는 단독 진입점 (`/setup`, `/harness-review`, `/cross-review`, `/refactor-sweep`).
 
 > **옛 학습 5 (`/learn:*`) + 일지 3 (`/journal:*`) 슬래시 = M3.5에서 제거** (5/20 의논 — KPI 전환 "학습 박제 중심 → Planning + 구현 + 보고"). 그 슬래시들이 떠받치던 학습 추적 트랙 B 자체도 **ADR-025로 은퇴** — 회고는 대화/노션 자유 양식으로 자율. 잔존 `00_Document/learning-journal/{본인}/` 디렉토리는 *각자 작업물*이라 보존 (신규 박제 안 강제).
 
@@ -19,11 +19,12 @@
 
 ---
 
-## 📌 세션 관리 (3) — 시작·마감·박제
+## 📌 세션 관리 (4) — 시작·마감·박제·리뷰
 
 | 커맨드 | 언제 쓰나 | 인풋 |
 |--------|----------|------|
-| [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력. git 게이트 (B+) 정책 + work-pin(`current-pin.txt`) 좌표 인지(현재 작업·다음 액션) + CHANGELOG 최근 변경 확인. | (인풋 없음) |
+| [`/session:start`](../.claude/commands/session/start.md) | 새 세션 시작 시 첫 입력 (**작업용/구현 세션**). git 게이트 (B+) 정책 + work-pin(`current-pin.txt`) 좌표 인지(현재 작업·다음 액션) + CHANGELOG 최근 변경 확인. | (인풋 없음) |
+| [`/session:review`](../.claude/commands/session/review.md) | **리뷰용(pull) 세션** (M7.5 신설). 구현이 아니라 *깊은 학습·점검* — `pending-comprehension` 원장 열고 "이거 어떻게/왜 구현했어?". 구현(루프)과 학습 분리 (ADR-032 §D). | (인풋 없음) |
 | [`/session:end`](../.claude/commands/session/end.md) | Phase 완료 마감 절차. -DONE.md 박제 후 호출 → commit + PR + `/session:log`(선택) + **work-pin 갱신** (마감 상태 반영, ADR-025 — 단일 핸드오프) + 다음 액션 결정. 등급별 마감 분기 (단순/보통 = work-pin + commit message / 복잡 이상 = work-pin + -DONE.md + HTML 시각화, ADR-031). | (인풋 없음) |
 | [`/session:log`](../.claude/commands/session/log.md) | 노션 박제 트리거. 보통 `/session:end`가 자동 호출. 실행자 분기: Codex 있으면 Codex가 박음 (본인 유영호 흐름), Codex 없으면 Claude가 mcp__notion 직접 호출 (인규/유현 fallback). | (인풋 없음) |
 
@@ -35,7 +36,15 @@
 |--------|----------|------|
 | [`/harness-review`](../.claude/commands/harness-review.md) | **Tier 3** 수동 깊은 리뷰 — 본인 하네스 자체 점검 (헌법 / SubAgent / Hook / Knowledge / 슬래시 정합 + 옛 약속 가짜화 여부 + 양식 비용 평가). 옛 `/work:review` rename + 책임 확장 (코드 리뷰는 Tier 2 reviewer SubAgent가 자동 흡수). `reviewer` + `plan-auditor` + (옵션) `knowledge-gc` 동원. **읽기 전용** | `[scope]` (기본 all) |
 | [`/cross-review`](../.claude/commands/cross-review.md) | 외부 시각 cross-check — 본인 작업 결과를 Codex β 또는 외부 도구로 재검증 (큰 PR 머지 전, 비가역 변경 전 권유). Rule of Three 통과 후 슬래시화 (5/18 pre-m3 감사 + γ 방식 4~7회차 실측 누적). **읽기 전용** | `<scope>` (예: PR # 또는 branch) |
-| [`/refactor-sweep`](../.claude/commands/refactor-sweep.md) | **자기 전 무인 자동 리팩토링** — production(server/shared/clientnet) CODE_CONVENTION/SOLID 진단 후 안전 범위(저위험 ✅ + 고위험 🔶) 자동 수정 → WSL2 회귀 게이트 통과분만 **전용 브랜치 atomic commit**. ⛔ trust-boundary(보안)·📋 03_Client(Unity 검증 불가) 제안만. **push/PR 없음**(아침 영호 GO). reviewer×N 병렬 진단 → Worker 직렬 리팩 → reviewer 재검증. *코드 수정+commit하는 유일한 슬래시* | `[--dry-run] [--max=N] [--domains=…]` |
+| [`/refactor-sweep`](../.claude/commands/refactor-sweep.md) | **자기 전 무인 자동 리팩토링** — production(server/shared/clientnet) CODE_CONVENTION/SOLID 진단 후 안전 범위(저위험 ✅ + 고위험 🔶) 자동 수정 → WSL2 회귀 게이트 통과분만 **전용 브랜치 atomic commit**. ⛔ trust-boundary(보안)·📋 03_Client(Unity 검증 불가) 제안만. **push/PR 없음**(아침 영호 GO). reviewer×N 병렬 진단 → Worker 직렬 리팩 → reviewer 재검증. *코드 수정+commit하는 유일한 슬래시* = `/engine:goal`의 첫 검증 인스턴스 | `[--dry-run] [--max=N] [--domains=…]` |
+
+---
+
+## ⚙️ 루프 드라이버 (1) — 목표 도달까지 자율 구동
+
+| 커맨드 | 언제 쓰나 | 인풋 |
+|--------|----------|------|
+| [`/engine:goal`](../.claude/commands/engine/goal.md) | **loop-driven 엔진** (M7.5 신설) — "<목표>를 done 조건까지 자율 구동". **done은 외부 기계 심판**(WSL2 게이트/dangling, AI 자기판단 X) + 3버킷 판정(work-judge) + 비가역(버킷 c) 정지 게이트. 내장 `/loop`·`Workflow` 위에 글루. v1 attended. `/refactor-sweep`이 그 refactor 프리셋. | `<목표> [--done=…] [--max=N]` |
 
 ---
 
@@ -69,10 +78,15 @@
 - **`/work:plan <목표>`** — *새* Phase 묶음 생성. 사용자 명시 호출.
 - **`plan-auditor` SubAgent** — `_milestone-plan.md` 또는 Phase 정의 `.md` Write 직후 *자동 호출* (사전 검증 = γ 방식 흡수, Codex 외부 의존 → 내부 자산 전환).
 
-### `/session:start` vs `/session:end` vs `/session:log`
-- **`/session:start`** — 세션 **시작**. git 안전 게이트 + work-pin 좌표 인지 + CHANGELOG 최근 변경 확인.
+### `/session:start` vs `/session:review` vs `/session:end` vs `/session:log`
+- **`/session:start`** — **작업/구현** 세션 **시작**. git 안전 게이트 + work-pin 좌표 인지 + CHANGELOG 최근 변경 확인.
+- **`/session:review`** — **리뷰(pull)** 세션. 구현이 아니라 *깊은 학습·점검* — `/session:start`(구현)와 짝, pending-comprehension 소비 (ADR-032 §D 구현/학습 분리).
 - **`/session:end`** — **Phase 완료** 마감 절차. commit + PR + 박제 + work-pin 갱신 + 다음 액션.
 - **`/session:log`** — 노션 **박제만**. 보통 `/session:end`가 호출. 본인이 직접 호출하는 경우는 Phase 외 큰 결정 박을 때.
+
+### `/engine:goal` vs `/refactor-sweep` (드라이버 vs 프리셋)
+- **`/engine:goal`** — *범용* 목표 도달형 드라이버. Step0~5 골격 + **외부 done 심판**(WSL2/dangling 게이트, AI 자기판단 X). 내장 `/loop`·`Workflow` 위에 글루.
+- **`/refactor-sweep`** — `/engine:goal`의 **refactor 모드 프리셋** (진단 룰북=CODE_CONVENTION, 도메인=server/shared/clientnet, G1~G9 안전 가드). 첫 검증된 인스턴스.
 
 ### `/work:plan` vs Phase 파일
 - **`/work:plan <목표>`** — 새 Phase 묶음(`01_Phases/<owner>/M{N}-{slug}/`)을 생성. **만들기**.
@@ -135,6 +149,7 @@ clone + Claude Code 설치 후 첫 호출
 
 ## 갱신 이력
 
+- **2026-06-18** — M7.5 loop-driven (ADR-032) sweep. `engine/` 폴더 + `/engine:goal`(목표 도달형 드라이버) 신설 + `/session:review`(pull 세션) 신설. 11 → 13. `refactor-sweep` = `/engine:goal` refactor 프리셋으로 재정의. 세션 2종(작업/리뷰) 차이 + 드라이버/프리셋 차이 박음.
 - **2026-05-24** — ADR-025 정합 sweep. `/session:start` CONTEXT 통독 → work-pin 인지 / `/session:end` CONTEXT 자동 갱신 → work-pin 갱신 (CONTEXT 3종 은퇴). 트랙 B "이관 안내" → "제거된 8 슬래시 안내" (트랙 B 자체 은퇴 반영).
 - **2026-05-21** — M3.5 Phase 06 통째 재작성. 옛 16 카탈로그 → 새 10 카탈로그. 학습 5 + 일지 3 = 트랙 B 이관 안내 섹션 신설. 점검 카테고리 신설 (`/harness-review` + `/cross-review`). 비슷한 것끼리 차이 갱신 (SubAgent 자동 호출 vs 슬래시 수동 호출 + 하네스 정합 vs 코드 리뷰 분리 명시). ADR-022 정합.
 - 2026-05-14 — 협업 셋업 후속 갱신 (옛 15 → 16, `/session:end` 신설).
