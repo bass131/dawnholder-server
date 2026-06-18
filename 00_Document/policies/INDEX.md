@@ -13,7 +13,7 @@
 
 ---
 
-## 정책 목록 (8개 — 옛 4 + 신규 4)
+## 정책 목록 (11개 — 옛 4 + 신규 4 + loop-driven 3)
 
 | 파일 | 한 줄 요약 | 헌법에서 참조하는 위치 | 상태 |
 |---|---|---|---|
@@ -25,6 +25,9 @@
 | [`subagent-routing.md`](subagent-routing.md) | SubAgent 풀 9 라우팅 + 자동 호출 + 에스컬레이션 | "🤖 SubAgent 풀" | **신규** (M3.5) |
 | [`knowledge-system.md`](knowledge-system.md) | AI 캐시 도메인별 _index.md + GC + 트랙 A/B 분리 | "📚 Knowledge 시스템" | **신규** (M3.5, Phase 04 reference) |
 | [`pr-and-merge-gate.md`](pr-and-merge-gate.md) | PR 생성/머지 = irreversible 깃발 + 사용자 명시 GO + 예외 경로(admin bypass) + PR body literal X | "확신이 없을 때 / PR 생성·머지 게이트" | **신규** (M3.5 후속 봉합 PR #43) |
+| [`loop-driver.md`](loop-driver.md) | 루프 엔진(/goal+Workflow) + v1 attended 기동 + WSL2 게이트=done 판사 + 세션 2종(작업/리뷰) | "운영 모드"(P02 추가 예정) | **신규** (M7.5, ADR-032) |
+| [`work-judge.md`](work-judge.md) | 3버킷 판정자(a 기계/b 취향·육안/c 판단·비가역) + 깃발→버킷 매핑 | "작업 등급 / 운영 모드"(P02) | **신규** (M7.5, ADR-032 §B) |
+| [`review-throughput.md`](review-throughput.md) | 리뷰 처리량(예외기반·통합고도·신뢰졸업·시선=max) + 신뢰졸업 N 초안 | "SubAgent 풀 / 운영 모드"(P02) | **신규** (M7.5, ADR-032 §E — ADR-019 매트릭스 supersede) |
 
 ---
 
@@ -58,5 +61,6 @@
 
 ## 갱신 이력
 
+- 2026-06-18 — M7.5 Phase 01에서 loop-driven 정책 3종(`loop-driver`·`work-judge`·`review-throughput`) 신설 등록 (#2 = 둘 다 독립 결정, 영호 GO). 총 8 → 11 정책. 헌법 링크는 P02에서 추가 예정.
 - 2026-05-22 — M3.6 cross-review γ 8회차 봉합 (α1 결함). PR #43에서 박힌 `pr-and-merge-gate.md`가 본 INDEX 표에 누락된 정합 깨짐 봉합. 총 7 → 총 8 정책. `subagent-routing.md` 한 줄 요약도 풀 8 → 풀 9 동기 정정.
 - 2026-05-20 — M3.5 Phase 01 (2/2) 신설. 옛 4 (응축 갱신) + 신규 3 = 총 7 정책 카탈로그. Phase 06 전환 시점에 옛 `00_Document/policies/INDEX.md` 자리에 mv 예정.
