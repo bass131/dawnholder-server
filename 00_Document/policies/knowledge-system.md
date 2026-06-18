@@ -5,7 +5,7 @@
 >
 > **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 시드 단계. 실제 입출력 패턴 + GC 정책 정합은 Phase 04 산출물에서 정착. 본 정책은 *원칙·경계*만 박음.
 
-본 문서는 SubAgent가 도메인별 학습을 *축적·조회*하는 Knowledge 시스템(트랙 A)과 *GC Collector* 정책을 정의합니다. (본인 회고 학습 일지 = 옛 트랙 B는 ADR-025로 은퇴.) 디테일은 Phase 04 산출물 ([`../knowledge/`](../knowledge/)).
+본 문서는 SubAgent가 도메인별 학습을 *축적·조회*하는 Knowledge 시스템(트랙 A)과 *GC Collector* 정책을 정의합니다. (본인 회고 학습 일지 = 옛 트랙 B는 ADR-025로 은퇴.) 디테일은 Phase 04 산출물 ([`../knowledge/`](../../.claude/knowledge/)).
 
 ---
 
@@ -168,9 +168,9 @@
 
 본 정책 수정 시 *반드시* 함께 갱신:
 
-- [`../CLAUDE.md`](../CLAUDE.md) "📚 Knowledge 시스템" 섹션
-- [`../agents/`](../agents/) (SubAgent 정의 — 각자 _index.md 통독 약속 박힘)
-- [`../knowledge/_usage.md`](../knowledge/_usage.md) (Phase 04 산출물 — AI/사용자 활용 가이드)
+- [`../CLAUDE.md`](../../CLAUDE.md) "📚 Knowledge 시스템" 섹션
+- [`../agents/`](../../.claude/agents/) (SubAgent 정의 — 각자 _index.md 통독 약속 박힘)
+- [`../knowledge/_usage.md`](../../.claude/knowledge/_usage.md) (Phase 04 산출물 — AI/사용자 활용 가이드)
 - [`subagent-routing.md`](subagent-routing.md) (SubAgent 정의 → 통독 대상 매핑)
 
 ---

@@ -118,8 +118,8 @@ WORK-ID 시스템은 [`pin-and-done.md`](pin-and-done.md)에서 통합 관리.
 
 본 정책 수정 시 *반드시* 함께 갱신:
 
-- [`../hooks/phase-gate-validator.sh`](../hooks/phase-gate-validator.sh) (Phase 03 산출물 — 5단계 보고 5 라벨 grep)
-- [`../templates/done-md-template.md`](../templates/done-md-template.md) (-DONE.md 양식 정합)
+- [`../hooks/phase-gate-validator.sh`](../../.claude/hooks/phase-gate-validator.sh) (Phase 03 산출물 — 5단계 보고 5 라벨 grep)
+- [`../templates/done-md-template.md`](../../.claude/templates/done-md-template.md) (-DONE.md 양식 정합)
 - [`pin-and-done.md`](pin-and-done.md) (WORK-ID 일관성)
 - [`grade-and-risk.md`](grade-and-risk.md) (등급별 보고 양식 격차)
 - [`loop-driver.md`](loop-driver.md) · [`work-judge.md`](work-judge.md) · [`review-throughput.md`](review-throughput.md) (루프 보고 분기 — a 배치 / c 즉시)

@@ -26,7 +26,7 @@ current-pin 갱신    →    -DONE.md 박제          →    두 액션 권유
 
 ### 핀 필드 (압축 5개 + 선택: 주의할 약속 · 루프 상태)
 
-빈 템플릿: [`../templates/pin-template.txt`](../templates/pin-template.txt) (Phase 03 산출물)
+빈 템플릿: [`../templates/pin-template.txt`](../../.claude/templates/pin-template.txt) (Phase 03 산출물)
 
 ```
 WORK-ID:        <Phase slug 또는 ad-hoc-YYYYMMDD-주제>
@@ -87,7 +87,7 @@ PHASE:          <마일스톤·Phase 번호> / 등급: <단순/보통/복잡/대
 
 ### 템플릿
 
-[`../templates/done-md-template.md`](../templates/done-md-template.md) (Phase 03 산출물 — 옛 템플릿 정합 갱신).
+[`../templates/done-md-template.md`](../../.claude/templates/done-md-template.md) (Phase 03 산출물 — 옛 템플릿 정합 갱신).
 
 ### 역할 분담 (가짜 학습 방지)
 
@@ -191,7 +191,7 @@ Phase는 자동 진행(ADR-031 — 학습 호흡 수동 멈춤 폐기, ADR-025 �
 
 ## 6. 변경 시 동기화 책임
 
-본 정책 수정 시 *반드시* 함께 갱신: [`pin-injector.sh`](../hooks/pin-injector.sh) (핀 주입) / [`phase-gate-validator.sh`](../hooks/phase-gate-validator.sh) (-DONE.md 게이트) / [`pin-template.txt`](../templates/pin-template.txt) (압축 필드 + 루프 상태) / [`done-md-template.md`](../templates/done-md-template.md) (등급별 필수 섹션) / [`reporting-format.md`](reporting-format.md) (5단계 라벨 정합) / [`grade-and-risk.md`](grade-and-risk.md) (등급 박제 조건) / [`loop-driver.md`](loop-driver.md) · [`work-judge.md`](work-judge.md) (루프 상태 필드·갱신 주체).
+본 정책 수정 시 *반드시* 함께 갱신: [`pin-injector.sh`](../../.claude/hooks/pin-injector.sh) (핀 주입) / [`phase-gate-validator.sh`](../../.claude/hooks/phase-gate-validator.sh) (-DONE.md 게이트) / [`pin-template.txt`](../../.claude/templates/pin-template.txt) (압축 필드 + 루프 상태) / [`done-md-template.md`](../../.claude/templates/done-md-template.md) (등급별 필수 섹션) / [`reporting-format.md`](reporting-format.md) (5단계 라벨 정합) / [`grade-and-risk.md`](grade-and-risk.md) (등급 박제 조건) / [`loop-driver.md`](loop-driver.md) · [`work-judge.md`](work-judge.md) (루프 상태 필드·갱신 주체).
 
 ---
 

@@ -118,7 +118,7 @@ ADR_History/phases/
 
 본 정책 수정 시 *반드시* 함께 갱신:
 
-- [`../CLAUDE.md`](../CLAUDE.md) "문서 운영" 섹션 (본 정책 링크 위치)
+- [`../CLAUDE.md`](../../CLAUDE.md) "문서 운영" 섹션 (본 정책 링크 위치)
 - [`INDEX.md`](INDEX.md) (본 폴더 카탈로그)
 - [`grade-and-risk.md`](grade-and-risk.md) (단위 작업 문서 비대 시 등급 재산정 흐름 정합)
 

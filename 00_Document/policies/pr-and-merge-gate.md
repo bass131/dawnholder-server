@@ -172,7 +172,7 @@ hook은 *literal 매칭*만, settings는 *권한 매처* — 두 자리 다름. 
 
 본 정책 수정 시 *반드시* 함께 갱신:
 
-- [`../CLAUDE.md`](../CLAUDE.md) "확신이 없을 때" 절 (헌법 본문 정합)
+- [`../CLAUDE.md`](../../CLAUDE.md) "확신이 없을 때" 절 (헌법 본문 정합)
 - [`grade-and-risk.md`](grade-and-risk.md) (irreversible 깃발 명세)
 - [`../../.claude/commands/session/end.md`](../../.claude/commands/session/end.md) §4-D (PR 생성 게이트 절차)
 - [`../../.claude/hooks/dangerous-cmd-guard.sh`](../../.claude/hooks/dangerous-cmd-guard.sh) 패턴 7번 (admin bypass 매칭)
