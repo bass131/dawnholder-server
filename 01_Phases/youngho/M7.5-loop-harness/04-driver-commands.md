@@ -41,5 +41,13 @@ summary: 신규 loop/goal 슬래시 + refactor-sweep 일반화 + session/work:pl
 - refactor-sweep의 G1~G9(전용 브랜치·회귀 게이트·push 금지 등) 한 줄도 약화 X.
 - /goal 평가자는 트랜스크립트만 봄 → done은 WSL 게이트 출력이 트랜스크립트에 박히게.
 
+## ✅ 실행 결정 (2026-06-18, 영호 게이트 통과)
+
+- **미결 #3 결정**: 내장 `/loop`(간격·self-pace)·`Workflow`(도구)가 *이미 존재* → 중복 제작 X. 어긋나는 핵심(**외부 done 심판** — 내장 self-pace는 AI 자기판단이라 편향 위험)만 커스텀 신규. **별도 슬래시 + 폴더 네임스페이스로 내장과 구분** (영호 결정).
+- **신설**: `.claude/commands/engine/goal.md` → **`/engine:goal`** (목표 도달형 드라이버, Step0~5 골격 + WSL2/dangling 게이트 = 외부 done 심판, v1 attended). `/engine:drive`는 생략(goal이 곧 범용 드라이버 — 군더더기).
+- **REVISE**: `refactor-sweep` = `/engine:goal`의 *refactor 프리셋*(G1~G9 보존) / `loop-driver.md §2`(#3 반영) / `session/start`(세션 2종 포인터) / `session/end`(루프 마감 경로) / `work/plan`(frontmatter `loop_track` 필드).
+- **신설(세션 2종 보강)**: `.claude/commands/session/review.md` → **`/session:review`** (pull 세션, pending-comprehension 소비).
+- **P06 이월**: commands 카탈로그 카운트 — `/engine:goal` + `/session:review` 반영 (commands-index 10→12 + 옛 10 vs 11 drift 봉합).
+
 ## ➡️ 다음 Phase
 - P05 (hooks+settings+원장)

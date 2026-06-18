@@ -9,6 +9,8 @@ production 코드(TDD 제외)의 CODE_CONVENTION/SOLID 부합도를 *자는 동�
 
 > ⚠️ **이 슬래시는 코드를 *수정하고 commit*한다** (`/harness-review`·`/cross-review`는 읽기 전용). 무인 commit의 안전은 **로컬 commit까지만 + 회귀 게이트 + 전용 브랜치 + 아침 선별 revert**에 달려 있다. push/PR은 *언제나* 아침 영호 명시 GO.
 
+> **드라이버 프리셋 (M7.5)**: 본 슬래시는 [`engine/goal.md`](engine/goal.md)(`/engine:goal`) **범용 드라이버의 *refactor 모드 프리셋***이다. Step 0~5 골격 + done 심판(외부 기계 게이트)은 `/engine:goal`이 정의하고, 본 슬래시는 refactor 특화만 채운다 — 진단 룰북 = CODE_CONVENTION/SOLID, 도메인 = server/shared/clientnet, 안전 가드 G1~G9. 골격·G1~G9는 약화되면 안 됨.
+
 ---
 
 ### 이 커맨드의 역할
@@ -247,7 +249,8 @@ baseline: test <N> → <M> (비감소 ✅)
 
 - **`/harness-review`** — *하네스 메타* 점검. **읽기 전용**(코드 미수정).
 - **`/cross-review`** — *외부 시각* 재검증. **읽기 전용**.
-- **`/refactor-sweep`** (본 슬래시) — production *코드를 수정하고 commit*. 무인 자동화. 안전 = 전용 브랜치 + 회귀 게이트 + 아침 선별. **프로젝트 첫 무인 코드 변경 패턴.**
+- **`/engine:goal`** — *범용* 목표 도달형 드라이버 (Step 0~5 골격 + 외부 done 심판). 본 슬래시는 그 **refactor 프리셋**.
+- **`/refactor-sweep`** (본 슬래시) — production *코드를 수정하고 commit*. 무인 자동화. 안전 = 전용 브랜치 + 회귀 게이트 + 아침 선별. **프로젝트 첫 무인 코드 변경 패턴 = `/engine:goal`의 첫 검증된 인스턴스.**
 
 ---
 

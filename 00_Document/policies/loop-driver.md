@@ -27,17 +27,19 @@
 
 ---
 
-## 2. 엔진 구성 (두 축)
+## 2. 엔진 구성 (내장 substrate + 우리 글루)
 
-| 축 | 무엇 | 언제 |
-|---|---|---|
-| **`/goal`** | done 조건 충족까지 자율 반복. 평가자가 *트랜스크립트만 보고* done 판정 | 목표 도달형 (예: "WSL2 green + reviewer 🔴0까지") |
-| **`/loop`** | 인터벌 반복형 | 주기 점검형 (예: PR 폴링) |
-| **Workflow** | 구조적 fan-out·pipeline·예산 상한 오케스트레이션 | 한 컨텍스트가 못 담는 규모 / 병렬 검증 |
+반복·오케스트레이션 substrate는 **이미 내장**으로 있다("loop-ready인데 loop-less" — 엔진을 새로 안 만듦). 우리는 그 위에 *done 심판·버킷·정지 게이트* 글루만 얹는다:
 
+| 축 | 무엇 | 제공 | done 심판 |
+|---|---|---|---|
+| **`/loop`** | 간격 반복 또는 self-pace | Claude Code 내장 | 없음 (self-pace) |
+| **`Workflow`** (도구) | 구조적 fan-out·pipeline·예산 상한 | Claude Code 내장 | 없음 |
+| **`/engine:goal`** | done 조건 충족까지 자율 + **외부 기계 done 심판** | M7.5 신규 (`engine/` 네임스페이스) | WSL2/dangling 게이트 |
+
+- **#3 결정 (2026-06-18, 영호)**: 내장 `/loop`·`Workflow`를 *몸통으로 재사용* + 어긋나는 핵심(**외부 done 심판** — 내장 self-pace는 AI 자기판단이라 편향 위험)만 `/engine:goal` 커스텀 신규. 내장 `/loop`과 구분 위해 **`engine/` 폴더 네임스페이스**(`/engine:goal`). `refactor-sweep` = `/engine:goal`의 *refactor 프리셋*(§7).
 - `coordinator` SubAgent는 **Workflow의 부분 구현**으로 인용 — 복잡/대규모 Phase 분해는 coordinator, 대규모 병렬은 Workflow.
-- 슬래시 `/goal`·`/loop` 실제 구현은 P04. 통합 여부(#3)는 P04에서 결정.
-- **done 조건은 기계 판정 가능한 문장으로.** `/goal` 평가자는 트랜스크립트만 보므로, WSL2 게이트 출력이 트랜스크립트에 *박히게* 해야 함 (§4 함정).
+- **done 조건은 기계 판정 가능한 문장으로.** `/engine:goal`은 외부 게이트(WSL2/dangling) 출력이 *트랜스크립트에 박히게* 실행 — AI 자기판단으로 done 선언 X (§4 함정).
 
 ---
 

@@ -54,9 +54,12 @@ owner: youngho | yuhyeon | ingyu  # M3.5 신규 필수 필드
 phase: NN
 status: pending  # pending | in_progress | done
 grade: 단순 | 보통 | 복잡 | 대규모  # M3.5 신규 — 4등급 명시
+loop_track: auto-gate | human-visual | human-gate  # M7.5 — 루프 버킷(a 기계 / b 취향·육안 / c 비가역). work-judge.md
 summary: <한 줄 요약>
 ---
 ```
+
+> **loop_track (M7.5)**: 루프 드라이버가 이 Phase를 *어떻게 다룰지* — `auto-gate`(버킷 a, 기계 게이트 통과 시 자율) / `human-visual`(버킷 b, 아트·Unity 외관 = 사람 트랙) / `human-gate`(버킷 c, 비가역·설계 분기 = 사람 GO 정지). 매핑 = [`../../../00_Document/policies/work-judge.md`](../../../00_Document/policies/work-judge.md).
 
 본문에 다음을 반드시 채울 것:
 
