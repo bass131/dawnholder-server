@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.Systems;
 
 namespace GameServer.Tests.Combat;
 

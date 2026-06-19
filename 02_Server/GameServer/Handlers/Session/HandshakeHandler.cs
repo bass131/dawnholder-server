@@ -1,7 +1,8 @@
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Session;
 
 // C_Handshake 핸들러: decode + version 검증 → lifecycle은 session 안.
 //

@@ -45,23 +45,27 @@ namespace Dawnholder.Client.Combat
             root.AddComponent<CombatBootstrap>();
         }
 
+        // combat 인프라 설치 순서 = installer registry (M7.7-P5c). 새 인프라 = Build 메서드 + 이 배열 1행.
+        // 순서 의존: State(Party/Quest)는 구독 HUD보다, registry는 spawn 수신보다 먼저.
+        //   파티/퀘스트 HUD는 UI.unity 패널이 State를 직접 구독 — 런타임 빌드 없음(M6 P05).
+        //   ZoneVisualizer는 BackGround.prefab 중복 회피로 비활성(클래스는 fallback 보존).
         void Awake()
         {
-            // ZoneVisualizer 자동 생성 *비활성*: 사용자가 BackGround.prefab을 씬에 직접 박아
-            // 코드 빌드와 중복되면 두 배경 박힘. ZoneVisualizer 클래스는 fallback 용으로 보존.
-            // BuildZoneVisualizer();
-            BuildEnemyRegistry();
-            BuildStageClearUI();
-            BuildToastUI();
-            BuildRemoteEntityRegistry();
-            BuildPartyState();
-            BuildQuestState();
-            // 파티/퀘스트 HUD는 UI.unity 씬에 배치된 패널(PartyMemberHud/QuestProgressHud 컴포넌트)이
-            // PartyState/QuestState를 직접 구독 — 런타임 빌드 폐지(M6 Phase 05, 영호 UI.unity 정식 채택).
-            BuildPartyInvitePopup();
-            BuildNpcDialogPanel();
-            BuildMinimapCamera();
-            BuildQuestIntro();
+            System.Action[] installers =
+            {
+                BuildEnemyRegistry,
+                BuildStageClearUI,
+                BuildToastUI,
+                BuildRemoteEntityRegistry,
+                BuildPartyState,
+                BuildQuestState,
+                BuildPartyInvitePopup,
+                BuildNpcDialogPanel,
+                BuildMinimapCamera,
+                BuildQuestIntro,
+            };
+            foreach (System.Action install in installers)
+                install();
         }
 
         // 퀘스트 부여 연출 — 사냥 구역(HuntingGround/BossRoom) 진입 시에만.

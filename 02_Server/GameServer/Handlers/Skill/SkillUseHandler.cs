@@ -1,8 +1,9 @@
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Skill;
 
 // C_SkillUse 핸들러: decode + 신뢰 경계 검증 + session 캡슐화 메서드 호출만.
 //   mutation / 쿨다운 / 박스 판정은 session.SubmitSkillUse → GameMap.ProcessSkill 안에서.

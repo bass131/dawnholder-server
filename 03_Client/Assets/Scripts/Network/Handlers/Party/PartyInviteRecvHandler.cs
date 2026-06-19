@@ -1,10 +1,12 @@
 using System;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.State;
 using Shared.Protocol;
 using UnityEngine;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Party
 {
     // S_PartyInviteRecv (ID 29) — 파티 초대 수신 → PartyState에 대기 초대 기록.
     // P2 팝업이 PartyState.OnInviteReceived를 구독해 표시.

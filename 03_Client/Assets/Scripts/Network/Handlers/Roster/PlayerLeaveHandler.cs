@@ -2,6 +2,8 @@ using System;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.Scenes;
@@ -13,7 +15,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Roster
 {
     // S_PlayerLeave (ID 6)
     // 타인 entity despawn.

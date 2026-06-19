@@ -2,6 +2,7 @@ using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Loop;
@@ -177,7 +178,7 @@ public class GameWorld
         Action<int, EnemyEntity> onKill = (killerId, target) =>
             _quest.EnqueueJob(() =>
             {
-                if (target.Kind == EnemyKind.Boss)
+                if (EnemyCatalog.For(target.Kind).IsBoss)
                     _quest.ResetAllQuestProgress();
                 else
                     _quest.OnKill(killerId, this);

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M7.7 구조 리팩토링 — 마일스톤 종합</title>
+<style>
+  :root{--bg:#0f1419;--card:#1a2230;--ink:#e6edf3;--mut:#8b98a9;--accent:#4ea1ff;--good:#3fb950;--warn:#d29922;--line:#2d3748;--mono:'Consolas','SF Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Segoe UI',-apple-system,sans-serif;line-height:1.6;padding:32px 16px;}
+  .wrap{max-width:1080px;margin:0 auto;}
+  h1{font-size:1.9rem;margin-bottom:4px;}
+  h2{font-size:1.25rem;margin:28px 0 12px;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:6px;}
+  .sub{color:var(--mut);margin-bottom:20px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0;}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
+  .stat .n{font-size:1.7rem;font-weight:700;color:var(--accent);}
+  .stat .l{color:var(--mut);font-size:.82rem;}
+  .stat.good .n{color:var(--good);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:12px 0;}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.9rem;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{color:var(--mut);font-weight:600;}
+  code{font-family:var(--mono);background:#0d1117;padding:1px 6px;border-radius:4px;font-size:.86em;color:#a5d6ff;}
+  .ba{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;}
+  .ba .arrow{color:var(--accent);font-size:1.6rem;text-align:center;}
+  .tree{font-family:var(--mono);font-size:.84rem;white-space:pre;background:#0d1117;border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;}
+  .del{color:#f85149;} .add{color:var(--good);} .dim{color:var(--mut);}
+  .pill{display:inline-block;padding:1px 8px;border-radius:20px;font-size:.74rem;font-weight:600;}
+  .pill.ok{background:rgba(63,185,80,.15);color:var(--good);border:1px solid rgba(63,185,80,.3);}
+  .timeline{border-left:2px solid var(--line);margin-left:8px;padding-left:18px;}
+  .tl{position:relative;margin-bottom:14px;}
+  .tl::before{content:'';position:absolute;left:-25px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--good);border:2px solid var(--bg);}
+  .tl .h{font-weight:600;}
+  .tl .c{color:var(--mut);font-size:.85rem;}
+  .gate{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0;}
+  .gate .g{background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);border-radius:8px;padding:8px 14px;font-size:.88rem;}
+  .gate .g b{color:var(--good);}
+  footer{color:var(--mut);font-size:.8rem;margin-top:32px;border-top:1px solid var(--line);padding-top:12px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>M7.7 — 구조 리팩토링 <span class="pill ok">완료</span></h1>
+  <p class="sub">behavior-invariant 구조 정비 · pre-M8 (DB를 깨끗한 토대 위에) · 2026-06-20 · 브랜치 <code>feature/m7.7-structure-refactor</code></p>
+
+  <div class="grid">
+    <div class="stat"><div class="n">23</div><div class="l">커밋 (P0~P6)</div></div>
+    <div class="stat"><div class="n">162</div><div class="l">파일 변경</div></div>
+    <div class="stat good"><div class="n">708/0/5</div><div class="l">WSL2 테스트 (비감소)</div></div>
+    <div class="stat good"><div class="n">16/16</div><div class="l">봇 회귀 PASS</div></div>
+    <div class="stat good"><div class="n">0</div><div class="l">reviewer 🔴 / wire bump</div></div>
+  </div>
+
+  <h2>🎯 무엇을 했나 — "이름이 거짓말하지 않는 구조"</h2>
+  <div class="card">
+    <p>코드는 <b>한 줄도 거동이 바뀌지 않았고</b>(behavior-invariant), 대신 <b>폴더·네임스페이스·데이터 경계</b>를 정리해 M8(DB 영속화)이 깨끗한 토대 위에 붙도록 했습니다. 핵심은 "사람이 이름을 보고 위치를 예측할 수 있게"(ADR-033).</p>
+    <div class="ba" style="margin-top:14px;">
+      <div>
+        <div class="dim" style="font-size:.8rem;margin-bottom:4px;">BEFORE — 이름이 거짓말하던 곳</div>
+        <div class="tree"><span class="del">GameServer/Network/</span>   <span class="dim"># 3중 오버로드</span>
+  GameSession.cs   <span class="dim">(NS=Sessions인데 폴더=Network)</span>
+  IntentRateLimiter.cs
+  MapMigration.cs  <span class="dim">(네트워크 아닌 존이동)</span>
+Maps/PlayerEntity.cs   <span class="dim"># 자매 엔티티가</span>
+Combat/EnemyEntity.cs  <span class="dim"># 두 폴더에 흩어짐</span>
+Combat/EnemyState.cs
+Maps/Systems/*.cs  <span class="dim">(폴더=Systems, NS=Maps)</span></div>
+      </div>
+      <div class="arrow">→</div>
+      <div>
+        <div class="dim" style="font-size:.8rem;margin-bottom:4px;">AFTER — 폴더 = 개념 = 네임스페이스</div>
+        <div class="tree"><span class="add">Sessions/</span>
+  GameSession.cs · IntentRateLimiter.cs
+<span class="add">Maps/Transitions/</span>
+  MapMigration.cs  <span class="dim">(존 이동 정위치)</span>
+<span class="add">Entities/</span>           <span class="dim"># 엔티티 통합</span>
+  PlayerEntity.cs · EnemyEntity.cs
+  EnemyState.cs    <span class="dim">(M8 저장 추상화 토대)</span>
+Combat/   <span class="dim">(CombatConstants·EnemyCatalog·Hitbox 잔류)</span>
+Maps/Systems/*  <span class="dim">NS=...Maps.Systems 정합</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>🤔 왜 — M8 차단 최소선 + OCP</h2>
+  <div class="card">
+    <table>
+      <tr><th>문제 (진단)</th><th>해결</th></tr>
+      <tr><td>GameMap 7책임 God-class (M8 영속화 blocker)</td><td>broadcaster→<code>MapPacketPublisher</code>, tick step→Systems 추출 (P4)</td></tr>
+      <tr><td>PlayerEntity 저장/휘발 상태 미구분</td><td><code>PlayerSnapshot</code> DTO + 경계 명시 (P4c) — M8 스냅샷 청사진</td></tr>
+      <tr><td>새 적/스킬 추가 = 산탄총 수술 (switch 산발)</td><td><code>EnemyCatalog</code>·<code>ClientSkillCatalog</code> 데이터화 (P5) — OCP</td></tr>
+      <tr><td>"Network" 폴더가 세션·전송·존이동 3개 의미 오버로드</td><td>Sessions/·Maps/Transitions/로 분리, Network/ 소멸 (P6)</td></tr>
+    </table>
+  </div>
+
+  <h2>🛠️ 어떻게 — Phase 타임라인 (P0 → P6)</h2>
+  <div class="card timeline">
+    <div class="tl"><div class="h">P0 — FEATURE_MAP + ADR-033 초안</div><div class="c">기능별 좌표 맵 + 네이밍·경계 기준 ADR (대량 이동 전 기준 확정)</div></div>
+    <div class="tl"><div class="h">P1 — 핸들러·PacketGen NS=폴더 정합</div><div class="c">NS만, 이동 0 · <code>6ddde44</code></div></div>
+    <div class="tl"><div class="h">P2 — 봇 ProbeBase 추출 + *Smoke 통일</div><div class="c">봇 16/16 · <code>49573e8</code></div></div>
+    <div class="tl"><div class="h">P3 — 98_Shared/GameData 개념 하위폴더</div><div class="c">Enums/Map/Combat 그룹화, NS 유지 (DLL 출력 불변) · <code>1689ce8</code></div></div>
+    <div class="tl"><div class="h">P4 — GameMap 분해 + PlayerEntity 경계 (M8 차단 핵심)</div><div class="c">MapPacketPublisher(P4a, byte동치 테스트9) + PlayerSnapshot(P4c) + 물리/중력 시스템(P4b) · GameMap 706→~590</div></div>
+    <div class="tl"><div class="h">P5 — 데이터화 (EnemyCatalog · 클라 스킬 · CombatBootstrap)</div><div class="c">switch 산발 → 데이터 테이블 (OCP) · <code>533206b</code>·<code>3332cda</code>·<code>ae3b0cf</code></div></div>
+    <div class="tl"><div class="h">P6 — 실제 폴더 이동 (ADR-033 Accepted 후, 最高위험)</div><div class="c">D2~D6 6개 이동, 각 독립 commit · git mv + NS + 빌드에러구동 using sweep · Network/ 소멸 + Entities/ 통합</div></div>
+  </div>
+
+  <h2>🧪 테스트 — 게이트 (전부 통과)</h2>
+  <div class="card">
+    <div class="gate">
+      <div class="g"><b>WSL2 708/0/5</b> — 매 이동마다 비감소 검증</div>
+      <div class="g"><b>봇 16/16 PASS</b> — 전 시나리오 회귀</div>
+      <div class="g"><b>reviewer 🔴 0</b> — 72파일 전수 "거동 byte 불변" 확인</div>
+      <div class="g"><b>build 0 error</b> — 서버 + 클라 Unity 컴파일</div>
+      <div class="g"><b>byte 동치 테스트 9</b> — S_Snapshot wire shape 불변 (P4a)</div>
+      <div class="g"><b>Play 육안 OK</b> — 스킬/부팅/거동 (영호 bucket-b)</div>
+    </div>
+    <p style="margin-top:10px;font-size:.9rem;color:var(--mut);">이동 방식 = <code>git mv</code> + namespace 변경 + <b>빌드 에러 구동 using sweep</b>(컴파일러가 정확한 worklist 제공). behavior-invariant를 기계적으로 보장 — old↔new 내용 diff가 namespace+using으로만 환원됨.</p>
+  </div>
+
+  <h2>➡️ 다음 — M8 (DB 영속화)</h2>
+  <div class="card">
+    <p>M7.7이 닦은 토대 위에 M8을 올립니다:</p>
+    <table>
+      <tr><td><code>Entities/</code> 통합</td><td>PlayerEntity·EnemyEntity·EnemyState 한 곳 → M8 저장 추상화가 깔끔히 붙음</td></tr>
+      <tr><td><code>PlayerSnapshot</code> DTO (P4c)</td><td>저장 후보(Hp/Position/Stats) vs 휘발(input queue/FSM) 경계 = M8 스냅샷 청사진</td></tr>
+      <tr><td>큐드 라이터 (헌법 §5)</td><td>틱 내 DB 호출 금지 → 비동기 write 경로 (M8 설계)</td></tr>
+    </table>
+    <p style="margin-top:8px;font-size:.9rem;color:var(--mut);">M8 핵심 미결: 계정 식별 / 큐드 라이터 / 30초+이벤트 cadence (ADR-005 LocalDB + EF Core 10).</p>
+  </div>
+
+  <footer>
+    M7.7 구조 리팩토링 · behavior-invariant · ADR-033 (Accepted 2026-06-20) · engine:goal AI-driven 구동 · 보고 = ADR-031 (Phase 자동 진행 + 비동기 문서 박제) · 게이트 = ADR-029 (WSL2 실행 표준)
+  </footer>
+</div>
+</body>
+</html>

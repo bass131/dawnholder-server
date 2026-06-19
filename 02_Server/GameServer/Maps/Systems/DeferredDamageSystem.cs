@@ -1,8 +1,9 @@
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 /// <summary>
 /// 지연 데미지 1건의 데이터. tick thread invariant — 생성 후 불변.

@@ -1,5 +1,6 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Tests;

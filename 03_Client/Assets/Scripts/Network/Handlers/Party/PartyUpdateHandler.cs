@@ -1,11 +1,13 @@
 using System;
 using Dawnholder.Client.Audio;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.State;
 using Shared.Protocol;
 using UnityEngine;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Party
 {
     // S_PartyUpdate (ID 30) — 파티 상태 브로드캐스트 → PartyState 미러 갱신.
     // partyId==0 → 파티 해산(미러 클리어) 약속.

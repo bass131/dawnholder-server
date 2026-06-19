@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 using Shared.Protocol;
 

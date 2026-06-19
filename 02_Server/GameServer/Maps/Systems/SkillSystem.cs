@@ -1,7 +1,8 @@
 using Dawnholder.Server.GameServer.Maps.Actions;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 /// <summary>
 /// §2.2 SkillSystem — GameMap(컨테이너)에서 스킬 로직 추출.

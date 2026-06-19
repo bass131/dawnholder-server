@@ -1,10 +1,12 @@
 using System;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.State;
 using Shared.Protocol;
 using UnityEngine;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Quest
 {
     // S_QuestUpdate (ID 32) — 퀘스트 진행 카운터 → QuestState 미러 갱신.
     internal sealed class QuestUpdateHandler : IClientPacketHandler

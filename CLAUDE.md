@@ -108,6 +108,7 @@
 01_Phases/     사람별 namespace + 마일스톤별 작업 단위(M{N}-{slug}/) Phase 마크다운.
 02_Server/     .NET 권위 서버. 98_Shared/ 읽기/쓰기 가능.
 03_Client/     Unity 프로젝트. 98_Shared/ 읽기만 (DLL로). 절대 98_Shared/에 쓰지 않음.
+04_ClientNet/  클라이언트 .NET 소켓 계층 (.NET Standard 2.1 → DLL로 Unity 참조). 02_Server/Network/와 자매 구현 (ADR-012).
 98_Shared/     Protocol + 게임 상수 + 공식. 양쪽이 공유하는 cross-cutting 코드.
 99_Tools/      헤드리스 봇, 컨텐츠 도구, 시뮬레이션 하니스.
 ```

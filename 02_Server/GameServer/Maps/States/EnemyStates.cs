@@ -1,6 +1,7 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -256,9 +257,7 @@ internal sealed class EnemyAttackState : ActorState<EnemyEntity>
 
     public override void Enter(EnemyEntity enemy)
     {
-        int windup = enemy.Kind == EnemyKind.Golem
-            ? CombatConstants.GolemAttackWindupTicks
-            : CombatConstants.NormalAttackWindupTicks;
+        int windup = EnemyCatalog.For(enemy.Kind).AttackWindupTicks;
         enemy.AttackWindupTicks = windup;
         // Attack 애니 latch: windup 내내 + 타격 후 AnimLatchTicks까지 유지(보스 BeginTelegraph 동형).
         enemy.AttackLatchTicks = windup + CombatConstants.AnimLatchTicks;
@@ -287,7 +286,7 @@ internal sealed class EnemyAttackState : ActorState<EnemyEntity>
     // 데미지 판정 + 쿨다운 리셋. windup=0 경로(Enter)와 windup>0 경로(Tick) 공통 단일 출처.
     static void ApplyAttack(EnemyEntity enemy)
     {
-        byte pattern = enemy.Kind == EnemyKind.Golem ? (byte)1 : (byte)0;
+        byte pattern = EnemyCatalog.For(enemy.Kind).AttackPattern;
         EnemyStates.ApplyMeleeDamage(enemy.OwningMap!, enemy, CombatConstants.NormalAttackHalfExtent, CombatConstants.NormalBaseDamage, pattern);
         enemy.AttackCooldownTicks = CombatConstants.NormalAttackCooldownTicks;
     }

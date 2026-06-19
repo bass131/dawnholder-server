@@ -1,7 +1,8 @@
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Zone;
 
 // C_EnterPortal 핸들러: handler = decode + 선결 검증 + session 캡슐화 메서드 호출만.
 //   portal 근접 검증 / migration 로직 / tick 마샬링은 session.SubmitEnterPortal 안에서.

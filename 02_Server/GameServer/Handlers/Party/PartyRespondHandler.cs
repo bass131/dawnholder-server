@@ -1,7 +1,8 @@
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Party;
 
 // C_PartyRespond 핸들러: decode inviterEntityId+accept + auth 게이트 + session 캡슐 메서드 호출만.
 //   파티 결성/통보는 session.SubmitPartyRespond → PartyRegistry actor 안에서.

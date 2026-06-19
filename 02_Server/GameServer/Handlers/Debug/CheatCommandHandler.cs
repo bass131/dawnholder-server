@@ -1,9 +1,10 @@
 #if DEBUG
 using Dawnholder.Server.GameServer.Debug;
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Debug;
 
 // C_CheatCommand 핸들러 (시연용 디버그). 클래스 전체가 #if DEBUG —
 //   Release 빌드에는 *물리적으로 부재*하고 HandlerRegistry에도 미등록(헌법 #3 빌드타임 봉합, SN-02).

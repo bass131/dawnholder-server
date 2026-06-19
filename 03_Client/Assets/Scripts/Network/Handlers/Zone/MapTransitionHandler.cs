@@ -3,6 +3,8 @@ using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.Scenes;
@@ -14,7 +16,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Zone
 {
     // S_MapTransition (ID 18) — 맵 전환.
     // 헌법 #1: S_MapTransition 도착 후 비로소 scene 전환. 클라 자체 portal 판정 X.

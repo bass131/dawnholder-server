@@ -1,4 +1,13 @@
+using Dawnholder.Server.GameServer.Handlers.Combat;
+using Dawnholder.Server.GameServer.Handlers.Movement;
+using Dawnholder.Server.GameServer.Handlers.Party;
+using Dawnholder.Server.GameServer.Handlers.Session;
+using Dawnholder.Server.GameServer.Handlers.Skill;
+using Dawnholder.Server.GameServer.Handlers.Zone;
 using Shared.Protocol;
+#if DEBUG
+using Dawnholder.Server.GameServer.Handlers.Debug;
+#endif
 
 namespace Dawnholder.Server.GameServer.Handlers;
 

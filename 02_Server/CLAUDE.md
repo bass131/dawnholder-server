@@ -16,10 +16,11 @@
 │   ├── FrameValidator.cs     frame 헤더 검증 helper (M4.1 Phase 03 — 04_ClientNet과 동기화 약속)
 │   └── JobQueue.cs           ServerCore 참조 구현 (production 미wiring — 맵 actor는 ConcurrentQueue 직접, 03-connection-handshake-DONE.md:68)
 ├── GameServer/
-│   ├── Network/        Game 도메인 session — PacketSession 상속
-│   │   └── GameSession.cs    socket 콜백 + first-packet 게이트 + Dictionary dispatch +
-│   │                          캡슐화된 lifecycle/state 메서드 (CompleteHandshakeAndEnter
-│   │                          / RejectHandshake / SubmitMoveIntent / RespondPong)
+│   ├── Sessions/       Game 도메인 session (M7.7 P6: Network/ → Sessions/, 폴더=NS 정합)
+│   │   ├── GameSession.cs        socket 콜백 + first-packet 게이트 + Dictionary dispatch +
+│   │   │                          캡슐화된 lifecycle/state 메서드 (CompleteHandshakeAndEnter
+│   │   │                          / RejectHandshake / SubmitMoveIntent / RespondPong)
+│   │   └── IntentRateLimiter.cs  세션 intent rate-limit (헌법 #3 fail-closed)
 │   ├── Handlers/       IPacketHandler 단위 + dispatch 테이블 (M3 Phase 03 신설)
 │   │   ├── IPacketHandler.cs       internal 인터페이스 (decode + 검증 + session 호출)
 │   │   ├── HandlerRegistry.cs      Dictionary<PacketID, IPacketHandler> (한 줄 등록)
@@ -36,8 +37,12 @@
 │   │   └── Zone/                   맵 이동 핸들러
 │   │       └── EnterPortalHandler.cs   C_EnterPortal → 포털 진입 처리
 │   ├── Loop/           Tick scheduler, world simulation
-│   ├── Maps/           맵별 actor, spatial query, PlayerEntity
-│   ├── Combat/         M3 응급 단순화 (CombatConstants/EnemyKind/EnemyEntity) — M4 정밀화 대기
+│   ├── Maps/           맵별 actor(GameMap), spatial query, MapDataLoader/PortalTable/PlayerSnapshot/MapPacketPublisher
+│   │   ├── Systems/        틱 step 시스템 (NS=...Maps.Systems, M7.7 P6 정합) — Combat/Skill/EnemyAI/Boss/Respawn/Deferred/PlayerPhysics/EnemyGravity/ActionGate
+│   │   ├── States/         FSM 상태 (Player/Enemy/Boss) · Actions/  IGameAction (Melee/Dash/Thunderbolt/Teleport)
+│   │   └── Transitions/    MapMigration.cs (M7.7 P6: Network/ → 존 이동 로직 정위치)
+│   ├── Entities/       게임 엔티티 통합 (M7.7 P6): PlayerEntity·EnemyEntity·EnemyState — M8 저장 추상화 토대
+│   ├── Combat/         전투 데이터 (M7.7 P6 잔류): CombatConstants·EnemyCatalog·Hitbox
 │   ├── Party/          파티 전역 actor (PartyRegistry/PartyState/PartyNotifier) + 오케스트레이션 (PartyFlow — M7.6 P03 GameSession에서 추출) — M5 박힘
 │   ├── Quest/          퀘스트 전역 actor (QuestRegistry/QuestConstants) — M7.6 P01 Party에서 분리
 │   ├── Persistence/    (예정 — M5 진입 시 박힘) DB writer queue, EF context

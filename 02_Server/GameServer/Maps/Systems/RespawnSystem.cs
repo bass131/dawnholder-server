@@ -1,8 +1,9 @@
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 /// <summary>
 /// §2.2 RespawnSystem — GameMap(컨테이너)에서 enemy respawn 로직 추출.
@@ -45,8 +46,7 @@ internal sealed class RespawnSystem
     /// </summary>
     internal void Enqueue(EnemyEntity dead)
     {
-        dead.RespawnTicksRemaining =
-            dead.Kind == EnemyKind.Golem ? GolemRespawnTicks : NormalEnemyRespawnTicks;
+        dead.RespawnTicksRemaining = EnemyCatalog.For(dead.Kind).RespawnTicks;
         _respawnQueue.Add(dead);
     }
 

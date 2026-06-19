@@ -3,6 +3,8 @@ using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.Scenes;
@@ -12,7 +14,7 @@ using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Combat
 {
     // S_EnemyAttack (ID 20, v9) — 보스/적 → 플레이어 피격 결과.
     // 헌법 #1: 이펙트/플래시만 담당. 사망 페이드는 S_PlayerHp(PlayerHpHandler) 권위 채널로 이동(#8).

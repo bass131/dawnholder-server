@@ -5,6 +5,15 @@ using System.Net;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.State;
+using Dawnholder.Client.Network.Handlers;
+using Dawnholder.Client.Network.Handlers.Combat;
+using Dawnholder.Client.Network.Handlers.Party;
+using Dawnholder.Client.Network.Handlers.Quest;
+using Dawnholder.Client.Network.Handlers.Roster;
+using Dawnholder.Client.Network.Handlers.Session;
+using Dawnholder.Client.Network.Handlers.Skill;
+using Dawnholder.Client.Network.Handlers.Sync;
+using Dawnholder.Client.Network.Handlers.Zone;
 using Shared.Protocol;
 using UnityEngine;
 

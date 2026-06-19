@@ -167,7 +167,7 @@ if (string.Equals(scenarioName, "RangedWhiffSmoke", StringComparison.OrdinalIgno
 
 if (string.Equals(scenarioName, "DashSmoke", StringComparison.OrdinalIgnoreCase))
 {
-    DashSmokeScenario.Result r = await DashSmokeScenario.Run(host, port);
+    DashSmoke.Result r = await DashSmoke.Run(host, port);
     Console.WriteLine($"[Bot] DashSmoke: success={r.Success} entity={r.LocalEntityId}");
     Console.WriteLine($"      skillCast={r.SawSkillCast} skillId={r.SkillCastSkillId}");
     Console.WriteLine($"      position: before={r.PositionBeforeDash:F2} after={r.PositionAfterDash:F2} " +
@@ -180,7 +180,7 @@ if (string.Equals(scenarioName, "DashSmoke", StringComparison.OrdinalIgnoreCase)
 
 if (string.Equals(scenarioName, "TeleportSmoke", StringComparison.OrdinalIgnoreCase))
 {
-    TeleportSmokeScenario.Result r = await TeleportSmokeScenario.Run(host, port);
+    TeleportSmoke.Result r = await TeleportSmoke.Run(host, port);
     Console.WriteLine($"[Bot] TeleportSmoke: success={r.Success} entity={r.LocalEntityId}");
     Console.WriteLine($"      skillCast={r.SawSkillCast}");
     Console.WriteLine($"      position: before={r.PositionBeforeTeleport:F2} " +
@@ -237,7 +237,7 @@ if (string.Equals(scenarioName, "PartyQuest", StringComparison.OrdinalIgnoreCase
 
 if (string.Equals(scenarioName, "MapTransition", StringComparison.OrdinalIgnoreCase))
 {
-    MapTransitionScenario.Result r = await MapTransitionScenario.Run(host, port);
+    MapTransitionSmoke.Result r = await MapTransitionSmoke.Run(host, port);
     Console.WriteLine($"[Bot] MapTransition: success={r.Success} entity={r.EntityId}");
     Console.WriteLine($"      HG={r.EnteredHuntingGround}(spawnX={r.SpawnXOnHG:F2}) " +
                       $"Boss={r.EnteredBossRoom}(spawnX={r.SpawnXOnBossRoom:F2}) " +

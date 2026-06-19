@@ -1,4 +1,4 @@
-using Dawnholder.Server.GameServer.Network;
+using Dawnholder.Server.GameServer.Sessions;
 
 namespace GameServer.Tests.Network;
 
