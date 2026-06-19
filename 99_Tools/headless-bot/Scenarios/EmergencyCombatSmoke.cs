@@ -191,12 +191,17 @@ public class EmergencyCombatSmoke
                     bot,
                     result.TargetEntityId,
                     previousHitCount,
-                    DefaultTimeout,
+                    CooldownWait,
                     ct,
                     simulatedLatencyMs);
 
                 if (hit == null)
-                    return Fail(result, $"S_HitResult timeout during kill flow at attempt {attempt + 1}");
+                {
+                    // rate-limit burst 직후/넉백으로 첫 kill 공격이 쿨다운에 걸려 누락될 수 있음 —
+                    // hard-fail 대신 재시도(BossFight/BossStageClear 패턴). MaxKillAttempts 상한이 무한루프 방지.
+                    await Task.Delay(CooldownWait, ct);
+                    continue;
+                }
 
                 hitFailure = ValidateHit(hit, result.LocalEntityId, result.TargetEntityId, currentHp);
                 if (hitFailure != null)

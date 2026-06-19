@@ -1,6 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // ⚠️ 본 코드는 04_ClientNet/SendBuffer.cs와 거의 동일 (의도된 두 벌).
 //
+// ⚠️ 현재 미wiring — 실제 송신은 Session.cs가 패킷당 new byte[] → _sendQueue → SendAsync(BufferList)
+//   직접 경로. 본 클래스(GC 압력 최소화 = 청크 재사용)는 끼우지 않은 최적화 참조 구현이다.
+//   삭제 대상 아님(JobQueue 동급) — 송신 핫패스 최적화 시 wiring 후보. perf 패스는 M8 이후 부하 측정 후.
+//
 // "왜 합치지 않았나" — Y2 분리 갈래(ADR-012):
 //   - 서버: .NET 10 LTS, GC 최적화 자유
 //   - 클라: .NET Standard 2.1, Unity Mono/IL2CPP 제약

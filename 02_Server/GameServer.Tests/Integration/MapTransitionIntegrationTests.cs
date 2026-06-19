@@ -130,22 +130,22 @@ public class MapTransitionIntegrationTests
     /// <b>타이밍 정합</b>: EnqueueJob 잡이 완료될 때까지 await → 시나리오가
     /// MoveToPortal/SendEnterPortal로 진행하기 전에 _soloProgress[eid]=40 확정.
     /// MapMigration.Execute(게이트)는 이후 틱에서 GetKillCount=40을 읽어 정당 통과.
-    /// OnTick 순서상 map.Tick이 Party.Tick보다 먼저지만, 시드가 이미 이전 틱에 드레인
+    /// OnTick 순서상 map.Tick이 Quest.Tick보다 먼저지만, 시드가 이미 이전 틱에 드레인
     /// 완료이므로 순서 무관.
     /// </para>
     ///
     /// <para>
-    /// <b>우회가 아님</b>: 게이트는 서버 권위 카운트(Party.GetKillCount)를 실제로 읽어
+    /// <b>우회가 아님</b>: 게이트는 서버 권위 카운트(Quest.GetKillCount)를 실제로 읽어
     /// 정당 통과 — 클라이언트 주장 값을 신뢰하지 않는 헌법 §3 신뢰경계 그대로.
     /// </para>
     /// </summary>
     Task SeedBossGate(int entityId)
     {
         TaskCompletionSource tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        GameWorld.Instance.Party.EnqueueJob(() =>
+        GameWorld.Instance.Quest.EnqueueJob(() =>
         {
             for (int i = 0; i < QuestConstants.BossUnlockKillCount; i++)
-                GameWorld.Instance.Party.OnKill(entityId, GameWorld.Instance);
+                GameWorld.Instance.Quest.OnKill(entityId, GameWorld.Instance);
             tcs.SetResult();
         });
         return tcs.Task;

@@ -11,17 +11,11 @@ namespace Dawnholder.Server.GameServer.Handlers;
 //   패킷에 추가하면 이 방어가 무너짐.
 internal sealed class AttackHandler : IPacketHandler
 {
+    // 전투 입력 — class 선택 전 = 신뢰 경계 위반. dispatch 일괄 게이트가 silent drop.
+    public bool RequiresSelectedClass => true;
+
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
-        // 헌법 #3 (trust boundary): class 선택 전 C_Attack = silent drop.
-        // 캐릭터 선택 전 전투 입력은 신뢰 경계 위반.
-        if (!session.HasSelectedClass)
-        {
-            Console.WriteLine(
-                $"[Trust] C_Attack before CharacterSelect — silent drop (cheat-flag candidate)");
-            return;
-        }
-
         C_Attack pkt = new C_Attack();
         pkt.Read(buffer);
 

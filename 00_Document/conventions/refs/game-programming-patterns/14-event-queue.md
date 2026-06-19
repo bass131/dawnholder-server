@@ -69,8 +69,9 @@ category: Decoupling Patterns
 
 ### 이미 사용 중
 
-**`02_Server/Network/JobQueue.cs` (서버 잡 큐)**
-- 각 맵(Actor)이 외부에서 들어오는 작업을 `JobQueue`에 enqueue → 맵 틱 루프가 dequeue해서 처리.
+**맵/파티/퀘스트 Actor 잡 큐 (`ConcurrentQueue<Action>`)**
+- 각 Actor(`GameMap`/`PartyRegistry`/`QuestRegistry`)가 외부 작업을 `EnqueueJob`으로 enqueue → 틱 루프가 `Tick()`에서 dequeue해서 처리.
+- (`02_Server/Network/JobQueue.cs`는 ServerCore 참조 구현 — production은 ConcurrentQueue 채택, 사유 `03-connection-handshake-DONE.md:68`.)
 - Event Queue 패턴의 **Work Queue 변형**. 다중 송신자(세션들) → 단일 처리자(맵 틱).
 - 덕분에 맵 내부 lock 없이 단일 스레드 실행 보장 (헌법 원칙 #5 준수).
 

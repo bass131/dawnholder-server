@@ -57,15 +57,7 @@ internal static class EnemyStates
             map.BroadcastToAll(attackPkt.Write());
 
             if (player.Hp <= 0)
-            {
-                Vector2 spawn = map.PlayerSpawnPosition;
-                player.Position = spawn;
-                player.Velocity = Vector2.Zero;
-                player.OnGround = false;
-                player.Hp = player.Stats.MaxHp;
-                player.Revive();
-                map.SendPlayerHp(player);
-            }
+                map.HandlePlayerDeath(player);
         }
     }
 

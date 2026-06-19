@@ -1,4 +1,5 @@
 using System;
+using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
@@ -35,7 +36,23 @@ namespace Dawnholder.Client.Network
                 if (entityId != session.LocalEntityId.Value) return;
 
                 HudController.Instance?.UpdateHP(currentHp, maxHp);
+
+                // 사망 도출 — 권위 HP 채널에서. 모든 사망 소스(근접/DoT/함정/투사체)에 robust.
+                // HP 복구는 직후 도착하는 S_PlayerHp(MaxHp)가 담당(부활 통지). 페이드 재진입은 SceneTransition 가드.
+                if (currentHp <= 0)
+                {
+                    AudioManager.Instance?.PlaySfx(LocalClassKey(SoundKeys.DeathKnight, SoundKeys.DeathMage));
+                    if (SceneTransition.Instance != null)
+                        SceneTransition.Instance.PlayRespawnFade();
+                }
             });
+        }
+
+        // 로컬 플레이어 직업에 맞는 사운드 키 선택. ClassLoadout 단일 진입점 경유.
+        static string LocalClassKey(string knightKey, string mageKey)
+        {
+            CharacterClass cls = (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
+            return cls == CharacterClass.Mage ? mageKey : knightKey;
         }
     }
 }

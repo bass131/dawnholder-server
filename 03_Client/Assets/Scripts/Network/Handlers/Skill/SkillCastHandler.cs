@@ -12,7 +12,6 @@ using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace Dawnholder.Client.Network
 {
@@ -67,8 +66,8 @@ namespace Dawnholder.Client.Network
                 {
                     case SkillId.Thunderbolt:
                         AudioManager.Instance?.PlaySfx(SoundKeys.MagicCast);
-                        SpawnEffect(ThunderboltCastPath, EffectAnchor.ResolvePosition(casterTf),
-                            facingSign: 0, ref _warnedMissingThunderbolt, "Thunderbolt 캐스팅 VFX");
+                        EffectSpawnService.SpawnFromPath(ThunderboltCastPath, EffectAnchor.ResolvePosition(casterTf),
+                            ref _warnedMissingThunderbolt, "Thunderbolt 캐스팅 VFX", facingSign: 0);
                         // 원격 캐스팅 모션: 서버는 Channeling을 animState로 안 보냄(ThunderboltAction이 AttackState
                         //   미진입) → S_SkillCast로 원격 캐스팅 모션 연출. 로컬은 LocalPlayerInput.NotifyChannel이 선예측.
                         if (!isLocal)
@@ -118,12 +117,13 @@ namespace Dawnholder.Client.Network
             //   이펙트만 제자리에 남아 끊겨 보인다(영호 실측). → 스폰 위치는 ResolvePosition(앵커 + flipX
             //   위치 미러)로 잡되, casterTf에 *부모로 묶어* 엔티티 Transform을 공유해 따라가게 한다.
             //   facing 고정(대쉬 중 P1 게이트)이라 스폰 시 1회 미러로 충분. (Thunderbolt/Teleport는 정지/
-            //   월드 고정이라 무부모 SpawnEffect 유지 — 대쉬만 parenting.)
+            //   월드 고정이라 무부모 스폰 유지 — 대쉬만 parenting.)
             Vector3 fxPos = EffectAnchor.ResolvePosition(casterTf, "Anchor_DashEffect");
             // DashSkill 스프라이트는 우향 기본 저작(895c3fb 재익스포트) → spriteDefaultFacesLeft=false.
             // facingSign<0(좌향)일 때만 localScale.x 반전 — 부모 flipX는 sprite-only라 transform 미전파.
-            SpawnEffectParented(DashSkillPath, fxPos, casterTf, facingSign, ref _warnedMissingDash,
-                "Dash 이펙트", spriteDefaultFacesLeft: false);
+            EffectSpawnService.SpawnFromPath(DashSkillPath, fxPos,
+                ref _warnedMissingDash, "Dash 이펙트",
+                parent: casterTf, facingSign: facingSign, spriteDefaultFacesLeft: false);
         }
 
         // Teleport 연출: 출발 이펙트 → (로컬) snap arming + 도착 콜백 등록 / (원격) 보간 끊기 + 도착 콜백 등록.
@@ -143,8 +143,9 @@ namespace Dawnholder.Client.Network
                 // 로컬 출발 이펙트: 송신 시점 stash 위치 사용.
                 Vector3? departPos = LocalPlayerMovement.Instance?.ConsumeTeleportDepartPos();
                 if (departPos.HasValue)
-                    SpawnEffect(TeleportDepartPath, departPos.Value + new Vector3(0f, TeleportEffectYOffset, 0f),
-                        0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
+                    EffectSpawnService.SpawnFromPath(TeleportDepartPath,
+                        departPos.Value + new Vector3(0f, TeleportEffectYOffset, 0f),
+                        ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트", facingSign: 0);
 
                 // S_SkillCast 수신 이 시점에 snap arming — 다음 snapshot(텔레포트 반영)에서 arrive 발동.
                 // arrive 콜백: 캐릭터 transform 자식으로 묶어 스폰(도착지에 글루).
@@ -162,8 +163,9 @@ namespace Dawnholder.Client.Network
             {
                 // 원격: S_SkillCast 수신 시점 casterTf.position을 출발 위치로 사용.
                 Vector3 departPos = casterTf.position;
-                SpawnEffect(TeleportDepartPath, departPos + new Vector3(0f, TeleportEffectYOffset, 0f),
-                    0, ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트");
+                EffectSpawnService.SpawnFromPath(TeleportDepartPath,
+                    departPos + new Vector3(0f, TeleportEffectYOffset, 0f),
+                    ref _warnedMissingTeleportDepart, "Teleport 출발 이펙트", facingSign: 0);
 
                 // 보간 끊기 + 다음 snapshot 확정 시 1회 발동할 콜백 등록.
                 if (RemoteEntityRegistry.Instance != null)
@@ -180,86 +182,18 @@ namespace Dawnholder.Client.Network
             }
         }
 
-        // 도착 TeleportArrive 이펙트 — 캐릭터 transform 자식 + localPosition (0,0,0) 글루.
-        // ⚠️ EffectAnchor.ResolvePosition 사용 금지: 그 앵커는 *방향성*(앞쪽 +X 오프셋 ~1.05) + flipX
-        //   미러라, 도착 이펙트가 캐릭터 옆으로 치우침(영호 실측: world (6.22,0.91) vs 캐릭터 (7.27,0)
-        //   → localPosition (-1.05, 0.91)). 도착은 방향 무관 *중심* 이펙트라 부모 원점에 직접 붙인다.
-        //   출발 이펙트(departPos = root)와 동일 기준(root/발밑) — 일관성. EffectLifetime(0.52초) 자동 파괴.
+        // 도착 TeleportArrive 이펙트 — 캐릭터 transform 자식 + localPosition (0, YOffset, 0) 글루.
+        // ⚠️ EffectAnchor.ResolvePosition 사용 금지: 방향성(+X 오프셋 ~1.05) + flipX 미러라
+        //   도착 이펙트가 캐릭터 옆으로 치우침(영호 실측). 도착은 방향 무관 중심 이펙트 — parent 원점.
+        //   SpawnFromPath: worldPos=entityTf.position은 localOffset이 덮으므로 최종 localPosition=localOffset.
+        //   facingSign=0 → flip 없음. localOffset → Configure가 localPosition+identity 세팅.
         internal static void SpawnTeleportArrive(Transform entityTf)
         {
             AudioManager.Instance?.PlaySfx(SoundKeys.TeleportArrive);
-            GameObject? prefab = Resources.Load<GameObject>(TeleportArrivePath);
-            if (prefab == null)
-            {
-                if (!_warnedMissingTeleportArrive)
-                {
-                    Debug.LogWarning($"[SkillCastHandler] Teleport 도착 이펙트 미존재: Resources/{TeleportArrivePath} — 연출 생략.");
-                    _warnedMissingTeleportArrive = true;
-                }
-                return;
-            }
-            GameObject fx = Object.Instantiate(prefab, entityTf);
-            fx.transform.localPosition = new Vector3(0f, TeleportEffectYOffset, 0f); // 캐릭터 기준 Y 오프셋(앵커·flipX 미러 제거)
-            fx.transform.localRotation = Quaternion.identity;
-            if (fx.GetComponent<EffectLifetime>() == null)
-                fx.AddComponent<EffectLifetime>();
-        }
-
-        // 공통 이펙트 스폰 helper. facingSign=0이면 flip 없음(방향 무관 이펙트).
-        // spriteDefaultFacesLeft=true면 좌향 기본 저작 prefab — flip 조건 반전(AnimatorDriver 동형).
-        //   기본 false = 우향 기본 전제(facingSign<0=왼쪽일 때만 거울상).
-        static void SpawnEffect(string resourcePath, Vector3 pos, int facingSign,
-                                ref bool warnedFlag, string displayName,
-                                bool spriteDefaultFacesLeft = false)
-        {
-            GameObject? prefab = Resources.Load<GameObject>(resourcePath);
-            if (prefab != null)
-            {
-                GameObject fx = Object.Instantiate(prefab, pos, Quaternion.identity);
-                // facingSign=0(방향 무관)은 flip 생략. 그 외 (왼쪽) XOR (좌향 기본) = 거울상 여부.
-                if (facingSign != 0 && ((facingSign < 0) ^ spriteDefaultFacesLeft))
-                {
-                    Vector3 s = fx.transform.localScale;
-                    s.x = -Mathf.Abs(s.x);
-                    fx.transform.localScale = s;
-                }
-                if (fx.GetComponent<EffectLifetime>() == null)
-                    fx.AddComponent<EffectLifetime>();
-            }
-            else if (!warnedFlag)
-            {
-                Debug.LogWarning($"[SkillCastHandler] {displayName} 미존재: Resources/{resourcePath} — 연출 생략.");
-                warnedFlag = true;
-            }
-        }
-
-        // 부모에 자식으로 묶어 스폰 — 엔티티 Transform을 따라가는 이펙트(대쉬)용.
-        //   worldPos = ResolvePosition(앵커 + flipX 위치 미러) 결과를 그대로 사용 → 미러 보존 +
-        //   parent에 묶여 엔티티 따라감(Instantiate가 world 위치를 유지하며 부모의 local로 변환).
-        //   flip 규칙은 SpawnEffect와 동형(localScale.x — 부모 flipX는 sprite-only라 transform 미전파).
-        //   정지/월드 이펙트는 무부모 SpawnEffect 사용.
-        static void SpawnEffectParented(string resourcePath, Vector3 worldPos, Transform parent, int facingSign,
-                                        ref bool warnedFlag, string displayName,
-                                        bool spriteDefaultFacesLeft = false)
-        {
-            GameObject? prefab = Resources.Load<GameObject>(resourcePath);
-            if (prefab != null)
-            {
-                GameObject fx = Object.Instantiate(prefab, worldPos, Quaternion.identity, parent);
-                if (facingSign != 0 && ((facingSign < 0) ^ spriteDefaultFacesLeft))
-                {
-                    Vector3 s = fx.transform.localScale;
-                    s.x = -Mathf.Abs(s.x);
-                    fx.transform.localScale = s;
-                }
-                if (fx.GetComponent<EffectLifetime>() == null)
-                    fx.AddComponent<EffectLifetime>();
-            }
-            else if (!warnedFlag)
-            {
-                Debug.LogWarning($"[SkillCastHandler] {displayName} 미존재: Resources/{resourcePath} — 연출 생략.");
-                warnedFlag = true;
-            }
+            EffectSpawnService.SpawnFromPath(TeleportArrivePath, entityTf.position,
+                ref _warnedMissingTeleportArrive, "Teleport 도착 이펙트",
+                parent: entityTf, facingSign: 0,
+                localOffset: new Vector3(0f, TeleportEffectYOffset, 0f));
         }
     }
 }

@@ -7,23 +7,18 @@ namespace Dawnholder.Server.GameServer.Handlers;
 // C_SkillUse 핸들러: decode + 신뢰 경계 검증 + session 캡슐화 메서드 호출만.
 //   mutation / 쿨다운 / 박스 판정은 session.SubmitSkillUse → GameMap.ProcessSkill 안에서.
 //
-// **헌법 #3 (Trust Boundary) — 3단계 검증**:
-//   1. class 선택 전(HasSelectedClass) = silent drop + cheat-flag 로그.
-//   2. skillId 범위 검증: None(0) 또는 카탈로그에 없는 값 = silent drop + cheat-flag 로그.
-//   3. 캐스터 클래스 검증: SkillCatalog.CanCast(caster.Class, skillId) false = silent drop + cheat-flag 로그.
+// **헌법 #3 (Trust Boundary) — 검증**:
+//   - class 선택 전(HasSelectedClass) = silent drop: dispatch 일괄 게이트로 이동(RequiresSelectedClass=true).
+//   1. skillId 범위 검증: None(0) 또는 카탈로그에 없는 값 = silent drop + cheat-flag 로그.
+//   2. 캐스터 클래스 검증: SkillCatalog.CanCast(caster.Class, skillId) false = silent drop + cheat-flag 로그.
 //      caster 클래스는 session.GetCasterClass()에서 강제 — 클라가 보낸 값 절대 신뢰 X.
 internal sealed class SkillUseHandler : IPacketHandler
 {
+    // 스킬 입력 — class 선택 전 = 신뢰 경계 위반. dispatch 일괄 게이트가 silent drop.
+    public bool RequiresSelectedClass => true;
+
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
-        // 헌법 #3: class 선택 전 스킬 입력은 신뢰 경계 위반.
-        if (!session.HasSelectedClass)
-        {
-            Console.WriteLine(
-                "[Trust] C_SkillUse before CharacterSelect — silent drop (cheat-flag candidate)");
-            return;
-        }
-
         C_SkillUse pkt = new C_SkillUse();
         pkt.Read(buffer);
 

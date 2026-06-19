@@ -82,7 +82,16 @@ public class BossFightSmoke
 
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
 
+            // standalone 보스 게이트 충족: C_CheatCommand{cheatType=0} → 서버 DEBUG 치트(DebugCompleteQuest).
+            // killCount를 게이트 임계로 즉시 세팅 → HG→BossRoom 포탈 통과.
+            // 서버는 #if DEBUG 빌드에서만 처리. standalone 회귀는 DEBUG 빌드 전용.
+#if DEBUG
+            bot.SendCheatCompleteQuest();
+            await Task.Delay(Constants.TickIntervalMs * 3, ct);
+#endif
+
             // HuntingGround → BossRoom
+            // robust MoveToPortal(_serverX 추적) — HG 적 hitstun/넉백에 의한 undershoot 방어.
             await bot.MoveToPortal(HGPortalX, ct);
             bot.SendEnterPortal(HGPortalId);
             if (!await bot.WaitSecondMapTransition(DefaultTimeout, ct))
@@ -248,16 +257,29 @@ public class BossFightSmoke
         public async Task<bool> WaitSecondMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition2.IsSet, timeout, ct);
 
+        // portal 위치까지 서버 권위 X(_serverX) 기반 robust 이동.
+        // 매 틱 방향 재계산 — HG 적 hitstun/넉백에 의한 undershoot 방어.
+        const int MoveToPortalMaxTicks = 400;
+        const float PortalReachRadius = 0.5f;
+
         public async Task MoveToPortal(float portalX, CancellationToken ct)
         {
-            float delta = portalX - SpawnX;
-            sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
-            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Knight().MoveSpeed * Constants.TickDuration));
-            ticks = Math.Clamp(ticks, 0, 160);
-            for (int i = 0; i < ticks; i++)
+            int ticks = 0;
+            while (true)
             {
-                SendMove(direction);
+                float sx = _serverX;
+                if (Math.Abs(sx - portalX) <= PortalReachRadius)
+                    break;
+
+                if (ticks >= MoveToPortalMaxTicks)
+                    throw new TimeoutException(
+                        $"MoveToPortal: {MoveToPortalMaxTicks}틱 내 포털 미도달. " +
+                        $"portalX={portalX}, serverX={sx}");
+
+                sbyte dir = sx < portalX ? (sbyte)1 : (sbyte)-1;
+                SendMove(dir);
                 await Task.Delay(Constants.TickIntervalMs, ct);
+                ticks++;
             }
             SendMove(0);
             await Task.Delay(150, ct);
@@ -267,6 +289,13 @@ public class BossFightSmoke
         {
             C_EnterPortal packet = new() { portalId = portalId };
             _session?.Send(packet.Write());
+        }
+
+        // standalone 게이트 충족용 DEBUG 치트. cheatType=0 = DebugCompleteQuest.
+        public void SendCheatCompleteQuest()
+        {
+            C_CheatCommand cheat = new() { cheatType = 0 };
+            _session?.Send(cheat.Write());
         }
 
         public async Task<S_EntitySpawn?> WaitForBossSpawn(TimeSpan timeout, CancellationToken ct)
@@ -394,6 +423,7 @@ public class BossFightSmoke
                     enterMap.Read(buffer);
                     LocalEntityId = enterMap.entityId;
                     SpawnX = enterMap.spawnX;
+                    _serverX = enterMap.spawnX; // robust MoveToPortal 초기화.
                     _enterMap.Set();
                     break;
 
@@ -401,6 +431,7 @@ public class BossFightSmoke
                     S_MapTransition mapTransition = new();
                     mapTransition.Read(buffer);
                     SpawnX = mapTransition.spawnX;
+                    _serverX = mapTransition.spawnX; // 새 맵 spawn 좌표로 재동기화.
                     if (!_mapTransition1.IsSet) _mapTransition1.Set();
                     else _mapTransition2.Set();
                     break;

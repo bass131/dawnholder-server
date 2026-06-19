@@ -144,6 +144,14 @@ public class ThunderboltAoeSmoke
                 return Fail(result, "Some Normal enemy HP did not decrease after Thunderbolt");
 
             // ── BossRoom — 보스 AoE 면역(이동) 검증 ─────────────────────────
+            // standalone 보스 게이트 충족: C_CheatCommand{cheatType=0} → 서버 DEBUG 치트(DebugCompleteQuest).
+            // killCount를 게이트 임계로 즉시 세팅 → HG→BossRoom 포탈 통과.
+            // 서버는 #if DEBUG 빌드에서만 처리. standalone 회귀는 DEBUG 빌드 전용.
+#if DEBUG
+            bot.SendCheatCompleteQuest();
+            await Task.Delay(Constants.TickIntervalMs * 3, ct);
+#endif
+
             await bot.MoveToPortal(HGPortalX, ct);
             bot.SendEnterPortal(HGPortalId);
             if (!await bot.WaitSecondMapTransition(DefaultTimeout, ct))
@@ -409,6 +417,13 @@ public class ThunderboltAoeSmoke
         {
             C_EnterPortal p = new() { portalId = portalId };
             _session?.Send(p.Write());
+        }
+
+        // standalone 게이트 충족용 DEBUG 치트. cheatType=0 = DebugCompleteQuest.
+        public void SendCheatCompleteQuest()
+        {
+            C_CheatCommand cheat = new() { cheatType = 0 };
+            _session?.Send(cheat.Write());
         }
 
         public void SendSkillUse(byte skillId)

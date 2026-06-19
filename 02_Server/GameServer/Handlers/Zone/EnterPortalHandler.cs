@@ -13,17 +13,11 @@ namespace Dawnholder.Server.GameServer.Handlers;
 //   tick thread 안에 박혀있음. invalid portalId → silent drop.
 internal sealed class EnterPortalHandler : IPacketHandler
 {
+    // 포털 진입 — class 선택 전엔 stats null → AddPlayerWithId 불가. dispatch 일괄 게이트가 silent drop.
+    public bool RequiresSelectedClass => true;
+
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
-        // 헌법 #3 (trust boundary): 캐릭터 선택 전 portal 시도 = silent drop.
-        // 클래스 선택 없이는 stats가 null → AddPlayerWithId 불가.
-        if (!session.HasSelectedClass)
-        {
-            Console.WriteLine(
-                $"[Trust] C_EnterPortal before CharacterSelect — silent drop (cheat-flag candidate)");
-            return;
-        }
-
         C_EnterPortal pkt = new C_EnterPortal();
         pkt.Read(buffer);
 

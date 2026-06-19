@@ -21,7 +21,7 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 /// <b>설계 (in-process 시드 — 봇 근접전투 제거)</b>:<br/>
 /// 봇 근접전투는 위치/serverTick/aggro 타이밍에 민감해 flaky함.
 /// R1의 고유 e2e 가치는 "파티 wire + 공유 카운트 cross-map 전달 + 해산"이므로
-/// SeedPartyKills가 Party.EnqueueJob으로 OnKill 2회를 직접 적립한다.
+/// SeedPartyKills가 Quest.EnqueueJob으로 OnKill 2회를 직접 적립한다.
 /// 이는 실제 킬과 동일한 OnKill 코드 경로(파티면 KillCount++ → 양 멤버 SendQuestUpdate)를 탄다.
 /// 20킬 전투 그라인드 검증은 xUnit QuestKillCountTests가 담당.
 /// </para>
@@ -85,7 +85,7 @@ public class PartyQuestSmokeTests
     /// 파티 공유 킬카운트 시드.
     ///
     /// <para>
-    /// Party.EnqueueJob으로 OnKill 2회 적립. 파티가 존재하면 OnKill은
+    /// Quest.EnqueueJob으로 OnKill 2회 적립. 파티가 존재하면 OnKill은
     /// PartyState.KillCount++ 후 양 멤버에게 S_QuestUpdate를 발송한다.
     /// TaskCompletionSource로 잡 완료를 await → 시나리오가 WaitForQuestCount로
     /// 진행하기 전에 서버 KillCount=2 확정.
@@ -99,10 +99,10 @@ public class PartyQuestSmokeTests
     Task SeedPartyKills(int entityId)
     {
         TaskCompletionSource tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        GameWorld.Instance.Party.EnqueueJob(() =>
+        GameWorld.Instance.Quest.EnqueueJob(() =>
         {
             for (int i = 0; i < 2; i++)
-                GameWorld.Instance.Party.OnKill(entityId, GameWorld.Instance);
+                GameWorld.Instance.Quest.OnKill(entityId, GameWorld.Instance);
             tcs.SetResult();
         });
         return tcs.Task;

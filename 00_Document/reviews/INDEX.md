@@ -42,3 +42,6 @@
 ### refactor-sweep (2026-06-12~13)
 - `2026-06-12-refactor-sweep-dryrun.md` — 첫 dry-run (Codex가 자기평가 편향 적발)
 - `2026-06-13-refactor-sweep.md` — 본 sweep
+
+### 아키텍처 논리 감사 (2026-06-19)
+- `2026-06-19-architecture-logic-audit.html` — **UltraCode 전체 게임코드 감사**(34에이전트). 위치오류·개념종속·계층위반·SOLID 4-lens + cross-domain → adversarial 검증. 38발견→13통과(헌법위반 1). M8(DB영속화) 전 정리 = QuestRegistry 분리·치트 게이트. (HTML 단독)

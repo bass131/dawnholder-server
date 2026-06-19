@@ -15,7 +15,8 @@ using UnityEngine;
 namespace Dawnholder.Client.Network
 {
     // S_EnemyAttack (ID 20, v9) — 보스/적 → 플레이어 피격 결과.
-    // 헌법 #1: 연출(이펙트/플래시/페이드)만 담당. HP 표시는 S_PlayerHp(ID 21)가 권위 통지.
+    // 헌법 #1: 이펙트/플래시만 담당. 사망 페이드는 S_PlayerHp(PlayerHpHandler) 권위 채널로 이동(#8).
+    // HP 표시는 S_PlayerHp(ID 21)가 권위 통지.
     internal sealed class EnemyAttackHandler : IClientPacketHandler
     {
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
@@ -25,7 +26,6 @@ namespace Dawnholder.Client.Network
 
             int attackerId = pkt.attackerId;
             int targetId = pkt.targetId;
-            int targetCurrentHp = pkt.targetCurrentHp;
             byte attackPattern = pkt.attackPattern;
 
             MainThreadDispatcher.Enqueue(() =>
@@ -101,13 +101,6 @@ namespace Dawnholder.Client.Network
                     flash.Flash();
                 }
 
-                // 사망 처리 — 리스폰 페이드 연출. HP 복구는 S_PlayerHp 권위 통지가 담당.
-                if (targetCurrentHp <= 0)
-                {
-                    AudioManager.Instance?.PlaySfx(LocalClassKey(SoundKeys.DeathKnight, SoundKeys.DeathMage));
-                    if (SceneTransition.Instance != null)
-                        SceneTransition.Instance.PlayRespawnFade();
-                }
             });
         }
 

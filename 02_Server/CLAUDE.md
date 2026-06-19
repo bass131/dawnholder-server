@@ -12,10 +12,9 @@
 │   ├── Listener.cs           accept loop + race window fail-closed (M3.8 Phase 05 봉합)
 │   ├── Connector.cs          client connect (헤드리스 봇 재사용)
 │   ├── RecvBuffer.cs         수신 링 버퍼
-│   ├── SendBuffer.cs         송신 링 버퍼
+│   ├── SendBuffer.cs         송신 링 버퍼 (production 미wiring — 송신은 Session.cs가 패킷당 byte[]+SendAsync BufferList 직접. 본 클래스는 GC 최적화 wiring 후보, M8후 perf 패스)
 │   ├── FrameValidator.cs     frame 헤더 검증 helper (M4.1 Phase 03 — 04_ClientNet과 동기화 약속)
-│   ├── JobQueue.cs           작업 직렬화 큐
-│   └── PriorityQueue.cs      우선순위 큐 자리잡이
+│   └── JobQueue.cs           ServerCore 참조 구현 (production 미wiring — 맵 actor는 ConcurrentQueue 직접, 03-connection-handshake-DONE.md:68)
 ├── GameServer/
 │   ├── Network/        Game 도메인 session — PacketSession 상속
 │   │   └── GameSession.cs    socket 콜백 + first-packet 게이트 + Dictionary dispatch +
@@ -39,6 +38,8 @@
 │   ├── Loop/           Tick scheduler, world simulation
 │   ├── Maps/           맵별 actor, spatial query, PlayerEntity
 │   ├── Combat/         M3 응급 단순화 (CombatConstants/EnemyKind/EnemyEntity) — M4 정밀화 대기
+│   ├── Party/          파티 전역 actor (PartyRegistry/PartyState/PartyNotifier) + 오케스트레이션 (PartyFlow — M7.6 P03 GameSession에서 추출) — M5 박힘
+│   ├── Quest/          퀘스트 전역 actor (QuestRegistry/QuestConstants) — M7.6 P01 Party에서 분리
 │   ├── Persistence/    (예정 — M5 진입 시 박힘) DB writer queue, EF context
 │   └── Program.cs
 └── GameServer.Tests/   xUnit

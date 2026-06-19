@@ -23,7 +23,7 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 ///
 /// <para>
 /// <b>시드 설계</b>: 실제 20킬 그라인드는 일정 시간 소요(리스폰 5s, HG 적 적음) → flaky.
-/// seedBossGate delegate가 Party.EnqueueJob을 통해 in-process로 _soloProgress[eid]=20 충족.
+/// seedBossGate delegate가 Quest.EnqueueJob을 통해 in-process로 _soloProgress[eid]=20 충족.
 /// 게이트는 서버 권위 GetKillCount를 실제 검사 — 클라이언트 주장값 신뢰 X (헌법 §1·§3 정합).
 /// </para>
 /// </summary>
@@ -92,7 +92,7 @@ public class BossGateSmokeTests
     /// BossRoom 게이트 전제조건 시드.
     ///
     /// <para>
-    /// Party.EnqueueJob으로 QuestConstants.BossUnlockKillCount(20)회 OnKill 적립.
+    /// Quest.EnqueueJob으로 QuestConstants.BossUnlockKillCount(20)회 OnKill 적립.
     /// TaskCompletionSource로 잡 완료를 await → 시나리오가 SendEnterPortal로
     /// 진행하기 전에 _soloProgress[eid]=20 확정. 게이트는 이후 틱에서
     /// GetKillCount=20을 읽어 정당 통과.
@@ -105,10 +105,10 @@ public class BossGateSmokeTests
     Task SeedBossGate(int entityId)
     {
         TaskCompletionSource tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        GameWorld.Instance.Party.EnqueueJob(() =>
+        GameWorld.Instance.Quest.EnqueueJob(() =>
         {
             for (int i = 0; i < QuestConstants.BossUnlockKillCount; i++)
-                GameWorld.Instance.Party.OnKill(entityId, GameWorld.Instance);
+                GameWorld.Instance.Quest.OnKill(entityId, GameWorld.Instance);
             tcs.SetResult();
         });
         return tcs.Task;

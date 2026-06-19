@@ -103,8 +103,10 @@ public class PacketManager
 //   - socket 인프라 (Connector/Listener/Session/Buffer) = 양쪽 분리 (ADR-012).
 //   - 핸들러 (GameSession/UnityClientSession) = 양쪽 분리.
 //
-// 따라서 본 파일은 SendBufferHelper / ServerCore 의존 X. Write()는 byte[] 반환만,
-// 호출자(핸들러)가 자기 SendBuffer로 marshalling.
+// 따라서 본 파일은 SendBufferHelper / ServerCore 의존 X. Write()는 byte[] 반환만 —
+// 호출자(GameSession/UnityClientSession)가 그대로 Session.Send로 전달한다.
+// (현재 SendBuffer 미경유 = 송신은 패킷당 byte[] 할당 경로. SendBuffer wiring은 M8후 perf 백로그.
+//  emit되는 Write() 본문 주석은 wiring 시점에 참이 되므로 그때 함께 갱신.)
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;

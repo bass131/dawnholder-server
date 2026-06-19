@@ -60,7 +60,7 @@ internal static class PartyNotifier
 
     // 퀘스트 킬카운트 진행상황을 단일 수신자에게 송신.
     //   currentCount = 현재 누적 킬, targetCount = QuestConstants.BossUnlockKillCount(서버 SSOT).
-    //   파티원 전원 송신은 호출자(PartyRegistry.OnKill)가 foreach — 여기서는 1:1만 담당.
+    //   파티원 전원 송신은 호출자(QuestRegistry.OnKill)가 foreach — 여기서는 1:1만 담당.
     //   SendToEntity = 대상 맵 EnqueueJob 경유 마샬링 (헌법 §5, Map=Actor).
     public static void SendQuestUpdate(GameWorld world, int recipientEntityId, int currentCount, int targetCount)
     {
