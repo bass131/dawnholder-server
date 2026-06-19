@@ -129,6 +129,14 @@ public class FreezeSmoke
                 return Fail(result, $"Normal enemy did NOT move after Mage attack — freeze may still be active (delta={xDeltaDuringObserve:F3}). M4.15 removes ApplyFreeze.");
 
             // ── 보스 freeze 면역 검증 ─────────────────────────────────────────
+            // standalone 보스 게이트 충족: C_CheatCommand{cheatType=0} → 서버 DEBUG 치트(DebugCompleteQuest).
+            // killCount를 게이트 임계로 즉시 세팅 → HG→BossRoom 포탈 통과.
+            // 서버는 #if DEBUG 빌드에서만 처리. standalone 회귀는 DEBUG 빌드 전용.
+#if DEBUG
+            bot.SendCheatCompleteQuest();
+            await Task.Delay(Constants.TickIntervalMs * 3, ct);
+#endif
+
             await bot.MoveToPortal(HGPortalX, ct);
             bot.SendEnterPortal(HGPortalId);
             if (!await bot.WaitSecondMapTransition(DefaultTimeout, ct))
@@ -365,6 +373,13 @@ public class FreezeSmoke
         {
             C_EnterPortal p = new() { portalId = portalId };
             _session?.Send(p.Write());
+        }
+
+        // standalone 게이트 충족용 DEBUG 치트. cheatType=0 = DebugCompleteQuest.
+        public void SendCheatCompleteQuest()
+        {
+            C_CheatCommand cheat = new() { cheatType = 0 };
+            _session?.Send(cheat.Write());
         }
 
         public void SendAttack(int targetEntityId)

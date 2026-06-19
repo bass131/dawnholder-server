@@ -144,13 +144,25 @@ public class MapTransitionScenario
             result.EnteredHuntingGround = true;
             result.SpawnXOnHG = bot.SpawnX;
 
-            // 보스 게이트 전제조건 시드 (테스트 픽스처 전용 — null이면 skip).
-            //   BossRoom 진입은 20킬 게이트(Q3)가 걸림. 순수 전환 테스트는 그라인드 대신
-            //   in-process로 killCount를 충족(게이트는 서버 권위 카운트를 실제 검사 → 정당 통과).
-            //   시드 delegate가 잡 완료를 await → 시나리오가 MoveToPortal/SendEnterPortal로
-            //   진행하기 전에 _soloProgress[eid]=20이 확정됨.
+            // 보스 게이트 전제조건 충족 — 경로 2가지:
+            //   non-null (xUnit 픽스처): in-process로 killCount를 충족(게이트는 서버 권위 카운트를
+            //     실제 검사 → 정당 통과). 시드 delegate가 잡 완료를 await → 진행 전 확정됨.
+            //   null (standalone 봇 런): C_CheatCommand{cheatType=0} 전송으로 서버 DEBUG 치트
+            //     경로(DebugCompleteQuest)를 활성화 — killCount를 즉시 게이트 임계로 세팅.
+            //     이 치트는 #if DEBUG 빌드에서만 서버가 처리한다. standalone 회귀는 DEBUG 빌드 전용.
+            //     xUnit seedBossGate의 socket 등가물.
             if (seedBossGate != null)
+            {
                 await seedBossGate(bot.LocalEntityId);
+            }
+            else
+            {
+#if DEBUG
+                bot.SendCheatCompleteQuest();
+                // 서버 Quest tick(DebugCompleteQuest 처리)이 killCount를 임계로 세팅하기까지 대기.
+                await Task.Delay(Constants.TickIntervalMs * 3, ct);
+#endif
+            }
 
             // ── 2단계: HuntingGround → BossRoom ──────────────────────────────
             await bot.MoveToPortal(HGPortalX, ct);
@@ -351,6 +363,15 @@ public class MapTransitionScenario
         {
             C_EnterPortal packet = new() { portalId = portalId };
             _session?.Send(packet.Write());
+        }
+
+        // standalone 게이트 충족용 DEBUG 치트 전송.
+        // cheatType=0 = DebugCompleteQuest — 서버가 killCount를 게이트 임계로 즉시 세팅.
+        // 서버는 #if DEBUG 빌드에서만 이 패킷을 처리한다.
+        public void SendCheatCompleteQuest()
+        {
+            C_CheatCommand cheat = new() { cheatType = 0 };
+            _session?.Send(cheat.Write());
         }
 
         public void Disconnect() => _session?.Disconnect();
