@@ -45,8 +45,7 @@ internal sealed class RespawnSystem
     /// </summary>
     internal void Enqueue(EnemyEntity dead)
     {
-        dead.RespawnTicksRemaining =
-            dead.Kind == EnemyKind.Golem ? GolemRespawnTicks : NormalEnemyRespawnTicks;
+        dead.RespawnTicksRemaining = EnemyCatalog.For(dead.Kind).RespawnTicks;
         _respawnQueue.Add(dead);
     }
 

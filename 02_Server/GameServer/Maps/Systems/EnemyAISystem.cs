@@ -19,7 +19,7 @@ internal sealed class EnemyAISystem
 
         foreach (EnemyEntity enemy in map.Enemies.Values)
         {
-            if (enemy.Kind == EnemyKind.Boss) continue;
+            if (EnemyCatalog.For(enemy.Kind).IsBoss) continue;
 
             // freeze 가드: FrozenUntilTick 동안 AI(Fsm.Tick)·latch 감소 스킵 = 이동 봉쇄.
             // 만료 틱에 도달하면 즉시 해제. Boss는 이 가드 없음 → freeze 면역(헌법 #1).

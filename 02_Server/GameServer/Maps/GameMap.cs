@@ -94,16 +94,10 @@ public class GameMap
                 }
 
                 EnemyKind kind = (EnemyKind)sp.KindId;
-                // HP 단일 출처 = Formulas factory MaxHp.
-                int maxHp = kind switch
-                {
-                    EnemyKind.Normal => EnemyStats.NormalDefault().MaxHp,
-                    EnemyKind.Boss   => EnemyStats.BossDefault().MaxHp,
-                    EnemyKind.Golem  => EnemyStats.GolemDefault().MaxHp,
-                    _                => 0,
-                };
+                // HP 단일 출처 = EnemyCatalog.
+                int maxHp = EnemyCatalog.For(kind).MaxHp;
                 SpawnEnemy(kind, sp.X, sp.Y, maxHp);
-                if (kind == EnemyKind.Boss) _bossSpawnPoint = sp;
+                if (EnemyCatalog.For(kind).IsBoss) _bossSpawnPoint = sp;
             }
         }
     }
@@ -360,20 +354,13 @@ public class GameMap
     {
         int id = AllocId();
         // kind별 stats 결정. stats != null이면 RespawnSystem이 원본 유지 목적으로 전달한 것 — 그대로 사용.
-        // default 분기 = fail-safe (알 수 없는 미래 종류 — Defense/MaxHp/Speed 모두 0, 동작하되 허약).
-        EnemyStats resolvedStats = stats ?? kind switch
-        {
-            EnemyKind.Normal => EnemyStats.NormalDefault(),
-            EnemyKind.Golem  => EnemyStats.GolemDefault(),
-            EnemyKind.Boss   => EnemyStats.BossDefault(),
-            _                => default,
-        };
+        // null이면 EnemyCatalog 단일 출처에서 조회.
+        EnemyStats resolvedStats = stats ?? EnemyCatalog.For(kind).Stats;
         EnemyEntity e = new EnemyEntity(id, kind, x, y, maxHp, resolvedStats);
         _enemies.Add(id, e);
         e.OwningMap = this;
-        // Fsm은 OwningMap 세팅 후 생성 — kind별 초기 State (Boss=BossStates.Idle, 그외=EnemyStates.Patrol).
-        e.Fsm = new StateMachine<EnemyEntity>(
-            kind == EnemyKind.Boss ? BossStates.Idle : EnemyStates.Patrol, e);
+        // Fsm은 OwningMap 세팅 후 생성 — 초기 State는 EnemyCatalog 단일 출처.
+        e.Fsm = new StateMachine<EnemyEntity>(EnemyCatalog.For(kind).InitialFsmState, e);
         return e;
     }
 
@@ -415,14 +402,14 @@ public class GameMap
     {
         _publisher.BroadcastEntityDeath(target.EntityId);
 
-        if (target.Kind == EnemyKind.Boss && !IsStageCleared)
+        if (EnemyCatalog.For(target.Kind).IsBoss && !IsStageCleared)
         {
             SetStageCleared();
             _publisher.BroadcastStageClear(target.EntityId);
         }
         RemoveEnemy(target.EntityId);
         // Normal(슬라임)은 원위치 재스폰, Golem은 1층 좌↔우 교차 재스폰(RespawnSystem이 위치 결정). Boss는 1회성.
-        if (target.Kind == EnemyKind.Normal || target.Kind == EnemyKind.Golem)
+        if (!EnemyCatalog.For(target.Kind).IsBoss)
             EnqueueRespawn(target);
 
         OnEnemyKilled(killerEntityId, target);
@@ -511,8 +498,8 @@ public class GameMap
         if (_bossSpawnPoint is not { } bsp) return;          // 보스 없는 맵 → 매 틱 최저비용 early-return
         if (_players.Count != 0) return;                     // 누군가 있으면 대기(전투 중/직후 리스폰 금지)
         foreach (EnemyEntity e in _enemies.Values)
-            if (e.Kind == EnemyKind.Boss) return;            // 이미 보스 존재 → 중복 방지
-        EnemyEntity boss = SpawnEnemy(EnemyKind.Boss, bsp.X, bsp.Y, EnemyStats.BossDefault().MaxHp);
+            if (EnemyCatalog.For(e.Kind).IsBoss) return;     // 이미 보스 존재 → 중복 방지
+        EnemyEntity boss = SpawnEnemy(EnemyKind.Boss, bsp.X, bsp.Y, EnemyCatalog.For(EnemyKind.Boss).MaxHp);
         _stageCleared = false;
         Console.WriteLine($"[Map:{MapId}] 빈 방 보스 재출현: id={boss.EntityId}");
     }
@@ -532,7 +519,7 @@ public class GameMap
     {
         _publisher.BroadcastEntityDeath(enemy.EntityId);
         RemoveEnemy(enemy.EntityId);
-        if (enemy.Kind == EnemyKind.Normal || enemy.Kind == EnemyKind.Golem)
+        if (!EnemyCatalog.For(enemy.Kind).IsBoss)
             EnqueueRespawn(enemy);
     }
 

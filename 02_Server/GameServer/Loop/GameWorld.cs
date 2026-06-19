@@ -177,7 +177,7 @@ public class GameWorld
         Action<int, EnemyEntity> onKill = (killerId, target) =>
             _quest.EnqueueJob(() =>
             {
-                if (target.Kind == EnemyKind.Boss)
+                if (EnemyCatalog.For(target.Kind).IsBoss)
                     _quest.ResetAllQuestProgress();
                 else
                     _quest.OnKill(killerId, this);

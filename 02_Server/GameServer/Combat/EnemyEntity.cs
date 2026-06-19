@@ -30,15 +30,13 @@ public class EnemyEntity
         Hp = maxHp;
         Stats = stats;
 
-        State = kind == EnemyKind.Boss ? EnemyState.Idle : EnemyState.Patrol;
+        EnemyCatalog.EnemyEntry entry = EnemyCatalog.For(kind);
+        State = entry.InitialState;
         PatrolDir = 1;
 
-        // 초기 쿨다운: 스폰 직후 즉시 공격 방지.
-        // Boss = 페이즈 1 쿨다운(40틱=2초). Normal/Golem = 일반몹 쿨다운(30틱=1.5초).
-        if (kind == EnemyKind.Boss)
-            AttackCooldownTicks = CombatConstants.BossPhase1CooldownTicks;
-        else
-            AttackCooldownTicks = CombatConstants.NormalAttackCooldownTicks;
+        // 초기 쿨다운: 스폰 직후 즉시 공격 방지. 값은 EnemyCatalog 단일 출처.
+        // Boss = BossPhase1CooldownTicks(40틱=2초). Normal/Golem = NormalAttackCooldownTicks(30틱=1.5초).
+        AttackCooldownTicks = entry.InitialAttackCooldownTicks;
     }
 
     public int EntityId { get; }
@@ -166,7 +164,7 @@ public class EnemyEntity
     public void EnterHitState(float dirX)
     {
         HitLatchTicks = CombatConstants.AnimLatchTicks;
-        if (Kind == EnemyKind.Boss || Fsm == null) return;
+        if (EnemyCatalog.For(Kind).IsBoss || Fsm == null) return;
         KnockbackVx = Constants.KnockbackInitialVx * (dirX < 0f ? -1f : 1f);
         Fsm.ChangeState(EnemyStates.Hit, this);
     }

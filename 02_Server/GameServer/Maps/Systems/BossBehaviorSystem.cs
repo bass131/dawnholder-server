@@ -33,7 +33,7 @@ internal sealed class BossBehaviorSystem
 
         foreach (EnemyEntity enemy in map.Enemies.Values)
         {
-            if (enemy.Kind != EnemyKind.Boss) continue;
+            if (!EnemyCatalog.For(enemy.Kind).IsBoss) continue;
             if (enemy.IsDead) continue;
 
             // ── 페이즈 2 전환 체크 (1회성 idempotent) ─────────────────────────
