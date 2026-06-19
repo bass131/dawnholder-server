@@ -61,6 +61,10 @@ public class GameMap
     // tick thread invariant 안에서만 읽기/쓰기.
     long _currentTick;
 
+    // wire-format 표현 책임 (§2.2 분리, M7.7 P4a). 시뮬 상태 → 패킷 조립·송신을 위임.
+    //   GameMap 참조를 받으므로 this 완성 후(ctor 본문 진입 시점) 안전. byte 동치 계약은 publisher 박제.
+    readonly MapPacketPublisher _publisher;
+
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
                    MapTerrain? terrain = null, MapContent? content = null,
                    Action<int, EnemyEntity>? onEnemyKilled = null)
@@ -71,6 +75,7 @@ public class GameMap
         _content = content;
         _onEnemyKilled = onEnemyKilled;
         Portals = PortalTable.GetPortalsFor(mapId);
+        _publisher = new MapPacketPublisher(this);
 
         if (content != null)
         {
@@ -291,28 +296,9 @@ public class GameMap
         }
 
         // 3) Snapshot 브로드캐스트. 매 1 tick(=50ms, 20Hz).
+        //    조립·송신은 MapPacketPublisher 위임 (§2.2 표현 분리). animState 계산도 publisher 내부.
         if (tickNumber % Constants.SnapshotTickInterval == 0)
-        {
-            foreach (PlayerEntity p in _players)
-            {
-                // 플레이어 animState 계산 (헌법 #1 — 서버 권위 결정).
-                // latch 감소는 physics 루프(2단계)에서 매 tick 처리됨 — 여기선 계산·주입만.
-                byte animState = ComputePlayerAnimState(p);
-
-                S_Snapshot pkt = new S_Snapshot
-                {
-                    entityId = p.EntityId,
-                    x = p.Position.X,
-                    y = p.Position.Y,
-                    vx = p.Velocity.X,
-                    vy = p.Velocity.Y,
-                    serverTick = (int)tickNumber,
-                    lastAckedClientTick = p.LastClientTick,
-                    animState = animState
-                };
-                BroadcastToAll(pkt.Write());
-            }
-        }
+            _publisher.BroadcastSnapshots(tickNumber);
 
         // 4) EnemyAISystem: Normal/Golem FSM 1틱 (aggro·Patrol↔Chase·이동·S_EntityState broadcast).
         _enemyAISystem.Update(this, tickNumber);
@@ -476,14 +462,12 @@ public class GameMap
     /// </summary>
     internal void HandleEnemyDeath(EnemyEntity target, int killerEntityId)
     {
-        S_EntityDeath death = new S_EntityDeath { entityId = target.EntityId };
-        BroadcastToAll(death.Write());
+        _publisher.BroadcastEntityDeath(target.EntityId);
 
         if (target.Kind == EnemyKind.Boss && !IsStageCleared)
         {
             SetStageCleared();
-            S_StageClear stageClear = new S_StageClear { bossEntityId = target.EntityId };
-            BroadcastToAll(stageClear.Write());
+            _publisher.BroadcastStageClear(target.EntityId);
         }
         RemoveEnemy(target.EntityId);
         // Normal(슬라임)은 원위치 재스폰, Golem은 1층 좌↔우 교차 재스폰(RespawnSystem이 위치 결정). Boss는 1회성.
@@ -528,17 +512,7 @@ public class GameMap
     /// currentHp는 Math.Max(0, p.Hp) floor — 음수 방어 (표시 전용, 사망 lifecycle은 S_EntityDeath 채널).
     /// entityId 필드는 미래 원격/파티 HP 바 확장 대비 — 이번 마일스톤은 본인에게만 송신.
     /// </summary>
-    internal void SendPlayerHp(PlayerEntity p)
-    {
-        if (p.Owner == null || p.Owner.IsClosing) return;
-        S_PlayerHp pkt = new S_PlayerHp
-        {
-            entityId  = p.EntityId,
-            currentHp = Math.Max(0, p.Hp),
-            maxHp     = p.MaxHp,
-        };
-        p.Owner.Send(pkt.Write());
-    }
+    internal void SendPlayerHp(PlayerEntity p) => _publisher.SendPlayerHp(p);
 
     /// <summary>
     /// 새로 진입한 세션에게 이 맵의 현재 roster를 1:1 Send — 기존 player(S_PlayerJoin) + 살아있는 enemy(S_EntitySpawn).
@@ -550,36 +524,7 @@ public class GameMap
     /// **§2 wire**: S_PlayerJoin/S_EntitySpawn 필드·순서는 통합 전 원본과 byte 단위 동일.
     /// </summary>
     internal void SendInitialRosterTo(GameSession target, List<PlayerEntity> existingPlayers)
-    {
-        foreach (PlayerEntity existing in existingPlayers)
-        {
-            if (existing.Owner == null) continue;
-            if (existing.Owner.IsClosing) continue;
-            S_PlayerJoin rosterEntry = new S_PlayerJoin
-            {
-                entityId = existing.EntityId,
-                spawnX = existing.Position.X,
-                spawnY = existing.Position.Y,
-                characterClass = (byte)existing.Stats.Class,
-            };
-            target.Send(rosterEntry.Write());
-        }
-
-        foreach (EnemyEntity enemy in Enemies.Values)
-        {
-            if (enemy.IsDead) continue;
-            S_EntitySpawn enemySpawn = new S_EntitySpawn
-            {
-                entityId = enemy.EntityId,
-                entityKind = (byte)enemy.Kind,
-                x = enemy.X,
-                y = enemy.Y,
-                currentHp = enemy.Hp,
-                maxHp = enemy.MaxHp,
-            };
-            target.Send(enemySpawn.Write());
-        }
-    }
+        => _publisher.SendInitialRoster(target, existingPlayers);
 
     // ── ProcessAttack (internal 래퍼 — 기존 테스트 인터페이스 보존) ───────────
 
@@ -603,19 +548,6 @@ public class GameMap
     /// </summary>
     internal void ProcessSkill(int casterEntityId, byte skillId, long attackerClientTick, sbyte facing, byte verticalDir)
         => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick, facing, verticalDir);
-
-    // ── AnimState 계산 ───────────────────────────────────────────────────────
-
-    /// <summary>
-    /// 플레이어의 현재 시각 애니메이션 상태를 계산. 서버 권위 (헌법 #1).
-    ///
-    /// ActionFsm이 단일 출처 — Death/Hit/Attack/Jump/Walk/Idle 우선순위는
-    /// FSM 전이 규칙으로 보장. 이 메서드는 FSM 현재 상태의 AnimState를 반환한다.
-    ///
-    /// **tick thread invariant**: GameMap.Tick 안에서만 호출 (단일 thread).
-    /// </summary>
-    static byte ComputePlayerAnimState(PlayerEntity p)
-        => (byte)p.ActionFsm.AnimState;
 
     /// <summary>
     /// 보스 방이 비고(플레이어 0) 보스도 없으면 보스를 재출현 — 다음 입장자가 fresh 보스를 만남(영호 지시).
@@ -690,7 +622,7 @@ public class GameMap
     /// </summary>
     private void DespawnEnemyByFall(EnemyEntity enemy)
     {
-        BroadcastToAll(new S_EntityDeath { entityId = enemy.EntityId }.Write());
+        _publisher.BroadcastEntityDeath(enemy.EntityId);
         RemoveEnemy(enemy.EntityId);
         if (enemy.Kind == EnemyKind.Normal || enemy.Kind == EnemyKind.Golem)
             EnqueueRespawn(enemy);
