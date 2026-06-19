@@ -11,9 +11,11 @@ namespace Dawnholder.Server.GameServer.Maps;
 // 단일 GameMap actor. 단일 thread Tick → lock 없음.
 //
 // §2.2 컨테이너 + System 분리:
-//   GameMap = 상태(_players/_enemies/_pendingJobs/AllocId) + Tick 엔진 + actor 경계.
-//   로직은 CombatSystem / EnemyAISystem / RespawnSystem 3개로 추출.
-//   Tick에서 System 호출 순서 명문화: physics → CombatSystem(EnqueueJob 경유) → EnemyAISystem → RespawnSystem.
+//   GameMap = 상태(_players/_enemies/_pendingJobs/AllocId) + Tick 엔진(스텝 순서 오케스트레이션) + actor 경계.
+//   로직은 Systems/ 폴더로 추출 — PlayerPhysicsSystem / CombatSystem / EnemyAISystem /
+//     BossBehaviorSystem / EnemyGravitySystem / DeferredDamageSystem / RespawnSystem / SkillSystem.
+//   Tick은 "스텝 순서 호출"만: PlayerPhysics → (job)CombatSystem → EnemyAI → BossBehavior →
+//     EnemyGravity → DeferredDamage → Respawn (틱 내 순서 = 결정론 물리 계약, 1bit도 안 바꿈).
 //
 // **_enemies invariant**: 살아있는 적만 _enemies에 잔류.
 //   사망 시 HandleEnemyDeath가 S_EntityDeath broadcast + RemoveEnemy + (Normal only) EnqueueRespawn.
@@ -43,9 +45,11 @@ public class GameMap
     readonly Action<int, EnemyEntity>? _onEnemyKilled;
 
     // System 인스턴스 — tick thread 안에서만 사용 (§1.1 정합).
+    readonly PlayerPhysicsSystem _playerPhysicsSystem = new();
     readonly CombatSystem _combatSystem = new();
     readonly EnemyAISystem _enemyAISystem = new();
     readonly BossBehaviorSystem _bossBehaviorSystem = new();
+    readonly EnemyGravitySystem _enemyGravitySystem = new();
     readonly RespawnSystem _respawnSystem = new();
     readonly DeferredDamageSystem _deferredDamageSystem = new();
     readonly SkillSystem _skillSystem = new();
@@ -150,6 +154,13 @@ public class GameMap
     /// </summary>
     internal long CurrentTick => _currentTick;
 
+    /// <summary>
+    /// 맵 지형(solids/platforms/killPlane). null = 평지 물리(Physics.Step 2-인자 fallback).
+    /// PlayerPhysicsSystem / EnemyGravitySystem이 Physics.Step 호출에 사용 (§2.2 추출 후 read-only 노출).
+    /// tick thread invariant 안에서만 읽기.
+    /// </summary>
+    internal MapTerrain? Terrain => _terrain;
+
     // virtual: 테스트 subclass에서 EnqueueJob 호출 카운트 추적 가능.
     public virtual void EnqueueJob(Action job) => _pendingJobs.Enqueue(job);
 
@@ -205,11 +216,11 @@ public class GameMap
     /// TickScheduler가 매 50ms마다 호출. 단일 thread.
     ///
     /// System 호출 순서 (§2.2 명문화):
-    ///   1. physics (PlayerEntity Physics.Step + RecordPosition)
-    ///   2. CombatSystem (EnqueueJob 경유 attack job 처리)
+    ///   1. PlayerPhysicsSystem (PlayerEntity Physics.Step + RecordPosition + ActionFsm)
+    ///   2. (job 경유) CombatSystem (EnqueueJob 경유 attack job 처리)
     ///   3. EnemyAISystem (Normal/Golem FSM — X 이동)
     ///   4. BossBehaviorSystem (Boss 패턴 FSM — X 이동)
-    ///   5. ApplyEnemyGravity (모든 적 수직 중력 패스 — Y/Vy/OnGround 갱신)
+    ///   5. EnemyGravitySystem (모든 적 수직 중력 패스 — Y/Vy/OnGround 갱신 + 낙사 despawn)
     ///   6. DeferredDamageSystem (impactTick 도달 데미지 + 사망 처리)
     ///   7. RespawnSystem
     ///
@@ -230,70 +241,10 @@ public class GameMap
             catch (Exception ex) { Console.WriteLine($"[Map] job 예외: {ex.Message}"); }
         }
 
-        // 2) Physics.Step + RecordPosition (플레이어 이동).
+        // 2) PlayerPhysicsSystem: Physics.Step + RecordPosition + ActionFsm 1틱 (플레이어 이동).
         //    헌법 #1: 서버 권위 이동. 클라 prediction은 서버 snapshot으로 reconcile.
-        //
-        //    틱당 정확히 Physics.Step 1회 불변식: 물리 시간 = 벽시계 시간 (50ms/tick).
-        //    큐에 N개 쌓여도 이 틱에는 1개만 소비 — 멀티 드레인 금지.
-        //    큐 비면(starvation) neutral (0, false) 적용 — 세계는 계속 흐름(중력/마찰).
-        foreach (PlayerEntity p in _players)
-        {
-            // death-guard: IsDead인데 DeathState가 아니면 즉시 전이.
-            // BossBehaviorSystem.ApplyBossAttack이 Hp를 0으로 내린 직후에도 안전하게 잡힘.
-            if (p.IsDead && p.ActionFsm.CurrentState is not DeathState)
-                p.ActionFsm.ChangeState(PlayerCombatStates.Death, p);
-
-            bool hasInput = p.TryDequeueInput(out PlayerEntity.InputCommand cmd);
-            sbyte inputX = hasInput ? cmd.InputX : (sbyte)0;
-            bool rawJump = hasInput && cmd.JumpPressed;
-
-            // movement-gate: LocksMovement=true인 State(Attack/Hit/Death)면 이동 입력 무효.
-            bool locked = p.ActionFsm.CurrentState.LocksMovement;
-            if (locked)
-            {
-                inputX = 0;
-                rawJump = false;
-            }
-
-            bool jumpPressed = p.ResolveJump(rawJump); // jump buffer: 공중 입력 → 착지 틱 발사
-
-            // ExternalImpulseVx: 대쉬/lunge(AttackState) + 넉백(HitState) 통합 단일 필드.
-            //   두 State는 상호배타라 항상 하나만 활성. 0이면 기존 이동과 동일.
-            PhysicsInput input = new PhysicsInput(inputX, jumpPressed, Constants.TickDuration, p.ExternalImpulseVx);
-            PhysicsState before = new PhysicsState(p.Position, p.Velocity, p.OnGround);
-            MoveParams move = new MoveParams(p.Stats.MoveSpeed, p.Stats.JumpVel);
-            PhysicsState after = Physics.Step(before, input, _terrain, move);
-            p.Position = after.Position;
-            p.Velocity = after.Velocity;
-            p.OnGround = after.OnGround;
-
-            // kill-plane: 낙하로 맵 밖 벗어나면 PlayerSpawn 재배치. HP 무변화 (낙사 데미지 M4.5 이월).
-            // terrain null이면 체크 skip (평지 맵은 낙사 없음).
-            if (_terrain != null && p.Position.Y < _terrain.KillPlaneY)
-            {
-                Vector2 spawn = PlayerSpawnPosition;
-                p.Position = spawn;
-                p.Velocity = Vector2.Zero;
-                p.OnGround = false;
-            }
-
-            // 이동 방향 갱신 — inputX가 0이 아닐 때만. 0이면 마지막 방향 유지.
-            // FacingDir은 S_PlayerAttack.facing 직렬화에 사용 (공격 연출 방향 결정).
-            if (inputX != 0)
-                p.FacingDir = inputX > 0 ? (sbyte)1 : (sbyte)-1;
-
-            // ack = 적용 시점 clientTick. 빈 틱(starvation)은 불변 — 클라 reconcile 정합.
-            if (hasInput)
-                p.LastClientTick = cmd.ClientTick;
-
-            // Physics.Step 완료 후 위치 기록 — "그 tick에 실제로 있던 위치".
-            p.RecordPosition(tickNumber, p.Position);
-
-            // ActionFsm Tick: 전투 State(Attack/Hit)의 카운터 감소 + 이동 State 전환 판정을 통합 처리.
-            // Attack/HitState는 내부에서 StateTicksRemaining을 감소시키고 0이면 ResolveGrounded 반환.
-            // 이동 State(Idle/Move/Jump)는 물리 상태(OnGround/Velocity)를 보고 전환.
-            p.ActionFsm.Tick(p);
-        }
+        //    틱당 정확히 Physics.Step 1회 불변식 + 입력 큐 1개 소비 = System 내부 보존.
+        _playerPhysicsSystem.Step(this, tickNumber);
 
         // 3) Snapshot 브로드캐스트. 매 1 tick(=50ms, 20Hz).
         //    조립·송신은 MapPacketPublisher 위임 (§2.2 표현 분리). animState 계산도 publisher 내부.
@@ -306,10 +257,10 @@ public class GameMap
         // 5) BossBehaviorSystem: Boss FSM 1틱 (쿨다운→telegraph→데미지판정→리셋, latch, broadcast).
         _bossBehaviorSystem.Update(this, tickNumber);
 
-        // 6) 적 수직 물리: FSM이 X를 세팅한 뒤 수직 중력 패스 적용.
+        // 6) EnemyGravitySystem: FSM이 X를 세팅한 뒤 모든 적 수직 중력 패스 적용.
         //    inputX=0 → Physics.Step이 X를 변경하지 않아 FSM 세팅 X 보존.
         //    terrain==null 이면 Physics.Step이 자동으로 StepFlat(Y<=0 clamp) 으로 위임.
-        ApplyEnemyGravity();
+        _enemyGravitySystem.Apply(this, tickNumber);
 
         // 7) DeferredDamageSystem: impactTick 도달 항목 HP 적용 + S_HitResult broadcast + 사망 처리.
         _deferredDamageSystem.Process(this, tickNumber);
@@ -567,50 +518,6 @@ public class GameMap
     }
 
     /// <summary>
-    /// 살아 있는 모든 적(Normal/Golem/Boss)에 수직 중력 패스 적용.
-    ///
-    /// FSM(EnemyAISystem/BossBehaviorSystem)이 X를 세팅한 *뒤*에 호출 —
-    /// inputX=0으로 Physics.Step을 호출하면 X 변화 없이 Y/Vy/OnGround만 갱신된다.
-    ///
-    /// terrain==null(평지 맵)이면 Physics.Step이 StepFlat으로 위임:
-    ///   Y&lt;=0 이면 clamp+onGround=true — 지면 아래로 꺼지지 않음.
-    ///
-    /// moveParams의 MoveSpeed/JumpVel은 inputX=0+jumpPressed=false라 사실상 미사용이지만
-    /// Physics.Step 시그니처 충족을 위해 실제 적 스탯 기반 값을 전달한다.
-    ///
-    /// 헌법 #5: async/await/Thread.Sleep 없음 — 순수 동기 연산.
-    /// </summary>
-    private void ApplyEnemyGravity()
-    {
-        PhysicsInput gravityInput = new PhysicsInput((sbyte)0, false, Constants.TickDuration);
-        List<EnemyEntity>? fallen = null; // 낙사 대상 — 순회 중 _enemies 수정 금지, collect-then-remove
-        foreach (EnemyEntity enemy in _enemies.Values)
-        {
-            MoveParams move = new MoveParams(enemy.Stats.MoveSpeed, 0f);
-            PhysicsState before = new PhysicsState(
-                new Vector2(enemy.X, enemy.Y),
-                new Vector2(0f, enemy.Vy),
-                enemy.OnGround);
-            PhysicsState after = Physics.Step(before, gravityInput, _terrain, move);
-            enemy.Y        = after.Position.Y;
-            enemy.Vy       = after.Velocity.Y;
-            enemy.OnGround = after.OnGround;
-
-            if (_terrain != null && enemy.Y < _terrain.KillPlaneY)
-            {
-                fallen ??= new List<EnemyEntity>();
-                fallen.Add(enemy);
-            }
-        }
-
-        if (fallen != null)
-        {
-            foreach (EnemyEntity enemy in fallen)
-                DespawnEnemyByFall(enemy);
-        }
-    }
-
-    /// <summary>
     /// kill-plane 아래로 낙사한 적을 소멸시킨다.
     ///
     /// HandleEnemyDeath와의 차이:
@@ -618,9 +525,10 @@ public class GameMap
     ///   - Boss → StageClear 발동 X (보스방에 낭떠러지 없으므로 실질 비발생, 안전망 차원).
     ///   - Normal/Golem → EnqueueRespawn 호출로 사냥터 인구 유지.
     ///
+    /// **호출 invariant**: tick thread에서만 (EnemyGravitySystem.Apply 안). broadcast→remove→requeue 원자 시퀀스.
     /// 헌법 §5: async/await/Thread.Sleep 없음 — 순수 동기.
     /// </summary>
-    private void DespawnEnemyByFall(EnemyEntity enemy)
+    internal void DespawnEnemyByFall(EnemyEntity enemy)
     {
         _publisher.BroadcastEntityDeath(enemy.EntityId);
         RemoveEnemy(enemy.EntityId);
