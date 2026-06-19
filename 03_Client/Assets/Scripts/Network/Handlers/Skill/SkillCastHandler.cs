@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
@@ -37,6 +38,32 @@ namespace Dawnholder.Client.Network.Handlers.Skill
         static bool _warnedMissingTeleportDepart;
         static bool _warnedMissingTeleportArrive;
 
+        readonly struct PresentContext
+        {
+            internal readonly UnityClientSession Session;
+            internal readonly int CasterId;
+            internal readonly byte Facing;
+            internal readonly bool IsLocal;
+            internal readonly Transform CasterTf;
+
+            internal PresentContext(UnityClientSession session, int casterId, byte facing, bool isLocal, Transform casterTf)
+            {
+                Session  = session;
+                CasterId = casterId;
+                Facing   = facing;
+                IsLocal  = isLocal;
+                CasterTf = casterTf;
+            }
+        }
+
+        static readonly Dictionary<SkillId, Action<PresentContext>> _presentTable =
+            new Dictionary<SkillId, Action<PresentContext>>
+            {
+                { SkillId.Thunderbolt, ctx => PresentThunderbolt(ctx) },
+                { SkillId.Dash,        ctx => PresentDash(ctx)        },
+                { SkillId.Teleport,    ctx => PresentTeleport(ctx)    },
+            };
+
         public void Handle(UnityClientSession session, ArraySegment<byte> buffer)
         {
             S_SkillCast pkt = new S_SkillCast();
@@ -64,34 +91,37 @@ namespace Dawnholder.Client.Network.Handlers.Skill
                 Debug.Log($"[Unity] SkillCast: caster={casterId} skill={skillId} facing={facing} local={isLocal}");
 
                 SkillId skill = (SkillId)skillId;
-                switch (skill)
-                {
-                    case SkillId.Thunderbolt:
-                        AudioManager.Instance?.PlaySfx(SoundKeys.MagicCast);
-                        EffectSpawnService.SpawnFromPath(ThunderboltCastPath, EffectAnchor.ResolvePosition(casterTf),
-                            ref _warnedMissingThunderbolt, "Thunderbolt 캐스팅 VFX", facingSign: 0);
-                        // 원격 캐스팅 모션: 서버는 Channeling을 animState로 안 보냄(ThunderboltAction이 AttackState
-                        //   미진입) → S_SkillCast로 원격 캐스팅 모션 연출. 로컬은 LocalPlayerInput.NotifyChannel이 선예측.
-                        if (!isLocal)
-                            RemoteEntityRegistry.Instance?.SetChanneling(casterId,
-                                Constants.AttackCommitWindowTicks * Constants.TickDuration);
-                        break;
-
-                    case SkillId.Dash:
-                        // 원격: 서버가 Dash 중 Attack animState를 보냄 → facing latch 갱신.
-                        // 스킬은 타겟 스냅 없으므로 facing = 이동 방향 = Local 연출과 일치.
-                        // 직전 평타의 stale facing이 Dash에 잘못 적용되는 것을 방지.
-                        if (!isLocal)
-                            RemoteEntityRegistry.Instance?.SetAttackFacing(casterId, facing == 1 ? 1 : -1);
-                        AudioManager.Instance?.PlaySfx(SoundKeys.Dash);
-                        HandleDash(isLocal, casterTf, facing);
-                        break;
-
-                    case SkillId.Teleport:
-                        HandleTeleport(isLocal, casterId, casterTf);
-                        break;
-                }
+                if (_presentTable.TryGetValue(skill, out var present))
+                    present(new PresentContext(session, casterId, facing, isLocal, casterTf));
             });
+        }
+
+        static void PresentThunderbolt(PresentContext ctx)
+        {
+            AudioManager.Instance?.PlaySfx(SoundKeys.MagicCast);
+            EffectSpawnService.SpawnFromPath(ThunderboltCastPath, EffectAnchor.ResolvePosition(ctx.CasterTf),
+                ref _warnedMissingThunderbolt, "Thunderbolt 캐스팅 VFX", facingSign: 0);
+            // 원격 캐스팅 모션: 서버는 Channeling을 animState로 안 보냄(ThunderboltAction이 AttackState
+            //   미진입) → S_SkillCast로 원격 캐스팅 모션 연출. 로컬은 LocalPlayerInput.NotifyChannel이 선예측.
+            if (!ctx.IsLocal)
+                RemoteEntityRegistry.Instance?.SetChanneling(ctx.CasterId,
+                    Constants.AttackCommitWindowTicks * Constants.TickDuration);
+        }
+
+        static void PresentDash(PresentContext ctx)
+        {
+            // 원격: 서버가 Dash 중 Attack animState를 보냄 → facing latch 갱신.
+            // 스킬은 타겟 스냅 없으므로 facing = 이동 방향 = Local 연출과 일치.
+            // 직전 평타의 stale facing이 Dash에 잘못 적용되는 것을 방지.
+            if (!ctx.IsLocal)
+                RemoteEntityRegistry.Instance?.SetAttackFacing(ctx.CasterId, ctx.Facing == 1 ? 1 : -1);
+            AudioManager.Instance?.PlaySfx(SoundKeys.Dash);
+            HandleDash(ctx.IsLocal, ctx.CasterTf, ctx.Facing);
+        }
+
+        static void PresentTeleport(PresentContext ctx)
+        {
+            HandleTeleport(ctx.IsLocal, ctx.CasterId, ctx.CasterTf);
         }
 
         // Dash 연출: Dash 이펙트 스폰 + facing 반영.

@@ -1,5 +1,4 @@
 #nullable enable
-using System.Collections.Generic;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Network;
@@ -28,23 +27,6 @@ namespace Dawnholder.Client.Input
 
         LocalPlayerMovement _movement = null!;
         LocalPlayerMotion? _motion;
-
-        // 클래스별 스킬 키 매핑 단일 진실.
-        // 키 배치 변경 시 이 테이블 한 곳만 수정. Phase 04/06에서 연출 추가 시도 여기서 SkillId 조회.
-        //
-        // | 클래스 | Q 키         | E 키      |
-        // |--------|--------------|-----------|
-        // | Mage   | Thunderbolt  | Teleport  |
-        // | Knight | Dash         | (없음)    |
-        //
-        // SkillCatalog.CanCast 게이트로 내 클래스가 못 쓰는 스킬은 송신 차단 (UX + 트래픽 절감).
-        // 헌법 §1: 클라 게이트는 편의, 진짜 권위는 서버 — 서버도 별도 검증.
-        internal static readonly Dictionary<CharacterClass, (SkillId q, SkillId e)> SkillKeyMap =
-            new Dictionary<CharacterClass, (SkillId q, SkillId e)>
-            {
-                { CharacterClass.Mage,   (SkillId.Thunderbolt, SkillId.Teleport) },
-                { CharacterClass.Knight, (SkillId.Dash,        SkillId.None)     },
-            };
 
         void Awake()
         {
@@ -123,7 +105,7 @@ namespace Dawnholder.Client.Input
             CharacterClass myClass = ClassLoadout.SessionSelectedClass
                 ?? (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
 
-            if (!SkillKeyMap.TryGetValue(myClass, out (SkillId q, SkillId e) mapping)) return;
+            if (!ClientSkillCatalog.SkillKeyMap.TryGetValue(myClass, out (SkillId q, SkillId e) mapping)) return;
 
             SkillId skillId = qDown ? mapping.q : mapping.e;
             TrySendSkill(skillId, myClass);
@@ -138,18 +120,8 @@ namespace Dawnholder.Client.Input
             if (_movement.IsActionLocked) return; // 서버 ActionGate 클라 거울 — Attack/Hit/Death 중 차단.
 
             // 스킬별 쿨다운 게이트 — Constants 상수 거울. 서버도 별도 검증(헌법 §1). 클라 게이트는 UX + 트래픽 절감.
-            switch (skillId)
-            {
-                case SkillId.Thunderbolt:
-                    if (!_movement.CanUseSkill) return;
-                    break;
-                case SkillId.Dash:
-                    if (!_movement.CanUseDash) return;
-                    break;
-                case SkillId.Teleport:
-                    if (!_movement.CanUseTeleport) return;
-                    break;
-            }
+            // 미등록 스킬은 게이트 스킵(원래 default 없음 거동 보존).
+            if (ClientSkillCatalog.TryGet(skillId, out var entry) && !entry!.CooldownReady(_movement)) return;
 
             UnityClientSession? session = UnityClientSession.Instance;
             if (session == null) return;
@@ -189,20 +161,7 @@ namespace Dawnholder.Client.Input
             // Teleport: 쿨다운 예측 + 다음 Snapshot force-adopt 플래그(보간 끊기) + 출발/도착 이펙트 콜백.
             //   출발 이펙트용 departPos = 송신 시점 transform.position (S_SkillCast vs S_Snapshot
             //   dispatch 순서에 무관하게 결정론적). 도착 이펙트 콜백은 1회만 여기서 등록.
-            switch (skillId)
-            {
-                case SkillId.Thunderbolt:
-                    _movement.NotifyChannel();
-                    break;
-                case SkillId.Dash:
-                    _movement.NotifyDash();
-                    break;
-                case SkillId.Teleport:
-                    // 송신 시점: 출발 위치 stash + 쿨다운만. snap arming과 arrive 콜백 등록은
-                    // S_SkillCast 수신 시점(SkillCastHandler.HandleTeleport)에서 ArmTeleportSnap()으로 수행.
-                    _movement.NotifyTeleport(departPos: transform.position);
-                    break;
-            }
+            entry?.PredictCommit(_movement, transform.position);
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.

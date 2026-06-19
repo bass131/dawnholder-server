@@ -64,13 +64,13 @@ namespace Dawnholder.Client.UI
             ResolveSkillSlots();
         }
 
-        // 선택 클래스 → Q/E 스킬 결정. LocalPlayerInput.SkillKeyMap이 단일 진실.
+        // 선택 클래스 → Q/E 스킬 결정. ClientSkillCatalog.SkillKeyMap이 단일 진실.
         void ResolveSkillSlots()
         {
             CharacterClass myClass = ClassLoadout.SessionSelectedClass
                 ?? (CharacterClass)ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
 
-            if (LocalPlayerInput.SkillKeyMap.TryGetValue(myClass, out (SkillId q, SkillId e) qe))
+            if (ClientSkillCatalog.SkillKeyMap.TryGetValue(myClass, out (SkillId q, SkillId e) qe))
             {
                 _qSkill = qe.q;
                 _eSkill = qe.e;
