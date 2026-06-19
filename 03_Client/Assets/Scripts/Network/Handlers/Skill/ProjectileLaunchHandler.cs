@@ -3,6 +3,8 @@ using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.Scenes;
@@ -14,7 +16,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Skill
 {
     // S_ProjectileLaunch (ID 23) — 서버 확정 투사체 발사 연출 통보.
     // 로컬/원격 공통 경로 — 클라 선예측 스폰 제거(M4.8 기둥1) 후 모든 투사체가 이 핸들러로 스폰.

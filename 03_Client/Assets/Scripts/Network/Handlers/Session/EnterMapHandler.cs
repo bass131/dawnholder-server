@@ -3,6 +3,8 @@ using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.Scenes;
@@ -14,7 +16,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Session
 {
     // S_EnterMap (ID 3)
     // 서버가 정한 spawn 좌표로 Player GameObject 배치 (헌법 #1).

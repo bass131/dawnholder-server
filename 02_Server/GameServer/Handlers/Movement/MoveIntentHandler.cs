@@ -1,8 +1,9 @@
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Movement;
 
 // C_MoveIntent 핸들러: decode + InputBits 디코드(헌법 #3 정합 invalid bits 정규화) →
 //   session.SubmitMoveIntent(...) 호출. rate-limit / tick 마샬링은 session 안.

@@ -1,7 +1,8 @@
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Combat;
 
 // C_Attack 핸들러: handler = decode + session 캡슐화 메서드 호출만.
 //   mutation / 검증 / tick 마샬링은 session.SubmitAttack 안 + GameMap.ProcessAttack 안에서.

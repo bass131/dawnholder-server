@@ -1,11 +1,13 @@
 using System;
 using Dawnholder.Client.Audio;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.State;
 using Shared.Protocol;
 using UnityEngine;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Party
 {
     // S_PartyError (ID 31) — 파티 조작 실패 코드 수신 → PartyState에 전달.
     // reason: 0=상대없음 1=이미파티 2=자기자신 3=정원초과.

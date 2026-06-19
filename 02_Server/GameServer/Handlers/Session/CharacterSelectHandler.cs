@@ -1,7 +1,8 @@
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Session;
 
 // `C_CharacterSelect` 수신 → 입력 검증 → `GameSession.SetCharacterClass` 호출.
 //

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace PacketGenerator
+namespace Dawnholder.Tools.PacketGenerator
 {
     internal class Program
     {

@@ -1,4 +1,4 @@
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers
 {
     // 서버 02_Server/GameServer/Handlers/IPacketHandler.cs 미러.
     //

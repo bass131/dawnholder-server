@@ -3,6 +3,8 @@ using Dawnholder.Client.Audio;
 using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
+using Dawnholder.Client.Network;
+using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.Scenes;
@@ -13,7 +15,7 @@ using Shared.Protocol;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Dawnholder.Client.Network
+namespace Dawnholder.Client.Network.Handlers.Skill
 {
     // S_SkillCast (ID 25) — 스킬 캐스팅 연출 통보.
     // skillId 분기: 1=Thunderbolt, 2=Dash, 3=Teleport.

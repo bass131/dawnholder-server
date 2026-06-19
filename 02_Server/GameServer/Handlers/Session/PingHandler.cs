@@ -1,7 +1,8 @@
+using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Handlers;
+namespace Dawnholder.Server.GameServer.Handlers.Session;
 
 // C_Ping 핸들러: decode → session.RespondPong(clientTimestampMs) — Send는 session 안.
 internal sealed class PingHandler : IPacketHandler
