@@ -1,7 +1,3 @@
-using System.Buffers.Binary;
-using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -343,14 +339,8 @@ public class EmergencyCombatSmoke
         return result;
     }
 
-    sealed class CombatProbe
+    sealed class CombatProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
-        // 서버는 맵 전환 시 S_MapTransition만 발송 (S_EnterMap 재발송 X) — S_MapTransition만으로 완료 판정.
         readonly ManualResetEventSlim _mapTransition = new(false);
         readonly List<S_EntitySpawn> _spawns = new();
         readonly List<HitEvent> _hits = new();
@@ -359,90 +349,36 @@ public class EmergencyCombatSmoke
         // entityId → 최신 live x (S_EntityState) — 타겟 근접 수렴 대기용.
         readonly Dictionary<int, float> _entityX = new();
 
-        BotSession? _session;
-        uint _clientTick;
-
-        // 서버 tick 추적 — S_Snapshot 수신 시 갱신.
-        // C_Attack.attackerClientTick에 박아야 서버 rewind 범위 검증(diff ≤ 4)을 통과.
-        // volatile: network thread(HandlePacket)에서 쓰고 메인 시나리오 thread(SendAttack)에서 읽음.
-        volatile int _lastReceivedServerTick = 0;
-
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
-        public float SpawnX { get; private set; }
-
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(handshake.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
-        public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
-        public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
-
-        // 서버는 맵 전환 시 S_MapTransition만 발송 — 이 이벤트 수신으로 맵 진입 완료 판정.
         public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition.IsSet, timeout, ct);
 
-        // portal 위치(portalX)까지 C_MoveIntent 기반 이동. portal x 좌표는 호출부 const(PortalTable.cs와 정합).
-        public async Task<int> MoveToPortal(float portalX, CancellationToken ct)
-        {
-            float delta = portalX - SpawnX;
-            sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
-            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Knight().MoveSpeed * Constants.TickDuration));
-            ticks = Math.Clamp(ticks, 0, 160);
-            for (int i = 0; i < ticks; i++)
-            {
-                SendMove(direction);
-                await Task.Delay(Constants.TickIntervalMs, ct);
-            }
-            SendMove(0);
-            await Task.Delay(150, ct);
-            return ticks + 1;
-        }
+        // portal 위치(portalX)까지 MoveToPortalCore 기반 robust 이동.
+        // ServerX 추적 — HG 적 hitstun/넉백에 의한 undershoot 방어.
+        public async Task MoveToPortal(float portalX, CancellationToken ct)
+            => await MoveToPortalCore(portalX, ct, maxTicks: 160);
 
-        public void SendEnterPortal(int portalId)
-        {
-            C_EnterPortal packet = new() { portalId = portalId };
-            _session?.Send(packet.Write());
-        }
+        public void SendEnterPortal(int portalId) => SendEnterPortalCore(portalId);
 
         public async Task<S_EntitySpawn?> WaitForFirstSpawn(TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(
                 () =>
                 {
-                    lock (_gate) return _spawns.Count > 0;
+                    lock (Gate) return _spawns.Count > 0;
                 },
                 timeout,
                 ct);
 
             if (!ok) return null;
-            lock (_gate) return _spawns[0];
+            lock (Gate) return _spawns[0];
         }
 
         public async Task<int> MoveIntoAttackRange(float targetX, CancellationToken ct)
         {
-            float desiredX = targetX > SpawnX
+            float desiredX = targetX > ServerX
                 ? targetX - PreferredAttackDistance
                 : targetX + PreferredAttackDistance;
-            float delta = desiredX - SpawnX;
+            float delta = desiredX - ServerX;
             sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
 
             int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Knight().MoveSpeed * Constants.TickDuration));
@@ -459,19 +395,17 @@ public class EmergencyCombatSmoke
             return ticks + 1;
         }
 
-        // simulatedLatencyMs > 0이면 lastReceivedServerTick이 0인 채 공격하면 항상 silent drop.
-        // 이동 완료 후 이 메서드로 serverTick이 갱신될 때까지 기다려야 함.
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
-            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+            => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
 
         // 타겟의 live 위치(S_EntityState)가 봇 현재 위치 기준 maxDist 안에 들어올 때까지 대기.
         public async Task<bool> WaitForTargetWithin(int entityId, float maxDist, TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(
                 () =>
                 {
-                    lock (_gate)
+                    lock (Gate)
                         return _entityX.TryGetValue(entityId, out float x)
-                            && Math.Abs(x - SpawnX) <= maxDist;
+                            && Math.Abs(x - ServerX) <= maxDist;
                 },
                 timeout, ct);
 
@@ -482,13 +416,13 @@ public class EmergencyCombatSmoke
         public void SendAttack(int targetEntityId, int simulatedLatencyMs = 0)
         {
             int latencyTicks = simulatedLatencyMs / Constants.TickIntervalMs;
-            int clientTick = Math.Max(0, _lastReceivedServerTick - latencyTicks);
+            int clientTick = Math.Max(0, LastReceivedServerTick - latencyTicks);
             C_Attack attack = new()
             {
                 targetEntityId = targetEntityId,
                 attackerClientTick = clientTick,
             };
-            _session?.Send(attack.Write());
+            Session?.Send(attack.Write());
         }
 
         public async Task<HitEvent?> WaitForHitCount(
@@ -503,7 +437,7 @@ public class EmergencyCombatSmoke
                 ct);
 
             if (!ok) return null;
-            lock (_gate)
+            lock (Gate)
                 return _hits.LastOrDefault(h => h.TargetEntityId == targetEntityId);
         }
 
@@ -516,76 +450,33 @@ public class EmergencyCombatSmoke
 
         public int HitCountFor(int targetEntityId)
         {
-            lock (_gate) return _hits.Count(h => h.TargetEntityId == targetEntityId);
+            lock (Gate) return _hits.Count(h => h.TargetEntityId == targetEntityId);
         }
 
         public int DeathCountFor(int targetEntityId)
         {
-            lock (_gate) return _deaths.Count(entityId => entityId == targetEntityId);
+            lock (Gate) return _deaths.Count(entityId => entityId == targetEntityId);
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void SendMove(sbyte inputX)
+        protected override void OnMapTransition(S_MapTransition packet)
         {
-            _clientTick++;
-            C_MoveIntent move = new()
-            {
-                input = InputBits.Encode(inputX, jumpPressed: false),
-                clientTick = _clientTick,
-            };
-            _session?.Send(move.Write());
+            _mapTransition.Set();
         }
 
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
         {
-            if (buffer.Count < 4) return;
-
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            switch (id)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult handshake = new();
-                    handshake.Read(buffer);
-                    HandshakeOk = handshake.ok;
-                    HandshakeReason = handshake.reason;
-                    // handshake OK 후 즉시 C_CharacterSelect 송신 (서버가 class 선택 전 월드 진입 차단).
-                    if (handshake.ok)
-                    {
-                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
-                        _session?.Send(charSelect.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    // 서버는 최초 진입 시에만 S_EnterMap 발송. 맵 전환 시엔 S_MapTransition만 발송.
-                    // ADR-026: entityId는 맵 이동 시 유지 — S_EnterMap은 최초 1회만 수신.
-                    S_EnterMap enterMap = new();
-                    enterMap.Read(buffer);
-                    LocalEntityId = enterMap.entityId;
-                    SpawnX = enterMap.spawnX;
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_MapTransition:
-                    // SpawnX를 목적지 spawn 좌표로 갱신. 봇은 서버 권위 좌표만 사용 (헌법 #1).
-                    S_MapTransition mapTransition = new();
-                    mapTransition.Read(buffer);
-                    SpawnX = mapTransition.spawnX;
-                    _mapTransition.Set();
-                    break;
-
                 case PacketID.S_EntitySpawn:
                     S_EntitySpawn spawn = new();
                     spawn.Read(buffer);
-                    lock (_gate) _spawns.Add(spawn);
+                    lock (Gate) _spawns.Add(spawn);
                     break;
 
                 case PacketID.S_HitResult:
                     S_HitResult hit = new();
                     hit.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _hits.Add(new HitEvent(
                             hit.attackerEntityId,
@@ -599,40 +490,16 @@ public class EmergencyCombatSmoke
                 case PacketID.S_EntityDeath:
                     S_EntityDeath death = new();
                     death.Read(buffer);
-                    lock (_gate) _deaths.Add(death.entityId);
-                    break;
-
-                case PacketID.S_Snapshot:
-                    // SendAttack이 이 값을 attackerClientTick에 박아 서버 rewind 범위 검증 통과.
-                    S_Snapshot snapshot = new();
-                    snapshot.Read(buffer);
-                    _lastReceivedServerTick = snapshot.serverTick;
-                    // 자기 자신 snapshot → 봇 현재 위치 갱신 (근접 수렴 대기의 기준 좌표).
-                    if (snapshot.entityId == LocalEntityId)
-                        SpawnX = snapshot.x;
+                    lock (Gate) _deaths.Add(death.entityId);
                     break;
 
                 case PacketID.S_EntityState:
                     // enemy live 위치 — 타겟 근접 수렴 대기용.
                     S_EntityState entityState = new();
                     entityState.Read(buffer);
-                    lock (_gate) _entityX[entityState.entityId] = entityState.x;
+                    lock (Gate) _entityX[entityState.entityId] = entityState.x;
                     break;
             }
-        }
-
-        static async Task<bool> WaitUntil(
-            Func<bool> predicate,
-            TimeSpan timeout,
-            CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (predicate()) return true;
-                await Task.Delay(25, ct);
-            }
-            return predicate();
         }
     }
 

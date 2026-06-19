@@ -1,8 +1,3 @@
-using System.Buffers.Binary;
-using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
-using Shared.GameData;
 using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
@@ -102,7 +97,6 @@ public class MultiRosterSmoke
         if (!bot.WaitEnterMap(DefaultTimeout))
             return $"{bot.Name}: S_EnterMap timeout";
 
-        // Server join/roster jobs can arrive in the same tick batch as EnterMap.
         await Task.Delay(50, ct);
         return null;
     }
@@ -114,50 +108,36 @@ public class MultiRosterSmoke
         return result;
     }
 
-    sealed class BotProbe
+    sealed class BotProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
         readonly List<int> _joins = new();
         readonly List<int> _leaves = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
-        BotSession? _session;
 
         public string Name { get; }
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int EntityId { get; private set; } = -1;
+        public int EntityId => LocalEntityId;
 
-        public int JoinCount { get { lock (_gate) return _joins.Count; } }
-        public int LeaveCount { get { lock (_gate) return _leaves.Count; } }
+        public int JoinCount { get { lock (Gate) return _joins.Count; } }
+        public int LeaveCount { get { lock (Gate) return _leaves.Count; } }
 
         public BotProbe(string name) => Name = name;
 
-        public void Connect(string host, int port)
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
         {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(handshake.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
+            switch (id)
+            {
+                case PacketID.S_PlayerJoin:
+                    S_PlayerJoin join = new();
+                    join.Read(buffer);
+                    lock (Gate) _joins.Add(join.entityId);
+                    break;
 
-        public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
-        public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
-        public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
+                case PacketID.S_PlayerLeave:
+                    S_PlayerLeave leave = new();
+                    leave.Read(buffer);
+                    lock (Gate) _leaves.Add(leave.entityId);
+                    break;
+            }
+        }
 
         public async Task<bool> WaitForJoin(int entityId, TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => HasJoin(entityId), timeout, ct);
@@ -167,66 +147,12 @@ public class MultiRosterSmoke
 
         public bool HasJoin(int entityId)
         {
-            lock (_gate) return _joins.Contains(entityId);
+            lock (Gate) return _joins.Contains(entityId);
         }
 
         bool HasLeave(int entityId)
         {
-            lock (_gate) return _leaves.Contains(entityId);
-        }
-
-        public void Disconnect() => _session?.Disconnect();
-
-        void HandlePacket(ArraySegment<byte> buffer)
-        {
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
-            {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult handshake = new();
-                    handshake.Read(buffer);
-                    HandshakeOk = handshake.ok;
-                    HandshakeReason = handshake.reason;
-                    // handshake OK 후 즉시 C_CharacterSelect 송신 (서버가 class 선택 전 월드 진입 차단).
-                    if (handshake.ok)
-                    {
-                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
-                        _session?.Send(charSelect.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap enterMap = new();
-                    enterMap.Read(buffer);
-                    EntityId = enterMap.entityId;
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_PlayerJoin:
-                    S_PlayerJoin join = new();
-                    join.Read(buffer);
-                    lock (_gate) _joins.Add(join.entityId);
-                    break;
-
-                case PacketID.S_PlayerLeave:
-                    S_PlayerLeave leave = new();
-                    leave.Read(buffer);
-                    lock (_gate) _leaves.Add(leave.entityId);
-                    break;
-            }
-        }
-
-        static async Task<bool> WaitUntil(
-            Func<bool> predicate, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (predicate()) return true;
-                await Task.Delay(25, ct);
-            }
-            return predicate();
+            lock (Gate) return _leaves.Contains(entityId);
         }
     }
 }

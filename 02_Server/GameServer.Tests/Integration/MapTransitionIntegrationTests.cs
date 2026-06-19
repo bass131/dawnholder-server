@@ -21,7 +21,7 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 /// </para>
 ///
 /// <para>
-/// <b>결정론</b>: MapTransitionScenario는 tick 기반 이동 (Constants.TickIntervalMs),
+/// <b>결정론</b>: MapTransitionSmoke는 tick 기반 이동 (Constants.TickIntervalMs),
 /// 실시간 sleep 최소화, 서버 권위 좌표만 사용. 매 실행 동일 결과 보장.
 /// </para>
 /// </summary>
@@ -48,7 +48,7 @@ public class MapTransitionIntegrationTests
     [Fact]
     public async Task MapTransition_FullLoop_Succeeds()
     {
-        MapTransitionScenario.Result r = await MapTransitionScenario.Run(
+        MapTransitionSmoke.Result r = await MapTransitionSmoke.Run(
             "127.0.0.1", _server.Port,
             seedBossGate: SeedBossGate);
 
@@ -72,7 +72,7 @@ public class MapTransitionIntegrationTests
     [Fact]
     public async Task MapTransition_EntityIdPreserved()
     {
-        MapTransitionScenario.Result r = await MapTransitionScenario.Run(
+        MapTransitionSmoke.Result r = await MapTransitionSmoke.Run(
             "127.0.0.1", _server.Port,
             seedBossGate: SeedBossGate);
 
@@ -99,7 +99,7 @@ public class MapTransitionIntegrationTests
         List<string> failures = new();
         for (int i = 0; i < 10; i++)
         {
-            MapTransitionScenario.Result r = await MapTransitionScenario.Run(
+            MapTransitionSmoke.Result r = await MapTransitionSmoke.Run(
                 "127.0.0.1", _server.Port,
                 seedBossGate: SeedBossGate);
             if (!r.Success)
@@ -116,7 +116,7 @@ public class MapTransitionIntegrationTests
     // ── 헬퍼 ─────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// BossRoom 게이트 전제조건 시드 — MapTransitionScenario.Run의 seedBossGate 훅용.
+    /// BossRoom 게이트 전제조건 시드 — MapTransitionSmoke.Run의 seedBossGate 훅용.
     ///
     /// <para>
     /// <b>왜 시드가 필요한가</b>: BossRoom 진입에는 Q3에서 추가된 40킬 게이트가 걸린다.

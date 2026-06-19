@@ -1,7 +1,3 @@
-using System.Buffers.Binary;
-using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -106,125 +102,51 @@ public class RangedWhiffSmoke
         return r;
     }
 
-    sealed class RangedWhiffProbe
+    sealed class RangedWhiffProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
-
         int _playerAttackCount;
         int _projectileLaunchCount;
         int _hitResultCount;
 
-        volatile int _lastReceivedServerTick;
+        protected override CharacterClass SelectedClass => CharacterClass.Mage;
 
-        BotSession? _session;
-
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
-
-        public int PlayerAttackCount    { get { lock (_gate) return _playerAttackCount; } }
-        public int ProjectileLaunchCount { get { lock (_gate) return _projectileLaunchCount; } }
-        public int HitResultCount        { get { lock (_gate) return _hitResultCount; } }
-
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake h = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(h.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan t) => _connected.Wait(t);
-        public bool WaitHandshake(TimeSpan t) => _handshake.Wait(t);
-        public bool WaitEnterMap(TimeSpan t)  => _enterMap.Wait(t);
+        public int PlayerAttackCount    { get { lock (Gate) return _playerAttackCount; } }
+        public int ProjectileLaunchCount { get { lock (Gate) return _projectileLaunchCount; } }
+        public int HitResultCount        { get { lock (Gate) return _hitResultCount; } }
 
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
-            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+            => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
 
         public void SendAttack(int targetEntityId)
         {
             C_Attack p = new()
             {
                 targetEntityId     = targetEntityId,
-                attackerClientTick = _lastReceivedServerTick,
+                attackerClientTick = LastReceivedServerTick,
             };
-            _session?.Send(p.Write());
+            Session?.Send(p.Write());
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
         {
-            if (buffer.Count < 4) return;
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            switch (id)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult hr = new(); hr.Read(buffer);
-                    HandshakeOk = hr.ok;
-                    HandshakeReason = hr.reason;
-                    if (hr.ok)
-                    {
-                        C_CharacterSelect cs = new() { characterClass = (byte)CharacterClass.Mage };
-                        _session?.Send(cs.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap em = new(); em.Read(buffer);
-                    LocalEntityId = em.entityId;
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_Snapshot:
-                    S_Snapshot sn = new(); sn.Read(buffer);
-                    _lastReceivedServerTick = sn.serverTick;
-                    break;
-
                 case PacketID.S_PlayerAttack:
                     // attacker 본인 제외 broadcast라 단일봇에선 이 패킷이 오지 않지만
                     // 혹시 규칙이 바뀌면 감지하기 위해 카운트 추적.
-                    lock (_gate) _playerAttackCount++;
+                    lock (Gate) _playerAttackCount++;
                     break;
 
                 case PacketID.S_ProjectileLaunch:
                     // 허공 스윙(타겟 없음) 시 이 패킷이 와서는 안 된다.
-                    lock (_gate) _projectileLaunchCount++;
+                    lock (Gate) _projectileLaunchCount++;
                     break;
 
                 case PacketID.S_HitResult:
                     // 허공 스윙 시 데미지가 발생하면 안 된다.
-                    lock (_gate) _hitResultCount++;
+                    lock (Gate) _hitResultCount++;
                     break;
             }
-        }
-
-        static async Task<bool> WaitUntil(Func<bool> pred, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (pred()) return true;
-                await Task.Delay(25, ct);
-            }
-            return pred();
         }
     }
 }

@@ -1,7 +1,4 @@
-using System.Buffers.Binary;
 using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -70,7 +67,7 @@ public class HpSyncSmoke
             // Town → HuntingGround
             await bot.MoveToPortal(TownPortalX, ct);
             bot.SendEnterPortal(TownPortalId);
-            if (!await bot.WaitMapTransition(DefaultTimeout, ct))
+            if (!await bot.WaitMapTransition1(DefaultTimeout, ct))
                 return Fail(result, "S_MapTransition timeout — Town→HuntingGround");
 
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
@@ -84,10 +81,10 @@ public class HpSyncSmoke
 #endif
 
             // HuntingGround → BossRoom
-            // robust MoveToPortal(_serverX 추적) — HG 적 hitstun/넉백에 의한 undershoot 방어.
+            // robust MoveToPortal(ServerX 추적) — HG 적 hitstun/넉백에 의한 undershoot 방어.
             await bot.MoveToPortal(HGPortalX, ct);
             bot.SendEnterPortal(HGPortalId);
-            if (!await bot.WaitSecondMapTransition(DefaultTimeout, ct))
+            if (!await bot.WaitMapTransition2(DefaultTimeout, ct))
                 return Fail(result, "S_MapTransition timeout — HuntingGround→BossRoom");
 
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
@@ -148,20 +145,13 @@ public class HpSyncSmoke
         return result;
     }
 
-    sealed class HpProbe
+    sealed class HpProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
         readonly ManualResetEventSlim _mapTransition1 = new(false);
         readonly ManualResetEventSlim _mapTransition2 = new(false);
         readonly List<S_EntitySpawn> _spawns = new();
         readonly List<HpEvent> _hpEvents = new();
 
-        BotSession? _session;
-        uint _clientTick;
         volatile float _bossX = 0f;
         volatile bool _bossXInitialized = false;
 
@@ -172,55 +162,26 @@ public class HpSyncSmoke
         bool _sawReviveFull;
         int _observedMaxHp;
 
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
-        public float SpawnX { get; private set; }
+        public bool SawInitialFull  { get { lock (Gate) return _sawInitialFull; } }
+        public bool SawDamage       { get { lock (Gate) return _sawDamage; } }
+        public bool SawZero         { get { lock (Gate) return _sawZero; } }
+        public bool SawReviveFull   { get { lock (Gate) return _sawReviveFull; } }
+        public int  ObservedMaxHp   { get { lock (Gate) return _observedMaxHp; } }
+        public int  HpEventCount    { get { lock (Gate) return _hpEvents.Count; } }
 
-        public bool SawInitialFull  { get { lock (_gate) return _sawInitialFull; } }
-        public bool SawDamage       { get { lock (_gate) return _sawDamage; } }
-        public bool SawZero         { get { lock (_gate) return _sawZero; } }
-        public bool SawReviveFull   { get { lock (_gate) return _sawReviveFull; } }
-        public int  ObservedMaxHp   { get { lock (_gate) return _observedMaxHp; } }
-        public int  HpEventCount    { get { lock (_gate) return _hpEvents.Count; } }
-
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(handshake.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
-        public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
-        public bool WaitEnterMap(TimeSpan timeout)  => _enterMap.Wait(timeout);
-
-        public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
+        public async Task<bool> WaitMapTransition1(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition1.IsSet, timeout, ct);
 
-        public async Task<bool> WaitSecondMapTransition(TimeSpan timeout, CancellationToken ct)
+        public async Task<bool> WaitMapTransition2(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition2.IsSet, timeout, ct);
 
         public async Task<S_EntitySpawn?> WaitForBossSpawn(TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(
-                () => { lock (_gate) return _spawns.Any(s => s.entityKind == BossEntityKind); },
+                () => { lock (Gate) return _spawns.Any(s => s.entityKind == BossEntityKind); },
                 timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _spawns.First(s => s.entityKind == BossEntityKind);
+            lock (Gate) return _spawns.First(s => s.entityKind == BossEntityKind);
         }
 
         // 4단계가 모두 true가 되는 순간 즉시 반환.
@@ -231,7 +192,7 @@ public class HpSyncSmoke
             Stopwatch sw = Stopwatch.StartNew();
             while (sw.Elapsed < timeout)
             {
-                lock (_gate)
+                lock (Gate)
                 {
                     if (_sawInitialFull && _sawDamage && _sawZero && _sawReviveFull)
                         return true;
@@ -242,58 +203,23 @@ public class HpSyncSmoke
                 await Task.Delay(25, ct);
             }
 
-            lock (_gate)
+            lock (Gate)
                 return _sawInitialFull && _sawDamage && _sawZero && _sawReviveFull;
         }
 
-        // portal 위치까지 서버 권위 X(_serverX) 기반 robust 이동.
-        // 매 틱 방향 재계산 — HG 적 hitstun/넉백에 의한 undershoot 방어.
-        const int MoveToPortalMaxTicks = 400;
-        const float PortalReachRadius = 0.5f;
-        volatile float _serverX = 0f;
-
         public async Task MoveToPortal(float portalX, CancellationToken ct)
-        {
-            int ticks = 0;
-            while (true)
-            {
-                float sx = _serverX;
-                if (Math.Abs(sx - portalX) <= PortalReachRadius)
-                    break;
+            => await MoveToPortalCore(portalX, ct);
 
-                if (ticks >= MoveToPortalMaxTicks)
-                    throw new TimeoutException(
-                        $"MoveToPortal: {MoveToPortalMaxTicks}틱 내 포털 미도달. " +
-                        $"portalX={portalX}, serverX={sx}");
+        public void SendEnterPortal(int portalId) => SendEnterPortalCore(portalId);
 
-                sbyte dir = sx < portalX ? (sbyte)1 : (sbyte)-1;
-                SendMove(dir);
-                await Task.Delay(Constants.TickIntervalMs, ct);
-                ticks++;
-            }
-            SendMove(0);
-            await Task.Delay(150, ct);
-        }
-
-        public void SendEnterPortal(int portalId)
-        {
-            C_EnterPortal packet = new() { portalId = portalId };
-            _session?.Send(packet.Write());
-        }
-
-        // standalone 게이트 충족용 DEBUG 치트. cheatType=0 = DebugCompleteQuest.
-        public void SendCheatCompleteQuest()
-        {
-            C_CheatCommand cheat = new() { cheatType = 0 };
-            _session?.Send(cheat.Write());
-        }
+        public void SendCheatCompleteQuest() => SendCheatCompleteQuestCore();
 
         public async Task MoveIntoBossRange(float bossX, CancellationToken ct)
         {
-            float desiredX = bossX > SpawnX
+            float desiredX = bossX > ServerX
                 ? bossX - PreferredAttackDistance
                 : bossX + PreferredAttackDistance;
-            float delta = desiredX - SpawnX;
+            float delta = desiredX - ServerX;
             sbyte direction = delta >= 0f ? (sbyte)1 : (sbyte)-1;
             int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Knight().MoveSpeed * Constants.TickDuration));
             ticks = Math.Clamp(ticks, 0, 160);
@@ -310,13 +236,13 @@ public class HpSyncSmoke
         async Task EnsureInAttackRangeOnce(CancellationToken ct)
         {
             if (!_bossXInitialized) return;
-            float dist = Math.Abs(SpawnX - _bossX);
+            float dist = Math.Abs(ServerX - _bossX);
             if (dist <= ReapproachThreshold) return;
 
-            sbyte dir = (_bossX >= SpawnX) ? (sbyte)1 : (sbyte)-1;
+            sbyte dir = (_bossX >= ServerX) ? (sbyte)1 : (sbyte)-1;
             for (int t = 0; t < MaxReapproachTicks; t++)
             {
-                float d = Math.Abs(SpawnX - _bossX);
+                float d = Math.Abs(ServerX - _bossX);
                 if (d <= ReapproachThreshold) break;
                 SendMove(dir);
                 await Task.Delay(Constants.TickIntervalMs, ct);
@@ -324,61 +250,20 @@ public class HpSyncSmoke
             SendMove(0);
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void SendMove(sbyte inputX)
+        protected override void OnMapTransition(S_MapTransition packet)
         {
-            _clientTick++;
-            C_MoveIntent move = new()
-            {
-                input = InputBits.Encode(inputX, jumpPressed: false),
-                clientTick = _clientTick,
-            };
-            _session?.Send(move.Write());
+            if (!_mapTransition1.IsSet) _mapTransition1.Set();
+            else _mapTransition2.Set();
         }
 
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
         {
-            if (buffer.Count < 4) return;
-
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            switch (id)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult handshake = new();
-                    handshake.Read(buffer);
-                    HandshakeOk = handshake.ok;
-                    HandshakeReason = handshake.reason;
-                    if (handshake.ok)
-                    {
-                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
-                        _session?.Send(charSelect.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap enterMap = new();
-                    enterMap.Read(buffer);
-                    LocalEntityId = enterMap.entityId;
-                    SpawnX = enterMap.spawnX;
-                    _serverX = enterMap.spawnX; // robust MoveToPortal 초기화.
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_MapTransition:
-                    S_MapTransition mapTransition = new();
-                    mapTransition.Read(buffer);
-                    SpawnX = mapTransition.spawnX;
-                    _serverX = mapTransition.spawnX; // 새 맵 spawn 좌표로 재동기화.
-                    if (!_mapTransition1.IsSet) _mapTransition1.Set();
-                    else _mapTransition2.Set();
-                    break;
-
                 case PacketID.S_EntitySpawn:
                     S_EntitySpawn spawn = new();
                     spawn.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _spawns.Add(spawn);
                         if (spawn.entityKind == BossEntityKind)
@@ -389,20 +274,10 @@ public class HpSyncSmoke
                     }
                     break;
 
-                case PacketID.S_Snapshot:
-                    S_Snapshot snapshot = new();
-                    snapshot.Read(buffer);
-                    if (snapshot.entityId == LocalEntityId)
-                    {
-                        SpawnX = snapshot.x;
-                        _serverX = snapshot.x; // robust MoveToPortal 실시간 추적.
-                    }
-                    break;
-
                 case PacketID.S_EntityState:
                     S_EntityState entityState = new();
                     entityState.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         bool isBoss = _spawns.Any(s => s.entityId == entityState.entityId && s.entityKind == BossEntityKind);
                         if (isBoss)
@@ -421,7 +296,7 @@ public class HpSyncSmoke
                     playerHp.Read(buffer);
                     if (playerHp.entityId != LocalEntityId) break;
 
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _hpEvents.Add(new HpEvent(playerHp.currentHp, playerHp.maxHp));
 
@@ -459,17 +334,6 @@ public class HpSyncSmoke
                     }
                     break;
             }
-        }
-
-        static async Task<bool> WaitUntil(Func<bool> predicate, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (predicate()) return true;
-                await Task.Delay(25, ct);
-            }
-            return predicate();
         }
     }
 

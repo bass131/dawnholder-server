@@ -1,7 +1,3 @@
-using System.Buffers.Binary;
-using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -25,7 +21,7 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 // 맵 경계 clamp(⑤): 서버 MapBoundsX = terrain Solids 합산. 빈 terrain 맵은 ±∞ → clamp 없음.
 //   HuntingGround terrain이 있으면 실제 경계로 잘림. 봇은 "MaxX 근처에서 시전 후 현재 X ≤ MaxX" 판정.
 //   terrain 없이 fresh-서버 실행 시 ⑤는 clamp 부재이지만 "경계 초과 없음"은 여전히 pass.
-public class TeleportSmokeScenario
+public class TeleportSmoke
 {
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
     static readonly TimeSpan SkillArrivalTimeout = TimeSpan.FromSeconds(5);
@@ -254,63 +250,29 @@ public class TeleportSmokeScenario
         return r;
     }
 
-    sealed class TeleportProbe
+    sealed class TeleportProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
         readonly ManualResetEventSlim _mapTransition = new(false);
 
         readonly List<S_SkillCast> _skillCasts = new();
         readonly List<S_HitResult> _hitResults = new();
 
-        volatile int _lastReceivedServerTick;
         volatile int _snapshotGeneration;
         volatile float _currentX;
 
-        BotSession? _session;
-        uint _moveTick;
         readonly CharacterClass _class;
 
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
-        public float SpawnX { get; private set; }
+        protected override CharacterClass SelectedClass => _class;
+
         public float CurrentX => _currentX;
 
         public TeleportProbe(CharacterClass cls) { _class = cls; }
-
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake h = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(h.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan t) => _connected.Wait(t);
-        public bool WaitHandshake(TimeSpan t) => _handshake.Wait(t);
-        public bool WaitEnterMap(TimeSpan t)  => _enterMap.Wait(t);
 
         public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition.IsSet, timeout, ct);
 
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
-            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+            => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
 
         public async Task<bool> WaitForNextSnapshot(TimeSpan timeout, CancellationToken ct)
         {
@@ -321,26 +283,26 @@ public class TeleportSmokeScenario
         public async Task<S_SkillCast?> WaitForSkillCast(int casterEntityId, byte skillId, TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(
-                () => { lock (_gate) return _skillCasts.Any(c => c.casterEntityId == casterEntityId && c.skillId == skillId); },
+                () => { lock (Gate) return _skillCasts.Any(c => c.casterEntityId == casterEntityId && c.skillId == skillId); },
                 timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _skillCasts.First(c => c.casterEntityId == casterEntityId && c.skillId == skillId);
+            lock (Gate) return _skillCasts.First(c => c.casterEntityId == casterEntityId && c.skillId == skillId);
         }
 
         public S_SkillCast? GetCachedSkillCast(int casterEntityId, byte skillId)
         {
-            lock (_gate)
+            lock (Gate)
                 return _skillCasts.FirstOrDefault(c => c.casterEntityId == casterEntityId && c.skillId == skillId);
         }
 
         public void ClearSkillCasts()
         {
-            lock (_gate) _skillCasts.Clear();
+            lock (Gate) _skillCasts.Clear();
         }
 
         public int GetHitResultCount()
         {
-            lock (_gate) return _hitResults.Count;
+            lock (Gate) return _hitResults.Count;
         }
 
         public async Task MoveToPortal(float portalX, CancellationToken ct)
@@ -376,102 +338,51 @@ public class TeleportSmokeScenario
             await Task.Delay(150, ct);
         }
 
-        public void SendEnterPortal(int portalId)
-        {
-            C_EnterPortal p = new() { portalId = portalId };
-            _session?.Send(p.Write());
-        }
+        public void SendEnterPortal(int portalId) => SendEnterPortalCore(portalId);
 
         public void SendSkillUse(byte skillId)
         {
             C_SkillUse p = new()
             {
                 skillId            = skillId,
-                attackerClientTick = _lastReceivedServerTick,
+                attackerClientTick = LastReceivedServerTick,
                 facing             = 1, // 오른쪽(PDL: 1=right). 기대 위치 계산(+TeleportDistance)과 정합.
                 verticalDir        = 0, // 수평 텔레포트 (M4.15 v14 신규 필드 — 0=수평, 기본).
             };
-            _session?.Send(p.Write());
+            Session?.Send(p.Write());
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void SendMove(sbyte inputX)
+        protected override void OnEnterMap(S_EnterMap packet)
         {
-            _moveTick++;
-            C_MoveIntent m = new()
-            {
-                input      = InputBits.Encode(inputX, jumpPressed: false),
-                clientTick = _moveTick,
-            };
-            _session?.Send(m.Write());
+            _currentX = packet.spawnX;
         }
 
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void OnMapTransition(S_MapTransition packet)
         {
-            if (buffer.Count < 4) return;
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            _currentX = packet.spawnX;
+            _mapTransition.Set();
+        }
+
+        protected override void OnSnapshot(S_Snapshot packet)
+        {
+            _currentX = packet.x;
+            Interlocked.Increment(ref _snapshotGeneration);
+        }
+
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
+        {
+            switch (id)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult hr = new(); hr.Read(buffer);
-                    HandshakeOk = hr.ok;
-                    HandshakeReason = hr.reason;
-                    if (hr.ok)
-                    {
-                        C_CharacterSelect cs = new() { characterClass = (byte)_class };
-                        _session?.Send(cs.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap em = new(); em.Read(buffer);
-                    LocalEntityId = em.entityId;
-                    SpawnX = em.spawnX;
-                    _currentX = em.spawnX;
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_MapTransition:
-                    S_MapTransition mt = new(); mt.Read(buffer);
-                    SpawnX = mt.spawnX;
-                    _currentX = mt.spawnX;
-                    _mapTransition.Set();
-                    break;
-
-                case PacketID.S_Snapshot:
-                    S_Snapshot sn = new(); sn.Read(buffer);
-                    _lastReceivedServerTick = sn.serverTick;
-                    if (sn.entityId == LocalEntityId)
-                    {
-                        SpawnX = sn.x;
-                        _currentX = sn.x;
-                        Interlocked.Increment(ref _snapshotGeneration);
-                    }
-                    break;
-
                 case PacketID.S_SkillCast:
                     S_SkillCast sc = new(); sc.Read(buffer);
-                    lock (_gate) _skillCasts.Add(sc);
+                    lock (Gate) _skillCasts.Add(sc);
                     break;
 
                 case PacketID.S_HitResult:
                     S_HitResult hit = new(); hit.Read(buffer);
-                    lock (_gate) _hitResults.Add(hit);
+                    lock (Gate) _hitResults.Add(hit);
                     break;
             }
-        }
-
-        static async Task<bool> WaitUntil(Func<bool> pred, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (pred()) return true;
-                await Task.Delay(25, ct);
-            }
-            return pred();
         }
     }
 }

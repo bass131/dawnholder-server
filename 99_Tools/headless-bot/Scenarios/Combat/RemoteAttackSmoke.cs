@@ -1,8 +1,3 @@
-using System.Buffers.Binary;
-using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
-using Shared.GameData;
 using Shared.Protocol;
 
 namespace Dawnholder.Tools.HeadlessBot.Scenarios;
@@ -113,53 +108,17 @@ public class RemoteAttackSmoke
         return result;
     }
 
-    sealed class AttackProbe
+    sealed class AttackProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
-
         // S_PlayerAttack 수신 목록 — attackerEntityId별로 카운트한다.
         readonly List<int> _receivedAttackerIds = new();
 
-        BotSession? _session;
-        volatile int _lastReceivedServerTick = 0;
-
         public string Name { get; }
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
 
         public AttackProbe(string name) => Name = name;
 
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(handshake.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
-        public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
-        public bool WaitEnterMap(TimeSpan timeout)  => _enterMap.Wait(timeout);
-
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
-            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+            => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
 
         // attackerClientTick에 최신 serverTick을 박아야 서버 rewind 범위 검증을 통과한다.
         public void SendAttack(int targetEntityId)
@@ -167,74 +126,29 @@ public class RemoteAttackSmoke
             C_Attack attack = new()
             {
                 targetEntityId = targetEntityId,
-                attackerClientTick = _lastReceivedServerTick,
+                attackerClientTick = LastReceivedServerTick,
             };
-            _session?.Send(attack.Write());
+            Session?.Send(attack.Write());
         }
 
         // 특정 attackerEntityId로부터 수신한 S_PlayerAttack 건수.
         public int AttackCountFrom(int attackerEntityId)
         {
-            lock (_gate)
+            lock (Gate)
                 return _receivedAttackerIds.Count(id => id == attackerEntityId);
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
         {
-            if (buffer.Count < 4) return;
-
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            if (id == PacketID.S_PlayerAttack)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult handshake = new();
-                    handshake.Read(buffer);
-                    HandshakeOk = handshake.ok;
-                    HandshakeReason = handshake.reason;
-                    if (handshake.ok)
-                    {
-                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
-                        _session?.Send(charSelect.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap enterMap = new();
-                    enterMap.Read(buffer);
-                    LocalEntityId = enterMap.entityId;
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_Snapshot:
-                    // SendAttack이 이 값을 attackerClientTick에 박아 서버 rewind 범위 검증 통과.
-                    S_Snapshot snapshot = new();
-                    snapshot.Read(buffer);
-                    _lastReceivedServerTick = snapshot.serverTick;
-                    break;
-
-                case PacketID.S_PlayerAttack:
-                    // 서버가 공격자 외 전원에게 broadcast하는 이벤트.
-                    // attackerEntityId를 기록해 검증에 활용한다.
-                    S_PlayerAttack playerAttack = new();
-                    playerAttack.Read(buffer);
-                    lock (_gate)
-                        _receivedAttackerIds.Add(playerAttack.attackerEntityId);
-                    break;
+                // 서버가 공격자 외 전원에게 broadcast하는 이벤트.
+                // attackerEntityId를 기록해 검증에 활용한다.
+                S_PlayerAttack playerAttack = new();
+                playerAttack.Read(buffer);
+                lock (Gate)
+                    _receivedAttackerIds.Add(playerAttack.attackerEntityId);
             }
-        }
-
-        static async Task<bool> WaitUntil(Func<bool> predicate, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (predicate()) return true;
-                await Task.Delay(25, ct);
-            }
-            return predicate();
         }
     }
 }

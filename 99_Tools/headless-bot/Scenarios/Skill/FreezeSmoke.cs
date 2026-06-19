@@ -1,7 +1,3 @@
-using System.Buffers.Binary;
-using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -84,7 +80,7 @@ public class FreezeSmoke
             // ── Normal 적 no-freeze 검증 (M4.15: 평타 후에도 이동 지속) ─────────
             await bot.MoveToPortal(TownPortalX, ct);
             bot.SendEnterPortal(TownPortalId);
-            if (!await bot.WaitMapTransition(DefaultTimeout, ct))
+            if (!await bot.WaitMapTransition1(DefaultTimeout, ct))
                 return Fail(result, "S_MapTransition timeout — Town→HuntingGround");
 
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
@@ -139,7 +135,7 @@ public class FreezeSmoke
 
             await bot.MoveToPortal(HGPortalX, ct);
             bot.SendEnterPortal(HGPortalId);
-            if (!await bot.WaitSecondMapTransition(DefaultTimeout, ct))
+            if (!await bot.WaitMapTransition2(DefaultTimeout, ct))
                 return Fail(result, "S_MapTransition timeout — HuntingGround→BossRoom");
 
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
@@ -193,13 +189,8 @@ public class FreezeSmoke
         return r;
     }
 
-    sealed class FreezeProbe
+    sealed class FreezeProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
         readonly ManualResetEventSlim _mapTransition1 = new(false);
         readonly ManualResetEventSlim _mapTransition2 = new(false);
 
@@ -210,63 +201,32 @@ public class FreezeSmoke
         readonly Dictionary<int, float> _maxDelta = new();
 
         S_ProjectileLaunch? _latestLaunch;
-        volatile int _lastReceivedServerTick;
 
-        BotSession? _session;
-        uint _moveTick;
+        protected override CharacterClass SelectedClass => CharacterClass.Mage;
 
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
-        public float SpawnX { get; private set; }
-
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake h = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(h.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan t) => _connected.Wait(t);
-        public bool WaitHandshake(TimeSpan t) => _handshake.Wait(t);
-        public bool WaitEnterMap(TimeSpan t)  => _enterMap.Wait(t);
-
-        public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
+        public async Task<bool> WaitMapTransition1(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition1.IsSet, timeout, ct);
 
-        public async Task<bool> WaitSecondMapTransition(TimeSpan timeout, CancellationToken ct)
+        public async Task<bool> WaitMapTransition2(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition2.IsSet, timeout, ct);
 
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
-            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+            => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
 
         public async Task<S_EntitySpawn?> WaitForSpawnByKind(byte kind, TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(
-                () => { lock (_gate) return _spawns.Any(s => s.entityKind == kind && s.currentHp > 0); },
+                () => { lock (Gate) return _spawns.Any(s => s.entityKind == kind && s.currentHp > 0); },
                 timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _spawns.First(s => s.entityKind == kind && s.currentHp > 0);
+            lock (Gate) return _spawns.First(s => s.entityKind == kind && s.currentHp > 0);
         }
 
         public async Task WaitForEntityNearby(int entityId, float maxDist, TimeSpan timeout, CancellationToken ct)
         {
             await WaitUntil(() =>
             {
-                lock (_gate)
+                lock (Gate)
                 {
                     if (!_entityCurrentX.TryGetValue(entityId, out float ex)) return false;
                     return Math.Abs(ex - SpawnX) <= maxDist;
@@ -276,9 +236,9 @@ public class FreezeSmoke
 
         public async Task<S_ProjectileLaunch?> WaitForProjectileLaunch(TimeSpan timeout, CancellationToken ct)
         {
-            bool ok = await WaitUntil(() => { lock (_gate) return _latestLaunch != null; }, timeout, ct);
+            bool ok = await WaitUntil(() => { lock (Gate) return _latestLaunch != null; }, timeout, ct);
             if (!ok) return null;
-            lock (_gate)
+            lock (Gate)
             {
                 var l = _latestLaunch;
                 _latestLaunch = null; // 다음 발사 대기를 위해 리셋
@@ -286,22 +246,12 @@ public class FreezeSmoke
             }
         }
 
-        public float GetEntityX(int entityId)
-        {
-            lock (_gate)
-            {
-                _entityCurrentX.TryGetValue(entityId, out float x);
-                return x;
-            }
-        }
-
         // position delta 추적 시작: 현재 x를 baseline으로 기록.
         public void StartTrackingEntity(int entityId)
         {
-            lock (_gate)
+            lock (Gate)
             {
-                float x = 0f;
-                _entityCurrentX.TryGetValue(entityId, out x);
+                _entityCurrentX.TryGetValue(entityId, out float x);
                 _entityBaselineX[entityId] = x;
                 _maxDelta[entityId] = 0f;
                 _tracking[entityId] = true;
@@ -310,27 +260,16 @@ public class FreezeSmoke
 
         public void ClearEntityPositionHistory(int entityId)
         {
-            lock (_gate)
+            lock (Gate)
             {
                 _maxDelta.Remove(entityId);
                 _tracking.Remove(entityId);
             }
         }
 
-        public void ClearPositionDeltaTracking(int entityId)
-        {
-            lock (_gate)
-            {
-                float x = 0f;
-                _entityCurrentX.TryGetValue(entityId, out x);
-                _entityBaselineX[entityId] = x;
-                _maxDelta[entityId] = 0f;
-            }
-        }
-
         public float GetMaxPositionDelta(int entityId)
         {
-            lock (_gate)
+            lock (Gate)
             {
                 _maxDelta.TryGetValue(entityId, out float d);
                 return d;
@@ -338,19 +277,7 @@ public class FreezeSmoke
         }
 
         public async Task MoveToPortal(float portalX, CancellationToken ct)
-        {
-            float delta = portalX - SpawnX;
-            sbyte dir = delta >= 0f ? (sbyte)1 : (sbyte)-1;
-            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Mage().MoveSpeed * Constants.TickDuration));
-            ticks = Math.Clamp(ticks, 0, 200);
-            for (int i = 0; i < ticks; i++)
-            {
-                SendMove(dir);
-                await Task.Delay(Constants.TickIntervalMs, ct);
-            }
-            SendMove(0);
-            await Task.Delay(150, ct);
-        }
+            => await MoveToPortalCore(portalX, ct);
 
         public async Task MoveIntoMageRange(float targetX, CancellationToken ct)
         {
@@ -369,84 +296,33 @@ public class FreezeSmoke
             await Task.Delay(150, ct);
         }
 
-        public void SendEnterPortal(int portalId)
-        {
-            C_EnterPortal p = new() { portalId = portalId };
-            _session?.Send(p.Write());
-        }
+        public void SendEnterPortal(int portalId) => SendEnterPortalCore(portalId);
 
-        // standalone 게이트 충족용 DEBUG 치트. cheatType=0 = DebugCompleteQuest.
-        public void SendCheatCompleteQuest()
-        {
-            C_CheatCommand cheat = new() { cheatType = 0 };
-            _session?.Send(cheat.Write());
-        }
+        public void SendCheatCompleteQuest() => SendCheatCompleteQuestCore();
 
         public void SendAttack(int targetEntityId)
         {
             C_Attack p = new()
             {
                 targetEntityId     = targetEntityId,
-                attackerClientTick = _lastReceivedServerTick,
+                attackerClientTick = LastReceivedServerTick,
             };
-            _session?.Send(p.Write());
+            Session?.Send(p.Write());
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void SendMove(sbyte inputX)
+        protected override void OnMapTransition(S_MapTransition packet)
         {
-            _moveTick++;
-            C_MoveIntent m = new()
-            {
-                input      = InputBits.Encode(inputX, jumpPressed: false),
-                clientTick = _moveTick,
-            };
-            _session?.Send(m.Write());
+            if (!_mapTransition1.IsSet) _mapTransition1.Set();
+            else _mapTransition2.Set();
         }
 
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
         {
-            if (buffer.Count < 4) return;
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            switch (id)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult hr = new(); hr.Read(buffer);
-                    HandshakeOk = hr.ok;
-                    HandshakeReason = hr.reason;
-                    if (hr.ok)
-                    {
-                        C_CharacterSelect cs = new() { characterClass = (byte)CharacterClass.Mage };
-                        _session?.Send(cs.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap em = new(); em.Read(buffer);
-                    LocalEntityId = em.entityId;
-                    SpawnX = em.spawnX;
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_MapTransition:
-                    S_MapTransition mt = new(); mt.Read(buffer);
-                    SpawnX = mt.spawnX;
-                    if (!_mapTransition1.IsSet) _mapTransition1.Set();
-                    else _mapTransition2.Set();
-                    break;
-
-                case PacketID.S_Snapshot:
-                    S_Snapshot sn = new(); sn.Read(buffer);
-                    _lastReceivedServerTick = sn.serverTick;
-                    if (sn.entityId == LocalEntityId)
-                        SpawnX = sn.x;
-                    break;
-
                 case PacketID.S_EntitySpawn:
                     S_EntitySpawn sp = new(); sp.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _spawns.Add(sp);
                         _entityCurrentX[sp.entityId] = sp.x;
@@ -455,7 +331,7 @@ public class FreezeSmoke
 
                 case PacketID.S_EntityState:
                     S_EntityState es = new(); es.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _entityCurrentX[es.entityId] = es.x;
                         if (_tracking.TryGetValue(es.entityId, out bool tracking) && tracking)
@@ -472,20 +348,9 @@ public class FreezeSmoke
 
                 case PacketID.S_ProjectileLaunch:
                     S_ProjectileLaunch pl = new(); pl.Read(buffer);
-                    lock (_gate) _latestLaunch = pl;
+                    lock (Gate) _latestLaunch = pl;
                     break;
             }
-        }
-
-        static async Task<bool> WaitUntil(Func<bool> pred, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (pred()) return true;
-                await Task.Delay(25, ct);
-            }
-            return pred();
         }
     }
 }

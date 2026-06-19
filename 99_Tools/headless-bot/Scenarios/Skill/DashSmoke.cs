@@ -1,7 +1,3 @@
-using System.Buffers.Binary;
-using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -22,7 +18,7 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 //
 // 클래스 게이트 검증(⑤)은 별도 Mage 봇이 같은 서버에 연결해 Dash 송신 후 S_SkillCast 부재 확인.
 // fresh 서버 단독 실행 관례 — 몬스터풀 교차오염 회피 (M4.6 학습).
-public class DashSmokeScenario
+public class DashSmoke
 {
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
     static readonly TimeSpan SkillArrivalTimeout = TimeSpan.FromSeconds(5);
@@ -252,13 +248,8 @@ public class DashSmokeScenario
         return r;
     }
 
-    sealed class DashProbe
+    sealed class DashProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
         readonly ManualResetEventSlim _mapTransition = new(false);
 
         readonly List<S_EntitySpawn> _spawns = new();
@@ -266,54 +257,25 @@ public class DashSmokeScenario
         readonly List<S_HitResult> _hitResults = new();
         readonly Dictionary<int, float> _entityCurrentX = new();
 
-        volatile int _lastReceivedServerTick;
         volatile int _snapshotGeneration;
         volatile float _currentX;
         // 마지막 비-0 이동 방향. +1=오른쪽, -1=왼쪽. 초기 +1(오른쪽).
         volatile int _lastFacingDir = 1;
 
-        BotSession? _session;
-        uint _moveTick;
         readonly CharacterClass _class;
 
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
-        public float SpawnX { get; private set; }
+        protected override CharacterClass SelectedClass => _class;
+
         public float CurrentX => _currentX;
         public int FacingDir => _lastFacingDir;
 
         public DashProbe(CharacterClass cls) { _class = cls; }
 
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake h = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(h.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan t) => _connected.Wait(t);
-        public bool WaitHandshake(TimeSpan t) => _handshake.Wait(t);
-        public bool WaitEnterMap(TimeSpan t)  => _enterMap.Wait(t);
-
         public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition.IsSet, timeout, ct);
 
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
-            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+            => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
 
         public async Task<bool> WaitForNextSnapshot(TimeSpan timeout, CancellationToken ct)
         {
@@ -323,7 +285,7 @@ public class DashSmokeScenario
 
         public async Task<bool> WaitForSpawns(int minCount, byte kind, TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(
-                () => { lock (_gate) return _spawns.Count(s => s.entityKind == kind && s.currentHp > 0) >= minCount; },
+                () => { lock (Gate) return _spawns.Count(s => s.entityKind == kind && s.currentHp > 0) >= minCount; },
                 timeout, ct);
 
         // Dash 타격 가능한 Normal 적 X를 반환.
@@ -332,7 +294,7 @@ public class DashSmokeScenario
         // _entityCurrentX 우선(AI 이동 반영), 없으면 S_EntitySpawn.x 폴백.
         public float GetFirstNormalCurrentX()
         {
-            lock (_gate)
+            lock (Gate)
             {
                 float botSpawnX = SpawnX;
                 IEnumerable<S_EntitySpawn> alive = _spawns.Where(s => s.entityKind == 0 && s.currentHp > 0);
@@ -359,7 +321,7 @@ public class DashSmokeScenario
         {
             const float DashBoxHalfX = 2.5f; // 서버 CombatConstants.DashBoxHalfX와 수동 동기화
             float boxOriginX = _currentX + DashBoxHalfX * _lastFacingDir;
-            lock (_gate)
+            lock (Gate)
                 return _spawns.Any(s =>
                     s.entityKind == 0 &&
                     s.currentHp > 0 &&
@@ -375,7 +337,7 @@ public class DashSmokeScenario
             const float DashBoxHalfX = 2.5f;
             const float OuterBound   = 4.0f;
             float boxOriginX = _currentX + DashBoxHalfX * _lastFacingDir;
-            lock (_gate)
+            lock (Gate)
                 return _spawns.Any(s =>
                     s.entityKind == 0 &&
                     s.currentHp > 0 &&
@@ -392,7 +354,7 @@ public class DashSmokeScenario
             const float DashBoxHalfX = 2.5f;
             const float OuterBound   = 4.0f;
             float boxOriginX = casterX + DashBoxHalfX * _lastFacingDir;
-            lock (_gate)
+            lock (Gate)
             {
                 foreach (S_HitResult hr in _hitResults)
                 {
@@ -408,26 +370,26 @@ public class DashSmokeScenario
         public async Task<S_SkillCast?> WaitForSkillCast(int casterEntityId, byte skillId, TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(
-                () => { lock (_gate) return _skillCasts.Any(c => c.casterEntityId == casterEntityId && c.skillId == skillId); },
+                () => { lock (Gate) return _skillCasts.Any(c => c.casterEntityId == casterEntityId && c.skillId == skillId); },
                 timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _skillCasts.First(c => c.casterEntityId == casterEntityId && c.skillId == skillId);
+            lock (Gate) return _skillCasts.First(c => c.casterEntityId == casterEntityId && c.skillId == skillId);
         }
 
         public S_SkillCast? GetCachedSkillCast(int casterEntityId, byte skillId)
         {
-            lock (_gate)
+            lock (Gate)
                 return _skillCasts.FirstOrDefault(c => c.casterEntityId == casterEntityId && c.skillId == skillId);
         }
 
         public void ClearSkillCasts()
         {
-            lock (_gate) _skillCasts.Clear();
+            lock (Gate) _skillCasts.Clear();
         }
 
         public S_HitResult? GetHitResultByEffect(byte hitEffect)
         {
-            lock (_gate)
+            lock (Gate)
                 return _hitResults.FirstOrDefault(h => h.hitEffect == hitEffect);
         }
 
@@ -440,10 +402,10 @@ public class DashSmokeScenario
             ticks = Math.Clamp(ticks, 0, 200);
             for (int i = 0; i < ticks; i++)
             {
-                SendMove(dir);
+                SendMoveDash(dir);
                 await Task.Delay(Constants.TickIntervalMs, ct);
             }
-            SendMove(0);
+            SendMoveDash(0);
             await Task.Delay(150, ct);
         }
 
@@ -458,10 +420,10 @@ public class DashSmokeScenario
             ticks = Math.Clamp(ticks, 0, 200);
             for (int i = 0; i < ticks; i++)
             {
-                SendMove(dir);
+                SendMoveDash(dir);
                 await Task.Delay(Constants.TickIntervalMs, ct);
             }
-            SendMove(0);
+            SendMoveDash(0);
             await Task.Delay(150, ct);
         }
 
@@ -483,13 +445,13 @@ public class DashSmokeScenario
                 float err = destX - _currentX;
                 if (Math.Abs(err) <= Tolerance)
                 {
-                    SendMove(0);
+                    SendMoveDash(0);
                     await Task.Delay(150, ct);
                     break;
                 }
 
                 sbyte dir = err >= 0f ? (sbyte)1 : (sbyte)-1;
-                SendMove(dir);
+                SendMoveDash(dir);
                 await Task.Delay(Constants.TickIntervalMs, ct);
                 iter++;
             }
@@ -513,95 +475,57 @@ public class DashSmokeScenario
 
                 if (Math.Abs(err) <= Tolerance)
                 {
-                    SendMove(0);
+                    SendMoveDash(0);
                     await Task.Delay(150, ct);
                     break;
                 }
 
                 sbyte dir = err >= 0f ? (sbyte)1 : (sbyte)-1;
-                SendMove(dir);
+                SendMoveDash(dir);
                 await Task.Delay(Constants.TickIntervalMs, ct);
                 iter++;
             }
         }
 
-        public void SendEnterPortal(int portalId)
-        {
-            C_EnterPortal p = new() { portalId = portalId };
-            _session?.Send(p.Write());
-        }
+        public void SendEnterPortal(int portalId) => SendEnterPortalCore(portalId);
 
         public void SendSkillUse(byte skillId)
         {
             C_SkillUse p = new()
             {
                 skillId            = skillId,
-                attackerClientTick = _lastReceivedServerTick,
+                attackerClientTick = LastReceivedServerTick,
             };
-            _session?.Send(p.Write());
+            Session?.Send(p.Write());
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void SendMove(sbyte inputX)
+        // ProbeBase.SendMove를 직접 쓰지 않고 _lastFacingDir 갱신이 필요하므로 별도 래퍼.
+        // ProbeBase.SendMove는 ClientTick 관리만 하므로 여기서 중복 관리.
+        void SendMoveDash(sbyte inputX)
         {
             if (inputX != 0) _lastFacingDir = inputX;
-            _moveTick++;
-            C_MoveIntent m = new()
-            {
-                input      = InputBits.Encode(inputX, jumpPressed: false),
-                clientTick = _moveTick,
-            };
-            _session?.Send(m.Write());
+            SendMove(inputX);
         }
 
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void OnMapTransition(S_MapTransition packet)
         {
-            if (buffer.Count < 4) return;
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            _currentX = packet.spawnX;
+            _mapTransition.Set();
+        }
+
+        protected override void OnSnapshot(S_Snapshot packet)
+        {
+            _currentX = packet.x;
+            Interlocked.Increment(ref _snapshotGeneration);
+        }
+
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
+        {
+            switch (id)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult hr = new(); hr.Read(buffer);
-                    HandshakeOk = hr.ok;
-                    HandshakeReason = hr.reason;
-                    if (hr.ok)
-                    {
-                        C_CharacterSelect cs = new() { characterClass = (byte)_class };
-                        _session?.Send(cs.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap em = new(); em.Read(buffer);
-                    LocalEntityId = em.entityId;
-                    SpawnX = em.spawnX;
-                    _currentX = em.spawnX;
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_MapTransition:
-                    S_MapTransition mt = new(); mt.Read(buffer);
-                    SpawnX = mt.spawnX;
-                    _currentX = mt.spawnX;
-                    _mapTransition.Set();
-                    break;
-
-                case PacketID.S_Snapshot:
-                    S_Snapshot sn = new(); sn.Read(buffer);
-                    _lastReceivedServerTick = sn.serverTick;
-                    if (sn.entityId == LocalEntityId)
-                    {
-                        SpawnX = sn.x;
-                        _currentX = sn.x;
-                        Interlocked.Increment(ref _snapshotGeneration);
-                    }
-                    break;
-
                 case PacketID.S_EntitySpawn:
                     S_EntitySpawn sp = new(); sp.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _spawns.Add(sp);
                         _entityCurrentX[sp.entityId] = sp.x;
@@ -610,17 +534,17 @@ public class DashSmokeScenario
 
                 case PacketID.S_EntityState:
                     S_EntityState es = new(); es.Read(buffer);
-                    lock (_gate) _entityCurrentX[es.entityId] = es.x;
+                    lock (Gate) _entityCurrentX[es.entityId] = es.x;
                     break;
 
                 case PacketID.S_SkillCast:
                     S_SkillCast sc = new(); sc.Read(buffer);
-                    lock (_gate) _skillCasts.Add(sc);
+                    lock (Gate) _skillCasts.Add(sc);
                     break;
 
                 case PacketID.S_HitResult:
                     S_HitResult hit = new(); hit.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _hitResults.Add(hit);
                         // spawn HP 갱신 — 경로 적 생존 여부 추적
@@ -631,15 +555,10 @@ public class DashSmokeScenario
             }
         }
 
-        static async Task<bool> WaitUntil(Func<bool> pred, TimeSpan timeout, CancellationToken ct)
+        // S_EnterMap에서 _currentX 초기화 (ProbeBase는 SpawnX를 처리하지만 _currentX는 별도).
+        protected override void OnEnterMap(S_EnterMap packet)
         {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (pred()) return true;
-                await Task.Delay(25, ct);
-            }
-            return pred();
+            _currentX = packet.spawnX;
         }
     }
 }

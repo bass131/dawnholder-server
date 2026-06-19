@@ -189,26 +189,14 @@ public class BossFightSmoke
         return result;
     }
 
-    sealed class FightProbe
+    sealed class FightProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
         readonly ManualResetEventSlim _mapTransition1 = new(false);
         readonly ManualResetEventSlim _mapTransition2 = new(false);
         readonly List<S_EntitySpawn> _spawns = new();
         readonly List<HitEvent> _hits = new();
         readonly List<StageClearEvent> _stageClears = new();
         readonly List<EnemyAttackEvent> _enemyAttacks = new();
-
-        BotSession? _session;
-        uint _clientTick;
-        volatile int _lastReceivedServerTick = 0;
-
-        // 봇 서버 권위 X — S_Snapshot(entityId==LocalEntityId) 수신 시 갱신.
-        volatile float _serverX = 0f;
 
         // 보스 서버 권위 X — S_EntityState 수신 시 갱신.
         volatile float _bossX = 0f;
@@ -219,92 +207,29 @@ public class BossFightSmoke
         bool _sawDeath;
         int _respawnCount = 0;
 
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
-        public float SpawnX { get; private set; }
-
-        public int EnemyAttackCount { get { lock (_gate) return _enemyAttacks.Count; } }
-        public int LastEnemyAttackDamage { get { lock (_gate) return _enemyAttacks.Count > 0 ? _enemyAttacks[^1].Damage : 0; } }
+        public int EnemyAttackCount { get { lock (Gate) return _enemyAttacks.Count; } }
+        public int LastEnemyAttackDamage { get { lock (Gate) return _enemyAttacks.Count > 0 ? _enemyAttacks[^1].Damage : 0; } }
         public int RespawnCount => _respawnCount;
-
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(handshake.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
-        public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
-        public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
 
         public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition1.IsSet, timeout, ct);
         public async Task<bool> WaitSecondMapTransition(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition2.IsSet, timeout, ct);
 
-        // portal 위치까지 서버 권위 X(_serverX) 기반 robust 이동.
-        // 매 틱 방향 재계산 — HG 적 hitstun/넉백에 의한 undershoot 방어.
-        const int MoveToPortalMaxTicks = 400;
-        const float PortalReachRadius = 0.5f;
-
+        // portal 위치까지 서버 권위 X 기반 robust 이동.
         public async Task MoveToPortal(float portalX, CancellationToken ct)
-        {
-            int ticks = 0;
-            while (true)
-            {
-                float sx = _serverX;
-                if (Math.Abs(sx - portalX) <= PortalReachRadius)
-                    break;
+            => await MoveToPortalCore(portalX, ct);
 
-                if (ticks >= MoveToPortalMaxTicks)
-                    throw new TimeoutException(
-                        $"MoveToPortal: {MoveToPortalMaxTicks}틱 내 포털 미도달. " +
-                        $"portalX={portalX}, serverX={sx}");
-
-                sbyte dir = sx < portalX ? (sbyte)1 : (sbyte)-1;
-                SendMove(dir);
-                await Task.Delay(Constants.TickIntervalMs, ct);
-                ticks++;
-            }
-            SendMove(0);
-            await Task.Delay(150, ct);
-        }
-
-        public void SendEnterPortal(int portalId)
-        {
-            C_EnterPortal packet = new() { portalId = portalId };
-            _session?.Send(packet.Write());
-        }
-
-        // standalone 게이트 충족용 DEBUG 치트. cheatType=0 = DebugCompleteQuest.
-        public void SendCheatCompleteQuest()
-        {
-            C_CheatCommand cheat = new() { cheatType = 0 };
-            _session?.Send(cheat.Write());
-        }
+        public void SendEnterPortal(int portalId) => SendEnterPortalCore(portalId);
+        public void SendCheatCompleteQuest() => SendCheatCompleteQuestCore();
 
         public async Task<S_EntitySpawn?> WaitForBossSpawn(TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(
-                () => { lock (_gate) return _spawns.Any(s => s.entityKind == BossEntityKind); },
+                () => { lock (Gate) return _spawns.Any(s => s.entityKind == BossEntityKind); },
                 timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _spawns.First(s => s.entityKind == BossEntityKind);
+            lock (Gate) return _spawns.First(s => s.entityKind == BossEntityKind);
         }
 
         // 보스 범위(±BossAttackHalfExtent=2.5f) 안으로 이동.
@@ -331,7 +256,7 @@ public class BossFightSmoke
         {
             for (int t = 0; t < MaxReapproachTicks; t++)
             {
-                float playerX = _serverX;
+                float playerX = ServerX;
                 float targetX = _bossXInitialized ? _bossX : playerX;
                 float dist = Math.Abs(playerX - targetX);
                 if (dist <= ReapproachThreshold)
@@ -344,102 +269,61 @@ public class BossFightSmoke
 
             SendMove(0);
             await Task.Delay(Constants.TickIntervalMs, ct);
-            float finalDist = Math.Abs(_serverX - (_bossXInitialized ? _bossX : 0f));
+            float finalDist = Math.Abs(ServerX - (_bossXInitialized ? _bossX : 0f));
             return finalDist <= ReapproachThreshold;
         }
 
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
-            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+            => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
 
         public void SendAttack(int targetEntityId)
         {
             C_Attack attack = new()
             {
                 targetEntityId = targetEntityId,
-                attackerClientTick = _lastReceivedServerTick,
+                attackerClientTick = LastReceivedServerTick,
             };
-            _session?.Send(attack.Write());
+            Session?.Send(attack.Write());
         }
 
         public async Task<HitEvent?> WaitForHitCount(int targetEntityId, int minCount, TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(() => HitCountFor(targetEntityId) >= minCount, timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _hits.LastOrDefault(h => h.TargetEntityId == targetEntityId);
+            lock (Gate) return _hits.LastOrDefault(h => h.TargetEntityId == targetEntityId);
         }
 
         public async Task<StageClearEvent?> WaitForStageClearCount(int bossEntityId, int minCount, TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(() => StageClearCountFor(bossEntityId) >= minCount, timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _stageClears.LastOrDefault(s => s.BossEntityId == bossEntityId);
+            lock (Gate) return _stageClears.LastOrDefault(s => s.BossEntityId == bossEntityId);
         }
 
         public int HitCountFor(int targetEntityId)
         {
-            lock (_gate) return _hits.Count(h => h.TargetEntityId == targetEntityId);
+            lock (Gate) return _hits.Count(h => h.TargetEntityId == targetEntityId);
         }
 
         public int StageClearCountFor(int bossEntityId)
         {
-            lock (_gate) return _stageClears.Count(s => s.BossEntityId == bossEntityId);
+            lock (Gate) return _stageClears.Count(s => s.BossEntityId == bossEntityId);
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void SendMove(sbyte inputX)
+        protected override void OnMapTransition(S_MapTransition packet)
         {
-            _clientTick++;
-            C_MoveIntent move = new()
-            {
-                input = InputBits.Encode(inputX, jumpPressed: false),
-                clientTick = _clientTick,
-            };
-            _session?.Send(move.Write());
+            if (!_mapTransition1.IsSet) _mapTransition1.Set();
+            else _mapTransition2.Set();
         }
 
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
         {
-            if (buffer.Count < 4) return;
-
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            switch (id)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult handshake = new();
-                    handshake.Read(buffer);
-                    HandshakeOk = handshake.ok;
-                    HandshakeReason = handshake.reason;
-                    if (handshake.ok)
-                    {
-                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
-                        _session?.Send(charSelect.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap enterMap = new();
-                    enterMap.Read(buffer);
-                    LocalEntityId = enterMap.entityId;
-                    SpawnX = enterMap.spawnX;
-                    _serverX = enterMap.spawnX; // robust MoveToPortal 초기화.
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_MapTransition:
-                    S_MapTransition mapTransition = new();
-                    mapTransition.Read(buffer);
-                    SpawnX = mapTransition.spawnX;
-                    _serverX = mapTransition.spawnX; // 새 맵 spawn 좌표로 재동기화.
-                    if (!_mapTransition1.IsSet) _mapTransition1.Set();
-                    else _mapTransition2.Set();
-                    break;
-
                 case PacketID.S_EntitySpawn:
                     S_EntitySpawn spawn = new();
                     spawn.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _spawns.Add(spawn);
                         // 보스 스폰 시 초기 좌표 캐시 — S_EntityState 수신 전에도 재접근 기준으로 활용.
@@ -454,7 +338,7 @@ public class BossFightSmoke
                 case PacketID.S_HitResult:
                     S_HitResult hit = new();
                     hit.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                         _hits.Add(new HitEvent(hit.attackerEntityId, hit.targetEntityId, hit.damage, hit.currentHp, hit.maxHp));
                     break;
 
@@ -465,23 +349,14 @@ public class BossFightSmoke
                 case PacketID.S_StageClear:
                     S_StageClear stageClear = new();
                     stageClear.Read(buffer);
-                    lock (_gate) _stageClears.Add(new StageClearEvent(stageClear.bossEntityId));
-                    break;
-
-                case PacketID.S_Snapshot:
-                    S_Snapshot snapshot = new();
-                    snapshot.Read(buffer);
-                    _lastReceivedServerTick = snapshot.serverTick;
-                    // 자기 자신 snapshot → 봇 서버 권위 위치 갱신 (재접근 헬퍼 기준 좌표).
-                    if (snapshot.entityId == LocalEntityId)
-                        _serverX = snapshot.x;
+                    lock (Gate) _stageClears.Add(new StageClearEvent(stageClear.bossEntityId));
                     break;
 
                 case PacketID.S_EntityState:
                     // 보스 live 위치 — 재접근 헬퍼가 최신 보스 좌표로 방향 계산.
                     S_EntityState entityState = new();
                     entityState.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         bool isBoss = _spawns.Any(s => s.entityId == entityState.entityId && s.entityKind == BossEntityKind);
                         if (isBoss)
@@ -498,7 +373,7 @@ public class BossFightSmoke
                     enemyAttack.Read(buffer);
                     if (enemyAttack.targetId == LocalEntityId)
                     {
-                        lock (_gate)
+                        lock (Gate)
                         {
                             _enemyAttacks.Add(new EnemyAttackEvent(
                                 enemyAttack.attackerId,
@@ -520,17 +395,6 @@ public class BossFightSmoke
                     }
                     break;
             }
-        }
-
-        static async Task<bool> WaitUntil(Func<bool> predicate, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (predicate()) return true;
-                await Task.Delay(25, ct);
-            }
-            return predicate();
         }
     }
 

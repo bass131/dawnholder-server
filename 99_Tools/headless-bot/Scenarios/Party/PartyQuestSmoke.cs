@@ -1,7 +1,4 @@
-using System.Buffers.Binary;
 using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -34,7 +31,6 @@ public class PartyQuestSmoke
     const int SeedKillCount = 2;
     const int ExpectedTargetCount = 20;
 
-    // portal 좌표 상수 — 서버 PortalTable.cs와 정합.
     const float TownPortalX = 20f;
     const int TownPortalId = 1;
 
@@ -121,7 +117,6 @@ public class PartyQuestSmoke
             result.PartyFormed = true;
 
             // ── 2. A: Town → HuntingGround 이동 (B는 Town 잔류) ─────────────
-            // HG 스폰(x≈2) 에 도착 후 이동 없음 — 적(x=10)과 거리>4=aggro 밖이라 전투 없음.
             await probeA.MoveToPortal(TownPortalX, ct);
             int expectedTransition = probeA.NextExpectedTransitionCount();
             probeA.SendEnterPortal(TownPortalId);
@@ -130,15 +125,11 @@ public class PartyQuestSmoke
             if (!aTransitioned)
                 return Fail(result, "probeA: S_MapTransition timeout — Town→HuntingGround");
 
-            // 서버 tick thread가 맵 진입 후속 처리를 완료하기까지 2틱 대기.
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
 
             // ── 3. 시드(xUnit 전용): 파티 공유 킬카운트 2회 적립 ──────────────
-            // seedPartyKills=null(standalone)이면 이 단계 스킵 → 해산으로 진행.
             if (seedPartyKills != null)
             {
-                // 이 시점에 파티가 서버에 존재(S_PartyUpdate 수신 = 서버 파티 생성 완료).
-                // OnKill(A.id)가 파티를 찾아 KillCount++ → 양 멤버에게 S_QuestUpdate 발송.
                 await seedPartyKills(probeA.LocalEntityId);
 
                 // ── 4. S_QuestUpdate 검증: A(HG)·B(Town) 양측 cross-map 수신 ─
@@ -186,14 +177,9 @@ public class PartyQuestSmoke
         return result;
     }
 
-    sealed class PartyProbe
+    sealed class PartyProbe : ProbeBase
     {
         readonly string _label;
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
 
         // 파티
         volatile bool _gotInviteRecv = false;
@@ -204,60 +190,60 @@ public class PartyQuestSmoke
         volatile int _lastQuestCurrentCount = 0;
         volatile int _lastQuestTargetCount = 0;
 
-        // 맵 전환
+        // 맵 전환 카운터 기반 추적
         volatile int _mapTransitionCount = 0;
-
-        // 서버 권위 위치 추적 (MoveToPortal용)
-        volatile float _serverX = 0f;
-
-        BotSession? _session;
-        uint _clientTick;
-
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
 
         public int LastQuestCurrentCount => _lastQuestCurrentCount;
         public int LastQuestTargetCount => _lastQuestTargetCount;
 
         public PartyProbe(string label) => _label = label;
 
-        public void Connect(string host, int port)
+        protected override void OnMapTransition(S_MapTransition packet)
         {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake handshake = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(handshake.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
+            System.Threading.Interlocked.Increment(ref _mapTransitionCount);
         }
 
-        public bool WaitConnected(TimeSpan timeout) => _connected.Wait(timeout);
-        public bool WaitHandshake(TimeSpan timeout) => _handshake.Wait(timeout);
-        public bool WaitEnterMap(TimeSpan timeout) => _enterMap.Wait(timeout);
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
+        {
+            switch (id)
+            {
+                case PacketID.S_PartyInviteRecv:
+                    S_PartyInviteRecv inviteRecv = new();
+                    inviteRecv.Read(buffer);
+                    lock (Gate)
+                    {
+                        _lastInviterEntityId = inviteRecv.inviterEntityId;
+                        _gotInviteRecv = true;
+                    }
+                    break;
+
+                case PacketID.S_PartyUpdate:
+                    S_PartyUpdate partyUpdate = new();
+                    partyUpdate.Read(buffer);
+                    lock (Gate) _lastPartyUpdate = partyUpdate;
+                    break;
+
+                case PacketID.S_QuestUpdate:
+                    S_QuestUpdate questUpdate = new();
+                    questUpdate.Read(buffer);
+                    _lastQuestCurrentCount = questUpdate.currentCount;
+                    _lastQuestTargetCount = questUpdate.targetCount;
+                    break;
+            }
+        }
 
         // ── 파티 송수신 ──────────────────────────────────────────────────────
 
         public void SendPartyInvite(int targetEntityId)
         {
             C_PartyInvite pkt = new() { targetEntityId = targetEntityId };
-            _session?.Send(pkt.Write());
+            Session?.Send(pkt.Write());
         }
 
         public void SendPartyRespond(int inviterEntityId, byte accept)
         {
             C_PartyRespond pkt = new() { inviterEntityId = inviterEntityId, accept = accept };
-            _session?.Send(pkt.Write());
+            Session?.Send(pkt.Write());
         }
 
         public async Task<bool> WaitForPartyInviteRecv(int expectedInviterEntityId, TimeSpan timeout, CancellationToken ct)
@@ -268,7 +254,7 @@ public class PartyQuestSmoke
         public async Task<bool> WaitForPartyFormed(int entityIdA, int entityIdB, TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() =>
             {
-                lock (_gate)
+                lock (Gate)
                 {
                     if (_lastPartyUpdate == null) return false;
                     if (_lastPartyUpdate.partyId <= 0) return false;
@@ -283,7 +269,7 @@ public class PartyQuestSmoke
         public async Task<bool> WaitForPartyDisband(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() =>
             {
-                lock (_gate)
+                lock (Gate)
                     return _lastPartyUpdate != null && _lastPartyUpdate.partyId == 0;
             }, timeout, ct);
 
@@ -305,7 +291,7 @@ public class PartyQuestSmoke
 
             while (true)
             {
-                float sx = _serverX;
+                float sx = ServerX;
                 if (Math.Abs(sx - portalX) <= reachRadius) break;
                 if (ticks >= maxTicks)
                     throw new TimeoutException(
@@ -320,103 +306,6 @@ public class PartyQuestSmoke
             await Task.Delay(150, ct);
         }
 
-        public void SendEnterPortal(int portalId)
-        {
-            C_EnterPortal pkt = new() { portalId = portalId };
-            _session?.Send(pkt.Write());
-        }
-
-        public void Disconnect() => _session?.Disconnect();
-
-        // ── 내부 ─────────────────────────────────────────────────────────────
-
-        void SendMove(sbyte inputX)
-        {
-            _clientTick++;
-            C_MoveIntent move = new()
-            {
-                input = InputBits.Encode(inputX, jumpPressed: false),
-                clientTick = _clientTick,
-            };
-            _session?.Send(move.Write());
-        }
-
-        void HandlePacket(ArraySegment<byte> buffer)
-        {
-            if (buffer.Count < 4) return;
-
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
-            {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult handshake = new();
-                    handshake.Read(buffer);
-                    HandshakeOk = handshake.ok;
-                    HandshakeReason = handshake.reason;
-                    if (handshake.ok)
-                    {
-                        C_CharacterSelect charSelect = new() { characterClass = (byte)CharacterClass.Knight };
-                        _session?.Send(charSelect.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap enterMap = new();
-                    enterMap.Read(buffer);
-                    LocalEntityId = enterMap.entityId;
-                    _serverX = enterMap.spawnX;
-                    if (!_enterMap.IsSet) _enterMap.Set();
-                    break;
-
-                case PacketID.S_MapTransition:
-                    S_MapTransition transition = new();
-                    transition.Read(buffer);
-                    _serverX = transition.spawnX;
-                    System.Threading.Interlocked.Increment(ref _mapTransitionCount);
-                    break;
-
-                case PacketID.S_Snapshot:
-                    S_Snapshot snapshot = new();
-                    snapshot.Read(buffer);
-                    if (snapshot.entityId == LocalEntityId)
-                        _serverX = snapshot.x;
-                    break;
-
-                case PacketID.S_PartyInviteRecv:
-                    S_PartyInviteRecv inviteRecv = new();
-                    inviteRecv.Read(buffer);
-                    lock (_gate)
-                    {
-                        _lastInviterEntityId = inviteRecv.inviterEntityId;
-                        _gotInviteRecv = true;
-                    }
-                    break;
-
-                case PacketID.S_PartyUpdate:
-                    S_PartyUpdate partyUpdate = new();
-                    partyUpdate.Read(buffer);
-                    lock (_gate) _lastPartyUpdate = partyUpdate;
-                    break;
-
-                case PacketID.S_QuestUpdate:
-                    S_QuestUpdate questUpdate = new();
-                    questUpdate.Read(buffer);
-                    _lastQuestCurrentCount = questUpdate.currentCount;
-                    _lastQuestTargetCount = questUpdate.targetCount;
-                    break;
-            }
-        }
-
-        static async Task<bool> WaitUntil(Func<bool> predicate, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (predicate()) return true;
-                await Task.Delay(25, ct);
-            }
-            return predicate();
-        }
+        public void SendEnterPortal(int portalId) => SendEnterPortalCore(portalId);
     }
 }

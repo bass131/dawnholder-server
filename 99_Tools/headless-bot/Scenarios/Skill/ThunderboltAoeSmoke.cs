@@ -1,7 +1,3 @@
-using System.Buffers.Binary;
-using System.Diagnostics;
-using System.Net;
-using Dawnholder.Client.Net;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -81,7 +77,7 @@ public class ThunderboltAoeSmoke
             // ── HuntingGround — Normal AoE 검증 ──────────────────────────────
             await bot.MoveToPortal(TownPortalX, ct);
             bot.SendEnterPortal(TownPortalId);
-            if (!await bot.WaitMapTransition(DefaultTimeout, ct))
+            if (!await bot.WaitMapTransition1(DefaultTimeout, ct))
                 return Fail(result, "S_MapTransition timeout — Town→HuntingGround");
 
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
@@ -154,7 +150,7 @@ public class ThunderboltAoeSmoke
 
             await bot.MoveToPortal(HGPortalX, ct);
             bot.SendEnterPortal(HGPortalId);
-            if (!await bot.WaitSecondMapTransition(DefaultTimeout, ct))
+            if (!await bot.WaitMapTransition2(DefaultTimeout, ct))
                 return Fail(result, "S_MapTransition timeout — HuntingGround→BossRoom");
 
             await Task.Delay(Constants.TickIntervalMs * 2, ct);
@@ -217,13 +213,8 @@ public class ThunderboltAoeSmoke
         return r;
     }
 
-    sealed class AoeProbe
+    sealed class AoeProbe : ProbeBase
     {
-        readonly object _gate = new();
-        readonly Connector _connector = new();
-        readonly ManualResetEventSlim _connected = new(false);
-        readonly ManualResetEventSlim _handshake = new(false);
-        readonly ManualResetEventSlim _enterMap = new(false);
         readonly ManualResetEventSlim _mapTransition1 = new(false);
         readonly ManualResetEventSlim _mapTransition2 = new(false);
 
@@ -235,61 +226,29 @@ public class ThunderboltAoeSmoke
         readonly Dictionary<int, float> _maxDelta = new();
         readonly Dictionary<int, bool> _tracking = new();
 
-        volatile int _lastReceivedServerTick;
+        protected override CharacterClass SelectedClass => CharacterClass.Mage;
 
-        BotSession? _session;
-        uint _moveTick;
-
-        public bool HandshakeOk { get; private set; }
-        public string HandshakeReason { get; private set; } = "";
-        public int LocalEntityId { get; private set; } = -1;
-        public float SpawnX { get; private set; }
-
-        public void Connect(string host, int port)
-        {
-            _connector.Connect(
-                new IPEndPoint(IPAddress.Parse(host), port),
-                sessionFactory: () =>
-                {
-                    BotSession s = new();
-                    s.OnConnectedCallback = _ =>
-                    {
-                        _connected.Set();
-                        C_Handshake h = new() { clientVersion = ProtocolVersion.Current };
-                        s.Send(h.Write());
-                    };
-                    s.OnDisconnectedCallback = _ => { };
-                    s.OnPacketCallback = HandlePacket;
-                    _session = s;
-                    return s;
-                });
-        }
-
-        public bool WaitConnected(TimeSpan t) => _connected.Wait(t);
-        public bool WaitHandshake(TimeSpan t) => _handshake.Wait(t);
-        public bool WaitEnterMap(TimeSpan t)  => _enterMap.Wait(t);
-
-        public async Task<bool> WaitMapTransition(TimeSpan timeout, CancellationToken ct)
+        public async Task<bool> WaitMapTransition1(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition1.IsSet, timeout, ct);
 
-        public async Task<bool> WaitSecondMapTransition(TimeSpan timeout, CancellationToken ct)
+        public async Task<bool> WaitMapTransition2(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition2.IsSet, timeout, ct);
 
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
-            => await WaitUntil(() => _lastReceivedServerTick > 0, timeout, ct);
+            => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
 
         public async Task<bool> WaitForSpawns(int minCount, byte kind, TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(
-                () => { lock (_gate) return _spawns.Count(s => s.entityKind == kind && s.currentHp > 0) >= minCount; },
+                () => { lock (Gate) return _spawns.Count(s => s.entityKind == kind && s.currentHp > 0) >= minCount; },
                 timeout, ct);
 
         public async Task<S_EntitySpawn?> WaitForSpawnKind(byte kind, TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(
-                () => { lock (_gate) return _spawns.Any(s => s.entityKind == kind && s.currentHp > 0); },
+                () => { lock (Gate) return _spawns.Any(s => s.entityKind == kind && s.currentHp > 0); },
                 timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _spawns.First(s => s.entityKind == kind && s.currentHp > 0);
+            lock (Gate) return _spawns.First(s => s.entityKind == kind && s.currentHp > 0);
         }
 
         // AoE 박스(ThunderboltBoxHalfX=6.0f) 내에 Normal 적이 1개 이상 있을 때까지 대기.
@@ -298,7 +257,7 @@ public class ThunderboltAoeSmoke
             const float AoeHalfX = 6.0f;
             await WaitUntil(() =>
             {
-                lock (_gate)
+                lock (Gate)
                     return _spawns.Any(s =>
                         s.entityKind == 0 &&
                         s.currentHp > 0 &&
@@ -308,7 +267,7 @@ public class ThunderboltAoeSmoke
 
         public List<int> GetNormalEntityIds()
         {
-            lock (_gate)
+            lock (Gate)
                 return _spawns
                     .Where(s => s.entityKind == 0 && s.currentHp > 0)
                     .Select(s => s.entityId)
@@ -317,7 +276,7 @@ public class ThunderboltAoeSmoke
 
         public float GetFirstNormalSpawnX()
         {
-            lock (_gate)
+            lock (Gate)
             {
                 S_EntitySpawn? sp = _spawns.FirstOrDefault(s => s.entityKind == 0 && s.currentHp > 0);
                 return sp != null ? GetEntityXUnsafe(sp.entityId) : SpawnX;
@@ -326,7 +285,7 @@ public class ThunderboltAoeSmoke
 
         public Dictionary<int, int> GetCurrentHpSnapshot(List<int> entityIds)
         {
-            lock (_gate)
+            lock (Gate)
             {
                 var d = new Dictionary<int, int>();
                 foreach (int eid in entityIds)
@@ -341,21 +300,21 @@ public class ThunderboltAoeSmoke
         public async Task<S_SkillCast?> WaitForSkillCast(int casterEntityId, TimeSpan timeout, CancellationToken ct)
         {
             bool ok = await WaitUntil(
-                () => { lock (_gate) return _skillCasts.Any(c => c.casterEntityId == casterEntityId); },
+                () => { lock (Gate) return _skillCasts.Any(c => c.casterEntityId == casterEntityId); },
                 timeout, ct);
             if (!ok) return null;
-            lock (_gate) return _skillCasts.First(c => c.casterEntityId == casterEntityId);
+            lock (Gate) return _skillCasts.First(c => c.casterEntityId == casterEntityId);
         }
 
         public S_HitResult? GetHitResult(int targetEntityId, byte hitEffect)
         {
-            lock (_gate)
+            lock (Gate)
                 return _hitResults.FirstOrDefault(h => h.targetEntityId == targetEntityId && h.hitEffect == hitEffect);
         }
 
         public void StartTrackingEntity(int entityId)
         {
-            lock (_gate)
+            lock (Gate)
             {
                 float x = GetEntityXUnsafe(entityId);
                 _entityBaselineX[entityId] = x;
@@ -366,7 +325,7 @@ public class ThunderboltAoeSmoke
 
         public float GetMaxPositionDelta(int entityId)
         {
-            lock (_gate)
+            lock (Gate)
             {
                 _maxDelta.TryGetValue(entityId, out float d);
                 return d;
@@ -381,19 +340,7 @@ public class ThunderboltAoeSmoke
         }
 
         public async Task MoveToPortal(float portalX, CancellationToken ct)
-        {
-            float delta = portalX - SpawnX;
-            sbyte dir = delta >= 0f ? (sbyte)1 : (sbyte)-1;
-            int ticks = (int)Math.Ceiling(Math.Abs(delta) / (PlayerStats.Mage().MoveSpeed * Constants.TickDuration));
-            ticks = Math.Clamp(ticks, 0, 200);
-            for (int i = 0; i < ticks; i++)
-            {
-                SendMove(dir);
-                await Task.Delay(Constants.TickIntervalMs, ct);
-            }
-            SendMove(0);
-            await Task.Delay(150, ct);
-        }
+            => await MoveToPortalCore(portalX, ct);
 
         public async Task MoveIntoAoeRange(float targetX, CancellationToken ct)
         {
@@ -413,84 +360,33 @@ public class ThunderboltAoeSmoke
             await Task.Delay(150, ct);
         }
 
-        public void SendEnterPortal(int portalId)
-        {
-            C_EnterPortal p = new() { portalId = portalId };
-            _session?.Send(p.Write());
-        }
+        public void SendEnterPortal(int portalId) => SendEnterPortalCore(portalId);
 
-        // standalone 게이트 충족용 DEBUG 치트. cheatType=0 = DebugCompleteQuest.
-        public void SendCheatCompleteQuest()
-        {
-            C_CheatCommand cheat = new() { cheatType = 0 };
-            _session?.Send(cheat.Write());
-        }
+        public void SendCheatCompleteQuest() => SendCheatCompleteQuestCore();
 
         public void SendSkillUse(byte skillId)
         {
             C_SkillUse p = new()
             {
                 skillId            = skillId,
-                attackerClientTick = _lastReceivedServerTick,
+                attackerClientTick = LastReceivedServerTick,
             };
-            _session?.Send(p.Write());
+            Session?.Send(p.Write());
         }
 
-        public void Disconnect() => _session?.Disconnect();
-
-        void SendMove(sbyte inputX)
+        protected override void OnMapTransition(S_MapTransition packet)
         {
-            _moveTick++;
-            C_MoveIntent m = new()
-            {
-                input      = InputBits.Encode(inputX, jumpPressed: false),
-                clientTick = _moveTick,
-            };
-            _session?.Send(m.Write());
+            if (!_mapTransition1.IsSet) _mapTransition1.Set();
+            else _mapTransition2.Set();
         }
 
-        void HandlePacket(ArraySegment<byte> buffer)
+        protected override void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer)
         {
-            if (buffer.Count < 4) return;
-            ushort id = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(2, 2));
-            switch ((PacketID)id)
+            switch (id)
             {
-                case PacketID.S_HandshakeResult:
-                    S_HandshakeResult hr = new(); hr.Read(buffer);
-                    HandshakeOk = hr.ok;
-                    HandshakeReason = hr.reason;
-                    if (hr.ok)
-                    {
-                        C_CharacterSelect cs = new() { characterClass = (byte)CharacterClass.Mage };
-                        _session?.Send(cs.Write());
-                    }
-                    _handshake.Set();
-                    break;
-
-                case PacketID.S_EnterMap:
-                    S_EnterMap em = new(); em.Read(buffer);
-                    LocalEntityId = em.entityId;
-                    SpawnX = em.spawnX;
-                    _enterMap.Set();
-                    break;
-
-                case PacketID.S_MapTransition:
-                    S_MapTransition mt = new(); mt.Read(buffer);
-                    SpawnX = mt.spawnX;
-                    if (!_mapTransition1.IsSet) _mapTransition1.Set();
-                    else _mapTransition2.Set();
-                    break;
-
-                case PacketID.S_Snapshot:
-                    S_Snapshot sn = new(); sn.Read(buffer);
-                    _lastReceivedServerTick = sn.serverTick;
-                    if (sn.entityId == LocalEntityId)
-                        SpawnX = sn.x;
-                    break;
-
                 case PacketID.S_EntitySpawn:
                     S_EntitySpawn sp = new(); sp.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _spawns.Add(sp);
                         _entityCurrentX[sp.entityId] = sp.x;
@@ -499,7 +395,7 @@ public class ThunderboltAoeSmoke
 
                 case PacketID.S_EntityState:
                     S_EntityState es = new(); es.Read(buffer);
-                    lock (_gate)
+                    lock (Gate)
                     {
                         _entityCurrentX[es.entityId] = es.x;
                         if (_tracking.TryGetValue(es.entityId, out bool tracking) && tracking)
@@ -516,25 +412,14 @@ public class ThunderboltAoeSmoke
 
                 case PacketID.S_SkillCast:
                     S_SkillCast sc = new(); sc.Read(buffer);
-                    lock (_gate) _skillCasts.Add(sc);
+                    lock (Gate) _skillCasts.Add(sc);
                     break;
 
                 case PacketID.S_HitResult:
                     S_HitResult hit = new(); hit.Read(buffer);
-                    lock (_gate) _hitResults.Add(hit);
+                    lock (Gate) _hitResults.Add(hit);
                     break;
             }
-        }
-
-        static async Task<bool> WaitUntil(Func<bool> pred, TimeSpan timeout, CancellationToken ct)
-        {
-            Stopwatch sw = Stopwatch.StartNew();
-            while (sw.Elapsed < timeout)
-            {
-                if (pred()) return true;
-                await Task.Delay(25, ct);
-            }
-            return pred();
         }
     }
 }
