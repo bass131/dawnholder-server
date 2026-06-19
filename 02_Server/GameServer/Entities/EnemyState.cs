@@ -1,4 +1,4 @@
-namespace Dawnholder.Server.GameServer.Combat;
+namespace Dawnholder.Server.GameServer.Entities;
 
 // 적 AI 유한 상태 기계(FSM, Finite State Machine) 상태 열거형.
 //

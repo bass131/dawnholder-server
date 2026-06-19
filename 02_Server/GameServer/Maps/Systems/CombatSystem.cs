@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps.Actions;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 using Shared.Protocol;
 

@@ -1,9 +1,10 @@
 using System.Numerics;
+using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Maps.States;
 using Shared.GameData;
 
-namespace Dawnholder.Server.GameServer.Combat;
+namespace Dawnholder.Server.GameServer.Entities;
 
 
 // 서버 소유 entity — owner GameSession 없음 (player와 가장 큰 차이). spawn/mutation/broadcast

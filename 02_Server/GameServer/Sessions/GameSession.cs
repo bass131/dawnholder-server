@@ -7,6 +7,7 @@ using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Maps.Transitions;
 using Dawnholder.Server.GameServer.Party;
+using Dawnholder.Server.GameServer.Entities;
 using Dawnholder.Server.Network;
 using Shared.GameData;
 using Shared.Protocol;

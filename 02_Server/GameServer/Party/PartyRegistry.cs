@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Dawnholder.Server.GameServer.Entities;
 
 namespace Dawnholder.Server.GameServer.Party;
 
