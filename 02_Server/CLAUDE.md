@@ -14,8 +14,7 @@
 │   ├── RecvBuffer.cs         수신 링 버퍼
 │   ├── SendBuffer.cs         송신 링 버퍼
 │   ├── FrameValidator.cs     frame 헤더 검증 helper (M4.1 Phase 03 — 04_ClientNet과 동기화 약속)
-│   ├── JobQueue.cs           작업 직렬화 큐
-│   └── PriorityQueue.cs      우선순위 큐 자리잡이
+│   └── JobQueue.cs           ServerCore 참조 구현 (production 미wiring — 맵 actor는 ConcurrentQueue 직접, 03-connection-handshake-DONE.md:68)
 ├── GameServer/
 │   ├── Network/        Game 도메인 session — PacketSession 상속
 │   │   └── GameSession.cs    socket 콜백 + first-packet 게이트 + Dictionary dispatch +

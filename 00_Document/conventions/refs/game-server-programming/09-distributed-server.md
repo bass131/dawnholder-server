@@ -123,7 +123,7 @@ category: 9장 분산 서버 구조
 
 ### 채택 후보
 - **비동기 분산 처리 (§9.6.2)**: 현재 맵 간 통신이 필요할 때(파티, 귓속말 등) — 메시지 패싱으로 구현 예정.
-  - Dawnholder의 `JobQueue` 기반 Actor 모델이 이 패턴과 정확히 일치. 맵 간 통신 = 큐에 메시지 투입.
+  - Dawnholder의 `ConcurrentQueue<Action>` 기반 Actor 모델(`GameMap`/`PartyRegistry`/`QuestRegistry`의 EnqueueJob+Tick)이 이 패턴과 정확히 일치. 맵 간 통신 = 큐에 메시지 투입.
 - **고가용성 (§9.12)**: 현재 단일 서버 프로세스. M5 이후 로드밸런서 + 멀티 인스턴스 전환 시 참조.
 - **DB 샤딩 (§9.13)**: M5 DB 영속화 설계 시 플레이어 ID 기반 수평 파티셔닝 후보. 당장은 LocalDB 단일 인스턴스.
 

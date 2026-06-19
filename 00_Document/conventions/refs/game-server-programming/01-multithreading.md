@@ -79,7 +79,7 @@ category: 01장 멀티스레딩
 | 개념 | 상태 | 구체 클래스·파일 |
 |------|------|----------------|
 | 방(Map) = Actor 단일 스레드 | **이미 사용 중** | `02_Server/GameServer/Maps/GameMap.cs` — 맵 단위 단일 스레드 20 TPS tick. 맵 내부에 별도 lock 없음. 1.11 "방 단위 잠금" 패턴의 직접 구현. |
-| JobQueue (직렬 실행 큐) | **이미 사용 중** | `02_Server/Network/JobQueue.cs` — 맵 액터에 작업을 직렬로 밀어넣어 lock 없이 동시성 제어. 세마포어/이벤트 대신 큐 직렬화 방식 채택. |
+| 직렬 실행 큐 (Actor) | **이미 사용 중** | `02_Server/GameServer/Maps/GameMap.cs`·`Party/PartyRegistry.cs`·`Quest/QuestRegistry.cs` — actor가 `ConcurrentQueue<Action>`(EnqueueJob+Tick 드레인)로 작업을 직렬화해 lock 없이 동시성 제어. (`02_Server/Network/JobQueue.cs`는 ServerCore 참조 구현 — production 미wiring. JobQueue의 *첫 Push가 직접 Flush* 구조가 IOCP↔tick 경합을 일으켜 ConcurrentQueue 채택, 사유 `03-connection-handshake-DONE.md:68`.) |
 | 스레드 풀 | **이미 사용 중** | `02_Server/Network/` IOCP 기반(`Session.cs`/`Listener.cs`/`Connector.cs`) — IOCP 워커 스레드 풀이 소켓 이벤트를 처리. 클라이언트마다 전용 스레드 없음. |
 | 뮤텍스 / lock | **이미 사용 중** | `02_Server/GameServer/Maps/GameMap.cs`, `02_Server/GameServer/Network/GameSession.cs` 내 `lock(_lock)` 패턴. 경계 확인 필요 (1.16.3/1.16.4 위험). |
 | 원자 조작 | **채택 후보** | PacketID 시퀀스 번호, 세션 연결 카운터 등 단순 카운터 — `Interlocked` 도입으로 lock 절약 가능. |
