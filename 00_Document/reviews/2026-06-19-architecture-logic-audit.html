@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아키텍처 논리 감사 — Dawnholder (2026-06-19)</title>
+<style>
+  :root{
+    --bg:#0f1117; --card:#1a1d27; --card2:#21252f; --ink:#e6e8ee; --muted:#9aa3b2;
+    --accent:#7c9cff; --high:#f87171; --med:#fbbf24; --low:#9aa3b2; --green:#4ade80;
+    --line:#2a2f3d; --pre:#a78bfa;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;}
+  .wrap{max-width:1040px;margin:0 auto;padding:40px 24px 80px;}
+  header{border-bottom:2px solid var(--line);padding-bottom:20px;margin-bottom:24px;}
+  h1{font-size:1.85rem;margin:0 0 6px;}
+  h1 .sub{color:var(--accent);}
+  .meta{color:var(--muted);font-size:.9rem;}
+  h2{font-size:1.25rem;margin:34px 0 14px;padding-left:10px;border-left:4px solid var(--accent);}
+  .kpis{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0;}
+  .kpi{flex:1 1 130px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
+  .kpi .n{font-size:1.6rem;font-weight:700;}
+  .kpi .l{color:var(--muted);font-size:.8rem;}
+  .kpi.g .n{color:var(--green);} .kpi.h .n{color:var(--high);} .kpi.m .n{color:var(--med);} .kpi.p .n{color:var(--pre);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0;}
+  .tldr{background:linear-gradient(135deg,#1a1d27,#1e2230);border-left:4px solid var(--green);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:720px){.grid{grid-template-columns:1fr;}}
+  .theme h3{margin:0 0 6px;font-size:1rem;color:var(--accent);}
+  .theme p{margin:0;font-size:.88rem;color:var(--ink);}
+  .finding{border-left:4px solid var(--line);}
+  .finding.high{border-left-color:var(--high);}
+  .finding.med{border-left-color:var(--med);}
+  .finding.low{border-left-color:var(--low);}
+  .finding .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+  .id{font-weight:700;font-family:ui-monospace,monospace;}
+  .badge{display:inline-block;border-radius:5px;padding:1px 8px;font-size:.72rem;font-weight:600;}
+  .b-high{background:#3a1f24;color:var(--high);} .b-med{background:#3a3320;color:var(--med);} .b-low{background:#262a33;color:var(--low);}
+  .b-lens{background:#23304d;color:#9db4ff;} .b-con{background:#3a1f24;color:#fca5a5;border:1px solid #5a2a30;}
+  .b-pre{background:#2e2747;color:var(--pre);border:1px solid #443a6b;}
+  .b-rec{background:#1e3a2a;color:var(--green);}
+  .finding .loc{font-family:ui-monospace,monospace;font-size:.8rem;color:var(--muted);margin:2px 0 6px;}
+  .finding p{margin:4px 0;font-size:.88rem;}
+  .finding .why{color:var(--muted);}
+  .prop{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0;}
+  .prop.pre{border-color:#443a6b;background:linear-gradient(135deg,#1a1d27,#201b30);}
+  .prop h3{margin:0 0 6px;font-size:1.02rem;}
+  .prop .row{font-size:.85rem;margin:4px 0;}
+  .prop .k{color:var(--accent);font-weight:600;}
+  code{background:#000;padding:1px 6px;border-radius:4px;font-size:.82em;color:#cbd5ff;font-family:ui-monospace,monospace;}
+  ul{margin:6px 0;padding-left:20px;} li{margin:4px 0;font-size:.88rem;}
+  .gate{background:#201b30;border:1px solid #443a6b;border-radius:10px;padding:16px 18px;margin:14px 0;}
+  .gate b{color:var(--pre);}
+  footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.8rem;}
+  .pill{font-size:.75rem;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>아키텍처 논리 감사 — <span class="sub">Dawnholder</span></h1>
+  <div class="meta">UltraCode 워크플로우(34 에이전트 · 2.6M 토큰 · 15.7분) · 2026-06-19 · 전체 게임코드 read-only 감사 · <b>리팩토링은 영호 게이트 (실행 아닌 제안)</b></div>
+</header>
+
+<h2>📊 핵심 지표</h2>
+<div class="kpis">
+  <div class="kpi"><div class="n">38</div><div class="l">발견 (raw)</div></div>
+  <div class="kpi g"><div class="n">13</div><div class="l">검증 통과 (adversarial)</div></div>
+  <div class="kpi h"><div class="n">1</div><div class="l">헌법 위반 (확정)</div></div>
+  <div class="kpi m"><div class="n">8</div><div class="l">리팩토링 제안</div></div>
+  <div class="kpi p"><div class="n">2</div><div class="l">M8 전 필수 (preM8)</div></div>
+</div>
+<div class="pill">검증 분류: high 1 · med 8 · low 3 (검증 통과 13) + 미검증 low 16 (참고). false-positive 기각 = 검증 대상 중 약 절반.</div>
+
+<h2>📌 한눈 결론 (TL;DR)</h2>
+<div class="card tldr">
+헌법 절대원칙 위반은 <b>SN-02(치트 게이트) 단 1건</b>이고, 나머지는 보안 구멍이 아니라 <b>"리팩토링이 중간에 멈춰 책임이 엉뚱한 계층에 흘러들어 굳은 자국"</b>입니다. 5대 원칙(서버 권위 / 프로토콜 / 신뢰경계 / 공유규율 / 틱루프 블로킹)은 production 경로에서 <b>대체로 잘 지켜지고 있어요.</b><br><br>
+<b>M8(DB 영속화) 진입 전 가장 중요한 정리는 <span style="color:var(--pre)">QuestRegistry 분리</span></b>입니다 — 영속화될 핵심 상태(킬카운트·보스해금·솔로진행도)가 지금 <code>PartyRegistry</code>(파티 도메인) 안에 살아서, 그대로 M8을 하면 <b>"파티 클래스가 솔로 플레이어 퀘스트를 영속화"하는 개념 역전이 DB 스키마에 박힙니다.</b> 영속화 경계를 긋기 전에 도메인 경계부터 바로잡아야 깨끗한 스키마가 나옵니다.
+</div>
+
+<h2>🔁 반복 테마 (결함 패턴 6)</h2>
+<div class="grid">
+  <div class="card theme"><h3>① System 추출의 절반-완료 비대칭</h3><p>같은 도메인의 같은 작업이 한쪽은 전용 System/Migration으로 빠지고(MeleeAction+DeferredDamageSystem, MapMigration, HandleEnemyDeath) 한쪽은 State·GameSession·PartyRegistry에 인라인 잔류. 리팩토링이 도중에 멈춰 책임 배치가 비대칭.</p></div>
+  <div class="card theme"><h3>② 진실 공급원 이중화 + 암묵 동기화</h3><p>같은 개념을 두 곳에 저장하고 동기화를 '각 진입점이 잊지 말고 세팅'하는 컴파일러가 못 잡는 계약에 의존. AI 상태(EnemyState vs Fsm), 사망 신호, 매직넘버, 매핑 테이블.</p></div>
+  <div class="card theme"><h3>③ false-promise 문서/주석</h3><p>코드/문서가 '이건 X에 쓰인다 / 참조 불가하다 / 클라도 공유한다'고 능동 약속하나 실재와 어긋남 → 다음 개발자를 오도. (JobQueue 'actor 큐로 사용 중', DashSpeed '서버 전용' 등)</p></div>
+  <div class="card theme"><h3>④ 보일러플레이트 fan-out</h3><p>동일 plumbing이 8~18곳 복제(Rule of Three 초과). 핸들러 게이트(8), 봇 라이프사이클(17), 이펙트 스폰(4). 계약 1곳 변경 시 다중 파일 동시 수정 + 누락 시 부분 침묵 실패.</p></div>
+  <div class="card theme"><h3>⑤ 네임스페이스 ≠ 폴더 ≠ 책임</h3><p>디렉토리·namespace·헤더 주석이 표방하는 책임과 실제 내용이 어긋남. GameSession(폴더 Network/namespace Sessions), PartyRegistry가 퀘스트 소유, ActionKind가 서버 전용인데 98_Shared.</p></div>
+  <div class="card theme"><h3>⑥ endianness 계약 위생</h3><p>wire는 LittleEndian 단일 진실인데 frame/list count 읽기 일부가 host-endian BitConverter로 새어 자기 계약 위반. 현 LE 타깃에서 우연히 동작하는 latent 결함.</p></div>
+</div>
+
+<h2>🔴 M8 전에 꼭 정리할 2건 (preM8)</h2>
+<div class="prop pre">
+  <h3>1. QuestRegistry 분리 <span class="badge b-pre">preM8</span> <span class="badge b-rec">recommend</span></h3>
+  <div class="row"><span class="k">왜</span> — 영속화될 핵심 상태(킬카운트·보스해금 latch·<code>_soloProgress</code>)가 <code>PartyRegistry</code>에 살아서, DB 스키마를 그대로 설계하면 '파티가 솔로 퀘스트를 영속화'하는 개념 역전이 DB 계층에 박힘. <code>_soloProgress</code>(파티 <i>없는</i> 플레이어)가 파티 클래스에 있는 게 정반대.</div>
+  <div class="row"><span class="k">범위</span> — <code>PartyRegistry</code>에서 퀘스트 상태/로직 제거 → 신설 <code>Quest/QuestRegistry.cs</code>(actor 패턴 동일). GameWorld가 둘 각각 소유, QuestRegistry는 파티 멤버 조회만 PartyRegistry에 질의(한 방향, 순환 없음). <code>QuestConstants</code>는 이미 Quest/에 있어 상태/로직만 합류.</div>
+  <div class="row"><span class="k">위험</span> — 낮음. actor 경계 복제로 race 낮음. <code>PartyState.KillCount</code>(파티 공유)는 PartyState에 남기되 QuestRegistry가 읽기/쓰기. 테스트 분리 필요.</div>
+</div>
+<div class="prop pre">
+  <h3>2. 치트 게이트를 빌드 구성에 종속 <span class="badge b-pre">preM8</span> <span class="badge b-con">헌법 #1·#3</span> <span class="badge b-rec">recommend</span></h3>
+  <div class="row"><span class="k">왜</span> — untrusted <code>C_CheatCommand</code>(F8)가 기본 ON 런타임 플래그(주석+수동토글이 유일 안전장치)만 통과하면 보스 포탈을 권위적으로 해금. 영속화 후엔 치트로 조작된 상태가 DB에 굳어 더 위험.</div>
+  <div class="row"><span class="k">범위</span> — <code>HandlerRegistry</code>에서 <code>#if DEBUG</code>로 CheatCommandHandler 등록을 감쌈. Release는 <code>C_CheatCommand</code>가 unknown PacketID로 drop. const 방식은 CS0162 경고 재도입이라 등록 게이트가 더 나음.</div>
+  <div class="row"><span class="k">위험</span> — 낮음·가역. DEBUG(데모) 빌드는 F8 그대로 유지(영호 시연 보존).</div>
+</div>
+
+<h2>🟡 검증 통과 발견 — 심각도별</h2>
+
+<div class="finding high card">
+  <div class="top"><span class="id">SN-02</span><span class="badge b-high">high</span><span class="badge b-con">헌법 #1·#3</span><span class="badge b-lens">계층위반</span></div>
+  <div class="loc">02_Server/GameServer/Debug/DebugConfig.cs:13 + Handlers/Debug/CheatCommandHandler.cs</div>
+  <p><code>DebugConfig.AllowCheats=true</code>가 const도 <code>#if DEBUG</code> 가드도 아닌 런타임 static readonly 기본 ON. CheatCommandHandler가 모든 빌드에서 무조건 등록 → untrusted <code>C_CheatCommand</code>가 퀘스트 킬카운트 게이트를 우회해 보스 포탈을 권위 해금. 안전장치가 '주석+수동 토글'뿐.</p>
+</div>
+
+<div class="finding med card">
+  <div class="top"><span class="id">XD-2</span><span class="badge b-med">med</span><span class="badge b-pre">preM8 핵심</span><span class="badge b-lens">위치오류</span></div>
+  <div class="loc">02_Server/GameServer/Party/PartyRegistry.cs</div>
+  <p><code>PartyRegistry</code>가 퀘스트 도메인 상태/로직을 통째 소유(<code>_soloProgress</code>/<code>_bossUnlocked</code>/OnKill/GetKillCount 등). 특히 <code>_soloProgress</code>는 '파티 없는' 플레이어 진행도라 파티 개념과 정반대. Quest/ 네임스페이스엔 상수만 있고 상태/로직은 PartyRegistry에 — 상수만 옳은 곳에 있는 비대칭.</p>
+</div>
+
+<div class="finding med card">
+  <div class="top"><span class="id">SG-2</span><span class="badge b-med">med</span><span class="badge b-lens">위치오류</span></div>
+  <div class="loc">02_Server/GameServer/.../States/EnemyStates.cs:59-67</div>
+  <p>적→플레이어 근접 데미지·HP감소·사망판정·풀피 부활(Revive)이 States 폴더에 인라인. 플레이어→적은 이미 MeleeAction+DeferredDamageSystem+HandleEnemyDeath로 추출됐는데 적→플레이어만 State에 남은 비대칭. '죽으면 풀피 부활' 핵심 규칙이 State에 묻혀 발견성 낮음. HandlePlayerDeath 대칭 진입점 부재.</p>
+</div>
+
+<div class="finding med card">
+  <div class="top"><span class="id">SN-01 / XD-3</span><span class="badge b-med">med</span><span class="badge b-lens">위치오류</span></div>
+  <div class="loc">02_Server/GameServer/Network/GameSession.cs:381-527</div>
+  <p>파티 비즈니스 규칙(거절 4종 검증/위장검증/CreateParty race/Disband 시퀀스)이 GameSession의 EnqueueJob 람다에 인라인. 같은 도메인의 포탈 이동은 MapMigration으로 추출됐는데 파티만 세션에 잔류. PartyRegistry는 저수준 primitive만 노출.</p>
+</div>
+
+<div class="finding med card">
+  <div class="top"><span class="id">SN-03</span><span class="badge b-med">med</span><span class="badge b-lens">SOLID·false-promise</span></div>
+  <div class="loc">02_Server/Network/JobQueue.cs · PriorityQueue.cs</div>
+  <p>JobQueue/IJobQueue + PriorityQueue가 production wiring 0건 dead code(게임은 ConcurrentQueue 직접 사용). 문서/convention refs는 'JobQueue가 맵 actor 큐로 사용 중'이라 약속하나 실재 0. 게다가 <code>PriorityQueue.Pop()</code> sift-down에 실제 버그(line 59가 <code>_heap[right]</code> 대신 <code>_heap[left]</code> 비교).</p>
+</div>
+
+<div class="finding med card">
+  <div class="top"><span class="id">SN-05</span><span class="badge b-med">med</span><span class="badge b-lens">개념종속·DRY</span></div>
+  <div class="loc">02_Server/GameServer/Handlers/ (8개 핸들러)</div>
+  <p>전제조건 게이트가 3층 분산 — handshake(OnRecvPacket 인라인) + HasSelectedClass(8개 핸들러가 각자 첫 줄 복붙) + dispatch. 새 게임플레이 핸들러에서 가드 누락 시 class 선택 전 입력이 새는데 컴파일러가 못 잡음(잠재 #3 구멍).</p>
+</div>
+
+<div class="finding med card">
+  <div class="top"><span class="id">C2</span><span class="badge b-med">med</span><span class="badge b-lens">SOLID·응집</span></div>
+  <div class="loc">03_Client SkillCastHandler · HitResultHandler · PlayerAttackHandler</div>
+  <p>SkillCastHandler가 스킬 분기·Resources 경로·스폰/부모링/flip/앵커 정책·텔레포트 보간까지 떠안은 God-handler성. Load+Instantiate+flip+EffectLifetime 패턴이 3곳에 4중 복제 — 정작 BossAttackEffectSpawner·ProjectileSpawner 추출 패턴이 이미 존재하는데 이 3개만 인라인(채택 컨벤션과 불일치).</p>
+</div>
+
+<div class="finding med card">
+  <div class="top"><span class="id">CNT-02</span><span class="badge b-med">med</span><span class="badge b-con">헌법 #4</span><span class="badge b-lens">계층위반</span></div>
+  <div class="loc">99_Tools (M2BasicMovement) vs 98_Shared/Constants.cs:97</div>
+  <p>M2BasicMovement이 '서버 전용·참조 불가'라는 stale 주석으로 DashSpeed를 리터럴 <code>10.0f</code>로 박음. 실제론 M4.13에서 <code>Constants.DashSpeed</code>로 추출됐고 같은 파일 옆 줄이 이미 Constants를 참조 → 즉시 도달 가능. 서버가 DashSpeed 튜닝 시 봇 텔레포트 탐지 상한이 stale 고정 → 회귀 안전망 거짓 판정. (테스트 하네스라 high 아님.)</p>
+</div>
+
+<div class="finding med card">
+  <div class="top"><span class="id">CNT-03</span><span class="badge b-med">med</span><span class="badge b-lens">SOLID·응집</span></div>
+  <div class="loc">99_Tools/headless-bot (17 시나리오)</div>
+  <p>17개 봇 시나리오가 connect/handshake/C_CharacterSelect/헤더 파싱/WaitUntil/EnterMap 라이프사이클을 각자 재구현. BotSession은 raw 콜백 3개만 노출 → 핸드셰이크 계약·PacketID 디코딩 변경 시 17파일 동시 수정, 누락 시 일부 시나리오만 silent 깨짐.</p>
+</div>
+
+<h3 style="color:var(--low);font-size:1rem;margin-top:20px;">검증 통과 low 3건 (활성 버그 0 · 미래 함정)</h3>
+<div class="finding low card">
+  <div class="top"><span class="id">SG-1</span><span class="badge b-low">low</span><span class="badge b-lens">SOLID·응집</span></div>
+  <p>EnemyEntity가 AI 상태를 <code>EnemyState</code>(wire) + <code>Fsm.CurrentState</code>(로직) 이중 표현. 보스는 각 State.Enter가 wire state를 동기화 안 해 추격·예고·공격 중에도 항상 0(Idle). 단 클라/하네스 어디서도 안 써서 관측 버그 0(animState로 단일화). 미래 회귀 함정.</p>
+</div>
+<div class="finding low card">
+  <div class="top"><span class="id">C1</span><span class="badge b-low">low</span><span class="badge b-lens">위치오류</span></div>
+  <p>로컬 플레이어 사망/리스폰 페이드가 S_PlayerHp(권위 HP) 핸들러가 아니라 EnemyAttackHandler에서 <code>targetCurrentHp&lt;=0</code>로 도출. 사망=생명주기 사건인데 특정 데미지 소스의 부산물로 박힘. 현재 활성 버그 없으나 함정/DoT/투사체 추가 시 누락될 구조적 취약점.</p>
+</div>
+<div class="finding low card">
+  <div class="top"><span class="id">CNT-01</span><span class="badge b-low">low</span><span class="badge b-lens">계층·계약</span></div>
+  <p>프레임 길이-prefix를 host-endian <code>BitConverter.ToUInt16</code>로 읽음(쓰기는 전부 LittleEndian 명시). 같은 경로의 payload length는 LittleEndian인데 frame length만 host-endian. 현 LE 타깃 전부라 관측 버그 0. 수정 trivial(양쪽 한 줄).</p>
+</div>
+
+<h2>⚖️ 헌법 정합 판정</h2>
+<div class="card">
+  <p><span class="badge b-con">위반 high</span> <b>SN-02</b> [#1 Server Authority + #3 Trust Boundary] — untrusted C_CheatCommand가 기본 ON 플래그만 통과하면 권위 상태 변경. 빌드 구성 미연동 → 비-데모 빌드에서 #1/#3 실질 무력화. '관례로 막지 말라'는 정확한 케이스.</p>
+  <p><span class="badge b-con">위반 med</span> <b>CNT-02</b> [#4 Shared Code Discipline] — Constants.DashSpeed 도달 가능한데 stale 주석으로 매직넘버 복제. 단일 출처 원칙 위반(테스트 하네스 한정).</p>
+  <p><span class="badge b-low">위반 아님</span> <b>SN-05</b> [#3 잠재] — 현재 8핸들러 모두 게이트 보유해 준수. 단 복붙이라 새 핸들러 누락 시 미래 #3 위반 가능 → 구조적 예방 권장.</p>
+</div>
+
+<h2>🛠️ 리팩토링 제안 8건 (실행 아닌 제안 · 모두 recommend)</h2>
+<div class="prop pre"><h3>1. QuestRegistry 분리 <span class="badge b-pre">preM8</span></h3><div class="row"><span class="k">범위</span> PartyRegistry → 신설 Quest/QuestRegistry (위 preM8 섹션 참조)</div><div class="row"><span class="k">위험</span> 낮음 (한 방향 의존, 순환 없음)</div></div>
+<div class="prop pre"><h3>2. 치트 게이트 빌드 종속 <span class="badge b-pre">preM8</span></h3><div class="row"><span class="k">범위</span> HandlerRegistry #if DEBUG 등록 게이트</div><div class="row"><span class="k">위험</span> 낮음·가역 (DEBUG 데모 F8 유지)</div></div>
+<div class="prop"><h3>3. 파티 오케스트레이션 추출 (PartyFlow)</h3><div class="row"><span class="k">범위</span> GameSession:381-527 → PartyRegistry 고수준 메서드 또는 PartyFlow (MapMigration 대칭)</div><div class="row"><span class="k">왜</span> GameSession 비대화 방지 + 파티 규칙 세션-독립 단위테스트</div><div class="row"><span class="k">위험</span> 중간 (PartyRegistry 결합 trade-off → PartyFlow 별도 클래스로 순수성 보존)</div></div>
+<div class="prop"><h3>4. dead code 정리 (JobQueue/PriorityQueue/SendBuffer)</h3><div class="row"><span class="k">범위</span> 삭제 + 문서 정정, 또는 채택해 통일. 남길 경우 PriorityQueue.Pop() line 59 버그 수정 필수</div><div class="row"><span class="k">위험</span> 낮음 (dead code, production 영향 0)</div></div>
+<div class="prop"><h3>5. 전제조건 게이트 선언화 (HasSelectedClass 복붙 제거)</h3><div class="row"><span class="k">범위</span> IPacketHandler.RequiresSelectedClass + dispatch 전 일괄 게이트, 8핸들러 복붙 제거</div><div class="row"><span class="k">왜</span> 게이트 누락이 구조적으로 불가능 → 잠재 #3 구멍 봉합</div><div class="row"><span class="k">위험</span> 낮음·가역</div></div>
+<div class="prop"><h3>6. 이펙트 스폰 통합 (EffectSpawnService)</h3><div class="row"><span class="k">범위</span> 03_Client 4중 복제 → Combat/Effects 단일 서비스 (기존 추출 패턴에 합류)</div><div class="row"><span class="k">위험</span> 낮음 (클라 연출 전용). 단 <b>시각 동치 육안 검증 = 영호 트랙</b>)</div></div>
+<div class="prop"><h3>7. 봇 라이프사이클 ProbeBase 추출</h3><div class="row"><span class="k">범위</span> BotSession 위 ProbeBase 1개, 17 시나리오는 고유 검증만 override</div><div class="row"><span class="k">위험</span> 낮음 (테스트 하네스). 추출 후 17 시나리오 WSL2 회귀 통과 확인</div></div>
+<div class="prop"><h3>8. 적→플레이어 데미지/사망 진입점 정리 (HandlePlayerDeath)</h3><div class="row"><span class="k">범위</span> EnemyStates.ApplyMeleeDamage → 전투 System + GameMap.HandlePlayerDeath 명시 진입점 (HandleEnemyDeath 대칭)</div><div class="row"><span class="k">왜</span> M8에서 사망=영속화 트리거 후보 → 사망 진입점이 단일·명시적이어야 훅이 깨끗</div><div class="row"><span class="k">위험</span> 중간 (DRY 헬퍼 유지 설계 + 부활 타이밍 회귀 테스트). 활성 버그 0이라 긴급도 중</div></div>
+
+<h2>📦 범위 밖 / 이월 (미검증 low 16 요약)</h2>
+<div class="card">
+<ul>
+  <li>미검증 low 16건은 themes에 흡수 — 개별 재검증 없이 제안에 미포함. SG-1·C1·CNT-01은 활성 버그 0이라 기회 있을 때 정리(긴급도 낮음).</li>
+  <li>namespace/폴더 정합(GameSession=Sessions vs 폴더 Network, ActionKind 위치) = 순수 네이밍 sweep 후보, M8 블로커 아님.</li>
+  <li>SkillId↔ActionKind↔CharacterClass 매핑 분산, AnimState 정의역, MeleeAction Knight/Mage 하드코딩, bot Program.cs if-chain dispatch = 미검증 low.</li>
+  <li><b>Unity 외관 검증</b>(이펙트 통합 시각 동치, 보스 텔레그래프 사운드 위치) = Play 모드 육안 = <b>영호 직접 트랙(버킷 b)</b>. AI 자동 판정 X.</li>
+  <li>모든 제안은 <b>실행 아닌 제안</b> — 실제 적용은 별도 work:plan + 사람 게이트. PR/머지/Protocol.Version bump 동반 변경은 본 감사 산출물에 없음.</li>
+</ul>
+</div>
+
+<div class="gate">
+<b>🚦 영호 결정 — 어디까지 정리?</b><br>
+<b>(A)</b> preM8 2건만(QuestRegistry + 치트 게이트) → 바로 M8 영속화 &nbsp;·&nbsp;
+<b>(B)</b> preM8 2건 + 저위험(4 dead code · 5 게이트 선언화) &nbsp;·&nbsp;
+<b>(C)</b> 전부 8건 한 마일스톤으로 정리 후 M8<br>
+<span class="pill">실행 = 별도 work:plan + 브랜치 + 사람 게이트. 본 문서는 진단·제안까지.</span>
+</div>
+
+<footer>
+  근거: UltraCode 워크플로우 <code>architecture-logic-audit</code> (5도메인 구조맵 → 4-lens 감사 + cross-domain → adversarial 검증 → 종합) · 헌법 5대 원칙 기준 · 영호 지시 "SOLID 넘어 개념적 종속·위치오류" · read-only 진단 (2026-06-19)
+</footer>
+</div>
+</body>
+</html>
