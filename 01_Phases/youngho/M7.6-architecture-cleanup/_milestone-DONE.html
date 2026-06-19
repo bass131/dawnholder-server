@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M7.6 — Architecture Cleanup (DONE)</title>
+<style>
+  :root{--bg:#0e1116;--panel:#171c24;--panel2:#1e2430;--line:#2a313c;--fg:#e6edf3;--mut:#8b949e;--ok:#3fb950;--warn:#d29922;--acc:#58a6ff;--purp:#bc8cff;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--fg);font-family:"Segoe UI","Malgun Gothic",sans-serif;line-height:1.6;padding:32px 20px;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-size:26px;margin-bottom:4px;}
+  .sub{color:var(--mut);margin-bottom:24px;font-size:14px;}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;}
+  .badge{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12.5px;color:var(--mut);}
+  .badge b{color:var(--fg);}
+  .badge.ok{border-color:var(--ok);color:var(--ok);}
+  .badge.warn{border-color:var(--warn);color:var(--warn);}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin-bottom:18px;}
+  h2{font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  h2 .em{font-size:18px;}
+  p{font-size:14px;color:#cdd5de;margin-bottom:8px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;}
+  .card .ph{font-size:12px;color:var(--acc);font-weight:600;letter-spacing:.3px;}
+  .card .t{font-size:14px;font-weight:600;margin:3px 0 6px;}
+  .card .d{font-size:12.5px;color:var(--mut);}
+  .card .c{font-family:Consolas,monospace;font-size:11.5px;color:var(--purp);margin-top:8px;}
+  .tl{position:relative;padding-left:22px;}
+  .tl::before{content:"";position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:var(--line);}
+  .ev{position:relative;margin-bottom:14px;}
+  .ev::before{content:"";position:absolute;left:-19px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--acc);border:2px solid var(--bg);}
+  .ev.warn::before{background:var(--warn);}
+  .ev.ok::before{background:var(--ok);}
+  .ev .r{font-weight:700;font-size:13px;}
+  .ev .r small{color:var(--purp);font-family:Consolas,monospace;font-weight:400;margin-left:6px;}
+  .ev .x{font-size:13px;color:#cdd5de;}
+  ul{margin:6px 0 0 18px;}li{font-size:13.5px;color:#cdd5de;margin-bottom:5px;}
+  .next{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:640px){.next{grid-template-columns:1fr;}}
+  code{background:#0c0f14;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-family:Consolas,monospace;font-size:12px;color:var(--purp);}
+  .foot{color:var(--mut);font-size:12px;text-align:center;margin-top:24px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;}
+  th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;}
+  th{background:var(--panel2);color:var(--fg);}
+  td{color:#cdd5de;}
+  .mono{font-family:Consolas,monospace;color:var(--purp);font-size:12px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>M7.6 — Architecture Cleanup</h1>
+  <div class="sub">아키텍처 논리 감사 8건 정리 · M8 영속화 전 토대 · 마감 2026-06-19</div>
+  <div class="badges">
+    <span class="badge">등급 <b>대규모</b></span>
+    <span class="badge ok">감사 8건 <b>전부 완료</b></span>
+    <span class="badge ok">WSL2 <b>663 / 0 / 5</b></span>
+    <span class="badge ok">봇 <b>16 / 16</b></span>
+    <span class="badge ok">reviewer <b>🔴 0</b></span>
+    <span class="badge ok">Protocol <b>불변</b></span>
+    <span class="badge">커밋 <b>12</b> (로컬)</span>
+    <span class="badge warn">PR/push <b>영호 GO 대기</b></span>
+  </div>
+
+  <section>
+    <h2><span class="em">📌</span> TL;DR</h2>
+    <p>UltraCode 34에이전트 감사(<span class="mono">w5oioyjmf</span>, 38발견→13통과)가 짚은 <b>책임이 엉뚱한 계층에 굳은 자국 8건</b>을 M8(DB 영속화) 진입 전 <b>동작 불변</b>으로 바로잡았다. 게임 외부 행동 0 변경, 구조만 정리 — 각 Phase를 WSL2 회귀·reviewer🔴0·봇 회귀로 증명. preM8 2건(QuestRegistry 분리·치트 <code>#if DEBUG</code>)이 M8 스키마·신뢰경계 오염을 사전 차단.</p>
+    <p>이번 마일스톤의 교훈 = <b>SendBuffer 사건</b>: 감사가 "dead code 삭제"로 묶은 걸 AI가 그대로 추천 → 영호가 <i>"패킷 어떻게 보내는데? 0참조라고 삭제 아니지?"</i>로 제동 → 실측 결과 <b>버려진 쓰레기가 아니라 안 끼운 GC 최적화</b>였고, 삭제 대신 정직 라벨로 전환.</p>
+  </section>
+
+  <section>
+    <h2><span class="em">🗂️</span> 감사 8건 (Phase · 커밋)</h2>
+    <div class="grid">
+      <div class="card"><div class="ph">P01 · 서버</div><div class="t">#1 QuestRegistry 분리</div><div class="d">권위 퀘스트 상태를 PartyRegistry → Quest/ 전용 actor (preM8★)</div><div class="c">5bbaf88</div></div>
+      <div class="card"><div class="ph">P02 · 서버 trust</div><div class="t">#2 치트 #if DEBUG</div><div class="d">Release에 C_CheatCommand 미등록 (헌법 #3 봉합, preM8★)</div><div class="c">c4864fa</div></div>
+      <div class="card"><div class="ph">P03 · 서버</div><div class="t">#3 PartyFlow 추출</div><div class="d">파티 오케스트레이션을 GameSession → PartyFlow</div><div class="c">1eb7ef1</div></div>
+      <div class="card"><div class="ph">P04 · 서버 trust</div><div class="t">#5 게이트 선언화</div><div class="d">RequiresSelectedClass 추상프로퍼티, 8핸들러 복붙 제거</div><div class="c">592ac5d</div></div>
+      <div class="card"><div class="ph">P04·P06 · 서버+클라</div><div class="t">#8 사망 진입점</div><div class="d">GameMap.HandlePlayerDeath 대칭 추출 + 사망 페이드 S_PlayerHp 권위 채널 이동</div><div class="c">eadf47d · 1c9770d</div></div>
+      <div class="card"><div class="ph">P05 · 서버/문서</div><div class="t">#4 dead code 정리</div><div class="d">dead PriorityQueue 삭제 + JobQueue/SendBuffer false-promise 정정</div><div class="c">a1b159c · 3f8aed2</div></div>
+      <div class="card"><div class="ph">P05 · 도구</div><div class="t">#7 봇 6개 수정</div><div class="d">하네스 drift(서버버그 아님) → 16/16 복원</div><div class="c">e5db185</div></div>
+      <div class="card"><div class="ph">P06 · 클라</div><div class="t">#6 EffectSpawnService</div><div class="d">이펙트 스폰 4중복제 → 단일 서비스 통합 (SkillCastHandler -97줄)</div><div class="c">08e627d</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="em">📊</span> 5단계 보고</h2>
+    <p><b>① 무엇을 만들었나</b> — 감사 통과 8건을 동작 불변으로 정리: QuestRegistry 분리 · 치트 빌드배제 · PartyFlow 추출 · 게이트 선언화 · 사망 진입점(서버 HandlePlayerDeath + 클라 권위채널) · dead code/false-promise 정정 · 봇 16/16 · 이펙트 통합.</p>
+    <p><b>② 왜 필요한가</b> — M8 = DB 영속화. 책임이 엉뚱한 계층에 있으면 영속화 경계가 더러워진다. preM8 2건(#1 퀘스트 분리·#2 치트 빌드배제)이 M8 스키마·신뢰경계 오염을 사전 차단하는 핵심.</p>
+    <p><b>③ 어떻게 만들었나</b> — Opus/Sonnet Worker 위임 → 각 Phase WSL2 회귀 + reviewer. trust-boundary/대규모는 Opus. 실측 정정 2건: BossStates 사망/부활 중복은 *없었고*(ApplyMeleeDamage 위임), death-guard는 도달불가 방어코드(범위 밖). SendBuffer는 영호 제동으로 삭제→정직라벨 전환.</p>
+    <p><b>④ 테스트 결과</b> — 서버: WSL2 <b>663/0/5</b>(657→+6) · 봇 <b>16/16</b> · reviewer🔴0 · P02 Release drop 별도 증명. 클라: Unity 컴파일 <b>0 에러</b>(MCP) · reviewer🔴0 · <b>영호 Play 육안 "전부 이상 무"</b>. ProtocolVersion 불변.</p>
+    <p><b>⑤ 다음 스텝</b> — PR/push(영호 GO, 단독 normal merge) → M8 DB 영속화 재개 → (백로그) M8후 부하 프로파일링+최적화 패스.</p>
+  </section>
+
+  <section>
+    <h2><span class="em">🧭</span> 결정 흐름 · SendBuffer 사건</h2>
+    <div class="tl">
+      <div class="ev"><div class="r">감사 #4: "dead code 삭제" <small>JobQueue/PriorityQueue/SendBuffer</small></div><div class="x">PriorityQueue는 0참조+0테스트+잠재버그 → 삭제. SendBuffer도 같은 묶음으로 AI가 "삭제" 추천.</div></div>
+      <div class="ev warn"><div class="r">영호 제동 <small>"0참조라고 삭제 아니지?"</small></div><div class="x">"패킷 어떻게 보내는데?" — 미참조 코드를 갈래 분류 없이 지우려던 것을 멈춤.</div></div>
+      <div class="ev"><div class="r">실측 = 송신 경로 추적</div><div class="x">Session.cs가 패킷당 <code>new byte[]</code> → _sendQueue → <code>SendAsync(BufferList)</code> 직접. SendBuffer(청크 재사용 GC최적화)는 끼우지 않은 참조 구현 = JobQueue 동급.</div></div>
+      <div class="ev ok"><div class="r">결론: 삭제 X, 정직 라벨 <small>3f8aed2</small></div><div class="x">02_Server/CLAUDE.md + 양쪽 SendBuffer.cs 헤더 + PacketFormat.cs 주석 4곳 정정. 교훈 memory 박제 + M8후 perf 백로그.</div></div>
+    </div>
+    <p style="margin-top:12px"><b>#8 실측 정정</b> — work-pin 가정("BossStates 중복")은 코드와 달랐다: BossStates.ApplyBossAttack은 ApplyMeleeDamage에 위임만 해 사망/부활 site는 단일. death-guard는 즉시부활로 도달불가. plan-auditor가 코드로 검증 → 범위 밖 잔류.</p>
+    <p><b>#8 클라↔서버 시너지</b> — 서버가 S_PlayerHp(0)→(MaxHp) 순으로 보내므로, 클라 사망 페이드를 권위 HP 채널(currentHp≤0)에서 도출하면 DoT/함정/투사체 등 모든 사망 소스에 robust.</p>
+  </section>
+
+  <section>
+    <h2><span class="em">🧪</span> AC 검증 결과</h2>
+    <table>
+      <tr><th>항목</th><th>결과</th></tr>
+      <tr><td>WSL2 회귀 (build + test)</td><td>Build 0 error · <b>663 passed / 0 failed / 5 skipped</b> (baseline 657 → +6)</td></tr>
+      <tr><td>봇 회귀 (16 시나리오)</td><td><b>PASS=16 FAIL=0</b> (HpSyncSmoke가 사망→부활 e2e 증명)</td></tr>
+      <tr><td>P02 위반 봉합 별도 증명</td><td>CheatBuildGateTests — Release에 C_CheatCommand 미등록 확인 (회귀 green ≠ 봉합 함정 회피)</td></tr>
+      <tr><td>클라 컴파일 (MCP)</td><td>강제 재컴파일 <b>CS 에러 0</b> · EffectSpawnService 타입 resolve</td></tr>
+      <tr><td>클라 시각 동치 (bucket-b)</td><td>영호 Play 육안 <b>"전부 이상 무"</b> — 사망 페이드 1회 / 대쉬 flip / 텔레포트 위치 / 피격 이펙트</td></tr>
+      <tr><td>reviewer (전 Phase)</td><td><b>🔴 0</b></td></tr>
+      <tr><td>ProtocolVersion</td><td><b>불변</b> (와이어 포맷 0 변경)</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="em">➡️</span> 다음</h2>
+    <div class="next">
+      <div class="card"><div class="t">1. PR / push</div><div class="d">12커밋 · 영호 GO 게이트(비가역) · 단독 normal merge(admin 불요)</div></div>
+      <div class="card"><div class="t">2. M8 = DB 영속화</div><div class="d">feature/m8-persistence · ADR-005 LocalDB + EF Core 10 + 큐드 라이터 · 계정식별 미결</div></div>
+      <div class="card"><div class="t">3. (백로그) perf 패스</div><div class="d">M8후 부하 프로파일링 → SendBuffer wiring·송신 할당·DB write 경로 데이터로 판단</div></div>
+      <div class="card"><div class="t">(후속) HitResultHandler</div><div class="d">같은 스폰 패턴 — EffectSpawnService 합류 후보(이번 범위 밖)</div></div>
+    </div>
+  </section>
+
+  <div class="foot">M7.6 Architecture Cleanup · 12커밋 로컬·미push · 모델 Opus 4.8 [1M] · 2026-06-19</div>
+</div>
+</body>
+</html>
