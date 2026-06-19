@@ -35,7 +35,7 @@
 |------|-----------|-----------|-----------|
 | 스킬이 안 나감 | `02_Server/GameServer/Maps/Systems/SkillSystem.cs` | `ProcessSkill` | 클라 `LocalPlayerInput.TrySendSkill`(클라측 쿨다운 게이트) → C_SkillUse → SkillUseHandler → ProcessSkill 분기(Thunderbolt/Dash/Teleport). 서버 쿨다운 → ValidateRewind 순 silent drop 확인 |
 | 스킬 이펙트 방향/위치가 이상함 | 〃 (S_SkillCast.facing) ↔ 클라 SkillCast 핸들러 | — | facing 1비트 약속: 1=오른쪽/0=왼쪽 (`PlayerEntity.FacingByte` 단일 출처) |
-| 쿨다운이 안 돌았는데 시전됨 / 안 돌아감 | `02_Server/GameServer/Maps/PlayerEntity.cs` | `GetLastSkillTick`/`SetLastSkillTick` | 스킬별 마지막 시전 tick 기록 — 서버 tick 기반(헌법 §5, blocking 0). 클래스↔스킬 게이트는 M4.12 예정(미구현 — 전사가 Mage 스킬 시전 가능) |
+| 쿨다운이 안 돌았는데 시전됨 / 안 돌아감 | `02_Server/GameServer/Entities/PlayerEntity.cs` | `GetLastSkillTick`/`SetLastSkillTick` | 스킬별 마지막 시전 tick 기록 — 서버 tick 기반(헌법 §5, blocking 0). 클래스↔스킬 게이트는 M4.12 예정(미구현 — 전사가 Mage 스킬 시전 가능) |
 
 ---
 
@@ -43,9 +43,9 @@
 
 | 증상 | 시작 파일 | 시작 함수 | 흐름 요약 |
 |------|-----------|-----------|-----------|
-| 포탈에 들어가도 무시됨 | `02_Server/GameServer/Network/MapMigration.cs` | `Execute` | 검증 3단계(portalId 유효 → 플레이어 존재 → 근접 2unit) 실패 시 `[Trust]` 로그 + silent drop — 서버 콘솔부터 |
+| 포탈에 들어가도 무시됨 | `02_Server/GameServer/Maps/Transitions/MapMigration.cs` | `Execute` | 검증 3단계(portalId 유효 → 플레이어 존재 → 근접 2unit) 실패 시 `[Trust]` 로그 + silent drop — 서버 콘솔부터 |
 | 맵 넘어가면 기존 플레이어/적이 안 보임 | `02_Server/GameServer/Maps/GameMap.cs` | `SendInitialRosterTo` | EnterGameWorld(최초 진입)/MapMigration(이동) **공용 단일 경로** — S_PlayerJoin(기존 player) + S_EntitySpawn(살아있는 enemy) 1:1 Send. 클라 수신측은 `RosterTransitionBuffer` drain |
-| 맵 넘어가면 HP가 풀로 보임 | `02_Server/GameServer/Network/MapMigration.cs` | `Execute` 안 `destMap.SendPlayerHp` | 캐리된 HP를 S_PlayerHp 1:1 재통지 — 누락 시 클라 placeholder(full HP) 고착 |
+| 맵 넘어가면 HP가 풀로 보임 | `02_Server/GameServer/Maps/Transitions/MapMigration.cs` | `Execute` 안 `destMap.SendPlayerHp` | 캐리된 HP를 S_PlayerHp 1:1 재통지 — 누락 시 클라 placeholder(full HP) 고착 |
 
 ---
 

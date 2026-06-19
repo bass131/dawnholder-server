@@ -16,9 +16,9 @@
 | 차원 | 좌표 |
 |---|---|
 | Entry | `Handlers/Combat/AttackHandler.cs:24` (C_Attack 디코드) |
-| Trust gate | `AttackHandler.cs:6-11` (패킷=targetEntityId만, attacker=session 강제) + `Network/GameSession.cs:285` (SubmitAttack, _entityId 캡처) |
+| Trust gate | `AttackHandler.cs:6-11` (패킷=targetEntityId만, attacker=session 강제) + `Sessions/GameSession.cs:285` (SubmitAttack, _entityId 캡처) |
 | Orchestration | `Maps/Systems/CombatSystem.cs:27` → `Maps/Systems/ActionGate.cs:16` (4단계 검증: 상태/쿨다운/클래스/rewind) |
-| State owner | `Combat/EnemyEntity.cs:18` (Hp/Hitbox) + `Maps/GameMap.cs:24` (_players/_enemies 컨테이너) |
+| State owner | `Entities/EnemyEntity.cs:18` (Hp/Hitbox) + `Maps/GameMap.cs:24` (_players/_enemies 컨테이너) |
 | Notification | `Maps/Actions/MeleeAction.cs:46` (S_PlayerAttack) · `:94` (S_HitResult 즉시/Knight) · `:80` (S_ProjectileLaunch deferred/Mage) |
 | Client mirror | `Handlers/Combat/PlayerAttackHandler.cs:28` (연출, 로컬 skip) · `Handlers/Combat/HitResultHandler.cs:34` (데미지/HP/VFX) |
 | UI | `HitResultHandler.cs:51` (EnemyRegistry.ApplyHit) · `Handlers/Combat/EnemyAttackHandler.cs:31` (적 공격 모션/flash) |
@@ -44,7 +44,7 @@
 | Entry | (자동 스폰) `Maps/GameMap.cs:422` (SpawnEnemy: kind별 stats/HP/Fsm) |
 | Trust gate | `GameMap.cs:79` (kindId 범위 fail-loud); 적은 서버 권위 생성(클라 입력 0) |
 | Orchestration | `Maps/Systems/EnemyAISystem.cs:16` (Fsm.Tick + latch + S_EntityState) · `Maps/Systems/BossBehaviorSystem.cs:30` (페이즈2 + 보스 FSM) |
-| State owner | `Combat/EnemyEntity.cs:17` (State/Target/AI필드) · `Maps/States/EnemyStates.cs:17` (Patrol/Chase/Hit/Attack) · `Maps/States/BossStates.cs:69` (Idle/Move/Telegraph/Attack) |
+| State owner | `Entities/EnemyEntity.cs:17` (State/Target/AI필드) · `Maps/States/EnemyStates.cs:17` (Patrol/Chase/Hit/Attack) · `Maps/States/BossStates.cs:69` (Idle/Move/Telegraph/Attack) |
 | Notification | `EnemyAISystem.cs:39` / `BossBehaviorSystem.cs:66` (S_EntityState: x/y/state/animState) |
 | Client mirror | `State/RemoteEntityRegistry.cs` (트랜스폼/애니 동기) · `Combat/Enemies/EnemyRegistry.cs` (적 미러) |
 | UI | `Combat/Enemies/` (EnemyView/Motion, animState 기반) + BossAttackEffectSpawner |
@@ -57,7 +57,7 @@
 | Entry | (자동) 플레이어=`Maps/States/EnemyStates.cs:59` (ApplyMeleeDamage Hp<=0) · `BossStates.cs:37` (ApplyBossAttack) · `DeferredDamageSystem.cs:78`. 적=동 사망 site |
 | Trust gate | 서버 권위만 (클라는 HP 수신 후 도출). deferred는 dispose 체크 `DeferredDamageSystem.cs:56` (stale ID 무효화) |
 | Orchestration | 플레이어=`GameMap.cs:502` HandlePlayerDeath(spawn 재배치/풀피/부활음) · 적=`GameMap.cs:477` HandleEnemyDeath(S_EntityDeath + StageClear + RemoveEnemy + EnqueueRespawn) |
-| State owner | 플레이어=`Maps/PlayerEntity.cs` (IsDead=Hp<=0, DeathState via ActionFsm) · 적=`EnemyEntity.cs:50` + `:94` RespawnTicksRemaining · 부활=`Maps/Systems/RespawnSystem.cs` |
+| State owner | 플레이어=`Entities/PlayerEntity.cs` (IsDead=Hp<=0, DeathState via ActionFsm) · 적=`EnemyEntity.cs:50` + `:94` RespawnTicksRemaining · 부활=`Maps/Systems/RespawnSystem.cs` |
 | Notification | 플레이어=`GameMap.cs:531` S_PlayerHp(0) · 적=`GameMap.cs:479` S_EntityDeath + `RespawnSystem.cs:82` S_EntitySpawn |
 | Client mirror | 플레이어=`Handlers/Combat/PlayerHpHandler.cs:42` (Hp<=0→RespawnFade) · 적=`Handlers/Combat/EntityDeathHandler.cs:22` (Despawn+사망음) |
 | UI | 플레이어=`PlayerHpHandler.cs:44` (사망음+페이드) · 적=`EntityDeathHandler.cs:34` (kind별 사망음) |
@@ -85,9 +85,9 @@
 | 차원 | 좌표 |
 |---|---|
 | Entry | `Handlers/Movement/MoveIntentHandler.cs:17` (C_MoveIntent) · `:22` InputBits.Decode |
-| Trust gate | `Network/IntentRateLimiter.cs:33` (1초 500 intent fail-closed) · `GameSession.cs:234` SubmitMoveIntent(rate-limit + inputBits 검증 + entityId<0 방어 + migration null race 방어 :256) |
+| Trust gate | `Sessions/IntentRateLimiter.cs:33` (1초 500 intent fail-closed) · `GameSession.cs:234` SubmitMoveIntent(rate-limit + inputBits 검증 + entityId<0 방어 + migration null race 방어 :256) |
 | Orchestration | `GameSession.cs:269` (EnqueueJob → PlayerEntity.EnqueueInput) → `GameMap.Tick()` physics loop 입력 소비 |
-| State owner | `Maps/PlayerEntity.cs:69` Position · `:78` Velocity · `:79` OnGround · `:28` _inputQueue(max6, drop-oldest) |
+| State owner | `Entities/PlayerEntity.cs:69` Position · `:78` Velocity · `:79` OnGround · `:28` _inputQueue(max6, drop-oldest) |
 | Notification | S_Snapshot=`SnapshotHandler` (20Hz 전 플레이어 위치) |
 | Client mirror | `Prediction/LocalPlayerMovement.cs:27` _predictor · `:60` curr/prev predict pos(보간) · OnServerSnapshot(reconcile) |
 | UI | `LocalPlayerMovement` 렌더 위치=보간된 _currPredictPos · _motion.facing |
@@ -98,7 +98,7 @@
 | 차원 | 좌표 |
 |---|---|
 | Entry | `Handlers/Zone/EnterPortalHandler.cs:19` (C_EnterPortal) · `:24` SubmitEnterPortal |
-| Trust gate | `Network/MapMigration.cs:43` Execute(portal lookup :56 / 플레이어 존재 :67 / **근접 2unit :71** / 보스포탈 killCount 게이트 :86 서버권위 QuestRegistry 조회) |
+| Trust gate | `Maps/Transitions/MapMigration.cs:43` Execute(portal lookup :56 / 플레이어 존재 :67 / **근접 2unit :71** / 보스포탈 killCount 게이트 :86 서버권위 QuestRegistry 조회) |
 | Orchestration | `GameSession.cs:354` SubmitEnterPortal(EnqueueJob) → `MapMigration.cs:104` (검증→RemovePlayer→SetMigrating(1)→맵B EnqueueJob→AddPlayerWithId→SetMigrating(0)) |
 | State owner | `GameSession.cs:61` _migrating(socket thread null 반환) · `:55` _currentMapIdValue(Volatile) · `Maps/PortalTable.cs:35` Portal record |
 | Notification | S_PlayerLeave=`MapMigration.cs:118` · S_MapTransition=`:158` · S_PlayerJoin=`:175` |
@@ -107,7 +107,7 @@
 | Persistence (M8) | 선형 플로우(Town→HG→Boss→Ending→Town). M8=마지막 맵ID+spawn 저장 |
 | Volatile | `GameSession.cs:61` _migrating(transient drop 보호) · MapMigration 로컬(capturedStats:107/capturedHp:108/destSpawn/destMapId) |
 
-> ⚠️ **이름이 거짓말하는 곳(P6 이동 대상)**: `MapMigration`은 폴더 `GameServer/Network/`인데 *네트워크가 아니라 존 이동 로직* → P6에서 `Maps/Transitions/`로. `GameSession`도 폴더=Network인데 NS=`...Sessions` → `Sessions/`로.
+> ✅ **이름·위치 정합 완료 (M7.7 P6, ADR-033)**: `GameSession`·`IntentRateLimiter`→`Sessions/`, `MapMigration`→`Maps/Transitions/`(네트워크 아닌 존 이동), `PlayerEntity`+`EnemyEntity`+`EnemyState`→`Entities/`(엔티티 통합), `Maps/Systems/*` NS=`...Maps.Systems` 정합. `GameServer/Network/` 폴더 소멸. 위 좌표는 이동 후 경로 기준(코드 line은 ±1 drift 가능, 심볼명이 앵커).
 
 ---
 
@@ -156,8 +156,8 @@
 
 ## M7.7 이후 갱신 의무
 
-- **P5(데이터화)** 후: A2 Skill / A3 Enemy의 "정의" 좌표가 catalog로 이동 → 갱신.
-- **P6(이동)** 후: B1 GameSession → `Sessions/`, B3 MapMigration → `Maps/Transitions/`, Maps/Systems NS 정합 → 좌표 갱신.
+- ✅ **P5(데이터화)** 완료: 적=`Entities/EnemyCatalog`? (서버 EnemyCatalog=`Combat/`), 클라 스킬=`ClientSkillCatalog`. ~~A2 Skill / A3 Enemy 정의 catalog 이동~~ 반영됨.
+- ✅ **P6(이동)** 완료: GameSession·IntentRateLimiter→`Sessions/`, MapMigration→`Maps/Transitions/`, PlayerEntity+EnemyEntity+EnemyState→`Entities/`, Maps/Systems NS=`...Maps.Systems`. 위 표 좌표 경로 갱신 완료(line ±1 drift 가능).
 - **M8(영속화)** 후: 각 기능 "Persistence candidate" → 실제 DB 엔티티/테이블 좌표로 구체화.
 
 > 이 지도는 *살아있는 문서*다. 기능 위치가 바뀌면 여기를 같이 고친다 — 안 그러면 다시 "이름이 거짓말하는" 상태로 돌아간다.
