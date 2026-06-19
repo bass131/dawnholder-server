@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Dawnholder.Server.GameServer.Network;
+namespace Dawnholder.Server.GameServer.Sessions;
 
 /// <summary>
 /// 플레이어 intent(C_MoveIntent) 속도 제한 — 1초 fixed 윈도우.
