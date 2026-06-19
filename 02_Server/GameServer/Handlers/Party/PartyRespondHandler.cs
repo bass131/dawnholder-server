@@ -14,15 +14,11 @@ namespace Dawnholder.Server.GameServer.Handlers;
 //   - class 선택 전 파티 입력은 silent drop + cheat-flag 후보 로그.
 internal sealed class PartyRespondHandler : IPacketHandler
 {
+    // 파티 입력 — class 선택 전 = 신뢰 경계 위반. dispatch 일괄 게이트가 silent drop.
+    public bool RequiresSelectedClass => true;
+
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
-        if (!session.HasSelectedClass)
-        {
-            Console.WriteLine(
-                "[Trust] C_PartyRespond before CharacterSelect — silent drop (cheat-flag candidate)");
-            return;
-        }
-
         C_PartyRespond pkt = new C_PartyRespond();
         pkt.Read(buffer);
 

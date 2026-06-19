@@ -181,6 +181,14 @@ public class GameSession : PacketSession
         // Dictionary dispatch. 새 핸들러 추가 = HandlerRegistry._handlers에 한 줄 등록. 누락 시 unknown drop.
         if (HandlerRegistry.TryGet(id, out IPacketHandler handler))
         {
+            // 전제조건 일괄 게이트 (헌법 #3): class 선택 전 게임플레이 입력은 신뢰 경계 위반 → silent drop.
+            //   옛 8핸들러 첫 줄 복붙(`if (!HasSelectedClass)`)을 RequiresSelectedClass 선언 + 이 한 곳으로 통합.
+            //   Handle *전*에 실행 = 기존 핸들러-첫줄과 동일 시점 (drop 동작 동치 보존).
+            if (handler.RequiresSelectedClass && !HasSelectedClass)
+            {
+                Console.WriteLine($"[Trust] {id} before CharacterSelect — silent drop (cheat-flag candidate)");
+                return;
+            }
             handler.Handle(this, buffer);
         }
         else

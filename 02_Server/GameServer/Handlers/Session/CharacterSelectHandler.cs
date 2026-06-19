@@ -12,6 +12,9 @@ namespace Dawnholder.Server.GameServer.Handlers;
 // **헌법 #3 (Trust Boundary)**: 중복 선택 차단 + 범위 검증(Knight/Mage 외 silent drop).
 internal sealed class CharacterSelectHandler : IPacketHandler
 {
+    // class를 *선택하는* 핸들러 자체 — false 필수. 반대 게이트(재선택 거부)는 Handle 내부 별개.
+    public bool RequiresSelectedClass => false;
+
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
         // 중복 선택 차단 (헌법 #3) — 기존 stats 교체 X, silent drop.

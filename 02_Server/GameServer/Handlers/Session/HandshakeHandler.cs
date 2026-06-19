@@ -9,6 +9,9 @@ namespace Dawnholder.Server.GameServer.Handlers;
 // lifecycle gating 권한 X). 본 핸들러는 *게이트 통과 후*의 decode + 검증만.
 internal sealed class HandshakeHandler : IPacketHandler
 {
+    // handshake는 class 선택 전 단계 자체 — 전제조건 게이트 미적용.
+    public bool RequiresSelectedClass => false;
+
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
         C_Handshake pkt = new C_Handshake();

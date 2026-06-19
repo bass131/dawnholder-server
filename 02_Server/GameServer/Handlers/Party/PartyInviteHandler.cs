@@ -12,15 +12,11 @@ namespace Dawnholder.Server.GameServer.Handlers;
 //   - 거절 4종(자기초대/이미파티/정원/만료)은 A4(Phase 05). 이번엔 happy + auth 게이트.
 internal sealed class PartyInviteHandler : IPacketHandler
 {
+    // 파티 입력 — class 선택(=월드 진입) 전 = 신뢰 경계 위반. dispatch 일괄 게이트가 silent drop.
+    public bool RequiresSelectedClass => true;
+
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
-        if (!session.HasSelectedClass)
-        {
-            Console.WriteLine(
-                "[Trust] C_PartyInvite before CharacterSelect — silent drop (cheat-flag candidate)");
-            return;
-        }
-
         C_PartyInvite pkt = new C_PartyInvite();
         pkt.Read(buffer);
 

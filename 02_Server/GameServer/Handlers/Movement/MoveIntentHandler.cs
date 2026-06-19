@@ -11,18 +11,11 @@ namespace Dawnholder.Server.GameServer.Handlers;
 // 본 핸들러가 디코드하고 sbyte/bool로 전달, session은 검증된 값만 받음.
 internal sealed class MoveIntentHandler : IPacketHandler
 {
+    // 이동 입력 — class 선택 전 = stats 없는 상태로 월드 영향 가능. dispatch 일괄 게이트가 silent drop.
+    public bool RequiresSelectedClass => true;
+
     public void Handle(GameSession session, ArraySegment<byte> buffer)
     {
-        // 헌법 #3 (trust boundary): class 선택 전 C_MoveIntent = silent drop.
-        // 캐릭터 선택 없이 movement를 처리하면 stats 없는 상태로 월드에 영향을 줄 수 있음.
-        // silent drop = disconnect보다 UX 부드러움 (reconnect storm 회피).
-        if (!session.HasSelectedClass)
-        {
-            Console.WriteLine(
-                $"[Trust] C_MoveIntent before CharacterSelect — silent drop (cheat-flag candidate)");
-            return;
-        }
-
         C_MoveIntent pkt = new C_MoveIntent();
         pkt.Read(buffer);
 
