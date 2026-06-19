@@ -1,7 +1,6 @@
 #nullable enable
 using Shared.GameData;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Dawnholder.Client.Combat
 {
@@ -87,16 +86,9 @@ namespace Dawnholder.Client.Combat
 
         static void SpawnPrefab(GameObject prefab, Vector3 spawnPos, int facing)
         {
-            GameObject fx = Object.Instantiate(prefab, spawnPos, Quaternion.identity);
-            if (facing < 0)
-            {
-                Vector3 s = fx.transform.localScale;
-                s.x = -Mathf.Abs(s.x);
-                fx.transform.localScale = s;
-            }
-            // 수명 자동 파괴 — AutoDestroy가 없으면 EffectLifetime 주입.
-            if (fx.GetComponent<EffectLifetime>() == null)
-                fx.AddComponent<EffectLifetime>();
+            // flip 동치: facing 항상 비0(1 or -1) + spriteDefaultFacesLeft=false
+            //   → EffectSpawnService 규칙 (facingSign<0)^false = facingSign<0 = facing<0 과 동일.
+            EffectSpawnService.SpawnPrefab(prefab, spawnPos, facingSign: facing, spriteDefaultFacesLeft: false);
         }
     }
 }
