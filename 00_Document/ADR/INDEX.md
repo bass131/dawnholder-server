@@ -20,7 +20,7 @@
 | ADR-012 | Unity 클라 socket 분리 클라용 라이브러리 (Y2) | [tech-stack/ADR-012-socket-y2.md](tech-stack/ADR-012-socket-y2.md) |
 | ADR-017 | 프로젝트 폴더 ASCII 경로 이동 | [tech-stack/ADR-017-ascii-path.md](tech-stack/ADR-017-ascii-path.md) |
 | ADR-026 | entity id 전역 풀 (맵 간 id 유지) | [tech-stack/ADR-026-entity-id-global-pool.md](tech-stack/ADR-026-entity-id-global-pool.md) |
-| ADR-033 | 🟡 구조 네이밍·경계 기준 (M7.7, **Proposed** — 영호 승인이 P6 이동 게이트) | [tech-stack/ADR-033-structure-naming-boundaries.md](tech-stack/ADR-033-structure-naming-boundaries.md) |
+| ADR-033 | 🟢 구조 네이밍·경계 기준 (M7.7, **Accepted** 2026-06-20 — P6 범위 A 전체 D2~D6) | [tech-stack/ADR-033-structure-naming-boundaries.md](tech-stack/ADR-033-structure-naming-boundaries.md) |
 
 ## gameplay/ — 게임 디자인·스코프
 

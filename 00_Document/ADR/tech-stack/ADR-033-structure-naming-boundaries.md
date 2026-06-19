@@ -1,6 +1,6 @@
 # ADR-033 — 구조 네이밍·경계 기준 (Structure Naming & Boundaries)
 
-- **Status**: 🟡 **Proposed (DRAFT)** — 영호 승인 시 Accepted. **이 ADR의 승인이 M7.7 P6(파일 이동)의 게이트다.**
+- **Status**: 🟢 **Accepted** (2026-06-20 영호 승인) — **P6 범위 = A(전체): D2·D3·D4·D5·D6 전부 집행.** 이 승인이 M7.7 P6(파일 이동) 게이트 통과.
 - **Date**: 2026-06-20
 - **Context milestone**: M7.7 구조 리팩토링 (behavior-invariant, pre-M8)
 - **입력**: `01_Phases/youngho/M7.7-structure-refactor/_diagnosis.md` + Codex 검토 #4·#5 + `00_Document/FEATURE_MAP.md`
@@ -36,8 +36,9 @@ M7.7 진단에서 "이름이 거짓말하는" 곳이 다수 발견됐다 — 폴
 - **P6** 집행: D2·D3·D4 (이동/NS 정합). **D5·D6은 영호 승인 시에만**(과한 이동, 미승인 시 Deferred). 이동마다 frozen 참조 grep 0 dangling 게이트(미통과 시 해당 이동 보류).
 - **Deferred**: D9, 엔티티 공통 베이스, Maps→World/Simulation 대재편(memory `future-maps-namespace-restructure`, post-M8 SOLID 패스).
 
-## 미해결 (영호 승인 필요)
+## 영호 결정 (2026-06-20)
 
-- **D5/D6 범위**: Combat 폴더 재편 + 엔티티 통합을 *이번 M7.7에 포함*할지, 아니면 보수적으로 D2·D3·D4(명백한 거짓말)만 하고 D5·D6은 post-M8로 미룰지. (권장: M7.7은 D2·D3·D4·D7·D8까지, D5·D6은 영호 결정 — 이동 위험 대비 가치 판단)
+- **D5/D6 범위**: **A(전체) 채택** — D5·D6을 이번 M7.7 P6에 *포함*한다 (보수안 B 미채택). 사유: M8(DB 영속화)이 엔티티에 붙기 *전에* `Entities/`로 통합해 두는 게 깨끗 — "이동 defer 거부, real reorg가 목표"(영호). D6(PlayerEntity 23참조)이 最高위험이라 **이동마다 frozen `-DONE`/CODEOWNERS grep 0 + WSL2 708 비감소 게이트, 미통과 시 해당 이동만 보류**.
+- **승인 항목**: D1(규칙화)·D2·D3·D4·D5·D6 집행. D7·D8은 P1·P3에서 이미 완료. D9(CharacterClass NS)·엔티티 공통 베이스·Maps→World 대재편은 Deferred 유지.
 
-> **이 ADR은 DRAFT다. 영호가 D1~D9를 승인(또는 수정)해야 P6이 집행된다.** 승인 전까지 P0~P5는 진행 가능(이동 없음 또는 D7·D8 같은 저위험만).
+> **이 ADR은 Accepted다 (영호 2026-06-20).** P6이 D2·D3·D4·D5·D6을 집행한다 — 이동마다 frozen 참조 grep 0 dangling 게이트 통과 시에만.
