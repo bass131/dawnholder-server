@@ -478,8 +478,10 @@ public class GameSession : PacketSession
         });
     }
 
-    // [시연 디버그 치트] C_CheatCommand 처리. 행위자=_entityId 강제(헌법 #3 — 패킷에 대상 필드 없음).
-    //   AllowCheats 게이트는 CheatCommandHandler에서 이미 통과. cheatType 0 = 퀘스트 즉시완료.
+#if DEBUG
+    // [시연 디버그 치트] C_CheatCommand 처리. 유일 호출자=CheatCommandHandler(둘 다 #if DEBUG).
+    //   Release에는 부재(치트 사슬 빌드타임 봉합, 헌법 #3 / SN-02).
+    //   행위자=_entityId 강제(패킷에 대상 필드 없음). cheatType 0 = 퀘스트 즉시완료.
     internal void SubmitCheatCommand(byte cheatType)
     {
         if (_entityId < 0) return; // EnterGameWorld 미완료 race 방어
@@ -494,6 +496,7 @@ public class GameSession : PacketSession
                 world.Quest.DebugCompleteQuest(entityId, world);
         });
     }
+#endif
 
     // disconnect 시 파티/초대 정리. OnDisconnected에서만 호출(_closing 게이트 통과 후 = 세션당 1회).
     //

@@ -97,9 +97,11 @@ public sealed class QuestRegistry
         }
     }
 
+#if DEBUG
     /// <summary>
     /// [시연 디버그 치트] 호출자의 퀘스트를 즉시 완료 — killCount를 임계로 채우고 보스 영구 해금.
-    /// CheatCommandHandler가 DebugConfig.AllowCheats 게이트 통과 시 EnqueueJob 경유로 호출(서버 권위 유지).
+    /// 유일 호출자=GameSession.SubmitCheatCommand(둘 다 #if DEBUG) — Release에는 부재(치트 사슬
+    /// 빌드타임 봉합, 헌법 #3 / SN-02). EnqueueJob 경유 호출로 서버 권위 유지.
     /// OnKill 임계 도달 분기와 동형 — 파티면 공유 카운트, 솔로면 _soloProgress.
     /// </summary>
     public void DebugCompleteQuest(int entityId, GameWorld world)
@@ -122,6 +124,7 @@ public sealed class QuestRegistry
             PartyNotifier.SendQuestUpdate(world, entityId, target, target);
         }
     }
+#endif
 
     /// <summary>
     /// 모든 퀘스트 진행상황 초기화. 보스 킬 시 GameWorld.MakeMap 콜백이 EnqueueJob 경유로 호출.

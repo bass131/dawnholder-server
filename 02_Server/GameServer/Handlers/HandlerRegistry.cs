@@ -25,7 +25,12 @@ internal static class HandlerRegistry
             { PacketID.C_PartyInvite,    new PartyInviteHandler() },
             { PacketID.C_PartyRespond,   new PartyRespondHandler() },
             { PacketID.C_PartyLeave,     new PartyLeaveHandler() },
+#if DEBUG
+            // [빌드타임 봉합 — 헌법 #3] 치트는 DEBUG 빌드에만 등록. Release는 미등록 →
+            //   C_CheatCommand가 unknown PacketID로 silent drop(빌드 클라가 F8 눌러도 무반응).
+            //   런타임 플래그가 아니라 빌드 구성이 1차 보장(SN-02 봉합). PacketID 정의·와이어는 불변(은퇴 아님).
             { PacketID.C_CheatCommand,   new CheatCommandHandler() },
+#endif
         };
 
     public static bool TryGet(PacketID id, out IPacketHandler handler)
