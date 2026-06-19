@@ -488,10 +488,10 @@ public class GameSession : PacketSession
         if (world == null) return; // shutdown race
 
         int entityId = _entityId;
-        world.Party.EnqueueJob(() =>
+        world.Quest.EnqueueJob(() =>
         {
             if (cheatType == 0) // 퀘스트 즉시완료(보스 포탈 해금)
-                world.Party.DebugCompleteQuest(entityId, world);
+                world.Quest.DebugCompleteQuest(entityId, world);
         });
     }
 
@@ -640,7 +640,7 @@ public class GameSession : PacketSession
         => GameWorld.Instance?.GetMap(destMapId);
 
     // 보스 포탈 잠금 게이트용 killCount 조회 hook. 테스트가 stub 주입 시 override.
-    // 서버 권위: PartyRegistry에서 읽음 — 클라 주장 X (헌법 #3 정합).
+    // 서버 권위: QuestRegistry에서 읽음 — 클라 주장 X (헌법 #3 정합).
     protected virtual int GetKillCount(int entityId)
-        => GameWorld.Instance?.Party.GetKillCount(entityId) ?? 0;
+        => GameWorld.Instance?.Quest.GetKillCount(entityId) ?? 0;
 }

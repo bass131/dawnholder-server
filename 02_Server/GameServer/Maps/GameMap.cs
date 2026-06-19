@@ -38,7 +38,7 @@ public class GameMap
     readonly MapTerrain? _terrain;
     readonly MapContent? _content;
 
-    // Q2: 적 사망 시 호출되는 외부 콜백. GameWorld.MakeMap에서 PartyRegistry.OnKill 연결.
+    // Q2: 적 사망 시 호출되는 외부 콜백. GameWorld.MakeMap에서 QuestRegistry.OnKill 연결.
     //   virtual OnEnemyKilled가 이 콜백을 invoke — SpyGameMap override는 base 미호출이므로 미영향(정상).
     readonly Action<int, EnemyEntity>? _onEnemyKilled;
 

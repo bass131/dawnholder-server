@@ -81,7 +81,7 @@ internal static class MapMigration
         // ── 보스 포탈 잠금 게이트 (trust-boundary, M5 Q3) ───────────────────
         //
         // RemovePlayer/SetMigrating *전*에 차단 — 거부 시 원래 맵 잔류(ghost 방지).
-        // killCount는 getKillCount delegate(PartyRegistry 서버 권위) — 클라 주장 X.
+        // killCount는 getKillCount delegate(QuestRegistry 서버 권위) — 클라 주장 X.
         // Dest==BossRoom 진입 방향만 게이트: 역방향(Boss→HG)은 나갈 때 자유.
         if (portal.Dest == MapId.BossRoom)
         {

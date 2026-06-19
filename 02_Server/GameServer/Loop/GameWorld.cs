@@ -1,6 +1,7 @@
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
+using Dawnholder.Server.GameServer.Quest;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Loop;
@@ -36,6 +37,11 @@ public class GameWorld
     // 외부 → PartyRegistry.EnqueueJob → GameWorld.OnTick에서 드레인.
     readonly PartyRegistry _party = new();
 
+    // 퀘스트 전역 actor (M7.6 P01 — Party 도메인에서 분리). cross-map(보스 해금)이라 GameWorld 소유.
+    // **생성 순서**: _party 선언이 먼저 → _quest = new QuestRegistry(_party) (단방향 의존 주입).
+    //   C# 필드 초기화는 선언 순서대로 실행되므로 _party는 이 시점에 이미 초기화됨.
+    readonly QuestRegistry _quest;
+
     /// <summary>
     /// 맵별 terrain/content 쌍을 주입받는 생성자 — **필수 인자** (default 없음).
     /// <para>
@@ -52,6 +58,10 @@ public class GameWorld
         if (Instance != null!)
             throw new InvalidOperationException("GameWorld는 단일 인스턴스만 허용");
         Instance = this;
+
+        // 퀘스트 actor 생성 — _party(inline 초기화 완료) 주입(단방향 의존).
+        //   MakeMap onKill 콜백이 _quest를 캡처하므로 _maps 생성보다 *먼저* 초기화해야 함.
+        _quest = new QuestRegistry(_party);
 
         // 4맵 생성 + 등록. provider가 있으면 맵별 terrain/content 주입.
         //
@@ -75,6 +85,9 @@ public class GameWorld
 
     // 파티 전역 actor 접근점.
     public PartyRegistry Party => _party;
+
+    // 퀘스트 전역 actor 접근점 (M7.6 P01 — Party에서 분리).
+    public QuestRegistry Quest => _quest;
 
     public long CurrentTick => _scheduler.CurrentTick;
 
@@ -158,16 +171,16 @@ public class GameWorld
         IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
     {
         // 킬 콜백: Boss 킬 → 전역 리셋, 그 외 → OnKill 적립.
-        //   EnqueueJob 마샬링: 모든 _parties/_soloProgress 변경을 Party 큐로 일원화.
-        //   맵 Tick과 Party.Tick은 같은 틱 스레드에서 순차 실행(GameWorld.OnTick).
+        //   EnqueueJob 마샬링: 모든 퀘스트 진행 변경을 Quest 큐로 일원화(파티 KillCount 쓰기 포함 — depth-B).
+        //   맵 Tick과 Quest.Tick은 같은 틱 스레드에서 순차 실행(GameWorld.OnTick).
         //   미래 맵 멀티스레드화 대비 방어적 — 현재는 0~1틱 지연만 발생.
         Action<int, EnemyEntity> onKill = (killerId, target) =>
-            _party.EnqueueJob(() =>
+            _quest.EnqueueJob(() =>
             {
                 if (target.Kind == EnemyKind.Boss)
-                    _party.ResetAllQuestProgress();
+                    _quest.ResetAllQuestProgress();
                 else
-                    _party.OnKill(killerId, this);
+                    _quest.OnKill(killerId, this);
             });
 
         if (provider.TryGetValue(id, out var pair))
@@ -185,5 +198,9 @@ public class GameWorld
 
         // 파티 job 드레인 — 맵 tick 후 단일 thread 직렬화. tickNumber = 초대 만료 판정 기준.
         Party.Tick(tickNumber);
+
+        // 퀘스트 job 드레인 — 파티 드레인 **다음에**. 퀘스트가 파티 상태(멤버십/KillCount)를
+        //   읽고 쓰므로 파티 변경이 먼저 반영된 후 처리해야 정합(동일-스레드 불변식).
+        Quest.Tick(tickNumber);
     }
 }

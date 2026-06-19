@@ -17,7 +17,7 @@ namespace Dawnholder.Server.GameServer.Tests.Party;
 //   2. 솔로 킬 → GetSoloProgress 증가 + 본인에게 S_QuestUpdate 송신
 //   3. ResetAllQuestProgress → 파티 KillCount 0 + 솔로 progress 0
 //   4. targetCount = QuestConstants.BossUnlockKillCount(20) SSOT 검증
-//   5. (통합) GameMap.HandleEnemyDeath → OnEnemyKilled → Party.EnqueueJob 드레인 → OnKill 적립
+//   5. (통합) GameMap.HandleEnemyDeath → OnEnemyKilled → Quest.EnqueueJob 드레인 → OnKill 적립
 //
 // 싱글톤 관리: GameWorld 단일 인스턴스 → [Collection] 직렬화 + IDisposable.
 [Collection("QuestKillCountTests")]
@@ -52,7 +52,7 @@ public class QuestKillCountTests : IDisposable
         _world.Party.CreateParty(entityA, entityB);
 
         // entityA가 Normal 적을 킬
-        _world.Party.OnKill(entityA, _world);
+        _world.Quest.OnKill(entityA, _world);
 
         Assert.Equal(1, _world.Party.GetPartyByEntity(entityA)!.KillCount);
 
@@ -84,9 +84,9 @@ public class QuestKillCountTests : IDisposable
 
         _world.Party.CreateParty(entityA, entityB);
 
-        _world.Party.OnKill(entityA, _world);
-        _world.Party.OnKill(entityB, _world);
-        _world.Party.OnKill(entityA, _world);
+        _world.Quest.OnKill(entityA, _world);
+        _world.Quest.OnKill(entityB, _world);
+        _world.Quest.OnKill(entityA, _world);
 
         Assert.Equal(3, _world.Party.GetPartyByEntity(entityA)!.KillCount);
 
@@ -108,9 +108,9 @@ public class QuestKillCountTests : IDisposable
         _huntingGround.AddPlayerWithId(entityId, session, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
 
         // 파티 없는 솔로
-        _world.Party.OnKill(entityId, _world);
+        _world.Quest.OnKill(entityId, _world);
 
-        Assert.Equal(1, _world.Party.GetSoloProgress(entityId));
+        Assert.Equal(1, _world.Quest.GetSoloProgress(entityId));
 
         _huntingGround.Tick(tickNumber: 1);
 
@@ -126,11 +126,11 @@ public class QuestKillCountTests : IDisposable
         int entityId = _world.NextEntityId();
         _huntingGround.AddPlayerWithId(entityId, null, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
 
-        _world.Party.OnKill(entityId, _world);
-        _world.Party.OnKill(entityId, _world);
-        _world.Party.OnKill(entityId, _world);
+        _world.Quest.OnKill(entityId, _world);
+        _world.Quest.OnKill(entityId, _world);
+        _world.Quest.OnKill(entityId, _world);
 
-        Assert.Equal(3, _world.Party.GetSoloProgress(entityId));
+        Assert.Equal(3, _world.Quest.GetSoloProgress(entityId));
     }
 
     // ── 3. ResetAllQuestProgress → 공유·솔로 둘 다 0 ─────────────────────────
@@ -147,17 +147,17 @@ public class QuestKillCountTests : IDisposable
         _huntingGround.AddPlayerWithId(solo, null, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
 
         _world.Party.CreateParty(entityA, entityB);
-        _world.Party.OnKill(entityA, _world);
-        _world.Party.OnKill(entityB, _world);
-        _world.Party.OnKill(solo, _world);
+        _world.Quest.OnKill(entityA, _world);
+        _world.Quest.OnKill(entityB, _world);
+        _world.Quest.OnKill(solo, _world);
 
         Assert.Equal(2, _world.Party.GetPartyByEntity(entityA)!.KillCount);
-        Assert.Equal(1, _world.Party.GetSoloProgress(solo));
+        Assert.Equal(1, _world.Quest.GetSoloProgress(solo));
 
-        _world.Party.ResetAllQuestProgress();
+        _world.Quest.ResetAllQuestProgress();
 
         Assert.Equal(0, _world.Party.GetPartyByEntity(entityA)!.KillCount);
-        Assert.Equal(0, _world.Party.GetSoloProgress(solo));
+        Assert.Equal(0, _world.Quest.GetSoloProgress(solo));
     }
 
     // ── 3b. 영구 해금: 임계 달성 후 리셋(보스 킬)에도 게이트 통과 유지(재그라인드 X) ──────
@@ -169,17 +169,17 @@ public class QuestKillCountTests : IDisposable
 
         // 솔로로 임계(20)까지 킬 → 영구 해금.
         for (int i = 0; i < QuestConstants.BossUnlockKillCount; i++)
-            _world.Party.OnKill(solo, _world);
+            _world.Quest.OnKill(solo, _world);
 
-        Assert.True(_world.Party.IsBossUnlocked(solo));
-        Assert.Equal(QuestConstants.BossUnlockKillCount, _world.Party.GetKillCount(solo));
+        Assert.True(_world.Quest.IsBossUnlocked(solo));
+        Assert.Equal(QuestConstants.BossUnlockKillCount, _world.Quest.GetKillCount(solo));
 
         // 보스 킬 = ResetAllQuestProgress → raw progress는 0이 되지만 해금 latch는 유지.
-        _world.Party.ResetAllQuestProgress();
+        _world.Quest.ResetAllQuestProgress();
 
-        Assert.Equal(0, _world.Party.GetSoloProgress(solo));                                // raw 카운트 리셋
-        Assert.True(_world.Party.IsBossUnlocked(solo));                                     // 해금 유지
-        Assert.Equal(QuestConstants.BossUnlockKillCount, _world.Party.GetKillCount(solo));  // 게이트 통과 유지(재그라인드 없음)
+        Assert.Equal(0, _world.Quest.GetSoloProgress(solo));                                // raw 카운트 리셋
+        Assert.True(_world.Quest.IsBossUnlocked(solo));                                     // 해금 유지
+        Assert.Equal(QuestConstants.BossUnlockKillCount, _world.Quest.GetKillCount(solo));  // 게이트 통과 유지(재그라인드 없음)
     }
 
     // ── 4. targetCount SSOT 검증 ─────────────────────────────────────────────
@@ -191,7 +191,7 @@ public class QuestKillCountTests : IDisposable
         int entityId = _world.NextEntityId();
         _huntingGround.AddPlayerWithId(entityId, session, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
 
-        _world.Party.OnKill(entityId, _world);
+        _world.Quest.OnKill(entityId, _world);
         _huntingGround.Tick(tickNumber: 1);
 
         S_QuestUpdate? pkt = ExtractQuestUpdate(session);
@@ -200,7 +200,7 @@ public class QuestKillCountTests : IDisposable
         Assert.Equal(QuestConstants.BossUnlockKillCount, pkt!.targetCount);
     }
 
-    // ── 5. 통합: HandleEnemyDeath → OnEnemyKilled → EnqueueJob 드레인 → OnKill ─
+    // ── 5. 통합: HandleEnemyDeath → OnEnemyKilled → Quest.EnqueueJob 드레인 → OnKill ─
 
     [Fact]
     public void HandleEnemyDeath_Normal_TriggersOnKill_ViaEnqueueJob()
@@ -215,10 +215,10 @@ public class QuestKillCountTests : IDisposable
         // HandleEnemyDeath는 내부 → SpawnEnemyForTest로 접근
         _huntingGround.HandleEnemyDeath(enemy, killerId);
 
-        // OnEnemyKilled가 _party.EnqueueJob을 push — Party.Tick으로 드레인
-        _world.Party.Tick(currentTick: 1);
+        // OnEnemyKilled가 _quest.EnqueueJob을 push — Quest.Tick으로 드레인
+        _world.Quest.Tick(currentTick: 1);
 
-        Assert.Equal(1, _world.Party.GetSoloProgress(killerId));
+        Assert.Equal(1, _world.Quest.GetSoloProgress(killerId));
 
         // SendToEntity도 맵 EnqueueJob → 맵 Tick 드레인
         _huntingGround.Tick(tickNumber: 2);

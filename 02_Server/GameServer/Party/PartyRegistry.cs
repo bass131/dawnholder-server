@@ -1,6 +1,4 @@
 using System.Collections.Concurrent;
-using Dawnholder.Server.GameServer.Loop;
-using Dawnholder.Server.GameServer.Quest;
 
 namespace Dawnholder.Server.GameServer.Party;
 
@@ -37,15 +35,6 @@ public sealed class PartyRegistry
 
     // entityId → partyId 역방향 인덱스. GetPartyByEntity O(1).
     readonly Dictionary<int, int> _entityToParty = new();
-
-    // 파티 없는 솔로 플레이어의 퀘스트 킬카운트. entityId → count.
-    // tick thread에서만 읽기/쓰기 — lock 없음 (actor 불변식).
-    readonly Dictionary<int, int> _soloProgress = new();
-
-    // 보스 포탈 영구 해금 latch. 한 번 임계 킬 달성한 entityId 보관 — 이후 리셋(보스 킬)에도 유지.
-    // 영호 요청: 퀘스트 달성 후 재그라인드 금지(양방향 포탈 왕복 시 매번 재달성 X). tick thread 전용.
-    // 세션 한정(서버 재시작 시 비움) — entityId는 연결마다 신규라 disconnect 잔여는 무해.
-    readonly HashSet<int> _bossUnlocked = new();
 
     // pending invite: targetEntityId → (inviterEntityId, 발급 tick). 피초대자 기준 키 = respond 시 O(1) 매칭.
     //   초대자가 보낸 invite를 피초대자가 응답할 때까지 보관. 응답(수락/거절) 시 소비(제거).
@@ -156,6 +145,14 @@ public sealed class PartyRegistry
         return GetParty(partyId);
     }
 
+    /// <summary>
+    /// 현재 등록된 모든 파티 순회 — QuestRegistry.ResetAllQuestProgress가 공유 KillCount를
+    /// 0으로 리셋할 때 사용(depth-B: KillCount는 PartyState 잔류, 리셋만 Quest 책임).
+    /// tick thread invariant — 단일 thread에서만 열거 안전(actor 불변식).
+    /// 메서드 형태 = 이 클래스 조회 API(GetParty/GetPartyByEntity)와 일관(StyleCop 순서 정합).
+    /// </summary>
+    public IEnumerable<PartyState> GetAllParties() => _parties.Values;
+
     // ── pending invite (초대 → 응답 매칭) ─────────────────────────────────────
 
     /// <summary>
@@ -204,103 +201,6 @@ public sealed class PartyRegistry
         foreach (int targetId in sentToTargets)
             _pendingInvites.Remove(targetId);
     }
-
-    // ── 퀘스트 킬카운트 API (tick thread invariant) ───────────────────────────
-
-    /// <summary>
-    /// 적 1킬을 killerEntityId에게 적립. PartyRegistry tick thread 안에서만 직접 호출 가능.
-    /// 외부(소켓 thread) 경유 시 GameWorld.MakeMap에서 주입된 onEnemyKilled 콜백이
-    /// EnqueueJob으로 마샬링한 후 호출 — 직접 호출 금지.
-    /// </summary>
-    public void OnKill(int killerEntityId, GameWorld world)
-    {
-        // tick thread invariant: _parties/_soloProgress/_entityToParty 직접 접근 안전.
-        PartyState? party = GetPartyByEntity(killerEntityId);
-        if (party != null)
-        {
-            party.KillCount++;
-            if (party.KillCount >= QuestConstants.BossUnlockKillCount)
-                foreach (int memberId in party.Members) _bossUnlocked.Add(memberId);
-
-            // 임계 도달 후 표시는 N/target에서 멈춤(초과 누적 숨김) — 해금=영구라 더 셀 의미 없음.
-            int shown = Math.Min(party.KillCount, QuestConstants.BossUnlockKillCount);
-            foreach (int memberId in party.Members)
-                PartyNotifier.SendQuestUpdate(world, memberId, shown, QuestConstants.BossUnlockKillCount);
-        }
-        else
-        {
-            _soloProgress.TryGetValue(killerEntityId, out int prev);
-            int newCount = prev + 1;
-            _soloProgress[killerEntityId] = newCount;
-            if (newCount >= QuestConstants.BossUnlockKillCount)
-                _bossUnlocked.Add(killerEntityId);
-
-            int shown = Math.Min(newCount, QuestConstants.BossUnlockKillCount);
-            PartyNotifier.SendQuestUpdate(world, killerEntityId, shown, QuestConstants.BossUnlockKillCount);
-        }
-    }
-
-    /// <summary>
-    /// [시연 디버그 치트] 호출자의 퀘스트를 즉시 완료 — killCount를 임계로 채우고 보스 영구 해금.
-    /// CheatCommandHandler가 DebugConfig.AllowCheats 게이트 통과 시 EnqueueJob 경유로 호출(서버 권위 유지).
-    /// OnKill 임계 도달 분기와 동형 — 파티면 공유 카운트, 솔로면 _soloProgress.
-    /// </summary>
-    public void DebugCompleteQuest(int entityId, GameWorld world)
-    {
-        int target = QuestConstants.BossUnlockKillCount;
-        PartyState? party = GetPartyByEntity(entityId);
-        if (party != null)
-        {
-            party.KillCount = target;
-            foreach (int memberId in party.Members)
-            {
-                _bossUnlocked.Add(memberId);
-                PartyNotifier.SendQuestUpdate(world, memberId, target, target);
-            }
-        }
-        else
-        {
-            _soloProgress[entityId] = target;
-            _bossUnlocked.Add(entityId);
-            PartyNotifier.SendQuestUpdate(world, entityId, target, target);
-        }
-    }
-
-    /// <summary>
-    /// 모든 퀘스트 진행상황 초기화. 보스 킬 시 GameWorld.MakeMap 콜백이 EnqueueJob 경유로 호출.
-    /// MVP 전역 리셋 — 다중 파티 월드로 확장 시 killer 파티/솔로만 리셋하는 정밀화 필요.
-    /// 현재 2인 MVP는 파티가 고정 1개이므로 전역 OK.
-    /// </summary>
-    public void ResetAllQuestProgress()
-    {
-        // _bossUnlocked는 의도적으로 비우지 않음 — 영구 해금 유지(보스 킬 후 재그라인드 방지, 영호 요청).
-        _soloProgress.Clear();
-        foreach (PartyState p in _parties.Values)
-            p.KillCount = 0;
-    }
-
-    /// <summary>
-    /// 보스 게이트용 killCount 통합 조회. 파티면 공유(PartyState.KillCount), 솔로면 _soloProgress.
-    ///
-    /// tick thread invariant — MapMigration.Execute(맵 tick thread) 안에서 읽힌다.
-    /// Q2 OnKill 적립처(파티 KillCount / _soloProgress)와 정확히 정합.
-    /// </summary>
-    public int GetKillCount(int entityId)
-    {
-        // 영구 해금 latch: 한 번 임계 달성 시 이후 리셋(보스 킬 등)에도 게이트 통과 유지(영호 요청).
-        // 게이트(MapMigration)는 이 값만 보므로 게이트 코드 변경 0 — latch는 서버 권위 OnKill만 세팅.
-        if (_bossUnlocked.Contains(entityId)) return QuestConstants.BossUnlockKillCount;
-
-        PartyState? party = GetPartyByEntity(entityId);
-        return party != null ? party.KillCount : GetSoloProgress(entityId);
-    }
-
-    /// <summary>솔로 진행상황 조회 — 테스트 관측용.</summary>
-    internal int GetSoloProgress(int entityId)
-        => _soloProgress.TryGetValue(entityId, out int v) ? v : 0;
-
-    /// <summary>보스 포탈 영구 해금 여부 — 테스트 관측용.</summary>
-    internal bool IsBossUnlocked(int entityId) => _bossUnlocked.Contains(entityId);
 
     // pending invite 1건: 발신자 + 발급 tick. 발급 tick으로 만료 판정.
     readonly record struct PendingInvite(int InviterEntityId, long IssuedTick);
