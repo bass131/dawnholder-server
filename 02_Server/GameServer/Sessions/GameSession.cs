@@ -5,7 +5,7 @@ using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Handlers;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
-using Dawnholder.Server.GameServer.Network;
+using Dawnholder.Server.GameServer.Maps.Transitions;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.Network;
 using Shared.GameData;

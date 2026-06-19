@@ -6,7 +6,7 @@ using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Network;
+namespace Dawnholder.Server.GameServer.Maps.Transitions;
 
 /// <summary>
 /// 맵 간 플레이어 이동(migration) 로직 헬퍼. 검증 단계와 transfer 단계로 분리.
