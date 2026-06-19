@@ -12,7 +12,7 @@
 │   ├── Listener.cs           accept loop + race window fail-closed (M3.8 Phase 05 봉합)
 │   ├── Connector.cs          client connect (헤드리스 봇 재사용)
 │   ├── RecvBuffer.cs         수신 링 버퍼
-│   ├── SendBuffer.cs         송신 링 버퍼
+│   ├── SendBuffer.cs         송신 링 버퍼 (production 미wiring — 송신은 Session.cs가 패킷당 byte[]+SendAsync BufferList 직접. 본 클래스는 GC 최적화 wiring 후보, M8후 perf 패스)
 │   ├── FrameValidator.cs     frame 헤더 검증 helper (M4.1 Phase 03 — 04_ClientNet과 동기화 약속)
 │   └── JobQueue.cs           ServerCore 참조 구현 (production 미wiring — 맵 actor는 ConcurrentQueue 직접, 03-connection-handshake-DONE.md:68)
 ├── GameServer/
