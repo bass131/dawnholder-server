@@ -39,7 +39,7 @@
 │   ├── Loop/           Tick scheduler, world simulation
 │   ├── Maps/           맵별 actor, spatial query, PlayerEntity
 │   ├── Combat/         M3 응급 단순화 (CombatConstants/EnemyKind/EnemyEntity) — M4 정밀화 대기
-│   ├── Party/          파티 전역 actor (PartyRegistry/PartyState/PartyNotifier) — M5 박힘
+│   ├── Party/          파티 전역 actor (PartyRegistry/PartyState/PartyNotifier) + 오케스트레이션 (PartyFlow — M7.6 P03 GameSession에서 추출) — M5 박힘
 │   ├── Quest/          퀘스트 전역 actor (QuestRegistry/QuestConstants) — M7.6 P01 Party에서 분리
 │   ├── Persistence/    (예정 — M5 진입 시 박힘) DB writer queue, EF context
 │   └── Program.cs
