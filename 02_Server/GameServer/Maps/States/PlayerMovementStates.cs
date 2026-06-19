@@ -1,4 +1,5 @@
 using Shared.GameData;
+using Dawnholder.Server.GameServer.Entities;
 
 namespace Dawnholder.Server.GameServer.Maps.States;
 

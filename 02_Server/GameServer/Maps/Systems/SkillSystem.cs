@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Maps.Actions;
+using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Maps.Systems;

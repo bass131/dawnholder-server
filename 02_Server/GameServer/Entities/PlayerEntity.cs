@@ -1,11 +1,12 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Sessions;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Entities;
 
 // 서버 권위 좌표를 가진 플레이어 1명을 표현하는 entity. tick thread에서만 mutate.
 //   - 헌법 #1 (Server Authority): Hp는 *서버만* mutate. 클라는 S_HitResult로 받은 값을 표시만.
