@@ -494,6 +494,23 @@ public class GameMap
     }
 
     /// <summary>
+    /// 플레이어 사망 후처리: PlayerSpawn 재배치 + 풀피 부활 + HUD HP 송신.
+    /// HandleEnemyDeath와 대칭 — 사망 처리는 권위 맵 소유자의 책임(State 폴더 아님).
+    /// 현재 호출 경로: EnemyStates.ApplyMeleeDamage(적/보스 근접 치사타). M8 영속화 훅 단일 후보.
+    /// tick thread invariant: GameMap.Tick(EnemyAISystem/BossBehaviorSystem) 안에서만.
+    /// </summary>
+    internal void HandlePlayerDeath(PlayerEntity player)
+    {
+        Vector2 spawn = PlayerSpawnPosition;
+        player.Position = spawn;
+        player.Velocity = Vector2.Zero;
+        player.OnGround = false;
+        player.Hp = player.Stats.MaxHp;
+        player.Revive();
+        SendPlayerHp(player);
+    }
+
+    /// <summary>
     /// DeferredDamageSystem에 지연 데미지 1건 등록. P3(평타)/P4(썬더볼트)가 호출.
     /// impactTick = CurrentTick + delayTicks — 호출자가 계산 후 전달.
     /// tick thread invariant: EnqueueJob 람다 안 또는 Tick 안에서만 호출.
