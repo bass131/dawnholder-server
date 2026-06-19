@@ -3,7 +3,7 @@ using Dawnholder.Server.GameServer.Maps.States;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 /// <summary>
 /// §2.2 BossBehaviorSystem — Boss entity State 머신 구동.

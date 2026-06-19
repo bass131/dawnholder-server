@@ -5,7 +5,7 @@ using Dawnholder.Server.GameServer.Maps.Actions;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 /// <summary>
 /// §2.2 CombatSystem — GameMap(컨테이너)에서 전투 로직 추출.

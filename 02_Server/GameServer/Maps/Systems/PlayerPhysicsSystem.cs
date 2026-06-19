@@ -3,7 +3,7 @@ using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps.States;
 using Shared.GameData;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 /// <summary>
 /// §2.2 PlayerPhysicsSystem — GameMap(컨테이너)에서 플레이어 물리 적분 스텝 추출 (M7.7 P4b).

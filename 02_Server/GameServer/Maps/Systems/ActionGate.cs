@@ -2,7 +2,7 @@ using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps.Actions;
 using Shared.GameData;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 // [흐름] GameMap.ProcessAttack/ProcessSkill → ActionGate.TryPerform → IGameAction.Execute
 //

@@ -2,7 +2,7 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Shared.GameData;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 /// <summary>
 /// §2.2 EnemyGravitySystem — GameMap(컨테이너)에서 적 수직 중력 패스 추출 (M7.7 P4b).

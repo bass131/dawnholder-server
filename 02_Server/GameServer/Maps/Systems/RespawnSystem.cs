@@ -2,7 +2,7 @@ using Dawnholder.Server.GameServer.Combat;
 using Shared.GameData;
 using Shared.Protocol;
 
-namespace Dawnholder.Server.GameServer.Maps;
+namespace Dawnholder.Server.GameServer.Maps.Systems;
 
 /// <summary>
 /// §2.2 RespawnSystem — GameMap(컨테이너)에서 enemy respawn 로직 추출.
