@@ -14,8 +14,17 @@ namespace Dawnholder.Server.GameServer.Maps;
 //
 // Position은 System.Numerics.Vector2. Unity의 UnityEngine.Vector2와 메모리 레이아웃은
 // 같지만 타입은 다름 — 패킷 직렬화 시 (float x, float y) 두 필드로 풀어서 전송.
+//
+// 상태 분류 (M8 영속화 토대):
+//   저장 후보(persistence candidate): EntityId / Position / Hp / MaxHp / Stats
+//   휘발 런타임(저장 금지): _inputQueue / _posHistory 링 / _lastActionTick / _jumpBufferRemaining /
+//     Velocity / OnGround / LastClientTick / InvulnUntilTick / ActionFsm / StateTicksRemaining /
+//     ExternalImpulseVx / ImpulseDecayPerTick
+//   → CaptureSnapshot()이 저장 후보만 뽑아 PlayerSnapshot DTO로 반환.
 public class PlayerEntity
 {
+    // === 휘발 런타임(저장 금지) ===
+
     // jump buffer: 공중에서 받은 점프 입력을 착지 틱까지 보관 (최대 1개).
     // TTL = JumpBufferTicks 이후 자연 소멸 — max1+유한TTL로 무한/유령 점프 불가 (헌법 #3).
     const int JumpBufferTicks = 3; // ~150ms @20TPS
@@ -35,7 +44,7 @@ public class PlayerEntity
     const int ActionSlotCount = 4; // ActionKind.Thunderbolt=3이 현재 최대값 + 1
     readonly long[] _lastActionTick;
 
-    // position history ring buffer.
+    // position history ring buffer — lag compensation 전용. 재접속 시 재구축 가능.
     //
     // **tick thread invariant**: RecordPosition / GetPositionAtTick 은 GameMap.Tick 안에서만 호출.
     //   외부 스레드(network thread)는 ring buffer를 직접 만지지 않음 — EnqueueJob으로 tick thread에 위임.
@@ -65,6 +74,8 @@ public class PlayerEntity
         ActionFsm = new StateMachine<PlayerEntity>(PlayerMovementStates.Idle, this);
     }
 
+    // === 저장 후보(M8 persistence) ===
+
     public int EntityId { get; }
     public Vector2 Position { get; set; }
     public GameSession? Owner { get; }
@@ -72,6 +83,8 @@ public class PlayerEntity
     // 서버 권위 스탯. GameSession.SetCharacterClass가 생성해 AddPlayer에 전달.
     // **헌법 #1 (Server Authority)**: 스탯 수치는 서버가 결정 — 클라이언트가 스탯 값 직접 전송 경로 없음.
     public PlayerStats Stats { get; }
+
+    // === 휘발 런타임(저장 금지) ===
 
     // 결정론 물리 상태 — Shared.GameData.Physics.Step이 매 tick mutation.
     // spawn 시점 Velocity=0 + OnGround=true (ground y=0 가정).
@@ -88,12 +101,16 @@ public class PlayerEntity
     // 빈 틱(starvation)에는 set 안 함 — 클라 replay할 미-ack 입력 보존 (reconcile 정합).
     public uint LastClientTick { get; set; }
 
+    // === 저장 후보(M8 persistence) ===
+
     // 서버 권위 전투 HP. 헌법 #1 — 서버만 mutate. 생성자에서 Stats.MaxHp/Hp로 초기화.
     // `IsDead`는 derived: `Hp <= 0`. 음수 보호는 derived가 흡수
     // (`Hp = -5` 직접 set도 IsDead true이므로 후속 attack job이 idempotent하게 no-op).
     public int Hp { get; set; }
     public int MaxHp { get; set; }
     public bool IsDead => Hp <= 0;
+
+    // === 휘발 런타임(저장 금지) ===
 
     // 대쉬 전용 무적(invuln) 만료 tick. 이 tick까지(포함) 모든 피격 데미지·넉백 차단 (헌법 #1 서버 판정).
     //   서버가 부여한 대쉬에서만 DashAction.Execute가 세팅 — 클라가 "나 무적" 신고 불가 (헌법 #3).
@@ -228,6 +245,25 @@ public class PlayerEntity
     //   (모션 8틱 T..T+7보다 +1틱 길다 = i-frame 안전 방향 over-coverage, 익스플로잇 0).
     // 플레이어 데미지 적용 지점(BossStates.ApplyBossAttack)이 게이트로 사용 (헌법 #1 서버 판정).
     public bool IsInvulnerable(long currentTick) => currentTick <= InvulnUntilTick;
+
+    // ── 영속화 API (M8 큐드 라이터가 호출) ────────────────────────────────
+
+    /// <summary>
+    /// 현재 저장 후보 상태를 <see cref="PlayerSnapshot"/> DTO로 반환.
+    /// M8 PersistenceWorker가 write queue에서 꺼내 DB 엔티티로 변환할 때 호출.
+    ///
+    /// 호출 시점 제약: tick thread 또는 tick 완료 직후 — Position/Hp가 mid-tick mutate 중이면 안 됨.
+    /// 현재(M7)는 미호출 — M8이 큐드 라이터 wiring 시 연결.
+    /// </summary>
+    public PlayerSnapshot CaptureSnapshot()
+        => new()
+        {
+            EntityId = EntityId,
+            Position = Position,
+            Hp       = Hp,
+            MaxHp    = MaxHp,
+            Stats    = Stats,
+        };
 
     // ── 전투 전이 API ──────────────────────────────────────────────────────
 
