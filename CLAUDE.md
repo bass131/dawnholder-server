@@ -41,7 +41,7 @@
 
 ### 슬래시 커맨드
 
-작업 4 + 세션 3 + 점검 2 + 셋업 1 — 총 10개. 옛 학습 5 + 일지 3은 제거 (M3.5 KPI 전환 + ADR-025 학습 트랙 은퇴). 카탈로그 → [`00_Document/commands-index.md`](00_Document/commands-index.md).
+작업 4 + 세션 4 + 엔진 1 + 점검 3 + 셋업 1 — 총 13개. 옛 학습 5 + 일지 3은 제거 (M3.5 KPI 전환 + ADR-025 학습 트랙 은퇴), M7.5에서 `/engine:goal`·`/session:review`·`/refactor-sweep` 신설 (ADR-032). 카탈로그 → [`00_Document/commands-index.md`](00_Document/commands-index.md).
 
 ---
 
@@ -200,10 +200,11 @@
 - **trust-boundary**: `02_Server/GameSession.cs`, `Handlers/`, 신뢰 경계 검증 코드 변경
 - **irreversible**: `git push` to main, `gh pr merge`, DB 마이그 SQL, `Protocol.Version` bump
 - **unity-asset**: `03_Client/Assets/**/*.{prefab,unity,asset}` 변경 (특히 prefab)
+- **harness**: `.claude/{hooks,agents,commands}/**` 등 하네스 자체 변경 (CHANGELOG [M]/[H] 의무 + 자기 참조 함정 인지)
 
 위험 깃발은 `risk-detector.sh` Hook이 자동 검출 → stderr 알림 + `.claude/state/risk-flags.txt` 누적. **work-pin 갱신은 본인이 수동** (Hook은 알림 전용 — 본인 인지를 거치는 게 정합, hook이 work-pin 자체를 안전 수정하기 어려움).
 
-**깃발 → 루프 버킷**: 무깃발=(a) 자율 / unity-asset=(b) 사람 트랙 / irreversible·trust-boundary=(c) 사람 게이트. 매핑 상세 → [`work-judge.md`](00_Document/policies/work-judge.md).
+**깃발 → 루프 버킷**: 무깃발=(a) 자율 / unity-asset=(b) 사람 트랙 / irreversible·trust-boundary=(c) 사람 게이트 / harness=(a) 기본·권한/게이트 변경 시 (c). 매핑 상세 → [`work-judge.md`](00_Document/policies/work-judge.md).
 
 등급 정의·위험 깃발 디테일 → [`00_Document/policies/grade-and-risk.md`](00_Document/policies/grade-and-risk.md)
 

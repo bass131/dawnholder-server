@@ -7,6 +7,8 @@
 
 본 문서는 PR 생성 + 머지를 *비가역(irreversible) 깃발*로 정의하고, **사용자 명시 GO 게이트**를 의무화하며, 정상 경로가 막힐 때(CODEOWNERS 거절 / 보안 hook 차단 / classifier 거절) **합법 우회 경로 = admin bypass 예외 경로**를 박습니다.
 
+> **솔로 운영 정합 (2026-06-18~)**: CODEOWNERS가 `* @bass131` 단독으로 통일되어, 단독 owner PR은 *code-owner 리뷰가 스킵*되어 **normal merge로 통과**(admin 불요). 따라서 본 문서의 *CODEOWNERS 거절 → admin bypass* 머신 + "다른 팀원 ack 대기" 정상경로는 **현재 휴면(dormant)**입니다. **단, push/PR/머지 = 영호 명시 GO 게이트(§2~3)는 그대로 유효** — 휴면은 *CODEOWNERS 분기*에 한함. admin bypass 예외 경로(§4)는 미래 팀 재구성 시 부활. 참조: `.github/CODEOWNERS` 2026-06-18 블록 + memory `project-effectively-solo-youngho`.
+
 ---
 
 ## 1. 왜 게이트가 필요한가 — 세 안전망 동시 사고 학습

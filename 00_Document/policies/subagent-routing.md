@@ -40,7 +40,7 @@
 | Unity 씬 / 렌더링 / 입력 / UI / prediction | `client` | |
 | Unity prefab / asset / scene YAML | `unity-bridge` | MCP 도구 전담 |
 | 헤드리스 봇 / 부하 / 퍼징 / 테스트 | `qa` | 게임 코드 R only |
-| ComfyUI 자산 / 2D 스프라이트 import | `unity-bridge` (인규 영역 보조) | unity-asset 깃발 발동 |
+| ComfyUI 자산 / 2D 스프라이트 import | `unity-bridge` | unity-asset 깃발 발동 |
 | 헌법 / ADR / policies / 하네스 자체 | (위임 X, 영호 단독) | M3.5 약속 |
 
 ### 여러 도메인 작업

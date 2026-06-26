@@ -14,7 +14,7 @@
 |---|------|------|------|------|------|
 | 1 | `dangerous-cmd-guard.sh` | PreToolUse | Bash | **Python shlex.split 토큰화** 후 rm -rf / git reset --hard / force push 등 6 패턴 차단 (exit 2). false positive 봉합 (M3.6 Phase 03-B 4-1) | **must-pass** |
 | 2 | `shared-discipline-guard.sh` | PreToolUse | Edit/Write | PDL.xml 변경 시 GenPackets stale 검사 + Shared.dll commit 동반 검사 (exit 2) + ProtocolVersion bump 경고 | **must-pass** |
-| 3 | `phase-gate-validator.sh` | PostToolUse | Edit/Write | -DONE.md 박제 frontmatter (5 필드) + 등급별 의무 섹션 + **대규모 등급 MD+HTML 페어 의무** (M3.6 Phase 03-B 4-3 강화, exit 2) | **must-pass** |
+| 3 | `phase-gate-validator.sh` | PostToolUse | Edit/Write | -DONE.md 박제 frontmatter (5 필드) + 등급별 의무 섹션 + **복잡 이상 등급 MD+HTML 페어 의무** (ADR-031 HTML 임계 대규모→복잡 하향 반영, exit 2) | **must-pass** |
 | 4 | `risk-detector.sh` | PreToolUse | Bash/Edit/Write | trust-boundary (Handlers/ 매처 stale 봉합, M3.6 Phase 03-B 4-4) / irreversible / unity-asset / **harness** (M3.6 Phase 03-B 4-4 신설) 4 깃발 → stderr 알림 + 누적 (exit 0) | advisory |
 | 5 | `tdd-guard.sh` | PreToolUse | Edit/Write | TDD 영역 4 (Handlers / GameSession / Protocol/Packets / GameData) 변경 시 테스트 부재 *경고만* + 누적 로그 | advisory |
 | 6 | `circuit-breaker.sh` | PostToolUse | (all) | 같은 도구 N회 반복 시 *알림* (Bash 제외, 등급별 임계 5/10/15/20, 윈도우 5분) + **halt 신호 기록** (M7.5 — `.claude/state/circuit-tripped.txt`, 루프 드라이버 폴링용) | advisory |
@@ -57,7 +57,7 @@ hook = *기계 judge* ([`../../00_Document/policies/work-judge.md`](../../00_Doc
 | Hook | 우회 가능? | 사유 |
 |------|------------|------|
 | `dangerous-cmd-guard` | ❌ PreToolUse 차단 | 파괴 명령 보호 |
-| `shared-discipline-guard` | ❌ PreToolUse 차단 | "주석 약속은 가짜다" 3회 봉합 사고 원인 — 강제 |
+| `shared-discipline-guard` | ⚠️ 부분 — PDL.xml *단독* 편집+즉시 commit은 exit 0 통과 (exit 2 차단은 *후속* 98_Shared 파일 편집 시) → `.githooks/pre-commit` 2차망 의존 | "주석 약속은 가짜다" 3회 봉합 사고 원인 — 강제 |
 | `phase-gate-validator` | ❌ PostToolUse 차단 | -DONE.md 형식 강제 (`.githooks/pre-commit`이 commit 시점 이중 안전망) |
 | `risk-detector` | ⚠️ work-pin 갱신만, 차단 X | 등급 상향 통보 — 본인이 인지하면 진행 가능 |
 | `tdd-guard` | ⚠️ 경고만 | 학부생 학습 호흡 (테스트 강제 부담 ↓) |

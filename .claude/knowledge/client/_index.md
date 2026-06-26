@@ -20,7 +20,7 @@ last_updated: 2026-05-24
 | 키워드 | 한 줄 요약 | 트리거 | 검증 |
 |---|---|---|---|
 | `prefab-overwrite-untracked-disaster` | PrefabUtility.SaveAsPrefabAsset 백업 없이 덮어쓰기 — untracked prefab은 git history도 없음 | prefab 신규 생성 / 수정 시 | M3 Phase 08 BackGround 사고 1건 |
-| `unity-version-hash-pinning` | 같은 라벨(예: 6000.4.1f1) 다른 hash 가능, hash까지 통일이 정답 (`.gitignore`로 우회 X) | 신규 팀원 환경 셋업 / Unity Hub 카탈로그 churn 시 | 5/16 사건 (본인 + 정유현 hash 어긋남) |
+| `unity-version-hash-pinning` | 같은 라벨(예: 6000.4.1f1) 다른 hash 가능, hash까지 통일이 정답 (`.gitignore`로 우회 X) | 미래 합류자 환경 셋업 / Unity Hub 카탈로그 churn 시 | 5/16 사건 (본인 머신 hash 어긋남 발견) |
 
 ---
 
@@ -50,7 +50,7 @@ git status --porcelain | grep <target>  # stage 확인
 
 ### `unity-version-hash-pinning`
 
-**증상**: 본인(`8535861f39e1`)과 정유현(`336a400b9ea2`) 둘 다 라벨은 `6000.4.1f1`인데 hash 어긋남. `ProjectVersion.txt` churn으로 매 Unity 실행 시 흔들림.
+**증상**: 본인 머신(`8535861f39e1`)과 다른 설치본(`336a400b9ea2`) 둘 다 라벨은 `6000.4.1f1`인데 hash 어긋남. `ProjectVersion.txt` churn으로 매 Unity 실행 시 흔들림.
 
 **패턴**: Unity가 *re-spin* (라벨 그대로 빌드만 갱신)을 가끔 함. Hub 카탈로그가 시점마다 다른 hash 서빙. 라벨 통일만으로 부족 — *같은 라벨 다른 hash* 흔하게 발생.
 
@@ -60,8 +60,8 @@ git status --porcelain | grep <target>  # stage 확인
 - `.gitignore`는 함정 — 신규 팀원이 임의 Unity 버전으로 열어도 막을 안전망 사라짐
 - 옵션 (B1) 같은 LTS minor 내 다음 패치 점프 = 깔끔 (재설치 부가비용 0)
 
-**사례**: 5/16 사건 (본인+정유현 hash 어긋남).
-**확신도**: 실측 1건. 신규 합류(인규) 환경 셋업 시 재발 확인 예정 (Rule of Three 후보).
+**사례**: 5/16 사건 (본인 머신 hash 어긋남 발견).
+**확신도**: 실측 1건. 미래 합류자 또는 본인 재현 시 재발 확인 예정 (Rule of Three 후보).
 **관련 키워드**: [[projectsettings-cloud-ping-pong]] (Unity 다인 함정 묶음), [[prefab-overwrite-untracked-disaster]] (Unity asset 사고 묶음)
 
 ---
@@ -96,3 +96,4 @@ _(없음 — 본 캐시는 2026-05-20 신설)_
 
 - 2026-05-20 — M3.5 Phase 04 (1/3) 골격 박힘. 시드 항목은 (2/3)에서 채움.
 - 2026-05-24 — `/harness-review all` knowledge-gc 후속. `unity-version-hash-pinning` 디테일 中 트랙 B(회고) 성격 1줄 제거 (트랙 A/B 경계 정신 정합).
+- 2026-06-26 — GC 결함 정정: `unity-version-hash-pinning` 팀원(정유현·인규) 언급 → 영호 단독 + 미래 합류자 일반화 (솔로 전환 2026-06-18 정합).

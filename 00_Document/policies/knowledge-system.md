@@ -15,9 +15,9 @@
 
 - 같은 함정(예: PacketGenerator `noManager` 기본값 트랩)을 매 마일스톤마다 다시 학습
 - 도메인 패턴(예: Phase 10 broadcast race deterministic 재현)이 코드 박힌 후 잊혀짐
-- `~/.claude/memory/`(개인 메모리)는 *개별 사용자 영역* — 팀원 공유 X
+- `~/.claude/memory/`(개인 메모리)는 *MEMORY.md 자동 로드* 영역 — 도메인 SubAgent가 직접 조회하진 않음
 
-**해결**: `.claude/knowledge/<domain>/_index.md` = SubAgent가 작업 시작 시 자기 도메인 캐시 조회 → 백지 비용 ↓. *팀 영역*(git에 박힘) → 인규/유현 합류 후 같은 캐시 활용.
+**해결**: `.claude/knowledge/<domain>/_index.md` = SubAgent가 작업 시작 시 자기 도메인 캐시 조회 → 백지 비용 ↓. *git에 박힌 공유 캐시* → 현재 영호 단독, 미래 합류자 합류 시 동일 캐시 활용.
 
 5/20 의논 결과 — KPI 전환("학습 박제 중심" → "Planning → 구현 → 보고"). AI 활용 캐시(트랙 A)만 유지, 본인 회고 일지(옛 트랙 B)는 **ADR-025로 은퇴**:
 
