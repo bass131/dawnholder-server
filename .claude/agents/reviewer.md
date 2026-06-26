@@ -130,7 +130,7 @@ M3.5 새 하네스 v1에서 옛 reviewer.md 흡수 + 새 등급 체계 정합 (�
 - `98_Shared/` 변경 포함
 - 새 핸들러 / 패킷 / 공식 추가
 - 사용자 *"리뷰 돌려줘"* 명시
-- **위험 깃발 발동** (trust-boundary / irreversible / unity-asset)
+- **위험 깃발 발동** (trust-boundary / irreversible) — ※`unity-asset`은 영호 육안(bucket-b)이라 reviewer 대상 아님
 
 ### 조건부 호출
 - 실질 변경 ≥10줄 + 등급 ≥ 보통

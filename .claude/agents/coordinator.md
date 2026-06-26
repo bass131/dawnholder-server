@@ -37,11 +37,11 @@ M3.5 새 하네스 v1에서 신설. 옛 운영은 *메인 세션이 직접 분�
 - 코드 직접 수정 X (Worker에 위임)
 - 헌법 / ADR / policies 변경 X (영호 단독)
 
-### 위임 권한
-- Worker SubAgent 호출 가능 (`server` / `shared` / `client` / `qa`)
-- Reviewer SubAgent 호출 가능 (`reviewer` / `plan-auditor`)
-- **다른 coordinator 호출 X** (재귀 차단)
-- **Worker가 다른 Worker 호출 X** (Worker는 coordinator에게 escalate → coordinator 재위임)
+### 위임 권한 (분해 *설계* — 실제 spawn은 메인 세션)
+> coordinator의 `tools`엔 SubAgent 호출 도구가 없음 (서브에이전트는 다른 서브에이전트를 spawn 못 함). 따라서 coordinator는 **위임 *계획*(어느 Worker·입력·순서)을 반환**하고, 실제 Worker spawn은 **메인 세션/루프 드라이버가 coordinator 계획대로 실행**. "Coordinator → Worker 1단계"는 *논리적 위임 경계*(재귀 차단)를 뜻함.
+- 위임 대상 Worker (`server` / `shared` / `client` / `qa`) + checker (`reviewer` / `plan-auditor`) 지정
+- **다른 coordinator 지정 X** (재귀 차단)
+- **Worker가 다른 Worker 호출 X** (Worker는 coordinator에게 escalate → 메인 세션이 재위임)
 
 ---
 

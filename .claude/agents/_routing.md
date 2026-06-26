@@ -49,7 +49,7 @@
 **무조건 호출**:
 - `98_Shared/` 변경 포함
 - 새 핸들러 / 패킷 / 공식 추가
-- 위험 깃발 (trust-boundary / irreversible / unity-asset) 발동
+- 위험 깃발 (trust-boundary / irreversible) 발동 (※`unity-asset`은 bucket-b 영호 육안 — reviewer 대상 아님)
 - 사용자 "리뷰 돌려줘" 명시
 
 **조건부 호출**: 실질 변경 ≥10줄 + 등급 ≥ 보통
@@ -63,6 +63,8 @@
 - `01_Phases/**/NN-{slug}.md` Write/Edit (Phase 정의)
 
 **스킵**: 주석·오타만 / 사용자 "점검 스킵 + 사유"
+
+> **plan-auditor는 soft 트리거 (Hard hook 없음 — 의도적 비대칭)**: reviewer는 `reviewer-auto-trigger.sh`(Hard hook)지만 plan-auditor는 대응 hook 부재. 사유 = plan Write는 *항상 메인 세션/루프 드라이버가 직접 작성*하는 행위라 "코딩 중 깜빡" 리스크가 낮음(빈번한 코드 변경과 다름) → 메인 세션이 plan Write 직후 직접 호출. Hard hook 승격은 하네스 v2 후보(실측 누락 빈도 관찰 후).
 
 ### Knowledge-GC 자동 호출 (없음)
 
@@ -103,6 +105,8 @@ Coordinator → Worker 위임 시:
 | `knowledge-gc` | `../knowledge/**/*.md` | 정책 + CHANGELOG | 코드 / 헌법 / ADR — 사용자 확인 게이트 통과 후만 정리 |
 
 권한 위반 시 즉시 거부 + coordinator에게 다른 SubAgent 요청 보고.
+
+> **공동 소유 경계** (위 표는 *단독 소유*만 표기): 일부 영역은 *게이트 분담*으로 공동 소유 — `98_Shared/**`(`server` R/W + `shared`가 Protocol *모양* 게이트), `99_Tools/PacketGenerator/**`(`shared` + `qa`), 콘텐츠 데이터값(`qa` + Unity asset은 메인 세션). 동시 쓰기 충돌 가능 영역은 메인 세션이 순서 조정. 헌법 §4(Shared Code Discipline)는 공동 소유에도 불변.
 
 ---
 

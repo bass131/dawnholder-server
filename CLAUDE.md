@@ -219,7 +219,7 @@
 | 1   | `server`       | 02_Server/ + 98_Shared/ 서버측 (게임플레이/네트워킹/영속화)          | Sonnet | 02_Server/ + 98_Shared/ R/W                  |
 | 2   | `shared`       | 98_Shared/ 단독 (Protocol/공식/공유 상수)                            | Sonnet | 98_Shared/ R/W, 04_ClientNet/ R              |
 | 3   | `client`       | 03_Client/ + 04_ClientNet/ (Unity 씬/렌더링/입력/UI/prediction)      | Sonnet | 03_Client/ + 04_ClientNet/ R/W, 98_Shared/ R |
-| 4   | `qa`           | 99_Tools/ + 테스트 코드 (헤드리스 봇/부하/퍼징)                      | Sonnet | 99_Tools/ + 테스트 R/W, 게임 코드 R only     |
+| 4   | `qa`           | 99_Tools/ + 테스트 코드 (헤드리스 봇/부하/퍼징)                      | Sonnet | 99_Tools/ + 테스트 R/W, 콘텐츠 데이터값 R/W, 게임 *로직* 코드 R only |
 | 5   | `reviewer`     | Tier 2 자동 리뷰 (헌법/ADR/도메인 패턴 점검)                         | Opus   | 전체 R only                                  |
 | 6   | `plan-auditor` | `_milestone-plan.md` / Phase 정의 `.md` 사전 검증 (Codex γ 흡수)     | Opus   | 전체 R only                                  |
 | 7   | `coordinator`  | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합                     | Opus   | 전체 R only, 위임 권한                       |
