@@ -110,7 +110,6 @@
 | `qa` | `qa/_index.md` + 작업 도메인 _index + `cross-cutting/_index.md` |
 | `reviewer` | 전체 _index.md (R only) |
 | `plan-auditor` | 전체 _index.md (R only) |
-| `unity-bridge` | `client/_index.md` + `cross-cutting/_index.md` |
 | `coordinator` | 전체 _index.md (R only, 분해 시 활용) |
 
 **적용 방식**: SubAgent 정의(`../agents/<name>.md`) 시스템 프롬프트에 *작업 시작 시 자기 도메인 _index.md를 먼저 통독한다*고 박음. 디테일은 Phase 02·04 산출물.

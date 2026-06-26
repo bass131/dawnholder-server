@@ -102,9 +102,9 @@
 
 ## 8. 버킷별 SubAgent 구동
 
-루프는 기존 SubAgent 9종을 *Worker/checker로 재사용*합니다 (새로 안 만듦):
+루프는 기존 SubAgent 8종을 *Worker/checker로 재사용*합니다 (새로 안 만듦):
 
-- 도메인 작업 = `server`/`shared`/`client`/`qa`/`unity-bridge` Worker
+- 도메인 작업 = `server`/`shared`/`client`/`qa` Worker (Unity asset/scene/prefab + MCP는 메인 세션 직접)
 - checker = `reviewer`(통합 리뷰) + `plan-auditor`(설계 사전 검증)
 - 분해·위임 = `coordinator` (복잡/대규모)
 - 라우팅·시선 배분 = [`subagent-routing.md`](subagent-routing.md) + [`review-throughput.md`](review-throughput.md) (시선 = `max(위험, 학습가치)`)

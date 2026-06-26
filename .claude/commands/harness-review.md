@@ -29,8 +29,8 @@ argument-hint: [scope] - 선택. 기본 all. 옵션: constitution | subagent | h
 
 | Scope | 점검 대상 | 동원 |
 |---|---|---|
-| `constitution` | `CLAUDE.md` + `00_Document/ADR/` + `00_Document/policies/` | reviewer (5축 점검) |
-| `subagent` | `.claude/agents/*.md` (풀 9 + _routing + _escalation) | reviewer + plan-auditor (역할 분담 정합) |
+| `constitution` | `CLAUDE.md` + `00_Document/ADR/` + `00_Document/policies/` | reviewer (6축 점검) |
+| `subagent` | `.claude/agents/*.md` (풀 8 + _routing + _escalation) | reviewer + plan-auditor (역할 분담 정합) |
 | `hook` | `.claude/hooks/*.sh` + `.claude/settings.json` | 본인 + reviewer (실행 우회 가능성 점검) |
 | `knowledge` | `.claude/knowledge/**/*.md` | knowledge-gc (정리 후보 추출) + reviewer (트랙 A/B 분리 정신 정합) |
 | `command` | `.claude/commands/**/*.md` + `00_Document/commands-index.md` | reviewer + plan-auditor (옛/새 매핑 정합) |
@@ -72,7 +72,7 @@ scope에 따른 점검 대상 파일 목록 박음:
 
 [`../agents/plan-auditor.md`](../agents/plan-auditor.md) 호출 — *설계 시각*에서 6축 점검:
 
-- 축 1: SubAgent 풀 분해 적정성 (9개 적정인가, 옛 6 → 9 확장 비용 정당화)
+- 축 1: SubAgent 풀 분해 적정성 (8개 적정인가, 옛 6 → 9 → 8 — unity-bridge 폐기)
 - 축 2: 의존성 그래프 (Coordinator → Worker 재귀 차단 정합)
 - 축 3: 완료 조건 정량성 (각 SubAgent 입력 약속 명확한가)
 - 축 4: 등급 산정 적정성 (4등급 매핑 옛/새 일관)

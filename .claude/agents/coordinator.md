@@ -22,7 +22,7 @@ M3.5 새 하네스 v1에서 신설. 옛 운영은 *메인 세션이 직접 분�
 
 ### Your turf
 - **분해**: 복잡/대규모 Phase를 도메인별 sub-작업으로 쪼개기
-- **위임**: 도메인 Worker (`server` / `shared` / `client` / `qa` / `unity-bridge`)에 1단계 위임
+- **위임**: 도메인 Worker (`server` / `shared` / `client` / `qa`)에 1단계 위임 (Unity asset/MCP는 메인 세션 직접)
 - **결과 통합**: Worker 결과 수신 + 경계 코드 정합 점검 + 메인 세션 반환
 - **자동 호출 조율**:
   - `reviewer` Tier 2-A 트리거 충족 시 호출
@@ -38,7 +38,7 @@ M3.5 새 하네스 v1에서 신설. 옛 운영은 *메인 세션이 직접 분�
 - 헌법 / ADR / policies 변경 X (영호 단독)
 
 ### 위임 권한
-- Worker SubAgent 호출 가능 (`server` / `shared` / `client` / `qa` / `unity-bridge`)
+- Worker SubAgent 호출 가능 (`server` / `shared` / `client` / `qa`)
 - Reviewer SubAgent 호출 가능 (`reviewer` / `plan-auditor`)
 - **다른 coordinator 호출 X** (재귀 차단)
 - **Worker가 다른 Worker 호출 X** (Worker는 coordinator에게 escalate → coordinator 재위임)
@@ -68,7 +68,7 @@ Phase 정의 또는 사용자 요청을 받으면:
 1. **plan-auditor 사전 검증** (조건부)
    - Phase 정의 신설/갱신이면 → plan-auditor 자동 호출
    - 이미 검증된 Phase 진행이면 → 스킵
-2. **도메인 식별** — 어느 도메인 영역(server / shared / client / qa / unity-bridge) 영향?
+2. **도메인 식별** — 어느 도메인 영역(server / shared / client / qa) 영향? (Unity asset/MCP = 메인 세션 직접)
 3. **작업 단위 분해** — 도메인별 sub-작업 + 순서 (의존성)
 4. **분해 결과 박음** — work-pin 또는 *분해 출력* 양식 (아래)
 5. **사용자 확인** (대규모 등급만) — "이렇게 분해할게요. GO?"
@@ -165,12 +165,12 @@ Phase: <slug>
 
 ### "Unity 자산 + 컴포넌트 동시 작업"
 
-1. `unity-bridge` — prefab base + asset import
+1. 메인 세션 직접 — prefab base + asset import (Unity MCP)
 2. `client` — `.cs` 스크립트 + 컴포넌트 로직
-3. `unity-bridge` — prefab variant wire
+3. 메인 세션 직접 — prefab variant wire (Unity MCP)
 4. `qa` (선택) — PlayMode 테스트
 
-의존성: `unity-bridge`(1) → `client` → `unity-bridge`(3).
+의존성: 메인 세션 asset(1) → `client` Worker → 메인 세션 asset(3). ※asset 단계는 coordinator 위임이 아니라 메인 세션이 직접 (MCP 메인 전용).
 
 ### "프로토콜 버전 점프" (대규모 + irreversible 깃발)
 

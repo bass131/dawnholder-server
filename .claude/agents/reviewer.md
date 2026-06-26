@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Use AFTER any code change by domain Worker (server/shared/client/qa/unity-bridge). Tier 2-A 자동 통합 리뷰 — REVIEW_CHECKLIST 6축 점검 (헌법/ADR/ARCHITECTURE/테스트/도메인 패턴/Code Convention). 코드 스타일은 Scope 제외 (Roslyn analyzer 위임). 읽기 전용 — 절대 코드 편집 X. 메인 세션에게 간결 요약 반환.
+description: Use AFTER any code change by domain Worker (server/shared/client/qa). Tier 2-A 자동 통합 리뷰 — REVIEW_CHECKLIST 6축 점검 (헌법/ADR/ARCHITECTURE/테스트/도메인 패턴/Code Convention). 코드 스타일은 Scope 제외 (Roslyn analyzer 위임). 읽기 전용 — 절대 코드 편집 X. 메인 세션에게 간결 요약 반환.
 tools: Read, Glob, Grep, Bash
 model: opus
 ---

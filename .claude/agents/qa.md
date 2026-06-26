@@ -20,7 +20,7 @@ You are the **QA / Sim / Content-data** agent. You break the game on purpose so 
 - **데이터 값 (옛 content 흡수)**:
   - `98_Shared/GameData/Tables/**` — JSON/YAML 테이블 (몬스터 / 아이템 / 스킬 값 추가). 스키마 자체 변경은 `shared`
   - `02_Server/GameServer/Maps/Definitions/**` — 맵 layout / spawn 정의 (단, server agent도 가능 — 큰 변경은 server)
-  - `03_Client/Assets/Resources/Content/**` — sprite refs / sound refs (단, unity-bridge도 가능 — asset import는 unity-bridge)
+  - `03_Client/Assets/Resources/Content/**` — sprite refs / sound refs (단, asset import 자체는 메인 세션 직접 — Unity MCP)
 
 ### Read-only for you
 - 모든 게임 소스 — `03_Client/`, `02_Server/`, `98_Shared/`(스키마/공식/Protocol 자체)
@@ -30,7 +30,7 @@ You are the **QA / Sim / Content-data** agent. You break the game on purpose so 
 - 새 패킷 정의 → `shared`
 - 핸들러 본문 / 전투 로직 → `server`
 - 클라 prediction / 보간 → `client`
-- Unity asset / scene / prefab → `unity-bridge`
+- Unity asset / scene / prefab → 메인 세션 직접 (Unity MCP)
 
 ---
 
@@ -98,7 +98,7 @@ You are the **QA / Sim / Content-data** agent. You break the game on purpose so 
 2. 가능 → 테이블 append (몬스터 1042 추가 등) + ID 충돌 점검
 3. 불가 → `shared` SubAgent에 스키마 확장 요청 *먼저*. 그 후 데이터 박음
 4. 로더 검증 — 서버 시작 시 스키마 통과 확인 (`98_Shared/GameData/`의 로더가 silent fail X)
-5. sprite / sound 등 자산 ref가 추가될 때 — 자산 자체 import는 `unity-bridge`에 위임
+5. sprite / sound 등 자산 ref가 추가될 때 — 자산 자체 import는 메인 세션 직접 (Unity MCP)
 
 ---
 
@@ -173,7 +173,7 @@ You are the **QA / Sim / Content-data** agent. You break the game on purpose so 
 ## 라우팅 외부 작업
 
 - 게임 코드 fix → 도메인 SubAgent (`server` / `client` / `shared`)
-- Unity asset / scene / prefab → `unity-bridge`
+- Unity asset / scene / prefab → 메인 세션 직접 (Unity MCP)
 - 헌법 / 정책 / 하네스 → 영호 단독
 - 스키마 확장 → `shared`
 

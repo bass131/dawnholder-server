@@ -43,13 +43,13 @@ argument-hint: <name> <level> <map>
    dotnet test 02_Server/GameServer.Tests --filter Category=ContentSchema
    ```
 
-#### Step 2. (조건부) `unity-bridge` SubAgent 위임
+#### Step 2. (조건부) 메인 세션 직접 — sprite 자산 import (Unity MCP)
 
-[`../../agents/unity-bridge.md`](../../agents/unity-bridge.md) 호출 — 클라이언트 sprite 자산이 없으면.
+클라이언트 sprite 자산이 없으면 메인 세션이 직접 Unity MCP로 import.
 
 브리프:
 - `03_Client/Assets/Resources/Content/Monsters/<id>.png` 존재 확인
-- 없으면 사용자에게 ComfyUI 자산 제공 요청 (인규 영역) 또는 placeholder sprite 박음
+- 없으면 영호에게 ComfyUI 자산 제공 요청 또는 placeholder sprite 박음
 
 ---
 
@@ -103,4 +103,4 @@ argument-hint: <name> <level> <map>
 ### 옛 슬래시와 차이
 
 - **옛 `/work:new-monster`**: `content` SubAgent 단일 위임 (데이터 + 일부 게임플레이 영향)
-- **새 `/work:new-monster`**: `qa`(데이터 값) + `unity-bridge`(자산, 조건부) 분담. `content` SubAgent 자체는 *삭제* — server/qa/unity-bridge로 분산 흡수 (Phase 02 결정)
+- **새 `/work:new-monster`**: `qa`(데이터 값) + 메인 세션 직접(자산 import, 조건부) 분담. `content` SubAgent 자체는 *삭제* — server/qa/메인 세션으로 분산 흡수 (Phase 02 결정)

@@ -31,7 +31,7 @@
 ## plan-auditor (Tier 2-B) — SubAgent 풀·라우팅 (🔴1 / 🟡6 / 🟢4)
 
 ### 🔴
-- **`unity-bridge` MCP 권능 허위** — 4개 문서(CLAUDE.md row7·`subagent-routing.md`·`_routing.md`·`unity-bridge.md`)가 "Unity MCP 전담" 선언하나 frontmatter `tools`에 `mcp__unity__*` **미보유** → 호출 불가. memory `unity-mcp-tools-in-main-session-not-unity-bridge`로 **이미 실측된 갭**(손YAML fallback = prefab 사고 위험). "메인 세션이 MCP 실행, unity-bridge는 asset 손편집만"으로 정정 필요.
+- **`unity-bridge` MCP 권능 허위** — 4개 문서(CLAUDE.md row7·`subagent-routing.md`·`_routing.md`·`unity-bridge.md`)가 "Unity MCP 전담" 선언하나 frontmatter `tools`에 `mcp__unity__*` **미보유** → 호출 불가. memory `unity-mcp-tools-in-main-session-not-unity-bridge`로 **이미 실측된 갭**(손YAML fallback = prefab 사고 위험). "메인 세션이 MCP 실행, unity-bridge는 asset 손편집만"으로 정정 필요. **→ [해결됨 2026-06-26: 에이전트 폐기, Unity asset/MCP = 메인 세션 직접]**
 
 ### 🟡
 - `coordinator` "위임 권한" 선언 vs tools에 위임도구 없음 — 실행모델("메인이 Worker 호출")과 prose 불일치.
@@ -77,7 +77,7 @@
 
 - 🟡 **번들 A — 하네스 doc-sync sweep** (단순/보통, 브랜치): CLAUDE.md 커맨드수(10→13)+harness 깃발 추가 / README phase-gate·shared-discipline 갭 명시 / INDEX 마커 2건(ADR-019·"P02") / reviewer.md 5축→6축. → 헌법·문서 정합 일괄.
 - 🟡 **번들 B — knowledge solo-reconcile** (단순, knowledge-gc 위임): 결함정정 4 + qa 플레이스홀더. 팀원 언급 일반화.
-- 🟠 **별건 surface — unity-bridge MCP 재정의** (설계 결정): "MCP=메인 전담, unity-bridge=손편집 asset" 명문화 or MCP 워크플로우 메인 이관. memory와 이미 일치 = 결정만 남음.
+- ✅ **[해결됨 2026-06-26] unity-bridge MCP 권능 허위** — 영호 결정: `unity-bridge` 에이전트 **폐기**, Unity asset/scene/prefab + MCP = 메인 세션 직접. 풀 9→8 (별도 커밋). plan-auditor 🔴 봉합 완료.
 - 🟢 그 외(공동소유 표·plan-auditor hook 비대칭·승격 후보) = 하네스 v2 백로그.
 
 > 헌법/문서 수정 = harness 깃발(영호 단독 통제). 본 점검은 제안까지 — 봉합 GO는 영호.

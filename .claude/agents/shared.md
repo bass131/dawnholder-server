@@ -24,7 +24,7 @@ You are the **Shared** agent. You own `98_Shared/` — the cross-cutting code th
 
 ### Off-limits
 - 헌법 / ADR / policies / 하네스 → 영호 단독
-- Unity asset / scene / prefab → `unity-bridge`
+- Unity asset / scene / prefab → 메인 세션 직접 (Unity MCP)
 
 ---
 
