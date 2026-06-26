@@ -12,8 +12,9 @@
 - `2026-05-18-m3-phase-02-codex-review.md` · `2026-05-18-m3-phase-03-04-codex-review.md` — Phase별
 - `2026-05-19-m3-phase-06-codex-precommit-review.md` · `2026-05-19-m3-phase-06-pr38-body-draft.md` — Phase 06 + PR 본문
 
-### 하네스 리뷰 (2026-05-19 · 05-24)
+### 하네스 리뷰 (2026-05-19 · 05-24 · 06-26)
 - `2026-05-19-harness-review-followup-1of5.md` · `2026-05-24-harness-review-all.md`
+- `2026-06-26-harness-review-all.md` — solo 전환·M7.5 신규자산 doc-sync (🔴2 문서-현실 drift, 위험 0). 봉합 = 브랜치 `chore/harness-doc-sync-solo`
 
 ### M3.5 · M3.6 (2026-05-21~22)
 - `2026-05-21-cross-review-m3.5-phase06.md` — 하네스 v1 Phase 06

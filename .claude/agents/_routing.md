@@ -1,4 +1,4 @@
-# Agents Routing — SubAgent 풀 9 도메인 매핑
+# Agents Routing — SubAgent 풀 8 도메인 매핑
 
 > 본 문서는 *작업 → SubAgent* 빠른 매핑 표. **WHY/원칙은 [`../policies/subagent-routing.md`](../../00_Document/policies/subagent-routing.md), 본 문서는 HOW**.
 
@@ -11,9 +11,9 @@
 | 패킷 모양 / 직렬화 / 프레이밍 / 연결 라이프사이클 | `shared` + `server` | PDL은 `shared`, 핸들러 + 세션 상태는 `server` |
 | 전투 / 스킬 / 스탯 / 공식 / AI / 영속화 | `server` | 게임플레이 + 네트워킹 + DB 통합 (옛 4 도메인 흡수) |
 | Unity 씬 / 렌더링 / 입력 / UI / prediction | `client` | `.cs` 스크립트 본문 |
-| Unity prefab / asset / scene YAML | `unity-bridge` | MCP 도구 전담 |
+| Unity prefab / asset / scene YAML | 메인 세션 직접 | Unity MCP=메인 세션 전용 (위임 불가) |
 | 헤드리스 봇 / 부하 / 퍼징 / 테스트 | `qa` | 게임 코드 R only |
-| ComfyUI 자산 / 2D 스프라이트 import | `unity-bridge` | unity-asset 깃발 자동 발동 (인규 영역 보조) |
+| ComfyUI 자산 / 2D 스프라이트 import | 메인 세션 직접 | unity-asset 깃발 자동 발동 |
 | 콘텐츠 데이터 값 (몬스터 stat 등) | `qa` | 스키마 자체는 `shared` |
 | Knowledge 캐시 정리 (비활성화/응축/승격/분해) | `knowledge-gc` | 수동 트리거만 (`/harness-review` / `/session:end` / 사용자 명시) |
 | 헌법 / ADR / policies / 하네스 자체 | (위임 X, 영호 단독) | M3.5 약속 |
@@ -25,7 +25,7 @@
 | 등급 | 처리 패턴 | SubAgent 동원 |
 |---|---|---|
 | **단순** | 메인 세션 직접 | 없음 (위임 비용 > 작업 비용) |
-| **보통** | Worker 1개 | server / shared / client / qa / unity-bridge 중 1 |
+| **보통** | Worker 1개 | server / shared / client / qa 중 1 |
 | **복잡** | Coordinator + Worker 1~2개 | + reviewer (조건부) |
 | **대규모** | Coordinator + Team | Worker 3~4개 + plan-auditor 사전 + reviewer 통합 |
 
@@ -97,7 +97,6 @@ Coordinator → Worker 위임 시:
 | `shared` | `98_Shared/**` + `99_Tools/PacketGenerator/**` | `02_Server/**` + `04_ClientNet/**` + `03_Client/**` | 헌법 / 정책 / Unity asset |
 | `client` | `03_Client/Assets/Scripts/**` + `04_ClientNet/**` | `98_Shared/**` | `02_Server/**` + Unity asset (`.prefab/.unity/.asset`) |
 | `qa` | `99_Tools/**` + `*Tests/**` + 콘텐츠 데이터 값 | 게임 코드 전체 | 게임 소스 본문 |
-| `unity-bridge` | `03_Client/Assets/Scenes/**` + `Prefabs/**` + Unity asset + Unity MCP | `.cs` 스크립트 + `98_Shared/**` | 서버 코드 + 헌법 |
 | `reviewer` | (없음) | 전체 | 코드 편집 X (Tier 2-A) |
 | `plan-auditor` | (없음) | 전체 | 코드 편집 X (Tier 2-B) |
 | `coordinator` | (없음, 위임 권한 보유) | 전체 | 코드 편집 X / 다른 coordinator 호출 X |
@@ -132,3 +131,4 @@ Coordinator → Worker 위임 시:
 
 - 2026-05-20 — M3.5 Phase 02 (3/3) 신설. 옛 헌법 본문에 박혔던 6 도메인 라우팅 표를 8 SubAgent로 확장 + 자동 호출 트리거 + 권한 경계 통합.
 - 2026-05-20 — M3.5 Phase 04 (3/3) 풀 9 확장. `knowledge-gc` Specialist 3번째 추가 (수동 트리거만, 자동 호출 X) — 도메인 매핑 + 자동 호출 트리거 + 권한 경계 행 추가.
+- 2026-06-26 — `unity-bridge` SubAgent 폐기 → Unity asset/scene/prefab + Unity MCP = **메인 세션 직접** (MCP 도구가 메인 세션 전용이라 위임 불가, `/harness-review` 발견). 풀 9→8. 도메인 표·등급 표·권한 표·헌법·subagent-routing 동기.

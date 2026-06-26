@@ -41,7 +41,7 @@
 
 ### 슬래시 커맨드
 
-작업 4 + 세션 3 + 점검 2 + 셋업 1 — 총 10개. 옛 학습 5 + 일지 3은 제거 (M3.5 KPI 전환 + ADR-025 학습 트랙 은퇴). 카탈로그 → [`00_Document/commands-index.md`](00_Document/commands-index.md).
+작업 4 + 세션 4 + 엔진 1 + 점검 3 + 셋업 1 — 총 13개. 옛 학습 5 + 일지 3은 제거 (M3.5 KPI 전환 + ADR-025 학습 트랙 은퇴), M7.5에서 `/engine:goal`·`/session:review`·`/refactor-sweep` 신설 (ADR-032). 카탈로그 → [`00_Document/commands-index.md`](00_Document/commands-index.md).
 
 ---
 
@@ -200,16 +200,17 @@
 - **trust-boundary**: `02_Server/GameSession.cs`, `Handlers/`, 신뢰 경계 검증 코드 변경
 - **irreversible**: `git push` to main, `gh pr merge`, DB 마이그 SQL, `Protocol.Version` bump
 - **unity-asset**: `03_Client/Assets/**/*.{prefab,unity,asset}` 변경 (특히 prefab)
+- **harness**: `.claude/{hooks,agents,commands}/**` 등 하네스 자체 변경 (CHANGELOG [M]/[H] 의무 + 자기 참조 함정 인지)
 
 위험 깃발은 `risk-detector.sh` Hook이 자동 검출 → stderr 알림 + `.claude/state/risk-flags.txt` 누적. **work-pin 갱신은 본인이 수동** (Hook은 알림 전용 — 본인 인지를 거치는 게 정합, hook이 work-pin 자체를 안전 수정하기 어려움).
 
-**깃발 → 루프 버킷**: 무깃발=(a) 자율 / unity-asset=(b) 사람 트랙 / irreversible·trust-boundary=(c) 사람 게이트. 매핑 상세 → [`work-judge.md`](00_Document/policies/work-judge.md).
+**깃발 → 루프 버킷**: 무깃발=(a) 자율 / unity-asset=(b) 사람 트랙 / irreversible·trust-boundary=(c) 사람 게이트 / harness=(a) 기본·권한/게이트 변경 시 (c). 매핑 상세 → [`work-judge.md`](00_Document/policies/work-judge.md).
 
 등급 정의·위험 깃발 디테일 → [`00_Document/policies/grade-and-risk.md`](00_Document/policies/grade-and-risk.md)
 
 ---
 
-## 🤖 SubAgent 풀 (9개) + 모델 분담
+## 🤖 SubAgent 풀 (8개) + 모델 분담
 
 작업이 들어오면 **메인 세션(또는 루프 드라이버)**이 등급 + 도메인 따라 SubAgent 위임:
 
@@ -221,10 +222,10 @@
 | 4   | `qa`           | 99_Tools/ + 테스트 코드 (헤드리스 봇/부하/퍼징)                      | Sonnet | 99_Tools/ + 테스트 R/W, 게임 코드 R only     |
 | 5   | `reviewer`     | Tier 2 자동 리뷰 (헌법/ADR/도메인 패턴 점검)                         | Opus   | 전체 R only                                  |
 | 6   | `plan-auditor` | `_milestone-plan.md` / Phase 정의 `.md` 사전 검증 (Codex γ 흡수)     | Opus   | 전체 R only                                  |
-| 7   | `unity-bridge` | Unity Editor MCP + asset + scene/prefab 작업 전담                    | Sonnet | 03_Client/ + Unity MCP                       |
-| 8   | `coordinator`  | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합                     | Opus   | 전체 R only, 위임 권한                       |
-| 9   | `knowledge-gc` | Knowledge 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `../knowledge/` R/W, 다른 영역 R only        |
+| 7   | `coordinator`  | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합                     | Opus   | 전체 R only, 위임 권한                       |
+| 8   | `knowledge-gc` | Knowledge 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `../knowledge/` R/W, 다른 영역 R only        |
 
+**Unity asset/scene/prefab + Unity MCP = 메인 세션 직접** (옛 `unity-bridge` SubAgent 폐기 2026-06-26 — MCP 도구가 메인 세션 전용이라 위임 자체가 불가했던 갭 봉합. 외관 육안 검증은 영호 bucket-b).
 **여러 도메인 작업**: Coordinator가 분해 → 도메인별 Worker 위임 → Reviewer 통합 점검.
 **서브에이전트끼리 호출 X**: 분해는 Coordinator가, 위임은 Coordinator → Worker 1단계만 (재귀 차단).
 

@@ -69,7 +69,7 @@ summary: <한 줄 요약>
 - ✅ 완료 조건 (객관적, 정량적 — "잘 작동한다" 같은 모호 표현 X)
 - 📚 학습 포인트 (학부생 시각에서 새로운 개념)
 - ⚠️ 함정 (이 영역에서 자주 하는 실수)
-- 담당 SubAgent 명시 (server / shared / client / qa / unity-bridge 또는 메인 직접)
+- 담당 SubAgent 명시 (server / shared / client / qa 또는 메인 직접 — Unity asset/MCP는 메인 세션)
 
 ### 4.5. work-pin 자동 시드 (ADR-018 입구 안전망)
 

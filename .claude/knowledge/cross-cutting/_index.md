@@ -54,7 +54,7 @@ Get-WinEvent -LogName "Microsoft-Windows-AppLocker/EXE and DLL" -MaxEvents 5  # 
 
 ### `projectsettings-cloud-ping-pong`
 
-**증상**: 본인 commit이 팀원 cloudProjectId / organizationId 덮어씀 (또는 반대). main `e9aa005` = 유현 Cloud, 본인 머신 = `roy_131` Cloud → 머신 켤 때마다 ping-pong.
+**증상**: 본인 commit이 cloud 설정을 덮어씀(미래 합류자 합류 시 상호 덮어씀 재발 가능). 머신마다 Unity Cloud가 자기 계정 자동 채움 → 머신 켤 때마다 ping-pong. (5/16 발견 당시: main `e9aa005` vs 본인 머신 `roy_131` Cloud 충돌)
 
 **패턴**: Unity Cloud Services는 머신별 자기 계정 자동 채움. `/session:start` (C-1) 게이트는 *세션 시작 시점*만 작동 → 세션 *중간* commit이 빠져나감.
 
@@ -65,7 +65,7 @@ Get-WinEvent -LogName "Microsoft-Windows-AppLocker/EXE and DLL" -MaxEvents 5  # 
 cloud 라인 *만* stage → 자동 unstage (워킹 디렉토리 보존 = 머신 식별 유지). cloud + 다른 변경 → block + `git add -p` 분리 안내.
 
 **사례**: CHANGELOG 5/19 [M]. 본인·유현 5/16부터 발견.
-**확신도**: 실측 검증 2회 통과 (단독 stage / 다른 파일 함께 stage 둘 다). 다인 환경에서 *모든 commit* 시점 적용.
+**확신도**: 실측 검증 2회 통과 (단독 stage / 다른 파일 함께 stage 둘 다). 솔로 환경에서도 본인 cloud 설정 commit 방지 + 미래 합류 시 충돌 방지 목적으로 *모든 commit* 시점 적용.
 **관련 키워드**: [[unity-version-hash-pinning]] (Unity 다인 함정 묶음)
 
 ### `gamma-pre-validation-pattern`
@@ -97,7 +97,7 @@ cloud 라인 *만* stage → 자동 unstage (워킹 디렉토리 보존 = 머신
 **장기 옵션**: A) Vanguard 제거 (게임 시 재설치) / B) 종료+재부팅 (매번 비용) / C) VM (학부생 PC 무거움) / D) WSL2 (Vanguard도 차단 사례)
 
 **사례**: 5/16 1회 실측 (본인 머신).
-**확신도**: 실측 1건. Rule of Three 미달. 다음 합류 팀원(인규/정우)에서 동일 사고 발생 시 ★★★ 승격 후보. 한국 학부생 + Valorant/LoL 인기 조합이라 빈도 ↑ 예상.
+**확신도**: 실측 1건. Rule of Three 미달. 미래 합류자 또는 본인 재현 시 동일 사고 발생 시 ★★★ 승격 후보. 한국 학부생 + Valorant/LoL 인기 조합이라 재발 빈도 ↑ 예상.
 **관련 키워드**: [[sac-dotnet-test-block]] (둘 다 머신 정책 사고), ONBOARDING.md "한국 게이밍 PC 주의사항" 박제 후보
 
 ### `jump-buffer-ack-vs-apply-split`
@@ -157,7 +157,7 @@ _(없음 — 본 캐시는 2026-05-20 신설)_
 ## 관련 자산
 
 - CHANGELOG: [`../../../../.claude/CHANGELOG.md`](../../CHANGELOG.md) — [H]/[M] 박힘 = 본 캐시 후보
-- 옛 memory: `~/.claude/projects/C--Dev-ClaudeDev/memory/` — 흡수 후보 (Phase 04 (2/3))
+- 옛 memory: `~/.claude/projects/C--Dev-ClaudeDev/memory/` — 흡수 미진행 / 현행 MEMORY.md 유지 (M7.7 완주 시점 기준 별도 흡수 미실시)
 - 정책: [`../../policies/knowledge-system.md`](../../../00_Document/policies/knowledge-system.md)
 
 ---
@@ -166,3 +166,4 @@ _(없음 — 본 캐시는 2026-05-20 신설)_
 
 - 2026-05-20 — M3.5 Phase 04 (1/3) 골격 박힘. 시드 항목은 (2/3)에서 채움 — cross-cutting은 시드 가장 풍부 (5건 이상 예상).
 - 2026-06-14 — M4.13 마일스톤 마감 후속. `impulse-class-prediction-boundary` + `dash-facing-client-authority` 2건 박제 (사용자 확인 게이트 통과).
+- 2026-06-26 — GC 결함 정정: `projectsettings-cloud-ping-pong` 팀원(유현) 언급 + 스테일 플래닝 노트 / `riot-vanguard-spawn-unknown` 팀원(인규·정우) 언급 → 솔로 + 미래 합류자 일반화 (솔로 전환 2026-06-18 정합).

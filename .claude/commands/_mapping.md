@@ -129,8 +129,6 @@ git mv 01_Phases/youngho/M3.5-harness-v1/New_Harness/commands/cross-review.md .c
   - Phase 회고 → -DONE.md "학습 일지 후보 키워드" + 본인 노션
 ```
 
-위 안내는 Phase 06 전환 commit 시점에 본인이 디스코드/슬랙으로 한 번 박음.
-
 ---
 
 ## 학습 키워드 후보

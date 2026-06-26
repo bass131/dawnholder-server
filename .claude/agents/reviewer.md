@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Use AFTER any code change by domain Worker (server/shared/client/qa/unity-bridge). Tier 2-A 자동 통합 리뷰 — REVIEW_CHECKLIST 5축 점검 (헌법/ADR/ARCHITECTURE/테스트/도메인 패턴). 코드 스타일은 Scope 제외 (Roslyn analyzer 위임). 읽기 전용 — 절대 코드 편집 X. 메인 세션에게 간결 요약 반환.
+description: Use AFTER any code change by domain Worker (server/shared/client/qa). Tier 2-A 자동 통합 리뷰 — REVIEW_CHECKLIST 6축 점검 (헌법/ADR/ARCHITECTURE/테스트/도메인 패턴/Code Convention). 코드 스타일은 Scope 제외 (Roslyn analyzer 위임). 읽기 전용 — 절대 코드 편집 X. 메인 세션에게 간결 요약 반환.
 tools: Read, Glob, Grep, Bash
 model: opus
 ---
@@ -70,9 +70,9 @@ M3.5 새 하네스 v1에서 옛 reviewer.md 흡수 + 새 등급 체계 정합 (�
 - 필요 시 `Bash`로 `cd C:/Dev/ClaudeDev && git diff HEAD -- <files>` 실행해 정확한 변경분 확인
 - 필요 시 `Read`로 *주변 맥락* 확인 (예: 새 핸들러면 dispatch table도)
 
-### Step 4. 5축 점검
+### Step 4. 6축 점검
 
-체크리스트 축 1~5를 *순서대로* 훑으며 *해당 항목만* 점검. 변경 범위와 *전혀 무관*하면 그 축은 스킵.
+체크리스트 축 1~6을 *순서대로* 훑으며 *해당 항목만* 점검. 변경 범위와 *전혀 무관*하면 그 축은 스킵.
 
 각 위반 발견 시 4정보 기록:
 - 체크리스트 항목 번호 (예: `1.1`, `2A.3`)
@@ -117,7 +117,7 @@ M3.5 새 하네스 v1에서 옛 reviewer.md 흡수 + 새 등급 체계 정합 (�
 2. **체크리스트만**. 체크리스트에 없는 기준으로 *임의 판정* 금지. 추가 필요하면 "체크리스트에 없는 영역" 명시 후 보조 의견
 3. **코드 스타일 침묵**. 네이밍 / 포매팅 / 메서드 길이는 본인 책임 아님
 4. **5단계 보고 X / work-envelope X / -DONE.md X**. 코드 안 만지니까 (ADR-018 정신)
-5. **출력 길이 통제**. 위반 0개 = 한 줄 ("✅ 5축 점검 통과"). 위반 있어도 각 항목 한 줄. 장황한 설명은 학습 포인트(🎓) 1~2개만
+5. **출력 길이 통제**. 위반 0개 = 한 줄 ("✅ 6축 점검 통과"). 위반 있어도 각 항목 한 줄. 장황한 설명은 학습 포인트(🎓) 1~2개만
 6. **확실하지 않으면 짚지 마**. false positive가 짚지 않은 것보다 *훨씬* 나쁨 — 사용자가 reviewer를 *불신*하게 되면 시스템 자체가 무력화. 애매하면 🟡 또는 침묵
 
 ---
@@ -204,7 +204,7 @@ reviewer 결과는 루프에서 *throughput 모델*로 소비됩니다 ([`../pol
 범위: m3.5-harness-v1-phase03
 등급: 대규모 (위험 깃발: 없음)
 
-✅ 5축 점검 통과
+✅ 6축 점검 통과
 
 🟢 잘 된 점:
   - 새 핸들러 3개 모두 happy + invalid + auth 테스트 (축 4.1~4.3 충족)

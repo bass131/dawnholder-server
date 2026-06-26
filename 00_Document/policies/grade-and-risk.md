@@ -60,7 +60,7 @@ PDF NDREAM 패턴(Sonnet Worker + Opus Coordinator)을 본 프로젝트에 정�
 | **trust-boundary** | `02_Server/GameSession.cs`, `02_Server/Handlers/`, `02_Server/**/Validation*`, 신뢰 경계 검증 코드 | 헌법 #3 — 한 줄 실수가 보안 구멍 |
 | **irreversible** | `git push` to `main`, `gh pr merge`, DB 마이그 SQL, `Protocol.Version` bump, `git reset --hard`, force push | 되돌리는 비용이 큼 |
 | **unity-asset** | `03_Client/Assets/**/*.{prefab,unity,asset,mat}`, 특히 prefab | YAML 자동 머지 충돌·prefab 백업 사고 (Phase 08 BackGround 사고) |
-| **harness** (M3.6 Phase 03-B 4-4 신설) | `.claude/{hooks,agents,commands}/**` 변경 | 하네스 자체 변경 = 모든 팀원 매번 영향 = CHANGELOG [M]/[H] 의무 + 자기 참조 함정 인지 |
+| **harness** (M3.6 Phase 03-B 4-4 신설) | `.claude/{hooks,agents,commands}/**` 변경 | 하네스 자체 변경 = 본인(+미래 합류자) 매번 영향 = CHANGELOG [M]/[H] 의무 + 자기 참조 함정 인지 |
 
 ### 상향 결과 박힘
 

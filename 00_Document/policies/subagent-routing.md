@@ -1,15 +1,15 @@
-# SubAgent Routing — 풀 9 라우팅 + 자동 호출 + 에스컬레이션
+# SubAgent Routing — 풀 8 라우팅 + 자동 호출 + 에스컬레이션
 
 > **헌법 참조**: 본 정책은 새 헌법 v1 "🤖 SubAgent 풀" 섹션에서 링크됩니다.
 > 충돌 시 헌법이 이깁니다.
 >
 > **신선도 주의**: 본 정책은 M3.5 박힘 시점(2026-05-20) 실측 0건. **M3.6 Phase 03-A 첫 실측 사이클 (2026-05-22)** — 5 항목 모두 0건 또는 간접 증명 박힘 (위임 false hit 0 / 재귀 마찰 0 — 단 재귀 차단 Hook 부재 발견 = work-pin 별 시점 / 에스컬레이션 0 / plan-auditor 가치 M3.6 plan 통과로 증명 / unity-bridge 영역 효과 간접 증명). 본문 수정 항목 없음.
 
-본 문서는 SubAgent 풀 9개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02/04 산출물(`../../.claude/agents/<name>.md`). **진입 주체 = 메인 세션 또는 루프 드라이버**(loop-driven, M7.5); 작업 → 버킷(a/b/c) 분류는 [`work-judge.md`](work-judge.md), 엔진은 [`loop-driver.md`](loop-driver.md).
+본 문서는 SubAgent 풀 8개의 *라우팅 룰*과 *자동 호출 트리거*, 그리고 *에스컬레이션*(Sonnet 2회 실패 → Opus → 사용자)을 정의합니다. SubAgent 정의 자체는 Phase 02/04 산출물(`../../.claude/agents/<name>.md`). **진입 주체 = 메인 세션 또는 루프 드라이버**(loop-driven, M7.5); 작업 → 버킷(a/b/c) 분류는 [`work-judge.md`](work-judge.md), 엔진은 [`loop-driver.md`](loop-driver.md).
 
 ---
 
-## 1. SubAgent 풀 9 (요약)
+## 1. SubAgent 풀 8 (요약)
 
 | # | 이름 | 역할 | 기본 모델 | 권한 |
 |---|---|---|---|---|
@@ -19,11 +19,10 @@
 | 4 | `qa` | 99_Tools/ + 테스트 코드 (헤드리스 봇/부하/퍼징) | Sonnet | 99_Tools/ + 테스트 R/W, 게임 코드 R only |
 | 5 | `reviewer` | Tier 2 자동 리뷰 (헌법/ADR/도메인 패턴 점검) | Opus | 전체 R only |
 | 6 | `plan-auditor` | _milestone-plan.md / Phase 정의 사전 검증 (Codex γ 흡수) | Opus | 전체 R only |
-| 7 | `unity-bridge` | Unity Editor MCP + asset + scene/prefab 작업 전담 | Sonnet | 03_Client/ + Unity MCP |
-| 8 | `coordinator` | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합 | Opus | 전체 R only, 위임 권한 |
-| 9 | `knowledge-gc` | `.claude/knowledge/` 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `.claude/knowledge/` R/W, 다른 영역 R only |
+| 7 | `coordinator` | 복잡/대규모 Phase 분해 + Worker 위임 + 결과 통합 | Opus | 전체 R only, 위임 권한 |
+| 8 | `knowledge-gc` | `.claude/knowledge/` 캐시 정리 (비활성화/응축/승격 후보/분해) — *수동 트리거만* | Sonnet | `.claude/knowledge/` R/W, 다른 영역 R only |
 
-옛 6 도메인(`netcode`/`gameplay`/`client`/`content`/`persistence`/`qa-sim`) → 새 9 SubAgent 매핑은 `../README.md` 옛 → 새 매핑 표 참조 (`knowledge-gc`는 옛 대응 없음, Phase 04 신설).
+옛 6 도메인(`netcode`/`gameplay`/`client`/`content`/`persistence`/`qa-sim`) → 새 8 SubAgent 매핑은 `../README.md` 옛 → 새 매핑 표 참조 (`knowledge-gc`는 옛 대응 없음, Phase 04 신설).
 
 각 SubAgent 디테일(입력/출력/툴 권한) = [`../../.claude/agents/<name>.md`](../../.claude/agents/) (Phase 02 산출물).
 
@@ -38,9 +37,9 @@
 | 패킷 모양 / 직렬화 / 프레이밍 / 연결 라이프사이클 | `shared` + `server` | PDL은 `shared`, 핸들러는 `server` |
 | 전투 / 스킬 / 스탯 / 공식 / AI / 영속화 | `server` | 게임플레이 + 네트워킹 + DB 통합 |
 | Unity 씬 / 렌더링 / 입력 / UI / prediction | `client` | |
-| Unity prefab / asset / scene YAML | `unity-bridge` | MCP 도구 전담 |
+| Unity prefab / asset / scene YAML | 메인 세션 직접 | Unity MCP=메인 세션 전용 (위임 불가) |
 | 헤드리스 봇 / 부하 / 퍼징 / 테스트 | `qa` | 게임 코드 R only |
-| ComfyUI 자산 / 2D 스프라이트 import | `unity-bridge` (인규 영역 보조) | unity-asset 깃발 발동 |
+| ComfyUI 자산 / 2D 스프라이트 import | 메인 세션 직접 | unity-asset 깃발 발동 |
 | 헌법 / ADR / policies / 하네스 자체 | (위임 X, 영호 단독) | M3.5 약속 |
 
 ### 여러 도메인 작업
@@ -102,7 +101,7 @@ Codex γ 방식(4~7회 실측)에서 *코드 박기 전 설계 검증* 패턴 �
 
 ### 4-4. 그 외 (수동 위임)
 
-- `server`/`shared`/`client`/`qa`/`unity-bridge`: 메인 세션 또는 coordinator가 명시 위임
+- `server`/`shared`/`client`/`qa`: 메인 세션 또는 coordinator가 명시 위임
 - `coordinator`: 복잡/대규모 등급 자동 호출 (등급 결정 직후)
 
 ---
@@ -149,7 +148,7 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 
 > **배경**: 2026-06-10~22 "Fable 메인 + 메인 조율 전담" 한시 방침은 **2026-06-13 폐기**됨 — Fable 5 사용 제한으로 메인이 Fable로 운영되지 않음. §1~§9 원래 라우팅으로 복귀(메인 = 세션 오케스트레이터: 단순=직접 / 보통+=위임). 그 위에 아래 *선택적 Opus* 룰을 **영구** 추가한다(한시 아님).
 
-**원칙**: 구현 Worker는 §1 *기본 모델 배정*(server/shared/client/qa/unity-bridge = Sonnet)을 따르되, **작업 위험도가 높으면 모델 티어를 상향**한다. 위험 깃발이 *등급*뿐 아니라 *모델 티어*도 상향하는 셈.
+**원칙**: 구현 Worker는 §1 *기본 모델 배정*(server/shared/client/qa = Sonnet)을 따르되, **작업 위험도가 높으면 모델 티어를 상향**한다. 위험 깃발이 *등급*뿐 아니라 *모델 티어*도 상향하는 셈.
 
 - **트리거**: `복잡 + trust-boundary` 또는 `대규모` Phase → 구현 Worker도 **Opus**로 위임 (`Agent` 도구 `model` override; agent 정의 frontmatter 기본값은 Sonnet 유지 — override는 위임 시점 결정).
 - **그 외**(단순 / 보통 / 복잡-non-tb) → 기본 **Sonnet**.
@@ -185,7 +184,7 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 - **단순 등급에 위임하지 마라** — 위임 비용 > 작업 비용. 메인 세션 직접이 더 빠름
 - **여러 도메인 = 무조건 coordinator** — 메인 세션이 직접 분해 시 문맥 손실 사고 발생. coordinator는 *분해 전문가*
 - **Sonnet/Opus 모델 비용 인식** — Opus는 비싸다. 에스컬레이션 발동 시 work-pin에 박힘으로 *왜 비용 커졌는지* 즉시 가시화
-- **unity-bridge 단독 영역** — Unity prefab/asset 사고(Phase 08 BackGround 사고)는 일반 Worker가 다루면 위험 ↑. MCP 도구 전담
+- **Unity asset = 메인 세션 직접** — Unity prefab/asset 사고(Phase 08 BackGround 사고) + MCP 도구가 메인 세션 전용이라 위임 불가. 옛 `unity-bridge` SubAgent 폐기(2026-06-26)
 
 ---
 
@@ -194,7 +193,7 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 본 정책 수정 시 *반드시* 함께 갱신:
 
 - [`../CLAUDE.md`](../../CLAUDE.md) "🤖 SubAgent 풀" 섹션 (헌법 본문 표와 정합)
-- [`../../.claude/agents/`](../../.claude/agents/) (SubAgent 정의 9개 — Phase 02 산출물 8 + Phase 04 신설 `knowledge-gc` 1)
+- [`../../.claude/agents/`](../../.claude/agents/) (SubAgent 정의 8개 — `unity-bridge` 폐기 2026-06-26)
 - [`grade-and-risk.md`](grade-and-risk.md) (등급 → 처리 패턴 매핑) · [`work-judge.md`](work-judge.md) (등급/깃발 → 버킷) · [`loop-driver.md`](loop-driver.md) (진입 주체)
 - [`review-tiering.md`](review-tiering.md) (reviewer 자동 호출 트리거)
 - [`../../.claude/hooks/circuit-breaker.sh`](../../.claude/hooks/circuit-breaker.sh) (Phase 03 산출물 — *반복 도구 사용 알림* advisory. 재귀 차단은 hook 아닌 coordinator 단독 위임 구조로 강제 — line 6 신선도 주석 정합)
@@ -203,7 +202,7 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 
 ## 9. 실측 후 재조정 (완료)
 
-본 정책 5축(위임 false hit / 재귀 차단 마찰 / 에스컬레이션 빈도 / plan-auditor 가치 / unity-bridge 효과)은 **M3.6 첫 실측 사이클(2026-05-22, line 6 신선도 주의)에서 모두 0건 또는 간접 증명** → 본문 재조정 불요. 이후 비용 가시화는 work-pin 에스컬레이션 박힘(§5)으로 상시 대체. 큰 변경은 ADR 신설.
+본 정책 4축(위임 false hit / 재귀 차단 마찰 / 에스컬레이션 빈도 / plan-auditor 가치)은 **M3.6 첫 실측 사이클(2026-05-22, line 6 신선도 주의)에서 모두 0건 또는 간접 증명** (옛 5번째 `unity-bridge 효과` 축은 에이전트 폐기 2026-06-26로 소멸) → 본문 재조정 불요. 이후 비용 가시화는 work-pin 에스컬레이션 박힘(§5)으로 상시 대체. 큰 변경은 ADR 신설.
 
 ---
 
@@ -213,3 +212,4 @@ work-pin에 박히는 이유 — Opus 호출 비용이 Sonnet 대비 크므로 *
 - 2026-05-22 — M3.5 후속 봉합 (β cross-review #3). 풀 8 → 풀 9 갱신 (`knowledge-gc` Phase 04 신설 항목 누락 봉합) + §4-3 수동 트리거 명세 박음.
 - 2026-06-13 — 한시 운영(Fable 메인) 섹션 폐기 + §5.5 선택적 Opus(영구) 신설. Fable 5 사용 제한으로 'Fable 메인 조율 전담' 한시방침 종료 → §1~9 원래 라우팅 복귀. `복잡+trust-boundary` 또는 `대규모` = 구현 Worker도 Opus(위험 깃발이 모델 티어 상향, 위임 시 model override). §1 표 헤더 '모델'→'기본 모델'. 동기화: CLAUDE.md 헌법 포인터 + `_routing.md` + `_escalation.md` + work-pin + memory(`opus-routing-by-complexity` 신설, 옛 `main-session-coordination-only` 폐기).
 - 2026-06-19 — §9 실측 체크리스트 응축(완료된 TODO → 결과는 line 6 신선도 주의가 SSOT). 222→214줄로 doc-thresholds 220 임계 회복. 라우팅 표·모델 배정·자동호출 트리거 *의미 변화 0* → §8 동기화 대상 문서 무변경.
+- 2026-06-26 — `unity-bridge` SubAgent 폐기 → Unity asset/scene/prefab + Unity MCP = **메인 세션 직접** (MCP 도구 메인 세션 전용, 위임 불가 — `/harness-review` 발견). 풀 9→8. §1 표·§3 도메인 표·§5 모델 배정·§9 실측 축·헌법·`_routing.md` 동기.

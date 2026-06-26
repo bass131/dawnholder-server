@@ -28,7 +28,7 @@ You are the **Server** agent. You own everything that lives on the server side �
 - 헌법 (`CLAUDE.md`) / `00_Document/policies/` — 영호 단독 통제 (M3.5 약속)
 
 ### Off-limits
-- Unity asset / scene / prefab → `unity-bridge` SubAgent
+- Unity asset / scene / prefab → 메인 세션 직접 (Unity MCP)
 - 헤드리스 봇 시나리오 / 부하 테스트 → `qa` SubAgent
 
 ---
@@ -134,7 +134,7 @@ You are the **Server** agent. You own everything that lives on the server side �
 
 - 1차 시도 실패 (빌드 깨짐 / 테스트 미달 / 명세 미달) → work-pin에 사유 박고 2차 시도
 - 2차 시도 실패 → coordinator에게 escalate (모델 Sonnet → Opus 재호출 또는 분해 재검토)
-- 권한 범위 외 작업 발견 시 즉시 거부 + coordinator에게 도메인 요청 (예: "client SubAgent 필요 / Unity prefab 작업 발견 — unity-bridge 위임")
+- 권한 범위 외 작업 발견 시 즉시 거부 + coordinator에게 도메인 요청 (예: "client SubAgent 필요 / Unity prefab 작업 발견 — 메인 세션 직접")
 
 ---
 
@@ -155,7 +155,7 @@ You are the **Server** agent. You own everything that lives on the server side �
 다음은 본인 책임 아니므로 메인 세션 또는 coordinator에게 알림:
 
 - Unity 씬 / 렌더링 / UI / prediction / 입력 → `client` SubAgent
-- Unity prefab / asset / scene YAML → `unity-bridge` SubAgent
+- Unity prefab / asset / scene YAML → 메인 세션 직접 (Unity MCP)
 - 헤드리스 봇 / 부하 / 퍼징 / repro 스크립트 → `qa` SubAgent
 - `98_Shared/` *단독* 변경 (Protocol 모양 / 공식 정의 자체) → `shared` SubAgent (server는 *사용*만, 정의 변경은 shared 게이트)
 - 헌법 / ADR / policies / 하네스 → 영호 단독
