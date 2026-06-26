@@ -8,6 +8,11 @@
 - **핵심 진단**: 위험·보안 구멍 **0**. 헌법 절대원칙 5개는 실제로 강제됨(reviewer 축1 🟢). 발견은 전부 **문서-현실 drift** — 두 원인: ① **solo 전환(2026-06-18) 미반영**, ② **M7.5 신규 자산(커맨드 3개·정책 3개·깃발 1종) 헌법 본문 미반영**.
 - **양식 비용**: 정합. work-pin 31줄(목표 30~40 ✅), CLAUDE.md 266줄(<350 ✅).
 
+> **✅ 봉합 현황 (2026-06-26 — 전 항목 처리 완료)**:
+> - **PR #123** (`cfd9b64`+`1bce6bc`): doc-sync(🔴 슬래시 13·reviewer 6축·README·INDEX 마커) + solo 정합 + 디스코드 제거 + **unity-bridge 폐기**(🔴 plan-auditor, 풀 9→8) + knowledge 4결함정정.
+> - **잔여 🟡 6** (`chore/harness-review-yellow`): coordinator 실행모델 명시 / REVIEW_CHECKLIST 2B 등급 한정 / qa 데이터 carve-out / unity-asset=bucket-b 정합 / plan-auditor soft 명문화 / 공동소유 경계 노트.
+> - **백로그(하네스 v2)**: plan-auditor Hard hook 승격 · knowledge 응축/승격 후보 · circuit halt 절대화.
+
 ---
 
 ## reviewer (Tier 2-A) — 헌법·정책·ADR·훅·커맨드 (🔴1 / 🟡6 / 🟢5)
