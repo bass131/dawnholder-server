@@ -30,7 +30,7 @@ namespace Dawnholder.Client.Network.Handlers.Combat
             int targetId = pkt.targetId;
             byte attackPattern = pkt.attackPattern;
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
                 if (session.LocalEntityId == null) return;
                 bool isLocalPlayer = targetId == session.LocalEntityId.Value;

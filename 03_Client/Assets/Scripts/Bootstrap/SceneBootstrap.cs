@@ -18,6 +18,8 @@ namespace Dawnholder.Client.Bootstrap
     {
         [FormerlySerializedAs("uiSceneName")]
         [SerializeField] string _uiSceneName = "UI";
+        static AsyncOperation _pendingUiLoad;
+        static string _pendingUiName;
 
         void Awake()
         {
@@ -26,7 +28,35 @@ namespace Dawnholder.Client.Bootstrap
             {
                 return;
             }
-            SceneManager.LoadSceneAsync(_uiSceneName, LoadSceneMode.Additive);
+            // UI is a late-bound display, not a gameplay readiness barrier.
+            if (_pendingUiLoad != null && !_pendingUiLoad.isDone && _pendingUiName == _uiSceneName) return;
+            string sceneName = _uiSceneName;
+            try
+            {
+                AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+                if (operation == null)
+                {
+                    Debug.LogError($"[SceneBootstrap] UI load returned null: '{sceneName}'. Gameplay continues.");
+                    return;
+                }
+                _pendingUiLoad = operation;
+                _pendingUiName = sceneName;
+                operation.completed += _ =>
+                {
+                    if (ReferenceEquals(_pendingUiLoad, operation))
+                    {
+                        _pendingUiLoad = null;
+                        _pendingUiName = null;
+                    }
+                    var scene = SceneManager.GetSceneByName(sceneName);
+                    if (!scene.IsValid() || !scene.isLoaded)
+                        Debug.LogWarning($"[SceneBootstrap] UI '{sceneName}' unavailable after load. Gameplay continues.");
+                };
+            }
+            catch (System.Exception error)
+            {
+                Debug.LogError($"[SceneBootstrap] UI '{sceneName}' failed; gameplay continues: {error}");
+            }
         }
     }
 }

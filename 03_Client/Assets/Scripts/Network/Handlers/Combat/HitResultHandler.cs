@@ -45,7 +45,7 @@ namespace Dawnholder.Client.Network.Handlers.Combat
             int maxHp = pkt.maxHp;
             HitEffect hitEffect = (HitEffect)pkt.hitEffect;
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
                 Debug.Log($"[Unity] Hit: attacker={attackerId} target={targetId} dmg={dmg} hp={hp}/{maxHp} effect={hitEffect}");
                 if (EnemyRegistry.Instance == null) return;

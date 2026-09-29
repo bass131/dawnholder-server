@@ -1,5 +1,6 @@
 #nullable enable
 using Dawnholder.Client.Gameplay;
+using Dawnholder.Client.Network;
 using Dawnholder.Client.Rendering;
 using Dawnholder.Client.State;
 using Dawnholder.Client.UI;
@@ -66,6 +67,7 @@ namespace Dawnholder.Client.Combat
             };
             foreach (System.Action install in installers)
                 install();
+            UnityClientSession.Instance?.TryBindEntryViews();
         }
 
         // 퀘스트 부여 연출 — 사냥 구역(HuntingGround/BossRoom) 진입 시에만.

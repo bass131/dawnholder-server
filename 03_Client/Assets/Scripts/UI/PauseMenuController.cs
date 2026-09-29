@@ -81,6 +81,7 @@ namespace Dawnholder.Client.UI
 
         public void OnMainMenuClicked()
         {
+            Dawnholder.Client.Network.NetworkService.Instance?.Disconnect();
             AudioManager.Instance?.PlaySfx(SoundKeys.ButtonClick);
             // 함정 방지: timeScale 0인 상태로 씬 로드하면 새 씬도 정지된 채 로드됨.
             Time.timeScale = 1f;

@@ -33,47 +33,7 @@ namespace Dawnholder.Client.Network.Handlers.Zone
 
             session.EnqueueApply(() =>
             {
-                string sceneName = SceneRouter.MapIdToSceneName(destMapId);
-                Debug.Log($"[Unity] MapTransition → destMapId={destMapId} scene='{sceneName}' spawn=({spawnX:F2},{spawnY:F2})");
-
-                if (string.IsNullOrEmpty(sceneName))
-                {
-                    Debug.LogError($"[Unity] S_MapTransition: 알 수 없는 destMapId={destMapId} — 전환 취소.");
-                    return;
-                }
-
-                MapNameDisplay.SetMapId(destMapId);
-
-                // roster buffer 활성화 — 전환 중 도착하는 roster 패킷 캐싱.
-                session.RosterBuffer.BeginTransition(sceneName);
-
-                // prediction 버퍼 리셋: 이전 맵 입력이 새 맵 좌표계에서 replay되면 캐릭터가 튐.
-                if (LocalPlayerMovement.Instance != null)
-                    LocalPlayerMovement.Instance.ResetPredictionForMapTransition();
-
-                // spawn 좌표 + mapId 보관 — 씬 로드 완료 후 새 LocalPlayerMovement.Awake()가 읽어 적용.
-                // PendingMapId: Awake에서 ClientTerrainStore.Load(mapId) 호출 → predictor terrain 주입.
-                // 갱신 누락 시 이전 맵 지형으로 예측 → 드리프트 폭증.
-                UnityClientSession.PendingSpawnX = spawnX;
-                UnityClientSession.PendingSpawnY = spawnY;
-                UnityClientSession.PendingMapId = destMapId;
-                UnityClientSession.HasPendingSpawn = true;
-
-                // BGM 전환 — 목적지 맵 BGM. null이면 현재 BGM 유지.
-                string? bgm = SoundKeys.BgmKeyForMap(destMapId);
-                if (bgm != null) AudioManager.Instance?.PlayBgm(bgm);
-
-                // 포탈 진입 whoosh — BGM 전환과 별개 1회성 효과음.
-                AudioManager.Instance?.PlaySfx(SoundKeys.PortalEnter);
-
-                // SceneTransition(페이드) 경유 씬 전환. Instance null 시 직접 LoadScene으로 fallback.
-                if (SceneTransition.Instance != null)
-                    SceneTransition.Instance.LoadScene(sceneName);
-                else
-                {
-                    Debug.LogWarning("[Unity] SceneTransition.Instance null — direct LoadScene fallback (페이드 없음).");
-                    SceneManager.LoadScene(sceneName);
-                }
+                session.BeginMapEntry(destMapId, spawnX, spawnY);
             });
         }
     }

@@ -101,24 +101,7 @@ namespace Dawnholder.Client.Prediction
             _predictor = new PlayerPredictor(move);
             _motion = GetComponent<LocalPlayerMotion>(); // 임펄스 facing 출처 (없을 수 있음 — 테스트 씬).
 
-            // 맵 전환 후 pending spawn 좌표 소비. S_MapTransition 핸들러가 박아둔 spawn 좌표를 읽어 위치 설정.
-            //
-            // **Awake에서 소비하는 이유 (race 봉합)**:
-            //   Start()에서 하면 서버의 첫 S_Snapshot이 Start()보다 먼저 처리되는 race가 생김.
-            //   그 순간 predictor가 아직 (0,0)이라 서버 spawn 좌표로 reconcile snap이 발생 →
-            //   맵 전환 직후 캐릭터가 튐. Awake는 Instantiate 즉시(같은 프레임) 호출 → 첫 snapshot
-            //   처리보다 확실히 먼저 위치를 잡아 snap을 제거.
-            if (UnityClientSession.HasPendingSpawn)
-            {
-                float x = UnityClientSession.PendingSpawnX;
-                float y = UnityClientSession.PendingSpawnY;
-                int mapId = UnityClientSession.PendingMapId;
-                UnityClientSession.ConsumePendingSpawn();
-
-                InjectTerrain(mapId);
-                SetServerPosition(new Vector3(x, y, 0f));
-                Debug.Log($"[LocalPlayer] spawn 적용: ({x:F2}, {y:F2}) mapId={mapId}");
-            }
+            // Scene-bound spawn is applied by the entry owner after Spawner finishes setup.
         }
 
         void OnDestroy()
@@ -311,6 +294,13 @@ namespace Dawnholder.Client.Prediction
             // UI·쿨다운 타이머는 frame dt 감쇠 — 송신 박자와 무관한 표시용.
             _timers.TickFrame(dt);
 
+            UnityClientSession? readySession = UnityClientSession.Instance;
+            if (readySession == null || !readySession.CanControlPlayer(this))
+            {
+                ClearEntryInput();
+                return;
+            }
+
             _sendAccumulator += dt;
 
             // 고정 서브스텝 루프 — spiral of death 방지를 위해 최대 MaxSubstepsPerFrame 회.
@@ -392,19 +382,24 @@ namespace Dawnholder.Client.Prediction
             transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
         }
 
-        // 맵 전환 시 옛 LocalPlayer를 snapshot/Update에서 분리. HandleMapTransition이 씬 전환 시작 전 호출.
-        //
-        // 이 GameObject는 페이드 동안 아직 살아있어, 위치를 (0,0)으로 박으면 도착한 S_Snapshot이
-        // 서버의 새 맵 좌표로 reconcile snap → 전환 직후 캐릭터가 튐. 새 맵 LocalPlayer는 별도 인스턴스 +
-        // 깨끗한 predictor라 옛 버퍼 리셋 자체가 불필요. 위치는 건드리지 않고:
-        //   1) Instance 등록 해제 — HandleSnapshot의 `Instance != null` 가드로 이후 snapshot이 drop.
-        //   2) enabled=false — Update 정지 (predict/transform 갱신 중단).
-        // 곧 씬 전환(LoadScene Single)이 이 GameObject를 파괴하고, 새 맵에서 새로 spawn됨.
+        // Compatibility entry point: readiness now gates Update and packet application.
         public void ResetPredictionForMapTransition()
         {
-            if (Instance == this) Instance = null;
-            enabled = false;
-            Debug.Log("[LocalPlayer] 맵 전환 — 옛 LocalPlayer를 snapshot/Update에서 분리 (곧 파괴).");
+            SuspendForMapEntry();
+        }
+
+        public void SuspendForMapEntry()
+        {
+            ClearEntryInput();
+            ClearSessionTeleportTransient();
+        }
+
+        void ClearEntryInput()
+        {
+            _sendAccumulator = 0f;
+            _currentMoveX = 0;
+            _jumpEdgeThisTick = false;
+            _impulsePending = false;
         }
 
         // S_Snapshot → predictor의 reconcile 판단에 위임. Predictor가 X+Y 둘 다 비교.

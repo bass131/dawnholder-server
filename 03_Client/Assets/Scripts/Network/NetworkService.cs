@@ -103,8 +103,7 @@ namespace Dawnholder.Client.Network
             }
             var party = PartyState.Instance;
             var quest = QuestState.Instance;
-            UnityClientSession.ConsumePendingSpawn();
-            Reset(() => LocalPlayerMovement.Instance?.ClearSessionTeleportTransient());
+            Reset(() => LocalPlayerMovement.Instance?.SuspendForMapEntry());
             Reset(() => party?.ResetSessionValues());
             Reset(() => quest?.ResetSessionValues());
             Reset(() => RemoteEntityRegistry.Instance?.Clear());

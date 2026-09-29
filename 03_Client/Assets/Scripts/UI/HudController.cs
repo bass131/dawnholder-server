@@ -1,5 +1,6 @@
 using TMPro;
 using Dawnholder.Client.Scenes;
+using Dawnholder.Client.Network;
 using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
@@ -12,12 +13,15 @@ namespace Dawnholder.Client.UI
     /// HUD 표시 핸들러. HP/MP 슬라이더 + 자원 텍스트(HP/Gold) 표시.
     ///
     /// **헌법 #1 (Server Authority)**: HUD는 *서버가 알려준* 값만 표시합니다.
-    /// EnemyAttackHandler가 <see cref="UpdateHP"/>를 호출해 피격 결과를 반영합니다.
+    /// Entry owner가 <see cref="ApplyServerHP"/>로 마지막 서버 HP를 표시합니다.
     /// 데미지/획득 *계산* 로직은 절대 이 클래스에 들어오지 않습니다.
     /// </summary>
     public class HudController : MonoBehaviour
     {
         public static HudController? Instance { get; private set; }
+        bool _hasServerHp;
+        UnityClientSession _boundSession;
+        long _boundEpoch;
 
         [Header("HP")]
         [FormerlySerializedAs("hpSlider")]
@@ -51,7 +55,15 @@ namespace Dawnholder.Client.UI
 
         void OnDestroy()
         {
+            _boundSession?.UnbindHud(this);
+            _boundSession = null;
             if (Instance == this) Instance = null;
+        }
+
+        void OnDisable()
+        {
+            _boundSession?.UnbindHud(this);
+            _boundSession = null;
         }
 
         void Start()
@@ -60,10 +72,33 @@ namespace Dawnholder.Client.UI
             // ClassLoadout 경유 — process-local 캐시 우선 (다중 인스턴스 PlayerPrefs 오염 차단).
             int classValue = Bootstrap.ClassLoadout.GetSelectedClassValue((int)CharacterClass.Knight);
             PlayerStats stats = PlayerStats.ForClass((CharacterClass)classValue);
-            UpdateHP(stats.MaxHp, stats.MaxHp);
+            if (!_hasServerHp) UpdateHP(stats.MaxHp, stats.MaxHp);
 
             UpdateMP(_mockMpCurrent, _mockMpMax);
             UpdateGold(_mockGold);
+            TryBindLatestEntry();
+        }
+
+        void Update() => TryBindLatestEntry();
+
+        void TryBindLatestEntry()
+        {
+            var session = UnityClientSession.Instance;
+            if (ReferenceEquals(_boundSession, session) && session != null &&
+                _boundEpoch == session.Entry.Epoch && session.IsCurrentEntry(_boundEpoch)) return;
+            _boundSession?.UnbindHud(this);
+            _boundSession = null;
+            if (session != null && session.TryBindHud(this))
+            {
+                _boundSession = session;
+                _boundEpoch = session.Entry.Epoch;
+            }
+        }
+
+        public void ApplyServerHP(int current, int max)
+        {
+            _hasServerHp = true;
+            UpdateHP(current, max);
         }
 
         public void UpdateHP(int current, int max)

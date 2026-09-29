@@ -1,6 +1,6 @@
 # M1b — 클라이언트 연결 수명과 지연 callback
 
-상태: 구현·독립 TestCode·코드 리뷰 완료, PR/최신 CI 준비. base main `956a3918b0c63a025c61e88a711ac51c119e0e8d`, branch `feat/refactor-client-connection`. [M1a](../2026-09-29-refactor-server-lifecycle/goal.md) 통합 후 시작한 [M1](../2026-09-29-refactor-lifecycle/goal.md)의 두 번째 목표다. 이번 로드맵은 사용자가 명시한 [AGENTS](../../../AGENTS.md)의 조건부 병합 예외를 따른다. 메인이 독립 테스트·리뷰·최신 head CI 성공과 크리티컬 이슈 부재를 확인해 직접 병합한다. 자동 병합 예약은 하지 않는다.
+상태: 완료·병합됨. PR #132, 검증 head `95e325c0daf6f97f787aa85df9d9d043ab7b16f7`, squash main `f0e76af6f322baebfab8c814ddcf5d3365856174`, 병합 시각 `2026-09-29T15:21:57Z`. base main `956a3918b0c63a025c61e88a711ac51c119e0e8d`, branch `feat/refactor-client-connection`. [M1a](../2026-09-29-refactor-server-lifecycle/goal.md) 통합 후 시작한 [M1](../2026-09-29-refactor-lifecycle/goal.md)의 두 번째 목표다. 이번 로드맵은 사용자가 명시한 [AGENTS](../../../AGENTS.md)의 조건부 병합 예외를 따른다. 메인이 독립 테스트·리뷰·최신 head CI 성공과 크리티컬 이슈 부재를 확인해 직접 병합한다. 자동 병합 예약은 하지 않는다.
 
 ## 목표와 선택 설계
 
@@ -57,7 +57,7 @@ DB 설계/구현·게임 정책 변경·전체 DI framework/이벤트 버스는 
 - [x] class override 캡처·중복 handshake의 1회 전송·Destroy/Quit·mirror reset을 검증한다.
 - [x] 공용 Connector의 실제 성공/거절/취소·legacy wrapper 호환·terminal 자원 정리, 영향받은 서버 suite 및 bot handshake/왕복을 확인한다.
 - [x] ClientNet 소스 산출물과 Unity plugin hash 일치 및 Unity compile/EditMode를 확인한다. 실제 플레이·화면 관찰과 구분한다.
-- [ ] 독립 코드 리뷰·TestCode 결과·최신 CI 통과, 크리티컬 이슈 없음 확인 후 PR을 직접 병합하고 결과를 기록한다.
+- [x] 독립 코드 리뷰·TestCode 결과·최신 CI 통과, 크리티컬 이슈 없음 확인 후 PR을 직접 병합하고 결과를 기록한다.
 
 실행 전 [DEVELOPMENT](../../../00_Document/operations/DEVELOPMENT.md)의 DLL 복사·WSL/포트 lock·Unity 프로세스를 확인한다. 원시 근거는 `.backups/verification/2026-09-29-client-connection/`에 둔다. 작업자 WSL 권한 제한이 지속되면 main은 명령만 기계 대행하고 독립 검증자가 테스트·판정을 소유한다. 전역 권한 변경은 하지 않는다.
 
@@ -81,4 +81,4 @@ Unity 실제 화면·물리 입력·오디오 플레이 확인은 이번에 수�
 
 [HTML 보고서](../../reports/2026-09-29-refactor-before-persistence/report.html)는 시점별 결과·설계 선택·핵심 실제 Diff 산출물이다. 데스크톱 및 320/430/768/1440 viewport overflow 부재, 테마 전환·Diff 접기·인쇄 확장/복원을 확인했다(`.backups/report-preview/qa-results.json`). 기준 상태는 본 goal이며 HTML은 실행 증거를 대체하지 않는다.
 
-PR/최신 head CI는 아직 준비 중이다. 사용자 조건부 병합 예외에 따라 독립 결과와 최신 CI를 대조하고 크리티컬 이슈가 없을 때 직접 병합한다. 이후 최신 main에서 [M1c](../2026-09-29-refactor-client-entry/goal.md)를 시작한다. 읽기 전용 사전 설계는 `.backups/reviews/2026-09-30-m1c-design-preflight.md`이며 연결 generation·취소·mirror reset과 미실행 플레이 경계를 인계한다.
+PR #132의 최신 head CI `36589149461`은 2026-09-29T15:20:54Z SUCCESS로 완료됐고 최종 서버 suite 751건 중 746 통과·실패 0·기존 제외 5를 확인했다. 독립 검증·production/TestCode 재리뷰에 잔여 지적이 없었으며 병합 직전 remote head/CLEAN/CI를 재확인한 뒤 사용자 조건부 승인으로 직접 squash 병합했다. 자동 병합 예약은 사용하지 않았다. 원시 근거 `ci.log`, `pr-checks.json`, `verification/summary.md`를 보존했다. 사용자 조건부 병합 예외에 따라 독립 결과와 최신 CI를 대조하고 크리티컬 이슈가 없을 때 직접 병합한다. 이후 최신 main에서 [M1c](../2026-09-29-refactor-client-entry/goal.md)를 시작한다. 읽기 전용 사전 설계는 `.backups/reviews/2026-09-30-m1c-design-preflight.md`이며 연결 generation·취소·mirror reset과 미실행 플레이 경계를 인계한다.

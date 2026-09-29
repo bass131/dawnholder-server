@@ -73,7 +73,7 @@ namespace Dawnholder.Client.Network.Handlers.Skill
             byte skillId = pkt.skillId;
             byte facing = pkt.facing; // 0=좌, 1=우
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
                 if (session.LocalEntityId == null) return;
 
@@ -121,7 +121,7 @@ namespace Dawnholder.Client.Network.Handlers.Skill
 
         static void PresentTeleport(PresentContext ctx)
         {
-            HandleTeleport(ctx.IsLocal, ctx.CasterId, ctx.CasterTf);
+            HandleTeleport(ctx.Session, ctx.IsLocal, ctx.CasterId, ctx.CasterTf);
         }
 
         // Dash 연출: Dash 이펙트 스폰 + facing 반영.
@@ -167,8 +167,9 @@ namespace Dawnholder.Client.Network.Handlers.Skill
         //   (P08 버그: 송신 시점 arming → 네트워크 지연 동안 옛 위치 snapshot이 플래그 소비 → arrive가 잘못된 위치에서 발동.)
         //
         // 원격 경로: S_SkillCast 수신 시점 casterTf.position을 출발 위치로 사용 (기존과 동일, 무변경).
-        static void HandleTeleport(bool isLocal, int casterId, Transform casterTf)
+        static void HandleTeleport(UnityClientSession session, bool isLocal, int casterId, Transform casterTf)
         {
+            long epoch = session.Entry.Epoch;
             AudioManager.Instance?.PlaySfx(SoundKeys.TeleportDepart);
             if (isLocal)
             {
@@ -186,8 +187,8 @@ namespace Dawnholder.Client.Network.Handlers.Skill
                 {
                     lpm.ArmTeleportSnap(arriveCallback: () =>
                     {
-                        if (LocalPlayerMovement.Instance != null)
-                            SpawnTeleportArrive(LocalPlayerMovement.Instance.transform);
+                        if (session.IsCurrentEntry(epoch) && lpm != null && LocalPlayerMovement.Instance == lpm)
+                            SpawnTeleportArrive(lpm.transform);
                     });
                 }
             }
@@ -202,11 +203,12 @@ namespace Dawnholder.Client.Network.Handlers.Skill
                 // 보간 끊기 + 다음 snapshot 확정 시 1회 발동할 콜백 등록.
                 if (RemoteEntityRegistry.Instance != null)
                 {
+                    RemoteEntityRegistry registry = RemoteEntityRegistry.Instance;
                     int capturedId = casterId;
                     RemoteEntityRegistry.Instance.SetTeleportArriveCallback(capturedId, () =>
                     {
-                        if (RemoteEntityRegistry.Instance != null &&
-                            RemoteEntityRegistry.Instance.TryGetTransform(capturedId, out Transform? tf) && tf != null)
+                        if (session.IsCurrentEntry(epoch) && registry != null && RemoteEntityRegistry.Instance == registry &&
+                            registry.TryGetTransform(capturedId, out Transform? tf) && tf != null)
                             SpawnTeleportArrive(tf);
                     });
                     RemoteEntityRegistry.Instance.SnapEntity(casterId);

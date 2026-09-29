@@ -96,6 +96,9 @@ namespace Dawnholder.Client.Tests
             var queue = new ManualConnectionQueue();
             bool current = true;
             var session = New(() => current, queue);
+            using var views = new EntryBindingFixture(session);
+            views.Begin();
+            views.Ready();
             session.OnRecvPacket(new S_HandshakeResult { ok = true, serverVersion = ProtocolVersion.Current, reason = "" }.Write());
             session.OnRecvPacket(new S_Snapshot { entityId = 7, serverTick = 123 }.Write());
             int unrelated = 0;
@@ -157,7 +160,7 @@ namespace Dawnholder.Client.Tests
             int applied = 0;
             Assert.IsTrue((bool)SessionTestTools.Call(roster, "TryBuffer", "test roster", (Action)(() => applied++)));
             if (invalidate) current = false;
-            SessionTestTools.Call(roster, "OnSceneLoadedForRosterDrain", scene, LoadSceneMode.Single);
+            SessionTestTools.Call(roster, "Drain");
             Assert.AreEqual(invalidate ? 0 : 1, applied);
         }
 
@@ -172,7 +175,7 @@ namespace Dawnholder.Client.Tests
             int applied = 0;
             SessionTestTools.Call(roster, "TryBuffer", "first", (Action)(() => { applied++; session.Cleanup(); }));
             SessionTestTools.Call(roster, "TryBuffer", "second", (Action)(() => applied++));
-            SessionTestTools.Call(roster, "OnSceneLoadedForRosterDrain", scene, LoadSceneMode.Single);
+            SessionTestTools.Call(roster, "Drain");
             Assert.AreEqual(1, applied);
         }
 
@@ -185,6 +188,7 @@ namespace Dawnholder.Client.Tests
             var delayed = new List<Action>();
             bool current = true;
             var session = New(() => current, queue, (action, _) => delayed.Add(action));
+            using var views = new EntryBindingFixture(session);
             session.Start(sockets.Client);
             UnityClientSession.SimulatedLatencyMs = 100;
             try
@@ -192,6 +196,10 @@ namespace Dawnholder.Client.Tests
                 session.SendIntent(new C_Ping { clientTimestampMs = 10 }.Write());
                 Assert.IsEmpty(delayed, "pre-handshake intent must not even be scheduled");
                 SessionTestTools.Handshake(session, queue);
+                session.SendIntent(new C_Ping { clientTimestampMs = 10 }.Write());
+                Assert.IsEmpty(delayed, "handshake alone is not gameplay readiness");
+                views.Begin();
+                views.Ready();
                 session.SendIntent(new C_Ping { clientTimestampMs = 10 }.Write());
                 Assert.AreEqual(1, delayed.Count);
                 if (invalidate) current = false;

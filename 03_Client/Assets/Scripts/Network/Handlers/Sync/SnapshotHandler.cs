@@ -35,7 +35,7 @@ namespace Dawnholder.Client.Network.Handlers.Sync
             uint ackedTick = pkt.lastAckedClientTick;
             byte animState = pkt.animState;
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
                 // 본인/타인 무관 최신 serverTick 갱신 (lag comp 기준점).
                 session.SetLastReceivedServerTick(sTick);
@@ -56,22 +56,6 @@ namespace Dawnholder.Client.Network.Handlers.Sync
                 }
                 else
                 {
-                    // 타인 path — 전환 중이면 roster buffer 캐싱.
-                    float capturedX = x;
-                    float capturedY = y;
-                    float capturedVx = vx;
-                    int capturedEid = eid;
-                    byte capturedAnimState = animState;
-                    int capturedTick = sTick;
-                    if (session.RosterBuffer.TryBuffer(
-                            $"S_Snapshot entity={eid}",
-                            () =>
-                            {
-                                if (RemoteEntityRegistry.Instance != null)
-                                    RemoteEntityRegistry.Instance.UpdateSnapshot(capturedEid, capturedTick, capturedX, capturedY, capturedVx, capturedAnimState);
-                            }))
-                        return;
-
                     if (RemoteEntityRegistry.Instance != null)
                         RemoteEntityRegistry.Instance.UpdateSnapshot(eid, sTick, x, y, vx, animState);
                 }

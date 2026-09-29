@@ -28,7 +28,7 @@ namespace Dawnholder.Client.Network.Handlers.Roster
 
             int eid = pkt.entityId;
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
                 if (RemoteEntityRegistry.Instance != null)
                     RemoteEntityRegistry.Instance.Despawn(eid);

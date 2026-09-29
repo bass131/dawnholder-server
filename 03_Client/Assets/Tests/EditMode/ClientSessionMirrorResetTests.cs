@@ -20,6 +20,7 @@ namespace Dawnholder.Client.Tests
         readonly List<Type> _singletons = new();
         PartyState _party;
         QuestState _quest;
+        UnityClientSession _seedSession;
         CharacterClass? _class;
         int _latency;
         bool _hadPreference;
@@ -44,8 +45,6 @@ namespace Dawnholder.Client.Tests
         }
         static IDictionary Dictionary(object owner, string field) =>
             (IDictionary)owner.GetType().GetField(field, PrivateInstance).GetValue(owner);
-        static void StaticSessionValue(string property, object value) => typeof(UnityClientSession)
-            .GetProperty(property).GetSetMethod(true).Invoke(null, new[] { value });
 
         [SetUp] public void Setup()
         {
@@ -59,7 +58,6 @@ namespace Dawnholder.Client.Tests
         [TearDown] public void Teardown()
         {
             UnityClientSession.Instance?.Cleanup();
-            UnityClientSession.ConsumePendingSpawn();
             foreach (Type type in _singletons)
                 type.GetProperty("Instance").GetSetMethod(true).Invoke(null, new object[] { null });
             _singletons.Clear();
@@ -76,10 +74,10 @@ namespace Dawnholder.Client.Tests
             _party.SetPendingInvite(12, 1);
             _party.SetLastError(2);
             _quest.ApplyUpdate(4, 5);
-            StaticSessionValue("PendingSpawnX", 12f);
-            StaticSessionValue("PendingSpawnY", 3f);
-            StaticSessionValue("PendingMapId", 2);
-            StaticSessionValue("HasPendingSpawn", true);
+            _seedSession = new UnityClientSession(() => true, action => action());
+            _seedSession.Publish();
+            _seedSession.Entry.Begin(2, 12, 3, true);
+            Assert.IsTrue(UnityClientSession.HasPendingSpawn);
         }
         void AssertMirrorsEmpty()
         {
@@ -111,6 +109,7 @@ namespace Dawnholder.Client.Tests
             int partyNotifications = 0, questNotifications = 0;
             _party.OnPartyUpdated += () => { AssertMirrorsEmpty(); partyNotifications++; };
             _quest.OnQuestUpdated += () => { AssertMirrorsEmpty(); questNotifications++; };
+            _seedSession.Cleanup(); // connection owner closes entry before notifying shared mirror resets
             NetworkService.ResetGlobalSessionMirrors();
             AssertMirrorsEmpty();
             Assert.AreEqual(1, partyNotifications);
@@ -129,6 +128,7 @@ namespace Dawnholder.Client.Tests
             _party.OnPartyUpdated += () => { AssertMirrorsEmpty(); laterParty++; };
             _quest.OnQuestUpdated += () => throw new InvalidOperationException("injected quest observer");
             _quest.OnQuestUpdated += () => { AssertMirrorsEmpty(); laterQuest++; };
+            _seedSession.Cleanup();
             var error = Assert.Throws<AggregateException>(() => NetworkService.ResetGlobalSessionMirrors());
             Assert.AreEqual(2, error.Flatten().InnerExceptions.Count);
             Assert.AreEqual(1, laterParty);

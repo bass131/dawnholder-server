@@ -211,7 +211,11 @@ namespace Dawnholder.Client.State
         {
             foreach (RemoteEntity entity in _entities.Values)
             {
-                if (entity != null) Destroy(entity.gameObject);
+                if (entity != null)
+                {
+                    entity.SetTeleportArriveCallback(null);
+                    Destroy(entity.gameObject);
+                }
             }
             _entities.Clear();
             _motions.Clear();

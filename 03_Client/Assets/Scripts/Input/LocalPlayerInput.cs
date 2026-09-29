@@ -45,6 +45,7 @@ namespace Dawnholder.Client.Input
         // Input System "Move" 액션 콜백.
         void OnMove(InputValue value)
         {
+            if (!CanAcceptGameplayInput()) return;
             Vector2 raw = value.Get<Vector2>();
             _movement.SetMoveX(EncodeInputX(raw.x));
         }
@@ -58,6 +59,7 @@ namespace Dawnholder.Client.Input
         // 헌법 #1 영향 X — 서버가 어차피 권위적으로 재검증, 본 게이트는 UX + 송신 절감용.
         void OnJump(InputValue value)
         {
+            if (!CanAcceptGameplayInput()) return;
             if (value.isPressed && _movement.OnGround)
                 _movement.RequestJump();
         }
@@ -65,6 +67,7 @@ namespace Dawnholder.Client.Input
         // "Attack" 액션 콜백 (Space 또는 좌클릭) — down 에지만 처리.
         void OnAttack(InputValue value)
         {
+            if (!CanAcceptGameplayInput()) return;
             if (!value.isPressed) return; // up edge 무시 — down 시점 한 번만.
             // 공격 쿨다운(서버 rate-limit의 클라 거울, AttackCooldownTicks=500ms) 중이면 재입력 무시 —
             //   "한 번 들어간 공격은 끝까지 커밋". commit window(이동잠금 400ms)보다 긴 쿨다운으로 게이트해
@@ -96,6 +99,7 @@ namespace Dawnholder.Client.Input
         // 클래스별 SkillKeyMap에서 SkillId 조회 → SkillCatalog.CanCast 게이트 → C_SkillUse 송신.
         void Update()
         {
+            if (!CanAcceptGameplayInput()) return;
             if (Keyboard.current == null) return;
 
             bool qDown = Keyboard.current.qKey.wasPressedThisFrame;
@@ -115,6 +119,7 @@ namespace Dawnholder.Client.Input
         // 게이트 순서: None 필터 → 클래스 자격(CanCast) → 행동 잠금 → 스킬별 쿨다운 게이트 → 세션 준비.
         void TrySendSkill(SkillId skillId, CharacterClass myClass)
         {
+            if (!CanAcceptGameplayInput()) return;
             if (skillId == SkillId.None) return;
             if (!SkillCatalog.CanCast(myClass, skillId)) return;
             if (_movement.IsActionLocked) return; // 서버 ActionGate 클라 거울 — Attack/Hit/Death 중 차단.
@@ -162,6 +167,12 @@ namespace Dawnholder.Client.Input
             //   출발 이펙트용 departPos = 송신 시점 transform.position (S_SkillCast vs S_Snapshot
             //   dispatch 순서에 무관하게 결정론적). 도착 이펙트 콜백은 1회만 여기서 등록.
             entry?.PredictCommit(_movement, transform.position);
+        }
+
+        bool CanAcceptGameplayInput()
+        {
+            var session = UnityClientSession.Instance;
+            return session != null && session.CanControlPlayer(_movement);
         }
 
         // Vector2(아날로그 가능) → sbyte(-1/0/1) 변환.

@@ -100,6 +100,26 @@ namespace Dawnholder.Client.Tests
             Assert.DoesNotThrow(() => hud.UpdateMP(0, 0));
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void AuthoritativeHp_BeforeOrAfterStart_IsNeverReplacedByPlaceholder(bool hpBeforeStart)
+        {
+            var hud = CreateHud(out Slider _);
+            var hpObject = new GameObject("HpSlider");
+            _spawned.Add(hpObject);
+            var slider = hpObject.AddComponent<Slider>();
+            var serialized = new UnityEditor.SerializedObject(hud);
+            serialized.FindProperty("_hpSlider").objectReferenceValue = slider;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            if (hpBeforeStart) hud.ApplyServerHP(23, 80);
+            typeof(HudController).GetMethod("Start", System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.NonPublic).Invoke(hud, null);
+            if (!hpBeforeStart) hud.ApplyServerHP(23, 80);
+            Assert.AreEqual(23f / 80, slider.value, 0.0001f);
+            hud.ApplyServerHP(11, 80);
+            Assert.AreEqual(11f / 80, slider.value, 0.0001f);
+        }
+
         // ── MapIdToDisplayName ────────────────────────────────────────────────
 
         [Test]

@@ -6,6 +6,7 @@ namespace Dawnholder.Client.Network
     // MapId drift를 한 파일로 봉인 — 씬명/표시명 모두 여기서 관리.
     internal static class SceneRouter
     {
+        public static bool RequiresPlayer(byte mapId) => mapId <= 2;
         /// <summary>
         /// 서버 MapId → Unity Build Settings 씬 이름.
         /// 알 수 없는 mapId는 <c>string.Empty</c> 반환 — 호출처에서 null/empty 검사 의무.

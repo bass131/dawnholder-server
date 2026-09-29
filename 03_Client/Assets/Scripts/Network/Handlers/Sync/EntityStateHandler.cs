@@ -34,7 +34,7 @@ namespace Dawnholder.Client.Network.Handlers.Sync
             // animState(byte) = 시각 애니 상태 — AnimatorDriver 경로로 전달.
             byte animState = pkt.animState;
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
                 if (EnemyRegistry.Instance == null) return;
                 // spawn 전 도착(race)이면 EnemyRegistry.UpdatePosition이 silent skip.
