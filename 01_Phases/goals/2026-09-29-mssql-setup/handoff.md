@@ -10,6 +10,7 @@
 - Windows 관리 연결: 통합 인증, `lpc:.\SQLEXPRESS`. native WSL: `tcp:127.0.0.1,14330`, 새 최소권한 SQL 로그인. 서버는 loopback IPv4/IPv6만 리슨한다. SQL Browser/방화벽 규칙/기존 데이터는 변경하지 않았다.
 - Ubuntu 26.04 mirrored WSL, native mssql-tools18/msodbcsql18 18.7.1.1-1 설치 완료. Windows SQL 서비스 시작 유형은 기존 Manual이다.
 - 사용자 승인으로 관리자 Enable, 혼합 인증, 새 SQL 로그인/DPAPI 및 서비스 재시작까지 수행했다. **PR merge는 별개로 해당 PR에 대한 사용자 명시 승인 후에만 가능하다.** 자동 병합 예약 금지.
+- 기존 학습용 테이블은 이번에 삭제하지 않았으며, 사용자가 Northwind 같은 학습용 테이블의 후속 삭제를 허용했다는 맥락을 전달받았다. 필요 시 대상 목록·복구 가능한 백업/복원 경로를 먼저 확인하며 이 허용을 DB/인스턴스 자체 삭제로 확대하지 않고 Dawnholder_Dev와 시스템 DB는 보존한다.
 
 ## 첫 확인과 평소 실행
 
