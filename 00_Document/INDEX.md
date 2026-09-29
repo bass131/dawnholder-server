@@ -28,4 +28,5 @@
 - [Phase 기록](../01_Phases/)은 과거 작업 정의와 결과를 보존한다. 현재 목표는 `01_Phases/goals/`에서 관리한다.
 - [정책](policies/INDEX.md), [슬래시 명령 목록](commands-index.md), [학습·운영 장부](ledgers/INDEX.md), [팀원 가이드](team-guide.html)는 기존 Claude 운영의 역사 자료다.
 - [리뷰](reviews/INDEX.md), [사례 연구](case-studies/), [보고서](reports/), [문서 보관함](archive/README.md)에서 과거 근거를 찾을 수 있다. HTML 보고는 목표마다 의무가 아니다.
+- [2026-09-29 Codex 초기 정비 결과 보고](reports/2026-09-29-codex-setup-report.html)는 생성 시점의 검증 결과와 남은 문제를 정리한 검토 자료다.
 - 삭제된 `CLAUDE.md`·`.claude` 운영 파일을 가리키는 과거 링크는 [고정 보관 브랜치](https://github.com/bass131/dawnholder-server/tree/archive/claude-setup-2026-09-29)의 같은 경로에서 확인한다. 과거 문서 링크를 복원하려고 현재 절차에 옛 운영 파일을 되살리지 않는다.
