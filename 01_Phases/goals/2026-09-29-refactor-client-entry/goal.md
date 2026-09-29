@@ -1,6 +1,6 @@
 # M1c — 클라이언트 씬 진입과 맵 전환
 
-상태: 구현·독립 TestCode·리뷰 및 Unity/실제 GameServer 검증 완료, 서버 로컬 회귀 완료·PR #133 CI 테스트 출력 격리 결함 보완 중. base main `f0e76af6f322baebfab8c814ddcf5d3365856174`, branch `feat/refactor-client-entry`. [M1b](../2026-09-29-refactor-client-connection/goal.md)의 PR #132를 독립 TestCode·리뷰·최신 CI 통과 후 조건부 승인으로 병합하고 시작했다. [M1](../2026-09-29-refactor-lifecycle/goal.md)의 마지막 목표이며 병합은 [AGENTS](../../../AGENTS.md)의 이번 로드맵 한정 예외를 따른다.
+상태: 완료·PR #133 병합. base main `f0e76af6f322baebfab8c814ddcf5d3365856174`, branch `feat/refactor-client-entry`. [M1b](../2026-09-29-refactor-client-connection/goal.md)의 PR #132를 독립 TestCode·리뷰·최신 CI 통과 후 조건부 승인으로 병합하고 시작했다. [M1](../2026-09-29-refactor-lifecycle/goal.md)의 마지막 목표이며 병합은 [AGENTS](../../../AGENTS.md)의 이번 로드맵 한정 예외를 따른다.
 
 ## 목표와 선택 설계
 
@@ -60,7 +60,7 @@
 - [x] Unity compile/EditMode 및 실제 SceneManager/PlayMode 계약 검증. 실제 GameServer↔Unity Town↔플레이맵 왕복 결과와 scripted loopback 검증을 구분한다.
 - [x] 실제 화면·fade·물리 입력·오디오 관찰의 수행/미수행을 별도로 기록한다. 자동 PlayMode 통과로 수동 플레이·청취 완료를 주장하지 않는다.
 - [x] 서버 suite/production bot 영향 확인과 기존 M1b 테스트 회귀를 완료하고 에셋·GUID·Shared/ClientNet DLL 보존을 확인한다.
-- [ ] 독립 코드·TestCode 리뷰, 최신 PR head CI 통과 및 크리티컬 이슈 부재를 확인해 조건부 승인에 따라 직접 병합한다.
+- [x] 독립 코드·TestCode 리뷰, 최신 PR head CI 통과 및 크리티컬 이슈 부재를 확인해 조건부 승인에 따라 직접 병합한다.
 
 실행 전 [DEVELOPMENT](../../../00_Document/operations/DEVELOPMENT.md)의 포트·Unity editor·lock·DLL 부작용을 확인한다. 원시 결과는 `.backups/verification/2026-09-30-client-entry/`에 둔다. WSL/Unity IPC 제한은 전역 권한 변경 없이 메인 기계 대행과 독립 판정으로 구분한다. 같은 포트/에디터를 동시에 실행하지 않는다.
 
@@ -84,3 +84,5 @@
 PR #133 첫 head `0e7a49e081519303f2a62631c06520ae6e891f16`, run `36597497111`은 751 total/745 pass/1 fail/5 skip으로 실패했다. GolemCrossRespawnTests의 정상 로그 출력이 이미 닫힌 StringWriter에 도달했다. ConsoleSerial 25 fixture는 같은 이름으로만 묶였고 collection definition이 없어 다른 logging collection과 병렬 실행됐다. 캡처 복원·dispose 사이 이미 획득한 Console.Out 참조에서 TOCTOU가 가능하며 실제 예외와 일치한다. 어느 capture fixture였는지는 원문으로 단정할 수 없다.
 
 합의된 검증 복구 범위로 구현자에게 새 `02_Server/GameServer.Tests/ConsoleSerialCollection.cs` 하나의 쓰기를 배정했다. 해당 collection만 DisableParallelization=true로 설정하고 다른 병렬 테스트는 유지한다. 다른 SetOut 두 caller는 기존 nonparallel collection임을 확인한다. 생산 코드 변경·테스트 삭제/제외/기대값 완화·단순 성공 rerun은 하지 않는다. 독립 리뷰와 전체 suite, 새 head CI를 다시 확인한 뒤 병합한다. 원문 `server/ci-failed.log`, 원인/재리뷰 `review/ci-console-*.md`.
+
+최종 통합: 격리 보완 후 로컬 suite 751/746pass/0fail/5skip, 독립 raw 대조 완료. 최종 head `51cca702492f6a35083c9bff469959de663f370f` CI run `36598408036` / job `109509165380`은 2026-09-29T16:34:38Z SUCCESS(동일751/746/0/5). 최신 head를 고정해 조건부 승인으로 PR #133을 16:35:03Z 직접 squash 병합, main `4c32c917ff68450174c9883951a8d02e0223d11d`. 미해결 크리티컬 이슈 없음. 앞 초기 CI 실패는 보존하며 수동 GUI/물리입력/청취 미실행 한계도 유지한다. 후속은 M2a goal.

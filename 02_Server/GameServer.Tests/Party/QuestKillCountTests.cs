@@ -14,7 +14,7 @@ namespace Dawnholder.Server.GameServer.Tests.Party;
 // 퀘스트 Q2 킬카운트 적립 + S_QuestUpdate 송신 테스트.
 //
 // 검증 범위:
-//   1. 파티원이 킬 → PartyState.KillCount 누적 + 멤버 전원에게 S_QuestUpdate 송신
+//   1. 파티원이 킬 → Quest 소유 party progress 누적 + 멤버 전원에게 S_QuestUpdate 송신
 //   2. 솔로 킬 → GetSoloProgress 증가 + 본인에게 S_QuestUpdate 송신
 //   3. ResetAllQuestProgress → 파티 KillCount 0 + 솔로 progress 0
 //   4. targetCount = QuestConstants.BossUnlockKillCount(20) SSOT 검증
@@ -53,9 +53,9 @@ public class QuestKillCountTests : IDisposable
         _world.Party.CreateParty(entityA, entityB);
 
         // entityA가 Normal 적을 킬
-        _world.Quest.OnKill(entityA, _world);
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityA));
 
-        Assert.Equal(1, _world.Party.GetPartyByEntity(entityA)!.KillCount);
+        Assert.Equal(1, _world.Quest.GetPartyProgress(_world.Party.GetPartyByEntity(entityA)!.PartyId));
 
         // SendToEntity가 EnqueueJob 경유 → 맵 Tick 드레인 필요
         _huntingGround.Tick(tickNumber: 1);
@@ -85,11 +85,11 @@ public class QuestKillCountTests : IDisposable
 
         _world.Party.CreateParty(entityA, entityB);
 
-        _world.Quest.OnKill(entityA, _world);
-        _world.Quest.OnKill(entityB, _world);
-        _world.Quest.OnKill(entityA, _world);
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityA));
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityB));
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityA));
 
-        Assert.Equal(3, _world.Party.GetPartyByEntity(entityA)!.KillCount);
+        Assert.Equal(3, _world.Quest.GetPartyProgress(_world.Party.GetPartyByEntity(entityA)!.PartyId));
 
         _huntingGround.Tick(tickNumber: 1);
 
@@ -109,7 +109,7 @@ public class QuestKillCountTests : IDisposable
         _huntingGround.AddPlayerWithId(entityId, session, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
 
         // 파티 없는 솔로
-        _world.Quest.OnKill(entityId, _world);
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
 
         Assert.Equal(1, _world.Quest.GetSoloProgress(entityId));
 
@@ -127,9 +127,9 @@ public class QuestKillCountTests : IDisposable
         int entityId = _world.NextEntityId();
         _huntingGround.AddPlayerWithId(entityId, null, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
 
-        _world.Quest.OnKill(entityId, _world);
-        _world.Quest.OnKill(entityId, _world);
-        _world.Quest.OnKill(entityId, _world);
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
 
         Assert.Equal(3, _world.Quest.GetSoloProgress(entityId));
     }
@@ -148,16 +148,16 @@ public class QuestKillCountTests : IDisposable
         _huntingGround.AddPlayerWithId(solo, null, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
 
         _world.Party.CreateParty(entityA, entityB);
-        _world.Quest.OnKill(entityA, _world);
-        _world.Quest.OnKill(entityB, _world);
-        _world.Quest.OnKill(solo, _world);
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityA));
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityB));
+        QuestNotifier.Send(_world, _world.Quest.OnKill(solo));
 
-        Assert.Equal(2, _world.Party.GetPartyByEntity(entityA)!.KillCount);
+        Assert.Equal(2, _world.Quest.GetPartyProgress(_world.Party.GetPartyByEntity(entityA)!.PartyId));
         Assert.Equal(1, _world.Quest.GetSoloProgress(solo));
 
         _world.Quest.ResetAllQuestProgress();
 
-        Assert.Equal(0, _world.Party.GetPartyByEntity(entityA)!.KillCount);
+        Assert.Equal(0, _world.Quest.GetPartyProgress(_world.Party.GetPartyByEntity(entityA)!.PartyId));
         Assert.Equal(0, _world.Quest.GetSoloProgress(solo));
     }
 
@@ -170,7 +170,7 @@ public class QuestKillCountTests : IDisposable
 
         // 솔로로 임계(20)까지 킬 → 영구 해금.
         for (int i = 0; i < QuestConstants.BossUnlockKillCount; i++)
-            _world.Quest.OnKill(solo, _world);
+            QuestNotifier.Send(_world, _world.Quest.OnKill(solo));
 
         Assert.True(_world.Quest.IsBossUnlocked(solo));
         Assert.Equal(QuestConstants.BossUnlockKillCount, _world.Quest.GetKillCount(solo));
@@ -192,7 +192,7 @@ public class QuestKillCountTests : IDisposable
         int entityId = _world.NextEntityId();
         _huntingGround.AddPlayerWithId(entityId, session, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
 
-        _world.Quest.OnKill(entityId, _world);
+        QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
         _huntingGround.Tick(tickNumber: 1);
 
         S_QuestUpdate? pkt = ExtractQuestUpdate(session);

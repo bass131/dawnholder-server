@@ -42,11 +42,9 @@ public class GameWorld
 
     // 파티 전역 actor. cross-map이라 특정 맵/세션에 둘 수 없음 — GameWorld 소유.
     // 외부 → PartyRegistry.EnqueueJob → GameWorld.OnTick에서 드레인.
-    readonly PartyRegistry _party = new();
+    readonly PartyRegistry _party;
 
-    // 퀘스트 전역 actor (M7.6 P01 — Party 도메인에서 분리). cross-map(보스 해금)이라 GameWorld 소유.
-    // **생성 순서**: _party 선언이 먼저 → _quest = new QuestRegistry(_party) (단방향 의존 주입).
-    //   C# 필드 초기화는 선언 순서대로 실행되므로 _party는 이 시점에 이미 초기화됨.
+    // Cross-map quest state, connected to copied membership and disband cleanup in the constructor.
     readonly QuestRegistry _quest;
 
     /// <summary>
@@ -65,9 +63,9 @@ public class GameWorld
         if (Instance != null!)
             throw new InvalidOperationException("GameWorld는 단일 인스턴스만 허용");
 
-        // 퀘스트 actor 생성 — _party(inline 초기화 완료) 주입(단방향 의존).
-        //   MakeMap onKill 콜백이 _quest를 캡처하므로 _maps 생성보다 *먼저* 초기화해야 함.
-        _quest = new QuestRegistry(_party);
+        // Both registries are ready before map callbacks can enqueue work.
+        _party = new PartyRegistry(OnPartyDisbanded);
+        _quest = new QuestRegistry(_party.GetMembershipByEntity);
 
         // 4맵 생성 + 등록. provider가 있으면 맵별 terrain/content 주입.
         //
@@ -193,6 +191,12 @@ public class GameWorld
     internal bool IsActiveEntity(int entityId)
         => _maps.Values.Any(map => map.GetPlayer(entityId)?.Owner is { IsClosing: false });
 
+#if DEBUG
+    // Called within the session's existing guarded quest job; do not enqueue a second job.
+    internal void CompleteQuestForDebug(int entityId)
+        => QuestNotifier.Send(this, _quest.DebugCompleteQuest(entityId));
+#endif
+
     void DrainSessionCloses()
     {
         while (_pendingCloses.TryDequeue(out GameSession? session))
@@ -216,11 +220,14 @@ public class GameWorld
         }
     }
 
+    void OnPartyDisbanded(int partyId)
+        => _quest.EnqueueJob(() => _quest.ForgetPartyProgress(partyId));
+
     GameMap MakeMap(MapId id,
         IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
     {
         // 킬 콜백: Boss 킬 → 전역 리셋, 그 외 → OnKill 적립.
-        //   EnqueueJob 마샬링: 모든 퀘스트 진행 변경을 Quest 큐로 일원화(파티 KillCount 쓰기 포함 — depth-B).
+        //   EnqueueJob 마샬링: solo/party 진행 변경과 통보를 기존 Quest job 안에서 처리.
         //   맵 Tick과 Quest.Tick은 같은 틱 스레드에서 순차 실행(GameWorld.OnTick).
         //   미래 맵 멀티스레드화 대비 방어적 — 현재는 0~1틱 지연만 발생.
         Action<int, EnemyEntity> onKill = (killerId, target) =>
@@ -229,7 +236,7 @@ public class GameWorld
                 if (EnemyCatalog.For(target.Kind).IsBoss)
                     _quest.ResetAllQuestProgress();
                 else
-                    _quest.OnKill(killerId, this);
+                    QuestNotifier.Send(this, _quest.OnKill(killerId));
             });
 
         if (provider.TryGetValue(id, out var pair))
