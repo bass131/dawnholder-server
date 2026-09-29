@@ -89,6 +89,7 @@
 # -----------------------------------------------------------------------------
 *.sh                text eol=lf
 *.bash              text eol=lf
+.githooks/*         text eol=lf
 *.ps1               text eol=lf
 *.psm1              text eol=lf
 *.cmd               text eol=crlf

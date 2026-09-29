@@ -11,14 +11,14 @@
 
 **Dawnholder**는 RPG 전투와 길드 타이쿤 요소를 결합한 2D MMORPG 프로토타입입니다. 서버가 이동과 전투를 판정하고, 클라이언트는 예측·재조정으로 조작 지연을 줄입니다. 로컬 환경에서 멀티플레이 전 과정을 시연할 수 있도록 구성했습니다.
 
-게임 구현과 함께 Claude Code 기반의 **AI 협업 환경**도 설계했습니다. 저장소 규칙, 역할별 서브에이전트, 슬래시 커맨드, 자동 검증 훅, 작업 계획과 결과 기록을 통해 AI가 만든 변경을 검토하고 통제합니다.
+게임 구현과 함께 **AI 협업 환경**도 설계했습니다. 기존 Claude Code 운영 자산은 보관하고, 현재는 Codex 메인 세션이 목표와 결정을 관리하며 작업자 구현과 독립 검증을 조정하는 프로젝트 지침을 정비하고 있습니다.
 
 ### 핵심 구현
 
 - **권위 서버**: 서버가 게임 상태를 소유하며 이동과 전투를 판정하고, 클라이언트는 입력과 화면 표현을 담당
 - **클라이언트 예측·재조정**: 로컬 플레이어의 예측 경로와 원격 엔티티의 보간 경로를 분리
-- **엔드투엔드 구성**: Unity 클라이언트, .NET 서버, MSSQL, PacketGenerator 기반 공유 프로토콜, CI/CD와 자동 검증 훅을 연동
-- **AI 협업 환경**: 규칙, 역할별 에이전트, 명령어, 검증 훅, 지식 캐시를 5개 계층으로 분리
+- **클라이언트·서버 연결**: Unity 클라이언트, .NET 서버, PacketGenerator 기반 공유 프로토콜을 연동. MSSQL 영속화는 설계·후속 구현 영역
+- **AI 협업 환경**: 메인 세션의 목표·결정 관리, 작업자 구현, 독립 검증, 단일 목표 기록으로 역할을 분리
 - **실행 데모**: self-contained GameServer + Unity 클라이언트 시연 빌드 (2026-06 캡스톤 1차 발표 완료)
 
 ### 게임 미리보기
@@ -35,124 +35,35 @@
 
 ---
 
-## 개발 환경 설정 — 팀원용
+## 개발 환경과 현재 작업
 
-> 화면별 설명이 필요한 경우 [팀원 사용 가이드](00_Document/team-guide.html)를 브라우저에서 열어보세요. 아래 내용은 빠른 설정을 위한 요약입니다.
+[개발 안내](00_Document/operations/DEVELOPMENT.md)에서 SDK·Unity 버전, 빌드와 실행 진입점, 검증 범위를 확인하세요. 현재 목표는 [CURRENT](00_Document/operations/CURRENT.md)가 가리키는 `goal.md`에 정리합니다.
 
-다음 네 단계로 개발 환경을 구성할 수 있습니다. `/setup` 명령이 환경을 검증하고 역할에 맞는 설정을 안내합니다.
+- 프로젝트 운영 기준: [AGENTS.md](AGENTS.md)
+- 다단계 작업 운영: [dawnholder-goal-loop](.agents/skills/dawnholder-goal-loop/SKILL.md)
+- 문서·설계 탐색: [문서 지도](00_Document/INDEX.md), [FEATURE_MAP](00_Document/FEATURE_MAP.md), [ADR](00_Document/ADR/INDEX.md)
+- 필요할 때의 Orca 다중 세션: [ORCA](00_Document/operations/ORCA.md)
 
-### 1. 사전 설치
+메인 대화 세션은 목표·범위·주요 결정과 종합 보고를 맡고, 실제 구현·테스트는 작업자에게 위임하며 독립 검증자를 분리합니다. 지침과 스킬은 운영 약속이며 모든 행동을 기술적으로 강제하는 장치는 아닙니다.
 
-다음 도구를 설치합니다:
+각 목표는 최신 `main`에서 개별 브랜치를 만들고 구현·검증 후 PR을 통해 `main`에 병합합니다. `chore/codex-project-setup`은 이번 정비용이며 장기 개발 계열이 아닙니다. 원격 작업은 실제 사용자 승인 범위에 따릅니다.
 
-| 항목 | 다운로드 |
-|---|---|
-| Git for Windows | https://git-scm.com/download/win |
-| .NET 10 SDK | https://dotnet.microsoft.com/download/dotnet/10.0 |
-| MSSQL LocalDB (Express 또는 Developer 에디션, "LocalDB" 옵션 체크) | https://www.microsoft.com/sql-server/sql-server-downloads |
-| VS Code | https://code.visualstudio.com/ |
-| Claude Code (VS Code 확장) | VS Code 확장 패널에서 `claude-code` 검색 |
+### 이전 AI 협업 환경
 
-> 백엔드 개발자는 Visual Studio 또는 Rider를 사용할 수도 있지만, 이 가이드는 VS Code를 기준으로 합니다.
-
-> Unity 클라이언트 개발자는 Unity Hub와 Unity 6 LTS `6000.4.7f1`도 설치해야 합니다.
-
-### 2. 저장소 복제
-
-한글이 없는 ASCII 경로에 저장소를 복제합니다. 한글 경로에서는 자동 검증 훅이 정상 동작하지 않을 수 있습니다([ADR-017](00_Document/ADR/tech-stack/ADR-017-ascii-path.md)).
-
-```bash
-cd /c/Dev    # 권장 위치
-git clone <레포 URL> ClaudeDev
-cd ClaudeDev
-```
-
-### 3. VS Code에서 Claude Code 실행
-
-```bash
-code .
-```
-
-VS Code 오른쪽 아래에 권장 확장 설치 알림이 표시되면 **Install All**을 선택합니다. C# Dev Kit, GitLens, Claude Code 등 협업에 필요한 확장이 설치됩니다.
-
-설치 후 VS Code의 Claude Code 패널을 엽니다.
-
-### 4. `/setup` 호출
-
-Claude Code 채팅창에:
-
-```
-/setup
-```
-
-`/setup`은 다음 설정을 순서대로 처리합니다:
-
-- 이름 입력 → 영문 식별자와 역할 결정
-- 환경 검증 8단계 (Git Bash, .NET, MSSQL, VS Code 통합 터미널 등)
-- 역할별 설정 (백엔드 또는 Unity 클라이언트)
-- 개인 작업 공간 초기화 (작업 좌표 핀 — `.claude/state/current-pin.txt`)
-- 개인 노션 페이지와 첫 작업 안내
-
----
-
-## 매일 작업 흐름
-
-```
-세션 시작:   /session:start         (work-pin 좌표 인지 + 최근 변경 확인)
-작업:        Phase 단위로 구현 및 검증
-Phase 끝:    -DONE.md에 결과를 기록한 뒤
-             /session:end          (commit + PR + 노션 기록 + 다음 작업 안내)
-```
-
-현재 사용하는 슬래시 커맨드 13개는 [`00_Document/commands-index.md`](00_Document/commands-index.md)에 정리되어 있습니다. 명령 체계의 변경 배경은 ADR-022와 ADR-025에서 확인할 수 있습니다.
-
----
-
-## 협업 규칙
-
-- **PR 기반 병합**: 팀원은 `main`에 직접 push하지 않고 PR로 변경을 병합합니다.
-- **영역별 소유권**: [`.github/CODEOWNERS`](.github/CODEOWNERS)를 기준으로 담당 영역을 나눕니다. 백엔드는 팀장, 클라이언트는 김인규·정유현이 담당합니다.
-- **하네스 변경 공유**: 규칙·ADR·하네스 변경은 [`.claude/CHANGELOG.md`](.claude/CHANGELOG.md)에 기록하며, `/session:start`가 이를 확인합니다.
-- **로컬 작업 상태 분리**: `current-pin.txt`는 Git에서 제외하고 각 팀원이 세션 간 작업 위치를 이어받는 데 사용합니다(ADR-025).
-
----
-
-## AI 협업 환경 — 5계층
-
-AI가 만든 변경이 정해진 역할과 검증 절차를 거치도록 운영 요소를 다섯 계층으로 분리했습니다. 전체 규칙은 [`CLAUDE.md`](CLAUDE.md)에서 확인할 수 있습니다.
-
-| 계층 | 자산 | 역할 |
-|---|---|---|
-| L1 — 규칙 | [`CLAUDE.md`](CLAUDE.md) + [`00_Document/policies/`](00_Document/policies/INDEX.md) | 반드시 지켜야 할 원칙과 11개 운영 정책을 분리해 관리 |
-| L2 — 역할 | [`.claude/agents/`](.claude/agents/) | 구현 4개, 검토 2개, 조정·지식 관리 2개로 구성한 서브에이전트 8개 |
-| L3 — 명령 | [`.claude/commands/`](.claude/commands/) | 작업·세션·점검·엔진·설정을 다루는 슬래시 커맨드 13개 |
-| L4 — 검증 | [`.claude/hooks/`](.claude/hooks/) | 자동 검증 훅 9개 (dangerous-cmd-guard / tdd-guard / circuit-breaker / risk-detector / shared-discipline-guard / pin-injector / phase-gate-validator / convention-size-guard / reviewer-auto-trigger) |
-| L5 — 지식 | [`.claude/knowledge/`](.claude/knowledge/) | 공통·서버·공유·클라이언트·QA 영역별 지식 캐시와 정리 에이전트 |
-
-관련 문서:
-
-- [`00_Document/PRD.md`](00_Document/PRD.md) — 무엇을 만드는지
-- [`00_Document/ARCHITECTURE.md`](00_Document/ARCHITECTURE.md) — 어떻게 만드는지
-- [`00_Document/ADR/`](00_Document/ADR/) — 주요 기술·운영 결정과 근거
-- [`00_Document/policies/`](00_Document/policies/INDEX.md) — 11개 운영 정책
-- [`00_Document/REVIEW_CHECKLIST.md`](00_Document/REVIEW_CHECKLIST.md) — reviewer 에이전트의 5개 점검 기준
-- [`01_Phases/`](01_Phases/) — 팀원별 Phase 정의와 `-DONE` 결과 기록
-
----
+Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식 캐시로 구성했던 환경은 [고정 보관 브랜치](https://github.com/bass131/dawnholder-server/tree/archive/claude-setup-2026-09-29)에서 확인할 수 있습니다. 과거 ADR·Phase·운영 정책은 포트폴리오와 설계 이력으로 보존하며 현재 Codex의 필수 절차로 자동 적용하지 않습니다. 이전 문서의 `CLAUDE.md`·`.claude` 링크는 보관 브랜치의 같은 경로를 참조하세요.
 
 ## 폴더 구조
 
-```
-00_Document/        요구사항·아키텍처·ADR·운영 정책·검토 기준
-01_Phases/          팀원별 작업 정의와 완료 기록
-02_Server/          권위 서버 (.NET 10) — 팀장 단독
-03_Client/          Unity 클라이언트 (6000.4.7f1) — 인규/유현 공유
-04_ClientNet/       클라이언트용 소켓 라이브러리 (Y2 모델) — 팀장 단독
-98_Shared/          서버·클라이언트 공유 프로토콜 (.NET Standard 2.1 DLL) — 팀장 단독
-99_Tools/           PacketGenerator 등 도구 — 팀장 단독
-.claude/            AI 협업 환경 (agents / commands / hooks / knowledge / templates / setup-steps)
-.github/            CODEOWNERS + GitHub 설정
-.vscode/            VS Code 협업 최소 셋 (Git Bash 통합 터미널, 자동 저장 등)
+```text
+00_Document/        요구사항·아키텍처·ADR·현행 운영 안내·과거 기록
+01_Phases/          과거 Phase 기록 + goals/ 목표별 기준과 결과
+02_Server/          .NET 권위 서버
+03_Client/          Unity 클라이언트
+04_ClientNet/       클라이언트용 소켓 라이브러리
+98_Shared/          공유 프로토콜·게임 데이터
+99_Tools/           PacketGenerator·헤드리스 봇·실행 도구
+.agents/skills/    프로젝트 전용 Codex 스킬
+.github/           CODEOWNERS와 저장소 설정
 ```
 
 ---
@@ -177,14 +88,7 @@ AI가 만든 변경이 정해진 역할과 검증 절차를 거치도록 운영 
 
 ## 문제 해결
 
-| 상황 | 조치 |
-|---|---|
-| 환경 설정 | `/setup`을 다시 실행하거나 [팀원 사용 가이드](00_Document/team-guide.html) 확인 |
-| 구현 중 개념 확인 | 관련 코드와 문서를 바탕으로 Claude Code에 질문 |
-| Git/PR | 팀장(유영호)에게 문의 |
-| 빌드 오류 | 오류 로그를 포함해 Claude Code에 질문 |
-| 규칙·결정의 배경 | [`00_Document/ADR/INDEX.md`](00_Document/ADR/INDEX.md) 확인 |
-| 회고 | 개인 노션에 자유 형식으로 기록 |
+환경·빌드는 [개발 안내](00_Document/operations/DEVELOPMENT.md), 진행 상태·남은 검증은 [현재 목표](00_Document/operations/CURRENT.md), 설계의 배경은 [ADR](00_Document/ADR/INDEX.md)에서 확인합니다. 과거 `/setup`이나 `/session:start`는 현행 Codex 명령이 아닙니다.
 
 ---
 
