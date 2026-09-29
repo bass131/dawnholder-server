@@ -1,6 +1,6 @@
 # M1c — 클라이언트 씬 진입과 맵 전환
 
-상태: 구현·독립 TestCode·리뷰 및 Unity/실제 GameServer 검증 완료, 서버 회귀 완료·PR CI 대기. base main `f0e76af6f322baebfab8c814ddcf5d3365856174`, branch `feat/refactor-client-entry`. [M1b](../2026-09-29-refactor-client-connection/goal.md)의 PR #132를 독립 TestCode·리뷰·최신 CI 통과 후 조건부 승인으로 병합하고 시작했다. [M1](../2026-09-29-refactor-lifecycle/goal.md)의 마지막 목표이며 병합은 [AGENTS](../../../AGENTS.md)의 이번 로드맵 한정 예외를 따른다.
+상태: 구현·독립 TestCode·리뷰 및 Unity/실제 GameServer 검증 완료, 서버 로컬 회귀 완료·PR #133 CI 테스트 출력 격리 결함 보완 중. base main `f0e76af6f322baebfab8c814ddcf5d3365856174`, branch `feat/refactor-client-entry`. [M1b](../2026-09-29-refactor-client-connection/goal.md)의 PR #132를 독립 TestCode·리뷰·최신 CI 통과 후 조건부 승인으로 병합하고 시작했다. [M1](../2026-09-29-refactor-lifecycle/goal.md)의 마지막 목표이며 병합은 [AGENTS](../../../AGENTS.md)의 이번 로드맵 한정 예외를 따른다.
 
 ## 목표와 선택 설계
 
@@ -79,3 +79,8 @@
 서버 전체 suite는 exit 0, **751 total / 746 pass / 0 fail / 5 skip**이며 기존 5 skip을 유지한다(`server/tests.log`, `server/trx/`). production MapTransition bot은 exit 0, **PASS 1 / FAIL 0**, entity ID 및 HG/Boss/Ending/Town spawn 좌표를 확인했다(`server/bot-maptransition.log`). bot의 Debug 해금은 실제 퀘스트/보스 처치 검증과 구분한다. 실제 이동 로그의 GetMap null 진단 2건은 GameSession.GetMap이 migrating 동안 null을 반환하고 SubmitMoveIntent가 입력을 버리는 기존 계약과 일치한다. 도착 뒤 정상 HP/roster를 확인했으며 크리티컬 결함 근거는 발견하지 못했다. 로그에 entity/migrating 필드가 없어 해당 두 건의 세션을 단정하지 않는다. 문구 개선은 M3 후보로 인계한다. HTML은 실제 diff 9개를 누적했고 Chrome 1440/430/320/768 폭, 테마·접기·인쇄 복원 검사를 통과했다. 최신 PR head CI와 병합 결과는 완료 후 이곳에 추가한다. 독립 상세 판정은 `verification/summary.md`에 둔다.
 
 통합 후 [M2](../2026-09-29-refactor-domain-state/goal.md)는 파티/퀘스트 분리와 스탯/캡처 모델의 두 목표로 나누는 사전 제안을 검토한다. 현재 읽기 전용 제안은 `.backups/reviews/2026-09-30-m2-design-preflight.md`이며 새 구현 권한이나 완료 증거가 아니다. DB 구현은 여전히 제외한다.
+### CI에서 발견한 테스트 출력 격리 보완
+
+PR #133 첫 head `0e7a49e081519303f2a62631c06520ae6e891f16`, run `36597497111`은 751 total/745 pass/1 fail/5 skip으로 실패했다. GolemCrossRespawnTests의 정상 로그 출력이 이미 닫힌 StringWriter에 도달했다. ConsoleSerial 25 fixture는 같은 이름으로만 묶였고 collection definition이 없어 다른 logging collection과 병렬 실행됐다. 캡처 복원·dispose 사이 이미 획득한 Console.Out 참조에서 TOCTOU가 가능하며 실제 예외와 일치한다. 어느 capture fixture였는지는 원문으로 단정할 수 없다.
+
+합의된 검증 복구 범위로 구현자에게 새 `02_Server/GameServer.Tests/ConsoleSerialCollection.cs` 하나의 쓰기를 배정했다. 해당 collection만 DisableParallelization=true로 설정하고 다른 병렬 테스트는 유지한다. 다른 SetOut 두 caller는 기존 nonparallel collection임을 확인한다. 생산 코드 변경·테스트 삭제/제외/기대값 완화·단순 성공 rerun은 하지 않는다. 독립 리뷰와 전체 suite, 새 head CI를 다시 확인한 뒤 병합한다. 원문 `server/ci-failed.log`, 원인/재리뷰 `review/ci-console-*.md`.
