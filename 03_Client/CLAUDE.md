@@ -51,5 +51,6 @@ predicted state가 **없음**. 서버 브로드캐스트의 순수 미러이며,
 
 ## 네트워크가 필요한 기능을 추가할 때
 
-여기서 패킷을 추가하지 않습니다. 먼저 `netcode` 에이전트에게 요청.
+여기서 패킷을 추가하지 않습니다. 먼저 `/work:new-packet` 슬래시 커맨드 사용
+(shared + server SubAgent 분담 — 옛 `netcode` 에이전트는 server로 통합 폐기).
 플로우는: 서버가 진실 정의 → shared에 패킷 정의 → 클라이언트가 렌더링.
