@@ -25,7 +25,7 @@ namespace Dawnholder.Client.Network.Handlers.Party
             byte member0Class = pkt.member0Class;
             byte member1Class = pkt.member1Class;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 if (partyId == 0)
                 {

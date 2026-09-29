@@ -32,7 +32,7 @@ namespace Dawnholder.Client.Network.Handlers.Combat
             int currentHp = pkt.currentHp;
             int maxHp = pkt.maxHp;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 if (session.LocalEntityId == null) return;
                 if (entityId != session.LocalEntityId.Value) return;

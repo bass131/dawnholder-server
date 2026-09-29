@@ -248,6 +248,16 @@ namespace Dawnholder.Client.Prediction
             return _teleportDepartPos;
         }
 
+        // 같은 플레이어 객체로 재접속해도 이전 연결의 teleport 후속 처리를 소비하지 않는다.
+        // 연결 종료 정리이며 위치/예측 history/쿨다운/씬 수명은 변경하지 않는다.
+        public void ClearSessionTeleportTransient()
+        {
+            _teleportSnapPending = false;
+            _teleportArriveCallback = null;
+            _teleportDepartPos = default;
+            _teleportDepartPosValid = false;
+        }
+
         // EnemyAttackHandler가 본인 피격(S_EnemyAttack) 시 호출 — hit-bridge 게이트 시작.
         // animState==Hit 스냅샷이 도착하기 전까지 입력을 미리 잠가 onset 당김을 줄인다.
         public void NotifyHit()

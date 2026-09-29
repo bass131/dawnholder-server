@@ -21,7 +21,7 @@ namespace Dawnholder.Client.Network.Handlers.Party
 
             byte reason = pkt.reason;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 Debug.Log($"[Party] 에러 수신 — reason={reason}");
                 AudioManager.Instance?.PlaySfx(SoundKeys.UiError);

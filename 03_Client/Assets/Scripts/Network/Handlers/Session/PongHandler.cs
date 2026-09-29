@@ -30,7 +30,7 @@ namespace Dawnholder.Client.Network.Handlers.Session
             long oneWayLatencyEstimate = rtt / 2;
             long serverTs = pong.serverTimestampMs;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
                 Debug.Log($"[Unity] Pong! RTT = {rtt}ms (one-way ≈ {oneWayLatencyEstimate}ms, serverTs={serverTs})"));
         }
     }

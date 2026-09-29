@@ -21,7 +21,7 @@ namespace Dawnholder.Client.Network.Handlers.Zone
             int required = pkt.requiredCount;
             int current  = pkt.currentCount;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 if (ToastUI.Instance == null)
                 {

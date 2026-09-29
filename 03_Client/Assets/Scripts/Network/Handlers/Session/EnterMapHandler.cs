@@ -31,7 +31,7 @@ namespace Dawnholder.Client.Network.Handlers.Session
             float x = pkt.spawnX;
             float y = pkt.spawnY;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 session.SetLocalEntityId(eid);
                 Debug.Log($"[Unity] EnterMap as entity {eid} at server spawn ({x}, {y})");

@@ -90,6 +90,37 @@ namespace Dawnholder.Client.State
             OnPartyUpdated?.Invoke();
         }
 
+        /// <summary>연결 종료 시 멤버·초대·오류 mirror를 모두 초기화한 뒤 알린다.</summary>
+        public void ResetSession()
+        {
+            ResetSessionValues();
+            NotifySessionReset();
+        }
+
+        internal void ResetSessionValues()
+        {
+            PartyId = 0;
+            LeaderEntityId = 0;
+            Member0EntityId = 0;
+            Member1EntityId = 0;
+            Member0Class = 0;
+            Member1Class = 0;
+            ClearPendingInvite();
+            LastErrorReason = -1;
+        }
+
+        internal void NotifySessionReset()
+        {
+            if (OnPartyUpdated == null) return;
+            var errors = new System.Collections.Generic.List<Exception>();
+            foreach (Action notify in OnPartyUpdated.GetInvocationList())
+            {
+                try { notify(); }
+                catch (Exception error) { errors.Add(error); }
+            }
+            if (errors.Count != 0) throw new AggregateException("Party reset notification failed.", errors);
+        }
+
         // S_PartyInviteRecv 핸들러에서 메인 스레드로 호출.
         public void SetPendingInvite(int inviterEntityId, byte inviterClass)
         {

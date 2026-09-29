@@ -31,10 +31,13 @@ namespace Dawnholder.Client.Network
         // 전환 중 도착한 roster 패킷의 재실행 Action 목록.
         // Action 패턴: 패킷 파싱은 socket 워커에서 이미 완료 → main thread에서 registry에 적용만.
         readonly List<Action> _buffer = new();
+        readonly Func<bool> _canApply;
+        bool _closed;
 
         /// <summary>sceneLoaded 콜백 등록. 생성자 호출 측(UnityClientSession)이 1회 new.</summary>
-        public RosterTransitionBuffer()
+        public RosterTransitionBuffer(Func<bool> canApply = null)
         {
+            _canApply = canApply ?? (() => true);
             SceneManager.sceneLoaded += OnSceneLoadedForRosterDrain;
         }
 
@@ -42,6 +45,7 @@ namespace Dawnholder.Client.Network
         /// <param name="destSceneName">전환 목적 씬 이름 (Build Settings 파일명).</param>
         public void BeginTransition(string destSceneName)
         {
+            if (_closed || !_canApply()) return;
             if (_pendingMapTransition)
             {
                 Debug.LogWarning($"[Unity] 이전 맵 전환 roster buffer 미drain 상태에서 새 MapTransition 도착 — buffer 초기화 후 재시작.");
@@ -57,12 +61,13 @@ namespace Dawnholder.Client.Network
         /// <summary>
         /// roster 패킷 Action을 버퍼에 추가 시도 (진입 직후 공통 overflow 가드 1곳).
         /// <para>전환 중 + 여유 있으면 버퍼에 추가하고 <c>true</c> 반환.</para>
-        /// <para>전환 중 아니거나 overflow이면 <c>false</c> 반환 → 호출처가 즉시 처리.</para>
+        /// <para>전환 중이 아니면 false, overflow/종료된 세션이면 true로 소비 후 폐기.</para>
         /// </summary>
         /// <param name="packetLabel">overflow 경고 로그용 패킷 설명 (예: "S_Snapshot entity=5").</param>
         /// <param name="action">새 씬에서 실행할 registry 적용 Action.</param>
         public bool TryBuffer(string packetLabel, Action action)
         {
+            if (_closed || !_canApply()) return true;
             if (!_pendingMapTransition) return false;
 
             if (_buffer.Count >= MaxSize)
@@ -82,8 +87,10 @@ namespace Dawnholder.Client.Network
         /// </summary>
         public void Teardown()
         {
+            _closed = true;
             SceneManager.sceneLoaded -= OnSceneLoadedForRosterDrain;
             _pendingMapTransition = false;
+            _pendingDestSceneName = string.Empty;
             _buffer.Clear();
         }
 
@@ -91,6 +98,7 @@ namespace Dawnholder.Client.Network
         // 목적 씬 이름 매치 시 buffer drain 후 플래그 해제.
         void OnSceneLoadedForRosterDrain(Scene scene, LoadSceneMode mode)
         {
+            if (_closed || !_canApply()) return;
             if (!_pendingMapTransition) return;
             if (scene.name != _pendingDestSceneName) return;
 
@@ -98,9 +106,14 @@ namespace Dawnholder.Client.Network
             _pendingDestSceneName = string.Empty;
 
             Debug.Log($"[Unity] RosterBuffer drain: {_buffer.Count}개 패킷 재실행 (씬='{scene.name}')");
-            foreach (Action action in _buffer)
-                action();
+            // A callback can end the session; do not keep applying its remaining roster.
+            Action[] pending = _buffer.ToArray();
             _buffer.Clear();
+            foreach (Action action in pending)
+            {
+                if (_closed || !_canApply()) break;
+                action();
+            }
         }
     }
 }

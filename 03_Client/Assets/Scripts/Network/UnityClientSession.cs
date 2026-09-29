@@ -2,6 +2,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.State;
@@ -24,18 +26,29 @@ namespace Dawnholder.Client.Network
     /// framing 자동, OnRecvPacket은 *완전한 한 패킷*. 패킷 dispatch는 IClientPacketHandler 테이블.
     /// 컨테이너는 framing + dispatch + main-thread 마샬링만 담당.
     ///
-    /// 콜백 모두 socket 워커 스레드 → Unity API는 main-thread queue 경유.
+    /// transport 콜백은 스레드 보장이 없으므로 Unity 적용은 세션 gate가 있는 main queue 경유.
     /// </summary>
-    public class UnityClientSession : PacketSession
+    public class UnityClientSession : PacketSession, IClientConnectionSession
     {
         // LocalPlayerMovement가 매 frame C_MoveIntent를 Send하려면 정적 접근점 필요.
-        // NetworkService가 connect 콜백에서 본 객체를 만들 때 등록.
+        // Main-thread owner가 transport 시작과 최초 handshake 송신 후 게시.
         public static UnityClientSession Instance { get; private set; }
+        readonly Func<bool> _isCurrent;
+        readonly Action<Action> _post;
+        readonly Action<Action, float> _postDelayed;
+        int _closed;
+        bool _cleaned;
+        public bool IsClosed => Volatile.Read(ref _closed) != 0 || IsDisconnected;
+        bool CanApply => !IsClosed && _isCurrent();
+        public event Action Closed;
+        public event Action HandshakeSucceeded
+        {
+            add => OnHandshakeOkEvent += value;
+            remove => OnHandshakeOkEvent -= value;
+        }
 
-        // handshake 완료 게이트. OnConnected가 socket 워커 스레드에서 C_Handshake를 자동 Send하지만,
-        // *main thread Update*가 그 사이 SendIntent를 호출할 race window가 짧게 존재.
-        // 본 플래그는 main thread에서 HandshakeResultHandler가 박음(dispatcher 큐 안) → 같은 thread의
-        // SendIntent에서 visibility 보장. ok 회신 도착 전 송신은 drop (헌법 #2 first-packet 정합).
+        // 서버 handshake 응답 전 intent를 보내지 않는다. main-thread handler만 갱신한다.
+        // 최초 handshake 송신 자체는 owner가 Instance 게시 전에 마친다.
         public bool HandshakeOk { get; private set; }
 
         // handshake OK event. NetworkService가 등록 후 S_HandshakeResult(ok=true) 수신 시 main thread에서
@@ -55,7 +68,7 @@ namespace Dawnholder.Client.Network
 
         // roster buffer. 컨테이너는 버퍼 인스턴스만 보유, 로직은 RosterTransitionBuffer 안에 있음.
         // internal: ClientPacketHandlers.cs(같은 어셈블리)에서 직접 접근.
-        internal RosterTransitionBuffer RosterBuffer { get; } = new RosterTransitionBuffer();
+        internal RosterTransitionBuffer RosterBuffer { get; }
 
         // ========================================================================
         // dispatch 테이블 (IClientPacketHandler 미러).
@@ -97,9 +110,52 @@ namespace Dawnholder.Client.Network
         public static int SimulatedLatencyMs = 0;
 #endif
 
-        public UnityClientSession()
+        public UnityClientSession(Func<bool> isCurrent = null, Action<Action> post = null,
+            Action<Action, float> postDelayed = null)
         {
-            Instance = this;
+            _isCurrent = isCurrent ?? (() => ReferenceEquals(Instance, this));
+            _post = post ?? MainThreadDispatcher.Enqueue;
+            _postDelayed = postDelayed ?? MainThreadDispatcher.EnqueueDelayed;
+            RosterBuffer = new RosterTransitionBuffer(() => CanApply);
+        }
+
+        public void Activate(Socket socket)
+        {
+            EndPoint endPoint = socket.RemoteEndPoint;
+            Start(socket);
+            if (!IsClosed) OnConnected(endPoint);
+        }
+
+        public void Publish()
+        {
+            if (!IsClosed) Instance = this;
+        }
+
+        public void SendCharacterSelect(byte characterClass)
+        {
+            if (!CanApply || !HandshakeOk) return;
+            Send(new C_CharacterSelect { characterClass = characterClass }.Write());
+        }
+
+        /// <summary>Check at execution time: queued work may outlive its connection.</summary>
+        public void EnqueueApply(Action action) => _post(() =>
+        {
+            if (CanApply) action();
+        });
+
+        // Main-thread cleanup of this session only. The owner resets shared mirrors.
+        public void Cleanup()
+        {
+            if (_cleaned) return;
+            _cleaned = true;
+            Interlocked.Exchange(ref _closed, 1);
+            HandshakeOk = false;
+            LocalEntityId = null;
+            LastReceivedServerTick = 0;
+            RosterBuffer.Teardown();
+            OnHandshakeOkEvent = null;
+            Closed = null;
+            if (ReferenceEquals(Instance, this)) Instance = null;
         }
 
         /// <summary>
@@ -113,7 +169,7 @@ namespace Dawnholder.Client.Network
         {
             // handshake 통과 전 송신은 drop (헌법 #2 first-packet). 정상 흐름에선 C_Handshake →
             // S_HandshakeResult OK가 첫 Update tick 안에 박혀 영향 X. race window에서만 발동.
-            if (!HandshakeOk)
+            if (!HandshakeOk || !CanApply)
             {
                 // 폭주 차단 위해 main thread에서 한 줄만. 정상 흐름엔 거의 0회 박힘.
                 return;
@@ -123,7 +179,10 @@ namespace Dawnholder.Client.Network
             {
                 // buf는 GenPackets.Write()가 매번 새로 할당한 byte[]라 큐 보존 안전(corruption X).
                 ArraySegment<byte> captured = buf;
-                MainThreadDispatcher.EnqueueDelayed(() => Send(captured), SimulatedLatencyMs / 1000f);
+                _postDelayed(() =>
+                {
+                    if (CanApply && HandshakeOk) Send(captured);
+                }, SimulatedLatencyMs / 1000f);
                 return;
             }
 #endif
@@ -133,30 +192,27 @@ namespace Dawnholder.Client.Network
         public override void OnConnected(EndPoint endPoint)
         {
             EndPoint ep = endPoint;
-            MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnConnected to {ep}"));
+            EnqueueApply(() => Debug.Log($"[Unity] OnConnected to {ep}"));
 
-            // 첫 패킷 = 반드시 C_Handshake (헌법 #2). 서버가 first-packet 강제라 다른 패킷 먼저 보내면
-            // 즉시 Disconnect. Send 자체는 thread-safe — socket 워커 스레드에서 직접 호출 OK.
+            // 최초 송신을 마친 뒤에만 owner가 Instance/Connected를 외부에 공개한다.
             C_Handshake handshake = new C_Handshake { clientVersion = ProtocolVersion.Current };
             Send(handshake.Write());
         }
 
         public override void OnDisconnected(EndPoint endPoint)
         {
+            Interlocked.Exchange(ref _closed, 1);
             EndPoint ep = endPoint;
-            MainThreadDispatcher.Enqueue(() =>
+            // Mandatory close notification bypasses the ordinary packet gate.
+            try { Closed?.Invoke(); }
+            finally
             {
-                Debug.Log($"[Unity] OnDisconnected from {ep}");
-                // 모든 타인 entity cleanup — 메모리 누수 차단.
-                if (RemoteEntityRegistry.Instance != null)
-                    RemoteEntityRegistry.Instance.Clear();
-                // enemy/boss도 동일 cleanup. StageClearUI는 누적 표시 OK라 유지.
-                if (EnemyRegistry.Instance != null)
-                    EnemyRegistry.Instance.Clear();
-                // sceneLoaded 구독 해제 — stale 구독 누수 차단.
-                RosterBuffer.Teardown();
-                if (Instance == this) Instance = null;
-            });
+                _post(() =>
+                {
+                    Cleanup();
+                    Debug.Log($"[Unity] OnDisconnected from {ep}");
+                });
+            }
         }
 
         public override void OnSend(int numOfBytes)
@@ -164,7 +220,7 @@ namespace Dawnholder.Client.Network
             int n = numOfBytes;
             // intent를 매 frame 보내면 OnSend 로그가 console 폭주 → 짧은 패킷(C_MoveIntent급)은 무시.
             if (n <= 12) return;
-            MainThreadDispatcher.Enqueue(() => Debug.Log($"[Unity] OnSend {n} bytes"));
+            EnqueueApply(() => Debug.Log($"[Unity] OnSend {n} bytes"));
         }
 
         /// <summary>
@@ -182,7 +238,7 @@ namespace Dawnholder.Client.Network
             else
             {
                 int unknownId = packetId;
-                MainThreadDispatcher.Enqueue(() =>
+                EnqueueApply(() =>
                     Debug.LogWarning($"[Unity] Unknown PacketId {unknownId} — dropped"));
             }
         }
@@ -203,7 +259,7 @@ namespace Dawnholder.Client.Network
 
         // ========================================================================
         // 씬 로드 완료 후 새 LocalPlayerMovement가 참조하는 pending spawn 좌표.
-        // UnityClientSession은 DontDestroyOnLoad 없이 IOCP 스레드에서 계속 살아있으므로 static 공유.
+        // 씬을 넘어 유지하며, 연결 종료 때 owner가 전체 값을 초기화한다.
         // LocalPlayerMovement.Awake()에서 HasPendingSpawn 확인 → SetServerPosition 호출 → Clear.
         // ========================================================================
 

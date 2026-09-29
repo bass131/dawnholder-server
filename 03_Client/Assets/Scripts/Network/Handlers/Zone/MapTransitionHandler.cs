@@ -31,7 +31,7 @@ namespace Dawnholder.Client.Network.Handlers.Zone
             float spawnX = pkt.spawnX;
             float spawnY = pkt.spawnY;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 string sceneName = SceneRouter.MapIdToSceneName(destMapId);
                 Debug.Log($"[Unity] MapTransition → destMapId={destMapId} scene='{sceneName}' spawn=({spawnX:F2},{spawnY:F2})");

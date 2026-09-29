@@ -32,7 +32,7 @@ namespace Dawnholder.Client.Network.Handlers.Roster
             int hp = pkt.currentHp;
             int maxHp = pkt.maxHp;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 // 전환 중이면 roster buffer 캐싱.
                 int capturedEid = eid;

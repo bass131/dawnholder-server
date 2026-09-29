@@ -35,7 +35,7 @@ namespace Dawnholder.Client.Network.Handlers.Sync
             uint ackedTick = pkt.lastAckedClientTick;
             byte animState = pkt.animState;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 // 본인/타인 무관 최신 serverTick 갱신 (lag comp 기준점).
                 session.SetLastReceivedServerTick(sTick);

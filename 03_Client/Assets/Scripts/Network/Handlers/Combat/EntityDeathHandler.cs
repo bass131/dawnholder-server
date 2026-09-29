@@ -28,7 +28,7 @@ namespace Dawnholder.Client.Network.Handlers.Combat
 
             int eid = pkt.entityId;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 Debug.Log($"[Unity] Entity {eid} died");
                 if (EnemyRegistry.Instance == null) return;
