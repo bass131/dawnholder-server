@@ -50,6 +50,7 @@ internal static class MapMigration
         Func<int, int> getKillCount)
     {
         // ── 검증 단계 ────────────────────────────────────────────────────
+        if (!session.OwnsPlayer(currentMap, entityId)) return;
 
         // 1) portal lookup — portalId가 현재 맵의 유효 portal인가
         // hot-path 일관성: LINQ FirstOrDefault 대신 foreach (클로저 할당 회피).

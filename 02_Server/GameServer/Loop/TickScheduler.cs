@@ -18,8 +18,10 @@ namespace Dawnholder.Server.GameServer.Loop;
 public class TickScheduler
 {
     readonly Action<long> _onTick;
+    readonly object _lifecycleGate = new();
     CancellationTokenSource? _cts;
     Task? _runTask;
+    int _tickThreadId;
 
     long _tickNumber;
 
@@ -32,74 +34,91 @@ public class TickScheduler
     public event Action<TickMetrics.Stats>? OnMetricsSnapshot;
 
     public long CurrentTick => Interlocked.Read(ref _tickNumber);
+    public bool IsTickThread => Volatile.Read(ref _tickThreadId) == Environment.CurrentManagedThreadId;
 
     public void Start()
     {
-        if (_runTask != null) throw new InvalidOperationException("이미 Start 됨");
-        _cts = new CancellationTokenSource();
-        _runTask = Task.Factory.StartNew(
-            () => RunLoop(_cts.Token),
-            _cts.Token,
-            TaskCreationOptions.LongRunning,
-            TaskScheduler.Default);
+        lock (_lifecycleGate)
+        {
+            if (_runTask != null) throw new InvalidOperationException("이미 Start 됨");
+            _cts = new CancellationTokenSource();
+            CancellationToken token = _cts.Token;
+            _runTask = Task.Factory.StartNew(
+                () => RunLoop(token), token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        }
     }
 
-    public void Stop()
+    public void Stop(TimeSpan? timeout = null)
     {
-        if (_cts == null) return;
-        _cts.Cancel();
-        try { _runTask?.Wait(2000); } catch (AggregateException) { /* cancellation */ }
-        _cts.Dispose();
-        _cts = null;
-        _runTask = null;
+        if (IsTickThread) throw new InvalidOperationException("틱 스레드에서 자신을 종료 대기할 수 없습니다.");
+        lock (_lifecycleGate)
+        {
+            if (_cts == null) return;
+            _cts.Cancel();
+            try
+            {
+                if (!_runTask!.Wait(timeout ?? TimeSpan.FromSeconds(2)))
+                    throw new TimeoutException("틱 스레드가 아직 종료되지 않았습니다.");
+            }
+            catch (AggregateException) when (_runTask!.IsCanceled) { }
+            _cts.Dispose();
+            _cts = null;
+            _runTask = null;
+        }
     }
 
     void RunLoop(CancellationToken ct)
     {
-        Stopwatch sw = Stopwatch.StartNew();
-        Stopwatch tickWork = new Stopwatch();
-
-        // 메트릭: 최근 ~1초 분량의 tick 소요시간 측정 (PRD: tick p99 < 10ms).
-        TickMetrics metrics = new TickMetrics();
-
-        long intervalMs = Constants.TickIntervalMs;
-
-        while (!ct.IsCancellationRequested)
+        Volatile.Write(ref _tickThreadId, Environment.CurrentManagedThreadId);
+        try
         {
-            long nextTargetMs = (_tickNumber + 1) * intervalMs;
+            Stopwatch sw = Stopwatch.StartNew();
+            long startingTick = CurrentTick;
+            Stopwatch tickWork = new Stopwatch();
 
-            // 다음 tick 시각까지 대기. SpinWait.SpinUntil은 짧은 spin 후 Yield하므로
-            // 헌법 #5의 "Sleep 절대 금지" 정신과 부합 + CPU 점유 낮음.
-            SpinWait.SpinUntil(
-                () => sw.ElapsedMilliseconds >= nextTargetMs || ct.IsCancellationRequested);
+            // 메트릭: 최근 ~1초 분량의 tick 소요시간 측정 (PRD: tick p99 < 10ms).
+            TickMetrics metrics = new TickMetrics();
 
-            if (ct.IsCancellationRequested) break;
+            long intervalMs = Constants.TickIntervalMs;
 
-            Interlocked.Increment(ref _tickNumber);
-
-            // OnTick 호출 + 소요시간 측정.
-            tickWork.Restart();
-            try
+            while (!ct.IsCancellationRequested)
             {
-                _onTick(_tickNumber);
-            }
-            catch (Exception ex)
-            {
-                // 한 tick 실패해도 루프는 죽지 않게 (서버 가용성 우선).
-                Console.WriteLine($"[Tick] #{_tickNumber} 콜백 예외: {ex}");
-            }
-            tickWork.Stop();
+                long nextTargetMs = (_tickNumber - startingTick + 1) * intervalMs;
 
-            long elapsedMicros = tickWork.ElapsedTicks * 1_000_000L / Stopwatch.Frequency;
-            metrics.Record(elapsedMicros);
+                // 다음 tick 시각까지 대기. SpinWait.SpinUntil은 짧은 spin 후 Yield하므로
+                // 헌법 #5의 "Sleep 절대 금지" 정신과 부합 + CPU 점유 낮음.
+                SpinWait.SpinUntil(
+                    () => sw.ElapsedMilliseconds >= nextTargetMs || ct.IsCancellationRequested);
 
-            // 버킷 가득 차면(= 1초 분량 = ServerTickRate 개) 메트릭 출력 + 리셋.
-            if (metrics.IsBucketFull)
-            {
-                TickMetrics.Stats s = metrics.SnapshotAndReset();
-                Console.WriteLine($"[Tick] #{_tickNumber} 1초 메트릭: {s.Format()}");
-                OnMetricsSnapshot?.Invoke(s);
+                if (ct.IsCancellationRequested) break;
+
+                Interlocked.Increment(ref _tickNumber);
+
+                // OnTick 호출 + 소요시간 측정.
+                tickWork.Restart();
+                try
+                {
+                    _onTick(_tickNumber);
+                }
+                catch (Exception ex)
+                {
+                    // 한 tick 실패해도 루프는 죽지 않게 (서버 가용성 우선).
+                    Console.WriteLine($"[Tick] #{_tickNumber} 콜백 예외: {ex}");
+                }
+                tickWork.Stop();
+
+                long elapsedMicros = tickWork.ElapsedTicks * 1_000_000L / Stopwatch.Frequency;
+                metrics.Record(elapsedMicros);
+
+                // 버킷 가득 차면(= 1초 분량 = ServerTickRate 개) 메트릭 출력 + 리셋.
+                if (metrics.IsBucketFull)
+                {
+                    TickMetrics.Stats s = metrics.SnapshotAndReset();
+                    Console.WriteLine($"[Tick] #{_tickNumber} 1초 메트릭: {s.Format()}");
+                    OnMetricsSnapshot?.Invoke(s);
+                }
             }
         }
+        finally { Volatile.Write(ref _tickThreadId, 0); }
     }
 }

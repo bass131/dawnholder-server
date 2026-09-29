@@ -1,6 +1,5 @@
 using System.Net;
-using Dawnholder.Server.Network;
-using Dawnholder.Server.GameServer.Sessions;
+using Dawnholder.Server.GameServer.Hosting;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Shared.GameData;
@@ -14,14 +13,12 @@ var mapProvider = MapDataLoader.LoadAll();
 // IPAddress.Any (= 0.0.0.0) → 모든 네트워크 인터페이스에서 listen.
 IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 7777);
 
-Listener listener = new Listener();
-listener.Init(endPoint, () => new GameSession());
-
 GameWorld world = new GameWorld(mapProvider);
-world.Start();
+using ServerHost host = new(world, endPoint);
+host.Start();
 
 Console.WriteLine($"Listening on {endPoint}. Press Enter to stop.");
 Console.ReadLine();
 
-world.Stop();
+host.Stop();
 Console.WriteLine("Server stopped.");

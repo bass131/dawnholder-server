@@ -1,6 +1,6 @@
 # M0 — 리팩토링 운영과 실행·평가 기준선
 
-상태: 산출물·기준선·독립 검토 완료, [PR #130](https://github.com/bass131/dawnholder-server/pull/130) 병합 승인 대기. 병합은 미승인·미병합이다. 최신 CI는 PR의 현재 head 검사 결과를 확인한다. 코드 리팩토링은 후속 목표다.
+상태: 완료. [PR #130](https://github.com/bass131/dawnholder-server/pull/130)은 사용자 명시 승인 후 2026-09-29 13:47:53 UTC에 병합했다. 승인 대상 head `8807ec11981e941c49f0ba347cf933821a321c42`의 CI 성공과 CLEAN 상태를 확인하고 해당 SHA를 고정해 squash 병합했다. main 병합 커밋은 `95058e585ac4a9c12f305b7135db124d53171941`이다. 코드 리팩토링은 후속 목표다.
 
 ## 목표와 출발점
 
@@ -51,7 +51,7 @@ DB 설계 전에 코드베이스의 상태 소유·흐름·도메인 경계를 �
 | AI 작업 준비도 | 4고정과제의 근거 설명 보조 평가 29/32. 전체 코드 품질·탐색속도 점수가 아님 | 답안자 refactor_scope_review와 채점자 client_flow_audit 분리. 사전 감사 노출·모델/effort 미확인 조건은 아래 기록 |
 | 구조 지표 | 아래 4개 경계의 정성 기준선 기록 | 전체 코드 건수나 전체 품질 점수로 일반화하지 않음 |
 | 독립 검증 | 문서 11파일·상대 링크 42개 정상. 지적 1건 보완 후 재검토 통과 | db_scope_review가 작성자와 별도로 절차/원시 실행 결과 확인, review/docs-review.md |
-| PR·병합 | [#130](https://github.com/bass131/dawnholder-server/pull/130) 생성, 미승인·미병합 | 대상 main. 최신 head/CI는 PR에서 확인하고 병합 직전 이 PR의 명시 승인을 받음 |
+| PR·병합 | [#130](https://github.com/bass131/dawnholder-server/pull/130) 사용자 명시 승인 후 squash 병합 완료 | 2026-09-29 13:47:53 UTC, main `95058e5`. 승인 head `8807ec1` CI 성공·CLEAN 확인 및 SHA 고정 |
 
 기준선에서 발견한 기존 실패는 리팩토링 후 회귀와 구분한다. 기준선 검증만으로 정적 감사 후보의 실행 재현을 주장하지 않는다.
 
@@ -101,4 +101,4 @@ Unity는 설치된 에디터의 `-batchmode -nographics -runTests -testPlatform 
 
 ## 다음 인계
 
-문서 작성자·서버 결과 검토자·Unity 실행자·독립 평가자 모두 쓰기를 종료했고 메인이 통합 문서를 소유한다. 다음 단계는 PR #130의 현재 head CI 확인과 사용자 병합 승인이다. 승인·통합 후 최신 main에서 M1의 설계/구현 범위·작업 분할을 먼저 확정한다. 서버/Unity/SQL 등 다른 소유자의 실행 자원을 임의 종료하지 않는다. 기본 Git credential helper의 대기로 중단한 푸시는 로그인된 gh helper를 해당 push 명령에만 지정해 완료했으며 전역 인증 설정은 변경하지 않았다.
+문서 작성자·서버 결과 검토자·Unity 실행자·독립 평가자 모두 쓰기를 종료했다. 사용자 병합 승인과 통합을 마쳤으며 최신 main에서 [M1](../2026-09-29-refactor-lifecycle/goal.md)의 설계/구현 범위·작업 분할로 이어간다. 이 승인은 후속 PR 병합 승인이 아니다. 서버/Unity/SQL 등 다른 소유자의 실행 자원을 임의 종료하지 않는다. 기본 Git credential helper의 대기로 중단한 푸시는 로그인된 gh helper를 해당 push 명령에만 지정해 완료했으며 전역 인증 설정은 변경하지 않았다.
