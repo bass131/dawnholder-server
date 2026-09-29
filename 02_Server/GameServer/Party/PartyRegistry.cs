@@ -45,7 +45,14 @@ public sealed class PartyRegistry
     //     append-only 확장(키/매칭 의미 보존, 만료 정보만 부착).
     readonly Dictionary<int, PendingInvite> _pendingInvites = new();
 
+    readonly Action<int>? _onDisbanded;
+
     int _nextPartyId;
+
+    public PartyRegistry(Action<int>? onDisbanded = null)
+    {
+        _onDisbanded = onDisbanded;
+    }
 
     // ── actor 인터페이스 (GameMap.EnqueueJob + Tick 패턴 mirror) ─────────────
 
@@ -131,6 +138,7 @@ public sealed class PartyRegistry
             _entityToParty.Remove(memberId);
 
         _parties.Remove(partyId);
+        _onDisbanded?.Invoke(partyId);
         return true;
     }
 
@@ -145,9 +153,15 @@ public sealed class PartyRegistry
         return GetParty(partyId);
     }
 
+    /// <summary>Copy membership on the tick thread; consumers cannot mutate PartyState through it.</summary>
+    public PartyMembership? GetMembershipByEntity(int entityId)
+    {
+        PartyState? party = GetPartyByEntity(entityId);
+        return party == null ? null : new PartyMembership(party.PartyId, party.Members);
+    }
+
     /// <summary>
-    /// 현재 등록된 모든 파티 순회 — QuestRegistry.ResetAllQuestProgress가 공유 KillCount를
-    /// 0으로 리셋할 때 사용(depth-B: KillCount는 PartyState 잔류, 리셋만 Quest 책임).
+    /// 현재 등록된 모든 파티 순회.
     /// tick thread invariant — 단일 thread에서만 열거 안전(actor 불변식).
     /// 메서드 형태 = 이 클래스 조회 API(GetParty/GetPartyByEntity)와 일관(StyleCop 순서 정합).
     /// </summary>

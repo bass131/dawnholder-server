@@ -34,3 +34,5 @@
 미착수이므로 실행/평가 수치 없음. 착수 시 base/branch/HEAD·소유 파일, 종료 시 검증 환경/명령/근거·회귀 비교·평가 결과·미실행·PR/승인을 이곳에 기록한다. 다음 [DB 설계](../2026-09-29-persistence-design/goal.md)에 최종 main, 안정된 상태 소유·전환 경계, 보존 정책, 기존 DB 인계 경로와 미해결 항목만 전달한다.
 
 M1c 진단 인계: GameSession.SubmitMoveIntent의 GetMap null 로그는 정상 migrating 상태도 config/shutdown race로 표현한다. 상태별 정확한 진단 문구를 검토하되 입력 drop 정책은 보존한다. 실제 두 로그의 세션 identity는 기록되어 있지 않아 추정으로 단정하지 않는다.
+
+M2a 리뷰 인계: Integration/M2BasicMovementIntegrationTests.cs의 기존 ServerFixture.Dispose는 World.Stop만 호출하고 Listener를 닫지 않는다. M3에서 현재 Listener.Stop 계약과 실제 소유 자원을 확인해 테스트 teardown 및 낡은 주석을 정리한다. M2a 신규 fixture 결함이나 실제 product 장애로 단정하지 않는다.

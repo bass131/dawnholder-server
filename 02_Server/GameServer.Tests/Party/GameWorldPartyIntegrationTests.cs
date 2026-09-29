@@ -47,17 +47,13 @@ public class GameWorldPartyIntegrationTests : IDisposable
     [Fact]
     public void PartyRegistry_Tick_IsDrained_On_GameWorld_Tick()
     {
-        // GameWorld가 Tick 1회 호출 시 PartyRegistry.EnqueueJob 람다가 실행되어야 함.
-        // TickScheduler 없이 GameWorld 내부 맵 tick thread 의존성을 피하기 위해
-        // PartyRegistry.EnqueueJob + Tick 직접 사용 (GameWorld.Tick은 Start 없이 수동 호출 불가).
-        // 대신 PartyRegistry.Tick()이 GameWorld 내부 OnTick에서 호출됨을
-        // "Party.EnqueueJob 후 Party.Tick() 직접 드레인"으로 검증 (동일 코드 경로).
+        // 실제 world tick을 구동해 Party 단계 연결을 검증한다.
         bool executed = false;
         _world.Party.EnqueueJob(() => executed = true);
 
         Assert.False(executed); // Tick 전: 미실행
 
-        _world.Party.Tick(currentTick: 1); // OnTick 내부 Party.Tick(tickNumber) 경로와 동일
+        Dawnholder.Server.GameServer.Tests.Maps.LifecycleTestWorld.Tick(_world, 1);
 
         Assert.True(executed); // Tick 후: 실행됨
     }

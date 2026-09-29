@@ -108,7 +108,7 @@ public class BossGateSmokeTests
         GameWorld.Instance.Quest.EnqueueJob(() =>
         {
             for (int i = 0; i < QuestConstants.BossUnlockKillCount; i++)
-                GameWorld.Instance.Quest.OnKill(entityId, GameWorld.Instance);
+                QuestNotifier.Send(GameWorld.Instance, GameWorld.Instance.Quest.OnKill(entityId));
             tcs.SetResult();
         });
         return tcs.Task;

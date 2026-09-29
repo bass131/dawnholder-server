@@ -428,7 +428,7 @@ public class GameSession : PacketSession
         {
             if (!world.IsActiveSession(this, entityId)) return;
             if (cheatType == 0) // 퀘스트 즉시완료(보스 포탈 해금)
-                world.Quest.DebugCompleteQuest(entityId, world);
+                world.CompleteQuestForDebug(entityId);
         });
     }
 #endif

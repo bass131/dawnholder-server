@@ -18,6 +18,56 @@ public class PartyRegistryTests
 {
     readonly PartyRegistry _registry = new();
 
+    [Fact]
+    public void Membership_CopiesInput_AndDoesNotExposeMutableStorage()
+    {
+        int[] members = { 10, 20 };
+        PartyMembership snapshot = new(7, members);
+        members[0] = 99;
+        Assert.Equal(7, snapshot.PartyId);
+        Assert.Equal(new[] { 10, 20 }, snapshot.MemberIds);
+        Assert.False(snapshot.MemberIds is int[]);
+        if (snapshot.MemberIds is IList<int> list)
+            Assert.Throws<NotSupportedException>(() => list[0] = 99);
+        Assert.Equal(new[] { 10, 20 }, snapshot.MemberIds);
+    }
+
+    [Fact]
+    public void MembershipLookup_RemainsCaptured_AfterDisbandAndNewParty()
+    {
+        PartyState first = _registry.CreateParty(10, 20)!;
+        PartyMembership before = _registry.GetMembershipByEntity(10)!;
+        Assert.True(_registry.Disband(first.PartyId));
+        Assert.Null(_registry.GetMembershipByEntity(20));
+        PartyState second = _registry.CreateParty(10, 30)!;
+        Assert.Equal(first.PartyId, before.PartyId);
+        Assert.Equal(new[] { 10, 20 }, before.MemberIds);
+        Assert.Equal(second.PartyId, _registry.GetMembershipByEntity(10)!.PartyId);
+        Assert.Equal(new[] { 10, 30 }, _registry.GetMembershipByEntity(10)!.MemberIds);
+    }
+
+    [Fact]
+    public void DisbandCallback_ObservesRemovedMembership_OncePerSuccessfulDisband()
+    {
+        List<int> retired = new();
+        List<bool> alreadyRemoved = new();
+        PartyRegistry registry = null!;
+        registry = new PartyRegistry(id =>
+        {
+            retired.Add(id);
+            alreadyRemoved.Add(registry.GetParty(id) == null
+                && registry.GetMembershipByEntity(10) == null
+                && registry.GetMembershipByEntity(20) == null);
+        });
+        PartyState party = registry.CreateParty(10, 20)!;
+        Assert.False(registry.Disband(int.MaxValue));
+        Assert.Empty(retired);
+        Assert.True(registry.Disband(party.PartyId));
+        Assert.False(registry.Disband(party.PartyId));
+        Assert.Equal(new[] { party.PartyId }, retired);
+        Assert.Equal(new[] { true }, alreadyRemoved);
+    }
+
     // ── CreateParty ──────────────────────────────────────────────────────────
 
     [Fact]

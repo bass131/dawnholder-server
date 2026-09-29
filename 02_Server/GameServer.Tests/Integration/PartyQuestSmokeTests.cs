@@ -22,8 +22,8 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 /// 봇 근접전투는 위치/serverTick/aggro 타이밍에 민감해 flaky함.
 /// R1의 고유 e2e 가치는 "파티 wire + 공유 카운트 cross-map 전달 + 해산"이므로
 /// SeedPartyKills가 Quest.EnqueueJob으로 OnKill 2회를 직접 적립한다.
-/// 이는 실제 킬과 동일한 OnKill 코드 경로(파티면 KillCount++ → 양 멤버 SendQuestUpdate)를 탄다.
-/// 20킬 전투 그라인드 검증은 xUnit QuestKillCountTests가 담당.
+/// 이는 실제 킬과 동일한 OnKill 코드 경로(파티 진행 적립 → 불변 결과를 notifier가 양 멤버에게 전송)를 탄다.
+/// 반복 적립 로직은 QuestKillCountTests가 검증하며 실제 전투 그라인드 검증은 아니다.
 /// </para>
 ///
 /// <para>
@@ -86,7 +86,7 @@ public class PartyQuestSmokeTests
     ///
     /// <para>
     /// Quest.EnqueueJob으로 OnKill 2회 적립. 파티가 존재하면 OnKill은
-    /// PartyState.KillCount++ 후 양 멤버에게 S_QuestUpdate를 발송한다.
+    /// Quest 소유 진행을 늘리고 notifier가 양 멤버에게 S_QuestUpdate를 발송한다.
     /// TaskCompletionSource로 잡 완료를 await → 시나리오가 WaitForQuestCount로
     /// 진행하기 전에 서버 KillCount=2 확정.
     /// </para>
@@ -102,7 +102,7 @@ public class PartyQuestSmokeTests
         GameWorld.Instance.Quest.EnqueueJob(() =>
         {
             for (int i = 0; i < 2; i++)
-                GameWorld.Instance.Quest.OnKill(entityId, GameWorld.Instance);
+                QuestNotifier.Send(GameWorld.Instance, GameWorld.Instance.Quest.OnKill(entityId));
             tcs.SetResult();
         });
         return tcs.Task;
