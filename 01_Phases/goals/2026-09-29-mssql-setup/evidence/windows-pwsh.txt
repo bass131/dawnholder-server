@@ -38,4 +38,8 @@ PASS: delete account test row
 PASS: rollback witness exists before rollback
 PASS: rollback leaves no test rows
 PASS: migration lock released on rollback
+PASS: loosened class CHECK rejected (SQL 51004)
+PASS: changed unlock DEFAULT rejected (SQL 51005)
+PASS: default attached to wrong column rejected (SQL 51005)
+PASS: original CHECK/default definitions restored after each negative test
 PASS: all database checks on .\SQLEXPRESS / Dawnholder_Dev. No test rows committed.

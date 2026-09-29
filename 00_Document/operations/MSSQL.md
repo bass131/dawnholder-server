@@ -4,7 +4,7 @@
 
 ## 실제 구성과 실행
 
-2026-09-29 확인: `YYH_Desktop\SQLEXPRESS`, Express 17.0.1000.7, `Dawnholder_Dev`, Windows 통합 인증, shared memory. 기존 `GameDB`의 `dbo.accounts(playerID, playerName, playerMoney, playerDate)`와 `BaseballData`, `Northwind`는 수정하지 않았다. 다른 프로젝트의 accounts를 게임 계정으로 재사용하지 않는다.
+2026-09-29 구성: `YYH_Desktop\SQLEXPRESS`, Express 17.0.1000.7, `Dawnholder_Dev`. Windows 관리 도구는 통합 인증/shared memory, native WSL은 전용 SQL 인증/`tcp:127.0.0.1,14330`을 사용한다. 사용자 승인으로 mixed 인증과 loopback TCP만 활성화했다. 기존 `GameDB`의 `dbo.accounts(playerID, playerName, playerMoney, playerDate)`와 `BaseballData`, `Northwind`의 데이터·스키마는 수정하지 않았다. 다른 프로젝트의 accounts를 게임 계정으로 재사용하지 않는다.
 
 저장소 루트의 Windows PowerShell 5.1 또는 PowerShell 7에서 실행한다. SQL Express가 실행 중이고 현재 Windows 사용자가 설치할 DB의 DDL 권한을 가져야 한다. 최초 생성에는 CREATE DATABASE 권한이 필요하다. 별도 NuGet, SQL PowerShell 모듈, 게임 빌드는 필요 없다.
 
@@ -68,20 +68,20 @@ WHERE p.CharacterId=@CharacterId AND c.AccountId=@AuthenticatedAccountId
 
 [목표 결과](../../01_Phases/goals/2026-09-29-mssql-setup/goal.md)와 [근거 폴더](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/)를 참고한다.
 
-`Test-Database.ps1`은 GUID로 격리된 시험 행만 만들고 끝에서 반드시 rollback한다. 카탈로그, PK/unique/FK/check/nullability, 두 직업·네 맵·HP 경계, CRUD, 데이터가 있는 상태의 migration 두 번 재실행, 체크섬/미지 버전 거부, stale rowversion, 별도 연결의 migration 잠금 및 쓰기 잠금 timeout을 검사한다. 삭제도 이 트랜잭션에서 만든 행만 대상으로 한다. rollback 전 남겨둔 witness 행이 rollback 후 없음을 확인한다. 실패한 경우에도 finally에서 rollback하며 실제 게임 행을 seed하거나 commit하지 않는다. rowversion 내부 카운터는 rollback 후에도 증가할 수 있고 연속 번호를 보장하지 않는다.
+`Test-Database.ps1`은 GUID로 격리된 시험 행만 만들고 끝에서 반드시 rollback한다. 카탈로그, PK/unique/FK/check/nullability, 두 직업·네 맵·HP 경계, CRUD, 데이터가 있는 상태의 migration 두 번 재실행, 체크섬/미지 버전 거부, stale rowversion, 별도 연결의 migration 잠금 및 쓰기 잠금 timeout을 검사한다. CHECK/default의 실제 식과 소속 테이블·열도 비교하며, Class CHECK 완화·해금 DEFAULT1·잘못된 default 열을 잠깐 적용한 세 음성사례가 거부됨을 각각 rollback으로 확인한다. 운영 트래픽이 없는 개발 DB에서 실행한다. 삭제도 이 트랜잭션에서 만든 행만 대상으로 한다. rollback 전 남겨둔 witness 행이 rollback 후 없음을 확인한다. 실패한 경우에도 finally에서 rollback하며 실제 게임 행을 seed하거나 commit하지 않는다. rowversion 내부 카운터는 rollback 후에도 증가할 수 있고 연속 번호를 보장하지 않는다.
 
-Windows PowerShell 5.1/7 검증은 통과했다. WSL Ubuntu는 mirrored 모드이나 현재 TCP 비활성·Windows 인증 전용·비도메인 PC이며 Linux sqlcmd도 없다. native WSL `127.0.0.1:14330` TCP probe는 실패했다. **WSL SQL 인증과 게임 서버 DB 저장은 미실행**이다. WSL에서 Windows powershell/sqlcmd를 호출하는 것은 Linux 프로세스의 SQL 인증 성공 증거로 취급하지 않는다.
+Windows PowerShell 5.1/7 및 독립 재검토는 통과했다. Ubuntu 26.04 mirrored 모드에 Microsoft 공식 26.04 저장소의 `mssql-tools18`/`msodbcsql18` 18.7.1.1-1을 설치했다. 승인된 관리자 Enable 후 native WSL SQL 인증·최소권한·rollback 저장이 성공했다. 초기 TCP 실패 기록은 [초기 probe](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/wsl.txt), 최종 성공은 [native 인증 검사](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/wsl-auth.txt)에 구분한다. **게임 서버 저장/재접속 복구는 미구현이며 Restore 실행 검증은 미실행**이다.
 
-## 미실행 관리자 단계: WSL 접속
+## WSL 연결 및 관리자 복구
 
-이 절차는 사용자 승인 후 조용한 점검 시간에만 실행할 선택적 단계다. 현재 스크립트는 Plan/구문 검사만 완료했고 Enable/Restore/실제 SQL 로그인 생성은 실행하지 않았다. 현재 터미널에는 관리자 토큰이 없다. 자동 UAC 요청은 하지 않는다.
+이 PC는 사용자 승인 및 독립 검토 후 관리자 Enable까지 적용했다. 재설치할 필요가 없으며 평소에는 아래 Test-WslAccess만 사용한다. 다른 PC의 Enable 및 현재 PC의 Restore는 영향 범위를 확인한 점검 시간에 관리자 PowerShell에서 실행한다. 스크립트 자체가 UAC를 열지는 않는다. 이번 적용은 승인된 elevated PowerShell을 한 번 실행해 SQL 서비스를 재시작했으며, 복구 테스트만을 위한 추가 재시작은 하지 않았다.
 
 ```powershell
 # 현재 설정과 정확한 변경 목록만 출력. 관리자 권한 불필요, 쓰기 없음.
 ./99_Tools/database/Configure-WslAccess.ps1 -Action Plan
 ```
 
-승인 대상 변경:
+적용된 변경 및 다른 PC에서의 승인 범위:
 
 1. `SQLEXPRESS`의 LoginMode를 Windows-only(1)에서 mixed(2)로 변경한다. 기존 로그인/암호를 교체하지 않는다.
 2. TCP Enabled=1, ListenOnAllIPs=0. 등록된 `127.0.0.1`과 `::1`만 Enabled=1, TcpPort=14330, TcpDynamicPorts=''로 바꾼다. 다른 IP는 비활성화한다. IPAll은 보존하고 ListenAll=0으로 무시된다. SQL Browser 및 방화벽 규칙은 변경하지 않는다.
@@ -99,12 +99,23 @@ Windows PowerShell 5.1/7 검증은 통과했다. WSL Ubuntu는 mirrored 모드�
 
 Restore는 원래 설정을 복구하고 SID가 일치하는 신규 login만 비활성화한다. 데이터·DB user·암호화된 복구 파일은 삭제하지 않는다. 적용 후 다른 관리자가 바꾼 값이 있으면 덮어쓰지 않고 수동 검토를 요구한다. Enable 도중 실패해도 백업을 보존하므로 무조건 재실행하지 말고 Restore를 사용한다. SQL 서비스가 시작 실패한 경우에도 원래 레지스트리를 먼저 복구한 뒤 시작한다. 백업 경로 생성 직후 중단되어 state.clixml이 없다면 아직 SQL/레지스트리 변경 전이다. SQL 설정이 복구된 뒤에도 데이터와 이전 시도 기록은 보존하며 새 Enable은 별도 검토한다.
 
-WSL Ubuntu에 native `mssql-tools18`의 `/opt/mssql-tools18/bin/sqlcmd`가 필요하다. 설치는 Ubuntu 버전에 맞는 [Microsoft 공식 절차](https://learn.microsoft.com/en-us/sql/linux/sql-server-linux-setup-tools)를 따라 별도로 진행하며 이 도구가 OS 패키지를 임의 설치하지 않는다. 승인된 구성과 도구 설치가 끝나면 Windows PowerShell **7**에서 실행한다.
+WSL Ubuntu에 native `mssql-tools18`의 `/opt/mssql-tools18/bin/sqlcmd`가 필요하며 이 PC에는 설치 완료했다. 새 환경에서는 Ubuntu 버전에 맞는 [Microsoft 공식 절차](https://learn.microsoft.com/en-us/sql/linux/sql-server-linux-setup-tools)를 따른다. 이번에는 Ubuntu 26.04용 `packages-microsoft-prod.deb`로 서명된 저장소를 등록하고 `ACCEPT_EULA=Y apt-get install -y mssql-tools18`로 필요한 ODBC 의존성만 설치했으며 기존 패키지 upgrade는 하지 않았다. 구성 후 Windows PowerShell **7**에서 실행한다.
 
 ```powershell
 ./99_Tools/database/Test-WslAccess.ps1 -Distribution Ubuntu
 ```
 
-이 probe는 DPAPI 비밀을 stdin으로 Linux child에 전달하고, child 수명 동안만 SQLCMDPASSWORD 환경변수에 둔다. 비밀을 명령 인자·콘솔·Linux 파일에 출력하지 않는다. localhost의 self-signed 개발 인증서를 신뢰하고 SQL 로그인/권한/rollback 저장을 검사한다. 실패하면 메시지와 포트 상태를 확인하되 방화벽 전체 공개나 LAN 바인딩 확대를 자동 수행하지 않는다. mixed mode 변경이 부담되면 이 단계 전체를 보류하고 Windows 개발 DB를 유지한다.
+이 probe는 DPAPI 비밀을 LF로 끝나는 stdin으로 Linux child에 전달하고, child 수명 동안만 SQLCMDPASSWORD 환경변수에 둔다. Windows CRLF를 쓰면 암호에 CR이 붙어 로그인 실패하므로 LF를 명시한다. 비밀을 명령 인자·콘솔·Linux 파일에 출력하지 않는다. localhost의 self-signed 개발 인증서를 신뢰하고 SQL 로그인/권한/rollback 저장을 검사한다. 실패하면 메시지와 포트 상태를 확인하되 방화벽 전체 공개나 LAN 바인딩 확대를 자동 수행하지 않는다. 프로브 성공은 native Linux ODBC 경로 검증이며 .NET GameServer의 저장 서비스 구현을 의미하지 않는다.
+
+## 다음 세션
+
+작업 재개 순서와 현재 PR/승인 경계는 [인계문](../../01_Phases/goals/2026-09-29-mssql-setup/handoff.md)에서 시작한다. DB 엔진은 Windows 서비스이며 WSL에서 별도 서버 프로세스를 띄울 필요가 없다. 서비스 시작 유형은 기존 Manual을 유지했으므로 재부팅 후에는 관리자 PowerShell에서 필요할 때 시작한다.
+
+```powershell
+Get-Service 'MSSQL$SQLEXPRESS'
+# 중지 상태일 때만 관리자 PowerShell에서 실행
+Start-Service 'MSSQL$SQLEXPRESS'
+./99_Tools/database/Test-WslAccess.ps1
+```
 
 설계 참고: [SQL application lock](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-getapplock-transact-sql), [TCP ListenAll 및 고정 포트](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-a-server-to-listen-on-a-specific-tcp-port), [Windows Export-Clixml/DPAPI](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/export-clixml).

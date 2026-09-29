@@ -122,6 +122,26 @@ SELECT (SELECT COUNT(*) FROM dh.Account WHERE AccountId=@account)
 + (SELECT COUNT(*) FROM dh.CharacterProgress WHERE CharacterId=@character)
 '@ $argsSql) 'rollback leaves no test rows'
     Assert-Equal 0 (Invoke-DbScalar $other "DECLARE @r int; BEGIN TRAN; EXEC @r=sys.sp_getapplock @Resource=N'Dawnholder.SchemaMigration',@LockMode='Exclusive',@LockOwner='Transaction',@LockTimeout=0; ROLLBACK; SELECT @r;") 'migration lock released on rollback'
+    # Isolated DDL transactions prove Install's catalog gate rejects semantic drift.
+    # THROW with XACT_ABORT ON may doom the transaction; always fully roll it back.
+    $driftCases = @(
+        @{Label='loosened class CHECK rejected';Number=51004;Sql='ALTER TABLE dh.Character DROP CONSTRAINT CK_Character_Class; ALTER TABLE dh.Character WITH CHECK ADD CONSTRAINT CK_Character_Class CHECK (Class IN (0,1,2));'},
+        @{Label='changed unlock DEFAULT rejected';Number=51005;Sql='ALTER TABLE dh.CharacterProgress DROP CONSTRAINT DF_CharacterProgress_BossUnlocked; ALTER TABLE dh.CharacterProgress ADD CONSTRAINT DF_CharacterProgress_BossUnlocked DEFAULT 1 FOR BossUnlocked;'},
+        @{Label='default attached to wrong column rejected';Number=51005;Sql='ALTER TABLE dh.CharacterProgress DROP CONSTRAINT DF_CharacterProgress_BossUnlocked; ALTER TABLE dh.CharacterProgress ADD CONSTRAINT DF_CharacterProgress_BossUnlocked DEFAULT 0 FOR Hp;'}
+    )
+    foreach ($case in $driftCases) {
+        $transaction = $connection.BeginTransaction()
+        try {
+            [void](Invoke-DbNonQuery $connection $case.Sql @{} $transaction)
+            Assert-SqlError { Invoke-Migrations $connection $transaction } @($case.Number) $case.Label
+        } finally {
+            if ($null -ne $transaction.Connection) { $transaction.Rollback() }
+            $transaction.Dispose()
+            $transaction = $null
+        }
+        [void](Invoke-DbNonQuery $connection (Get-MigrationText (Join-Path $PSScriptRoot 'verify-schema.sql')))
+    }
+    Write-Output 'PASS: original CHECK/default definitions restored after each negative test'
     Write-Output "PASS: all database checks on $Instance / $Database. No test rows committed."
 } finally {
     if ($null -ne $transaction) {

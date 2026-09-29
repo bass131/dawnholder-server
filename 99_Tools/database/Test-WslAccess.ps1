@@ -57,6 +57,8 @@ try {
     [void]$process.Start()
     $outputTask = $process.StandardOutput.ReadToEndAsync()
     $errorTask = $process.StandardError.ReadToEndAsync()
+    # bash read strips LF only; Windows CRLF would append CR to the password.
+    $process.StandardInput.NewLine = "`n"
     $process.StandardInput.WriteLine($credential.GetNetworkCredential().Password)
     $process.StandardInput.Close()
     if (-not $process.WaitForExit(30000)) { $process.Kill($true); throw 'WSL SQL probe timed out.' }

@@ -51,10 +51,34 @@ IF EXISTS (
       AND OBJECT_SCHEMA_NAME(fk.referenced_object_id)='dh'
 ) THROW 51003, 'Foreign key drift detected.', 1;
 
-IF (SELECT COUNT(*) FROM sys.check_constraints WHERE schema_id=SCHEMA_ID('dh') AND is_disabled=0 AND is_not_trusted=0
-    AND name IN ('CK_SchemaVersion_Version','CK_Character_Class','CK_CharacterProgress_Map','CK_CharacterProgress_Hp')) <> 4
-    THROW 51004, 'Missing, disabled or untrusted check constraint.', 1;
-IF (SELECT COUNT(*) FROM sys.default_constraints WHERE schema_id=SCHEMA_ID('dh')
-    AND name IN ('DF_SchemaVersion_AppliedUtc','DF_Account_CreatedUtc','DF_Character_CreatedUtc',
-                 'DF_CharacterProgress_BossUnlocked','DF_CharacterProgress_SavedUtc')) <> 5
-    THROW 51005, 'Missing default constraint.', 1;
+-- Compare SQL Server's stored expression text as well as names/ownership.
+-- Deliberately fail closed even for a manually rewritten equivalent expression.
+DECLARE @checks TABLE (Name sysname, TableName sysname, ColumnName sysname NULL, Definition nvarchar(4000));
+INSERT @checks VALUES
+('CK_SchemaVersion_Version','SchemaVersion','Version','([Version]>(0))'),
+('CK_Character_Class','Character','Class','([Class]=(1) OR [Class]=(0))'),
+('CK_CharacterProgress_Map','CharacterProgress','MapId','([MapId]=(3) OR [MapId]=(2) OR [MapId]=(1) OR [MapId]=(0))'),
+('CK_CharacterProgress_Hp','CharacterProgress',NULL,'([MaxHp]>(0) AND [Hp]>=(0) AND [Hp]<=[MaxHp])');
+IF EXISTS (
+    SELECT * FROM @checks
+    EXCEPT
+    SELECT name,OBJECT_NAME(parent_object_id),COL_NAME(parent_object_id,parent_column_id),definition
+    FROM sys.check_constraints WHERE schema_id=SCHEMA_ID('dh')
+    AND is_disabled=0 AND is_not_trusted=0 AND is_not_for_replication=0
+) OR (SELECT COUNT(*) FROM sys.check_constraints WHERE schema_id=SCHEMA_ID('dh')) <> 4
+    THROW 51004, 'Check expression, ownership or trust drift detected.', 1;
+
+DECLARE @defaults TABLE (Name sysname, TableName sysname, ColumnName sysname, Definition nvarchar(4000));
+INSERT @defaults VALUES
+('DF_SchemaVersion_AppliedUtc','SchemaVersion','AppliedUtc','(sysutcdatetime())'),
+('DF_Account_CreatedUtc','Account','CreatedUtc','(sysutcdatetime())'),
+('DF_Character_CreatedUtc','Character','CreatedUtc','(sysutcdatetime())'),
+('DF_CharacterProgress_BossUnlocked','CharacterProgress','BossUnlocked','((0))'),
+('DF_CharacterProgress_SavedUtc','CharacterProgress','SavedUtc','(sysutcdatetime())');
+IF EXISTS (
+    SELECT * FROM @defaults
+    EXCEPT
+    SELECT name,OBJECT_NAME(parent_object_id),COL_NAME(parent_object_id,parent_column_id),definition
+    FROM sys.default_constraints WHERE schema_id=SCHEMA_ID('dh')
+) OR (SELECT COUNT(*) FROM sys.default_constraints WHERE schema_id=SCHEMA_ID('dh')) <> 5
+    THROW 51005, 'Default expression or ownership drift detected.', 1;
