@@ -1,0 +1,4 @@
+Native WSL TCP 127.0.0.1:14330: FAILED errno=11
+mirrored
+native-sqlcmd-not-installed
+10.0.300
