@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -5,17 +6,7 @@ using UnityEngine.Serialization;
 
 namespace Dawnholder.Client.UI
 {
-    /// <summary>
-    /// 씬 전환 시 검은 페이드 인/아웃. Singleton + DontDestroyOnLoad.
-    /// 모든 씬 전환 호출은 SceneTransition.Instance.LoadScene(...)로 일원화.
-    ///
-    /// **헌법 #1 (Server Authority)**: 페이드는 *본인 클라 시각* 효과만.
-    /// 서버 권위 타임라인엔 영향 X (멀티게임 시 다른 플레이어는 보지 못함).
-    ///
-    /// **timeScale=0 안전망**: PauseMenuController에서 timeScale=0인 채 호출될 위험을
-    /// 대비해 Fade Coroutine은 Time.unscaledDeltaTime을 사용. PauseMenuController가
-    /// timeScale=1 복원 먼저 하지만 안전망 이중.
-    /// </summary>
+    /// <summary>Unity fade/load adapter. SceneLoadQueue owns request ordering and completion.</summary>
     public class SceneTransition : MonoBehaviour
     {
         public static SceneTransition Instance { get; private set; }
@@ -28,119 +19,147 @@ namespace Dawnholder.Client.UI
         [FormerlySerializedAs("fadeDuration")]
         [SerializeField] float _fadeDuration = 0.5f;
 
-        bool isTransitioning;
+        readonly SceneLoadQueue _loads = new SceneLoadQueue();
+        bool _running;
+        Coroutine _respawnFade;
+        public bool IsTransitioning => _running;
+        public SceneLoadRequest ActiveRequest => _loads.Active;
+
+        public static SceneTransition EnsureInstance()
+        {
+            if (Instance == null)
+            {
+                Debug.LogWarning("[SceneTransition] Missing service; using a runtime loader without fade.");
+                new GameObject("SceneTransitionFallback").AddComponent<SceneTransition>();
+            }
+            return Instance;
+        }
 
         void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
+            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
-
-            // PersistentServices 프리팹의 *자식*(FadeCanvas)으로 들어가면 영속화는 루트가 담당
-            // (PersistentServicesBootstrap이 루트를 DontDestroyOnLoad). 자식에 DDOL 호출은
-            // "only works for root GameObjects" 경고만 내고 무의미하므로 루트일 때만 호출.
-            if (transform.parent == null)
-                DontDestroyOnLoad(gameObject);
-
-            if (_fadeGroup != null)
-            {
-                _fadeGroup.alpha = 0f;
-                _fadeGroup.blocksRaycasts = false;
-            }
+            _loads.ObserverFailed += error => Debug.LogException(error);
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
+            RestoreOverlay();
         }
 
-        public void LoadScene(string sceneName)
+        public void LoadScene(string sceneName) => RequestScene(sceneName);
+
+        public SceneLoadRequest RequestScene(string sceneName, Action<SceneLoadResult> completed = null)
         {
-            if (isTransitioning) return;
-            // 리스폰 페이드 진행 중 씬 전환 도착 — 권위 전환이 이김 (헌법 #1). 페이드 중단 후 전환 진행.
+            var request = _loads.Request(sceneName, result =>
+            {
+                if (result.Status == SceneLoadStatus.Failed)
+                    Debug.LogError($"[SceneTransition] '{sceneName}' failed: {result.Error}");
+                try { completed?.Invoke(result); }
+                catch (Exception error) { Debug.LogException(error); }
+            });
             if (_respawnFade != null)
             {
                 StopCoroutine(_respawnFade);
                 _respawnFade = null;
             }
-            StartCoroutine(LoadSceneRoutine(sceneName));
+            if (!_running)
+            {
+                _running = true;
+                StartCoroutine(LoadScenes());
+            }
+            return request;
         }
 
-        // 리스폰 페이드 코루틴 핸들. isTransitioning과 별도 —
-        // isTransitioning을 점유하면 페이드 1초 동안 도착한 S_MapTransition의 LoadScene이
-        // silent drop돼 서버/클라 씬 desync (서버는 맵을 옮겼는데 클라는 옛 씬에 잔류).
-        Coroutine _respawnFade;
+        public bool CancelRequest(long requestId) => _loads.Cancel(requestId);
 
-        // 리스폰 시 씬 로드 없는 짧은 페이드 왕복 (out→in). LoadScene 호출 0.
-        // onCovered = 화면이 완전히 덮인 시점 콜백 (HUD 복구 등 — 덮이기 전 갱신은 사망 표시를 지움).
-        // 반환 false = 페이드 시작 불가 (전환 중/중복/_fadeGroup null) — 콜백 미발화, 호출자가 즉시 처리.
-        public bool PlayRespawnFade(System.Action onCovered = null)
+        IEnumerator LoadScenes()
         {
-            if (isTransitioning || _respawnFade != null) return false;
-            if (_fadeGroup == null)
+            try
             {
-                Debug.LogWarning("[SceneTransition] PlayRespawnFade: _fadeGroup null — 페이드 스킵.");
-                return false;
+                while (_loads.TryStartNext(out SceneLoadRequest request))
+                {
+                    if (_fadeGroup != null) _fadeGroup.blocksRaycasts = true;
+                    yield return Fade(_fadeGroup != null ? _fadeGroup.alpha : 0f, 1f, _fadeDuration);
+                    AsyncOperation operation = null;
+                    Exception failure = null;
+                    ulong sceneHandle = 0;
+                    if (!request.IsFinished)
+                    {
+                        try
+                        {
+                            operation = SceneManager.LoadSceneAsync(request.SceneName, LoadSceneMode.Single);
+                            if (operation == null) failure = new InvalidOperationException("LoadSceneAsync returned null.");
+                        }
+                        catch (Exception error) { failure = error; }
+                    }
+                    // Cancellation suppresses application; it cannot roll back a started Unity load.
+                    if (operation != null)
+                    {
+                        while (!operation.isDone) yield return null;
+                        Scene scene = SceneManager.GetSceneByName(request.SceneName);
+                        if (scene.IsValid() && scene.isLoaded) sceneHandle = scene.handle.GetRawData();
+                        else failure = new InvalidOperationException("Loaded scene was not available for binding.");
+                    }
+                    // Bind the loaded scene while covered, before revealing its initial state.
+                    _loads.Complete(request.Id, failure == null ? SceneLoadStatus.Completed : SceneLoadStatus.Failed,
+                        sceneHandle, failure);
+                    if (_loads.Pending == null)
+                    {
+                        yield return Fade(_fadeGroup != null ? _fadeGroup.alpha : 1f, 0f, _fadeDuration);
+                        RestoreOverlay();
+                    }
+                }
             }
+            finally
+            {
+                _running = false;
+                RestoreOverlay();
+            }
+        }
+
+        // Respawn remains a visual-only fade; an authoritative scene request takes precedence.
+        public bool PlayRespawnFade(Action onCovered = null)
+        {
+            if (_running || _respawnFade != null || _fadeGroup == null) return false;
             _respawnFade = StartCoroutine(RespawnFadeRoutine(onCovered));
             return true;
         }
 
-        IEnumerator RespawnFadeRoutine(System.Action onCovered)
+        IEnumerator RespawnFadeRoutine(Action onCovered)
         {
-            _fadeGroup.blocksRaycasts = true;
-
-            yield return Fade(0f, 1f, _fadeDuration);
-            onCovered?.Invoke();
-            yield return Fade(1f, 0f, _fadeDuration);
-
-            _fadeGroup.blocksRaycasts = false;
-            _respawnFade = null;
-        }
-
-        IEnumerator LoadSceneRoutine(string sceneName)
-        {
-            // 방어: _fadeGroup Inspector 슬롯이 비었으면 페이드 스킵 + 즉시 로드 (검은 화면 멈춤 방지)
-            if (_fadeGroup == null)
+            try
             {
-                Debug.LogError("[SceneTransition] _fadeGroup is NULL — Inspector slot empty. Skipping fade.");
-                SceneManager.LoadScene(sceneName);
-                isTransitioning = false;
-                yield break;
+                _fadeGroup.blocksRaycasts = true;
+                yield return Fade(0f, 1f, _fadeDuration);
+                onCovered?.Invoke();
+                yield return Fade(1f, 0f, _fadeDuration);
             }
-
-            isTransitioning = true;
-            _fadeGroup.blocksRaycasts = true;
-
-            yield return Fade(0f, 1f, _fadeDuration);
-
-            var op = SceneManager.LoadSceneAsync(sceneName);
-            if (op == null)
-            {
-                // 잘못된 씬 이름 / Build Settings 미등록 — 검은 화면 멈춤 방지 위해 페이드 인으로 복구
-                Debug.LogError($"[SceneTransition] LoadSceneAsync returned null — '{sceneName}' not in Build Settings?");
-            }
-            else
-            {
-                while (!op.isDone)
-                    yield return null;
-            }
-
-            yield return Fade(1f, 0f, _fadeDuration);
-
-            _fadeGroup.blocksRaycasts = false;
-            isTransitioning = false;
+            finally { RestoreOverlay(); _respawnFade = null; }
         }
 
         IEnumerator Fade(float from, float to, float duration)
         {
+            if (_fadeGroup == null) yield break;
             float elapsed = 0f;
-            while (elapsed < duration)
+            while (elapsed < duration && _fadeGroup != null)
             {
                 elapsed += Time.unscaledDeltaTime;
                 _fadeGroup.alpha = Mathf.Lerp(from, to, elapsed / duration);
                 yield return null;
             }
-            _fadeGroup.alpha = to;
+            if (_fadeGroup != null) _fadeGroup.alpha = to;
+        }
+
+        void RestoreOverlay()
+        {
+            if (_fadeGroup == null) return;
+            _fadeGroup.alpha = 0f;
+            _fadeGroup.blocksRaycasts = false;
+        }
+
+        void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+            _loads.CancelAll();
+            RestoreOverlay();
         }
     }
 }

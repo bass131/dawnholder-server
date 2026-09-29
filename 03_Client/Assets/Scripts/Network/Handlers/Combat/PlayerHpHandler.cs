@@ -37,7 +37,7 @@ namespace Dawnholder.Client.Network.Handlers.Combat
                 if (session.LocalEntityId == null) return;
                 if (entityId != session.LocalEntityId.Value) return;
 
-                HudController.Instance?.UpdateHP(currentHp, maxHp);
+                session.ReceivePlayerHp(entityId, currentHp, maxHp);
 
                 // 사망 도출 — 권위 HP 채널에서. 모든 사망 소스(근접/DoT/함정/투사체)에 robust.
                 // HP 복구는 직후 도착하는 S_PlayerHp(MaxHp)가 담당(부활 통지). 페이드 재진입은 SceneTransition 가드.

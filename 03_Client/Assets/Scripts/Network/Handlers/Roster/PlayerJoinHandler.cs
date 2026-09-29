@@ -31,19 +31,9 @@ namespace Dawnholder.Client.Network.Handlers.Roster
             float y = pkt.spawnY;
             CharacterClass cls = ClassLoadout.ByteToClass(pkt.characterClass);
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
                 if (session.LocalEntityId != null && eid == session.LocalEntityId.Value) return;
-
-                // 전환 중이면 roster buffer 캐싱.
-                if (session.RosterBuffer.TryBuffer(
-                        $"S_PlayerJoin entity={eid}",
-                        () =>
-                        {
-                            if (RemoteEntityRegistry.Instance != null)
-                                RemoteEntityRegistry.Instance.Spawn(eid, x, y, cls);
-                        }))
-                    return;
 
                 if (RemoteEntityRegistry.Instance != null)
                     RemoteEntityRegistry.Instance.Spawn(eid, x, y, cls);

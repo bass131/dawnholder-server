@@ -36,7 +36,7 @@ namespace Dawnholder.Client.Network.Handlers.Combat
             byte attackType = pkt.attackType;
             byte facingByte = pkt.facing;
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
                 if (session.LocalEntityId == null) return;
 

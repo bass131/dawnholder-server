@@ -1,0 +1,14 @@
+{
+    "name": "Dawnholder.Client.Tests.PlayMode",
+    "rootNamespace": "Dawnholder.Client.Tests.PlayMode",
+    "references": ["Dawnholder.Client", "UnityEngine.TestRunner", "Unity.InputSystem", "Unity.TextMeshPro"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll", "Shared.dll", "Dawnholder.Client.Net.dll"],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

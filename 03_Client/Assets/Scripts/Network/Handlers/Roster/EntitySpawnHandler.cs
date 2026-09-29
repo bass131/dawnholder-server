@@ -32,28 +32,8 @@ namespace Dawnholder.Client.Network.Handlers.Roster
             int hp = pkt.currentHp;
             int maxHp = pkt.maxHp;
 
-            session.EnqueueApply(() =>
+            session.EnqueueWorldApply(() =>
             {
-                // 전환 중이면 roster buffer 캐싱.
-                int capturedEid = eid;
-                byte capturedKind = kind;
-                float capturedX = x;
-                float capturedY = y;
-                int capturedHp = hp;
-                int capturedMaxHp = maxHp;
-                if (session.RosterBuffer.TryBuffer(
-                        $"S_EntitySpawn entity={eid}",
-                        () =>
-                        {
-                            if (EnemyRegistry.Instance == null)
-                            {
-                                Debug.LogWarning($"[Unity] EnemyRegistry 미박힘 (roster drain) — entity {capturedEid} spawn drop.");
-                                return;
-                            }
-                            EnemyRegistry.Instance.Spawn(capturedEid, capturedKind, capturedX, capturedY, capturedHp, capturedMaxHp);
-                        }))
-                    return;
-
                 if (EnemyRegistry.Instance == null)
                 {
                     Debug.LogWarning($"[Unity] EnemyRegistry 미박힘 — entity {eid} spawn drop. CombatBootstrap 누락?");

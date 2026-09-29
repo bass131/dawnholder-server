@@ -5,6 +5,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Dawnholder.Client.Combat;
+using Dawnholder.Client.Audio;
+using Dawnholder.Client.Prediction;
+using Dawnholder.Client.UI;
 using Dawnholder.Client.Net;
 using Dawnholder.Client.State;
 using Dawnholder.Client.Network.Handlers;
@@ -18,6 +21,7 @@ using Dawnholder.Client.Network.Handlers.Sync;
 using Dawnholder.Client.Network.Handlers.Zone;
 using Shared.Protocol;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Dawnholder.Client.Network
 {
@@ -40,6 +44,15 @@ namespace Dawnholder.Client.Network
         bool _cleaned;
         public bool IsClosed => Volatile.Read(ref _closed) != 0 || IsDisconnected;
         bool CanApply => !IsClosed && _isCurrent();
+        public MapEntryCoordinator Entry { get; }
+        LocalPlayerMovement _entryPlayer;
+        long _playerEpoch;
+        SceneTransition _sceneLoader;
+        long _sceneRequestId;
+        HudController _hud;
+        public bool CanSendGameplay => CanApply && HandshakeOk && Entry.IsGameplayReady;
+        public bool CanControlPlayer(LocalPlayerMovement player) => CanSendGameplay && _entryPlayer == player;
+        public bool IsCurrentEntry(long epoch) => CanApply && Entry.IsCurrent(epoch);
         public event Action Closed;
         public event Action HandshakeSucceeded
         {
@@ -116,6 +129,8 @@ namespace Dawnholder.Client.Network
             _isCurrent = isCurrent ?? (() => ReferenceEquals(Instance, this));
             _post = post ?? MainThreadDispatcher.Enqueue;
             _postDelayed = postDelayed ?? MainThreadDispatcher.EnqueueDelayed;
+            Entry = new MapEntryCoordinator(CommitEntry, ApplyEntryHp, FailEntry,
+                entry => { if (entry.RequiresPlayer) RosterBuffer.Drain(); });
             RosterBuffer = new RosterTransitionBuffer(() => CanApply);
         }
 
@@ -143,6 +158,135 @@ namespace Dawnholder.Client.Network
             if (CanApply) action();
         });
 
+        // The entry boundary is read on main, after preceding EnterMap/MapTransition callbacks.
+        public void EnqueueWorldApply(Action action) => EnqueueApply(() =>
+        {
+            long epoch = Entry.Epoch;
+            if (!Entry.IsCurrent(epoch) || !Entry.RequiresPlayer) return;
+            Action scoped = () => { if (IsCurrentEntry(epoch)) action(); };
+            if (!RosterBuffer.TryBuffer("world update", scoped)) scoped();
+        });
+
+        public bool BeginMapEntry(byte mapId, float x, float y, bool initial = false)
+        {
+            if (!CanApply) return false;
+            string sceneName = SceneRouter.MapIdToSceneName(mapId);
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                Debug.LogError($"[Unity] Unknown destination map {mapId}; entry rejected.");
+                return false;
+            }
+            long epoch = Entry.Begin(mapId, x, y, SceneRouter.RequiresPlayer(mapId));
+            if (_sceneLoader != null && _sceneRequestId != 0) _sceneLoader.CancelRequest(_sceneRequestId);
+            _sceneRequestId = 0;
+            _entryPlayer = null;
+            _playerEpoch = 0;
+            _hud = null;
+            LocalPlayerMovement.Instance?.SuspendForMapEntry();
+            RemoteEntityRegistry.Instance?.Clear();
+            RosterBuffer.BeginTransition(sceneName);
+
+            string bgm = SoundKeys.BgmKeyForMap(mapId);
+            if (bgm != null) AudioManager.Instance?.PlayBgm(bgm);
+            if (!initial) AudioManager.Instance?.PlaySfx(SoundKeys.PortalEnter);
+
+            Scene existing = SceneManager.GetSceneByName(sceneName);
+            _sceneLoader = SceneTransition.Instance;
+            if (initial && existing.IsValid() && existing.isLoaded)
+            {
+                var active = _sceneLoader != null ? _sceneLoader.ActiveRequest : null;
+                if (active != null && !active.IsFinished && active.SceneName == sceneName)
+                {
+                    _sceneRequestId = active.Id;
+                    active.ObserveCompletion(result => OnEntrySceneLoaded(epoch, result));
+                }
+                else BindEntryScene(epoch, existing.handle.GetRawData());
+                return true;
+            }
+            try
+            {
+                _sceneLoader = SceneTransition.EnsureInstance();
+                _sceneRequestId = _sceneLoader.RequestScene(sceneName,
+                    result => OnEntrySceneLoaded(epoch, result)).Id;
+            }
+            catch (Exception error) { Entry.Fail(epoch, error); }
+            return Entry.IsCurrent(epoch);
+        }
+
+        void OnEntrySceneLoaded(long epoch, SceneLoadResult result)
+        {
+            if (!IsCurrentEntry(epoch)) return;
+            if (result.Status == SceneLoadStatus.Completed) BindEntryScene(epoch, result.SceneHandle);
+            else
+                Entry.Fail(epoch, result.Error ?? new InvalidOperationException($"Scene request ended: {result.Status}."));
+        }
+
+        void BindEntryScene(long epoch, ulong handle)
+        {
+            if (!IsCurrentEntry(epoch)) return;
+            MapNameDisplay.SetMapId(Entry.MapId);
+            Entry.BindScene(epoch, handle);
+            TryBindEntryViews();
+        }
+
+        public void TryBindEntryViews()
+        {
+            long epoch = Entry.Epoch;
+            if (!IsCurrentEntry(epoch) || !Entry.SceneReady || !Entry.RequiresPlayer) return;
+            try
+            {
+                var player = LocalPlayerMovement.Instance;
+                if (player != null && player.gameObject.scene.handle.GetRawData() == Entry.SceneHandle &&
+                    (_entryPlayer != player || _playerEpoch != epoch))
+                {
+                    player.InjectTerrain(Entry.MapId);
+                    _entryPlayer = player;
+                    _playerEpoch = epoch;
+                    Entry.BindPlayer(epoch);
+                }
+                var remote = RemoteEntityRegistry.Instance;
+                var enemies = EnemyRegistry.Instance;
+                if (remote != null && enemies != null &&
+                    remote.gameObject.scene.handle.GetRawData() == Entry.SceneHandle && enemies.gameObject.scene.handle.GetRawData() == Entry.SceneHandle)
+                    Entry.BindRegistries(epoch);
+            }
+            catch (Exception error) { Entry.Fail(epoch, error); }
+        }
+
+        void CommitEntry(MapEntryCoordinator entry)
+        {
+            if (!CanApply) throw new InvalidOperationException("Session ended before scene binding.");
+            if (!entry.RequiresPlayer) return; // Ending has no player, terrain, or HP barrier.
+            if (_entryPlayer == null) throw new InvalidOperationException("Entry player is unavailable.");
+            _entryPlayer.SetServerPosition(new Vector3(entry.SpawnX, entry.SpawnY, 0f));
+        }
+
+        public void ReceivePlayerHp(int entityId, int current, int max)
+        {
+            if (CanApply && LocalEntityId == entityId) Entry.ReceiveHp(Entry.Epoch, current, max);
+        }
+
+        public bool TryBindHud(HudController hud)
+        {
+            if (!CanApply || !Entry.IsGameplayReady || !Entry.HasHp || hud == null) return false;
+            _hud = hud;
+            hud.ApplyServerHP(Entry.CurrentHp, Entry.MaxHp);
+            return true;
+        }
+
+        public void UnbindHud(HudController hud) { if (_hud == hud) _hud = null; }
+
+        void ApplyEntryHp(int current, int max)
+        {
+            if (CanApply && _hud != null) _hud.ApplyServerHP(current, max);
+        }
+
+        void FailEntry(Exception error)
+        {
+            Debug.LogError($"[Unity] Map entry failed; disconnecting: {error}");
+            Disconnect();
+        }
+
         // Main-thread cleanup of this session only. The owner resets shared mirrors.
         public void Cleanup()
         {
@@ -152,6 +296,11 @@ namespace Dawnholder.Client.Network
             HandshakeOk = false;
             LocalEntityId = null;
             LastReceivedServerTick = 0;
+            Entry.Close();
+            if (_sceneLoader != null && _sceneRequestId != 0) _sceneLoader.CancelRequest(_sceneRequestId);
+            _sceneRequestId = 0;
+            _entryPlayer = null;
+            _hud = null;
             RosterBuffer.Teardown();
             OnHandshakeOkEvent = null;
             Closed = null;
@@ -169,7 +318,7 @@ namespace Dawnholder.Client.Network
         {
             // handshake 통과 전 송신은 drop (헌법 #2 first-packet). 정상 흐름에선 C_Handshake →
             // S_HandshakeResult OK가 첫 Update tick 안에 박혀 영향 X. race window에서만 발동.
-            if (!HandshakeOk || !CanApply)
+            if (!CanSendGameplay)
             {
                 // 폭주 차단 위해 main thread에서 한 줄만. 정상 흐름엔 거의 0회 박힘.
                 return;
@@ -179,9 +328,10 @@ namespace Dawnholder.Client.Network
             {
                 // buf는 GenPackets.Write()가 매번 새로 할당한 byte[]라 큐 보존 안전(corruption X).
                 ArraySegment<byte> captured = buf;
+                long epoch = Entry.Epoch;
                 _postDelayed(() =>
                 {
-                    if (CanApply && HandshakeOk) Send(captured);
+                    if (CanSendGameplay && Entry.Epoch == epoch) Send(captured);
                 }, SimulatedLatencyMs / 1000f);
                 return;
             }
@@ -257,27 +407,12 @@ namespace Dawnholder.Client.Network
 
         internal void SetLastReceivedServerTick(int tick) => LastReceivedServerTick = tick;
 
-        // ========================================================================
-        // 씬 로드 완료 후 새 LocalPlayerMovement가 참조하는 pending spawn 좌표.
-        // 씬을 넘어 유지하며, 연결 종료 때 owner가 전체 값을 초기화한다.
-        // LocalPlayerMovement.Awake()에서 HasPendingSpawn 확인 → SetServerPosition 호출 → Clear.
-        // ========================================================================
+        // Compatibility view only: the entry record is the single source of spawn state.
+        public static float PendingSpawnX => Instance != null ? Instance.Entry.SpawnX : 0f;
+        public static float PendingSpawnY => Instance != null ? Instance.Entry.SpawnY : 0f;
+        public static int PendingMapId => Instance != null ? Instance.Entry.MapId : 0;
+        public static bool HasPendingSpawn => Instance != null &&
+            Instance.Entry.State == MapEntryState.Entering && Instance.Entry.RequiresPlayer && !Instance.Entry.SpawnApplied;
 
-        public static float PendingSpawnX { get; internal set; }
-        public static float PendingSpawnY { get; internal set; }
-        public static bool HasPendingSpawn { get; internal set; }
-
-        // terrain 주입용 mapId. EnterMapHandler는 0(Town 고정), MapTransitionHandler는 destMapId 박음.
-        // LocalPlayerMovement.Awake()에서 pending spawn 소비 시 함께 읽어 ClientTerrainStore.Load 호출.
-        public static int PendingMapId { get; internal set; }
-
-        // LocalPlayerMovement.Awake()에서 pending spawn 소비 후 호출.
-        public static void ConsumePendingSpawn()
-        {
-            HasPendingSpawn = false;
-            PendingSpawnX = 0f;
-            PendingSpawnY = 0f;
-            PendingMapId = 0;
-        }
     }
 }

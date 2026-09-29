@@ -3,6 +3,7 @@ using Dawnholder.Client.Audio;
 using Dawnholder.Client.Combat;
 using Dawnholder.Client.Gameplay;
 using Dawnholder.Client.Input;
+using Dawnholder.Client.Network;
 using Dawnholder.Client.Prediction;
 using Dawnholder.Client.Rendering;
 using UnityEngine;
@@ -21,15 +22,8 @@ namespace Dawnholder.Client.Bootstrap
     //
     // **배치 위치**: PersistentServices.prefab에 컴포넌트로 부착 (DontDestroyOnLoad).
     //
-    // **spawn 책임 범위 (헌법 §1 Server Authority)**:
-    //   Spawner = GameObject 생성만. 위치/entityId/스탯 = 서버 권위 경로가 처리:
-    //     - 초기 진입: HandleEnterMap → LocalPlayerMovement.Instance.SetServerPosition()
-    //     - 맵 전환:   HandleMapTransition → PendingSpawn 세팅 → Awake()에서 소비
-    //
-    // **초기 진입 race**:
-    //   sceneLoaded에서 Instantiate → LocalPlayerMovement.Awake() → Instance 등록.
-    //   S_EnterMap이 Instance 등록보다 *먼저* 처리되는 경우, HandleEnterMap이 Instance null을 보고
-    //   좌표를 PendingSpawn에 보관 → 곧 spawn될 LocalPlayerMovement.Awake()가 소비.
+    // Spawner는 오브젝트/비주얼/입력 전략/카메라를 설치한 뒤 entry owner에 준비를 알린다.
+    // 서버 spawn과 terrain/HP/roster 적용 및 입력 재개는 session의 entry owner가 결정한다.
     [DisallowMultipleComponent]
     public class LocalPlayerSpawner : MonoBehaviour
     {
@@ -63,6 +57,7 @@ namespace Dawnholder.Client.Bootstrap
             if (LocalPlayerMovement.Instance != null)
             {
                 Debug.Log($"[LocalPlayerSpawner] '{scene.name}': LocalPlayerMovement.Instance 이미 존재 — spawn 생략 (중복 방지).");
+                UnityClientSession.Instance?.TryBindEntryViews();
                 return;
             }
 
@@ -75,8 +70,8 @@ namespace Dawnholder.Client.Bootstrap
             }
 
             // Instantiate: 위치는 origin (0,0,0). 서버 권위 좌표 적용은 이후 흐름에 위임.
-            // - 초기 진입: HandleEnterMap → SetServerPosition()
-            // - 맵 전환:   LocalPlayerMovement.Awake() → PendingSpawn 소비 → SetServerPosition()
+            // 초기/전환 진입 모두 entry owner의 준비 barrier에서 서버 좌표를 적용한다.
+
             // Spawner는 GameObject 생성만 — 헌법 §1 Server Authority 정합.
             GameObject go = Instantiate(_localPlayerPrefab, Vector3.zero, Quaternion.identity);
             go.name = "LocalPlayer"; // "LocalPlayer(Clone)" → "LocalPlayer" (Hierarchy 가독성)
@@ -124,7 +119,8 @@ namespace Dawnholder.Client.Bootstrap
                 layer.AnchorToCameraX();
 
             Debug.Log($"[LocalPlayerSpawner] '{scene.name}': LocalPlayer Instantiate 완료. " +
-                      "위치는 서버 권위 경로(HandleEnterMap / PendingSpawn)가 설정합니다.");
+                      "위치는 현재 entry owner가 준비 조건을 확인한 뒤 설정합니다.");
+            UnityClientSession.Instance?.TryBindEntryViews();
         }
     }
 }

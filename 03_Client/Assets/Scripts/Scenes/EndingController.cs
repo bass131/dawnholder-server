@@ -67,6 +67,7 @@ namespace Dawnholder.Client.Scenes
         {
             if (_exiting) return;
             _exiting = true;
+            Dawnholder.Client.Network.NetworkService.Instance?.Disconnect();
 
             if (SceneTransition.Instance != null)
             {

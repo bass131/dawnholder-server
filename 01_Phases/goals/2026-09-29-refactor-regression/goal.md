@@ -7,7 +7,7 @@
 실행 시스템에 섞인 필요한 설정과 실제 코드에 맞지 않는 주석을 정리하고, 리팩토링 후 동작·구조·AI 작업 준비도를 M0와 비교한다.
 
 - 설정: 최초 적 배치는 content를 읽지만 골렘 재출현 위치/교대는 RespawnSystem 내부다. 기존 값을 유지하는 서버 내부 배치 정책 주입을 우선 검토하고 EnemyCatalog와 실행 시스템의 상수 참조 방향을 정리한다.
-- 주석: GameMap 실행 순서/킬 전달 대상, Snapshot 불변성/식별자, 변경된 연결·전환 계약을 실제 코드와 대조한다. 주석 삭제량이나 파일 크기를 성과로 삼지 않는다.
+- 주석: GameMap 실행 순서/킬 전달 대상, Snapshot 불변성/식별자, 변경된 연결·전환 계약을 실제 코드와 대조한다. M1c 통합 리뷰에서 `LocalPlayerMovement.cs`의 옛 terrain 주입 설명(당시 112–114행)을 P3로 인계받았으므로 최종 binding 경계에 맞춰 수정한다. 주석 삭제량이나 파일 크기를 성과로 삼지 않는다.
 - 회귀: 서버 빌드/테스트·봇, Unity 컴파일/EditMode·실제 접속/전투/사망·부활/맵 왕복/파티/퀘스트/보스 흐름을 구분하여 확인한다.
 - 재평가: [고정 과제와 지표](../../milestones/2026-09-29-refactor-before-persistence/assessment.md)를 [M0](../2026-09-29-refactor-baseline/goal.md)와 같은 조건으로 측정한다. 모델/도구/시간 등이 달라지면 직접 비교 한계를 표시한다.
 
@@ -32,3 +32,5 @@
 ## 실제 결과와 인계
 
 미착수이므로 실행/평가 수치 없음. 착수 시 base/branch/HEAD·소유 파일, 종료 시 검증 환경/명령/근거·회귀 비교·평가 결과·미실행·PR/승인을 이곳에 기록한다. 다음 [DB 설계](../2026-09-29-persistence-design/goal.md)에 최종 main, 안정된 상태 소유·전환 경계, 보존 정책, 기존 DB 인계 경로와 미해결 항목만 전달한다.
+
+M1c 진단 인계: GameSession.SubmitMoveIntent의 GetMap null 로그는 정상 migrating 상태도 config/shutdown race로 표현한다. 상태별 정확한 진단 문구를 검토하되 입력 drop 정책은 보존한다. 실제 두 로그의 세션 identity는 기록되어 있지 않아 추정으로 단정하지 않는다.
