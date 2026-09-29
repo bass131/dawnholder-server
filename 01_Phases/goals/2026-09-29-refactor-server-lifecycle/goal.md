@@ -80,9 +80,9 @@
 | 검증 | 관찰 결과 | 근거 |
 |---|---|---|
 | 초기 구현 빌드 | exit 0, 오류 0·경고 15. 이후 추가 경고 원인 수정 | `implementation/main-build.log` |
-| 전체 서버 suite | 2026-09-29 14:15:35–14:17:44 UTC. 736개 중 통과 731·실패 0·기존 skip 5, exit 0 | `verification/suite-1.log`, `suite-1-run.json`, `results/*.trx` |
-| 보완 후 대상 suite | 14:20:34–14:20:51 UTC. 30/30 통과, 실패·skip 0. 신규 27+기존 scheduler 3. 오류 0·기존 경고 6, 추가 xUnit1031 해소 | `verification/targeted.log`, `targeted-run.json`, `targeted-results/*.trx` |
-| production MapTransition | 14:21:12–14:21:38 UTC. PASS 1/FAIL 0, HG/Boss/Ending/Town 도달, entity 7 유지·도착 좌표 일치 | `verification/production-smoke.log`, `production-smoke-run.json`, `MapTransition-{server,bot}.log` |
+| 전체 서버 suite | 2026-09-29 14:15:35–14:17:44 UTC. 736개 중 통과 731·실패 0·기존 skip 5, exit 0 | `verification/suite-1.log`, `verification/suite-1-run.json`, `verification/results/*.trx` |
+| 보완 후 대상 suite | 14:20:34–14:20:51 UTC. 30/30 통과, 실패·skip 0. 신규 27+기존 scheduler 3. 오류 0·기존 경고 6, 추가 xUnit1031 해소 | `verification/targeted.log`, `verification/targeted-run.json`, `verification/targeted-results/*.trx` |
+| production MapTransition | 14:21:12–14:21:38 UTC. PASS 1/FAIL 0, HG/Boss/Ending/Town 도달, entity 7 유지·도착 좌표 일치 | `verification/production-smoke.log`, `verification/production-smoke-run.json`, `verification/MapTransition-{server,bot}.log` |
 | 운영 문서/skill | diff --check 및 skill quick_validate 통과 | 독립 문서 리뷰와 메인 실행 |
 | 최종 전체 CI | 최종 테스트 집계는 740개다. 최신 head 실행 결과는 PR #131의 CI가 기준이며 로컬 740개 실행으로 보고하지 않는다 | PR 검사·로컬 `pr-checks.json` |
 
