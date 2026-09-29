@@ -1,3 +1,3 @@
 # 현재 목표
 
-[정리 후 남은 Legacy 파일과 디렉터리 정리](../../01_Phases/goals/2026-09-29-legacy-cleanup/goal.md)
+[M0 — 리팩토링 운영과 실행·평가 기준선](../../01_Phases/goals/2026-09-29-refactor-baseline/goal.md)
