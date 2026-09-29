@@ -1,0 +1,5 @@
+PARSE PASS: Configure-WslAccess.ps1
+PARSE PASS: Database.Common.ps1
+PARSE PASS: Install-Database.ps1
+PARSE PASS: Test-Database.ps1
+PARSE PASS: Test-WslAccess.ps1

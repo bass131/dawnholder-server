@@ -1,0 +1,43 @@
+PASS: remote target rejected before connection
+PASS: existing unrelated database rejected before connection
+PASS: column types/nullability, PK/unique/index, FK and trusted constraints catalog
+Migration 1 unchanged.
+PASS: insert/read joins, coordinates, HP and defaults
+Migration 1 unchanged.
+Migration 1 unchanged.
+PASS: migration replay preserves populated row and rowversion
+PASS: migration replay has one version row
+PASS: changed migration history rejected
+PASS: unknown database migration rejected
+PASS: account PK duplicate rejected (SQL 2627)
+PASS: character PK duplicate rejected (SQL 2627)
+PASS: progress PK duplicate rejected (SQL 2627)
+PASS: migration name unique constraint (SQL 2627)
+PASS: orphan character rejected (SQL 547)
+PASS: orphan progress rejected (SQL 547)
+PASS: account deletion does not cascade (SQL 547)
+PASS: character deletion does not cascade (SQL 547)
+PASS: invalid class rejected (SQL 547)
+PASS: invalid map rejected (SQL 547)
+PASS: invalid HP rejected: Hp=-1 (SQL 547)
+PASS: invalid HP rejected: Hp=151 (SQL 547)
+PASS: invalid HP rejected: MaxHp=0 (SQL 547)
+PASS: missing coordinate rejected (SQL 515)
+PASS: expected failures leave test transaction usable
+PASS: current rowversion update succeeds
+PASS: stale save rejected without lost update
+PASS: winning save retained
+PASS: both classes, all maps and zero HP accepted
+PASS: second connection cannot acquire held migration lock
+PASS: second writer blocked by uncommitted save (SQL 1222)
+PASS: delete progress test row
+PASS: delete character test row
+PASS: delete account test row
+PASS: rollback witness exists before rollback
+PASS: rollback leaves no test rows
+PASS: migration lock released on rollback
+PASS: loosened class CHECK rejected (SQL 51004)
+PASS: changed unlock DEFAULT rejected (SQL 51005)
+PASS: default attached to wrong column rejected (SQL 51005)
+PASS: original CHECK/default definitions restored after each negative test
+PASS: all database checks on .\SQLEXPRESS / Dawnholder_Dev. No test rows committed.

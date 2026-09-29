@@ -1,0 +1,2 @@
+Enable completed. Run Test-WslAccess.ps1 to verify native WSL authentication and runtime permissions.
+ExitCode: 0
