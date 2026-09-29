@@ -1,6 +1,6 @@
 # M1a — 서버 시작·종료와 세션 해제의 소유권
 
-상태: 구현·로컬 검증 완료, 결과 통합·PR 준비 중. [M1](../2026-09-29-refactor-lifecycle/goal.md)의 첫 독립 PR이다. base main `95058e585ac4a9c12f305b7135db124d53171941`, branch `feat/refactor-lifecycle`. M0 PR #130 병합과 다음 단계 진행은 사용자 승인됨. 이 PR의 병합은 별도 승인 대상이며 아직 승인·병합하지 않았다.
+상태: 구현·로컬 검증·독립 리뷰 완료, [PR #131](https://github.com/bass131/dawnholder-server/pull/131) 병합 승인 대기. [M1](../2026-09-29-refactor-lifecycle/goal.md)의 첫 독립 PR이다. base main `95058e585ac4a9c12f305b7135db124d53171941`, branch `feat/refactor-lifecycle`, 구현·테스트 커밋 `e31a399`. M0 PR #130 병합과 다음 단계 진행은 사용자 승인됨. PR #131은 별도 승인 대상이며 아직 승인·병합하지 않았다. 최신 head의 CI는 PR 검사 결과에서 확인한다.
 
 ## 목표와 선택 설계
 
@@ -57,7 +57,7 @@
 - [x] 진입 및 이동 단계별 종료에서 0/1 등록과 cleanup 이후 0, 낡은 작업의 무효화를 독립 테스트 코드로 확인한다.
 - [x] 실제 listener/host 접속과 종료·scheduler 종료 실패의 관찰 가능한 결과를 독립 테스트로 확인한다.
 - [x] 영향받는 서버 suite와 production MapTransition smoke를 실행한다. 기존 M0의 skip·fixture 한계와 구분한다.
-- [ ] 독립 코드 리뷰·테스트 결과·미실행 범위를 기록하고 PR을 준비한다. 병합 승인은 별도 기록한다.
+- [x] 독립 코드 리뷰·테스트 결과·미실행 범위를 기록하고 PR을 준비한다. 병합 승인은 별도 기록한다.
 
 실행 전 [DEVELOPMENT](../../../00_Document/operations/DEVELOPMENT.md)의 WSL lock·포트·DLL 복사 부작용을 확인한다. 원시 근거는 `.backups/verification/2026-09-29-server-lifecycle/`에 둔다. 서버만 변경하므로 Unity 편집·실제 플레이 성공을 이 PR의 서버 결과로 주장하지 않는다. 클라이언트 변경과 통합 플레이는 후속 M1 목표에서 검증한다.
 
@@ -84,6 +84,7 @@
 | 보완 후 대상 suite | 14:20:34–14:20:51 UTC. 30/30 통과, 실패·skip 0. 신규 27+기존 scheduler 3. 오류 0·기존 경고 6, 추가 xUnit1031 해소 | `verification/targeted.log`, `targeted-run.json`, `targeted-results/*.trx` |
 | production MapTransition | 14:21:12–14:21:38 UTC. PASS 1/FAIL 0, HG/Boss/Ending/Town 도달, entity 7 유지·도착 좌표 일치 | `verification/production-smoke.log`, `production-smoke-run.json`, `MapTransition-{server,bot}.log` |
 | 운영 문서/skill | diff --check 및 skill quick_validate 통과 | 독립 문서 리뷰와 메인 실행 |
+| 최종 전체 CI | 최종 테스트 집계는 740개다. 최신 head 실행 결과는 PR #131의 CI가 기준이며 로컬 740개 실행으로 보고하지 않는다 | PR 검사·로컬 `pr-checks.json` |
 
 서버 명령은 `wsl -d Ubuntu --exec bash 99_Tools/sync-wsl.sh test --logger trx --results-directory <전용 경로>`다. 보완 검증은 `--filter 'FullyQualifiedName~SessionCleanupTests|FullyQualifiedName~ServerHostLifecycleTests|FullyQualifiedName~TickSchedulerTests'`를 추가했다. 봇 명령은 같은 helper의 `bot MapTransition`이다. 보완 뒤 로컬 전체 suite를 다시 실행했다고 주장하지 않으며 최종 PR CI와 구분한다. 실행 후 WSL 7777 listener 및 이 작업의 GameServer/testhost/HeadlessBot/helper 실행이 없음을 확인했다.
 
@@ -93,6 +94,6 @@
 - 이동 종료는 단계별 상태·큐 순서와 목적지 등록 중 transient routing 상태를 제어해 검증했다. 기존 경쟁 창을 실제 OS 스케줄링에서 재현했다는 뜻은 아니다. 일시적 OS accept 오류의 자연 발생·재시도도 실행 재현하지 않았다.
 - production 봇은 Debug 해금 명령을 사용하며 실제 처치 목표·보스 전투 검증이 아니다. helper의 프로세스 종료는 Program의 Enter 입력에 의한 정상 종료 검증이 아니다. 정상 Host 종료·timeout/재시도는 별도 loopback 테스트로 검증했다.
 - Unity 실제 플레이·DB 검증은 미실행이며 클라이언트 수명/씬 진입 완료로 표시하지 않는다.
-- 구현자·테스트 작성자·리뷰어는 쓰기를 종료했다. 메인은 문서·Git·PR 통합만 소유한다. PR은 준비 중이고 병합은 미승인이다.
+- 독립 검증자가 TRX와 봇 원문을 대조한 최종 판정은 로컬 `verification/summary.md`에 있다. 구현자·테스트 작성자·리뷰어는 쓰기를 종료했다. 메인은 문서·Git·PR 통합만 소유한다. PR #131을 생성했으며 병합은 미승인이다. 명시 승인을 받기 전 다음 목표의 구현 브랜치로 진행하지 않는다.
 
 이 PR 통합 후 최신 main에서 [M1b](../2026-09-29-refactor-client-connection/goal.md)를 시작한다. 클라이언트 설계에서 서버 wire 순서 보존을 확인했고 서버 변경을 클라이언트 연결/씬 진입 완료로 취급하지 않는다.
