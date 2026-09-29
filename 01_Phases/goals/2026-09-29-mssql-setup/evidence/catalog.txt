@@ -1,0 +1,21 @@
+ServerName DatabaseName
+---------- ------------
+YYH_Desktop\SQLEXPRESS Dawnholder_Dev
+Version MigrationName Checksum
+------- ------------- --------
+1 001_initial.sql F28502BB1A8D683A66F596F15BA9EEC779E5110BAD8ADDAEE03E393F26E54FCC
+TableName RowsPresent
+--------- -----------
+Account 0
+Character 0
+CharacterProgress 0
+TransactionCount
+----------------
+0
+Address port
+------- ----
+127.0.0.1 14330
+::1 14330
+WindowsOnlyAuthentication
+-------------------------
+0

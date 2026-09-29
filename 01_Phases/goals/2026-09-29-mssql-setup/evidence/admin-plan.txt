@@ -1,0 +1,59 @@
+Path   : HKLM:/SOFTWARE/Microsoft/Microsoft SQL Server/MSSQL17.SQLEXPRESS/MSSQLServer
+Name   : LoginMode
+Before : 1
+After  : 2
+
+Path   : HKLM:/SOFTWARE/Microsoft/Microsoft SQL Server/MSSQL17.SQLEXPRESS/MSSQLServer/SuperSocketNetLib/Tcp
+Name   : Enabled
+Before : 0
+After  : 1
+
+Path   : HKLM:/SOFTWARE/Microsoft/Microsoft SQL Server/MSSQL17.SQLEXPRESS/MSSQLServer/SuperSocketNetLib/Tcp
+Name   : ListenOnAllIPs
+Before : 1
+After  : 0
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP1
+Name   : Enabled
+Before : 0
+After  : 0
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP2
+Name   : Enabled
+Before : 0
+After  : 0
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP3
+Name   : Enabled
+Before : 0
+After  : 1
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP3
+Name   : TcpPort
+Before :
+After  : 14330
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP3
+Name   : TcpDynamicPorts
+Before : 0
+After  :
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP4
+Name   : Enabled
+Before : 0
+After  : 1
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP4
+Name   : TcpPort
+Before :
+After  : 14330
+
+Path   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP4
+Name   : TcpDynamicPorts
+Before : 0
+After  :
+
+Additional changes: new random SQL login; user in Dawnholder_Dev; SELECT/INSERT/UPDATE on the three game tables; SELECT on SchemaVersion.
+One service restart for Enable, one for Restore. No SQL Browser or firewall changes. Port: 14330, loopback only.
+State and Windows DPAPI credential: C:\Users\bass1\AppData\Local\Dawnholder\MssqlWsl-SQLEXPRESS (created only by Enable).
+Restore reverts saved registry values and disables only the newly created login; it preserves all data, user and credential files.
