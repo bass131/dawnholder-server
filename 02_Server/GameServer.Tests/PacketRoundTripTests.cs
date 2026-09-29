@@ -8,7 +8,7 @@ namespace GameServer.Tests;
 /// 자체 PDL이 자동 생성한 패킷 클래스(98_Shared/Protocol/Generated/GenPackets.cs)의
 /// **라운드트립 정합 검증**.
 ///
-/// **왜 이 테스트가 헌법 권고 영역인가** (루트 CLAUDE.md / 02_Server/CLAUDE.md):
+/// 직렬화 계약과 변경 검증 기준은 00_Document/domains/protocol.md 참조.
 /// 게임 서버 도메인에서 *직렬화 깨짐*은 프로덕션에서 발견되는 최악 사례 중 하나.
 /// desync / 핵 발견이 1년 후 대량 환불 사건으로 이어지는 클래식 패턴. 본 테스트가
 /// PDL.xml 변경 / PacketFormat.cs 템플릿 변경 / BinaryPrimitives endian 정합

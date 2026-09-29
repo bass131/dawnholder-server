@@ -3,7 +3,7 @@
 //
 // ⚠️ 현재 미wiring — 실제 송신은 ClientSession.cs가 패킷당 byte[] → _sendQueue → SendAsync(BufferList)
 //   직접 경로. 본 클래스(GC 압력 최소화 = 청크 재사용)는 끼우지 않은 최적화 참조 구현이다(자리잡이).
-//   삭제 대상 아님 — broadcast/송신 최적화 시 wiring 후보(04_ClientNet/CLAUDE.md 레이아웃 정합).
+//   삭제 대상 아님 — broadcast/송신 최적화 시 wiring 후보. 전송 계층 계약은 04_ClientNet/README.md 참조.
 //
 // "왜 합치지 않았나" — Y2 분리 갈래(ADR-012):
 //   - 클라: .NET Standard 2.1, Unity Mono/IL2CPP 제약

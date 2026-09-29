@@ -3,8 +3,8 @@ namespace Shared.Protocol;
 /// <summary>
 /// 와이어 프로토콜 버전. 패킷 모양이 바뀔 때마다 bump (헌법 #2 "Protocol is Sacred").
 ///
-/// **자리잡이 위치 활용** (98_Shared/CLAUDE.md Layout 표에 박혀있던 `(예정 — Phase M2+ 핸드셰이크)`
-/// 자리에 Phase 07 D3 결정으로 박음):
+/// Phase 07 D3 결정으로 핸드셰이크 버전을 도입했다.
+/// 현재 패킷 변경·버전·호환성 계약은 00_Document/domains/protocol.md 참조.
 ///
 /// **버전 이력**:
 ///   - v1: M2 Phase 04~06 — C_MoveIntent (sbyte inputX), S_Snapshot (x/y만).
