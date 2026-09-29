@@ -45,5 +45,29 @@ namespace Dawnholder.Client.State
 
             OnQuestUpdated?.Invoke();
         }
+
+        public void ResetSession()
+        {
+            ResetSessionValues();
+            NotifySessionReset();
+        }
+
+        internal void ResetSessionValues()
+        {
+            CurrentCount = 0;
+            TargetCount = 0;
+        }
+
+        internal void NotifySessionReset()
+        {
+            if (OnQuestUpdated == null) return;
+            var errors = new System.Collections.Generic.List<Exception>();
+            foreach (Action notify in OnQuestUpdated.GetInvocationList())
+            {
+                try { notify(); }
+                catch (Exception error) { errors.Add(error); }
+            }
+            if (errors.Count != 0) throw new AggregateException("Quest reset notification failed.", errors);
+        }
     }
 }

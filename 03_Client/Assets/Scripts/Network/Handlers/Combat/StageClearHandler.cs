@@ -28,7 +28,7 @@ namespace Dawnholder.Client.Network.Handlers.Combat
 
             int bossId = pkt.bossEntityId;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 Debug.Log($"[Unity] StageClear! (boss entity {bossId})");
                 if (StageClearUI.Instance == null)

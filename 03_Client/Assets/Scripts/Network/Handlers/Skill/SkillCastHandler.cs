@@ -73,7 +73,7 @@ namespace Dawnholder.Client.Network.Handlers.Skill
             byte skillId = pkt.skillId;
             byte facing = pkt.facing; // 0=좌, 1=우
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 if (session.LocalEntityId == null) return;
 

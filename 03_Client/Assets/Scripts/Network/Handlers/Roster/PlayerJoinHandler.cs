@@ -31,7 +31,7 @@ namespace Dawnholder.Client.Network.Handlers.Roster
             float y = pkt.spawnY;
             CharacterClass cls = ClassLoadout.ByteToClass(pkt.characterClass);
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 if (session.LocalEntityId != null && eid == session.LocalEntityId.Value) return;
 

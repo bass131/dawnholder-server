@@ -20,7 +20,7 @@ namespace Dawnholder.Client.Network.Handlers.Party
             int inviterId = pkt.inviterEntityId;
             byte inviterClass = pkt.inviterClass;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 Debug.Log($"[Party] 초대 수신 — inviter={inviterId} class={inviterClass}");
                 PartyState.Instance.SetPendingInvite(inviterId, inviterClass);

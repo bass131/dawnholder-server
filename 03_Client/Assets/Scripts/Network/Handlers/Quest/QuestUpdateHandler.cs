@@ -19,7 +19,7 @@ namespace Dawnholder.Client.Network.Handlers.Quest
             int currentCount = pkt.currentCount;
             int targetCount  = pkt.targetCount;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 Debug.Log($"[Quest] 업데이트 수신 — {currentCount}/{targetCount}");
                 QuestState.Instance.ApplyUpdate(currentCount, targetCount);

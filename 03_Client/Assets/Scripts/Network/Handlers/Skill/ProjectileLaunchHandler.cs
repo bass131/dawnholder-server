@@ -37,7 +37,7 @@ namespace Dawnholder.Client.Network.Handlers.Skill
             int targetId = pkt.targetEntityId;
             int travelTicks = pkt.travelTicks;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 if (session.LocalEntityId == null) return;
 

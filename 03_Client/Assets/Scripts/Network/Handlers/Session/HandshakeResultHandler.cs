@@ -30,7 +30,7 @@ namespace Dawnholder.Client.Network.Handlers.Session
             ushort sv = pkt.serverVersion;
             string reason = pkt.reason;
 
-            MainThreadDispatcher.Enqueue(() =>
+            session.EnqueueApply(() =>
             {
                 if (ok)
                 {

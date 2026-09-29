@@ -6,9 +6,8 @@ namespace Dawnholder.Client.Net;
 // ─────────────────────────────────────────────────────────────────────────────
 // ⚠️ Unity main thread 침범 금지
 //
-// 이 파일의 모든 콜백 (OnConnected / OnDisconnected / OnRecv / OnSend /
-// OnRecvPacket)은 .NET 스레드풀의 *socket 워커 스레드*에서 호출됩니다.
-// Unity main thread가 아닙니다. 따라서:
+// 콜백은 호출 스레드 또는 socket 워커에서 실행될 수 있으며 스레드 보장이 없습니다.
+// Unity main thread라고 가정하지 않습니다. 따라서:
 //
 //   - GameObject / Transform / MonoBehaviour 등 Unity API 직접 호출 금지.
 //   - 받은 데이터/이벤트는 main-thread queue에 박아두고 Unity의 Update()에서
@@ -102,7 +101,6 @@ public abstract class ClientSession
 
     protected Socket? _socket;
     protected int _disconnected = 0; // 0 = 연결됨, 1 = 끊김. Interlocked로만 변경.
-
     // _lock: Send 호출이 main thread / socket worker thread 양쪽에서 들어올 수
     // 있어 큐 보호 필요. 클라라고 단순화 안 한 이유 = 위 메모의 두 스레드 시나리오.
     protected readonly object _lock = new object();
@@ -111,9 +109,13 @@ public abstract class ClientSession
     protected readonly SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
     protected readonly SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs();
 
+    readonly object _lifecycleGate = new();
+    EndPoint _remoteEndPoint = new IPEndPoint(IPAddress.None, 0);
     readonly RecvBuffer _recvBuffer = new RecvBuffer(65535);
 
     #endregion
+
+    public bool IsDisconnected => Volatile.Read(ref _disconnected) != 0;
 
     public abstract void OnConnected(EndPoint endPoint);
     public abstract void OnDisconnected(EndPoint endPoint);
@@ -123,12 +125,33 @@ public abstract class ClientSession
     /// <summary>Connector가 connect 성공 후 호출. 비동기 수신 시작.</summary>
     public void Start(Socket socket)
     {
-        _socket = socket;
-
-        _recvArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnRecvCompleted);
-        _sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
-
-        RegisterRecv();
+        if (socket == null) throw new ArgumentNullException(nameof(socket));
+        try
+        {
+            lock (_lifecycleGate)
+            {
+                if (IsDisconnected)
+                {
+                    socket.Dispose();
+                    return;
+                }
+                if (_socket != null)
+                {
+                    if (!ReferenceEquals(_socket, socket)) socket.Dispose();
+                    throw new InvalidOperationException("A client session can only be started once.");
+                }
+                _socket = socket;
+                _remoteEndPoint = socket.RemoteEndPoint ?? _remoteEndPoint;
+                _recvArgs.Completed += OnRecvCompleted;
+                _sendArgs.Completed += OnSendCompleted;
+            }
+            RegisterRecv();
+        }
+        catch (Exception error)
+        {
+            Console.WriteLine($"[ClientSession] Start failed: {error}");
+            Disconnect();
+        }
     }
 
     /// <summary>패킷 1개를 전송 큐에 넣고, 대기 중이 없으면 즉시 전송 시작.</summary>
@@ -136,6 +159,7 @@ public abstract class ClientSession
     {
         lock (_lock)
         {
+            if (IsDisconnected) return;
             _sendQueue.Enqueue(sendBuff);
 
             if (_pendingList.Count == 0)
@@ -151,6 +175,7 @@ public abstract class ClientSession
 
         lock (_lock)
         {
+            if (IsDisconnected) return;
             foreach (ArraySegment<byte> sendBuff in sendBuffList)
                 _sendQueue.Enqueue(sendBuff);
 
@@ -166,15 +191,25 @@ public abstract class ClientSession
         if (Interlocked.Exchange(ref _disconnected, 1) == 1)
             return;
 
-        OnDisconnected(_socket!.RemoteEndPoint!);
+        Socket? socket;
+        EndPoint endPoint;
+        lock (_lifecycleGate)
+        {
+            socket = _socket;
+            endPoint = _remoteEndPoint;
+        }
+
+        // Notification failures must not skip transport cleanup (including pre-Start close).
+        try { OnDisconnected(endPoint); }
+        catch (Exception error) { Console.WriteLine($"[ClientSession] OnDisconnected failed: {error}"); }
 
         // Shutdown / Close / Clear 각 단계 독립 보호.
         // Shutdown throw → Close 여전히 실행(FD 누수 차단), Close throw → Clear 여전히 실행.
         // 서버 Session.cs와 자매 봉합 (ADR-012 Y2 분리 정합 — 양쪽 동시 수정).
-        try { _socket!.Shutdown(SocketShutdown.Both); }
+        try { socket?.Shutdown(SocketShutdown.Both); }
         catch (Exception e) { Console.WriteLine($"[ClientSession] socket Shutdown 예외 (이미 reset?) — 무시: {e.Message}"); }
 
-        try { _socket!.Close(); }
+        try { socket?.Close(); }
         catch (Exception e) { Console.WriteLine($"[ClientSession] socket Close 예외 — 무시: {e.Message}"); }
 
         Clear();
@@ -216,6 +251,7 @@ public abstract class ClientSession
         catch (Exception e)
         {
             Console.WriteLine($"[ClientSession] RegisterSend Failed {e}");
+            Disconnect();
         }
     }
 
@@ -238,6 +274,7 @@ public abstract class ClientSession
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[ClientSession] OnSendCompleted Failed : {ex}");
+                    Disconnect();
                 }
             }
             else
@@ -266,6 +303,7 @@ public abstract class ClientSession
         catch (Exception e)
         {
             Console.WriteLine($"[ClientSession] RegisterRecv Failed {e}");
+            Disconnect();
         }
     }
 
@@ -300,6 +338,7 @@ public abstract class ClientSession
             catch (Exception ex)
             {
                 Console.WriteLine($"[ClientSession] OnRecvCompleted Failed : {ex}");
+                Disconnect();
             }
         }
         else
