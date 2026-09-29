@@ -7,7 +7,6 @@
     "eamodio.gitlens",
     "ms-vscode.powershell",
     "redhat.vscode-xml",
-    "yzhang.markdown-all-in-one",
-    "anthropic.claude-code"
+    "yzhang.markdown-all-in-one"
   ]
 }

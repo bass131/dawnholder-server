@@ -1,3 +1,3 @@
 # 현재 목표
 
-[문서 정비와 AI 작업 준비도 개선](../../01_Phases/goals/2026-09-29-ai-readiness-docs/goal.md)
+[정리 후 남은 Legacy 파일과 디렉터리 정리](../../01_Phases/goals/2026-09-29-legacy-cleanup/goal.md)

@@ -12,7 +12,7 @@ using Dawnholder.Server.GameServer.Handlers.Debug;
 namespace Dawnholder.Server.GameServer.Handlers;
 
 // PacketID → IPacketHandler dispatch 테이블.
-// 새 핸들러 추가 절차는 02_Server/CLAUDE.md "새 packet handler를 추가할 때" 참조.
+// 핸들러의 입력 검증과 상태 변경 경계는 00_Document/domains/server.md "수정 흐름" 참조.
 //
 // **Dispatch 패턴 선택 trade-off**:
 //   - if-else / switch: 새 핸들러 추가 시 누락 위험 또는 본문 수정 필요.
