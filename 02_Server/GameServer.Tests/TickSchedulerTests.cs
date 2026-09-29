@@ -7,6 +7,60 @@ namespace Dawnholder.Server.GameServer.Tests;
 public class TickSchedulerTests
 {
     [Fact]
+    public void StopTimeout_PreservesRunningTask_AndRetryWaitsForActualExit()
+    {
+        using ManualResetEventSlim entered = new();
+        using ManualResetEventSlim release = new();
+        TickScheduler scheduler = new(_ => { entered.Set(); release.Wait(TimeSpan.FromSeconds(10)); });
+        scheduler.Start();
+        try
+        {
+            Assert.True(entered.Wait(TimeSpan.FromSeconds(3)));
+            Assert.Throws<TimeoutException>(() => scheduler.Stop(TimeSpan.FromMilliseconds(30)));
+            Assert.Throws<InvalidOperationException>(() => scheduler.Start());
+        }
+        finally { release.Set(); scheduler.Stop(TimeSpan.FromSeconds(3)); }
+        long stoppedTick = scheduler.CurrentTick;
+        scheduler.Stop(); // repeated stop remains harmless
+        Assert.Equal(stoppedTick, scheduler.CurrentTick);
+    }
+
+    [Fact]
+    public async Task StopFromTick_IsRejectedWithoutDeadlockingExternalStop()
+    {
+        TaskCompletionSource<Exception?> observed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TickScheduler? scheduler = null;
+        scheduler = new TickScheduler(_ => observed.TrySetResult(Record.Exception(() => scheduler!.Stop())));
+        scheduler.Start();
+        try
+        {
+            Assert.IsType<InvalidOperationException>(await observed.Task.WaitAsync(TimeSpan.FromSeconds(3)));
+        }
+        finally { scheduler.Stop(); }
+    }
+
+    [Fact]
+    public void FaultedRunTask_IsReportedByStop()
+    {
+        using ManualResetEventSlim faultEntered = new();
+        TickScheduler scheduler = new(_ => { });
+        InvalidOperationException failure = new("injected metrics callback failure");
+        scheduler.OnMetricsSnapshot += _ => { faultEntered.Set(); throw failure; };
+        scheduler.Start();
+        try
+        {
+            Assert.True(faultEntered.Wait(TimeSpan.FromSeconds(4)));
+            AggregateException error = Assert.Throws<AggregateException>(() => scheduler.Stop());
+            Assert.Contains(failure, error.Flatten().InnerExceptions);
+        }
+        finally
+        {
+            // A fault must be observed, but this task has already exited; no process is left running.
+            try { scheduler.Stop(); } catch (AggregateException) { }
+        }
+    }
+
+    [Fact]
     public void FiresApproximately20TicksPerSecond()
     {
         int count = 0;

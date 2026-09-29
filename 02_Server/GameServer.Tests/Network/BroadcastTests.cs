@@ -1,4 +1,6 @@
 using System.Net;
+using Dawnholder.Server.GameServer.Loop;
+using Dawnholder.Server.GameServer.Tests.Maps;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
@@ -22,9 +24,10 @@ namespace GameServer.Tests.Network;
 ///   - Send/Disconnect/GetMap override로 캡처
 ///   - 두 TestGameSession 인스턴스 + 단일 GameMap 주입 + tick 직접 제어
 /// </summary>
-[Collection("ConsoleSerial")]
+[Collection("GameWorldRegistryTests")]
 public class BroadcastTests : IDisposable
 {
+    readonly GameWorld _world;
     readonly GameMap _map;
     readonly StringWriter _consoleCapture;
     readonly TextWriter _originalOut;
@@ -73,14 +76,16 @@ public class BroadcastTests : IDisposable
             new EnemySpawnPoint((byte)EnemyKind.Normal, NormalX, NormalY),
             new EnemySpawnPoint((byte)EnemyKind.Boss,   BossX,   BossY),
         });
-        _map = new GameMap(MapId.HuntingGround, content: content);
+        _world = new GameWorld(new Dictionary<MapId, (MapTerrain?, MapContent?)>
+        { [MapId.HuntingGround] = (null, content) });
+        _map = _world.GetMap(MapId.HuntingGround)!;
 
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
         Console.SetOut(_consoleCapture);
     }
 
-    public void Dispose() => Console.SetOut(_originalOut);
+    public void Dispose() { _world.Stop(); Console.SetOut(_originalOut); }
 
     static IPEndPoint Ep() => new IPEndPoint(IPAddress.Loopback, 0);
 
@@ -203,7 +208,7 @@ public class BroadcastTests : IDisposable
 
         // s1 disconnect → cleanup job + S_PlayerLeave broadcast to s2
         s1.OnDisconnected(Ep());
-        _map.Tick(2);
+        LifecycleTestWorld.Tick(_world, 2);
 
         // s2가 PlayerLeave 1건 받았는지
         List<byte[]> s2New = s2.SentPackets.Skip(s2BaselineCount).ToList();
@@ -270,6 +275,8 @@ public class BroadcastTests : IDisposable
         // 만약 roster skip이 깨지면 s2.SentPackets에 s1의 PlayerJoin이 들어감.
         int s2RosterCount = CountPacketsOfType(s2.SentPackets, PacketID.S_PlayerJoin);
         Assert.Equal(0, s2RosterCount);
+
+        LifecycleTestWorld.Tick(_world, 2); // actual world-owned close queue drain
 
         // 검증 3: tick 후 s1만 사라지고 s2는 정상 add됨 (s2는 closing 아님).
         // s2 EnterGameWorld 람다는 `self=s2`의 _closing(=0)만 보고 add 진행한다.

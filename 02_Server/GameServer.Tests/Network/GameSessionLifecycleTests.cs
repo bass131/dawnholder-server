@@ -1,4 +1,7 @@
 using System.Net;
+using Dawnholder.Server.GameServer.Loop;
+using Dawnholder.Server.GameServer.Tests.Maps;
+using Shared.GameData;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
 
@@ -8,17 +11,17 @@ namespace GameServer.Tests.Network;
 /// connect/disconnect race window 봉합 회귀 안전망.
 ///
 /// **검증 invariant**: connect 직후 tick 전에 disconnect가 와도 ghost player가 맵에 남지 않는다.
-/// `OnConnected`의 queued AddPlayer job과 `OnDisconnected`의 `_entityId<0` early-return이 race.
-/// accept 직후 끊기면 cleanup 누락 + queued AddPlayer가 닫힌 세션을 owner로 player 박음.
+/// 진입 job과 월드 종료 요청 큐의 순서를 바꿔도 닫힌 세션이 player로 남지 않는지 확인한다.
 ///
 /// **테스트 전략 (deterministic)**:
-/// - GameSession.GetMap() override로 GameMap 직접 주입 (singleton race 차단)
-/// - GameMap.Tick() 호출 시점 직접 제어 → race window를 *결정론적*으로 재현
-/// - rapid smoke 100회는 추가 안전망 (deterministic은 아니지만 회귀 보호)
+/// - 실제 GameWorld를 만들고 world tick을 직접 진행하여 close queue까지 검증
+/// - world tick 호출 시점을 제어하여 각 순서를 결정론적으로 검증
+/// - rapid smoke 100회는 누적 누수 회귀 보호
 /// </summary>
-[Collection("ConsoleSerial")]
+[Collection("GameWorldRegistryTests")]
 public class GameSessionLifecycleTests : IDisposable
 {
+    readonly GameWorld _world;
     readonly GameMap _map;
     readonly StringWriter _consoleCapture;
     readonly TextWriter _originalOut;
@@ -48,13 +51,15 @@ public class GameSessionLifecycleTests : IDisposable
     {
         // Town(빈 맵) — lifecycle 테스트는 enemy 불필요.
         // 플레이어 entityId = 1 (enemy 없음 → 첫 발급 = 1).
-        _map = new GameMap(MapId.Town);
+        _world = new GameWorld(new Dictionary<MapId, (MapTerrain?, MapContent?)>());
+        _map = _world.Map;
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;
         Console.SetOut(_consoleCapture);
     }
 
-    public void Dispose() => Console.SetOut(_originalOut);
+    public void Dispose() { _world.Stop(); Console.SetOut(_originalOut); }
+    void Tick(long tick) => LifecycleTestWorld.Tick(_world, tick);
 
     static IPEndPoint Ep() => new IPEndPoint(IPAddress.Loopback, 0);
 
@@ -63,8 +68,8 @@ public class GameSessionLifecycleTests : IDisposable
     {
         // 핵심 race 시나리오 — deterministic.
         // 1. OnConnected → AddPlayer job 1개 enqueue (아직 tick 안 함)
-        // 2. tick 전에 OnDisconnected → cleanup job 1개 enqueue (총 2개)
-        // 3. Tick 1회 → 두 job 순차 처리 → players=0 (ghost player X)
+        // 2. tick 전에 OnDisconnected → 별도 월드 close queue에 요청
+        // 3. World tick → close queue 및 map job 처리 → players=0
         TestGameSession session = new(_map);
 
         session.OnConnected(Ep());     // job 1 enqueue
@@ -73,7 +78,7 @@ public class GameSessionLifecycleTests : IDisposable
         session.OnDisconnected(Ep());   // job 2 enqueue (closing 플래그 박힘)
         Assert.Empty(_map.Players);
 
-        _map.Tick(1); // 두 job 처리
+        Tick(1); // 두 job 처리
 
         // AddPlayer job은 _closing 체크로 skip. RemovePlayerBySession은 0건 제거(이미 없음).
         // 결과: ghost player 없음.
@@ -90,14 +95,14 @@ public class GameSessionLifecycleTests : IDisposable
         TestGameSession session = new(_map);
 
         session.OnConnected(Ep());
-        _map.Tick(1);
+        Tick(1);
         Assert.Single(_map.Players);
 
         session.OnDisconnected(Ep());
-        _map.Tick(2);
+        Tick(2);
 
         Assert.Empty(_map.Players);
-        Assert.Contains("Session cleanup", _consoleCapture.ToString());
+        Assert.Equal(-1, session.EntityId);
     }
 
     [Fact]
@@ -108,14 +113,14 @@ public class GameSessionLifecycleTests : IDisposable
         TestGameSession session = new(_map);
 
         session.OnConnected(Ep());
-        _map.Tick(1);
+        Tick(1);
 
         // 첫 OnDisconnected → cleanup job enqueue
         session.OnDisconnected(Ep());
         // 두 번째 OnDisconnected → early return (이중 enqueue 차단)
         session.OnDisconnected(Ep());
 
-        _map.Tick(2);
+        Tick(2);
 
         Assert.Empty(_map.Players);
         // "[GameSession] OnDisconnected from" 로그는 첫 호출에서만 박힘 = 1번
@@ -126,14 +131,14 @@ public class GameSessionLifecycleTests : IDisposable
     [Fact]
     public void ScenarioD_RapidConnectDisconnect_100x_NoLeak()
     {
-        // smoke 회귀 안전망 — deterministic은 아니지만 누적 누수 X 확증.
+        // 반복 진입·종료의 누적 누수 회귀 안전망.
         // 매 iteration마다 새 session, 매 iteration 후 tick.
         for (int i = 0; i < 100; i++)
         {
             TestGameSession s = new(_map);
             s.OnConnected(Ep());
             s.OnDisconnected(Ep());
-            _map.Tick((long)(i + 1));
+            Tick((long)(i + 1));
         }
 
         Assert.Empty(_map.Players); // 누적 player 0
@@ -148,37 +153,28 @@ public class GameSessionLifecycleTests : IDisposable
         TestGameSession session = new(_map);
 
         session.OnDisconnected(Ep());  // _closing=1 박힘, cleanup job 1 enqueue
-        session.OnConnected(Ep());     // _closing 체크 *결과*는 job 실행 시점에 평가
-                                       // — enqueue는 됨, AddPlayer는 skip될 것
+        session.OnConnected(Ep());     // closing 상태에서는 진입을 예약하지 않는다.
 
-        _map.Tick(1); // 두 job 실행: cleanup(0 제거) → AddPlayer(closing=1 → skip)
+
+        Tick(1); // 종료 요청 처리. 역순 진입은 예약되지 않아 player가 생기지 않는다.
 
         Assert.Empty(_map.Players);
-        Assert.Contains("AddPlayer skipped", _consoleCapture.ToString());
+        Assert.Equal(-1, session.EntityId);
     }
 
     [Fact]
     public void EntityId_ResetAfterCleanup()
     {
-        // cleanup 후 _entityId reset. 낡은 id 잔존 방지.
-        // session 객체에서 직접 _entityId를 보는 방법은 없으므로 (private),
-        // cleanup 로그에 "entityId={_entityId}"가 박혀있는데 *cleanup 후* 박는 게 -1이면
-        // OK. 다만 Console.WriteLine은 reset 전에 박힘 (구조상). 그래서 다음 cleanup 시
-        // -1이 박혀야 한다.
+        // Observe the reset directly after the real world cleanup tick.
         TestGameSession session = new(_map);
         session.OnConnected(Ep());
-        _map.Tick(1);
+        Tick(1);
         Assert.Single(_map.Players);
 
         session.OnDisconnected(Ep());
-        _map.Tick(2);
+        Tick(2);
 
-        // 첫 cleanup 로그는 _entityId=1 (reset 전).
-        // Town 맵(빈 맵) 사용 → enemy 없음 → player = 첫 발급 entityId=1.
-        Assert.Contains("entityId=1", _consoleCapture.ToString());
-        // reset 이후의 검증 — direct access 불가하므로, 두 번째 OnDisconnected를 무시(_closing=1)
-        // 후 _entityId 직접 reflection으로 확인하는 대신 _closing 멱등성으로 간접 검증.
-        // (이 테스트는 reset 자체보다는 *cleanup 호출이 정상 마무리됨* 검증)
+        Assert.Equal(-1, session.EntityId);
     }
 
     [Fact]
@@ -189,7 +185,7 @@ public class GameSessionLifecycleTests : IDisposable
 
         // closing 박히지만 enqueue는 정상 (map job → RemovePlayerBySession 0건 → false)
         session.OnDisconnected(Ep());
-        _map.Tick(1);
+        Tick(1);
 
         Assert.Empty(_map.Players);
     }
@@ -203,12 +199,12 @@ public class GameSessionLifecycleTests : IDisposable
 
         s1.OnConnected(Ep());
         s2.OnConnected(Ep());
-        _map.Tick(1); // 둘 다 AddPlayer
+        Tick(1); // 둘 다 AddPlayer
 
         Assert.Equal(2, _map.Players.Count);
 
         s1.OnDisconnected(Ep()); // s1만 disconnect
-        _map.Tick(2);
+        Tick(2);
 
         Assert.Single(_map.Players); // s2만 남음
         Assert.Equal(s2, _map.Players[0].Owner);

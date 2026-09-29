@@ -1,4 +1,5 @@
 using System.Net;
+using Dawnholder.Server.GameServer.Tests.Maps;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
@@ -49,7 +50,7 @@ public class PartyRejectionTests : IDisposable
 
     void DrainAll(long tick)
     {
-        _world.Party.Tick(tick);
+        LifecycleTestWorld.Tick(_world, tick);
         _town.Tick(tick);
     }
 

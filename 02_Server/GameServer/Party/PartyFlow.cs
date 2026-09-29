@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Loop;
+using Dawnholder.Server.GameServer.Sessions;
 
 namespace Dawnholder.Server.GameServer.Party;
 
@@ -17,11 +18,12 @@ namespace Dawnholder.Server.GameServer.Party;
 internal static class PartyFlow
 {
     // 파티 초대 오케스트레이션. inviterEntityId는 세션이 강제한 행위자(_entityId).
-    internal static void Invite(GameWorld world, int inviterEntityId, int targetEntityId)
+    internal static void Invite(GameWorld world, GameSession session, int inviterEntityId, int targetEntityId)
     {
         int target = targetEntityId;
         world.Party.EnqueueJob(() =>
         {
+            if (!world.IsActiveSession(session, inviterEntityId)) return;
             // ── 거절 4종 검증 (헌법 §3 — 모두 서버 판정. 행위자=inviterEntity(_entityId 강제)) ──
             //   RecordInvite 전에 fail-closed. 거절 통보는 초대자(행위자)에게 S_PartyError.
 
@@ -34,7 +36,7 @@ internal static class PartyFlow
 
             // 0 = 상대 없음: target이 현재 어느 맵에도 없는 entityId(오프라인/유령 id).
             //   TryGetEntityClass = 어느 맵에든 존재하면 true(존재 확인 재활용).
-            if (!world.TryGetEntityClass(target, out _))
+            if (!world.IsActiveEntity(target))
             {
                 PartyNotifier.SendPartyError(world, inviterEntityId, PartyRegistry.ErrorTargetMissing);
                 return;
@@ -57,10 +59,11 @@ internal static class PartyFlow
 
     // 초대 응답 오케스트레이션. responderEntityId는 세션이 강제한 행위자(_entityId).
     //   claimedInviter는 패킷값(untrusted) — 서버 기록(pendingInviter)과 일치 검증으로 위장 차단.
-    internal static void Respond(GameWorld world, int responderEntityId, int claimedInviter, bool accepted)
+    internal static void Respond(GameWorld world, GameSession session, int responderEntityId, int claimedInviter, bool accepted)
     {
         world.Party.EnqueueJob(() =>
         {
+            if (!world.IsActiveSession(session, responderEntityId)) return;
             // 보류 초대 매칭(존재 확인). 없음/만료(Tick이 청소) → silent drop(에러 X — 위조/지연 응답).
             if (!world.Party.TryGetPendingInvite(responderEntityId, out int pendingInviter))
                 return; // 보류 초대 없음/만료 — 응답 race silent
@@ -75,6 +78,8 @@ internal static class PartyFlow
             if (!accepted)
                 return; // 거절: 초대 소비만(거절 측 통보 없음 — UX는 클라 timeout 처리)
 
+            if (!world.IsActiveEntity(pendingInviter)) return;
+
             // 수락: 보류된 inviter로 파티 결성. CreateParty가 null = 그새 한쪽이 파티 보유(race) → silent.
             PartyState? party = world.Party.CreateParty(pendingInviter, responderEntityId);
             if (party == null) return;
@@ -84,10 +89,11 @@ internal static class PartyFlow
     }
 
     // 파티 탈퇴 오케스트레이션. leaverEntityId는 세션이 강제한 행위자(_entityId).
-    internal static void Leave(GameWorld world, int leaverEntityId)
+    internal static void Leave(GameWorld world, GameSession session, int leaverEntityId)
     {
         world.Party.EnqueueJob(() =>
         {
+            if (!world.IsActiveSession(session, leaverEntityId)) return;
             PartyState? party = world.Party.GetPartyByEntity(leaverEntityId);
             if (party == null) return; // 파티 없음 — no-op
 

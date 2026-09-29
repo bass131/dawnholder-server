@@ -3,7 +3,10 @@ using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
 using Dawnholder.Server.GameServer.Entities;
+using Dawnholder.Server.GameServer.Sessions;
+using System.Collections.Concurrent;
 using Shared.GameData;
+using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Loop;
 
@@ -16,6 +19,9 @@ namespace Dawnholder.Server.GameServer.Loop;
 // 독립 actor로 관리. 매 틱 모든 맵 tick (foreach). GetMap(MapId)으로 맵 단건 조회.
 public class GameWorld
 {
+    static GameWorld? _instance;
+    readonly ConcurrentQueue<GameSession> _pendingCloses = new();
+    readonly ConcurrentQueue<TaskCompletionSource> _cleanupBarriers = new();
     // readonly Dictionary — 외부 set 금지 (헌법: 정적 mutable 게임 상태 금지).
     // 4맵은 ctor에서 1회 생성 + 등록. 이후 추가/제거 X (맵간 이동도 맵 내용 변경이지 레지스트리 변경 아님).
     readonly Dictionary<MapId, GameMap> _maps;
@@ -58,7 +64,6 @@ public class GameWorld
         // 첫 인스턴스 = 공식 singleton. 두 번째 생성은 테스트/오용 신호 → 예외.
         if (Instance != null!)
             throw new InvalidOperationException("GameWorld는 단일 인스턴스만 허용");
-        Instance = this;
 
         // 퀘스트 actor 생성 — _party(inline 초기화 완료) 주입(단방향 의존).
         //   MakeMap onKill 콜백이 _quest를 캡처하므로 _maps 생성보다 *먼저* 초기화해야 함.
@@ -77,9 +82,11 @@ public class GameWorld
         };
 
         _scheduler = new TickScheduler(OnTick);
+        if (Interlocked.CompareExchange(ref _instance, this, null) != null)
+            throw new InvalidOperationException("GameWorld는 단일 인스턴스만 허용");
     }
 
-    public static GameWorld Instance { get; private set; } = null!;
+    public static GameWorld Instance => Volatile.Read(ref _instance)!;
 
     // 호환용 프로퍼티 — GameWorld.Instance?.Map으로 Town 맵을 반환하던 흐름 보존.
     public GameMap Map => _maps[MapId.Town];
@@ -102,11 +109,21 @@ public class GameWorld
 
     public void Start() => _scheduler.Start();
 
-    public void Stop()
+    public void Stop(TimeSpan? timeout = null)
     {
-        _scheduler.Stop();
+        _scheduler.Stop(timeout);
         // 테스트에서 다시 생성 가능하도록 instance 해제.
-        if (Instance == this) Instance = null!;
+        Interlocked.CompareExchange(ref _instance, null, this);
+    }
+
+    // 세션 종료 요청 제출을 끝낸 호출자가 틱 밖에서 기다리는 barrier.
+    public Task FlushSessionClosuresAsync()
+    {
+        if (_scheduler.IsTickThread)
+            throw new InvalidOperationException("틱에서 cleanup 완료를 기다릴 수 없습니다.");
+        TaskCompletionSource completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        _cleanupBarriers.Enqueue(completion);
+        return completion.Task;
     }
 
     // 없는 MapId를 요청하면 null 반환 (등록 안 된 맵 = 조용한 실패, 호출자가 null 체크 필요).
@@ -168,6 +185,37 @@ public class GameWorld
         return false;
     }
 
+    internal void RequestSessionClose(GameSession session) => _pendingCloses.Enqueue(session);
+
+    internal bool IsActiveSession(GameSession session, int entityId)
+        => !session.IsClosing && _maps.Values.Any(map => ReferenceEquals(map.GetPlayer(entityId)?.Owner, session));
+
+    internal bool IsActiveEntity(int entityId)
+        => _maps.Values.Any(map => map.GetPlayer(entityId)?.Owner is { IsClosing: false });
+
+    void DrainSessionCloses()
+    {
+        while (_pendingCloses.TryDequeue(out GameSession? session))
+        {
+            int entityId = session.EntityId;
+            List<(GameMap Map, int EntityId)> removed = new();
+            // 모든 맵은 같은 월드 틱에서 실행된다. 소켓의 라우팅 힌트를 신뢰하지 않는다.
+            foreach (GameMap map in _maps.Values)
+            {
+                foreach (PlayerEntity player in map.Players)
+                {
+                    if (ReferenceEquals(player.Owner, session))
+                        removed.Add((map, player.EntityId));
+                }
+                map.RemovePlayerBySession(session);
+            }
+            if (entityId >= 0) PartyFlow.CleanupOnDisconnect(this, entityId);
+            session.CompleteWorldLeave();
+            foreach (var entry in removed)
+                entry.Map.BroadcastToAll(new S_PlayerLeave { entityId = entry.EntityId }.Write(), except: session);
+        }
+    }
+
     GameMap MakeMap(MapId id,
         IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
     {
@@ -191,17 +239,23 @@ public class GameWorld
 
     void OnTick(long tickNumber)
     {
-        // 모든 맵 순차 tick. 맵 간 tick 순서 의존 없음 (맵 간 통신 없어 순서 무관).
-        foreach (GameMap map in _maps.Values)
+        List<TaskCompletionSource> barriers = new();
+        while (_cleanupBarriers.TryDequeue(out TaskCompletionSource? barrier)) barriers.Add(barrier);
+        try
         {
-            map.Tick(tickNumber);
+            DrainSessionCloses();
+            foreach (GameMap map in _maps.Values)
+                map.Tick(tickNumber);
+            DrainSessionCloses();
+
+            Party.Tick(tickNumber);
+            Quest.Tick(tickNumber);
+            foreach (TaskCompletionSource completion in barriers) completion.TrySetResult();
         }
-
-        // 파티 job 드레인 — 맵 tick 후 단일 thread 직렬화. tickNumber = 초대 만료 판정 기준.
-        Party.Tick(tickNumber);
-
-        // 퀘스트 job 드레인 — 파티 드레인 **다음에**. 퀘스트가 파티 상태(멤버십/KillCount)를
-        //   읽고 쓰므로 파티 변경이 먼저 반영된 후 처리해야 정합(동일-스레드 불변식).
-        Quest.Tick(tickNumber);
+        catch (Exception ex)
+        {
+            foreach (TaskCompletionSource completion in barriers) completion.TrySetException(ex);
+            throw;
+        }
     }
 }
