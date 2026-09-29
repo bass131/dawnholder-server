@@ -1,3 +1,5 @@
+> 과거 시각 실험 계획이다. 아래의 현재 씬·구현 상태·수치는 작성 당시 관찰이며, 지금의 실행 결과나 변경 지시로 사용하지 않는다. 사용자 결정과 실험 조건을 보존한 기록으로 읽는다.
+
 # Project Overview
 - **Game Title**: Dawnholder (Client) — HuntingGround 스테이지
 - **High-Level Concept**: 횡스크롤 2D 액션 platformer. 플레이어가 사냥터(HuntingGround)를 이동하며 전투/탐험. 본 플랜은 해당 스테이지에 **저녁 노을 분위기의 3-Layer 무한 패럴랙스 배경**을 신규 생성·세팅하는 작업.

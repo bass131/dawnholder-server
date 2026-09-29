@@ -3,6 +3,8 @@
 **날짜**: 2026-05-29
 **상태**: 채택됨
 
+> 아래는 2026-05-29 결정 당시의 기록이다. 기술적 이유와 사용자 인용은 보존하며, 옛 Claude agent·hook·학습 절차는 현재 운영 지침이 아니다. 현재 규칙은 [AGENTS](../../../AGENTS.md)와 [코드 규칙](../../conventions/CODE_CONVENTION.md)을 따른다.
+
 **결정**: `00_Document/conventions/`를 신설하고 3층으로 구성한다.
 - **`refs/`** — *Game Programming Patterns*(Nystrom) 19패턴 + *게임 서버 프로그래밍 교과서*(배현직) 10장을 **각 1파일**로 정독·색인화한 참고서. 각 파일 = 책 이론 + "언제 참조" 트리거 + 우리 프로젝트 적용 + 함정. 폴더별 `_index.md`로 진입.
 - **`CODE_CONVENTION.md`** — 우리가 *채택한 규칙*만 (책 이론은 refs로 위임, 섞지 않음). 핵심 = **§2.2 God class 분리 결정적 기준**(트리거 = 2+ 도메인 / 구조 = 컨테이너[상태+tick 엔진]+System[로직] / 과분할 경계 명시).
@@ -14,4 +16,4 @@
 
 **트레이드오프**: 문서 33파일을 한 번에 신설(워크플로우 32 에이전트 / 약 118만 토큰의 일회성 비용)했다 — 그러나 SubAgent가 작업별로 *필요한 파일만 핀포인트 로드*해 오히려 토큰 효율적이고, 두고두고 쓰는 자산 + 면접/포트폴리오 가치가 비용을 상쇄한다. 문서 과분할 우려는 Convention 자신의 §0.3(과한 추상화 경계 — "과분할도 부채")으로 자기 제약한다. refs의 책 내용은 *요약·인덱스*라 저작권상 안전하나 원문 정확도는 정독에 의존(opus 검증 1회 + 실제 코드 경로 봉합 1회를 거쳐 `ServerCore`/`EnemyData` 등 가공 경로를 실제로 정정). 강제 §5의 agent/reviewer/hook은 `.claude/` self-modification 영역이라 *스테이징 → 사용자 적용*에 의존한다 — 적용하지 않으면 본 Convention도 ADR처럼 무력해지는 갭이 남는다(적용은 사용자 책임으로 분담). M4.3 발표 데모(Phase 08~12)를 보류하고 기반에 투자한 것은 사용자 명시 결정("기반 부채가 발표 데모보다 비싸다").
 
-**관련**: [ADR-019](ADR-019-reviewer-agent.md)(reviewer — "코드 스타일 Scope 제외" 조항을 본 ADR이 *부분 뒤집음*: 구조/SRP는 축 6으로 편입, 포매팅만 도구 위임 유지), [ADR-009](../gameplay/ADR-009-portfolio-target.md)(게임회사 백엔드 포트폴리오 — 권위서 기반 정합). `.editorconfig`+Roslyn(포매팅 강제)은 CODE_CONVENTION §4로 M4.4 이월. God class 리팩토링(`GameMap`→CombatSystem/AISystem/RespawnSystem 등, 부록 A)은 본 Convention 확정 + 강제 §5 적용 후 별도 Phase에서 진행.
+**관련**: [ADR-019](../../archive/workflow/legacy-decisions.md#source-2f318205b5c4)(reviewer — "코드 스타일 Scope 제외" 조항을 본 ADR이 *부분 뒤집음*: 구조/SRP는 축 6으로 편입, 포매팅만 도구 위임 유지), [ADR-009](../gameplay/ADR-009-portfolio-target.md)(게임회사 백엔드 포트폴리오 — 권위서 기반 정합). `.editorconfig`+Roslyn(포매팅 강제)은 CODE_CONVENTION §4로 M4.4 이월. God class 리팩토링(`GameMap`→CombatSystem/AISystem/RespawnSystem 등, 부록 A)은 본 Convention 확정 + 강제 §5 적용 후 별도 Phase에서 진행.

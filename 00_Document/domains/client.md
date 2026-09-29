@@ -1,0 +1,18 @@
+# 클라이언트
+
+Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 서버가 소유한다. 전송 라이브러리는 `04_ClientNet`, Unity 연결은 [Network](../../03_Client/Assets/Scripts/Network/), 예측은 [Prediction](../../03_Client/Assets/Scripts/Prediction/)에 있다.
+
+## 수정 흐름
+
+- 패킷 수신과 Unity 메인 스레드 적용을 분리한다. [MainThreadDispatcher](../../03_Client/Assets/Scripts/Network/MainThreadDispatcher.cs)와 해당 핸들러를 확인한다.
+- 로컬 이동은 `LocalPlayerMovement`·`PlayerPredictor`·`InputHistory`, 원격 표현은 서버 스냅샷·보간 경로를 확인한다.
+- 씬 전환과 연결 종료를 혼동하지 않는다. `NetworkService`, `SceneRouter`, bootstrap의 객체 수명을 함께 확인한다.
+- 입력·HP·파티 등 UI는 서버 상태의 표시와 클라이언트 임시 상태를 구분한다.
+
+## 에셋을 다룰 때
+
+기존 prefab을 저장하기 전에 추적 여부와 사용자 변경을 확인한다. 미추적 에셋은 Git으로 복원할 수 없으므로 덮어쓸 대상의 사본을 먼저 확보한다. `.meta`·GUID와 직렬화 값, Resources 등의 문자열 경로를 함께 보존한다. 이는 과거 BackGround prefab 덮어쓰기 사례에서 확인된 복구 한계다.
+
+Unity 버전은 [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 버전과 revision을 함께 확인한다. 과거에는 `6000.4.1f1`이라는 같은 표기에서 `8535861f39e1`과 `336a400b9ea2` revision 차이를 관찰했다. 이 숫자는 현재 설치 기준이 아니라 과거 사례다.
+
+입력 ack·임펄스 예측의 경계는 [영역 간 경계](cross-cutting.md)에 있다. [이관 전 원문](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/.claude/knowledge/client/_index.md)은 에셋 사고와 2026-05-16 버전 관찰을 보존한다.

@@ -1,0 +1,23 @@
+# 원거리 전투와 스킬 — M4.8-ranged-and-skills
+
+원래 작업 묶음: `01_Phases/youngho/M4.8-ranged-and-skills`. 주영역은 server이며 관련 영역은 client, protocol이다.
+
+## 문제와 변경
+
+서버가 명중을 정한 뒤 투사체 발사·도착 피해를 처리하도록 하고, 지연 피해·freeze·썬더볼트 범위 공격을 연결했다.
+
+## 작업별 근거와 남은 조건
+
+요지는 원문의 요약·목표와 검증·제약 부분을 짧게 뽑은 것이다. 수치와 상태는 해당 문서 시점의 기록이며 현재의 완료 여부를 뜻하지 않는다. 계획을 통과 결과로 바꾸지 않았고, 다른 시점의 결과도 합산하지 않았다. 전체 수치·사용자 인용·후속 갱신은 고정 원문에서 확인한다.
+
+| 원문과 당시 상태 | 내용·검증·제약 |
+|---|---|
+| <a id="source-9f5a898d2797"></a>[Phase 01: 프로토콜 신설 (v11)](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/01-protocol.md)<br>계획; 상태: pending | 원거리 평타 + 최소 스킬 + 썬더볼트 AoE에 필요한 패킷을 PDL append-only로 신설하고 ProtocolVersion을 11로 bump.<br>계획 자료이며 완료 여부는 별도 결과 기록을 확인한다. |
+| <a id="source-f170c26780b3"></a>[Phase 02: 서버 인프라 (지연 데미지 + freeze)](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/02-server-infra.md)<br>계획; 상태: pending | "N틱 뒤 데미지 적용"(헌법 #5 논블로킹)과 "도착까지 적 이동 봉쇄"(freeze, Boss 면역)를 서버 권위로 신설.<br>원문 발췌 [완료 조건 (정량)]: [ ] `dotnet test` green (기존 회귀 0) |
+| <a id="source-dc2fd64017ec"></a>[Phase 03: 서버 평타 원거리](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/03-server-ranged.md)<br>완료 표기된 작업 정의; 상태: done | Mage 평타(C_Attack)를 근접 AABB에서 분리해 더 긴 사거리로 즉발 명중 판정 → S_ProjectileLaunch + DeferredDamage + freeze. Knight는 기존 즉시 데미지 유지.<br>원문 발췌 [완료 조건 (정량)]: [ ] `dotnet test` green (기존 회귀 0)<br>제약·후속 [작업]: 명중 실패(타겟 없음/miss): 기존 `S_PlayerAttack` 캐스팅 스윙만(투사체 X, 데미지 0). |
+| <a id="source-5ec744c47bdf"></a>[Phase 04: 서버 스킬 시스템 + 썬더볼트 AoE](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/04-server-skill-thunderbolt.md)<br>완료 표기된 작업 정의; 상태: done | 평타와 분리된 스킬 발동(C_SkillUse)을 받아 쿨다운 검증 → 공격자 중심 X,Y 박스 스캔으로 타격 적 즉발 확정 → 각 적 광역 지연 데미지 + freeze(Normal만) + S_SkillCast 연출.<br>원문 발췌 [완료 조건 (정량)]: [ ] `dotnet test` green (기존 회귀 0)<br>제약·후속 [완료 조건 (정량)]: [ ] C_SkillUse handler: happy 1 + invalid skillId 1 + auth(handshake 미완료) 1 |
+| <a id="source-a88b9668b42c"></a>[Phase 05: 클라 서버확정 투사체 + 스킬 입력/연출](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/05-client.md)<br>완료 표기된 작업 정의; 상태: done | 로컬 선예측 투사체 스폰을 제거하고 서버 통보(S_ProjectileLaunch) 후 스폰으로 통일. 스킬 키 입력(C_SkillUse) + 썬더볼트 낙뢰 연출(S_SkillCast 캐스팅 + S_HitResult hitEffect 분기). |
+| <a id="source-46e8f79aebb8"></a>[Phase 06: 회귀 + 마감](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/06-regression-and-close.md)<br>완료 표기된 작업 정의; 상태: done | v11 원거리+스킬+썬더볼트 전체 회귀 입증 + 마일스톤 마감. |
+| <a id="source-7bb85d10c8b3"></a>[M4.8 — 원거리 전투 모델 + 스킬 시스템 마일스톤 기록](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/_milestone-DONE.html)<br>결과 기록; 상태: 명시 없음; 2026-06-09 | 클린빌드 0/0 + dotnet test 508/0/4skip + 신규 봇 4종 PASS(RangedHit·RangedWhiff·ThunderboltAoe·Freeze) + 기존 봇(EmergencyCombat·BossFight) v11 회귀 0 + ProtocolVersion==11(시프트 0) + Unity 컴파일 0err(MCP isCompiling=False) + r… (뒤 내용은 원문)<br>원문 발췌 [본문]: 클린빌드 0/0 + dotnet test 508/0/4skip + 신규 봇 4종 PASS(RangedHit·RangedWhiff·ThunderboltAoe·Freeze) + 기존 봇(EmergencyCombat·BossFight) v11 회귀 0 + ProtocolVersion==11(시프트 0) + Unity 컴파일 0… (뒤 내용은 원문)<br>원문 발췌 [본문]: dotnet test 508/0/4skip (LagSim 1 flaky 분리)<br>제약·후속 [본문]: dotnet test 508/0/4skip (LagSim 1 flaky 분리) |
+| <a id="source-81a04fc59ac5"></a>[M4.8 — 원거리 전투 모델 + 스킬 시스템 마일스톤 기록](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/_milestone-DONE.md)<br>결과 기록; 상태: done; 2026-06-09 | M4.8 완전 마감 (6 Phase, 단일 브랜치 feature/m4.8-ranged-and-skills, ProtocolVersion 10→11).<br>원문 발췌 [AC 검증 결과]: 마일스톤 완료 조건 대조 (2026-06-09 세션28, WSL2 = ADR-029, 메인 직접 실측):<br>원문 발췌 [AC 검증 결과]: [x] `dotnet test` green — 508 통과/0 실패/4 skip(LagSim 1 flaky = 동시 실행 경합, 단독 green = 코드 무관)<br>제약·후속 [이월 명시 (➡️ 다음)]: 음수 currentHp 계약: 즉시 경로(Knight)는 currentHp raw(음수=사망 신호로 LagSim 봇 의존), deferred 경로는 Max(0) floor. 통일은 봇을 S_EntityDeath 판정으로 전환하는 별도 작업. |
+| <a id="source-6289ab8ac657"></a>[M4.8 — 원거리 전투 + 최소 스킬 시스템 + 썬더볼트 AoE](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/_milestone-plan.md)<br>계획; 상태: planned; 2026-06-09 | 썬더볼트 박스 = facing 전방 우선 디폴트(전방 ThunderboltBoxHalfX, 후방 절반?) vs 자기중심 — Play로 확정.<br>계획 자료이며 완료 여부는 별도 결과 기록을 확인한다. |

@@ -11,7 +11,7 @@
 
 **Dawnholder**는 RPG 전투와 길드 타이쿤 요소를 결합한 2D MMORPG 프로토타입입니다. 서버가 이동과 전투를 판정하고, 클라이언트는 예측·재조정으로 조작 지연을 줄입니다. 로컬 환경에서 멀티플레이 전 과정을 시연할 수 있도록 구성했습니다.
 
-게임 구현과 함께 **AI 협업 환경**도 설계했습니다. 기존 Claude Code 운영 자산은 보관하고, 현재는 Codex 메인 세션이 목표와 결정을 관리하며 작업자 구현과 독립 검증을 조정하는 프로젝트 지침을 정비하고 있습니다.
+게임 구현과 함께 **AI 협업 환경**도 설계했습니다. 기존 Claude Code 운영 자산은 보관하고, 현재는 Codex 메인 세션이 목표와 결정을 관리하며 작업자 구현과 독립 검증을 조정하는 프로젝트 지침을 운영합니다.
 
 ### 핵심 구현
 
@@ -37,7 +37,7 @@
 
 ## 개발 환경과 현재 작업
 
-[개발 안내](00_Document/operations/DEVELOPMENT.md)에서 SDK·Unity 버전, 빌드와 실행 진입점, 검증 범위를 확인하세요. 현재 목표는 [CURRENT](00_Document/operations/CURRENT.md)가 가리키는 `goal.md`에 정리합니다.
+[개발 안내](00_Document/operations/DEVELOPMENT.md)에서 SDK·Unity 버전, 빌드와 실행 진입점, 검증 범위를 확인하세요. 현재 목표는 [CURRENT](00_Document/operations/CURRENT.md)가 가리키는 `goal.md`에 정리합니다. [영역별 계약](00_Document/domains/INDEX.md)에서 수정할 기능의 주요 파일과 주의사항을 찾을 수 있습니다.
 
 - 프로젝트 운영 기준: [AGENTS.md](AGENTS.md)
 - 다단계 작업 운영: [dawnholder-goal-loop](.agents/skills/dawnholder-goal-loop/SKILL.md)
@@ -46,17 +46,17 @@
 
 메인 대화 세션은 목표·범위·주요 결정과 종합 보고를 맡고, 실제 구현·테스트는 작업자에게 위임하며 독립 검증자를 분리합니다. 지침과 스킬은 운영 약속이며 모든 행동을 기술적으로 강제하는 장치는 아닙니다.
 
-각 목표는 최신 `main`에서 개별 브랜치를 만들고 구현·검증 후 PR을 통해 `main`에 병합합니다. `chore/codex-project-setup`은 이번 정비용이며 장기 개발 계열이 아닙니다. 원격 작업은 실제 사용자 승인 범위에 따릅니다.
+각 목표는 최신 `main`에서 개별 브랜치를 만들고 구현·독립 검증 후 PR을 작성합니다. **각 PR 병합 직전에는 사용자 명시 승인을 받습니다.** 자동 병합을 예약하지 않습니다.
 
 ### 이전 AI 협업 환경
 
-Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식 캐시로 구성했던 환경은 [고정 보관 브랜치](https://github.com/bass131/dawnholder-server/tree/archive/claude-setup-2026-09-29)에서 확인할 수 있습니다. 과거 ADR·Phase·운영 정책은 포트폴리오와 설계 이력으로 보존하며 현재 Codex의 필수 절차로 자동 적용하지 않습니다. 이전 문서의 `CLAUDE.md`·`.claude` 링크는 보관 브랜치의 같은 경로를 참조하세요.
+Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식 캐시로 구성했던 환경은 [고정 보관 브랜치](https://github.com/bass131/dawnholder-server/tree/archive/claude-setup-2026-09-29)에서 확인할 수 있습니다. 과거 작업·운영 정책은 [영역별 보관](00_Document/archive/INDEX.md)에서 요약과 고정 Git 원문으로 확인합니다. 역사 자료의 절차를 현행 규칙으로 자동 적용하지 않습니다.
 
 ## 폴더 구조
 
 ```text
 00_Document/        요구사항·아키텍처·ADR·현행 운영 안내·과거 기록
-01_Phases/          과거 Phase 기록 + goals/ 목표별 기준과 결과
+01_Phases/goals/    목표별 기준·상태·결과
 02_Server/          .NET 권위 서버
 03_Client/          Unity 클라이언트
 04_ClientNet/       클라이언트용 소켓 라이브러리
@@ -82,7 +82,7 @@ Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식
 ## 일정
 
 - ✅ **6월** — 캡스톤 1차 발표 완료 (self-contained GameServer + Unity 클라 시연)
-- **11월 19일** — 졸업작품 본 마감 (현재 M7.x 진행 중)
+- **11월 19일** — 졸업작품 본 마감
 
 ---
 

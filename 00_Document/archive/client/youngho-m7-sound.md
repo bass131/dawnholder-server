@@ -1,0 +1,24 @@
+# 사운드와 플레이 조정 — M7-sound
+
+원래 작업 묶음: `01_Phases/youngho/M7-sound`. 주영역은 client이며 관련 영역은 tooling, server이다.
+
+## 문제와 변경
+
+AudioManager와 사운드 키를 연결하고 생성 음원·청음 피드백을 반영했다. 관련 서버 진행·적 상태 수정은 별도 근거로 확인한다.
+
+## 작업별 근거와 남은 조건
+
+요지는 원문의 요약·목표와 검증·제약 부분을 짧게 뽑은 것이다. 수치와 상태는 해당 문서 시점의 기록이며 현재의 완료 여부를 뜻하지 않는다. 계획을 통과 결과로 바꾸지 않았고, 다른 시점의 결과도 합산하지 않았다. 전체 수치·사용자 인용·후속 갱신은 고정 원문에서 확인한다.
+
+| 원문과 당시 상태 | 내용·검증·제약 |
+|---|---|
+| <a id="source-0b97de807061"></a>[Phase 01: 사운드 인벤토리 + 분류 체계 + 폴더 구조](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/01-sound-inventory-taxonomy.md)<br>완료 표기된 작업 정의; 상태: done; 2026-06-16 | 게임 이벤트별 필요 사운드 목록화 + Sound 폴더 분류(BGM/SFX/UI/Ambient) 확정 |
+| <a id="source-d9ae21369882"></a>[Phase 02: 오디오 재생 인프라 (AudioManager)](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/02-audio-playback-infra.md)<br>계획; 상태: in-progress; 2026-06-16 | 키 기반 사운드 재생/정지/볼륨 제어 인프라 — AudioSource 풀 + BGM 채널 + 볼륨 그룹<br>원문 발췌 [🧪 테스트]: 자동: 서버 무관 — 회귀 644/0/5 유지 |
+| <a id="source-2e7213bdfcad"></a>[Phase 03: 사운드 에셋 생성 (Unity AI Generator) + import + 분류 배치](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/03-sound-asset-generation.md)<br>계획; 상태: in-progress; 2026-06-16, 2026-06-15 | AI Generator로 사운드 생성 + Sound 폴더 분류 배치 + import 설정(압축/로드 타입)<br>계획 자료이며 완료 여부는 별도 결과 기록을 확인한다.<br>제약·후속 [⚠️ 함정 / 주의사항]: 파일명-키 불일치 시 런타임 로드 실패 — 네이밍 규칙 엄수. |
+| <a id="source-27fa9bb3bb52"></a>[Phase 04: SFX wiring (전투/이동/UI 이벤트)](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/04-sfx-wiring.md)<br>계획; 상태: in-progress; 2026-06-16 | 게임 이벤트(공격/피격/점프/대시/스킬/레벨업/UI/퀘스트·스테이지)에 SFX 연결<br>원문 발췌 [🧪 테스트]: 자동: 서버 무관 — 회귀 644/0/5 유지 |
+| <a id="source-4610a7caa8fa"></a>[Phase 05: BGM/Ambient + 볼륨 밸런싱 + 클로즈아웃](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/05-bgm-ambient-balance-closeout.md)<br>계획; 상태: pending | 마을/전투/보스 BGM 전환 + ambient + 볼륨 밸런싱 + 설정 + -DONE 박제 + (영호 GO) 머지<br>원문 발췌 [📝 작업 내용]: [ ] WSL2 회귀 게이트 (baseline 644/0/5)<br>원문 발췌 [🧪 테스트]: 자동: WSL2 회귀 644/0/5 |
+| <a id="source-e7b5cd334e33"></a>[M7 사운드 — 야간 무인(AutoMode) 진행 기록](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_NIGHT-PROGRESS.md)<br>계획; 상태: AI 1패스 완료 — 영호 청음 + GO 대기; 2026-06-16 | 게임 사운드 0 → 사운드 시스템 + 32개 사운드 적용 (1패스). 7 commit ahead of origin/main (M6 아트 1 + M7 6).<br>원문 발췌 [🧪 테스트 (4중 검증 통과)]: WSL2 회귀 645 passed / 0 failed / 5 skipped (baseline 일치).<br>제약·후속 [➡️ 다음 (영호가 일어나서)]: 4. 확장 후보(미적용, 선택): cooldown_ready / boss 패턴별 타격음 / 존 앰비언트 / 버튼 호버 — 발굴됐으나 스코프 가드로 보류 (영호 결정). *(party_disbanded는 watch에서 추가 완료.) |
+| <a id="source-9ad5227e4192"></a>[M7 사운드 개선 리스트업 (청음 피드백용)](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_SOUND-TUNING.md)<br>계획; 상태: 명시 없음; 2026-06-16 | `player.respawn` — 미생성/미wiring. 리스폰 트리거 결정 필요(HP 0→복구 감지 방식).<br>계획 자료이며 완료 여부는 별도 결과 기록을 확인한다. |
+| <a id="source-f0efca0e66d6"></a>[M7 — 게임 사운드 + 청음 튜닝 + 플레이테스트 폴리시 (DONE)](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_milestone-DONE.html)<br>결과 기록; 상태: 명시 없음; 2026-06-16 | 🤔 왜 필요한가 — 결정 흐름<br>원문 발췌 [본문]: WSL2 657 / 0 / 5<br>원문 발췌 [본문]: 신규 테스트(서버)BossEmptyRoomRespawnTests 4 + EnemyGravityTests 8(중력4+낙사4) |
+| <a id="source-3ae6938591df"></a>[M7 마일스톤 마감 — 게임 사운드 + 청음 튜닝 + 플레이테스트 폴리시](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_milestone-DONE.md)<br>결과 기록; 상태: done; 2026-06-16 | 게임 사운드 0 → 사운드 시스템(AudioManager 자기-부트스트랩) + 33키 적용 + AI 생성 25개(ElevenLabs SFX 24 + Lyria 엔딩 BGM 1).<br>원문 발췌 [AC 검증 결과]: 신규 테스트(서버): `BossEmptyRoomRespawnTests`(4) + `EnemyGravityTests`(8: 중력 4 + 낙사 4) = +12.<br>원문 발췌 [🧪 테스트 결과]: WSL2 657/0/5(+12 신규) · reviewer 🔴0 · Unity 컴파일 0err · BuildPlayer Succeeded(726MB) · 영호 인게임 청음/거동 검증 이상 무. ProtocolVersion v16 무변경.<br>제약·후속 [➡️ 다음 스텝]: 이월(영호 결정 대기, M7 범위 밖): `sfx.player.respawn`(리스폰 트리거 신호 정의 필요) · 투사체/슬라임/골렘 DamageEffect prefab 미배치(사운드 무관, 아트 측) · 확장 후보(존 앰비언트 / 버튼 호버 / 보스 패턴별 타격음). |
+| <a id="source-73bb9be4ab23"></a>[M7 — 사운드](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_milestone-plan.md)<br>계획; 상태: in-progress; 2026-06-15, 2026-06-16 | M5 인터랙티브 2차 플레이테스트 피드백 7번째 항목 = "Unity AI Generator로 전면 사운드 적용,<br>계획 자료이며 완료 여부는 별도 결과 기록을 확인한다.<br>제약·후속 [배경]: > - 생성 = AI 단독(`elevenlabs-sound-effects-v2`). BgmComposer(칩튠) 전면 배제 — 폴백조차 X (영호 "저품질 사운드 아예 배제"). 생성 실패 = 재시도 최대 3회 → MISSING 무음(억지 무한 생성 금지). |
