@@ -1,0 +1,2512 @@
+{
+  ".claude/knowledge/README.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-ce53b24acf86",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/.claude/knowledge/README.md",
+    "action": "condensed"
+  },
+  ".claude/knowledge/_usage.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-32b8703e398a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/.claude/knowledge/_usage.md",
+    "action": "condensed"
+  },
+  "00_Document/ADR/harness/ADR-013-done-md-pair.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-35a469c35ce5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-013-done-md-pair.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-014-doc-length-thresholds.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-3d1e41694cde",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-014-doc-length-thresholds.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-015-postflight-gate.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-389ab65637f2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-015-postflight-gate.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-016-notion-3way.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-a762dc07ff8e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-016-notion-3way.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-018-forgetting-safety-net.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-75630e314736",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-018-forgetting-safety-net.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-019-reviewer-agent.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-2f318205b5c4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-019-reviewer-agent.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-020-hook-env-deps.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-b2b65307970b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-020-hook-env-deps.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-022-new-harness-v1.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-0401e39b8a8e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-022-new-harness-v1.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-023-sync-gate-progress-stale-hole.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-25b81bb57514",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-023-sync-gate-progress-stale-hole.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-024-false-promise-cadence.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-89f44ecfc98f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-024-false-promise-cadence.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-025-retire-context-trio-and-learning-track.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-7a20d3b9c6e6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-025-retire-context-trio-and-learning-track.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-031-auto-phase-progression-async-reporting.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-a794c5a66fc0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-031-auto-phase-progression-async-reporting.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/ADR/harness/ADR-032-loop-driven-operation.md": {
+    "target": "00_Document/archive/workflow/legacy-decisions.md#source-9f27ca064173",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ADR/harness/ADR-032-loop-driven-operation.md",
+    "action": "condensed-legacy-decision"
+  },
+  "00_Document/archive/M4-backlog.md": {
+    "target": "00_Document/archive/cross-cutting/previous-backlog.md#source-4406900cb6c6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/archive/M4-backlog.md",
+    "action": "condensed"
+  },
+  "00_Document/archive/README.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-e90ebf3027d5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/archive/README.md",
+    "action": "condensed"
+  },
+  "00_Document/case-studies/2026-05-25-ai-orchestrator-concurrency.html": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-4e68862e07cf",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/case-studies/2026-05-25-ai-orchestrator-concurrency.html",
+    "action": "condensed"
+  },
+  "00_Document/commands-index.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-5793dd1f9e17",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/commands-index.md",
+    "action": "condensed"
+  },
+  "00_Document/ledgers/INDEX.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-1acb6cb57ae9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ledgers/INDEX.md",
+    "action": "condensed"
+  },
+  "00_Document/ledgers/pending-art.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-40475d446081",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ledgers/pending-art.md",
+    "action": "condensed"
+  },
+  "00_Document/ledgers/pending-comprehension.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-5c77ff92815a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ledgers/pending-comprehension.md",
+    "action": "condensed"
+  },
+  "00_Document/ledgers/pending-knowledge.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-c49da6a088e6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/ledgers/pending-knowledge.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/INDEX.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-1a4ca05d6b89",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/INDEX.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/doc-thresholds.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-e9d485b4fa73",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/doc-thresholds.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/grade-and-risk.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-c9bb49e8ce3b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/grade-and-risk.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/knowledge-system.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-69345eff94eb",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/knowledge-system.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/loop-driver.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-befffa66a28b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/loop-driver.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/pin-and-done.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-21a5750474d4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/pin-and-done.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/pr-and-merge-gate.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-7fa637766f6c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/pr-and-merge-gate.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/reporting-format.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-beaf1bbaebc2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/reporting-format.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/review-throughput.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-409396bb1b1a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/review-throughput.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/review-tiering.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-41c63f152d1b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/review-tiering.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/subagent-routing.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-48d21afd5ad9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/subagent-routing.md",
+    "action": "condensed"
+  },
+  "00_Document/policies/work-judge.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-72a01479a665",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/policies/work-judge.md",
+    "action": "condensed"
+  },
+  "00_Document/reports/2026-09-29-codex-setup-report.html": {
+    "target": "00_Document/reports/2026-09-29-codex-setup-report.html",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reports/2026-09-29-codex-setup-report.html",
+    "action": "retained-current-report"
+  },
+  "00_Document/reports/2026-09-29-codex-workflow-proposal.html": {
+    "target": "00_Document/reports/2026-09-29-codex-workflow-proposal.html",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reports/2026-09-29-codex-workflow-proposal.html",
+    "action": "retained-current-report"
+  },
+  "00_Document/reports/M4.6-04.html": {
+    "target": "00_Document/archive/server/combat-report.md#source-21de66311c85",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reports/M4.6-04.html",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-18-m3-phase-02-codex-review.md": {
+    "target": "00_Document/archive/protocol/reviews.md#source-20954c707871",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-18-m3-phase-02-codex-review.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-18-m3-phase-03-04-codex-review.md": {
+    "target": "00_Document/archive/protocol/reviews.md#source-61abaf0d7615",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-18-m3-phase-03-04-codex-review.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-18-m3-phase-plan-codex-prompt.md": {
+    "target": "00_Document/archive/server/reviews.md#source-c44bd75de762",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-18-m3-phase-plan-codex-prompt.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-18-m3-phase-plan-codex-review.md": {
+    "target": "00_Document/archive/server/reviews.md#source-415f76a7b06f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-18-m3-phase-plan-codex-review.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-18-pre-m3-claude-review.md": {
+    "target": "00_Document/archive/server/reviews.md#source-c01fa33f6c41",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-18-pre-m3-claude-review.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-18-pre-m3-codex-review.md": {
+    "target": "00_Document/archive/server/reviews.md#source-cdf83e5db183",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-18-pre-m3-codex-review.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-19-harness-review-followup-1of5.md": {
+    "target": "00_Document/archive/workflow/reviews.md#source-90db90fcf462",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-19-harness-review-followup-1of5.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-19-m3-phase-06-codex-precommit-review.md": {
+    "target": "00_Document/archive/server/reviews.md#source-ff6a73435b44",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-19-m3-phase-06-codex-precommit-review.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-19-m3-phase-06-pr38-body-draft.md": {
+    "target": "00_Document/archive/server/reviews.md#source-9ead3d45b5a9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-19-m3-phase-06-pr38-body-draft.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-21-cross-review-m3.5-phase06.md": {
+    "target": "00_Document/archive/workflow/reviews.md#source-6ec819ecedc5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-21-cross-review-m3.5-phase06.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-22-cross-review-m3.6-plan.md": {
+    "target": "00_Document/archive/workflow/reviews.md#source-ec9002748f2a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-22-cross-review-m3.6-plan.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-23-claude-pre-review-m4.1-phase02-04.md": {
+    "target": "00_Document/archive/server/reviews.md#source-bdfe8a430a3f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-23-claude-pre-review-m4.1-phase02-04.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-23-cross-review-m4.1-phase01.md": {
+    "target": "00_Document/archive/server/reviews.md#source-fac90b4ee5b6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-23-cross-review-m4.1-phase01.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-23-cross-review-m4.1-phase02-04-codex.md": {
+    "target": "00_Document/archive/server/reviews.md#source-17ed34ff91f3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-23-cross-review-m4.1-phase02-04-codex.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-23-cross-review-m4.1-phase02-04.md": {
+    "target": "00_Document/archive/server/reviews.md#source-b5c430b9360f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-23-cross-review-m4.1-phase02-04.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-23-m4.1-phase02-04-codex-prompt.md": {
+    "target": "00_Document/archive/server/reviews.md#source-78d03ec95732",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-23-m4.1-phase02-04-codex-prompt.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-23-pre-m4-cross-review-claude.md": {
+    "target": "00_Document/archive/server/reviews.md#source-c0f45396f300",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-23-pre-m4-cross-review-claude.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-23-pre-m4-cross-review-codex.md": {
+    "target": "00_Document/archive/server/reviews.md#source-b992084eb7d3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-23-pre-m4-cross-review-codex.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-24-harness-review-all.md": {
+    "target": "00_Document/archive/workflow/reviews.md#source-92051c6c8921",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-24-harness-review-all.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-28-claude-pre-review-m4.2-map-transition.md": {
+    "target": "00_Document/archive/server/reviews.md#source-aa36a05793fd",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-28-claude-pre-review-m4.2-map-transition.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-28-cross-review-m4.2-map-transition.md": {
+    "target": "00_Document/archive/server/reviews.md#source-30a6b4c49095",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-28-cross-review-m4.2-map-transition.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-29-cross-review-full-audit.md": {
+    "target": "00_Document/archive/cross-cutting/reviews.md#source-d1638a3deafc",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-29-cross-review-full-audit.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-30-claude-pre-review-pr56-m43-merge.md": {
+    "target": "00_Document/archive/server/reviews.md#source-f30eea6234d6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-30-claude-pre-review-pr56-m43-merge.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-05-30-cross-review-pr56-m43-merge.md": {
+    "target": "00_Document/archive/server/reviews.md#source-58d23983df24",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-05-30-cross-review-pr56-m43-merge.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-06-claude-pre-review-m4.4-terrain-01-02.md": {
+    "target": "00_Document/archive/server/reviews.md#source-f7116276d351",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-06-claude-pre-review-m4.4-terrain-01-02.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-06-cross-review-m4.4-terrain-01-02.md": {
+    "target": "00_Document/archive/server/reviews.md#source-3e731653e176",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-06-cross-review-m4.4-terrain-01-02.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-07-claude-pre-review-m4.5-phase04-combat-v9.md": {
+    "target": "00_Document/archive/server/reviews.md#source-345b4273e208",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-07-claude-pre-review-m4.5-phase04-combat-v9.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-07-cross-review-m4.5-phase04-combat-v9.md": {
+    "target": "00_Document/archive/server/reviews.md#source-291eef88cb35",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-07-cross-review-m4.5-phase04-combat-v9.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-07-m4.5-phase04-codex-prompt.md": {
+    "target": "00_Document/archive/server/reviews.md#source-58200312213d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-07-m4.5-phase04-codex-prompt.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-12-refactor-sweep-dryrun.md": {
+    "target": "00_Document/archive/cross-cutting/reviews.md#source-ba4e3f260786",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-12-refactor-sweep-dryrun.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-13-refactor-sweep.md": {
+    "target": "00_Document/archive/cross-cutting/reviews.md#source-c6ae21f1e911",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-13-refactor-sweep.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-19-architecture-logic-audit.html": {
+    "target": "00_Document/archive/cross-cutting/reviews.md#source-73b628e3c907",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-19-architecture-logic-audit.html",
+    "action": "condensed"
+  },
+  "00_Document/reviews/2026-06-26-harness-review-all.md": {
+    "target": "00_Document/archive/workflow/reviews.md#source-e50058de61de",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/2026-06-26-harness-review-all.md",
+    "action": "condensed"
+  },
+  "00_Document/reviews/INDEX.md": {
+    "target": "00_Document/archive/cross-cutting/reviews.md#source-c0330cc19f23",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/reviews/INDEX.md",
+    "action": "condensed"
+  },
+  "00_Document/team-guide.html": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-d86077abf7ee",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/00_Document/team-guide.html",
+    "action": "condensed"
+  },
+  "01_Phases/README.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-9870520153f1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/README.md",
+    "action": "condensed"
+  },
+  "01_Phases/_template.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-7f3fd005413f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/_template.md",
+    "action": "condensed"
+  },
+  "01_Phases/inkyu/README.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-264ed486dc84",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/inkyu/README.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/01-solution-bootstrap-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-cf2fc87f9252",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/01-solution-bootstrap-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/01-solution-bootstrap.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-283c8cfb9d90",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/01-solution-bootstrap.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/02-server-network-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-a16abd278540",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/02-server-network-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/02-server-network.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-7698f99d73de",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/02-server-network.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/03-tcp-listener-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-e5cf132053c3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/03-tcp-listener-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/03-tcp-listener.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-ed7d1b92f3ac",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/03-tcp-listener.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/04-framing-and-pingpong-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-a28cbe195d86",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/04-framing-and-pingpong-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/04-framing-and-pingpong.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-af7edc365e5f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/04-framing-and-pingpong.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/05-framing-ping-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-6b3ead6f5e95",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/05-framing-ping-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/05-framing-ping.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-360783dcb95e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/05-framing-ping.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/06-pdl-migration-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-3fc10ae579f0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/06-pdl-migration-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/06-pdl-migration.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-69870faa34df",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/06-pdl-migration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/07-pdl-integration-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-f48e85f896e8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/07-pdl-integration-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M1-foundation/07-pdl-integration.md": {
+    "target": "00_Document/archive/protocol/youngho-m1-foundation.md#source-afa226db9d62",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M1-foundation/07-pdl-integration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/01-unity-scene-and-character-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-e69bf3e87fcf",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/01-unity-scene-and-character-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/01-unity-scene-and-character.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-a25b53f35c63",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/01-unity-scene-and-character.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/02-server-gameloop-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-8299d095c391",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/02-server-gameloop-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/02-server-gameloop.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-b5b9d279a295",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/02-server-gameloop.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/03-connection-handshake-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-9788278947b6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/03-connection-handshake-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/03-connection-handshake.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-153522462aad",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/03-connection-handshake.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/04-move-intent-and-snapshot-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-b44edf3d7f3c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/04-move-intent-and-snapshot-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/04-move-intent-and-snapshot.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-50fafebf9201",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/04-move-intent-and-snapshot.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/05-client-prediction-snap-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-a7ca47b70d0a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/05-client-prediction-snap-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/05-client-prediction-snap.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-e4361a3ebcd2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/05-client-prediction-snap.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/06-input-replay-reconcile-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-fb05e81b9f6e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/06-input-replay-reconcile-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/06-input-replay-reconcile.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-ca78a9315c60",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/06-input-replay-reconcile.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/07-gravity-and-jump-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-46bfa61cc151",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/07-gravity-and-jump-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/07-gravity-and-jump.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-b5c2e0169548",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/07-gravity-and-jump.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/08-regression-and-demo-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-5636a1cacc58",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/08-regression-and-demo-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/08-regression-and-demo.md": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-511cd551063e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/08-regression-and-demo.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/_phase05-latency-tradeoff.html": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-4e970fad0cb0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/_phase05-latency-tradeoff.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/_phase07-d4-edge-detection.html": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-5d61e8bb91d0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/_phase07-d4-edge-detection.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/_phase07-decisions.html": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-76d1a91998c9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/_phase07-decisions.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/_phase07-step4-smoothness-AvsC.html": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-17c586dd9945",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/_phase07-step4-smoothness-AvsC.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2-first-connection/_plan-visualization.html": {
+    "target": "00_Document/archive/client/youngho-m2-first-connection.md#source-707c0d2d81ff",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2-first-connection/_plan-visualization.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/09-trust-boundary-fail-closed-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-bc84db813f66",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/09-trust-boundary-fail-closed-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/09-trust-boundary-fail-closed.md": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-66e8519a6c30",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/09-trust-boundary-fail-closed.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/10-session-lifecycle-race-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-40d335bb36f7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/10-session-lifecycle-race-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/10-session-lifecycle-race.md": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-0d6c9f37f184",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/10-session-lifecycle-race.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/11-m25-cleanup-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-e2a0c2ba66b4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/11-m25-cleanup-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/11-m25-cleanup.md": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-23d1664a8a4a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/11-m25-cleanup.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/_m25-summary.html": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-2287e43552fa",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/_m25-summary.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/_phase09-explain.html": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-df1b9dd3d9c2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/_phase09-explain.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/_phase10-explain.html": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-0b4e1d3a92d5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/_phase10-explain.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M2.5-hardening/_phase11-explain.html": {
+    "target": "00_Document/archive/protocol/youngho-m2.5-hardening.md#source-b94cf4c57a7e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M2.5-hardening/_phase11-explain.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/01-pre-flight-smoke-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-06e95c5b20eb",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/01-pre-flight-smoke-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/01-pre-flight-smoke.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-2c2f6b3351b9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/01-pre-flight-smoke.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/02-protocol-version-handshake-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-b934b6030097",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/02-protocol-version-handshake-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/02-protocol-version-handshake.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-7fa0e9d816f4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/02-protocol-version-handshake.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/03-handler-layer-split-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-6a8d4b404200",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/03-handler-layer-split-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/03-handler-layer-split.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-28bcfe15496b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/03-handler-layer-split.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/04-server-broadcast-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-008b064129d7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/04-server-broadcast-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/04-server-broadcast.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-05e8c558dcea",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/04-server-broadcast.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/05-client-remote-entity-registry-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-b0f68ed5d9f5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/05-client-remote-entity-registry-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/05-client-remote-entity-registry.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-1b46140d557f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/05-client-remote-entity-registry.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/06-server-combat-emergency-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-da82720d5690",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/06-server-combat-emergency-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/06-server-combat-emergency.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-0738d6b3f568",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/06-server-combat-emergency.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/07-server-boss-stage-clear-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-bcba0be78db2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/07-server-boss-stage-clear-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/07-server-boss-stage-clear.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-94b8eab720c1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/07-server-boss-stage-clear.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/08-client-asset-zones-ui-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-6d1a81dbe07c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/08-client-asset-zones-ui-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/08-client-asset-zones-ui.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-032c64c81da6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/08-client-asset-zones-ui.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/08a-asset-prefab-preparation.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-f57440c350f3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/08a-asset-prefab-preparation.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/08b-zone-ui-integration.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-52cfe4038fe3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/08b-zone-ui-integration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/09-demo-rehearsal-checklist.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-fba9ab96da65",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/09-demo-rehearsal-checklist.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/_handoff-prefab-20260518.html": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-1a256c5dbb55",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/_handoff-prefab-20260518.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/_handoff-prompt-yuhyeon-20260518.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-9e3e9fb99d44",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/_handoff-prompt-yuhyeon-20260518.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3-first-multiplayer/_handoff-prompt-yuhyeon-20260519.md": {
+    "target": "00_Document/archive/server/youngho-m3-first-multiplayer.md#source-80aeb9600275",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3-first-multiplayer/_handoff-prompt-yuhyeon-20260519.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/01-constitution-and-docs-diet-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-05c39c08857b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/01-constitution-and-docs-diet-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/01-constitution-and-docs-diet.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-b4e1dd5dab9c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/01-constitution-and-docs-diet.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/02-subagent-pool-8-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-bb6935ac010e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/02-subagent-pool-8-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/02-subagent-pool-8.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-74b395d9a687",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/02-subagent-pool-8.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/03-hook-infrastructure-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-5bbed389d4e2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/03-hook-infrastructure-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/03-hook-infrastructure.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-cc5fa78e262d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/03-hook-infrastructure.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/04-knowledge-system-gc-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-69e237a7fe30",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/04-knowledge-system-gc-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/04-knowledge-system-gc.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-3ae4e6fa8a0c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/04-knowledge-system-gc.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/05-slash-cleanup-and-new-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-50fda450a20e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/05-slash-cleanup-and-new-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/05-slash-cleanup-and-new.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-aef0861b9a39",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/05-slash-cleanup-and-new.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/06-format-diet-and-integration-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-afd409713546",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/06-format-diet-and-integration-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/06-format-diet-and-integration.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-d7c66a78ed45",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/06-format-diet-and-integration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.5-harness-v1/_milestone-plan.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md#source-13daf232aef8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.5-harness-v1/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/01-pre-flight-infra-baseline.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-1d5706b28424",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/01-pre-flight-infra-baseline.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/02-constitution-adr-policies-audit-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-0a6a9b805078",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/02-constitution-adr-policies-audit-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/02-constitution-adr-policies-audit.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-485b69ee4210",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/02-constitution-adr-policies-audit.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/03-harness-v1-week1-recalibration-DONE.html": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-1b1c5c247c8a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/03-harness-v1-week1-recalibration-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/03-harness-v1-week1-recalibration-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-bd48c55f7e78",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/03-harness-v1-week1-recalibration-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/03-harness-v1-week1-recalibration.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-9ca2800a4d15",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/03-harness-v1-week1-recalibration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/04-server-codebase-audit-DONE.html": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-b6a6fc7b36dc",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/04-server-codebase-audit-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/04-server-codebase-audit-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-d09f9e9bcf4d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/04-server-codebase-audit-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/04-server-codebase-audit.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-418f00a7455e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/04-server-codebase-audit.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/05-client-codebase-audit-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-dff250e6340d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/05-client-codebase-audit-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/05-client-codebase-audit.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-6784ae287d8d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/05-client-codebase-audit.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/06-external-review-absorption-and-final-report-DONE.html": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-ec8f6ec2745d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/06-external-review-absorption-and-final-report-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/06-external-review-absorption-and-final-report-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-b8dc7e028897",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/06-external-review-absorption-and-final-report-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/06-external-review-absorption-and-final-report.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-a7e0fda7ba64",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/06-external-review-absorption-and-final-report.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/_milestone-plan.html": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-ae809d02db48",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/_milestone-plan.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/_milestone-plan.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-a57c371a9cde",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.6-harness-and-codebase-audit/_yuhyeon-area-review-2026-05-22.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.6-harness-and-codebase-audit.md#source-a97dc61626e7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.6-harness-and-codebase-audit/_yuhyeon-area-review-2026-05-22.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.7-sync-gate-and-cadence/01-session-start-drift-gate.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.7-sync-gate-and-cadence.md#source-a4b5be71dde7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.7-sync-gate-and-cadence/01-session-start-drift-gate.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.7-sync-gate-and-cadence/02-adr-sync-and-cadence-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.7-sync-gate-and-cadence.md#source-382ab30633f2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.7-sync-gate-and-cadence/02-adr-sync-and-cadence-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.7-sync-gate-and-cadence/02-adr-sync-and-cadence.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.7-sync-gate-and-cadence.md#source-df3fc57ff37b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.7-sync-gate-and-cadence/02-adr-sync-and-cadence.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.7-sync-gate-and-cadence/_milestone-plan.md": {
+    "target": "00_Document/archive/workflow/youngho-m3.7-sync-gate-and-cadence.md#source-bd67d2f78426",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.7-sync-gate-and-cadence/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/01-prd-update-and-milestone-meta.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-8d1de932618b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/01-prd-update-and-milestone-meta.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/02-main-menu-and-ending-ui.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-189a94acdeb9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/02-main-menu-and-ending-ui.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/03-character-select-DONE.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-d52bfd2b73d0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/03-character-select-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/03-character-select.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-98f97ca010e1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/03-character-select.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/04-npc-dialogue.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-cb56c52baeaa",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/04-npc-dialogue.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/05-hamachi-setup-and-milestone-closeout-DONE.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-1ca269cb7dda",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/05-hamachi-setup-and-milestone-closeout-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/05-hamachi-setup-and-milestone-closeout.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-0560592d1697",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/05-hamachi-setup-and-milestone-closeout.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/_demo-environment-verification-2026-05-23.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-8e7ca26a1ea2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/_demo-environment-verification-2026-05-23.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/_listener-race-and-packet-order-2026-05-23.html": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-84b465af5b10",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/_listener-race-and-packet-order-2026-05-23.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/_milestone-plan.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-4a3c0bee0df1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/_session-handoff-2026-05-22.md": {
+    "target": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md#source-9c7da86d7c53",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/_session-handoff-2026-05-22.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/01-codex-cross-review-and-hardcoding-audit-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-7101cd00c661",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/01-codex-cross-review-and-hardcoding-audit-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/01-codex-cross-review-and-hardcoding-audit.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-1a6ed3c1821b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/01-codex-cross-review-and-hardcoding-audit.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/02-session-state-machine-hardening-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-e24f1402b555",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/02-session-state-machine-hardening-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/02-session-state-machine-hardening.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-4b9ef28d8ce5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/02-session-state-machine-hardening.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/03-clientnet-trust-boundary-symmetry.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-a2b7e5eb475d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/03-clientnet-trust-boundary-symmetry.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/04-build-artifact-hygiene.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-67ccb169c0bd",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/04-build-artifact-hygiene.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/05-damage-formulas-extraction-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-05c854cbfb5a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/05-damage-formulas-extraction-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/05-damage-formulas-extraction.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-cfad44493107",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/05-damage-formulas-extraction.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/06-lag-compensation-precision-hitbox-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-76882e795249",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/06-lag-compensation-precision-hitbox-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/06-lag-compensation-precision-hitbox.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-b4411a992bea",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/06-lag-compensation-precision-hitbox.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/LagComp_Report/1-problem.html": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-deaf5d6476e1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/LagComp_Report/1-problem.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/LagComp_Report/2-ring-buffer.html": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-bf3ec0525561",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/LagComp_Report/2-ring-buffer.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/LagComp_Report/3-rewind.html": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-92c5c33681f3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/LagComp_Report/3-rewind.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/LagComp_Report/4-cheat-defense.html": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-6fbc4c6ec7bd",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/LagComp_Report/4-cheat-defense.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/LagComp_Report/5-aabb-hitbox.html": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-0f04cc45a3c4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/LagComp_Report/5-aabb-hitbox.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/LagComp_Report/6-implementation.html": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-f101cb0b5311",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/LagComp_Report/6-implementation.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/LagComp_Report/7-tests-result.html": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-93e8af8c90c4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/LagComp_Report/7-tests-result.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/LagComp_Report/index.html": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-cdf246ace0d8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/LagComp_Report/index.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-df914b1db8f4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.1-combat-precision/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.1-combat-precision.md#source-610254247e46",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.1-combat-precision/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/01-convention-v6-member-ordering-entrypoint-skeleton-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-119a4f2441ce",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/01-convention-v6-member-ordering-entrypoint-skeleton-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/01-convention-v6-member-ordering-entrypoint-skeleton.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-aa1589b2962d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/01-convention-v6-member-ordering-entrypoint-skeleton.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/02-magic-numbers-shared-hiteffect-enum-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-441487f8fb2d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/02-magic-numbers-shared-hiteffect-enum-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/02-magic-numbers-shared-hiteffect-enum.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-1dab90f729bb",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/02-magic-numbers-shared-hiteffect-enum.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/03-enemy-death-handle-extract-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-49c67153f00f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/03-enemy-death-handle-extract-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/03-enemy-death-handle-extract.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-c11daee88f5e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/03-enemy-death-handle-extract.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/04-roster-send-unify-rewind-facing-helpers-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-36bca941617b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/04-roster-send-unify-rewind-facing-helpers-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/04-roster-send-unify-rewind-facing-helpers.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-c27e79018c02",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/04-roster-send-unify-rewind-facing-helpers.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/05-convention-sweep-entrypoint-fill-regression-close-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-83da79b55553",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/05-convention-sweep-entrypoint-fill-regression-close-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/05-convention-sweep-entrypoint-fill-regression-close.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-84d05a8f1e4d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/05-convention-sweep-entrypoint-fill-regression-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/_milestone-DONE.html": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-5791ba404951",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/_milestone-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-90c7e84e011c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.10-foundation/_milestone-plan.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md#source-9058a21c7eb7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.10-foundation/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/01-remote-interp-servertick-DONE.html": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-10854bf65235",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/01-remote-interp-servertick-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/01-remote-interp-servertick-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-6b6821c71bb3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/01-remote-interp-servertick-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/01-remote-interp-servertick.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-83c2bdbf63b7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/01-remote-interp-servertick.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/02-force-adopt-decouple-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-9c4de8b1b4a9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/02-force-adopt-decouple-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/02-force-adopt-decouple.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-1980d306d7c3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/02-force-adopt-decouple.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/03-regression-safety-net-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-c0e6c9701c0d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/03-regression-safety-net-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/03-regression-safety-net.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-6546ac2df330",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/03-regression-safety-net.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/04-fixedstep-prediction-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-b912ac45ea5c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/04-fixedstep-prediction-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/04-fixedstep-prediction.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-bf4c0a72d512",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/04-fixedstep-prediction.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/05-rebuild-and-full-regression.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-9ed4a675fe13",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/05-rebuild-and-full-regression.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/_milestone-DONE.html": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-9978e8395b4e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/_milestone-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-3009a999bf85",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/_milestone-plan.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-248bb3c7752c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.11-sync/_p4-2client-checklist.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.11-sync.md#source-f38aa40b1ba4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.11-sync/_p4-2client-checklist.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.12-skill-finish/01-skill-cooldown-hud-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m4.12-skill-finish.md#source-8ba6a34a2501",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.12-skill-finish/01-skill-cooldown-hud-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.12-skill-finish/01-skill-cooldown-hud.md": {
+    "target": "00_Document/archive/client/youngho-m4.12-skill-finish.md#source-2a74f97bb1c2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.12-skill-finish/01-skill-cooldown-hud.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.12-skill-finish/02-rebuild-and-finalize-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m4.12-skill-finish.md#source-614c9e86f4b8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.12-skill-finish/02-rebuild-and-finalize-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.12-skill-finish/02-rebuild-and-finalize.md": {
+    "target": "00_Document/archive/client/youngho-m4.12-skill-finish.md#source-50f2b0e07aa6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.12-skill-finish/02-rebuild-and-finalize.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.12-skill-finish/_milestone-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m4.12-skill-finish.md#source-8e7a61c110f1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.12-skill-finish/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.12-skill-finish/_milestone-plan.md": {
+    "target": "00_Document/archive/client/youngho-m4.12-skill-finish.md#source-295ef0fcb1a1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.12-skill-finish/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/01-action-input-gate-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-96af77fbf9bb",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/01-action-input-gate-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/01-action-input-gate-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-82971a546b10",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/01-action-input-gate-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/01-action-input-gate.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-fe654bae68ba",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/01-action-input-gate.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/02-server-impulse-model-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-42baf5e9ef63",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/02-server-impulse-model-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/02-server-impulse-model.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-b747744bfc27",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/02-server-impulse-model.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/03-dash-behavior-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-d5567c545fd1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/03-dash-behavior-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/03-dash-behavior.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-448e9bffc74d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/03-dash-behavior.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/04-shared-extract.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-de2deca76e85",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/04-shared-extract.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/05-client-prediction-b-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-4220c0a9fbb0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/05-client-prediction-b-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/05-client-prediction-b-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-fa89e8bd1a02",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/05-client-prediction-b-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/05-client-prediction-b.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-61f04f07eba3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/05-client-prediction-b.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/06-class-integration-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-11d9cb463472",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/06-class-integration-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/06-class-integration.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-565fcaa047f2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/06-class-integration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/_milestone-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-253a7d6d7ba8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-8f3fed12eb26",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-3b6d65ef1f0e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.13-impulse-class/p1-gate-architecture.html": {
+    "target": "00_Document/archive/server/youngho-m4.13-impulse-class.md#source-985ffc70a74c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.13-impulse-class/p1-gate-architecture.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/01-baseline-and-prep.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-c200713dcac2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/01-baseline-and-prep.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/01b-attackstate-flyweight-fix.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-e56b6998234f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/01b-attackstate-flyweight-fix.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/02-igameaction-contract-DONE.html": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-213a7981fbe3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/02-igameaction-contract-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/02-igameaction-contract-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-26a2c9e7d4ac",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/02-igameaction-contract-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/02-igameaction-contract.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-26a7c0c7be38",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/02-igameaction-contract.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/03-convention-report.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-33f9a9662879",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/03-convention-report.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/04-convention-sweep.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-ccabcfb1d26c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/04-convention-sweep.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/05-localplayermovement-timers.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-f659899a08cc",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/05-localplayermovement-timers.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/06-regression-and-close.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-500a391e1335",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/06-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/_architecture-review-2026-06-13.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-3a369c7f4cd0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/_architecture-review-2026-06-13.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/_milestone-DONE.html": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-d08b51a2dcfe",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/_milestone-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-9804786d2731",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.14-architecture-followup/_milestone-plan.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.14-architecture-followup.md#source-748c39dad793",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.14-architecture-followup/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/01-baseline-and-starting-values.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-99e4abbfbaf8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/01-baseline-and-starting-values.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/02-hitbox-xy-split.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-56125271b625",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/02-hitbox-xy-split.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/03-freeze-removal.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-9d069c97f83e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/03-freeze-removal.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/04-projectile-server-model.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-c41ffbac61e9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/04-projectile-server-model.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/05-projectile-client-visual.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-359bc12bfe83",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/05-projectile-client-visual.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/06-protocol-v14-teleport-dir.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-3f4d33b9a44c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/06-protocol-v14-teleport-dir.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/07-server-teleport-4dir.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-ab2da8c5fbda",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/07-server-teleport-4dir.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/08-client-teleport-input-effect.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-43be8cb1733b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/08-client-teleport-input-effect.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/09-teleport-polish.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-017afd2e0cbf",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/09-teleport-polish.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/10-regression-and-close.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-86f1dd17a165",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/10-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/_milestone-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-2b64050e3e36",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-ca0bf14e4364",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.15-energybolt-skill-range/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.15-energybolt-skill-range.md#source-cce92a577cb2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.15-energybolt-skill-range/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.2-map-transition/01-map-registry-skeleton.md": {
+    "target": "00_Document/archive/server/youngho-m4.2-map-transition.md#source-9121af9f260f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.2-map-transition/01-map-registry-skeleton.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.2-map-transition/02-portal-and-transition-packet.md": {
+    "target": "00_Document/archive/server/youngho-m4.2-map-transition.md#source-86fbf73a1c7c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.2-map-transition/02-portal-and-transition-packet.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.2-map-transition/03-cross-map-player-migration.md": {
+    "target": "00_Document/archive/server/youngho-m4.2-map-transition.md#source-e9c8027ac3d3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.2-map-transition/03-cross-map-player-migration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.2-map-transition/04-client-scene-dispatch-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.2-map-transition.md#source-1c11bae1e511",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.2-map-transition/04-client-scene-dispatch-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.2-map-transition/04-client-scene-dispatch.md": {
+    "target": "00_Document/archive/server/youngho-m4.2-map-transition.md#source-69186045ff76",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.2-map-transition/04-client-scene-dispatch.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.2-map-transition/05-integration-and-milestone-close.md": {
+    "target": "00_Document/archive/server/youngho-m4.2-map-transition.md#source-db2995470748",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.2-map-transition/05-integration-and-milestone-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.2-map-transition/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.2-map-transition.md#source-00bdda95ae00",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.2-map-transition/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.2-map-transition/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.2-map-transition.md#source-d895038f8536",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.2-map-transition/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/07-enemy-ai-server-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-92f51c07f8f0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/07-enemy-ai-server-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/07-enemy-ai-server.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-d30bb6ee3cf2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/07-enemy-ai-server.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/08a-anim-state-protocol-server-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-f2b93f28db58",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/08a-anim-state-protocol-server-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/08a-anim-state-protocol-server.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-3f57bee8dd64",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/08a-anim-state-protocol-server.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/08b-anim-client-structure-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-90ab806e2b3a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/08b-anim-client-structure-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/08b-anim-client-structure.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-acc0f4a1b21d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/08b-anim-client-structure.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/09-boss-behavior.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-8a7023b34db9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/09-boss-behavior.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/10-movement-feel-polish-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-ffe15df3770e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/10-movement-feel-polish-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/10-movement-feel-polish.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-9490f65f97d0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/10-movement-feel-polish.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/11-anim-visual-completion-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-97f0fe25749d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/11-anim-visual-completion-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/11-anim-visual-completion.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-689ef9db4a67",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/11-anim-visual-completion.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/12-regression-and-close.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-5b1cfe64608b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/12-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-b80a8adaec6d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3-ai-and-polish/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.3-ai-and-polish.md#source-a30952f8500f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3-ai-and-polish/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/01-convention-alignment-and-baseline.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-f0fd3ec90c72",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/01-convention-alignment-and-baseline.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/02-client-packet-dispatch-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-9991cf79a736",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/02-client-packet-dispatch-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/02-client-packet-dispatch.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-be725528f6ce",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/02-client-packet-dispatch.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/03-gamemap-system-split-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-64dec62aa0a5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/03-gamemap-system-split-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/03-gamemap-system-split.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-6c19fca34483",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/03-gamemap-system-split.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/04-gamesession-trust-boundary-extract-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-5c52897c2993",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/04-gamesession-trust-boundary-extract-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/04-gamesession-trust-boundary-extract.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-fdd721504b59",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/04-gamesession-trust-boundary-extract.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/05-client-structural-opportunistic.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-9a7509ac0ef9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/05-client-structural-opportunistic.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/06-client-naming-alignment.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-8e913c20a584",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/06-client-naming-alignment.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/07-network-layer-prefix-sweep.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-dea7690450a2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/07-network-layer-prefix-sweep.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/_M4.3R-summary.html": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-f49698219478",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/_M4.3R-summary.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/_M4.3R-summary.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-e084232bc1b0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/_M4.3R-summary.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3R-convention-refactor/_milestone-plan.md": {
+    "target": "00_Document/archive/client/youngho-m4.3r-convention-refactor.md#source-bd796f22cb2c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3R-convention-refactor/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3X-code-cleanup/01-convention-augment.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.3x-code-cleanup.md#source-b0f833e68760",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3X-code-cleanup/01-convention-augment.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3X-code-cleanup/02-comment-cleanup-server.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.3x-code-cleanup.md#source-1cfd56af3702",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3X-code-cleanup/02-comment-cleanup-server.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3X-code-cleanup/06-regression-enforce-close.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.3x-code-cleanup.md#source-7654fd26c586",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3X-code-cleanup/06-regression-enforce-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.3X-code-cleanup/_milestone-plan.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m4.3x-code-cleanup.md#source-854baa4441ae",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.3X-code-cleanup/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/01-terrain-bake-tool-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-5e21700eb1a2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/01-terrain-bake-tool-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/01-terrain-bake-tool.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-13fca400dec4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/01-terrain-bake-tool.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/02-terrain-physics-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-53141f61534f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/02-terrain-physics-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/02-terrain-physics.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-024b885f650f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/02-terrain-physics.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/03-terrain-integration-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-b29a21cf4208",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/03-terrain-integration-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/03-terrain-integration-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-91a512ac28e1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/03-terrain-integration-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/03-terrain-integration.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-14fe73a6c1f3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/03-terrain-integration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/04-class-movement-split-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-1a6ac15b33c9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/04-class-movement-split-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/04-class-movement-split.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-05fd76d5b13a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/04-class-movement-split.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/05-class-loadout-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-0043831fce25",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/05-class-loadout-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/05-class-loadout.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-aa4da0171917",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/05-class-loadout.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/06-regression-and-close.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-af4fadf6d0ba",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/06-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/_milestone-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-49c1361f6e71",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-386b2fd0c4d4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.4-world-and-player/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.4-world-and-player.md#source-65c7c4bcc5b2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.4-world-and-player/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/01-enemy-prefab-and-visual-table-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-7aa14ac0e2b1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/01-enemy-prefab-and-visual-table-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/01-enemy-prefab-and-visual-table.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-36491762d446",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/01-enemy-prefab-and-visual-table.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/02-golem-data-only-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-15d6e9dab487",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/02-golem-data-only-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/02-golem-data-only.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-8f7bd429d140",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/02-golem-data-only.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/03-ui-wiring.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-1a53061d396b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/03-ui-wiring.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/04-boss-protocol-and-server-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-414f83c5a3c2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/04-boss-protocol-and-server-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/04-boss-protocol-and-server-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-f02da95d1314",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/04-boss-protocol-and-server-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/04-boss-protocol-and-server.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-5e8de8b92189",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/04-boss-protocol-and-server.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/05-boss-client-and-remote-class-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-e9d979b3bc1d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/05-boss-client-and-remote-class-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/05-boss-client-and-remote-class-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-3f9c023b485e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/05-boss-client-and-remote-class-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/05-boss-client-and-remote-class.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-d255bf0ecc26",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/05-boss-client-and-remote-class.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/06-regression-and-close.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-b2b3e64bb8bb",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/06-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/_milestone-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-201f4a6355b8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-beb87135e6e7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.5-content-and-boss/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.5-content-and-boss.md#source-61c4ba9bed9a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.5-content-and-boss/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/01-state-machine-skeleton-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-0a8f85c58ea8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/01-state-machine-skeleton-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/01-state-machine-skeleton.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-7700e0c7bb4a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/01-state-machine-skeleton.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/02-player-combat-and-commit-window-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-24a67217fbbd",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/02-player-combat-and-commit-window-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/02-player-combat-and-commit-window.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-d315b3eada13",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/02-player-combat-and-commit-window.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/03-client-mirror-and-prediction-gate-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-2f46306e0330",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/03-client-mirror-and-prediction-gate-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/03-client-mirror-and-prediction-gate.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-69bdd5835d66",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/03-client-mirror-and-prediction-gate.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/04-monster-ai-state-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-7ebde42c4a77",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/04-monster-ai-state-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/04-monster-ai-state.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-2ea9c6a8acbd",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/04-monster-ai-state.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/05-boss-state-cleanup-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-97f77f83c0df",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/05-boss-state-cleanup-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/05-boss-state-cleanup.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-94d656d7ca21",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/05-boss-state-cleanup.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/05b-boss-move-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-311e365a8812",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/05b-boss-move-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/06-regression-and-close.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-984631cef0b0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/06-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/_attack-stop-feel-comparison.html": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-8e4554b4549e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/_attack-stop-feel-comparison.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/_class-hierarchy.html": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-1446d8ec8853",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/_class-hierarchy.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/_fsm-design-discussion.html": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-74aafd705b43",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/_fsm-design-discussion.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/_milestone-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-9f5e9e939c32",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-cb893a095f7a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.6-action-state-fsm/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.6-action-state-fsm.md#source-a1c61f59accf",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.6-action-state-fsm/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/01-protocol-packets.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-99cbd95311de",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/01-protocol-packets.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/02-server-hp-send.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-b275cd745428",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/02-server-hp-send.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/03-server-combat-model.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-ae848ffd19b5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/03-server-combat-model.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/04-client-hp-trust.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-329961fcbc73",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/04-client-hp-trust.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/05-client-combat.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-d2486bc6c4da",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/05-client-combat.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/06-regression-and-close.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-46a2a3bc4e46",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/06-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/_milestone-DONE.html": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-7079446c42f7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/_milestone-DONE.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-f6b0a82b42a5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.7-hp-sync-and-combat-events/_milestone-plan.md": {
+    "target": "00_Document/archive/protocol/youngho-m4.7-hp-sync-and-combat-events.md#source-f47b465419b9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.7-hp-sync-and-combat-events/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/01-protocol.md": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-9f5a898d2797",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/01-protocol.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/02-server-infra.md": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-f170c26780b3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/02-server-infra.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/03-server-ranged.md": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-dc2fd64017ec",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/03-server-ranged.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/04-server-skill-thunderbolt.md": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-5ec744c47bdf",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/04-server-skill-thunderbolt.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/05-client.md": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-a88b9668b42c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/05-client.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/06-regression-and-close.md": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-46e8f79aebb8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/06-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/_milestone-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-7bb85d10c8b3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-81a04fc59ac5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.8-ranged-and-skills/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m4.8-ranged-and-skills.md#source-6289ab8ac657",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.8-ranged-and-skills/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/01-client-skill-visual-prefab.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-8cc72a95e391",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/01-client-skill-visual-prefab.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/02-class-skill-gate.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-66e2370122f3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/02-class-skill-gate.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/03-server-knight-dash.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-d1f722453c67",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/03-server-knight-dash.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/04-client-knight-dash-visual.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-c266fb5b0c4d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/04-client-knight-dash-visual.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/05-server-mage-teleport.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-8401cb8fb8d6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/05-server-mage-teleport.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/06-client-mage-teleport-visual.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-b599befdf413",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/06-client-mage-teleport-visual.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/07-client-skill-hud-and-regression.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-34f69f77c326",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/07-client-skill-hud-and-regression.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/_milestone-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-7f506ef329ce",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/_milestone-plan.md": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-2acd03bc9a36",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M4.9-skill-completion/phase01-prefab-guide.html": {
+    "target": "00_Document/archive/client/youngho-m4.9-skill-completion.md#source-7f3c1a509447",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M4.9-skill-completion/phase01-prefab-guide.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/01-pdl-packets-v15-bump.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-bdead5226bee",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/01-pdl-packets-v15-bump.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/02-party-registry-actor.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-5459d1a3e612",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/02-party-registry-actor.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/03-gameworld-crossmap-send.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-9355a74d72e8",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/03-gameworld-crossmap-send.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/04-party-handlers-happy.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-b17e500605ee",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/04-party-handlers-happy.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/05-party-trust-boundary.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-56d7601ae220",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/05-party-trust-boundary.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/06-killer-propagation.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-55f1cf9a2322",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/06-killer-propagation.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/07-killcount-quest-update.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-dc74e69ee457",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/07-killcount-quest-update.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/08-boss-portal-gate.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-4ce36c951f01",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/08-boss-portal-gate.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/09-bidirectional-portal-data.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-6a072fb2dc33",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/09-bidirectional-portal-data.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/10-portal-entry-upkey.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-f6288ce53afd",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/10-portal-entry-upkey.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/11-reverse-portal-scene.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-5e70a04f10ed",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/11-reverse-portal-scene.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/12-client-party-handlers.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-b36ce15c2e5d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/12-client-party-handlers.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/13-party-invite-popup.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-ed85e5a96250",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/13-party-invite-popup.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/14-party-member-hud.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-e80fcdf20543",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/14-party-member-hud.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/15-quest-progress-hud.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-e59fa28c058a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/15-quest-progress-hud.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/16-portal-locked-toast.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-0de6d2d2abb1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/16-portal-locked-toast.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/17-normal-mob-attack.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-89292a1c686f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/17-normal-mob-attack.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/18-mob-hit-effect-wiring.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-c6cbc56a5c8c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/18-mob-hit-effect-wiring.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/19-boss-stab-effect-wiring.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-87cd5e22a86e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/19-boss-stab-effect-wiring.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/20-npc-placement-dialog.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-e9e53d35778a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/20-npc-placement-dialog.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/21-stageclear-animated-sprite.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-90a941d2dfc1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/21-stageclear-animated-sprite.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/22-bot-party-quest-smoke.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-d27a0522463a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/22-bot-party-quest-smoke.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/23-bot-boss-gate-smoke.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-0a78482f8d77",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/23-bot-boss-gate-smoke.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/24-regression-and-close.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-28a6764d0ebf",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/24-regression-and-close.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/_milestone-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-5439e932c1cc",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-db0e23383439",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M5-party-quest/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m5-party-quest.md#source-c8350add7305",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M5-party-quest/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M6-playtest-polish/01-animator-exit-time.md": {
+    "target": "00_Document/archive/client/youngho-m6-playtest-polish.md#source-f2072262a1f4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M6-playtest-polish/01-animator-exit-time.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M6-playtest-polish/02-render-sorting-layers.md": {
+    "target": "00_Document/archive/client/youngho-m6-playtest-polish.md#source-f30d3abed7d2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M6-playtest-polish/02-render-sorting-layers.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M6-playtest-polish/03-top-hud-rework.md": {
+    "target": "00_Document/archive/client/youngho-m6-playtest-polish.md#source-a036a3bf3b6c",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M6-playtest-polish/03-top-hud-rework.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M6-playtest-polish/04-npc-dialog-rebuild.md": {
+    "target": "00_Document/archive/client/youngho-m6-playtest-polish.md#source-843799e9d45e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M6-playtest-polish/04-npc-dialog-rebuild.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M6-playtest-polish/05-integration-playtest-closeout.md": {
+    "target": "00_Document/archive/client/youngho-m6-playtest-polish.md#source-e144f92e2ae2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M6-playtest-polish/05-integration-playtest-closeout.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M6-playtest-polish/_milestone-DONE.html": {
+    "target": "00_Document/archive/client/youngho-m6-playtest-polish.md#source-4919bdec0500",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M6-playtest-polish/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M6-playtest-polish/_milestone-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m6-playtest-polish.md#source-630e3b6aecfb",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M6-playtest-polish/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M6-playtest-polish/_milestone-plan.md": {
+    "target": "00_Document/archive/client/youngho-m6-playtest-polish.md#source-795909dd3102",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M6-playtest-polish/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/01-sound-inventory-taxonomy.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-0b97de807061",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/01-sound-inventory-taxonomy.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/02-audio-playback-infra.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-d9ae21369882",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/02-audio-playback-infra.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/03-sound-asset-generation.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-2e7213bdfcad",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/03-sound-asset-generation.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/04-sfx-wiring.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-27fa9bb3bb52",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/04-sfx-wiring.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/05-bgm-ambient-balance-closeout.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-4610a7caa8fa",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/05-bgm-ambient-balance-closeout.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/_NIGHT-PROGRESS.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-e7b5cd334e33",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_NIGHT-PROGRESS.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/_SOUND-TUNING.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-9ad5227e4192",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_SOUND-TUNING.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/_milestone-DONE.html": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-f0efca0e66d6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/_milestone-DONE.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-3ae6938591df",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7-sound/_milestone-plan.md": {
+    "target": "00_Document/archive/client/youngho-m7-sound.md#source-73bb9be4ab23",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7-sound/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/01-new-policies.md": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-3cd7be7777e0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/01-new-policies.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/02-constitution-policies-atomic.md": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-61baf71a0382",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/02-constitution-policies-atomic.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/03-agents-revise.md": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-4475c323b0c7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/03-agents-revise.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/04-driver-commands.md": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-74e78278abc2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/04-driver-commands.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/05-hooks-settings-ledgers.md": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-82156407f634",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/05-hooks-settings-ledgers.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/06-catalog-drift-closeout.md": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-3a2b322f4d9a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/06-catalog-drift-closeout.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/_milestone-DONE.html": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-07dc9f8b7f65",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/_milestone-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-5c50c4d99ab9",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.5-loop-harness/_milestone-plan.md": {
+    "target": "00_Document/archive/workflow/youngho-m7.5-loop-harness.md#source-d7b174d079f1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.5-loop-harness/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.6-architecture-cleanup/01-quest-registry-split.md": {
+    "target": "00_Document/archive/server/youngho-m7.6-architecture-cleanup.md#source-dc1515bae7b1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.6-architecture-cleanup/01-quest-registry-split.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.6-architecture-cleanup/02-cheat-build-gate.md": {
+    "target": "00_Document/archive/server/youngho-m7.6-architecture-cleanup.md#source-663a22d93886",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.6-architecture-cleanup/02-cheat-build-gate.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.6-architecture-cleanup/03-party-flow-extract.md": {
+    "target": "00_Document/archive/server/youngho-m7.6-architecture-cleanup.md#source-b54c04e6ce0f",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.6-architecture-cleanup/03-party-flow-extract.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.6-architecture-cleanup/04-precondition-gate-declaration.md": {
+    "target": "00_Document/archive/server/youngho-m7.6-architecture-cleanup.md#source-7b56d4379be0",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.6-architecture-cleanup/04-precondition-gate-declaration.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.6-architecture-cleanup/04b-death-entry-point.md": {
+    "target": "00_Document/archive/server/youngho-m7.6-architecture-cleanup.md#source-2a573d3853b3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.6-architecture-cleanup/04b-death-entry-point.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.6-architecture-cleanup/_milestone-DONE.html": {
+    "target": "00_Document/archive/server/youngho-m7.6-architecture-cleanup.md#source-1bb5f6f25ef7",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.6-architecture-cleanup/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.6-architecture-cleanup/_milestone-DONE.md": {
+    "target": "00_Document/archive/server/youngho-m7.6-architecture-cleanup.md#source-f5d470b2651e",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.6-architecture-cleanup/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.6-architecture-cleanup/_milestone-plan.md": {
+    "target": "00_Document/archive/server/youngho-m7.6-architecture-cleanup.md#source-b4d7b061991d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.6-architecture-cleanup/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.7-structure-refactor/FOLDER_STRUCTURE_DRAFT.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m7.7-structure-refactor.md#source-73ef356d9e5a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.7-structure-refactor/FOLDER_STRUCTURE_DRAFT.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.7-structure-refactor/MIGRATION_SPEC.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m7.7-structure-refactor.md#source-0e7ef754d011",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.7-structure-refactor/MIGRATION_SPEC.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.7-structure-refactor/_diagnosis.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m7.7-structure-refactor.md#source-83b495dfcfb5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.7-structure-refactor/_diagnosis.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.7-structure-refactor/_milestone-DONE.html": {
+    "target": "00_Document/archive/cross-cutting/youngho-m7.7-structure-refactor.md#source-7908f6c39c8d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.7-structure-refactor/_milestone-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.7-structure-refactor/_milestone-DONE.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m7.7-structure-refactor.md#source-6493fb884465",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.7-structure-refactor/_milestone-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/M7.7-structure-refactor/_milestone-plan.md": {
+    "target": "00_Document/archive/cross-cutting/youngho-m7.7-structure-refactor.md#source-f2f44f3c6cb5",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/M7.7-structure-refactor/_milestone-plan.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/project-reorg/_reorg-DONE.html": {
+    "target": "00_Document/archive/workflow/youngho-project-reorg.md#source-351bc612bedf",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/project-reorg/_reorg-DONE.html",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/project-reorg/_reorg-DONE.md": {
+    "target": "00_Document/archive/workflow/youngho-project-reorg.md#source-748d5458dd75",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/project-reorg/_reorg-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/youngho/youhyun-art-integration/01-integration-and-residue-seal-DONE.md": {
+    "target": "00_Document/archive/client/youngho-youhyun-art-integration.md#source-b4bd069af7da",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/youngho/youhyun-art-integration/01-integration-and-residue-seal-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/01-hello-ui-bootstrap-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-12ebba3ff9c2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/01-hello-ui-bootstrap-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/01-hello-ui-bootstrap.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-8788f4574376",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/01-hello-ui-bootstrap.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/02-main-menu-buttons-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-078da4b1d4ab",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/02-main-menu-buttons-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/02-main-menu-buttons.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-5ca3c2b1b5e2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/02-main-menu-buttons.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/03-hud-skeleton-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-2c7f8f265fc4",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/03-hud-skeleton-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/03-hud-skeleton.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-e93ad55099de",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/03-hud-skeleton.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/04-pause-menu-input-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-d260e94cf08d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/04-pause-menu-input-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/04-pause-menu-input.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-fdc51f8e1938",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/04-pause-menu-input.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/05-scene-transition-fade-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-c7a47b2f3082",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/05-scene-transition-fade-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/05-scene-transition-fade.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-7f488360b746",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/05-scene-transition-fade.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/06-regression-and-demo-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-fe26cf5932e2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/06-regression-and-demo-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M1-client-foundations/06-regression-and-demo.md": {
+    "target": "00_Document/archive/client/yuhyeon-m1-client-foundations.md#source-1c04acb03667",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M1-client-foundations/06-regression-and-demo.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/01-sprite-import-conventions-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-b19a94e39dc1",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/01-sprite-import-conventions-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/01-sprite-import-conventions.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-cf329c84495b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/01-sprite-import-conventions.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/02-idle-animation-clip-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-94201e97b03b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/02-idle-animation-clip-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/02-idle-animation-clip.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-882c5afbd3e3",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/02-idle-animation-clip.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/03-run-animation-and-transition-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-33466e97d81b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/03-run-animation-and-transition-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/03-run-animation-and-transition.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-018e0940a47b",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/03-run-animation-and-transition.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/04-character-movement-wiring-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-6e0fcb991fb6",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/04-character-movement-wiring-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/04-character-movement-wiring.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-03c4c68b69a2",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/04-character-movement-wiring.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/05-static-background-and-sorting-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-d18b2c57a171",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/05-static-background-and-sorting-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/05-static-background-and-sorting.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-323caa408bbb",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/05-static-background-and-sorting.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/06-tmp-korean-font-asset-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-24ebe63f7466",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/06-tmp-korean-font-asset-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/06-tmp-korean-font-asset.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-6d23c42a1559",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/06-tmp-korean-font-asset.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/07-menu-and-hud-korean.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-83b29f5c7d8a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/07-menu-and-hud-korean.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/08-regression-and-demo.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-6d9ecf56433a",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/08-regression-and-demo.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/_ad-hoc-20260519-gameplay-test-scene-DONE.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-17750fd08d79",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/_ad-hoc-20260519-gameplay-test-scene-DONE.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M2-client-visuals/_ad-hoc-20260519-gameplay-test-scene.md": {
+    "target": "00_Document/archive/client/yuhyeon-m2-client-visuals.md#source-ba72e12bbe79",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M2-client-visuals/_ad-hoc-20260519-gameplay-test-scene.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/M4.3-ui-art/_handoff-ui-art-20260605.html": {
+    "target": "00_Document/archive/client/yuhyeon-m4.3-ui-art.md#source-e0f0b2c59525",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/M4.3-ui-art/_handoff-ui-art-20260605.html",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/README.md": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-d42b3ce99532",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/README.md",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/_work-portfolio-20260605.html": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-ed377e44045d",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/_work-portfolio-20260605.html",
+    "action": "condensed"
+  },
+  "01_Phases/yuhyeon/dawnholder-worklog.html": {
+    "target": "00_Document/archive/workflow/legacy-operations.md#source-8d7e751424cd",
+    "source": "https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/01_Phases/yuhyeon/dawnholder-worklog.html",
+    "action": "condensed"
+  }
+}

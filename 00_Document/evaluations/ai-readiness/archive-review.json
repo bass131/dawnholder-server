@@ -1,0 +1,87 @@
+{
+  "status": "PASS after requested corrections",
+  "sourceCommit": "59c7f087dc630df79650cedc3ede29765397bd8d",
+  "mechanical": {
+    "sourceRecords": 502,
+    "uniqueMappings": 502,
+    "condensedRecords": 500,
+    "retainedReports": 2,
+    "checks": [
+      "Source path → Git blob identity",
+      "SHA-256 and byte count from original Git blob",
+      "Fixed commit and source URL",
+      "Unique old paths and matching map targets",
+      "Summary anchor presence or intentional direct retained-report path",
+      "Each recorded date/PR/commit token occurs in source",
+      "Removed/retained disposition"
+    ],
+    "errors": 0
+  },
+  "semanticSamples": [
+    {
+      "source": "01_Phases/youngho/M3-first-multiplayer/01-pre-flight-smoke-DONE.md",
+      "summary": "00_Document/archive/server/youngho-m3-first-multiplayer.md",
+      "anchor": "source-06e95c5b20eb",
+      "result": "PASS",
+      "note": "132/0/1 and PacketGenerator default change match; reused asset smoke remains a historical source claim."
+    },
+    {
+      "source": "01_Phases/youngho/M2-first-connection/01-unity-scene-and-character-DONE.md",
+      "summary": "00_Document/archive/client/youngho-m2-first-connection.md",
+      "anchor": "source-e69bf3e87fcf",
+      "result": "PASS",
+      "note": "Three manual passes plus one unmeasured frame-rate comparison retained; no full-pass upgrade."
+    },
+    {
+      "source": "01_Phases/youngho/M1-foundation/01-solution-bootstrap-DONE.md",
+      "summary": "00_Document/archive/protocol/youngho-m1-foundation.md",
+      "anchor": "source-cf2fc87f9252",
+      "result": "PASS",
+      "note": "DLL/.NET Standard bootstrap matches; retrospective reconstruction caveat restored after review."
+    },
+    {
+      "source": "01_Phases/youngho/M3.8-capstone-1-demo-infrastructure/03-character-select-DONE.md",
+      "summary": "00_Document/archive/tooling/youngho-m3.8-capstone-1-demo-infrastructure.md",
+      "anchor": "source-d52bfd2b73d0",
+      "result": "PASS",
+      "note": "PacketID16, protocol3→4 and five tests match; demonstration-infrastructure grouping includes client/protocol cross-links."
+    },
+    {
+      "source": "01_Phases/youngho/M3.5-harness-v1/01-constitution-and-docs-diet-DONE.md",
+      "summary": "00_Document/archive/workflow/youngho-m3.5-harness-v1.md",
+      "anchor": "source-05c39c08857b",
+      "result": "PASS",
+      "note": "170-pass baseline explicitly inherited because SAC blocked rerun; does not claim fresh execution."
+    },
+    {
+      "source": "01_Phases/youngho/M4.10-foundation/01-convention-v6-member-ordering-entrypoint-skeleton-DONE.md",
+      "summary": "00_Document/archive/cross-cutting/youngho-m4.10-foundation.md",
+      "anchor": "source-119a4f2441ce",
+      "result": "PASS",
+      "note": "StyleCop warning introduction is separated from later zero-warning sweep; zero game-source edits retained."
+    },
+    {
+      "source": "01_Phases/youngho/M7.7-structure-refactor/FOLDER_STRUCTURE_DRAFT.md",
+      "summary": "00_Document/archive/cross-cutting/youngho-m7.7-structure-refactor.md",
+      "anchor": "source-73ef356d9e5a",
+      "result": "PASS",
+      "note": "Draft 663/0/5 and 16-bot criteria remain future validation requirements, not actual passes."
+    },
+    {
+      "source": "00_Document/ADR/harness/ADR-032-loop-driven-operation.md",
+      "summary": "00_Document/archive/workflow/legacy-decisions.md",
+      "anchor": "source-9f27ca064173",
+      "result": "PASS",
+      "note": "Attended v1 adoption, unattended v2 deferral and pending implementation remain separate."
+    }
+  ],
+  "corrections": [
+    "Replaced misleading verification-record labels on planned checks with neutral source-excerpt labels.",
+    "Restored retrospective/non-live provenance for three historical completion records."
+  ],
+  "limits": [
+    "Semantic review sampled eight records covering six domains, an uncompleted plan and an operational ADR. It does not certify lossless semantic preservation of all 502 records.",
+    "Full source is preserved in fixed Git objects; summaries intentionally omit detail.",
+    "Historical runtime numbers were compared to their source documents, not rerun as current game tests."
+  ]
+}

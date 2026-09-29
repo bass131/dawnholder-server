@@ -1,0 +1,30 @@
+{
+  "method": "ai-readiness-cartography",
+  "rubricVersion": "v2-100pt",
+  "sourceCommit": "900d3956a4ad85117d66d34f902faa5c84392b02",
+  "sourceRepository": "https://github.com/jha0313/skills_repo",
+  "rubricPath": "ai-readiness-cartography/references/scoring-rubric.md",
+  "scorerPath": "ai-readiness-cartography/scripts/score.py",
+  "scorerSha256": "14e9736909bf01266a0d409114dfd9e63768016a94296f07177104bf74cec0b8",
+  "retrievedDate": "2026-09-29",
+  "primaryVideo": "https://www.youtube.com/watch?v=Wlt7GhA_14s",
+  "creatorConnectionVideo": "https://www.youtube.com/watch?v=v6UAPUnOSxA",
+  "connectionEvidence": "Public YouTube videoDetails identify both videos as 실밸개발자. The second video's description directly links jha0313/harness_framework; skills_repo belongs to that same public GitHub account. The first describes the 100-point, seven-category scorer demonstration at 7:21.",
+  "notClaimed": [
+    "Exact equality with the unpublished recording-time source version",
+    "Meta certification or a universal industry standard",
+    "Factory Agent Readiness scoring",
+    "Video token-saving estimates reproduced in Dawnholder"
+  ],
+  "executionReview": {
+    "dependencies": "Python standard library only",
+    "subprocess": "git rev-parse --abbrev-ref HEAD, read-only",
+    "networkInScorer": false,
+    "writesInScorer": "Only caller-selected JSON report",
+    "runtimeVerified": "WSL Ubuntu Python 3.14.4",
+    "originalScorerModified": false,
+    "installedAsSkill": false,
+    "baselineReproduced": true,
+    "baselineRawTotal": 17
+  }
+}

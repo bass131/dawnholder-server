@@ -1,0 +1,27 @@
+{
+  "scope": "All snapshot .md/.html paths, UTF-8 text with CRLF normalized to LF; excludes the two separately rewritten report HTML files and evaluation outputs. Snapshot is tracked files plus reviewed new documentation.",
+  "excluded": [
+    "00_Document/reports/2026-09-29-codex-setup-report.html",
+    "00_Document/reports/2026-09-29-codex-workflow-proposal.html"
+  ],
+  "before": {
+    "files": 580,
+    "bytes": 5031833,
+    "archiveBodyFiles": 2,
+    "archiveBodyBytes": 7776,
+    "archiveTraceJsonBytes": 0
+  },
+  "after": {
+    "files": 138,
+    "bytes": 650193,
+    "archiveBodyFiles": 51,
+    "archiveBodyBytes": 447099,
+    "archiveTraceJsonBytes": 799761
+  },
+  "reduction": {
+    "files": 442,
+    "bytes": 4381640,
+    "percent": 87.1
+  },
+  "afterMeasurementNote": "Final publication metadata update: current goal results updated after scoring; scores and rubric unchanged."
+}

@@ -1,3 +1,3 @@
 # 현재 목표
 
-[Codex 프로젝트 초기 정비](../../01_Phases/goals/2026-09-29-codex-setup/goal.md)
+[문서 정비와 AI 작업 준비도 개선](../../01_Phases/goals/2026-09-29-ai-readiness-docs/goal.md)

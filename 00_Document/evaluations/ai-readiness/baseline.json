@@ -1,0 +1,529 @@
+{
+  "methodology": {
+    "name": "ai-readiness-cartography",
+    "version": "v2-100pt",
+    "sourceCommit": "900d3956a4ad85117d66d34f902faa5c84392b02",
+    "scorerSha256": "14e9736909bf01266a0d409114dfd9e63768016a94296f07177104bf74cec0b8",
+    "status": "Author-defined public rubric; independent manual application, not certification"
+  },
+  "scope": {
+    "snapshot": "tracked commit",
+    "commit": "59c7f087dc630df79650cedc3ede29765397bd8d",
+    "files": 2879,
+    "coreModules": [
+      "02_Server",
+      "03_Client",
+      "04_ClientNet",
+      "98_Shared",
+      "99_Tools"
+    ],
+    "ignoredLocalFilesIncluded": false,
+    "measuredAt": "2026-09-29"
+  },
+  "raw": {
+    "meta": {
+      "repo": "baseline-59c7",
+      "path": "<snapshot>",
+      "scored_at": "2026-09-29",
+      "git_branch": "unknown",
+      "rubric_version": "v2-100pt",
+      "modules_total": 5,
+      "context_files_total": 7,
+      "large_files_300plus": 48
+    },
+    "total": 17,
+    "grade": "AI-Hostile",
+    "grade_color": "red",
+    "categories": {
+      "A": {
+        "name": "AI Navigation & Coverage",
+        "score": 0,
+        "max": 15,
+        "evidence": {
+          "core_modules": 5,
+          "covered_modules": 0,
+          "coverage_ratio": 0,
+          "root_claude": null
+        },
+        "sub_scores": {},
+        "findings": [
+          "context 미보유 핵심 module 5개: 02_Server, 03_Client, 04_ClientNet, 98_Shared, 99_Tools",
+          "root CLAUDE.md 부재 — 진입점 브리핑 없음"
+        ]
+      },
+      "B": {
+        "name": "Context Document Quality",
+        "score": 8,
+        "max": 20,
+        "evidence": {
+          "context_files": 7,
+          "max_lines": 114,
+          "min_lines": 10
+        },
+        "sub_scores": {
+          "B1_Conciseness": 2,
+          "B2_QuickCommands": 0,
+          "B3_KeyFiles": 3,
+          "B4_NonObvious": 1,
+          "B5_CrossRefs": 2
+        },
+        "findings": [
+          "conciseness 초과(>100 lines) context 2건: 01_Phases/README.md (110), 01_Phases/yuhyeon/README.md (114)",
+          "bash 코드블록이 부족 — quick command 보강 필요",
+          "Why/Note/Gotcha 같은 hidden rule 마커 부족",
+          "관련 module / context 간 cross-link 부족"
+        ]
+      },
+      "C": {
+        "name": "Tribal Knowledge Externalization",
+        "score": 0,
+        "max": 20,
+        "evidence": {
+          "memory_md": false,
+          "adr": false,
+          "modules_total": 5,
+          "q1_owns": 0,
+          "q2_patterns": 0,
+          "q3_nonobvious": 0,
+          "q4_deps": 0
+        },
+        "sub_scores": {
+          "C_Q1_Owns": 0,
+          "C_Q2_Patterns": 0,
+          "C_Q3_NonObvious": 0,
+          "C_Q4_Dependencies": 0,
+          "C_Q5_TribalStore": 0
+        },
+        "findings": [
+          "MEMORY.md / ADR / docs/decisions 부재 — tribal knowledge 외부화 store 없음",
+          "Cross-module dependencies 섹션이 절반 이상 module에서 누락",
+          "Common modification patterns 섹션 누락"
+        ]
+      },
+      "D": {
+        "name": "Cross-Module Dependency Mapping",
+        "score": 2,
+        "max": 15,
+        "evidence": {
+          "architecture_doc": false,
+          "mermaid_diagrams": false,
+          "context_with_deps_section": 1,
+          "monorepo_workspace": false
+        },
+        "sub_scores": {},
+        "findings": [
+          "ARCHITECTURE.md / dependency map 부재",
+          "mermaid 다이어그램 없음 — 시각적 의존도 표현 부재"
+        ]
+      },
+      "E": {
+        "name": "Verification & Quality Gates",
+        "score": 7,
+        "max": 15,
+        "evidence": {
+          "ref_total": 22,
+          "ref_broken": 6,
+          "codeowners": true,
+          "pr_template": false,
+          "ci_workflows": true,
+          "husky": false,
+          "evals_dir": false
+        },
+        "sub_scores": {
+          "E1_RefAccuracy": 4,
+          "E2_CriticReview": 2,
+          "E3_TaskValidation": 1,
+          "E4_PromptTests": 0
+        },
+        "findings": [
+          "hallucinated path 6건 (총 22 참조 중) — 예: AGENTS.md: agents/skills/dawnholder-goal-loop/SKILL.md, README.md: agents/skills/dawnholder-goal-loop/SKILL.md, 00_Document/archive/README.md: ./ledgers/INDEX.md, 01_Phases/README.md: phases/_template.md",
+          "agent eval / prompt test 디렉터리 없음 — AI 회귀 catch 없음"
+        ]
+      },
+      "F": {
+        "name": "Freshness & Self-Maintenance",
+        "score": 0,
+        "max": 10,
+        "evidence": {
+          "drifted_modules": 0,
+          "measurable_modules": 0,
+          "drift_ratio": 0,
+          "ctx_validation_workflow": false,
+          "hook_validates_paths": false
+        },
+        "sub_scores": {},
+        "findings": [
+          "CI에 context / docs validation step 없음",
+          "pre-commit / pre-push hook에 path 검증 없음"
+        ]
+      },
+      "G": {
+        "name": "Agent Performance Outcomes",
+        "score": 0,
+        "max": 5,
+        "evidence": {
+          "eval_dirs": [],
+          "metric_files": [],
+          "telemetry_hint": false
+        },
+        "sub_scores": {},
+        "findings": [
+          "agent eval / benchmark 디렉터리·결과 파일 부재 — 성능 측정 인프라 없음",
+          "AI usage telemetry 단서 없음 (session log / OpenTelemetry)"
+        ]
+      }
+    },
+    "insights": [
+      "총점 17/100 · 등급 AI-Hostile",
+      "가장 낮은 카테고리: A AI Navigation & Coverage 0/15",
+      "가장 낮은 카테고리: C Tribal Knowledge Externalization 0/20",
+      "⚠️  context에 hallucinated path 6건 — Meta 기준으로는 0이어야 함"
+    ],
+    "actions": [
+      {
+        "title": "context의 hallucinated path 6건 수정 (referential trust)",
+        "category": "E",
+        "effort": "S",
+        "effort_hours": 0.5,
+        "impact": "agent의 잘못된 path-following 방지 — stale = worse than missing",
+        "impact_score": 10,
+        "priority": 20
+      },
+      {
+        "title": "CI 또는 pre-push hook에 context path 검증 추가",
+        "category": "F",
+        "effort": "S",
+        "effort_hours": 1,
+        "impact": "stale reference를 코드 머지 시점에 차단 — 회귀 방지",
+        "impact_score": 8,
+        "priority": 8
+      },
+      {
+        "title": "5개 핵심 module에 CLAUDE.md 신설 (02_Server, 03_Client, 04_ClientNet…)",
+        "category": "A",
+        "effort": "S",
+        "effort_hours": 2.5,
+        "impact": "task당 ~3 min × ~5 task/일 절감 → 모듈 1개당 주 1-2 hr 회수",
+        "impact_score": 9,
+        "priority": 3.6
+      },
+      {
+        "title": "과도한 CLAUDE.md를 25-35 lines로 압축 (compass-not-encyclopedia)",
+        "category": "B",
+        "effort": "M",
+        "effort_hours": 2,
+        "impact": "agent context 로드 시간 단축 + 핵심 정보 가시성 ↑",
+        "impact_score": 7,
+        "priority": 3.5
+      },
+      {
+        "title": "ARCHITECTURE.md 또는 mermaid dependency 다이어그램 추가",
+        "category": "D",
+        "effort": "M",
+        "effort_hours": 2.5,
+        "impact": "cross-module ripple 추적 → 변경 영향 분석 시간 절반",
+        "impact_score": 7,
+        "priority": 2.8
+      },
+      {
+        "title": "MEMORY.md 또는 docs/adr/ 도입으로 tribal knowledge 외부화",
+        "category": "C",
+        "effort": "M",
+        "effort_hours": 3,
+        "impact": "senior 의존 의사결정 외부화 → 신규 agent run 시 오류 ↓",
+        "impact_score": 8,
+        "priority": 2.6666666666666665
+      },
+      {
+        "title": "evals/ 디렉터리 + 대표 task pass-rate 측정 도입",
+        "category": "G",
+        "effort": "L",
+        "effort_hours": 6,
+        "impact": "AI 회귀 측정 가능 — 개선 ROI 자체를 정량화",
+        "impact_score": 6,
+        "priority": 1
+      },
+      {
+        "title": "god file 16개 분할 (>500 lines): 98_Shared/Protocol/Generated/GenPackets.cs (2490), 03_Client/Assets/Art/Environment/Others/Cainos/Third Party/Lucid Editor/Editor/EditorIcons.cs (1183), 02_Server/GameServer.Tests/PacketRoundTripTests.cs (1090)",
+        "category": "B",
+        "effort": "L",
+        "effort_hours": 40,
+        "impact": "파일당 ~5K-10K token 절감 + 편집 정확도 ↑",
+        "impact_score": 6,
+        "priority": 0.15
+      }
+    ],
+    "extras": {
+      "modules": [
+        {
+          "path": "<snapshot>/02_Server",
+          "rel": "02_Server",
+          "code_files": 143,
+          "has_context": false,
+          "context_file": null,
+          "context_kind": ""
+        },
+        {
+          "path": "<snapshot>/03_Client",
+          "rel": "03_Client",
+          "code_files": 217,
+          "has_context": false,
+          "context_file": null,
+          "context_kind": ""
+        },
+        {
+          "path": "<snapshot>/04_ClientNet",
+          "rel": "04_ClientNet",
+          "code_files": 6,
+          "has_context": false,
+          "context_file": null,
+          "context_kind": ""
+        },
+        {
+          "path": "<snapshot>/98_Shared",
+          "rel": "98_Shared",
+          "code_files": 17,
+          "has_context": false,
+          "context_file": null,
+          "context_kind": ""
+        },
+        {
+          "path": "<snapshot>/99_Tools",
+          "rel": "99_Tools",
+          "code_files": 37,
+          "has_context": false,
+          "context_file": null,
+          "context_kind": ""
+        }
+      ],
+      "large_files": [
+        {
+          "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+          "lines": 2490
+        },
+        {
+          "path": "03_Client/Assets/Art/Environment/Others/Cainos/Third Party/Lucid Editor/Editor/EditorIcons.cs",
+          "lines": 1183
+        },
+        {
+          "path": "02_Server/GameServer.Tests/PacketRoundTripTests.cs",
+          "lines": 1090
+        },
+        {
+          "path": "03_Client/Assets/Art/Environment/Others/Cainos/Third Party/Lucid Editor/Editor/LucidEditorGUILayout.cs",
+          "lines": 995
+        },
+        {
+          "path": "03_Client/Assets/Art/Environment/Others/Cainos/Third Party/Lucid Editor/Editor/LucidEditorGUI.cs",
+          "lines": 942
+        },
+        {
+          "path": "02_Server/GameServer.Tests/Maps/BossBehaviorTests.cs",
+          "lines": 818
+        },
+        {
+          "path": "03_Client/Assets/Tests/EditMode/Prediction/PlayerPredictorTests.cs",
+          "lines": 789
+        },
+        {
+          "path": "02_Server/GameServer.Tests/Maps/MapMigrationTests.cs",
+          "lines": 632
+        },
+        {
+          "path": "02_Server/GameServer.Tests/AnimStateTests.cs",
+          "lines": 607
+        },
+        {
+          "path": "02_Server/GameServer/Sessions/GameSession.cs",
+          "lines": 569
+        },
+        {
+          "path": "99_Tools/headless-bot/Scenarios/Skill/DashSmoke.cs",
+          "lines": 564
+        },
+        {
+          "path": "02_Server/GameServer.Tests/TerrainPhysicsTests.cs",
+          "lines": 556
+        },
+        {
+          "path": "02_Server/GameServer.Tests/Combat/MageTeleportTests.cs",
+          "lines": 541
+        },
+        {
+          "path": "02_Server/GameServer/Maps/GameMap.cs",
+          "lines": 535
+        },
+        {
+          "path": "99_Tools/headless-bot/Scenarios/Combat/EmergencyCombatSmoke.cs",
+          "lines": 512
+        },
+        {
+          "path": "99_Tools/headless-bot/Scenarios/Boss/BossStageClearSmoke.cs",
+          "lines": 509
+        },
+        {
+          "path": "02_Server/GameServer.Tests/Combat/EnemyAiTests.cs",
+          "lines": 497
+        },
+        {
+          "path": "03_Client/Assets/Scripts/Prediction/LocalPlayerMovement.cs",
+          "lines": 456
+        },
+        {
+          "path": "03_Client/Assets/Editor/TerrainBaker.cs",
+          "lines": 450
+        },
+        {
+          "path": "02_Server/GameServer.Tests/Combat/MageRangedCombatTests.cs",
+          "lines": 445
+        },
+        {
+          "path": "99_Tools/headless-bot/Scenarios/Skill/ThunderboltAoeSmoke.cs",
+          "lines": 425
+        },
+        {
+          "path": "02_Server/GameServer.Tests/Maps/EnemyStateTests.cs",
+          "lines": 414
+        },
+        {
+          "path": "99_Tools/headless-bot/Scenarios/Boss/BossFightSmoke.cs",
+          "lines": 404
+        },
+        {
+          "path": "99_Tools/PacketGenerator/PacketFormat.cs",
+          "lines": 402
+        },
+        {
+          "path": "99_Tools/headless-bot/Scenarios/Skill/TeleportSmoke.cs",
+          "lines": 388
+        },
+        {
+          "path": "02_Server/GameServer.Tests/Combat/ThunderboltSkillTests.cs",
+          "lines": 381
+        },
+        {
+          "path": "02_Server/GameServer.Tests/PhysicsTests.cs",
+          "lines": 378
+        },
+        {
+          "path": "99_Tools/headless-bot/Scenarios/Enemy/EnemyAiSmoke.cs",
+          "lines": 371
+        },
+        {
+          "path": "02_Server/GameServer.Tests/Combat/KnightDashTests.cs",
+          "lines": 369
+        },
+        {
+          "path": "98_Shared/GameData/Physics.cs",
+          "lines": 363
+        }
+      ]
+    }
+  },
+  "manual": {
+    "total": 63,
+    "grade": "AI-Assisted",
+    "categories": {
+      "A": {
+        "score": 10,
+        "max": 15,
+        "evidence": [
+          "AGENTS.md: 필요한 문서만 읽기 → FEATURE_MAP / ARCHITECTURE / DEVELOPMENT",
+          "FEATURE_MAP has server/client feature entry points; DEVELOPMENT has five domain contracts."
+        ],
+        "gaps": [
+          "Architecture navigation still lists removed GameServer/Network and planned Persistence as a directory tree; not every route is trustworthy within two hops."
+        ]
+      },
+      "B": {
+        "score": 14,
+        "max": 20,
+        "subscores": {
+          "B1_Conciseness": 2,
+          "B2_QuickCommands": 3,
+          "B3_KeyFiles": 3,
+          "B4_NonObvious": 3,
+          "B5_CrossRefs": 3
+        },
+        "evidence": [
+          "AGENTS.md and README route to on-demand development, feature map, conventions and ADR.",
+          "DEVELOPMENT supplies runnable PowerShell/WSL commands, conditions and DLL copy warnings."
+        ],
+        "gaps": [
+          "Root instructions and goal skill repeat roles/workflow.",
+          "Long FEATURE_MAP/conventions contain old terminology and compulsory reading instructions."
+        ]
+      },
+      "C": {
+        "score": 15,
+        "max": 20,
+        "evidence": [
+          "DEVELOPMENT: five domain contracts",
+          "FEATURE_MAP: actor ownership, mutation hazards, intentional transport duplication",
+          "ADR/INDEX.md: protocol and transport decisions"
+        ],
+        "gaps": [
+          "Useful knowledge is scattered among current conventions, historical rules and hidden .claude/knowledge files; modification recipes are uneven across domains."
+        ]
+      },
+      "D": {
+        "score": 10,
+        "max": 15,
+        "evidence": [
+          "ARCHITECTURE: client → transport → authoritative server and shared protocol",
+          "FEATURE_MAP: feature entry/trust/state/notification/client/persistence distinctions",
+          "Dawnholder.slnx and csproj project references"
+        ],
+        "gaps": [
+          "Architecture tree and persistence implementation claims are stale; not all documented runtime paths match source."
+        ]
+      },
+      "E": {
+        "score": 11,
+        "max": 15,
+        "subscores": {
+          "E1_RefAccuracy": 4,
+          "E2_CriticReview": 4,
+          "E3_TaskValidation": 3,
+          "E4_PromptTests": 0
+        },
+        "evidence": [
+          "PR125 CI passed; same game source independently built and tested with 708 pass / 0 fail / 5 skip.",
+          "Three representative bots and six map hashes verified in initial setup evidence.",
+          "AGENTS requires separate implementer/reviewer; goal records separate actual reviews."
+        ],
+        "gaps": [
+          "E1: known stale live architecture references prevent full reference-accuracy credit; six raw regex failures are not six proven broken paths.",
+          "E3: Unity Editor / gameplay / DB validation remain unverified.",
+          "E4: no representative fresh-agent workflow evaluation at this baseline."
+        ]
+      },
+      "F": {
+        "score": 3,
+        "max": 10,
+        "evidence": [
+          "CURRENT points to a dated goal; ADR and FEATURE_MAP explicitly require updates with changes.",
+          "Git and completed setup goal record recent checks."
+        ],
+        "gaps": [
+          "No functioning docs/path validation job; manual maintenance only. Snapshot mtime is not freshness evidence."
+        ]
+      },
+      "G": {
+        "score": 0,
+        "max": 5,
+        "evidence": [],
+        "gaps": [
+          "No before/after agent-task success, intervention, token or tool-use measurements. Game tests and this readiness score do not satisfy G."
+        ]
+      }
+    }
+  },
+  "limitations": [
+    "Raw scorer filename/language/path heuristics do not cover this repository accurately.",
+    "Manual category evidence is evaluator judgment under the pinned published rubric.",
+    "Runtime evidence predates this documentation-only baseline; game source unchanged.",
+    "Unity, DB, Orca provider readiness and fresh-session skill auto-selection are not verified.",
+    "Merge permission is independent from score and requires current explicit user approval."
+  ]
+}

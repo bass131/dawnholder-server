@@ -1,61 +1,52 @@
-# ADR INDEX — 카테고리별 결정 목록
+# 기술 결정 색인
 
-> 본 폴더는 [`../ADR.md`](../ADR.md)의 본문이 220줄 임계 도달로 카테고리 외부화된 결과입니다 (ADR-014 정책 (b) 패턴).
->
-> 새 ADR 추가 시: (1) 적절한 카테고리 폴더에 `ADR-NNN-slug.md` 생성 → (2) 본 INDEX에 한 줄 추가 → (3) `../ADR.md`의 후보 표 갱신 → (4) `../ADR_History.md`에 변경 이력 한 줄.
+ADR은 선택 당시의 이유와 비용을 보존한다. 현재 운영 권한은 [AGENTS](../../AGENTS.md), 실제 구현은 [ARCHITECTURE](../ARCHITECTURE.md)를 확인한다. 채택된 설계가 모두 구현되었다는 뜻은 아니다. 특히 SQL 영속화와 거점 기능은 구현 상태를 따로 확인한다.
 
----
+## 기술・제품 결정
 
-## tech-stack/ — 스택·도구체인·환경
+| 번호 | 결정 |
+|---|---|
+| ADR-001 | [Unity・.NET・공유 런타임 선택](tech-stack/ADR-001-unity-dotnet-versions.md) |
+| ADR-002 | [TCP・PDL・코드 생성](tech-stack/ADR-002-tcp-pdl.md) |
+| ADR-003 | [모노레포와 별도 MES 저장소](tech-stack/ADR-003-monorepo.md) |
+| ADR-004 | [20 TPS 서버 틱](tech-stack/ADR-004-tickrate.md) |
+| ADR-005 | [SQL Server・EF Core 선택(영속화 설계)](tech-stack/ADR-005-mssql-efcore.md) |
+| ADR-006 | [사냥과 거점 성장의 제품 방향](gameplay/ADR-006-genre-mix.md) |
+| ADR-007 | [거점 시설의 구매・기능 제공 모델](gameplay/ADR-007-stronghold-model.md) |
+| ADR-008 | [단일 서버 프로세스](gameplay/ADR-008-single-process.md) |
+| ADR-009 | [게임 백엔드 포트폴리오 범위](gameplay/ADR-009-portfolio-target.md) |
+| ADR-010 | [공유 DLL과 디버그 정보](tech-stack/ADR-010-shared-dll.md) |
+| ADR-011 | [기존 ServerDev 코드의 부분 채택](tech-stack/ADR-011-serverdev-scenario-b.md) |
+| ADR-012 | [클라이언트 전송 라이브러리 분리](tech-stack/ADR-012-socket-y2.md) |
+| ADR-017 | [ASCII 프로젝트 경로](tech-stack/ADR-017-ascii-path.md) |
+| ADR-021 | [Unity UI Additive Scene 분리](harness/ADR-021-client-ui-additive-scene.md) |
+| ADR-026 | [맵 이동 시 entity ID 유지](tech-stack/ADR-026-entity-id-global-pool.md) |
+| ADR-027 | [클라이언트 bootstrap과 연결 수명주기](harness/ADR-027-client-bootstrap-persistent-services.md) |
+| ADR-028 | [코드 규칙과 참고자료 분리](harness/ADR-028-code-convention.md) |
+| ADR-029 | [WSL에서 .NET 실행](harness/ADR-029-wsl2-dotnet-execution-standard.md) |
+| ADR-030 | [행동 상태의 서버 권위](gameplay/ADR-030-server-authoritative-action-rules.md) |
+| ADR-033 | [구조 이름과 책임 경계](tech-stack/ADR-033-structure-naming-boundaries.md) |
 
-| 번호 | 결정 | 파일 |
-|------|------|------|
-| ADR-001 | Unity 6.4 LTS + .NET 10 LTS + .NET Std 2.1 멀티타겟 | [tech-stack/ADR-001-unity-dotnet-versions.md](tech-stack/ADR-001-unity-dotnet-versions.md) |
-| ADR-002 | Raw TCP + 자체 PDL + 코드 생성기 | [tech-stack/ADR-002-tcp-pdl.md](tech-stack/ADR-002-tcp-pdl.md) |
-| ADR-003 | 모노레포 (MES만 별도 레포) | [tech-stack/ADR-003-monorepo.md](tech-stack/ADR-003-monorepo.md) |
-| ADR-004 | 20 TPS 서버 틱 | [tech-stack/ADR-004-tickrate.md](tech-stack/ADR-004-tickrate.md) |
-| ADR-005 | **MSSQL (SQL Server) + EF Core 10** (v2: PostgreSQL→MSSQL 정정) | [tech-stack/ADR-005-mssql-efcore.md](tech-stack/ADR-005-mssql-efcore.md) |
-| ADR-010 | Shared 코드 공유 = DLL + Embedded PDB | [tech-stack/ADR-010-shared-dll.md](tech-stack/ADR-010-shared-dll.md) |
-| ADR-011 | 기존 ServerDev 코드 부분 채택 (시나리오 B) | [tech-stack/ADR-011-serverdev-scenario-b.md](tech-stack/ADR-011-serverdev-scenario-b.md) |
-| ADR-012 | Unity 클라 socket 분리 클라용 라이브러리 (Y2) | [tech-stack/ADR-012-socket-y2.md](tech-stack/ADR-012-socket-y2.md) |
-| ADR-017 | 프로젝트 폴더 ASCII 경로 이동 | [tech-stack/ADR-017-ascii-path.md](tech-stack/ADR-017-ascii-path.md) |
-| ADR-026 | entity id 전역 풀 (맵 간 id 유지) | [tech-stack/ADR-026-entity-id-global-pool.md](tech-stack/ADR-026-entity-id-global-pool.md) |
-| ADR-033 | 🟢 구조 네이밍·경계 기준 (M7.7, **Accepted** 2026-06-20 — P6 범위 A 전체 D2~D6) | [tech-stack/ADR-033-structure-naming-boundaries.md](tech-stack/ADR-033-structure-naming-boundaries.md) |
+ADR-021・027・028・029는 기존 harness 경로에 있지만 기술 결정도 담고 있어 원문을 유지했다. 본문의 옛 도구・필수 절차는 당시 운영 기록이며 현재 지침을 덮어쓰지 않는다.
 
-## gameplay/ — 게임 디자인·스코프
+## 종료된 운영 결정
 
-| 번호 | 결정 | 파일 |
-|------|------|------|
-| ADR-006 | 두 장르 결합을 MVP 핵심으로 유지 | [gameplay/ADR-006-genre-mix.md](gameplay/ADR-006-genre-mix.md) |
-| ADR-007 | 거점 시설 = "구매 → 기능 제공" 모델 | [gameplay/ADR-007-stronghold-model.md](gameplay/ADR-007-stronghold-model.md) |
-| ADR-008 | 단일 서버 프로세스 (분산/샤딩 없음) | [gameplay/ADR-008-single-process.md](gameplay/ADR-008-single-process.md) |
-| ADR-009 | 포트폴리오 타겟 = 게임 회사 백엔드 | [gameplay/ADR-009-portfolio-target.md](gameplay/ADR-009-portfolio-target.md) |
-| ADR-030 | 행동 상태 규칙 = 서버 권위 (클라 Animator Exit Time = 시각 거울) | [gameplay/ADR-030-server-authoritative-action-rules.md](gameplay/ADR-030-server-authoritative-action-rules.md) |
+다음 결정은 영역별 보관에 요약과 원문을 남겼다. 현재 작업 절차로 적용하지 않는다.
 
-## harness/ — 작업 흐름·문서·훅
+| 번호 | 과거 주제 |
+|---|---|
+| ADR-013 | [작업 결과・회고 문서](../archive/workflow/legacy-decisions.md#source-35a469c35ce5) |
+| ADR-014 | [문서 길이 기준](../archive/workflow/legacy-decisions.md#source-3d1e41694cde) |
+| ADR-015 | [작업 후 검사](../archive/workflow/legacy-decisions.md#source-389ab65637f2) |
+| ADR-016 | [Notion 협업 분담](../archive/workflow/legacy-decisions.md#source-a762dc07ff8e) |
+| ADR-018 | [작업 상태 보존](../archive/workflow/legacy-decisions.md#source-75630e314736) |
+| ADR-019 | [리뷰 에이전트](../archive/workflow/legacy-decisions.md#source-2f318205b5c4) |
+| ADR-020 | [Claude 훅 실행 환경](../archive/workflow/legacy-decisions.md#source-b2b65307970b) |
+| ADR-022 | [Claude 운영 체계](../archive/workflow/legacy-decisions.md#source-0401e39b8a8e) |
+| ADR-023 | [작업 상태 동기화](../archive/workflow/legacy-decisions.md#source-25b81bb57514) |
+| ADR-024 | [문서와 구현의 정기 대조](../archive/workflow/legacy-decisions.md#source-89f44ecfc98f) |
+| ADR-025 | [이전 학습 기록 절차 종료](../archive/workflow/legacy-decisions.md#source-7a20d3b9c6e6) |
+| ADR-031 | [작업 진행・보고 방식](../archive/workflow/legacy-decisions.md#source-a794c5a66fc0) |
+| ADR-032 | [Claude 목표 루프](../archive/workflow/legacy-decisions.md#source-9f27ca064173) |
 
-| 번호 | 결정 | 파일 |
-|------|------|------|
-| ADR-013 | -DONE.md 페어 박제 정책 (AI=사실 / 본인=회고 분업) *(회고 절반 superseded — ADR-025)* | [harness/ADR-013-done-md-pair.md](harness/ADR-013-done-md-pair.md) |
-| ADR-014 | 문서 세분화 정책 (220줄 임계 + 헌법 350줄 예외) | [harness/ADR-014-doc-length-thresholds.md](harness/ADR-014-doc-length-thresholds.md) |
-| ADR-015 | Post-flight 게이트 (validate-phase-gate.sh 훅) | [harness/ADR-015-postflight-gate.md](harness/ADR-015-postflight-gate.md) |
-| ADR-016 | Notion 협업 3자 분업 (Claude / Codex / 본인) *(부분 superseded — ADR-032: 사실상 Claude 단독)* | [harness/ADR-016-notion-3way.md](harness/ADR-016-notion-3way.md) |
-| ADR-018 | 하네스 망각 안전망 — 작업 봉투 + 핀 + WORK-ID *(부분 superseded — ADR-022)* | [harness/ADR-018-forgetting-safety-net.md](harness/ADR-018-forgetting-safety-net.md) |
-| ADR-019 | Reviewer 에이전트 도입 (Tier 2 자동 리뷰) *(부분 갱신 — ADR-022 / 정적 트리거 매트릭스 부분 superseded — ADR-032)* | [harness/ADR-019-reviewer-agent.md](harness/ADR-019-reviewer-agent.md) |
-| ADR-020 | 훅 실행 환경 의존성 (Git Bash on Windows) + 검증 패턴 | [harness/ADR-020-hook-env-deps.md](harness/ADR-020-hook-env-deps.md) |
-| ADR-021 | 클라이언트 UI는 별도 Additive Scene으로 분리 | [harness/ADR-021-client-ui-additive-scene.md](harness/ADR-021-client-ui-additive-scene.md) |
-| ADR-022 | 새 하네스 v1 (M3.5 — 5/20 의논 + NDREAM 패턴 흡수 + KPI 전환) | [harness/ADR-022-new-harness-v1.md](harness/ADR-022-new-harness-v1.md) |
-| ADR-023 | work-pin/CONTEXT 동기화 결함 — 진행 단계 stale hole 봉합 (M3.7 — 옵션 C 게이트 보강, `/session:start` drift 발견 단계 신설) *(CONTEXT 절반 superseded — ADR-025, drift 게이트는 work-pin 단독으로 유지; 동기 시점 부분 superseded — ADR-032)* | [harness/ADR-023-sync-gate-progress-stale-hole.md](harness/ADR-023-sync-gate-progress-stale-hole.md) |
-| ADR-024 | false-promise 주기적 감사 cadence (M3.7 — 누적 12건+ Rule of Three 3회 통과, 마일스톤 마감 + ad-hoc X건 트리거) | [harness/ADR-024-false-promise-cadence.md](harness/ADR-024-false-promise-cadence.md) |
-| ADR-025 | CONTEXT 3종 + 학습 일지 트랙 B 은퇴, work-pin 단일 핸드오프 (M4.1 — ADR-013 회고/ADR-023 CONTEXT/ADR-022 트랙 B 부분 supersede) | [harness/ADR-025-retire-context-trio-and-learning-track.md](harness/ADR-025-retire-context-trio-and-learning-track.md) |
-| ADR-027 | 클라 Bootstrap(코드 주도 RuntimeInitialize) + Persistent Services + 연결 생명주기 A안 (M4.2 — ADR-021 scene-lifecycle 확장, ① DontDestroyOnLoad-per-service WIP supersede, B/로그인은 M5 이월) | [harness/ADR-027-client-bootstrap-persistent-services.md](harness/ADR-027-client-bootstrap-persistent-services.md) |
-| ADR-028 | Code Convention 수립 (GPP 19 + 게임서버 교과서 10 참고서 + 우리 규칙 + 강제 4중) — God class 분리 결정 기준, refs/CODE_CONVENTION/INDEX 3층 | [harness/ADR-028-code-convention.md](harness/ADR-028-code-convention.md) |
-| ADR-029 | SAC dotnet 실행 차단 — WSL2 실행 표준 (로컬 테스트 부활, 세션16 "SAC 게이트 은퇴 = CI 단독" 부분 supersede, PoC 5항목 게이트) | [harness/ADR-029-wsl2-dotnet-execution-standard.md](harness/ADR-029-wsl2-dotnet-execution-standard.md) |
-| ADR-031 | Phase 자동 진행 + 보고 비동기 문서화 (학습 호흡 수동 멈춤 폐기 = ADR-025 드리프트 봉합, HTML 임계 대규모→복잡, Stop=영호 직접확인 4종) *(ADR-015 "학습 호흡 보존"·ADR-022 "5단계 대규모 인라인" supersede)* | [harness/ADR-031-auto-phase-progression-async-reporting.md](harness/ADR-031-auto-phase-progression-async-reporting.md) |
-| ADR-032 | Loop-driven 운영 모드 (사람=방향+판단, 엔진=내장 /loop·Workflow + /engine:goal) — v1 attended adopt / v2 무인 defer. 3버킷 judge + 리뷰 throughput + 세션 2종 + pending 원장 3종 *(ADR-022 운영모드·019 정적매트릭스·016 3자분업·023 동기시점 부분 superseded / 031 확장)* | [harness/ADR-032-loop-driven-operation.md](harness/ADR-032-loop-driven-operation.md) |
-
----
-
-## 후보 ADR (아직 채택 안 됨)
-
-본문 [`../ADR.md`](../ADR.md#채워질-adr-후보들-예시) 참조. 후보 번호는 채택 순서대로 부여되어 변동될 수 있음.
+[변경 이력](../ADR_History.md) · [새 결정 기록 방법](../ADR.md)

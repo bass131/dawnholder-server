@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "scope": "All existing tracked/untracked Markdown files; code fences and external/anchor-only links excluded. Local target existence only; inline code paths and anchor semantics require separate review.",
+  "files": 139,
+  "links": 488,
+  "broken": [],
+  "caseErrors": [],
+  "limits": [
+    "External URLs were not mass-requested. Archive Git URLs were checked against fixed Git tree/blob identities.",
+    "Anchor names and inline code paths are outside regex target-existence checks; archive source anchors separately verified."
+  ],
+  "scoringSnapshot": {
+    "files": 139,
+    "links": 480
+  },
+  "measuredPhase": "Final goal-result update; scoring snapshot evidence stays 139 files / 480 links.",
+  "html": {
+    "file": "00_Document/reports/2026-09-29-codex-setup-report.html",
+    "localLinks": 21,
+    "internalAnchors": 6,
+    "missing": 0,
+    "caseErrors": 0,
+    "sha256": "7791dd73540e4a9548819f2e45d64bc47b435433d981f96dc5636ccd266a16d7",
+    "metricsTextMatches": true
+  }
+}
