@@ -1,13 +1,12 @@
 # Dawnholder — 리포 루트 .editorconfig
-# CODE_CONVENTION §7.1 멤버 정렬을 StyleCop SA1201/SA1202로 빌드 경고 강제한다.
-# 이 Phase(M4.10 Phase 01)는 룰을 "박기만" 한다 — 전체 경고 0 스윕은 Phase 05.
-# StyleCop의 나머지 카테고리는 전부 끄고 멤버 정렬 2룰만 켠다.
+# 멤버 정렬과 여러 줄 본문의 중괄호를 기존 분석기로 검사한다.
+# 정확한 적용 범위와 CI 실패 조건은 CODE_CONVENTION의 현재 자동 검사 설명을 따른다.
 
 root = true
 
 [*.cs]
 
-# --- StyleCop 카테고리 전체 비활성 (멤버 정렬만 남기려고 끈다) ---
+# StyleCop 카테고리는 비활성화하고 아래 개별 진단만 선택한다.
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpecialRules.severity = none
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpacingRules.severity = none
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.ReadabilityRules.severity = none
@@ -17,18 +16,34 @@ dotnet_analyzer_diagnostic.category-StyleCop.CSharp.MaintainabilityRules.severit
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.LayoutRules.severity = none
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
 
-# SA0001(XML 주석 분석 비활성)은 특수 룰이라 category none으로 안 꺼진다 — 개별로 끈다.
+# XML 주석 분석 비활성 진단은 개별로 끈다.
 dotnet_diagnostic.SA0001.severity = none
 
-# --- 멤버 정렬만 warning (more-specific 룰이 위 category none을 이긴다) ---
-# 적용 범위: production 게임 코드만 — GameServer.Tests/·99_Tools/는 하위 .editorconfig가 none으로 완화 (Phase 05 결정).
-dotnet_diagnostic.SA1201.severity = warning   # 멤버 종류 순서: 필드→생성자→event→프로퍼티→메서드→중첩타입 (파일 레벨: struct→class)
-dotnet_diagnostic.SA1202.severity = warning   # 접근성 순서: public→internal→protected internal→protected→private
+# 개별 진단이 위 category 설정보다 우선한다.
+# 멤버 종류: 필드 → 생성자 → 이벤트 → 프로퍼티 → 메서드 → 중첩 타입.
+dotnet_diagnostic.SA1201.severity = warning
+# 접근성: public → internal → protected internal → protected → private.
+dotnet_diagnostic.SA1202.severity = warning
 
-# --- 중괄호 when_multiline (CODE_CONVENTION §4, M4.14 P04 결정) ---
-# 한 줄 가드절(if (x) return;)은 허용, 본문이 줄바꿈된 무중괄호 if/else/loop만 강제.
-# 명분 = "goto fail" 류 사고(무중괄호 밑 문장 추가)는 multi-line일 때만 발생 → 위험 케이스만 차단.
-# always(SA1503/IDE0011=true)는 production 168건 churn 대비 가치 낮아 기각 (M4.14 P03 실측: when_multiline=15).
-# IDE 계열이라 EnforceCodeStyleInBuild=true(Directory.Build.props) 전제. Tests/99_Tools는 하위 .editorconfig가 none.
+# 여러 줄 본문에 중괄호를 사용하며 한 줄 가드절은 허용한다.
+# Directory.Build.props의 EnforceCodeStyleInBuild가 빌드에서 IDE0011을 실행한다.
+# Tests와 99_Tools는 하위 .editorconfig로 이 세 규칙을 완화한다.
 csharp_prefer_braces = when_multiline
 dotnet_diagnostic.IDE0011.severity = warning
+
+# 즉시 피해 처리 파일럿: 이 세 production 파일에서만 CI 빌드 실패 조건으로 적용한다.
+[02_Server/GameServer/Maps/{GameMap.cs,Actions/MeleeAction.cs,Actions/DashAction.cs}]
+dotnet_diagnostic.SA1201.severity = error
+dotnet_diagnostic.SA1202.severity = error
+dotnet_diagnostic.IDE0011.severity = error
+
+# .NET SDK 분석기의 복잡도·결합 임계 진단을 이 pilot 범위에서 warning으로 관찰한다.
+# CA1502/CA1506은 연속 점수나 전체 아키텍처 평가가 아니다.
+dotnet_diagnostic.CA1502.severity = warning
+dotnet_diagnostic.CA1506.severity = warning
+
+# 서버 패킷 표현 통합: 수정한 추가 production 파일에만 동일한 실패 조건을 적용한다.
+[02_Server/GameServer/{Sessions/GameSession.cs,Maps/Transitions/MapMigration.cs,Maps/MapPacketPublisher.cs,Maps/Systems/EnemyAISystem.cs,Maps/Systems/BossBehaviorSystem.cs}]
+dotnet_diagnostic.SA1201.severity = error
+dotnet_diagnostic.SA1202.severity = error
+dotnet_diagnostic.IDE0011.severity = error

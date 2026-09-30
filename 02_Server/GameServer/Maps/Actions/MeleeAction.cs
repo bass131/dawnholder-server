@@ -90,25 +90,7 @@ internal sealed class MeleeAction : IGameAction
         }
         else
         {
-            target.Hp -= damage;
-            target.TargetEntityId = attacker.EntityId;
-
-            S_HitResult hit = new S_HitResult
-            {
-                attackerEntityId = attacker.EntityId,
-                targetEntityId   = target.EntityId,
-                damage           = damage,
-                currentHp        = target.Hp,
-                maxHp            = target.MaxHp,
-                hitEffect        = (byte)HitEffect.Melee,
-            };
-            map.BroadcastToAll(hit.Write());
-
-            if (target.Hp <= 0)
-            {
-                map.HandleEnemyDeath(target, attacker.EntityId);
-            }
-            else
+            if (map.ApplyImmediateEnemyHit(target, attacker.EntityId, damage, HitEffect.Melee))
             {
                 float knockbackDir = target.X >= attacker.Position.X ? 1f : -1f;
                 target.EnterHitState(knockbackDir);
