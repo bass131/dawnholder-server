@@ -79,8 +79,9 @@ namespace Dawnholder.Client.UI
         void ReleaseSubscriptions()
         {
             PartyState? source = _subscribedPartyState;
-            if (source == null) return;
             _subscribedPartyState = null;
+            // Destroy된 Unity wrapper에도 managed 이벤트 구독이 남을 수 있다.
+            if (ReferenceEquals(source, null)) return;
             source.OnInviteReceived -= OnInviteReceived;
             source.OnPartyUpdated -= OnPartyUpdated;
         }
