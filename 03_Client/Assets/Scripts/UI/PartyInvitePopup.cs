@@ -21,7 +21,7 @@ namespace Dawnholder.Client.UI
     //   팝업 숨김을 트리거하기 위해 정적 접근점 필요.
     //
     // **이벤트 구독 해제**:
-    //   OnDestroy에서 PartyState 이벤트 구독 해제 → 씬 전환 시 누수 방지.
+    //   구독한 source에서 disable/destroy 시 대칭 해제한다.
     [DisallowMultipleComponent]
     public class PartyInvitePopup : MonoBehaviour
     {
@@ -29,6 +29,8 @@ namespace Dawnholder.Client.UI
 
         readonly PartyInviteResponseCommand _responseCommand = new PartyInviteResponseCommand(
             () => PartyState.Instance, () => UnityClientSession.Instance);
+
+        PartyState? _subscribedPartyState;
 
         [SerializeField] CanvasGroup? _group;
         [SerializeField] TMP_Text? _inviteText;
@@ -53,27 +55,34 @@ namespace Dawnholder.Client.UI
 
         void OnEnable()
         {
-            // OnEnable: Awake보다 늦지만 BuildRuntime 이후 AddComponent 순서상 안전.
-            // PartyState는 DontDestroyOnLoad → 씬 전환 후에도 Instance 유지.
-            if (PartyState.Instance != null)
-            {
-                PartyState.Instance.OnInviteReceived += OnInviteReceived;
-                PartyState.Instance.OnPartyUpdated   += OnPartyUpdated;
-            }
+            // 활성 중 source 교체를 자동 감지하거나 pending 초대를 replay하지 않는다.
+            if (_subscribedPartyState != null) return;
+            PartyState? source = PartyState.Instance;
+            if (source == null) return;
+
+            _subscribedPartyState = source;
+            source.OnInviteReceived += OnInviteReceived;
+            source.OnPartyUpdated += OnPartyUpdated;
         }
 
         void OnDisable()
         {
-            if (PartyState.Instance != null)
-            {
-                PartyState.Instance.OnInviteReceived -= OnInviteReceived;
-                PartyState.Instance.OnPartyUpdated   -= OnPartyUpdated;
-            }
+            ReleaseSubscriptions();
         }
 
         void OnDestroy()
         {
+            ReleaseSubscriptions();
             if (Instance == this) Instance = null;
+        }
+
+        void ReleaseSubscriptions()
+        {
+            PartyState? source = _subscribedPartyState;
+            if (source == null) return;
+            _subscribedPartyState = null;
+            source.OnInviteReceived -= OnInviteReceived;
+            source.OnPartyUpdated -= OnPartyUpdated;
         }
 
         // PartyState.OnInviteReceived 핸들러 — main thread 보장 (PartyInviteRecvHandler → Enqueue).
