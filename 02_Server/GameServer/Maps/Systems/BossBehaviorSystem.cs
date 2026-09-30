@@ -2,7 +2,6 @@ using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
-using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps.Systems;
 
@@ -68,16 +67,7 @@ internal sealed class BossBehaviorSystem
             if (shouldBroadcast)
             {
                 byte bossAnimState = ComputeBossAnimState(enemy);
-                S_EntityState statePkt = new S_EntityState
-                {
-                    entityId   = enemy.EntityId,
-                    x          = enemy.X,
-                    y          = enemy.Y,
-                    state      = (byte)enemy.State,
-                    animState  = bossAnimState,
-                    serverTick = (int)tickNumber,
-                };
-                map.BroadcastToAll(statePkt.Write());
+                map.BroadcastEnemyState(enemy, tickNumber, bossAnimState);
             }
         }
     }

@@ -45,25 +45,7 @@ internal sealed class DashAction : IGameAction
         foreach (EnemyEntity target in targets)
         {
             int damage = Formulas.ComputeDamage(caster.Stats, target.Stats, CombatConstants.BaseDamage);
-            target.Hp -= damage;
-            target.TargetEntityId = caster.EntityId;
-
-            S_HitResult hit = new S_HitResult
-            {
-                attackerEntityId = caster.EntityId,
-                targetEntityId   = target.EntityId,
-                damage           = damage,
-                currentHp        = target.Hp,
-                maxHp            = target.MaxHp,
-                hitEffect        = (byte)HitEffect.Dash,
-            };
-            map.BroadcastToAll(hit.Write());
-
-            if (target.Hp <= 0)
-            {
-                map.HandleEnemyDeath(target, caster.EntityId);
-            }
-            else
+            if (map.ApplyImmediateEnemyHit(target, caster.EntityId, damage, HitEffect.Dash))
             {
                 // 허딩: 생존 적을 대쉬 진행 방향으로 밀침. 기존 KnockbackVx 채널 재사용
                 //   (EnemyHitState가 X 적분+감쇠 처리). Boss는 EnterHitState가 latch-only라 자동 면역.
