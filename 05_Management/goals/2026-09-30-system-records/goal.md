@@ -54,6 +54,8 @@ Game Dev에 ARCHITECTURE의 계층/의존 방향, FEATURE_MAP 코드 진입점, 
 
 ## 현재 상태
 
+구현·독립 검증 완료. [PR #147](https://github.com/bass131/dawnholder-server/pull/147)을 `main` 대상으로 제출했으며 OPEN이다. 구현 커밋은 `3fc1e536c0ebdbeced52615787cbed9535d16bcc`다. 자동 병합은 설정하지 않았고 사용자 개별 병합 승인과 Game Dev 정정본 최종 회신을 기다린다. 원격 CI 결과는 PR에서 확인하며 아래 로컬 검증과 구분한다.
+
 기록 데이터(18시스템·18기록·35출처), 재배치 대응표와 앱 런타임 읽기/편집/저장 구현을 완료했다. 별도 Astra의 27개 테스트, 테스트 코드 타입검사, UI/Electron 빌드, 실행 배치 12개 테스트가 통과했다. 제품 빌드와 hash가 같은 시험용 복사본의 실제 Electron 창에서 편집→저장→재조회, JSON 불러오기, 잘못된 JSON 보존, 외부 수정 충돌·초안 보존과 격리 경계를 확인했다. 새 정본 경로의 실제 main을 별도 읽기 전용 실행해 1280×720 외곽 창, 실제 catalog 읽기, 원본 hash 보존과 정상 종료를 확인했다.
 
 Game Dev의 전투 의미 검토에 따라 StageClear의 보스/최초 조건, 비보스 respawn, 지연 피해 패킷 표현 clamp와 권위 HP의 차이, 평타/Dash 진입점을 정정했다. 최종 catalog SHA256은 `2711E0C1DB3FB581A6B02373E7C6F72EE3761E303628E3A03329758014385A1A`다. 09:05 기준 기록에 이후의 앱·게임 실행 결과를 소급하지 않는다. Game Dev 원문과 CURRENT는 수정하지 않았다.
