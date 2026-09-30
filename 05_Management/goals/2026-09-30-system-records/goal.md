@@ -54,7 +54,7 @@ Game Dev에 ARCHITECTURE의 계층/의존 방향, FEATURE_MAP 코드 진입점, 
 
 ## 현재 상태
 
-구현·독립 검증 완료. [PR #147](https://github.com/bass131/dawnholder-server/pull/147)은 OPEN이며 사용자 개별 병합 승인 대기다. 구현 커밋은 `3fc1e536c0ebdbeced52615787cbed9535d16bcc`다. Game Dev 전투 정정본 최종 의미검토는 **PASS**로 수신했다. 자동 병합은 설정하지 않았다. 원격 CI 결과는 PR의 정확 head에서 확인하며 아래 로컬 검증과 구분한다.
+구현·독립 검증·병합 완료. [PR #147](https://github.com/bass131/dawnholder-server/pull/147)은 사용자 명시 승인 후 Game Dev 메인이 2026-09-30 10:41:59 UTC에 `715bff5bfc62ab5c1f1cdf0aabdf7358492bb1d3`으로 병합했다. 구현 커밋은 `3fc1e536c0ebdbeced52615787cbed9535d16bcc`, 최종 검토 head는 `fd8f3c84cda4b7867a67ec5d3042de0bd43e8c4b`다. 해당 head의 독립 검토·CI와 Game Dev 전투 정정본 의미검토는 PASS다. 후속 공동 조회 착수는 사용자의 오늘 작업 종료 선택에 따라 보류한다.
 
 기록 데이터(18시스템·18기록·35출처), 재배치 대응표와 앱 런타임 읽기/편집/저장 구현을 완료했다. 별도 Astra의 27개 테스트, 테스트 코드 타입검사, UI/Electron 빌드, 실행 배치 12개 테스트가 통과했다. 제품 빌드와 hash가 같은 시험용 복사본의 실제 Electron 창에서 편집→저장→재조회, JSON 불러오기, 잘못된 JSON 보존, 외부 수정 충돌·초안 보존과 격리 경계를 확인했다. 새 정본 경로의 실제 main을 별도 읽기 전용 실행해 1280×720 외곽 창, 실제 catalog 읽기, 원본 hash 보존과 정상 종료를 확인했다.
 
@@ -80,4 +80,15 @@ Game Dev 조건부 의미 검토는 `msg_4397a2310999`다. 정정 완료본 요�
 
 09:05 이후의 별도 관찰: Game Dev의 09:57 회신은 P0 PR146의 사용자 승인 및 09:55:32 UTC 병합(a2eb65e), P1 첫 파티 command 추출 준비를 전달했다. 이번 사용자 전달은 별도 branch에서 P1 계약 테스트/command 추출 진행을 알렸다. 이는 전달받은 상태이며 Management가 P1 코드·실행을 검증한 결과가 아니다. 게임의 현재 상태 원본은 Game Dev CURRENT/goal이다. 기존 catalog의 기준일·내용·hash는 그대로 보존했다.
 
-이번 후속 작업은 회신 상태 정정·main 정합성 확인·정확 head 검토와 [다음 작업 설계안](next-options.md)까지만 포함한다. API/MCP·폼 편집·서버 실행/로그 관리는 아직 후속 범위 합의 전이며 실제 MCP/서버/DB/3D 실행과 권한 변경은 하지 않는다.
+PR147 마무리 당시 작업은 회신 상태 정정·main 정합성 확인·정확 head 검토와 [다음 작업 설계안](next-options.md)까지였다. 이후 사용자와 정한 공동 조회·로그 범위와 오늘의 착수 보류는 아래 재개 기록을 따른다. 실제 MCP/서버/DB/3D 실행과 권한 변경은 하지 않았다.
+
+## 오늘 작업 종료·다음 세션 재개
+
+최신 회신 `msg_fc30215d0d1a`(2026-09-30 10:45:29 UTC)가 직전 `msg_3187ffc08f9d`의 즉시 후속 착수 지시를 보류했다. 사용자의 직접 종료 요청과 함께 확인했으며 새 구현·새 목표·서버 실행을 시작하지 않는다. 터미널/프로세스를 종료하거나 정리하지 않고 현재 세션과 자료를 유지한다.
+
+- PR148도 사용자 승인 후 10:42:37 UTC에 `ef5f1023fe3353ee9eec5da04422232a33855233`으로 병합됐다. PR147/148의 merged 상태·시각·hash를 GitHub API에서 확인했다. 전달된 최신 main은 ef5f1023이다.
+- 최초 종료 기록 시 로컬은 `feat/management-system-records`, HEAD `fd8f3c84cda4b7867a67ec5d3042de0bd43e8c4b`, 미커밋 변경은 이 goal 하나였다. 이후 사용자 요청 msg_9bb970405c73으로 05 문서 갱신·독립 정적 검토·로컬 문서 commit만 허용됐다. 이 맥락 정리는 후속 착수 보류를 해제하지 않는다. 실제 문서 커밋은 `git log -1 --format="%H %s" -- 05_Management`, 남은 변경은 `git status --short --branch`로 확인한다. 원격 push·새 branch·PR·merge는 이번 범위가 아니다.
+- 다음 세션은 [재개 진입](../../RESUME.md) 순서로 읽고 사용자의 재개 지시를 확인한다. 로컬 문서 커밋과 추가 dirty 변경을 보존한 뒤 최신 main의 별도 branch로 문서를 이식하고 **개발 기록 공동 조회 → 서버 등록·로그 계약 공동설계** 순서로 정식화한다. 과거의 PR147 병합 대기는 해소됐으며 현재 대기는 사용자의 작업 종료 선택 때문이다.
+- 첫 목표는 화면 없는 로컬 stdio MCP와 공통 조회, 같은 catalog 버전/시점·읽기 전용·응답 제한/오류, 앱 종료 중 두 client 조회 검증이다. 구현 Sol6.1, 독립 TestCode·검토·보고 Astra, 새 CLI --no-daemon, 후속 PR마다 별도 병합 승인을 유지한다.
+- 확정 합의·완료조건·역할·Game Dev 경계는 Git으로 보존하는 [공동 조회·로그 합의](shared-read-agreements.md)에 모았다. 이전 [로컬 착수 준비](../../.verification/shared-read-implementation-plan.md)와 [로컬 병합 조율](../../.verification/shared-read-merge-coordination.md)은 당시 관찰로 남기며, 그 안의 OPEN/승인 대기를 현재 상태로 쓰지 않는다. 재개 시 필요한 내용만 새 goal로 승격하며 원시 대화를 재수집하지 않는다.
+- 로그 단계는 Game Dev가 실행 wrapper/서버 출력 계약, Management가 등록·조회·보존을 소유한다. 일반 로그 최근10분 조회, 서버당7일/1GB 보관 및 조사 근거 별도 보존 합의를 유지한다. 현행 자유문 로그의 시각/수준·실행등록 부족은 공동계약으로 보완하며 현재 실행 성공으로 표시하지 않는다. catalog의 09:05 역사 snapshot과 Game Dev CURRENT/goal 원본은 보존한다.
