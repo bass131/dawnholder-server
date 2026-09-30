@@ -14,7 +14,7 @@
 | 적·보스 | `Maps/Systems/EnemyAISystem.cs`, `BossBehaviorSystem.cs`; `Entities/EnemyEntity.cs`, `Maps/States/EnemyStates.cs` | `Network/Handlers/Sync/EntityStateHandler.cs`, `Combat/Enemies/` |
 | 피격·사망·리스폰 | `Maps/Systems/CombatSystem.cs`, `RespawnSystem.cs`; 엔티티 HP·상태 | `Network/Handlers/Combat/`, `UI/` |
 | 포탈·맵 이동 | `Handlers/Zone/EnterPortalHandler.cs` → `GameSession.SubmitEnterPortal` → `Maps/Transitions/MapMigration.cs`; `Maps/PortalTable.cs` | `Network/Handlers/Zone/MapTransitionHandler.cs`, `Network/SceneRouter.cs` |
-| 파티 | `Handlers/Party/` → `Party/PartyFlow.cs`; `PartyRegistry.cs`, `PartyState.cs`, `PartyNotifier.cs` | `Network/Handlers/Party/`, `State/PartyState.cs`, `UI/PartyInvitePopup.cs`, `PartyMemberHud.cs` |
+| 파티 | `Handlers/Party/` → `Party/PartyFlow.cs`; `PartyRegistry.cs`, `PartyState.cs`, `PartyNotifier.cs` | `Network/Handlers/Party/`, `State/PartyState.cs`, `UI/PartyInvitePopup.cs` → `PartyInviteResponseCommand.cs`, `PartyMemberHud.cs` |
 | 처치 진행·보스 해금 | `Loop/GameWorld.cs`의 처치 콜백 → `Quest/QuestRegistry.cs`; `QuestConstants.cs`, Party의 KillCount | `Network/Handlers/Quest/`, `State/QuestState.cs`, `UI/QuestProgressHud.cs` |
 
 ## 공통 계약

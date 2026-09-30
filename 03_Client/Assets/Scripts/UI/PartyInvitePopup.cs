@@ -21,11 +21,16 @@ namespace Dawnholder.Client.UI
     //   팝업 숨김을 트리거하기 위해 정적 접근점 필요.
     //
     // **이벤트 구독 해제**:
-    //   OnDestroy에서 PartyState 이벤트 구독 해제 → 씬 전환 시 누수 방지.
+    //   구독한 source에서 disable/destroy 시 대칭 해제한다.
     [DisallowMultipleComponent]
     public class PartyInvitePopup : MonoBehaviour
     {
         public static PartyInvitePopup? Instance { get; private set; }
+
+        readonly PartyInviteResponseCommand _responseCommand = new PartyInviteResponseCommand(
+            () => PartyState.Instance, () => UnityClientSession.Instance);
+
+        PartyState? _subscribedPartyState;
 
         [SerializeField] CanvasGroup? _group;
         [SerializeField] TMP_Text? _inviteText;
@@ -50,27 +55,35 @@ namespace Dawnholder.Client.UI
 
         void OnEnable()
         {
-            // OnEnable: Awake보다 늦지만 BuildRuntime 이후 AddComponent 순서상 안전.
-            // PartyState는 DontDestroyOnLoad → 씬 전환 후에도 Instance 유지.
-            if (PartyState.Instance != null)
-            {
-                PartyState.Instance.OnInviteReceived += OnInviteReceived;
-                PartyState.Instance.OnPartyUpdated   += OnPartyUpdated;
-            }
+            // 활성 중 source 교체를 자동 감지하거나 pending 초대를 replay하지 않는다.
+            if (_subscribedPartyState != null) return;
+            PartyState? source = PartyState.Instance;
+            if (source == null) return;
+
+            _subscribedPartyState = source;
+            source.OnInviteReceived += OnInviteReceived;
+            source.OnPartyUpdated += OnPartyUpdated;
         }
 
         void OnDisable()
         {
-            if (PartyState.Instance != null)
-            {
-                PartyState.Instance.OnInviteReceived -= OnInviteReceived;
-                PartyState.Instance.OnPartyUpdated   -= OnPartyUpdated;
-            }
+            ReleaseSubscriptions();
         }
 
         void OnDestroy()
         {
+            ReleaseSubscriptions();
             if (Instance == this) Instance = null;
+        }
+
+        void ReleaseSubscriptions()
+        {
+            PartyState? source = _subscribedPartyState;
+            _subscribedPartyState = null;
+            // Destroy된 Unity wrapper에도 managed 이벤트 구독이 남을 수 있다.
+            if (ReferenceEquals(source, null)) return;
+            source.OnInviteReceived -= OnInviteReceived;
+            source.OnPartyUpdated -= OnPartyUpdated;
         }
 
         // PartyState.OnInviteReceived 핸들러 — main thread 보장 (PartyInviteRecvHandler → Enqueue).
@@ -113,28 +126,7 @@ namespace Dawnholder.Client.UI
 
         void SendRespond(byte accept)
         {
-            // PartyState는 DontDestroyOnLoad — 런타임 null 방어.
-            if (PartyState.Instance == null) return;
-            PartyState state = PartyState.Instance;
-            if (!state.HasPendingInvite)
-            {
-                Debug.LogWarning("[PartyInvitePopup] HasPendingInvite=false — 응답 취소.");
-                return;
-            }
-
-            UnityClientSession? session = UnityClientSession.Instance;
-            if (session == null || !session.HandshakeOk)
-            {
-                Debug.LogWarning("[PartyInvitePopup] 세션 없음 또는 Handshake 미완료 — 응답 송신 불가.");
-                return;
-            }
-
-            int inviterId = state.PendingInviterEntityId;
-            var pkt = new C_PartyRespond { inviterEntityId = inviterId, accept = accept };
-            session.SendIntent(pkt.Write());
-
-            state.ClearPendingInvite();
-            Debug.Log($"[PartyInvitePopup] C_PartyRespond 송신 — inviterId={inviterId} accept={accept}");
+            _responseCommand.Execute(accept);
         }
 
         void ShowPopup()
