@@ -1,6 +1,6 @@
 # S4 — 원격 보간 계산과 Unity 적용 경계 분리
 
-상태: 최신 main `a3c4e15e7d655511ced06bd1303360761413c5ab` 기반 `refactor/remote-interpolation-state`에서 구현 착수. [S3 PR #143](https://github.com/bass131/dawnholder-server/pull/143)의 독립 검증·계약 검토 완료 후 진행하며, 앞선 미병합 서버 변경은 이 독립 브랜치에 포함하지 않는다. 기존 클라이언트 수명·설정·예측 분리를 재작업하지 않고 필요한 작은 책임 경계에 기준을 적용한다. PR은 최종 보고서 확인·사용자 승인 전 병합하지 않는다.
+상태: 구현·독립 검증 완료, [PR #144](https://github.com/bass131/dawnholder-server/pull/144) 통합 대기. 최신 main `a3c4e15e7d655511ced06bd1303360761413c5ab` 기반 `refactor/remote-interpolation-state`, 구현·테스트 commit `f948848`. [S3 PR #143](https://github.com/bass131/dawnholder-server/pull/143)의 독립 검증·계약 검토 완료 후 진행하며, 앞선 미병합 서버 변경은 이 독립 브랜치에 포함하지 않는다. 기존 클라이언트 수명·설정·예측 분리를 재작업하지 않고 필요한 작은 책임 경계에 기준을 적용한다. PR은 최종 보고서 확인·사용자 승인 전 병합하지 않는다.
 
 ## 목표와 설계
 
@@ -32,7 +32,7 @@ DEVELOPMENT와 프로젝트 Unity 버전6000.4.7f1을 확인한다. 기존 사�
 
 ## 결과와 다음 작업
 
-구현·독립 TestCode·별도 읽기 리뷰 완료, PR 준비 상태다. Sol이 wrapper·새 internal state/meta·client 계약을 수정했고 별도 Astra가 신규 EditMode 테스트2파일과 meta를 작성·실행했다. 구현자와 검증자 모두 쓰기를 종료했다. 요청 모델 Sol6.1/Astra와 실제 런타임 unknown을 구분한다.
+구현·독립 TestCode·별도 읽기 리뷰 완료 상태다. Sol이 wrapper·새 internal state/meta·client 계약을 수정했고 별도 Astra가 신규 EditMode 테스트2파일과 meta를 작성·실행했다. 구현자와 검증자 모두 쓰기를 종료했다. 요청 모델 Sol6.1/Astra와 실제 런타임 unknown을 구분한다.
 
 | 실행 | 실제 결과 |
 |---|---|
