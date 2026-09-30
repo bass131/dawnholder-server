@@ -1,11 +1,14 @@
 #nullable enable
 using Dawnholder.Client.Network;
+using Dawnholder.Client.Bootstrap;
 using Dawnholder.Client.UI;
 using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
+using Shared.GameData;
+using Shared.Protocol;
 
 namespace Dawnholder.Client.Tests
 {
@@ -121,6 +124,50 @@ namespace Dawnholder.Client.Tests
         }
 
         // ── MapIdToDisplayName ────────────────────────────────────────────────
+
+        [TestCase(CharacterClass.Knight, 150, false)]
+        [TestCase(CharacterClass.Knight, 150, true)]
+        [TestCase(CharacterClass.Mage, 80, false)]
+        [TestCase(CharacterClass.Mage, 80, true)]
+        [TestCase((CharacterClass)255, 150, false)]
+        [TestCase((CharacterClass)255, 150, true)]
+        public void ClassDefinition_HudPlaceholderAndAuthoritativeHpRemainSeparate(
+            CharacterClass selected, int initialHp, bool hpBeforeStart)
+        {
+            CharacterClass? previous = ClassLoadout.SessionSelectedClass;
+            try
+            {
+                ClassLoadout.SessionSelectedClass = selected;
+                var hud = CreateHud(out Slider _);
+                var hpObject = new GameObject("ClassHpSlider");
+                var labelObject = new GameObject("ClassHpLabel");
+                _spawned.Add(hpObject);
+                _spawned.Add(labelObject);
+                var slider = hpObject.AddComponent<Slider>();
+                var label = labelObject.AddComponent<TextMeshProUGUI>();
+                var serialized = new UnityEditor.SerializedObject(hud);
+                serialized.FindProperty("_hpSlider").objectReferenceValue = slider;
+                serialized.FindProperty("_hpText").objectReferenceValue = label;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                Assert.AreEqual(initialHp, PlayerStats.ForClass(selected).InitialHp);
+                if (hpBeforeStart) hud.ApplyServerHP(23, 203);
+                typeof(HudController).GetMethod("Start", System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic).Invoke(hud, null);
+                if (!hpBeforeStart)
+                {
+                    Assert.AreEqual($"HP {initialHp} / {initialHp}", label.text);
+                    Assert.AreEqual(1f, slider.value);
+                    hud.ApplyServerHP(23, 203);
+                }
+                Assert.AreEqual("HP 23 / 203", label.text);
+                Assert.AreEqual(23f / 203, slider.value, 0.0001f);
+                hud.ApplyServerHP(11, 211);
+                Assert.AreEqual("HP 11 / 211", label.text);
+                Assert.AreEqual(11f / 211, slider.value, 0.0001f);
+                Assert.AreEqual(initialHp, PlayerStats.ForClass(selected).InitialHp);
+            }
+            finally { ClassLoadout.SessionSelectedClass = previous; }
+        }
 
         [Test]
         public void MapIdToDisplayName_Town() =>

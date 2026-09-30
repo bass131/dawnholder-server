@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps.States;
+using Dawnholder.Server.GameServer.Maps.Transitions;
 using Dawnholder.Server.GameServer.Sessions;
 using Dawnholder.Server.GameServer.Maps.Systems;
 using Dawnholder.Server.GameServer.Entities;
@@ -167,11 +168,11 @@ public class GameMap
         return entity;
     }
 
-    // migration 전용 AddPlayer 오버로드 — 기존 entity id 유지 (ADR-026).
-    public PlayerEntity AddPlayerWithId(int entityId, GameSession? owner, Vector2 spawnPos, PlayerStats stats, int currentHp)
+    // Preserve ID/raw HP; null Stats uses the existing Knight fallback. MaxHp/transients are recreated.
+    public PlayerEntity AddPlayerWithId(PlayerTransferState transfer, GameSession? owner, Vector2 spawnPos)
     {
-        PlayerEntity entity = new PlayerEntity(entityId, spawnPos, owner, stats);
-        entity.Hp = currentHp;
+        PlayerEntity entity = new PlayerEntity(transfer.EntityId, spawnPos, owner, transfer.Stats);
+        entity.Hp = transfer.CurrentHp;
         _players.Add(entity);
         return entity;
     }

@@ -106,8 +106,7 @@ internal static class MapMigration
 
         // 검증 통과 → migration 시작.
         // 캡처: migration에 필요한 상태 (tick thread 안에서 읽으므로 안전)
-        PlayerStats capturedStats = player.Stats;
-        int capturedHp = player.Hp;
+        PlayerTransferState transfer = new PlayerTransferState(entityId, player.Stats, player.Hp);
         Vector2 destSpawn = portal.DestSpawn;
         MapId destMapId = portal.Dest;
 
@@ -135,7 +134,6 @@ internal static class MapMigration
 
         // 맵 B: EnqueueJob으로 AddPlayerWithId 마샬링 (Map=Actor 원칙).
         // 한 맵의 tick thread가 다른 맵 상태를 직접 mutate 금지.
-        int capturedEntityId = entityId;
         destMap.EnqueueJob(() =>
         {
             // closing race: 이미 disconnect된 세션이면 skip
@@ -149,8 +147,7 @@ internal static class MapMigration
             List<PlayerEntity> existingInDest = new(destMap.Players);
 
             // AddPlayerWithId: 기존 entity id 유지 (ADR-026 핵심)
-            PlayerEntity newEntity = destMap.AddPlayerWithId(
-                capturedEntityId, session, destSpawn, capturedStats, capturedHp);
+            PlayerEntity newEntity = destMap.AddPlayerWithId(transfer, session, destSpawn);
 
             // _currentMapId 갱신 + _migrating 해제 (이 시점부터 GetMap() 정상 반환)
             session.SetCurrentMapId(destMapId);
@@ -184,7 +181,7 @@ internal static class MapMigration
             destMap.BroadcastToAll(joinNotice.Write(), except: session);
 
             Console.WriteLine(
-                $"[Map] Player {capturedEntityId} arrived at map={destMapId} spawn=({destSpawn.X},{destSpawn.Y}) — hp={capturedHp}, roster:{existingInDest.Count}");
+                $"[Map] Player {transfer.EntityId} arrived at map={destMapId} spawn=({destSpawn.X},{destSpawn.Y}) — hp={transfer.CurrentHp}, roster:{existingInDest.Count}");
         });
     }
 }

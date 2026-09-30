@@ -4,6 +4,7 @@ using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Entities;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.Transitions;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
 using Dawnholder.Server.GameServer.Sessions;
@@ -48,7 +49,7 @@ public sealed class QuestNotificationContractTests : IDisposable
         CapturedSession session = new(_world);
         _sessions.Add(session);
         int id = _world.NextEntityId();
-        _world.GetMap(mapId)!.AddPlayerWithId(id, session, Vector2.Zero, PlayerStats.Knight(), 100);
+        _world.GetMap(mapId)!.AddPlayerWithId(new PlayerTransferState(id, PlayerStats.Knight(), 100), session, Vector2.Zero);
         return (id, session);
     }
 
