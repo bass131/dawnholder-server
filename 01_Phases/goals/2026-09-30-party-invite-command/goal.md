@@ -1,6 +1,6 @@
 # P1a — 파티 초대 응답 요청과 팝업 책임 분리
 
-상태: **설계 확정, 독립 baseline 테스트 준비 중**. 구현·실행 검증·PR 병합 완료가 아니다.
+상태: **구현·독립 검증·코드 검토 통과, HTML 독립 검토·PR 준비 중**. PR 병합 완료가 아니다.
 
 ## 목표·기준선
 
@@ -22,7 +22,7 @@ P1 전체에서 독립 검증 가능한 첫 조각 P1a다. 메뉴 probe·다른 
 ## 역할·순서·파일 소유
 
 - 메인 Astra: goal·CURRENT·로드맵·관련 기능 계약·결과 보고, 사용자 정책 결정과 통합.
-- 독립 Astra: 신규 `03_Client/Assets/Tests/EditMode/PartyInviteResponseContractTests.cs`/`.meta`, 필요할 때 신규 `PartyInvitePopupBindingTests.cs`/`.meta`, 자신의 검증 산출물. 기존 fixture는 읽고 재사용하며 기존 테스트/asmdef 수정이 필요하면 정확한 파일을 메인에 요청한다.
+- 독립 Astra: 신규 `03_Client/Assets/Tests/EditMode/PartyInviteResponseContractTests.cs`, `PartyInvitePopupBindingTests.cs`, `PartyInviteResponseCommandTests.cs`와 각 `.meta`, 자신의 검증 산출물. 기존 fixture는 읽고 재사용하며 기존 테스트/asmdef 수정이 필요하면 정확한 파일을 메인에 요청한다.
 - Sol6.1: `03_Client/Assets/Scripts/UI/PartyInvitePopup.cs`, 신규 `PartyInviteResponseCommand.cs`/`.meta`(기존 Unity assembly 안의 기능 위치). baseline 완료 신호 전 생산 쓰기 금지. 테스트 기대값을 구현에 맞춰 수정하지 않는다.
 
 독립 baseline Component/버튼 fixture 실행 → writer-end/source 고정 → Sol 구현 → writer-end → 동일 baseline 및 추가 경계/실패/구독 검증 → 별도 Astra 코드 검토 → 문서/PR 순서다. 일반 작업자의 추가 위임·같은 파일 동시 쓰기는 금지한다. 결함은 Sol에 반환한다. 지정 모델과 실제 runtime은 구분하고 확인 불가하면 unknown이다. 새 CLI는 --no-daemon이며 전역 설정·기존 사용자 Editor·Management/Claude worktree는 건드리지 않는다.
@@ -37,16 +37,33 @@ baseline 대상 테스트 → 구현 후 같은 테스트와 추가 경계/실�
 
 ## 완료조건
 
-- [ ] 독립 baseline fixture로 기존 popup 정상·거부/drop·예외·pending/표시 계약을 실행하고 근거를 남긴다.
-- [ ] 요청 책임을 기능 command로 분리하고 팝업의 서버 상태 낙관 변경 없이 참조 보유·구독 해제 책임을 명확히 한다.
-- [ ] 독립 TestCode로 전후 계약·실패·지연 callback·구독 수명과 필요한 Unity 회귀를 확인한다. 차단·미실행은 별도 기록한다.
-- [ ] 별도 코드 검토에서 과도한 추상화·패킷/에셋 변화·새 완료 보장·의도하지 않은 UX 변화가 없음을 확인한다.
-- [ ] Astra가 변경 이유·대표 diff·실제 검증·한계·남은 정책을 보고하고 PR을 생성한다. 최종 head CI 후 사용자 개별 병합 승인을 받는다.
+- [x] 독립 baseline fixture로 기존 popup 정상·거부/drop·예외·pending/표시 계약을 실행하고 근거를 남긴다.
+- [x] 요청 책임을 기능 command로 분리하고 팝업의 서버 상태 낙관 변경 없이 참조 보유·구독 해제 책임을 명확히 한다.
+- [x] 독립 TestCode로 전후 계약·실패·지연 callback·구독 수명과 필요한 Unity 회귀를 확인한다. 차단·미실행은 별도 기록한다.
+- [x] 별도 코드 검토에서 과도한 추상화·패킷/에셋 변화·새 완료 보장·의도하지 않은 UX 변화가 없음을 확인한다.
+- [ ] Astra가 변경 이유·대표 diff·실제 검증·한계·남은 정책을 보고하고 PR을 생성한다.
+- [ ] 최종 head CI 후 사용자 개별 병합 승인을 받아 통합한다.
 
 ## 현재 결과·다음 실행
 
-PR146은 UTC2026-09-30 09:55:32 병합됐다. 최신 main a2eb65e는 P0 진단 대상과 생산 코드가 같다. 이전 AI44/48을 P1 개선 후 측정값으로 재사용하지 않는다. 독립 baseline fixture와 격리 Unity 환경을 준비 중이며 생산 코드는 동결돼 있다. 설계 범위·보존 계약의 별도 Astra 검토 PASS, 근거는 `.backups/reviews/2026-09-30-p1-scope-review.md`다. 코드 검토와 시험 성공 판정은 후속이다.
+PR146은 UTC2026-09-30 09:55:32 병합됐다. 최신 main a2eb65e는 P0 진단 대상과 생산 코드가 같다. 이전 AI44/48을 P1 개선 후 측정값으로 재사용하지 않는다. 설계 범위·보존 계약의 별도 Astra 검토 PASS, 근거는 `.backups/reviews/2026-09-30-p1-scope-review.md`다. 정식 목표 등록4문서는 checkpoint `c45c6895c0019329e992d2dd52944fb4b29f5e42`로 커밋했다.
 
-다음은 독립 fixture/Unity 실행 환경 확인과 구현자의 읽기 전용 경계 설계다. 그 뒤 baseline 실행과 command 추출을 진행한다. 전송 거절 시 pending 보존/팝업 유지·재시도/자동 rebind/새 ack가 필요해지면 재현과 선택지를 사용자에게 올린다.
+독립 baseline 응답20case는 격리 Unity6000.4.7f1에서20/20 PASS·exit0, 소유PID40628 정상 종료를 확인했다. 별도 binding5는 기존 정책3 PASS, 새 해제계약2 expected FAIL(exit2, PID42172 정상 종료)로 차이를 검출했다. 두 실패는 source 강제 교체 후 old OnInviteReceived listener가1개 남아0개 기대와 달랐다는 것이며 실제 운영 발생은 확인하지 않았다. `.backups/verification/2026-09-30-party-invite-command/baseline-summary.md`, `baseline-source-snapshot.json`, `baseline-1/results.xml`, `baseline-binding-1/results.xml`이 근거다. 생산 원본 포함2,090파일 hash 불변을 확인하고 테스트2파일/meta를 동결한 뒤 Sol에 생산 쓰기를 인계했다. 변경 후에는 기존23개 보존과 새2개 해제를 함께 확인한다.
+
+Sol은 command 추출 `529d789344e0f174cf32c86a1e3506887f54f67f`, 동일 source 해제 `c24d578fbcb0d3f90a7b366fba16fc32b0c3a4df`로 생산3파일을 변경했다. 이 시점의 독립25case와 영향91case는 PASS다. 별도 Astra 코드 리뷰 R1은 Unity native source가 먼저 파괴되면 Unity null 비교가 managed event 해제를 건너뛰는 수명 공백을 지적했다. source에 실제 DestroyImmediate 후 popup OnDisable/OnDestroy를 명시 호출한2case가 당시head에서FAIL(listener1 잔류), 추가 command provider8case는PASS다. 근거는 `.backups/reviews/2026-09-30-p1-code-review.md` 및 verification의 `command-and-destroyed-source-1/results.xml`이다. source 교체와 마찬가지로 통제 fixture의 관찰이며 실제 운영 발생은 미확인이다.
+
+독립 테스트 소유는 신규 `PartyInviteResponseCommandTests.cs`/`.meta`까지 확장했다. 기존 응답20·binding5의 기대값은 보존하고 binding에파괴source2case만 추가했다. 기존 baseline 사본/hash를 남겼다. Sol에는 Popup의 CLR null 구분·동일source 해제만 보강하도록 반환했으며, 수정 후35case와 안정된 전체EditMode1회·별도리뷰로 최종 확인한다. 중간91개 결과를 수정 후 최종 실행이라고 쓰지 않는다.
+
+R1 수정은 `f1635d59a91c4708e4e074d0c3aaf4ad5c4f7321`이며 보관 참조를 먼저 비우고 CLR null을 구분한다. 별도 코드 재검토 PASS, 같은35case도35/35 PASS(exit0, PID33876 종료)다. 안정 수정본 전체 EditMode는310/310 PASS(실패/skip/inconclusive0, exit0, PID38696 종료)이며 최종 Unity 프로세스0이다. 실행은 원본을 열지 않는 격리 Windows Hidden batch, Unity6000.4.7f1(f3c3c4248748)이다. `run-unity.ps1 -RunName fixed-contract-1 -Filter <대상3클래스>`와 Filter 없는 `-RunName editmode-final-1`로 실행했으며 정확 arguments는 각 run.json에 있다.
+
+기존2,090입력 중 허용한 Popup만 달라졌고 나머지2,089개는 hash 불변, 신규GUID4개는 각각1회다. 이 최초 manifest에는 당시 신규 응답 테스트와 meta도 포함됐으므로2,090개 전체를 기존 추적 파일 수로 해석하지 않는다. 최종 원본과 격리본2,096입력이 모두 일치하며 테스트6파일은 실행 시 미커밋 상태를 hash로 고정했다. 검증자는 테스트/산출물 쓰기를 종료했다. `.backups/verification/2026-09-30-party-invite-command/final-summary.md`, `verified-input-manifest.json`, `verified-critical-manifest.json`, `fixed-contract-1/results.xml`, `editmode-final-1/results.xml`, `final-execution-state.json`이 최종 근거다.
+
+기존 응답20·구독정책3의 보존과 새 동일source해제2·파괴source해제2의 실패→성공을 구분했다. 신규 command8은 새 API 직접 검증으로 변경 전 동일 API 실행과 비교하지 않는다. 실제 물리 클릭·시각·사운드·PlayMode/player-loop·실서버 초대/가입·SQL/PDL·native .NET build는 미실행이다. local loopback을 서버 수락으로 해석하지 않는다. Unity CI 자동화 완료도 아니며 PR의 dotnet-tests와 이번 로컬 Unity 검증은 별도다.
+
+메인은 기능 지도와 client 영역 계약에 새 요청 진입점·같은source해제 및 완료 보장의 한계를 반영했다. Astra 작성 HTML은 `.backups/reports/2026-09-30-party-invite-command/index.html`, 고정 생산diff는 `production.diff`다. 지정 모델은 구현Sol6.1/테스트·리뷰·보고Astra, 실제 runtime은 unknown이다. HTML 독립 내용·렌더 검토 후 테스트/문서를 커밋하고 새 PR 및 정확 head CI를 확인한다.
+
+전송 거절 시 pending 보존/팝업 유지·재시도/자동 rebind/새 ack가 필요해지면 재현과 선택지를 사용자에게 올린다.
 
 Management는 별도 worktree에서 PR147 마무리와 후속 선택지 설계를 맡는다. 전투 정정본 의미 검토 PASS는 `msg_ccd48e9fdcbc`, 다음 작업 prompt 접수·turn 시작은 request `6c0738ae-2f99-4017-828d-abda7386c5a0`다. PR147 병합이나 새로운 MCP/게임/DB 실행 권한은 이 전달에서 부여하지 않았다.
+
+Management 후속 회신 `msg_feac1da0df99`: PR147 head `fd8f3c84cda4b7867a67ec5d3042de0bd43e8c4b`에 main 반영·독립 검토·CI 통과, 개별 병합 승인 대기. 메인은 원격 head/CI와 일치를 확인했다. 사용자 선택은 읽기 전용 공동 조회 API/MCP이며 아직 설계 단계다. `msg_7f6383111f47`로 데이터 원본·freshness·권한·프로세스 수명·어댑터 책임을 정리하고 미합의 정책을 사용자와 논의하도록 회신했다.
