@@ -1,6 +1,6 @@
 # S5 — 도구 실패 결과와 종합 회귀·보고
 
-상태: 최신 main `a3c4e15e7d655511ced06bd1303360761413c5ab`의 `fix/packet-generator-exit`에서 구현 착수. S2–S4 독립 검증·리뷰 완료 후 진행하는 독립 목표이며 앞선 미병합 소스는 이 브랜치에 포함하지 않는다. 2026-09-30 사용자는 PacketGenerator 출력 실패의 nonzero exit 전달과 독립 회귀를 S5에 포함하도록 승인했다. 정상 생성 내용·패킷 형식은 보존한다.
+상태: 개별 구현·독립 검증 및 S1–S5 합성 검증 완료, [PR #145](https://github.com/bass131/dawnholder-server/pull/145) 통합 대기. branch `fix/packet-generator-exit`, 생산·테스트 commit `7b4ce82226785aa39f4ae6273a2aa83166d5250f`, base main `a3c4e15e7d655511ced06bd1303360761413c5ab`. S2–S4 독립 검증·리뷰 완료 후 진행한 독립 목표이며 앞선 미병합 소스는 이 브랜치에 포함하지 않는다. 2026-09-30 사용자는 PacketGenerator 출력 실패의 nonzero exit 전달과 독립 회귀를 S5에 포함하도록 승인했다. 정상 생성 내용·패킷 형식은 보존한다. HTML 최종 확인과 정확한 최신 PR head/CI 근거는 아래 결과 경로에서 확인한다. 사용자 확인 전 병합하지 않는다.
 
 ## 목표와 설계
 
@@ -43,4 +43,22 @@ S1 즉시 피해 조정 소유 지점, S2 선택한 wire 표현 조립 지점, S
 
 이 수치는 독립 main 기준 S5이며 앞선 미병합 신규 테스트는 포함하지 않는다. 실제 subprocess는 테스트 소유 임시 repo에서만 실행했다. 원본 PDL·생성 코드·PacketFormat 보존을 확인했다. interactive 키 입력 대기는 실행하지 않고 기존 후행 순서의 코드 보존을 검토했으며 자동 검사에는 --no-wait를 사용했다. 환경·명령·hash·원시 결과는 `.backups/verification/2026-09-30-generator-exit/summary.md`, 별도 읽기 리뷰는 `.backups/reviews/2026-09-30-s5-generator-contract-review.md`다.
 
-최종 합성 회귀·HTML 보고서 최종 갱신과 독립 확인은 진행 전이다. 순서·의존성은 [로드맵](../../milestones/2026-09-30-maintainability-rollout/roadmap.md)에 유지한다.
+## S1–S5 합성 검증과 최종 보고
+
+Git/PR 병합 없이 별도 WSL 공간에 S2 `2e6b8c3`(S1 `2b533c7` 포함), S3 `c459201`, S4 `4f084af`, S5 `7b4ce82`의 검증된 소스를 조합했다. source282파일의 소유 head/hash와 실제 runtime260입력 파일 hash를 대조했다. 기존 helper를 이 합성 소스 자체에서 실행하여 독립 S5 checkout으로 덮어쓰는 오류를 피했다. 모든 단계 exit0이다.
+
+| 최종 합성 실행 | 실제 결과 |
+|---|---|
+| .NET solution 강제 빌드 | 성공 |
+| 전체 solution 회귀 | **839 total / 834 pass / 기존5 skip / 0 fail** |
+| 실제 전투 봇 | DashSmoke·EmergencyCombatSmoke 2/2 성공 |
+| 입력 보존·정리 | source282/runtime260 hash불변, 소유 서버·봇0개, 7777 listener없음 |
+| Unity 결과 연결 | S4 동일 내용의 production/test/meta와 기존275/275 EditMode 결과 연결; 새 Unity 반복 실행 아님 |
+
+새 Unity 테스트 meta 하나는 Git 저장/checkout 줄바꿈 차이로 원시 hash가 달랐다. 줄바꿈 조합만 바꿔 검증 당시 SHA256과 정확히 일치하는 원시본을 재구성했고, normalized text 및 GUID 의미가 같음을 확인했다. 합성 소스는 Git blob bytes를 유지하며 raw 동일과 정규화 동치를 구분했다. 원본·PR·main은 변경하지 않았다. 원시 명령·source manifest·Unity 연결·실행 결과·정리 근거는 `.backups/verification/2026-09-30-maintainability-combined/summary.md`와 연결된 파일이다.
+
+확인한 독립 브랜치 간 겹침은 CURRENT/roadmap 두 문서뿐이다. 별도 Astra가 생성기 테스트의 격리/실패 계약과 공통 문서 조정안을 검토해 통과했다: `.backups/reviews/2026-09-30-rollout-integration-readiness.md`. 승인 후 통합할 정확한 문서 내용은 `.backups/handoffs/2026-09-30-rollout-integration-docs.md`에 제시했다. 최종 CURRENT는 이 goal, roadmap은 단계별 goal 링크를 보존한다. 예상 밖 생산 충돌이나 새로운 실패는 범위를 다시 확인한다.
+
+HTML 보고서는 `.backups/reports/2026-09-30-maintainability-rollout/index.html`이며 설계 이유·실제 diff·검증·측정 한계·정확한 PR/head/CI·통합 순서를 제공한다. 별도 화면/내용 검토와 마지막 GitHub 상태 확인은 `.backups/verification/2026-09-30-rollout-report/`에 남긴다. S1–S5 및 인계 스킬 PR141은 모두 승인·병합 대기이며 S0 PR139만 이미 통합됐다.
+
+범위는 대표 영역 조사 후 필요한 책임 경계·오류 계약에 적용한 것이며 모든 코드/동시성/게임플레이를 전수 검증하지 않았다. 실제 시각 플레이·자동 PlayerLoop·DB 저장 연동·성능·AI 탐색 시간·연속 복잡도는 이번 결과에 포함하지 않는다. DB schema/접속과 GameServer 영속 저장 구현은 여전히 구분한다. 다음 단계는 종합 보고서 확인 후 사용자와 최종 통합, 이후 DB 설계 범위 논의다. 순서·의존성은 [로드맵](../../milestones/2026-09-30-maintainability-rollout/roadmap.md)에 유지한다.
