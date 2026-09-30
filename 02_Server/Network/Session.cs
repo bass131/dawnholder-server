@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -132,18 +132,48 @@ namespace Dawnholder.Server.Network
             if (Interlocked.Exchange(ref _disconnected, 1) == 1)
                 return;
 
-            OnDisconnected(_socket!.RemoteEndPoint!); // player cleanup enqueue 포함
+            bool notificationFailed = false;
+            try
+            {
+                OnDisconnected(_socket!.RemoteEndPoint!); // player cleanup enqueue 포함
+            }
+            catch
+            {
+                notificationFailed = true;
+                throw;
+            }
+            finally
+            {
+                try
+                {
+                    CleanupTransport();
+                }
+                catch when (notificationFailed)
+                {
+                    // endpoint/callback의 원래 예외가 정리 예외에 가려지지 않게 한다.
+                }
+            }
+        }
 
-            // Shutdown / Close / Clear 각 단계 독립 보호 — 어느 단계 예외도 다음 단계를 막지 않음.
-            // Shutdown이 throw해도 Close가 socket handle을 반드시 닫고(FD 누수 차단),
-            // Close가 throw해도 Clear가 SendQueue/PendingList를 반드시 정리.
+        void CleanupTransport()
+        {
+            // 각 단계와 진단 출력을 분리해 Shutdown 실패에도 Close/Clear를 시도한다.
             try { _socket!.Shutdown(SocketShutdown.Both); }
-            catch (Exception e) { Console.WriteLine($"[Session] socket Shutdown 예외 (이미 reset?) — 무시: {e.Message}"); }
+            catch (Exception e) { ReportCleanupFailure("Shutdown", e); }
 
             try { _socket!.Close(); }
-            catch (Exception e) { Console.WriteLine($"[Session] socket Close 예외 — 무시: {e.Message}"); }
+            catch (Exception e) { ReportCleanupFailure("Close", e); }
 
             Clear();
+        }
+
+        static void ReportCleanupFailure(string stage, Exception error)
+        {
+            try { Console.WriteLine($"[Session] socket {stage} 예외 — 무시: {error.Message}"); }
+            catch
+            {
+                // 진단 출력 실패는 transport 정리를 중단할 이유가 아니다.
+            }
         }
 
         void Clear()
