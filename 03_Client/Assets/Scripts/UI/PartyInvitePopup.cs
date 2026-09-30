@@ -27,6 +27,9 @@ namespace Dawnholder.Client.UI
     {
         public static PartyInvitePopup? Instance { get; private set; }
 
+        readonly PartyInviteResponseCommand _responseCommand = new PartyInviteResponseCommand(
+            () => PartyState.Instance, () => UnityClientSession.Instance);
+
         [SerializeField] CanvasGroup? _group;
         [SerializeField] TMP_Text? _inviteText;
 
@@ -113,28 +116,7 @@ namespace Dawnholder.Client.UI
 
         void SendRespond(byte accept)
         {
-            // PartyState는 DontDestroyOnLoad — 런타임 null 방어.
-            if (PartyState.Instance == null) return;
-            PartyState state = PartyState.Instance;
-            if (!state.HasPendingInvite)
-            {
-                Debug.LogWarning("[PartyInvitePopup] HasPendingInvite=false — 응답 취소.");
-                return;
-            }
-
-            UnityClientSession? session = UnityClientSession.Instance;
-            if (session == null || !session.HandshakeOk)
-            {
-                Debug.LogWarning("[PartyInvitePopup] 세션 없음 또는 Handshake 미완료 — 응답 송신 불가.");
-                return;
-            }
-
-            int inviterId = state.PendingInviterEntityId;
-            var pkt = new C_PartyRespond { inviterEntityId = inviterId, accept = accept };
-            session.SendIntent(pkt.Write());
-
-            state.ClearPendingInvite();
-            Debug.Log($"[PartyInvitePopup] C_PartyRespond 송신 — inviterId={inviterId} accept={accept}");
+            _responseCommand.Execute(accept);
         }
 
         void ShowPopup()
