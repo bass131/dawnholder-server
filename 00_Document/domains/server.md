@@ -10,6 +10,10 @@
 - 새 입력에는 정상 경로와 잘못된 길이·범위·상태·권한의 거부 경로를 확인한다.
 - 맵 이동은 [MapMigration](../../02_Server/GameServer/Maps/Transitions/MapMigration.cs), 파티·퀘스트 갱신 순서는 [GameWorld](../../02_Server/GameServer/Loop/GameWorld.cs)에서 확인한다.
 
+## 즉시 적 피해
+
+평타·Dash는 대상 선택·피해 계산·시전과 생존 시 넉백을 각 액션에서 처리한다. `GameMap.ApplyImmediateEnemyHit`는 틱 흐름 안에서 계산된 피해의 HP 반영·공격자 지정·Hit 통지·치사 후처리를 소유하고 생존 여부를 반환한다. 즉시 피해의 음수 HP도 Hit 패킷에 그대로 보낸다. Hit → Death → 보스 StageClear → 제거·리스폰 등록 → 처치 콜백 순서를 보존한다. 지연 피해는 기존 `DeferredDamageSystem` 경로를 유지한다.
+
 ## 종료와 broadcast
 
 수신자의 연결 정리와 broadcast는 겹칠 수 있다. [MapPacketPublisher](../../02_Server/GameServer/Maps/MapPacketPublisher.cs)의 수신자 필터와 세션 `IsClosing`을 확인한다. 종료된 세션을 건너뛰어도 이미 시작된 전송의 수명주기까지 자동 해결되는 것은 아니다.

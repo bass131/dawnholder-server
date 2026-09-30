@@ -1,6 +1,6 @@
 # 유지보수 기준과 목표 루프 정비
 
-상태: **문서·스킬 정비와 독립 검토 완료, PR #139 통합 대기**. 최신 main `863be8c3831de1130c4f128036521e480311a49c`에서 만든 `docs/maintainability-principles`를 사용한다. [PR #139](https://github.com/bass131/dawnholder-server/pull/139)의 최신 head·CI와 사용자 명시 승인을 확인한 뒤 통합한다.
+상태: **완료·PR #139 병합**. base main `863be8c3831de1130c4f128036521e480311a49c`, branch `docs/maintainability-principles`, 최종 head `a0bba1b1deb262bacccf928be51c3c56517b3571`. 사용자의 “OK 승인”을 받아 동일 head의 독립 검토·CI 성공·CLEAN을 확인하고 [PR #139](https://github.com/bass131/dawnholder-server/pull/139)를 2026-09-30T03:53:37Z에 squash 병합했다. main은 `a3c4e15e7d655511ced06bd1303360761413c5ab`다. CI 근거는 [36666053956](https://github.com/bass131/dawnholder-server/actions/runs/36666053956)과 `.backups/verification/2026-09-30-maintainability-standards/pr-final.json`이다.
 
 ## 목표와 범위
 
@@ -13,7 +13,7 @@ S0는 프로젝트의 코드 작성 기준과 구현·독립 검증 적용 방�
 - 자동 판정 가능한 정적 검사는 첫 실제 적용부터 CI에 포함한다. 책임 경계·테스트 품질·AI 탐색은 독립 검토와 별도 측정으로 다룬다.
 - 첫 파일럿은 평타와 Dash의 공통 즉시 피해 처리다. 현행 동작을 보존하며 실제 책임 통합을 검증한다.
 - 파일럿이 현행 동작 보존·독립 테스트 코드 검증·CI·실제 책임 통합 조건을 충족하면 프로젝트 전체로 순차 확대한다. 충족 전에는 후속 영역 소스 쓰기를 시작하지 않는다.
-- 기준 정비와 마일스톤 진행은 합의됐다. 각 PR 병합은 별도 명시 승인이 필요하며 전체 진행 요청은 포괄 병합 승인이 아니다. PR #139 병합 승인은 아직 받지 않았다.
+- 기준 정비와 마일스톤 진행은 합의됐다. 각 PR 병합은 별도 명시 승인이 필요하며 전체 진행 요청은 포괄 병합 승인이 아니다. PR #139 승인은 해당 PR에만 적용했다.
 
 ## 현재 상태와 검증
 

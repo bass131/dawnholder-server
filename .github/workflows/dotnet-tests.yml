@@ -1,5 +1,4 @@
-# .NET 테스트 안전망 — 로컬 SAC(Smart App Control) 간헐 차단과 무관한 회귀 검증.
-# 본인 머신 = build + 봇 확정 / 테스트 = CI 분담 (M4.4 세션16 결정).
+# .NET 빌드·회귀 테스트와 production 파일럿의 정적 진단을 검사한다.
 name: dotnet-tests
 
 on:
@@ -21,7 +20,8 @@ jobs:
           dotnet-version: "10.0.x"
 
       # build → test 분리: dotnet test --no-incremental은 .slnx에서 MSB1001 (SDK 10.0.203+)
-      - name: Build
+      # .editorconfig의 pilot SA1201/SA1202/IDE0011 error도 이 빌드에서 실패시킨다.
+      - name: Build and enforce pilot diagnostics
         run: dotnet build Dawnholder.slnx --no-incremental
 
       - name: Test
