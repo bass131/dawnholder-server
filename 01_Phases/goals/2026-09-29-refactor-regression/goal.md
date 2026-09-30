@@ -1,6 +1,6 @@
 # M3 — 설정·주석 정리와 전체 회귀·재평가
 
-상태: 구현·독립 TestCode·리뷰·전체 회귀·AI 재평가 완료, PR/최신 CI/병합 준비. base main `0b3b7224ef5e314d7a28bb8a0265f1e3a41fe07a`, branch `feat/refactor-config-regression`. [M2b](../2026-09-30-refactor-player-state/goal.md) PR #135의 독립 검증·리뷰·최신 CI를 통과하고 조건부 승인으로 병합한 뒤 시작했다.
+상태: **완료·PR #136 병합**. base main `0b3b7224ef5e314d7a28bb8a0265f1e3a41fe07a`, branch `feat/refactor-config-regression`. [M2b](../2026-09-30-refactor-player-state/goal.md) PR #135의 독립 검증·리뷰·최신 CI를 통과하고 조건부 승인으로 병합한 뒤 시작했다. 최종 head `d16424064bf3553a9eb9e1a5629bc3beecdfcd02`, 병합 main `84d3566f3e73017bfb90b550c48477ad5f84ed63`.
 
 ## 선택 설계와 보존 계약
 
@@ -47,7 +47,7 @@
 - [x] 현재 주석·진단을 구현과 맞추고 정책/미구현 주장을 정리했다.
 - [x] 전체 서버·봇·Unity 회귀 결과와 M0 비교·미실행/실패 이력을 기록했다.
 - [x] 고정 과제 원점수·조건·계측·한계와 구조 지표를 독립 평가했다.
-- [ ] 독립 source/TestCode 리뷰·최신 head CI·크리티컬 이슈 부재 확인 뒤 조건부 승인으로 직접 병합했다.
+- [x] 독립 source/TestCode 리뷰·최신 head CI·크리티컬 이슈 부재 확인 뒤 조건부 승인으로 직접 병합했다.
 - [x] HTML에 실제 diff·평가·검증 결과와 한계를 기록하고 후속 DB 설계에 필요한 사실/미합의 결정을 인계했다.
 
 ## 실제 결과와 인계
@@ -63,7 +63,7 @@
 - task-owned server PID899는 exact stdin FIFO newline으로 graceful exit0, `verification/server/server.log`에 Server stopped. main이 port7777/PID 부재 확인. 외부 SQL/다른 process는 조작하지 않았다.
 - 수동 GUI/물리 키보드/오디오 청취는 미수행. 자동 실제 엔진/가상 InputSystem 및 production 봇 검증을 수동 평가나 DB 연동 성공으로 보고하지 않는다.
 
-독립 raw 판정은 `verification/summary.md`. 최신 PR CI/병합 결과는 아직 대기다. 다음 [DB 설계](../2026-09-29-persistence-design/goal.md)는 최종 main과 안정된 상태 수명·비동기 경계, 기존 schema/접속 인계를 대조한다. DB 저장·인증·schema 적용 구현 권한으로 확대하지 않는다. 저장 범위/계정 모델에 관한 사용자 질의는 응답 대기이며 답변 없는 항목을 합의로 취급하지 않는다.
+독립 raw 판정은 `verification/summary.md`. 다음 [DB 설계](../2026-09-29-persistence-design/goal.md)는 최종 main과 안정된 상태 수명·비동기 경계, 기존 schema/접속 인계를 대조한다. 사용자는 2026-09-30 개발 고정 계정1·캐릭터1, 최초 클래스 유지, Town·풀 HP 복귀, 퀘스트·보스 해금 세션 한정의 작은 범위를 선택했다. 이는 설계 범위이며 DB 저장·인증·schema 적용 구현 권한으로 확대하지 않는다.
 
 ## 고정 과제 재평가와 구조 비교
 
@@ -76,3 +76,9 @@
 `assessment/structure.md`는 M0 게임 코드 `4b2c84e3bb94d91452d0b50af0ed76b107d5d6a6`와 위 source를 좁게 대조했다. QuestRegistry가 PartyState.KillCount를 직접 쓰던 문장 **3→0**, PlayerStats의 public mutable setter 속성 **1→0**을 확인했다. 서버 종료는 world close queue/Host, 클라이언트 연결은 lifetime·entry·물리 load queue, 퀘스트 진행은 Quest owner, 전달값은 불변 정의·현재 HP 캡처로 책임을 구분했다. Unity singleton/mirror·entity setter·migration 상태는 필요한 경계에 남아 있다. 이 수치를 repository 전체 결합 총계·완전한 SOLID 준수·DB 연동 완료로 해석하지 않는다.
 
 HTML의 실제 diff18개와 CSS/JS를 보존해 누적 결과를 갱신했다. 원 담당자의 사용량 제한 오류 종료 후 db_scope_review에 HTML 단독 쓰기를 이관했고 쓰기 종료 후 메인이 브라우저 QA를 실행했다. 2026-09-30T01:13:28Z, 1440/430/320/768px 가로 overflow0, light/dark·details·print 확장/복원 통과, 430px light screenshot을 실제 확인했다(`.backups/report-preview/qa-results.json`, `qa-m3.log`). DB 사전안과 독립 리뷰는 별도 설계 단계 입력이며 저장 구현·현재 SQL 접속 성공을 뜻하지 않는다.
+
+## PR 통합
+
+독립 문서 대조에서 source freeze 이후 코드·TestCode가 동일하고 수치·한계가 raw 판정과 일치함을 확인했다. 메인의 desktop screenshot 점검으로 M1 미완료라는 오래된 문장1개를 찾아 문서만 고쳤다. 이전 CI 성공을 재사용하지 않고 새 head `d16424064bf3553a9eb9e1a5629bc3beecdfcd02`의 [CI 36654454404](https://github.com/bass131/dawnholder-server/actions/runs/36654454404/job/109695632011)를 확인했다: 2026-09-30T01:20:53Z SUCCESS, build 성공·808 total/803 pass/0 fail/5 skip (`ci-final.log`).
+
+같은 head·CLEAN·독립 TestCode/리뷰·크리티컬 이슈 부재를 확인하고 이번 로드맵의 사용자 명시 예외로 자동 예약 없이 직접 squash 병합했다. [PR #136](https://github.com/bass131/dawnholder-server/pull/136) MERGED 2026-09-30T01:21:52Z, main `84d3566f3e73017bfb90b550c48477ad5f84ed63`. 해당 main에서 후속 DB 설계 브랜치 `docs/persistence-integration-design`를 만들었다. 리팩토링 코드/검증 작업은 종료됐으며 후속 문서 설계는 DB 구현 완료를 뜻하지 않는다.
