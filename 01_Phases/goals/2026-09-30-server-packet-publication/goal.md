@@ -1,6 +1,6 @@
 # S2 — 서버 패킷 표현 책임 통합
 
-상태: `refactor/server-packet-publication` 구현·독립 테스트·리뷰 완료, PR 준비. S1 PR #140의 검증된 head `2b533c752076e3e00cfdfe081a9f45d824059606`를 선행 기준으로 삼는다. 미병합 선행 변경을 사용하는 이번 로드맵의 stacked PR이며 main 통합 완료를 뜻하지 않는다. PR은 종합 보고서에서 사용자와 확인하기 전 병합하지 않는다.
+상태: `refactor/server-packet-publication` 구현·독립 테스트·리뷰 완료, [PR #142](https://github.com/bass131/dawnholder-server/pull/142) 통합 대기. 구현·테스트 commit `f1ebd15`. S1 PR #140의 검증된 head `2b533c752076e3e00cfdfe081a9f45d824059606`를 선행 기준으로 삼는다. 미병합 선행 변경을 사용하는 이번 로드맵의 stacked PR이며 main 통합 완료를 뜻하지 않는다. PR은 종합 보고서에서 사용자와 확인하기 전 병합하지 않는다.
 
 ## 목표와 설계
 
