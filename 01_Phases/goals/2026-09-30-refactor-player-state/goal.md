@@ -1,6 +1,6 @@
 # M2b — 기본 스탯과 현재 상태·캡처·이동 값
 
-상태: 구현·독립 TestCode·리뷰·서버/Unity 검증 완료, PR CI 준비. base main `a0c60943cc89d74830d826044bd8fb852a458e7b`, branch `feat/refactor-player-state`. [M2a](../2026-09-30-refactor-party-quest/goal.md) PR #134의 독립 TestCode·리뷰·최신 CI를 통과하고 조건부 승인으로 병합한 뒤 시작했다. [M2](../2026-09-29-refactor-domain-state/goal.md)의 두 번째 목표다.
+상태: 완료·PR #135 병합. base main `a0c60943cc89d74830d826044bd8fb852a458e7b`, branch `feat/refactor-player-state`. [M2a](../2026-09-30-refactor-party-quest/goal.md) PR #134의 독립 TestCode·리뷰·최신 CI를 통과하고 조건부 승인으로 병합한 뒤 시작했다. [M2](../2026-09-29-refactor-domain-state/goal.md)의 두 번째 목표다.
 
 ## 선택 설계
 
@@ -45,7 +45,7 @@ Shared/서버 source는 단일 writer다. source 쓰기 종료 후 테스트를 
 - [x] 두 entity/current HP 독립, 두 캡처/원본 mutation 독립, 클래스 기본값·fallback·null/default·raw HP/MaxHp 경계를 독립 TestCode로 검증했다.
 - [x] 실제 migration의 ID/HP/목적 spawn·transient 초기화·closing/owner와 기존 Party 소비자·전체 서버/봇 컴파일·회귀를 확인했다.
 - [x] 검증 Shared DLL hash/기존 meta/ClientNet 보존, Unity compile/EditMode·실제 씬 PlayMode·실제 서버 왕복을 수행하고 수동 플레이 한계를 구분했다.
-- [ ] 독립 source/TestCode 리뷰·최신 head CI·크리티컬 이슈 부재 확인 뒤 이번 로드맵 조건부 승인으로 직접 병합했다.
+- [x] 독립 source/TestCode 리뷰·최신 head CI·크리티컬 이슈 부재 확인 뒤 이번 로드맵 조건부 승인으로 직접 병합했다.
 - [x] 누적 HTML에 실제 diff와 실행 결과/한계를 기록했다.
 
 ## 실제 결과와 다음 단계
@@ -60,3 +60,5 @@ production 기존6+신규1파일 구현과 독립 TestCode server6+Unity2파일 
 - 자동 실제 엔진 테스트는 가상 InputSystem을 사용한다. 수동 화면/fade 평가·물리 키보드·오디오 청취는 미수행이며 DB 연결/저장 검증도 아니다. 이번 goal에서는 별도 production bot을 반복 실행하지 않았으며 실제 socket suite와 Unity 왕복 범위를 구분한다.
 
 독립 raw 판정은 `verification/summary.md`에 둔다. 최신 PR head CI와 병합 결과는 통합 후 기록한다. 후속 [M3](../2026-09-29-refactor-regression/goal.md)는 설정·주석·회귀와 AI 로컬 재평가를 진행한다. DB 구현은 여전히 제외한다.
+
+최종 통합: head `01cbb8a3b6b702220493fc3be013bc8b6172d046`, CI run `36650958299` / job `109684729867` SUCCESS 2026-09-30T00:36:50Z(798/793pass/0fail/5skip). 독립 검증·리뷰와 최신 head 조건을 확인해 PR #135를 00:37:49Z 직접 squash 병합, main `0b3b7224ef5e314d7a28bb8a0265f1e3a41fe07a`. 미해결 크리티컬 이슈 없음. 후속은 M3.

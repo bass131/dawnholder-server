@@ -250,7 +250,7 @@ public class GameSession : PacketSession
         GameMap? map = GetMap();
         if (map == null)
         {
-            Console.WriteLine($"[Trust] GameSession: GetMap() returned null — config/shutdown race?");
+            Console.WriteLine($"[Trust] GameSession: GetMap() returned null — migration/config/shutdown; move intent dropped.");
             return;
         }
         int eid = _entityId;
@@ -280,7 +280,7 @@ public class GameSession : PacketSession
         GameMap? map = GetMap();
         if (map == null)
         {
-            Console.WriteLine($"[Trust] GameSession.SubmitAttack: GetMap() returned null — config/shutdown race?");
+            Console.WriteLine($"[Trust] GameSession.SubmitAttack: GetMap() returned null — migration/config/shutdown; attack dropped.");
             return;
         }
         int attackerEntityId = _entityId;
@@ -308,7 +308,7 @@ public class GameSession : PacketSession
         GameMap? map = GetMap();
         if (map == null)
         {
-            Console.WriteLine($"[Trust] GameSession.SubmitSkillUse: GetMap() returned null — config/shutdown race?");
+            Console.WriteLine($"[Trust] GameSession.SubmitSkillUse: GetMap() returned null — migration/config/shutdown; skill dropped.");
             return;
         }
         int casterEntityId = _entityId;
@@ -477,7 +477,7 @@ public class GameSession : PacketSession
         {
             // silent no-op은 shutdown race에는 맞지만 startup/config 버그(GameWorld 초기화 누락)를
             // 은폐 가능. 명시 로그로 표면화.
-            Console.WriteLine($"[Trust] GameSession.EnterGameWorld: GetMap() returned null — config/shutdown race?");
+            Console.WriteLine($"[Trust] GameSession.EnterGameWorld: GetMap() returned null — migration/config/shutdown; entry skipped.");
             return;
         }
         GameSession self = this;

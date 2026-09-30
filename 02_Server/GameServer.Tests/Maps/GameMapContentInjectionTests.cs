@@ -251,18 +251,25 @@ public class GolemCrossRespawnTests
         });
         GameMap map = new GameMap(MapId.HuntingGround, content: content);
         Assert.Single(map.Enemies);
+        EnemyEntity initial = Assert.Single(map.Enemies.Values);
+        Assert.Equal(5.5f, initial.SpawnX);
+        Assert.Equal(0f, initial.SpawnY);
 
         // 1차 처치 → 좌측(-8.5) 재출현
         KillAndRespawn(map);
         EnemyEntity g1 = map.Enemies.Values.Single();
         Assert.Equal(EnemyKind.Golem, g1.Kind);
         Assert.Equal(-8.5f, g1.SpawnX, 3);
+        Assert.Equal(0f, g1.SpawnY);
+        Assert.NotEqual(initial.EntityId, g1.EntityId);
 
         // 2차 처치 → 우측(9.5) 재출현 (교차)
         KillAndRespawn(map);
         EnemyEntity g2 = map.Enemies.Values.Single();
         Assert.Equal(EnemyKind.Golem, g2.Kind);
         Assert.Equal(9.5f, g2.SpawnX, 3);
+        Assert.Equal(0f, g2.SpawnY);
+        Assert.NotEqual(g1.EntityId, g2.EntityId);
 
         // 항상 1마리 유지
         Assert.Single(map.Enemies);
