@@ -72,3 +72,5 @@ HTML 보고서는 `.backups/reports/2026-09-30-maintainability-rollout/index.htm
 [D0 DB 초기 설계](../2026-09-29-persistence-design/goal.md)는 이미 PR #137로 병합됐고 D1–D4 구현이 미착수다. 이전 문구의 ‘다음에 DB 설계 범위 논의’는 이 완료 상태를 충분히 반영하지 못했으므로 정정한다. 다음은 이번 보고서 확인·사용자 승인에 따른 통합 후 기존 D0 설계와 [구현 분할](../2026-09-29-persistence-design/implementation-plan.md)을 재확인하고 D1a 기술 명세의 착수 범위를 정하는 것이다. 기존 제품 범위를 새 미합의로 되돌리거나 DB 구현·외부 쓰기를 자동 시작하지 않는다.
 
 비교 근거는 `.backups/reviews/2026-09-30-astra-report-comparison.md`다. 보고서의 이전/이번 성과 구분, 설계 대안·대가, 상태 소유 흐름, 해설 있는 실제 diff와 검증 해석을 보강하며 최종 내용·화면 확인은 기존 report verification 폴더에 연결한다.
+
+보고서 규칙을 추가한 뒤 최신 브랜치 경로를 다시 비교하면 공통 문서는 CURRENT/roadmap에 `AGENTS.md`가 추가되어 3개다. 앞의 두 문서 겹침은 생산·테스트 검증 head `7b4ce82` 기준 기록이다. S1을 포함한 S2의 Git 권한 설명과 S5의 보고서 모델 라우팅을 통합할 때 최신 사용자 지시를 기준으로 정합성을 확인한다. 과거 병합 예외를 자동 적용하지 않으며 이 문서는 새 병합 승인이 아니다. 생산·테스트 코드 겹침이 추가된 것은 아니다.
