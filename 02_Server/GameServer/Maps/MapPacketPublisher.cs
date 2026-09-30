@@ -101,14 +101,7 @@ internal sealed class MapPacketPublisher
         {
             if (existing.Owner == null) continue;
             if (existing.Owner.IsClosing) continue;
-            S_PlayerJoin rosterEntry = new S_PlayerJoin
-            {
-                entityId = existing.EntityId,
-                spawnX = existing.Position.X,
-                spawnY = existing.Position.Y,
-                characterClass = (byte)existing.Stats.Class,
-            };
-            target.Send(rosterEntry.Write());
+            target.Send(CreatePlayerJoin(existing).Write());
         }
 
         foreach (EnemyEntity enemy in _map.Enemies.Values)
@@ -126,6 +119,34 @@ internal sealed class MapPacketPublisher
             target.Send(enemySpawn.Write());
         }
     }
+
+    // 호출자가 등록·roster 전송을 완료한 뒤 기존 수신자에게만 입장을 알린다.
+    internal void BroadcastPlayerJoin(PlayerEntity player, GameSession except)
+        => _map.BroadcastToAll(CreatePlayerJoin(player).Write(), except);
+
+    // 발행 시점과 애니메이션 우선순위는 각 AI 시스템이 결정한다.
+    internal void BroadcastEnemyState(EnemyEntity enemy, long tickNumber, byte animState)
+    {
+        S_EntityState statePacket = new S_EntityState
+        {
+            entityId = enemy.EntityId,
+            x = enemy.X,
+            y = enemy.Y,
+            state = (byte)enemy.State,
+            animState = animState,
+            serverTick = (int)tickNumber,
+        };
+        _map.BroadcastToAll(statePacket.Write());
+    }
+
+    static S_PlayerJoin CreatePlayerJoin(PlayerEntity player)
+        => new S_PlayerJoin
+        {
+            entityId = player.EntityId,
+            spawnX = player.Position.X,
+            spawnY = player.Position.Y,
+            characterClass = (byte)player.Stats.Class,
+        };
 
     /// <summary>
     /// 플레이어의 현재 시각 애니메이션 상태 계산. 서버 권위 (헌법 #1).

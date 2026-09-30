@@ -289,7 +289,9 @@ public class GameSession : PacketSession
         map.EnqueueJob(() =>
         {
             if (OwnsPlayer(map, attackerEntityId))
+            {
                 map.ProcessAttack(attackerEntityId, targetId, clientTick);
+            }
         });
     }
 
@@ -319,7 +321,9 @@ public class GameSession : PacketSession
         map.EnqueueJob(() =>
         {
             if (OwnsPlayer(map, casterEntityId))
+            {
                 map.ProcessSkill(casterEntityId, capturedSkillId, capturedClientTick, capturedFacing, capturedVerticalDir);
+            }
         });
     }
 
@@ -428,7 +432,9 @@ public class GameSession : PacketSession
         {
             if (!world.IsActiveSession(this, entityId)) return;
             if (cheatType == 0) // 퀘스트 즉시완료(보스 포탈 해금)
+            {
                 world.CompleteQuestForDebug(entityId);
+            }
         });
     }
 #endif
@@ -518,14 +524,7 @@ public class GameSession : PacketSession
             map.SendInitialRosterTo(self, existing);
 
             // 자기 외 모든 player에게 신규 entity broadcast (except self — 본인은 로컬 선예측).
-            S_PlayerJoin joinNotice = new S_PlayerJoin
-            {
-                entityId = entity.EntityId,
-                spawnX = entity.Position.X,
-                spawnY = entity.Position.Y,
-                characterClass = (byte)entity.Stats.Class,
-            };
-            map.BroadcastToAll(joinNotice.Write(), except: self);
+            map.BroadcastPlayerJoin(entity, self);
 
             Console.WriteLine($"[Map] Player {entity.EntityId} entered — roster:{existing.Count}, enemies:{map.Enemies.Count}");
         });

@@ -3,9 +3,9 @@
 | 순서 | 범위 | 선행 의존성 | 목표 |
 |---|---|---|---|
 | S0 | 코드 기준·목표 루프 정비 | 사용자 합의 | [기준 정비](../../goals/2026-09-30-maintainability-standards/goal.md) |
-| S1 | 평타·Dash 공통 즉시 피해 처리와 첫 적용 CI | S0 통합 | [즉시 피해 처리 — 미병합 목표](https://github.com/bass131/dawnholder-server/blob/2b533c752076e3e00cfdfe081a9f45d824059606/01_Phases/goals/2026-09-30-immediate-enemy-hit/goal.md) |
-| S2 | 서버 영역별 적용 | S1 파일럿 성공 조건 충족 | [패킷 표현 책임 — 미병합 목표](https://github.com/bass131/dawnholder-server/blob/2e6b8c3546563dc231a6d7309703a80edf0d08f0/01_Phases/goals/2026-09-30-server-packet-publication/goal.md) |
-| S3 | 공유·전송·네트워크 적용 | S2 관련 계약 확정 | [종료 자원 정리 — 미병합 목표](https://github.com/bass131/dawnholder-server/blob/c45920175f22b9d05bd3dd13beb434ced99c1fbd/01_Phases/goals/2026-09-30-session-disconnect-cleanup/goal.md) |
+| S1 | 평타·Dash 공통 즉시 피해 처리와 첫 적용 CI | S0 통합 | [즉시 피해 처리](../../goals/2026-09-30-immediate-enemy-hit/goal.md) |
+| S2 | 서버 영역별 적용 | S1 파일럿 성공 조건 충족 | [패킷 표현 책임](../../goals/2026-09-30-server-packet-publication/goal.md) |
+| S3 | 공유·전송·네트워크 적용 | S2 관련 계약 확정 | [종료 자원 정리](../../goals/2026-09-30-session-disconnect-cleanup/goal.md) |
 | S4 | Unity 클라이언트 적용 | S3 공유·프로토콜 계약 확정 | [원격 보간 상태](../../goals/2026-09-30-remote-interpolation/goal.md) |
 | S5 | 도구와 전체 회귀 확인 | S2–S4 적용 결과 | 착수 시 생성 |
 

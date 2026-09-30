@@ -171,14 +171,7 @@ internal static class MapMigration
 
             // 맵 B 기존 플레이어에게 신규 진입자 S_PlayerJoin broadcast
             // characterClass: 서버 newEntity.Stats.Class byte cast (헌법 #3).
-            S_PlayerJoin joinNotice = new S_PlayerJoin
-            {
-                entityId = newEntity.EntityId,
-                spawnX = newEntity.Position.X,
-                spawnY = newEntity.Position.Y,
-                characterClass = (byte)newEntity.Stats.Class,
-            };
-            destMap.BroadcastToAll(joinNotice.Write(), except: session);
+            destMap.BroadcastPlayerJoin(newEntity, session);
 
             Console.WriteLine(
                 $"[Map] Player {transfer.EntityId} arrived at map={destMapId} spawn=({destSpawn.X},{destSpawn.Y}) — hp={transfer.CurrentHp}, roster:{existingInDest.Count}");

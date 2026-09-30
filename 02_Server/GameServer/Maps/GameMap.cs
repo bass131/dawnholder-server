@@ -387,18 +387,38 @@ public class GameMap
     internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
 
     /// <summary>
-    /// 사망 처리 시퀀스(S_EntityDeath broadcast → StageClear → RemoveEnemy → EnqueueRespawn) 완료 후 호출되는 훅.
-    /// 기본 구현은 주입 콜백(_onEnemyKilled)을 invoke — GameWorld가 Quest job에 적립/보스 reset을 연결한다.
-    /// virtual 유지: SpyGameMap override는 base 미호출 → 콜백 미실행(정상 — 테스트 spy 격리).
-    /// tick thread invariant 안에서만 호출.
+    /// 선택된 대상에 계산된 즉시 피해를 적용하고 생존 여부를 반환한다.
+    /// tick thread에서만 호출. 대상 선택·피해 계산·생존 시 넉백은 액션이 소유한다.
+    /// 음수 HP도 Hit에 그대로 보내며, Hit → 사망 후처리 → 처치 콜백 순서를 보존한다.
     /// </summary>
-    protected virtual void OnEnemyKilled(int killerEntityId, EnemyEntity target)
-        => _onEnemyKilled?.Invoke(killerEntityId, target);
+    internal bool ApplyImmediateEnemyHit(EnemyEntity target, int attackerEntityId, int damage, HitEffect hitEffect)
+    {
+        target.Hp -= damage;
+        target.TargetEntityId = attackerEntityId;
+
+        S_HitResult hit = new S_HitResult
+        {
+            attackerEntityId = attackerEntityId,
+            targetEntityId = target.EntityId,
+            damage = damage,
+            currentHp = target.Hp,
+            maxHp = target.MaxHp,
+            hitEffect = (byte)hitEffect,
+        };
+        BroadcastToAll(hit.Write());
+
+        if (target.Hp <= 0)
+        {
+            HandleEnemyDeath(target, attackerEntityId);
+            return false;
+        }
+        return true;
+    }
 
     /// <summary>
     /// 적 사망 후처리: S_EntityDeath broadcast → (Boss) StageClear → 제거 → (비보스) respawn 큐잉.
-    /// CombatSystem(즉시) / DeferredDamageSystem(지연) / SkillSystem(Dash) 3 경로 공통 — DRY 단일 출처.
-    /// HP 게이트(target.Hp &lt;= 0)와 S_HitResult 송신은 호출처에 남는다 — 적용 타이밍이 경로마다 다르므로.
+    /// ApplyImmediateEnemyHit(평타·Dash) / DeferredDamageSystem(지연)의 공통 사망 후처리.
+    /// HP 게이트(target.Hp &lt;= 0)와 S_HitResult 송신은 각 피해 적용 진입점이 소유한다.
     ///
     /// **순서 계약(BossStageClearTests)**: S_EntityDeath → S_StageClear 순서 보존 필수.
     /// **tick thread invariant**: GameMap.Tick 안에서만 호출.
@@ -457,6 +477,12 @@ public class GameMap
     /// </summary>
     internal void SendPlayerHp(PlayerEntity p) => _publisher.SendPlayerHp(p);
 
+    internal void BroadcastPlayerJoin(PlayerEntity player, GameSession except)
+        => _publisher.BroadcastPlayerJoin(player, except);
+
+    internal void BroadcastEnemyState(EnemyEntity enemy, long tickNumber, byte animState)
+        => _publisher.BroadcastEnemyState(enemy, tickNumber, animState);
+
     /// <summary>
     /// 새로 진입한 세션에게 이 맵의 현재 roster를 1:1 Send — 기존 player(S_PlayerJoin) + 살아있는 enemy(S_EntitySpawn).
     /// EnterGameWorld(최초 진입) / MapMigration(맵 이동) 두 경로 공통 — DRY 단일 출처.
@@ -493,23 +519,6 @@ public class GameMap
         => _skillSystem.ProcessSkill(this, casterEntityId, skillId, attackerClientTick, facing, verticalDir);
 
     /// <summary>
-    /// 보스 방이 비고(플레이어 0) 보스도 없으면 보스를 재출현 — 다음 입장자가 fresh 보스를 만남(영호 지시).
-    /// 빈 방에서만 리셋 → 전투 중/직후 갑작스런 재등장 없음. StageClear flag도 함께 리셋.
-    /// broadcast 불필요: 플레이어 0명일 때만 실행 → 수신자 0. 입장자는 SendInitialRosterTo로 받음.
-    /// tick thread invariant: Tick 안에서만 호출. 헌법 #5 정합(await/sleep 없음).
-    /// </summary>
-    private void MaybeRespawnBoss()
-    {
-        if (_bossSpawnPoint is not { } bsp) return;          // 보스 없는 맵 → 매 틱 최저비용 early-return
-        if (_players.Count != 0) return;                     // 누군가 있으면 대기(전투 중/직후 리스폰 금지)
-        foreach (EnemyEntity e in _enemies.Values)
-            if (EnemyCatalog.For(e.Kind).IsBoss) return;     // 이미 보스 존재 → 중복 방지
-        EnemyEntity boss = SpawnEnemy(EnemyKind.Boss, bsp.X, bsp.Y, EnemyCatalog.For(EnemyKind.Boss).MaxHp);
-        _stageCleared = false;
-        Console.WriteLine($"[Map:{MapId}] 빈 방 보스 재출현: id={boss.EntityId}");
-    }
-
-    /// <summary>
     /// kill-plane 아래로 낙사한 적을 소멸시킨다.
     ///
     /// HandleEnemyDeath와의 차이:
@@ -526,6 +535,32 @@ public class GameMap
         RemoveEnemy(enemy.EntityId);
         if (!EnemyCatalog.For(enemy.Kind).IsBoss)
             EnqueueRespawn(enemy);
+    }
+
+    /// <summary>
+    /// 사망 처리 시퀀스(S_EntityDeath broadcast → StageClear → RemoveEnemy → EnqueueRespawn) 완료 후 호출되는 훅.
+    /// 기본 구현은 주입 콜백(_onEnemyKilled)을 invoke — GameWorld가 Quest job에 적립/보스 reset을 연결한다.
+    /// virtual 유지: SpyGameMap override는 base 미호출 → 콜백 미실행(정상 — 테스트 spy 격리).
+    /// tick thread invariant 안에서만 호출.
+    /// </summary>
+    protected virtual void OnEnemyKilled(int killerEntityId, EnemyEntity target)
+        => _onEnemyKilled?.Invoke(killerEntityId, target);
+
+    /// <summary>
+    /// 보스 방이 비고(플레이어 0) 보스도 없으면 보스를 재출현 — 다음 입장자가 fresh 보스를 만남(영호 지시).
+    /// 빈 방에서만 리셋 → 전투 중/직후 갑작스런 재등장 없음. StageClear flag도 함께 리셋.
+    /// broadcast 불필요: 플레이어 0명일 때만 실행 → 수신자 0. 입장자는 SendInitialRosterTo로 받음.
+    /// tick thread invariant: Tick 안에서만 호출. 헌법 #5 정합(await/sleep 없음).
+    /// </summary>
+    private void MaybeRespawnBoss()
+    {
+        if (_bossSpawnPoint is not { } bsp) return;          // 보스 없는 맵 → 매 틱 최저비용 early-return
+        if (_players.Count != 0) return;                     // 누군가 있으면 대기(전투 중/직후 리스폰 금지)
+        foreach (EnemyEntity e in _enemies.Values)
+            if (EnemyCatalog.For(e.Kind).IsBoss) return;     // 이미 보스 존재 → 중복 방지
+        EnemyEntity boss = SpawnEnemy(EnemyKind.Boss, bsp.X, bsp.Y, EnemyCatalog.For(EnemyKind.Boss).MaxHp);
+        _stageCleared = false;
+        Console.WriteLine($"[Map:{MapId}] 빈 방 보스 재출현: id={boss.EntityId}");
     }
 
     /// <summary>
