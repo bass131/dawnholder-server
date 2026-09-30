@@ -41,7 +41,7 @@ MonoBehaviour는 Unity 생명주기 연결을 맡고, 예측·상태 계산처�
 - IDE0011: `when_multiline`; 여러 줄 본문에는 중괄호를 사용하고 한 줄 가드절은 허용한다.
 - Tests·99_Tools는 하위 설정으로 일부 규칙을 완화한다. Unity는 [별도 props](../../03_Client/Directory.Build.props)로 NuGet 분석기 상속을 차단한다.
 
-기본 production 범위는 warning이며, 첫 파일럿인 `02_Server/GameServer/Maps/GameMap.cs`, `Maps/Actions/MeleeAction.cs`, `Maps/Actions/DashAction.cs`에서는 위 세 진단을 error로 지정한다. [dotnet-tests CI](../../.github/workflows/dotnet-tests.yml)의 `dotnet build Dawnholder.slnx --no-incremental`이 이 세 파일의 위반을 실패시킨다. 기존 StyleCop.Analyzers `1.2.0-beta.556`과 `EnforceCodeStyleInBuild`를 사용하며 전역 warnings-as-errors는 적용하지 않는다.
+기본 production 범위는 warning이며, 첫 파일럿인 `02_Server/GameServer/Maps/GameMap.cs`, `Maps/Actions/MeleeAction.cs`, `Maps/Actions/DashAction.cs`에서는 위 세 진단을 error로 지정한다. [dotnet-tests CI](../../.github/workflows/dotnet-tests.yml)의 `dotnet build Dawnholder.slnx --no-incremental`이 이 세 파일의 위반을 실패시킨다. 서버 패킷 표현 통합에서는 `Sessions/GameSession.cs`, `Maps/Transitions/MapMigration.cs`, `Maps/MapPacketPublisher.cs`, `Maps/Systems/EnemyAISystem.cs`, `Maps/Systems/BossBehaviorSystem.cs`에도 같은 세 error 진단을 적용한다. 기존 StyleCop.Analyzers `1.2.0-beta.556`과 `EnforceCodeStyleInBuild`를 사용하며 전역 warnings-as-errors는 적용하지 않는다.
 
 같은 세 파일에서 .NET SDK 분석기의 CA1502·CA1506을 warning으로 관찰한다. 기본 임계값 초과 진단이므로 진단이 없는 상태를 연속 복잡도·결합 점수나 전체 설계 검증으로 해석하지 않는다.
 
