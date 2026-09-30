@@ -35,20 +35,20 @@ $env:DAWNHOLDER_SQL_DATABASE = 'Dawnholder_Dev'
 | `dh.CharacterProgress` | CharacterId PK/FK로 최대 한 체크포인트. MapId 0~3, real 좌표, int Hp/MaxHp, BossUnlocked bit, 저장 UTC, rowversion. `MaxHp > 0`, `0 <= Hp <= MaxHp`. FK 삭제 cascade 없음. |
 | `dh.SchemaVersion` | 버전 PK, 파일명 UNIQUE, 양수 버전 CHECK, SHA-256 및 적용 UTC. 게임 계정과 무관한 설치 이력. |
 
-- [GameWorld](../../02_Server/GameServer/Loop/GameWorld.cs)의 `NextEntityId()`는 프로세스 메모리에서 증가하고 [GameSession](../../02_Server/GameServer/Sessions/GameSession.cs)은 재접속 때 새 entity를 만든다. 따라서 runtime EntityId를 DB PK로 쓰지 않는다. 향후 인증된 AccountId/CharacterId와 세션 EntityId의 서버 내부 매핑이 필요하다. PlayerSnapshot의 과거 “DB primary key 대응” 주석은 현재 ID 수명과 일치하지 않는다.
+- [GameWorld](../../02_Server/GameServer/Loop/GameWorld.cs)의 `NextEntityId()`는 프로세스 메모리에서 증가하고 [GameSession](../../02_Server/GameServer/Sessions/GameSession.cs)은 재접속 때 새 entity를 만든다. 따라서 runtime EntityId를 DB PK로 쓰지 않는다. 후속 연동에는 서버가 확인한 AccountId/CharacterId와 세션 EntityId의 매핑이 필요하다. PlayerSnapshot도 현재 이 메모리 ID와 DB 계약을 구분한다.
 - [CharacterClass](../../98_Shared/Protocol/CharacterClass.cs)는 Knight=0, Mage=1. [PlayerStats](../../98_Shared/GameData/Combat/PlayerStats.cs)의 공격력·방어력·이동/점프 속도는 Class로 다시 생성한다. 레벨·경험치·장비·재화·길드는 현재 코드에 저장할 계약이 없어 넣지 않았다.
-- [PlayerSnapshot](../../02_Server/GameServer/Maps/PlayerSnapshot.cs)의 Position/Hp/MaxHp를 체크포인트 컬럼으로 표현한다. [MapId](../../02_Server/GameServer/Maps/MapId.cs)는 Town=0, HuntingGround=1, BossRoom=2, Ending=3이다. MapId는 Snapshot에 없어 향후 actor에서 함께 캡처해야 한다.
+- [PlayerSnapshot](../../02_Server/GameServer/Maps/PlayerSnapshot.cs)은 Position/CurrentHp/MaxHp와 불변 PlayerStats 정의를 캡처한다. [MapId](../../02_Server/GameServer/Maps/MapId.cs)는 Town=0, HuntingGround=1, BossRoom=2, Ending=3이다. 기존 컬럼은 더 넓은 checkpoint를 표현할 수 있지만, 선택된 첫 연동 범위에서는 동적 snapshot을 저장하지 않고 Town 안전 spawn과 저장 클래스의 기본 풀HP로 복귀한다.
 - [QuestRegistry](../../02_Server/GameServer/Quest/QuestRegistry.cs)의 `_bossUnlocked`는 현재 **세션 한정** latch다. 여기서는 향후 캐릭터별 재접속에도 해금을 유지할 수 있는 저장 자리를 마련했다. 기존 솔로 카운트와 파티 공유 카운트는 보스 처치 때 초기화되고 서로 수명이 달라 저장하지 않는다. 현재 latch를 실제 DB에 쓰거나 복원하지 않는다.
 
-재접속 저장 범위의 제안은 직업, 마지막 서버 체크포인트(맵·좌표·HP), 보스 해금이다. 파티 멤버십·초대·킬카운트·몬스터/보스 인스턴스·입력 큐·속도·FSM·틱·쿨다운·무적·position history는 복원하지 않는다. 이 정책의 실제 게임 적용은 후속 목표에서 확정한다. dead HP, 변경된 맵 지형/스탯 밸런스, BossRoom/Ending 재입장에 대한 안전 스폰 정책도 그때 구현해야 한다.
+사용자가 선택한 첫 연동 범위는 개발 고정 계정1/캐릭터1, 최초 클래스 유지, Town 풀HP 복귀, quest/보스 해금 세션 한정이다. identity/class와 안전 checkpoint를 다루며 전투 위치/HP/해금, 파티·킬 수·적 인스턴스·입력/FSM/cooldown/위치 이력은 복원하지 않는다. 선택 범위와 기술 계약은 [DB 설계 목표](../../01_Phases/goals/2026-09-29-persistence-design/goal.md)에 있다. 현재는 설계 단계이며 실제 게임 저장/복원은 미구현이다.
 
-DB의 좌표형은 C# float에 대응하는 real이다. SQL은 현재 맵의 실제 지형 범위를 알지 못하므로 저장 전 서버에서 유한값/유효 위치를 확인해야 한다. 음수 HP 스냅샷은 0으로 정규화해야 하며, 클라이언트가 보낸 HP/좌표를 그대로 저장하면 안 된다.
+DB의 좌표형은 C# float에 대응하는 real이다. SQL은 실제 지형을 모르므로 서버가 안전 spawn의 유한값/유효 위치를 검증한다. 이번 안전 projection은 Town/저장 클래스 기본 HP·MaxHp/해금false이며 runtime rawHP 전송 계약을 바꾸지 않는다. 클라이언트가 보낸 HP/좌표를 저장 권위로 쓰지 않는다.
 
 ## 후속 서버 통합 계약
 
-tick/actor에서 Class, 좌표, HP, MapId, quest latch를 값으로 복사하고 비동기 큐/worker에서 DB I/O를 실행한다. Snapshot의 Stats 참조 자체를 여러 스레드에서 변경 가능한 상태로 공유하지 않는다. 계정 소유권 확인, 서버 인증, 세션 종료 flush, bounded queue/backpressure, 중복 저장, 실패 재시도/종료 복구는 별도 구현 대상이다.
+게임 tick에서 DB 완료를 기다리지 않는다. 현재 PlayerStats는 불변 정의이며 후속 worker에는 identity/class·안전 projection과 작업 수명의 불변 값만 넘긴다. 첫 범위는 create/load·권위 획득/해제·미확정 작업 종결이고 주기/매 logout 동일 값 쓰기나 Quest snapshot pipeline은 없다. DB 직렬화/fence·읽기 token·종료 인계·권위 class 입장은 [설계 계약](../../01_Phases/goals/2026-09-29-persistence-design/design.md)대로 별도 구현·검증해야 한다.
 
-저장은 읽었던 rowversion으로 낙관적 동시성을 확인해야 한다. 예시의 모든 값은 서버가 검증한 SQL 파라미터이며 인증된 계정은 클라이언트 주장값이 아니다.
+저장은 읽었던 rowversion으로 낙관적 동시성을 확인해야 한다. 아래 SQL은 기존 전필드 checkpoint 후보의 예시이며, 이번 MVP의 실행 쿼리나 영구 해금 정책이 아니다. acquire/load와 모든 mutation/release의 DB 직렬화/fence 및 Character 읽기 의존성은 추가 설계 대상이다. 예시 값은 서버가 검증한 SQL 파라미터이며 계정은 클라이언트 주장값이 아니다.
 
 ```sql
 UPDATE p
