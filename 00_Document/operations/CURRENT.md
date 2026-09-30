@@ -1,3 +1,3 @@
 # 현재 목표
 
-[서버 종료 오류 경로의 자원 정리 보장](../../01_Phases/goals/2026-09-30-session-disconnect-cleanup/goal.md)
+[원격 보간 계산과 Unity 적용 경계 분리](../../01_Phases/goals/2026-09-30-remote-interpolation/goal.md)
