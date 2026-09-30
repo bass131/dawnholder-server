@@ -54,7 +54,7 @@ Game Dev에 ARCHITECTURE의 계층/의존 방향, FEATURE_MAP 코드 진입점, 
 
 ## 현재 상태
 
-구현·독립 검증 완료. [PR #147](https://github.com/bass131/dawnholder-server/pull/147)을 `main` 대상으로 제출했으며 OPEN이다. 구현 커밋은 `3fc1e536c0ebdbeced52615787cbed9535d16bcc`다. 자동 병합은 설정하지 않았고 사용자 개별 병합 승인과 Game Dev 정정본 최종 회신을 기다린다. 원격 CI 결과는 PR에서 확인하며 아래 로컬 검증과 구분한다.
+구현·독립 검증 완료. [PR #147](https://github.com/bass131/dawnholder-server/pull/147)은 OPEN이며 사용자 개별 병합 승인 대기다. 구현 커밋은 `3fc1e536c0ebdbeced52615787cbed9535d16bcc`다. Game Dev 전투 정정본 최종 의미검토는 **PASS**로 수신했다. 자동 병합은 설정하지 않았다. 원격 CI 결과는 PR의 정확 head에서 확인하며 아래 로컬 검증과 구분한다.
 
 기록 데이터(18시스템·18기록·35출처), 재배치 대응표와 앱 런타임 읽기/편집/저장 구현을 완료했다. 별도 Astra의 27개 테스트, 테스트 코드 타입검사, UI/Electron 빌드, 실행 배치 12개 테스트가 통과했다. 제품 빌드와 hash가 같은 시험용 복사본의 실제 Electron 창에서 편집→저장→재조회, JSON 불러오기, 잘못된 JSON 보존, 외부 수정 충돌·초안 보존과 격리 경계를 확인했다. 새 정본 경로의 실제 main을 별도 읽기 전용 실행해 1280×720 외곽 창, 실제 catalog 읽기, 원본 hash 보존과 정상 종료를 확인했다.
 
@@ -72,4 +72,12 @@ Game Dev의 전투 의미 검토에 따라 StageClear의 보스/최초 조건, �
 
 검토 중 편집 초안을 보존한 채 새로고침하면 저장 기준 버전만 갱신되는 결함을 수정했다. 초안의 기준 버전을 별도로 유지하고 외부 수정 충돌을 독립 테스트와 실제 renderer에서 재검증했다.
 
-Game Dev 조건부 의미 검토는 `msg_4397a2310999`와 로컬 `2026-09-30-management-catalog-gamedev-review.md`다. 정정 완료본은 `msg_2d844976d31e`로 재검토 요청했으며 최종 회신은 대기 중이다. 이번 PR은 검증된 Management 범위만 포함하며 사용자 명시 승인 전 병합하지 않는다. MCP 조회/설정, 폼 기반 항목 편집, 3D 관계 지도, 항목별 서술 정본 전환은 후속 논의 대상으로 남긴다.
+Game Dev 조건부 의미 검토는 `msg_4397a2310999`다. 정정 완료본 요청 `msg_2d844976d31e`에 대한 최종 회신 `msg_ccd48e9fdcbc`(2026-09-30 09:57:21 UTC)의 **PASS**를 확인했다. 원문은 `C:/Dev/DawnHolder_Project/.backups/handoffs/2026-09-30-management-catalog-gamedev-review.md`의 「정정본 최종 의미 확인」이며 수신 확인 당시 SHA256은 `587D734069292FA1EECDA9761E5F1F3F68EA01D2CC3E650FA3B496FC389D114B`다. 대상은 catalog `2711E0…`의 combat.behavior/change-immediate-hit.details이고 전체 catalog/UI/store 새 실행이나 PR147 병합 승인을 뜻하지 않는다.
+
+## PR147 마무리와 이후 관찰
+
+최신 main을 fetch하여 `a2eb65ee663ff127e77481b7ddcc5e3859abc4b8`을 확인하고 `f28f8d2bb2cadc96bd7a05579cebb04d301afca2`에서 작업 브랜치로 병합했다. main의 P0 문서 9파일만 반영됐고 충돌 및 05 트리 변경은 0이다. 게임 코드·공통 문서를 임의 편집하지 않았다. 종전 head `f5212d8ca0f1ba82f359ae5ecb21d152c2d0c3a9`의 [CI](https://github.com/bass131/dawnholder-server/actions/runs/36699062421)는 SUCCESS다. 이번 최종 문서 커밋의 정확 head 독립 검토·CI는 별도로 확인해 PR에 남기며 종전 CI를 새 head 결과로 쓰지 않는다.
+
+09:05 이후의 별도 관찰: Game Dev의 09:57 회신은 P0 PR146의 사용자 승인 및 09:55:32 UTC 병합(a2eb65e), P1 첫 파티 command 추출 준비를 전달했다. 이번 사용자 전달은 별도 branch에서 P1 계약 테스트/command 추출 진행을 알렸다. 이는 전달받은 상태이며 Management가 P1 코드·실행을 검증한 결과가 아니다. 게임의 현재 상태 원본은 Game Dev CURRENT/goal이다. 기존 catalog의 기준일·내용·hash는 그대로 보존했다.
+
+이번 후속 작업은 회신 상태 정정·main 정합성 확인·정확 head 검토와 [다음 작업 설계안](next-options.md)까지만 포함한다. API/MCP·폼 편집·서버 실행/로그 관리는 아직 후속 범위 합의 전이며 실제 MCP/서버/DB/3D 실행과 권한 변경은 하지 않는다.
