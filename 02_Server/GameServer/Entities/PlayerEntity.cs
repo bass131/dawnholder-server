@@ -16,12 +16,11 @@ namespace Dawnholder.Server.GameServer.Entities;
 // Position은 System.Numerics.Vector2. Unity의 UnityEngine.Vector2와 메모리 레이아웃은
 // 같지만 타입은 다름 — 패킷 직렬화 시 (float x, float y) 두 필드로 풀어서 전송.
 //
-// 상태 분류 (M8 영속화 토대):
-//   저장 후보(persistence candidate): EntityId / Position / Hp / MaxHp / Stats
-//   휘발 런타임(저장 금지): _inputQueue / _posHistory 링 / _lastActionTick / _jumpBufferRemaining /
+// CaptureSnapshot이 복사하는 값: EntityId / Position / Hp / MaxHp와 불변 Stats 정의.
+//   캡처에서 제외하는 런타임 상태: _inputQueue / _posHistory 링 / _lastActionTick / _jumpBufferRemaining /
 //     Velocity / OnGround / LastClientTick / InvulnUntilTick / ActionFsm / StateTicksRemaining /
 //     ExternalImpulseVx / ImpulseDecayPerTick
-//   → CaptureSnapshot()이 저장 후보만 뽑아 PlayerSnapshot DTO로 반환.
+// DB 저장·복원 형식은 이 캡처의 계약이 아니다.
 public class PlayerEntity
 {
     // === 휘발 런타임(저장 금지) ===
@@ -66,7 +65,7 @@ public class PlayerEntity
         Owner = owner;
         Stats = stats ?? PlayerStats.Knight();
         MaxHp = Stats.MaxHp;
-        Hp = Stats.Hp;
+        Hp = Stats.InitialHp;
         // 행동 쿨다운 배열 초기화: 스폰 직후 첫 발동 허용 + 오버플로우 회피.
         _lastActionTick = new long[ActionSlotCount];
         long allowFirst = long.MinValue / 2;
@@ -104,7 +103,7 @@ public class PlayerEntity
 
     // === 저장 후보(M8 persistence) ===
 
-    // 서버 권위 전투 HP. 헌법 #1 — 서버만 mutate. 생성자에서 Stats.MaxHp/Hp로 초기화.
+    // 서버 권위 전투 HP. 헌법 #1 — 서버만 mutate. 생성자에서 Stats.MaxHp/InitialHp로 초기화.
     // `IsDead`는 derived: `Hp <= 0`. 음수 보호는 derived가 흡수
     // (`Hp = -5` 직접 set도 IsDead true이므로 후속 attack job이 idempotent하게 no-op).
     public int Hp { get; set; }
@@ -247,21 +246,18 @@ public class PlayerEntity
     // 플레이어 데미지 적용 지점(BossStates.ApplyBossAttack)이 게이트로 사용 (헌법 #1 서버 판정).
     public bool IsInvulnerable(long currentTick) => currentTick <= InvulnUntilTick;
 
-    // ── 영속화 API (M8 큐드 라이터가 호출) ────────────────────────────────
+    // ── 현재 상태 캡처 (월드 tick thread) ─────────────────────────────────
 
     /// <summary>
-    /// 현재 저장 후보 상태를 <see cref="PlayerSnapshot"/> DTO로 반환.
-    /// M8 PersistenceWorker가 write queue에서 꺼내 DB 엔티티로 변환할 때 호출.
-    ///
-    /// 호출 시점 제약: tick thread 또는 tick 완료 직후 — Position/Hp가 mid-tick mutate 중이면 안 됨.
-    /// 현재(M7)는 미호출 — M8이 큐드 라이터 wiring 시 연결.
+    /// 월드 tick thread에서 현재 ID·위치·HP·MaxHp를 값으로 캡처한다.
+    /// 불변 Stats 정의는 같은 참조를 공유한다. 동시 변경 중의 호출이나 DB 저장은 보장하지 않는다.
     /// </summary>
     public PlayerSnapshot CaptureSnapshot()
         => new()
         {
             EntityId = EntityId,
             Position = Position,
-            Hp       = Hp,
+            CurrentHp = Hp,
             MaxHp    = MaxHp,
             Stats    = Stats,
         };

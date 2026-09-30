@@ -437,7 +437,7 @@ public class GameSession : PacketSession
     {
         _stats = PlayerStats.ForClass((CharacterClass)characterClass);
         Console.WriteLine(
-            $"[GameSession] CharacterClass set to {_stats.Class} — Hp:{_stats.Hp} Atk:{_stats.Attack} Def:{_stats.Defense} Spd:{_stats.MoveSpeed}");
+            $"[GameSession] CharacterClass set to {_stats.Class} — Hp:{_stats.InitialHp} Atk:{_stats.Attack} Def:{_stats.Defense} Spd:{_stats.MoveSpeed}");
     }
 
     // handshake 통과 후 lifecycle 전이 = `_handshakeCompleted` 박힘 + S_HandshakeResult(ok=true) 회신.

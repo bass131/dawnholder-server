@@ -1,6 +1,6 @@
 # M2a — 파티 멤버십과 퀘스트 상태·통보 분리
 
-상태: 구현·독립 TestCode·리뷰·로컬 검증 완료, PR CI 준비. base `4c32c917ff68450174c9883951a8d02e0223d11d`, branch `feat/refactor-party-quest-ownership`. [M1c](../2026-09-29-refactor-client-entry/goal.md) PR #133의 독립 테스트·리뷰·최신 CI를 통과하고 조건부 승인으로 병합한 뒤 시작했다. [M2](../2026-09-29-refactor-domain-state/goal.md)의 첫 목표다.
+상태: 완료·PR #134 병합. base `4c32c917ff68450174c9883951a8d02e0223d11d`, branch `feat/refactor-party-quest-ownership`. [M1c](../2026-09-29-refactor-client-entry/goal.md) PR #133의 독립 테스트·리뷰·최신 CI를 통과하고 조건부 승인으로 병합한 뒤 시작했다. [M2](../2026-09-29-refactor-domain-state/goal.md)의 첫 목표다.
 
 ## 선택 설계와 이유
 
@@ -43,7 +43,7 @@ Party는 멤버십·초대, Quest는 solo/party 진행·entity 해금 latch, Que
 - [x] copied membership/notification 불변성, raw/clamp/latch/reset, solo 복원·재결성, 모든 해산 cleanup을 독립 TestCode로 검증했다.
 - [x] 실제 world Party→Quest 순서·queued membership·kill/reset 순서, 정확한 패킷 수신자/순서/무통보를 확인했다.
 - [x] 기존 보스 gate/PartyQuest socket 통합과 서버 전체 suite·Release 경계를 검증하고 Shared/Unity 변경 부재를 확인했다.
-- [ ] 독립 source/TestCode 리뷰·최신 head CI·크리티컬 이슈 부재 확인 후 이번 로드맵 조건부 승인으로 직접 병합했다.
+- [x] 독립 source/TestCode 리뷰·최신 head CI·크리티컬 이슈 부재 확인 후 이번 로드맵 조건부 승인으로 직접 병합했다.
 - [x] HTML에 실제 diff와 검증/미실행 범위를 기록했다.
 
 ## 실제 결과와 다음 단계
@@ -58,3 +58,5 @@ production 기존6+신규3파일의 구현·정적 확인을 마쳤다. 정확 A
 - Shared/ClientNet/Unity/PDL 변경0, 원본 DLL 복사와 Unity 재실행 없음. 서버 내부 변경은 socket suite로 검증했으며 별도 bot/수동플레이/DB 실행을 했다고 주장하지 않는다.
 
 최신 PR head CI와 병합 결과는 통합 뒤 기록한다. 독립 raw 판정은 `verification/summary.md`에 둔다. 다음 [M2b](../2026-09-30-refactor-player-state/goal.md)는 M2a 통합 후 최신 main에서 Shared 스탯 정의·현재 HP·캡처/이동 값을 정리한다. DB 구현 권한으로 확대하지 않는다.
+
+최종 통합: head `83eefc8750bc4fc3f9263b78c37c3b3481124868`, CI run `36601258878` / job `109518934198` SUCCESS 2026-09-29T16:58:38Z(775/770pass/0fail/5skip). 독립 테스트·리뷰와 최신 head 조건을 확인해 PR #134를 16:59:13Z 직접 squash 병합, main `a0c60943cc89d74830d826044bd8fb852a458e7b`. 크리티컬 이슈 없음. 이전 기록의 CI 준비/대기는 그 시점 상태이며 최종 결과는 이 통합 기록을 따른다.

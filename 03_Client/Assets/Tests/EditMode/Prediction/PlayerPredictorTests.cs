@@ -2,6 +2,8 @@ using Dawnholder.Client.Prediction;
 using NUnit.Framework;
 using Shared.GameData;
 using UnityEngine;
+using Dawnholder.Client.Bootstrap;
+using Shared.Protocol;
 
 namespace Dawnholder.Client.Tests.Prediction
 {
@@ -27,6 +29,36 @@ namespace Dawnholder.Client.Tests.Prediction
     {
         // 기존 reconcile 테스트의 물리 기준. 직업값 테스트 아님 — reconcile 의미론 테스트.
         static readonly MoveParams DefaultMove = new MoveParams(5f, 8f);
+
+        [TestCase(CharacterClass.Knight, 4f, 150)]
+        [TestCase(CharacterClass.Mage, 6f, 80)]
+        [TestCase((CharacterClass)255, 4f, 150)]
+        public void LocalClassResolver_DrivesAbsoluteMovementAndJumpFromImmutableDefinition(
+            CharacterClass selected, float expectedSpeed, int expectedInitialHp)
+        {
+            CharacterClass? previous = ClassLoadout.SessionSelectedClass;
+            try
+            {
+                ClassLoadout.SessionSelectedClass = selected;
+                // Exercise the production class-to-movement adapter, not a test-only factory mapping.
+                var resolver = typeof(LocalPlayerMovement).GetMethod("ResolveClassMoveParams",
+                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+                Assert.NotNull(resolver);
+                var move = (MoveParams)resolver.Invoke(null, null);
+                Assert.AreEqual(expectedSpeed, move.MoveSpeed);
+                Assert.AreEqual(8f, move.JumpVel);
+                var predictor = new PlayerPredictor(move);
+                predictor.SetInitialPosition(Vector2.zero);
+                predictor.Predict(inputX: 1, jumpPressed: true);
+                Assert.AreEqual(expectedSpeed * Constants.TickDuration, predictor.Position.x, 0.0001f);
+                Assert.AreEqual(8f * Constants.TickDuration, predictor.Position.y, 0.0001f);
+                Assert.AreEqual(expectedSpeed, predictor.Velocity.x, 0.0001f);
+                Assert.AreEqual(8f, predictor.Velocity.y, 0.0001f);
+                Assert.IsFalse(predictor.OnGround);
+                Assert.AreEqual(expectedInitialHp, PlayerStats.ForClass(selected).InitialHp);
+            }
+            finally { ClassLoadout.SessionSelectedClass = previous; }
+        }
 
         // === 기본 초기화 ===
 

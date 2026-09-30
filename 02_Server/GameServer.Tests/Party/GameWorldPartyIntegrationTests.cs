@@ -1,6 +1,7 @@
 using System.Numerics;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.Transitions;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Sessions;
 using Dawnholder.Server.GameServer.Entities;
@@ -85,9 +86,7 @@ public class GameWorldPartyIntegrationTests : IDisposable
         int entityId = 42;
         trackingMap.AddPlayer(null, Vector2.Zero); // owner null 테스트 entity
         // entityId=42를 직접 주입하기 위해 AddPlayerWithId 사용
-        PlayerEntity entity = trackingMap.AddPlayerWithId(
-            entityId, null, Vector2.Zero,
-            PlayerStats.Knight(), currentHp: 100);
+        PlayerEntity entity = trackingMap.AddPlayerWithId(new PlayerTransferState(entityId, PlayerStats.Knight(), 100), null, Vector2.Zero);
 
         // SendToEntity를 TrackingMap에 직접 적용하기 위해 GameWorld를 우회하는
         // 통합 스타일 테스트: GameWorld._maps에 TrackingMap을 박을 수 없으므로
@@ -97,8 +96,7 @@ public class GameWorldPartyIntegrationTests : IDisposable
 
         // 실제 맵에 플레이어 추가 (owner null — session Send 없음, EnqueueJob 경유만 확인)
         int realEntityId = _world.NextEntityId();
-        townMap!.AddPlayerWithId(realEntityId, null, Vector2.Zero,
-            PlayerStats.Knight(), currentHp: 100);
+        townMap!.AddPlayerWithId(new PlayerTransferState(realEntityId, PlayerStats.Knight(), 100), null, Vector2.Zero);
 
         // SendToEntity 호출 시 예외가 나지 않고 owner null이면 Send skip (silent 무시).
         byte[] dummyPayload = new byte[] { 0x01, 0x02 };
@@ -140,10 +138,8 @@ public class GameWorldPartyIntegrationTests : IDisposable
         int entityA = _world.NextEntityId();
         int entityB = _world.NextEntityId();
 
-        town!.AddPlayerWithId(entityA, sessionA, Vector2.Zero,
-            PlayerStats.Knight(), currentHp: 100);
-        hunting!.AddPlayerWithId(entityB, sessionB, Vector2.Zero,
-            PlayerStats.Knight(), currentHp: 100);
+        town!.AddPlayerWithId(new PlayerTransferState(entityA, PlayerStats.Knight(), 100), sessionA, Vector2.Zero);
+        hunting!.AddPlayerWithId(new PlayerTransferState(entityB, PlayerStats.Knight(), 100), sessionB, Vector2.Zero);
 
         byte[] payloadA = new byte[] { 0xAA };
         byte[] payloadB = new byte[] { 0xBB };

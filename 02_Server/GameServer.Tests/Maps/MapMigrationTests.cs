@@ -3,6 +3,9 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Sessions;
 using Dawnholder.Server.GameServer.Entities;
+using Dawnholder.Server.GameServer.Maps.Actions;
+using Dawnholder.Server.GameServer.Maps.States;
+using Dawnholder.Server.GameServer.Maps.Transitions;
 using Shared.GameData;
 using Shared.Protocol;
 
@@ -118,12 +121,14 @@ public class MapMigrationTests : IDisposable
         // 왕복 테스트에서 현재 맵/목적지 맵 교체용
         public void SetCurrentMap(GameMap map) => _currentMap = map;
         public void SetDestMap(GameMap map) => _destMapOverride = map;
+        public Action? OnTransitionPublished { get; set; }
 
         public override void Send(ArraySegment<byte> seg)
         {
             byte[] copy = new byte[seg.Count];
             Array.Copy(seg.Array!, seg.Offset, copy, 0, seg.Count);
             SentPackets.Add(copy);
+            if (PacketIdOf(copy) == PacketID.S_MapTransition) OnTransitionPublished?.Invoke();
         }
         public override void OnSend(int numOfBytes) { }
         public override void Disconnect() { DisconnectCalls++; }
@@ -243,6 +248,127 @@ public class MapMigrationTests : IDisposable
     }
 
     // --- 1. entity id 유지 (ADR-026 핵심) ---
+
+    [Theory]
+    [InlineData(-5)]
+    [InlineData(0)]
+    [InlineData(51)]
+    [InlineData(221)]
+    public void Migration_CapturesRawHpBeforeDeparture_RebuildsMaxHp_AndKeepsDestinationSpawn(int rawHp)
+    {
+        TestMigrationSession session = SetupMigratingSession();
+        PlayerEntity source = Assert.Single(_mapA.Players, p => p.Owner == session);
+        int id = source.EntityId;
+        source.Hp = rawHp;
+        source.MaxHp = 400;
+        source.Position = NearTownPortal;
+        PlayerSnapshot? published = null;
+        session.OnTransitionPublished = () => published = _mapB.GetPlayer(id)!.CaptureSnapshot();
+        session.SentPackets.Clear();
+        session.OnRecvPacket(new C_EnterPortal { portalId = PortalId }.Write());
+        _mapA.Tick(2);
+        Assert.DoesNotContain(_mapA.Players, p => p.EntityId == id);
+        Assert.DoesNotContain(_mapB.Players, p => p.EntityId == id);
+        // The old entity reference still exists, but it must no longer supply deferred transfer data.
+        source.Hp = 2;
+        source.MaxHp = 3;
+        source.Position = new Vector2(-999, -999);
+        _mapB.Tick(2);
+        Assert.True(published.HasValue, "All raw HP cases follow the existing portal path; no new death gate.");
+        PlayerSnapshot captured = published.GetValueOrDefault();
+        Assert.Equal(id, captured.EntityId);
+        Assert.Equal(rawHp, captured.CurrentHp);
+        Assert.Equal(150, captured.MaxHp);
+        Assert.Equal(new Vector2(2, 0), captured.Position);
+        Assert.Same(source.Stats, captured.Stats);
+        PlayerEntity destination = Assert.Single(_mapB.Players, p => p.Owner == session);
+        Assert.NotSame(source, destination);
+        Assert.Equal(rawHp, destination.Hp);
+        Assert.DoesNotContain(_mapA.Players, p => p.Owner == session);
+        S_PlayerHp packet = new();
+        packet.Read(new ArraySegment<byte>(Assert.Single(session.SentPackets,
+            p => PacketIdOf(p) == PacketID.S_PlayerHp)));
+        Assert.Equal(Math.Max(0, rawHp), packet.currentHp); // Wire floor is separate from stored raw HP.
+        Assert.Equal(150, packet.maxHp);
+    }
+
+    sealed record ArrivalObservation(Vector2 Velocity, bool OnGround, int InputCount,
+        bool BufferedJump, uint Ack, bool Idle, int StateTicks, float Impulse, float Decay,
+        bool Invulnerable, Vector2 HistoricalPosition, Dictionary<ActionKind, long> LastActions);
+
+    [Fact]
+    public void Migration_CreatesFreshTransientState_BeforeFirstDestinationSimulation()
+    {
+        TestMigrationSession session = SetupMigratingSession();
+        PlayerEntity source = Assert.Single(_mapA.Players, p => p.Owner == session);
+        source.Position = NearTownPortal;
+        source.Velocity = new Vector2(11, -3);
+        source.OnGround = false;
+        source.ResolveJump(true);
+        source.EnqueueInput(-1, true, 444);
+        source.LastClientTick = 443;
+        source.InvulnUntilTick = 99;
+        source.EnterAttackState(7f, 1f, 9);
+        source.RecordPosition(444, new Vector2(-77, 23));
+        foreach (ActionKind kind in ActionRegistry.All.Keys) source.SetLastActionTick(kind, 2);
+        Assert.True(source.HasBufferedJump);
+        Assert.True(source.IsInvulnerable(2));
+        Assert.False(source.ActionFsm.CurrentState.AcceptsAction(ActionKind.Melee));
+        ArrivalObservation? arrived = null;
+        session.OnTransitionPublished = () =>
+        {
+            PlayerEntity destination = _mapB.GetPlayer(source.EntityId)!;
+            arrived = new ArrivalObservation(destination.Velocity, destination.OnGround,
+                destination.InputQueueCount, destination.HasBufferedJump, destination.LastClientTick,
+                ReferenceEquals(PlayerMovementStates.Idle, destination.ActionFsm.CurrentState),
+                destination.StateTicksRemaining, destination.ExternalImpulseVx, destination.ImpulseDecayPerTick,
+                destination.IsInvulnerable(2), destination.GetPositionAtTick(444),
+                ActionRegistry.All.Keys.ToDictionary(kind => kind, destination.GetLastActionTick));
+        };
+        session.OnRecvPacket(new C_EnterPortal { portalId = PortalId }.Write());
+        _mapA.Tick(2);
+        _mapB.Tick(2);
+        Assert.NotNull(arrived);
+        Assert.Equal(Vector2.Zero, arrived!.Velocity);
+        Assert.True(arrived.OnGround);
+        Assert.Equal(0, arrived.InputCount);
+        Assert.False(arrived.BufferedJump);
+        Assert.Equal(0u, arrived.Ack);
+        Assert.True(arrived.Idle);
+        Assert.Equal(0, arrived.StateTicks);
+        Assert.Equal(0f, arrived.Impulse);
+        Assert.Equal(Constants.KnockbackDecayPerTick, arrived.Decay);
+        Assert.False(arrived.Invulnerable);
+        Assert.Equal(new Vector2(2, 0), arrived.HistoricalPosition);
+        foreach (var action in ActionRegistry.All)
+            Assert.True(2 - arrived.LastActions[action.Key] >= action.Value.CooldownTicks,
+                $"{action.Key} must be immediately available after destination creation.");
+        Assert.Single(_mapB.Players, p => ReferenceEquals(p.Owner, session));
+        Assert.DoesNotContain(_mapA.Players, p => ReferenceEquals(p.Owner, session));
+    }
+
+    [Fact]
+    public void Migration_WithExistingRoster_PublishesTransitionThenCarriedHpThenRoster()
+    {
+        TestMigrationSession session = SetupMigratingSession();
+        PlayerEntity source = Assert.Single(_mapA.Players, p => p.Owner == session);
+        source.Hp = 37;
+        ObserverSession residentSession = new(_mapB);
+        PlayerEntity resident = _mapB.AddPlayerWithId(
+            new PlayerTransferState(500_000, PlayerStats.Mage(), 80), residentSession, new Vector2(8, 0));
+        Assert.Same(residentSession, resident.Owner);
+        Assert.False(residentSession.IsClosing);
+        session.SentPackets.Clear();
+        TriggerMigration(session, _mapA, _mapB, NearTownPortal, 2, 2);
+        PacketID[] relevant = session.SentPackets.Select(PacketIdOf).Where(id =>
+            id == PacketID.S_MapTransition || id == PacketID.S_PlayerHp || id == PacketID.S_PlayerJoin).ToArray();
+        Assert.Equal(new[] { PacketID.S_MapTransition, PacketID.S_PlayerHp, PacketID.S_PlayerJoin }, relevant);
+        S_PlayerJoin roster = new();
+        roster.Read(new ArraySegment<byte>(Assert.Single(session.SentPackets,
+            p => PacketIdOf(p) == PacketID.S_PlayerJoin)));
+        Assert.Equal(resident.EntityId, roster.entityId);
+        Assert.Equal((byte)CharacterClass.Mage, roster.characterClass);
+    }
 
     [Fact]
     public void EntityId_Preserved_After_Migration()

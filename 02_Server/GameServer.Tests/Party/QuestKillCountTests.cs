@@ -2,6 +2,7 @@ using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
+using Dawnholder.Server.GameServer.Maps.Transitions;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
 using Dawnholder.Server.GameServer.Sessions;
@@ -46,8 +47,8 @@ public class QuestKillCountTests : IDisposable
         int entityA = _world.NextEntityId();
         int entityB = _world.NextEntityId();
 
-        _huntingGround.AddPlayerWithId(entityA, sessionA, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
-        _huntingGround.AddPlayerWithId(entityB, sessionB, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityA, PlayerStats.Knight(), 100), sessionA, Vector2.Zero);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityB, PlayerStats.Knight(), 100), sessionB, Vector2.Zero);
 
         // 파티 결성 (tick thread 직접 호출)
         _world.Party.CreateParty(entityA, entityB);
@@ -80,8 +81,8 @@ public class QuestKillCountTests : IDisposable
         int entityA = _world.NextEntityId();
         int entityB = _world.NextEntityId();
 
-        _huntingGround.AddPlayerWithId(entityA, sessionA, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
-        _huntingGround.AddPlayerWithId(entityB, sessionB, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityA, PlayerStats.Knight(), 100), sessionA, Vector2.Zero);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityB, PlayerStats.Knight(), 100), sessionB, Vector2.Zero);
 
         _world.Party.CreateParty(entityA, entityB);
 
@@ -106,7 +107,7 @@ public class QuestKillCountTests : IDisposable
     {
         TrackingSession session = new TrackingSession();
         int entityId = _world.NextEntityId();
-        _huntingGround.AddPlayerWithId(entityId, session, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityId, PlayerStats.Knight(), 100), session, Vector2.Zero);
 
         // 파티 없는 솔로
         QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
@@ -125,7 +126,7 @@ public class QuestKillCountTests : IDisposable
     public void SoloKill_MultipleKills_Accumulates()
     {
         int entityId = _world.NextEntityId();
-        _huntingGround.AddPlayerWithId(entityId, null, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityId, PlayerStats.Knight(), 100), null, Vector2.Zero);
 
         QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
         QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
@@ -143,9 +144,9 @@ public class QuestKillCountTests : IDisposable
         int entityB = _world.NextEntityId();
         int solo = _world.NextEntityId();
 
-        _huntingGround.AddPlayerWithId(entityA, null, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
-        _huntingGround.AddPlayerWithId(entityB, null, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
-        _huntingGround.AddPlayerWithId(solo, null, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityA, PlayerStats.Knight(), 100), null, Vector2.Zero);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityB, PlayerStats.Knight(), 100), null, Vector2.Zero);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(solo, PlayerStats.Knight(), 100), null, Vector2.Zero);
 
         _world.Party.CreateParty(entityA, entityB);
         QuestNotifier.Send(_world, _world.Quest.OnKill(entityA));
@@ -190,7 +191,7 @@ public class QuestKillCountTests : IDisposable
     {
         TrackingSession session = new TrackingSession();
         int entityId = _world.NextEntityId();
-        _huntingGround.AddPlayerWithId(entityId, session, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(entityId, PlayerStats.Knight(), 100), session, Vector2.Zero);
 
         QuestNotifier.Send(_world, _world.Quest.OnKill(entityId));
         _huntingGround.Tick(tickNumber: 1);
@@ -208,7 +209,7 @@ public class QuestKillCountTests : IDisposable
     {
         TrackingSession session = new TrackingSession();
         int killerId = _world.NextEntityId();
-        _huntingGround.AddPlayerWithId(killerId, session, Vector2.Zero, PlayerStats.Knight(), currentHp: 100);
+        _huntingGround.AddPlayerWithId(new PlayerTransferState(killerId, PlayerStats.Knight(), 100), session, Vector2.Zero);
 
         // 테스트용 Normal 적 직접 spawn (internal — 같은 어셈블리)
         EnemyEntity enemy = _huntingGround.SpawnEnemy(EnemyKind.Normal, x: 0f, y: 0f, maxHp: 10);
