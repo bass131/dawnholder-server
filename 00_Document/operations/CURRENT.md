@@ -1,3 +1,3 @@
 # 현재 목표
 
-[원격 보간 계산과 Unity 적용 경계 분리](../../01_Phases/goals/2026-09-30-remote-interpolation/goal.md)
+[도구 실패 결과와 종합 회귀·보고](../../01_Phases/goals/2026-09-30-generator-exit-and-rollout-report/goal.md)
