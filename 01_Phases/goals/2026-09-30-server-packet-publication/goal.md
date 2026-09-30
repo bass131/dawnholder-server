@@ -46,6 +46,8 @@ Sol 구현자와 별도 Astra 테스트 작성자의 쓰기 종료를 확인했�
 
 전체 회귀 후 새 테스트의 동등한 Assert.Single predicate 표기 한 곳만 정리하고 최종 강제 빌드와 신규11개를 재검증했다. 생산코드는 같으며 전체 회귀 당시/최종 manifest를 분리해 보존했다. 원시 명령·환경·결과·정확한 skip 목록·해시는 `.backups/verification/2026-09-30-server-packet-publication/summary.md`와 연결된 파일, 별도 리뷰는 `.backups/reviews/2026-09-30-s2-packet-contract-review.md`다. GitHub의 정확한 PR head CI는 PR 생성 후 확인한다.
 
+PR 생성 뒤 기존 workflow의 `pull_request.branches: [main]` 때문에 stacked PR의 GitHub CI가 아예 시작되지 않는 것을 확인했다. Sol이 해당 필터 한 줄만 제거하는 patch를 작성했고 별도 Astra가 문법·범위·권한 불변을 검토했다. 메인이 이를 적용했으며 push 조건·job·명령·권한은 그대로다. 이는 이번 PR의 원격 검증 진입 조건 보완이다. 원격 실행 결과는 정확한 head로 별도 확인한다.
+
 확인한 변화는 PlayerJoin 조립3→1, 선택한 두 시스템의 주기 EntityState 조립2→1과 실제 입장/이동/tick의 bytes·순서·수신자 보존이다. SnapshotTickInterval은 현재1이므로 정상 비발행 tick 테스트를 수행했다고 주장하지 않는다. 일반 적의 사망 검증은 제거 후 상태 통지 부재이며 보스에는 명시 dead guard가 있다. 별도 즉시 공격 예고 발행은 유지했다. 복잡도·AI 탐색 시간·성능·전수 감사·별도 봇·Unity/시각 플레이·DB는 미측정 또는 미실행이다.
 
 후속 S3에는 사용자가 승인한 서버 Disconnect 오류 경로 보강을 별도 목표로 진행한다: 자원 정리를 보장한 뒤 기존 예외를 전파한다. S3 부분 송신 후보는 실제 정상 API 도달성 근거가 없어 보류했다. 전체 단계와 의존성은 [로드맵](../../milestones/2026-09-30-maintainability-rollout/roadmap.md)을 따른다.
