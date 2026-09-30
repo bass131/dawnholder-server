@@ -1,3 +1,3 @@
 # 현재 목표
 
-[서버 패킷 표현 책임 통합](../../01_Phases/goals/2026-09-30-server-packet-publication/goal.md)
+[서버 종료 오류 경로의 자원 정리 보장](../../01_Phases/goals/2026-09-30-session-disconnect-cleanup/goal.md)

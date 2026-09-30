@@ -8,6 +8,10 @@ PDL 수정 → 생성기 실행 → 생성 diff와 [ProtocolVersion](../../98_Sh
 
 패킷 ID를 재사용하거나 정의 순서를 바꾸지 않는다. 필드 끝 추가도 기존 읽기 코드에 영향을 준다. 버전 일치로 연결을 제한하는 현재 핸드셰이크와 새 동작을 함께 검증한다. 전송의 프레임 길이 검사는 [서버](../../02_Server/Network/FrameValidator.cs)와 [클라이언트](../../04_ClientNet/FrameValidator.cs)에 각각 있다.
 
+## 서버 연결 종료
+
+서버 Network.Session.Disconnect는 최초 호출만 종료 알림을 수행하고 정상 경로에서 callback → socket Shutdown → Close → 송신 큐·pending list 정리 순서를 유지한다. endpoint 조회나 callback이 실패해도 transport 정리를 시도한 뒤 원래 예외를 전파하며, 정리·진단 출력의 실패가 그 예외를 가리지 않는다. Shutdown·Close 실패는 기존처럼 무시하고 다음 정리를 진행한다. 클라이언트 종료 정책과 진행 중 I/O의 전체 수명은 이 계약의 변경 범위가 아니다.
+
 ## 타입과 권한
 
 공유 공식·스탯 타입은 양쪽이 읽는 계약이다. 서버 권위는 판정을 서버가 한다는 뜻이며, 타입을 서버 프로젝트에만 두라는 뜻은 아니다. `PlayerStats`·`Formulas`는 [Shared/GameData/Combat](../../98_Shared/GameData/Combat/)에 있고 적용은 서버 시스템에서 수행한다.
