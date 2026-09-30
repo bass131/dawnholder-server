@@ -1,7 +1,6 @@
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
-using Shared.Protocol;
 
 namespace Dawnholder.Server.GameServer.Maps.Systems;
 
@@ -27,9 +26,13 @@ internal sealed class EnemyAISystem
             if (enemy.FrozenUntilTick > 0)
             {
                 if (tickNumber >= enemy.FrozenUntilTick)
+                {
                     enemy.FrozenUntilTick = 0;
+                }
                 else
+                {
                     continue;
+                }
             }
 
             enemy.Fsm!.Tick(enemy);
@@ -40,16 +43,7 @@ internal sealed class EnemyAISystem
             if (shouldBroadcast)
             {
                 byte animState = ComputeEnemyAnimState(enemy);
-                S_EntityState statePacket = new S_EntityState
-                {
-                    entityId   = enemy.EntityId,
-                    x          = enemy.X,
-                    y          = enemy.Y,
-                    state      = (byte)enemy.State,
-                    animState  = animState,
-                    serverTick = (int)tickNumber,
-                };
-                map.BroadcastToAll(statePacket.Write());
+                map.BroadcastEnemyState(enemy, tickNumber, animState);
             }
         }
     }
@@ -63,13 +57,19 @@ internal sealed class EnemyAISystem
     static byte ComputeEnemyAnimState(EnemyEntity enemy)
     {
         if (enemy.HitLatchTicks > 0)
+        {
             return (byte)Shared.GameData.AnimState.Hit;
+        }
 
         if (enemy.AttackLatchTicks > 0)
+        {
             return (byte)Shared.GameData.AnimState.Attack;
+        }
 
         if (enemy.State == EnemyState.Patrol || enemy.State == EnemyState.Chase)
+        {
             return (byte)Shared.GameData.AnimState.Walk;
+        }
 
         return (byte)Shared.GameData.AnimState.Idle;
     }

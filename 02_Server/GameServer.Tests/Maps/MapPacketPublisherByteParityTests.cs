@@ -24,6 +24,56 @@ namespace GameServer.Tests.Maps;
 /// </summary>
 public class MapPacketPublisherByteParityTests
 {
+    [Theory]
+    [InlineData(CharacterClass.Knight)]
+    [InlineData(CharacterClass.Mage)]
+    public void BroadcastPlayerJoin_PreservesBytes_AndExcludesJoiningSession(CharacterClass characterClass)
+    {
+        GameMap map = MakeTownMap();
+        var joiningSink = new List<byte[]>();
+        var observerSink = new List<byte[]>();
+        var joining = new FakeCapturingSession(joiningSink);
+        var observer = new FakeCapturingSession(observerSink);
+        PlayerEntity player = map.AddPlayer(joining, new Vector2(-12.5f, 3.25f), PlayerStats.ForClass(characterClass));
+        map.AddPlayer(observer, Vector2.Zero);
+
+        new MapPacketPublisher(map).BroadcastPlayerJoin(player, joining);
+
+        Assert.Empty(joiningSink);
+        Assert.Equal(Capture(new S_PlayerJoin
+        {
+            entityId = player.EntityId, spawnX = -12.5f, spawnY = 3.25f,
+            characterClass = (byte)characterClass,
+        }.Write()), Assert.Single(observerSink));
+    }
+
+    [Theory]
+    [InlineData(EnemyKind.Normal)]
+    [InlineData(EnemyKind.Boss)]
+    public void BroadcastEnemyState_PreservesSuppliedAnimationAndEveryWireField(EnemyKind kind)
+    {
+        GameMap map = MakeTownMap();
+        var sink = new List<byte[]>();
+        map.AddPlayer(new FakeCapturingSession(sink), Vector2.Zero);
+        var enemy = new EnemyEntity(8123, kind, -31.5f, 9.25f, 150)
+        {
+            State = EnemyState.Chase,
+            HitLatchTicks = 10,
+            AttackLatchTicks = 10,
+        };
+
+        // Policy belongs to the caller: do not derive animation from kind or latches here.
+        new MapPacketPublisher(map).BroadcastEnemyState(enemy, 54321, (byte)AnimState.Walk);
+
+        Assert.Equal(Capture(new S_EntityState
+        {
+            entityId = 8123, x = -31.5f, y = 9.25f, state = (byte)EnemyState.Chase,
+            animState = (byte)AnimState.Walk, serverTick = 54321,
+        }.Write()), Assert.Single(sink));
+        Assert.Equal(10, enemy.HitLatchTicks);
+        Assert.Equal(10, enemy.AttackLatchTicks);
+    }
+
     // ── 헬퍼 ──────────────────────────────────────────────────────────────────
 
     static GameMap MakeTownMap() => new GameMap(MapId.Town);

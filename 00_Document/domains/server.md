@@ -14,6 +14,10 @@
 
 평타·Dash는 대상 선택·피해 계산·시전과 생존 시 넉백을 각 액션에서 처리한다. `GameMap.ApplyImmediateEnemyHit`는 틱 흐름 안에서 계산된 피해의 HP 반영·공격자 지정·Hit 통지·치사 후처리를 소유하고 생존 여부를 반환한다. 즉시 피해의 음수 HP도 Hit 패킷에 그대로 보낸다. Hit → Death → 보스 StageClear → 제거·리스폰 등록 → 처치 콜백 순서를 보존한다. 지연 피해는 기존 `DeferredDamageSystem` 경로를 유지한다.
 
+## 맵 패킷 표현
+
+입장·맵 이동의 등록과 수신자 정책은 기존 호출자가 소유하며, PlayerJoin의 roster·broadcast wire 조립은 MapPacketPublisher가 공유한다. 호출자는 최초 EnterMap 또는 이동 MapTransition → HP → 등록 전 snapshot의 roster → 본인 제외 join 순서를 유지한다. 일반 적·보스 시스템은 FSM·latch와 발행 간격을 결정하고 GameMap을 통해 EntityState 표현을 위임한다. 일반 적 Hit 우선과 보스 Attack 우선, AI → 보스 → 중력의 발행 시점을 보존한다.
+
 ## 종료와 broadcast
 
 수신자의 연결 정리와 broadcast는 겹칠 수 있다. [MapPacketPublisher](../../02_Server/GameServer/Maps/MapPacketPublisher.cs)의 수신자 필터와 세션 `IsClosing`을 확인한다. 종료된 세션을 건너뛰어도 이미 시작된 전송의 수명주기까지 자동 해결되는 것은 아니다.

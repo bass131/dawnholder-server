@@ -477,6 +477,12 @@ public class GameMap
     /// </summary>
     internal void SendPlayerHp(PlayerEntity p) => _publisher.SendPlayerHp(p);
 
+    internal void BroadcastPlayerJoin(PlayerEntity player, GameSession except)
+        => _publisher.BroadcastPlayerJoin(player, except);
+
+    internal void BroadcastEnemyState(EnemyEntity enemy, long tickNumber, byte animState)
+        => _publisher.BroadcastEnemyState(enemy, tickNumber, animState);
+
     /// <summary>
     /// 새로 진입한 세션에게 이 맵의 현재 roster를 1:1 Send — 기존 player(S_PlayerJoin) + 살아있는 enemy(S_EntitySpawn).
     /// EnterGameWorld(최초 진입) / MapMigration(맵 이동) 두 경로 공통 — DRY 단일 출처.

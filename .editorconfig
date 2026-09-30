@@ -41,3 +41,9 @@ dotnet_diagnostic.IDE0011.severity = error
 # CA1502/CA1506은 연속 점수나 전체 아키텍처 평가가 아니다.
 dotnet_diagnostic.CA1502.severity = warning
 dotnet_diagnostic.CA1506.severity = warning
+
+# 서버 패킷 표현 통합: 수정한 추가 production 파일에만 동일한 실패 조건을 적용한다.
+[02_Server/GameServer/{Sessions/GameSession.cs,Maps/Transitions/MapMigration.cs,Maps/MapPacketPublisher.cs,Maps/Systems/EnemyAISystem.cs,Maps/Systems/BossBehaviorSystem.cs}]
+dotnet_diagnostic.SA1201.severity = error
+dotnet_diagnostic.SA1202.severity = error
+dotnet_diagnostic.IDE0011.severity = error
