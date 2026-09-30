@@ -1,6 +1,6 @@
 # D0 — 작은 범위의 DB 연동 설계와 구현 분할
 
-상태: **설계·독립 리뷰 완료, PR/최신 CI/통합 준비**. [M3](../2026-09-29-refactor-regression/goal.md) PR #136 병합 후 최신 main `84d3566f3e73017bfb90b550c48477ad5f84ed63`에서 `docs/persistence-integration-design` 브랜치로 시작했다. 이번 목표는 설계이며 GameServer/SQL/프로토콜 구현·실행 검증은 미착수다. 상태·결정·결과는 이 파일에서 관리한다.
+상태: **설계 목표 완료·PR #137 병합**. [M3](../2026-09-29-refactor-regression/goal.md) PR #136 병합 후 최신 main `84d3566f3e73017bfb90b550c48477ad5f84ed63`에서 `docs/persistence-integration-design` 브랜치로 시작했다. 최종 head `a37bb405155e8856b94cf50fd18521ce4f2c9d90`, 병합 main `ce9f2ed18e7f4778170609a7df0bcce718f25734`. 이번 목표는 설계이며 GameServer/SQL/프로토콜 구현·실행 검증은 미착수다. 상태·결정·결과는 이 파일에서 관리한다.
 
 ## 확정 범위와 결정 출처
 
@@ -30,7 +30,7 @@
 - [x] DB acquire/fence/token·create unknown·safe DTO/close·입력 gate·권위 class 생성 계약을 작성했다.
 - [x] D1–D4 선행 조건/소유 후보/반증 TestCode/데이터 부작용을 분할했다.
 - [x] 독립 설계 리뷰의 보완과 문서 링크·범위 검토를 마쳤다.
-- [ ] 설계 PR·최신 CI·승인/병합 결과를 기록했다.
+- [x] 설계 PR·최신 CI·승인/병합 결과를 기록했다.
 
 ## 실제 결과와 남은 작업
 
@@ -42,4 +42,14 @@
 
 초안의 상대 문서 링크 누락0을 읽기 전용으로 확인했다. goal/design/implementation-plan과 MSSQL의 지정 문구 쓰기를 종료하고 독립 리뷰에 인계한다. 추가 정책·API·ID·DDL을 실행 결과처럼 확정하지 않았다.
 
-SQL/.NET 접속·repository·게임 저장/로드·장애·Unity/bot·migration·restore는 **이번 목표에서 미실행**이다. 남은 것은 설계 PR/통합이다. D1의 구체 driver/DDL/잠금·복구 권한, D3 packet ID/status/정확 UI 접점, 종료 시간값은 구현 전 기술 명세/측정 항목이며 사용자 제품 범위를 다시 미합의로 되돌리지 않는다. D1–D4 구현은 미착수이며 이번 설계 통합을 구현·외부 DB 변경 권한으로 확대하지 않는다.
+SQL/.NET 접속·repository·게임 저장/로드·장애·Unity/bot·migration·restore는 **이번 목표에서 미실행**이다. D1의 구체 driver/DDL/잠금·복구 권한, D3 packet ID/status/정확 UI 접점, 종료 시간값은 구현 전 기술 명세/측정 항목이며 사용자 제품 범위를 다시 미합의로 되돌리지 않는다. D1–D4 구현은 미착수이며 이번 설계 통합을 구현·외부 DB 변경 권한으로 확대하지 않는다.
+
+## 통합 결과와 다음 진입점
+
+최종 head `a37bb405155e8856b94cf50fd18521ce4f2c9d90`의 [CI 36656143968](https://github.com/bass131/dawnholder-server/actions/runs/36656143968/job/109700809553)는 2026-09-30T01:42:23Z SUCCESS, build 성공·808 total/803 pass/0 fail/5 기존 skip이었다(`.backups/verification/2026-09-30-persistence-design/ci-final.log`). 이는 기존 서버 회귀이며 DB 구현/실행 성공이 아니다.
+
+독립 계약 리뷰·정적/HTML 확인·동일 head CLEAN·최신 CI·크리티컬 이슈 부재를 확인하고 이번 로드맵의 사용자 명시 예외로 자동 예약 없이 직접 squash 병합했다. [PR #137](https://github.com/bass131/dawnholder-server/pull/137) MERGED 2026-09-30T01:42:48Z, main `ce9f2ed18e7f4778170609a7df0bcce718f25734`. 그 main의 `docs/refactor-persistence-completion` 브랜치는 이 실제 결과와 누적 HTML의 완료 상태만 기록하는 통합 마무리이며 새 기능 목표가 아니다.
+
+합의된 M0–M3와 후속 D0 설계는 종료됐다. 다음 후보는 [D1a 기술 명세](implementation-plan.md)이며 새 목표/실행 범위를 인계받은 뒤 시작한다. D1–D4에는 이번 조건부 병합 예외를 적용하지 않고 **각 PR 병합 직전 사용자 명시 승인**을 받는다. 현재 goal/CURRENT는 완료된 설계와 후속 계획의 진입점으로 남기며 새 구현 목표·SQL 작업을 자동 시작하지 않는다.
+
+누적 HTML 최종 상태 QA: 2026-09-30T01:44:16Z, 4개 화면 폭에서 overflow0·theme/details/print 통과, 메인이 430px light 완료 요약과 DB 설계 섹션 이미지를 확인했다(`.backups/report-preview/qa-completion.log`, `qa-results.json`). 보고서는 로컬 self-contained 파일로 제공하며 외부 게시하지 않았다.
