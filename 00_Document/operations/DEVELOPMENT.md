@@ -37,7 +37,7 @@ WSL 빌드는 Windows 원본 Unity DLL을 갱신하지 않는다. DLL 반영은 
 
 ## 패킷 생성과 로컬 Git 검사
 
-PacketGenerator는 PDL 경로를 명시해야 저장소 루트에서도 동작한다. 다음 명령은 .NET 실행이 허용된 환경용이며 생성 소스를 변경한다. 이번 문서 정비에서는 재실행하지 않았다.
+PacketGenerator는 PDL 경로를 명시해야 저장소 루트에서도 동작한다. 정상 출력은 exit0, 잡힌 출력 실패는 exit1을 반환하며 파싱 예외는 기존대로 전파하고 `--no-wait`는 성공·실패 모두 후행 키 입력 대기를 생략한다. 다음 명령은 .NET 실행이 허용된 환경용이며 생성 소스를 변경한다.
 
 ```powershell
 dotnet run --project 99_Tools/PacketGenerator -- 99_Tools/PacketGenerator/PDL.xml --no-wait

@@ -1,6 +1,6 @@
 # P0 — 공통 계약·유지보수·영속성 기준선
 
-상태: **사용자 승인된 마일스톤을 정식 목표로 등록하고 통합 기준선을 준비 중**. 이전 PR 통합·영역별 계약 조사·평가 기준선은 미완료다. 이 문서 생성은 게임 코드 개선이나 DB 저장 연결의 완료를 뜻하지 않는다.
+상태: **기존 PR 통합·최종 main 회귀·P0 계약/평가 기준선·독립 문서 검토 완료, PR 준비 중**. P0의 설계·진단 완료는 게임 코드 개선·DB 저장 연결·실제 Unity 플레이나 PR 병합 완료를 뜻하지 않는다.
 
 ## 목표와 승인 범위
 
@@ -12,13 +12,13 @@
 
 ## P0 범위와 완료조건
 
-- [ ] 기존 PR #141/#143/#144/#145의 정확 head·검증·충돌·미실행 범위를 확인하고, 사용자 개별 승인 후 통합한다. #140/#142의 병합 결과를 보존한다.
-- [ ] 통합 후 main commit을 고정하고 조사·평가의 대상 코드와 문서 상태를 기록한다. 통합 전 결과와 섞지 않는다.
-- [ ] 기능 지도 각 기능과 공통 경계를 포함하는 owner/request/state 표를 작성한다. 변경/유지/추가조사 이유, 수명과 실패 경로, 테스트 진입점 및 실제 읽은 경로를 연결한다.
-- [ ] 경계를 넘는 요청·상태·완료 의미와 역할별 적용 기준을 현행 규칙에 연결한다. 불필요한 추상화·중복 장부를 추가하지 않는다.
-- [ ] AI 탐색 평가의 과제·채점·모델/effort·맥락·열람/시간 기록 방법을 실행 전에 고정하고 독립 검토한다. 기준선 실행과 미측정 항목을 구분한다.
-- [ ] 고정한 baseline 과제를 실제 수행하고 독립 채점·원시 기록 확인을 마친다. 실행할 수 없으면 미완료 또는 사용자와 합의한 제외로 남긴다.
-- [ ] P1 첫 구현의 좁은 계약과 독립 TestCode 검증안을 확정한다. 행동 수정이 필요한 분기는 사용자 결정 후 별도 기록한다.
+- [x] 기존 PR #141/#143/#144/#145의 정확 head·검증·충돌·미실행 범위를 확인하고, 사용자 개별 승인 후 통합한다. #140/#142의 병합 결과를 보존한다.
+- [x] 통합 후 main commit을 고정하고 조사·평가의 대상 코드와 문서 상태를 기록한다. 통합 전 결과와 섞지 않는다.
+- [x] 기능 지도 각 기능과 공통 경계를 포함하는 owner/request/state 표를 작성한다. 변경/유지/추가조사 이유, 수명과 실패 경로, 테스트 진입점 및 실제 읽은 경로를 연결한다.
+- [x] 경계를 넘는 요청·상태·완료 의미와 역할별 적용 기준을 현행 규칙에 연결한다. 불필요한 추상화·중복 장부를 추가하지 않는다.
+- [x] AI 탐색 평가의 과제·채점·모델/effort·맥락·열람/시간 기록 방법을 실행 전에 고정하고 독립 검토한다. 기준선 실행과 미측정 항목을 구분한다.
+- [x] 고정한 baseline 과제를 실제 수행하고 독립 채점·원시 기록 확인을 마친다. 실행할 수 없으면 미완료 또는 사용자와 합의한 제외로 남긴다.
+- [x] P1 첫 구현의 좁은 계약과 독립 TestCode 검증안을 확정한다. 행동 수정이 필요한 분기는 사용자 결정 후 별도 기록한다.
 - [ ] 문서·경로·권한 일관성의 독립 검토를 마치고 P0 PR을 생성한다. P0 PR도 병합 직전 사용자 승인이 필요하다.
 
 P0는 설계·기준선 단계다. 생산 코드·Unity 에셋·PDL·SQL·Management UI를 여기서 수정하지 않는다. 정적 CI 확대는 실제 적용할 코드 목표에서 구체 규칙·대상·위반 테스트를 함께 추가한다.
@@ -56,22 +56,69 @@ AI Readiness는 고정된 탐색 과제에서 owner·호출 흐름·실패 처�
 
 요청 모델과 확인된 실제 runtime은 구분한다. 새 Codex는 --no-daemon. Management 파일·보관 Claude worktree·전역 설정·기존 실행 자원은 수정하지 않는다. SQL 실행은 후속 구체 대상·권한·부작용을 확인한 뒤 진행한다.
 
-## 시작 상태와 통합 준비
+## 기준선과 통합 결과
 
-- 작업 branch: `bass131/game-contracts-p0`; 시작 HEAD/main 관측값 `be227d147bc593a7bd525a78072d24a1266c31ba`.
-- #140 merge `e582798cb4c04e8502027c23c50c267d0176af05`, #142 merge `be227d147bc593a7bd525a78072d24a1266c31ba`는 이미 사용자 개별 승인으로 완료했다.
-- 남은 정확 head: #141 `4a88b292bdffd5a2c9ce0ed3c4f76e3d8e1dce78`, #143 `c45920175f22b9d05bd3dd13beb434ced99c1fbd`, #144 `4f084af97b40395f317031c63f5b9f8b84a64ad8`, #145 `c0d89e895dfc3ff411602e333caa956ce3448f6e`. 기존 CI는 SUCCESS이나 현재 main과의 통합 준비를 별도 확인 중이다.
-- 이번 “정리 후 진행” 요청은 개별 PR의 정확 head에 대한 병합 승인으로 대체하지 않는다. 자동 병합 예약·미병합 선행 코드의 임의 누적을 하지 않는다.
-- 이전 유지보수 결과의 검증과 이번 재실행은 구분한다. 실제 Unity PlayMode/실서버 시각 플레이·DB 저장 실행을 문서 검사나 EditMode로 대신하지 않는다.
+작업 branch는 `bass131/game-contracts-p0`, 최초 base는 `be227d147bc593a7bd525a78072d24a1266c31ba`다. 최종 main 기준선 B는 `c27b03e888986f2ec8c593cd6c626a9c515595e1`, tree는 `e5dd66f6a48cdb94822ebda27f091c8505e37558`로 고정했다. P0 계약 문서가 추가된 작업트리와 B의 기존 문서·코드를 구분한다.
 
-## 현재 결과와 다음 실행
+#140 merge `e582798cb4c04e8502027c23c50c267d0176af05`, #142 merge `be227d147bc593a7bd525a78072d24a1266c31ba` 이후 아래 PR을 각각 사용자 승인·정확 head CI SUCCESS·독립 통합 검토 후 병합했다.
 
-정식 목표·로드맵 등록 및 현재 진입점 갱신을 준비했다. 과거 S1–S5 한정 일괄 승인 예외는 현행 AGENTS에서 제거하여 현재 개별 승인 규칙과 맞춘다. 아직 PR 통합·P0 전체 조사·평가 실행·생산 구현은 완료하지 않았다.
+| PR | 승인·검증한 head | main merge | 보존/검증 범위 |
+|---|---|---|---|
+| [#141](https://github.com/bass131/dawnholder-server/pull/141) | `4a88b292bdffd5a2c9ce0ed3c4f76e3d8e1dce78` | `4a8700b9abbd04392affd618fa816a2ced426176` | 세션 준비·인계 문서 2파일 정적 검토 |
+| [#143](https://github.com/bass131/dawnholder-server/pull/143) | `a83e72f321482822421a9e4e6c23772d718470a0` | `832291d11c243b1f672adc0a0e336a515ca4590d` | 종료 callback 예외 후 정리·예외 전파. 코드/독립 테스트 기존 검증본과 동일 |
+| [#144](https://github.com/bass131/dawnholder-server/pull/144) | `159440fd1e09c3fccdc247db4b0efb6db6cbcf87` | `4abeb8b874ada9c7d924f35e4622944f036f6219` | 원격 보간 코드·테스트·meta 7파일이 기존 EditMode 275 통과본과 동일. PlayMode/시각 플레이 미실행 |
+| [#145](https://github.com/bass131/dawnholder-server/pull/145) | `09f618ae7f1d6b30095569af0ba455a3d95763d3` | `c27b03e888986f2ec8c593cd6c626a9c515595e1` | 생성기 실패 종료 코드·회귀 테스트·설정 기존 검증본과 동일. 보고서 Astra 전담 규칙 포함 |
 
-PR #141은 사용자 개별 승인 후 head `4a88b292`·CI SUCCESS·충돌 없음을 재확인하고 병합했다. merge `4a8700b9abbd04392affd618fa816a2ced426176`, 2026-09-30 08:35:23 UTC. 문서 두 파일의 독립 정적 검토 PASS이며 터미널 실행을 이번에 재검증한 결과는 아니다. #143/#144/#145는 통합 준비 중이다.
+이 승인은 해당 PR에만 사용했다. P0 및 후속 PR의 병합 권한으로 전용하지 않는다. 현행 AGENTS에서 과거 S1–S5 일괄 승인 예외를 제거하고 최신 개별 승인 규칙을 유지한다.
 
-정식 등록 5파일의 독립 정적 검토 PASS: 승인 범위·미완료 표기·권한과 상대 링크 28개를 확인했다. 빌드·게임 실행은 문서 검토 범위가 아니어서 수행하지 않았다. 근거: `.backups/reviews/2026-09-30-p0-formal-doc-review.md`.
+## 현재 결과·근거·다음 실행
 
-다음: 남은 PR의 충돌 수정/검증 → 각각 사용자 병합 승인 → 통합 main 고정 → P0 문서 기준 재확인과 영역 조사·평가 → P0 PR → P1. 승인 대기 동안 생산 코드에 의존하지 않는 설계·평가 명세와 제한 조사는 계속할 수 있다.
+### 계약과 조사
 
-로컬 근거는 `.backups/reviews/2026-09-30-remaining-pr-integration-plan.md`, `2026-09-30-remaining-pr-validation-plan.md`, `2026-09-30-p0-promotion-review-notes.md`에 모은다. 이 경로는 Git에 포함된 공유 실행 증거가 아니며 후속 goal에는 검증 요약과 필요한 재현 명령을 남긴다.
+[영역별 계약](contracts.md)에 대표 15영역의 owner/request/state·수명·실패/완료 의미·변경/유지/추가조사 판단을 작성했다. 서버 신규 16파일+타입 보강3파일, 클라이언트/공통/도구 신규13파일과 이전12파일 조사 재사용에 기반한 제한 조사다. 모든 코드·에셋의 결함 부재를 주장하지 않는다. [평가 방법](evaluation-method.md)은 별도 계약이며 실행 결과는 이 goal에 둔다. [P1 첫 구현 계약안](p1-first-contract.md)은 파티 응답 command 추출과 별도 구독 조각, 현재 동작 보존 및 독립 테스트 계획을 정의한다. 구현 착수나 테스트 실행 결과는 아니다.
+
+PlayerStats 같은 불변 정의 공유는 유지하고 mutable session/entity/배열은 소유권과 수명을 명시한다. 파티 popup의 gate와 SendIntent의 entry-ready gate 차이는 코드상 관찰했으나 실제 UI 재현 전이다. ConnectionProbe의 EndConnect SocketException 경로는 명시적 Close/finally 없이 실패 callback을 등록하고 반환한다. 실제 운영 발생·누수량은 확인하지 않았다. HP coordinator의 epoch API 검증과 wire packet의 과거 entry 식별은 구분한다. 후속 동작 변경은 재현과 정책 논의 후 결정한다.
+
+Management의 Git 기록+재생 가능한 조회 색인·전투 기록 pilot에 의견을 회신했다. 게임 버전별 계약·활성 goal/CURRENT의 원본은 Game Dev가 유지하고, 소유권 이전 전 Management 카드는 출처/관측시점을 가진 투영으로 취급한다. 기존 문서 이동·삭제나 새 API 구현을 수행한 것은 아니다. 상세 회신은 로컬 `.backups/handoffs/2026-09-30-management-records-gamedev-reply.md`다.
+
+### 실제 최종 main 회귀
+
+2026-09-30 UTC 09:07:56–09:09:52, Ubuntu26.04 WSL2/.NET SDK10.0.300에서 B의 입력260파일을 고정해 실행했다.
+
+```text
+dotnet build Dawnholder.slnx --configuration Debug --no-incremental --nologo
+dotnet test Dawnholder.slnx --configuration Debug --no-build --nologo --logger "trx;LogFileName=final-main.trx" --results-directory <evidence>/test-results
+```
+
+빌드 exit0/오류0/경고4, 전체 테스트 1회 **839개 중 834 통과·5 기존 skip·실패0**. 입력 전후 hash와 Git 동치 확인, 추가 source/config0, 원본 Unity DLL2 불변. 테스트 실행 전 runner의 CRLF 파싱 오류는 evidence script만 LF로 고쳐 해결했으며 제품 코드는 바꾸지 않았다. 실제 Unity/독립 bot/SQL/시각 플레이를 이번에 재실행하지 않았다. 원시 로그·TRX·입력 manifest: 로컬 `.backups/verification/2026-09-30-final-main-regression/summary.md`와 같은 폴더.
+
+### AI 진단 기준선
+
+B에서 고정6과제를 각1회, 과제마다 이전 작업 대화를 전달하지 않은 새 native agent 맥락으로 실행했다. 정답 작성자·검토자와 응답자를 분리하고, 응답 시작 전에 정답의 callback 정리·HP epoch·generator fixture 범위를 정정한 뒤 독립 검토·hash 봉인을 마쳤다. 지정 모델/effort는 `gpt-6-astra/high`, 실제 모델/effort는 **unknown**이다. 응답은 모두 기록상10분 안에 도착했고 invalid 또는 정답 노출을 보여주는 기록은 없었다.
+
+| 과제 | 소유/수명 | 정상·실패 | 영향 경계 | 검증/한계 | 계 | 기록상 경과(초, 추정) | 내용 열람 경로(자기기록) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| T1 파티 수락 | 2 | 2 | 2 | 2 | 8/8 | 278 | 30 |
+| T2 메뉴 연결 확인·화면 종료 | 2 | 1 | 2 | 1 | 6/8 | 166 | 10 |
+| T3 첫 맵 진입·HP | 2 | 2 | 1 | 2 | 7/8 | 307 | 29 |
+| T4 DB 설계/구현·결과 소유 | 2 | 2 | 2 | 2 | 8/8 | 185 | 6 |
+| T5 이동 패킷 필드 변경 영향 | 2 | 2 | 2 | 2 | 8/8 | 300 | 38 |
+| T6 생성기 종료·출력 계약 | 2 | 2 | 2 | 1 | 7/8 | 164 | 7 |
+
+별도 Astra의 원시 기록 감사·24항목 채점 재검토 **PASS, 44/48**. 이는 여섯 답안의 적합도이며 전체 코드 품질·PR 합격선·개선율이 아니다. 확정 과잉확신0건은 명시적 거짓 보장에 대한 판정이며 답안이 완전하다는 뜻은 아니다. T2의 실패 socket 정리/구체 검증 접점, T3의 coordinator epoch와 wire HP 한계, T6의 작은 ValidPdl fixture·LF 정규화 hash 범위 설명이 빠졌다. 해당 항목을1점으로 처리했고 다른 항목에 중복 감점하지 않았다. 이후 문서·테스트의 경계 설명을 보강할 구체 출발점이다.
+
+계측은 명령/경로 자기기록과 메인 dispatch 직전 시각·응답자 시각의 조합이다. 실제 prompt 전달·마지막 파일 저장을 외부 관측한 엄밀한 경과시간 상한이 아니다. 초기 기록 일부 재구성, 잘린 출력, 형식 차이를 보존했다. baseline 내용 경로를 source/test/config/document로 정규화한 수는 T1 `23/5/1/1`, T2 `6/1/0/3`, T3 `21/7/0/1`, T4 `3/0/0/3`, T5 `28/4/4/2`, T6 `1/2/1/3`이며 로컬 prompt/metadata는 제외했다. command JSON 행46/16/33/15/17/14는 tool/내부 명령 수와 같지 않아 별도 비교 점수로 쓰지 않는다. 실제 token/cache·독립 전수 열람 계측은 미측정이다. 자동 제공 지침/운영 문서의 정보 노출 가능성이 있어 완전한 맹검·기술적 접근 차단을 주장하지 않는다.
+
+봉인 method SHA256 `E355FE3E30E97CA741E3CBB07494B8595F7763F52E8B6028970356A551700B24`, allowlist SHA256 `B93F026BEA8C710E7197E0A4589F133C76025B35A159B965AF1EC3D27BAFDDD3`. common605파일과 T4 추가D0문서3개의 blob은 B와 일치했다. 제출물18개 hash와 봉인 입력도 일치했다. `.backups/verification/2026-09-30-p0-evaluation/`의 seal·allowlist·task별 prompt/answer/commands/run·parent-runs·measurement-summary·scoring-draft가 원시 근거다. draft라는 원문 이름/봉인 전 상태 문구는 후속 seal·검토 기록과 구분한다. 독립 감사는 `.backups/reviews/2026-09-30-p0-evaluation-audit.md`다. 이 로컬 기록을 공유 환경의 자동 재현 데이터라고 하지 않는다.
+
+이후 비교는 별도 고정 A와 같은6과제/기준을 사용하되 A의 실제 정답을 독립 확인한다. 실제 runtime 확인 불가·단발 진단이라는 한계 때문에 속도·생산성 향상의 인과 효과를 주장하지 않는다. 과거29/32→31/32와 이번 점수를 같은 추세로 합치지 않는다.
+
+### 문서 검토·다음 실행
+
+[P1 첫 계약](p1-first-contract.md)은 파티 응답 command 추출 → 별도 같은-source 구독 조각을 다룬다. 기존 drop/pending/팝업·예외 순서를 먼저 독립 baseline fixture로 고정하며, void SendIntent의 정상 반환을 전송 접수나 서버 확정으로 이름 붙이지 않는다. 실제 UI 도달성/변경 필요성을 재현한 뒤 UX 정책 변경은 사용자와 결정한다. 구현자는 Sol6.1, 독립 TestCode·검증은 Astra이며 P0 병합 후 최신 main의 별도 목표/branch로 착수한다.
+
+독립 문서 검토에서 초기28개·추가75개 상대 링크 누락0, B 대비 생산/테스트/설정 delta0을 확인했다. 전투 표의 raw/clamp를 권위 HP 상태가 아닌 패킷 currentHp 표현으로 명확히 고쳤다. 계약·P1 범위/독립 테스트안과 최종 평가 결과 단락·체크박스의 좁은 재검토도 PASS다. 다음은 문서9파일의 PR 생성이며 P0도 병합 직전 사용자 명시 승인이 필요하다.
+
+Management의 요청 `msg_19fee0fa81cb`도 전투·Game Dev 상태 범위로 검토해 `msg_4397a2310999`로 회신했다. 고정09:05 catalog 상태는 일치하고, 사망 후처리의 조건과 HP packet 표현을 정정 요청했다. 이후 회귀/평가 결과를 이전 snapshot에 소급하지 않으며 Management 파일·UI는 수정/검증하지 않았다. 회신 근거는 `.backups/handoffs/2026-09-30-management-catalog-gamedev-review.md`다.
+
+그 밖의 로컬 근거는 `.backups/reviews/2026-09-30-p0-formal-doc-review.md`, `2026-09-30-p0-curated-inventory-review.md`, `2026-09-30-p0-final-doc-review.md`, 각 `pr143/144/145-integration-review.md`, `.backups/verification/2026-09-30-rollout-report/merge-*.json`이다. 공유 goal의 수치·commit·명령과 코드/CI가 재확인의 출발점이다. 다음은 P0 PR → 사용자 병합 승인 → P1이며, 미합의 게임 정책·SQL 실행 권한을 자동 확대하지 않는다.

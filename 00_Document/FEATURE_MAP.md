@@ -30,6 +30,6 @@
 
 ## 상태의 수명
 
-플레이어 HP·스탯·맵 위치는 현재 실행 중 서버가 소유한다. 입력 큐, 재조정 기록, 이동 중 플래그, 미응답 파티 초대는 임시 상태다. 저장 후보를 모두 DB에 저장하는 것으로 가정하지 않는다. [PlayerSnapshot](../02_Server/GameServer/Maps/PlayerSnapshot.cs)과 파티·퀘스트 저장 정책은 영속화 목표에서 확정해야 한다.
+플레이어 HP·스탯·맵 위치는 현재 실행 중 서버가 소유한다. 입력 큐, 재조정 기록, 이동 중 플래그, 미응답 파티 초대는 임시 상태다. [D0 설계](../01_Phases/goals/2026-09-29-persistence-design/design.md)는 고정 계정/캐릭터 하나의 identity·최초 class·안전 checkpoint를 저장 대상으로 정했다. 재접속은 Town·풀 HP이며 quest/보스 해금은 세션 한정이다. [PlayerSnapshot](../02_Server/GameServer/Maps/PlayerSnapshot.cs) 전체의 DB 저장을 뜻하지 않으며 GameServer 저장·복원 연동은 후속 구현이다.
 
 함수별 디버깅 출발점은 [ENTRY_POINTS](conventions/ENTRY_POINTS.md), 과거 변경 이유는 [영역별 기록](archive/INDEX.md)에서 찾는다.

@@ -16,7 +16,7 @@ namespace Dawnholder.Tools.PacketGenerator
         // 헌법 #2 (Protocol is Sacred) "은퇴한 ID는 절대 재사용 금지" 정합.
         static HashSet<string> seenPacketNames = new HashSet<string>();
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             // 인자 파싱: 첫 비-옵션 인자 = PDL 경로. 옵션: --no-manager (manager 출력 skip),
             // --no-wait (CI/스크립트용, ReadKey 대기 안 함).
@@ -58,6 +58,7 @@ namespace Dawnholder.Tools.PacketGenerator
             string pdlDir = Path.GetDirectoryName(pdlAbs)!;
             string projectRoot = Path.GetFullPath(Path.Combine(pdlDir, "..", ".."));
 
+            int exitCode = 0;
             try
             {
                 string genPacketsDir = Path.Combine(projectRoot, "98_Shared", "Protocol", "Generated");
@@ -88,6 +89,7 @@ namespace Dawnholder.Tools.PacketGenerator
             }
             catch (Exception ex)
             {
+                exitCode = 1;
                 Console.WriteLine("[GEN] Packet Generate FAIL!!");
                 Console.WriteLine(ex.Message);
             }
@@ -97,6 +99,7 @@ namespace Dawnholder.Tools.PacketGenerator
                 Console.WriteLine("Press AnyKey to quit...");
                 Console.ReadKey(true);
             }
+            return exitCode;
         }
 
 
