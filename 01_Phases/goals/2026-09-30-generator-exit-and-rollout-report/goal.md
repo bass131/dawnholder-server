@@ -55,7 +55,7 @@ Git/PR 병합 없이 별도 WSL 공간에 S2 `2e6b8c3`(S1 `2b533c7` 포함), S3 
 | 입력 보존·정리 | source282/runtime260 hash불변, 소유 서버·봇0개, 7777 listener없음 |
 | Unity 결과 연결 | S4 동일 내용의 production/test/meta와 기존275/275 EditMode 결과 연결; 새 Unity 반복 실행 아님 |
 
-새 Unity 테스트 meta 하나는 Git 저장/checkout 줄바꿈 차이로 원시 hash가 달랐다. 줄바꿈 조합만 바꿔 검증 당시 SHA256과 정확히 일치하는 원시본을 재구성했고, normalized text 및 GUID 의미가 같음을 확인했다. 합성 소스는 Git blob bytes를 유지하며 raw 동일과 정규화 동치를 구분했다. 원본·PR·main은 변경하지 않았다. 원시 명령·source manifest·Unity 연결·실행 결과·정리 근거는 `.backups/verification/2026-09-30-maintainability-combined/summary.md`와 연결된 파일이다.
+새 Unity 테스트 meta 2개는 Git 저장/checkout 줄바꿈 차이로 원시 hash가 달랐다. 줄바꿈 조합만 바꿔 검증 당시 SHA256과 정확히 일치하는 원시본을 재구성했고, normalized text 및 GUID 의미가 같음을 확인했다. 합성 소스는 Git blob bytes를 유지하며 raw 동일과 정규화 동치를 구분했다. 원본·PR·main은 변경하지 않았다. 원시 명령·source manifest·Unity 연결·실행 결과·정리 근거는 `.backups/verification/2026-09-30-maintainability-combined/summary.md`와 연결된 파일이다.
 
 확인한 독립 브랜치 간 겹침은 CURRENT/roadmap 두 문서뿐이다. 별도 Astra가 생성기 테스트의 격리/실패 계약과 공통 문서 조정안을 검토해 통과했다: `.backups/reviews/2026-09-30-rollout-integration-readiness.md`. 승인 후 통합할 정확한 문서 내용은 `.backups/handoffs/2026-09-30-rollout-integration-docs.md`에 제시했다. 최종 CURRENT는 이 goal, roadmap은 단계별 goal 링크를 보존한다. 예상 밖 생산 충돌이나 새로운 실패는 범위를 다시 확인한다.
 
