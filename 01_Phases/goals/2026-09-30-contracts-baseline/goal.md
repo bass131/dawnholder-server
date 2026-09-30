@@ -1,6 +1,6 @@
 # P0 — 공통 계약·유지보수·영속성 기준선
 
-상태: **기존 PR 통합·최종 main 회귀·P0 계약/평가 기준선·독립 문서 검토 및 PR 발행 완료, 사용자 병합 승인 대기**. [PR #146](https://github.com/bass131/dawnholder-server/pull/146)의 정확 head CI를 확인한 뒤 병합 승인을 받는다. P0의 설계·진단 완료는 게임 코드 개선·DB 저장 연결·실제 Unity 플레이나 PR 병합 완료를 뜻하지 않는다.
+상태: **완료·병합됨**. [PR #146](https://github.com/bass131/dawnholder-server/pull/146)의 head `f18fe92c73d85c69b75b38dcfb4b7969299b6ebb`에 대한 CI SUCCESS·독립 검토와 사용자 명시 승인 후 UTC2026-09-30 09:55:32 merge `a2eb65ee663ff127e77481b7ddcc5e3859abc4b8`로 통합했다. P0의 설계·진단 완료는 게임 코드 개선·DB 저장 연결·실제 Unity 플레이 완료를 뜻하지 않는다. 후속은 [P1a](../2026-09-30-party-invite-command/goal.md)다.
 
 ## 목표와 승인 범위
 
@@ -117,8 +117,8 @@ B에서 고정6과제를 각1회, 과제마다 이전 작업 대화를 전달하
 
 [P1 첫 계약](p1-first-contract.md)은 파티 응답 command 추출 → 별도 같은-source 구독 조각을 다룬다. 기존 drop/pending/팝업·예외 순서를 먼저 독립 baseline fixture로 고정하며, void SendIntent의 정상 반환을 전송 접수나 서버 확정으로 이름 붙이지 않는다. 실제 UI 도달성/변경 필요성을 재현한 뒤 UX 정책 변경은 사용자와 결정한다. 구현자는 Sol6.1, 독립 TestCode·검증은 Astra이며 P0 병합 후 최신 main의 별도 목표/branch로 착수한다.
 
-독립 문서 검토에서 초기28개·추가75개 상대 링크 누락0, B 대비 생산/테스트/설정 delta0을 확인했다. 전투 표의 raw/clamp를 권위 HP 상태가 아닌 패킷 currentHp 표현으로 명확히 고쳤다. 계약·P1 범위/독립 테스트안과 최종 평가 결과 단락·체크박스의 좁은 재검토도 PASS다. 문서9파일을 PR #146으로 발행했다. 최종 CI는 PR의 해당 head checks에서 확인하며 자동 병합은 설정하지 않았다. P0도 병합 직전 사용자 명시 승인이 필요하다.
+독립 문서 검토에서 초기28개·추가75개 상대 링크 누락0, B 대비 생산/테스트/설정 delta0을 확인했다. 전투 표의 raw/clamp를 권위 HP 상태가 아닌 패킷 currentHp 표현으로 명확히 고쳤다. 계약·P1 범위/독립 테스트안과 최종 평가 결과 단락·체크박스의 좁은 재검토도 PASS다. 문서9파일을 PR #146으로 발행했다. 최종 head CI SUCCESS와 사용자 개별 승인을 확인해 병합했다. 자동 병합은 사용하지 않았다. 이후 PR도 별도 명시 승인을 받는다.
 
 Management의 요청 `msg_19fee0fa81cb`도 전투·Game Dev 상태 범위로 검토해 `msg_4397a2310999`로 회신했다. 고정09:05 catalog 상태는 일치하고, 사망 후처리의 조건과 HP packet 표현을 정정 요청했다. 이후 회귀/평가 결과를 이전 snapshot에 소급하지 않으며 Management 파일·UI는 수정/검증하지 않았다. 회신 근거는 `.backups/handoffs/2026-09-30-management-catalog-gamedev-review.md`다.
 
-그 밖의 로컬 근거는 `.backups/reviews/2026-09-30-p0-formal-doc-review.md`, `2026-09-30-p0-curated-inventory-review.md`, `2026-09-30-p0-final-doc-review.md`, 각 `pr143/144/145-integration-review.md`, `.backups/verification/2026-09-30-rollout-report/merge-*.json`이다. 공유 goal의 수치·commit·명령과 코드/CI가 재확인의 출발점이다. 다음은 PR #146의 정확 head CI 확인 → 사용자 병합 승인 → P1이며, 미합의 게임 정책·SQL 실행 권한을 자동 확대하지 않는다.
+그 밖의 로컬 근거는 `.backups/reviews/2026-09-30-p0-formal-doc-review.md`, `2026-09-30-p0-curated-inventory-review.md`, `2026-09-30-p0-final-doc-review.md`, 각 `pr143/144/145-integration-review.md`, `.backups/verification/2026-09-30-rollout-report/merge-*.json`이다. 공유 goal의 수치·commit·명령과 코드/CI가 재확인의 출발점이다. PR #146의 검증·개별 승인·병합을 마치고 후속 P1a로 이동했다. 미합의 게임 정책·SQL 실행 권한은 자동 확대하지 않는다.

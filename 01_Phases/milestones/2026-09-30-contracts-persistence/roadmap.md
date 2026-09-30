@@ -3,7 +3,7 @@
 | 순서 | 범위 | 선행 의존성 | 목표 |
 |---|---|---|---|
 | P0 | 통합 기준선·영역별 소유권/요청/상태 계약·평가 기준선 | 기존 PR 정리 및 사용자 승인 범위 | [기준선](../../goals/2026-09-30-contracts-baseline/goal.md) |
-| P1 | 클라이언트/UI 기능 명령·요청 수명·binding | P0 계약과 평가 기준선 | 착수 시 작은 목표별 생성 |
+| P1 | 클라이언트/UI 기능 명령·요청 수명·binding | P0 계약과 평가 기준선 | [P1a 파티 응답](../../goals/2026-09-30-party-invite-command/goal.md); 후속 조각은 착수 시 생성 |
 | P2 / D1a | 영속성 schema·transaction·authority·실패/복구 기술 설계 | 기존 D0 및 P0; P1과 독립 설계 가능 | 착수 시 생성 |
 | P3 / D1b | 신규 migration·저장소·격리 SQL 검증 도구 | P2 계약과 구체 SQL 시험 권한 | 착수 시 생성 |
 | P4 / D2 | bounded 저장 작업·actor 결과 적용·종료 수명 | P3 저장 계약과 검증 | 착수 시 생성 |
