@@ -1,3 +1,3 @@
 # 현재 목표
 
-[유지보수 기준과 목표 루프 정비](../../01_Phases/goals/2026-09-30-maintainability-standards/goal.md)
+[도구 실패 결과와 종합 회귀·보고](../../01_Phases/goals/2026-09-30-generator-exit-and-rollout-report/goal.md)

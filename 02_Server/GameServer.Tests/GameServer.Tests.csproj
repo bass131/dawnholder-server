@@ -19,6 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Subprocess contract tests need the tool built, without referencing its implementation. -->
+    <ProjectReference Include="..\..\99_Tools\PacketGenerator\PacketGenerator.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\GameServer\GameServer.csproj" />
     <ProjectReference Include="..\Network\Dawnholder.Server.Network.csproj" />
     <ProjectReference Include="..\..\98_Shared\Shared.csproj" />
