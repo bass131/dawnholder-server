@@ -1,6 +1,6 @@
 # S3 — 서버 종료 오류 경로의 자원 정리 보장
 
-상태: `fix/session-disconnect-cleanup`에서 구현 착수. 최신 main `a3c4e15e7d655511ced06bd1303360761413c5ab` 기반의 독립 목표이며 [S2 PR #142](https://github.com/bass131/dawnholder-server/pull/142)의 로컬 독립 검증·계약 검토 완료 후 진행한다. 앞선 미병합 소스는 이 브랜치에 포함하지 않는다. 사용자는 2026-09-30 종료 알림 예외 시 **정리 보장 후 기존처럼 예외 전파**를 선택했다. 순수 동작불변 리팩토링과 구분한 좁은 오류 경로 보강이다. PR은 최종 보고서 확인·사용자 승인 전 병합하지 않는다.
+상태: 구현·독립 검증 완료, [PR #143](https://github.com/bass131/dawnholder-server/pull/143) 통합 대기. branch `fix/session-disconnect-cleanup`, 구현·테스트 commit `217d87a`. 최신 main `a3c4e15e7d655511ced06bd1303360761413c5ab` 기반의 독립 목표이며 [S2 PR #142](https://github.com/bass131/dawnholder-server/pull/142)의 로컬 독립 검증·계약 검토 완료 후 진행한다. 앞선 미병합 소스는 이 브랜치에 포함하지 않는다. 사용자는 2026-09-30 종료 알림 예외 시 **정리 보장 후 기존처럼 예외 전파**를 선택했다. 순수 동작불변 리팩토링과 구분한 좁은 오류 경로 보강이다. PR은 최종 보고서 확인·사용자 승인 전 병합하지 않는다.
 
 ## 목표와 선택한 설계
 
@@ -29,7 +29,7 @@ DEVELOPMENT에 따라 WSL 격리본에서 검증하고 Windows Unity DLL을 갱�
 
 ## 결과와 다음 단계
 
-구현·독립 테스트·별도 읽기 리뷰 완료, PR 준비 상태다. Sol은 Session.cs 및 protocol.md만 수정했고 별도 Astra는 신규 `Network/SessionDisconnectCleanupTests.cs`5case를 작성·실행했다. 지정 Sol6.1/Astra와 실제 모델을 구분하며 실제 런타임은 unknown이다.
+구현·독립 테스트·별도 읽기 리뷰 완료 상태다. Sol은 Session.cs 및 protocol.md만 수정했고 별도 Astra는 신규 `Network/SessionDisconnectCleanupTests.cs`5case를 작성·실행했다. 지정 Sol6.1/Astra와 실제 모델을 구분하며 실제 런타임은 unknown이다.
 
 | 검증 | 실제 결과 |
 |---|---|
