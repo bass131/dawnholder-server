@@ -1,6 +1,6 @@
 # S1 — 즉시 피해 처리 책임 통합과 정적 CI 첫 적용
 
-상태: **구현·독립 검증 완료, PR 통합 대기**. base main `a3c4e15e7d655511ced06bd1303360761413c5ab`, branch `refactor/immediate-enemy-hit`. 사용자는 S0 PR #139 병합을 명시 승인했고 2026-09-30T03:53:37Z에 병합했다. S1 PR의 병합 승인은 별도로 받는다. 원격 CI·PR의 최신 head와 승인·병합 여부는 통합 직전에 확인한다.
+상태: **구현·독립 검증 완료, [PR #140](https://github.com/bass131/dawnholder-server/pull/140) 통합 대기**. base main `a3c4e15e7d655511ced06bd1303360761413c5ab`, branch `refactor/immediate-enemy-hit`, 구현·테스트 commit `d8c93d4`. 사용자는 S0 PR #139 병합을 명시 승인했고 2026-09-30T03:53:37Z에 병합했다. S1 PR의 병합 승인은 별도로 받는다. 원격 CI·PR의 최신 head와 승인·병합 여부는 통합 직전에 확인한다.
 
 ## 목표와 완료조건
 
