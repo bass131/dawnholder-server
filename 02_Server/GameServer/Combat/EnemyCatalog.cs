@@ -1,13 +1,12 @@
 using Shared.GameData;
 using Dawnholder.Server.GameServer.Maps;
-using Dawnholder.Server.GameServer.Maps.Systems;
 using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Entities;
 
 namespace Dawnholder.Server.GameServer.Combat;
 
 /// <summary>
-/// EnemyKind별 정적 데이터 테이블 — "새 적 = 데이터 1행".
+/// EnemyKind별 기본 수치와 초기 상태를 정의하는 서버 데이터 테이블.
 ///
 /// <para>
 /// <strong>배치 사유(02_Server/Combat/ — 서버 전용)</strong>:
@@ -16,7 +15,7 @@ namespace Dawnholder.Server.GameServer.Combat;
 ///     <c>InitialFsmState</c>가 <c>ActorState&lt;EnemyEntity&gt;</c>(서버 FSM 타입)를 보유.
 ///   </description></item>
 ///   <item><description>
-///     <c>InitialAttackCooldownTicks</c> / <c>RespawnTicks</c>가 <c>CombatConstants</c>(서버 전용)을 참조.
+///     서버 전용 공격 cooldown 상수와 재출현 대기 틱을 정의.
 ///   </description></item>
 ///   <item><description>
 ///     클라가 볼 필요 없는 서버 판정 데이터만 포함 (least-exposure 원칙).
@@ -36,7 +35,7 @@ namespace Dawnholder.Server.GameServer.Combat;
 /// 1. <c>EnemyKind</c> enum에 값 append (98_Shared/GameData/Enums/EnemyKind.cs).
 /// 2. <c>EnemyStats</c>에 factory 메서드 추가 (98_Shared/GameData/Combat/Formulas.cs).
 /// 3. 이 파일 <c>Catalog</c> 배열에 <c>EnemyEntry</c> 1행 추가.
-/// 그 외 파일 수정 없음.
+/// 새로운 행동·배치·표현이 필요하면 해당 실행 시스템과 소비자도 별도로 확장한다.
 /// </para>
 /// </summary>
 internal static class EnemyCatalog
@@ -83,14 +82,15 @@ internal static class EnemyCatalog
         ActorState<EnemyEntity> InitialFsmState,
 
         /// <summary>
-        /// true = 보스 종류. 보스는 사망 시 StageClear + 재출현 없음.
+        /// true = 보스 종류. 사망 시 StageClear를 발행하고 timed respawn 큐에서 제외한다.
+        /// 빈 방 보스 재출현은 GameMap의 별도 경로다.
         /// 제어 흐름이 다른 Boss 분기들의 boolean 플래그 단일 출처.
         /// </summary>
         bool IsBoss,
 
         /// <summary>
-        /// 사망 후 재출현 대기 틱. Boss = 0 (재출현 없음).
-        /// RespawnSystem.Enqueue kind 분기 대체.
+        /// 사망 후 timed 재출현 대기 틱. Boss = 0 (GameMap이 timed 큐에서 제외).
+        /// RespawnSystem.Enqueue가 이 값을 읽는다.
         /// Normal = 100틱(5초), Golem = 120틱(6초).
         /// </summary>
         int RespawnTicks,
@@ -126,12 +126,12 @@ internal static class EnemyCatalog
             InitialAttackCooldownTicks:  CombatConstants.NormalAttackCooldownTicks, // 30
             InitialFsmState:             EnemyStates.Patrol,
             IsBoss:                      false,
-            RespawnTicks:                RespawnSystem.NormalEnemyRespawnTicks,    // 100
+            RespawnTicks:                100, // 5초 @ 20TPS
             AttackWindupTicks:           CombatConstants.NormalAttackWindupTicks,  // 0
             AttackPattern:               0
         ),
 
-        // Boss (index 1) — 보스, 선공, 재출현 없음, StageClear
+        // Boss (index 1) — 보스, 선공, StageClear. 재출현은 GameMap의 빈 방 경로.
         new(
             Kind:                        EnemyKind.Boss,
             MaxHp:                       EnemyStats.BossDefault().MaxHp,          // 150
@@ -154,7 +154,7 @@ internal static class EnemyCatalog
             InitialAttackCooldownTicks:  CombatConstants.NormalAttackCooldownTicks, // 30
             InitialFsmState:             EnemyStates.Patrol,
             IsBoss:                      false,
-            RespawnTicks:                RespawnSystem.GolemRespawnTicks,           // 120
+            RespawnTicks:                120, // 6초 @ 20TPS
             AttackWindupTicks:           CombatConstants.GolemAttackWindupTicks,    // 6
             AttackPattern:               1
         ),

@@ -1,6 +1,5 @@
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Maps;
-using Dawnholder.Server.GameServer.Maps.Systems;
 using Dawnholder.Server.GameServer.Maps.States;
 using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
@@ -165,7 +164,7 @@ public class EnemyCatalogValueTests
 
     [Fact]
     public void Normal_RespawnTicks_MatchesNormalEnemyRespawnTicks()
-        => Assert.Equal(RespawnSystem.NormalEnemyRespawnTicks,
+        => Assert.Equal(100,
                         EnemyCatalog.For(EnemyKind.Normal).RespawnTicks);
 
     [Fact]
@@ -174,7 +173,7 @@ public class EnemyCatalogValueTests
 
     [Fact]
     public void Golem_RespawnTicks_MatchesGolemRespawnTicks()
-        => Assert.Equal(RespawnSystem.GolemRespawnTicks,
+        => Assert.Equal(120,
                         EnemyCatalog.For(EnemyKind.Golem).RespawnTicks);
 
     // ── 19~20. AttackWindupTicks 동치 ────────────────────────────────────────

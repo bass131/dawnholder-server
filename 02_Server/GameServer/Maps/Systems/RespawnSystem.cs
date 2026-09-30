@@ -1,3 +1,4 @@
+using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Entities;
 using Shared.GameData;
@@ -20,26 +21,21 @@ namespace Dawnholder.Server.GameServer.Maps.Systems;
 ///   respawn = 논리적으로 새 적 출현. 기존 entityId는 S_EntityDeath로 이미 클라에서 despawn.
 ///   헌법 #2 "은퇴 ID 재사용 금지" 정합 — AllocId()로 새 id 발급.
 ///
-/// **골렘 1층 교차 스폰(M6)**: 골렘은 항상 1마리 유지하되 처치 시 1층 좌↔우 지점을 번갈아 재출현.
+/// 골렘 재출현마다 주입된 좌/우 지점을 교대한다. 골렘 수는 content와 등록된 대기 항목에 따른다.
 /// </summary>
 internal sealed class RespawnSystem
 {
-    // Normal enemy respawn 대기 틱 수 (tick 기반 타이머 — 헌법 #5 await 금지).
-    // **설계 결정**: 5초는 데모 반복 시연 시 자연스러운 재출현 간격 (1초=너무 짧음, 10초=흐름 끊김).
-    internal const int NormalEnemyRespawnTicks = 100; // 5초 @ 20TPS
-
-    // 골렘 respawn 대기 틱 — 슬라임보다 약간 느리게(영호 튜닝 지점). 골렘은 1마리 유지 + 위치 교차.
-    internal const int GolemRespawnTicks = 120; // 6초 @ 20TPS
-
-    // 골렘 "1층 교차 스폰" — 처치 시 좌↔우를 번갈아 재출현(영호 튜닝 지점).
-    const float GolemSpawnLeftX  = -8.5f;
-    const float GolemSpawnRightX =  9.5f;
-    const float GolemFloor1Y     =  0f;
-    bool _golemSpawnAtLeft = true; // 첫 재스폰은 좌측(원본 골렘이 중앙우측이라 반대편부터)
+    readonly EnemyRespawnPlacement _placement;
+    bool _golemSpawnAtLeft = true; // 맵별 첫 재스폰은 좌측.
 
     // enemy respawn 대기 큐.
     // **살아있는 적만 _enemies** invariant(컨테이너 주석)를 유지하기 위해 별도 보관.
     readonly List<EnemyEntity> _respawnQueue = new();
+
+    internal RespawnSystem(EnemyRespawnPlacement placement)
+    {
+        _placement = placement;
+    }
 
     /// <summary>
     /// respawn 대기 큐에 사망한 enemy 등록 — RespawnTicksRemaining 세팅 포함(kind별 타이머).
@@ -65,12 +61,13 @@ internal sealed class RespawnSystem
             {
                 _respawnQueue.RemoveAt(i);
 
-                // 골렘은 1층 좌↔우 교차 위치, 그 외는 원래 스폰 지점.
+                // 골렘은 주입된 좌/우 위치, 그 외는 원래 스폰 지점.
                 float spawnX = dead.SpawnX, spawnY = dead.SpawnY;
                 if (dead.Kind == EnemyKind.Golem)
                 {
-                    spawnX = _golemSpawnAtLeft ? GolemSpawnLeftX : GolemSpawnRightX;
-                    spawnY = GolemFloor1Y;
+                    Vector2 spawn = _golemSpawnAtLeft ? _placement.GolemLeft : _placement.GolemRight;
+                    spawnX = spawn.X;
+                    spawnY = spawn.Y;
                     _golemSpawnAtLeft = !_golemSpawnAtLeft;
                 }
 

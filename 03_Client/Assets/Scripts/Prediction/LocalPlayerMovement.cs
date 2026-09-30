@@ -109,8 +109,8 @@ namespace Dawnholder.Client.Prediction
             if (Instance == this) Instance = null;
         }
 
-        // terrain 주입 단일 경로 — Awake pending 소비 + EnterMapHandler instance 분기(ADR-027
-        // 첫 진입 두 순서 모두 관측) 둘 다 여기로. fail loud: 파일 부재/CRC 실패 시 예외 전파
+        // entry owner가 현재 씬의 player를 바인딩할 때 호출하고, 완료 후 준비 장벽을 갱신한다.
+        // fail loud: 파일 부재/CRC 실패 시 entry 실패 처리로 예외 전파
         // (이전 맵 terrain으로 예측하는 드리프트보다 시끄러운 실패 우선).
         public void InjectTerrain(int mapId)
         {

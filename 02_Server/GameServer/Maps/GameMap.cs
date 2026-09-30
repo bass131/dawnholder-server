@@ -17,11 +17,11 @@ namespace Dawnholder.Server.GameServer.Maps;
 //   GameMap = 상태(_players/_enemies/_pendingJobs/AllocId) + Tick 엔진(스텝 순서 오케스트레이션) + actor 경계.
 //   로직은 Systems/ 폴더로 추출 — PlayerPhysicsSystem / CombatSystem / EnemyAISystem /
 //     BossBehaviorSystem / EnemyGravitySystem / DeferredDamageSystem / RespawnSystem / SkillSystem.
-//   Tick은 "스텝 순서 호출"만: PlayerPhysics → (job)CombatSystem → EnemyAI → BossBehavior →
-//     EnemyGravity → DeferredDamage → Respawn (틱 내 순서 = 결정론 물리 계약, 1bit도 안 바꿈).
+//   Tick 순서: queued jobs → PlayerPhysics → Snapshot → EnemyAI → BossBehavior →
+//     EnemyGravity → DeferredDamage → timed Respawn → 빈 방 Boss 재출현.
 //
 // **_enemies invariant**: 살아있는 적만 _enemies에 잔류.
-//   사망 시 HandleEnemyDeath가 S_EntityDeath broadcast + RemoveEnemy + (Normal only) EnqueueRespawn.
+//   사망 시 HandleEnemyDeath가 S_EntityDeath broadcast + (Boss) StageClear + 제거 + (비보스) EnqueueRespawn.
 //   죽음 연출은 클라 VFX 담당 (헌법 #1 — 서버는 확정+제거만).
 //
 // ARCHITECTURE "Map = Actor": 한 맵의 모든 mutation을 단일 thread에 가두면
@@ -53,7 +53,7 @@ public class GameMap
     readonly EnemyAISystem _enemyAISystem = new();
     readonly BossBehaviorSystem _bossBehaviorSystem = new();
     readonly EnemyGravitySystem _enemyGravitySystem = new();
-    readonly RespawnSystem _respawnSystem = new();
+    readonly RespawnSystem _respawnSystem;
     readonly DeferredDamageSystem _deferredDamageSystem = new();
     readonly SkillSystem _skillSystem = new();
 
@@ -75,12 +75,20 @@ public class GameMap
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
                    MapTerrain? terrain = null, MapContent? content = null,
                    Action<int, EnemyEntity>? onEnemyKilled = null)
+        : this(EnemyRespawnPlacement.Default, mapId, idAllocator, terrain, content, onEnemyKilled)
+    {
+    }
+
+    internal GameMap(EnemyRespawnPlacement placement, MapId mapId = MapId.HuntingGround,
+                     Func<int>? idAllocator = null, MapTerrain? terrain = null, MapContent? content = null,
+                     Action<int, EnemyEntity>? onEnemyKilled = null)
     {
         MapId = mapId;
         _idAllocator = idAllocator;
         _terrain = terrain;
         _content = content;
         _onEnemyKilled = onEnemyKilled;
+        _respawnSystem = new RespawnSystem(placement);
         Portals = PortalTable.GetPortalsFor(mapId);
         _publisher = new MapPacketPublisher(this);
 
@@ -212,18 +220,12 @@ public class GameMap
     /// <summary>
     /// TickScheduler가 매 50ms마다 호출. 단일 thread.
     ///
-    /// System 호출 순서 (§2.2 명문화):
-    ///   1. PlayerPhysicsSystem (PlayerEntity Physics.Step + RecordPosition + ActionFsm)
-    ///   2. (job 경유) CombatSystem (EnqueueJob 경유 attack job 처리)
-    ///   3. EnemyAISystem (Normal/Golem FSM — X 이동)
-    ///   4. BossBehaviorSystem (Boss 패턴 FSM — X 이동)
-    ///   5. EnemyGravitySystem (모든 적 수직 중력 패스 — Y/Vy/OnGround 갱신 + 낙사 despawn)
-    ///   6. DeferredDamageSystem (impactTick 도달 데미지 + 사망 처리)
-    ///   7. RespawnSystem
-    ///
-    /// physics가 1순위인 이유: 이 틱의 player 최종 위치를 RecordPosition으로 기록한 뒤
-    ///   CombatSystem이 rewind lookup을 해야 하기 때문 — 단, job은 _currentTick 갱신 후 physics 전에 처리.
-    ///   (헌법 #5: tick 안 await/Sleep/DB 금지)
+    /// 실행 순서: _currentTick 갱신 → queued jobs(입장/이동/공격 등) → PlayerPhysicsSystem
+    ///   → Snapshot broadcast(송신 주기 해당 시) → EnemyAISystem → BossBehaviorSystem
+    ///   → EnemyGravitySystem → DeferredDamageSystem → RespawnSystem → 빈 방 보스 재출현.
+    /// 공격 job의 rewind 판정은 갱신된 tick 번호와 그 시점까지 기록된 위치 이력을 사용한다.
+    /// 이 tick의 job/낙사/지연 데미지에서 respawn을 enqueue하면 같은 tick의 RespawnSystem에서
+    /// 첫 countdown 감소가 일어난다. tick 안에서 await/Sleep/DB 완료를 기다리지 않는다.
     /// </summary>
     public void Tick(long tickNumber)
     {
@@ -262,7 +264,7 @@ public class GameMap
         // 7) DeferredDamageSystem: impactTick 도달 항목 HP 적용 + S_HitResult broadcast + 사망 처리.
         _deferredDamageSystem.Process(this, tickNumber);
 
-        // 8) RespawnSystem: Normal enemy respawn 카운트다운 + 재출현.
+        // 8) RespawnSystem: 비보스 respawn 카운트다운 + 재출현.
         _respawnSystem.Process(this, tickNumber);
 
         // 9) 보스 방 빈 상태 리스폰: 플레이어 0 + 보스 부재면 재출현(영호 지시). 빈 방에서만 리셋.
@@ -379,14 +381,14 @@ public class GameMap
     internal void RemoveEnemy(int entityId) => _enemies.Remove(entityId);
 
     /// <summary>
-    /// RespawnSystem에 죽은 enemy 등록. HandleEnemyDeath가 Normal enemy 사망 시 호출 (+테스트).
+    /// RespawnSystem에 죽은 enemy 등록. 사망/낙사 경로가 비보스에 호출한다 (+테스트).
     /// RespawnSystem._respawnQueue 직접 접근 대신 이 경유로 단일화.
     /// </summary>
     internal void EnqueueRespawn(EnemyEntity dead) => _respawnSystem.Enqueue(dead);
 
     /// <summary>
     /// 사망 처리 시퀀스(S_EntityDeath broadcast → StageClear → RemoveEnemy → EnqueueRespawn) 완료 후 호출되는 훅.
-    /// 기본 구현은 생성자 주입 콜백(_onEnemyKilled)을 invoke — GameWorld.MakeMap이 PartyRegistry.OnKill을 연결.
+    /// 기본 구현은 주입 콜백(_onEnemyKilled)을 invoke — GameWorld가 Quest job에 적립/보스 reset을 연결한다.
     /// virtual 유지: SpyGameMap override는 base 미호출 → 콜백 미실행(정상 — 테스트 spy 격리).
     /// tick thread invariant 안에서만 호출.
     /// </summary>
@@ -394,7 +396,7 @@ public class GameMap
         => _onEnemyKilled?.Invoke(killerEntityId, target);
 
     /// <summary>
-    /// 적 사망 후처리: S_EntityDeath broadcast → (Boss) StageClear → 제거 → (Normal) respawn 큐잉.
+    /// 적 사망 후처리: S_EntityDeath broadcast → (Boss) StageClear → 제거 → (비보스) respawn 큐잉.
     /// CombatSystem(즉시) / DeferredDamageSystem(지연) / SkillSystem(Dash) 3 경로 공통 — DRY 단일 출처.
     /// HP 게이트(target.Hp &lt;= 0)와 S_HitResult 송신은 호출처에 남는다 — 적용 타이밍이 경로마다 다르므로.
     ///
@@ -411,7 +413,7 @@ public class GameMap
             _publisher.BroadcastStageClear(target.EntityId);
         }
         RemoveEnemy(target.EntityId);
-        // Normal(슬라임)은 원위치 재스폰, Golem은 1층 좌↔우 교차 재스폰(RespawnSystem이 위치 결정). Boss는 1회성.
+        // Normal은 원위치, Golem은 주입된 좌/우 교대. Boss는 별도 빈 방 재출현 경로를 사용한다.
         if (!EnemyCatalog.For(target.Kind).IsBoss)
             EnqueueRespawn(target);
 

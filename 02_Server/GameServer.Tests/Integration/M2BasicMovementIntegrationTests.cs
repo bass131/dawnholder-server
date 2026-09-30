@@ -1,10 +1,8 @@
 using System.Net;
-using System.Net.Sockets;
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Hosting;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
-using Dawnholder.Server.GameServer.Sessions;
-using Dawnholder.Server.Network;
 using Dawnholder.Tools.HeadlessBot.Scenarios;
 using Shared.GameData;
 
@@ -13,7 +11,7 @@ namespace Dawnholder.Server.GameServer.Tests.Integration;
 // M2 회귀 안전망 — in-process 서버 spawn + 봇 호출 + 안정성·p99 검증.
 //
 // **포트 전략**: 매 fixture 인스턴스마다 OS가 free port 할당 (port 0 bind 후 실제 포트 추출).
-// Listener.Stop 없음 → 테스트 process 종료 시 GC가 socket 정리. Fixture 1회 spawn.
+// ServerHost가 listener·수락한 session·world의 시작/종료 순서를 소유한다. Fixture 1회 spawn.
 //
 // **시나리오 크기 절충**: "100회 반복"은 1000 intent×100회=87분 비현실.
 // 자동 테스트 = 50 intent×10회 (~25초). 100회 풀스케일 회귀는 별도 [Trait("Category","LongRunning")]
@@ -27,22 +25,10 @@ public class IntegrationTestsCollection : ICollectionFixture<ServerFixture> { }
 
 public class ServerFixture : IDisposable
 {
-    public int Port { get; }
-    public GameWorld World { get; }
-    public Listener Listener { get; }
+    readonly ServerHost _host;
 
     public ServerFixture()
     {
-        // OS에게 free port 받기 (0 bind → 실제 port 추출 → close → 같은 port 재사용).
-        TcpListener probe = new(IPAddress.Loopback, 0);
-        probe.Start();
-        Port = ((IPEndPoint)probe.LocalEndpoint).Port;
-        probe.Stop();
-
-        IPEndPoint endPoint = new(IPAddress.Loopback, Port);
-        Listener = new Listener();
-        Listener.Init(endPoint, () => new GameSession());
-
         // 통합 테스트용 content provider — 옛 MapSpawnTable 값 보존.
         var provider = new Dictionary<MapId, (MapTerrain? Terrain, MapContent? Content)>
         {
@@ -60,14 +46,27 @@ public class ServerFixture : IDisposable
         };
 
         World = new GameWorld(provider);
-        World.Start();
+        _host = new ServerHost(World, new IPEndPoint(IPAddress.Loopback, 0));
+        try
+        {
+            _host.Start();
+            if (_host.LocalEndPoint is not IPEndPoint { Port: > 0 } endPoint)
+                throw new InvalidOperationException("ServerHost did not publish a bound endpoint.");
+            Port = endPoint.Port;
+        }
+        catch (Exception startError)
+        {
+            // A failed constructor will not be disposed by xUnit. Keep Host's timeout ownership policy.
+            try { _host.Stop(); }
+            catch (Exception stopError) { throw new AggregateException(startError, stopError); }
+            throw;
+        }
     }
 
-    public void Dispose()
-    {
-        World.Stop();
-        // Listener.Stop이 없어서 socket은 GC에 의존 (process 종료 시 정리).
-    }
+    public int Port { get; }
+    public GameWorld World { get; }
+
+    public void Dispose() => _host.Stop();
 }
 
 [Collection("IntegrationTests")]
