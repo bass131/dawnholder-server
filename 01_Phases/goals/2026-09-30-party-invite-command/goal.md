@@ -1,6 +1,6 @@
 # P1a — 파티 초대 응답 요청과 팝업 책임 분리
 
-상태: **구현·독립 검증·코드 검토 통과, HTML 독립 검토·PR 준비 중**. PR 병합 완료가 아니다.
+상태: **구현·독립 검증·보고 완료, [PR148](https://github.com/bass131/dawnholder-server/pull/148) 검토·사용자 개별 병합 승인 대기**. PR 병합 완료가 아니다.
 
 ## 목표·기준선
 
@@ -41,7 +41,7 @@ baseline 대상 테스트 → 구현 후 같은 테스트와 추가 경계/실�
 - [x] 요청 책임을 기능 command로 분리하고 팝업의 서버 상태 낙관 변경 없이 참조 보유·구독 해제 책임을 명확히 한다.
 - [x] 독립 TestCode로 전후 계약·실패·지연 callback·구독 수명과 필요한 Unity 회귀를 확인한다. 차단·미실행은 별도 기록한다.
 - [x] 별도 코드 검토에서 과도한 추상화·패킷/에셋 변화·새 완료 보장·의도하지 않은 UX 변화가 없음을 확인한다.
-- [ ] Astra가 변경 이유·대표 diff·실제 검증·한계·남은 정책을 보고하고 PR을 생성한다.
+- [x] Astra가 변경 이유·대표 diff·실제 검증·한계·남은 정책을 보고하고 PR을 생성한다.
 - [ ] 최종 head CI 후 사용자 개별 병합 승인을 받아 통합한다.
 
 ## 현재 결과·다음 실행
@@ -60,7 +60,9 @@ R1 수정은 `f1635d59a91c4708e4e074d0c3aaf4ad5c4f7321`이며 보관 참조를 �
 
 기존 응답20·구독정책3의 보존과 새 동일source해제2·파괴source해제2의 실패→성공을 구분했다. 신규 command8은 새 API 직접 검증으로 변경 전 동일 API 실행과 비교하지 않는다. 실제 물리 클릭·시각·사운드·PlayMode/player-loop·실서버 초대/가입·SQL/PDL·native .NET build는 미실행이다. local loopback을 서버 수락으로 해석하지 않는다. Unity CI 자동화 완료도 아니며 PR의 dotnet-tests와 이번 로컬 Unity 검증은 별도다.
 
-메인은 기능 지도와 client 영역 계약에 새 요청 진입점·같은source해제 및 완료 보장의 한계를 반영했다. Astra 작성 HTML은 `.backups/reports/2026-09-30-party-invite-command/index.html`, 고정 생산diff는 `production.diff`다. 지정 모델은 구현Sol6.1/테스트·리뷰·보고Astra, 실제 runtime은 unknown이다. HTML 독립 내용·렌더 검토 후 테스트/문서를 커밋하고 새 PR 및 정확 head CI를 확인한다.
+메인은 기능 지도와 client 영역 계약에 새 요청 진입점·같은source해제 및 완료 보장의 한계를 반영했다. Astra 작성 HTML은 `.backups/reports/2026-09-30-party-invite-command/index.html`, 고정 생산diff는 `production.diff`다. 지정 모델은 구현Sol6.1/테스트·리뷰·보고Astra, 실제 runtime은 unknown이다. 별도 Astra의 문서 검토와 HTML 내용·실제1440/430/320px 렌더 검토 PASS다. 좁은 화면의 긴 타입명 줄바꿈을 보정했고 목차·표/코드 스크롤·diff 토글·로컬 링크·고정diff 일치를 확인했다. 보고서 검토는 `.backups/reviews/2026-09-30-p1-report-review.md`, 원시 캡처는 `.backups/verification/2026-09-30-p1-report-qa/`다.
+
+테스트6파일과 계약/상태 문서3파일을 `423883d3988c47e95df98ed90123ec8fc15aedde`에 커밋·push하고 PR148을 만들었다. 검증 manifest의 테스트6파일 raw SHA256와 Git 정규화 blob의 stage/HEAD 일치를 각각 확인했고 생산3파일은 f1635d59와 같은 blob이다. PR 범위는 생산3·테스트6·문서6파일이다. 후속 상태 문서 커밋은 게임 입력을 바꾸지 않는다. CI의 정확 head/최종 결과는 PR checks와 `.backups/verification/2026-09-30-party-invite-command/pr-148-status.json`으로 확인한다. 자동 병합은 설정하지 않았고 PR146 승인은 재사용하지 않는다. 남은 실행은 최종 head CI·사용자 PR148 개별 승인 후 통합이다.
 
 전송 거절 시 pending 보존/팝업 유지·재시도/자동 rebind/새 ack가 필요해지면 재현과 선택지를 사용자에게 올린다.
 
