@@ -1,6 +1,6 @@
 # P1a — 파티 초대 응답 요청과 팝업 책임 분리
 
-상태: **구현·독립 검증·보고 완료, [PR148](https://github.com/bass131/dawnholder-server/pull/148) 검토·사용자 개별 병합 승인 대기**. PR 병합 완료가 아니다.
+상태: **완료·병합됨**. 사용자 명시 승인 후 PR148을 UTC2026-09-30 10:42:37에 merge `ef5f1023fe3353ee9eec5da04422232a33855233`로 통합했다. 이후 사용자가 오늘 작업을 마치고 향후 세션에서 재개하도록 지시하여 후속 구현은 보류했다.
 
 ## 목표·기준선
 
@@ -42,7 +42,7 @@ baseline 대상 테스트 → 구현 후 같은 테스트와 추가 경계/실�
 - [x] 독립 TestCode로 전후 계약·실패·지연 callback·구독 수명과 필요한 Unity 회귀를 확인한다. 차단·미실행은 별도 기록한다.
 - [x] 별도 코드 검토에서 과도한 추상화·패킷/에셋 변화·새 완료 보장·의도하지 않은 UX 변화가 없음을 확인한다.
 - [x] Astra가 변경 이유·대표 diff·실제 검증·한계·남은 정책을 보고하고 PR을 생성한다.
-- [ ] 최종 head CI 후 사용자 개별 병합 승인을 받아 통합한다.
+- [x] 최종 head CI 후 사용자 개별 병합 승인을 받아 통합한다.
 
 ## 현재 결과·다음 실행
 
@@ -62,10 +62,22 @@ R1 수정은 `f1635d59a91c4708e4e074d0c3aaf4ad5c4f7321`이며 보관 참조를 �
 
 메인은 기능 지도와 client 영역 계약에 새 요청 진입점·같은source해제 및 완료 보장의 한계를 반영했다. Astra 작성 HTML은 `.backups/reports/2026-09-30-party-invite-command/index.html`, 고정 생산diff는 `production.diff`다. 지정 모델은 구현Sol6.1/테스트·리뷰·보고Astra, 실제 runtime은 unknown이다. 별도 Astra의 문서 검토와 HTML 내용·실제1440/430/320px 렌더 검토 PASS다. 좁은 화면의 긴 타입명 줄바꿈을 보정했고 목차·표/코드 스크롤·diff 토글·로컬 링크·고정diff 일치를 확인했다. 보고서 검토는 `.backups/reviews/2026-09-30-p1-report-review.md`, 원시 캡처는 `.backups/verification/2026-09-30-p1-report-qa/`다.
 
-테스트6파일과 계약/상태 문서3파일을 `423883d3988c47e95df98ed90123ec8fc15aedde`에 커밋·push하고 PR148을 만들었다. 검증 manifest의 테스트6파일 raw SHA256와 Git 정규화 blob의 stage/HEAD 일치를 각각 확인했고 생산3파일은 f1635d59와 같은 blob이다. PR 범위는 생산3·테스트6·문서6파일이다. 후속 상태 문서 커밋은 게임 입력을 바꾸지 않는다. CI의 정확 head/최종 결과는 PR checks와 `.backups/verification/2026-09-30-party-invite-command/pr-148-status.json`으로 확인한다. 자동 병합은 설정하지 않았고 PR146 승인은 재사용하지 않는다. 남은 실행은 최종 head CI·사용자 PR148 개별 승인 후 통합이다.
+테스트6파일과 계약/상태 문서3파일을 `423883d3988c47e95df98ed90123ec8fc15aedde`에 커밋·push하고 PR148을 만들었다. 검증 manifest의 테스트6파일 raw SHA256와 Git 정규화 blob의 stage/HEAD 일치를 각각 확인했고 생산3파일은 f1635d59와 같은 blob이다. PR 범위는 생산3·테스트6·문서6파일이다. 후속 상태 문서 커밋은 게임 입력을 바꾸지 않는다. CI의 정확 head/최종 결과는 PR checks와 `.backups/verification/2026-09-30-party-invite-command/pr-148-status.json`으로 확인한다. 최종 head `725db8d1115eee174ca36a6d9a6b6b829e216f1f`의 CI SUCCESS를 확인했고, 이후 사용자가 PR147·148을 명시 승인했다. PR147→148 순서로 수동 병합했다. PR146 승인을 재사용하거나 자동 병합을 설정하지 않았다. 병합 근거는 `.backups/verification/2026-09-30-party-invite-command/merge-147-148.json`이다.
 
 전송 거절 시 pending 보존/팝업 유지·재시도/자동 rebind/새 ack가 필요해지면 재현과 선택지를 사용자에게 올린다.
 
 Management는 별도 worktree에서 PR147 마무리와 후속 선택지 설계를 맡는다. 전투 정정본 의미 검토 PASS는 `msg_ccd48e9fdcbc`, 다음 작업 prompt 접수·turn 시작은 request `6c0738ae-2f99-4017-828d-abda7386c5a0`다. PR147 병합이나 새로운 MCP/게임/DB 실행 권한은 이 전달에서 부여하지 않았다.
 
 Management 후속 회신 `msg_feac1da0df99`: PR147 head `fd8f3c84cda4b7867a67ec5d3042de0bd43e8c4b`에 main 반영·독립 검토·CI 통과, 개별 병합 승인 대기. 메인은 원격 head/CI와 일치를 확인했다. 사용자 선택은 읽기 전용 공동 조회 API/MCP이며 아직 설계 단계다. `msg_7f6383111f47`로 데이터 원본·freshness·권한·프로세스 수명·어댑터 책임을 정리하고 미합의 정책을 사용자와 논의하도록 회신했다.
+
+## 사용자 요청에 따른 오늘 종료·재개 경계
+
+종료 시 확인한 최신 main은 ef5f1023이며 후속 준비 branch는 bass131/menu-probe-lifetime-p1b다. branch만 생성했고 P1b의 목표·생산 코드·테스트 구현은 시작하지 않았다. 사용자는 이후 두 프로젝트의 새 세션 재개 맥락 갱신을 요청했다. 이 goal 완료/보류 기록·CURRENT 링크·RESUME 절차를 로컬 문서 checkpoint로 보존하며 원격 push/새 PR/병합은 하지 않는다. 다음 세션에는 최신 main 차이를 먼저 확인하고 메뉴 연결 probe의 입력/실패 정리/late callback 보존 계약부터 설계한다. 기존 정책을 바꿔야 하면 사용자와 결정한다.
+
+운영툴 공동조회도 즉시 착수 지시를 보류했고 msg_fc30215d0d1a와 terminal request075a460d-5582-44e2-a81f-90f9449b3b7b의 turn_started로 전달했다. Management는 msg_f7274ad16672로 보류 수신과 PR147·148 병합 확인, 자기 goal의 종료 기록을 회신했다. 후속 맥락 정리는 msg_9bb970405c73/request4135e4fa-0f6e-455d-932b-da1a42490746(accepted/turn_started)로 해당 메인에 위임했다. GameDev가 05 문서를 동시에 수정하지 않는다.
+
+Management의 확정된 후속 순서는 개발기록 공동조회 → 서버 등록·로그 조회다. 첫 조회는 로컬 stdio MCP와 공통 조회 모듈, 동일 catalog의 hash/revision/기준시점·source commit, 요청별 단일 버전·읽기 전용·입력/응답 제한·앱 종료 중 두 client 조회 검증이다. GameDev 파티/DB 변경과 독립이며 구현 미착수다. 초안→담당 메인 검토→정식 반영, 근거/중복/과거 이력 보존은 운영 합의이며 첫 조회에 쓰기/승인 자동화까지 포함하지 않는다.
+
+로그 후속에서는 GameDev가02_Server/실행 wrapper의 실행식별·출력 계약, Management가05의 등록·조회·보존을 맡는 안에 양 메인이 동의했다. 현재 helper의 혼합 stdout/stderr 원문 수집과 공통UTC시각/severity/serverId·runId·build manifest 부재는 제한 정적 조사 결과다. 발생시각과 수집시각을 구분하고 입력/다중행/cursor·제한·등록 경로/보존 소유권을 먼저 정한다. 사용자 합의는 기본 최근10분 오류·경고와 주변 로그, 서버당 일반로그7일/1GB·오래된 순 정리, 조사근거별도보존이다. 실제 등록/조회/삭제 실행은 아직 없으며 저장완료를 요구하는 종료 제어는 P4 계약 뒤다.
+
+새 서버/SQL/로그삭제·전역설정·기존터미널 종료는 하지 않는다. 새 세션은 [RESUME](../../../00_Document/operations/RESUME.md)에서 읽는 순서와 소유권을 확인한다. 당시 로컬 경로·checkpoint 확인용 인계는 `.backups/handoffs/2026-09-30-game-dev-next-session.md`다. 다음 세션의 사용자 재개 지시 전에는 맥락 정리만으로 구현 보류를 해제하지 않는다.
