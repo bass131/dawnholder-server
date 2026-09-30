@@ -1,6 +1,6 @@
 # M3 — 설정·주석 정리와 전체 회귀·재평가
 
-상태: 구현·독립 TestCode·리뷰·전체 회귀 완료, 고정 commit AI 재평가 준비. base main `0b3b7224ef5e314d7a28bb8a0265f1e3a41fe07a`, branch `feat/refactor-config-regression`. [M2b](../2026-09-30-refactor-player-state/goal.md) PR #135의 독립 검증·리뷰·최신 CI를 통과하고 조건부 승인으로 병합한 뒤 시작했다.
+상태: 구현·독립 TestCode·리뷰·전체 회귀·AI 재평가 완료, PR/최신 CI/병합 준비. base main `0b3b7224ef5e314d7a28bb8a0265f1e3a41fe07a`, branch `feat/refactor-config-regression`. [M2b](../2026-09-30-refactor-player-state/goal.md) PR #135의 독립 검증·리뷰·최신 CI를 통과하고 조건부 승인으로 병합한 뒤 시작했다.
 
 ## 선택 설계와 보존 계약
 
@@ -46,9 +46,9 @@
 - [x] fixture의 listener/session/world 소유를 기존 Host로 모으고 실제 종료/재시작을 독립 검증했다.
 - [x] 현재 주석·진단을 구현과 맞추고 정책/미구현 주장을 정리했다.
 - [x] 전체 서버·봇·Unity 회귀 결과와 M0 비교·미실행/실패 이력을 기록했다.
-- [ ] 고정 과제 원점수·조건·계측·한계와 구조 지표를 독립 평가했다.
+- [x] 고정 과제 원점수·조건·계측·한계와 구조 지표를 독립 평가했다.
 - [ ] 독립 source/TestCode 리뷰·최신 head CI·크리티컬 이슈 부재 확인 뒤 조건부 승인으로 직접 병합했다.
-- [ ] HTML에 실제 diff·평가·검증 결과와 한계를 기록하고 후속 DB 설계에 필요한 사실/미합의 결정을 인계했다.
+- [x] HTML에 실제 diff·평가·검증 결과와 한계를 기록하고 후속 DB 설계에 필요한 사실/미합의 결정을 인계했다.
 
 ## 실제 결과와 인계
 
@@ -63,4 +63,16 @@
 - task-owned server PID899는 exact stdin FIFO newline으로 graceful exit0, `verification/server/server.log`에 Server stopped. main이 port7777/PID 부재 확인. 외부 SQL/다른 process는 조작하지 않았다.
 - 수동 GUI/물리 키보드/오디오 청취는 미수행. 자동 실제 엔진/가상 InputSystem 및 production 봇 검증을 수동 평가나 DB 연동 성공으로 보고하지 않는다.
 
-독립 raw 판정은 `verification/summary.md`. AI 평가와 최신 PR CI/병합 결과는 아직 대기다. 다음 [DB 설계](../2026-09-29-persistence-design/goal.md)는 최종 main과 안정된 상태 수명·비동기 경계, 기존 schema/접속 인계를 대조한다. DB 저장·인증·schema 적용 구현 권한으로 확대하지 않는다. 저장 범위/계정 모델에 관한 사용자 질의는 응답 대기이며 답변 없는 항목을 합의로 취급하지 않는다.
+독립 raw 판정은 `verification/summary.md`. 최신 PR CI/병합 결과는 아직 대기다. 다음 [DB 설계](../2026-09-29-persistence-design/goal.md)는 최종 main과 안정된 상태 수명·비동기 경계, 기존 schema/접속 인계를 대조한다. DB 저장·인증·schema 적용 구현 권한으로 확대하지 않는다. 저장 범위/계정 모델에 관한 사용자 질의는 응답 대기이며 답변 없는 항목을 합의로 취급하지 않는다.
+
+## 고정 과제 재평가와 구조 비교
+
+평가 source commit은 `2f2fbed37446ac9c19e27676b68d1ef3d3eccdec`로 고정했다. 이후 통합 문서 갱신은 코드·테스트 변경 없이 진행한다. 동일 T1–T4 답안자 refactor_scope_review, 독립 채점자 client_flow_audit이며 두 작업자 모두 과거 감사/구현에 노출됐다. 정확 runtime 모델/effort는 unknown이고 blind benchmark나 리팩토링의 인과적 생산성 평가가 아니다. 기존 답안·채점을 이번 답안 작성에 제공하지 않았다.
+
+답안은 `.backups/verification/2026-09-30-regression/assessment/answers.md`에 고정했다. 과제별 실측 78.2/81.2/68.8/76.5초로 각각 10분 이내이며, 과제 도구 호출11·rg14·source 읽기37, 고유 source28개와 시작 문서3개를 기록했다. 준비/기록 호출은 별도 집계하고 저장 뒤 무관 shell token 오류1회도 공개했다. 이는 답안자 기록 계측이며 채점자가 전체 도구 이력을 독립 감사한 수치가 아니다. M0의 사전 탐색 계측이 불완전하고 배치 크기가 다르므로 시간·검색 감소율을 계산하지 않는다.
+
+독립 채점 `assessment/grades.md`의 결과는 **31/32**: T1 위치·흐름/경계·영향/검증/불확실성=(1,2,2,2), T2–T4는 각각(2,2,2,2)다. T1에서 실제 MainMenu의 Disconnect→GameEntryPoint의 IsConnected/Connect 재진입 호출자 경로 1묶음이 누락됐으며 사실 정정 요청은0이다. 원본 답안을 사후 보정해 점수를 높이지 않았다. M0의 29/32(T1–T4=6/8/8/7) 대비 +2는 중복 완료 검증과 tick 캡처 소유 설명의 보완이다. 핵심 누락은3→1, 사실 정정 요청0→0으로 비교한다. 네 답안 설명 적합도의 보조 환산96.875/100이며 전체 코드 품질·외부 공인 AI Readiness·인과적 개선률로 보고하지 않는다.
+
+`assessment/structure.md`는 M0 게임 코드 `4b2c84e3bb94d91452d0b50af0ed76b107d5d6a6`와 위 source를 좁게 대조했다. QuestRegistry가 PartyState.KillCount를 직접 쓰던 문장 **3→0**, PlayerStats의 public mutable setter 속성 **1→0**을 확인했다. 서버 종료는 world close queue/Host, 클라이언트 연결은 lifetime·entry·물리 load queue, 퀘스트 진행은 Quest owner, 전달값은 불변 정의·현재 HP 캡처로 책임을 구분했다. Unity singleton/mirror·entity setter·migration 상태는 필요한 경계에 남아 있다. 이 수치를 repository 전체 결합 총계·완전한 SOLID 준수·DB 연동 완료로 해석하지 않는다.
+
+HTML의 실제 diff18개와 CSS/JS를 보존해 누적 결과를 갱신했다. 원 담당자의 사용량 제한 오류 종료 후 db_scope_review에 HTML 단독 쓰기를 이관했고 쓰기 종료 후 메인이 브라우저 QA를 실행했다. 2026-09-30T01:13:28Z, 1440/430/320/768px 가로 overflow0, light/dark·details·print 확장/복원 통과, 430px light screenshot을 실제 확인했다(`.backups/report-preview/qa-results.json`, `qa-m3.log`). DB 사전안과 독립 리뷰는 별도 설계 단계 입력이며 저장 구현·현재 SQL 접속 성공을 뜻하지 않는다.
