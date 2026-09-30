@@ -61,4 +61,14 @@ Git/PR 병합 없이 별도 WSL 공간에 S2 `2e6b8c3`(S1 `2b533c7` 포함), S3 
 
 HTML 보고서는 `.backups/reports/2026-09-30-maintainability-rollout/index.html`이며 설계 이유·실제 diff·검증·측정 한계·정확한 PR/head/CI·통합 순서를 제공한다. 별도 화면/내용 검토와 마지막 GitHub 상태 확인은 `.backups/verification/2026-09-30-rollout-report/`에 남긴다. S1–S5 및 인계 스킬 PR141은 모두 승인·병합 대기이며 S0 PR139만 이미 통합됐다.
 
-범위는 대표 영역 조사 후 필요한 책임 경계·오류 계약에 적용한 것이며 모든 코드/동시성/게임플레이를 전수 검증하지 않았다. 실제 시각 플레이·자동 PlayerLoop·DB 저장 연동·성능·AI 탐색 시간·연속 복잡도는 이번 결과에 포함하지 않는다. DB schema/접속과 GameServer 영속 저장 구현은 여전히 구분한다. 다음 단계는 종합 보고서 확인 후 사용자와 최종 통합, 이후 DB 설계 범위 논의다. 순서·의존성은 [로드맵](../../milestones/2026-09-30-maintainability-rollout/roadmap.md)에 유지한다.
+범위는 대표 영역 조사 후 필요한 책임 경계·오류 계약에 적용한 것이며 모든 코드/동시성/게임플레이를 전수 검증하지 않았다. 실제 시각 플레이·자동 PlayerLoop·DB 저장 연동·성능·AI 탐색 시간·연속 복잡도는 이번 결과에 포함하지 않는다. DB schema/접속과 GameServer 영속 저장 구현은 여전히 구분한다. 순서·의존성은 [로드맵](../../milestones/2026-09-30-maintainability-rollout/roadmap.md)에 유지한다.
+
+## 보고서 비교·보강과 다음 상태 정정
+
+2026-09-30 사용자는 앞으로 보고서 전체를 Astra가 작성하고 이전 Astra 보고서와 비교해 보강하도록 지시했다. [AGENTS](../../../AGENTS.md#모델-라우팅)와 [보고서 기준](../../../00_Document/conventions/REPORTING.md)에 본문·정보 구성·HTML·전용 생성 스크립트까지 Astra 소유, 별도 Astra 독립 검토를 명시했다. 이번에는 일반 구현 Sol 라우팅과 구분해 보고서 자체를 Astra가 재작성한다. 게임 생산·테스트 코드 변경은 없다.
+
+기존 [M0–M3 보고서](../../reports/2026-09-29-refactor-before-persistence/report.html)와 canonical goal을 비교한 결과, 이전 HTML 보강판에서 과거 실적과의 연결이 빠졌음을 정정한다. [M1b](../2026-09-29-refactor-client-connection/goal.md) 연결 수명과 [M1c](../2026-09-29-refactor-client-entry/goal.md) 씬 진입은 이미 통합됐다. 이번 S4는 그 위의 원격 보간 추가 개선이다. [M3](../2026-09-29-refactor-regression/goal.md)의 고정 과제 답안 적합도 29/32→31/32와 자동 PlayScenes/실제 서버 왕복 검증은 과거 실적이며 이번 S1–S5의 재평가·재실행 결과가 아니다. 이번 AI 평가 미실시를 프로젝트에 평가 이력이 없다는 뜻으로 표현하지 않는다.
+
+[D0 DB 초기 설계](../2026-09-29-persistence-design/goal.md)는 이미 PR #137로 병합됐고 D1–D4 구현이 미착수다. 이전 문구의 ‘다음에 DB 설계 범위 논의’는 이 완료 상태를 충분히 반영하지 못했으므로 정정한다. 다음은 이번 보고서 확인·사용자 승인에 따른 통합 후 기존 D0 설계와 [구현 분할](../2026-09-29-persistence-design/implementation-plan.md)을 재확인하고 D1a 기술 명세의 착수 범위를 정하는 것이다. 기존 제품 범위를 새 미합의로 되돌리거나 DB 구현·외부 쓰기를 자동 시작하지 않는다.
+
+비교 근거는 `.backups/reviews/2026-09-30-astra-report-comparison.md`다. 보고서의 이전/이번 성과 구분, 설계 대안·대가, 상태 소유 흐름, 해설 있는 실제 diff와 검증 해석을 보강하며 최종 내용·화면 확인은 기존 report verification 폴더에 연결한다.

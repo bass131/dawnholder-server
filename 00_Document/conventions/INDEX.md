@@ -11,3 +11,4 @@
 | 책임 분리·상태·이벤트 | [게임 패턴 색인](refs/game-programming-patterns/_index.md) |
 | 전송·DB·분산 설계 | [서버 참고 색인](refs/game-server-programming/_index.md) |
 | 검증 | [도구·테스트](../domains/tooling.md), [검토 항목](../REVIEW_CHECKLIST.md) |
+| 작업 결과·설계 해설 보고서 | [REPORTING](REPORTING.md) |
