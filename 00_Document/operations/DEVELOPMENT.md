@@ -5,6 +5,7 @@
 ## 환경
 
 - .NET SDK: [global.json](../../global.json)의 정확한 `10.0.301`, `rollForward: disable`. 다른 버전으로 대체하지 않는다.
+- SDK pin 이전의 obj/bin이 남은 checkout은 해당 빌드 생성물을 확인·백업하고 정리한 뒤 1회 clean 빌드가 필요하다.
 - Unity: [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 `6000.4.7f1`과 revision을 확인한다.
 - WSL Ubuntu: .NET SDK, Bash·Python 3·rsync·flock(util-linux)·ss(iproute2)·coreutils가 필요하다. 저장소는 ASCII 경로를 권장한다.
 - 서버·테스트 실행이 Windows 정책으로 차단되는 현재 환경에서는 WSL을 사용한다. Windows 전용 디버그 설정은 네이티브 실행이 허용된 머신용이다.
@@ -48,6 +49,8 @@ Windows 원본 Git에서 입력 manifest를 만들고 전용 WSL 복제본을 �
 ```
 
 CI나 Git이 있는 Linux checkout에서는 `bash 99_Tools/format-check.sh`를 사용한다. Git이 없는 복제본은 `--manifest <원본 manifest 경로>`가 필요하다. Windows 진입점은 실제 checkout SHA·작업 상태·파일/설정 hash·Compile 집합·SDK를 기록하고, sync는 루트 빌드/정책 입력과 manifest를 명시적으로 복사해 hash를 대조한다. 복제본의 `.git` 열거나 원본 C# 쓰기를 하지 않는다.
+
+제품 참조와 독립 테스트의 restore/build 및 서식 적용·보존 비교는 소유 표시가 있는 검사 snapshot에서 수행한다. Shared/ClientNet 빌드의 Unity DLL 복사도 그 snapshot 안에 한정하며, 실제 checkout의 입력·Git 상태·기존 DLL hash를 다시 확인한다. CI의 제품 전체 빌드는 별도 restore 뒤 수행한다.
 
 검사는 고정 SDK의 `dotnet format whitespace`만 사용한다. 수기 제품 소스·검사 도구·독립 `Formatting.Tests`를 각각 검사하고, 생성 `GenPackets.cs`는 제외하며 hash로 보존한다. 누락된 입력·SDK 불일치·로드/파싱 오류·실행 실패·독립 테스트 프로젝트 부재는 실패한다. 원본과 자체 서식 snapshot의 Debug/Release token·리터럴·주석·directive 보존 근거 및 원시 명령/exit/report는 출력된 전용 evidence 디렉터리에 남긴다. 이 검사는 제품 전체 build/test나 Unity 검증을 대신하지 않는다.
 

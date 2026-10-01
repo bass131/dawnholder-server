@@ -12,8 +12,15 @@ try
             {
                 var destination = Path.GetFullPath(arguments.Required("after"));
                 if (!Directory.Exists(destination) || Directory.EnumerateFileSystemEntries(destination).Any()) throw new InvalidDataException("Snapshot destination must be an existing empty directory.");
+                InputManifest? manifest = null;
+                if (arguments.Has("manifest"))
+                {
+                    manifest = await JsonFiles.ReadAsync<InputManifest>(arguments.Required("manifest"));
+                    manifest.ValidateFiles(root, sdk);
+                }
+                var inputs = manifest?.Files.Select(file => file.Path).ToArray() ?? await InputManifest.GitInputsAsync(root);
                 var copied = new List<InputFile>();
-                foreach (var relative in await InputManifest.GitInputsAsync(root))
+                foreach (var relative in inputs)
                 {
                     var source = InputPaths.Resolve(root, relative);
                     var hash = InputPaths.Hash(source);
@@ -23,6 +30,7 @@ try
                     if (InputPaths.Hash(target) != hash || InputPaths.Hash(source) != hash) throw new InvalidDataException($"Source changed during snapshot: {relative}");
                     copied.Add(new InputFile(relative, hash, new FileInfo(source).Length, "snapshot-input"));
                 }
+                manifest?.ValidateFiles(destination, sdk);
                 await JsonFiles.WriteAsync(arguments.Required("out"), copied);
                 break;
             }

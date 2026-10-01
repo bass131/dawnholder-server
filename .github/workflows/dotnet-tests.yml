@@ -44,7 +44,9 @@ jobs:
       # build → test 분리: dotnet test --no-incremental은 .slnx에서 MSB1001 (SDK 10.0.203+)
       # .editorconfig의 pilot SA1201/SA1202/IDE0011 error도 이 빌드에서 실패시킨다.
       - name: Build and enforce pilot diagnostics
-        run: dotnet build Dawnholder.slnx --no-restore --no-incremental
+        run: |
+          dotnet restore Dawnholder.slnx
+          dotnet build Dawnholder.slnx --no-restore --no-incremental
 
       - name: Test
         run: dotnet test Dawnholder.slnx --no-build --logger "console;verbosity=normal"

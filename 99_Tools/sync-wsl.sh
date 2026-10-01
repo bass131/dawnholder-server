@@ -89,16 +89,17 @@ source "$RUNTIME_ROOT/99_Tools/Formatting/sdk.sh"
 dawnholder_sdk "$RUNTIME_ROOT"
 cd -- "$RUNTIME_ROOT"
 if [[ -n "$MANIFEST" ]]; then
-  "$DOTNET" restore 99_Tools/Formatting/Formatting.csproj --nologo
-  "$DOTNET" build 99_Tools/Formatting/Formatting.csproj --no-restore --nologo
-  "$DOTNET" 99_Tools/Formatting/bin/Debug/net10.0/Formatting.dll sync-inputs --root "$SOURCE_ROOT" --after "$RUNTIME_ROOT" --dotnet "$DOTNET" --manifest "$MANIFEST"
+  "$DOTNET" restore 99_Tools/Formatting/Formatting.csproj --nologo 8>&-
+  "$DOTNET" build 99_Tools/Formatting/Formatting.csproj --no-restore --nologo 8>&-
+  "$DOTNET" 99_Tools/Formatting/bin/Debug/net10.0/Formatting.dll sync-inputs --root "$SOURCE_ROOT" --after "$RUNTIME_ROOT" --dotnet "$DOTNET" --manifest "$MANIFEST" 8>&-
 fi
 [[ "$ACTION" != sync ]] || exit 0
-"$DOTNET" restore Dawnholder.slnx --nologo
-"$DOTNET" build Dawnholder.slnx --configuration Debug --no-restore --nologo
+# The parent owns the workspace lock; compiler servers must not inherit it.
+"$DOTNET" restore Dawnholder.slnx --nologo 8>&-
+"$DOTNET" build Dawnholder.slnx --configuration Debug --no-restore --nologo 8>&-
 case "$ACTION" in
   build) exit 0 ;;
-  test) exec "$DOTNET" test Dawnholder.slnx --configuration Debug --no-build --nologo "$@" ;;
+  test) "$DOTNET" test Dawnholder.slnx --configuration Debug --no-build --nologo "$@" 8>&-; exit 0 ;;
 esac
 
 # GameServer currently has a fixed 7777 endpoint. Different workspaces cannot run it concurrently.

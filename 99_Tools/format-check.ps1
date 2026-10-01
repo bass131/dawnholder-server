@@ -75,8 +75,8 @@ try {
     & wsl @wslArguments *> "$EvidenceRoot/wsl-check.log"
     $checkExit=$LASTEXITCODE
     [IO.File]::WriteAllText("$EvidenceRoot/wsl-check.command.json",(ConvertTo-Json -Depth 8 -InputObject @{args=$wslArguments;exit=$checkExit}),$utf8)
-    if ($checkExit -ne 0) { throw "Formatting check failed: $EvidenceRoot/wsl-check.log" }
     RunDotnet 'final-validate' @($cli,'validate','--root',$repo,'--dotnet',$dotnet,'--manifest',$manifest,'--git','--files-only')
+    if ($checkExit -ne 0) { throw "Formatting check failed: $EvidenceRoot/wsl-check.log" }
     Write-Output "Formatting checks passed. Evidence: $EvidenceRoot"
 } finally {
     foreach ($name in $saved.Keys) { [Environment]::SetEnvironmentVariable($name,$saved[$name],'Process') }
