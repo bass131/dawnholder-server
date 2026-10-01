@@ -1,6 +1,6 @@
 # 다음 세션 재개
 
-이 문서는 읽는 순서와 재개 절차다. 현재 상태·결정·결과는 [CURRENT](CURRENT.md)가 가리키는 goal을 정본으로 삼는다. [P1a 종료 기록](../../01_Phases/goals/2026-09-30-party-invite-command/goal.md)과 [로드맵](../../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md)은 이전 완료와 남은 의존성을 제공한다. 2026-10-01 사용자는 [기록 정정·설계 이유 복원](../../01_Phases/goals/2026-10-01-refactor-record-corrections/goal.md)을 재개했으며, 이 범위를 넘어 P1b·DB·게임 정책 구현이 자동 시작되는 것은 아니다.
+이 문서는 읽는 순서와 재개 절차다. 현재 상태·결정·결과는 [CURRENT](CURRENT.md)가 가리키는 goal을 정본으로 삼는다. [기록 정정](../../01_Phases/goals/2026-10-01-refactor-record-corrections/goal.md)은 PR150으로 병합됐다. [P1a 종료 기록](../../01_Phases/goals/2026-09-30-party-invite-command/goal.md)과 [로드맵](../../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md)은 이전 완료와 남은 의존성을 제공한다. 다음 라우팅 시범은 일부 합의·착수 전이며 P1b·DB·게임 정책 구현을 자동 시작하지 않는다.
 
 ## 최소 읽기
 
@@ -17,9 +17,10 @@ GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, �
 
 ## 다음 조각을 시작하는 순서
 
-- 현재 정정 범위를 먼저 확인하고 [후속 후보와 판단 근거](../../01_Phases/goals/2026-10-01-refactor-record-corrections/open-items.md)를 참고한다. 이전 다음 후보는 메뉴 연결 probe의 입력 캡처·요청 수명·실패 정리·늦은 callback이었다. 실제 착수 순서는 사용자의 현재 우선순위에 따른다. `MainMenuController`와 `ConnectionProbe`의 필요한 경로 및 기존 동작/실패 fixture부터 설계하며 후보를 구현 완료나 확정된 UX로 해석하지 않는다.
+- 먼저 [계층형 모델 라우팅 시범과 코드 기준 재정립](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md)의 확정 A/B와 미확정 C를 구분한다. 다음 세션 시범 대상은 GameDev의 `?? AddComponent` 4곳이며 새 라우팅은 이 goal에 한해 사용자 승인됐다. 이번 인계 문서화에는 기존 Astra 작성·독립 검토를 적용하며 시범은 미착수다.
+- [후속 후보와 판단 근거](../../01_Phases/goals/2026-10-01-refactor-record-corrections/open-items.md)의 메뉴 연결 probe·RegisterSend·HUD·UnityClientSession 후보는 유지한다. 메뉴 작업은 `MainMenuController`와 `ConnectionProbe`의 입력 캡처·요청 수명·실패 정리·늦은 callback 및 기존 fixture부터 설계하며 후보를 구현 완료나 확정된 UX로 해석하지 않는다.
 - source 교체·화면 종료 뒤 표시·재시도 같은 정책이 달라져야 하면 관찰 결과와 선택지를 사용자에게 올린다. 이후 표시 전용 HUD의 source binding을 별도 작은 조각으로 다룬다.
-- 범위·보존 계약·완료조건·파일 소유를 새 goal에 문서화한 뒤 CURRENT와 로드맵에 링크한다. Sol6.1 구현과 별도 Astra TestCode/검증/보고를 나눈다. 새 Codex CLI는 `--no-daemon`, 실제 모델 확인 불가는 `unknown`으로 기록한다.
+- 범위·보존 계약·완료조건·파일 소유를 goal에 명시한다. 라우팅 시범은 해당 goal의 한정 합의를 따르고 그 밖은 기존 AGENTS를 따른다. 새 Codex CLI는 `--no-daemon`, 실제 모델 확인 불가는 `unknown`으로 기록한다.
 - DB 상세 설계는 P1과 독립적으로 준비할 수 있다. [D0](../../01_Phases/goals/2026-09-29-persistence-design/design.md)를 다시 결정하지 말고 schema/transaction/실패·복구 기술 계약을 구체화한다. SQL schema 접근 가능과 GameServer 저장·복원 연동 완료를 구분한다.
 
 ## Management와의 경계
