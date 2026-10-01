@@ -90,8 +90,10 @@ namespace Dawnholder.Client.Network.Handlers.Skill
 
                 AudioManager.Instance?.PlaySfx(SoundKeys.ProjectileLaunch);
                 GameObject proj = Object.Instantiate(prefab, spawnPos, Quaternion.identity);
-                ProjectileVisual visual = proj.GetComponent<ProjectileVisual>()
-                                         ?? proj.AddComponent<ProjectileVisual>();
+                if (!proj.TryGetComponent(out ProjectileVisual visual))
+                {
+                    visual = proj.AddComponent<ProjectileVisual>();
+                }
 
                 // travelTicks로 비행 속도 역산 — 도착 ≈ 서버 도착 틱.
                 // 거리 / (travelTicks × TickDuration) = 픽셀속도. travelTicks=0이면 즉발(Destroy).
