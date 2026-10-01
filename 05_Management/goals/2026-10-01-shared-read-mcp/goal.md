@@ -169,17 +169,17 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 ## 현재 상태와 근거
 
-**V1 재검증·V2와 최종 V3-R1이 통과했다. V3-01/02 및 메인이 포함한 R01~R09는 승인 범위에서 해소됐고, 독립 판정은 제품 차단 0건·새 제품 결함 0건·참고 9건이다. 최종 시험 249/249 후 작업자 정산을 마쳤으며 PR을 준비한다.** 실제 개발 세션 연결과 해당 PR 병합은 별도 결정 전이다. V2 보고 과장, V3 GUI 미확인 합성 클릭, Sol 환경 복구 표현, V3-R1 수치 오기와 정리 절차 이탈은 각각 아래 감사 기록을 유지한다. 판정 원문을 고쳐 성공으로 소급하지 않는다.
+**V1 재검증·V2와 최종 V3-R1이 통과했고 [PR #159](https://github.com/bass131/dawnholder-server/pull/159)를 생성했다. V3-01/02 및 메인이 포함한 R01~R09는 승인 범위에서 해소됐고, 독립 판정은 제품 차단 0건·새 제품 결함 0건·참고 9건이다. 최종 시험 249/249 후 작업자 정산을 마쳤다.** 실제 개발 세션 연결과 해당 PR 병합은 별도 결정 전이다. V2 보고 과장, V3 GUI 미확인 합성 클릭, Sol 환경 복구 표현, V3-R1 수치 오기와 정리 절차 이탈은 각각 아래 감사 기록을 유지한다. 판정 원문을 고쳐 성공으로 소급하지 않는다.
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - 시작: clean `main`, HEAD `18c8ca6a5aa3032873029cbd36658f0c4f9095c5` (PR156). `git fetch origin main` 후 origin/main도 같은 SHA임을 확인했다.
-- 작업 브랜치: `feat/management-shared-read-mcp`, 위 origin/main에서 새로 생성. 첫 커밋 대상은 이 goal 한 파일이다. 원격 push·PR·병합은 아직 수행하지 않았다.
+- 작업 브랜치: `feat/management-shared-read-mcp`, 위 origin/main에서 새로 생성. 첫 커밋 대상은 이 goal 한 파일이었다. 착수 시에는 push·PR·병합 전이었으며 최신 상태는 이 절 첫 문단과 아래 PR 기록을 따른다.
 - 현재 runtime `8a673084-6819-45b9-a551-347226cdce9b`, Astra terminal `term_6df8363a-d0bf-454f-aa67-7c7c7323008a`, incarnation `3068c493-4095-4e8c-b907-eed3f3b741e6`. Orca worktree 소속과 실제 cwd 모두 management-active로 확인했다. 이 값은 관찰 기록이며 향후 실행 권한이 아니다.
 - READY 회신 `msg_46884ca17d25`를 메인에게 enqueue했다. enqueue 성공을 메인이 읽거나 승인했다는 근거로 쓰지 않는다.
 - 구현 발행 전에는 좁은 정적 조사, 버전/registry metadata 조회, 공식 문서 확인과 Fable 계획 검토를 수행했다. 이후 Sol 구현·자체 실행과 독립 검증의 근거는 아래 기록을 따른다. 실제 개발 세션 연결 설정은 변경하지 않았다.
 - 원시 receipt/로그와 판정 원문은 Git 제외 `.backups/verification/2026-10-01-shared-read-mcp/`에 보존한다. 계획·구현·최초 수정 필요·후속 독립 통과 판정은 아래에 구분한다. 원문은 로컬 근거이며 원격 가용성을 보장하지 않는다.
 
-Sol 구현과 V1-01 수정·재검증, V2, V3 수정·재검증을 마쳤다. 다음은 PR 생성과 메인의 최종 원문 확인이며, D4 실제 개발 세션 연결/설정 적용은 별도 결정 항목으로 남는다. 정본 범위는 확정됐고 SDK·응답 제한·Windows 저장 보완의 기술 결정과 실행 근거는 아래에 구분한다.
+Sol 구현과 V1-01 수정·재검증, V2, V3 수정·재검증 및 PR 생성을 마쳤다. 메인의 최종 원문 확인과 이 PR의 사용자 병합 승인을 남겨 두며, D4 실제 개발 세션 연결/설정 적용도 별도 결정 항목이다. 정본 범위는 확정됐고 SDK·응답 제한·Windows 저장 보완의 기술 결정과 실행 근거는 아래에 구분한다.
 
 ### Fable 계획 검토 결과 — 검토 후 기록
 
@@ -370,3 +370,9 @@ Electron 파일 복구는 exact package44.5.0·검증된 로컬 cache·process n
 남은 참고는 정본 UI 산출물의 다음 정상 build 필요, MCP 안내의 npm ci/lazy install 주어 명확화, 수동 도구 등록 잔여, Zod 타입 결합의 단방향 한계, 보수적인 tsconfig digest 포함, node_modules라는 상위 디렉터리 이름의 특수 경로 한계(미실행 추론), 고정 stderr 진단의 단계 구분 제한, retry 상수 설명 위치, 기존 긴 schema/DTO 행이다. 독립 판정은 모두 참고로 분류했다. 일부 실제 build/digest 시험은 Windows에서만 실행된다. 실제 Codex/Claude 개발 세션 연결, 이번 GUI, .NET·DB·Unity는 미실행이다. O-4는 “다른 창 영향 미확인, 사용자 직접 관측 없음, 추가 조치 없음으로 종결”을 유지한다. 이전 자동 승인 검토가 삭제를 거절한 Sol probe 사본44파일177500bytes도 그대로 보존한다.
 
 완료 `msg_d8ca6b24801d`를 Task/Dispatch와 대조하고 worker-release의 retained/external_terminal 뒤 동일 incarnation의 완료·빈 prompt를 확인했다. 해당 pane만 종료해 ptyKilled=true를 받았고 `delivery_a593cdf4b3e4`를 acknowledge했다. reclaimable0이며 검증자 세션은 재사용하지 않는다. 완료·종료 receipt는 `v3-r1-completion.json`, `v3-r1-close.json`이다. 제품 소스·package/lock/catalog·정본 Electron/UI 산출물·AppData·환경·ExecutionPolicy와 삭제 거절 사본은 검증 전후 차이0이다. 시험10파일과 Astra goal 상태만 Git 변경으로 통합한다.
+
+### PR 생성 — 사용자 병합 승인 전
+
+독립 검증 시험10파일과 goal 상태를 `7cdcecb04f025a024866cb30629589c754a87fae`로 커밋했다. whitespace/staged check exit0·clean 확인 후 정확한 원격 `bass131/dawnholder-server`로 작업 브랜치를 push하고 `main` 대상 [PR #159](https://github.com/bass131/dawnholder-server/pull/159)를 생성했다. 같은 head의 기존 PR은 없었다. 생성 직후 API에서 OPEN·MERGEABLE·autoMergeRequest=null을 확인했고 .NET CI는 진행 중이었다. 이 CI는 Management의 독립249개 시험과 다르다. 전체 변경56파일은 모두05_Management 아래이며 catalog SHA는 착수값과 같다.
+
+메인에게 최종 원문 `v3-r1-review.md`와 `v3-r1-astra-audit.md`를 전달해 직접 확인하도록 한다. 원문 SHA-256은 `966c2cdd0d667365abd953549e99a41dc2ffd6424a0b9da0582a91295f4fb5e1`이다. 병합·자동 병합 예약·실제 MCP client 설정 적용은 하지 않았다. PR 생성 허용과 병합 허용은 별개이며, **PR #159 병합 직전 사용자 명시 승인**을 받아야 한다. 현재 승인된 구현·검증·PR 작업은 마쳤고 병합과 D4 연결 결정을 기다린다.
