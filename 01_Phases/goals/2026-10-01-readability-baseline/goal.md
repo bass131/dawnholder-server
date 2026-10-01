@@ -6,13 +6,13 @@
 
 출처는 메인 Claude의 `msg_0355f528b164`(2026-10-01 14:01:41 UTC)와 [요청 원문 사본](../../../.backups/verification/2026-10-01-readability-baseline/main-request.md)이다. 사용자 결정은 메인을 통해 전달됐으며 사용자 직접 입력으로 격상하지 않는다. 로컬 evidence는 Git 제외이고 다른 checkout/GitHub에서 자동 접근되지 않는다.
 
-- 상태: **goal 초안 작성. Fable 검토·메인 승인·구현·독립 검증 모두 미실행.** 아래 구현 설계와 PR 분할은 검토·승인할 제안이다.
+- 상태: **초안 `30147f3`의 Fable 검토 완료. 메인 원문 확인·goal 보완·승인 대기. 구현·독립 Opus 검증은 미실행.** 아래 설계와 PR 분할은 아직 승인되지 않은 검토 대상 초안이며 F-1~F-17을 반영하기 전이다.
 - 작업 경로: `C:/Dev/DawnHolder_Project`; branch: `bass131/q1-readability-20261001`.
 - base: fetch로 확인한 `origin/main` = `0239290d6f423dbfe91c42c3fffd0789f56de26f` ([PR158](https://github.com/bass131/dawnholder-server/pull/158) 병합). [이전 goal](../2026-10-01-operations-rules/goal.md)의 승인 대기 표시는 당시 기록이다.
 - 기존 로컬 `bass131/operations-rules-20261001`은 base의 ancestor 확인 후 `git branch -d`로 삭제했다. 고정 보관 branch는 건드리지 않았다.
 - evidence 루트: `.backups/verification/2026-10-01-readability-baseline/`. 원문·실행 명령·로그·판정·세션 receipt를 여기에 보존한다.
 - 메인 `msg_84770287842d`로 `CLAUDE.md` O-5 보충 쓰기 종료와 goal 커밋 포함 허용을 받았다. R-7 Fable 쓰기 예외 한 줄(+1/-0)을 실제 diff/hash로 대조했으며 독립 검토는 아직 남았다.
-- 최초 관측: 화면 `GPT-6-Astra xhigh`; backend 실제 모델 `unknown`. 새 Run/Task/Dispatch는 아직 없다. 이전 목표의 실행 권한을 재사용하지 않는다.
+- 최초 관측: 화면 `GPT-6-Astra xhigh`; backend 실제 모델 `unknown`. 새 Q-1 Run은 `run_a3a4a4d552d1`이다. 이전 목표의 실행 권한을 재사용하지 않는다.
 
 ## 범위와 보존할 동작
 
@@ -135,6 +135,17 @@ XML 문서 분석이 꺼져 SA1612가 무효가 되는 경우를 반드시 probe
 3. Fable 검토 후 실제 도구 probe 결과로 세부 구현 계약을 확정한다. 규칙 의미/기본값/라이선스가 채택 전제와 다르면 코드 구현을 진행하기 전에 해당 사항을 메인에 올린다.
 
 아직 formatter·빌드·테스트·분석기 설치·기준선 측정·코드 정리·PR 생성은 수행하지 않았다. Q-1 전체 위반 수, 완료 예상 PR 수, Unity 동작 보존은 미확인이다.
+
+## Fable 검토 결과와 인계
+
+- [검토 원문](goal-review.md)은 초안 `30147f3a2a5eb16d940a0dfd1f331cf74304303c`에 대한 Fable의 기록으로 보존한다. 필수 보완 12건(A 발행·병합 전 8건/B 발행 전 4건), 후속 5건, 참고 5건을 **검토자가 보고**했다. 번호별 채택/보완 판단과 메인 원문 확인은 아직 남았으며 원문 전체를 Astra가 읽었다.
+- 새 `claude-fable-5-1` 세션의 Task `task_e636368193d1`, Dispatch `ctx_d64fa7a76a36`. 화면 `Fable 5.1 xhigh`, backend `unknown`. 최초 실행 명령 `fable-1-launch-command.txt`, 첫 화면 `fable-1-first-read.json`, ready/input_accepted/turn_started는 `fable-1-start.json`에 있다. 첫 화면 15행에서 선택창은 미관측이며 설정을 변경하지 않았다.
+- 완료 `msg_e0745dde030b`와 실제 변경을 대조했다. 저장소 변경은 `goal-review.md` 한 파일이며 당시 goal/CLAUDE/CURRENT diff는 0이었다. 검토자는 scratchpad의 임시 Git 저장소에서 Git 동작을 재현했고 설치·포매터·빌드·제품 테스트는 실행하지 않았다고 보고했다. 원시 명령/결과가 별도 저장되지 않은 항목은 보고서의 실측 표와 직접 원천을 구분한다.
+- 원문 사본: `.backups/verification/2026-10-01-readability-baseline/fable-1-goal-review-original.md`, SHA256 `0DF38451A4CA6B7023C089AB703D612C8E33178785B01EA31903799AC532A000`. 메인 전달 `msg_7297e42c4217`에 원문 경로와 아래 한계를 즉시 알렸다.
+- **해석 주의**: F-2의 프로필 443개와 NuGet 기본 활성 연결은 원문 스스로 기억 기반·미실측으로 표시했지만 영향/요약에서 단정했다. 실제 설치 시 활성 규칙 수를 확인한 사실로 채택하지 않는다. F-1도 master 라이선스의 요약 도구 경유 관찰이며, 원문 전체 직접 읽기는 권한 거부로 못 했고 고정 패키지의 라이선스와 일치는 미확인이다. 해당 조항의 적용·수용을 Astra/Fable가 결정하지 않는다.
+- 주요 보완 대상은 F-3 공백 증명, F-5 원본 Git과 WSL 분석/서식 반영 경계, F-6 SDK 일치, F-7 DLL 갱신, F-8 공백 커밋 보존, F-9 쓰기 소유권, F-10 probe 단계, F-11/12 트리·fixture·기준선 계약이다. 메인 원문 확인 후 설계와 소유권을 보완하며, routine 구현 선택과 사용자 결정 영역을 다시 구분한다.
+- 완료 settlement 수신 뒤 runtime/incarnation/checkout 동일성을 확인해 release(`retained/external_terminal`, processAction none) → 정확한 Fable pane close(`ptyKilled=true`)를 수행했다. `fable-1-{before-close-show,final-identity,release,close,ack}.json`이 근거다. Delivery `delivery_9e4af9aaf16e` acknowledge 완료, reclaimable 0. 해당 세션을 재사용하지 않는다.
+- 다음 입력은 메인의 **원문 확인과 보완 방향**이다. 회신 주소는 `run:run_a3a4a4d552d1`. Sol 발행·설치·제품 변경은 보완 goal의 메인 승인 이후다. 이번 상태 기록은 goal 설계의 승인이나 구현 완료를 뜻하지 않는다.
 
 ## 확인한 1차 자료와 남은 확인
 
