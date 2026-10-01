@@ -1,6 +1,8 @@
 # S3 — 서버 종료 오류 경로의 자원 정리 보장
 
-상태: 구현·독립 검증 완료, [PR #143](https://github.com/bass131/dawnholder-server/pull/143) 통합 대기. branch `fix/session-disconnect-cleanup`, 구현·테스트 commit `217d87a`. 최신 main `a3c4e15e7d655511ced06bd1303360761413c5ab` 기반의 독립 목표이며 [S2 PR #142](https://github.com/bass131/dawnholder-server/pull/142)의 로컬 독립 검증·계약 검토 완료 후 진행한다. 앞선 미병합 소스는 이 브랜치에 포함하지 않는다. 사용자는 2026-09-30 종료 알림 예외 시 **정리 보장 후 기존처럼 예외 전파**를 선택했다. 순수 동작불변 리팩토링과 구분한 좁은 오류 경로 보강이다. PR은 최종 보고서 확인·사용자 승인 전 병합하지 않는다.
+상태: **완료·[PR #143](https://github.com/bass131/dawnholder-server/pull/143) 병합됨**. 사용자 개별 승인 후 2026-09-30T08:45:22Z, main merge `832291d11c243b1f672adc0a0e336a515ca4590d`로 통합했다. 승인 head·통합 근거는 [P0 통합 기록](../2026-09-30-contracts-baseline/goal.md#기준선과-통합-결과)에 있다. 아래 검증 head·수치는 당시 실행 기록이며 2026-10-01 상태 정정에서 재실행하지 않았다. 후속 PR도 [AGENTS](../../../AGENTS.md#git-권한)에 따라 병합 직전 개별 명시 승인이 필요하다.
+
+당시 작업 경과: 구현·독립 검증 완료, [PR #143](https://github.com/bass131/dawnholder-server/pull/143) 통합 전 기록이다. branch `fix/session-disconnect-cleanup`, 구현·테스트 commit `217d87a`. 당시 base main `a3c4e15e7d655511ced06bd1303360761413c5ab` 기반의 독립 목표이며 [S2 PR #142](https://github.com/bass131/dawnholder-server/pull/142)의 로컬 독립 검증·계약 검토 완료 후 진행했다. 당시 미병합인 선행 소스는 이 브랜치에 포함하지 않았다. 사용자는 2026-09-30 종료 알림 예외 시 **정리 보장 후 기존처럼 예외 전파**를 선택했다. 순수 동작불변 리팩토링과 구분한 좁은 오류 경로 보강이다.
 
 ## 목표와 선택한 설계
 

@@ -1,6 +1,8 @@
 # S5 — 도구 실패 결과와 종합 회귀·보고
 
-상태: 개별 구현·독립 검증 및 S1–S5 합성 검증 완료, [PR #145](https://github.com/bass131/dawnholder-server/pull/145) 통합 대기. branch `fix/packet-generator-exit`, 생산·테스트 commit `7b4ce82226785aa39f4ae6273a2aa83166d5250f`, base main `a3c4e15e7d655511ced06bd1303360761413c5ab`. S2–S4 독립 검증·리뷰 완료 후 진행한 독립 목표이며 앞선 미병합 소스는 이 브랜치에 포함하지 않는다. 2026-09-30 사용자는 PacketGenerator 출력 실패의 nonzero exit 전달과 독립 회귀를 S5에 포함하도록 승인했다. 정상 생성 내용·패킷 형식은 보존한다. HTML 최종 확인과 정확한 최신 PR head/CI 근거는 아래 결과 경로에서 확인한다. 사용자 확인 전 병합하지 않는다.
+상태: **완료·[PR #145](https://github.com/bass131/dawnholder-server/pull/145) 병합됨**. 사용자 개별 승인 후 2026-09-30T09:04:23Z, main merge `c27b03e888986f2ec8c593cd6c626a9c515595e1`로 통합했다. 승인 head·통합 근거는 [P0 통합 기록](../2026-09-30-contracts-baseline/goal.md#기준선과-통합-결과)에 있다. 아래 검증 head·수치는 당시 실행 기록이며 2026-10-01 상태 정정에서 재실행하지 않았다. 후속 PR도 [AGENTS](../../../AGENTS.md#git-권한)에 따라 병합 직전 개별 명시 승인이 필요하다.
+
+당시 작업 경과: 개별 구현·독립 검증 및 S1–S5 합성 검증 완료, [PR #145](https://github.com/bass131/dawnholder-server/pull/145) 통합 전 기록이다. branch `fix/packet-generator-exit`, 생산·테스트 commit `7b4ce82226785aa39f4ae6273a2aa83166d5250f`, base main `a3c4e15e7d655511ced06bd1303360761413c5ab`. S2–S4 독립 검증·리뷰 완료 후 진행한 독립 목표이며 당시 미병합인 선행 소스는 이 브랜치에 포함하지 않았다. 2026-09-30 사용자는 PacketGenerator 출력 실패의 nonzero exit 전달과 독립 회귀를 S5에 포함하도록 승인했다. 정상 생성 내용·패킷 형식은 보존한다. HTML 최종 확인과 정확한 최신 PR head/CI 근거는 아래 결과 경로에서 확인한다.
 
 ## 목표와 설계
 
@@ -14,9 +16,11 @@ Main의 반환 결과를 명시해 정상 성공은0, 현재 catch가 처리하�
 - 생성기를 원본 repo PDL 대상으로 실행하지 않는다. 테스트 소유 임시 repo 구조와 sentinel로 출력 경로 충돌을 만들고 정상 생성 bytes를 기준선과 비교한다.
 - XML 오류는 기존대로 실패함을 유지하고 출력 I/O 실패가 nonzero인지 확인한다. 다른 packet generator 상태·ID·버전·template·실제 generated source는 수정하지 않는다.
 - 관련 회귀와 최종 solution build/test, 필요한 서버·봇·Unity 회귀의 수행 범위와 미실행 범위를 따로 기록한다. 기존 통과를 무조건 반복하지 않고 최종 변경이 영향을 주는 영역에 맞춘다.
-- 원래 구현자 외 검증자가 결과를 확인하고, 메인이 S1–S5와 별도 인계 스킬 PR의 정확한 head·의존 순서·검증·남은 위험을 종합 보고한다. 병합은 그 후 사용자의 최종 확인을 기다린다.
+- 원래 구현자 외 검증자가 결과를 확인하고, 메인이 S1–S5와 별도 인계 스킬 PR의 정확한 head·의존 순서·검증·남은 위험을 종합 보고한다. 당시에는 보고 후 사용자 확인을 기다리는 계획이었고, 실제 개별 승인·병합 결과는 상단 및 P0 기록에 있다.
 
 ## 전체 적용 평가
+
+원래 목표는 파일럿 이후 서버·공유/전송·Unity·도구 전 영역에 유지보수 기준을 순차 적용하는 것이었다. [S1–S5 로드맵](../../milestones/2026-09-30-maintainability-rollout/roadmap.md)의 표는 그 과정에서 실제 수행한 대표 변경을 구체화한 것이며 전 영역 개선 의도를 소급 축소하거나 모든 파일·실패 경로의 개선과 검증이 끝났다는 뜻이 아니다. 후속 계약 정착·미해결 후보·실행 검증은 [공통 계약·유지보수·영속성 로드맵](../../milestones/2026-09-30-contracts-persistence/roadmap.md)과 각 목표에 이어진다. 영역당 후보를 정확히 하나로 제한하는 규칙은 없다.
 
 영역별 대표 책임·상태 소유·실패 경계·검증 진입을 조사하고 개선 근거가 있는 부분에만 적용한다. 프로젝트 전체의 모든 파일·동시성·게임플레이를 전수 검증했다고 표현하지 않는다.
 
@@ -26,7 +30,7 @@ S1 즉시 피해 조정 소유 지점, S2 선택한 wire 표현 조립 지점, S
 
 ## 보고서
 
-사용자가 요청한 HTML 보고서에는 목표·선택 이유·파일/역할별 변경 설명·주요 실제 diff·독립 테스트/CI 근거·미실행 범위·PR 순서와 승인 대기를 담는다. 원문 대화나 거대한 로그는 복제하지 않는다. 보고서와 raw evidence 위치는 결과 절에서 안내한다. 인계 스킬 PR #141은 이번 코드 로드맵과 별도의 main 기반 문서 PR임을 구분한다.
+사용자가 요청한 HTML 보고서에는 목표·선택 이유·파일/역할별 변경 설명·주요 실제 diff·독립 테스트/CI 근거·미실행 범위·PR 순서와 당시 승인 대기를 담는다. 원문 대화나 거대한 로그는 복제하지 않는다. 보고서와 raw evidence 위치는 결과 절에서 안내한다. 인계 스킬 PR #141은 이번 코드 로드맵과 별도의 main 기반 문서 PR임을 구분한다.
 
 ## 결과
 
@@ -41,7 +45,7 @@ S1 즉시 피해 조정 소유 지점, S2 선택한 wire 표현 조립 지점, S
 | 전체 solution | 811 total / 806 pass / 기존5 skip / 0 fail |
 | 독립 읽기 리뷰 | 필수 수정 없음 |
 
-이 수치는 독립 main 기준 S5이며 앞선 미병합 신규 테스트는 포함하지 않는다. 실제 subprocess는 테스트 소유 임시 repo에서만 실행했다. 원본 PDL·생성 코드·PacketFormat 보존을 확인했다. interactive 키 입력 대기는 실행하지 않고 기존 후행 순서의 코드 보존을 검토했으며 자동 검사에는 --no-wait를 사용했다. 환경·명령·hash·원시 결과는 `.backups/verification/2026-09-30-generator-exit/summary.md`, 별도 읽기 리뷰는 `.backups/reviews/2026-09-30-s5-generator-contract-review.md`다.
+이 수치는 당시 독립 main 기준 S5이며 당시 미병합 신규 테스트는 포함하지 않는다. 실제 subprocess는 테스트 소유 임시 repo에서만 실행했다. 원본 PDL·생성 코드·PacketFormat 보존을 확인했다. interactive 키 입력 대기는 실행하지 않고 기존 후행 순서의 코드 보존을 검토했으며 자동 검사에는 --no-wait를 사용했다. 환경·명령·hash·원시 결과는 `.backups/verification/2026-09-30-generator-exit/summary.md`, 별도 읽기 리뷰는 `.backups/reviews/2026-09-30-s5-generator-contract-review.md`다.
 
 ## S1–S5 합성 검증과 최종 보고
 
@@ -57,9 +61,9 @@ Git/PR 병합 없이 별도 WSL 공간에 S2 `2e6b8c3`(S1 `2b533c7` 포함), S3 
 
 새 Unity 테스트 meta 2개는 Git 저장/checkout 줄바꿈 차이로 원시 hash가 달랐다. 줄바꿈 조합만 바꿔 검증 당시 SHA256과 정확히 일치하는 원시본을 재구성했고, normalized text 및 GUID 의미가 같음을 확인했다. 합성 소스는 Git blob bytes를 유지하며 raw 동일과 정규화 동치를 구분했다. 원본·PR·main은 변경하지 않았다. 원시 명령·source manifest·Unity 연결·실행 결과·정리 근거는 `.backups/verification/2026-09-30-maintainability-combined/summary.md`와 연결된 파일이다.
 
-확인한 독립 브랜치 간 겹침은 CURRENT/roadmap 두 문서뿐이다. 별도 Astra가 생성기 테스트의 격리/실패 계약과 공통 문서 조정안을 검토해 통과했다: `.backups/reviews/2026-09-30-rollout-integration-readiness.md`. 승인 후 통합할 정확한 문서 내용은 `.backups/handoffs/2026-09-30-rollout-integration-docs.md`에 제시했다. 최종 CURRENT는 이 goal, roadmap은 단계별 goal 링크를 보존한다. 예상 밖 생산 충돌이나 새로운 실패는 범위를 다시 확인한다.
+통합 준비 당시 확인한 독립 브랜치 간 겹침은 CURRENT/roadmap 두 문서뿐이었다. 별도 Astra가 생성기 테스트의 격리/실패 계약과 공통 문서 조정안을 검토해 통과했다: `.backups/reviews/2026-09-30-rollout-integration-readiness.md`. 승인 후 통합할 정확한 문서 내용은 `.backups/handoffs/2026-09-30-rollout-integration-docs.md`에 제시했다. 당시 통합안의 CURRENT는 이 goal, roadmap은 단계별 goal 링크를 보존하도록 했다. 현재 목표는 CURRENT의 최신 링크를 따른다.
 
-HTML 보고서는 `.backups/reports/2026-09-30-maintainability-rollout/index.html`이며 설계 이유·실제 diff·검증·측정 한계·정확한 PR/head/CI·통합 순서를 제공한다. 별도 화면/내용 검토와 마지막 GitHub 상태 확인은 `.backups/verification/2026-09-30-rollout-report/`에 남긴다. S1–S5 및 인계 스킬 PR141은 모두 승인·병합 대기이며 S0 PR139만 이미 통합됐다.
+HTML 보고서는 `.backups/reports/2026-09-30-maintainability-rollout/index.html`이며 설계 이유·실제 diff·검증·측정 한계·정확한 PR/head/CI·통합 순서를 제공한다. 별도 화면/내용 검토와 마지막 GitHub 상태 확인은 `.backups/verification/2026-09-30-rollout-report/`에 남긴다. 이 보고서 작성 시점에는 S0 PR139만 통합되고 S1–S5 및 인계 스킬 PR141은 승인·병합 대기였다. 이후 모두 병합됐으며 실제 merge·개별 승인 근거는 [P0 통합 기록](../2026-09-30-contracts-baseline/goal.md#기준선과-통합-결과)에 있다. 보고서의 당시 스냅샷을 현재 상태로 해석하지 않는다.
 
 범위는 대표 영역 조사 후 필요한 책임 경계·오류 계약에 적용한 것이며 모든 코드/동시성/게임플레이를 전수 검증하지 않았다. 실제 시각 플레이·자동 PlayerLoop·DB 저장 연동·성능·AI 탐색 시간·연속 복잡도는 이번 결과에 포함하지 않는다. DB schema/접속과 GameServer 영속 저장 구현은 여전히 구분한다. 순서·의존성은 [로드맵](../../milestones/2026-09-30-maintainability-rollout/roadmap.md)에 유지한다.
 
@@ -69,7 +73,7 @@ HTML 보고서는 `.backups/reports/2026-09-30-maintainability-rollout/index.htm
 
 기존 [M0–M3 보고서](../../reports/2026-09-29-refactor-before-persistence/report.html)와 canonical goal을 비교한 결과, 이전 HTML 보강판에서 과거 실적과의 연결이 빠졌음을 정정한다. [M1b](../2026-09-29-refactor-client-connection/goal.md) 연결 수명과 [M1c](../2026-09-29-refactor-client-entry/goal.md) 씬 진입은 이미 통합됐다. 이번 S4는 그 위의 원격 보간 추가 개선이다. [M3](../2026-09-29-refactor-regression/goal.md)의 고정 과제 답안 적합도 29/32→31/32와 자동 PlayScenes/실제 서버 왕복 검증은 과거 실적이며 이번 S1–S5의 재평가·재실행 결과가 아니다. 이번 AI 평가 미실시를 프로젝트에 평가 이력이 없다는 뜻으로 표현하지 않는다.
 
-[D0 DB 초기 설계](../2026-09-29-persistence-design/goal.md)는 이미 PR #137로 병합됐고 D1–D4 구현이 미착수다. 이전 문구의 ‘다음에 DB 설계 범위 논의’는 이 완료 상태를 충분히 반영하지 못했으므로 정정한다. 다음은 이번 보고서 확인·사용자 승인에 따른 통합 후 기존 D0 설계와 [구현 분할](../2026-09-29-persistence-design/implementation-plan.md)을 재확인하고 D1a 기술 명세의 착수 범위를 정하는 것이다. 기존 제품 범위를 새 미합의로 되돌리거나 DB 구현·외부 쓰기를 자동 시작하지 않는다.
+[D0 DB 초기 설계](../2026-09-29-persistence-design/goal.md)는 이미 PR #137로 병합됐고 D1–D4 구현이 미착수다. 이전 문구의 ‘다음에 DB 설계 범위 논의’는 이 완료 상태를 충분히 반영하지 못했으므로 정정한다. 당시 후속 계획은 이번 보고서 확인·사용자 승인에 따른 통합 후 기존 D0 설계와 [구현 분할](../2026-09-29-persistence-design/implementation-plan.md)을 재확인하고 D1a 기술 명세의 착수 범위를 정하는 것이었다. 이후 P0와 P1a가 진행됐으며 현재 후속 범위는 [공통 계약 로드맵](../../milestones/2026-09-30-contracts-persistence/roadmap.md)과 CURRENT의 목표를 따른다. 기존 제품 범위를 새 미합의로 되돌리거나 DB 구현·외부 쓰기를 자동 시작하지 않는다.
 
 비교 근거는 `.backups/reviews/2026-09-30-astra-report-comparison.md`다. 보고서의 이전/이번 성과 구분, 설계 대안·대가, 상태 소유 흐름, 해설 있는 실제 diff와 검증 해석을 보강하며 최종 내용·화면 확인은 기존 report verification 폴더에 연결한다.
 

@@ -36,6 +36,8 @@ namespace Dawnholder.Client.State
 
         internal void EnqueueSnapshot(int serverTick, float x, float y)
         {
+            // freeze 후 한 프레임에 몰린 snapshot도 각자의 serverTick으로 시간축에 펼친다.
+            // 수신 벽시계로 다시 찍으면 서로 다른 시점이 뭉쳐 보간 간격을 잃는다.
             float serverTime = serverTick * Constants.TickDuration;
 
             _buffer.Add(new Snapshot(serverTime, x, y));

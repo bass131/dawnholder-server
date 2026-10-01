@@ -43,7 +43,9 @@ MonoBehaviour는 Unity 생명주기 연결을 맡고, 예측·상태 계산처�
 
 기본 production 범위는 warning이며, 첫 파일럿인 `02_Server/GameServer/Maps/GameMap.cs`, `Maps/Actions/MeleeAction.cs`, `Maps/Actions/DashAction.cs`에서는 위 세 진단을 error로 지정한다. [dotnet-tests CI](../../.github/workflows/dotnet-tests.yml)의 `dotnet build Dawnholder.slnx --no-incremental`이 이 세 파일의 위반을 실패시킨다. 서버 패킷 표현 통합에서는 `Sessions/GameSession.cs`, `Maps/Transitions/MapMigration.cs`, `Maps/MapPacketPublisher.cs`, `Maps/Systems/EnemyAISystem.cs`, `Maps/Systems/BossBehaviorSystem.cs`에도 같은 세 error 진단을 적용한다. 기존 StyleCop.Analyzers `1.2.0-beta.556`과 `EnforceCodeStyleInBuild`를 사용하며 전역 warnings-as-errors는 적용하지 않는다.
 
-같은 세 파일에서 .NET SDK 분석기의 CA1502·CA1506을 warning으로 관찰한다. 기본 임계값 초과 진단이므로 진단이 없는 상태를 연속 복잡도·결합 점수나 전체 설계 검증으로 해석하지 않는다.
+따라서 SA1201·SA1202·IDE0011의 error 적용은 S1의 3파일 + S2의 추가 5파일 = **총 8개 production 파일**이다. CI 빌드가 이 8파일의 세 진단 위반을 실패시키며, 그 밖 기본 production 범위는 warning이다. 이 적용 범위를 전체 소스의 error 검사나 전체 설계 기준 자동 검증으로 해석하지 않는다.
+
+S1 파일럿의 세 파일에서만 .NET SDK 분석기의 CA1502·CA1506을 warning으로 관찰한다. 기본 임계값 초과 진단이므로 진단이 없는 상태를 연속 복잡도·결합 점수나 전체 설계 검증으로 해석하지 않는다.
 
 Tests·99_Tools의 세 진단 완화와 Unity 분석기 격리를 유지한다. 범위 밖 경고는 남을 수 있으므로 빌드 성공이 경고 0을 뜻하지 않으며, 모든 이름·설계 규칙이 자동 검사되는 것도 아니다.
 

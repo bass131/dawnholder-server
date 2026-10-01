@@ -1,6 +1,6 @@
 # 다음 세션 재개
 
-이 문서는 읽는 순서와 재개 절차다. 목표의 상태·결정·결과는 [P1a goal](../../01_Phases/goals/2026-09-30-party-invite-command/goal.md), 남은 단계·의존성은 [로드맵](../../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md)을 정본으로 삼는다. 세션을 새로 여는 것만으로 사용자의 후속 구현 보류가 해제되지는 않는다.
+이 문서는 읽는 순서와 재개 절차다. 현재 상태·결정·결과는 [CURRENT](CURRENT.md)가 가리키는 goal을 정본으로 삼는다. [P1a 종료 기록](../../01_Phases/goals/2026-09-30-party-invite-command/goal.md)과 [로드맵](../../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md)은 이전 완료와 남은 의존성을 제공한다. 2026-10-01 사용자는 [기록 정정·설계 이유 복원](../../01_Phases/goals/2026-10-01-refactor-record-corrections/goal.md)을 재개했으며, 이 범위를 넘어 P1b·DB·게임 정책 구현이 자동 시작되는 것은 아니다.
 
 ## 최소 읽기
 
@@ -11,13 +11,13 @@
 
 ## Git와 문서 보존
 
-GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, 현재 branch/HEAD, 원격 main과의 차이를 먼저 확인한다. 재개 준비 branch·기준 commit은 P1a goal의 종료 절에 있다. branch 이름만 보고 다음 구현이 시작됐다고 판단하지 않는다.
+GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, 현재 branch/HEAD, 원격 main과의 차이를 먼저 확인한다. 현재 branch·기준 commit은 CURRENT의 goal, 이전 준비 branch는 P1a 종료 절에 있다. branch 이름만 보고 다음 구현이 시작됐다고 판단하지 않는다.
 
-오늘의 맥락 갱신은 로컬 문서 checkpoint로 보존하며 원격 main에 자동 반영하지 않는다. 기존 변경이나 이 문서 commit을 버리거나 무조건 main으로 전환하지 않는다. 다음 목표를 실제 시작할 때 최신 main을 확인하고, 필요한 종료/재개 문서를 보존해 개별 작업 branch에 반영한다. 새 checkout에 이 문서가 없다면 기존 작업 경로의 [로컬 인계](../../.backups/handoffs/2026-09-30-game-dev-next-session.md)와 로컬 문서 commit을 먼저 확인한다. 새 PR은 생성할 수 있지만 병합에는 그 PR에 대한 사용자 명시 승인이 필요하다.
+2026-09-30 맥락 문서 checkpoint `b3cf78a`는 기존 준비 branch에 보존됐으며, 2026-10-01 정정 branch에 `147ef1c`로 가져왔다. 이후 push·PR·병합 상태는 정정 goal에서 확인한다. 기존 변경이나 이 문서 commit을 버리거나 무조건 main으로 전환하지 않는다. 새 checkout에 이 문서가 없다면 기존 작업 경로의 [로컬 인계](../../.backups/handoffs/2026-09-30-game-dev-next-session.md)와 checkpoint를 확인한다. `CLAUDE.md`는 별도 세션이 PR149에 보존하고 사용자 승인으로 미추적 사본을 제거했으며, 정정 작업에서 재생성하거나 커밋하지 않는다. 상세 출처는 정정 goal에 있다. PR 병합에는 해당 PR에 대한 사용자 명시 승인이 필요하다.
 
 ## 다음 조각을 시작하는 순서
 
-- GameDev의 다음 후보는 메뉴 연결 probe의 입력 캡처·요청 수명·실패 정리·늦은 callback이다. `MainMenuController`와 `ConnectionProbe`의 필요한 경로를 읽고 기존 동작/실패 fixture부터 설계한다. 후보는 구현 완료나 확정된 UX 변경이 아니다.
+- 현재 정정 범위를 먼저 확인하고 [후속 후보와 판단 근거](../../01_Phases/goals/2026-10-01-refactor-record-corrections/open-items.md)를 참고한다. 이전 다음 후보는 메뉴 연결 probe의 입력 캡처·요청 수명·실패 정리·늦은 callback이었다. 실제 착수 순서는 사용자의 현재 우선순위에 따른다. `MainMenuController`와 `ConnectionProbe`의 필요한 경로 및 기존 동작/실패 fixture부터 설계하며 후보를 구현 완료나 확정된 UX로 해석하지 않는다.
 - source 교체·화면 종료 뒤 표시·재시도 같은 정책이 달라져야 하면 관찰 결과와 선택지를 사용자에게 올린다. 이후 표시 전용 HUD의 source binding을 별도 작은 조각으로 다룬다.
 - 범위·보존 계약·완료조건·파일 소유를 새 goal에 문서화한 뒤 CURRENT와 로드맵에 링크한다. Sol6.1 구현과 별도 Astra TestCode/검증/보고를 나눈다. 새 Codex CLI는 `--no-daemon`, 실제 모델 확인 불가는 `unknown`으로 기록한다.
 - DB 상세 설계는 P1과 독립적으로 준비할 수 있다. [D0](../../01_Phases/goals/2026-09-29-persistence-design/design.md)를 다시 결정하지 말고 schema/transaction/실패·복구 기술 계약을 구체화한다. SQL schema 접근 가능과 GameServer 저장·복원 연동 완료를 구분한다.
