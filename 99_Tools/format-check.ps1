@@ -80,6 +80,13 @@ try {
     if ($checkExit -ne 0) { throw "Formatting check failed: $EvidenceRoot/wsl-check.log" }
     Write-Output "Formatting checks passed. Evidence: $EvidenceRoot"
 } finally {
-    foreach ($name in $saved.Keys) { [Environment]::SetEnvironmentVariable($name,$saved[$name],'Process') }
+    foreach ($name in $saved.Keys) {
+        if ($null -eq $saved[$name]) {
+            # A typed null removes the variable; PowerShell's $null becomes an empty string.
+            [Environment]::SetEnvironmentVariable($name,[NullString]::Value,'Process')
+        } else {
+            [Environment]::SetEnvironmentVariable($name,$saved[$name],'Process')
+        }
+    }
     $taskLock.Dispose()
 }
