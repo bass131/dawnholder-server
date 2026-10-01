@@ -25,12 +25,13 @@
 - 새 브랜치: `docs/management-context-corrections`. 기존 `feat/management-system-records`는 `8c6fbd57f2f54825a937a82a6ad949755b43411c`로 보존한다.
 - checkpoint 이식: `dd4e7ea` (`git cherry-pick 8c6fbd57...`), 충돌 없음. 이후 변경 전에 clean을 확인했다.
 - catalog 출처 전환은 `ef6c50d0226247a6ac6d704e8ef2f1f560f7c782` 한 커밋에 `records/catalog.json`만 담아 문서 정정과 분리했다.
+- 문서 정정·독립 검토 근거는 `aa17541`로 커밋했다. 이후 PR 생성 상태를 이 goal에 기록한다.
 - 메인: 이번 goal·통합·PR·사용자/Claude 회신. 문서·기록 서술 작성자: 기존 05 문서와 catalog. 독립 검증자: 이 목표의 검토 기록만 소유하며 제품·정정 문서를 수정하지 않는다.
 - 지정 모델: 메인·문서/기록 작성·독립 검토 `gpt-6-astra`. 실제 backend 모델은 확인 불가로 `unknown`이다. 이번에는 일반 구현과 새 Codex CLI 프로세스를 시작하지 않는다.
 
 ## 현재 상태
 
-MC1의 브랜치 생성과 checkpoint 이식, MC2–MC6 정정, catalog 별도 커밋 및 별도 Astra의 [독립 정적 검토](verification.md)를 완료했다. 검토에서 발견한 사실 표기 1건은 작성자 수정 후 재확인해 PASS를 받았다. 문서 커밋·PR 생성은 준비 중이며 병합은 수행하지 않는다. PR147의 병합 완료와 이번 정정 PR의 진행 상태를 구분한다.
+MC1–MC6의 정정·별도 커밋·독립 정적 검토와 [PR #151](https://github.com/bass131/dawnholder-server/pull/151) 생성을 완료했다. 검토에서 발견한 사실 표기 1건은 작성자 수정 후 재확인해 PASS를 받았다. PR151은 OPEN이며 사용자 개별 병합 승인 전이다. 자동 병합을 설정하지 않았고 main 병합은 수행하지 않았다. PR147의 기존 병합 완료와 이번 정정 PR의 통합 대기를 구분한다. 새 MCP·운영 기능 착수 보류는 유지한다.
 
 이번 검토는 기존 catalog 계약의 데이터 수용, 출처 6개의 Git blob과 이전 SHA256 일치, 시스템·기록·asOf·sourceCommit 및 나머지 29개 출처 보존, 상대 링크 181개를 확인했다. 재현용 정적 검토 스크립트와 결과를 이 목표 폴더에 보존한다. 제품 코드·테스트 스위트 변경이나 앱 실행 검증은 아니다. r2 catalog SHA256은 `4D81FAAAF3DD375D2EEBF0ACB95983CA0AA2311038782DBA6EE7D35EC9554488`이다.
 
@@ -39,6 +40,7 @@ MC1의 브랜치 생성과 checkpoint 이식, MC2–MC6 정정, catalog 별도 �
 - [이전 구현·병합과 후속 보류](../2026-09-30-system-records/goal.md), [공동조회·로그 합의](../2026-09-30-system-records/shared-read-agreements.md).
 - [PR147](https://github.com/bass131/dawnholder-server/pull/147)은 `gh pr view`로 MERGED, 병합 commit `715bff5bfc62ab5c1f1cdf0aabdf7358492bb1d3`, 2026-09-30 10:41:59 UTC를 확인했다. Game Dev 의미검토 PASS는 이미 main의 이전 goal에 기록돼 있다.
 - 기존 Vitest·배치 fixture·Electron 실행은 당시 검증 기록이다. 이번 작업에서 다시 수행한 결과로 보고하지 않는다.
+- PR151 본문에도 dotnet-tests CI의 05 npm test/build 비실행과 실제 launcher 더블클릭·START detached 경로 미검증을 명시했다. 원격 CI의 현재 결과는 PR에서 확인하며, CI 성공이 Management 제품 실행 검증을 대신하지 않는다.
 - 실제 launcher 더블클릭·START detached 경로, 서버·SQL·Unity·MCP, 최신 게임 상태·catalog 자동 갱신을 검증하지 않는다. 원시 로그·이미지는 기존 로컬 전용 범위를 유지한다.
 
 ## 남은 결정
