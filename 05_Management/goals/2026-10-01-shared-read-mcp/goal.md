@@ -169,7 +169,7 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 ## 현재 상태와 근거
 
-**V1 재검증은 통과했다. 최초 결함 V1-01을 새 Sol이 수정하고 신규 Opus가 독립 시험24건을 추가해 전체174건 통과를 확인했다. V2 실제 stdio·Windows 경합 검증으로 진행하며 V3와 PR은 아직 미착수다.** 최초 Fable 판정과 최초 V1의 수정 필요 판정은 아래 이력에 보존한다.
+**V1 재검증과 V2 실제 stdio·Windows 경합 검증이 통과했다. 현재 V3 UI·build 회귀와 코드 리뷰를 준비하며 PR은 아직 미착수다.** V2 최종 전체206건 통과와 초기 실패 실행의 보고 과장1건을 구분해 아래에 기록한다. 최초 Fable 판정과 최초 V1의 수정 필요 판정은 이력에 보존한다.
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - 시작: clean `main`, HEAD `18c8ca6a5aa3032873029cbd36658f0c4f9095c5` (PR156). `git fetch origin main` 후 origin/main도 같은 SHA임을 확인했다.
@@ -276,3 +276,21 @@ V1 `worker_done msg_7f12f52e0932`는 검증 작업 완료이며 제품 통과를
 남은 V1 제품 결함은 없다. V1-01 재검증 실패 횟수는0이다. 비차단 관찰은 schema key와 등록 도구 집합의 수동 결합(V3 코드리뷰 인계), wrapper의 SDK envelope 검사 이전 거부, SDK/transport 갱신 때 전달 멤버 재점검, 비문자열 이름의 고정 크기 SDK문구다. Transport `extra` 전달은 코드상 확인했으나 시험에서는 효과를 판별하지 못했다. V2/V3와 실제 설정 연결은 별도이며 미실행 범위를 통과로 바꾸지 않는다.
 
 시험 쓰기 종료 `2026-10-01T23:45:56+09:00`, 보고 종료 `23:50:07+09:00`, 완료 `msg_0e73d5464f53`의 Task/Dispatch를 대조했다. release retained/external_terminal 후 같은 incarnation의 완료·빈 prompt를 확인하고 해당 pane만 닫아 ptyKilled=true를 받았다. Delivery `delivery_9f36037d2498` acknowledge 및 reclaimable0을 확인했으며 `v1-r1-completion.json`·release/close receipts에 보존했다. 다음 V2는 새 세션으로 수행한다.
+
+### V2 기준 커밋과 신규 검증자 발행
+
+모든 작업자 쓰기가 끝난 상태에서 제품·시험·05 안내/상태 35파일을 `41010557917adcfff8c2d11258cff371ff777569`로 커밋했다. `git diff --check`·staged check는 exit0, 커밋 후 clean을 확인했다. 기존 main 기준 `18c8ca6`에서 추가된 제품 파일도 이제 Git diff에 포함된다. 원격 push·PR·병합은 아직 수행하지 않았다. 메인에게 `msg_5d42b5d47260`으로 V1-R1 원문 경로·통과 근거·잔여 범위와 이 커밋을 보고했다.
+
+V2는 새 Astra 아래 split의 `claude --model claude-opus-5-5`로 실행했고 화면 Opus5.5 xhigh, backend unknown, 빈 prompt·tui-idle을 확인했다. Task `task_ea27a8466c95` / Dispatch `ctx_494133981704` / terminal `term_08bf6163-fe4d-4787-865e-1da59e2a190f` / incarnation `bbe3496e-00ff-46e3-bcd2-116cb234d527`다. 연결은 input_accepted·turn_started, 잔여 자원 없음이며 `v2-spec.md`, `v2-*-*.json`에 근거를 보존했다. 제품·기존/V1/V1-R1 시험은 읽기 전용이고 V2 시험만 작성한다. 실제 stdio 동시두client·취소/종료·quota·응답크기·고정정본경로와 Windows 반복 저장 경합을 검증한다. `v2-review.md` 판정 대기 중이다.
+
+### V2 통과·실사 보완·정산
+
+Astra는 `v2-review.md` 전체를 읽었다. V2 신규32건, 전체206건, 시험/MCP typecheck·build가 exit0이며 제품·정본49파일과 mcp-dist12파일 해시는 불변이다. 두 규격의 실제 동시child에서 탐색·hash고정·충돌·재빌드 없는 갱신·취소시 응답억제/handle/slot반환·프로세스별quota·argv/env/cwd/roots로 정본을 바꾸지 못함을 확인했다. 최종실행50프로세스의 EOF 종료는 최대13ms, exit0, 강제kill0이었다. 입력거부50유형의 fixture handler/read/open 실측0, 정상대조군계측동작, 최대client거부609bytes이며 production에는 counter가 없어 직접계측으로 주장하지 않는다.
+
+정본 최대application은16,220bytes, modern client16,387/wire16,445bytes다. SDK부가필드는 application한도와 별도다. Windows 두프로세스가 각각tokenbucket 상한으로 읽는7회 실행에서 저장1,400/1,400, rename1회1,395·2회5(EPERM5)였다. 제어군350/350, 공유없는handle의 실제EBUSY→UNREADABLE/해제후회복, 강제읽기handle의EPERM23회·1,008~1,017ms후기존write실패, EIO1회실패·backup/lock/conflict 보존을 확인했다. 마지막새시도시작은956~964ms로1초창안이며 OS I/O 자체지연과 구분한다.
+
+초기 시험실패 두건은 시험측 원인이었다. IPC의pause등록확인보다stdin요청이앞서는 순서문제와, 비원자적관측 직후회복조회가소진된quota의retryAfterMs를지키지않던 문제를 보완했다. 실패로그는 보존됐다. 다만 **보고 원문12절의 초기실패실행도 "부분 성공0건"이라는 문장은 미입증**이다. 7절은 그 실행의측정/최종검사가남지않았다고 정확히구분한다. Astra가 `v2-windows-attempt-before-fix.log`와 시험흐름을 직접 대조하니 회복assert실패후의unknownHashes검사는 미실행이었다. 이 차이는 `msg_e9bf2c4563f1`로 즉시메인보고했고 `v2-astra-audit.md`에 보완했다. 원문은 보존한다. 최종및나머지6회부분성공검사/전체pass, 별개인원자적저장1,400측정의근거는유효하다.
+
+비차단 관찰은 modern SDK부가크기, 비원자적편집의일시적INVALID(retryable=false), schema확장시거부크기재측정, SDK10MiB초과stdin연결종료, 환경별경합빈도차이다. MCP안내에는 외부편집완료확인후수동재조회와지속오류확인을추가했고V3문서실사대상이다. V3 UI/ElectronGUI/build/코드리뷰와실제개발세션연결은아직미실행이다.
+
+시험쓰기종료 `2026-10-02T00:20:22+09:00`, 보고종료00:26:24, 완료 `msg_15de0df8beec`의Task/Dispatch를대조했다. release retained/external_terminal후같은incarnation의완료·빈prompt를확인하고해당pane만닫아ptyKilled=true를받았다. Delivery `delivery_c13e5c812626` acknowledge및reclaimable0을확인했고 `v2-completion.json`·release/close receipts에보존했다. 완료세션은재사용하지않는다.

@@ -43,6 +43,8 @@ C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active/05_Managemen
 
 `VERSION_CONFLICT`가 나면 새 목록부터 다시 읽고 어떤 버전을 사용할지 판단한다. 서버가 오래된 snapshot으로 조용히 되돌리거나 자동 재시도하지 않는다. 파일 오류에는 정상 data가 없으며 `retryable`과 오류 code로 후속 처리를 구분한다. `RATE_LIMITED`는 `retryAfterMs` 뒤에 다시 요청한다. 오류 코드·입출력의 정확한 계약은 [goal D2/D3](goals/2026-10-01-shared-read-mcp/goal.md#d2-조회-도구와-응답-제한)를 따른다.
 
+외부 편집 도구가 파일을 제자리에서 나눠 쓰는 동안에는 잠깐 `CATALOG_INVALID`가 나올 수 있다. 편집 도구의 저장이 끝났는지 확인한 뒤 다시 조회하고, 오류가 계속되면 catalog 내용을 확인한다. 서버는 쓰기 중인 파일과 손상된 파일을 구분할 수 없어 이 오류를 자동 재시도하지 않는다.
+
 ## 버전과 제한
 
 catalog 내용만 수정하면 다음 요청에서 다시 읽으므로 MCP 재빌드는 필요 없다. 같은 작업 트리의 미병합 편집도 공동 조회에 보인다. branch 전환이나 MCP/공통 코드·의존성 변경 뒤에는 `npm ci`가 필요한지 확인하고 MCP를 재빌드한 다음 client의 MCP child process를 다시 시작한다. 오래된 실행본을 계속 사용하는 방식은 지원하지 않는다.
