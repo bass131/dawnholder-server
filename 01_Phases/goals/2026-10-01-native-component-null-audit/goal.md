@@ -1,6 +1,6 @@
 # R-2 내장 컴포넌트 null 검사
 
-상태: **독립 정적 실사 PASS·R-2 검사 종료·PR 준비**. `cb6f717`의 `03_Client/Assets/Scripts` 112파일·44호출을 조사했고 신규 Opus가 독립 재검색했다. 승인 범위의 수정 대상은 발견하지 못해 제품 변경 없이 R-2 후보를 닫는다. 이는 파괴된 Unity 객체 수명 전반이나 실제 Unity 실행의 안전성 판정이 아니다.
+상태: **독립 정적 실사 PASS·R-2 검사 종료·[PR155](https://github.com/bass131/dawnholder-server/pull/155) 병합 승인 대기**. `cb6f717`의 `03_Client/Assets/Scripts` 112파일·44호출을 조사했고 신규 Opus가 독립 재검색했다. 승인 범위의 수정 대상은 발견하지 못해 제품 변경 없이 R-2 후보를 닫는다. 이는 파괴된 Unity 객체 수명 전반이나 실제 Unity 실행의 안전성 판정이 아니다.
 
 ## 목표와 범위
 
@@ -60,7 +60,7 @@ Unity·EditMode·PlayMode·수동 플레이·솔루션 빌드·서버/DB는 이�
 
 GameDev 정리 직후(20:10:35 +0900) archive·main·Management branch·stash 2개를 보존했다. manifest의 skip-worktree `S`와 SHA256 `3E194274509B32D18F4BE03F2D9462B5CDBB721C14EEE0ED0B6A17B1360AD781`도 동일하다. 근거는 같은 로컬 폴더의 `cleanup-before.json`, `cleanup-after.json`이다. main은 Management worktree 소유이며 직접 전환·갱신하지 않았다.
 
-Management의 `feat/management-system-records`는 20:10:35 이후 삭제됐고 삭제 주체는 메인이 확인 중이다. 독립 검증의 N-4를 메인에게 전달한 뒤 `msg_ca634bc5934a`로 내용이 main의 `dd4e7ea`와 동등한 patch라는 확인을 받았다. GameDev도 `git cherry -v main 8c6fbd5`의 `-` 및 stable patch-id 동일을 재확인했다(`management-patch-equivalence.json`). ref 부재와 내용 손실을 구분하며 해당 branch를 재생성하지 않는다.
+Management의 `feat/management-system-records`는 Management Astra가 20:10:36 +0900 무렵 `git branch -D`로 삭제했다고 메인이 `msg_07899ca4ea9b`로 확인했다(Management 회신 `msg_425f706e6972`). 독립 검증의 N-4를 메인에게 전달한 뒤 `msg_ca634bc5934a`로 내용이 main의 `dd4e7ea`와 동등한 patch라는 확인도 받았다. GameDev 역시 `git cherry -v main 8c6fbd5`의 `-` 및 stable patch-id 동일을 재확인했다(`management-patch-equivalence.json`). ref 부재와 내용 손실을 구분하며 해당 branch를 재생성하지 않는다.
 
 ## 세션 관측과 다음 경계
 
@@ -78,5 +78,7 @@ GameDev Astra 화면은 `GPT-6-Astra xhigh`, 백엔드 실제 모델은 `unknown
 비차단 관찰 N-1~N-5는 원문에 남긴다. N-1의 비제네릭 `out T` 타입 공란 4건은 원본 JSON을 보존한 채 `component-call-inventory-supplemented.json`에 보완했다. N-2 Find 검색 출력은 `find-queries.txt`로 추가 보존했고 검증자의 더 넓은 검색도 있다. N-3 투사체 target 출처는 위 표를 정밀화했다. N-4의 내용 보존 확인은 위 브랜치 정리 절을 따른다. N-5는 검증자가 메인 지시 메시지·원격 ls-remote를 독립 재확인하지 않은 한계다.
 
 파괴 객체 수명과 타입 인식 분석기 도입은 검증자가 제시한 범위 밖 의견이다. 메인 `msg_ca634bc5934a`에 따라 StageClearUI와 분석기 도입을 open-items 후보로만 남기며 결함 확정·추가 구현 승인으로 삼지 않는다. 검사·결과 문서화 뒤 PR을 생성하며 병합은 사용자 승인 전까지 대기한다.
+
+결과 커밋 `a25bec3`을 push해 PR155를 생성했다. 메인은 판정 원문을 직접 읽고 PASS와 비차단 관찰에 동의했다. 제품 diff 0·상대 파일 링크 61개 누락 0·diff 공백 검사를 확인했다(`final-doc-check.json`). 최종 head와 CI 상태는 PR 및 같은 근거 폴더의 `final-pr-status.json`으로 확인한다. 자동 병합은 설정하지 않았으며 CI 성공도 병합 승인을 대신하지 않는다.
 
 DB D1a는 읽기 전용 조사·메인에게 초안/질문 전달까지만 병행한다. DB 문서 쓰기와 구현은 이 branch 작업 종료 뒤 별도 branch에서 진행하며 D0 결정을 다시 열지 않는다.
