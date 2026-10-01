@@ -56,9 +56,13 @@ Game Dev에 ARCHITECTURE의 계층/의존 방향, FEATURE_MAP 코드 진입점, 
 
 구현·독립 검증·병합 완료. [PR #147](https://github.com/bass131/dawnholder-server/pull/147)은 사용자 명시 승인 후 Game Dev 메인이 2026-09-30 10:41:59 UTC에 `715bff5bfc62ab5c1f1cdf0aabdf7358492bb1d3`으로 병합했다. 구현 커밋은 `3fc1e536c0ebdbeced52615787cbed9535d16bcc`, 최종 검토 head는 `fd8f3c84cda4b7867a67ec5d3042de0bd43e8c4b`다. 해당 head의 독립 검토·CI와 Game Dev 전투 정정본 의미검토는 PASS다. 후속 공동 조회 착수는 사용자의 오늘 작업 종료 선택에 따라 보류한다.
 
+2026-10-01 [문맥 정정 목표](../2026-10-01-context-corrections/goal.md)는 문서·출처 표기만 다룬다. Game Dev 최종 의미 검토 PASS는 기존 공개 main `ef5f1023`의 이 goal에도 이미 기록돼 있었다. 당시 main 문서의 PR147 표기는 OPEN·사용자 승인 대기였으며, 위 병합 완료 기록은 로컬 checkpoint `8c6fbd57`에서 이번 브랜치로 이식한 내용이다. 이를 이번에 처음 확인한 PASS나 새 병합 실행으로 표시하지 않는다. MCP 착수 보류를 유지한다. 위 CI는 [dotnet-tests](../../../.github/workflows/dotnet-tests.yml)의 .NET 검사이며 05 npm test/build를 실행하지 않는다. 아래 Management 검증은 별도 로컬 실적이다. 실제 배치 더블클릭·START detached 실행은 미검증이고, Electron main의 1280×720 관찰로 이를 대신하지 않는다.
+
 기록 데이터(18시스템·18기록·35출처), 재배치 대응표와 앱 런타임 읽기/편집/저장 구현을 완료했다. 별도 Astra의 27개 테스트, 테스트 코드 타입검사, UI/Electron 빌드, 실행 배치 12개 테스트가 통과했다. 제품 빌드와 hash가 같은 시험용 복사본의 실제 Electron 창에서 편집→저장→재조회, JSON 불러오기, 잘못된 JSON 보존, 외부 수정 충돌·초안 보존과 격리 경계를 확인했다. 새 정본 경로의 실제 main을 별도 읽기 전용 실행해 1280×720 외곽 창, 실제 catalog 읽기, 원본 hash 보존과 정상 종료를 확인했다.
 
 Game Dev의 전투 의미 검토에 따라 StageClear의 보스/최초 조건, 비보스 respawn, 지연 피해 패킷 표현 clamp와 권위 HP의 차이, 평타/Dash 진입점을 정정했다. 최종 catalog SHA256은 `2711E0C1DB3FB581A6B02373E7C6F72EE3761E303628E3A03329758014385A1A`다. 09:05 기준 기록에 이후의 앱·게임 실행 결과를 소급하지 않는다. Game Dev 원문과 CURRENT는 수정하지 않았다.
+
+위 hash는 당시 `2026-09-30-r1` 결과다. 후속 `2026-10-01-r2`는 [고정 Git 출처 전환](migration-map.md#출처-고정과-가용성)으로 JSON hash가 달라지며 asOf·시스템/기록의 역사 상태·sourceCommit을 보존한다. 내용 최신성이나 runtime 검증을 갱신한 것이 아니다.
 
 이번에 새로 만든 것은 기록 데이터·대응표·탐색/편집 화면·좁은 Electron 파일 bridge와 독립 테스트다. 인계된 Electron/콘솔/배치 기반과 기존 요구·결정·검증 문서는 함께 첫 커밋에 들어가며, 이 목표에서 새로 구현하거나 재검증한 범위를 과거 실적과 구분한다. 메인·기록 작성·독립 검증 지정 모델은 `gpt-6-astra`, 구현 지정 모델은 `gpt-6.1-sol`; 실제 모델 runtime은 확인되지 않아 `unknown`이다.
 
@@ -83,6 +87,8 @@ Game Dev 조건부 의미 검토는 `msg_4397a2310999`다. 정정 완료본 요�
 PR147 마무리 당시 작업은 회신 상태 정정·main 정합성 확인·정확 head 검토와 [다음 작업 설계안](next-options.md)까지였다. 이후 사용자와 정한 공동 조회·로그 범위와 오늘의 착수 보류는 아래 재개 기록을 따른다. 실제 MCP/서버/DB/3D 실행과 권한 변경은 하지 않았다.
 
 ## 오늘 작업 종료·다음 세션 재개
+
+이 절은 2026-09-30 종료 당시의 권한과 재개 지시를 보존한다. 2026-10-01에는 원래 `feat/management-system-records`와 checkpoint `8c6fbd57`을 보존하고, main `ef5f1023fe3353ee9eec5da04422232a33855233` 기반 `docs/management-context-corrections`로 문서를 `dd4e7ea`에 이식했다. 현재 문서 정정·PR 상태는 [새 goal](../2026-10-01-context-corrections/goal.md)을 따른다. 아래 “새 branch·PR 범위 아님”은 당시 문서 보존 작업의 한계이며 현재 정정 PR 금지를 뜻하지 않는다. MCP 후속 구현 보류는 유지한다.
 
 최신 회신 `msg_fc30215d0d1a`(2026-09-30 10:45:29 UTC)가 직전 `msg_3187ffc08f9d`의 즉시 후속 착수 지시를 보류했다. 사용자의 직접 종료 요청과 함께 확인했으며 새 구현·새 목표·서버 실행을 시작하지 않는다. 터미널/프로세스를 종료하거나 정리하지 않고 현재 세션과 자료를 유지한다.
 

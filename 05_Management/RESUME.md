@@ -4,7 +4,7 @@
 
 ## 최소 읽기 순서
 
-1. [기존 goal의 현재 상태·종료/재개 절](goals/2026-09-30-system-records/goal.md#현재-상태): 병합·보류, 로컬 branch와 문서 보존, 검증/미실행의 정본.
+1. [현재 문맥 정정 goal](goals/2026-10-01-context-corrections/goal.md): 사실 정정의 범위·검토·PR 상태. [기존 goal](goals/2026-09-30-system-records/goal.md#현재-상태)은 PR147 병합과 후속 구현 보류·당시 검증의 원본이다.
 2. [공동 조회·로그 합의](goals/2026-09-30-system-records/shared-read-agreements.md): 사용자와 정한 순서, 첫 구현 경계, 후속 로그 계약과 남은 결정.
 3. 실제 재개할 때만 [AGENTS](../AGENTS.md), [목표 루프](../.agents/skills/dawnholder-goal-loop/SKILL.md), [실행 안내](../00_Document/operations/DEVELOPMENT.md)의 영향 범위를 읽는다. 과거 전체 소스·로그·대화를 모으지 않는다.
 
@@ -12,7 +12,9 @@
 
 사용자의 작업 재개 지시 여부를 먼저 확인한다. 이어 `git status --short --branch`와 `git log -1 --format="%H %s" -- 05_Management`로 실제 로컬 변경·문서 커밋을 확인하고 위 goal의 관찰과 비교한다. 맥락 갱신만으로 후속 보류가 해제되지는 않는다.
 
-재개 지시가 있으면 로컬 문서 커밋·미커밋 변경을 보존한 뒤 최신 main을 fetch한다. 이 맥락 정리 커밋은 원격에 push하지 않았으므로 원격만 checkout하면 재개 문서가 빠질 수 있다. 현재 branch를 그대로 보관하고 최신 main 기반 새 branch를 만든 뒤 필요한 문서 정리 커밋을 이식(cherry-pick)하는 방법을 우선 검토한다. dirty 상태는 먼저 별도 보존하고, 충돌은 실제 최신 상태와 대조한다. reset/삭제로 정리하지 않는다. 그 뒤 합의된 공동 조회 범위를 새 goal에 정식화한다. 오늘은 이 전환을 실행하지 않는다.
+2026-09-30 종료 당시에는 로컬 문서 commit을 보존한 뒤 최신 main 기반 새 branch로 이식하는 절차를 남겼고, 그날은 전환하지 않았다. 이 과거 지시는 [당시 종료 기록](goals/2026-09-30-system-records/goal.md#오늘-작업-종료다음-세션-재개)에 보존한다.
+
+2026-10-01 사실 정정을 위해 원래 `feat/management-system-records`와 문서 checkpoint `8c6fbd57`을 보존하고, main `ef5f1023fe3353ee9eec5da04422232a33855233` 기반 `docs/management-context-corrections`에 `dd4e7ea`로 cherry-pick했다. 현재 정정의 진행 상태는 위 새 goal을 따른다. 이 브랜치 전환·문서 PR 작업은 MCP 착수 보류를 해제하지 않는다. 후속 구현은 별도 재개 지시와 goal 범위 안에서 진행하며, 그때 실제 최신 main과 로컬 변경을 확인해 보존한다.
 
 ## 소유권과 다음 결정
 

@@ -1,0 +1,127 @@
+{
+  "snapshotUtc": "2026-10-01T05:12:06.933Z",
+  "base": "ef5f1023fe3353ee9eec5da04422232a33855233",
+  "head": "dd4e7eabf955bec7f47778cb22a3aefd9cf7ef5b",
+  "checkpointPreserved": true,
+  "checkpointPatchIdentical": true,
+  "contractAccepted": true,
+  "byteLength": 75931,
+  "catalogSha256": "4D81FAAAF3DD375D2EEBF0ACB95983CA0AA2311038782DBA6EE7D35EC9554488",
+  "originalCatalogSha256": "2711E0C1DB3FB581A6B02373E7C6F72EE3761E303628E3A03329758014385A1A",
+  "changedSources": [
+    {
+      "id": "management-decisions",
+      "locator": "05_Management/decisions.md",
+      "sha256": "472B8ED724155474B594CE92FA97924419B9A81A82D8E7A2693F60C8A21C6225"
+    },
+    {
+      "id": "management-requirements",
+      "locator": "05_Management/requirements.md",
+      "sha256": "35D123FB83C92DC065AB3C111C3030B460E0D869E9A0ABD003588625FBFAA748"
+    },
+    {
+      "id": "management-foundation",
+      "locator": "05_Management/goals/2026-09-30-foundation/goal.md",
+      "sha256": "B9510B4BEBD7AD7C726BE632D0E97D070EFF7C5C121E4A2780906FA38659617D"
+    },
+    {
+      "id": "management-desktop",
+      "locator": "05_Management/goals/2026-09-30-desktop-shell/verification.md",
+      "sha256": "F3B7878D822327334F1377B699873BBE99A9F837523997D783E55E0135649C8C"
+    },
+    {
+      "id": "management-console",
+      "locator": "05_Management/goals/2026-09-30-console-refinement/verification.md",
+      "sha256": "30D5E4152835865118E7FB5FEF5C5F7699F4E41743C5A8D7CE20D51248F9CBA2"
+    },
+    {
+      "id": "management-launcher",
+      "locator": "05_Management/goals/2026-09-30-launcher/verification.md",
+      "sha256": "AE02BAC7AC3A42DB79181F203E6D76E10B7CC9165A1A3E2E0D389FAC2C9A7AD4"
+    }
+  ],
+  "gitSourcePathsPresent": 22,
+  "kindCounts": {
+    "git": 22,
+    "local": 12,
+    "handoff": 1
+  },
+  "unchangedHistoryAndOtherSources": true,
+  "referenceAndReverseErrors": 0,
+  "changedPaths": [
+    "05_Management/README.md",
+    "05_Management/RESUME.md",
+    "05_Management/decisions.md",
+    "05_Management/goals/2026-09-30-console-refinement/goal.md",
+    "05_Management/goals/2026-09-30-desktop-shell/goal.md",
+    "05_Management/goals/2026-09-30-foundation/goal.md",
+    "05_Management/goals/2026-09-30-launcher/goal.md",
+    "05_Management/goals/2026-09-30-system-records/goal.md",
+    "05_Management/goals/2026-09-30-system-records/migration-map.md",
+    "05_Management/goals/2026-09-30-system-records/next-options.md",
+    "05_Management/goals/2026-09-30-system-records/shared-read-agreements.md",
+    "05_Management/goals/2026-09-30-system-records/verification.md",
+    "05_Management/records/catalog.json",
+    "05_Management/requirements.md"
+  ],
+  "checkedLinks": 181,
+  "broken": [],
+  "reviewedDocuments": [
+    {
+      "file": "05_Management/README.md",
+      "sha256": "73C3F12126A9A5F98E4FCBAD5FA7E0D87465A0BAE07AA7E65838B397EE0DDB4D"
+    },
+    {
+      "file": "05_Management/RESUME.md",
+      "sha256": "DCD1F384193030A4B9658214A304D8DC28B424239264712961E09867C5510593"
+    },
+    {
+      "file": "05_Management/decisions.md",
+      "sha256": "70658C255278A3DD87E6F9CAA4C838CA0DAD51400A1C496FF3284F4B008ED32A"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-console-refinement/goal.md",
+      "sha256": "8737D8B51B610899B980E6E2361135F37EB4C6F1B37CB6E4CC4728550E8DCCE2"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-desktop-shell/goal.md",
+      "sha256": "E87B733F50D5778999B7AF9A145C7ABB608247C64915376C2BD81F093FBCAB4C"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-foundation/goal.md",
+      "sha256": "B5647B783EBC7690317304E22B6D43D4474EDFDE09D551F6B09DED491C1F4738"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-launcher/goal.md",
+      "sha256": "C393A13D3AD117ECEF3FC362C59821DC1D7E3BDFBBC4265CD1BAEF3045083EF5"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-system-records/goal.md",
+      "sha256": "E195BB74181D25DCE230D65E4623A718328DE22DFC8DF296CEE38616F97A7C0C"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-system-records/migration-map.md",
+      "sha256": "C3B97B099274112DEB7F2AD8D7EAA9277667BD28322B2E0BD0A7C8CAC26CD710"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-system-records/next-options.md",
+      "sha256": "9BD36E820560C3BDC8B8319BC3BAFAD86C09D4260CFC581F2E54DE8448C78BC6"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-system-records/shared-read-agreements.md",
+      "sha256": "7D11139EE5293F3456DB6392F0E00B3E122564F645AF29596113634B853AEAA5"
+    },
+    {
+      "file": "05_Management/goals/2026-09-30-system-records/verification.md",
+      "sha256": "BAD4CB20931059813404E98714A889DEBE4FFEDAB9169407A1C82975795529B2"
+    },
+    {
+      "file": "05_Management/requirements.md",
+      "sha256": "8A2CC67B25C5FC8BDA9C71CDF67D65963FA9DA7B92439148A7AEC214A88FFDC7"
+    },
+    {
+      "file": "05_Management/goals/2026-10-01-context-corrections/goal.md",
+      "sha256": "41E56A2C4F8B7EF3B4F2CAFD5A4DB97A10DB3B1B297DE1F2D7C16F92EF2673BC"
+    }
+  ]
+}

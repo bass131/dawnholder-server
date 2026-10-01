@@ -6,6 +6,8 @@
 
 **확정:** [R-01](requirements.md#r-01)의 우선순위를 따른다. 현재 라이브 운영 필요를 먼저 다루고 유저/GM와 개발 근거 영역으로 이어간다. 초기 화면 탐색도 이 순서를 사용한다.
 
+이는 장기 제품 우선순위다. PR147 이후 제한된 후속의 확정 순서인 개발 기록 공동 조회 → 서버 등록·로그 조회는 [D-10](#d-10)을 따른다. 우선순위 재논의 예정이라는 전달은 기존 합의의 취소나 새 구현 착수 승인이 아니다.
+
 ## D-02
 
 **확정:** [R-02](requirements.md#r-02)의 현재 운영 단위와 로컬 접근 제한을 따른다. 게임 접속 제공과 관리 접근의 권한 경계를 분리하기 위한 선택이다. 장기 다중 서버 요구를 현재 Docker/분산 구현 승인으로 해석하지 않는다.
@@ -59,6 +61,12 @@ Public Trust Test·Private Trust·자체서명을 현재 SAC를 유지하는 공
 레이아웃/간격 참고는 [shadcn blocks](https://ui.shadcn.com/blocks)·[sidebar](https://ui.shadcn.com/blocks/sidebar), [Tabler vertical layout](https://preview.tabler.io/layout-vertical.html)·[admin template](https://tabler.io/admin-template)다. 직접 SVG/CSS로 구성하며 템플릿 전체 복사·설치나 패키지 추가를 하지 않는다.
 
 두 프로젝트의 라이선스 원본은 MIT로 확인했다: [shadcn LICENSE.md](https://github.com/shadcn-ui/ui/blob/main/LICENSE.md), [Tabler LICENSE](https://github.com/tabler/tabler/blob/dev/LICENSE). 이는 참고 출처 기록이며 외부 구현 코드를 복사했다는 뜻이 아니다. 실제 변경과 검증 결과는 [데스크톱 창 목표](goals/2026-09-30-desktop-shell/goal.md)에만 기록한다.
+
+## D-10
+
+**후속 확정:** [R-10](requirements.md#r-10)에 따라 개발 기록 공동 조회 → 서버 등록·로그 조회 순서로 진행한다. 현재 구현된 `records/catalog.json` 파일을 공통 원본으로 유지하고, 첫 조회는 로컬 stdio MCP와 공통 조회 모듈로 앱 수명과 분리한다. 사람과 에이전트가 같은 자료를 읽게 하되 첫 MCP에 쓰기·서버 제어를 노출하지 않는다. 합의와 완료조건은 [공동 조회·로그 합의](goals/2026-09-30-system-records/shared-read-agreements.md)에서 찾는다.
+
+일반 로그 최근 10분 조회와 서버당 최대 7일·1GB 보존, 조사 근거의 별도 보존도 확정했다. 자동 수집·갱신 주기, 쓰기/실행 권한, 등록·회전 세부 계약 등 [남은 결정](goals/2026-09-30-system-records/shared-read-agreements.md#다음-결정)은 유지한다. 이 선택은 구현 실적이 아니며 2026-10-01 사실 정정 요청으로 MCP 착수 보류가 해제되지는 않는다.
 
 ## 기록 원칙
 
