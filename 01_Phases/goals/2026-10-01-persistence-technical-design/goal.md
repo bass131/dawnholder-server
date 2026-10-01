@@ -1,11 +1,11 @@
 # P2 / D1a — 캐릭터 영속성 기술 계약
 
-상태: **메인 승인 후 기술 명세 작성 완료, 신규 Opus 독립 실사 준비**. D0·P0·현재 서버의 읽기 전용 조사와 공식 driver 자료 확인을 마쳤다. 이 goal은 기술 명세 작업의 범위이며 GameServer 연동·신규 migration·SQL 시험이 완료됐다는 뜻이 아니다.
+상태: **1차 독립 실사 PASS 후 비차단 관찰을 명세에 보완, 신규 Opus 재실사 준비**. D0·P0·현재 서버의 읽기 전용 조사와 공식 driver 자료 확인을 마쳤다. 이 goal은 기술 명세 작업의 범위이며 GameServer 연동·신규 migration·SQL 시험이 완료됐다는 뜻이 아니다.
 
 ## 착수 근거와 기준
 
 - 메인 지시 `msg_40867e846fd7`: DB 설계가 큰 목표이고 R-2 검사와 Management 규칙 적용은 병행한다. C 사전 조사 결과와 초안·질문은 `msg_29b12d4b2d87`로 전달했다.
-- 메인 `msg_deb8cb0b630f`: R-2 판정·PR 후 최신 main의 별도 branch에서 D1a goal을 작성하고 커밋 뒤 메인 확인을 받는다. R-2는 독립 실사 PASS·제품 변경 없이 [PR155](https://github.com/bass131/dawnholder-server/pull/155)로 분리됐으며 사용자 병합 승인은 별도다.
+- 메인 `msg_deb8cb0b630f`: R-2 판정·PR 후 최신 main의 별도 branch에서 D1a goal을 작성하고 커밋 뒤 메인 확인을 받는다. R-2는 독립 실사 PASS·제품 변경 없이 [PR155](https://github.com/bass131/dawnholder-server/pull/155)로 분리됐고 이후 사용자 승인에 따라 메인이 병합했다(`ac37f28`).
 - branch `bass131/persistence-technical-design`, base `cb6f717de0fc0eea6d1295d3c8c47da7454125a6`(branch 생성 직전 `git fetch origin main` 결과). GameDev checkout의 R-2 쓰기를 종료한 뒤 전환했고 다른 checkout을 만들지 않았다.
 - goal 초안 `b1183bc`는 메인 `msg_ee67fbb79a1c`에서 승인됐다. PR155·156 병합 후 `msg_95454224fccb` 지시로 clean 상태에서 `origin/main 18c8ca6`에 rebase했다. goal 커밋은 `b2c31bf`로 바뀌었고 CURRENT의 D1a 링크를 유지했다. 병합된 R-2 로컬 branch만 `git branch -d`로 삭제했으며 원격 branch는 보존했다.
 - 계약 출처: [D0 결정](../2026-09-29-persistence-design/goal.md), [D0 설계](../2026-09-29-persistence-design/design.md), [D1–D4 분할](../2026-09-29-persistence-design/implementation-plan.md), [P0 DB·소유 계약](../2026-09-30-contracts-baseline/contracts.md), [P2 로드맵](../../milestones/2026-09-30-contracts-persistence/roadmap.md). D0 제품 결정을 다시 열지 않는다.
@@ -15,8 +15,10 @@
 개발 고정 계정 1개·캐릭터 1개, 최초 생성 클래스 유지, 재접속 Town 안전 spawn·기본 풀HP, quest/보스 해금 세션 한정을 유지한다. 영속 대상은 identity/class와 안전 checkpoint다. 주기 저장·매 logout 동일 게임 데이터 UPDATE·전투 위치/rawHP/quest 저장·정식 인증·경제 데이터는 추가하지 않는다.
 
 - 사용자 결정은 메인 `msg_04bde9ea9023`으로 전달됐다: **신뢰 복구 입구는 로컬 Windows 관리자가 명시 실행하는 제한된 관리 도구**로 설계한다. 게임 앱 principal에는 recovery 권한을 주지 않는다. Management 복구 command와 운영툴 권한/경계는 후속 브레인스토밍 후보이며 D1a 범위 밖이다.
+- 추가 사용자 결정은 메인 `msg_dac79ea2b268`으로 전달됐다: 복구 도구의 실제 연결은 **dh_recovery에만 매핑한 전용 비-sysadmin Windows principal**로 고정한다. 기존 관리자 sysadmin으로 대체하지 않는다. Windows 계정 생성과 SQL login/user/role·실행 경로 구성은 D1b gate에서 별도 승인을 받는다. 메인이 전달한 결정이며 사용자 직접 입력으로 격상하지 않는다.
 - SQL 시험 대상은 **D1b 실행 직전에 결정**한다. 새 `Dawnholder_Dev_<suffix>` 격리 DB가 추천안이나 아직 선택·실행 승인으로 보지 않는다.
 - 사용자 확인을 받은 메인 `msg_deb8cb0b630f`에 따라 `Northwind`·`BaseballGame`은 연습용이며 참조·재사용·변경하지 않는다. 게임용 사전 schema는 `Dawnholder_Dev`의 `dh` 테이블이다. **001 migration을 고정하고 authority/operation 변경은 002 이후 신규 migration으로 설계**한다.
+- 메인 `msg_dac79ea2b268`은 GameDB도 연습용이라고 확인했고 제외 목록을 **GameDB·BaseballData·Northwind**로 전달했다. `BaseballGame`이 BaseballData를 뜻할 가능성은 실제 조회로 확인하지 않았다. 원칙은 선택한 `Dawnholder_Dev[_suffix]` 외 전부 제외이며 실제 catalog 이름은 D1b gate에서 기록한다.
 - 사용자는 게임용 사전 테이블을 아직 직접 보지 않았으므로 아래 역할·제약을 보고에 포함한다. 보고 후 변경을 원하면 D0 재결정 여부를 메인에 올린다. 이 설명을 기존 데이터의 실제 현황 재검증으로 보지 않는다.
 
 ## 사용자가 볼 사전 테이블 요약
@@ -38,7 +40,7 @@
 4. D1b 저장소 API/결과와 D2 bounded worker·owner/종료 인계, D3 Loading/권위 class 입장의 소비 경계를 명세한다. D2 전체 deadline 수치 튜닝이나 D3 packet ID·Unity 구현을 앞당기지 않는다.
 5. 격리 SQL 두 연결 시험의 old/new 순서·장애 주입 지점·관측 증거·권한·정리 절차를 설계한다. 정확한 실행 DB·시험 principal/GUID·cleanup 권한은 D1b 실행 gate로 남긴다.
 
-산출물은 이 `goal.md`(기준·상태·결정·결과), [technical-spec.md](technical-spec.md)(DDL/API/transaction/설정·권한 계약), [verification-plan.md](verification-plan.md)(반증 행렬·실행 gate·정리)다. 메인 goal 승인 후 두 명세를 작성했으며 독립 실사 전이다. CURRENT와 로드맵은 goal 링크만 유지한다.
+산출물은 이 `goal.md`(기준·상태·결정·결과), [technical-spec.md](technical-spec.md)(DDL/API/transaction/설정·권한 계약), [verification-plan.md](verification-plan.md)(반증 행렬·실행 gate·정리)다. 메인 goal 승인 후 두 명세를 작성했으며 1차 실사 뒤 보완을 재실사한다. CURRENT와 로드맵은 goal 링크만 유지한다.
 
 ## 현재 코드와 후속 연결점
 
@@ -66,3 +68,10 @@ branch 전환 후 manifest·packages-lock·ProjectSettings의 skip-worktree `S`�
 - acquire/create/checkpoint/release/resolve/관리 recovery의 동일 application lock·transaction 경계, 늦은 미도착 요청의 seal, historical 결과와 현재 권위 구분을 정했다. 정상 close는 checkpoint RPC 없이 NoWriteNeeded와 조건부 release를 사용한다.
 - 기존 SQL runtime login의 직접 DML grant를 그대로 쓰면 fencing이 우회되는 점을 명시했다. execute-only 전용 principal·legacy writer 격리는 D1b gate이며 이번에 권한을 변경하지 않았다.
 - 검증 계획에 문서 실사와 별도의 SQL 두 연결/장애/권한/cleanup 행렬, D2/3/4 소비 시험 범위를 나눴다. DB·DDL·build·Unity·비밀 읽기·테스트 코드 실행은 모두 미수행이다.
+
+## 독립 실사와 보완
+
+- 1차 대상 `83b927d`, base `18c8ca6`: 신규 외부 Opus가 실제 diff 5파일·D0/P0·SQL/현재 서버·공식 출처 11건을 대조해 **PASS(필수 결함0, 비차단 관찰11)**를 반환했다. 판정 원문은 로컬 `.backups/verification/2026-10-01-persistence-technical-design/verification-1/verdict.md`이고 Astra가 전체를 읽었다. SQL·build·제품/테스트 실행은 미수행이다.
+- 관찰 반영: OBS01 배포 batch/catalog, 02 kind별 code·C03, 03 좌표 JSON, 04 엔진 codec gate, 05 사용자 선택의 전용 비-sysadmin recovery principal과 DB 강제 시험, 06 recovery content 의존 제거, 07 고정 pool 설정, 08 public lock 가용성 위험, 09 연습 DB/대상 외 DB 전부 제외, 10 fixture 장애/입력/권한/Windows 실행 제한 시험, 11 과거 PR 상태를 명확히 했다. 6.1 LTS 선택과 legacy Progress 무자동갱신·무자동수선 결정은 유지한다.
+- 최초 검증자는 담당 Astra 아래 split에서 `claude --model claude-opus-5-5` 기동·화면 Opus5.5 xhigh·tui-idle·최초 attach ready/turn_started를 확인했다. backend unknown. Run `run_5563cdae8c96`, Task `task_91b64fd5aeed`, Dispatch `ctx_22179294b64d`, handle `term_eb4a53aa-53ab-4138-af67-125aba5cb2dd`, incarnation `78fcb552-3e87-473d-8469-0ce1ebef0792`는 이번 실행의 역사 기록이다.
+- worker_done 뒤 `worker-release`는 external_terminal retained를 반환했다. 동일 runtime/handle/incarnation을 확인하고 그 작업 pane만 close하여 `ptyKilled=true`를 받았다. 원문과 release/close receipt는 같은 로컬 증거 폴더에 보존했다. 기존 검증자를 재사용하지 않는다.

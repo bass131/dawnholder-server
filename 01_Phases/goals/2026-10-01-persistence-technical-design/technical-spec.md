@@ -17,6 +17,12 @@
 
 드라이버 설치·restore·패키지 취약점 검사·Windows/WSL .NET 접속은 아직 하지 않았다. 문서의 지원 여부와 실제 SQLExpress·OS·인증 조합의 성공을 구분한다. 후속 착수일에는 지원표/patch를 다시 확인하고 버전 변경은 diff와 재검증으로 남긴다.
 
+### 1.1 migration 배포 형식
+
+현 `Database.Common.ps1`은 파일 하나를 하나의 SQL batch로 실행하고 전체 신규 migration과 catalog 검증을 한 transaction으로 묶는다. 이를 유지한다. 002는 테이블/role, 003 이후는 공통 codec 함수와 **procedure당 CREATE 문 하나인 별도 파일**, 마지막 신규 파일은 개별 GRANT로 나눈다. 함수/호출 대상부터 만드는 의존 순서를 지키고 정확 파일명·번호는 D1b goal에서 배정한다. 파일에 GO를 넣거나 runtime procedure 본문에 동적 SQL을 넣지 않는다. [CREATE PROCEDURE의 batch 제약](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-procedure-transact-sql?view=sql-server-ver17)을 피하려고 기존 runner에 ad hoc 문자열 분할기를 추가하지 않는다(확인일 2026-10-01).
+
+`verify-schema.sql`의 기존 schema 전체 열20/CHECK4/DEFAULT5 고정 개수 검사를 그대로 두면 추가 schema가 실패한다. D1b는 001의 기존 테이블별 계약은 보존하면서 신규 테이블의 필드/키/제약과 codec/procedure/role/개별 grant를 포함한 명시 catalog로 갱신한다. 독립 검증자는 `Test-Database.ps1`에서 재실행·누락/변조 catalog·중간 실패 rollback을 확인한다. 001 파일과 적용 checksum은 바꾸지 않으며 변경한 runner로 이미 적용된 SQL을 재실행하지 않는다.
+
 ## 2. 연결·설정·비밀·권한
 
 ### 2.1 저장소 설정과 수명
@@ -25,9 +31,9 @@ D1b `PersistenceOptions`는 immutable 값으로 `Database`, 명시적인 `Server
 
 저장소는 주입된 connection factory만 사용한다. 비밀 읽기·환경 변수 해석·전역 singleton·GameSession 접근을 저장소 안에 넣지 않는다. D1b 범위는 options/factory의 계약과 검증이며 실제 Host·launcher 연결은 D2의 단일 writer에게 인계한다. 공개 설정과 자격증명을 분리하고 연결 문자열 전체를 로그하지 않는다.
 
-- runtime: Windows와 WSL 모두 **최소 권한의 전용 SQL principal**을 기본 경로로 한다. 기존 Windows 관리자 통합 인증을 runtime에 쓰지 않는다. local admin tool만 Windows 로컬 통합 인증을 쓴다.
+- runtime: Windows와 WSL 모두 **최소 권한의 전용 SQL principal**을 기본 경로로 한다. 기존 Windows 관리자 통합 인증을 runtime에 쓰지 않는다. local admin tool은 §2.2의 전용 비-sysadmin Windows principal로 로컬 통합 인증을 쓴다.
 - endpoint: 기존 기록의 Windows `YYH_Desktop\SQLEXPRESS`, WSL loopback TCP 14330은 후보 근거일 뿐이다. 실행 직전 실제 endpoint/DB를 지정하고 확인한다. SQL Browser 탐색·다른 포트 자동 fallback은 없다.
-- `SqlConnectionStringBuilder`: `Encrypt=Mandatory`, `TrustServerCertificate=false`, `PersistSecurityInfo=false`, `MultipleActiveResultSets=false`, `Enlist=false`, `ConnectRetryCount=0`, `Pooling=true`, `MinPoolSize=0`, `MaxPoolSize=4`, 고정 `Application Name=Dawnholder.Persistence`를 명시한다. `RetryLogicProvider`는 설정하지 않는다. pool은 실행 동시성 제한의 대체물이 아니다.
+- `SqlConnectionStringBuilder`: `Encrypt=Mandatory`, `TrustServerCertificate=false`, `PersistSecurityInfo=false`, `MultipleActiveResultSets=false`, `Enlist=false`, `ConnectRetryCount=0`, **고정 `Connect Timeout=5`**, `Pooling=true`, `MinPoolSize=0`, `MaxPoolSize=4`, 고정 `Application Name=Dawnholder.Persistence`를 명시한다. `RetryLogicProvider`는 설정하지 않는다. 남은 예산별로 연결 문자열/credential 객체를 새로 만들어 pool을 쪼개지 않는다. pool은 실행 동시성 제한의 대체물이 아니다.
 - 기존 self-signed 환경에서 인증서 검증이 실패하면 설정 오류로 멈춘다. D1b 격리 개발 시험에 한해서 endpoint를 확인한 뒤 `TrustServerCertificate=true`를 명시 승인·기록할 수 있으나 자동 fallback은 금지한다. TLS는 켜져 있어도 이 설정은 서버 신원을 검증하지 않는다. [Microsoft 인증서 설명](https://learn.microsoft.com/en-us/sql/connect/ado-net/encryption-and-certificate-validation?view=sql-server-ver17)
 - 기존 DPAPI 자격증명은 승인된 로컬 launcher만 읽고 제한된 자식 process의 stdin/익명 pipe로 전달한다. WSL은 이미 사용하는 LF 인코딩 경계를 유지한다. CLI 인수·저장소·Unity·report·명령 출력·지속 환경 변수에 password/connection string을 넣지 않는다. D1a에서는 비밀 파일을 읽지 않는다.
 - 한 repository 호출에 connection 하나를 열고 typed `SqlParameter`를 쓴다(`AddWithValue`/문자열 SQL 조립 금지). connection/reader/command를 actor 사이에서 공유하지 않는다. 전체 결과와 마지막 완료를 읽은 뒤 반환하고 정상 종결 후 dispose한다. 진행 중 task를 버리고 connection을 재사용하지 않는다.
@@ -38,7 +44,11 @@ D1b `PersistenceOptions`는 immutable 값으로 `Database`, 명시적인 `Server
 
 `Configure-WslAccess.ps1`의 기존 runtime login은 3개 게임 테이블의 SELECT/INSERT/UPDATE를 받는다. **그 login을 새 저장소의 principal로 그대로 사용하면 이 설계의 fencing을 우회할 수 있다.** D1b 실행 gate에서 새 principal/role과 기존 writer 접근을 확인한다. 격리 DB에서는 legacy principal을 매핑하지 않으며, 기존 게임 DB를 선택하면 해당 DB의 기존 쓰기 권한 철회·사용 중 process 차단 계획을 별도 승인받아야 한다. D1a에서 기존 login/권한/script를 변경하지 않는다.
 
-DB 소유자/sysadmin 자체를 기술적으로 막는 설계는 아니다. 관리 변경도 같은 slot 경계를 따르고 runtime을 quiesce한다. 로컬 Windows 관리자가 명시 실행하는 제한된 DB 관리 도구가 recovery 입구다. 일반 게임 서버·클라이언트 패킷·Management command에는 이 권한을 노출하지 않는다. Management의 복구 command/운영 권한 설계는 별도 목표다.
+메인이 전달한 사용자 결정 `msg_dac79ea2b268`에 따라 실제 관리 도구는 **`dh_recovery`에만 매핑한 전용 비-sysadmin Windows principal**로 실행한다(모든 user의 기본 public membership은 유지). 로컬 Windows 관리자가 명시적으로 승인된 도구를 그 계정의 실행 컨텍스트로 시작한다. 도구는 허용된 4개 관리 RPC와 지정 DB/slot/GUID만 제공하며 임의 SQL·다른 DB 선택·runtime credential 전달 기능을 넣지 않는다. 도구 수준 입력 제한에 더해 이 principal의 직접 DML/DDL와 runtime RPC 금지는 DB 권한으로 강제한다.
+
+전용 Windows 계정 생성, SQL login/user·role 매핑, 그 계정으로 실행할 정확한 launcher와 자격증명 접근 제어는 **D1b gate에서 별도 승인 후** 구성한다. 실제 `ORIGINAL_LOGIN`·서버 role·DB role·Windows group에서 상속된 권한을 대조해 sysadmin/db_owner/직접 DML 권한이 없음을 확인한다. 기존 Windows 관리자(sysadmin)의 통합 인증은 이 recovery 절차에서 사용하지 않는다. DB 소유자/sysadmin의 사람에 의한 비상 수동 조치는 이 도구의 DB 최소권한 보장 밖이며 별도 승인·기록 대상이다.
+
+관리 변경도 같은 slot 경계를 따르고 runtime을 quiesce한다. 일반 게임 서버·클라이언트 패킷·Management command에는 recovery 권한을 노출하지 않는다. Management의 복구 command/운영 권한 설계는 별도 목표다.
 
 ## 3. 002+ schema 계약과 각 필드의 이유
 
@@ -59,7 +69,7 @@ MVP singleton metadata다. D1b의 승인된 초기화 도구가 **정확히 한 
 
 행 CHECK: Free이면 `OwnerId IS NULL AND LastSequence=0`; Held이면 `OwnerId IS NOT NULL AND Fence>0`. 계정/캐릭터 바인딩은 일반 procedure로 변경/삭제하지 않는다. 아직 없는 게임 행을 가리키므로 이 두 GUID에 게임 테이블 FK를 걸지 않는다. 대신 모든 procedure가 게임 행 존재 시 Character.AccountId 일치를 검사하고 불일치면 실패한다. 임의 다중 캐릭터 선택·기존 행 삭제·바인딩 교체는 별도 승인 대상이다.
 
-정상 acquire, release, 관리 recovery 각각 Fence를 **현재값+1**로 변경한다. release도 증가시켜 해제 전 admission probe를 무효화한다. `bigint` 최대값이면 overflow 전에 `IntegrityFailure`로 닫으며 wrap/reset하지 않는다. LastSequence는 acquire/recovery 때 0, runtime 작업마다 +1, release 후 Free에서는 0이다. DB backup restore로 counter/ledger를 과거로 돌리는 상황은 이 계약의 자동 복구 범위 밖이며 구 process·연결 격리와 별도 복구 gate 없이는 재개하지 않는다.
+정상 acquire, release, 관리 recovery 각각 Fence를 **현재값+1**로 변경한다. release도 증가시켜 해제 전 admission probe를 무효화한다. `bigint` 최대값이면 overflow 전에 `IntegrityFailure`로 닫으며 wrap/reset하지 않는다. LastSequence는 acquire/recovery 때 0, runtime 작업마다 +1, release 후 Free에서는 0이다. LastSequence의 next 계산도 overflow 전에 실패하며 임의 reset하지 않는다. 그 owner의 종결은 새 fence의 관리 recovery 경로로 처리한다. DB backup restore로 counter/ledger를 과거로 돌리는 상황은 이 계약의 자동 복구 범위 밖이며 구 process·연결 격리와 별도 복구 gate 없이는 재개하지 않는다.
 
 ### 3.2 `dh.CharacterOperation` — 요청의 확정 증빙
 
@@ -79,7 +89,20 @@ MVP singleton metadata다. D1b의 승인된 초기화 도구가 **정확히 한 
 
 허용 code: Applied=`Acquired(100)`, `CheckpointApplied(101)`, `CheckpointNoChange(102)`, `Released(103)`, `Recovered(104)`, `RecoveredAbsent(105)`; NotApplied=`Busy(200)`, `StaleFence(201)`, `Conflict(202)`, `IdentityMismatch(203)`, `InvalidClass(204)`, `CancelledBeforeApply(205)`, `SequenceMismatch(206)`, `IntegrityFailure(207)`. CHECK로 Outcome/ResultCode 조합을 제한한다. Applied는 ResultSnapshot 필수, NotApplied는 snapshot을 NULL로 둔다. 동일 ID/다른 payload는 기존 증빙을 바꾸지 않고 `OperationPayloadMismatch`를 반환한다.
 
-Applied snapshot의 JSON v1 키는 `version`, `kind`, `resultCode`, `slotId`, `accountId`, `characterId`, `ownerKind`, `ownerId`, `fence`, `sequence`, `characterPresent`, `class`, `characterVersionHex`, `progressPresent`, `progressVersionHex`, `safe`(mapId/x/y/hp/maxHp/bossUnlocked), `storedProgress`(동일 필드 또는 null)다. BIGINT는 문자열, GUID는 정규 D 문자열, token은 정확히 16개 hex 문자다. Character absence의 class/token/safe/storedProgress는 null이고 Progress absence이면 progress token/storedProgress만 null이다. release는 게임 load 결과를 소비하지 않으므로 characterPresent부터 storedProgress까지 전부 null인 별도 shape와 해제 후 Free/fence/sequence를 담는다. SQL이 typed 값으로 생성하며 앱 JSON을 그대로 증빙으로 받지 않는다. 길이 초과·kind별 필수 키 누락은 transaction 실패다.
+Kind×code 조합도 CHECK와 procedure에서 아래 집합으로 제한한다. 공통 203은 binding/Character.AccountId 불일치, 205는 resolver seal, 206은 Acquire/Recover의 sequence!=0 또는 그 외 next sequence 불일치, 207은 schema/저장 class 무결성·counter overflow 등이다. owner 판정의 200은 Free/잘못된 OwnerKind/OwnerId를 포함한다. 여러 조건이 틀리면 바인딩→fence→owner→sequence→게임 의존값 순서로 판정한다. 이 판정은 **기존 operation의 payload 검사 뒤, 게임/authority DML 전**에 한다.
+
+| Kind | Applied code | NotApplied code와 종류별 의미 |
+|---|---|---|
+| Acquire | 100 | 200 Held, 201 probe fence 불일치, 203/205/206/207 공통, 204 intendedClass 범위 밖. 기존 저장 class와 반대인 유효 intendedClass는 거부하지 않음 |
+| Checkpoint | 101/102 | 200/201/203/205/206/207 공통, 202 token/presence 또는 **유효 class와 저장 class 불일치**, 204 class 범위 밖 |
+| ReleaseRuntime / ReleaseRecovery | 103 | 200 현재 owner kind/ID가 해당 해제와 다름, 201 fence 불일치, 203/205/206/207 공통 |
+| Recover | 104/105 | 200 관찰한 ExpectedOwnerKind/Id 불일치, 201 관찰 fence 불일치, 203/205/206/207 공통 |
+
+구문·매개변수 형식 오류/권한 오류/transaction 접수 조건 위반은 유효 operation으로 기록하지 않는다. typed payload를 만들 수 없는 입력은 `InvalidRequest`로 접수 거부한다. DB에서 완전한 미변경 receipt 없이 예외가 난 경우의 상태는 §7의 unknown 규칙을 따른다.
+
+Applied snapshot의 JSON v1 키는 `version`, `kind`, `resultCode`, `slotId`, `accountId`, `characterId`, `ownerKind`, `ownerId`, `fence`, `sequence`, `characterPresent`, `class`, `characterVersionHex`, `progressPresent`, `progressVersionHex`, `safe`(mapId/x/y/hp/maxHp/bossUnlocked), `storedProgress`(동일 필드 또는 null)다. BIGINT는 문자열, GUID는 정규 D 문자열, token은 정확히 16개 hex 문자다. real x/y는 SQL `CONVERT(varchar(32), value, 3)`의 lossless 문자열로 넣고 .NET은 invariant culture의 Single로 복원해 원 bits를 비교한다. fresh 응답과 replay가 같은 codec을 쓴다. [CAST/CONVERT style 3 근거](https://learn.microsoft.com/en-us/sql/t-sql/functions/cast-and-convert-transact-sql?view=sql-server-ver17)(확인일 2026-10-01).
+
+Character absence의 class/token/safe/storedProgress는 null이고 Progress absence이면 progress token/storedProgress는 null이다. **Recover의 safe는 항상 null**이며 storedProgress 진단값만 반환한다. release는 게임 load 결과를 소비하지 않으므로 characterPresent부터 storedProgress까지 전부 null인 별도 shape와 해제 후 Free/fence/sequence를 담는다. SQL이 typed 값으로 생성하며 앱 JSON을 그대로 증빙으로 받지 않는다. 길이 초과·kind별 필수 키 누락은 transaction 실패다.
 
 MVP에는 ledger 자동 TTL·purge·archive를 넣지 않는다. 바인딩/fence도 삭제하지 않는다. 증빙 크기 증가를 계측하고 후속 보존 정책을 별도 결정한다. 미해결 ID 또는 다시 도착 가능한 ID의 증빙 삭제는 idempotency를 깨므로 금지한다. 승인된 시험 전용 DB 폐기 외 cleanup은 아래 시험 계획을 따른다.
 
@@ -89,12 +112,14 @@ MVP에는 ledger 자동 TTL·purge·archive를 넣지 않는다. 바인딩/fence
 
 공통 순서: version(1 byte), kind(1), SlotId(1), AccountId(16), CharacterId(16), OwnerId(16), ExpectedFence(8), Sequence(8). 뒤에는 종류별 값이 붙는다. GUID는 SQL `CONVERT(binary(16), value)`, 정수는 지정 크기 binary 변환, token은 원래 8 bytes다. 가변 값은 길이 prefix를 붙이며 NULL은 별도 1-byte presence 뒤 값으로 인코딩한다. SQL binary 변환 규칙은 v1 codec에 고정하고 D1b에 golden vector로 검증한다. 길이와 bytes를 모두 비교해 padding 차이도 다른 payload로 판정한다.
 
+이 binary 변환을 SQL 엔진 버전 간 동일하다고 가정하지 않는다. 엔진 version/patch 변경 전에는 모든 owner/operation을 확정·정산하고 old process/연결을 quiesce해야 한다. 변경 후 golden vector가 다르면 재개하지 않고 codec 호환 migration으로 새 PayloadVersion과 기존 버전 읽기 경로를 함께 정의한다. 기존 증빙의 payload/hash를 덮어쓰거나 새 형식으로 같은 ID를 재실행하지 않는다. 미확정 operation을 남긴 엔진 교체·restore는 별도 복구 승인 영역이다.
+
 | Kind | 공통부 뒤의 필드·순서 |
 |---|---|
 | Acquire | intendedClass(1), SafeDefaults: Town X/Y 각각 real의 binary(4), KnightMaxHp(4), MageMaxHp(4) |
 | Checkpoint | CharacterVersion(8), ProgressVersion presence(1)+있으면(8), class(1), Town X/Y(각4), MaxHp(4). Hp=MaxHp·Map=0·unlock=false는 procedure가 구성 |
 | ReleaseRuntime / ReleaseRecovery | 추가 없음. sequence와 expected fence가 이전 작업의 순서를 고정 |
-| Recover | 관찰한 ExpectedOwnerKind(1), ExpectedOwnerId presence+값, 관리 사유 UTF-16LE(2-byte byte길이+최대 128자), SafeDefaults(위와 같음). 공통 OwnerId는 신규 관리 수명 ID |
+| Recover | 관찰한 ExpectedOwnerKind(1), ExpectedOwnerId presence+값, 관리 사유 UTF-16LE(2-byte byte길이+최대 128자). 공통 OwnerId는 신규 관리 수명 ID. Ready를 만들지 않으므로 SafeDefaults를 받지 않음 |
 
 Acquire/Recover는 Sequence=0이다. deadline/trace ID/retry count는 게임 의미가 없어 payload에서 제외한다. deadline만 새로 부여해 같은 ID의 의미를 바꾸지는 않는다. real 값은 SQL에 도달하기 전 finite·허용 content 범위를 검사하고 음의 0을 양의 0으로 정규화한다. DB도 범위·MaxHp 양수·class0/1·GUID·token 길이·kind별 필수 매개변수를 검사한다. 원래 값 범위를 벗어나는 HP나 class를 fallback으로 고치지 않는다.
 
@@ -104,15 +129,19 @@ GUID/enum/정수/float는 immutable value다. rowversion은 정확히 8-byte opa
 
 slot 1은 하나의 논리 캐릭터다. 모든 ReadAdmission/acquire/checkpoint/release/resolve/recovery는 동일 DB에서 고정 리소스 **`Dawnholder.Persistence.Slot.1`**, `@DbPrincipal='public'`, `Exclusive`, `LockOwner='Transaction'`인 `sp_getapplock`을 쓴다. GUID·프로세스·procedure 이름에 따라 다른 lock을 잡지 않는다. runtime/관리 principal도 동일한 resource/principal 조합을 쓴다. 이 제한을 장래 다중 계정 설계로 일반화하지 않는다.
 
+public을 택하므로 대상 DB에 접속 가능한 다른 principal도 같은 lock을 점유해 가용성을 막을 수 있다. 이 위험은 수용하되 예상하지 않은 사용자 매핑/legacy writer가 없는지 D1b에서 확인한다. 잠금 방해는 timeout/Unresolved로 닫히며 자동 takeover로 우회하지 않는다. 이것을 의도적으로 방해하는 DB 자격증명 보유자에 대한 가용성 보장으로 설명하지 않는다.
+
 공통 순서는 다음과 같다.
 
-1. `@@TRANCOUNT=0` 확인(ambient/nested transaction 거부), `NOCOUNT ON`, `XACT_ABORT ON`, `READ COMMITTED`, 명시 transaction 시작.
+1. `@@TRANCOUNT=0` 확인(ambient/nested transaction 거부), `IMPLICIT_TRANSACTIONS OFF`, `NOCOUNT ON`, `XACT_ABORT ON`, `READ COMMITTED`, 명시 transaction 시작. 성공 반환 직전 transaction count가 0이어야 한다.
 2. 남은 예산에서 제한한 application lock 획득. 반환값 0/1만 성공. 음수이면 명시 rollback 후 해당 실패를 반환한다. lock deadlock 반환 자체가 자동 rollback이라는 가정을 두지 않는다.
-3. Authority `UPDLOCK,HOLDLOCK` 읽기, 바인딩 검증. 고정 순서 Authority → Operation → Account → Character → Progress. 게임 행은 필요한 row/key range를 `UPDLOCK,HOLDLOCK`으로 읽고 transaction 끝까지 유지한다. RCSI가 켜져 있어도 token 검사와 변경 사이 의존 행이 바뀌지 않게 한다.
-4. ledger에 동일 OperationId가 있으면 kind/version/길이/bytes 비교. 같으면 historical terminal 결과와 **현재** authority/token 관측을 돌려줄 준비만 한다. 다른 payload면 거부. 없으면 종류별 소유·fence·sequence·token 검증 후 변경하고 terminal 증빙을 INSERT한다.
+3. Authority `UPDLOCK,HOLDLOCK` 읽기. 고정 순서 Authority → Operation → Account → Character → Progress. 게임 행은 필요한 row/key range를 `UPDLOCK,HOLDLOCK`으로 읽고 transaction 끝까지 유지한다. RCSI가 켜져 있어도 token 검사와 변경 사이 의존 행이 바뀌지 않게 한다.
+4. ledger에 동일 OperationId가 있으면 kind/version/길이/bytes 비교. 같으면 historical terminal 결과와 **현재** authority/token 관측을 돌려줄 준비만 한다. 다른 payload면 거부. 없으면 위 code 표 순서로 바인딩·fence·owner·sequence·의존 게임 행 검증을 모두 마친 후에만 변경하고 terminal 증빙을 INSERT한다. 예를 들어 다른 계정의 기존 Character가 있으면 새 Account부터 INSERT하고 거부를 commit하지 않는다.
 5. 결과를 transaction 내부 변수에 담아 **COMMIT 후에만** result set을 내보낸다. `OUTPUT`으로 얻은 token도 commit 전 client에 내보내지 않는다. CATCH는 열린 transaction을 rollback하고 예외를 반환한다. commit 응답 유실은 별도 unknown 처리다.
 
 트랜잭션 lock은 commit/rollback까지 유지되며 DB ID·principal·resource 이름이 lock identity를 이룬다. 음수 반환 처리 등은 [sp_getapplock 공식 계약](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-getapplock-transact-sql?view=sql-server-ver17)을 따른다. `XACT_ABORT`와 `THROW`를 사용하지만 클라이언트 cancel을 rollback 증거로 읽지는 않는다. [XACT_ABORT 근거](https://learn.microsoft.com/en-us/sql/t-sql/statements/set-xact-abort-transact-sql?view=sql-server-ver17)
+
+implicit mode에서 BEGIN이 중첩 transaction count를 만들 수 있으므로 진입에서 OFF를 명시한다. [IMPLICIT_TRANSACTIONS 근거](https://learn.microsoft.com/en-us/sql/t-sql/statements/set-implicit-transactions-transact-sql?view=sql-server-ver17)(확인일 2026-10-01).
 
 두 연결에서 old가 lock을 먼저 얻으면 new는 old의 commit/rollback 뒤 결과를 읽는다. new의 acquire/recovery가 먼저 끝나면 old는 fence 불일치로 쓰기·해제를 못 한다. 직접 DML이 가능한 writer를 허용하면 이 증명이 깨지므로 권한 gate가 필수다. migration의 별도 `Dawnholder.SchemaMigration` lock은 runtime slot lock의 대체물이 아니다. schema 배포 시 runtime을 quiesce한다.
 
@@ -157,7 +186,7 @@ seal은 그 **한 OperationId**만 취소한다. owner의 다른 작업을 취�
 
 관리 도구는 target DB/slot/두 GUID, InspectRecovery에서 확인한 ExpectedFence·ExpectedOwnerKind·ExpectedOwnerId, 관리 사유, 신규 관리 OwnerId/OperationId를 명시한다. 운영자가 이전 runtime을 quiesce하고 대상과 이유를 확인해야 한다. process 부재·시간 경과 자체는 SQL 완료 증거가 아니다.
 
-procedure는 관리 role에서만 실행된다. 같은 slot lock 안에서 **관찰한 owner/fence가 아직 같은지** 확인하고 Fence+1, Recovery owner/LastSequence=0으로 교체한 뒤 Character/Progress를 일관 load한다. 동시 정상 새 owner가 먼저 바뀌었다면 관찰값 불일치로 거부한다. 게임 값은 수정하지 않는다. 유효 Character가 없으면 존재하지 않는 상태를 일관 load한 `RecoveredAbsent`를 기록한다. 잘못된 ownership/class는 실패하며 자동 데이터 수선하지 않는다. missing Progress도 여기서는 diagnostic absence로 반환한다.
+procedure EXECUTE는 관리 role에만 부여하고 도구는 전용 비-sysadmin principal을 쓴다(§2.2). 같은 slot lock 안에서 **관찰한 owner/fence가 아직 같은지** 확인하고 Fence+1, Recovery owner/LastSequence=0으로 교체한 뒤 Character/Progress를 일관 load한다. 동시 정상 새 owner가 먼저 바뀌었다면 관찰값 불일치로 거부한다. 게임 값은 수정하지 않는다. 유효 Character가 없으면 존재하지 않는 상태를 일관 load한 `RecoveredAbsent`를 기록한다. 잘못된 ownership/class는 실패하며 자동 데이터 수선하지 않는다. missing Progress도 여기서는 diagnostic absence로 반환한다. 관리 tool은 game content/SafeDefaults를 읽거나 전달하지 않는다.
 
 복구 결과는 관리자에게만 반환한다. Runtime Ready를 이 결과로 직접 열지 않는다. 관리 owner의 확인된 `ReleaseRecovery` 후 일반 새 연결이 새 fence로 AcquireAndLoad하며 필요한 missing Progress를 안전 초기화한다. recovery 또는 release가 unknown이면 관리 owner 상태를 유지하고 동일 operation resolver로 확정한다. 자동 시간 만료·앱 recovery key·TTL takeover는 없다.
 
@@ -175,6 +204,7 @@ procedure는 관리 role에서만 실행된다. 같은 slot lock 안에서 **관
 | `Released` | 그 operation의 조건부 해제 commit 확정. 현재 다른 owner에 대한 권위 없음 |
 | `Rejected` / `Conflict` | 상세 내부 reason·operation 확정 여부. stale DTO에 token만 바꿔 재시도 금지 |
 | `NotDispatched` | command 호출 전 로컬 검증/예산/접수 실패. 이 호출은 DB에 보낸 적이 없음 |
+| `AdmissionReadFailed` | 읽기 전용 probe의 실패. acquire operation은 아직 만들거나 발행하지 않았으며 입장을 열지 않음. mutation resolver 대상 아님 |
 | `AcquireUnknown` / `CommitUnknown` | command 진입 뒤 전체 terminal receipt를 받지 못함. lane freeze·동일 ID resolver 대상 |
 | `OperationResolution` | historical outcome/snapshot와 현재 owner/fence/sequence/tokens를 분리. `StillUnknown`, `NotApplied`, `Applied`, `FenceLost`를 명시 |
 | `Unresolved` / `RecoveryRequired` | 예산 내 결과 확정 불가 또는 잔존 owner. 성공·Released로 표시하지 않음 |
@@ -187,7 +217,7 @@ D3의 `HandshakePending → Selecting → Loading → Resolved → Entering → 
 
 ## 7. timeout·cancel·재시도
 
-D1b 기본 상한은 Open 5초, command network timeout 5초, application lock 2초로 설정하되 각 호출의 **남은 절대 예산**으로 줄인다. 무한 timeout 0/-1은 사용하지 않는다. command 초 단위는 남은 시간 올림값과 상한 중 작은 값(최소1초), lock은 남은 ms와 2000 중 작은 값이다. 더 짧은 실제 deadline은 cancellation timer로 요청하되 cancel 완료를 SQL rollback으로 간주하지 않는다. D2 Host 전체 종료 deadline의 최종 수치는 별도 측정 대상이며 단계마다 5초를 새로 주지 않는다.
+D1b 기본 상한은 Open 5초, command network timeout 5초, application lock 2초다. Open의 연결 문자열 timeout은 **항상5초로 고정**하고 남은 절대 예산이 짧으면 `OpenAsync` cancellation timer를 사용한다. 연결 문자열별 pool이 나뉘므로 남은 초마다 문자열을 바꾸지 않는다. [pool 구분 근거](https://learn.microsoft.com/en-us/sql/connect/ado-net/sql-server-connection-pooling?view=sql-server-ver17)(확인일 2026-10-01). command 초 단위는 남은 시간 올림값과 상한 중 작은 값(최소1초), lock은 남은 ms와 2000 중 작은 값이다. 무한 timeout 0/-1은 사용하지 않는다. command의 더 짧은 실제 deadline도 cancellation timer로 요청하되 cancel 완료를 SQL rollback으로 간주하지 않는다. D2 Host 전체 종료 deadline의 최종 수치는 별도 측정 대상이며 단계마다 5초를 새로 주지 않는다.
 
 `CommandTimeout`은 전체 업무 deadline이 아니며 첫 row 이후에도 읽기 timeout이 날 수 있다. [SqlCommand 공식 문서](https://learn.microsoft.com/en-us/dotnet/api/microsoft.data.sqlclient.sqlcommand.commandtimeout?view=sqlclient-dotnet-core-6.1) 따라서 result set 일부만 받았거나 DB exception/IO failure/cancel/process 종료가 command 진입 후 발생하면 보수적으로 unknown이다. 서버가 보낸 완전한 terminal rejection receipt 또는 seal commit 증빙이 있어야 NotApplied로 확정한다. SQL 오류 번호 하나만으로 “미실행”이라고 단정하지 않는다.
 

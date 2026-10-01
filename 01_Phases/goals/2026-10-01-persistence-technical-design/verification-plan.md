@@ -23,11 +23,13 @@
 
 메인이 D1b 시작 시 아래 표의 정확한 값을 확정한다. `Dawnholder_Dev_<suffix>`의 새 격리 DB를 추천하지만 이름을 추천했다는 이유로 만들거나 접속하지 않는다. Northwind·BaseballGame은 연습 DB로 전 과정에서 제외한다. 기존 `Dawnholder_Dev`는 게임용이며 자동 초기화/cleanup 대상이 아니다.
 
+메인이 전달한 추가 사용자 결정 `msg_dac79ea2b268`에서 GameDB도 연습용임을 확인했다. 제외 목록은 **GameDB·BaseballData·Northwind**이며, 이전 전달의 `BaseballGame`은 BaseballData를 가리킬 가능성이 있으나 D1a에서 실제 이름을 조회하지 않았다. 이름 추정으로 대상을 넓히지 않으며 **D1b에서 정확히 선택한 Dawnholder DB 외에는 모두 제외**한다. 실제 catalog 이름은 D1b 실행 gate에서 확인해 기록한다.
+
 | 확정할 값 | gate에서 남길 기록 |
 |---|---|
 | SQL endpoint·DB·DB 소유 marker | 서버/instance/포트·DB_NAME·버전·collation·RCSI·migration hash, 승인 message와 조회 시각 |
 | 실행자와 시간 창 | 한 SQL executor, 사용할 Windows/WSL process·코드 commit, 동시 writer 부재 |
-| runtime/recovery/test observer principal | role/effective grant, legacy direct-DML principal이 대상 DB에 없는지. 계정 생성/권한 변경은 별도 정확 범위 승인 |
+| runtime/recovery/test observer principal | runtime 최소권한, 실제 recovery용 전용 비-sysadmin Windows principal의 dh_recovery 단독 매핑과 group 상속 권한, 별도 observer를 구분. 기존 관리자 sysadmin으로 recovery 시험을 대체하지 않음. 전용 Windows 계정·SQL login/user/role·실행 launcher/자격증명 접근 제어의 생성·설정은 별도 정확 범위 승인. legacy direct-DML/의도하지 않은 사용자 매핑이 없는지 |
 | TLS·secret 전달 경로 | secret 값 없는 설정, 인증서 검증 여부와 예외 승인. 기존 DPAPI 파일을 읽을 주체/launcher |
 | singleton 바인딩 | 시험 전용 AccountId/CharacterId·slot1·초기 Fence0/Free, 재시도에도 동일 GUID. 기존 행 채택 시 소유/class 사전 검사 |
 | 허용 side effect | 002+ DDL·실제 commit·시험 행·권한 음성 시도·task-owned 연결 차단·정리 범위 |
@@ -39,6 +41,7 @@
 ## 3. 공통 시험 장치와 판정 증거
 
 - 실행 전 `dotnet --info`, resolved package/version, OS/architecture·native dependency, schema catalog와 git SHA를 기록한다. Windows build의 DLL 자동 복사 부작용은 DEVELOPMENT를 따라 차단한다. driver library와 실제 package hash를 남기고 connection secret은 제외한다.
+- 이 머신의 Windows .NET 실행은 ADR-029의 Smart App Control 제약이 있을 수 있다. 막히면 전역 정책을 바꾸지 않고 정확 명령/오류·Windows 미실행을 기록한다. WSL 성공으로 Windows PASS를 대신하지 않으며 D1b 완료의 허용 실행 환경은 메인이 gate에서 정한다.
 - 실제 경쟁 주체는 **독립 SqlConnection A/B**다. 필요한 barrier 제어 연결과 읽기 전용 관측 연결은 별도로 둔다. 한 connection/transaction을 공유해 동시성을 흉내 내지 않는다. 각 connection의 session ID·client connection ID·operation ID·owner·fence·sequence를 기록한다.
 - 테스트는 TaskCompletionSource/외부 barrier 또는 실제 row lock 대기로 순서를 제어한다. 임의 sleep 후 “먼저 실행됐을 것”이라고 판정하지 않는다. event timestamp는 설명용이며 lock/fence/proof가 판정 근거다.
 - DB lock 획득 뒤 변경 전 정지는 제어 연결이 대상 행 lock을 보유하게 해 실제 procedure가 application lock을 가진 채 row lock에서 기다리도록 구성한다. 관측 권한은 시험 관리자에게만 준다. runtime에 DMV/ALTER 권한을 추가하지 않는다. 단계 위치를 관측하지 못했으면 그 시나리오는 미실행이다.
@@ -50,15 +53,17 @@
 
 | ID | 자극 | 필요한 관측 |
 |---|---|---|
-| S01 | 001만 설치된 새 승인 fixture에 002+ 적용 | 001 파일/checksum·게임 행 불변, 두 신규 테이블·각 필드/PK/FK/CHECK/procedure/role 존재, 바인딩 자동 생성 없음 |
+| S01 | 001만 설치된 새 승인 fixture에 002+ 적용 | 001 파일/checksum·게임 행 불변, 단일 batch 파일별 함수/procedure 설치, 기존+신규 catalog 검증, 테이블/각 필드/PK/FK/CHECK/role/grant 존재, 바인딩 자동 생성 없음 |
 | S02 | migration 재실행·중간 오류 주입 | 두 번째 실행 무변경, 부분 schema/SchemaVersion 기록 없음. rollback으로 rowversion 전역 counter가 안 변한다고 단정하지 않음 |
 | S03 | slot!=1·empty GUID·잘못된 owner/null 조합·음수 fence/sequence·잘못된 outcome/code·invalid JSON | 제약 또는 procedure가 거부. app principal로 직접 INSERT를 허용해 음성 fixture를 만들지 않음 |
 | S04 | 승인 초기화로 fixed binding 등록, 다른 GUID config 시작 | binding 정확히1행, mismatch는 시작/입장 실패. 임의 Character 첫 행 채택·바인딩 UPDATE 없음 |
-| S05 | runtime 정상 RPC 및 직접 SELECT/INSERT/UPDATE/DELETE/DDL·관리 RPC 시도 | 개별 정상 RPC 양성, 테이블/관리 경로 음성. legacy grants/role 상속도 조사. 권한 오류 로그에 secret 없음 |
-| S06 | 제한된 로컬 Windows recovery principal과 runtime principal 비교 | Recover/ReleaseRecovery/관리 resolver는 관리자만 성공, runtime resolver에 kind4/5 위장 거부 |
+| S05 | runtime 정상 RPC 및 직접 SELECT/INSERT/UPDATE/DELETE/DDL·관리 RPC 시도 | 개별 정상 RPC 양성, 테이블/관리 경로 음성. legacy grants/role 상속·의도하지 않은 DB 사용자도 조사. public applock 점유 방해는 가용성 위험이며 takeover 없이 실패하는지 확인. 권한 오류 로그에 secret 없음 |
+| S06 | 실제 recovery용 전용 비-sysadmin Windows principal로 통합 인증 후 runtime principal과 비교 | 실제 login·group/role 상속 확인, 관리 RPC 양성 및 직접 DML/DDL/runtime RPC 음성을 DB에서 확인. runtime resolver kind4/5 위장 거부. 도구의 허용 RPC·DB/slot/GUID 외 입력 거부도 확인. 기존 sysadmin 계정 결과로 대체하지 않음 |
 | S07 | Windows·WSL 각각 6.1.7/net10 실제 연결·RPC | package/native dependency·TLS·인증·대상 DB 확인. 인증서 오류는 실패하며 자동 trust/암호화 downgrade 없음 |
 | S08 | 잘못된 DB/schema/binding/endpoint·secret 누락 | 입장 gate 닫힘, 다른 DB/메모리 fallback 없음. 비밀·원문 connection string 출력 없음 |
-| S09 | SQL codec golden vectors 및 모든 payload field를 하나씩 변경 | Guid byte order·real·null/8-byte token·유효 class·긴 reason·길이 동일/다름 비교 정확. 같은 ID의 의미 변경 전부 거부 |
+| S09 | SQL codec golden vectors 및 모든 payload field를 하나씩 변경 | Guid byte order·real·null/8-byte token·유효 class·긴 reason·길이 동일/다름 비교 정확. NaN/±Inf 거부·-0 정규화, JSON style3 좌표 fresh/replay roundtrip 확인. 같은 ID의 의미 변경 전부 거부. 엔진/patch 변경 전 정산·변경 후 vector gate도 확인 |
+| S10 | ambient/nested transaction, implicit-transactions 설정을 가진 연결로 호출 | @@TRANCOUNT>0 접수 거부. count0 진입에서는 implicit off로 자체 transaction 하나만 열고 정상 반환 시 count0. 외부 commit 전 Durable을 반환하는 경로 없음 |
+| S11 | 동일 endpoint/credential로 서로 다른 짧은 Open deadline 사용 | 연결 문자열 Connect Timeout=5 유지, deadline별 pool 생성 없음. 취소 요청 뒤에도 진행 Open task를 유실하지 않고 종료 추적 |
 
 ## 5. 생성·load·token·operation 시험 행렬
 
@@ -66,8 +71,8 @@
 |---|---|---|
 | C01 | 게임 행 없음, Knight/Mage 각각 첫 acquire | 고정 GUID Account/Character/Progress 각1행·저장 class·safe값·Fence1/Runtime·sequence0·Applied ledger 원자 commit. class별 fixture reset은 승인된 시험 행에서만 |
 | C02 | 같은 Free fence의 서로 다른 두 acquire 동시 발행 | 하나만 Acquired, 나머지 Busy/StaleFence. Character가2개 되지 않음. 같은 ID/동일 payload 동시 재요청은 하나의 증빙을 공유 |
-| C03 | 다른 CharacterId/AccountId 또는 클래스 변경 의도를 같은 slot에 전달 | 바인딩/소유 mismatch 거부. 기존 계정의 무관한 다른 Character는 보존 |
-| C04 | Account INSERT 후·Character INSERT 후·Progress INSERT 후 실패 | 세 게임 행·authority·Applied 증빙에 부분 commit 없음. 이후 동일 ID 조회는 absent/unknown이며 필요 시 seal로 최종 NotApplied |
+| C03 | 다른 CharacterId/AccountId, 또는 Checkpoint class≠저장 class | 전자는 IdentityMismatch(203), 후자의 유효 class는 Conflict(202), 범위 밖 class는 InvalidClass(204). 기존 무관한 Character 보존. Acquire의 반대 intendedClass 수용은 C05 |
+| C04 | Account INSERT 후·Character INSERT 후·Progress INSERT 후 실패 | 승인된 격리 fixture에만 각 테이블의 시험 AFTER INSERT trigger가 THROW하도록 하나씩 설치해 실제 production procedure의 중간 실패를 주입하고 즉시 정리한다. row-lock barrier만으로 이 지점에 닿았다고 하지 않음. 세 게임 행·authority·Applied 증빙 부분 commit 없음. 동일 ID absent는 unknown이며 seal로 최종 NotApplied |
 | C05 | 기존 Character와 반대 intendedClass, missing Progress | 저장 class 유지, 해당 class의 safe Progress만 INSERT, Character token 불변·Progress token 존재 |
 | C06 | 기존 combat Progress/낮은HP/unlock=true로 acquire→close | 반환 safe는 Town풀HP/unlock=false, 기존 게임 행·두 token은 그대로. diagnostic과 runtime projection 구분, logout 게임 UPDATE0 |
 | C07 | stale CharacterVersion만, stale ProgressVersion만, missing/present 불일치 | 각각 Conflict, 게임 DML·owner sequence 변화 없음, NotApplied 증빙. stale DTO에 token 교체 재전송 안 함 |
@@ -76,6 +81,7 @@
 | C10 | 접수 직후 원본/반환 byte[] 변경 시도 | queued request·SQL expected token·저장된 snapshot 불변. accessor alias가 없고 원본과 token 비교가 뒤틀리지 않음 |
 | C11 | 같은 ID로 class/token/owner/fence/sequence/default/reason/kind 중 하나 변경 | OperationPayloadMismatch 또는 preflight 거부, 기존 ledger/게임/authority 보존 |
 | C12 | 유효 owner에서 seq 누락/중복/역순, fence overflow fixture | SequenceMismatch 또는 IntegrityFailure, overflow 재사용 없음. 동일 ID replay는 seq 재증가 없음 |
+| C13 | current owner·Character token은 유효하고 Progress만 없는 승인 fixture에 Checkpoint | ExpectedProgressVersion missing일 때만 safe INSERT·sequence/proof 원자 commit, present token이면 Conflict. fixture 생성/정리는 관리자가 동일 경계·시험 GUID에서만 수행 |
 
 ## 6. old/new 두 연결 순서와 unknown 반증
 
@@ -110,6 +116,7 @@
 | R02 | 관리 recovery의 fence 교체+load와 old mutation 교차 | 동일 경계·일관 snapshot·ledger commit. recovery result가 client Ready로 바로 쓰이지 않음(D1b/D3) |
 | R03 | 아직 Character 없음 또는 Progress 없음 | RecoveredAbsent/진단 absence, 게임 행 자동 수선 없음. 관리 release 뒤 정상 acquire가 최초/누락 Progress를 안전 생성(D1b) |
 | R04 | recovery/recovery release 응답 유실, runtime이 대신 해제/resolve 시도 | runtime 거부. 관리 same-ID resolver로만 확정, timeout/TTL 자동 해제 없음(D1b) |
+| R05 | Recovery held 중 runtime Acquire, Runtime held에 ReleaseRecovery | 각각 Busy(200), 기존 owner/fence/게임 데이터 보존. stale fence를 함께 주면 우선 StaleFence(201)(D1b) |
 | L01 | EOF/명시 close/Host/0-owner/destination close skip | safe immutable 인계→entity/party cleanup 유한 종결, 이후 owner가 operation/release 추적. 게임 틱 DB 대기0(D2) |
 | L02 | durable 변경/진행 작업 없는 close | local NoWriteNeeded, checkpoint RPC0·게임 UPDATE0, 조건부 release 성공 또는 명시 unknown(D2) |
 | L03 | full queue·final slot·DB 지연·늦은 ack | Accepted와 Durable 구분, 유한 접수/cleanup, 같은 전체 deadline을 사용, ShutdownIncomplete 목록 유지(D2) |
