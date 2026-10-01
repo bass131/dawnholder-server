@@ -121,7 +121,7 @@ domain 오류는 `isError: true`와 짧은 code/message/복구 안내를 반환�
 
 ## 현재 상태와 근거
 
-**goal 제안 작성 완료. 커밋 후 Fable 계획 검토 예정. 메인 확인·D1~D4 결정 전이며 구현·독립 제품 검증 미착수.**
+**goal 제안 커밋·Fable 계획 검토 완료, 판정은 수정 필요. 메인의 판정 원문 확인과 goal 보완/결정 전이며 구현·독립 제품 검증 미착수.**
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - 시작: clean `main`, HEAD `18c8ca6a5aa3032873029cbd36658f0c4f9095c5` (PR156). `git fetch origin main` 후 origin/main도 같은 SHA임을 확인했다.
@@ -129,6 +129,18 @@ domain 오류는 `isError: true`와 짧은 code/message/복구 안내를 반환�
 - 현재 runtime `8a673084-6819-45b9-a551-347226cdce9b`, Astra terminal `term_6df8363a-d0bf-454f-aa67-7c7c7323008a`, incarnation `3068c493-4095-4e8c-b907-eed3f3b741e6`. Orca worktree 소속과 실제 cwd 모두 management-active로 확인했다. 이 값은 관찰 기록이며 향후 실행 권한이 아니다.
 - READY 회신 `msg_46884ca17d25`를 메인에게 enqueue했다. enqueue 성공을 메인이 읽거나 승인했다는 근거로 쓰지 않는다.
 - 현행 코드·문서의 좁은 정적 조사, 버전/registry metadata 조회, 공식 문서 확인만 수행했다. package 설치·MCP/앱 실행·테스트·빌드·독립 판정·설정 변경은 수행하지 않았다.
-- 원시 receipt/로그와 판정 원문은 Git 제외 `.backups/verification/2026-10-01-shared-read-mcp/`에 보존한다. 아직 계획/구현/검증 판정 원문은 없다. 원문은 로컬 근거이며 원격 가용성을 보장하지 않는다.
+- 원시 receipt/로그와 판정 원문은 Git 제외 `.backups/verification/2026-10-01-shared-read-mcp/`에 보존한다. 계획 판정은 아래와 같고 구현/제품 검증 판정은 아직 없다. 원문은 로컬 근거이며 원격 가용성을 보장하지 않는다.
 
 남은 판단은 D1~D3의 기술 계약 채택, D4의 시험 client 우선 방식과 실제 개발 세션 연결 방식이다. 치명 결함이 발견됐다는 뜻은 아니며 구현·호환성·회귀가 아직 검증되지 않은 상태다.
+
+### Fable 계획 검토 결과 — 검토 후 기록
+
+검토 대상은 첫 goal 커밋 `8875c6b`다. Fable은 해당 작업 트리 파일을 읽고 **수정 필요, 높음 1·중간 8·낮음 8건**을 반환했다. 합의 완료조건 누락과 치명적 설계 결함은 찾지 못했다고 보고했다. 높음 1건은 실제 stdio fixture 주입·경합 재현·취소 지연에 필요한 제품 쪽 시험 경계를 발행 전에 정하라는 지적이다. 중간 지적은 도구별 입출력/오류 순서, UI 저장과 읽기의 간섭, 응답 예산, SDK 입력 거부, Electron fixture 실행, 정본/빌드 식별, 산출물 경로, client 의존성 소유를 구체화하는 내용이다.
+
+판정 원문은 `.backups/verification/2026-10-01-shared-read-mcp/goal-review.md`이며 Astra가 전체를 읽었다. 완료 원문은 `fable-completion.json`이다. Fable의 질문 3건은 정본의 작업 트리 범위, 64 KiB 수치, SDK 2.2.0 고정 수용이며 D4의 연결 방식 질문은 유지했다. 이는 **검토자 제안**이며 기존 합의를 취소하거나 모든 질문이 새 사용자 승인 사항이 됐다는 뜻은 아니다. 메인이 원문과 기존 결정을 대조해 기술 보완·사용자 결정의 경계를 판단한다. 현재 goal의 D1~D4는 아직 초안이다.
+
+Fable은 일부 외부 출처를 WebFetch 요약으로 확인했으며 Windows rename·SDK 실행·출력 token 수 등 미확인 범위를 원문 7절에 명시했다. 검토자의 Git 금지 범위 때문에 commit 바이트 대조는 하지 않았고, Astra가 이 기록 수정 직전에 `git diff --exit-code 8875c6b -- <goal 경로>` exit 0으로 검토 기간 중 goal의 미변경을 확인했다. **이후 이 절과 상태 갱신은 기록 전용으로 Fable 판정에 포함되지 않는다.** 코드·설정·catalog 변경이나 제품 시험은 없었다.
+
+Run `run_178353cf7ce2`, Task `task_caa031611206`, Dispatch `ctx_dec63c9a6dd9`다. Management 탭 아래 vertical split의 최초 `worker-start --terminal` 연결이 실제 성공했고 `turn_started`를 확인했다(`fable-worker-start.json`). 최초 실행은 `claude --model claude-fable-5-1`, 화면은 Fable 5.1 xhigh, backend는 `unknown`이다. `--terminal` 연결의 launch model=null을 모델 근거로 사용하지 않았다. 처음의 effort 선택창은 메인이 Keep xhigh로 처리했다고 통지했으며 동일 runtime/handle/incarnation·빈 prompt·tui-idle을 다시 확인한 뒤 attach했다(`main-effort-resolution.json`, `fable-ready-*.json`, `fable-launch-observations.md`).
+
+계획 판정과 별개로 검토 작업은 `worker_done outcome=succeeded`로 정상 정산됐다. release는 `retained / external_terminal / processAction none`이어서 같은 incarnation의 완료·빈 prompt를 확인하고 이 작업 pane만 닫았다. `fable-pane-close.json`은 `ptyKilled=true`다. 완료 Delivery `delivery_a49d1ce1d4d4`를 acknowledge했고 reclaimable 목록은 0개다. 세션은 재사용하지 않는다. 메인의 원문 확인과 goal 확인 전 Sol은 발행하지 않는다.
