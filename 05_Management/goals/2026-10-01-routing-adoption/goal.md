@@ -46,8 +46,10 @@ Management Astra는 허용 문서 작성·goal·Git·검증 조정을 맡는다.
 
 `138394d` 이후 이 goal의 상태·판정·정산·PR 기록 갱신은 **기록 전용이며 독립 판정에 포함되지 않는다.** 메인의 `msg_08ba5a4d0abf`가 허용한 (b) 방식으로 실제 검토 head와 이후 기록의 경계를 PR 본문에도 명시했다. 병합 승인 전 메인이 이 기록 diff를 별도로 검토한다.
 
-1차 세션의 종료 판단을 넘긴 뒤 메인이 `/` 화면을 `/auto-mode-setup` 대화상자로 확인하고 동일 terminal을 `ptyKilled=true`로 닫았다고 통지했다(`msg_8b19c7e683a3`, `main-followup.json`). 이후 `retained-terminal.json`도 `exited / operator_close`를 보여준다. 앞 절의 사용자 입력 가능성은 당시의 보수적인 판단이며 현재 종료 상태와 구분한다. 실행 명령·화면 표시 등 별도 원문 receipt가 남지 않은 당시 관측의 한계와 1차 원문의 main 반영 시각 정정은 재검증 원문에 있다.
+1차 세션의 종료 판단을 넘긴 뒤 메인이 `/` 화면을 `/auto-mode-setup` 대화상자로 확인하고 동일 terminal을 `ptyKilled=true`로 닫았다고 통지했다(`msg_8b19c7e683a3`, `main-followup.json`). 이후 `retained-terminal.json`도 `exited / operator_close`를 보여준다. 앞 절의 사용자 입력 가능성은 당시의 보수적인 판단이며 현재 종료 상태와 구분한다. 메인은 이후 두 checkout의 Git 제외 `.claude/settings.local.json`에 `skillOverrides`의 `auto-mode-setup off`를 설정했다고 통지했다(`main-local-settings-notice.json`). 설정 효과는 다음 신규 검증자에서 확인할 예정이며 이번 성공으로 보고하지 않는다.
 
-2차 세션도 분할 연결이 거부되어 미사용 pane을 닫고 새 탭으로 기동했다(`re-pane-*.json`, `re-worker-start.json`). 메인의 분할 반복 금지·직접 새 탭 대안 지침은 기동 후 수신했으며 이후 동일 시도는 반복하지 않는다. 최종 정산은 `re-worker-release.json`의 `released / closed_agent_terminal / archive captured`로 완료했고, 이미 닫힌 terminal에 추가 close를 하지 않았다. 완료 Delivery를 acknowledge했으며(`re-ack.json`) Run의 reclaimable worker는 0개였다.
+**receipt 없는 관측**은 1차 split 실행 명령 원문, 분할 pane·새 탭의 Opus 5.5 화면 표시, 배치 한계 보고 원문, 완료 화면과 `/` 내용의 네 항목이다. 당시 Astra 관측이며 별도 원문 파일로 입증한 사실과 구분한다. 사후 대조 범위 및 1차 원문의 main 반영 시각 정정은 재검증 원문에 있다.
+
+2차 세션도 분할 연결이 거부되어 미사용 pane을 닫고 새 탭으로 기동했다(`re-pane-*.json`, `re-worker-start.json`). 메인의 분할 반복 금지·직접 새 탭 대안 지침은 기동 후 수신했다. 이후 Management 작업자는 split을 재시도하지 않고 처음부터 새 탭 대안을 사용하며, 공통 규칙 반영은 메인의 다음 규칙 PR 범위다. 최종 정산은 `re-worker-release.json`의 `released / closed_agent_terminal / archive captured`로 완료했고, 이미 닫힌 terminal에 추가 close를 하지 않았다. 1차 완료 Delivery `delivery_986bfd441455`와 2차 `delivery_007b0b539f19`를 모두 acknowledge했다. 2차 ack 원문은 `re-ack.json`이며 Run의 reclaimable worker는 0개였다.
 
 [PR #156](https://github.com/bass131/dawnholder-server/pull/156)을 생성했다. 현재 OPEN이며 push·PR 생성까지 수행했고 병합·자동 병합은 하지 않았다. 메인에게 판정 원문과 검토 경계, pane 배치 한계, 기록 전용 변경의 검토 필요를 전달한다.
