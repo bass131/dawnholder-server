@@ -1,5 +1,5 @@
 # 현재 목표
 
-[R-2 내장 컴포넌트 null 검사](../../01_Phases/goals/2026-10-01-native-component-null-audit/goal.md)
+[P2 / D1a — 캐릭터 영속성 기술 계약](../../01_Phases/goals/2026-10-01-persistence-technical-design/goal.md)
 
 [다음 세션 재개 절차](RESUME.md)
