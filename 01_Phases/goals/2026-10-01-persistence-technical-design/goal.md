@@ -1,6 +1,6 @@
 # P2 / D1a — 캐릭터 영속성 기술 계약
 
-상태: **D1a 명세 작성·독립 정적 실사 완료, PR 통합 준비**. 신규 Opus 두 세션의 판정은 모두 PASS이며 보완본 `7710aa9`의 필수 결함은 0건이다. 이 완료는 기술 명세 작업의 범위이며 GameServer 연동·신규 migration·SQL 시험이 완료됐다는 뜻이 아니다. 병합은 이 PR에 대한 사용자 명시 승인 대상이다.
+상태: **D1a 명세 작성·독립 정적 실사 완료, [PR157](https://github.com/bass131/dawnholder-server/pull/157) 사용자 병합 승인 대기**. 신규 Opus 두 세션의 판정은 모두 PASS이며 보완본 `7710aa9`의 필수 결함은 0건이다. 이 완료는 기술 명세 작업의 범위이며 GameServer 연동·신규 migration·SQL 시험이 완료됐다는 뜻이 아니다. 자동 병합은 설정하지 않는다.
 
 ## 착수 근거와 기준
 
@@ -87,10 +87,11 @@ branch 전환 후 manifest·packages-lock·ProjectSettings의 skip-worktree `S`�
 
 | 관찰 | D1b에서 정할 일 |
 |---|---|
-| R2-OBS01·02 | 함수/시험 trigger도 객체별 batch 규칙으로 구체화. 시험 trigger 설치·제거를 정확 승인 부작용에 넣고 정리 후 잔여 trigger를 확인 |
+| **R2-OBS06 — 착수 조건 1** | **모든 DB 도구 실행에 승인된 정확 `-Database`와 그 값을 기록**. 기본값 Dawnholder_Dev로 002+가 기존 게임 DB에 자동 commit되는 경로를 막음 |
+| **R2-OBS01 — 착수 조건 2** | **function·procedure·시험 trigger 하나당 CREATE 문 하나인 파일**로 구체화 |
+| R2-OBS02 | 시험 trigger 설치·제거를 정확 승인 부작용에 넣고 정리 후 잔여 trigger를 확인 |
 | R2-OBS03·04 | DB 입력 범위 위반의 결과/기록 여부·class 검증 순서를 테스트 기대값으로 고정. 검증 전 Account INSERT 금지 예시를 구현 순서와 대조 |
 | R2-OBS05 | 전용 Windows principal의 실제 권한 시험 수단과 SAC 제한을 확정. repository 경계 시험과 후속 실제 관리 도구 시험의 작성·실행 소유를 분리 |
-| R2-OBS06 | 기존 DB 도구의 기본값은 Dawnholder_Dev이므로 모든 실행에 승인된 정확 `-Database`를 명시하고 기록. 기존 게임 DB를 자동 대상 삼지 않음 |
 | R2-OBS07 | 예정 밖 엔진 patch도 감지하도록 시작 시 ProductVersion 기록/비교·golden vector 재검증 절차를 구체화 |
 | R2-OBS08 | 전용 principal/launcher의 신규 파일 또는 수동 절차와 writer/executor를 D1b goal에 배정. server-level principal 구성은 게임 DB 데이터/schema 제외 원칙과 구분해 별도 정확 승인을 받음 |
 | R2-OBS09 | 1차 CLI 원응답 보존 한계를 위에 명시. 2차부터 시작 receipt를 별도 보존함 |
