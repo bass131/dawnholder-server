@@ -1,6 +1,8 @@
 # S4 — 원격 보간 계산과 Unity 적용 경계 분리
 
-상태: 구현·독립 검증 완료, [PR #144](https://github.com/bass131/dawnholder-server/pull/144) 통합 대기. 최신 main `a3c4e15e7d655511ced06bd1303360761413c5ab` 기반 `refactor/remote-interpolation-state`, 구현·테스트 commit `f948848`. [S3 PR #143](https://github.com/bass131/dawnholder-server/pull/143)의 독립 검증·계약 검토 완료 후 진행하며, 앞선 미병합 서버 변경은 이 독립 브랜치에 포함하지 않는다. 기존 클라이언트 수명·설정·예측 분리를 재작업하지 않고 필요한 작은 책임 경계에 기준을 적용한다. PR은 최종 보고서 확인·사용자 승인 전 병합하지 않는다.
+상태: **완료·[PR #144](https://github.com/bass131/dawnholder-server/pull/144) 병합됨**. 사용자 개별 승인 후 2026-09-30T08:55:43Z, main merge `4abeb8b874ada9c7d924f35e4622944f036f6219`로 통합했다. 승인 head·통합 근거는 [P0 통합 기록](../2026-09-30-contracts-baseline/goal.md#기준선과-통합-결과)에 있다. 아래 검증 head·수치는 당시 실행 기록이며 2026-10-01 상태 정정에서 재실행하지 않았다. 후속 PR도 [AGENTS](../../../AGENTS.md#git-권한)에 따라 병합 직전 개별 명시 승인이 필요하다.
+
+당시 작업 경과: 구현·독립 검증 완료, [PR #144](https://github.com/bass131/dawnholder-server/pull/144) 통합 전 기록이다. 당시 base main `a3c4e15e7d655511ced06bd1303360761413c5ab` 기반 `refactor/remote-interpolation-state`, 구현·테스트 commit `f948848`. [S3 PR #143](https://github.com/bass131/dawnholder-server/pull/143)의 독립 검증·계약 검토 완료 후 진행했으며, 당시 미병합인 선행 서버 변경은 이 독립 브랜치에 포함하지 않았다. 기존 클라이언트 수명·설정·예측 분리를 재작업하지 않고 필요한 작은 책임 경계에 기준을 적용한다.
 
 ## 목표와 설계
 

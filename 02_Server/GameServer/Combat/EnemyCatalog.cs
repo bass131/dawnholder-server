@@ -126,6 +126,7 @@ internal static class EnemyCatalog
             InitialAttackCooldownTicks:  CombatConstants.NormalAttackCooldownTicks, // 30
             InitialFsmState:             EnemyStates.Patrol,
             IsBoss:                      false,
+            // 당시 데모 반복 시연에서 1초는 너무 짧고 10초는 흐름이 끊겨 5초를 선택했다.
             RespawnTicks:                100, // 5초 @ 20TPS
             AttackWindupTicks:           CombatConstants.NormalAttackWindupTicks,  // 0
             AttackPattern:               0
@@ -154,6 +155,7 @@ internal static class EnemyCatalog
             InitialAttackCooldownTicks:  CombatConstants.NormalAttackCooldownTicks, // 30
             InitialFsmState:             EnemyStates.Patrol,
             IsBoss:                      false,
+            // 당시 골렘은 슬라임보다 약간 느리게 재출현하도록 튜닝한 값이다.
             RespawnTicks:                120, // 6초 @ 20TPS
             AttackWindupTicks:           CombatConstants.GolemAttackWindupTicks,    // 6
             AttackPattern:               1
