@@ -14,7 +14,7 @@
 
 ## 현재 상태와 결과
 
-문서 작성·독립 정적 검토·[PR153 생성](https://github.com/bass131/dawnholder-server/pull/153)을 완료하고 메인 검토를 기다린다. PR153은 OPEN이며 사용자 병합 승인 요청과 병합은 수행하지 않았다. [직전 목표](../2026-10-01-context-corrections/goal.md)의 현재 상태를 PR151 병합 완료로 갱신하고 당시 검증 기록을 보존했다.
+**완료.** 문서 작성·독립 정적 검토와 [PR153](https://github.com/bass131/dawnholder-server/pull/153) 병합을 완료했다. 2026-10-01 후속 규칙 적용 작업에서 `gh pr view 153`으로 MERGED, 병합 commit `dd5c253763c55a151a78678869a43792d7b7c34f`, 병합 시각 `2026-10-01T07:26:07Z`를 확인했다. PR 생성 당시에는 OPEN 상태로 메인 검토를 기다렸으며 이 목표의 coordinator는 사용자 병합 승인 요청과 병합을 수행하지 않았다. [직전 목표](../2026-10-01-context-corrections/goal.md)의 현재 상태를 PR151 병합 완료로 갱신하고 당시 검증 기록을 보존했다. 후속 운영 규칙 적용과 브랜치 정리는 [별도 goal](../2026-10-01-routing-adoption/goal.md)을 따른다.
 
 coordinator는 승인된 로컬 `docs/management-context-corrections`를 `git branch -d`로 삭제했다. 원격 삭제 시도는 `remote ref does not exist`로 실패했으며, 이어 `git ls-remote --heads origin refs/heads/docs/management-context-corrections`의 exit 0·출력 없음으로 원격 ref 부재를 확인했다. 다른 브랜치와 stash는 보존했다.
 
