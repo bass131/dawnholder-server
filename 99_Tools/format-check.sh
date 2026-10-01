@@ -24,7 +24,7 @@ mkdir -p -- "$EVIDENCE"
 [[ -z $(find "$EVIDENCE" -mindepth 1 -maxdepth 1 -print -quit) ]] || fail "Evidence directory is not empty: $EVIDENCE"
 printf '%s\n' "$ROOT" > "$EVIDENCE/.dawnholder-format-evidence-owner"
 export DOTNET_CLI_HOME="$STATE/cli-home" NUGET_PACKAGES="$STATE/nuget/packages" NUGET_HTTP_CACHE_PATH="$STATE/nuget/http" NUGET_PLUGINS_CACHE_PATH="$STATE/nuget/plugins" NUGET_SCRATCH="$STATE/nuget/scratch"
-export DOTNET_GENERATE_ASPNET_CERTIFICATE=false DOTNET_CLI_TELEMETRY_OPTOUT=1 MSBUILDDISABLENODEREUSE=1
+export DOTNET_ADD_GLOBAL_TOOLS_TO_PATH=0 DOTNET_GENERATE_ASPNET_CERTIFICATE=false DOTNET_CLI_TELEMETRY_OPTOUT=1 MSBUILDDISABLENODEREUSE=1
 source "$ROOT/99_Tools/Formatting/sdk.sh"
 dawnholder_sdk "$ROOT" > "$EVIDENCE/sdk.txt"
 cat "$EVIDENCE/sdk.txt"

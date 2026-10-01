@@ -22,6 +22,7 @@ try {
         DOTNET_CLI_HOME="$taskRoot/cli-home"; NUGET_PACKAGES="$taskRoot/nuget/packages";
         NUGET_HTTP_CACHE_PATH="$taskRoot/nuget/http"; NUGET_PLUGINS_CACHE_PATH="$taskRoot/nuget/plugins";
         NUGET_SCRATCH="$taskRoot/nuget/scratch"; DOTNET_GENERATE_ASPNET_CERTIFICATE='false';
+        DOTNET_ADD_GLOBAL_TOOLS_TO_PATH='0';
         DOTNET_CLI_TELEMETRY_OPTOUT='1'; MSBUILDDISABLENODEREUSE='1'
     }
     foreach ($name in $environment.Keys) { $saved[$name]=[Environment]::GetEnvironmentVariable($name,'Process'); [Environment]::SetEnvironmentVariable($name,$environment[$name],'Process') }

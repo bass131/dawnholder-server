@@ -36,7 +36,7 @@ wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh bot DashSmoke
 
 `build/test/run/bot`은 같은 SDK 선택 함수를 사용한다. 순서는 명시한 `DAWNHOLDER_DOTNET` → `/home/bass1/.local/share/dawnholder/dotnet-10.0.301/dotnet` → PATH의 `dotnet` → `$HOME/.dotnet/dotnet`이다. override는 실행 가능한 절대 경로여야 한다. 선택한 실행파일을 복제본의 `global.json`이 적용되는 cwd에서 확인하고 요구 버전·선택 경로·실제 SDK를 출력한다. override 부재·실행 오류·버전 불일치는 실패하며 다른 버전으로 다시 선택하지 않는다. 전역 PATH·기존 SDK·셸 profile은 바꾸지 않는다.
 
-첫 dotnet 호출부터 개발 인증서 생성을 억제하고, 새 실행 전용 CLI home과 NuGet package/HTTP/plugins/scratch 경로를 사용한다. 선택한 host를 `DOTNET_HOST_PATH`로 자식 테스트 프로세스에도 전달한다. 제품 restore를 명시한 다음 Debug build/test를 수행하며, 원본에는 역복사하지 않는다.
+첫 dotnet 호출부터 개발 인증서 생성과 전역 도구 경로의 PATH 추가를 억제하고, 새 실행 전용 CLI home과 NuGet package/HTTP/plugins/scratch 경로를 사용한다. `DOTNET_ADD_GLOBAL_TOOLS_TO_PATH=0`은 프로세스와 자식에만 적용한다. 선택한 host를 `DOTNET_HOST_PATH`로 자식 테스트 프로세스에도 전달한다. 제품 restore를 명시한 다음 Debug build/test를 수행하며, 원본에는 역복사하지 않는다.
 
 WSL 빌드는 Windows 원본 Unity DLL을 갱신하지 않는다. DLL 반영은 Windows 빌드 또는 별도로 정한 검증·배포 범위에서 수행한다.
 
@@ -49,6 +49,8 @@ Windows 원본 Git에서 입력 manifest를 만들고 전용 WSL 복제본을 �
 ```
 
 CI나 Git이 있는 Linux checkout에서는 `bash 99_Tools/format-check.sh`를 사용한다. Git이 없는 복제본은 `--manifest <원본 manifest 경로>`가 필요하다. Windows 진입점은 실제 checkout SHA·작업 상태·파일/설정 hash·Compile 집합·SDK를 기록하고, sync는 루트 빌드/정책 입력과 manifest를 명시적으로 복사해 hash를 대조한다. 복제본의 `.git` 열거나 원본 C# 쓰기를 하지 않는다.
+
+두 서식 진입점과 CI는 첫 SDK 조회 전부터 `DOTNET_ADD_GLOBAL_TOOLS_TO_PATH=0`으로 새 CLI home의 도구 경로가 사용자 PATH에 추가되는 것을 막는다. PowerShell 진입점은 종료·실패 시 호출자의 프로세스 환경값을 복원한다. 이미 추가된 사용자 PATH 항목은 자동 수정하지 않는다.
 
 제품 참조와 독립 테스트의 restore/build 및 서식 적용·보존 비교는 소유 표시가 있는 검사 snapshot에서 수행한다. Shared/ClientNet 빌드의 Unity DLL 복사도 그 snapshot 안에 한정하며, 실제 checkout의 입력·Git 상태·기존 DLL hash를 다시 확인한다. CI의 제품 전체 빌드는 별도 restore 뒤 수행한다.
 
