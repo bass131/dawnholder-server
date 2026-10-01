@@ -12,11 +12,15 @@
 
 ## 메인 세션 진입
 
-- 사용자는 세션을 마칠 때 Astra를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 두 Astra를 지금 보이는 pane의 분할로 다시 연다. 새 탭은 탭 그룹 뒤에 가려지므로 쓰지 않는다.
+- 사용자는 세션을 마칠 때 Astra를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 GameDev Astra를 메인 pane의 분할로, Management Astra를 Management worktree 탭에 다시 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)).
 - 두 Astra가 준비되면 메인 handle을 Orca 메시지로 알린다.
+- 메인이 직접 하는 운영 의무는 세 가지다. 세부는 각 링크의 정본을 따른다.
+  - 목표가 끝나면 그 Astra pane을 닫고 새로 연다([R-8](00_Document/operations/ORCA.md#r8-astra-lifecycle)).
+  - 새 세션 첫 화면의 선택창은 메인이 처리하고 설정 불변을 확인한다([R-6](00_Document/operations/ORCA.md#r6-first-screen)).
+  - 깨끗한 보고는 승인 전에 원천을 표본 대조한다([R-2](00_Document/operations/ORCA.md#r2-source-check)).
 
 ## Orca로 Codex 세션과 통신
 
 - 명령 문법은 `orca skills get orchestration`의 버전 일치 가이드를 따른다. 터미널 handle은 매번 `orca terminal list --json`으로 확인하고 문서에 고정하지 않는다.
-- 메시지와 터미널 입력은 `[메인 Claude]`로 시작한다. 지시는 `orca orchestration send --to <상대 handle>`로 우편함에 넣고, 터미널 입력에는 "Orca 메시지를 확인하라"는 안내만 담는다. 보낸 사람 태그 규칙은 AGENTS.md를 따른다.
+- 메시지(회신 subject 포함, [R-3](00_Document/operations/ORCA.md#r3-reply-tag))와 터미널 입력은 `[메인 Claude]`로 시작한다. 지시는 `orca orchestration send --to <상대 handle>`로 우편함에 넣고, 터미널 입력에는 "Orca 메시지를 확인하라"는 안내만 담는다. 보낸 사람 태그 규칙은 AGENTS.md를 따른다.
 - 터미널 알림은 상대가 빈 프롬프트일 때만 `orca terminal send --enter`로 보낸다. 상대가 작업 중이거나 사용자가 프롬프트를 작성 중이면 보내지 않는다. 답장은 `$ORCA_TERMINAL_HANDLE`로 받는다. 세부 절차는 `.agents/skills/dawnholder-session-handoff/SKILL.md`를 따른다.
