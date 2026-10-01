@@ -2,19 +2,19 @@
 
 정본 worktree는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, 소유 영역은 `05_Management`다. 과거 root05나 management-foundation을 정본으로 사용하지 않는다. 이 문서는 읽기 순서와 다음 행동만 제공하며 상태를 별도 집계하지 않는다.
 
-Management pane은 Game Dev 화면에서 분할되어 Orca에는 Game Dev 소유로 표시될 수 있다. 실제 파일·Git 작업은 위 `management-active`에서만 수행하며 `C:/Dev/DawnHolder_Project`를 사용하지 않는다. pane 소속과 실제 작업 경로를 구분한다.
+이번 M-1 세션은 메인의 지시에 따라 독립 Management 탭에 배치했다. 새 세션의 배치는 루트 RESUME와 현재 지시를 따르고, Orca pane 소속과 실제 작업 경로를 함께 확인한다. 실제 파일·Git 작업은 위 `management-active`에서만 수행하며 `C:/Dev/DawnHolder_Project`를 사용하지 않는다. 과거 Game Dev pane 분할이나 이번 탭의 관찰을 새 세션의 실행 권한으로 재사용하지 않는다.
 
 ## 최소 읽기 순서
 
 1. 루트 [AGENTS](../AGENTS.md)와 [현재 규칙 적용 goal](goals/2026-10-01-routing-adoption/goal.md). PR153 종료 근거는 [세션 종료 정리 goal](goals/2026-10-01-session-closeout/goal.md), PR151 종료 근거는 [문맥 정정 goal](goals/2026-10-01-context-corrections/goal.md)에서 확인한다.
-2. [공동 조회·로그 합의](goals/2026-09-30-system-records/shared-read-agreements.md): 사용자와 정한 순서, 첫 구현 경계, 후속 로그 계약과 남은 결정. PR147 병합과 후속 구현 보류·당시 검증은 [기존 goal](goals/2026-09-30-system-records/goal.md#현재-상태)을 따른다.
+2. [현재 공동 조회 MCP goal](goals/2026-10-01-shared-read-mcp/goal.md): 승인 범위·현재 단계·실행 근거와 남은 결정의 원본. [공동 조회·로그 합의](goals/2026-09-30-system-records/shared-read-agreements.md)는 사용자와 정한 순서·첫 구현 경계·후속 로그 계약이다. PR147 병합과 당시 검증은 [기존 goal](goals/2026-09-30-system-records/goal.md#현재-상태)을 따른다.
 3. 세션 배치는 루트 [RESUME의 세션 진입 배치](../00_Document/operations/RESUME.md#세션-진입-배치)를 따른다. 실제 다단계 작업을 재개할 때 [목표 루프](../.agents/skills/dawnholder-goal-loop/SKILL.md)와 [실행 안내](../00_Document/operations/DEVELOPMENT.md)의 영향 범위를 읽는다. 과거 전체 소스·로그·대화를 모으지 않는다.
 
 ## 재개 첫 행동
 
 이번 세션에 허용된 범위와 지시 출처를 먼저 확인한다. 이어 `git status --short --branch`와 `git log -1 --format="%H %s" -- 05_Management`로 실제 로컬 변경·문서 커밋을 확인하고 위 goal의 관찰과 비교한다. 맥락 갱신만으로 후속 보류가 해제되지는 않는다.
 
-과거 문서 checkpoint `8c6fbd57` 이식과 문맥 정정은 PR151 병합으로 끝났다. [당시 종료 기록](goals/2026-09-30-system-records/goal.md#오늘-작업-종료다음-세션-재개)의 이식 절차를 다시 실행하지 않는다. MCP·서버 등 후속 구현은 계속 보류하며, 별도 재개 지시와 goal 범위가 정해지면 실제 최신 main과 로컬 변경을 확인해 보존한다.
+과거 문서 checkpoint `8c6fbd57` 이식과 문맥 정정은 PR151 병합으로 끝났다. [당시 종료 기록](goals/2026-09-30-system-records/goal.md#오늘-작업-종료다음-세션-재개)의 이식 절차를 다시 실행하지 않는다. 읽기 전용 MCP 재개 범위는 [현재 goal](goals/2026-10-01-shared-read-mcp/goal.md)로 확정됐다. 해당 goal의 단계와 실제 로컬 변경을 대조해 이어가며, 서버 등록·로그 조회·쓰기·실행 제어는 계속 후속 범위다. MCP 정본은 management-active 작업 트리이며 실제 개발 세션의 연결 설정 적용은 별도 결정이다.
 
 ## 소유권과 다음 결정
 

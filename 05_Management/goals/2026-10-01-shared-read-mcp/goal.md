@@ -13,6 +13,7 @@
 - 허용: 05 안의 읽기 전용 MCP, UI와 공유하는 catalog 계약·검증·읽기·검색 모듈, 필요한 05 package/TypeScript 설정, 독립 테스트와 실행·연결 안내. requirements/decisions/README/RESUME는 이 목표로 연결하는 데 필요한 부분만 후속 갱신한다. 첫 체크포인트는 이 goal 작성·커밋뿐이다.
 - MCP에는 catalog 조회 도구만 등록한다. 쓰기·서버 조작·shell·외부 URL 요청·임의 파일 경로 읽기·원문 파일 열기를 노출하지 않는다. 도구의 path/URL 인자, client roots에 따른 읽기 범위 확장, 자동 source locator 해석을 두지 않는다. 읽기 전용 표식은 설명이며 실제 보장은 서버의 등록 도구·의존성·파일 접근 경계와 독립 테스트로 확인한다.
 - catalog 본문·기존 ID·출처·`asOf`·`sourceCommit`을 이번 구현으로 최신화하지 않는다. catalog에 적힌 게임 상태와 실제 현재 게임 상태를 구분한다. 기존 UI JSON 불러오기·수정·저장·백업·잠금·낙관적 충돌 처리와 미저장 초안을 보존한다.
+- Windows 읽기/저장 간섭 보완은 메인 `msg_f1bd05219af4`의 명시 범위로 한정한다. UI 저장 rename의 일시 오류에만 총 1초 이내 제한된 재시도를 적용하고, 소진 시 기존 저장 실패를 반환한다. 아래 D3와 실제 재현 근거를 따른다.
 - Electron의 빌드 진입점 `frontend/desktop-dist/main.js`와 그 위치에서 `../../records/catalog.json`을 해석한 절대경로를 보존한다. 공통 모듈 이동이 `rootDir: electron`·`outDir: desktop-dist`·package의 main 경로를 조용히 바꾸지 않아야 한다. 빌드된 MCP entry도 동일한 05 원본을 가리킨다.
 - Game Dev 소유 `02_Server`, root CURRENT/goal, AGENTS/.agents, 공유 DLL·PDL·Unity·실행 wrapper는 변경하지 않는다. HTTP/관리백엔드·서버 등록/로그·초안 승인 자동화·새 기록 저장 체계는 포함하지 않는다.
 - Codex/Claude 설정(`.codex/config.toml`, `.mcp.json`, `.claude/*`, 사용자 설정 포함)은 변경하지 않는다. 실제 개발 세션 연결에 설정 적용이 필요하면 아래 D4의 사용자 결정으로 올린다. 전역 설정·업데이트·권한 우회는 수행하지 않는다.
@@ -80,11 +81,13 @@ Sol은 05 안에서 다음 책임을 분리한다. 정확한 파일 배치는 �
 
 ### D3. 읽기 오류와 버전 충돌
 
+**Windows UI 저장 간섭 보완:** TEMP 제어군 저장 100/100 성공 대비, production reader를 100ms 간격으로 병행한 사본에서 저장 99/100·write 실패 1건이 보고돼 메인이 허용한 bounded retry를 적용한다. 대상은 UI 저장 rename의 `EPERM`·`EACCES`·`EBUSY`뿐이며 총 1초 이내 backoff 후 소진 시 기존 저장 실패다. 1초는 새 재시도의 시작 기한이며 이미 대기 중인 native I/O의 완료 시간을 강제로 제한하지 않는다. 잠금·낙관적 충돌·백업·미저장 초안의 의미를 유지한다. MCP reader의 `CATALOG_UNREADABLE`은 retryable인 명시 오류로 두고 내부 자동 재시도를 추가하지 않는다. 이 재현은 구현자의 동일 reader 직접 시험이며 실제 stdio 조회 중 독립 저장 회귀와 시도 횟수 분포는 V2/V3에서 확인한다. 구체 backoff·최종 실행 근거는 아래 결과 기록을 따른다.
+
 성공 envelope는 `{ ok: true, snapshot: { hash, revision, asOf, sourceCommit }, data }`, domain 오류는 `{ ok: false, snapshot, error: { code, message, retryable, details? } }`이며 오류에는 data가 없다. 각 도구에 이 성공/오류 구조의 outputSchema를 선언하고 structuredContent와 동일 JSON의 text 한 블록을 항상 병행한다. 성공은 isError=false, domain 오류는 true다. SDK가 오류 outputSchema 검증을 생략하더라도 독립 테스트가 오류 계약을 검증한다.
 
 hash는 **UI와 MCP가 같은 함수 하나**로 계산한다. 기존 UI 의미를 보존해 UTF-8로 decode한 문자열을 다시 UTF-8로 인코딩해 SHA-256을 계산한다. JSON 정렬/정규화는 하지 않으며 유효하지 않은 UTF-8에서 raw byte hash와 다를 수 있음을 기록한다. revision/asOf/sourceCommit은 catalog 값을 보존하며 현재 시각·서버 build commit으로 바꾸지 않는다. 검증된 snapshot이 없는 오류는 snapshot:null이다. 긴 metadata로 상한을 넘으면 snapshot:null과 details.metadataOmitted=true를 반환한다.
 
-**strict 입력 schema를 채택한다.** 알 수 없는 속성을 제거하는 기본 object 대신 추가 속성을 거부하는 schema를 사용한다. SDK가 handler 이전에 거부한 입력은 SDK의 isError/프로토콜 거부 형태를 별도 채널로 기록하며 위 domain envelope를 보장하지 않는다. 공통 관찰 조건은 **오류 반환이며 정상 data 없음**이다. SDK 자체 거부가 과대 입력 원문·절대 경로 등을 반사하거나 비정상 크기로 증가하는지는 첫 smoke에서 확인해 문제 시 메인에 보고한다. 정상 handler에 도달한 의미 검증은 INVALID_ARGUMENT로 통일한다.
+**strict 입력 거부를 유지하며 오류 문구는 입력 원문을 반사하지 않는다.** 알 수 없는 속성을 제거하는 기본 object 대신 추가 속성을 거부한다. 메인 후속 지시 `msg_f9186b55efca`의 1안을 채택해 schema별 공식 오류 옵션으로 고정 문구를 지정한다. Zod의 strictObject와 필드 string/max/enum 옵션을 적용한 legacy/modern 보완 smoke가 통과했다. SDK가 먼저 strict 검증하며 handler에서만 검증하는 2안은 채택하지 않았다. SDK pin은 유지하고 node_modules 패치나 전역 오류 설정은 하지 않는다. SDK가 handler 이전에 거부한 입력은 SDK의 isError/프로토콜 거부 형태를 별도 채널로 기록하며 위 domain envelope를 보장하지 않는다. 공통 관찰 조건은 **오류 반환·정상 data 없음·입력 key/value 원문 미반사**다. 입력 거부 결과의 JSON UTF-8 크기는 SDK/handler 어느 경로든 입력 길이와 무관하게 **1,024 bytes 이하**인지 두 규격에서 확인한다. SDK 부가 필드를 포함한 client 관측 result를 측정하고 JSON-RPC wire overhead는 별도 기록한다. 정상 handler에 도달한 의미 검증은 INVALID_ARGUMENT로 통일한다.
 
 판정 순서는 **프로토콜/strict schema → 동시 처리·빈도 제한 → 의미 인자(뒤 페이지의 VERSION_REQUIRED 포함) → 원본 I/O·크기·읽기 변경 → JSON/스키마·참조 검증 → expectedHash 일치 → ID/systemId 존재 → 검색·응답 크기**다. 예를 들어 잘못된 입력은 catalog를 읽지 않고, 손상된 catalog는 VERSION_CONFLICT나 NOT_FOUND로 가리지 않는다. rate 제한을 받지 않는 같은 조건의 정상 요청에서 결과 결정성을 확인한다. 취소는 각 await 경계에서 우선 중단하며 성공 data를 반환하지 않는다.
 
@@ -152,7 +155,7 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 이번 세션의 메인 지시로 Management Astra는 독립 Management 탭에 있다. 작업자 pane은 이 탭의 Astra 아래 split에 열고 `worker-start --terminal`로 연결한다. 이전 Game Dev 탭의 mismatch 관찰을 현재 성공으로 재사용하지 않는다. 실제 split/readiness/attach receipt를 저장하고 거부되면 residual 자원·미발행 상태를 확인한 뒤 승인된 새 탭 대안을 사용한다. 상세 절차는 [Orca 위임 지침](../../../.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 발행 전에 읽는다.
 
-모든 작업자·검증자는 작업 하나 후 정산·종료하고 재사용·추가 위임하지 않는다. 파트당 검증자는 동시에 하나만 열며 같은 파일 동시 쓰기를 금지한다. 세션 모델은 요청/launch·최초 실행 명령/화면/백엔드를 구분한다. 현재 Astra 화면은 `GPT-6-Astra xhigh`, 실제 백엔드 모델은 `unknown`이다. Sol/Opus는 아직 발행하지 않아 launch/화면 근거가 없다.
+모든 작업자·검증자는 작업 하나 후 정산·종료하고 재사용·추가 위임하지 않는다. 파트당 검증자는 동시에 하나만 열며 같은 파일 동시 쓰기를 금지한다. 세션 모델은 요청/launch·최초 실행 명령/화면/백엔드를 구분한다. 현재 Astra 화면은 `GPT-6-Astra xhigh`, 실제 백엔드 모델은 `unknown`이다. Sol과 신규 Opus V1의 발행 근거는 아래에 기록한다.
 
 ### Fable goal 검토 시범
 
@@ -166,17 +169,17 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 ## 현재 상태와 근거
 
-**메인이 goal `8001372`를 승인했다. 호출량 조정을 반영해 외부 Sol의 구현/첫 smoke를 발행하는 단계이며 독립 제품 검증은 미착수다.** 최초 Fable 판정은 수정 필요이며 메인의 후속 goal 승인과 구분한다.
+**V1 재검증은 통과했다. 최초 결함 V1-01을 새 Sol이 수정하고 신규 Opus가 독립 시험24건을 추가해 전체174건 통과를 확인했다. V2 실제 stdio·Windows 경합 검증으로 진행하며 V3와 PR은 아직 미착수다.** 최초 Fable 판정과 최초 V1의 수정 필요 판정은 아래 이력에 보존한다.
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - 시작: clean `main`, HEAD `18c8ca6a5aa3032873029cbd36658f0c4f9095c5` (PR156). `git fetch origin main` 후 origin/main도 같은 SHA임을 확인했다.
 - 작업 브랜치: `feat/management-shared-read-mcp`, 위 origin/main에서 새로 생성. 첫 커밋 대상은 이 goal 한 파일이다. 원격 push·PR·병합은 아직 수행하지 않았다.
 - 현재 runtime `8a673084-6819-45b9-a551-347226cdce9b`, Astra terminal `term_6df8363a-d0bf-454f-aa67-7c7c7323008a`, incarnation `3068c493-4095-4e8c-b907-eed3f3b741e6`. Orca worktree 소속과 실제 cwd 모두 management-active로 확인했다. 이 값은 관찰 기록이며 향후 실행 권한이 아니다.
 - READY 회신 `msg_46884ca17d25`를 메인에게 enqueue했다. enqueue 성공을 메인이 읽거나 승인했다는 근거로 쓰지 않는다.
-- 현행 코드·문서의 좁은 정적 조사, 버전/registry metadata 조회, 공식 문서 확인과 Fable 계획 검토를 수행했다. package 설치·MCP/앱 실행·테스트·빌드·독립 제품 검증·설정 변경은 수행하지 않았다.
-- 원시 receipt/로그와 판정 원문은 Git 제외 `.backups/verification/2026-10-01-shared-read-mcp/`에 보존한다. 계획 판정은 아래와 같고 구현/제품 검증 판정은 아직 없다. 원문은 로컬 근거이며 원격 가용성을 보장하지 않는다.
+- 구현 발행 전에는 좁은 정적 조사, 버전/registry metadata 조회, 공식 문서 확인과 Fable 계획 검토를 수행했다. 이후 Sol 구현·자체 실행과 독립 검증의 근거는 아래 기록을 따른다. 실제 개발 세션 연결 설정은 변경하지 않았다.
+- 원시 receipt/로그와 판정 원문은 Git 제외 `.backups/verification/2026-10-01-shared-read-mcp/`에 보존한다. 계획 판정·Sol 구현 보고·V1 수정 필요 판정은 아래에 구분하며 후속 독립 검증은 진행 중이다. 원문은 로컬 근거이며 원격 가용성을 보장하지 않는다.
 
-goal 승인 후 다음 단계는 Sol의 첫 smoke 보고와 구현, V1→V2→V3 독립 검증, PR이다. 정본 범위는 확정됐고 응답 축소와 SDK 조건부 채택은 메인 기술 결정으로 처리했다. D4 실제 개발 세션 연결/설정 적용은 시험 후의 결정 항목으로 남는다. 구현·SDK 설치/호환성·회귀는 아직 검증되지 않았다.
+Sol 구현과 최초 V1 독립 검증 후 V1-01 수정·재검증을 마쳤다. 이어 V2→V3와 PR을 수행하며, D4 실제 개발 세션 연결/설정 적용은 시험 후 결정 항목으로 남는다. 정본 범위는 확정됐고 SDK·응답 제한·Windows 저장 보완의 기술 결정과 실행 근거는 아래에 구분한다.
 
 ### Fable 계획 검토 결과 — 검토 후 기록
 
@@ -211,3 +214,65 @@ Run `run_178353cf7ce2`, Task `task_caa031611206`, Dispatch `ctx_dec63c9a6dd9`다
 ### goal 승인과 구현 착수
 
 메인 메시지 `msg_8c4a3b4c61ff`에서 `ed465b0..8001372` diff를 직접 확인하고 goal 및 Sol 발행·V1→V2→V3·PR까지 승인했다. 병합은 해당 PR의 사용자 명시 승인 대상이다. 메인이 허용한 호출량 조정 중 **동시 처리 4, 대기열 0**을 선택했다. 작은 병렬 도구 호출을 수용하면서 대기열·대기 timeout의 추가 수명주기를 만들지 않기 위해서이며, 나머지 16/8 KiB·10건·초당 10회 수치는 유지한다.
+
+Sol 발행은 Run `run_178353cf7ce2`, Task `task_da962a6212eb`, Dispatch `ctx_7eb42a498622`다. Management 탭 아래 새 vertical split의 최초 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 화면은 `GPT-6.1-Sol xhigh`, backend는 `unknown`이다. 빈 prompt와 `tui-idle satisfied=true`를 확인한 뒤 `worker-start --terminal` 연결에서 `input_accepted`와 `turn_started`, 잔여 자원 없음이 확인됐다. `sol-split.json`, `sol-ready-*.json`, `sol-worker-start.json`, `sol-implementation-spec.md`에 원시 근거를 보존했다. 이 기록은 작업 발행 성공이며 SDK/제품 검증 성공을 뜻하지 않는다.
+
+### 첫 SDK smoke와 오류 반사 보완
+
+Sol의 최초 자체 점검은 **차단 발견**이다. exact package 설치, legacy/modern 연결, 일반 strict 거부·stdout 순수성·EOF exit 0은 관측됐으나, Zod 기본 strictObject가 알 수 없는 property 이름을 그대로 오류에 넣었다. 인공 민감 경로 sentinel과 27,648 UTF-16 code unit key가 반사됐고 SDK client result JSON은 legacy 27,782 bytes / modern 27,882 bytes였다. 이는 SDK 오류 결과 크기이며 application envelope 한도 측정과 구분한다. 원문 `sol-smoke.md`와 `sol-evidence/sdk-smoke-*.json`을 Astra가 확인해 메인에 보고했다. 제품 변경은 당시 package/lockfile뿐이며 Sol은 쓰기를 중단했다.
+
+메인 `msg_f9186b55efca`는 pin·strict 거부 유지, 입력 원문 미반사와 입력 거부 결과 1 KiB 이하를 두 규격에서 확인하도록 지시했다. 먼저 schema-local 고정 오류 문구의 공식 API를 보완 probe에서 확인하고, 통과하면 재승인 없이 같은 미완료 구현 작업을 이어간다. 실패 시에만 handler strict 대안을 검토한다. 보완 smoke는 아래와 같이 통과했다. 이 체크포인트 당시 독립 제품 검증은 미착수였다. 최초 실패를 성공으로 바꾸어 기록하지 않는다.
+
+Sol의 보완 smoke는 두 규격 각각 잘못된 입력 9건(민감한 모양의 key/value, 27,648-unit key, 300 keys, nested object/array, 과대 query, enum 포함)을 고정 문구로 거부했다. SDK 필드 포함 client result JSON 최대치는 legacy **142 bytes**, modern **242 bytes**였고 원문 반사와 성공 data가 없었다. 잘못된 입력의 handler 미실행은 거부 envelope와 stderr 실행 marker로 추정한 것이며, 요약 log의 handlerRuns: 1은 코드 상수로 전용 호출 counter 측정값이 아니다. stdout JSON-RPC와 EOF exit 0도 관측됐다. Astra는 원문 보완 절·probe·요약 log를 직접 읽고 schema-local 고정 오류 방식 채택 및 구현 재개를 통지했다. 근거는 sol-smoke.md의 Supplemental checkpoint, sol-evidence/sdk-sanitized-*.json과 sdk-sanitized-run.log다. 이는 구현자 자체 점검이며 V2가 실제 제품으로 다시 독립 검증한다.
+
+메인의 표기 정정 요청 msg_3507e1989469에 따라 위의 관측/추정을 구분했다. Astra가 client probe를 직접 대조했으며 :42-43의 stderr 한 줄·고정 marker assert도 보조 근거로 기록한다. V2는 내부 server factory의 시험용 callback(예: onToolHandlerEntered)을 tool handler 진입 첫 지점에 주입해 실제 호출 counter를 측정한다. production entry는 이 callback을 주입하거나 외부 옵션으로 노출하지 않는다. 기존 readSnapshot 호출수만으로 전체 handler 진입 횟수를 대신하지 않는다.
+
+### Windows rename 간섭 확인 — 진행 중
+
+Sol은 TEMP 사본에서 열린 읽기 handle을 강제로 유지한 atomic rename probe의 EPERM(-4048)을 보고했다. reader-probe-atomic-run.log는 probe 실행 완료(exit 0)와 rename 실패(CATALOG_UNREADABLE)를 함께 기록하므로 저장 성공 근거로 사용하지 않는다. 실제 createCatalogStore.save와 MCP 반복 조회의 간섭은 별도로 확인 중이다.
+
+메인 msg_f1bd05219af4는 실제 저장 실패가 재현될 때에만 UI 저장의 rename 단계에서 EPERM/EACCES/EBUSY에 대한 총 1초 이내 bounded backoff 재시도를 허용했다. 잠금·낙관적 충돌·백업·초안 보존은 유지하고 소진 시 기존 저장 실패를 반환한다. MCP reader는 finally close와 명시적 UNREADABLE(retryable)을 유지하며 내부 자동 재시도는 추가하지 않는다. 재현되지 않으면 수정하지 않고 강제 handle probe를 위험 근거로만 남긴다. 수정 시 V2/V3는 반복 조회 중 저장 성공률과 실제 rename 시도 횟수 분포를 측정한다. 후속 quota 범위 직접 reader 시험에서 저장 실패가 재현돼 아래 보완을 진행했다.
+
+Sol은 조회 없는 제어군 save 100/100 성공과 100ms 간격 직접 reader 병행의 save 99/100(write 실패 1건)을 보고했고, 마지막 catalog rename에만 10→20→40ms 상한 backoff와 단조 1초 deadline을 적용했다. backup rename과 reader에는 재시도가 없다. 같은 사본 조건의 보완 후 저장은 100/100 성공, 실제 onAttempt 관측의 시도 분포는 첫 시도 98·두 번째 2(EPERM 2건)였다. 이 짧은 시험에서 reader 성공은 7회이며 실제 stdio client 반복 검증과 구분한다. 가상 clock의 EPERM/EACCES/EBUSY 소진은 각 27회 시도·1000ms 뒤 기존 write 실패, 비대상 EIO는 1회·대기 0이었다. 원본/백업/입력 초안 보존과 소유 lock·임시파일 정리를 자체 관측했다. Astra는 windows-save-probe-limited-after.log와 rename-retry-probe-run.log 원문을 읽었다. createCatalogStore의 세 번째 CatalogRenameOptions(rename/wait/now/onAttempt)는 독립 검증의 시도 분포·소진 관측에 사용하고 production IPC에 노출하지 않는다. 이 자체 점검 보고 당시에는 최종 쓰기 종료와 독립 판정을 기다렸다. 후속 상태는 아래를 따른다.
+
+### Sol 완료·정산과 V1 시작
+
+Sol 최종 원문 `sol-implementation.md`는 제품 쓰기 종료 `2026-10-01T22:24:13+09:00`과 제품 18개 파일 변경을 기록한다. 기존 27개 테스트, UI/Electron/MCP 빌드와 실제 entry의 두 규격 자체 smoke는 성공했다. 입력 거부 결과의 최대 크기는 legacy 387 / modern 554 bytes, 표본 application 응답의 최대 크기는 16,220 bytes였다. modern SDK 부가 필드와 wire 크기는 별도다.
+
+두 client는 순차 실행했으며 동시 격리·실제 stdio 취소·독립 V1/V2/V3·GUI는 당시 미실행으로 구분했다. Astra는 원문 전체와 실제 변경 목록을 대조했다. 실제 개발 세션 연결·전역 설정·정본 편집·게임/DB 검증은 수행하지 않았다.
+
+`worker_done msg_9b8bc95a93ef`의 정확한 Task/Dispatch와 원문을 대조하고 release했다. 반환은 `retained / external_terminal / processAction none`이어서 같은 incarnation의 완료·빈 prompt를 확인한 뒤 Sol pane만 닫았다(`ptyKilled=true`). Delivery `delivery_330194967fe5`를 acknowledge했고 reclaimable 목록 0개를 확인했다. 근거는 `sol-completion.json`, `sol-release.json`, `sol-close-identity.json`, `sol-pane-close.json`이다. 세션은 재사용하지 않는다.
+
+V1은 같은 Management 탭 아래 새 split에서 `claude --model claude-opus-5-5`로 시작했다. 화면은 `Opus 5.5 with xhigh effort`, backend는 `unknown`이며 빈 prompt와 `tui-idle`을 확인했다. Run `run_178353cf7ce2` / Task `task_769048c370e9` / Dispatch `ctx_6517dc2b7475` / terminal `term_5c8b52c7-86ad-4906-95f9-ccec697d2671`이다.
+
+최초 연결은 `input_accepted`·`turn_started`와 잔여 자원 없음으로 확인했다. `v1-spec.md`와 `v1-*.json`에 발행 근거가 있다. V1에게 제품 파일 쓰기 권한은 부여하지 않았다.
+
+### V1 판정·정산과 V1-01 수정
+
+Astra는 `v1-review.md` 전체를 읽었다. 독립 7개 파일 123건 중 121건이 통과했고, 기존 27건도 통과했다. 유일한 제품 결함 V1-01은 알 수 없는 도구 이름을 SDK가 `Tool <이름> not found` 오류에 그대로 반사하는 문제다. 5,024-unit 이름은 두 규격 모두 client 관측 5,069 bytes였으며, 기존 1 KiB·입력 미반사 기준을 위반한다. handler 진입·catalog 읽기·정상 data는 없었다. arguments 거부 31유형×두 규격은 실제 handler counter로 미진입·미반사를 확인했다. 제품·정본·package/lock·기존 시험 26개 파일 해시는 검증 전후 같았다.
+
+메인에게 `msg_284f2834465f`로 원문 경로·결함·잔여 범위와 수정 진행을 보고했다. 기준을 약화하지 않고 신규 Sol이 공개 SDK API를 이용한 최소 제품 수정을 수행한 뒤 신규 Opus가 재검증한다. V1-01은 최초 발견이며 재검증 실패 횟수는 현재 0이다. 공개 API로 해결할 수 없거나 범위 확대가 필요하면 메인에 보고한다.
+
+R-1은 Sol 자체 probe의 요약 필드 `strictInvalidDidNotEnterHandler`가 뒤 정상 호출을 포함하는 식이라 오해할 수 있다는 표기 지적이다. 앞의 실제 `assert.equal(entered, beforeInvalid)` 및 V1의 독립 counter 관측은 유효하므로 미실행을 통과로 보고한 불일치는 아니다. 기존 원시 로그는 보존하며 V2는 실제 counter와 wire 관측을 유지한다. V2 stdio·실제 Windows 경합, V3 UI·코드 리뷰는 아직 미실행이다.
+
+V1 `worker_done msg_7f12f52e0932`는 검증 작업 완료이며 제품 통과를 뜻하지 않는다. 원문과 Task/Dispatch를 대조하고 `worker-release`의 `retained / external_terminal / processAction none`을 확인했다. 같은 incarnation의 완료·빈 prompt를 확인하고 해당 pane만 닫아 `ptyKilled=true`를 받았다. Delivery `delivery_9a928cb2b132` acknowledge 및 reclaimable 0을 확인했다. 근거는 `v1-completion.json`, `v1-release.json`, `v1-close-screen.json`, `v1-pane-close.json`이며 세션은 재사용하지 않는다.
+
+수정 Sol은 새로운 Astra 아래 split에서 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`로 실행했다. 화면 `GPT-6.1-Sol xhigh`, backend `unknown`, 빈 prompt·tui-idle을 확인했다. Task `task_e0cb9ebdaee9` / Dispatch `ctx_4addcdf164d6` / terminal `term_c2e9d861-3094-44db-890d-c913d3d9e613` / incarnation `9e32c144-b447-43f8-887e-1b0a6783e0e3`다. 최초 연결 `input_accepted`·`turn_started`, 잔여 자원 없음이며 `sol-fix-v1-01-spec.md` 및 같은 접두사의 launch receipt에 보존했다. 쓰기는 MCP 결함 관련 최소 제품 모듈과 자기 보고에 한정했고 V1 시험은 읽기 전용이다.
+
+수정 Sol은 `catalog-server.ts`와 새 `catalog-tool-name-transport.ts` 두 제품 파일을 변경했다. public `McpServer.connect`와 `Transport`를 조합해 등록되지 않은 문자열 이름을 SDK 조회 전에 고정 `-32602 / Unknown tool name.`으로 거부한다. SDK 내부 교체나 node_modules 패치는 없다고 보고했으며 Astra는 두 제품 파일·기존 server 대비 diff와 `sol-fix-v1-01.md` 전체를 읽었다. 최종 build digest는 `0.0.0+sha256.08509f24db77418ae3cfca9ca9d2951612e14c1f24ae09ec118d36046a2cf18c`다.
+
+구현자 자체 재실행은 기존 V1 123/123, 전체150/150, MCP typecheck/build exit0이다. 양 규격 in-memory·계측 stdio·production stdio의 54개 미등록 이름은 client 오류46bytes, wire79bytes로 반사 없이 거부됐다. 계측된36호출의 handler/reader는0이며 production counter는 미측정이다. 실제 stdio child4개는 EOF 후 exit0, stdout JSON-RPC만 관측했다. 이 결과는 V2 전체나 독립 재검증 통과를 뜻하지 않는다. 기존81파일 중 server 외80파일은 해시불변이고 catalog도 이전해시를 유지했다.
+
+제품 쓰기 종료는 `2026-10-01T23:21:03+09:00`이며 `worker_done msg_606fe515a530`의 정확한 Task/Dispatch와 보고를 대조했다. release는 retained/external_terminal이므로 같은 incarnation의 완료·빈 prompt를 확인하고 해당 pane만 닫아 ptyKilled=true를 받았다. Delivery `delivery_6dbb4f9d47f9` acknowledge 및 reclaimable0을 확인했다. `sol-fix-v1-01-completion.json`·release/close receipt에 보존했고 이 세션은 재사용하지 않는다. 신규 Opus의 첫 재검증을 진행한다.
+
+첫 재검증 V1-R1은 새 split의 `claude --model claude-opus-5-5`로 실행했고 화면 Opus5.5 xhigh, backend unknown, 빈 prompt·tui-idle을 확인했다. Task `task_c6260f5ed8ad` / Dispatch `ctx_499a690e574f` / terminal `term_92dfa7f5-d558-4637-aaf8-e150a90fd1b2` / incarnation `ffde5d31-814c-4343-a87e-82458d69aeae`다. 연결은 input_accepted·turn_started, 잔여 자원 없음으로 확인했으며 `v1-r1-spec.md` 및 launch receipts에 보존했다. 제품은 읽기 전용이고 원래 기준과 실패 사례를 유지해 시험을 보완·실행한다. 판정은 `v1-r1-review.md` 대기 중이다.
+
+### V1-R1 독립 재검증 통과·정산
+
+`v1-r1-review.md`의 최종 판정은 **V1 재검증 통과, V1-01 해결**이며 Astra가 전체 원문을 읽었다. 공개 API만 사용하는 수정임을 실사했고 SDK/server/core/client 및 zod가 registry tarball과 바이트 동일함을 확인했다. 미등록 이름39종(1,000,012-unit 이름·경로/URL·Unicode·prototype key 포함)은 두 규격 모두 client46bytes, wire79~80bytes로 고정 거부됐다. 실제 tool handler 첫줄 counter·readSnapshot·open은0이며 이어 정상 다섯 도구의 counter가5로 늘어 계측의 동작도 확인했다.
+
+새 독립시험24건, 원래V1 123건, 전체174건과 시험/MCP typecheck·MCP build가 모두 exit0이다. 수정 전 server를 이용한 저장소 밖 변이 시험에서는 새 시험 중14건이 실패해 원래 결함 판별력도 확인했다. 제품 원본은 변이하지 않았으며 검증 전후55파일 해시와 정본은 불변이다. production stdio 보조 점검은 두 규격을 순차 실행해 정상 다섯 도구·미반사·stdout JSON·EOF exit0을 확인했지만 V2의 동시client/실제취소/Windows 경합을 대신하지 않는다. 보고/실행 불일치는 없었다.
+
+남은 V1 제품 결함은 없다. V1-01 재검증 실패 횟수는0이다. 비차단 관찰은 schema key와 등록 도구 집합의 수동 결합(V3 코드리뷰 인계), wrapper의 SDK envelope 검사 이전 거부, SDK/transport 갱신 때 전달 멤버 재점검, 비문자열 이름의 고정 크기 SDK문구다. Transport `extra` 전달은 코드상 확인했으나 시험에서는 효과를 판별하지 못했다. V2/V3와 실제 설정 연결은 별도이며 미실행 범위를 통과로 바꾸지 않는다.
+
+시험 쓰기 종료 `2026-10-01T23:45:56+09:00`, 보고 종료 `23:50:07+09:00`, 완료 `msg_0e73d5464f53`의 Task/Dispatch를 대조했다. release retained/external_terminal 후 같은 incarnation의 완료·빈 prompt를 확인하고 해당 pane만 닫아 ptyKilled=true를 받았다. Delivery `delivery_9f36037d2498` acknowledge 및 reclaimable0을 확인했으며 `v1-r1-completion.json`·release/close receipts에 보존했다. 다음 V2는 새 세션으로 수행한다.
