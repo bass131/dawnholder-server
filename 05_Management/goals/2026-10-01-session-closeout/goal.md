@@ -10,7 +10,7 @@
 
 - 시작 기준 main: `36fb5ec751f4c482a993e77c9547968e8f828e34`. PR152 병합 후 `f32dbbe9a4aec7cafd64fc7f1897a1f5e47370f6`까지 rebase로 반영했다. 작업 브랜치: `docs/management-session-closeout`.
 - 정본 worktree: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`. root CURRENT와 Game Dev 영역은 변경하지 않는다.
-- 메인은 범위·통합·Git 작업, 작성자는 허용된 문서, 별도 검토자는 읽기 전용 정적 검토를 맡는다. 지정 모델은 `gpt-6-astra`, 확인된 실제 모델은 `unknown`이다.
+- Management Astra(조정자)는 범위·통합·Git 작업, 작성자는 허용된 문서, 별도 검토자는 읽기 전용 정적 검토를 맡는다. 지정 모델은 `gpt-6-astra`, 확인된 실제 모델은 `unknown`이다.
 
 ## 현재 상태와 결과
 
