@@ -8,14 +8,14 @@
 |---|---|---|
 | 연결·버전·캐릭터 | `Sessions/GameSession.cs`, `Handlers/Session/`, `Handlers/HandlerRegistry.cs` | `Network/NetworkService.cs`, `Network/Handlers/Session/`, `Bootstrap/ClassLoadout.cs` |
 | 이동·점프 | `Handlers/Movement/MoveIntentHandler.cs` → `GameSession.SubmitMoveIntent` → `Maps/Systems/PlayerPhysicsSystem.cs`; 상태 `Entities/PlayerEntity.cs` | `Input/`, `Prediction/LocalPlayerMovement.cs`, `PlayerPredictor.cs`, `InputHistory.cs` |
-| 스냅샷·보간 | `Maps/MapPacketPublisher.cs`, `GameMap.Tick` | `Network/Handlers/Sync/`, `Rendering/` |
+| 스냅샷·보간 | `Maps/MapPacketPublisher.cs`, `GameMap.Tick` | `Network/Handlers/Sync/`, `State/RemoteInterpolationState.cs`, `State/RemoteEntity.cs`, `Rendering/` |
 | 근접·원거리 공격 | `Handlers/Combat/AttackHandler.cs` → `GameSession.SubmitAttack` → `Maps/Systems/CombatSystem.cs`, `DeferredDamageSystem.cs` | `Network/Handlers/Combat/`, `Combat/Attack/`, `Combat/Effects/` |
 | 스킬·행동 가능 조건 | `Handlers/Skill/SkillUseHandler.cs` → `Maps/Systems/ActionGate.cs`, `SkillSystem.cs`; `Maps/States/Actions/` | `Network/Handlers/Skill/`, `Prediction/PlayerAbilityTimers.cs` |
 | 적·보스 | `Maps/Systems/EnemyAISystem.cs`, `BossBehaviorSystem.cs`; `Entities/EnemyEntity.cs`, `Maps/States/EnemyStates.cs` | `Network/Handlers/Sync/EntityStateHandler.cs`, `Combat/Enemies/` |
 | 피격·사망·리스폰 | `Maps/Systems/CombatSystem.cs`, `RespawnSystem.cs`; 엔티티 HP·상태 | `Network/Handlers/Combat/`, `UI/` |
 | 포탈·맵 이동 | `Handlers/Zone/EnterPortalHandler.cs` → `GameSession.SubmitEnterPortal` → `Maps/Transitions/MapMigration.cs`; `Maps/PortalTable.cs` | `Network/Handlers/Zone/MapTransitionHandler.cs`, `Network/SceneRouter.cs` |
 | 파티 | `Handlers/Party/` → `Party/PartyFlow.cs`; `PartyRegistry.cs`, `PartyState.cs`, `PartyNotifier.cs` | `Network/Handlers/Party/`, `State/PartyState.cs`, `UI/PartyInvitePopup.cs` → `PartyInviteResponseCommand.cs`, `PartyMemberHud.cs` |
-| 처치 진행·보스 해금 | `Loop/GameWorld.cs`의 처치 콜백 → `Quest/QuestRegistry.cs`; `QuestConstants.cs`, Party의 KillCount | `Network/Handlers/Quest/`, `State/QuestState.cs`, `UI/QuestProgressHud.cs` |
+| 처치 진행·보스 해금 | `Loop/GameWorld.cs`의 처치 콜백 → `Quest/QuestRegistry.cs`의 solo/party 진행·해금; `QuestConstants.cs` | `Network/Handlers/Quest/`, `State/QuestState.cs`, `UI/QuestProgressHud.cs` |
 
 ## 공통 계약
 

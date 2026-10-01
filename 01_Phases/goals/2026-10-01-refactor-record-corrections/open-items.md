@@ -42,6 +42,21 @@
 | BossStates.BeginTelegraph의 즉시 발행 | 의도적 유지·범위 제외 | [S2 goal](../2026-09-30-server-packet-publication/goal.md)은 주기 snapshot과 별개인 즉시 공격 예고를 유지했다. 모든 EntityState 조립의 단일화를 약속하지 않음 | 현재 보존 근거를 유지. 새 변경 이유가 확인되기 전 통합 과제로 승격하지 않음 | 현재 변경 없음. 발행 시점/정책 변경 시 별도 판단 |
 | P0 변경 후(after) 평가 | 검증 공백·후속 계획 | [P0 평가 방법](../2026-09-30-contracts-baseline/evaluation-method.md), [P0 결과](../2026-09-30-contracts-baseline/goal.md), [P7](../../milestones/2026-09-30-contracts-persistence/roadmap.md). after commit·실행 결과 없음 | 비교하려는 변경 범위와 A를 고정하고 같은 조건의 실험 가치·시점을 정함 | 새 합격선/과제/대규모 재평가 도입 시 필요. 이번 정정에는 실행하지 않음 |
 
+## 2026-10-01 추가 — 36fb5ec7 기준
+
+기준 main `36fb5ec751f4c482a993e77c9547968e8f828e34`, 요청 원문 `msg_8ca511af0885`([로컬 보존](../../../.backups/handoffs/2026-10-01-routing-documentation-request.json)). 위 `ef5f1023` 기준 목록을 소급 변경하지 않는다. 메뉴 연결·RegisterSend·HUD 2개 등 기존 후보는 유지한다. 아래는 후속 등록이며 이번 문서화에서 코드·ADR·패키지·보안 설정을 변경하지 않았다.
+
+| 항목 | 관찰·한계 | 다음 행동·결정 경계 |
+|---|---|---|
+| `?? AddComponent` 4곳 | [ProjectileSpawner:29](../../../03_Client/Assets/Scripts/Combat/Effects/ProjectileSpawner.cs), [ProjectileLaunchHandler:94](../../../03_Client/Assets/Scripts/Network/Handlers/Skill/ProjectileLaunchHandler.cs), [EnemyAttackHandler:102](../../../03_Client/Assets/Scripts/Network/Handlers/Combat/EnemyAttackHandler.cs), [RemoteEntityRegistry:260](../../../03_Client/Assets/Scripts/State/RemoteEntityRegistry.cs)에 해당 표현을 정적으로 확인. Editor fake-null에서 AddComponent 누락 가능성은 실행 미검증 | [새 시범 goal](../2026-10-01-hierarchical-routing-pilot/goal.md)의 승인 범위로 처리. 구현·재현은 미착수 |
+| ADR-029 SAC 재활성화 설명 | [ADR-029:19](../../../00_Document/ADR/harness/ADR-029-wsl2-dotnet-execution-standard.md)의 재설치 필수 문구와 [Microsoft FAQ](https://support.microsoft.com/en-us/windows/security/threat-malware-protection/smart-app-control-frequently-asked-questions)의 최신 업데이트 후 재설치 없는 재활성화 안내가 다름. FAQ의 기기에서 제공되는 경우(`if available for your device`) 조건을 보존. 이 PC Windows `26200.9457`은 레지스트리 읽기로 확인했으나 SAC 재활성화 조작·시험은 미실행 | 당시 WSL 선택 이력과 현재 지원 조건을 구분하는 문서 정정 후보. ADR 본문·보안 설정은 지금 변경하지 않음. 보안 설정 변경은 사용자 판단 필요 |
+| manifest skip-worktree | [manifest.json](../../../03_Client/Packages/manifest.json)의 index flag `S`; 로컬 `com.unity.ai.assistant`는 `2.11.0-pre.1`, HEAD는 `2.7.0-pre.3`로 status에 차이가 드러나지 않음. checkout 전후 SHA256 `3E194274509B32D18F4BE03F2D9462B5CDBB721C14EEE0ED0B6A17B1360AD781` 동일 | 로컬 변경 의도·소유자와 처리 범위를 먼저 확인. flag 해제·버전 변경·덮어쓰기 금지; 후속 사용자 결정 전 보존 |
+| UnityClientSession 분리 | [UnityClientSession](../../../03_Client/Assets/Scripts/Network/UnityClientSession.cs). 기존 표에는 없었으므로 사용자 전달 원문 `msg_8ca511af0885`의 유지 요청을 근거로 명시 등록. 이번에 책임 분리 필요성이나 결함을 확정한 것은 아님 | 기존 연결·entry·mirror 계약을 보존하며 변경 이유·경계·검증 비용을 좁게 조사. 기술 선택은 담당자 판단, 동작·범위 변경은 사용자 판단 |
+
+로컬 관측 근거: `.backups/verification/2026-10-01-hierarchical-routing-handoff/baseline.json`(branch/base·manifest·OS). 공식 FAQ 확인과 이 PC의 실제 재활성화 성공은 별개다.
+
+2026-10-01 후속: 추가 요청 `msg_b1fb9688460f`에 따라 이번 문서 변경에서 ADR-029의 재설치 필수 단정을 날짜·공식 FAQ 조건과 함께 정정했다. 위 표는 정정 전 후보 관찰이며 당시 WSL 선택 이력·현재 실행 표준은 유지한다. 보안 설정 변경·실제 재활성화 시험은 하지 않았다.
+
 ## 평가와 출처의 한계
 
 [문서 정비의 63→83](../2026-09-29-ai-readiness-docs/goal.md)은 문서·운영 근거를 보강한 평가자 점수, [M0–M3의 29/32→31/32](../2026-09-29-refactor-regression/goal.md)는 고정 과제 답안 적합도, [P0의 44/48](../2026-09-30-contracts-baseline/goal.md)은 다른 여섯 과제의 진단 기준선이다. 서로 다른 대상·조건이므로 하나의 코드 품질 추세나 생산성 개선율로 합치지 않는다. P1a 뒤 점수 향상이나 탐색 속도 개선은 측정하지 않았다.

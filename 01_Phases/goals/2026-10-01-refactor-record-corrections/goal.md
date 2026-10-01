@@ -1,6 +1,6 @@
 # 리팩토링 기록 정정과 설계 이유 복원
 
-상태: **정정 작성·독립 검토·PR 생성 완료, 병합 승인 대기**. 사용자 재개 지시(2026-10-01)에 따라 C1–C5를 수행했다. [PR150](https://github.com/bass131/dawnholder-server/pull/150)의 검증 결과는 아래에 기록하며 병합은 해당 PR의 사용자 명시 승인을 기다린다.
+상태: **완료·[PR150](https://github.com/bass131/dawnholder-server/pull/150) 병합됨**. 사용자 명시 승인 후 승인 head `6a294ec9`를 고정해 2026-10-01T06:07:23Z, merge `71bf667542102148aaf86816d27c380f1d2a4c8d`로 통합했다. C1–C5의 당시 검증 head·CI 결과는 아래에 보존한다. 후속은 [계층형 라우팅 시범·코드 기준](../2026-10-01-hierarchical-routing-pilot/goal.md)이며 문서화와 시범 실행을 구분한다.
 
 ## 목표와 기준선
 
@@ -41,7 +41,7 @@
 - [x] C3의 각 후보가 구체 근거·다음 행동·사용자 결정 필요 여부를 갖고 사실/추정/미실행을 구분한다.
 - [x] 별도 Astra가 C4의 유효한 설명과 실행 코드 불변, 변경 경계·문서 링크를 확인했다.
 - [x] 기존 checkpoint·Unity 자산/공유 DLL을 보존하고 CLAUDE.md의 별도 소유자 처리·보존 위치를 확인했다.
-- [x] 결과·미실행을 기록하고 PR을 생성해 필수 CI의 빌드·테스트 통과를 확인했다. 병합 전 최신 head 검사는 PR Checks와 최종 인계 결과를 대조한다. 병합은 별도 승인 대기다.
+- [x] 결과·미실행을 기록하고 PR을 생성해 필수 CI의 빌드·테스트 통과를 확인했다. 최종 head 근거는 PR Checks와 인계 결과에 보존했고 사용자 개별 승인 후 병합했다.
 
 일반 주석·문서 정정에는 새로운 동작 테스트나 전체 Unity/서버 회귀를 추가하지 않는다. 독립 검증은 고정 base/head의 diff와 실행 토큰·문자열·지시문 동일성, 주석 의미, 상대 링크·기록 일관성을 확인한다. 비주석 변화나 컴파일 우려가 발견되면 범위를 재확인하고 필요한 검증만 추가한다. Windows solution build의 DLL 복사 부작용을 피하며 PR의 기존 필수 CI는 유지한다. 과거 테스트 수치는 링크된 해당 goal의 실적이며 이번 재실행이 아니다.
 
@@ -55,4 +55,4 @@
 
 [PR150](https://github.com/bass131/dawnholder-server/pull/150)은 base `ef5f1023fe3353ee9eec5da04422232a33855233`에서 인계 문서 commit `147ef1ca4c53df18a1030a6d00759951a2c85f83`과 정정 commit `b253135f9c02250e38254d97a54344bfec72b066`을 포함해 생성했다. 정정 head `b253135`의 [dotnet-tests 실행 36818624257](https://github.com/bass131/dawnholder-server/actions/runs/36818624257)은 2026-10-01T05:14:36Z에 빌드·진단 검사와 테스트 모두 성공했다. 이는 위 정적 검토와 별도의 CI 실행 결과다.
 
-이후 PR·CI 기록만 갱신하는 commit의 최신 head 검사는 [PR Checks](https://github.com/bass131/dawnholder-server/pull/150/checks)에서 확인한다. 최종 인계 시 해당 head·run·결과를 대조해 사용자와 Claude 세션에 전달하고 로컬 `final-status.json`(위 verification 경로)에 보존한다. 이 결과 기록은 새 실행 동작·정책·설정 변경을 포함하지 않으며 자동 병합을 예약하지 않는다.
+이후 PR·CI 기록만 갱신한 commit의 최종 head 근거는 [PR Checks](https://github.com/bass131/dawnholder-server/pull/150/checks)와 로컬 `final-status.json`(위 verification 경로)에 있다. 병합 회신은 `msg_c563cebaea65`이며 `.backups/handoffs/2026-10-01-routing-documentation-request.json`에 보존했다. 이번 종료 상태 갱신은 당시 실행을 재실행한 결과가 아니며 새 동작·정책·설정 변경도 포함하지 않는다.
