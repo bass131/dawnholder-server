@@ -5,16 +5,25 @@
 // - V2 fixture entry: same built product factories, TEMP fixture path, IPC counters.
 // Every exchange runs over real pipes; stdout lines are parsed independently.
 import { readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
 import { catalogBytes, expectEnvelope, expectError, expectSuccess, linkedCatalog, makeCatalog, makeRecord, makeSource, makeSystem, type ToolName } from './mcp-fixtures';
 import {
-  CANONICAL_CATALOG, ERAS, EXIT_DEADLINE_MS, REVISION, StdioProcess, removeTempRoots, sha256, sleep, structured, tempRoot, textHash, waitFor,
+  CANONICAL_CATALOG, ERAS, EXIT_DEADLINE_MS, PRODUCTION_ENTRY, REVISION, StdioProcess, removeTempRoots, sha256, sleep, structured, tempRoot, textHash, waitFor,
   type Era, type JsonObject, type SpawnOptions,
 } from './mcp-v2/harness';
 import { closeAndCheck, outcome, processPool, writeCatalog } from './mcp-v2/support';
 
-const BUILD_DIGEST = '0.0.0+sha256.08509f24db77418ae3cfca9ca9d2951612e14c1f24ae09ec118d36046a2cf18c';
+// V3-R1: the expected serverInfo.version is read from the build-info.js next to the entry the
+// clients actually run, never taken from the server's answer and no longer pinned to one build.
+// That this digest belongs to the current sources is shown by a fresh TEMP build
+// (tests/mcp-v3-build.test.ts) and its input coverage by tests/mcp-v3-r1-build.test.ts.
+function builtDigest(): string {
+  expect(readFileSync(PRODUCTION_ENTRY, 'utf8')).toContain("from './build-info.js'");
+  const match = /^export const BUILD_VERSION = "(0\.0\.0\+sha256\.[0-9a-f]{64})";\n$/.exec(readFileSync(join(dirname(PRODUCTION_ENTRY), 'build-info.js'), 'utf8'));
+  if (!match?.[1]) throw new Error('mcp-dist/mcp/build-info.js holds no build digest');
+  return match[1];
+}
 const pool = processPool();
 const start = (options: SpawnOptions) => pool.start(options);
 afterEach(async () => { await pool.closeAll(); });
@@ -55,11 +64,12 @@ describe('production entry: two simultaneous independent clients on the canonica
   it('legacy 2025-11-25 and pinned modern 2026-07-28 explore the same snapshot, stay isolated and exit 0 on EOF', async () => {
     const canonicalBefore = readFileSync(CANONICAL_CATALOG);
     const canonical = JSON.parse(canonicalBefore.toString('utf8')) as { revision: string; asOf: string; sourceCommit: string };
+    const buildDigest = builtDigest();
     const [legacy, modern] = await Promise.all([start({ era: 'legacy', label: 'prod-legacy' }), start({ era: 'modern', label: 'prod-modern' })]);
     expect(legacy.child.pid).not.toBe(modern.child.pid);
     for (const proc of [legacy, modern]) {
       expect(proc.negotiated).toBe(REVISION[proc.options.era]);
-      expect(proc.serverVersion).toBe(BUILD_DIGEST);
+      expect(proc.serverVersion).toBe(buildDigest);
       const tools = (await proc.client.listTools()).tools;
       expect(tools.map(tool => tool.name).sort()).toEqual(['get_record', 'get_source', 'get_system', 'list_systems', 'search_records']);
     }

@@ -169,7 +169,7 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 ## 현재 상태와 근거
 
-**V1 재검증과 V2가 통과했고, V3는 동작 회귀 통과·문구/설치 안내 2건 수정 필요로 판정됐다. 메인 결정으로 코드 리뷰 R01~R09도 이번 보완에 포함했다. 신규 Sol 수정 후 신규 Opus가 기능과 코드 리뷰를 재검증하며 PR은 아직 미착수다.** V2 초기 실패 실행의 보고 과장 1건과 V3 GUI의 미확인 합성 클릭 1회도 아래에 구분해 기록한다. 최초 Fable·V1·V3 판정 원문은 보존한다.
+**V1 재검증·V2와 최종 V3-R1이 통과했다. V3-01/02 및 메인이 포함한 R01~R09는 승인 범위에서 해소됐고, 독립 판정은 제품 차단 0건·새 제품 결함 0건·참고 9건이다. 최종 시험 249/249 후 작업자 정산을 마쳤으며 PR을 준비한다.** 실제 개발 세션 연결과 해당 PR 병합은 별도 결정 전이다. V2 보고 과장, V3 GUI 미확인 합성 클릭, Sol 환경 복구 표현, V3-R1 수치 오기와 정리 절차 이탈은 각각 아래 감사 기록을 유지한다. 판정 원문을 고쳐 성공으로 소급하지 않는다.
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - 시작: clean `main`, HEAD `18c8ca6a5aa3032873029cbd36658f0c4f9095c5` (PR156). `git fetch origin main` 후 origin/main도 같은 SHA임을 확인했다.
@@ -177,9 +177,9 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 - 현재 runtime `8a673084-6819-45b9-a551-347226cdce9b`, Astra terminal `term_6df8363a-d0bf-454f-aa67-7c7c7323008a`, incarnation `3068c493-4095-4e8c-b907-eed3f3b741e6`. Orca worktree 소속과 실제 cwd 모두 management-active로 확인했다. 이 값은 관찰 기록이며 향후 실행 권한이 아니다.
 - READY 회신 `msg_46884ca17d25`를 메인에게 enqueue했다. enqueue 성공을 메인이 읽거나 승인했다는 근거로 쓰지 않는다.
 - 구현 발행 전에는 좁은 정적 조사, 버전/registry metadata 조회, 공식 문서 확인과 Fable 계획 검토를 수행했다. 이후 Sol 구현·자체 실행과 독립 검증의 근거는 아래 기록을 따른다. 실제 개발 세션 연결 설정은 변경하지 않았다.
-- 원시 receipt/로그와 판정 원문은 Git 제외 `.backups/verification/2026-10-01-shared-read-mcp/`에 보존한다. 계획 판정·Sol 구현 보고·V1 수정 필요 판정은 아래에 구분하며 후속 독립 검증은 진행 중이다. 원문은 로컬 근거이며 원격 가용성을 보장하지 않는다.
+- 원시 receipt/로그와 판정 원문은 Git 제외 `.backups/verification/2026-10-01-shared-read-mcp/`에 보존한다. 계획·구현·최초 수정 필요·후속 독립 통과 판정은 아래에 구분한다. 원문은 로컬 근거이며 원격 가용성을 보장하지 않는다.
 
-Sol 구현과 최초 V1 독립 검증 후 V1-01 수정·재검증을 마쳤다. 이어 V2→V3와 PR을 수행하며, D4 실제 개발 세션 연결/설정 적용은 시험 후 결정 항목으로 남는다. 정본 범위는 확정됐고 SDK·응답 제한·Windows 저장 보완의 기술 결정과 실행 근거는 아래에 구분한다.
+Sol 구현과 V1-01 수정·재검증, V2, V3 수정·재검증을 마쳤다. 다음은 PR 생성과 메인의 최종 원문 확인이며, D4 실제 개발 세션 연결/설정 적용은 별도 결정 항목으로 남는다. 정본 범위는 확정됐고 SDK·응답 제한·Windows 저장 보완의 기술 결정과 실행 근거는 아래에 구분한다.
 
 ### Fable 계획 검토 결과 — 검토 후 기록
 
@@ -342,3 +342,31 @@ Electron 파일 복구는 exact package44.5.0·검증된 로컬 cache·process n
 자동 승인 검토가 자기 probe 사본의 계산 경로/좁은 literal 경로 삭제 **두 차례를 실행 전 `blocked by policy`로 거절**했다. 더 구체적인 이유는 반환되지 않았다. 앞서 Astra의 “재시도하지 않았다”는 진행 설명은 최종 원문에서 이 두 시도가 있었던 것으로 정정한다. 이후 추가 삭제는 하지 않았다. 정확한 보존 경로는 `.backups/verification/2026-10-01-shared-read-mcp/sol-fix-v3-evidence/빌드 경로 probe 4h8hIb`, 44파일·177500bytes·링크0이다. node_modules junction은 제거됐고 catalog/profile은 없다. `probe-cleanup-rejected.log`·`probe-retained-manifest.json`에 근거가 있다. 신규 검증자는 이 사본을 삭제하거나 재사용하지 않는다.
 
 완료 `msg_a288db114bfb`의 Task/Dispatch와 보고를 대조했다. release retained/external_terminal 후 같은 incarnation의 완료·빈 prompt를 확인하고 해당 pane만 닫아 ptyKilled=true를 받았다. Delivery `delivery_5d071f50c680` acknowledge 및 reclaimable0을 확인했다. `sol-fix-v3-completion.json`·release/close receipts에 보존했으며 세션은 재사용하지 않는다.
+
+### V3 첫 재검증 발행
+
+제품 보완·기존 V3 시험·Astra 안내/상태 16파일을 `5a7ad0a3c6ff07e30d7cd76a7e951c894ea830cf`로 커밋했다. diff/staged whitespace check exit0, 커밋 후 clean을 확인했다. 이 커밋은 재검증 기준이며 통과나 PR/병합 완료를 뜻하지 않는다.
+
+새 Astra 아래 split의 최초 명령은 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. 빈 prompt·tui-idle 확인 후 Task `task_73b31886940c` / Dispatch `ctx_0c267aaa3bb0` / terminal `term_85966825-0034-4b85-b281-e988943bc1c5` / incarnation `f3326fd3-5d4c-4e45-b66d-84abd6d2c316`를 연결했다. input_accepted·turn_started와 잔여 자원 없음을 확인했다. `v3-r1-spec.md` 및 launch receipts에 근거를 보존했다.
+
+제품/문서는 읽기 전용이며 R08 rename 시험과 자체 실패 3시험의 요구사항 기반 보완, 필요한 신규 독립 시험만 허용했다. 전체 기능·코드 리뷰·TEMP 설치/desktop build를 재검증하고 GUI는 다시 조작하지 않는다. 보고 표현 정정·미실행 범위·캡처 사고 후속·삭제 거절 사본 보존을 함께 인계했다. `v3-r1-review.md` 판정 대기다. 메인 `msg_930793254a5b`의 capacity 발생 시 동일 미완료 task/모델을 유지하며 간격을 늘려 재시도하는 사용자 지침도 인계했다. 현재까지 이 발행에서 capacity는 관측되지 않았다.
+
+### capacity 대응의 조건부 모델 예외
+
+메인 `msg_38f843354063`은 사용자 부재 중 적용할 사용자 지침(메인 경유)을 전달했다. 구현 gpt-6.1-sol에서 capacity가 반복되면 먼저 같은 미완료 task/세션에서 1→2→5→10분 간격으로 재시도하고, 최초 관측 후 누적 30분 이상 계속 실패할 때에만 기존 세션을 상태/근거 보존·정산·종료한 뒤 별도 신규 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` 작업자로 같은 범위의 미완료 작업을 이어갈 수 있다. 역할 태그는 Sol을 유지하고 요청/최초 명령·화면/백엔드 unknown과 시각별 사유를 기록한다. 파트 리드가 구현을 대신하는 허가는 아니다. Opus에는 전환 예외가 없으며 장시간 실패 시 대기 상태로 남긴다.
+
+현재 Management 수정 Sol은 capacity 없이 이미 종료됐고 V3-R1 Opus도 capacity가 관측되지 않았다. 따라서 현재 세션 모델을 바꾸지 않는다. 이 조건부 지침은 향후 필요 시에만 적용하며 프로젝트 전역 규칙을 수정하지 않는다.
+
+### V3-R1 독립 재검증 통과·감사·정산
+
+신규 Opus의 `v3-r1-review.md` 첫줄은 **V3 재검증 통과**다. Astra가 원문 전체, 실제 시험 diff, 원시 최종 runner/typecheck/build 차등·보존 근거를 직접 읽었다. V3-01/02와 R01~R09는 승인 범위에서 해소됐고 제품 차단 0건·새 제품 결함 0건·참고 9건이다. Sol의 제품 쓰기 종료 후 검증했고 검증자 시험 쓰기 종료는 `2026-10-02T02:02:01+09:00`, 완료 메시지는02:22:40이다. 모델 capacity는 발생하지 않았다.
+
+최종 **21파일 249/249**, UI/desktop/MCP/시험 typecheck 4종, 05 launcher **12/12**, 정본 MCP build, TEMP MCP·desktop build가 exit0이다. 249는 기존213에서 R08의 고정 상수 시험1개를 요구사항 시나리오로 통합하고 신규37개를 더한 값이다. rename의 합법적 backoff 변형3개는 통과하고 위반9개는 거부했으며 observer 예외 격리, 새 전이/type-only 소스의 digest 포함, 안전한 산출물 정리, 두 규격의 고정 오류 진단과 공개 응답 보존을 확인했다. `637145..5a7ad0a`의 old/new 별도 build는 tools/list와16개 호출이 두 규격에서 동일했고 build version만 달랐다. 정본 MCP digest는 `fd60b03a6b866f127446178b3e431b00cd7b457a7a257000d5182c10bc8a7ae9`로 불변이다.
+
+이번 Windows 재실행은 제어50/50·읽기 부하200/200 저장(첫 시도199·EPERM 후 두 번째1), held-handle 소진1008ms/23시도, EIO1회, 취소·quota·크기 제한·50개 stdio EOF 정상 종료를 확인했다. 과거 V2의1400/1400 저장과 최초 V3 실제 GUI 결과는 별도 실행 근거이며 이번 GUI 재실행으로 부르지 않는다. 이번 TEMP 설치 실증은 오프라인 npm cache와 검증 ZIP으로 `npm ci`의 Electron dist 소실 및 install.js·lazy require 복구를 재현했다. 정본 Electron44.5.0 exe SHA와 TEMP 복구 SHA가 일치한다. UI/desktop 기존 정본 산출물은 보존했고 정상 launcher가 다음 실행에 새 소스를 build하는 것은 정적 확인이다.
+
+**Astra 감사 정정:** 원문35행의 DevelopmentRecords 시험6건은 실제 `r1-final-npm-test.log`499·515·516·537·546·554·555행의 **7건**이다. Sol 원시 로그도7건이며 전체249/249에는 영향이 없다. 또한 spec의 자기 TEMP native PowerShell 정리 지시와 달리 신규 rename 시험은 Node `rmSync`를 사용했다. OS TEMP 직계 자식·고유 prefix·하위 링크 없음 검사를 했지만 지시한 정리 방식과 다르다. 대상은 mutant .ts뿐 아니라 같은 helper의 R07 store fixture catalog/backup도 포함한다. 원문 §10과 Astra 최초 알림의 “작은 .ts만” 표현도 축소였음을 정정한다. 정본 catalog 삭제나 잔여 TEMP는 관측되지 않았다. 메인에 `msg_13234b64aa12`, 이어 정확한 대상 범위를 `msg_4a73ce51cb73`으로 즉시 보고했다. `v3-r1-astra-audit.md`에 원문 hash·근거를 별도 보존하며 원문 판정은 수정하지 않는다.
+
+남은 참고는 정본 UI 산출물의 다음 정상 build 필요, MCP 안내의 npm ci/lazy install 주어 명확화, 수동 도구 등록 잔여, Zod 타입 결합의 단방향 한계, 보수적인 tsconfig digest 포함, node_modules라는 상위 디렉터리 이름의 특수 경로 한계(미실행 추론), 고정 stderr 진단의 단계 구분 제한, retry 상수 설명 위치, 기존 긴 schema/DTO 행이다. 독립 판정은 모두 참고로 분류했다. 일부 실제 build/digest 시험은 Windows에서만 실행된다. 실제 Codex/Claude 개발 세션 연결, 이번 GUI, .NET·DB·Unity는 미실행이다. O-4는 “다른 창 영향 미확인, 사용자 직접 관측 없음, 추가 조치 없음으로 종결”을 유지한다. 이전 자동 승인 검토가 삭제를 거절한 Sol probe 사본44파일177500bytes도 그대로 보존한다.
+
+완료 `msg_d8ca6b24801d`를 Task/Dispatch와 대조하고 worker-release의 retained/external_terminal 뒤 동일 incarnation의 완료·빈 prompt를 확인했다. 해당 pane만 종료해 ptyKilled=true를 받았고 `delivery_a593cdf4b3e4`를 acknowledge했다. reclaimable0이며 검증자 세션은 재사용하지 않는다. 완료·종료 receipt는 `v3-r1-completion.json`, `v3-r1-close.json`이다. 제품 소스·package/lock/catalog·정본 Electron/UI 산출물·AppData·환경·ExecutionPolicy와 삭제 거절 사본은 검증 전후 차이0이다. 시험10파일과 Astra goal 상태만 Git 변경으로 통합한다.

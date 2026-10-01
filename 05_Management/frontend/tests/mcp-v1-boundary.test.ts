@@ -1,11 +1,13 @@
 // @vitest-environment node
 // V1: static import / file-access boundary of the MCP, the fixed production entry, the
 // shared UI modules, and the catalog paths of the built MCP and Electron entries.
-// Source is only read here; nothing is built or executed.
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+// Source is only read here; the one exception (V3-R1) is the build digest test, which builds
+// an owned TEMP copy.
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { createTempCopy } from './mcp-v3/temp-copy';
 
 const frontend = fileURLToPath(new URL('..', import.meta.url));
 const read = (path: string) => readFileSync(join(frontend, path), 'utf8');
@@ -119,13 +121,33 @@ describe('fixed production entry', () => {
     expect(readFileSync(join(frontend, 'mcp-dist', 'mcp', 'build-info.js'), 'utf8')).toMatch(/^export const BUILD_VERSION = "0\.0\.0\+sha256\.[a-f0-9]{64}";\n$/);
   });
 
-  it('the build digest covers MCP sources, shared modules, build settings and the lockfile', () => {
-    const script = read('scripts/build-mcp.mjs');
-    expect(script).toContain("...await sources('mcp')");
-    for (const input of ['electron/catalog-contract.ts', 'electron/catalog-query.ts', 'electron/catalog-hash.ts', 'scripts/build-mcp.mjs', 'tsconfig.mcp.json', 'package.json', 'package-lock.json']) {
-      expect(script.includes(`'${input}'`), input).toBe(true);
+  // V3-R1: this used to look for the old build script's literal input list. The digest contract is
+  // now checked by behaviour in an owned TEMP copy (the canonical tree is only read): changing any
+  // module this file's own static graph reaches (independent of the compiler listing the build uses),
+  // the MCP build config, the package manifest, the lockfile or the build script changes the
+  // digest, and catalog data does not.
+  it.runIf(process.platform === 'win32')('the build digest covers MCP sources, shared modules, build settings and the lockfile', () => {
+    const copy = createTempCopy('v1-boundary');
+    try {
+      const base = copy.buildMcp();
+      const inputs = [...mcpGraph().files, 'tsconfig.mcp.json', 'package.json', 'package-lock.json', 'scripts/build-mcp.mjs'];
+      expect(inputs).toContain('electron/catalog-contract.ts');
+      const unchanged = inputs.filter(input => {
+        const path = join(copy.frontend, input);
+        const bytes = readFileSync(path);
+        // A trailing comment or JSON whitespace keeps the build valid.
+        writeFileSync(path, Buffer.concat([bytes, Buffer.from(/\.(ts|mjs)$/.test(input) ? '\n// v3-r1 digest probe\n' : '\n')]));
+        try { return copy.buildMcp() === base; } finally { writeFileSync(path, bytes); }
+      });
+      expect(unchanged).toEqual([]);
+      const catalog = readFileSync(copy.catalog);
+      writeFileSync(copy.catalog, Buffer.concat([catalog, Buffer.from('\n')]));
+      try { expect(copy.buildMcp()).toBe(base); } finally { writeFileSync(copy.catalog, catalog); }
+      console.info(`[V3-R1-MEASURE] v1-boundary-digest ${JSON.stringify({ base, inputs })}`);
+    } finally {
+      copy.remove();
     }
-  });
+  }, 300_000);
 });
 
 describe('UI sharing and preserved contracts', () => {

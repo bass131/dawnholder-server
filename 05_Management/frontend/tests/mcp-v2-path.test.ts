@@ -27,11 +27,13 @@ const rel = (path: string) => relative(DIST, path).replaceAll('\\', '/');
 describe('built output static boundary (mcp-dist, what the client runs)', () => {
   it('file set, import graph and forbidden APIs', () => {
     const files = distFiles();
-    expect(files.map(rel).sort()).toEqual([
-      'electron/catalog-contract.js', 'electron/catalog-hash.js', 'electron/catalog-query.js',
-      'mcp/build-info.js', 'mcp/catalog-dto.js', 'mcp/catalog-errors.js', 'mcp/catalog-reader.js', 'mcp/catalog-response.js',
-      'mcp/catalog-schemas.js', 'mcp/catalog-server.js', 'mcp/catalog-tool-name-transport.js', 'mcp/main.js',
-    ]);
+    // V3-R1: derived from the requirement instead of a frozen 12-file list. The output is exactly the
+    // compiled MCP adapter sources (mcp/*.ts) plus the three pure shared modules the goal allows; a
+    // store/rename/UI/Electron-runtime module, any other shared module or a stale file fails here, and
+    // every file still passes the import and API checks below.
+    const adapter = readdirSync(join(FRONTEND, 'mcp')).filter(name => name.endsWith('.ts')).map(name => `mcp/${name.replace(/\.ts$/, '.js')}`);
+    const allowedShared = ['electron/catalog-contract.js', 'electron/catalog-hash.js', 'electron/catalog-query.js'];
+    expect(files.map(rel).sort()).toEqual([...allowedShared, ...adapter].sort());
     const allowedBare = new Set(['@modelcontextprotocol/server', '@modelcontextprotocol/server/stdio', 'zod', 'node:fs/promises', 'node:url', 'node:crypto']);
     const imports: Record<string, string[]> = {};
     for (const file of files) {
@@ -65,8 +67,12 @@ describe('built output static boundary (mcp-dist, what the client runs)', () => 
     expect(/\bnow\s*:/.test(main)).toBe(false);
     expect(main).toContain("new URL('../../../records/catalog.json', import.meta.url)");
     expect(fileURLToPath(new URL('../../../records/catalog.json', pathToFileURL(PRODUCTION_ENTRY)))).toBe(CANONICAL_CATALOG);
-    expect(readFileSync(join(DIST, 'mcp', 'build-info.js'), 'utf8')).toContain('0.0.0+sha256.08509f24db77418ae3cfca9ca9d2951612e14c1f24ae09ec118d36046a2cf18c');
-    console.info(`[V2-MEASURE] dist-imports ${JSON.stringify(imports)}`);
+    // V3-R1: the build identity is a content digest, not a pinned value; that it matches the current
+    // sources is shown by a fresh TEMP build (tests/mcp-v3-build.test.ts, tests/mcp-v3-r1-build.test.ts).
+    const buildInfo = readFileSync(join(DIST, 'mcp', 'build-info.js'), 'utf8');
+    expect(buildInfo).toMatch(/^export const BUILD_VERSION = "0\.0\.0\+sha256\.[0-9a-f]{64}";\n$/);
+    expect(imports['mcp/main.js']).toContain('./build-info.js');
+    console.info(`[V2-MEASURE] dist-imports ${JSON.stringify(imports)} build=${buildInfo.trim()}`);
   });
 });
 
