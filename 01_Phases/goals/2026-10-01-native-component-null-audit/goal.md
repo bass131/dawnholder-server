@@ -1,6 +1,6 @@
 # R-2 내장 컴포넌트 null 검사
 
-상태: **사전 조사 완료·goal 커밋 후 메인 확인 대기**. `cb6f717`의 `03_Client/Assets/Scripts`를 조사한 결과, 내장 컴포넌트 조회 결과를 CLR null 연산으로 처리하는 수정 대상은 발견하지 못했다. 문서 변경 경로를 제안하며 신규 Opus의 독립 실사 전에는 후보 종료를 확정하지 않는다.
+상태: **독립 정적 실사 PASS·R-2 검사 종료·PR 준비**. `cb6f717`의 `03_Client/Assets/Scripts` 112파일·44호출을 조사했고 신규 Opus가 독립 재검색했다. 승인 범위의 수정 대상은 발견하지 못해 제품 변경 없이 R-2 후보를 닫는다. 이는 파괴된 Unity 객체 수명 전반이나 실제 Unity 실행의 안전성 판정이 아니다.
 
 ## 목표와 범위
 
@@ -23,9 +23,9 @@
 | 신규 Opus 검증자 | 저장소 읽기·정적 실사, `.backups/verification/2026-10-01-native-component-null-audit/verification-1/` 보고와 원시 근거 쓰기. 제품·문서·Git 쓰기와 추가 위임 금지 |
 | Sol | 현재 수정 대상 없음으로 미발행. 새 코드 대상 발견 시 메인에 근거와 최소 파일 범위를 보고하고 소유권을 정한다 |
 
-goal 커밋 후 메인 확인을 받고 독립 검증을 발행한다. 검증 중 저장소 문서 쓰기를 동결하며 판정 후 결과 기록만 갱신한다. [코드 기준](../../../00_Document/conventions/CODE_CONVENTION.md)·[Orca 절차](../../../.agents/skills/dawnholder-goal-loop/references/orca-work.md)를 적용한다.
+goal 커밋 `a6407457ea4b7e563cebd42e84b19c847d26d9c1`을 메인이 `msg_2ce7e21ab3c6`으로 확인·승인한 뒤 독립 검증을 발행했다. 검증 중 저장소 문서 쓰기를 동결했고 판정·쓰기 종료 뒤 결과 기록을 갱신했다. [코드 기준](../../../00_Document/conventions/CODE_CONVENTION.md)·[Orca 절차](../../../.agents/skills/dawnholder-goal-loop/references/orca-work.md)를 적용했다.
 
-## 조사 결과 — 독립 실사 전
+## 조사 결과
 
 기준 HEAD/base: `cb6f717de0fc0eea6d1295d3c8c47da7454125a6`, branch `bass131/native-component-null-audit`. C# 파일 112개, `GetComponent` 계열 및 `TryGetComponent` 호출 44개를 열거했다. 호출부 목록과 CLR null 연산 목록을 각각 검색하고 교차 대조했다. 내장 조회의 결과 변수는 선언·대입부터 사용까지 본문을 읽었다.
 
@@ -46,7 +46,7 @@ rg -n --glob '*.cs' 'Find(Object|FirstObject|AnyObject|Objects)|\.Find\(' 03_Cli
 | `EnemyRegistry`의 `entry.Motion`/`entry.Driver` | 조회 결과를 엔트리에 보관한 뒤 `?.` 사용. 사용자 `EnemyMotion`/`AnimatorDriver`이며 내장 타입 아님 |
 | `ClassVisualMount.root.Find`, `MinimapTerrainTint.FindObjectsByType` | Transform 단일 조회는 Unity 비교, TilemapRenderer/SpriteRenderer 복수 조회는 배열 순회·목록 보관 뒤 Unity 비교. 대상 CLR null 연산 없음 |
 | `EffectAnchor.FindRecursive(...) ?? ...` | 사용자 재귀 탐색은 `GetChild`로 실재 자식을 순회하고 미발견 때 명시적 CLR null 반환. GetComponent 미발견 sentinel을 전달하는 경로가 아님 |
-| `AudioManager.src?.`, `StageClearUI._animator?.`, 투사체의 `target?.` | 각각 AddComponent로 생성한 AudioSource, 직렬화/AddComponent Animator, 호출자가 전달한 Transform. 조회 API 미발견 결과라는 현재 R-2 조건과 구분하며 파괴 수명 전반의 안전성은 미판정 |
+| `AudioManager.src?.`, `StageClearUI._animator?.`, 투사체의 `target?.` | 각각 AddComponent로 생성한 AudioSource, 직렬화/AddComponent Animator. `ProjectileSpawner.target`은 매개변수이고 `ProjectileLaunchHandler.target`은 `EnemyRegistry.TryGetTransform`의 out 값(Unity 비교 후 Transform 또는 명시적 null)이다. GetComponent 미발견 결과와 구분하며 파괴 수명 전반의 안전성은 미판정 |
 
 원시 근거: `.backups/verification/2026-10-01-native-component-null-audit/`의 `script-files.txt`, `component-queries.txt`, `component-calls-multiline.txt`, `component-call-inventory.json`, `clr-null-patterns.txt`. 정규식 기반 열거와 수동 타입/대입/사용처 실사이며 컴파일러 데이터 흐름 증명은 아니다. 검색 과정의 EnemyMotion 최초 경로 오기는 `Rendering/EnemyMotion.cs`로 바로잡아 타입을 확인했다.
 
@@ -58,10 +58,25 @@ Unity·EditMode·PlayMode·수동 플레이·솔루션 빌드·서버/DB는 이�
 
 `bass131/menu-probe-lifetime-p1b`의 `b3cf78a50f8e2ed7570ffd0727a86b339495ae33`는 upstream `147ef1c`와 stable patch-id `dd93abf67ef22d6ac28ba13c3bedc912bbbed4cb`가 같고 `git cherry origin/main`의 유일한 결과가 `-`임을 확인한 뒤 승인된 `-D`로 삭제했다. 원격 삭제는 수행하지 않았다.
 
-archive·main·Management branch·stash 2개를 보존했다. manifest의 skip-worktree `S`와 SHA256 `3E194274509B32D18F4BE03F2D9462B5CDBB721C14EEE0ED0B6A17B1360AD781`도 동일하다. 근거는 같은 로컬 폴더의 `cleanup-before.json`, `cleanup-after.json`이다. main은 Management worktree 소유이며 직접 전환·갱신하지 않았다.
+GameDev 정리 직후(20:10:35 +0900) archive·main·Management branch·stash 2개를 보존했다. manifest의 skip-worktree `S`와 SHA256 `3E194274509B32D18F4BE03F2D9462B5CDBB721C14EEE0ED0B6A17B1360AD781`도 동일하다. 근거는 같은 로컬 폴더의 `cleanup-before.json`, `cleanup-after.json`이다. main은 Management worktree 소유이며 직접 전환·갱신하지 않았다.
+
+Management의 `feat/management-system-records`는 20:10:35 이후 삭제됐고 삭제 주체는 메인이 확인 중이다. 독립 검증의 N-4를 메인에게 전달한 뒤 `msg_ca634bc5934a`로 내용이 main의 `dd4e7ea`와 동등한 patch라는 확인을 받았다. GameDev도 `git cherry -v main 8c6fbd5`의 `-` 및 stable patch-id 동일을 재확인했다(`management-patch-equivalence.json`). ref 부재와 내용 손실을 구분하며 해당 branch를 재생성하지 않는다.
 
 ## 세션 관측과 다음 경계
 
-GameDev Astra 화면은 `GPT-6-Astra xhigh`, 백엔드 실제 모델은 `unknown`이다. 현재 CLI runtime은 `8a673084-6819-45b9-a551-347226cdce9b`이며 메인 전달값과의 차이를 회신했다. 메인 handle과 incarnation은 직접 조회해 일치함을 확인했다. 신규 Opus의 요청 모델은 `claude-opus-5-5`이며 최초 실행 명령·화면 표시·실제 모델을 구별해 후속 기록한다.
+GameDev Astra 화면은 `GPT-6-Astra xhigh`, 백엔드 실제 모델은 `unknown`이다. 현재 CLI runtime은 `8a673084-6819-45b9-a551-347226cdce9b`이며 메인은 이전 runtime 전달값을 `msg_f7286ed7f5c2`로 정정했다. 메인 handle과 incarnation은 직접 조회해 일치함을 확인했다.
+
+- 첫 `vertical split --command 'claude --model claude-opus-5-5'`는 pane 생성 receipt를 반환했지만 화면에 PowerShell prompt만 보였고 tui-idle은 timeout이었다. Task/Dispatch·작업 입력은 없었다. 이후 그 handle은 `operator_close`/`exited`였고 현재 목록에서 사라졌으며 GameDev가 추가로 닫지 않았다. 원인은 미확정이다(`opus-split.json`, `opus-ready.json`, `opus-shell-show.json`, `opus-shell-read.json`).
+- 메인이 같은 명령으로 담당 Astra 아래 새 pane을 기동해 `msg_b8c65eb92afa`로 인계했다. runtime/incarnation·경로·빈 prompt를 재확인하고 `tui-idle satisfied: true` 뒤 최초 `worker-start --terminal`이 성공했다. Run `run_ab6439edc4cc`, Task `task_08d900abe370`, Dispatch `ctx_a9adab245a35`, terminal `term_ad3f46ab-593f-420b-a27f-db5a2c35fd93`다. receipt는 `ready`, `turnStart: observed`, `input_accepted`·`turn_started`이며 attach 거부는 없었다.
+- attach의 `launch.requested/effective.model`은 null이다. 모델 근거는 최초 실행 명령 `claude --model claude-opus-5-5`와 화면 `Opus 5.5 with xhigh effort`이고 backend는 `unknown`이다(`opus-attach.json`, `opus-model-screen.json`, `opus-ready-main-pane.json`). 따라서 메인 대리 기동 뒤 최초 attach 성공과 GameDev 자체 기동 미성공을 구별한다.
+- 완료 메시지 `msg_f1a501002b33`의 태그·from/Task/Dispatch와 원문을 대조했다. `worker-release`는 `retained / external_terminal / processAction: none`이었다. 작업 하나 종료 규칙에 따라 동일 incarnation을 재확인한 뒤 그 pane만 닫았고 `ptyKilled: true`, Run reclaimable 0건을 확인했다(`opus-done.json`, `opus-release.json`, `opus-show-before-close.json`, `opus-close.json`).
+
+## 독립 판정과 한계
+
+판정 원문: `.backups/verification/2026-10-01-native-component-null-audit/verification-1/verdict.md`. **PASS, 결함 0건**. 검증자는 git grep·다중 줄 파서·식별자 교차 참조로 112파일·44호출을 독립 열거하고 내장 8·UGUI/TMP 4·사용자 32호출, CLR null 연산 147줄과 Find 계열을 대조했다. 원시 근거는 같은 `verification-1/raw/`, 시작·끝 상태는 `start-state.txt`·`end-state.txt`다. 제품 diff 0, 작업 트리 상태·manifest hash/flag·stash 동일을 확인했다. Unity·빌드·실행 테스트·DB는 미실행이다.
+
+비차단 관찰 N-1~N-5는 원문에 남긴다. N-1의 비제네릭 `out T` 타입 공란 4건은 원본 JSON을 보존한 채 `component-call-inventory-supplemented.json`에 보완했다. N-2 Find 검색 출력은 `find-queries.txt`로 추가 보존했고 검증자의 더 넓은 검색도 있다. N-3 투사체 target 출처는 위 표를 정밀화했다. N-4의 내용 보존 확인은 위 브랜치 정리 절을 따른다. N-5는 검증자가 메인 지시 메시지·원격 ls-remote를 독립 재확인하지 않은 한계다.
+
+파괴 객체 수명과 타입 인식 분석기 도입은 검증자가 제시한 범위 밖 의견이다. 메인 `msg_ca634bc5934a`에 따라 StageClearUI와 분석기 도입을 open-items 후보로만 남기며 결함 확정·추가 구현 승인으로 삼지 않는다. 검사·결과 문서화 뒤 PR을 생성하며 병합은 사용자 승인 전까지 대기한다.
 
 DB D1a는 읽기 전용 조사·메인에게 초안/질문 전달까지만 병행한다. DB 문서 쓰기와 구현은 이 branch 작업 종료 뒤 별도 branch에서 진행하며 D0 결정을 다시 열지 않는다.
