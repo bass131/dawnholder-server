@@ -71,7 +71,11 @@
 
 로컬 HTML 보고서·초안·분리 기록·협의 회신은 `C:/Dev/DawnHolder_Project/.backups/...` 원본 경로와 SHA256을 유지한다. 다른 PC나 checkout에서는 없을 수 있으며 파일을 찾지 못하면 미확인으로 표시해야 한다. 동일 파일의 여러 섹션을 서로 다른 source ID로 가리키는 것은 구간 연결이며 별도 실행 증거가 아니다.
 
-기존 `05_Management` 문서들은 작성 시 Git 미추적이어서 `local-only`와 SHA256으로 고정했다. 과거 본문의 `C:/Dev/.../05_Management`는 당시 작업 경로다. 실제 출처 locator는 보존된 새 Management 파일을 가리키며, 과거 실행을 새 경로에서 수행한 것으로 바꾸지 않는다. 원시 로그·이미지를 재수집하거나 원문을 수정하지 않았다. 향후 커밋 이후 출처를 Git으로 전환할 경우 해당 정확 commit을 별도 revision으로 기록해야 한다.
+기존 `05_Management` 문서들은 최초 r1 작성 시 Git 미추적이어서 `local-only`와 SHA256으로 고정했다. 과거 본문의 `C:/Dev/.../05_Management`는 당시 작업 경로다. 과거 실행을 새 경로에서 수행한 것으로 바꾸지 않는다.
+
+2026-10-01 출처 정정 revision `2026-10-01-r2`에서 `management-decisions`, `management-requirements`, `management-foundation`, `management-desktop`, `management-console`, `management-launcher` 6개를 `git`/`versioned`와 저장소 상대경로로 전환했다. 공개 PR147 merge commit `715bff5bfc62ab5c1f1cdf0aabdf7358492bb1d3`의 각 Git blob bytes가 기존 SHA256과 정확히 일치함을 대조했고, 이전 SHA256은 각 source.note에 보존했다. 해당 commit의 과거 원문을 가리키며 현재 수정 중인 파일과 같다는 주장이 아니다. 기존 catalog contract가 이 enum을 지원하므로 코드·schema는 변경하지 않았다.
+
+출처 분포는 r1의 Git 16·local-only 18·메시지 관찰 1에서 r2의 Git 22·local-only 12·메시지 관찰 1로 바뀐다. `asOf`는 `2026-09-30T09:05:09Z`, `sourceCommit`은 `c27b03e888986f2ec8c593cd6c626a9c515595e1`로 유지한다. 시스템·기록 내용과 역사 상태는 동일하다. 새 revision은 출처 표현 변경이며 내용 최신성·게임 상태·실행 검증 갱신이 아니다. 원시 로그·이미지·`.backups` 등은 계속 로컬 전용이며 재수집하지 않았다. 새 문서·합의가 생겼다고 r1 내용에 소급하지 않는다.
 
 PR 최종 상태 출처는 `msg_b5283836b43f @ 2026-09-30T09:05:09Z`다. PR140/142 기존 병합에 PR141/143/144/145 병합을 합쳐 모두 MERGED로 표시한다. 보고서와 협의 회신의 이전 OPEN 스냅샷을 현재값으로 사용하지 않는다. P0 문서 local commit `966d7a915a7e9e0dc2d61a73e28a5962fd885c2d`는 전달된 관찰이며 이 작업에서 root를 읽어 복사하거나 평가 PASS를 확인한 것이 아니다.
 
