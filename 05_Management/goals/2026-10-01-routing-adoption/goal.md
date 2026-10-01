@@ -27,9 +27,9 @@ Management Astra는 허용 문서 작성·goal·Git·검증 조정을 맡는다.
 
 ## 현재 상태와 검증
 
-main fast-forward와 소유 브랜치 정리를 완료했다. 문서 3개를 `af84607814950775ba7dd56148d5dad63c2eca3e`로 작성한 뒤 신규 Opus의 독립 정적 실사를 받았다. 1차 판정은 FAIL 1건으로, 재개 기준인 공동 조회 합의의 과거 역할·모델 지정과 현행 라우팅의 우선순위를 명시해야 한다는 결함이다. RESUME에 당시 역할·모델·CLI 지정은 역사이고 현재 배정은 루트 AGENTS를 따른다는 문장을 추가했다. 수정분과 아래 수행 기록은 새 Opus 검증자의 재검증 대상이다.
+**문서 수정·독립 재검증·PR 생성 완료, 병합 승인 대기.** main fast-forward와 소유 브랜치 정리를 완료했다. 문서 3개를 `af84607814950775ba7dd56148d5dad63c2eca3e`로 작성한 뒤 신규 Opus의 독립 정적 실사를 받았다. 1차 판정은 FAIL 1건으로, 재개 기준인 공동 조회 합의의 과거 역할·모델 지정과 현행 라우팅의 우선순위를 명시해야 한다는 결함이다. RESUME에 당시 역할·모델·CLI 지정은 역사이고 현재 배정은 루트 AGENTS를 따른다는 문장을 추가했다. 수정분과 당시 수행 기록을 새 Opus가 재검증한 결과는 아래에 구분해 남긴다.
 
-검증 범위는 실제 diff·지시와 결과의 일치·상대 링크·과거 기록 및 소유 경계 보존이다. 1차 검증자는 상대 링크 20개·앵커 6개의 목적지와 PR/Git 근거를 확인했다. 제품 테스트·빌드·앱·서버·SQL·Unity·MCP 실행은 범위 밖이며 수행하지 않았다. 과거 검증 결과를 이번 성공으로 재사용하지 않는다. 최종 재검증·push·PR 생성은 아직 수행 전이며, 병합은 해당 PR의 사용자 명시 승인 대상이다.
+검증 범위는 실제 diff·지시와 결과의 일치·상대 링크·과거 기록 및 소유 경계 보존이다. 1차 검증자는 상대 링크 20개·앵커 6개의 목적지와 PR/Git 근거를 확인했다. 제품 테스트·빌드·앱·서버·SQL·Unity·MCP 실행은 범위 밖이며 수행하지 않았다. 과거 검증 결과를 이번 성공으로 재사용하지 않는다. 병합은 해당 PR의 사용자 명시 승인 대상이다.
 
 ### Orca 실행과 근거
 
@@ -40,4 +40,14 @@ main fast-forward와 소유 브랜치 정리를 완료했다. 문서 3개를 `af
 - 1차 판정 원문은 `review.md`, 상세 근거는 `review-evidence.json`, 완료 메시지는 `completion.json`이다. 검증 작업 완료와 검토 대상의 FAIL을 구분한다. `worker-release.json`은 `retained / user_takeover / processAction none`을 반환했다. 동일 terminal·incarnation과 완료 화면을 확인했으나 `/` 입력 초안과 메뉴가 있어 사용자 입력 비간섭 기준에 따라 닫지 않고 메인에 종료 판단을 전달했다. 이 검증 작업은 정산됐고 세션을 재사용하지 않는다.
 - 최초 지시의 관련 발췌는 `coordinator-message-capture.md`다. 수신 내용의 발췌이며 전체 raw JSON이나 사용자 직접 입력 증거가 아니다. 삭제 명령의 순서·시작 당시 clean·삭제하지 않은 다른 ref 등 당시 관측과 검증자가 사후 입증한 범위는 판정 원문에서 구분한다.
 
-재검증 후 추가하는 판정·정산·PR 상태 기록에는 실제 검토 head와 이후 기록 범위를 구분해 남긴다.
+### 재검증·PR 결과 — 검토 후 기록
+
+신규 Opus의 delta 재검증은 **PASS, 결함 0건**이다. 실제 검토 head는 `138394d529b4fc2ed4245560c16a958740360948`, 검토 범위는 `af84607..138394d`의 수정 문장과 당시 수행 기록·주변 문맥이다. Task `task_1443711d82e3`, Dispatch `ctx_ce471ed80bf1`이며 원문은 `re-review.md`, 상세 근거는 `re-review-evidence.json`, 완료 메시지는 `re-completion.json`이다. 재검증자는 전체 변경이 05 문서 3개뿐임과 상대 링크 20개·앵커 6개, 보존 영역·승인 경계를 확인했다. 지정·launch 모델은 `claude-opus-5-5`, 백엔드는 `unknown`이다.
+
+`138394d` 이후 이 goal의 상태·판정·정산·PR 기록 갱신은 **기록 전용이며 독립 판정에 포함되지 않는다.** 메인의 `msg_08ba5a4d0abf`가 허용한 (b) 방식으로 실제 검토 head와 이후 기록의 경계를 PR 본문에도 명시했다. 병합 승인 전 메인이 이 기록 diff를 별도로 검토한다.
+
+1차 세션의 종료 판단을 넘긴 뒤 메인이 `/` 화면을 `/auto-mode-setup` 대화상자로 확인하고 동일 terminal을 `ptyKilled=true`로 닫았다고 통지했다(`msg_8b19c7e683a3`, `main-followup.json`). 이후 `retained-terminal.json`도 `exited / operator_close`를 보여준다. 앞 절의 사용자 입력 가능성은 당시의 보수적인 판단이며 현재 종료 상태와 구분한다. 실행 명령·화면 표시 등 별도 원문 receipt가 남지 않은 당시 관측의 한계와 1차 원문의 main 반영 시각 정정은 재검증 원문에 있다.
+
+2차 세션도 분할 연결이 거부되어 미사용 pane을 닫고 새 탭으로 기동했다(`re-pane-*.json`, `re-worker-start.json`). 메인의 분할 반복 금지·직접 새 탭 대안 지침은 기동 후 수신했으며 이후 동일 시도는 반복하지 않는다. 최종 정산은 `re-worker-release.json`의 `released / closed_agent_terminal / archive captured`로 완료했고, 이미 닫힌 terminal에 추가 close를 하지 않았다. 완료 Delivery를 acknowledge했으며(`re-ack.json`) Run의 reclaimable worker는 0개였다.
+
+[PR #156](https://github.com/bass131/dawnholder-server/pull/156)을 생성했다. 현재 OPEN이며 push·PR 생성까지 수행했고 병합·자동 병합은 하지 않았다. 메인에게 판정 원문과 검토 경계, pane 배치 한계, 기록 전용 변경의 검토 필요를 전달한다.
