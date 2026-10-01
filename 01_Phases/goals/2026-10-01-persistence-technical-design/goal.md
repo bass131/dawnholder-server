@@ -1,12 +1,13 @@
 # P2 / D1a — 캐릭터 영속성 기술 계약
 
-상태: **goal 초안 커밋 후 메인 확인 대기**. D0·P0·현재 서버의 읽기 전용 조사를 마쳤다. 이 goal은 기술 명세 작업의 범위이며 GameServer 연동·신규 migration·SQL 시험이 완료됐다는 뜻이 아니다.
+상태: **메인 승인 후 기술 명세 작성 완료, 신규 Opus 독립 실사 준비**. D0·P0·현재 서버의 읽기 전용 조사와 공식 driver 자료 확인을 마쳤다. 이 goal은 기술 명세 작업의 범위이며 GameServer 연동·신규 migration·SQL 시험이 완료됐다는 뜻이 아니다.
 
 ## 착수 근거와 기준
 
 - 메인 지시 `msg_40867e846fd7`: DB 설계가 큰 목표이고 R-2 검사와 Management 규칙 적용은 병행한다. C 사전 조사 결과와 초안·질문은 `msg_29b12d4b2d87`로 전달했다.
 - 메인 `msg_deb8cb0b630f`: R-2 판정·PR 후 최신 main의 별도 branch에서 D1a goal을 작성하고 커밋 뒤 메인 확인을 받는다. R-2는 독립 실사 PASS·제품 변경 없이 [PR155](https://github.com/bass131/dawnholder-server/pull/155)로 분리됐으며 사용자 병합 승인은 별도다.
 - branch `bass131/persistence-technical-design`, base `cb6f717de0fc0eea6d1295d3c8c47da7454125a6`(branch 생성 직전 `git fetch origin main` 결과). GameDev checkout의 R-2 쓰기를 종료한 뒤 전환했고 다른 checkout을 만들지 않았다.
+- goal 초안 `b1183bc`는 메인 `msg_ee67fbb79a1c`에서 승인됐다. PR155·156 병합 후 `msg_95454224fccb` 지시로 clean 상태에서 `origin/main 18c8ca6`에 rebase했다. goal 커밋은 `b2c31bf`로 바뀌었고 CURRENT의 D1a 링크를 유지했다. 병합된 R-2 로컬 branch만 `git branch -d`로 삭제했으며 원격 branch는 보존했다.
 - 계약 출처: [D0 결정](../2026-09-29-persistence-design/goal.md), [D0 설계](../2026-09-29-persistence-design/design.md), [D1–D4 분할](../2026-09-29-persistence-design/implementation-plan.md), [P0 DB·소유 계약](../2026-09-30-contracts-baseline/contracts.md), [P2 로드맵](../../milestones/2026-09-30-contracts-persistence/roadmap.md). D0 제품 결정을 다시 열지 않는다.
 
 ## 확정 결정과 사용자 판단 경계
@@ -37,7 +38,7 @@
 4. D1b 저장소 API/결과와 D2 bounded worker·owner/종료 인계, D3 Loading/권위 class 입장의 소비 경계를 명세한다. D2 전체 deadline 수치 튜닝이나 D3 packet ID·Unity 구현을 앞당기지 않는다.
 5. 격리 SQL 두 연결 시험의 old/new 순서·장애 주입 지점·관측 증거·권한·정리 절차를 설계한다. 정확한 실행 DB·시험 principal/GUID·cleanup 권한은 D1b 실행 gate로 남긴다.
 
-산출물은 이 `goal.md`(기준·상태·결정·결과), 같은 폴더의 `technical-spec.md`(DDL/API/transaction/설정·권한 계약), `verification-plan.md`(반증 행렬·실행 gate·정리)다. 메인 확인 전에는 후자의 두 문서를 구현 명세로 확정하지 않는다. CURRENT와 로드맵은 goal 링크만 유지한다.
+산출물은 이 `goal.md`(기준·상태·결정·결과), [technical-spec.md](technical-spec.md)(DDL/API/transaction/설정·권한 계약), [verification-plan.md](verification-plan.md)(반증 행렬·실행 gate·정리)다. 메인 goal 승인 후 두 명세를 작성했으며 독립 실사 전이다. CURRENT와 로드맵은 goal 링크만 유지한다.
 
 ## 현재 코드와 후속 연결점
 
@@ -56,4 +57,12 @@
 
 제품/프로토콜/테스트/SQL script·001·계정/서비스·전역 설정·비밀 파일은 수정하지 않는다. DB 접속·비밀 읽기·DDL/데이터 쓰기·restore/장애 시험·빌드/Unity/서버 실행도 이 설계 목표에서 수행하지 않는다. 문서 실사와 실제 저장/복구 성공을 구분한다. `CLAUDE.md`·Management 문서는 각 소유자에게 남긴다.
 
-branch 전환 후 manifest·packages-lock·ProjectSettings의 skip-worktree `S`와 SHA256은 R-2 검증 끝 상태와 동일했다. stash 2개·archive를 보존하고 제품 변경은 없다. 설계 문서와 독립 실사 결과는 아직 작성·실행 전이다.
+branch 전환 후 manifest·packages-lock·ProjectSettings의 skip-worktree `S`와 SHA256은 R-2 검증 끝 상태와 동일했다. stash 2개·archive를 보존하고 제품 변경은 없다.
+
+## 기술 명세 작성 결과
+
+- `Microsoft.Data.SqlClient 6.1.7` LTS를 고정 후보로 정하고 공식 NuGet·Microsoft 지원표를 2026-10-01에 확인했다. Windows/WSL net10·SQLExpress 실제 호환은 D1b 실측 gate다.
+- 신규 metadata 두 테이블 `CharacterAuthority`(slot1 바인딩·fence·owner·순서), `CharacterOperation`(정확 payload·terminal 증빙)을 명세했다. 각 필드 이유·키·제약·retention을 설명하고 기존 001/game rows를 일괄 수정하지 않는다.
+- acquire/create/checkpoint/release/resolve/관리 recovery의 동일 application lock·transaction 경계, 늦은 미도착 요청의 seal, historical 결과와 현재 권위 구분을 정했다. 정상 close는 checkpoint RPC 없이 NoWriteNeeded와 조건부 release를 사용한다.
+- 기존 SQL runtime login의 직접 DML grant를 그대로 쓰면 fencing이 우회되는 점을 명시했다. execute-only 전용 principal·legacy writer 격리는 D1b gate이며 이번에 권한을 변경하지 않았다.
+- 검증 계획에 문서 실사와 별도의 SQL 두 연결/장애/권한/cleanup 행렬, D2/3/4 소비 시험 범위를 나눴다. DB·DDL·build·Unity·비밀 읽기·테스트 코드 실행은 모두 미수행이다.
