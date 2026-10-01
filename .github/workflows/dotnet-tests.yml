@@ -15,13 +15,20 @@ jobs:
       DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: "0"
       DOTNET_GENERATE_ASPNET_CERTIFICATE: "false"
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
-      DOTNET_CLI_HOME: ${{ runner.temp }}/dawnholder-dotnet/cli-home
-      NUGET_PACKAGES: ${{ runner.temp }}/dawnholder-dotnet/nuget/packages
-      NUGET_HTTP_CACHE_PATH: ${{ runner.temp }}/dawnholder-dotnet/nuget/http
-      NUGET_PLUGINS_CACHE_PATH: ${{ runner.temp }}/dawnholder-dotnet/nuget/plugins
-      NUGET_SCRATCH: ${{ runner.temp }}/dawnholder-dotnet/nuget/scratch
     steps:
       - uses: actions/checkout@v4
+
+      - name: Configure isolated .NET paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            printf 'DOTNET_CLI_HOME=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/cli-home"
+            printf 'NUGET_PACKAGES=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/nuget/packages"
+            printf 'NUGET_HTTP_CACHE_PATH=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/nuget/http"
+            printf 'NUGET_PLUGINS_CACHE_PATH=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/nuget/plugins"
+            printf 'NUGET_SCRATCH=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/nuget/scratch"
+          } >> "$GITHUB_ENV"
 
       - uses: actions/setup-dotnet@v4
         with:
