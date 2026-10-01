@@ -47,3 +47,38 @@ dotnet_diagnostic.CA1506.severity = warning
 dotnet_diagnostic.SA1201.severity = error
 dotnet_diagnostic.SA1202.severity = error
 dotnet_diagnostic.IDE0011.severity = error
+
+[02_Server/**.cs]
+end_of_line = lf
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[04_ClientNet/**.cs]
+end_of_line = lf
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[98_Shared/**.cs]
+end_of_line = lf
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[99_Tools/**.cs]
+end_of_line = lf
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[99_Tools/PacketGenerator/PacketFormat.cs]
+trim_trailing_whitespace = false

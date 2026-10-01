@@ -4,9 +4,9 @@
 
 ## 환경
 
-- .NET SDK: [global.json](../../global.json)의 `10.0.203`, `rollForward: latestFeature`.
+- .NET SDK: [global.json](../../global.json)의 정확한 `10.0.301`, `rollForward: disable`. 다른 버전으로 대체하지 않는다.
 - Unity: [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 `6000.4.7f1`과 revision을 확인한다.
-- WSL Ubuntu: .NET SDK, Bash·rsync·flock(util-linux)·ss(iproute2)·coreutils가 필요하다. 저장소는 ASCII 경로를 권장한다.
+- WSL Ubuntu: .NET SDK, Bash·Python 3·rsync·flock(util-linux)·ss(iproute2)·coreutils가 필요하다. 저장소는 ASCII 경로를 권장한다.
 - 서버·테스트 실행이 Windows 정책으로 차단되는 현재 환경에서는 WSL을 사용한다. Windows 전용 디버그 설정은 네이티브 실행이 허용된 머신용이다.
 
 ## Windows 빌드
@@ -33,7 +33,23 @@ wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh bot DashSmoke
 
 원본 경로별 Linux 복사본은 `$HOME/.cache/dawnholder/workspaces/<hash>`다. 소유 marker와 workspace lock으로 동일 대상의 동시 작업을 막는다. `DAWNHOLDER_WSL_ROOT`는 비어 있거나 해당 원본 소유 표시가 있는 전용 Linux 디렉터리만 허용한다. `DAWNHOLDER_DOTNET`과 함께 WSL 환경변수이므로 PowerShell에서 지정할 때는 `wsl -d Ubuntu -- env DAWNHOLDER_WSL_ROOT=/home/bass1/dawnholder-custom bash 99_Tools/sync-wsl.sh build`처럼 전달한다.
 
+`build/test/run/bot`은 같은 SDK 선택 함수를 사용한다. 순서는 명시한 `DAWNHOLDER_DOTNET` → `/home/bass1/.local/share/dawnholder/dotnet-10.0.301/dotnet` → PATH의 `dotnet` → `$HOME/.dotnet/dotnet`이다. override는 실행 가능한 절대 경로여야 한다. 선택한 실행파일을 복제본의 `global.json`이 적용되는 cwd에서 확인하고 요구 버전·선택 경로·실제 SDK를 출력한다. override 부재·실행 오류·버전 불일치는 실패하며 다른 버전으로 다시 선택하지 않는다. 전역 PATH·기존 SDK·셸 profile은 바꾸지 않는다.
+
+첫 dotnet 호출부터 개발 인증서 생성을 억제하고, 새 실행 전용 CLI home과 NuGet package/HTTP/plugins/scratch 경로를 사용한다. 선택한 host를 `DOTNET_HOST_PATH`로 자식 테스트 프로세스에도 전달한다. 제품 restore를 명시한 다음 Debug build/test를 수행하며, 원본에는 역복사하지 않는다.
+
 WSL 빌드는 Windows 원본 Unity DLL을 갱신하지 않는다. DLL 반영은 Windows 빌드 또는 별도로 정한 검증·배포 범위에서 수행한다.
+
+## C# 서식 검사
+
+Windows 원본 Git에서 입력 manifest를 만들고 전용 WSL 복제본을 검사한다.
+
+```powershell
+& ./99_Tools/format-check.ps1
+```
+
+CI나 Git이 있는 Linux checkout에서는 `bash 99_Tools/format-check.sh`를 사용한다. Git이 없는 복제본은 `--manifest <원본 manifest 경로>`가 필요하다. Windows 진입점은 실제 checkout SHA·작업 상태·파일/설정 hash·Compile 집합·SDK를 기록하고, sync는 루트 빌드/정책 입력과 manifest를 명시적으로 복사해 hash를 대조한다. 복제본의 `.git` 열거나 원본 C# 쓰기를 하지 않는다.
+
+검사는 고정 SDK의 `dotnet format whitespace`만 사용한다. 수기 제품 소스·검사 도구·독립 `Formatting.Tests`를 각각 검사하고, 생성 `GenPackets.cs`는 제외하며 hash로 보존한다. 누락된 입력·SDK 불일치·로드/파싱 오류·실행 실패·독립 테스트 프로젝트 부재는 실패한다. 원본과 자체 서식 snapshot의 Debug/Release token·리터럴·주석·directive 보존 근거 및 원시 명령/exit/report는 출력된 전용 evidence 디렉터리에 남긴다. 이 검사는 제품 전체 build/test나 Unity 검증을 대신하지 않는다.
 
 ## 패킷 생성과 로컬 Git 검사
 

@@ -14,7 +14,7 @@ case "$ACTION" in
   *) fail "Unknown action: $ACTION" ;;
 esac
 [[ $(uname -s) == Linux ]] || fail 'Run this helper inside WSL/Linux.'
-for tool in realpath sha256sum rsync flock ss timeout; do
+for tool in realpath sha256sum rsync flock ss timeout python3; do
   command -v "$tool" >/dev/null || fail "Required tool missing: $tool"
 done
 WORKSPACE_KEY=$(printf '%s' "$SOURCE_ROOT" | sha256sum | cut -c1-20)
@@ -54,17 +54,48 @@ for tree in 02_Server 04_ClientNet 98_Shared 99_Tools; do
     --exclude='out/' --exclude='soundfont/' \
     "$SOURCE_ROOT/$tree/" "$RUNTIME_ROOT/$tree/"
 done
-for config in Dawnholder.slnx global.json Directory.Build.props .editorconfig; do
+for config in Dawnholder.slnx global.json Directory.Build.props .editorconfig .gitattributes .github/workflows/dotnet-tests.yml; do
   [[ -f "$SOURCE_ROOT/$config" ]] || fail "Missing root build input: $config"
+  [[ ! -L "$RUNTIME_ROOT/$config" ]] || fail "Linked root build input: $config"
+  if [[ "$config" == .github/* ]]; then
+    [[ ! -L "$RUNTIME_ROOT/.github" && ! -L "$RUNTIME_ROOT/.github/workflows" ]] || fail 'Linked CI configuration directory.'
+    mkdir -p -- "$RUNTIME_ROOT/.github/workflows"
+  fi
   cp -- "$SOURCE_ROOT/$config" "$RUNTIME_ROOT/$config"
+  [[ $(sha256sum "$SOURCE_ROOT/$config" | cut -d' ' -f1) == $(sha256sum "$RUNTIME_ROOT/$config" | cut -d' ' -f1) ]] || fail "Root input hash mismatch: $config"
 done
+for config in Directory.Build.targets NuGet.config nuget.config packages.lock.json; do
+  if [[ -f "$SOURCE_ROOT/$config" ]]; then
+    [[ ! -L "$RUNTIME_ROOT/$config" ]] || fail "Linked root build input: $config"
+    cp -- "$SOURCE_ROOT/$config" "$RUNTIME_ROOT/$config"
+    [[ $(sha256sum "$SOURCE_ROOT/$config" | cut -d' ' -f1) == $(sha256sum "$RUNTIME_ROOT/$config" | cut -d' ' -f1) ]] || fail "Root input hash mismatch: $config"
+  fi
+done
+MANIFEST=''
+if [[ -n ${DAWNHOLDER_FORMAT_MANIFEST:-} ]]; then
+  [[ -f "$DAWNHOLDER_FORMAT_MANIFEST" && ! -L "$DAWNHOLDER_FORMAT_MANIFEST" ]] || fail 'Source format manifest missing or linked.'
+  MANIFEST="$RUNTIME_ROOT/.dawnholder-format-manifest.json"
+  [[ ! -L "$MANIFEST" ]] || fail 'Linked destination manifest.'
+  cp -- "$DAWNHOLDER_FORMAT_MANIFEST" "$MANIFEST"
+  [[ $(sha256sum "$DAWNHOLDER_FORMAT_MANIFEST" | cut -d' ' -f1) == $(sha256sum "$MANIFEST" | cut -d' ' -f1) ]] || fail 'Format manifest copy hash mismatch.'
+fi
 echo "Runtime workspace: $RUNTIME_ROOT"
-[[ "$ACTION" != sync ]] || exit 0
-DOTNET=${DAWNHOLDER_DOTNET:-$(command -v dotnet || true)}
-[[ -n "$DOTNET" ]] || DOTNET="$HOME/.dotnet/dotnet"
-[[ -x "$DOTNET" ]] || fail 'Install the SDK required by global.json, or set DAWNHOLDER_DOTNET.'
+[[ "$ACTION" != sync || -n "$MANIFEST" ]] || exit 0
+STATE=$(mktemp -d "$RUNTIME_ROOT/.dotnet-state-XXXXXXXX")
+printf '%s\n' "$SOURCE_ROOT" > "$STATE/.dawnholder-source"
+export DOTNET_CLI_HOME="${DOTNET_CLI_HOME:-$STATE/cli-home}" NUGET_PACKAGES="${NUGET_PACKAGES:-$STATE/nuget/packages}" NUGET_HTTP_CACHE_PATH="${NUGET_HTTP_CACHE_PATH:-$STATE/nuget/http}" NUGET_PLUGINS_CACHE_PATH="${NUGET_PLUGINS_CACHE_PATH:-$STATE/nuget/plugins}" NUGET_SCRATCH="${NUGET_SCRATCH:-$STATE/nuget/scratch}"
+export DOTNET_GENERATE_ASPNET_CERTIFICATE=false DOTNET_CLI_TELEMETRY_OPTOUT=1 MSBUILDDISABLENODEREUSE=1
+source "$RUNTIME_ROOT/99_Tools/Formatting/sdk.sh"
+dawnholder_sdk "$RUNTIME_ROOT"
 cd -- "$RUNTIME_ROOT"
-"$DOTNET" build Dawnholder.slnx --configuration Debug --nologo
+if [[ -n "$MANIFEST" ]]; then
+  "$DOTNET" restore 99_Tools/Formatting/Formatting.csproj --nologo
+  "$DOTNET" build 99_Tools/Formatting/Formatting.csproj --no-restore --nologo
+  "$DOTNET" 99_Tools/Formatting/bin/Debug/net10.0/Formatting.dll sync-inputs --root "$SOURCE_ROOT" --after "$RUNTIME_ROOT" --dotnet "$DOTNET" --manifest "$MANIFEST"
+fi
+[[ "$ACTION" != sync ]] || exit 0
+"$DOTNET" restore Dawnholder.slnx --nologo
+"$DOTNET" build Dawnholder.slnx --configuration Debug --no-restore --nologo
 case "$ACTION" in
   build) exit 0 ;;
   test) exec "$DOTNET" test Dawnholder.slnx --configuration Debug --no-build --nologo "$@" ;;

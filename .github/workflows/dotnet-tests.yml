@@ -11,17 +11,40 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: "false"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_CLI_HOME: ${{ runner.temp }}/dawnholder-dotnet/cli-home
+      NUGET_PACKAGES: ${{ runner.temp }}/dawnholder-dotnet/nuget/packages
+      NUGET_HTTP_CACHE_PATH: ${{ runner.temp }}/dawnholder-dotnet/nuget/http
+      NUGET_PLUGINS_CACHE_PATH: ${{ runner.temp }}/dawnholder-dotnet/nuget/plugins
+      NUGET_SCRATCH: ${{ runner.temp }}/dawnholder-dotnet/nuget/scratch
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          global-json-file: global.json
+
+      - name: Record actual checkout and pinned SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          git status --porcelain=v1
+          dotnet --info
+          test "$(dotnet --version)" = "10.0.301"
+          printf 'DOTNET_HOST_PATH=%s\n' "$(command -v dotnet)" >> "$GITHUB_ENV"
+
+      # The tool and its independent tests are separate from the eight product projects.
+      # A missing test project, load failure, or manifest mismatch fails this step.
+      - name: Whitespace, input manifest, preservation and formatting tool tests
+        run: bash 99_Tools/format-check.sh
 
       # build → test 분리: dotnet test --no-incremental은 .slnx에서 MSB1001 (SDK 10.0.203+)
       # .editorconfig의 pilot SA1201/SA1202/IDE0011 error도 이 빌드에서 실패시킨다.
       - name: Build and enforce pilot diagnostics
-        run: dotnet build Dawnholder.slnx --no-incremental
+        run: dotnet build Dawnholder.slnx --no-restore --no-incremental
 
       - name: Test
         run: dotnet test Dawnholder.slnx --no-build --logger "console;verbosity=normal"

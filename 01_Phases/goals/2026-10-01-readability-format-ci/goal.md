@@ -4,15 +4,15 @@
 
 [Q-1 로드맵](../2026-10-01-readability-baseline/goal.md)의 첫 실행 목표다. 서버 솔루션의 C# 서식을 하나의 고정된 포매터 결과로 맞추고, 동작 보존 증명과 로컬·CI의 재현 가능한 검사로 유지한다. 먼저 P0-A에서 실행 환경·포매터·부작용을 임시 공간에서 실측하고, 그 결과로 이 goal을 보완한 뒤 실제 A 구현을 발행한다.
 
-- 상태: **P0-A 완료. C-1을 포함한 A spec 메인 승인과 전용 WSL SDK 설치 사용자 승인 전달을 받아 신규 A Sol 발행 준비.** 원본 서식 적용·검사 구현·독립 Opus 검증·PR 생성은 미실행이다.
+- 상태: **P0-A와 A Sol의 CP1 자체 확인·쓰기 중지 보고를 받았다. 설정·도구·문서 커밋 후 같은 작업자가 원본 서식 적용 단계로 진행한다.** 원본 서식 적용·독립 Opus 검증은 아직 완료 보고를 받지 않았다.
 - 근거: 메인 `msg_b7f867c99e0f`(2026-10-01 14:28:26 UTC), [결정 사본](../../../.backups/verification/2026-10-01-readability-format-ci/main-split-decision.json). 사용자 결정은 메인 경유이며 사용자 직접 입력으로 격상하지 않는다.
-- A 조건부 승인: 메인 `msg_ba75a9bdad3a`(2026-10-01 15:28:29 UTC), [승인 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-conditional-approval-c1.json). `2fda71b`의 A안에 아래 C-1을 추가하고 나머지 제안은 승인했다. SDK 설치의 사용자 승인은 아직 전달되지 않았다.
+- A 조건부 승인: 메인 `msg_ba75a9bdad3a`(2026-10-01 15:28:29 UTC), [승인 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-conditional-approval-c1.json). `2fda71b`의 A안에 아래 C-1을 추가하고 나머지 제안은 승인했다. 이 시점에는 SDK 설치의 사용자 승인이 전달되기 전이었다.
 - SDK 사용자 승인 전달: 메인 `msg_7f23f9a1e303`(2026-10-01 15:56:51 UTC), [전달 원문](../../../.backups/verification/2026-10-01-readability-format-ci/sdk-user-approval.json). 사용자의 “SDK 설치 승인할게”를 메인이 전달했으며 사용자 직접 입력으로 격상하지 않는다. `26f878d`의 경로·버전 1건만 승인했고 A Sol 발행을 허용했다. 앞의 SDK 답변 대기는 이 전달로 해소됐다.
 - 메인이 Q-1 [Fable 원문](../2026-10-01-readability-baseline/goal-review.md)을 전부 읽고 BOM·WSL 동기화·SDK·템플릿 공백 표본 일치를 보고했다. F-3~F-10/F-15와 관련 참고를 아래에 반영한다. 이후 `msg_69bc8300f5b7`의 Q-1B 조건부 자체 분석기/위반 수 ratchet 결정은 로드맵으로 인계하며 Q-1A 범위를 바꾸지 않는다.
 - checkout: `C:/Dev/DawnHolder_Project`. 실행 branch는 기존 준비 branch `bass131/q1-readability-20261001`을 **Q-1A 전용으로 배정**한다. Q-1은 실행 없는 로드맵으로 바뀌며 B/C는 별도 branch를 사용한다.
 - base: 이번 진입에서 다시 fetch한 `origin/main` = `0239290d6f423dbfe91c42c3fffd0789f56de26f` (PR158 병합). 기존 준비 커밋 `30147f3`(초안·CURRENT·메인 CLAUDE O-5), `d40ba0b`(검토 원문·인계)을 보존했다.
 - evidence: `.backups/verification/2026-10-01-readability-format-ci/` (Git 제외). 이전 원문·보호 기준·Fable 정산은 인접 `2026-10-01-readability-baseline/`에 있다. 실제 결과는 이 goal 한 곳에 기록한다.
-- coordinator Run `run_a3a4a4d552d1`; P0-A worker는 정산·종료했고 현재 실행 중인 worker는 없다. A는 승인 뒤 새 Task/Dispatch로 발행한다. 메인 회신 주소도 이 Run이다.
+- coordinator Run `run_a3a4a4d552d1`; P0-A worker는 정산·종료했다. 현재 A Task `task_389cb0776c39` / Dispatch `ctx_05b030e24036`, terminal `term_dff33cb7-c289-4447-af55-2980cd371d40`, incarnation `c92e0d71-1d4a-4f04-b7cb-c2f6e9a8746d`. 신규 pane의 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`와 첫 화면 GPT-6.1-Sol xhigh/빈 prompt를 확인했다. backend는 unknown. [시작 receipt](../../../.backups/verification/2026-10-01-readability-format-ci/a-sol-1-start.json)의 input_accepted/turn_started를 확인했고 [작업 계약](../../../.backups/verification/2026-10-01-readability-format-ci/a-sol-1-spec.txt)에 CP1/CP2 쓰기중지·Astra Git 순서를 명시했다. 메인 회신 주소도 이 Run이다.
 
 ## 범위와 불변 조건
 
@@ -99,7 +99,17 @@ Task `task_df82d0ec21ff`, Dispatch `ctx_1025421355cc`, terminal `term_75d525b0-0
 
 메인이 승인한 A안은 **원본 적용 Windows native 10.0.301**, **검사 원본 Git manifest → 전용 WSL 복제 → 동일 SDK**다. 원본 역복사 도구는 포함하지 않는다. native가 실제 적용 때 막히면 상태를 메인에 올리고 별도 경로를 승인받는다. `.editorconfig`의 새 서식 속성은 네 소스 트리에만 적용해 P0의 임시 root `[*.cs]` 절을 그대로 Unity까지 확장하지 않는다. PacketFormat 국소 false와 생성 소스 제외/hash 검사를 유지한다.
 
-**SDK 설치 승인 범위:** Linux x64 .NET SDK **10.0.301**과 동봉 runtime/host를 `/home/bass1/.local/share/dawnholder/dotnet-10.0.301/`에 추가한다. 실행파일은 그 경로의 `dotnet`, SDK 위치는 `sdk/10.0.301/`이다. 다운로드·전용 디스크 사용이 생긴다. 출처는 **Microsoft 공식 배포물**로 한정하고 버전·checksum·용량·설치 파일 근거를 남긴다. 기존 `/home/bass1/.dotnet`, 전역 PATH, 셸 profile, 시스템 설정은 바꾸지 않고 명시 실행파일과 아래 C-1 탐색 순서를 사용한다. Windows 설치·다른 버전·다른 위치는 승인 범위 밖이다. 설치 자체와 동일 SDK 임시 재대조는 아직 미실행이다.
+**SDK 설치 승인 범위:** Linux x64 .NET SDK **10.0.301**과 동봉 runtime/host를 `/home/bass1/.local/share/dawnholder/dotnet-10.0.301/`에 추가한다. 실행파일은 그 경로의 `dotnet`, SDK 위치는 `sdk/10.0.301/`이다. 다운로드·전용 디스크 사용이 생긴다. 출처는 **Microsoft 공식 배포물**로 한정하고 버전·checksum·용량·설치 파일 근거를 남긴다. 기존 `/home/bass1/.dotnet`, 전역 PATH, 셸 profile, 시스템 설정은 바꾸지 않고 명시 실행파일과 아래 C-1 탐색 순서를 사용한다. Windows 설치·다른 버전·다른 위치는 승인 범위 밖이다.
+
+설치 진행 근거: Sol `msg_3fbd80c02e2f`가 승인 경로 설치를 완료했다고 보고했다([수신 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-sdk-install-status.json)). `a-sol-1/official-sdk.json`과 `download-checksum.json`의 Microsoft 공식 metadata/archive SHA512는 `cfbeec3a3a1d3ad3e168e37a77c4cc26c23125acd84a86d014047da3ecffce4c368a9acac4d7c950a047fa3d98989ce8aea69f8e5842cb6d330e8911e1c335a7`로 같았고 다운로드 235,086,718 bytes/설치 628,124,550 bytes, SDK 표시 10.0.301을 기록했다. Astra는 이 원시 기록을 읽었으며 독립 설치 검증은 미실행이다. Windows python alias 실패로 240-input durable capture는 설치 **후** 복구해 P0 hash와 비교했다. 설치 전 WSL profile/기존 dotnet hash와 구분하고 사전 전수 증명으로 주장하지 않는다. 메인에도 한계를 전달했다. 실제 명령·파일 hash는 `a-sol-1/installed-sdk-*`, `wsl-preservation-before.json`에 보존한다.
+
+동일 SDK 임시 재대조: Sol `msg_39cdb8acf1e1`의 [보고](../../../.backups/verification/2026-10-01-readability-format-ci/a-same-sdk-status.json)는 Windows/WSL 10.0.301에서 restore 0, verify 2, apply 0, rerun 0이다. Astra가 비교 JSON 240행을 읽어 변경 81파일·환경 간 최종 바이트 불일치 0·P0 변경 경로 차이 0을 확인했다([자료 대조](../../../.backups/verification/2026-10-01-readability-format-ci/astra-a-cross-report-comparison.json)). 전수 Workspace 의미 증명 통과를 뜻하지 않는다. `msg_1017f83aff8e`는 임시 전후 Debug/Release build가 0이어도 Shared/ClientNet metadata 관련 Workspace 진단으로 manifest가 실패한다고 보고했다([진행 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-capacity-resumed-status.json)). 후속 `msg_72faa4f847bc`는 도구를 포함한 227소스·실제 Debug/Release 454조건·81변경·비활성 1영역 대응 증명에서 Windows 임시 proof 0을 보고했다([후속 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-capacity-2-resumed-status.json)). CP1의 최종 도구/입력으로 양쪽 전수 결과를 확인하기 전 원본 기존 C#을 적용하지 않는다.
+
+전체 테스트 초기 실패: Sol `msg_1165e4a13f28`는 첫 baseline 임시 테스트 839개 중 829통과·5실패·5skip을 보고했다([원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-snapshot-content-omission-status.json)). 소스 위주 P0 snapshot에 실제 Content인 맵 terrain/content 6개 bin을 넣지 않은 누락을 원인으로 보고했고, 원본 6파일을 변경하지 않고 manifest·복제·hash 보호에 포함해 전후 Windows/WSL 테스트를 다시 실행 중이다. P0 240입력과 새 도구/Content가 추가된 A 집계를 구분한다. 최초 실패와 보완 후 결과를 모두 보존하며 최종 CP1 보고를 대조하기 전 자체 검사 전체 완료로 기록하지 않는다.
+
+2026-10-01 16:36 UTC 모델 capacity 오류 후 동일 모델·세션·Task의 첫 재시도에서 실제 도구 실행이 재개됐다. 메인 `msg_71674b338ea8`가 전달한 사용자 지침은 지정 모델 유지, 간격을 늘린 재시도, 시각·결과 기록, 약 30분 이상 지속 실패나 상태 손상 때 보고다. [지침 원문](../../../.backups/verification/2026-10-01-readability-format-ci/capacity-retry-main-instruction.json)과 [관측 기록](../../../.backups/verification/2026-10-01-readability-format-ci/astra-capacity-retries.md)을 보존하며 사용자 직접 입력으로 격상하지 않는다.
+
+메인 `msg_0b8d28f601a7`(16:52:50 UTC)의 [추가 사용자 지침 전달](../../../.backups/verification/2026-10-01-readability-format-ci/capacity-fallback-main-instruction.json)은 **Sol의 첫 capacity 관측 후 누적 30분이 지나도 재시도(1→2→5→10분)로 계속 실패할 때만**, 상태·근거 보존과 기존 작업자 정산·종료 뒤 같은 미완료 범위를 **새 외부 `gpt-6-astra` xhigh 작업자**에게 맡기는 것을 허용한다. 실행 중인 세션의 모델은 바꾸지 않고 역할 태그는 `[GameDev Sol]`을 유지한다. 최초 명령/화면의 실행 모델·요청 모델 Sol·backend unknown·전환 근거를 기록한다. 파트 리드의 직접 구현과 Opus 검증자 모델 대체는 허용하지 않는다. 16:52:09 UTC에는 기존 Sol의 재개 보고를 받았으므로 전환하지 않았다. 지침은 메인 경유이며 사용자 직접 입력으로 격상하지 않는다.
 
 `global.json`은 정확히 `10.0.301`, `rollForward: disable`, CI는 `global-json-file: global.json`으로 바꾸는 계약이다. 진입점에서 실제 SDK가 다르면 실패하며 CI 실제 값도 로그에 남긴다. 설치 후 **원본 적용 전에** 동일 입력·설정으로 Windows/WSL format을 임시 공간에서 비교한다. 두 환경 일치·누락 없음·의미 차이 없음 확인이 선행조건이다. 알려진 81파일과 다른 변경은 원인을 보고하고 임의 포함하지 않는다. process 한정 task CLI home/package/http/plugins/**scratch** 경로와 `DOTNET_GENERATE_ASPNET_CERTIFICATE=false`를 첫 dotnet 호출부터 지정한다.
 
@@ -128,7 +138,7 @@ CI는 실제 checkout SHA와 그 작업 트리에서 Git 입력 manifest를 새�
 
 현재 루트 4개에 `.gitattributes`, `.github/workflows/dotnet-tests.yml`, task별 manifest를 명시적으로 더한다. 앞의 두 파일은 MSBuild 필수 입력이 아니라 정책/CI 계약의 대조 자료다. 새 도구에 필요한 props/targets/NuGet.config/lock이 추가되면 그 파일도 명시 목록·hash에 넣는다. 하위 editorconfig와 도구 소스는 네 트리 범위에 포함하되 secrets·bin/obj를 원본에서 무차별 복사하지 않는다.
 
-검사 진입점은 실제 `dotnet --version`을 기록하고 승인된 고정값과 다르면 실패한다. 위 10.0.301 pin/CI 계약은 메인 조건부 승인됐으나 구현·SDK 설치·실행은 미완료다. CI의 formatter 검사는 로컬과 동일한 SDK·옵션·파일 목록·설정을 사용하며 최신 main과의 통합 결과에서도 통과해야 한다. P0의 metadata 누락을 넘겨받지 않도록 정식 증명/빌드 전에 필요한 명시적 restore를 수행하고 결과를 기록한다.
+검사 진입점은 실제 `dotnet --version`을 기록하고 승인된 고정값과 다르면 실패한다. 위 10.0.301 pin/CI 계약은 승인됐고 전용 SDK 설치 보고를 받았으며, 정식 진입점 구현·전수 증명은 CP1 이전 진행 중이다. CI의 formatter 검사는 로컬과 동일한 SDK·옵션·파일 목록·설정을 사용하며 최신 main과의 통합 결과에서도 통과해야 한다. P0의 metadata 누락을 넘겨받지 않도록 정식 증명/빌드 전에 필요한 명시적 restore를 수행하고 결과를 기록한다.
 
 ### C-1 — 기존 WSL 표준 실행의 SDK 해석 보존
 
@@ -188,6 +198,12 @@ P0-A에서 Shared 8파일 변경, ClientNet 0파일을 확인했다. **Shared의
 
 ## 다음 행동과 미실행
 
-C-1을 포함한 메인 승인과 경로·버전 한정 사용자 SDK 설치 승인 전달이 모두 갖춰졌다. 이 승인 기록을 commit한 뒤 R-5/R-6에 따라 신규 A Sol을 발행한다. **공식 배포물 checksum을 확인한 전용 SDK 설치 → 같은 입력·설정의 Windows/WSL 동일 SDK 임시 재대조 → 원본 적용** 순서를 지킨다. 설치 승인이나 P0-A 결과만으로 원본 적용 선행조건을 통과 처리하지 않는다. Astra Git checkpoint와 신규 Opus 독립 검증·PR별 사용자 병합 승인 경계는 그대로다.
+CP1: Sol의 blocking ask `msg_35ed03eaeaa7`(2026-10-01 17:31:48 UTC)에 따라 전체 tracked 쓰기를 정지했다. Astra는 [CP1 원문 사본](../../../.backups/verification/2026-10-01-readability-format-ci/a-cp1-report.md)(SHA256 `86283D487BC1F63B162E847FEA05E3B81C7494C26016B5AA714C3761D5939F76`)을 전부 읽고 원시 명령·test/digest 로그와 대조했다. [자료/현재 파일 대조](../../../.backups/verification/2026-10-01-readability-format-ci/astra-cp1-correspondence-resolved.json)에서 255입력의 현재 원본 및 Windows/WSL 전후 hash 차이 0, 양쪽 227소스·실제 조건 454·변경 81·비활성 대응 증명 1을 확인했다. 원래 제품 수기221·생성1에 도구5소스를 더한 집계이며 제품 slnx8개는 유지한다. 임시 전후 Debug/Release build와 전후 Debug test(각 834통과·5skip·0실패), 고정 digest 통과는 구현자 자체 실행이다. 원본 적용과 신규 Opus 독립 검증을 대체하지 않는다.
 
-P0-A 임시 formatter 실행과 관측 helper build만 완료했다. 원본 서식 적용·SDK 설치·제품/테스트 수정·제품 build/test·고정 digest·전수 증명·Opus 독립 판정·CI 실행·DLL 갱신·PR·병합은 미실행이다. 이 보완에서 tracked 변경은 goal 기록뿐이다. Q-1B의 조건부 자체 분석기/위반 수 ratchet 결정은 로드맵에 유지하며 A 승인으로 B를 시작하지 않는다.
+최종 임시 제품/도구 formatter는 양쪽 0이다. 실제 Windows→WSL 진입점은 입력/hash/SDK/Compile 검증 후 아직 없는 `Formatting.Tests`를 명확히 실패로 처리했으며 전체 진입점·CI 통과로 기록하지 않는다. 초기 Workspace 실패 일부는 helper 로그명 재사용으로 원시 로그가 남지 않아 `a-sol-1/observed-failures.md`의 관측 요약만 존재한다. 이후 attempt별 원시 결과를 보존했고 설치 전 Windows 전수 hash 부재도 원문에 명시했다.
+
+CP1 대조 때 `.git/config`의 후속 차이를 발견해 메인에 즉시 알렸다. 메인 `msg_8a98e72b00e1`은 같은 저장소 worktree의 Management PR159 `push -u`에 따른 정상 변경을 확인하고 진행을 허용했다([전달 원문](../../../.backups/verification/2026-10-01-readability-format-ci/cp1-shared-config-main-resolution.json)). Astra의 [읽기 전용 재구성](../../../.backups/verification/2026-10-01-readability-format-ci/astra-cp1-git-config-resolution-final.json)은 기존 Management branch의 `merge` 한 줄이 `refs/heads/main`에서 해당 branch로 바뀐 차이만 제거하면 사전 hash `8f67fa3d...`와 정확히 일치함을 확인했다. 설정을 되돌리지 않았다. 공유 Git config는 승인된 upstream 변경을 구분하며, 나머지 보호 파일 불일치는 없고 goal 차이는 Astra의 기록이다. Q-1A push 때 명시한 해당 branch upstream을 확인한다.
+
+C-1과 SDK 승인 기록을 `1a78510`에 commit한 뒤 R-5/R-6에 따라 신규 A Sol을 발행했고 CP1까지 HEAD를 유지했다. **공식 배포물 checksum을 확인한 전용 SDK 설치 → 같은 입력·설정의 Windows/WSL 동일 SDK 임시 재대조 → 원본 적용** 순서를 감독한다. CP1은 설정·도구·문서 15파일과 Astra goal 기록만 커밋하고 실제 HEAD를 blocking reply로 회신한다. 다음 CP2에서 기존 수기 C#만 별도 공백 커밋으로 만든다. Astra Git checkpoint와 신규 Opus 독립 검증·PR별 사용자 병합 승인 경계는 그대로다.
+
+P0-A 임시 formatter 실행과 관측 helper build, A의 승인 SDK 설치 완료 보고를 받았다. A의 제품 변경/자체 검사 결과는 진행 보고·CP1에서 확인하며, 원본 서식 적용·고정 digest·전수 증명·Opus 독립 판정·CI 실행·DLL 갱신·PR·병합의 완료를 아직 주장하지 않는다. Astra의 tracked 쓰기는 goal 기록뿐이고 제품 파일은 A Sol 소유다. Q-1B의 조건부 자체 분석기/위반 수 ratchet 결정은 로드맵에 유지하며 A 승인으로 B를 시작하지 않는다.

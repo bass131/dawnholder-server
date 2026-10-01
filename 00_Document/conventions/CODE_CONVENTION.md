@@ -49,6 +49,16 @@ S1 파일럿의 세 파일에서만 .NET SDK 분석기의 CA1502·CA1506을 warn
 
 Tests·99_Tools의 세 진단 완화와 Unity 분석기 격리를 유지한다. 범위 밖 경고는 남을 수 있으므로 빌드 성공이 경고 0을 뜻하지 않으며, 모든 이름·설계 규칙이 자동 검사되는 것도 아니다.
 
+## C# 공백 서식
+
+`02_Server`·`04_ClientNet`·`98_Shared`·`99_Tools`의 수기 C#에 LF, BOM 없는 UTF-8, 공백 4칸, 파일 끝 개행, 행 끝 공백 제거를 적용한다. `99_Tools/PacketGenerator/PacketFormat.cs`는 행 끝 공백 제거를 끈다. `98_Shared/Protocol/Generated/GenPackets.cs`는 formatter에서 명시적으로 제외하고 전후 hash가 같아야 한다. Unity 소스와 `.meta`·직렬화 자산은 이 서식 적용 범위에 포함하지 않는다.
+
+SDK `10.0.301`의 `dotnet format whitespace`만 사용하며 추가 layout 규칙이나 선언 순서 변경을 포함하지 않는다. 실행은 [DEVELOPMENT의 서식 검사](../operations/DEVELOPMENT.md#c-서식-검사)를 따른다. `.editorconfig`의 기존 severity와 8 production 파일의 error, Tests·Tools 정책을 유지한다. 검사 도구와 `Formatting.Tests`는 제품 slnx에 넣지 않고 별도로 build/format/test한다.
+
+서식 전후 보존은 같은 SDK Workspace의 실제 프로젝트별 Debug/Release parse options로 token 종류·원문 순서·리터럴 값·주석 본문·directive를 전수 비교한다. 비활성 영역의 차이는 실제 활성 대응 조건에서 증명해야 하고 증명할 조건이 없으면 원문이 같아야 한다. 정규식으로 모든 공백을 제거한 문자열 비교는 의미 증명이 아니다. BOM·EOF와 생성 소스는 별도로 기록한다. `git diff -w`는 보조 근거이며 BOM·개행 등 잔여 hunk를 분류한다.
+
+공백 커밋은 설정·도구·문서와 분리하고 실제 SHA를 `.git-blame-ignore-revs`에 기록한다. 로컬에서 `git blame --ignore-revs-file .git-blame-ignore-revs <파일>`로 사용한다. 원하면 저장소 한정 `git config blame.ignoreRevsFile .git-blame-ignore-revs`를 설정할 수 있으며 전역 Git 설정은 변경하지 않는다.
+
 ## 주석과 문서
 
 이름과 코드만으로 드러나는 설명은 반복하지 않는다. 권한·프로토콜·스레드·수명주기의 비자명한 이유와 공개 계약을 짧게 남긴다. 클래스 책임이나 요청 흐름을 설명할 필요가 있으면 해당 코드 가까이에 적는다. 과거 Phase 수행 내역과 긴 대안 검토는 [보관 기록](../archive/INDEX.md)으로 연결한다.
