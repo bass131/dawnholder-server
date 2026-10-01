@@ -20,7 +20,7 @@ GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, �
 - 먼저 [계층형 모델 라우팅 시범과 코드 기준 재정립](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md)의 확정 A/B와 미확정 C를 구분한다. 다음 세션 시범 대상은 GameDev의 `?? AddComponent` 4곳이며 새 라우팅은 이 goal에 한해 사용자 승인됐다. 이번 인계 문서화에는 기존 Astra 작성·독립 검토를 적용하며 시범은 미착수다.
 - [후속 후보와 판단 근거](../../01_Phases/goals/2026-10-01-refactor-record-corrections/open-items.md)의 메뉴 연결 probe·RegisterSend·HUD·UnityClientSession 후보는 유지한다. 메뉴 작업은 `MainMenuController`와 `ConnectionProbe`의 입력 캡처·요청 수명·실패 정리·늦은 callback 및 기존 fixture부터 설계하며 후보를 구현 완료나 확정된 UX로 해석하지 않는다.
 - source 교체·화면 종료 뒤 표시·재시도 같은 정책이 달라져야 하면 관찰 결과와 선택지를 사용자에게 올린다. 이후 표시 전용 HUD의 source binding을 별도 작은 조각으로 다룬다.
-- 범위·보존 계약·완료조건·파일 소유를 goal에 명시한다. 라우팅 시범은 해당 goal의 한정 합의를 따르고 그 밖은 기존 AGENTS를 따른다. 새 Codex CLI는 `--no-daemon`, 실제 모델 확인 불가는 `unknown`으로 기록한다.
+- 범위·보존 계약·완료조건·파일 소유를 goal에 명시한다. 라우팅 시범은 해당 goal의 한정 합의를 따르고 그 밖은 기존 AGENTS를 따른다. 실제 모델 확인 불가는 `unknown`으로 기록한다.
 - DB 상세 설계는 P1과 독립적으로 준비할 수 있다. [D0](../../01_Phases/goals/2026-09-29-persistence-design/design.md)를 다시 결정하지 말고 schema/transaction/실패·복구 기술 계약을 구체화한다. SQL schema 접근 가능과 GameServer 저장·복원 연동 완료를 구분한다.
 
 ## Management와의 경계

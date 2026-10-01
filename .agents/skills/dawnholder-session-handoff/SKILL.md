@@ -12,7 +12,7 @@ description: Dawnholder의 Orca 신규 세션 준비를 확인하고 최소 맥�
 - 설치된 `orca-cli` 스킬로 실행 파일을 선택하고 그 실행 파일의 `skills get orca-cli` 버전 일치 가이드를 읽는다. 정확한 문법·지원 기능은 이 가이드가 기준이다.
 - 현재 runtime, 저장소·worktree 경로와 전체 ID, terminal handle, incarnation을 식별한다. 제공되지 않은 incarnation은 미확인으로 기록한다. runtime/handle을 하드코딩하거나 재시작 전 handle을 재사용하지 않는다.
 - `terminal show`와 제한된 `terminal read`로 준비 상태를 확인한다. 긴 출력은 cursor와 limit으로 필요한 구간만 읽는다. busy·모달·사용자가 작성 중인 prompt는 건드리지 않는다.
-- [AGENTS](../../../AGENTS.md)의 모델 라우팅과 새 Codex CLI의 `--no-daemon`을 따른다. 요청 모델과 확인 모델을 구분하고 확인할 수 없으면 `unknown`으로 남긴다.
+- [AGENTS](../../../AGENTS.md)의 모델 라우팅을 따른다. 요청 모델과 확인 모델을 구분하고 확인할 수 없으면 `unknown`으로 남긴다.
 
 ## 신규 prompt 준비 확인
 
