@@ -9,6 +9,7 @@
 - 이번 문서 작성·독립 검토는 기존 AGENTS의 Astra 라우팅을 따른다. 지정 `gpt-6-astra`, 실제 runtime `unknown`. 별도 Astra의 문서 정적 검토는 PASS이며 시범 완료 판정은 아니다.
 - AGENTS·.agents/는 아래 CLI 규칙 삭제만 예외로 허용하며 라우팅 규칙은 이번에 개정하지 않는다. CODE_CONVENTION·CLAUDE.md·제품 코드·설정은 수정하지 않는다. PR 발행 후 Claude 메인에 링크·head·CI 결과를 전달하며, 메인의 검증·승인 전 사용자에게 병합 승인을 요청하지 않는다.
 - 2026-10-01 사용자 지시로 `--no-daemon` 규칙 폐지(`msg_8a09e2e92e17`, 로컬 `.backups/handoffs/2026-10-01-no-daemon-rule-removal-request.json`). 시범 성공 이후가 아닌 이번 문서 PR의 예외이며, 과거 완료 goal의 실행 기록은 보존한다. 관련 이슈 해결이나 새 CLI 실행 검증을 주장하지 않는다.
+- 추가 3([`msg_b1fb9688460f` 원문](../../../.backups/handoffs/2026-10-01-context-refresh-branch-cleanup-request.json)): 이번 PR에 현행 GameDev 문서·ADR-029의 날짜별 사실 정정을 포함한다. PR152 병합 후 메인 Codex는 [최신 정정 `msg_dc989cc54bad`](../../../.backups/handoffs/2026-10-01-branch-cleanup-correction.json)에 따라 원격 삭제 명령 없이 `fetch --prune`과 승인된 로컬 9개 `branch -d`만 수행하며 거부 시 보존·보고한다. stash 전체·로컬 PR152 branch·main·archive는 보존하고, 원격 PR152는 GitHub 자동 삭제 설정을 따르며 Management 정리 대상은 해당 담당자 소유다. 이번 단계의 브랜치 정리는 미실행이다.
 
 ## A. 확정 운영 합의 — 시범 적용 전 기록
 

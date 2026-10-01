@@ -109,7 +109,7 @@ WSL Ubuntu에 native `mssql-tools18`의 `/opt/mssql-tools18/bin/sqlcmd`가 필�
 
 ## 다음 세션
 
-작업 재개 순서와 현재 PR/승인 경계는 [인계문](../../01_Phases/goals/2026-09-29-mssql-setup/handoff.md)에서 시작한다. DB 엔진은 Windows 서비스이며 WSL에서 별도 서버 프로세스를 띄울 필요가 없다. 서비스 시작 유형은 기존 Manual을 유지했으므로 재부팅 후에는 관리자 PowerShell에서 필요할 때 시작한다.
+당시 DB 구성·접속 인계는 [인계문](../../01_Phases/goals/2026-09-29-mssql-setup/handoff.md), 현재 작업·승인 범위는 [CURRENT](CURRENT.md)의 goal에서 확인한다. DB 엔진은 Windows 서비스이며 WSL에서 별도 서버 프로세스를 띄울 필요가 없다. 서비스 시작 유형은 기존 Manual을 유지했으므로 재부팅 후에는 관리자 PowerShell에서 필요할 때 시작한다.
 
 ```powershell
 Get-Service 'MSSQL$SQLEXPRESS'

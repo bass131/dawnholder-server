@@ -4,6 +4,8 @@
 
 ## 실행과 감독
 
+2026-10-01 현재 운영툴 Astra 터미널은 GameDev 화면의 분할 페인에 열려 있어 Orca 목록·알림·diff에서는 GameDev worktree 소속으로 보인다. 실제 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 화면 소속과 작업 경로를 구분하고 terminal handle은 사용할 때마다 조회한다. 현재 합의와 미착수 라우팅 시범의 적용 범위는 [CURRENT](CURRENT.md)의 goal을 따른다.
+
 - 큰 독립 목표는 별도 Orca 세션·worktree·작업 브랜치로 나눈다. worktree 부모 관계와 Git 시작 커밋은 별개이므로 최신 main 기준점을 확인한다.
 - 설치된 `orca-cli`·`orchestration` 스킬에서 선택한 CLI와 버전에 맞는 가이드를 사용한다. 실제 세션의 Run·Task·Dispatch를 기록한다. 일반 서브에이전트 호출은 Orca 실행 증거가 아니다.
 - 요청 모델과 실제 launch 설정을 대조한다. 목표 담당자는 메인이 명시한 단일 목표·공간·권한 안에서만 좁은 구현·검증 작업을 분할한다.
@@ -33,4 +35,4 @@
 
 초기 시도: Run `run_85f26e01d393`, Task `task_d783e29c2337`, Dispatch `ctx_7e635e1b1d19`. 로컬 원본은 `%TEMP%/dawnholder-orca-smoke-20260929/`에 있다.
 
-기존 터미널 재사용: Run `run_af1e4581e074`, Task `task_8973cd06c2c8`, Dispatch `ctx_cbd3c2c78d02`, Terminal `term_103c9e14-2792-432e-8a0e-b00215dbe0fd`. 로컬 상태 증거는 `.backups/mssql-orca-coordination-20260929/worker-show.json`이다. 작업 공간은 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/feat-mssql-game-schema`, 브랜치는 `bass131/feat-mssql-game-schema`로 문서 정비 공간과 분리했다. 결과와 다음 세션 인계는 별도 [PR127](https://github.com/bass131/dawnholder-server/pull/127)에 기록한다. SQL 테스트의 트랜잭션 rollback 통과와 관리자 설정 Restore 실행 검증은 구분한다. PR 병합 승인은 아직 없다.
+기존 터미널 재사용: Run `run_af1e4581e074`, Task `task_8973cd06c2c8`, Dispatch `ctx_cbd3c2c78d02`, Terminal `term_103c9e14-2792-432e-8a0e-b00215dbe0fd`. 로컬 상태 증거는 `.backups/mssql-orca-coordination-20260929/worker-show.json`이다. 작업 공간은 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/feat-mssql-game-schema`, 브랜치는 `bass131/feat-mssql-game-schema`로 문서 정비 공간과 분리했다. 결과와 당시 인계는 별도 [PR127](https://github.com/bass131/dawnholder-server/pull/127)에 기록했다. SQL 테스트의 트랜잭션 rollback 통과와 관리자 설정 Restore 실행 검증은 구분한다. 당시 관찰 시점에는 PR 병합 승인이 없었다.
