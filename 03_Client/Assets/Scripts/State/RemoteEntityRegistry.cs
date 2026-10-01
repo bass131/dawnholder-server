@@ -256,8 +256,10 @@ namespace Dawnholder.Client.State
             _entities[entityId] = entity;
             _spawnedClasses[entityId] = characterClass;
 
-            RemotePlayerMotion motion = go.GetComponent<RemotePlayerMotion>()
-                                        ?? go.AddComponent<RemotePlayerMotion>();
+            if (!go.TryGetComponent(out RemotePlayerMotion motion))
+            {
+                motion = go.AddComponent<RemotePlayerMotion>();
+            }
             if (go.GetComponent<AnimatorDriver>() == null)
                 go.AddComponent<AnimatorDriver>();
             _motions[entityId] = motion;

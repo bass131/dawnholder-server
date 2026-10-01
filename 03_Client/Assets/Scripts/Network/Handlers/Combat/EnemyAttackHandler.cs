@@ -98,8 +98,10 @@ namespace Dawnholder.Client.Network.Handlers.Combat
                 // 피격 플래시 — LocalPlayer GameObject에서 DamageFlash 조회 또는 런타임 주입.
                 if (LocalPlayerMovement.Instance != null)
                 {
-                    DamageFlash flash = LocalPlayerMovement.Instance.GetComponent<DamageFlash>()
-                                       ?? LocalPlayerMovement.Instance.gameObject.AddComponent<DamageFlash>();
+                    if (!LocalPlayerMovement.Instance.TryGetComponent(out DamageFlash flash))
+                    {
+                        flash = LocalPlayerMovement.Instance.gameObject.AddComponent<DamageFlash>();
+                    }
                     flash.Flash();
                 }
 

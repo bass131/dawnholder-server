@@ -25,8 +25,10 @@ namespace Dawnholder.Client.Combat
                 : (target?.position ?? Vector3.zero);
 
             GameObject proj = Object.Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
-            ProjectileVisual visual = proj.GetComponent<ProjectileVisual>()
-                                     ?? proj.AddComponent<ProjectileVisual>();
+            if (!proj.TryGetComponent(out ProjectileVisual visual))
+            {
+                visual = proj.AddComponent<ProjectileVisual>();
+            }
 
             if (target != null)
             {
