@@ -1,6 +1,6 @@
 # P2 / D1a — 캐릭터 영속성 기술 계약
 
-상태: **1차 독립 실사 PASS 후 비차단 관찰을 명세에 보완, 신규 Opus 재실사 준비**. D0·P0·현재 서버의 읽기 전용 조사와 공식 driver 자료 확인을 마쳤다. 이 goal은 기술 명세 작업의 범위이며 GameServer 연동·신규 migration·SQL 시험이 완료됐다는 뜻이 아니다.
+상태: **D1a 명세 작성·독립 정적 실사 완료, PR 통합 준비**. 신규 Opus 두 세션의 판정은 모두 PASS이며 보완본 `7710aa9`의 필수 결함은 0건이다. 이 완료는 기술 명세 작업의 범위이며 GameServer 연동·신규 migration·SQL 시험이 완료됐다는 뜻이 아니다. 병합은 이 PR에 대한 사용자 명시 승인 대상이다.
 
 ## 착수 근거와 기준
 
@@ -40,7 +40,7 @@
 4. D1b 저장소 API/결과와 D2 bounded worker·owner/종료 인계, D3 Loading/권위 class 입장의 소비 경계를 명세한다. D2 전체 deadline 수치 튜닝이나 D3 packet ID·Unity 구현을 앞당기지 않는다.
 5. 격리 SQL 두 연결 시험의 old/new 순서·장애 주입 지점·관측 증거·권한·정리 절차를 설계한다. 정확한 실행 DB·시험 principal/GUID·cleanup 권한은 D1b 실행 gate로 남긴다.
 
-산출물은 이 `goal.md`(기준·상태·결정·결과), [technical-spec.md](technical-spec.md)(DDL/API/transaction/설정·권한 계약), [verification-plan.md](verification-plan.md)(반증 행렬·실행 gate·정리)다. 메인 goal 승인 후 두 명세를 작성했으며 1차 실사 뒤 보완을 재실사한다. CURRENT와 로드맵은 goal 링크만 유지한다.
+산출물은 이 `goal.md`(기준·상태·결정·결과), [technical-spec.md](technical-spec.md)(DDL/API/transaction/설정·권한 계약), [verification-plan.md](verification-plan.md)(반증 행렬·실행 gate·정리)다. 메인 goal 승인 후 두 명세를 작성하고 보완본의 신규 세션 재실사까지 마쳤다. CURRENT와 로드맵은 goal 링크만 유지한다.
 
 ## 현재 코드와 후속 연결점
 
@@ -73,5 +73,26 @@ branch 전환 후 manifest·packages-lock·ProjectSettings의 skip-worktree `S`�
 
 - 1차 대상 `83b927d`, base `18c8ca6`: 신규 외부 Opus가 실제 diff 5파일·D0/P0·SQL/현재 서버·공식 출처 11건을 대조해 **PASS(필수 결함0, 비차단 관찰11)**를 반환했다. 판정 원문은 로컬 `.backups/verification/2026-10-01-persistence-technical-design/verification-1/verdict.md`이고 Astra가 전체를 읽었다. SQL·build·제품/테스트 실행은 미수행이다.
 - 관찰 반영: OBS01 배포 batch/catalog, 02 kind별 code·C03, 03 좌표 JSON, 04 엔진 codec gate, 05 사용자 선택의 전용 비-sysadmin recovery principal과 DB 강제 시험, 06 recovery content 의존 제거, 07 고정 pool 설정, 08 public lock 가용성 위험, 09 연습 DB/대상 외 DB 전부 제외, 10 fixture 장애/입력/권한/Windows 실행 제한 시험, 11 과거 PR 상태를 명확히 했다. 6.1 LTS 선택과 legacy Progress 무자동갱신·무자동수선 결정은 유지한다.
-- 최초 검증자는 담당 Astra 아래 split에서 `claude --model claude-opus-5-5` 기동·화면 Opus5.5 xhigh·tui-idle·최초 attach ready/turn_started를 확인했다. backend unknown. Run `run_5563cdae8c96`, Task `task_91b64fd5aeed`, Dispatch `ctx_22179294b64d`, handle `term_eb4a53aa-53ab-4138-af67-125aba5cb2dd`, incarnation `78fcb552-3e87-473d-8469-0ce1ebef0792`는 이번 실행의 역사 기록이다.
+- 최초 검증자는 담당 Astra 아래 split에서 `claude --model claude-opus-5-5` 기동·화면 Opus5.5 xhigh·tui-idle·최초 attach ready/turn_started를 CLI 응답으로 확인했다. 다만 당시 tui-idle/turn_started의 원응답은 별도 파일로 남기지 않았고 보존한 worker-show에는 ready/input_accepted만 있다(R2-OBS09). backend unknown. Run `run_5563cdae8c96`, Task `task_91b64fd5aeed`, Dispatch `ctx_22179294b64d`, handle `term_eb4a53aa-53ab-4138-af67-125aba5cb2dd`, incarnation `78fcb552-3e87-473d-8469-0ce1ebef0792`는 이번 실행의 역사 기록이다.
 - worker_done 뒤 `worker-release`는 external_terminal retained를 반환했다. 동일 runtime/handle/incarnation을 확인하고 그 작업 pane만 close하여 `ptyKilled=true`를 받았다. 원문과 release/close receipt는 같은 로컬 증거 폴더에 보존했다. 기존 검증자를 재사용하지 않는다.
+
+## 최종 실사·정산과 남은 범위
+
+- 2차 대상 `7710aa9`(보완 diff `83b927d..7710aa9`, 문서3개): **PASS, 필수 결함0·비차단 관찰9**. 최초 OBS01~11과 추가 사용자 결정이 모두 일관되게 반영됐음을 확인했다. 원문 `.backups/verification/2026-10-01-persistence-technical-design/verification-2/verdict.md`는 Astra가 전체를 읽고 메인에게 전달했다. 기술 명세/검증 계획은 이 검토 뒤 변경하지 않았으며 이 goal의 결과·인계만 갱신한다.
+- 2차 신규 Opus는 같은 Run의 Task `task_2758a8e22a0e` / Dispatch `ctx_96007738473d`, handle `term_38bc9114-3e13-4015-a284-22ff2b960f61`, incarnation `ea2d5388-3512-4ef4-9ec1-f2683f6368cc`였다. split 지정 `claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown. `review-2-start.json`에 최초 attach ready와 input_accepted/turn_started 원응답을 보존했다.
+- 쓰기 종료 원문과 worker_done을 대조하고 release 후 같은 pane을 close했다(`ptyKilled=true`). close 전 tui-idle satisfied와 전체 화면 read 49행(`limited=false`)을 확인했다. 관측한 종료 화면에는 `/auto-mode-setup` 안내 창이 없고 일반 `auto mode on` 상태줄만 있었다. 이는 해당 화면의 관찰이며 설정 전체의 효과를 보장하지 않는다. `review-2-before-close-{read,show}.json`, `review-2-{release,close}.json`, `workers-final.json`을 로컬에 보존했다. Run의 reclaimable worker 조회 결과는 0이었다.
+- 문서 공백 검사 `git diff --check` 통과. 제품/SQL/테스트 코드 변경과 DB/계정 생성·비밀 읽기·build·게임/SQL 시험은 0이다. 사용자 Unity 3파일의 skip-worktree와 기존 hash·stash2개는 보존했다. SQL driver/권한/잠금/복구 실측과 D2/3/4 동작은 여전히 미실행이다.
+
+2차의 비차단 관찰은 아래처럼 **D1b kickoff/gate에 인계**한다. 이것은 미실행 항목의 통과 판정이나 추가 실행 승인이 아니다. 전체 실패 순서·근거·권고 원문은 위 `verification-2/verdict.md`에 있다.
+
+| 관찰 | D1b에서 정할 일 |
+|---|---|
+| R2-OBS01·02 | 함수/시험 trigger도 객체별 batch 규칙으로 구체화. 시험 trigger 설치·제거를 정확 승인 부작용에 넣고 정리 후 잔여 trigger를 확인 |
+| R2-OBS03·04 | DB 입력 범위 위반의 결과/기록 여부·class 검증 순서를 테스트 기대값으로 고정. 검증 전 Account INSERT 금지 예시를 구현 순서와 대조 |
+| R2-OBS05 | 전용 Windows principal의 실제 권한 시험 수단과 SAC 제한을 확정. repository 경계 시험과 후속 실제 관리 도구 시험의 작성·실행 소유를 분리 |
+| R2-OBS06 | 기존 DB 도구의 기본값은 Dawnholder_Dev이므로 모든 실행에 승인된 정확 `-Database`를 명시하고 기록. 기존 게임 DB를 자동 대상 삼지 않음 |
+| R2-OBS07 | 예정 밖 엔진 patch도 감지하도록 시작 시 ProductVersion 기록/비교·golden vector 재검증 절차를 구체화 |
+| R2-OBS08 | 전용 principal/launcher의 신규 파일 또는 수동 절차와 writer/executor를 D1b goal에 배정. server-level principal 구성은 게임 DB 데이터/schema 제외 원칙과 구분해 별도 정확 승인을 받음 |
+| R2-OBS09 | 1차 CLI 원응답 보존 한계를 위에 명시. 2차부터 시작 receipt를 별도 보존함 |
+
+문서 정합성의 알려진 필수 결함은 없지만 구현·실측이 남아 있으므로 실제 저장 안정성을 보장하지 않는다. D1b의 정확 DB·계정 구성·시험/정리 실행권은 시작 직전에 확정하며 이 목표에서 자동 착수하지 않는다.
