@@ -17,16 +17,16 @@ GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, �
 
 ## 세션 진입 배치
 
-아래 운영 방식은 **프로젝트 규칙으로 채택(사용자 결정), 규칙 문서 반영은 현재 PR**이다. 결정 근거·세부 작업자 절차·적용/미검증 결과와 계층형 라우팅 전역 채택 여부는 [현재 goal B](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md#오늘의-운영-결정과-규칙-문서-반영)에 둔다.
+현재 운영 규칙의 정본은 [ORCA R-1~R-8](ORCA.md#2026-10-01-운영-규칙-정본)이다. 이전 시범 goal은 당시 결과의 근거로만 읽고 현재 배치·기동 절차는 아래 정본 링크를 따른다.
 
-1. 세션 종료 때 사용자는 Astra를 모두 닫고, 다음 새 메인 Claude 세션에서 메인이 다시 연다. 이전 handle/Run/Task/Dispatch를 재사용하지 않는다.
-2. 메인 Claude → GameDev Astra → Management Astra를 좌우로 배치한다. 메인 pane의 `horizontal split`에 GameDev Astra, GameDev pane의 `horizontal split`에 Management Astra를 연다. 두 Astra 모두 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`를 명시하고 Management는 `-C C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`를 추가한다. 작업자는 담당 Astra pane 아래 `vertical split`으로 열며 새 탭은 사용하지 않는다. 시작 후 작업 경로·모델 표시·준비 상태를 확인한다.
-3. 메인은 시작 시 두 Astra에 자기 handle을 알린다. 모든 세션 간 메시지 subject/body와 입력은 자기 발신 태그를 붙이고 `from_handle`과 대조한다. 타 세션 터미널에는 태그와 Orca 메시지 확인 안내만 넣으며, 지시는 orchestration으로 전달한다. 표식 없는 터미널 입력만 사용자 직접 지시다.
+1. 새 Astra의 배치는 [R-1](ORCA.md#r1-management-placement), 작업자 기동은 [R-5](ORCA.md#r5-worker-launch), 첫 화면 확인은 [R-6](ORCA.md#r6-first-screen)을 따른다. 이전 handle/Run/Task/Dispatch를 재사용하지 않는다.
+2. Astra의 목표 종료·재진입·중간 재개·인계 기록은 [R-8](ORCA.md#r8-astra-lifecycle)을 따른다.
+3. 메인은 시작 시 두 Astra에 자기 handle을 알린다. 모든 세션 간 메시지 subject/body와 입력은 자기 발신 태그를 붙이고 `from_handle`과 대조한다. 회신 subject는 [R-3](ORCA.md#r3-reply-tag)을 따른다. 타 세션 터미널에는 태그와 Orca 메시지 확인 안내만 넣으며, 지시는 orchestration으로 전달한다. 표식 없는 터미널 입력만 사용자 직접 지시다.
 4. 작업자·검증자 세션은 작업 하나 후 정산·종료하고 재사용하지 않는다. 정상 완료는 `worker_done`·Astra 대조 후, 비정상 종료·막힘·무응답은 진단 기록 후 정산·종료한다. 수정·재검증에는 새 세션을 연다.
 
 ## 다음 조각을 시작하는 순서
 
-- 먼저 [계층형 모델 라우팅 시범과 코드 기준 재정립](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md)의 구현·검증 결과와 PR 상태를 읽는다. 대상 4곳은 동작 보존 정리로 판정됐다. 운영 방식·계층형 라우팅 채택은 확정이고 C(작은 작업 예외 포함)는 미확정이다. Management 적용은 이 PR 병합 뒤다.
+- 먼저 [계층형 모델 라우팅 시범과 코드 기준 재정립](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md)의 구현·검증 결과와 PR 상태를 읽는다. 대상 4곳은 동작 보존 정리로 판정됐다. 계층형 라우팅 채택은 확정이고 C(작은 작업 예외 포함)는 미확정이다. 현재 Management 배치는 [R-1](ORCA.md#r1-management-placement)을 따른다.
 - [후속 후보와 판단 근거](../../01_Phases/goals/2026-10-01-refactor-record-corrections/open-items.md)의 메뉴 연결 probe·RegisterSend·HUD·UnityClientSession 후보는 유지한다. 메뉴 작업은 `MainMenuController`와 `ConnectionProbe`의 입력 캡처·요청 수명·실패 정리·늦은 callback 및 기존 fixture부터 설계하며 후보를 구현 완료나 확정된 UX로 해석하지 않는다.
 - source 교체·화면 종료 뒤 표시·재시도 같은 정책이 달라져야 하면 관찰 결과와 선택지를 사용자에게 올린다. 이후 표시 전용 HUD의 source binding을 별도 작은 조각으로 다룬다.
 - 범위·보존 계약·완료조건·파일 소유를 goal에 명시하고 최신 사용자 결정과 규칙 문서 반영 상태를 함께 확인한다. 실제 모델 확인 불가는 `unknown`으로 기록한다.

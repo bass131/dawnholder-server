@@ -11,13 +11,13 @@ description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 �
 
 - 설치된 `orca-cli` 스킬로 실행 파일을 선택하고 그 실행 파일의 `skills get orca-cli` 버전 일치 가이드를 읽는다. 정확한 문법·지원 기능은 이 가이드가 기준이다.
 - 현재 runtime, 저장소·worktree 경로와 전체 ID, terminal handle, incarnation을 식별한다. 제공되지 않은 incarnation은 미확인으로 기록한다. runtime/handle을 하드코딩하거나 재시작 전 handle을 재사용하지 않는다.
-- `terminal show`와 제한된 `terminal read`로 준비 상태를 확인한다. 긴 출력은 cursor와 limit으로 필요한 구간만 읽는다. busy·모달·사용자가 작성 중인 prompt는 건드리지 않는다.
+- `terminal show`와 제한된 `terminal read`로 준비 상태를 확인한다. 긴 출력은 cursor와 limit으로 필요한 구간만 읽는다. busy·모달·사용자가 작성 중인 prompt는 건드리지 않는다. 첫 화면 판단은 [R-6](../../../00_Document/operations/ORCA.md#r6-first-screen)을 따른다.
 - [AGENTS](../../../AGENTS.md)의 모델 라우팅을 따른다. 요청 모델과 확인 모델을 구분하고 확인할 수 없으면 `unknown`으로 남긴다.
-- 발신 태그와 지시 채널은 [AGENTS 메시지와 보고](../../../AGENTS.md#메시지와-보고)를 따른다.
+- 발신 태그와 지시 채널은 [AGENTS 메시지와 보고](../../../AGENTS.md#메시지와-보고), 회신 subject는 [R-3](../../../00_Document/operations/ORCA.md#r3-reply-tag)을 따른다.
 
 ## 세션 진입과 배치
 
-- [RESUME의 진입 절차](../../../00_Document/operations/RESUME.md#세션-진입-배치)를 따른다. 사용자는 종료 때 Astra를 모두 닫고 새 메인 Claude가 다음 세션에서 다시 연다.
+- [RESUME의 진입 절차](../../../00_Document/operations/RESUME.md#세션-진입-배치)와 [R-1 배치](../../../00_Document/operations/ORCA.md#r1-management-placement), [R-8 Astra 수명](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)을 따른다.
 - 메인은 준비된 두 Astra에 현재 자기 handle을 Orca 메시지로 공유한다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
 
 ## 신규 prompt 준비 확인
