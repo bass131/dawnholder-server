@@ -27,6 +27,17 @@ Management Astra는 허용 문서 작성·goal·Git·검증 조정을 맡는다.
 
 ## 현재 상태와 검증
 
-main fast-forward와 소유 브랜치 정리를 완료했다. 문서 갱신 후 신규 Opus의 독립 정적 실사를 진행한다. 검증 범위는 실제 diff·지시와 결과의 일치·상대 링크·과거 기록 및 소유 경계 보존이다. 제품 테스트·빌드·앱·서버·SQL·Unity·MCP 실행은 범위 밖이며 수행하지 않는다. 과거 검증 결과를 이번 성공으로 재사용하지 않는다.
+main fast-forward와 소유 브랜치 정리를 완료했다. 문서 3개를 `af84607814950775ba7dd56148d5dad63c2eca3e`로 작성한 뒤 신규 Opus의 독립 정적 실사를 받았다. 1차 판정은 FAIL 1건으로, 재개 기준인 공동 조회 합의의 과거 역할·모델 지정과 현행 라우팅의 우선순위를 명시해야 한다는 결함이다. RESUME에 당시 역할·모델·CLI 지정은 역사이고 현재 배정은 루트 AGENTS를 따른다는 문장을 추가했다. 수정분과 아래 수행 기록은 새 Opus 검증자의 재검증 대상이다.
 
-Orca pane의 표시 소속과 실제 checkout이 다를 수 있으므로 담당 Astra 아래 분할에서 작업 경로를 명시하고 실제 경로·준비 상태를 확인한다. 최초 작업 연결이 명시적으로 거부되면 지침에 따라 미사용 pane을 정리하고 승인된 새 검증 세션으로 전환한다. 실제 Run·Task·Dispatch, 판정·원문·정산 결과와 PR 상태는 수행 후 여기에 기록한다.
+검증 범위는 실제 diff·지시와 결과의 일치·상대 링크·과거 기록 및 소유 경계 보존이다. 1차 검증자는 상대 링크 20개·앵커 6개의 목적지와 PR/Git 근거를 확인했다. 제품 테스트·빌드·앱·서버·SQL·Unity·MCP 실행은 범위 밖이며 수행하지 않았다. 과거 검증 결과를 이번 성공으로 재사용하지 않는다. 최종 재검증·push·PR 생성은 아직 수행 전이며, 병합은 해당 PR의 사용자 명시 승인 대상이다.
+
+### Orca 실행과 근거
+
+현재 runtime은 `8a673084-6819-45b9-a551-347226cdce9b`다. Run `run_ea1195f0b3f5`, 1차 Task `task_9d499a8e7a0e`, Dispatch `ctx_e6154492ce88`로 독립 검증을 수행했다. 이 ID는 당시 관측값으로 이후 실행 권한이 아니다. 모든 원시 근거는 `.backups/verification/2026-10-01-management-routing-adoption/`의 Git 제외 로컬 파일이며 원격 가용성을 보장하지 않는다.
+
+- 아래 pane에 작업 경로와 `claude --model claude-opus-5-5`를 명시했고 Opus 5.5 표시·`tui-idle=true`를 확인했다. 하지만 Orca의 GameDev 소속 때문에 최초 연결은 `terminal_worktree_mismatch`로 거부됐다. Task/worker 0개와 미사용 pane을 확인해 닫았으며 `pane-close.json`의 `ptyKilled=true`로 확인했다. 정확한 cwd를 작업자 응답으로 확인하기 전에 연결이 거부됐으므로 분할 경로의 완전한 준비·연결 성공으로 보고하지 않는다.
+- 승인된 대안으로 Management 작업 공간에 새 탭을 열었다. `worker-start.json`의 requested/effective 모델은 모두 `claude-opus-5-5`, `turn_started`를 확인했고 검증자도 실제 cwd·toplevel·branch를 대조했다. 화면은 Opus 5.5였으며 백엔드는 `unknown`이다. GameDev 화면 아래 pane에 표시되지 않는 배치 한계를 메인에게 보고했다.
+- 1차 판정 원문은 `review.md`, 상세 근거는 `review-evidence.json`, 완료 메시지는 `completion.json`이다. 검증 작업 완료와 검토 대상의 FAIL을 구분한다. `worker-release.json`은 `retained / user_takeover / processAction none`을 반환했다. 동일 terminal·incarnation과 완료 화면을 확인했으나 `/` 입력 초안과 메뉴가 있어 사용자 입력 비간섭 기준에 따라 닫지 않고 메인에 종료 판단을 전달했다. 이 검증 작업은 정산됐고 세션을 재사용하지 않는다.
+- 최초 지시의 관련 발췌는 `coordinator-message-capture.md`다. 수신 내용의 발췌이며 전체 raw JSON이나 사용자 직접 입력 증거가 아니다. 삭제 명령의 순서·시작 당시 clean·삭제하지 않은 다른 ref 등 당시 관측과 검증자가 사후 입증한 범위는 판정 원문에서 구분한다.
+
+재검증 후 추가하는 판정·정산·PR 상태 기록에는 실제 검토 head와 이후 기록 범위를 구분해 남긴다.

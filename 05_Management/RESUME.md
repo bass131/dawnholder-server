@@ -20,7 +20,7 @@ Management pane은 Game Dev 화면에서 분할되어 Orca에는 Game Dev 소유
 
 Game Dev의 root CURRENT/goal·게임 코드·실행 wrapper는 해당 메인 소유다. Management는 05의 기록 조회와 후속 서버 등록·조회·보존을 담당한다. 첫 공동 조회 이후에는 Game Dev와 로그의 실행 식별·시각/수준·cursor·보존 계약을 맞춘다. [합의 문서의 다음 결정](goals/2026-09-30-system-records/shared-read-agreements.md#다음-결정)을 기준으로 이미 정한 질문을 반복하지 않는다.
 
-Management에도 이번 세션부터 [계층형 모델 라우팅](../AGENTS.md#모델-라우팅)을 적용한다. 적용 결정의 전달 경위와 PR154 병합 근거는 [현재 goal](goals/2026-10-01-routing-adoption/goal.md)에 둔다. 규칙 문서 변경과 실제 세션의 모델 관측을 구분한다.
+Management에도 이번 세션부터 [계층형 모델 라우팅](../AGENTS.md#모델-라우팅)을 적용한다. 공동 조회 합의와 기존 goal의 역할·모델·CLI 지정은 당시 기준이며, 현재 배정은 루트 AGENTS를 따른다. 적용 결정의 전달 경위와 PR154 병합 근거는 [현재 goal](goals/2026-10-01-routing-adoption/goal.md)에 둔다. 규칙 문서 변경과 실제 세션의 모델 관측을 구분한다.
 
 Management Astra의 발신 태그는 `[Management Astra]`다. 수신 출처 대조와 터미널 알림·실제 지시 구분은 [메시지와 보고 규칙](../AGENTS.md#메시지와-보고)을 따른다. 새 세션에서는 루트 RESUME의 진입 배치에 따라 메인 handle과 실제 경로·모델 표시·준비 상태를 확인한다.
 
