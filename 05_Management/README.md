@@ -6,8 +6,9 @@
 
 ## 문서 지도
 
-- [현재 문맥 정정 목표](goals/2026-10-01-context-corrections/goal.md): 사실·상태·출처 정정과 독립 검토·PR 상태의 원본. 새 MCP·서버 구현 착수는 계속 보류한다.
-- [다음 세션 재개](RESUME.md): 최소 읽기 순서와 보존된 checkpoint·새 문서 브랜치 안내.
+- [현재 세션 종료 정리 목표](goals/2026-10-01-session-closeout/goal.md).
+- [문맥 정정 목표](goals/2026-10-01-context-corrections/goal.md): 사실·상태·출처 정정과 독립 검토·병합 결과의 원본.
+- [다음 세션 재개](RESUME.md): 최소 읽기 순서와 다음 행동.
 - [요구사항](requirements.md): 확정 요구, 설계 제안, 미결정, 조사 관찰과 향후 완료조건의 원본.
 - [결정](decisions.md): 확정된 선택과 이유, 변경된 방향을 요구사항 ID로 연결.
 - [개발기록 재구성 목표와 현재 상태](goals/2026-09-30-system-records/goal.md): 재배치 범위·공동 협의·구현·검증·병합과 후속 보류 상태의 원본.
@@ -56,6 +57,6 @@ catalog revision `2026-10-01-r2`는 추적된 Management 문서 6개의 출처�
 
 파일 읽기·저장은 Electron 창에서 제공한다. 브라우저 개발 화면에는 파일 연결이 없어 미연결 안내를 표시한다. JSON 불러오기는 편집 초안만 바꾸며, `검증 후 기록 저장`을 눌러야 원본에 반영된다. 직전 정상본은 `.verification/system-records-last-good.json`에 복구용으로 보관한다. 같은 파일을 여러 앱에서 편집한 경우 이전 초안의 저장을 거부하므로 초안을 보존하고 최신본과 비교한다.
 
-별도 DB/색인은 없으며 실제 MCP·Three.js·Git/서버 자동 갱신은 후속 범위다. Game Dev 규칙·기술 계약·진행 goal/CURRENT와 과거 근거는 정본 소유권을 유지한다. 실제 서버 제어/유저 변경/운영 API 호출은 없다. 테스트와 실제 화면 검증 결과는 현재 목표에서 확인한다.
+별도 DB/색인은 없으며 실제 MCP·Three.js·Git/서버 자동 갱신은 후속 범위다. Game Dev 규칙·기술 계약·진행 goal/CURRENT와 과거 근거는 정본 소유권을 유지한다. 실제 서버 제어/유저 변경/운영 API 호출은 없다. 기존 테스트와 실제 화면 검증 결과는 [개발기록 재구성 목표](goals/2026-09-30-system-records/goal.md)에서 확인한다.
 
 프로젝트 공통 권한·역할은 [AGENTS](../AGENTS.md), 실행 부작용은 [개발 안내](../00_Document/operations/DEVELOPMENT.md)를 따른다. Management 상세 맥락은 이 영역에서 관리하고 기존 Game Dev 메인과 범위·소유권을 조율한다.
