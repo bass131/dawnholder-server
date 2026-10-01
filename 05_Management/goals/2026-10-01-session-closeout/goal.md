@@ -8,7 +8,7 @@
 
 ## 기준과 소유권
 
-- 기준 main: `36fb5ec751f4c482a993e77c9547968e8f828e34`. 작업 브랜치: `docs/management-session-closeout`.
+- 시작 기준 main: `36fb5ec751f4c482a993e77c9547968e8f828e34`. PR152 병합 후 `f32dbbe9a4aec7cafd64fc7f1897a1f5e47370f6`까지 rebase로 반영했다. 작업 브랜치: `docs/management-session-closeout`.
 - 정본 worktree: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`. root CURRENT와 Game Dev 영역은 변경하지 않는다.
 - 메인은 범위·통합·Git 작업, 작성자는 허용된 문서, 별도 검토자는 읽기 전용 정적 검토를 맡는다. 지정 모델은 `gpt-6-astra`, 확인된 실제 모델은 `unknown`이다.
 
@@ -18,7 +18,9 @@
 
 coordinator는 승인된 로컬 `docs/management-context-corrections`를 `git branch -d`로 삭제했다. 원격 삭제 시도는 `remote ref does not exist`로 실패했으며, 이어 `git ls-remote --heads origin refs/heads/docs/management-context-corrections`의 exit 0·출력 없음으로 원격 ref 부재를 확인했다. 다른 브랜치와 stash는 보존했다.
 
-`RESUME.md`는 열린 Game Dev PR152의 소유 파일이므로 아직 수정하지 않았다. 메인의 병합 통지와 최신 main 반영 후 작성 소유권을 넘겨받아 재개 안내를 갱신한다. 이후 독립 정적 검토와 문서 PR 생성이 남아 있다.
+메인의 `msg_72e01b664b54` 통지와 coordinator의 `gh` 확인에 따라 PR152는 사용자 명시 승인으로 `2026-10-01T07:03:49Z`에 병합됐다. coordinator가 최신 main을 충돌 없이 반영한 뒤 `RESUME.md` 잠금을 해제하고 작성 소유권을 넘겼다. 재개 안내에 오늘의 라우팅 적용 조건·CLI 의무 폐지·메인 알림과 지시 구분·실제 작업 경로를 반영했다. 최종 독립 정적 검토와 문서 PR 생성이 남아 있다.
+
+1차 독립 Astra 정적 검토는 원래 head `a2ab1e6768b69e4fa70f5896858e4a79d81e17fc` / base `36fb5ec751f4c482a993e77c9547968e8f828e34`에서 PASS였고 상대 링크 58개를 확인했다. 이는 rebase와 재개 안내 수정 전 결과다. 판정 원문은 `.backups/verification/2026-10-01-management-session-closeout/phase1-review.md`에 바이트 그대로 보관했으며 원본·사본 SHA256은 `94DDB3E4214E821D4861334BEA1BAC87CB562EF9CDCA691AD1014E96A00ACA31`로 일치했다. 최종 검토 원문은 같은 폴더의 `final-review.md`에 보관할 예정이다. 모두 Git에서 제외된 로컬 전용 근거이며 원격 가용성을 보장하지 않는다.
 
 ## 검증 범위와 한계
 
