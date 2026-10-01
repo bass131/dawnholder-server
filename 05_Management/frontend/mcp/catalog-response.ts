@@ -3,6 +3,7 @@ import type { SnapshotMetadata } from './catalog-reader.js';
 
 export const MAX_RESPONSE_BYTES = 16384;
 export const DEFAULT_LIST_BYTES = 8192;
+export const DEFAULT_LIST_LIMIT = 10;
 
 export type CatalogEnvelope =
   | { ok: true; snapshot: SnapshotMetadata; data: Record<string, unknown> }
@@ -40,7 +41,8 @@ export function listResponse(snapshot: SnapshotMetadata, items: unknown[], offse
     return serializeEnvelope({ ok: true, snapshot, data: { items: selected, paging: { total, offset, limit, returned, nextOffset: offset + returned < total ? offset + returned : null } } });
   }
   if (offset >= total) return success(snapshot, { items: [], paging: { total, offset, limit, returned: 0, nextOffset: null } });
-  const budget = limit === 10 ? DEFAULT_LIST_BYTES : MAX_RESPONSE_BYTES;
+  // Explicit limit=10 has the same preview budget as an omitted default limit.
+  const budget = limit === DEFAULT_LIST_LIMIT ? DEFAULT_LIST_BYTES : MAX_RESPONSE_BYTES;
   for (const item of items.slice(offset, offset + limit)) {
     selected.push(item);
     const bytes = responseBytes(candidate());

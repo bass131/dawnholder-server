@@ -13,6 +13,12 @@ npm run mcp:typecheck
 npm run mcp:build
 ```
 
+`npm ci`는 기존 `node_modules`를 다시 설치하므로 수동으로 받은 Electron 실행 파일도 지운다. 현재 고정 버전은 이 파일을 자동으로 다시 받지 않는다. MCP만 실행할 때는 Electron이 필요 없지만, Management 앱도 사용하려면 같은 frontend에서 이어서 아래 명령을 실행한다. 공식 바이너리를 캐시에서 풀거나 다운로드한다.
+
+```powershell
+node node_modules/electron/install.js
+```
+
 MCP client가 실행할 명령은 `node`, 인자는 다음 절대경로 하나다.
 
 ```text

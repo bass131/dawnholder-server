@@ -169,7 +169,7 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 ## 현재 상태와 근거
 
-**V1 재검증과 V2 실제 stdio·Windows 경합 검증이 통과했다. 현재 V3 UI·build 회귀와 코드 리뷰를 준비하며 PR은 아직 미착수다.** V2 최종 전체206건 통과와 초기 실패 실행의 보고 과장1건을 구분해 아래에 기록한다. 최초 Fable 판정과 최초 V1의 수정 필요 판정은 이력에 보존한다.
+**V1 재검증과 V2가 통과했고, V3는 동작 회귀 통과·문구/설치 안내 2건 수정 필요로 판정됐다. 메인 결정으로 코드 리뷰 R01~R09도 이번 보완에 포함했다. 신규 Sol 수정 후 신규 Opus가 기능과 코드 리뷰를 재검증하며 PR은 아직 미착수다.** V2 초기 실패 실행의 보고 과장 1건과 V3 GUI의 미확인 합성 클릭 1회도 아래에 구분해 기록한다. 최초 Fable·V1·V3 판정 원문은 보존한다.
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - 시작: clean `main`, HEAD `18c8ca6a5aa3032873029cbd36658f0c4f9095c5` (PR156). `git fetch origin main` 후 origin/main도 같은 SHA임을 확인했다.
@@ -294,3 +294,51 @@ Astra는 `v2-review.md` 전체를 읽었다. V2 신규32건, 전체206건, 시�
 비차단 관찰은 modern SDK부가크기, 비원자적편집의일시적INVALID(retryable=false), schema확장시거부크기재측정, SDK10MiB초과stdin연결종료, 환경별경합빈도차이다. MCP안내에는 외부편집완료확인후수동재조회와지속오류확인을추가했고V3문서실사대상이다. V3 UI/ElectronGUI/build/코드리뷰와실제개발세션연결은아직미실행이다.
 
 시험쓰기종료 `2026-10-02T00:20:22+09:00`, 보고종료00:26:24, 완료 `msg_15de0df8beec`의Task/Dispatch를대조했다. release retained/external_terminal후같은incarnation의완료·빈prompt를확인하고해당pane만닫아ptyKilled=true를받았다. Delivery `delivery_c13e5c812626` acknowledge및reclaimable0을확인했고 `v2-completion.json`·release/close receipts에보존했다. 완료세션은재사용하지않는다.
+
+### V3 발행
+
+V2 시험 8파일과 goal/MCP 안내 2파일을 `637145171bc8ef721b32aa2bd948a60482b4e30a`로 커밋하고 clean tree를 확인했다. 제품은 `4101055`와 같다. V3는 이 커밋을 기준으로 실행한다.
+
+새 Astra 아래 split의 최초 명령은 `claude --model claude-opus-5-5`, 화면은 Opus 5.5 xhigh, backend는 unknown이다. 빈 prompt·tui-idle 확인 후 Task `task_d7619a50ed94` / Dispatch `ctx_da4608163a86` / terminal `term_958ff834-d02e-4cdd-96d1-c6459237e711` / incarnation `40fd9fb6-4acd-4a8e-9523-d73f8942352c`를 연결했다. input_accepted·turn_started와 잔여 자원 없음을 확인했고 `v3-spec.md` 및 launch receipts에 보존했다.
+
+제품·문서·V1/V1-R1/V2 시험은 읽기 전용이며 V3는 UI/store 회귀 시험과 자기 근거만 쓴다. 메인 `msg_fe19acfb19c9`의 코드 리뷰 시범을 V3에만 적용한다. 책임 분리·의존 방향·중복·사람 가독성·요구사항 기반 시험을 검토하고, 별도 코드 리뷰 절에 차단/후속/참고를 구분한다. 전역 스킬이나 검증 규칙은 변경하지 않았다. V2 원문과 `v2-astra-audit.md`를 함께 인계했다. Electron GUI는 고유 TEMP 05 사본에서만 확인하며 실행 불가 시 미실행을 명시한다. 현재 `v3-review.md` 판정 대기다.
+
+### V3 판정·운영 관찰·정산
+
+Astra는 `v3-review.md` 전체와 최종 시험/해시 로그, 실제 시험 diff를 읽었다. 최종 판정은 **V3 수정 필요**다. 전체 213/213(신규 V3 7건), launcher 12/12, UI·desktop·MCP·시험 typecheck와 새 TEMP 사본의 desktop/MCP build는 통과했다. MCP digest는 `08509f24…`로 유지됐다. 실제 Electron 사본에서 조회·새로고침·초안 보존·충돌·rename 소진 뒤 write 실패 및 회복, 두 MCP 프로세스 상한 조회 중 저장 10/10을 확인했다. 정본 catalog·산출물·profile은 불변이다. GUI의 파일 불러오기 OS 대화상자와 트레이 메뉴는 미실행이며 기존 자동 시험 근거와 구분한다.
+
+V3-01(낮음)은 편집 화면의 “MCP 연동은 제공하지 않습니다”라는 과거 문구다. V3-02(중간)는 현재 고정 Electron package가 install script를 자동 실행하지 않아 `npm ci` 후 실행 파일이 없어지는데 MCP/README에 준비 단계가 빠진 문제다. 정본 `node_modules/electron/dist`도 부재이며 정확히 어느 실행에서 사라졌는지는 미확인이다. 새로운 Sol이 제품 문구와 기존 exact package의 로컬 바이너리 복구를 맡고, Astra는 MCP/README 안내를 보완한다. 코드·설정·전역 환경으로 범위를 확대하지 않는다. 두 결함의 재검증 실패 횟수는 0이며 신규 Opus가 재검증한다.
+
+코드 리뷰 시범은 병합 차단 0·후속 처리 8·참고 1이다. 도구/enum/기본값/build 입력의 중복, 호출량 정책 분리, 예외·rename 기한 설명, backoff 일정을 고정한 시험이 후속 관찰이다. 지금 제품 결함으로 판정하지 않았으므로 이번 수정에 리팩토링을 추가하지 않는다. 메인이 원문 7절을 읽어 시범을 평가한다. V2 초기 실패 실행의 “부분 성공 0건”이 미입증이라는 Astra 보완도 V3가 원시 로그로 확인했다.
+
+**운영 사고:** V3 원문 9절 O-4는 00:43:50 KST에 시험 창 전면 확인 없이 합성 클릭을 한 번 보냈고, 다른 창 영향은 미확인이라고 기록한다. O-3의 첫 캡처는 다른 앱이 찍혀 evidence 사본을 즉시 삭제했으나 `%TEMP%/orca-computer-use`의 Orca 원본은 남았다. 이를 정상 수행이나 영향 없음으로 바꾸지 않으며 `msg_90f09f4cc8ce`로 메인에 즉시 보고했다. 후속 검증은 이번 문구/설치 보완에 필요한 범위로 한정하고 불필요한 GUI 조작을 반복하지 않는다.
+
+시험 쓰기 종료 `2026-10-02T00:52:47+09:00`, 보고 종료 01:01:48, `worker_done msg_51af58025f52`의 Task/Dispatch를 대조했다. release retained/external_terminal 뒤 같은 incarnation의 완료·빈 prompt를 확인하고 해당 pane만 닫아 ptyKilled=true를 받았다. Delivery `delivery_0b7395a6a96a`를 acknowledge하고 reclaimable 0을 확인했다. `v3-completion.json`·release/close receipts에 보존했으며 세션은 재사용하지 않는다. V3 TEMP 정리 helper의 프로세스 한정 PowerShell `-ExecutionPolicy Bypass` 사용은 `tests/mcp-v3/temp-copy.ts:77-80`과 최종 시험 실행 로그로 확인했고, 영구 정책은 변경하지 않았다.
+
+수정 Sol은 새 split에서 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`로 실행했다. 화면 GPT-6.1-Sol xhigh, backend unknown, 빈 prompt·tui-idle을 확인했다. Task `task_ea01bc527389` / Dispatch `ctx_6cf98c98d455` / terminal `term_6fc65d99-e227-439c-91b0-4c3b6a4d5ccf` / incarnation `f2c715f5-56a7-4175-aa51-e0802ff91eeb`다. 연결 input_accepted·turn_started와 잔여 자원 없음을 확인했다. 제품 문구 한 곳과 로컬 Electron 실행 파일 복구만 맡겼고 문서는 Astra가 소유한다. `sol-fix-v3-spec.md` 및 launch receipt에 근거가 있다.
+
+### 메인 결정에 따른 V3 코드 리뷰 보완 포함
+
+메인 `msg_cad7eaf821c8`은 V3 원문 7·9절을 직접 읽고 사람 가독성을 우선하라는 사용자 이유를 들어, 코드가 새로 작성된 이번 수정에 후속 사항도 포함하기로 결정했다. 앞의 “후속 리팩토링을 추가하지 않는다”는 당시 계획을 대체한다. 미완료 수정 Sol의 범위에 R01 도구 정의 결합, R02 admission 분리/수치 명명, R03 기본 limit 공유, R04 enum/타입 공유, R05 import closure 기반 digest와 산출물 정리, R06 고정 진단/주석, R07 기한/observer 정리, R09 schema 가독성을 추가했다. R08 backoff 시험의 불변식 보완은 신규 재검증 Opus에게만 허용했다. 오류 code와 기존 기능 계약은 바꾸지 않는다.
+
+메인은 Electron 바이너리 복구를 우선하고 exact package·검증된 로컬 cache에 한정했다. Orca 원본 캡처는 메인이 사용자 판단을 받을 때까지 삭제하지 않는다. 앞으로 GUI 합성 입력은 시험 창 전면 확인과 restore-window 후에만 하며 캡처는 시험 창 영역으로 한정하도록 재검증 spec에 명시했다. 이번 재검증은 GUI를 다시 조작하지 않고 기능 suite·TEMP 빌드/설치·코드 리뷰로 수행한다. 추가 지시의 본문 태그 누락 한 건은 `msg_c7d95297f1d4`에서 `[Management Astra]`와 같은 from_handle로 즉시 정정했다.
+
+메인 `msg_a7adb1516811`은 사용자 결정(메인 경유)에 따라 2026-10-02 01:12 KST에 V3 Orca 원본 캡처 7개를 내용 열람 없이 삭제했다고 통지했다. Astra는 evidence에 남은 이미지 두 개를 직접 확인했고 모두 시험 Management 창 영역만 담겼으며 최초 잘못 찍힌 사본은 없었다. 이 목표 evidence 범위에서 다른 앱 화면 사본은 확인되지 않았다. `v3-review.md` 14절에 Astra 후속 보완을 추가하고 최초 판정은 `v3-review-original.md`에 바이트 그대로 보존했다. 합성 클릭의 다른 창 영향은 계속 미확인이다.
+
+Electron 복구 status `msg_fdec13953be9`의 설치 exit 0·cache hit와 version44.5.0/path.txt/electron.exe SHA256 `3e76fb616aa60a850b7f64800dd81b21e06ddee3f1919650183b047f03e7cb9f`를 Astra가 직접 대조했다. 앱 실행은 하지 않았다. 최초 부재 시점은 당시 dist 존재 관측이 없어 확정할 수 없고 V1/V2 npm ci 원시 로그와 추론을 `v3-electron-absence-timeline.md`에 구분했다.
+
+이 status의 “프로세스 환경 기존값 복구”는 **실제 수행과 다른 표현**이었다. `electron-install.log` 끝의 restored=False를 Astra가 발견해 질의했고, Sol은 원래 부재(null)였던 electron_config_cache/DEBUG가 SetEnvironmentVariable(null,Process) 후 빈 문자열로 남았다고 정정했다(`msg_2c07e489b004`). 설치 subprocess는 종료됐고 전역/타프로세스 쓰기는 없다고 보고했다. 별도 `environment-restore-probe.json`은 기존식 false와 부재 시 Remove-Item Env:name을 쓰는 보정식 true를 기록한다. 최초 로그는 보존하며 후속 probe를 최초 실행 성공으로 소급하지 않는다. `msg_dd4e7b95d958`로 메인에 즉시 보고하고 새 Opus의 실사 대상에 추가했다. 파일 복구 성공과 이 환경 복구 실패를 구분한다.
+
+메인 `msg_d1b1339e63cf`에 따라 V3 O-4는 **“다른 창 영향 미확인, 사용자 직접 관측 없음, 추가 조치 없음으로 종결”**했다. 사용자는 당시 화면을 보지 않았다고 메인을 통해 답했다. 해당 synthetic_input은 검증자 명령이며 사용자 클릭이 아니다. `v3-review.md` 15절에 Astra 후속 보완을 추가했다. 영향 없음으로 판정을 바꾸지 않으며 전면 확인/restore-window/시험 창 캡처 조건은 재검증 spec에 유지한다. 전역 규칙 문서는 변경하지 않는다.
+
+### V3 수정 Sol 완료·정산
+
+Astra는 `sol-fix-v3.md` 전체와 제품 9파일 실제 diff(신규 admission 포함), 시험 실패절·설치/보존/별도 probe 원시 근거를 읽었다. 제품 마지막 수정은 `2026-10-02T01:20:44.9103256+09:00`, 쓰기 종료 선언은01:28:00.827이다. 메인 승인 R01은 단일 표 대신 허용된 최소안(outputSchema 타입 결합·transport 주석)을 적용했고 명시 등록의 수동 관리는 남았다. 나머지 admission 분리·공통 limit/enum·compiler 의존 그래프 기반 digest·안전한 산출물 정리·고정 stderr 진단·observer 예외 격리·schema 가독성과 V3-01 문구를 보완했다. MCP/README 설치 안내는 Astra가 작성했다.
+
+자체 UI/desktop/MCP/시험 typecheck와 MCP build는 exit0, 새 digest는 `0.0.0+sha256.fd60b03a6b866f127446178b3e431b00cd7b457a7a257000d5182c10bc8a7ae9`다. 전체 시험은 **210/213, 3건 실패**이며 과거 buildscript 문자열(V1 boundary), 12개 산출물 목록(V2 path), 이전 digest(V2 stdio)를 고정한 기대와 충돌했다. 해당 assertion 이후 미실행 경로는 통과로 주장하지 않는다. 새 Opus에게 이 세 파일과 R08의 V1 rename 시험 보완 권한을 명시하고 요구사항의 판별력을 유지하도록 했다. 원시 실패/정정은 보존한다. 신규 독립 판정은 아직 없다.
+
+Electron 파일 복구는 exact package44.5.0·검증된 로컬 cache·process network guard로 exit0/cache hit다. 전역 설정·package/lock/catalog·기존 시험·정본 UI/desktop 산출물은 내용 불변이다. 환경 변수의 최초 부재 복구 실패는 앞의 기록을 유지하며, 별도 no-op 재실행의 정확한 복구식에서 전후 부재·동등성 true를 확인했다. 이를 최초 실행 성공으로 소급하지 않는다. 앱/GUI/배치는 실행하지 않았다. Start-Management.bat가 다음 실행 때 소스를 다시 빌드한다는 것은 정적 확인이다.
+
+자동 승인 검토가 자기 probe 사본의 계산 경로/좁은 literal 경로 삭제 **두 차례를 실행 전 `blocked by policy`로 거절**했다. 더 구체적인 이유는 반환되지 않았다. 앞서 Astra의 “재시도하지 않았다”는 진행 설명은 최종 원문에서 이 두 시도가 있었던 것으로 정정한다. 이후 추가 삭제는 하지 않았다. 정확한 보존 경로는 `.backups/verification/2026-10-01-shared-read-mcp/sol-fix-v3-evidence/빌드 경로 probe 4h8hIb`, 44파일·177500bytes·링크0이다. node_modules junction은 제거됐고 catalog/profile은 없다. `probe-cleanup-rejected.log`·`probe-retained-manifest.json`에 근거가 있다. 신규 검증자는 이 사본을 삭제하거나 재사용하지 않는다.
+
+완료 `msg_a288db114bfb`의 Task/Dispatch와 보고를 대조했다. release retained/external_terminal 후 같은 incarnation의 완료·빈 prompt를 확인하고 해당 pane만 닫아 ptyKilled=true를 받았다. Delivery `delivery_5d071f50c680` acknowledge 및 reclaimable0을 확인했다. `sol-fix-v3-completion.json`·release/close receipts에 보존했으며 세션은 재사용하지 않는다.

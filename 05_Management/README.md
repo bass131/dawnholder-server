@@ -28,7 +28,7 @@
 
 위는 구현된 실행 경로의 사용 안내다. 배치 분기 검증의 성공 START는 stub이며, **사람의 실제 더블클릭과 START detached 실행의 끝까지 이어지는 성공은 미검증**이다. 따라서 [launcher 목표](goals/2026-09-30-launcher/goal.md)의 사용자 진입점 완료조건을 모두 검증했다고 표시하지 않는다. 이후 실제 Electron main의 1280×720 창은 [system-records 검증](goals/2026-09-30-system-records/verification.md#실제-electron-관찰)에서 확인했지만 배치 경로 성공을 입증하지 않는다.
 
-Node/npm, 로컬 의존성 또는 Electron 바이너리가 없으면 자동 설치/다운로드 없이 오류를 표시하고 키 입력 후 실패로 종료한다. 사전 준비는 아래 개발 명령의 `npm ci`, 바이너리만 준비하려면 frontend에서 `node node_modules/electron/install.js`를 직접 실행한다. 빌드 실패 시 이전 빌드를 대신 띄우지 않는다. 새 기본 창 크기 `1280×720`은 다음 실행부터 적용하며 현재 열린 창은 유지한다.
+Node/npm, 로컬 의존성 또는 Electron 바이너리가 없으면 자동 설치/다운로드 없이 오류를 표시하고 키 입력 후 실패로 종료한다. 사전 준비는 frontend에서 `npm ci`를 실행한 뒤 `node node_modules/electron/install.js`로 공식 Electron 바이너리를 캐시에서 풀거나 다운로드하는 것이다. 현재 고정 버전은 `npm ci`만으로 바이너리를 준비하지 않으며, 다시 `npm ci`를 실행하면 기존 바이너리도 지워지므로 설치 명령을 다시 실행해야 한다. 빌드 실패 시 이전 빌드를 대신 띄우지 않는다. 새 기본 창 크기 `1280×720`은 다음 실행부터 적용하며 현재 열린 창은 유지한다.
 
 ## 프런트엔드 개발
 
@@ -37,6 +37,7 @@ Node/npm, 로컬 의존성 또는 Electron 바이너리가 없으면 자동 설�
 ```powershell
 Set-Location 'C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active/05_Management/frontend'
 npm ci
+node node_modules/electron/install.js
 npm run dev
 npm run typecheck
 npm run build

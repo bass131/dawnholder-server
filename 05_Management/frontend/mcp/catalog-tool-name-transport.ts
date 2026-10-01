@@ -22,6 +22,8 @@ class CatalogToolNameTransport implements Transport {
     this.inner.onclose = () => this.onclose?.();
     this.inner.onerror = error => this.onerror?.(error);
     this.inner.onmessage = (message, extra) => {
+      // Allowed names are the input-schema keys. Registration remains explicit
+      // in catalog-server; outputSchemas is type-checked against the same keys.
       if (isJSONRPCRequest(message) && message.method === 'tools/call'
         && typeof message.params?.name === 'string' && !Object.hasOwn(inputSchemas, message.params.name)) {
         void this.inner.send({

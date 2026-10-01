@@ -1,6 +1,10 @@
+export const RECORD_TYPES = ['변경', '결정', '검증', '계획'] as const;
+export const SOURCE_KINDS = ['git', 'local', 'handoff'] as const;
+export const SOURCE_AVAILABILITY = ['versioned', 'local-only'] as const;
+
 export interface RecordSource {
-  id: string; title: string; kind: 'git' | 'local' | 'handoff'; locator: string;
-  revision: string; section: string; availability: 'versioned' | 'local-only'; note: string;
+  id: string; title: string; kind: typeof SOURCE_KINDS[number]; locator: string;
+  revision: string; section: string; availability: typeof SOURCE_AVAILABILITY[number]; note: string;
 }
 export interface SystemRecord {
   id: string; title: string; area: string; summary: string; responsibility: string;
@@ -8,7 +12,7 @@ export interface SystemRecord {
   limitations: string[]; nextSteps: string[]; sourceIds: string[]; relatedSystemIds: string[]; recordIds: string[];
 }
 export interface DevelopmentRecord {
-  id: string; type: '변경' | '결정' | '검증' | '계획'; title: string; summary: string;
+  id: string; type: typeof RECORD_TYPES[number]; title: string; summary: string;
   reason: string; status: string; systemIds: string[]; sourceIds: string[];
   details: string[]; limitations: string[]; nextSteps: string[];
 }
@@ -19,6 +23,7 @@ export interface RecordCatalog {
 
 const object = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const strings = (value: unknown): value is string[] => Array.isArray(value) && value.every(item => typeof item === 'string');
+const enumValue = (values: readonly string[], value: unknown): boolean => values.includes(String(value));
 function fields(value: unknown, text: string[], lists: string[] = []): value is Record<string, unknown> {
   return object(value) && text.every(key => typeof value[key] === 'string') && lists.every(key => strings(value[key]));
 }
@@ -31,9 +36,9 @@ export function readCatalog(value: unknown): RecordCatalog | null {
   const { sources, systems, records } = value;
   if (!Array.isArray(sources) || !Array.isArray(systems) || !Array.isArray(records)) return null;
   if (![sources, systems, records].every(uniqueIds)) return null;
-  if (!sources.every(source => fields(source, ['id', 'title', 'kind', 'locator', 'revision', 'section', 'availability', 'note']) && ['git', 'local', 'handoff'].includes(String(source.kind)) && ['versioned', 'local-only'].includes(String(source.availability)))) return null;
+  if (!sources.every(source => fields(source, ['id', 'title', 'kind', 'locator', 'revision', 'section', 'availability', 'note']) && enumValue(SOURCE_KINDS, source.kind) && enumValue(SOURCE_AVAILABILITY, source.availability))) return null;
   if (!systems.every(system => fields(system, ['id', 'title', 'area', 'summary', 'responsibility', 'implementationStatus', 'integrationStatus', 'verificationStatus'], ['behavior', 'limitations', 'nextSteps', 'sourceIds', 'relatedSystemIds', 'recordIds']))) return null;
-  if (!records.every(record => fields(record, ['id', 'type', 'title', 'summary', 'reason', 'status'], ['systemIds', 'sourceIds', 'details', 'limitations', 'nextSteps']) && ['변경', '결정', '검증', '계획'].includes(String(record.type)))) return null;
+  if (!records.every(record => fields(record, ['id', 'type', 'title', 'summary', 'reason', 'status'], ['systemIds', 'sourceIds', 'details', 'limitations', 'nextSteps']) && enumValue(RECORD_TYPES, record.type))) return null;
   return value as unknown as RecordCatalog;
 }
 export function catalogReferenceErrors(catalog: RecordCatalog): string[] {

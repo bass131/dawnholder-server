@@ -2,8 +2,9 @@ import type { McpServer } from '@modelcontextprotocol/server';
 import { compareCatalogIds, filterRecords, filterSystems } from '../electron/catalog-query.js';
 import { recordDetails, recordSummary, sourceDetails, systemDetails, systemSummary } from './catalog-dto.js';
 import { CatalogReadError, checkCancelled } from './catalog-errors.js';
+import { createCatalogAdmission } from './catalog-admission.js';
 import type { CatalogSnapshot } from './catalog-reader.js';
-import { failure, listResponse, success, type CatalogResponse } from './catalog-response.js';
+import { DEFAULT_LIST_LIMIT, failure, listResponse, success, type CatalogResponse } from './catalog-response.js';
 import { inputSchemas, outputSchemas, type CatalogToolName, type ToolArguments } from './catalog-schemas.js';
 import { CatalogMcpServer } from './catalog-tool-name-transport.js';
 
@@ -21,13 +22,13 @@ function querySnapshot(name: CatalogToolName, args: ToolArguments, snapshot: Cat
   if (args.expectedHash !== undefined && args.expectedHash !== metadata.hash) return failure('VERSION_CONFLICT', metadata, { expectedHash: args.expectedHash });
   if (name === 'list_systems') {
     const items = filterSystems(catalog, args.query ?? '', args.area ?? '').sort(compareCatalogIds).map(systemSummary);
-    return listResponse(metadata, items, args.offset ?? 0, args.limit ?? 10);
+    return listResponse(metadata, items, args.offset ?? 0, args.limit ?? DEFAULT_LIST_LIMIT);
   }
   if (name === 'search_records') {
     if (args.systemId !== undefined && !catalog.systems.some(item => item.id === args.systemId)) return failure('NOT_FOUND', metadata);
     const items = filterRecords(catalog, args.query ?? '', args.area ?? '', args.type ?? '')
       .filter(item => args.systemId === undefined || item.systemIds.includes(args.systemId)).sort(compareCatalogIds).map(recordSummary);
-    return listResponse(metadata, items, args.offset ?? 0, args.limit ?? 10);
+    return listResponse(metadata, items, args.offset ?? 0, args.limit ?? DEFAULT_LIST_LIMIT);
   }
   if (name === 'get_system') {
     const item = catalog.systems.find(system => system.id === args.id);
@@ -43,20 +44,13 @@ function querySnapshot(name: CatalogToolName, args: ToolArguments, snapshot: Cat
 
 export function createCatalogServer(options: CatalogServerOptions): McpServer {
   const server = new CatalogMcpServer({ name: 'dawnholder-catalog', version: options.version });
-  const now = options.now ?? (() => performance.now());
-  let active = 0;
-  let tokens = 10;
-  let lastRefill = now();
+  const admission = createCatalogAdmission(options.now ?? (() => performance.now()));
 
   async function handle(name: CatalogToolName, args: ToolArguments, signal: AbortSignal): Promise<CatalogResponse> {
     options.onToolHandlerEntered?.(name);
     if (signal.aborted) return failure('REQUEST_CANCELLED');
-    const current = Math.max(lastRefill, now());
-    tokens = Math.min(10, tokens + (current - lastRefill) / 100);
-    lastRefill = current;
-    if (active >= 4 || tokens < 1) return failure('RATE_LIMITED', null, { retryAfterMs: active >= 4 ? 100 : Math.min(1000, Math.max(1, Math.ceil((1 - tokens) * 100))) });
-    tokens -= 1;
-    active += 1;
+    const permit = admission.tryAcquire();
+    if (!permit.accepted) return failure('RATE_LIMITED', null, { retryAfterMs: permit.retryAfterMs });
     try {
       checkCancelled(signal);
       // The SDK already rejects malformed/unknown inputs. This semantic check
@@ -70,9 +64,12 @@ export function createCatalogServer(options: CatalogServerOptions): McpServer {
     } catch (error) {
       if (signal.aborted) return failure('REQUEST_CANCELLED');
       if (error instanceof CatalogReadError) return failure(error.code, null, error.details);
+      // Unexpected query/serialization errors retain the existing public code.
+      // Diagnose the catch-all with fixed text; never disclose input or raw errors.
+      process.stderr.write('Catalog MCP internal error.\n');
       return failure('CATALOG_UNREADABLE');
     } finally {
-      active -= 1;
+      permit.release();
     }
   }
 
