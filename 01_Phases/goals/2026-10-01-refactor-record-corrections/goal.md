@@ -1,6 +1,6 @@
 # 리팩토링 기록 정정과 설계 이유 복원
 
-상태: **정정 작성·독립 검토 완료, PR 준비 중**. 사용자 재개 지시(2026-10-01)에 따라 C1–C5를 수행했다. 최종 문서 갱신·PR·CI 결과는 아래에 기록하며 병합은 해당 PR의 사용자 명시 승인을 기다린다.
+상태: **정정 작성·독립 검토·PR 생성 완료, 병합 승인 대기**. 사용자 재개 지시(2026-10-01)에 따라 C1–C5를 수행했다. [PR150](https://github.com/bass131/dawnholder-server/pull/150)의 검증 결과는 아래에 기록하며 병합은 해당 PR의 사용자 명시 승인을 기다린다.
 
 ## 목표와 기준선
 
@@ -41,7 +41,7 @@
 - [x] C3의 각 후보가 구체 근거·다음 행동·사용자 결정 필요 여부를 갖고 사실/추정/미실행을 구분한다.
 - [x] 별도 Astra가 C4의 유효한 설명과 실행 코드 불변, 변경 경계·문서 링크를 확인했다.
 - [x] 기존 checkpoint·Unity 자산/공유 DLL을 보존하고 CLAUDE.md의 별도 소유자 처리·보존 위치를 확인했다.
-- [ ] 결과·미실행을 기록하고 PR을 생성해 최종 head의 필수 CI를 확인했다. 병합은 별도 승인 대기다.
+- [x] 결과·미실행을 기록하고 PR을 생성해 필수 CI의 빌드·테스트 통과를 확인했다. 병합 전 최신 head 검사는 PR Checks와 최종 인계 결과를 대조한다. 병합은 별도 승인 대기다.
 
 일반 주석·문서 정정에는 새로운 동작 테스트나 전체 Unity/서버 회귀를 추가하지 않는다. 독립 검증은 고정 base/head의 diff와 실행 토큰·문자열·지시문 동일성, 주석 의미, 상대 링크·기록 일관성을 확인한다. 비주석 변화나 컴파일 우려가 발견되면 범위를 재확인하고 필요한 검증만 추가한다. Windows solution build의 DLL 복사 부작용을 피하며 PR의 기존 필수 CI는 유지한다. 과거 테스트 수치는 링크된 해당 goal의 실적이며 이번 재실행이 아니다.
 
@@ -49,6 +49,10 @@
 
 문서 Astra와 Sol6.1이 쓰기를 종료한 뒤 별도 Astra가 독립 정적 검토하여 PASS했다. 생산 변화는 3파일에 일반 `//` 주석을 각 2줄 추가한 것뿐이다. `git diff --unified=0` 및 삽입 위치 대조로 기존 행·실행 토큰·문자열·전처리 지시문 불변을 확인했고, `.meta`·DLL 변경은 없다. PR140/142/143/144/145의 merge SHA·UTC 시각은 `gh pr view`와 대조했고 모두 기준 main의 조상이다.
 
-변경·신규 Markdown의 상대 파일 링크 누락은 0건이며 새로 바뀐 anchor와 `git diff --check`도 확인했다. checkpoint 3문서의 cherry-pick blob 동일성과 기존 준비 branch의 `b3cf78a` 보존을 확인했다. 검토 당시 입력은 변경 14파일의 SHA256으로 고정했으며 이후 이 goal과 RESUME의 소유자 현황·결과 갱신은 별도 작은 delta로 재확인한다.
+변경·신규 Markdown의 상대 파일 링크 누락은 0건이며 새로 바뀐 anchor와 `git diff --check`도 확인했다. checkpoint 3문서의 cherry-pick blob 동일성과 기존 준비 branch의 `b3cf78a` 보존을 확인했다. 검토 당시 입력은 변경 14파일의 SHA256으로 고정했으며 이후 이 goal과 RESUME의 소유자 현황·결과 갱신도 별도 작은 delta로 재확인하여 PASS했다. PR 생성·CI 결과만 기록하는 마지막 문서 갱신은 같은 독립 검토자의 delta 검토를 거친다.
 
-원시 명령·hash·결과는 `.backups/verification/2026-10-01-refactor-record-corrections/{checks.json,pr-merge-records.json,summary.md}`, 독립 검토는 `.backups/reviews/2026-10-01-refactor-record-corrections.md`다. 로컬 빌드·동작 테스트·Unity·서버·SQL·AI 재평가는 미실행이며 이번 정정의 성공으로 주장하지 않는다. PR의 .NET CI는 이 정적 검토와 별도로 기록한다. 후속 게임 정책·DB/Management 구현은 시작하지 않았다.
+원시 명령·hash·결과는 `.backups/verification/2026-10-01-refactor-record-corrections/{checks.json,pr-merge-records.json,summary.md}`, 독립 검토는 `.backups/reviews/2026-10-01-refactor-record-corrections.md`다. 로컬 빌드·동작 테스트·Unity·서버·SQL·AI 재평가는 미실행이며 이번 정정의 성공으로 주장하지 않는다. 후속 게임 정책·DB/Management 구현은 시작하지 않았다.
+
+[PR150](https://github.com/bass131/dawnholder-server/pull/150)은 base `ef5f1023fe3353ee9eec5da04422232a33855233`에서 인계 문서 commit `147ef1ca4c53df18a1030a6d00759951a2c85f83`과 정정 commit `b253135f9c02250e38254d97a54344bfec72b066`을 포함해 생성했다. 정정 head `b253135`의 [dotnet-tests 실행 36818624257](https://github.com/bass131/dawnholder-server/actions/runs/36818624257)은 2026-10-01T05:14:36Z에 빌드·진단 검사와 테스트 모두 성공했다. 이는 위 정적 검토와 별도의 CI 실행 결과다.
+
+이후 PR·CI 기록만 갱신하는 commit의 최신 head 검사는 [PR Checks](https://github.com/bass131/dawnholder-server/pull/150/checks)에서 확인한다. 최종 인계 시 해당 head·run·결과를 대조해 사용자와 Claude 세션에 전달하고 로컬 `final-status.json`(위 verification 경로)에 보존한다. 이 결과 기록은 새 실행 동작·정책·설정 변경을 포함하지 않으며 자동 병합을 예약하지 않는다.
