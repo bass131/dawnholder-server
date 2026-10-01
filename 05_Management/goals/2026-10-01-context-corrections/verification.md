@@ -15,11 +15,13 @@
 | MC5 검증 한계 | 실제 `.github/workflows/dotnet-tests.yml`은 .NET build/test이며 05 npm test/build 명령이 없다. 기존 launcher verification은 START를 stub으로 대체했다. goal·README·PR 초안은 실제 더블클릭/START detached 경로 미검증과 이후 Electron main 1280×720 관찰을 구별한다. 이번 앱 실행으로 표시하지 않는다. |
 | MC6 출처 | 6개 출처의 PR147 고정 Git blob bytes가 기존 r1 SHA256과 모두 같다. 아래 계약·보존 확인을 통과했다. 별도 catalog commit은 아직 수행 전이다. |
 
-실제 추적 diff는 `05_Management`의 Markdown과 `records/catalog.json`에 한정된다. 코드·새 CI·MCP·Game Dev 문서 변경은 없다. 새 검토 파일은 이 목표 폴더 안에 둔다.
+당시 검토 대상의 제품·정정 diff는 `05_Management`의 Markdown과 `records/catalog.json`에 한정됐다. 코드·새 CI·MCP·Game Dev 문서 변경은 없었다. 당시 이 목표 폴더에 작성했던 두 검토 근거 파일의 현재 보존 위치는 아래와 같다.
 
 ## catalog와 링크 근거
 
-[정적 검증 스크립트](static-review.mjs)는 기존 `catalog-contract.ts`의 `readCatalog`와 `catalogReferenceErrors`를 Node에서 직접 호출해 데이터 계약을 확인했다. 앱이나 테스트 스위트를 실행하는 하니스가 아니다. [결과 JSON](static-review-result.json)에 정확한 문서 SHA256, 출처별 SHA256, 기준 commit과 관찰 시각을 보존했다.
+당시 정적 검증 스크립트는 기존 `catalog-contract.ts`의 `readCatalog`와 `catalogReferenceErrors`를 Node에서 직접 호출해 데이터 계약을 확인했다. 앱이나 테스트 스위트를 실행하는 하니스가 아니다. 결과 JSON에는 당시 문서 SHA256, 출처별 SHA256, 기준 commit과 관찰 시각을 보존했다. 아래 수치와 PASS는 2026-10-01 05:12 UTC 검토 결과이며 후속 보관·참조 정리에서 재실행한 결과가 아니다.
+
+두 원본의 보관 사본은 `.backups/verification/2026-10-01-management-context-corrections/static-review.mjs`와 `.backups/verification/2026-10-01-management-context-corrections/static-review-result.json`이다. **공유되지 않는 로컬 근거**이며 GitHub나 다른 PC의 조회를 보장하지 않는 보조근거다. 보관 시 원본·사본 SHA256은 각각 `E8CE28D9ADD7D7B0461477E7D2DC151E522736BCB0813314F9D76989873ED32C`, `E42B8195B5FF299172C090D11D07669CC723290C2E638E0BD426691FA672D7E9`로 일치했다. 보관 사본을 수정하거나 실행하지 않았다.
 
 - r2 SHA256: `4D81FAAAF3DD375D2EEBF0ACB95983CA0AA2311038782DBA6EE7D35EC9554488`, 75,931 bytes. 기존 2 MiB 제한 안에 있고 기존 계약이 수용한다.
 - r1 SHA256: `2711E0C1DB3FB581A6B02373E7C6F72EE3761E303628E3A03329758014385A1A`. 원본은 기준 main의 Git blob으로 읽었다.
@@ -36,13 +38,10 @@ PR 초안은 메인이 제공한 TEMP 파일 `dawnholder-management-corrections-
 
 ## 실제 수행과 미실행
 
-주요 수행 명령은 `git status --short`, `git branch --show-current`, `git rev-parse`, `git diff --stat`, `git diff --name-only <base>`, `git diff --check`, `git show <commit>:<path>`, `git show --format=`, `git cat-file -e`, `git ls-tree -r --name-only`, 문서 `Get-Content`/`rg`, PR 초안 `Get-FileHash`, `node --version`이다. Node는 `v24.15.0`이었다. 저장한 정적 결과는 저장소 루트에서 다음 명령으로 생성했다.
+당시 주요 수행 명령은 `git status --short`, `git branch --show-current`, `git rev-parse`, `git diff --stat`, `git diff --name-only <base>`, `git diff --check`, `git show <commit>:<path>`, `git show --format=`, `git cat-file -e`, `git ls-tree -r --name-only`, 문서 `Get-Content`/`rg`, PR 초안 `Get-FileHash`, `node --version`이다. Node는 `v24.15.0`이었다. 당시 저장소 루트에서 정적 검토 스크립트를 Node로 실행해 결과 JSON을 생성했고, 별도로 `git diff --check`를 실행했다.
 
-```powershell
-node 05_Management/goals/2026-10-01-context-corrections/static-review.mjs > 05_Management/goals/2026-10-01-context-corrections/static-review-result.json
-git diff --check
-```
+이는 과거 수행 요약이다. 스크립트가 당시 경로 기준의 상대경로를 포함하므로 위 로컬 보관 사본을 현재 재현 명령으로 제시하지 않는다.
 
-두 명령은 exit 0이며 diff 공백 오류는 없었다. 추가 의존성을 설치하지 않았다. 최초 스크립트 실행에서 기준 main에 새 문서가 없다는 Git 메시지 3건은 비교용 이전 문서 조회에서 발생했으며, 이후 기준 트리 목록으로 신규 파일을 구별해 최종 실행은 정상 종료했다.
+당시 두 명령은 exit 0이며 diff 공백 오류는 없었다. 추가 의존성을 설치하지 않았다. 최초 스크립트 실행에서 기준 main에 새 문서가 없다는 Git 메시지 3건은 비교용 이전 문서 조회에서 발생했으며, 이후 기준 트리 목록으로 신규 파일을 구별해 당시 최종 실행은 정상 종료했다.
 
 Vitest·npm build/test·배치 fixture·Electron·실제 더블클릭/START·서버·SQL·Unity·MCP·최신 게임 상태·catalog 자동 갱신은 실행 또는 검증하지 않았다. 원격 CI를 이번에 실행하거나 원격 PR API를 독립 재조회하지 않았다. PR147 merge commit은 로컬 Git에서 확인했고 GitHub 병합 시각 10:41:59 UTC는 메인이 제공한 조회 근거를 사용했다. 기존 Game Dev PASS는 main 문서와 checkpoint에서 확인했으며 의미검토나 제품 실행을 다시 수행한 결과가 아니다.

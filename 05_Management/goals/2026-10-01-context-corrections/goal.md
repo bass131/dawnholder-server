@@ -33,7 +33,13 @@
 
 MC1–MC6의 정정·별도 커밋·독립 정적 검토와 [PR #151](https://github.com/bass131/dawnholder-server/pull/151) 생성을 완료했다. 검토에서 발견한 사실 표기 1건은 작성자 수정 후 재확인해 PASS를 받았다. PR151은 OPEN이며 사용자 개별 병합 승인 전이다. 자동 병합을 설정하지 않았고 main 병합은 수행하지 않았다. PR147의 기존 병합 완료와 이번 정정 PR의 통합 대기를 구분한다. 새 MCP·운영 기능 착수 보류는 유지한다.
 
-이번 검토는 기존 catalog 계약의 데이터 수용, 출처 6개의 Git blob과 이전 SHA256 일치, 시스템·기록·asOf·sourceCommit 및 나머지 29개 출처 보존, 상대 링크 181개를 확인했다. 재현용 정적 검토 스크립트와 결과를 이 목표 폴더에 보존한다. 제품 코드·테스트 스위트 변경이나 앱 실행 검증은 아니다. r2 catalog SHA256은 `4D81FAAAF3DD375D2EEBF0ACB95983CA0AA2311038782DBA6EE7D35EC9554488`이다.
+2026-10-01 05:12 UTC의 독립 정적 검토는 기존 catalog 계약의 데이터 수용, 출처 6개의 Git blob과 이전 SHA256 일치, 시스템·기록·asOf·sourceCommit 및 나머지 29개 출처 보존, 상대 링크 181개를 확인했다. 당시 r2 catalog SHA256은 `4D81FAAAF3DD375D2EEBF0ACB95983CA0AA2311038782DBA6EE7D35EC9554488`이다. 이는 과거 검토 결과 요약이며 제품 코드·테스트 스위트 변경이나 앱 실행 검증이 아니다.
+
+사용자는 후속 정정 요청 `msg_ace72b027aa0`를 읽고 해당 범위의 처리를 지시했다. 이에 두 검토 원본을 바이트 그대로 `.backups/verification/2026-10-01-management-context-corrections/static-review.mjs`와 `.backups/verification/2026-10-01-management-context-corrections/static-review-result.json`에 복사하고 원본·사본 SHA256 일치를 확인했다. 두 파일은 **공유되지 않는 로컬 근거**이며 GitHub나 다른 PC의 조회를 보장하지 않는 보조근거다. 검토 스크립트는 당시 경로를 전제로 하므로 보관 사본을 현재 실행 명령으로 안내하지 않는다.
+
+이번 후속 변경은 두 파일을 저장소 추적에서 제외하고 관련 문서 참조를 정리한다. 원본 보존과 참조 정리는 과거 catalog 검토의 재실행이 아니다. 같은 PR 브랜치에서 반영하며 새 HEAD의 CI 결과는 [PR151 Checks](https://github.com/bass131/dawnholder-server/pull/151/checks)와 최종 회신에서 확인한다. 이전 HEAD의 CI 성공을 새 결과로 사용하지 않는다. main rebase/merge와 PR 병합·자동 병합은 수행하지 않으며 사용자 개별 병합 승인 대기를 유지한다.
+
+별도 Astra가 이 후속 변경을 읽기 전용으로 검토해 원래 Git blob과 보관 사본의 바이트 일치, `.backups` 제외 규칙, 두 문서·두 삭제 파일의 범위, 깨진 파일 링크·실행 안내 제거를 확인했다. catalog와 제품 코드, 과거 검증 결과는 바꾸지 않았다. 새 검증 파일을 만들거나 기존 검토 스크립트·제품 테스트를 실행하지 않았다.
 
 ## 근거와 검증 한계
 
