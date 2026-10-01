@@ -1,6 +1,6 @@
 ---
 name: dawnholder-session-handoff
-description: Dawnholder의 Orca 신규 세션 준비를 확인하고 최소 맥락을 인계한다. 빈 신규 prompt에서 준비 대기가 만료되면 허용된 no-op 일반 메시지 한 번으로 응답을 확인한다. 감독형 작업 추적은 goal-loop의 Orca 지침을 따른다.
+description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 인계를 수행한다. 빈 신규 prompt의 준비 대기 만료는 Orca 준비 확인 메시지와 발신 태그 안내로 처리하며, 감독형 작업 추적은 goal-loop의 Orca 지침을 따른다.
 ---
 
 # Dawnholder 세션 준비와 인계
@@ -13,11 +13,17 @@ description: Dawnholder의 Orca 신규 세션 준비를 확인하고 최소 맥�
 - 현재 runtime, 저장소·worktree 경로와 전체 ID, terminal handle, incarnation을 식별한다. 제공되지 않은 incarnation은 미확인으로 기록한다. runtime/handle을 하드코딩하거나 재시작 전 handle을 재사용하지 않는다.
 - `terminal show`와 제한된 `terminal read`로 준비 상태를 확인한다. 긴 출력은 cursor와 limit으로 필요한 구간만 읽는다. busy·모달·사용자가 작성 중인 prompt는 건드리지 않는다.
 - [AGENTS](../../../AGENTS.md)의 모델 라우팅을 따른다. 요청 모델과 확인 모델을 구분하고 확인할 수 없으면 `unknown`으로 남긴다.
+- 발신 태그와 지시 채널은 [AGENTS 메시지와 보고](../../../AGENTS.md#메시지와-보고)를 따른다.
+
+## 세션 진입과 배치
+
+- [RESUME의 진입 절차](../../../00_Document/operations/RESUME.md#세션-진입-배치)를 따른다. 사용자는 종료 때 Astra를 모두 닫고 새 메인 Claude가 다음 세션에서 다시 연다.
+- 메인은 준비된 두 Astra에 현재 자기 handle을 Orca 메시지로 공유한다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
 
 ## 신규 prompt 준비 확인
 
 1. bounded readiness wait를 실행하고 `satisfied` 값을 확인한다. 출력이나 timeout만으로 준비됐다고 판단하지 않는다.
-2. wait가 만료됐고 읽기 결과가 **빈 신규 prompt**임을 확인한 경우에만, 권한 있는 준비 확인 no-op 일반 메시지를 딱 한 번 보낸다. 예: “작업은 시작하지 말고 준비되었으면 READY와 현재 작업 경로만 답해주세요.”
+2. wait가 만료됐고 읽기 결과가 **빈 신규 prompt**임을 확인한 경우에만, 준비 확인 no-op 요청을 Orca 메시지로 딱 한 번 보낸다. subject/body에 자기 태그를 붙이고 “작업은 시작하지 말고 준비되었으면 READY와 현재 작업 경로만 답해주세요”라고 요청한다. 터미널에는 자기 태그와 “Orca 메시지를 확인해 주세요” 안내만 입력한다.
 3. busy·모달·작성 중 prompt이거나 상태가 불명확하면 보내지 않고 상태를 보고한다. 준비 확인 메시지의 실제 응답을 bounded read/wait로 확인한 뒤에만 handoff를 보낸다.
 4. READY 응답 뒤 실제 handoff 직전에 target·runtime·incarnation을 새로 조회해 준비 확인 때의 값과 대조한다. 값이 바뀌거나 동일성을 확인할 수 없으면 이전 READY·receipt를 재사용하지 않고 보류한다. 새 대상에 자동 전송하지 않는다.
 5. `input_accepted`는 입력 접수, `turn_started`는 턴 시작 증거, 실제 준비 응답은 준비 확인이다. 이 셋을 같은 성공으로 보고하지 않는다.
@@ -29,7 +35,7 @@ description: Dawnholder의 Orca 신규 세션 준비를 확인하고 최소 맥�
 
 ## 최소 맥락 인계
 
-- durable handoff에는 목표·완료조건, 확정 결정·보존 계약, 작업 경로·branch/base/HEAD, 허용 수정 파일, 실행 자원 소유권, 검증 근거·미실행 범위, 결과 기록 경로와 막힐 때 보고 대상을 남긴다. 전체 대화·로그를 복제하지 않는다.
+- durable handoff에는 목표·완료조건, 확정 결정·보존 계약, 작업 경로·branch/base/HEAD, 허용 수정 파일, 실행 자원 소유권, 검증 근거·미실행 범위, 결과 기록 경로와 막힐 때 보고 대상을 남긴다. 작업자 spec에는 자기 태그·작업 하나·추가 위임 금지·정산 후 종료·재사용 금지를 포함한다. 전체 대화·로그를 복제하지 않는다.
 - 같은 checkout이면 수정 파일 범위와 branch 전환 담당자를 명시하고 기존 작성자의 쓰기 종료를 확인한다. 수신자가 임의로 branch를 전환하거나 동시에 같은 파일을 쓰게 하지 않는다.
 - 인계 메시지의 durable request/receipt를 보존하고 접수·턴 시작 확인 여부를 각각 보고한다. accepted 뒤 침묵은 중복 전송하지 않고 위 동일 request 확인 절차를 따른다.
 - 원래 메인이 유지되는 좁은 위임이면 복귀 대상과 소유권을 명시한다. 전체 handoff이면 새 worktree ID·agent handle과 접수 receipt를 보고한 뒤 원래 에이전트는 멈추며 완료까지 기다리지 않는다.

@@ -1,6 +1,6 @@
 # 다음 세션 재개
 
-이 문서는 읽는 순서와 재개 절차다. 현재 상태·결정·결과는 [CURRENT](CURRENT.md)가 가리키는 goal을 정본으로 삼는다. [기록 정정](../../01_Phases/goals/2026-10-01-refactor-record-corrections/goal.md)은 PR150으로 병합됐다. [P1a 종료 기록](../../01_Phases/goals/2026-09-30-party-invite-command/goal.md)과 [로드맵](../../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md)은 이전 완료와 남은 의존성을 제공한다. 라우팅 시범의 코드 실사·EditMode 검증은 PASS이며 전체 시범 판정·PR 상태는 goal에서 확인한다. P1b·DB·게임 정책 구현을 자동 시작하지 않는다.
+이 문서는 읽는 순서와 재개 절차다. 현재 상태·결정·결과는 [CURRENT](CURRENT.md)가 가리키는 goal을 정본으로 삼는다. [기록 정정](../../01_Phases/goals/2026-10-01-refactor-record-corrections/goal.md)은 PR150으로 병합됐다. [P1a 종료 기록](../../01_Phases/goals/2026-09-30-party-invite-command/goal.md)과 [로드맵](../../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md)은 이전 완료와 남은 의존성을 제공한다. 라우팅 시범은 성공했고 계층형 라우팅은 사용자 결정으로 전역 채택됐다. PR·규칙 문서 반영 상태는 goal에서 확인하며 P1b·DB·게임 정책 구현을 자동 시작하지 않는다.
 
 ## 최소 읽기
 
@@ -26,7 +26,7 @@ GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, �
 
 ## 다음 조각을 시작하는 순서
 
-- 먼저 [계층형 모델 라우팅 시범과 코드 기준 재정립](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md)의 구현·검증 결과와 남은 사용자 판정을 읽는다. 대상 4곳은 결함 수정이 아닌 동작 보존 정리로 판정됐다. 오늘의 운영 규칙 채택, 계층형 라우팅의 전역 채택 대기, 미확정 C를 구분한다.
+- 먼저 [계층형 모델 라우팅 시범과 코드 기준 재정립](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md)의 구현·검증 결과와 PR 상태를 읽는다. 대상 4곳은 동작 보존 정리로 판정됐다. 운영 방식·계층형 라우팅 채택은 확정이고 C(작은 작업 예외 포함)는 미확정이다. Management 적용은 이 PR 병합 뒤다.
 - [후속 후보와 판단 근거](../../01_Phases/goals/2026-10-01-refactor-record-corrections/open-items.md)의 메뉴 연결 probe·RegisterSend·HUD·UnityClientSession 후보는 유지한다. 메뉴 작업은 `MainMenuController`와 `ConnectionProbe`의 입력 캡처·요청 수명·실패 정리·늦은 callback 및 기존 fixture부터 설계하며 후보를 구현 완료나 확정된 UX로 해석하지 않는다.
 - source 교체·화면 종료 뒤 표시·재시도 같은 정책이 달라져야 하면 관찰 결과와 선택지를 사용자에게 올린다. 이후 표시 전용 HUD의 source binding을 별도 작은 조각으로 다룬다.
 - 범위·보존 계약·완료조건·파일 소유를 goal에 명시하고 최신 사용자 결정과 규칙 문서 반영 상태를 함께 확인한다. 실제 모델 확인 불가는 `unknown`으로 기록한다.

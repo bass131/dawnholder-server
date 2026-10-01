@@ -4,13 +4,15 @@
 
 ## 실행과 감독
 
-2026-10-01 현재 운영툴 Astra 터미널은 GameDev 화면의 분할 페인에 열려 있어 Orca 목록·알림·diff에서는 GameDev worktree 소속으로 보인다. 실제 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 화면 소속과 작업 경로를 구분하고 terminal handle은 사용할 때마다 조회한다. 현재 합의와 미착수 라우팅 시범의 적용 범위는 [CURRENT](CURRENT.md)의 goal을 따른다.
+메인 Claude·GameDev Astra·Management Astra는 [RESUME](RESUME.md#세션-진입-배치)의 좌우 pane 배치를 사용하고 작업자는 담당 Astra 아래 pane을 사용한다. Management 실제 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 화면 소속과 작업 경로를 구분하고 runtime·terminal handle·incarnation은 사용할 때 확인한다. 채택 근거와 시범 결과는 [CURRENT](CURRENT.md)의 goal을 따른다.
 
 - 큰 독립 목표는 별도 Orca 세션·worktree·작업 브랜치로 나눈다. worktree 부모 관계와 Git 시작 커밋은 별개이므로 최신 main 기준점을 확인한다.
-- 설치된 `orca-cli`·`orchestration` 스킬에서 선택한 CLI와 버전에 맞는 가이드를 사용한다. 실제 세션의 Run·Task·Dispatch를 기록한다. 일반 서브에이전트 호출은 Orca 실행 증거가 아니다.
-- 요청 모델과 실제 launch 설정을 대조한다. 목표 담당자는 메인이 명시한 단일 목표·공간·권한 안에서만 좁은 구현·검증 작업을 분할한다.
-- worker는 주입된 live preamble의 확인·heartbeat·결과 절차를 따른다. `worker_done` 수신 후 계약과 결과를 대조하고 재사용·보존·release를 결정한 뒤 delivery를 acknowledge한다.
+- 설치된 `orca-cli`·`orchestration` 스킬에서 선택한 CLI와 버전에 맞는 가이드를 사용한다. 구현·테스트 작성·검증 판정은 외부 세션 작업자가 맡고 실제 Run·Task·Dispatch를 기록한다. 내부 서브에이전트는 읽기 전용 조사·요약에만 쓰며 외부 실행 근거가 아니다.
+- 모델은 직접 agent 시작의 요청/적용값과 화면 표시를 대조한다. 새 pane의 최초 `--terminal` 연결은 split 명령과 화면 표시를 근거로 쓰고 백엔드 실제 모델은 확인 불가 시 `unknown`이다. 구체적인 생성·준비·거부 시 처리는 [Orca 위임 지침](../../.agents/skills/dawnholder-goal-loop/references/orca-work.md#pane-생성과-작업-연결)에 둔다.
+- 메시지 subject/body와 타 세션 입력은 [AGENTS 태그 규칙](../../AGENTS.md#메시지와-보고)을 따른다. 메인은 세션 시작 때 자기 handle을 두 Astra에 공유한다.
+- worker는 live preamble의 확인·heartbeat·결과 절차를 따른다. 작업 하나가 끝나면 `worker_done`과 원문 대조 → release → 정확한 pane 확인·close로 정리하고 재사용하지 않는다. 실패·막힘·무응답은 진단을 보존한 뒤 공식 정산/중단·종료를 수행한다. 수정·재검증은 새 세션으로 발행하고 전체 delivery 처리 뒤 acknowledge한다.
 - 실패 시 `failedStage`·`residualResources`와 공식 recovery 명령을 따른다. 타임아웃은 종료 증거가 아니다. 해당 작업의 자원만 정리하고 사용자·메인 터미널은 유지한다.
+- 실행 정책·권한 우회 기준은 [AGENTS 공학 조건](../../AGENTS.md#공학-조건)을 따른다.
 
 ## 공유 자원
 

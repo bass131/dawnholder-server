@@ -1,6 +1,6 @@
 # 계층형 모델 라우팅 시범과 코드 기준 재정립 (S0 후속)
 
-상태: **B 코드 검증 PASS — PR 준비, 보고 이해도·전역 라우팅 판단 대기**. 대상 4곳은 동작 보존 정리이며 fake-null 결함 주장은 미입증이다. 신규 Opus의 실사·EditMode 348/348 통과와 파일 보존 검사를 마치고 메인에 판정 원문을 전달했다. 오늘 정한 작업자 운영 방식은 프로젝트 규칙으로 채택(사용자 결정), 규칙 문서 반영은 이 PR에서 진행한다. 계층형 모델 라우팅의 전역 채택과 C는 별도 미확정이다.
+상태: **B 시범 성공·전역 라우팅 채택 — PR154 통합 대기**. 대상 4곳은 동작 보존 정리이며 fake-null 결함 주장은 미입증이다. 신규 Opus 실사·EditMode 348/348 통과·보존 검사에 이어 사용자가 보고 이해도 ④를 확인하고 계층형 라우팅을 채택했다(`msg_1a24e45f10a3`). [PR154](https://github.com/bass131/dawnholder-server/pull/154)에 코드·결과·운영 규칙을 반영하며 메인 검토와 중복 정리 승인을 받았다. C는 미확정이며 병합 승인은 아직 없다.
 
 ## PR152 문서화 기록 — 완료
 
@@ -14,7 +14,7 @@
 - 추가 3([`msg_b1fb9688460f` 원문](../../../.backups/handoffs/2026-10-01-context-refresh-branch-cleanup-request.json)): 이번 PR에 현행 GameDev 문서·ADR-029의 날짜별 사실 정정을 포함했다. PR152 병합 후 GameDev Astra는 [최신 정정 `msg_dc989cc54bad`](../../../.backups/handoffs/2026-10-01-branch-cleanup-correction.json)에 따라 원격 삭제 명령 없이 `fetch --prune`과 승인된 로컬 9개 `branch -d`를 완료했다(모두 exit 0, 거부 없음). stash 전체·로컬 PR152 branch·main·archive는 보존했으며 Management 정리 대상은 해당 담당자 소유다. 결과는 로컬 `.backups/verification/2026-10-01-hierarchical-routing-handoff/cleanup-after.json`과 `prune-result.json`에 있다.
 - PR152는 2026-10-01 07:03:49 UTC에 `f32dbbe9a4aec7cafd64fc7f1897a1f5e47370f6`으로 병합됐다. 같은 근거 폴더의 `final-status.json`에서 상단 `pr.state: OPEN`은 병합 전 스냅샷이며 후행 `mergeConfirmation.state: MERGED`와 `branchCleanup`이 후속 결과다. 원시 기록을 덮어쓰지 않고 시점을 구분한다. 이번 재개 시 원격 main `dd5c253763c55a151a78678869a43792d7b7c34f`의 이력에서도 PR152·153 병합을 확인했다.
 
-## A. 계층형 라우팅 합의 — 이 goal 적용, 전역 채택은 사용자 판단 대기
+## A. 계층형 라우팅 합의 — 시범 성공 후 프로젝트 규칙으로 채택
 
 - 구조: 메인(Claude Code, Opus 5.5) → 파트 리드(GPT-6 Astra: GameDev·Management) → 구현(GPT-6.1 Sol). 검증자는 신규 Opus 5.5 세션. 모델 대체 금지는 유지한다.
 - 메인: 방향 설정·파트 분할·사용자 조율·결과 통합·사용자용 보고서·PR 병합 승인 요청. 저장소 파일은 쓰지 않으며 CLAUDE.md만 예외다. Astra는 파트 결과를 goal에 기록한다.
@@ -36,14 +36,14 @@
 
 ## B. GameDev 시범 — 구현·검증 결과와 후속
 
-- **이 goal에 한해 새 라우팅을 적용한다, 사용자 승인.** 전역 라우팅 규칙은 시범 성공 후 변경한다. 완료된 PR152 문서화에는 기존 라우팅을 적용했으며 위 CLI 규칙 삭제만 별도 승인된 예외였다.
+- 초기에는 이 goal에 한해 새 라우팅을 적용했고, 시범 성공 후 `msg_1a24e45f10a3`으로 전역 채택을 전달받았다. 완료된 PR152 문서화에는 당시 기존 라우팅을 적용했으며 위 CLI 규칙 삭제만 별도 승인된 예외였다.
 - GameDev 대상: 기존 `?? AddComponent` 4곳 — `ProjectileSpawner`, `ProjectileLaunchHandler`, `EnemyAttackHandler`, `RemoteEntityRegistry`. [후속 후보](../2026-10-01-refactor-record-corrections/open-items.md#2026-10-01-추가--36fb5ec7-기준)의 결함 가설을 검사했으며, 대상 세 사용자 컴포넌트에서는 재현되지 않았다. `TryGetComponent` 기반의 명시적 분기로 바꾸고 동작 보존을 검증했다.
 - 성공 조건: ① Astra가 Opus 검증자를 열 수 있음 ② 실사가 끝까지 진행됨 ③ 판정 원문이 메인까지 도달함 ④ 사용자가 받은 보고가 이해하기 쉬움.
-- 현재 ① 기동·② 실사·③ 판정 원문 전달은 확인했다. **④ 보고 이해도는 사용자가 판단**하며 이 결정 전 계층형 라우팅을 전역 확정하지 않는다. 실패 시 라우팅은 기존 규칙을 유지하고 재논의한다.
+- ① 기동·② 실사·③ 판정 원문 전달은 메인이 확인했고, **④ 보고 이해도는 사용자가 충족으로 판단**했다. 사용자 결정에 따라 계층형 라우팅을 전역 채택하고, Management 적용은 이 PR 병합 뒤 진행한다.
 
 ### 오늘의 운영 결정과 규칙 문서 반영
 
-출처: **2026-10-01 메인 Claude 세션에서 사용자 직접 결정**, 메인 전달 `msg_eb390e210223` / `msg_7433dfc82389` / `msg_96619e974d99` / `msg_6dec38fbfdff`, 정정 `msg_d624222c0b11`, 단일 작업 세션 결정 `msg_e701acb5e24d`. 앞선 “규칙 문서는 시범 후” 유예를 정정해 아래 운영 방식을 프로젝트 규칙으로 채택하고 이 PR에 반영한다. A의 계층형 라우팅 전역 채택은 위 ④와 분리한다.
+출처: **2026-10-01 메인 Claude 세션에서 사용자 직접 결정**, 메인 전달 `msg_eb390e210223` / `msg_7433dfc82389` / `msg_96619e974d99` / `msg_6dec38fbfdff`, 정정 `msg_d624222c0b11`, 단일 작업 세션 `msg_e701acb5e24d`, 최종 라우팅 채택·보고 형식 `msg_1a24e45f10a3`. 규칙 문서 반영 시점도 사용자 결정이며, “시범 후” 유예를 같은 PR 반영으로 정정한 뒤 ④ 충족에 따라 라우팅도 전역 채택했다.
 
 1. 구현·테스트 작성·검증 판정은 Orca 외부 세션 작업자에게 맡긴다. 직접 `worker-start --agent <codex|claude> --model <지정 모델>`로 연 경우 요청 모델·`launch.requested/effective`·화면 표시를 구분해 기록한다.
 2. Codex 내부 `multi_agent`는 읽기 전용 조사·요약에만 사용한다. 실제 백엔드 모델 확인 불가는 `unknown`으로 기록한다.
@@ -51,9 +51,12 @@
 4. 작은 작업의 세션 비용 예외는 **미확정 C-7 논의**이며 이번 규칙 채택에 포함하지 않는다.
 5. 작업자는 담당 Astra pane을 아래로 `vertical split`해 지정 모델로 시작하고 `tui-idle` 확인 뒤 `worker-start --terminal`로 작업을 넣는다. 이 경우 모델 근거는 split 명령과 화면 표시이며 launch 모델값이 남는다고 가정하지 않는다. attach 거부 시 미사용 pane 확인·정리 후 기존 agent/model 방식으로 진행하고 보고한다. 정산·release 뒤 해당 pane을 확인하고 닫는다. 이번 두 세션은 이 결정 전에 시작했으며 **새 분할→attach 절차는 미검증**이다.
 6. 발신 태그는 `[메인 Claude]`, `[GameDev Astra]`, `[Management Astra]`, `[GameDev Sol]`, `[GameDev 검증자]`(Management 작업자는 대응 태그)다. subject/body 첫머리·타 세션 안내 입력에 적용하고 `from_handle`과 대조한다. 태그 없는 터미널 입력만 사용자 직접 지시로 본다.
-7. CLAUDE.md의 “생산 코드와 테스트는 Codex에게”와 Opus 검증자의 테스트 작성 역할 충돌은 이번 spec의 goal 예외로 처리했다. **메인이 CLAUDE.md의 검증자 역할을 정의**하며 Astra는 그 파일을 쓰지 않는다. 전역 라우팅 확정 여부를 별도 표시한다.
+7. CLAUDE.md의 “생산 코드와 테스트는 Codex에게”와 Opus 검증자의 테스트 작성 역할 충돌은 이번 spec의 goal 예외로 처리했다. **메인이 CLAUDE.md의 메인/검증자 역할을 정의하고 쓰기 종료를 통지했다**. Astra는 내용을 수정하지 않고 같은 PR의 커밋만 맡는다.
 8. 세션 진입 배치·handle 공유·태그를 session-handoff와 [RESUME](../../../00_Document/operations/RESUME.md#세션-진입-배치)에 반영한다. 종료 때 Astra를 모두 닫고 다음 메인 세션이 다시 여는 운영도 포함한다.
 9. 작업자·검증자 세션은 할당된 작업 하나 후 닫고 재사용하지 않는다. 정상 완료는 `worker_done`과 Astra 대조 뒤 release·terminal close, 비정상 종료·막힘·무응답은 Astra가 진단을 보존한 뒤 정산·종료한다. 결함 수정·재검증은 항상 새 세션이며 `--terminal`은 새로 연 세션의 최초 작업 연결에만 사용한다.
+10. 사용자 최종 보고는 결정 요청이 있으면 맨 앞 한 문단, 이어 어떤 작업이었나 한 줄 → 필요한 세부 항목마다 3~4줄 → 남은 우려와 크리티컬 여부 순서로 쓴다. 모든 항목을 채울 필요는 없다. Astra→메인 보고 형식은 유지하며 [REPORTING](../../../00_Document/conventions/REPORTING.md)도 맞춘다.
+
+실행 정책도 사용자 승인됐다: 프로세스 한정 PowerShell `-ExecutionPolicy Bypass`는 실행 근거 기록 조건으로 허용하고 영구 정책 변경·Claude 권한 우회는 계속 금지한다.
 
 반영 순서: 검증·보존 검사 종료 통지 → PASS 결과 commit/push/PR → Astra가 AGENTS·goal-loop의 orca-work·session-handoff·ORCA.md diff 작성 → **commit 전 메인 검토** → 같은 PR에 추가. CLAUDE.md는 메인이 보존 검사 종료 후 쓰고 종료를 알리면 Astra가 커밋한다. 전체 반영 후에도 병합은 매 PR 사용자 명시 승인이 필요하다.
 
@@ -62,6 +65,7 @@
 - 메인 착수 지시: `msg_90fa4b6d4ed9`(2026-10-01), 초안 회신 `msg_dc98dd494aca`에 보완 6건을 적용한다. 작업 경로는 `C:/Dev/DawnHolder_Project`, branch는 `bass131/unity-component-null-pilot`이다. `git fetch origin` 후 확인한 base는 `dd5c253763c55a151a78678869a43792d7b7c34f`다.
 - **단계 (a) 완료:** branch 생성·계획을 `3d3968ebc028f1d66db94bae569d55dfc08a42a8`로 커밋했고 메인이 `msg_18c50e734a8e`로 승인했다. local main은 Management worktree에 있으므로 main 전환 없이 origin/main에서 새 branch를 만들었다.
 - 단계 (b): 구현 후 독립 판정 원문 경로·변경 요약·리스크·결정 요청을 메인에게 전달한다. PASS이면 push·PR 생성까지 허용되며 PR 링크·head·CI를 보고한다. 병합은 해당 PR의 사용자 명시 승인 전까지 하지 않는다.
+- 결과 커밋 `3cdaf74c752c065a0b0f55025a7823e62c7ee360`을 push하고 PR154를 초안으로 생성했으며 해당 head의 `dotnet-tests`는 SUCCESS다. 메인은 `rules-review.diff`의 9파일을 확인해 `msg_70bd19145980`으로 승인했고 지정한 중복 4곳을 정본 링크로 줄였다. 두 스킬 validator·상대 파일 링크·diff 공백 검사를 통과했다. 최종 head·CI·PR 상태는 PR과 로컬 근거 폴더 `final-status.json`에서 확인하며 병합은 별도 사용자 승인 대상이다.
 - 단계 (c): 막힘·지정 모델 불가·보고와 실제 수행 불일치·사용자 판단 영역은 즉시 메인에 보고한다. C 논의·다른 제품 후보·전역 설정 변경은 범위 밖이며, 운영 규칙 문서 추가는 위 별도 승인 범위만 따른다.
 
 ### 설계와 파일 소유
@@ -131,6 +135,6 @@ S0·CODE_CONVENTION 후속 초안이며 현재 규칙으로 확정하지 않는�
 
 후속 후보는 [기존 목록의 날짜별 추가 구획](../2026-10-01-refactor-record-corrections/open-items.md#2026-10-01-추가--36fb5ec7-기준)에 둔다. 메뉴 연결·RegisterSend·HUD 2개·UnityClientSession 분리 후보를 유지하며 후보 등록을 구현 승인으로 확대하지 않는다.
 
-PR152 문서 검토 근거는 `.backups/verification/2026-10-01-hierarchical-routing-handoff/`에 보존한다. 이번 코드 판정은 위 B의 별도 근거를 따른다. 현재 후속은 결과 PR, 메인 검토를 거친 운영 규칙 반영, 사용자 보고 이해도·전역 라우팅 판단, 해당 PR 병합 승인이다.
+PR152 문서 검토 근거는 `.backups/verification/2026-10-01-hierarchical-routing-handoff/`에 보존한다. 이번 코드 판정·규칙 검토는 위 B의 별도 근거를 따른다. 사용자 보고 이해도·전역 라우팅 채택 판단은 완료됐으며 남은 통합 경계는 PR154의 최종 CI 확인과 사용자 병합 승인이다.
 
 Management 종료 goal의 PR153 OPEN 스냅샷 정리와 Management RESUME의 태그 규칙은 Management Astra 소유다. Management 적용 단계에서 정리하며 이번 GameDev 변경으로 대신 수정하지 않는다.
