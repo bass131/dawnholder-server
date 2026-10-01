@@ -4,8 +4,9 @@
 
 [Q-1 로드맵](../2026-10-01-readability-baseline/goal.md)의 첫 실행 목표다. 서버 솔루션의 C# 서식을 하나의 고정된 포매터 결과로 맞추고, 동작 보존 증명과 로컬·CI의 재현 가능한 검사로 유지한다. 먼저 P0-A에서 실행 환경·포매터·부작용을 임시 공간에서 실측하고, 그 결과로 이 goal을 보완한 뒤 실제 A 구현을 발행한다.
 
-- 상태: **P0-A 실측·보고·작업자 정산 완료. 아래 보완 goal/A spec의 메인 승인과 WSL SDK 설치의 사용자 승인 대기.** 원본 서식 적용·검사 구현·독립 Opus 검증·PR 생성은 미실행이다.
+- 상태: **P0-A 실측·보고·작업자 정산 완료. A spec은 메인 C-1 조건부 승인, WSL SDK 설치의 사용자 답변 대기.** 메인 지시에 따라 답변 전달 전에는 A Sol을 발행하지 않는다. 원본 서식 적용·검사 구현·독립 Opus 검증·PR 생성은 미실행이다.
 - 근거: 메인 `msg_b7f867c99e0f`(2026-10-01 14:28:26 UTC), [결정 사본](../../../.backups/verification/2026-10-01-readability-format-ci/main-split-decision.json). 사용자 결정은 메인 경유이며 사용자 직접 입력으로 격상하지 않는다.
+- A 조건부 승인: 메인 `msg_ba75a9bdad3a`(2026-10-01 15:28:29 UTC), [승인 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-conditional-approval-c1.json). `2fda71b`의 A안에 아래 C-1을 추가하고 나머지 제안은 승인했다. SDK 설치의 사용자 승인은 아직 전달되지 않았다.
 - 메인이 Q-1 [Fable 원문](../2026-10-01-readability-baseline/goal-review.md)을 전부 읽고 BOM·WSL 동기화·SDK·템플릿 공백 표본 일치를 보고했다. F-3~F-10/F-15와 관련 참고를 아래에 반영한다. 이후 `msg_69bc8300f5b7`의 Q-1B 조건부 자체 분석기/위반 수 ratchet 결정은 로드맵으로 인계하며 Q-1A 범위를 바꾸지 않는다.
 - checkout: `C:/Dev/DawnHolder_Project`. 실행 branch는 기존 준비 branch `bass131/q1-readability-20261001`을 **Q-1A 전용으로 배정**한다. Q-1은 실행 없는 로드맵으로 바뀌며 B/C는 별도 branch를 사용한다.
 - base: 이번 진입에서 다시 fetch한 `origin/main` = `0239290d6f423dbfe91c42c3fffd0789f56de26f` (PR158 병합). 기존 준비 커밋 `30147f3`(초안·CURRENT·메인 CLAUDE O-5), `d40ba0b`(검토 원문·인계)을 보존했다.
@@ -91,15 +92,15 @@ Astra의 [원본·보호 대조](../../../.backups/verification/2026-10-01-reada
 
 Task `task_df82d0ec21ff`, Dispatch `ctx_1025421355cc`, terminal `term_75d525b0-0f90-46d6-83be-f80c520d735e`, incarnation `b1f98cfa-c65d-4cdf-97e2-b68824058936`. 최초 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 화면은 GPT-6.1-Sol xhigh, backend는 unknown이었다. [worker_done](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-worker-done.json) `msg_4761fff2b89c`(2026-10-01 15:20:57 UTC)의 succeeded는 **P0-A 계약 완료**다. [release](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-sol-1-release.json)는 external_terminal/retained/processAction none이었고, runtime·incarnation·경로를 다시 대조한 뒤 [해당 pane close](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-sol-1-close.json)의 ptyKilled=true를 확인했다. Delivery 전체를 ack했고 이 세션은 재사용하지 않는다.
 
-## A 구현 제안 — 메인 승인 대기
+## A 구현 계약 — C-1 조건부 승인, SDK 답변 대기
 
-### 승인할 실행 경로·SDK·파일 소유권
+### 실행 경로·SDK·파일 소유권
 
-P0-A 근거로 **원본 적용은 Windows native 10.0.301**, **검사는 원본 Git manifest → 전용 WSL 복제 → 동일 SDK**를 제안한다. 원본 역복사 도구는 이 A안에 넣지 않는다. native가 실제 적용 때 막히면 상태를 메인에 올리고 별도 경로를 승인받는다. `.editorconfig`의 새 서식 속성은 네 소스 트리에만 적용해 P0의 임시 root `[*.cs]` 절을 그대로 Unity까지 확장하지 않는다. PacketFormat 국소 false와 생성 소스 제외/hash 검사를 유지한다.
+메인이 승인한 A안은 **원본 적용 Windows native 10.0.301**, **검사 원본 Git manifest → 전용 WSL 복제 → 동일 SDK**다. 원본 역복사 도구는 포함하지 않는다. native가 실제 적용 때 막히면 상태를 메인에 올리고 별도 경로를 승인받는다. `.editorconfig`의 새 서식 속성은 네 소스 트리에만 적용해 P0의 임시 root `[*.cs]` 절을 그대로 Unity까지 확장하지 않는다. PacketFormat 국소 false와 생성 소스 제외/hash 검사를 유지한다.
 
-**SDK 설치 사용자 승인 요청:** Linux x64 .NET SDK **10.0.301**을 `/home/bass1/.local/share/dawnholder/dotnet-10.0.301/`에 추가한다. 실행파일은 그 경로의 `dotnet`, SDK 위치는 `sdk/10.0.301/`이다. 다운로드·SDK와 동봉 runtime/host·전용 디스크 사용이 생긴다. 기존 `/home/bass1/.dotnet`과 전역 PATH·시스템 설정은 바꾸지 않고 명시 실행파일/`DAWNHOLDER_DOTNET`만 사용한다. 설치 출처·버전·파일 근거·용량과 실제 영향은 승인된 구현자가 기록한다. 사용자 승인 전달 전에는 설치하지 않는다.
+**SDK 설치 사용자 답변 대기:** Linux x64 .NET SDK **10.0.301**을 `/home/bass1/.local/share/dawnholder/dotnet-10.0.301/`에 추가하는 안이다. 실행파일은 그 경로의 `dotnet`, SDK 위치는 `sdk/10.0.301/`이다. 다운로드·SDK와 동봉 runtime/host·전용 디스크 사용이 생긴다. 기존 `/home/bass1/.dotnet`과 전역 PATH·시스템 설정은 바꾸지 않고 명시 실행파일과 아래 C-1 탐색 순서를 사용한다. 설치 출처·버전·파일 근거·용량과 실제 영향은 승인된 구현자가 기록한다. 메인이 사용자에게 승인 요청을 올렸으며 답변 전달 전에는 설치하거나 A Sol을 발행하지 않는다.
 
-`global.json`은 정확히 `10.0.301`, `rollForward: disable`, CI는 `global-json-file: global.json`으로 바꾸는 안이다. 진입점에서 실제 SDK가 다르면 실패하며 CI 실제 값도 로그에 남긴다. 설치 후 **원본 적용 전에** 동일 입력·설정으로 Windows/WSL format을 임시 공간에서 비교한다. 두 환경 일치·누락 없음·의미 차이 없음 확인이 선행조건이다. 알려진 81파일과 다른 변경은 원인을 보고하고 임의 포함하지 않는다. process 한정 task CLI home/package/http/plugins/**scratch** 경로와 `DOTNET_GENERATE_ASPNET_CERTIFICATE=false`를 첫 dotnet 호출부터 지정한다.
+`global.json`은 정확히 `10.0.301`, `rollForward: disable`, CI는 `global-json-file: global.json`으로 바꾸는 계약이다. 진입점에서 실제 SDK가 다르면 실패하며 CI 실제 값도 로그에 남긴다. 설치 후 **원본 적용 전에** 동일 입력·설정으로 Windows/WSL format을 임시 공간에서 비교한다. 두 환경 일치·누락 없음·의미 차이 없음 확인이 선행조건이다. 알려진 81파일과 다른 변경은 원인을 보고하고 임의 포함하지 않는다. process 한정 task CLI home/package/http/plugins/**scratch** 경로와 `DOTNET_GENERATE_ASPNET_CERTIFICATE=false`를 첫 dotnet 호출부터 지정한다.
 
 | 소유자 | 경로·책임 |
 |---|---|
@@ -126,7 +127,16 @@ CI는 실제 checkout SHA와 그 작업 트리에서 Git 입력 manifest를 새�
 
 현재 루트 4개에 `.gitattributes`, `.github/workflows/dotnet-tests.yml`, task별 manifest를 명시적으로 더한다. 앞의 두 파일은 MSBuild 필수 입력이 아니라 정책/CI 계약의 대조 자료다. 새 도구에 필요한 props/targets/NuGet.config/lock이 추가되면 그 파일도 명시 목록·hash에 넣는다. 하위 editorconfig와 도구 소스는 네 트리 범위에 포함하되 secrets·bin/obj를 원본에서 무차별 복사하지 않는다.
 
-검사 진입점은 실제 `dotnet --version`을 기록하고 승인된 고정값과 다르면 실패한다. 위 10.0.301 pin/CI 제안은 아직 구현·승인 완료가 아니다. CI의 formatter 검사는 로컬과 동일한 SDK·옵션·파일 목록·설정을 사용하며 최신 main과의 통합 결과에서도 통과해야 한다. P0의 metadata 누락을 넘겨받지 않도록 정식 증명/빌드 전에 필요한 명시적 restore를 수행하고 결과를 기록한다.
+검사 진입점은 실제 `dotnet --version`을 기록하고 승인된 고정값과 다르면 실패한다. 위 10.0.301 pin/CI 계약은 메인 조건부 승인됐으나 구현·SDK 설치·실행은 미완료다. CI의 formatter 검사는 로컬과 동일한 SDK·옵션·파일 목록·설정을 사용하며 최신 main과의 통합 결과에서도 통과해야 한다. P0의 metadata 누락을 넘겨받지 않도록 정식 증명/빌드 전에 필요한 명시적 restore를 수행하고 결과를 기록한다.
+
+### C-1 — 기존 WSL 표준 실행의 SDK 해석 보존
+
+현재 `sync-wsl.sh`는 `DAWNHOLDER_DOTNET`, PATH의 `dotnet`, 마지막으로 `~/.dotnet/dotnet`을 고른다. 현재 fallback SDK는 10.0.300이므로 global.json만 10.0.301로 고정하면 기존 build/test/run 경로가 실패한다. 메인은 A에서 이 호환성 문제를 함께 해소하도록 조건을 붙였다. 문서에 기록한 현재 문제이며 스크립트 수정 완료가 아니다.
+
+1. SDK 선택 순서는 **명시한 `DAWNHOLDER_DOTNET` → 승인된 전용 `/home/bass1/.local/share/dawnholder/dotnet-10.0.301/dotnet` → 기존 PATH 탐색/`~/.dotnet/dotnet` fallback**으로 바꾼다. 명시 override가 잘못됐거나 선택 SDK가 요구 버전과 다르면 다른 SDK로 조용히 우회하지 않고 명확히 실패한다.
+2. 복제본의 `global.json`이 적용되는 작업 경로에서 선택 실행파일과 실제 SDK를 확인한다. 요구 버전·선택 경로·관측 버전 또는 선택 실패 원인을 오류에 남긴다. 버전 확인 실패를 build/test 성공으로 처리하지 않는다. build/test/run/bot의 공통 SDK 해석에 적용하고, 기존 sync/소유 marker/lock/경로 안전 경계를 유지한다.
+3. `DEVELOPMENT.md`의 현재 실행 안내에 탐색 순서·설치 위치·override·버전 불일치 실패를 반영한다. **과거 ADR의 `~/.dotnet` 명령은 역사 기록으로 보존**하며 수정하지 않는다. 전역 PATH나 기존 SDK 설치를 바꾸지 않는다.
+4. 신규 독립 Opus는 `DAWNHOLDER_DOTNET`과 PATH의 dotnet에 기대지 않는 표준 경로에서 `sync-wsl.sh build`와 `test`가 실제 10.0.301로 통과하는지 확인한다. override 우선순위·잘못된 버전/부재의 실패 경계도 독립 테스트로 검증한다. Windows의 설치된 10.0.301과 CI의 global-json-file에서도 동일 pin의 실제 build/test 결과·명령·SDK를 기록한다. 미실행이나 정책 차단은 별도로 보고하며 서버/게임/DB 실행으로 범위를 확대하지 않는다.
 
 Windows native 적용 소유자 한 명이 manifest의 수기 C#만 대상으로 원본의 사전 hash가 여전히 같은지 확인한다. 원본이 달라졌거나 범위 밖 파일이 나오면 덮어쓰지 않고 중단·보고한다. WSL 역반영은 현재 제안에 포함하지 않는다.
 
@@ -177,6 +187,6 @@ P0-A에서 Shared 8파일 변경, ClientNet 0파일을 확인했다. **Shared의
 
 ## 다음 행동과 미실행
 
-이 보완 goal의 커밋·P0-A 최종 원문·리스크·결정 요청을 메인에 보낸다. **(1) A 구현 제안 승인, (2) 전용 WSL SDK 10.0.301 설치의 사용자 승인 전달**을 기다린다. 승인 근거는 P0-A 승인 `msg_8789c1a1fb96`가 별도로 요구한 `보고 → goal 보완 → 메인 승인 → 새 A Sol` 경계와 이 goal의 SDK 설치 사용자 승인 조건이다. 답변 전에는 A 세션을 발행하거나 설치/원본 적용하지 않는다.
+C-1과 조건부 승인 상태를 반영한 goal 커밋을 메인에 보고한다. A 구현안의 메인 승인은 `msg_ba75a9bdad3a`로 받았으므로 반복 요청하지 않는다. **남은 발행 경계는 전용 WSL SDK 10.0.301 설치에 대한 사용자 답변의 메인 전달**이다. 같은 메시지가 “A Sol 발행은 WSL SDK 설치에 대한 사용자 답을 받은 뒤”라고 명시했다. 전달 전에는 A 세션·SDK 설치·원본 적용을 시작하지 않으며, 설치가 승인되면 C-1을 포함한 새 A Sol 작업을 발행한다. 거절이나 다른 조건이 전달되면 그 결정에 맞춰 실행 계획을 조정한다.
 
 P0-A 임시 formatter 실행과 관측 helper build만 완료했다. 원본 서식 적용·SDK 설치·제품/테스트 수정·제품 build/test·고정 digest·전수 증명·Opus 독립 판정·CI 실행·DLL 갱신·PR·병합은 미실행이다. 이 보완에서 tracked 변경은 goal 기록뿐이다. Q-1B의 조건부 자체 분석기/위반 수 ratchet 결정은 로드맵에 유지하며 A 승인으로 B를 시작하지 않는다.
