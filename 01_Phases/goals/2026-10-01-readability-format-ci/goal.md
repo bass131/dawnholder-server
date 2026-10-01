@@ -4,17 +4,17 @@
 
 [Q-1 로드맵](../2026-10-01-readability-baseline/goal.md)의 첫 실행 목표다. 서버 솔루션의 C# 서식을 하나의 고정된 포매터 결과로 맞추고, 동작 보존 증명과 로컬·CI의 재현 가능한 검사로 유지한다. 먼저 P0-A에서 실행 환경·포매터·부작용을 임시 공간에서 실측하고, 그 결과로 이 goal을 보완한 뒤 실제 A 구현을 발행한다.
 
-- 상태: **Q-1A goal 작성. P0-A Sol 발행은 메인 승인 대기.** 실측·서식 적용·검사 구현·독립 Opus 검증·PR 생성은 미실행이다.
+- 상태: **P0-A 실측·보고·작업자 정산 완료. 아래 보완 goal/A spec의 메인 승인과 WSL SDK 설치의 사용자 승인 대기.** 원본 서식 적용·검사 구현·독립 Opus 검증·PR 생성은 미실행이다.
 - 근거: 메인 `msg_b7f867c99e0f`(2026-10-01 14:28:26 UTC), [결정 사본](../../../.backups/verification/2026-10-01-readability-format-ci/main-split-decision.json). 사용자 결정은 메인 경유이며 사용자 직접 입력으로 격상하지 않는다.
 - 메인이 Q-1 [Fable 원문](../2026-10-01-readability-baseline/goal-review.md)을 전부 읽고 BOM·WSL 동기화·SDK·템플릿 공백 표본 일치를 보고했다. F-3~F-10/F-15와 관련 참고를 아래에 반영한다. 이후 `msg_69bc8300f5b7`의 Q-1B 조건부 자체 분석기/위반 수 ratchet 결정은 로드맵으로 인계하며 Q-1A 범위를 바꾸지 않는다.
 - checkout: `C:/Dev/DawnHolder_Project`. 실행 branch는 기존 준비 branch `bass131/q1-readability-20261001`을 **Q-1A 전용으로 배정**한다. Q-1은 실행 없는 로드맵으로 바뀌며 B/C는 별도 branch를 사용한다.
 - base: 이번 진입에서 다시 fetch한 `origin/main` = `0239290d6f423dbfe91c42c3fffd0789f56de26f` (PR158 병합). 기존 준비 커밋 `30147f3`(초안·CURRENT·메인 CLAUDE O-5), `d40ba0b`(검토 원문·인계)을 보존했다.
 - evidence: `.backups/verification/2026-10-01-readability-format-ci/` (Git 제외). 이전 원문·보호 기준·Fable 정산은 인접 `2026-10-01-readability-baseline/`에 있다. 실제 결과는 이 goal 한 곳에 기록한다.
-- coordinator Run `run_a3a4a4d552d1`; 현재 실행 중인 worker는 없다. 새 worker는 새 Task/Dispatch로 발행한다. 메인 회신 주소도 이 Run이다.
+- coordinator Run `run_a3a4a4d552d1`; P0-A worker는 정산·종료했고 현재 실행 중인 worker는 없다. A는 승인 뒤 새 Task/Dispatch로 발행한다. 메인 회신 주소도 이 Run이다.
 
 ## 범위와 불변 조건
 
-`Dawnholder.slnx`의 8개 프로젝트와 `02_Server`, `04_ClientNet`, `98_Shared`, `99_Tools`의 수기 C# Compile 입력을 대상으로 한다. `GameServer.Tests`와 도구·봇을 포함한다. 검토자의 정적 집계는 추적 C# 222파일이며 실제 포매터 입력·생성물·변경 예정 수는 P0-A가 확정한다. 정적 파일 수를 실제 분석 완료 수로 쓰지 않는다.
+`Dawnholder.slnx`의 8개 프로젝트와 `02_Server`, `04_ClientNet`, `98_Shared`, `99_Tools`의 수기 C# Compile 입력을 대상으로 한다. `GameServer.Tests`와 도구·봇을 포함한다. P0-A에서 원본 Git C# 목록과 8개 프로젝트의 초기 Compile 합집합 **222파일 = 수기 221 + GenPackets 1**의 일치를 확인했다. 원본 입력 manifest는 설정 등을 포함해 240개다. 추가 검사 도구/독립 테스트는 아래의 별도 프로젝트 목록으로 집계하며 원래 8개 프로젝트의 수치를 바꾸어 보고하지 않는다.
 
 - A 관련 파일: 루트/하위 `.editorconfig`, `global.json`, `.github/workflows/dotnet-tests.yml`, `99_Tools/sync-wsl.sh`, 필요한 서식 검사·증명 도구, `.git-blame-ignore-revs`, 해당 C# 소스, `CODE_CONVENTION.md`의 서식 부분, `DEVELOPMENT.md`의 실행 안내, 이 goal/CURRENT. 세부 도구 경로는 P0-A 후 A spec에서 고정한다.
 - `98_Shared/Protocol/Generated/GenPackets.cs`, SDK 생성물, `obj`/`bin`은 수기 소스와 별도 목록으로 집계하고 보존한다. 프로토콜 생성 코드를 재생성하거나 정리하지 않는다. `99_Tools/PacketGenerator/PacketFormat.cs`는 수기 템플릿 소스이며 생성물로 오인해 제외하지 않는다.
@@ -28,21 +28,23 @@
 
 | 속성 | 값 | 근거와 보존 조건 | P0-A 예상 변경 파일 수 |
 |---|---|---|---|
-| `end_of_line` | `lf` | `.gitattributes`의 C# 정책과 일치. 검토 정적 표본은 222파일 모두 LF | 미측정 |
-| `charset` | `utf-8` (BOM 없음) | BOM 제거 3파일을 개별 기록: Network의 `JobQueue.cs`/`RecvBuffer.cs`, PacketGenerator의 `Program.cs` | 실측 대기(검토 사전 관측 3파일) |
-| `indent_style` / `indent_size` | `space` / `4` | 기존 코드 다수·도구 기본값. 범위 밖 Unity에는 새 정책을 확장하지 않음 | 미측정 |
-| `insert_final_newline` | `true` | 파일 끝 개행을 통일하고 전후 내용을 증명 | 미측정 |
-| `trim_trailing_whitespace` | `true` | 아래 템플릿 파일의 국소 보호를 함께 적용 | 미측정 |
+| `end_of_line` | `lf` | `.gitattributes`의 C# 정책과 일치. P0-A 시작/최종 222파일 모두 LF | 0 |
+| `charset` | `utf-8` (BOM 없음) | Network의 `JobQueue.cs`/`RecvBuffer.cs`, PacketGenerator의 `Program.cs` | 3 |
+| `indent_style` / `indent_size` | `space` / `4` | 기존 대응 줄의 선행 공백 변화. 속성만 분리한 인과 실험은 아님. Unity에는 새 정책을 확장하지 않음 | 3 (layout 변화와 중복) |
+| `insert_final_newline` | `true` | Network의 `Connector.cs`/`SendBuffer.cs` | 2 |
+| `trim_trailing_whitespace` | `true` | 아래 템플릿 파일의 국소 보호를 함께 적용 | 0 |
 
-`PacketFormat.cs`의 문자열 내부 줄 끝 공백은 생성 바이트의 일부다. 이 파일에만 `trim_trailing_whitespace = false`를 두는 국소 보호를 우선안으로 삼고, P0-A에서 실제 포매터/편집기 속성 영향을 확인한다. 국소 설정으로 보존할 수 없으면 해당 속성을 이 파일에 도입하지 않는 방안을 메인에 올린다. 템플릿 내용을 바꾸거나 digest 기대값을 재산출해 통과시키지 않는다.
+SDK 기본 syntax whitespace/layout의 `WHITESPACE` 진단은 80파일/698건, 전체 중복 제거 변경은 **81파일**이었다. 속성별 숫자를 합산하지 않는다. 설치 SDK 기본 옵션의 reflection은 assembly version conflict로 실패해 개별 기본값 수치를 전부 확인하지 못했다. A는 추가 layout 값을 임의 지정하지 않고 승인될 정확 SDK의 CLI 출력을 계약으로 삼는 안이다.
+
+`PacketFormat.cs`의 문자열 내부 줄 끝 공백은 생성 바이트의 일부다. 이 파일에만 `trim_trailing_whitespace = false`를 두는 국소 보호를 우선안으로 삼았다. P0-A에서 CLI 보존을 관측했으며 편집기 저장 동작은 미측정이다. A에서 보존할 수 없으면 해당 속성을 이 파일에 도입하지 않는 방안을 메인에 올린다. 템플릿 내용을 바꾸거나 digest 기대값을 재산출해 통과시키지 않는다.
 
 고정 판정 근거는 `02_Server/GameServer.Tests/Tools/PacketGeneratorExitTests.cs`의 `ValidInput_ExitsZeroAndPreservesBaselineOutput`이다. 정규화 후 기대 SHA256 `5725B8CCC663816C8EA816DBCEBB2AF475BE21528CC28F3F110AFB109E630F5B`를 A와 후속 C3에서 유지한다. 검사 성공은 실제 실행 뒤에만 기록한다.
 
 포매터 CLI 결과를 서식의 주 판정으로 둔다. IDE0055는 보조이며, 두 결과가 다르면 CLI/SDK/설정 차이를 조사해 메인에 보고한다. 임의 severity·설정 완화로 맞추지 않는다. 추가 레이아웃 값은 설치 SDK의 기본값을 확인해 기록하고 다수와 다른 값이 필요하면 메인에 올린다.
 
-## P0-A — 승인 뒤 수행할 좁은 실측 계약
+## P0-A — 수행한 좁은 실측 계약
 
-담당은 **신규 Sol `gpt-6.1-sol` xhigh 한 세션**이다. 아직 발행하지 않았다. 쓰기는 이 goal의 evidence와 저장소 밖 전용 임시 Windows/WSL 공간으로 한정한다. 추적 파일은 바꾸지 않고, 원본에 formatter를 적용하거나 결과를 역복사하지 않는다. 필요한 원본은 읽기 전용으로 수집하며 secrets·로컬 Claude 설정·사용자 Unity 변경을 복제하지 않는다.
+메인 `msg_8789c1a1fb96`가 승인한 **신규 Sol `gpt-6.1-sol` xhigh 한 세션**이 아래 계약으로 수행했다. 쓰기는 이 goal의 evidence와 저장소 밖 전용 임시 Windows/WSL 공간으로 한정했다. 추적 파일·원본 formatter 적용·역복사·SDK 설치는 수행하지 않았다. 필요한 원본만 읽어 수집했고 secrets·로컬 Claude 설정·사용자 Unity 변경은 복제하지 않았다.
 
 | 실측 | 입력·관찰할 것 | 산출물/통과 의미 |
 |---|---|---|
@@ -56,11 +58,65 @@
 
 P0-A는 기존 프로젝트 의존성의 필요한 restore와 임시 공간의 포매터·부수적인 프로젝트 로드/컴파일까지만 수행한다. Sonar 설치·라이선스 다운로드·전체 게임/서버/DB 실행·포트 7777·Unity 실행은 수행하지 않는다. NuGet 캐시 변경은 부작용으로 기록하고, 가능한 범위에서는 task 전용 캐시를 사용한다. 기존 캐시·다른 WSL 작업 공간을 삭제하지 않는다.
 
-SDK를 새로 설치하거나 OS/전역 설정을 바꾸지 않는다. Windows 10.0.301·WSL 10.0.300은 Fable의 당시 관측일 뿐이며 시작 시 다시 확인한다. 공통으로 쓸 수 있는 기존 SDK가 없으면 **필요한 정확 버전·설치 위치·영향을 사용자 승인 항목으로 메인에 보고**한다. 설치나 승인 부재를 성공으로 처리하지 않는다.
+SDK를 새로 설치하거나 OS/전역 설정을 바꾸지 않는 계약을 유지했다. P0-A가 다시 확인한 실제 선택값도 Windows 10.0.301·WSL 10.0.300이며 공통 설치 SDK가 없었다. **정확 버전·설치 위치·영향을 아래 사용자 승인 항목으로 메인에 보고**한다. 설치나 승인 부재를 성공으로 처리하지 않는다.
 
 P0-A 산출물은 실행 보고와 원시 근거 경로, 정확한 snapshot/SDK/옵션, 속성 표의 예상 변경 수, 선택할 실행 경로·고정 버전/rollForward/CI 제안, 원본 불변 결과다. `P0-A 보고 → Astra goal 보완 → 메인 승인 → 별도의 신규 A 구현 Sol` 순서로 진행한다. P0 세션을 A 구현에 재사용하지 않는다.
 
-## A 구현 설계 — P0-A 후 확정할 계약
+## P0-A 결과와 정산
+
+- 원문: [P0-A report.md](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-sol-1/report.md), [명령 인덱스](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-sol-1/commands.md), [근거 파일 manifest](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-sol-1/artifact-manifest.json). 최종 원문 SHA256 `735627B45D31C46AC70FC1149AF799B0F534119B606FD48957303486E4BFE7AA`를 Astra가 전부 읽었다. 독립 Opus 판정 원문은 아직 없다.
+- 고정 입력 HEAD `95fe8f769b701d79bf672abdd1c36e1665bff2df`. Windows temp `C:/Users/bass1/AppData/Local/Temp/dawnholder-p0a-task_df82d0ec21ff/`, WSL temp `/home/bass1/.cache/dawnholder/p0a/task_df82d0ec21ff/`. 원본 Git manifest 240개와 WSL 복제 hash가 모두 일치했다. 자료는 보존하며 다른 공간이나 캐시를 삭제하지 않았다.
+- Windows 설치 SDK `8.0.425/10.0.204/10.0.301`, WSL `10.0.300`. `10.0.301 + rollForward:disable` probe는 Windows exit 0, WSL exit 155(SDK 부재). CI는 설정만 확인했고 실제 runner는 미실행이다.
+- 양쪽 모두 slnx whitespace verify **exit 2/81파일**, 임시 적용 **exit 0/81파일**, 재검사 **exit 0/report []**. 최종 C# 222개 바이트가 환경 간 동일했다. 다른 SDK의 같은 snapshot 결과이며 동일 SDK 재현을 증명하지 않는다. Windows native formatter의 SAC 차단은 없었지만 제품 build/실행의 정책 상태는 미확인이다.
+
+| 모듈 | 수기 C# | 변경 예상 |
+|---|---:|---:|
+| GameServer.Tests | 87 | 32 |
+| GameServer | 67 | 18 |
+| Network | 7 | 5 |
+| ClientNet | 7 | 0 |
+| Shared | 16 | 8 |
+| BgmComposer | 13 | 8 |
+| headless-bot | 22 | 9 |
+| PacketGenerator | 2 | 1 |
+| 합계 | 221 | 81 |
+
+`PacketFormat.cs`는 국소 trim=false와 임시 true 대조 모두 원본 hash가 같고 문자열 내부 줄 끝 공백 3줄을 보존했다. 편집기 저장 동작은 미측정이므로 **국소 false 유지**를 A안으로 제안한다. `GenPackets.cs`는 명시 exclude와 hash로 보존했다. 각 formatter snapshot의 design-time obj 39개 중 SDK 생성 C# 23개는 별도 집계했다. CLI의 245파일을 수기 입력 수로 사용하지 않는다. 참조 metadata 누락 메시지가 있어 제품 restore/build·완전한 참조 바인딩 성공으로 확대하지 않는다.
+
+실제 21파일/Debug·Release 42관측의 token 원문·리터럴 값·주석·directive 표본은 일치했다. 전체 실제 Workspace ParseOptions를 취득한 전수 증명은 아니다. `CheatBuildGateTests.cs`의 Debug 분기 쉼표 뒤 공백 2→1이 Release DisabledTextTrivia 차이로 관측됐다. A는 해당 구간이 다른 실제 조건에서 활성화될 때 보존됨을 대응시켜 확인해야 한다. 단순 whitespace 제거로 비활성 텍스트를 통과시키지 않는다. 보조 diff -w의 16개 nonzero는 BOM 3개와 initializer 줄 분리 13개로 분류됐고 모두 표본에 포함됐다. PacketGenerator digest 테스트는 미실행이다.
+
+부작용은 다음과 같이 남긴다. task NuGet package cache는 양쪽 0이며 WSL HTTP cache 2개와 scratch lock 24개가 생겼다. 초기 기본 scratch(Windows system temp/WSL `/tmp/NuGetScratchbass1`)의 실제 쓰기는 사전 inventory가 없어 미확인이다. 이후 task scratch를 명시했다. 첫 formatter 버전 실행은 개발용 인증서 설치 안내와 task CLI home의 0바이트 sentinel을 만들었다. 새 인증서 파일은 발견되지 않았고 사전 전수 목록 증명은 없다. **메인 독립 대조: 일치(기본 저장소 신규 없음), 방법: X509Store 읽기·WSL 디렉터리 timestamp**([전달 원문](../../../.backups/verification/2026-10-01-readability-format-ci/main-certificate-crosscheck.json)). 이후 process 한정 `DOTNET_GENERATE_ASPNET_CERTIFICATE=false`를 사용했고 인증서 삭제·신뢰 변경·개인키 export는 하지 않았다. 원본/임시 제품 DLL 생성·갱신은 없었고 관측 helper의 자체 DLL/restore는 별도다.
+
+Astra의 [원본·보호 대조](../../../.backups/verification/2026-10-01-readability-format-ci/astra-p0a-source-preservation.json)에서 입력 240개, 보호 5파일, skip-worktree 3개, stash 2개가 기준과 일치했고 tracked status 0이었다. [두 추적 DLL hash](../../../.backups/verification/2026-10-01-readability-format-ci/astra-p0a-dll-preservation.json)도 일치했다. 이는 실행 자료와 보존 여부의 대조이며 독립 제품 검증을 대신하지 않는다.
+
+Task `task_df82d0ec21ff`, Dispatch `ctx_1025421355cc`, terminal `term_75d525b0-0f90-46d6-83be-f80c520d735e`, incarnation `b1f98cfa-c65d-4cdf-97e2-b68824058936`. 최초 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 화면은 GPT-6.1-Sol xhigh, backend는 unknown이었다. [worker_done](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-worker-done.json) `msg_4761fff2b89c`(2026-10-01 15:20:57 UTC)의 succeeded는 **P0-A 계약 완료**다. [release](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-sol-1-release.json)는 external_terminal/retained/processAction none이었고, runtime·incarnation·경로를 다시 대조한 뒤 [해당 pane close](../../../.backups/verification/2026-10-01-readability-format-ci/p0a-sol-1-close.json)의 ptyKilled=true를 확인했다. Delivery 전체를 ack했고 이 세션은 재사용하지 않는다.
+
+## A 구현 제안 — 메인 승인 대기
+
+### 승인할 실행 경로·SDK·파일 소유권
+
+P0-A 근거로 **원본 적용은 Windows native 10.0.301**, **검사는 원본 Git manifest → 전용 WSL 복제 → 동일 SDK**를 제안한다. 원본 역복사 도구는 이 A안에 넣지 않는다. native가 실제 적용 때 막히면 상태를 메인에 올리고 별도 경로를 승인받는다. `.editorconfig`의 새 서식 속성은 네 소스 트리에만 적용해 P0의 임시 root `[*.cs]` 절을 그대로 Unity까지 확장하지 않는다. PacketFormat 국소 false와 생성 소스 제외/hash 검사를 유지한다.
+
+**SDK 설치 사용자 승인 요청:** Linux x64 .NET SDK **10.0.301**을 `/home/bass1/.local/share/dawnholder/dotnet-10.0.301/`에 추가한다. 실행파일은 그 경로의 `dotnet`, SDK 위치는 `sdk/10.0.301/`이다. 다운로드·SDK와 동봉 runtime/host·전용 디스크 사용이 생긴다. 기존 `/home/bass1/.dotnet`과 전역 PATH·시스템 설정은 바꾸지 않고 명시 실행파일/`DAWNHOLDER_DOTNET`만 사용한다. 설치 출처·버전·파일 근거·용량과 실제 영향은 승인된 구현자가 기록한다. 사용자 승인 전달 전에는 설치하지 않는다.
+
+`global.json`은 정확히 `10.0.301`, `rollForward: disable`, CI는 `global-json-file: global.json`으로 바꾸는 안이다. 진입점에서 실제 SDK가 다르면 실패하며 CI 실제 값도 로그에 남긴다. 설치 후 **원본 적용 전에** 동일 입력·설정으로 Windows/WSL format을 임시 공간에서 비교한다. 두 환경 일치·누락 없음·의미 차이 없음 확인이 선행조건이다. 알려진 81파일과 다른 변경은 원인을 보고하고 임의 포함하지 않는다. process 한정 task CLI home/package/http/plugins/**scratch** 경로와 `DOTNET_GENERATE_ASPNET_CERTIFICATE=false`를 첫 dotnet 호출부터 지정한다.
+
+| 소유자 | 경로·책임 |
+|---|---|
+| 새 A Sol | `99_Tools/format-check.ps1`: Windows 원본 Git의 commit/상태/파일·설정 hash manifest 생성 및 WSL 검사 호출. source 쓰기와 검사를 분리 |
+| 새 A Sol | `99_Tools/format-check.sh`: WSL·CI 검사 진입점. manifest/경로/SDK 검증, formatter exit/report, 정식 보존 도구 실행과 근거 출력 |
+| 새 A Sol | `99_Tools/Formatting/Formatting.csproj`와 해당 디렉터리: Roslyn 보존 검사 CLI. manifest 해석·경로 검증·구문 비교 책임을 분리하며 실제 필요한 경계만 추상화 |
+| 새 A Sol | 기존 설정/CI/sync-wsl, 범위 안 수기 C#의 기계적 서식, 필요한 Shared DLL, ignore-revs, CODE_CONVENTION/DEVELOPMENT 실행 안내 |
+| 새 독립 Opus | `99_Tools/Formatting.Tests/`의 독립 테스트 프로젝트·fixture와 필요한 동작 보존 테스트. 제품 결함은 번호로 반환하고 검사 구현은 쓰지 않음 |
+| Astra | 이 goal과 설계·위임·Git/PR. `CLAUDE.md`는 메인 소유 유지 |
+
+검사 도구와 독립 테스트 프로젝트는 원래 8개 제품 프로젝트와 별도로 build/format/test하며 CI에 명시적으로 포함한다. fixture는 제품 Compile에 섞이지 않는 입력 파일로 다룬다. 새 도구 자체의 C#도 formatter/기존 적용 규칙/독립 리뷰 대상이다. 의존성은 구현 시 정확 버전·근거를 기록하며 Sonar나 Q-1B 규칙 구현을 추가하지 않는다.
+
+CI는 실제 checkout SHA와 그 작업 트리에서 Git 입력 manifest를 새로 만든다. Windows와 CI는 같은 manifest schema·파일 열거/경로 정규화 구현을 공유하고, Windows가 만든 과거 manifest를 CI에 그대로 재사용하지 않는다. Git이 없는 WSL 복제본은 전달받은 manifest만 검증한다. PR의 실제 checkout이 합성 merge인지와 SHA를 기록하며 전체 범위를 검사하므로 B의 변경 파일/merge-base 판정을 미리 구현하지 않는다.
+
+정식 보존 CLI는 같은 고정 SDK의 Workspace에서 **프로젝트별 실제 ParseOptions/전처리 기호**를 얻는다. source commit·작업 상태·파일/설정 hash·Compile 집합의 누락, 허용 목록 밖 경로, 경로 탈출, SDK/입력 불일치, load/parse 실패·결과 누락은 실패로 처리한다. Debug/Release의 token 종류/원문 순서·string/char/interpolated 값·주석본문·directive를 비교한다. 변경된 비활성 구간은 실제 조건에서 활성인 대응 구간의 보존 증명이 있어야 하며, 어느 대상 조건에서도 증명할 수 없으면 동일 원문을 요구하고 차이는 중단·보고한다. raw/verbatim 문자열·문서 주석·BOM/EOF 경계는 독립 fixture로 검증한다.
+
+한 신규 A Sol의 작업 안에서도 쓰기와 Astra의 Git checkpoint를 순차 진행한다. 설정·도구·문서를 먼저 분리하고, 원본 적용 후 **기존 수기 C#만** 공백 커밋으로 만든다. Sol은 해당 checkpoint에서 쓰기를 멈추고 Astra가 실제 공백 SHA를 회신한 뒤 `.git-blame-ignore-revs`를 작성한다. 필요한 DLL은 별도 커밋이다. Sol은 commit/push하지 않는다. 최종 쓰기 종료·worker_done·정산 뒤에만 신규 Opus에게 테스트 쓰기를 넘긴다.
 
 ### 로컬·WSL·CI 입력과 SDK
 
@@ -68,9 +124,11 @@ P0-A 산출물은 실행 보고와 원시 근거 경로, 정확한 snapshot/SDK/
 
 `sync-wsl.sh`는 현재 네 소스 트리와 루트 파일 4개만 복사한다. A에 필요한 모든 루트 입력을 명시적으로 동기화하는 변경을 범위에 포함한다. `.git`을 무조건 복제하거나 루트 전체를 역동기화하지 않는다. 기존 원본 소유 marker·경로 검증·lock·4트리 한정 삭제 경계를 보존한다. 검사 전 원본과 복제본의 설정 hash가 같아야 한다.
 
-검사 진입점은 실제 `dotnet --version`을 기록하고 선택한 고정값과 다르면 실패한다. `global.json` 정확 버전, `rollForward` 축소, CI `global-json-file` 사용을 P0-A 근거로 제안한다. SDK/CI의 새 버전을 지금 정한 것으로 쓰지 않는다. CI의 formatter 검사는 로컬과 동일한 SDK·옵션·파일 목록·설정을 사용하며 최신 main과의 통합 결과에서도 통과해야 한다.
+현재 루트 4개에 `.gitattributes`, `.github/workflows/dotnet-tests.yml`, task별 manifest를 명시적으로 더한다. 앞의 두 파일은 MSBuild 필수 입력이 아니라 정책/CI 계약의 대조 자료다. 새 도구에 필요한 props/targets/NuGet.config/lock이 추가되면 그 파일도 명시 목록·hash에 넣는다. 하위 editorconfig와 도구 소스는 네 트리 범위에 포함하되 secrets·bin/obj를 원본에서 무차별 복사하지 않는다.
 
-P0-A가 선택한 formatter 적용 경로 하나를 A spec에 고정한다. WSL 역반영을 선택하면 소유자 한 명이 manifest의 수기 C#만 대상으로 원본의 사전 hash가 여전히 같은지 확인하고 정확한 파일별로 반영한다. 원본이 달라졌거나 범위 밖 파일이 나오면 덮어쓰지 않고 중단·보고한다.
+검사 진입점은 실제 `dotnet --version`을 기록하고 승인된 고정값과 다르면 실패한다. 위 10.0.301 pin/CI 제안은 아직 구현·승인 완료가 아니다. CI의 formatter 검사는 로컬과 동일한 SDK·옵션·파일 목록·설정을 사용하며 최신 main과의 통합 결과에서도 통과해야 한다. P0의 metadata 누락을 넘겨받지 않도록 정식 증명/빌드 전에 필요한 명시적 restore를 수행하고 결과를 기록한다.
+
+Windows native 적용 소유자 한 명이 manifest의 수기 C#만 대상으로 원본의 사전 hash가 여전히 같은지 확인한다. 원본이 달라졌거나 범위 밖 파일이 나오면 덮어쓰지 않고 중단·보고한다. WSL 역반영은 현재 제안에 포함하지 않는다.
 
 ### 공백 전용 커밋과 의미 보존
 
@@ -84,7 +142,7 @@ P0-A가 선택한 formatter 적용 경로 하나를 A spec에 고정한다. WSL 
 
 ### Shared/ClientNet DLL
 
-P0-A에서 Shared·ClientNet 소스가 바뀌는지 먼저 확인한다. **바뀌면 소스와 추적 DLL을 함께 커밋해 온 관례에 따라 DLL을 별도 커밋으로 갱신**하는 것이 기본이다. 관련 소스가 안 바뀌면 불필요한 DLL 재생성으로 범위를 늘리지 않는다.
+P0-A에서 Shared 8파일 변경, ClientNet 0파일을 확인했다. **Shared의 추적 DLL을 별도 커밋으로 갱신**하는 안이다. ClientNet은 소비 계약 확인 대상이지만 소스가 그대로인 만큼 불필요한 DLL 재생성으로 범위를 늘리지 않는다. 필수 소비 빌드/SDK 변경이 다른 추적 DLL을 실제로 바꾸면 사전 사본·hash와 원인을 보존해 메인에 포함 여부를 보고한다.
 
 빌드 소유자 한 명, 정확한 SDK, 두 DLL의 사전/사후 hash·사전 로컬 변경·복사 경로를 고정한다. Windows 빌드가 막히면 메인에 보고하며 우회하거나 다른 방식의 바이너리를 몰래 대신하지 않는다. `CopyToUnityPlugins`와 embedded source/PDB 때문에 공백 변화도 DLL hash를 바꿀 수 있음을 기록한다. 원본 DLL의 기존 사용자 변경은 사전 사본으로 보존한다.
 
@@ -119,6 +177,6 @@ P0-A에서 Shared·ClientNet 소스가 바뀌는지 먼저 확인한다. **바�
 
 ## 다음 행동과 미실행
 
-이번 문서 커밋의 경로/SHA를 메인에 status로 보고한다. **메인이 P0-A 발행을 승인하면** 좁은 Sol 작업을 시작한다. P0-A 보고 전에는 실제 변경 수·고정 SDK·적용 경로를 채택 완료로 기재하지 않는다. P0-A 승인과 A 구현 승인을 구분한다.
+이 보완 goal의 커밋·P0-A 최종 원문·리스크·결정 요청을 메인에 보낸다. **(1) A 구현 제안 승인, (2) 전용 WSL SDK 10.0.301 설치의 사용자 승인 전달**을 기다린다. 승인 근거는 P0-A 승인 `msg_8789c1a1fb96`가 별도로 요구한 `보고 → goal 보완 → 메인 승인 → 새 A Sol` 경계와 이 goal의 SDK 설치 사용자 승인 조건이다. 답변 전에는 A 세션을 발행하거나 설치/원본 적용하지 않는다.
 
-현재 formatter 실행·SDK 설치·제품/테스트 수정·빌드·CI 실행·DLL 갱신·PR·병합은 모두 미실행이다. 보호 파일은 진입 시점의 기존 기준을 유지한다. Q-1B에는 라이선스 원문에서 조건 확인 후 자체 분석기를 구현하는 정책과 위반 수 ratchet을 인계했다. 해당 조건 확인·B 설계는 A 진행을 막지 않는다.
+P0-A 임시 formatter 실행과 관측 helper build만 완료했다. 원본 서식 적용·SDK 설치·제품/테스트 수정·제품 build/test·고정 digest·전수 증명·Opus 독립 판정·CI 실행·DLL 갱신·PR·병합은 미실행이다. 이 보완에서 tracked 변경은 goal 기록뿐이다. Q-1B의 조건부 자체 분석기/위반 수 ratchet 결정은 로드맵에 유지하며 A 승인으로 B를 시작하지 않는다.
