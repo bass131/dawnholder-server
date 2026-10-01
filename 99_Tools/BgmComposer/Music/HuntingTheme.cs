@@ -68,19 +68,27 @@ public static class HuntingTheme
 
         var flute = ChannelScore.Parse("flute-melody", new Instrument
         {
-            Wave = Wave.Flute, Volume = 0.15, Pan = -0.12,
+            Wave = Wave.Flute,
+            Volume = 0.15,
+            Pan = -0.12,
             Adsr = new Adsr(0.04, 0.10, 0.85, 0.20),
-            VibratoDepth = 0.004, VibratoRate = 5.2, VibratoDelay = 0.22,
-            GmProgram = 73, MidiVelocity = 96, // GM Flute
+            VibratoDepth = 0.004,
+            VibratoRate = 5.2,
+            VibratoDelay = 0.22,
+            GmProgram = 73,
+            MidiVelocity = 96, // GM Flute
         },
         string.Concat(Enumerable.Repeat("R:4 ", MelodyStartBar)) + MelodyB +
         string.Concat(Enumerable.Repeat("R:4 ", LiftStartBar - MelodyStartBar)) + MelodyC);
 
         var glock = ChannelScore.Parse("glockenspiel", new Instrument
         {
-            Wave = Wave.Sine, Volume = 0.08, Pan = +0.25,
+            Wave = Wave.Sine,
+            Volume = 0.08,
+            Pan = +0.25,
             Adsr = new Adsr(0.001, 0.40, 0.05, 0.22),
-            GmProgram = 9, MidiVelocity = 80, // GM Glockenspiel
+            GmProgram = 9,
+            MidiVelocity = 80, // GM Glockenspiel
         }, Sparkle);
 
         return new Score
@@ -90,7 +98,9 @@ public static class HuntingTheme
             BeatsTotal = Bars * beatsPerBar,
             Channels = [BuildRiff(), BuildXylo(), flute, glock, BuildStabs(), BuildBass(), BuildDrums()],
             // 빠른 보폭 — 잔향은 짧고 마른 편이 리프의 또렷함을 살린다
-            EchoBeats = 0.5, EchoFeedback = 0.20, EchoMix = 0.10,
+            EchoBeats = 0.5,
+            EchoFeedback = 0.20,
+            EchoMix = 0.10,
         };
     }
 
@@ -103,10 +113,10 @@ public static class HuntingTheme
             "Am" => (ChannelScore.PitchToMidi("A3"), 3, 7, -1),
             "Dm" => (ChannelScore.PitchToMidi("D4"), 3, 7, -1),
             "Em" => (ChannelScore.PitchToMidi("E4"), 3, 7, -1),
-            "F"  => (ChannelScore.PitchToMidi("F3"), 4, 7, -1),
-            "G"  => (ChannelScore.PitchToMidi("G3"), 4, 7, -1),
-            "C"  => (ChannelScore.PitchToMidi("C4"), 4, 7, -1),
-            "D"  => (ChannelScore.PitchToMidi("D4"), 4, 7, -1), // 도리안 IV — F# 포함
+            "F" => (ChannelScore.PitchToMidi("F3"), 4, 7, -1),
+            "G" => (ChannelScore.PitchToMidi("G3"), 4, 7, -1),
+            "C" => (ChannelScore.PitchToMidi("C4"), 4, 7, -1),
+            "D" => (ChannelScore.PitchToMidi("D4"), 4, 7, -1), // 도리안 IV — F# 포함
             "E7" => (ChannelScore.PitchToMidi("E4"), 4, 7, 10),
             _ => throw new FormatException($"코드 오류: {name}"),
         };
@@ -144,9 +154,13 @@ public static class HuntingTheme
             Name = "riff-marimba",
             Instrument = new Instrument
             {
-                Wave = Wave.Triangle, Volume = 0.28, Pan = +0.05, LowpassHz = 2400,
+                Wave = Wave.Triangle,
+                Volume = 0.28,
+                Pan = +0.05,
+                LowpassHz = 2400,
                 Adsr = new Adsr(0.002, 0.30, 0.05, 0.10),
-                GmProgram = 12, MidiVelocity = 100, // GM Marimba
+                GmProgram = 12,
+                MidiVelocity = 100, // GM Marimba
             },
             Events = events,
         };
@@ -172,9 +186,13 @@ public static class HuntingTheme
             Name = "xylo-lift",
             Instrument = new Instrument
             {
-                Wave = Wave.Triangle, Volume = 0.12, Pan = -0.20, LowpassHz = 3600,
+                Wave = Wave.Triangle,
+                Volume = 0.12,
+                Pan = -0.20,
+                LowpassHz = 3600,
                 Adsr = new Adsr(0.001, 0.18, 0.03, 0.07),
-                GmProgram = 13, MidiVelocity = 76, // GM Xylophone
+                GmProgram = 13,
+                MidiVelocity = 76, // GM Xylophone
             },
             Events = events,
         };
@@ -196,9 +214,13 @@ public static class HuntingTheme
             Name = "stab-strings",
             Instrument = new Instrument
             {
-                Wave = Wave.Sine, Volume = 0.08, Pan = +0.12, DetuneCents = 7,
+                Wave = Wave.Sine,
+                Volume = 0.08,
+                Pan = +0.12,
+                DetuneCents = 7,
                 Adsr = new Adsr(0.01, 0.10, 0.4, 0.08),
-                GmProgram = 48, MidiVelocity = 70, // GM String Ensemble 1 — 짧게 끊는 스탭
+                GmProgram = 48,
+                MidiVelocity = 70, // GM String Ensemble 1 — 짧게 끊는 스탭
             },
             Events = events,
         };
@@ -228,8 +250,12 @@ public static class HuntingTheme
             Name = "bass-drive",
             Instrument = new Instrument
             {
-                Wave = Wave.Pluck, Volume = 0.46, Pan = -0.05, PluckDamp = 0.998,
-                GmProgram = 32, MidiVelocity = 98, // GM Acoustic Bass
+                Wave = Wave.Pluck,
+                Volume = 0.46,
+                Pan = -0.05,
+                PluckDamp = 0.998,
+                GmProgram = 32,
+                MidiVelocity = 98, // GM Acoustic Bass
             },
             Events = events,
         };
@@ -245,7 +271,10 @@ public static class HuntingTheme
             string.Concat(Enumerable.Repeat(barFull, Bars - 4));
         return ChannelScore.Parse("drums", new Instrument
         {
-            Wave = Wave.Drum, Volume = 0.13, Pan = -0.03, MidiVelocity = 76,
+            Wave = Wave.Drum,
+            Volume = 0.13,
+            Pan = -0.03,
+            MidiVelocity = 76,
         }, notation);
     }
 }

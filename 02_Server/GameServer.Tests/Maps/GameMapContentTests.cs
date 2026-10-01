@@ -18,12 +18,12 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 public class GameMapContentTests
 {
     // 옛 MapSpawnTable 값 보존 — inlined.
-    const float NormalX    = 10f;
-    const float NormalY    = 0f;
-    const int   NormalMaxHp = 30;
-    const float BossX      = 30f;
-    const float BossY      = 0f;
-    const int   BossMaxHp   = 150;
+    const float NormalX = 10f;
+    const float NormalY = 0f;
+    const int NormalMaxHp = 30;
+    const float BossX = 30f;
+    const float BossY = 0f;
+    const int BossMaxHp = 150;
 
     [Fact]
     public void Town_HasNoEnemies()

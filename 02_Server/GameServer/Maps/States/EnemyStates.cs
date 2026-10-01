@@ -17,10 +17,10 @@ namespace Dawnholder.Server.GameServer.Maps.States;
 //   공격: |dx| <= NormalAttackTriggerRange + 쿨다운 0 → Attack → 1틱 후 Chase 복귀 (쿨다운이 재공격 차단).
 internal static class EnemyStates
 {
-    internal static readonly PatrolState        Patrol = new();
-    internal static readonly ChaseState         Chase  = new();
-    internal static readonly EnemyHitState      Hit    = new();
-    internal static readonly EnemyAttackState   Attack = new();
+    internal static readonly PatrolState Patrol = new();
+    internal static readonly ChaseState Chase = new();
+    internal static readonly EnemyHitState Hit = new();
+    internal static readonly EnemyAttackState Attack = new();
 
     // Normal/Golem 공통 근접 데미지 적용. BossStates.ApplyBossAttack(보스)과 동형.
     //
@@ -49,11 +49,11 @@ internal static class EnemyStates
 
             S_EnemyAttack attackPkt = new S_EnemyAttack
             {
-                attackerId      = attacker.EntityId,
-                targetId        = player.EntityId,
-                damage          = damage,
+                attackerId = attacker.EntityId,
+                targetId = player.EntityId,
+                damage = damage,
                 targetCurrentHp = player.Hp,
-                attackPattern   = attackPattern,
+                attackPattern = attackPattern,
             };
             map.BroadcastToAll(attackPkt.Write());
 
@@ -116,7 +116,7 @@ internal static class EnemyStates
         float step = enemy.Stats.MoveSpeed * Constants.TickDuration;
         enemy.X += enemy.PatrolDir * step;
 
-        float leftBound  = enemy.SpawnX - enemy.Stats.PatrolRange;
+        float leftBound = enemy.SpawnX - enemy.Stats.PatrolRange;
         float rightBound = enemy.SpawnX + enemy.Stats.PatrolRange;
         if (enemy.X <= leftBound)
         {

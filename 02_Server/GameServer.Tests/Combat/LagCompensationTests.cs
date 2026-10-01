@@ -47,12 +47,12 @@ public class LagCompensationTests : IDisposable
     const int PlayerEntityId = 3;
 
     // 옛 MapSpawnTable 값 보존 — inlined (MapSpawnTable 은퇴, M4.4 Phase 03).
-    const float NormalX    = 10f;
-    const float NormalY    = 0f;
-    const int   NormalMaxHp = 30;
-    const float BossX      = 30f;
-    const float BossY      = 0f;
-    const int   BossMaxHp   = 150;
+    const float NormalX = 10f;
+    const float NormalY = 0f;
+    const int NormalMaxHp = 30;
+    const float BossX = 30f;
+    const float BossY = 0f;
+    const int BossMaxHp = 150;
 
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
         PlayerStats.Knight(), default, baseDamage: 10);

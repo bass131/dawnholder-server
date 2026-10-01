@@ -46,7 +46,7 @@ public class MapDataFileTests
         byte[] bytes = MapDataFile.WriteTerrain(1, src);
         MapTerrain dst = MapDataFile.ReadTerrain(bytes, 1);
 
-        Assert.Equal(src.Solids.Length,    dst.Solids.Length);
+        Assert.Equal(src.Solids.Length, dst.Solids.Length);
         Assert.Equal(src.Platforms.Length, dst.Platforms.Length);
 
         for (int i = 0; i < src.Solids.Length; i++)
@@ -58,7 +58,7 @@ public class MapDataFileTests
         }
         for (int i = 0; i < src.Platforms.Length; i++)
         {
-            Assert.Equal(src.Platforms[i].Y,    dst.Platforms[i].Y);
+            Assert.Equal(src.Platforms[i].Y, dst.Platforms[i].Y);
             Assert.Equal(src.Platforms[i].MinX, dst.Platforms[i].MinX);
             Assert.Equal(src.Platforms[i].MaxX, dst.Platforms[i].MaxX);
         }
@@ -73,15 +73,15 @@ public class MapDataFileTests
         byte[] bytes = MapDataFile.WriteContent(2, src);
         MapContent dst = MapDataFile.ReadContent(bytes, 2);
 
-        Assert.Equal(src.PlayerSpawnX,    dst.PlayerSpawnX);
-        Assert.Equal(src.PlayerSpawnY,    dst.PlayerSpawnY);
-        Assert.Equal(src.Enemies.Length,  dst.Enemies.Length);
+        Assert.Equal(src.PlayerSpawnX, dst.PlayerSpawnX);
+        Assert.Equal(src.PlayerSpawnY, dst.PlayerSpawnY);
+        Assert.Equal(src.Enemies.Length, dst.Enemies.Length);
 
         for (int i = 0; i < src.Enemies.Length; i++)
         {
             Assert.Equal(src.Enemies[i].KindId, dst.Enemies[i].KindId);
-            Assert.Equal(src.Enemies[i].X,      dst.Enemies[i].X);
-            Assert.Equal(src.Enemies[i].Y,      dst.Enemies[i].Y);
+            Assert.Equal(src.Enemies[i].X, dst.Enemies[i].X);
+            Assert.Equal(src.Enemies[i].Y, dst.Enemies[i].Y);
         }
     }
 

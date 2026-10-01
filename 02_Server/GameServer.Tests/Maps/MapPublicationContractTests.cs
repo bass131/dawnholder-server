@@ -55,7 +55,9 @@ public class MapPublicationContractTests
             expected.Add(new("source", Bytes(new S_PlayerLeave { entityId = entrant.EntityId }.Write())));
             expected.Add(new("entrant", Bytes(new S_MapTransition
             {
-                destMapId = (byte)MapId.HuntingGround, spawnX = spawn.X, spawnY = spawn.Y,
+                destMapId = (byte)MapId.HuntingGround,
+                spawnX = spawn.X,
+                spawnY = spawn.Y,
             }.Write())));
         }
         else
@@ -69,19 +71,26 @@ public class MapPublicationContractTests
         EnemyEntity enemy = Assert.Single(destination.Enemies.Values);
         byte[] enemyRoster = Bytes(new S_EntitySpawn
         {
-            entityId = enemy.EntityId, entityKind = (byte)EnemyKind.Normal,
-            x = 100f, y = 0f, currentHp = enemy.MaxHp, maxHp = enemy.MaxHp,
+            entityId = enemy.EntityId,
+            entityKind = (byte)EnemyKind.Normal,
+            x = 100f,
+            y = 0f,
+            currentHp = enemy.MaxHp,
+            maxHp = enemy.MaxHp,
         }.Write());
         destination.Tick(3);
 
         if (!migration)
             expected.Add(new("entrant", Bytes(new S_EnterMap
             {
-                entityId = entrant.EntityId, spawnX = spawn.X, spawnY = spawn.Y,
+                entityId = entrant.EntityId,
+                spawnX = spawn.X,
+                spawnY = spawn.Y,
             }.Write())));
         expected.Add(new("entrant", Bytes(new S_PlayerHp
         {
-            entityId = entrant.EntityId, currentHp = expectedHp,
+            entityId = entrant.EntityId,
+            currentHp = expectedHp,
             maxHp = PlayerStats.ForClass(CharacterClass.Mage).MaxHp,
         }.Write())));
         expected.Add(new("entrant", firstRoster));
@@ -228,8 +237,12 @@ public class MapPublicationContractTests
     static byte[] StateBytes(int id, float x, float y, EnemyState state, AnimState animation, long tick)
         => Bytes(new S_EntityState
         {
-            entityId = id, x = x, y = y, state = (byte)state,
-            animState = (byte)animation, serverTick = (int)tick,
+            entityId = id,
+            x = x,
+            y = y,
+            state = (byte)state,
+            animState = (byte)animation,
+            serverTick = (int)tick,
         }.Write());
 
     static void AssertDeliveries(IEnumerable<Delivery> expected, Delivery[] actual)

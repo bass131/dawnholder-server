@@ -23,11 +23,11 @@ namespace Shared.GameData;
 /// </summary>
 public static class MapDataFile
 {
-    private const int    HeaderSize      = 20;
-    private const uint   Magic           = 0x504D5744u; // "DWMP" LE
-    private const ushort FormatVersion   = 1;
-    private const ushort KindTerrain     = 1;
-    private const ushort KindContent     = 2;
+    private const int HeaderSize = 20;
+    private const uint Magic = 0x504D5744u; // "DWMP" LE
+    private const ushort FormatVersion = 1;
+    private const ushort KindTerrain = 1;
+    private const ushort KindContent = 2;
 
     // ── CRC32 (IEEE 802.3 다항식 0xEDB88320) ──────────────────────────────────
 
@@ -47,7 +47,7 @@ public static class MapDataFile
     {
         if (terrain == null) throw new ArgumentNullException(nameof(terrain));
 
-        ReadOnlySpan<TerrainAabb>     solids    = terrain.Solids;
+        ReadOnlySpan<TerrainAabb> solids = terrain.Solids;
         ReadOnlySpan<TerrainPlatform> platforms = terrain.Platforms;
 
         int payloadSize = 4                      // solidCount
@@ -104,10 +104,10 @@ public static class MapDataFile
         TerrainAabb[] solids = new TerrainAabb[solidCount];
         for (int i = 0; i < solidCount; i++)
         {
-            float minX = ReadF32LE(data, pos);      pos += 4;
-            float minY = ReadF32LE(data, pos);      pos += 4;
-            float maxX = ReadF32LE(data, pos);      pos += 4;
-            float maxY = ReadF32LE(data, pos);      pos += 4;
+            float minX = ReadF32LE(data, pos); pos += 4;
+            float minY = ReadF32LE(data, pos); pos += 4;
+            float maxX = ReadF32LE(data, pos); pos += 4;
+            float maxY = ReadF32LE(data, pos); pos += 4;
             solids[i] = new TerrainAabb(minX, minY, maxX, maxY);
         }
 
@@ -122,9 +122,9 @@ public static class MapDataFile
         TerrainPlatform[] platforms = new TerrainPlatform[platCount];
         for (int i = 0; i < platCount; i++)
         {
-            float y    = ReadF32LE(data, pos);      pos += 4;
-            float minX = ReadF32LE(data, pos);      pos += 4;
-            float maxX = ReadF32LE(data, pos);      pos += 4;
+            float y = ReadF32LE(data, pos); pos += 4;
+            float minX = ReadF32LE(data, pos); pos += 4;
+            float maxX = ReadF32LE(data, pos); pos += 4;
             platforms[i] = new TerrainPlatform(y, minX, maxX);
         }
 
@@ -163,7 +163,7 @@ public static class MapDataFile
         pos += 4;
         for (int i = 0; i < enemies.Length; i++)
         {
-            buf[pos] = enemies[i].KindId;  pos += 1;
+            buf[pos] = enemies[i].KindId; pos += 1;
             pos = WriteF32LE(buf, pos, enemies[i].X);
             pos = WriteF32LE(buf, pos, enemies[i].Y);
         }
@@ -193,9 +193,9 @@ public static class MapDataFile
         EnemySpawnPoint[] enemies = new EnemySpawnPoint[enemyCount];
         for (int i = 0; i < enemyCount; i++)
         {
-            byte  kindId = data[pos];         pos += 1;
-            float x      = ReadF32LE(data, pos); pos += 4;
-            float y      = ReadF32LE(data, pos); pos += 4;
+            byte kindId = data[pos]; pos += 1;
+            float x = ReadF32LE(data, pos); pos += 4;
+            float y = ReadF32LE(data, pos); pos += 4;
             enemies[i] = new EnemySpawnPoint(kindId, x, y);
         }
 

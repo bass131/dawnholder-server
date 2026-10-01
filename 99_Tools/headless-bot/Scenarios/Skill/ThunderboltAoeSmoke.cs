@@ -21,13 +21,13 @@ public class ThunderboltAoeSmoke
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
     static readonly TimeSpan SkillArrivalTimeout = TimeSpan.FromSeconds(5);
 
-    const float TownPortalX  = 20f;
-    const int   TownPortalId = 1;
-    const float HGPortalX    = 25f;
-    const int   HGPortalId   = 1;
+    const float TownPortalX = 20f;
+    const int TownPortalId = 1;
+    const float HGPortalX = 25f;
+    const int HGPortalId = 1;
 
     const byte NormalKind = 0;
-    const byte BossKind   = 1;
+    const byte BossKind = 1;
     const byte ThunderboltSkillId = (byte)SkillId.Thunderbolt;
 
     // hitEffect=2 = 낙뢰(썬더볼트)
@@ -368,7 +368,7 @@ public class ThunderboltAoeSmoke
         {
             C_SkillUse p = new()
             {
-                skillId            = skillId,
+                skillId = skillId,
                 attackerClientTick = LastReceivedServerTick,
             };
             Session?.Send(p.Write());

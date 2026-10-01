@@ -54,27 +54,27 @@ public class PlayerSnapshotTests
     {
         // Arrange: Knight(HP=150, MaxHp=150) 엔티티를 특정 위치에 생성.
         var spawnPos = new Vector2(3.5f, 0f);
-        var stats    = PlayerStats.Knight();
-        var entity   = new PlayerEntity(entityId: 42, position: spawnPos, owner: null, stats: stats);
+        var stats = PlayerStats.Knight();
+        var entity = new PlayerEntity(entityId: 42, position: spawnPos, owner: null, stats: stats);
 
         // 전투 시뮬레이션: HP를 서버 권위로 변경.
         entity.Hp = 80;
 
         // 휘발 상태도 변경 — 스냅샷에 영향 없어야 함.
-        entity.Velocity  = new Vector2(5f, -2f);
-        entity.OnGround  = false;
+        entity.Velocity = new Vector2(5f, -2f);
+        entity.OnGround = false;
 
         // Act
         PlayerSnapshot snap = entity.CaptureSnapshot();
 
         // Assert — 저장 후보 필드 일치
-        Assert.Equal(42,      snap.EntityId);
+        Assert.Equal(42, snap.EntityId);
         Assert.Equal(spawnPos, snap.Position);
-        Assert.Equal(80,      snap.CurrentHp);
-        Assert.Equal(150,     snap.MaxHp);
+        Assert.Equal(80, snap.CurrentHp);
+        Assert.Equal(150, snap.MaxHp);
         Assert.Equal(CharacterClass.Knight, snap.Stats.Class);
-        Assert.Equal(15,      snap.Stats.Attack);
-        Assert.Equal(5,       snap.Stats.Defense);
+        Assert.Equal(15, snap.Stats.Attack);
+        Assert.Equal(5, snap.Stats.Defense);
     }
 
     [Fact]

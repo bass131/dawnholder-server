@@ -27,10 +27,10 @@ namespace Dawnholder.Server.Network
             int processLen = 0;
             int packetCount = 0;
 
-            while(true)
+            while (true)
             {
                 // 최소한 헤더는 파싱할 수 있는지 확인.
-                if(buffer.Count < HeaderSize)
+                if (buffer.Count < HeaderSize)
                     break;
 
                 ushort dataSize = BitConverter.ToUInt16(buffer.Array!, buffer.Offset);
@@ -45,7 +45,7 @@ namespace Dawnholder.Server.Network
                     return processLen;
                 }
 
-                if(buffer.Count < dataSize)
+                if (buffer.Count < dataSize)
                     break;
 
                 OnRecvPacket(new ArraySegment<byte>(buffer.Array!, buffer.Offset, dataSize));
@@ -85,7 +85,7 @@ namespace Dawnholder.Server.Network
 
         public abstract void OnConnected(EndPoint endPoint);
         public abstract void OnDisconnected(EndPoint endPoint);
-        public abstract int  OnRecv(ArraySegment<byte> buffer);
+        public abstract int OnRecv(ArraySegment<byte> buffer);
         public abstract void OnSend(int numOfBytes);
 
         public void Start(Socket socket)
@@ -112,7 +112,7 @@ namespace Dawnholder.Server.Network
 
         public void Send(List<ArraySegment<byte>> sendBuffList)
         {
-            if(sendBuffList.Count == 0)
+            if (sendBuffList.Count == 0)
                 return;
 
             lock (_lock)

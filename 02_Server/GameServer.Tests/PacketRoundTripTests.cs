@@ -401,8 +401,10 @@ public class PacketRoundTripTests
         var snap = new S_Snapshot
         {
             entityId = 0,
-            x = coord, y = coord,
-            vx = coord, vy = coord,
+            x = coord,
+            y = coord,
+            vx = coord,
+            vy = coord,
             serverTick = 0,
             lastAckedClientTick = 0
         };
@@ -423,8 +425,14 @@ public class PacketRoundTripTests
         // [size:2][id:2][entityId:4][x:4][y:4][vx:4][vy:4][serverTick:4][lastAckedClientTick:4][animState:1] = 33 bytes.
         var snap = new S_Snapshot
         {
-            entityId = 0, x = 0f, y = 0f, vx = 0f, vy = 0f,
-            serverTick = 0, lastAckedClientTick = 0, animState = 0
+            entityId = 0,
+            x = 0f,
+            y = 0f,
+            vx = 0f,
+            vy = 0f,
+            serverTick = 0,
+            lastAckedClientTick = 0,
+            animState = 0
         };
 
         ArraySegment<byte> bytes = snap.Write();
@@ -441,8 +449,13 @@ public class PacketRoundTripTests
         // PDL.xml 6번째 정의 = PacketID 6
         var snap = new S_Snapshot
         {
-            entityId = 0, x = 0f, y = 0f, vx = 0f, vy = 0f,
-            serverTick = 0, lastAckedClientTick = 0
+            entityId = 0,
+            x = 0f,
+            y = 0f,
+            vx = 0f,
+            vy = 0f,
+            serverTick = 0,
+            lastAckedClientTick = 0
         };
 
         ArraySegment<byte> bytes = snap.Write();

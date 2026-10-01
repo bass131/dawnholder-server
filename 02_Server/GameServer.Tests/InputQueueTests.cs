@@ -90,9 +90,9 @@ public class InputQueueTests
         GameMap map = new GameMap();
         PlayerEntity e = map.AddPlayer(null, new Vector2(0f, 0f));
 
-        e.EnqueueInput(1,  false, clientTick: 100u);
+        e.EnqueueInput(1, false, clientTick: 100u);
         e.EnqueueInput(-1, false, clientTick: 101u);
-        e.EnqueueInput(0,  true,  clientTick: 102u);
+        e.EnqueueInput(0, true, clientTick: 102u);
 
         map.Tick(1);
         Assert.Equal(100u, e.LastClientTick); // 첫 번째 적용

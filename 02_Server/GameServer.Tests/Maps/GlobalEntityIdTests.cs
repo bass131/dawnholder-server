@@ -28,10 +28,10 @@ public class GlobalEntityIdTests : IDisposable
         // 생성 순서 결정론: Town→HG→BR→Ending → HG Normal=id1, BR Boss=id2.
         var provider = new Dictionary<MapId, (MapTerrain? Terrain, MapContent? Content)>
         {
-            [MapId.Town]          = (null, MapContent.Empty),
+            [MapId.Town] = (null, MapContent.Empty),
             [MapId.HuntingGround] = (null, new MapContent(0f, 0f, new[] { new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f) })),
-            [MapId.BossRoom]      = (null, new MapContent(0f, 0f, new[] { new EnemySpawnPoint((byte)EnemyKind.Boss,   30f, 0f) })),
-            [MapId.Ending]        = (null, MapContent.Empty),
+            [MapId.BossRoom] = (null, new MapContent(0f, 0f, new[] { new EnemySpawnPoint((byte)EnemyKind.Boss, 30f, 0f) })),
+            [MapId.Ending] = (null, MapContent.Empty),
         };
         _world = new GameWorld(provider);
     }
@@ -126,7 +126,7 @@ public class GlobalEntityIdTests : IDisposable
         // AddPlayer 후 SpawnEnemy도 같은 전역 풀에서 id 받음.
         // → entity id 공간에서 player와 enemy가 섞여도 id 충돌 없음.
         GameMap town = _world.GetMap(MapId.Town)!;
-        GameMap hg   = _world.GetMap(MapId.HuntingGround)!;
+        GameMap hg = _world.GetMap(MapId.HuntingGround)!;
 
         int normalEnemyId = hg.Enemies.Keys.Single(); // 전역 풀에서 이미 발급된 id
 

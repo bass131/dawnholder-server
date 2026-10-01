@@ -16,8 +16,8 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 public class RangedWhiffSmoke
 {
     static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
-    static readonly TimeSpan CooldownWait   = TimeSpan.FromMilliseconds(550);
-    static readonly TimeSpan QuietWindow    = TimeSpan.FromMilliseconds(700);
+    static readonly TimeSpan CooldownWait = TimeSpan.FromMilliseconds(550);
+    static readonly TimeSpan QuietWindow = TimeSpan.FromMilliseconds(700);
 
     const int AttackCount = 3;
 
@@ -70,9 +70,9 @@ public class RangedWhiffSmoke
             // QuietWindow 대기 후 수신 카운트 확정.
             await Task.Delay(QuietWindow, ct);
 
-            result.PlayerAttackCount    = bot.PlayerAttackCount;
+            result.PlayerAttackCount = bot.PlayerAttackCount;
             result.ProjectileLaunchCount = bot.ProjectileLaunchCount;
-            result.HitResultCount        = bot.HitResultCount;
+            result.HitResultCount = bot.HitResultCount;
 
             // 스윙 연출(S_PlayerAttack)은 1건 이상 있어야 한다 — attacker 본인 제외 broadcast이므로
             // 2봇 검증은 아니지만 단일봇에서는 자기 자신의 스윙 연출 0건 (RemoteAttackSmoke 규칙과 동일).
@@ -110,9 +110,9 @@ public class RangedWhiffSmoke
 
         protected override CharacterClass SelectedClass => CharacterClass.Mage;
 
-        public int PlayerAttackCount    { get { lock (Gate) return _playerAttackCount; } }
+        public int PlayerAttackCount { get { lock (Gate) return _playerAttackCount; } }
         public int ProjectileLaunchCount { get { lock (Gate) return _projectileLaunchCount; } }
-        public int HitResultCount        { get { lock (Gate) return _hitResultCount; } }
+        public int HitResultCount { get { lock (Gate) return _hitResultCount; } }
 
         public async Task<bool> WaitForFirstSnapshot(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => LastReceivedServerTick > 0, timeout, ct);
@@ -121,7 +121,7 @@ public class RangedWhiffSmoke
         {
             C_Attack p = new()
             {
-                targetEntityId     = targetEntityId,
+                targetEntityId = targetEntityId,
                 attackerClientTick = LastReceivedServerTick,
             };
             Session?.Send(p.Write());

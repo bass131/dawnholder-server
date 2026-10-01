@@ -167,8 +167,16 @@ public sealed class RespawnPlacementTests
         Observer second = new();
         map.AddPlayer(first, new Vector2(200, 0));
         map.AddPlayer(second, new Vector2(210, 0));
-        EnemyStats stats = new() { MaxHp = 999, Defense = 11, Attack = 23, MoveSpeed = 1.75f,
-            PatrolRange = 3, AggroRange = 4, AggroOnSight = false };
+        EnemyStats stats = new()
+        {
+            MaxHp = 999,
+            Defense = 11,
+            Attack = 23,
+            MoveSpeed = 1.75f,
+            PatrolRange = 3,
+            AggroRange = 4,
+            AggroOnSight = false
+        };
         EnemyEntity dead = map.SpawnEnemy(kind, 17, 19, 87, stats);
         dead.X = 55;
         dead.Y = 57;

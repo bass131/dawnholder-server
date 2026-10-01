@@ -15,7 +15,7 @@ public readonly struct MoveParams
     public MoveParams(float moveSpeed, float jumpVel)
     {
         MoveSpeed = moveSpeed;
-        JumpVel   = jumpVel;
+        JumpVel = jumpVel;
     }
 }
 
@@ -207,8 +207,8 @@ public static class Physics
     /// </summary>
     private static PhysicsState StepWithTerrain(PhysicsState state, PhysicsInput input, MapTerrain terrain, MoveParams move)
     {
-        float x  = state.Position.X;
-        float y  = state.Position.Y;
+        float x = state.Position.X;
+        float y = state.Position.Y;
         float vy = state.Velocity.Y;
         float dt = input.Dt;
         float eps = GroundEpsilon;
@@ -271,7 +271,7 @@ public static class Physics
             if (bestFace < float.MaxValue)
             {
                 newX = bestFace;
-                vx   = 0f;
+                vx = 0f;
             }
         }
         else if (vx < 0f)
@@ -288,7 +288,7 @@ public static class Physics
             if (bestFace > float.MinValue)
             {
                 newX = bestFace;
-                vx   = 0f;
+                vx = 0f;
             }
         }
 
@@ -324,8 +324,8 @@ public static class Physics
             }
             if (bestFace > float.MinValue)
             {
-                newY     = bestFace;
-                vy       = 0f;
+                newY = bestFace;
+                vy = 0f;
                 onGround = true;
             }
         }
@@ -349,8 +349,8 @@ public static class Physics
             }
             if (bestFace < float.MaxValue)
             {
-                newY     = bestFace;
-                vy       = 0f;
+                newY = bestFace;
+                vy = 0f;
                 onGround = false;
             }
         }

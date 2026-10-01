@@ -24,10 +24,10 @@ namespace Dawnholder.Server.GameServer.Maps.States;
 //   Attack:    Enter에서 데미지 판정 + 쿨다운 리셋, Tick에서 Idle 복귀.
 internal static class BossStates
 {
-    internal static readonly BossIdleState      Idle      = new();
-    internal static readonly BossMoveState      Move      = new();
+    internal static readonly BossIdleState Idle = new();
+    internal static readonly BossMoveState Move = new();
     internal static readonly BossTelegraphState Telegraph = new();
-    internal static readonly BossAttackState    Attack    = new();
+    internal static readonly BossAttackState Attack = new();
 
     // 범위 내 플레이어에게 데미지 적용 + S_EnemyAttack broadcast.
     // BossAttackState.Enter(= telegraph 완료 틱)에서만 호출 — tick thread invariant 보장.
@@ -53,11 +53,11 @@ internal static class BossStates
 
         S_EntityState telegraphPkt = new S_EntityState
         {
-            entityId   = enemy.EntityId,
-            x          = enemy.X,
-            y          = enemy.Y,
-            state      = (byte)enemy.State,
-            animState  = (byte)AnimState.Attack,
+            entityId = enemy.EntityId,
+            x = enemy.X,
+            y = enemy.Y,
+            state = (byte)enemy.State,
+            animState = (byte)AnimState.Attack,
             serverTick = (int)enemy.OwningMap!.CurrentTick,
         };
         enemy.OwningMap.BroadcastToAll(telegraphPkt.Write());

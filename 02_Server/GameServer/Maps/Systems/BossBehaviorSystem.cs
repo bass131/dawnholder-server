@@ -80,9 +80,9 @@ internal sealed class BossBehaviorSystem
     /// </summary>
     static byte ComputeBossAnimState(EnemyEntity boss)
     {
-        if (boss.IsDead)               return (byte)AnimState.Death;
+        if (boss.IsDead) return (byte)AnimState.Death;
         if (boss.AttackLatchTicks > 0) return (byte)AnimState.Attack;
-        if (boss.HitLatchTicks > 0)    return (byte)AnimState.Hit;
+        if (boss.HitLatchTicks > 0) return (byte)AnimState.Hit;
         // 이동 중이면 Walk — FSM 현재 상태 AnimState 사용(BossMoveState→Walk, 그 외→Idle).
         // Telegraph/Attack의 AnimState=Attack은 위 AttackLatch 분기가 먼저 잡으므로 여기 도달 X.
         return (byte)boss.Fsm!.AnimState;

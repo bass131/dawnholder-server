@@ -37,15 +37,15 @@ public class CombatSwingTests : IDisposable
     readonly TextWriter _originalOut;
 
     const int NormalEnemyId = 1;
-    const int BossEntityId  = 2;
-    const int AttackerEntityId  = 3;
-    const int ObserverEntityId  = 4;
+    const int BossEntityId = 2;
+    const int AttackerEntityId = 3;
+    const int ObserverEntityId = 4;
 
-    const float NormalX    = 10f;
-    const float NormalY    = 0f;
-    const int   NormalMaxHp = 30;
-    const float BossX      = 30f;
-    const float BossY      = 0f;
+    const float NormalX = 10f;
+    const float NormalY = 0f;
+    const int NormalMaxHp = 30;
+    const float BossX = 30f;
+    const float BossY = 0f;
 
     // attacker(Knight) + Normal enemy 조합 예상 데미지.
     static readonly int ExpectedDamage = Formulas.ComputeDamage(
@@ -144,7 +144,7 @@ public class CombatSwingTests : IDisposable
     {
         C_Attack pkt = new C_Attack
         {
-            targetEntityId     = targetEntityId,
+            targetEntityId = targetEntityId,
             attackerClientTick = (int)attackerClientTick,
         };
         return pkt.Write();

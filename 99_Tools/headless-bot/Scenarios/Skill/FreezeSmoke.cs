@@ -30,13 +30,13 @@ public class FreezeSmoke
     // ResumeObserveWindow: 옛 freeze 만료 후 재개 관측 창. M4.15에서는 불필요하나 보스 후처리 대기용 보존.
     static readonly TimeSpan ResumeObserveWindow = TimeSpan.FromMilliseconds(1500);
 
-    const float TownPortalX  = 20f;
-    const int   TownPortalId = 1;
-    const float HGPortalX    = 25f;
-    const int   HGPortalId   = 1;
+    const float TownPortalX = 20f;
+    const int TownPortalId = 1;
+    const float HGPortalX = 25f;
+    const int HGPortalId = 1;
 
     const byte NormalKind = 0;
-    const byte BossKind   = 1;
+    const byte BossKind = 1;
 
     // 보스를 죽이지 않기 위한 HP 하한선. 이 이하면 공격 생략.
     const int BossHpSafetyFloor = 10;
@@ -304,7 +304,7 @@ public class FreezeSmoke
         {
             C_Attack p = new()
             {
-                targetEntityId     = targetEntityId,
+                targetEntityId = targetEntityId,
                 attackerClientTick = LastReceivedServerTick,
             };
             Session?.Send(p.Write());

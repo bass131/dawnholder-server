@@ -58,7 +58,7 @@ public static class MainMenuTheme
         "E3+B3+D4+G4:4 " +   // Em7
         "F3+C4+E4+A4:4 " +
         "G3+C4+D4+F4:4 " +   // G7sus4
-        // B
+                             // B
         "A3+E4+G4+C5:4 " +
         "F3+C4+E4+A4:4 " +
         "E3+C4+G4:4 " +      // C/E
@@ -67,7 +67,7 @@ public static class MainMenuTheme
         "D3+A3+C4+F4:4 " +   // Dm7
         "F3+C4+E4+A4:4 " +
         "G3+B3+D4+F4:4 " +   // G7
-        // C
+                             // C
         "C3+G3+D4+E4:4 " +
         "E3+B3+D4+G4:4 " +
         "F3+C4+E4+A4:4 " +
@@ -130,31 +130,46 @@ public static class MainMenuTheme
         var lead = ChannelScore.Parse("lead-musicbox", new Instrument
         {
             // 뮤직박스 근사 — 사인 + 빠른 감쇠의 영롱함.
-            Wave = Wave.Sine, Volume = 0.30, Pan = +0.05,
+            Wave = Wave.Sine,
+            Volume = 0.30,
+            Pan = +0.05,
             Adsr = new Adsr(0.001, 0.55, 0.04, 0.30),
-            GmProgram = 10, MidiVelocity = 105, // GM Music Box
+            GmProgram = 10,
+            MidiVelocity = 105, // GM Music Box
         }, Melody);
 
         var pad = ChannelScore.Parse("pad-strings", new Instrument
         {
-            Wave = Wave.Sine, Volume = 0.10, Pan = 0, DetuneCents = 8,
+            Wave = Wave.Sine,
+            Volume = 0.10,
+            Pan = 0,
+            DetuneCents = 8,
             Adsr = new Adsr(0.5, 0.3, 0.85, 0.7),
-            GmProgram = 48, MidiVelocity = 52, // GM String Ensemble 1
+            GmProgram = 48,
+            MidiVelocity = 52, // GM String Ensemble 1
         }, Pad);
 
         var flute = ChannelScore.Parse("flute-counter", new Instrument
         {
-            Wave = Wave.Flute, Volume = 0.12, Pan = -0.18,
+            Wave = Wave.Flute,
+            Volume = 0.12,
+            Pan = -0.18,
             Adsr = new Adsr(0.07, 0.12, 0.85, 0.30),
-            VibratoDepth = 0.004, VibratoRate = 4.6, VibratoDelay = 0.35,
-            GmProgram = 73, MidiVelocity = 75, // GM Flute
+            VibratoDepth = 0.004,
+            VibratoRate = 4.6,
+            VibratoDelay = 0.35,
+            GmProgram = 73,
+            MidiVelocity = 75, // GM Flute
         }, string.Concat(Enumerable.Repeat("R:4 ", FullStartBar)) + FluteLine);
 
         var glock = ChannelScore.Parse("glockenspiel", new Instrument
         {
-            Wave = Wave.Sine, Volume = 0.08, Pan = +0.25,
+            Wave = Wave.Sine,
+            Volume = 0.08,
+            Pan = +0.25,
             Adsr = new Adsr(0.001, 0.45, 0.05, 0.25),
-            GmProgram = 9, MidiVelocity = 78, // GM Glockenspiel
+            GmProgram = 9,
+            MidiVelocity = 78, // GM Glockenspiel
         }, string.Concat(Enumerable.Repeat("R:4 ", FullStartBar)) + Sparkle);
 
         return new Score
@@ -164,7 +179,9 @@ public static class MainMenuTheme
             BeatsTotal = Bars * beatsPerBar,
             Channels = [lead, pad, BuildHarp(), BuildBass(), flute, glock, BuildSwell()],
             // 느린 보폭에 맞춘 길고 따뜻한 잔향
-            EchoBeats = 1.0, EchoFeedback = 0.28, EchoMix = 0.15,
+            EchoBeats = 1.0,
+            EchoFeedback = 0.28,
+            EchoMix = 0.15,
         };
     }
 
@@ -185,8 +202,12 @@ public static class MainMenuTheme
             Name = "harp",
             Instrument = new Instrument
             {
-                Wave = Wave.Pluck, Volume = 0.16, Pan = +0.18, PluckDamp = 0.997,
-                GmProgram = 46, MidiVelocity = 72, // GM Orchestral Harp
+                Wave = Wave.Pluck,
+                Volume = 0.16,
+                Pan = +0.18,
+                PluckDamp = 0.997,
+                GmProgram = 46,
+                MidiVelocity = 72, // GM Orchestral Harp
             },
             Events = events,
         };
@@ -207,8 +228,12 @@ public static class MainMenuTheme
             Name = "bass-soft",
             Instrument = new Instrument
             {
-                Wave = Wave.Pluck, Volume = 0.38, Pan = -0.05, PluckDamp = 0.9988,
-                GmProgram = 32, MidiVelocity = 80, // GM Acoustic Bass — 메뉴라 부드럽게
+                Wave = Wave.Pluck,
+                Volume = 0.38,
+                Pan = -0.05,
+                PluckDamp = 0.9988,
+                GmProgram = 32,
+                MidiVelocity = 80, // GM Acoustic Bass — 메뉴라 부드럽게
             },
             Events = events,
         };
@@ -228,9 +253,13 @@ public static class MainMenuTheme
             Name = "swell",
             Instrument = new Instrument
             {
-                Wave = Wave.Sine, Volume = 0.05, Pan = +0.15, DetuneCents = 9,
+                Wave = Wave.Sine,
+                Volume = 0.05,
+                Pan = +0.15,
+                DetuneCents = 9,
                 Adsr = new Adsr(0.9, 0.4, 0.9, 0.9),
-                GmProgram = 49, MidiVelocity = 42, // GM String Ensemble 2
+                GmProgram = 49,
+                MidiVelocity = 42, // GM String Ensemble 2
             },
             Events = events,
         };

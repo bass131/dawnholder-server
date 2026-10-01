@@ -101,34 +101,52 @@ public static class SfxLibrary
     {
         var lead = ChannelScore.Parse("lead-marimba", new Instrument
         {
-            Wave = Wave.Triangle, Volume = 0.30, Pan = +0.05, LowpassHz = 2600,
+            Wave = Wave.Triangle,
+            Volume = 0.30,
+            Pan = +0.05,
+            LowpassHz = 2600,
             Adsr = new Adsr(0.002, 0.35, 0.05, 0.12),
-            GmProgram = 12, MidiVelocity = 105,
+            GmProgram = 12,
+            MidiVelocity = 105,
         }, "C5:0.5 E5:0.5 G5:0.5 C6:0.5 D6:0.5 E6:0.5 G6:3 R:6");
 
         var glock = ChannelScore.Parse("glockenspiel", new Instrument
         {
-            Wave = Wave.Sine, Volume = 0.10, Pan = +0.22,
+            Wave = Wave.Sine,
+            Volume = 0.10,
+            Pan = +0.22,
             Adsr = new Adsr(0.001, 0.45, 0.05, 0.25),
-            GmProgram = 9, MidiVelocity = 85,
+            GmProgram = 9,
+            MidiVelocity = 85,
         }, "R:1 C6:0.5 E6:0.5 G6:0.5 C7:0.5 R:1 E7:2 R:6");
 
         var pad = ChannelScore.Parse("pad-strings", new Instrument
         {
-            Wave = Wave.Sine, Volume = 0.10, Pan = 0, DetuneCents = 8,
+            Wave = Wave.Sine,
+            Volume = 0.10,
+            Pan = 0,
+            DetuneCents = 8,
             Adsr = new Adsr(0.10, 0.3, 0.85, 0.8),
-            GmProgram = 48, MidiVelocity = 60,
+            GmProgram = 48,
+            MidiVelocity = 60,
         }, "R:3 C4+E4+G4+D5:5 R:4");
 
         var bass = ChannelScore.Parse("bass", new Instrument
         {
-            Wave = Wave.Pluck, Volume = 0.42, Pan = -0.05, PluckDamp = 0.998,
-            GmProgram = 32, MidiVelocity = 95,
+            Wave = Wave.Pluck,
+            Volume = 0.42,
+            Pan = -0.05,
+            PluckDamp = 0.998,
+            GmProgram = 32,
+            MidiVelocity = 95,
         }, "C3:0.5 R:0.5 G2:0.5 R:0.5 C2:0.5 R:0.5 C2:3.5 R:5.5");
 
         var drums = ChannelScore.Parse("drums", new Instrument
         {
-            Wave = Wave.Drum, Volume = 0.13, Pan = -0.03, MidiVelocity = 80,
+            Wave = Wave.Drum,
+            Volume = 0.13,
+            Pan = -0.03,
+            MidiVelocity = 80,
         }, "K:0.5 H:0.5 S:0.5 H:0.5 K:0.5 H:0.5 K:0.5 S:0.5 K:8");
 
         return new Score
@@ -137,7 +155,9 @@ public static class SfxLibrary
             Bpm = 150,
             BeatsTotal = 12, // 6박 연주 + 6박 여백 (에코·릴리즈 흡수)
             Channels = [lead, glock, pad, bass, drums],
-            EchoBeats = 0.5, EchoFeedback = 0.22, EchoMix = 0.14,
+            EchoBeats = 0.5,
+            EchoFeedback = 0.22,
+            EchoMix = 0.14,
         };
     }
 }

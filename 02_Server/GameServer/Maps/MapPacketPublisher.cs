@@ -82,9 +82,9 @@ internal sealed class MapPacketPublisher
         if (p.Owner == null || p.Owner.IsClosing) return;
         S_PlayerHp pkt = new S_PlayerHp
         {
-            entityId  = p.EntityId,
+            entityId = p.EntityId,
             currentHp = Math.Max(0, p.Hp),
-            maxHp     = p.MaxHp,
+            maxHp = p.MaxHp,
         };
         p.Owner.Send(pkt.Write());
     }

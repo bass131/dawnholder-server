@@ -210,7 +210,7 @@ public class RangedHitSmoke
         {
             C_Attack p = new()
             {
-                targetEntityId     = targetEntityId,
+                targetEntityId = targetEntityId,
                 attackerClientTick = LastReceivedServerTick,
             };
             Session?.Send(p.Write());

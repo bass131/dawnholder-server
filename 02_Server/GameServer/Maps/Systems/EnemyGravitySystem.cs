@@ -34,8 +34,8 @@ internal sealed class EnemyGravitySystem
                 new Vector2(0f, enemy.Vy),
                 enemy.OnGround);
             PhysicsState after = Physics.Step(before, gravityInput, terrain, move);
-            enemy.Y        = after.Position.Y;
-            enemy.Vy       = after.Velocity.Y;
+            enemy.Y = after.Position.Y;
+            enemy.Vy = after.Velocity.Y;
             enemy.OnGround = after.OnGround;
 
             if (terrain != null && enemy.Y < terrain.KillPlaneY)

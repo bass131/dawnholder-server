@@ -15,8 +15,8 @@ namespace Dawnholder.Server.GameServer.Maps.States;
 internal static class PlayerCombatStates
 {
     internal static readonly AttackState Attack = new();
-    internal static readonly HitState    Hit    = new();
-    internal static readonly DeathState  Death  = new();
+    internal static readonly HitState Hit = new();
+    internal static readonly DeathState Death = new();
 }
 
 // ── AttackState ───────────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ internal static class PlayerCombatStates
 internal sealed class AttackState : ActorState<PlayerEntity>
 {
     public override AnimState AnimState => AnimState.Attack;
-    public override bool LocksMovement      => true;
+    public override bool LocksMovement => true;
     public override bool InterruptibleByHit => false;
 
     // commit window 중 모든 행동 거부 — Dash 중 평타 구멍 봉합.
@@ -46,7 +46,7 @@ internal sealed class AttackState : ActorState<PlayerEntity>
 
     public override void Exit(PlayerEntity player)
     {
-        player.ExternalImpulseVx   = 0f;
+        player.ExternalImpulseVx = 0f;
         player.ImpulseDecayPerTick = Constants.KnockbackDecayPerTick;
     }
 }
@@ -60,7 +60,7 @@ internal sealed class AttackState : ActorState<PlayerEntity>
 internal sealed class HitState : ActorState<PlayerEntity>
 {
     public override AnimState AnimState => AnimState.Hit;
-    public override bool LocksMovement      => true;
+    public override bool LocksMovement => true;
     public override bool InterruptibleByHit => true;
     public override bool AcceptsAction(ActionKind kind) => false;
 

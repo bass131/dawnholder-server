@@ -15,10 +15,10 @@ namespace Dawnholder.Server.GameServer.Maps.Systems;
 internal readonly struct DeferredImpact
 {
     internal int AttackerEntityId { get; init; }
-    internal int TargetEntityId   { get; init; }
-    internal int Damage            { get; init; }
-    internal long ImpactTick       { get; init; }
-    internal byte HitEffect        { get; init; }
+    internal int TargetEntityId { get; init; }
+    internal int Damage { get; init; }
+    internal long ImpactTick { get; init; }
+    internal byte HitEffect { get; init; }
 }
 
 /// <summary>
@@ -68,11 +68,11 @@ internal sealed class DeferredDamageSystem
             S_HitResult hit = new S_HitResult
             {
                 attackerEntityId = impact.AttackerEntityId,
-                targetEntityId   = target.EntityId,
-                damage           = impact.Damage,
-                currentHp        = Math.Max(0, target.Hp),
-                maxHp            = target.MaxHp,
-                hitEffect        = impact.HitEffect,
+                targetEntityId = target.EntityId,
+                damage = impact.Damage,
+                currentHp = Math.Max(0, target.Hp),
+                maxHp = target.MaxHp,
+                hitEffect = impact.HitEffect,
             };
             map.BroadcastToAll(hit.Write());
 

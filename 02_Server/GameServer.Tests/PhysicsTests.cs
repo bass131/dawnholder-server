@@ -222,7 +222,7 @@ public class PhysicsTests
         PhysicsInput input = new PhysicsInput(1, false, Dt);
 
         var knight = new MoveParams(PlayerStats.Knight().MoveSpeed, PlayerStats.Knight().JumpVel);
-        var mage  = new MoveParams(PlayerStats.Mage().MoveSpeed,  PlayerStats.Mage().JumpVel);
+        var mage = new MoveParams(PlayerStats.Mage().MoveSpeed, PlayerStats.Mage().JumpVel);
 
         PhysicsState ws = PhysicsState.AtRest(Vector2.Zero);
         PhysicsState rs = PhysicsState.AtRest(Vector2.Zero);
@@ -256,12 +256,12 @@ public class PhysicsTests
     public void PlayerStats_Factory_FixedValues_4_6_8_8()
     {
         PlayerStats knight = PlayerStats.Knight();
-        PlayerStats mage  = PlayerStats.Mage();
+        PlayerStats mage = PlayerStats.Mage();
 
         Assert.Equal(4f, knight.MoveSpeed, 4);
-        Assert.Equal(8f, knight.JumpVel,   4);
-        Assert.Equal(6f, mage.MoveSpeed,  4);
-        Assert.Equal(8f, mage.JumpVel,    4);
+        Assert.Equal(8f, knight.JumpVel, 4);
+        Assert.Equal(6f, mage.MoveSpeed, 4);
+        Assert.Equal(8f, mage.JumpVel, 4);
     }
 
     // ── P3 불변식 — 서버 궤적 golden (P4 후에도 절대 green) ─────────────────────

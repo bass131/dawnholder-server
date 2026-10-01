@@ -36,15 +36,15 @@ public class MageRangedCombatTests : IDisposable
     readonly TextWriter _originalOut;
 
     // GameMap ctor가 id=1(Normal), id=2(Boss) 발급 → player id=3(attacker), id=4(observer).
-    const int NormalEnemyId     = 1;
-    const int AttackerEntityId  = 3;
-    const int ObserverEntityId  = 4;
+    const int NormalEnemyId = 1;
+    const int AttackerEntityId = 3;
+    const int ObserverEntityId = 4;
 
-    const float NormalX    = 10f;
-    const float NormalY    = 0f;
-    const int   NormalMaxHp = 30;
-    const float BossX      = 30f;
-    const float BossY      = 0f;
+    const float NormalX = 10f;
+    const float NormalY = 0f;
+    const int NormalMaxHp = 30;
+    const float BossX = 30f;
+    const float BossY = 0f;
 
     public MageRangedCombatTests()
     {
@@ -126,7 +126,7 @@ public class MageRangedCombatTests : IDisposable
     {
         C_Attack pkt = new C_Attack
         {
-            targetEntityId     = targetEntityId,
+            targetEntityId = targetEntityId,
             attackerClientTick = (int)attackerClientTick,
         };
         return pkt.Write();
@@ -381,8 +381,8 @@ public class MageRangedCombatTests : IDisposable
         // 맵: NormalEnemy 2개(같은 층 + 위층) + Boss(별 위치).
         // enemy_same: x=3, y=0 (attacker와 같은 층)
         // enemy_upper: x=3, y=3.0 (층간격 초과, hit이면 Phase 02 실패)
-        const float EnemySameX  = 3f;
-        const float EnemySameY  = 0f;
+        const float EnemySameX = 3f;
+        const float EnemySameY = 0f;
         const float EnemyUpperX = 3f;
         const float EnemyUpperY = 3.0f; // MageAttackHalfY(1.0) + HitboxHalfExtent(0.5) = 1.5 < 3.0 → miss
 
@@ -410,9 +410,9 @@ public class MageRangedCombatTests : IDisposable
         casterEntity.Position = new Vector2(0f, 0f);
         casterEntity.RecordPosition(1, casterEntity.Position);
 
-        EnemyEntity enemySame  = map.Enemies[1]; // 같은 층
+        EnemyEntity enemySame = map.Enemies[1]; // 같은 층
         EnemyEntity enemyUpper = map.Enemies[2]; // 위층
-        int hpSameBefore  = enemySame.Hp;
+        int hpSameBefore = enemySame.Hp;
         int hpUpperBefore = enemyUpper.Hp;
 
         attacker.SentPackets.Clear();
@@ -433,7 +433,7 @@ public class MageRangedCombatTests : IDisposable
         AABB mageBox = CombatSystem.GetAttackHitbox(new Vector2(0f, 0f), CharacterClass.Mage);
         AABB upperHitbox = new AABB(new Vector2(EnemyUpperX, EnemyUpperY),
             new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
-        AABB sameHitbox  = new AABB(new Vector2(EnemySameX, EnemySameY),
+        AABB sameHitbox = new AABB(new Vector2(EnemySameX, EnemySameY),
             new Vector2(CombatConstants.HitboxHalfExtent, CombatConstants.HitboxHalfExtent));
 
         // Phase 02 acceptance: 같은 층 = hit, 위층(Y=3.0) = miss

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +25,7 @@ namespace Dawnholder.Server.Network
             {
                 _jobQueue.Enqueue(job);
 
-                if(_flush == false)
+                if (_flush == false)
                 {
                     flush = _flush = true;
                 }

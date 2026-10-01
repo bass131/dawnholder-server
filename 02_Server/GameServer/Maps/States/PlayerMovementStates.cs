@@ -13,9 +13,9 @@ namespace Dawnholder.Server.GameServer.Maps.States;
 // 이 값을 바꾸면 행동 불변 보장이 깨짐 — 변경 금지.
 internal static class PlayerMovementStates
 {
-    internal static readonly IdleState  Idle  = new();
-    internal static readonly MoveState  Move  = new();
-    internal static readonly JumpState  Jump  = new();
+    internal static readonly IdleState Idle = new();
+    internal static readonly MoveState Move = new();
+    internal static readonly JumpState Jump = new();
 
     // 기존 ComputePlayerAnimState와 동일한 임계값.
     internal const float VxEpsilon = 0.01f;

@@ -98,10 +98,10 @@ public class DeferredDamageSystemTests : IDisposable
         map.EnqueueDeferredDamage(new DeferredImpact
         {
             AttackerEntityId = 0,
-            TargetEntityId   = enemy.EntityId,
-            Damage           = 5,
-            ImpactTick       = 5,
-            HitEffect        = 1,
+            TargetEntityId = enemy.EntityId,
+            Damage = 5,
+            ImpactTick = 5,
+            HitEffect = 1,
         });
 
         for (long t = 1; t <= 4; t++)
@@ -125,10 +125,10 @@ public class DeferredDamageSystemTests : IDisposable
         map.EnqueueDeferredDamage(new DeferredImpact
         {
             AttackerEntityId = 99,
-            TargetEntityId   = enemy.EntityId,
-            Damage           = damage,
-            ImpactTick       = 3,
-            HitEffect        = 1,
+            TargetEntityId = enemy.EntityId,
+            Damage = damage,
+            ImpactTick = 3,
+            HitEffect = 1,
         });
 
         // tick=3에서 처리
@@ -175,10 +175,10 @@ public class DeferredDamageSystemTests : IDisposable
         map.EnqueueDeferredDamage(new DeferredImpact
         {
             AttackerEntityId = 0,
-            TargetEntityId   = entityId,
-            Damage           = 1,
-            ImpactTick       = 2,
-            HitEffect        = 0,
+            TargetEntityId = entityId,
+            Damage = 1,
+            ImpactTick = 2,
+            HitEffect = 0,
         });
 
         map.Tick(1);
@@ -302,10 +302,10 @@ public class DeferredDamageSystemTests : IDisposable
         map.EnqueueDeferredDamage(new DeferredImpact
         {
             AttackerEntityId = 0,
-            TargetEntityId   = entityId,
-            Damage           = 5,
-            ImpactTick       = 3,
-            HitEffect        = 0,
+            TargetEntityId = entityId,
+            Damage = 5,
+            ImpactTick = 3,
+            HitEffect = 0,
         });
 
         // 도착 전에 적을 직접 제거 (사망 시뮬)

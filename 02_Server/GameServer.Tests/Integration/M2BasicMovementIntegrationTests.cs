@@ -32,17 +32,17 @@ public class ServerFixture : IDisposable
         // 통합 테스트용 content provider — 옛 MapSpawnTable 값 보존.
         var provider = new Dictionary<MapId, (MapTerrain? Terrain, MapContent? Content)>
         {
-            [MapId.Town]          = (null, MapContent.Empty),
+            [MapId.Town] = (null, MapContent.Empty),
             [MapId.HuntingGround] = (null, new MapContent(0f, 0f, new[]
             {
                 new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f),
             })),
-            [MapId.BossRoom]      = (null, new MapContent(0f, 0f, new[]
+            [MapId.BossRoom] = (null, new MapContent(0f, 0f, new[]
             {
                 new EnemySpawnPoint((byte)EnemyKind.Normal, 10f, 0f),
                 new EnemySpawnPoint((byte)EnemyKind.Boss,   30f, 0f),
             })),
-            [MapId.Ending]        = (null, MapContent.Empty),
+            [MapId.Ending] = (null, MapContent.Empty),
         };
 
         World = new GameWorld(provider);

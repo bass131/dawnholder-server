@@ -62,7 +62,7 @@ public class HandleEnemyDeathKillerTests : IDisposable
         protected override void OnEnemyKilled(int killerEntityId, EnemyEntity target)
         {
             CapturedKillerId = killerEntityId;
-            CapturedTarget   = target;
+            CapturedTarget = target;
             CallCount++;
             // 훅 호출 시점에 이미 _enemies에서 제거됐어야 함(시퀀스 순서 계약).
             EnemyAlreadyRemovedWhenHookCalled = !Enemies.ContainsKey(target.EntityId);
@@ -133,9 +133,9 @@ public class HandleEnemyDeathKillerTests : IDisposable
     {
         C_SkillUse pkt = new C_SkillUse
         {
-            skillId            = (byte)SkillId.Dash,
+            skillId = (byte)SkillId.Dash,
             attackerClientTick = (int)clientTick,
-            facing             = facing,
+            facing = facing,
         };
         return pkt.Write();
     }
@@ -246,10 +246,10 @@ public class HandleEnemyDeathKillerTests : IDisposable
         map.EnqueueDeferredDamage(new DeferredImpact
         {
             AttackerEntityId = expectedKillerId,
-            TargetEntityId   = enemyEntityId,
-            Damage           = 1,
-            ImpactTick       = 3,
-            HitEffect        = 1,
+            TargetEntityId = enemyEntityId,
+            Damage = 1,
+            ImpactTick = 3,
+            HitEffect = 1,
         });
 
         map.Tick(1);
@@ -281,10 +281,10 @@ public class HandleEnemyDeathKillerTests : IDisposable
         map.EnqueueDeferredDamage(new DeferredImpact
         {
             AttackerEntityId = 42,
-            TargetEntityId   = enemyEntityId,
-            Damage           = 1,
-            ImpactTick       = 2,
-            HitEffect        = 0,
+            TargetEntityId = enemyEntityId,
+            Damage = 1,
+            ImpactTick = 2,
+            HitEffect = 0,
         });
 
         sink.Clear();

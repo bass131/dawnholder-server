@@ -79,7 +79,7 @@ public class MoveIntentTests
     {
         GameMap map = new GameMap();
         PlayerEntity knight = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Knight());
-        PlayerEntity mage  = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Mage());
+        PlayerEntity mage = map.AddPlayer(null, new Vector2(0f, 0f), PlayerStats.Mage());
 
         for (int i = 0; i < 20; i++)
         {

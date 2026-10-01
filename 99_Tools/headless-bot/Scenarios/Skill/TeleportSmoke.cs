@@ -28,8 +28,8 @@ public class TeleportSmoke
     static readonly TimeSpan SnapshotSettleTimeout = TimeSpan.FromSeconds(3);
 
     const float TownPortalX = 20f;
-    const int   TownPortalId = 1;
-    const byte  TeleportSkillId = (byte)SkillId.Teleport;
+    const int TownPortalId = 1;
+    const byte TeleportSkillId = (byte)SkillId.Teleport;
 
     // 서버 TeleportDistance=3.5f (M4.15 워크스트림 D: 15.0f→3.5f 단축). 허용 오차 ±1.0f.
     const float TeleportDistance = 3.5f;
@@ -344,10 +344,10 @@ public class TeleportSmoke
         {
             C_SkillUse p = new()
             {
-                skillId            = skillId,
+                skillId = skillId,
                 attackerClientTick = LastReceivedServerTick,
-                facing             = 1, // 오른쪽(PDL: 1=right). 기대 위치 계산(+TeleportDistance)과 정합.
-                verticalDir        = 0, // 수평 텔레포트 (M4.15 v14 신규 필드 — 0=수평, 기본).
+                facing = 1, // 오른쪽(PDL: 1=right). 기대 위치 계산(+TeleportDistance)과 정합.
+                verticalDir = 0, // 수평 텔레포트 (M4.15 v14 신규 필드 — 0=수평, 기본).
             };
             Session?.Send(p.Write());
         }

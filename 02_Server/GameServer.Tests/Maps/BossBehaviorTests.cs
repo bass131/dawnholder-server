@@ -571,7 +571,10 @@ public class BossBehaviorTests : IDisposable
         // [size:2][id:2][entityId:4][spawnX:4][spawnY:4][characterClass:1] = 17 bytes.
         S_PlayerJoin pkt = new S_PlayerJoin
         {
-            entityId = 0, spawnX = 0f, spawnY = 0f, characterClass = 0,
+            entityId = 0,
+            spawnX = 0f,
+            spawnY = 0f,
+            characterClass = 0,
         };
 
         ArraySegment<byte> bytes = pkt.Write();

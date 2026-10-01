@@ -96,7 +96,10 @@ public sealed class ChannelScore
 
     static int DrumCode(string p) => p switch
     {
-        "K" => 0, "k" => 1, "H" => 2, "S" => 3,
+        "K" => 0,
+        "k" => 1,
+        "H" => 2,
+        "S" => 3,
         _ => throw new FormatException($"드럼 토큰 오류: '{p}' (K/k/H/S만 허용)")
     };
 }

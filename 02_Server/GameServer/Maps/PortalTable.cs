@@ -136,10 +136,10 @@ public static class PortalTable
     /// </summary>
     public static IReadOnlyList<Portal> GetPortalsFor(MapId mapId) => mapId switch
     {
-        MapId.Town           => TownPortals,
-        MapId.HuntingGround  => HuntingGroundPortals,
-        MapId.BossRoom       => BossRoomPortals,
-        MapId.Ending         => EndingPortals,
-        _                    => Empty,
+        MapId.Town => TownPortals,
+        MapId.HuntingGround => HuntingGroundPortals,
+        MapId.BossRoom => BossRoomPortals,
+        MapId.Ending => EndingPortals,
+        _ => Empty,
     };
 }
