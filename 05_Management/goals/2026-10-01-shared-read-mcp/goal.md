@@ -72,7 +72,7 @@ Sol은 05 안에서 다음 책임을 분리한다. 정확한 파일 배치는 �
 | 목록 예산 | 기본 목록은 위 측정 기준 **8,192 bytes(8 KiB)**를 목표로 limit보다 적게 반환할 수 있다. 단일 요약이 8 KiB를 넘으면 16 KiB 안에서 한 건을 반환한다. 16 KiB에도 안 들어가면 오류다. 최대 50개 요청도 16 KiB 상한을 우선한다. |
 | 초과 | 실제 반환 건수에 맞게 nextOffset을 계산해 누락/무한 반복을 막는다. preview 생략은 item의 truncatedFields로 표시한다. 단일 상세가 들어가지 않으면 내용 없는 RESPONSE_TOO_LARGE 오류를 반환한다. 잘린 상세를 정상 전체 결과라고 표시하지 않는다. |
 | 원본 | 기존 최대 **2,097,152 bytes(2 MiB)** 유지. MCP read는 제한 + 1 bytes 이내에서 초과를 판정해 증가 중인 파일을 무제한 읽지 않는다. |
-| 호출량 | 프로세스별 동시 tools/call 처리 최대 2, 대기열 0. 별도로 단조 시계의 token bucket을 적용해 capacity 10, 초당 10회 충전으로 제한한다. 초과는 RATE_LIMITED와 retryAfterMs(상한 1,000)를 반환한다. 취소/실패/정상 종료 모두 슬롯을 반환한다. 클라이언트 두 개는 별도 프로세스이므로 전역 quota·공유 상태를 추가하지 않는다. |
+| 호출량 | 프로세스별 동시 tools/call 처리 최대 **4**, 대기열 0. 별도로 단조 시계의 token bucket을 적용해 capacity 10, 초당 10회 충전으로 제한한다. 초과는 RATE_LIMITED와 retryAfterMs(상한 1,000)를 반환한다. 취소/실패/정상 종료 모두 슬롯을 반환한다. 클라이언트 두 개는 별도 프로세스이므로 전역 quota·공유 상태를 추가하지 않는다. |
 
 한도 축소는 메인 기술 결정이며 **16 KiB 상한 / 기본 8 KiB 목표**는 Astra의 구체 수치 선택이다. [Claude Code의 공식 출력 제한](https://code.claude.com/docs/en/mcp#mcp-output-limits-and-warnings)은 경고 10,000 tokens·기본 최대 25,000 tokens다. 64 KiB는 다국어·escaping·중복 표현을 고려하면 여유를 설명하기 어렵고, 8 KiB를 모든 상세의 강제 상한으로 삼으면 불필요한 거부가 늘 수 있어 16/8 KiB를 선택했다. bytes는 tokens와 동치가 아니므로 특정 tokenizer·host rendering에서 경고가 없다고 미리 보장하지 않는다. 정본 기준 각 도구의 기본/최대 페이지·최대 상세 응답 bytes와 실제 wire overhead를 독립 검증에 기록하고, 실제 client 연결 시 토큰/파일 대체 여부를 별도로 관측한다. 출력 제한을 높이는 설정이나 vendor별 우회 annotation은 추가하지 않는다.
 
@@ -166,7 +166,7 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 ## 현재 상태와 근거
 
-**Fable 계획 검토 지적 17건과 메인 후속 결정을 반영한 goal 보완 완료, 메인 diff 확인·goal 승인 대기. 구현·독립 제품 검증 미착수.** 최초 Fable 판정은 수정 필요이며 이 보완안을 승인했다고 해석하지 않는다.
+**메인이 goal `8001372`를 승인했다. 호출량 조정을 반영해 외부 Sol의 구현/첫 smoke를 발행하는 단계이며 독립 제품 검증은 미착수다.** 최초 Fable 판정은 수정 필요이며 메인의 후속 goal 승인과 구분한다.
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - 시작: clean `main`, HEAD `18c8ca6a5aa3032873029cbd36658f0c4f9095c5` (PR156). `git fetch origin main` 후 origin/main도 같은 SHA임을 확인했다.
@@ -176,7 +176,7 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 - 현행 코드·문서의 좁은 정적 조사, 버전/registry metadata 조회, 공식 문서 확인과 Fable 계획 검토를 수행했다. package 설치·MCP/앱 실행·테스트·빌드·독립 제품 검증·설정 변경은 수행하지 않았다.
 - 원시 receipt/로그와 판정 원문은 Git 제외 `.backups/verification/2026-10-01-shared-read-mcp/`에 보존한다. 계획 판정은 아래와 같고 구현/제품 검증 판정은 아직 없다. 원문은 로컬 근거이며 원격 가용성을 보장하지 않는다.
 
-남은 선행 단계는 메인의 보완 diff 확인·goal 승인이다. 정본 범위는 확정됐고 응답 축소와 SDK 조건부 채택은 메인 기술 결정으로 처리했다. D4 실제 개발 세션 연결/설정 적용은 시험 후의 결정 항목으로 남는다. 구현·SDK 설치/호환성·회귀는 아직 검증되지 않았다.
+goal 승인 후 다음 단계는 Sol의 첫 smoke 보고와 구현, V1→V2→V3 독립 검증, PR이다. 정본 범위는 확정됐고 응답 축소와 SDK 조건부 채택은 메인 기술 결정으로 처리했다. D4 실제 개발 세션 연결/설정 적용은 시험 후의 결정 항목으로 남는다. 구현·SDK 설치/호환성·회귀는 아직 검증되지 않았다.
 
 ### Fable 계획 검토 결과 — 검토 후 기록
 
@@ -206,4 +206,8 @@ Run `run_178353cf7ce2`, Task `task_caa031611206`, Dispatch `ctx_dec63c9a6dd9`다
 | #12·15·16 | 프로세스별 rate/동시 처리 제한, UI/MCP 단일 hash 함수·code unit 정렬·locale 한계·긴 ID 표시, modern pin/legacy revision 확인. |
 | #14·17 | Codex 최종 URL과 CLI MCP override 미확인, Claude strict 옵션은 후속 선택. V1/V2/V3 신규 세션 순차 배정·stdout/EOF/취소 종료 관측. |
 
-이 보완은 문서 작업이며 제품 코드·설정·catalog는 변경하지 않았다. SDK·GUI 실행은 전부 계획이다. 메인이 보완 commit diff를 확인해 goal을 승인할 때까지 Sol을 발행하지 않는다.
+이 보완은 문서 작업이며 제품 코드·설정·catalog는 변경하지 않았다. SDK·GUI 실행은 이 보완 시점에 모두 계획이었다. 이후 승인과 실행은 아래에 구분한다.
+
+### goal 승인과 구현 착수
+
+메인 메시지 `msg_8c4a3b4c61ff`에서 `ed465b0..8001372` diff를 직접 확인하고 goal 및 Sol 발행·V1→V2→V3·PR까지 승인했다. 병합은 해당 PR의 사용자 명시 승인 대상이다. 메인이 허용한 호출량 조정 중 **동시 처리 4, 대기열 0**을 선택했다. 작은 병렬 도구 호출을 수용하면서 대기열·대기 timeout의 추가 수명주기를 만들지 않기 위해서이며, 나머지 16/8 KiB·10건·초당 10회 수치는 유지한다.
