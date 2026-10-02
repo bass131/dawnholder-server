@@ -1,6 +1,6 @@
 # P3 / D1b — 영속성 저장소와 격리 SQL 검증
 
-상태: **G0 기술 범위 승인, 신규 Sol의 A1 SQL 구현 진행; G1 외부 변경은 사용자 응답 대기**. 메인 `msg_78c5c1647b7c`로 독립 저장소·schema·수명 도구·최소 recovery 콘솔/launcher 범위가 승인됐다. DB 접속·생성·변경과 계정 생성은 아직 금지다. 구현 완료나 독립 검증 판정은 아직 없다.
+상태: **G0·G1 승인, 신규 Sol의 A1 SQL 구현 진행; 실제 외부 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. 구현 완료나 독립 검증 판정은 아직 없다.
 
 ## 착수 근거와 기준점
 
@@ -32,9 +32,9 @@
 | `rg --files 99_Tools/database`와 `rg -n 'DROP\s+DATABASE'` (`02_Server`, `99_Tools`의 SQL/PS1/SH/프로젝트 파일) | 해당 검색 범위에 DB DROP 도구 없음. 시험 DB 폐기 도구/절차의 작성·검토·실행 소유를 새로 배정해야 함 |
 | `00_Document/FEATURE_MAP.md:13`, `02_Server/GameServer/Maps/Actions/` | `Maps/States/Actions/` 오기를 확인. D1b 기능 완료와 무관하므로 이 branch에서는 수정하지 않고 별도 작은 문서 PR 후보로 메인에 보고 |
 
-## 사용자에게 올릴 세 가지 안건 — 모두 제안, 미승인
+## 사용자 세 안건 — 추천안 승인(G1)
 
-전용 DB 사용·시험 후 폐기라는 방향은 다시 묻지 않는다. 아래는 정확한 외부 변경 대상과 승인 단위다. 메인이 사용자 응답과 원문 message를 이 절에 반영한 뒤 실행 gate를 연다.
+메인 `msg_21ae101a52db`(2026-10-02 04:49:42 UTC)가 전달한 사용자 원문은 **"음 내가 살펴보니까 전체적으로 추천 방향으로 작업 진행하자"**다. 메인이 보여 준 아래 세 안건의 추천안에 대한 승인이다. 전달을 사용자 직접 입력으로 격상하지 않으며 각 PR 병합·다른 외부 변경 승인으로 확대하지 않는다. 아래 추천 범위가 확정됐고 대안 열은 당시 비교 기록이다. G1은 열렸으나 실제 외부 변경은 G2의 신규 Opus 실사 통과 뒤에만 수행한다. 관리자/UAC 단계는 정확한 명령과 실행 주체를 메인에게 전달한다.
 
 | 안건 | 추천하는 구체 범위 | 다른 선택의 영향 |
 |---|---|---|
@@ -104,12 +104,16 @@ G2가 제품 전체 구현보다 먼저 필요하면 A 쓰기 종료 후 정적 
 
 ## 현재 결과와 다음 경계
 
-- 원천 조사, 세션/branch 준비, 이 goal 초안과 CURRENT·로드맵 링크 작성을 수행했다. 작성자 점검에서 로컬 Markdown 링크가 모두 존재하고 Unity 사용자 3파일 SHA256이 진입 기준과 같음을 확인했다. DB/계정/서비스/패키지/비밀/제품/테스트/Unity 변경은 없고 외부 작업자도 아직 없다. 독립 판정 원문은 **아직 없음**이다.
+- 초안 checkpoint `dfa9526`에서 원천 조사, 세션/branch 준비, goal·CURRENT·로드맵 링크 작성을 수행했다. 당시 작성자 점검에서 로컬 Markdown 링크가 모두 존재하고 Unity 사용자 3파일 SHA256이 진입 기준과 같음을 확인했다. 당시 제품 변경·외부 작업자는 없었다. 이후 A1 제품 쓰기는 아래 실행 기록을 따르며 DB/계정/서비스/비밀/Unity 변경은 여전히 없다. 독립 판정 원문은 **아직 없음**이다.
 - 로컬 근거 위치: `.backups/verification/2026-10-02-persistence-repository/`. `kickoff-messages.json`, `astra-show.json`, `unity-baseline-hashes.json`에 진입/전달/보존 근거를 둔다. 이 폴더는 Git 제외 자료다.
-- 초안 commit은 `dfa9526`이며 이후 G0 승인과 실행 대안을 이 goal에 반영했다. 다음은 A1/A2의 DB 접속 없는 구현과 G1 사용자 결정 수신이다. 새 DB/계정 생성이나 실행 범위를 암묵적으로 넓히지 않는다.
+- 초안 commit은 `dfa9526`, G0 기록은 `9540314`다. 이후 G1 승인과 A1 세부 계약을 이 goal에 반영했다. 다음은 A1/A2의 DB 접속 없는 구현과 G2 실사다. 새 DB/계정 생성이나 실행 범위를 암묵적으로 넓히지 않는다.
 
 ## G0 이후 실행 기록
 
 - 2026-10-02 공식 재확인: [Microsoft 지원표](https://learn.microsoft.com/en-us/sql/connect/ado-net/sqlclient-driver-support-lifecycle?view=sql-server-ver17)는 6.1 LTS 최신 patch를 **6.1.7**, 지원 종료를 2028-08-14로 표시한다. [NuGet 6.1.7](https://www.nuget.org/packages/Microsoft.Data.SqlClient/6.1.7)은 실제 패키지와 .NET8+ 및 계산된 net10 호환을 제공한다. 승인된 6.1.7을 유지한다. 아직 이 프로젝트에 package/restore를 실행한 결과는 아니다.
 - 새 Run `run_5caa3033b174`, A1 Task `task_1df2b9371a5d`, Dispatch `ctx_4b0c8c812eeb`. 작업자 handle `term_46b65ef5-49f6-4d60-bb4b-c32e545b6bbb`, incarnation `d0e34ecb-8993-4086-b083-45750f640086`. 요청/최초 split 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 화면 `GPT-6.1-Sol xhigh`, backend `unknown`. Codex CLI0.160.0. 담당 Astra 아래 새 vertical pane의 빈 정상 prompt·경로·모델과 tui-idle satisfied를 확인한 뒤 최초 attach했다.
 - `a1-start.json`에 state ready, `input_accepted`와 `turn_started` receipt를 보존했다. attach의 launch model=null은 모델 판정에 쓰지 않는다. `a1-spec.md`는 002~013 SQL과 catalog만 쓰기 허용하며 모든 DB 연결·비밀·설치·빌드·테스트 파일 쓰기를 금지한다. A2/검증자는 A1 정산 후 새 세션으로 발행한다.
+- A1 질문 `msg_92e06a8bff49`의 기술 선택: SQL 좌표 검사는 real 유한 표현/-0 정규화, Town spawn 선택은 서버 content 캡처/D2 owner, B는 immutable SafeDefaults의 finite/양수 검증을 맡는다. 현재 MapContent/MapDataLoader에 전역 좌표 범위 상수가 없으므로 DB에 임의 terrain 경계를 새로 하드코딩하지 않는다. D1a의 입력 범위는 이 책임 경계로 구체화한다. int 입력이 byte payload 표현 범위 밖/null이거나 slot!=1/금지 kind/owner이면 InvalidRequest·증빙 없음, class2..255는 정본 판정 순서 뒤 InvalidClass204·NotApplied다. token/reason은 넓은 SQL 타입으로 받고 실제 길이를 검증해 silent truncation을 막는다. 한 mutation/resolver는 commit 뒤 단일 result set/row와 historical snapshot·별도 Current authority/token 열을 반환한다. 정확 signature/shape는 A1 보고에서 B/C에 인계한다. 응답 원문은 `a1-contract-reply.json`이다.
+- Architecture `msg_0493c20dff4f`는 0단계와 현재 A-1이 FEATURE_MAP을 쓰지 않는다고 회신했다. 별도 경로 수정 PR과 현재 파일 소유는 충돌하지 않는다.
+- Architecture `msg_a137ef003676`가 CURRENT의 새 goal 링크 삽입 위치 충돌을 관측했다. Architecture 0단계가 먼저 병합되면 D1b의 제품 쓰기 종료·clean checkpoint 뒤 최신 main을 반영하고 양쪽 goal 링크를 모두 보존한다. 작업자 쓰기 중 branch 전환/rebase를 하지 않는다.
+- 계획 전용 `fixture-plan.json`에 slot1 AccountId=`828e39df-ba5d-4209-86ea-4e9ec1a43ed5`, CharacterId=`686e8071-daa1-404d-af7d-d4bb2442748c`를 고정했다. 이 GUID 생성·기록은 DB 바인딩 등록이 아니다. 외부 자원은 아직 만들지 않았다.
