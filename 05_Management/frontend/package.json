@@ -17,13 +17,19 @@
     "test:watch": "vitest",
     "desktop:typecheck": "tsc --project tsconfig.electron.json --noEmit",
     "desktop:build": "npm run build && tsc --project tsconfig.electron.json",
-    "desktop:start": "npm run desktop:build && electron ."
+    "desktop:start": "npm run desktop:build && electron .",
+    "mcp:typecheck": "tsc --project tsconfig.mcp.json --noEmit",
+    "mcp:build": "node scripts/build-mcp.mjs",
+    "mcp:start": "node mcp-dist/mcp/main.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/server": "2.2.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zod": "4.6.5"
   },
   "devDependencies": {
+    "@modelcontextprotocol/client": "2.2.0",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",

@@ -111,6 +111,15 @@ describe('desktop shell authority and lifetime contracts', () => {
     expect(store.save).toHaveBeenCalledOnce();
   });
 
+  it('builds the store only from the module-relative 05 catalog and backup, without injected rename options', async () => {
+    // V3: electron/ and desktop-dist/ are siblings, so this also fixes the built entry's paths.
+    await start();
+    const { createCatalogStore } = await import('../electron/catalog-store.js');
+    expect(vi.mocked(createCatalogStore).mock.calls).toEqual([[
+      fileURLToPath(new URL('../../records/catalog.json', import.meta.url)),
+      fileURLToPath(new URL('../../.verification/system-records-last-good.json', import.meta.url)),
+    ]]);
+  });
   it('rejects navigation, redirects, subframe navigation and new windows', async () => {
     await start();
     for (const name of ['will-navigate', 'will-frame-navigate', 'will-redirect']) {

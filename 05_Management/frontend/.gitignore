@@ -4,3 +4,4 @@ desktop-dist/
 .verification/
 coverage/
 *.tsbuildinfo
+/mcp-dist/

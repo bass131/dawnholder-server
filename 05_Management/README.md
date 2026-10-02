@@ -6,7 +6,9 @@
 
 ## 문서 지도
 
-- [현재 세션 종료 정리 목표](goals/2026-10-01-session-closeout/goal.md).
+- [현재 공동 조회 MCP 목표](goals/2026-10-01-shared-read-mcp/goal.md): 읽기 전용 공동 조회의 범위·계약·상태·검증 근거.
+- [공동 조회 MCP 사용 안내](MCP.md): 빌드·조회 순서·버전 처리와 실제 세션 연결 전 검토할 설정 예시.
+- [이전 세션 종료 정리 목표](goals/2026-10-01-session-closeout/goal.md).
 - [문맥 정정 목표](goals/2026-10-01-context-corrections/goal.md): 사실·상태·출처 정정과 독립 검토·병합 결과의 원본.
 - [다음 세션 재개](RESUME.md): 최소 읽기 순서와 다음 행동.
 - [요구사항](requirements.md): 확정 요구, 설계 제안, 미결정, 조사 관찰과 향후 완료조건의 원본.
@@ -26,7 +28,7 @@
 
 위는 구현된 실행 경로의 사용 안내다. 배치 분기 검증의 성공 START는 stub이며, **사람의 실제 더블클릭과 START detached 실행의 끝까지 이어지는 성공은 미검증**이다. 따라서 [launcher 목표](goals/2026-09-30-launcher/goal.md)의 사용자 진입점 완료조건을 모두 검증했다고 표시하지 않는다. 이후 실제 Electron main의 1280×720 창은 [system-records 검증](goals/2026-09-30-system-records/verification.md#실제-electron-관찰)에서 확인했지만 배치 경로 성공을 입증하지 않는다.
 
-Node/npm, 로컬 의존성 또는 Electron 바이너리가 없으면 자동 설치/다운로드 없이 오류를 표시하고 키 입력 후 실패로 종료한다. 사전 준비는 아래 개발 명령의 `npm ci`, 바이너리만 준비하려면 frontend에서 `node node_modules/electron/install.js`를 직접 실행한다. 빌드 실패 시 이전 빌드를 대신 띄우지 않는다. 새 기본 창 크기 `1280×720`은 다음 실행부터 적용하며 현재 열린 창은 유지한다.
+Node/npm, 로컬 의존성 또는 Electron 바이너리가 없으면 자동 설치/다운로드 없이 오류를 표시하고 키 입력 후 실패로 종료한다. 사전 준비는 frontend에서 `npm ci`를 실행한 뒤 `node node_modules/electron/install.js`로 공식 Electron 바이너리를 캐시에서 풀거나 다운로드하는 것이다. 현재 고정 버전은 `npm ci`만으로 바이너리를 준비하지 않으며, 다시 `npm ci`를 실행하면 기존 바이너리도 지워지므로 설치 명령을 다시 실행해야 한다. 빌드 실패 시 이전 빌드를 대신 띄우지 않는다. 새 기본 창 크기 `1280×720`은 다음 실행부터 적용하며 현재 열린 창은 유지한다.
 
 ## 프런트엔드 개발
 
@@ -35,6 +37,7 @@ Node/npm, 로컬 의존성 또는 Electron 바이너리가 없으면 자동 설�
 ```powershell
 Set-Location 'C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active/05_Management/frontend'
 npm ci
+node node_modules/electron/install.js
 npm run dev
 npm run typecheck
 npm run build
@@ -57,6 +60,8 @@ catalog revision `2026-10-01-r2`는 추적된 Management 문서 6개의 출처�
 
 파일 읽기·저장은 Electron 창에서 제공한다. 브라우저 개발 화면에는 파일 연결이 없어 미연결 안내를 표시한다. JSON 불러오기는 편집 초안만 바꾸며, `검증 후 기록 저장`을 눌러야 원본에 반영된다. 직전 정상본은 `.verification/system-records-last-good.json`에 복구용으로 보관한다. 같은 파일을 여러 앱에서 편집한 경우 이전 초안의 저장을 거부하므로 초안을 보존하고 최신본과 비교한다.
 
-별도 DB/색인은 없으며 실제 MCP·Three.js·Git/서버 자동 갱신은 후속 범위다. Game Dev 규칙·기술 계약·진행 goal/CURRENT와 과거 근거는 정본 소유권을 유지한다. 실제 서버 제어/유저 변경/운영 API 호출은 없다. 기존 테스트와 실제 화면 검증 결과는 [개발기록 재구성 목표](goals/2026-09-30-system-records/goal.md)에서 확인한다.
+Windows에서 공동 조회와 파일 교체가 잠깐 겹치면 저장의 마지막 교체 단계를 짧게 재시도한다. 새 시도는 1초 안에서 제한하며, 이미 실행 중인 파일 I/O의 완료 시간은 운영체제에 따른다. 끝내 실패하면 저장 실패를 표시하므로 미저장 초안을 보존하고 다시 확인한다. 읽기 오류는 MCP 안에서 자동 재시도하지 않는다.
+
+별도 DB/색인은 없다. 읽기 전용 MCP와 공통 조회 모듈의 구현·검증 상태는 [공동 조회 목표](goals/2026-10-01-shared-read-mcp/goal.md)를 따른다. Three.js·Git/서버 자동 갱신·서버 제어·유저 변경·운영 API는 후속 범위다. Game Dev 규칙·기술 계약·진행 goal/CURRENT와 과거 근거는 정본 소유권을 유지한다. 기존 테스트와 실제 화면 검증 결과는 [개발기록 재구성 목표](goals/2026-09-30-system-records/goal.md)에서 확인한다.
 
 프로젝트 공통 권한·역할은 [AGENTS](../AGENTS.md), 실행 부작용은 [개발 안내](../00_Document/operations/DEVELOPMENT.md)를 따른다. Management 상세 맥락은 이 영역에서 관리하고 기존 Game Dev 메인과 범위·소유권을 조율한다.
