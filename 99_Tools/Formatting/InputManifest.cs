@@ -61,6 +61,7 @@ internal sealed record InputManifest(int SchemaVersion, string CheckoutSha, stri
             if (!Files.Any(file => file.Path == required)) throw new InvalidDataException($"Missing required input: {required}");
         foreach (var optional in InputPaths.OptionalRootInputs)
             if (File.Exists(Path.Combine(root, optional)) && !Files.Any(file => file.Path == optional)) throw new InvalidDataException($"Uncaptured root build input: {optional}");
+        ProjectRegistration.Load(root, Files.Select(file => file.Path));
         if (!Files.Select(file => file.Path).SequenceEqual(ObservedInputs(root).Order(StringComparer.Ordinal), StringComparer.Ordinal)) throw new InvalidDataException("Unknown or missing source/configuration inputs in the inspected tree.");
     }
 
@@ -87,7 +88,7 @@ internal sealed record InputManifest(int SchemaVersion, string CheckoutSha, stri
                     else
                     {
                         var relative = InputPaths.Relative(root, entry);
-                        if (InputPaths.IsInput(relative))
+                        if (InputPaths.IsInput(relative) && !InputPaths.RootInputs.Contains(relative, StringComparer.Ordinal))
                         {
                             if (attributes.HasFlag(FileAttributes.ReparsePoint)) throw new InvalidDataException($"Linked source file: {entry}");
                             yield return relative;

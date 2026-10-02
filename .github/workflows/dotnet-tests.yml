@@ -44,7 +44,7 @@ jobs:
           test "$(dotnet --version)" = "10.0.301"
           printf 'DOTNET_HOST_PATH=%s\n' "$(command -v dotnet)" >> "$GITHUB_ENV"
 
-      # The tool and its independent tests are separate from the eight product projects.
+      # Explicit independent registrations are separate from the slnx product project set.
       # A missing test project, load failure, or manifest mismatch fails this step.
       - name: Whitespace, input manifest, preservation and formatting tool tests
         run: bash 99_Tools/format-check.sh
