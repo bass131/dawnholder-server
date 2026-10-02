@@ -1,6 +1,6 @@
 # 정적 관계 추출기 비교와 스냅샷 계약
 
-내부 목표 ID: A-1. **현재 상태: 정식 goal 작성, 메인 검토 대기. 설치·시범 구현·정답표 동결·독립 검증은 미실행이다.**
+내부 목표 ID: A-1. **현재 상태: 메인 goal 승인, 원천 정답표·입력 manifest 작성 완료·분석 전 동결. 설치·시범 구현·독립 검증은 미실행이다.**
 
 ## 목표와 결정 출처
 
@@ -51,6 +51,8 @@ npm install --prefix 99_Tools/Architecture/CodeGraph --save-exact --ignore-scrip
 분석 대상은 위 기준 main의 고정 SHA로 시작한다. 추출기 구현 HEAD와 분석 대상 `commitSha`를 분리하고, 선택한 실제 파일·해시와 해석에 필요한 project/props/참조·버전을 manifest로 고정한다. 두 도구가 같은 입력을 읽었는지 복사 전후 hash를 대조한다. 분석 입력을 바꾸면 새 manifest와 별도 결과로 기록하며 미커밋 입력을 clean commit의 결과로 표시하지 않는다.
 
 정답표는 Astra가 **추출기 출력 없이 원천 코드만 보고 작성**한다. 두 도구의 첫 분석 실행 전에 `evaluation-scope.json`, `truth.json`, `input-manifest.json`을 이 goal 폴더에 기록하고 commit SHA·파일 SHA-256·동결 시각을 남긴다. 버전/help 조회·설치 자체와 분석 실행은 구분한다. Sol은 동결 근거가 확보되기 전 실제 입력이나 별도 표본에 추출을 실행하지 않는다. 신규 Opus는 이후 원천과 동결 이력을 독립 대조한다.
+
+메인 승인 `msg_f7f5c55caeeb`에 따라 정답표 작성=Astra·독립 대조=신규 Opus의 소유권을 확정했다. 정답표 commit SHA와 commit 시각, 첫 분석 실행의 UTC 시각·명령·로그를 함께 남겨 **commit 시각이 첫 분석보다 앞섬**을 검증자가 확인할 수 있어야 한다. Unity 참조는 로컬 설치 폴더의 managed DLL을 읽기 전용으로 목표 manifest에 포함·복사하는 데까지 허용한다. 다른 설치·다운로드와 `03_Client` 원본의 Library·obj 접근·변경은 하지 않는다. 사용자용 HTML이 필요하면 Astra가 작성하고 독립 Opus가 내용·근거·표시를 검토한다.
 
 - 표본은 수기 판정 가능한 10~15개 양성 관계를 목표로 한다. source symbol·관계 종류·target domain을 열거해 **닫힌 평가 범위**를 먼저 정하고 그 범위의 양성을 빠짐없이 기록한다. 실제 양성이 목표 개수를 넘으면 임의로 빼지 않고 범위·분모를 조정해 동결한다.
 - 각 정답 행은 source/target의 namespace·type·method signature·repo-relative file, 관계 종류, 코드 증거 위치를 담는다. 직접 호출, 인터페이스 구현, 패킷 타입 사용, 클라이언트 핸들러를 포함한다. 타입 사용과 런타임 패킷 전달은 다른 의미다.
@@ -110,4 +112,16 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 - 이 목표의 새 Run/Task/Dispatch와 외부 작업자는 아직 없다. 과거 목표의 식별자를 실행 권한으로 재사용하지 않는다. 설치·정답 동결·분석·제품 build/test·Unity·DB·독립 판정은 아직 수행하지 않았다.
 - CURRENT는 이 goal 링크만 추가하고 기존 링크를 모두 보존한다. GameDev 저장 연동 브랜치도 CURRENT를 수정하므로 뒤에 통합하는 쪽이 최신 main과 대조해 양쪽 링크를 보존한다. 현재 원격 main과의 관계를 미병합 다른 브랜치와의 비충돌로 표현하지 않는다.
 - 남은 설계 확인은 Unity 참조의 실제 읽기 입력, 도구의 관계별 지원 수준, 시스템 카드의 다중 매핑 해석이다. 이들은 시범의 조사 대상이며 측정 전에 성공으로 가정하지 않는다. 설치 조건을 넓혀야 하거나 파일 소유 범위를 벗어나야 하면 메인에 올린다.
-- 다음 행동은 메인의 goal 검토 결과 반영이다. 승인 뒤 평가 기준을 동결하고 신규 Sol을 발행한다. PR 병합과 결과 기록이 모두 끝난 뒤 Astra 교체는 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 수행한다.
+- 메인 `msg_f7f5c55caeeb`가 commit `3572fb9`의 goal을 승인했다. 현재는 평가 기준을 동결한 뒤 신규 Sol을 발행하는 단계다. 승인·운영 지적 원문은 이번 로컬 evidence의 `main-goal-approval-and-notice.json`이다. PR 병합과 결과 기록이 모두 끝난 뒤 Astra 교체는 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 수행한다.
+
+### 메인 보고 안내와 다음 세션 인계
+
+메인 `msg_ec10ceb1ac7d`는 사용자 지적과 함께 READY·goal 검토 요청 등의 Orca 메시지는 받았으나 터미널 안내가 누락되어 늦게 확인했다고 전달했다. Astra는 이번 READY·검토 요청의 안내 누락을 인정하고 `msg_16ff9498fa23`로 회신했다. 메인 작업 종료를 bounded wait로 기다린 뒤 제한 read에서 빈 prompt를 확인해 안내를 한 번 보냈다. `main-ack-nudge.json`에 `input_accepted`·`turn_started`가 있으며, 이는 메인의 읽기·동의 자체를 뜻하지 않는다.
+
+이후 메인에게 보내는 status·question 보고마다 현재 메인 handle/runtime/incarnation을 확인하고 제한 read로 상태를 확인한다. READY, 결정·검토 요청, PR 준비, 판정 원문, R-8 준비, 원천 불일치·위험 보고에는 **`[Architecture Astra] Orca 메시지를 확인하라` 한 줄을 빈 prompt에서 한 번** 보낸다. 메인이 작업 중이거나 사용자가 작성 중이면 입력하지 않고 bounded wait 뒤 다시 확인한다. 단순 진행 경과는 묶을 수 있으나 필요한 안내를 생략하고 종료하지 않는다. accepted 뒤 침묵에 중복 입력하지 않으며 접수와 턴 시작 receipt를 보존한다. 자세한 지시는 orchestration 메시지에만 담는다. 다음 Architecture Astra도 현재 대상을 새로 조회해 이 규칙을 이어받는다.
+
+### 분석 전 평가 기준
+
+`evaluation-scope.json`의 8개 닫힌 source/target 집합은 관계 후보 36개이며 `truth.json`에 양성 15개·음성 21개를 수기로 판정했다. 양성의 source층은 Server 9, Shared 1, ClientNet 1, Client 4다. 다른 타입의 `ProcessAttack`과 패킷 세 타입의 `Read`를 음성 후보에 포함했다. 실제 존재하더라도 사전 정의한 target 범위 밖의 호출은 별도 개수로 보고한다. 평가·정규화 도구가 정답표로 간선을 생성하거나 동명 모호성을 해소해서는 안 된다.
+
+`input-manifest.json`은 분석 대상 main `881957c`의 파일 225개(C# 210개 포함)와 로컬 Unity managed DLL 157개의 경로·hash·크기를 기록한다. 원본 제품·설정의 base 대비 diff가 없음을 확인했다. Unity InputSystem/TMP의 Library 산출물은 입력에 없으며 참조 부족을 부분 해석으로 기록한다. 아직 복사·분석 성공을 뜻하지 않는다. 작성 데이터의 후보 완전성·증거 행 문자열·심볼 파일 포함 여부 자체 확인은 `freeze-data-check.txt`에 있고 독립 의미 판정과 구분한다. 이 세 파일의 동결 commit·UTC 시각·SHA-256은 commit 직후 로컬 `freeze-record.json`에 보존하여 첫 분석 로그와 대조한다.
