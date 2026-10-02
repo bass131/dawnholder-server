@@ -2,7 +2,9 @@
 
 정본 worktree는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, 소유 영역은 `05_Management`다. 과거 root05나 management-foundation을 정본으로 사용하지 않는다. 이 문서는 읽기 순서와 다음 행동만 제공하며 상태를 별도 집계하지 않는다.
 
-이번 M-1 세션은 메인의 지시에 따라 독립 Management 탭에 배치했다. 새 세션의 배치는 루트 RESUME와 현재 지시를 따르고, Orca pane 소속과 실제 작업 경로를 함께 확인한다. 실제 파일·Git 작업은 위 `management-active`에서만 수행하며 `C:/Dev/DawnHolder_Project`를 사용하지 않는다. 과거 Game Dev pane 분할이나 이번 탭의 관찰을 새 세션의 실행 권한으로 재사용하지 않는다.
+새 세션의 배치·진입은 루트 [RESUME의 세션 진입 배치](../00_Document/operations/RESUME.md#세션-진입-배치)와 [R-1](../00_Document/operations/ORCA.md#r1-management-placement), 작업자 기동과 첫 화면 확인은 [R-5](../00_Document/operations/ORCA.md#r5-worker-launch)·[R-6](../00_Document/operations/ORCA.md#r6-first-screen)을 따른다. Orca pane 소속과 실제 작업 경로·runtime·모델 표시·준비 상태를 함께 확인한다. 실제 파일·Git 작업은 위 `management-active`에서만 수행하며 `C:/Dev/DawnHolder_Project`를 사용하지 않는다. 과거 배치 관찰이나 handle을 현재 세션의 실행 권한으로 재사용하지 않는다.
+
+목표 종료 후 Management Astra 교체는 메인이 [R-8](../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 수행하며, 새 Astra는 루트 RESUME의 진입 절차를 따른다. 문서 변경은 실제 세션 교체 완료를 뜻하지 않는다.
 
 ## 최소 읽기 순서
 
