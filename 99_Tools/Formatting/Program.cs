@@ -8,6 +8,20 @@ try
     var command = arguments.Command;
     switch (command)
     {
+        case "projects":
+            {
+                string[] inputs;
+                if (arguments.Has("manifest"))
+                {
+                    var manifest = await JsonFiles.ReadAsync<InputManifest>(arguments.Required("manifest"));
+                    manifest.ValidateFiles(root, sdk);
+                    inputs = manifest.Files.Select(file => file.Path).ToArray();
+                }
+                else inputs = await InputManifest.GitInputsAsync(arguments.Has("git-root") ? arguments.Required("git-root") : root);
+                var registration = ProjectRegistration.Load(root, inputs);
+                await JsonFiles.WriteAsync(arguments.Required("out"), new { registration.ProductProjects, registration.IndependentProjects });
+                break;
+            }
         case "snapshot":
             {
                 var destination = Path.GetFullPath(arguments.Required("after"));
@@ -84,7 +98,7 @@ try
                 break;
             }
         default:
-            throw new InvalidOperationException("Expected manifest, validate, sync-inputs, compare, or check-report.");
+            throw new InvalidOperationException("Expected projects, snapshot, manifest, validate, sync-inputs, compare, or check-report.");
     }
     return 0;
 }
