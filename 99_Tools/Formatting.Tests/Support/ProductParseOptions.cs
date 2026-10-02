@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Xml.Linq;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
@@ -6,25 +7,16 @@ using Microsoft.CodeAnalysis.MSBuild;
 namespace Dawnholder.Tools.Formatting.Tests.Support;
 
 /// <summary>
-/// Actual Debug/Release parse options of the eight product projects, read through the pinned SDK
-/// Workspace independently of the tool's own manifest code. Requires a restored checkout.
+/// Actual Debug/Release parse options of every product project the repository's Dawnholder.slnx
+/// declares, read through the pinned SDK Workspace independently of the tool's own manifest and
+/// registration code. Requires a restored checkout.
 /// </summary>
 public sealed class ProductParseOptions : IAsyncLifetime
 {
-    // Dependencies first so every opened project's references are already in the solution.
-    private static readonly string[] Projects =
-    [
-        "98_Shared/Shared.csproj",
-        "04_ClientNet/Dawnholder.Client.Net.csproj",
-        "02_Server/Network/Dawnholder.Server.Network.csproj",
-        "02_Server/GameServer/GameServer.csproj",
-        "99_Tools/PacketGenerator/PacketGenerator.csproj",
-        "99_Tools/headless-bot/HeadlessBot.csproj",
-        "99_Tools/BgmComposer/BgmComposer.csproj",
-        "02_Server/GameServer.Tests/GameServer.Tests.csproj",
-    ];
-
     private readonly Dictionary<(string Project, string Configuration), CSharpParseOptions> _options = new();
+
+    /// <summary>The slnx product set, dependencies first so every opened project's references are already loaded.</summary>
+    public static IReadOnlyList<string> Projects { get; } = SolutionProjectsInDependencyOrder();
 
     public IReadOnlyDictionary<(string Project, string Configuration), CSharpParseOptions> Options => _options;
 
@@ -41,6 +33,34 @@ public sealed class ProductParseOptions : IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     public CSharpParseOptions Get(string project, string configuration) => _options[(project, configuration)];
+
+    // Read with plain XML so the expectation never comes from the formatting tool's registration code.
+    private static string[] SolutionProjectsInDependencyOrder()
+    {
+        var root = TestEnvironment.RepositoryRoot;
+        var declared = XDocument.Load(Path.Combine(root, "Dawnholder.slnx")).Descendants("Project")
+            .Select(element => (string?)element.Attribute("Path") ?? throw new InvalidOperationException("slnx project without Path."))
+            .ToArray();
+        var ordered = new List<string>();
+        var visiting = new HashSet<string>(StringComparer.Ordinal);
+        void Visit(string project)
+        {
+            if (ordered.Contains(project, StringComparer.Ordinal)) return;
+            if (!visiting.Add(project)) throw new InvalidOperationException($"Cyclic product reference: {project}");
+            var directory = Path.GetDirectoryName(Path.Combine(root, project))!;
+            foreach (var reference in XDocument.Load(Path.Combine(root, project)).Descendants("ProjectReference"))
+            {
+                var include = ((string?)reference.Attribute("Include") ?? string.Empty).Replace('\\', '/');
+                var target = Path.GetRelativePath(root, Path.GetFullPath(Path.Combine(directory, include))).Replace('\\', '/');
+                if (declared.Contains(target, StringComparer.Ordinal)) Visit(target);
+            }
+
+            ordered.Add(project);
+        }
+
+        foreach (var project in declared) Visit(project);
+        return ordered.ToArray();
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void Register(string sdkDirectory)
