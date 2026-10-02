@@ -1,6 +1,6 @@
 # 정적 관계 추출기 비교와 스냅샷 계약
 
-내부 목표 ID: A-1. **현재 상태: 세 번째 문서 판정은 FAIL이다. D1–D6은 해소됐고 새 D7(근거 경로·필드·확인 귀속), D8(시각 출처)이 나왔다. 메인 지시에 따라 보고를 선택에 필요한 23개 주장으로 줄이고 원시 파일·실제 JSON 위치에 연결했다. 과정 이력은 로컬 근거에 보존했으며 정정본의 신규 Opus 전수 실사 전이다. 제품·테스트·oracle는 고정했고 기존 정상 성공 43개·expected failure 3개를 재실행하지 않았다. 제품 비차단 N1–N11·가독성 의견은 남아 있다. 구현자와 세 검증자는 정산·pane 종료했다. PR은 GameDev 선행 등록 변경이 main에 통합된 뒤 진행한다.**
+내부 목표 ID: A-1. **현재 상태: 네 번째 문서 판정은 D9 한 건으로 FAIL이다. D1–D8·N13·N14는 해소됐다. 보고 본문 23개 주장의 수치·제약·추천은 일치했지만 S06 근거의 source 필터가 틀렸다. 이를 실제 score `/rows/8/source`·`target`·`result`에 연결했고 비차단 N15(근거 위치 정밀도)·N16(과정 시각 출처)도 보완했다. 보고 본문·수치는 그대로이며 신규 Opus 재실사 전이다. 제품·테스트·oracle는 고정했고 기존 정상 성공 43개·expected failure 3개를 재실행하지 않았다. 제품 비차단 N1–N11·가독성 의견은 남아 있다. 구현자와 네 검증자는 정산·pane 종료했다. PR은 GameDev 선행 등록 변경이 main에 통합된 뒤 진행한다.**
 
 ## 목표와 결정 출처
 
@@ -191,3 +191,11 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 - 메인 `msg_896d212c823c`는 선택에 필요한 TP/FP/FN·범위 밖 오류·비용·7개 뷰어 지원·Unity 한계·추천만 본문과 주장표에 남기라고 지시했다. 이전 검증자의 확인 행위·도구 시계 등 과정은 근거 이력으로 옮기고 원시 파일의 실제 위치에 연결하며, 신규 Opus가 축소된 표 전부를 실사한다. 이 지시가 앞선 90행 표 유지 방식과 보고 본문 시각·모델 표기보다 우선한다. 원문은 `main-report-reduction-direction.json`이다.
 - 보고의 선택 주장은 23개로 정리했다. 보고 원문과 주장의 직접 근거·범위를 연결했으며 공통 계약의 미충족은 계약 문서에, 제품 비차단 N1–N11·가독성 및 검증 과정은 `report-reduction/history.md`와 과거 판정에 남긴다. 제품을 고치거나 known limitation을 해소로 바꾸지 않는다. 기존 90행 보고·대조표는 `report-reduction/*-b142f38.md`로도 보존했다. `render_reduced.py`와 `opened-sources.json`은 Astra의 문서 배치·원천 위치 확인일 뿐 독립 판정이 아니다.
 - 메인 `msg_fe14b4092498`의 압축 뒤 재진입 지침과 전달된 사용자 원문은 `main-context-reentry-direction.json`에 보존했다. 압축 뒤 현재 goal의 상태·결정 및 최신 계약을 다시 읽고, 승인·금지 조건을 대화 기억만으로 재구성하지 않는다. 이후 결정도 즉시 원문과 함께 보존하며 신규 작업자 계약은 자기완결로 쓴다. 메인은 이 운영 참고에 별도 회신을 요구하지 않았다.
+
+### 네 번째 문서 판정과 근거 위치 보완
+
+- `ac139700e700bb3f1177454a8cb4f39a4f402f61`의 23개 주장을 신규 Opus Task `task_1f5c6686bfd7` / Dispatch `ctx_1ca009c32ac3`에 발행했다. [네 번째 판정](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification-4/verdict.md)과 [행별 실사표](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification-4/claims-audit.md) 전체를 직접 읽었다. D7·D8·N13·N14는 해소됐고 새 차단은 D9 하나다. 완료 메시지는 `msg_655af55e548e`다.
+- D9는 S06에서 scope 그룹 ID인 clientFrame을 score 행의 source 필터로 잘못 적은 문제다. 검증자 `msg_d8cda94fd246`를 받아 메인 `msg_4bba4d5a6dc1`로 즉시 보고했다. Astra의 기존 JSON Pointer 점검이 `/rows` 배열에서 멈추고 사람이 적은 필터까지 확인하지 못했음을 인정했다. 양쪽 score `/rows/8`의 source=netRecv·target=validateFrame·결과 FN/TP를 직접 다시 읽고, 이 세 값의 포인터로 연결했다. 보고 본문 23개 주장은 ac13970과 byte 동일하다.
+- N15는 SDK 동봉 근거 포인터·불필요한 Roslyn null 필드·runner/snapshot 줄 위치·다운로드 cache 원천 줄을 실제 위치로 좁힌 것이다. N16은 로컬 과정 이력의 시각을 원 메시지 레코드가 보존된 것처럼 적은 문제다. 원 레코드가 없고 Astra 수신 관찰의 후속 메인 전달만 보존돼 있음을 명시했다. 기존 FAIL 원문과 23행 실사표는 수정하지 않는다.
+- 쓰기 종료 뒤 worker-release(retained/external_terminal)와 동일 handle `term_ce4ef22a-c629-43f4-b6d1-8c65017e715f`, incarnation `20e174a8-d543-4b35-a0d5-07ead0a28647`의 완료 빈 prompt를 확인해 pane을 닫았다(ptyKilled=true). 근거는 `review-4-completion.json`, `review-4-release.json`, `review-4-before-close-identity.json`, `review-4-before-close-read.json`, `review-4-close.json`이다. 지정 claude-opus-5-5·화면 Opus 5.5 xhigh·backend unknown이며 세션을 재사용하지 않는다.
+- GameDev `msg_9e81ddbdf85f`는 선행 F가 PR 생성 전 마지막 독립 검증 중이며 main 통합 SHA는 아직 없다고 회신했다. 원문은 `gamedev-registry-status-0937.json`이다. 이 파트는 통합 통보 뒤에만 최신 main을 반영하고 승인된 Roslyn 등록을 진행한다. 현재 PR·CI·실제 카드 조인·사용자 도구 선택·병합 승인 미완료는 유지한다.
