@@ -1,6 +1,6 @@
 # P3 / D1b — 영속성 저장소와 격리 SQL 검증
 
-상태: **G0·G1 승인, 신규 Sol의 A1 SQL 구현 진행; 실제 외부 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. 구현 완료나 독립 검증 판정은 아직 없다.
+상태: **G0·G1 승인, A1 SQL 구현 정산 완료·A2 수명 도구 구현 준비; 실제 외부 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. 전체 구현 완료나 독립 검증 판정은 아직 없다.
 
 ## 착수 근거와 기준점
 
@@ -53,9 +53,9 @@ TLS 예외는 암호화를 유지하지만 서버 인증서의 신원을 검증�
 - G2에서 launcher 및 script의 실제 diff/경로/ACL·입력·권한 검사를 먼저 실사한다. signed Windows PowerShell 경로를 사용한다고 script 실행 성공을 가정하지 않는다. PowerShell 경로도 정책에 막히면 정확 오류·미실행을 보고하며 SAC 끄기·정책 변경·Unblock·신뢰 DLL 복사로 우회하지 않는다. 이 경로로 S06이 성공해도 Microsoft.Data.SqlClient/net10 Windows 실행(S07) 성공으로 합치지 않는다.
 - FEATURE_MAP 오기는 메인의 별도 작은 문서 PR 지시를 받았다. D1b 구현의 독립 대기 구간에 Architecture 파일 소유를 확인한 뒤 별도 branch·외부 작성/실사로 처리하며 D1b diff에 섞지 않는다.
 
-## 메인과 Astra가 정할 기술 항목
+## G0로 승인한 기술 항목
 
-사용자 안건과 분리한다. 아래 제안은 메인 goal 확인 뒤 세부 manifest/spec으로 고정하며, 구현자가 사용자 정책을 추측해 바꾸지 않는다.
+사용자 안건과 분리한다. 아래 범위는 메인 G0로 승인됐으며 세부 manifest/spec과 A1 질문 답변으로 구체화한다. 구현자가 사용자 정책을 추측해 바꾸지 않는다.
 
 1. **독립 라이브러리:** `02_Server/Persistence/`의 net10 저장소 프로젝트와 별도 `Persistence.Tests`를 둔다. GameSession/GameWorld/Host를 참조하지 않는다. immutable options/request/token/result·typed SQL adapter·별도 recovery interface를 나눈다. GameServer composition 연결은 D2다. `Microsoft.Data.SqlClient 6.1.7`은 D1a 선택값이며 구현 착수 시 공식 지원/patch를 다시 확인하고 고정 version을 기록한다. 아직 restore/설치하지 않는다.
 2. **배포 단위:** 002 `persistence_metadata`(Authority/Operation/role), 003 `persistence_payload`(codec 함수 하나), 004 `read_admission`, 005 `acquire_and_load`, 006 `write_safe_checkpoint`, 007 `release_runtime`, 008 `resolve_runtime_operation`, 009 `inspect_recovery`, 010 `recover_and_load`, 011 `release_recovery`, 012 `resolve_recovery_operation`, 013 `persistence_grants`를 제안한다. 실제 파일은 `NNN_name.sql`. 각 function/procedure/시험 trigger 파일은 CREATE 하나만 둔다. 추가 함수가 필요하면 적용 전에 Astra가 번호·의존 목록을 다시 고정한다. GO 분할기·동적 runtime SQL·login/password를 migration에 넣지 않는다.
@@ -66,7 +66,7 @@ TLS 예외는 암호화를 유지하지만 서버 인증서의 신원을 검증�
 
 ## 작업 단위와 파일·실행 소유
 
-현재 Astra 쓰기는 이 goal·CURRENT·로드맵 링크와 로컬 근거뿐이다. 아래는 **goal 확인 후 발행할 범위안**이며 동시 쓰기 권한이 아니다. 단계마다 정확 파일 목록을 task spec에 고정하고 같은 시간 외부 작업자는 하나만 둔다.
+Astra 쓰기는 이 goal·CURRENT·로드맵 링크와 로컬 근거뿐이다. 아래는 **G0로 승인한 단계별 범위**이며 동시 쓰기 권한이 아니다. 실제 Task마다 정확 파일 목록을 더 좁히고 같은 시간 외부 작업자는 하나만 둔다.
 
 | 단위 | 작성/쓰기 담당 | 산출물·경계 |
 |---|---|---|
@@ -117,3 +117,8 @@ G2가 제품 전체 구현보다 먼저 필요하면 A 쓰기 종료 후 정적 
 - Architecture `msg_0493c20dff4f`는 0단계와 현재 A-1이 FEATURE_MAP을 쓰지 않는다고 회신했다. 별도 경로 수정 PR과 현재 파일 소유는 충돌하지 않는다.
 - Architecture `msg_a137ef003676`가 CURRENT의 새 goal 링크 삽입 위치 충돌을 관측했다. Architecture 0단계가 먼저 병합되면 D1b의 제품 쓰기 종료·clean checkpoint 뒤 최신 main을 반영하고 양쪽 goal 링크를 모두 보존한다. 작업자 쓰기 중 branch 전환/rebase를 하지 않는다.
 - 계획 전용 `fixture-plan.json`에 slot1 AccountId=`828e39df-ba5d-4209-86ea-4e9ec1a43ed5`, CharacterId=`686e8071-daa1-404d-af7d-d4bb2442748c`를 고정했다. 이 GUID 생성·기록은 DB 바인딩 등록이 아니다. 외부 자원은 아직 만들지 않았다.
+- 2026-10-02 05:01 UTC 읽기 관측: 현재 실행자 `YYH_DESKTOP\bass1`의 관리자 token은 false, Windows PowerShell 실행파일 Authenticode는 Valid/Microsoft Windows였다. 현재 PowerShell7.6.6의 LocalMachine 실행 정책은 RemoteSigned, 나머지는 Undefined다. Windows recovery script 실행/SQL 성공은 확인하지 않았다. `windows-executor-readonly.json`에 보존했고 메인 `msg_f85eed4890e0`로 전달했다. 관리자 계정 생성·정리는 G2 뒤 정확 명령/주체를 메인에 전달한다.
+- A1 질문 `msg_543905be887d`: 기존 001의 `CK_Character_Class`/`CK_CharacterProgress_Map`는 table-form 선언이지만 기존 catalog는 Class/MapId의 parent_column_id를 기대한다. [Microsoft catalog 문서](https://learn.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-check-constraints-transact-sql?view=sql-server-ver17)는 0을 table-level로 정의한다. 현재 엔진의 실제 단일열 식 저장 메타데이터는 미조회이므로 A1에서는 기존 기대를 유지하고 S01에서 001 적용 직후 parent_column_id/definition을 원문으로 관측한다. 0/column 둘 다 허용해 검사를 느슨하게 하지 않는다. 다르면 실제 관측을 근거로 새 수정/검증하며 001은 고정한다. 과거 PASS가 틀렸다고 확정한 관찰은 아니다. 응답 `a1-catalog-reply.json`, 메인 보고 `msg_95f247422356`.
+- A1 추가 원천 관측 `msg_411c1baf7173`: `Install-Database.ps1`의 `CK_SchemaVersion_Version`도 같은 table-form/column 기대 패턴이다. 같은 보존 결정을 적용하며 S01 관측 목록은 세 constraint다. 기존 PS와 001을 이 이유로 변경하지 않았다.
+- A1 완료 `msg_7ac65395293e`(05:29:30 UTC): migration002~013과 catalog 13파일의 쓰기 종료. 자체 텍스트 점검267항목 불충족0, `git diff --check` exit0, 001/기존 runner 보존이다. T-SQL 구문 실행·DB 연결·잠금·권한·durability·독립 검증은 모두 미실행이다. 원문 `a1-implementation/report.md`를 정산 후 직접 읽었고 SHA256은 `02A71F31C0B561C69BD085F37A9E80288CBB0F4E085CC9EC06CCDEFBF25848C1`이다. Astra는 실제 ReleaseRuntime의 applock/commit/결과 반환 순서와 명령 receipt를 표본 대조했으며 독립 판정으로 확대하지 않는다. Unity3파일 SHA256은 진입 기준과 같다.
+- A1 release는 `retained/external_terminal/processAction:none`이었다. 동일 runtime/handle/incarnation과 idle 화면을 재확인한 후 그 작업 pane만 닫아 `ptyKilled:true`를 받았다. 근거 `a1-release.json`, `a1-final-show.json`, `a1-close.json`, `a1-settlement-messages.json`이며 완료 delivery를 처리·ack했다. A2는 재사용 없이 새 Sol 세션으로 발행한다.
