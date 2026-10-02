@@ -8,6 +8,18 @@
 
 도구는 같은 원천을 다시 읽을 수 있어야 한다. `repository`와 전체 `commitSha`는 분석 입력을 식별하며 도구 구현 HEAD와 다를 수 있다. manifest hash, 실제 입력 hash, 도구 버전·설정, 참조 목록과 compiler diagnostics를 근거로 보존한다. 새 시각의 생성물이라는 이유로 최신 소스 또는 완전한 해석이라고 표시하지 않는다.
 
+다음은 구현할 데이터 접점의 흐름이다. 모든 단계의 실행을 완료했다는 도식이 아니다.
+
+```mermaid
+flowchart LR
+    Source[고정 SHA의 원천 코드] --> Extractor[정적 관계 추출기]
+    Extractor --> Snapshot[코드 노드·간선·진단]
+    Cards[같은 SHA의 하위 카드 코드 매핑] --> Membership[다대다 소속 관계]
+    Snapshot --> Membership
+    Membership --> Overview[하위 카드와 상위 시스템 개요]
+    Overview --> Evidence[원천 edge ID·파일·signature]
+```
+
 ## 스냅샷 정보
 
 | 정보 | 의미·검사 |
@@ -71,4 +83,12 @@ Management 회신 시점의 7/39/9는 디자인 샘플이며 실제 카드 corpu
 
 Unity 입력은 로컬 managed DLL까지이며 InputSystem/TMP의 Library 산출물을 읽지 않는다. 누락 참조로 인한 compiler error와 unresolved 관계는 부분 해석으로 표시한다. 임의 Unity stub을 추가해 완전한 semantic 분석으로 보이게 하지 않는다. 추출기 비교는 Editor 컴파일·플레이·서버 실행·DB 검증을 대신하지 않는다.
 
-독립 Opus는 보고·raw·실제 diff를 먼저 대조한 뒤 schema/SHA/path/endpoint·동명 오인·누락 입력·결정적 정규화·원본 보존 등 계약 실패 경로를 검사한다. 구현의 필드명·validator 위치·실제 실행 결과와 이 초안의 일치는 구현 완료 후 갱신한다. 아직 최종 형식 승인이나 구현 통과를 뜻하지 않는다.
+독립 Opus는 보고·raw·실제 diff를 먼저 대조한 뒤 schema/SHA/path/endpoint·동명 오인·누락 입력·결정적 정규화·원본 보존 등 계약 실패 경로를 검사한다. 아직 최종 형식 승인이나 구현 통과를 뜻하지 않는다.
+
+### 현재 구현 접점 — 독립 확인 전
+
+`99_Tools/Architecture/Pipeline/snapshot.py`가 공통 검사와 단일 codeReference의 조인을, `normalization.py`가 각 도구 raw 변환을, `cli.py`가 `normalize`·`validate`·`score`·`join` 명령을 제공한다. `schemaVersion=1`, `extractor={name,version,configHash}`, `analysisScope={manifestHash,includedRoots,excludedRoots,inputFileCount}`이며 status 값은 `complete`·`partial`·`failed`·`notRun`이다. 노드와 간선의 `resolution`은 `resolved`·`external`·`unresolved`·`ambiguous`·`unsupported`를 구분한다.
+
+간선은 `evidence` 배열에 여러 출현 위치와 `context`를 담고 `provenance`에 원시 해석 출처를 보존한다. 문맥 값은 `direct`·`declaration`·`deferredLambda`·`unknown`이다. Roslyn은 compiler documentation ID를 추가하며 CodeGraph는 raw signature가 없을 때 `signatureStatus=unavailable`을 남긴다. 표시용 qualified name이 완전한 메서드 signature라는 뜻은 아니다. 외부 심볼은 원본 저장소 파일을 지어내지 않고 `source=null`과 외부 해석 상태로 구분한다.
+
+현재 `join_code_reference`는 매핑별 node membership과 SHA 불일치·무매핑 상태를 반환한다. 여러 카드의 계층 집계와 화면은 위의 소비 계약이며 이번 코드가 완성한 기능으로 표시하지 않는다. packet protocol ID/version은 선택 정보로서 이번 구현이 이를 모두 추출한다고 보장하지 않는다. 최종 구현 checkpoint와 독립 판정은 비교 보고에서 연결한다.
