@@ -1,6 +1,6 @@
 # P3 / D1b — 영속성 저장소와 격리 SQL 검증
 
-상태: **G0·G1 승인, A1·A2·가독성 구현 정산 완료, F 서식 검사 등록 구현 정산 후 신규 Opus 검증 착수, SQL 구조·위치(b) 승인(B1 보류); 실제 외부 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. 전체 구현 완료나 독립 검증 판정은 아직 없다.
+상태: **G0·G1 승인, A1·A2·가독성 구현 정산 완료, F 로컬 독립 PASS/검증자 정산 후 PR164 CI 진행, SQL 구조·위치(b) 승인(B1 보류); 실제 DB·계정 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. D1b 전체 구현 완료나 전체 독립 검증 판정은 아직 없다. F의 별도 PR 생성 권한으로 PR164를 열었으며 병합 승인은 받지 않았다.
 
 ## 착수 근거와 기준점
 
@@ -236,3 +236,14 @@ engine-definition 기대값은 검토된 소스에서 만든 값이며 실제 DB
 
 - 메인 `msg_18560e7fd9e5`(2026-10-02 09:26:58 UTC)의 전달 원문: “[메인 Claude] 참고 공유다. 사용자 결정으로 규칙 목표의 SQL CI(SQLFluff)는 이번 PR에서 보류됐다. 저장 연동 SQL이 modules 구조로 다시 쓰이기 때문이다. 구조 분리 뒤 새 modules와 verify-schema로 parse 시범을 다시 돌려 도입을 정한다. 그때 시범 입력 고정과 파일 소유를 Rules 쪽(또는 그 시점의 담당)과 조율하라. 구조 분리 구현 Sol 계약에는 SQL·PowerShell 작성 규칙 원문 첨부와 검증 차단 기준을 그대로 적용하라. 기계 검사가 없는 동안 들여쓰기·중첩 소속 같은 서식 판정은 신규 Opus의 사람 판정이 맡는다.” 메인 전달 결정을 사용자 직접 입력으로 격상하지 않는다. SQL 구조 구현/검증 초안에 보류·후속 조율·사람 판정 경계를 반영하며 현재 F나 DB 실행 권한을 넓히지 않는다.
 - 메인 `msg_2b6e2df8eaf8`(09:29:14 UTC)의 운영 지침과 사용자 원문은 `main-context-and-sql-ci-decisions.json`에 보존한다. 사용자 원문: “아 그리고 참고로 GPT 계열은 API 기준으로는 1M Context인데 Codex Agent에서는 273k니까 참고해줘, Context Compact가 자주 일어나니까 맥락 손실때문에 실수 하는 경향도 가끔 있어”. 이 숫자는 사용자 전달 원문이며 별도 제품 사실 검증 결과로 보고하지 않는다. 압축 직후 행동 전 이 goal의 현재 상태·결정과 최신 발행 계약을 다시 읽고, 결정·권한·금지는 수신 즉시 원문과 함께 기록하며, 자기완결 계약을 유지하고 압축 후 첫 보고를 원천과 재대조한다. 이번 재진입에서 goal의 승인·현재 관측과 `formatting-review-1-spec.md`를 다시 읽었다. F의 244 PASS 이후 e2e/Windows PS/변이 시험과 최종 판정은 여전히 진행 중이다.
+
+## F 독립 검증 정산과 PR164
+
+- 검증 완료 `msg_f930e964c6aa`(09:52:02 UTC), Task `task_a2b973098d85` / Dispatch `ctx_c48713d40f76`의 outcome succeeded를 대조했다. F checkout의 `.backups/verification/formatting-project-registration/verification-1/verdict.md` 전체 원문 SHA256 `A2AEC7CB570FB4850B176B67A9DC5074511F52E2BD807D29C45FC9C10AE07E3F`를 직접 읽었다. 판정은 **로컬 PASS, FORMAT 차단 제품 결함0**이며 CI는 포함하지 않는다.
+- 기존200/신규포함244 모두 PASS·skip0, Bash e2e9시나리오 기대대로, 고정8 gate·집합 대조 제거·대소문자 중복 허용 변이3종 검출이다. 9번째 제품과 공백 경로 독립 도구 사본은248 PASS다. 195→200 차이는 과거 a88cb92에 추가한 ProcessEnvironmentGuardTests5사례이며 삭제/skip이 아니다. BrokenProjectReference의 공허한 통과는 구체 누락 경로 단언으로 보강했다.
+- Windows PS7의 소유 사본 전체 진입점은09:13:39~09:26:38 UTC/exit0, 정책 override 없음이다. Windows 입력 준비→WSL 검사→Windows 원본 검증을 거쳤으며 PS5.1은 parser만 실행했다. 제품 전체 build/test·게임·Unity 플레이·DB·원격CI는 이 로컬 판정에 포함하지 않는다.
+- Astra R-2 표본은 PS command/exit와 wsl-check·final-validate, e2e9 receipt, 실제 등록검증/변경 tests, source/Git/DLL 보존 목록을 대조했다. 테스트15파일 현재 hash와 실행 복제본 C#13파일 hash가 각각 일치한다. clone-test-sources는 tests-with-registration-1 하위에 있었으며 최초 상위경로 조회 실패를 성공으로 해석하지 않았다. 원시 목록은 절대/상대 경로와 대상이 달라 텍스트 비교에 차이가 났지만 경로별 hash 대조는0차이다. 근거 `formatting-review-1-clone-source-check.json`, F verification-1의 `astra-tests-hash-check.json`이다. 보고 불일치는 발견하지 않았다.
+- 비차단 O-1 미사용 상수2개, O-2 미등록 오류의 경로 정보 부족, O-3 문서 입력트리 설명 부족, O-4 기존 MSBuildWorkspace 거부가 먼저라 새 Compile 중복 검사 자체 미도달을 보존한다. 범위 밖 S-1은 PATH의 dotnet2개일 때 기존 PS 진입점 실패다. 수정 권한으로 확대하지 않고 PR에 공개했다. 등록·거부·보존 완료조건의 차단 결함은 아니다.
+- release retained/external/processAction:none 뒤 동일 runtime/handle/incarnation 및 idle·백그라운드 실행 종료 화면을 확인해 정확 pane만 close, ptyKilled:true였다. worker_done Delivery 전체를 저장/ack했고 세션을 재사용하지 않는다. `formatting-review-1-release/final-show/close/settlement-delivery.json`에 근거가 있다.
+- F 테스트5파일 checkpoint **`af10bc3c58d817812f94aa8e09904b50eb3fa8ec`**, fetch한 최신 main은 여전히 `881957cbb431d4af822d1d935ac117e1ede6c303`였다. [PR164](https://github.com/bass131/dawnholder-server/pull/164)를 승인 범위에서 push/생성했다. CI `36992552840`의 test job은09:55:26 UTC 시작/in_progress이며 통과로 보고하지 않는다. 메인 `msg_d7e7c0c17953`에 원문 경로/hash·표본·잔여 관측·PR을 전달했다. 사용자 PR별 명시 병합 승인은 아직 없으며 자동 병합을 예약하지 않았다.
+- 메인 `msg_7e840c27b699`(09:57:50 UTC)는 판정 전문/hash와 R-2 표본4건 일치를 직접 확인했다. 원문은 `formatting-main-r2-and-merge-plan.json`이다. PR164 병합 뒤 D1b가 main을 받을 때 CODE_CONVENTION 프로젝트 집합 문단의 충돌은 PR164/main의 구현 문안을 채택하고, 03a6aeb의 다른 절이 Rules PR로 옮겨가는 것과 함께 정리한다. **지금 D1b 문서를 바꾸라는 지시가 아니며** Rules의 문서 소유를 유지한다. CI 결과를 메인에게 보낸 뒤 메인이 사용자 병합 승인을 요청한다.
