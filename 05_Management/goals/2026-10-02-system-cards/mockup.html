@@ -1,20 +1,22 @@
 <!doctype html>
-<html lang="ko" data-theme="board">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; object-src 'none'">
-<title>M-2 시스템 카드 테마 목업</title>
+<title>M-2 시스템 카드 혼합안 목업</title>
 <!--
-  M-2 시스템 카드 결정용 목업 (제품 코드 아님)
-  - 작성: [Management 검증자] 디자인 작성자 세션, 요청 모델 claude-opus-5-5, backend unknown
-  - 같은 DOM·같은 데이터·같은 흐름 위에서 테마 토큰과 장식 층만 바뀐다 (html[data-theme]).
+  M-2 시스템 카드 혼합안 목업 (제품 코드 아님, 사용자 확인 전)
+  - 작성: [Management 검증자] 디자인 작성자 세션(혼합안 수정), 요청 모델 claude-opus-5-5, backend unknown
+  - 사용자가 고른 방향: 앱 전체는 상점 장부(밝은 장부 페이지 + 호두나무색 사이드바),
+    1단·2단 시스템 카드는 퀘스트 게시판의 핀 꽂은 종이 의뢰서. 장부 페이지 안에 게시판을 둔 단일안이다.
+  - 이전 A/B 비교본은 Git commit aa0d9c5의 같은 경로에만 남아 있다. 이 파일에는 테마 전환이 없다.
   - 외부 요청 없음: 위 CSP가 connect/img/font를 data: 또는 none으로 막는다. 링크는 클릭할 때만 열린다.
   - 데이터: 카드 분할은 design-spec.md의 제안, 경로는 333fe20 tree에서 존재만 확인, 본문은 목업 샘플.
 -->
 <style>
 /* ================================================================
-   1. 공통 토큰 (테마와 무관한 데이터 층 기준)
+   1. 공통 토큰
    ================================================================ */
 :root {
   --font-ui: "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
@@ -29,57 +31,42 @@
 :root[data-motion="reduce"] { --motion: 0; }
 
 /* ================================================================
-   2. 테마 A — 퀘스트 게시판 (밤의 길드 홀, 어두운 크롬 + 종이 카드)
+   2. 앱 층 — 상점 장부 (밝은 장부 페이지 + 호두나무색 사이드바)
+      크롬·문서·검색·기록·편집·운영 화면이 이 토큰을 쓴다.
    ================================================================ */
-[data-theme="board"] {
-  --app-bg:#0e1118; --ws-bg:#121620; --text:#e9ebf0; --muted:#adb5c3; --line:#2c3443; --link:#ffd58a;
-  --side-bg:#1b140e; --side-text:#efe3cc; --side-muted:#c2ae8c; --side-hover:#2a1f15; --side-active-bg:#3b2b1c; --side-active-mark:#f0b44c; --side-line:#3a2a1b;
-  --toolbar-bg:#151a24; --toolbar-line:#2c3443;
-  --tab-bg:#1a202b; --tab-ink:#d9dee7; --tab-line:#3a4354; --tab-active-bg:#f2e7cc; --tab-active-ink:#2a2118; --tab-active-line:#f2e7cc; --tab-mark:#c8473a;
-  --input-bg:#0f131b; --input-ink:#eef0f4; --input-line:#4a5468;
-  --btn-bg:#232b38; --btn-ink:#eef0f4; --btn-line:#4a5468; --btn-shadow:#05070a;
-  --accent:#f0b44c; --accent-ink:#1d1406; --accent-line:#f0b44c; --danger-ink:#ffb4a8; --danger-line:#c0574a;
-  --warn-bg:#fff1c9; --warn-ink:#5a3a00; --warn-line:#b57d00;
-  --focus:#ffd66b; --card-focus:#ffd66b; --focus-paper:#0b57d0;
-  --wood:#4b3222; --wood-seam:#3e281b; --wood-frame:#7c5434; --wood-edge:#24170d;
-  --paper:#f2e7cc; --paper-ink:#2a2118; --paper-muted:#5d4e3b; --paper-edge:#2d1f13; --hard-shadow:rgba(0,0,0,.45); --card-go:#7a3d12;
-  --doc-bg:#f5eedd; --doc-ink:#211a12; --doc-muted:#5a4b39; --doc-line:#cfbd97; --doc-link:#7a3d12; --doc-code-bg:#ebdfc4; --doc-flag-bg:#efe4c9;
-  --panel-bg:#171c27; --panel-line:#2f3848; --panel-ink:#e6e9ef; --panel-muted:#aab3c2;
-  --st-bg:#fbf6e8; --st-present:#2a6a37; --st-partial:#7d5200; --st-absent:#8e2f28; --st-disconnected:#4a5262;
-  --px-o:#1d130b; --px-a:#c9a46a; --px-b:#8a6a3f; --px-c:#fff3cf; --px-r:#c8473a; --px-w:#fff6e0;
-  --plaque-bg:#7c5434; --plaque-ink:#fff1d6; --plaque-line:#24170d;
-  --title-font: var(--font-ui); --title-ink:#ffe7b0; --title-shadow:2px 2px 0 #000;
-  --brand-bg:#f0b44c; --brand-ink:#1d1406; --brand-line:#000;
-  --rail-bg:#f2e7cc; --rail-ink:#2a2118; --rail-line:#2d1f13; --rail-active-bg:#fff8e6;
-}
-
-/* ================================================================
-   3. 테마 B — 상점 장부 (낮의 상점 카운터, 밝은 장부 페이지 + 행 목록)
-   ================================================================ */
-[data-theme="ledger"] {
+:root {
   --app-bg:#e9dfc9; --ws-bg:#ece3cf; --text:#2a231b; --muted:#5f5241; --line:#cdbb98; --link:#155c57;
   --side-bg:#3b2a1e; --side-text:#f5ecda; --side-muted:#d3c3a5; --side-hover:#4a3628; --side-active-bg:#5d4432; --side-active-mark:#e3b24a; --side-line:#2b1d13;
   --toolbar-bg:#f7f1e3; --toolbar-line:#d6c5a3;
   --tab-bg:#f5edda; --tab-ink:#3b2f22; --tab-line:#cdb994; --tab-active-bg:#fffdf6; --tab-active-ink:#174f4b; --tab-active-line:#1f6b66; --tab-mark:#1f6b66;
   --input-bg:#fffdf6; --input-ink:#2a231b; --input-line:#a8946e;
-  --btn-bg:#fffdf6; --btn-ink:#2a231b; --btn-line:#a8946e; --btn-shadow:transparent;
+  --btn-bg:#fffdf6; --btn-ink:#2a231b; --btn-line:#a8946e;
   --accent:#1f6b66; --accent-ink:#ffffff; --accent-line:#174f4b; --danger-ink:#9b2c22; --danger-line:#9b2c22;
   --warn-bg:#fff1c9; --warn-ink:#5a3a00; --warn-line:#b57d00;
-  --focus:#0b57d0; --card-focus:#0b57d0; --focus-paper:#0b57d0;
-  --page:#fffaf0; --page-2:#f3e9d2; --page-edge:#cdb994; --margin-rule:#d9998a; --rule:#e4d7b9; --row-hover:#f7efda; --gold:#b8862b;
-  --paper:transparent; --paper-ink:#2a231b; --paper-muted:#5f5241; --paper-edge:#cdb994; --hard-shadow:transparent; --card-go:#155c57;
-  --doc-bg:#fffaf0; --doc-ink:#211b14; --doc-muted:#5c4f3e; --doc-line:#dfd0ae; --doc-link:#155c57; --doc-code-bg:#f4ecd9; --doc-flag-bg:#f8f1e0;
+  --focus:#0b57d0; --focus-on-wood:#ffd66b;
+  --page:#fffaf0; --page-2:#f3e9d2; --page-edge:#cdb994; --head-rule:#a8946e; --margin-rule:#d9998a; --rule:#e4d7b9;
+  --doc-ink:#211b14; --doc-muted:#5c4f3e; --doc-line:#dfd0ae; --doc-link:#155c57; --doc-code-bg:#f4ecd9; --doc-flag-bg:#f8f1e0;
   --panel-bg:#fffaf0; --panel-line:#d8c9a6; --panel-ink:#2a231b; --panel-muted:#5f5241;
   --st-bg:#fffaf0; --st-present:#1f6b3a; --st-partial:#7d5200; --st-absent:#9b2c22; --st-disconnected:#4f5560;
   --px-o:#2b1d12; --px-a:#d9a441; --px-b:#9c6b1e; --px-c:#fff1bf; --px-r:#9b2c22; --px-w:#fffaf0;
-  --plaque-bg:transparent; --plaque-ink:#2a231b; --plaque-line:transparent;
-  --title-font: "Batang", "바탕", "BatangChe", "Noto Serif KR", "Nanum Myeongjo", serif; --title-ink:#2a231b; --title-shadow:none;
+  /* 픽셀 폰트는 보류. 승인되면 --title-font·--plaque-font 두 값만 바꾼다. */
+  --title-font: "Batang", "바탕", "BatangChe", "Noto Serif KR", "Nanum Myeongjo", serif; --title-ink:#2a231b;
   --brand-bg:#e3b24a; --brand-ink:#2b1d12; --brand-line:#2b1d12;
-  --rail-bg:#f3e9d2; --rail-ink:#3b2f22; --rail-line:#cdb994; --rail-active-bg:#fffaf0;
 }
 
 /* ================================================================
-   4. 목업 제어 막대 (제품 화면 아님 — 테마와 무관한 회색)
+   3. 카드 층 — 퀘스트 게시판 (장부 페이지 안의 나무 게시판 + 핀 꽂은 종이 의뢰서)
+      틀·이름판은 사이드바와 같은 호두나무 계열, 의뢰서는 장부와 같은 종이 계열이다.
+   ================================================================ */
+:root {
+  --wood:#4b3222; --wood-seam:#3e281b; --wood-frame:#3b2a1e; --wood-edge:#24170d;
+  --plaque-bg:#5d4432; --plaque-ink:#fff1d6; --plaque-line:#24170d; --plaque-font: var(--font-ui); --nail:#e3b24a;
+  --card-paper:#fdf6e6; --card-ink:#2a231b; --card-muted:#5f5241; --card-edge:#2d1f13; --card-shadow:rgba(0,0,0,.45); --card-go:#155c57;
+  --pin-head:#c8473a; --pin-dark:#1d130b; --pin-light:#fff6e0; --bang:#f2c14e;
+}
+
+/* ================================================================
+   4. 목업 제어 막대 (제품 화면 아님 — 앱과 무관한 회색)
    ================================================================ */
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -116,7 +103,6 @@ body { font-family: var(--font-ui); background: #0b0d12; color: #e6e9ef; }
 .app-grid { display: grid; grid-template-columns: 192px minmax(0, 1fr); height: 100%; background: var(--app-bg); color: var(--text); font-size: 14px; line-height: 1.6; word-break: keep-all; overflow-wrap: anywhere; }
 .app :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-[data-theme="board"] .only-ledger, [data-theme="ledger"] .only-board { display: none !important; }
 code, .path { font-family: var(--font-mono); font-size: .9em; }
 .path { word-break: normal; overflow-wrap: anywhere; }
 a { color: var(--link); }
@@ -124,8 +110,8 @@ a { color: var(--link); }
 .skip-link { position: absolute; left: 8px; top: -60px; z-index: 30; padding: 8px 12px; font: inherit; font-weight: 700; background: var(--accent); color: var(--accent-ink); border: 2px solid var(--accent-line); cursor: pointer; }
 .skip-link:focus { top: 8px; }
 
-/* 사이드바 */
-.sidebar { --focus: #ffd66b; display: flex; flex-direction: column; padding: 22px 12px 16px; background: var(--side-bg); color: var(--side-text); border-right: 3px solid var(--side-line); overflow: auto; }
+/* 사이드바 (호두나무) */
+.sidebar { --focus: var(--focus-on-wood); display: flex; flex-direction: column; padding: 22px 12px 16px; background: var(--side-bg); color: var(--side-text); border-right: 3px solid var(--side-line); overflow: auto; }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 6px; }
 .brand-mark { display: grid; place-items: center; flex: none; width: 30px; height: 30px; font: 800 17px/1 var(--title-font); color: var(--brand-ink); background: var(--brand-bg); box-shadow: 0 0 0 2px var(--brand-line), 3px 3px 0 0 var(--brand-line); }
 .brand h1 { margin: 0; font: 650 13px/1.3 var(--font-ui); }
@@ -140,7 +126,7 @@ a { color: var(--link); }
 .side-nav a[aria-current="page"]::before { content: ""; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 5px; background: var(--side-active-mark); }
 .sidebar-footer { margin-top: auto; padding: 18px 8px 0; font-size: 12px; color: var(--side-muted); }
 
-/* 작업 영역 */
+/* 작업 영역 (장부를 펼친 카운터) */
 .workspace { position: relative; min-width: 0; overflow: auto; background: var(--ws-bg); scroll-padding-top: 64px; }
 .toolbar { position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; min-height: 48px; padding: 8px 28px; background: var(--toolbar-bg); border-bottom: 1px solid var(--toolbar-line); font-size: 12.5px; }
 .breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin: 0; padding: 0; list-style: none; }
@@ -179,25 +165,28 @@ main.is-deep .connection-notice { margin: 6px 0 12px; padding-bottom: 8px; }
 .search input::placeholder { color: var(--muted); }
 
 /* 버튼 */
-.btn { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 5px 12px; border: 2px solid var(--btn-line); background: var(--btn-bg); color: var(--btn-ink); font: inherit; font-size: 13px; font-weight: 700; line-height: 1.3; cursor: pointer; text-decoration: none; box-shadow: 2px 2px 0 var(--btn-shadow); }
-.btn:hover { filter: brightness(1.08); }
-.btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--btn-shadow); }
+.btn { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 5px 12px; border: 2px solid var(--btn-line); background: var(--btn-bg); color: var(--btn-ink); font: inherit; font-size: 13px; font-weight: 700; line-height: 1.3; cursor: pointer; text-decoration: none; }
+.btn:hover { filter: brightness(.97); }
+.btn:active { transform: translate(1px, 1px); }
 .btn-small { min-height: 30px; padding: 3px 10px; font-size: 12.5px; }
 .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent-line); }
-.btn-danger { background: transparent; color: var(--danger-ink); border-color: var(--danger-line); box-shadow: none; }
-.btn-ghost { background: transparent; box-shadow: none; }
+.btn-danger { background: transparent; color: var(--danger-ink); border-color: var(--danger-line); }
+.btn-ghost { background: transparent; }
 .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
 .link-btn { padding: 0 2px; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 
 /* ================================================================
-   6. 시스템 카드 화면 공통
+   6. 시스템 카드 화면 — 장부 페이지 (앱 층)
    ================================================================ */
+/* 화면 전환은 장부 층의 몫: 오른쪽에서 14px 넘겨 들어오는 페이지 넘김 */
 .view-enter { animation: view-in var(--t-mid) ease-out both; }
-@keyframes view-in { from { opacity: 0; transform: translateY(calc(8px * var(--motion))); } to { opacity: 1; transform: none; } }
-[data-theme="ledger"] .view-enter { animation-name: view-in-ledger; }
-@keyframes view-in-ledger { from { opacity: 0; transform: translateX(calc(14px * var(--motion))); } to { opacity: 1; transform: none; } }
+@keyframes view-in { from { opacity: 0; transform: translateX(calc(14px * var(--motion))); } to { opacity: 1; transform: none; } }
+
+.ledger-page { position: relative; margin-bottom: 12px; padding: 18px 20px 26px 54px; color: var(--text); background-color: var(--page); background-image: linear-gradient(90deg, transparent 34px, var(--margin-rule) 34px, var(--margin-rule) 36px, transparent 36px); background-repeat: no-repeat; border: 1px solid var(--page-edge); box-shadow: 0 4px 0 -1px var(--page-2), 0 5px 0 -1px var(--page-edge), 0 9px 0 -2px var(--page-2), 0 10px 0 -2px var(--page-edge); }
+.rail-nav + .ledger-page { border-top: 0; }
 .view-head { margin-bottom: 12px; }
-.view-title { margin: 0; font: 700 20px/1.35 var(--title-font); color: var(--title-ink); text-shadow: var(--title-shadow); letter-spacing: .01em; }
+.ledger-page > .view-head, .sys-head { padding-bottom: 10px; border-bottom: 3px double var(--head-rule); }
+.view-title { margin: 0; font: 700 20px/1.35 var(--title-font); color: var(--title-ink); letter-spacing: .01em; }
 .view-desc { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
 .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 10px 0 0; font-size: 12px; color: var(--muted); }
 
@@ -211,16 +200,12 @@ main.is-deep .connection-notice { margin: 6px 0 12px; padding-bottom: 8px; }
 .source-body dt { color: var(--text); font-weight: 700; }
 .source-body dd { margin: 0; }
 
-.surface { position: relative; margin-top: 26px; }
-.surface-plaque { display: flex; align-items: center; gap: 8px; font: 700 13px/1.4 var(--title-font); }
-.surface-plaque .px { width: 12px; height: 24px; }
-.surface-plaque .px.coin { width: 20px; height: 20px; }
-
-/* 상위 시스템 바로가기 */
-.sys-rail { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; }
-.sys-rail a { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 6px; font-size: 12.5px; color: var(--rail-ink); background: var(--rail-bg); border: 2px solid var(--rail-line); text-decoration: none; }
+/* 상위 시스템 바로가기 = 장부 색인 탭. 현재 탭은 아래 페이지와 이어진다. */
+.rail-nav { margin: 0; }
+.sys-rail { display: flex; flex-wrap: wrap; margin: 0; padding: 0 0 0 18px; list-style: none; border-bottom: 2px solid var(--page-edge); }
+.sys-rail a { display: inline-flex; align-items: center; gap: 6px; margin: 0 -2px -2px 0; padding: 3px 10px 3px 6px; font-size: 12.5px; color: var(--tab-ink); background: color-mix(in srgb, var(--sys) 22%, var(--page)); border: 2px solid var(--page-edge); text-decoration: none; }
 .sys-rail a .px { width: 18px; height: 18px; --px-a: var(--sys); }
-.sys-rail a[aria-current="true"] { font-weight: 800; background: var(--rail-active-bg); box-shadow: inset 0 -4px 0 var(--sys); }
+.sys-rail a[aria-current="true"] { font-weight: 800; background: var(--page); border-bottom-color: var(--page); box-shadow: inset 0 4px 0 var(--sys); }
 
 [data-sys="server"] { --sys: var(--sys-server); } [data-sys="client"] { --sys: var(--sys-client); } [data-sys="client-net"] { --sys: var(--sys-client-net); }
 [data-sys="shared"] { --sys: var(--sys-shared); } [data-sys="tools"] { --sys: var(--sys-tools); } [data-sys="management"] { --sys: var(--sys-management); } [data-sys="automation"] { --sys: var(--sys-automation); }
@@ -228,84 +213,15 @@ main.is-deep .connection-notice { margin: 6px 0 12px; padding-bottom: 8px; }
 /* 픽셀 아이콘 */
 .px { display: inline-block; flex: none; width: 24px; height: 24px; vertical-align: middle; shape-rendering: crispEdges; }
 
-/* 상태 표시: 모양 아이콘 + 글자 + 테두리. 색만으로 구분하지 않는다. */
-.st { display: inline-flex; align-items: center; gap: 5px; padding: 0 7px 0 4px; font-size: 12px; font-weight: 800; line-height: 1.6; color: var(--st-c); background: var(--st-bg); border: 2px solid currentColor; white-space: nowrap; }
+/* 상태 도장: 모양 아이콘 + 글자 + 테두리. 색만으로 구분하지 않는다. 장부와 의뢰서에 같은 도장을 찍는다. */
+.st { display: inline-flex; align-items: center; gap: 5px; padding: 0 7px 0 4px; font-size: 12px; font-weight: 800; line-height: 1.6; letter-spacing: .03em; color: var(--st-c); background: var(--st-bg); border: 3px double currentColor; white-space: nowrap; }
 .st .px { width: 14px; height: 14px; --px-o: currentColor; --px-a: var(--st-bg); --px-b: currentColor; --px-c: currentColor; }
-.st-present { --st-c: var(--st-present); } .st-partial { --st-c: var(--st-partial); } .st-absent { --st-c: var(--st-absent); border-style: dashed; } .st-disconnected { --st-c: var(--st-disconnected); border-style: dotted; }
-[data-theme="ledger"] .st { border-width: 3px; border-style: double; letter-spacing: .03em; }
-[data-theme="ledger"] .st-absent { border-style: dashed; border-width: 2px; } [data-theme="ledger"] .st-disconnected { border-style: dotted; border-width: 2px; }
+.st-present { --st-c: var(--st-present); } .st-partial { --st-c: var(--st-partial); }
+.st-absent { --st-c: var(--st-absent); border: 2px dashed currentColor; } .st-disconnected { --st-c: var(--st-disconnected); border: 2px dotted currentColor; }
 .mini-st { display: inline-flex; align-items: center; gap: 3px; margin-right: 8px; white-space: nowrap; }
 .mini-st .px { width: 14px; height: 14px; --px-o: currentColor; --px-a: transparent; --px-b: currentColor; --px-c: currentColor; }
 
-/* 카드 공통 (같은 마크업, 테마별 배치) */
-.card-grid { list-style: none; margin: 0; padding: 0; }
-.card { position: relative; min-width: 0; color: var(--paper-ink); }
-.card-link { color: inherit; text-decoration: none; }
-.card-link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
-.card-link:focus-visible { outline: none; }
-.card:has(.card-link:focus-visible) { outline: 3px solid var(--card-focus); outline-offset: 4px; }
-.card-title { margin: 0; font-size: 16px; font-weight: 800; line-height: 1.35; }
-.card-path { margin: 2px 0 0; font: 12px/1.5 var(--font-mono); color: var(--paper-muted); }
-.card-summary { margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; }
-.card-facts { display: grid; gap: 3px; margin: 10px 0 0; font-size: 12.5px; }
-.card-facts > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
-.card-facts dt { color: var(--paper-muted); }
-.card-facts dd { margin: 0; }
-.card-go { display: block; margin-top: 10px; font-size: 12.5px; font-weight: 800; color: var(--card-go); }
-.card-icon .px { width: 24px; height: 24px; --px-a: var(--sys); }
-.card-deco { position: absolute; pointer-events: none; }
-.card-flag { display: inline-flex; align-items: center; gap: 4px; margin: 8px 0 0; padding: 1px 6px; border: 2px dashed var(--st-absent); color: var(--st-absent); background: var(--st-bg); font-size: 12px; font-weight: 700; }
-
-/* --- A: 게시판 배치 --- */
-[data-theme="board"] .surface { padding: 34px 20px 26px; background: repeating-linear-gradient(180deg, var(--wood) 0 58px, var(--wood-seam) 58px 61px); border: 6px solid var(--wood-frame); box-shadow: inset 0 0 0 3px var(--wood-edge), 0 0 0 3px var(--wood-edge); }
-[data-theme="board"] .surface-plaque { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); padding: 2px 14px; white-space: nowrap; letter-spacing: .08em; background: var(--plaque-bg); color: var(--plaque-ink); box-shadow: 0 0 0 3px var(--plaque-line); text-shadow: 2px 2px 0 #000; --px-a: #f2c14e; --px-o: #1d130b; }
-[data-theme="board"] .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 30px 20px; }
-[data-theme="board"] .card { padding: 20px 16px 14px; background: var(--paper); box-shadow: 0 0 0 2px var(--paper-edge), 4px 4px 0 0 var(--hard-shadow); transition: transform var(--t-fast) steps(2, end), box-shadow var(--t-fast) steps(2, end); }
-[data-theme="board"] .card:hover, [data-theme="board"] .card:has(.card-link:focus-visible) { transform: translate(calc(-2px * var(--motion)), calc(-2px * var(--motion))); box-shadow: 0 0 0 2px var(--paper-edge), calc(4px + 2px * var(--motion)) calc(4px + 2px * var(--motion)) 0 0 var(--hard-shadow); }
-[data-theme="board"] .card-deco { top: -10px; left: 50%; margin-left: -10px; }
-[data-theme="board"] .card-deco .px { width: 20px; height: 20px; }
-[data-theme="board"] .card:hover .card-deco .px { animation: pin-wobble calc(300ms * var(--motion)) steps(3, end) 1; }
-@keyframes pin-wobble { 0% { transform: rotate(0); } 33% { transform: rotate(-12deg); } 66% { transform: rotate(8deg); } 100% { transform: rotate(0); } }
-[data-theme="board"] .card-icon { position: absolute; top: 12px; right: 12px; }
-[data-theme="board"] .card-title { padding-right: 30px; }
-[data-theme="board"] .card[data-attn]::before { content: ""; position: absolute; inset: 5px; border: 2px dashed var(--paper-muted); pointer-events: none; }
-[data-theme="board"] .card-attn { position: absolute; top: -27px; left: 14px; }
-[data-theme="board"] .card-attn .px { width: 12px; height: 24px; --px-a: #f2c14e; --px-o: #1d130b; }
-[data-theme="board"] .card:hover .card-attn .px { animation: bang-hop calc(360ms * var(--motion)) steps(3, end) 1; }
-@keyframes bang-hop { 50% { transform: translateY(-3px); } }
-[data-theme="ledger"] .card-attn { display: none; }
-
-/* --- B: 장부 배치 --- */
-[data-theme="ledger"] .surface { padding: 18px 20px 24px 58px; background: var(--page) linear-gradient(90deg, transparent 38px, var(--margin-rule) 38px, var(--margin-rule) 40px, transparent 40px) no-repeat; border: 1px solid var(--page-edge); box-shadow: 0 4px 0 -1px var(--page-2), 0 5px 0 -1px var(--page-edge), 0 9px 0 -2px var(--page-2), 0 10px 0 -2px var(--page-edge); }
-[data-theme="ledger"] .surface-plaque { justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 10px; padding: 0 0 6px; border-bottom: 2px solid var(--text); font-size: 14px; color: var(--plaque-ink); }
-[data-theme="ledger"] .plaque-page { font: 12px var(--font-mono); color: var(--muted); }
-[data-theme="ledger"] .card-grid { display: block; }
-[data-theme="ledger"] .card { display: grid; grid-template-columns: 30px minmax(0, 1fr) minmax(210px, 36%) 18px; grid-template-areas: "icon title facts go" "icon path facts go" "icon summary facts go"; column-gap: 16px; padding: 12px 8px 12px 0; border-bottom: 1px solid var(--rule); background: transparent; transition: background-color var(--t-fast); }
-[data-theme="ledger"] .card:hover { background: var(--row-hover); }
-[data-theme="ledger"] .card-icon { grid-area: icon; padding-top: 2px; }
-[data-theme="ledger"] .card-title { grid-area: title; font-family: var(--title-font); font-size: 17px; }
-[data-theme="ledger"] .card-path { grid-area: path; }
-[data-theme="ledger"] .card-summary { grid-area: summary; margin-top: 4px; }
-[data-theme="ledger"] .card-facts { grid-area: facts; margin: 0; align-self: center; padding-left: 12px; border-left: 1px solid var(--rule); }
-[data-theme="ledger"] .card-flag { grid-area: summary; align-self: end; justify-self: start; }
-[data-theme="ledger"] .card-go { grid-area: go; align-self: center; margin: 0; font-size: 22px; line-height: 1; }
-[data-theme="ledger"] .card-go .go-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-[data-theme="ledger"] .card-go::before { content: "›"; }
-[data-theme="ledger"] .card-deco { display: none; }
-[data-theme="ledger"] .card-link { background: linear-gradient(var(--gold), var(--gold)) no-repeat 0 100% / 0 3px; transition: background-size var(--t-mid) ease-out; }
-[data-theme="ledger"] .card:hover .card-link, [data-theme="ledger"] .card:has(.card-link:focus-visible) .card-link { background-size: 100% 3px; }
-[data-theme="ledger"] .card[data-attn] .card-title::before { content: "※ "; color: var(--st-absent); }
-[data-theme="ledger"] .card-grid.lvl1 .card { padding-top: 14px; padding-bottom: 14px; }
-
-/* 레일: 테마별 모양 */
-[data-theme="board"] .sys-rail a { box-shadow: 2px 2px 0 var(--hard-shadow); }
-[data-theme="board"] .sys-rail a[aria-current="true"] { box-shadow: inset 0 -4px 0 var(--sys), 2px 2px 0 var(--hard-shadow); }
-[data-theme="ledger"] .sys-rail { gap: 0; margin-bottom: 0; padding-left: 18px; border-bottom: 2px solid var(--page-edge); }
-[data-theme="ledger"] .sys-rail a { margin: 0 -2px -2px 0; border-color: var(--page-edge); background: color-mix(in srgb, var(--sys) 22%, var(--page)); }
-[data-theme="ledger"] .sys-rail a[aria-current="true"] { background: var(--page); border-bottom-color: var(--page); box-shadow: inset 0 4px 0 var(--sys); }
-
-/* 상위 시스템 머리말 */
-.sys-head { margin: 0 0 6px; }
+/* 상위 시스템 머리말 (장부 페이지 윗부분) */
 .sys-head-top { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .sys-title-row { display: flex; align-items: center; gap: 10px; }
 .sys-title-row .px { width: 32px; height: 32px; --px-a: var(--sys); }
@@ -316,8 +232,44 @@ main.is-deep .connection-notice { margin: 6px 0 12px; padding-bottom: 8px; }
 .sys-meta dt { color: var(--muted); }
 .sys-meta dd { margin: 0; }
 .sys-meta .path + .path::before { content: " · "; color: var(--muted); }
-[data-theme="ledger"] .sys-head { padding: 14px 18px 12px; background: var(--page); border: 1px solid var(--page-edge); border-top: 0; }
-[data-theme="ledger"] .sys-head + .surface { margin-top: 14px; }
+
+/* ================================================================
+   7. 게시판 — 카드 층 (1단·2단 카드만 이 층에 둔다)
+   ================================================================ */
+.board { --focus: var(--focus-on-wood); --px-o: var(--pin-dark); --px-r: var(--pin-head); --px-w: var(--pin-light); position: relative; margin-top: 30px; padding: 32px 18px 24px; background: repeating-linear-gradient(180deg, var(--wood) 0 58px, var(--wood-seam) 58px 61px); border: 6px solid var(--wood-frame); box-shadow: inset 0 0 0 3px var(--wood-edge), 0 0 0 3px var(--wood-edge); }
+.board-plaque { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 8px; width: max-content; max-width: calc(100% - 24px); padding: 2px 14px; font: 700 13px/1.4 var(--plaque-font); letter-spacing: .08em; text-align: center; color: var(--plaque-ink); background: var(--plaque-bg); box-shadow: 0 0 0 3px var(--plaque-line); text-shadow: 2px 2px 0 #000; --px-a: var(--nail); }
+.board-plaque .px { width: 8px; height: 8px; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 30px 20px; margin: 0; padding: 0; list-style: none; }
+.card-grid > li { display: grid; min-width: 0; }
+/* 의뢰서: 장부와 같은 종이 계열에 장부 여백 괘선을 그대로 가져온 쪽지. 안쪽 글자 면은 평평하다. */
+.card { position: relative; min-width: 0; padding: 20px 16px 14px 26px; color: var(--card-ink); background-color: var(--card-paper); background-image: linear-gradient(90deg, transparent 14px, var(--margin-rule) 14px, var(--margin-rule) 16px, transparent 16px); background-repeat: no-repeat; box-shadow: 0 0 0 2px var(--card-edge), 4px 4px 0 0 var(--card-shadow); transition: transform var(--t-fast) steps(2, end), box-shadow var(--t-fast) steps(2, end); }
+.card:hover, .card:has(.card-link:focus-visible) { transform: translate(calc(-2px * var(--motion)), calc(-2px * var(--motion))); box-shadow: 0 0 0 2px var(--card-edge), calc(4px + 2px * var(--motion)) calc(4px + 2px * var(--motion)) 0 0 var(--card-shadow); }
+.card-link { color: inherit; text-decoration: none; }
+.card-link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.card-link:focus-visible { outline: none; }
+.card:has(.card-link:focus-visible) { outline: 3px solid var(--focus-on-wood); outline-offset: 4px; }
+.card-title { margin: 0; padding-right: 30px; font-size: 16px; font-weight: 800; line-height: 1.35; }
+.card-path { margin: 2px 0 0; font: 12px/1.5 var(--font-mono); color: var(--card-muted); }
+.card-summary { margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; }
+.card-facts { display: grid; gap: 3px; margin: 10px 0 0; font-size: 12.5px; }
+.card-facts > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
+.card-facts dt { color: var(--card-muted); }
+.card-facts dd { margin: 0; }
+.card-go { display: block; margin-top: 10px; font-size: 12.5px; font-weight: 800; color: var(--card-go); }
+.card-icon { position: absolute; top: 12px; right: 12px; }
+.card-icon .px { width: 24px; height: 24px; --px-a: var(--sys); }
+.card-deco { position: absolute; top: -10px; left: 50%; margin-left: -10px; pointer-events: none; }
+.card-deco .px { width: 20px; height: 20px; }
+.card:hover .card-deco .px { animation: pin-wobble calc(300ms * var(--motion)) steps(3, end) 1; }
+@keyframes pin-wobble { 0% { transform: rotate(0); } 33% { transform: rotate(-12deg); } 66% { transform: rotate(8deg); } 100% { transform: rotate(0); } }
+.card-flag { display: inline-flex; align-items: center; gap: 4px; margin: 8px 0 0; padding: 1px 6px; border: 2px dashed var(--st-absent); color: var(--st-absent); background: var(--st-bg); font-size: 12px; font-weight: 700; }
+/* 주의가 필요한 의뢰서에만: 카드 위 느낌표 + 안쪽 점선. 정상 카드에는 신호가 없다. */
+.card[data-attn]::before { content: ""; position: absolute; inset: 5px; border: 2px dashed var(--card-muted); pointer-events: none; }
+.card-attn { position: absolute; top: -27px; left: 14px; }
+.card-attn .px { width: 12px; height: 24px; --px-a: var(--bang); }
+.card:hover .card-attn .px { animation: bang-hop calc(360ms * var(--motion)) steps(3, end) 1; }
+@keyframes bang-hop { 50% { transform: translateY(-3px); } }
 
 /* 칩 */
 .chips { display: inline-flex; flex-wrap: wrap; gap: 5px; }
@@ -328,24 +280,24 @@ a.chip:hover { text-decoration: underline; }
 .chip-broken { border: 2px dashed var(--st-absent); color: var(--st-absent); background: var(--st-bg); font-weight: 700; }
 .chip-broken .px { width: 14px; height: 14px; --px-o: currentColor; --px-a: transparent; }
 
-/* 문서 */
-.doc { --focus: var(--focus-paper); position: relative; padding: 24px 30px 30px; background: var(--doc-bg); color: var(--doc-ink); }
+/* ================================================================
+   8. 구현 문서 — 게시판에서 뗀 의뢰서를 장부 페이지에 펼친 평평한 면
+   ================================================================ */
+.doc { padding: 22px 28px 28px 56px; color: var(--doc-ink); }
 .doc a { color: var(--doc-link); }
-[data-theme="board"] .doc { margin-top: 18px; box-shadow: 0 0 0 2px var(--paper-edge), 5px 5px 0 var(--hard-shadow); }
-.doc-pins { position: absolute; top: -10px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 18px; pointer-events: none; }
-.doc-pins .px { width: 20px; height: 20px; }
-[data-theme="ledger"] .doc-pins { display: none; }
-[data-theme="ledger"] .doc { padding-left: 56px; border: 1px solid var(--page-edge); border-top: 0; background-image: linear-gradient(90deg, transparent 32px, var(--margin-rule) 32px, var(--margin-rule) 34px, transparent 34px); background-repeat: no-repeat; }
-.doc .btn { --btn-bg: var(--doc-flag-bg); --btn-ink: var(--doc-ink); --btn-line: var(--doc-line); --btn-shadow: transparent; }
+.doc .btn { --btn-bg: var(--doc-flag-bg); --btn-ink: var(--doc-ink); --btn-line: var(--doc-line); }
 .doc-nav-top { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-.doc-kicker { margin: 0; font-size: 12.5px; color: var(--doc-muted); }
-.doc h3 { margin: 2px 0 0; font: 800 23px/1.35 var(--title-font); color: var(--doc-ink); }
+.doc-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0; font-size: 12.5px; color: var(--doc-muted); }
+/* 의뢰서 쪽지: 게시판 카드와 같은 종이·테두리·핀. 어디서 왔는지 알려 주는 연결 장치다. */
+.doc-slip { --px-o: var(--pin-dark); --px-r: var(--pin-head); --px-w: var(--pin-light); display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px 2px 6px; color: var(--card-ink); background: var(--card-paper); box-shadow: 0 0 0 2px var(--card-edge), 3px 3px 0 0 rgba(0, 0, 0, .22); font-weight: 700; }
+.doc-slip .px { width: 16px; height: 16px; }
+.doc h3 { margin: 6px 0 0; font: 800 23px/1.35 var(--title-font); color: var(--doc-ink); }
 .doc-sub { margin: 4px 0 0; font-size: 15px; color: var(--doc-muted); }
 .doc-flags { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 12px; align-items: center; }
 .flag { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; padding: 1px 8px; font-size: 12.5px; border: 1px solid var(--doc-line); background: var(--doc-flag-bg); }
 .flag-mock { border: 2px dashed var(--doc-muted); font-weight: 700; }
 .flag-warn, .doc-warn { border: 2px solid var(--warn-line); background: var(--warn-bg); color: var(--warn-ink); font-weight: 700; }
-.doc-layout { display: grid; grid-template-columns: 188px minmax(0, 1fr); gap: 28px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--doc-line); }
+.doc-layout { display: grid; grid-template-columns: 188px minmax(0, 1fr); gap: 28px; margin-top: 18px; padding-top: 16px; border-top: 3px double var(--head-rule); }
 .doc-toc { position: sticky; top: 62px; align-self: start; font-size: 13px; }
 .doc-toc h4 { margin: 0 0 6px; font-size: 12px; color: var(--doc-muted); }
 .doc-toc ol { margin: 0; padding-left: 20px; }
@@ -371,11 +323,11 @@ a.chip:hover { text-decoration: underline; }
 .ref-list { list-style: none; padding-left: 0 !important; }
 .doc-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--doc-line); }
 
-/* 검색 결과 */
-.results { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }
-.result { padding: 10px 14px; background: var(--panel-bg); border: 1px solid var(--panel-line); color: var(--panel-ink); }
-.result a { font-weight: 800; color: var(--link); }
-[data-theme="ledger"] .result a { color: var(--doc-link); }
+/* 검색 결과 (장부 색인 행) */
+.results { list-style: none; margin: 0 0 18px; padding: 0; }
+.result { padding: 10px 4px; border-bottom: 1px solid var(--rule); }
+.result:first-child { border-top: 1px solid var(--rule); }
+.result a { font-weight: 800; color: var(--doc-link); }
 .result-kind { margin-left: 8px; font-size: 12px; color: var(--panel-muted); }
 .result-sub { margin: 2px 0 0; font: 12px var(--font-mono); color: var(--panel-muted); }
 .result-snip { margin: 4px 0 0; font-size: 13px; }
@@ -391,13 +343,14 @@ mark { background: #ffe08a; color: #1d1406; padding: 0 1px; }
 .state-panel .px { width: 18px; height: 18px; --px-o: currentColor; --px-a: transparent; --px-b: currentColor; --px-c: currentColor; }
 .state-panel code { overflow-wrap: anywhere; }
 .skeleton .card { min-height: 170px; }
-.sk { display: block; height: 12px; margin: 8px 0; background: color-mix(in srgb, var(--paper-muted) 30%, transparent); }
+.sk { display: block; height: 12px; margin: 8px 0; background: color-mix(in srgb, var(--card-muted) 30%, transparent); }
 .sk.w40 { width: 40%; height: 16px; } .sk.w90 { width: 90%; } .sk.w70 { width: 70%; } .sk.w55 { width: 55%; }
 .skeleton .sk { animation: sk-pulse 1.2s steps(4, end) infinite; }
 @keyframes sk-pulse { 50% { opacity: .45; } }
-[data-theme="ledger"] .skeleton .card { min-height: 64px; display: block; }
 
-/* 개발 기록 (기존 화면 보존, 토큰만 적용) */
+/* ================================================================
+   9. 개발 기록·기록 편집·운영 (기존 화면 보존, 장부 토큰만 적용)
+   ================================================================ */
 .panel { background: var(--panel-bg); border: 1px solid var(--panel-line); color: var(--panel-ink); }
 .record-intro { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
 .record-intro p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
@@ -432,7 +385,6 @@ mark { background: #ffe08a; color: #1d1406; padding: 0 1px; }
 .rec-detail ul { margin: 0; padding-left: 20px; font-size: 13px; }
 .rec-type { display: inline-block; margin-right: 6px; padding: 0 5px; border: 1px solid var(--panel-line); font-size: 11.5px; font-weight: 700; }
 
-/* 기록 편집 */
 .editor-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; font-size: 12.5px; }
 .editor-notice { margin: 0 0 10px; font-size: 12.5px; white-space: pre-wrap; }
 .editor-notice.is-fail { color: var(--danger-ink); font-weight: 700; }
@@ -444,7 +396,6 @@ mark { background: #ffe08a; color: #1d1406; padding: 0 1px; }
 .file-label { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .file-label input { max-width: 230px; font: inherit; font-size: 12px; color: var(--muted); }
 
-/* 서버 운영·유저 관리 (기존 의미 보존) */
 .summary-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 0 20px; }
 .summary-item { padding: 0 18px; border-left: 1px solid var(--line); }
 .summary-item:first-child { padding-left: 0; border-left: 0; }
@@ -466,6 +417,12 @@ mark { background: #ffe08a; color: #1d1406; padding: 0 1px; }
 .user-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .user-table th { text-align: left; font-size: 12.5px; padding: 10px 16px; border-bottom: 1px solid var(--panel-line); }
 
+/* 목업 전용: 층 경계 표시 (제어 막대에서 켠다. 제품 화면에는 없다) */
+.app[data-layers="show"] .ledger-page { outline: 2px dashed #0b57d0; outline-offset: -4px; }
+.app[data-layers="show"] .ledger-page::after { content: "장부 층"; position: absolute; right: 8px; bottom: 6px; padding: 0 6px; font: 700 11px/1.6 var(--font-ui); color: #fff; background: #0b57d0; }
+.app[data-layers="show"] .board { outline: 2px dashed #ffd66b; outline-offset: -10px; }
+.app[data-layers="show"] .board::after { content: "게시판 층"; position: absolute; right: 10px; top: 4px; padding: 0 6px; font: 700 11px/1.6 var(--font-ui); color: #1d1406; background: #ffd66b; }
+
 /* 다이얼로그 */
 dialog.credits { max-width: min(760px, 92vw); max-height: 86vh; padding: 0; border: 2px solid #6b7382; background: #1b1e25; color: #e6e9ef; font: 14px/1.65 var(--font-ui); }
 dialog.credits::backdrop { background: rgba(0, 0, 0, .6); }
@@ -479,7 +436,7 @@ dialog.credits::backdrop { background: rgba(0, 0, 0, .6); }
 .credits :focus-visible { outline: 3px solid #ffd66b; outline-offset: 2px; }
 
 /* ================================================================
-   7. 컨테이너 크기별 배치 (창 폭 미리보기와 실제 창 모두에 적용)
+   10. 컨테이너 크기별 배치 (창 폭 미리보기와 실제 창 모두에 적용)
    ================================================================ */
 @container app (max-width: 1000px) {
   .doc-layout { grid-template-columns: minmax(0, 1fr); gap: 14px; }
@@ -494,13 +451,10 @@ dialog.credits::backdrop { background: rgba(0, 0, 0, .6); }
   .toolbar-context { display: none; }
   main { padding: 18px 18px 40px; }
   .search { max-width: none; flex-basis: 100%; }
-  [data-theme="ledger"] .card { grid-template-columns: 28px minmax(0, 1fr); grid-template-areas: "icon title" "icon path" "icon summary" "icon facts"; row-gap: 2px; }
-  [data-theme="ledger"] .card-facts { padding: 6px 0 0; border-left: 0; margin-top: 6px; border-top: 1px dotted var(--rule); }
-  [data-theme="ledger"] .card-go { display: none; }
-  [data-theme="ledger"] .card-flag { grid-area: auto; grid-column: 2; }
-  [data-theme="ledger"] .surface { padding-left: 40px; background-image: linear-gradient(90deg, transparent 22px, var(--margin-rule) 22px, var(--margin-rule) 24px, transparent 24px); }
-  .doc { padding: 20px 18px 24px; }
-  [data-theme="ledger"] .doc { padding-left: 34px; background-image: linear-gradient(90deg, transparent 16px, var(--margin-rule) 16px, var(--margin-rule) 18px, transparent 18px); }
+  .ledger-page { padding: 16px 14px 22px 40px; background-image: linear-gradient(90deg, transparent 22px, var(--margin-rule) 22px, var(--margin-rule) 24px, transparent 24px); }
+  .doc { padding: 20px 16px 24px 40px; }
+  .board { padding: 30px 14px 22px; }
+  .card-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px 16px; }
   .summary-item { padding-inline: 10px; }
 }
 @container app (max-width: 560px) {
@@ -515,12 +469,11 @@ dialog.credits::backdrop { background: rgba(0, 0, 0, .6); }
   .workspace { scroll-padding-top: 0; }
   main { padding: 14px 12px 32px; }
   .page-heading h2 { font-size: 20px; }
-  [data-theme="board"] .surface { padding: 30px 10px 18px; border-width: 4px; }
-  [data-theme="board"] .card-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
-  [data-theme="ledger"] .surface { padding: 14px 10px 18px 30px; background-image: linear-gradient(90deg, transparent 14px, var(--margin-rule) 14px, var(--margin-rule) 16px, transparent 16px); }
-  .surface-plaque { font-size: 12px; }
-  .doc { padding: 18px 12px 20px; }
-  [data-theme="ledger"] .doc { padding-left: 24px; background-image: linear-gradient(90deg, transparent 10px, var(--margin-rule) 10px, var(--margin-rule) 12px, transparent 12px); }
+  .ledger-page { padding: 14px 10px 18px 28px; background-image: linear-gradient(90deg, transparent 12px, var(--margin-rule) 12px, var(--margin-rule) 14px, transparent 14px); }
+  .doc { padding: 16px 10px 20px 28px; }
+  .board { padding: 28px 10px 18px; border-width: 4px; }
+  .card-grid { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .board-plaque { font-size: 12px; letter-spacing: .04em; }
   .doc h3 { font-size: 20px; }
   .doc-body { font-size: 14.5px; }
   .map-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
@@ -534,7 +487,7 @@ dialog.credits::backdrop { background: rgba(0, 0, 0, .6); }
   .sys-rail a { padding: 3px 6px; }
 }
 
-/* 동작 감소: 무한 반복 효과는 끄고, 나머지 전환은 --motion 0으로 즉시 끝난다 */
+/* 동작 감소: 무한 반복과 장식 움직임은 끄고, 나머지 전환은 --motion 0으로 즉시 끝난다 */
 @media (prefers-reduced-motion: reduce) { :root:not([data-motion="full"]) .skeleton .sk, :root:not([data-motion="full"]) .card-deco .px, :root:not([data-motion="full"]) .card-attn .px { animation: none !important; } }
 :root[data-motion="reduce"] .skeleton .sk, :root[data-motion="reduce"] .card-deco .px, :root[data-motion="reduce"] .card-attn .px { animation: none !important; }
 </style>
@@ -543,11 +496,9 @@ dialog.credits::backdrop { background: rgba(0, 0, 0, .6); }
 <svg id="sprites" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"></svg>
 
 <div class="mockbar" id="mockbar" role="region" aria-label="목업 제어 (제품 화면 아님)">
-  <p class="mb-title">M-2 시스템 카드 · 결정용 목업<small>제품 코드 아님 · 자료는 샘플 · 저장은 흉내만 냄</small></p>
-  <div class="mb-group" role="radiogroup" aria-labelledby="mb-theme-l">
-    <span class="mb-label" id="mb-theme-l">테마</span>
-    <label class="seg"><input type="radio" name="theme" value="board"><span>A 퀘스트 게시판</span></label>
-    <label class="seg"><input type="radio" name="theme" value="ledger"><span>B 상점 장부</span></label>
+  <p class="mb-title">M-2 시스템 카드 · 혼합안 목업<small>사용자 확인 전 · 제품 미구현 · 자료는 샘플 · 저장은 흉내만 냄</small></p>
+  <div class="mb-group">
+    <label class="mb-label"><input type="checkbox" id="mb-layers"> 층 경계 표시</label>
   </div>
   <div class="mb-group">
     <label class="mb-label" for="mb-state">자료 상태</label>
@@ -583,7 +534,7 @@ dialog.credits::backdrop { background: rgba(0, 0, 0, .6); }
     <a href="#/search?q=%EC%97%86%EB%8A%94%EA%B2%80%EC%83%89%EC%96%B4">결과 없음</a>
     <button type="button" id="mb-credits">출처·라이선스</button>
   </div>
-  <p class="mb-desc" id="mb-desc"></p>
+  <p class="mb-desc" id="mb-desc"><b>혼합안</b> — 앱 전체는 <b>상점 장부</b>(밝은 장부 페이지, 호두나무색 사이드바)이고, 1단·2단 시스템 카드만 장부 페이지 안의 <b>퀘스트 게시판</b>에 핀으로 꽂은 종이 의뢰서다. 구현 문서·검색·기록·편집은 평평한 장부 면에서 읽는다. 제목 픽셀 폰트는 보류했다.</p>
 </div>
 
 <div class="stage" id="stage" data-frame="1280">
@@ -617,21 +568,23 @@ dialog.credits::backdrop { background: rgba(0, 0, 0, .6); }
     <h2 id="credits-title">출처·라이선스·목업 한계</h2>
     <h3>이 목업의 성격</h3>
     <ul>
-      <li>사용자 테마 결정을 위한 목업이다. 제품 코드·제품 데이터가 아니며 구현 완료를 뜻하지 않는다.</li>
+      <li>사용자가 고른 혼합 방향(앱은 상점 장부, 시스템 카드는 퀘스트 게시판)을 화면으로 옮긴 확인용 목업이다. 사용자 확인 전이며, 제품 코드·제품 데이터가 아니고 구현 완료를 뜻하지 않는다.</li>
+      <li>이전 A/B 두 테마 비교본은 Git commit <code>aa0d9c5</code>의 같은 경로에만 남아 있다. 그 비교본의 추천 문구는 최신 선택이 아니다.</li>
       <li>상위 7개·하위 39개 분할은 design-spec.md의 제안이다. 코드 경로는 <code>333fe20</code> tree에서 존재만 확인했고, 대표 문서 9개의 본문은 ARCHITECTURE·FEATURE_MAP·파일 목록으로 쓴 샘플이다. 사실 대조는 독립 검증자가 따로 한다.</li>
       <li>개발 기록 탭의 시스템 18개·기록 18개 제목과 상태는 <code>05_Management/records/catalog.json</code> (revision 2026-10-01-r2)에서 읽기 전용으로 옮겼다. 기록 편집의 저장은 흉내만 내고 파일을 쓰지 않는다.</li>
     </ul>
     <h3>표현 레퍼런스 (개념만 참고, 아트·UI 복제 없음)</h3>
+    <p>이전 결정용 목업 작성자가 확인한 공식 출처를 그대로 쓴다. 이번 혼합안 수정에서 출처를 다시 조회하지 않았다.</p>
     <ul>
-      <li><b>A 퀘스트 게시판 ← Stardew Valley (ConcernedApe)의 Help Wanted 게시판.</b> 공식 사이트의 Wiki 링크가 가리키는 위키 Quests 문서에 따르면, 게시판은 Pierre's General Store 밖에 있다. 새 의뢰가 붙으면 게시판 위에 노란 느낌표가 뜨고, 받은 의뢰는 그날과 다음 날까지 유효하다. 이 안은 "벽에 붙은 의뢰서를 훑어보고 하나를 집어 든다"는 탐색 감각과 "주의할 것에만 느낌표"라는 신호 절제를 빌렸다.
-        <br><a href="https://www.stardewvalley.net/" target="_blank" rel="noopener noreferrer">stardewvalley.net</a> · <a href="https://stardewvalleywiki.com/Quests" target="_blank" rel="noopener noreferrer">stardewvalleywiki.com/Quests</a></li>
-      <li><b>B 상점 장부 ← Moonlighter (Digital Sun, 11 bit studios).</b> Steam 공식 상점 페이지는 낮에는 마을 Rynoka의 상점을 운영하며 물건을 진열하고 값을 신중히 정하고 금 보유량을 관리한다고 설명한다. 이 안은 "진열·가격·재고를 한 줄에 대조하는 장부"라는 정리 감각을 빌려 하위 시스템을 품목 행으로, 상태를 장부 도장으로 표현했다.
+      <li><b>앱 층(상점 장부) ← Moonlighter (Digital Sun, 11 bit studios).</b> Steam 공식 상점 페이지는 낮에는 마을 Rynoka의 상점을 운영하며 물건을 진열하고 값을 신중히 정하고 금 보유량을 관리한다고 설명한다. 혼합안은 여기서 "밝은 장부 페이지와 장부 도장"이라는 정리 감각을 빌려 앱 바탕·문서·상태 도장에 썼다.
         <br><a href="https://store.steampowered.com/app/606150/Moonlighter/" target="_blank" rel="noopener noreferrer">store.steampowered.com/app/606150/Moonlighter</a></li>
-      <li>Recettear·Sea of Stars는 후보였지만 이번 목업에서는 1차 출처 확인과 반영을 하지 않았다.</li>
+      <li><b>카드 층(퀘스트 게시판) ← Stardew Valley (ConcernedApe)의 Help Wanted 게시판.</b> 공식 사이트의 Wiki 링크가 가리키는 위키 Quests 문서에 따르면, 게시판은 Pierre's General Store 밖에 있다. 새 의뢰가 붙으면 게시판 위에 노란 느낌표가 뜬다. 혼합안은 "게시판의 의뢰서를 훑어보고 하나를 집어 든다"는 탐색 감각과 "주의할 것에만 느낌표"라는 신호 절제를 1단·2단 카드에 썼다.
+        <br><a href="https://www.stardewvalley.net/" target="_blank" rel="noopener noreferrer">stardewvalley.net</a> · <a href="https://stardewvalleywiki.com/Quests" target="_blank" rel="noopener noreferrer">stardewvalleywiki.com/Quests</a></li>
+      <li>Recettear·Sea of Stars는 후보였지만 1차 출처 확인과 반영을 하지 않았다.</li>
     </ul>
-    <h3>폰트</h3>
-    <p><b>Galmuri는 이 목업에 포함하지 않았다.</b> 원천 저장소의 <code>ofl.md</code>에서 SIL Open Font License 1.1과 저작권 표시 "Copyright © 2019–2025 Lee Minseo (quiple@quiple.dev)"를 확인했다. 그러나 글꼴 파일을 받는 명령이 권한 확인에서 거부되어 우회하지 않았다. 그래서 픽셀 폰트 제목 변형은 미실행 상태다.</p>
-    <p>대신 A안 제목은 시스템 sans 굵은 글자와 2px 픽셀 그림자, B안 제목은 Windows 기본 바탕(Batang) 계열 serif를 쓴다. 본문은 두 안 모두 Segoe UI·맑은 고딕이다.
+    <h3>폰트 (픽셀 제목 폰트 보류)</h3>
+    <p><b>픽셀 제목 폰트는 보류 상태이며 이 목업에 포함하지 않았다.</b> 이전 작성자가 Galmuri 원천 저장소의 <code>ofl.md</code>에서 SIL Open Font License 1.1과 저작권 표시 "Copyright © 2019–2025 Lee Minseo (quiple@quiple.dev)"를 확인했다고 보고했다. 글꼴 파일 받기는 권한 확인에서 거부되었고, 이번 수정에서도 받지 않았다.</p>
+    <p>장부 층의 화면·문서 제목은 Windows 기본 바탕(Batang) 계열 serif, 게시판 이름판은 시스템 sans 굵은 글자와 2px 픽셀 그림자, 본문과 카드 글자는 Segoe UI·맑은 고딕이다.
       <br><a href="https://github.com/quiple/galmuri" target="_blank" rel="noopener noreferrer">github.com/quiple/galmuri</a> · <a href="https://openfontlicense.org" target="_blank" rel="noopener noreferrer">openfontlicense.org</a></p>
     <h3>그림과 외부 요청</h3>
     <p>모든 그림은 이 파일 안에 문자 격자로 직접 적은 픽셀 SVG다. 생성 이미지·외부 이미지·실제 게임 아트는 없다. 문서 머리의 CSP가 <code>connect-src 'none'</code>, <code>img-src data:</code>, <code>font-src data:</code>로 외부 요청을 막는다. 위 링크는 누를 때만 새 창으로 열린다.</p>
@@ -824,7 +777,7 @@ const SPRITES = {
   'users': ['............', '..ooo..ooo..', '.oaaao.obbo.', '.oaaao.obbo.', '..ooo...oo..', '.ooaoo.obbo.', 'oaaaaaoobbbo', 'oaaaaaoobbbo', 'oaaaaaoobbbo', 'oooooooooooo', '............', '............'],
   'quest': ['............', '.oooooooooo.', '.owwwwwwwwo.', '.owwwrrwwwo.', '.owwwrrwwwo.', '.owwwrrwwwo.', '.owwwwwwwwo.', '.owwwrrwwwo.', '.owwwwwwwwo.', '.oooooooooo.', '............', '............'],
   'pin': ['...oooo...', '..orrrro..', '.orwwrrro.', '.orwrrrro.', '.orrrrrro.', '..orrrro..', '...oooo...', '....oo....', '....oo....', '.....o....'],
-  'coin': ['...oooo...', '..occcco..', '.ocaaaaco.', 'ocaaooaaco', 'ocaoaaaaco', 'ocaoaaaaco', 'ocaaooaaco', '.ocaaaaco.', '..occcco..', '...oooo...'],
+  'nail': ['.oo.', 'oaao', 'oaao', '.oo.'],
   'bang': ['.oooo.', '.oaao.', '.oaao.', '.oaao.', '.oaao.', '.oaao.', '..oo..', '......', '.oooo.', '.oaao.', '.oooo.', '......'],
   'st-present': ['ooooooo', 'oaaaaco', 'oaaacao', 'ocacaao', 'oacaaao', 'oaaaaao', 'ooooooo'],
   'st-partial': ['ooooooo', 'obbbaao', 'obbbaao', 'obbbaao', 'obbbaao', 'obbbaao', 'ooooooo'],
@@ -878,30 +831,27 @@ function statusSummary(cards) {
    상태
    ================================================================ */
 const state = {
-  theme: 'board', data: 'ok', stress: false, frame: '1280', motion: 'auto',
+  data: 'ok', stress: false, frame: '1280', motion: 'auto', layers: false,
   lastNonSearch: '#/cards',
   records: { q: '', area: '', view: 'systems', sel: null },
   editor: { loaded: SAMPLE_JSON, draft: SAMPLE_JSON, dirty: false, notice: '기록 파일을 읽었습니다. 자동 갱신은 하지 않습니다. (목업)', fail: false, error: '' },
 };
-const THEME_DESC = {
-  board: '<b>A 퀘스트 게시판</b> — 어두운 길드 홀의 나무 게시판에 종이 의뢰서처럼 붙은 카드. 넓게 훑어보고 하나를 골라 들어가는 탐색에 맞다. 현재 R-12의 어두운 화면을 이어 간다. 주의할 카드에만 느낌표를 단다.',
-  ledger: '<b>B 상점 장부</b> — 밝은 장부 페이지의 색인 탭과 품목 행. 한 줄에 상태·매핑 수·기존 기록을 나란히 대조하는 밀도에 맞다. 현재 R-12의 어두운 화면에서 밝은 화면으로 바뀐다. 제목만 바탕 계열 serif다.',
-};
+/* 혼합안은 테마 전환이 없다. 이전 A/B 목업의 저장 키(m2-mockup)와 theme 매개변수는 읽지 않는다. */
+const PREF_KEY = 'm2-mockup-hybrid';
 function loadPrefs() {
-  try { const saved = JSON.parse(localStorage.getItem('m2-mockup') || '{}'); Object.assign(state, pick(saved, ['theme', 'frame', 'motion'])); } catch { /* 저장소 없음: 기본값 유지 */ }
+  try { const saved = JSON.parse(localStorage.getItem(PREF_KEY) || '{}'); Object.assign(state, pick(saved, ['frame', 'motion'])); } catch { /* 저장소 없음: 기본값 유지 */ }
   const p = new URLSearchParams(location.search);
-  if (p.get('theme')) state.theme = p.get('theme');
   if (p.get('frame')) state.frame = p.get('frame');
   if (p.get('motion')) state.motion = p.get('motion');
   if (p.get('state')) state.data = p.get('state');
   if (p.get('stress') === '1') state.stress = true;
+  if (p.get('layers') === '1') state.layers = true;
   if (p.get('dirty') === '1') { state.editor.draft = SAMPLE_JSON.replace('"records": []', '"records": [ "초안 편집 중" ]'); state.editor.dirty = true; }
-  if (!['board', 'ledger'].includes(state.theme)) state.theme = 'board';
   if (!['1280', '760', '420', 'fluid'].includes(state.frame)) state.frame = '1280';
   if (!['auto', 'reduce'].includes(state.motion)) state.motion = 'auto';
 }
 function pick(obj, keys) { const o = {}; keys.forEach(k => { if (typeof obj[k] === 'string') o[k] = obj[k]; }); return o; }
-function savePrefs() { try { localStorage.setItem('m2-mockup', JSON.stringify(pick(state, ['theme', 'frame', 'motion']))); } catch { /* 무시 */ } }
+function savePrefs() { try { localStorage.setItem(PREF_KEY, JSON.stringify(pick(state, ['frame', 'motion']))); } catch { /* 무시 */ } }
 
 /* ================================================================
    라우팅 — 해시 경로가 화면 위치다. 브라우저 뒤로가기도 같은 흐름을 쓴다.
@@ -1032,22 +982,24 @@ function sourceStrip() {
   </details>`;
 }
 function legend() { return `<p class="legend"><span>상태 표시는 모양·글자·테두리로 구분합니다:</span>${Object.keys(STATUS).map(stChip).join('')}</p>`; }
-function plaque(boardText, ledgerText, ledgerRight) {
-  return `<div class="surface-plaque" aria-hidden="true"><span class="only-board">${px('bang')} ${esc(boardText)} ${px('bang')}</span><span class="only-ledger">${px('coin', 'coin')} ${esc(ledgerText)}</span><span class="only-ledger plaque-page">${esc(ledgerRight)}</span></div>`;
+/* 게시판 이름판: 장식이라 낭독하지 않는다. 같은 정보는 화면 제목과 목록 제목이 전한다. */
+function plaque(text) {
+  return `<div class="board-plaque" aria-hidden="true">${px('nail')}<span>${esc(text)}</span>${px('nail')}</div>`;
 }
 function rail(cur) {
-  return `<nav aria-label="상위 시스템 바로가기"><ul class="sys-rail">${SYSTEMS.map(s => `<li><a href="#/cards/${s.id}" data-sys="${s.id}" ${s.id === cur ? 'aria-current="true"' : ''}>${px('sys-' + s.id)}<span>${esc(s.title)}</span></a></li>`).join('')}</ul></nav>`;
+  return `<nav class="rail-nav" aria-label="상위 시스템 바로가기"><ul class="sys-rail">${SYSTEMS.map(s => `<li><a href="#/cards/${s.id}" data-sys="${s.id}" ${s.id === cur ? 'aria-current="true"' : ''}>${px('sys-' + s.id)}<span>${esc(s.title)}</span></a></li>`).join('')}</ul></nav>`;
 }
 function needsAttn(c) { return c.status !== 'present' || (c.id === DEMO_CARD && (state.data === 'legacy-missing' || state.data === 'map-mismatch')); }
 
+/* 1단: 장부 페이지(머리·자료 줄) 안에 게시판을 두고, 상위 시스템을 의뢰서로 꽂는다. */
 function viewL1() {
-  return `<section aria-labelledby="view-title">
+  return `<section aria-labelledby="view-title"><div class="ledger-page">
     <div class="view-head"><h3 id="view-title" class="view-title" tabindex="-1">전체 시스템</h3>
       <p class="view-desc">상위 시스템 ${SYSTEMS.length}개 · 하위 시스템 ${CARDS.length}개. 카드를 고르면 그 시스템의 하위 카드로 들어갑니다.</p>${legend()}</div>
     ${sourceStrip()}
-    <div class="surface">${plaque('길드 의뢰 게시판', '상점 장부 · 시스템 목록', `기준 ${SHORT}`)}
+    <div class="board">${plaque('시스템 의뢰 게시판')}
       <ul class="card-grid lvl1">${SYSTEMS.map(cardL1).join('')}</ul></div>
-  </section>`;
+  </div></section>`;
 }
 function cardL1(s) {
   const kids = kidsOf(s.id); const attn = kids.some(needsAttn);
@@ -1066,6 +1018,7 @@ function viewL2(sys, r) {
   const kids = kidsOf(sys.id); const q = r.params.get('q');
   return `<section aria-labelledby="view-title">
     ${rail(sys.id)}
+    <div class="ledger-page">
     <header class="sys-head" data-sys="${sys.id}">
       <div class="sys-head-top"><a class="btn btn-small btn-ghost" href="#/cards">↑ 전체 시스템</a>${q ? `<a class="btn btn-small btn-ghost" href="#/search?q=${enc(q)}">← ‘${esc(q)}’ 검색 결과로</a>` : ''}</div>
       <div class="sys-title-row"><span aria-hidden="true">${px('sys-' + sys.id)}</span><h3 id="view-title" class="view-title" tabindex="-1">${esc(titleOf(sys))}</h3></div>
@@ -1077,9 +1030,10 @@ function viewL2(sys, r) {
         <div><dt>기존 기록</dt><dd><details class="legacy-more"><summary>${unionLegacy(kids).length}개 ID 연결 · 펼쳐 보기</summary>${legacyChips(unionLegacy(kids), false)}</details></dd></div>
       </dl>
     </header>
-    <div class="surface">${plaque(`의뢰: ${sys.title}`, `장부: ${sys.title}`, `품목 ${kids.length}`)}
+    <div class="board">${plaque(`의뢰: ${sys.title} · ${kids.length}장`)}
       <h4 class="sr-only">하위 시스템 ${kids.length}개</h4>
       <ul class="card-grid lvl2">${kids.map(c => cardL2(c, q)).join('')}</ul></div>
+    </div>
   </section>`;
 }
 function cardL2(c, q) {
@@ -1133,12 +1087,12 @@ function viewDoc(sys, card, r) {
     if (t === 'map') return mapTable(card, mismatch);
     return '';
   };
+  /* 문서는 게시판을 떠나 장부 페이지 한 장에 평평하게 펼친다. 머리의 의뢰서 쪽지만 카드 층의 종이·핀을 이어받는다. */
   return `<section aria-labelledby="view-title">
     ${rail(sys.id)}
-    <article class="doc" data-sys="${sys.id}">
-      <span class="doc-pins" aria-hidden="true">${px('pin')}${px('pin')}</span>
+    <article class="ledger-page doc" data-sys="${sys.id}">
       <div class="doc-nav-top"><a class="btn btn-small" href="#/cards/${sys.id}${q ? `?q=${enc(q)}` : ''}">↑ ${esc(sys.title)} 하위 목록</a>${q ? `<a class="btn btn-small" href="#/search?q=${enc(q)}">← ‘${esc(q)}’ 검색 결과로</a>` : ''}</div>
-      <p class="doc-kicker">${esc(sys.title)} › 하위 시스템 · 구현 문서 · <code>${esc(card.id)}</code></p>
+      <p class="doc-kicker"><span class="doc-slip">${px('pin')}의뢰서 <code>${esc(card.id)}</code></span><span>${esc(sys.title)} › 하위 시스템 · 구현 문서</span></p>
       <h3 id="view-title" tabindex="-1">${esc(titleOf(card))}</h3>
       <p class="doc-sub">${esc(doc ? doc.sub : card.summary)}</p>
       <div class="doc-flags">
@@ -1206,7 +1160,7 @@ function viewSearch(q) {
   const tokens = tokensOf(q);
   const head = `<div class="view-head"><h3 id="view-title" class="view-title" tabindex="-1">검색 결과</h3>`;
   const back = `<p class="view-desc"><a class="btn btn-small btn-ghost" href="${esc(state.lastNonSearch || '#/cards')}">← 검색 전 화면으로</a></p>`;
-  if (!tokens.length) return `<section aria-labelledby="view-title">${head}<p class="view-desc" role="status">검색어를 입력하세요.</p>${back}</div></section>`;
+  if (!tokens.length) return `<section aria-labelledby="view-title"><div class="ledger-page">${head}<p class="view-desc" role="status">검색어를 입력하세요.</p>${back}</div></div></section>`;
   const res = INDEX.filter(it => tokens.every(t => it.text.toLowerCase().includes(t) || it.title.toLowerCase().includes(t)));
   const groups = ['상위 시스템', '하위 시스템', '문서 본문'].map(k => ({ k, items: res.filter(r => r.kind === k) })).filter(g => g.items.length);
   const body = res.length ? groups.map(g => `<h4 class="result-group">${g.k} ${g.items.length}개</h4><ol class="results">${g.items.map(it => `<li class="result"><a href="#/${it.path}?q=${enc(q)}${it.sec ? '&sec=' + it.sec : ''}" ${it.sec ? '' : `data-result="${it.path}"`}>${hl(it.title, tokens)}</a><span class="result-kind">${g.k}</span><p class="result-sub">${esc(it.sub)}</p><p class="result-snip">${snippet(it.text, tokens)}</p></li>`).join('')}</ol>`).join('')
@@ -1215,16 +1169,16 @@ function viewSearch(q) {
         <ul><li>낱말을 줄이거나 다른 낱말로 찾아 보세요. 예: <a href="#/search?q=GameSession">GameSession</a> · <a href="#/search?q=Network">Network</a> · <a href="#/search?q=persistence">persistence</a></li>
         <li>과거 변경·결정·검증 기록은 <a href="#/records?q=${enc(q)}">개발 기록에서 같은 검색어로</a> 찾습니다.</li></ul>
         <div class="actions"><a class="btn" href="#/cards">전체 시스템으로</a></div></div>`;
-  return `<section aria-labelledby="view-title">${head}<p class="view-desc" role="status">‘${esc(q)}’ — ${res.length}개 결과</p>${back}</div>${body}</section>`;
+  return `<section aria-labelledby="view-title"><div class="ledger-page">${head}<p class="view-desc" role="status">‘${esc(q)}’ — ${res.length}개 결과</p>${back}</div>${body}</div></section>`;
 }
 
 /* 로딩·오류 */
 function viewGuideDown() {
   if (state.data === 'loading') {
     const sk = '<li><div class="card"><span class="sk w40"></span><span class="sk w90"></span><span class="sk w70"></span><span class="sk w55"></span></div></li>';
-    return `<section aria-labelledby="view-title" aria-busy="true"><div class="view-head"><h3 id="view-title" class="view-title" tabindex="-1">전체 시스템</h3>
+    return `<section aria-labelledby="view-title" aria-busy="true"><div class="ledger-page"><div class="view-head"><h3 id="view-title" class="view-title" tabindex="-1">전체 시스템</h3>
       <p class="view-desc" role="status">시스템 카드 자료를 읽는 중입니다. 자료 하나를 끝까지 읽고 검증한 뒤에만 표시합니다.</p></div>
-      <div class="surface">${plaque('길드 의뢰 게시판', '상점 장부 · 시스템 목록', '읽는 중')}<ul class="card-grid lvl1 skeleton" aria-hidden="true">${sk.repeat(7)}</ul></div></section>`;
+      <div class="board">${plaque('시스템 의뢰 게시판 · 읽는 중')}<ul class="card-grid lvl1 skeleton" aria-hidden="true">${sk.repeat(7)}</ul></div></div></section>`;
   }
   const detail = {
     'guide-fail': ['시스템 카드 자료를 읽지 못했습니다', `<p><code class="path">${pathHTML(GUIDE.path)}</code>를 읽는 중 오류가 났습니다. (목업 예시: 파일 없음)</p>`],
@@ -1393,7 +1347,7 @@ document.addEventListener('change', e => {
     if (file.size > 2 * 1024 * 1024) { editorError('불러올 파일은 2 MiB 이하이어야 합니다.'); return; }
     file.text().then(text => { state.editor.draft = text; state.editor.dirty = true; $('#ed-text').value = text; updateDirtyMarks(); editorNotice(`${file.name}을 초안으로 불러왔습니다. 아직 기록 파일에 저장하지 않았습니다.`); }).catch(() => editorError('선택한 파일을 읽지 못했습니다.'));
   }
-  else if (t.name === 'theme') setTheme(t.value);
+  else if (t.id === 'mb-layers') setLayers(t.checked);
   else if (t.name === 'frame') setFrame(t.value);
   else if (t.name === 'motion') setMotion(t.value);
   else if (t.id === 'mb-state') { state.data = t.value; onRoute(true); announce(`자료 상태: ${t.options[t.selectedIndex].text}`); }
@@ -1408,7 +1362,7 @@ document.addEventListener('keydown', e => {
 $('#mb-credits').addEventListener('click', () => $('#credits').showModal());
 window.addEventListener('hashchange', () => onRoute(false));
 
-function setTheme(v) { state.theme = v; document.documentElement.dataset.theme = v; $('#mb-desc').innerHTML = THEME_DESC[v]; savePrefs(); }
+function setLayers(on) { state.layers = on; if (on) $('#app').dataset.layers = 'show'; else delete $('#app').dataset.layers; }
 function setFrame(v) { state.frame = v; $('#stage').dataset.frame = v; savePrefs(); measure(); }
 function setMotion(v) { state.motion = v; if (v === 'reduce') document.documentElement.dataset.motion = 'reduce'; else delete document.documentElement.dataset.motion; savePrefs(); }
 function measure() {
@@ -1421,12 +1375,12 @@ function measure() {
 
 /* 시작 */
 buildSprites(); buildIndex(); loadPrefs();
-document.querySelectorAll('input[name="theme"]').forEach(i => { i.checked = i.value === state.theme; });
 document.querySelectorAll('input[name="frame"]').forEach(i => { i.checked = i.value === state.frame; });
 document.querySelectorAll('input[name="motion"]').forEach(i => { i.checked = i.value === state.motion; });
 $('#mb-state').value = state.data; if ($('#mb-state').value !== state.data) { state.data = 'ok'; $('#mb-state').value = 'ok'; }
 $('#mb-stress').checked = state.stress;
-setTheme(state.theme); setFrame(state.frame); setMotion(state.motion);
+$('#mb-layers').checked = state.layers;
+setLayers(state.layers); setFrame(state.frame); setMotion(state.motion);
 if ('ResizeObserver' in window) new ResizeObserver(measure).observe($('#app'));
 window.addEventListener('resize', measure);
 onRoute(true);
