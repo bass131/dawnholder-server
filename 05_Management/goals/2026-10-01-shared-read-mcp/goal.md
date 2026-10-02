@@ -169,7 +169,7 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 ## 현재 상태와 근거
 
-**M-1의 구현·독립 검증·[PR #159](https://github.com/bass131/dawnholder-server/pull/159) 병합을 마쳤다. 병합 커밋은 `96cc89a83d9abd305a46d025333382e86488ca2f`, 시각은 2026-10-02 02:03:27 UTC(11:03:27 KST)다.** 최종 V3-R1은 249/249, 제품 차단 0건·새 제품 결함 0건·참고 9건이며 V3-01/02와 R01~R09는 승인 범위에서 해소됐다. 실제 개발 세션 연결(D4)은 별도 결정 전이며 시작하지 않았다. 병합 결과와 PR158 O-7의 RESUME 안내를 담은 두 문서도 신규 Opus의 독립 정적 실사 PASS·필수 결함0을 받았고 작업자 정산을 마쳤다. 후속 문서 PR을 준비한다. V2 보고 과장, V3 GUI 미확인 합성 클릭, Sol 환경 복구 표현, V3-R1 수치 오기와 정리 절차 이탈은 아래 원문·감사 기록을 유지하며 성공으로 소급하지 않는다.
+**M-1의 구현·독립 검증·[PR #159](https://github.com/bass131/dawnholder-server/pull/159) 병합을 마쳤다. 병합 커밋은 `96cc89a83d9abd305a46d025333382e86488ca2f`, 시각은 2026-10-02 02:03:27 UTC(11:03:27 KST)다.** 최종 V3-R1은 249/249, 제품 차단 0건·새 제품 결함 0건·참고 9건이며 V3-01/02와 R01~R09는 승인 범위에서 해소됐다. 실제 개발 세션 연결(D4)은 별도 결정 전이며 시작하지 않았다. 병합 결과와 PR158 O-7의 RESUME 안내를 담은 두 문서는 독립 정적 실사 PASS·필수 결함0 후 [후속 PR #161](https://github.com/bass131/dawnholder-server/pull/161)로 올렸고, 작업자 정산을 마쳤다. PR161은 별도 사용자 병합 승인 전이다. V2 보고 과장, V3 GUI 미확인 합성 클릭, Sol 환경 복구 표현, V3-R1 수치 오기와 정리 절차 이탈은 아래 원문·감사 기록을 유지하며 성공으로 소급하지 않는다.
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - 시작: clean `main`, HEAD `18c8ca6a5aa3032873029cbd36658f0c4f9095c5` (PR156). `git fetch origin main` 후 origin/main도 같은 SHA임을 확인했다.
@@ -401,4 +401,6 @@ Electron 파일 복구는 exact package44.5.0·검증된 로컬 cache·process n
 
 완료 `msg_5592a0ef4846` 뒤 worker-release retained/external_terminal, 동일 incarnation `5ed35327-5098-41ae-94b1-8fd0df782f0e`의 완료·빈 prompt를 확인해 정확한 pane만 닫았다(ptyKilled=true). `opus-ack.json`은 `delivery_ed2d982c9055` acknowledge를, `reclaimable-final.json`은0건을 보존한다. 작업자 재사용은 없다. heartbeat3건의 body가 빈 값이었고 Astra가 `msg_22bdc24b4850`으로 태그 준수를 요청했다는 형식 관찰도 남긴다. 최종 worker_done의 subject/body와 출처는 일치했다.
 
-실사 후 수정은 이 goal의 결과·정산·근거 귀속/인용 명확화이며 RESUME 본문은 `05a427c`와 같다. 후속 문서 PR 생성까지 정리한 뒤 메인에게 원문과 인계를 보고한다. D4 연결과 R-8 실제 교체는 여전히 미실행이다.
+실사 후 수정은 이 goal의 결과·정산·근거 귀속/인용 명확화이며 RESUME 본문은 `05a427c`와 같다. 실사 결과 기록은 `033b213069b9412f5f8f6cb4623e4917b05a5d36`으로 커밋해 `docs/management-m1-closeout`을 push하고 `main` 대상 [PR #161](https://github.com/bass131/dawnholder-server/pull/161)을 만들었다. 동일 head의 선행 PR은 없었다. 제품 코드·시험·catalog·설정 변경은 없고 D4 연결과 R-8 실제 교체도 여전히 미실행이다.
+
+이 종료 기록과 O-7 수정의 구현·독립 실사·PR 발행은 마쳤다. **PR161의 병합은 사용자 별도 명시 승인 전**이며 자동 병합하지 않는다. 메인이 R-8로 교체할 때의 최소 인계는 정본 `management-active`, branch `docs/management-m1-closeout`, PR161, 이 goal과 위 최종 판정 원문이다. 메인은 새 Astra에 PR 후속 담당을 명시하고 실제 새 handle/runtime/incarnation/READY를 다시 확인한다. 이전 Run·Task·Dispatch를 새 목표의 실행 권한으로 쓰지 않는다. 현재 Astra는 이 결과를 보고한 뒤 새 작업을 시작하지 않는다.
