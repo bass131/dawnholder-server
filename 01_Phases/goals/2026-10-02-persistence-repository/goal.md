@@ -133,3 +133,39 @@ G2가 제품 전체 구현보다 먼저 필요하면 A 쓰기 종료 후 정적 
 - Astra 원천 조사: Formatting/WorkspaceInputs.cs:32의 productProjects.Count!=8 gate가 승인된 새 slnx 프로젝트를 거부한다. 메인 `msg_4e649350435c`는 좁은 F 의존 변경을 승인했다. 기대 집합 출처를 하나로 정해 slnx/input manifest와 대조하고 누락·중복·예상밖·Compile누락 거부를 보존한다. 기존195 테스트를 유지하고 새 Opus가 새프로젝트 양성 및 음성을 추가·실행하며 CI 결과로 확인한다. Formatting 쓰기는 GameDev 단독, Architecture의 .NET 도구와 최신main 병합 순서를 조율한다. CODE_CONVENTION 서식 절에도 기대 집합 기준을 반영한다.
 - 현재 Architecture는 새 handle `term_cf097010-8b72-4381-800d-3fdc2882c826`, incarnation `bca09aee-2864-4bd1-b988-f6f9ab8fe06e`, Run `run_8c735d301418`임을 live terminal list로 확인했다. `msg_471561c220ff`로 F 파일 소유·병합 순서/CODE_CONVENTION 단독 쓰기를 공유했다. 구 handle로 보낸 두 사전 알림은 현재 조율 근거로 대체했다.
 - 공통 SQL 검사 추출 제안은 메인 `msg_d3ddc4723ba5`로 올렸다. 내부 helper migration014와 schema metadata13→14가 필요해 외부signature/결과code/권한 보존과 별도 차이로 설명했고 응답 대기 중이다. mutation/resolver의 MigrationManifest NULL은 A1 명시계약(read probe/inspect만 반환)의 의도로 보이며 이유를 주석으로 남기고 독립 검증한다. SQL 실행 없이 의미 보존 성공으로 확정하지 않는다.
+
+## 가독성 정리의 현재 번호·위치 계약
+
+메인 `msg_c9f520c7a1b7`은 내부 공통 검사 procedure 한 개와 설치 metadata14를 승인했다. 아직 새 migration은 어느 DB에도 적용하지 않았다. 읽기/배포 의존 순서를 맞추기 위해 아래 번호를 정본으로 다시 고정한다. 외부9RPC signature·29열/순서·결과/오류코드·권한은 유지하며 schema metadata13→14와 새 내부module/hash만 승인된 차이다. `001_initial.sql`은 불변이다.
+
+| 번호 | 파일·객체 |
+|---|---|
+| 002 | persistence_metadata (기존 번호 유지) |
+| 003 | persistence_payload / dh.PersistencePayloadV1 (기존 번호 유지) |
+| 004 | assert_persistence_contract / dh.AssertPersistenceContract (신규 내부 helper, GRANT 없음) |
+| 005 | read_admission / dh.ReadAdmission (이전004) |
+| 006 | acquire_and_load / dh.AcquireAndLoad (이전005) |
+| 007 | write_safe_checkpoint / dh.WriteSafeCheckpoint (이전006) |
+| 008 | release_runtime / dh.ReleaseRuntime (이전007) |
+| 009 | resolve_runtime_operation / dh.ResolveRuntimeOperation (이전008) |
+| 010 | inspect_recovery / dh.InspectRecovery (이전009) |
+| 011 | recover_and_load / dh.RecoverAndLoad (이전010) |
+| 012 | release_recovery / dh.ReleaseRecovery (이전011) |
+| 013 | resolve_recovery_operation / dh.ResolveRecoveryOperation (이전012) |
+| 014 | persistence_grants (이전013) |
+
+위 파일은 모두 `99_Tools/database/migrations/NNN_name.sql`이다. catalog는 이름/번호/checksum/module 정의를 함께 갱신한다. helper의 runtime/recovery 직접 실행 거부도 G2 및 실제 권한 검증에 포함한다. 이전 실행 기록의002~013/13version은 A1 당시 산출물이며 현재 소비 계약은 이 재번호화 이후 정리 원문을 따른다.
+
+목적별 신규 도구 위치는 `99_Tools/database/test-environment/`로 고정한다. 범용 설치/검증 도구와 격리 시험환경 수명을 구분하고 기존 Verb-Noun 관례를 따른다. 아래 이동을 신규 Sol에 맡기며 함수의 D1b 접두사도 책임 이름으로 바꾼다. 기존 DB/계정 이름의 D1b는 G1이 선택한 외부 대상 식별자이므로 이름 정리로 바꾸지 않는다.
+
+| 이전 파일 (`99_Tools/database/`) | 새 파일 (`test-environment/`) |
+|---|---|
+| D1b.Common.ps1 | Environment.Common.ps1 |
+| New-D1bTestDatabase.ps1 | New-TestDatabase.ps1 |
+| Initialize-D1bBinding.ps1 | Initialize-CharacterBinding.ps1 |
+| Set-D1bPrincipals.ps1 | Set-TestPrincipals.ps1 |
+| Remove-D1bTestResources.ps1 | Remove-TestEnvironment.ps1 |
+
+Astra가 goal·CODE_CONVENTION·MSSQL 안내의 현재 참조를, Sol이 제품 dot-source/호출·입력 계약과 old→new 보고를 소유한다. 과거 실행 원문은 덮어쓰지 않는다. 운영 message ID·executor SID·machine/endpoint/credential 경로는 비밀 없는 승인 계획/manifest/명시 인자로 분리하되 현재 G1의 정확 대상·SID·한 번 수명·실패 시 중단 경계는 유지한다. 실제 필수 인자와 승인 계획 schema는 Sol의 쓰기 전 맥락 메모에서 확인한다.
+
+A2 checkpoint는 `1091525`, 최신 main 통합은 `771806c`다. CURRENT 충돌은 D1b와 Architecture0 링크를 모두 보존해 해결했다. Architecture `msg_c416878c68bb`는 독립 도구를 slnx 밖에서 검증하며 Formatting/CODE_CONVENTION을 쓰지 않는다고 확인했다. 새 independent tool도 전체 C# manifest의 Compile gate에 영향을 줄 수 있어 `msg_8a51ccd79aab`로 별도 조율 중이며 미등록 입력을 묵시 허용하지 않는다.
