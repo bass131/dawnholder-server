@@ -1,6 +1,6 @@
 # P3 / D1b — 영속성 저장소와 격리 SQL 검증
 
-상태: **goal 초안 작성, 메인 범위 확인과 사용자 외부 변경 승인 대기**. D1a 기술 계약을 구현할 범위·쓰기 소유·실행 gate를 제안한다. 제품/SQL/테스트 구현, 패키지 추가·설치, DB 접속·생성·변경, 계정 생성, 외부 작업자 발행은 아직 하지 않았다. 이 초안은 실행 승인이나 독립 검증 판정이 아니다.
+상태: **G0 기술 범위 승인, 신규 Sol의 A1 SQL 구현 진행; G1 외부 변경은 사용자 응답 대기**. 메인 `msg_78c5c1647b7c`로 독립 저장소·schema·수명 도구·최소 recovery 콘솔/launcher 범위가 승인됐다. DB 접속·생성·변경과 계정 생성은 아직 금지다. 구현 완료나 독립 검증 판정은 아직 없다.
 
 ## 착수 근거와 기준점
 
@@ -44,6 +44,15 @@
 
 TLS 예외는 암호화를 유지하지만 서버 인증서의 신원을 검증하지 않는다. 위 계정의 비밀번호는 사용자 답변·채팅·goal·명령 인수·로그에 적지 않는다. DB 제거가 server login/Windows 계정·credential 제거를 대신하지 않으므로 각각 기록한다. 계정 profile의 임의 재귀 삭제·다른 DPAPI 파일 읽기/변경은 포함하지 않는다. SQL service·registry·방화벽·인증 모드·SAC·Claude 권한 설정의 변경, 기존 principal의 revoke/disable은 세 안건의 범위 밖이다.
 
+## G0 승인과 Windows recovery 실행 설계
+
+- 메인 `msg_78c5c1647b7c`(2026-10-02 04:46:08 UTC)는 기술 항목 1~5를 승인했다. `Microsoft.Data.SqlClient 6.1.7`의 추가/restore는 D1a 결정의 이행이며 별도 사용자 재승인 대상이 아니다. 공식 지원/patch를 다시 확인하고 다른 version/패키지가 필요하면 메인에 올린다. R-7 Fable 시범은 이 목표에 적용하지 않는다.
+- G1 응답 전에도 **DB 접속 없는 A 구현**을 진행한다. A를 A1(SQL schema·RPC·catalog)→A2(승인 대상/identity/계정·DB 수명 도구)로 좁혀 신규 Sol 세션을 순차 배정한다. G0가 DB/계정/비밀 실행권을 열지는 않는다.
+- [ADR-029](../../../00_Document/ADR/harness/ADR-029-wsl2-dotnet-execution-standard.md)의 SAC `0x800711C7` 과거 관측과 현재 DEVELOPMENT를 따른다. Windows 최소 콘솔의 실제 실행이 막힐 수 있으므로 B의 launcher에 **Windows PowerShell + 기존 System.Data.SqlClient**로 동일 4개 RPC를 호출하는 제한된 script 경로를 구현한다. 새 DLL/Add-Type 컴파일 없이 `CommandType.StoredProcedure`와 명시 SqlDbType/길이를 쓰고 .NET 콘솔과 SQL 계약을 공유한다.
+- 복구 script는 전용 recovery Windows 계정의 실제 실행 컨텍스트에서만 통합 인증한다. 정확 manifest의 DB/slot/GUID와 expected owner/fence/reason을 받으며 임의 SQL/범용 RPC/임의 endpoint·credential을 받지 않는다. parent 관리자와 child recovery identity를 혼동하지 않고 실제 Windows SID·ORIGINAL_LOGIN·서버/DB role 및 상속 권한을 검증한다. 자격증명은 argv/보고에 넣지 않으며 기존 runtime credential을 사용하지 않는다.
+- G2에서 launcher 및 script의 실제 diff/경로/ACL·입력·권한 검사를 먼저 실사한다. signed Windows PowerShell 경로를 사용한다고 script 실행 성공을 가정하지 않는다. PowerShell 경로도 정책에 막히면 정확 오류·미실행을 보고하며 SAC 끄기·정책 변경·Unblock·신뢰 DLL 복사로 우회하지 않는다. 이 경로로 S06이 성공해도 Microsoft.Data.SqlClient/net10 Windows 실행(S07) 성공으로 합치지 않는다.
+- FEATURE_MAP 오기는 메인의 별도 작은 문서 PR 지시를 받았다. D1b 구현의 독립 대기 구간에 Architecture 파일 소유를 확인한 뒤 별도 branch·외부 작성/실사로 처리하며 D1b diff에 섞지 않는다.
+
 ## 메인과 Astra가 정할 기술 항목
 
 사용자 안건과 분리한다. 아래 제안은 메인 goal 확인 뒤 세부 manifest/spec으로 고정하며, 구현자가 사용자 정책을 추측해 바꾸지 않는다.
@@ -81,7 +90,7 @@ TLS 예외는 암호화를 유지하지만 서버 인증서의 신원을 검증�
 | G3 독립 구현 검증 | D1a 검증 계획의 S01–S11, C01–C13, O01–O07, U01–U11, R01–R05를 아래 경계로 판정. 제품 결함 0, 미실행은 환경·영향을 적고 메인 판단 없이 완료로 합치지 않음 |
 | G4 정산·인계 | 원시 증거·manifest 보존, operation/owner/connection 정산, 임시 trigger/권한/도구 프로세스 잔여 확인. 승인된 DB/계정/credential 정리 결과 및 미정리 항목 명시. D2 소비 API·미실행 D2/D3/D4 인계. PR 승인 전 최종 판정 원문과 원천 표본을 메인에게 전달 |
 
-G2가 제품 전체 구현보다 먼저 필요하면 A 쓰기 종료 후 정적 실사 Opus를 별도 신규 세션으로 발행·종료하고 B를 진행한다. 최종 C 검증자와 재사용하지 않는다. 승인 전에는 읽기 전용 소스 조사·설계만 진행하며 DB 연결·비밀 읽기·패키지 restore·관리 변경을 실행하지 않는다.
+G2가 제품 전체 구현보다 먼저 필요하면 A 쓰기 종료 후 정적 실사 Opus를 별도 신규 세션으로 발행·종료하고 B를 진행한다. 최종 C 검증자와 재사용하지 않는다. G0로 승인된 소스 구현과 고정 driver 추가/restore는 가능하지만, G1·G2 전에는 DB 연결·비밀 읽기·관리 변경을 실행하지 않는다.
 
 독립 검증의 핵심 관측은 다음과 같다. 자세한 자극과 기대값은 D1a 검증 계획의 ID를 정본으로 사용한다.
 
@@ -97,4 +106,10 @@ G2가 제품 전체 구현보다 먼저 필요하면 A 쓰기 종료 후 정적 
 
 - 원천 조사, 세션/branch 준비, 이 goal 초안과 CURRENT·로드맵 링크 작성을 수행했다. 작성자 점검에서 로컬 Markdown 링크가 모두 존재하고 Unity 사용자 3파일 SHA256이 진입 기준과 같음을 확인했다. DB/계정/서비스/패키지/비밀/제품/테스트/Unity 변경은 없고 외부 작업자도 아직 없다. 독립 판정 원문은 **아직 없음**이다.
 - 로컬 근거 위치: `.backups/verification/2026-10-02-persistence-repository/`. `kickoff-messages.json`, `astra-show.json`, `unity-baseline-hashes.json`에 진입/전달/보존 근거를 둔다. 이 폴더는 Git 제외 자료다.
-- 다음은 메인이 초안의 기술 범위와 세 안건을 검토해 사용자 결정을 전달하는 단계다. 합의한 기술 사항은 Astra가 구체 spec으로 좁히며 새 DB/계정 생성이나 실행 범위를 암묵적으로 넓히지 않는다.
+- 초안 commit은 `dfa9526`이며 이후 G0 승인과 실행 대안을 이 goal에 반영했다. 다음은 A1/A2의 DB 접속 없는 구현과 G1 사용자 결정 수신이다. 새 DB/계정 생성이나 실행 범위를 암묵적으로 넓히지 않는다.
+
+## G0 이후 실행 기록
+
+- 2026-10-02 공식 재확인: [Microsoft 지원표](https://learn.microsoft.com/en-us/sql/connect/ado-net/sqlclient-driver-support-lifecycle?view=sql-server-ver17)는 6.1 LTS 최신 patch를 **6.1.7**, 지원 종료를 2028-08-14로 표시한다. [NuGet 6.1.7](https://www.nuget.org/packages/Microsoft.Data.SqlClient/6.1.7)은 실제 패키지와 .NET8+ 및 계산된 net10 호환을 제공한다. 승인된 6.1.7을 유지한다. 아직 이 프로젝트에 package/restore를 실행한 결과는 아니다.
+- 새 Run `run_5caa3033b174`, A1 Task `task_1df2b9371a5d`, Dispatch `ctx_4b0c8c812eeb`. 작업자 handle `term_46b65ef5-49f6-4d60-bb4b-c32e545b6bbb`, incarnation `d0e34ecb-8993-4086-b083-45750f640086`. 요청/최초 split 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 화면 `GPT-6.1-Sol xhigh`, backend `unknown`. Codex CLI0.160.0. 담당 Astra 아래 새 vertical pane의 빈 정상 prompt·경로·모델과 tui-idle satisfied를 확인한 뒤 최초 attach했다.
+- `a1-start.json`에 state ready, `input_accepted`와 `turn_started` receipt를 보존했다. attach의 launch model=null은 모델 판정에 쓰지 않는다. `a1-spec.md`는 002~013 SQL과 catalog만 쓰기 허용하며 모든 DB 연결·비밀·설치·빌드·테스트 파일 쓰기를 금지한다. A2/검증자는 A1 정산 후 새 세션으로 발행한다.
