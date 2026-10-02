@@ -57,13 +57,13 @@
 - 기존 catalog의 ID 연결은 guide의 `relatedSystemIds`로 표현한다. 두 파일을 하나의 원자적 snapshot으로 주장하지 않는다. UI/응답은 출처별 hash와 기준일을 구분하며 누락된 기존 ID는 연결 실패로 표시한다. guide 실패가 기존 기록 조회·편집을 막지 않도록 상태를 분리한다.
 - guide는 이번 UI에서 편집하지 않는다. 외부 작성은 전체 임시 파일 작성 후 교체하는 절차로 안내하고, 읽기는 손상·동시 변경·초과 크기에 부분 문서를 반환하지 않는다. 정상본 cache로 조용히 대체하지 않는다.
 
-### Architecture 접점 — 협의 전 초안
+### Architecture 접점 — 데이터 계약 합의
 
-Architecture Astra의 `msg_64e6b8884f21`은 저장소 상대 경로·file/directory 구분·경계 구분 prefix 매칭·snapshot commitSha를 제안했다. 발신 terminal의 architecture-active 소속을 확인하고 `msg_a94f4d24fd2a`로 다음 형식을 회신했다. 아직 상호 확정 전이다.
+Architecture Astra의 `msg_64e6b8884f21`은 저장소 상대 경로·file/directory 구분·경계 구분 prefix 매칭·snapshot commitSha를 제안했다. 발신 terminal의 architecture-active 소속을 확인하고 `msg_a94f4d24fd2a`로 다음 형식을 회신했다. 상대가 `msg_56dfb357c1ef`로 동의했고 추가 제안한 Git 경로 대소문자 보존에도 Management가 동의했다. 아래는 데이터 접점 합의이며 제품 구현·검증 완료를 뜻하지 않는다.
 
 하위 카드는 안정된 `id`/`parentId`와 `codeReference: { commitSha, mappings }`를 소유한다. `commitSha`는 전체 SHA이며 연결 구현 문서의 `sourceCommit`과 일치시킨다. 매핑 항목은 저장소 상대 `path`, `kind`(`file`/`directory`), 선택적 `namespace`, 설명용 `role`이다. `/` 상대 경로를 마지막 slash 없이 저장하고 절대경로·빈 값·점/상위 세그먼트·역슬래시·URL·glob을 거부한다. directory 매칭은 동일 경로 또는 `path + /` 경계로 시작하는 파일이다. namespace는 코드에서 확인된 경우만 기록하며 현재 매칭 필터로 사용하지 않는다.
 
-경로는 전체 저장소 기준이며 파일 이동 시 ID를 바꾸지 않고 매핑을 갱신한다. 하나의 경로가 여러 카드에 연결될 수 있고 namespace 없는 대상도 허용한다. 미구현/코드 없는 카드는 빈 mappings와 상태·사유를 허용하며 가짜 경로를 만들지 않는다. 추출기의 snapshot.commitSha와 카드 기준이 다르면 같은 버전의 매핑으로 표시하지 않는다. 실제 그래프 node ID나 분석기 구현에는 결합하지 않는다. 이 계약 합의는 그 세션에 frontend 쓰기 권한을 주지 않는다.
+경로는 전체 저장소 기준이며 Git tree의 정확한 대소문자를 보존하고 OS별 소문자화는 하지 않는다. 파일 이동 시 ID를 바꾸지 않고 매핑을 갱신한다. 하나의 경로가 여러 카드에 연결될 수 있고 namespace 없는 대상도 허용한다. 미구현/코드 없는 카드는 빈 mappings와 상태·사유를 허용하며 가짜 경로를 만들지 않는다. 추출기의 `node.source.path`와 카드 경로는 `snapshot.commitSha`와 카드 기준이 일치할 때 조인하며, 다르면 같은 버전의 매핑으로 표시하지 않는다. 실제 그래프 node ID나 분석기 구현에는 결합하지 않는다. 이 계약 합의는 그 세션에 frontend 쓰기 권한을 주지 않는다.
 
 ### 읽기 MCP와 공통 코드
 
@@ -117,6 +117,6 @@ Sol에게 구현 설명 본문 작성을 맡기지 않는다. **역할 확인 �
 - runtime `8a673084-6819-45b9-a551-347226cdce9b`, terminal `term_8ead19bc-a73a-4fb0-a401-59892cd8a5eb`, incarnation `64aeb8fe-cbca-4e4d-aed1-5d0400f77c36`를 2026-10-02 진입 시 확인했다. 화면 `GPT-6-Astra xhigh`, 실제 backend는 `unknown`이다. 이는 진입 관측값이며 이후 명령 전에 현재 동일성을 확인한다.
 - 이전 `docs/management-m1-closeout` HEAD `f39042e61de42dcf363c0526be335c78e9985955`에서 로컬 변경 없음을 확인했다. `git fetch origin main` 후 최신 `333fe20211260ef230cd7d4ef9555cb4d5999c08`(PR161 merge)에서 `feat/management-m2-system-cards`를 새로 만들었다. 이전 branch와 과거 결과는 보존했다.
 - READY를 메인에 전송한 receipt는 `msg_d2107d5fea19`다. enqueue는 수신·검토 완료 증거가 아니다.
-- Architecture Astra `term_366eb418-ef60-48df-9d08-e6b3efa11c08`의 제안과 실제 architecture-active 소속을 확인하고 `run_a98ca1c7a511`로 매핑 형식을 회신했다. 아직 계약 합의 전이다.
+- Architecture Astra `term_366eb418-ef60-48df-9d08-e6b3efa11c08`의 제안과 실제 architecture-active 소속을 확인하고 `run_a98ca1c7a511`로 매핑 형식을 조율했다. 데이터 접점은 위와 같이 합의했으며 양쪽 구현·검증은 별도다.
 - 현재 제품 코드·데이터·설정·디자인 규칙 변경, 작업자 기동, 빌드·테스트·GUI·DB 실행은 없다. 독립 검증 판정 원문도 아직 없다.
 - 다음 행동: 메인에게 이 초안과 역할 확인 사항을 전달하고 검토 결과를 반영한다. goal 검토 뒤 디자인 작업자 하나를 발행한다. 사용자에게 물을 테마 선택은 목업이 준비된 뒤 메인이 구체적인 화면으로 진행한다.
