@@ -2,29 +2,30 @@
 
 `99_Tools/database`는 Windows SQL Express의 별도 개발 DB를 설치하고 검증하는 도구다. **게임 서버의 로그인·저장·재접속 복구는 아직 연결하지 않았다.** 서버가 실행 중이어도 이 테이블에는 자동 저장되지 않는다.
 
-## 실제 구성과 실행
+## 현재 저장 연동 구현과 실행 경계
+
+현재 작업은 [저장소 구현 목표](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md)다. `001_initial.sql`은 보존하고, 새 migration002~014와 수명 관리 도구를 구현·검토 중이다. **새 SQL의 적용·DB 연결·계정/권한 변경은 아직 실행하지 않았다.** 이 문서 아래의 2026-09-29 검증 결과는 새 저장 연동의 통과 근거가 아니다.
+
+현재 installer는 기본 DB를 자동 생성하는 진입점이 아니다. 명시한 DB·manifest·승인 계획과 별도로 검토한 계획 hash를 대조하고, 수명 도구가 만든 정확한 DB만 설치한다. 인자 없이 과거의 `Install-Database.ps1` 명령을 실행하지 않는다. 실제 명령·실행 주체·승인 입력은 최초 실행 전 G2 독립 검토 후 goal에 고정한다. 승인 계획의 문자열이나 `ExecutionApproved` 값 자체가 사용자 승인을 대신하지 않는다.
+
+| 도구 | 책임 |
+|---|---|
+| [New-TestDatabase.ps1](../../99_Tools/database/test-environment/New-TestDatabase.ps1) | 승인된 이름의 부재 확인, 한 번의 시험 DB 생성과 수명 기록 |
+| [Install-Database.ps1](../../99_Tools/database/Install-Database.ps1) | 동일 DB의 001 기준 설치와 전체 migration 설치 단계 |
+| [Initialize-CharacterBinding.ps1](../../99_Tools/database/test-environment/Initialize-CharacterBinding.ps1) | 승인된 슬롯·계정·캐릭터 식별자 바인딩 |
+| [Set-TestPrincipals.ps1](../../99_Tools/database/test-environment/Set-TestPrincipals.ps1) | 승인된 시험 principal·권한·격리 credential 구성 |
+| [Remove-TestEnvironment.ps1](../../99_Tools/database/test-environment/Remove-TestEnvironment.ps1) | identity·미확정 작업·owner·연결 정산 대조 후 정확한 자원 정리 |
+| [Environment.Common.ps1](../../99_Tools/database/test-environment/Environment.Common.ps1) | 승인 입력·수명 manifest·identity·단계 기록의 공통 경계 |
+
+DB명·principal·executor·endpoint·TLS·경로는 검토된 승인 계획에 둔다. 기존 DB나 같은 이름의 자원을 자동 채택하거나 다른 이름으로 재생성하지 않는다. 실패·부분 실행은 원문과 자원을 보존하고 조사하며 강제 연결 종료나 자동 정리로 넘기지 않는다. migration checksum은 개행을 정규화하며 적용 이력·파일·module/catalog 대조를 유지한다. 이번 재번호화는 새 SQL을 아직 적용하지 않은 구현 단계에서 승인한 변경이며, 적용된 migration을 나중에 덮어쓰는 운영 규칙이 아니다.
+
+기존 `Test-Database.ps1`과 `Test-WslAccess.ps1`의 아래 실행 기록은 001 구성 당시의 경로다. 현재 저장소 RPC·권한·경쟁·복구 검증은 별도 검증 계획을 따르며, 과거 도구의 성공을 새 계약의 검증으로 합치지 않는다.
+
+## 2026-09-29 기존 구성 기록
 
 2026-09-29 구성: `YYH_Desktop\SQLEXPRESS`, Express 17.0.1000.7, `Dawnholder_Dev`. Windows 관리 도구는 통합 인증/shared memory, native WSL은 전용 SQL 인증/`tcp:127.0.0.1,14330`을 사용한다. 사용자 승인으로 mixed 인증과 loopback TCP만 활성화했다. 기존 `GameDB`의 `dbo.accounts(playerID, playerName, playerMoney, playerDate)`와 `BaseballData`, `Northwind`의 데이터·스키마는 수정하지 않았다. 다른 프로젝트의 accounts를 게임 계정으로 재사용하지 않는다.
 
-저장소 루트의 Windows PowerShell 5.1 또는 PowerShell 7에서 실행한다. SQL Express가 실행 중이고 현재 Windows 사용자가 설치할 DB의 DDL 권한을 가져야 한다. 최초 생성에는 CREATE DATABASE 권한이 필요하다. 별도 NuGet, SQL PowerShell 모듈, 게임 빌드는 필요 없다.
-
-```powershell
-./99_Tools/database/Install-Database.ps1
-./99_Tools/database/Test-Database.ps1
-```
-
-설정 주입은 두 스크립트의 `-Instance '.\SQLEXPRESS' -Database 'Dawnholder_Dev'` 인자 또는 현재 프로세스의 다음 환경변수로 한다. 이 변수는 **DB 도구 전용**이며 현재 GameServer가 읽는 설정이 아니다.
-
-```powershell
-$env:DAWNHOLDER_SQL_INSTANCE = '.\SQLEXPRESS'
-$env:DAWNHOLDER_SQL_DATABASE = 'Dawnholder_Dev'
-```
-
-도구는 `.\인스턴스명` 및 `Dawnholder_Dev`/`Dawnholder_Dev_<suffix>`만 받는다. `lpc:`로 로컬 shared memory 연결을 강제하고 SQL MachineName도 확인한다. 암호를 받거나 저장하지 않는다. 로컬 개발 인증서에 한해 TrustServerCertificate를 사용하며 외부 서버 연결용 설정으로 복사하지 않는다.
-
-처음 만든 DB에 소유 표시 `Dawnholder.DatabaseTool=development-v1`를 남긴다. 동명 DB에 표시가 없으면 채택하거나 변경하지 않고 실패한다. 기존 DB의 호환성을 추측하지 말고 조사 후 별도 suffix DB를 선택한다. CREATE DATABASE와 소유 표시 초기화 사이에 프로세스가 죽은 경우에도 자동 채택하지 않는다. 남은 빈 DB는 수동 조사 대상으로 보존한다.
-
-`dh.SchemaVersion`은 migration 번호·파일명·정규화한 SQL의 SHA-256·적용 시각을 기록한다. CRLF/LF 차이는 체크섬에 영향을 주지 않는다. 생성 잠금과 migration 트랜잭션 잠금으로 동시 설치를 직렬화한다. 적용된 파일이 바뀌거나 DB에 알 수 없는 버전이 있으면 실패하며, 기존 migration을 수정하는 대신 새 번호의 SQL을 추가한다. 설치 재실행은 기존 게임 데이터를 수정하지 않는다. 자동 down migration, DROP, TRUNCATE, seed 계정은 없다.
+당시 Windows PowerShell 5.1/7 도구는 명시 인자 또는 프로세스의 `DAWNHOLDER_SQL_INSTANCE`·`DAWNHOLDER_SQL_DATABASE`를 읽고, `lpc:` 로컬 shared memory·MachineName·`Dawnholder.DatabaseTool=development-v1` 소유 표시를 확인했다. 이 변수는 GameServer 설정이 아니며 현재 시험환경 수명 도구의 승인 입력을 대신하지 않는다. 기존 DB와 계정은 현재 목표의 수정·정리 대상에서 제외한다.
 
 ## 저장 모델과 코드 근거
 
@@ -40,7 +41,7 @@ $env:DAWNHOLDER_SQL_DATABASE = 'Dawnholder_Dev'
 - [PlayerSnapshot](../../02_Server/GameServer/Maps/PlayerSnapshot.cs)은 Position/CurrentHp/MaxHp와 불변 PlayerStats 정의를 캡처한다. [MapId](../../02_Server/GameServer/Maps/MapId.cs)는 Town=0, HuntingGround=1, BossRoom=2, Ending=3이다. 기존 컬럼은 더 넓은 checkpoint를 표현할 수 있지만, 선택된 첫 연동 범위에서는 동적 snapshot을 저장하지 않고 Town 안전 spawn과 저장 클래스의 기본 풀HP로 복귀한다.
 - [QuestRegistry](../../02_Server/GameServer/Quest/QuestRegistry.cs)의 `_bossUnlocked`는 현재 **세션 한정** latch다. 여기서는 향후 캐릭터별 재접속에도 해금을 유지할 수 있는 저장 자리를 마련했다. 기존 솔로 카운트와 파티 공유 카운트는 보스 처치 때 초기화되고 서로 수명이 달라 저장하지 않는다. 현재 latch를 실제 DB에 쓰거나 복원하지 않는다.
 
-사용자가 선택한 첫 연동 범위는 개발 고정 계정1/캐릭터1, 최초 클래스 유지, Town 풀HP 복귀, quest/보스 해금 세션 한정이다. identity/class와 안전 checkpoint를 다루며 전투 위치/HP/해금, 파티·킬 수·적 인스턴스·입력/FSM/cooldown/위치 이력은 복원하지 않는다. 선택 범위와 기술 계약은 [DB 설계 목표](../../01_Phases/goals/2026-09-29-persistence-design/goal.md)에 있다. 현재는 설계 단계이며 실제 게임 저장/복원은 미구현이다.
+사용자가 선택한 첫 연동 범위는 개발 고정 계정1/캐릭터1, 최초 클래스 유지, Town 풀HP 복귀, quest/보스 해금 세션 한정이다. identity/class와 안전 checkpoint를 다루며 전투 위치/HP/해금, 파티·킬 수·적 인스턴스·입력/FSM/cooldown/위치 이력은 복원하지 않는다. 선택 범위는 [DB 설계 목표](../../01_Phases/goals/2026-09-29-persistence-design/goal.md), 상세 계약은 [저장소 기술 설계](../../01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md)에 있다. 저장소 구현은 진행 중이며 실제 게임 저장/복원 연결은 미구현이다.
 
 DB의 좌표형은 C# float에 대응하는 real이다. SQL은 실제 지형을 모르므로 서버가 안전 spawn의 유한값/유효 위치를 검증한다. 이번 안전 projection은 Town/저장 클래스 기본 HP·MaxHp/해금false이며 runtime rawHP 전송 계약을 바꾸지 않는다. 클라이언트가 보낸 HP/좌표를 저장 권위로 쓰지 않는다.
 
@@ -64,7 +65,7 @@ WHERE p.CharacterId=@CharacterId AND c.AccountId=@AuthenticatedAccountId
 
 결과 0행은 충돌/권한 없음/미존재를 처리할 신호다. 재시도 전에 상태를 다시 읽어야 하며, 무조건 덮어쓰기 하면 안 된다. SQL rowversion 자체가 stale write를 자동 차단하지는 않는다. Character와 Progress를 함께 바꿀 때는 하나의 트랜잭션에서 두 버전을 검사한다. SavedUtc는 진단 시각이며 동시성 토큰이 아니다. UTC와 rowversion은 성공적인 새 저장마다 갱신하고, 해금은 서버 정책에 따라 단조롭게 유지한다.
 
-## 실제 검증
+## 2026-09-29 구성 검증 기록
 
 [목표 결과](../../01_Phases/goals/2026-09-29-mssql-setup/goal.md)와 [근거 폴더](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/)를 참고한다.
 
@@ -72,9 +73,9 @@ WHERE p.CharacterId=@CharacterId AND c.AccountId=@AuthenticatedAccountId
 
 Windows PowerShell 5.1/7 및 독립 재검토는 통과했다. Ubuntu 26.04 mirrored 모드에 Microsoft 공식 26.04 저장소의 `mssql-tools18`/`msodbcsql18` 18.7.1.1-1을 설치했다. 승인된 관리자 Enable 후 native WSL SQL 인증·최소권한·rollback 저장이 성공했다. 초기 TCP 실패 기록은 [초기 probe](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/wsl.txt), 최종 성공은 [native 인증 검사](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/wsl-auth.txt)에 구분한다. **게임 서버 저장/재접속 복구는 미구현이며 Restore 실행 검증은 미실행**이다.
 
-## WSL 연결 및 관리자 복구
+## 기존 WSL 연결 및 관리자 복구 기록
 
-이 PC는 사용자 승인 및 독립 검토 후 관리자 Enable까지 적용했다. 재설치할 필요가 없으며 평소에는 아래 Test-WslAccess만 사용한다. 다른 PC의 Enable 및 현재 PC의 Restore는 영향 범위를 확인한 점검 시간에 관리자 PowerShell에서 실행한다. 스크립트 자체가 UAC를 열지는 않는다. 이번 적용은 승인된 elevated PowerShell을 한 번 실행해 SQL 서비스를 재시작했으며, 복구 테스트만을 위한 추가 재시작은 하지 않았다.
+당시 이 PC는 사용자 승인 및 독립 검토 후 관리자 Enable까지 적용했다. 아래는 기존 도구의 구성·복구 기록이며 현재 저장 연동 시험환경의 실행 절차가 아니다. 기존 설정·credential을 새 목표에 재사용하거나 Enable·Restore·서비스 재시작을 이번 승인 범위로 해석하지 않는다. 다른 PC의 Enable 및 현재 PC의 Restore는 별도로 영향 범위를 확인한 점검 시간에 관리자 PowerShell에서 실행한다. 스크립트 자체가 UAC를 열지는 않는다. 당시 적용은 승인된 elevated PowerShell을 한 번 실행해 SQL 서비스를 재시작했으며, 복구 테스트만을 위한 추가 재시작은 하지 않았다.
 
 ```powershell
 # 현재 설정과 정확한 변경 목록만 출력. 관리자 권한 불필요, 쓰기 없음.

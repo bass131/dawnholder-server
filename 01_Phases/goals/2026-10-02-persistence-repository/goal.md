@@ -1,6 +1,6 @@
 # P3 / D1b — 영속성 저장소와 격리 SQL 검증
 
-상태: **G0·G1 승인, A1·A2 구현 정산 완료, 사용자 요청 가독성·위치·이름 정리 준비(B1 보류); 실제 외부 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. 전체 구현 완료나 독립 검증 판정은 아직 없다.
+상태: **G0·G1 승인, A1·A2·가독성 구현 정산 완료, F 서식 검사 등록의 신규 Sol 착수, SQL 구조·위치(b) 승인(B1 보류); 실제 외부 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. 전체 구현 완료나 독립 검증 판정은 아직 없다.
 
 ## 착수 근거와 기준점
 
@@ -169,3 +169,50 @@ G2가 제품 전체 구현보다 먼저 필요하면 A 쓰기 종료 후 정적 
 Astra가 goal·CODE_CONVENTION·MSSQL 안내의 현재 참조를, Sol이 제품 dot-source/호출·입력 계약과 old→new 보고를 소유한다. 과거 실행 원문은 덮어쓰지 않는다. 운영 message ID·executor SID·machine/endpoint/credential 경로는 비밀 없는 승인 계획/manifest/명시 인자로 분리하되 현재 G1의 정확 대상·SID·한 번 수명·실패 시 중단 경계는 유지한다. 실제 필수 인자와 승인 계획 schema는 Sol의 쓰기 전 맥락 메모에서 확인한다.
 
 A2 checkpoint는 `1091525`, 최신 main 통합은 `771806c`다. CURRENT 충돌은 D1b와 Architecture0 링크를 모두 보존해 해결했다. Architecture `msg_c416878c68bb`는 독립 도구를 slnx 밖에서 검증하며 Formatting/CODE_CONVENTION을 쓰지 않는다고 확인했다. 새 independent tool도 전체 C# manifest의 Compile gate에 영향을 줄 수 있어 `msg_8a51ccd79aab`로 별도 조율 중이며 미등록 입력을 묵시 허용하지 않는다.
+- 작성 기준은 `03a6aeb`에 기록했다. `CODE_CONVENTION`의 파일 위치와 이름/SQL·PowerShell 절 및 서식 프로젝트 집합 원칙이다. 쓰기 전 Astra 맥락 메모는 `readability-context-astra.md`에 보존했다. 새 정리 Task `task_140c7851c57f`, Dispatch `ctx_c4c3bba85a8f`, handle `term_f268a742-ba03-458d-a0d6-5fea06535269`, incarnation `5e96db74-dbc5-489b-bfee-e642e2898f6a`. 최초 argv `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 빈 정상 화면 GPT-6.1-Sol xhigh, backend unknown. tui-idle와 input_accepted/turn_started를 확인했다. `readability-spec.md`에 제품 쓰기 전 맥락 메모 blocking ask→Astra 수신 확인, 정확 파일/번호/이름/불변 계약과 DB·비밀 실행 금지를 넣었다. 현재는 메모 대기이며 제품 쓰기 착수 답변을 아직 보내지 않았다.
+- 정리 Sol의 쓰기 전 ask `msg_be4938ba3493`과 `readability-implementation/context.md`를 전체 읽었다. 당시 SHA256 `D70863B3F4E2437CB9421F0F870865F2D6A34EF00F124127963137D8F09E89DB`, git status는 Astra의 goal만 변경된 상태라 제품 쓰기 전 제출을 확인했다. `msg_2e5b47e970e4`로 제안한 명명/배치·schema14 OUTPUT·ApprovalPlanPath와 별도 reviewed hash/명시 Contract를 확인하고 착수를 허용했다. fresh snapshot의 중복 JSON만 공통화하며 replay ledger snapshot은 Current 값으로 덮어쓰지 않는 경계를 보완했다. 실제 승인 확인 책임·ExecutionApproved=false 초안·G2 전 외부 실행 금지는 그대로다. 답변 근거 `readability-context-reply.json`.
+- Architecture `msg_36eb807acc49`: 새 독립 도구 `99_Tools/Architecture/Roslyn/Architecture.Roslyn.csproj`, 테스트 경로 `99_Tools/Architecture.Tests`(csproj 여부 미정). slnx 밖이어도 기존 formatter의 Compile/별도대상 고정 gate에 영향을 주는 소스를 상호 대조했다. 승인된 독립 도구를 명시적으로 등록해 restore/Compile/서식/보존을 연결하는 F의 필요 의존 범위와 별도 선행PR/후속 등록 소유를 메인 `msg_d373f84ecd7c`로 요청했다. 현재 F 제품 쓰기/원격 변경은 없다.
+- 메인 `msg_f1947abf6f32`(06:41 UTC)는 F를 별도 선행 PR로 확정했다. 제품 slnx 집합과 독립 도구 데이터 목록을 구분하며 restore·Compile·서식·보존 및 입력 수집/PS·SH 진입점에 연결한다. 미등록 C#·중복·누락 거부와 기존195 테스트를 유지한다. F PR은 기존 Formatting/Formatting.Tests만 등록하고 각 파트가 자기 PR에서 자기 도구 항목만 추가한다. 검사 코드는 GameDev 단독 소유다. 현재 정리 Sol 정산→F 신규 Sol→F 신규 Opus→PR/사용자 병합 승인 순서이며 B1 전에 SQL/PS 독립 실사도 수행한다.
+- `git fetch origin main` 후 `orca worktree create --name formatting-project-registration --no-parent --base-branch origin/main --setup skip`으로 별도 checkout을 만들었다. 경로 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/formatting-project-registration`, branch `bass131/formatting-project-registration`, base `881957cbb431d4af822d1d935ac117e1ede6c303`, Orca instance `90acc87f-32ef-41f2-99ec-0f4187235239`다. 메인 승인대로 `.claude/settings.local.json`의 동일 내용 복사와 Git 제외를 확인했다. `formatting-worktree-readiness.json`에 근거를 보존했다. 아직 F 작업자/제품 쓰기는 없으며 동시 외부 작업자1명 원칙을 유지한다. worktree 정리는 PR 병합 후 메인 보고를 거친다. Architecture에 `msg_61aacb5e3bab`로 결정·등록 소유를 알렸으며 파일 위치/형식 확정 후 추가 전달한다.
+- F 구현/검증 계약은 `formatting-spec.md`, `formatting-review-spec-draft.md`에 준비했다. 별도 checkout에서 Astra가 쓰기 전 `astra-context.md`를 남기고 CODE_CONVENTION 서식 절에 제품/독립 목록·모든 단계 연결·등록 소유 원칙만 추가했다. 해당 문서는 신규 Opus 실사 대상이며 검사 구현/CI 완료를 뜻하지 않는다. 별도 checkout의 현재 관측 근거는 `formatting-worktree-observed.json`, 주요 승인/조율 원문은 `readability-formatting-decisions.json`이다.
+- 정리 Sol `msg_0add95c1beda`(07:16 UTC)는 SQL/PS 제품 정리와 PS5.1 parser/import/오프라인 입력 경계 점검을 마치고 9RPC·29열·code/error/grant와 14migration/11module hash를 대조 중이라고 보고했다. 아직 worker_done/최종 원문 정산/독립 판정은 아니다. Astra의 ReleaseRuntime/helper/grants 및 승인계획 hash 입력 표본 읽기 뒤 `msg_dcc6a89dc2b5`로 installer 긴 호출과 과거 작업명에 의존한 SQL 주석의 최종 가독성 확인을 요청했다. 실제 SQL/권한/engine canonical text는 미실행이다.
+- Astra가 MSSQL 안내의 인자 없는 과거 installer 예시를 제거하고 test-environment의 목적별 파일·역할/검토된 계획과 별도 hash/G2/실행 주체 경계를 설명했다. 2026-09-29 구성·검증·WSL 기록은 새 저장 연동 결과와 분리했다. 현재 링크 점검과 문서 diff 공백 점검은 성공했으며 도구의 실행 검증이나 독립 실사를 대신하지 않는다. `readability-review-spec-draft.md`에 실제 구현과 문서의 일치 검토를 포함했다.
+
+## 추가 결정: SQL 공통 구조와 프로시저 위치 설계
+
+메인 `msg_95aaf70df9ed`(2026-10-02 07:36:46 UTC)가 사용자 원문 **“지금 진행하자”**를 전달했다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다. 원문은 `sql-structure-decision.json`에 보존했다. RPC9개의 반복 뼈대를 내부 helper로 분리하는 구현은 승인됐으며, 프로시저 위치는 아래 두 구체 설계안을 사용자에게 다시 확인받은 뒤 구현한다. 구조가 확정될 때까지002~014를 어떤 공유·개발 DB에도 적용하지 않는다.
+
+- 순서: 현재 정리 Sol 마무리·정산 → 별도 서식 등록 Sol/신규 Opus/선행PR → 확정 설계에 따른 새 뼈대 분리 Sol → 정리와 뼈대를 묶은 신규 Opus SQL 독립 검증. 정리 전용 독립 검증을 따로 반복하지 않는다. F 작업 중 Astra가 설계안을 작성해 메인에게 올린다.
+- helper 후보는 잠금+권위 읽기, 영수증 조회+payload 비교, 게임 행 읽기, 영수증 JSON+기록, 종단29열 반환이다. public9RPC에는 입력·자기 판정순서·상태전이를 남긴다. grant 없는 같은소유자 내부 helper가 호출자 transaction에서 동작하며 nested BEGIN TRAN 없이 Transaction applock을 보존한다. 상태 전달의 OUTPUT 인자와 table type/임시테이블을 읽기흐름·결합·검증·권한 관점에서 비교한다.
+- 위치(a)는 버전 migration의 현재 방식과 후속 ALTER migration, (b)는 별도 목적 폴더의 CREATE OR ALTER 반복 적용 코드와 checksum 재적용이다. installer·SchemaVersion/manifest·verify-schema·G0~G4·되돌리기에 미치는 구체 변화와 비용을 비교해 추천한다. 기존 구조·파일 위치/이름의 맥락 메모를 먼저 작성한다. 위치 구현은 사용자 확인 전 보류다.
+- 결과코드·오류번호·public signature·29열 이름/형식/순서·payload byte·9grant·검사 우선순위는 불변 조건으로 두고 최종 검증에 전후 동등성 표를 포함한다. SQL 실행 전제와 metadata 변경 범위는 위치 설계안에서 명확히 드러낸다.
+- 메인의006 표본: INSERT/VALUES 들여쓰기, -0 정규화 이유, fence overflow 방지 설명, resultCode 누적 조건의 판정 흐름, 본문 숫자코드, 삽입 뒤 재조회다. 현재 Task에서 가능한 기존 가독성5항목/전체RPC 블록 직접 확인을 `msg_68134511df1f`로 Sol에 전달했다. 추가 helper·위치·재조회 흡수는 새 Task로 남겼다. 변환 스크립트의 출력만으로 구조 검토가 끝났다고 하지 않는다.
+- 메인 회신 `msg_c66c66e03104`에 기존 독립검증 통합과 F 우선순위 수신을 알렸다. B1 저장소/B2 recovery launcher가 아직 미구현이므로 최초 실제 실행 G2에는 그때의 최종 launcher까지 포함해야 하는 의존도 전달했다. 현재 문단은 구현·검증 완료 판정이 아니다.
+
+## 가독성 정산과 F 착수
+
+- 가독성 완료 `msg_d8769890c6b1`(07:58:42 UTC), Task `task_140c7851c57f` / Dispatch `ctx_c4c3bba85a8f`를 대조했다. `readability-implementation/report.md` 전체 원문 SHA256 `2E24B6E574F8AD32E8B3D0666906615699095FA7F38CFF68CB2CF5822AF92AC5`, 실제 제품21파일 hash와 inventory 일치, 001/Unity3파일 hash 보존을 확인했다. 구현자의 SQL 정적 대조 및 PS5.1 parser/import/오프라인 점검 exit0이며 실제 SQL·OS 변경·독립 검증은 미실행이다.
+- Astra 원천 표본 대조: 최종 보고와 일치. `final-command-receipt.json`의 실제 exit/미실행 구분, 006의 RecordedUtc datetime2(3)·fence 상한 이유·BEGIN/END와 INSERT/VALUES, 004의 단일 OUTPUT/무결과집합, 014의 정확9grant를 읽었다. 표본을 전수 동작 검증으로 확대하지 않는다. 중간 타입 추출 오류는 메인에 `msg_b6c309346c6e`로 즉시 알렸으며 `type-extraction-before.json`/`type-extraction-after.json`에 잘못된 datetime 표와 정정된 9RPC 선언을 별도 보존했다. 이전 추출의 exit0을 정확성 근거로 사용하지 않는다.
+- release는 retained/external_terminal/processAction:none였다. 동일 runtime/handle/incarnation과 idle 화면 재확인 후 정확한 가독성 pane만 닫아 ptyKilled:true를 받았다. `readability-release.json`, `readability-final-show.json`, `readability-close.json`, `readability-settlement-delivery.json`/`readability-ack.json`에 보존했다. 완료 세션을 재사용하지 않는다. SQL 가독성 검증은 아래 구조 구현과 합쳐 신규 Opus 한 번으로 수행한다.
+- F 신규 Sol Task `task_3d54b837d7d5`, Dispatch `ctx_e66eabefb0dd`, handle `term_d53bca8d-c704-4dad-b0ba-92b4505f65d3`, incarnation `84ea0481-4fa3-49d8-b8c0-eb5f34aa1c33`. 최초 argv는 `codex --cd C:/Users/bass1/orca/workspaces/DawnHolder_Project/formatting-project-registration --model gpt-6.1-sol -c model_reasoning_effort=xhigh`다. 빈 첫 화면의 별도 checkout 경로·GPT-6.1-Sol xhigh·정상 prompt와 tui-idle를 확인했다. backend unknown, Orca pane metadata는 Root에 속하며 실제 Codex cwd/쓰기 범위는 F checkout이다. `formatting-split.json`, `formatting-ready-wait.json`, `formatting-first-screen.json`, `formatting-start.json`에 input_accepted/turn_started를 보존했다. 최초 terminal read의 미지원 --lines는 거부됐고 --screen --limit으로 바로잡았다.
+- F의 ask `msg_8aaa9d15988d`와 쓰기 전 context 전체(SHA256 `12C07C1A4A49AD53778D9452540490A4DE9C6459886A6FC4B06C974B13E0E092`), 제품 쓰기 전 CODE_CONVENTION 기존 M만 있음을 확인했다. `msg_71b87aa6b9f2`로 `ProjectRegistration.cs`의 공통 입력 검증과 `99_Tools/Formatting/independent-projects.json`의 `{"SchemaVersion":1,"Projects":[...]}`를 확정하고 착수했다. formatter bootstrap과 등록 대상 전체 단계의 구분, 기존 Formatting.Tests 부재 실패/미등록 거부/테스트 쓰기 금지를 다시 명시했다. Architecture `msg_8f9c7c54e888`, Rules `msg_1175c4d1a231`로 등록 형식과 각자 후속 PR의 등록 소유를 전달했다. Rules의 현재 Run은 `run_4861c13f1d54`다.
+- 메인 `msg_35e09c107105`의 다음 계약부터 임시 강화: 관련 CODE_CONVENTION 원문을 Task에 싣고, 쓰기 전 메모 및 완료 후 file:line 적용 근거·변경 블록 직접 읽기를 요구한다. 신규 검증자는 위반을 번호 있는 차단 결함으로 반환한다. F 구현·검증 계약에 6개 절 원문을 첨부했다. 링크나 기억만으로 규칙 적용을 주장하지 않는다.
+- Rules Astra는 메인 `msg_078d06653cae`가 소개한 handle `term_d02899ec-ad0a-4bb1-8a81-f21af8a942c7`/incarnation `cc15b66e-9af7-457d-ae66-78d70695a427`이다. `msg_6e76134cdfd2`/메인 보고 `msg_357fd5f17350`에 따라 Root와 F의 CODE_CONVENTION 추가 쓰기를 동결하고 Rules가 정식 보완을 소유한다. F 검사 코드/Formatting.Tests/format-check PS·SH/기존 dotnet-tests workflow는 F 병합까지 GameDev 단독 소유다. Rules의 별도 CodeRules 경로·workflow는 그 목표 승인 범위에서 작성하며 새 독립 csproj 등록은 F 최신 main 뒤 자기 PR에서 한다. 원문은 `readability-structure-rules-decisions.json`에 보존했다.
+
+## 승인된 SQL 위치와 필요한 배포 장치
+
+[구조·위치 설계안](sql-structure-design.md)을 `msg_97d7ef669c36`로 제출했다. 제출본 SHA256은 `085081D4193FC5EC044BF347B20BD83B1F758712BCE8FCDC5170C1CE6AF0F6B8`이다. 메인 `msg_b89cdee4009d`(08:04:56 UTC)가 사용자 원문 **“추천대로 가는데, CI 범위쪽은 한번 더 설명해줄래? 자세히?”**를 전달했다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다. 명명 scalar OUTPUT과 (b) 현재 modules/코드·버전 이력 분리, SchemaVersion14→4 및 MigrationManifest 배포값 변경이 승인됐다. 외부9RPC/29열/코드·오류·grant·판정순서·payload 불변 조건은 유지한다. 이 승인은 F→구조 구현→SQL 합동 독립 검증→B1/B2→G2 순서를 바꾸지 않는다.
+
+아래는 구현 전 필요성 대조이며 실제 장애·변조를 관측했다는 보고가 아니다. 메인 조건대로 같은 실패를 막는 별도 장치는 추가하지 않는다.
+
+| 장치 | 막는 구체적 실패 | 채택 범위 |
+|---|---|---|
+| 새 버전 선언에 코드 manifest hash 고정 | procedure 파일만 바뀌고 기존 MigrationManifest가 그대로여서 B1이 이전 계약의 서버라고 수락하는 실패 | 유지. 기존 `{version,name,checksum}` 배열을 통해 코드 묶음을 연결 |
+| `ModuleRelease`의 version→manifest hash 기록 | runner가 선언 SQL 내용을 다시 파싱하거나 새 파일 hash를 곧바로 승인값으로 삼아 미선언 묶음을 적용하는 실패 | 유지. migration이 선언한 값과 실행기가 비교하는 최소 DB 기록만 둠. 별도 승인 bool·사용자/시각·감사 이력은 추가하지 않음 |
+| manifest의 명시 객체/파일·순서와 source hash | 누락·추가 파일이나 helper보다 public RPC를 먼저 적용하고도 성공으로 기록하는 실패 | 유지. directory 탐색 결과로 자동 실행하지 않고 목록과 실제 집합을 대조 |
+| `ModuleDefinition`의 이전 source hash | 매 실행마다 같은 정의를 불필요하게 ALTER하거나 새 정의 일부만 적용한 상태를 이전 묶음과 혼동하는 실패 | 유지. 객체별 현재 적용 기록만 둠. 모듈 본문 사본·별도 전체 변경 이력은 추가하지 않음 |
+| 실제 engine-definition과 검토된 이전/새 expected hash 대조 | 설치 기록·버전은 같지만 실제 procedure가 달라졌을 때, source hash가 같다는 이유로 skip하거나 새 배포가 그 차이를 덮어 숨기는 실패 | 유지. 현재 `verify-schema.sql:240` 이후가 이미 실제 `sys.sql_modules` 정의 길이/hash를 검사한다. 반복 적용의 skip/갱신 전·후에도 이 보존 조건을 유지함. 침입 탐지 기능을 새로 만드는 것이 아니며 수동 변조 관측은 없음 |
+| 미등록 SQL 객체·기록 누락 거부 | 같은 dh schema의 예상 밖 helper/객체를 권한·의존 검토 없이 정상 설치로 채택하는 실패 | 유지. 기존 catalog의 양방향 집합 대조를 새 객체들에 확장. 타 schema의 객체를 통제하지 않음 |
+| 전체 설치 transaction과 마지막 strict catalog | 선언/객체 일부/권한/기록 중 일부만 commit돼 다음 실행이 완료 상태로 오해하는 실패 | 기존 경계 유지. 9grant 멱등 적용과 최종 전체 집합 확인도 같은 transaction |
+
+engine-definition 기대값은 검토된 소스에서 만든 값이며 실제 DB 값을 읽어 정답으로 저장하지 않는다. 최초 실제 엔진의 CREATE OR ALTER 정규화가 다르면 원문·차이를 보고하고 수정/독립 재검증한다. 임의 정규화 확대나 실제값 역채택으로 통과시키지 않는다. 제안 장치 중 제거한 것은 없으나 메타데이터를 위의 최소 책임으로 제한했다. 추가 감시 daemon·주기 hash 검사·범용 감사/자가 복구·승인 엔진은 만들지 않는다.
