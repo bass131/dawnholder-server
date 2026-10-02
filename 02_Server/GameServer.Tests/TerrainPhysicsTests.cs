@@ -22,9 +22,9 @@ namespace Dawnholder.Server.GameServer.Tests;
 //   M) MapId enum 정합 어서션
 public class TerrainPhysicsTests
 {
-    const float Dt     = Constants.TickDuration; // 0.05s
+    const float Dt = Constants.TickDuration; // 0.05s
     const float DtClient = 0.016f;               // 클라 디스플레이 dt (60 fps)
-    const float Eps    = 0.001f;                 // 어서션 tolerance
+    const float Eps = 0.001f;                 // 어서션 tolerance
 
     // 지형 의미론 테스트용 — 좌표/기하를 5.0/8.0 기준으로 만들었으므로 유지.
     static readonly MoveParams Move = new MoveParams(5f, 8f);
@@ -53,8 +53,8 @@ public class TerrainPhysicsTests
     [Fact]
     public void Fallback_NullTerrain_IdenticalToTwoArgOverload()
     {
-        PhysicsState s2    = PhysicsState.AtRest(Vector2.Zero);
-        PhysicsState s3    = PhysicsState.AtRest(Vector2.Zero);
+        PhysicsState s2 = PhysicsState.AtRest(Vector2.Zero);
+        PhysicsState s3 = PhysicsState.AtRest(Vector2.Zero);
 
         PhysicsInput[] seq = new[]
         {
@@ -87,18 +87,18 @@ public class TerrainPhysicsTests
         }
 
         // float 완전 동일 — 같은 코드 경로이므로 epsilon 마진 불필요
-        Assert.Equal(s2.Position.X,  s3.Position.X);
-        Assert.Equal(s2.Position.Y,  s3.Position.Y);
-        Assert.Equal(s2.Velocity.X,  s3.Velocity.X);
-        Assert.Equal(s2.Velocity.Y,  s3.Velocity.Y);
-        Assert.Equal(s2.OnGround,    s3.OnGround);
+        Assert.Equal(s2.Position.X, s3.Position.X);
+        Assert.Equal(s2.Position.Y, s3.Position.Y);
+        Assert.Equal(s2.Velocity.X, s3.Velocity.X);
+        Assert.Equal(s2.Velocity.Y, s3.Velocity.Y);
+        Assert.Equal(s2.OnGround, s3.OnGround);
     }
 
     // F-2: new MapTerrain(null, null) — 빈 지형이라 fallback 위임 → 2-인자와 동일.
     [Fact]
     public void Fallback_EmptyTerrain_IdenticalToTwoArgOverload()
     {
-        TerrainAabb[]?     nullSolids    = null;
+        TerrainAabb[]? nullSolids = null;
         TerrainPlatform[]? nullPlatforms = null;
         MapTerrain emptyTerrain = new MapTerrain(nullSolids!, nullPlatforms!);
 
@@ -118,7 +118,7 @@ public class TerrainPhysicsTests
         Assert.Equal(s2.Position.Y, s3.Position.Y);
         Assert.Equal(s2.Velocity.X, s3.Velocity.X);
         Assert.Equal(s2.Velocity.Y, s3.Velocity.Y);
-        Assert.Equal(s2.OnGround,   s3.OnGround);
+        Assert.Equal(s2.OnGround, s3.OnGround);
     }
 
     // ── S) 슬래브 착지 / 안정 서기 ───────────────────────────────────────────
@@ -166,7 +166,7 @@ public class TerrainPhysicsTests
         {
             state = Physics.Step(state, new PhysicsInput(0, false, Dt), terrain, Move);
             Assert.Equal(2f, state.Position.Y, 3);
-            Assert.True(state.OnGround, $"tick {i+1}: onGround=false (불안정)");
+            Assert.True(state.OnGround, $"tick {i + 1}: onGround=false (불안정)");
         }
     }
 

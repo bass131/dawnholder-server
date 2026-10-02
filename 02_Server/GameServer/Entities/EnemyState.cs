@@ -10,7 +10,7 @@ namespace Dawnholder.Server.GameServer.Entities;
 //   클라가 S_EntityState.state를 이 enum으로 해석하므로 값 변경 = breaking change = Protocol.Version bump 의무.
 public enum EnemyState : byte
 {
-    Idle   = 0,   // 정지 (초기값 + Boss 전용)
+    Idle = 0,   // 정지 (초기값 + Boss 전용)
     Patrol = 1,   // 순찰 — SpawnX 중심 ±PatrolRange 왕복
-    Chase  = 2,   // 추격 — 타겟 플레이어 방향으로 이동
+    Chase = 2,   // 추격 — 타겟 플레이어 방향으로 이동
 }

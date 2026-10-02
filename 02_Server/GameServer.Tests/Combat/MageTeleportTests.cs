@@ -131,8 +131,8 @@ public class MageTeleportTests : IDisposable
     // Teleport 경계 clamp 검증용 — solid 2개로 맵 X 범위 [-100, 100] 정의.
     static MapTerrain MakeBoundedTerrain(float minX = -100f, float maxX = 100f)
     {
-        TerrainAabb left  = new TerrainAabb(minX - 1f, -1f, minX, 10f);
-        TerrainAabb right = new TerrainAabb(maxX,      -1f, maxX + 1f, 10f);
+        TerrainAabb left = new TerrainAabb(minX - 1f, -1f, minX, 10f);
+        TerrainAabb right = new TerrainAabb(maxX, -1f, maxX + 1f, 10f);
         TerrainAabb floor = new TerrainAabb(minX, -1f, maxX, 0f);
         return new MapTerrain(new[] { left, right, floor }, Array.Empty<TerrainPlatform>());
     }

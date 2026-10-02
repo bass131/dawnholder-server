@@ -74,14 +74,14 @@ public class EnemyCatalogValueTests
     public void Normal_Stats_MatchesNormalDefaultFactory()
     {
         EnemyStats expected = EnemyStats.NormalDefault();
-        EnemyStats actual   = EnemyCatalog.For(EnemyKind.Normal).Stats;
+        EnemyStats actual = EnemyCatalog.For(EnemyKind.Normal).Stats;
 
-        Assert.Equal(expected.MaxHp,        actual.MaxHp);
-        Assert.Equal(expected.Defense,      actual.Defense);
-        Assert.Equal(expected.Attack,       actual.Attack);
-        Assert.Equal(expected.MoveSpeed,    actual.MoveSpeed,    precision: 4);
-        Assert.Equal(expected.AggroRange,   actual.AggroRange,   precision: 4);
-        Assert.Equal(expected.PatrolRange,  actual.PatrolRange,  precision: 4);
+        Assert.Equal(expected.MaxHp, actual.MaxHp);
+        Assert.Equal(expected.Defense, actual.Defense);
+        Assert.Equal(expected.Attack, actual.Attack);
+        Assert.Equal(expected.MoveSpeed, actual.MoveSpeed, precision: 4);
+        Assert.Equal(expected.AggroRange, actual.AggroRange, precision: 4);
+        Assert.Equal(expected.PatrolRange, actual.PatrolRange, precision: 4);
         Assert.Equal(expected.AggroOnSight, actual.AggroOnSight);
     }
 
@@ -89,14 +89,14 @@ public class EnemyCatalogValueTests
     public void Boss_Stats_MatchesBossDefaultFactory()
     {
         EnemyStats expected = EnemyStats.BossDefault();
-        EnemyStats actual   = EnemyCatalog.For(EnemyKind.Boss).Stats;
+        EnemyStats actual = EnemyCatalog.For(EnemyKind.Boss).Stats;
 
-        Assert.Equal(expected.MaxHp,        actual.MaxHp);
-        Assert.Equal(expected.Defense,      actual.Defense);
-        Assert.Equal(expected.Attack,       actual.Attack);
-        Assert.Equal(expected.MoveSpeed,    actual.MoveSpeed,    precision: 4);
-        Assert.Equal(expected.AggroRange,   actual.AggroRange,   precision: 4);
-        Assert.Equal(expected.PatrolRange,  actual.PatrolRange,  precision: 4);
+        Assert.Equal(expected.MaxHp, actual.MaxHp);
+        Assert.Equal(expected.Defense, actual.Defense);
+        Assert.Equal(expected.Attack, actual.Attack);
+        Assert.Equal(expected.MoveSpeed, actual.MoveSpeed, precision: 4);
+        Assert.Equal(expected.AggroRange, actual.AggroRange, precision: 4);
+        Assert.Equal(expected.PatrolRange, actual.PatrolRange, precision: 4);
         Assert.Equal(expected.AggroOnSight, actual.AggroOnSight);
     }
 
@@ -104,14 +104,14 @@ public class EnemyCatalogValueTests
     public void Golem_Stats_MatchesGolemDefaultFactory()
     {
         EnemyStats expected = EnemyStats.GolemDefault();
-        EnemyStats actual   = EnemyCatalog.For(EnemyKind.Golem).Stats;
+        EnemyStats actual = EnemyCatalog.For(EnemyKind.Golem).Stats;
 
-        Assert.Equal(expected.MaxHp,        actual.MaxHp);
-        Assert.Equal(expected.Defense,      actual.Defense);
-        Assert.Equal(expected.Attack,       actual.Attack);
-        Assert.Equal(expected.MoveSpeed,    actual.MoveSpeed,    precision: 4);
-        Assert.Equal(expected.AggroRange,   actual.AggroRange,   precision: 4);
-        Assert.Equal(expected.PatrolRange,  actual.PatrolRange,  precision: 4);
+        Assert.Equal(expected.MaxHp, actual.MaxHp);
+        Assert.Equal(expected.Defense, actual.Defense);
+        Assert.Equal(expected.Attack, actual.Attack);
+        Assert.Equal(expected.MoveSpeed, actual.MoveSpeed, precision: 4);
+        Assert.Equal(expected.AggroRange, actual.AggroRange, precision: 4);
+        Assert.Equal(expected.PatrolRange, actual.PatrolRange, precision: 4);
         Assert.Equal(expected.AggroOnSight, actual.AggroOnSight);
     }
 
@@ -222,11 +222,11 @@ public class EnemyCatalogValueTests
         EnemyEntity enemy = GetFirst(map);
 
         EnemyStats expected = EnemyCatalog.For(kind).Stats;
-        Assert.Equal(expected.MaxHp,       enemy.Stats.MaxHp);
-        Assert.Equal(expected.Defense,     enemy.Stats.Defense);
-        Assert.Equal(expected.Attack,      enemy.Stats.Attack);
-        Assert.Equal(expected.MoveSpeed,   enemy.Stats.MoveSpeed,   precision: 4);
-        Assert.Equal(expected.AggroRange,  enemy.Stats.AggroRange,  precision: 4);
+        Assert.Equal(expected.MaxHp, enemy.Stats.MaxHp);
+        Assert.Equal(expected.Defense, enemy.Stats.Defense);
+        Assert.Equal(expected.Attack, enemy.Stats.Attack);
+        Assert.Equal(expected.MoveSpeed, enemy.Stats.MoveSpeed, precision: 4);
+        Assert.Equal(expected.AggroRange, enemy.Stats.AggroRange, precision: 4);
         Assert.Equal(expected.PatrolRange, enemy.Stats.PatrolRange, precision: 4);
     }
 

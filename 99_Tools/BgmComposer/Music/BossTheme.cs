@@ -77,9 +77,14 @@ public static class BossTheme
         var brass = ChannelScore.Parse("brass-theme", new Instrument
         {
             // 브라스 근사 — 펄스 + 로우패스의 두꺼운 날.
-            Wave = Wave.Pulse, Duty = 0.30, Volume = 0.22, Pan = +0.05, LowpassHz = 2800,
+            Wave = Wave.Pulse,
+            Duty = 0.30,
+            Volume = 0.22,
+            Pan = +0.05,
+            LowpassHz = 2800,
             Adsr = new Adsr(0.02, 0.10, 0.80, 0.12),
-            GmProgram = 61, MidiVelocity = 112, // GM Brass Section
+            GmProgram = 61,
+            MidiVelocity = 112, // GM Brass Section
         },
         string.Concat(Enumerable.Repeat("R:4 ", ThemeStartBar)) + ThemeB +
         string.Concat(Enumerable.Repeat("R:4 ", ChoirStartBar - ThemeStartBar)) + ThemeD +
@@ -92,7 +97,9 @@ public static class BossTheme
             BeatsTotal = Bars * beatsPerBar,
             Channels = [BuildOstinato(), brass, BuildChoir(), BuildTimpani(), BuildBass(), BuildDrums()],
             // 격렬한 곡 — 잔향은 짧게, 마찰음이 뭉개지지 않도록
-            EchoBeats = 0.375, EchoFeedback = 0.18, EchoMix = 0.09,
+            EchoBeats = 0.375,
+            EchoFeedback = 0.18,
+            EchoMix = 0.09,
         };
     }
 
@@ -134,8 +141,12 @@ public static class BossTheme
             Name = "ostinato-strings",
             Instrument = new Instrument
             {
-                Wave = Wave.Pluck, Volume = 0.30, Pan = -0.10, PluckDamp = 0.995,
-                GmProgram = 48, MidiVelocity = 96, // GM String Ensemble 1 — 스타카토 저현
+                Wave = Wave.Pluck,
+                Volume = 0.30,
+                Pan = -0.10,
+                PluckDamp = 0.995,
+                GmProgram = 48,
+                MidiVelocity = 96, // GM String Ensemble 1 — 스타카토 저현
             },
             Events = events,
         };
@@ -157,9 +168,13 @@ public static class BossTheme
             Name = "choir",
             Instrument = new Instrument
             {
-                Wave = Wave.Sine, Volume = 0.09, Pan = +0.10, DetuneCents = 10,
+                Wave = Wave.Sine,
+                Volume = 0.09,
+                Pan = +0.10,
+                DetuneCents = 10,
                 Adsr = new Adsr(0.5, 0.3, 0.9, 0.6),
-                GmProgram = 52, MidiVelocity = 72, // GM Choir Aahs
+                GmProgram = 52,
+                MidiVelocity = 72, // GM Choir Aahs
             },
             Events = events,
         };
@@ -185,9 +200,12 @@ public static class BossTheme
             Name = "timpani",
             Instrument = new Instrument
             {
-                Wave = Wave.Sine, Volume = 0.16, Pan = -0.15,
+                Wave = Wave.Sine,
+                Volume = 0.16,
+                Pan = -0.15,
                 Adsr = new Adsr(0.003, 0.30, 0.10, 0.20),
-                GmProgram = 47, MidiVelocity = 100, // GM Timpani
+                GmProgram = 47,
+                MidiVelocity = 100, // GM Timpani
             },
             Events = events,
         };
@@ -211,8 +229,12 @@ public static class BossTheme
             Name = "contrabass",
             Instrument = new Instrument
             {
-                Wave = Wave.Pluck, Volume = 0.34, Pan = 0, PluckDamp = 0.9988,
-                GmProgram = 43, MidiVelocity = 92, // GM Contrabass
+                Wave = Wave.Pluck,
+                Volume = 0.34,
+                Pan = 0,
+                PluckDamp = 0.9988,
+                GmProgram = 43,
+                MidiVelocity = 92, // GM Contrabass
             },
             Events = events,
         };
@@ -221,9 +243,9 @@ public static class BossTheme
     /// <summary>드럼 — A 절제 → B·C 풀타임 → D 클라이맥스 더블 킥 → E 풀타임 유지.</summary>
     static ChannelScore BuildDrums()
     {
-        const string barTense   = "K:0.5 H:0.5 R:0.5 H:0.5 S:0.5 H:0.5 R:0.5 H:0.5 ";
-        const string barFull    = "K:0.5 H:0.5 K:0.5 H:0.5 S:0.5 H:0.5 k:0.5 H:0.5 ";
-        const string barClimax  = "K:0.5 H:0.5 K:0.5 S:0.5 K:0.5 H:0.5 S:0.5 S:0.5 ";
+        const string barTense = "K:0.5 H:0.5 R:0.5 H:0.5 S:0.5 H:0.5 R:0.5 H:0.5 ";
+        const string barFull = "K:0.5 H:0.5 K:0.5 H:0.5 S:0.5 H:0.5 k:0.5 H:0.5 ";
+        const string barClimax = "K:0.5 H:0.5 K:0.5 S:0.5 K:0.5 H:0.5 S:0.5 S:0.5 ";
         string notation =
             string.Concat(Enumerable.Repeat(barTense, ThemeStartBar)) +
             string.Concat(Enumerable.Repeat(barFull, ClimaxStartBar - ThemeStartBar)) +
@@ -231,7 +253,10 @@ public static class BossTheme
             string.Concat(Enumerable.Repeat(barFull, Bars - BreakStartBar));
         return ChannelScore.Parse("drums", new Instrument
         {
-            Wave = Wave.Drum, Volume = 0.15, Pan = -0.03, MidiVelocity = 88,
+            Wave = Wave.Drum,
+            Volume = 0.15,
+            Pan = -0.03,
+            MidiVelocity = 88,
         }, notation);
     }
 }

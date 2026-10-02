@@ -306,7 +306,7 @@ public class GameMap
             {
                 if (surfaceY > currentY + eps && surfaceY < best)
                 {
-                    best  = surfaceY;
+                    best = surfaceY;
                     found = true;
                 }
             }
@@ -314,7 +314,7 @@ public class GameMap
             {
                 if (surfaceY < currentY - eps && surfaceY > best)
                 {
-                    best  = surfaceY;
+                    best = surfaceY;
                     found = true;
                 }
             }
@@ -329,7 +329,7 @@ public class GameMap
             {
                 if (surfaceY > currentY + eps && surfaceY < best)
                 {
-                    best  = surfaceY;
+                    best = surfaceY;
                     found = true;
                 }
             }
@@ -337,7 +337,7 @@ public class GameMap
             {
                 if (surfaceY < currentY - eps && surfaceY > best)
                 {
-                    best  = surfaceY;
+                    best = surfaceY;
                     found = true;
                 }
             }

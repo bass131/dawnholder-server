@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <FormatterSdkDirectory>$(MSBuildSDKsPath)/../DotnetTools/dotnet-format</FormatterSdkDirectory>
+  </PropertyGroup>
+  <!-- Use the Workspace shipped with the pinned formatter, including its build host. -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Formatting.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <Reference Include="$(FormatterSdkDirectory)/*.dll" Exclude="$(FormatterSdkDirectory)/dotnet-format.dll;$(FormatterSdkDirectory)/Microsoft.Build*.dll">
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Locator">
+      <HintPath>$(FormatterSdkDirectory)/BuildHost-netcore/Microsoft.Build.Locator.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Content Include="$(FormatterSdkDirectory)/BuildHost-netcore/**/*">
+      <Link>BuildHost-netcore/%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Target Name="RequireFormatterSdk" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(NETCoreSdkVersion)' != '10.0.301'" Text="Formatting requires SDK 10.0.301; selected $(NETCoreSdkVersion)." />
+    <Error Condition="!Exists('$(FormatterSdkDirectory)/Microsoft.CodeAnalysis.Workspaces.MSBuild.dll')" Text="Pinned SDK Workspace is missing." />
+  </Target>
+</Project>

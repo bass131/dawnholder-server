@@ -4,9 +4,9 @@ namespace Shared.GameData;
 // wire 무관 (직렬화 안 됨) — 패킷 형상 불변(§2 Protocol 무손상).
 public enum ActionKind : byte
 {
-    Melee       = 0,
-    Dash        = 1,
-    Teleport    = 2,
+    Melee = 0,
+    Dash = 1,
+    Teleport = 2,
     Thunderbolt = 3,
 }
 
@@ -16,9 +16,9 @@ public static class ActionKindExtensions
     public static ActionKind? FromSkillId(byte skillId)
         => (SkillId)skillId switch
         {
-            SkillId.Dash        => ActionKind.Dash,
-            SkillId.Teleport    => ActionKind.Teleport,
+            SkillId.Dash => ActionKind.Dash,
+            SkillId.Teleport => ActionKind.Teleport,
             SkillId.Thunderbolt => ActionKind.Thunderbolt,
-            _                   => null,
+            _ => null,
         };
 }

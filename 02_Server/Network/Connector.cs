@@ -37,7 +37,7 @@ namespace Dawnholder.Server.Network
 
             bool pending = socket.ConnectAsync(args);
 
-            if(pending == false)
+            if (pending == false)
             {
                 OnConnectCompleted(null, args);
             }
@@ -45,7 +45,7 @@ namespace Dawnholder.Server.Network
 
         void OnConnectCompleted(object? sender, SocketAsyncEventArgs args)
         {
-            if(args.SocketError == SocketError.Success)
+            if (args.SocketError == SocketError.Success)
             {
                 Session session = _sessionFactory!.Invoke();
                 session.Start(args.ConnectSocket!);

@@ -57,10 +57,15 @@ public static class TownTheme
 
         var lead = ChannelScore.Parse("lead-flute", new Instrument
         {
-            Wave = Wave.Flute, Volume = 0.25, Pan = +0.05,
+            Wave = Wave.Flute,
+            Volume = 0.25,
+            Pan = +0.05,
             Adsr = new Adsr(0.045, 0.12, 0.85, 0.20),
-            VibratoDepth = 0.005, VibratoRate = 4.8, VibratoDelay = 0.30,
-            GmProgram = 73, MidiVelocity = 100, // GM Flute
+            VibratoDepth = 0.005,
+            VibratoRate = 4.8,
+            VibratoDelay = 0.30,
+            GmProgram = 73,
+            MidiVelocity = 100, // GM Flute
         }, Melody);
 
         return new Score
@@ -70,7 +75,9 @@ public static class TownTheme
             BeatsTotal = bars * beatsPerBar,
             Channels = [lead, BuildEPiano(), BuildBass(), BuildPad(), BuildSwell(), BuildDrums()],
             // 따뜻한 잔향 — 하프타임에 맞는 긴 딜레이
-            EchoBeats = 0.5, EchoFeedback = 0.25, EchoMix = 0.14,
+            EchoBeats = 0.5,
+            EchoFeedback = 0.25,
+            EchoMix = 0.14,
         };
     }
 
@@ -97,9 +104,12 @@ public static class TownTheme
             Name = "epiano",
             Instrument = new Instrument
             {
-                Wave = Wave.Sine, Volume = 0.13, Pan = -0.18,
+                Wave = Wave.Sine,
+                Volume = 0.13,
+                Pan = -0.18,
                 Adsr = new Adsr(0.004, 0.55, 0.15, 0.20), // 피아노처럼 치면 사그라듦
-                GmProgram = 4, MidiVelocity = 78,         // GM Electric Piano 1
+                GmProgram = 4,
+                MidiVelocity = 78,         // GM Electric Piano 1
             },
             Events = events,
         };
@@ -123,8 +133,12 @@ public static class TownTheme
             Name = "bass",
             Instrument = new Instrument
             {
-                Wave = Wave.Pluck, Volume = 0.50, Pan = +0.03, PluckDamp = 0.9988,
-                GmProgram = 32, MidiVelocity = 96, // GM Acoustic Bass
+                Wave = Wave.Pluck,
+                Volume = 0.50,
+                Pan = +0.03,
+                PluckDamp = 0.9988,
+                GmProgram = 32,
+                MidiVelocity = 96, // GM Acoustic Bass
             },
             Events = events,
         };
@@ -144,9 +158,13 @@ public static class TownTheme
             Name = "pad",
             Instrument = new Instrument
             {
-                Wave = Wave.Sine, Volume = 0.09, Pan = 0, DetuneCents = 7,
+                Wave = Wave.Sine,
+                Volume = 0.09,
+                Pan = 0,
+                DetuneCents = 7,
                 Adsr = new Adsr(0.4, 0.3, 0.85, 0.6),
-                GmProgram = 48, MidiVelocity = 52, // GM String Ensemble 1
+                GmProgram = 48,
+                MidiVelocity = 52, // GM String Ensemble 1
             },
             Events = events,
         };
@@ -166,9 +184,13 @@ public static class TownTheme
             Name = "swell",
             Instrument = new Instrument
             {
-                Wave = Wave.Sine, Volume = 0.055, Pan = +0.15, DetuneCents = 9,
+                Wave = Wave.Sine,
+                Volume = 0.055,
+                Pan = +0.15,
+                DetuneCents = 9,
                 Adsr = new Adsr(0.8, 0.4, 0.9, 0.8),
-                GmProgram = 49, MidiVelocity = 45, // GM String Ensemble 2
+                GmProgram = 49,
+                MidiVelocity = 45, // GM String Ensemble 2
             },
             Events = events,
         };
@@ -183,7 +205,10 @@ public static class TownTheme
             + string.Concat(Enumerable.Repeat(bar, Progression.Length - FullSectionStartBar));
         return ChannelScore.Parse("drums", new Instrument
         {
-            Wave = Wave.Drum, Volume = 0.12, Pan = -0.03, MidiVelocity = 70,
+            Wave = Wave.Drum,
+            Volume = 0.12,
+            Pan = -0.03,
+            MidiVelocity = 70,
         }, notation);
     }
 }

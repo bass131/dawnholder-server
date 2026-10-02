@@ -26,12 +26,12 @@ namespace Shared.GameData;
 //   = Protocol.Version bump 의무.
 public enum AnimState : byte
 {
-    Idle       = 0,  // 정지 — 기본 대기 상태
-    Walk       = 1,  // 이동 — 수평 이동 중 (vx != 0 또는 Patrol/Chase)
-    Jump       = 2,  // 공중 — OnGround=false (플레이어 전용; 적은 현재 미사용)
-    Attack     = 3,  // 공격 — 공격 수행 틱 + latch 지속
-    Hit        = 4,  // 피격 — 피격 틱 + latch 지속
-    Death      = 5,  // 사망 — HP <= 0 (latch 없음 — 고정 상태)
+    Idle = 0,  // 정지 — 기본 대기 상태
+    Walk = 1,  // 이동 — 수평 이동 중 (vx != 0 또는 Patrol/Chase)
+    Jump = 2,  // 공중 — OnGround=false (플레이어 전용; 적은 현재 미사용)
+    Attack = 3,  // 공격 — 공격 수행 틱 + latch 지속
+    Hit = 4,  // 피격 — 피격 틱 + latch 지속
+    Death = 5,  // 사망 — HP <= 0 (latch 없음 — 고정 상태)
 
     // 스킬 시전 — 평타 스윙(Attack)과 구분되는 캐스팅 모션.
     //

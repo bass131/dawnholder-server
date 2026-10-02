@@ -126,7 +126,7 @@ public class EnemyStateTests
         Assert.Null(enemy.TargetEntityId);
         // 같은 틱에 Patrol 이동(PatrolDir 방향)이 일어났어야 함 — X가 변하거나 경계 clamp
         // PatrolDir=+1(초기값)이므로 오른쪽으로 이동 or 경계로 clamp
-        float leftBound  = enemy.SpawnX - enemy.Stats.PatrolRange;
+        float leftBound = enemy.SpawnX - enemy.Stats.PatrolRange;
         float rightBound = enemy.SpawnX + enemy.Stats.PatrolRange;
         bool movedOrClamped =
             enemy.X != beforeX ||

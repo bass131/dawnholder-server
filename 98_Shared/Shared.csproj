@@ -22,6 +22,9 @@
          CI 환경 진입 시 ContinuousIntegrationBuild=true 옵션 추가가 정석 (현재 CI 환경 없어 backlog). -->
     <Deterministic>true</Deterministic>
     <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
+    <!-- DLL과 embedded PDB에 Git 커밋별 정보가 들어가지 않도록 한다. -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <EnableSourceLink>false</EnableSourceLink>
   </PropertyGroup>
 
   <!-- ADR-010: 빌드 후 산출물(.dll)을 Unity Plugins/로 자동 복사.

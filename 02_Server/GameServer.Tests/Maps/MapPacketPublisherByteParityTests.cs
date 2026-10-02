@@ -42,7 +42,9 @@ public class MapPacketPublisherByteParityTests
         Assert.Empty(joiningSink);
         Assert.Equal(Capture(new S_PlayerJoin
         {
-            entityId = player.EntityId, spawnX = -12.5f, spawnY = 3.25f,
+            entityId = player.EntityId,
+            spawnX = -12.5f,
+            spawnY = 3.25f,
             characterClass = (byte)characterClass,
         }.Write()), Assert.Single(observerSink));
     }
@@ -67,8 +69,12 @@ public class MapPacketPublisherByteParityTests
 
         Assert.Equal(Capture(new S_EntityState
         {
-            entityId = 8123, x = -31.5f, y = 9.25f, state = (byte)EnemyState.Chase,
-            animState = (byte)AnimState.Walk, serverTick = 54321,
+            entityId = 8123,
+            x = -31.5f,
+            y = 9.25f,
+            state = (byte)EnemyState.Chase,
+            animState = (byte)AnimState.Walk,
+            serverTick = 54321,
         }.Write()), Assert.Single(sink));
         Assert.Equal(10, enemy.HitLatchTicks);
         Assert.Equal(10, enemy.AttackLatchTicks);

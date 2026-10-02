@@ -46,12 +46,12 @@ public class AttackHandlerTests : IDisposable
     const int PlayerEntityId = 3;
 
     // 옛 MapSpawnTable 값 보존 — inlined (MapSpawnTable 은퇴, M4.4 Phase 03).
-    const float NormalX    = 10f;
-    const float NormalY    = 0f;
+    const float NormalX = 10f;
+    const float NormalY = 0f;
     static readonly int NormalMaxHp = EnemyStats.NormalDefault().MaxHp;
-    const float BossX      = 30f;
-    const float BossY      = 0f;
-    static readonly int BossMaxHp   = EnemyStats.BossDefault().MaxHp;
+    const float BossX = 30f;
+    const float BossY = 0f;
+    static readonly int BossMaxHp = EnemyStats.BossDefault().MaxHp;
 
     // Formulas.ComputeDamage(Knight, default, BaseDamage=10) = Max(1, 10+15-0) = 25.
     // 두 곳 drift 방지: 이 값은 Knight factory + EnemyStats default + CombatConstants.BaseDamage 3곳 기반.

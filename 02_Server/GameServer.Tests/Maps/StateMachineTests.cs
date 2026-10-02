@@ -35,7 +35,7 @@ public class StateMachineTests
         public TrackingState(AnimState anim) => _animState = anim;
 
         public override void Enter(PlayerEntity p) => EnterCount++;
-        public override void Exit(PlayerEntity p)  => ExitCount++;
+        public override void Exit(PlayerEntity p) => ExitCount++;
         public override ActorState<PlayerEntity>? Tick(PlayerEntity p) => NextState;
     }
 
@@ -103,7 +103,7 @@ public class StateMachineTests
         { _name = name; _log = log; }
 
         public override void Enter(PlayerEntity p) => _log.Add($"{_name}.Enter");
-        public override void Exit(PlayerEntity p)  => _log.Add($"{_name}.Exit");
+        public override void Exit(PlayerEntity p) => _log.Add($"{_name}.Exit");
         public override ActorState<PlayerEntity>? Tick(PlayerEntity p) => null;
     }
 

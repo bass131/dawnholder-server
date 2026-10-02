@@ -31,9 +31,9 @@ public class FacingSnapTests : IDisposable
 
     // EnemySpawnPoint 1마리 → id=1. 플레이어 첫 번째 BypassHandshake → id=2.
     // CombatSwingTests(적 2마리)와 달리 여기는 적 1마리만 스폰 → 플레이어 id=2.
-    const int NormalEnemyId    = 1;
-    const float EnemyX         = 10f;
-    const float EnemyY         = 0f;
+    const int NormalEnemyId = 1;
+    const float EnemyX = 10f;
+    const float EnemyY = 0f;
 
     // ── TestGameSession ────────────────────────────────────────────────────────
 

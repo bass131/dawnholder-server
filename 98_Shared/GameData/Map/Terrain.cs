@@ -58,7 +58,7 @@ public sealed class MapTerrain
                       float killPlaneY = float.NegativeInfinity)
     {
         // 방어 복사 — 호출자가 배열을 나중에 수정해도 이 객체 상태는 불변.
-        _solids    = solids    == null || solids.Length    == 0
+        _solids = solids == null || solids.Length == 0
             ? System.Array.Empty<TerrainAabb>()
             : (TerrainAabb[])solids.Clone();
         _platforms = platforms == null || platforms.Length == 0

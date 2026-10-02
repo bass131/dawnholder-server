@@ -210,7 +210,9 @@ public sealed class SessionCleanupTests : IDisposable
         long previousCast = player.GetLastSkillTick((byte)SkillId.Dash);
         session.OnRecvPacket(new C_SkillUse
         {
-            skillId = (byte)SkillId.Dash, attackerClientTick = 2, facing = 1,
+            skillId = (byte)SkillId.Dash,
+            attackerClientTick = 2,
+            facing = 1,
         }.Write());
         if (closeBeforeExecution) session.OnDisconnected(Endpoint);
         _world.Map.Tick(2);

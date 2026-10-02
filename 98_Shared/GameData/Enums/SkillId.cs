@@ -10,8 +10,8 @@ namespace Shared.GameData;
 //   값 변경 = breaking change = Protocol.Version bump 의무.
 public enum SkillId : byte
 {
-    None        = 0,  // 미지정/예약 — 유효 스킬 아님 (서버 silent drop)
+    None = 0,  // 미지정/예약 — 유효 스킬 아님 (서버 silent drop)
     Thunderbolt = 1,  // Mage 광역 — 공격자 중심 X,Y 박스 내 적 각자 위치에 낙뢰
-    Dash        = 2,  // Knight 전진 대시 — 짧은 거리 고속 이동
-    Teleport    = 3,  // Mage 순간이동 — 커서 방향 일정 거리 텔레포트
+    Dash = 2,  // Knight 전진 대시 — 짧은 거리 고속 이동
+    Teleport = 3,  // Mage 순간이동 — 커서 방향 일정 거리 텔레포트
 }

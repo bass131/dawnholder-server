@@ -57,10 +57,10 @@ internal sealed class DashAction : IGameAction
 
         S_SkillCast castPkt = new S_SkillCast
         {
-            casterEntityId   = caster.EntityId,
-            skillId          = (byte)SkillId.Dash,
+            casterEntityId = caster.EntityId,
+            skillId = (byte)SkillId.Dash,
             strikeDelayTicks = 0,
-            facing           = caster.FacingByte,
+            facing = caster.FacingByte,
         };
         map.BroadcastToAll(castPkt.Write());
         return true;

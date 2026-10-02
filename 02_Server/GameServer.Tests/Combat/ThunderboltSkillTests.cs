@@ -33,14 +33,14 @@ public class ThunderboltSkillTests : IDisposable
 
     // GameMap ctor id 발급: Normal=1, Boss=2 → caster=3, observer=4.
     const int NormalEnemyId = 1;
-    const int BossEnemyId   = 2;
+    const int BossEnemyId = 2;
     const int CasterEntityId = 3;
 
-    const float NormalX    = 3f;   // 박스 내 (caster x=0, ThunderboltBoxHalfX=13.0 → 범위 [-13,13])
-    const float NormalY    = 0f;
-    const float BossX      = 4f;   // 박스 내
-    const float BossY      = 0f;
-    const float OutsideX   = 20f;  // 박스 밖 (halfX=13, origin=0 → x=20은 범위 밖)
+    const float NormalX = 3f;   // 박스 내 (caster x=0, ThunderboltBoxHalfX=13.0 → 범위 [-13,13])
+    const float NormalY = 0f;
+    const float BossX = 4f;   // 박스 내
+    const float BossY = 0f;
+    const float OutsideX = 20f;  // 박스 밖 (halfX=13, origin=0 → x=20은 범위 밖)
 
     public ThunderboltSkillTests()
     {

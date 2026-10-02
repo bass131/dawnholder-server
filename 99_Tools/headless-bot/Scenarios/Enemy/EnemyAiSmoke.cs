@@ -42,10 +42,10 @@ public class EnemyAiSmoke
     static readonly TimeSpan PatrolHoldWindow = TimeSpan.FromMilliseconds(600);
 
     const byte StatePatrol = 1;
-    const byte StateChase  = 2;
+    const byte StateChase = 2;
 
     const float TownPortalX = 20f;
-    const int   TownPortalId = 1;
+    const int TownPortalId = 1;
 
     const float SamePlaneTolerance = 1.5f;
 
@@ -130,8 +130,8 @@ public class EnemyAiSmoke
             }
             else
             {
-                result.GolemEntityId  = golemTarget.entityId;
-                result.GolemInitialX  = golemTarget.x;
+                result.GolemEntityId = golemTarget.entityId;
+                result.GolemInitialX = golemTarget.x;
 
                 bool gotGolemPatrol = await bot.WaitForEnemyState(
                     golemTarget.entityId, StatePatrol, DefaultTimeout, ct);
@@ -183,8 +183,8 @@ public class EnemyAiSmoke
                     $"Normal spawns: {string.Join(", ", allSpawns.Where(s => s.entityKind == 0).Select(s => $"({s.x:F2},{s.y:F2})"))} " +
                     $"/ bot=({botX:F2},{botY:F2})");
 
-            result.SlimeEntityId  = slimeTarget.entityId;
-            result.SlimeInitialX  = slimeTarget.x;
+            result.SlimeEntityId = slimeTarget.entityId;
+            result.SlimeInitialX = slimeTarget.x;
 
             bool gotSlimePatrol = await bot.WaitForEnemyState(
                 slimeTarget.entityId, StatePatrol, DefaultTimeout, ct);

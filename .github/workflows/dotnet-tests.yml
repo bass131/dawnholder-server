@@ -11,17 +11,50 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: "0"
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: "false"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
     steps:
       - uses: actions/checkout@v4
 
+      - name: Configure isolated .NET paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            printf 'DOTNET_CLI_HOME=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/cli-home"
+            printf 'NUGET_PACKAGES=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/nuget/packages"
+            printf 'NUGET_HTTP_CACHE_PATH=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/nuget/http"
+            printf 'NUGET_PLUGINS_CACHE_PATH=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/nuget/plugins"
+            printf 'NUGET_SCRATCH=%s\n' "$RUNNER_TEMP/dawnholder-dotnet/nuget/scratch"
+          } >> "$GITHUB_ENV"
+
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          global-json-file: global.json
+
+      - name: Record actual checkout and pinned SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          git status --porcelain=v1
+          dotnet --info
+          test "$(dotnet --version)" = "10.0.301"
+          printf 'DOTNET_HOST_PATH=%s\n' "$(command -v dotnet)" >> "$GITHUB_ENV"
+
+      # The tool and its independent tests are separate from the eight product projects.
+      # A missing test project, load failure, or manifest mismatch fails this step.
+      - name: Whitespace, input manifest, preservation and formatting tool tests
+        run: bash 99_Tools/format-check.sh
 
       # build → test 분리: dotnet test --no-incremental은 .slnx에서 MSB1001 (SDK 10.0.203+)
       # .editorconfig의 pilot SA1201/SA1202/IDE0011 error도 이 빌드에서 실패시킨다.
       - name: Build and enforce pilot diagnostics
-        run: dotnet build Dawnholder.slnx --no-incremental
+        run: |
+          dotnet restore Dawnholder.slnx
+          dotnet build Dawnholder.slnx --no-restore --no-incremental
 
       - name: Test
         run: dotnet test Dawnholder.slnx --no-build --logger "console;verbosity=normal"

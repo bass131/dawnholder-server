@@ -32,18 +32,18 @@ namespace Dawnholder.Server.Network
     {
         public static ThreadLocal<SendBuffer?> s_currentBuffer = new ThreadLocal<SendBuffer?>(() => null);
 
-        public static int ChunkSize {get; set;} = 65535 * 1000;
+        public static int ChunkSize { get; set; } = 65535 * 1000;
 
         public SendBuffer? Current { get { return s_currentBuffer.Value; } }
 
         public static ArraySegment<byte> Open(int reserveSize)
         {
-            if(s_currentBuffer.Value == null)
+            if (s_currentBuffer.Value == null)
             {
                 s_currentBuffer.Value = new SendBuffer(ChunkSize);
             }
 
-            if(s_currentBuffer.Value!.FreeSize < reserveSize)
+            if (s_currentBuffer.Value!.FreeSize < reserveSize)
             {
                 s_currentBuffer.Value = new SendBuffer(ChunkSize);
             }
@@ -58,19 +58,19 @@ namespace Dawnholder.Server.Network
 
         public SendBuffer? New(int bufferSize)
         {
-            if(bufferSize > 10000)
+            if (bufferSize > 10000)
             {
                 Console.WriteLine("SendBuffer Error : Buffer Size is too large");
                 return null;
             }
 
             SendBuffer? sendBuffer = s_currentBuffer.Value;
-            if(sendBuffer == null)
+            if (sendBuffer == null)
             {
                 sendBuffer = new SendBuffer(bufferSize);
                 s_currentBuffer.Value = sendBuffer;
             }
-            else if(sendBuffer.FreeSize < bufferSize)
+            else if (sendBuffer.FreeSize < bufferSize)
             {
                 sendBuffer = new SendBuffer(bufferSize);
                 s_currentBuffer.Value = sendBuffer;
@@ -99,7 +99,7 @@ namespace Dawnholder.Server.Network
 
         public ArraySegment<byte> Open(int reserveSize)
         {
-            if(reserveSize > FreeSize)
+            if (reserveSize > FreeSize)
                 return default;
 
             return new ArraySegment<byte>(_buffer, _usedSize, reserveSize);

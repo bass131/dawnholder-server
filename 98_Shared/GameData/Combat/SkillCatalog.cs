@@ -32,8 +32,8 @@ public static class SkillCatalog
         => skillId switch
         {
             SkillId.Thunderbolt => CharacterClass.Mage,
-            SkillId.Dash        => CharacterClass.Knight,
-            SkillId.Teleport    => CharacterClass.Mage,
-            _                   => null,   // None=0 + 미정의 전부
+            SkillId.Dash => CharacterClass.Knight,
+            SkillId.Teleport => CharacterClass.Mage,
+            _ => null,   // None=0 + 미정의 전부
         };
 }

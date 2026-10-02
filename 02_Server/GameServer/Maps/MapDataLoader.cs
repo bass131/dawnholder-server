@@ -22,9 +22,9 @@ internal static class MapDataLoader
         var result = new Dictionary<MapId, (MapTerrain?, MapContent?)>();
 
         // 플레이 맵 3개 — 파일 부재/검증 실패 시 명확한 메시지로 예외.
-        result[MapId.Town]          = LoadPlayMap(mapsDir, MapId.Town);
+        result[MapId.Town] = LoadPlayMap(mapsDir, MapId.Town);
         result[MapId.HuntingGround] = LoadPlayMap(mapsDir, MapId.HuntingGround);
-        result[MapId.BossRoom]      = LoadPlayMap(mapsDir, MapId.BossRoom);
+        result[MapId.BossRoom] = LoadPlayMap(mapsDir, MapId.BossRoom);
 
         // Ending — 의도된 빈 맵 (지형/콘텐츠 없음).
         result[MapId.Ending] = (null, MapContent.Empty);

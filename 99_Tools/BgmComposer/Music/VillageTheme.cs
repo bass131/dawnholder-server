@@ -29,7 +29,7 @@ public static class VillageTheme
         "A5:1 G5:0.5 E5:0.5 F5:1 C5:1 " +
         "D5:1.5 C5:0.5 A4:1 F4:1 " +
         "G4:1 A4:0.5 B4:0.5 D5:1 R:1 " +        // B로 차오르는 상행
-        // B — "설레는 리프트" (F | G | D(리디안 II) | Am7 | F | G | C/E | G)
+                                                // B — "설레는 리프트" (F | G | D(리디안 II) | Am7 | F | G | C/E | G)
         "C5:0.5 F5:0.5 A5:1.5 G5:0.5 F5:1 " +
         "D5:0.5 G5:0.5 B5:1.5 A5:0.5 G5:1 " +   // 한 단 위 시퀀스 — 앞으로 나아가는 추진
         "A5:1 F#5:0.5 D5:0.5 E5:1 F#5:1 " +     // 리디안 #4(F#) — "마법" 반짝임
@@ -63,7 +63,7 @@ public static class VillageTheme
         "F3+C4+E4+A4:4 " +   // Fmaj7
         "D3+A3+C4+F4:4 " +   // Dm7
         "G3+C4+D4+F4:2 G3+B3+D4+F4:2 " + // G7sus4 → G7
-        // B
+                                         // B
         "F3+C4+A4:4 " +      // F
         "G3+D4+B4:4 " +      // G
         "D3+A3+F#4:4 " +     // D (리디안 II)
@@ -97,23 +97,34 @@ public static class VillageTheme
         var lead = ChannelScore.Parse("lead-marimba", new Instrument
         {
             // 마림바 근사 — 삼각파 + 빠른 감쇠. 레퍼런스 밝기(1760Hz)에 맞춰 컷오프 하향.
-            Wave = Wave.Triangle, Volume = 0.30, Pan = +0.05, LowpassHz = 2300,
+            Wave = Wave.Triangle,
+            Volume = 0.30,
+            Pan = +0.05,
+            LowpassHz = 2300,
             Adsr = new Adsr(0.002, 0.35, 0.05, 0.12),
-            GmProgram = 12, MidiVelocity = 105, // GM Marimba
+            GmProgram = 12,
+            MidiVelocity = 105, // GM Marimba
         }, Melody);
 
         var glock = ChannelScore.Parse("glockenspiel", new Instrument
         {
-            Wave = Wave.Sine, Volume = 0.09, Pan = +0.25,
+            Wave = Wave.Sine,
+            Volume = 0.09,
+            Pan = +0.25,
             Adsr = new Adsr(0.001, 0.45, 0.05, 0.25),
-            GmProgram = 9, MidiVelocity = 80, // GM Glockenspiel
+            GmProgram = 9,
+            MidiVelocity = 80, // GM Glockenspiel
         }, Sparkle);
 
         var pad = ChannelScore.Parse("pad-strings", new Instrument
         {
-            Wave = Wave.Sine, Volume = 0.10, Pan = 0, DetuneCents = 8,
+            Wave = Wave.Sine,
+            Volume = 0.10,
+            Pan = 0,
+            DetuneCents = 8,
             Adsr = new Adsr(0.4, 0.3, 0.85, 0.6),
-            GmProgram = 48, MidiVelocity = 55, // GM String Ensemble 1
+            GmProgram = 48,
+            MidiVelocity = 55, // GM String Ensemble 1
         }, Pad);
 
         return new Score
@@ -123,7 +134,9 @@ public static class VillageTheme
             BeatsTotal = Bars * beatsPerBar,
             Channels = [lead, glock, pad, BuildBass(), BuildFlute(), BuildSwell(), BuildDrums()],
             // 하프타임 보폭에 맞춘 따뜻하고 긴 잔향
-            EchoBeats = 0.75, EchoFeedback = 0.25, EchoMix = 0.13,
+            EchoBeats = 0.75,
+            EchoFeedback = 0.25,
+            EchoMix = 0.13,
         };
     }
 
@@ -154,8 +167,12 @@ public static class VillageTheme
             Name = "bass-deep",
             Instrument = new Instrument
             {
-                Wave = Wave.Pluck, Volume = 0.50, Pan = -0.05, PluckDamp = 0.9988,
-                GmProgram = 32, MidiVelocity = 100, // GM Acoustic Bass — 피치카토보다 두툼
+                Wave = Wave.Pluck,
+                Volume = 0.50,
+                Pan = -0.05,
+                PluckDamp = 0.9988,
+                GmProgram = 32,
+                MidiVelocity = 100, // GM Acoustic Bass — 피치카토보다 두툼
             },
             Events = events,
         };
@@ -167,10 +184,15 @@ public static class VillageTheme
         string notation = string.Concat(Enumerable.Repeat("R:4 ", BSectionStartBar)) + FluteLine;
         return ChannelScore.Parse("flute-counter", new Instrument
         {
-            Wave = Wave.Flute, Volume = 0.13, Pan = -0.18,
+            Wave = Wave.Flute,
+            Volume = 0.13,
+            Pan = -0.18,
             Adsr = new Adsr(0.06, 0.12, 0.85, 0.25),
-            VibratoDepth = 0.004, VibratoRate = 4.8, VibratoDelay = 0.30,
-            GmProgram = 73, MidiVelocity = 80, // GM Flute
+            VibratoDepth = 0.004,
+            VibratoRate = 4.8,
+            VibratoDelay = 0.30,
+            GmProgram = 73,
+            MidiVelocity = 80, // GM Flute
         }, notation);
     }
 
@@ -188,9 +210,13 @@ public static class VillageTheme
             Name = "swell",
             Instrument = new Instrument
             {
-                Wave = Wave.Sine, Volume = 0.05, Pan = +0.15, DetuneCents = 9,
+                Wave = Wave.Sine,
+                Volume = 0.05,
+                Pan = +0.15,
+                DetuneCents = 9,
                 Adsr = new Adsr(0.8, 0.4, 0.9, 0.8),
-                GmProgram = 49, MidiVelocity = 45, // GM String Ensemble 2
+                GmProgram = 49,
+                MidiVelocity = 45, // GM String Ensemble 2
             },
             Events = events,
         };
@@ -207,7 +233,10 @@ public static class VillageTheme
             string.Concat(Enumerable.Repeat(barB, Bars - BSectionStartBar));
         return ChannelScore.Parse("drums", new Instrument
         {
-            Wave = Wave.Drum, Volume = 0.12, Pan = -0.03, MidiVelocity = 68,
+            Wave = Wave.Drum,
+            Volume = 0.12,
+            Pan = -0.03,
+            MidiVelocity = 68,
         }, notation);
     }
 }

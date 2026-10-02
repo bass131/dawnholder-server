@@ -22,6 +22,9 @@
          CI 환경 진입 시 ContinuousIntegrationBuild=true 추가 권장 — Codex β cross-review 2026-05-23 보강. -->
     <Deterministic>true</Deterministic>
     <PathMap>$(MSBuildThisFileDirectory)=/_/</PathMap>
+    <!-- DLL과 embedded PDB에 Git 커밋별 정보가 들어가지 않도록 한다. -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <EnableSourceLink>false</EnableSourceLink>
 
     <!-- 폴더명에 숫자 prefix(04_)가 있어 자동 추론 어색 → 명시 -->
     <RootNamespace>Dawnholder.Client.Net</RootNamespace>

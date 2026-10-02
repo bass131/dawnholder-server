@@ -178,45 +178,45 @@ public sealed class Renderer(int sampleRate)
         switch (code)
         {
             case 0 or 1: // K / k — 사인 피치 스윕 썸프
-            {
-                double vol = code == 0 ? volume : volume * 0.55;
-                int len = (int)(0.14 * SampleRate);
-                double phase = 0;
-                for (int i = 0; i < len; i++)
                 {
-                    double t = (double)i / SampleRate;
-                    double f = 150 * Math.Pow(50.0 / 150.0, t / 0.14); // 150→50Hz
-                    phase += f / SampleRate;
-                    double env = Math.Exp(-t * 28);
-                    buf[(s0 + i) % loop] += (float)(Math.Sin(2 * Math.PI * phase) * env * vol * 1.6);
+                    double vol = code == 0 ? volume : volume * 0.55;
+                    int len = (int)(0.14 * SampleRate);
+                    double phase = 0;
+                    for (int i = 0; i < len; i++)
+                    {
+                        double t = (double)i / SampleRate;
+                        double f = 150 * Math.Pow(50.0 / 150.0, t / 0.14); // 150→50Hz
+                        phase += f / SampleRate;
+                        double env = Math.Exp(-t * 28);
+                        buf[(s0 + i) % loop] += (float)(Math.Sin(2 * Math.PI * phase) * env * vol * 1.6);
+                    }
+                    break;
                 }
-                break;
-            }
             case 2: // H — 노이즈 하이햇 (1차 차분 = 간이 하이패스)
-            {
-                int len = (int)(0.05 * SampleRate);
-                double prev = 0;
-                for (int i = 0; i < len; i++)
                 {
-                    double t = (double)i / SampleRate;
-                    double n = rnd.NextDouble() * 2 - 1;
-                    double hp = n - prev; prev = n;
-                    buf[(s0 + i) % loop] += (float)(hp * Math.Exp(-t * 90) * volume * 0.5);
+                    int len = (int)(0.05 * SampleRate);
+                    double prev = 0;
+                    for (int i = 0; i < len; i++)
+                    {
+                        double t = (double)i / SampleRate;
+                        double n = rnd.NextDouble() * 2 - 1;
+                        double hp = n - prev; prev = n;
+                        buf[(s0 + i) % loop] += (float)(hp * Math.Exp(-t * 90) * volume * 0.5);
+                    }
+                    break;
                 }
-                break;
-            }
             case 3: // S — 노이즈 + 톤 스네어 (가볍게)
-            {
-                int len = (int)(0.11 * SampleRate);
-                for (int i = 0; i < len; i++)
                 {
-                    double t = (double)i / SampleRate;
-                    double n = rnd.NextDouble() * 2 - 1;
-                    double tone = Math.Sin(2 * Math.PI * 190 * t);
-                    buf[(s0 + i) % loop] += (float)((n * 0.7 + tone * 0.3) * Math.Exp(-t * 35) * volume);
+                    int len = (int)(0.11 * SampleRate);
+                    for (int i = 0; i < len; i++)
+                    {
+                        double t = (double)i / SampleRate;
+                        double n = rnd.NextDouble() * 2 - 1;
+                        double tone = Math.Sin(2 * Math.PI * 190 * t);
+                        buf[(s0 + i) % loop] += (float)((n * 0.7 + tone * 0.3) * Math.Exp(-t * 35) * volume);
+                    }
+                    break;
                 }
-                break;
-            }
         }
     }
 

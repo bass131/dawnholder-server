@@ -22,7 +22,7 @@ public class CheatBuildGateTests
     {
         bool registered = HandlerRegistry.TryGet(PacketID.C_CheatCommand, out _);
 #if DEBUG
-        Assert.True(registered,  "DEBUG 빌드 = 치트 등록(시연 F8)");
+        Assert.True(registered, "DEBUG 빌드 = 치트 등록(시연 F8)");
 #else
         Assert.False(registered, "Release 빌드 = 치트 미등록 (헌법 #3 빌드타임 봉합)");
 #endif

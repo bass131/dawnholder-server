@@ -58,10 +58,10 @@ internal sealed class TeleportAction : IGameAction
 
         S_SkillCast castPkt = new S_SkillCast
         {
-            casterEntityId   = caster.EntityId,
-            skillId          = (byte)SkillId.Teleport,
+            casterEntityId = caster.EntityId,
+            skillId = (byte)SkillId.Teleport,
             strikeDelayTicks = 0,
-            facing           = caster.FacingByte,
+            facing = caster.FacingByte,
         };
         map.BroadcastToAll(castPkt.Write());
         return true;

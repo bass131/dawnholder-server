@@ -258,8 +258,8 @@ public class PlayerEntity
             EntityId = EntityId,
             Position = Position,
             CurrentHp = Hp,
-            MaxHp    = MaxHp,
-            Stats    = Stats,
+            MaxHp = MaxHp,
+            Stats = Stats,
         };
 
     // ── 전투 전이 API ──────────────────────────────────────────────────────
@@ -273,7 +273,7 @@ public class PlayerEntity
         // AttackState가 자기 데이터를 엔티티에 직접 소유 (flyweight 싱글톤 채널 제거).
         // ChangeState 이후 세팅 — Exit(이전 상태)이 ExternalImpulseVx를 0으로 덮을 수 있으므로.
         StateTicksRemaining = durationTicks < 0 ? Constants.AttackCommitWindowTicks : durationTicks;
-        ExternalImpulseVx   = impulseVx;
+        ExternalImpulseVx = impulseVx;
         ImpulseDecayPerTick = decayPerTick < 0f ? Constants.KnockbackDecayPerTick : decayPerTick;
     }
 
@@ -285,8 +285,8 @@ public class PlayerEntity
         if (IsDead) return;
         if (!ActionFsm.CurrentState.InterruptibleByHit) return;
         // 넉백 임펄스: dirX 부호 방향으로 KnockbackInitialVx 세팅. M4.11 P2 force-adopt 계약 — 거동 불변.
-        ExternalImpulseVx     = Constants.KnockbackInitialVx * MathF.Sign(dirX == 0f ? 1f : dirX);
-        ImpulseDecayPerTick   = Constants.KnockbackDecayPerTick;
+        ExternalImpulseVx = Constants.KnockbackInitialVx * MathF.Sign(dirX == 0f ? 1f : dirX);
+        ImpulseDecayPerTick = Constants.KnockbackDecayPerTick;
         ActionFsm.ChangeState(PlayerCombatStates.Hit, this);
     }
 
@@ -295,9 +295,9 @@ public class PlayerEntity
     public void Revive()
     {
         ActionFsm.ChangeState(PlayerMovementStates.Idle, this);
-        StateTicksRemaining  = 0;
-        ExternalImpulseVx    = 0f;
-        ImpulseDecayPerTick  = Constants.KnockbackDecayPerTick;
+        StateTicksRemaining = 0;
+        ExternalImpulseVx = 0f;
+        ImpulseDecayPerTick = Constants.KnockbackDecayPerTick;
     }
 
     // 임펄스 1틱 감쇠. AttackState.Tick + HitState.Tick의 단일 경로.

@@ -48,9 +48,9 @@ internal sealed class MeleeAction : IGameAction
         S_PlayerAttack swing = new S_PlayerAttack
         {
             attackerEntityId = attacker.EntityId,
-            attackType       = attackType,
-            targetEntityId   = ctx.TargetEntityId,
-            facing           = attacker.FacingByte,
+            attackType = attackType,
+            targetEntityId = ctx.TargetEntityId,
+            facing = attacker.FacingByte,
         };
         map.BroadcastToAll(swing.Write(), except: attacker.Owner);
 
@@ -73,18 +73,18 @@ internal sealed class MeleeAction : IGameAction
             map.EnqueueDeferredDamage(new DeferredImpact
             {
                 AttackerEntityId = attacker.EntityId,
-                TargetEntityId   = target.EntityId,
-                Damage           = damage,
-                ImpactTick       = map.CurrentTick + travelTicks,
-                HitEffect        = (byte)HitEffect.Projectile,
+                TargetEntityId = target.EntityId,
+                Damage = damage,
+                ImpactTick = map.CurrentTick + travelTicks,
+                HitEffect = (byte)HitEffect.Projectile,
             });
 
             S_ProjectileLaunch launch = new S_ProjectileLaunch
             {
                 attackerEntityId = attacker.EntityId,
-                targetEntityId   = target.EntityId,
-                projectileType   = 0,
-                travelTicks      = travelTicks,
+                targetEntityId = target.EntityId,
+                projectileType = 0,
+                travelTicks = travelTicks,
             };
             map.BroadcastToAll(launch.Write());
         }

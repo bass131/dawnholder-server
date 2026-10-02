@@ -24,9 +24,9 @@ public class DashSmoke
     static readonly TimeSpan SkillArrivalTimeout = TimeSpan.FromSeconds(5);
 
     const float TownPortalX = 20f;
-    const int   TownPortalId = 1;
-    const byte  NormalKind = 0;
-    const byte  DashSkillId = (byte)SkillId.Dash;
+    const int TownPortalId = 1;
+    const byte NormalKind = 0;
+    const byte DashSkillId = (byte)SkillId.Dash;
 
     // hitEffect=3 = Dash 타격
     const byte HitEffectDash = 3;
@@ -335,7 +335,7 @@ public class DashSmoke
         public bool HasNormalOutsideDashPath()
         {
             const float DashBoxHalfX = 2.5f;
-            const float OuterBound   = 4.0f;
+            const float OuterBound = 4.0f;
             float boxOriginX = _currentX + DashBoxHalfX * _lastFacingDir;
             lock (Gate)
                 return _spawns.Any(s =>
@@ -352,7 +352,7 @@ public class DashSmoke
         public bool HasDashHitOutsidePath(float casterX, byte dashHitEffect)
         {
             const float DashBoxHalfX = 2.5f;
-            const float OuterBound   = 4.0f;
+            const float OuterBound = 4.0f;
             float boxOriginX = casterX + DashBoxHalfX * _lastFacingDir;
             lock (Gate)
             {
@@ -493,7 +493,7 @@ public class DashSmoke
         {
             C_SkillUse p = new()
             {
-                skillId            = skillId,
+                skillId = skillId,
                 attackerClientTick = LastReceivedServerTick,
             };
             Session?.Send(p.Write());

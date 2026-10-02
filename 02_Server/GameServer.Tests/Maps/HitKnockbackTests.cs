@@ -171,7 +171,7 @@ public class HitKnockbackTests
     {
         // 3인자 ctor(ExternalVelX=0)와 4인자 ctor(ExternalVelX=0)의 결과가 동일한지 확인
         var state = new PhysicsState(new Vector2(0f, 0f), Vector2.Zero, true);
-        var move  = new MoveParams(5f, 10f);
+        var move = new MoveParams(5f, 10f);
 
         var input3 = new PhysicsInput(1, false, Constants.TickDuration);
         var input4 = new PhysicsInput(1, false, Constants.TickDuration, 0f);

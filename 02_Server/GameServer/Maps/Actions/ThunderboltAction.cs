@@ -35,19 +35,19 @@ internal sealed class ThunderboltAction : IGameAction
             map.EnqueueDeferredDamage(new DeferredImpact
             {
                 AttackerEntityId = caster.EntityId,
-                TargetEntityId   = target.EntityId,
-                Damage           = damage,
-                ImpactTick       = impactTick,
-                HitEffect        = (byte)HitEffect.Lightning,
+                TargetEntityId = target.EntityId,
+                Damage = damage,
+                ImpactTick = impactTick,
+                HitEffect = (byte)HitEffect.Lightning,
             });
         }
 
         S_SkillCast castPkt = new S_SkillCast
         {
-            casterEntityId   = caster.EntityId,
-            skillId          = (byte)SkillId.Thunderbolt,
+            casterEntityId = caster.EntityId,
+            skillId = (byte)SkillId.Thunderbolt,
             strikeDelayTicks = CombatConstants.LightningDelayTicks,
-            facing           = caster.FacingByte,
+            facing = caster.FacingByte,
         };
         map.BroadcastToAll(castPkt.Write());
         return true;

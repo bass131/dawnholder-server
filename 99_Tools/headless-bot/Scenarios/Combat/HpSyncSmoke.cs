@@ -123,9 +123,9 @@ public class HpSyncSmoke
             {
                 string missing = "";
                 if (!result.SawInitialFull) missing += " SawInitialFull";
-                if (!result.SawDamage)      missing += " SawDamage";
-                if (!result.SawZero)        missing += " SawZero";
-                if (!result.SawReviveFull)  missing += " SawReviveFull";
+                if (!result.SawDamage) missing += " SawDamage";
+                if (!result.SawZero) missing += " SawZero";
+                if (!result.SawReviveFull) missing += " SawReviveFull";
                 return Fail(result, $"death-revive cycle incomplete within {DeathReviveTimeout.TotalSeconds}s — missing:{missing}");
             }
 
@@ -162,12 +162,12 @@ public class HpSyncSmoke
         bool _sawReviveFull;
         int _observedMaxHp;
 
-        public bool SawInitialFull  { get { lock (Gate) return _sawInitialFull; } }
-        public bool SawDamage       { get { lock (Gate) return _sawDamage; } }
-        public bool SawZero         { get { lock (Gate) return _sawZero; } }
-        public bool SawReviveFull   { get { lock (Gate) return _sawReviveFull; } }
-        public int  ObservedMaxHp   { get { lock (Gate) return _observedMaxHp; } }
-        public int  HpEventCount    { get { lock (Gate) return _hpEvents.Count; } }
+        public bool SawInitialFull { get { lock (Gate) return _sawInitialFull; } }
+        public bool SawDamage { get { lock (Gate) return _sawDamage; } }
+        public bool SawZero { get { lock (Gate) return _sawZero; } }
+        public bool SawReviveFull { get { lock (Gate) return _sawReviveFull; } }
+        public int ObservedMaxHp { get { lock (Gate) return _observedMaxHp; } }
+        public int HpEventCount { get { lock (Gate) return _hpEvents.Count; } }
 
         public async Task<bool> WaitMapTransition1(TimeSpan timeout, CancellationToken ct)
             => await WaitUntil(() => _mapTransition1.IsSet, timeout, ct);

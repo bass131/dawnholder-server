@@ -96,7 +96,7 @@ public class EnemyEntity
     // 우선순위: Death > Hit > Attack > Walk > Idle (적은 Jump 없음).
     // tick thread invariant — EnemyAISystem.Update 안에서만 읽기/쓰기.
     public int AttackLatchTicks { get; set; }    // Attack 상태 남은 latch 틱 수
-    public int HitLatchTicks    { get; set; }    // Hit 상태 남은 latch 틱 수
+    public int HitLatchTicks { get; set; }    // Hit 상태 남은 latch 틱 수
 
     // 공격 windup(준비/휘두르기) 남은 틱 수. EnemyAttackState.Enter가 kind별 windup으로 세팅,
     // Tick에서 0 도달 시 ApplyMeleeDamage 실행. 0 = windup 없음(진입 즉시 타격, 옛 거동).
@@ -110,8 +110,8 @@ public class EnemyEntity
 
     // 수직 물리 상태. GameMap.ApplyEnemyGravity가 매 틱 Physics.Step으로 갱신.
     // FSM이 X를 세팅한 뒤 수직 패스에서 Y만 적용 (inputX=0 → X 불변).
-    public float Vy       { get; set; }
-    public bool  OnGround { get; set; }
+    public float Vy { get; set; }
+    public bool OnGround { get; set; }
 
     // tick thread invariant — EnemyAISystem.Update 안에서만 R/W.
     // >0: 이 tick 이후까지 이동/AI 봉쇄. 0 도달 시 자동 해제.
