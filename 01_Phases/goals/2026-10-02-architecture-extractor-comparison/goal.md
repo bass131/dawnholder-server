@@ -1,6 +1,6 @@
 # 정적 관계 추출기 비교와 스냅샷 계약
 
-내부 목표 ID: A-1. **현재 상태: 메인 goal 승인, 원천 정답표·입력 manifest 작성 완료·분석 전 동결. 설치·시범 구현·독립 검증은 미실행이다.**
+내부 목표 ID: A-1. **현재 상태: 정답표·입력 manifest를 분석 전 commit하고 신규 Sol 구현을 발행했다. 설치·분석의 실제 결과와 독립 검증은 아직 없다.**
 
 ## 목표와 결정 출처
 
@@ -109,7 +109,7 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 - 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active`.
 - 브랜치: `feat/architecture-extractor-a1-20261002`. 진입 HEAD `c9d07ceca15d059b07286536f0e2abd09885e1c6`는 이전 목표의 결과·R-8 인계 기록이다. 기준 main `881957cbb431d4af822d1d935ac117e1ede6c303`와 현재 원격 main이 같음을 2026-10-02 `git ls-remote`로 확인했다. 진입 tracked 변경은 없었다.
 - 현재 Astra: handle `term_cf097010-8b72-4381-800d-3fdc2882c826`, runtime `8a673084-6819-45b9-a551-347226cdce9b`, incarnation `bca09aee-2864-4bd1-b988-f6f9ab8fe06e`. 화면 `GPT-6-Astra xhigh`, backend 실제 모델 `unknown`. 메인에 READY `msg_87eae6e32eba`를 보냈다. 근거는 이번 로컬 evidence 폴더의 `astra-identity.json`, `astra-screen.json`이다.
-- 이 목표의 새 Run/Task/Dispatch와 외부 작업자는 아직 없다. 과거 목표의 식별자를 실행 권한으로 재사용하지 않는다. 설치·정답 동결·분석·제품 build/test·Unity·DB·독립 판정은 아직 수행하지 않았다.
+- 진입 당시 새 Run/Task/Dispatch와 외부 작업자는 없었다. 이후 동결·신규 구현 발행은 다음 절에 기록한다. 과거 목표의 식별자를 실행 권한으로 재사용하지 않는다. 설치·분석·제품 build/test·Unity·DB·독립 판정의 결과는 아직 없다.
 - CURRENT는 이 goal 링크만 추가하고 기존 링크를 모두 보존한다. GameDev 저장 연동 브랜치도 CURRENT를 수정하므로 뒤에 통합하는 쪽이 최신 main과 대조해 양쪽 링크를 보존한다. 현재 원격 main과의 관계를 미병합 다른 브랜치와의 비충돌로 표현하지 않는다.
 - 남은 설계 확인은 Unity 참조의 실제 읽기 입력, 도구의 관계별 지원 수준, 시스템 카드의 다중 매핑 해석이다. 이들은 시범의 조사 대상이며 측정 전에 성공으로 가정하지 않는다. 설치 조건을 넓혀야 하거나 파일 소유 범위를 벗어나야 하면 메인에 올린다.
 - 메인 `msg_f7f5c55caeeb`가 commit `3572fb9`의 goal을 승인했다. 현재는 평가 기준을 동결한 뒤 신규 Sol을 발행하는 단계다. 승인·운영 지적 원문은 이번 로컬 evidence의 `main-goal-approval-and-notice.json`이다. PR 병합과 결과 기록이 모두 끝난 뒤 Astra 교체는 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 수행한다.
@@ -125,3 +125,19 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 `evaluation-scope.json`의 8개 닫힌 source/target 집합은 관계 후보 36개이며 `truth.json`에 양성 15개·음성 21개를 수기로 판정했다. 양성의 source층은 Server 9, Shared 1, ClientNet 1, Client 4다. 다른 타입의 `ProcessAttack`과 패킷 세 타입의 `Read`를 음성 후보에 포함했다. 실제 존재하더라도 사전 정의한 target 범위 밖의 호출은 별도 개수로 보고한다. 평가·정규화 도구가 정답표로 간선을 생성하거나 동명 모호성을 해소해서는 안 된다.
 
 `input-manifest.json`은 분석 대상 main `881957c`의 파일 225개(C# 210개 포함)와 로컬 Unity managed DLL 157개의 경로·hash·크기를 기록한다. 원본 제품·설정의 base 대비 diff가 없음을 확인했다. Unity InputSystem/TMP의 Library 산출물은 입력에 없으며 참조 부족을 부분 해석으로 기록한다. 아직 복사·분석 성공을 뜻하지 않는다. 작성 데이터의 후보 완전성·증거 행 문자열·심볼 파일 포함 여부 자체 확인은 `freeze-data-check.txt`에 있고 독립 의미 판정과 구분한다. 이 세 파일의 동결 commit·UTC 시각·SHA-256은 commit 직후 로컬 `freeze-record.json`에 보존하여 첫 분석 로그와 대조한다.
+
+### 신규 구현 발행
+
+- 동결 commit은 `12327d8af48e06fed71058c0b9316df7bc4c2cef`, commit 시각은 `2026-10-02T06:05:04Z`다. 동결 직후에는 두 도구 모두 분석 미실행이었다. 이 시각과 실제 첫 분석 로그를 Opus가 대조한다. `freeze-record.json`의 SHA-256은 해당 시점 작업 파일 바이트 기준이며 Git의 텍스트 개행 정규화와 구분한다.
+- 새 Run `run_8c735d301418`, Task `task_fb2142ab8f0f`, Dispatch `ctx_9f87fa7214db`로 구현 작업 하나를 발행했다. Sol terminal은 `term_43f69aa8-59c7-4270-a680-31ee72cf34f9`, incarnation `e0801fd5-d0ad-475c-9a8a-5bd46bfcd77f`다. 현재 runtime과 이 checkout을 확인했다.
+- 최초 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 화면은 `GPT-6.1-Sol xhigh`, backend 실제 모델 `unknown`이다. 준비 `satisfied=true`와 선택창 없는 빈 신규 prompt를 확인했다. 최초 attach의 `input_accepted`·`turn_started`를 확인했으며 null launch 모델값을 모델 근거로 쓰지 않는다.
+- 원문은 이번 로컬 evidence의 `run-create.json`, `sol-split.json`, `sol-ready.json`, `sol-first-screen.json`, `sol-identity.json`, `sol-start.json`, `sol-task.txt`다. Sol은 도구·원시 출력만 작성하고 정답표·goal·비교 보고 본문·독립 테스트는 쓰지 않는다. 같은 시간 다른 외부 작업자는 열지 않는다.
+
+### 병렬 파트와 작업 맥락 보강
+
+- Management `msg_21aa0289e58f`와 해당 checkout의 system-cards goal 접점 절을 대조했다. 원본 codeReference는 하위 카드 소유, 다대다 membership 보존·원천 edge ID 기준 중복 제거·공유 근거 보존·임의 primary 미선택에 합의했다. 상위 관계는 하위 membership에서 유도한 집계이며 상위 직접 mapping 저장은 미확정이다. 실제 카드 corpus는 아직 없고 디자인 샘플 기준 `333fe20211260ef230cd7d4ef9555cb4d5999c08`은 분석 SHA와 다르다. `snapshot-contract.md`에 계약 초안을 작성했으며 실제 추출 결과로 보고하지 않는다. 근거는 `peer-contracts.json`, `sol-contract-followup.json`이다.
+- 메인 `msg_67bd598fa0eb`와 GameDev `msg_471561c220ff`에 따라 Formatting·CODE_CONVENTION 쓰기는 GameDev에 유지한다. 이번 도구와 독립 검사는 slnx 밖에서 별도로 실행하며 기대 프로젝트 집합을 바꾸지 않는다. 이 판단을 GameDev `msg_c416878c68bb`로 공유했고 메인 `msg_2caf43354006`이 수용했다. 나중에 편입이 필요하면 먼저 조율하며 CURRENT는 양쪽 링크를 보존한다.
+- 메인 `msg_ed628b97bba4`의 위치·이름 기준과 `msg_2caf43354006`의 임시 작업 전 맥락 구축 1~6을 현재 작업에도 적용한다. 처음 전달된 1~6이 이 Run inbox에 없어 재전달을 요청했으며, 기존 Sol을 재발행하지 않고 남은 파일 수정 전에 메모를 남기도록 전달했다. 이미 읽고 수정한 시각을 구분하고 과거 작업 전에 적용했다고 소급하지 않는다. 원문은 `main-context-complete.json`, 전달 계약은 `sol-context-followup.txt/json`이다.
+- 외부 작업자의 읽는 순서는 goal→작업 계약→관련 FEATURE_MAP/domains→CODE_CONVENTION 해당 언어 절이다. 구현자는 주변 코드·유사 예시 1~2개·재사용 helper와 이름/공백/오류 처리/주석 관례를 확인한다. 검증자는 요구 원천·보고·실제 diff·기존 테스트 패턴을 읽고 동작과 별도로 가독성·배치·책임 분리·주석 위치를 판정한다. 읽기 범위를 관련 목록으로 제한한다.
+- 파일 수정 전 짧은 맥락 메모에 읽은 시각, 따를 기존 패턴의 경로, 재사용할 것, 영향 파일, 열린 질문, 파일 위치·이름 이유를 기록한다. 보고에 메모를 포함하며 메모 없는 완료 보고는 받지 않는다. 검증자는 메모와 실제 결과가 다르면 결함으로 반환한다. Astra는 각 spec에 제한된 읽기 묶음과 해당 언어 가독성 완료조건을 제공한다.
+- 이 작업의 예시는 `99_Tools/Formatting/`의 독립 프로젝트·manifest·실행 책임 분리와 `99_Tools/format-check.ps1`, `format-check.sh`, `Formatting/sdk.sh`, `sync-wsl.sh`의 소유/SDK 경계다. 현재 checkout CODE_CONVENTION에는 PowerShell/Bash/Python 전용 절이 없음을 구분한다. 새 제품 파일·폴더·식별자는 목적과 기존 명명 관례를 따르고 milestone·날짜·작업자 이름을 넣지 않는다. 기존 승인 goal 폴더와 동결 자료 식별자는 보존한다. 정식 공통 맥락 명세는 메인이 지정한 별도 규칙 목표이며 이 구현 범위에 추가하지 않는다.
