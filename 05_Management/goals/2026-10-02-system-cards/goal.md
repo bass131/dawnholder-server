@@ -2,7 +2,7 @@
 
 ## 현재 단계와 요청 출처
 
-**메인 goal 승인, 디자인 Opus 작업 진행 중.** 메인의 `msg_2cc96f3f8124`가 `08ae8a9` 기준 goal과 7개 상위 분류·자료 분리·매핑 계약·guide 편집 UI 제외를 승인했다. 이번 목표는 개발 현황에서 전체 시스템 카드 → 하위 시스템 카드 → 내부 구현 설명을 탐색하고, 같은 자료를 읽기 전용 MCP로 조회하게 만드는 일이다. 목표 기준·현재 상태·결과는 이 파일에 모은다. root CURRENT는 GameDev 소유이므로 수정하지 않는다. Management README/RESUME의 진입 링크는 범위 확정 뒤 이 goal로 연결한다.
+**디자인 목업·명세와 작성자 자기 점검 완료, 작업자 종료. 업데이트 전 정지 준비 완료이며 M-2 전체 목표는 미완료다.** 메인의 `msg_2cc96f3f8124`가 `08ae8a9` 기준 goal과 7개 상위 분류·자료 분리·매핑 계약·guide 편집 UI 제외를 승인했다. 이번 목표는 개발 현황에서 전체 시스템 카드 → 하위 시스템 카드 → 내부 구현 설명을 탐색하고, 같은 자료를 읽기 전용 MCP로 조회하게 만드는 일이다. 목표 기준·현재 상태·결과는 이 파일에 모은다. root CURRENT는 GameDev 소유이므로 수정하지 않는다. Management README/RESUME의 진입 링크는 범위 확정 뒤 이 goal로 연결한다.
 
 2026-10-02 메인 Claude의 `msg_536a13756092`가 신규 Management Astra 진입과 M-2 목표를 요청했다. 수신 `from_handle`은 현재 메인 terminal `term_6505bda3-c071-476a-a50a-755c10fa02eb`와 대조했다. **메인이 전달한 사용자 결정이며 사용자 직접 입력으로 격상하지 않는다.** 원문과 진입 관찰은 로컬 Git 제외 `.backups/verification/2026-10-02-management-m2-system-cards/{entry-mail,entry-terminal}.json`에 있다.
 
@@ -120,11 +120,42 @@ Sol에게 구현 설명 본문 작성을 맡기지 않는다. `msg_44e5a4be4ebe`
 - 이전 `docs/management-m1-closeout` HEAD `f39042e61de42dcf363c0526be335c78e9985955`에서 로컬 변경 없음을 확인했다. `git fetch origin main` 후 최신 `333fe20211260ef230cd7d4ef9555cb4d5999c08`(PR161 merge)에서 `feat/management-m2-system-cards`를 새로 만들었다. 이전 branch와 과거 결과는 보존했다.
 - READY를 메인에 전송한 receipt는 `msg_d2107d5fea19`다. enqueue는 수신·검토 완료 증거가 아니다.
 - Architecture Astra `term_366eb418-ef60-48df-9d08-e6b3efa11c08`의 제안과 실제 architecture-active 소속을 확인하고 `run_a98ca1c7a511`로 매핑 형식을 조율했다. 데이터 접점은 위와 같이 합의했으며 양쪽 구현·검증은 별도다.
-- 현재 제품 코드·데이터·설정·디자인 규칙 변경, 빌드·테스트·GUI·DB 실행은 없다. 디자인 작업자만 아래처럼 기동했고 독립 검증 판정 원문은 아직 없다.
-- 다음 행동: 두 변형 목업을 감독하고 필요 이미지 생성을 지원한다. 사용자에게 물을 테마 선택은 목업 준비 즉시 메인에게 경로를 전달해 진행한다. 디자인 방향/R-12·D-09 변경의 사용자 승인은 아직 받지 않았다.
+- 현재 제품 코드·실데이터·설정·디자인 규칙 변경, 제품 빌드·테스트·Electron·DB 실행은 없다. 디자인 목업의 헤드리스 Chrome 자기 점검만 수행됐고 독립 검증 판정 원문은 아직 없다.
+- 현재 중단 지점과 다음 행동은 아래 재개 절을 따른다. 사용자 디자인 방향/R-12·D-09 변경 승인은 아직 받지 않았다.
+- 업데이트 준비 중단 경계: 메인의 `msg_de0513298626`은 사용자 요청에 따라 **현재 디자인 Opus 작업 하나와 필요한 이미지까지만 마감**하고, 작업자 정산·종료 및 이 goal에 현재 단계·미커밋 파일·다음 행동을 남긴 뒤 “정지 준비 완료”를 보고하도록 했다. 이후 새 작업자나 제품 구현 단계는 시작하지 않는다. 이 Astra 종료·업데이트·재진입은 메인 소유다.
 
 ### 디자인 작업 발행 — 2026-10-02
 
 Run `run_ba66f38de7c0`, Task `task_2ac3f658be9a`, Dispatch `ctx_ac12fb3133b1`로 신규 디자인 Opus의 최초 작업을 연결했다. Management Astra 아래 vertical split, terminal `term_4f24d4a3-a5c5-45d2-99c6-f2f19f96b68e`, incarnation `c406fb10-b98b-4842-859c-7238c8a4ffbb`다. `claude --model claude-opus-5-5` 실행 명령과 최초 화면의 Opus 5.5 xhigh·management-active 경로·빈 prompt를 대조했으며 `tui-idle`이 true였다. 이 화면에는 선택창이 관측되지 않았다. 실제 backend는 `unknown`이고 attach receipt의 model null은 실제 모델 판정에 사용하지 않는다.
 
 `design-start.json`에서 `input_accepted`와 `turn_started`를 확인했다. 이는 작업 접수·턴 시작 근거이며 목업 완료나 디자인 검증 결과가 아니다. 원문 spec·기동·첫 화면·준비·연결 receipt는 로컬 evidence의 `design-task.md`, `design-launch-command.txt`, `design-{launch,first-screen,ready,terminal,start}.json`에 있다. 디자인 작업자는 목표 전용 명세·목업·assets와 자기 점검 보고만 쓰고 goal·제품·데이터 원본은 쓰지 않는다. 명세 확정 전 필요한 생성물 목록을 Astra에게 보내도록 했다.
+
+중간 자산 결정 `msg_06cbc123d1b6`: 작성자는 핀·인장·장부 탭·동전·프레임을 작은 SVG로 만들 수 있어 현재 목업에는 생성 이미지를 요청하지 않았다. GPT-Image 실행·생성물은 없다. Galmuri OFL 원천 확인은 작성자 보고이며, npm metadata를 읽는 Bash curl은 권한 확인에서 거부됐다. Astra가 제한된 원문에서도 거부를 관찰해 `msg_bdd90b15abf2`로 메인에 보고하고 대신 다운로드하거나 권한을 변경하지 않았다. 시스템 폰트로 목업을 계속하며 폰트 적용 미실행을 별도로 기록한다. 최초 heartbeat의 빈 body에는 태그 보완을 요청했다.
+
+### 디자인 결과·정산과 업데이트 후 재개
+
+산출물은 [단독 열람 목업](mockup.html)과 [디자인 명세](design-spec.md)다. 목업은 **A 퀘스트 게시판 / B 상점 장부**를 같은 자료·DOM·화면 흐름에서 전환한다. 1단 7개와 2단 39개, 대표 문서 본문 9개가 있으며 나머지는 목업 본문 생략을 명시한다. 2단 분할·기존 기록 연결·샘플 본문은 작성자 제안이며 실제 guide 자료나 Astra의 구현 설명 본문으로 확정된 것이 아니다. 작성자는 A와 픽셀 폰트 보류를 추천했고 최종 선택은 사용자에게 남겼다.
+
+작성자 상태 `msg_e64d5ae1c42b`(04:01:32 UTC)와 완료 `msg_5cdf43a69275`(04:13:35 UTC)를 Astra가 04:17 UTC의 inbox 확인에서 함께 수신했다. 수신 직후 `msg_75bce43b1af4`로 메인에게 목업 절대경로를 우선 전달했다. 발신 시각과 Astra 전달 시각을 같은 것으로 보고하지 않는다.
+
+자기 점검 원문은 `.backups/verification/2026-10-02-management-m2-system-cards/design/report.md`, 키 입력 로그는 `design/keyboard-check.txt`, 실행 스크립트 사본은 `design/kb-check.mjs.txt`, 화면 자료는 `design/screens/`의 28장이다. 작성자는 헤드리스 Chrome 154에서 두 테마의 진입·Esc/검색 복귀 focus·편집 초안 보존·동작 감소와 42개 폭×화면 조합을 점검했다고 보고했다. **이는 작성자의 자기 점검이며 독립 판정이 아니다.** 실제 Electron·실데이터·MCP·화면 낭독기·200% 확대·OS 실제 동작 감소 설정은 미실행이다. 1280×720은 헤드리스 브라우저 안 목업 프레임이며 실제 Electron 창 크기 검증과 다르다.
+
+Astra는 원문 보고 전체, 실제 쓰기 목록, 키 입력 로그와 CDP 스크립트의 실제 `Input.dispatchKeyEvent`·42조합 반복·넘침 계산, 두 테마 1단 스크린샷을 표본 대조했다. HTML의 테마 선택자·CSP·동작 감소 규칙을 읽었고 제품 파일 diff가 없음을 확인했다. 아래 실제 파일 hash가 보고와 일치했다. 이는 전체 동작의 독립 재실행·메인의 R-2 대조를 대신하지 않는다.
+
+| 파일 | bytes | SHA-256 |
+|---|---:|---|
+| mockup.html | 154411 | `99246a81d5fd6a6dcc3e4cd60b0f9ac2790ca46d77eff79b2352926bed58663a` |
+| design-spec.md | 38050 | `ed1c7a4351eaa7731620390d6f8a51e9cc1e710b31014ee7edb0c7f20c7253ec` |
+
+보고에는 쓰기 종료 시각을 13:14 KST로 기재했지만 종료 화면에서 작성자가 실제 마지막 수정은 13:13 무렵이라고 정정했다. Astra가 본 `report.md`의 LastWriteTimeUtc는 `2026-10-02T04:13:22.7864365Z`였다. 13:14를 정확한 관측 시각으로 사용하지 않는다.
+
+정산은 accepted worker_done의 task/dispatch와 원문 대조 뒤 `worker-release`의 `retained / external_terminal / processAction none`을 받았다. 동일 incarnation과 완료·빈 prompt를 다시 확인해 해당 디자인 pane만 닫았고 `design-close.json`의 `ptyKilled: true`를 확인했다. Delivery `delivery_5abaff93b01b`는 acknowledge했고 Run의 reclaimable 조회는 빈 목록이었다. `design-completion.json`, `design-release.json`, `design-before-close-{show,read}.json`, `design-close.json`, `design-completion-ack.json`, `design-reclaimable-final.json`을 evidence에 보존했다. 세션 재사용·새 작업자 발행은 없다.
+
+**재개 인계:**
+
+- 현재 단계: 사용자에게 보여 줄 두 테마 목업까지 마쳤고, 테마/폰트 결정·규칙 갱신·실제 guide 작성·Sol 제품 구현·독립 Opus 검증·PR은 남았다. 업데이트 뒤 메인이 같은 goal로 새 Astra를 열 때까지 진행하지 않는다.
+- 작업 공간·브랜치: `management-active`, `feat/management-m2-system-cards`. base는 `333fe20211260ef230cd7d4ef9555cb4d5999c08`이고 디자인 발행 기록까지 HEAD는 `3d4b650`이었다. 이 결과 기록과 목업/명세를 별도 로컬 checkpoint로 함께 보존한다. push·PR·병합은 하지 않았다.
+- 미커밋 파일: 위 checkpoint 후 없음. Git 제외 evidence는 로컬 `.backups/verification/2026-10-02-management-m2-system-cards/`에 보존돼 있고 원격에서 사용할 수 있다고 가정하지 않는다. 재진입 때 실제 Git 상태를 다시 대조한다.
+- 다음 행동: 메인의 사용자 테마/폰트 결정과 업데이트 후 재개 지시를 읽는다. 그 뒤 39개 하위 분할·`client.audio`/`tools.bgm`의 빈 기존 ID 연결·M-2 자체 카드 포함 여부를 Astra가 확정한다. 승인된 방향으로 R-12/D-09 갱신을 배정하고, Astra가 기준 commit을 정해 실제 카드/문서 데이터를 작성한다. Sol은 승인된 모든 제품 코드를 구현하고 **신규 독립 Opus**가 검증한다. 종료된 디자인 세션은 재사용하지 않는다.
+- 발견된 범위 밖 사실: FEATURE_MAP 스킬 행의 `Maps/States/Actions/`와 실제 기준 tree의 `02_Server/GameServer/Maps/Actions/`가 다르다. Astra도 `git cat-file`/`ls-tree`로 이 경로 표본을 대조했다. GameDev 정본 소유자에게 전달할 항목이며 이 목표에서 원문을 수정하지 않았다.
+- 리스크: 목업을 제품 구현·독립 검증 완료로 해석하지 않는다. 폰트 제목 변형과 이미지 생성은 미실행이다. 지금 메인의 업데이트·세션 종료를 막는 작업자는 없다.
