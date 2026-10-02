@@ -1,6 +1,6 @@
 # 정적 관계 추출기 비교와 스냅샷 계약
 
-내부 목표 ID: A-1. **현재 상태: 첫 독립 판정은 FAIL(보고 필수 수정 D1–D3, 제품 필수 결함 0)이다. 신규 Opus의 46개 독립 테스트는 정상 성공 43개·expected failure 3개이며 모두 통과로 보고하지 않는다. Astra가 보고와 계약 설명을 정정했으며 새 Opus의 문서 재실사 전이다. 구현자·첫 검증자는 정산·pane 종료했다. PR은 GameDev의 독립 도구 등록 변경이 main에 통합된 뒤 진행한다.**
+내부 목표 ID: A-1. **현재 상태: 두 번째 문서 판정은 FAIL이다. 기존 D1–D3의 내용은 해소됐고 새 보고 결함 D4–D6(검증 주체·시각·check 경로)을 정정했다. 전체 보고 원문 90개 행의 주장·근거·확인 주체·범위 대조표를 작성했으며 다음 신규 Opus의 전수 실사 전이다. 첫 제품 판정의 필수 결함 0과 비차단 N1–N9·가독성은 유지하며 문서 실사에서 N10–N12가 추가됐다. 기존 독립 테스트는 정상 성공 43개·expected failure 3개이고 재실행하지 않았다. 구현자·첫/두 번째 검증자는 정산·pane 종료했다. PR은 GameDev 선행 등록 변경이 main에 통합된 뒤 진행한다.**
 
 ## 목표와 결정 출처
 
@@ -169,4 +169,16 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 - Management `msg_a0f2ef99e700`은 읽기 전용 코드 뷰어가 현재 path/kind/SHA 계약을 먼저 사용하고 line/symbol은 후속임을 확인했다. frontend 동시 쓰기는 없다. 원문은 `management-code-view-boundary.json`이다.
 - 메인 `msg_95284adaddb7`의 규칙은 **다음 신규 작업 계약부터** 적용한다. 관련 CODE_CONVENTION 절 원문을 계약 본문에 넣고 규칙별 적용·파일/줄 근거를 메모한다. 일괄 변환은 사람이 블록을 다시 확인하며 규칙 위반은 독립 검증에서 번호 있는 차단 결함으로 반환한다. Astra도 표본을 확인한다. 첫 검증 계약을 소급 변경하거나 기존 비차단 의견을 해결됐다고 표시하지 않는다. 새 문서 재실사는 이번 정정 문서의 내용·표현·근거와 적용 규칙을 차단 기준으로 확인한다. 원문은 `main-inline-convention-rule.json`이다.
 - 메인이 새로 지정한 Rules Astra의 현재 identity를 확인하고 `msg_fff0dbd63447`로 Python 파일·독립 테스트·관례와 환경만 읽기 보고했다. 관측 Python은 3.14.4이며 버전 pin 또는 기존 Python formatter 규정이라는 뜻이 아니다. AGENTS/skills/CODE_CONVENTION/CI/Formatting은 이 파트 쓰기 범위가 아니다. 원문은 `rules-python-question.json`, `rules-python-response.json`, `rules-identity.json`이다.
-- 새 문서 판정과 GameDev 선행 PR 통합이 남았다. 제품 비차단 N1–N9·가독성 의견, Unity 부분 해석, 실제 카드 자료 부재와 사용자 최종 추출기 선택은 [비교 보고](comparison-report.md)에 명시한다. 선행 등록 목록의 경로·형식이 도착하면 승인된 Roslyn 프로젝트 항목만 후속 새 작업자 계약으로 반영한다.
+- 새 문서 판정과 GameDev 선행 PR 통합이 남았다. 제품 비차단 N1–N11·가독성 의견, Unity 부분 해석, 실제 카드 자료 부재와 사용자 최종 추출기 선택은 [비교 보고](comparison-report.md)에 명시한다. GameDev `msg_8f9c7c54e888`로 `99_Tools/Formatting/independent-projects.json`, `SchemaVersion=1`, `Projects` repo-relative 명시 배열을 확정 전달받았다. F에는 Formatting/Formatting.Tests 두 항목만 넣고, main 통합 후 이 파트의 `99_Tools/Architecture/Roslyn/Architecture.Roslyn.csproj`만 신규 작업자 계약으로 추가한다. 독립 테스트는 Python이라 추가 C# 프로젝트가 없다. 원문은 `gamedev-registry-contract.json`, 회신 `msg_32cc12451b9d`는 `gamedev-registry-reply.json`이다.
+
+### 두 번째 문서 판정과 전체 주장 대조
+
+- 보고·goal·계약을 `e9a34763431cc27221058273caec88252a385229`에 고정한 뒤 신규 Opus를 발행했다. Task `task_cedbd4293b57`, Dispatch `ctx_e39d9ecfea37`, 완료 `msg_5e6d1307a2a5`와 [두 번째 판정 원문](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification-2/verdict.md)을 직접 전부 읽었다. 최초 실행 `claude --model claude-opus-5-5`, 화면 Opus 5.5 xhigh, backend unknown이다. `review-2-start.json`에는 input_accepted·turn_started가 있다. 적용 규칙 원문을 `review-2-task.txt` 본문에 넣었다.
+- 검증자는 raw·normalized·명령과 WSL cache를 읽기 전용으로 다시 집계해 D1–D3의 내용을 해소로 판정했다. 새 필수 결함은 D4(실행별 replay 테스트에 실행 간 byte 동일성 검증을 잘못 귀속), D5(상태 스냅샷 UTC 시각 누락), D6(measure와 check의 서로 다른 NuGet state를 하나로 일반화)다. 첫 판정의 동일 번호가 반복 실패한 경우는 아니다.
+- D4는 즉시 통지 `msg_f31282c9e6f1`을 받아 메인 `msg_3eddae58d1d3`로 알렸다. D6에 대해 Astra가 `msg_204d203b817d`에서 check의 새 상태와 이미 구분해 적었다고 답했으나 실제 문서에는 그 구분이 없었다. 이 보고 불일치도 메인 `msg_32821b5c1042`로 인정·전달했다. 결과가 참인 것과 누가 무엇을 확인했는지는 다른 주장이다.
+- 새 비차단 N10은 도구 build 구간의 HTTP/SDK 안내 manifest 생성과 배경 네트워크 가능성(인과 미증명), N11은 10개 state 중 7개의 package/HTTP cache 약 205 MB 누적, N12는 여러 문서의 상태 문구 중복이다. 제품 변경이나 cache 정리를 하지 않는다. 보고에는 N10–N11을 추가하고 상태는 시점이 있는 설명과 이 goal 링크로 구분한다.
+- 이 문서 실사는 독립 테스트 46개나 .NET/CodeGraph 추출을 다시 실행하지 않았다. 첫 테스트 결과를 재사용한 문서 실사와 새 실행을 구분한다. `verification-2/logs/`에 명령·집계 원문이 있고 `context.md`는 첫 쓰기로 남겼다. 현재 `audit.py`의 출력 경로를 바꾼 사본이 기존 summary와 byte 동일함도 검증자가 확인했다. 원본 보고 집계 자료는 덮어쓰지 않았다.
+- 완료와 쓰기 종료를 대조해 worker-release(retained/external_terminal) 후 동일 handle `term_b21708a5-dc38-4746-b868-c54c81f45050`, incarnation `d4071a2e-aec5-40bf-9cfd-94274551c1c0`의 완료 빈 prompt를 확인하고 pane을 닫았다(ptyKilled=true). 근거는 `review-2-completion.json`, `review-2-release.json`, `review-2-before-close-identity.json`, `review-2-before-close-read.json`, `review-2-close.json`이다. 재사용하지 않는다.
+- 메인 `msg_753da99bf45f`는 보고의 모든 사실 주장을 근거 파일:줄/명령 출력·확인 주체·확인 범위와 연결하고, 근거가 없으면 삭제 또는 미확인으로 표시하도록 지시했다. 다음 신규 Opus의 전수 확인까지 포함한다. 원문은 `main-claims-ledger-direction.json`, 수신 회신은 `main-claims-ledger-ack.json`이다. Astra의 작업 전 메모·문장 목록·수기 근거 연결은 `claim-audit/`에 보존하고 [전체 주장 대조표](comparison-claims.md)를 별도 보고 부록으로 작성한다. 자동 문장 포괄 검사는 사실 판정을 대신하지 않는다.
+- 보고 정정은 D4의 주체 분리, D5의 `2026-10-02 08:33:12 UTC` 상태 시점, D6의 measure `.dotnet-state-82UwSiLX`와 check `.dotnet-state-4r2mWCng` 명시를 포함한다. 서술 근거가 좁은 signature·조건부 컴파일 문장도 확보된 정보/한계 수준으로 고쳤다. 실제 수치·제품·테스트·oracle는 바꾸지 않았다.
+- 메인 진행 보고 `msg_f619553f3b6b`와 이전 보고 불일치 통지는 안전한 빈 prompt에서 `main-review-2-and-correction-nudge.json`의 input_accepted·turn_started로 안내했다. 캐시 디스크 크기를 다운로드 양으로 옮긴 메인 표현도 `msg_de8e19715013`으로 정정 요청했고 메인 화면에서 정정을 확인했다. 뒤의 D4 통지·전수 표 수용·두 번째 판정 보고는 사용자 draft 때문에 안내를 보류했다가 현재 동일 메인의 빈 prompt를 확인해 묶어 전달했다. `main-review-2-findings-and-ledger-nudge.json`의 input_accepted·turn_started를 보존하며 내용 승인으로 해석하지 않는다.

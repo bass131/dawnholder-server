@@ -1,10 +1,10 @@
 # 정적 관계 추출기 비교
 
-**2026-10-02 독립 실사 후 정정본 — 새 문서 재실사 전.** 닫힌 후보 36개 안에서는 CodeGraph TP/FP/FN이 14/0/1, SDK Roslyn 경로가 15/0/0이었다. 그러나 **범위 밖에서는 CodeGraph가 프로젝트 참조상 불가능한 층 방향 간선 16개를 확정했다. 같은 방향 위반은 Roslyn에서 0개였다.** CodeGraph의 유일한 표본 FN도 서버의 동명 메서드로 잘못 연결한 결과다. 이 차이를 추출기 선택의 핵심 근거로 본다.
+**상태 스냅샷: 2026-10-02 08:33:12 UTC.** 두 번째 문서 판정 FAIL 뒤의 정정본이다. 최신 검증·통합 상태는 [goal](goal.md)을 따른다. 닫힌 후보 36개 안에서는 CodeGraph TP/FP/FN이 14/0/1, SDK Roslyn 경로가 15/0/0이었다. 그러나 **범위 밖에서는 CodeGraph가 프로젝트 참조상 불가능한 층 방향 간선 16개를 확정했다. 같은 방향 위반은 Roslyn에서 0개였다.** CodeGraph의 유일한 표본 FN도 서버의 동명 메서드로 잘못 연결한 결과다. 이 차이를 추출기 선택의 핵심 근거로 본다.
 
 CodeGraph 인덱싱은 더 빨랐으며 양쪽 전체 해석은 partial이다. Roslyn 기본 후보 판단에도 Unity 부분 해석과 타입 사용 분류의 한계가 남는다. 이 문서는 현재 [goal](goal.md)의 비교 결과 설명이며, 최종 추출기 선택이나 PR 병합 승인이 아니다.
 
-작성자는 Architecture Astra(지정 `gpt-6-astra`, 화면 `GPT-6-Astra xhigh`, 실제 backend `unknown`)다. 첫 [Opus 판정](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification/verdict.md)은 **FAIL: 보고 필수 수정 D1–D3, 제품 필수 결함 0**이었다. 이전 보고 `4b064ec`의 범위 밖 오확정 축소·캐시 조건 오기·뷰어 평가 누락을 이 정정본에서 고쳤다. 최초 판정과 원시 자료를 보존하며, 새 Opus의 문서 재실사와 이후 상태는 goal에 연결한다.
+작성자는 Architecture Astra(지정 `gpt-6-astra`, 화면 `GPT-6-Astra xhigh`, 실제 backend `unknown`)다. 첫 [Opus 판정](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification/verdict.md)은 **FAIL: 보고 필수 수정 D1–D3, 제품 필수 결함 0**이었다. [두 번째 판정](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification-2/verdict.md)은 `e9a3476`에서 D1–D3 내용의 해소를 확인했지만 검증 주체·상태 시각·check 경로 서술에 D4–D6을 반환했다. 이 정정본은 그 문장과 [전체 주장 대조표](comparison-claims.md)를 보완한 것이다. 과거 판정과 원시 자료를 보존한다.
 
 ## 비교 이유와 판단 범위
 
@@ -72,7 +72,7 @@ CodeGraph는 설치된 `1.6.1`의 인덱스와 resolver 결과를 읽는다. Ros
 | `Pipeline/normalization.py`, `snapshot.py` | 공통 노드·간선·근거를 만들고 SHA·경로·endpoint·해석 상태를 검사한다. 같은 SHA의 codeReference 매핑 접점을 제공한다. |
 | `Pipeline/evaluation.py`, `cli.py` | 정규화 완료 후 닫힌 정답 범위에서 채점하고 JSON/CSV를 남긴다. normalize·validate·score·join을 따로 실행할 수 있다. |
 
-기존 게임 책임을 이 도구로 옮기지 않았다. 같은 목적의 기존 `Formatting` 도구처럼 `99_Tools` 아래에 실행·입력·계약 책임을 분리했다. 추출기가 시스템 카드 이름이나 화면 분류를 소유하지 않도록 카드 매핑은 별도 접점으로 둔다.
+기존 게임 책임을 이 도구로 옮기지 않았다. 기존 `Formatting`처럼 개발 보조 도구를 `99_Tools`에 두는 관례를 따르고 실행·입력·계약 책임을 분리했다. 추출기가 시스템 카드 이름이나 화면 분류를 소유하지 않도록 카드 매핑은 별도 접점으로 둔다.
 
 제품 도구 checkpoint는 `d0dffd1feb6082c3ddeb50fed359e2cc94886bea`로, 직전 `d7f3e82a82e496817887f9b8649683ea90ca0f39` 대비 새 파일 20개·1,542행이다. 측정 당시에는 도구가 미커밋이어서 config의 implementationHead는 직전 HEAD이며, 실제 실행 코드 SHA-256은 config와 `changed-files.json`으로 식별한다. Astra는 종료 후 현재 20개 파일과 기록 hash가 일치함을 확인하고 commit했다. 분석 대상 SHA와 도구 commit을 혼동하지 않는다. 전체 고정 diff는 다음 명령으로 볼 수 있다.
 
@@ -82,11 +82,11 @@ git diff d7f3e82a82e496817887f9b8649683ea90ca0f39 d0dffd1feb6082c3ddeb50fed359e2
 
 ## 시스템 개요에 연결하는 조건
 
-[스냅샷 계약](snapshot-contract.md)은 node의 정확한 파일·namespace·signature와 edge의 출현 위치·문맥을 보존한다. `GameSession.SubmitAttack`의 큐 내부 람다에서 `GameMap.ProcessAttack`으로 이어지는 호출은 deferred 문맥이다. 이를 즉시 실행 순서로 표시하면 안 된다.
+[스냅샷 계약](snapshot-contract.md)은 원천에서 확보한 node의 파일·namespace·signature와 edge의 출현 위치·문맥을 보존하도록 요구한다. CodeGraph의 signature가 없는 경우는 `signatureStatus=unavailable`이며 표시용 이름으로 완전한 signature를 대신했다고 보지 않는다. `GameSession.SubmitAttack`의 큐 내부 람다에서 `GameMap.ProcessAttack`으로 이어지는 호출은 deferred 문맥이다. 이를 즉시 실행 순서로 표시하면 안 된다.
 
 Management 하위 카드의 codeReference와 snapshot은 같은 전체 SHA에서만 조인한다. 같은 코드가 여러 카드에 들어가는 다대다 소속을 보존하고, 상위 시스템 관계는 그 소속에서 유도한 집계로 표시한다. 중복 edge를 한 번 세더라도 어떤 카드들이 같은 근거를 공유하는지는 남긴다. 현재 Management 디자인 샘플은 다른 SHA이며 실제 카드 corpus가 아니므로 이번 결과와 조인하지 않았다.
 
-다음은 최종 cold snapshot의 실제 node/edge를 읽어 수행한 **데이터 지원 평가**다. 화면·조회 API를 구현하거나 플레이를 실행했다는 뜻이 아니다. 양쪽 정규화 결과가 네 번 동일한지는 독립 replay 검사가 확인했다.
+다음은 최종 cold snapshot의 실제 node/edge를 읽어 수행한 **데이터 지원 평가**다. 화면·조회 API를 구현하거나 플레이를 실행했다는 뜻이 아니다. 각 도구의 cold/warm 네 결과가 byte 단위로 같은지는 구현자의 자체 점검과 두 번째 Opus 문서 실사의 SHA-256 대조에서 확인했다. 기존 독립 replay 테스트는 각 실행의 raw를 다시 변환해 그 실행 자신의 normalized.json과 비교했다. 이 두 검사의 주체와 대상을 구분한다.
 
 | 뷰어 기능 | 확인한 데이터와 판정 | 부족한 부분·소비 조건 |
 |---|---|---|
@@ -115,7 +115,7 @@ module root 5개는 `02_Server/GameServer`, `02_Server/Network`, `03_Client/Asse
 
 승인된 npm 설치는 4.713초·exit 0, 실제 node_modules 296,018,321 bytes, npm cache 64,762,250 bytes로 기록됐다. 설치 과정의 네트워크 다운로드 바이트를 이 디스크 점유량과 동일시하지 않는다.
 
-`measure` 진입 명령은 매번 새 `.dotnet-state-*`를 만들고 전용 NuGet package·HTTP·plugins·scratch 경로를 사용한다. **최종 준비 단계에는 api.nuget.org에서 기존 제품 의존성을 내려받은 시간이 들어 있다.** 최종 state는 소유 WSL root 아래 `.dotnet-state-82UwSiLX`다. 하나의 `measure` 안의 8회 분석은 이 준비 이후 실행되며 각 cold/warm 분석마다 restore를 새로 수행한 것은 아니다.
+`measure`와 `check` 진입 명령은 각각 새 `.dotnet-state-*`를 만들고 전용 NuGet package·HTTP·plugins·scratch 경로를 지정한다. **최종 measure의 준비 단계에는 api.nuget.org에서 기존 제품 의존성을 내려받은 시간이 들어 있다.** 그 measure state는 소유 WSL root 아래 `.dotnet-state-82UwSiLX`다. 하나의 `measure` 안의 8회 분석은 이 준비 이후 실행되며 각 cold/warm 분석마다 restore를 새로 수행한 것은 아니다. `check`는 명시적 restore를 실행하지 않는다.
 
 | 최종 준비 단계 | 다시 집계한 초 | cache·수행 범위 |
 |---|---:|---|
@@ -128,11 +128,11 @@ module root 5개는 `02_Server/GameServer`, `02_Server/Network`, `03_Client/Asse
 
 최종 cache의 공통 경로는 `/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5/.dotnet-state-82UwSiLX/nuget`다. 그 아래 `packages`에는 `NETStandard.Library.Ref 2.1.0` 23,193,422 bytes, `StyleCop.Analyzers 1.2.0-beta.556` 34,522 bytes, `StyleCop.Analyzers.Unstable 1.2.0.556` 1,957,899 bytes가 있다. 합계 157파일·25,185,843 bytes다. 같은 위치의 `http`는 11파일·4,126,428 bytes이며 api.nuget.org의 패키지/목록 cache 파일 시각은 Server restore 구간과 일치한다. 이 수치는 cache의 파일 크기이며 실제 네트워크 전송량은 N/A다.
 
-모든 기록된 .NET 명령의 NuGet 환경은 이 격리 경로를 가리킨다. **기존 전역 NuGet cache의 전후 해시를 수집하지 않았으므로 그 내용의 불변은 미검증이다.** 격리 경로 지정과 전역 cache 불변의 실증을 혼동하지 않는다. 경로·환경·개별 크기·비용 재집계는 `report-correction/summary.json`, 원천 다운로드 시각은 `verification/logs/audit/preserve.txt`에 있다. 재실행 시 새 cache에 기존 의존성을 복원하는 네트워크 의존이 유지 비용으로 남는다.
+최종 measure의 .NET 명령 9개는 `.dotnet-state-82UwSiLX`를 사용했다. 07:03 UTC의 check가 기록한 .NET 명령 2개(`implementation/format/sdk-version`, `format/whitespace`)는 별도 `.dotnet-state-4r2mWCng`를 사용했고 그 상태의 package cache 파일은 0개였다. 두 실행은 각각 격리 경로를 지정했다. **기존 전역 NuGet cache의 전후 해시를 수집하지 않았으므로 그 내용의 불변은 미검증이다.** 격리 경로 지정과 전역 cache 불변의 실증을 혼동하지 않는다. measure 비용은 `report-correction/summary.json`, 실행별 경로는 `verification-2/logs/attribution_and_state.txt`, cache 대조는 `verification-2/logs/d2_restore_cache.txt`에 있다. measure 재실행 시 새 cache에 기존 의존성을 복원하는 네트워크 의존이 유지 비용으로 남는다.
 
 Unity는 로컬 managed DLL만 사용하고 InputSystem/TMP의 Library·obj를 입력으로 읽지 않았다. 최종 Roslyn raw의 Unity 근사 compilation에는 Error 285개·Warning 55개·Hidden 250개가 있다. Server/Shared/ClientNet의 compilation에는 Error가 기록되지 않았지만 각각의 미해석 호출은 남아 있다. 측정 자료의 이 세 층 `complete`는 compiler error 없는 실제 project 해석 상태를 뜻하며 모든 관계가 해소됐다는 뜻으로 읽지 않는다. 최상위 snapshot은 partial이다.
 
-CodeGraph는 조건부 지시문 양쪽을 문법적으로 인덱싱하는 설정이며 Roslyn은 기록된 Debug/Unity editor/windows parse options를 따른다. 입력 파일이 같다는 사실과 활성화된 컴파일 분기가 같다는 주장을 구분한다. CodeGraph 결과도 컴파일러가 완전하게 확인한 의미 그래프라고 표시하지 않는다. 설치 메모리나 정규화 개별 peak memory처럼 계측하지 않은 항목은 N/A다. telemetry 환경 설정·설치 소스 확인과 패킷 캡처를 구분한다.
+CodeGraph raw는 compiler configuration과 supplied DLL의 의미 해석이 없는 문법/resolver 인덱스라는 한계를 기록한다. Roslyn은 기록된 Debug/Unity editor/windows parse options를 따른다. 입력 파일이 같다는 사실만으로 활성화된 컴파일 분기가 같다고 보지 않는다. CodeGraph 결과를 컴파일러가 완전하게 확인한 의미 그래프로 표시하지 않는다. 설치 메모리나 정규화 개별 peak memory처럼 계측하지 않은 항목은 N/A다. telemetry 환경 설정·설치 소스 확인과 패킷 캡처를 구분한다.
 
 ## 선택 근거와 유지보수 대가
 
@@ -154,23 +154,25 @@ CodeGraph는 이번 설정에서 인덱싱이 빨랐지만, **동명 target 오�
 | N6 | 동결 manifest의 작업본 CRLF hash는 `9f440a1a…`, Git LF blob hash는 `890aee6b…`다. 현재 snapshot은 작업 바이트 기준이므로 새로운 LF checkout에 그대로 이식되지 않는다. 원래 동결을 바꾸지 않았고 표준화 hash는 후속 보강 사항이다. |
 | N7–N8 | 07:03의 check가 06:58 batch의 score/채점 명령 기록을 갱신했다(재계산은 동일). 실행 config의 코드 hash에는 `.ps1`과 comparison-settings.json이 빠져 있다. 완료 파일 hash/commit과 실행 시점 출처를 구분해야 한다. |
 | N9 | Roslyn의 WorkspaceFailed API 사용에 CS0618 obsolete 경고가 있다. 도구 build exit 0은 경고 0이 아니다. |
+| N10 | 도구 build 구간에 HTTP service index·서명 cache와 SDK workload 안내 manifest가 생성됐다. 배경 네트워크 사용 가능성은 시각의 일치에서 추정했으며 인과나 전송량을 증명하지 않았다. |
+| N11 | 문서 재실사 시 전용 `.dotnet-state-*` 10개가 남았고 그중 7개의 package+HTTP cache는 각각 29,312,271 bytes였다(합계 205,185,897 bytes). 반복 측정에 따른 디스크 누적이 남는다. |
 | 가독성 | 책임별 배치는 적합하나 긴 Python/C# 식, 큰 measure 함수, PowerShell 명명 인자 부분 미준수가 비차단 의견으로 남았다. 구현/검증 당시 기준과 다음 신규 계약부터 강화되는 차단 기준의 적용 시점을 구분한다. |
 
-Unity Editor·플레이·게임 서버·DB·제품 전체 빌드/테스트는 실행하지 않았다. 검증자도 .NET/CodeGraph를 새로 추출 실행하지 않고 기존 raw와 공개 변환·검사·채점 CLI를 독립 시험했다. CI는 GameDev의 독립 도구 목록 등록 PR이 main에 통합된 뒤 우리 프로젝트 항목을 추가해 확인한다. 그 전에는 이 작업의 PR을 내지 않는다. 정정 보고의 새 문서 판정이 아직 없고, Unity 부분 해석과 위 비차단 발견이 남아 있다. 최종 도구 선택과 각 PR 병합은 사용자의 결정으로 남긴다.
+Unity Editor·플레이·게임 서버·DB·제품 전체 빌드/테스트는 실행하지 않았다. 첫 검증자는 .NET/CodeGraph를 새로 추출 실행하지 않고 기존 raw와 공개 변환·검사·채점 CLI를 독립 시험했다. 두 번째 검증자는 문서 실사와 읽기 집계만 수행했으며 그 테스트를 재실행하지 않았다. CI는 GameDev의 독립 도구 목록 등록 PR이 main에 통합된 뒤 우리 프로젝트 항목을 추가해 확인한다. 그 전에는 이 작업의 PR을 내지 않는다. Unity 부분 해석과 위 비차단 발견이 남아 있다. 검증·통합 상태의 정본은 goal이며 최종 도구 선택과 각 PR 병합은 사용자의 결정으로 남긴다.
 
 ## 재현과 근거 찾기
 
-현재 동결 바이트·설치 자료를 보존한 Windows checkout의 PowerShell 7.6.6에서 `& ./99_Tools/Architecture/run-architecture.ps1 measure`를 실행하면 별도 시각의 batch를 만든다. 기존 CodeGraph 설치는 사용하지만 NuGet 격리 상태는 새로 만든다. `check`는 계약·채점·C# 서식을 다시 확인하고 기존 batch의 채점 파일을 갱신한다. 근거 보존이 필요한 독립 검사는 이 명령을 그대로 재실행하지 않는다. 소유 WSL 경로는 `/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5`다. 새 checkout의 manifest 개행 차이(N6)와 Git 제외 freeze/evidence 자료 필요를 함께 고려해야 한다.
+현재 동결 바이트·설치 자료를 보존한 Windows checkout에서 구현자가 사용한 PowerShell은 7.6.6이다. `& ./99_Tools/Architecture/run-architecture.ps1 measure`는 별도 시각의 batch를 만든다. 기존 CodeGraph 설치를 사용하고 NuGet 격리 상태는 새로 만든다. `check`도 새 state를 만들며 명시적 restore 없이 계약·채점·C# 서식을 다시 확인하고 기존 batch의 채점 파일을 갱신한다. 근거 보존이 필요한 독립 검사는 이 명령을 그대로 재실행하지 않는다. 소유 WSL 경로는 `/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5`다. 새 checkout의 manifest 개행 차이(N6)와 Git 제외 freeze/evidence 자료 필요를 함께 고려해야 한다.
 
 raw 재정규화는 `Pipeline/cli.py normalize`에 run의 `raw.json`·`extractor-config.json`·동결 manifest를 전달한다. `score`는 그 결과와 scope·truth를 별도로 받는다. 새 출력 경로를 지정해 기존 근거를 덮어쓰지 않는다. Windows 경로·개행과 WSL 경로·Git blob 바이트 차이도 기록된 hash의 기준에 맞춰 확인한다.
 
 | 근거 | 로컬 evidence 안의 위치 |
 |---|---|
-| 승인 설치·lock·크기 | `implementation/install/measurement.json`, `dependency-check.json`, `install/package-lock.json` |
-| 분석 전 동결 | `freeze-record.json`, `implementation/first-analysis-codegraph.json`, `first-analysis-roslyn.json` |
+| 승인 설치·lock·크기 | `implementation/install/measurement.json`, `implementation/dependency-check.json`, `implementation/install/package-lock.json` |
+| 분석 전 동결 | `freeze-record.json`, `implementation/first-analysis-codegraph.json`, `implementation/first-analysis-roslyn.json` |
 | 입력·실행·비용 | 최종 batch의 `input-copy.json`, `config.json`, `environment.json`, `measurements.json/csv`, 단계별 `command.json` |
-| 독립 raw와 정규화·채점 | 최종 batch의 `{codegraph,roslyn}/{cold,warm1,warm2,warm3}/raw.json`, `normalized.json`, `score.json/csv` |
-| 구현자 자체 검사·보존 | `implementation/inspection-results.json`, `format/whitespace/command.json`, `original-final-check.json`, `changed-files.json` |
+| 두 추출기의 raw와 정규화·채점 | 최종 batch의 `{codegraph,roslyn}/{cold,warm1,warm2,warm3}/raw.json`, `normalized.json`, `score.json/csv` |
+| 구현자 자체 검사·보존 | `implementation/inspection-results.json`, `implementation/format/whitespace/command.json`, `implementation/original-final-check.json`, `implementation/changed-files.json` |
 | 최종 파일 대조·구현 diff | `astra-final-file-check.json`, `implementation.diff` |
 | 독립 실사·검사·보고 정정 근거 | `verification/verdict.md`, `verification/logs/final-run.txt`, `verification/logs/audit/{frame,viewer,preserve}.txt`, `report-correction/summary.json` |
 
