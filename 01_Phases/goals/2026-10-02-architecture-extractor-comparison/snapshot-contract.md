@@ -85,7 +85,7 @@ Management 회신 시점의 7/39/9는 디자인 샘플이며 실제 카드 corpu
 
 Unity 입력은 로컬 managed DLL까지이며 InputSystem/TMP의 Library 산출물을 읽지 않는다. 누락 참조로 인한 compiler error와 unresolved 관계는 부분 해석으로 표시한다. 임의 Unity stub을 추가해 완전한 semantic 분석으로 보이게 하지 않는다. 추출기 비교는 Editor 컴파일·플레이·서버 실행·DB 검증을 대신하지 않는다.
 
-독립 Opus는 보고·raw·실제 diff를 대조한 뒤 schema/SHA/path/endpoint·동명 오인·누락 입력·결정적 정규화·원본 보존 등 계약 실패 경로를 검사했다. 46개 테스트 중 정상 성공 43개·expected failure 3개였고 첫 전체 판정은 보고 결함으로 FAIL이다. 최종 형식 승인이나 모든 계약의 충족을 뜻하지 않는다. [비교 보고](comparison-report.md)의 N1–N9와 판정 원문을 함께 읽는다.
+독립 Opus는 보고·raw·실제 diff를 대조한 뒤 schema/SHA/path/endpoint·동명 오인·누락 입력·결정적 정규화·원본 보존 등 계약 실패 경로를 검사했다. 46개 테스트 중 정상 성공 43개·expected failure 3개였고 첫 전체 판정은 보고 결함으로 FAIL이다. 최종 형식 승인이나 모든 계약의 충족을 뜻하지 않는다. 제품 비차단 N1–N11·가독성과 과거 판정은 [로컬 검증 이력](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/report-reduction/history.md)에 연결한다.
 
 ### 현재 구현 접점과 독립 확인의 한계
 
