@@ -2,7 +2,7 @@
 
 ## 현재 단계와 요청 출처
 
-**goal 초안 작성, 메인 검토 전.** 이번 목표는 개발 현황에서 전체 시스템 카드 → 하위 시스템 카드 → 내부 구현 설명을 탐색하고, 같은 자료를 읽기 전용 MCP로 조회하게 만드는 일이다. 목표 기준·현재 상태·결과는 이 파일에 모은다. root CURRENT는 GameDev 소유이므로 수정하지 않는다. Management README/RESUME의 진입 링크는 범위 확정 뒤 이 goal로 연결한다.
+**메인 goal 승인, 디자인 Opus 작업 진행 중.** 메인의 `msg_2cc96f3f8124`가 `08ae8a9` 기준 goal과 7개 상위 분류·자료 분리·매핑 계약·guide 편집 UI 제외를 승인했다. 이번 목표는 개발 현황에서 전체 시스템 카드 → 하위 시스템 카드 → 내부 구현 설명을 탐색하고, 같은 자료를 읽기 전용 MCP로 조회하게 만드는 일이다. 목표 기준·현재 상태·결과는 이 파일에 모은다. root CURRENT는 GameDev 소유이므로 수정하지 않는다. Management README/RESUME의 진입 링크는 범위 확정 뒤 이 goal로 연결한다.
 
 2026-10-02 메인 Claude의 `msg_536a13756092`가 신규 Management Astra 진입과 M-2 목표를 요청했다. 수신 `from_handle`은 현재 메인 terminal `term_6505bda3-c071-476a-a50a-755c10fa02eb`와 대조했다. **메인이 전달한 사용자 결정이며 사용자 직접 입력으로 격상하지 않는다.** 원문과 진입 관찰은 로컬 Git 제외 `.backups/verification/2026-10-02-management-m2-system-cards/{entry-mail,entry-terminal}.json`에 있다.
 
@@ -81,6 +81,8 @@ Architecture Astra의 `msg_64e6b8884f21`은 저장소 상대 경로·file/direct
 
 현재 `vite.config.ts`의 production CSP는 `style-src 'self'`, `default-src 'none'`이며 font-src가 없다. 초기 목업은 기존 시스템 폰트·직접 CSS/SVG로 만든다. 새 폰트나 패키지를 제안하면 정확한 출처·라이선스·CSP·설치 범위를 별도 선택지로 내고 승인 전 도입하지 않는다. 후보 게임의 실제 아트·폰트를 가져오는 권한으로 해석하지 않는다.
 
+메인의 `msg_2cc96f3f8124`에 따라 서로 다른 테마 두 가지(예: 퀘스트 게시판형·상점 장부형)를 같은 데이터·화면 흐름으로 제시한다. 데이터 본문과 구현 문서는 두 안 모두 장식 없이 읽기 쉽게 유지한다. **결정용 목업 한정 예외:** OFL 라이선스를 원천에서 확인한 픽셀 폰트(Galmuri 후보)를 제목 변형에 data URI로 포함할 수 있고, 출처·라이선스를 목업에 적는다. 이 허용은 제품 폰트 도입·설정/CSP 변경 승인으로 확대하지 않는다.
+
 그림이나 애니메이션이 필요하면 디자인 Opus가 용도·크기·스타일·프레임 수·투명 배경 여부·파일 크기 예산을 지정하고 Astra가 Codex 내장 이미지 생성으로 만든다. 설정 변경·설치 없이 사용할 수 없으면 우회하지 않고 메인에게 보고한다. 생성 프레임의 sprite sheet/CSS 애니메이션도 동작 감소 설정을 존중한다. 산출물은 앱에 번들하는 로컬 파일이며 외부 URL은 넣지 않고 CSP를 유지한다. 자체 포함 목업에 쓰는 이미지는 내부에 포함해 단독 열람을 유지한다. 각 생성물의 prompt·사용 도구·표시 모델·생성 일시·확인 불가 backend `unknown`을 목표 산출물에 기록하며 prompt에 비밀·개인정보를 넣지 않는다. 독립 Opus가 명세 일치와 실제 표시를 검증한다. 목업에 필요한 생성물이 있으면 생성→삽입 후 경로를 즉시 메인에게 보낸다.
 
 메인이 목업을 사용자에게 보여 주고 레퍼런스 1~2개·테마 방향·필요한 의존성을 결정한다. 이 결정이 전달된 뒤 R-12/D-09를 갱신하고 구현 명세를 고정한다. 디자인 목업 완료, 사용자 승인, 제품 화면 검증은 각각 별도 상태로 기록한다.
@@ -97,7 +99,7 @@ Architecture Astra의 `msg_64e6b8884f21`은 저장소 상대 경로·file/direct
 | 6 | 결함 시 신규 Sol 수정 → 신규 Opus 재검증 | 같은 결함 3회 실패는 메인 보고 |
 | 7 | Astra: 결과 기록·commit/push·PR; 메인 원문/R-2 대조 | 해당 PR 병합 직전 사용자 명시 승인 |
 
-Sol에게 구현 설명 본문 작성을 맡기지 않는다. **역할 확인 필요:** 메인의 “Sol에게 UI 구현만” 범위를 UI와 이를 지원하는 Electron/공통 검증/읽기 MCP 코드까지 포함하는지 확인 요청했다(`msg_44e5a4be4ebe`). 이 확인 전 해당 제품 작업을 발행하지 않는다. Astra가 제품 구현이나 독립 검증 판정을 대신하지 않는다.
+Sol에게 구현 설명 본문 작성을 맡기지 않는다. `msg_44e5a4be4ebe`의 역할 확인 요청에 메인이 `msg_2cc96f3f8124`로 **제품 코드는 전부 Sol 소유**라고 확정했다. UI, Electron IPC, 공통 검증·순수 조회, 읽기 MCP adapter와 새 도구 3개를 포함한다. Astra는 카드 분류·데이터 계약·구현 설명 본문을 맡고 제품 구현이나 독립 검증 판정을 대신하지 않는다.
 
 외부 작업자는 [Orca 위임 절차](../../../.agents/skills/dawnholder-goal-loop/references/orca-work.md)로 신규 Run/Task/Dispatch에 연결한다. 같은 파일의 동시 쓰기·추가 위임·세션 재사용을 금지한다. Sol/검증자는 commit/push하지 않고 담당 Astra만 수행한다. 모델 요청·실행 명령·화면 표시와 backend `unknown`을 구분한다. 독립 검증 중 제품·설명 자료 쓰기는 중단한다.
 
@@ -118,5 +120,11 @@ Sol에게 구현 설명 본문 작성을 맡기지 않는다. **역할 확인 �
 - 이전 `docs/management-m1-closeout` HEAD `f39042e61de42dcf363c0526be335c78e9985955`에서 로컬 변경 없음을 확인했다. `git fetch origin main` 후 최신 `333fe20211260ef230cd7d4ef9555cb4d5999c08`(PR161 merge)에서 `feat/management-m2-system-cards`를 새로 만들었다. 이전 branch와 과거 결과는 보존했다.
 - READY를 메인에 전송한 receipt는 `msg_d2107d5fea19`다. enqueue는 수신·검토 완료 증거가 아니다.
 - Architecture Astra `term_366eb418-ef60-48df-9d08-e6b3efa11c08`의 제안과 실제 architecture-active 소속을 확인하고 `run_a98ca1c7a511`로 매핑 형식을 조율했다. 데이터 접점은 위와 같이 합의했으며 양쪽 구현·검증은 별도다.
-- 현재 제품 코드·데이터·설정·디자인 규칙 변경, 작업자 기동, 빌드·테스트·GUI·DB 실행은 없다. 독립 검증 판정 원문도 아직 없다.
-- 다음 행동: 메인에게 이 초안과 역할 확인 사항을 전달하고 검토 결과를 반영한다. goal 검토 뒤 디자인 작업자 하나를 발행한다. 사용자에게 물을 테마 선택은 목업이 준비된 뒤 메인이 구체적인 화면으로 진행한다.
+- 현재 제품 코드·데이터·설정·디자인 규칙 변경, 빌드·테스트·GUI·DB 실행은 없다. 디자인 작업자만 아래처럼 기동했고 독립 검증 판정 원문은 아직 없다.
+- 다음 행동: 두 변형 목업을 감독하고 필요 이미지 생성을 지원한다. 사용자에게 물을 테마 선택은 목업 준비 즉시 메인에게 경로를 전달해 진행한다. 디자인 방향/R-12·D-09 변경의 사용자 승인은 아직 받지 않았다.
+
+### 디자인 작업 발행 — 2026-10-02
+
+Run `run_ba66f38de7c0`, Task `task_2ac3f658be9a`, Dispatch `ctx_ac12fb3133b1`로 신규 디자인 Opus의 최초 작업을 연결했다. Management Astra 아래 vertical split, terminal `term_4f24d4a3-a5c5-45d2-99c6-f2f19f96b68e`, incarnation `c406fb10-b98b-4842-859c-7238c8a4ffbb`다. `claude --model claude-opus-5-5` 실행 명령과 최초 화면의 Opus 5.5 xhigh·management-active 경로·빈 prompt를 대조했으며 `tui-idle`이 true였다. 이 화면에는 선택창이 관측되지 않았다. 실제 backend는 `unknown`이고 attach receipt의 model null은 실제 모델 판정에 사용하지 않는다.
+
+`design-start.json`에서 `input_accepted`와 `turn_started`를 확인했다. 이는 작업 접수·턴 시작 근거이며 목업 완료나 디자인 검증 결과가 아니다. 원문 spec·기동·첫 화면·준비·연결 receipt는 로컬 evidence의 `design-task.md`, `design-launch-command.txt`, `design-{launch,first-screen,ready,terminal,start}.json`에 있다. 디자인 작업자는 목표 전용 명세·목업·assets와 자기 점검 보고만 쓰고 goal·제품·데이터 원본은 쓰지 않는다. 명세 확정 전 필요한 생성물 목록을 Astra에게 보내도록 했다.
