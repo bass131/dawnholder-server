@@ -1,6 +1,6 @@
 # P3 / D1b — 영속성 저장소와 격리 SQL 검증
 
-상태: **G0·G1 승인, A1·A2·가독성 구현 정산 완료, F 서식 검사 등록의 신규 Sol 착수, SQL 구조·위치(b) 승인(B1 보류); 실제 외부 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. 전체 구현 완료나 독립 검증 판정은 아직 없다.
+상태: **G0·G1 승인, A1·A2·가독성 구현 정산 완료, F 서식 검사 등록 구현 정산 후 신규 Opus 검증 착수, SQL 구조·위치(b) 승인(B1 보류); 실제 외부 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 아래 세 안건 추천안이 승인됐다. DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. 전체 구현 완료나 독립 검증 판정은 아직 없다.
 
 ## 착수 근거와 기준점
 
@@ -216,3 +216,14 @@ A2 checkpoint는 `1091525`, 최신 main 통합은 `771806c`다. CURRENT 충돌�
 | 전체 설치 transaction과 마지막 strict catalog | 선언/객체 일부/권한/기록 중 일부만 commit돼 다음 실행이 완료 상태로 오해하는 실패 | 기존 경계 유지. 9grant 멱등 적용과 최종 전체 집합 확인도 같은 transaction |
 
 engine-definition 기대값은 검토된 소스에서 만든 값이며 실제 DB 값을 읽어 정답으로 저장하지 않는다. 최초 실제 엔진의 CREATE OR ALTER 정규화가 다르면 원문·차이를 보고하고 수정/독립 재검증한다. 임의 정규화 확대나 실제값 역채택으로 통과시키지 않는다. 제안 장치 중 제거한 것은 없으나 메타데이터를 위의 최소 책임으로 제한했다. 추가 감시 daemon·주기 hash 검사·범용 감사/자가 복구·승인 엔진은 만들지 않는다.
+
+## 현재 관측 보완
+
+- Root 가독성/문서/승인 설계 checkpoint는 `11cfe4a88441eb6ac284e597c93af2e1f38b22d7`이며 원격 push/PR/DB 실행은 하지 않았다. 신규 구조 구현·합동 검증 계약은 각각 `sql-structure-spec-draft.md`, `sql-structure-review-spec-draft.md`에 준비했고 관련 규칙 원문을 붙였다. 단독 가독성 검증 초안은 폐기 표시했다. 아직 구조 Task를 발행하지 않았다.
+- F Sol `msg_0ce9ecc0372e`(08:24 UTC): WSL SDK10.0.301 build 및 등록 제품8/독립2의 restore·verify·apply, 240파일 Debug/Release 보존은 자체 관측 exit0이며 전체 format-check는 기존 tests 단계 exit1이다. 실제 discovery는 **200, PASS115/FAIL85**다. 기존 계약의195는 과거 보고값이며 현재 count를 대신하지 않는다. Astra가 `existing-tests.log` 마지막 원문과 tests diff 없음(exit0)을 대조하고 메인 `msg_ad91cb983055`로 즉시 알렸다. 아직 최종 구현 정산/독립 판정이 아니다. 신규 Opus가 실제 전체200을 보존하고 실패를 독립 분류·fixture/등록 반례를 보완하며 195로 줄이지 않는다.
+- F checkout DEVELOPMENT 서식 절에 명시 slnx/독립 등록, 단계 연결과 각 파트 기능 테스트 CI 소유를 Astra가 추가했다. 기존 CODE_CONVENTION 변경과 함께 Sol 소유에서 제외하고 `msg_daa685fa8d45`로 알렸다. 새 Opus가 구현·문서 일치를 실사한다. Rules 소유 CODE_CONVENTION 추가 쓰기 동결은 유지한다.
+- Rules Astra `msg_5f5c94e8d09d`의 그 목표 승인된 SQLFluff4.3.0 격리 parse 시범 요청에 `msg_8d57cffad325`로 고정11cfe4a와 독립 SQL15파일(001~014 + verify-schema.sql)을 전달했다. Git 내용만 Rules evidence에 복사하고 Root/F 파일은 쓰지 않는다. PS here-string SQL과 미래 modules 구조는 이 시범 범위 밖이다. `msg_0623e77ac8f2`로 수신·범위 구분을 확인했다. 원문 `rules-sql-snapshot-reply.json`; 실제 parse 결과는 아직 받지 않았다.
+- Architecture `msg_32cc12451b9d`는 F main 통합 후 자기 `Architecture.Roslyn.csproj` 한 항목만 새 작업자 계약으로 등록하고 PR을 낸다고 확인했다. 테스트는 Python stdlib이며 추가 C# 테스트 프로젝트는 없다. Rules `msg_031a9df0258a`도 현재 새 csproj 계획이 없고 등록 필요시 자기 항목만 추가한다고 확인했다.
+- F Sol 완료 `msg_c34e8b14e4bf`(08:31:14 UTC), 원문 전체를 읽었으며 SHA256 `6C4231394B1311C0F5522FFF8D54B2B7EA0F9108298FAD2255D3EA390ECD5C85`다. F checkout의 implementation/report.md와 context 완료 절, 실제 preservation/tests command+exit 및 tests200/115/85 원문, 9제품 hash·23보호파일 보존을 대조했다. Astra의 첫 hash 불일치 집계는 PowerShell 비교에서 속성 대신 literal을 쓴 자체 오류였고 원래 expected/actual 행을 보존한 뒤 scriptblock으로 바로잡아 불일치0을 확인했다(astra-product-hash-check.json). 제품 불일치나 독립 PASS로 해석하지 않는다. 새로운 프로젝트/공백 경로·Windows PS 전체·CI는 미실행이다.
+- F release retained/external_terminal 뒤 동일 runtime/handle/incarnation/idle 화면을 확인해 정확 pane만 닫았고 ptyKilled:true, 완료 Delivery도 ack했다. `formatting-release.json`, `formatting-final-show.json`, `formatting-close.json`, `formatting-settlement-delivery.json`. F의 구현+문서 로컬 checkpoint는 `c5bc64f86b995ebf55e8db1b0169441446372df0`이며 tests는 수정되지 않았다.
+- 신규 F Opus 검증 Task `task_a2b973098d85`, Dispatch `ctx_c48713d40f76`, handle `term_0676e059-ae1e-41ec-9735-95edfb275259`, incarnation `6b383745-8fce-4002-a2b3-400cb85f0cb7`. 최초 명령은 `pwsh -NoLogo -NoProfile -WorkingDirectory C:/Users/bass1/orca/workspaces/DawnHolder_Project/formatting-project-registration -Command "claude --model claude-opus-5-5"`다. 첫13행 정상 prompt·Opus5.5 xhigh·F 경로와 tui-idle 확인, 선택창 없음, backend unknown. attach ready/input_accepted이며 turn_started 관측은 provider unsupported이므로 확인됐다고 하지 않는다. `formatting-review-1-split/ready-wait/first-screen/start.json`에 보존했다. 검증 계약은 context 수신 후 tests만 쓰며 실제 전체200 보존과 새 제품/독립 도구·실제 단계 연결·규칙 준수 차단을 요구한다.
