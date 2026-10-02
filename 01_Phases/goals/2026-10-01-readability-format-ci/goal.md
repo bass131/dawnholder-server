@@ -349,7 +349,7 @@ DLL embedded source 실사: Sol의 `a-sol-1/cp3-final-embedded-source-impact.jso
 
 ### 종료 기록의 Git 통합
 
-메인 `msg_79e2f9371013`(02:19:52Z)의 [결정 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-main-closeout-docs-pr.json)에 따라 병합 main `10bcafd`에서 `docs/q1a-closeout-20261002`를 만들고 이 goal과 Q-1 로드맵의 인계 링크만 별도 PR로 통합한다. 새 목표가 아닌 Q-1A의 종료 기록이다. 신규 Opus가 두 파일의 링크·사실·미실행 표기를 정적으로 실사했다. 제품 변경·추가 SDK 실행은 없으며 이 기록 PR에도 별도 사용자 병합 승인이 필요하다. 아래 1차 지적의 정정·신규 독립 재검증과 PR 생성·승인은 아직 완료되지 않았다.
+메인 `msg_79e2f9371013`(02:19:52Z)의 [결정 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-main-closeout-docs-pr.json)에 따라 병합 main `10bcafd`에서 `docs/q1a-closeout-20261002`를 만들고 이 goal과 Q-1 로드맵의 인계 링크만 별도 PR로 통합한다. 새 목표가 아닌 Q-1A의 종료 기록이다. 신규 Opus가 두 파일의 링크·사실·미실행 표기를 정적으로 실사했고, 아래 1차 지적은 정정 뒤 별도 신규 Opus의 한정 재검증에서 해소됐다. 제품 변경·추가 SDK 실행은 없으며 이 결과 기록 PR에도 별도 사용자 병합 승인이 필요하다. 해당 PR의 CI·메인 원문 대조·사용자 승인·병합 상태는 PR과 메인의 보고에서 확인한다.
 
 ### 종료 문서 1차 실사와 정정 — 2026-10-02
 
@@ -358,6 +358,12 @@ DLL embedded source 실사: Sol의 `a-sol-1/cp3-final-embedded-source-impact.jso
 - 변경 줄 링크14개(로컬 근거10·tracked1·자기 anchor1·외부 API대조2)는 누락0이었다. Git·gh·HKCU 읽기 전용 재조회에서 병합/56파일 차이/blame4표본/PATH/CI834+5/미실행/3A 인계가 기록과 일치했다. 외부 URL의 실제 Markdown 화면 렌더는 확인하지 않았고 로컬 `.backups/` 링크는 Git 제외라 다른 clone에서 열 수 없다. 제품·SDK·CI·Unity·게임·DB를 새로 실행한 결과가 아니다.
 - [Astra 원천 대조](../../../.backups/verification/2026-10-01-readability-format-ci/astra-opus-4-docs-final-correspondence.json)는 검증 전후 HEAD·clean 상태와 실제 근거18파일 목록을 확인했다. 대상2문서를 포함한7개 hash 비교 중6개는 같았고 shared `.git/config`1개만 바뀌었고 메인이 승인된 Management PR161 push에 따른 변경임을 확인했으므로 보존했다. 이 파일을 불변이라고 보고하지 않는다. 완료 뒤 release·동일 runtime/incarnation/경로 및 빈 prompt 확인·[close](../../../.backups/verification/2026-10-01-readability-format-ci/a-opus-4-docs-close.json) ptyKilled=true·delivery ACK로 정산했다. 이 검증자를 재사용하지 않는다.
 - 실행 경계는 **허용 밖 임시 쓰기2건**으로 불준수다. [실패 기록](../../../.backups/verification/2026-10-01-readability-format-ci/a-opus-4-docs/attempts.md): `%TEMP%/opus4-path-read.ps1`은 alias 충돌 exit1로 비교에 실패했고, Git Bash 리디렉션은 `AppData/Local/nul`에 Git diff 출력을 썼다. 작업자는 사본을 남기고 두 원본을 삭제했다고 기록했다. Astra는 현재 두 경로 부재와 사본의 실제 Git diff 일치를 확인했지만 쓰기 전 부재·덮어쓰기 여부는 unknown이며 완전 복구라고 주장하지 않는다. 실패 스크립트·수정 스크립트는 registry 읽기 전용이고 원천 Git/문서가 유지돼 별도 성공 대조의 내용 근거를 무효화하지 않는다고 판단했다. F-1과 재검증 필요는 그대로 남긴다. 메인 `msg_c4a0866c4eb4`로 즉시 보고했으며 위반을 문서 PASS로 덮지 않는다.
+
+### 종료 문서 재검증 정산 — 2026-10-02
+
+- 메인 승인에 따라 `4b8f5ad8b72e86828d1fbda2f57214c738f1b096`를 고정하고 신규 `claude-opus-5-5` 한 명에게 정정 diff와 F-1~F-3만 재검증시켰다. [최초 연결](../../../.backups/verification/2026-10-01-readability-format-ci/a-opus-5-docs-recheck-start.json)은 Task `task_4507c707b0b8`/Dispatch `ctx_bfea27d54d7d`, input_accepted·turn_started를 확인한다. 첫 화면은 Opus5.5 xhigh·빈 prompt, backend는 unknown이다. Astra가 전부 읽은 [불변 판정 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-opus-5-docs-recheck-final-verdict.md)의 SHA256은 `B367CF975FE8844C2CDB71D04C5E48FDAFFA40B3160246CD95BE7F42899B5869`다. **F-1 첫 재검증 해소·F-2/F-3 해소·신규 필수 결함0**이며 비차단 참고4건은 원문에 남긴다.
+- 이번 직접 검사는 정정 링크11개(신규7개)·ref 부재와 patch-id/조상 관계·이전 근거 hash 대조·전후 HEAD/status/문서 hash·diff-check였다. 1차의 링크14개/병합/CI/PATH 수치를 새 실행 수로 복사하지 않았다. 초기 링크 집계 패턴 오류는 원문을 보존하고 정정본으로 판정했다. [Astra 대조](../../../.backups/verification/2026-10-01-readability-format-ci/astra-opus-5-docs-recheck-final-correspondence.json)는 현재 보호7개 hash 일치·실제 근거13파일과 완료 목록 일치를 확인한다. N-1/N-4는 과거 일부 발신·ACK·최초 실행 명령의 로컬 원시 receipt 미보존, N-2/N-3은 방법 표기 범위와 F-3 교차참조에 관한 비차단 한계다. 이 제한을 없던 것으로 바꾸지 않는다.
+- 검증자는 원본·추적 파일을 바꾸지 않고 허용 근거 폴더만 썼다고 보고했다. release 후 같은 runtime/incarnation/경로·빈 prompt를 확인하고 [close](../../../.backups/verification/2026-10-01-readability-format-ci/a-opus-5-docs-recheck-close.json) ptyKilled=true와 [완료 ACK](../../../.backups/verification/2026-10-01-readability-format-ci/a-opus-5-docs-recheck-done-ack.json)를 보존했다. 모든 외부 작업자는 정산·종료했고 재사용하지 않는다. 이 절은 재검증 뒤 Astra가 추가한 결과 기록으로, 검토 입력4b8f5ad 자체에 포함됐던 내용과 구분한다. 제품·SDK·CI·registry·Unity·게임·DB를 새로 실행하지 않았다.
 
 <a id="q1b-entry-windows"></a>
 
