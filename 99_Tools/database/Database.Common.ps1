@@ -60,7 +60,11 @@ function Get-MigrationHash([string]$Sql) {
     finally { $sha.Dispose() }
 }
 
-function Invoke-Migrations($Connection, $Transaction = $null) {
+function Invoke-Migrations($Connection, $Transaction = $null, [ValidateSet('Complete','Baseline001')][string]$Phase = 'Complete') {
+    # 002+ may only enter the explicitly approved D1b database. No environment fallback.
+    if ($Phase -eq 'Complete' -and $Connection.Database -cne 'Dawnholder_Dev_D1b_20261002') {
+        throw '002+ installation requires the exact D1b target through its manifest-gated installer.'
+    }
     $ownsTransaction = $null -eq $Transaction
     if ($ownsTransaction) { $Transaction = $Connection.BeginTransaction() }
     try {
@@ -71,6 +75,10 @@ EXEC @result = sys.sp_getapplock @Resource=N'Dawnholder.SchemaMigration', @LockM
 IF @result < 0 THROW 51000, 'Could not acquire migration lock.', 1;
 '@ @{} $Transaction)
         $files = @(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'migrations') -Filter '*.sql' | Sort-Object Name)
+        if ($Phase -eq 'Baseline001') {
+            $files = @($files | Where-Object Name -ceq '001_initial.sql')
+            if ($files.Count -ne 1) { throw 'The immutable 001 baseline is missing.' }
+        }
         $known = @()
         foreach ($file in $files) {
             if ($file.Name -notmatch '^(\d{3})_[a-z0-9_]+\.sql$') { throw "Invalid migration name: $($file.Name)" }
@@ -91,7 +99,20 @@ IF @result < 0 THROW 51000, 'Could not acquire migration lock.', 1;
         }
         $count = Invoke-DbScalar $Connection 'SELECT COUNT(*) FROM dh.SchemaVersion' @{} $Transaction
         if ($count -ne $known.Count) { throw 'Database has unknown migrations; use the matching tool revision.' }
-        [void](Invoke-DbNonQuery $Connection (Get-MigrationText (Join-Path $PSScriptRoot 'verify-schema.sql')) @{} $Transaction)
+        if ($Phase -eq 'Complete') {
+            [void](Invoke-DbNonQuery $Connection (Get-MigrationText (Join-Path $PSScriptRoot 'verify-schema.sql')) @{} $Transaction)
+        } else {
+            # Phase-specific structural boundary, not the final 13-version catalog or S01 PASS.
+            [void](Invoke-DbNonQuery $Connection @'
+IF (SELECT COUNT(*) FROM dh.SchemaVersion)<>1 OR
+ NOT EXISTS(SELECT 1 FROM dh.SchemaVersion WHERE Version=1 AND Name=N'001_initial.sql') OR
+ OBJECT_ID(N'dh.Account',N'U') IS NULL OR OBJECT_ID(N'dh.Character',N'U') IS NULL OR
+ OBJECT_ID(N'dh.CharacterProgress',N'U') IS NULL OR OBJECT_ID(N'dh.CharacterAuthority') IS NOT NULL OR
+ OBJECT_ID(N'dh.CharacterOperation') IS NOT NULL OR DATABASE_PRINCIPAL_ID(N'dh_runtime') IS NOT NULL OR
+ DATABASE_PRINCIPAL_ID(N'dh_recovery') IS NOT NULL
+ THROW 51007, '001 phase boundary mismatch; final catalog has not been run.', 1;
+'@ @{} $Transaction)
+        }
         if ($ownsTransaction) { $Transaction.Commit() }
     } catch {
         if ($ownsTransaction -and $null -ne $Transaction.Connection) { $Transaction.Rollback() }
