@@ -1,6 +1,6 @@
 # 정적 관계 추출기 비교와 스냅샷 계약
 
-내부 목표 ID: A-1. **현재 상태: 구현 Sol의 완료·쓰기 종료를 확인하고 정산·pane 종료했다. 최종 실행·집계·파일 hash를 대조해 제품 checkpoint `d0dffd1`과 비교 보고를 준비했다. 신규 Opus의 독립 실사·테스트 전이며, PR은 GameDev의 독립 도구 등록 변경이 main에 통합된 뒤 진행한다.**
+내부 목표 ID: A-1. **현재 상태: 첫 독립 판정은 FAIL(보고 필수 수정 D1–D3, 제품 필수 결함 0)이다. 신규 Opus의 46개 독립 테스트는 정상 성공 43개·expected failure 3개이며 모두 통과로 보고하지 않는다. Astra가 보고와 계약 설명을 정정했으며 새 Opus의 문서 재실사 전이다. 구현자·첫 검증자는 정산·pane 종료했다. PR은 GameDev의 독립 도구 등록 변경이 main에 통합된 뒤 진행한다.**
 
 ## 목표와 결정 출처
 
@@ -153,3 +153,20 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 - 최종 batch는 `implementation/runs/20261002T065831395290Z`다. CodeGraph/Roslyn cold 1회·warm 3회 exit 0, TP/FP/FN은 14/0/1과 15/0/0이고 최상위 snapshot은 모두 partial이다. Unity compiler Error 285개, CodeGraph 문법/resolver 한계, 단계별 비용과 미실행을 [비교 보고](comparison-report.md)에 적었다. 구현자의 자체 점검 33개를 독립 테스트로 계산하지 않는다.
 - `worker-release`는 `retained/external_terminal/processAction=none`을 반환했다. 동일 runtime·handle·incarnation과 작업 종료 빈 prompt를 다시 확인해 정확한 Sol pane만 `terminal close`했고 `ptyKilled=true`를 받았다. 원문은 `sol-completion.json`, `sol-release.json`, `sol-before-close-identity.json`, `sol-before-close-read.json`, `sol-close.json`이다. 완료 Sol은 재사용하지 않는다.
 - 다음 검증자는 신규 `claude --model claude-opus-5-5`로 같은 탭 Astra 아래에 열었다. 준비 satisfied와 첫 화면의 `Opus 5.5 with xhigh effort`·빈 prompt를 확인했으며 선택창은 관측되지 않았다. backend는 unknown이다. 작업 연결 전 보고와 계약의 쓰기를 끝내고 제품/문서 고정 checkpoint를 계약서에 제공한다. 초기 근거는 `review-split.json`, `review-ready.json`, `review-identity.json`, `review-first-screen.json`이다.
+
+### 첫 독립 판정과 보고 정정
+
+- 첫 Opus의 Task `task_fba7bfe553c8`, Dispatch `ctx_6a8c21c83ba1`, 완료 `msg_61bb6e6ea2ad`와 [판정 원문](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification/verdict.md)을 대조했다. `worker_done outcome=succeeded`는 검토 작업의 종료이며 제품·보고 PASS가 아니다. 전체 판정은 FAIL, 보고의 D1–D3가 필수 수정이다. 제품 필수 결함은 0이며 N1–N9와 가독성 의견은 비차단으로 남았다.
+- 검증자는 실제 diff·정답 36개·동결 순서·8회 raw와 공개 CLI를 독립 확인하고 테스트 46개를 작성했다. 최종 실행은 정상 성공 43개와 알려진 미충족을 재현한 expected failure 3개, exit 0이다. 테스트 commit은 `1daa45153b12074f12bd39b98a9a3abcd8fd3638`이다. .NET/CodeGraph 새 추출, Unity Editor·플레이·DB·제품 전체 빌드·CI는 이 검증에서 실행하지 않았다. `verification/logs/final-run.txt`와 원문 판정이 근거다.
+- 검증자의 제품·보고 쓰기가 없음을 확인했다. release는 retained/external_terminal이었고 동일 handle `term_e74938cb-1258-4182-967f-2b0c2bcbf139`·incarnation `55f45aff-9b8b-499c-b8a1-68df0be8bacc`·완료 화면을 확인해 정확한 pane만 닫았다(`ptyKilled=true`). 근거는 `review-completion.json`, `review-release.json`, `review-before-close-identity.json`, `review-before-close-read.json`, `review-close.json`이다. 이 세션은 재사용하지 않는다.
+- D1은 ClientNet FrameValidator 호출의 Server 동명 target 오확정과 범위 밖 불가능 층 방향 16개를 보고가 충분히 드러내지 않은 문제다. 정정본은 raw target·출현 위치·네 번의 일치, 방향별 CodeGraph 16/Roslyn 0과 거짓 시스템 연결 위험을 별도로 보인다. 닫힌 점수 14/0/1 대 15/0/0과 동결 분모는 바꾸지 않았다.
+- D2는 새 격리 NuGet cache 복원 비용을 기존 cache로 잘못 설명한 문제다. `measure` 진입마다 새 상태를 만들고 그 안의 8회 분석은 준비 상태를 공유한다. 정정본은 실제 package/HTTP 경로와 크기, restore 3.964초·restore+도구 build 6.188초, 실제 네트워크 전송량 N/A를 제시한다. 전역 cache 전후 hash는 없어 불변을 검증했다고 주장하지 않는다.
+- D3는 목표에 명시된 뷰어 기능의 데이터 평가 누락이다. 실제 snapshot의 종류·층·포함 관계·2홉 연결·packet 부재를 원천으로 7개 기능 지원표를 작성했다. 부분 지원, 조회 API/UI·실제 카드 corpus 조인 미실행을 구분했다. Astra의 읽기 집계 스크립트·결과는 `report-correction/audit.py`, `summary.json`이며 독립 테스트로 계산하지 않는다. 작업 전 메모는 `report-correction/context.md`다.
+- 메인에 원래 보고 불일치를 즉시 알렸다. active dispatch가 없는 Astra의 escalation은 `sender_not_assignee`로 거절돼 일반 high-priority status `msg_6a1de0613e3b`로 보냈다. 메인 `msg_eb219692a22e`는 D1–D3 문서 수정 후 **새 Opus 문서 재실사**, 제품 수정과 분모 변경 없이 진행하도록 확인했다. 원문은 `main-report-mismatch-status.json`, `main-report-correction-direction.json`이다. 첫 FAIL 원문을 보존하고 재실사 전에는 정정본 PASS로 보고하지 않는다.
+
+### 현재 접점과 다음 계약 기준
+
+- Management `msg_a0f2ef99e700`은 읽기 전용 코드 뷰어가 현재 path/kind/SHA 계약을 먼저 사용하고 line/symbol은 후속임을 확인했다. frontend 동시 쓰기는 없다. 원문은 `management-code-view-boundary.json`이다.
+- 메인 `msg_95284adaddb7`의 규칙은 **다음 신규 작업 계약부터** 적용한다. 관련 CODE_CONVENTION 절 원문을 계약 본문에 넣고 규칙별 적용·파일/줄 근거를 메모한다. 일괄 변환은 사람이 블록을 다시 확인하며 규칙 위반은 독립 검증에서 번호 있는 차단 결함으로 반환한다. Astra도 표본을 확인한다. 첫 검증 계약을 소급 변경하거나 기존 비차단 의견을 해결됐다고 표시하지 않는다. 새 문서 재실사는 이번 정정 문서의 내용·표현·근거와 적용 규칙을 차단 기준으로 확인한다. 원문은 `main-inline-convention-rule.json`이다.
+- 메인이 새로 지정한 Rules Astra의 현재 identity를 확인하고 `msg_fff0dbd63447`로 Python 파일·독립 테스트·관례와 환경만 읽기 보고했다. 관측 Python은 3.14.4이며 버전 pin 또는 기존 Python formatter 규정이라는 뜻이 아니다. AGENTS/skills/CODE_CONVENTION/CI/Formatting은 이 파트 쓰기 범위가 아니다. 원문은 `rules-python-question.json`, `rules-python-response.json`, `rules-identity.json`이다.
+- 새 문서 판정과 GameDev 선행 PR 통합이 남았다. 제품 비차단 N1–N9·가독성 의견, Unity 부분 해석, 실제 카드 자료 부재와 사용자 최종 추출기 선택은 [비교 보고](comparison-report.md)에 명시한다. 선행 등록 목록의 경로·형식이 도착하면 승인된 Roslyn 프로젝트 항목만 후속 새 작업자 계약으로 반영한다.

@@ -1,6 +1,6 @@
 # 정적 관계 스냅샷과 시스템 개요 접점
 
-**상태: 계약 초안. 구현 산출물과 독립 검증 결과를 대조하기 전이다.** 원천 SHA는 `881957cbb431d4af822d1d935ac117e1ede6c303`이며, 아래 요구사항은 정적 관계를 표현하는 계약이다. 실제 실행 순서·패킷 전송·게임 플레이를 관측한 자료가 아니다.
+**상태: 계약 초안. 첫 독립 실사·테스트를 마쳤으며 보고 D1–D3를 정정한 뒤 새 문서 재실사 전이다.** 첫 판정은 보고 FAIL·제품 필수 결함 0이며 비차단 미충족이 남아 있다. 아래 요구사항과 현재 구현의 한계를 구분한다. 원천 SHA는 `881957cbb431d4af822d1d935ac117e1ede6c303`이다. 실제 실행 순서·패킷 전송·게임 플레이를 관측한 자료가 아니다.
 
 ## 경계와 책임
 
@@ -36,6 +36,8 @@ node는 `id`, `kind`, 설명적인 표시명, namespace·signature, `layer`, 근
 같은 이름이어도 namespace·소유 타입·signature가 다르면 다른 심볼이다. 예를 들어 `GameMap.ProcessAttack(int,int,long)`과 `CombatSystem.ProcessAttack(GameMap,int,int,long)`을 구분한다. ID의 안정성은 같은 입력 SHA·해석 설정에서 재현됨을 우선하며 파일 이동·signature 변경 뒤에도 ID가 유지된다고 보장하지 않는다. 카드 ID는 추출기 node ID와 결합하지 않는다.
 
 edge는 `id`, 관계 종류, sourceId/targetId, 증거 위치, resolution 상태를 갖는다. 관계 자체는 source·target·kind로 중복 제거할 수 있으나 여러 원시 출현 위치와 문맥을 잃지 않는다. 해석되지 않은 호출은 원문 위치·이름·후보를 진단으로 유지하며 임의로 확정 endpoint를 고르지 않는다. 확정하지 못한 관계를 표현하는 방식은 raw와 변환 결과에서 명시해야 한다.
+
+`resolution=resolved`는 **추출기가 target을 확정했다는 기록**이며 원천 코드상 참임을 검증한 표지가 아니다. CodeGraph가 ClientNet `PacketSession.OnRecv`를 Server의 동명 `FrameValidator.TryValidateFrameHeader`로 잘못 연결한 사례처럼 확정 상태에도 오인이 있다. 현재 관찰된 불가능 층 방향 간선은 CodeGraph 16개/Roslyn 0개다. 숫자 confidence와 resolved만으로 시스템 연결을 신뢰하지 않으며 도구·출처·부분 해석·알려진 오인을 함께 표시한다. 이 관찰은 전역 정확도 검증을 대신하지 않는다.
 
 | 종류 | 정적 의미 | 잘못 해석하기 쉬운 것 |
 |---|---|---|
@@ -83,12 +85,16 @@ Management 회신 시점의 7/39/9는 디자인 샘플이며 실제 카드 corpu
 
 Unity 입력은 로컬 managed DLL까지이며 InputSystem/TMP의 Library 산출물을 읽지 않는다. 누락 참조로 인한 compiler error와 unresolved 관계는 부분 해석으로 표시한다. 임의 Unity stub을 추가해 완전한 semantic 분석으로 보이게 하지 않는다. 추출기 비교는 Editor 컴파일·플레이·서버 실행·DB 검증을 대신하지 않는다.
 
-독립 Opus는 보고·raw·실제 diff를 먼저 대조한 뒤 schema/SHA/path/endpoint·동명 오인·누락 입력·결정적 정규화·원본 보존 등 계약 실패 경로를 검사한다. 아직 최종 형식 승인이나 구현 통과를 뜻하지 않는다.
+독립 Opus는 보고·raw·실제 diff를 대조한 뒤 schema/SHA/path/endpoint·동명 오인·누락 입력·결정적 정규화·원본 보존 등 계약 실패 경로를 검사했다. 46개 테스트 중 정상 성공 43개·expected failure 3개였고 첫 전체 판정은 보고 결함으로 FAIL이다. 최종 형식 승인이나 모든 계약의 충족을 뜻하지 않는다. [비교 보고](comparison-report.md)의 N1–N9와 판정 원문을 함께 읽는다.
 
-### 현재 구현 접점 — 독립 확인 전
+### 현재 구현 접점과 독립 확인의 한계
 
 `99_Tools/Architecture/Pipeline/snapshot.py`가 공통 검사와 단일 codeReference의 조인을, `normalization.py`가 각 도구 raw 변환을, `cli.py`가 `normalize`·`validate`·`score`·`join` 명령을 제공한다. `schemaVersion=1`, `extractor={name,version,configHash}`, `analysisScope={manifestHash,includedRoots,excludedRoots,inputFileCount}`이며 status 값은 `complete`·`partial`·`failed`·`notRun`이다. 노드와 간선의 `resolution`은 `resolved`·`external`·`unresolved`·`ambiguous`·`unsupported`를 구분한다.
 
 간선은 `evidence` 배열에 여러 출현 위치와 `context`를 담고 `provenance`에 원시 해석 출처를 보존한다. 문맥 값은 `direct`·`declaration`·`deferredLambda`·`unknown`이다. Roslyn은 compiler documentation ID를 추가하며 CodeGraph는 raw signature가 없을 때 `signatureStatus=unavailable`을 남긴다. 표시용 qualified name이 완전한 메서드 signature라는 뜻은 아니다. 외부 심볼은 원본 저장소 파일을 지어내지 않고 `source=null`과 외부 해석 상태로 구분한다.
 
-현재 `join_code_reference`는 매핑별 node membership과 SHA 불일치·무매핑 상태를 반환한다. 여러 카드의 계층 집계와 화면은 위의 소비 계약이며 이번 코드가 완성한 기능으로 표시하지 않는다. packet protocol ID/version은 선택 정보로서 이번 구현이 이를 모두 추출한다고 보장하지 않는다. 최종 구현 checkpoint와 독립 판정은 비교 보고에서 연결한다.
+층별 `complete`는 현재 compiler error 없는 프로젝트 해석을, snapshot의 `complete`는 미해석 관계도 없는 상태를 뜻한다(N5). 두 상태를 같은 의미로 집계하지 않는다. 현재 최상위 결과는 모두 partial이다. Roslyn usesType에는 추론된 var 타입과 메서드 이름 후보 분류가 섞이는 한계(N4)가 있으며 CodeGraph는 명시적 생성 관계 중심의 부분 지원이다. 관계 개수나 상태만으로 전체 타입 사용 지원을 주장하지 않는다.
+
+snapshot schemaVersion 거부는 검사하지만 manifest/scope/truth의 알 수 없는 버전 거부, 정답표 중복·ID·counts 검사, CodeGraph complete raw의 입력 누락 보정은 미충족이다(N1–N3). 동결 manifest 작업본의 CRLF hash와 Git LF blob hash가 달라 새 checkout의 바이트를 자동 호환하지 못한다(N6). 이 요구사항을 모두 구현·통과했다고 표시하지 않는다.
+
+현재 `join_code_reference`는 매핑별 node membership과 SHA 불일치·무매핑 상태를 반환한다. 합성 계약 검사는 수행했지만 실제 카드 corpus 조인은 수행하지 않았다. 여러 카드의 계층 집계와 화면은 위의 소비 계약이며 이번 코드가 완성한 기능으로 표시하지 않는다. 양쪽 packet kind node는 0개이고 protocol ID/version도 없다. packet 선언은 일반 type으로 다룬다. module은 입력 root 5개이며 file/type/method 포함 관계는 다중 부모가 가능하고 중간 폴더·namespace의 별도 모듈 트리는 없다. [비교 보고](comparison-report.md)의 7개 뷰어 기능 데이터 평가가 현재 지원 범위의 근거다.
