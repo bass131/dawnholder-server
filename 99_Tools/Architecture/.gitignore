@@ -1,0 +1,10 @@
+CodeGraph/node_modules/
+CodeGraph/.npm-cache/
+bin/
+obj/
+__pycache__/
+out/
+*.db
+*.db-shm
+*.db-wal
+.codegraph/

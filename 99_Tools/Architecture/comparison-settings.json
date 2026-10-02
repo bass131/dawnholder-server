@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "goalPath": "01_Phases/goals/2026-10-02-architecture-extractor-comparison",
+  "evidencePath": ".backups/verification/2026-10-02-architecture-extractor-comparison/implementation",
+  "freezeRecordPath": ".backups/verification/2026-10-02-architecture-extractor-comparison/freeze-record.json",
+  "codegraphVersion": "1.6.1",
+  "maxInstalledPackageBytes": 419430400,
+  "dotnetRelativePath": ".local/share/dawnholder/dotnet-10.0.301/dotnet"
+}
