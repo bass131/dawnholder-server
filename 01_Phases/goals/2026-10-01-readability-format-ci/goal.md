@@ -4,8 +4,8 @@
 
 [Q-1 로드맵](../2026-10-01-readability-baseline/goal.md)의 첫 실행 목표다. 서버 솔루션의 C# 서식을 하나의 고정된 포매터 결과로 맞추고, 동작 보존 증명과 로컬·CI의 재현 가능한 검사로 유지한다. 먼저 P0-A에서 실행 환경·포매터·부작용을 임시 공간에서 실측하고, 그 결과로 이 goal을 보완한 뒤 실제 A 구현을 발행한다.
 
-- 상태: **PR160의 최종 제품 HEAD439997b에서 실제 CI 통과와 신규 Opus의 CI-1·D-2 해소 판정을 확인하고 정산·종료했다. 메인의 원천 대조와 사용자 병합 승인을 기다린다.** 실제 [run36939767252](https://github.com/bass131/dawnholder-server/actions/runs/36939767252)는 SDK10.0.301·서식 검사·제품 build/test 모두 success, 제품839개 중834통과·5skip이다. checker 내부 수는 CI 성공 로그에 없으며 이전 로컬 독립200/200과 구분한다. 독립 판정은 CI17검사·PS1가짜 host6사례47검사·변형4종에 근거하며 신규 결함0, 비차단 참고3건이다. 이번 최종 기록은 goal 문서만 바꾸고 제품·테스트를 바꾸지 않는다. 병합 직전 PR 최신 head의 check 상태를 확인한다. 서식 전용 `755bdcc`를 보존하며 실제 Windows SDK 실행·PATH 복구·PR160 병합의 사용자 승인은 아직 없다.
-- 환경 보존 정정: **Windows User PATH에서 P0/A 작업 경로8개를 발견해 구현 보고의 PATH 불변 주장을 승인 근거에서 제외했다.** 정확 SDK 소스의 기본 첫 실행 추가 동작을 확인했다. 최종 메인 `msg_621954fe6fe4`에 따라 사용자 승인 전 새 CLI_HOME Windows 첫 실행과 User PATH 복구를 금지하며 WSL·읽기 전용 검증은 계속한다. 아래 PATH 조사와 [원천 감사](../../../.backups/verification/2026-10-01-readability-format-ci/astra-path-source-audit.md)를 따른다.
+- 상태: **Q-1A 구현·독립 검증·사용자 승인·PR160 병합과 종료 대조 완료.** 메인이 전달한 사용자 결정에 따라 2026-10-02 02:05:13Z merge commit `10bcafd7f25a861318dff6412fa3dc542addd4ef`로 통합했다. 병합 head `070d1fb`의 실제 CI는 전체 success(제품834통과·5skip), 독립 판정은 CI-1·D-2 해소/신규 결함0이다. 병합 후 `755bdcc` ancestor·ignore-revs와 blame4표본을 확인했다. Windows 실제 검증은 사용자 선택3A에 따라 [Q-1B 진입 조건](#q1b-entry-windows)으로 이관했으며 이번 목표의 미실행 범위를 그대로 남긴다. 이 결과 기록의 Git 반영 상태와 R-8 교체는 아래 종료 인계를 따른다.
+- 환경 보존 정정: **초기 Windows User PATH 불변 보고는 철회했고, 사용자 직접 실행으로 이번 작업의8항목만 제거 완료했다.** 메인 `msg_f17b37f089a8`과 실행 기록은 02:10:31Z 37→29항목·ExpandString 유지·after SHA256 `6FB87D14DB862FE871939211056E3623955F0513A4062D3D7B383D0BE0364DDA`를 남긴다. Astra는 현재 원문이 정확 제거안 proposedRaw와 같고 대상 task 경로0임을 읽기 전용 대조했다. 작업 전 PATH 정본은 없어 전체 원복이라고 부르지 않는다. 기존29항목과 순서는 유지했고 Astra의 registry 쓰기는0회다.
 - 근거: 메인 `msg_b7f867c99e0f`(2026-10-01 14:28:26 UTC), [결정 사본](../../../.backups/verification/2026-10-01-readability-format-ci/main-split-decision.json). 사용자 결정은 메인 경유이며 사용자 직접 입력으로 격상하지 않는다.
 - A 조건부 승인: 메인 `msg_ba75a9bdad3a`(2026-10-01 15:28:29 UTC), [승인 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-conditional-approval-c1.json). `2fda71b`의 A안에 아래 C-1을 추가하고 나머지 제안은 승인했다. 이 시점에는 SDK 설치의 사용자 승인이 전달되기 전이었다.
 - SDK 사용자 승인 전달: 메인 `msg_7f23f9a1e303`(2026-10-01 15:56:51 UTC), [전달 원문](../../../.backups/verification/2026-10-01-readability-format-ci/sdk-user-approval.json). 사용자의 “SDK 설치 승인할게”를 메인이 전달했으며 사용자 직접 입력으로 격상하지 않는다. `26f878d`의 경로·버전 1건만 승인했고 A Sol 발행을 허용했다. 앞의 SDK 답변 대기는 이 전달로 해소됐다.
@@ -13,7 +13,7 @@
 - checkout: `C:/Dev/DawnHolder_Project`. 실행 branch는 기존 준비 branch `bass131/q1-readability-20261001`을 **Q-1A 전용으로 배정**한다. Q-1은 실행 없는 로드맵으로 바뀌며 B/C는 별도 branch를 사용한다.
 - base: 이번 진입에서 다시 fetch한 `origin/main` = `0239290d6f423dbfe91c42c3fffd0789f56de26f` (PR158 병합). 기존 준비 커밋 `30147f3`(초안·CURRENT·메인 CLAUDE O-5), `d40ba0b`(검토 원문·인계)을 보존했다.
 - evidence: `.backups/verification/2026-10-01-readability-format-ci/` (Git 제외). 이전 원문·보호 기준·Fable 정산은 인접 `2026-10-01-readability-baseline/`에 있다. 실제 결과는 이 goal 한 곳에 기록한다.
-- coordinator Run `run_a3a4a4d552d1`; P0-A·초기 A·수정 Sol들과 독립 검증자들은 각각 정산·종료했고 재사용하지 않는다. 최종 Task `task_6ea6f03ba929` / Dispatch `ctx_a9315073dfd4`도 완료했다. 현재 진행 중인 외부 작업자는 없다. 각 최초 명령·화면 모델·backend unknown·Task/Dispatch·완료/close 근거는 아래 회차별 기록에 둔다. 메인 회신 주소는 이 Run이며 Astra는 병합/goal 결과 기록 전까지 유지한다.
+- coordinator Run `run_a3a4a4d552d1`; 제품 구현자·검증자는 각각 정산·종료했고 재사용하지 않는다. 제품 최종 Task `task_6ea6f03ba929` / Dispatch `ctx_a9315073dfd4`도 완료했다. 아래 별도 종료 기록 PR의 신규 Opus 정적 실사·사용자 승인·병합을 마친 뒤 메인이 R-8로 이 Astra를 교체한다. 신규 Astra는 현재 runtime·handle·incarnation·최신 main과 다음 goal을 새로 확인하고 이 Run/Dispatch를 실행 권한으로 재사용하지 않는다. Q-1B는 아직 착수하지 않았다.
 
 ## 범위와 불변 조건
 
@@ -336,3 +336,25 @@ DLL embedded source 실사: Sol의 `a-sol-1/cp3-final-embedded-source-impact.jso
 - 보고 정정과 보존 한계는 위 정산 JSON의 corrections에 남겼다. 완료 payload의 evidence 설명이 쉼표로 쪼개진 실경로 아닌 조각을 포함하므로 [실제 근거66파일 목록](../../../.backups/verification/2026-10-01-readability-format-ci/astra-opus-3-ci-d2-evidence-files.json)과 tracked 변경0을 정본으로 삼는다. failures.md의 모든 원문 보존 문구에는 예외가 있다: 초기 M3-no-restore-r 첫 개별 command JSON이 동명 두 번째 호출로 덮였고 회차 요약만 남았다. 종료 화면의 도구 실패2건 모두 제품 미실행 문구도 CI1차 초기화 block 실행과 구분해야 한다. 원문은 수정하지 않고 메인 `msg_57b494585f5a`·`msg_d7c76b9d6610`·`msg_6dfbb8ade04d`로 즉시 알렸다. 정상 최종본·정정 재실행·실제 CI의 근거는 별도로 존재한다.
 - release는 external_terminal retained/processAction none을 반환했다. 동일 runtime/incarnation/path와 종료 화면을 확인한 뒤 [정확 pane close](../../../.backups/verification/2026-10-01-readability-format-ci/a-opus-3-ci-d2-close.json) ptyKilled=true, 완료 delivery ACK를 확인했다. 검증자를 재사용하지 않는다.
 - 비차단 참고3건은 원문 §6에 남긴다: CI 초기화 위치의 설명 주석 부재, 정의된 빈 RUNNER_TEMP 미차단, 기존 action Node20/ubuntu-latest 변경 경고. 이번 제품 수정 범위를 확대하지 않는다. 실제 Windows SDK/native PS1 전체/Windows fresh DLL 독립 실행, User PATH8항목 복구, Unity compile/play·실제 게임/DB는 미실행이다. User PATH는 오염 후 기준값 보존이며 원상 복구가 아니다. 메인의 최종 원문/R-2 대조 및 사용자 PR160 병합 승인 뒤 merge commit 방식으로만 통합한다. 승인 전 자동 병합 예약·병합은 하지 않는다.
+
+## 병합 결과와 종료 인계 — 2026-10-02
+
+- 사용자 결정은 메인 `msg_48452f9fcb78`(02:08:35Z)의 [전달 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-main-merge-and-user-decisions.json)으로 받았다. 메인은 사용자의 직접 입력 “셋 다 승인”이 1A 두 PR 병합, 2A 이번 작업의 User PATH8항목만 제거, 3A Windows 실제 검증을 Q-1B 진입 때 방지 변수와 HKCU 전후 대조로1회 수행하는 선택이라고 전달했다. 이 세션의 사용자 직접 입력으로 격상하지 않는다.
+- 메인이 PR159를 `96cc89a83d9abd305a46d025333382e86488ca2f`에 먼저 병합한 뒤 [PR160](https://github.com/bass131/dawnholder-server/pull/160)을 02:05:13Z `10bcafd7f25a861318dff6412fa3dc542addd4ef`에 merge commit으로 병합했다. [실제 PR 조회](../../../.backups/verification/2026-10-01-readability-format-ci/a-postmerge-pr160.json)는 MERGED/head070d1fb/merge10bcafd를 확인한다. Astra는 병합을 실행하지 않았다.
+- 메인의 최종 원문/R-2 대조 완료는 `msg_47c521aa926b`의 [기록](../../../.backups/verification/2026-10-01-readability-format-ci/a-main-final-r2-and-ci-watch.json)에 있다. 병합 head `070d1fb7069757b07b1d8bd9719f0dc1ce6ea6ec`의 [CI run36942931587](https://github.com/bass131/dawnholder-server/actions/runs/36942931587)은 00:10:18Z 전체 success였다. [원시 metadata](../../../.backups/verification/2026-10-01-readability-format-ci/a-ci-4-run.json)·[로그](../../../.backups/verification/2026-10-01-readability-format-ci/a-ci-4-run.log)에서 SDK10.0.301, Formatting checks passed, build 성공, 제품839=834통과+5skip을 확인했다. checker 내부 테스트 수는 이 성공 로그로 확인하지 못했고 이전 독립 로컬200/200과 구분한다.
+- 병합 후 실제 fetch한 `origin/main=10bcafd`의 부모는 main96cc89a와 PR head070d1fb다. head070d1fb 대비 차이는 `05_Management/`56파일뿐이며 Q-1A 입력과 겹치지 않는다. [Astra 종료 대조](../../../.backups/verification/2026-10-01-readability-format-ci/astra-postmerge-final-audit.json)는 서식 commit `755bdccf74db6f7e83165d3455f3fd7b20639060`의 main ancestor와 ignore-revs blob 일치를 확인했다. main에서 PlayerEntity.cs:261, CheatBuildGateTests.cs:25, SkillCatalog.cs:35, PacketGenerator/Program.cs:1의 기본 blame은755bdcc이고 `--ignore-revs-file`을 적용하면 각각 기존 작성 commit으로 돌아간다. 이4개 표본을 전수 blame 보존으로 확대하지 않는다.
+- User PATH는 메인의 최초 실행 시도가 Claude Code 권한 분류기에 거부돼 미실행이었고, 이후 사용자가 직접 실행했다. 메인 `msg_f17b37f089a8`의 [완료 전달](../../../.backups/verification/2026-10-01-readability-format-ci/a-main-path-user-executed.json), [백업](../../../.backups/verification/2026-10-01-readability-format-ci/main-user-path-backup-20261002T021031Z.json), [실행 기록](../../../.backups/verification/2026-10-01-readability-format-ci/main-user-path-remediation-20261002T021031Z.json): 02:10:31Z 정확8항목 제거,37→29,ExpandString 유지, before351E10DA…→after6FB87D14…。 Astra가 registry를 읽어 현재 원문과 정확 제거안 proposedRaw의 일치·대상 task 경로0을 확인했다. 기존 Codex 경로와 나머지 항목/순서를 보존했으며 작업 전 정본 복구를 증명한 것은 아니다. Astra의 registry 쓰기는0회다.
+- 모든 구현자·검증자는 정산·종료했고 재사용하지 않는다. 실제 Windows SDK/native PS1 전체/Windows fresh DLL의 신규 독립 실행, Unity compile/play·실제 게임/DB는 이번 목표에서 미실행이다. Windows1회 검증은 아래 사용자 선택3A로 이관하며 기존 비차단 코드리뷰·CI 참고도 원문에 남긴다. Q-1 전체/B/C 완료로 보고하지 않는다.
+- 실행 branch `bass131/q1-readability-20261001`의 병합 head는070d1fb, 기존 base는0239290이었다. 병합 결과의 정본은 main10bcafd다. 완료 보고 뒤 메인이 R-8로 현재 GameDev Astra를 교체한다. 로컬 `bass131/menu-probe-lifetime-p1b`의 b3cf78a, archive branch, 보호 파일·stash·기존 task 근거/임시 공간은 보존하며 정리하지 않는다. CURRENT는 이 완료 goal과 로드맵 링크를 유지한다.
+
+### 종료 기록의 Git 통합
+
+메인 `msg_79e2f9371013`(02:19:52Z)의 [결정 원문](../../../.backups/verification/2026-10-01-readability-format-ci/a-main-closeout-docs-pr.json)에 따라 병합 main `10bcafd`에서 `docs/q1a-closeout-20261002`를 만들고 이 goal과 Q-1 로드맵의 인계 링크만 별도 PR로 통합한다. 새 목표가 아닌 Q-1A의 종료 기록이다. 신규 Opus 한 세션이 두 파일의 링크·사실·미실행 표기를 정적으로 실사한다. 제품 변경·추가 SDK 실행은 없으며 이 기록 PR에도 별도 사용자 병합 승인이 필요하다. 현재 판정·PR 생성·승인은 대기 중이다.
+
+<a id="q1b-entry-windows"></a>
+
+### Q-1B 진입 조건 — 사용자 선택3A
+
+Q-1B를 시작하는 새 Astra는 최신 main에서 별도 branch/goal을 만들고 R-7 Fable 시범3회차 절차를 따른다. 그 goal과 외부 작업 계약에 **Windows 실제 검증1회**를 먼저 반영한다. SDK 첫 호출부터 task 전용 CLI_HOME/NuGet, `DOTNET_ADD_GLOBAL_TOOLS_TO_PATH=0`, `DOTNET_GENERATE_ASPNET_CERTIFICATE=false`를 적용하고 HKCU `Environment/Path`의 전후 원문·종류·hash·항목을 비교한다. 실행 명령·실제 SDK·종료 코드와 실제 확인 범위를 기록한다.
+
+사용자 PATH 정리 결과를 당시의 새로운 기준으로 삼되, 실행 직전 현재 값을 다시 읽는다. 방지 변수 설정만으로 영구 PATH 불변을 성공 처리하지 않는다. 실제 변경·권한 거부·실패가 있으면 근거와 상태를 보존해 메인에 보고한다. 1회 검증은 아직 수행하지 않았으며 Q-1A의 가짜 host/WSL/CI 결과로 대신하지 않는다. 이 인계는 Q-1B의 목표·제품 구현을 이번 Astra가 시작했다는 뜻이 아니다.

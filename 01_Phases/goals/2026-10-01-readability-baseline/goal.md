@@ -9,7 +9,7 @@
 | 순서 | 하위 목표 | 선행 조건·다음 경계 |
 |---|---|---|
 | Q-1A | [P0-A 실측과 C# 서식·CI](../2026-10-01-readability-format-ci/goal.md) | P0-A 발행 승인→임시 공간 실측→goal 보완/메인 승인→서식 구현·독립 검증. 공백 전용 커밋을 보존하는 merge commit 병합 뒤 B |
-| Q-1B | P0-B 분석기 실측과 정적 차단 (goal 미작성) | A가 통합된 최신 main의 별도 branch/goal. **R-7 Fable 시범 3회차** 검토→메인 원문 확인→보완·승인. 아래 확정 정책의 조건과 검증 계약을 반영 |
+| Q-1B | P0-B 분석기 실측과 정적 차단 (goal 미작성) | A가 통합된 최신 main의 별도 branch/goal. [Q-1A 종료 인계의 Windows 1회 검증 조건](../2026-10-01-readability-format-ci/goal.md#q1b-entry-windows)을 먼저 반영한다. **R-7 Fable 시범 3회차** 검토→메인 원문 확인→보완·승인. 아래 확정 정책의 조건과 검증 계약을 반영 |
 | Q-1C1 | Network·ClientNet 정리/승격 (goal 미작성) | B 기준선과 승인된 차단 방식. 프레이밍·send/close·재연결 수명·Unity 소비 계약 |
 | Q-1C2 | Shared 수기 소스 정리/승격 (goal 미작성) | B 기준선. packet round-trip/byte parity·공개 API·Unity 소비 계약. PDL/생성 코드 보존 |
 | Q-1C3 | 99_Tools 프로젝트별 정리/승격 (goal 미작성) | B 기준선. PacketGenerator digest/exit·봇 시나리오·BgmComposer 출력 계약 |
