@@ -27,7 +27,7 @@
 - 브랜치: `docs/architecture-part-rules-20261002`.
 - 기준 main: `333fe20211260ef230cd7d4ef9555cb4d5999c08`. 진입 시 원격 main을 `git ls-remote`로 대조했고 기존 tracked 변경은 없었다.
 - 현재 Architecture Astra handle: `term_423a4e96-28cd-4f84-9ac8-d6d1853917fb`, runtime `8a673084-6819-45b9-a551-347226cdce9b`, incarnation `afdd8e9d-8a7d-4a94-9264-e2c822f010e7`. 화면 `GPT-6-Astra xhigh`, backend 실제 모델 `unknown`. 업데이트 전 handle은 `term_366eb418-ef60-48df-9d08-e6b3efa11c08`, incarnation `8a047d4d-9dfc-4dec-bd15-3b9dd56acb28`이었다. ID는 이 목표의 관찰 기록이며 다음 세션의 권한이 아니다.
-- 현재: **문서 구현·독립 실사·보완 재검증 완료, PR 준비**. 1차 전체 실사 PASS 뒤 비차단 Low A-01~A-04를 보완했고 신규 Opus의 첫 재검증에서 네 건 모두 해소됐다. 필수 결함·새 비차단 발견은 0건이다. 사용자 병합 승인 전에는 병합하지 않는다. A-1 설치는 조건부 사용자 승인 전달을 받았으나 0단계 병합과 정식 A-1 goal 검토 전에는 실행하지 않는다.
+- 현재: **[PR163](https://github.com/bass131/dawnholder-server/pull/163) 생성, 사용자 병합 승인 대기**. 1차 전체 실사 PASS 뒤 비차단 Low A-01~A-04를 보완했고 신규 Opus의 첫 재검증에서 네 건 모두 해소됐다. 필수 결함·새 비차단 발견은 0건이다. 사용자 병합 승인 전에는 병합하지 않는다. A-1 설치는 조건부 사용자 승인 전달을 받았으나 0단계 병합과 정식 A-1 goal 검토 전에는 실행하지 않는다.
 - 검증 원문과 receipt 보존: `.backups/verification/2026-10-02-architecture-part-rules/`.
 
 ## 세션 관측과 재개
@@ -77,6 +77,7 @@
 - 보완 Sol의 `msg_9224a1bd9f78`과 `implementation-fix.md`를 실제 두 문장에 대조했다. A-01의 중복 상세는 R-1 링크로 축소됐고 A-04의 Architecture 배치는 메인 지시로 명시됐다. `git diff --check` exit 0, 쓰기 종료를 확인했다. release `retained/external_terminal` 뒤 같은 incarnation만 close했고 `ptyKilled=true`다. A-02/A-03 goal 정정도 끝났으며 이 시점부터 운영 문서·goal/CURRENT 쓰기를 멈추고 신규 Opus의 재검증을 받는다.
 - 신규 재검증자는 `claude --model claude-opus-5-5`로 vertical split에 기동했다. terminal `term_948a205c-71da-4456-8bd7-969d2d783816`, incarnation `df673f1d-69b5-4b41-8e95-59b5e2774de4`, 화면 `Opus 5.5 with xhigh effort`, backend `unknown`이다. 준비와 첫 화면을 확인한 뒤 Task `task_11b5f6ab888e`, Dispatch `ctx_fa3104b43e68` 최초 연결의 접수·턴 시작을 확인했다. `msg_9268e4018ea4`와 `verification-2/verdict.md`는 A-01~A-04 모두 해소·필수 결함 0·새 비차단 발견 0의 PASS다. 전체 실사를 반복한 판정이 아니라 네 보완과 영향·보존의 재검증이다.
 - Astra는 재검증 원문을 직접 읽고 수정 문장·원천·동결 7파일 hash 불변을 대조했다(`recheck-frozen-check.json`). `git diff --check` exit 0과 미실행 범위를 확인했다. release `retained/external_terminal` 뒤 같은 pane만 close해 `ptyKilled=true`, 현재 Run의 reclaimable 0건을 확인했다. 근거는 `recheck-*.json`이다. 선택 관찰 R-O2에 따라 Astra→메인 위험 보고 `msg_62bbd7990110` 원문도 `current-risk-main-notice.json`에 추가 보존했다. 제품 build/test·Unity·DB·스킬 자동 검사·독립적인 실제 배치 재현은 미실행이다. 검증 종료 뒤 이 결과·Git 상태 기록만 Astra가 갱신한다.
+- 문서 구현·검증 결과는 commit `a037b19`로 push하고 [PR163](https://github.com/bass131/dawnholder-server/pull/163)을 생성했다. 대상은 승인된 7파일이다. `git merge-tree --write-tree origin/main HEAD`는 main `27f1f57`과 충돌 없는 tree를 생성했고 작업 트리나 branch를 병합하지 않았다. 사용자 병합 승인·실제 병합·R-8 종료/재진입은 남아 있다. 메인은 전체 판정 `verification/verdict.md`와 한정 재검증 `verification-2/verdict.md`를 직접 읽고 R-2 원천 표본 대조 후 승인 요청한다.
 
 ### A-1 별도 목표
 
