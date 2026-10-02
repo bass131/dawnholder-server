@@ -13,8 +13,8 @@
 
 ## 메인 세션 진입
 
-- 사용자는 세션을 마칠 때 Astra를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 GameDev Astra를 메인 pane의 분할로, Management Astra를 Management worktree 탭에 다시 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)).
-- 두 Astra가 준비되면 메인 handle을 Orca 메시지로 알린다.
+- 사용자는 세션을 마칠 때 Astra를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 GameDev Astra를 메인 pane의 분할로, Management Astra를 Management worktree 탭에, Architecture Astra를 Architecture worktree 탭에 다시 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)).
+- 세 Astra가 준비되면 메인 handle을 Orca 메시지로 알린다.
 - 메인이 직접 하는 운영 의무는 세 가지다. 세부는 각 링크의 정본을 따른다.
   - 목표가 끝나면 그 Astra pane을 닫고 새로 연다([R-8](00_Document/operations/ORCA.md#r8-astra-lifecycle)).
   - 새 세션 첫 화면의 선택창은 메인이 처리하고 설정 불변을 확인한다([R-6](00_Document/operations/ORCA.md#r6-first-screen)).

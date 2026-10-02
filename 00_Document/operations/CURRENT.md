@@ -1,5 +1,7 @@
 # 현재 목표
 
+[Architecture 0단계 — 세 번째 파트 운영 규칙](../../01_Phases/goals/2026-10-02-architecture-part-rules/goal.md)
+
 [Q-1A — P0-A 실측과 C# 서식·CI 정착](../../01_Phases/goals/2026-10-01-readability-format-ci/goal.md)
 
 [Q-1 — 가독성 기준 정착 로드맵](../../01_Phases/goals/2026-10-01-readability-baseline/goal.md)

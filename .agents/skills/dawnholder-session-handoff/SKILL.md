@@ -18,7 +18,7 @@ description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 �
 ## 세션 진입과 배치
 
 - [RESUME의 진입 절차](../../../00_Document/operations/RESUME.md#세션-진입-배치)와 [R-1 배치](../../../00_Document/operations/ORCA.md#r1-management-placement), [R-8 Astra 수명](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)을 따른다.
-- 메인은 준비된 두 Astra에 현재 자기 handle을 Orca 메시지로 공유한다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
+- 메인은 준비된 세 Astra에 현재 자기 handle을 Orca 메시지로 공유한다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
 
 ## 신규 prompt 준비 확인
 
