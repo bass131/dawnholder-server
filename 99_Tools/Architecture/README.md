@@ -62,7 +62,21 @@ CodeGraph는 저장소의 고정 package/lock에 맞는 1.6.1 Linux x64 bundle, 
 wsl -d Ubuntu -- python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_*.py' -v
 ```
 
-로컬 비교 근거가 있으면 기본 suite는 settings의 `evidencePath/latest-run.json`이 가리키는 batch와 현재 실행 코드를 대조한다. 근거 없는 사본에서는 해당 재생 테스트의 skip 사유와 실행 건수를 확인해야 한다. 전체 테스트의 성공은 새 추출 실행이나 Unity·DB 검증 완료를 뜻하지 않는다.
+로컬 비교 근거가 있으면 기본 suite는 settings의 `evidencePath/latest-run.json`이 가리키는 batch와 현재 실행 코드를 대조한다. 근거 없는 새 clone에서는 해당 재생 테스트가 skip되므로 사유와 실행 건수를 확인해야 한다. 전체 테스트의 성공은 새 추출 실행이나 Unity·DB 검증 완료를 뜻하지 않는다.
+
+기본 대조는 줄바꿈을 포함한 실제 bytes를 검사한다. 검증 batch `20261003T170218569325Z`의 `Directory.Build.props`와 `Roslyn/Architecture.Roslyn.csproj`는 LF지만 Git 속성은 `eol=crlf`다. 이 두 파일을 다시 checkout해 CRLF가 되면 기본 hash 대조가 실패한다. 저장소 루트에서 다음 명령의 `w/lf` 또는 `w/crlf`와 `attr/text eol=crlf`를 확인한다. 비교 자료나 파일을 검사 통과 목적으로 바꾸지 않는다.
+
+```powershell
+git ls-files --eol -- 99_Tools/Architecture/Directory.Build.props 99_Tools/Architecture/Roslyn/Architecture.Roslyn.csproj
+```
+
+이 batch를 당시 실제 bytes로 재생하려면 보존된 runtime의 `tool`을 명시한다. 다음 예시는 해당 로컬 보존 자료가 있는 WSL 저장소 루트에서 실행하며, 새 추출이나 `check`를 실행하지 않는다.
+
+```bash
+ARCHITECTURE_EVIDENCE_BATCH="$PWD/.backups/verification/2026-10-03-codegraph-adapter-cleanup/behavior-fix-1-verification/compare-execution/runs/20261003T170218569325Z" \
+ARCHITECTURE_EVIDENCE_TOOL_ROOT=/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5-compare-dd085a73442a/tool \
+python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_*.py' -v
+```
 과거 batch는 `ARCHITECTURE_EVIDENCE_BATCH`에 절대 경로 `<근거 root>/runs/<batch>`를 지정한다. 이때 당시 실제 실행 도구를 다음 중 하나 이상으로 명시해야 한다. 기본 실행은 이 변수들 없이 현재 저장소 코드를 검사한다.
 
 | 환경변수 | 과거 실행과 대조할 실제 바이트 |

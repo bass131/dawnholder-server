@@ -49,6 +49,7 @@ Roslyn 실행이 CodeGraph 설치에 의존하지 않게 하고, CodeGraph는 �
 범위 밖·보류 목록:
 
 - 검증 batch 봉인과 재채점 때 기존 로그 보존: 다음 계획 후보(msg_cc5c63a1a4ba). 기존 check의 scoring command/time 재기록을 이번에 재설계하지 않는다.
+- 도구 bytes hash 대조의 줄바꿈 처리 — 정규화하거나, 줄바꿈만 다를 때 실패 메시지로 안내: 다음 계획 후보(msg_bd4a97892fe4).
 
 - **다음 계획의 첫 후보: Architecture 기능 테스트 CI 파일럿.** 기존 승인 `msg_f78d893cdab2`로 작성한 workflow는 삭제하지 않고 이번 근거의 `deferred-ci/architecture-tests.yml`에 보존했다. 이동 전후 SHA256은 `deferred-ci/preservation.json`에 있으며 작성 완료 hash와 같다. 기존 `ci-implementation/report.md`와 발행·정산 근거를 유지한다. 독립 CI 검증, 실제 Actions·의도적 원격 실패/복구 시험은 다음 계획 범위이며 이번 PR에서는 발행하지 않는다.
 - 모듈 경계 규칙, 시스템 도식 뷰어, Management codeReference 활용, 현재 HEAD용 입력 수집기, Roslyn 알고리즘·snapshot schema 변경은 다음 계획 후보이거나 이번 목표 밖이다.
@@ -242,4 +243,8 @@ PR165 병합 주체는 미확정이다. 메인은 Codex·Claude 세션 기록, c
 - 원본 checkout의 새 Compare root는 `E/behavior-fix-1-verification/compare-execution`, batch는 `runs/20261003T170218569325Z`다. prepare/measure/check와 batch 28명령은 exit 0이고, CodeGraph cold·warm1–3 뒤 Roslyn cold·warm1–3의 8회 분석은 모두 partial이다. 독립 27개 대조가 현재 구현 15파일·진입점 3개·manifest 입력 225개·외부 참조 157개를 확인했다. 기본 evidencePath는 아직 이전 값이다.
 - CodeGraph 보존 대상 (a) 설치 (b) lockfile에서 명령으로 도출한 의존 패키지의 index 항목 (c) 해당 blob은 불변이다. 보호 12개 root의 순차 inventory-1→2도 차이 0이다. 트리 밖 cache 두 경로·key와 _logs 관측은 위 보존 정의의 표가 정본이며 전체 cache 불변을 주장하지 않는다. CodeRules Changed는 대상 13·위반 0으로 PASS, All은 Architecture 밖 PS 진단 285·Management TS 실행 환경 부재·SQL deferred로 FAIL이다.
 - 문서 #4는 해소됐다. 새 문서 #5(최신 상태 출처 모순), #6(붙은 bullet), #7(숫자·식별자 공백)는 Astra가 이번 판정 뒤 수정했으며 신규 Opus의 재실사는 아직 미실행이다. 현재 한계와 상태는 마지막 재개 실행을 가리키도록 맞췄다. 같은 결함의 재검증 실패를 추가로 세지 않는다.
-- R1은 `Directory.Build.props`와 `Roslyn/Architecture.Roslyn.csproj`의 eol=crlf 속성에도 현재 작업 트리와 채택 후보 batch가 LF라는 조건이다. 지금 bytes는 일치하지만 다시 checkout되어 CRLF로 변하면 기본 해시 검사가 실패한다. 현재 근거 채택과 PR/README 조건 공개를 메인 `msg_b46aa0ceb266`으로 제안했다. 제품·속성·해시 정규화 변경은 하지 않으며 메인 범위 판정을 기다린다. 기존 CodeGraph check 단발 실패는 두 번 미재현·원인 미상으로 남긴다.
+- R1은 `Directory.Build.props`와 `Roslyn/Architecture.Roslyn.csproj`의 eol=crlf 속성에도 현재 작업 트리와 채택 후보 batch가 LF라는 조건이다. 지금 bytes는 일치하지만 다시 checkout되어 CRLF로 변하면 기본 해시 검사가 실패한다. 현재 근거 채택과 PR/README 조건 공개를 메인 `msg_b46aa0ceb266`으로 제안했다. 메인 범위 판정은 바로 다음 기록에 반영했다. 기존 CodeGraph check 단발 실패는 두 번 미재현·원인 미상으로 남긴다.
+
+- 메인 `msg_bd4a97892fe4`(18:02:57Z)는 현재 검증 root 채택과 실제 bytes 검사 보존을 확정했다. README·PR에 LF/CRLF 조건·`git ls-files --eol` 확인 명령·당시 도구 bytes 재생·근거 없는 clone의 skip을 적고, 다음 신규 Opus가 확인 명령을 실제 실행한다. `.gitattributes`·hash 정규화·새 추출은 범위 밖이며 보류 목록에 후속 후보를 남겼다.
+- LF 원인은 **이번 목표 전부터 있던 상태**로 분류한다. 이전 목표 batch `20261002T065831395290Z`(2026-10-02T06:58Z)의 두 파일 hash가 현재 LF bytes와 같고, 당시 `run-wsl.sh`는 원본 도구를 `rsync -a`로 복사했다. 파일 생성·최종 수정 시각은 둘 다 2026-10-02T06:13:04Z이며, 이번 목표 기준 `48e722b`부터 현재까지 두 파일과 `.gitattributes`의 Git diff는 없다. 첫 구조 단계 source provenance도 일치한다. 실제 명령·출력·hash·시각은 `E/r1-line-endings-origin.json`에 보존했다. 최초 작성 명령까지 추정하지 않으며 후속 Opus가 이 분류를 실사한다.
+- 동작 제품·테스트 11파일은 `4a73ee1`, 실행 안내·계약·goal 기록은 `74cb8a1`로 커밋했다. staging 검사에서 실행 계약 끝의 빈 줄 1개를 제거했으며 의미 변경은 없다. 최신 main `7fa1074`는 `9732ce1`로 통합했고 CURRENT의 상단 충돌은 main의 파트별 표를 유지하며 Architecture 최신 「재개 실행」 링크로 해결했다. 통합 전후 구현 15파일 hash는 모두 같다(`E/pre-main-integration-hashes.json`, `E/post-main-integration-hashes.json`). 제품/속성 변경이나 push/PR 생성은 이 통합에 포함하지 않았다.
