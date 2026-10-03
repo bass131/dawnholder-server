@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03, 작성 `[Rules Astra]`. **사용자 휴식으로 일시 대기 — [재개 지점](#재개-지점)부터 읽는다.** 메인 `msg_ac1ed6a996ab`가 전달한 휴식 결정에 따라 새 작업자를 발행하지 않는다. 첫 BACKLOG PR의 결함 #2 수리는 끝났지만 독립 재검증·PR·CI·병합은 남았다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본 문서·도구의 구현·검증·병합 실적과 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **첫 BACKLOG 문서 단위 독립 PASS — [최신 검증·통합 기록](#첫-backlog-pr-검증과-통합)을 읽는다.** 결함 #1·#2·#3은 해소됐고 PR·CI·해당 PR 병합 승인 절차가 남았다. 아래 [재개 지점](#재개-지점)의 휴식·첫 재개 기록은 당시의 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본 문서·도구의 구현·검증·병합 실적과 구분한다.
 
 ## 문제와 목표
 
@@ -375,7 +375,14 @@ GameDev msg_bd6ae56c412e와 Management msg_6e86b93bc63e에 보낸 원문을 재�
 
 ## 재개 지점
 
-**사용자 휴식으로 대기 중이며 goal 완료가 아니다.** 메인 `msg_ac1ed6a996ab`의 휴식·재개기록 지시를 적용했다. 사용자 재개와 메인의 현재 권한 확인 전에는 새 작업자를 열지 않는다. 모든 과거 handle/Run/Task/Dispatch는 아래 수행 근거이며 새 세션 실행 권한이 아니다.
+**2026-10-04 사용자 재개 전달을 확인했으며 goal 완료는 아니다.** 메인 `msg_bddbf9d62026`(2026-10-03T16:00:46Z)의 사용자 원문은 “이어서 진행하자”다. 전달 원문은 `.backups/verification/2026-10-03-harness-principles/main-resume-2026-10-04.json`에 보존한다. 기존 메인과 Rules 세션의 live handle·incarnation을 대조했다. 아래 위치·종료 작업자 표는 휴식 당시의 보존 기록이며 과거 세션의 실행 권한이 아니다.
+
+### 2026-10-04 재개 확인
+
+- 첫 작업자 발행 전 미커밋 네 파일과 휴식 시 고정한 45개 입력의 SHA가 모두 일치했다. `resume-2026-10-04-input-check.json`에 실제 값과 대조 결과를 기록했다.
+- 현재 branch `docs/harness-backlog`, HEAD `0a72a543295cb0e17471b44637fcc7b0fe6f4f2c`. 원격 main은 `5616573c32a2b2e0b677bc21b75e22a08d21f285`이며 열린 PR이 없음을 다시 확인했다.
+- 재개 권한과 대조 결과를 이 goal에 기록한 변경만 새 입력으로 추가한다. 기존 `reverification2-inputs.json`은 보존하고 `reverification2-inputs-resumed.json` 및 `backlog-reverification2-resume-addendum.md`를 신규 Opus에 전달한다. 이 기록 작성 시 Task는 아직 미발행이다.
+- 기존 범위·점검·capacity·테스트 분류 결정을 유지한다. 새 pane의 공식 계약 크기 placeholder만 남고 다른 입력이 없는 `turn_start_unobserved`는 메인 재개 메시지의 허용대로 draft 확인 후 Enter만 제출할 수 있다. 조건 불충족 시 메인에 보고한다.
 
 ### 위치와 보존 상태
 
@@ -430,3 +437,23 @@ CURRENT의 네 goal은 각 소유 worktree에서 실재함을 확인했다(`resu
 메인은 재개 뒤 신규 판정 전문을 읽고, 병합 승인 요청 전 R-2 형식으로 원문 메시지↔12행 출처표·실제 diff/원시 근거의 표본을 독립 대조한다. 이 메인 표본 대조는 Opus의 12행 전수 대조를 대신하지 않는다. GameDev/Management는 테스트 분류 표의 이전/새 단정·요구사항 출처·전후 명령 수치를 별도로 표본 대조한다. CURRENT 네파트 실경로와 미병합 goal 경계, 적용 결정의 사용자/메인 구분도 확인한다.
 
 남은 사용자 결정은 이 BACKLOG PR의 병합 승인, 계획된 중간 점검 뒤 후속 진행, 그리고 별도 후보인 검증 강도 차등·작은 작업 예외/규칙 가지치기/사람용 따라읽기 정책이다. workflow lint 도구 도입과 npm 해소·PS error 승격은 해당 미래 후보의 조건이며 현재 BACKLOG 문서 완료를 막는 선행 승인이 아니다. Management의 125% 확인은 그 파트 goal의 경계다. 다음 goal을 자동 시작하지 않는다.
+
+## 첫 BACKLOG PR 검증과 통합
+
+2026-10-03T16:58:46Z(한국 10-04) 신규 Opus의 문서 단위 **PASS**를 받았다. 이 절은 Astra의 수행 결과 기록이며 독립 검증 뒤 추가한 메타데이터다. 검증 대상 goal 사본은 근거 루트의 `goal-reviewed-before-integration.md`에 보존했다. 근거 루트는 `.backups/verification/2026-10-03-harness-principles/`이며 Git 제외 로컬 파일이다.
+
+| 재개 뒤 작업 | Task / Dispatch | 결과·근거 |
+|---|---|---|
+| 출처·휴식/재개 문서 재검증2 | `task_2f306f85439e` / `ctx_4f6ac55be0df` | #2 해소·#1 보존, 출처 12/12·적용 결정 16/16 실사. 새 #3(CURRENT Management 앵커)만 차단. `backlog-reverification2/verdict.md`, SHA256 `B8C4D494EACBA8AE48BAD233F241541A98770CB0B142FECB148EF59AF22F754A` |
+| #3 최소 수리 | `task_206430c1244f` / `ctx_4c94e3f19113` | CURRENT:10 fragment 한 곳만 변경, 비대상 48입력 보존. `resume-link-repair/report.md`, done `msg_435e8678f010` |
+| #3 독립 재검증 | `task_7cbb2ef0940a` / `ctx_5bf244ebb85d` | PASS, #3 첫 수정 후 해소. 새 입력 75/75 일치. `resume-link-verification/verdict.md`, SHA256 `7DC9DCD2E451F041B65334E1E10509AC1776F46FC1B081F387CB385BA80A901A`, done `msg_61365ada33bb` |
+
+세 세션 모두 정확한 완료·판정/보고 대조 뒤 release와 동일 incarnation 확인을 거쳐 close했고 `ptyKilled=true`다. 원시는 `backlog-reverifier2-*`, `resume-link-sol-*`, `resume-link-verifier-*`다. 각 신규 Opus의 최초 명령과 화면은 `claude-opus-5-5`/Opus 5.5 xhigh, Sol은 `gpt-6.1-sol` xhigh였고 backend는 모두 unknown이다. Astra도 최종 원문 전문과 75입력 보존을 확인했다.
+
+현재 열린 번호 결함은 없다. #1·#2·#3은 각각 수정 후 첫 재검증에서 해소됐다. 원 결정/재전달 누락의 같은 부류는 재검증2의 12행 전수 대조에서 재발하지 않았다. 마지막 Opus는 이 출처 12행을 다시 원문과 대조하지 않았으며, BACKLOG와 goal 등 비대상 48개 hash 불변으로 이전 실사 결과의 보존을 판정했다. 문서 정적 실사와 `git diff --check`만 수행했고 로컬 코드 테스트·빌드·게임·DB·Unity는 실행하지 않았다. PR CI는 별도 실제 결과로 기록한다.
+
+Management 앵커는 메인 조율 `msg_7c5f1b5c4df5`에 따라 GameDev `d0458b7`과 같은 `#재개-지점--2026-10-03-사용자-휴식`을 사용한다. 현재 CURRENT SHA256은 `A6E86E03CE2E5932E58CE5722D699FA4B8019477FB6F29774C657CC5031DB63D`다. 휴식 당시 SHA 표는 역사 기록으로 남긴다.
+
+비차단 참고 N1~N6·R1~R3·R5~R12는 판정 원문에 보존한다(R4 해소). 특히 다른 파트 goal 미병합 동안의 로컬 탐색 경계, Management의 휴식 절→현재 진행 절 이동, GameDev CURRENT의 절대 경로와 Rules 상대 경로 4행 차이에 따른 향후 병합 충돌 가능성이 남는다. 다음에 병합하는 파트가 최신 main의 CURRENT를 기준으로 관련 네 행을 조율한다. 이번 PR에서 다른 파트 파일을 고치지 않는다. 최초 재개 때 저장하지 못한 identity/열린 PR 원시는 소급 재현하지 않았고, `pre-pr-*`는 16:35 UTC 무렵의 새 관측이다.
+
+다음 절차는 검증된 문서 커밋·명시 branch push·PR·실제 CI 확인 → 메인 R-2 대조와 사용자 해당 PR 병합 승인 → 합의된 중간 점검이다. 자동 병합을 예약하거나 후속 운영규칙 PR을 자동 시작하지 않는다. 이 문서 단위의 PASS는 전체 goal 완료나 후속 세 PR·Gardener 완료가 아니다.

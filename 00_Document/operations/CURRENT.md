@@ -1,15 +1,17 @@
 # 현재 목표
 
-[하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md)
+상태·결정·남은 일은 각 goal의 「재개 지점」에서 확인한다. 아직 병합되지 않은 goal은 아래 해당 worktree에서 읽는다. 다른 worktree의 로컬 기록이 이 checkout에도 있다고 가정하지 않는다.
 
-[작업 전 맥락과 코드 규칙의 실행 연결](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md)
+| 파트 | 목표의 재개 지점 |
+|---|---|
+| GameDev | [영속성 저장소](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#재개-지점) |
+| Rules | [하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#재개-지점) |
+| Architecture | [CodeGraph adapter 정비](../../01_Phases/goals/2026-10-03-codegraph-adapter-cleanup/goal.md#재개-지점) |
+| Management | [시스템 카드](../../05_Management/goals/2026-10-02-system-cards/goal.md#재개-지점--2026-10-03-사용자-휴식) |
 
-[정적 관계 추출기 비교와 스냅샷 계약](../../01_Phases/goals/2026-10-02-architecture-extractor-comparison/goal.md)
+- GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-repository-d1b-20261002`
+- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/harness-backlog`
+- Architecture: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `feat/codegraph-adapter-cleanup-20261003`
+- Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-m2-system-cards`
 
-[Architecture 0단계 — 세 번째 파트 운영 규칙](../../01_Phases/goals/2026-10-02-architecture-part-rules/goal.md)
-
-[Q-1A — P0-A 실측과 C# 서식·CI 정착](../../01_Phases/goals/2026-10-01-readability-format-ci/goal.md)
-
-[Q-1 — 가독성 기준 정착 로드맵](../../01_Phases/goals/2026-10-01-readability-baseline/goal.md)
-
-[다음 세션 재개 절차](RESUME.md)
+[다음 세션 재개 절차](RESUME.md) · [정본 반영 전 적용 결정](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#정본-반영-전-적용-중인-사용자-결정)
