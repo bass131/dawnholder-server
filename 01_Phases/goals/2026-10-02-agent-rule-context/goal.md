@@ -2,7 +2,7 @@
 
 ## 현재 상태와 승인된 결정
 
-**2026-10-03 — PR #166 병합·All 1회 완료, All에서 발견한 결함 #5 로컬 독립 판정 통과·수정 PR/실제 Linux CI 단계·목표 미완료.** PR #166의 결함 #1~#4는 신규 Sol 수정·신규 Opus 재검증과 원격 CI를 거쳐 병합했다. 그 작업자들은 정산·종료했고, 병합 후 All에서 발견한 #5는 별도 새 Sol 수정·신규 Opus 로컬 판정을 마쳤고 실제 Linux CI가 남았다. 이전 17/17은 결함 해소 근거로 재사용하지 않으며 19/19 두 설치, 최종21/21과 실제 Linux 결과를 각각 기록한다. 판정·재개 순서·이전 미커밋 목록은 [재개 기록](#session-resume), 이번 세션은 [2026-10-03 진행](#resume-2026-10-03)에 있다. 최신 SQL 범위는 [보류 결정](#sql-deferred)을 유지한다.
+**2026-10-03 — 승인 범위 작업 완료, 메인 최종 대조·R-8 교체 인계 대기.** PR #166·#167은 각각 사용자 승인을 받고 병합됐으며 이 목표의 최종 병합 기준은 `5616573`이다. 실제 저장소 All의 TS57과 세 typecheck 완료, Linux 독립28/28, .NET834통과·5skip을 확인했다. 기존 PS289건/9파일과 SQL2 보류는 남는다. Gardener가 발견한 기록 불일치3건은 원문 보존 후 보정했고 신규 Opus의 좁은 독립 실사에서 모두PASS, 세 파트 안내·수신 기록도 충족했다. 작업자들은 모두 정산·종료했다. 최종 결과와 미커밋 종료기록의 인계는 [최종 결과](#최종-결과와-r8-인계), 후속 범위는 [다음 Astra 인계](#첫-재계획-결과와-다음-astra-인계)에 있다. Gardener 후보의 사용자 채택 결정은 마지막 종료 인계 절에 반영했으며 2단계 구현은 새 Astra가 맡는다. 재개 근거는 [재개 기록](#session-resume)·[2026-10-03 진행](#resume-2026-10-03), SQL 결정은 [보류 결정](#sql-deferred)에 있다.
 
 **앞선 검증 종료 뒤 메인 추가 변경:** CLAUDE.md에 실행 출처 추적·수기 측정값/동어반복 테스트 차단 조항 1줄이 추가됐다. SHA256 `5e8f26c1c645c39a7c5f12e2f300b546ac3d0e2bee995b3025155f1ecced0c4a`를 이번 신규 Opus가 실사했고 기존 규칙과 충돌 없음으로 판정했다. 앞선 `921b4b3e…` 대상 판정과 구분한다.
 
@@ -153,11 +153,11 @@ SQLFluff이 프로젝트의 유효 T-SQL을 파싱하지 못하면 조용히 제
 8. 병합 뒤 GameDev·Management·Architecture Astra의 당시 live 주소로 규칙 정본과 적용 시점을 전달하고 수신 여부를 기록한다. 병합 전 다른 파트는 전달받은 임시 규칙을 유지한다. 새 규칙이 기존 실행 중 세션에 자동 적용됐다고 주장하지 않는다.
 9. 병합 직후 최신 main에서 로컬 또는 실제 가능한 workflow_dispatch로 전체 검사 1회를 실행한다. 파일·규칙·위반 수·소유 파트별 결과를 메인에게 보고하고 goal에 근거를 남긴다. 기존 파일 수정·자동 기준선 생성은 하지 않는다. 이 보고와 goal 결과 기록 뒤 Rules Astra 종료는 메인이 R-8대로 수행한다.
 
-## 진행 순서와 남은 한계
+## 진행 순서와 최초 검증 당시 한계 — 2026-10-02 기록
 
 외부 Sol의 문서·스킬 구현 → 메인 CLAUDE 쓰기 종료와 별도 신규 Sol 검사 구현/SQL 적용성 시범 → 신규 Opus 실사·독립 실행 → 필요시 새 Sol/Opus 수정·재검증 → PR·실제 CI → 사용자 병합 승인 → 최신 main 전체 검사 1회·결과 보고 → 파트 안내·goal 결과 기록 순서다. Fable goal 시범은 이번 배정에 승인되지 않았으므로 열지 않는다.
 
-현재 로컬 독립 테스트와 문서 실사는 완료됐으나 판정은 결함 #1·#2·#3으로 차단이다. SQL 고정17개 적용성 시범은15통과2실패 뒤 사용자 결정으로 보류했고, PR·원격 CI/Linux runner·병합 후 최신main All은 미실행이다. Management/Architecture의 전달 사실과 이번 검증자가 실제 실행한 범위를 구분한다. 문서와 기계 검사가 모든 설계 품질을 강제할 수 없으므로 사람 가독성·책임 분리 검토를 독립 차단 기준으로 유지한다.
+아래는 2026-10-02 최초 독립 판정 당시의 한계 기록이며 현재 미완료 목록이 아니다. 당시 로컬 독립 테스트와 문서 실사는 완료됐으나 판정은 결함 #1·#2·#3으로 차단됐다. SQL 고정17개 적용성 시범은15통과2실패 뒤 사용자 결정으로 보류했고, PR·원격 CI/Linux runner·병합 후 최신main All은 당시 미실행이었다. 이후 결함 수정·두 PR 병합·원격 CI·All 결과는 이 문서의 현재 상태와 후속 진행 절에 기록했다. Management/Architecture의 전달 사실과 각 검증자의 실제 실행 범위를 구분하며, 사람 가독성·책임 분리 검토는 계속 독립 판정 기준이다.
 
 ## 세션 진행 근거
 
@@ -443,3 +443,62 @@ Windows Node24.15.0/TypeScript7.0.2/PSSA1.25.0/WSL Python에서 전체회귀1회
 비차단 N1중첩 실패안내 반복, N2candidate변수재사용, N3Sol의 null반환99행 표기(실제101행), N4Windows동등변형을 원문에 남겼다. N3은 Astra도 rg로 확인하고 msg_472fe1f17cca로 메인에게 보고했으며 기존 보고를 지우지 않는다. 새로운 리팩토링 범위로 확대하지 않는다. goal의 이번 승인/병합/All/재계획 기록도 원문과 대조해 잘못 옮긴 상태·결정·수치 없음으로 판정했다.
 
 검증자는 completed/succeeded 확인 뒤 release → 정확 incarnation 대조 → close(ptyKilled=true)로 정산했다. 증거 defect5-verification-{done,settled,release,before-close,close}.json. 현재 활성 작업자는 없다. 최신main48e722b와 제품/테스트hash를 확인하고 제품1·테스트1·Astra goal1의 좁은 PR을 만든다. 실제 LinuxCI에서 전체28/fail0/skip0, ENOTDIR 진단 줄, EACCES subtest 비skip을 확인한 뒤 PR별 병합 승인을 요청한다. 이 기록 시점에는 LinuxCI와 병합이 미완료다.
+
+### PR #167의 실제 저장소 Linux All 추가 검증
+
+메인 msg_9bd6b24d9103(2026-10-03T09:17:14Z)은 PR167 승인 전에 실제 저장소 All을 PR HEAD84e19fe0960652d7315ced7ae5117e287773cda8에서 Linux로 1회 더 실행하도록 명시했다. 기존 금지는 이 추가 실행에 한해 대체되며 원래 main All 실패 원문은 그대로 보존한다. fixture의 All과 일반 PR Changed 대상0은 실제 저장소 TypeScript 완료를 증명하지 못하므로 TS completed=true·대상 수·언어별 실행, ENOTDIR 부재, 기존 PS289건/9파일 대조를 완료조건으로 삼는다. 기존 PS 위반에 따른 exit1과 검사 실행 장애는 구분한다.
+
+Rules Astra는 OPEN/HEAD 일치 확인 뒤 workflow_dispatch scope=All, ref=fix/code-rules-import-candidates, base=84e19fe로 run37113031702를 09:26:03Z에 발행했다. 원문 main-pr167-real-all-request.json과 pr167-real-all-dispatch.json에 보존했다. .NET run37112139407 결과와 함께 별도 승인 패킷을 올리며 PR167 병합 승인은 아직 없다. CI 대상 SHA를 바꾸지 않도록 이 이후 진행 기록은 작업 트리에 보존하고 임의 추가 커밋·push를 하지 않는다.
+
+추가 All run37113031702 결과는 TS57 completed=true/passed/진단0·세 실제 typecheck exit0, Python16 완료/통과, PS12 완료/기존289건, SQL2 deferred이다. 전체87입력이며 checker exit1/failures1은 PS 위반이고 실행 장애가 아니다. 이전 All과 PS9파일 집합 및 path/rule/line/column/message/suppressedInSource 개별 진단은 정규화 대조 차이0이다. 실제 primary 결과·compiler 출력에 ENOTDIR 재발이 없고 별도회귀28/28·skip0·stderr0B도 확인했다. 원문 pr167-real-all-artifact/run-2026-10-03T09-26-33.710Z-2455/results.json(SHA256 0782A253AE75356BCE9E350D6F481DBA2CFB9CD53BA818F934B2D5DE5BD8FBF0), 보고 pr167-real-all-report.md 및 comparison.json. 최초 비교 초안의 JSON 속성순서 차이를 발견해 원문 필드 순서만 정규화했고 초안도 보존했다. checker를 다시 실행하지 않았다.
+
+.NET run37112139407은 2026-10-03T09:32:28Z SUCCESS로 완료됐다. 실제 merge checkout023fa4d(HEAD84e19fe/base48e722b), SDK10.0.301, 서식·입력manifest·보존·formatting도구 검사와 빌드 통과, 빌드경고4·오류0, 테스트839 중834통과·5skip·실패0이다. 원문 defect5-ci-dotnet-run.json/log의229행(checkout),231행(SDK),371~372행(빌드),2499~2503행(테스트)을 직접 읽었다. skipped5는 기존 long integration/lag 사례이며839전부 통과라고 하지 않는다. 두 PR체크 SUCCESS·OPEN/CLEAN·HEAD84e19fe·autoMerge=null을 확인하고 PR본문을 실제All/.NET 근거로 갱신했다. 사용자 병합 승인은 아직 없다.
+
+### PR #167 병합 완료와 Gardener 진입
+
+메인 msg_1edd1029abfb가 사용자 원문 “OK 병합 승인”(2026-10-03T09:40:26Z)을 PR167·HEAD84e19fe에 한정해 전달했다. 메인 전달을 사용자 직접 입력으로 격상하지 않는다. R-2 최종147행 판정 전문과 Linux28/28·실제All TS57·.NET839/834/5 원문 표본 대조가 일치했다는 보고를 받았다. Rules Astra는 병합 직전 OPEN/CLEAN·HEAD84e19fe·두check SUCCESS·autoMerge null을 재확인한 뒤 지정 gh pr merge --merge --match-head-commit을 직접 실행했다(exit0).
+
+PR167은 2026-10-03T09:41:23Z MERGED, merge SHA5616573c32a2b2e0b677bc21b75e22a08d21f285, GitHub mergedBy=bass131이며 실제 명령 호출자는 Rules Astra다. 원문 main-pr167-merge-approval.json/pr167-pre-merge.json/pr167-merge-execution.json/pr167-merged.json을 보존했고 로컬goal진행을 보존한 채 최신main으로fast-forward했다. 제품/테스트 추가쓰기나 전체All 추가실행은 없다.
+
+이제 신규 읽기전용 Opus Gardener에게 승인된 보고서1개·후보최대2 및 두All보고 원시대조를 맡긴다. 결과와 원문을 직접읽고 정산·종료한 뒤 goal결과와 R8교체를 메인에게 올린다. 2단계 구현은 다음Astra로 넘기며 이시점 goal은 종료점검 미완료다. CI 이후 진행기록은 로컬미커밋으로 보존했고 병합승인HEAD에 임의추가하지 않았다.
+
+### Gardener 판정과 기록 보정
+
+신규 Gardener는 claude --model claude-opus-5-5, 첫 화면 Opus5.5 xhigh/ClaudeCode2.1.288, backend unknown으로 기동했다. 일반prompt와tui-idle 뒤 task_1d6dbcf7d594/ctx_ed06cf4198fc 최초연결(input_accepted/turn_started observed), terminal1abf3284/incarnation c8fb6a98이다. gardener-report.md 전문(SHA256 A1207CFD3DCF3918A4251C706FC2A00AE61418363F6337BE575ADB1341A3CB56)을 Astra가 읽고37입력불변과 원시표본을대조했다. 보고작성 outcome succeeded와 종료판정 통과보류는 다르다. 원시All/CI수치·승인/병합순서는 일치했으나 goal상태2곳과 집계firstLine의미 불일치3건을 발견했다. 원문은 즉시 메인 msg_6f9acf557d8c로보고했고 검증자는정산/release/동일incarnation/close ptyKilled=true로종료했다. 증거 gardener-{launch,ready,first-screen,start,done,settled,release,before-close,close}.json.
+
+Astra는 현재상태와2026-10-02 최초판정의시점표시를 보정하고, report전용 aggregate-all.ps1의firstLine을 숫자최소값으로바꿔 같은원시결과를 재집계했다. Configure-WslAccess18→4, format-check36→22 두값만바뀌며289/9·규칙·소유별집계는동일하다. 기존goal/집계/스크립트는 gardener-reviewed-*로보존했다. 재집계후Astra래퍼의부적절한LASTEXITCODE검사가실패를던졌지만집계파일작성은성공했고다음읽기로대조했다. 제품검사/All재실행이아니다. 보정원문 gardener-correction-report.md, 새독립실사결과는아직미완료다.
+
+완료조건8의세파트안내는메인자연지점합의를대체로추정하지않고실제발행/수신했다. GameDev msg_f9ce6c23ca02→msg_486af7d0b953는현재Opus종료뒤checkpoint, Management msg_5149ea057f3c→msg_8e15c1ed1b74는현재Sol종료/정산뒤다음Opus전, Architecture msg_1887da34636e→msg_60849680af59는현재writer종료뒤PR통합지점에서최신main/다음계약적용을회신했다. 기존실행세션자동적용을주장하지않는다. 원문 rules-rollout-*-sent.json 및 rules-rollout-receipts.json. Managementsubject의Re태그차이는원문보존/다음회신자기태그안내했고body/from_handle은일치했다.
+
+Gardener신규후보는①npm>=11선언대비CI10.9.9 EBADENGINE경고가setup원문에만남는문제(4run·원인1개),②반복All결과집계/비교정본helper와출력순서안정화(오류3회·기존인용검사helper연계)다. 제안만메인에게전달했고채택/설치/pin변경/제품구현없다. 관측한npm설치와typecheck는성공했으며버전간설치트리차이는미검증이다. 신규좁은Opus실사는보정3건과안내수신만확인한다.
+
+## 최종 결과와 R8 인계
+
+신규 보정 검증자 msg_6d66a6fd0b03(2026-10-03T10:14:27Z)의 최종 판정은 보정1/2/3 모두PASS·안내수신충족·번호결함0·통과차단0이다. task_31772231a27a/ctx_78cdd4649d49, 최초명령 claude --model claude-opus-5-5, 화면Opus5.5 xhigh/ClaudeCode2.1.288, backend unknown을 기록했다. 판정원문 gardener-correction-verdict.md(SHA256 48D6B0DB3769EA7AA805216AB45EA30C15F0ADCC258EA611ABDC53CF066C7A2C) 전문을 Astra가 직접읽고39입력hash불일치0, 집계firstLine원시최소값과실제diff·수신원문을대조했다. 보정전 Gardener의통과보류원문을PASS로고쳐쓰지않는다.
+
+completed/succeeded → release(retained external) → 정확incarnation0e8f26a2-7500-4dff-9eaa-83a07ed2df59 확인 → terminal11306288 close(ptyKilled=true)로정산했다. 증거 gardener-correction-{start,done,settled,release,before-close,close}.json. 신규Gardener와보정검증자를포함해현재이목표의활성작업자는없다. 마지막Management정정회신 msg_f656a2895ffc의subject/body는둘다자기태그이며적용지점은기존회신그대로다. 원문 rules-rollout-management-tag-correction.json.
+
+비차단참고N1의메인보고/Management안내 원문은판정후우편함에서정확ID만추출해 gardener-mismatch-main-notification.json 및 rules-rollout-management-tag-notification.json에추가보존했다. N2의래퍼stderr원본파일부재는남아있으며Astra자기공개와집계생성파일근거를구분한다. N3의과거이유절생략은독립기준결론과역사사실을바꾸지않았다는판정이다. 이를검사실행실패나신규제품결함으로표현하지않는다.
+
+| 완료조건 묶음 | 최종 결과와 근거 |
+|---|---|
+| 규칙·맥락·검사 구현과 독립검증(1~6) | PR166의문서/CodeRules와최종독립21회귀, PR167결함5의새독립테스트/실제Linux28회귀/실제저장소TS57완료. 해당판정원문과CIartifact·명령/exit보존. 게임·DB·Unity는목표밖/미실행 |
+| PR별사용자승인과병합(7) | PR166 48e722b, PR167 5616573. 각승인원문·정확HEAD·사전상태·RulesAstra실행·GitHub계정표시·시각·mergeSHA분리기록. 자동병합없음 |
+| 세파트정본안내와수신(8) | GameDev/Management/Architecture에현live주소로발행, 세회신과다음자연경계적용을원문보존. 기존실행세션자동적용주장없음 |
+| 병합뒤전체검사·소유별보고와종료기록(9) | mainAll1회37109061247의PS289/9·TS실행장애를분리보고, 추가명시승인PRheadAll1회37113031702로TS57완료·PS개별진단불변확인. 두원시보존, Gardener2후보제안 및3기록보정의새독립PASS완료 |
+
+남은위험은기존PS289위반·SQL2보류·.NET5skip, npm선언대비CI버전경고와보고래퍼원본stderr부재다. 이번목표의새크리티컬제품결함이나통과차단항목은없다. 파트별PS정리진행회신은각파트의전달사실이지이All이정리후다시실행됐다는뜻이아니다. Gardener후보2개는아래사용자결정대로백로그와2단계범위에반영한다. 이세션에서는후속구현을수행하지않았다.
+
+CI이후상태·보정·종료기록은이goal한파일의미커밋변경으로보존한다. 제품/테스트추가변경·추가commit/push/PR은없다. R8인계에현재goal스냅샷·HEAD대비diff·hash와근거경로를남기고, Git통합방식은메인/다음Astra가다음별도목표의PR승인경계안에서처리한다. 이세션을닫고새로여는행위는메인이수행하며아직교체완료라고보고하지않는다. 다음Astra는새handle/runtime/incarnation/Run/goal/최신main을확인하고BACKLOG별도PR부터시작한다. 원래2단계범위·태그승인·보존경계·운영결정은앞의첫재계획인계와원문을따른다.
+
+
+### Gardener 후보의 사용자 채택 결정 — 다음 Astra 적용
+
+메인 msg_d5453356cc75(2026-10-03T10:17:49Z)가 사용자 원문 “추천대로 진행해줘”를 전달했다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다. 원문은 resume-2026-10-03/main-gardener-candidate-decision.json이다. 이 결정은 앞선 Gardener 및 종료 보고의 “후보 채택 대기” 상태를 대체한다. 현재 세션에서는 기록과 인계만 수행하고 다음 Astra가 새 목표·계약에서 구현한다.
+
+1. **npm engines 경고 노출은 백로그로 채택한다.** BACKLOG.md 첫 PR의 씨앗 목록에 넣는다. 첫 단계는 warning 파일럿으로 npm --version을 setup 증거에 기록하고, npm stderr의 EBADENGINE을 warning annotation과 결과 요약에 노출한다. 실패로 승격하지 않으며 경고 포함·미포함 fixture 2개를 둔다. 실측 뒤 npm 고정·Management engines 조정·engine-strict error 승격 중 해소 방법을 사용자 결정으로 올린다. engines는 Management 소유이므로 해당 목표에서 조율하고 경고 노출과 해소 결정을 함께 다룬다.
+2. **PowerShell 결과 객체의 [ordered] 고정은 Rules 2단계 범위에 추가한다.** 같은 fixture를 두 번 실행해 adapter stdout 바이트가 같은지 확인하는 회귀를 붙이고 새 Sol → 새 Opus로 구현·검증한다. Python·SQL 다른 adapter의 순서 안정성은 그 작업의 사전 조사에서 확인한다. 이 세션에서 조사·제품 변경을 실행하지 않았다.
+3. **집계·비교 helper는 기존 백로그 “문서 근거 인용 검사 helper” 항목에 합친다.** 첫 BACKLOG PR에 통합 씨앗으로 반영한다. 파일·규칙·소유 파트별 수, 파일별 최소 줄, 진단 identity 차이, 소유 맵 존재 검사를 포함한다. 각 파트 PS 서식 정리 뒤 error 승격 실측을 위한 다음 실제 All 비교 때 함께 설계·구현하며 사용처 없는 선행 제작은 하지 않는다.
+4. **goal 상태 문장의 시점 경과는 재관측 항목으로 남긴다.** 이번에 별도 제품 helper를 만들지 않고, 다음 Gardener에서 다시 발생하면 재평가한다.
+
+종료 보고 msg_71b3dc358861은 이 메시지를 읽기 직전에 발행돼 후보를 대기로 적었다. 원문을 보존하고 이 추가 결정과 새 goal hash를 메인에게 별도 전달한다. 보정 독립 PASS와 제품 검증 근거는 바뀌지 않는다.
