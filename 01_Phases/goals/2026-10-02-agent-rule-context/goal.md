@@ -321,3 +321,7 @@ Gardener 4주 파일럿은 PR 병합·goal 결과 기록 뒤 R-8 교체 직전�
 - 독립 실제 저장소 All은 두 설치 모두 기존 PS7파일287진단(Whitespace269·Indentation18), 동일 결과다. 병합 후 최신 main All1회와 구분하며 이 위반 정리는 범위 밖이다. 원격 PR CI·manual dispatch·최신 main 통합 실행·취소/경합 실행은 아직 미실행이다.
 - N1~N6은 비차단 참고다: CLAUDE 추가 차단사유의 공통 양식 연결, DEVELOPMENT 작성시점 미실행 문장의 갱신, pin 목록 밖 추가 파일, 다음 수정 때 가독성 경계 사례, TS 근사 검사 뒤 거부 경로 주석, 새 테스트의 복사 비용. 이번 맥락 장치를 늘리지 않는 결정에 따라 메인에 후속 판단 후보로 보고했다(`msg_5c7e37d39979`).
 - 정상 Task/Dispatch 완료 → release external_terminal/retained → 정확 incarnation 대조 → close ptyKilled=true를 확인했다. `verification-{done,settled,release,before-close,close}.json`에 원문을 남겼다. 회귀/원문 대조 후 최신 main 재조회는 `b385bc95c21dbf20954c8a05d9d6f23184dc653c`다. 통합·PR·CI 뒤 해당 PR 사용자 승인, 병합 후 All·Gardener가 남았다.
+
+### 최신 main 통합
+
+검증 대상31파일을 `0895bdc`에 커밋하고 `origin/main b385bc95c21dbf20954c8a05d9d6f23184dc653c`를 `3a16fce`에서 충돌 없이 병합했다. `integration-hashes.json` 대조에서30/31개는 바이트가 같고, DEVELOPMENT만 main의 독립 Formatting 프로젝트 등록 안내4줄을 자동 수용했다. CODE_CONVENTION의 같은 정본 문장은 중복 없이 유지됐고 CodeRules·테스트·CLAUDE는 검증된 바이트 그대로다. `git diff origin/main HEAD --check`는 통과했다. 실제 원격 CI는 PR 발행 뒤 기록하며 병합 후 최신 main All과 Gardener는 아직 남아 있다.
