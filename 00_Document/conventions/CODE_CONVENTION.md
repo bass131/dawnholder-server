@@ -19,6 +19,25 @@
 - 실제 변경·소유·검증에 필요한 경계만 추상화한다. 추출한 책임이 무엇이고 어떤 변경 이유를 분리하는지 설명할 수 있어야 한다. 추상화나 패턴 적용 자체를 목표로 삼지 않는다.
 - 게임 틱·프레임 동작, 프로토콜·공유 DLL, Unity 자산 계약은 [AGENTS 공학 조건](../../AGENTS.md#공학-조건)과 해당 [영역별 계약](../domains/INDEX.md)을 보존한다. 실행 전 생성물·DLL 복사 등 부작용은 [DEVELOPMENT](../operations/DEVELOPMENT.md)에서 확인한다.
 
+## 파일 위치와 이름
+
+새 파일을 만들기 전에 같은 책임의 기존 파일 1~2개를 찾는다. 위치·이름·재사용할 helper와 선택 이유를 작업 전 맥락 메모에 적는다. [기능 지도](../FEATURE_MAP.md)와 [구조의 책임 경계](../ARCHITECTURE.md)를 출발점으로 쓰며 저장소 전체를 훑지 않는다.
+
+| 위치 | 모을 책임 |
+|---|---|
+| `02_Server/` | 서버 권위·판정·상태와 서버 전송·저장소 등 독립 책임의 프로젝트, 해당 테스트 |
+| `03_Client/` | Unity 실행·표현·입력과 Unity 자산 |
+| `04_ClientNet/` | Unity API에 의존하지 않는 클라이언트 전송 라이브러리 |
+| `98_Shared/` | 서버와 클라이언트가 함께 소비하는 프로토콜·데이터·공식 |
+| `99_Tools/` | 생성·검사·DB 관리·개발 실행 도구와 도구별 테스트 |
+| `05_Management/` | 운영 애플리케이션의 화면·기능과 해당 테스트 |
+
+같은 책임은 모으고 성격이 다른 도구를 한 폴더에 평평하게 섞지 않는다. 기존 하위 구조로 담을 수 없을 때만 목적이 분명한 폴더를 만든다. 이름은 무엇을 하는지 드러내고 주변의 대소문자·동사-명사·접두사 관례를 따른다. 제품·도구의 파일·폴더·식별자에 마일스톤 코드, 날짜, 작업자 이름을 붙이지 않는다. 승인·환경·실행 이력은 코드 이름이나 상수에 넣지 않고 설정·manifest·목표 기록으로 분리한다.
+
+이동·이름 변경은 호출·dot-source·빌드/검증·문서 링크를 함께 갱신하고 이전→새 경로 대응표를 남긴다. 독립 검증자는 동작과 별도로 책임별 배치, 이름의 의미, 처음 읽는 사람이 찾을 수 있는지, 맥락 메모의 기존 관례를 실제로 따랐는지를 판정한다.
+
+제품·도구 이름의 금지를 역사 goal의 날짜 접두 폴더 관례나 외부 계약 이름의 일괄 변경에 적용하지 않는다. 역할별 메모와 판정은 [작업 맥락 스킬](../../.agents/skills/dawnholder-task-context/SKILL.md)을 따른다.
+
 ## Unity와 이름
 
 MonoBehaviour는 Unity 생명주기 연결을 맡고, 예측·상태 계산처럼 독립 검증 가능한 로직은 일반 C# 타입에 둔다. 네트워크 결과는 메인 스레드에서 Unity 객체에 적용한다.
@@ -55,9 +74,47 @@ Tests·99_Tools의 세 진단 완화와 Unity 분석기 격리를 유지한다. 
 
 SDK `10.0.301`의 `dotnet format whitespace`만 사용하며 추가 layout 규칙이나 선언 순서 변경을 포함하지 않는다. 실행은 [DEVELOPMENT의 서식 검사](../operations/DEVELOPMENT.md#c-서식-검사)를 따른다. `.editorconfig`의 기존 severity와 8 production 파일의 error, Tests·Tools 정책을 유지한다. 검사 도구와 `Formatting.Tests`는 제품 slnx에 넣지 않고 별도로 build/format/test한다.
 
+제품 프로젝트 기대 집합의 정본은 `Dawnholder.slnx`로 두고 프로젝트 수를 고정 숫자로 제한하지 않는다. 독립 도구는 코드와 분리된 명시 목록으로 등록하며 제품 집합과 구분한다. 두 집합과 입력 manifest·실제 Workspace를 대조하고 restore·Compile·서식·보존 단계에 같은 대상을 연결한다. 누락·중복·예상 밖 프로젝트와 미등록 C#·Compile 누락은 계속 거부한다. 각 파트는 자기 PR에서 자기 도구 항목만 추가하며 검사 코드의 변경은 GameDev가 맡는다.
+
 서식 전후 보존은 같은 SDK Workspace의 실제 프로젝트별 Debug/Release parse options로 token 종류·원문 순서·리터럴 값·주석 본문·directive를 전수 비교한다. 비활성 영역의 차이는 실제 활성 대응 조건에서 증명해야 하고 증명할 조건이 없으면 원문이 같아야 한다. 정규식으로 모든 공백을 제거한 문자열 비교는 의미 증명이 아니다. BOM·EOF와 생성 소스는 별도로 기록한다. `git diff -w`는 보조 근거이며 BOM·개행 등 잔여 hunk를 분류한다.
 
 공백 커밋은 설정·도구·문서와 분리하고 실제 SHA를 `.git-blame-ignore-revs`에 기록한다. 로컬에서 `git blame --ignore-revs-file .git-blame-ignore-revs <파일>`로 사용한다. 원하면 저장소 한정 `git config blame.ignoreRevsFile .git-blame-ignore-revs`를 설정할 수 있으며 전역 Git 설정은 변경하지 않는다.
+
+## SQL·PowerShell 작성
+
+[001_initial.sql](../../99_Tools/database/migrations/001_initial.sql)의 DDL 배치와 [Database.Common.ps1](../../99_Tools/database/Database.Common.ps1)의 helper·자원 수명, [Test-Database.ps1](../../99_Tools/database/Test-Database.ps1)의 단계·검증 범위 주석을 관례의 출발점으로 삼는다. 다음 기준은 이번에 바꾸는 책임에 적용하며 무관한 파일의 일괄 정리로 넓히지 않는다.
+
+- 들여쓰기는 공백 4칸이다. 중첩 `BEGIN/END`와 중괄호의 소속을 맞추고 연산자·쉼표 뒤 공백을 둔다. 한 줄에는 한 판단·대입·부작용을 두며 120자를 넘는 식·인자·열 목록은 의미 단위로 줄을 나눈다. 긴 경로·리터럴은 값 보존이 우선이다.
+- 상태·결과·오류 숫자는 이름 있는 값, 조회 정의 또는 가까운 주석 표로 의미를 밝힌다. 외부 코드값을 가독성 수정 과정에서 바꾸지 않는다. 변수는 한꺼번에 나열하지 않고 입력·현재 상태·판정·결과 등 책임별로 묶는다.
+- 호출은 이름 있는 인자를 우선하고 긴 인자 목록은 한 줄에 하나씩 둔다. PowerShell은 명명 인자나 splatting을 쓴다. SQL의 `EXEC`도 명명 인자를 사용하며 위치 인자만 가능한 표현에서는 각 인자의 의미가 드러나게 쓴다. 설명 없는 `NULL` 나열을 남기지 않는다.
+- 같은 이유로 반복되는 검사는 함수·프로시저 한 곳에서 소유한다. 입력 검증 → 잠금·조회 → 판정 → 쓰기 → 결과 생성의 경계를 읽을 수 있게 나누되, 분리 때문에 transaction·잠금·오류 전파 순서를 바꾸지 않는다. 외부에 불필요한 실행 권한을 추가하지 않는다.
+- JSON·결과 조립과 공통 환경 검사를 중복 작성하지 않는다. 큰 함수는 책임을 나누고 각 helper의 입력·출력·부작용을 이름과 계약으로 드러낸다. 줄 수를 줄이려고 서로 다른 단계를 한 줄에 압축하지 않는다.
+- 주석은 구문을 번역하는 대신 검사 순서·잠금·의도된 NULL·정리 중단 조건 등의 이유를 설명한다. 세션 메시지 ID·실행자 SID·머신 경로 같은 승인/환경 값은 검증된 manifest·설정·명시 인자로 받는다. 설정으로 옮겨도 정확 대상·identity 대조와 실패 시 중단 경계를 유지한다.
+- 동작 보존 정리는 SQL 객체 signature, 결과 열·순서·코드값, 오류 번호, 권한 대상과 PowerShell 진입 인자·부작용의 전후 대조를 남긴다. 서식·정적 대조, 오프라인 시험, 실제 SQL·계정 실행은 구분하며 가독성·배치·책임 분리를 독립 판정 항목에 넣는다.
+
+## TypeScript·Electron 작성
+
+현재 관례의 출발점은 Management의 [preload.cts](../../05_Management/frontend/electron/preload.cts), [catalog-store.ts](../../05_Management/frontend/electron/catalog-store.ts)와 해당 [package.json](../../05_Management/frontend/package.json)·[화면 tsconfig](../../05_Management/frontend/tsconfig.json)·[Electron tsconfig](../../05_Management/frontend/tsconfig.electron.json)·[MCP tsconfig](../../05_Management/frontend/tsconfig.mcp.json)다. 전달 예시의 `preload.ts` 대신 실제 `.cts` 경로와 CommonJS 경계를 확인한다. 기존 압축 한줄 표현은 가독성 모범으로 강제하지 않으며 다음 기준을 바꾸는 책임에 적용한다.
+
+- 공백 2칸·세미콜론·작은따옴표를 따른다. 함수·변수는 camelCase, 타입·클래스·React 컴포넌트는 PascalCase를 쓴다. 한 줄에 서로 다른 판단·부작용을 압축하지 않고 긴 조건·인자·결과 조립을 의미 단위로 나눈다. 이름은 기존 하위 폴더의 책임과 관례를 따른다.
+- 타입 전용 import를 드러내고 `strict`·`noUncheckedIndexedAccess`·`exactOptionalPropertyTypes`·`verbatimModuleSyntax` 계약을 보존한다. Electron/MCP의 NodeNext import는 기존 `.js` 경로 관례를 따르며 화면의 Bundler 해석이나 `.cts` 경계와 혼동하지 않는다. 외부 입력은 `unknown`에서 검증하고 타입 단언이나 `any`로 검증을 생략하지 않는다. 누락·`null`·오류 결과의 기존 의미를 보존한다.
+- 화면 표현·순수 조회/변환·입력 계약·파일 I/O의 책임을 구분한다. [catalog-contract.ts](../../05_Management/frontend/electron/catalog-contract.ts)·[catalog-query.ts](../../05_Management/frontend/electron/catalog-query.ts)의 기존 계약/helper를 먼저 찾고 같은 검증·결과 조립을 중복 소유하지 않는다. 분리할 때는 변경 이유와 테스트할 경계를 설명하며 사용처 없는 추상화를 추가하지 않는다.
+- preload는 좁은 API를 노출하고 renderer에 Node·파일 시스템·임의 IPC 접근을 넘기지 않는다. [main.ts](../../05_Management/frontend/electron/main.ts)의 sender·mainFrame·URL 검증과 `nodeIntegration: false`·`contextIsolation: true`·`sandbox: true` 경계를 보존한다. TypeScript 타입만으로 IPC 입력이나 발신자가 검증됐다고 보지 않는다.
+- 저장 경계의 파일 handle·잠금·임시 파일·백업·버전 충돌·rename 순서와 실패 시 정리 책임을 드러낸다. Windows 공유 위반 재시도는 기존 대상/잠금의 소유와 제한된 수명을 보존하고 다른 실행자의 잠금을 임의 삭제하지 않는다. 주석은 이 순서·수명의 비자명한 이유를 관련 코드 가까이에 둔다.
+
+기존 `typecheck`·`desktop:typecheck`·`mcp:typecheck`는 각 tsconfig의 타입 검사이고 Vitest는 실행한 테스트 범위의 근거다. 타입 검사 성공을 서식 lint·설계·IPC 통합 실행 통과로 쓰지 않는다. 이 절은 새 ESLint/Prettier 설치나 CI 연결 완료를 뜻하지 않는다.
+
+## Python 도구 작성
+
+관례 참고는 **미병합 Architecture `d0dffd1`**의 `99_Tools/Architecture/Pipeline/inputs.py` 경로/hash 경계와 `execution.py` argv·로그·소유 process group 수명이다. 해당 코드는 신규 Opus 검증 중이며 현재 main이나 확정 모범으로 삼지 않는다. 파트가 전달한 WSL Python **3.14.4**는 관측 환경이고 저장소 지원 최소버전/pin의 합의가 아니다.
+
+- 모듈·함수·변수는 snake_case, 클래스는 PascalCase, 상수는 UPPER_SNAKE_CASE, 들여쓰기는 공백 4칸을 따른다. 긴 조건·인자·자료 조립은 의미 단위로 나누고 기존 압축 표현을 모범으로 강제하지 않는다. 모듈은 책임별로 모으며 도구 경계와 이름을 작업 전 메모에 설명한다.
+- 관측 Pipeline은 표준 라이브러리만 사용한다. 기존 helper·입력/출력 계약을 먼저 확인하고 새 의존성·지원버전 변경이 필요하면 승인된 작업 범위를 대조한다. 설치나 실행 환경 관측을 저장소 전체의 의존성/버전 규칙으로 확대하지 않는다.
+- 파일/manifest 입력은 경계에서 형식·상대 경로·대소문자·root 이탈·symlink·hash/크기와 소유를 확인한다. 복사·쓰기 전 대상 identity를 대조하고 입력 불일치를 성공 결과로 바꾸지 않는다. 경로 검증과 JSON 조립을 같은 책임의 helper에서 소유하며 Windows 원본과 WSL 복제 경계를 구분한다.
+- 외부 명령은 argv·cwd·환경·timeout·exit·원시 stdout/stderr를 구분한다. 문자열 shell 조립으로 인자 의미를 바꾸지 않는다. 파일과 자식 프로세스는 소유 수명에서 정리하며 timeout/취소 시 자기 process group만 대상으로 한다. 코드 배치나 가독성 정리 때문에 종료·오류 전파 순서를 바꾸지 않는다.
+- JSON·텍스트의 encoding·hash 대상과 실패 전달 책임을 명시한다. docstring·가까운 주석은 입력 계약·수명·제약의 비자명한 이유를 설명한다. 실행 성공·측정 값·관측 불가를 구분하고 미확인 값을 고정 성공값으로 채우지 않는다.
+
+구문/compile 검사는 실제 입력의 처리·소유 process 종료·통합 동작 검증을 대신하지 않는다. 별도 lint/formatter는 관측하지 못했으며 이 절의 문서 보강을 Python 검사 구현이나 CI 통과로 표현하지 않는다.
 
 ## 주석과 문서
 
@@ -72,6 +129,8 @@ SDK `10.0.301`의 `dotnet format whitespace`만 사용하며 추가 layout 규�
 
 설계·분할·위임·검증·통합 흐름과 전달 정보는 [목표 루프](../../.agents/skills/dawnholder-goal-loop/SKILL.md)를 따른다.
 
+각 작성자와 검증자는 [작업 맥락 스킬](../../.agents/skills/dawnholder-task-context/SKILL.md)의 사전 메모·관련 절 원문 계약·실제 준수 위치·판정 양식을 적용한다. 맥락 메모 부재·관련 원문 누락·적용 규칙 위반·메모와 결과 불일치는 수정 또는 메인 결정 전 통과 차단이다. 검토했고 지적 없음·미검토·해당 없음과 이유를 구분한다.
+
 구현자는 변경 경계와 설계 이유를 코드·계약에 반영하고 적절한 자체 점검을 수행한다. 변경 파일, 실제 점검 결과와 근거, 남은 위험·미실행 범위를 독립 검증자와 메인에게 전달한다. 자체 점검은 독립 검증을 대신하지 않는다.
 
 독립 검증자는 구현자의 설명을 결론으로 삼지 않고 요구사항·보존 동작·원시 근거를 기준으로 검증한다. 실제 코드 변경에는 별도 소유권을 받은 테스트 코드를 작성·보완하고 실행하며, 정상 경로와 관련 실패·취소·종료 경로를 확인한다. 구현 세부를 복제하는 테스트를 피하고, 결함은 구현자에게 돌려 수정 후 영향 범위를 재검증한다. 독립 리뷰에서는 책임·의존성·계약 보존과 변경 파급을 확인한다.
@@ -81,6 +140,8 @@ SDK `10.0.301`의 `dotnet format whitespace`만 사용하며 추가 layout 규�
 ## 변화 평가
 
 자동 판정 가능한 정적 기준은 구체적인 기준과 적용 범위를 확정해 첫 코드 적용부터 CI 검사에 연결한다. 책임 경계·테스트 품질·AI 탐색 부담은 독립 검토와 별도 측정으로 평가한다. 이 문서 정비는 CI 설정이나 검사 구현의 완료를 뜻하지 않는다.
+
+자동 진단은 실제 설정·대상·도구/버전·실행 근거가 확인된 범위만 주장한다. 위 C# 분석기/서식, TS 타입 검사와 이후 선정할 PowerShell·SQL·Python 정적 진단의 검출 범위를 구분한다. 반복 RPC 뼈대·불필요한 변환·중복 책임·주석 위치·파일 배치/이름·탐색 부담은 사람 검토로 남기며 린터 성공으로 통과시키지 않는다. 승인된 검사 도입 계획의 실제 설정·명령·CI 상태는 해당 goal과 DEVELOPMENT에서 확인한다.
 
 복잡도·결합·변경 파급·실패 검증·탐색 부담을 구분한다. 변경 목적에 관련된 지표와 독립 검토를 선택하고, 같은 범위의 기준선과 변경 후 결과를 비교한다. 숫자 개선이나 단일 AI 점수, 코드 줄 수·주석량·테스트 건수 자체를 목표로 삼지 않는다.
 

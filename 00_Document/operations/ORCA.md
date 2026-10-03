@@ -9,7 +9,7 @@
 - 큰 독립 목표는 별도 Orca 세션·worktree·작업 브랜치로 나눈다. worktree 부모 관계와 Git 시작 커밋은 별개이므로 최신 main 기준점을 확인한다.
 - 설치된 `orca-cli`·`orchestration` 스킬에서 선택한 CLI와 버전에 맞는 가이드를 사용한다. 구현·테스트 작성·검증 판정은 외부 세션 작업자가 맡고 실제 Run·Task·Dispatch를 기록한다. 내부 서브에이전트는 읽기 전용 조사·요약에만 쓰며 외부 실행 근거가 아니다.
 - 모델은 직접 agent 시작의 요청/적용값과 화면 표시를 대조한다. 새 pane의 최초 `--terminal` 연결은 split 명령과 화면 표시를 근거로 쓰고 백엔드 실제 모델은 확인 불가 시 `unknown`이다. 구체적인 생성·준비·거부 시 처리는 [R-5](#r5-worker-launch)를 따른다.
-- 메시지 subject/body와 타 세션 입력은 [AGENTS 태그 규칙](../../AGENTS.md#메시지와-보고)을 따른다. 메인은 세션 시작 때 자기 handle을 두 Astra에 공유한다.
+- 메시지 subject/body와 타 세션 입력은 [AGENTS 태그 규칙](../../AGENTS.md#메시지와-보고)을 따른다. 메인은 세션 시작 때 자기 handle을 GameDev·Management·Architecture 세 Astra에 공유한다.
 - worker는 live preamble의 확인·heartbeat·결과 절차를 따른다. 작업 하나가 끝나면 `worker_done`과 원문 대조 → release → 정확한 pane 확인·close로 정리하고 재사용하지 않는다. 실패·막힘·무응답은 진단을 보존한 뒤 공식 정산/중단·종료를 수행한다. 수정·재검증은 새 세션으로 발행하고 전체 delivery 처리 뒤 acknowledge한다.
 - 실패 시 `failedStage`·`residualResources`와 공식 recovery 명령을 따른다. 타임아웃은 종료 증거가 아니다. 해당 작업의 자원만 정리하고 사용자·메인 터미널은 유지한다.
 - 실행 정책·권한 우회 기준은 [AGENTS 공학 조건](../../AGENTS.md#공학-조건)을 따른다.
@@ -23,22 +23,29 @@ R-1~R-8의 상세는 이 절에만 둔다. 다른 현재 운영 문서·프로�
 | R-1~R-7 | `msg_0f0b14870182`, 2026-10-01 13:14:47 UTC | [main-request.json](../../.backups/verification/2026-10-01-operations-rules/main-request.json) |
 | R-8 추가 | `msg_339a1cb74839`, 2026-10-01 13:15:57 UTC | [main-request-r8.json](../../.backups/verification/2026-10-01-operations-rules/main-request-r8.json) |
 | R-3 CLI 제약의 회신 예외 | `msg_fc7e6335130c`, 2026-10-01 13:29:31 UTC | [main-r3-decision.json](../../.backups/verification/2026-10-01-operations-rules/main-r3-decision.json) |
+| R-1 Architecture 파트 추가 | `msg_39f5b5bcb525`, 2026-10-02 03:14:21 UTC | [main-source-recovered.json](../../.backups/verification/2026-10-02-architecture-part-rules/main-source-recovered.json) |
+| R-1 목표 한정 추가 파트 | `msg_9d5215e34c70`, 2026-10-02 메인 전달 | [현재 목표의 승인 결정](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md#현재-상태와-승인된-결정) |
 
 로컬 `.backups/` 근거는 Git 제외 자료다. 전달 사실과 직접 보존된 실행 근거를 구분하며, 문서 반영을 runtime 전환·새 실행 성공으로 보고하지 않는다.
 
 <a id="r1-management-placement"></a>
-### R-1 — GameDev와 Management 세션 배치
+### R-1 — GameDev·Management·Architecture 세션 배치
 
-사용자 결정: GameDev Astra는 메인 Claude 옆 `horizontal split`에 열고, Management Astra는 별도 Management worktree 탭에 연다. `<main-handle>`과 `<management-active>`는 현재 조회한 메인 handle과 승인된 Management checkout 절대 경로로 바꾼다. 현재 Management 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다.
+사용자 결정: GameDev Astra는 메인 Claude 옆 `horizontal split`에 열고, Management Astra는 별도 Management worktree 탭에 연다. Architecture Astra는 사용자의 세 번째 파트 결정에 따른 메인 지시로 별도 Architecture worktree 탭에 연다. `<main-handle>`, `<management-active>`, `<architecture-active>`는 현재 조회한 메인 handle과 승인된 각 checkout 절대 경로로 바꾼다. 현재 Management 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, Architecture 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active`다.
 
 ```text
 orca terminal split --terminal <main-handle> --direction horizontal --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
 orca terminal create --worktree "path:<management-active>" --title "Management Astra" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
+orca terminal create --worktree "path:<architecture-active>" --title "Architecture Astra" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
 ```
 
-Management 작업자는 그 worktree 탭 안의 Management Astra 아래 `vertical split`으로 열고, 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. GameDev 작업자도 담당 Astra 아래에 둔다. 실제 작업 경로·화면 모델·준비 상태 확인과 연결 절차는 [R-5](#r5-worker-launch)·[R-6](#r6-first-screen)을 따른다. 이전의 메인과 두 Astra 좌우 배치, Management를 GameDev split에 두는 방식과 일괄적인 새 탭 금지는 이 결정으로 대체한다.
+Management·Architecture 작업자는 각 worktree 탭 안의 담당 Astra 아래 `vertical split`으로 열고, 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. GameDev 작업자도 담당 Astra 아래에 둔다. 세 파트 모두 실제 작업 경로·화면 모델·준비 상태 확인과 연결 절차는 [R-5](#r5-worker-launch)·[R-6](#r6-first-screen)을 따른다. 이전의 메인과 두 Astra 좌우 배치, Management를 GameDev split에 두는 방식과 일괄적인 새 탭 금지는 이 결정으로 대체한다.
 
 메인이 전달한 2026-10-01 Management 실증은 Fable `term_4f0d2f42`, Sol `term_240ab30b` 두 건이다. 이 값은 당시 관찰 식별자이며 현재 실행 권한·재사용 대상이 아니다. Orca CLI **1.4.218**의 `terminal --help`에는 pane 크기 조절 명령이 없음을 확인했다([로컬 help](../../.backups/verification/2026-10-01-operations-rules/terminal-help.txt)). 다른 버전의 지원 여부까지 일반화하지 않는다.
+
+기본 파트는 GameDev·Management·Architecture 세 Astra로 유지한다. **추가 파트는 사용자 승인 시 메인이 별도 worktree 탭에 열고 목표 종료 때 닫는다.** 추가 파트의 작업자·검증자도 담당 Astra 아래 `vertical split`과 R-5·R-6을 따르며, 태그는 [AGENTS](../../AGENTS.md#메시지와-보고)의 `[<파트> Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 추가 파트 승인이나 태그가 기존 모델·쓰기·Git·병합 권한을 넓히지 않는다.
+
+추가 파트의 목표 종료 판정은 해당 goal의 완료조건과 [R-8](#r8-astra-lifecycle)을 따른다. 기본 세 파트의 배치와 R-8 교체 규칙은 유지한다.
 
 <a id="r2-source-check"></a>
 ### R-2 — 깨끗한 보고의 원천 표본 대조
@@ -83,7 +90,7 @@ Astra→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내�
 
 `tui-idle=true` 또는 wait의 `satisfied: true`만으로 모달·선택창이 없다고 판단하지 않는다. 새 세션의 첫 화면을 제한된 `terminal read`·`show`로 확인한다. Fable effort 기본값 선택창이나 `/auto-mode-setup` 안내가 있으면 Astra는 입력하지 않고 상태를 메인에 보고한다. **메인이 선택창을 처리하고 설정 파일이 바뀌지 않았는지 확인한다.** 화면이 불명확하면 준비 완료로 판정하지 않는다. 권한 확인을 우회하거나 작업자가 설정을 바꾸지 않는다.
 
-환경 사실: GameDev·Management 두 checkout에 Git 제외 `.claude/settings.local.json`이 있고 `skillOverrides`의 `auto-mode-setup` 값은 `off`다. 이번 문서 작업에서 이 파일들은 읽기 전용이다. 이 값이 모든 세션·화면의 안내를 억제한다고 보장하지 않는다.
+환경 사실: GameDev·Management·Architecture 세 checkout에 Git 제외 `.claude/settings.local.json`이 있고 `skillOverrides`의 `auto-mode-setup` 값은 `off`다. Architecture checkout에는 메인이 같은 `skillOverrides` 내용을 복사해 두었다. 이번 문서 작업에서 이 파일들은 읽기 전용이다. 이 값이 모든 세션·화면의 안내를 억제한다고 보장하지 않는다.
 
 D1a verification-2의 [종료 전 화면](../../.backups/verification/2026-10-01-persistence-technical-design/review-2-before-close-read.json)은 전체 49행(`limited=false`)에서 `/auto-mode-setup` 안내 창이 관측되지 않고 일반 `auto mode on` 상태줄이 보인 기록이다. [판정 원문](../../.backups/verification/2026-10-01-persistence-technical-design/verification-2/verdict.md)과 [해당 완료 goal](../../01_Phases/goals/2026-10-01-persistence-technical-design/goal.md)은 문서 실사 범위를 제공한다. 안내 미관측은 **해당 종료 화면에 한정한 관찰**이며 첫 화면이나 전역 설정 효과의 검증이 아니다.
 

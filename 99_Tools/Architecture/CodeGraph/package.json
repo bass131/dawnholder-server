@@ -1,0 +1,8 @@
+{
+  "name": "dawnholder-architecture-codegraph",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@colbymchenry/codegraph": "1.6.1"
+  }
+}
