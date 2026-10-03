@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168) 병합 뒤 운영 규칙의 첫 재검증 PASS와 메인 R-2 표본 일치를 확인해 PR·CI를 준비한다 — [현재 판정·통합 상태](#운영-단위-첫-재검증-pass와-통합)를 읽는다.** 메인 `msg_063d3c6e4829`가 사용자 “재개”와 남은 세 PR 계획 승인을 전달했고 `msg_cca37bd31a41`가 이번 단위의 commit/push/PR/CI 진행을 지시했다. 전체 goal은 미완료이며 각 PR 병합 승인은 별도다. 아래 휴식·첫 재개·중간 점검 기록은 당시 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본·도구의 구현 실적과 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **운영 규칙 [PR #170](https://github.com/bass131/dawnholder-server/pull/170)의 독립 재검증 PASS·메인 R-2 표본 일치·CI 두 job 성공을 확인했다. 해당 PR의 사용자 병합 승인은 대기 중이다 — [PR·CI 결과와 체크포인트](#운영-규칙-pr170과-ci-완료-체크포인트)를 읽는다.** 첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168)은 병합했다. 메인 `msg_063d3c6e4829`가 사용자 “재개”와 남은 세 PR 계획 승인을 전달했고 `msg_cca37bd31a41`가 이번 단위의 commit/push/PR/CI 진행을 지시했다. 전체 goal은 미완료이며 각 PR 병합 승인은 별도다. 아래 휴식·첫 재개·중간 점검 기록은 당시 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본·도구의 구현 실적과 구분한다.
 
 ## 문제와 목표
 
@@ -575,3 +575,12 @@ Main msg_894bfc3cc2d9(2026-10-03T21:02:14Z)의 보완 완료를 받았다. `revi
 - 남은 한계: R2~R14 비차단 항목과 기존 링크/위치 드리프트를 보존한다. 이관 위치 표본은 41/46이고 과거46개 내용 실사와 다른 수치다. 변경 없는 부분의 과거 원시는 재실행으로 바꾸지 않는다. 이번 재검증에서 새 GitHub CI·Linux·전체 CodeRules·게임·DB·Unity·로컬 .NET을 실행하지 않았다.
 - **메인 독립 대조: 일치, 표본 대조**. 메인 `msg_cca37bd31a41`(21:34:02Z)는 판정176행 전문을 직접 읽고 원문 hash를 대조했다. 실제 transcript11925·11964·11979행의 v2 원문→메모19:46:27Z→복원/재작성19:46:49Z 순서, 변이5/6·미검출1개, manifest86개 bytes, CLAUDE·goal-loop·templates 세 파일 hash를 직접 확인했다. 전수 검증으로 확대하지 않는다. 승인 기록 원문은 `revision1/main-r2-confirmation.json`이다.
 - 메인은 후속 후보 세 건을 위 보류 목록에 남기고 commit/push/PR/CI를 진행하도록 지시했다. 통합 전 맥락은 `operating-rules/integration-context.md`다. 동작5파일과 문서를 별도 커밋으로 묶고 실제 CI job·checkout·입력을 대조한 뒤 PR번호와 근거를 메인에 전달한다. **이 지시는 병합 승인이 아니며, 해당 PR의 사용자 명시 승인 전 병합·자동 병합을 하지 않는다.** 환경/경로검사와 PowerShell 출력순서 두 PR는 아직 남았다.
+
+### 운영 규칙 PR170과 CI 완료 체크포인트
+
+- [PR #170](https://github.com/bass131/dawnholder-server/pull/170)은 OPEN이며 자동 병합 없음이다. 제출 HEAD **`b72423f763390fe112fac549c67a0cac37ee0f22`**, base **`7fa107488df3eb8133bb8a51e6eb746903ab94fe`**. helper·테스트·CI 연결5파일은 f763ba4, 문서22파일은 b72423f로 나누어 push했다. 검증 후 원격27파일의 blob이 커밋과 모두 일치한다.
+- [code-rules/check](https://github.com/bass131/dawnholder-server/actions/runs/37155852060/job/111298956068) success(21:40:22Z). Linux Node22.23.3에서 Orca22/22, 기존 checker 회귀28/28, skip0이다. Changed 수집27·제외27·일반 정적 검사대상0·dirtyfalse이므로27파일을 정적 분석했다고 쓰지 않는다. helper 검증 근거는 별도 Orca 테스트다.
+- [dotnet-tests/test](https://github.com/bass131/dawnholder-server/actions/runs/37155852027/job/111298956043) success(21:59:10Z). 실제 SDK10.0.301, 포맷·입력 보존 검사와 빌드 성공, 테스트839건 중834통과·5skip·실패0이다. 변경 없는 경로의 빌드 경고4건(SA1201·SA1202·xUnit2031 두 건)과 기존skip5건은 남았다. 로컬 게임·DB·Unity·.NET 실행을 새로 수행한 것은 아니다.
+- 두 job이 실제 checkout한 합성 merge **`e3cc90126ff48864cb091391c9974dec58c3ccc8`**의 parents는 위 base와 head이며, tree **`e2446cf3ac780d6832e0b93eefc615f3f0b35d84`**가 제출 HEAD의 tree와 같다. code-rules artifact의 checkout·base·27변경 경로와 원격27blob을 대조했다. .NET formatter 상세 manifest는 runner 경로만 로그에 남고 해당 workflow의 artifact는0개이므로 상세 manifest를 다운로드해 직접 hash 대조했다고 보고하지 않는다.
+- 원시는 `operating-rules/ci-code-rules-run.json`, `ci-code-rules.log`, `ci-initial-code-rules/`, `ci-initial-input-comparison.json`, `pr-merge-input-comparison.json`, `ci-dotnet-run.json`, `ci-dotnet-job.json`, `ci-dotnet.log`, `pr-ci-complete.json`이다. 기존 npm 버전 요구 차이와 action Node 런타임 경고를 보존했다. 중간 GitHub 조회504 두 건은 CI 실패가 아니며 이후 조회·완료 로그 확보가 정상화됐다.
+- **이 머리·절은 CI 완료 뒤의 로컬 상태 기록이며 원격 PR170의 diff와 CI 입력에 포함되지 않는다.** 로컬 문서 체크포인트를 만들고 승인 대상 원격 HEAD와 별도로 메인에 보고한다. 승인·병합 뒤 다음 허용 branch에 이관하며, 현재 다음 PR나 branch를 시작하지 않는다. 메인이 해당 PR의 사용자 명시 병합 승인을 요청할 수 있도록 번호·job·실제 입력 대조·판정 원문을 전달한다. 전체 goal 종료나 다음 단위 착수 승인을 받은 상태가 아니다.
