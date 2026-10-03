@@ -1,6 +1,19 @@
 # P3 / D1b — 영속성 저장소와 격리 SQL 검증
 
-상태: **사용자 결정으로 세션 마무리 중. F 로컬 독립 PASS/CI PASS/PR164 사용자 승인 병합 완료, SQL 구조 구현은 미착수로 다음 세션에 재개한다. A1·A2·가독성 구현 정산 완료, SQL 구조·위치(b) 승인(B1 보류), 실제 DB·계정 변경은 G2 독립 실사 대기**. 메인 `msg_78c5c1647b7c`로 기술 범위, `msg_21ae101a52db`로 외부 대상·한 번 수명이 승인됐으나 DB 접속·생성·변경과 계정 생성은 G2 전까지 하지 않는다. D1b 전체 구현 완료나 전체 독립 검증 판정은 아직 없다. PR164는 사용자 명시 승인을 메인 msg_e76d142a8c9b로 전달받아 병합했다. 아래 재개 절이 현재 정본이며 뒤의 진행 기록은 당시 상태다.
+상태: **2026-10-03 메인 지시로 재개. 인계 checkpoint와 최신 main 통합 완료, SQL 구조 신규 구현 계약 준비 중. A1·A2·가독성 구현 정산 완료, SQL 구조·위치(b) 승인, B1/B2 미구현, 실제 DB·계정 변경은 G2 독립 실사 대기**. 기술 범위와 외부 대상·한 번 수명의 기존 승인은 유지하지만 SQL 접속도 G2 전까지 하지 않는다. 전체 구현 완료나 전체 독립 검증 판정은 아직 없다. 아래 최신 재개 절이 정본이며 이전 절은 당시 기록이다.
+
+## 재개와 하네스 적용 (2026-10-03)
+
+- 메인 `msg_0cb8bca3b722`(05:21:50 UTC)의 발신 handle과 현재 메인 세션을 대조했다. **메인이 전달한 사용자 결정**이며 사용자 직접 입력으로 격상하지 않는다. 전문은 `.backups/verification/2026-10-03-persistence-repository/main-entry-delivery.json`에 보존했다. 전날 마무리 지시에 따른 보류를 해제하고 이 목표의 순서를 이어간다.
+- Root 인계 한 파일은 `93c57e2`로 먼저 보존했다. fetch한 `origin/main`은 `b385bc95c21dbf20954c8a05d9d6f23184dc653c`이며 `ca8f8cb36cade02f639b7213848196e1f2761803`로 통합했다. CODE_CONVENTION 프로젝트 집합 충돌 한 곳만 PR164/main 문안으로 해결했고 나머지 03a6aeb 추가 절은 유지했다. stash2개와 Unity 사용자3파일/skip-worktree는 보존한다.
+- 신규 SQL 구조 Sol → 가독성+구조 합동 신규 Opus 오프라인 검증 → 저장소 → recovery/launcher → 최종 신규 Opus G2 실사 → 승인된 DB·계정 수명과 실제 반증 → 정리 → PR 순서다. 과거 abandoned Task/Dispatch/handle은 재사용하지 않는다. 구현자와 검증자는 서로 다른 신규 외부 세션으로, 한 작업 뒤 정산·종료한다.
+- 다음 구현 계약에는 **RPC의 modules 위치와 정본 helper 사용을 확인하는 구조 검사**를 포함한다. 위반에는 옮길 파일/목적지/사용할 helper 등 고치는 방법을 적고, 도구·입력 실패로 검사하지 못한 상태와 실제 위반을 구분한다. 새 검사는 warning 파일럿 → 실측 → error 승격 순서이며 독립 검증자가 양성·반례를 작성한다. 실제 위반은 goal의 구조 완료 판정에서 숨기지 않는다.
+- **구조 이동·helper 추출의 동작 보존 커밋과 승인된 계약·배포값 변경 커밋을 분리**한다. 구현 계약의 쓰기 전 context에서 각 경계와 보존 근거를 먼저 고정하고, 구조 checkpoint에서 9RPC/29열·payload·코드/오류/검사 순서·grant·잠금/transaction을 따로 확인한다. 중간 checkpoint는 최종 독립 PASS가 아니다.
+- 구조 완료 뒤 modules/verify-schema 입력과 hash를 고정해 SQLFluff parse 재시범을 Rules와 조율한다. 통과하면 변경 파일 검사 연결까지 완료조건에 포함한다. `99_Tools/CodeRules/`와 CI는 Rules 소유다. `msg_eb6c2219f01f`로 현재 기준·중복 문단 처리·향후 연결 방식을 문의했다. 현재 CI 활성화·parser 설치 권한으로 확대하지 않는다.
+- MSSQL.md는 GameDev의 후속 문서 작업이다. INDEX/ADR 색인·ADR-034/035, CURRENT/RESUME, FEATURE_MAP은 Rules 소유로 수정하지 않는다. ADR-035의 SqlClient6.1.7·typed RPC·ORM 미도입 사실 대조 요청에 응한다. 문서 소유의 최신 기준이 이전 goal의 해당 허용 문장보다 우선한다.
+- 일반 원칙은 반복 규칙의 검사화, 정본 helper를 쓰기 쉬운 구조, 수기 경로의 존재 검사, 검사 warning 파일럿과 unavailable/violation 구분, 구조/동작 커밋 분리다. 현행 주석 정책을 유지하며 작은 작업 예외·규칙 가지치기·사람용 코드 따라읽기 문서는 미결정이다. Roslyn 반복 패턴/ratchet은 별도 후속 goal이며 지금 시작하지 않는다. 속도보다 완성도와 독립 검증·실행 근거를 우선한다.
+- PR164의 병합된 로컬 formatting-project-registration worktree·branch만 clean/병합 포함·근거 보존 확인 후 정리한다. 원격 branch는 삭제하지 않는다. 목표 PR 병합과 결과 기록 뒤, R-8 교체 전에 신규 Opus로 Gardener 읽기 전용 점검을 수행한다. 보고서 하나만 쓰며 반복 빈도 순 후보 최대2건과 검사화 방법을 제안하고 후보 채택은 메인·사용자에게 맡긴다. 파일럿 평가 시점은 2026-10-31 무렵이다.
+- 현재 runtime `e1b9b47b-a65a-4fd5-8bfb-eaa4ce33fad8`, GameDev handle `term_8a7a39ac-baa7-467b-b364-13716d182611`, incarnation `5e2e1c35-21f6-43da-af69-1220e215b733`, 화면 GPT-6-Astra xhigh, backend unknown을 확인했다. 메인 handle과 파트 목록은 `msg_b43ca1756d69` 및 `part-handles-delivery.json`에 보존하며 사용할 때 다시 조회한다.
 
 ## 다음 세션 재개 인계 (2026-10-02)
 
