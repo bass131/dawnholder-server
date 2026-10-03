@@ -18,6 +18,7 @@ description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 �
 ## 세션 진입과 배치
 
 - [RESUME의 진입 절차](../../../00_Document/operations/RESUME.md#세션-진입-배치)와 [R-1 배치](../../../00_Document/operations/ORCA.md#r1-management-placement), [R-8 Astra 수명](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)을 따른다.
+- 기본 세 파트와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. 이 스킬이 추가 파트의 상시 배치나 생성 권한을 만들지 않는다.
 - 메인은 준비된 세 Astra에 현재 자기 handle을 Orca 메시지로 공유한다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
 
 ## 신규 prompt 준비 확인
@@ -35,6 +36,7 @@ description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 �
 
 ## 최소 맥락 인계
 
+- 할당 작업의 역할별 읽기·쓰기 전 메모·관련 규칙 원문 계약·실제 준수 위치는 [작업 맥락 스킬](../dawnholder-task-context/SKILL.md)과 [양식](../dawnholder-task-context/references/templates.md)을 따른다. 인계에 긴 과거 로그를 복제하지 않으면서 적용 규칙 원문을 누락하지 않는다.
 - durable handoff에는 목표·완료조건, 확정 결정·보존 계약, 작업 경로·branch/base/HEAD, 허용 수정 파일, 실행 자원 소유권, 검증 근거·미실행 범위, 결과 기록 경로와 막힐 때 보고 대상을 남긴다. 작업자 spec에는 자기 태그·작업 하나·추가 위임 금지·정산 후 종료·재사용 금지를 포함한다. 전체 대화·로그를 복제하지 않는다.
 - 같은 checkout이면 수정 파일 범위와 branch 전환 담당자를 명시하고 기존 작성자의 쓰기 종료를 확인한다. 수신자가 임의로 branch를 전환하거나 동시에 같은 파일을 쓰게 하지 않는다.
 - 인계 메시지의 durable request/receipt를 보존하고 접수·턴 시작 확인 여부를 각각 보고한다. accepted 뒤 침묵은 중복 전송하지 않고 위 동일 request 확인 절차를 따른다.
