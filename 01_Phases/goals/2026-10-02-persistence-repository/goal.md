@@ -1,6 +1,14 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **독립 검증1의 차단5건 수정1 `7525051` 완료·작업자 정산/종료, 제품13파일의 별도 서식 Task와 신규 Opus 합동 재검증 준비**. 수정자의 기존 독립 tests 재실행은300PASS/0FAIL/7OBSERVED이나 독립 최종 판정은 아직 없고 CodeRules는483진단으로 FAIL이다. 구조 `ad6d5cb`·배포 `ccb7107`·MSSQL 문서 `66020b4`·독립 tests `0fa8815`와 최신 main48e722b 통합 `c2f508e`를 보존했다. 2026-10-03 사용자 결정으로 SQL/PS 구조·검사·문서와 합동 오프라인 검증까지 첫 PR을 분리한다. 저장소·복구 도구·G2·실제 DB/계정 수명은 첫 PR 병합 뒤 최신 main 새 branch/후속 goal에 인계하며 새 GameDev Astra가 시작한다. 현재 전체 영속성 완료나 SQL 실행 PASS는 아니다. SQL 접속도 G2 전까지 하지 않는다.
+상태: **독립 검증1의 차단5건 수정1 `7525051`과 제품13파일 서식 `4d6b07b` 완료·두 작업자 정산/종료, 신규 Opus 합동 재검증 준비**. 수정자의 기존 독립 tests 재실행은300PASS/0FAIL/7OBSERVED이나 독립 최종 판정은 아직 없다. 제품13파일의 PSSA 진단은615→0이며 Changed CodeRules에는 tests121진단이 남아 FAIL이다. 구조 `ad6d5cb`·배포 `ccb7107`·MSSQL 문서 `66020b4`·독립 tests `0fa8815`와 최신 main48e722b 통합 `c2f508e`를 보존했다. 2026-10-03 사용자 결정으로 SQL/PS 구조·검사·문서와 합동 오프라인 검증까지 첫 PR을 분리한다. 저장소·복구 도구·G2·실제 DB/계정 수명은 첫 PR 병합 뒤 최신 main 새 branch/후속 goal에 인계하며 새 GameDev Astra가 시작한다. 현재 전체 영속성 완료나 SQL 실행 PASS는 아니다. SQL 접속도 G2 전까지 하지 않는다.
+
+## PowerShell 서식 정산과 합동 독립 검증2 입력 (2026-10-03)
+
+- 신규 Sol Task `task_fea98a0c106c` / Dispatch `ctx_3bb2f726ba5d`, 입력 `8c1675f72f66b81e9b60f57b3b0a9058aea41caf`. 최초 argv와 화면은 `gpt-6.1-sol` xhigh, backend unknown이다. `ps-format-spec.md` SHA256 `064ED6D718793B407B5E1042102CD0A041E10600CE5223AC24E25168B41832AC`의 정확13파일만 기계 서식으로 바꾸었다. 별도 커밋 **`4d6b07be17b9911870b4d1e5088d2e99b7f4927e`**은425추가/425삭제이며 부모가 직접 확인한 `git diff -w` 출력과 diff-check 오류가 없다.
+- **보고 원문:** `.backups/verification/2026-10-03-persistence-repository/ps-format-implementation/report.md`, SHA256 **`68A463E9105B62F41B5E3069671AAB52178629C845F2181D71CF4AAE36C54EC8`**. 부모는 최종 원문 전체와 context·실제 diff·PSSA/PS5.1 parser·보존 gate 원시 표본을 읽었다. 각13파일 PSSA615→0, PS5.1 파싱 오류0, 문자열/주석/AST·encoding/BOM 보존 대조를 기록했다. 최종목록74/74 실물 hash 일치는 변경13+보호61의 대응 확인이며 시작 대비 보존 수는61이다. `astra-ps-format/audit.md`, `source-hash-check.json`에 근거와 한계를 둔다.
+- 사전 메모의 빈gitstatus→사용자변경없음 표현은 부모 reply `msg_14673a3fc728`에 따라 제품쓰기 전에 정정했고 Unity 사용자3/skip-worktree를 보존했다. 제출 원문을 남기고 메인 `msg_3ca81b2c8a1e`에 알렸다. PS5.1 자체 probe 두 실패와 정정은 raw/source를 보존했고 제품·독립 실패 횟수에 넣지 않는다. nested token은 별도 열거가 아닌 외부 string token 원문과 중첩 AST 대조였다는 방법도 최종 보고에 공개했다.
+- 실제 CodeRules `ps-format-implementation/code-rules/run-2026-10-03T09-18-00.712Z-25628/results.json`은42targets(PS19/SQL23), tests121진단/실패1/exit1/SQL23deferred/summary.passed=null이다. 제품13은0이며 tests6개 중5파일에121진단이 남았다. 전체 검사·SQL·독립 PASS로 보고하지 않는다. 신규 Opus는 tests 소유에서 이를 보완하고 첫 PR 전체 소스/문서·반례·사람 규칙/보고 정확성과 최종 WSL build/tests·Formatting·Changed CodeRules를 독립 검증한다.
+- worker_done `msg_35a089e8b3cc`(09:28:21Z)의 Task/발신/reporthash를 대조했다. release→동일 incarnation/idle 확인→정확 pane close `ptyKilled=true`→delivery ACK로 정산했고 재사용하지 않는다. `ps-format-{done-delivery,release,before-close,before-close-screen,close}.json`에 보존했다. 정산 뒤 조회한 원격 main도48e722b다. 기존 SQL-STRUCTURE-01~05의 확정 NOT PASS는 각1회이며 새 독립 판정·PR/CI·개별 사용자 병합 승인은 남아 있다.
 
 ## 수정1 정산과 최신 사용자 결정 반영 (2026-10-03)
 
