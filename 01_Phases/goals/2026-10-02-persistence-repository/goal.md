@@ -1,10 +1,21 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **2026-10-04 검증4 정산을 마쳤고 새 Sol 수정3을 준비한다.** 기존 06·07·08은 해소됐지만 새 SQL-STRUCTURE-09·10 때문에 차단이다. 독립 테스트 6파일을 `ef51206685aa43e8f7f54f7e8e60ae7aefd7ce75`에 보존했고, 메인은 미등록 해시 소비처 검출(N-14)을 06 재발 방지 범위로 확정했다. 수정3 → 신규 Opus 재검증 → PR/CI → 개별 병합 승인이 남았다. 실제 SQL/DB/G2·계정·저장소/복구 통합은 범위 밖이다.
+상태: **2026-10-04 수정3 정산·최신 main 통합을 마쳤고 신규 Opus 검증5를 준비한다.** SQL-STRUCTURE-09·10과 미등록 해시 소비처 검출(N-14)을 세 파일에서 수정했다. 자체 runner는 614PASS/2FAIL/10OBS이며, 남은 함수 수 단정 두 건을 포함한 독립 실사·테스트 보완이 필요하다. 검증5 → PR/CI → 개별 병합 승인이 남았다. 실제 SQL/DB/G2·계정·저장소/복구 통합은 범위 밖이다.
 
 ## 재개 지점
 
-### 현재 다음 단계 — 검증4 정산 후 수정3 (2026-10-04)
+### 현재 다음 단계 — 수정3 정산 후 독립 검증5 (2026-10-04)
+
+- **고정할 입력:** 수정3 제품 커밋 `1f6eddb98e95973207c1661d3437f2134798f632`(3파일 228추가/57삭제), 독립 tests는 `ef51206685aa43e8f7f54f7e8e60ae7aefd7ce75` 그대로다. 종료 후 최신 origin/main `7fa107488df3eb8133bb8a51e6eb746903ab94fe`(문서 PR168)을 `dfd5d1ec9f82919f6e04c0e90be8c57432245b90`에 통합했다. SQL 열린 PR은0이며 아직 push하지 않았다. 이 상태 기록 뒤의 최종 HEAD를 새 계약에 고정한다.
+- **구현 보고 원문:** `.backups/verification/2026-10-03-persistence-repository/sql-structure-fix-3/report.md`, SHA256 `B8F07DB989853E3CC460BC806CDC8FFEDCA3EE4AF5A6198869A4568C51376506`. 최종 context SHA `7DA95536447C878925231D4AD501C1EC554A837E366750D2DA86FAF731C3D952`; write-end SHA `62A22E12B2210C91710D71A4D9D338514CF085DD0CF2B651044353742596E898`. 부모는 두 원문 전체·세 파일 실제 diff·PS5.1/CodeRules/runner 원문·반례 표본을 실사했고, `astra-fix-3/audit.md`와 개별 source/raw 대조에 범위와 한계를 남겼다.
+- **실제 변경:** `ModuleHash.Common.ps1`의 manifest 전체 숫자 토큰/int32 검사, 단계별 오류 파일 귀속, 제품 파일 열거·위치별 미등록64hex 대조를 보완했다. `Test-ModuleStructure.ps1`은 경로 사전 검사와 결과/exit를 연결하고 `MSSQL.md`는 검사 범위·제외·문자 위치·등록 안내를 맞췄다. 원본 제품38파일/64hex80개/미등록0, 기존 등록116개 튜플은 보존됐다. `tests/`만 명시 제외하며 같은 행의 동일 값 복사도 미등록이다. root 자체 junction은 지원하고 하위 link는 따라 읽지 않은 검사 불가2로 공개한다.
+- **자체 실행과 남은 실패:** R1은610PASS/6FAIL/10OBS, 출력 호환 보완 후 R2(17:48:53.566~17:51:40.338 UTC)는614PASS/2FAIL/10OBS·exit1이다. 이전09의10개·10의3개 실패는 같은 이름으로 모두PASS가 됐으나 독립 재검증은 아니다. 남은 두 실패는 정의/import 함수 수를6개로 고정한 단정이며 실제는 책임 helper3개가 추가된9개다. Sol은 tests를 수정하지 않았다. 신규 Opus가 요구사항·부작용 보존으로 독립 판단한다. PS5.1 변경2파일 파싱 오류0, CodeRules44대상·위반0·실패0이지만 SQL23개는deferred다.
+- **원문 정확성과 보존:** 최초 같은 행 복사 smoke는 자극이 삽입되지 않은 오류2행을 보존했고, 새 사본의 실제407행·등록offset23517/미등록23595·같은 값2회와 exit1/1을 부모가 직접 대조했다. 하위 junction OBS는compliant→unavailable/읽은link파일0, 기존 N14 관측은0→1로 달라졌다. OBS를PASS로 세지 않는다. 최종54파일 SHA가 실물과 일치하고 허용3개 외51개·tests7·SQL/manifest·UnityS3·stash2·HEAD는 보존됐다.
+- **정산:** 신규 Sol Task `task_2e7025776cb0`/Dispatch `ctx_68314b29c590`, 최초 명령·화면 gpt-6.1-sol xhigh/backend unknown. 공식 긴 계약의 초기 turn_start_unobserved는 메인74af의 조건에 맞는 Enter1회로 복구했고 원래 unknown 기록은 보존했다. worker_done `msg_208fbfee3455`(18:04:15 UTC)의 발신·원문SHA를 확인한 뒤 release→동일incarnation `080ca504-938c-49d3-887a-d120736ba43e`의 idle→정확 pane close `ptyKilled=true`→ACK로 종료했다. 이 세션은 재사용하지 않는다.
+- **최신 main 충돌 처리:** 문서6파일만 추가됐으며 제품·tests·CODE_CONVENTION은 바뀌지 않았다. CURRENT 충돌은 새로 포함된 Rules goal/결정은 상대 링크, 아직 이 checkout에 없는 Architecture·Management goal은 실재하는 별도 worktree 링크로 조합했다. Rules의 실제 현재 branch `docs/harness-operating-rules`도 확인해 링크 옆 경로를 갱신했다. `astra-review-5/main-integration.json`에 근거를 두며 검증5가 해당 문서 연결도 실사한다.
+- **다음 실행과 횟수:** 새 `claude-opus-5-5`가 tests/**와 자기 근거만 쓰며 제품은 읽기 전용이다. 사전 context 전체·SHA에 blocking 회신한 뒤 tests를 보완하고 09·10/N14·기존 보존 계약/문서/사람 규칙을 검증한다. 09·10은 각 최초 실패1/완료 재검증0 그대로이며 자체 smoke나 두 함수 단정을 독립 실패 회수로 더하지 않는다. 실제SQL/DB/G2/U01/Unity·현재 HEAD 전체build/Formatting·CI는 미실행이다. 합의한 범위 수정·검증을 이어가며 PR 병합은 해당 PR의 사용자 명시 승인 뒤에만 한다.
+
+### 이전 단계 — 검증4 정산 후 수정3 (2026-10-04)
 
 - **현재 입력:** 제품 `e03dcc9`, 독립 테스트 checkpoint `ef51206685aa43e8f7f54f7e8e60ae7aefd7ce75`(6파일 1182추가/60삭제). 검증4의 고정 입력은 `2093c25c55d2c41537b05dc528e24421d029cb90`/base `5616573c32a2b2e0b677bc21b75e22a08d21f285`였다. 종료 후 다시 fetch한 origin/main도 같은 값이며 현재 HEAD의 조상, 열린 SQL PR은 0이다. Unity S3·stash2를 보존했다. 아래 휴식 절은 당시 이력이며 현재 다음 작업은 검증4 재실행이 아니라 수정3이다.
 - **판정 원문:** `.backups/verification/2026-10-03-persistence-repository/sql-structure-verification-4/verdict.md`, SHA256 `98407A0E6EFEF671FCF48CAC262C7B3E7C942F09BD4256EE87925480D9EEEA5F`. 부모가 전체 원문과 최종 context, tests 전체 diff·신규 suite, R0/R1/R2 raw·변이 사본·소스 표본을 읽었다. `astra-review-4/audit.md`, `source-hash-check.json`에 실제 범위와 한계를 남겼다. 54/54 최종 SHA와 별도 tests7개 SHA가 일치하며, 변경은 허용 tests5개와 신규 suite1개뿐이었다.
