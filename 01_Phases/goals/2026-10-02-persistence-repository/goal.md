@@ -1,10 +1,19 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **2026-10-04 수정3 정산·최신 main 통합을 마쳤고 신규 Opus 검증5를 준비한다.** SQL-STRUCTURE-09·10과 미등록 해시 소비처 검출(N-14)을 세 파일에서 수정했다. 자체 runner는 614PASS/2FAIL/10OBS이며, 남은 함수 수 단정 두 건을 포함한 독립 실사·테스트 보완이 필요하다. 검증5 → PR/CI → 개별 병합 승인이 남았다. 실제 SQL/DB/G2·계정·저장소/복구 통합은 범위 밖이다.
+상태: **2026-10-04 독립 검증5 통과·정산을 마쳤고 첫 SQL PR과 CI를 준비한다.** SQL-STRUCTURE-09·10은 첫 완료 재검증에서 해소됐고 새 제품 결함은 없다. 최종 오프라인 runner는 884PASS/0FAIL/8OBS, 오류 주입 15종은 모두 검출됐다. PR/CI와 해당 PR의 사용자 명시 병합 승인이 남았다. 실제 SQL/DB/G2·계정·저장소/복구 통합은 범위 밖이다.
 
 ## 재개 지점
 
-### 현재 다음 단계 — 수정3 정산 후 독립 검증5 (2026-10-04)
+### 현재 다음 단계 — 독립 검증5 정산 후 PR/CI (2026-10-04)
+
+- **판정과 입력:** 신규 Opus의 최종 판정은 통과·새 제품 결함0이다. 고정 검증 입력은 `075fe5b16db5933545d17919c93cf840ec7dd4b9`/base `7fa107488df3eb8133bb8a51e6eb746903ab94fe`이며, 검증자 종료 후 tests3파일만 `6be9e7d76d40d3321a3cc3e64de338b543b9a5b6`에 커밋했다(785추가/31삭제). fresh fetch의 origin/main도 같은 base이며 열린 SQL PR은0이었다. 제품 커밋 `1f6eddb`는 바뀌지 않았다.
+- **판정 원문:** `.backups/verification/2026-10-03-persistence-repository/sql-structure-verification-5/verdict.md`, SHA256 `023E06CD3BFEBD2A788171363C0673004FFDBE060A7D6B41B85D4F7B2AF40E8B`. 최종 context SHA `910AA669E4FCB864DA6A1E2EE60A5D190AD711F3E980F88F93F2A5AABA33F2E7`, 변경표 `static/test-changes.md`. 부모가 세 원문 전체·실제 tests diff·신규649행 suite를 읽고 `astra-review-5/audit.md`에 수용 근거를 남겼다.
+- **독립 실행:** 동일 PS5.1 전체 runner의 R0는614PASS/2FAIL/10OBS·exit1, 최종 R1(18:50:43.541~18:56:07.532 UTC)은884PASS/0FAIL/8OBS·exit0이다. 6suite 모두 결과를 썼고 중단0이다. 기존 실패2는 옛6함수 고정 단정(a)이며 정의-only·caller 보존·검토한9함수 목록과 충돌 검사를 유지했다. N14 OBS2는 같은 자극의 실제 단정10개로 옮겨 모두PASS다. 나머지622개는 같은 이름·같은 결과이며 기존09·10 실패13개도 정확 같은 이름으로PASS다. PS5.1 parse3파일 오류0, CodeRules는 초기 tests 들여쓰기16행 수정 후45대상·위반0·실패0이지만 SQL23개는deferred다.
+- **검출·보존 대조:** 오류 주입15종의 실제 코드 변경·원본/사본SHA·기준선M0와 새 실패 이름·stdout을 부모가 전수 대조했다. 새 실패 수는136/25/5/10/15/5/5/1/12/4/56/1/5/5/20으로 원문과 같다. 동치1종은 검출에서 제외했고 초기 중단 묶음은 보존했다. `mutation-source-raw-check.json`, `classification-raw-check.json`, `r1-final-source-samples.json`이 부모 증거다. 최종 보호62파일의 실물SHA가 모두 일치하고 기존tests2개와 신규1개 외 제품·문서·Unity S3·stash2는 보존됐다. 실행 입력46개도 현재 실물과 일치했다.
+- **정산·횟수:** Task `task_c3b1534951e5`/Dispatch `ctx_b44a2e4f2787`, 최초 명령·화면 Opus5.5/backend unknown. tests 쓰기 종료19:09:34 UTC, worker_done `msg_61b7a3bdb077`19:11:45 UTC를 실사한 뒤 release→동일incarnation `1982947f-6cb5-4c67-af57-ae199f6f94d0` idle→정확 pane close `ptyKilled=true`→ACK로 종료했다. 세션 재사용은 없다. 09·10은 최초 실패각1 이후 첫 완료 재검증1회에서 해소됐고, 06·07·08도 앞선 해소 상태를 유지한다. 3회 실패 조건은 발생하지 않았다.
+- **남은 경계:** 비차단 H-1은 공유 `$activeFile` 유지보수 위험이며 종류별 reader 분리는 후속 정리 후보다. H-2 긴 literal 예외, H-3 미사용 초기값, H-4 의도된 배포 reader gate 확대, N-15 정확64hex만 검사하는 경계도 원문에 공개됐다. 현재 범위에 추가 정리를 넣지 않는다. 실제 SQL/DB/G2/U-01/Unity·현재 HEAD 전체build/Formatting·CI는 아직 미실행이며, 과거 C#/build/format276입력 일치는 과거 실행 재사용의 근거일 뿐 새 실행이 아니다. PR 생성과 CI 확인 뒤 메인이 최종 판정 원문·R-2 표본을 읽고 해당 PR의 사용자 명시 병합 승인을 받는다. 승인 전 병합·자동 병합 예약은 없다.
+
+### 이전 단계 — 수정3 정산 후 독립 검증5 준비 (2026-10-04)
 
 - **고정할 입력:** 수정3 제품 커밋 `1f6eddb98e95973207c1661d3437f2134798f632`(3파일 228추가/57삭제), 독립 tests는 `ef51206685aa43e8f7f54f7e8e60ae7aefd7ce75` 그대로다. 종료 후 최신 origin/main `7fa107488df3eb8133bb8a51e6eb746903ab94fe`(문서 PR168)을 `dfd5d1ec9f82919f6e04c0e90be8c57432245b90`에 통합했다. SQL 열린 PR은0이며 아직 push하지 않았다. 이 상태 기록 뒤의 최종 HEAD를 새 계약에 고정한다.
 - **구현 보고 원문:** `.backups/verification/2026-10-03-persistence-repository/sql-structure-fix-3/report.md`, SHA256 `B8F07DB989853E3CC460BC806CDC8FFEDCA3EE4AF5A6198869A4568C51376506`. 최종 context SHA `7DA95536447C878925231D4AD501C1EC554A837E366750D2DA86FAF731C3D952`; write-end SHA `62A22E12B2210C91710D71A4D9D338514CF085DD0CF2B651044353742596E898`. 부모는 두 원문 전체·세 파일 실제 diff·PS5.1/CodeRules/runner 원문·반례 표본을 실사했고, `astra-fix-3/audit.md`와 개별 source/raw 대조에 범위와 한계를 남겼다.
