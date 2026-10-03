@@ -1,6 +1,6 @@
 # 정적 관계 추출기 비교와 스냅샷 계약
 
-내부 목표 ID: A-1. **현재 상태: 다섯 번째 독립 문서 실사는 PASS(차단 0건)다. 검토 HEAD는 `1d04f6e`이며 23개 주장의 원천 전수 대조로 D9·N15·N16이 해소됐다. 메인의 R-2 대조가 일치했고 사용자는 SDK Roslyn을 선택했다. 선행 PR164는 `b385bc9`로 병합됐다. 사용자 마무리 결정에 따라 검증자 정산과 결정·재개 기록까지만 완료하고 중단한다. 구현자와 다섯 검증자는 모두 pane 종료했다. 최신 main 반영·Roslyn CI 등록·Architecture PR은 다음 세션에 남겼다. 제품 비차단 N1–N11·가독성 및 새 비차단 N17은 남긴다. 아래 ‘세션 종료와 자기완결 재개 지점’을 먼저 읽는다.**
+내부 목표 ID: A-1. **현재 상태: 2026-10-03 메인 재개 지시를 수신해 Roslyn CI 등록과 Architecture PR 준비를 진행한다. 기존 미커밋 재개 기록은 `bc15410`에 보존했고 `b385bc9` main을 `65ae938`에 반영했다. 다섯 번째 문서 실사의 PASS·SDK Roslyn 선택·메인의 R-2 일치는 유지한다. 새 등록 변경의 구현·독립 검증·CI와 PR별 사용자 병합 승인은 아직 남았다. 제품 비차단 N1–N11·가독성·N17은 미해결이며 CodeGraph cache를 삭제하지 않는다. 최신 계약은 아래 ‘2026-10-03 재개와 등록 계약’이다.**
 
 ## 목표와 결정 출처
 
@@ -222,3 +222,14 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 **남은 판단과 한계:** SDK Roslyn 선택과 메인 R-2 대조는 완료됐지만 CI 등록/통합·Architecture PR별 병합 승인은 남았다. **CodeGraph `node_modules`·npm cache 정리 여부는 사용자 결정 대기**이며 선택만으로 삭제 권한을 추정하지 않는다. 닫힌 36후보에서 CodeGraph TP/FP/FN=14/0/1, Roslyn=15/0/0이고 범위 밖 불가능 층 방향은 16/0이다. 이는 저장소 전체 정확도가 아니다. Roslyn의 약 8초 분석 비용·SDK/참조 유지와 Unity 부분 해석(Error 285), 제품 비차단 N1–N11·가독성, 새 N17을 숨기지 않는다. 실제 같은 SHA의 시스템 카드 corpus 조인·화면·실행 trace는 완료하지 않았으며 뷰어 후속 목표를 자동 시작하지 않는다.
 
 **남긴 자원과 근거:** 이 목표가 연 외부 작업자/검증자 pane은 모두 닫았다. Architecture Astra pane만 사용자 종료를 기다린다. 로컬 근거 루트는 `.backups/verification/2026-10-02-architecture-extractor-comparison/`이며 Git 제외다. 최종 판정은 `verification-5/verdict.md`, 행별 근거는 `verification-5/claims-audit.md`, 제품 원시 실행은 `implementation/runs/20261002T065831395290Z/`, 과거 FAIL과 과정은 `verification/`부터 `verification-4/`, `report-reduction/history.md`에 남아 있다. 승인 설치의 `99_Tools/Architecture/CodeGraph/node_modules`와 `.npm-cache`, 전용 WSL 복제본 `/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5` 및 10개 격리 state는 근거 보존을 위해 삭제하지 않았다. 진행 중인 추출/빌드 작업은 없고 오늘 별도 자원 정리를 시작하지 않는다. 다음 세션은 필요한 근거만 읽고 전체 과거 대화·소스를 반복 수집하지 않는다.
+
+### 2026-10-03 재개와 등록 계약
+
+메인 `msg_0f558329c8ce`(생성 `2026-10-03T05:21:51Z`)의 `from_handle`을 현재 메인 terminal과 대조하고 재개했다. 아래 결정은 **메인이 전달한 사용자 결정**이며 사용자 직접 입력으로 격상하지 않는다. 원문은 로컬 `.backups/verification/2026-10-03-architecture-roslyn-registration/entry-delivery.json`, 수신 회신은 `entry-status-send.json`에 있다. 기존 종료 시점 기록과 검증 이력은 보존한다.
+
+- 현재 마무리: 기존 goal 변경 checkpoint → 최신 main 반영 → 신규 Sol이 `99_Tools/Formatting/independent-projects.json`의 `Projects`에 `99_Tools/Architecture/Roslyn/Architecture.Roslyn.csproj` 한 항목 추가 → 신규 Opus 실사·관련 검사 실행 → CI·PR 준비. `SchemaVersion=1`과 기존 항목을 보존한다. Formatting 구현·중앙 규칙·CI 변경은 허용하지 않는다. Astra는 goal·로컬 근거와 Git 통합, Sol은 등록 JSON 하나, 검증자는 필요한 독립 테스트와 로컬 판정만 쓴다. 신규 Run은 `run_464513fb0e5e`이며 이전 Run·Task·Dispatch를 재사용하지 않는다.
+- SDK Roslyn 선택은 확정이다. CodeGraph `node_modules`·npm cache의 정리 여부는 PR 준비 때 선택지·재현성·디스크 영향을 메인에 question으로 올리고 결정 전에는 삭제하지 않는다. PR별 병합 승인도 별도이며 자동 병합하지 않는다.
+- 채택 원칙: 반복 규칙은 고치는 방법을 포함한 검사로 옮긴다. 정본 helper·생성기·구조를 쓰기 쉽게 한다. 수기 경로 목록에는 존재·드리프트 검사를 붙인다. 새 검사는 warning 파일럿→실측→error 순서로 도입하고 도구·환경 실패와 실제 위반을 구분하며 유지 비용에 따라 강등한다. 구조 변경과 동작 변경은 별도 commit으로 나눈다. 진행 중 단계는 그대로 마치고 다음 계약부터 검사 장치를 적용하며 무관한 정리로 넓히지 않는다. 현행 주석 정책을 유지한다. 검증 강도 차등·작은 작업 예외·규칙 문서 가지치기·사람용 코드 따라읽기 문서는 미결정이다.
+- 사용자 우선순위: 속도보다 완성도이며 독립 검증·실행 근거·가독성 실사를 줄이지 않는다. DB 저장소·연동 완성이 게임 콘텐츠 개발의 선행 관문이다. 이 파트는 파일·실행 자원을 분리하고 작은 검증 단위로 진행한다. 새 파일·폴더·식별자·운영툴 기록에는 마일스톤 코드로 이름을 대신하지 않는다.
+- 종료 후 Gardener: PR 병합과 goal 결과 기록 뒤 Astra 교체 전에 신규 `claude-opus-5-5`가 파트 소유 결함·CI 실패·새 억제/우회·드리프트 결과를 읽는다. 쓰기는 점검 보고서 하나다. 반복 빈도 순 후보 최대 2건과 검사로 바꾸는 방법을 제안하며 후보가 없으면 없음으로 끝낸다. 실행 실패와 실제 문제를 구분한다. 수정·후보 채택은 별도 사용자 결정이다. 4주 파일럿 평가 시점은 2026-10-31 무렵이다.
+- 다음 목표: 이번 PR 병합 뒤 최신 main에서 별도 branch·goal로 **모듈 경계 검사**를 설계하고 메인 검토 후 구현한다. 전송/프레이밍→게임 규칙 금지, 시스템 간 직접 호출, Client→ClientNet→Shared←Server 방향은 우선 실측할 후보이며 확정 규칙이 아니다. warning 파일럿, source→target 위반과 수정 안내, 생성 실패/부분 분석/위반 구분, 실제 기존 위반 수·위치를 드러내는 기준선을 계약에 넣고 자동 기준선으로 숨기지 않는다. GameDev의 코드 내부 패턴 분석기와 범위를 나누고 Rules의 CI·CodeRules 접점을 조율한다. 시스템 도식 뷰어와 Management codeReference 조인은 그 뒤에 같은 스냅샷·계층 정의를 재사용한다. 메인이 전달한 ‘현재 아키텍처 테스트 0건’은 이 세션의 독립 검색 결과가 아니다.
