@@ -27,7 +27,6 @@ BEGIN
     DECLARE @ReleaseRecoveryKind int = 5;
     -- Result codes are wire/ledger contracts; validation priority remains binding, fence, owner, sequence, game.
     DECLARE @CancelledBeforeApply smallint = 205;
-    DECLARE @Applied tinyint = 1;
     DECLARE @NotApplied tinyint = 2;
     -- OwnerKind: 0 Free, 1 Runtime, 2 Recovery.
     -- Kind: 1 Acquire, 2 Checkpoint, 3 ReleaseRuntime, 4 Recover, 5 ReleaseRecovery.
@@ -93,10 +92,8 @@ BEGIN
     DECLARE @hp int;
     DECLARE @storedMaxHp int;
     DECLARE @bossUnlocked bit;
-    -- Current diagnostic JSON and fresh historical snapshot.
+    -- Current diagnostic JSON; historical replay proof belongs to the receipt.
     DECLARE @storedProgress nvarchar(max);
-    DECLARE @safe nvarchar(max);
-    DECLARE @snapshot nvarchar(max);
     -- Terminal proof (replay remains the original ledger snapshot).
     DECLARE @status varchar(32) = 'Terminal';
     DECLARE @outcome tinyint;
@@ -104,7 +101,6 @@ BEGIN
     DECLARE @resultSnapshot nvarchar(2048);
     DECLARE @isReplay bit = 0;
     DECLARE @recordedUtc datetime2(3);
-    DECLARE @safeMaxHp int;
     -- Deployment identity is returned by ReadAdmission/InspectRecovery preflight.
     -- Mutation/resolution rows carry operation proof and current state; this metadata field stays NULL.
     -- Preflight boundary: 01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md, section 5.

@@ -101,7 +101,6 @@ BEGIN
     DECLARE @resultSnapshot nvarchar(2048);
     DECLARE @isReplay bit = 0;
     DECLARE @recordedUtc datetime2(3);
-    DECLARE @safeMaxHp int;
     -- Deployment identity is returned by ReadAdmission/InspectRecovery preflight.
     -- Mutation/resolution rows carry operation proof and current state; this metadata field stays NULL.
     -- Preflight boundary: 01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md, section 5.

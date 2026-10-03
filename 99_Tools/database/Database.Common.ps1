@@ -137,24 +137,7 @@ function Assert-DatabaseOwner(
     }
 }
 
-function Get-MigrationText(
-    [string]$Path
-) {
-    # Stable across Git CRLF/LF checkouts; BOM excluded by ReadAllText.
-    return [IO.File]::ReadAllText($Path).Replace("`r`n", "`n")
-}
-
-function Get-MigrationHash(
-    [string]$Sql
-) {
-    $sha = [Security.Cryptography.SHA256]::Create()
-    try {
-        return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($Sql)))).Replace('-', '')
-    }
-    finally {
-        $sha.Dispose()
-    }
-}
+. (Join-Path $PSScriptRoot 'ModuleHash.Common.ps1')
 
 . (Join-Path $PSScriptRoot 'Module.Common.ps1')
 

@@ -1,6 +1,8 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+. (Join-Path $PSScriptRoot 'ModuleHash.Common.ps1')
+
 # Import definitions in a child scope: the executable entry point's parameters must not overwrite caller variables.
 $moduleStructureDefinitions = & {
     . (Join-Path $PSScriptRoot 'Test-ModuleStructure.ps1')
@@ -10,16 +12,6 @@ $moduleStructureDefinitions = & {
 }
 foreach ($definition in $moduleStructureDefinitions) {
     Set-Item -Path ('Function:' + $definition.Name) -Value $definition.ScriptBlock
-}
-
-function Get-ModuleDefinitionHash([string]$Sql) {
-    # Reviewed source, UTF-16LE without BOM. Never derive the expected hash from the database.
-    $sha = [Security.Cryptography.SHA256]::Create()
-    try {
-        return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::Unicode.GetBytes($Sql)))).Replace('-', '')
-    } finally {
-        $sha.Dispose()
-    }
 }
 
 function Assert-ModuleManifestFields($Value, [string[]]$Expected, [string]$Location) {

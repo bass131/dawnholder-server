@@ -11,8 +11,6 @@ BEGIN
     -- Result codes are wire/ledger contracts; validation priority remains binding, fence, owner, sequence, game.
     DECLARE @IdentityMismatch smallint = 203;
     DECLARE @IntegrityFailure smallint = 207;
-    DECLARE @Applied tinyint = 1;
-    DECLARE @NotApplied tinyint = 2;
     -- OwnerKind: 0 Free, 1 Runtime, 2 Recovery.
     -- Kind: 1 Acquire, 2 Checkpoint, 3 ReleaseRuntime, 4 Recover, 5 ReleaseRecovery.
     -- Errors: 51020 InvalidRequest, 51021 ambient transaction, 51022 applock,
@@ -52,10 +50,8 @@ BEGIN
     DECLARE @hp int;
     DECLARE @storedMaxHp int;
     DECLARE @bossUnlocked bit;
-    -- Current diagnostic JSON and fresh historical snapshot.
+    -- Current diagnostic JSON; historical replay proof belongs to the receipt.
     DECLARE @storedProgress nvarchar(max);
-    DECLARE @safe nvarchar(max);
-    DECLARE @snapshot nvarchar(max);
     -- Terminal proof (replay remains the original ledger snapshot).
     DECLARE @status varchar(32) = 'Terminal';
     DECLARE @outcome tinyint;
@@ -63,7 +59,6 @@ BEGIN
     DECLARE @resultSnapshot nvarchar(2048);
     DECLARE @isReplay bit = 0;
     DECLARE @recordedUtc datetime2(3);
-    DECLARE @safeMaxHp int;
     -- Admission/recovery preflight exposes ordered deployment identity through execute-only roles.
     -- Preflight boundary: 01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md, section 5.
     -- Current transport contract: 01_Phases/goals/2026-10-02-persistence-repository/goal.md.

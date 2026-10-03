@@ -34,7 +34,9 @@ if ($MyInvocation.InvocationName -eq '.') {
     return
 }
 . (Join-Path $PSScriptRoot 'test-environment/Environment.Common.ps1')
-$Contract = Read-TestEnvironmentApprovalPlan -ApprovalPlanPath $ApprovalPlanPath -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
+$Contract = Read-TestEnvironmentApprovalPlan `
+    -ApprovalPlanPath $ApprovalPlanPath `
+    -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
 Assert-TestEnvironmentTarget -Contract $Contract -Database $Database -Instance $Instance
 & (Join-Path $PSScriptRoot 'test-environment/New-TestDatabase.ps1') `
     -Action Install `

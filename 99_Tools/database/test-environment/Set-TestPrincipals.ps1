@@ -53,7 +53,9 @@ function Get-TestEnvironmentLoginSid(
     return $sid
 }
 
-$Contract = Read-TestEnvironmentApprovalPlan -ApprovalPlanPath $ApprovalPlanPath -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
+$Contract = Read-TestEnvironmentApprovalPlan `
+    -ApprovalPlanPath $ApprovalPlanPath `
+    -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
 Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
 Assert-TestEnvironmentExecutor -Contract $Contract -Administrator
 if ($PSVersionTable.PSEdition -ne 'Desktop' -or -not [Environment]::Is64BitProcess) {
@@ -75,7 +77,12 @@ try {
         throw 'Provision requires complete install and the fixed binding.'
     }
     Assert-TestEnvironmentLocalAccountAbsent -Contract $Contract
-    foreach ($path in @($manifest.PrivateDirectory, $manifest.IdentityDirectory, $manifest.RuntimeCredentialPath, $manifest.RecoveryCredentialPath)) {
+    foreach ($path in @(
+            $manifest.PrivateDirectory,
+            $manifest.IdentityDirectory,
+            $manifest.RuntimeCredentialPath,
+            $manifest.RecoveryCredentialPath
+        )) {
         Assert-TestEnvironmentNoReparse -Path $path
         if (Test-Path -LiteralPath $path) {
             throw 'Lifecycle path already exists; never read or rotate existing secrets.'
@@ -113,7 +120,10 @@ try {
             Path = $manifest.PrivateDirectory
             FullControl = @($manifest.ExecutorSid, 'S-1-5-18')
         })
-    Set-TestEnvironmentDirectoryAcl -Contract $Contract -Path $manifest.PrivateDirectory -ExecutorSid $manifest.ExecutorSid
+    Set-TestEnvironmentDirectoryAcl `
+        -Contract $Contract `
+        -Path $manifest.PrivateDirectory `
+        -ExecutorSid $manifest.ExecutorSid
     Complete-TestEnvironmentStep `
         -Contract $Contract `
         -Manifest $manifest `
@@ -192,7 +202,9 @@ try {
         -ErrorAction Stop
     $manifest.WindowsAccountSid = $user.SID.Value
     Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
-    $adminMembers = @(Get-LocalGroupMember -SID ([Security.Principal.SecurityIdentifier]::new('S-1-5-32-544')) -ErrorAction Stop)
+    $adminMembers = @(Get-LocalGroupMember `
+            -SID ([Security.Principal.SecurityIdentifier]::new('S-1-5-32-544')) `
+            -ErrorAction Stop)
     if (@($adminMembers | Where-Object {
                 $_.SID.Value -ceq $manifest.WindowsAccountSid
             }).Count) {

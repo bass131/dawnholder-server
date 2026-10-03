@@ -95,26 +95,33 @@ source checksum은 UTF-8/BOM 제외·CRLF→LF 기준이며 module의 남은 CR�
 
 ## 오프라인 module 구조 검사
 
-[Test-ModuleStructure.ps1](../../99_Tools/database/Test-ModuleStructure.ps1)은 고정 module 경로·객체명/종류·파일당 정의 하나와 공개 RPC의 정본 helper 직접 호출을 검사한다. 주석/리터럴을 제외한 제한된 lexer를 사용하며 입장 조회·관리 inspection·resolver의 서로 다른 책임을 별도로 등록한다.
+[Test-ModuleStructure.ps1](../../99_Tools/database/Test-ModuleStructure.ps1)은 고정 module 경로·객체명/종류·파일당 정의 하나와 공개 RPC의 정본 helper 직접 호출, 현재 소스의 hash 소비값을 읽기 전용으로 검사한다. 주석/리터럴을 제외한 제한된 lexer를 사용하며 입장 조회·관리 inspection·resolver의 서로 다른 책임을 별도로 등록한다. [ModuleHash.Common.ps1](../../99_Tools/database/ModuleHash.Common.ps1)이 소스 정규화·hash 계산과 소비 대조를 소유하며 bundle 읽기나 DB 연결을 호출하지 않는다.
 
 ```powershell
-# Windows PowerShell 5.1에서 소스 구조만 검사. 생략 시 스크립트의 database 폴더.
+# Windows PowerShell 5.1에서 소스 구조·hash 소비값 검사. 생략 시 스크립트의 database 폴더.
 # 상대 -DatabaseRoot는 PowerShell 세션의 현재 FileSystem 위치를 기준으로 해석한다.
 ./99_Tools/database/Test-ModuleStructure.ps1 -DatabaseRoot ./99_Tools/database -Json
 ./99_Tools/database/Test-ModuleStructure.ps1 -Json -Strict
 ```
 
-`-DatabaseRoot`는 FileSystem provider 경로만 허용하며, 끝 구분자 유무와 관계없이 같은 트리를 검사한다. 다른 provider나 해석할 수 없는 경로는 `unavailable`/exit2다. `-Json`은 Status/DatabaseRoot/Scope/CheckedFiles/Issues/ViolationCount를 출력한다. DatabaseRoot는 검사 대상의 정규화 절대 경로이며, 경로 해석에 실패하면 null이다. 기본 출력 첫 줄에도 DatabaseRoot를 표시하고 각 File/Line/Expected/Remediation 경고를 출력한다. `-Strict`는 구조 위반을 실패 exit로 바꾼다.
+`-DatabaseRoot`는 FileSystem provider 경로만 허용하며, 끝 구분자 유무와 관계없이 같은 트리를 검사한다. 다른 provider나 해석할 수 없는 경로는 `unavailable`/exit2다. `-Json`은 Status/DatabaseRoot/Scope/CheckedFiles/Issues/ViolationCount와 HashTargets/HashTargetCount/HashInspectionComplete/HashViolationCount를 출력한다. DatabaseRoot는 검사 대상의 정규화 절대 경로이며, 경로 해석에 실패하면 null이다. 기본 출력 첫 줄에도 DatabaseRoot를 표시하고 hash 대상 수·검사 완료 여부·drift 수와 각 File/Line/Expected/Remediation 경고를 출력한다. `-Strict`는 배치·직접 호출 구조 위반을 실패 exit로 바꾼다. hash drift는 기본 모드에서도 실패한다.
+
+hash 검사에는 `modules/manifest.json`, 정확 module SQL, `verify-schema.sql`, `migrations/001~004`와 `Module.Common.ps1`이 모두 필요하다. 현재 release의 명시 대상은 116개다. manifest의 source 19개·definition/bytes 각18개, catalog의 source/definition/bytes 각18개, migration checksum4개, raw manifest identity2개(004 선언·catalog release 검사), immutable001 guard1개를 대조한다. HashTargets는 대상마다 File/Line/Kind/Source/Observed/Expected/IsDrift와 구체적인 대체 안내를 제공한다. 등록 누락·중복·알 수 없는 형식이나 입력 부재는 검사 불가이며 대상0개를 정상으로 처리하지 않는다.
+
+manifest identity는 UTF-8 without BOM·LF·마지막 개행의 실물 bytes SHA256이다. module SourceChecksum과 migration checksum은 BOM 제외·CRLF→LF 원문의 UTF-8 hash이고, DefinitionChecksum/Bytes는 같은 정의의 UTF-16LE without BOM hash/byte 길이다. immutable001의 raw 보호 hash와 정규화 checksum은 의미가 다르다. manifest identity를 module source나 004 자체 checksum에 복사하지 않는다. 이 검사에서 source로 계산한 definition 기대값은 실제 엔진이 저장한 정의/hash의 증명이 아니다.
 
 | 상태 | 뜻 | warning 파일럿 exit | Strict exit |
 |---|---|---|---|
 | `compliant` | 검사한 경로·정의·직접 호출 계약에 위반 없음 | 0 | 0 |
-| `violation` | 읽은 소스에 누락·미등록/잘못된 경로·정의·필수 호출 위반 | 0, Issues로 위반 공개 | 1 |
-| `unavailable` | 경로/접근 실패나 미종결 주석·문자열/식별자 등으로 검사 불가 | 2 | 2 |
+| `violation` (구조만) | hash 대조가 완료됐으며 배치·정의·직접 호출 위반이 있음 | 0, Issues로 위반 공개 | 1 |
+| `violation` (hash drift 포함) | 관측된 소비값이 정본 source의 hash/길이와 다름 | 1 | 1 |
+| `unavailable` | 경로/접근·미종결 SQL·hash 입력 부재/형식/등록 오류 등으로 검사 불가 | 2 | 2 |
 
-`unavailable`의 ViolationCount는 null이며 통과가 아니다. 예를 들어 누락된 `modules/procedures/internal/read_character_state.sql`을 복구하거나 공개 RPC를 등록된 목적 경로로 옮긴다. receipt helper 누락은 원래 receipt 단계에서 `EXEC dh.ReadOperationReceipt`를 명명 인자로 호출하도록 고친다. 주석에 helper 이름을 적어도 직접 호출로 세지 않는다.
+`unavailable`의 ViolationCount/HashViolationCount는 null, HashInspectionComplete는 false이며 통과가 아니다. HashTargetCount는 오류 전까지 관측한 대상 수이고 완전한116개 검사를 뜻하지 않는다. 예를 들어 누락된 `modules/procedures/internal/read_character_state.sql`을 복구하거나 공개 RPC를 등록된 목적 경로로 옮긴다. receipt helper 누락은 원래 receipt 단계에서 `EXEC dh.ReadOperationReceipt`를 명명 인자로 호출하도록 고친다. 주석에 helper 이름을 적어도 직접 호출로 세지 않는다.
 
-검사는 SQL 문법·중첩/들여쓰기·타입·transaction/동시성·권한·29열 실행을 판정하지 않으며 manifest/hash 배포 검사의 대용도 아니다. 기본 exit0만으로 violation을 PASS로 읽지 않는다. 현재 warning 파일럿이며 CLI·독립 tests의 CI 연결과 SQLFluff 적용성/연결은 **첫 PR 병합 뒤 Rules와 별도 조율**한다. CI 연결·SQLFluff parse·실제 엔진 PASS를 이 검사에 합치지 않는다.
+hash drift는 Issues의 File/Line/Observed/Expected/Remediation을 따라 검토된 소스에 대응하는 값을 바꾼다. module 변경이면 manifest source/definition/bytes → manifest 실물 identity → 004 선언 → 004 자체 checksum과 catalog module/migration/release 소비값을 함께 갱신한다. 과거 이력이나 고의 실패 fixture를 새 값으로 덮지 않는다. 검사에는 자동 쓰기·수정·런타임 기대값 주입이 없다. 실제 DB의 unknown/drift 거부와 엄격 catalog 검사를 유지한다.
+
+검사는 SQL 문법·중첩/들여쓰기·타입·transaction/동시성·권한·29열 실행을 판정하지 않으며 실제 DB의 manifest/hash 배포 검사를 대신하지 않는다. 기본 exit0만으로 구조 violation을 PASS로 읽지 않는다. 배치·직접 호출은 warning 파일럿을 유지하며 CLI·독립 tests의 CI 연결과 SQLFluff 적용성/연결은 **첫 PR 병합 뒤 Rules와 별도 조율**한다. CI 연결·SQLFluff parse·실제 엔진 PASS를 이 검사에 합치지 않는다.
 
 ## 게임 정책과 후속 소비 계약
 

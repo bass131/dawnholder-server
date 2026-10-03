@@ -5,6 +5,8 @@ param(
     [switch]$Strict
 )
 
+. (Join-Path $PSScriptRoot 'ModuleHash.Common.ps1')
+
 function Get-ModuleStructureContract {
     # These are responsibility contracts, not a rule that every RPC calls every helper.
     $shared = @('LockAndReadAuthority', 'AssertPersistenceContract', 'EmitPersistenceResult')
@@ -200,6 +202,9 @@ function Test-ModuleStructure {
     $status = 'compliant'
     $activeFile = $DatabaseRoot
     $resolvedRoot = $null
+    $hashTargets = @()
+    $hashComplete = $false
+    $hashViolationCount = 0
     try {
         if ([string]::IsNullOrWhiteSpace($DatabaseRoot)) {
             throw 'DatabaseRoot must be a nonempty FileSystem path.'
@@ -327,7 +332,16 @@ function Test-ModuleStructure {
                     })
             }
         }
-        if ($issues.Count -gt 0) { $status = 'violation' }
+        $hashInspection = Test-ModuleHashConsumers -DatabaseRoot $resolvedRoot -Contract $contract
+        $hashTargets = @($hashInspection.Targets)
+        $hashComplete = $hashInspection.Complete
+        foreach ($file in $hashInspection.CheckedFiles) {
+            if (-not $checked.Contains($file)) { $checked.Add($file) }
+        }
+        foreach ($issue in $hashInspection.Issues) { $issues.Add($issue) }
+        $hashViolationCount = @($hashTargets | Where-Object IsDrift).Count
+        if (-not $hashComplete) { $status = 'unavailable' }
+        elseif ($issues.Count -gt 0) { $status = 'violation' }
     }
     catch {
         $status = 'unavailable'
@@ -342,10 +356,14 @@ function Test-ModuleStructure {
     [pscustomobject]@{
         Status = $status
         DatabaseRoot = $resolvedRoot
-        Scope = 'Source placement and direct calls only; SQL grammar, indentation and behavior are not verified.'
+        Scope = 'Source placement, direct calls and registered source hash consumers; SQL engine is unverified.'
         CheckedFiles = @($checked.ToArray())
         Issues = @($issues.ToArray())
         ViolationCount = if ($status -eq 'unavailable') { $null } else { $issues.Count }
+        HashTargets = $hashTargets
+        HashTargetCount = $hashTargets.Count
+        HashInspectionComplete = $hashComplete
+        HashViolationCount = if ($status -eq 'unavailable') { $null } else { $hashViolationCount }
     }
 }
 
@@ -356,12 +374,15 @@ if ($Json) { $result | ConvertTo-Json -Depth 6 }
 else {
     Write-Output ("Module structure: {0}. DatabaseRoot: {1}. {2}" -f
         $result.Status, $result.DatabaseRoot, $result.Scope)
+    Write-Output ("Hash consumers: {0}; complete: {1}; drift: {2}." -f
+        $result.HashTargetCount, $result.HashInspectionComplete, $result.HashViolationCount)
     foreach ($issue in $result.Issues) {
         Write-Warning ("{0}:{1}: {2}. Expected: {3}. Fix: {4}" -f
             $issue.File, $issue.Line, $issue.Message, $issue.Expected, $issue.Remediation)
     }
 }
-# Warning pilot: violations remain machine-visible even when exit0. Unavailable is always exit2.
+# Placement/direct-call warnings keep the pilot. Hash drift fails both modes; incomplete inspection is exit2.
 if ($result.Status -eq 'unavailable') { exit 2 }
+if ($result.HashViolationCount -gt 0) { exit 1 }
 if ($Strict -and $result.Status -eq 'violation') { exit 1 }
 exit 0

@@ -11,7 +11,9 @@ if ($MyInvocation.InvocationName -eq '.') {
 . (Join-Path $PSScriptRoot 'Environment.Common.ps1')
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-$Contract = Read-TestEnvironmentApprovalPlan -ApprovalPlanPath $ApprovalPlanPath -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
+$Contract = Read-TestEnvironmentApprovalPlan `
+    -ApprovalPlanPath $ApprovalPlanPath `
+    -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
 Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
 $guard = Lock-TestEnvironmentManifest -Contract $Contract -Database $Database -ManifestPath $ManifestPath
 $master = $null
@@ -134,7 +136,11 @@ VALUES
         }
     }
     if ($started) {
-        Fail-TestEnvironmentStep -Contract $Contract -Manifest $manifest -Name 'InitializeBinding' -FailureCode $failureCode
+        Fail-TestEnvironmentStep `
+            -Contract $Contract `
+            -Manifest $manifest `
+            -Name 'InitializeBinding' `
+            -FailureCode $failureCode
     }
     throw 'Test environment binding stopped; preserve manifest and investigate commit state before retry.'
 } finally {

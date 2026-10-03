@@ -90,7 +90,6 @@ BEGIN
     DECLARE @bossUnlocked bit;
     -- Current diagnostic JSON; the snapshot helper writes the terminal proof below.
     DECLARE @storedProgress nvarchar(max);
-    DECLARE @safe nvarchar(max);
     -- Terminal proof (replay remains the original ledger snapshot).
     DECLARE @status varchar(32) = 'Terminal';
     DECLARE @outcome tinyint;
@@ -98,7 +97,6 @@ BEGIN
     DECLARE @resultSnapshot nvarchar(2048);
     DECLARE @isReplay bit = 0;
     DECLARE @recordedUtc datetime2(3);
-    DECLARE @safeMaxHp int;
     -- Deployment identity is returned by ReadAdmission/InspectRecovery preflight.
     -- Mutation/resolution rows carry operation proof and current state; this metadata field stays NULL.
     -- Preflight boundary: 01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md, section 5.

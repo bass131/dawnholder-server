@@ -40,7 +40,8 @@ function Read-TestEnvironmentSettlement(
     $root = [IO.Path]::GetDirectoryName($Manifest.ManifestPath) + [IO.Path]::DirectorySeparatorChar
     foreach ($e in @($s.Evidence)) {
         $resolved = [IO.Path]::GetFullPath($e.Path)
-        if (-not [IO.Path]::IsPathRooted($e.Path) -or -not $resolved.StartsWith($root, [StringComparison]::OrdinalIgnoreCase) -or
+        if (-not [IO.Path]::IsPathRooted($e.Path) -or
+            -not $resolved.StartsWith($root, [StringComparison]::OrdinalIgnoreCase) -or
             $e.Hash -cnotmatch '^[0-9A-F]{64}$' -or $resolved -ieq $Path -or $resolved -ieq $Manifest.ManifestPath) {
             throw 'Evidence must be durable, nonsecret files within this goal evidence directory.'
         }
@@ -56,7 +57,8 @@ function Read-TestEnvironmentSettlement(
     }
     $ids = @()
     foreach ($r in @($s.Requests)) {
-        if ($r.OperationId -in $ids -or [Guid]$r.OperationId -eq [Guid]::Empty -or [Guid]$r.OwnerId -eq [Guid]::Empty -or
+        if ($r.OperationId -in $ids -or
+            [Guid]$r.OperationId -eq [Guid]::Empty -or [Guid]$r.OwnerId -eq [Guid]::Empty -or
             $r.Disposition -cnotin @('Terminal', 'NotDispatched')) {
             throw 'Invalid settled request.'
         }
@@ -102,7 +104,8 @@ function Assert-TestEnvironmentResourceIdentities(
         }
     }
     if (($null -eq $Manifest.WindowsAccountSid -and $null -ne $windows) -or
-        ($null -ne $Manifest.WindowsAccountSid -and ($null -eq $windows -or $windows.SID.Value -cne $Manifest.WindowsAccountSid))) {
+        ($null -ne $Manifest.WindowsAccountSid -and ($null -eq $windows -or
+            $windows.SID.Value -cne $Manifest.WindowsAccountSid))) {
         throw 'Windows account identity missing/unknown/changed; no deletion.'
     }
     foreach ($kind in @('Runtime', 'Recovery')) {
@@ -176,7 +179,9 @@ IF OBJECT_ID(N'dh.CharacterAuthority', N'U') IS NOT NULL
         (Invoke-DatabaseSql -Connection $Connection -Sql 'SELECT COUNT(*) FROM dh.CharacterAuthority') -ne 1) {
         throw 'Recorded binding disappeared; preserve resources.'
     }
-    if ($bound -ne 0 -or (Invoke-DatabaseSql -Connection $Connection -Sql 'SELECT COUNT(*) FROM sys.triggers WHERE is_ms_shipped=0') -ne 0) {
+    if ($bound -ne 0 -or
+        (Invoke-DatabaseSql -Connection $Connection `
+            -Sql 'SELECT COUNT(*) FROM sys.triggers WHERE is_ms_shipped=0') -ne 0) {
         throw 'Held/mismatched binding or temporary trigger remains; cleanup does not release/drop it.'
     }
     $ledgerCount = Invoke-DatabaseSql `
@@ -213,7 +218,9 @@ FROM dh.CharacterOperation WHERE OperationId = @id;
     Assert-TestEnvironmentResourceIdentities -Contract $Contract -Master $Master -Manifest $Manifest
 }
 
-$Contract = Read-TestEnvironmentApprovalPlan -ApprovalPlanPath $ApprovalPlanPath -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
+$Contract = Read-TestEnvironmentApprovalPlan `
+    -ApprovalPlanPath $ApprovalPlanPath `
+    -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
 Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
 $manifest = Read-TestEnvironmentManifest -Contract $Contract -Database $Database -ManifestPath $ManifestPath
 if ($Mode -eq 'OfflinePlan') {
@@ -251,7 +258,8 @@ $cleanupStep = $null
 $cleanupStarted = $false
 try {
     $manifest = Read-TestEnvironmentManifest -Contract $Contract -Database $Database -ManifestPath $ManifestPath
-    if ($Mode -eq 'Execute' -and (Get-FileHash -LiteralPath $ManifestPath -Algorithm SHA256).Hash -cne $ExpectedManifestHash) {
+    if ($Mode -eq 'Execute' -and
+        (Get-FileHash -LiteralPath $ManifestPath -Algorithm SHA256).Hash -cne $ExpectedManifestHash) {
         throw 'Manifest changed after review.'
     }
     if ($null -ne $manifest.Cleanup -or $manifest.State -in @('CleanupStarted', 'Removed')) {
@@ -414,7 +422,12 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
 } catch {
     if ($cleanupStarted) {
         $manifest.Cleanup.State = 'Failed'
-        $manifest.Cleanup | Add-Member -MemberType NoteProperty -Name Failure -Value (Get-DatabaseFailureCode -Exception $_.Exception) -Force
+        $manifest.Cleanup | Add-Member `
+            -MemberType NoteProperty `
+            -Name Failure `
+            -Value (Get-DatabaseFailureCode `
+                -Exception $_.Exception) `
+            -Force
         foreach ($record in @($manifest.Cleanup.Steps)) {
             if ($record.Status -ceq 'Pending') {
                 $record.Status = 'Failed'

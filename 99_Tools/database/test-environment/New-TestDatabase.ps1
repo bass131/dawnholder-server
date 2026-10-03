@@ -15,7 +15,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $VerbosePreference = 'SilentlyContinue'
 $DebugPreference = 'SilentlyContinue'
-$Contract = Read-TestEnvironmentApprovalPlan -ApprovalPlanPath $ApprovalPlanPath -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
+$Contract = Read-TestEnvironmentApprovalPlan `
+    -ApprovalPlanPath $ApprovalPlanPath `
+    -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
 Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
 Assert-TestEnvironmentPath -Path $ManifestPath -Expected ($Contract).ManifestPath
 if ($Action -eq 'OfflinePlan') {

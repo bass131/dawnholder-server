@@ -23,7 +23,10 @@ function Read-TestEnvironmentApprovalPlan {
     }
     $plan = [Text.UTF8Encoding]::new($false, $true).GetString($bytes).TrimStart([char]0xFEFF) | ConvertFrom-Json
     Assert-TestEnvironmentApprovalPlan -Plan $plan
-    $plan | Add-Member -MemberType NoteProperty -Name ApprovalPlanPath -Value ([IO.Path]::GetFullPath($ApprovalPlanPath))
+    $plan | Add-Member `
+        -MemberType NoteProperty `
+        -Name ApprovalPlanPath `
+        -Value ([IO.Path]::GetFullPath($ApprovalPlanPath))
     $plan | Add-Member -MemberType NoteProperty -Name ApprovalPlanHash -Value $actualHash
     return $plan
 }
@@ -75,7 +78,16 @@ function Assert-TestEnvironmentApprovalPlan {
         $Plan.TrustServerCertificate -isnot [bool] -or -not $Plan.TrustServerCertificate) {
         throw 'Unsupported approval-plan version, slot or fixture encryption contract.'
     }
-    foreach ($key in @('Goal', 'GoalMarker', 'G0', 'G1', 'Machine', 'InstanceName', 'RuntimeLogin', 'RecoveryLocalName')) {
+    foreach ($key in @(
+            'Goal',
+            'GoalMarker',
+            'G0',
+            'G1',
+            'Machine',
+            'InstanceName',
+            'RuntimeLogin',
+            'RecoveryLocalName'
+        )) {
         if ($Plan.$key -isnot [string] -or [string]::IsNullOrWhiteSpace($Plan.$key)) {
             throw "Missing explicit approval value: $key."
         }
@@ -337,14 +349,17 @@ function Assert-TestEnvironmentManifest(
         throw 'Invalid manifest version/slot/state type.'
     }
     if ($null -ne $Manifest.Engine -and ($Manifest.Engine.ProductVersion -cnotmatch '^\d+\.\d+\.\d+\.\d+$' -or
-            [string]::IsNullOrWhiteSpace($Manifest.Engine.ServerCollation) -or [string]::IsNullOrWhiteSpace($Manifest.Engine.OriginalLogin))) {
+            [string]::IsNullOrWhiteSpace($Manifest.Engine.ServerCollation) -or
+            [string]::IsNullOrWhiteSpace($Manifest.Engine.OriginalLogin))) {
         throw 'Invalid recorded engine observation.'
     }
     if ($null -ne $Manifest.DatabaseIdentity) {
         $id = $Manifest.DatabaseIdentity
-        if ($id.DatabaseId -isnot [int] -or $id.DatabaseId -le 4 -or $id.CreationTime -cnotmatch '^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,7})?$' -or
+        if ($id.DatabaseId -isnot [int] -or
+            $id.DatabaseId -le 4 -or $id.CreationTime -cnotmatch '^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,7})?$' -or
             $id.OwnerSid -cnotmatch '^0x(?:[0-9A-F]{2})+$' -or $id.DatabaseGuid -cnotmatch '^[a-fA-F0-9-]{36}$' -or
-            [Guid]$id.DatabaseGuid -eq [Guid]::Empty -or $id.Rcsi -isnot [bool] -or [string]::IsNullOrWhiteSpace($id.Collation)) {
+            [Guid]$id.DatabaseGuid -eq [Guid]::Empty -or
+            $id.Rcsi -isnot [bool] -or [string]::IsNullOrWhiteSpace($id.Collation)) {
             throw 'Invalid recorded created database identity.'
         }
     }
@@ -370,7 +385,13 @@ function Assert-TestEnvironmentManifest(
             'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version remains one.'
         )
     }
-    foreach ($sidKey in @('WindowsAccountSid', 'RuntimeLoginSid', 'RecoveryLoginSid', 'RuntimeUserSid', 'RecoveryUserSid')) {
+    foreach ($sidKey in @(
+            'WindowsAccountSid',
+            'RuntimeLoginSid',
+            'RecoveryLoginSid',
+            'RuntimeUserSid',
+            'RecoveryUserSid'
+        )) {
         if ($null -ne $Manifest.$sidKey -and [string]$Manifest.$sidKey -cnotmatch '^0x[0-9A-F]+$|^S-1-[0-9-]+$') {
             throw 'Invalid recorded SID.'
         }
@@ -443,7 +464,12 @@ function Lock-TestEnvironmentManifest(
     Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
     Assert-TestEnvironmentPath -Path $ManifestPath -Expected ($Contract).ManifestPath
     Assert-TestEnvironmentNoReparse -Path ($ManifestPath + '.lock')
-    return [IO.File]::Open(($ManifestPath + '.lock'), [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+    return [IO.File]::Open(
+        ($ManifestPath + '.lock'),
+        [IO.FileMode]::OpenOrCreate,
+        [IO.FileAccess]::ReadWrite,
+        [IO.FileShare]::None
+    )
 }
 
 function Assert-TestEnvironmentExecutor(
@@ -484,7 +510,8 @@ function Assert-TestEnvironmentLocalAccountAbsent(
 function Assert-TestEnvironmentReadyForStep(
     $Manifest
 ) {
-    if ($Manifest.State -in @('CleanupStarted', 'Removed') -or @($Manifest.Steps | Where-Object Status -ne 'Done').Count -gt 0) {
+    if ($Manifest.State -in @('CleanupStarted', 'Removed') -or
+        @($Manifest.Steps | Where-Object Status -ne 'Done').Count -gt 0) {
         throw 'An incomplete attempt or cleanup exists; preserve resources and request coordinator reconciliation.'
     }
 }
@@ -621,7 +648,10 @@ function New-DatabaseSqlCommand(
             if ($null -eq $inputParameter -or $null -eq $inputParameter.PSObject.Properties['Type']) {
                 throw 'Typed SQL parameters required.'
             }
-            $checked = New-DatabaseSqlParameter -Type $inputParameter.Type -Value $inputParameter.Value -Size $inputParameter.Size
+            $checked = New-DatabaseSqlParameter `
+                -Type $inputParameter.Type `
+                -Value $inputParameter.Value `
+                -Size $inputParameter.Size
             $parameter = $command.Parameters.Add(('@' + $name), $checked.Type)
             if ($checked.Size) {
                 $parameter.Size = $checked.Size
@@ -647,7 +677,11 @@ function Invoke-DatabaseSql(
     [Data.SqlClient.SqlTransaction]$Transaction = $null,
     [ValidateSet('Scalar', 'NonQuery', 'Rows')][string]$Result = 'Scalar'
 ) {
-    $command = New-DatabaseSqlCommand -Connection $Connection -Sql $Sql -Parameters $Parameters -Transaction $Transaction
+    $command = New-DatabaseSqlCommand `
+        -Connection $Connection `
+        -Sql $Sql `
+        -Parameters $Parameters `
+        -Transaction $Transaction
     try {
         switch ($Result) {
             'Scalar' {
@@ -724,7 +758,8 @@ SELECT CONVERT(nvarchar(128), SERVERPROPERTY('MachineName')) Machine,
     IS_SRVROLEMEMBER('sysadmin') IsSysadmin, ORIGINAL_LOGIN() OriginalLogin;
 '@ `
                 -Result Rows).Rows[0]
-        if ($row.Machine -cne $Manifest.Machine -or $row.InstanceName -cne $Contract.InstanceName -or $row.IsSysadmin -ne 1) {
+        if ($row.Machine -cne $Manifest.Machine -or
+            $row.InstanceName -cne $Contract.InstanceName -or $row.IsSysadmin -ne 1) {
             throw 'Exact local instance and privileged SQL executor required.'
         }
         if ($null -ne $Manifest.Engine -and ($row.ProductVersion -cne $Manifest.Engine.ProductVersion -or
@@ -848,11 +883,19 @@ function Set-TestEnvironmentDirectoryAcl(
     $acl.SetOwner([Security.Principal.SecurityIdentifier]::new($ExecutorSid))
     foreach ($sid in @($ExecutorSid, 'S-1-5-18')) {
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-                [Security.Principal.SecurityIdentifier]::new($sid), 'FullControl', 'ContainerInherit,ObjectInherit', 'None', 'Allow'))
+                [Security.Principal.SecurityIdentifier]::new($sid),
+                'FullControl',
+                'ContainerInherit,ObjectInherit',
+                'None',
+                'Allow'))
     }
     if ($ReaderSid) {
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-                [Security.Principal.SecurityIdentifier]::new($ReaderSid), 'ReadAndExecute', 'ContainerInherit,ObjectInherit', 'None', 'Allow'))
+                [Security.Principal.SecurityIdentifier]::new($ReaderSid),
+                'ReadAndExecute',
+                'ContainerInherit,ObjectInherit',
+                'None',
+                'Allow'))
     }
     # Directory.CreateDirectory with ACL is available in Windows PowerShell/.NET Framework.
     [void][IO.Directory]::CreateDirectory($Path, $acl)
@@ -899,7 +942,8 @@ function Assert-TestEnvironmentDirectoryAcl(
     if ($ReaderSid) {
         $expected += $ReaderSid
     }
-    if (-not $acl.AreAccessRulesProtected -or $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value -cne $ExecutorSid -or
+    if (-not $acl.AreAccessRulesProtected -or
+        $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value -cne $ExecutorSid -or
         $rules.Count -ne $expected.Count) {
         throw 'Unexpected lifecycle directory ACL.'
     }
@@ -914,9 +958,14 @@ function Assert-TestEnvironmentDirectoryAcl(
             })
         # Allow rules add Synchronize on .NET Framework; compare the constructed effective mask.
         $rights = ([Security.AccessControl.FileSystemAccessRule]::new(
-                [Security.Principal.SecurityIdentifier]::new($sid), $rightsName, 'ContainerInherit,ObjectInherit', 'None', 'Allow')).FileSystemRights
+                [Security.Principal.SecurityIdentifier]::new($sid),
+                $rightsName,
+                'ContainerInherit,ObjectInherit',
+                'None',
+                'Allow')).FileSystemRights
         if ($rule.Count -ne 1 -or $rule[0].AccessControlType -ne 'Allow' -or $rule[0].IsInherited -or
-            $rule[0].FileSystemRights -ne $rights -or $rule[0].InheritanceFlags -ne 'ContainerInherit, ObjectInherit' -or
+            $rule[0].FileSystemRights -ne $rights -or
+            $rule[0].InheritanceFlags -ne 'ContainerInherit, ObjectInherit' -or
             $rule[0].PropagationFlags -ne 'None') {
             throw 'Unexpected lifecycle directory access rule.'
         }
