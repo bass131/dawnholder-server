@@ -38,11 +38,11 @@ function Add-TestResult {
         [string]$Detail = ''
     )
     $script:TestResults.Add([pscustomobject]@{
-        Suite = $script:SuiteName
-        Name = $Name
-        Outcome = $Outcome
-        Detail = $Detail
-    })
+            Suite = $script:SuiteName
+            Name = $Name
+            Outcome = $Outcome
+            Detail = $Detail
+        })
     Write-Output ('{0}: {1}{2}' -f $Outcome, $Name, $(if ($Detail) { ' -- ' + $Detail } else { '' }))
 }
 
@@ -221,16 +221,16 @@ function Set-OfflineStubs {
     # Call after the test script dot-sources the product definitions into its own script scope.
     # Connection/identity/ACL/secret entry points are replaced there by fail-closed stubs.
     foreach ($name in @(
-        'Open-LocalDatabase',
-        'Open-TestEnvironmentDatabase',
-        'Invoke-DatabaseSql',
-        'Assert-TestEnvironmentExecutor',
-        'Assert-TestEnvironmentLocalAccountAbsent',
-        'Lock-TestEnvironmentManifest',
-        'Set-TestEnvironmentDirectoryAcl',
-        'New-TestEnvironmentOwnedFile',
-        'New-TestEnvironmentChildIdentity'
-    )) {
+            'Open-LocalDatabase',
+            'Open-TestEnvironmentDatabase',
+            'Invoke-DatabaseSql',
+            'Assert-TestEnvironmentExecutor',
+            'Assert-TestEnvironmentLocalAccountAbsent',
+            'Lock-TestEnvironmentManifest',
+            'Set-TestEnvironmentDirectoryAcl',
+            'New-TestEnvironmentOwnedFile',
+            'New-TestEnvironmentChildIdentity'
+        )) {
         $stub = [scriptblock]::Create("throw 'Offline test stub: $name must not run.'")
         Set-Item -Path ('Function:script:' + $name) -Value $stub
     }
@@ -311,8 +311,8 @@ function Invoke-PowerShellFile {
     # Run a product entry point in a separate Windows PowerShell process and capture all output and exit.
     $exe = [Diagnostics.Process]::GetCurrentProcess().Path
     $quoted = @('-NoLogo', '-NoProfile', '-File', ('"' + $File + '"')) + @($Arguments | ForEach-Object {
-        if ($_ -match '\s') { '"' + $_ + '"' } else { $_ }
-    })
+            if ($_ -match '\s') { '"' + $_ + '"' } else { $_ }
+        })
     $info = New-Object Diagnostics.ProcessStartInfo
     $info.FileName = $exe
     $info.Arguments = $quoted -join ' '

@@ -98,27 +98,27 @@ Assert-NoThrow -Name 'BOM-prefixed plan hashed as stored bytes and parsed' -Acti
 # ---- Approval plan shape: exact local target, principals and separated paths.
 $invalidTarget = '^Invalid explicit local target/principal'
 foreach ($case in @(
-    @{ Name = 'default game database name'; Property = 'Database'; Value = 'Dawnholder_Dev'; Pattern = $invalidTarget },
-    @{ Name = 'unrelated database'; Property = 'Database'; Value = 'GameDB'; Pattern = $invalidTarget },
-    @{ Name = 'instance not matching instance name'; Property = 'Instance'; Value = '.\OTHER'; Pattern = $invalidTarget },
-    @{ Name = 'non-loopback endpoint'; Property = 'Endpoint'; Value = 'tcp:10.0.0.5,14330'; Pattern = $invalidTarget },
-    @{ Name = 'endpoint port out of range'; Property = 'Endpoint'; Value = 'tcp:127.0.0.1,70000'; Pattern = $invalidTarget },
-    @{ Name = 'recovery principal on another machine'; Property = 'RecoveryPrincipal'; Value = 'OTHERHOST\dhrecovery'; Pattern = $invalidTarget },
-    @{ Name = 'runtime login equals recovery principal'; Property = 'RuntimeLogin'; Value = 'FIXTUREHOST\dhrecovery'; Pattern = $invalidTarget },
-    @{ Name = 'malformed executor SID'; Property = 'ExecutorSid'; Value = 'S-1-x'; Pattern = $invalidTarget },
-    @{ Name = 'empty binding GUID'; Property = 'AccountId'; Value = '00000000-0000-0000-0000-000000000000'; Pattern = '^Invalid fixed binding: AccountId' },
-    @{ Name = 'plan version 2'; Property = 'PlanVersion'; Value = 2; Pattern = '^Unsupported approval-plan version' },
-    @{ Name = 'encryption disabled'; Property = 'Encrypt'; Value = $false; Pattern = '^Unsupported approval-plan version' },
-    @{ Name = 'slot 2'; Property = 'SlotId'; Value = 2; Pattern = '^Unsupported approval-plan version' },
-    @{ Name = 'UNC manifest path'; Property = 'ManifestPath'; Value = '\\server\share\manifest.json'; Pattern = '^Approval paths must be explicit local absolute paths: ManifestPath' },
-    @{ Name = 'non-normalized identity path'; Property = 'IdentityPath'; Value = (Join-Path $fixtureRoot 'identity\..\identity\identity.json');
-        Pattern = '^Approval paths must be distinct, normalized' },
-    @{ Name = 'settlement path equal to manifest path'; Property = 'SettlementPath'; Value = (Join-Path $fixtureRoot 'lifecycle\manifest.json');
-        Pattern = '^Approval paths must be distinct, normalized' },
-    @{ Name = 'credential outside private directory'; Property = 'RuntimeCredentialPath'; Value = (Join-Path $fixtureRoot 'lifecycle\runtime.cred');
-        Pattern = '^Credential, child identity and settlement locations do not match' },
-    @{ Name = 'drive root path'; Property = 'PrivateDirectory'; Value = 'C:\'; Pattern = '^Approval paths must be distinct, normalized' }
-)) {
+        @{ Name = 'default game database name'; Property = 'Database'; Value = 'Dawnholder_Dev'; Pattern = $invalidTarget },
+        @{ Name = 'unrelated database'; Property = 'Database'; Value = 'GameDB'; Pattern = $invalidTarget },
+        @{ Name = 'instance not matching instance name'; Property = 'Instance'; Value = '.\OTHER'; Pattern = $invalidTarget },
+        @{ Name = 'non-loopback endpoint'; Property = 'Endpoint'; Value = 'tcp:10.0.0.5,14330'; Pattern = $invalidTarget },
+        @{ Name = 'endpoint port out of range'; Property = 'Endpoint'; Value = 'tcp:127.0.0.1,70000'; Pattern = $invalidTarget },
+        @{ Name = 'recovery principal on another machine'; Property = 'RecoveryPrincipal'; Value = 'OTHERHOST\dhrecovery'; Pattern = $invalidTarget },
+        @{ Name = 'runtime login equals recovery principal'; Property = 'RuntimeLogin'; Value = 'FIXTUREHOST\dhrecovery'; Pattern = $invalidTarget },
+        @{ Name = 'malformed executor SID'; Property = 'ExecutorSid'; Value = 'S-1-x'; Pattern = $invalidTarget },
+        @{ Name = 'empty binding GUID'; Property = 'AccountId'; Value = '00000000-0000-0000-0000-000000000000'; Pattern = '^Invalid fixed binding: AccountId' },
+        @{ Name = 'plan version 2'; Property = 'PlanVersion'; Value = 2; Pattern = '^Unsupported approval-plan version' },
+        @{ Name = 'encryption disabled'; Property = 'Encrypt'; Value = $false; Pattern = '^Unsupported approval-plan version' },
+        @{ Name = 'slot 2'; Property = 'SlotId'; Value = 2; Pattern = '^Unsupported approval-plan version' },
+        @{ Name = 'UNC manifest path'; Property = 'ManifestPath'; Value = '\\server\share\manifest.json'; Pattern = '^Approval paths must be explicit local absolute paths: ManifestPath' },
+        @{ Name = 'non-normalized identity path'; Property = 'IdentityPath'; Value = (Join-Path $fixtureRoot 'identity\..\identity\identity.json');
+            Pattern = '^Approval paths must be distinct, normalized' },
+        @{ Name = 'settlement path equal to manifest path'; Property = 'SettlementPath'; Value = (Join-Path $fixtureRoot 'lifecycle\manifest.json');
+            Pattern = '^Approval paths must be distinct, normalized' },
+        @{ Name = 'credential outside private directory'; Property = 'RuntimeCredentialPath'; Value = (Join-Path $fixtureRoot 'lifecycle\runtime.cred');
+            Pattern = '^Credential, child identity and settlement locations do not match' },
+        @{ Name = 'drive root path'; Property = 'PrivateDirectory'; Value = 'C:\'; Pattern = '^Approval paths must be distinct, normalized' }
+    )) {
     $plan = New-PlanObject
     $plan.($case.Property) = $case.Value
     Assert-Throws -Name ("plan $($case.Name) rejected") -Pattern $case.Pattern -Action { Assert-TestEnvironmentApprovalPlan -Plan $plan }
@@ -142,9 +142,9 @@ Assert-Throws -Name 'child identity directory nested in private directory reject
     -Pattern '^Private and child directories must have separate ACL boundaries' -Action { Assert-TestEnvironmentApprovalPlan -Plan $plan }
 
 foreach ($case in @(
-    @{ Name = 'approved without G2'; G2 = '' },
-    @{ Name = 'approved with G2 copied from G0'; G2 = 'fixture-g0' }
-)) {
+        @{ Name = 'approved without G2'; G2 = '' },
+        @{ Name = 'approved with G2 copied from G0'; G2 = 'fixture-g0' }
+    )) {
     $plan = New-PlanObject
     $plan.ExecutionApproved = $true
     $plan.G2 = $case.G2
@@ -160,11 +160,11 @@ Assert-NoThrow -Name 'in-memory approved contract with G2 passes the execution g
 Assert-NoThrow -Name 'exact database and instance accepted' `
     -Action { Assert-TestEnvironmentTarget -Contract $script:read -Database $database -Instance '.\FIXTURE' }
 foreach ($case in @(
-    @{ Name = 'database differing only by case'; Database = 'dawnholder_Dev_Fixture'; Instance = '' },
-    @{ Name = 'another approved-looking database'; Database = 'Dawnholder_Dev_Other'; Instance = '' },
-    @{ Name = 'other instance'; Database = $database; Instance = '.\SQLEXPRESS' },
-    @{ Name = 'empty database'; Database = ''; Instance = '' }
-)) {
+        @{ Name = 'database differing only by case'; Database = 'dawnholder_Dev_Fixture'; Instance = '' },
+        @{ Name = 'another approved-looking database'; Database = 'Dawnholder_Dev_Other'; Instance = '' },
+        @{ Name = 'other instance'; Database = $database; Instance = '.\SQLEXPRESS' },
+        @{ Name = 'empty database'; Database = ''; Instance = '' }
+    )) {
     Assert-Throws -Name ("target $($case.Name) rejected") -Pattern '^Supply the explicit exact approved database' `
         -Action { Assert-TestEnvironmentTarget -Contract $script:read -Database $case.Database -Instance $case.Instance }
 }
@@ -176,8 +176,8 @@ Assert-Throws -Name 'other lifecycle path rejected' -Pattern '^Test environment 
 # ---- Lifecycle manifest: SQL migration boundary per state, lifecycle schema stays 1.
 $contract = Get-ApprovedContract
 $migrations = @(Get-DatabaseMigrationSources -Phase Complete -DatabaseRoot $script:ToolRoot | ForEach-Object {
-    [pscustomobject]@{ Version = $_.Version; Name = $_.Name; Checksum = $_.Checksum }
-})
+        [pscustomobject]@{ Version = $_.Version; Name = $_.Name; Checksum = $_.Checksum }
+    })
 function Test-ManifestBoundary {
     param([string]$State, $Rows)
     $manifest = New-TestEnvironmentManifest -Contract $contract -Database $database
@@ -199,15 +199,15 @@ $oldName = [pscustomobject]@{ Version = 3; Name = '003_persistence_payload.sql';
 $fifth = [pscustomobject]@{ Version = 5; Name = '005_future.sql'; Checksum = ('F' * 64) }
 $lower = [pscustomobject]@{ Version = 1; Name = $migrations[0].Name; Checksum = $migrations[0].Checksum.ToLowerInvariant() }
 foreach ($case in @(
-    @{ Name = 'Installed with three migrations'; State = 'Installed'; Rows = @($migrations[0..2]); Pattern = $boundary },
-    @{ Name = 'Bound with one migration'; State = 'Bound'; Rows = @($migrations[0]); Pattern = $boundary },
-    @{ Name = 'Baseline001 with two migrations'; State = 'Baseline001'; Rows = @($migrations[0..1]); Pattern = $boundary },
-    @{ Name = 'hole 001,003'; State = 'Created'; Rows = @($migrations[0], $migrations[2]); Pattern = $ordered },
-    @{ Name = 'previous 003 name'; State = 'Created'; Rows = @($migrations[0], $migrations[1], $oldName); Pattern = $ordered },
-    @{ Name = 'fifth version'; State = 'Installed'; Rows = @($migrations) + $fifth; Pattern = $identity },
-    @{ Name = 'duplicate version'; State = 'Created'; Rows = @($migrations[0], $migrations[0]); Pattern = $identity },
-    @{ Name = 'lowercase checksum'; State = 'Baseline001'; Rows = @($lower); Pattern = $identity }
-)) {
+        @{ Name = 'Installed with three migrations'; State = 'Installed'; Rows = @($migrations[0..2]); Pattern = $boundary },
+        @{ Name = 'Bound with one migration'; State = 'Bound'; Rows = @($migrations[0]); Pattern = $boundary },
+        @{ Name = 'Baseline001 with two migrations'; State = 'Baseline001'; Rows = @($migrations[0..1]); Pattern = $boundary },
+        @{ Name = 'hole 001,003'; State = 'Created'; Rows = @($migrations[0], $migrations[2]); Pattern = $ordered },
+        @{ Name = 'previous 003 name'; State = 'Created'; Rows = @($migrations[0], $migrations[1], $oldName); Pattern = $ordered },
+        @{ Name = 'fifth version'; State = 'Installed'; Rows = @($migrations) + $fifth; Pattern = $identity },
+        @{ Name = 'duplicate version'; State = 'Created'; Rows = @($migrations[0], $migrations[0]); Pattern = $identity },
+        @{ Name = 'lowercase checksum'; State = 'Baseline001'; Rows = @($lower); Pattern = $identity }
+    )) {
     Assert-Throws -Name ("manifest $($case.Name) rejected") -Pattern $case.Pattern `
         -Action { Test-ManifestBoundary -State $case.State -Rows $case.Rows }
 }

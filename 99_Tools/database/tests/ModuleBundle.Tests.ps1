@@ -55,9 +55,9 @@ Assert-Equal -Name 'reviewed bundle -> release version 4' -Expected 4 -Actual $r
 Assert-Equal -Name 'reviewed bundle -> manifest checksum equals raw file SHA256' -Expected $manifestHash -Actual $real.ManifestChecksum
 Assert-True -Name '004 declaration carries the raw manifest SHA256 (no self-hash cycle)' `
     -Condition ($declaration -cmatch "VALUES\(4, '$manifestHash'\)" -and
-        @($manifest.Entries | Where-Object { $_.Path -cmatch 'manifest|004_' }).Count -eq 0)
+    @($manifest.Entries | Where-Object { $_.Path -cmatch 'manifest|004_' }).Count -eq 0)
 $kinds = @($manifest.Entries | ForEach-Object { if ($_.Kind -ceq 'FN') { 'codec' } elseif ($_.Path -cmatch '/internal/') { 'helper' } `
-    elseif ($_.Kind -ceq 'Permissions') { 'permissions' } else { 'public' } })
+            elseif ($_.Kind -ceq 'Permissions') { 'permissions' } else { 'public' } })
 Assert-Equal -Name 'manifest order codec -> 8 helpers -> 9 public -> permissions' `
     -Expected ((@('codec') + @('helper') * 8 + @('public') * 9 + @('permissions')) -join ',') -Actual ($kinds -join ',')
 $valueMismatches = @()
@@ -72,9 +72,9 @@ foreach ($entry in $manifest.Entries) {
     if ($null -ne $entry.ObjectName) {
         # Independent call extraction: drop line comments, then collect direct qualified EXEC targets.
         $code = ((Read-FixtureText -Path (Join-Path $script:ToolRoot $entry.Path)) -split "`n" |
-            ForEach-Object { ($_ -replace '--.*$', '') }) -join "`n"
+                ForEach-Object { ($_ -replace '--.*$', '') }) -join "`n"
         $calls = @([regex]::Matches($code, '(?i)\bEXEC(?:UTE)?\s+(?:@\w+\s*=\s*)?dh\.(\w+)') |
-            ForEach-Object { 'dh.' + $_.Groups[1].Value } | Sort-Object -Unique)
+                ForEach-Object { 'dh.' + $_.Groups[1].Value } | Sort-Object -Unique)
         if (($calls -join '|') -cne ((@($entry.DependsOn) | Sort-Object) -join '|')) {
             $dependencyMismatches += "$($entry.Path): calls=$($calls -join ',') declared=$(@($entry.DependsOn) -join ',')"
         }
@@ -86,16 +86,21 @@ Assert-True -Name 'every declared dependency set equals the module''s actual dir
     -Condition ($dependencyMismatches.Count -eq 0) -Detail ($dependencyMismatches -join '; ')
 $catalog = Read-FixtureText -Path (Join-Path $script:ToolRoot 'verify-schema.sql')
 $catalogRows = @([regex]::Matches($catalog, "\('(\w+)', '(FN|P)', (\d+), 0x([0-9A-F]{64}),\s*'([0-9A-F]{64})'\)") | ForEach-Object {
-    'dh.{0}|{1}|{2}|{3}|{4}' -f $_.Groups[1].Value, $_.Groups[2].Value, $_.Groups[3].Value, $_.Groups[4].Value, $_.Groups[5].Value
-})
+        'dh.{0}|{1}|{2}|{3}|{4}' -f $_.Groups[1].Value, $_.Groups[2].Value, $_.Groups[3].Value, $_.Groups[4].Value, $_.Groups[5].Value
+    })
 $manifestRows = @($manifest.Entries | Where-Object ObjectName | ForEach-Object {
-    '{0}|{1}|{2}|{3}|{4}' -f $_.ObjectName, $_.Kind, $_.DefinitionBytes, $_.DefinitionChecksum, $_.SourceChecksum
-})
+        '{0}|{1}|{2}|{3}|{4}' -f $_.ObjectName, $_.Kind, $_.DefinitionBytes, $_.DefinitionChecksum, $_.SourceChecksum
+    })
 Assert-Equal -Name 'strict catalog module expectations equal manifest (18 rows)' `
     -Expected (($manifestRows | Sort-Object) -join ';') -Actual (($catalogRows | Sort-Object) -join ';')
+# The catalog runs after 004 is recorded; its release literal must name the same reviewed bundle as 004.
+$releasePattern = "ModuleRelease r JOIN dh\.SchemaVersion s[\s\S]*?ManifestChecksum[^']*'([0-9A-F]{64})'"
+$releaseLiteral = [regex]::Match($catalog, $releasePattern).Groups[1].Value
+Assert-Equal -Name 'strict catalog release declaration expects the raw manifest SHA256 declared by 004' `
+    -Expected $manifestHash -Actual $releaseLiteral
 $permissionsText = Read-FixtureText -Path (Join-Path $script:ToolRoot $permissions)
 $grants = @([regex]::Matches($permissionsText, '(?m)^GRANT EXECUTE ON OBJECT::dh\.(\w+) TO (dh_runtime|dh_recovery);$') |
-    ForEach-Object { $_.Groups[1].Value + '>' + $_.Groups[2].Value })
+        ForEach-Object { $_.Groups[1].Value + '>' + $_.Groups[2].Value })
 Assert-Equal -Name 'permissions: exactly nine individual public EXECUTE grants (runtime5/recovery4)' `
     -Expected 'ReadAdmission>dh_runtime,AcquireAndLoad>dh_runtime,WriteSafeCheckpoint>dh_runtime,ReleaseRuntime>dh_runtime,ResolveRuntimeOperation>dh_runtime,InspectRecovery>dh_recovery,RecoverAndLoad>dh_recovery,ReleaseRecovery>dh_recovery,ResolveRecoveryOperation>dh_recovery' `
     -Actual ($grants -join ',')
@@ -127,11 +132,11 @@ Assert-Throws -Name 'manifest with an extra top-level field rejected' -Pattern '
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 foreach ($case in @(
-    @{ Name = 'release version 5'; Property = 'ReleaseVersion'; Value = 5 },
-    @{ Name = 'release version as string'; Property = 'ReleaseVersion'; Value = '4' },
-    @{ Name = 'format version 2'; Property = 'FormatVersion'; Value = 2 },
-    @{ Name = 'source encoding text changed'; Property = 'SourceEncoding'; Value = 'UTF-8' }
-)) {
+        @{ Name = 'release version 5'; Property = 'ReleaseVersion'; Value = 5 },
+        @{ Name = 'release version as string'; Property = 'ReleaseVersion'; Value = '4' },
+        @{ Name = 'format version 2'; Property = 'FormatVersion'; Value = 2 },
+        @{ Name = 'source encoding text changed'; Property = 'SourceEncoding'; Value = 'UTF-8' }
+    )) {
     $root = New-DatabaseFixture -Name ('manifest-' + ($case.Name -replace '\W+', '-'))
     $fixture = Read-FixtureManifest -Root $root
     $fixture.($case.Property) = $case.Value
@@ -148,10 +153,10 @@ Assert-Throws -Name 'entry with an extra field rejected' -Pattern '^Unexpected m
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 foreach ($case in @(
-    @{ Name = 'path escape through ..'; Value = 'modules/procedures/../procedures/read_admission.sql' },
-    @{ Name = 'absolute path'; Value = 'C:/Windows/win.ini' },
-    @{ Name = 'backslash path'; Value = 'modules\procedures\read_admission.sql' }
-)) {
+        @{ Name = 'path escape through ..'; Value = 'modules/procedures/../procedures/read_admission.sql' },
+        @{ Name = 'absolute path'; Value = 'C:/Windows/win.ini' },
+        @{ Name = 'backslash path'; Value = 'modules\procedures\read_admission.sql' }
+    )) {
     $root = New-DatabaseFixture -Name ('entry-' + ($case.Name -replace '\W+', '-'))
     Set-ManifestEntryValue -Root $root -EntryPath $admission -Property Path -Value $case.Value
     Assert-Throws -Name ("entry $($case.Name) rejected") -Pattern '^Invalid module path/checksum/dependency list' `
@@ -219,9 +224,9 @@ $path = Join-Path $root $progress
 Assert-NoThrow -Name 'BOM-prefixed module keeps the same identity (BOM excluded by contract)' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 foreach ($case in @(
-    @{ Name = 'GO batch separator'; Text = "GO`n" },
-    @{ Name = 'indented lowercase go'; Text = "    go`n" }
-)) {
+        @{ Name = 'GO batch separator'; Text = "GO`n" },
+        @{ Name = 'indented lowercase go'; Text = "    go`n" }
+    )) {
     $root = New-DatabaseFixture -Name ('source-' + ($case.Name -replace '\W+', '-'))
     $path = Join-Path $root $progress
     Write-FixtureText -Path $path -Text ((Read-FixtureText -Path $path) + $case.Text)
@@ -254,11 +259,11 @@ Assert-Throws -Name 'module must begin with its CREATE OR ALTER header' `
 
 # ---- Engine expectation fields and dependency declarations.
 foreach ($case in @(
-    @{ Name = 'definition checksum'; Property = 'DefinitionChecksum'; Value = ('0' * 64) },
-    @{ Name = 'definition byte count'; Property = 'DefinitionBytes'; Value = 1268 },
-    @{ Name = 'object name'; Property = 'ObjectName'; Value = 'dh.SerializeProgressV2' },
-    @{ Name = 'kind'; Property = 'Kind'; Value = 'FN' }
-)) {
+        @{ Name = 'definition checksum'; Property = 'DefinitionChecksum'; Value = ('0' * 64) },
+        @{ Name = 'definition byte count'; Property = 'DefinitionBytes'; Value = 1268 },
+        @{ Name = 'object name'; Property = 'ObjectName'; Value = 'dh.SerializeProgressV2' },
+        @{ Name = 'kind'; Property = 'Kind'; Value = 'FN' }
+    )) {
     $root = New-DatabaseFixture -Name ('expectation-' + ($case.Name -replace '\W+', '-'))
     Set-ManifestEntryValue -Root $root -EntryPath $progress -Property $case.Property -Value $case.Value
     Assert-Throws -Name ("wrong $($case.Name) rejected") `
@@ -291,13 +296,13 @@ Assert-Throws -Name 'permissions entry before public modules rejected' `
     -Pattern '^Permissions must be the final single bundle entry' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 foreach ($case in @(
-    @{ Name = 'runtime RPC granted to recovery'; Find = 'dh.ReleaseRuntime TO dh_runtime'; Replace = 'dh.ReleaseRuntime TO dh_recovery' },
-    @{ Name = 'schema-wide grant added'; Find = 'GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;';
-        Replace = "GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;`nGRANT EXECUTE ON SCHEMA::dh TO dh_runtime;" },
-    @{ Name = 'helper grant added'; Find = 'GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;';
-        Replace = "GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;`nGRANT EXECUTE ON OBJECT::dh.ReadOperationReceipt TO dh_runtime;" },
-    @{ Name = 'one grant removed'; Find = "GRANT EXECUTE ON OBJECT::dh.ReleaseRecovery TO dh_recovery;`n"; Replace = '' }
-)) {
+        @{ Name = 'runtime RPC granted to recovery'; Find = 'dh.ReleaseRuntime TO dh_runtime'; Replace = 'dh.ReleaseRuntime TO dh_recovery' },
+        @{ Name = 'schema-wide grant added'; Find = 'GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;';
+            Replace = "GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;`nGRANT EXECUTE ON SCHEMA::dh TO dh_runtime;" },
+        @{ Name = 'helper grant added'; Find = 'GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;';
+            Replace = "GRANT EXECUTE ON OBJECT::dh.ReadAdmission TO dh_runtime;`nGRANT EXECUTE ON OBJECT::dh.ReadOperationReceipt TO dh_runtime;" },
+        @{ Name = 'one grant removed'; Find = "GRANT EXECUTE ON OBJECT::dh.ReleaseRecovery TO dh_recovery;`n"; Replace = '' }
+    )) {
     $root = New-DatabaseFixture -Name ('permissions-' + ($case.Name -replace '\W+', '-'))
     Edit-FixtureText -Path (Join-Path $root $permissions) -Find $case.Find -Replace $case.Replace
     Update-FixtureManifestEntry -Root $root -EntryPath $permissions
@@ -317,8 +322,8 @@ Assert-Equal -Name 'migration sources -> exact ordered names' -Expected $expecte
 $recomputed = @($sources | ForEach-Object { (Get-ExpectedModuleValues -Path (Join-Path $script:ToolRoot ('migrations/' + $_.Name))).SourceChecksum })
 Assert-Equal -Name 'migration checksums re-derived from source' -Expected ($recomputed -join ',') -Actual (($sources | ForEach-Object Checksum) -join ',')
 $catalogMigrations = @([regex]::Matches($catalog, "\((\d), '(\d{3}_[a-z_]+\.sql)', '([0-9A-F]{64})'\)") | ForEach-Object {
-    '{0}|{1}|{2}' -f $_.Groups[1].Value, $_.Groups[2].Value, $_.Groups[3].Value
-})
+        '{0}|{1}|{2}' -f $_.Groups[1].Value, $_.Groups[2].Value, $_.Groups[3].Value
+    })
 Assert-Equal -Name 'strict catalog migration rows equal runner sources' `
     -Expected (($sources | ForEach-Object { '{0}|{1}|{2}' -f $_.Version, $_.Name, $_.Checksum }) -join ';') -Actual ($catalogMigrations -join ';')
 Assert-Equal -Name '001 raw bytes unchanged (protected SHA256)' -Expected 'A831893F95C37F1194D0FE470538EACA020FFB4192710D1675ADCEE1A9C9F214' `
@@ -385,6 +390,32 @@ Assert-Throws -Name 'JSON rows: empty text rejected' -Pattern '^Expected the com
     -Action { ConvertFrom-DatabaseJsonRows -Json '' }
 Assert-Throws -Name 'JSON rows: single object rejected' -Pattern '^Expected the complete database JSON row array' `
     -Action { ConvertFrom-DatabaseJsonRows -Json '{"a":1}' }
+Assert-Throws -Name 'JSON rows: JSON null literal rejected' -Pattern '^Expected the complete database JSON row array' `
+    -Action { ConvertFrom-DatabaseJsonRows -Json 'null' }
+Assert-Throws -Name 'JSON rows: whitespace-only text rejected' `
+    -Pattern '^Expected the complete database JSON row array' -Action { ConvertFrom-DatabaseJsonRows -Json '   ' }
+# Truncated arrays pass the leading-bracket guard and must still fail in the JSON parser itself.
+Assert-Throws -Name 'JSON rows: truncated array rejected by the parser' -Pattern '^Invalid array passed in' `
+    -Action { ConvertFrom-DatabaseJsonRows -Json '[{"Version":1}' }
+
+# ---- Known-answer source identity, fixed outside PowerShell (Node crypto, verifier evidence).
+# Expected values do not come from product or TestSupport code: CRLF->LF, UTF-8 source, UTF-16LE definition.
+$knownPath = Join-Path $script:SuiteRoot 'known-answer.sql'
+$knownText = "CREATE PROCEDURE dh.Probe`r`nAS SELECT N'" + [char]0xAC00 + [char]0x00E9 + "';`r`n"
+[IO.File]::WriteAllText($knownPath, $knownText, (New-Object Text.UTF8Encoding($false)))
+$knownSql = Get-MigrationText -Path $knownPath
+$knownSource = '8CE8896144B87C9159CD5623A3F672B4216D0BEA5D4C9356F4571A8C07C8F1FA'
+$knownDefinition = 'D12E32D985BB1C8D43033D21925825793DC724C2527E40509795ADE2433338E9'
+Assert-Equal -Name 'known answer: product source checksum' -Expected $knownSource `
+    -Actual (Get-MigrationHash -Sql $knownSql)
+Assert-Equal -Name 'known answer: product definition checksum' -Expected $knownDefinition `
+    -Actual (Get-ModuleDefinitionHash -Sql $knownSql)
+Assert-Equal -Name 'known answer: product definition bytes' -Expected 86 -Actual ($knownSql.Length * 2)
+$knownValues = Get-ExpectedModuleValues -Path $knownPath
+Assert-True -Name 'known answer: test recomputation helper agrees with the fixed values' -Condition (
+    $knownValues.SourceChecksum -ceq $knownSource -and $knownValues.DefinitionChecksum -ceq $knownDefinition -and
+    $knownValues.DefinitionBytes -eq 86)
+
 $dbNull = Get-ThrownMessage -Action { ConvertFrom-DatabaseJsonRows -Json ([DBNull]::Value) }
 Add-TestResult -Name 'JSON rows: DBNull scalar (engine form for an empty scalar FOR JSON subquery is unverified)' -Outcome OBSERVED `
     -Detail $(if ($null -eq $dbNull) { 'accepted' } else { 'rejected: ' + $dbNull })

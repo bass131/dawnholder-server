@@ -50,14 +50,14 @@ function New-EngineState {
         $state.Releases.Add([pscustomobject]@{ Version = 4; ManifestChecksum = $script:Bundle.ManifestChecksum })
         foreach ($module in $script:Bundle.Modules) {
             $state.Recorded.Add([pscustomobject]@{
-                ObjectName = $module.ObjectName
-                Kind = $module.Kind.PadRight(2)
-                SourceChecksum = $module.SourceChecksum
-                DefinitionBytes = $module.DefinitionBytes
-                DefinitionChecksum = $module.DefinitionChecksum
-            })
+                    ObjectName = $module.ObjectName
+                    Kind = $module.Kind.PadRight(2)
+                    SourceChecksum = $module.SourceChecksum
+                    DefinitionBytes = $module.DefinitionBytes
+                    DefinitionChecksum = $module.DefinitionChecksum
+                })
             $state.Actual.Add((New-ActualRow -ObjectName $module.ObjectName -Kind $module.Kind `
-                -Bytes $module.DefinitionBytes -Checksum $module.DefinitionChecksum))
+                        -Bytes $module.DefinitionBytes -Checksum $module.DefinitionChecksum))
         }
     }
     return $state
@@ -109,7 +109,7 @@ $script:Responder = {
         $stored = Get-DefinitionValues -Text (& $engine.StoreText $Sql)
         $kind = if ($header.Groups[1].Value -ceq 'FUNCTION') { 'FN' } else { 'P' }
         Set-Row -List $engine.Actual -ObjectName $name -Row (New-ActualRow -ObjectName $name -Kind $kind `
-            -Bytes $stored.Bytes -Checksum $stored.Checksum)
+                -Bytes $stored.Bytes -Checksum $stored.Checksum)
         return -1
     }
     if ($Sql.Contains('THROW 51001')) {
@@ -161,12 +161,12 @@ $script:Responder = {
     if ($Sql.StartsWith('UPDATE dh.ModuleDefinition')) {
         $engine.Events.Add('META:' + $Values.name)
         Set-Row -List $engine.Recorded -ObjectName $Values.name -Row ([pscustomobject]@{
-            ObjectName = $Values.name
-            Kind = ([string]$Values.kind).PadRight(2)
-            SourceChecksum = $Values.source
-            DefinitionBytes = $Values.bytes
-            DefinitionChecksum = $Values.definition
-        })
+                ObjectName = $Values.name
+                Kind = ([string]$Values.kind).PadRight(2)
+                SourceChecksum = $Values.source
+                DefinitionBytes = $Values.bytes
+                DefinitionChecksum = $Values.definition
+            })
         return 1
     }
     if ($Sql.Contains('001 phase boundary mismatch')) { $engine.Events.Add('BOUNDARY'); return -1 }
@@ -234,11 +234,35 @@ $run = Invoke-Complete -Engine (New-EngineState -AppliedMigrations 1 -Empty DBNu
 Add-TestResult -Name 'first Complete install with DBNull for empty sets (engine form unverified)' -Outcome OBSERVED `
     -Detail ('error=' + $run.Error + '; events=' + ($run.Events -join ',') + '; tx=' + ($run.Transactions -join ','))
 
+# ---- Empty metadata reads ask SQL for [] (source/boundary form only).
+# The fake does not evaluate ISNULL, so this is not engine acceptance of an empty row set; that remains U-01.
+$wrappedReadHead = '(?s)^SELECT ISNULL\(\(\s*SELECT .+ FOR JSON PATH(?:, INCLUDE_NULL_VALUES)?'
+$wrappedRead = $wrappedReadHead + '\s*\), N''\[\]''\) AS \w+Rows;\s*$'
+$readSourcePattern = 'FROM (dh\.SchemaVersion|dh\.ModuleRelease|dh\.ModuleDefinition|sys\.objects)'
+$run = Invoke-Complete -Engine (New-EngineState -AppliedMigrations 1)
+$jsonReads = @($script:Connection.Log | Where-Object { $_.Mode -ceq 'Scalar' -and $_.Sql.Contains('FOR JSON') })
+$unwrappedReads = @($jsonReads | Where-Object { $_.Sql -cnotmatch $wrappedRead })
+$readSources = @($jsonReads | ForEach-Object { [regex]::Match($_.Sql, $readSourcePattern).Groups[1].Value } |
+        Sort-Object -Unique)
+Assert-True -Name 'first install -> every scalar FOR JSON read is sent as ISNULL(..., N''[]'')' -Condition (
+    $null -eq $run.Error -and $jsonReads.Count -gt 0 -and $unwrappedReads.Count -eq 0) `
+    -Detail ('reads=' + $jsonReads.Count + '; error=' + $run.Error)
+Assert-Equal -Name 'first install -> wrapped reads cover history, releases, recorded and actual modules' `
+    -Expected 'dh.ModuleDefinition,dh.ModuleRelease,dh.SchemaVersion,sys.objects' -Actual ($readSources -join ',')
+$databaseCommon = Read-FixtureText -Path (Join-Path $script:ToolRoot 'Database.Common.ps1')
+$moduleCommon = Read-FixtureText -Path (Join-Path $script:ToolRoot 'Module.Common.ps1')
+$scalarSites = [regex]::Matches($databaseCommon + $moduleCommon, 'FOR JSON PATH').Count
+$wrappedSitePattern = 'FOR JSON PATH(?:, INCLUDE_NULL_VALUES)?\r?\n\), N''\[\]''\) AS \w+Rows;'
+$wrappedSites = [regex]::Matches($databaseCommon + $moduleCommon, $wrappedSitePattern).Count
+Assert-True -Name 'runner sources -> all five scalar FOR JSON sites end in ISNULL(..., N''[]'')' `
+    -Condition ($scalarSites -eq 5 -and $wrappedSites -eq 5) `
+    -Detail ('sites=' + $scalarSites + '; wrapped=' + $wrappedSites)
+
 # ---- Baseline001 on the freshly created (empty) SchemaVersion table.
 $run = Invoke-Runner -Engine (New-EngineState) -Action { Invoke-Migrations -Connection $script:Connection -Phase Baseline001 }
 Assert-True -Name 'Baseline001 on empty history (empty set as []) -> applies only 001 and boundary check' `
     -Condition ($null -eq $run.Error -and ($run.Events -join ',') -ceq 'LOCK,HISTORY,MIGRATION:001,SV:1,HISTORY,BOUNDARY' -and
-        ($run.Transactions -join ',') -ceq 'Begin,Commit,Dispose') -Detail ('error=' + $run.Error + '; events=' + ($run.Events -join ','))
+    ($run.Transactions -join ',') -ceq 'Begin,Commit,Dispose') -Detail ('error=' + $run.Error + '; events=' + ($run.Events -join ','))
 $run = Invoke-Runner -Engine (New-EngineState -Empty DBNull) -Action { Invoke-Migrations -Connection $script:Connection -Phase Baseline001 }
 Add-TestResult -Name 'Baseline001 on empty history with DBNull for the empty set (engine form unverified)' -Outcome OBSERVED `
     -Detail ('error=' + $run.Error + '; events=' + ($run.Events -join ',') + '; tx=' + ($run.Transactions -join ','))
@@ -246,7 +270,7 @@ Add-TestResult -Name 'Baseline001 on empty history with DBNull for the empty set
 # ---- Re-running the same reviewed bundle on an installed database.
 $run = Invoke-Complete -Engine (New-EngineState -AppliedMigrations 4 -Installed)
 $expected = @('LOCK', 'HISTORY', 'HISTORY', 'RELEASES', 'RECORDED', 'ACTUAL', 'SESSION', 'GRANTS', 'RECORDED', 'ACTUAL') +
-    $metaOrder + @('CATALOG')
+$metaOrder + @('CATALOG')
 Assert-Equal -Name 'same bundle rerun -> no migration body or DDL, grants and verification repeated' `
     -Expected ($expected -join ',') -Actual ($run.Events -join ',')
 Assert-Equal -Name 'same bundle rerun -> committed once' -Expected 'Begin,Commit,Dispose' -Actual ($run.Transactions -join ',')
@@ -288,12 +312,12 @@ Test-RejectedBeforeDdl -Name 'registrations and objects erased after install' -E
     -Pattern '^Existing module registration/object set is incomplete or unexpected'
 
 foreach ($case in @(
-    @{ Name = 'owner differs from dbo'; Object = 'dh.ReadAdmission'; Property = 'OwnerPrincipalId'; Value = 5 },
-    @{ Name = 'EXECUTE AS context'; Object = 'dh.ReadAdmission'; Property = 'ExecuteAsPrincipalId'; Value = 1 },
-    @{ Name = 'ANSI_NULLS off'; Object = 'dh.ReadAdmission'; Property = 'AnsiNulls'; Value = $false },
-    @{ Name = 'QUOTED_IDENTIFIER off'; Object = 'dh.ReadAdmission'; Property = 'QuotedIdentifier'; Value = $false },
-    @{ Name = 'codec not schema bound'; Object = 'dh.PersistencePayloadV1'; Property = 'SchemaBound'; Value = $false }
-)) {
+        @{ Name = 'owner differs from dbo'; Object = 'dh.ReadAdmission'; Property = 'OwnerPrincipalId'; Value = 5 },
+        @{ Name = 'EXECUTE AS context'; Object = 'dh.ReadAdmission'; Property = 'ExecuteAsPrincipalId'; Value = 1 },
+        @{ Name = 'ANSI_NULLS off'; Object = 'dh.ReadAdmission'; Property = 'AnsiNulls'; Value = $false },
+        @{ Name = 'QUOTED_IDENTIFIER off'; Object = 'dh.ReadAdmission'; Property = 'QuotedIdentifier'; Value = $false },
+        @{ Name = 'codec not schema bound'; Object = 'dh.PersistencePayloadV1'; Property = 'SchemaBound'; Value = $false }
+    )) {
     $engine = New-EngineState -AppliedMigrations 4 -Installed
     @($engine.Actual | Where-Object ObjectName -CEQ $case.Object)[0].($case.Property) = $case.Value
     Test-RejectedBeforeDdl -Name ("actual module $($case.Name)") -Engine $engine `
