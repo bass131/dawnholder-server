@@ -7,34 +7,8 @@ param(
 . (Join-Path $PSScriptRoot 'TestSupport.ps1')
 $null = Initialize-TestSuite -WorkRoot $WorkRoot -Suite 'module-structure-cli'
 $checker = Join-Path $script:ToolRoot 'Test-ModuleStructure.ps1'
-
-function Invoke-StructureCheck {
-    param(
-        [Parameter(Mandatory)][string]$Root,
-        [switch]$Strict,
-        [switch]$Text
-    )
-    $arguments = @('-DatabaseRoot', $Root)
-    if (-not $Text) { $arguments += '-Json' }
-    if ($Strict) { $arguments += '-Strict' }
-    $run = Invoke-PowerShellFile -File $checker -Arguments $arguments
-    $result = $null
-    if (-not $Text -and $run.StdOut.Trim().StartsWith('{')) {
-        $result = $run.StdOut | ConvertFrom-Json
-    }
-    return [pscustomobject]@{
-        ExitCode = $run.ExitCode
-        Result = $result
-        StdOut = $run.StdOut
-        StdErr = $run.StdErr
-    }
-}
-
-function Get-IssueText {
-    param($Result)
-    if ($null -eq $Result) { return '' }
-    return (@($Result.Issues) | ForEach-Object { '{0}:{1}|{2}|{3}|{4}' -f $_.File, $_.Line, $_.Message, $_.Expected, $_.Remediation }) -join ' || '
-}
+# Structure counterexamples that edit a module source re-derive the hash chain with Sync-FixtureHashConsumers,
+# so that they stay structure-only (warning pilot exit0, Strict exit1); hash drift is tested in its own suite.
 
 function Test-ViolationCase {
     param(
@@ -80,13 +54,52 @@ function Test-UnavailableCase {
     Assert-Equal -Name "$Name -> Strict exit" -Expected 2 -Actual $strict.ExitCode
 }
 
-# Positive control: the reviewed tree copy is compliant in both modes and lists every module and migration file.
+function Test-InputMissingCase {
+    param(
+        [Parameter(Mandatory)][string]$Name,
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][string]$File,
+        [Parameter(Mandatory)][string]$MessagePattern,
+        [Parameter(Mandatory)][string]$MissingFile
+    )
+    # A registered module path that no longer exists leaves the hash inspection without an input.
+    # MSSQL.md documents that as unavailable (exit2 in both modes); the placement issue must stay visible.
+    $warning = Invoke-StructureCheck -Root $Root
+    $strict = Invoke-StructureCheck -Root $Root -Strict
+    $issues = @(if ($warning.Result) { $warning.Result.Issues })
+    $placement = @($issues | Where-Object { $_.File -ceq $File -and $_.Message -cmatch $MessagePattern })
+    $missingInput = @($issues | Where-Object {
+            $null -ne $_.PSObject.Properties['Kind'] -and $_.Kind -ceq 'HashInspectionUnavailable' -and
+            $_.File -ceq $MissingFile
+        })
+    Assert-True -Name "$Name -> unavailable with null ViolationCount" `
+        -Condition ($null -ne $warning.Result -and $warning.Result.Status -ceq 'unavailable' -and
+        $null -eq $warning.Result.ViolationCount -and $warning.Result.HashInspectionComplete -eq $false) `
+        -Detail (Get-IssueText -Result $warning.Result)
+    Assert-True -Name "$Name -> placement issue kept next to the input error" -Condition ($placement.Count -ge 1) `
+        -Detail (Get-IssueText -Result $warning.Result)
+    Assert-True -Name "$Name -> hash input issue names the missing registered file" `
+        -Condition ($missingInput.Count -eq 1) -Detail (Get-IssueText -Result $warning.Result)
+    Assert-Equal -Name "$Name -> warning pilot exit" -Expected 2 -Actual $warning.ExitCode
+    Assert-Equal -Name "$Name -> Strict exit" -Expected 2 -Actual $strict.ExitCode
+}
+
+# Positive control: the reviewed tree copy is compliant in both modes and lists every file it read.
 $compliantRoot = New-DatabaseFixture -Name 'compliant'
 $compliant = Invoke-StructureCheck -Root $compliantRoot
 $compliantStrict = Invoke-StructureCheck -Root $compliantRoot -Strict
 Assert-Equal -Name 'compliant tree -> status' -Expected 'compliant' -Actual $compliant.Result.Status
 Assert-Equal -Name 'compliant tree -> ViolationCount' -Expected 0 -Actual $compliant.Result.ViolationCount
-Assert-Equal -Name 'compliant tree -> checked files (19 modules + 4 migrations)' -Expected 23 -Actual @($compliant.Result.CheckedFiles).Count
+# 19 module/permission files and 4 migrations for placement, plus the three hash consumers MSSQL.md requires.
+$structureFiles = @(
+    Get-ChildItem -LiteralPath (Join-Path $compliantRoot 'modules') -Filter '*.sql' -File -Recurse
+    Get-ChildItem -LiteralPath (Join-Path $compliantRoot 'migrations') -Filter '*.sql' -File
+) | ForEach-Object { $_.FullName.Substring($compliantRoot.Length + 1).Replace('\', '/') }
+$expectedChecked = @($structureFiles) + @('modules/manifest.json', 'verify-schema.sql', 'Module.Common.ps1')
+Assert-Equal -Name 'compliant tree -> checked files (23 structure files + manifest, catalog, Module.Common)' `
+    -Expected ((@($expectedChecked) | Sort-Object) -join '|') `
+    -Actual ((@($compliant.Result.CheckedFiles) | Sort-Object) -join '|')
+Assert-Equal -Name 'compliant tree -> checked file count' -Expected 26 -Actual @($compliant.Result.CheckedFiles).Count
 Assert-Equal -Name 'compliant tree -> warning exit' -Expected 0 -Actual $compliant.ExitCode
 Assert-Equal -Name 'compliant tree -> Strict exit' -Expected 0 -Actual $compliantStrict.ExitCode
 Assert-True -Name 'compliant tree -> machine fields' -Condition (
@@ -104,6 +117,7 @@ $acquire = 'modules/procedures/acquire_and_load.sql'
 $receiptCall = 'EXEC dh.ReadOperationReceipt'
 $root = New-DatabaseFixture -Name 'receipt-in-line-comment'
 Edit-FixtureText -Path (Join-Path $root $acquire) -Find $receiptCall -Replace ('-- ' + $receiptCall)
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'receipt call only in a line comment' -Root $root -File $acquire `
     -MessagePattern '^dh\.AcquireAndLoad does not call its ReadOperationReceipt responsibility$' `
     -ExpectedPattern 'Direct EXEC dh\.ReadOperationReceipt in modules/procedures/acquire_and_load\.sql' `
@@ -111,21 +125,25 @@ Test-ViolationCase -Name 'receipt call only in a line comment' -Root $root -File
 
 $root = New-DatabaseFixture -Name 'receipt-in-nested-block-comment'
 Edit-FixtureText -Path (Join-Path $root $acquire) -Find $receiptCall -Replace ('/* outer /* ' + $receiptCall + ' */ still comment */ PRINT 1;')
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'receipt call only in a nested block comment' -Root $root -File $acquire `
     -MessagePattern 'does not call its ReadOperationReceipt responsibility'
 
 $root = New-DatabaseFixture -Name 'receipt-in-string'
 Edit-FixtureText -Path (Join-Path $root $acquire) -Find $receiptCall -Replace ("PRINT N'it''s " + $receiptCall + "';")
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'receipt call only inside a string literal with an escaped quote' -Root $root -File $acquire `
     -MessagePattern 'does not call its ReadOperationReceipt responsibility'
 
 $root = New-DatabaseFixture -Name 'receipt-in-dynamic-sql'
 Edit-FixtureText -Path (Join-Path $root $acquire) -Find $receiptCall -Replace ("EXEC sys.sp_executesql N'" + $receiptCall + "';")
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'receipt call only as dynamic SQL text' -Root $root -File $acquire `
     -MessagePattern 'does not call its ReadOperationReceipt responsibility'
 
 $root = New-DatabaseFixture -Name 'receipt-bracket-call'
 Edit-FixtureText -Path (Join-Path $root $acquire) -Find $receiptCall -Replace 'EXECUTE [dh].[ReadOperationReceipt]'
+Sync-FixtureHashConsumers -Root $root
 $bracket = Invoke-StructureCheck -Root $root -Strict
 Assert-True -Name 'bracket-qualified EXECUTE call is recognized -> compliant' `
     -Condition ($bracket.ExitCode -eq 0 -and $bracket.Result.Status -ceq 'compliant') -Detail (Get-IssueText -Result $bracket.Result)
@@ -134,19 +152,39 @@ Assert-True -Name 'bracket-qualified EXECUTE call is recognized -> compliant' `
 $root = New-DatabaseFixture -Name 'public-moved-to-internal'
 Move-Item -LiteralPath (Join-Path $root 'modules/procedures/read_admission.sql') `
     -Destination (Join-Path $root 'modules/procedures/internal/read_admission.sql')
-Test-ViolationCase -Name 'public RPC moved to internal folder' -Root $root -File 'modules/procedures/internal/read_admission.sql' `
-    -MessagePattern '^Unknown path or non-single module definition$' `
-    -ExpectedPattern '^dh\.ReadAdmission at modules/procedures/read_admission\.sql$' -RemediationPattern 'Move the known object'
+$movedCase = @{
+    Name = 'public RPC moved to internal folder'
+    Root = $root
+    File = 'modules/procedures/internal/read_admission.sql'
+    MessagePattern = '^Unknown path or non-single module definition$'
+    MissingFile = 'modules/procedures/read_admission.sql'
+}
+Test-InputMissingCase @movedCase
 $moved = Invoke-StructureCheck -Root $root
+Assert-True -Name 'public RPC moved -> intended issue (file/message/expected/remediation)' -Condition (
+    @($moved.Result.Issues | Where-Object {
+            $_.File -ceq 'modules/procedures/internal/read_admission.sql' -and
+            $_.Expected -cmatch '^dh\.ReadAdmission at modules/procedures/read_admission\.sql$' -and
+            $_.Remediation -cmatch 'Move the known object' }).Count -eq 1) -Detail (Get-IssueText -Result $moved.Result)
 Assert-True -Name 'public RPC moved -> missing contract path also reported' -Condition (
     @($moved.Result.Issues | Where-Object { $_.File -ceq 'modules/procedures/read_admission.sql' -and
             $_.Message -cmatch '^Required module missing' }).Count -eq 1)
 
 $root = New-DatabaseFixture -Name 'helper-missing'
 Remove-Item -LiteralPath (Join-Path $root 'modules/procedures/internal/read_character_state.sql')
-Test-ViolationCase -Name 'helper file missing' -Root $root -File 'modules/procedures/internal/read_character_state.sql' `
-    -MessagePattern '^Required module missing or registered under the wrong definition$' `
-    -RemediationPattern 'Restore the authoritative modules/procedures/internal/read_character_state\.sql'
+$missingCase = @{
+    Name = 'helper file missing'
+    Root = $root
+    File = 'modules/procedures/internal/read_character_state.sql'
+    MessagePattern = '^Required module missing or registered under the wrong definition$'
+    MissingFile = 'modules/procedures/internal/read_character_state.sql'
+}
+Test-InputMissingCase @missingCase
+$missing = Invoke-StructureCheck -Root $root
+$restore = 'Restore the authoritative modules/procedures/internal/read_character_state\.sql'
+Assert-True -Name 'helper file missing -> restore remediation kept' -Condition (
+    @($missing.Result.Issues | Where-Object { $_.Remediation -cmatch $restore }).Count -eq 1) `
+    -Detail (Get-IssueText -Result $missing.Result)
 
 $root = New-DatabaseFixture -Name 'procedure-back-in-migrations'
 Copy-Item -LiteralPath (Join-Path $root 'modules/procedures/read_admission.sql') `
@@ -163,18 +201,21 @@ Test-ViolationCase -Name 'unregistered module file' -Root $root -File 'modules/p
 $root = New-DatabaseFixture -Name 'two-definitions'
 $path = Join-Path $root 'modules/procedures/internal/serialize_progress.sql'
 Write-FixtureText -Path $path -Text ((Read-FixtureText -Path $path) + "GO`nCREATE PROCEDURE dh.Second AS SELECT 1;`n")
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'two definitions in one module file' -Root $root -File 'modules/procedures/internal/serialize_progress.sql' `
     -MessagePattern '^Unknown path or non-single module definition$'
 
 $root = New-DatabaseFixture -Name 'renamed-object'
 Edit-FixtureText -Path (Join-Path $root 'modules/procedures/read_admission.sql') `
     -Find 'CREATE OR ALTER PROCEDURE dh.ReadAdmission' -Replace 'CREATE OR ALTER PROCEDURE dh.ReadAdmissionV2'
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'wrong object name at contract path' -Root $root -File 'modules/procedures/read_admission.sql' `
     -MessagePattern '^Unexpected module dh\.ReadAdmissionV2$'
 
 $root = New-DatabaseFixture -Name 'wrong-kind'
 Edit-FixtureText -Path (Join-Path $root 'modules/procedures/internal/serialize_progress.sql') `
     -Find 'CREATE OR ALTER PROCEDURE dh.SerializeProgress' -Replace 'CREATE OR ALTER FUNCTION dh.SerializeProgress'
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'wrong module kind at contract path' -Root $root -File 'modules/procedures/internal/serialize_progress.sql' `
     -MessagePattern '^Unexpected module dh\.SerializeProgress$' -ExpectedPattern '\(P\)'
 
@@ -183,6 +224,7 @@ $admission = 'modules/procedures/read_admission.sql'
 $root = New-DatabaseFixture -Name 'admission-reads-receipt'
 Edit-FixtureText -Path (Join-Path $root $admission) -Find '        EXEC dh.AssertPersistenceContract' `
     -Replace "        EXEC dh.ReadOperationReceipt @OperationId = @OperationId;`n        EXEC dh.AssertPersistenceContract"
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'ReadAdmission adds a receipt read' -Root $root -File $admission `
     -MessagePattern '^Unexpected helper/RPC call dh\.ReadOperationReceipt$' -RemediationPattern 'preserve admission/inspection/resolver exceptions'
 
@@ -190,6 +232,7 @@ $inspect = 'modules/procedures/inspect_recovery.sql'
 $root = New-DatabaseFixture -Name 'inspection-records-receipt'
 Edit-FixtureText -Path (Join-Path $root $inspect) -Find '        EXEC dh.AssertPersistenceContract' `
     -Replace "        EXEC dh.RecordOperationReceipt @OperationId = @OperationId;`n        EXEC dh.AssertPersistenceContract"
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'InspectRecovery adds a receipt write' -Root $root -File $inspect `
     -MessagePattern '^Unexpected helper/RPC call dh\.RecordOperationReceipt$'
 
@@ -197,12 +240,14 @@ $resolver = 'modules/procedures/resolve_runtime_operation.sql'
 $root = New-DatabaseFixture -Name 'resolver-serializes-snapshot'
 Edit-FixtureText -Path (Join-Path $root $resolver) -Find '        EXEC dh.AssertPersistenceContract' `
     -Replace "        EXEC dh.SerializePersistenceSnapshot @Kind = @Kind;`n        EXEC dh.AssertPersistenceContract"
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'resolver adds a fresh snapshot serializer' -Root $root -File $resolver `
     -MessagePattern '^Unexpected helper/RPC call dh\.SerializePersistenceSnapshot$'
 
 $root = New-DatabaseFixture -Name 'public-calls-public'
 Edit-FixtureText -Path (Join-Path $root $acquire) -Find '        EXEC dh.AssertPersistenceContract' `
     -Replace "        EXEC dh.ReadAdmission @SlotId = 1;`n        EXEC dh.AssertPersistenceContract"
+Sync-FixtureHashConsumers -Root $root
 Test-ViolationCase -Name 'public RPC calls another public RPC' -Root $root -File $acquire `
     -MessagePattern '^Unexpected helper/RPC call dh\.ReadAdmission$'
 
@@ -232,6 +277,7 @@ Test-UnavailableCase -Name 'nonexistent root' -Root (Join-Path $script:SuiteRoot
 $root = New-DatabaseFixture -Name 'helper-opens-transaction'
 Edit-FixtureText -Path (Join-Path $root 'modules/procedures/internal/serialize_progress.sql') `
     -Find '    SET NOCOUNT ON;' -Replace "    SET NOCOUNT ON;`n    BEGIN TRANSACTION;"
+Sync-FixtureHashConsumers -Root $root
 $scope = Invoke-StructureCheck -Root $root
 Add-TestResult -Name 'scope: helper body with BEGIN TRANSACTION is not inspected by the CLI' -Outcome OBSERVED `
     -Detail ('status=' + $scope.Result.Status)
@@ -300,11 +346,13 @@ function New-TwoTreeCase {
         [Parameter(Mandatory)][string]$Name,
         [Parameter(Mandatory)][bool]$SessionTreeCompliant
     )
-    # Same relative name in both directories; exactly one of the two trees is missing a helper.
+    # Same relative name in both directories; exactly one tree has an unregistered module file.
+    # That placement violation leaves every registered hash input intact (warning pilot, Strict exit1).
     $sessionTree = New-DatabaseFixture -Name ($Name + '\session\db')
     $processTree = New-DatabaseFixture -Name ($Name + '\process\db')
     $broken = if ($SessionTreeCompliant) { $processTree } else { $sessionTree }
-    Remove-Item -LiteralPath (Join-Path $broken 'modules/procedures/internal/read_character_state.sql')
+    Write-FixtureText -Path (Join-Path $broken 'modules/procedures/extra_lookup.sql') `
+        -Text "CREATE OR ALTER PROCEDURE dh.ExtraLookup`nAS`nBEGIN`n    SET NOCOUNT ON;`nEND;`n"
     $runner = @{
         Name = $Name + '-runner'
         ProcessDirectory = Split-Path -Parent $processTree
@@ -465,15 +513,16 @@ Add-TestResult -Name 'scope: SQL behind a junction inside modules/ is not inspec
     -Detail ('status=' + $(if ($inner.Result) { $inner.Result.Status }) + '; linked files checked=' + $linkedChecked)
 [IO.Directory]::Delete($innerLink)
 
-# Text mode exposes a violation even when the warning pilot exits 0.
+# Text mode exposes a structure-only violation even when the warning pilot exits 0.
 $root = New-DatabaseFixture -Name 'text-mode-violation'
-Remove-Item -LiteralPath (Join-Path $root 'modules/procedures/internal/read_character_state.sql')
+Write-FixtureText -Path (Join-Path $root 'modules/procedures/extra_lookup.sql') `
+    -Text "CREATE OR ALTER PROCEDURE dh.ExtraLookup`nAS`nBEGIN`n    SET NOCOUNT ON;`nEND;`n"
 $textViolation = Invoke-StructureCheck -Root $root -Text
 # The host may wrap long warning lines when output is redirected; compare whitespace-normalized text.
 $textOutput = ($textViolation.StdOut + $textViolation.StdErr).Trim() -replace '\s+', ' '
 Assert-True -Name 'text mode violation -> status line and file:line warning with fix' -Condition (
     $textViolation.ExitCode -eq 0 -and $textOutput -cmatch 'Module structure: violation\.' -and
-    $textOutput -cmatch 'WARNING: modules/procedures/internal/read_character_state\.sql:1: .*Fix: Restore') `
+    $textOutput -cmatch 'WARNING: modules/procedures/extra_lookup\.sql:1: .*Fix: Move the known object') `
     -Detail $textOutput
 
 Complete-TestSuite

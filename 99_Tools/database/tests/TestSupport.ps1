@@ -150,11 +150,15 @@ function New-DatabaseFixture {
         [switch]$WithoutMigrations
     )
     # Byte-exact copy of the reviewed module and migration sources; product files stay read-only.
+    # The structure check also reads these two files as registered hash consumers (MSSQL.md offline check).
     $root = Join-Path $script:SuiteRoot $Name
     [void][IO.Directory]::CreateDirectory($root)
     Copy-Item -LiteralPath (Join-Path $script:ToolRoot 'modules') -Destination $root -Recurse
     if (-not $WithoutMigrations) {
         Copy-Item -LiteralPath (Join-Path $script:ToolRoot 'migrations') -Destination $root -Recurse
+    }
+    foreach ($consumer in @('verify-schema.sql', 'Module.Common.ps1')) {
+        Copy-Item -LiteralPath (Join-Path $script:ToolRoot $consumer) -Destination (Join-Path $root $consumer)
     }
     return $root
 }
@@ -215,6 +219,133 @@ function Update-FixtureManifestEntry {
         $entry.DefinitionChecksum = $values.DefinitionChecksum
     }
     Write-FixtureManifest -Root $Root -Manifest $manifest
+}
+
+function Set-FixtureHashLiteral {
+    param(
+        [Parameter(Mandatory)][string]$Text,
+        [Parameter(Mandatory)][string]$Pattern,
+        [Parameter(Mandatory)][string]$Value,
+        [Parameter(Mandatory)][string]$Location
+    )
+    # The anchor must exist exactly once; a missing or repeated consumer stops the fixture preparation.
+    $found = [regex]::Matches($Text, $Pattern)
+    if ($found.Count -ne 1) {
+        throw "Fixture hash consumer is not present exactly once at ${Location}: $Pattern"
+    }
+    $literal = $found[0].Groups['Value']
+    return $Text.Substring(0, $literal.Index) + $Value + $Text.Substring($literal.Index + $literal.Length)
+}
+
+function Sync-FixtureHashConsumers {
+    param(
+        [Parameter(Mandatory)][string]$Root,
+        [switch]$PreserveManifestEntries,
+        [switch]$PreserveReleaseDeclaration
+    )
+    # Fixture preparation for intended compliant or structure-only cases and for isolating one stimulus.
+    # Derived consumers are recomputed by the helpers above, never by product hash functions:
+    # manifest entries -> raw manifest identity -> 004 declaration -> catalog module, migration and release rows.
+    # The Preserve switches keep a deliberate manifest or 004 stimulus while its unrelated dependents are aligned.
+    $manifest = Read-FixtureManifest -Root $Root
+    if (-not $PreserveManifestEntries) {
+        $changed = $false
+        foreach ($entry in $manifest.Entries) {
+            $values = Get-ExpectedModuleValues -Path (Join-Path $Root $entry.Path)
+            $fields = @('SourceChecksum')
+            if ($null -ne $entry.ObjectName) { $fields += @('DefinitionBytes', 'DefinitionChecksum') }
+            foreach ($field in $fields) {
+                if ([string]$entry.$field -cne [string]$values.$field) {
+                    $entry.$field = $values.$field
+                    $changed = $true
+                }
+            }
+        }
+        if ($changed) { Write-FixtureManifest -Root $Root -Manifest $manifest }
+    }
+    $identity = Get-Sha256Hex -Bytes ([IO.File]::ReadAllBytes((Join-Path $Root 'modules/manifest.json')))
+
+    $releasePath = Join-Path $Root 'migrations/004_module_release.sql'
+    if (-not $PreserveReleaseDeclaration) {
+        $release = Read-FixtureText -Path $releasePath
+        $releaseLiteral = @{
+            Text = $release
+            Pattern = "VALUES\(4, '(?<Value>[0-9A-F]{64})'\)"
+            Value = $identity
+            Location = $releasePath
+        }
+        $syncedRelease = Set-FixtureHashLiteral @releaseLiteral
+        if ($syncedRelease -cne $release) { Write-FixtureText -Path $releasePath -Text $syncedRelease }
+    }
+
+    $catalogPath = Join-Path $Root 'verify-schema.sql'
+    $catalog = Read-FixtureText -Path $catalogPath
+    $synced = $catalog
+    foreach ($entry in @($manifest.Entries | Where-Object ObjectName)) {
+        $values = Get-ExpectedModuleValues -Path (Join-Path $Root $entry.Path)
+        $row = "\('" + [regex]::Escape($entry.ObjectName.Substring(3)) + "', '(?:FN|P)', "
+        $replacements = @(
+            @{ Pattern = $row + '(?<Value>\d+), 0x'; Value = [string]$values.DefinitionBytes },
+            @{ Pattern = $row + '\d+, 0x(?<Value>[0-9A-F]{64}),'; Value = $values.DefinitionChecksum },
+            @{ Pattern = $row + "\d+, 0x[0-9A-F]{64},\s*'(?<Value>[0-9A-F]{64})'\)"; Value = $values.SourceChecksum }
+        )
+        foreach ($replacement in $replacements) {
+            $synced = Set-FixtureHashLiteral -Text $synced -Location $catalogPath @replacement
+        }
+    }
+    $migrationNames = @(
+        '001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql'
+    )
+    for ($index = 0; $index -lt $migrationNames.Count; $index++) {
+        $name = $migrationNames[$index]
+        $migration = @{
+            Text = $synced
+            Pattern = '\(' + ($index + 1) + ", '" + [regex]::Escape($name) + "', '(?<Value>[0-9A-F]{64})'\)"
+            Value = (Get-ExpectedModuleValues -Path (Join-Path $Root ('migrations/' + $name))).SourceChecksum
+            Location = $catalogPath
+        }
+        $synced = Set-FixtureHashLiteral @migration
+    }
+    $catalogRelease = @{
+        Text = $synced
+        Pattern = "Latin1_General_100_BIN2 =\s*'(?<Value>[0-9A-F]{64})'"
+        Value = $identity
+        Location = $catalogPath
+    }
+    $synced = Set-FixtureHashLiteral @catalogRelease
+    if ($synced -cne $catalog) { Write-FixtureText -Path $catalogPath -Text $synced }
+}
+
+function Invoke-StructureCheck {
+    param(
+        [Parameter(Mandatory)][string]$Root,
+        [switch]$Strict,
+        [switch]$Text
+    )
+    # Runs the real Test-ModuleStructure.ps1 entry point in a separate process and parses its JSON contract.
+    $arguments = @('-DatabaseRoot', $Root)
+    if (-not $Text) { $arguments += '-Json' }
+    if ($Strict) { $arguments += '-Strict' }
+    $run = Invoke-PowerShellFile -File (Join-Path $script:ToolRoot 'Test-ModuleStructure.ps1') -Arguments $arguments
+    $result = $null
+    if (-not $Text -and $run.StdOut.Trim().StartsWith('{')) {
+        $result = $run.StdOut | ConvertFrom-Json
+    }
+    return [pscustomobject]@{
+        ExitCode = $run.ExitCode
+        Result = $result
+        StdOut = $run.StdOut
+        StdErr = $run.StdErr
+    }
+}
+
+function Get-IssueText {
+    param($Result)
+    if ($null -eq $Result) { return '' }
+    $lines = @($Result.Issues) | ForEach-Object {
+        '{0}:{1}|{2}|{3}|{4}' -f $_.File, $_.Line, $_.Message, $_.Expected, $_.Remediation
+    }
+    return $lines -join ' || '
 }
 
 function Set-OfflineStubs {

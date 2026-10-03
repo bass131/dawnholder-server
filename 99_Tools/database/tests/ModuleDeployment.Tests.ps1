@@ -377,10 +377,22 @@ Assert-True -Name 'stored definition differs from source expectation -> rejected
 Add-TestResult -Name 'engine canonical text for CREATE OR ALTER is unobserved; fake assumes the submitted batch is stored' -Outcome OBSERVED
 
 # ---- Declaration and release history.
+# A source change whose manifest entry alone was updated is refused before any database command:
+# 004 and the strict catalog still name the old bundle (SQL-STRUCTURE-06 recurrence path).
+$partialRoot = New-DatabaseFixture -Name 'changed-source-manifest-only'
+Edit-FixtureText -Path (Join-Path $partialRoot 'modules/procedures/read_admission.sql') -Find '    SET NOCOUNT ON;' `
+    -Replace "    SET NOCOUNT ON;`n    -- reviewed wording change"
+Update-FixtureManifestEntry -Root $partialRoot -EntryPath 'modules/procedures/read_admission.sql'
+$partialCause = '^Module source structure violation: .*"Kind":"CatalogSourceChecksum",' +
+'"Source":"modules/procedures/read_admission\.sql".*"Kind":"CatalogManifestIdentity"'
+Assert-Throws -Name 'changed source with only its manifest entry updated -> refused at the source stage' `
+    -Pattern $partialCause -Action { Read-ModuleBundle -DatabaseRoot $partialRoot }
+
+# The reviewed change with every derived consumer aligned (manifest, 004, catalog) reaches the declaration check.
 $fixtureRoot = New-DatabaseFixture -Name 'changed-source'
 Edit-FixtureText -Path (Join-Path $fixtureRoot 'modules/procedures/read_admission.sql') -Find '    SET NOCOUNT ON;' `
     -Replace "    SET NOCOUNT ON;`n    -- reviewed wording change"
-Update-FixtureManifestEntry -Root $fixtureRoot -EntryPath 'modules/procedures/read_admission.sql'
+Sync-FixtureHashConsumers -Root $fixtureRoot
 $changedBundle = Read-ModuleBundle -DatabaseRoot $fixtureRoot
 $run = Invoke-Runner -Engine (New-EngineState -AppliedMigrations 4 -Installed) -Action {
     $transaction = $script:Connection.BeginTransaction()

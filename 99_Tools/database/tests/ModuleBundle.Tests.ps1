@@ -149,9 +149,15 @@ $root = New-DatabaseFixture -Name 'entry-extra-field'
 $fixture = Read-FixtureManifest -Root $root
 $fixture.Entries[3] | Add-Member -MemberType NoteProperty -Name Approved -Value $true
 Write-FixtureManifest -Root $root -Manifest $fixture
+# Only the rewritten manifest identity is re-derived; the extra field itself stays the stimulus.
+Sync-FixtureHashConsumers -Root $root
 Assert-Throws -Name 'entry with an extra field rejected' -Pattern '^Unexpected manifest fields at modules/' `
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
+# Registration anomalies now stop at the source hash inspection that Read-ModuleBundle runs first
+# (MSSQL.md: missing, duplicate or unknown registration is unavailable, never accepted).
+$registrationCause = '^Module source structure unavailable: .*"Kind":"HashInspectionUnavailable".*' +
+'Manifest hash target registration has missing, duplicate or unknown paths'
 foreach ($case in @(
         @{ Name = 'path escape through ..'; Value = 'modules/procedures/../procedures/read_admission.sql' },
         @{ Name = 'absolute path'; Value = 'C:/Windows/win.ini' },
@@ -159,21 +165,23 @@ foreach ($case in @(
     )) {
     $root = New-DatabaseFixture -Name ('entry-' + ($case.Name -replace '\W+', '-'))
     Set-ManifestEntryValue -Root $root -EntryPath $admission -Property Path -Value $case.Value
-    Assert-Throws -Name ("entry $($case.Name) rejected") -Pattern '^Invalid module path/checksum/dependency list' `
+    Assert-Throws -Name ("entry $($case.Name) rejected") -Pattern $registrationCause `
         -Action { Read-ModuleBundle -DatabaseRoot $root }
 }
 
 $root = New-DatabaseFixture -Name 'entry-lowercase-checksum'
 Set-ManifestEntryValue -Root $root -EntryPath $admission -Property SourceChecksum `
     -Value (@($manifest.Entries | Where-Object Path -CEQ $admission)[0].SourceChecksum.ToLowerInvariant())
-Assert-Throws -Name 'lowercase source checksum rejected' -Pattern '^Invalid module path/checksum/dependency list' `
+$lowercaseCause = '^Module source structure unavailable: .*' +
+'Unknown or duplicate SourceChecksum literal: modules/procedures/read_admission\.sql'
+Assert-Throws -Name 'lowercase source checksum rejected' -Pattern $lowercaseCause `
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 $root = New-DatabaseFixture -Name 'entry-count-short'
 $fixture = Read-FixtureManifest -Root $root
 $fixture.Entries = @($fixture.Entries | Where-Object Path -CNE $progress)
 Write-FixtureManifest -Root $root -Manifest $fixture
-Assert-Throws -Name 'manifest missing one module entry rejected' -Pattern '^Module SQL file set differs from the exact reviewed bundle' `
+Assert-Throws -Name 'manifest missing one module entry rejected' -Pattern $registrationCause `
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 $root = New-DatabaseFixture -Name 'entry-duplicate'
@@ -181,8 +189,7 @@ $fixture = Read-FixtureManifest -Root $root
 $lock = @($fixture.Entries | Where-Object Path -CEQ 'modules/procedures/internal/lock_and_read_authority.sql')[0]
 $fixture.Entries = @($fixture.Entries | ForEach-Object { if ($_.Path -ceq $progress) { $lock } else { $_ } })
 Write-FixtureManifest -Root $root -Manifest $fixture
-Assert-Throws -Name 'duplicate entry replacing another module rejected' `
-    -Pattern '^Module object/kind/expected definition mismatch: modules/procedures/internal/lock_and_read_authority\.sql' `
+Assert-Throws -Name 'duplicate entry replacing another module rejected' -Pattern $registrationCause `
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 # ---- File set and source identity.
@@ -198,17 +205,38 @@ Add-TestResult -Name 'non-SQL file under modules is outside the bundle set' -Out
 
 $root = New-DatabaseFixture -Name 'missing-module-file'
 Remove-Item -LiteralPath (Join-Path $root $progress)
-Assert-Throws -Name 'missing module file rejected' -Pattern '^Module source structure violation' `
+# The placement issue is reported together with the unreadable registered hash input (MSSQL.md unavailable row).
+$missingCause = '^Module source structure unavailable: .*Required module missing.*' +
+'"File":"modules/procedures/internal/serialize_progress\.sql","Line":null,"Kind":"HashInspectionUnavailable"'
+Assert-Throws -Name 'missing module file rejected' -Pattern $missingCause `
     -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 $root = New-DatabaseFixture -Name 'source-changed-without-manifest'
 Edit-FixtureText -Path (Join-Path $root $admission) -Find '    SET NOCOUNT ON;' -Replace "    SET NOCOUNT ON;`n    -- changed"
-Assert-Throws -Name 'changed source without reviewed manifest update rejected' `
-    -Pattern '^Module source checksum mismatch: modules/procedures/read_admission\.sql' -Action { Read-ModuleBundle -DatabaseRoot $root }
+# The source hash drift guard runs before the reader's own checksum comparison.
+$changedCause = '^Module source structure violation: .*' +
+'"Kind":"ManifestSourceChecksum","Source":"modules/procedures/read_admission\.sql"'
+Assert-Throws -Name 'changed source without reviewed manifest update rejected' -Pattern $changedCause `
+    -Action { Read-ModuleBundle -DatabaseRoot $root }
+
+# SQL-STRUCTURE-06 shape: the catalog release check keeps the stale identity while 004 and the manifest agree.
+$staleRelease = 'A8D8DC923CD472F1113DD1A1B1FC92A9A02E4034C5AF20489DEA87867ADE1070'
+$root = New-DatabaseFixture -Name 'stale-catalog-release'
+$staleEdit = @{
+    Path = Join-Path $root 'verify-schema.sql'
+    Find = "'" + $manifestHash + "')"
+    Replace = "'" + $staleRelease + "')"
+}
+Edit-FixtureText @staleEdit
+$staleCause = '^Module source structure violation: \{"File":"verify-schema\.sql","Line":\d+,' +
+'"Kind":"CatalogManifestIdentity","Source":"modules/manifest\.json \(raw UTF-8 bytes\)",' +
+'"Observed":"' + $staleRelease + '","Expected":"' + $manifestHash + '"'
+Assert-Throws -Name 'stale catalog release literal -> bundle rejected with exactly that identity drift' `
+    -Pattern $staleCause -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 $root = New-DatabaseFixture -Name 'source-lone-cr'
 Edit-FixtureText -Path (Join-Path $root $progress) -Find '    SET NOCOUNT ON;' -Replace "    SET NOCOUNT ON;`r    -- lone carriage return"
-Update-FixtureManifestEntry -Root $root -EntryPath $progress
+Sync-FixtureHashConsumers -Root $root
 Assert-Throws -Name 'lone CR in module source rejected even with matching checksum' `
     -Pattern '^Module source checksum mismatch: modules/procedures/internal/serialize_progress\.sql' `
     -Action { Read-ModuleBundle -DatabaseRoot $root }
@@ -230,7 +258,7 @@ foreach ($case in @(
     $root = New-DatabaseFixture -Name ('source-' + ($case.Name -replace '\W+', '-'))
     $path = Join-Path $root $progress
     Write-FixtureText -Path $path -Text ((Read-FixtureText -Path $path) + $case.Text)
-    Update-FixtureManifestEntry -Root $root -EntryPath $progress
+    Sync-FixtureHashConsumers -Root $root
     Assert-Throws -Name ("module with $($case.Name) rejected") `
         -Pattern '^Module files are one batch and cannot contain GO: modules/procedures/internal/serialize_progress\.sql' `
         -Action { Read-ModuleBundle -DatabaseRoot $root }
@@ -239,13 +267,13 @@ foreach ($case in @(
 $root = New-DatabaseFixture -Name 'source-go-in-comment'
 $path = Join-Path $root $progress
 Write-FixtureText -Path $path -Text ((Read-FixtureText -Path $path) + "/*`nGO`n*/`n")
-Update-FixtureManifestEntry -Root $root -EntryPath $progress
+Sync-FixtureHashConsumers -Root $root
 Assert-NoThrow -Name 'GO inside a block comment is not a batch separator (control)' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 $root = New-DatabaseFixture -Name 'header-create-only'
 Edit-FixtureText -Path (Join-Path $root $progress) -Find 'CREATE OR ALTER PROCEDURE dh.SerializeProgress' `
     -Replace 'CREATE PROCEDURE dh.SerializeProgress'
-Update-FixtureManifestEntry -Root $root -EntryPath $progress
+Sync-FixtureHashConsumers -Root $root
 Assert-Throws -Name 'CREATE without OR ALTER header rejected' `
     -Pattern '^Expected one CREATE OR ALTER PROCEDURE batch at modules/procedures/internal/serialize_progress\.sql' `
     -Action { Read-ModuleBundle -DatabaseRoot $root }
@@ -253,32 +281,47 @@ Assert-Throws -Name 'CREATE without OR ALTER header rejected' `
 $root = New-DatabaseFixture -Name 'header-after-comment'
 $path = Join-Path $root $progress
 Write-FixtureText -Path $path -Text ("-- leading note`n" + (Read-FixtureText -Path $path))
-Update-FixtureManifestEntry -Root $root -EntryPath $progress
+Sync-FixtureHashConsumers -Root $root
 Assert-Throws -Name 'module must begin with its CREATE OR ALTER header' `
     -Pattern '^Expected one CREATE OR ALTER PROCEDURE batch' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 # ---- Engine expectation fields and dependency declarations.
+# A wrong reviewed value is now exactly one manifest hash drift; the rewritten identity's dependents are aligned.
 foreach ($case in @(
         @{ Name = 'definition checksum'; Property = 'DefinitionChecksum'; Value = ('0' * 64) },
-        @{ Name = 'definition byte count'; Property = 'DefinitionBytes'; Value = 1268 },
+        @{ Name = 'definition byte count'; Property = 'DefinitionBytes'; Value = 1268 }
+    )) {
+    $root = New-DatabaseFixture -Name ('expectation-' + ($case.Name -replace '\W+', '-'))
+    Set-ManifestEntryValue -Root $root -EntryPath $progress -Property $case.Property -Value $case.Value
+    Sync-FixtureHashConsumers -Root $root -PreserveManifestEntries
+    $driftCause = '^Module source structure violation: \{"File":"modules/manifest\.json","Line":\d+,' +
+    '"Kind":"Manifest' + $case.Property + '","Source":"modules/procedures/internal/serialize_progress\.sql"'
+    Assert-Throws -Name ("wrong $($case.Name) rejected") -Pattern $driftCause `
+        -Action { Read-ModuleBundle -DatabaseRoot $root }
+}
+# An unknown object name or kind is a registration error of the hash inspection (unavailable).
+foreach ($case in @(
         @{ Name = 'object name'; Property = 'ObjectName'; Value = 'dh.SerializeProgressV2' },
         @{ Name = 'kind'; Property = 'Kind'; Value = 'FN' }
     )) {
     $root = New-DatabaseFixture -Name ('expectation-' + ($case.Name -replace '\W+', '-'))
     Set-ManifestEntryValue -Root $root -EntryPath $progress -Property $case.Property -Value $case.Value
-    Assert-Throws -Name ("wrong $($case.Name) rejected") `
-        -Pattern '^Module object/kind/expected definition mismatch: modules/procedures/internal/serialize_progress\.sql' `
+    $objectKindCause = '^Module source structure unavailable: .*' +
+    'Unknown manifest object/kind hash registration: modules/procedures/internal/serialize_progress\.sql'
+    Assert-Throws -Name ("wrong $($case.Name) rejected") -Pattern $objectKindCause `
         -Action { Read-ModuleBundle -DatabaseRoot $root }
 }
 
 $root = New-DatabaseFixture -Name 'dependency-after-caller'
 Move-ManifestEntry -Root $root -EntryPath 'modules/procedures/internal/read_character_state.sql' -BeforePath 'modules/procedures/write_safe_checkpoint.sql'
+Sync-FixtureHashConsumers -Root $root
 Assert-Throws -Name 'helper ordered after its caller rejected' `
     -Pattern '^Dependency must precede dh\.AcquireAndLoad: dh\.ReadCharacterState' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 $root = New-DatabaseFixture -Name 'dependency-missing'
 $acquireDependencies = @(@($manifest.Entries | Where-Object Path -CEQ $acquire)[0].DependsOn | Where-Object { $_ -cne 'dh.RecordOperationReceipt' })
 Set-ManifestEntryValue -Root $root -EntryPath $acquire -Property DependsOn -Value $acquireDependencies
+Sync-FixtureHashConsumers -Root $root
 Assert-Throws -Name 'declared dependency missing an actual responsibility rejected' `
     -Pattern '^Dependency contract mismatch: modules/procedures/acquire_and_load\.sql' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
@@ -286,12 +329,14 @@ $root = New-DatabaseFixture -Name 'dependency-extra'
 $resolver = 'modules/procedures/resolve_runtime_operation.sql'
 $resolverDependencies = @(@($manifest.Entries | Where-Object Path -CEQ $resolver)[0].DependsOn) + 'dh.SerializePersistenceSnapshot'
 Set-ManifestEntryValue -Root $root -EntryPath $resolver -Property DependsOn -Value $resolverDependencies
+Sync-FixtureHashConsumers -Root $root
 Assert-Throws -Name 'declared dependency beyond the operation''s responsibility rejected' `
     -Pattern '^Dependency contract mismatch: modules/procedures/resolve_runtime_operation\.sql' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 # ---- Permissions.
 $root = New-DatabaseFixture -Name 'permissions-not-last'
 Move-ManifestEntry -Root $root -EntryPath $permissions -BeforePath $admission
+Sync-FixtureHashConsumers -Root $root
 Assert-Throws -Name 'permissions entry before public modules rejected' `
     -Pattern '^Permissions must be the final single bundle entry' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
@@ -305,14 +350,14 @@ foreach ($case in @(
     )) {
     $root = New-DatabaseFixture -Name ('permissions-' + ($case.Name -replace '\W+', '-'))
     Edit-FixtureText -Path (Join-Path $root $permissions) -Find $case.Find -Replace $case.Replace
-    Update-FixtureManifestEntry -Root $root -EntryPath $permissions
+    Sync-FixtureHashConsumers -Root $root
     Assert-Throws -Name ("permissions $($case.Name) rejected") `
         -Pattern '^Permissions source must contain only the nine reviewed individual EXECUTE grants' -Action { Read-ModuleBundle -DatabaseRoot $root }
 }
 
 $root = New-DatabaseFixture -Name 'permissions-comment-only-change'
 Edit-FixtureText -Path (Join-Path $root $permissions) -Find '-- Execute-only' -Replace "-- reviewed note`n-- Execute-only"
-Update-FixtureManifestEntry -Root $root -EntryPath $permissions
+Sync-FixtureHashConsumers -Root $root
 Assert-NoThrow -Name 'permissions comment change keeps the grant set (control)' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 # ---- Migration sources.
