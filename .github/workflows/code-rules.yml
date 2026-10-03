@@ -111,6 +111,29 @@ jobs:
           node --test 99_Tools/CodeRules.Tests/code-rules.test.mjs \
             > "$CODE_RULES_RESULTS/stdout.txt" 2> "$CODE_RULES_RESULTS/stderr.txt"
 
+      - name: Run independent Orca message policy regressions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          orca_results="$RULES_OUTPUT/orca-independent-tests"
+          mkdir -p "$orca_results"
+          printf '%s\n' 'node --test 99_Tools/Orca.Tests/message-policy.test.mjs' > "$orca_results/command.txt"
+          set +e
+          if test -f 99_Tools/Orca.Tests/message-policy.test.mjs; then
+            node --test 99_Tools/Orca.Tests/message-policy.test.mjs \
+              > "$orca_results/stdout.txt" 2> "$orca_results/stderr.txt"
+            orca_exit=$?
+          else
+            : > "$orca_results/stdout.txt"
+            printf '%s\n' 'Independent test entry point is missing: 99_Tools/Orca.Tests/message-policy.test.mjs' \
+              > "$orca_results/stderr.txt"
+            orca_exit=1
+          fi
+          printf '%s\n' "$orca_exit" > "$orca_results/exit.txt"
+          cat "$orca_results/stdout.txt" "$orca_results/stderr.txt"
+          exit "$orca_exit"
+
       - name: Preserve results even on failure
         if: always()
         uses: actions/upload-artifact@v4

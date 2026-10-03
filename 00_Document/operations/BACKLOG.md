@@ -14,7 +14,7 @@
 | 담당 후보 | 소유 조율 대상이며 확정 배정이 아님 |
 | 상태 | 아래 세 값 중 하나 |
 
-상태는 `대기`, `goal 승격 → 링크`, `폐기 + 이유`로 제한한다. 승격 시 실제 `goal.md` 링크를, 폐기 시 이유와 결정 출처를 기록한다. 승격한 작업의 진행·검증·완료 결과는 링크된 goal에서 관리한다. 현재 아래 12개는 모두 `대기`다.
+상태는 `대기`, `goal 승격 → 링크`, `폐기 + 이유`로 제한한다. 승격 시 실제 `goal.md` 링크를, 폐기 시 이유와 결정 출처를 기록한다. 승격한 작업의 진행·검증·완료 결과는 링크된 goal에서 관리한다. 최초 12개와 아래 이관 후보 7개는 모두 `대기`다. 최초 12개 ID·출처·조건·7필드는 보존한다.
 
 ## 후보
 
@@ -54,3 +54,21 @@ PS 정책 판단에서는 PSSA 진단 severity, checker 상태/exit, CI job 실�
 ## 중복 제외
 
 이미 예정된 CodeGraph 정돈, 모듈 경계 검사, Management 백로그 메뉴는 새 후보로 중복 등록하지 않는다. 그 작업의 기준·상태·결과는 각 승인된 목표에서 관리한다. 위 정적 분석기·작업 현황 후보를 그 예정 작업의 착수나 완료로 해석하지 않는다.
+
+## 규칙 이관에서 연결한 후보
+
+메인이 전달한 이관 inventory의 E절을 원천과 [현재 하네스 goal](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#후속-운영-단위의-정본-이관과-점검-계획)에 대조해 기록한다. inventory 보존 원문은 `.backups/verification/2026-10-03-harness-principles/operating-rules/source-snapshots/rules-migration-inventory.md`, SHA256 `31ACAB31B5198DF37ACE2DB3EDAE96040C2B8848AF44DCF5D70463E468983A94`이고 메인 전달은 `msg_168d9aa35710`(2026-10-03T11:14:25Z)이다. 연결 임시 원문 replan-agenda와 msg-scope-principle도 직접 대조했다. 개별 사건 원시/검증 판정을 직접 확인하지 않은 후보는 그 한계와 재확인 조건을 적으며, 기록이 채택·착수 권한은 아니다.
+
+| ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
+|---|---|---|---|---|---|---|
+| `registration-error-repair` | 도구 등록 오류의 수리 안내 | Architecture O2로 전달된 등록 누락 진단에 수정 방법이 없음 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda의 Architecture O2 안건 직접 대조, 개별 판정 원시 미확인 | 해당 오류 원문/현재 동작 재확인·Formatting 코드 GameDev 소유 조율 | GameDev·Rules 협의 | 대기 |
+| `contract-context-check` | 위임 계약과 사전 맥락 누락의 검사화 | 규칙 원문 누락·읽기 순서 이탈의 반복 여부 검토 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda의 Management P-01 사례, 사건 원시 미확인 | 현행 메모/원문 계약과 실제 이탈 근거 대조·검사 범위/오탐 검토 | Rules·해당 파트 | 대기 |
+| `intermediate-commit-validation` | 중간 커밋의 보존·검증 확인 | GameDev 중간 tree가 단계별 검증 원칙과 달랐다는 안건 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda 안건, 개별 중간 tree/실행 미확인 | 해당 SHA·보존 동작·실행 근거와 GameDev 계획 대조 | GameDev·Rules 협의 | 대기 |
+| `goal-state-drift` | goal 상태 기록 형식과 드리프트 검사 | goal 산문 상태/시점 정정 중 다른 오류가 재발한 안건 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda의 Architecture 문서 #1→#4 및 Rules Gardener 후속 관찰, 개별 실패 원시 미확인 | 다음 Gardener/현재 goal의 실제 상태 근거·형식/검사 비용 대조 | Rules·각 파트 | 대기 |
+| `representative-platform-fixtures` | 대표 입력과 플랫폼 실행 근거 | PR166 Changed의 TS0건 통과 뒤 Linux JSON import 후보 오류 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda 및 이전 맥락 goal의 PR167 실제 Linux/독립28회귀 근거 | PR167에서 이미 고친 범위 제외·향후 대표 fixture/플랫폼 필요를 실제 결함에 한정 검토 | Rules·도구 소유자 | 대기 |
+| `post-db-load-profiling` | DB 연동 뒤 부하 프로파일링 | 헤드리스 봇으로 실제 병목을 확인한 뒤 최적화할 후보 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03)만 보존; 별도 사용자/사건 원문 없음 | 영속화 완료·대표 부하와 원시 측정 방법·GameDev 범위 확인 | GameDev | 대기 |
+| `legacy-document-consolidation` | legacy 문서 통합·보관 계획 | 현 하네스 goal에서 별도 계획으로 뺀 통합/삭제/보관 | 메인 전달 `msg_238982aa5d26`(2026-10-03T11:00:22Z), 최초 `msg_61d4c35695da`는 하네스 goal에 보존된 이관 관계로 연결 | 다음 계획에서 archive/link-map/tag·보존 경계와 정확한 파일 범위 재확정 | Rules | 대기 |
+
+E절의 「다음 일」27개 정리·ID/goal 링크 드리프트는 Management의 `05_Management/goals/2026-10-02-system-cards/goal.md`에 이미 예정된 **백로그 메뉴 후속 목표**로 연결한다. management-active 원문의 「첫 재계획 사용자 결정」·백로그 후속 계약(`msg_6e281afe2167`)·「범위 밖 목록 — 다음 계획으로 이관」을 대조했다. 현재 시스템 카드 goal에는 주입하지 않고 새 후보를 중복 등록하지 않는다. Management 전체 corpus·기록 소개/상세·창/배율 복원·코드 보기·매핑 드리프트·I-03~05도 그 goal의 출처 있는 범위 밖 표를 정본으로 연결한다([해당 worktree 진입](CURRENT.md)).
+
+Architecture 기능 테스트 CI 파일럿은 architecture-active의 `01_Phases/goals/2026-10-03-codegraph-adapter-cleanup/goal.md` 「PR 경계와 범위 밖」에 보존된 다음 계획 첫 후보다. 실제 goal/보존 workflow를 대조했고 중복 후보를 만들지 않는다. 다른 checkout에만 있는 목표의 경로·상태는 [CURRENT](CURRENT.md)에서 해당 worktree를 찾아 확인하며 이 문서에 상태를 복사하지 않는다. 외부 URL 내용 확인이나 운영 화면 구현은 이 이관 작업에서 수행하지 않는다.
