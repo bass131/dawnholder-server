@@ -2,7 +2,7 @@
 
 ## 현재 상태와 승인된 결정
 
-**2026-10-03 재개 — #1~#3 신규 Opus 재검증 통과, 최신 main 통합·PR 준비 중·목표 미완료.** 메인 `msg_61d4c35695da`에 따라 신규 Sol 수정과 신규 Opus 재검증을 마쳤다. 이전 검증의 17/17 통과는 결함 해소 근거로 사용하지 않고, 이번 독립 판정과 두 설치의 19/19 통과를 별도로 기록한다. 작업자는 정산·종료했다. 판정·재개 순서·이전 미커밋 목록은 [재개 기록](#session-resume), 이번 세션은 [2026-10-03 진행](#resume-2026-10-03)에 있다. 최신 SQL 범위는 [보류 결정](#sql-deferred)을 유지한다.
+**2026-10-03 재개 — #1~#3 재검증 통과, PR #166 원격 workflow 결함 #4 수정 중·목표 미완료.** 메인 `msg_61d4c35695da`에 따라 신규 Sol 수정과 신규 Opus 재검증을 마쳤다. 이전 검증의 17/17 통과는 결함 해소 근거로 사용하지 않고, 이번 독립 판정과 두 설치의 19/19 통과를 별도로 기록한다. 작업자는 정산·종료했다. 판정·재개 순서·이전 미커밋 목록은 [재개 기록](#session-resume), 이번 세션은 [2026-10-03 진행](#resume-2026-10-03)에 있다. 최신 SQL 범위는 [보류 결정](#sql-deferred)을 유지한다.
 
 **앞선 검증 종료 뒤 메인 추가 변경:** CLAUDE.md에 실행 출처 추적·수기 측정값/동어반복 테스트 차단 조항 1줄이 추가됐다. SHA256 `5e8f26c1c645c39a7c5f12e2f300b546ac3d0e2bee995b3025155f1ecced0c4a`를 이번 신규 Opus가 실사했고 기존 규칙과 충돌 없음으로 판정했다. 앞선 `921b4b3e…` 대상 판정과 구분한다.
 
@@ -325,3 +325,43 @@ Gardener 4주 파일럿은 PR 병합·goal 결과 기록 뒤 R-8 교체 직전�
 ### 최신 main 통합
 
 검증 대상31파일을 `0895bdc`에 커밋하고 `origin/main b385bc95c21dbf20954c8a05d9d6f23184dc653c`를 `3a16fce`에서 충돌 없이 병합했다. `integration-hashes.json` 대조에서30/31개는 바이트가 같고, DEVELOPMENT만 main의 독립 Formatting 프로젝트 등록 안내4줄을 자동 수용했다. CODE_CONVENTION의 같은 정본 문장은 중복 없이 유지됐고 CodeRules·테스트·CLAUDE는 검증된 바이트 그대로다. `git diff origin/main HEAD --check`는 통과했다. 실제 원격 CI는 PR 발행 뒤 기록하며 병합 후 최신 main All과 Gardener는 아직 남아 있다.
+
+### PR #166 원격 workflow 결함 #4
+
+PR https://github.com/bass131/dawnholder-server/pull/166 (HEAD `71fd894`) 발행 뒤 run `37103004530`이 job 시작 전 `Invalid workflow file`로 실패했다. 실제 annotation은 `.github/workflows/code-rules.yml` 26·27·28행의 job env에서 `runner.temp`를 `Unrecognized named-value: runner`로 거부한다. `ci-initial-run.json`·`ci-initial-run.html`에 원문을 보존했고 GitHub 공식 Context availability 표의 job env 허용 문맥과 대조했다. 로컬19/19와 앞선 문서 정적 실사는 플랫폼 정의 결함을 검출하지 못했다. 이전 판정은 원격 CI 미실행을 명시했으며 이를 통과로 소급하지 않는다.
+
+메인 `msg_ef7f41d4951f`에 즉시 보고했다. 신규 Sol은 workflow 하나만 수정하고 신규 Opus는 독립 회귀를 작성·검증한다. 기존 SQL 보류·Changed/All·무결성·권한·런타임 버전 계약을 유지한다. Sol Task `task_f21d5f2e47c6` / Dispatch `ctx_c91fd51a0778`, terminal `term_cd51731e-e1dc-4dda-be9c-e6542c65fd1c`, incarnation `7d254b77-cbb4-4adb-a7cc-87ee25e6cb85`. 최초 명령과 화면은 gpt-6.1-sol xhigh, backend unknown. 빈 일반 prompt와 tui-idle 만족을 확인했고 `ci-repair-start.json`은 input_accepted·turn_started 관측 성공이다. 계약 `ci-repair-contract.md`, 쓰기 전 메모/보고는 `ci-repair/`다. 병합 승인 요청은 CI 확인 뒤다.
+
+#### 결함 #4 사례와 Gardener 입력
+
+메인 `msg_9ee4744b9974`(2026-10-03T06:29:57Z)는 사용자 원문 “그 부분 기록해놓자”를 전달했다(직접 사용자 입력으로 격상하지 않음).
+
+- 사례: 로컬 독립 테스트19/19와 독립 PASS 뒤 첫 원격 Actions run37103004530이 workflow 정의 검증(job env의 runner context 불허)에서 job 시작 전 실패했다. 로컬 테스트가 GitHub 플랫폼 정의 검증을 재현하지 못했다. 원문 `ci-initial-run.json/html`.
+- 교훈: 메인은 이를 “실제 산출물로 증명” 원칙에 연결했다. 판정에서 원격 CI 미실행을 명시한 것은 맞았고, 실제 원격 산출물 확인 단계에서 결함이 잡혔다. 독립 로컬 PASS만으로 원격 CI 통과를 추정하지 않는다.
+- Gardener 후보: workflow 정의를 push 전에 검사하는 lint(예: actionlint 류)를 CodeRules 또는 CI 앞단에 warning 파일럿으로 두는 안이다. 도구·버전·설치 방식은 사용자 승인 대상이므로 지금 도입하지 않는다. 목표 종료 Gardener와 첫 재계획의 입력으로만 남긴다.
+
+#### 미제출 draft와 사용자 입력의 구분
+
+메인 `msg_ae8e98ad1d0d`(2026-10-03T06:38:46Z)는 사용자 원문 “채팅 입력창에서 Enter해서 채팅 로그에 삽입된게 아니면 입력한 부분이 아니다, 아마 Text Scan하면서 생긴 오해같은데”를 전달했다. 미제출 입력창 글·추천 프롬프트·ghost text는 지시가 아니며 이를 이유로 pane 종료를 보류하지 않는다. 사용자 직접 지시는 제출돼 대화 기록에 들어간 표식 없는 입력뿐이다. worker-start의 미제출 계약 draft는 사용자 입력이 아닌 주입 미제출 상태로, 공식 recovery와 메인 판단으로 처리한다. 원문 `main-draft-input-guidance.json`. 후속 문서 정비의 ORCA R-6/session-handoff 종료 절차 반영 후보이며 이번 제품 수정 범위는 늘리지 않는다.
+
+#### Sol 동일 작업 3회 실패 시 에스컬레이션
+
+메인 `msg_cc9eb529807e`(2026-10-03T06:41:10Z)는 사용자 결정을 전달했고 지금부터 임시 운영 규칙으로 적용한다. 같은 계약/결함 번호에서 Sol FAILED 또는 동일 결함 독립 NOT PASS를 실패1회로 센다. 조사 전용으로 계획한 FAILED 정산은 사유를 기록하고 제외한다. 3회째 확정 뒤 네 번째 시도 전에 담당 Astra는 새 `gpt-6-astra xhigh` 구현 세션 또는 읽기 전용 `claude-fable-5-1` Advisor 세션을 선택한다. 리드가 구현을 대신하는 것이 아니며 모델·첫 화면·단일 작업·종료 경계는 유지한다. Advisor는 조언 파일 하나만 쓰고 계약·3회 실패 원문·관련 코드에 대한 가설/대안을 제안하며 판정·승인은 아니다. 선택/이유/실패 원문은 메인 status로 보고하고 기존 동일 번호3회 재검증 실패 보고도 유지한다. 지정 모델 불가 시 대체하지 않는다. 기존 R-7 goal 검토 시범은 그대로다. 정식 반영(AGENTS, orca-work, ORCA R-5/R-7)은 후속 문서 정비 후보로 남긴다. 원문 `main-three-failure-escalation.json`.
+
+### 결함 #4 수정 종료와 신규 독립 검증
+
+Sol `msg_b7ac967f9b92`는 workflow 한 구간11행 추가/3행 삭제와 쓰기 종료를 보고했다. checkout 전 Bash 초기화에서 RUNNER_TEMP 기반3경로를 GITHUB_ENV에 기록한다. Astra는 `ci-repair/report.md` 전문·실제diff·공백경로 summary·기존 workflow 테스트1개 원문을 대조했다. 최종 workflow SHA256 `4B0235FE84F94CC0FF49CB56DD0834966786FCD875C1D9AF33B3895ECBA30447`. 최초 WSL Git 포인터 재현 실패exit128은 별도 보존됐고 경로보정 후 환경전파/의도한HEAD불일치exit1/후속근거저장/구문5개를 확인했다. 로컬 환경파일 수동 전파와 probe를 실제 GitHub scheduling/upload 성공으로 보고하지 않았다. 정상settled→release→정확incarnation→close ptyKilled=true를 `ci-repair-*`에 남겼다.
+
+신규 Opus terminal `term_06aeffb2-cd9d-4925-a109-536eecaf7ee5`, incarnation `78696457-2bc8-4e79-8a26-67c24f1164fe`, Task `task_7cffa1effc5c` / Dispatch `ctx_7bcd7caa6ef8`. 최초 `claude --model claude-opus-5-5`, 화면Opus5.5 xhigh, backend unknown. tui-idle=true·빈 일반prompt·선택창없음을 확인하고 첫attach input_accepted/turn_started를 관측했다. 계약 `ci-verification-contract.md`, 제품28개 고정 `ci-verification-input-hashes.json`, 허용쓰기 CodeRules.Tests와 ci-verification근거만. 제품/테스트 동시쓰기는 없고 Astra는 goal의 전달결정/상태만 갱신한다. 독립 판정·push뒤실제CI는 아직 남았다.
+
+#### 3회 실패 규칙의 최종 사용자 결정 — 앞선 임시안 대체
+
+메인 `msg_22a9b4109ee7`(2026-10-03T07:08:40Z)는 사용자 원문 “2번은 추천”에 따른 선택을 전달했고, 위 `msg_cc9eb529807e` 임시안을 대체한다. 같은 계약·같은 결함 번호의 Sol FAILED 또는 독립 NOT PASS3회를 집계하되 같은 산출물의 두 상태를 중복 계산하지 않고 조사전용 세션·개발 중 자체 smoke수정은 제외한다.
+
+3회 확정 시 이유/실패 원문3개 경로를 Advisor기동 전 메인 status로 보내고 회신 대기 없이 사용자 사전승인 규칙대로 진행한다. 네 번째는 **새 Sol(gpt-6.1-sol xhigh)과 새 Fable Advisor(claude-fable-5-1)** 조합이다. 종료된 작업자는 재사용하지 않는다. Advisor는 읽기전용·조언파일 하나만 쓰며, 새 Sol은 구현 전 Orca로 직접 질문하고 조언·채택/기각 이유를 보고한다. **Astra 구현모델 격상은 사용자 결정으로 제외**됐으며 리드 직접 구현도 하지 않는다. R-5/R-6·지정모델·첫 화면 경계를 지키고 Fable effort선택창 등은 입력하지 않고 메인에 보고한다. 네 번째도 실패하면 다섯 번째 전에 메인 question으로 올린다. AGENTS/orca-work/ORCA 정식 반영은 후속 문서정비에서 한다. 원문 `main-three-failure-final-decision.json`.
+
+### 결함 #4 판정 대조와 테스트 범위 재정리
+
+신규 Opus `msg_71bd93d03573`는 제품 workflow 로컬PASS·24/24회귀·변이13/13·쓰기종료를 보고했다. Astra는 `ci-verification/verdict.md` 전문과 제품28개 hash 불변을 대조했다. 그러나 보고 결론의 모든메시지 subject/body태그·형식차이없음 주장은 실제 빈body heartbeat `msg_ee1b7eacd60b`와 불일치한다(`ci-verification-first-heartbeats.json`). `msg_801551e0dee3`으로 메인에 즉시 보고했다. 이 차이를 소급해 준수로 고치지 않고 기존 원문을 보존한다.
+
+테스트helper는 첫 안내 `msg_961a89a61462`에 따라 표현식평가기 등을 제거했으나 YAML파싱·job순서/checkout/upload모사가 남았다. 이후 좁은Bash초기화/환경파일3값/별도프로세스전달로 한정한 `msg_cb7b558f2e44`는 최종산출물에 미반영이다. 따라서 테스트 범위와 보고의 최종수용은 보류한다. worker_done된 검증자는 정산·정확incarnation대조·종료했다(`ci-verification-*`); 재사용하지 않는다. 후속 신규Opus는 테스트만 좁히고 최종회귀/원본재발검출 및 별도정정판정을 맡는다. 제품workflow11+/3-와 이전실행원문은 보존하며 Sol3회실패조건과 혼동하지 않는다. 중간 테스트본문2개도 `ci-verification-reviewed-tests/`에 보존했다.
