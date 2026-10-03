@@ -1,6 +1,68 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **SQL-STRUCTURE-06~08 수정2를 `e03dcc9`로 보존하고 Sol 정산·종료 완료, 신규 Opus3 독립 검증 준비**. 기존 runner는188PASS/117FAIL/5OBSERVED와 deployment 중단1이며 테스트용 입력·새 검사 계약의 영향은 새 검증자가 실사·보완한다. 자체 PS5.1 parse/PSSA10파일0·CodeRules43대상0진단이나 SQL23deferred/passed=null이며 독립 PASS가 아니다. 첫 PR은 SQL/PS 구조·검사·문서와 합동 오프라인 검증으로 한정한다. 실제 DB/G2·계정·저장소/복구 통합은 범위 밖이다. **현재 goal의 PR 병합·결과 기록·기승인 Gardener·R8 정산 뒤 점검과 다음 계획을 기다리며 후속 goal을 자동 시작하지 않는다.** 현재 전체 영속성 완료나 SQL 실행 PASS는 아니다. SQL 접속도 G2 전까지 하지 않는다.
+상태: **사용자 휴식 요청으로 대기. Opus 검증3은 테스트 쓰기 전 안전 정지·정산·종료했으며 판정 없음/미완료다.** 제품은 `e03dcc9`, 정지 입력은 `4a212a8`에 보존했고 새 제품/tests 미커밋은 없다(기존 Unity 보호 상태는 아래 별도 기록). 기존 runner188PASS/117FAIL/5OBSERVED와 deployment 중단1을 재현했으며 전수 실패 분류·독립 테스트/판정·PR/CI·개별 병합 승인이 남았다. 실제 DB/G2/계정·저장소/복구 통합은 범위 밖이며 SQL 접속도 하지 않는다. 메인의 재개 전달 전 새 작업자를 발행하지 않는다.
+
+## 재개 지점
+
+이 절이 다음 GameDev Astra의 진입점이다. 기록 시각은 **2026-10-03 12:19 UTC / 21:19 KST**이며 메인 `msg_c20bbbd49a4d`(12:06:53Z)가 전달한 사용자 휴식 요청을 따른다. 전문은 `.backups/verification/2026-10-03-persistence-repository/main-pause-resume-decision.json`에 있다. 완료가 아니라 안전 정지이며, 다음 새 세션도 메인이 재개를 전달한 뒤 시작한다.
+
+### 위치·입력·보존 상태
+
+- 작업 공간 `C:/Dev/DawnHolder_Project`, branch **`feat/persistence-repository-d1b-20261002`**. 정지 시점/이 기록 직전 HEAD **`4a212a88485dcba9b2f06f24c8e0248d21973fe9`**, 마지막 fetch한 origin/main/base **`5616573c32a2b2e0b677bc21b75e22a08d21f285`**. 로컬 `refs/heads/main`의 과거 값은 기준이 아니다. 이 재개 절과 메인 추가 지시의 CURRENT 링크만 별도 후속 commit하며 실제 기록 commit은 `git log -1 -- 01_Phases/goals/2026-10-02-persistence-repository/goal.md`와 아래 `resume-settlement.json`에서 확인한다.
+- 휴식 요청 전에 제품21개 수정2 **`e03dcc9a56a3ca08969fa7a1f848d31cee31918d`**와 goal **`4a212a8`**까지 커밋됐다. 이번 휴식 정산에서는 제품/tests를 커밋하지 않는다. 새 제품/tests 미커밋 파일은0이고 재개 기록 작성 전 `git status --porcelain`은 빈 출력이었다. 기존 tests6개는 `d4249e6` 판 그대로다. 상세54파일 SHA 목록은 `sql-structure-verification-3/protected-after-2.json`, 부모 실물54/54일치(12:15:43.090Z)는 `astra-review-3/source-hash-check.json`에 있다.
+- 기존 사용자 보호 입력은 status와 별도로 보존한다. **skip-worktree `S` 3개**, stash2개 그대로이며 reset/restore/stash pop/삭제하지 않는다. stash의 객체는 `8f368f17e5e38474f25c62d31fd10bba85ba10c3`, `265a9b418598c801d40164175438e2ef3f36cd34`다.
+
+| 보호 경로 | 현재 실물 SHA256 |
+|---|---|
+| `03_Client/Packages/manifest.json` | `3E194274509B32D18F4BE03F2D9462B5CDBB721C14EEE0ED0B6A17B1360AD781` |
+| `03_Client/Packages/packages-lock.json` | `7AAC153EA8FD375F8EFE8435085FF64008434E472D0588D3FDF61EDF5BBD1EDE` |
+| `03_Client/ProjectSettings/ProjectSettings.asset` | `D44FE55BA37E458C142C0C98CB87A9EA43E5E5598ED0E4306F6F697E05598CE6` |
+
+- 아래 모든 근거 상대 경로의 root는 **`.backups/verification/2026-10-03-persistence-repository/`**다. ignored 로컬 근거이므로 새 clone에 자동 포함되지 않는다. 지금 같은 worktree에 보존돼 있다. 12:11:02Z `git ls-remote --heads origin refs/heads/feat/persistence-repository-d1b-20261002`는 exit0/0행으로 원격 branch부재였다(`resume-remote-branch-check.json`). 원격이 없는 branch는 로컬 기록만 한다는 지시에 따라 push하지 않는다. 최종 정산/기록 commit 확인은 `resume-settlement.json`에 남긴다.
+
+메인 추가 지시 **`msg_76a84b178c2b`(12:18:42Z)**에 따라 이 checkout의 `00_Document/operations/CURRENT.md`도 네 파트의 재개 링크로 갱신하고 이 goal 기록과 함께 커밋한다. Rules 원본 CURRENT와 각 worktree의 실제 goal/branch를 읽어 확인했다. 다른 checkout에만 있는 goal은 그 worktree의 실제 절대 경로와 재개 절 anchor로 연결했다. **Rules BACKLOG PR도 CURRENT를 변경하므로 이후 main 통합 시 충돌 가능성이 있다.** 어느 쪽을 통째로 선택하지 말고 네 파트의 최신 goal 경로와 branch를 대조해 통합한다. 근거는 `main-pause-current-decision.json`, `resume-current-path-check.json`이다.
+
+### 작업자 상태와 부분 결과
+
+- **수정2 Sol 완료/종료:** Task `task_168a2a1cd79a` / Dispatch `ctx_1251f55a5618`. 최종 `sql-structure-fix-2/report.md` SHA256 **`2BFB0E3E8D6003EAD59954F545CDDF243CD7DEB52440A6B61A8948289469BB47`**, 부모 `astra-fix-2/audit.md`. 구현 완료일 뿐 기존 runner FAIL·독립 판정은 남았다.
+- **검증3 Opus 안전 정지/미완료/판정 없음:** Task **`task_31b3f2ce95c8`** / Dispatch **`ctx_496acbef0d07`**. 원래 계약 `sql-structure-review-3-spec.md` SHA **`19F99A5CAE0FFA4EAFDD5EC56DEA8DAC58ED43945329698429D60C95A108E2E0`**, 추가 기준 `sql-structure-review-3-addendum-test-classification.md` SHA **`D3FED90D1A99F5F221A4F52559F493F5346AD798EA8607703C675DC122ECDE01`**. 제출 context88줄/SHA **`C8E4DC0236712CE1934866C662251ADF2BDA3797D6E0CF974B690A222F57D6DA`**는 추가 기준을 아직 반영하지 않았고 부모 회신은 hold였다. tests 쓰기는0이다.
+- 부분 원문 **`sql-structure-verification-3/partial-report.md`**, SHA256 **`EC7B73772AD1BC716465AE54374F237A0213AB81C362EC83D05BA8DCFC850536`**를 부모가 전체 읽었다. `runs/r0-baseline/meta.json`·`runs-work/r0-baseline/summary.json`의 실제 PS5.1 실행은12:01:17.018~12:02:41.940Z exit1, **188PASS/117FAIL/5OBSERVED + deployment 중단1**이다.117개는 `r0-failures-raw.json`에 추출만 했고(a)~(d) 분류/변경표/새 tests·변이·최종 verdict는 미착수다. 과거 구현자 grouping을 독립 분류로 사용하지 않는다.
+- 부모 `astra-review-3/audit.md`에 실제 R0/후보 probe/54hash 표본 대조와 한계를 기록했다. p2/p3 보조 script 실패, p4 직접 trace의 meta 부재, p5 파일 부재, wrong-cwd snapshot 실패도 원문에 공개돼 있다. 자동 저장 읽기 결과와 약20MB 로컬 fixture 근거는 보존했다. 코드·SQL·DB·계정·전역설정 변경은 없다.
+- worker_done `msg_8acc98509478`(12:12:27Z)의 settled outcome `failed`는 **사용자 정지에 따른 미완료 상태**이며 제품 재검증 실패 횟수에 더하지 않는다. release retained/external 뒤 정확 handle `term_f3808a15-5bed-4944-aa96-4197e881d3aa` / incarnation `b72ba42d-f6d9-4f41-8af8-2c2c5cf45a86`의 idle를 확인하고 close ptyKilled=true를 관측했다. `sql-structure-review-3-{done-delivery,release,before-close,before-close-screen,close}.json` 보존, 종료 뒤ACK 완료. 현재 이 파트 작업자0이며 과거 handle/Task는 재사용하지 않는다.
+
+### 열린 결함·재검증 횟수
+
+| 항목 | 상태·횟수 | 다음 확인 |
+|---|---|---|
+| SQL-STRUCTURE-06 High | 검증2 최초 실패1회, 그 뒤 독립 재검증 완료0회 | 수정2의 release 소비 일치·116대상 전수 대응과 독립 변조/검사불가 |
+| SQL-STRUCTURE-07 Low | 최초 실패1회, 그 뒤 독립 재검증 완료0회 | 지정30선언/4주석,9RPC/29열·소유/잠금/transaction 보존 |
+| SQL-STRUCTURE-08 Low | 최초 실패1회, 그 뒤 독립 재검증 완료0회 | 정확31식(원문의32는 산술 오기), token·사람 가독성 |
+| 후보 A·B | 번호/심각도 미부여, 판정/재검증0회 | A: 정합 identity 사본의 DefinitionBytes소수/entry추가 hash필드가 CLI0/0이지만reader거부. B: manifest형식 오류 issue File이module경로를 가리킴. 원문 자극/양성·미확정 범위부터 독립 판단 |
+
+기존01~05는 검증2의 첫 재검증에서 재발하지 않았다. 이번 안전 정지·보조 script 실패·기존117개 fixture 영향은 제품의 확정 실패 회수로 추가하지 않는다. 새 번호나 기존 번호 반복 여부는 새 독립 판정으로 정한다.
+
+### 재개 첫 단계와 남은 순서
+
+1. 메인의 재개 전달과 새 Astra의 현재 handle/runtime/담당 공간을 확인한다. 이 절·현재 AGENTS/CLAUDE/Orca 스킬을 읽고 실제 branch/HEAD/보호SHA를 대조한다. 최신 origin/main을 확인·필요한 통합 후 규칙 원문과 입력을 새로 고정한다. 지금 worktree의 제품이나 사용자 변경을 초기화하지 않는다.
+2. **새 외부 Opus `claude-opus-5-5`로 독립 검증을 다시 발행한다.** 미발행 초안 **`sql-structure-review-4-spec-draft.md`**, 현재 SHA256 **`8D4A41347FE888D62CFBF70EF78D9B78FAD269E5E587BF6A741AF268B642DA9F`**. `__RESUME_HEAD__`·`__RESUME_BASE__`·`__RESUME_PARENT_HANDLE__`와 최신6절 원문/출처를 갱신한 뒤 사용한다. 이전 세션의 부분 관측을 결론으로 재사용하지 않는다. 새 evidence는 `sql-structure-verification-4/`, 쓰기는 tests/**와 자기 evidence만, 제품은 읽기 전용이다. 첫 context 전체/hash를 받고 회신한 뒤 tests를 쓴다.
+3.117실패 전수 분류와 deployment중단1, 테스트 변경4열표·동일 실행 방식의before/after, hash별 양성/반례·변이, 구조/경로·배포/guard 보존,07/08 사람 검토와 문서·PS5.1/CodeRules를 완료한다. 신규 `ModuleHashConsumers.Tests.ps1`과 runner1줄 등록은 tests/** 안의 설계 선택이며 사전 context에서 확정한다. 부모가 테스트를 대신 쓰거나 예상 판정으로 유도하지 않는다.
+4. 제품 결함이 반환되면 새로운 Sol 구현→새로운 Opus 재검증으로 같은 goal 안에서 수정한다. 차단0/최종 원문·실행 근거 대조 뒤 첫 PR과 CI를 준비하고 **그 PR의 사용자 명시 병합 승인**을 메인에 요청한다. 현재 SQL PR은 없고 원격 branch도 없다. F PR164는 이미 b385bc9로 병합됐으므로 다시 수행하지 않는다.
+5. 현재 첫 PR은 SQL/PS 구조·배포·검사·MSSQL 안내·오프라인 검증이다. 실제 SQL 설치/G2/DB·계정·권한·동시성·내구성·저장소/복구 통합, SQLFluff/검사CI 연결은 범위 밖이다. 설치 불가 중간 tree `ad6d5cb`는 소스 보존 검토용/DB-install bisect제외이며 실제 설치는 최종 tree에서만 한다. 후속 초안/기존 G0·G1 외부 대상 승인은 보존하지만 자동으로 다음 goal을 시작하지 않는다.
+6. 이전 검증2의 WSL build4warning/0error·제품834PASS/5SKIP·Formatting244PASS는 **82c87f0+당시tests dirty**의 실행이다. 부모의276입력일치 기록(`astra-review-3/prior-format-input-comparison.json`)도4a212a8 기준이다. 새 입력에서 영향 범위를 다시 대조하고 필요 없는 반복은 피하되 현재 최종 전체검사는 PR CI로 확인한다. SQL23deferred/passed=null은 SQL PASS가 아니다.
+
+### 오늘 적용된 결정과 메인의 재개 확인
+
+현재 checkout 정본보다 아래 세션 결정을 우선한다. Rules의 후속 정본 반영 여부는 재개 때 확인하며 GameDev가 규칙 파일을 선점하지 않는다.
+
+| 결정·원문 msg id | 적용 내용 |
+|---|---|
+| 범위 원칙 `msg_68d7ef71133f` | 계획 때 완료조건·PR경계·범위 밖을 고정한다. 완료에 필요한 결함/이번변경 실패·계약/규칙위반·그 결함의 재발 방지는 현재 루프. 새 기능/도구/개선은 보류 한 줄로 다음 계획에 두고 승인 요청을 늘리지 않는다. 애매하면 메인에 범위 판정, 기본은범위밖. GameDev06~08/hash소비검사는 현재 루프라고 명시됐다. |
+| goal 종료 뒤 점검 `msg_ff3d710670b0` | PR병합·결과기록·기승인 Gardener·R8정산이 현재goal종료다. 남은위험/보류목록을 보고하고 대기한다. 이전 후속초안/승인도 자동착수 근거가 아니며 메인·사용자의 점검/다음계획/재개전달이 필요하다. PR줄수상한은없다. |
+| capacity 예외 `msg_b0be5fd20c7b` | 실제 화면 Selected model is at capacity를 관측하면 같은세션/Task에서1→2→5→10분 재시도한다. 구현Sol6.1이 최초관측부터누적30분후에도실패하면 기존세션정산/종료후 **새 gpt-6-astra xhigh 구현작업자**로 전환할 수 있다. 실행중모델변경/파트리드직접구현은금지, Opus는재시도만하며대체없음. 모델/사유/출처를기록한다. 이번작업에capacity관측/전환은없었다. |
+| 기존 실패 분류 `msg_bd6ae56c412e` |117실패 전부를(a)옛구현세부·(b)fixture/환경부재·(c)제품회귀·(d)미확정으로분류한다. 수정테스트 이름/이전단정/새단정/요구사항출처 표와같은명령 before/after raw필수. 제품계산으로항상맞는기대값·일괄재생성/완화금지. 메인이표본대조한다. 검증3은미적용/미완료였고 재개초안에원문5항목을통합했다. |
+| 마일스톤 승격·로드맵 | 이번휴식지시 `msg_c20bbbd49a4d`가 **종료점검때로드맵초안**을남기도록명시했다. GameDev에별도승격결정의상세원문/msg id는현재보존자료에서확인되지않았다. 현goal범위를늘리거나마일스톤을자동착수하지않으며, 종료점검계획과상세원문을메인이재개뒤확인한다. |
+
+메인이 재개 뒤 확인할 항목은117분류와 변경4열표의 원문 표본, 최종 판정 전체와 R-2 source/raw 대조, 로컬/CI 입력 및 미실행 경계, 위 미반영 결정의 정본 연결이다. **남은 사용자 결정은 첫 SQL PR의 개별 병합 승인과 현재goal종료뒤다음계획/재개**다. 현재 GameDev의 추가 승인 요청은 없다. 실제DB/G2실행의 정확명령·주체·시간창은 이goal의 승인 요청으로 섞지 않는다. 새범위/완료조건변경이 필요하면 메인에 올린다. 기존 보류 항목은 FEATURE_MAP 경로, Roslyn반복패턴/ratchet, 규칙가지치기·작은작업예외·코드따라읽기 문서이며 지금 시작하지 않는다.
 
 ## 수정2 정산과 독립 검증3 입력 (2026-10-03)
 
