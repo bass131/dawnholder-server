@@ -1,0 +1,441 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "881957cbb431d4af822d1d935ac117e1ede6c303",
+  "authorRole": "Architecture Astra",
+  "method": "Manual source reading before either extractor's first analysis; not derived from tool output.",
+  "identity": "documentationId plus repo-relative path; generic braces and by-ref @ follow C# documentation IDs; nullable reference annotation does not change identity.",
+  "symbols": {
+    "attackType": {
+      "kind": "type",
+      "namespace": "Dawnholder.Server.GameServer.Handlers.Combat",
+      "type": "AttackHandler",
+      "signature": "Dawnholder.Server.GameServer.Handlers.Combat.AttackHandler",
+      "documentationId": "T:Dawnholder.Server.GameServer.Handlers.Combat.AttackHandler",
+      "path": "02_Server/GameServer/Handlers/Combat/AttackHandler.cs",
+      "declarationLine": 13,
+      "layer": "Server"
+    },
+    "moveType": {
+      "kind": "type",
+      "namespace": "Dawnholder.Server.GameServer.Handlers.Movement",
+      "type": "MoveIntentHandler",
+      "signature": "Dawnholder.Server.GameServer.Handlers.Movement.MoveIntentHandler",
+      "documentationId": "T:Dawnholder.Server.GameServer.Handlers.Movement.MoveIntentHandler",
+      "path": "02_Server/GameServer/Handlers/Movement/MoveIntentHandler.cs",
+      "declarationLine": 13,
+      "layer": "Server"
+    },
+    "serverHandler": {
+      "kind": "type",
+      "namespace": "Dawnholder.Server.GameServer.Handlers",
+      "type": "IPacketHandler",
+      "signature": "Dawnholder.Server.GameServer.Handlers.IPacketHandler",
+      "documentationId": "T:Dawnholder.Server.GameServer.Handlers.IPacketHandler",
+      "path": "02_Server/GameServer/Handlers/IPacketHandler.cs",
+      "declarationLine": 11,
+      "layer": "Server"
+    },
+    "clientHandler": {
+      "kind": "type",
+      "namespace": "Dawnholder.Client.Network.Handlers",
+      "type": "IClientPacketHandler",
+      "signature": "Dawnholder.Client.Network.Handlers.IClientPacketHandler",
+      "documentationId": "T:Dawnholder.Client.Network.Handlers.IClientPacketHandler",
+      "path": "03_Client/Assets/Scripts/Network/Handlers/IClientPacketHandler.cs",
+      "declarationLine": 17,
+      "layer": "Client"
+    },
+    "packetInterface": {
+      "kind": "type",
+      "namespace": "Shared.Protocol",
+      "type": "IPacket",
+      "signature": "Shared.Protocol.IPacket",
+      "documentationId": "T:Shared.Protocol.IPacket",
+      "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+      "declarationLine": 57,
+      "layer": "Shared"
+    },
+    "attackPacket": {
+      "kind": "type",
+      "namespace": "Shared.Protocol",
+      "type": "C_Attack",
+      "signature": "Shared.Protocol.C_Attack",
+      "documentationId": "T:Shared.Protocol.C_Attack",
+      "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+      "declarationLine": 765,
+      "layer": "Shared"
+    },
+    "movePacket": {
+      "kind": "type",
+      "namespace": "Shared.Protocol",
+      "type": "C_MoveIntent",
+      "signature": "Shared.Protocol.C_MoveIntent",
+      "documentationId": "T:Shared.Protocol.C_MoveIntent",
+      "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+      "declarationLine": 313,
+      "layer": "Shared"
+    },
+    "pongPacket": {
+      "kind": "type",
+      "namespace": "Shared.Protocol",
+      "type": "S_Pong",
+      "signature": "Shared.Protocol.S_Pong",
+      "documentationId": "T:Shared.Protocol.S_Pong",
+      "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+      "declarationLine": 121,
+      "layer": "Shared"
+    },
+    "pongType": {
+      "kind": "type",
+      "namespace": "Dawnholder.Client.Network.Handlers.Session",
+      "type": "PongHandler",
+      "signature": "Dawnholder.Client.Network.Handlers.Session.PongHandler",
+      "documentationId": "T:Dawnholder.Client.Network.Handlers.Session.PongHandler",
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Session/PongHandler.cs",
+      "declarationLine": 21,
+      "layer": "Client"
+    },
+    "attackHandle": {
+      "kind": "method",
+      "namespace": "Dawnholder.Server.GameServer.Handlers.Combat",
+      "type": "AttackHandler",
+      "method": "Handle",
+      "parameters": [
+        "Dawnholder.Server.GameServer.Sessions.GameSession",
+        "System.ArraySegment{System.Byte}"
+      ],
+      "returnType": "System.Void",
+      "signature": "Dawnholder.Server.GameServer.Handlers.Combat.AttackHandler.Handle(Dawnholder.Server.GameServer.Sessions.GameSession,System.ArraySegment{System.Byte})",
+      "documentationId": "M:Dawnholder.Server.GameServer.Handlers.Combat.AttackHandler.Handle(Dawnholder.Server.GameServer.Sessions.GameSession,System.ArraySegment{System.Byte})",
+      "path": "02_Server/GameServer/Handlers/Combat/AttackHandler.cs",
+      "declarationLine": 18,
+      "layer": "Server"
+    },
+    "moveHandle": {
+      "kind": "method",
+      "namespace": "Dawnholder.Server.GameServer.Handlers.Movement",
+      "type": "MoveIntentHandler",
+      "method": "Handle",
+      "parameters": [
+        "Dawnholder.Server.GameServer.Sessions.GameSession",
+        "System.ArraySegment{System.Byte}"
+      ],
+      "returnType": "System.Void",
+      "signature": "Dawnholder.Server.GameServer.Handlers.Movement.MoveIntentHandler.Handle(Dawnholder.Server.GameServer.Sessions.GameSession,System.ArraySegment{System.Byte})",
+      "documentationId": "M:Dawnholder.Server.GameServer.Handlers.Movement.MoveIntentHandler.Handle(Dawnholder.Server.GameServer.Sessions.GameSession,System.ArraySegment{System.Byte})",
+      "path": "02_Server/GameServer/Handlers/Movement/MoveIntentHandler.cs",
+      "declarationLine": 18,
+      "layer": "Server"
+    },
+    "pongHandle": {
+      "kind": "method",
+      "namespace": "Dawnholder.Client.Network.Handlers.Session",
+      "type": "PongHandler",
+      "method": "Handle",
+      "parameters": [
+        "Dawnholder.Client.Network.UnityClientSession",
+        "System.ArraySegment{System.Byte}"
+      ],
+      "returnType": "System.Void",
+      "signature": "Dawnholder.Client.Network.Handlers.Session.PongHandler.Handle(Dawnholder.Client.Network.UnityClientSession,System.ArraySegment{System.Byte})",
+      "documentationId": "M:Dawnholder.Client.Network.Handlers.Session.PongHandler.Handle(Dawnholder.Client.Network.UnityClientSession,System.ArraySegment{System.Byte})",
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Session/PongHandler.cs",
+      "declarationLine": 23,
+      "layer": "Client"
+    },
+    "attackRead": {
+      "kind": "method",
+      "namespace": "Shared.Protocol",
+      "type": "C_Attack",
+      "method": "Read",
+      "parameters": [
+        "System.ArraySegment{System.Byte}"
+      ],
+      "returnType": "System.Void",
+      "signature": "Shared.Protocol.C_Attack.Read(System.ArraySegment{System.Byte})",
+      "documentationId": "M:Shared.Protocol.C_Attack.Read(System.ArraySegment{System.Byte})",
+      "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+      "declarationLine": 772,
+      "layer": "Shared"
+    },
+    "moveRead": {
+      "kind": "method",
+      "namespace": "Shared.Protocol",
+      "type": "C_MoveIntent",
+      "method": "Read",
+      "parameters": [
+        "System.ArraySegment{System.Byte}"
+      ],
+      "returnType": "System.Void",
+      "signature": "Shared.Protocol.C_MoveIntent.Read(System.ArraySegment{System.Byte})",
+      "documentationId": "M:Shared.Protocol.C_MoveIntent.Read(System.ArraySegment{System.Byte})",
+      "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+      "declarationLine": 320,
+      "layer": "Shared"
+    },
+    "pongRead": {
+      "kind": "method",
+      "namespace": "Shared.Protocol",
+      "type": "S_Pong",
+      "method": "Read",
+      "parameters": [
+        "System.ArraySegment{System.Byte}"
+      ],
+      "returnType": "System.Void",
+      "signature": "Shared.Protocol.S_Pong.Read(System.ArraySegment{System.Byte})",
+      "documentationId": "M:Shared.Protocol.S_Pong.Read(System.ArraySegment{System.Byte})",
+      "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+      "declarationLine": 128,
+      "layer": "Shared"
+    },
+    "submitAttack": {
+      "kind": "method",
+      "namespace": "Dawnholder.Server.GameServer.Sessions",
+      "type": "GameSession",
+      "method": "SubmitAttack",
+      "parameters": [
+        "System.Int32",
+        "System.Int64"
+      ],
+      "returnType": "System.Void",
+      "signature": "Dawnholder.Server.GameServer.Sessions.GameSession.SubmitAttack(System.Int32,System.Int64)",
+      "documentationId": "M:Dawnholder.Server.GameServer.Sessions.GameSession.SubmitAttack(System.Int32,System.Int64)",
+      "path": "02_Server/GameServer/Sessions/GameSession.cs",
+      "declarationLine": 276,
+      "layer": "Server"
+    },
+    "mapAttack": {
+      "kind": "method",
+      "namespace": "Dawnholder.Server.GameServer.Maps",
+      "type": "GameMap",
+      "method": "ProcessAttack",
+      "parameters": [
+        "System.Int32",
+        "System.Int32",
+        "System.Int64"
+      ],
+      "returnType": "System.Void",
+      "signature": "Dawnholder.Server.GameServer.Maps.GameMap.ProcessAttack(System.Int32,System.Int32,System.Int64)",
+      "documentationId": "M:Dawnholder.Server.GameServer.Maps.GameMap.ProcessAttack(System.Int32,System.Int32,System.Int64)",
+      "path": "02_Server/GameServer/Maps/GameMap.cs",
+      "declarationLine": 508,
+      "layer": "Server"
+    },
+    "combatAttack": {
+      "kind": "method",
+      "namespace": "Dawnholder.Server.GameServer.Maps.Systems",
+      "type": "CombatSystem",
+      "method": "ProcessAttack",
+      "parameters": [
+        "Dawnholder.Server.GameServer.Maps.GameMap",
+        "System.Int32",
+        "System.Int32",
+        "System.Int64"
+      ],
+      "returnType": "System.Void",
+      "signature": "Dawnholder.Server.GameServer.Maps.Systems.CombatSystem.ProcessAttack(Dawnholder.Server.GameServer.Maps.GameMap,System.Int32,System.Int32,System.Int64)",
+      "documentationId": "M:Dawnholder.Server.GameServer.Maps.Systems.CombatSystem.ProcessAttack(Dawnholder.Server.GameServer.Maps.GameMap,System.Int32,System.Int32,System.Int64)",
+      "path": "02_Server/GameServer/Maps/Systems/CombatSystem.cs",
+      "declarationLine": 28,
+      "layer": "Server"
+    },
+    "decode": {
+      "kind": "method",
+      "namespace": "Shared.GameData",
+      "type": "InputBits",
+      "method": "Decode",
+      "parameters": [
+        "System.Byte"
+      ],
+      "returnType": "System.ValueTuple{System.SByte,System.Boolean,System.Boolean}",
+      "signature": "Shared.GameData.InputBits.Decode(System.Byte)",
+      "documentationId": "M:Shared.GameData.InputBits.Decode(System.Byte)",
+      "path": "98_Shared/GameData/InputBits.cs",
+      "declarationLine": 60,
+      "layer": "Shared"
+    },
+    "encode": {
+      "kind": "method",
+      "namespace": "Shared.GameData",
+      "type": "InputBits",
+      "method": "Encode",
+      "parameters": [
+        "System.SByte",
+        "System.Boolean"
+      ],
+      "returnType": "System.Byte",
+      "signature": "Shared.GameData.InputBits.Encode(System.SByte,System.Boolean)",
+      "documentationId": "M:Shared.GameData.InputBits.Encode(System.SByte,System.Boolean)",
+      "path": "98_Shared/GameData/InputBits.cs",
+      "declarationLine": 38,
+      "layer": "Shared"
+    },
+    "netRecv": {
+      "kind": "method",
+      "namespace": "Dawnholder.Client.Net",
+      "type": "PacketSession",
+      "method": "OnRecv",
+      "parameters": [
+        "System.ArraySegment{System.Byte}"
+      ],
+      "returnType": "System.Int32",
+      "signature": "Dawnholder.Client.Net.PacketSession.OnRecv(System.ArraySegment{System.Byte})",
+      "documentationId": "M:Dawnholder.Client.Net.PacketSession.OnRecv(System.ArraySegment{System.Byte})",
+      "path": "04_ClientNet/ClientSession.cs",
+      "declarationLine": 35,
+      "layer": "ClientNet"
+    },
+    "validateFrame": {
+      "kind": "method",
+      "namespace": "Dawnholder.Client.Net",
+      "type": "FrameValidator",
+      "method": "TryValidateFrameHeader",
+      "parameters": [
+        "System.UInt16",
+        "System.String@"
+      ],
+      "returnType": "System.Boolean",
+      "signature": "Dawnholder.Client.Net.FrameValidator.TryValidateFrameHeader(System.UInt16,System.String@)",
+      "documentationId": "M:Dawnholder.Client.Net.FrameValidator.TryValidateFrameHeader(System.UInt16,System.String@)",
+      "path": "04_ClientNet/FrameValidator.cs",
+      "declarationLine": 56,
+      "layer": "ClientNet"
+    },
+    "enqueueApply": {
+      "kind": "method",
+      "namespace": "Dawnholder.Client.Network",
+      "type": "UnityClientSession",
+      "method": "EnqueueApply",
+      "parameters": [
+        "System.Action"
+      ],
+      "returnType": "System.Void",
+      "signature": "Dawnholder.Client.Network.UnityClientSession.EnqueueApply(System.Action)",
+      "documentationId": "M:Dawnholder.Client.Network.UnityClientSession.EnqueueApply(System.Action)",
+      "path": "03_Client/Assets/Scripts/Network/UnityClientSession.cs",
+      "declarationLine": 156,
+      "layer": "Client"
+    }
+  },
+  "groups": [
+    {
+      "id": "handlerInterfaces",
+      "kind": "implements",
+      "sources": [
+        "attackType",
+        "moveType",
+        "pongType",
+        "pongPacket"
+      ],
+      "targets": [
+        "serverHandler",
+        "clientHandler",
+        "packetInterface"
+      ],
+      "rationale": "직접 선언한 인터페이스만 평가하며 상속 전이는 포함하지 않는다."
+    },
+    {
+      "id": "packetUsage",
+      "kind": "usesType",
+      "sources": [
+        "attackHandle",
+        "moveHandle",
+        "pongHandle"
+      ],
+      "targets": [
+        "attackPacket",
+        "movePacket",
+        "pongPacket"
+      ],
+      "rationale": "세 핸들러 본문의 명시적 패킷 타입/생성식 사용. 동일 타입의 여러 출현은 하나의 관계다."
+    },
+    {
+      "id": "attackCalls",
+      "kind": "calls",
+      "sources": [
+        "attackHandle"
+      ],
+      "targets": [
+        "submitAttack",
+        "attackRead",
+        "moveRead",
+        "pongRead"
+      ],
+      "rationale": "공격 요청 인계와 서로 다른 패킷의 동명 Read 메서드 구분."
+    },
+    {
+      "id": "moveDecode",
+      "kind": "calls",
+      "sources": [
+        "moveHandle"
+      ],
+      "targets": [
+        "decode",
+        "encode"
+      ],
+      "rationale": "공유 입력 인코딩/디코딩 helper 경계만 평가. 다른 Read/SubmitMoveIntent 호출은 범위 밖이다."
+    },
+    {
+      "id": "attackQueue",
+      "kind": "calls",
+      "sources": [
+        "submitAttack"
+      ],
+      "targets": [
+        "mapAttack",
+        "combatAttack"
+      ],
+      "rationale": "람다 호출을 enclosing method 소유로 집계하고 deferred 문맥을 보존. 동명 타깃을 혼동하지 않는다."
+    },
+    {
+      "id": "attackDelegation",
+      "kind": "calls",
+      "sources": [
+        "mapAttack"
+      ],
+      "targets": [
+        "mapAttack",
+        "combatAttack"
+      ],
+      "rationale": "동명 self 재귀 호출과 다른 타입으로의 위임을 구분."
+    },
+    {
+      "id": "clientFrame",
+      "kind": "calls",
+      "sources": [
+        "netRecv"
+      ],
+      "targets": [
+        "validateFrame"
+      ],
+      "rationale": "ClientNet 프레이밍 helper 호출 경계. OnRecvPacket·Disconnect·BCL 호출은 평가 범위 밖이다."
+    },
+    {
+      "id": "pongCalls",
+      "kind": "calls",
+      "sources": [
+        "pongHandle"
+      ],
+      "targets": [
+        "enqueueApply",
+        "attackRead",
+        "moveRead",
+        "pongRead"
+      ],
+      "rationale": "메인 스레드 반영 큐 진입과 동명 패킷 Read 구분. Debug.Log는 별도 deferred 호출이며 평가 범위 밖이다."
+    }
+  ],
+  "relationSemantics": {
+    "calls": "Static invocation target only, no transitive/runtime-inferred calls. Invocation inside lambdas belongs to enclosing named method with deferredLambda context retained.",
+    "implements": "Direct named interface on source type declaration. Method override or indirect interface inheritance is not this relation.",
+    "usesType": "A named target type used in source method body, including explicit object creation or local type declaration. Deduplicate occurrences; comments/usings/strings are not usesType."
+  },
+  "scoring": {
+    "closedDomain": "Union of Cartesian source x target pairs per group and its relation kind. Every pair not in truth.positives is negative. Output outside this union is excluded and separately counted.",
+    "unit": "Distinct kind/source/target; count by source layer and kind; target layer also retained.",
+    "unsupported": "Keep expected relations as FN when an extractor cannot support the kind; mark support. No comparison score for an analysis that did not run.",
+    "ambiguity": "Unresolved or ambiguous candidates are not confirmed TP; retain diagnostic evidence, do not resolve names against the answer table.",
+    "denominatorZero": "N/A"
+  },
+  "adapterConstraint": "Extraction and normalization must not use truth positives/negatives to invent, suppress, or resolve relations. Scoring consumes already-produced raw/normalized output. Insufficient raw target identity stays unresolved/ambiguous."
+}

@@ -1,0 +1,2571 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "881957cbb431d4af822d1d935ac117e1ede6c303",
+  "capturedUtc": "2026-10-02T06:03:16.4828912Z",
+  "authorRole": "Architecture Astra",
+  "captureMethod": "Git tree lists immutable source identities; SHA-256 hashes exact checkout bytes before extractor runs. Product/config diff against sourceCommit is empty.",
+  "includedRoots": [
+    "02_Server/GameServer",
+    "02_Server/Network",
+    "04_ClientNet",
+    "98_Shared",
+    "03_Client/Assets/Scripts"
+  ],
+  "excludedRoots": [
+    "02_Server/GameServer.Tests",
+    "03_Client/Assets/Tests",
+    "03_Client/Library",
+    "03_Client/obj",
+    "03_Client/Temp",
+    "05_Management",
+    "99_Tools/Architecture"
+  ],
+  "files": [
+    {
+      "path": ".editorconfig",
+      "gitBlobId": "e9c190e4f0c8ef6e9aea4a02275960d5e1b6da6e",
+      "sha256": "73aeb4ffcee96909f4fe7f986104ca01af4de55abe87415d5afe3d545aa4d70c",
+      "bytes": 3478,
+      "role": "configuration"
+    },
+    {
+      "path": ".gitattributes",
+      "gitBlobId": "f47048b59d2a1bd21ecbbdf76247f41acd87f9bc",
+      "sha256": "e635553b0a395963eef8cbc4ebf91f336ac8459296c7a54dffbe4f8bc8eca196",
+      "bytes": 6010,
+      "role": "configuration"
+    },
+    {
+      "path": "02_Server/GameServer.Tests/.editorconfig",
+      "gitBlobId": "f881eaf1f20e3860d225ae0329d4c57102761889",
+      "sha256": "4ace61559b15a23784bdcdf75f72f5fbf1852175840155eec59377673b22507e",
+      "bytes": 267,
+      "role": "configuration"
+    },
+    {
+      "path": "02_Server/GameServer/Combat/CombatConstants.cs",
+      "gitBlobId": "52d4eaf35a3b5a442cce322b0a123b9bde2ee402",
+      "sha256": "cbb4ba1a29794fa847424a18e93228959c00c5f291d24cdb52ccbaeefe564ec7",
+      "bytes": 13893,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Combat/EnemyCatalog.cs",
+      "gitBlobId": "18f519f51ac6df91ce91dd8eb8980de5f9c11b0c",
+      "sha256": "7c69c2c5d3aaf9864b39558aeae4171283ac5e057af117dcb603346cc3bb448e",
+      "bytes": 7716,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Combat/Hitbox.cs",
+      "gitBlobId": "0c093e89af6e7bb4ce1b6f1d3943e20c23f44c1c",
+      "sha256": "12b0052f1bd28d9a66a3528d93a25eb902f596b60a9c04a4d84e66e1af2101a3",
+      "bytes": 2294,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Debug/DebugConfig.cs",
+      "gitBlobId": "47b9eb054bc40f32344e58dafba77ad19e800632",
+      "sha256": "cd5c235c30c4a0826cf47bf2cdef46a83a6850a416dc45cb6e1889f1770a46be",
+      "bytes": 1067,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Entities/EnemyEntity.cs",
+      "gitBlobId": "e7fbcefc9cf5b5152a644e68f7a3093ffa5fbefb",
+      "sha256": "580bc76ca0143b2bfd407606bd36814b013625a5d76fbea24edcc2cd20c88924",
+      "bytes": 8866,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Entities/EnemyState.cs",
+      "gitBlobId": "d4d0e63bc8c194a13f8d722fa16d935316b1c587",
+      "sha256": "cc31b6c313e289b4a6edf9d163f3700a840ea7305624ad5c3cbcf1079897c9fe",
+      "bytes": 730,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Entities/PlayerEntity.cs",
+      "gitBlobId": "8b8a367ef282e1eb9a2fa849a5fc55478c466705",
+      "sha256": "6f60fdc165850931f289b491592f79165899e31c73a9512c12b2f1b8a26fc508",
+      "bytes": 16566,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/GameServer.csproj",
+      "gitBlobId": "da49bfb75596d36b714833eb5bbef5c522ed4eee",
+      "sha256": "ab45b799577a6fa524a36b5488b18830d5d19bc868c933bc6edcb238c1767970",
+      "bytes": 1451,
+      "role": "configuration"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Combat/AttackHandler.cs",
+      "gitBlobId": "3c0b8148ffdcd6669ec280e4b8c9d5708a682f8b",
+      "sha256": "b4a5d30c7f1c0794bd04c12e3b909e7aa1cf548950d830c62b2772e8c9aba5d0",
+      "bytes": 1279,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Debug/CheatCommandHandler.cs",
+      "gitBlobId": "b0367695b18905bab1f354eeb72a1681e40efce1",
+      "sha256": "2f91a81dda45dce8cb8e8ff9ef13ef4de764393ec5e114a533079d61f330a9b1",
+      "bytes": 1533,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/HandlerRegistry.cs",
+      "gitBlobId": "1c6bb6aa18826d8adbaca616aa98b3bcb69df5d4",
+      "sha256": "4e831a32dbc342089a721eeeb05be804e4d7f3998bee194170b4f96057d64b3e",
+      "bytes": 2545,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/IPacketHandler.cs",
+      "gitBlobId": "619c355ef050a3d12fd04987753de530eb02b886",
+      "sha256": "d42755df3734639a942ffeb034451ee03da5939445b010e3fa3cb5858a12c646",
+      "bytes": 847,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Movement/MoveIntentHandler.cs",
+      "gitBlobId": "d0eb4cedac181fe6e14d4060243746e03a1dee79",
+      "sha256": "e645062ee88d2c87032bcd3af9171b5b356551b0a5ec7295da4a6bc6cfb4b3d3",
+      "bytes": 1126,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Party/PartyInviteHandler.cs",
+      "gitBlobId": "4ca353fd8f64e9893017134d0ad7e3ff9f305ee4",
+      "sha256": "660578a056cbed0e0dcbe94681c41783136c6a3aac0c74e99e028978c761e78d",
+      "bytes": 1347,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Party/PartyLeaveHandler.cs",
+      "gitBlobId": "59c388a6bf9918d01d57c46ca2b62a54024e1ace",
+      "sha256": "3d1e99a65834adf949adae996811a96c5eb46a5bab632e86a7283f97f732ae31",
+      "bytes": 1181,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Party/PartyRespondHandler.cs",
+      "gitBlobId": "dae84d9be5ca452743c6ae90b63bcb255acf2593",
+      "sha256": "f364052597f69011c6c4c3c910ca4acf799076a0bc455ba7406fd791bf1a3dd8",
+      "bytes": 1372,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Session/CharacterSelectHandler.cs",
+      "gitBlobId": "62bfe53011ed7584a1625686d86e2dae76a28de2",
+      "sha256": "ccc5d8902aa5fb5c738d60eee7e2350eddd6ef8614bebd19d19aec9890689136",
+      "bytes": 2029,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Session/HandshakeHandler.cs",
+      "gitBlobId": "be03e420fa3609c0a908cab69656b6637c05c6d7",
+      "sha256": "88ce2b5f5a41f79a30472cfdf2b562a69c9d9c23cc2f568105f10685ce49087e",
+      "bytes": 1201,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Session/PingHandler.cs",
+      "gitBlobId": "37cca5368f03560980a1ad129f0728f66c249423",
+      "sha256": "959ff934a9174529a97e88a3c918386462d7485ff4985b5c435e633416ccbf66",
+      "bytes": 770,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Skill/SkillUseHandler.cs",
+      "gitBlobId": "9db24945576d36fdc901ba1157662c918a765a92",
+      "sha256": "1aef3fa3cdab5d5bbd6032211a935e1bae98d25d5849093805b80b32fc726f17",
+      "bytes": 3346,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Handlers/Zone/EnterPortalHandler.cs",
+      "gitBlobId": "81b34211292dca31a588a4d9cf670c265f815a47",
+      "sha256": "b67eb363a7a2ac3857d97bde6d3ead31e6374c90badf04bc1dc6fba2df85734e",
+      "bytes": 1183,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Hosting/ServerHost.cs",
+      "gitBlobId": "04adeba41429f9971848f7908bac962a78f17b27",
+      "sha256": "7a31da31a4fb933319bee1d71ea24b03c6fc7ad6c6e8d0890f1b14517f0c4665",
+      "bytes": 3906,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Loop/GameWorld.cs",
+      "gitBlobId": "90a5a46c9032c9e5eac26d44ffb3ea407a9996ba",
+      "sha256": "ca88ab5737271094b2ae95bcaa8eaa3adde5c4a5bf3dc60f0ccf3e929e4ab21e",
+      "bytes": 12484,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Loop/TickMetrics.cs",
+      "gitBlobId": "6f2814a5cf9b9f3416fd2ce13fbd14a06d8bc4af",
+      "sha256": "c7290838e3f7d879692a6c8dcf39670c5756f638dfecf98df7abcbc5b0cfc760",
+      "bytes": 3090,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Loop/TickScheduler.cs",
+      "gitBlobId": "078512a88e88b3c29632e43d2de2ebd28b3c4767",
+      "sha256": "6555667a2fb383783d2c60af16cc6ec37b96c182ca2710b4e1d0102bcb55e081",
+      "bytes": 4798,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Actions/ActionContext.cs",
+      "gitBlobId": "74b94ee4959195245420fc6266a5a32f66e0b33d",
+      "sha256": "811c9dd4b01398115dfb5c8c2e5c71fe5c676068aa8774f4842c203866804dd1",
+      "bytes": 1180,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Actions/ActionRegistry.cs",
+      "gitBlobId": "c02d09d64b3cdec629d5f83467d68a97ee6e26b6",
+      "sha256": "0ba36dbf0ace4f90c632e2527c2011e54a1dfa942ce0077455a9cfec2bcf7a41",
+      "bytes": 956,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Actions/DashAction.cs",
+      "gitBlobId": "685ba8eb26e396cab47e89e54154b9dfd9895600",
+      "sha256": "636a0555744d4b048be089b19e45fce09e1205908a5d38b9237fbde5211c55d5",
+      "bytes": 3430,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Actions/IGameAction.cs",
+      "gitBlobId": "ef8ad20315e8c6d44638a8ae04b9a4c264724d48",
+      "sha256": "5ebea8db8ec6b8902ab7847c52e29da09d2589fb5979384bddfbb6fd97e1cbce",
+      "bytes": 974,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Actions/MeleeAction.cs",
+      "gitBlobId": "110c6bb16ba76c9bd112f66dc2eb7664a90d47d7",
+      "sha256": "fc1f49d9b61e9a60401d696057b26fce7f0ceaf01acd7ce944efc123e251daa5",
+      "bytes": 4299,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Actions/TeleportAction.cs",
+      "gitBlobId": "6ad3db580c191eb57c2118df172d0d189b85841c",
+      "sha256": "31cf5b2bd9a1cd4b04470ff9649604af6f6e4704b43b9a622cb3b33d13695d00",
+      "bytes": 2989,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Actions/ThunderboltAction.cs",
+      "gitBlobId": "89724e29bc2cb3fb80142ae55ce9c4e1ea221dbf",
+      "sha256": "df2833c35b82465edfb61f734e6ef7a10d258bfc2e8bc3ce499169ff451d9287",
+      "bytes": 2079,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/EnemyRespawnPlacement.cs",
+      "gitBlobId": "f146c5a366797634308e324687f482da2b4850d9",
+      "sha256": "921f5a836c5d9e60016883e5a117c95d971daaf4d18e077fd7d8ef49ae9d5071",
+      "bytes": 599,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/GameMap.cs",
+      "gitBlobId": "162715d0caedb24228438ae57e46fc4038970062",
+      "sha256": "0a4f35348cd1f1c8082c5dd89ee2e03b41ff45dd32bdd1fdcc8b35de16ba3731",
+      "bytes": 27817,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/MapDataLoader.cs",
+      "gitBlobId": "7dde8f0ed5039ae5faeea3894639ec2f76939be0",
+      "sha256": "8a891e98743f492f9191b6f4f2a92236591c7ea7a90d147277b96b412f356416",
+      "bytes": 3532,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/MapId.cs",
+      "gitBlobId": "4a186654b246c396eee2ba4dab3639c7adde0318",
+      "sha256": "57de5f454d230c242f7b6720a225ac11844a79522183e5169a623a959d680bb5",
+      "bytes": 704,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/MapPacketPublisher.cs",
+      "gitBlobId": "af06129f3a336ff1b9194024983886f2122fcd96",
+      "sha256": "424ec30f60b0bcc4476d586816c14d6caff006c363d6fe221a5e0d54d243a1f8",
+      "bytes": 6524,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/PlayerSnapshot.cs",
+      "gitBlobId": "b6e444593338defe21db34c123a031131cfa0837",
+      "sha256": "be9bf2ec4d74aef4c4ebb00f2d1e9f4d1fc054edd6266ed7d6a3db1694bb41a3",
+      "bytes": 1155,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/PortalTable.cs",
+      "gitBlobId": "423c8a88ccc7534be2d4002c1e4cb8a3f32f9469",
+      "sha256": "1fe331be2568e08ec2572338d07a7eca7ed42f0fe12fae674ebfe85872212633",
+      "bytes": 6991,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/States/ActorState.cs",
+      "gitBlobId": "ac8ef34e5d04f6626b63dc69c233226e6c2d53e7",
+      "sha256": "5a978b711f15c86fa20f6e2adfdaa5f4fc2ca25994fc7877edf9f3623bfb02d6",
+      "bytes": 1823,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/States/BossStates.cs",
+      "gitBlobId": "08111a8ae26e336895c49cd87d4876b3e9b4943b",
+      "sha256": "24bd6d2460ac24c407be23c3fe8f62cdfdd9295dc833e8b425349195aa723523",
+      "bytes": 8665,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/States/EnemyStates.cs",
+      "gitBlobId": "1808d8ef971e6b1870b4f8616ff49c77c59a15a3",
+      "sha256": "b5fde6de45b205bd17a21656a460b373e154e6210253a957dca4e1233cf7f7f9",
+      "bytes": 12460,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/States/PlayerCombatStates.cs",
+      "gitBlobId": "8ac2b07aca34b5d4b298e2da8474e55e0c2444ec",
+      "sha256": "d9b7840b6acc259b877ae8962f577c3a067d76636d2706b61a9131ff69fd22e0",
+      "bytes": 4684,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/States/PlayerMovementStates.cs",
+      "gitBlobId": "aae9fa9cc94b3945cf8b4175f0889cc0043dd8ae",
+      "sha256": "6bf3b057efd7dc72da247499890dcb4936dce99ae00feb9221211a0e20d581f3",
+      "bytes": 3467,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/States/StateMachine.cs",
+      "gitBlobId": "efd10cb86b750d2d2448e33e4416d88e77f28649",
+      "sha256": "383a644d9cecb32851d81573e9dad9b207b8cf99edf5a3ed216d1f3987947fbb",
+      "bytes": 1571,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/ActionGate.cs",
+      "gitBlobId": "5f9a279a91ea82b6980f48d1ac4a502d71933f81",
+      "sha256": "012f7c175a4cd6e205d47390df2b5ee690b87af4f218fae859e4f0f8ccb74198",
+      "bytes": 3100,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/BossBehaviorSystem.cs",
+      "gitBlobId": "31f8800696e45ef91e033ef779b19d66aa67322c",
+      "sha256": "0ed41453cfd61f42b94f070cc04b623f6e2bd40215670d4d6d15b68532787cac",
+      "bytes": 4945,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/CombatSystem.cs",
+      "gitBlobId": "7e91a71216a52ced1fb8ec1e7f032f3c1335c923",
+      "sha256": "d02ea5b1e01be61d1fe58714a238886d0dbd8b0bb8916ce165dde362a48bb892",
+      "bytes": 3696,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/DeferredDamageSystem.cs",
+      "gitBlobId": "66f313688615a03bcf2d3cb3134da471f8c8cf82",
+      "sha256": "02df53fd0a23557c3498de2433f890dbf2a7adc68aad78d17ea960ae091298db",
+      "bytes": 3711,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/EnemyAISystem.cs",
+      "gitBlobId": "28c2d5eb0ee15ef0eee9378765cc0cb5cfb0ba96",
+      "sha256": "284869571914c7a62e9cd3a8a6a049305ab09f6b7d4f3bfea2b2b3cd2f3a4a8a",
+      "bytes": 2662,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/EnemyGravitySystem.cs",
+      "gitBlobId": "f0fb78b2766144f68ffc70d22b075066e1bc76ae",
+      "sha256": "d84db9798fed5104d5dbb73fb713748740ada71c533563bc15411971f0cee45b",
+      "bytes": 2601,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/PlayerPhysicsSystem.cs",
+      "gitBlobId": "5d8581db87185c01e8792592bc9933e8d54f3adb",
+      "sha256": "199ae7a6552782663de4e00280ced707c3278efd0df0818b42b795f71095024e",
+      "bytes": 4615,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/RespawnSystem.cs",
+      "gitBlobId": "5b965e783ce52059781748da91845a1ec40ee469",
+      "sha256": "29bb91d0e7151c9c60c3a276e0e5337d7c00a7eaa626a637624058229d432ba9",
+      "bytes": 3907,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Systems/SkillSystem.cs",
+      "gitBlobId": "2e7af2ec58eba37092ea728741b91210506d2bd2",
+      "sha256": "6e29b7b28fd872b5d13fe7dd836e07e8b450342ff3fa95f3593349c5251bfb3d",
+      "bytes": 1155,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Transitions/MapMigration.cs",
+      "gitBlobId": "dec6522d4bd1b3956617d383cf4458de864e96b6",
+      "sha256": "eb8d5c96f79fd7a27a78984bf2f2a043f71e0a595c41b6bdb0a6147f6586b378",
+      "bytes": 9112,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Maps/Transitions/PlayerTransferState.cs",
+      "gitBlobId": "e294c83d8b159b471d275e20aa6088f663d59c39",
+      "sha256": "7878307301b780c9a0116012f8a6a3e9fdbe81f10c824d16ff52534c22f9981b",
+      "bytes": 520,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Party/PartyFlow.cs",
+      "gitBlobId": "d56905cd7fe2671bb5eaeec8164c8af6b6518237",
+      "sha256": "ee97d64be05b88eb83a7f77244c1bcd41c4e97ed3aa4069afd61ee02c4778b3a",
+      "bytes": 7300,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Party/PartyMembership.cs",
+      "gitBlobId": "c831a8f662efa5107f2c154a3eb8df3512343e9c",
+      "sha256": "8fe015d8a2d1f18ee13a586d52bce7f733fae30bb90775b828aa88490f2caf55",
+      "bytes": 498,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Party/PartyNotifier.cs",
+      "gitBlobId": "cd6563954a6a80350c006fab35a9d44368d6d046",
+      "sha256": "870c6a8cc0ce70c82c23a622f250ba0c1a9f1680983ea8c36b41d8286bff6feb",
+      "bytes": 3540,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Party/PartyRegistry.cs",
+      "gitBlobId": "3b0381ea4741a4d65f3dfe7bcb8fcb1ea8916668",
+      "sha256": "79c50e4b828c8ac303f4e3478d5097cd3dd4fb3508140555b13f75ce87dc4b37",
+      "bytes": 9775,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Party/PartyState.cs",
+      "gitBlobId": "8632632bd7c08b5711bd02267fd3681d5527ef96",
+      "sha256": "2ff9fa6a490ff07d3ddbc75ca07f502874c9103a3c8a6b35b32c49bb740b9a87",
+      "bytes": 579,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Program.cs",
+      "gitBlobId": "5a2759ad79772f058eec1b72e26a81d040d1c328",
+      "sha256": "4233b4b14ecc6db833c14885b2f3de74579aa3d5437e7a46adb1ebb83eaab838",
+      "bytes": 867,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Quest/QuestConstants.cs",
+      "gitBlobId": "2a4e69a2ba4124b00e4fbaeb2074ef6744d6bdcf",
+      "sha256": "2f0de32e1d5a0d72d58b7b200a13480adfe4ce7abff605916035a5ee12a350fc",
+      "bytes": 742,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Quest/QuestNotifier.cs",
+      "gitBlobId": "e864385cee801a570b6b5ff0dcc547872840276b",
+      "sha256": "2cf28a0c3ae4fecfa0cb7481e9823aaf31a6f6778360f4c75c0e2320c25f65bf",
+      "bytes": 676,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Quest/QuestProgressUpdate.cs",
+      "gitBlobId": "ddf854b55b5c30ea7892d0e31f55138a9d5e56d5",
+      "sha256": "95f0335c7203807a67d843a7c45b8153d4a55c364fce4b609643504738cc8384",
+      "bytes": 258,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Quest/QuestRegistry.cs",
+      "gitBlobId": "5851b3b2b47d528351b5539b43d62f865dec93be",
+      "sha256": "cb1bef54f1f533ac55f890c9664a0ef7ac58fc771a860a9ea8565cb5875d6d9d",
+      "bytes": 4287,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Sessions/GameSession.cs",
+      "gitBlobId": "b62ef5e02be623165ca6cb1f4ce3e748f9117ed5",
+      "sha256": "0f1aa49e27ddfa383188e38a51ce358c26efc24931860ff0afa323b602235c97",
+      "bytes": 25433,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/GameServer/Sessions/IntentRateLimiter.cs",
+      "gitBlobId": "cd645b51fae1f6e5d1ff3171bdb5369166aa738a",
+      "sha256": "ab3f967a2d2666142fa9d9250b6b057053acf74066b1e5a6cdc2a5d54a4be427",
+      "bytes": 2221,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/Network/Connector.cs",
+      "gitBlobId": "38b36588388d59bff38b62b9a9779a2bc0c4e9b5",
+      "sha256": "8ac6b6f86056b46f0715c850065f4ee25e0c224807433e9f4ca5818fd060ee26",
+      "bytes": 1671,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/Network/Dawnholder.Server.Network.csproj",
+      "gitBlobId": "9568e674bf71a8524b0ccb425a5ce71b1aa6eb76",
+      "sha256": "eb010b2dabe7036714a7b40c6edb969574d2e208bf093bb9e93c9e06611d9266",
+      "bytes": 304,
+      "role": "configuration"
+    },
+    {
+      "path": "02_Server/Network/FrameValidator.cs",
+      "gitBlobId": "86d094c83910a5cf3843197133f468390cb14d70",
+      "sha256": "05886706093c4ec09de94466f15de183b597e372baaea77f6cb394f89c186404",
+      "bytes": 1966,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/Network/JobQueue.cs",
+      "gitBlobId": "91dc3759d8e1cc4390f7e69843c476aaa02b58a1",
+      "sha256": "ba06bf7d1fda93d163b6dd7eb6ba4696c57f658514d92217797666261cb312ed",
+      "bytes": 1273,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/Network/Listener.cs",
+      "gitBlobId": "03731b67e72e419b167a27f9ec59eda45eb7db7d",
+      "sha256": "04476c273b7704f8e47518ee8db162da61a4d5e6fc5afb4aebfdeff466b205bb",
+      "bytes": 5773,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/Network/RecvBuffer.cs",
+      "gitBlobId": "ef01497e8aaefdd61900e2362dec167ed317c1c4",
+      "sha256": "297c81e331d8a8b957717d0d0360815bdde9b79c1dedc8abca9c6b11a3ab6012",
+      "bytes": 2734,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/Network/SendBuffer.cs",
+      "gitBlobId": "0d9b44522e0b539553e89928346e421aafc8842c",
+      "sha256": "a38cec50dbf0bf7e9357bb73eb611d4eb93129c7ece81cd1154bfb975593de22",
+      "bytes": 4538,
+      "role": "source"
+    },
+    {
+      "path": "02_Server/Network/Session.cs",
+      "gitBlobId": "9b8bdfa712f4e46eaae2d9ab697f36d8915b1613",
+      "sha256": "db7c8f6a7ce27f8d88ef2019cc1a563f43a7462c4c894ced1d1f3f40d02c8056",
+      "bytes": 10546,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/AssemblyInfo.cs",
+      "gitBlobId": "e079f93762b6b03852adf53ab8b39591bb0c3393",
+      "sha256": "f3286d4d19db604a80a0eb1c850f7140e20462ceea59da86716f0098322a38bb",
+      "bytes": 198,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Audio/AudioManager.cs",
+      "gitBlobId": "16c94fc4feb4d35c404503bec890cbbc3eb7c6f7",
+      "sha256": "06e62048b5da2880ff60110a3c3b2685e162ee2af280a4797ac0c9186f66eccb",
+      "bytes": 8973,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Audio/FootstepTicker.cs",
+      "gitBlobId": "7f5a72b7cc2ff1fb9fddf499b3b469264e7c4fb4",
+      "sha256": "a9321af31b830001b51799da8d2a2da2e51dfe071bc495fe1f454a5edc693ffc",
+      "bytes": 1723,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Audio/SoundKeys.cs",
+      "gitBlobId": "e50b648f608e7c22093598a98f40bd069b09c2a4",
+      "sha256": "406ef588efab3175933eaef09175b47cce2b683d2e535e7c58617fea2b5504a8",
+      "bytes": 4177,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Bootstrap/ClassLoadout.cs",
+      "gitBlobId": "33603dcadb9a03edd3b26d34daeb8ec306c9c83d",
+      "sha256": "a673d655f81462f097ddfa85407b93db497e0a787a04c9101194a9bfddaf1533",
+      "bytes": 3437,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Bootstrap/GameEntryPoint.cs",
+      "gitBlobId": "e7f53c0c4e7ac39df247da3fa824f00d7e262687",
+      "sha256": "f901b4e1d1e217aeeee66e6e5752fa05e486d1605e1cbae8e9dea4b04ae5d9f6",
+      "bytes": 3282,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Bootstrap/LocalPlayerSpawner.cs",
+      "gitBlobId": "842d8254418b0ba94591c00a7b4ec79d43e6eb88",
+      "sha256": "8215731df6c52d1bcdf12f4005f50306eb3983290e2933832ab773b6872be41e",
+      "bytes": 7341,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Bootstrap/PersistentServicesBootstrap.cs",
+      "gitBlobId": "f93572c7266e1fc4414c125f4f763f251a1a129a",
+      "sha256": "bdfd9ee2d28856a4060b387c6c57356dba914980dfe21d563e77150a34b9414b",
+      "bytes": 3448,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Bootstrap/SceneBootstrap.cs",
+      "gitBlobId": "a57313c9ddc6b8a1f86add820790cde87a1ddd16",
+      "sha256": "22e13274fd9d588ca2a9fb25435cec80e21e1122ade297faedac08a1c91a9f44",
+      "bytes": 2734,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Attack/AttackIntent.cs",
+      "gitBlobId": "643eb057615d67999692d3420aed21c7448137bb",
+      "sha256": "69cf96a8129b2efb241f83586cd91a7fb8964aba78c13f521549cc529e583a6a",
+      "bytes": 2463,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Attack/ClassConfig.cs",
+      "gitBlobId": "a1c831a3dc5d268446058b9ee78e2da8256da1d4",
+      "sha256": "d9a1a206f293302bcb432113e4a504fc5f90068bc94c18b0d53773eb0bfc4bce",
+      "bytes": 1184,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Attack/IAttackStrategy.cs",
+      "gitBlobId": "6db11e331635390811567ce47f10162efce8e43b",
+      "sha256": "7ead1ba3be7acde4d5a0b56436729635bfc3879be0245bff7b466d65e6b2a25a",
+      "bytes": 1039,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Attack/KnightClassConfig.cs",
+      "gitBlobId": "62e420c62b125eac7eccffde4a716e6a5e23c405",
+      "sha256": "dda1e0f4d41a05ce1a3a8599afd6d7c53e8391601459485c84acf63c9ed8884c",
+      "bytes": 295,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Attack/KnightMeleeAttack.cs",
+      "gitBlobId": "3a87ea0f97b0c824f781004a7c0d01a40830b031",
+      "sha256": "2bc7b07e9fd50deaec38e567f50a6f9c360135174f14d86d4feb59b744ee8894",
+      "bytes": 530,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Attack/MageClassConfig.cs",
+      "gitBlobId": "e754db747a3154de9da3989bda59691d22841483",
+      "sha256": "a31725a56a1923e01ee1be57dc4b419a3d15fbb611b72a066105393f9d33a0d2",
+      "bytes": 498,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Attack/MageRangedAttack.cs",
+      "gitBlobId": "6b719d81b5437e7e291eaef9f680cec0ab6e2ee1",
+      "sha256": "9d5f1d10a2a3b1a8a4290b2245468ab464568d51ee08679c92e440c83dd3212b",
+      "bytes": 962,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/CombatBootstrap.cs",
+      "gitBlobId": "7f0fc9f87ee3b277a225606db48a6947bbaea1a4",
+      "sha256": "f657556463fc4961c3ef11e8c70f8f8811f64e54830ead40422afc408cc73134",
+      "bytes": 8595,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Effects/BossAttackEffectSpawner.cs",
+      "gitBlobId": "31cde8da66e0ff8c43931d2864db2dd4f60eff6e",
+      "sha256": "c64a2b2915312dac70d5787ccbe24422b696ae9376b1f223efdacda9cb8e2dd0",
+      "bytes": 3955,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Effects/DamageFlash.cs",
+      "gitBlobId": "b7497ca11a7e56232d80a15bd5182af0a8ca1d06",
+      "sha256": "470032b410f05dcdc1005720e072e1c3de0f0d074756eca80bcee8c76ee90892",
+      "bytes": 1439,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Effects/EffectAnchor.cs",
+      "gitBlobId": "afc99b7f33cd5db791254aeae43d3f0e28fbfe59",
+      "sha256": "565b37b21d7c56b269de37201178e4587f9490e1eee5166544960e9717c876c2",
+      "bytes": 3439,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Effects/EffectLifetime.cs",
+      "gitBlobId": "915df78b4780fa3299288739994326c549ed70d6",
+      "sha256": "ec9fb4182c45bd640ac0ba516be6d03f0acf92dbc47d490606d77db8caf7b9b9",
+      "bytes": 577,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Effects/EffectSpawnService.cs",
+      "gitBlobId": "e76e8737031201da0a4a8f24f7bdc3298fc06c26",
+      "sha256": "8c8ff2a6a3e4587488b91e5cea7fa79baf527ab78415ce077ce5a69825c79352",
+      "bytes": 3743,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Effects/ProjectileSpawner.cs",
+      "gitBlobId": "ab84732399820b51abf2ca746261d37b9f2e3d6e",
+      "sha256": "58287ade385f322e30b6aa0c615dda547e107eb9f7cbac02a1c3813c48f4468f",
+      "bytes": 1711,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Effects/ProjectileVisual.cs",
+      "gitBlobId": "07ee7e75d91318c085e96c6b5ab4aef0e5b63ff4",
+      "sha256": "6bab86a828294f72ada67a625dae92df951d13ee52cc10393cb3a642a1befb52",
+      "bytes": 2949,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Effects/ZoneVisualizer.cs",
+      "gitBlobId": "0ac3824d48f1e77514b5da7e7480adcb56a38021",
+      "sha256": "669af35a8ff7d4ece0b58123d9c1e43b021ba5c750a88c4efed61be4251b9aed",
+      "bytes": 5626,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Enemies/EnemyRegistry.cs",
+      "gitBlobId": "92c0d80eaa98bb3c66c0cd050ec0c6bb1911b5d5",
+      "sha256": "62143e08e8e807f1bf9b834fa0ff29072accf6ae068ee87f903b0eb348fa48da",
+      "bytes": 10525,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Enemies/EnemyViewFactory.cs",
+      "gitBlobId": "06978152473b3d74b212b9bf0e7797af61f16ed5",
+      "sha256": "29542a7605af79782ea85ae6df060651d7f8918cffc286c12cda7d677f771763",
+      "bytes": 3012,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Enemies/EnemyVisualTable.cs",
+      "gitBlobId": "d9f6e9a4d73a98a0f520170c0cb281685fe13efa",
+      "sha256": "cfdddd6e35ed37b4f1e2b80a55c74e145888605b41a756fff834503b9a03f51d",
+      "bytes": 1698,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Combat/Enemies/RemoteEnemy.cs",
+      "gitBlobId": "f510ab024d94d6f126cdab1fedb7aa239aa61dc1",
+      "sha256": "d033da5c275a88e7ca8595b7aceeabaadd8bd4a6d3b071c45450419a19c834f4",
+      "bytes": 2590,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Dawnholder.Client.asmdef",
+      "gitBlobId": "17c94473cc2d526f0b56fe458449396d9d81c88a",
+      "sha256": "f502a62110ba55b234066a9d8a2dc41841ced6f2adbe3f06a724e308dc5b6fa8",
+      "bytes": 447,
+      "role": "configuration"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Dev/ParallaxCameraTester.cs",
+      "gitBlobId": "5623332fe48647d6618e3b5b7d97b8b91c77148c",
+      "sha256": "5a71c6bcb42d073bcd0dfca6f43dde267e6b28d8813bee2e1641926567217d6d",
+      "bytes": 1259,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Gameplay/CheatSender.cs",
+      "gitBlobId": "2d31ded633e18ae244a0c24726d9e7fa151a494f",
+      "sha256": "a3f612e4e70e0d507350af05123f1cc741a7eca609f977b9e47061ea2ae04e53",
+      "bytes": 2292,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Gameplay/NpcDialogPanel.cs",
+      "gitBlobId": "ab134fa9c9b236089a27e4a2eafcd3e96c11ea4a",
+      "sha256": "6a980c8f869af60badcf9b59815f94982a8552a91a1235f2c8a048f9bc91eb97",
+      "bytes": 10130,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Gameplay/NpcInteractable.cs",
+      "gitBlobId": "2a014e15c86f24682bf4c3c6b9977296e591ed36",
+      "sha256": "5df610cb98705f78b1361fc7684101ff53d7b7d99beb8824294597474c8fab61",
+      "bytes": 2891,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Gameplay/PartyInviteSender.cs",
+      "gitBlobId": "1904110e8214698ec238401c62ac8684a94ba1c8",
+      "sha256": "b929a74b015fe8067202a5938750db0d69f00bb20b2ec319b71f6129a2aced1f",
+      "bytes": 4352,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Gameplay/PortalTrigger.cs",
+      "gitBlobId": "8632df8191f9f4fba02b92763c51c092c5fd9382",
+      "sha256": "9ba10c6ade82921f68ee3fe9b8e2eb60971aee4d472f966c6e01d584b1722b93",
+      "bytes": 6967,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Input/ClientSkillCatalog.cs",
+      "gitBlobId": "452abc7712107797d67618c427e4dc8e201e0d20",
+      "sha256": "e4e29d72f8fdfcc0af62bf7ee251748f84720308c9a89eaeb59692e48bcec8a7",
+      "bytes": 2452,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Input/LocalPlayerInput.cs",
+      "gitBlobId": "e79dd357c72acdf790a78a96504013d7b7b542bb",
+      "sha256": "cd7682914aebb520d438f01a1d07440c6507d48699802ac6d3ba1fe1bf7176a7",
+      "bytes": 9764,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs",
+      "gitBlobId": "fbaaf9a377faf0d4a304a4af3a0974a361dac8dc",
+      "sha256": "f7db4433997a4d7e742c5bd19f379702e0e6efbb8f5afd55386f2e48c1be7335",
+      "bytes": 7548,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/ConnectionProbe.cs",
+      "gitBlobId": "e0b532a0212fb7209eb191ba74a1e7c124852511",
+      "sha256": "5da367484665a1b20a3d6a7fd3a074943785955294d928676f47fb450a7d36bd",
+      "bytes": 5048,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Combat/EnemyAttackHandler.cs",
+      "gitBlobId": "555eb50aa26fb272fe85f990195eb44966978780",
+      "sha256": "7feafa880219355b7b6f755d200bd7618b1c9598afec2874ccd9f8716f204e7a",
+      "bytes": 7662,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Combat/EntityDeathHandler.cs",
+      "gitBlobId": "b70c5b43801115b265bba37ca5ee1964f708d69c",
+      "sha256": "2cced2d89c01c496782710342f96d6b1788ca0081a93067e6da225825e9c0c79",
+      "bytes": 1589,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Combat/HitResultHandler.cs",
+      "gitBlobId": "f530f3f82ec38d5bbda7b53ab6edc568ee1dc1fb",
+      "sha256": "245342251b105705dd3132d0659bd34ea02a25b5050c3d2a2ede3124d9f11a26",
+      "bytes": 5622,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Combat/PlayerAttackHandler.cs",
+      "gitBlobId": "1a6597c7c6cd3cddbfd6cb4e2ab16ee3f776c573",
+      "sha256": "f65e096ea2f6de7429e85fa929492fddde132e3eec5e02d68db84b46d18d93d7",
+      "bytes": 3973,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Combat/PlayerHpHandler.cs",
+      "gitBlobId": "9647d39c3ab3ed725f0331aa26135b4d91b8a17f",
+      "sha256": "0e65489522fc91187d07221a98632c409600b1e7b75bfa11f4a65c06d6f74b33",
+      "bytes": 2422,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Combat/StageClearHandler.cs",
+      "gitBlobId": "fa2708c9a6b42dff731613ff2bf3523135c0ff02",
+      "sha256": "40f33aec0f7d4fe3ccb76e8df061a62f1c2ef13743d386433a1afcbb068dae41",
+      "bytes": 1427,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/IClientPacketHandler.cs",
+      "gitBlobId": "5e7dfe1bcee422000e6cc2044e547063bb91d7a6",
+      "sha256": "4222c4cc38f8d47c9f43a0a867958b9871fa90fbb9d61f8d0808184dbdb0798d",
+      "bytes": 987,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Party/PartyErrorHandler.cs",
+      "gitBlobId": "34d082178391a295a90b1dde1bd1179acffb154c",
+      "sha256": "1ef884a20da1b0ebfae3cae12171b293623fad6337abc5ebccdacf161dfa3c4c",
+      "bytes": 1082,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Party/PartyInviteRecvHandler.cs",
+      "gitBlobId": "7070338fb2cce490e0fcdb65ddd9de1000406a14",
+      "sha256": "714ea50557c83f16b5b42a7e53b580fcaeb20ec0227a72d0a28950b2e74e4f6f",
+      "bytes": 1038,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Party/PartyUpdateHandler.cs",
+      "gitBlobId": "0aa1fc12673aae1eab9a849035d866474b4f2904",
+      "sha256": "6fb3365044e9f9c40f8a390346a15a9a6b2f8870fcde93406d16cd5d0a54e89d",
+      "bytes": 1950,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Quest/QuestUpdateHandler.cs",
+      "gitBlobId": "3b77aadbbbf03291f014c51c438e299f73fd6846",
+      "sha256": "66133158adb0eabe3cac9501a873c0d1d128ce25b75222b54b71af3302d7c196",
+      "bytes": 938,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Roster/EntitySpawnHandler.cs",
+      "gitBlobId": "3649a777792492e68b4085d21833d2bbff13b431",
+      "sha256": "fe0ae3c709ff5eb47675a84be0a0068c1a44c653f0c482a72d0a69b42ff275a1",
+      "bytes": 1505,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Roster/PlayerJoinHandler.cs",
+      "gitBlobId": "9e94c91f21eae50d46085d8b4693c3d44dad8055",
+      "sha256": "acfaacb64f0165fe1310e457861ef37a5ccad5552ff468aae075f13d9ff50179",
+      "bytes": 1384,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Roster/PlayerLeaveHandler.cs",
+      "gitBlobId": "83a4bbd1b100da8bdd029d75ce9b5f82d89b1a6c",
+      "sha256": "b9d4238c4b5d195d3114e1659ff5d75f00f60027ee707ad6efb040110b003c70",
+      "bytes": 1097,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Session/EnterMapHandler.cs",
+      "gitBlobId": "169ee75f6243616bd85b36809f3284814af11458",
+      "sha256": "5a521034fa20eef9055241a920f0c14cd954aea932aa3ffc5c93f5281c78363f",
+      "bytes": 1306,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Session/HandshakeResultHandler.cs",
+      "gitBlobId": "75548956c149e0e15270ea407ccef322baf4e01e",
+      "sha256": "ef11295f61b9b791029ab06e2e75e15a466444ae62aa8e4e5909c1044e530c0d",
+      "bytes": 1588,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Session/PongHandler.cs",
+      "gitBlobId": "7614271aad94e4a52e7e3f0cd5ac8be73329fc69",
+      "sha256": "a84ec7e5b670472464270629d9c31933f26cbad45b39561366b95a359658a2be",
+      "bytes": 1195,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Skill/ProjectileLaunchHandler.cs",
+      "gitBlobId": "b346bcbb934e4e4682619d004f9f16b197e7a80d",
+      "sha256": "2fbe289e62ffcbbf307dde1345a6fbb7d8ee7178584a2ce33b4c998a7a5de1da",
+      "bytes": 4951,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Skill/SkillCastHandler.cs",
+      "gitBlobId": "f93873f9631f9379201a72ea8c8788f3b56fa6d0",
+      "sha256": "af537c929e40a1850139cb7ad404f2bc2f3d37d7e9cc72c2cd3b28e115f8ed74",
+      "bytes": 12460,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Sync/EntityStateHandler.cs",
+      "gitBlobId": "1765670890516d831ce253e6463f7b6c8ed54bb4",
+      "sha256": "352693ccb9e10e8b346df3650a30c2323a8ceebce3dacecf57fd7d6625277028",
+      "bytes": 1596,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Sync/SnapshotHandler.cs",
+      "gitBlobId": "ece1fe73884ff70af92b714181d2fefa303d5957",
+      "sha256": "cf94811e90139060fc0ac0d80f09f0a56c3e4042aeb34fe8bdb8a8b595ccd1f0",
+      "bytes": 2478,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Zone/MapTransitionHandler.cs",
+      "gitBlobId": "0403e4a52113e7ed18a47a278ab7a52e8a6dd833",
+      "sha256": "795a7cddc4579e7e911c6214c56e6d97f44a440b3ac50de70b7bed53578cfa43",
+      "bytes": 1245,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/Handlers/Zone/PortalLockedHandler.cs",
+      "gitBlobId": "1cee5866a621ba2ed7499f03a74a04fb8428ad92",
+      "sha256": "69a72e52585ded562d91a48682e9de4a0620f7dbdad5cefb199052b2fb7fc0f0",
+      "bytes": 1253,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/MainThreadDispatcher.cs",
+      "gitBlobId": "0544ecd77dc8985545d20606a83fc0598bb306ad",
+      "sha256": "03fc788663fb683dfea52ff542133e5e8e20fea9c03ad94c902bfb91e34553b1",
+      "bytes": 3930,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/MapEntryCoordinator.cs",
+      "gitBlobId": "f181340afcdd6e47b9f6fb6e7d31e49d6061d85b",
+      "sha256": "375188caee86d35294e0aa2a37d08c4aafffa25ad8f90cb24ba75eef47317a1a",
+      "bytes": 5399,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/NetworkBootstrap.cs",
+      "gitBlobId": "b81b1f11684cacd12b39d6206da2807f25342463",
+      "sha256": "4b7ac6b137fbb5e965ce9c26e4ca472aafae1029817c4b9fdf3d30fef3e1be36",
+      "bytes": 120,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/NetworkService.cs",
+      "gitBlobId": "82f4e19f06e72cc840f608b8badd38e12b012604",
+      "sha256": "1b03e48d2e7534aa4693883375d1f070c6af49a6c08f2fa8fa5c875d84a72500",
+      "bytes": 6206,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/RosterTransitionBuffer.cs",
+      "gitBlobId": "2282dbfab862e5f716082eccef63aafecd3b0a75",
+      "sha256": "f1c1d907e2743ca64464a50d43aa42e5b44b43f78bb2c01704d6fa1ab1b1a5d1",
+      "bytes": 1952,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/SceneRouter.cs",
+      "gitBlobId": "8cdc29263cb8bb0432403c79da3325ce907aca24",
+      "sha256": "50c54bd481ddab489dbee7539e1b6c92448647d3cc0b55c5406a46d9bcaecaaf",
+      "bytes": 1380,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Network/UnityClientSession.cs",
+      "gitBlobId": "bff827c681e0064ef40d468173c396aa98a24d04",
+      "sha256": "501e8464cba6b576c699b3132ac4b21f73d502f62dd576718c2d4f70aa3e4136",
+      "bytes": 19444,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Prediction/ClientTerrainStore.cs",
+      "gitBlobId": "37102a7fcc0f96809ae7985bec0c2f40f5720ff3",
+      "sha256": "11c00784f126adf79faf57e889ca9147741bad04ae6756bf50c70366d009c72b",
+      "bytes": 1805,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Prediction/InputHistory.cs",
+      "gitBlobId": "faee5ada1adeac6a76a002f4134d75358a8633e4",
+      "sha256": "b7fc376f4ea7ff9c25a45ee0858439a778f4e3a513dd94777821197a945f8675",
+      "bytes": 3995,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Prediction/LocalPlayerMovement.cs",
+      "gitBlobId": "76be1a34545389659db2ddbecf412eb17c634d64",
+      "sha256": "1fd5e1c4f08d46d07cff8349268ec476fc95c2eae3035f46d4ab849e1fbf4e5a",
+      "bytes": 25426,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Prediction/PlayerAbilityTimers.cs",
+      "gitBlobId": "6060791332c2cf1bb0a73f07ddc07f88cab93167",
+      "sha256": "c6d7739e34b3166c4792b25664fbaa81e364842a0ba88562325b8de1f0ae3ecf",
+      "bytes": 6812,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Prediction/PlayerPredictor.cs",
+      "gitBlobId": "f7e16a74a79c0ddc0c5e1c616bee053ccc752a24",
+      "sha256": "eeae9d97494acaec9cb65765065a62b17db0237749f69c4e98cad4a9d6906eaa",
+      "bytes": 12528,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/AnimatorDriver.cs",
+      "gitBlobId": "4d39fbf1770938089e26c98c31267ab23ac3bbf0",
+      "sha256": "6ce23122062693e6a28755bb1cee9fd8032719da8a11970e6c439173d21a898f",
+      "bytes": 4566,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/CameraFollow.cs",
+      "gitBlobId": "4efaee88c6b98f81a063ceb37723f7fa679d0328",
+      "sha256": "2faf458ae8cf8b505ee7a6a288898645f4f1b4420c79ba9190322d0abbe1bae7",
+      "bytes": 2065,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/ClassVisualMount.cs",
+      "gitBlobId": "b50a16b080c7aac5025f13dc76070b91226c8ff4",
+      "sha256": "d9652ef6942da15123046af09ea03a611c6d5af3883c4be69293cca36a317ac9",
+      "bytes": 1494,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/EnemyMotion.cs",
+      "gitBlobId": "cf5de888830ff5c29fccb730203058a3af149dd6",
+      "sha256": "03a55c8d75fdfcf9a9fb52596bd54a6600c453eca5ce24851b7e003d8c957a47",
+      "bytes": 3229,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/IMotionState.cs",
+      "gitBlobId": "4116bdb27cd3f7c7061bd6d40f5a3b06a0da7e7f",
+      "sha256": "b6f06946a400ba3df55da14e04ca1232beb1d18c479854515a1fb5f743ddf513",
+      "bytes": 429,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/LocalPlayerMotion.cs",
+      "gitBlobId": "2774bf1e020ad43321a32a0839217d58207ba9df",
+      "sha256": "7d6af9570dacf6ddf74936652ab622d59e95cb6eb80d149eeb719e7f02481a65",
+      "bytes": 5191,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/MinimapCamera.cs",
+      "gitBlobId": "bee90bb40b41efa0ac67688574529a6acf88eb00",
+      "sha256": "004b11e3adf49aa763dc341443f0ba7955dd838b8668321071ed20d7ec6047d7",
+      "bytes": 3517,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/MinimapMarkers.cs",
+      "gitBlobId": "7399e5052e10cc20c527da3d499f4ee0e1e3b8d5",
+      "sha256": "d27d908e2c5b4bab3d7d8092f726b7c9f25419f5e532c280a51de21706237e93",
+      "bytes": 7504,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/MinimapTerrainTint.cs",
+      "gitBlobId": "48f00fe2cd675bed05acdc60037fa863e223c764",
+      "sha256": "929e1bd5fac843f1cac87be1fe7e6d7ab07340fcaffe3cd54c4117639adf7c2f",
+      "bytes": 4078,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/MotionConstants.cs",
+      "gitBlobId": "df941a813f238da322232aeba2ab1bda9899b51a",
+      "sha256": "52ffb1595a2b1b001584af93a547813240ee9c8c3fcafc706463fcf4efc6199f",
+      "bytes": 553,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/ParallaxLayer.cs",
+      "gitBlobId": "9fbfa89ac5d6f65b60162596c0522426fd8d72f8",
+      "sha256": "0c7da1da539a3fc5510f4b10edd2f91b08d27e151a06a51666ba754c0462a1f0",
+      "bytes": 6274,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/RemotePlayerMotion.cs",
+      "gitBlobId": "f89ef472be05656889acb5e9b9ca237ec1486ef2",
+      "sha256": "f4bd3874f9333dd56160c16ab9653355316761da20687094a0ed0ea8adb69df5",
+      "bytes": 3799,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Rendering/RenderLayers.cs",
+      "gitBlobId": "9dde413646201f6656f45da15567e8f65cbf3661",
+      "sha256": "384417490b9fb87a8de3f2eb4103463fdcf6164e0217b3838a0380b37177af17",
+      "bytes": 989,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Scenes/CharacterSelectController.cs",
+      "gitBlobId": "9d08aae542af828807b5d826b455a3f974b85d5c",
+      "sha256": "4792e05c4949c23d593821a6f35c21f9435431729b76f16625a7f7cb586d1d1d",
+      "bytes": 3042,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/Scenes/EndingController.cs",
+      "gitBlobId": "b56c2a62ef07b9f50f6e9630321ff8753a9029c1",
+      "sha256": "24a4b561c00366f38faf366379ef97d8a511f749c46ee9d7ed1a6080c67ae850",
+      "bytes": 5319,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/State/PartyState.cs",
+      "gitBlobId": "824b15d2cc5a47d4322edee24867a7f2c977b3a8",
+      "sha256": "5516a677a359140e23f5151dba9f1eb2ba9f1b5aeeb5a04e5c8c4ac9b83de0e2",
+      "bytes": 5663,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/State/QuestState.cs",
+      "gitBlobId": "8fb248c90ba717531cbba23703e05da068dcf56f",
+      "sha256": "05a2e22277897ac6ee1e0b820143053c27fe2dd2ac4b368c6237ea47387003a1",
+      "bytes": 2309,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/State/RemoteEntity.cs",
+      "gitBlobId": "cb2bd0798e9067c09bf986b17894e32a135e44d1",
+      "sha256": "ac61be680cc16f29a20e9c3c09830b93683277bf32c237f0d19e5c0eef1057bc",
+      "bytes": 1979,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/State/RemoteEntityRegistry.cs",
+      "gitBlobId": "544b565b94942409deccc90d4869a2b2254282e5",
+      "sha256": "16f231f1615d6f2d5c71de8e99c7bc6d7de305c4539bd76b9c4849b4264e249b",
+      "bytes": 13905,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/State/RemoteInterpolationState.cs",
+      "gitBlobId": "7f2995cfd8d3cc42c52fb354df9df1fe4f95f0aa",
+      "sha256": "6abab3c8c6bce6a3c3260fb77ca59eb37736536c37039643250e449bd6e8f082",
+      "bytes": 4932,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/HudController.cs",
+      "gitBlobId": "e5ee0244975a7dc96cdab71e091a6e7a762d96e0",
+      "sha256": "eefe4b47e9176ec1f6a1c238cedab8359413da8cf492389e6004be280cf12000",
+      "bytes": 4394,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/MainMenuController.cs",
+      "gitBlobId": "b9738f1ecff3d68b5ef0076d78e576e74d3aa812",
+      "sha256": "1368a8067f1a5b2f57ab96dc2544e31b57137f98581f085ea2081cab190b257a",
+      "bytes": 5561,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/MapNameDisplay.cs",
+      "gitBlobId": "81c4fa751c95e7938cef1b6cc132c850a5be4cb2",
+      "sha256": "472eda8fe3974911e5aaf3fc2903b9704b6e4e8b4c8bf128549ffd0c8a36fac1",
+      "bytes": 1763,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/PartyInvitePopup.cs",
+      "gitBlobId": "5670e06fd713b15bf1558e3bfca8cd36bff50455",
+      "sha256": "0f8cb98ed497686a9e6122f06638eca85321c7f6dc692a129e0707c44083f9c2",
+      "bytes": 12022,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/PartyInviteResponseCommand.cs",
+      "gitBlobId": "e192763cc86ff5b9475f46a9eb5ce16cb8a76bac",
+      "sha256": "00d0c651e983ff72d58c5ac37ffe4d4892008c7d822ed33e39f897b8213e35db",
+      "bytes": 1842,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/PartyMemberHud.cs",
+      "gitBlobId": "3416e41ead0af63ae816d17b57c95c41b017202e",
+      "sha256": "4979e4301a4e6f6ced1c1d2d0f43da5ed3eb7238b8b8ba37cb6ceb0f93a7d6f2",
+      "bytes": 4107,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/PauseMenuController.cs",
+      "gitBlobId": "a0f9cced1086e948e2e5ae3478c958b18b8fafcd",
+      "sha256": "db4f9fc389b18e45350fdd2427f932f804cf43e278787a5a41d96647fb1c47c8",
+      "bytes": 4292,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/QuestAlert.cs",
+      "gitBlobId": "441637e145e1a32e5e4df32d998223bc2f67c7bf",
+      "sha256": "316cbf47e97fb440051aef542bdabf6f76de246db44dda157f8f10c31e7f53e7",
+      "bytes": 9105,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/QuestCompleteWatcher.cs",
+      "gitBlobId": "05e97f7c6e16c94e0e531dfdd8e65f02e2a25db9",
+      "sha256": "d6c612c8bdebfbef2864eae4aa1803b0132368df04e44a7349cea4ecc82dee5e",
+      "bytes": 2162,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/QuestGrantedPopup.cs",
+      "gitBlobId": "b6bf284bd1b0154e5956c3079be912dcf7b11c98",
+      "sha256": "b422763f87b7ca294700aaa083d1659006bade809b108106954f349987e9f9a0",
+      "bytes": 5768,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/QuestIntroSequencer.cs",
+      "gitBlobId": "439e12a97b1733d69aa02d84bb6df00032d7914a",
+      "sha256": "a693dae3361768f7ceb57218522d0b6fb2bfc5c51563e7f2bea04e28725e3f56",
+      "bytes": 3403,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/QuestProgressHud.cs",
+      "gitBlobId": "9e87308d658700f1d7c6b1a911c0cfa7b4c1b90f",
+      "sha256": "03a51920e102d849d6f85bb9613bd7af8ec8a906fe75052bf83b999bede4e845",
+      "bytes": 4986,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/SceneLoadQueue.cs",
+      "gitBlobId": "effebdf86d095f74ec4006ffe18733d2e020a69a",
+      "sha256": "0ad43b226aa8530d2d2a102b6680c7ae45875c82f9e5d8af76780268e8597ef8",
+      "bytes": 5853,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/SceneTransition.cs",
+      "gitBlobId": "f3456f543e409f913d22a9b4717479c0aebed536",
+      "sha256": "cfc9707eae1a1bc277f1d463d0c9ed11c3a9affc5161b706e451efb6eb8b9053",
+      "bytes": 6408,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/SkillHudController.cs",
+      "gitBlobId": "815849497f83ebbf06aa0c335eca7e53017da4d9",
+      "sha256": "ee4c4bde95fffb993aa00e09a7434c76ce99c17901e3f3c4f1f417156195adb4",
+      "bytes": 5209,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/SkillIconSet.cs",
+      "gitBlobId": "7979eb440e76984b53cb88e304482b14f4c76d92",
+      "sha256": "d62ef911b0c43f20063824a245418073f84f2317e53b261ef5d73a98ae4cc4f5",
+      "bytes": 893,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/StageClearUI.cs",
+      "gitBlobId": "461835c209f02e9c0a6ab662f38b80b4a5d23650",
+      "sha256": "0630337bf481d7f3e88341726863f0ed898804ddcce19fb35e609a857cace4e3",
+      "bytes": 8167,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Assets/Scripts/UI/ToastUI.cs",
+      "gitBlobId": "bd80269938b4b9f11da3bb68b63e5a70d7d0c046",
+      "sha256": "e89551a63a60e40fe312c7e96ed1b294ff8dc27194e3d48c3ffa97c71f32d9b3",
+      "bytes": 5450,
+      "role": "source"
+    },
+    {
+      "path": "03_Client/Directory.Build.props",
+      "gitBlobId": "5c1daba406df5dc707f13db8e11542eeff3f1d07",
+      "sha256": "31df31ea0d285f11936407d3520e184e53fae95642fb85d8ce5132d9dd8a026e",
+      "bytes": 450,
+      "role": "configuration"
+    },
+    {
+      "path": "03_Client/Packages/manifest.json",
+      "gitBlobId": "58ce5340d5a4bbcc6ca65a0cde80609b62d6848d",
+      "sha256": "61df96c7b3dd90ada09e18a14472f85be6df3b5e2c8c16308ceac7d7d20b9014",
+      "bytes": 2415,
+      "role": "configuration"
+    },
+    {
+      "path": "03_Client/Packages/packages-lock.json",
+      "gitBlobId": "582878153d49e75c802485549549af5d55fc2210",
+      "sha256": "64c66abc5405803ab47d9cb160543a4280196d73556d9449f71b85a2c47da6df",
+      "bytes": 17554,
+      "role": "configuration"
+    },
+    {
+      "path": "03_Client/ProjectSettings/ProjectVersion.txt",
+      "gitBlobId": "14cc1a9b9cf90d4cf525b1ff361fc5bcd7cddeaf",
+      "sha256": "7682d5a612c24f8310ca7094cfe88140abc299dafb4a92293d3b405f524d6f8e",
+      "bytes": 83,
+      "role": "configuration"
+    },
+    {
+      "path": "04_ClientNet/ClientSession.cs",
+      "gitBlobId": "d8104372bd785c504282e79afd846a044ce67493",
+      "sha256": "e2db5f0d6de7a03e9a3624325d7837f1f8fd2608ebdb07d61f5c9dcf007585ff",
+      "bytes": 12646,
+      "role": "source"
+    },
+    {
+      "path": "04_ClientNet/ConnectionAttempt.cs",
+      "gitBlobId": "2b876bd84e9c462d13371fa94b660543a2b7f138",
+      "sha256": "ca9660b0fd7b55396e987e23533e6c1bf3bb872d6cfcbdb4eb75cea3a00f2521",
+      "bytes": 3727,
+      "role": "source"
+    },
+    {
+      "path": "04_ClientNet/Connector.cs",
+      "gitBlobId": "9675bcb67d66ef31c0bac241dcc0775df7115905",
+      "sha256": "56b6dea42a5231443ecae1f86621aa313ec68c3c7d5aa8eb716f28d72b209f97",
+      "bytes": 2048,
+      "role": "source"
+    },
+    {
+      "path": "04_ClientNet/Dawnholder.Client.Net.csproj",
+      "gitBlobId": "ef9d8c7efcc756ae6cef3c46fa15505f43a9e286",
+      "sha256": "80eba44644194e27ceaf162a765c847960c9cf62f8011021c7c90fa1b16b0333",
+      "bytes": 2286,
+      "role": "configuration"
+    },
+    {
+      "path": "04_ClientNet/FrameValidator.cs",
+      "gitBlobId": "ee808a56851094f3343c2b8819f14d9d478fa40c",
+      "sha256": "8cb9ca6f669b744384d9d7c48b51dd9d4f6d6f1186a17f67068555e09ee9a109",
+      "bytes": 2958,
+      "role": "source"
+    },
+    {
+      "path": "04_ClientNet/RecvBuffer.cs",
+      "gitBlobId": "3b559829cfffbd6497f7b1fc1e42fa48d57d977d",
+      "sha256": "7cbe81b144d184efe5835185af832b8b7ed82b44e6a4c64284422876bba78e6d",
+      "bytes": 3230,
+      "role": "source"
+    },
+    {
+      "path": "04_ClientNet/SendBuffer.cs",
+      "gitBlobId": "a650be5189a335608d71a9a197764a7a12dfb528",
+      "sha256": "88d10b54c10271192d5f31664eaf57cdcf805db11c6c2807a5dbb71399501b15",
+      "bytes": 4046,
+      "role": "source"
+    },
+    {
+      "path": "04_ClientNet/SmokeProbe.cs",
+      "gitBlobId": "7988b74f45d7d32efe1cbe74348e4ef5af6cb38f",
+      "sha256": "5c8a45c639e3484a2ac7fe939c6b0eea37499d21ad23606d2ebfa5c8b3ea4c5a",
+      "bytes": 686,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Combat/Formulas.cs",
+      "gitBlobId": "0176ec49b345ffacdb6699222e494103cb385fee",
+      "sha256": "2aa7f81990550f95e87f373056a9328b03bb80376f8a9ce5ca55014b6bd9a9d8",
+      "bytes": 9528,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Combat/PlayerStats.cs",
+      "gitBlobId": "1fda29a754ed2d32c5b22ece3389f13a063fc692",
+      "sha256": "b77bad942fb261e89eb5dffe1488e1279cc9c7b2395f65913e8f74993e0e13c8",
+      "bytes": 2239,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Combat/SkillCatalog.cs",
+      "gitBlobId": "680482759ee6835dd7a76a6dde1a942639bb59c1",
+      "sha256": "8bd0e50883b438366130f3a9d77ee672e5a690fef745c01dedde28db7c0abb16",
+      "bytes": 1671,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Constants.cs",
+      "gitBlobId": "e2a67556a657279103842ea73b1f27dc606585bd",
+      "sha256": "47a9868e93df3135d5c1f766b1323476885cd30d075c6bfae150a1090f8f12aa",
+      "bytes": 6783,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Enums/ActionKind.cs",
+      "gitBlobId": "456c6895872a75cb172781625275256d3752ed91",
+      "sha256": "fd127638b8e542e089810108d07f60af35e6b44a5c22b02c64a629573c8d091a",
+      "bytes": 788,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Enums/AnimState.cs",
+      "gitBlobId": "834b032ebd1a382993922fa9aab348e56fe4f429",
+      "sha256": "e1abd3ca74a7ccb3efa4d660ca4904f7bd9466b9e80f8ff7fa0128ca7050f3ab",
+      "bytes": 2527,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Enums/EnemyKind.cs",
+      "gitBlobId": "3f60acb481aa885becc34be2a68150ad30086744",
+      "sha256": "12cf5c6bd4fc8e81ba291a9718f37106de9068ac95bea894718a9416328de226",
+      "bytes": 324,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Enums/HitEffect.cs",
+      "gitBlobId": "7ea1c205fa770f2cba1737d45f263720a8ebea39",
+      "sha256": "d9faa360b62dac7fa4a0291dd44ecf6fe97d05b199c1db47212d8aa90d585bba",
+      "bytes": 540,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Enums/SkillId.cs",
+      "gitBlobId": "8c61696be3dc3e92a9e46d3fec29e3587ddf7d45",
+      "sha256": "ef0bcbbdbd3c6aea302c8a784d0598d1674eb8968cd726860605025ed9bf8022",
+      "bytes": 925,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/InputBits.cs",
+      "gitBlobId": "912adf29c2efc06b21bce8c9b1ed2aed1bdf6bad",
+      "sha256": "a09bf35f1719b056a21897821b89cdc8639827dd4057658b9c5457739077fbb8",
+      "bytes": 3254,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Map/MapContent.cs",
+      "gitBlobId": "2f36359be0eaeb7e423a473f3a563ccf0e770058",
+      "sha256": "8a588764d775d7573a8bfb52fa5d57019a9d287f064c81ae314e008549d052dd",
+      "bytes": 1512,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Map/MapDataFile.cs",
+      "gitBlobId": "ffb489664697b7ded707c3d746399ddf3b15e392",
+      "sha256": "ef8a2f4d3313df673a68b30eda8ef023cee6ae1a3f06fdb802dc4a03b3ee8fbb",
+      "bytes": 13786,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Map/Terrain.cs",
+      "gitBlobId": "7b8b5d116b6b914b8be2967681a5f76a47595390",
+      "sha256": "162b3ae975c91b069c2cfe5a1c9854f7f5aa9cc7a5c76e65587eb315021b3fa0",
+      "bytes": 2411,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/GameData/Physics.cs",
+      "gitBlobId": "eb3950a27ce4ecca69aa2ceb98ef8631efbfb042",
+      "sha256": "45bdf2c0f317f7c25916a729a6888cc9e1db093db20be73b8539beca13668a48",
+      "bytes": 14285,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/Protocol/CharacterClass.cs",
+      "gitBlobId": "7fb6b12ab27d9ec7dd9e25b5a9aa7f2854cd1e55",
+      "sha256": "f63d561fc5b5ca950ab1c9332ca5419117e6258de34dbdc2c51d2e49dba413af",
+      "bytes": 413,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+      "gitBlobId": "38d43a93309b152cc49dfe11ec4fb9fa1f4fdc06",
+      "sha256": "b69e6d7fcfd0e869e1defcddaffafeffd671a21bc4429a78b027d4e8f30ac58e",
+      "bytes": 92669,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/Protocol/ProtocolVersion.cs",
+      "gitBlobId": "34da77190eaf61a1038a40150409dd1fbc9eb078",
+      "sha256": "bd38eb395d75ac6ec049de43d5688ab12cdb9ff6831d7e99305b67a4908c8cab",
+      "bytes": 7672,
+      "role": "source"
+    },
+    {
+      "path": "98_Shared/Shared.csproj",
+      "gitBlobId": "289734fcb25e3f9e15102bd34615612d230a1922",
+      "sha256": "c287f204f065b1368bb4d09a5a45f0819cbec005e898272e413dba6320183897",
+      "bytes": 2507,
+      "role": "configuration"
+    },
+    {
+      "path": "99_Tools/PacketGenerator/PDL.xml",
+      "gitBlobId": "b9bac9edf32cdb57739a2c8e298d9a3edc47e32a",
+      "sha256": "b298bba90e054184c0baa3ffabad2c168ad1dbc6820dddd5dd1c8a760a9c83a6",
+      "bytes": 26021,
+      "role": "configuration"
+    },
+    {
+      "path": "Directory.Build.props",
+      "gitBlobId": "02db462e724c3ac6c19a7e3492ad5dcacdc0f9c9",
+      "sha256": "4343855dd9c308f805192f2e24c92254dc2fc09f1c9becea8ce33864f3a99d56",
+      "bytes": 910,
+      "role": "configuration"
+    },
+    {
+      "path": "global.json",
+      "gitBlobId": "f5d6141c3666641c17abff56ba7cc37d5d649c0a",
+      "sha256": "e67cbfea6a001b75869cb8314b566bfd09e90ec5071c3f3e329faa59f062585d",
+      "bytes": 75,
+      "role": "configuration"
+    }
+  ],
+  "externalReferenceRoots": [
+    {
+      "id": "unityManaged",
+      "version": "6000.4.7f1",
+      "observedRoot": "C:/Program Files/Unity/Hub/Editor/6000.4.7f1/Editor/Data/Managed",
+      "access": "read-only; copy only into owned analysis snapshot; no install/download or Unity Library/obj access"
+    }
+  ],
+  "externalReferences": [
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEditor.dll",
+      "sha256": "e12f3d26a1d36cae2fb3086791b54f02bb0c32d9af31ba682cc632a6616853d8",
+      "bytes": 19982848
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine.dll",
+      "sha256": "e7dfa2759e7a4cb060733cf724c57d870b41f3f49635fcc8a90dfc456ca7b39f",
+      "bytes": 8408064
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Bee.BeeDriver2.dll",
+      "sha256": "d8858b98b6efe517fb54f56b19adcf598c95bfdf9cd8e1f0b9b2365af7b76962",
+      "bytes": 120320
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Bee.BinLog.dll",
+      "sha256": "2517efb41483d8eb445d295f2c39d12c2eb6aa87cefab95bf288e643a13b4cd0",
+      "bytes": 18944
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Bee.TinyProfiler2.dll",
+      "sha256": "3aada10ba9cc742f1803bf86fca8d8d98d121650336c3b29c5ed40592f2045ad",
+      "bytes": 20480
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/BeeBuildProgramCommon.Data.dll",
+      "sha256": "bc1a026a53c4b87a4c80e5502d57c995bfb93dcb4f43a3fa9bd7789e8d36f35b",
+      "bytes": 4608
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/ExCSS.Unity.dll",
+      "sha256": "07860534a9a2a91f273d96e8491ddfa065da699b5539423df8eaa1bf5307036d",
+      "bytes": 347136
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Newtonsoft.Json.dll",
+      "sha256": "72cf291d4bab0edd08a9b07c6173e1e7ad1abb7ab727fd7044bf6305d7515661",
+      "bytes": 695336
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/PlayerBuildProgramLibrary.Data.dll",
+      "sha256": "900cd099a33ee404dcc910cf3bff9bd66cb5aa41071f255d82187e96840420d1",
+      "bytes": 6144
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/ScriptCompilationBuildProgram.Data.dll",
+      "sha256": "e4b418eb67648a04f60fea9a8a9cb6118a2a1e5a768ff7fc58bb42281864a597",
+      "bytes": 5120
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/System.CodeDom.dll",
+      "sha256": "3772e9c431fe84eb53580225ba8fe1dca549e76037375f5ba2be0903733fb716",
+      "bytes": 184936
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Unity.Cecil.dll",
+      "sha256": "27a8e20b84f9b6aef707d7ea026eed9e5b93f5d93b09362d61281194dee0f2a4",
+      "bytes": 351232
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Unity.Cecil.Mdb.dll",
+      "sha256": "08db5b40b2610f31ff66dfc00b774cfee455dddd8e73f12a06f030517970f02f",
+      "bytes": 44544
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Unity.Cecil.Pdb.dll",
+      "sha256": "ed6895a9cbe6aafb357b8c386fb9086fcd6e56899d34d4e7c15bc124ef2ccfa2",
+      "bytes": 88064
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Unity.Cecil.Rocks.dll",
+      "sha256": "7ca9ebcef1a3ae21ea4f0d9a98337c0441bcf582571982e5ae29c49f48538e3b",
+      "bytes": 28672
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Unity.CecilTools.dll",
+      "sha256": "17ff3788a08f7d2224f01a91ab0d4334cb4c3945b70c50b1b0b1a17a168017cd",
+      "bytes": 11264
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Unity.CompilationPipeline.Common.dll",
+      "sha256": "9a9983b298cd1f454b26535b8d314fa939841449b62a80d0deedac0f7e18a512",
+      "bytes": 9216
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Unity.Scripting.dll",
+      "sha256": "ed328dd368b539f99c5cb2fcf0d7486274989a5a639da1f1f1a5ff186b9c6148",
+      "bytes": 64000
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/Unity.SerializationLogic.dll",
+      "sha256": "bbc61bf90fb530761118d95711c273ae4393427ecf0864bf154a19246801713e",
+      "bytes": 19968
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.AccessibilityModule.dll",
+      "sha256": "2b8167c6e07e216eff76b6cf70b5fe936a1083f32a4c6c575e1bcbc1320da6e3",
+      "bytes": 25088
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.AdaptivePerformanceModule.dll",
+      "sha256": "f769f3687bddc6ad586b56b8dadb1c29ef7d4a0baee95752148dd3059de86c6c",
+      "bytes": 174080
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.AssetComplianceModule.dll",
+      "sha256": "49f693a003bfcb9e71ba14f055d10fdee2c81512b09f2d7a17f96c5f86fcb428",
+      "bytes": 3584
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.BuildProfileModule.dll",
+      "sha256": "7931aeed4195a21b62822f3a93e19bb42acae5e446dea55e5de0296412c1db8e",
+      "bytes": 123904
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.ClothModule.dll",
+      "sha256": "ecbd802d5af06dbbf9184df6474df4a31fc18d3f56e6c4ccf71f76b67dcd7e9e",
+      "bytes": 57856
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.CoreBusinessMetricsModule.dll",
+      "sha256": "fa8e39242a263ec9b4034313f03a6175a1d1c783b0e4ec19cd2d5e233f1036e8",
+      "bytes": 26112
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.CoreModule.dll",
+      "sha256": "38656030c469ab2e1a79c290e3e0bc3f114930c1ff428d96628a0dde21af74b5",
+      "bytes": 10343936
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.DeviceSimulatorModule.dll",
+      "sha256": "54bcf5e71d3796e1f48bb23137364386a9e58bcd25df15ba6e127c01d56d941a",
+      "bytes": 117248
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.DiagnosticsModule.dll",
+      "sha256": "361478ea96a37aed84334064247b3c61796f5848f4643edfad29a933dee161f0",
+      "bytes": 38912
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.dll",
+      "sha256": "37d9b0dbe8390317ec200125c96381e73a6d3ad0b8fe67d0c42c5b3e8eda96c8",
+      "bytes": 349696
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.EditorToolbarModule.dll",
+      "sha256": "7d1b4f13c2c9395f97ebd86f18b11baae510ff046f7c3f401326429861e65ca4",
+      "bytes": 127488
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.EmbreeModule.dll",
+      "sha256": "28f2da20f38a6c3f8e2d4171600a9d99ae87c96fc5df179df5d4fd0e5bb2ac16",
+      "bytes": 6144
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.GIModule.dll",
+      "sha256": "60ac8ab5092641018fb820e5edb8b54c46530a5a4ea14140b27aece44dc3b9eb",
+      "bytes": 26112
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.GraphicsStateCollectionSerializerModule.dll",
+      "sha256": "e8b201b049d4cbe2bcdaab324cbe49287fee53bd21bf27f19055ef105883edcb",
+      "bytes": 3584
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.GraphToolkitModule.dll",
+      "sha256": "6856ba54b42fd3c0436cd47e42c58dcaa9358d559d17e7040e6329bc9e44b18a",
+      "bytes": 1498624
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.GraphViewModule.dll",
+      "sha256": "26d955437759d044a9eec5500733ace1d7f1a71153f8720955ceaae7bc9f7083",
+      "bytes": 257536
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.GridAndSnapModule.dll",
+      "sha256": "4c7bc1db412cf90250585ce6ee8a581bf959cec8b059805d7a4160fb8f7e53aa",
+      "bytes": 41984
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.GridModule.dll",
+      "sha256": "8b3bee1cfbb783146c0e5b1dcacfd14152e10a4815296295f33cc7b2ca963c3f",
+      "bytes": 28160
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.HierarchyModule.dll",
+      "sha256": "1ebab9f0a39598ff0f338fb0234df8470ef96acb47a660b8fb0ceb728b4332fe",
+      "bytes": 128512
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.MediaModule.dll",
+      "sha256": "5db64ab661082dc94d7ef1886e37e27919bb08d401e5ef24ba8cd97e7edb8426",
+      "bytes": 13824
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.MultiplayerModule.dll",
+      "sha256": "e628dd55343f9b6139b3f832a4e4bbcdd50501826ee2d0f88c2b3f2ec3ad1616",
+      "bytes": 460800
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.Physics2DModule.dll",
+      "sha256": "3ecd05bbb57189a3f8d19aab2415487adb42998e232674f5e29acc1887f3ef98",
+      "bytes": 128512
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.PhysicsModule.dll",
+      "sha256": "b789825b828c3087339ccae937e8c9957c2bd9c371f2802525c57b49e283ddeb",
+      "bytes": 183296
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.PlayModeModule.dll",
+      "sha256": "d4bcfc63da8ffcea7852578ba2bd111abd1bb89b7704fb3678ae3ea85b71fa82",
+      "bytes": 46592
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.PresetsUIModule.dll",
+      "sha256": "f1444e2ba923824e9e23cd7704a0ee7f4bd003ec5f9bc99b3dc87a8372de78c4",
+      "bytes": 81920
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.ProjectAuditorModule.dll",
+      "sha256": "f8b93b84c08d6a2e4638583b93ce8bcf1dfa0124f1aa6e65602f13f79fcef7d3",
+      "bytes": 486400
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.PropertiesModule.dll",
+      "sha256": "b17b26f68fd504c75f4eb83d5972c7dc3b03b9ffbc177d6a8eadfe3cc96c6e8d",
+      "bytes": 5120
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.QuickInstallModule.dll",
+      "sha256": "58a3b1ded347811da61fd96eb080b2557aab0c5dc1e50537c7b1e5b8d3af2418",
+      "bytes": 40960
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.QuickSearchModule.dll",
+      "sha256": "3878884eed7d561eb951931aa1a385b2a2a9a649e759a5ae2d71c8f3314431e3",
+      "bytes": 1664000
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.SafeModeModule.dll",
+      "sha256": "4779ef2eb15ea4cd1f30ab5543d0fdc09e3fa431147a0bcefbd6949ad144f1e5",
+      "bytes": 34816
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.SceneTemplateModule.dll",
+      "sha256": "8621d7a25b1335f3c90a741005eed17f97f0db7f8a20ef46e8eac64910c556e4",
+      "bytes": 153088
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.SceneViewModule.dll",
+      "sha256": "655b06ff7b9f032df6e052b4986bb15ee22af393f14ecfe5dcf81a9910627d3b",
+      "bytes": 83456
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.ShaderBuildSettingsModule.dll",
+      "sha256": "e99a4f7acfd9df7b38bc3a3b0b95095c0591fd6ae342c0cd413aa08212e57f48",
+      "bytes": 3584
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.ShaderCompilationModule.dll",
+      "sha256": "2bf8fa17037e4b6b55e3979052b6b7dbe094ce9faed074c2ff891e5c73212865",
+      "bytes": 26112
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.ShaderFoundryModule.dll",
+      "sha256": "f3fdf4ef07fc9fed386d7f9fb2f80252b6181dc52a47916668fe79e1c94c6245",
+      "bytes": 339456
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.SketchUpModule.dll",
+      "sha256": "f290d986a9735c3a76a2b406835de449988431fdcc303dd2c1147ac135ca8223",
+      "bytes": 41984
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.SpriteMaskModule.dll",
+      "sha256": "668daa61575a49351d06216e361e442c8f4d3a452ddb441b4bb83ac79d4d44aa",
+      "bytes": 31232
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.SpriteShapeModule.dll",
+      "sha256": "0c02e6a5d3f296aec9d19576bc683c5e703b726f63de4a1ba5d9ae52cdfa6a33",
+      "bytes": 30208
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.SubstanceModule.dll",
+      "sha256": "ae6aac7c3a25d2107435e44014b84f83053d2560ed4506c832a11af7eeef0c88",
+      "bytes": 26112
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.TerrainModule.dll",
+      "sha256": "686964bcf13cc91ba507c326b3fffb8798de822d5b86ec99baf04119d89144d7",
+      "bytes": 235520
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.TextCoreFontEngineModule.dll",
+      "sha256": "79db00adc240817f295050b68c76a32ca245e345278aee5e6d3d4b49bb5c5db4",
+      "bytes": 5120
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.TextCoreTextEngineModule.dll",
+      "sha256": "d22903d603eab8e28408746cba2f2e7e952ce9e8f195e3bab8151b39f4892185",
+      "bytes": 209408
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.TextRenderingModule.dll",
+      "sha256": "70f2cde2af9cfeac21e12fd0c51501912b37f0e5174d7c06fc4f27afde88715e",
+      "bytes": 19968
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.TilemapModule.dll",
+      "sha256": "d35ce904e5af34fdb3322194b67f8f99c1e8f0d604b2ce03da5b5ec3f212831f",
+      "bytes": 44032
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.TreeModule.dll",
+      "sha256": "41a7582777a075f4266121c941711e1ba1db476721a81c269fa3982954f906c1",
+      "bytes": 149504
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.UIAutomationModule.dll",
+      "sha256": "1edc517745a201e990bfc73d1c8a5f85f8f8f933ca9513fb0aec0b68c6cf771d",
+      "bytes": 47616
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.UIBuilderModule.dll",
+      "sha256": "d648a1fd76cbbfc4a3c10811afbafd85515e516d7320ba4e7abddcd5e63c528b",
+      "bytes": 946688
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.UIElementsModule.dll",
+      "sha256": "f3eff932bfbeca30e8a28cec7588aaac4093dc00d98556f8aba217315b21093f",
+      "bytes": 529920
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.UIElementsSamplesModule.dll",
+      "sha256": "8c8a0903f5c95f18f5941a98ea4c38167ad2d3a78551f2ca3421e73a850a24a0",
+      "bytes": 86528
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.UIToolkitAuthoringModule.dll",
+      "sha256": "6b31d5c687c375530dced5f62050a31711011adea35e2d9a3ebdd9922716725b",
+      "bytes": 275456
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.UmbraModule.dll",
+      "sha256": "2f236fd25c97c566a4da99b8d1d5eb17f4b5916edda0f8b413d3c3a6a8755ceb",
+      "bytes": 26112
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.UnityConnectModule.dll",
+      "sha256": "928a43f42897052a02a9b1f0da4fd49f50018d163968ea8bf31fce5b38580eac",
+      "bytes": 220160
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.VectorGraphicsModule.dll",
+      "sha256": "65bcef30b1661279855db5e823c304c6be2504dbb4645b511f5a8e9c2b5b017c",
+      "bytes": 44032
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.VFXModule.dll",
+      "sha256": "1be1216446da40778260e96ab53a776b23e60ad38dd006681ecc7eaab1a60d8f",
+      "bytes": 61440
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.VideoModule.dll",
+      "sha256": "ecedae743c44be3ace878522df2d214333c5426c1d8ed581b52bb0d0f22e6910",
+      "bytes": 55296
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEditor.XRModule.dll",
+      "sha256": "9de96121d3f68d880dcee53c5520603442f330e26d4b35d8f43ed904e0c29d53",
+      "bytes": 31744
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.AccessibilityModule.dll",
+      "sha256": "11bba2b9cc488d47a541cc8c73ce874b1e3a4319d7d0459688fb5184e6ce0247",
+      "bytes": 37888
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.AdaptivePerformanceModule.dll",
+      "sha256": "102c90c1f9576adc97ae0a5f15ac39d7a1b68b405b1e7023187c2f61fb9b78f7",
+      "bytes": 111616
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.AIModule.dll",
+      "sha256": "cc53f54d020e4a02b353b4448d9813bf9e6790dbc9877f24bf771311e5e9a1ac",
+      "bytes": 74752
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.AMDModule.dll",
+      "sha256": "de9b64f086e6674599c4ed08c763a8f1fae3b95cb8dba74d48cbf0020266bef0",
+      "bytes": 11264
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.AndroidJNIModule.dll",
+      "sha256": "1c270d79c845d7fd8fc8c9137a6a1259ebbcab4ded98e8d0b6390e5dcbe72a49",
+      "bytes": 109056
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.AnimationModule.dll",
+      "sha256": "b17d62fd8d292f8e5947f6c0fe9b13a7b65e0bd24155254556df8891d647b5e8",
+      "bytes": 219136
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ARModule.dll",
+      "sha256": "abab6671c684b096e2544cac15968439346512a2b6289466437238001d425070",
+      "bytes": 20992
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.AssetBundleModule.dll",
+      "sha256": "0e887d99b94806e64ecf1dc8b866382becfd22c8ad43cd18781e624d33e1a62e",
+      "bytes": 36864
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.AudioModule.dll",
+      "sha256": "c33edc853c30d2285d23bbee9e0a618176ee7112816190d1687f3bb327986ad6",
+      "bytes": 138240
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ClothModule.dll",
+      "sha256": "18c9afab33ccbda0d373972ed10c65086e2fa7463a2c6cda0a7e0bd74176c4c1",
+      "bytes": 31744
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ClusterInputModule.dll",
+      "sha256": "c17d24e07efc20a538b8bebf54855b85797e45389c805fd0fd1bbc9ef98c4ce7",
+      "bytes": 23552
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ClusterRendererModule.dll",
+      "sha256": "ae3f3bfb083f1538c5153a34543090979b3034886dc380c1c56253a6c0f3dac4",
+      "bytes": 22016
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ContentLoadModule.dll",
+      "sha256": "32eb295f2e4e92173610b5a4536fcd75dd3d6d3d4a9c59eaf1892f47303e0883",
+      "bytes": 28672
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.CoreModule.dll",
+      "sha256": "f57f4860f2973c2ca3f97c68b46d0522a97e16819ae7c8f3d45a9d5332d4d7e6",
+      "bytes": 2181120
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.CrashReportingModule.dll",
+      "sha256": "5c6386cfc5fa4d4506aea7433aa9db1555d87bc42cf4a38df98bd296dfe6250b",
+      "bytes": 22016
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.DirectorModule.dll",
+      "sha256": "05c8c584a0c5bb90d3e10d88f83dce9f0836511f8b26d05af64ee06b49faa718",
+      "bytes": 36352
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.dll",
+      "sha256": "45fb8bee534f6022ce5b51a0811a0f68a26d7fdaa7102472bcdcd0235106a205",
+      "bytes": 195584
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.DSPGraphModule.dll",
+      "sha256": "0308140c1fab09b69130d36f155c910036485416c6ee933e9a70021c283c9799",
+      "bytes": 27136
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.GameCenterModule.dll",
+      "sha256": "4c0bd1ee12743f86c9f311eaeef5a0b37b3f0f9a271fecd3d182244c011b8f08",
+      "bytes": 50176
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.GIModule.dll",
+      "sha256": "d44c8a8d36eda9aef84636177b7c32a983e6a91df4ebf4d345dd7b5ace14d0d0",
+      "bytes": 19456
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.GraphicsStateCollectionSerializerModule.dll",
+      "sha256": "94eacc3077ba5e1991800ed86520144c1aa2b2369224246ee537dec15b990854",
+      "bytes": 3584
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.GridModule.dll",
+      "sha256": "69241f642fd6afd0c66214d42eccb39ef48531d044f67587b5458bbd282bba84",
+      "bytes": 25600
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.HierarchyCoreModule.dll",
+      "sha256": "8754f60c13f2c00430138c29321f31c81a12ad09df766f6a9ba546b7c0367b58",
+      "bytes": 95744
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.HierarchyModule.dll",
+      "sha256": "f4e12a430731e72cd86e86420c020d7c9a47511745be966c6b472ba519e83c5e",
+      "bytes": 87552
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.HotReloadModule.dll",
+      "sha256": "590e48ad62e020a23674231d40fd4e39a9ce2ec83d3531fce590fb6d47ceee66",
+      "bytes": 19456
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.IdentifiersModule.dll",
+      "sha256": "5197b3d337b41a619bdac4316567401f043e5d8da95ab56979c35c1ee7a739c1",
+      "bytes": 4608
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ImageConversionModule.dll",
+      "sha256": "83b03bacd12fa8b8fe40c93e52486c681d5b435ddfcf3f370614f066f1ecc3c0",
+      "bytes": 27648
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.IMGUIModule.dll",
+      "sha256": "d80c7f1ed09956fb8d54156eaac8cb0176e5fea2584e3fb2d69375418312f34f",
+      "bytes": 180224
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.InputForUIModule.dll",
+      "sha256": "2813d9b3a16ddf4bd5560077152dbce18364c088defed226c6222156ed1f952b",
+      "bytes": 45056
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.InputLegacyModule.dll",
+      "sha256": "d0df22a76ed0c05669e2203154c46d95e21e06a7a1e69a71f54b3fbb7164fc3d",
+      "bytes": 36864
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.InputModule.dll",
+      "sha256": "675e915a326a3d8c96e610ab2e81e6101725b2338458ef4f4c6baecead9a85d3",
+      "bytes": 24064
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.InsightsModule.dll",
+      "sha256": "bfd949257b165c76150baa925b91747c56f88c7360f5474ae4957ddf75b859c4",
+      "bytes": 3584
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.JSONSerializeModule.dll",
+      "sha256": "878f5b1f9bb4fb3a6d293621018bac20cf3be2cd797dc42725e9e58718af6755",
+      "bytes": 22528
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.LocalizationModule.dll",
+      "sha256": "771dc8998304e86f68bcefb1118783bb190181dad206bd3e2d47bf6d8a842367",
+      "bytes": 22528
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.MarshallingModule.dll",
+      "sha256": "9de711c719ef4c67fbf85c41f306ff7fc2ad8a8370f6d34bd670c6af5d913aeb",
+      "bytes": 78336
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.MultiplayerModule.dll",
+      "sha256": "b05b8af8d218b9b29a9fe940dfdaebd08e7eedd1c4f146b9c1b279f9429a34ca",
+      "bytes": 8192
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.NVIDIAModule.dll",
+      "sha256": "c5e4453a43faabfb0584c092c7084042812d3891d08f27e45cd9c278545a104e",
+      "bytes": 34816
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ParticleSystemModule.dll",
+      "sha256": "92bed3b64541464c2afe85d9861db8df8f330dcb8a2141a53722b117b396b8dd",
+      "bytes": 167424
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.PerformanceReportingModule.dll",
+      "sha256": "c382cb5eff602325eb2fa871df6e33d211e99a5f7db6d9a3f2c872b3a7d78a9c",
+      "bytes": 20480
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.Physics2DModule.dll",
+      "sha256": "2e8e44533a61ad9f5a096ad2cb7329d819b992ea267edcf0b67148d333523c28",
+      "bytes": 585728
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.PhysicsBackendPhysXModule.dll",
+      "sha256": "2cf116ca9bbec4a4efed4797cfd91574a37ddc0582475bb6ab54bd25a67a3a73",
+      "bytes": 3584
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.PhysicsModule.dll",
+      "sha256": "02acd9e52c2b1db2071bb8f0ca2d0400f64e0c353a2b04aa19c56e6c8edea593",
+      "bytes": 173568
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.PropertiesModule.dll",
+      "sha256": "d788625aeec832f0cf6a3726003093a79601dc9d6dde9a39fbb2d8ba6b4636af",
+      "bytes": 114176
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.RenderAs2DModule.dll",
+      "sha256": "15bc46dfd559197a3a3dd932525fad92c34c12afeb6f1d778d0308351ba4fa13",
+      "bytes": 20992
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll",
+      "sha256": "6d862f1cbc1a11bb7ccfd390c7c2a34f1a1dc254a1aa1a46983fcba1393c7c8d",
+      "bytes": 19456
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ScreenCaptureModule.dll",
+      "sha256": "214e93a4120c103d677793f9a501cd5c6b0199f2cc7b76d1bd12438924a4df0f",
+      "bytes": 21504
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ScriptingModule.dll",
+      "sha256": "96e47333cd4bec7da81fd305efc8712fad03ec408aeaacf56b01a3474b271c6d",
+      "bytes": 21504
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.ShaderVariantAnalyticsModule.dll",
+      "sha256": "355370564b10ca1c40052a5f1e7337ee27f474f9054bc2c79a27c11ce44ca7ef",
+      "bytes": 19456
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.SharedInternalsModule.dll",
+      "sha256": "9c939a2f9406dac0b2e54f99528c6d39a3c3c774b2f33adde14248376bf42fb7",
+      "bytes": 31744
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.SpriteMaskModule.dll",
+      "sha256": "a180eaae5bf18f9130e03330a863e2ba4c4ce2f101cac1b5bfec492f8dc590ae",
+      "bytes": 24064
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.SpriteShapeModule.dll",
+      "sha256": "1d162eee15d8381264312a02bea587c39d4e35b7c974a6ad8a79bf62771e4866",
+      "bytes": 28672
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.StreamingModule.dll",
+      "sha256": "a850de1835f90c7690f49c412eba49cb25964bd93974b49f46b79da95f81f144",
+      "bytes": 21504
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.SubstanceModule.dll",
+      "sha256": "269efedcecde97b69a87cc2854b71ca4f8e63269c1abd21a62989afa1368cf59",
+      "bytes": 24576
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.SubsystemsModule.dll",
+      "sha256": "e5e20a5dc91f641bc5f63a5ee2a59a3e911f1129e03604be2d713a4fc8ae83c4",
+      "bytes": 36352
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.TerrainModule.dll",
+      "sha256": "312151a6a9e8019cd9e6e4328609577999155e0345ac6431c735bfcc27e6e515",
+      "bytes": 125952
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.TerrainPhysicsModule.dll",
+      "sha256": "33410b90845ab7038dc5a5ba5be79443da00779853e183d718c03d7325470c31",
+      "bytes": 20992
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.TextCoreFontEngineModule.dll",
+      "sha256": "0b662a778381c54b053b972e1ae001a1825a2851d96b8e5a4c7be381c649d5fe",
+      "bytes": 67584
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.TextCoreTextEngineModule.dll",
+      "sha256": "15629dc910d9a2beebb2ed59a1608eed77b0904656f71dc5473cfdfd628fbdf1",
+      "bytes": 315904
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.TextRenderingModule.dll",
+      "sha256": "e70a379a8facf9ce3cdb84813732f525c9e45f018d303b5059545bd1864a1a9a",
+      "bytes": 28672
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.TilemapModule.dll",
+      "sha256": "30243a6e62b939bbc36570b571603e92d54fd9bc8d64d9abd1534150cbfa3a43",
+      "bytes": 70656
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.TLSModule.dll",
+      "sha256": "0bc88c5ef2a90f355d1667c998e689734bac3b7df124c2c5abb793681a06d5d9",
+      "bytes": 26624
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UIElementsModule.dll",
+      "sha256": "fada4275fc1fc3c95f8b558b255074dc6940bc90e6a148f2e6dcb9c6933d2643",
+      "bytes": 2288128
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UIModule.dll",
+      "sha256": "52ebc9105617732ecf1b888695198c373fa0716a3028e3a3c0a34e4b771e5fcb",
+      "bytes": 46080
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UmbraModule.dll",
+      "sha256": "50df42bfe6c4fac5aca97e94b6f46e7c8bd6bdee0abe9902f3328fbbb9721a13",
+      "bytes": 19456
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityAnalyticsCommonModule.dll",
+      "sha256": "cb72e8caeb744b754d0fb5e21983a8976f199473a83d7abab9c9eb2ba0844272",
+      "bytes": 30208
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityAnalyticsModule.dll",
+      "sha256": "36eeb756856ca2784ca478bf1145bc170ee291ac73047c5deaac8892c144ca42",
+      "bytes": 54272
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityConnectModule.dll",
+      "sha256": "51b3a3f9be4b38c92d166ba4de3ad14bbb81b93804f01190399b116fd237ca53",
+      "bytes": 23040
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityConsentModule.dll",
+      "sha256": "e40f84da1e8653cab5b6feb50d7228c438b0b68c3e15e5ca5d5dba98ae377ed6",
+      "bytes": 5632
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityCurlModule.dll",
+      "sha256": "40078db91a9eb9873e761e1ae6ada367b1a64db19f49ff0793540256c947a4d4",
+      "bytes": 21504
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityWebRequestAssetBundleModule.dll",
+      "sha256": "d34369414328e95490923e9306f9b370553749643e9f7604388dc0fd1e1179f9",
+      "bytes": 24064
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityWebRequestAudioModule.dll",
+      "sha256": "141f2f6970d96f2a6420878079ed5cd34b7a97533f4d661761d56115a549047c",
+      "bytes": 23552
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityWebRequestModule.dll",
+      "sha256": "433c1a10cabfef8723e716915504fea11dd741f675239c9d187ba3285dc79d8d",
+      "bytes": 61952
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityWebRequestTextureModule.dll",
+      "sha256": "c3061780366481af613d4073785eb8910e1150a5508af522d2ce9c1a0294dee1",
+      "bytes": 23040
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.UnityWebRequestWWWModule.dll",
+      "sha256": "7b06054af4812785d36db9999744e38c97312c77a25e1fcd800d6a7222cd2bbe",
+      "bytes": 30720
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.VectorGraphicsModule.dll",
+      "sha256": "ccb7f0b2ee448bb1a1fc6cbf800efbe97a56550a1c76776e8aed43b923dbd4aa",
+      "bytes": 218112
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.VehiclesModule.dll",
+      "sha256": "eb35e8302116f608211d95c6ce2f43b36fb9c7d836bcc4c00ab8688b10f7ce33",
+      "bytes": 26624
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.VFXModule.dll",
+      "sha256": "aa62f260740f91b2a6145c9c8edaeadabaecb3bc30bcbf109e4e4e90c260e309",
+      "bytes": 75776
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.VideoModule.dll",
+      "sha256": "44171d25a5b2b256207209ff96c60170d6a4763bed5dfc2daf8b265db9c70113",
+      "bytes": 38400
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.VirtualTexturingModule.dll",
+      "sha256": "b37a7b244ae7ab0a8784daefda621a49f4a602c10bd2bcc3711d23a7dec19d70",
+      "bytes": 37376
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.VRModule.dll",
+      "sha256": "770a607e6fba6f71db492bf2148a8c2bc5dfdf63b1d02075b86d384fdfbc3c57",
+      "bytes": 27136
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.WindModule.dll",
+      "sha256": "aa5ae70242d7c0fde341a275a1623108f7c1f47f83698b7bab5869c59b6ccf54",
+      "bytes": 22016
+    },
+    {
+      "rootId": "unityManaged",
+      "path": "UnityEngine/UnityEngine.XRModule.dll",
+      "sha256": "e23c09d7d5926dddc591479d88213d470a753a4cbd8dc591dd8b5167d1eaaa6d",
+      "bytes": 81408
+    }
+  ],
+  "sdk": {
+    "version": "10.0.301",
+    "rollForward": "disable",
+    "roslyn": "SDK-bundled DLLs only, no new NuGet",
+    "execution": "WSL owned snapshot; first call environment follows DEVELOPMENT",
+    "referencePackEvidence": "Worker records selected installed reference-pack paths, versions and hashes before analysis; never substitutes missing Unity package assemblies with stubs."
+  },
+  "compilation": {
+    "configuration": "Debug",
+    "frameworkByRoot": {
+      "02_Server/GameServer": "net10.0",
+      "02_Server/Network": "net10.0",
+      "04_ClientNet": "netstandard2.1",
+      "98_Shared": "netstandard2.1",
+      "03_Client/Assets/Scripts": "Unity asmdef approximation with supplied local managed DLLs"
+    },
+    "unity": "Record actual parse symbols and references; InputSystem/TMP assemblies are not supplied by this managed-DLL manifest. Report partial semantics if needed, do not read Library/obj or download them."
+  },
+  "counting": "File hashes cover all extraction input, not just the 36 scored relation candidates. Both extractors read the same frozen code roots. Reports separate evaluated scope from compilation/context input."
+}
