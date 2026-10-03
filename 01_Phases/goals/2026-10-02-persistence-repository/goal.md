@@ -1,10 +1,12 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **2026-10-04 독립 검증5 통과·정산을 마쳤고 첫 SQL PR과 CI를 준비한다.** SQL-STRUCTURE-09·10은 첫 완료 재검증에서 해소됐고 새 제품 결함은 없다. 최종 오프라인 runner는 884PASS/0FAIL/8OBS, 오류 주입 15종은 모두 검출됐다. PR/CI와 해당 PR의 사용자 명시 병합 승인이 남았다. 실제 SQL/DB/G2·계정·저장소/복구 통합은 범위 밖이다.
+상태: **2026-10-04 독립 검증5 통과·정산 후 [PR169](https://github.com/bass131/dawnholder-server/pull/169)를 발행했고, CI 확인과 개별 병합 승인 절차를 진행한다.** SQL-STRUCTURE-09·10은 첫 완료 재검증에서 해소됐고 새 제품 결함은 없다. 최종 오프라인 runner는 884PASS/0FAIL/8OBS, 오류 주입 15종은 모두 검출됐다. 해당 PR의 사용자 명시 병합 승인은 아직 없다. 실제 SQL/DB/G2·계정·저장소/복구 통합은 범위 밖이다.
 
 ## 재개 지점
 
-### 현재 다음 단계 — 독립 검증5 정산 후 PR/CI (2026-10-04)
+### 현재 다음 단계 — PR169 CI·개별 병합 승인 (2026-10-04)
+
+- **PR:** [SQL 첫 PR169](https://github.com/bass131/dawnholder-server/pull/169), `feat/persistence-repository-d1b-20261002` → `main`을 발행했다. 제품·테스트 입력은 아래 독립 판정과 같고 후속 변경은 이 운영 상태 기록뿐이다. 최종 head의 CI는 [PR checks](https://github.com/bass131/dawnholder-server/pull/169/checks)에서 `dotnet-tests`와 `code-rules`를 각각 확인한다. 발행 직후 관측은 queued/in_progress이며 성공으로 보고하지 않았다. CI 원문·실제 checkout·head·결과는 로컬 `astra-review-5/`에 보존하고 메인에 전달한다. 자동 병합은 설정하지 않는다.
 
 - **판정과 입력:** 신규 Opus의 최종 판정은 통과·새 제품 결함0이다. 고정 검증 입력은 `075fe5b16db5933545d17919c93cf840ec7dd4b9`/base `7fa107488df3eb8133bb8a51e6eb746903ab94fe`이며, 검증자 종료 후 tests3파일만 `6be9e7d76d40d3321a3cc3e64de338b543b9a5b6`에 커밋했다(785추가/31삭제). fresh fetch의 origin/main도 같은 base이며 열린 SQL PR은0이었다. 제품 커밋 `1f6eddb`는 바뀌지 않았다.
 - **판정 원문:** `.backups/verification/2026-10-03-persistence-repository/sql-structure-verification-5/verdict.md`, SHA256 `023E06CD3BFEBD2A788171363C0673004FFDBE060A7D6B41B85D4F7B2AF40E8B`. 최종 context SHA `910AA669E4FCB864DA6A1E2EE60A5D190AD711F3E980F88F93F2A5AABA33F2E7`, 변경표 `static/test-changes.md`. 부모가 세 원문 전체·실제 tests diff·신규649행 suite를 읽고 `astra-review-5/audit.md`에 수용 근거를 남겼다.
