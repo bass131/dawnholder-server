@@ -1,6 +1,16 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **구조 `ad6d5cb`·배포 `ccb7107`·MSSQL 문서 `66020b4` 완료, 두 Sol 정산·종료 완료, 신규 Opus 오프라인 검증은 미완료**. 2026-10-03 사용자 결정으로 SQL/PS 구조·검사·문서와 합동 오프라인 검증까지 첫 PR을 분리한다. 저장소·복구 도구·G2·실제 DB/계정 수명은 첫 PR 병합 뒤 최신 main 새 branch/후속 goal에 인계하며 새 GameDev Astra가 시작한다. 현재 전체 영속성 완료나 SQL 실행 PASS는 아니다. SQL 접속도 G2 전까지 하지 않는다.
+상태: **독립 검증1 NOT PASS(차단5건), 검증자 정산·종료 및 최신 main 통합 `c2f508e` 완료, 새 Sol 수정·새 Opus 재검증 준비**. 구조 `ad6d5cb`·배포 `ccb7107`·MSSQL 문서 `66020b4`와 독립 tests `0fa8815`를 보존했다. 2026-10-03 사용자 결정으로 SQL/PS 구조·검사·문서와 합동 오프라인 검증까지 첫 PR을 분리한다. 저장소·복구 도구·G2·실제 DB/계정 수명은 첫 PR 병합 뒤 최신 main 새 branch/후속 goal에 인계하며 새 GameDev Astra가 시작한다. 현재 전체 영속성 완료나 SQL 실행 PASS는 아니다. SQL 접속도 G2 전까지 하지 않는다.
+
+## 독립 검증1과 최신 main 통합 뒤 재계획 (2026-10-03)
+
+- 신규 Opus Task `task_d5696ec6b1f6` / Dispatch `ctx_2c91a5874c65`는 고정 입력 `95b9de6`에서 A1/A2·가독성·구조·배포·MSSQL을 합동 실사하고 독립 tests6개를 작성했다. 최초 argv `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown. 사전 context `43321B00AF65CFE517C762D68CEE23EB24B7D80948656CFA657488D23DC18A9E` 전체 대조 후 reply `msg_0b12aa1ec6d5`로 쓰기 범위를 확인했다. 계약과 기동 근거는 `.backups/verification/2026-10-03-persistence-repository/sql-structure-review-1-*`에 있다.
+- **판정 원문:** `.backups/verification/2026-10-03-persistence-repository/sql-structure-verification-1/verdict.md`, SHA256 **`98F2E8174E5A374662D4E9B08324027B3752885158980406D7B71ACFF5E9586A`**. 부모가 전체 원문·raw 표본을 읽었다. PS5.1 최종08:00:00~08:00:48 UTC는 **PASS297/FAIL3/OBSERVED7, runner exit1**이며 두 경로 결함을 재현했다. 공개9RPC·29열·오류/코드/grant의 소스 대조는 일치하나 실제 SQL·provider/권한·동시성·내구성/G2/CI 실행은 아니다. PS7 보조 실행은 별도이며 통과 수에 넣지 않는다.
+- **차단 결함:** SQL-STRUCTURE-01은 상대 DatabaseRoot가 세션 위치 대신 프로세스 CWD로 해석돼 다른 tree를 compliant로 보고할 수 있다. 02는 끝 구분자 root가 상대 경로 첫 글자를 자른다. 03은 release 두 RPC의 의도 NULL7개 이유 주석, 04는 helper 추출 뒤5개 RPC의 미사용 snapshot 선언/묶음 주석, 05는 변경 범위9줄의 긴 식·동작 표기다. 각 결함의 확정 NOT PASS는 **1회**이며 같은 출력의 FAIL3을 중복 집계하지 않는다. U-01·개발 harness 수정·조사는 실패 집계에서 제외한다.
+- **보존·보고 한계:** tests6/6과 보호 파일50/50 hash가 일치했다. 다만 완료 body/원문§11의 tests/evidence 외 쓰기 없음은 실제 Claude TEMP `scratchpad/jsonint.ps1` 생성·실행과 불일치한다. 메인에 `msg_2574f9154c29`, `msg_97ca634f0df5`로 즉시 보고했고 원문을 고치지 않고 `astra-review-1/audit.md`, `probe-observation.json`과 실물 복사로 보존했다. 저장소 hash 보존을 전역 무변경 근거로 확대하지 않는다. 소스 비교 도구 초기 실패 출력 미보존도 원문에 공개됐다. worker_done `msg_5e4ee492aa44`의 Task/발신/hash 대조 후 release→정확 incarnation/idle 확인→pane close `ptyKilled=true` 완료, 재사용하지 않는다.
+- **통합:** tests는 `0fa8815`에 보존했다. PR165와166 병합 뒤 main `48e722bc7820e78d4df4b84a1ebf6a7290258261`을 `c2f508ed6084d6db41e12e0f0ffb2f944ed0d47e`로 통합했다. CODE_CONVENTION은 SQL·PowerShell 절이 완전히 동일함을 대조해 main의 새 위치를 채택했고 CURRENT 충돌은 양쪽 기존 링크를 모두 남기는 기계 결합만 했다. 일반 색인/운영 문서 소유는 Rules에 그대로 둔다. stash2·Unity 사용자3/skip-worktree를 유지했다. `astra-review-1/context.md`와 `merge-resolution-plan.json`에 근거가 있다.
+- **다음 계약:** 새 Sol은01~05를 좁게 수정하고, U-01을 실제 엔진 실패로 단정하지 않으면서 해당 scalar SQL의 빈 결과를 `[]`로 명시해 첫 설치 빈 행 경계를 보강한다. 엄격한 malformed/unknown/drift 거부는 유지한다. MSSQL 현재 실행 host를 Windows PowerShell5.1로 명시하며 PS7 지원 확장으로 넓히지 않는다. SQL 원문 변경에 따른 manifest/004 선언/검증 소비 hash만 함께 갱신한다. 기존 tests는 Sol 읽기 전용, 새 Opus가 경로 재현·빈 행 계약·회귀/규칙·문서·보고 정확성을 독립 재검증한다.
+- 새 작업은 최신 `AGENTS`/`CLAUDE`/작업 맥락 스킬과 관련 규칙 원문·실제 준수 위치 양식을 적용한다. 현재 main의 CodeRules Changed 검사도 수행·근거화한다. PSScriptAnalyzer1.25.0은 Rules의 기존 승인 캐시를 보존 복사해 사용하고 전역 설치/설정 변경은 없다. 제품 자체 검사 실행과 tests 작성/판정의 역할은 분리한다. 새 main의 SQL deferred 및 첫 PR 뒤 구조 CLI/tests·SQLFluff 연결 합의는 유지한다. 최종 비DB 검사·CI와 PR별 병합 승인은 아직 남아 있다.
 
 ## 현재 goal의 PR 경계와 완료조건 (2026-10-03)
 
