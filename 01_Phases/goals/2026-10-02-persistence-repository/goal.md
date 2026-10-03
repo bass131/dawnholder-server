@@ -15,6 +15,14 @@
 - PR164의 병합된 로컬 formatting-project-registration worktree·branch만 clean/병합 포함·근거 보존 확인 후 정리한다. 원격 branch는 삭제하지 않는다. 목표 PR 병합과 결과 기록 뒤, R-8 교체 전에 신규 Opus로 Gardener 읽기 전용 점검을 수행한다. 보고서 하나만 쓰며 반복 빈도 순 후보 최대2건과 검사화 방법을 제안하고 후보 채택은 메인·사용자에게 맡긴다. 파일럿 평가 시점은 2026-10-31 무렵이다.
 - 현재 runtime `e1b9b47b-a65a-4fd5-8bfb-eaa4ce33fad8`, GameDev handle `term_8a7a39ac-baa7-467b-b364-13716d182611`, incarnation `5e2e1c35-21f6-43da-af69-1220e215b733`, 화면 GPT-6-Astra xhigh, backend unknown을 확인했다. 메인 handle과 파트 목록은 `msg_b43ca1756d69` 및 `part-handles-delivery.json`에 보존하며 사용할 때 다시 조회한다.
 
+## 현재 발행·정리 근거 (2026-10-03)
+
+- 새 Run `run_f4d40c8b95d1`, SQL 구조 Task `task_acb3a16d999b`, Dispatch `ctx_92963b71e852`. 신규 Sol handle `term_a53d32f5-36e3-4487-adb0-b10f244e2e5c`, incarnation `0c92acd5-39cc-4a44-a7c7-14421390f8b7`. 최초 argv는 `codex --cd C:/Dev/DawnHolder_Project --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 첫 화면 GPT-6.1-Sol xhigh/Codex0.160.0, backend unknown이다. 준비 satisfied/정상 빈 prompt와 경로를 확인하고 최초 연결의 input_accepted·turn_started를 관측했다. 구현 완료 근거가 아니다.
+- 구현 기준 HEAD `5f72b61`, 계약 `.backups/verification/2026-10-03-persistence-repository/sql-structure-spec.md` SHA256 `8CC939A02D624732C362E7359814D42214F77457A7843B2236A1F67EDDBAB383`. 제품 쓰기 전 context와 구조/동작 checkpoint 계획을 blocking ask로 제출받는다. `sql-structure-start.json`, `sql-structure-first-screen.json`, `sql-structure-show.json`에 receipt/동일성을 보존했다.
+- 병합된 formatting-project-registration은 clean, 현재 터미널0, HEAD af10bc3c가 origin/main 조상임을 확인했다. 로컬 evidence 928파일을 Root `.backups/verification/formatting-project-registration/`로 복사하고 모든 SHA256 일치/차이0을 대조했다. verdict SHA256 `A2AEC7CB570FB4850B176B67A9DC5074511F52E2BD807D29C45FC9C10AE07E3F`도 동일하다. 로컬 settings 파일도 별도 보존한 뒤 정확 worktree를 Orca로 제거했고 로컬 branch 부재를 확인했다. 원격 branch는 변경하지 않았다. 과거 절의 F 원문 경로는 위 새 보존 경로로 대응하며 과거 실행 기록 자체는 수정하지 않는다. 근거 `formatting-evidence-preservation.json`·`formatting-cleanup.json`이다.
+- Architecture `msg_971aa13d3c84`와 회신 `msg_04609af7ffc9`: 현재 독립 도구 등록 파일은 각자 자기 항목만 추가한다. 후속 모듈 의존 방향 검사는 Architecture, 코드 내부 틱 블로킹/ratchet은 GameDev로 구분하며 후속 goal을 자동 시작하지 않는다.
+- Rules `msg_50a70f5d9fb7`의 ADR035 사실 대조에 `msg_e56df7ffeb79`로 응답했다. 직접 ADO.NET·SqlClient6.1.7·typed RPC·ORM 미도입은 기술명세의 선택이다. runtime의 최소권한 SQL principal과 recovery의 전용 비관리자 Windows 통합 인증을 구분하며 Windows 인증 전체를 배제하지 않는다. LocalDB는 현재 승인된 시험 대상이 아니고 SQL 접속은 미실행이다. Directory.Build.props 문서 절 번호 주석 정정은 Rules 후속 goal과 충돌하지 않는다.
+
 ## 다음 세션 재개 인계 (2026-10-02)
 
 - **사용자 마무리 결정:** 메인 `msg_a934ce962ec6`(10:08:43 UTC)는 사용자 결정 A를 전달했다. 원문 핵심은 “진행 중인 작업 하나만 끝내고 마무리”, “지금부터 새 작업자·검증자 세션을 열지 않는다”, “PASS여도 다음 단계는 착수하지 않는다”다. 이어 `msg_e49813c45553`(10:09:27 UTC)는 SQL Sol 기동 보류 및 이미 열었으면 쓰기 전 공식 중단·정산을 지시했다. 두 메시지 **전문**은 `.backups/verification/2026-10-02-persistence-repository/session-close-decisions.json`에 있다. 오늘은 PR164 CI 결론 보고, 메인이 사용자 승인 전달 시 정확 head 병합, 이 인계와 마무리 보고만 수행한다. Astra 자기 pane은 사용자가 닫는다.
