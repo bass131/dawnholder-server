@@ -1,20 +1,26 @@
-# SQL 공통 구조와 배포 위치 제안
+# SQL 공통 구조와 배포 위치
 
-상태: **추천안 승인, 구현 전 설계**. 2026-10-02 GameDev Astra 작성. [goal](goal.md)의 메인 `msg_95aaf70df9ed` 요청에 대한 A/B 비교를 제출했고, `msg_b89cdee4009d`가 명명 OUTPUT·위치(b)·SchemaVersion14→4와 배포 metadata 값 변경의 사용자 승인을 전달했다. 제출본 SHA256 `085081D4193FC5EC044BF347B20BD83B1F758712BCE8FCDC5170C1CE6AF0F6B8`은 로컬 `sql-structure-design-submitted.md`에 보존했다. 아래 비교는 제품 구현·독립 판정·SQL 실행 결과가 아니다. 정리 Sol은 원문 정산·세션 종료했고 F를 먼저 진행한다. 구조 Task 발행 전 정확한 구현 기준 SHA를 고정하며 장치별 실패 대응표는 goal의 마지막 절에 둔다. 쓰기 전 맥락은 `.backups/verification/2026-10-02-persistence-repository/sql-structure-context.md`에 보존했다.
+상태: **승인안 구현, 문서·독립 오프라인 검증 대기**. 2026-10-02 제안, 2026-10-03 GameDev Astra가 실제 산출물에 맞춰 갱신했다. [goal](goal.md)의 메인 `msg_b89cdee4009d`는 명명 OUTPUT·위치(b)·SchemaVersion14→4와 배포 metadata 변경의 사용자 승인을 전달했다. 최초 제출본 SHA256 `085081D4193FC5EC044BF347B20BD83B1F758712BCE8FCDC5170C1CE6AF0F6B8`은 로컬 `sql-structure-design-submitted.md`에 보존했다. 구조 `ad6d5cb`와 배포 `ccb7107`은 구현 커밋이며 독립 판정·실제 SQL 통과가 아니다. 장치별 실패 대응표와 정확 실행 권한은 goal이 정본이다.
+
+최종 구현은 9개 공개 RPC와8개 내부 helper, codec1개, 권한 파일1개를 현재 `modules/`에 둔다. 처음6책임 후보에 순수 `SerializeProgress`·`SerializePersistenceSnapshot`을 더한 분할은 메인 `msg_7aca3e6e330c`의 기존 반복 책임 내 허용이며, 신규 Opus가 가독성과 불필요한 wrapper 여부를 판정한다. 배포는 immutable001, 기존002, metadata003, manifest 선언004와 `Module.Common.ps1`·공유 runner·strict catalog로 구현했다. 정확 migration/source/manifest hash와 실행 근거는 goal이 연결한 최종 구현 원문에 있고, 향후 소비자는 최종 검증된 tree의 값을 사용한다.
+
+첫 PR은 SQL/PS 구조·검사·MSSQL 안내와 합동 오프라인 검증까지다. 저장소·복구 launcher·G2·실제 DB/계정 수명은 첫 PR 병합 뒤 새 Astra의 후속 goal로 인계한다. 구조 커밋 `ad6d5cb`는 **설치 불가 중간 tree, 소스 보존 검토용**이며 DB 설치 bisect에서 제외한다. 설치·G2는 최종 검증 tree만 사용한다. 새 구조 검사 CLI는 warning 파일럿이고 독립 tests/SQLFluff의 CI 연결은 첫 PR 병합 뒤 Rules와 조율한다.
 
 추천은 **명명 OUTPUT 인자로 helper를 연결하고, 위치는 (b) 현재 코드 파일과 버전 이력을 분리하는 안**이다. 다만 단순히 파일 checksum이 달라졌다는 이유만으로 배포하지 않는다. 버전 migration에 승인된 코드 묶음의 hash를 선언하고 그 선언과 일치한 코드만 반복 적용한다. 코드의 현재 위치는 고정하면서 배포 이력·클라이언트의 호환 확인을 유지하기 위한 추가 비용이다. (a)는 실행기를 적게 바꾸는 선택이며 아래 표에 그 대가를 함께 적었다.
 
 ## A. helper의 책임과 호출 흐름
 
-입력 수락과 각 operation의 판정·상태 전이는 public RPC가 소유한다. 여러 operation을 `Kind`로 실행하는 거대한 공통 executor는 만들지 않는다. 아래는 책임 경계이며 정확한 SQL 인자는 구현 전 Task에서 고정한다.
+입력 수락과 각 operation의 판정·상태 전이는 public RPC가 소유한다. 여러 operation을 `Kind`로 실행하는 거대한 공통 executor는 만들지 않는다. 아래는 현재 구현의 책임 경계이며 정확한 SQL 인자·타입은 공개/내부 procedure 선언과 구현 원문에 고정돼 있다.
 
-| 내부 helper 후보 | 입력 → 출력 | 부작용·불변 조건 |
+| 내부 helper | 입력 → 출력 | 부작용·불변 조건 |
 |---|---|---|
 | `LockAndReadAuthority` | 제한된 lock timeout → 바인딩, owner, fence, sequence와 잠금 결과 | 동일 slot1/public/Exclusive/Transaction applock과 Authority 잠금 조회. 별도 transaction·다른 lock 이름 없음 |
 | 기존 `AssertPersistenceContract` | 해당 배포 계약 → 설치 schema version | Authority 존재 확인 뒤, receipt 조회 전에 호출. 별도 결과집합·공개 grant 없음 |
 | `ReadOperationReceipt` | OperationId, Kind, payload bytes → 증빙 유무, 동일성, 당시 outcome/code/snapshot/시각 | 동일 잠금 조회와 길이+byte 비교. 불일치 요청의 증빙을 반환값으로 노출하지 않음. 현재 상태로 과거 snapshot을 재생성하지 않음 |
 | `ReadCharacterState` | 확정된 AccountId/CharacterId → 존재 여부, 소유·class, rowversion, 저장 progress | 잠금 순서 Account→Character→Progress 유지. 존재하지 않는 상태의 null/false 구분과 재호출 때 출력 초기화를 명시. 생성·수선·판정 없음 |
-| `RecordOperationReceipt` | 이미 정해진 outcome/code와 캡처 값 → 당시 snapshot·RecordedUtc | 정해진 kind별 JSON shape를 만들고 단 한 번 ledger INSERT. 새 요청만 호출하며 replay·mismatch에는 호출하지 않음. 게임/권위 변경 여부를 helper가 결정하지 않음 |
+| `SerializeProgress` | 이미 읽은 progress scalar 값 → 기존6키 JSON | 순수 직렬화. 조회·수선·권한·transaction을 소유하지 않음 |
+| `SerializePersistenceSnapshot` | 이미 판정한 fresh Applied scalar 값 → 기존17키 snapshot | 순수 직렬화와 기존51024 검사. 과거 replay snapshot을 재생성하지 않음 |
+| `RecordOperationReceipt` | 이미 정해진 outcome/code·직렬화된 snapshot → RecordedUtc | 기존 시각 캡처와 단 한 번 ledger INSERT. caller의 기존 fresh/seal 경로만 호출하며 replay·mismatch에는 호출하지 않음. 게임/권위 변경 여부를 helper가 결정하지 않음 |
 | `EmitPersistenceResult` | transaction 안에서 확정한 증빙·현재 값·배포 metadata → 단일29열/한 행 | **COMMIT 이후의 순수 최종 projection**. 추가 DB 조회/쓰기·JSON 재해석·새 결과집합 없음 |
 
 DB를 읽거나 쓰는 helper는 호출자의 transaction 안에서 동작한다. helper는 BEGIN/COMMIT/ROLLBACK을 소유하지 않고, 예상 실패는 기존 RPC의 번호·우선순위로 종결한다. public RPC의 CATCH가 rollback·THROW를 마무리한다. 잠금 실패·XACT_ABORT·중첩 호출에서 추가 오류가 생기는지는 실제 SQL 검증에 포함한다. SQL Server의 내부 transaction은 독립된 commit 단위가 아니므로 transaction을 helper마다 열지 않는다. [Microsoft COMMIT 계약](https://learn.microsoft.com/en-us/sql/t-sql/language-elements/commit-transaction-transact-sql?view=sql-server-ver17)
@@ -62,7 +68,7 @@ TVP 제한과 type 생성/호출 권한은 [Microsoft TVP](https://learn.microso
 
 ### (b)의 metadata와 실행기 경계
 
-001은 byte/checksum 모두 보존한다. 아직 미적용인002 이후만 사용자 선택 후 재배치한다. 구체 번호 제안은002 기존 authority/operation/role,003 코드 배포 metadata,004 최초 코드 묶음 선언이다. 함수·procedure·grant는 반복 적용 경로로 옮긴다. 이 안을 선택하면 현재 초안의 **SchemaVersion14는4로 다시 고정**하고 전체 expected migration 집합·checksum·catalog·계획/B 소비 문서를 함께 갱신한다. “새 helper를 넣었으니14를 계속 반환” 같은 허위 metadata는 만들지 않는다.
+001은 byte/checksum 모두 보존한다. 실제 DB에 적용하지 않은002 이후는 승인된 설계대로 재배치했다.002는 기존 authority/operation/role,003은 코드 배포 metadata,004는 최초 코드 묶음 선언이다. 함수·procedure·grant는 반복 적용 경로로 옮겼고 **SchemaVersion14는4로 고정**했다. runner·catalog·lifecycle manifest의 예상 migration 집합과 checksum을 함께 갱신했다. 아직 구현하지 않은 B 소비자는 후속 goal에서 이 최종 계약을 사용한다.
 
 추가 metadata는 두 책임이다. `dh.ModuleRelease`는 해당 버전 migration이 선언한 manifest hash를 보존하고, `dh.ModuleDefinition`은 정확한 객체별 적용 source/engine-definition hash를 기록한다. 런타임/복구 역할에는 이 테이블이나 helper의 직접 권한을 주지 않는다. 첫 설치 외에는 기존 객체의 실제 정의와 이전 적용 기록이 일치해야 하며 수동 변조·미등록 객체·기록 누락은 자동 채택/덮어쓰기 대신 거부한다.
 
@@ -80,10 +86,10 @@ CREATE OR ALTER는 파일 하나/SQL batch 하나로 처리한다. runner에 GO 
 
 | 게이트 | 이번 결정의 반영 |
 |---|---|
-| G0 | helper 구현은 승인됨. 위치(a)/(b), 선택된 migration 번호·배포 metadata와 consumer 기준을 사용자 선택 후 goal/기술명세에 고정 |
+| G0 | 명명 OUTPUT·위치(b)·001~004/schema4/배포 metadata 변경은 승인돼 구현됨. 정확 최종 consumer 입력은 검증된 tree와 goal의 원문 근거로 고정 |
 | G1 | 정확한 시험 DB·계정·한 번 수명·TLS·비밀/cleanup 권한은 그대로. 별도 DB/새 라이브러리/전역 설정 권한을 만들지 않음 |
 | G2 | 최종 provision/install/cleanup/**recovery launcher**의 실제 diff·실행 주체·입력 hash를 신규 Opus가 최초 실제 실행 전에 검토. 현재 B1/B2가 미구현이므로 SQL 정리만으로 G2 완료라고 하지 않음 |
-| G3 | 정리+뼈대 분리를 하나의 신규 Opus SQL 검증으로 묶음. 정적/독립 오프라인 시험과 G2 후 실제 SQL 결과를 구분. 실제 SQL은 S/C/O/U/R 기존 계획에 배포 회귀를 추가 |
+| G3 | 첫 PR의 관련 SQL/PS 전체 변경·가독성·MSSQL 안내를 신규 Opus가 합동 실사하고 독립 오프라인 시험. 후속 goal의 G2 이후 실제 SQL S/C/O/U/R 및 배포 회귀는 별도 미실행 범위 |
 | G4 | operation/owner/연결/자원 정산 및 exact cleanup. 코드 변경을 되돌린다는 이유로 DB/fence/ledger를 과거로 돌리지 않음. 최종 원문/차이·미실행과 PR별 사용자 병합 승인 |
 
 독립 검증의 차단 항목은 다음과 같다.
@@ -93,4 +99,4 @@ CREATE OR ALTER는 파일 하나/SQL batch 하나로 처리한다. runner에 GO 
 - (b)는 동일 묶음 재실행, manifest/선언/파일/engine hash 불일치, 미등록·누락 모듈, 중간 module 실패 rollback, 권한 재적용/예상 밖 grant, 새 version의 변경 모듈만 재적용, 이전 설치/게임 행 보존을 독립 시험한다. 승인된 단일 DB 수명 안에서 단계별 원문을 보존한다.
 - 코드 규칙 원문을 구현·검증 Task에 붙이고 적용 규칙/실제 파일:줄 및 변환 뒤 직접 읽은 블록을 남긴다. 이름 있는 코드값, 중첩 소속, 이유 주석, 공통 책임·파일 위치 위반은 번호 있는 차단 결함이다. 기존 범위 밖 코드와 미실행은 분리한다.
 
-정리 Sol 정산 후 서식 등록 F의 Sol→신규 Opus→PR 우선순위를 유지한다. 이 설계안의 위치 선택은 메인이 사용자에게 확인하며, 확인 전 구조 구현 Task는 발행하지 않는다. 선택 이후 정리 최종 SHA·정정된 근거를 입력으로 사용하고, SQL 합동 검증과 B1/B2·G2의 실행 순서를 goal에 갱신한다.
+서식 등록 F/PR164는 병합됐고 SQL 구조 Sol도 최종 원문·worker_done 대조 후 정산·종료했다. 다음은 신규 문서 Sol의 MSSQL 안내 갱신과 신규 Opus 합동 독립 검증이다. B1/B2·G2·실제 DB 실행의 후속 goal 분리, 현재 첫 PR별 승인과 R-8 교체 순서는 goal의 최신 결정 절을 따른다. 위 A/B 표는 선택 당시의 대안 비교이며 현재 작업 상태를 대신하지 않는다.
