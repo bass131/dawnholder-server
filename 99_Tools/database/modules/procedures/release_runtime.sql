@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.ReleaseRecovery
+CREATE PROCEDURE dh.ReleaseRuntime
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,
@@ -10,11 +10,11 @@ CREATE PROCEDURE dh.ReleaseRecovery
 AS
 BEGIN
     -- Contract discriminators used by this RPC; numeric values remain the v1 wire/ledger contract.
-    DECLARE @RecoveryOwnerKind tinyint = 2;
+    DECLARE @RuntimeOwnerKind tinyint = 1;
     DECLARE @FreeOwnerKind tinyint = 0;
     DECLARE @KnightClass tinyint = 0;
     DECLARE @MageClass tinyint = 1;
-    DECLARE @ReleaseRecoveryKind int = 5;
+    DECLARE @ReleaseRuntimeKind int = 3;
     DECLARE @MaxCounterValue bigint = 9223372036854775807;
     -- Result codes are wire/ledger contracts; validation priority remains binding, fence, owner, sequence, game.
     DECLARE @Released smallint = 103;
@@ -35,7 +35,7 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
     SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-    DECLARE @Kind int = @ReleaseRecoveryKind;
+    DECLARE @Kind int = @ReleaseRuntimeKind;
     IF @SlotId IS NULL OR @SlotId <> 1 OR @AccountId IS NULL OR @CharacterId IS NULL
         OR @AccountId = '00000000-0000-0000-0000-000000000000'
         OR @CharacterId = '00000000-0000-0000-0000-000000000000'
@@ -111,69 +111,59 @@ BEGIN
     -- One transaction owns the slot lock, current observations, mutation and proof.
     BEGIN TRY
         BEGIN TRANSACTION;
-        EXEC @lockResult = sys.sp_getapplock @Resource = N'Dawnholder.Persistence.Slot.1',
-            @DbPrincipal = 'public',
-            @LockMode = 'Exclusive',
-            @LockOwner = 'Transaction',
-            @LockTimeout = @LockTimeoutMs;
+        EXEC dh.LockAndReadAuthority
+            @LockTimeoutMs = @LockTimeoutMs,
+            @lockResult = @lockResult OUTPUT,
+            @boundAccount = @boundAccount OUTPUT,
+            @boundCharacter = @boundCharacter OUTPUT,
+            @currentFence = @currentFence OUTPUT,
+            @currentOwnerKind = @currentOwnerKind OUTPUT,
+            @currentOwner = @currentOwner OUTPUT,
+            @currentSequence = @currentSequence OUTPUT;
         IF @lockResult NOT IN (0, 1)
         BEGIN
             IF XACT_STATE() <> 0
                 ROLLBACK TRANSACTION;
             THROW 51022, 'Slot application lock was not acquired.', 1;
         END;
-        SELECT @boundAccount = AccountId,
-            @boundCharacter = CharacterId,
-            @currentFence = Fence,
-            @currentOwnerKind = OwnerKind,
-            @currentOwner = OwnerId,
-            @currentSequence = LastSequence
-        FROM dh.CharacterAuthority WITH (UPDLOCK, HOLDLOCK) WHERE SlotId = 1;
         IF @boundAccount IS NULL
             THROW 51023, 'Required slot binding is absent.', 1;
         -- Preserve Authority → schema → Operation validation under the same transaction/applock.
         EXEC dh.AssertPersistenceContract
             @SchemaVersion = @schemaVersion OUTPUT;
-        SELECT @outcome = Outcome,
-            @resultCode = ResultCode,
-            @resultSnapshot = ResultSnapshot,
-            @recordedUtc = RecordedUtc,
-            @isReplay = 1,
-            @status = CASE WHEN Kind = @Kind AND PayloadVersion = 1
-            AND DATALENGTH(Payload) = DATALENGTH(@payload) AND Payload = @payload
-            THEN 'Terminal' ELSE 'OperationPayloadMismatch' END
-        FROM dh.CharacterOperation WITH (UPDLOCK, HOLDLOCK) WHERE OperationId = @OperationId;
-        IF @status = 'OperationPayloadMismatch'
-        BEGIN
-            -- Never expose a different request's historical receipt as this request's result.
-            SET @outcome = NULL;
-            SET @resultCode = NULL;
-            SET @resultSnapshot = NULL;
-            SET @recordedUtc = NULL;
-            SET @isReplay = 0;
-        END;
-        SELECT @accountPresent = 1 FROM dh.Account WITH (UPDLOCK, HOLDLOCK) WHERE AccountId = @boundAccount;
-        SELECT @characterPresent = 1,
-            @storedAccount = AccountId,
-            @storedClass = Class,
-            @characterVersion = Version
-        FROM dh.Character WITH (UPDLOCK, HOLDLOCK) WHERE CharacterId = @boundCharacter;
-        SELECT @progressPresent = 1,
-            @mapId = MapId,
-            @positionX = PositionX,
-            @positionY = PositionY,
-            @hp = Hp,
-            @storedMaxHp = MaxHp,
-            @bossUnlocked = BossUnlocked,
-            @progressVersion = Version
-        FROM dh.CharacterProgress WITH (UPDLOCK, HOLDLOCK) WHERE CharacterId = @boundCharacter;
+        EXEC dh.ReadOperationReceipt
+            @OperationId = @OperationId,
+            @Kind = @Kind,
+            @payload = @payload,
+            @status = @status OUTPUT,
+            @outcome = @outcome OUTPUT,
+            @resultCode = @resultCode OUTPUT,
+            @resultSnapshot = @resultSnapshot OUTPUT,
+            @isReplay = @isReplay OUTPUT,
+            @recordedUtc = @recordedUtc OUTPUT;
+        EXEC dh.ReadCharacterState
+            @boundAccount = @boundAccount,
+            @boundCharacter = @boundCharacter,
+            @accountPresent = @accountPresent OUTPUT,
+            @characterPresent = @characterPresent OUTPUT,
+            @progressPresent = @progressPresent OUTPUT,
+            @storedAccount = @storedAccount OUTPUT,
+            @storedClass = @storedClass OUTPUT,
+            @characterVersion = @characterVersion OUTPUT,
+            @progressVersion = @progressVersion OUTPUT,
+            @mapId = @mapId OUTPUT,
+            @positionX = @positionX OUTPUT,
+            @positionY = @positionY OUTPUT,
+            @hp = @hp OUTPUT,
+            @storedMaxHp = @storedMaxHp OUTPUT,
+            @bossUnlocked = @bossUnlocked OUTPUT;
         IF @isReplay = 0 AND @status = 'Terminal'
         BEGIN
             IF @AccountId <> @boundAccount OR @CharacterId <> @boundCharacter
                 SET @resultCode = @IdentityMismatch;
             ELSE IF @ExpectedFence <> @currentFence
                 SET @resultCode = @StaleFence;
-            ELSE IF @currentOwnerKind <> @RecoveryOwnerKind OR @currentOwner <> @OwnerId OR @currentOwner IS NULL
+            ELSE IF @currentOwnerKind <> @RuntimeOwnerKind OR @currentOwner <> @OwnerId OR @currentOwner IS NULL
                 SET @resultCode = @Busy;
             -- Reject the maximum before +1: fences/sequences must never wrap or reuse an old value.
             ELSE IF @currentSequence = @MaxCounterValue
@@ -184,7 +174,8 @@ BEGIN
             -- Binding/fence/owner/sequence rejection therefore keeps its original priority.
             IF @resultCode IS NULL AND @characterPresent = 1 AND @storedAccount <> @boundAccount
                 SET @resultCode = @IdentityMismatch;
-            IF @resultCode IS NULL AND ((@characterPresent = 1 AND (@accountPresent = 0 OR @storedClass NOT IN (@KnightClass, @MageClass)))
+            IF @resultCode IS NULL
+                AND ((@characterPresent = 1 AND (@accountPresent = 0 OR @storedClass NOT IN (@KnightClass, @MageClass)))
                 OR (@progressPresent = 1 AND @characterPresent = 0))
                 SET @resultCode = @IntegrityFailure;
             -- Reject the maximum before +1: a fence must never wrap or reuse an old value.
@@ -205,65 +196,45 @@ BEGIN
                     THROW 51024, 'Authority update failed.', 1;
                 SET @resultCode = @Released;
                 SET @outcome = @Applied;
-                SET @snapshot = (SELECT 1 AS version,
-                    @Kind AS kind,
-                    @resultCode AS resultCode,
-                    1 AS slotId,
-                    LOWER(CONVERT(char(36), @boundAccount)) AS accountId,
-                    LOWER(CONVERT(char(36), @boundCharacter)) AS characterId,
-                    @currentOwnerKind AS ownerKind,
-                    LOWER(CONVERT(char(36), @currentOwner)) AS ownerId,
-                    CONVERT(varchar(20), @currentFence) AS fence,
-                    CONVERT(varchar(20), @currentSequence) AS sequence,
-                    NULL AS characterPresent,
-                    NULL AS class,
-                    NULL AS characterVersionHex,
-                    NULL AS progressPresent,
-                    NULL AS progressVersionHex,
-                    NULL AS safe,
-                    NULL AS storedProgress
-                    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER, INCLUDE_NULL_VALUES);
-                IF DATALENGTH(@snapshot) > 4096 OR ISJSON(@snapshot) <> 1
-                    THROW 51024, 'Snapshot serialization failed.', 1;
-                SET @resultSnapshot = CONVERT(nvarchar(2048), @snapshot);
+                EXEC dh.SerializePersistenceSnapshot
+                    @Kind = @Kind,
+                    @resultCode = @resultCode,
+                    @boundAccount = @boundAccount,
+                    @boundCharacter = @boundCharacter,
+                    @currentOwnerKind = @currentOwnerKind,
+                    @currentOwner = @currentOwner,
+                    @currentFence = @currentFence,
+                    @currentSequence = @currentSequence,
+                    @characterPresent = NULL,
+                    @storedClass = NULL,
+                    @characterVersion = NULL,
+                    @progressPresent = NULL,
+                    @progressVersion = NULL,
+                    @safe = NULL,
+                    @storedProgress = NULL,
+                    @resultSnapshot = @resultSnapshot OUTPUT;
             END
             ELSE
                 SET @outcome = @NotApplied;
-            SET @recordedUtc = SYSUTCDATETIME();
-            INSERT dh.CharacterOperation
-            (
-                OperationId,
-                SlotId,
-                Kind,
-                PayloadVersion,
-                Payload,
-                Outcome,
-                ResultCode,
-                ResultSnapshot,
-                RecordedUtc
-            )
-            VALUES
-            (
-                @OperationId,
-                1,
-                @Kind,
-                1,
-                @payload,
-                @outcome,
-                @resultCode,
-                @resultSnapshot,
-                @recordedUtc
-            );
+            EXEC dh.RecordOperationReceipt
+                @OperationId = @OperationId,
+                @Kind = @Kind,
+                @payload = @payload,
+                @outcome = @outcome,
+                @resultCode = @resultCode,
+                @resultSnapshot = @resultSnapshot,
+                @recordedUtc = @recordedUtc OUTPUT;
         END;
         SET @storedProgress = NULL;
         IF @progressPresent = 1
-            SET @storedProgress = (SELECT @mapId AS mapId,
-                CONVERT(varchar(32), @positionX, 3) AS x,
-                CONVERT(varchar(32), @positionY, 3) AS y,
-                @hp AS hp,
-                @storedMaxHp AS maxHp,
-                @bossUnlocked AS bossUnlocked
-                FOR JSON PATH, WITHOUT_ARRAY_WRAPPER, INCLUDE_NULL_VALUES);
+            EXEC dh.SerializeProgress
+                @mapId = @mapId,
+                @positionX = @positionX,
+                @positionY = @positionY,
+                @hp = @hp,
+                @storedMaxHp = @storedMaxHp,
+                @bossUnlocked = @bossUnlocked,
+                @Json = @storedProgress OUTPUT;
         COMMIT TRANSACTION;
     END TRY
     BEGIN CATCH
@@ -274,33 +245,30 @@ BEGIN
     IF @@TRANCOUNT <> 0
         THROW 51025, 'Transaction count did not return to zero.', 1;
     -- Emit one terminal row only after COMMIT; Current* does not replace historical ResultSnapshot.
-    SELECT CONVERT(int, 1) AS TransportVersion,
-        @status AS Status,
-        @OperationId AS OperationId,
-        CONVERT(int, @Kind) AS Kind,
-        @outcome AS Outcome,
-        @resultCode AS ResultCode,
-        @resultSnapshot AS ResultSnapshot,
-        @isReplay AS IsReplay,
-        @recordedUtc AS RecordedUtc,
-        @databaseName AS DatabaseName,
-        @productVersion AS ProductVersion,
-        @schemaVersion AS SchemaVersion,
-        CONVERT(int, 1) AS PayloadVersion,
-        CONVERT(int, 1) AS SnapshotVersion,
-        @migrationManifest AS MigrationManifest,
-        CONVERT(int, 1) AS CurrentSlotId,
-        @boundAccount AS CurrentAccountId,
-        @boundCharacter AS CurrentCharacterId,
-        @currentOwnerKind AS CurrentOwnerKind,
-        @currentOwner AS CurrentOwnerId,
-        @currentFence AS CurrentFence,
-        @currentSequence AS CurrentLastSequence,
-        @accountPresent AS CurrentAccountPresent,
-        @characterPresent AS CurrentCharacterPresent,
-        @storedClass AS CurrentClass,
-        @characterVersion AS CurrentCharacterVersion,
-        @progressPresent AS CurrentProgressPresent,
-        @progressVersion AS CurrentProgressVersion,
-        @storedProgress AS CurrentStoredProgress;
+    EXEC dh.EmitPersistenceResult
+        @status = @status,
+        @OperationId = @OperationId,
+        @outcome = @outcome,
+        @Kind = @Kind,
+        @resultCode = @resultCode,
+        @resultSnapshot = @resultSnapshot,
+        @isReplay = @isReplay,
+        @recordedUtc = @recordedUtc,
+        @databaseName = @databaseName,
+        @productVersion = @productVersion,
+        @schemaVersion = @schemaVersion,
+        @migrationManifest = @migrationManifest,
+        @boundAccount = @boundAccount,
+        @boundCharacter = @boundCharacter,
+        @currentOwnerKind = @currentOwnerKind,
+        @currentOwner = @currentOwner,
+        @currentFence = @currentFence,
+        @currentSequence = @currentSequence,
+        @accountPresent = @accountPresent,
+        @characterPresent = @characterPresent,
+        @storedClass = @storedClass,
+        @characterVersion = @characterVersion,
+        @progressPresent = @progressPresent,
+        @progressVersion = @progressVersion,
+        @storedProgress = @storedProgress;
 END;

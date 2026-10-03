@@ -74,44 +74,42 @@ BEGIN
     -- One transaction owns the slot lock, current observations, mutation and proof.
     BEGIN TRY
         BEGIN TRANSACTION;
-        EXEC @lockResult = sys.sp_getapplock @Resource = N'Dawnholder.Persistence.Slot.1',
-            @DbPrincipal = 'public',
-            @LockMode = 'Exclusive',
-            @LockOwner = 'Transaction',
-            @LockTimeout = @LockTimeoutMs;
+        EXEC dh.LockAndReadAuthority
+            @LockTimeoutMs = @LockTimeoutMs,
+            @lockResult = @lockResult OUTPUT,
+            @boundAccount = @boundAccount OUTPUT,
+            @boundCharacter = @boundCharacter OUTPUT,
+            @currentFence = @currentFence OUTPUT,
+            @currentOwnerKind = @currentOwnerKind OUTPUT,
+            @currentOwner = @currentOwner OUTPUT,
+            @currentSequence = @currentSequence OUTPUT;
         IF @lockResult NOT IN (0, 1)
         BEGIN
             IF XACT_STATE() <> 0
                 ROLLBACK TRANSACTION;
             THROW 51022, 'Slot application lock was not acquired.', 1;
         END;
-        SELECT @boundAccount = AccountId,
-            @boundCharacter = CharacterId,
-            @currentFence = Fence,
-            @currentOwnerKind = OwnerKind,
-            @currentOwner = OwnerId,
-            @currentSequence = LastSequence
-        FROM dh.CharacterAuthority WITH (UPDLOCK, HOLDLOCK) WHERE SlotId = 1;
         IF @boundAccount IS NULL
             THROW 51023, 'Required slot binding is absent.', 1;
         -- Preserve Authority → schema → Operation validation under the same transaction/applock.
         EXEC dh.AssertPersistenceContract
             @SchemaVersion = @schemaVersion OUTPUT;
-        SELECT @accountPresent = 1 FROM dh.Account WITH (UPDLOCK, HOLDLOCK) WHERE AccountId = @boundAccount;
-        SELECT @characterPresent = 1,
-            @storedAccount = AccountId,
-            @storedClass = Class,
-            @characterVersion = Version
-        FROM dh.Character WITH (UPDLOCK, HOLDLOCK) WHERE CharacterId = @boundCharacter;
-        SELECT @progressPresent = 1,
-            @mapId = MapId,
-            @positionX = PositionX,
-            @positionY = PositionY,
-            @hp = Hp,
-            @storedMaxHp = MaxHp,
-            @bossUnlocked = BossUnlocked,
-            @progressVersion = Version
-        FROM dh.CharacterProgress WITH (UPDLOCK, HOLDLOCK) WHERE CharacterId = @boundCharacter;
+        EXEC dh.ReadCharacterState
+            @boundAccount = @boundAccount,
+            @boundCharacter = @boundCharacter,
+            @accountPresent = @accountPresent OUTPUT,
+            @characterPresent = @characterPresent OUTPUT,
+            @progressPresent = @progressPresent OUTPUT,
+            @storedAccount = @storedAccount OUTPUT,
+            @storedClass = @storedClass OUTPUT,
+            @characterVersion = @characterVersion OUTPUT,
+            @progressVersion = @progressVersion OUTPUT,
+            @mapId = @mapId OUTPUT,
+            @positionX = @positionX OUTPUT,
+            @positionY = @positionY OUTPUT,
+            @hp = @hp OUTPUT,
+            @storedMaxHp = @storedMaxHp OUTPUT,
+            @bossUnlocked = @bossUnlocked OUTPUT;
         SET @migrationManifest = (SELECT Version AS version,
             Name AS name,
             Checksum AS checksum
@@ -136,13 +134,14 @@ BEGIN
             SET @status = 'Inspected';
         SET @storedProgress = NULL;
         IF @progressPresent = 1
-            SET @storedProgress = (SELECT @mapId AS mapId,
-                CONVERT(varchar(32), @positionX, 3) AS x,
-                CONVERT(varchar(32), @positionY, 3) AS y,
-                @hp AS hp,
-                @storedMaxHp AS maxHp,
-                @bossUnlocked AS bossUnlocked
-                FOR JSON PATH, WITHOUT_ARRAY_WRAPPER, INCLUDE_NULL_VALUES);
+            EXEC dh.SerializeProgress
+                @mapId = @mapId,
+                @positionX = @positionX,
+                @positionY = @positionY,
+                @hp = @hp,
+                @storedMaxHp = @storedMaxHp,
+                @bossUnlocked = @bossUnlocked,
+                @Json = @storedProgress OUTPUT;
         COMMIT TRANSACTION;
     END TRY
     BEGIN CATCH
@@ -153,33 +152,30 @@ BEGIN
     IF @@TRANCOUNT <> 0
         THROW 51025, 'Transaction count did not return to zero.', 1;
     -- Emit one terminal row only after COMMIT; Current* does not replace historical ResultSnapshot.
-    SELECT CONVERT(int, 1) AS TransportVersion,
-        @status AS Status,
-        @OperationId AS OperationId,
-        CONVERT(int, @Kind) AS Kind,
-        @outcome AS Outcome,
-        @resultCode AS ResultCode,
-        @resultSnapshot AS ResultSnapshot,
-        @isReplay AS IsReplay,
-        @recordedUtc AS RecordedUtc,
-        @databaseName AS DatabaseName,
-        @productVersion AS ProductVersion,
-        @schemaVersion AS SchemaVersion,
-        CONVERT(int, 1) AS PayloadVersion,
-        CONVERT(int, 1) AS SnapshotVersion,
-        @migrationManifest AS MigrationManifest,
-        CONVERT(int, 1) AS CurrentSlotId,
-        @boundAccount AS CurrentAccountId,
-        @boundCharacter AS CurrentCharacterId,
-        @currentOwnerKind AS CurrentOwnerKind,
-        @currentOwner AS CurrentOwnerId,
-        @currentFence AS CurrentFence,
-        @currentSequence AS CurrentLastSequence,
-        @accountPresent AS CurrentAccountPresent,
-        @characterPresent AS CurrentCharacterPresent,
-        @storedClass AS CurrentClass,
-        @characterVersion AS CurrentCharacterVersion,
-        @progressPresent AS CurrentProgressPresent,
-        @progressVersion AS CurrentProgressVersion,
-        @storedProgress AS CurrentStoredProgress;
+    EXEC dh.EmitPersistenceResult
+        @status = @status,
+        @OperationId = @OperationId,
+        @outcome = @outcome,
+        @Kind = @Kind,
+        @resultCode = @resultCode,
+        @resultSnapshot = @resultSnapshot,
+        @isReplay = @isReplay,
+        @recordedUtc = @recordedUtc,
+        @databaseName = @databaseName,
+        @productVersion = @productVersion,
+        @schemaVersion = @schemaVersion,
+        @migrationManifest = @migrationManifest,
+        @boundAccount = @boundAccount,
+        @boundCharacter = @boundCharacter,
+        @currentOwnerKind = @currentOwnerKind,
+        @currentOwner = @currentOwner,
+        @currentFence = @currentFence,
+        @currentSequence = @currentSequence,
+        @accountPresent = @accountPresent,
+        @characterPresent = @characterPresent,
+        @storedClass = @storedClass,
+        @characterVersion = @characterVersion,
+        @progressPresent = @progressPresent,
+        @progressVersion = @progressVersion,
+        @storedProgress = @storedProgress;
 END;

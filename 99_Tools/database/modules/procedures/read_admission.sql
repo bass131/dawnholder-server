@@ -72,24 +72,21 @@ BEGIN
     -- One transaction owns the slot lock, current observations, mutation and proof.
     BEGIN TRY
         BEGIN TRANSACTION;
-        EXEC @lockResult = sys.sp_getapplock @Resource = N'Dawnholder.Persistence.Slot.1',
-            @DbPrincipal = 'public',
-            @LockMode = 'Exclusive',
-            @LockOwner = 'Transaction',
-            @LockTimeout = @LockTimeoutMs;
+        EXEC dh.LockAndReadAuthority
+            @LockTimeoutMs = @LockTimeoutMs,
+            @lockResult = @lockResult OUTPUT,
+            @boundAccount = @boundAccount OUTPUT,
+            @boundCharacter = @boundCharacter OUTPUT,
+            @currentFence = @currentFence OUTPUT,
+            @currentOwnerKind = @currentOwnerKind OUTPUT,
+            @currentOwner = @currentOwner OUTPUT,
+            @currentSequence = @currentSequence OUTPUT;
         IF @lockResult NOT IN (0, 1)
         BEGIN
             IF XACT_STATE() <> 0
                 ROLLBACK TRANSACTION;
             THROW 51022, 'Slot application lock was not acquired.', 1;
         END;
-        SELECT @boundAccount = AccountId,
-            @boundCharacter = CharacterId,
-            @currentFence = Fence,
-            @currentOwnerKind = OwnerKind,
-            @currentOwner = OwnerId,
-            @currentSequence = LastSequence
-        FROM dh.CharacterAuthority WITH (UPDLOCK, HOLDLOCK) WHERE SlotId = 1;
         IF @boundAccount IS NULL
             THROW 51023, 'Required slot binding is absent.', 1;
         -- Preserve Authority → schema → Operation validation under the same transaction/applock.
@@ -119,33 +116,30 @@ BEGIN
     IF @@TRANCOUNT <> 0
         THROW 51025, 'Transaction count did not return to zero.', 1;
     -- Emit one terminal row only after COMMIT; Current* does not replace historical ResultSnapshot.
-    SELECT CONVERT(int, 1) AS TransportVersion,
-        @status AS Status,
-        @OperationId AS OperationId,
-        CONVERT(int, @Kind) AS Kind,
-        @outcome AS Outcome,
-        @resultCode AS ResultCode,
-        @resultSnapshot AS ResultSnapshot,
-        @isReplay AS IsReplay,
-        @recordedUtc AS RecordedUtc,
-        @databaseName AS DatabaseName,
-        @productVersion AS ProductVersion,
-        @schemaVersion AS SchemaVersion,
-        CONVERT(int, 1) AS PayloadVersion,
-        CONVERT(int, 1) AS SnapshotVersion,
-        @migrationManifest AS MigrationManifest,
-        CONVERT(int, 1) AS CurrentSlotId,
-        @boundAccount AS CurrentAccountId,
-        @boundCharacter AS CurrentCharacterId,
-        @currentOwnerKind AS CurrentOwnerKind,
-        @currentOwner AS CurrentOwnerId,
-        @currentFence AS CurrentFence,
-        @currentSequence AS CurrentLastSequence,
-        @accountPresent AS CurrentAccountPresent,
-        @characterPresent AS CurrentCharacterPresent,
-        @storedClass AS CurrentClass,
-        @characterVersion AS CurrentCharacterVersion,
-        @progressPresent AS CurrentProgressPresent,
-        @progressVersion AS CurrentProgressVersion,
-        @storedProgress AS CurrentStoredProgress;
+    EXEC dh.EmitPersistenceResult
+        @status = @status,
+        @OperationId = @OperationId,
+        @outcome = @outcome,
+        @Kind = @Kind,
+        @resultCode = @resultCode,
+        @resultSnapshot = @resultSnapshot,
+        @isReplay = @isReplay,
+        @recordedUtc = @recordedUtc,
+        @databaseName = @databaseName,
+        @productVersion = @productVersion,
+        @schemaVersion = @schemaVersion,
+        @migrationManifest = @migrationManifest,
+        @boundAccount = @boundAccount,
+        @boundCharacter = @boundCharacter,
+        @currentOwnerKind = @currentOwnerKind,
+        @currentOwner = @currentOwner,
+        @currentFence = @currentFence,
+        @currentSequence = @currentSequence,
+        @accountPresent = @accountPresent,
+        @characterPresent = @characterPresent,
+        @storedClass = @storedClass,
+        @characterVersion = @characterVersion,
+        @progressPresent = @progressPresent,
+        @progressVersion = @progressVersion,
+        @storedProgress = @storedProgress;
 END;

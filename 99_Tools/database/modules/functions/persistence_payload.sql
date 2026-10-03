@@ -78,7 +78,8 @@ BEGIN
     IF @Kind = 2
         SET @payload = @payload + @ExpectedCharacterVersion
             + CASE WHEN @ExpectedProgressVersion IS NULL THEN 0x00 ELSE 0x01 + @ExpectedProgressVersion END
-            + CONVERT(binary(1), @Class) + CONVERT(binary(4), @TownX) + CONVERT(binary(4), @TownY) + CONVERT(binary(4), @MaxHp);
+            + CONVERT(binary(1), @Class) + CONVERT(binary(4), @TownX)
+            + CONVERT(binary(4), @TownY) + CONVERT(binary(4), @MaxHp);
     IF @Kind = 4
         SET @payload = @payload + CONVERT(binary(1), @ExpectedOwnerKind)
             + CASE WHEN @ExpectedOwnerId IS NULL THEN 0x00 ELSE 0x01 + CONVERT(binary(16), @ExpectedOwnerId) END
