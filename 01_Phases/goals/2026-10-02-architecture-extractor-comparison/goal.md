@@ -1,10 +1,10 @@
 # 정적 관계 추출기 비교와 스냅샷 계약
 
-내부 목표 ID: A-1. **현재 상태: 네 번째 문서 판정은 D9 한 건으로 FAIL이다. D1–D8·N13·N14는 해소됐다. 보고 본문 23개 주장의 수치·제약·추천은 일치했지만 S06 근거의 source 필터가 틀렸다. 이를 실제 score `/rows/8/source`·`target`·`result`에 연결했고 비차단 N15(근거 위치 정밀도)·N16(과정 시각 출처)도 보완했다. 보고 본문·수치는 그대로이며 신규 Opus 재실사 전이다. 제품·테스트·oracle는 고정했고 기존 정상 성공 43개·expected failure 3개를 재실행하지 않았다. 제품 비차단 N1–N11·가독성 의견은 남아 있다. 구현자와 네 검증자는 정산·pane 종료했다. PR은 GameDev 선행 등록 변경이 main에 통합된 뒤 진행한다.**
+내부 목표 ID: A-1. **현재 상태: 다섯 번째 독립 문서 실사는 PASS(차단 0건)다. 검토 HEAD는 `1d04f6e`이며 23개 주장의 원천 전수 대조로 D9·N15·N16이 해소됐다. 메인의 R-2 대조가 일치했고 사용자는 SDK Roslyn을 선택했다. 선행 PR164는 `b385bc9`로 병합됐다. 사용자 마무리 결정에 따라 검증자 정산과 결정·재개 기록까지만 완료하고 중단한다. 구현자와 다섯 검증자는 모두 pane 종료했다. 최신 main 반영·Roslyn CI 등록·Architecture PR은 다음 세션에 남겼다. 제품 비차단 N1–N11·가독성 및 새 비차단 N17은 남긴다. 아래 ‘세션 종료와 자기완결 재개 지점’을 먼저 읽는다.**
 
 ## 목표와 결정 출처
 
-CodeGraph와 SDK 동봉 Roslyn을 동일한 실제 코드 표본으로 비교해 정적 관계의 정확도, 누락과 오인, 실행 비용을 확인한다. 운영툴에서 사용할 스냅샷 계약 초안을 만들고 추출기 선택 근거를 제공한다. 최종 추출기 선택은 결과를 본 사용자에게 맡긴다.
+CodeGraph와 SDK 동봉 Roslyn을 동일한 실제 코드 표본으로 비교해 정적 관계의 정확도, 누락과 오인, 실행 비용을 확인한다. 운영툴에서 사용할 스냅샷 계약 초안을 만들고 추출기 선택 근거를 제공한다. 사용자는 결과를 본 뒤 2026-10-02 SDK Roslyn을 선택했다. 결정 출처와 후속 범위는 아래 재개 지점에 기록한다.
 
 메인 요청은 `msg_b07ae67f4d45`와 발신 표기 정정 `msg_6c699283e2d2`다. 현재 메인 handle과 두 메시지의 `from_handle`을 대조했다. 원문은 로컬 `.backups/verification/2026-10-02-architecture-extractor-comparison/main-entry-messages.json`에 있다. 메인이 전달한 사용자 결정과 이 세션의 직접 관측을 구분한다.
 
@@ -199,3 +199,26 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 - N15는 SDK 동봉 근거 포인터·불필요한 Roslyn null 필드·runner/snapshot 줄 위치·다운로드 cache 원천 줄을 실제 위치로 좁힌 것이다. N16은 로컬 과정 이력의 시각을 원 메시지 레코드가 보존된 것처럼 적은 문제다. 원 레코드가 없고 Astra 수신 관찰의 후속 메인 전달만 보존돼 있음을 명시했다. 기존 FAIL 원문과 23행 실사표는 수정하지 않는다.
 - 쓰기 종료 뒤 worker-release(retained/external_terminal)와 동일 handle `term_ce4ef22a-c629-43f4-b6d1-8c65017e715f`, incarnation `20e174a8-d543-4b35-a0d5-07ead0a28647`의 완료 빈 prompt를 확인해 pane을 닫았다(ptyKilled=true). 근거는 `review-4-completion.json`, `review-4-release.json`, `review-4-before-close-identity.json`, `review-4-before-close-read.json`, `review-4-close.json`이다. 지정 claude-opus-5-5·화면 Opus 5.5 xhigh·backend unknown이며 세션을 재사용하지 않는다.
 - GameDev `msg_9e81ddbdf85f`는 선행 F가 PR 생성 전 마지막 독립 검증 중이며 main 통합 SHA는 아직 없다고 회신했다. 원문은 `gamedev-registry-status-0937.json`이다. 이 파트는 통합 통보 뒤에만 최신 main을 반영하고 승인된 Roslyn 등록을 진행한다. 현재 PR·CI·실제 카드 조인·사용자 도구 선택·병합 승인 미완료는 유지한다.
+
+### 다섯 번째 문서 판정과 정산
+
+- 검토 HEAD `1d04f6e4ab1ac209cba817da997bda8a637b3518`을 신규 Opus Task `task_ccf84a593701` / Dispatch `ctx_d2b8b476c861`에 발행했다. 계약은 로컬 근거 루트의 `review-5-task.txt`다. 최초 실행 명령은 `claude --model claude-opus-5-5`, 화면은 Opus 5.5 xhigh, backend 실제 모델은 unknown이다. 명령은 발행 당시 기록이고 raw split 응답에 명령 필드가 있는 것으로 주장하지 않는다.
+- [최종 판정 원문](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification-5/verdict.md)과 [23행 실사표](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/verification-5/claims-audit.md) 전체를 직접 읽었다. S01–S23을 원천에서 전수 확인한 결과 **PASS, 차단 결함 0건**이다. 인용 23/23, 링크 65개, JSON Pointer 129개와 소스 줄을 확인했고 D9·N15·N16은 해소됐다. 새 비차단 N17은 S06의 하위 조건에 scope/truth 직접 포인터를 더 연결하라는 의견이며 내용 자체는 맞다. 이번 마무리에서는 수정하지 않는다.
+- 보고 본문은 `ac13970`과 byte 동일하고 제품·테스트·oracle는 그대로다. 이번에는 문서 실사와 원시 자료·WSL cache 읽기만 했으며 제품 테스트·추출·restore/build·Unity·DB·CI를 재실행하지 않았다. 이전 정상 성공 43개·expected failure 3개는 첫 검증 실적이다. Astra도 양쪽 raw score `/rows/8`의 source=netRecv, target=validateFrame, 결과 FN/TP와 보고 파일 hash를 다시 대조했다(`wrap-astra-source-sample.json`). 이는 메인의 R-2 대조를 대신하지 않는다.
+- 완료 `msg_253a4f1aa86a`의 `worker_done outcome=succeeded`, 정확한 Task/Dispatch/from_handle와 쓰기 종료를 확인했다. release는 retained/external_terminal/processAction=none이었다. handle `term_0ec4ffac-59f0-49ef-a020-0d9ae9b8d5cd`, incarnation `1988a09d-1401-4efd-b530-51ef8c4fbe26`의 완료·빈 prompt를 확인해 해당 pane만 닫았다(`ptyKilled=true`). 근거는 `review-5-completion.json`, `review-5-release.json`, `review-5-before-close-identity.json`, `review-5-before-close-read.json`, `review-5-close.json`, `review-5-completion-ack.json`이다. 재사용하지 않는다.
+
+### 세션 종료와 자기완결 재개 지점
+
+**종료 결정:** 메인 `msg_0c92cfae954b`가 전달한 사용자 원문은 **“진행 중인 작업 하나만 끝내고 마무리”**다. 원문은 [마무리 지시](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/main-session-wrap-direction.json)에 보존했다. 진행 중이던 verification-5의 판정·정산·이 재개 기록까지만 수행했다. 새 작업자/검증자·PR·수정·범위는 시작하지 않는다. 자체 Astra pane은 사용자가 닫으며 이 세션은 빈 prompt로 돌아간다. 이 종료 기록은 목표 전체 완료나 다음 작업의 자동 시작 권한을 뜻하지 않는다.
+
+**현재 checkout과 보존 상태:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active`, 브랜치 `feat/architecture-extractor-a1-20261002`, HEAD `1d04f6e4ab1ac209cba817da997bda8a637b3518`이다. 종료 기록 전 clean이었고 종료 기록 후 미커밋 tracked 파일은 이 `01_Phases/goals/2026-10-02-architecture-extractor-comparison/goal.md` 하나다. 이 종료 기록은 commit/push하지 않았다. Architecture 브랜치의 열린 PR은 없으며 이번 세션에서 push/PR을 수행하지 않았다. 분석 입력 `881957c`, oracle 동결 `12327d8`, 제품 `d0dffd1`, 독립 테스트 `1daa451`, 최신 문서 `1d04f6e`를 구분한다. 기존 사용자 변경과 이 미커밋 재개 기록을 보존한다.
+
+**확정된 선택과 메인 대조:** 메인 `msg_b84c7d8a14a2`가 2026-10-02 사용자 원문 **“OK 로슬린으로 가자”**를 전달했다(메시지 생성 `2026-10-02T10:22:31Z`; 사용자 발언의 정확한 시각으로 확대하지 않는다). 선택은 **SDK Roslyn**이며 사용자 직접 입력이 아니라 현재 메인에게 전달받은 결정이다. 원문은 [선택·마무리 후속 지시](../../../.backups/verification/2026-10-02-architecture-extractor-comparison/post-wrap-inbox.json)에 보존했다. 같은 메시지의 **메인 독립 대조: 일치** 보고를 수신했다. 메인이 verification-5/verdict.md 전문을 읽고 양쪽 cold score의 `/rows/8` source=netRecv·target=validateFrame·결과 FN/TP, 전체 집계 Roslyn TP15/TN21·CodeGraph TP14/TN21/FN1을 보고서 15/0/0 대 14/0/1과 직접 대조한 방법이다. 이는 메인의 수행 보고이며 Astra 수행으로 귀속하지 않는다.
+
+**선행 PR:** GameDev의 독립 도구 등록 데이터 [PR164](https://github.com/bass131/dawnholder-server/pull/164)는 `2026-10-02T10:21:16Z`에 병합됐고 merge commit은 `b385bc95c21dbf20954c8a05d9d6f23184dc653c`다. 메인 전달과 Astra의 `gh pr view 164` 읽기 조회가 일치했다(`post-wrap-pr164-merged.json`). 메인이 전달한 당시 origin/main도 같은 SHA다. 앞서 head `af10bc3c58d817812f94aa8e09904b50eb3fa8ec`의 `dotnet-tests / test` SUCCESS는 `wrap-git-state.json`의 run `36992552840`에 있다. 선행 병합과 그 CI를 Architecture 변경의 CI 통과나 이 checkout의 main 반영으로 보고하지 않는다. 위 09:37·10:17의 병합 전 기록은 당시 상태다.
+
+**다음 세션의 첫 단계:** 메인이 재개를 지시하면 이 절과 최종 판정·[비교 보고](comparison-report.md)를 읽고 현재 메인 identity와 최신 main을 확인한다. 이미 확정된 Roslyn 선택을 다시 미결로 돌리지 않으며 과거 handle만으로 발행하지 않는다. 순서는 **최신 main(`b385bc9` 병합 포함) 반영 → 새 Sol로 독립 프로젝트 목록에 Architecture.Roslyn.csproj 한 항목 등록 → 새 Opus 검증 → CI → Architecture PR 준비**다. 새 Sol의 쓰기는 `99_Tools/Formatting/independent-projects.json`의 `Projects` 배열에 **`99_Tools/Architecture/Roslyn/Architecture.Roslyn.csproj` 추가**로 한정하고 `SchemaVersion=1`, 기존 Formatting/Formatting.Tests 항목을 보존한다. Python 독립 테스트용 C# 항목은 없다. Formatting 구현·CI·중앙 규칙은 범위 밖이다. 병합 직전 Architecture PR에 대한 사용자 명시 승인을 메인이 받는다. 오늘은 main 반영·새 작업자/검증자·등록·PR 모두 착수하지 않았다.
+
+**남은 판단과 한계:** SDK Roslyn 선택과 메인 R-2 대조는 완료됐지만 CI 등록/통합·Architecture PR별 병합 승인은 남았다. **CodeGraph `node_modules`·npm cache 정리 여부는 사용자 결정 대기**이며 선택만으로 삭제 권한을 추정하지 않는다. 닫힌 36후보에서 CodeGraph TP/FP/FN=14/0/1, Roslyn=15/0/0이고 범위 밖 불가능 층 방향은 16/0이다. 이는 저장소 전체 정확도가 아니다. Roslyn의 약 8초 분석 비용·SDK/참조 유지와 Unity 부분 해석(Error 285), 제품 비차단 N1–N11·가독성, 새 N17을 숨기지 않는다. 실제 같은 SHA의 시스템 카드 corpus 조인·화면·실행 trace는 완료하지 않았으며 뷰어 후속 목표를 자동 시작하지 않는다.
+
+**남긴 자원과 근거:** 이 목표가 연 외부 작업자/검증자 pane은 모두 닫았다. Architecture Astra pane만 사용자 종료를 기다린다. 로컬 근거 루트는 `.backups/verification/2026-10-02-architecture-extractor-comparison/`이며 Git 제외다. 최종 판정은 `verification-5/verdict.md`, 행별 근거는 `verification-5/claims-audit.md`, 제품 원시 실행은 `implementation/runs/20261002T065831395290Z/`, 과거 FAIL과 과정은 `verification/`부터 `verification-4/`, `report-reduction/history.md`에 남아 있다. 승인 설치의 `99_Tools/Architecture/CodeGraph/node_modules`와 `.npm-cache`, 전용 WSL 복제본 `/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5` 및 10개 격리 state는 근거 보존을 위해 삭제하지 않았다. 진행 중인 추출/빌드 작업은 없고 오늘 별도 자원 정리를 시작하지 않는다. 다음 세션은 필요한 근거만 읽고 전체 과거 대화·소스를 반복 수집하지 않는다.
