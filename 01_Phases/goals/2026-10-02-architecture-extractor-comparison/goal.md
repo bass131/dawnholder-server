@@ -1,6 +1,6 @@
 # 정적 관계 추출기 비교와 스냅샷 계약
 
-내부 목표 ID: A-1. **현재 상태: Roslyn 독립 프로젝트 등록 `86b697c`의 신규 Opus 판정은 PASS(차단 0건)다. [PR165](https://github.com/bass131/dawnholder-server/pull/165)를 만들었으며 원격 CI는 해당 PR Checks와 아래 실행 근거로 확인한다. PR별 사용자 병합 승인은 받지 않았다. 구현자·검증자는 정산·pane 종료했다. SDK Roslyn 선택과 이전 문서 실사 PASS는 유지한다. 제품 비차단 N1–N11·가독성·N17은 미해결이며 CodeGraph cache는 보존한다. Rules PR과 이 PR이 모두 병합된 뒤 메인이 Gardener·전체 검사 결과로 다음 목표를 재계획한다. 최신 결과는 아래 ‘등록 검증과 PR 통합’이다.**
+내부 목표 ID: A-1. **현재 상태: [PR165](https://github.com/bass131/dawnholder-server/pull/165)는 승인된 HEAD `8023152`로 병합됐다(merge `9633354`). 신규 Opus 등록 판정 PASS·차단 0건, CI SUCCESS·제품 test 834 성공/5 skip, 메인 R-2 일치다. 병합 결과 checkpoint `d5fb467` 뒤 신규 Opus Gardener가 후보 2건을 보고했고 원문 대조·정산·pane 종료까지 끝났다. 이번 목표의 외부 작업자는 모두 종료했으며 R-8 인계가 가능하다. SDK Roslyn 선택과 이전 문서 실사 PASS는 유지하며 제품 비차단 N1–N11·가독성·N17과 기존 expected failure 3개는 미해결이다. CodeGraph 설치본과 npm cache는 둘 다 보존한다. PR166 병합 뒤 메인이 Gardener·Rules 전체 검사 결과로 재계획한다. 병합 뒤 goal 기록은 로컬 checkpoint이며 main 반영과 구분한다.**
 
 ## 목표와 결정 출처
 
@@ -244,3 +244,47 @@ Management와 합의한 형태는 `codeReference:{commitSha,mappings:[{path,kind
 - [PR165](https://github.com/bass131/dawnholder-server/pull/165)는 초안으로 생성해 CI를 연결했다. 원격 HEAD별 CI 결과는 PR Checks와 로컬 `ci-final.json`·`ci-runs.json` 조회 근거로 구분한다. 코드 판정 HEAD `86b697c` 뒤의 목표 결과 기록은 문서 변경이며 제품·독립 테스트를 수정하지 않는다. 병합은 사용자 PR별 명시 승인 전에는 실행하지 않는다. 최종 비교 문서의 이전 PASS는 `verification-5/verdict.md`, 새 등록 PASS는 위 판정으로 서로 구분한다.
 - 새 비차단 관찰은 O1(csproj/props의 checkout별 CRLF와 hash 차이), O2(등록 누락 오류에 경로·수정 안내가 없음), O3(이전 종료 절은 과거 시점 기록)다. 수정 요구가 아니며 O2와 기존 결함·가독성 의견을 종료 뒤 Gardener 입력으로 남긴다. CodeGraph의 Windows 설치 파일 합계는 `2026-10-03T05:30:15Z` 측정에서 node_modules 296,018,321바이트, npm cache 64,762,250바이트(논리 파일 크기)이며 실제 네트워크 전송량이나 할당 디스크 크기가 아니다. 정리 여부는 메인 question으로 사용자 결정을 받는다.
 - **추가 재계획 결정:** 메인 `msg_52176f1f55d1`(생성 `2026-10-03T05:47:44Z`)은 사용자 확인을 전달하며, Rules 결함 수정 PR과 Architecture PR이 모두 병합된 직후를 첫 통합·재계획 지점으로 정했다. 각 파트는 자연 지점에서 최신 main과 새 규칙을 받고 메인은 Rules 전체 검사와 첫 Gardener 결과로 다음 목표를 다시 정한다. 따라서 위 모듈 경계 후보를 지금 자동 발행하지 않는다. 그 전 CURRENT는 자기 goal 링크 추가 외에는 수정하지 않는다. 이번 재개에서는 CURRENT를 수정하지 않았다. 원문은 로컬 `main-integration-replan.json`이다. GameDev·Rules·Management의 기술 경계 확인 원문은 각각 `gamedev-boundary-reply.json`, `rules-boundary-reply.json`, `implementation-settlement-check.json`과 회신 기록에 있다.
+
+### PR 생성 뒤 CodeGraph 보존 결정과 후속 재개
+
+메인 `msg_0b885199ef07`(생성 `2026-10-03T06:10:10Z`)이 전달한 사용자 결정은 **CodeGraph/node_modules와 .npm-cache 둘 다 보존(선택 2)**이다. 사용자 원문은 패키지를 유지하고 이후 다시 쓸 가능성을 열어 두되 연결 코드를 삭제 없이 정돈하라는 요청이다. 사용자 직접 입력으로 격상하지 않으며 원문은 로컬 `main-check-2.json`, 수신 회신은 `main-codegraph-retention-ack.json`에 있다. 앞선 정리 question은 이 결정으로 해소됐다.
+
+- PR165의 검증된 제품 변경에 정돈을 섞지 않는다. 현재 CodeGraph 파일·cache는 삭제하지 않는다.
+- 메인이 제안한 후속 기준은 Roslyn 기본 경로와 명시적으로 켜는 CodeGraph adapter 분리, Roslyn 실행·테스트의 CodeGraph 설치 의존 제거, 미설치를 위반과 구분한 ‘돌지 못함’ 상태와 고정 lock/설치 스크립트 수리 안내, 코드 가까운 현재 상태·재실행·비교 근거 안내다. package.json/lock·install-codegraph.ps1·syntax-context.cjs·Pipeline 연결이 대상 후보이며 삭제와 비교 재현성 훼손을 하지 않는다. ‘약 39곳 참조’는 메인 전달 관측이며 이 세션의 독립 검색 결과가 아니다.
+- 정돈은 PR165 병합 뒤 첫 재계획에서 선행 단계 또는 별도 goal로 결정한다. Astra의 제안은 **별도 작은 goal**이다. 실행·설치 의존 계약을 먼저 검증해 Roslyn 단독 실행 기반을 고정하고 모듈 의존 규칙의 판정과 분리할 수 있기 때문이다. 이 제안은 사용자 확정·goal 승인·구현 착수로 해석하지 않는다. 구현은 신규 Sol, 검증은 신규 Opus다.
+- 이 절은 원격 PR HEAD `8023152` 생성 뒤 도착한 결정을 보존하는 로컬 재개 기록이다. PR165의 제품 diff를 바꾸지 않았으며 이 기록의 다음 checkpoint는 병합·종료 정산과 함께 처리한다.
+
+**heartbeat 표식 관찰:** 이 목표의 Sol·Opus heartbeat 일부는 자기 태그가 있는 `alive` subject와 빈 body였다. Astra는 from_handle·Task·Dispatch를 대조했고, Opus에 `verification-heartbeat-tag-guidance.json`의 안내 한 번만 보냈다. 종료 전 `msg_ceb626c7fe66`는 body에도 자기 태그를 넣었다. worker_done의 태그·출처·정확한 lifecycle payload는 일치했다. 메인 `msg_0e635c0a67bc`(생성 `2026-10-03T06:15:03Z`)은 다른 파트에서도 같은 형태를 관측했다며 출처 대조·goal 한 번 기록·매 heartbeat 교정 금지를 지시했다. preamble 형식과 태그 규칙의 충돌 가능성은 메인의 가설이며 원인을 확정하지 않는다. 결과 보고·질문·worker_done의 태그 규칙은 유지하고 lifecycle heartbeat 예외 여부는 첫 재계획의 Rules 문서 정비 후보와 Gardener 입력으로 남긴다. 원문은 로컬 `main-heartbeat-direction.json`이다.
+
+**원격 CI와 승인 경계:** PR165 HEAD `802315289bff6533298e1fd362ec5f99b604bc56`의 [run 37101876011](https://github.com/bass131/dawnholder-server/actions/runs/37101876011)은 `2026-10-03T06:27:17Z` SUCCESS로 끝났다. 서식·입력·보존·Formatting.Tests 단계, 제품 솔루션 build, 제품 test가 모두 성공했다. 제품 test 원문은 839개 중 834 성공·5 skip이며, 5개는 기존 LongRunning·타이밍 의존 항목(맵 전환 10회, 이동 100회, LagSim 3개)이다. 이를 실행 성공으로 세지 않는다. 경고는 남아 있고 Unity Editor·사람의 플레이·DB 검증 완료를 뜻하지 않는다. 근거는 로컬 `ci-final-run.json`, `ci-final.json`, `ci-final.log:326,365,2509–2512`와 skip 사유 원문이다. 이전 HEAD `86b697c` run `37101764930`은 문서 결과 commit으로 대체돼 취소한 실행이며 실패나 통과 근거가 아니다. PR은 ready for review·OPEN·MERGEABLE로 조회됐고 병합·자동 병합은 수행하지 않았다.
+
+메인은 새 판정 원문과 R-2 표본을 직접 확인한 뒤 **PR165에 대한 사용자 명시 승인**을 받아야 한다. 승인·병합 전에는 Gardener를 발행하지 않는다. Gardener 계약 초안은 로컬 `gardener-task-draft.txt`로 준비했으며 그 존재는 발행이 아니다. 신규 검증자의 전용 WSL 공간과 복사된 원시 근거는 보존했다. 로컬 tracked 미커밋 파일은 이 goal.md 하나이며, PR 이후 결정·CI 결과·향후 checkpoint를 담는다.
+
+최종 메인 question은 `msg_fae32f4d194b`(`2026-10-03T06:31:34Z`)이며 PR165·정확한 HEAD·CI·판정 경로·R-2·사용자 병합 승인과 위 미커밋 재개 기록을 전달했다. 원문은 로컬 `main-pr165-merge-question.json`이다. enqueue 성공이며 메인의 읽음·사용자 승인으로 해석하지 않는다. 메인 terminal에 작성 중인 draft가 보여 별도 터미널 입력은 보내지 않았다.
+
+### PR165 병합과 종료 점검 진입
+
+메인 `msg_030a913b107d`(생성 `2026-10-03T06:33:14Z`)이 사용자 원문 **“OK 병합 승인”**을 PR165 HEAD `802315289bff6533298e1fd362ec5f99b604bc56` 한정으로 전달했다. 메인이 전달한 결정이며 사용자 직접 입력으로 격상하지 않는다. 발신 handle과 현재 메인 incarnation을 대조했고 원문은 로컬 `main-merge-approval.json`에 보존했다. 메인은 판정 원문 전문·부정 입력 6종·등록 diff·CI HEAD와 839/834/5·CLEAN/자동 병합 없음의 R-2 대조가 일치했다고 보고했다.
+
+Astra가 병합 전 상태를 조회했을 때 PR은 이미 MERGED였다. 직접 조회한 GitHub `mergedAt`은 `2026-10-03T06:33:13Z`, merge commit은 `963335414cbf52886fe24aee41aebfaf8cf16fbe`, PR HEAD는 승인 SHA와 같고 CI는 SUCCESS였다. merge commit의 부모도 `b385bc9`와 `8023152`다. Astra가 병합 명령을 실행했다고 보고하지 않으며 중복 병합하지 않았다. 근거는 `pr165-merged.json`, 메인 회신은 `main-merge-observed-send.json`이다.
+
+승인된 순서는 결과 기록·로컬 checkpoint → 신규 Opus Gardener(보고서 한 파일 외 읽기 전용) → 메인 보고다. 병합 후 결정·결과 기록을 이미 병합된 PR이나 main에 반영됐다고 표현하지 않는다. 다음 목표는 PR166 병합 뒤 메인의 첫 통합·재계획에서 정한다. CodeGraph 연결 정돈과 모듈 경계 검사는 아직 발행하지 않는다.
+
+**종료 단계 운영 규칙 수신:** 메인 `msg_78629c4a1ab3`은 Enter로 제출돼 대화 기록에 들어간 표식 없는 입력만 사용자 직접 지시이며, 미제출 draft·추천 문구·ghost text는 지시나 pane 종료 보류 근거가 아니라고 전달했다. 미제출 worker-start 계약은 사용자 입력이 아니라 공식 recovery·메인 판단 대상으로 구분한다. 원문은 `main-input-rule-and-gardener-heartbeat.json`이다. 기존의 draft 관측을 사용자 지시로 해석하지 않으며 이 기준을 이후 종료 판단에 적용한다.
+
+메인 `msg_4a4d50b7b934`의 사용자 결정에 따라 **같은 작업 계약 또는 같은 결함 번호의 Sol 실패가 3회 확정되면 4번째 시도 전 구현 모델 격상 또는 Fable Advisor**를 선택한다. FAILED 종료 또는 같은 결함의 독립 NOT PASS를 세고, 계획된 원인 조사용 FAILED는 근거를 적어 제외한다. 격상은 새 외부 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` 구현 세션이며 파트 리드의 직접 구현이 아니다. Advisor는 새 `claude --model claude-fable-5-1` 읽기 전용 세션에 계약·3회 실패 원문·관련 경로를 주고 조언 파일 하나만 허용한다. 조언은 판정·승인이 아니며 선택·이유·실패 근거를 메인에 보고한다. 기존 같은 번호 3회 재검증 실패 보고와 지정 모델 불가 시 대체 금지를 유지한다. R-7 goal 검토 시범과 별도 용도이며 정식 문서는 Rules 2단계에서 반영한다. 메인이 전달한 결정으로 수신했고 원문은 `main-escalation-rule.json`이다. 현재 등록 구현은 한 번에 PASS했으며 Gardener는 읽기 전용이므로 이 수신으로 새 구현/Advisor를 발행하지 않는다.
+
+### Gardener 결과와 최종 인계
+
+신규 외부 Opus Task `task_f26cbccc5051` / Dispatch `ctx_50901f94ff5e`, terminal `term_165dc3d9-65da-482b-980e-ff1efde1e8d0`, incarnation `406bbe8e-7cef-46be-87c3-bb8df79ca189`가 읽기 전용 점검을 수행했다. 최초 명령은 `claude --model claude-opus-5-5`, 화면은 Opus 5.5 xhigh, backend unknown이다. 준비·빈 prompt·실제 경로를 확인했고 `gardener-start.json`에 input_accepted·turn_started가 있다. `2026-10-03T06:48:48Z` worker_done `msg_4cb079e1934f`를 수신했으며 유일한 작성 파일은 [Gardener 원문](../../../.backups/verification/2026-10-03-architecture-roslyn-registration/gardener.md)이다. Astra는 전문을 읽고 아래 근거를 표본 대조했다. 별도 테스트나 검사를 재실행한 판정이 아니다.
+
+- **heartbeat 규칙·예시 정비:** 보존된 원 레코드 9건의 body가 비었고 2건은 subject 태그도 없었다. payload의 Task/Dispatch와 기록된 발신 handle은 모두 대조됐다. 전체 발송 건수는 미확인이다. Rules가 예외 여부를 결정한 뒤 수신 helper와 fixture로 발신자·Task·Dispatch를 검사하고, 엄격 태그 정책을 유지하면 계약 예시에 body를 명시하는 후보다. 이번 검증자가 본 preamble의 body 생략은 직접 관측이나 다른 세션의 원인으로 확정하지 않는다.
+- **문서 근거 인용 검사:** 문서 판정 3~5차에 연속 나타났으며 3~4차 차단 D7·D8·D9의 경로·필드·시각·필터 부분을 정본 helper와 음성 fixture로 검사하는 후보다. `path:line`, JSON Pointer와 실제 값·literal을 대조하고 수리 안내를 출력한다. 원시 근거는 Git 제외이므로 실제 문서는 로컬에서, fixture는 CI에서 검사하는 제안이다. 의미 판정·확인 주체 판정은 계속 독립 검증자가 맡는다.
+
+보고서의 두 후보는 관측 단위가 다르다(메시지 9건, 문서 판정 3회). 따라서 후보 번호를 공통 분모의 통계적 빈도 순위로 해석하지 않는다. 근거 원문과 횟수는 대조했으며 메인이 비용·영향과 함께 채택을 판단한다. 현재 수정·채택은 없다. Astra 대조 근거는 `gardener-astra-source-sample.json`에 있다. D7/D8/D9 판정 해당 절, 5차 N17·인용 개수, 지정 JSON 5파일의 고유 heartbeat 9건, CI workflow와 runner의 Node 옵션을 직접 확인했으며 메인의 R-2를 대신하지 않는다.
+
+CI 실패나 새 C# 경고 억제 위반은 발견되지 않았다. 다만 Node `--disable-warning=ExperimentalWarning`은 runner에 존재하며 벤더와 같은 옵션이라는 관찰을 보고했다. Architecture.Roslyn 컴파일 경고와 Python Architecture.Tests는 현재 CI 실행 범위 밖이고, Python의 이번 로컬 43 성공·3 expected failure와 구분한다. Rules 전체 검사 결과와 4주 파일럿 비용·잡음 평가는 미실행이다. 기존 제품 비차단·Unity 부분 해석·사람의 플레이/DB 미검증도 남는다.
+
+완료 원문을 대조한 뒤 release(`external_terminal`, processAction `none`) → 동일 incarnation·완료 화면 확인 → 정확한 pane close(`ptyKilled=true`) → delivery acknowledge를 수행했다. 근거는 `gardener-completion.json`, `gardener-release.json`, `gardener-final-identity.json`, `gardener-final-screen.json`, `gardener-close.json`이다. 구현·등록 검증·Gardener의 세 외부 세션을 재사용하지 않는다. CodeGraph 설치·cache와 기존 WSL 근거 공간, 새 등록 검증 전용 WSL clone(검증자 측정 약 8.2 GiB)은 보존했고 자원 삭제는 수행하지 않았다.
+
+현재 인계 대상은 이 checkout·브랜치의 로컬 종료 checkpoint와 `.backups/verification/2026-10-03-architecture-roslyn-registration/` 근거다. 메인 보고 뒤 R-8 Astra 교체를 기다리며 현재 Astra가 자기 pane을 닫거나 새 목표를 시작하지 않는다. 새 목표는 PR166 병합 뒤 최신 main에서 메인이 결정한다. 병합 뒤 goal 기록을 main 반영으로 오해하지 말고 기존 비교 자료와 새 등록/CI/Gardener 근거의 범위를 구분한다.
