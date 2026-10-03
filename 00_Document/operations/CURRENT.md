@@ -1,5 +1,7 @@
 # 현재 목표
 
+[CodeGraph 연결 코드 정돈](../../01_Phases/goals/2026-10-03-codegraph-adapter-cleanup/goal.md)
+
 [작업 전 맥락과 코드 규칙의 실행 연결](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md)
 
 [정적 관계 추출기 비교와 스냅샷 계약](../../01_Phases/goals/2026-10-02-architecture-extractor-comparison/goal.md)
