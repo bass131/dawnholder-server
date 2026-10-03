@@ -1,11 +1,14 @@
 // Independent regressions for 99_Tools/CodeRules. Expectations come from the approved goal,
 // the Changed/All decision and the SQL deferral decision, not from the checker's code: every
 // fixture line below is chosen so its file, rule and line are known before the checker runs.
+// Workflow tests take platform rules from the GitHub Actions reference and the job-local layout
+// from the approved paths, not from the workflow's own text.
 //
 // Environment: CODE_RULES_PSSA_MANIFEST (approved PSScriptAnalyzer 1.25.0 manifest),
 // CODE_RULES_PYTHON (default python3), CODE_RULES_WSL_DISTRIBUTION (required on Windows),
 // CODE_RULES_RESULTS (raw evidence parent), CODE_RULES_TEST_WORK (temporary repositories).
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { appendFile, copyFile, cp, mkdir, readFile, readdir, rm, stat, symlink, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { after, before, test } from 'node:test';
@@ -762,6 +765,212 @@ test('the workflow keeps PR Changed, manual All or Changed, no schedule and narr
   const executable = workflow.split('\n').filter(line => !/^\s*#/.test(line)).join('\n');
   assert.doesNotMatch(executable, /sqlfluff/i, 'SQL inspection must stay disconnected while deferred');
   assert.doesNotMatch(executable, /--fix|baseline/i);
+});
+
+const workflowPath = join(repositoryRoot, '.github/workflows/code-rules.yml');
+// Lines as GitHub checks the workflow out (LF); a Windows checkout may have added CR.
+const readWorkflowLines = async () => (await readFile(workflowPath, 'utf8')).replace(/\r\n/g, '\n').split('\n');
+const indentOf = line => line.length - line.trimStart().length;
+const isYamlContent = line => line.trim() !== '' && !line.trimStart().startsWith('#');
+const unsupportedForm = (lines, index, reason) =>
+  new Error(`Unsupported workflow form at line ${index + 1} (${reason}): ${lines[index]}`);
+
+// Indices of the YAML content lines nested under lines[parent], up to its next sibling.
+function nestedLines(lines, parent) {
+  const nested = [];
+  for (let index = parent + 1; index < lines.length; index += 1) {
+    if (!isYamlContent(lines[index])) continue;
+    if (indentOf(lines[index]) <= indentOf(lines[parent])) break;
+    nested.push(index);
+  }
+  return nested;
+}
+
+function directChildren(lines, parent) {
+  const nested = nestedLines(lines, parent);
+  if (nested.length === 0) return [];
+  return nested.filter(index => indentOf(lines[index]) === indentOf(lines[nested[0]]));
+}
+
+// Contexts GitHub allows in jobs.<job_id>.env ("Context availability" in the contexts reference).
+// runner is not one of them: it only exists once the job's steps run.
+const jobEnvironmentContexts = ['github', 'needs', 'strategy', 'matrix', 'vars', 'secrets', 'inputs'];
+
+// The `NAME: value` lines of every jobs.<job_id>.env block. Only the one-line plain form this
+// workflow uses is read; any other form fails instead of being skipped.
+function jobEnvironmentEntries(lines) {
+  const jobsLine = lines.indexOf('jobs:');
+  if (jobsLine < 0) throw new Error('Unsupported workflow form: no top-level "jobs:" line');
+  const jobs = directChildren(lines, jobsLine);
+  if (jobs.length === 0) throw unsupportedForm(lines, jobsLine, 'no job');
+  const entries = [];
+  for (const job of jobs) {
+    const jobId = /^\s+([A-Za-z_][\w-]*):$/.exec(lines[job])?.[1];
+    if (!jobId) throw unsupportedForm(lines, job, 'expected "<job_id>:"');
+    const keys = directChildren(lines, job);
+    const notKey = keys.find(index => !/^\s+[\w-]+:(?: |$)/.test(lines[index]));
+    if (notKey !== undefined) throw unsupportedForm(lines, notKey, 'expected "key:" under a job');
+    const env = keys.find(index => /^\s+env:/.test(lines[index]));
+    if (env === undefined) continue;
+    if (lines[env].trim() !== 'env:') throw unsupportedForm(lines, env, 'job env must be a block mapping');
+    const values = nestedLines(lines, env);
+    for (const index of values) {
+      const match = /^\s+([A-Za-z_]\w*): (\S.*)$/.exec(lines[index]);
+      const sameLevel = indentOf(lines[index]) === indentOf(lines[values[0]]);
+      if (!match || !sameLevel || /^['"|>{[&*!]/.test(match[2])) {
+        throw unsupportedForm(lines, index, 'expected a one-line plain "NAME: value"');
+      }
+      entries.push({ line: index + 1, name: `jobs.${jobId}.env.${match[1]}`, value: match[2] });
+    }
+  }
+  return entries;
+}
+
+// First names of the property chains in a value's ${{ }} expressions, such as github in
+// github.event_name. Quoted strings, function calls and true/false/null are skipped; nothing is evaluated.
+function contextsIn(value) {
+  if (value.replace(/\$\{\{[\s\S]*?\}\}/g, '').includes('${{')) throw new Error(`Unclosed expression: ${value}`);
+  const contexts = new Set();
+  for (const [, expression] of value.matchAll(/\$\{\{([\s\S]*?)\}\}/g)) {
+    const withoutStrings = expression.replace(/'(?:[^']|'')*'/g, "''");
+    for (const [, name, call] of withoutStrings.matchAll(/(?<![\w.-])([A-Za-z_][\w-]*)(\s*\()?/g)) {
+      if (call === undefined && !['true', 'false', 'null'].includes(name)) contexts.add(name);
+    }
+  }
+  return [...contexts];
+}
+
+test('the workflow job env uses only the contexts GitHub allows in jobs.<job_id>.env', async () => {
+  // The first remote run was rejected before the job started: runner.temp in jobs.check.env.
+  const refused = jobEnvironmentEntries(await readWorkflowLines()).flatMap(entry => contextsIn(entry.value)
+    .filter(context => !jobEnvironmentContexts.includes(context))
+    .map(context => `line ${entry.line} ${entry.name}: ${context}`));
+  assert.deepEqual(refused, []);
+});
+
+// The `run: |` body of the bash step `name`, as YAML's default clipping hands it to the shell.
+// Only that body runs here, so a step with any other key (env, if, working-directory) fails.
+function bashStepBody(lines, name) {
+  const step = lines.findIndex(line => line.trim() === `- name: ${name}`);
+  if (step < 0) throw new Error(`Workflow step not found: ${name}`);
+  const keyIndent = indentOf(lines[step]) + 2;
+  const keys = nestedLines(lines, step).filter(index => indentOf(lines[index]) === keyIndent);
+  const keyText = keys.map(index => lines[index].trim());
+  if (keyText.length !== 2 || !keyText.includes('shell: bash') || !keyText.includes('run: |')) {
+    throw unsupportedForm(lines, step, `expected only "shell: bash" and "run: |", found ${keyText.join(' / ')}`);
+  }
+  const run = keys[keyText.indexOf('run: |')];
+  const body = [];
+  for (let index = run + 1; index < lines.length; index += 1) {
+    if (lines[index].trim() !== '' && indentOf(lines[index]) <= keyIndent) break;
+    body.push(lines[index]);
+  }
+  while (body.length > 0 && body.at(-1).trim() === '') body.pop();
+  const bodyIndent = indentOf(body.find(line => line.trim() !== '') ?? '');
+  if (body.length === 0 || body.some(line => line.trim() !== '' && indentOf(line) < bodyIndent)) {
+    throw unsupportedForm(lines, run, 'expected an indented literal block');
+  }
+  return `${body.map(line => line.slice(bodyIndent)).join('\n')}\n`;
+}
+
+// GitHub runs `shell: bash` as `bash --noprofile --norc -eo pipefail {0}` (workflow syntax reference).
+// On Windows the same bash comes from the WSL distribution these tests already require. `env -i`
+// limits the process environment to what the test hands it.
+function runBash(scriptPath, environment) {
+  const argv = [
+    'env', '-i', 'PATH=/usr/local/bin:/usr/bin:/bin',
+    ...Object.entries(environment).map(([name, value]) => `${name}=${value}`),
+    'bash', '--noprofile', '--norc', '-eo', 'pipefail', scriptPath,
+  ];
+  const [command, ...args] = process.platform === 'win32'
+    ? ['wsl', '-d', toolEnvironment().tools.wslDistribution, '--exec', ...argv]
+    : argv;
+  const result = spawnSync(command, args, { encoding: 'utf8' });
+  return {
+    argv: [command, ...args],
+    exit: result.status,
+    error: result.error?.message ?? null,
+    stdout: result.stdout,
+    stderr: result.stderr,
+  };
+}
+
+// The bash spelling of a local directory: unchanged on Linux, its WSL mount path on Windows.
+function bashPath(path) {
+  if (process.platform !== 'win32') return path;
+  const distribution = toolEnvironment().tools.wslDistribution;
+  const result = spawnSync('wsl', ['-d', distribution, '--exec', 'wslpath', '-a', '-u', path], { encoding: 'utf8' });
+  if (result.status !== 0) throw new Error(`wslpath failed (${result.status}): ${result.stderr}${result.error ?? ''}`);
+  return result.stdout.trim();
+}
+
+// Approved job-local layout under RUNNER_TEMP: results (the uploaded artifact), analyzer modules
+// and npm cache. The job env held these paths before they moved to GITHUB_ENV.
+const jobLocalPaths = {
+  RULES_OUTPUT: 'code-rules-results',
+  RULES_MODULES: 'code-rules-tools/modules',
+  NPM_CONFIG_CACHE: 'code-rules-tools/npm',
+};
+
+// GITHUB_ENV in the documented one-line form NAME=value. The multiline NAME<<DELIMITER form is not
+// used by this workflow and is refused, as is a repeated name.
+function readGitHubEnvironment(text) {
+  const values = {};
+  for (const line of text.split('\n').filter(line => line !== '')) {
+    const match = /^([A-Za-z_]\w*)=(.*)$/.exec(line);
+    if (!match) throw new Error(`Unsupported GITHUB_ENV line: ${line}`);
+    if (Object.hasOwn(values, match[1])) throw new Error(`Repeated GITHUB_ENV name: ${match[1]}`);
+    values[match[1]] = match[2];
+  }
+  return values;
+}
+
+test('the workflow initializer hands three job-local paths to a later bash process through GITHUB_ENV', async () => {
+  const directory = join(workspace.work, 'workflow-initializer');
+  // GitHub-hosted runner paths have no space; one here shows that every use is quoted.
+  const runnerTemp = join(directory, 'runner temp');
+  await mkdir(runnerTemp, { recursive: true });
+  await writeFile(join(runnerTemp, 'set_env'), '');
+  const initializerBody = bashStepBody(await readWorkflowLines(), 'Initialize job-local paths');
+  await writeFile(join(directory, 'initializer.sh'), initializerBody);
+  // Local stand-in for the runner hand-off (workflow commands reference: GITHUB_ENV is read after
+  // the step and its values reach every later step). A separate bash gets only what the real step
+  // wrote and leaves a marker where each value points; the later workflow steps do not run here.
+  const laterStep = [
+    'set -u',
+    `for name in ${Object.keys(jobLocalPaths).join(' ')}; do`,
+    '  mkdir -p "${!name}"',
+    '  printf \'%s\\n\' "$name" > "${!name}/marker.txt"',
+    'done',
+    '',
+  ].join('\n');
+  await writeFile(join(directory, 'later-step.sh'), laterStep);
+
+  const bashDirectory = bashPath(directory);
+  const bashRunnerTemp = `${bashDirectory}/runner temp`;
+  const evidencePath = join(workspace.results, `${workspace.nextCase('workflow-initializer')}.json`);
+  const keep = evidence => writeFile(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`);
+  const initializer = runBash(`${bashDirectory}/initializer.sh`, {
+    RUNNER_TEMP: bashRunnerTemp,
+    GITHUB_ENV: `${bashRunnerTemp}/set_env`,
+  });
+  const githubEnvironment = await readFile(join(runnerTemp, 'set_env'), 'utf8');
+  await keep({ initializerBody, initializer, githubEnvironment });
+  assert.equal(initializer.exit, 0, `${initializer.stderr}${initializer.error ?? ''}`);
+
+  const handedOver = readGitHubEnvironment(githubEnvironment);
+  const expected = Object.fromEntries(Object.entries(jobLocalPaths)
+    .map(([name, relative]) => [name, `${bashRunnerTemp}/${relative}`]));
+  assert.deepEqual(handedOver, expected);
+
+  const later = runBash(`${bashDirectory}/later-step.sh`, handedOver);
+  await keep({ initializerBody, initializer, githubEnvironment, laterStep, later });
+  assert.equal(later.exit, 0, `${later.stderr}${later.error ?? ''}`);
+  for (const [name, relative] of Object.entries(jobLocalPaths)) {
+    const marker = join(runnerTemp, ...relative.split('/'), 'marker.txt');
+    assert.ok(await exists(marker), `${name} must lead the later process to runner temp/${relative}`);
+    assert.equal(await readFile(marker, 'utf8'), `${name}\n`);
+  }
 });
 
 test('the SQL deferral evidence link resolves to the recorded decision', async () => {

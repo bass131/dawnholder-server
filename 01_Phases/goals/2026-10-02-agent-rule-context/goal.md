@@ -2,7 +2,7 @@
 
 ## 현재 상태와 승인된 결정
 
-**2026-10-03 재개 — #1~#3 재검증 통과, PR #166 원격 workflow 결함 #4 수정 중·목표 미완료.** 메인 `msg_61d4c35695da`에 따라 신규 Sol 수정과 신규 Opus 재검증을 마쳤다. 이전 검증의 17/17 통과는 결함 해소 근거로 사용하지 않고, 이번 독립 판정과 두 설치의 19/19 통과를 별도로 기록한다. 작업자는 정산·종료했다. 판정·재개 순서·이전 미커밋 목록은 [재개 기록](#session-resume), 이번 세션은 [2026-10-03 진행](#resume-2026-10-03)에 있다. 최신 SQL 범위는 [보류 결정](#sql-deferred)을 유지한다.
+**2026-10-03 재개 — #1~#4 로컬 재검증 통과, PR #166 원격 CI 확인 단계·목표 미완료.** 메인 `msg_61d4c35695da`에 따라 신규 Sol 수정과 신규 Opus 재검증을 마쳤다. 이전 검증의 17/17 통과는 결함 해소 근거로 사용하지 않고, 이번 독립 판정과 두 설치의 19/19 통과를 별도로 기록한다. 작업자는 정산·종료했다. 판정·재개 순서·이전 미커밋 목록은 [재개 기록](#session-resume), 이번 세션은 [2026-10-03 진행](#resume-2026-10-03)에 있다. 최신 SQL 범위는 [보류 결정](#sql-deferred)을 유지한다.
 
 **앞선 검증 종료 뒤 메인 추가 변경:** CLAUDE.md에 실행 출처 추적·수기 측정값/동어반복 테스트 차단 조항 1줄이 추가됐다. SHA256 `5e8f26c1c645c39a7c5f12e2f300b546ac3d0e2bee995b3025155f1ecced0c4a`를 이번 신규 Opus가 실사했고 기존 규칙과 충돌 없음으로 판정했다. 앞선 `921b4b3e…` 대상 판정과 구분한다.
 
@@ -365,3 +365,20 @@ Sol `msg_b7ac967f9b92`는 workflow 한 구간11행 추가/3행 삭제와 쓰기 
 신규 Opus `msg_71bd93d03573`는 제품 workflow 로컬PASS·24/24회귀·변이13/13·쓰기종료를 보고했다. Astra는 `ci-verification/verdict.md` 전문과 제품28개 hash 불변을 대조했다. 그러나 보고 결론의 모든메시지 subject/body태그·형식차이없음 주장은 실제 빈body heartbeat `msg_ee1b7eacd60b`와 불일치한다(`ci-verification-first-heartbeats.json`). `msg_801551e0dee3`으로 메인에 즉시 보고했다. 이 차이를 소급해 준수로 고치지 않고 기존 원문을 보존한다.
 
 테스트helper는 첫 안내 `msg_961a89a61462`에 따라 표현식평가기 등을 제거했으나 YAML파싱·job순서/checkout/upload모사가 남았다. 이후 좁은Bash초기화/환경파일3값/별도프로세스전달로 한정한 `msg_cb7b558f2e44`는 최종산출물에 미반영이다. 따라서 테스트 범위와 보고의 최종수용은 보류한다. worker_done된 검증자는 정산·정확incarnation대조·종료했다(`ci-verification-*`); 재사용하지 않는다. 후속 신규Opus는 테스트만 좁히고 최종회귀/원본재발검출 및 별도정정판정을 맡는다. 제품workflow11+/3-와 이전실행원문은 보존하며 Sol3회실패조건과 혼동하지 않는다. 중간 테스트본문2개도 `ci-verification-reviewed-tests/`에 보존했다.
+
+
+### 최신 main 재통합과 최소 회귀 후속 검증
+
+workflow 수정과 진행 기록은 `a2bcdf9`에 커밋했다. main `963335414cbf52886fe24aee41aebfaf8cf16fbe`(#165)를 `794fc36`에서 통합했다. CURRENT의 같은 위치 목표 링크 추가만 충돌했고, 양쪽 기존 링크 블록과 문단 구분을 보존하는 기계적 Git 통합으로 해결했다. 한쪽 추가 블록을 제거하면 다른 쪽 원문과 정확히 같음을 대조했다. 세 방향 원문과 결과는 `architecture-main-integration/`에 있다. 최초 줄 단위 union에서 붙은 링크 문단은 원래 두 문단 블록 그대로 조합해 미푸시 merge commit을 amend했다. 새 문구나 목표 상태 재서술은 없으며 후속 Opus가 읽기 전용으로 보존을 확인한다. 제품 workflow hash는 `4B0235FE…0447`을 유지한다.
+
+새 Opus는 terminal `term_9e930267-79cd-41e9-bb89-d779b9efb39c`, incarnation `141e8826-4a49-4838-b6cc-fcd662dc126b`, Task `task_31aef2427aac` / Dispatch `ctx_c9c75df22072`다. 최초 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown. 일반 빈 prompt·tui-idle=true·선택창 없음을 확인했고 첫 attach의 input_accepted와 turn_started를 관측했다. 계약 `ci-followup-contract.md`, 제품28개 hash `ci-followup-input-hashes.json`, 근거 `ci-verification-followup/`이다. 허용 쓰기는 테스트 두 파일과 그 근거 폴더뿐이다. 원래19개 회귀 보존, job env 문맥 검사와 실제 Bash/환경파일/별도 프로세스 전달의 두 책임만 추가하며 일반 YAML 파서·표현식 평가기·job runner는 제외한다. 앞선 보고 불일치는 원문 보존 후 별도 정정한다. 원격 PR은 아직 `71fd894`이고 후속 판정 뒤 최신 로컬 커밋을 push한다.
+
+
+
+### 최소 회귀 최종 판정과 PR 갱신
+
+신규 Opus `msg_2fd6c13571f7`는 번호 결함 없음·로컬 통과·쓰기 종료를 보고했다. Astra는 `ci-verification-followup/verdict.md` 전문, 최종 회귀 stdout(21/21·skip0·exit0), 원본 검출 stdout(26/27/28행 runner 거부와 초기화 스텝 부재), 실제 테스트 diff, 고정 제품28개 hash 불변을 대조했다. 새 일반 workflow 도우미는 삭제했고 기존 테스트 파일에 두 책임만 삽입했다. 최종 테스트 SHA256 `0fdc410fc4df499f7d2fcc88cbac0edc81a7fbe6e270328a98864d171b4d90ef`, 원래19개와 repository-fixture는 보존됐다.
+
+앞선 heartbeat 보고 불일치와 이번 첫 빈 body를 구분해 정정했고, 당시 원문은 보존했다. 신규 Opus는 전달 근거 메시지 `msg_f52bc6f98a38`를 반영하고 마지막 우편함이 비었음을 보고했다. CURRENT 통합은 두 부모와 원문 블록의 바이트 대조 및 링크 누락/신규 추가0(양쪽 링크의 합집합)으로 확인됐다. 정상 Task/Dispatch 완료 후 release·정확 incarnation 대조·close ptyKilled=true를 `ci-followup-*`에 남겼다.
+
+원격 main 재조회는 여전히 `9633354`다. 최종 테스트와 진행 기록을 커밋·push해 PR #166의 실제 Linux CI를 확인한다. 새 테스트의 Linux 분기, 실제 workflow 정의 수용·job 시작·artifact·런타임 버전은 원격 결과로 확인해야 한다. 병합은 PR별 사용자 명시 승인 전 불가하며, 병합 후 main 수동 All1회와 파트별 보고·Gardener는 남아 있다.
