@@ -1,4 +1,4 @@
-param([ValidateSet('prepare','measure','check','path')][string]$Action = 'check')
+param([ValidateSet('prepare', 'measure', 'check', 'path')][string]$Action = 'check')
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'Architecture.Common.ps1')
 $settings = Get-ArchitectureSettings

@@ -6,12 +6,14 @@ import hashlib
 import json
 import os
 import pathlib
-import shutil
 import subprocess
 import time
 from collections import Counter
+
+import codegraph_adapter
 from execution import run_process, utc_now
 from inputs import read_json, write_json, digest, verify, relative_path
+# Keep dump_codegraph importable here as well as from normalization.
 from normalization import normalize, dump_codegraph
 from snapshot import validate, layer
 
@@ -24,8 +26,7 @@ def require_success(record, folder):
 def cache_state(root, extractor):
     if extractor == "Roslyn":
         return {"persistentAnalysisCache": False, "process": "fresh", "workspacePrerequisites": "restored projects/SDK; compiler build hosts may share OS page cache"}
-    folder = root / ".codegraph"
-    return {"persistentAnalysisCache": folder.exists(), "files": [{"path": str(p.relative_to(root)), "bytes": p.stat().st_size, "sha256": digest(p)} for p in sorted(folder.rglob("*")) if p.is_file()] if folder.exists() else []}
+    return codegraph_adapter.cache_state(root)
 
 
 def freeze_check(source, evidence):
@@ -65,10 +66,7 @@ def extractor_config(raw, runtime, batch):
                                     "references": sorted(c["references"], key=lambda r: json.dumps(r, sort_keys=True))}
                                    for c in raw.get("compilations", [])]
     else:
-        config["bundleFiles"] = [{"path": str(path.relative_to(runtime / "bundle")), "sha256": digest(path)}
-                                 for path in sorted((runtime / "bundle").rglob("*"))
-                                 if path.is_file() and (path.suffix == ".wasm" and "c_sharp" in path.name or path == runtime / "bundle/node" or path == runtime / "bundle/lib/dist/bin/codegraph.js")]
-        config["preprocessorPolicy"] = "CodeGraph blanks conditional directives and indexes both branches; no compiler defines"
+        config.update(codegraph_adapter.bundle_config(runtime))
     return config
 
 
@@ -109,22 +107,15 @@ def measure(source, runtime, evidence, dotnet):
     source_record = read_json(evidence / "input-copy.json")
     write_json(batch / "input-copy.json", source_record)
     write_json(batch / "source-git.json", metadata)
-    # Keep source inspections and help outputs distinct from first analysis.
-    inspection = evidence / "install/source-inspection"
-    inspection.mkdir(parents=True, exist_ok=True)
-    for name in ("bin/codegraph.js", "directory.js", "index.js", "installer/index.js", "telemetry/index.js", "extraction/languages/csharp.js", "extraction/tree-sitter.js", "resolution/callback-synthesizer.js", "db/schema.sql"):
-        path = runtime / "bundle/lib/dist" / name
-        target = inspection / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(path, target)
-    cg = runtime / "bundle/bin/codegraph"
-    for label, command in (("codegraph-version", [cg, "--version"]), ("codegraph-init-help", [cg, "init", "--help"]), ("codegraph-index-help", [cg, "index", "--help"]), ("sdk-version", [dotnet, "--version"])):
+    codegraph_adapter.inspect_bundle(runtime, evidence)
+    # Retain CodeGraph help/version before SDK checks and either extractor run.
+    commands = (*codegraph_adapter.preflight_commands(runtime), ("sdk-version", [dotnet, "--version"]))
+    for label, command in commands:
         record = run_process(command, runtime, batch / label)
         require_success(record, batch / label)
     if (batch / "sdk-version/stdout.txt").read_text().strip() != "10.0.301":
         raise ValueError("SDK pin mismatch; no fallback")
-    if (batch / "codegraph-version/stdout.txt").read_text().strip() != "1.6.1":
-        raise ValueError("CodeGraph version differs from approved bundle")
+    codegraph_adapter.check_version(batch)
     tool_project = runtime / "tool/Roslyn/Architecture.Roslyn.csproj"
     for label, command, cwd in (("tool-restore", [dotnet, "restore", tool_project, "--nologo"], runtime),
                                 ("tool-build", [dotnet, "build", tool_project, "--no-restore", "--nologo", "-p:UseSharedCompilation=false"], runtime),
@@ -136,13 +127,7 @@ def measure(source, runtime, evidence, dotnet):
               "implementationFiles": [{"path": str(p.relative_to(runtime / "tool")), "sha256": digest(p)} for p in sorted((runtime / "tool").rglob("*")) if p.is_file() and p.suffix in {".py", ".cs", ".csproj", ".sh", ".props", ".cjs"} and "obj" not in p.parts and "bin" not in p.parts],
               "environment": {name: os.environ.get(name) for name in ("DO_NOT_TRACK", "CODEGRAPH_TELEMETRY", "CODEGRAPH_NO_UPDATE_CHECK", "CODEGRAPH_NO_DAEMON")}}
     write_json(batch / "config.json", config)
-    analysis_dir = runtime / "codegraph-input/.codegraph"
-    if analysis_dir.exists():
-        if analysis_dir.is_symlink():
-            raise ValueError("Linked CodeGraph cache")
-        archived = runtime / "cache-archive" / stamp
-        archived.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(analysis_dir), str(archived))
+    codegraph_adapter.archive_cache(runtime, stamp)
     runs = []
     for extractor in ("CodeGraph", "Roslyn"):
         root = runtime / ("codegraph-input" if extractor == "CodeGraph" else "roslyn-input")
@@ -152,7 +137,13 @@ def measure(source, runtime, evidence, dotnet):
             verify(manifest, root)
             freeze_check(source, evidence)
             before = cache_state(root, extractor)
-            command = [cg, "init", str(root), "--yes"] if extractor == "CodeGraph" and index == 0 else [cg, "index", str(root), "--quiet"] if extractor == "CodeGraph" else [dotnet, runtime / "tool/Roslyn/bin/Debug/net10.0/Architecture.Roslyn.dll", root, manifest_path, folder / "raw.json"]
+            if extractor == "CodeGraph":
+                command = codegraph_adapter.analysis_command(runtime, root, index)
+            else:
+                command = [
+                    dotnet, runtime / "tool/Roslyn/bin/Debug/net10.0/Architecture.Roslyn.dll",
+                    root, manifest_path, folder / "raw.json",
+                ]
             first_record_path = evidence / f"first-analysis-{extractor.lower()}.json"
             if not first_record_path.exists():
                 started = utc_now()
@@ -163,15 +154,12 @@ def measure(source, runtime, evidence, dotnet):
             syntax_seconds = None
             syntax_peak = None
             if record["exitCode"] == 0:
-                raw = dump_codegraph(root / ".codegraph/codegraph.db", folder / "raw.json") if extractor == "CodeGraph" else read_json(folder / "raw.json")
                 if extractor == "CodeGraph":
-                    context_command = [runtime / "bundle/node", "--liftoff-only", "--disable-warning=ExperimentalWarning", runtime / "tool/CodeGraph/syntax-context.cjs", runtime / "bundle", root, manifest_path, folder / "syntax-context.json"]
-                    context_record = run_process(context_command, root, folder / "syntax-context")
-                    require_success(context_record, folder / "syntax-context")
-                    syntax_seconds = context_record["elapsedSeconds"]
-                    syntax_peak = context_record["peakMemoryBytes"]
-                    raw["syntaxContext"] = read_json(folder / "syntax-context.json")
-                    write_json(folder / "raw.json", raw)
+                    raw, syntax_seconds, syntax_peak = codegraph_adapter.read_analysis(
+                        runtime, root, manifest_path, folder,
+                    )
+                else:
+                    raw = read_json(folder / "raw.json")
             else:
                 raw = {"rawVersion": 1, "extractor": extractor, "version": "1.6.1" if extractor == "CodeGraph" else "SDK10.0.301", "status": "failed", "diagnostics": [{"kind": "execution", "exitCode": record["exitCode"], "commandRecord": str(folder / "analysis/command.json")} ]}
                 write_json(folder / "raw.json", raw)
@@ -200,7 +188,13 @@ def measure(source, runtime, evidence, dotnet):
     check_outputs(source, runtime, evidence)
     process_rows = subprocess.check_output(["ps", "-eo", "pid,ppid,args"], text=True).splitlines()
     remaining = [row for row in process_rows if str(runtime / "bundle") in row or str(runtime / "tool/Roslyn/bin") in row]
-    write_json(batch / "environment.json", {"platform": subprocess.check_output(["uname", "-a"], text=True).strip(), "dotnetState": os.environ["DOTNET_CLI_HOME"], "codegraphNodeSha256": digest(runtime / "bundle/node"), "codegraphLauncherSha256": digest(cg), "telemetry": "disabled environment and installed source inspected; no packet capture", "remainingOwnedAnalysisProcesses": remaining})
+    write_json(batch / "environment.json", {
+        "platform": subprocess.check_output(["uname", "-a"], text=True).strip(),
+        "dotnetState": os.environ["DOTNET_CLI_HOME"],
+        **codegraph_adapter.bundle_hashes(runtime),
+        "telemetry": "disabled environment and installed source inspected; no packet capture",
+        "remainingOwnedAnalysisProcesses": remaining,
+    })
     print(f"Evidence: {batch}", flush=True)
 
 
