@@ -1,11 +1,17 @@
 """Comparison run order, argv and failure handling through `runner.py measure`.
 
-The expected step table below is the comparison contract: CodeGraph then Roslyn, cold then
-three warm runs, CodeGraph preflight before the SDK, and CodeGraph's DB dump and
-syntax-context only after a successful CodeGraph analysis. One test checks that the recorded
-real batch followed this table; the others run the current runner with stand-in executables
+The expected step table below is the comparison contract of the explicit Compare selection
+(`--extractor compare`): CodeGraph then Roslyn, cold then three warm runs, CodeGraph preflight
+before the SDK, and CodeGraph's DB dump and syntax-context only after a successful CodeGraph
+analysis. One test checks that the recorded real batch followed this table; the others prepare
+a stand-in workspace with the real run-wsl.sh, run the current runner with stand-in executables
 (support/stand_in_runtime.py) and compare against the same table. Stand-in runs prove
 orchestration only, never real extractor output.
+
+The execution contract adds the machine result of every attempt (execution-result.json):
+a command that started and failed, or a failed/notRun analysis, ends nonzero as `failed`; a
+missing prerequisite ends nonzero as `unavailable`; latest-run.json names only a batch whose
+selected commands all completed. Tests below assert these outcomes next to the unchanged order.
 """
 import hashlib
 import json
@@ -94,14 +100,13 @@ class RecordedBatchOrderTests(unittest.TestCase):
     @unittest.skipIf(LOCATION is None, SKIP_REASON)
     def test_recorded_real_batch_followed_the_step_table(self):
         batch = LOCATION["batch"]
-        evidence = LOCATION["evidence"]
         settings = _read(mini_inputs.REPOSITORY_ROOT / "99_Tools/Architecture/comparison-settings.json")
-        source = evidence
-        for _ in pathlib.PurePosixPath(settings["evidencePath"]).parts:
-            source = source.parent
+        # The batch's own copy record names the source it ran from; a replayed batch may live
+        # outside the configured evidence root or come from another checkout.
+        source = _read(batch / "input-copy.json")["sourceRoot"]
         version = _read(batch / "codegraph-version/command.json")
         sdk = _read(batch / "sdk-version/command.json")
-        placeholders = {str(batch): "<batch>", version["cwd"]: "<runtime>", sdk["argv"][0]: "<dotnet>", str(source): "<source>"}
+        placeholders = {str(batch): "<batch>", version["cwd"]: "<runtime>", sdk["argv"][0]: "<dotnet>", source: "<source>"}
         records = sorted((_read(path)["startedUtc"], path) for path in batch.rglob("command.json"))
         steps = []
         for _, path in records:
@@ -120,6 +125,13 @@ class MeasureSequenceTests(unittest.TestCase):
     def assert_failed_with(self, run, message):
         self.assertEqual(1, run.returncode, run.stderr)
         self.assertIn("ERROR: " + message, run.stderr)
+
+    def assert_result(self, runtime, status, reason):
+        result = _read(runtime.evidence / "execution-result.json")
+        self.assertEqual(("measure", "compare", ["CodeGraph", "Roslyn"], status, reason),
+                         (result["action"], result["selection"], result["selectedExtractors"],
+                          result["executionStatus"], result["reasonCode"]))
+        return result
 
     def test_compare_run_keeps_order_argv_and_records(self):
         runtime = self.start()
@@ -157,6 +169,10 @@ class MeasureSequenceTests(unittest.TestCase):
                     self.assertFalse((folder / "syntax-context").exists())
                 self.assertEqual(_sha256(folder / "extractor-config.json"), _read(folder / "normalized.json")["extractor"]["configHash"])
 
+        self.assert_result(runtime, "completed", "command_completed")
+        latest = _read(runtime.evidence / "latest-run.json")
+        self.assertEqual((str(run.batch), "compare", ["CodeGraph", "Roslyn"]), (latest["batch"], latest["selection"], latest["selectedExtractors"]))
+
         inspected = runtime.evidence / "install/source-inspection"
         for name in INSPECTED_BUNDLE_FILES:
             self.assertEqual((runtime.runtime / "bundle/lib/dist" / name).read_bytes(), (inspected / name).read_bytes(), name)
@@ -173,11 +189,13 @@ class MeasureSequenceTests(unittest.TestCase):
         self.assertEqual((_sha256(bundle / "node"), _sha256(bundle / "bin/codegraph")), (environment["codegraphNodeSha256"], environment["codegraphLauncherSha256"]))
 
         # Provenance names every executed file of the stand-in tool copy: all Pipeline modules
-        # (a moved or added module included) and syntax-context.cjs; settings JSON is not code.
+        # (a moved or added module included), syntax-context.cjs, the Roslyn project files and
+        # run-wsl.sh that run-wsl.sh copies with the tool; settings JSON and .ps1 are not listed.
         recorded = {item["path"]: item["sha256"] for item in _read(run.batch / "config.json")["implementationFiles"]}
         tool = runtime.runtime / "tool"
         copied = {f"Pipeline/{path.name}": _sha256(path) for path in (tool / "Pipeline").glob("*.py")}
-        copied["CodeGraph/syntax-context.cjs"] = _sha256(tool / "CodeGraph/syntax-context.cjs")
+        for name in ("CodeGraph/syntax-context.cjs", "Roslyn/Architecture.Roslyn.csproj", "Roslyn/Program.cs", "run-wsl.sh"):
+            copied[name] = _sha256(tool / name)
         self.assertEqual(copied, recorded)
 
     def test_syntax_context_failure_stops_after_keeping_the_database_dump(self):
@@ -193,13 +211,17 @@ class MeasureSequenceTests(unittest.TestCase):
         self.assertEqual(len(mini_inputs.codegraph_raw()["nodes"]), len(raw["nodes"]))
         self.assertTrue((folder / "raw.db").is_file())
         self.assertFalse((folder / "normalized.json").exists())
-        self.assertEqual(["cold"], [row["label"] for row in _read(runtime.evidence / "latest-run.json")["runs"]])
         self.assertFalse((run.batch / "measurements.json").exists())
+        # A stopped batch is never published as the latest run; the attempt records the failure.
+        self.assertFalse((runtime.evidence / "latest-run.json").exists())
+        result = self.assert_result(runtime, "failed", "command_failed")
+        self.assertEqual(str(folder / "syntax-context/command.json"), result["commandRecord"])
 
     def test_failed_codegraph_analysis_is_kept_as_failed_without_dump_or_context(self):
         runtime = self.start({"codegraph:init": {"exit": 3}})
         run = runtime.measure()
-        self.assertEqual(0, run.returncode, run.stderr)
+        # The remaining runs still execute and are kept, but the attempt fails (nonzero).
+        self.assert_failed_with(run, f"Selected analysis failed/notRun; see {run.batch}")
         folders = [folder for folder, _, _ in observed(run.steps())]
         self.assertNotIn("codegraph/cold/syntax-context", folders)
         self.assertIn("codegraph/warm1/syntax-context", folders)
@@ -214,20 +236,26 @@ class MeasureSequenceTests(unittest.TestCase):
         measurement = _read(cold / "measurement.json")
         self.assertEqual((3, "failed", None), (measurement["exitCode"], measurement["analysisStatus"], measurement["syntaxContextSeconds"]))
         self.assertEqual("notScored", _read(cold / "score.json")["status"])
+        result = self.assert_result(runtime, "failed", "analysis_failed")
+        self.assertEqual([str(cold / "analysis/command.json")], result["commandRecord"])
+        self.assertEqual(("failed", "partial"), (result["analysisStatus"][0]["status"], result["analysisStatus"][1]["status"]))
+        self.assertFalse((runtime.evidence / "latest-run.json").exists())
 
     def test_linked_cache_is_refused_before_any_analysis(self):
         runtime = self.start()
         target = runtime.root / "elsewhere"
         target.mkdir()
         (target / "codegraph.db").write_bytes(b"not ours")
+        link = runtime.runtime / "codegraph-input/.codegraph"
         try:
-            os.symlink(target, runtime.runtime / "codegraph-input/.codegraph")
+            os.symlink(target, link)
         except OSError as error:
             self.skipTest(f"symbolic links are unavailable here: {error}")
         run = runtime.measure()
-        self.assert_failed_with(run, "Linked CodeGraph cache")
-        self.assertEqual(preflight_steps(), observed(run.steps()))
-        self.assertTrue((run.batch / "config.json").is_file(), "provenance is written before the cache is touched")
+        # The owned-runtime check now refuses any link before a batch or process exists.
+        self.assert_failed_with(run, f"Linked execution file/directory: {link}")
+        self.assertIsNone(run.batch)
+        self.assertEqual([], runtime.calls())
         self.assertEqual(b"not ours", (target / "codegraph.db").read_bytes())
         self.assertTrue((runtime.runtime / "codegraph-input/.codegraph").is_symlink())
         self.assertFalse((runtime.runtime / "cache-archive").exists())
@@ -251,13 +279,17 @@ class MeasureSequenceTests(unittest.TestCase):
 
     def test_missing_bundle_source_stops_before_any_process(self):
         runtime = self.start()
-        (runtime.runtime / "bundle/lib/dist/db/schema.sql").unlink()
+        missing = runtime.runtime / "bundle/lib/dist/db/schema.sql"
+        missing.unlink()
         run = runtime.measure()
         self.assertEqual(1, run.returncode, run.stderr)
-        self.assertIn("No such file or directory", run.stderr)
-        self.assertIn("db/schema.sql", run.stderr)
+        self.assertIn(f"Missing/unusable CodeGraph prerequisite: {missing}", run.stderr)
+        self.assertIn("Status: unavailable", run.stderr)
+        self.assertIn("install-codegraph.ps1", run.stderr)
         self.assertEqual([], observed(run.steps()))
         self.assertEqual([], runtime.calls())
+        result = self.assert_result(runtime, "unavailable", "codegraph_input_missing")
+        self.assertEqual(f"Missing/unusable CodeGraph prerequisite: {missing}", result["message"])
 
 
 if __name__ == "__main__":

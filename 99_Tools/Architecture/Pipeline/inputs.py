@@ -64,14 +64,21 @@ def verify(manifest, root):
     return records
 
 
-def prepare(source, runtime, manifest_path, evidence):
+def prepare(source, runtime, manifest_path, evidence, selection="roslyn"):
+    """Copy/hash only selected input roots, writing their provenance in owned evidence."""
+    from execution_status import selected_extractors
+
     source, runtime = pathlib.Path(source), pathlib.Path(runtime)
+    extractors = selected_extractors(selection)
+    input_names = [name.lower() + "-input" for name in ("Roslyn", "CodeGraph") if name in extractors]
     manifest = read_json(manifest_path)
     # Windows worktree .git pointers are not Linux paths. Capture Git metadata
     # with the Windows entry point; WSL never opens the original .git directory.
     metadata = read_json(pathlib.Path(evidence) / "source-git.json")
     if metadata["manifestHash"] != digest(manifest_path) or metadata["sourceCommit"] != manifest["sourceCommit"]:
         raise ValueError("Git metadata belongs to another manifest")
+    if metadata.get("selection") != selection or metadata.get("selectedExtractors") != extractors:
+        raise ValueError("Git metadata belongs to another extractor selection")
     tree = list(metadata["tree"])
     tree_set = set(tree)
     records = []
@@ -85,7 +92,7 @@ def prepare(source, runtime, manifest_path, evidence):
         blob = metadata["tree"][item["path"]]
         if blob != item["gitBlobId"]:
             raise ValueError(f"Git blob identity mismatch: {path}")
-        for name in ("roslyn-input", "codegraph-input"):
+        for name in input_names:
             dest = checked_path(runtime / name, item["path"])
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, dest)
@@ -95,14 +102,16 @@ def prepare(source, runtime, manifest_path, evidence):
         path = checked_path(roots[item["rootId"]], item["path"])
         if digest(path) != item["sha256"] or path.stat().st_size != item["bytes"]:
             raise ValueError(f"Unity reference changed: {path}")
-        for name in ("roslyn-input", "codegraph-input"):
+        for name in input_names:
             dest = checked_path(runtime / name, f".architecture-references/{item['rootId']}/{item['path']}")
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, dest)
-        references.append({**item, "originalPath": str(path), "originalSha256": digest(path),
-                           "roslyn-inputSha256": digest(runtime / "roslyn-input/.architecture-references" / item["rootId"] / item["path"]),
-                           "codegraph-inputSha256": digest(runtime / "codegraph-input/.architecture-references" / item["rootId"] / item["path"])})
-    for name in ("roslyn-input", "codegraph-input"):
+        references.append({
+            **item, "originalPath": str(path), "originalSha256": digest(path),
+            **{name + "Sha256": digest(runtime / name / ".architecture-references" / item["rootId"] / item["path"])
+               for name in input_names},
+        })
+    for name in input_names:
         copied_records = verify(manifest, runtime / name)
         for record, copied in zip(records, copied_records):
             record[name + "Sha256"] = copied["sha256"]
@@ -110,11 +119,25 @@ def prepare(source, runtime, manifest_path, evidence):
         "sourceCommit": manifest["sourceCommit"],
         "implementationHead": metadata["implementationHead"],
         "manifestHash": digest(manifest_path), "files": records, "externalReferences": references,
-        "verifiedCopies": ["roslyn-input", "codegraph-input"], "gitTreePaths": tree,
+        "selection": selection, "selectedExtractors": extractors,
+        "verifiedCopies": input_names, "gitTreePaths": tree,
         "sourceRoot": str(source), "runtimeRoot": str(runtime),
     })
 
 
 if __name__ == "__main__":
     import sys
-    prepare(*sys.argv[1:])
+    from execution_status import record_result
+
+    try:
+        prepare(*sys.argv[1:6])
+    except Exception as error:
+        source, runtime, manifest_path, evidence = sys.argv[1:5]
+        selection = sys.argv[5] if len(sys.argv) > 5 else "roslyn"
+        action = sys.argv[6] if len(sys.argv) > 6 else "prepare"
+        status = "unavailable" if isinstance(error, FileNotFoundError) else "failed"
+        repair = "Provide the unchanged frozen manifest/source/reference bytes and Git capture; rerun the PowerShell prepare entry point with the same selection/root."
+        record_result(evidence, action, selection, status,
+                      "input_missing" if status == "unavailable" else "input_mismatch", str(error), repair)
+        print(f"ERROR: {error}\nStatus: {status}; evidence: {evidence}\nRepair: {repair}", file=sys.stderr)
+        raise SystemExit(1)

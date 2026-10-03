@@ -7,21 +7,47 @@ import json
 import pathlib
 import shutil
 import sqlite3
+import os
 
 from execution import run_process
 from inputs import digest, read_json, write_json
+from execution_status import CODEGRAPH_REPAIR, ExecutionError, assert_unlinked_tree
 from snapshot import KINDS
+
+INSPECTED_FILES = (
+    "bin/codegraph.js", "directory.js", "index.js", "installer/index.js",
+    "telemetry/index.js", "extraction/languages/csharp.js",
+    "extraction/tree-sitter.js", "resolution/callback-synthesizer.js", "db/schema.sql",
+)
+
+
+def require_bundle(bundle, syntax_context):
+    """Read selected bundle prerequisites only; never install or remove package/cache."""
+    bundle, syntax_context = map(pathlib.Path, (bundle, syntax_context))
+    assert_unlinked_tree(bundle)
+    required = [
+        ("codegraph_bundle_missing", bundle / "bin/codegraph"),
+        ("codegraph_node_missing", bundle / "node"),
+        ("codegraph_grammar_missing", bundle / "lib/dist/extraction/wasm/tree-sitter-c_sharp.wasm"),
+        ("codegraph_context_missing", syntax_context),
+        *(("codegraph_input_missing", bundle / "lib/dist" / name) for name in INSPECTED_FILES),
+    ]
+    for reason, path in required:
+        if path.is_symlink() or not path.is_file():
+            raise ExecutionError(f"Missing/unusable CodeGraph prerequisite: {path}", reason,
+                                 "unavailable", CODEGRAPH_REPAIR)
+    for path in (bundle / "bin/codegraph", bundle / "node"):
+        if not os.access(path, os.X_OK):
+            raise ExecutionError(f"CodeGraph executable cannot start: {path}", "codegraph_not_executable",
+                                 "unavailable", CODEGRAPH_REPAIR)
 
 
 def inspect_bundle(runtime, evidence):
+    """Copy selected bundle source/help evidence outside measured analysis time."""
     # Source/help inspection stays before the first analysis, outside its timing.
     inspection = evidence / "install/source-inspection"
     inspection.mkdir(parents=True, exist_ok=True)
-    for name in (
-        "bin/codegraph.js", "directory.js", "index.js", "installer/index.js",
-        "telemetry/index.js", "extraction/languages/csharp.js",
-        "extraction/tree-sitter.js", "resolution/callback-synthesizer.js", "db/schema.sql",
-    ):
+    for name in INSPECTED_FILES:
         path = runtime / "bundle/lib/dist" / name
         target = inspection / name
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -94,7 +120,12 @@ def analysis_command(runtime, root, index):
     return [launcher, "index", str(root), "--quiet"]
 
 
-def read_analysis(runtime, root, manifest_path, folder):
+def read_analysis(runtime, root, manifest_path, folder, execute_command=None):
+    """Dump/backup the DB, then run syntax context and return (raw, command record).
+
+    The runner decides success before reading syntax-context.json. A failed command
+    still leaves its logs and the preceding DB dump/backup for diagnosis.
+    """
     # Keep the DB dump/backup before syntax context, including on context failure.
     raw = dump_codegraph(root / ".codegraph/codegraph.db", folder / "raw.json")
     command = [
@@ -102,16 +133,9 @@ def read_analysis(runtime, root, manifest_path, folder):
         runtime / "tool/CodeGraph/syntax-context.cjs", runtime / "bundle",
         root, manifest_path, folder / "syntax-context.json",
     ]
-    record = run_process(command, root, folder / "syntax-context")
-    if record["exitCode"] != 0:
-        raise RuntimeError(
-            f"Command failed; see {folder / 'syntax-context'}/command.json and stdout/stderr"
-        )
-    syntax_seconds = record["elapsedSeconds"]
-    syntax_peak = record["peakMemoryBytes"]
-    raw["syntaxContext"] = read_json(folder / "syntax-context.json")
-    write_json(folder / "raw.json", raw)
-    return raw, syntax_seconds, syntax_peak
+    command_executor = execute_command if execute_command is not None else run_process
+    record = command_executor(command, root, folder / "syntax-context")
+    return raw, record
 
 
 def dump_codegraph(database, output):
