@@ -1,8 +1,12 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **사용자 휴식 요청으로 대기. Opus 검증3은 테스트 쓰기 전 안전 정지·정산·종료했으며 판정 없음/미완료다.** 제품은 `e03dcc9`, 정지 입력은 `4a212a8`에 보존했고 새 제품/tests 미커밋은 없다(기존 Unity 보호 상태는 아래 별도 기록). 기존 runner188PASS/117FAIL/5OBSERVED와 deployment 중단1을 재현했으며 전수 실패 분류·독립 테스트/판정·PR/CI·개별 병합 승인이 남았다. 실제 DB/G2/계정·저장소/복구 통합은 범위 밖이며 SQL 접속도 하지 않는다. 메인의 재개 전달 전 새 작업자를 발행하지 않는다.
+상태: **2026-10-04 사용자 재개 전달을 받아 신규 Opus 검증4를 준비한다.** 휴식 전 검증3은 안전 정지·정산·종료했으며 판정 없음/미완료다. 제품은 `e03dcc9`, 휴식 기록은 `d0458b7`에 보존했다. 보호53파일·goal/CURRENT2파일 SHA와 Unity S3·stash2가 정산 기록과 일치하고 새 제품/tests 미커밋은 없다. 기존 runner188PASS/117FAIL/5OBSERVED와 deployment 중단1의 전수 분류·독립 테스트/판정·PR/CI·개별 병합 승인이 남았다. 실제 DB/G2/계정·저장소/복구 통합은 범위 밖이며 SQL 접속도 하지 않는다.
 
 ## 재개 지점
+
+**2026-10-04 재개 적용:** 메인 `msg_74af66ee9bf2`(2026-10-03T16:00:46Z)가 사용자 “이어서 진행하자”를 전달했다. 아래 휴식 상태를 이어 첫 단계부터 진행한다. 진입 HEAD `d0458b742425cb50d70b21f2858019e421e8dc4b`에서 `resume-input-check-20261004.json`의53+2파일 SHA·Unity S3·stash2가 모두 일치하고 visible dirty0이었다. fetch 뒤 origin/main은 `5616573c32a2b2e0b677bc21b75e22a08d21f285`로 같으며 HEAD의 ancestor, 열린 PR0을 재확인했다. 부모 사전 맥락은 `astra-review-4/context.md`; 새 계약 `sql-structure-review-4-spec.md`로 tests/** 소유의 신규 Opus를 발행한다. 큰 공식 계약의 turn_start_unobserved는 새 pane의 draft가 공식 계약 크기 placeholder인 조건에서만 텍스트 없는 Enter로 복구할 수 있다는 메인 지시도 받았다.
+
+마일스톤 상세 결정은 재개 때 Rules goal의 「정본 반영 전 적용 중인 사용자 결정」에서 찾았다: `msg_39d7be6b2eb9`(2026-10-03T11:16:48Z). 둘 이상 연결 goal이면 계획 때 로드맵을 만들며 순서·선행조건·goal 링크만 두고 진행률/검증/결정은 각 goal에 둔다. 현재 goal에 로드맵 작성을 끼워 넣지 않으며 종료 점검에 다음 단계·의존성·순서의 초안을 제시해 사용자와 확인한다. 아래 휴식 기록의 “상세 원문 미확인”은 당시 상태로 보존한다.
 
 이 절이 다음 GameDev Astra의 진입점이다. 기록 시각은 **2026-10-03 12:19 UTC / 21:19 KST**이며 메인 `msg_c20bbbd49a4d`(12:06:53Z)가 전달한 사용자 휴식 요청을 따른다. 전문은 `.backups/verification/2026-10-03-persistence-repository/main-pause-resume-decision.json`에 있다. 완료가 아니라 안전 정지이며, 다음 새 세션도 메인이 재개를 전달한 뒤 시작한다.
 
