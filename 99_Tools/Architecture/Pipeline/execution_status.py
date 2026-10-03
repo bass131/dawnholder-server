@@ -74,6 +74,41 @@ def assert_unlinked_tree(root):
                 raise ValueError(f"Linked execution file/directory: {path}")
 
 
+def is_unowned_comparison_root(root):
+    """Identify stored history by latest-run/runs layout, without trusting JSON contents."""
+    latest, runs, marker = root / "latest-run.json", root / "runs", root / OWNER_FILE
+    if not latest.is_file() or not runs.is_dir():
+        return False
+    for record in (latest, runs, marker):
+        if record.is_symlink():
+            raise ValueError(f"Linked comparison evidence: {record}")
+    return not marker.is_file()
+
+
+def assert_preserved_comparison_path(source, evidence):
+    """Refuse overlap with unowned history independently of the current batch pointer."""
+    backups = source / ".backups"
+    ancestor = evidence
+    # Ancestors protect missing children; descendants protect a requested enclosing root.
+    while ancestor.is_relative_to(backups):
+        if is_unowned_comparison_root(ancestor):
+            raise ValueError(
+                f"EvidencePath overlaps preserved comparison evidence with no current execution owner: {ancestor}"
+            )
+        ancestor = ancestor.parent
+    # Inspect only the candidate subtree, never unrelated .backups siblings or linked directories.
+    pending = [evidence] if evidence.is_dir() else []
+    while pending:
+        directory = pending.pop()
+        if is_unowned_comparison_root(directory):
+            raise ValueError(
+                f"EvidencePath overlaps preserved comparison evidence with no current execution owner: {directory}"
+            )
+        for child in directory.iterdir():
+            if not child.is_symlink() and child.is_dir():
+                pending.append(child)
+
+
 def evidence_path(source, selection, value=None):
     """Read-only path/Git/owner validation; never create or adopt historical evidence."""
     selected_extractors(selection)
@@ -89,6 +124,7 @@ def evidence_path(source, selection, value=None):
     if ((evidence.is_relative_to(historical) or historical.is_relative_to(evidence)) and not current_owned_root
             or freeze.is_relative_to(evidence)):
         raise ValueError(f"EvidencePath overlaps preserved comparison/freeze evidence: {evidence}")
+    assert_preserved_comparison_path(source, evidence)
     # A Windows worktree pointer must be queried by Windows Git, never Linux Git.
     pointer = source / ".git"
     windows_git = pointer.is_file() and ":/" in pointer.read_text(encoding="utf-8").replace("\\", "/")
