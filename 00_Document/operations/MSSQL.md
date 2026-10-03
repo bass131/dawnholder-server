@@ -104,9 +104,11 @@ source checksum은 UTF-8/BOM 제외·CRLF→LF 기준이며 module의 남은 CR�
 ./99_Tools/database/Test-ModuleStructure.ps1 -Json -Strict
 ```
 
-`-DatabaseRoot`는 FileSystem provider 경로만 허용하며, 끝 구분자 유무와 관계없이 같은 트리를 검사한다. 다른 provider나 해석할 수 없는 경로는 `unavailable`/exit2다. `-Json`은 Status/DatabaseRoot/Scope/CheckedFiles/Issues/ViolationCount와 HashTargets/HashTargetCount/HashInspectionComplete/HashViolationCount를 출력한다. DatabaseRoot는 검사 대상의 정규화 절대 경로이며, 경로 해석에 실패하면 null이다. 기본 출력 첫 줄에도 DatabaseRoot를 표시하고 hash 대상 수·검사 완료 여부·drift 수와 각 File/Line/Expected/Remediation 경고를 출력한다. `-Strict`는 배치·직접 호출 구조 위반을 실패 exit로 바꾼다. hash drift는 기본 모드에서도 실패한다.
+`-DatabaseRoot`는 FileSystem provider 경로만 허용하며, 끝 구분자 유무와 관계없이 같은 트리를 검사한다. 다른 provider나 해석할 수 없는 경로는 `unavailable`/exit2다. 선택 root 자체가 junction이어도 그 트리를 검사하며, 하위 제품 입력의 junction/symlink는 따라 읽지 않고 검사 불가로 보고한다. `-Json`은 Status/DatabaseRoot/Scope/CheckedFiles/Issues/ViolationCount와 HashTargets/HashTargetCount/HashInspectionComplete/HashViolationCount를 출력한다. HashUnregisteredLiterals/HashUnregisteredLiteralCount와 HashLiteralInspectionComplete는 제품 전수 literal 검사 결과다. DatabaseRoot는 검사 대상의 정규화 절대 경로이며, 경로 해석에 실패하면 null이다. CheckedFiles는 실제 읽은 파일의 root 상대 경로를 중복 없이 담으며 사본에 존재하는 제품 입력에 따라 달라진다. 기본 출력은 root·등록 대상 수·완료 여부·hash 위반 수·미등록 수와 File/Line/Expected/Remediation 경고를 표시한다. `-Strict`는 배치·직접 호출 구조 위반을 실패 exit로 바꾼다. hash drift와 미등록 literal은 기본 모드에서도 실패한다.
 
-hash 검사에는 `modules/manifest.json`, 정확 module SQL, `verify-schema.sql`, `migrations/001~004`와 `Module.Common.ps1`이 모두 필요하다. 현재 release의 명시 대상은 116개다. manifest의 source 19개·definition/bytes 각18개, catalog의 source/definition/bytes 각18개, migration checksum4개, raw manifest identity2개(004 선언·catalog release 검사), immutable001 guard1개를 대조한다. HashTargets는 대상마다 File/Line/Kind/Source/Observed/Expected/IsDrift와 구체적인 대체 안내를 제공한다. 등록 누락·중복·알 수 없는 형식이나 입력 부재는 검사 불가이며 대상0개를 정상으로 처리하지 않는다.
+hash 검사에는 `modules/manifest.json`, 정확 module SQL, `verify-schema.sql`, `migrations/001~004`와 `Module.Common.ps1`이 모두 필요하다. 현재 release의 명시 대상은 116개다. manifest의 source 19개·definition/bytes 각18개, catalog의 source/definition/bytes 각18개, migration checksum4개, raw manifest identity2개(004 선언·catalog release 검사), immutable001 guard1개를 대조한다. HashTargets는 대상마다 File/Line/Offset/Kind/Source/Observed/Expected/IsDrift와 구체적인 대체 안내를 제공한다. Offset은 SQL의 CRLF→LF 검사 text 또는 PS/JSON의 BOM을 제외한 decoded text에서 literal이 시작하는 0-based 문자 위치다. 등록 누락·중복·알 수 없는 형식이나 입력 부재는 검사 불가이며 대상0개를 정상으로 처리하지 않는다. DefinitionBytes는 JSON 숫자 토큰 전체가 canonical 비음수 int32(`0` 또는 0으로 시작하지 않는 정수, 최대2147483647)여야 한다. 소수·지수·문자열·음수·범위 초과를 정수 prefix로 채택하지 않는다. 유효 정수의 길이 차이는 drift다. manifest 항목의 형식/객체 오류는 `modules/manifest.json`, migration 읽기 오류는 해당 migration을 Issues.File로 보고한다.
+
+미등록 검사는 선택 DatabaseRoot 아래 `.sql`/`.ps1`/`.psm1`/`.psd1`/`.json` 제품 파일을 읽는다. 저장소 원본이나 다른 영역으로 넘어가지 않는다. 코드의 명시 제외 목록에는 root 상대 `tests/` 하위만 있으며, 고의 실패 fixture·보호 SHA·known-answer를 제품 등록에 넣지 않는다. `tests-extra/`나 다른 경로의 `tests/`는 제외되지 않는다. 주석·문자열도 포함해 앞뒤 hex 문자가 없는 정확64자리 hex literal을 등록 target의 File/Offset/Observed와 대조한다. 이미 등록된 값의 복사라도 다른 위치는 미등록이다. HashUnregisteredLiterals는 실제 File/Line/Offset/Observed와 등록 안내를 제공한다. HashTargetCount는 등록 대상만, HashViolationCount는 등록 drift와 미등록 literal의 합이다. 파일 읽기/열거 실패나 하위 link로 필수 검사를 못 하면 검사 불가이며 완료로 보고하지 않는다.
 
 manifest identity는 UTF-8 without BOM·LF·마지막 개행의 실물 bytes SHA256이다. module SourceChecksum과 migration checksum은 BOM 제외·CRLF→LF 원문의 UTF-8 hash이고, DefinitionChecksum/Bytes는 같은 정의의 UTF-16LE without BOM hash/byte 길이다. immutable001의 raw 보호 hash와 정규화 checksum은 의미가 다르다. manifest identity를 module source나 004 자체 checksum에 복사하지 않는다. 이 검사에서 source로 계산한 definition 기대값은 실제 엔진이 저장한 정의/hash의 증명이 아니다.
 
@@ -114,12 +116,14 @@ manifest identity는 UTF-8 without BOM·LF·마지막 개행의 실물 bytes SHA
 |---|---|---|---|
 | `compliant` | 검사한 경로·정의·직접 호출 계약에 위반 없음 | 0 | 0 |
 | `violation` (구조만) | hash 대조가 완료됐으며 배치·정의·직접 호출 위반이 있음 | 0, Issues로 위반 공개 | 1 |
-| `violation` (hash drift 포함) | 관측된 소비값이 정본 source의 hash/길이와 다름 | 1 | 1 |
+| `violation` (hash 위반 포함) | 등록 소비값의 drift 또는 미등록64hex literal이 있음 | 1 | 1 |
 | `unavailable` | 경로/접근·미종결 SQL·hash 입력 부재/형식/등록 오류 등으로 검사 불가 | 2 | 2 |
 
-`unavailable`의 ViolationCount/HashViolationCount는 null, HashInspectionComplete는 false이며 통과가 아니다. HashTargetCount는 오류 전까지 관측한 대상 수이고 완전한116개 검사를 뜻하지 않는다. 예를 들어 누락된 `modules/procedures/internal/read_character_state.sql`을 복구하거나 공개 RPC를 등록된 목적 경로로 옮긴다. receipt helper 누락은 원래 receipt 단계에서 `EXEC dh.ReadOperationReceipt`를 명명 인자로 호출하도록 고친다. 주석에 helper 이름을 적어도 직접 호출로 세지 않는다.
+`unavailable`의 ViolationCount/HashViolationCount/HashUnregisteredLiteralCount는 null이며 통과가 아니다. HashInspectionComplete는 등록 대조와 제품 literal 검사가 모두 완료되어야 true이고, HashLiteralInspectionComplete는 전수 literal 대조가 끝났는지를 나타낸다. HashTargetCount는 오류 전까지 관측한 대상 수이고 완전한116개 검사를 뜻하지 않는다. 부분 목록이나 미등록0만으로 검사를 완료했다고 읽지 않는다. 예를 들어 누락된 `modules/procedures/internal/read_character_state.sql`을 복구하거나 공개 RPC를 등록된 목적 경로로 옮긴다. receipt helper 누락은 원래 receipt 단계에서 `EXEC dh.ReadOperationReceipt`를 명명 인자로 호출하도록 고친다. 주석에 helper 이름을 적어도 직접 호출로 세지 않는다.
 
 hash drift는 Issues의 File/Line/Observed/Expected/Remediation을 따라 검토된 소스에 대응하는 값을 바꾼다. module 변경이면 manifest source/definition/bytes → manifest 실물 identity → 004 선언 → 004 자체 checksum과 catalog module/migration/release 소비값을 함께 갱신한다. 과거 이력이나 고의 실패 fixture를 새 값으로 덮지 않는다. 검사에는 자동 쓰기·수정·런타임 기대값 주입이 없다. 실제 DB의 unknown/drift 거부와 엄격 catalog 검사를 유지한다.
+
+미등록 literal은 먼저 해당 파일/행과 의미를 검토한다. 필요한 소비처라면 ModuleHash.Common.ps1의 `Test-ModuleHashConsumers`에서 정본 source/definition/raw manifest identity와 연결해 `New-ModuleHashTarget`에 실제 File/Offset/Observed/Expected를 등록한다. 고정116 대상 계약과 독립 오프라인 검증 및 이 문서를 함께 검토·갱신해야 하며, 값만 허용 목록에 넣거나 관측값을 기대값으로 자동 채택하지 않는다. 불필요한 소비처라면 제거한다. 검사 대상/제외를 넓혀 위반을 숨기지 않는다.
 
 검사는 SQL 문법·중첩/들여쓰기·타입·transaction/동시성·권한·29열 실행을 판정하지 않으며 실제 DB의 manifest/hash 배포 검사를 대신하지 않는다. 기본 exit0만으로 구조 violation을 PASS로 읽지 않는다. 배치·직접 호출은 warning 파일럿을 유지하며 CLI·독립 tests의 CI 연결과 SQLFluff 적용성/연결은 **첫 PR 병합 뒤 Rules와 별도 조율**한다. CI 연결·SQLFluff parse·실제 엔진 PASS를 이 검사에 합치지 않는다.
 

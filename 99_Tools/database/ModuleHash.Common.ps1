@@ -49,6 +49,7 @@ function New-ModuleHashTarget {
         IsDrift = $Observed -cne $Expected
         Message = "$Kind consumer differs from reviewed source: $Source"
         Remediation = "Replace '$Observed' with '$Expected' at ${File}:$line; update derived consumers together."
+        Offset = $Offset
     }
 }
 
@@ -71,13 +72,185 @@ function Get-ModuleHashRows {
     [pscustomobject]@{ Offset = $block.Index; Rows = $rows }
 }
 
+function Read-ModuleHashInputs {
+    param([string]$DatabaseRoot)
+    $texts = @{}
+    $files = New-Object 'Collections.Generic.List[string]'
+    $issues = New-Object 'Collections.Generic.List[object]'
+    $pending = New-Object 'Collections.Generic.Queue[string]'
+    $pending.Enqueue('')
+    # Only the root-level independent evidence tree is excluded, never tests-extra or a nested namesake.
+    $excludedDirectories = @('tests')
+    $extensions = @('.sql', '.ps1', '.psm1', '.psd1', '.json')
+    $activeFile = '.'
+    while ($pending.Count -gt 0) {
+        $relativeDirectory = $pending.Dequeue()
+        $activeFile = if ($relativeDirectory) { $relativeDirectory } else { '.' }
+        try {
+            $directory = Join-Path $DatabaseRoot $relativeDirectory
+            $children = @(Get-ChildItem -LiteralPath $directory -Force -ErrorAction Stop | Sort-Object Name)
+            foreach ($child in $children) {
+                $relative = if ($relativeDirectory) { $relativeDirectory + '/' + $child.Name } else { $child.Name }
+                if ($child.PSIsContainer -and $relative -iin $excludedDirectories) { continue }
+                $isInput = -not $child.PSIsContainer -and $child.Extension -iin $extensions
+                if (-not $child.PSIsContainer -and -not $isInput) { continue }
+                $activeFile = $relative
+                if (($child.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+                    throw "Hash input reparse point cannot be inspected without following a link: $relative."
+                }
+                if ($child.PSIsContainer) {
+                    $pending.Enqueue($relative)
+                    continue
+                }
+                $text = if ($child.Extension -ieq '.sql') {
+                    Get-MigrationText -Path $child.FullName
+                } else { [IO.File]::ReadAllText($child.FullName) }
+                $texts[$relative] = $text
+                $files.Add($relative)
+            }
+        }
+        catch {
+            $issues.Add([pscustomobject]@{
+                    File = $activeFile
+                    Line = $null
+                    Kind = 'HashInspectionUnavailable'
+                    Source = $null
+                    Observed = $null
+                    Expected = 'Readable product SQL, PowerShell and manifest inputs within DatabaseRoot'
+                    Message = $_.Exception.Message
+                    Remediation = 'Restore local readable inputs; do not follow external links or broaden tests exclusion.'
+                })
+        }
+    }
+    [pscustomobject]@{
+        Complete = $issues.Count -eq 0
+        Texts = $texts
+        CheckedFiles = @($files.ToArray())
+        Issues = @($issues.ToArray())
+    }
+}
+
+function Test-ModuleHashLiteralRegistration {
+    param(
+        [hashtable]$Texts,
+        [object[]]$Targets
+    )
+    $registrations = @{}
+    foreach ($target in $Targets) {
+        if ($target.Observed -cmatch '^[0-9A-F]{64}$') {
+            $key = $target.File + ':' + $target.Offset
+            $registrations[$key] = $target.Observed
+        }
+    }
+    foreach ($file in @($Texts.Keys | Sort-Object)) {
+        $text = $Texts[$file]
+        # Include comments and strings. Values alone cannot authorize a new consumer location.
+        $literals = [regex]::Matches($text, '(?i)(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])')
+        foreach ($literal in $literals) {
+            $key = $file + ':' + $literal.Index
+            if ($registrations.ContainsKey($key) -and $registrations[$key] -ceq $literal.Value) { continue }
+            $line = 1 + [regex]::Matches($text.Substring(0, $literal.Index), "`n").Count
+            [pscustomobject]@{
+                File = $file
+                Line = $line
+                Offset = $literal.Index
+                Kind = 'UnregisteredHashLiteral'
+                Source = $null
+                Observed = $literal.Value
+                Expected = 'An explicitly reviewed source/definition/manifest identity consumer at this location'
+                Message = 'Unregistered 64-hex literal; an existing value at another location is not a registration'
+                Remediation = "Review ${file}:$line (offset $($literal.Index)); register its meaning and exact " +
+                'File/Offset via Test-ModuleHashConsumers/New-ModuleHashTarget in ModuleHash.Common.ps1, ' +
+                'update the fixed target contract, independent offline tests and MSSQL.md; do not adopt the value.'
+            }
+        }
+    }
+}
+
+function Get-ModuleManifestHashTargets {
+    param(
+        [object]$Entry,
+        [string]$Text,
+        [object[]]$Contract,
+        [object]$Values
+    )
+    $entryPattern = '(?s)\{\s*"Path"\s*:\s*"' + [regex]::Escape($Entry.Path) + '".*?\}'
+    $blocks = [regex]::Matches($Text, $entryPattern)
+    if ($blocks.Count -ne 1) { throw "Cannot locate a single literal manifest entry: $($Entry.Path)." }
+    $block = $blocks[0]
+    $known = @($Contract | Where-Object Path -CEQ $Entry.Path)
+    if ($Entry.Path -ceq 'modules/permissions.sql') {
+        if ($Entry.Kind -cne 'Permissions' -or $null -ne $Entry.ObjectName -or
+            $Entry.DefinitionBytes -isnot [int] -or $Entry.DefinitionBytes -ne 0 -or
+            $null -ne $Entry.DefinitionChecksum) {
+            throw 'Permissions entry must not register an engine definition hash.'
+        }
+    }
+    elseif ($known.Count -ne 1 -or $Entry.ObjectName -cne ('dh.' + $known[0].Name) -or
+        $Entry.Kind -cne $known[0].Kind) {
+        throw "Unknown manifest object/kind hash registration: $($Entry.Path)."
+    }
+    $fields = @('SourceChecksum')
+    if ($Entry.Path -cne 'modules/permissions.sql') { $fields += @('DefinitionChecksum') }
+    $fields += @('DefinitionBytes')
+    foreach ($field in $fields) {
+        # Capture the whole JSON value token. A decimal/exponent prefix is never an integer byte count.
+        $fieldPattern = '"' + $field + '"\s*:\s*(?<Value>[^,}]+)(?=[,}])'
+        $literalMatches = [regex]::Matches($block.Value, $fieldPattern)
+        if ($literalMatches.Count -ne 1) { throw "Unknown or duplicate $field literal: $($Entry.Path)." }
+        $group = $literalMatches[0].Groups['Value']
+        $token = $group.Value.Trim()
+        $offset = $block.Index + $group.Index + $group.Value.Length - $group.Value.TrimStart().Length
+        if ($field -eq 'DefinitionBytes') {
+            if ($token -cnotmatch '^(0|[1-9][0-9]*)$' -or $Entry.DefinitionBytes -isnot [int] -or
+                $Entry.DefinitionBytes -lt 0) {
+                throw "Unknown or duplicate DefinitionBytes literal: $($Entry.Path); token '$token' requires int32."
+            }
+            if ($Entry.Path -ceq 'modules/permissions.sql') { continue }
+            $observed = $token
+        }
+        else {
+            if ($token -cnotmatch '^"[0-9A-F]{64}"$') {
+                throw "Unknown or duplicate $field literal: $($Entry.Path)."
+            }
+            $observed = $token.Substring(1, 64)
+            $offset++
+        }
+        $parameters = @{
+            File = 'modules/manifest.json'
+            Text = $Text
+            Offset = $offset
+            Kind = 'Manifest' + $field
+            Source = $Entry.Path
+            Observed = $observed
+            Expected = [string]$Values.$field
+        }
+        New-ModuleHashTarget @parameters
+    }
+}
+
 function Test-ModuleHashConsumers {
     param(
         [string]$DatabaseRoot,
-        [object[]]$Contract
+        [object[]]$Contract,
+        [object]$Inputs
     )
     $targets = New-Object 'Collections.Generic.List[object]'
     $files = New-Object 'Collections.Generic.List[string]'
+    $unregistered = @()
+    $inputInspection = $Inputs
+    if ($null -eq $inputInspection) { $inputInspection = Read-ModuleHashInputs -DatabaseRoot $DatabaseRoot }
+    foreach ($file in $inputInspection.CheckedFiles) { $files.Add($file) }
+    if (-not $inputInspection.Complete) {
+        return [pscustomobject]@{
+            Complete = $false
+            LiteralInspectionComplete = $false
+            CheckedFiles = @($files.ToArray())
+            Targets = @()
+            UnregisteredLiterals = @()
+            Issues = $inputInspection.Issues
+        }
+    }
     $migrationNames = @(
         '001_initial.sql', '002_persistence_metadata.sql', '003_module_metadata.sql', '004_module_release.sql'
     )
@@ -85,7 +258,6 @@ function Test-ModuleHashConsumers {
     try {
         # Hash raw decoded UTF-8 only after proving decoding did not remove/change any identity bytes.
         $manifestBytes = [IO.File]::ReadAllBytes((Join-Path $DatabaseRoot $activeFile))
-        $files.Add($activeFile)
         $utf8 = New-Object Text.UTF8Encoding($false, $true)
         $manifestText = $utf8.GetString($manifestBytes)
         $hasBom = $manifestBytes.Length -ge 3 -and $manifestBytes[0] -eq 0xEF -and
@@ -112,7 +284,6 @@ function Test-ModuleHashConsumers {
         foreach ($entry in $manifest.Entries) {
             $activeFile = [string]$entry.Path
             $sql = Get-MigrationText -Path (Join-Path $DatabaseRoot $activeFile)
-            $files.Add($activeFile)
             $sourceHash = Get-MigrationHash -Sql $sql
             $definitionHash = Get-ModuleDefinitionHash -Sql $sql
             $definitionBytes = [Text.Encoding]::Unicode.GetByteCount($sql)
@@ -121,45 +292,13 @@ function Test-ModuleHashConsumers {
                 DefinitionChecksum = $definitionHash
                 DefinitionBytes = $definitionBytes
             }
-            $entryPattern = '(?s)\{\s*"Path"\s*:\s*"' + [regex]::Escape($entry.Path) + '".*?\}'
-            $blocks = [regex]::Matches($manifestText, $entryPattern)
-            if ($blocks.Count -ne 1) { throw "Cannot locate a single literal manifest entry: $($entry.Path)." }
-            $block = $blocks[0]
-            $known = @($Contract | Where-Object Path -CEQ $entry.Path)
-            if ($entry.Path -ceq 'modules/permissions.sql') {
-                if ($entry.Kind -cne 'Permissions' -or $null -ne $entry.ObjectName -or
-                    $entry.DefinitionBytes -ne 0 -or $null -ne $entry.DefinitionChecksum) {
-                    throw 'Permissions entry must not register an engine definition hash.'
-                }
-            }
-            elseif ($known.Count -ne 1 -or $entry.ObjectName -cne ('dh.' + $known[0].Name) -or
-                $entry.Kind -cne $known[0].Kind) {
-                throw "Unknown manifest object/kind hash registration: $($entry.Path)."
-            }
-            $fields = @('SourceChecksum')
-            if ($entry.Path -cne 'modules/permissions.sql') { $fields += @('DefinitionChecksum', 'DefinitionBytes') }
-            foreach ($field in $fields) {
-                $fieldPattern = '"' + $field + '"\s*:\s*(?:"(?<Value>[0-9A-F]{64})"|(?<Value>\d+))'
-                $literalMatches = [regex]::Matches($block.Value, $fieldPattern)
-                if ($literalMatches.Count -ne 1 -or ($field -ne 'DefinitionBytes' -and
-                        $literalMatches[0].Groups['Value'].Value -cnotmatch '^[0-9A-F]{64}$')) {
-                    throw "Unknown or duplicate $field literal: $($entry.Path)."
-                }
-                $parameters = @{
-                    File = 'modules/manifest.json'
-                    Text = $manifestText
-                    Offset = $block.Index + $literalMatches[0].Groups['Value'].Index
-                    Kind = 'Manifest' + $field
-                    Source = $entry.Path
-                    Observed = $literalMatches[0].Groups['Value'].Value
-                    Expected = [string]$values[$entry.Path].$field
-                }
-                $targets.Add((New-ModuleHashTarget @parameters))
-            }
+            $activeFile = 'modules/manifest.json'
+            $entryTargets = @(Get-ModuleManifestHashTargets -Entry $entry -Text $manifestText -Contract $Contract `
+                    -Values $values[$entry.Path])
+            foreach ($target in $entryTargets) { $targets.Add($target) }
         }
         $activeFile = 'verify-schema.sql'
         $catalog = Get-MigrationText -Path (Join-Path $DatabaseRoot $activeFile)
-        $files.Add($activeFile)
         $modulePattern = "\('(?<Name>\w+)',\s*'(?<Kind>FN|P)',\s*(?<Bytes>\d+),\s*" +
         "0x(?<Definition>[0-9A-F]{64}),\s*'(?<Source>[0-9A-F]{64})'\)"
         $moduleBlock = Get-ModuleHashRows -Text $catalog -Table 'modules' -Pattern $modulePattern -Count 18
@@ -200,8 +339,9 @@ function Test-ModuleHashConsumers {
             }
             $seen[$version] = $true
             $source = 'migrations/' + $migrationNames[$version - 1]
+            $activeFile = $source
             $sql = Get-MigrationText -Path (Join-Path $DatabaseRoot $source)
-            $files.Add($source)
+            $activeFile = 'verify-schema.sql'
             $parameters = @{
                 File = $activeFile
                 Text = $catalog
@@ -214,6 +354,8 @@ function Test-ModuleHashConsumers {
             $targets.Add((New-ModuleHashTarget @parameters))
         }
         $releasePattern = "r\.ManifestChecksum\s+COLLATE\s+Latin1_General_100_BIN2\s*=\s*'(?<Value>[0-9A-F]{64})'"
+        $activeFile = 'migrations/004_module_release.sql'
+        $releaseText = Get-MigrationText -Path (Join-Path $DatabaseRoot $activeFile)
         $consumers = @(
             @{
                 File = 'verify-schema.sql'
@@ -223,7 +365,7 @@ function Test-ModuleHashConsumers {
             }
             @{
                 File = 'migrations/004_module_release.sql'
-                Text = Get-MigrationText -Path (Join-Path $DatabaseRoot 'migrations/004_module_release.sql')
+                Text = $releaseText
                 Pattern = "VALUES\s*\(4,\s*'(?<Value>[0-9A-F]{64})'\)"
                 Kind = 'ReleaseManifestIdentity'
             }
@@ -247,11 +389,12 @@ function Test-ModuleHashConsumers {
         }
         $activeFile = 'Module.Common.ps1'
         $moduleCommon = [IO.File]::ReadAllText((Join-Path $DatabaseRoot $activeFile))
-        $files.Add($activeFile)
         $baselinePattern = "\`$index -eq 0 -and \`$hash -cne '(?<Value>[0-9A-F]{64})'"
         $literalMatches = [regex]::Matches($moduleCommon, $baselinePattern)
         if ($literalMatches.Count -ne 1) { throw 'Expected one immutable 001 source checksum guard.' }
-        $baselineSql = Get-MigrationText -Path (Join-Path $DatabaseRoot 'migrations/001_initial.sql')
+        $activeFile = 'migrations/001_initial.sql'
+        $baselineSql = Get-MigrationText -Path (Join-Path $DatabaseRoot $activeFile)
+        $activeFile = 'Module.Common.ps1'
         $parameters = @{
             File = $activeFile
             Text = $moduleCommon
@@ -264,18 +407,23 @@ function Test-ModuleHashConsumers {
         $targets.Add((New-ModuleHashTarget @parameters))
         # Fixed reviewed release: permissions source + 18*3 manifest + 18*3 catalog + 4 migrations + 2 release + 001.
         if ($targets.Count -ne 116) { throw "Hash target count $($targets.Count) differs from the registered 116." }
+        $unregistered = @(Test-ModuleHashLiteralRegistration -Texts $inputInspection.Texts -Targets $targets.ToArray())
         [pscustomobject]@{
             Complete = $true
+            LiteralInspectionComplete = $true
             CheckedFiles = @($files.ToArray())
             Targets = @($targets.ToArray())
-            Issues = @($targets | Where-Object IsDrift)
+            UnregisteredLiterals = $unregistered
+            Issues = @($targets | Where-Object IsDrift) + $unregistered
         }
     }
     catch {
         [pscustomobject]@{
             Complete = $false
+            LiteralInspectionComplete = $false
             CheckedFiles = @($files.ToArray())
             Targets = @($targets.ToArray())
+            UnregisteredLiterals = $unregistered
             Issues = @([pscustomobject]@{
                     File = $activeFile
                     Line = $null

@@ -204,6 +204,8 @@ function Test-ModuleStructure {
     $resolvedRoot = $null
     $hashTargets = @()
     $hashComplete = $false
+    $hashLiteralComplete = $false
+    $hashUnregisteredLiterals = @()
     $hashViolationCount = 0
     try {
         if ([string]::IsNullOrWhiteSpace($DatabaseRoot)) {
@@ -234,19 +236,25 @@ function Test-ModuleStructure {
             throw "Module directory cannot be inspected: $modulesPath. Supply the database root containing modules."
         }
         $contract = @(Get-ModuleStructureContract)
+        # Preflight product paths before either inspector can follow a nested link.
+        $hashInputs = Read-ModuleHashInputs -DatabaseRoot $resolvedRoot
+        foreach ($file in $hashInputs.CheckedFiles) { $checked.Add($file) }
         $byPath = @{}
         foreach ($entry in $contract) { $byPath[$entry.Path] = $entry }
         $seen = @{}
-        $files = @(Get-ChildItem -LiteralPath $modulesPath -Filter '*.sql' -File -Recurse)
+        $files = @()
         $migrationsPath = Join-Path $resolvedRoot 'migrations'
-        if ([IO.Directory]::Exists($migrationsPath)) {
-            $files += @(Get-ChildItem -LiteralPath $migrationsPath -Filter '*.sql' -File)
+        if ($hashInputs.Complete) {
+            $files = @(Get-ChildItem -LiteralPath $modulesPath -Filter '*.sql' -File -Recurse)
+            if ([IO.Directory]::Exists($migrationsPath)) {
+                $files += @(Get-ChildItem -LiteralPath $migrationsPath -Filter '*.sql' -File)
+            }
         }
         $files = @($files | Sort-Object FullName)
         foreach ($file in $files) {
             $activeFile = $file.FullName
             $relative = $file.FullName.Substring($rootPrefix.Length).Replace('\', '/')
-            $checked.Add($relative)
+            if (-not $checked.Contains($relative)) { $checked.Add($relative) }
             if ($relative -ceq 'modules/permissions.sql') { continue }
             $text = [IO.File]::ReadAllText($file.FullName)
             $executable = Get-ModuleExecutableText -Text $text
@@ -322,6 +330,7 @@ function Test-ModuleStructure {
             }
         }
         foreach ($entry in $contract) {
+            if (-not $hashInputs.Complete) { continue }
             if (-not $seen.ContainsKey($entry.Name)) {
                 $issues.Add([pscustomobject]@{
                         File = $entry.Path
@@ -332,14 +341,16 @@ function Test-ModuleStructure {
                     })
             }
         }
-        $hashInspection = Test-ModuleHashConsumers -DatabaseRoot $resolvedRoot -Contract $contract
+        $hashInspection = Test-ModuleHashConsumers -DatabaseRoot $resolvedRoot -Contract $contract -Inputs $hashInputs
         $hashTargets = @($hashInspection.Targets)
         $hashComplete = $hashInspection.Complete
+        $hashLiteralComplete = $hashInspection.LiteralInspectionComplete
+        $hashUnregisteredLiterals = @($hashInspection.UnregisteredLiterals)
         foreach ($file in $hashInspection.CheckedFiles) {
             if (-not $checked.Contains($file)) { $checked.Add($file) }
         }
         foreach ($issue in $hashInspection.Issues) { $issues.Add($issue) }
-        $hashViolationCount = @($hashTargets | Where-Object IsDrift).Count
+        $hashViolationCount = @($hashTargets | Where-Object IsDrift).Count + $hashUnregisteredLiterals.Count
         if (-not $hashComplete) { $status = 'unavailable' }
         elseif ($issues.Count -gt 0) { $status = 'violation' }
     }
@@ -356,13 +367,16 @@ function Test-ModuleStructure {
     [pscustomobject]@{
         Status = $status
         DatabaseRoot = $resolvedRoot
-        Scope = 'Source placement, direct calls and registered source hash consumers; SQL engine is unverified.'
+        Scope = 'Source placement, direct calls, registered hashes and product 64-hex literals; SQL engine is unverified.'
         CheckedFiles = @($checked.ToArray())
         Issues = @($issues.ToArray())
         ViolationCount = if ($status -eq 'unavailable') { $null } else { $issues.Count }
         HashTargets = $hashTargets
         HashTargetCount = $hashTargets.Count
         HashInspectionComplete = $hashComplete
+        HashLiteralInspectionComplete = $hashLiteralComplete
+        HashUnregisteredLiterals = $hashUnregisteredLiterals
+        HashUnregisteredLiteralCount = if ($status -eq 'unavailable') { $null } else { $hashUnregisteredLiterals.Count }
         HashViolationCount = if ($status -eq 'unavailable') { $null } else { $hashViolationCount }
     }
 }
@@ -374,14 +388,19 @@ if ($Json) { $result | ConvertTo-Json -Depth 6 }
 else {
     Write-Output ("Module structure: {0}. DatabaseRoot: {1}. {2}" -f
         $result.Status, $result.DatabaseRoot, $result.Scope)
+    $driftCount = if ($result.Status -eq 'unavailable') { $null } else {
+        @($result.HashTargets | Where-Object IsDrift).Count
+    }
     Write-Output ("Hash consumers: {0}; complete: {1}; drift: {2}." -f
-        $result.HashTargetCount, $result.HashInspectionComplete, $result.HashViolationCount)
+        $result.HashTargetCount, $result.HashInspectionComplete, $driftCount)
+    Write-Output ("Product hash literals: complete: {0}; unregistered: {1}; total hash violations: {2}." -f
+        $result.HashLiteralInspectionComplete, $result.HashUnregisteredLiteralCount, $result.HashViolationCount)
     foreach ($issue in $result.Issues) {
         Write-Warning ("{0}:{1}: {2}. Expected: {3}. Fix: {4}" -f
             $issue.File, $issue.Line, $issue.Message, $issue.Expected, $issue.Remediation)
     }
 }
-# Placement/direct-call warnings keep the pilot. Hash drift fails both modes; incomplete inspection is exit2.
+# Placement/direct-call warnings keep the pilot. Hash drift/unregistered literals fail both; incomplete is exit2.
 if ($result.Status -eq 'unavailable') { exit 2 }
 if ($result.HashViolationCount -gt 0) { exit 1 }
 if ($Strict -and $result.Status -eq 'violation') { exit 1 }
