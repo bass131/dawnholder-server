@@ -2,7 +2,7 @@
 
 ## 현재 상태와 승인된 결정
 
-**2026-10-03 재개 — #1~#4 로컬 재검증 통과, PR #166 원격 CI 확인 단계·목표 미완료.** 메인 `msg_61d4c35695da`에 따라 신규 Sol 수정과 신규 Opus 재검증을 마쳤다. 이전 검증의 17/17 통과는 결함 해소 근거로 사용하지 않고, 이번 독립 판정과 두 설치의 19/19 통과를 별도로 기록한다. 작업자는 정산·종료했다. 판정·재개 순서·이전 미커밋 목록은 [재개 기록](#session-resume), 이번 세션은 [2026-10-03 진행](#resume-2026-10-03)에 있다. 최신 SQL 범위는 [보류 결정](#sql-deferred)을 유지한다.
+**2026-10-03 — PR #166 병합·All 1회 완료, All에서 발견한 결함 #5 로컬 독립 판정 통과·수정 PR/실제 Linux CI 단계·목표 미완료.** PR #166의 결함 #1~#4는 신규 Sol 수정·신규 Opus 재검증과 원격 CI를 거쳐 병합했다. 그 작업자들은 정산·종료했고, 병합 후 All에서 발견한 #5는 별도 새 Sol 수정·신규 Opus 로컬 판정을 마쳤고 실제 Linux CI가 남았다. 이전 17/17은 결함 해소 근거로 재사용하지 않으며 19/19 두 설치, 최종21/21과 실제 Linux 결과를 각각 기록한다. 판정·재개 순서·이전 미커밋 목록은 [재개 기록](#session-resume), 이번 세션은 [2026-10-03 진행](#resume-2026-10-03)에 있다. 최신 SQL 범위는 [보류 결정](#sql-deferred)을 유지한다.
 
 **앞선 검증 종료 뒤 메인 추가 변경:** CLAUDE.md에 실행 출처 추적·수기 측정값/동어반복 테스트 차단 조항 1줄이 추가됐다. SHA256 `5e8f26c1c645c39a7c5f12e2f300b546ac3d0e2bee995b3025155f1ecced0c4a`를 이번 신규 Opus가 실사했고 기존 규칙과 충돌 없음으로 판정했다. 앞선 `921b4b3e…` 대상 판정과 구분한다.
 
@@ -382,3 +382,64 @@ workflow 수정과 진행 기록은 `a2bcdf9`에 커밋했다. main `963335414cb
 앞선 heartbeat 보고 불일치와 이번 첫 빈 body를 구분해 정정했고, 당시 원문은 보존했다. 신규 Opus는 전달 근거 메시지 `msg_f52bc6f98a38`를 반영하고 마지막 우편함이 비었음을 보고했다. CURRENT 통합은 두 부모와 원문 블록의 바이트 대조 및 링크 누락/신규 추가0(양쪽 링크의 합집합)으로 확인됐다. 정상 Task/Dispatch 완료 후 release·정확 incarnation 대조·close ptyKilled=true를 `ci-followup-*`에 남겼다.
 
 원격 main 재조회는 여전히 `9633354`다. 최종 테스트와 진행 기록을 커밋·push해 PR #166의 실제 Linux CI를 확인한다. 새 테스트의 Linux 분기, 실제 workflow 정의 수용·job 시작·artifact·런타임 버전은 원격 결과로 확인해야 한다. 병합은 PR별 사용자 명시 승인 전 불가하며, 병합 후 main 수동 All1회와 파트별 보고·Gardener는 남아 있다.
+
+## PR #166 병합과 최신 main 전체 검사
+
+메인 msg_55e7a3c01be4가 사용자 원문 “OK 병합 승인”(2026-10-03 약08:10Z)을 전달했다. 승인 범위는 PR166·HEAD4a0a6c47750b16c2ae9cc5497903954239460964이며 사용자 직접 입력으로 격상하지 않는다. 메인은 최종 판정 전문, 테스트 hash·helper 삭제·원본 재발 검출·21/21 원문과 CI를 R-2에 따라 대조했다고 보고했다.
+
+Rules Astra는 병합 직전 OPEN/CLEAN·동일 HEAD·두 체크 SUCCESS·autoMerge null을 재확인하고 지정된 gh pr merge --merge --match-head-commit 명령을 직접 실행했다(exit0). PR은 2026-10-03T08:12:54Z에 병합됐고 merge commit은 48e722bc7820e78d4df4b84a1ebf6a7290258261, GitHub mergedBy는 bass131이다. 실제 명령 호출자는 Rules Astra이며 계정 표시와 구분한다. main 원격 조회·fetch 뒤 이 checkout도 같은 SHA로 fast-forward했다. 병합 실행을 중복하지 않았다.
+
+원문은 resume-2026-10-03/main-pr166-merge-approval.json, pr166-pre-merge.json, pr166-merge-execution.json, pr166-merged.json이다. 최종 CI CodeRules run37107438999는 Changed PS2/Python2·진단0·실패0 및 Linux 독립21/21(skip0), 실제 Node22.23.3/Python3.12.3/pwsh7.6.6/PSSA1.25.0을 확인했다. .NET run37107438996은 같은 PR merge checkout629b5d1에서 SDK10.0.301·서식/빌드 통과, 테스트839 중834 통과·5 skip·실패0, 빌드경고4·오류0이다. 다운로드 원문과 집계는 ci-observation.md/json 및 ci-final-*에 보존했다. PR Changed의 TS/SQL 대상0을 전체 통과로 표현하지 않는다.
+
+다음 순서는 최신 main workflow_dispatch scope=All 1회 → 파일/규칙/소유 파트별 집계와 반복 규칙 의견 → 신규 읽기전용 Opus Gardener(보고서1개·최대2후보) → 메인 최초 통합 점검·재계획 요청이다. 기존 위반 수정과 2단계 제품 변경은 아직 수행하지 않는다. 이 절 작성 시 All과 Gardener는 미실행이며 목표는 미완료다.
+
+### All 1회 결과와 결함 #5
+
+승인된 최신 main All은 workflow_dispatch run37109061247로 1회 실행했다. head/base48e722b·dirtyfalse, targets87(PS12/Python16/TS57/SQL2), 규칙 진단289·9파일이다. GameDev6파일267, Management1파일18, Architecture2파일4이며 Rules 선택4입력에는 진단0이다. 규칙별 PSUseConsistentWhitespace271(8파일), PSUseConsistentIndentation18(1파일)로 합계를 대조했다. 기존 PSSA로 검출되는 서식이며 새 helper 필요를 뒷받침하지 않는다. 파일별 원문/집계·한계는 resume-2026-10-03/post-merge-all-report.md와 post-merge-all-aggregate.json에 있다.
+
+검사 전체는 FAIL이다. PS는 completed=true인 규칙 위반, Python은 완료·통과, SQL2는 deferred, TS57은 ENOTDIR records/catalog.json/index.ts로 completed=false이다. failures2를 실행 장애2건으로 표현하지 않는다. TS의 세 tsc 명령은 실행되지 않았고 독립 회귀21/21·skip0와 별개다. 기존 위반 수정과 All 재실행은 하지 않았다. 원시 results SHA256 E04F609E0C5290EF79FB38E9C1FD1CC13EF3529867FF48537BA67016F10CF3BC, 실제 Node22.23.3/Python3.12.3/pwsh7.6.6/PSSA1.25.0이다.
+
+메인 msg_3029455e5956은 이 실행 오류를 결함 #5로 등록하고 승인 목표 안의 좁은 수정으로 결정했다. 최신main48e722b에서 fix/code-rules-import-candidates를 만들었고 이전 goal 기록만 보존해 옮겼다. 신규 Sol → 신규 Opus → 실제 Linux CI → PR → PR별 사용자 병합 승인을 따른다. ENOENT/ENOTDIR 후보 없음, 비TS import 정책, source/import/해결 안내가 있는 오류, Linux JSON fixture가 완료조건이다. 후보 경계를 넘어 필수 입력/안전성 검사를 완화하지 않는다. #5 실패 집계는 첫 시도부터 새로 센다. Management에 msg_d30ed7d57703으로 다음 Changed 검사 영향을 알렸고 msg_57c12203fefd로 제품 위반과 분리·소유 충돌 없음 회신을 받았다.
+
+새 Sol: 최초 명령 codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh, 화면 GPT-6.1-Sol xhigh, backend unknown. terminal term_2006adfe-2600-44e5-92d8-451aea17ab65 / incarnation d308a235-87e0-465d-913b-d17781ff03a6. tui-idle와 첫 화면 일반 prompt를 확인한 뒤 task_c509a7efa48a / ctx_30b0020f49ab 발행, input_accepted/turn_started observed. 원문 계약 defect5-repair-contract.md. 제품 typescript-inputs.mjs와 테스트의 쓰기 소유를 분리했다.
+
+메인 결정에 따라 Gardener와 R-8 교체는 #5 수정PR 병합 뒤 목표 종료 시점으로 미뤘다. 첫 재계획은 All 집계가 나오면 메인이 #5와 병행한다. 2단계 제품 변경은 아직 발행하지 않는다.
+
+## 첫 재계획 결과와 다음 Astra 인계
+
+메인 msg_8639aeaf7a12(2026-10-03T08:32:32Z)가 사용자 원문 “오케이 추천 사항으로 진행하잡”을 전달했다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다. 원문은 resume-2026-10-03/main-first-replan-decision.json이다. 이 결정은 아래에 한 번 기록하며, 이전 “첫 재계획 전 미착수” 상태를 현재 미결 결정으로 다시 사용하지 않는다.
+
+- DB 연동을 최우선으로 하고 품질 작업은 병행한다. 다른 파트가 GameDev의 database·서버 영속성·MSSQL 경로를 막지 않도록 소유를 조율한다.
+- All289개 PS 서식 진단은 각 파트가 자기 파일을 다음 목표의 첫 구조 커밋에서 기계적으로 한 번에 정리한다. 위 파일별 집계(Whitespace271·Indentation18)가 범위이며 Rules가 다른 파트 파일을 고치지 않는다. 확인은 git diff -w가 비어 있음과 해당 파일의 PS 진단0, 기존 독립 검증이다. 작은 작업 예외는 미합의다. Rules는 정리 후 error 승격 필요를 실측해 별도 제안한다. 현행 검사기는 선택 PS 진단이 있으면 이미 exit1을 반환하므로 향후 제안에서 analyzer severity와 CI 실패 동작을 구분해 확인한다.
+- 지금부터 내용 없는 생존 heartbeat에는 subject/body 태그를 요구하지 않는다. from_handle·taskId·dispatchId 일치로 판단하고 누락 교정 메시지를 보내지 않는다. 내용이 있는 지시·보고·질문·worker_done·ask·escalation에는 기존 태그가 필수다. 이후 계약에 이 임시 결정을 반영하며 과거의 보고 불일치 원문을 소급해 지우지 않는다.
+- Architecture Gardener 후보 중 문서 근거 인용(경로·줄·JSON Pointer·값) 검사 helper와 fixture는 채택된 백로그로 등록하고 Rules 공용 도구로 둔다. heartbeat 후보는 위 임시 예외로 처리한다.
+- 이 Astra는 결함5 수정PR → 사용자 PR별 병합 승인 → 신규 Opus Gardener → 메인 보고 → R-8 교체 순서를 유지한다. 2단계 구현을 이 세션에서 시작하지 않는다.
+
+2단계 “하네스 원칙 채택과 문서 정비”는 앞서 승인한 범위와 아래 추가 사항으로 확정됐다. 새 Astra는 최신 main·새 goal·새 Run/handle/권한을 확인하고 시작한다.
+
+1. 첫 별도 PR로 00_Document/operations/BACKLOG.md를 신설한다. 필드는 ID·제목·이유·출처(누가/언제)·선행 조건·담당 후보·상태(대기/goal 승격→링크/폐기+이유)다. CURRENT=진행 중, BACKLOG=goal 전 후보, goal=세부로 나눈다. 이 PR 뒤 Management가 운영툴 백로그 메뉴를 만든다.
+2. 첫 백로그 입력: 도식 디자인 개선, ASD-STE100·HTML 답변 방식, 작업 루프 자기 개선·그래프 설계, 문서 근거 인용 검사 helper, workflow 정의 lint(actionlint류·도구 도입은 사용자 승인), 미결3건(검증 강도 차등/규칙 문서 가지치기/사람용 따라읽기), Q-1B 정적 분석기 단계(DB 연동 뒤). 출처·이유는 메인 원문과 goal 기록에서 가져온다. 이미 예정된 CodeGraph 정돈·모듈 경계 검사·Management 백로그 메뉴는 CURRENT/goal에 두고 백로그에 중복하지 않는다.
+3. 사용자 운영 규칙을 정식 반영한다: 미제출 draft는 사용자 입력이 아님(ORCA R-6/session-handoff 종료), 동일결함 Sol3회 실패 후 네 번째는 새 Sol+새 읽기전용 Fable Advisor(AGENTS/orca-work/ORCA R-5/R-7; 상세 최종결정 msg_22a9b4109ee7), 내용 없는 heartbeat 태그 예외(AGENTS/ORCA, 수신 쪽 helper+fixture로 출처 판정).
+4. 기존 판정 N1의 CLAUDE 추가 차단 사유2개를 양식에 동기화하고 N2의 DEVELOPMENT 94행을 실제 상태와 맞춘다. CLAUDE 쓰기 소유는 메인이고 그 밖의 문서/제품 구현은 승인된 역할 라우팅을 유지한다.
+
+앞선 2단계 상세 승인과 출처는 이 goal의 관련 결정, resume-2026-10-03/main-decisions.json 및 followup-research.md에 보존했다. archive tag의 단일 승인 대상과 고정 SHA를 포함해 실행 전 원문을 다시 확인한다. 보고서 자료·본문·HTML·전용 생성 스크립트는 Astra 작성, Sol은 허용된 구현, 신규 Opus는 독립 판정을 맡는다. 다음 PR도 각각 병합 직전 사용자 승인이 필요하다.
+
+
+### 결함 #5 구현 종료
+
+Sol msg_ca50b7f11135(08:40:45Z)가 제품 쓰기 종료를 보고했다. 제품은 typescript-inputs.mjs 한 파일, 최종 SHA256 57FC41CC9BBDA39A4AFED8632987A728FC85D1C5CB78F1885F10F46291886B74이다. 후보 ENOENT/ENOTDIR 한정 처리와 비TS 파일 hash·실패 source/import/candidate/해결 안내를 추가했다. Astra는 report.md 전문·실제 Git diff·fixed27개 hash 불변, JSON후/비ENOENT I/O 실패/Linux errno20·Node미가용 원문을 대조했다.
+
+이 자체 관측은 Windows Node24.15.0이며 Linux Node전후·CI·기존21개 회귀·세 tsc 실제 실행은 미실행이다. Windows의 수정 전 JSON 예시는 exit0이므로 원래 Linux 오류 재현으로 쓰지 않는다. Linux Python lstat ENOTDIR 관측과 Linux Node 실행 성공을 구분한다. 구현자의 첫 명령 문자열 오류와 첫 구현 수정 원문도 지우지 않고 final/ 근거와 구분했다.
+
+task_c509a7efa48a/ctx_30b0020f49ab completed/succeeded 확인 → worker-release(external terminal retained) → 정확 incarnation 확인 → terminal close(ptyKilled=true)로 정산했다. 원문은 defect5-repair-{done,settled,release,before-close,close}.json. 신규 Opus 계약 defect5-verification-contract.md는 전체 실사·독립 회귀·실제 CI Linux 필수, 전체 All 재실행 금지와 내용 없는 heartbeat 예외를 포함한다. CI의 TS 대상0 PASS만으로 결함5 Linux 검증을 대신하지 않는다.
+결함5 독립 검증 기동: 최초 명령 claude --model claude-opus-5-5, 화면 Opus5.5 xhigh·Claude Code2.1.288, backend unknown. terminal term_ee112a52-5eac-4c1c-a635-69c564a9d74a / incarnation dc18266b-9ac8-4ad3-9259-3c4be46f1c34. tui-idle와 선택창 없는 일반 첫 prompt를 대조한 뒤 task_7b1ee6b40ef3 / ctx_619b63ecf5ad로 발행, input_accepted/turn_started observed. 원문은 defect5-verification-first-screen.json 및 defect5-verification-start.json. 제품28개 입력은 defect5-verification-input-hashes.json으로 고정하고 기존21 테스트 hash는 defect5-test-baseline.json에 있다.
+
+### 결함 #5 로컬 독립 판정과 PR 진입
+
+신규 Opus msg_78461a45ef2a(09:05:54Z)의 판정은 로컬 독립 검증 통과·번호 결함 없음이며 실제 Linux 수정본 실행/CI는 필수 미완료다. 원문 defect5-verification/verdict.md 전문을 Astra가 읽고 테스트 실제 diff·runs/03-full-regression command/exit/stdout/stderr, 원본 포함8개 변형 요약, 실제저장소 preflight, Linux lstat 표본을 대조했다. 새 테스트는 기존 파일의 TypeScript 구간에만 추가했고 기존21개 본문과 repository-fixture는 보존했다. 최종 테스트 SHA256 95AD017CC2751743B6438F2B0C95D5735201A1EB70006011AB78C5F1132D4809, 제품28개 고정입력은 불일치0이다.
+
+Windows Node24.15.0/TypeScript7.0.2/PSSA1.25.0/WSL Python에서 전체회귀1회: tests28/pass27/fail0/skip1(POSIX EACCES)/stderr0B/exit0. 새 fixture는 실제 세typecheck argv까지 수행한다. 수정 전 제품 포함8개 실행 중6개를 검출했고 2개는 Windows동등으로 세지 않았다. 실제 Management preflight는 Windows에서54→56입력으로 catalog.json/styles.css 해시가 추가됐으며 이 좁은 관측에서는 compiler를 실행하지 않았다. 전체 All을 다시 실행하지 않았다.
+
+비차단 N1중첩 실패안내 반복, N2candidate변수재사용, N3Sol의 null반환99행 표기(실제101행), N4Windows동등변형을 원문에 남겼다. N3은 Astra도 rg로 확인하고 msg_472fe1f17cca로 메인에게 보고했으며 기존 보고를 지우지 않는다. 새로운 리팩토링 범위로 확대하지 않는다. goal의 이번 승인/병합/All/재계획 기록도 원문과 대조해 잘못 옮긴 상태·결정·수치 없음으로 판정했다.
+
+검증자는 completed/succeeded 확인 뒤 release → 정확 incarnation 대조 → close(ptyKilled=true)로 정산했다. 증거 defect5-verification-{done,settled,release,before-close,close}.json. 현재 활성 작업자는 없다. 최신main48e722b와 제품/테스트hash를 확인하고 제품1·테스트1·Astra goal1의 좁은 PR을 만든다. 실제 LinuxCI에서 전체28/fail0/skip0, ENOTDIR 진단 줄, EACCES subtest 비skip을 확인한 뒤 PR별 병합 승인을 요청한다. 이 기록 시점에는 LinuxCI와 병합이 미완료다.

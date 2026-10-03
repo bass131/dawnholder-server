@@ -9,7 +9,9 @@
 // CODE_RULES_RESULTS (raw evidence parent), CODE_RULES_TEST_WORK (temporary repositories).
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { appendFile, copyFile, cp, mkdir, readFile, readdir, rm, stat, symlink, writeFile } from 'node:fs/promises';
+import {
+  appendFile, chmod, copyFile, cp, lstat, mkdir, readFile, readdir, rm, stat, symlink, writeFile,
+} from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { after, before, test } from 'node:test';
 import {
@@ -726,6 +728,190 @@ test('TypeScript keeps real JSONC config and refuses config or sources outside t
   expectRefused('typescript-unrecognised-import-form', await check('typescript-unrecognised-import-form'),
     { beforeCompiler: false });
   await repository.remove(`${frontend}/src/probe.ts`);
+});
+
+// The real Management frontend imports '../../records/catalog.json' from a test; its tsconfig
+// sets resolveJsonModule. The fixture configs get the same option so tsc accepts that import.
+async function enableJsonModules(repository, extraOptions = {}) {
+  for (const name of ['tsconfig.json', 'tsconfig.electron.json', 'tsconfig.mcp.json']) {
+    const path = `05_Management/frontend/${name}`;
+    const project = JSON.parse(await repository.read(path));
+    Object.assign(project.compilerOptions, { resolveJsonModule: true, ...extraOptions });
+    await repository.write(path, `${JSON.stringify(project, null, 2)}\n`);
+  }
+}
+
+// Defect #5: Linux All run 37109061247 stopped the whole TypeScript check with
+// "ENOTDIR … lstat …/05_Management/records/catalog.json/index.ts". On POSIX a path below a file
+// is ENOTDIR, not ENOENT. A missing module candidate is not an input failure, and modules the
+// compiler reads outside the frontend must still be checked and recorded before it starts.
+test('TypeScript follows a JSON import and module imports beyond the frontend as checked inputs', async t => {
+  const repository = await TemporaryRepository.create(workspace, 'typescript-json-import');
+  await repository.addTypeScriptFrontend();
+  // With outDir, TypeScript 7 defaults rootDir to the config folder; the shared modules sit beside it.
+  await enableJsonModules(repository, { rootDir: '..' });
+  const frontend = '05_Management/frontend';
+  await repository.write(`${frontend}/src/good.ts`, 'export const value = 1;\n');
+  repository.commit('base');
+
+  // Each module below is only reachable through one import form, never through the frontend tree.
+  const inputs = {
+    '05_Management/records/catalog.json': '{ "records": [] }\n',
+    '05_Management/shared/plain.ts': 'export const plain = 1;\n',
+    '05_Management/shared/mapped.ts': 'export const mapped = 2;\n',
+    '05_Management/shared/folder/index.ts': 'export const folder = 3;\n',
+    '05_Management/shared/widgets.v2/index.ts': 'export const widget = 4;\n',
+    '05_Management/shared/explicit.ts': 'declare const explicitReference: number;\n',
+  };
+  for (const [path, content] of Object.entries(inputs)) await repository.write(path, content);
+  await repository.write(`${frontend}/src/consumer.ts`, [
+    '/// <reference path="../../shared/explicit.ts" />',
+    "import fixture from '../../records/catalog.json';",
+    "import { plain } from '../../shared/plain';",
+    "import { mapped } from '../../shared/mapped.js';",
+    "import { folder } from '../../shared/folder';",
+    "import { widget } from '../../shared/widgets.v2';",
+    'export const total: number = fixture.records.length + plain + mapped + folder + widget;',
+    '',
+  ].join('\n'));
+
+  const belowFile = join(repository.path('05_Management/records/catalog.json'), 'index.ts');
+  const belowFileResult = await lstat(belowFile).then(() => 'exists', error => error.code);
+  t.diagnostic(`${process.platform}: lstat of catalog.json/index.ts reports ${belowFileResult}`);
+  if (process.platform !== 'win32') {
+    assert.equal(belowFileResult, 'ENOTDIR', 'this run must exercise the POSIX meaning of the original failure');
+  }
+
+  const run = await runChecker(workspace, repository, workspace.nextCase('typescript-json-import'), {
+    scope: 'Changed', base: 'HEAD',
+  });
+  assertResultsKept(run);
+  const typescript = checkOf(run.report, 'typescript');
+  assert.equal(typescript.completed, true, describeRun(run));
+  assert.equal(typescript.status, 'passed', describeRun(run));
+  assert.equal(run.exit, 0, describeRun(run));
+  assert.deepEqual(typescript.scripts.map(script => [script.name, script.exit]),
+    [['typecheck', 0], ['desktop:typecheck', 0], ['mcp:typecheck', 0]]);
+  // The preflight record is the evidence that the compiler's extra inputs were checked first.
+  for (const [path, content] of Object.entries(inputs)) {
+    const recorded = typescript.preflight.find(input => input.path === path);
+    assert.deepEqual(recorded, { path, sha256: sha256(Buffer.from(content)), bytes: Buffer.byteLength(content) },
+      `${path} must be recorded with the hash of its bytes`);
+  }
+});
+
+test('TypeScript leaves absent import candidates to the compiler but stops on other candidate failures', async t => {
+  const repository = await TemporaryRepository.create(workspace, 'typescript-import-candidates');
+  await repository.addTypeScriptFrontend();
+  await enableJsonModules(repository);
+  const frontend = '05_Management/frontend';
+  const probe = `${frontend}/src/probe.ts`;
+  await repository.write(`${frontend}/src/good.ts`, 'export const value = 1;\n');
+  await repository.write('05_Management/records/catalog.json', '{ "records": [] }\n');
+  await repository.write('.gitignore', 'node_modules/\nlocked/\n');
+  repository.commit('base');
+  const outside = join(workspace.work, 'typescript-candidates-outside');
+  await mkdir(outside, { recursive: true });
+  await writeFile(join(outside, 'data.json'), '{ "outside": true }\n');
+  await writeFile(join(outside, 'mod.ts'), 'export const outside = 1;\n');
+
+  const compilerStarted = run => commandLines(run.report).some(line => /node_modules[\\/]typescript[\\/]/.test(line));
+  const check = async (name, source) => {
+    await repository.write(probe, source);
+    const run = await runChecker(workspace, repository, workspace.nextCase(name), { scope: 'Changed', base: 'HEAD' });
+    assertResultsKept(run);
+    t.diagnostic(`${name}: exit=${run.exit}; ${checkOf(run.report, 'typescript').message ?? 'no message'}`);
+    return run;
+  };
+
+  // Absent modules, including a path below a file (ENOTDIR on POSIX), are the compiler's
+  // located diagnostics in a completed check, not an input failure.
+  const absent = await check('typescript-absent-candidates', [
+    "import missing from '../../records/missing.json';",
+    "import belowFile from '../../records/catalog.json/extra';",
+    'export const values = [missing, belowFile];',
+    '',
+  ].join('\n'));
+  const located = checkOf(absent.report, 'typescript');
+  assert.equal(located.completed, true, describeRun(absent));
+  assert.equal(located.status, 'failed', describeRun(absent));
+  assert.notEqual(absent.exit, 0, describeRun(absent));
+  // TS2307 is the compiler's "Cannot find module" diagnostic.
+  assert.deepEqual(diagnosticsAt(absent.report, probe).map(issue => `${issue.line}:${issue.rule}`).sort(),
+    ['1:TS2307', '1:TS2307', '1:TS2307', '2:TS2307', '2:TS2307', '2:TS2307'],
+    'each typecheck script locates both unresolved imports');
+
+  // Any other failure on a candidate stops the check before the compiler and names the source,
+  // the import, the candidate and the cause with a way to fix it.
+  const expectInputFailure = (name, run, parts) => {
+    const typescript = checkOf(run.report, 'typescript');
+    assert.notEqual(run.exit, 0, `${name}: ${describeRun(run)}`);
+    assert.equal(typescript.status, 'failed', `${name}: ${typescript.message}`);
+    assert.equal(typescript.completed, false, `${name}: an input failure is not a completed check`);
+    assert.deepEqual(typescript.diagnostics, [], `${name}: an input failure is not a rule violation`);
+    assert.ok(!compilerStarted(run), `${name}: the compiler must not start: ${commandLines(run.report).join(' | ')}`);
+    for (const part of [probe, ...parts]) {
+      assert.ok(typescript.message.includes(part), `${name}: the message must name ${part}: ${typescript.message}`);
+    }
+    assert.match(typescript.message, /\b(?:correct|fix|restore|remove|rename|replace)\b/i,
+      `${name}: the message must say how to fix the input`);
+  };
+  const linkOrSkip = async (st, target, name) => {
+    try {
+      await symlink(target, repository.path(name), 'file');
+      return true;
+    } catch (error) {
+      if (!['EPERM', 'EACCES'].includes(error.code)) throw error;
+      st.skip(`file links cannot be created here: ${error.code}`);
+      return false;
+    }
+  };
+
+  await t.test('a candidate that is a directory', async () => {
+    await repository.write('05_Management/shared/broken.ts/keep.txt', 'not a module\n');
+    const run = await check('typescript-candidate-directory', "import '../../shared/broken';\n");
+    expectInputFailure('typescript-candidate-directory', run, ['../../shared/broken', 'broken.ts', 'EISDIR']);
+    await repository.remove('05_Management/shared/broken.ts');
+  });
+
+  await t.test('an unreadable candidate parent on POSIX', async st => {
+    if (process.platform === 'win32' || process.getuid?.() === 0) {
+      st.skip('directory permissions do not deny lstat for this user on this platform');
+      return;
+    }
+    const locked = repository.path('05_Management/shared/locked');
+    await repository.write('05_Management/shared/locked/mod.ts', 'export const locked = 1;\n');
+    await chmod(locked, 0o000);
+    try {
+      const run = await check('typescript-candidate-permission', "import '../../shared/locked/mod';\n");
+      expectInputFailure('typescript-candidate-permission', run, ['../../shared/locked/mod', 'locked', 'EACCES']);
+    } finally {
+      await chmod(locked, 0o755);
+      await repository.remove('05_Management/shared/locked');
+    }
+  });
+
+  await t.test('a directory index candidate that is a link', async st => {
+    await mkdir(repository.path('05_Management/shared/linked'), { recursive: true });
+    if (!await linkOrSkip(st, join(outside, 'mod.ts'), '05_Management/shared/linked/index.ts')) return;
+    const run = await check('typescript-candidate-link', "import '../../shared/linked';\n");
+    expectInputFailure('typescript-candidate-link', run, ['../../shared/linked', 'index.ts']);
+    await repository.remove('05_Management/shared/linked');
+  });
+
+  await t.test('a JSON import that is a link', async st => {
+    if (!await linkOrSkip(st, join(outside, 'data.json'), '05_Management/records/linked.json')) return;
+    const run = await check('typescript-json-link', "import '../../records/linked.json';\n");
+    expectInputFailure('typescript-json-link', run, ['../../records/linked.json']);
+    await repository.remove('05_Management/records/linked.json');
+  });
+
+  await t.test('a JSON import outside the repository', async () => {
+    const specifier = '../../../../typescript-candidates-outside/data.json';
+    const run = await check('typescript-json-outside', `import '${specifier}';\n`);
+    expectInputFailure('typescript-json-outside', run, [specifier]);
+  });
+  await repository.remove(probe);
 });
 
 test('every invocation keeps its own results and the default scope is Changed', async () => {

@@ -1,5 +1,5 @@
-import { readFile, readdir } from 'node:fs/promises';
-import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
+import { lstat, readFile, readdir } from 'node:fs/promises';
+import { dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { hash, safePath } from './inputs.mjs';
 
 function configJson(text) {
@@ -80,7 +80,7 @@ export async function preflightTypeScript(root, frontendRoot, configNames) {
     files.set(path, { path, sha256: hash(bytes), bytes: bytes.length });
     return bytes.toString('utf8');
   };
-  const checkPath = async (directory, name) => {
+  const checkPath = async (directory, name, optionalCandidate = false) => {
     if (typeof name !== 'string' || name.includes('\0')) throw new Error('Invalid TypeScript path input.');
     if (/^[a-z]:[\\/]/i.test(name) && process.platform !== 'win32') {
       throw new Error('Foreign absolute TypeScript path.');
@@ -93,7 +93,13 @@ export async function preflightTypeScript(root, frontendRoot, configNames) {
       try {
         await safePath(root, parts.slice(0, length).join('/'));
       } catch (error) {
-        if (error.code !== 'ENOENT') throw error;
+        if (error.code !== 'ENOENT' && !(optionalCandidate && error.code === 'ENOTDIR')) {
+          throw error;
+        }
+        if (optionalCandidate) {
+          // Candidate absence is platform-dependent; required inspect reads still propagate errors.
+          return null;
+        }
         break;
       }
     }
@@ -163,33 +169,57 @@ export async function preflightTypeScript(root, frontendRoot, configNames) {
       imports.push(reference[1]);
     }
     for (const name of imports) {
-      const isPackageImport = !name.startsWith('.') &&
-        !name.startsWith('\\') &&
-        !isAbsolute(name) &&
-        !/^[a-z]:[\\/]/i.test(name);
-      if (isPackageImport) {
-        if (name.split(/[\\/]/).includes('..')) {
-          await checkPath(frontend, `node_modules/${name}`);
-        }
-        continue;
-      }
-      const referenced = await checkPath(dirname(absolute), name);
-      const stem = referenced.replace(/\.(js|jsx|cjs|mjs)$/, '');
-      const candidates = [
-        referenced,
-        ...['.ts', '.tsx', '.cts', '.mts', '.d.ts', '/index.ts'].map(ext => `${stem}${ext}`),
-      ];
-      for (const candidate of candidates) {
-        if (!/\.(ts|tsx|cts|mts)$/.test(candidate)) {
+      let candidate = name;
+      try {
+        const isPackageImport = !name.startsWith('.') &&
+          !name.startsWith('\\') &&
+          !isAbsolute(name) &&
+          !/^[a-z]:[\\/]/i.test(name);
+        if (isPackageImport) {
+          if (name.split(/[\\/]/).includes('..')) {
+            candidate = resolve(frontend, `node_modules/${name}`);
+            await checkPath(frontend, `node_modules/${name}`);
+          }
           continue;
         }
-        try {
-          await scanSource(candidate);
-        } catch (error) {
-          if (error.code !== 'ENOENT') {
-            throw error;
+        candidate = resolve(dirname(absolute), name.replaceAll('\\', '/'));
+        const referenced = candidate;
+        const existingReference = await checkPath(dirname(absolute), name, true);
+
+        const nonSourceImport = extname(referenced) !== '' &&
+          !/\.(ts|tsx|cts|mts|js|jsx|cjs|mjs)$/.test(referenced);
+        if (nonSourceImport) {
+          if (existingReference === null) {
+            continue;
+          }
+          // Assets remain checked/hashed inputs; dotted directory names still get index candidates.
+          if (!(await lstat(existingReference)).isDirectory()) {
+            await inspect(referenced);
+            continue;
           }
         }
+
+        const stem = referenced.replace(/\.(js|jsx|cjs|mjs)$/, '');
+        const candidates = [
+          referenced,
+          ...['.ts', '.tsx', '.cts', '.mts', '.d.ts', '/index.ts'].map(ext => `${stem}${ext}`),
+        ];
+        for (candidate of candidates) {
+          if (!/\.(ts|tsx|cts|mts)$/.test(candidate)) {
+            continue;
+          }
+          if (await checkPath(dirname(absolute), candidate, true) === null) {
+            continue;
+          }
+          await scanSource(candidate);
+        }
+      } catch (error) {
+        throw new Error(
+          `TypeScript input preflight failed in source ${JSON.stringify(relativePath(absolute))} ` +
+          `for import/reference ${JSON.stringify(name)} at candidate ${JSON.stringify(candidate)}: ` +
+          `${error.message}. Correct the import path or restore a readable repository input without symlinks.`,
+          { cause: error },
+        );
       }
     }
   };
