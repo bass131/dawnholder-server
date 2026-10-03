@@ -1,0 +1,250 @@
+{
+  "version": "1.25.0",
+  "files": [
+    {
+      "path": ".signature.p7s",
+      "sha256": "6ac5b29a690659d4217f53c8c9a859e013ca3af21082bb5c62c84c42447cb58a",
+      "bytes": 12873
+    },
+    {
+      "path": "compatibility_profiles/ubuntu_x64_18.04_6.2.4_x64_4.0.30319.42000_core.json",
+      "sha256": "878362300df6712cb3cbb98dd369331d54d0b5e07092dca7d14c71dd9aab4f04",
+      "bytes": 14057147
+    },
+    {
+      "path": "compatibility_profiles/ubuntu_x64_18.04_7.0.0_x64_3.1.2_core.json",
+      "sha256": "cdb761d8e75be72b78157babd233487a79bf689b0b926ba6ae46f5aef3dc2a94",
+      "bytes": 14800607
+    },
+    {
+      "path": "compatibility_profiles/win-4_x64_10.0.18362.0_6.2.4_x64_4.0.30319.42000_core.json",
+      "sha256": "196beb5415dfb8b63e3e3678268f2990e2239401a98b86d89800749504b69b66",
+      "bytes": 17942759
+    },
+    {
+      "path": "compatibility_profiles/win-4_x64_10.0.18362.0_7.0.0_x64_3.1.2_core.json",
+      "sha256": "66a64ccee6b4bcb3b68842843693849d2beb88cd1ddde525a1c4f0132f1609bf",
+      "bytes": 33660662
+    },
+    {
+      "path": "compatibility_profiles/win-48_x64_10.0.17763.0_5.1.17763.316_x64_4.0.30319.42000_framework.json",
+      "sha256": "9a99ccc7d25a974190e5352e0f773e24039d2fe831307d666a7502310d7c0907",
+      "bytes": 23653457
+    },
+    {
+      "path": "compatibility_profiles/win-8_x64_10.0.14393.0_5.1.14393.2791_x64_4.0.30319.42000_framework.json",
+      "sha256": "10cabb80ec1e5567a96d50f053854c833b7b9701b01ffc1e4700dc115fa2ba4a",
+      "bytes": 23727309
+    },
+    {
+      "path": "compatibility_profiles/win-8_x64_10.0.14393.0_6.2.4_x64_4.0.30319.42000_core.json",
+      "sha256": "d889900200c1bed3f098991ccef0c84d48226fdb5be722c1018102819a1a38ad",
+      "bytes": 15076121
+    },
+    {
+      "path": "compatibility_profiles/win-8_x64_10.0.14393.0_7.0.0_x64_3.1.2_core.json",
+      "sha256": "00d4fa18798da98b27a047f9cf629c71185e51e37ec627872450d4d2f7c67d87",
+      "bytes": 30796461
+    },
+    {
+      "path": "compatibility_profiles/win-8_x64_10.0.17763.0_5.1.17763.316_x64_4.0.30319.42000_framework.json",
+      "sha256": "01c0d51beb49979d55f52e0dd58cb06bafd8d0553e197b65d4b17955ce97270d",
+      "bytes": 24690250
+    },
+    {
+      "path": "compatibility_profiles/win-8_x64_10.0.17763.0_6.2.4_x64_4.0.30319.42000_core.json",
+      "sha256": "7fa1bbbc38a59984f9bb661dd653f64f6116b6661a4efcd70e9dd051c7576f84",
+      "bytes": 17196301
+    },
+    {
+      "path": "compatibility_profiles/win-8_x64_10.0.17763.0_7.0.0_x64_3.1.2_core.json",
+      "sha256": "bab82f4bc80c15bf3f2a2ef967c7244aae24acf9984b7910a3d95c0291a62b75",
+      "bytes": 32967223
+    },
+    {
+      "path": "compatibility_profiles/win-8_x64_6.2.9200.0_3.0_x64_4.0.30319.42000_framework.json",
+      "sha256": "60c3f51e87d332989cf0082dd8b785fa412f8b1cd488f7c8417560022e0bcc28",
+      "bytes": 21257822
+    },
+    {
+      "path": "compatibility_profiles/win-8_x64_6.3.9600.0_4.0_x64_4.0.30319.42000_framework.json",
+      "sha256": "fc584750c710acf52d21eaf09b19ef52d54f87c95a67cb6c55fdd46746584153",
+      "bytes": 21716676
+    },
+    {
+      "path": "en-US/Microsoft.Windows.PowerShell.ScriptAnalyzer.dll-Help.xml",
+      "sha256": "efb6db773eb0790ddc793e04905eddcb14ae9d070202f74d1b8fc29d3fb604d0",
+      "bytes": 109093
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "646f8936b8ddcd14e13e578ff6857e368780b0d1a4f6066bee89211923a373e2",
+      "bytes": 1073
+    },
+    {
+      "path": "Microsoft.PowerShell.CrossCompatibility.dll",
+      "sha256": "a7c3a149c660c0cd0ac6e15f391d749c2dde918b45ed770fde95e8f4c924b76b",
+      "bytes": 143392
+    },
+    {
+      "path": "Microsoft.Windows.PowerShell.ScriptAnalyzer.BuiltinRules.dll",
+      "sha256": "43450722c34b139c1934af56e7e0cc483ea21417eb4e2b8308445fc70890bc18",
+      "bytes": 419872
+    },
+    {
+      "path": "Microsoft.Windows.PowerShell.ScriptAnalyzer.dll",
+      "sha256": "145ba1459672da808757b2bc6c6494926a13d92353ccd6a0354a0d5d8fe14a5f",
+      "bytes": 227360
+    },
+    {
+      "path": "Newtonsoft.Json.dll",
+      "sha256": "99c6184c081fbe1b965c168d109c0112f3f2aa1e97d86601411773c34d3ce6a3",
+      "bytes": 731640
+    },
+    {
+      "path": "PSScriptAnalyzer.psd1",
+      "sha256": "2b219f688bcdd67101040f845e530b22907d39bbf49089b4b5b2afaba7996791",
+      "bytes": 17822
+    },
+    {
+      "path": "PSScriptAnalyzer.psm1",
+      "sha256": "b69773fc9080cfb958dc13c95e42a625553e9bca5dcbedc27231e5c183a4e869",
+      "bytes": 17647
+    },
+    {
+      "path": "PSv7/Microsoft.PowerShell.CrossCompatibility.dll",
+      "sha256": "d92cb413e18927bb64d9bac221191fc69cf1659f55c72c27ddf1fe19ef774caf",
+      "bytes": 153632
+    },
+    {
+      "path": "PSv7/Microsoft.Windows.PowerShell.ScriptAnalyzer.BuiltinRules.dll",
+      "sha256": "c8aa9890743a6d9c47ccfee5ec33caaee58c30591454d3ccf379720025a1533c",
+      "bytes": 472088
+    },
+    {
+      "path": "PSv7/Microsoft.Windows.PowerShell.ScriptAnalyzer.dll",
+      "sha256": "c377532a1d8d8975e598891602b5c3ed39ab719f589d054eb889d11eb6ccaea3",
+      "bytes": 252488
+    },
+    {
+      "path": "PSv7/Pluralize.NET.dll",
+      "sha256": "eeecdf663a3e854f67bbbb872dc45577e785a581c1ca86ea2ae1d8215b8505d6",
+      "bytes": 30264
+    },
+    {
+      "path": "README.md",
+      "sha256": "113ea1d2fe4f0ce77aa116cf265a2de35f82f881a4e6bd32e35756e08f6786e5",
+      "bytes": 8629
+    },
+    {
+      "path": "ScriptAnalyzer.format.ps1xml",
+      "sha256": "d647e6c1cdfe4052d2382f2d76b899ec596ec71d23d724553b93f74827d49044",
+      "bytes": 20940
+    },
+    {
+      "path": "ScriptAnalyzer.types.ps1xml",
+      "sha256": "34246566553fe97c96a9ffea8aeefee353c1e07e41a72d3bfe9fdf826cc71d2a",
+      "bytes": 18802
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "abe73f3d2a40900de478d8d6a9b9c76e7e9bf602309cdd3cee4355f1fcd1b459",
+      "bytes": 2701
+    },
+    {
+      "path": "Settings/CmdletDesign.psd1",
+      "sha256": "520c023182de4f23235af284db33d7e12cbc285aef6e82e45cb76539719140c0",
+      "bytes": 15025
+    },
+    {
+      "path": "Settings/CodeFormatting.psd1",
+      "sha256": "8978821a976903e845dfbb591d2a82ab97cfd39291313b2bdd9bc114fbbdb592",
+      "bytes": 16330
+    },
+    {
+      "path": "Settings/CodeFormattingAllman.psd1",
+      "sha256": "19eae3db753e04223b486f5246f53245e70e5cec342e48dc38d4b67340428f62",
+      "bytes": 16331
+    },
+    {
+      "path": "Settings/CodeFormattingOTBS.psd1",
+      "sha256": "1dadb2ffd5e542cc009645d861b31c8bcb85c1b5ef9dabe7ea0435047d357610",
+      "bytes": 16331
+    },
+    {
+      "path": "Settings/CodeFormattingStroustrup.psd1",
+      "sha256": "e501d3f729ba3bf4275e5c08852db5b1e971930323df14532cad34b500ea5198",
+      "bytes": 16375
+    },
+    {
+      "path": "Settings/core-6.1.0-linux-arm.json",
+      "sha256": "4ac89539ca47eae3eb1d95547efc59894a8a6e062f86d52840da35edf189131b",
+      "bytes": 141310
+    },
+    {
+      "path": "Settings/core-6.1.0-linux.json",
+      "sha256": "a43e4b44e055410dd18742a281a704945aa1f39519b19c344d7cd78f4a4757b5",
+      "bytes": 141310
+    },
+    {
+      "path": "Settings/core-6.1.0-macos.json",
+      "sha256": "70703e205682f5d216320143ed50f9acc9cf4d3655240435fcd109ac504a3b05",
+      "bytes": 141310
+    },
+    {
+      "path": "Settings/core-6.1.0-windows.json",
+      "sha256": "e35c5ab33003a8a4fbbd5aff0f659a920743080f9337c90819d4001c7928720e",
+      "bytes": 184113
+    },
+    {
+      "path": "Settings/desktop-2.0-windows.json",
+      "sha256": "e0dd156000b822ff10a9347ef3ba6a17c00c2136811acea01ef47d6dd1c092a7",
+      "bytes": 287033
+    },
+    {
+      "path": "Settings/desktop-3.0-windows.json",
+      "sha256": "60aae851911741248d3414925cbaf4c59e8743efaf5a5005ed129db257dc4c4f",
+      "bytes": 1083242
+    },
+    {
+      "path": "Settings/desktop-4.0-windows.json",
+      "sha256": "d11970a52c011335e3f93dea7f3da887428caf1f12807a803ec65a8068b77ba8",
+      "bytes": 1213067
+    },
+    {
+      "path": "Settings/desktop-5.1.14393.206-windows.json",
+      "sha256": "b829ff1493cadd5284c5bc326487107a0617b0b8c3799c5b8dbfcbb78ac8f652",
+      "bytes": 1821748
+    },
+    {
+      "path": "Settings/DSC.psd1",
+      "sha256": "c1305c948b6ccc4dad6ae387ba7b9dc71ce7043df78e40b1e9e60485d6f76762",
+      "bytes": 14674
+    },
+    {
+      "path": "Settings/PSGallery.psd1",
+      "sha256": "9e68228af73b868a35c63d1202c21b55aa09e846223ecda8e070a10e4bdbfdd8",
+      "bytes": 15735
+    },
+    {
+      "path": "Settings/ScriptFunctions.psd1",
+      "sha256": "3fa7e84b1c8f8eb104b9ac4de2f12bd9bac588cd56c75456c018711fd79ee6de",
+      "bytes": 15157
+    },
+    {
+      "path": "Settings/ScriptingStyle.psd1",
+      "sha256": "7a78670582d1b8309974131c3377b3a74163b5409ab390518c8a49ba44ff40ab",
+      "bytes": 14736
+    },
+    {
+      "path": "Settings/ScriptSecurity.psd1",
+      "sha256": "13c5674bf0eb873aa909161add076117b1573ee3a13650eae6122b5fa5c8bdab",
+      "bytes": 14985
+    },
+    {
+      "path": "ThirdPartyNotices.txt",
+      "sha256": "2328c49f600036e032cbcca36b850ce4f2ae5db31a67d1485f779be03facf499",
+      "bytes": 1732
+    }
+  ]
+}

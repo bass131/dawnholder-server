@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "powerShellVersion": "1.25.0",
+  "sqlFluffVersion": "4.3.0",
+  "sqlGate": {
+    "enabled": false,
+    "reason": "SQL inspection deferred by user decision until the SQL modules restructure and a new applicability pilot. The fixed 17-input SQLFluff 4.3.0 pilot passed 15 inputs; both verify-schema.sql snapshots failed parsing. No SQL inspection pass is claimed.",
+    "evidence": "01_Phases/goals/2026-10-02-agent-rule-context/goal.md#sql-deferred"
+  },
+  "managementRoot": "05_Management/frontend",
+  "pythonRoots": [
+    "99_Tools/Architecture/Pipeline/",
+    "99_Tools/Architecture.Tests/",
+    "99_Tools/CodeRules/",
+    "99_Tools/CodeRules.Tests/"
+  ],
+  "excludedRoots": ["03_Client/", ".backups/", ".git/", "archive/"],
+  "excludedSegments": [
+    "node_modules", "bin", "obj", "__pycache__", ".venv", "venv",
+    "tool-cache", "Generated", "generated", "vendor", "third_party",
+    "dist", "desktop-dist", "mcp-dist", "Library", "Temp"
+  ],
+  "fixtureRoots": ["99_Tools/CodeRules.Tests/fixtures/"],
+  "typecheckScripts": ["typecheck", "desktop:typecheck", "mcp:typecheck"]
+}
