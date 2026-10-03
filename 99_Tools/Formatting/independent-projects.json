@@ -2,6 +2,7 @@
   "SchemaVersion": 1,
   "Projects": [
     "99_Tools/Formatting/Formatting.csproj",
-    "99_Tools/Formatting.Tests/Formatting.Tests.csproj"
+    "99_Tools/Formatting.Tests/Formatting.Tests.csproj",
+    "99_Tools/Architecture/Roslyn/Architecture.Roslyn.csproj"
   ]
 }
