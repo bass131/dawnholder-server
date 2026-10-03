@@ -62,7 +62,7 @@ function Read-ModuleBundle([string]$DatabaseRoot) {
     $contract = @(Get-ModuleStructureContract)
     $expectedPaths = @($contract.Path) + @('modules/permissions.sql')
     $actualPaths = @(Get-ChildItem -LiteralPath (Join-Path $DatabaseRoot 'modules') -Recurse -File -Filter '*.sql' |
-        ForEach-Object { $_.FullName.Substring($DatabaseRoot.TrimEnd('\', '/').Length + 1).Replace('\', '/') })
+            ForEach-Object { $_.FullName.Substring($DatabaseRoot.TrimEnd('\', '/').Length + 1).Replace('\', '/') })
     if ((($actualPaths | Sort-Object) -join '|') -cne (($expectedPaths | Sort-Object) -join '|') -or
         $manifest.Entries.Count -ne $expectedPaths.Count) {
         throw 'Module SQL file set differs from the exact reviewed bundle; remove extras or restore missing files.'
@@ -99,7 +99,7 @@ function Read-ModuleBundle([string]$DatabaseRoot) {
             }
             $expectedGrants = foreach ($public in @($contract | Where-Object Public)) {
                 $role = if ($public.Name -cin @('ReadAdmission', 'AcquireAndLoad', 'WriteSafeCheckpoint',
-                    'ReleaseRuntime', 'ResolveRuntimeOperation')) { 'dh_runtime' } else { 'dh_recovery' }
+                        'ReleaseRuntime', 'ResolveRuntimeOperation')) { 'dh_runtime' } else { 'dh_recovery' }
                 'GRANTEXECUTEONOBJECT::dh.' + $public.Name + 'TO' + $role + ';'
             }
             if (($executable -replace '\s', '') -cne ($expectedGrants -join '')) {
@@ -164,7 +164,7 @@ function Get-DatabaseMigrationSources(
     $names = @('001_initial.sql', '002_persistence_metadata.sql',
         '003_module_metadata.sql', '004_module_release.sql')
     $files = @(Get-ChildItem -LiteralPath (Join-Path $DatabaseRoot 'migrations') -File -Filter '*.sql' |
-        Sort-Object Name)
+            Sort-Object Name)
     if ($Phase -eq 'Baseline001') {
         $names = @('001_initial.sql')
         $files = @($files | Where-Object Name -CEQ $names[0])
@@ -277,7 +277,7 @@ function Assert-DatabaseModuleState(
         }
         if ($recorded.SourceChecksum -ceq $expected.SourceChecksum -and
             ($recorded.DefinitionBytes -ne $expected.DefinitionBytes -or
-                $recorded.DefinitionChecksum -cne $expected.DefinitionChecksum)) {
+            $recorded.DefinitionChecksum -cne $expected.DefinitionChecksum)) {
             throw "Unchanged source has different reviewed definition metadata: $($expected.ObjectName)."
         }
         if ($RequireCurrentSource -and $recorded.SourceChecksum -cne $expected.SourceChecksum) {
@@ -338,9 +338,9 @@ SET QUOTED_IDENTIFIER ON;
     $expectedRecords = @($Bundle.Modules | Select-Object ObjectName, Kind, SourceChecksum,
         DefinitionBytes, DefinitionChecksum)
     Assert-DatabaseModuleState -State ([pscustomobject]@{
-        Recorded = $expectedRecords
-        Actual = $newState.Actual
-    }) -Bundle $Bundle
+            Recorded = $expectedRecords
+            Actual = $newState.Actual
+        }) -Bundle $Bundle
     foreach ($module in $Bundle.Modules) {
         [void](Invoke-DbNonQuery -Connection $Connection -Transaction $Transaction -Sql @'
 UPDATE dh.ModuleDefinition SET Kind = @kind, SourceChecksum = @source,
@@ -349,11 +349,11 @@ IF @@ROWCOUNT = 0
     INSERT dh.ModuleDefinition(ObjectName, Kind, SourceChecksum, DefinitionBytes, DefinitionChecksum)
     VALUES(@name, @kind, @source, @bytes, @definition);
 '@ -Parameters @{
-            name = $module.ObjectName
-            kind = $module.Kind
-            source = $module.SourceChecksum
-            bytes = [int]$module.DefinitionBytes
-            definition = $module.DefinitionChecksum
-        })
+                name = $module.ObjectName
+                kind = $module.Kind
+                source = $module.SourceChecksum
+                bytes = [int]$module.DefinitionBytes
+                definition = $module.DefinitionChecksum
+            })
     }
 }

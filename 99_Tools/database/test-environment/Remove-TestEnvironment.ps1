@@ -35,15 +35,15 @@ function Read-TestEnvironmentSettlement(
         $s.EvidencePreserved -isnot [bool] -or -not $s.EvidencePreserved -or
         @($s.Unresolved).Count -ne 0 -or @($s.PendingRequests).Count -ne 0 -or @($s.HeldOwners).Count -ne 0 -or
         @($s.RemainingTriggers).Count -ne 0 -or @($s.Evidence).Count -eq 0) {
-            throw 'Cleanup settlement is incomplete; no deletion is authorized by it.'
-        }
-    $root = [IO.Path]::GetDirectoryName($Manifest.ManifestPath)+[IO.Path]::DirectorySeparatorChar
+        throw 'Cleanup settlement is incomplete; no deletion is authorized by it.'
+    }
+    $root = [IO.Path]::GetDirectoryName($Manifest.ManifestPath) + [IO.Path]::DirectorySeparatorChar
     foreach ($e in @($s.Evidence)) {
         $resolved = [IO.Path]::GetFullPath($e.Path)
         if (-not [IO.Path]::IsPathRooted($e.Path) -or -not $resolved.StartsWith($root, [StringComparison]::OrdinalIgnoreCase) -or
             $e.Hash -cnotmatch '^[0-9A-F]{64}$' -or $resolved -ieq $Path -or $resolved -ieq $Manifest.ManifestPath) {
-                throw 'Evidence must be durable, nonsecret files within this goal evidence directory.'
-            }
+            throw 'Evidence must be durable, nonsecret files within this goal evidence directory.'
+        }
         Assert-TestEnvironmentNoReparse -Path $resolved
         if ((Get-FileHash -LiteralPath $resolved -Algorithm SHA256).Hash -cne $e.Hash) {
             throw 'Preserved evidence hash mismatch.'
@@ -58,12 +58,12 @@ function Read-TestEnvironmentSettlement(
     foreach ($r in @($s.Requests)) {
         if ($r.OperationId -in $ids -or [Guid]$r.OperationId -eq [Guid]::Empty -or [Guid]$r.OwnerId -eq [Guid]::Empty -or
             $r.Disposition -cnotin @('Terminal', 'NotDispatched')) {
-                throw 'Invalid settled request.'
-            }
+            throw 'Invalid settled request.'
+        }
         if ($r.Disposition -ceq 'Terminal' -and ($r.PayloadHash -cnotmatch '^[0-9A-F]{64}$' -or
-            $r.Kind -notin 1..5 -or $r.Outcome -notin @(1, 2))) {
-                throw 'Terminal request lacks payload/outcome evidence.'
-            }
+                $r.Kind -notin 1..5 -or $r.Outcome -notin @(1, 2))) {
+            throw 'Terminal request lacks payload/outcome evidence.'
+        }
         $ids += $r.OperationId
     }
     return $s
@@ -76,21 +76,21 @@ function Assert-TestEnvironmentResourceIdentities(
 ) {
     foreach ($kind in @('Runtime', 'Recovery')) {
         $name = $(if ($kind -eq 'Runtime') {
-            $Manifest.RuntimeLogin
-        } else {
-            $Manifest.RecoveryPrincipal
-        })
+                $Manifest.RuntimeLogin
+            } else {
+                $Manifest.RecoveryPrincipal
+            })
         $observed = Invoke-DatabaseSql `
             -Connection $Master `
             -Sql 'SELECT CONVERT(varchar(170),sid,1) FROM sys.server_principals WHERE name=@name' `
             -Parameters @{
-                name = (New-DatabaseSqlParameter -Type NVarChar -Value $name -Size 128)
-            }
-        $expected = $Manifest.($kind+'LoginSid')
+            name = (New-DatabaseSqlParameter -Type NVarChar -Value $name -Size 128)
+        }
+        $expected = $Manifest.($kind + 'LoginSid')
         if (($null -eq $expected -and $null -ne $observed -and $observed -isnot [DBNull]) -or
             ($null -ne $expected -and $observed -cne $expected)) {
-                throw 'SQL login identity missing/unknown/changed; no deletion.'
-            }
+            throw 'SQL login identity missing/unknown/changed; no deletion.'
+        }
     }
     $windows = $null
     try {
@@ -103,11 +103,11 @@ function Assert-TestEnvironmentResourceIdentities(
     }
     if (($null -eq $Manifest.WindowsAccountSid -and $null -ne $windows) -or
         ($null -ne $Manifest.WindowsAccountSid -and ($null -eq $windows -or $windows.SID.Value -cne $Manifest.WindowsAccountSid))) {
-            throw 'Windows account identity missing/unknown/changed; no deletion.'
-        }
+        throw 'Windows account identity missing/unknown/changed; no deletion.'
+    }
     foreach ($kind in @('Runtime', 'Recovery')) {
-        $path = $Manifest.($kind+'CredentialPath')
-        $hash = $Manifest.($kind+'CredentialHash')
+        $path = $Manifest.($kind + 'CredentialPath')
+        $hash = $Manifest.($kind + 'CredentialHash')
         if ($null -eq $hash) {
             if (Test-Path -LiteralPath $path) {
                 throw 'Unknown credential file exists; do not read/delete it.'
@@ -167,15 +167,15 @@ IF OBJECT_ID(N'dh.CharacterAuthority', N'U') IS NOT NULL
     ELSE SELECT 0;
 '@ `
         -Parameters @{
-            account = (New-DatabaseSqlParameter -Type UniqueIdentifier -Value ([Guid]$Manifest.AccountId))
-            character = (New-DatabaseSqlParameter -Type UniqueIdentifier -Value ([Guid]$Manifest.CharacterId))
-        }
+        account = (New-DatabaseSqlParameter -Type UniqueIdentifier -Value ([Guid]$Manifest.AccountId))
+        character = (New-DatabaseSqlParameter -Type UniqueIdentifier -Value ([Guid]$Manifest.CharacterId))
+    }
     if (@($Manifest.Steps | Where-Object {
-        $_.Name -ceq 'InitializeBinding' -and $_.Status -ceq 'Done'
-    }).Count -and
+                $_.Name -ceq 'InitializeBinding' -and $_.Status -ceq 'Done'
+            }).Count -and
         (Invoke-DatabaseSql -Connection $Connection -Sql 'SELECT COUNT(*) FROM dh.CharacterAuthority') -ne 1) {
-            throw 'Recorded binding disappeared; preserve resources.'
-        }
+        throw 'Recorded binding disappeared; preserve resources.'
+    }
     if ($bound -ne 0 -or (Invoke-DatabaseSql -Connection $Connection -Sql 'SELECT COUNT(*) FROM sys.triggers WHERE is_ms_shipped=0') -ne 0) {
         throw 'Held/mismatched binding or temporary trigger remains; cleanup does not release/drop it.'
     }
@@ -197,8 +197,8 @@ SELECT Kind,
 FROM dh.CharacterOperation WHERE OperationId = @id;
 '@ `
                 -Parameters @{
-                    id = (New-DatabaseSqlParameter -Type UniqueIdentifier -Value ([Guid]$r.OperationId))
-                } `
+                id = (New-DatabaseSqlParameter -Type UniqueIdentifier -Value ([Guid]$r.OperationId))
+            } `
                 -Result Rows
             if ($rowset.Rows.Count -ne 1) {
                 throw 'Terminal operation evidence is absent.'
@@ -206,8 +206,8 @@ FROM dh.CharacterOperation WHERE OperationId = @id;
             $row = $rowset.Rows[0]
             if ($row.Kind -ne $r.Kind -or $row.Outcome -ne $r.Outcome -or $row.ResultCode -ne $r.ResultCode -or
                 $row.PayloadHash -cne $r.PayloadHash) {
-                    throw 'Terminal operation evidence differs from settlement.'
-                }
+                throw 'Terminal operation evidence differs from settlement.'
+            }
         }
     }
     Assert-TestEnvironmentResourceIdentities -Contract $Contract -Master $Master -Manifest $Manifest
@@ -286,14 +286,14 @@ try {
     $connection = $null
     $cleanupStep = 'DropDatabase'
     $manifest.Cleanup.Steps = @([pscustomobject]@{
-        Name = $cleanupStep
-        Status = 'Pending'
-        Identity = $manifest.DatabaseIdentity
-    })
+            Name = $cleanupStep
+            Status = 'Pending'
+            Identity = $manifest.DatabaseIdentity
+        })
     Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
     [void](Invoke-DatabaseSql `
-        -Connection $master `
-        -Sql @'
+            -Connection $master `
+            -Sql @'
 SET LOCK_TIMEOUT 1000;
 IF NOT EXISTS(SELECT 1 FROM sys.databases d JOIN sys.database_recovery_status r ON r.database_id = d.database_id
     WHERE d.name = @database AND d.database_id = @id AND CONVERT(nvarchar(33), d.create_date, 126) = @created
@@ -315,7 +315,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE session_id <> @@SPID AND data
 DECLARE @dropSql nvarchar(max) = N'DROP DATABASE ' + QUOTENAME(@database) + N';';
 EXEC sys.sp_executesql @stmt = @dropSql;
 '@ `
-        -Parameters @{
+            -Parameters @{
             id = (New-DatabaseSqlParameter -Type Int -Value ([int]$manifest.DatabaseIdentity.DatabaseId))
             created = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.CreationTime -Size 33)
             owner = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.OwnerSid -Size 170)
@@ -323,20 +323,20 @@ EXEC sys.sp_executesql @stmt = @dropSql;
             guid = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.DatabaseGuid -Size 36)
             database = (New-DatabaseSqlParameter -Type NVarChar -Value $Database -Size 128)
         } `
-        -Result NonQuery)
+            -Result NonQuery)
     $manifest.Cleanup.Steps[0].Status = 'Done'
     Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
     foreach ($kind in @('Runtime', 'Recovery')) {
-        $sid = $manifest.($kind+'LoginSid')
+        $sid = $manifest.($kind + 'LoginSid')
         if ($null -eq $sid) {
             continue
         }
         $name = $(if ($kind -eq 'Runtime') {
-            $manifest.RuntimeLogin
-        } else {
-            $manifest.RecoveryPrincipal
-        })
-        $cleanupStep = 'Drop'+$kind+'Login'
+                $manifest.RuntimeLogin
+            } else {
+                $manifest.RecoveryPrincipal
+            })
+        $cleanupStep = 'Drop' + $kind + 'Login'
         $record = [pscustomobject]@{
             Name = $cleanupStep
             Status = 'Pending'
@@ -345,7 +345,7 @@ EXEC sys.sp_executesql @stmt = @dropSql;
                 Sid = $sid
             }
         }
-        $manifest.Cleanup.Steps = @($manifest.Cleanup.Steps)+$record
+        $manifest.Cleanup.Steps = @($manifest.Cleanup.Steps) + $record
         Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
         $sql = @'
 DECLARE @dropSql nvarchar(max) = N'DROP LOGIN ' + QUOTENAME(@name) + N';';
@@ -358,13 +358,13 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
     THROW 51133, 'Principal still has a SQL session.', 1;
 '@
         [void](Invoke-DatabaseSql `
-            -Connection $master `
-            -Sql ($prefix+"`n"+$sql) `
-            -Parameters @{
+                -Connection $master `
+                -Sql ($prefix + "`n" + $sql) `
+                -Parameters @{
                 name = (New-DatabaseSqlParameter -Type NVarChar -Value $name -Size 128)
                 sid = (New-DatabaseSqlParameter -Type VarBinary -Value (ConvertFrom-DatabaseSidHex -Hex $sid) -Size 85)
             } `
-            -Result NonQuery)
+                -Result NonQuery)
         $record.Status = 'Done'
         Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
     }
@@ -375,7 +375,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
             Status = 'Pending'
             Identity = $manifest.WindowsAccountSid
         }
-        $manifest.Cleanup.Steps = @($manifest.Cleanup.Steps)+$record
+        $manifest.Cleanup.Steps = @($manifest.Cleanup.Steps) + $record
         Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
         $user = Get-LocalUser -Name 'dh_d1b_recovery' -ErrorAction Stop
         if ($user.SID.Value -cne $manifest.WindowsAccountSid) {
@@ -386,12 +386,12 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
         Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
     }
     foreach ($kind in @('Runtime', 'Recovery')) {
-        $hash = $manifest.($kind+'CredentialHash')
+        $hash = $manifest.($kind + 'CredentialHash')
         if ($null -eq $hash) {
             continue
         }
-        $path = $manifest.($kind+'CredentialPath')
-        $cleanupStep = 'Remove'+$kind+'Credential'
+        $path = $manifest.($kind + 'CredentialPath')
+        $cleanupStep = 'Remove' + $kind + 'Credential'
         $record = [pscustomobject]@{
             Name = $cleanupStep
             Status = 'Pending'
@@ -400,7 +400,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
                 Hash = $hash
             }
         }
-        $manifest.Cleanup.Steps = @($manifest.Cleanup.Steps)+$record
+        $manifest.Cleanup.Steps = @($manifest.Cleanup.Steps) + $record
         Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
         Assert-TestEnvironmentSecretFile -Contract $Contract -Path $path -ExpectedHash $hash -Manifest $manifest
         Remove-Item -LiteralPath $path -ErrorAction Stop

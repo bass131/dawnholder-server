@@ -18,12 +18,12 @@ function Invoke-TestEnvironmentInstall {
     )
     Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
     if ($null -eq $ManifestLock -or -not $ManifestLock.CanWrite -or
-        $ManifestLock.Name -ine ($ManifestPath+'.lock') -or $Connection.Database -cne $Database) {
-            throw 'Installer core requires the lifecycle-owned manifest lock and exact connection.'
-        }
+        $ManifestLock.Name -ine ($ManifestPath + '.lock') -or $Connection.Database -cne $Database) {
+        throw 'Installer core requires the lifecycle-owned manifest lock and exact connection.'
+    }
     $manifest = Read-TestEnvironmentManifest -Contract $Contract -Database $Database -ManifestPath $ManifestPath
     $pending = @($manifest.Steps | Where-Object Status -ne 'Done')
-    if ($pending.Count -ne 1 -or $pending[0].Name -cne ('Install'+$Phase) -or $pending[0].Status -cne 'Pending') {
+    if ($pending.Count -ne 1 -or $pending[0].Name -cne ('Install' + $Phase) -or $pending[0].Status -cne 'Pending') {
         throw 'Installer requires the recorded active test-environment installation step.'
     }
     Assert-TestEnvironmentMarkers -Connection $Connection -Manifest $manifest

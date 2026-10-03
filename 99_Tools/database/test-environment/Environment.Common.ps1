@@ -6,8 +6,8 @@ function Read-TestEnvironmentApprovalPlan {
     )
     if ([string]::IsNullOrWhiteSpace($ApprovalPlanPath) -or -not [IO.Path]::IsPathRooted($ApprovalPlanPath) -or
         $ExpectedApprovalPlanHash -cnotmatch '^[0-9A-F]{64}$') {
-            throw 'Supply the absolute nonsecret plan path and separately coordinator-reviewed SHA256.'
-        }
+        throw 'Supply the absolute nonsecret plan path and separately coordinator-reviewed SHA256.'
+    }
     Assert-TestEnvironmentNoReparse -Path $ApprovalPlanPath
     # Hash the same byte array that is parsed: file replacement cannot switch the reviewed input.
     $bytes = [IO.File]::ReadAllBytes($ApprovalPlanPath)
@@ -73,8 +73,8 @@ function Assert-TestEnvironmentApprovalPlan {
         $Plan.SlotId -isnot [int] -or $Plan.SlotId -ne 1 -or $Plan.ExecutionApproved -isnot [bool] -or
         $Plan.Encrypt -isnot [bool] -or -not $Plan.Encrypt -or
         $Plan.TrustServerCertificate -isnot [bool] -or -not $Plan.TrustServerCertificate) {
-            throw 'Unsupported approval-plan version, slot or fixture encryption contract.'
-        }
+        throw 'Unsupported approval-plan version, slot or fixture encryption contract.'
+    }
     foreach ($key in @('Goal', 'GoalMarker', 'G0', 'G1', 'Machine', 'InstanceName', 'RuntimeLogin', 'RecoveryLocalName')) {
         if ($Plan.$key -isnot [string] -or [string]::IsNullOrWhiteSpace($Plan.$key)) {
             throw "Missing explicit approval value: $key."
@@ -89,20 +89,20 @@ function Assert-TestEnvironmentApprovalPlan {
         $Plan.RecoveryPrincipal -cne ($Plan.Machine + '\' + $Plan.RecoveryLocalName) -or
         $Plan.RecoveryPrincipal.Length -gt 128 -or $Plan.RuntimeLogin -ceq $Plan.RecoveryPrincipal -or
         $Plan.ExecutorSid -cnotmatch '^S-1-[0-9-]+$') {
-            throw 'Invalid explicit local target/principal; no game DB, system DB or endpoint fallback.'
-        }
+        throw 'Invalid explicit local target/principal; no game DB, system DB or endpoint fallback.'
+    }
     foreach ($key in @('AccountId', 'CharacterId')) {
         $guid = [Guid]::Empty
         if ($Plan.$key -isnot [string] -or -not [Guid]::TryParseExact($Plan.$key, 'D', [ref]$guid) -or
             $guid -eq [Guid]::Empty) {
-                throw "Invalid fixed binding: $key."
-            }
+            throw "Invalid fixed binding: $key."
+        }
     }
     Assert-TestEnvironmentPlanPaths -Plan $Plan
     if ($Plan.ExecutionApproved -and ($Plan.G2 -isnot [string] -or [string]::IsNullOrWhiteSpace($Plan.G2) -or
-        $Plan.G2 -cin @($Plan.G0, $Plan.G1))) {
-            throw 'Execution needs the separately reviewed G2 record.'
-        }
+            $Plan.G2 -cin @($Plan.G0, $Plan.G1))) {
+        throw 'Execution needs the separately reviewed G2 record.'
+    }
 }
 
 function Assert-TestEnvironmentPlanPaths {
@@ -122,8 +122,8 @@ function Assert-TestEnvironmentPlanPaths {
         $value = $Plan.$key
         if ($value -isnot [string] -or [string]::IsNullOrWhiteSpace($value) -or
             -not [IO.Path]::IsPathRooted($value) -or $value.StartsWith('\\')) {
-                throw "Approval paths must be explicit local absolute paths: $key."
-            }
+            throw "Approval paths must be explicit local absolute paths: $key."
+        }
         $resolved = [IO.Path]::GetFullPath($value)
         if ($resolved -cne $value -or $resolved -ieq [IO.Path]::GetPathRoot($resolved) -or $resolved -in $seen) {
             throw 'Approval paths must be distinct, normalized and below a directory root.'
@@ -134,8 +134,8 @@ function Assert-TestEnvironmentPlanPaths {
         [IO.Path]::GetDirectoryName($Plan.RecoveryCredentialPath) -ine $Plan.PrivateDirectory -or
         [IO.Path]::GetDirectoryName($Plan.IdentityPath) -ine $Plan.IdentityDirectory -or
         [IO.Path]::GetDirectoryName($Plan.SettlementPath) -ine [IO.Path]::GetDirectoryName($Plan.ManifestPath)) {
-            throw 'Credential, child identity and settlement locations do not match their approved responsibilities.'
-        }
+        throw 'Credential, child identity and settlement locations do not match their approved responsibilities.'
+    }
     foreach ($directory in @($Plan.PrivateDirectory, $Plan.IdentityDirectory)) {
         $prefix = $directory + [IO.Path]::DirectorySeparatorChar
         foreach ($key in @('ManifestPath', 'SettlementPath')) {
@@ -146,8 +146,8 @@ function Assert-TestEnvironmentPlanPaths {
     }
     if ($Plan.PrivateDirectory.StartsWith($Plan.IdentityDirectory + '\', [StringComparison]::OrdinalIgnoreCase) -or
         $Plan.IdentityDirectory.StartsWith($Plan.PrivateDirectory + '\', [StringComparison]::OrdinalIgnoreCase)) {
-            throw 'Private and child directories must have separate ACL boundaries.'
-        }
+        throw 'Private and child directories must have separate ACL boundaries.'
+    }
 }
 
 function Assert-TestEnvironmentExecutionApproval {
@@ -157,8 +157,8 @@ function Assert-TestEnvironmentExecutionApproval {
     # A reviewed hash pins the input, not the truth of user approval. Coordinator/executor must read that original.
     if ($Contract.ExecutionApproved -isnot [bool] -or -not $Contract.ExecutionApproved -or
         [string]::IsNullOrWhiteSpace($Contract.G2)) {
-            throw 'Draft plan cannot execute. Coordinator must review actual G2 approval and deliver its exact plan hash.'
-        }
+        throw 'Draft plan cannot execute. Coordinator must review actual G2 approval and deliver its exact plan hash.'
+    }
 }
 
 function Assert-TestEnvironmentTarget(
@@ -169,8 +169,8 @@ function Assert-TestEnvironmentTarget(
     if ($null -eq $Contract -or [string]::IsNullOrWhiteSpace($Database) -or
         $Database -cne $Contract.Database -or $Database -cnotmatch '^Dawnholder_Dev_[A-Za-z0-9_]+$' -or
         ($Instance -and $Instance -cne $Contract.Instance)) {
-            throw 'Supply the explicit exact approved database and local instance; no fallback.'
-        }
+        throw 'Supply the explicit exact approved database and local instance; no fallback.'
+    }
 }
 
 function Assert-TestEnvironmentPath(
@@ -179,8 +179,8 @@ function Assert-TestEnvironmentPath(
 ) {
     if ([string]::IsNullOrWhiteSpace($Path) -or -not [IO.Path]::IsPathRooted($Path) -or
         -not [string]::Equals([IO.Path]::GetFullPath($Path), $Expected, [StringComparison]::OrdinalIgnoreCase)) {
-            throw 'Test environment path is not the exact approved absolute path.'
-        }
+        throw 'Test environment path is not the exact approved absolute path.'
+    }
 }
 
 function Assert-TestEnvironmentNoReparse(
@@ -264,36 +264,36 @@ function Assert-TestEnvironmentManifest(
     $c = $Contract
     Assert-TestEnvironmentPath -Path $ManifestPath -Expected $c.ManifestPath
     foreach ($key in @(
-        'SchemaVersion',
-        'Goal',
-        'GoalMarker',
-        'G0',
-        'G1',
-        'G2',
-        'Machine',
-        'Instance',
-        'InstanceName',
-        'Endpoint',
-        'Database',
-        'SlotId',
-        'AccountId',
-        'CharacterId',
-        'RuntimeLogin',
-        'RecoveryPrincipal',
-        'RecoveryLocalName',
-        'ExecutorSid',
-        'Encrypt',
-        'TrustServerCertificate',
-        'ManifestPath',
-        'SettlementPath',
-        'PrivateDirectory',
-        'IdentityDirectory',
-        'IdentityPath',
-        'RuntimeCredentialPath',
-        'RecoveryCredentialPath',
-        'ApprovalPlanPath',
-        'ApprovalPlanHash'
-    )) {
+            'SchemaVersion',
+            'Goal',
+            'GoalMarker',
+            'G0',
+            'G1',
+            'G2',
+            'Machine',
+            'Instance',
+            'InstanceName',
+            'Endpoint',
+            'Database',
+            'SlotId',
+            'AccountId',
+            'CharacterId',
+            'RuntimeLogin',
+            'RecoveryPrincipal',
+            'RecoveryLocalName',
+            'ExecutorSid',
+            'Encrypt',
+            'TrustServerCertificate',
+            'ManifestPath',
+            'SettlementPath',
+            'PrivateDirectory',
+            'IdentityDirectory',
+            'IdentityPath',
+            'RuntimeCredentialPath',
+            'RecoveryCredentialPath',
+            'ApprovalPlanPath',
+            'ApprovalPlanHash'
+        )) {
         if ($null -eq $Manifest.PSObject.Properties[$key] -or [string]$Manifest.$key -cne [string]$Contract.$key) {
             throw "Lifecycle manifest differs from the independently supplied approval plan: $key."
         }
@@ -301,52 +301,52 @@ function Assert-TestEnvironmentManifest(
     Assert-TestEnvironmentExecutionApproval -Contract $Contract
     if ($Manifest.Encrypt -isnot [bool] -or -not $Manifest.Encrypt -or
         $Manifest.TrustServerCertificate -isnot [bool] -or -not $Manifest.TrustServerCertificate) {
-            throw 'Lifecycle encryption values must retain their boolean contract.'
-        }
+        throw 'Lifecycle encryption values must retain their boolean contract.'
+    }
     foreach ($key in @(
-        'State',
-        'Engine',
-        'DatabaseIdentity',
-        'MigrationManifest',
-        'WindowsAccountSid',
-        'RuntimeLoginSid',
-        'RecoveryLoginSid',
-        'RuntimeUserSid',
-        'RecoveryUserSid',
-        'RuntimeCredentialHash',
-        'RecoveryCredentialHash',
-        'IdentityHash',
-        'Steps',
-        'Cleanup'
-    )) {
+            'State',
+            'Engine',
+            'DatabaseIdentity',
+            'MigrationManifest',
+            'WindowsAccountSid',
+            'RuntimeLoginSid',
+            'RecoveryLoginSid',
+            'RuntimeUserSid',
+            'RecoveryUserSid',
+            'RuntimeCredentialHash',
+            'RecoveryCredentialHash',
+            'IdentityHash',
+            'Steps',
+            'Cleanup'
+        )) {
         if ($null -eq $Manifest.PSObject.Properties[$key]) {
             throw "Missing lifecycle field: $key."
         }
     }
     if ($Manifest.SchemaVersion -isnot [int] -or $Manifest.SlotId -isnot [int] -or
         $Manifest.State -cnotin @(
-        'Planned',
-        'Created',
-        'Baseline001',
-        'Installed',
-        'Bound',
-        'PrincipalsReady',
-        'CleanupStarted',
-        'Removed'
-    )) {
+            'Planned',
+            'Created',
+            'Baseline001',
+            'Installed',
+            'Bound',
+            'PrincipalsReady',
+            'CleanupStarted',
+            'Removed'
+        )) {
         throw 'Invalid manifest version/slot/state type.'
     }
     if ($null -ne $Manifest.Engine -and ($Manifest.Engine.ProductVersion -cnotmatch '^\d+\.\d+\.\d+\.\d+$' -or
-        [string]::IsNullOrWhiteSpace($Manifest.Engine.ServerCollation) -or [string]::IsNullOrWhiteSpace($Manifest.Engine.OriginalLogin))) {
-            throw 'Invalid recorded engine observation.'
-        }
+            [string]::IsNullOrWhiteSpace($Manifest.Engine.ServerCollation) -or [string]::IsNullOrWhiteSpace($Manifest.Engine.OriginalLogin))) {
+        throw 'Invalid recorded engine observation.'
+    }
     if ($null -ne $Manifest.DatabaseIdentity) {
         $id = $Manifest.DatabaseIdentity
         if ($id.DatabaseId -isnot [int] -or $id.DatabaseId -le 4 -or $id.CreationTime -cnotmatch '^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,7})?$' -or
             $id.OwnerSid -cnotmatch '^0x(?:[0-9A-F]{2})+$' -or $id.DatabaseGuid -cnotmatch '^[a-fA-F0-9-]{36}$' -or
             [Guid]$id.DatabaseGuid -eq [Guid]::Empty -or $id.Rcsi -isnot [bool] -or [string]::IsNullOrWhiteSpace($id.Collation)) {
-                throw 'Invalid recorded created database identity.'
-            }
+            throw 'Invalid recorded created database identity.'
+        }
     }
     $migrationNames = @('001_initial.sql', '002_persistence_metadata.sql',
         '003_module_metadata.sql', '004_module_release.sql')
@@ -356,8 +356,8 @@ function Assert-TestEnvironmentManifest(
             $migration.Version -in $versions -or $migration.Name -cnotmatch '^\d{3}_[a-z0-9_]+\.sql$' -or
             [int]$migration.Name.Substring(0, 3) -ne $migration.Version -or
             $migration.Checksum -cnotmatch '^[0-9A-F]{64}$') {
-                throw 'Invalid recorded migration identity.'
-            }
+            throw 'Invalid recorded migration identity.'
+        }
         if ($migration.Version -ne $versions.Count + 1 -or
             $migration.Name -cne $migrationNames[$versions.Count]) {
             throw 'Recorded migrations must retain the reviewed ordered contiguous version/name contract.'
@@ -458,9 +458,9 @@ function Assert-TestEnvironmentExecutor(
             throw 'Run as the separately approved machine/SID; no alternate identity is adopted.'
         }
         if ($Administrator -and -not ([Security.Principal.WindowsPrincipal]::new($identity)).IsInRole(
-            [Security.Principal.WindowsBuiltInRole]::Administrator)) {
-                throw 'Use an approved elevated Windows PowerShell with the same executor SID; no automatic UAC.'
-            }
+                [Security.Principal.WindowsBuiltInRole]::Administrator)) {
+            throw 'Use an approved elevated Windows PowerShell with the same executor SID; no automatic UAC.'
+        }
     } finally {
         $identity.Dispose()
     }
@@ -627,10 +627,10 @@ function New-DatabaseSqlCommand(
                 $parameter.Size = $checked.Size
             }
             $parameter.Value = $(if ($null -eq $checked.Value) {
-                [DBNull]::Value
-            } else {
-                $checked.Value
-            })
+                    [DBNull]::Value
+                } else {
+                    $checked.Value
+                })
         }
         return $command
     } catch {
@@ -670,10 +670,10 @@ function Invoke-DatabaseSql(
     } catch {
         # Do not rethrow a provider error: CREATE LOGIN errors can contain generated SQL/passwords.
         $number = $(if ($_.Exception -is [Data.SqlClient.SqlException]) {
-            $_.Exception.Number
-        } else {
-            0
-        })
+                $_.Exception.Number
+            } else {
+                0
+            })
         $safeError = [InvalidOperationException]::new("Test environment SQL command failed (provider number $number); raw SQL and provider text suppressed. Preserve manifest.")
         $safeError.Data['DatabaseSqlNumber'] = $number
         throw $safeError
@@ -695,12 +695,12 @@ function Open-TestEnvironmentDatabase(
         -ManifestPath $Manifest.ManifestPath
     Assert-TestEnvironmentExecutor -Contract $Contract
     $builder = [Data.SqlClient.SqlConnectionStringBuilder]::new()
-    $builder.DataSource = 'lpc:'+$Manifest.Instance
+    $builder.DataSource = 'lpc:' + $Manifest.Instance
     $builder.InitialCatalog = $(if ($Master) {
-        'master'
-    } else {
-        $Database
-    })
+            'master'
+        } else {
+            $Database
+        })
     $builder.IntegratedSecurity = $true
     $builder.Encrypt = $true
     $builder.TrustServerCertificate = $true
@@ -715,22 +715,22 @@ function Open-TestEnvironmentDatabase(
             throw 'Test environment shared-memory connection failed; no fallback, provider text suppressed.'
         }
         $row = (Invoke-DatabaseSql `
-            -Connection $connection `
-            -Sql @'
+                -Connection $connection `
+                -Sql @'
 SELECT CONVERT(nvarchar(128), SERVERPROPERTY('MachineName')) Machine,
     CONVERT(nvarchar(128), SERVERPROPERTY('InstanceName')) InstanceName,
     CONVERT(nvarchar(128), SERVERPROPERTY('ProductVersion')) ProductVersion,
     CONVERT(nvarchar(128), SERVERPROPERTY('Collation')) ServerCollation,
     IS_SRVROLEMEMBER('sysadmin') IsSysadmin, ORIGINAL_LOGIN() OriginalLogin;
 '@ `
-            -Result Rows).Rows[0]
+                -Result Rows).Rows[0]
         if ($row.Machine -cne $Manifest.Machine -or $row.InstanceName -cne $Contract.InstanceName -or $row.IsSysadmin -ne 1) {
             throw 'Exact local instance and privileged SQL executor required.'
         }
         if ($null -ne $Manifest.Engine -and ($row.ProductVersion -cne $Manifest.Engine.ProductVersion -or
-            $row.ServerCollation -cne $Manifest.Engine.ServerCollation)) {
-                throw 'Engine changed; a new golden-vector decision is required.'
-            }
+                $row.ServerCollation -cne $Manifest.Engine.ServerCollation)) {
+            throw 'Engine changed; a new golden-vector decision is required.'
+        }
         return $connection
     } catch {
         $connection.Dispose()
@@ -754,8 +754,8 @@ FROM sys.databases d JOIN sys.database_recovery_status r ON r.database_id = d.da
 WHERE d.name = @name;
 '@ `
         -Parameters @{
-            name = (New-DatabaseSqlParameter -Type NVarChar -Value $Manifest.Database -Size 128)
-        } `
+        name = (New-DatabaseSqlParameter -Type NVarChar -Value $Manifest.Database -Size 128)
+    } `
         -Result Rows
     if ($table.Rows.Count -ne 1) {
         throw 'Exact database identity missing or ambiguous.'
@@ -809,14 +809,14 @@ WHERE class = 0 AND name IN (N'Dawnholder.DatabaseTool', N'Dawnholder.D1bGoal');
     }
     if ($markers['Dawnholder.DatabaseTool'] -cne 'development-v1' -or
         $markers['Dawnholder.D1bGoal'] -cne $Manifest.GoalMarker) {
-            throw 'Owner/goal marker mismatch; no adoption or cleanup.'
-        }
+        throw 'Owner/goal marker mismatch; no adoption or cleanup.'
+    }
 }
 
 function ConvertTo-DatabaseSidHex(
     [byte[]]$Bytes
 ) {
-    '0x'+[BitConverter]::ToString($Bytes).Replace('-', '')
+    '0x' + [BitConverter]::ToString($Bytes).Replace('-', '')
 }
 
 function ConvertFrom-DatabaseSidHex(
@@ -825,7 +825,7 @@ function ConvertFrom-DatabaseSidHex(
     if ($Hex -cnotmatch '^0x(?:[0-9A-F]{2})+$') {
         throw 'Invalid SID hex.'
     }
-    $bytes = [byte[]]::new(($Hex.Length-2)/2)
+    $bytes = [byte[]]::new(($Hex.Length - 2) / 2)
     for ($index = 0; $index -lt $bytes.Length; $index++) {
         $bytes[$index] = [Convert]::ToByte($Hex.Substring(2 + $index * 2, 2), 16)
     }
@@ -841,18 +841,18 @@ function Set-TestEnvironmentDirectoryAcl(
     $c = $Contract
     if ($Path -cnotin @($c.PrivateDirectory, $c.IdentityDirectory) -or $ExecutorSid -cne $c.ExecutorSid -or
         ($Path -ceq $c.PrivateDirectory -and $ReaderSid)) {
-            throw 'Directory ACL change is outside the exact lifecycle contract.'
-        }
+        throw 'Directory ACL change is outside the exact lifecycle contract.'
+    }
     $acl = [Security.AccessControl.DirectorySecurity]::new()
     $acl.SetAccessRuleProtection($true, $false)
     $acl.SetOwner([Security.Principal.SecurityIdentifier]::new($ExecutorSid))
     foreach ($sid in @($ExecutorSid, 'S-1-5-18')) {
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-            [Security.Principal.SecurityIdentifier]::new($sid), 'FullControl', 'ContainerInherit,ObjectInherit', 'None', 'Allow'))
+                [Security.Principal.SecurityIdentifier]::new($sid), 'FullControl', 'ContainerInherit,ObjectInherit', 'None', 'Allow'))
     }
     if ($ReaderSid) {
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-            [Security.Principal.SecurityIdentifier]::new($ReaderSid), 'ReadAndExecute', 'ContainerInherit,ObjectInherit', 'None', 'Allow'))
+                [Security.Principal.SecurityIdentifier]::new($ReaderSid), 'ReadAndExecute', 'ContainerInherit,ObjectInherit', 'None', 'Allow'))
     }
     # Directory.CreateDirectory with ACL is available in Windows PowerShell/.NET Framework.
     [void][IO.Directory]::CreateDirectory($Path, $acl)
@@ -868,19 +868,19 @@ function New-TestEnvironmentOwnedFile(
     $c = $Contract
     if ($Path -cnotin @($c.RuntimeCredentialPath, $c.RecoveryCredentialPath, $c.IdentityPath) -or
         $ExecutorSid -cne $c.ExecutorSid -or ($ReaderSid -and $Path -cne $c.IdentityPath)) {
-            throw 'File security is outside the exact lifecycle contract.'
-        }
+        throw 'File security is outside the exact lifecycle contract.'
+    }
     Assert-TestEnvironmentNoReparse -Path $Path
     $acl = [Security.AccessControl.FileSecurity]::new()
     $acl.SetAccessRuleProtection($true, $false)
     $acl.SetOwner([Security.Principal.SecurityIdentifier]::new($ExecutorSid))
     foreach ($sid in @($ExecutorSid, 'S-1-5-18')) {
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-            [Security.Principal.SecurityIdentifier]::new($sid), 'FullControl', 'Allow'))
+                [Security.Principal.SecurityIdentifier]::new($sid), 'FullControl', 'Allow'))
     }
     if ($ReaderSid) {
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-            [Security.Principal.SecurityIdentifier]::new($ReaderSid), 'ReadAndExecute', 'Allow'))
+                [Security.Principal.SecurityIdentifier]::new($ReaderSid), 'ReadAndExecute', 'Allow'))
     }
     # Set owner and ACL at CreateNew, including under an elevated token. Never open an existing file.
     return [IO.FileStream]::new($Path, [IO.FileMode]::CreateNew, [Security.AccessControl.FileSystemRights]::FullControl,
@@ -901,25 +901,25 @@ function Assert-TestEnvironmentDirectoryAcl(
     }
     if (-not $acl.AreAccessRulesProtected -or $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value -cne $ExecutorSid -or
         $rules.Count -ne $expected.Count) {
-            throw 'Unexpected lifecycle directory ACL.'
-        }
+        throw 'Unexpected lifecycle directory ACL.'
+    }
     foreach ($sid in $expected) {
         $rule = @($rules | Where-Object {
-            $_.IdentityReference.Value -ceq $sid
-        })
+                $_.IdentityReference.Value -ceq $sid
+            })
         $rightsName = $(if ($sid -ceq $ReaderSid) {
-            'ReadAndExecute'
-        } else {
-            'FullControl'
-        })
+                'ReadAndExecute'
+            } else {
+                'FullControl'
+            })
         # Allow rules add Synchronize on .NET Framework; compare the constructed effective mask.
         $rights = ([Security.AccessControl.FileSystemAccessRule]::new(
-            [Security.Principal.SecurityIdentifier]::new($sid), $rightsName, 'ContainerInherit,ObjectInherit', 'None', 'Allow')).FileSystemRights
+                [Security.Principal.SecurityIdentifier]::new($sid), $rightsName, 'ContainerInherit,ObjectInherit', 'None', 'Allow')).FileSystemRights
         if ($rule.Count -ne 1 -or $rule[0].AccessControlType -ne 'Allow' -or $rule[0].IsInherited -or
             $rule[0].FileSystemRights -ne $rights -or $rule[0].InheritanceFlags -ne 'ContainerInherit, ObjectInherit' -or
             $rule[0].PropagationFlags -ne 'None') {
-                throw 'Unexpected lifecycle directory access rule.'
-            }
+            throw 'Unexpected lifecycle directory access rule.'
+        }
     }
 }
 
@@ -942,9 +942,9 @@ function Assert-TestEnvironmentSecretFile(
     $acl = Get-Acl -LiteralPath $Path
     $rules = @($acl.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier]))
     if (-not $acl.AreAccessRulesProtected -or $rules.Count -ne 2 -or @($rules | Where-Object {
-        $_.IdentityReference.Value -cnotin @($Manifest.ExecutorSid, 'S-1-5-18') -or
-        $_.AccessControlType -ne 'Allow' -or $_.FileSystemRights -ne 'FullControl'
-    }).Count -or $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value -cne $Manifest.ExecutorSid) {
+                $_.IdentityReference.Value -cnotin @($Manifest.ExecutorSid, 'S-1-5-18') -or
+                $_.AccessControlType -ne 'Allow' -or $_.FileSystemRights -ne 'FullControl'
+            }).Count -or $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value -cne $Manifest.ExecutorSid) {
         throw 'Unexpected credential file ACL.'
     }
     if ((Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash -cne $ExpectedHash) {

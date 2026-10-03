@@ -81,8 +81,8 @@ SELECT SlotId,
         })
     $started = $true
     [void](Invoke-DatabaseSql `
-        -Connection $connection `
-        -Sql @'
+            -Connection $connection `
+            -Sql @'
 IF EXISTS(SELECT 1 FROM dh.CharacterAuthority WITH (UPDLOCK, HOLDLOCK))
     THROW 51113, 'Binding appeared.', 1;
 INSERT dh.CharacterAuthority
@@ -108,9 +108,9 @@ VALUES
     SYSUTCDATETIME()
 );
 '@ `
-        -Parameters $parameters `
-        -Transaction $transaction `
-        -Result NonQuery)
+            -Parameters $parameters `
+            -Transaction $transaction `
+            -Result NonQuery)
     $transaction.Commit()
     $manifest.State = 'Bound'
     Complete-TestEnvironmentStep `

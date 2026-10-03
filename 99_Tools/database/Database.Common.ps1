@@ -186,8 +186,8 @@ function Invoke-Migrations(
     }
     try {
         [void](Invoke-DbNonQuery `
-            -Connection $Connection `
-            -Sql @'
+                -Connection $Connection `
+                -Sql @'
 SET XACT_ABORT ON;
 DECLARE @result int;
 EXEC @result = sys.sp_getapplock @Resource = N'Dawnholder.SchemaMigration',
@@ -197,9 +197,9 @@ EXEC @result = sys.sp_getapplock @Resource = N'Dawnholder.SchemaMigration',
 IF @result < 0
     THROW 51000, 'Could not acquire migration lock.', 1;
 '@ `
-            -Parameters @{
+                -Parameters @{
             } `
-            -Transaction $Transaction)
+                -Transaction $Transaction)
         # First installation reads empty metadata; the SQL boundary always returns a JSON array.
         $historyText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
 SELECT ISNULL((
@@ -216,14 +216,14 @@ SELECT ISNULL((
             }
             [void](Invoke-DbNonQuery -Connection $Connection -Sql $source.Sql -Transaction $Transaction)
             [void](Invoke-DbNonQuery `
-                -Connection $Connection `
-                -Sql 'INSERT dh.SchemaVersion(Version,Name,Checksum) VALUES(@version,@name,@hash)' `
-                -Parameters @{
+                    -Connection $Connection `
+                    -Sql 'INSERT dh.SchemaVersion(Version,Name,Checksum) VALUES(@version,@name,@hash)' `
+                    -Parameters @{
                     version = $source.Version
                     name = $source.Name
                     hash = $source.Checksum
                 } `
-                -Transaction $Transaction)
+                    -Transaction $Transaction)
             Write-Output "Migration $($source.Version) applied."
         }
         $finalHistoryText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
@@ -245,8 +245,8 @@ SELECT ISNULL((
         } else {
             # Phase-specific structural boundary, not the final four-version catalog or S01 PASS.
             [void](Invoke-DbNonQuery `
-                -Connection $Connection `
-                -Sql @'
+                    -Connection $Connection `
+                    -Sql @'
 IF (SELECT COUNT( * ) FROM dh.SchemaVersion) <> 1 OR
     NOT EXISTS(SELECT 1 FROM dh.SchemaVersion WHERE Version = 1 AND Name = N'001_initial.sql') OR
     OBJECT_ID(N'dh.Account', N'U') IS NULL OR OBJECT_ID(N'dh.Character', N'U') IS NULL OR
@@ -255,9 +255,9 @@ IF (SELECT COUNT( * ) FROM dh.SchemaVersion) <> 1 OR
     DATABASE_PRINCIPAL_ID(N'dh_recovery') IS NOT NULL
     THROW 51007, '001 phase boundary mismatch; final catalog has not been run.', 1;
 '@ `
-                -Parameters @{
+                    -Parameters @{
                 } `
-                -Transaction $Transaction)
+                    -Transaction $Transaction)
         }
         if ($ownsTransaction) {
             $Transaction.Commit()

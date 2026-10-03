@@ -38,7 +38,7 @@ $other = $null
 $transaction = $null
 $accountId = [Guid]::NewGuid()
 $characterId = [Guid]::NewGuid()
-$argsSql = @{account=$accountId; character=$characterId; missing=[Guid]::NewGuid()}
+$argsSql = @{account = $accountId; character = $characterId; missing = [Guid]::NewGuid() }
 try {
     Assert-DatabaseOwner $connection
     [void](Invoke-DbNonQuery $connection (Get-MigrationText (Join-Path $PSScriptRoot 'verify-schema.sql')))
@@ -76,17 +76,17 @@ AND p.SavedUtc IS NOT NULL AND c.CreatedUtc IS NOT NULL AND a.CreatedUtc IS NOT 
     $transaction.Rollback('UnknownVersionGuard')
     [void](Invoke-DbNonQuery $connection 'SET XACT_ABORT OFF;' @{} $transaction)
 
-    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Account(AccountId) VALUES(@account)' $argsSql $transaction } @(2627,2601) 'account PK duplicate rejected'
-    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Character(CharacterId,AccountId,Class) VALUES(@character,@account,1)' $argsSql $transaction } @(2627,2601) 'character PK duplicate rejected'
-    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.CharacterProgress(CharacterId,MapId,PositionX,PositionY,Hp,MaxHp) VALUES(@character,0,0,0,80,80)' $argsSql $transaction } @(2627,2601) 'progress PK duplicate rejected'
-    Assert-SqlError { Invoke-DbNonQuery $connection "INSERT dh.SchemaVersion(Version,Name,Checksum) SELECT 999999,Name,Checksum FROM dh.SchemaVersion WHERE Version=1" @{} $transaction } @(2627,2601) 'migration name unique constraint'
+    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Account(AccountId) VALUES(@account)' $argsSql $transaction } @(2627, 2601) 'account PK duplicate rejected'
+    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Character(CharacterId,AccountId,Class) VALUES(@character,@account,1)' $argsSql $transaction } @(2627, 2601) 'character PK duplicate rejected'
+    Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.CharacterProgress(CharacterId,MapId,PositionX,PositionY,Hp,MaxHp) VALUES(@character,0,0,0,80,80)' $argsSql $transaction } @(2627, 2601) 'progress PK duplicate rejected'
+    Assert-SqlError { Invoke-DbNonQuery $connection "INSERT dh.SchemaVersion(Version,Name,Checksum) SELECT 999999,Name,Checksum FROM dh.SchemaVersion WHERE Version=1" @{} $transaction } @(2627, 2601) 'migration name unique constraint'
     Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.Character(CharacterId,AccountId,Class) VALUES(@missing,@missing,0)' $argsSql $transaction } @(547) 'orphan character rejected'
     Assert-SqlError { Invoke-DbNonQuery $connection 'INSERT dh.CharacterProgress(CharacterId,MapId,PositionX,PositionY,Hp,MaxHp) VALUES(@missing,0,0,0,80,80)' $argsSql $transaction } @(547) 'orphan progress rejected'
     Assert-SqlError { Invoke-DbNonQuery $connection 'DELETE dh.Account WHERE AccountId=@account' $argsSql $transaction } @(547) 'account deletion does not cascade'
     Assert-SqlError { Invoke-DbNonQuery $connection 'DELETE dh.Character WHERE CharacterId=@character' $argsSql $transaction } @(547) 'character deletion does not cascade'
     Assert-SqlError { Invoke-DbNonQuery $connection 'UPDATE dh.Character SET Class=2 WHERE CharacterId=@character' $argsSql $transaction } @(547) 'invalid class rejected'
     Assert-SqlError { Invoke-DbNonQuery $connection 'UPDATE dh.CharacterProgress SET MapId=4 WHERE CharacterId=@character' $argsSql $transaction } @(547) 'invalid map rejected'
-    foreach ($assignment in @('Hp=-1','Hp=151','MaxHp=0')) {
+    foreach ($assignment in @('Hp=-1', 'Hp=151', 'MaxHp=0')) {
         Assert-SqlError { Invoke-DbNonQuery $connection "UPDATE dh.CharacterProgress SET $assignment WHERE CharacterId=@character" $argsSql $transaction } @(547) "invalid HP rejected: $assignment"
     }
     Assert-SqlError { Invoke-DbNonQuery $connection 'UPDATE dh.CharacterProgress SET PositionX=NULL WHERE CharacterId=@character' $argsSql $transaction } @(515) 'missing coordinate rejected'
@@ -100,7 +100,7 @@ AND p.SavedUtc IS NOT NULL AND c.CreatedUtc IS NOT NULL AND a.CreatedUtc IS NOT 
     # Both valid classes, all map IDs, alive/dead HP bounds.
     [void](Invoke-DbNonQuery $connection 'UPDATE dh.Character SET Class=1 WHERE CharacterId=@character; UPDATE dh.CharacterProgress SET Hp=0,MaxHp=80 WHERE CharacterId=@character;' $argsSql $transaction)
     foreach ($map in 0..3) {
-        [void](Invoke-DbNonQuery $connection 'UPDATE dh.CharacterProgress SET MapId=@map WHERE CharacterId=@character' @{map=$map;character=$characterId} $transaction)
+        [void](Invoke-DbNonQuery $connection 'UPDATE dh.CharacterProgress SET MapId=@map WHERE CharacterId=@character' @{map = $map; character = $characterId } $transaction)
     }
     Write-Output 'PASS: both classes, all maps and zero HP accepted'
 
@@ -125,9 +125,9 @@ SELECT (SELECT COUNT(*) FROM dh.Account WHERE AccountId=@account)
     # Isolated DDL transactions prove Install's catalog gate rejects semantic drift.
     # THROW with XACT_ABORT ON may doom the transaction; always fully roll it back.
     $driftCases = @(
-        @{Label='loosened class CHECK rejected';Number=51004;Sql='ALTER TABLE dh.Character DROP CONSTRAINT CK_Character_Class; ALTER TABLE dh.Character WITH CHECK ADD CONSTRAINT CK_Character_Class CHECK (Class IN (0,1,2));'},
-        @{Label='changed unlock DEFAULT rejected';Number=51005;Sql='ALTER TABLE dh.CharacterProgress DROP CONSTRAINT DF_CharacterProgress_BossUnlocked; ALTER TABLE dh.CharacterProgress ADD CONSTRAINT DF_CharacterProgress_BossUnlocked DEFAULT 1 FOR BossUnlocked;'},
-        @{Label='default attached to wrong column rejected';Number=51005;Sql='ALTER TABLE dh.CharacterProgress DROP CONSTRAINT DF_CharacterProgress_BossUnlocked; ALTER TABLE dh.CharacterProgress ADD CONSTRAINT DF_CharacterProgress_BossUnlocked DEFAULT 0 FOR Hp;'}
+        @{Label = 'loosened class CHECK rejected'; Number = 51004; Sql = 'ALTER TABLE dh.Character DROP CONSTRAINT CK_Character_Class; ALTER TABLE dh.Character WITH CHECK ADD CONSTRAINT CK_Character_Class CHECK (Class IN (0,1,2));' },
+        @{Label = 'changed unlock DEFAULT rejected'; Number = 51005; Sql = 'ALTER TABLE dh.CharacterProgress DROP CONSTRAINT DF_CharacterProgress_BossUnlocked; ALTER TABLE dh.CharacterProgress ADD CONSTRAINT DF_CharacterProgress_BossUnlocked DEFAULT 1 FOR BossUnlocked;' },
+        @{Label = 'default attached to wrong column rejected'; Number = 51005; Sql = 'ALTER TABLE dh.CharacterProgress DROP CONSTRAINT DF_CharacterProgress_BossUnlocked; ALTER TABLE dh.CharacterProgress ADD CONSTRAINT DF_CharacterProgress_BossUnlocked DEFAULT 0 FOR Hp;' }
     )
     foreach ($case in $driftCases) {
         $transaction = $connection.BeginTransaction()

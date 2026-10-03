@@ -265,24 +265,24 @@ function Test-ModuleStructure {
                     'dh.' + $knownObject[0].Name + ' at ' + $knownObject[0].Path
                 } else { 'One registered dh module at its exact contract path' }
                 $issues.Add([pscustomobject]@{
-                    File = $relative
-                    Line = $line
-                    Expected = $expectedLocation
-                    Message = 'Unknown path or non-single module definition'
-                    Remediation = 'Move the known object to its modules/functions or procedures contract path; remove unregistered SQL.'
-                })
+                        File = $relative
+                        Line = $line
+                        Expected = $expectedLocation
+                        Message = 'Unknown path or non-single module definition'
+                        Remediation = 'Move the known object to its modules/functions or procedures contract path; remove unregistered SQL.'
+                    })
                 continue
             }
             $actualName = $definitions[0].Groups[2].Value
             $actualKind = if ($definitions[0].Groups[1].Value -ieq 'FUNCTION') { 'FN' } else { 'P' }
             if ($actualName -cne $entry.Name -or $actualKind -cne $entry.Kind) {
                 $issues.Add([pscustomobject]@{
-                    File = $relative
-                    Line = $line
-                    Expected = ('dh.' + $entry.Name + ' (' + $entry.Kind + ') at ' + $entry.Path)
-                    Message = ('Unexpected module dh.' + $actualName)
-                    Remediation = 'Restore the expected definition/name/kind or move it to its registered path.'
-                })
+                        File = $relative
+                        Line = $line
+                        Expected = ('dh.' + $entry.Name + ' (' + $entry.Kind + ') at ' + $entry.Path)
+                        Message = ('Unexpected module dh.' + $actualName)
+                        Remediation = 'Restore the expected definition/name/kind or move it to its registered path.'
+                    })
                 continue
             }
             $seen[$entry.Name] = $true
@@ -294,12 +294,12 @@ function Test-ModuleStructure {
             foreach ($required in $entry.RequiredCalls) {
                 if ($required -notin $callNames) {
                     $issues.Add([pscustomobject]@{
-                        File = $relative
-                        Line = $line
-                        Expected = ('Direct EXEC dh.' + $required + ' in ' + $entry.Path)
-                        Message = ('dh.' + $entry.Name + ' does not call its ' + $required + ' responsibility')
-                        Remediation = ('Use the authoritative internal helper dh.' + $required + ' with named arguments at the original stage.')
-                    })
+                            File = $relative
+                            Line = $line
+                            Expected = ('Direct EXEC dh.' + $required + ' in ' + $entry.Path)
+                            Message = ('dh.' + $entry.Name + ' does not call its ' + $required + ' responsibility')
+                            Remediation = ('Use the authoritative internal helper dh.' + $required + ' with named arguments at the original stage.')
+                        })
                 }
             }
             foreach ($call in $calls) {
@@ -307,24 +307,24 @@ function Test-ModuleStructure {
                 if ($called -notin $entry.RequiredCalls) {
                     $callLine = 1 + ([regex]::Matches($text.Substring(0, $call.Index), "`n")).Count
                     $issues.Add([pscustomobject]@{
-                        File = $relative
-                        Line = $callLine
-                        Expected = ($entry.RequiredCalls -join ', ')
-                        Message = ('Unexpected helper/RPC call dh.' + $called)
-                        Remediation = 'Remove the added responsibility; preserve admission/inspection/resolver exceptions in the fixed contract.'
-                    })
+                            File = $relative
+                            Line = $callLine
+                            Expected = ($entry.RequiredCalls -join ', ')
+                            Message = ('Unexpected helper/RPC call dh.' + $called)
+                            Remediation = 'Remove the added responsibility; preserve admission/inspection/resolver exceptions in the fixed contract.'
+                        })
                 }
             }
         }
         foreach ($entry in $contract) {
             if (-not $seen.ContainsKey($entry.Name)) {
                 $issues.Add([pscustomobject]@{
-                    File = $entry.Path
-                    Line = 1
-                    Expected = ('dh.' + $entry.Name + ' at ' + $entry.Path)
-                    Message = 'Required module missing or registered under the wrong definition'
-                    Remediation = ('Restore the authoritative ' + $entry.Path + ' file and its exact dh.' + $entry.Name + ' definition.')
-                })
+                        File = $entry.Path
+                        Line = 1
+                        Expected = ('dh.' + $entry.Name + ' at ' + $entry.Path)
+                        Message = 'Required module missing or registered under the wrong definition'
+                        Remediation = ('Restore the authoritative ' + $entry.Path + ' file and its exact dh.' + $entry.Name + ' definition.')
+                    })
             }
         }
         if ($issues.Count -gt 0) { $status = 'violation' }
@@ -332,12 +332,12 @@ function Test-ModuleStructure {
     catch {
         $status = 'unavailable'
         $issues.Add([pscustomobject]@{
-            File = $activeFile
-            Line = $null
-            Expected = 'Readable, lexically inspectable module sources'
-            Message = $_.Exception.Message
-            Remediation = 'Correct the supplied database path/access or unfinished SQL text, then rerun; unavailable is not compliant.'
-        })
+                File = $activeFile
+                Line = $null
+                Expected = 'Readable, lexically inspectable module sources'
+                Message = $_.Exception.Message
+                Remediation = 'Correct the supplied database path/access or unfinished SQL text, then rerun; unavailable is not compliant.'
+            })
     }
     [pscustomobject]@{
         Status = $status

@@ -62,10 +62,10 @@ SELECT (SELECT COUNT( * ) FROM sys.databases WHERE name = @database) DatabaseCou
     ORIGINAL_LOGIN() OriginalLogin;
 '@ `
             -Parameters @{
-                database = (New-DatabaseSqlParameter -Type NVarChar -Value $Database -Size 128)
-                runtime = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.RuntimeLogin -Size 128)
-                recovery = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.RecoveryPrincipal -Size 128)
-            } `
+            database = (New-DatabaseSqlParameter -Type NVarChar -Value $Database -Size 128)
+            runtime = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.RuntimeLogin -Size 128)
+            recovery = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.RecoveryPrincipal -Size 128)
+        } `
             -Result Rows
         $r = $preflight.Rows[0]
         if ($r.DatabaseCount -ne 0 -or $r.LoginCount -ne 0) {
@@ -84,11 +84,11 @@ SELECT (SELECT COUNT( * ) FROM sys.databases WHERE name = @database) DatabaseCou
             -Plan ([pscustomobject]@{
                 Database = $Database
                 Mode = 'CreateOnly'
-                Lock = 'Dawnholder.Create.'+$Database
+                Lock = 'Dawnholder.Create.' + $Database
             })
         [void](Invoke-DatabaseSql `
-            -Connection $master `
-            -Sql @'
+                -Connection $master `
+                -Sql @'
 DECLARE @lockResult int;
 EXEC @lockResult = sys.sp_getapplock @Resource = @resource,
     @LockMode = 'Exclusive',
@@ -103,11 +103,11 @@ IF DB_ID(@database) IS NOT NULL
 DECLARE @sql nvarchar(max) = N'CREATE DATABASE ' + QUOTENAME(@database) + N';';
 EXEC sys.sp_executesql @stmt = @sql;
 '@ `
-            -Parameters @{
-                resource = (New-DatabaseSqlParameter -Type NVarChar -Value ('Dawnholder.Create.'+$Database) -Size 255)
+                -Parameters @{
+                resource = (New-DatabaseSqlParameter -Type NVarChar -Value ('Dawnholder.Create.' + $Database) -Size 255)
                 database = (New-DatabaseSqlParameter -Type NVarChar -Value $Database -Size 128)
             } `
-            -Result NonQuery)
+                -Result NonQuery)
         $manifest.DatabaseIdentity = Get-TestEnvironmentDatabaseIdentity -Master $master -Manifest $manifest
         Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
         Complete-TestEnvironmentStep `
@@ -126,8 +126,8 @@ EXEC sys.sp_executesql @stmt = @sql;
             })
         $connection = Open-TestEnvironmentDatabase -Contract $Contract -Manifest $manifest -Database $Database
         [void](Invoke-DatabaseSql `
-            -Connection $connection `
-            -Sql @'
+                -Connection $connection `
+                -Sql @'
 SET XACT_ABORT ON;
 BEGIN TRANSACTION;
 EXEC(N'CREATE SCHEMA dh AUTHORIZATION dbo');
@@ -145,10 +145,10 @@ EXEC sys.sp_addextendedproperty @name = N'Dawnholder.D1bGoal',
     @value = @goal;
 COMMIT;
 '@ `
-            -Parameters @{
+                -Parameters @{
                 goal = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.GoalMarker -Size 128)
             } `
-            -Result NonQuery)
+                -Result NonQuery)
         Assert-TestEnvironmentMarkers -Connection $connection -Manifest $manifest
         $manifest.State = 'Created'
         Complete-TestEnvironmentStep `
@@ -165,11 +165,11 @@ COMMIT;
     Assert-TestEnvironmentDatabaseIdentity -Master $master -Manifest $manifest
     if (($Phase -eq 'Baseline001' -and $manifest.State -cne 'Created') -or
         ($Phase -eq 'Complete' -and $manifest.State -cne 'Baseline001')) {
-            throw 'Install 001 first, leave its fixture to the independent verifier, then install 002+ in the same database.'
-        }
+        throw 'Install 001 first, leave its fixture to the independent verifier, then install 002+ in the same database.'
+    }
     $connection = Open-TestEnvironmentDatabase -Contract $Contract -Manifest $manifest -Database $Database
     Assert-TestEnvironmentMarkers -Connection $connection -Manifest $manifest
-    $stepName = 'Install'+$Phase
+    $stepName = 'Install' + $Phase
     Start-TestEnvironmentStep `
         -Contract $Contract `
         -Manifest $manifest `
@@ -197,17 +197,17 @@ COMMIT;
         -Sql 'SELECT Version,Name,Checksum FROM dh.SchemaVersion ORDER BY Version' `
         -Result Rows
     $manifest.MigrationManifest = @(foreach ($row in $versions.Rows) {
-        [pscustomobject]@{
-            Version = [int]$row.Version
-            Name = [string]$row.Name
-            Checksum = [string]$row.Checksum
-        }
-    })
+            [pscustomobject]@{
+                Version = [int]$row.Version
+                Name = [string]$row.Name
+                Checksum = [string]$row.Checksum
+            }
+        })
     $manifest.State = $(if ($Phase -eq 'Baseline001') {
-        'Baseline001'
-    } else {
-        'Installed'
-    })
+            'Baseline001'
+        } else {
+            'Installed'
+        })
     Complete-TestEnvironmentStep `
         -Contract $Contract `
         -Manifest $manifest `

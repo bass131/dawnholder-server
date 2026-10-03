@@ -43,14 +43,14 @@ IFS= read -r SQLCMDPASSWORD
 export SQLCMDPASSWORD
 exec /opt/mssql-tools18/bin/sqlcmd -S tcp:127.0.0.1,14330 -U '__LOGIN__' -d Dawnholder_Dev -C -b -l 5 -t 10 -W -Q "__SQL__"
 '@
-$bashScript = $bashScript.Replace('__LOGIN__',$credential.UserName).Replace('__SQL__',$sql).Replace("`r`n","`n")
+$bashScript = $bashScript.Replace('__LOGIN__', $credential.UserName).Replace('__SQL__', $sql).Replace("`r`n", "`n")
 $start = [Diagnostics.ProcessStartInfo]::new('wsl.exe')
 $start.UseShellExecute = $false
 $start.CreateNoWindow = $true
 $start.RedirectStandardInput = $true
 $start.RedirectStandardOutput = $true
 $start.RedirectStandardError = $true
-foreach ($argument in @('-d',$Distribution,'--','bash','-c',$bashScript)) { $start.ArgumentList.Add($argument) }
+foreach ($argument in @('-d', $Distribution, '--', 'bash', '-c', $bashScript)) { $start.ArgumentList.Add($argument) }
 $process = [Diagnostics.Process]::new()
 $process.StartInfo = $start
 try {
