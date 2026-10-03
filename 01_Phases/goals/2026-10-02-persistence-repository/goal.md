@@ -1,12 +1,20 @@
-# P3 / D1b — 영속성 저장소와 격리 SQL 검증
+# SQL 영속성 구조와 오프라인 검증
 
-상태: **2026-10-03 메인 지시로 재개. 인계 checkpoint와 최신 main 통합 완료, SQL 구조 신규 구현 계약 준비 중. A1·A2·가독성 구현 정산 완료, SQL 구조·위치(b) 승인, B1/B2 미구현, 실제 DB·계정 변경은 G2 독립 실사 대기**. 기술 범위와 외부 대상·한 번 수명의 기존 승인은 유지하지만 SQL 접속도 G2 전까지 하지 않는다. 전체 구현 완료나 전체 독립 검증 판정은 아직 없다. 아래 최신 재개 절이 정본이며 이전 절은 당시 기록이다.
+상태: **구조 단계 자체 점검 완료·중간 커밋 준비, 최종 배포 변경과 신규 Opus 오프라인 검증은 미완료**. 2026-10-03 사용자 결정으로 SQL/PS 구조·검사·문서와 합동 오프라인 검증까지 첫 PR을 분리한다. 저장소·복구 도구·G2·실제 DB/계정 수명은 첫 PR 병합 뒤 최신 main 새 branch/후속 goal에 인계하며 새 GameDev Astra가 시작한다. 현재 전체 영속성 완료나 SQL 실행 PASS는 아니다. SQL 접속도 G2 전까지 하지 않는다.
+
+## 현재 goal의 PR 경계와 완료조건 (2026-10-03)
+
+- 메인 `msg_e8899cc5c4f9`(05:47:43 UTC)는 사용자 원문 “Ok 확인했어”에 근거한 PR 분할 결정을 전달했다. 사용자 직접 입력으로 격상하지 않는다. 현재 SQL Sol 계약은 바꾸지 않고 SQL 구조 + 가독성·구조 합동 오프라인 독립 검증 완료 시 첫 PR을 연다. PR에는 **실제 DB 설치·G2·계정/ACL 실행 전**과 아래 두 커밋 중간 tree 제한을 명시한다. 해당 PR의 사용자 명시 병합 승인은 별도로 받는다.
+- 메인 `msg_b7da026afd7d`(05:53:44 UTC)는 후속 goal 분리 제안을 승인했다. 현재 goal의 완료범위는 SQL 구조·오프라인 검증·첫 PR이며, 원래 저장소/DB 계약은 미완료로 인계한다. 후속 goal은 새 GameDev Astra가 최신 main·새 branch에서 시작하고 G0/G1의 정확 대상·한 번 수명 승인과 출처 메시지를 그대로 이어받는다. 새 DB나 두 번째 수명을 승인한 것이 아니다. 현재 goal의 PR 병합·결과 기록 뒤 Gardener를 수행하고 R-8 교체한다.
+- **완료조건:** 승인된 modules/helper·manifest/배포 변경과 구조 검사를 구현하고 구조/동작 커밋을 분리한다. 가독성까지 포함한 신규 Opus가 보고·실제 diff·원문을 실사하고 독립 오프라인 테스트와 사람 가독성 검토에서 미해결 차단 결함이 없어야 한다. MSSQL 안내와 후속 소비/실행 경계를 실제 코드에 맞춘다. 현재 main 통합 뒤 해당 비DB 검사·CI 결과를 기록하고 PR별 승인·병합과 결과·근거 보존·작업자 정산을 완료한다. 실제 SQL·G2·계정 수명은 이 goal의 통과로 대체하지 않는다.
+- 첫 PR 병합 뒤 Rules와 새 modules/verify-schema 고정 입력·hash로 SQLFluff 적용성 및 main 검사 연결을 조율한다. 이전 절의 첫 PR 전 lint 연결 조건은 이 최신 순서로 대체한다. 통과 시 변경 파일 연결을 후속 경계에 인계한다.
+- 메인 `msg_88b9b8e1b5cd`에 따라 Rules 결함 수정 PR과 Architecture PR이 모두 병합되면 자연 checkpoint에서 최신 main과 새 AGENTS·CLAUDE 규칙을 받아 재계획한다. 그 전 CURRENT는 자기 goal 링크 외 수정하지 않으며 이 세션은 수정하지 않았다. 전체 결정 전문은 `.backups/verification/2026-10-03-persistence-repository/main-pr-boundary-delivery.json`, `main-followup-goal-decision.json`에 보존했다. 실행 입력을 보존하기 위해 이 갱신은 구조 검사 종료 뒤에 수행했다.
 
 ## 재개와 하네스 적용 (2026-10-03)
 
 - 메인 `msg_0cb8bca3b722`(05:21:50 UTC)의 발신 handle과 현재 메인 세션을 대조했다. **메인이 전달한 사용자 결정**이며 사용자 직접 입력으로 격상하지 않는다. 전문은 `.backups/verification/2026-10-03-persistence-repository/main-entry-delivery.json`에 보존했다. 전날 마무리 지시에 따른 보류를 해제하고 이 목표의 순서를 이어간다.
 - Root 인계 한 파일은 `93c57e2`로 먼저 보존했다. fetch한 `origin/main`은 `b385bc95c21dbf20954c8a05d9d6f23184dc653c`이며 `ca8f8cb36cade02f639b7213848196e1f2761803`로 통합했다. CODE_CONVENTION 프로젝트 집합 충돌 한 곳만 PR164/main 문안으로 해결했고 나머지 03a6aeb 추가 절은 유지했다. stash2개와 Unity 사용자3파일/skip-worktree는 보존한다.
-- 신규 SQL 구조 Sol → 가독성+구조 합동 신규 Opus 오프라인 검증 → 저장소 → recovery/launcher → 최종 신규 Opus G2 실사 → 승인된 DB·계정 수명과 실제 반증 → 정리 → PR 순서다. 과거 abandoned Task/Dispatch/handle은 재사용하지 않는다. 구현자와 검증자는 서로 다른 신규 외부 세션으로, 한 작업 뒤 정산·종료한다.
+- 신규 SQL 구조 Sol → 필요한 MSSQL 문서 갱신 → 가독성+구조 합동 신규 Opus 오프라인 검증 → 첫 PR 순서다. 저장소/recovery/launcher/G2/DB 수명은 위 후속 goal로 옮긴다. 과거 abandoned Task/Dispatch/handle은 재사용하지 않는다. 구현자와 검증자는 서로 다른 신규 외부 세션으로, 한 작업 뒤 정산·종료한다.
 - 다음 구현 계약에는 **RPC의 modules 위치와 정본 helper 사용을 확인하는 구조 검사**를 포함한다. 위반에는 옮길 파일/목적지/사용할 helper 등 고치는 방법을 적고, 도구·입력 실패로 검사하지 못한 상태와 실제 위반을 구분한다. 새 검사는 warning 파일럿 → 실측 → error 승격 순서이며 독립 검증자가 양성·반례를 작성한다. 실제 위반은 goal의 구조 완료 판정에서 숨기지 않는다.
 - **구조 이동·helper 추출의 동작 보존 커밋과 승인된 계약·배포값 변경 커밋을 분리**한다. 구현 계약의 쓰기 전 context에서 각 경계와 보존 근거를 먼저 고정하고, 구조 checkpoint에서 9RPC/29열·payload·코드/오류/검사 순서·grant·잠금/transaction을 따로 확인한다. 중간 checkpoint는 최종 독립 PASS가 아니다.
 - 구조 완료 뒤 modules/verify-schema 입력과 hash를 고정해 SQLFluff parse 재시범을 Rules와 조율한다. 통과하면 변경 파일 검사 연결까지 완료조건에 포함한다. `99_Tools/CodeRules/`와 CI는 Rules 소유다. `msg_eb6c2219f01f`로 현재 기준·중복 문단 처리·향후 연결 방식을 문의했다. 현재 CI 활성화·parser 설치 권한으로 확대하지 않는다.
@@ -22,6 +30,10 @@
 - 병합된 formatting-project-registration은 clean, 현재 터미널0, HEAD af10bc3c가 origin/main 조상임을 확인했다. 로컬 evidence 928파일을 Root `.backups/verification/formatting-project-registration/`로 복사하고 모든 SHA256 일치/차이0을 대조했다. verdict SHA256 `A2AEC7CB570FB4850B176B67A9DC5074511F52E2BD807D29C45FC9C10AE07E3F`도 동일하다. 로컬 settings 파일도 별도 보존한 뒤 정확 worktree를 Orca로 제거했고 로컬 branch 부재를 확인했다. 원격 branch는 변경하지 않았다. 과거 절의 F 원문 경로는 위 새 보존 경로로 대응하며 과거 실행 기록 자체는 수정하지 않는다. 근거 `formatting-evidence-preservation.json`·`formatting-cleanup.json`이다.
 - Architecture `msg_971aa13d3c84`와 회신 `msg_04609af7ffc9`: 현재 독립 도구 등록 파일은 각자 자기 항목만 추가한다. 후속 모듈 의존 방향 검사는 Architecture, 코드 내부 틱 블로킹/ratchet은 GameDev로 구분하며 후속 goal을 자동 시작하지 않는다.
 - Rules `msg_50a70f5d9fb7`의 ADR035 사실 대조에 `msg_e56df7ffeb79`로 응답했다. 직접 ADO.NET·SqlClient6.1.7·typed RPC·ORM 미도입은 기술명세의 선택이다. runtime의 최소권한 SQL principal과 recovery의 전용 비관리자 Windows 통합 인증을 구분하며 Windows 인증 전체를 배제하지 않는다. LocalDB는 현재 승인된 시험 대상이 아니고 SQL 접속은 미실행이다. Directory.Build.props 문서 절 번호 주석 정정은 Rules 후속 goal과 충돌하지 않는다.
+- 쓰기 전 Sol context SHA256 `1229278DEABD6A4FEA602AE2A281C52F33A9F964EA92CED1619296F6AFA4BEE1`을 전부 읽고, 제품 diff0을 확인했다. 추가 순수 progress/snapshot serializer2개와 `Module.Common.ps1`은 기존 반복 JSON·배포 책임 내 분할이며 메인도 이를 수용했다. 독립 Opus는 사람 가독성과 한 호출자 wrapper 여부(30초 시험)를 판정한다.
+- **중간 tree 결정:** 메인 `msg_7aca3e6e330c`(05:35:21 UTC)는 원칙 적용의 메인 해석이며 새 사용자 결정이 아니다. 첫 구조 커밋은 **설치 불가 중간 tree, 소스 보존 검토용, 설치·G2 검증은 최종 tree에서만**이라는 조건으로 허용한다. `git bisect`의 DB 설치 판정에서 이 커밋을 제외한다. 커밋 본문과 PR에도 같은 한계를 기록한다. 구조 커밋의 9RPC/29열·payload·오류·우선순위·grant·transaction 소스 보존과 최종 설치 동작은 별개 판정이다.
+- 위 예외에서도 현재 CI의 비DB build/dotnet tests/서식/manifest/preservation/해당 CodeRules 검사는 통과해야 한다. 실패 또는 확인 못 함은 메인에 보고하며 완료로 해석하지 않는다. 현재 main 통합 tree의 CI는 dotnet-tests.yml 하나이며 CodeRules 경로는 아직 없다. 새 검사 도구가 통합되면 해당 범위를 다시 대조한다. `msg_92e6d9e738d0`로 소유 WSL 사본의 기존 비DB 검사만 실행을 허용했고 원본 Windows 전체빌드/DB 접속 금지는 유지했다.
+- 이 예외는 각 단계가 모든 빌드·테스트를 통과한다는 원칙과 달리 **DB 설치 가능성을 중간 커밋에서 보장하지 않는다**. 이 비용과 재발 여부는 목표 종료 Gardener 입력으로 남긴다. 결정·context·회신 전문은 `main-structure-boundary-decision.json`, `sql-structure-context-delivery.json`, `sql-structure-context-reply.json`, `main-structure-decision-delivery.json`에 보존한다.
 
 ## 다음 세션 재개 인계 (2026-10-02)
 
@@ -45,7 +57,7 @@
 
 ## 목표와 보존 경계
 
-**목표:** D1a의 authority/fence·두 rowversion·operation 증빙·unknown 조정 계약을 신규 migration과 .NET 저장소로 구현하고, 정확히 승인된 시험 DB에서 독립 SQL 반증 근거를 남긴다. 다음 D2가 게임 actor와 분리된 API를 받아 연결할 수 있어야 한다.
+**현재 목표:** authority/fence·두 rowversion·operation 증빙 계약의 SQL/PS 구조·배포·구조 검사를 완성하고, 가독성까지 포함한 합동 오프라인 독립 검증과 첫 PR을 마친다. 원래의 .NET 저장소·복구 도구·정확 시험 DB의 실제 반증 및 다음 게임 연결 소비 API는 위 후속 goal로 인계한다. 아래 기술 불변조건과 이미 승인된 외부 대상·한 번 수명은 보존하며 현재 실행 성공으로 해석하지 않는다.
 
 - 고정 계정/캐릭터 1개, 최초 저장 class 유지, 재접속 Town 안전 spawn·기본 풀HP, quest/보스 해금 비영속을 유지한다. legacy Progress를 acquire/정상 close에서 자동 UPDATE하지 않는다.
 - 모든 writer·resolver·recovery는 동일 slot lock과 DB transaction을 사용한다. runtime은 recovery 권한·직접 테이블 DML을 갖지 않는다. timeout·프로세스 부재·취소를 rollback/권위 해제 증거로 삼지 않는다.
