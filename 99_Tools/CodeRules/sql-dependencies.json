@@ -1,0 +1,67 @@
+{
+  "sqlFluffVersion": "4.3.0",
+  "pythonMinimumForThisLock": "3.11",
+  "platform": "Linux x86_64",
+  "dependencies": [
+    {
+      "name": "sqlfluff",
+      "version": "4.3.0"
+    },
+    {
+      "name": "click",
+      "version": "8.4.2"
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6"
+    },
+    {
+      "name": "diff_cover",
+      "version": "10.6.0"
+    },
+    {
+      "name": "pluggy",
+      "version": "1.6.0"
+    },
+    {
+      "name": "Pygments",
+      "version": "2.21.0"
+    },
+    {
+      "name": "chardet",
+      "version": "7.6.0"
+    },
+    {
+      "name": "Jinja2",
+      "version": "3.1.6"
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.3"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.3"
+    },
+    {
+      "name": "pathspec",
+      "version": "1.1.1"
+    },
+    {
+      "name": "platformdirs",
+      "version": "4.12.2"
+    },
+    {
+      "name": "regex",
+      "version": "2026.9.29"
+    },
+    {
+      "name": "tblib",
+      "version": "3.2.2"
+    },
+    {
+      "name": "tqdm",
+      "version": "4.70.1"
+    }
+  ]
+}

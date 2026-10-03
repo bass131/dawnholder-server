@@ -24,6 +24,7 @@ R-1~R-8의 상세는 이 절에만 둔다. 다른 현재 운영 문서·프로�
 | R-8 추가 | `msg_339a1cb74839`, 2026-10-01 13:15:57 UTC | [main-request-r8.json](../../.backups/verification/2026-10-01-operations-rules/main-request-r8.json) |
 | R-3 CLI 제약의 회신 예외 | `msg_fc7e6335130c`, 2026-10-01 13:29:31 UTC | [main-r3-decision.json](../../.backups/verification/2026-10-01-operations-rules/main-r3-decision.json) |
 | R-1 Architecture 파트 추가 | `msg_39f5b5bcb525`, 2026-10-02 03:14:21 UTC | [main-source-recovered.json](../../.backups/verification/2026-10-02-architecture-part-rules/main-source-recovered.json) |
+| R-1 목표 한정 추가 파트 | `msg_9d5215e34c70`, 2026-10-02 메인 전달 | [현재 목표의 승인 결정](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md#현재-상태와-승인된-결정) |
 
 로컬 `.backups/` 근거는 Git 제외 자료다. 전달 사실과 직접 보존된 실행 근거를 구분하며, 문서 반영을 runtime 전환·새 실행 성공으로 보고하지 않는다.
 
@@ -41,6 +42,10 @@ orca terminal create --worktree "path:<architecture-active>" --title "Architectu
 Management·Architecture 작업자는 각 worktree 탭 안의 담당 Astra 아래 `vertical split`으로 열고, 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. GameDev 작업자도 담당 Astra 아래에 둔다. 세 파트 모두 실제 작업 경로·화면 모델·준비 상태 확인과 연결 절차는 [R-5](#r5-worker-launch)·[R-6](#r6-first-screen)을 따른다. 이전의 메인과 두 Astra 좌우 배치, Management를 GameDev split에 두는 방식과 일괄적인 새 탭 금지는 이 결정으로 대체한다.
 
 메인이 전달한 2026-10-01 Management 실증은 Fable `term_4f0d2f42`, Sol `term_240ab30b` 두 건이다. 이 값은 당시 관찰 식별자이며 현재 실행 권한·재사용 대상이 아니다. Orca CLI **1.4.218**의 `terminal --help`에는 pane 크기 조절 명령이 없음을 확인했다([로컬 help](../../.backups/verification/2026-10-01-operations-rules/terminal-help.txt)). 다른 버전의 지원 여부까지 일반화하지 않는다.
+
+기본 파트는 GameDev·Management·Architecture 세 Astra로 유지한다. **추가 파트는 사용자 승인 시 메인이 별도 worktree 탭에 열고 목표 종료 때 닫는다.** 추가 파트의 작업자·검증자도 담당 Astra 아래 `vertical split`과 R-5·R-6을 따르며, 태그는 [AGENTS](../../AGENTS.md#메시지와-보고)의 `[<파트> Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 추가 파트 승인이나 태그가 기존 모델·쓰기·Git·병합 권한을 넓히지 않는다.
+
+추가 파트의 목표 종료 판정은 해당 goal의 완료조건과 [R-8](#r8-astra-lifecycle)을 따른다. 기본 세 파트의 배치와 R-8 교체 규칙은 유지한다.
 
 <a id="r2-source-check"></a>
 ### R-2 — 깨끗한 보고의 원천 표본 대조

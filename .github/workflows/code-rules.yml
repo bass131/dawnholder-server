@@ -1,0 +1,113 @@
+name: code-rules
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: File collection scope (same tools and rules)
+        type: choice
+        options: [Changed, All]
+        default: All
+      base:
+        description: Git base for a manual run
+        type: string
+        default: origin/main
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      RULES_SCOPE: ${{ github.event_name == 'pull_request' && 'Changed' || inputs.scope }}
+      RULES_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || inputs.base }}
+      RULES_OUTPUT: ${{ runner.temp }}/code-rules-results
+      RULES_MODULES: ${{ runner.temp }}/code-rules-tools/modules
+      NPM_CONFIG_CACHE: ${{ runner.temp }}/code-rules-tools/npm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare evidence and verify checkout
+        shell: bash
+        env:
+          EXPECTED_CHECKOUT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RULES_OUTPUT/setup" "$RULES_MODULES"
+          git rev-parse HEAD > "$RULES_OUTPUT/setup/head.txt"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_CHECKOUT"
+          git rev-parse --verify --end-of-options "$RULES_BASE^{commit}" > "$RULES_OUTPUT/setup/base.txt"
+          node --version > "$RULES_OUTPUT/setup/node-version.txt"
+          python3 --version > "$RULES_OUTPUT/setup/python-version.txt"
+
+      - name: Save exact analyzer in job-local cache
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $rulesLog = Join-Path $env:RULES_OUTPUT 'setup/pssa-install.txt'
+          'Save-Module -Name PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery -Path RULES_MODULES' |
+              Set-Content -LiteralPath $rulesLog
+          try {
+              Save-Module -Name PSScriptAnalyzer -RequiredVersion 1.25.0 -Repository PSGallery `
+                  -Path $env:RULES_MODULES *>> $rulesLog
+          } catch {
+              $_ | Out-String | Add-Content -LiteralPath $rulesLog
+              throw
+          }
+
+      - name: Restore existing Management lockfile without installation scripts
+        shell: bash
+        working-directory: 05_Management/frontend
+        run: |
+          set -euo pipefail
+          printf '%s\n' 'npm ci --ignore-scripts --no-audit --no-fund' > "$RULES_OUTPUT/setup/npm-command.txt"
+          npm ci --ignore-scripts --no-audit --no-fund > "$RULES_OUTPUT/setup/npm.stdout.txt" 2> "$RULES_OUTPUT/setup/npm.stderr.txt"
+
+      # SQL installation and lint remain deferred until the SQL modules split is complete,
+      # followed by a new modules/verify-schema applicability pilot and an adoption decision.
+      - name: Check selected worktree inputs
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$RULES_OUTPUT/checker"
+          set +e
+          node 99_Tools/CodeRules/check-code-rules.mjs \
+            --scope "$RULES_SCOPE" --base "$RULES_BASE" \
+            --output "$RULES_OUTPUT" \
+            --pssa-manifest "$RULES_MODULES/PSScriptAnalyzer/1.25.0/PSScriptAnalyzer.psd1" \
+            > "$RULES_OUTPUT/checker/stdout.txt" 2> "$RULES_OUTPUT/checker/stderr.txt"
+          rules_exit=$?
+          printf '%s\n' "$rules_exit" > "$RULES_OUTPUT/checker/exit.txt"
+          cat "$RULES_OUTPUT/checker/stdout.txt" "$RULES_OUTPUT/checker/stderr.txt"
+          exit "$rules_exit"
+
+      # Independently authored tests have separate ownership; absence/load failure is an error.
+      - name: Run independent checker regressions
+        if: always()
+        shell: bash
+        env:
+          CODE_RULES_PSSA_MANIFEST: ${{ runner.temp }}/code-rules-tools/modules/PSScriptAnalyzer/1.25.0/PSScriptAnalyzer.psd1
+          CODE_RULES_RESULTS: ${{ runner.temp }}/code-rules-results/independent-tests
+        run: |
+          set -euo pipefail
+          mkdir -p "$CODE_RULES_RESULTS"
+          if ! test -f 99_Tools/CodeRules.Tests/code-rules.test.mjs; then
+            printf '%s\n' 'Independent test entry point is missing: 99_Tools/CodeRules.Tests/code-rules.test.mjs' \
+              > "$CODE_RULES_RESULTS/stderr.txt"
+            exit 1
+          fi
+          node --test 99_Tools/CodeRules.Tests/code-rules.test.mjs \
+            > "$CODE_RULES_RESULTS/stdout.txt" 2> "$CODE_RULES_RESULTS/stderr.txt"
+
+      - name: Preserve results even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-rules-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/code-rules-results/
+          if-no-files-found: error
+          retention-days: 14
