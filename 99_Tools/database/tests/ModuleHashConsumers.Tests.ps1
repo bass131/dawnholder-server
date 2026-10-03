@@ -342,13 +342,6 @@ function Get-ConsumerHashes {
         }) -join '|'
 }
 
-function Get-ScopeDetail {
-    param($Check)
-    if ($null -eq $Check.Result) { return 'exit=' + $Check.ExitCode + '; no JSON result' }
-    return 'exit={0}; status={1}; drift={2}; targets={3}' -f $Check.ExitCode, $Check.Result.Status,
-    $Check.Result.HashViolationCount, $Check.Result.HashTargetCount
-}
-
 function Invoke-ChildScript {
     param(
         [Parameter(Mandatory)][string]$Name,
@@ -551,6 +544,23 @@ foreach ($case in $absentCases) {
         -Actual $(if ($script:LastHashResult) { $script:LastHashResult.HashTargetCount })
 }
 
+# SQL-STRUCTURE-10: a migration that cannot be read is the file to restore, not the catalog that names it.
+# The partial target list is reported as observed; the internal order of checks is not part of the contract.
+foreach ($migration in @(
+        'migrations/001_initial.sql', 'migrations/002_persistence_metadata.sql', 'migrations/003_module_metadata.sql'
+    )) {
+    $root = New-DatabaseFixture -Name ('absent-' + ($migration -replace '\W+', '-'))
+    Remove-Item -LiteralPath (Join-Path $root $migration)
+    $absentName = $migration + ' absent'
+    $absentCause = [regex]::Escape(($migration -split '/')[-1])
+    Test-HashUnavailableCase -Name $absentName -Root $root -MessagePattern $absentCause -File $migration
+    $partial = $script:LastHashResult
+    Assert-True -Name ($absentName + ' -> partial target list below the registered 116') -Condition (
+        $null -ne $partial -and $partial.HashTargetCount -lt 116 -and
+        $partial.HashTargetCount -eq @($partial.HashTargets).Count) `
+        -Detail $(if ($partial) { 'targets=' + $partial.HashTargetCount })
+}
+
 $manifestCause = '^Manifest identity requires UTF-8 without BOM, LF and a final newline\.$'
 $root = New-DatabaseFixture -Name 'manifest-bom'
 $path = Join-Path $root $manifestFile
@@ -611,6 +621,94 @@ foreach ($case in $bytesCases) {
     Sync-FixtureHashConsumers -Root $root -PreserveManifestEntries
     Test-HashUnavailableCase -Name ('manifest DefinitionBytes ' + $case.Name) -Root $root `
         -MessagePattern 'DefinitionBytes' -File $manifestFile
+}
+
+# SQL-STRUCTURE-09: the whole JSON number token must be a canonical nonnegative int32 (MSSQL.md offline check).
+# Windows PowerShell 5.1 ConvertFrom-Json reads 012072 and +12072 as Int32, so a typed reader alone cannot reject
+# them. The cause must name the whole token from the file, never an adopted integer prefix.
+$bytesTokenCases = @(
+    @{ Name = 'exponent form'; Token = { param($value) $value.Substring(0, 1) + '.' + $value.Substring(1) +
+            'E' + ($value.Length - 1) } },
+    @{ Name = 'negative value'; Token = { param($value) '-' + $value } },
+    @{ Name = 'string value'; Token = { param($value) '"' + $value + '"' } },
+    @{ Name = 'int32 overflow'; Token = { param($value) '2147483648' } },
+    @{ Name = 'leading zero'; Token = { param($value) '0' + $value } },
+    @{ Name = 'plus sign'; Token = { param($value) '+' + $value } }
+)
+foreach ($case in $bytesTokenCases) {
+    $root = New-DatabaseFixture -Name ('format-bytes-' + ($case.Name -replace '\W+', '-'))
+    $consumer = Get-ConsumerRow -Root $root -Kind 'ManifestDefinitionBytes' -Source $admissionPath
+    $token = & $case.Token $consumer.Value
+    Set-ConsumerLiteral -Root $root -Consumer $consumer -Value $token
+    Sync-FixtureHashConsumers -Root $root -PreserveManifestEntries
+    $unavailableCase = @{
+        Name = 'manifest DefinitionBytes ' + $case.Name + ' ' + $token
+        Root = $root
+        MessagePattern = 'DefinitionBytes.*' + [regex]::Escape($token)
+        File = $manifestFile
+    }
+    Test-HashUnavailableCase @unavailableCase
+}
+
+# A canonical int32 token is the registered format: another value is drift and Observed is the whole token.
+foreach ($token in @('0', '2147483647')) {
+    $root = New-DatabaseFixture -Name ('bytes-canonical-' + $token)
+    $consumer = Get-ConsumerRow -Root $root -Kind 'ManifestDefinitionBytes' -Source $admissionPath
+    Set-ConsumerLiteral -Root $root -Consumer $consumer -Value $token
+    Sync-FixtureHashConsumers -Root $root -PreserveManifestEntries
+    $canonicalCase = @{
+        Name = 'manifest DefinitionBytes canonical ' + $token + ' with another value'
+        Root = $root
+        Consumer = $consumer
+        Observed = $token
+        Expected = $consumer.Expected
+    }
+    Test-SingleDriftCase @canonicalCase
+}
+
+# JSON whitespace around a canonical token is layout, not another format; the target still starts at the token.
+$root = New-DatabaseFixture -Name 'bytes-whitespace'
+$consumer = Get-ConsumerRow -Root $root -Kind 'ManifestDefinitionBytes' -Source $admissionPath
+Set-ConsumerLiteral -Root $root -Consumer $consumer -Value ('   ' + $consumer.Value + "`n            ")
+Sync-FixtureHashConsumers -Root $root -PreserveManifestEntries
+$spaced = Invoke-StructureCheck -Root $root -Strict
+$spacedTargets = @(if ($spaced.Result) {
+        $spaced.Result.HashTargets | Where-Object {
+            $_.Kind -ceq 'ManifestDefinitionBytes' -and $_.Source -ceq $admissionPath
+        }
+    })
+$spacedText = Read-FixtureText -Path (Join-Path $root $manifestFile)
+Assert-True -Name 'manifest DefinitionBytes with spaces and a newline around the token -> compliant, Strict exit0' `
+    -Condition ($spaced.ExitCode -eq 0 -and $null -ne $spaced.Result -and $spaced.Result.Status -ceq 'compliant') `
+    -Detail ('exit=' + $spaced.ExitCode + '; ' + (Get-IssueText -Result $spaced.Result))
+Assert-True -Name 'manifest DefinitionBytes with surrounding whitespace -> target offset and line at the token' `
+    -Condition ($spacedTargets.Count -eq 1 -and $spacedTargets[0].Observed -ceq $consumer.Value -and
+    $spacedTargets[0].Line -eq $consumer.Line -and
+    $spacedText.Substring($spacedTargets[0].Offset, $consumer.Value.Length) -ceq $consumer.Value) `
+    -Detail $(if ($spacedTargets.Count -eq 1) {
+        'offset=' + $spacedTargets[0].Offset + '; line=' + $spacedTargets[0].Line
+    })
+
+# The permissions entry registers no engine definition; its own field formats stay exact (manifest is the file).
+$permissionsCause = '^Permissions entry must not register an engine definition hash\.$'
+$permissionsCases = @(
+    @{ Name = 'DefinitionBytes written as 0.0'; Find = '"DefinitionBytes": 0,'; Replace = '"DefinitionBytes": 0.0,' },
+    @{
+        Name = 'DefinitionChecksum registered'
+        Find = '"DefinitionChecksum": null'
+        Replace = '"DefinitionChecksum": "' + ('C' * 64) + '"'
+    }
+)
+foreach ($case in $permissionsCases) {
+    $root = New-DatabaseFixture -Name ('permissions-' + ($case.Name -replace '\W+', '-'))
+    $path = Join-Path $root $manifestFile
+    if (([regex]::Matches((Read-FixtureText -Path $path), [regex]::Escape($case.Find))).Count -ne 1) {
+        throw "Permissions fixture anchor is not unique: $($case.Find)"
+    }
+    Edit-FixtureText -Path $path -Find $case.Find -Replace $case.Replace
+    Sync-FixtureHashConsumers -Root $root -PreserveManifestEntries
+    Test-HashUnavailableCase -Name ('permissions entry ' + $case.Name) -Root $root `
+        -MessagePattern $permissionsCause -File $manifestFile
 }
 
 $catalogRow = "    ('SerializeProgress', 'P', "
@@ -772,12 +870,35 @@ $hashFunctions = @(
     'Get-MigrationText', 'Get-MigrationHash', 'Get-ModuleDefinitionHash',
     'New-ModuleHashTarget', 'Get-ModuleHashRows', 'Test-ModuleHashConsumers'
 )
-$sortedHashFunctions = ($hashFunctions | Sort-Object) -join ','
+# Reviewed definition set: fix 3 split input reading, occurrence registration and manifest token checks into
+# helpers. Callers dot-source this file into their own scope, so every added name is a reviewed import change.
+$reviewedHashFunctions = $hashFunctions + @(
+    'Read-ModuleHashInputs', 'Test-ModuleHashLiteralRegistration', 'Get-ModuleManifestHashTargets'
+)
+$sortedHashFunctions = ($reviewedHashFunctions | Sort-Object) -join ','
 $definedNames = (@($definitions | ForEach-Object Name) | Sort-Object) -join ','
-Assert-True -Name 'ModuleHash.Common.ps1 -> definitions only (six functions, no top-level statement)' -Condition (
-    @($parseErrors).Count -eq 0 -and $topLevel.Count -eq 6 -and $definitions.Count -eq 6 -and
+Assert-True -Name 'ModuleHash.Common.ps1 -> definitions only (nine reviewed functions, no top-level statement)' `
+    -Condition (@($parseErrors).Count -eq 0 -and $topLevel.Count -eq $definitions.Count -and
     $definedNames -ceq $sortedHashFunctions) `
-    -Detail ((@($topLevel | ForEach-Object { $_.GetType().Name }) -join ','))
+    -Detail ((@($topLevel | ForEach-Object { $_.GetType().Name }) -join ',') + '; names=' + $definedNames)
+# A reviewed name must not replace a function that another product script defines in the same caller scope.
+$productScripts = @(Get-ChildItem -LiteralPath $script:ToolRoot -Filter '*.ps1' -File -Recurse | Where-Object {
+        $_.Name -cne 'ModuleHash.Common.ps1' -and
+        -not $_.FullName.StartsWith((Join-Path $script:ToolRoot 'tests') + '\')
+    })
+$callerFunctions = foreach ($productScript in $productScripts) {
+    $callerTokens = $null
+    $callerErrors = $null
+    $callerAst = [Management.Automation.Language.Parser]::ParseFile(
+        $productScript.FullName, [ref]$callerTokens, [ref]$callerErrors
+    )
+    $callerAst.FindAll({ param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] }, $true) |
+        ForEach-Object Name
+}
+$collisions = @($reviewedHashFunctions | Where-Object { $_ -in @($callerFunctions) })
+Assert-True -Name 'ModuleHash.Common.ps1 functions do not redefine a function of another product script' `
+    -Condition ($productScripts.Count -gt 0 -and $collisions.Count -eq 0) `
+    -Detail ('scripts=' + $productScripts.Count + '; collisions=' + ($collisions -join ','))
 $forbidden = @(
     'Read-ModuleBundle', 'Test-ModuleStructure', 'Invoke-Migrations', 'Invoke-ModuleBundle', 'Invoke-DbScalar',
     'Invoke-DbNonQuery', 'New-DbCommand', 'Open-LocalDatabase', 'Invoke-Sqlcmd', 'sqlcmd', 'Invoke-Expression',
@@ -827,7 +948,7 @@ foreach ($case in $importCases) {
         $probe.ExitCode -eq 0 -and $null -ne $probe.Result -and $probe.Result.Kept -eq $sentinels.Count) `
         -Detail $probe.Output
     if ($case.Exact) {
-        Assert-Equal -Name ("dot-sourcing $($case.Name) adds exactly its six hash functions") `
+        Assert-Equal -Name ("dot-sourcing $($case.Name) adds exactly its nine reviewed hash functions") `
             -Expected $sortedHashFunctions -Actual ($added -join ',')
     }
     else {
@@ -861,24 +982,7 @@ Assert-True -Name 'hash inspection completes with the bundle reader, structure C
     -Condition ($stubbed.ExitCode -eq 0 -and $null -ne $stubbed.Result -and $stubbed.Result.Complete -eq $true -and
     $stubbed.Result.Targets -eq 116 -and $stubbed.Result.Issues -eq 0) -Detail $stubbed.Output
 
-# ---- Scope observations judged in the verdict: literals outside the registered consumer formats.
-$root = New-DatabaseFixture -Name 'scope-unregistered-catalog-consumer'
-$staleCheck = "IF NOT EXISTS (SELECT 1 FROM dh.ModuleRelease WHERE ManifestChecksum = '" + $staleRelease + "')`n" +
-"    THROW 51010, 'Module release declaration drift.', 1;`n"
-Add-FixtureText -Path (Join-Path $root $catalogFile) -Text $staleCheck
-$scope = Invoke-StructureCheck -Root $root
-Add-TestResult -Name 'scope: an added catalog check with an unregistered stale identity literal' -Outcome OBSERVED `
-    -Detail (Get-ScopeDetail -Check $scope)
-
-$root = New-DatabaseFixture -Name 'scope-extra-entry-hash-field'
-$consumer = Get-ConsumerRow -Root $root -Kind 'ManifestSourceChecksum' -Source $admissionPath
-$extraField = '"SourceChecksum": "' + $consumer.Value + '",' + "`n" +
-'            "PreviousSourceChecksum": "' + ('A' * 64) + '"'
-Edit-FixtureText -Path (Join-Path $root $manifestFile) -Find ('"SourceChecksum": "' + $consumer.Value + '"') `
-    -Replace $extraField
-Sync-FixtureHashConsumers -Root $root -PreserveManifestEntries
-$scope = Invoke-StructureCheck -Root $root
-Add-TestResult -Name 'scope: a manifest entry with an extra hash field' -Outcome OBSERVED `
-    -Detail (Get-ScopeDetail -Check $scope)
+# Unregistered 64-hex literals (N-14), including the two former scope observations of this suite, are asserted in
+# ModuleHashLiterals.Tests.ps1 with the same stimuli.
 
 Complete-TestSuite

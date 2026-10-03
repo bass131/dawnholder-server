@@ -22,6 +22,7 @@ if ([IO.File]::Exists($summaryPath)) {
 $suites = @(
     @{ File = 'ModuleStructureCli.Tests.ps1'; Directory = 'module-structure-cli' },
     @{ File = 'ModuleHashConsumers.Tests.ps1'; Directory = 'module-hash-consumers' },
+    @{ File = 'ModuleHashLiterals.Tests.ps1'; Directory = 'module-hash-literals' },
     @{ File = 'ModuleBundle.Tests.ps1'; Directory = 'module-bundle' },
     @{ File = 'ModuleDeployment.Tests.ps1'; Directory = 'module-deployment' },
     @{ File = 'EnvironmentGuards.Tests.ps1'; Directory = 'environment-guards' }
