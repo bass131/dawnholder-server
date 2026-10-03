@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.ReadCharacterState
+CREATE OR ALTER PROCEDURE dh.ReadCharacterState
     @boundAccount uniqueidentifier,
     @boundCharacter uniqueidentifier,
     @accountPresent bit OUTPUT,

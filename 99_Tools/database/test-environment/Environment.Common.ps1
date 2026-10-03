@@ -348,14 +348,27 @@ function Assert-TestEnvironmentManifest(
                 throw 'Invalid recorded created database identity.'
             }
     }
+    $migrationNames = @('001_initial.sql', '002_persistence_metadata.sql',
+        '003_module_metadata.sql', '004_module_release.sql')
     $versions = @()
     foreach ($migration in @($Manifest.MigrationManifest)) {
-        if ($migration.Version -isnot [int] -or $migration.Version -lt 1 -or $migration.Version -gt 14 -or
+        if ($migration.Version -isnot [int] -or $migration.Version -lt 1 -or $migration.Version -gt 4 -or
             $migration.Version -in $versions -or $migration.Name -cnotmatch '^\d{3}_[a-z0-9_]+\.sql$' -or
-            [int]$migration.Name.Substring(0, 3) -ne $migration.Version -or $migration.Checksum -cnotmatch '^[0-9A-F]{64}$') {
+            [int]$migration.Name.Substring(0, 3) -ne $migration.Version -or
+            $migration.Checksum -cnotmatch '^[0-9A-F]{64}$') {
                 throw 'Invalid recorded migration identity.'
             }
+        if ($migration.Version -ne $versions.Count + 1 -or
+            $migration.Name -cne $migrationNames[$versions.Count]) {
+            throw 'Recorded migrations must retain the reviewed ordered contiguous version/name contract.'
+        }
         $versions += $migration.Version
+    }
+    if (($Manifest.State -ceq 'Baseline001' -and $versions.Count -ne 1) -or
+        ($Manifest.State -cin @('Installed', 'Bound', 'PrincipalsReady') -and $versions.Count -ne 4)) {
+        throw (
+            'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version remains one.'
+        )
     }
     foreach ($sidKey in @('WindowsAccountSid', 'RuntimeLoginSid', 'RecoveryLoginSid', 'RuntimeUserSid', 'RecoveryUserSid')) {
         if ($null -ne $Manifest.$sidKey -and [string]$Manifest.$sidKey -cnotmatch '^0x[0-9A-F]+$|^S-1-[0-9-]+$') {

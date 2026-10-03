@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.LockAndReadAuthority
+CREATE OR ALTER PROCEDURE dh.LockAndReadAuthority
     @LockTimeoutMs int,
     @lockResult int OUTPUT,
     @boundAccount uniqueidentifier OUTPUT,

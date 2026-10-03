@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.SerializeProgress
+CREATE OR ALTER PROCEDURE dh.SerializeProgress
     @mapId tinyint,
     @positionX real,
     @positionY real,

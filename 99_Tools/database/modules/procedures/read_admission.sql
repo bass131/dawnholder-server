@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.ReadAdmission
+CREATE OR ALTER PROCEDURE dh.ReadAdmission
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

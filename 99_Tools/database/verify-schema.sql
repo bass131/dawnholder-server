@@ -50,7 +50,14 @@ INSERT @columns VALUES
     ('CharacterOperation', 'Outcome', 'tinyint', 1, 0, 0),
     ('CharacterOperation', 'ResultCode', 'smallint', 2, 0, 0),
     ('CharacterOperation', 'ResultSnapshot', 'nvarchar', 4096, 0, 1),
-    ('CharacterOperation', 'RecordedUtc', 'datetime2', 7, 3, 0);
+    ('CharacterOperation', 'RecordedUtc', 'datetime2', 7, 3, 0),
+    ('ModuleRelease', 'Version', 'int', 4, 0, 0),
+    ('ModuleRelease', 'ManifestChecksum', 'char', 64, 0, 0),
+    ('ModuleDefinition', 'ObjectName', 'sysname', 256, 0, 0),
+    ('ModuleDefinition', 'Kind', 'char', 2, 0, 0),
+    ('ModuleDefinition', 'SourceChecksum', 'char', 64, 0, 0),
+    ('ModuleDefinition', 'DefinitionBytes', 'int', 4, 0, 0),
+    ('ModuleDefinition', 'DefinitionChecksum', 'char', 64, 0, 0);
 IF EXISTS (
     SELECT TableName,
         ColumnName,
@@ -67,7 +74,8 @@ IF EXISTS (
         c.is_nullable FROM sys.tables t
     JOIN sys.columns c ON c.object_id = t.object_id JOIN sys.types ty ON ty.user_type_id = c.user_type_id
     WHERE t.schema_id = SCHEMA_ID('dh') AND c.is_identity = 0 AND c.is_computed = 0 AND c.is_sparse = 0 AND c.generated_always_type = 0
-) OR (SELECT COUNT(*) FROM sys.columns c JOIN sys.tables t ON t.object_id = c.object_id WHERE t.schema_id = SCHEMA_ID('dh')) <> 37
+) OR (SELECT COUNT(*) FROM sys.columns c JOIN sys.tables t ON t.object_id = c.object_id
+    WHERE t.schema_id = SCHEMA_ID('dh')) <> 44
     THROW 51001, 'Column/type/nullability drift detected.', 1;
 DECLARE @indexes TABLE
 (
@@ -87,7 +95,9 @@ INSERT @indexes VALUES
     ('CharacterProgress', 'PK_CharacterProgress', 'CharacterId', 1, 1, 1),
     ('CharacterAuthority', 'PK_CharacterAuthority', 'SlotId', 1, 1, 1),
     ('CharacterAuthority', 'UQ_CharacterAuthority_CharacterId', 'CharacterId', 1, 0, 2),
-    ('CharacterOperation', 'PK_CharacterOperation', 'OperationId', 1, 1, 1);
+    ('CharacterOperation', 'PK_CharacterOperation', 'OperationId', 1, 1, 1),
+    ('ModuleRelease', 'PK_ModuleRelease', 'Version', 1, 1, 1),
+    ('ModuleDefinition', 'PK_ModuleDefinition', 'ObjectName', 1, 1, 1);
 IF EXISTS (
     SELECT * FROM @indexes
     EXCEPT
@@ -103,7 +113,7 @@ IF EXISTS (
     AND i.ignore_dup_key = 0 AND ic.key_ordinal = 1 AND ic.is_descending_key = 0
     AND (SELECT COUNT(*) FROM sys.index_columns x WHERE x.object_id = i.object_id AND x.index_id = i.index_id) = 1
 ) OR (SELECT COUNT(*) FROM sys.indexes i JOIN sys.tables t ON t.object_id = i.object_id
-    WHERE t.schema_id = SCHEMA_ID('dh') AND i.index_id > 0) <> 9
+    WHERE t.schema_id = SCHEMA_ID('dh') AND i.index_id > 0) <> 11
     THROW 51002, 'Primary/unique/FK lookup index drift detected.', 1;
 DECLARE @foreignKeys TABLE
 (
@@ -181,7 +191,7 @@ IF EXISTS (
     FROM sys.default_constraints WHERE schema_id = SCHEMA_ID('dh')
 ) OR (SELECT COUNT(*) FROM sys.default_constraints WHERE schema_id = SCHEMA_ID('dh')) <> 5
     THROW 51005, 'Default expression or ownership drift detected.', 1;
-IF (SELECT COUNT(*) FROM sys.tables WHERE schema_id = SCHEMA_ID('dh')) <> 6
+IF (SELECT COUNT(*) FROM sys.tables WHERE schema_id = SCHEMA_ID('dh')) <> 8
     OR EXISTS (SELECT name FROM sys.tables WHERE schema_id = SCHEMA_ID('dh')
     EXCEPT SELECT TableName FROM @columns)
     THROW 51006, 'Unexpected dh table catalog.', 1;
@@ -231,26 +241,52 @@ IF EXISTS (
 ) OR (SELECT COUNT(*) FROM sys.check_constraints WHERE schema_id = SCHEMA_ID('dh')) <> 17
     THROW 51007, 'Persistence CHECK expression, ownership or trust drift.', 1;
 -- SHA-256 of the exact LF-normalized UTF-16 module source, including signature and defaults.
--- Recompute these catalog constants whenever an unapplied module migration changes.
+-- Reviewed current source expectations; database observations never become the expected values.
 DECLARE @modules TABLE
 (
     Name sysname,
     Type char(2),
     DefinitionBytes int,
-    DefinitionHash varbinary(32)
+    DefinitionHash varbinary(32),
+    SourceChecksum char(64)
 );
 INSERT @modules VALUES
-    ('PersistencePayloadV1', 'FN', 9216, 0x63868CCDC03EC1BA15658A29A0A959CD7D11AB5033D1C7D0EF73131ACB41C83E),
-    ('AssertPersistenceContract', 'P', 1508, 0x930E9ADA0380D4D76AFF92C55A21C9A9DCC3E725B233C6B40449A4CA1C105F10),
-    ('ReadAdmission', 'P', 13458, 0xBB66AD9AA6C67F5C2AB4A1C2CDB5C9227B98FD4483FD18FD432A46187C23B1A6),
-    ('AcquireAndLoad', 'P', 33982, 0xA49AB75DA7D11740C646BA187D0792D5222253C16CC1EFC7290A757EA33B69A3),
-    ('WriteSafeCheckpoint', 'P', 35690, 0xF43A97C533C26F3B92FDABCE7CF4DC31D857CB5A105497412A011B43817774AB),
-    ('ReleaseRuntime', 'P', 27622, 0xD8A74E6F06E98B7C7B42EC4F3B23128D3CB32B1EBA77F99A8E5AFF19FA17DACF),
-    ('ResolveRuntimeOperation', 'P', 22052, 0x3701BD10DF4723CD15B295482CD8FD13E3BFC96C1B0ACCBF818C350C44383677),
-    ('InspectRecovery', 'P', 16534, 0x1CBA47DF4BE4825B5C520E8BC822FC9756F0F68A6B0FAF34BEEED3392E9285BA),
-    ('RecoverAndLoad', 'P', 28796, 0x86A478C91C54C6B54CBF2868683172041866BA0D2DF5A51C0CEDF490B029D346),
-    ('ReleaseRecovery', 'P', 27632, 0xAEA787CB282DA192820BA249FB57F3B946F11871168802D2064FCCDB02719907),
-    ('ResolveRecoveryOperation', 'P', 21950, 0x44B8A150C3B213C003BFDA1C6A0F4B907430A6ED2374516B8B01D33F0635169B);
+    ('PersistencePayloadV1', 'FN', 9258, 0xB7D79454BFEFB461791E987BB713B55C7766BF5CBBA066E2673E189DD4C2C9E4,
+        'D074787D4B18C9E1AF95A0F8EE1E61B4FFFF97CE21DBAD3A8F6A48695A107926'),
+    ('LockAndReadAuthority', 'P', 2604, 0xE0C3E452CBCCB84AB19C2FA8CAAAAE3C824C4806486FAF89D253723B471F0427,
+        'FCC77C1B391B06346E5B0C1B617188EDB87B89172CF565AB9ABB30FBF60C6F94'),
+    ('AssertPersistenceContract', 'P', 1524, 0xE8504643281A1DE27D4A2081B7A64E5920C809CFBC27F411556E313E4620B748,
+        'E25B3C75A2D96398AA0DDDCE2C80A5D8B0D6828F7C5499A3ECB0A151036E4B00'),
+    ('ReadOperationReceipt', 'P', 2800, 0x48DBC12D0E943469C3B94FDA86D49740C0DD28D288E4F7A87FF69769FD454972,
+        '56DC8B6C845A991162E4EF60B48E14C33924432388B6579B166A0FDC81696193'),
+    ('ReadCharacterState', 'P', 3424, 0x1EEA5821ADF69BB8D368693E6E9A80155EA05554CE45555C4C602FF00E994258,
+        '8A095DC941685F616EF01D1B3948EB6C516A18F121A815CC5A3F21C6D4AD31DE'),
+    ('SerializeProgress', 'P', 1266, 0xCC8971A7F867F51AD5F064C7CC9BC0DF6A74962099AC3E0245D92BD18802CCB2,
+        'DF7C1012C9F34299E52387527013BFA37D7435B6F975CE0D4F9F364710723FB7'),
+    ('SerializePersistenceSnapshot', 'P', 3572, 0xDB35102EFA7B5AA097B5A0C33810E004514BE6578C3860778ED754E765CFD130,
+        '134F5AA1ADC199FCBBFFE9AAE85B399EC23CC33259DCBC31030061B5C4366B0A'),
+    ('RecordOperationReceipt', 'P', 1682, 0x3280839F42578F3C28E2A7E2C0FB3F1AC9DE25BA2A898C4DAF070D0272EC10F6,
+        'AAFB8C190266AAED7F55750A7BB4CDE179013DDB03DFAE6F59C036AC45648B25'),
+    ('EmitPersistenceResult', 'P', 4350, 0x0E5D8E6941FFBD9675655BEBB7E6737470D7882177224B76908B31B269002C1D,
+        'ABB087091CD097FA59241362AA97A4B5D6A7427E92E98253FD9AF52F9450F691'),
+    ('ReadAdmission', 'P', 12800, 0x1659E51318BD2B4035A97BF8713D0718F11665A9D720559E23CEDBD779C0200E,
+        '58093893445077FFBFE41EA9AB27E632A9772AD409D50337CD216E25F0074E53'),
+    ('AcquireAndLoad', 'P', 30880, 0xCE4519FB18B213ADD31F10B37B31EAE395A5EA9C8A4666462F1D6DB6C00F86FE,
+        '3BB8D8A354D1B1D75828E07B11F65DCDE86F2363873212913D04EAEADE49A87B'),
+    ('WriteSafeCheckpoint', 'P', 32580, 0x42BBE81F91B9F965F5D1C16583146F04A1FB0E5929B413DAE892F8388B843558,
+        'C8EFC4AA3DCE79E6E3FEFB20B70E97FA643DAF6D127DDE817FF5AA54C361C5E4'),
+    ('ReleaseRuntime', 'P', 24790, 0x68F7D16D6F1F0007F4EF0AD077956476A990A223E3462182350A1D01332AB70A,
+        '04FA0C10B81D7493C641E6FEAA10366AD3BFF054FF1A7E54ED5FBFFB68B01643'),
+    ('ResolveRuntimeOperation', 'P', 19770, 0x35154902610E8BFC0D438F8446AAAEAF2F28301334D99B083FAF6040B2DF0993,
+        '2B95D1BB56BF98FF11C78336D87CC5E680952A6F487BB3FE7DE3887380D6D064'),
+    ('InspectRecovery', 'P', 15870, 0x5C42A1292158B97608F5DE5FA37AE71C02485C9B59AD24AAB0F4684763FFB5F7,
+        '88D1EA2A9B3F8B6362858972EAA2E7F9C385D7C5C5CA3E37C77B7A94AFF05CB8'),
+    ('RecoverAndLoad', 'P', 25828, 0x64180C75DF88AD6D9DFF67EC6E3D2A920EAE099863866977FB024494CF05F31F,
+        'A597DCE2C0B2886A3445152F10E7DA79352F9BE8EC4A9BB1A8E3B7AA3910561B'),
+    ('ReleaseRecovery', 'P', 24800, 0x2D69E5AB560F33F7B55BDC7C1DC325839364E03C9A6EE158E21BFEFCE0C3FC8B,
+        '3136D78B8EF3F271119768255F2CC5683BEEE0504CC85B40156FEDFCED41DD2C'),
+    ('ResolveRecoveryOperation', 'P', 19668, 0x3B19F6178598CA47F720687BB37ABAEF01E2166AA76CEF45CF848DFFC3132AC8,
+        '9C4CB515AF1020EB8C37DB23CEE936D9A37F9100E3B6EFBDB1A8EBA9C7CBC2FC');
 IF EXISTS (
     SELECT Name,
         Type,
@@ -265,8 +301,18 @@ IF EXISTS (
     WHERE o.schema_id = SCHEMA_ID('dh') AND sm.execute_as_principal_id IS NULL
     AND sm.uses_ansi_nulls = 1 AND sm.uses_quoted_identifier = 1
     AND ((o.type = 'FN' AND sm.is_schema_bound = 1) OR o.type = 'P')
-) OR (SELECT COUNT(*) FROM sys.objects WHERE schema_id = SCHEMA_ID('dh') AND type IN ('P', 'FN', 'IF', 'TF', 'FS', 'FT', 'PC')) <> 11
+) OR (SELECT COUNT(*) FROM sys.objects WHERE schema_id = SCHEMA_ID('dh')
+    AND type IN ('P', 'FN', 'IF', 'TF', 'FS', 'FT', 'PC')) <> 18
     THROW 51008, 'Persistence module/signature/body drift.', 1;
+-- Current registration must contain reviewed expectations, not hashes adopted from sys.sql_modules.
+IF EXISTS (
+    SELECT N'dh.' + Name, Type, SourceChecksum COLLATE Latin1_General_100_BIN2,
+        DefinitionBytes, CONVERT(char(64), DefinitionHash, 2) COLLATE Latin1_General_100_BIN2 FROM @modules
+    EXCEPT
+    SELECT ObjectName, Kind, SourceChecksum COLLATE Latin1_General_100_BIN2,
+        DefinitionBytes, DefinitionChecksum COLLATE Latin1_General_100_BIN2 FROM dh.ModuleDefinition
+) OR (SELECT COUNT(*) FROM dh.ModuleDefinition) <> 18
+    THROW 51008, 'Reviewed module registration drift.', 1;
 DECLARE @grants TABLE
 (
     RoleName sysname,
@@ -338,18 +384,14 @@ DECLARE @migrations TABLE
 INSERT @migrations VALUES
     (1, '001_initial.sql', 'F28502BB1A8D683A66F596F15BA9EEC779E5110BAD8ADDAEE03E393F26E54FCC'),
     (2, '002_persistence_metadata.sql', '867F8CC52350029EE15E753EC9134DDB7F7FAD91D5A9383D0F2209EAAD2C3599'),
-    (3, '003_persistence_payload.sql', 'B37E8DB8A894F51AFDC9EF62C06E525F5E4C257391E41B796F1B1711B9C7BA55'),
-    (4, '004_assert_persistence_contract.sql', '2E8F18DBC16CB40FD502D73E7649A591470839777F95726C4D494E4BAE9B8B59'),
-    (5, '005_read_admission.sql', 'AC8972298184143414842E8396ED3DFF4570CF75268E18B57C080E80D8597D3D'),
-    (6, '006_acquire_and_load.sql', 'A895630D040569BC1BC5A668EFF74FE87D1E67ADA11144FFF17F39E7A224F3B0'),
-    (7, '007_write_safe_checkpoint.sql', 'DE5168C67EA955E94BABE7A8B6096121F61E6B08333B14D604D375FB25DB0336'),
-    (8, '008_release_runtime.sql', '641FC66FCFADD4EE8E998B78F6B2266AF153B59E4A29749423A9CECEFD5C552E'),
-    (9, '009_resolve_runtime_operation.sql', '176A6426475401B0AA4BCF7C3BA16FDE16E0A02D15BD2BE766B89F4E3779F0C6'),
-    (10, '010_inspect_recovery.sql', '16C4A12D51DA7AB60D935188D779B7ABC265FF5E7B9A87E940DFD0DB9416D6AF'),
-    (11, '011_recover_and_load.sql', 'ECEAFA2B42E25FE4242A46613DF89049612EF8D8B8F2C4AFB8CE388588E23B98'),
-    (12, '012_release_recovery.sql', 'D08D0D847250CDB0D8350120B5526792A296D6B2033CDDA489C5ACC0A7F6EFAF'),
-    (13, '013_resolve_recovery_operation.sql', '233CB83ECCEE609A02AE5323302255EB5EA3A94D12FDB105E1160E8F9C5F43A5'),
-    (14, '014_persistence_grants.sql', '48D17D4B3F3AB176BA4873DED33789F052ED028B4767EF0E786C3D7C00181B22');
+    (3, '003_module_metadata.sql', 'A4F271547EC0E2E700413F51D8281A361D8654D383996E73F9476E4540A40F9B'),
+    (4, '004_module_release.sql', '13908494AC2FE43DF6D8A2CAE2AADECE97F4818BABBB4A9F3066F0C5EFB13AA0');
 IF EXISTS (SELECT * FROM @migrations EXCEPT SELECT Version, Name, Checksum FROM dh.SchemaVersion)
-    OR (SELECT COUNT(*) FROM dh.SchemaVersion) <> 14
+    OR (SELECT COUNT(*) FROM dh.SchemaVersion) <> 4
     THROW 51010, 'Migration name/checksum/version catalog drift.', 1;
+-- The release declaration is checked after the runner has recorded its schema migration row.
+IF (SELECT COUNT(*) FROM dh.ModuleRelease) <> 1
+    OR NOT EXISTS (SELECT 1 FROM dh.ModuleRelease r JOIN dh.SchemaVersion s ON s.Version = r.Version
+        WHERE r.Version = 4 AND r.ManifestChecksum COLLATE Latin1_General_100_BIN2 =
+            'A8D8DC923CD472F1113DD1A1B1FC92A9A02E4034C5AF20489DEA87867ADE1070')
+    THROW 51010, 'Module release declaration drift.', 1;

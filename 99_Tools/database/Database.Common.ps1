@@ -156,6 +156,8 @@ function Get-MigrationHash(
     }
 }
 
+. (Join-Path $PSScriptRoot 'Module.Common.ps1')
+
 function Invoke-Migrations(
     $Connection,
     $Transaction = $null,
@@ -169,6 +171,14 @@ function Invoke-Migrations(
         }
         Assert-TestEnvironmentTarget -Database $Connection.Database -Contract $Contract
         Assert-TestEnvironmentExecutionApproval -Contract $Contract
+    }
+    # Freeze reviewed inputs before any database mutation. No directory-discovered module execution.
+    $sources = @(Get-DatabaseMigrationSources -Phase $Phase)
+    $bundle = $null
+    $catalog = $null
+    if ($Phase -eq 'Complete') {
+        $bundle = Read-ModuleBundle -DatabaseRoot $PSScriptRoot
+        $catalog = Get-MigrationText -Path (Join-Path $PSScriptRoot 'verify-schema.sql')
     }
     $ownsTransaction = $null -eq $Transaction
     if ($ownsTransaction) {
@@ -190,70 +200,43 @@ IF @result < 0
             -Parameters @{
             } `
             -Transaction $Transaction)
-        $files = @(Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'migrations') -Filter '*.sql' | Sort-Object Name)
-        if ($Phase -eq 'Baseline001') {
-            $files = @($files | Where-Object Name -ceq '001_initial.sql')
-            if ($files.Count -ne 1) {
-                throw 'The immutable 001 baseline is missing.'
-            }
-        }
-        $known = @()
-        foreach ($file in $files) {
-            if ($file.Name -notmatch '^(\d{3})_[a-z0-9_]+\.sql$') {
-                throw "Invalid migration name: $($file.Name)"
-            }
-            $version = [int]$Matches[1]
-            if ($version -in $known) {
-                throw 'Duplicate migration version in files.'
-            }
-            $known += $version
-            $sql = Get-MigrationText -Path $file.FullName
-            $hash = Get-MigrationHash -Sql $sql
-            $applied = Invoke-DbScalar `
-                -Connection $Connection `
-                -Sql 'SELECT Checksum FROM dh.SchemaVersion WHERE Version=@version' `
-                -Parameters @{
-                    version = $version
-                } `
-                -Transaction $Transaction
-            if ($null -ne $applied -and $applied -isnot [DBNull]) {
-                if ($applied -ne $hash) {
-                    throw "Migration $version checksum mismatch; add a new migration instead of editing history."
-                }
-                Write-Output "Migration $version unchanged."
+        $historyText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
+SELECT (SELECT Version, Name, Checksum FROM dh.SchemaVersion ORDER BY Version FOR JSON PATH) AS MigrationRows;
+'@
+        $history = @(ConvertFrom-DatabaseJsonRows -Json $historyText)
+        Assert-DatabaseMigrationHistory -History $history -Sources $sources
+        foreach ($source in $sources) {
+            if ($source.Version -le $history.Count) {
+                Write-Output "Migration $($source.Version) unchanged."
                 continue
             }
-            [void](Invoke-DbNonQuery -Connection $Connection -Sql $sql -Parameters @{
-            } -Transaction $Transaction)
+            [void](Invoke-DbNonQuery -Connection $Connection -Sql $source.Sql -Transaction $Transaction)
             [void](Invoke-DbNonQuery `
                 -Connection $Connection `
                 -Sql 'INSERT dh.SchemaVersion(Version,Name,Checksum) VALUES(@version,@name,@hash)' `
                 -Parameters @{
-                    version = $version
-                    name = $file.Name
-                    hash = $hash
+                    version = $source.Version
+                    name = $source.Name
+                    hash = $source.Checksum
                 } `
                 -Transaction $Transaction)
-            Write-Output "Migration $version applied."
+            Write-Output "Migration $($source.Version) applied."
         }
-        $count = Invoke-DbScalar `
-            -Connection $Connection `
-            -Sql 'SELECT COUNT(*) FROM dh.SchemaVersion' `
-            -Parameters @{
-            } `
-            -Transaction $Transaction
-        if ($count -ne $known.Count) {
-            throw 'Database has unknown migrations; use the matching tool revision.'
-        }
+        $finalHistoryText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
+SELECT (SELECT Version, Name, Checksum FROM dh.SchemaVersion ORDER BY Version FOR JSON PATH) AS MigrationRows;
+'@
+        $finalHistory = @(ConvertFrom-DatabaseJsonRows -Json $finalHistoryText)
+        Assert-DatabaseMigrationHistory -History $finalHistory -Sources $sources
+        if ($finalHistory.Count -ne $sources.Count) { throw 'Incomplete migration history after application.' }
         if ($Phase -eq 'Complete') {
-            [void](Invoke-DbNonQuery `
-                -Connection $Connection `
-                -Sql (Get-MigrationText -Path (Join-Path $PSScriptRoot 'verify-schema.sql')) `
-                -Parameters @{
-                } `
-                -Transaction $Transaction)
+            # Only creating metadata for the first time permits an empty object/registration set.
+            # Erasing both after an installed release must not turn into automatic adoption/repair.
+            Invoke-ModuleBundle -Connection $Connection -Transaction $Transaction -Bundle $bundle `
+                -AllowFirstInstall ($history.Count -lt 3) `
+                -ReleaseAlreadyApplied ($history.Count -ge $bundle.ReleaseVersion)
+            [void](Invoke-DbNonQuery -Connection $Connection -Sql $catalog -Transaction $Transaction)
         } else {
-            # Phase-specific structural boundary, not the final 14-version catalog or S01 PASS.
+            # Phase-specific structural boundary, not the final four-version catalog or S01 PASS.
             [void](Invoke-DbNonQuery `
                 -Connection $Connection `
                 -Sql @'

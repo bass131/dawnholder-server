@@ -1,4 +1,4 @@
-CREATE FUNCTION dh.PersistencePayloadV1
+CREATE OR ALTER FUNCTION dh.PersistencePayloadV1
 (
     @Kind int,
     @SlotId int,

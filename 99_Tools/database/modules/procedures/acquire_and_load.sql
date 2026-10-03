@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.AcquireAndLoad
+CREATE OR ALTER PROCEDURE dh.AcquireAndLoad
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

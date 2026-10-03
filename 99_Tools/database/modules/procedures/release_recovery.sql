@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.ReleaseRecovery
+CREATE OR ALTER PROCEDURE dh.ReleaseRecovery
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

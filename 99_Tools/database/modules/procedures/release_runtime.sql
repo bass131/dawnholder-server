@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.ReleaseRuntime
+CREATE OR ALTER PROCEDURE dh.ReleaseRuntime
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

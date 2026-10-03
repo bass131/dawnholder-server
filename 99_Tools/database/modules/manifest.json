@@ -1,0 +1,267 @@
+{
+    "FormatVersion": 1,
+    "ReleaseVersion": 4,
+    "SourceEncoding": "UTF-8; no BOM; CRLF->LF",
+    "DefinitionEncoding": "UTF-16LE; no BOM; LF; actual CR removed",
+    "Entries": [
+        {
+            "Path": "modules/functions/persistence_payload.sql",
+            "ObjectName": "dh.PersistencePayloadV1",
+            "Kind": "FN",
+            "DependsOn": [],
+            "SourceChecksum": "D074787D4B18C9E1AF95A0F8EE1E61B4FFFF97CE21DBAD3A8F6A48695A107926",
+            "DefinitionBytes": 9258,
+            "DefinitionChecksum": "B7D79454BFEFB461791E987BB713B55C7766BF5CBBA066E2673E189DD4C2C9E4"
+        },
+        {
+            "Path": "modules/procedures/internal/lock_and_read_authority.sql",
+            "ObjectName": "dh.LockAndReadAuthority",
+            "Kind": "P",
+            "DependsOn": [],
+            "SourceChecksum": "FCC77C1B391B06346E5B0C1B617188EDB87B89172CF565AB9ABB30FBF60C6F94",
+            "DefinitionBytes": 2604,
+            "DefinitionChecksum": "E0C3E452CBCCB84AB19C2FA8CAAAAE3C824C4806486FAF89D253723B471F0427"
+        },
+        {
+            "Path": "modules/procedures/internal/assert_persistence_contract.sql",
+            "ObjectName": "dh.AssertPersistenceContract",
+            "Kind": "P",
+            "DependsOn": [],
+            "SourceChecksum": "E25B3C75A2D96398AA0DDDCE2C80A5D8B0D6828F7C5499A3ECB0A151036E4B00",
+            "DefinitionBytes": 1524,
+            "DefinitionChecksum": "E8504643281A1DE27D4A2081B7A64E5920C809CFBC27F411556E313E4620B748"
+        },
+        {
+            "Path": "modules/procedures/internal/read_operation_receipt.sql",
+            "ObjectName": "dh.ReadOperationReceipt",
+            "Kind": "P",
+            "DependsOn": [],
+            "SourceChecksum": "56DC8B6C845A991162E4EF60B48E14C33924432388B6579B166A0FDC81696193",
+            "DefinitionBytes": 2800,
+            "DefinitionChecksum": "48DBC12D0E943469C3B94FDA86D49740C0DD28D288E4F7A87FF69769FD454972"
+        },
+        {
+            "Path": "modules/procedures/internal/read_character_state.sql",
+            "ObjectName": "dh.ReadCharacterState",
+            "Kind": "P",
+            "DependsOn": [],
+            "SourceChecksum": "8A095DC941685F616EF01D1B3948EB6C516A18F121A815CC5A3F21C6D4AD31DE",
+            "DefinitionBytes": 3424,
+            "DefinitionChecksum": "1EEA5821ADF69BB8D368693E6E9A80155EA05554CE45555C4C602FF00E994258"
+        },
+        {
+            "Path": "modules/procedures/internal/serialize_progress.sql",
+            "ObjectName": "dh.SerializeProgress",
+            "Kind": "P",
+            "DependsOn": [],
+            "SourceChecksum": "DF7C1012C9F34299E52387527013BFA37D7435B6F975CE0D4F9F364710723FB7",
+            "DefinitionBytes": 1266,
+            "DefinitionChecksum": "CC8971A7F867F51AD5F064C7CC9BC0DF6A74962099AC3E0245D92BD18802CCB2"
+        },
+        {
+            "Path": "modules/procedures/internal/serialize_persistence_snapshot.sql",
+            "ObjectName": "dh.SerializePersistenceSnapshot",
+            "Kind": "P",
+            "DependsOn": [],
+            "SourceChecksum": "134F5AA1ADC199FCBBFFE9AAE85B399EC23CC33259DCBC31030061B5C4366B0A",
+            "DefinitionBytes": 3572,
+            "DefinitionChecksum": "DB35102EFA7B5AA097B5A0C33810E004514BE6578C3860778ED754E765CFD130"
+        },
+        {
+            "Path": "modules/procedures/internal/record_operation_receipt.sql",
+            "ObjectName": "dh.RecordOperationReceipt",
+            "Kind": "P",
+            "DependsOn": [],
+            "SourceChecksum": "AAFB8C190266AAED7F55750A7BB4CDE179013DDB03DFAE6F59C036AC45648B25",
+            "DefinitionBytes": 1682,
+            "DefinitionChecksum": "3280839F42578F3C28E2A7E2C0FB3F1AC9DE25BA2A898C4DAF070D0272EC10F6"
+        },
+        {
+            "Path": "modules/procedures/internal/emit_persistence_result.sql",
+            "ObjectName": "dh.EmitPersistenceResult",
+            "Kind": "P",
+            "DependsOn": [],
+            "SourceChecksum": "ABB087091CD097FA59241362AA97A4B5D6A7427E92E98253FD9AF52F9450F691",
+            "DefinitionBytes": 4350,
+            "DefinitionChecksum": "0E5D8E6941FFBD9675655BEBB7E6737470D7882177224B76908B31B269002C1D"
+        },
+        {
+            "Path": "modules/procedures/read_admission.sql",
+            "ObjectName": "dh.ReadAdmission",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "58093893445077FFBFE41EA9AB27E632A9772AD409D50337CD216E25F0074E53",
+            "DefinitionBytes": 12800,
+            "DefinitionChecksum": "1659E51318BD2B4035A97BF8713D0718F11665A9D720559E23CEDBD779C0200E"
+        },
+        {
+            "Path": "modules/procedures/acquire_and_load.sql",
+            "ObjectName": "dh.AcquireAndLoad",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.PersistencePayloadV1",
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.ReadOperationReceipt",
+                "dh.ReadCharacterState",
+                "dh.SerializeProgress",
+                "dh.SerializePersistenceSnapshot",
+                "dh.RecordOperationReceipt",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "3BB8D8A354D1B1D75828E07B11F65DCDE86F2363873212913D04EAEADE49A87B",
+            "DefinitionBytes": 30880,
+            "DefinitionChecksum": "CE4519FB18B213ADD31F10B37B31EAE395A5EA9C8A4666462F1D6DB6C00F86FE"
+        },
+        {
+            "Path": "modules/procedures/write_safe_checkpoint.sql",
+            "ObjectName": "dh.WriteSafeCheckpoint",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.PersistencePayloadV1",
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.ReadOperationReceipt",
+                "dh.ReadCharacterState",
+                "dh.SerializeProgress",
+                "dh.SerializePersistenceSnapshot",
+                "dh.RecordOperationReceipt",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "C8EFC4AA3DCE79E6E3FEFB20B70E97FA643DAF6D127DDE817FF5AA54C361C5E4",
+            "DefinitionBytes": 32580,
+            "DefinitionChecksum": "42BBE81F91B9F965F5D1C16583146F04A1FB0E5929B413DAE892F8388B843558"
+        },
+        {
+            "Path": "modules/procedures/release_runtime.sql",
+            "ObjectName": "dh.ReleaseRuntime",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.PersistencePayloadV1",
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.ReadOperationReceipt",
+                "dh.ReadCharacterState",
+                "dh.SerializeProgress",
+                "dh.SerializePersistenceSnapshot",
+                "dh.RecordOperationReceipt",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "04FA0C10B81D7493C641E6FEAA10366AD3BFF054FF1A7E54ED5FBFFB68B01643",
+            "DefinitionBytes": 24790,
+            "DefinitionChecksum": "68F7D16D6F1F0007F4EF0AD077956476A990A223E3462182350A1D01332AB70A"
+        },
+        {
+            "Path": "modules/procedures/resolve_runtime_operation.sql",
+            "ObjectName": "dh.ResolveRuntimeOperation",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.PersistencePayloadV1",
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.ReadOperationReceipt",
+                "dh.ReadCharacterState",
+                "dh.SerializeProgress",
+                "dh.RecordOperationReceipt",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "2B95D1BB56BF98FF11C78336D87CC5E680952A6F487BB3FE7DE3887380D6D064",
+            "DefinitionBytes": 19770,
+            "DefinitionChecksum": "35154902610E8BFC0D438F8446AAAEAF2F28301334D99B083FAF6040B2DF0993"
+        },
+        {
+            "Path": "modules/procedures/inspect_recovery.sql",
+            "ObjectName": "dh.InspectRecovery",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.ReadCharacterState",
+                "dh.SerializeProgress",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "88D1EA2A9B3F8B6362858972EAA2E7F9C385D7C5C5CA3E37C77B7A94AFF05CB8",
+            "DefinitionBytes": 15870,
+            "DefinitionChecksum": "5C42A1292158B97608F5DE5FA37AE71C02485C9B59AD24AAB0F4684763FFB5F7"
+        },
+        {
+            "Path": "modules/procedures/recover_and_load.sql",
+            "ObjectName": "dh.RecoverAndLoad",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.PersistencePayloadV1",
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.ReadOperationReceipt",
+                "dh.ReadCharacterState",
+                "dh.SerializeProgress",
+                "dh.SerializePersistenceSnapshot",
+                "dh.RecordOperationReceipt",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "A597DCE2C0B2886A3445152F10E7DA79352F9BE8EC4A9BB1A8E3B7AA3910561B",
+            "DefinitionBytes": 25828,
+            "DefinitionChecksum": "64180C75DF88AD6D9DFF67EC6E3D2A920EAE099863866977FB024494CF05F31F"
+        },
+        {
+            "Path": "modules/procedures/release_recovery.sql",
+            "ObjectName": "dh.ReleaseRecovery",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.PersistencePayloadV1",
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.ReadOperationReceipt",
+                "dh.ReadCharacterState",
+                "dh.SerializeProgress",
+                "dh.SerializePersistenceSnapshot",
+                "dh.RecordOperationReceipt",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "3136D78B8EF3F271119768255F2CC5683BEEE0504CC85B40156FEDFCED41DD2C",
+            "DefinitionBytes": 24800,
+            "DefinitionChecksum": "2D69E5AB560F33F7B55BDC7C1DC325839364E03C9A6EE158E21BFEFCE0C3FC8B"
+        },
+        {
+            "Path": "modules/procedures/resolve_recovery_operation.sql",
+            "ObjectName": "dh.ResolveRecoveryOperation",
+            "Kind": "P",
+            "DependsOn": [
+                "dh.PersistencePayloadV1",
+                "dh.LockAndReadAuthority",
+                "dh.AssertPersistenceContract",
+                "dh.ReadOperationReceipt",
+                "dh.ReadCharacterState",
+                "dh.SerializeProgress",
+                "dh.RecordOperationReceipt",
+                "dh.EmitPersistenceResult"
+            ],
+            "SourceChecksum": "9C4CB515AF1020EB8C37DB23CEE936D9A37F9100E3B6EFBDB1A8EBA9C7CBC2FC",
+            "DefinitionBytes": 19668,
+            "DefinitionChecksum": "3B19F6178598CA47F720687BB37ABAEF01E2166AA76CEF45CF848DFFC3132AC8"
+        },
+        {
+            "Path": "modules/permissions.sql",
+            "ObjectName": null,
+            "Kind": "Permissions",
+            "DependsOn": [
+                "dh.ReadAdmission",
+                "dh.AcquireAndLoad",
+                "dh.WriteSafeCheckpoint",
+                "dh.ReleaseRuntime",
+                "dh.ResolveRuntimeOperation",
+                "dh.InspectRecovery",
+                "dh.RecoverAndLoad",
+                "dh.ReleaseRecovery",
+                "dh.ResolveRecoveryOperation"
+            ],
+            "SourceChecksum": "48D17D4B3F3AB176BA4873DED33789F052ED028B4767EF0E786C3D7C00181B22",
+            "DefinitionBytes": 0,
+            "DefinitionChecksum": null
+        }
+    ]
+}

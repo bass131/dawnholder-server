@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.SerializePersistenceSnapshot
+CREATE OR ALTER PROCEDURE dh.SerializePersistenceSnapshot
     @Kind int,
     @resultCode smallint,
     @boundAccount uniqueidentifier,

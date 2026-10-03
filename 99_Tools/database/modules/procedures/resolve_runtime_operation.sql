@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.ResolveRuntimeOperation
+CREATE OR ALTER PROCEDURE dh.ResolveRuntimeOperation
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

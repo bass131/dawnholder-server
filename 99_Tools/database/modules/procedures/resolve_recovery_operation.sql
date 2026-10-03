@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.ResolveRecoveryOperation
+CREATE OR ALTER PROCEDURE dh.ResolveRecoveryOperation
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.InspectRecovery
+CREATE OR ALTER PROCEDURE dh.InspectRecovery
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

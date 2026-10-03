@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.RecordOperationReceipt
+CREATE OR ALTER PROCEDURE dh.RecordOperationReceipt
     @OperationId uniqueidentifier,
     @Kind int,
     @payload varbinary(512),

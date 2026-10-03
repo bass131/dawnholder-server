@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.RecoverAndLoad
+CREATE OR ALTER PROCEDURE dh.RecoverAndLoad
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

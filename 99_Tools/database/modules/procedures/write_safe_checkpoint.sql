@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.WriteSafeCheckpoint
+CREATE OR ALTER PROCEDURE dh.WriteSafeCheckpoint
     @SlotId int,
     @AccountId uniqueidentifier,
     @CharacterId uniqueidentifier,

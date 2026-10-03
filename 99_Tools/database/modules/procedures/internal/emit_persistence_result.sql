@@ -1,4 +1,4 @@
-CREATE PROCEDURE dh.EmitPersistenceResult
+CREATE OR ALTER PROCEDURE dh.EmitPersistenceResult
     @status varchar(32),
     @OperationId uniqueidentifier,
     @outcome tinyint,
