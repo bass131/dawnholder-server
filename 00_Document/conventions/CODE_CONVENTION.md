@@ -55,6 +55,8 @@ Tests·99_Tools의 세 진단 완화와 Unity 분석기 격리를 유지한다. 
 
 SDK `10.0.301`의 `dotnet format whitespace`만 사용하며 추가 layout 규칙이나 선언 순서 변경을 포함하지 않는다. 실행은 [DEVELOPMENT의 서식 검사](../operations/DEVELOPMENT.md#c-서식-검사)를 따른다. `.editorconfig`의 기존 severity와 8 production 파일의 error, Tests·Tools 정책을 유지한다. 검사 도구와 `Formatting.Tests`는 제품 slnx에 넣지 않고 별도로 build/format/test한다.
 
+제품 프로젝트 기대 집합의 정본은 `Dawnholder.slnx`로 두고 프로젝트 수를 고정 숫자로 제한하지 않는다. 독립 도구는 코드와 분리된 명시 목록으로 등록하며 제품 집합과 구분한다. 두 집합과 입력 manifest·실제 Workspace를 대조하고 restore·Compile·서식·보존 단계에 같은 대상을 연결한다. 누락·중복·예상 밖 프로젝트와 미등록 C#·Compile 누락은 계속 거부한다. 각 파트는 자기 PR에서 자기 도구 항목만 추가하며 검사 코드의 변경은 GameDev가 맡는다.
+
 서식 전후 보존은 같은 SDK Workspace의 실제 프로젝트별 Debug/Release parse options로 token 종류·원문 순서·리터럴 값·주석 본문·directive를 전수 비교한다. 비활성 영역의 차이는 실제 활성 대응 조건에서 증명해야 하고 증명할 조건이 없으면 원문이 같아야 한다. 정규식으로 모든 공백을 제거한 문자열 비교는 의미 증명이 아니다. BOM·EOF와 생성 소스는 별도로 기록한다. `git diff -w`는 보조 근거이며 BOM·개행 등 잔여 hunk를 분류한다.
 
 공백 커밋은 설정·도구·문서와 분리하고 실제 SHA를 `.git-blame-ignore-revs`에 기록한다. 로컬에서 `git blame --ignore-revs-file .git-blame-ignore-revs <파일>`로 사용한다. 원하면 저장소 한정 `git config blame.ignoreRevsFile .git-blame-ignore-revs`를 설정할 수 있으며 전역 Git 설정은 변경하지 않는다.
