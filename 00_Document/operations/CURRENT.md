@@ -5,7 +5,7 @@
 | 파트 | 목표의 재개 지점 |
 |---|---|
 | GameDev | [영속성 저장소](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#재개-지점) |
-| Rules | [하네스 원칙 채택과 문서 정비](C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active/01_Phases/goals/2026-10-03-harness-principles/goal.md#재개-지점) |
+| Rules | [하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#재개-지점) |
 | Architecture | [CodeGraph adapter 정비](C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active/01_Phases/goals/2026-10-03-codegraph-adapter-cleanup/goal.md#재개-지점) |
 | Management | [시스템 카드](C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active/05_Management/goals/2026-10-02-system-cards/goal.md#재개-지점--2026-10-03-사용자-휴식) |
 
@@ -14,4 +14,4 @@
 - Architecture: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `feat/codegraph-adapter-cleanup-20261003`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-m2-system-cards`
 
-[다음 세션 재개 절차](RESUME.md) · [정본 반영 전 적용 결정](C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active/01_Phases/goals/2026-10-03-harness-principles/goal.md#정본-반영-전-적용-중인-사용자-결정)
+[다음 세션 재개 절차](RESUME.md) · [정본 반영 전 적용 결정](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#정본-반영-전-적용-중인-사용자-결정)
