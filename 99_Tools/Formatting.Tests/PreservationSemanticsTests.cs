@@ -21,24 +21,13 @@ public sealed class PreservationSemanticsTests
         _options = options;
     }
 
-    private static readonly string[] ProjectNames =
-    [
-        "98_Shared/Shared.csproj",
-        "04_ClientNet/Dawnholder.Client.Net.csproj",
-        "02_Server/Network/Dawnholder.Server.Network.csproj",
-        "02_Server/GameServer/GameServer.csproj",
-        "99_Tools/PacketGenerator/PacketGenerator.csproj",
-        "99_Tools/headless-bot/HeadlessBot.csproj",
-        "99_Tools/BgmComposer/BgmComposer.csproj",
-        "02_Server/GameServer.Tests/GameServer.Tests.csproj",
-    ];
-
-    public static TheoryData<string> AllProjects => new(ProjectNames);
+    // Every product project the real slnx declares, not a fixed list or count.
+    public static TheoryData<string> AllProjects => new(ProductParseOptions.Projects);
 
     [Fact]
     public void ActualOptions_DistinguishDebugAndRelease()
     {
-        foreach (var project in ProjectNames)
+        foreach (var project in ProductParseOptions.Projects)
         {
             var debug = _options.Get(project, "Debug").PreprocessorSymbolNames.ToHashSet();
             var release = _options.Get(project, "Release").PreprocessorSymbolNames.ToHashSet();

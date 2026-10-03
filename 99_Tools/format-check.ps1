@@ -50,9 +50,23 @@ try {
     $snapshot=Join-Path $taskRoot 'source'
     New-Item -ItemType Directory -Path $snapshot | Out-Null
     RunDotnet 'snapshot' @($cli,'snapshot','--root',$repo,'--after',$snapshot,'--dotnet',$dotnet,'--out',"$EvidenceRoot/snapshot-copy.json")
+    $projectsPath = Join-Path $EvidenceRoot 'projects.json'
+    RunDotnet -name 'projects' -workingRoot $snapshot -arguments @(
+        $cli, 'projects', '--root', $snapshot, '--git-root', $repo,
+        '--dotnet', $dotnet, '--out', $projectsPath
+    )
+    # Registration policy belongs to the CLI; consume its validated concrete paths as arguments.
+    $projects = Get-Content -LiteralPath $projectsPath -Raw | ConvertFrom-Json
+    $independentProjects = @($projects.IndependentProjects)
     RunDotnet 'snapshot-product-restore' @('restore','Dawnholder.slnx') $snapshot
-    RunDotnet 'snapshot-tool-restore' @('restore','99_Tools/Formatting/Formatting.csproj') $snapshot
-    if (Test-Path "$snapshot/99_Tools/Formatting.Tests/Formatting.Tests.csproj") { RunDotnet 'snapshot-tests-restore' @('restore','99_Tools/Formatting.Tests/Formatting.Tests.csproj') $snapshot }
+    for ($index = 0; $index -lt $independentProjects.Count; $index++) {
+        RunDotnet -name "snapshot-independent-$index-restore" -workingRoot $snapshot -arguments @(
+            'restore', $independentProjects[$index]
+        )
+    }
+    if (!(Test-Path -LiteralPath (Join-Path $snapshot '99_Tools/Formatting.Tests/Formatting.Tests.csproj'))) {
+        throw 'Independent Formatting.Tests project is missing; tests and the complete check have not run.'
+    }
     foreach ($configuration in @('Debug','Release')) {
         RunDotnet "snapshot-shared-$configuration" @('build','98_Shared/Shared.csproj','--configuration',$configuration,'--no-restore','--nologo') $snapshot
         RunDotnet "snapshot-clientnet-$configuration" @('build','04_ClientNet/Dawnholder.Client.Net.csproj','--configuration',$configuration,'--no-restore','--nologo') $snapshot

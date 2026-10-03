@@ -18,6 +18,8 @@ internal sealed record WorkspaceInputs(List<ProjectInputs> Projects, List<Loaded
         var bundledWorkspace = Path.Combine(sdk.SdkDirectory, "DotnetTools/dotnet-format/Microsoft.CodeAnalysis.Workspaces.dll");
         if (InputPaths.Hash(typeof(Workspace).Assembly.Location) != InputPaths.Hash(bundledWorkspace)) throw new InvalidOperationException("Workspace differs from pinned SDK formatter.");
         var files = expectedFiles.ToHashSet(StringComparer.Ordinal);
+        var registration = ProjectRegistration.Load(root, files);
+        var expectedProjects = registration.AllProjects.ToHashSet(StringComparer.Ordinal);
         var results = new WorkspaceInputs([], []);
         foreach (var configuration in new[] { "Debug", "Release" })
         {
@@ -28,9 +30,6 @@ internal sealed record WorkspaceInputs(List<ProjectInputs> Projects, List<Loaded
             });
             workspace.LoadMetadataForReferencedProjects = false;
             workspace.SkipUnrecognizedProjects = false;
-            var productProjects = System.Xml.Linq.XDocument.Load(InputPaths.Resolve(root, "Dawnholder.slnx")).Descendants("Project").Select(element => (string?)element.Attribute("Path") ?? throw new InvalidDataException("Missing project path.")).ToHashSet(StringComparer.Ordinal);
-            if (productProjects.Count != 8) throw new InvalidDataException("Expected eight product projects.");
-            var expectedProjects = productProjects.Concat(new[] { InputPaths.ToolProject, InputPaths.TestProject }.Where(files.Contains)).ToHashSet(StringComparer.Ordinal);
             // Open dependencies first: Roslyn's discovered-project resolver requires a non-null
             // reference-assembly path even for netstandard projects that do not produce one.
             foreach (var projectPath in DependencyOrder(root, expectedProjects))
@@ -45,9 +44,11 @@ internal sealed record WorkspaceInputs(List<ProjectInputs> Projects, List<Loaded
                 var sources = new List<string>();
                 var generated = new List<string>();
                 var packageSources = new List<PackageCompileInput>();
+                var documentPaths = new HashSet<string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
                 foreach (var document in project.Documents)
                 {
                     var absoluteSource = Path.GetFullPath(document.FilePath ?? throw new InvalidDataException("Document has no path."));
+                    if (!documentPaths.Add(absoluteSource)) throw new InvalidDataException($"Duplicate Compile input: {projectPath}: {absoluteSource}");
                     var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
                     var packageRoot = Path.GetFullPath(Environment.GetEnvironmentVariable("NUGET_PACKAGES") ?? throw new InvalidDataException("NUGET_PACKAGES must be task scoped."));
                     if (absoluteSource.StartsWith(packageRoot.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar, comparison) || !absoluteSource.StartsWith(Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar, comparison))

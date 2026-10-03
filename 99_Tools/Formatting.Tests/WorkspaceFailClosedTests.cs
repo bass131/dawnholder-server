@@ -46,18 +46,20 @@ public sealed class WorkspaceFailClosedTests
         using var repository = MiniRepository.Create("broken-reference", restore: false);
         repository.Write("02_Server/Alpha/Alpha.csproj", ProjectWith("<ItemGroup>\n    <ProjectReference Include=\"../Missing/Missing.csproj\" />\n  </ItemGroup>"));
         repository.Commit("broken reference");
-        AssertManifestFails(repository, string.Empty);
+        // Name the missing target so an earlier, unrelated capture failure cannot satisfy this case.
+        AssertManifestFails(repository, "Missing/Missing.csproj");
     }
 
     [Fact]
-    public void SolutionWithoutEightProducts_FailsManifest()
+    public void ProjectOmittedFromSolution_FailsManifest()
     {
-        using var repository = MiniRepository.Create("seven-projects", restore: false);
+        // The project stays an input while the slnx no longer registers it; the count itself is not the rule.
+        using var repository = MiniRepository.Create("omitted-project", restore: false);
         var solution = repository.Read("Dawnholder.slnx").Replace("  <Project Path=\"99_Tools/Zeta/Zeta.csproj\" />\n", string.Empty, StringComparison.Ordinal);
         repository.Write("Dawnholder.slnx", solution);
-        repository.Commit("seven projects");
+        repository.Commit("omitted project");
         repository.Restore();
-        AssertManifestFails(repository, "eight product projects");
+        AssertManifestFails(repository, "outside explicit registration");
     }
 
     [Fact]
