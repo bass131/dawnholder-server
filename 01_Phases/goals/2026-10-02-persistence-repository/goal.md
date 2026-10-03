@@ -4,6 +4,9 @@
 
 ## 독립 검증2 정산·차단 결함과 재발 방지 (2026-10-03)
 
+- **전체 점검 중 범위 동결:** 메인 `msg_a01097f122d3`(10:46:46Z)가 사용자 요청을 전달했다. 점검 종료까지 이미 승인된 현재 단계·그 결함 수정만 계속하고 새 범위/goal/백로그 착수는 하지 않는다. 새 개선 후보는 아래 보류 목록에만 기록하며 승인 요청으로 올리지 않는다. 현재 단계의 PR 준비/개별 병합 승인 절차는 그대로다. Astra가 최초/추가 범위·단계/세션 예상·독립검증/결함 횟수·리스크·이동 후보·보류 항목을29줄로 회신했다(`msg_e36e74b4d4f7`, `.backups/verification/2026-10-03-persistence-repository/main-inspection-report.md`). 보고 시 실행 작업자0, 현재 SQL독립완료2회/F별도1회이며 이후 수정Sol1·재검증Opus1·병합뒤GardenerOpus1은 최소 **예상**이지 수행 실적이 아니다.
+- **보류 목록:** 기존 FEATURE_MAP 경로 오기 별도PR 후보, 반복 Roslyn 패턴/ratchet, 규칙 가지치기·작은 작업 예외·코드 따라읽기 문서. 이번 점검 중 새로 착수하지 않는다. 후속 B1/B2·G2·실제DB·SQLFluff 연결·Q1B는 기존 후속 경계를 유지한다. 새로운 개선 후보가 생기면 이 목록에 한 줄로만 추가한다.
+
 - 신규 Opus Task `task_b016d5d97c02` / Dispatch `ctx_81703ba23b53`, 입력 `82c87f0d335ad7c67eade381216605d75c0b8955`/base48e722b. 최초 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown, 정상 첫 화면과 turn_started를 확인했다. 사전 context 전체/SHA `4D00DD9A0E8F756D95522135803101A7807E47308CBB4CBBA5B1A10618E324AD`와 입력을 대조하고 reply `msg_50871bb52809` 뒤 tests 쓰기를 허용했다. 도구 자동 TEMP/WSL 산출물과 직접 ad-hoc evidence 쓰기를 구별했다.
 - **최종 판정 원문:** `.backups/verification/2026-10-03-persistence-repository/sql-structure-verification-2/verdict.md`, SHA256 **`A2E0C17004FF5599435660D20DA86783A4BC8D2A65418F95ECA725E3B72564B4`**. 부모가 전체 원문과 실제 tests diff·원시 실행/소스 표본을 읽었다. 판정은 차단이며 기존01~05 재발없음, 새06/07/08은 각 확정 NOT PASS **1회**다. 수정 전 CLI의38FAIL/현재168PASS 변이 대조가01/02 수정 효과를 보였으며 개발 probe 실패·동일 원인의 여러 표본을 추가 실패로 세지 않는다.
 - **06 High:** `verify-schema.sql` release 선언 검사만 이전 manifest SHA `A8D8…1070`이고004 선언/manifest 실물은 `9B81…F3E1`이다. 실제SQL은 미실행이지만 Complete catalog에서 THROW51010/rollback으로 이어질 소스 불일치다. 수정1 보고의 module5행/004 checksum 동기화·300/0 자체 실행은 실제와 일치했고 이 추가 소비처가 누락됐다. 메인 `msg_c2e6807930b9`로 즉시 알렸다. 실제 최초 설치에서 드러날 종류의 누락을 소스/오프라인만으로 놓칠 수 있다는 근거이며, 승인된 후속 목표의 **동일 DB 조기 설치·schema/U-01 실제 엔진 gate**를 생략하지 않는다.
