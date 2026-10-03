@@ -1,0 +1,410 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "881957cbb431d4af822d1d935ac117e1ede6c303",
+  "authorRole": "Architecture Astra",
+  "method": "Manual source reading before either extractor's first analysis; not derived from tool output.",
+  "scopeFile": "evaluation-scope.json",
+  "positives": [
+    {
+      "id": "P01",
+      "kind": "implements",
+      "source": "attackType",
+      "target": "serverHandler",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Handlers/Combat/AttackHandler.cs",
+        "line": 13,
+        "text": "AttackHandler : IPacketHandler"
+      },
+      "context": "declaration",
+      "sourceLayer": "Server",
+      "targetLayer": "Server"
+    },
+    {
+      "id": "P02",
+      "kind": "implements",
+      "source": "moveType",
+      "target": "serverHandler",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Handlers/Movement/MoveIntentHandler.cs",
+        "line": 13,
+        "text": "MoveIntentHandler : IPacketHandler"
+      },
+      "context": "declaration",
+      "sourceLayer": "Server",
+      "targetLayer": "Server"
+    },
+    {
+      "id": "P03",
+      "kind": "implements",
+      "source": "pongType",
+      "target": "clientHandler",
+      "expected": true,
+      "evidence": {
+        "path": "03_Client/Assets/Scripts/Network/Handlers/Session/PongHandler.cs",
+        "line": 21,
+        "text": "PongHandler : IClientPacketHandler"
+      },
+      "context": "declaration",
+      "sourceLayer": "Client",
+      "targetLayer": "Client"
+    },
+    {
+      "id": "P04",
+      "kind": "implements",
+      "source": "pongPacket",
+      "target": "packetInterface",
+      "expected": true,
+      "evidence": {
+        "path": "98_Shared/Protocol/Generated/GenPackets.cs",
+        "line": 121,
+        "text": "S_Pong : IPacket"
+      },
+      "context": "declaration",
+      "sourceLayer": "Shared",
+      "targetLayer": "Shared"
+    },
+    {
+      "id": "P05",
+      "kind": "usesType",
+      "source": "attackHandle",
+      "target": "attackPacket",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Handlers/Combat/AttackHandler.cs",
+        "line": 20,
+        "text": "C_Attack pkt = new C_Attack();"
+      },
+      "context": "methodBody",
+      "sourceLayer": "Server",
+      "targetLayer": "Shared"
+    },
+    {
+      "id": "P06",
+      "kind": "usesType",
+      "source": "moveHandle",
+      "target": "movePacket",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Handlers/Movement/MoveIntentHandler.cs",
+        "line": 20,
+        "text": "C_MoveIntent pkt = new C_MoveIntent();"
+      },
+      "context": "methodBody",
+      "sourceLayer": "Server",
+      "targetLayer": "Shared"
+    },
+    {
+      "id": "P07",
+      "kind": "usesType",
+      "source": "pongHandle",
+      "target": "pongPacket",
+      "expected": true,
+      "evidence": {
+        "path": "03_Client/Assets/Scripts/Network/Handlers/Session/PongHandler.cs",
+        "line": 25,
+        "text": "S_Pong pong = new S_Pong();"
+      },
+      "context": "methodBody",
+      "sourceLayer": "Client",
+      "targetLayer": "Shared"
+    },
+    {
+      "id": "P08",
+      "kind": "calls",
+      "source": "attackHandle",
+      "target": "submitAttack",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Handlers/Combat/AttackHandler.cs",
+        "line": 25,
+        "text": "session.SubmitAttack(pkt.targetEntityId, pkt.attackerClientTick);"
+      },
+      "context": "direct",
+      "sourceLayer": "Server",
+      "targetLayer": "Server"
+    },
+    {
+      "id": "P09",
+      "kind": "calls",
+      "source": "attackHandle",
+      "target": "attackRead",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Handlers/Combat/AttackHandler.cs",
+        "line": 21,
+        "text": "pkt.Read(buffer);"
+      },
+      "context": "direct",
+      "sourceLayer": "Server",
+      "targetLayer": "Shared"
+    },
+    {
+      "id": "P10",
+      "kind": "calls",
+      "source": "moveHandle",
+      "target": "decode",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Handlers/Movement/MoveIntentHandler.cs",
+        "line": 23,
+        "text": "InputBits.Decode(pkt.input)"
+      },
+      "context": "direct",
+      "sourceLayer": "Server",
+      "targetLayer": "Shared"
+    },
+    {
+      "id": "P11",
+      "kind": "calls",
+      "source": "submitAttack",
+      "target": "mapAttack",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Sessions/GameSession.cs",
+        "line": 293,
+        "text": "map.ProcessAttack(attackerEntityId, targetId, clientTick);"
+      },
+      "context": "deferredLambda",
+      "sourceLayer": "Server",
+      "targetLayer": "Server"
+    },
+    {
+      "id": "P12",
+      "kind": "calls",
+      "source": "mapAttack",
+      "target": "combatAttack",
+      "expected": true,
+      "evidence": {
+        "path": "02_Server/GameServer/Maps/GameMap.cs",
+        "line": 509,
+        "text": "_combatSystem.ProcessAttack(this, attackerEntityId, targetEntityId, attackerClientTick);"
+      },
+      "context": "direct",
+      "sourceLayer": "Server",
+      "targetLayer": "Server"
+    },
+    {
+      "id": "P13",
+      "kind": "calls",
+      "source": "netRecv",
+      "target": "validateFrame",
+      "expected": true,
+      "evidence": {
+        "path": "04_ClientNet/ClientSession.cs",
+        "line": 53,
+        "text": "FrameValidator.TryValidateFrameHeader(dataSize, out var reason)"
+      },
+      "context": "direct",
+      "sourceLayer": "ClientNet",
+      "targetLayer": "ClientNet"
+    },
+    {
+      "id": "P14",
+      "kind": "calls",
+      "source": "pongHandle",
+      "target": "pongRead",
+      "expected": true,
+      "evidence": {
+        "path": "03_Client/Assets/Scripts/Network/Handlers/Session/PongHandler.cs",
+        "line": 26,
+        "text": "pong.Read(buffer);"
+      },
+      "context": "direct",
+      "sourceLayer": "Client",
+      "targetLayer": "Shared"
+    },
+    {
+      "id": "P15",
+      "kind": "calls",
+      "source": "pongHandle",
+      "target": "enqueueApply",
+      "expected": true,
+      "evidence": {
+        "path": "03_Client/Assets/Scripts/Network/Handlers/Session/PongHandler.cs",
+        "line": 33,
+        "text": "session.EnqueueApply(() =>"
+      },
+      "context": "direct",
+      "sourceLayer": "Client",
+      "targetLayer": "Client"
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N01",
+      "kind": "implements",
+      "source": "attackType",
+      "target": "clientHandler",
+      "expected": false,
+      "reason": "source의 직접 base-list에 이 인터페이스 선언은 없다."
+    },
+    {
+      "id": "N02",
+      "kind": "implements",
+      "source": "attackType",
+      "target": "packetInterface",
+      "expected": false,
+      "reason": "source의 직접 base-list에 이 인터페이스 선언은 없다."
+    },
+    {
+      "id": "N03",
+      "kind": "implements",
+      "source": "moveType",
+      "target": "clientHandler",
+      "expected": false,
+      "reason": "source의 직접 base-list에 이 인터페이스 선언은 없다."
+    },
+    {
+      "id": "N04",
+      "kind": "implements",
+      "source": "moveType",
+      "target": "packetInterface",
+      "expected": false,
+      "reason": "source의 직접 base-list에 이 인터페이스 선언은 없다."
+    },
+    {
+      "id": "N05",
+      "kind": "implements",
+      "source": "pongType",
+      "target": "serverHandler",
+      "expected": false,
+      "reason": "source의 직접 base-list에 이 인터페이스 선언은 없다."
+    },
+    {
+      "id": "N06",
+      "kind": "implements",
+      "source": "pongType",
+      "target": "packetInterface",
+      "expected": false,
+      "reason": "source의 직접 base-list에 이 인터페이스 선언은 없다."
+    },
+    {
+      "id": "N07",
+      "kind": "implements",
+      "source": "pongPacket",
+      "target": "serverHandler",
+      "expected": false,
+      "reason": "source의 직접 base-list에 이 인터페이스 선언은 없다."
+    },
+    {
+      "id": "N08",
+      "kind": "implements",
+      "source": "pongPacket",
+      "target": "clientHandler",
+      "expected": false,
+      "reason": "source의 직접 base-list에 이 인터페이스 선언은 없다."
+    },
+    {
+      "id": "N09",
+      "kind": "usesType",
+      "source": "attackHandle",
+      "target": "movePacket",
+      "expected": false,
+      "reason": "source 본문에 이 패킷 타입의 사용은 없다."
+    },
+    {
+      "id": "N10",
+      "kind": "usesType",
+      "source": "attackHandle",
+      "target": "pongPacket",
+      "expected": false,
+      "reason": "source 본문에 이 패킷 타입의 사용은 없다."
+    },
+    {
+      "id": "N11",
+      "kind": "usesType",
+      "source": "moveHandle",
+      "target": "attackPacket",
+      "expected": false,
+      "reason": "source 본문에 이 패킷 타입의 사용은 없다."
+    },
+    {
+      "id": "N12",
+      "kind": "usesType",
+      "source": "moveHandle",
+      "target": "pongPacket",
+      "expected": false,
+      "reason": "source 본문에 이 패킷 타입의 사용은 없다."
+    },
+    {
+      "id": "N13",
+      "kind": "usesType",
+      "source": "pongHandle",
+      "target": "attackPacket",
+      "expected": false,
+      "reason": "source 본문에 이 패킷 타입의 사용은 없다."
+    },
+    {
+      "id": "N14",
+      "kind": "usesType",
+      "source": "pongHandle",
+      "target": "movePacket",
+      "expected": false,
+      "reason": "source 본문에 이 패킷 타입의 사용은 없다."
+    },
+    {
+      "id": "N15",
+      "kind": "calls",
+      "source": "attackHandle",
+      "target": "moveRead",
+      "expected": false,
+      "reason": "source 본문의 실제 receiver 타입/선언이 이 target과 다르거나 이 호출은 없다. 동명만으로 연결하지 않는다."
+    },
+    {
+      "id": "N16",
+      "kind": "calls",
+      "source": "attackHandle",
+      "target": "pongRead",
+      "expected": false,
+      "reason": "source 본문의 실제 receiver 타입/선언이 이 target과 다르거나 이 호출은 없다. 동명만으로 연결하지 않는다."
+    },
+    {
+      "id": "N17",
+      "kind": "calls",
+      "source": "moveHandle",
+      "target": "encode",
+      "expected": false,
+      "reason": "source 본문의 실제 receiver 타입/선언이 이 target과 다르거나 이 호출은 없다. 동명만으로 연결하지 않는다."
+    },
+    {
+      "id": "N18",
+      "kind": "calls",
+      "source": "submitAttack",
+      "target": "combatAttack",
+      "expected": false,
+      "reason": "GameSession의 본문은 GameMap.ProcessAttack을 호출한다. CombatSystem 호출은 GameMap 본문에만 있으며 전이 호출로 섞지 않는다."
+    },
+    {
+      "id": "N19",
+      "kind": "calls",
+      "source": "mapAttack",
+      "target": "mapAttack",
+      "expected": false,
+      "reason": "GameMap 본문은 _combatSystem.ProcessAttack을 호출하며 자기 자신을 재귀 호출하지 않는다."
+    },
+    {
+      "id": "N20",
+      "kind": "calls",
+      "source": "pongHandle",
+      "target": "attackRead",
+      "expected": false,
+      "reason": "source 본문의 실제 receiver 타입/선언이 이 target과 다르거나 이 호출은 없다. 동명만으로 연결하지 않는다."
+    },
+    {
+      "id": "N21",
+      "kind": "calls",
+      "source": "pongHandle",
+      "target": "moveRead",
+      "expected": false,
+      "reason": "source 본문의 실제 receiver 타입/선언이 이 target과 다르거나 이 호출은 없다. 동명만으로 연결하지 않는다."
+    }
+  ],
+  "counts": {
+    "positive": 15,
+    "negative": 21,
+    "candidates": 36
+  },
+  "limits": "Small predeclared source/target domain; excludes other real edges rather than treating them as false positives. Not repository-wide accuracy. Source identity and evidence must be independently reviewed."
+}
