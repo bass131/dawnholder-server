@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168) 병합 완료·합의된 중간 점검 대기 — [병합 결과와 다음 진입](#pr-168-병합-결과와-중간-점검)을 읽는다.** 독립 PASS·CI 2건 SUCCESS·메인 R-2 대조·해당 PR 사용자 승인을 거쳤다. 다음 운영 규칙 PR과 새 작업자 발행은 메인의 사용자 점검 후 재개 전달까지 멈춘다. 전체 goal은 미완료다. 아래 휴식·첫 재개·병합 전 기록은 당시 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본·도구의 구현 실적과 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168) 병합 뒤 운영 규칙의 첫 재검증 PASS와 메인 R-2 표본 일치를 확인해 PR·CI를 준비한다 — [현재 판정·통합 상태](#운영-단위-첫-재검증-pass와-통합)를 읽는다.** 메인 `msg_063d3c6e4829`가 사용자 “재개”와 남은 세 PR 계획 승인을 전달했고 `msg_cca37bd31a41`가 이번 단위의 commit/push/PR/CI 진행을 지시했다. 전체 goal은 미완료이며 각 PR 병합 승인은 별도다. 아래 휴식·첫 재개·중간 점검 기록은 당시 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본·도구의 구현 실적과 구분한다.
 
 ## 문제와 목표
 
@@ -162,7 +162,10 @@ PR 경계는 **BACKLOG → 운영 규칙/참고 근거 → 사실 정정/경로 
 - 보관 ref 작업: 같은 두 메시지. 앞선 단일 tag `archive/document-sources-2026-09-29`, SHA `59c7f087dc630df79650cedc3ede29765397bd8d`의 기존 승인 사실을 보존하되 이번 실행은 제외한다. `archive/claude-setup-2026-09-29`는 고정 보관이다.
 - 파트 PS 정리 후 All 비교·승격·인용/집계 helper: `msg_c1412c982ac5`, 세 파트 PS 정리 병합 완료 뒤 별도 goal 후보이며 BACKLOG에 묶는다.
 - 미결 정책·새 도구·화면 등 첫 BACKLOG의 나머지 후보는 기록만 한다. 씨앗 등록이 그 후보의 착수 권한을 뜻하지 않는다.
-- 이번 변경과 무관한 기존 실패는 PR 보고에 구분해 적는다. 현 루프에서 새로 발견한 추가 작업 제안은 아직 없음.
+- 이번 변경과 무관한 기존 실패는 PR 보고에 구분해 적는다.
+- CLAUDE.md:29의 R-2 대상 중복 열거는 다음 Rules PR에서 메인이 링크로 정리할 후보로 둔다. 메인 소유이며 이번 판정 이후 해당 파일을 다시 고치지 않는다(`msg_cca37bd31a41`).
+- R13의 ask 발신 주소 단독 반례는 다음 helper 변경 때 추가한다. receipt id는 맞지만 term 주소에서 발신한 `Question`을 반례로 삼으며 이번 제품 결함 확정이나 추가 구현 승인으로 해석하지 않는다(`msg_cca37bd31a41`).
+- 근거 보존용 사본/추출 쓰기의 사전 메모 대상 여부와 허용 경로 밖 임시 쓰기 처리는 기존 BACKLOG [`contract-context-check`](../../../00_Document/operations/BACKLOG.md#규칙-이관에서-연결한-후보)에 연결한다. 메인 `msg_b5335a17d12d`·`msg_cca37bd31a41`의 후속 질문이며 이번 PR에서 일반 규칙을 신설하거나 중복 후보를 만들지 않는다.
 
 ## 후속 운영 단위의 정본 이관과 점검 계획
 
@@ -489,3 +492,86 @@ Management 앵커는 메인 조율 `msg_7c5f1b5c4df5`에 따라 GameDev `d0458b7
 남은 외부 세션의 계획상 최소치는 **Sol 3 + 신규 Opus 3 = 6개**, 전체 goal 종료 시 읽기 전용 **Gardener Opus 1개를 더해 7개**다. 결함 수정/재검증은 새 세션 쌍이 추가되고 capacity·실패 임계점 예외는 해당 조건에서만 적용한다. 기존 Main/Rules Astra 세션은 이 수에 포함하지 않는다. 파트당 Opus 동시 하나, 작업자 재사용 금지다.
 
 **지금 다음 단위의 branch·작업자·도구 구현·PR은 시작하지 않는다.** 메인이 사용자와 이 중간 점검을 마친 뒤 재개를 전달하면 live 신원·최신 main·보존 체크포인트를 대조하고 후속 범위를 확정한다. 전체 goal 종료는 남은 세 PR·각 사용자 병합 승인·결과·Gardener·종료 점검 뒤이며, 이번에는 R-8 종료나 다음 goal 자동 착수를 하지 않는다.
+
+## 운영 규칙 PR 재개와 설계
+
+2026-10-03T17:49:36Z(한국 10-04) 메인 `msg_063d3c6e4829`가 중간 점검 뒤 사용자 “재개”를 전달했다. 앞 보고 `msg_98be49dd97d1`의 남은 세 PR와 운영 목록을 그대로 승인했고 운영 규칙부터 착수한다. 출처는 현재 live 메인 handle과 대조했으며 사용자 직접 입력으로 격상하지 않는다. 근거는 `.backups/verification/2026-10-03-harness-principles/operating-rules/main-resume-decision.json`이다.
+
+- 위치: 기존 rules-active worktree, 새 branch `docs/harness-operating-rules`, base 최신 `origin/main` **`7fa107488df3eb8133bb8a51e6eb746903ab94fe`**. 로컬 점검 커밋 b923e4f를 cherry-pick한 **`3d18ac43db88e6348f528f298a860407e45f2152`**에서 시작한다. 이전 branch는 보존했다.
+- 이관 검증: 원본·새 커밋·작업 파일의 Git blob이 모두 `84993b1441f8331e883b98db5d4dd9b28336d289`이며 base 대비 goal 한 파일뿐이다. 체크아웃이 CRLF를 LF로 정규화해 raw SHA는 달라졌으므로 바이트 동일이라고 보고하지 않는다. `operating-rules/checkpoint-transfer.json`에 첫 raw SHA guard 실패와 Git blob 재대조를 함께 기록했다.
+- 원천: 이관 inventory·공용/Orca/메인 메모리13개·임시 안건/범위 원문2개를 `operating-rules/source-snapshots/`에 복사하고 `source-snapshots.json`에서 원본/사본 hash를 고정했다. inventory의 과거 보류와 사실 숫자를 최신 결정·관측으로 구분해 대조한다.
+
+### 정본 경계와 파일 소유
+
+공용 권한/역할은 AGENTS, 상세 세션 절차는 ORCA, 목표 범위/점검은 goal-loop와 milestones, 사전 맥락/판정 양식은 task-context, 코드 원칙은 CODE_CONVENTION, 사용자 보고 표기는 REPORTING이 소유한다. 같은 절차를 여러 파일에 반복하지 않고 진입 링크로 연결한다. 정책 원천→반영 정본→실제 준수 위치의 이관 대조표를 먼저 만들고, 적용 결정16개를 모두 원문과 대조한다. 역사 휴식의 임시 명령을 영구 정책으로 복사하지 않는다.
+
+| 작성자 | 허용 파일/책임 |
+|---|---|
+| 신규 Sol | `AGENTS.md`; `00_Document/conventions/CODE_CONVENTION.md`, `REPORTING.md`; `00_Document/operations/ORCA.md`, `DEVELOPMENT.md`(N2 시점·새 helper 실행 안내만), `BACKLOG.md`(E 후보·중복/출처 확인만), `CURRENT.md`(Rules 현재 branch/진입만); 프로젝트 스킬 세 개의 SKILL.md와 기존 `goal-loop/references/orca-work.md`, `milestones.md`, `task-context/references/templates.md`; 새 `99_Tools/Orca/message-policy.mjs`, `check-message.mjs`; `99_Tools/README.md`; `.github/workflows/code-rules.yml`의 새 helper 독립 회귀 실행/근거 단계만 |
+| Rules Astra | 이 goal·계약/입력 고정/실행 근거; `00_Document/conventions/refs/agent-engineering/_index.md`와 출처 설명 자료; 그 탐색용 `conventions/INDEX.md`; `00_Document/ADR/harness/ADR-034-harness-principles.md`와 ADR INDEX |
+| 메인 Claude | **Sol 쓰기 종료 뒤** 같은 branch/cwd의 `CLAUDE.md`만. 종료 확인 뒤 새 Opus를 발행한다. 메모리 원본 정리는 이 PR 병합 뒤 메인 소유 |
+| 신규 Opus | `99_Tools/Orca.Tests/` 독립 테스트와 할당 검증 근거만. 모든 작성자의 실제 diff·규칙/원문/이관표를 실사하며 제품 결함은 번호로 반환 |
+
+Sol은 CLAUDE·goal·ADR·참고 본문·테스트를 쓰지 않는다. 현재 checkout에 없는 다른 파트 파일은 읽기 전용 원천 대조만 한다. 새 작업은 승인된 운영 단위 한 개이며 추가 위임·commit/push는 담당 Astra 외 금지다.
+
+### heartbeat 수신 판정 helper
+
+실제 사용처는 Astra가 Orca Delivery의 작업자 메시지를 수신해 태그·현재 Task/Dispatch 출처를 대조하는 경로다. ORCA에서 파일 입력 CLI로 안내하고 순수 판정과 JSON 읽기/출력 경계를 분리한다. `99_Tools/Orca/`는 코드 정적 규칙 검사와 다른 세션 메시지 판정 책임이며 도구별 폴더·별도 테스트의 기존 관례를 따른다. 기존 CodeRules의 Node ESM/표준 라이브러리 실행 관례를 재사용하지만 관련 없는 Git 수집·adapter를 의존시키지 않는다.
+
+현재 coordinator가 검증한 expected from_handle·taskId·dispatchId·자기태그를 명시 입력으로 받고, 메시지 자체에서 기대 identity를 만들지 않는다. 세 identity가 모두 맞는 **내용 없는 heartbeat만** 태그 예외다. 내용 있는 작업자 메시지는 subject/body 태그를 모두 확인하고 출처 불일치·누락·잘못된 payload는 통과시키지 않는다. 실제 CLI payload JSON 문자열과 이미 파싱한 객체를 구분해 검증한다. 도구/입력 실패와 규칙 위반의 결과/exit를 구분하고 진단에 수정 방법을 준다.
+
+helper는 읽기 전용 수신 보조이며 자동 ack·reply·lifecycle 변경·권한 부여를 하지 않는다. 현재 Task/Dispatch의 진위를 런타임에서 자동 보장하는 기능으로 설명하지 않는다. CLI 없는 정적 함수만 만들고 사용처를 남기지 않는 선행 제작은 하지 않는다. 신규 Opus는 정상/태그누락/각 identity불일치/오래된 Dispatch/내용 있는 heartbeat/잘못된 입력 및 CLI 오류의 독립 fixture를 작성·실행하며 기존 code-rules CI에 별도 회귀로 연결한다.
+
+### 이번 단위의 검증과 다음 경계
+
+capacity·마일스톤/점검·draft 복구는 승인 원문대로 반영한다. 같은 부류 집계는 이번 BACKLOG 적용과 일반 규칙 승격 검토를 구분하며 기존 확정 실패3회 규칙을 조용히 대체하지 않는다. 273k 등 수치는 당시 사용자/메모리 관찰로 출처를 표시하거나 자기완결 계약 원칙만 남기며 최신 모델 전체의 불변 사양으로 쓰지 않는다.
+
+Sol·Astra 쓰기 종료 → 메인 CLAUDE 쓰기 종료 → 신규 Opus의 원문/실제 diff 실사·helper 독립 테스트·변경 스킬의 현실적인 사용 확인 → 필요 수정/재검증 → PR·CI → 메인 R-2 및 **해당 PR 사용자 병합 승인** 순서다. 참고 원문 미확인·미실행을 완료로 기록하지 않는다. 환경/경로검사·PowerShell 출력순서는 다음 두 PR이며 이 운영 PR을 통해 완료했다고 하지 않는다.
+
+### 운영 단위 수행 기록
+
+- 신규 Sol `task_e9f7c0e835a8` / `ctx_e99a28aa1f33`, handle `term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23`, incarnation `1f4b6e0e-8cf8-4f2f-be02-50bae46d9e15`에 17경로의 구현을 발행했다. 최초 명령/화면은 gpt-6.1-sol xhigh, backend unknown. 원시는 `operating-rules/sol-launch*`, `sol-first-read.json`, `implementation-contract.md`와 `implementation-inputs.json`이다.
+- 첫 attach는 input_accepted/turn_start_unobserved였고 빈 신규 pane에 공식 계약의 붙여넣기 placeholder만 남았다. 다른 입력이 없고 current Task의 공식 preamble에 고정 계약이 포함됨을 확인해 승인된 Enter 단독 복구를 한 번 수행했다. 20,709자 placeholder와 재생성 preamble 20,424자는 정확한 바이트 일치라고 주장하지 않는다. 원시·판단은 `sol-draft-*`; 이후 draft 소멸·Sol의 작업 수락 문장·Working과 live/working을 `sol-after-recovery.json`에서 확인했다. 최초 receipt의 start_unknown은 현재 활동과 구분한다.
+- 후속 계약 v2: 메인 `msg_09a19a463a74`(2026-10-03T18:06:16Z)가 Orca **1.4.218** 공식 blocking ask의 고정 subject `Question`에만 R-3 태그 예외를 승인했다. body 태그·현재 Task/Dispatch/from_handle 확인은 유지하고, 일반 send와 reply에 이 새 예외를 넓히지 않는다. ask에 subject 옵션이 생기면 예외가 끝난다. 기존 reply 예외와는 별개다. 원문 `operating-rules/main-official-ask-decision.json`, 도움말·관측 질문 및 고정 보충 계약 `operating-rules/official-ask-addendum.md`를 Sol에 전달했다. 기존 16개 원결정과 구분한 후속 판단이다.
+- 독립 검증 입력: `operating-rules/verification-scenario-inputs.md`에 범위·실패 이력·draft·capacity·여러 goal·종료 단계의 합성 사례 여섯 개를 준비했다. 실제 승인/실행 기록이 아니며, 신규 검증자가 변경된 스킬로 짧은 산출물을 만들고 사용 경로와 불확실성을 판정한다. 구현자의 자체 결과를 독립 PASS로 재사용하지 않는다. 현재 검증 계약은 초안이며 Sol과 메인의 쓰기 종료 전 발행하지 않는다.
+- 후속 계약 v3: 메인 `msg_29e3012b0274`(18:29:20Z)가 heartbeat 관측 문구의 범위 내 정정을 요청했다. Astra는 일반 check 결과 없음·`lastHeartbeatAt=null`만 보고 송신 누락처럼 설명했으나, 공개 inbox 원시에서 18:02~18:28Z의 현재 Run/Task/Dispatch/from_handle이 일치하는 5건과 `read=1`/`delivered_at`을 확인해 즉시 정정했다. 원문·관측 시각·주소를 근거로 하며 원인은 미확정이다. 앞 4건의 subject/body 정책 불일치와 18:08→18:23 cadence 공백은 별도 사실이다. Astra의 첫 escalation 보고는 active Dispatch 부재로 거부됐고 메인에게 거부 알림이 전달돼 R-4의 status로 다시 보고했다. 근거는 `operating-rules/main-heartbeat-observation-decision.json`, `heartbeat-worker-message-inspection.json`, `heartbeat-observation-addendum.md`이며 Sol에 `msg_04dd1fbd479c`로 전달했다. 실제 liveness·저장/전달·정책 허용·완료/정산을 서로 대신하는 증거로 삼지 않는다.
+- Sol 수행 종료: `msg_5a860cb51d06`(18:54:20Z), Task `task_e9f7c0e835a8`/Dispatch `ctx_e99a28aa1f33`의 공식 completed와 원문을 대조했다. 허용17파일의 보고 hash가 모두 실제와 일치하고 Astra참고6파일도 유지됐다. 기존 CLAUDE는 그대로이며 실제 전체24변경에 범위 밖 파일이 없었다. `worker-release`는 external_terminal retained, 같은incarnation·최종턴 확인 뒤 `terminal close`의 `ptyKilled=true`로 종료했다. 근거는 `operating-rules/sol-completion-file-audit.json`, `sol-completed-show.json`, `sol-release.json`, `sol-close.json`이다.
+- Sol 보고 원문은 `operating-rules/implementation/report.md`(SHA256 `5C183A75AC1C6B0C87B1B677B69CBE7A0867F851AB016831C0F513D68AB48FCD`)다. 작성자 자체 CLI smoke16개와 스킬형식3개 확인은 독립 PASS가 아니다. 초기 PyYAML 부재는 Astra가 ignored 전용venv를 준비해 실행 경로만 제공했고 원래 실패와 새실행을 분리했다. helper는 실제 완료 메시지와 coordinator가 독립 확인한 expected 입력으로 소비했으며 정책 allowed와 native 완료/정산을 별도로 대조했다. 메인 CLAUDE 작성·종료 후 신규 Opus 실사/테스트가 남았다.
+- 메인 CLAUDE 작성: `msg_4fe7e12c4ce1`에 따라 18:58:59Z 쓰기 종료, D1~D5와 정본 링크를 반영했고 SHA256 `2A79F49611E5BED037C7433D218882D23B308796A6056DF4BC3CD11705B5B381`을 실제 파일과 대조했다. 작성 요청에 관련 CC 원문이 빠졌고 메인도 쓰기 전 읽지 않은 사실이 종료 뒤 확인됐다. Astra가 19:01:17Z `msg_8b4084009501`로 관련5절 원문을 보충했고, 메인은 19:01:35Z 사후 열람·대조 뒤 수정 없음으로 회신했다(`msg_dbb6eff8f29c`). 사전 준수로 소급하지 않는다. 원 요청·보충·메인 사후 표를 포함한 `operating-rules/main-claude-context.md`(SHA256 `21CE46469457235946311AB721CDA8229E1AB2B72674D90CE341B0237734F677`)와 두 종료 원문을 신규 Opus에 그대로 넘겨 판정받는다. 현재 전체25파일은 미커밋이며 독립 PASS는 아직 없다.
+- Astra 소유 참고/ADR 여섯 파일 작성 종료: `operating-rules/reference-report.md`, `reference-context.md`, `research-notes.md`. 자체 상대경로72건 존재와 파일 hash를 확인했고 새 Opus의 내용/출처 실사는 아직 미실행이다. 기사 원문 확인과 영상 미열람을 구분했다. Sol 종료 뒤 메인 CLAUDE 쓰기 종료를 기다린 다음 신규 Opus를 발행한다.
+
+### 운영 단위 첫 독립 판정과 수정
+
+신규 Opus `task_565402eb59f9`/`ctx_8fa3a4c5566c`의 판정은 **NOT PASS**다. 원문 `operating-rules/verification/verdict.md` SHA256 `40B341416B862D140446EBBB6C65ED08A8475A00419C6D16EF78F0FDBDBE499D`를 Astra가 전체 읽었다. `worker_done` msg_7d2e54b3e818(2026-10-03T19:40:23Z)의 outcome succeeded는 검증 작업의 수행 완료이며 제품 통과가 아니다. completed→release(external retained)→동일 incarnation·최종턴 확인→close(ptyKilled=true)·Delivery ACK로 정산했고 재사용하지 않는다.
+
+- #1: goal93 및 원문 msg_61d4c35695da의 결함별 「이 결함을 검사로 바꿀 수 있나」 칸을 v1 계약부터 빠뜨렸다. 새 Sol이 goal-loop SKILL와 task-context templates 두 파일에서 기록란과 사용 연결을 보완한다. 이전 Sol은 v1 계약을 따른 것으로 확인됐고 Astra 계약 누락을 구현자 위반으로 소급하지 않는다.
+- #2: Main CLAUDE의 CC 원문 계약 누락·사전 미열람. 실제 내용 위반은 찾지 못했으나 절차 차단이다. Main msg_c8e8f33af5cb(19:42:08Z)는 자기 면제·사용자 예외 승인 대신 새 계약에 따른 재작성·재검증을 정했다. `revision1/main-claude-contract-v2.md`에 관련 CC 5절 원문과 D1~D5를 붙이고, 기계적 기본 bytes 복원도 쓰기이므로 새 열람·메모를 복원보다 먼저 둔다. Main은 CLAUDE와 별도 근거만 쓴다.
+- 검증 실적: helper22/22, 변이11/11 검출, 기존 workflow 문구2/2, 스킬형식3개, 합성 시나리오6건. GitHub CI·전체 CodeRules 회귀·게임/DB/Unity는 미실행이며 최초 새 테스트 실패 원시 미저장과 검증자 메모 시각 정정을 원문에서 구분한다. 테스트22통과를 전체 PASS로 바꾸지 않는다.
+- 비차단 R1의 사전성 관측에는 Astra의 실제 작성 명령을 추가 제공했다(msg_9d03bc7bbc30). `reference-write-original-events.json`과 `.patch`는 reference-context가 첫 항목인 단일 apply_patch(18:01:54.683Z)를, `astra-initial-context-original-events.json`은 앞선 일반 메모 생성(17:50:53.092Z)을 보존한다. 별도 선행 호출이었다고 주장하지 않으며 첫 판정의 R1 문구와 새 원시를 다음 Opus에 함께 넘긴다. R2~R10도 첫 판정대로 보존한다.
+- #1·#2는 각각 최초 NOT PASS 뒤 첫 수정/재검증 단계다. 두 작성자 쓰기 종료 뒤 다음 manifest를 고정해 신규 Opus 한 명만 연다. 새 사전 맥락은 `operating-rules/revision1-context.md`, 원천·계약은 `operating-rules/revision1/`에 있다. 현재 PR/CI/commit/push는 아직이며 병합 승인은 별도다.
+
+이 절은 첫 독립 판정 뒤 작성한 Astra의 상태 기록이며 그 판정의 고정 입력에 소급 포함하지 않는다.
+
+### 첫 수정 종료와 재검증 대기
+
+- #1 신규 Sol은 `task_77a29ff29d3e`/`ctx_577a98c9ae2f`, 완료 msg_425cd89a5846(2026-10-03T19:58:50Z)으로 두 문서의 기록란·사용 연결 보완을 종료했다. 보고 `operating-rules/revision1/implementation/report.md` SHA256 `999F252670055101D07CDF2287C75548649019F0B3B51C434C4F0DF5A3790D36`과 실제 diff·원시 출력을 대조했다. 자체 스킬형식 2개는 exit 0이며 독립 PASS가 아니다. 완료·release·동일 pane close(ptyKilled=true)·Delivery ACK를 마쳤다.
+- #2 Main은 v2 계약에 따른 CLAUDE 재작성을 보고했다(msg_19060a17fef8). 최종 bytes는 v1과 같다. 새 메모의 실제 준수 연결과 최초 기록 원시의 보완을 msg_82171240b21b로 요청했다. 근거용 사본을 메모보다 먼저 쓴 사실도 다음 Opus에 공개해 판정받는다. 이 보완 회신은 아직 없다.
+- Main 화면의 사용량 제한·6am 재개 안내를 관측했다. Main 세션과 미제출 draft를 보존했고, 신규 Opus의 한도 문제를 관측한 것은 아니다. 현재 대기 원인은 Main의 근거 보완 회신이며 사용자 목표 일시정지·완료가 아니다.
+- 수정 후 입력은 아직 최종 고정하지 않았다. 신규 Opus 계약 초안·원문 부록과 재개 경로는 `operating-rules/revision1/checkpoint.md`에 있다. 회신 후 최종 입력을 고정해 새 Opus 한 명에게 #1/#2 첫 재검증과 R1 추가 원시 실사를 맡긴다. PR·CI·commit/push는 아직 수행하지 않았으며 각 PR 병합은 별도 사용자 승인이다.
+
+### Main 근거 보완 수신과 첫 재검증 입력
+
+Main msg_894bfc3cc2d9(2026-10-03T21:02:14Z)의 보완 완료를 받았다. `revision1/main-context.md` SHA256 `F038099F94AC25F4E03391A4BEDA29853A369AA9CCA702E4F605D6E4E98A226B`의 실제 준수 표·원시 출처와 `main-evidence/self-check.txt`를 직접 읽었다. 제공된 정확한 transcript 11964행의 Write `toolu_01589hbABh2CSNCjs1BjcQHz`, timestamp 19:46:27.158Z를 확인해 `main-context-original-event.jsonl`에 그 한 줄을 보존했다. 제품 복원보다 앞선 메모와 메모보다 먼저 만든 근거 사본의 순서 차이를 함께 신규 Opus의 입력으로 둔다. 독립 판정으로 미리 해결 처리하지 않는다.
+
+신규 Opus pane `term_3b98ca5a-52ef-473b-984b-247360a1e66e`, incarnation `c6916d2d-9d97-4b3a-8bde-e45ac8cef393`를 담당 Astra 아래 승인된 같은 checkout에 열었다. 최초 명령 `claude --model claude-opus-5-5`, 첫 화면 Claude Code 2.1.288/Opus 5.5 xhigh, backend unknown이며 readiness satisfied=true와 선택창 없는 첫 화면을 확인했다. 메인 근거 회신 대기는 해소됐다. `revision1/verification-contract.md`와 `verification-inputs.json`으로 전체 25제품·기존 독립 테스트 2개·관련 근거를 고정한 뒤 이 신규 세션의 최초 작업으로 발행한다. Task/Dispatch 및 실제 시작 여부는 `revision1/verifier-start.json`에 보존하며 접수와 턴 시작을 구분한다. 판정 전 제품·goal은 동결하고 새 검증 근거/필요 독립 테스트만 쓰게 한다.
+
+### 운영 단위 첫 재검증 PASS와 통합
+
+신규 Opus `task_4b8af11c0dca`/`ctx_3145c4396fb0`의 첫 재검증은 **PASS**, #1·#2 해소, 새 차단 결함 0건이다. 최종 원문 `operating-rules/revision1/verification/verdict.md` SHA256 `41F6E026E2F1DD2D736E7F8408A8C97B8F5E06BE5EB30BE293D2C378EB8CE792`를 Astra가 전문 열람했다. 완료 `msg_ed86f9bacb94`(2026-10-03T21:31:34Z)와 native completed를 대조하고 release(external retained)→동일 incarnation·최종턴 확인→close(ptyKilled=true)→Delivery ACK로 정산했다. 이 검증자를 재사용하지 않는다.
+
+- 실제 새 실행: Windows Node helper 테스트 22/22, 수정 스킬 형식 2/2, 결함별 검사화 기록의 합성 사례 1건. 변이 검사는 대조군 22/0, 6개 중 5개 검출이며 `ask-any-sender`가 22/0으로 살아남아 도구 exit 1이다. 모두 검출했다고 보고하지 않는다. 독립 검증자는 현재 다른 identity·receipt 조건을 통과하는 실제 오허용 입력을 찾지 못해 R13을 비차단 테스트 보강 후보로 판정했다.
+- 고정 입력 25제품·2테스트·59근거 총86개는 검증 종료 시 전부 bytes/hash가 일치했다. Astra의 별도 완료 대조도 불일치0이다. 판정 이후 이 goal에 쓰는 상태·후속 후보는 Astra 메타데이터이며 고정 입력의 일부였다고 소급하지 않는다. 원시는 `revision1/verification/raw/manifest-check-final.stdout.txt`, `revision1/verifier-completion-input-comparison.json`이다.
+- 절차 기록: 메인의 근거 사본이 메모보다 앞섰고, 새 검증자는 메모 전에 허용 경로 밖 TEMP에 원문 추출본을 썼다. 메인 `msg_b5335a17d12d`는 두 이탈을 면제하지 않고 기록한 채, 제품·테스트·고정 입력을 바꾸지 않았으므로 현 검증을 계속하도록 결정했다. 독립 판정의 비차단 해석과 이 결정은 일반적인 사전 메모 예외 규칙이 아니다. TEMP 원본을 보존하고 raw 사본/hash를 남겼다. 완료 payload의 TEMP 경로 오기는 실제 파일·사본 대조와 `revision1/verifier-completion-path-correction.json`에 구분했으며 원래 메시지는 수정하지 않았다.
+- 남은 한계: R2~R14 비차단 항목과 기존 링크/위치 드리프트를 보존한다. 이관 위치 표본은 41/46이고 과거46개 내용 실사와 다른 수치다. 변경 없는 부분의 과거 원시는 재실행으로 바꾸지 않는다. 이번 재검증에서 새 GitHub CI·Linux·전체 CodeRules·게임·DB·Unity·로컬 .NET을 실행하지 않았다.
+- **메인 독립 대조: 일치, 표본 대조**. 메인 `msg_cca37bd31a41`(21:34:02Z)는 판정176행 전문을 직접 읽고 원문 hash를 대조했다. 실제 transcript11925·11964·11979행의 v2 원문→메모19:46:27Z→복원/재작성19:46:49Z 순서, 변이5/6·미검출1개, manifest86개 bytes, CLAUDE·goal-loop·templates 세 파일 hash를 직접 확인했다. 전수 검증으로 확대하지 않는다. 승인 기록 원문은 `revision1/main-r2-confirmation.json`이다.
+- 메인은 후속 후보 세 건을 위 보류 목록에 남기고 commit/push/PR/CI를 진행하도록 지시했다. 통합 전 맥락은 `operating-rules/integration-context.md`다. 동작5파일과 문서를 별도 커밋으로 묶고 실제 CI job·checkout·입력을 대조한 뒤 PR번호와 근거를 메인에 전달한다. **이 지시는 병합 승인이 아니며, 해당 PR의 사용자 명시 승인 전 병합·자동 병합을 하지 않는다.** 환경/경로검사와 PowerShell 출력순서 두 PR는 아직 남았다.
