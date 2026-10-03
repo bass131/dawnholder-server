@@ -4,6 +4,8 @@
 
 ## 현재 SQL 구조와 실행 경계
 
+현재 database 설치·수명 도구와 오프라인 구조 검사·tests의 실행 host는 **Windows PowerShell 5.1 (`powershell.exe`)**이다. PowerShell 7에서 소스를 분석하는 CodeRules와 구분하며, 그 분석 결과를 제품 도구의 PowerShell 7 실행 지원으로 해석하지 않는다.
+
 현재 [SQL 구조·오프라인 검증 목표](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md)의 첫 PR 범위는 SQL/PowerShell 구조·배포·구조 검사와 이 안내, 신규 Opus의 합동 오프라인 검증이다. `001_initial.sql`을 보존하고 `001~004`/SchemaVersion4와 현재 `modules/` 구조를 구현했으며 독립 검증은 대기 중이다. 설계와 구현 경계는 [SQL 구조·배포 설계](../../01_Phases/goals/2026-10-02-persistence-repository/sql-structure-design.md)에 있다. **실제 새 DB 설치·SQL 접속·G2·계정/ACL/DPAPI·Windows recovery 실행과 저장소/GameServer 연결은 미완료**이며 첫 PR 병합 뒤 후속 goal로 이어간다.
 
 정확 시험 DB·두 principal·실행 주체·한 번의 생성부터 폐기까지 수명은 [goal의 G1 승인 범위](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#사용자-세-안건--추천안-승인g1)를 따른다. 후속 goal 분리는 새 DB나 두 번째 수명 승인이 아니다. 이 문서의 도구·명령 설명도 SQL 접속이나 시스템 변경 권한을 추가하지 않는다. 아래 2026-09-29 성공 기록은 당시 001 구성의 근거다.
@@ -96,12 +98,13 @@ source checksum은 UTF-8/BOM 제외·CRLF→LF 기준이며 module의 남은 CR�
 [Test-ModuleStructure.ps1](../../99_Tools/database/Test-ModuleStructure.ps1)은 고정 module 경로·객체명/종류·파일당 정의 하나와 공개 RPC의 정본 helper 직접 호출을 검사한다. 주석/리터럴을 제외한 제한된 lexer를 사용하며 입장 조회·관리 inspection·resolver의 서로 다른 책임을 별도로 등록한다.
 
 ```powershell
-# 소스 구조만 검사. -DatabaseRoot 생략 시 스크립트의 database 폴더.
+# Windows PowerShell 5.1에서 소스 구조만 검사. 생략 시 스크립트의 database 폴더.
+# 상대 -DatabaseRoot는 PowerShell 세션의 현재 FileSystem 위치를 기준으로 해석한다.
 ./99_Tools/database/Test-ModuleStructure.ps1 -DatabaseRoot ./99_Tools/database -Json
 ./99_Tools/database/Test-ModuleStructure.ps1 -Json -Strict
 ```
 
-`-Json`은 Status/Scope/CheckedFiles/Issues/ViolationCount를 출력한다. 기본 출력은 상태와 각 File/Line/Expected/Remediation 경고다. `-Strict`는 구조 위반을 실패 exit로 바꾼다.
+`-DatabaseRoot`는 FileSystem provider 경로만 허용하며, 끝 구분자 유무와 관계없이 같은 트리를 검사한다. 다른 provider나 해석할 수 없는 경로는 `unavailable`/exit2다. `-Json`은 Status/DatabaseRoot/Scope/CheckedFiles/Issues/ViolationCount를 출력한다. DatabaseRoot는 검사 대상의 정규화 절대 경로이며, 경로 해석에 실패하면 null이다. 기본 출력 첫 줄에도 DatabaseRoot를 표시하고 각 File/Line/Expected/Remediation 경고를 출력한다. `-Strict`는 구조 위반을 실패 exit로 바꾼다.
 
 | 상태 | 뜻 | warning 파일럿 exit | Strict exit |
 |---|---|---|---|

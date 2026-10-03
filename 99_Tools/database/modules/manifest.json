@@ -113,9 +113,9 @@
                 "dh.RecordOperationReceipt",
                 "dh.EmitPersistenceResult"
             ],
-            "SourceChecksum": "3BB8D8A354D1B1D75828E07B11F65DCDE86F2363873212913D04EAEADE49A87B",
-            "DefinitionBytes": 30880,
-            "DefinitionChecksum": "CE4519FB18B213ADD31F10B37B31EAE395A5EA9C8A4666462F1D6DB6C00F86FE"
+            "SourceChecksum": "432C596B4870625564B0462791985A4C1330102CBC4F8A6A69B4607DE7A768F6",
+            "DefinitionBytes": 30852,
+            "DefinitionChecksum": "62A12FB3F4B7891DDEE834968BA9BB6BD7823316DF757AABEFF8806DDF10D40C"
         },
         {
             "Path": "modules/procedures/write_safe_checkpoint.sql",
@@ -132,9 +132,9 @@
                 "dh.RecordOperationReceipt",
                 "dh.EmitPersistenceResult"
             ],
-            "SourceChecksum": "C8EFC4AA3DCE79E6E3FEFB20B70E97FA643DAF6D127DDE817FF5AA54C361C5E4",
-            "DefinitionBytes": 32580,
-            "DefinitionChecksum": "42BBE81F91B9F965F5D1C16583146F04A1FB0E5929B413DAE892F8388B843558"
+            "SourceChecksum": "AE1EAEFEC64AA790D4B324C902D051F9ED6BFB0726D46A43DA4BD9217DE85812",
+            "DefinitionBytes": 32552,
+            "DefinitionChecksum": "0B3E65F06D84A9278FEDA3184F52BB234261D435F87D204B851874A8A0B8ED85"
         },
         {
             "Path": "modules/procedures/release_runtime.sql",
@@ -151,9 +151,9 @@
                 "dh.RecordOperationReceipt",
                 "dh.EmitPersistenceResult"
             ],
-            "SourceChecksum": "04FA0C10B81D7493C641E6FEAA10366AD3BFF054FF1A7E54ED5FBFFB68B01643",
-            "DefinitionBytes": 24790,
-            "DefinitionChecksum": "68F7D16D6F1F0007F4EF0AD077956476A990A223E3462182350A1D01332AB70A"
+            "SourceChecksum": "2D64CAC16FD959851F97AE8DAD5E4D872ED9F2AFF6772AF04444732FC5501AE3",
+            "DefinitionBytes": 24986,
+            "DefinitionChecksum": "EEC38BE165F76CAC570618BBF52A98F64AD37D53B427B84DD7C525B3477606BB"
         },
         {
             "Path": "modules/procedures/resolve_runtime_operation.sql",
@@ -203,9 +203,9 @@
                 "dh.RecordOperationReceipt",
                 "dh.EmitPersistenceResult"
             ],
-            "SourceChecksum": "A597DCE2C0B2886A3445152F10E7DA79352F9BE8EC4A9BB1A8E3B7AA3910561B",
-            "DefinitionBytes": 25828,
-            "DefinitionChecksum": "64180C75DF88AD6D9DFF67EC6E3D2A920EAE099863866977FB024494CF05F31F"
+            "SourceChecksum": "973A154A1E7075728A710DCDF7596121399DD9460916321B82E4EC9532977809",
+            "DefinitionBytes": 25800,
+            "DefinitionChecksum": "02833653F58B0CB0C6DD0C9A04E783FEEA4438F0FA4C3927E9E38386F9C5498A"
         },
         {
             "Path": "modules/procedures/release_recovery.sql",
@@ -222,9 +222,9 @@
                 "dh.RecordOperationReceipt",
                 "dh.EmitPersistenceResult"
             ],
-            "SourceChecksum": "3136D78B8EF3F271119768255F2CC5683BEEE0504CC85B40156FEDFCED41DD2C",
-            "DefinitionBytes": 24800,
-            "DefinitionChecksum": "2D69E5AB560F33F7B55BDC7C1DC325839364E03C9A6EE158E21BFEFCE0C3FC8B"
+            "SourceChecksum": "A178449B8269A82242B154E485576770FA9164761FB1AFD0C9B34A50AE95AF95",
+            "DefinitionBytes": 24996,
+            "DefinitionChecksum": "61422F6BAE65A992FC9A8F0FFED5CFC19F7FF76820226BC3028F6624301E569B"
         },
         {
             "Path": "modules/procedures/resolve_recovery_operation.sql",

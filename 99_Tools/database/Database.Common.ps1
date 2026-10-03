@@ -200,8 +200,12 @@ IF @result < 0
             -Parameters @{
             } `
             -Transaction $Transaction)
+        # First installation reads empty metadata; the SQL boundary always returns a JSON array.
         $historyText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
-SELECT (SELECT Version, Name, Checksum FROM dh.SchemaVersion ORDER BY Version FOR JSON PATH) AS MigrationRows;
+SELECT ISNULL((
+    SELECT Version, Name, Checksum
+    FROM dh.SchemaVersion ORDER BY Version FOR JSON PATH
+), N'[]') AS MigrationRows;
 '@
         $history = @(ConvertFrom-DatabaseJsonRows -Json $historyText)
         Assert-DatabaseMigrationHistory -History $history -Sources $sources
@@ -223,7 +227,10 @@ SELECT (SELECT Version, Name, Checksum FROM dh.SchemaVersion ORDER BY Version FO
             Write-Output "Migration $($source.Version) applied."
         }
         $finalHistoryText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
-SELECT (SELECT Version, Name, Checksum FROM dh.SchemaVersion ORDER BY Version FOR JSON PATH) AS MigrationRows;
+SELECT ISNULL((
+    SELECT Version, Name, Checksum
+    FROM dh.SchemaVersion ORDER BY Version FOR JSON PATH
+), N'[]') AS MigrationRows;
 '@
         $finalHistory = @(ConvertFrom-DatabaseJsonRows -Json $finalHistoryText)
         Assert-DatabaseMigrationHistory -History $finalHistory -Sources $sources

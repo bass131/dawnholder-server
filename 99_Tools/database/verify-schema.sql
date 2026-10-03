@@ -73,7 +73,9 @@ IF EXISTS (
         c.scale,
         c.is_nullable FROM sys.tables t
     JOIN sys.columns c ON c.object_id = t.object_id JOIN sys.types ty ON ty.user_type_id = c.user_type_id
-    WHERE t.schema_id = SCHEMA_ID('dh') AND c.is_identity = 0 AND c.is_computed = 0 AND c.is_sparse = 0 AND c.generated_always_type = 0
+    WHERE t.schema_id = SCHEMA_ID('dh')
+    AND c.is_identity = 0 AND c.is_computed = 0
+    AND c.is_sparse = 0 AND c.generated_always_type = 0
 ) OR (SELECT COUNT(*) FROM sys.columns c JOIN sys.tables t ON t.object_id = c.object_id
     WHERE t.schema_id = SCHEMA_ID('dh')) <> 44
     THROW 51001, 'Column/type/nullability drift detected.', 1;
@@ -107,7 +109,8 @@ IF EXISTS (
         i.is_unique,
         i.is_primary_key,
         i.type FROM sys.tables t
-    JOIN sys.indexes i ON i.object_id = t.object_id JOIN sys.index_columns ic ON ic.object_id = i.object_id AND ic.index_id = i.index_id
+    JOIN sys.indexes i ON i.object_id = t.object_id
+    JOIN sys.index_columns ic ON ic.object_id = i.object_id AND ic.index_id = i.index_id
     JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
     WHERE t.schema_id = SCHEMA_ID('dh') AND i.is_disabled = 0 AND i.has_filter = 0 AND i.is_hypothetical = 0
     AND i.ignore_dup_key = 0 AND ic.key_ordinal = 1 AND ic.is_descending_key = 0
@@ -163,10 +166,14 @@ IF EXISTS (
         COL_NAME(parent_object_id, parent_column_id),
         definition
     FROM sys.check_constraints WHERE schema_id = SCHEMA_ID('dh')
-    AND parent_object_id IN (OBJECT_ID('dh.SchemaVersion'), OBJECT_ID('dh.Account'), OBJECT_ID('dh.Character'), OBJECT_ID('dh.CharacterProgress'))
+    AND parent_object_id IN (
+        OBJECT_ID('dh.SchemaVersion'), OBJECT_ID('dh.Account'),
+        OBJECT_ID('dh.Character'), OBJECT_ID('dh.CharacterProgress'))
     AND is_disabled = 0 AND is_not_trusted = 0 AND is_not_for_replication = 0
 ) OR (SELECT COUNT(*) FROM sys.check_constraints WHERE schema_id = SCHEMA_ID('dh')
-    AND parent_object_id IN (OBJECT_ID('dh.SchemaVersion'), OBJECT_ID('dh.Account'), OBJECT_ID('dh.Character'), OBJECT_ID('dh.CharacterProgress'))) <> 4
+    AND parent_object_id IN (
+        OBJECT_ID('dh.SchemaVersion'), OBJECT_ID('dh.Account'),
+        OBJECT_ID('dh.Character'), OBJECT_ID('dh.CharacterProgress'))) <> 4
     THROW 51004, 'Check expression, ownership or trust drift detected.', 1;
 DECLARE @defaults TABLE
 (
@@ -271,20 +278,20 @@ INSERT @modules VALUES
         'ABB087091CD097FA59241362AA97A4B5D6A7427E92E98253FD9AF52F9450F691'),
     ('ReadAdmission', 'P', 12800, 0x1659E51318BD2B4035A97BF8713D0718F11665A9D720559E23CEDBD779C0200E,
         '58093893445077FFBFE41EA9AB27E632A9772AD409D50337CD216E25F0074E53'),
-    ('AcquireAndLoad', 'P', 30880, 0xCE4519FB18B213ADD31F10B37B31EAE395A5EA9C8A4666462F1D6DB6C00F86FE,
-        '3BB8D8A354D1B1D75828E07B11F65DCDE86F2363873212913D04EAEADE49A87B'),
-    ('WriteSafeCheckpoint', 'P', 32580, 0x42BBE81F91B9F965F5D1C16583146F04A1FB0E5929B413DAE892F8388B843558,
-        'C8EFC4AA3DCE79E6E3FEFB20B70E97FA643DAF6D127DDE817FF5AA54C361C5E4'),
-    ('ReleaseRuntime', 'P', 24790, 0x68F7D16D6F1F0007F4EF0AD077956476A990A223E3462182350A1D01332AB70A,
-        '04FA0C10B81D7493C641E6FEAA10366AD3BFF054FF1A7E54ED5FBFFB68B01643'),
+    ('AcquireAndLoad', 'P', 30852, 0x62A12FB3F4B7891DDEE834968BA9BB6BD7823316DF757AABEFF8806DDF10D40C,
+        '432C596B4870625564B0462791985A4C1330102CBC4F8A6A69B4607DE7A768F6'),
+    ('WriteSafeCheckpoint', 'P', 32552, 0x0B3E65F06D84A9278FEDA3184F52BB234261D435F87D204B851874A8A0B8ED85,
+        'AE1EAEFEC64AA790D4B324C902D051F9ED6BFB0726D46A43DA4BD9217DE85812'),
+    ('ReleaseRuntime', 'P', 24986, 0xEEC38BE165F76CAC570618BBF52A98F64AD37D53B427B84DD7C525B3477606BB,
+        '2D64CAC16FD959851F97AE8DAD5E4D872ED9F2AFF6772AF04444732FC5501AE3'),
     ('ResolveRuntimeOperation', 'P', 19770, 0x35154902610E8BFC0D438F8446AAAEAF2F28301334D99B083FAF6040B2DF0993,
         '2B95D1BB56BF98FF11C78336D87CC5E680952A6F487BB3FE7DE3887380D6D064'),
     ('InspectRecovery', 'P', 15870, 0x5C42A1292158B97608F5DE5FA37AE71C02485C9B59AD24AAB0F4684763FFB5F7,
         '88D1EA2A9B3F8B6362858972EAA2E7F9C385D7C5C5CA3E37C77B7A94AFF05CB8'),
-    ('RecoverAndLoad', 'P', 25828, 0x64180C75DF88AD6D9DFF67EC6E3D2A920EAE099863866977FB024494CF05F31F,
-        'A597DCE2C0B2886A3445152F10E7DA79352F9BE8EC4A9BB1A8E3B7AA3910561B'),
-    ('ReleaseRecovery', 'P', 24800, 0x2D69E5AB560F33F7B55BDC7C1DC325839364E03C9A6EE158E21BFEFCE0C3FC8B,
-        '3136D78B8EF3F271119768255F2CC5683BEEE0504CC85B40156FEDFCED41DD2C'),
+    ('RecoverAndLoad', 'P', 25800, 0x02833653F58B0CB0C6DD0C9A04E783FEEA4438F0FA4C3927E9E38386F9C5498A,
+        '973A154A1E7075728A710DCDF7596121399DD9460916321B82E4EC9532977809'),
+    ('ReleaseRecovery', 'P', 24996, 0x61422F6BAE65A992FC9A8F0FFED5CFC19F7FF76820226BC3028F6624301E569B,
+        'A178449B8269A82242B154E485576770FA9164761FB1AFD0C9B34A50AE95AF95'),
     ('ResolveRecoveryOperation', 'P', 19668, 0x3B19F6178598CA47F720687BB37ABAEF01E2166AA76CEF45CF848DFFC3132AC8,
         '9C4CB515AF1020EB8C37DB23CEE936D9A37F9100E3B6EFBDB1A8EBA9C7CBC2FC');
 IF EXISTS (
@@ -362,15 +369,19 @@ IF EXISTS (
     AND dp.grantee_principal_id <> DATABASE_PRINCIPAL_ID('dbo')
     AND (
         (dp.class = 0 AND dp.permission_name IN ('CONTROL', 'ALTER', 'ALTER ANY SCHEMA', 'ALTER ANY ROLE',
-                'CREATE TABLE', 'CREATE PROCEDURE', 'CREATE FUNCTION', 'EXECUTE', 'SELECT', 'INSERT', 'UPDATE', 'DELETE'))
+                'CREATE TABLE', 'CREATE PROCEDURE', 'CREATE FUNCTION',
+                'EXECUTE', 'SELECT', 'INSERT', 'UPDATE', 'DELETE'))
         OR (dp.class = 3 AND dp.major_id = SCHEMA_ID('dh'))
         OR (dp.class = 1 AND dp.major_id IN (SELECT object_id FROM sys.tables WHERE schema_id = SCHEMA_ID('dh'))
             AND (dp.permission_name IN ('INSERT', 'UPDATE', 'DELETE', 'CONTROL', 'ALTER', 'TAKE OWNERSHIP')
                 OR (dp.permission_name = 'SELECT' AND dp.grantee_principal_id IN
-                    (DATABASE_PRINCIPAL_ID('public'), DATABASE_PRINCIPAL_ID('dh_runtime'), DATABASE_PRINCIPAL_ID('dh_recovery')))))
-        OR (dp.class = 1 AND dp.major_id IN (SELECT object_id FROM sys.objects WHERE schema_id = SCHEMA_ID('dh') AND type IN ('P', 'FN'))
+                    (DATABASE_PRINCIPAL_ID('public'), DATABASE_PRINCIPAL_ID('dh_runtime'),
+                        DATABASE_PRINCIPAL_ID('dh_recovery')))))
+        OR (dp.class = 1 AND dp.major_id IN (
+            SELECT object_id FROM sys.objects WHERE schema_id = SCHEMA_ID('dh') AND type IN ('P', 'FN'))
             AND NOT EXISTS (SELECT 1 FROM @grants g WHERE DATABASE_PRINCIPAL_ID(g.RoleName) = dp.grantee_principal_id
-                AND OBJECT_ID(N'dh.' + g.ProcedureName) = dp.major_id AND dp.permission_name = 'EXECUTE' AND dp.state = 'G' AND dp.minor_id = 0))
+                AND OBJECT_ID(N'dh.' + g.ProcedureName) = dp.major_id
+                AND dp.permission_name = 'EXECUTE' AND dp.state = 'G' AND dp.minor_id = 0))
     )
 )
     THROW 51009, 'Unnecessary broad grant or direct writer permission.', 1;
@@ -385,7 +396,7 @@ INSERT @migrations VALUES
     (1, '001_initial.sql', 'F28502BB1A8D683A66F596F15BA9EEC779E5110BAD8ADDAEE03E393F26E54FCC'),
     (2, '002_persistence_metadata.sql', '867F8CC52350029EE15E753EC9134DDB7F7FAD91D5A9383D0F2209EAAD2C3599'),
     (3, '003_module_metadata.sql', 'A4F271547EC0E2E700413F51D8281A361D8654D383996E73F9476E4540A40F9B'),
-    (4, '004_module_release.sql', '13908494AC2FE43DF6D8A2CAE2AADECE97F4818BABBB4A9F3066F0C5EFB13AA0');
+    (4, '004_module_release.sql', '172F3476BE79D8A458BA91D43C59F909D0ED6A144E3BB754DD8C2CF49BE15E82');
 IF EXISTS (SELECT * FROM @migrations EXCEPT SELECT Version, Name, Checksum FROM dh.SchemaVersion)
     OR (SELECT COUNT(*) FROM dh.SchemaVersion) <> 4
     THROW 51010, 'Migration name/checksum/version catalog drift.', 1;

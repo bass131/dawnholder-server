@@ -199,8 +199,31 @@ function Test-ModuleStructure {
     $checked = New-Object 'Collections.Generic.List[string]'
     $status = 'compliant'
     $activeFile = $DatabaseRoot
+    $resolvedRoot = $null
     try {
-        $resolvedRoot = [IO.Path]::GetFullPath($DatabaseRoot)
+        if ([string]::IsNullOrWhiteSpace($DatabaseRoot)) {
+            throw 'DatabaseRoot must be a nonempty FileSystem path.'
+        }
+        # PowerShell's provider location can differ from the process working directory.
+        $pathProvider = $null
+        $pathDrive = $null
+        $providerPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
+            $DatabaseRoot, [ref]$pathProvider, [ref]$pathDrive
+        )
+        if ($pathProvider.Name -cne 'FileSystem') {
+            throw 'DatabaseRoot must use the FileSystem provider.'
+        }
+        $resolvedRoot = [IO.Path]::GetFullPath($providerPath)
+        $pathRoot = [IO.Path]::GetPathRoot($resolvedRoot)
+        $rootSeparators = [char[]]@([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
+        # Preserve drive/share roots while removing optional separators from deeper paths.
+        if ($resolvedRoot.Length -gt $pathRoot.Length) {
+            $resolvedRoot = $resolvedRoot.TrimEnd($rootSeparators)
+        }
+        $rootPrefix = $resolvedRoot
+        if (-not $rootPrefix.EndsWith([string][IO.Path]::DirectorySeparatorChar)) {
+            $rootPrefix += [IO.Path]::DirectorySeparatorChar
+        }
         $modulesPath = Join-Path $resolvedRoot 'modules'
         if (-not [IO.Directory]::Exists($modulesPath)) {
             throw "Module directory cannot be inspected: $modulesPath. Supply the database root containing modules."
@@ -217,7 +240,7 @@ function Test-ModuleStructure {
         $files = @($files | Sort-Object FullName)
         foreach ($file in $files) {
             $activeFile = $file.FullName
-            $relative = $file.FullName.Substring($resolvedRoot.Length + 1).Replace('\', '/')
+            $relative = $file.FullName.Substring($rootPrefix.Length).Replace('\', '/')
             $checked.Add($relative)
             if ($relative -ceq 'modules/permissions.sql') { continue }
             $text = [IO.File]::ReadAllText($file.FullName)
@@ -229,7 +252,9 @@ function Test-ModuleStructure {
             if ($relative.StartsWith('migrations/') -and $definitions.Count -eq 0) { continue }
             $entry = $byPath[$relative]
             $line = 1
-            if ($definitions.Count -eq 1) { $line = 1 + ([regex]::Matches($text.Substring(0, $definitions[0].Index), "`n")).Count }
+            if ($definitions.Count -eq 1) {
+                $line = 1 + ([regex]::Matches($text.Substring(0, $definitions[0].Index), "`n")).Count
+            }
             if ($null -eq $entry -or $relative -cne $entry.Path -or $definitions.Count -ne 1) {
                 $knownObject = @(
                     if ($definitions.Count -eq 1) {
@@ -316,6 +341,7 @@ function Test-ModuleStructure {
     }
     [pscustomobject]@{
         Status = $status
+        DatabaseRoot = $resolvedRoot
         Scope = 'Source placement and direct calls only; SQL grammar, indentation and behavior are not verified.'
         CheckedFiles = @($checked.ToArray())
         Issues = @($issues.ToArray())
@@ -328,7 +354,8 @@ if (-not $PSBoundParameters.ContainsKey('DatabaseRoot')) { $DatabaseRoot = $PSSc
 $result = Test-ModuleStructure -DatabaseRoot $DatabaseRoot
 if ($Json) { $result | ConvertTo-Json -Depth 6 }
 else {
-    Write-Output ("Module structure: {0}. {1}" -f $result.Status, $result.Scope)
+    Write-Output ("Module structure: {0}. DatabaseRoot: {1}. {2}" -f
+        $result.Status, $result.DatabaseRoot, $result.Scope)
     foreach ($issue in $result.Issues) {
         Write-Warning ("{0}:{1}: {2}. Expected: {3}. Fix: {4}" -f
             $issue.File, $issue.Line, $issue.Message, $issue.Expected, $issue.Remediation)

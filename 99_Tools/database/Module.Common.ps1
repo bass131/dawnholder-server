@@ -216,14 +216,15 @@ function ConvertFrom-DatabaseJsonRows([string]$Json) {
 
 function Get-DatabaseModuleState($Connection, $Transaction) {
     # A top-level FOR JSON can split long output across provider rows; scalar subqueries retain the full JSON value.
+    # Empty metadata on first installation is normalized in SQL; the JSON reader still rejects malformed values.
     $recordedText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
-SELECT (
+SELECT ISNULL((
     SELECT ObjectName, Kind, SourceChecksum, DefinitionBytes, DefinitionChecksum
     FROM dh.ModuleDefinition ORDER BY ObjectName FOR JSON PATH
-) AS ModuleRows;
+), N'[]') AS ModuleRows;
 '@
     $actualText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
-SELECT (
+SELECT ISNULL((
     SELECT N'dh.' + o.name AS ObjectName, o.type AS Kind,
         DATALENGTH(REPLACE(sm.definition, NCHAR(13), N'')) AS DefinitionBytes,
         CONVERT(char(64), HASHBYTES('SHA2_256', REPLACE(sm.definition, NCHAR(13), N'')), 2) AS DefinitionChecksum,
@@ -235,7 +236,7 @@ SELECT (
     LEFT JOIN sys.sql_modules sm ON sm.object_id = o.object_id
     WHERE s.name = N'dh' AND o.type IN ('P', 'FN', 'IF', 'TF', 'FS', 'FT', 'PC')
     ORDER BY o.name FOR JSON PATH, INCLUDE_NULL_VALUES
-) AS ModuleRows;
+), N'[]') AS ModuleRows;
 '@
     return [pscustomobject]@{
         Recorded = @(ConvertFrom-DatabaseJsonRows -Json $recordedText)
@@ -294,11 +295,11 @@ function Invoke-ModuleBundle(
 ) {
     if ($null -eq $Transaction) { throw 'Module deployment requires the caller-owned migration transaction.' }
     $releaseText = Invoke-DbScalar -Connection $Connection -Transaction $Transaction -Sql @'
-SELECT (
+SELECT ISNULL((
     SELECT r.Version, r.ManifestChecksum, s.Version AS SchemaVersion
     FROM dh.ModuleRelease r LEFT JOIN dh.SchemaVersion s ON s.Version = r.Version
     ORDER BY r.Version FOR JSON PATH, INCLUDE_NULL_VALUES
-) AS ReleaseRows;
+), N'[]') AS ReleaseRows;
 '@
     $releases = @(ConvertFrom-DatabaseJsonRows -Json $releaseText)
     if ($releases.Count -eq 0 -or $releases[-1].Version -ne $Bundle.ReleaseVersion -or

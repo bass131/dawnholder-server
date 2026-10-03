@@ -100,10 +100,9 @@ BEGIN
     DECLARE @hp int;
     DECLARE @storedMaxHp int;
     DECLARE @bossUnlocked bit;
-    -- Current diagnostic JSON and fresh historical snapshot.
+    -- Current diagnostic JSON; the snapshot helper writes the terminal proof below.
     DECLARE @storedProgress nvarchar(max);
     DECLARE @safe nvarchar(max);
-    DECLARE @snapshot nvarchar(max);
     -- Terminal proof (replay remains the original ledger snapshot).
     DECLARE @status varchar(32) = 'Terminal';
     DECLARE @outcome tinyint;
