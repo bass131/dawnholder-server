@@ -1,6 +1,6 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **구조 단계 자체 점검 완료·중간 커밋 준비, 최종 배포 변경과 신규 Opus 오프라인 검증은 미완료**. 2026-10-03 사용자 결정으로 SQL/PS 구조·검사·문서와 합동 오프라인 검증까지 첫 PR을 분리한다. 저장소·복구 도구·G2·실제 DB/계정 수명은 첫 PR 병합 뒤 최신 main 새 branch/후속 goal에 인계하며 새 GameDev Astra가 시작한다. 현재 전체 영속성 완료나 SQL 실행 PASS는 아니다. SQL 접속도 G2 전까지 하지 않는다.
+상태: **구조 checkpoint `ad6d5cb` 완료, 승인된 최종 배포 변경 진행 중, 신규 Opus 오프라인 검증은 미완료**. 2026-10-03 사용자 결정으로 SQL/PS 구조·검사·문서와 합동 오프라인 검증까지 첫 PR을 분리한다. 저장소·복구 도구·G2·실제 DB/계정 수명은 첫 PR 병합 뒤 최신 main 새 branch/후속 goal에 인계하며 새 GameDev Astra가 시작한다. 현재 전체 영속성 완료나 SQL 실행 PASS는 아니다. SQL 접속도 G2 전까지 하지 않는다.
 
 ## 현재 goal의 PR 경계와 완료조건 (2026-10-03)
 
@@ -25,6 +25,9 @@
 
 ## 현재 발행·정리 근거 (2026-10-03)
 
+- 구조 단계 쓰기 종료 ask `msg_aafd5284bdc6` 뒤 원문 전체·raw 실행 근거와 source/hash를 대조하고 **`ad6d5cbb3432947aaf867ebc994151e9473b9d02`**로 구조 변경만 commit했다. commit 본문은 설치 불가/소스 검토용/최종 tree만 설치·G2/DB-install bisect 제외를 명시한다. 판정 원문 `sql-structure-implementation/structure-checkpoint-report.md` SHA256 `7436ED1721B830855CEBB80F0C082E73F32C9A7DE7CCA1E078F30EB81A403801`; 최종 독립 판정이나 worker_done이 아니다.
+- 실제 로컬 비DB 근거: WSL build4warning/0error, 제품 테스트839 중834pass/5skip/0fail, whitespace·manifest·preservation·Formatting.Tests244pass와 원본 final-validate exit0. 기록된 DB파일33개 hash 일치/차이0, 별도001/Unity3hash도 동일하다. 부모는 ReadAdmission의 이전/새 lock/schema/commit/projection, Emit29열/datetime2(3), Acquire fresh receipt 표본을 직접 대조했다. 범위 한정 대조이며 실행 SQL 의미·설치 동등성·원격CI/독립PASS를 뜻하지 않는다. 첫 자체 checker/comparator 실패 및 제품 테스트 start UTC 누락은 원문에 공개됐다.
+- 구조 대조 근거는 `.backups/verification/2026-10-03-persistence-repository/astra-structure-checkpoint-review.md`와 `astra-structure-inventory-check.json`. reply `msg_4e10f59405f9`로 같은 Task의 승인된 배포 단계만 계속하도록 했다. `sql-structure-checkpoint-delivery.json`과 `sql-structure-checkpoint-reply.json`을 보존했고 메인 보고는 `msg_3a978242e929`다. 구조 checkpoint 원문을 덮어쓰지 않으며 신규 독립 Opus가 최종 배포 변경과 두 경계를 나눠 판정한다.
 - 새 Run `run_f4d40c8b95d1`, SQL 구조 Task `task_acb3a16d999b`, Dispatch `ctx_92963b71e852`. 신규 Sol handle `term_a53d32f5-36e3-4487-adb0-b10f244e2e5c`, incarnation `0c92acd5-39cc-4a44-a7c7-14421390f8b7`. 최초 argv는 `codex --cd C:/Dev/DawnHolder_Project --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, 첫 화면 GPT-6.1-Sol xhigh/Codex0.160.0, backend unknown이다. 준비 satisfied/정상 빈 prompt와 경로를 확인하고 최초 연결의 input_accepted·turn_started를 관측했다. 구현 완료 근거가 아니다.
 - 구현 기준 HEAD `5f72b61`, 계약 `.backups/verification/2026-10-03-persistence-repository/sql-structure-spec.md` SHA256 `8CC939A02D624732C362E7359814D42214F77457A7843B2236A1F67EDDBAB383`. 제품 쓰기 전 context와 구조/동작 checkpoint 계획을 blocking ask로 제출받는다. `sql-structure-start.json`, `sql-structure-first-screen.json`, `sql-structure-show.json`에 receipt/동일성을 보존했다.
 - 병합된 formatting-project-registration은 clean, 현재 터미널0, HEAD af10bc3c가 origin/main 조상임을 확인했다. 로컬 evidence 928파일을 Root `.backups/verification/formatting-project-registration/`로 복사하고 모든 SHA256 일치/차이0을 대조했다. verdict SHA256 `A2AEC7CB570FB4850B176B67A9DC5074511F52E2BD807D29C45FC9C10AE07E3F`도 동일하다. 로컬 settings 파일도 별도 보존한 뒤 정확 worktree를 Orca로 제거했고 로컬 branch 부재를 확인했다. 원격 branch는 변경하지 않았다. 과거 절의 F 원문 경로는 위 새 보존 경로로 대응하며 과거 실행 기록 자체는 수정하지 않는다. 근거 `formatting-evidence-preservation.json`·`formatting-cleanup.json`이다.
