@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **첫 BACKLOG 문서 단위 독립 PASS·[PR #168](https://github.com/bass131/dawnholder-server/pull/168) 제출 — [최신 검증·통합 기록](#첫-backlog-pr-검증과-통합)을 읽는다.** 결함 #1·#2·#3은 해소됐고 CI 확인·메인 검토·해당 PR 병합 승인 단계다. 아래 [재개 지점](#재개-지점)의 휴식·첫 재개 기록은 당시의 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본 문서·도구의 구현·검증·병합 실적과 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168) 병합 완료·합의된 중간 점검 대기 — [병합 결과와 다음 진입](#pr-168-병합-결과와-중간-점검)을 읽는다.** 독립 PASS·CI 2건 SUCCESS·메인 R-2 대조·해당 PR 사용자 승인을 거쳤다. 다음 운영 규칙 PR과 새 작업자 발행은 메인의 사용자 점검 후 재개 전달까지 멈춘다. 전체 goal은 미완료다. 아래 휴식·첫 재개·병합 전 기록은 당시 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본·도구의 구현 실적과 구분한다.
 
 ## 문제와 목표
 
@@ -461,3 +461,31 @@ Management 앵커는 메인 조율 `msg_7c5f1b5c4df5`에 따라 GameDev `d0458b7
 실제 CI 결과와 검사한 commit은 [PR Checks](https://github.com/bass131/dawnholder-server/pull/168/checks)에서 확인한다. 제출 직후 실행은 [code-rules](https://github.com/bass131/dawnholder-server/actions/runs/37138934729)와 [dotnet-tests](https://github.com/bass131/dawnholder-server/actions/runs/37138934750)이며, 이후 커밋에는 그 SHA의 새 실행 결과를 사용한다. 로컬 문서 PASS를 이 CI 결과로 대신하지 않는다.
 
 다음 절차는 최종 head의 실제 CI 확인 → 메인 R-2 대조와 사용자 **PR #168 병합 승인** → 합의된 중간 점검이다. 자동 병합을 예약하거나 후속 운영규칙 PR을 자동 시작하지 않는다. 이 문서 단위의 PASS는 전체 goal 완료나 후속 세 PR·Gardener 완료가 아니다.
+
+## PR #168 병합 결과와 중간 점검
+
+**2026-10-04 02:38 KST 병합 완료, 사용자와의 중간 점검 대기.** 메인 `msg_426fe6c4b083`(2026-10-03T17:34:34Z)이 전달한 사용자 원문은 “OK 병합 승인”이다. 승인 head는 `a041aa4486cb56455b11ea3b0c2a3bf2c45f63d9` 한정이다. 메인은 최종 판정 전문·제품 네 파일 hash·출처/앵커·goal 메타데이터 diff·CI를 직접 대조했다고 보고했다. 승인 원문은 로컬 근거 루트의 `main-pr168-merge-approval.json`이다. 사용자 직접 입력으로 격상하지 않는다.
+
+- 병합 직전 승인 head 불변, `MERGEABLE/CLEAN`, `autoMergeRequest=null`, code-rules·dotnet-tests 두 건 모두 SUCCESS를 다시 확인했다. `gh pr merge 168 --repo bass131/dawnholder-server --merge --match-head-commit a041aa4486cb56455b11ea3b0c2a3bf2c45f63d9`를 실행했다. 자동 병합을 예약하지 않았다.
+- 실제 merge commit은 **`7fa107488df3eb8133bb8a51e6eb746903ab94fe`**, 병합 시각은 `2026-10-03T17:38:05Z`다. 두 부모는 `5616573c32a2b2e0b677bc21b75e22a08d21f285`와 승인 head다. 병합 트리와 승인 head 트리는 같다. `git fetch origin main` 뒤 `origin/main`과 원격 `refs/heads/main`이 모두 이 merge SHA임을 확인했다.
+- 승인 head CI는 [code-rules 37139432567](https://github.com/bass131/dawnholder-server/actions/runs/37139432567), [dotnet-tests 37139432552](https://github.com/bass131/dawnholder-server/actions/runs/37139432552)이다. .NET은 839건 중 **834통과·5건 skipped**다. CI checkout `1fe9f7409b9df49a005e903f28c1b65b1890f3ae`는 PR 시험용 merge commit이며 위 실제 병합 SHA와 구분한다. 로컬 게임·DB·Unity 검증을 새로 수행하지 않았다.
+- BACKLOG 12후보·7필드, INDEX 진입, 네 파트 CURRENT/RESUME 진입, 이전 goal 보존이 main에 반영됐다. 독립 문서 PASS와 #1~#3 해소는 위 원문 근거를 따른다. 남은 비차단 참고·다른 파트 goal 미병합/경로 조율 경계는 유지한다.
+- 로컬 `docs/harness-backlog`와 worktree는 보존한다. 명시적 삭제 명령은 실행하지 않았지만 저장소의 `delete_branch_on_merge=true` 설정에 따라 원격 branch는 병합 뒤 조회에서 없어졌다. 이 goal의 병합·점검 메타데이터만 **로컬 체크포인트 커밋**으로 보존하고 원격 branch를 재생성하거나 push하지 않는다. 자기 commit SHA는 `checkpoint-final-state.json`과 메인 회신에서 찾는다. 재개 때 이 메타데이터를 보존해 최신 main 기준 후속 branch로 이관한다.
+
+병합 원시는 `pr168-immediately-before-merge.json`, `pr168-merge-command.json`, `pr168-merged-state.json`, `pr168-fetch-main.json`, `pr168-postmerge-git-state.json`이다. 마지막 파일의 최초 요약 필드가 원격 branch 보존을 잘못 추론해 refs 원문 및 저장소 설정 대조 후 정정했다. 실제 원격 branch 부재를 메인에게 보고한다. 이 절과 첫 문단은 **독립 판정/병합 이후 Astra가 작성한 상태 메타데이터**이며 PR #168의 검증·병합 내용에 소급 포함하지 않는다.
+
+### 중간 점검에 올릴 남은 세 PR
+
+| 순서 | 남은 단위 | 주요 선행·완료 경계 |
+|---|---|---|
+| 2 | 운영 규칙·참고 근거·ADR-034 | 이관 대조표 A/F/B-Orca와 E 후보, 적용 결정 16항목, capacity·마일스톤·draft 복구·같은 부류 집계 검토, 기존 하네스·실패/heartbeat·N1/N2. 참고/ADR는 Astra, 규칙·helper 구현은 새 Sol, 새 Opus가 문서 실사와 helper 독립 테스트 |
+| 3 | 개발·Unity 환경 사실, 문서 사실/탐색 정정과 경로 검사 | B의 나머지 환경 원문을 현재 상태와 대조. 새 경로 검사는 warning 파일럿과 독립 회귀 검증. ADR-035는 GameDev 첫 SQL 구조 PR 병합 및 사실 조율 뒤에만 작성 |
+| 4 | PowerShell 결과 출력 순서 `[ordered]` 고정 | `check-powershell.ps1` 범위, 같은 fixture 두 번 stdout 바이트와 의미 보존을 독립 검증. Python/SQL adapter는 조사 결과만 기록하며 추가 수정은 영향 보고 |
+
+운영 규칙 PR은 **원천 → 반영 정본 → 실제 문구/근거** 대조표를 먼저 만들고 보존 사본/hash와 각 원문을 함께 읽는다. 적용 결정 16항목은 위 정본 전 결정 절과 원문 매핑을 기준으로 하나도 빠짐없이 대조하되, 사용자/메인 결정·당시 관측·지금 적용·미래 후보를 구분한다. 같은 부류 출처 누락은 이번 BACKLOG에서 이미 적용한 집계 근거를 보존하고, 일반 규칙 승격은 후속 PR에서 검토한다. 같은 번호의 확정 실패 집계 규칙을 미리 교체하지 않는다.
+
+메인 **CLAUDE.md 작성 시점은 운영 규칙 PR의 Sol 쓰기 종료 뒤, 신규 Opus 기동 전**이다. 먼저 Astra가 같은 branch/cwd와 파일 소유를 전달하고 메인의 쓰기 종료를 확인한다. 신규 Opus가 Sol·Astra·메인 작성분을 함께 실사한다. 메모리 정리는 해당 PR 병합 뒤 메인 소유다.
+
+남은 외부 세션의 계획상 최소치는 **Sol 3 + 신규 Opus 3 = 6개**, 전체 goal 종료 시 읽기 전용 **Gardener Opus 1개를 더해 7개**다. 결함 수정/재검증은 새 세션 쌍이 추가되고 capacity·실패 임계점 예외는 해당 조건에서만 적용한다. 기존 Main/Rules Astra 세션은 이 수에 포함하지 않는다. 파트당 Opus 동시 하나, 작업자 재사용 금지다.
+
+**지금 다음 단위의 branch·작업자·도구 구현·PR은 시작하지 않는다.** 메인이 사용자와 이 중간 점검을 마친 뒤 재개를 전달하면 live 신원·최신 main·보존 체크포인트를 대조하고 후속 범위를 확정한다. 전체 goal 종료는 남은 세 PR·각 사용자 병합 승인·결과·Gardener·종료 점검 뒤이며, 이번에는 R-8 종료나 다음 goal 자동 착수를 하지 않는다.
