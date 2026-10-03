@@ -27,11 +27,9 @@ GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, �
 
 ## 다음 조각을 시작하는 순서
 
-- 먼저 [계층형 모델 라우팅 시범과 코드 기준 재정립](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md)의 구현·검증 결과와 PR 상태를 읽는다. 대상 4곳은 동작 보존 정리로 판정됐다. 계층형 라우팅 채택은 확정이고 C(작은 작업 예외 포함)는 미확정이다. 현재 Management 배치는 [R-1](ORCA.md#r1-management-placement)을 따른다.
-- [후속 후보와 판단 근거](../../01_Phases/goals/2026-10-01-refactor-record-corrections/open-items.md)의 메뉴 연결 probe·RegisterSend·HUD·UnityClientSession 후보는 유지한다. 메뉴 작업은 `MainMenuController`와 `ConnectionProbe`의 입력 캡처·요청 수명·실패 정리·늦은 callback 및 기존 fixture부터 설계하며 후보를 구현 완료나 확정된 UX로 해석하지 않는다.
-- source 교체·화면 종료 뒤 표시·재시도 같은 정책이 달라져야 하면 관찰 결과와 선택지를 사용자에게 올린다. 이후 표시 전용 HUD의 source binding을 별도 작은 조각으로 다룬다.
-- 범위·보존 계약·완료조건·파일 소유를 goal에 명시하고 최신 사용자 결정과 규칙 문서 반영 상태를 함께 확인한다. 실제 모델 확인 불가는 `unknown`으로 기록한다.
-- DB 상세 설계는 P1과 독립적으로 준비할 수 있다. [D0](../../01_Phases/goals/2026-09-29-persistence-design/design.md)를 다시 결정하지 말고 schema/transaction/실패·복구 기술 계약을 구체화한다. SQL schema 접근 가능과 GameServer 저장·복원 연동 완료를 구분한다.
+- [CURRENT](CURRENT.md)의 해당 파트 worktree·branch를 확인하고 그 goal의 「재개 지점」을 따른다. 상태와 다음 작업을 이 문서에 복제하지 않는다. 아직 병합되지 않은 다른 파트 goal은 해당 worktree에서 읽는다.
+- goal 종료 뒤에는 다음 goal을 자동으로 시작하지 않는다. 메인과 사용자가 결과·남은 위험·BACKLOG·마일스톤의 다음 순서를 점검한 뒤 다음 계획을 정하고 재개한다.
+- 정본 규칙에 아직 반영되지 않았지만 적용 중인 결정은 [Rules goal의 적용 결정](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#정본-반영-전-적용-중인-사용자-결정)을 확인한다. 사용자 결정과 메인 결정을 구분하고, 운영 규칙 PR 병합 뒤에는 그 절이 가리키는 정본을 따른다.
 
 ## Management와의 경계
 

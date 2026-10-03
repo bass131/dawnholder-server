@@ -13,6 +13,7 @@
 | 코드 규칙·필요한 참고자료 | [conventions](conventions/INDEX.md) |
 | 검토할 항목 | [REVIEW_CHECKLIST](REVIEW_CHECKLIST.md) |
 | 다단계 목표 운영 | [목표 루프](../.agents/skills/dawnholder-goal-loop/SKILL.md) |
+| goal로 승격되기 전 후보 | [BACKLOG](operations/BACKLOG.md) |
 | 공통 계약·유지보수·영속성 단계 | [마일스톤 로드맵](../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md) |
 | DB 설계 전 리팩토링 순서 | [마일스톤 로드맵](../01_Phases/milestones/2026-09-29-refactor-before-persistence/roadmap.md) |
 | Orca 세션의 실행·제한 | [ORCA](operations/ORCA.md) |
