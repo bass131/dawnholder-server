@@ -1,6 +1,6 @@
 # CodeGraph 연결 코드 정돈
 
-상태: **사용자 휴식 요청으로 미완료·대기 중이다.** 구조 제품·테스트는 독립 PASS 뒤 `9baf0b3`로 커밋했다. 동작 제품7파일은 미커밋이며 신규 Opus의 부분 판정은 원본 Windows worktree stdin 소실(제품 #1)·O1 차단과 미실행 범위를 남긴다. 검증자는 안전 정지·정산·종료했고 현재 작업자는 없다. 문서 #4 해소 실사도 미완료다. CI 파일럿은 이번 PR에서 제외해 보존했다. 작업 브랜치는 `feat/codegraph-adapter-cleanup-20261003`, 마지막 통합 HEAD는 `b1d37b9`(main `5616573`)다. 다음 세션은 맨 아래 [재개 지점](#재개-지점)부터 읽고 명시 재개 지시 전 새 작업을 시작하지 않는다. 근거는 `.backups/verification/2026-10-03-codegraph-adapter-cleanup/`다.
+상태: **동작 제품 #1과 문서 #4는 신규 Opus의 독립 재검증에서 해소됐다.** 구조 제품·테스트는 9baf0b3에서 독립 PASS다. 동작 최종 suite는 89건 중 정상 85, O1 실패 1, 기존 expected failure 3, skip 0으로 전체 통과는 아니다. 독립 대조를 통과한 새 Compare batch의 기본 포인터 전환과 문서 #5–7 수정의 신규 독립 재실사가 남는다. 기존 검증자는 정산·종료했고 재사용하지 않는다. 최신 상태는 마지막 「재개 실행」을 따르며, 「재개 지점」은 휴식 시점의 보존 기록이다. 브랜치는 `feat/codegraph-adapter-cleanup-20261003`, 근거 root(E)는 `.backups/verification/2026-10-03-codegraph-adapter-cleanup/`다. CI 파일럿은 다음 목표 후보로 보존한다.
 
 ## 첫 재계획의 승인과 적용
 
@@ -22,6 +22,18 @@
 
 ## 목표와 범위
 
+보존 정의 정본(msg_f706d082841b, 2026-10-03T17:27:06Z; _logs 제외는 msg_b0d80c167869): cache 보존 목적은 CodeGraph 비교의 재현성이다. 불변 대상은 **CodeGraph 설치, CodeGraph 의존 트리에 속한 패키지의 index 항목, 그 항목이 가리키는 content blob**이다. 의존 패키지 목록은 lockfile이나 설치된 트리에서 명령으로 도출하고 명령·출력을 보존한다. 신규 Opus가 이 세 대상의 불변과 트리 밖 변경이 CodeGraph 결과에 미칠 수 있는 영향을 독립 판정한다. npm 실행 로그 `_logs`는 불변 대상에서 제외한다. 트리 밖 패키지의 index 메타데이터 변화는 보존 위반이 아니며 관측한 경로·key를 goal과 PR에 공개한다. 앞선 비로그 cache 전체 불변 정의는 이 원칙으로 대체됐고 전체 cache 불변을 주장하지 않는다. 공유 로그·CLI/MCP cache 원인 추적·회전/갱신 정책 변경·원복은 수행하지 않는다.
+
+관측한 예외 공개 목록(경로 root `C:/Users/bass1/AppData/Local/npm-cache/`):
+
+| 경로 | key·관측과 한계 |
+|---|---|
+| `_logs/` | Sol의 두 비원자적 순회에서 추가 3·삭제 3·내용 변경 1. 추가 3의 Management vitest cwd/argv는 읽었으나 삭제·변경 원인은 미확정이다. 신규 Opus의 inventory-1→2는 추가 11·삭제 11·내용 변경 0이다. 로그 회전은 추정이며 불변 대상에서 제외한다. |
+| `_cacache/index-v5/41/c5/4270bf1cd1aae004ed6fee83989ac428601f4c060987660e9a1aef9d53b6` | `make-fetch-happen:request-cache:https://registry.npmjs.org/@anthropic-ai%2fclaude-code`. Sol 사후 기준 대비 hash 변경. 17:26:07Z Astra 표본과 신규 Opus inventory-1·2에서 1,462 bytes를 유지하면서 내용 hash가 달라졌다. 최신 관측은 inventory-2에 보존한다. |
+| `_cacache/index-v5/a5/23/a83575c65b6fb18a60f10d9b42220ee2e3dbea5cac054ecccb5e5634a232` | `make-fetch-happen:request-cache:https://registry.npmjs.org/@modelcontextprotocol%2fserver-pdf`. Sol 사후 기준 대비 hash 변경. Astra 표본과 신규 Opus 대조에서 2,382 bytes를 유지하면서 내용 hash가 달라졌다. |
+
+정확한 hash·관측 시점은 `E/npm-cache-index-source-sample.json`, 독립 순회 대조는 `E/behavior-fix-1-verification/preservation-compare.json`에 있다. CLI/MCP npx·갱신 확인이 원인일 가능성은 메인의 추정이며 실제 writer/원인을 확정하지 않았다. 이 공개는 독립 판정을 대신하지 않는다.
+
 Roslyn 실행이 CodeGraph 설치에 의존하지 않게 하고, CodeGraph는 명시적으로 선택한 adapter로 계속 재실행·비교할 수 있게 한다. 현재 정규화 스냅샷과 동결 비교 자료의 의미·근거를 보존한다. 새로운 모듈 경계 규칙이나 현재 HEAD용 전체 소스 수집기는 이 목표에 넣지 않는다.
 
 허용 후보는 `99_Tools/Architecture/`의 실행 진입점, `Architecture.Common.ps1`, `Pipeline/`의 실행·입력 준비·정규화 연결, `CodeGraph/syntax-context.cjs`, `install-codegraph.ps1`, package.json/lock와 코드 가까운 실행 안내다. 정확한 쓰기 파일은 목표 확정 시 좁힌다. Roslyn 추출 알고리즘, 공통 snapshot schema, frozen manifest/scope/truth, 기존 비교 결과와 원시 로그는 의미 변경하지 않는다. package 버전과 lock은 원칙적으로 보존하며 설치 경로를 정돈할 필요가 있어도 임의 업그레이드는 하지 않는다.
@@ -35,6 +47,8 @@ Roslyn 실행이 CodeGraph 설치에 의존하지 않게 하고, CodeGraph는 �
 이번 PR은 이전 goal 기록 이관과 이미 독립 검증한 구조 변경, Roslyn 기본·CodeGraph/Compare 명시 선택 동작, O1 기본 비교 결과 정상화, 문서 #4 및 실행 안내를 포함한다. 새로운 기능 테스트 CI 파일럿은 포함하지 않는다. 다음 goal 범위는 이 PR 병합 승인 때 메인과 사용자가 함께 정한다.
 
 범위 밖·보류 목록:
+
+- 검증 batch 봉인과 재채점 때 기존 로그 보존: 다음 계획 후보(msg_cc5c63a1a4ba). 기존 check의 scoring command/time 재기록을 이번에 재설계하지 않는다.
 
 - **다음 계획의 첫 후보: Architecture 기능 테스트 CI 파일럿.** 기존 승인 `msg_f78d893cdab2`로 작성한 workflow는 삭제하지 않고 이번 근거의 `deferred-ci/architecture-tests.yml`에 보존했다. 이동 전후 SHA256은 `deferred-ci/preservation.json`에 있으며 작성 완료 hash와 같다. 기존 `ci-implementation/report.md`와 발행·정산 근거를 유지한다. 독립 CI 검증, 실제 Actions·의도적 원격 실패/복구 시험은 다음 계획 범위이며 이번 PR에서는 발행하지 않는다.
 - 모듈 경계 규칙, 시스템 도식 뷰어, Management codeReference 활용, 현재 HEAD용 입력 수집기, Roslyn 알고리즘·snapshot schema 변경은 다음 계획 후보이거나 이번 목표 밖이다.
@@ -99,7 +113,7 @@ PR165 병합 주체는 미확정이다. 메인은 Codex·Claude 세션 기록, c
 
 이전 goal의 Astra 구현 격상 선택지는 당시 이력이다. 현재는 위 재시도 단계에 기록한 후속 결정이 임시 규칙의 미결 부분을 대체하며, 정식 AGENTS·orca-work·ORCA 반영은 Rules 문서 정비 목표가 맡는다. 미제출 draft·추천 문구는 사용자 직접 입력이 아니며 작업 지시나 pane 종료 보류 근거로 삼지 않는다. 미제출 공식 작업 계약은 recovery 절차로 구분한다. heartbeat 태그 누락은 재계획 결정 전 from_handle·Task·Dispatch로 출처를 판단하며 매번 교정하지 않는다.
 
-구조 독립 검증 범위는 unittest·대역 실행·기록 재생·CodeRules 실사다. 이후 동작 Opus는 별도 clone에서 Roslyn 기본·CodeGraph/Compare 명시 실제 실행과 원본 도구 bytes 대조를 수행했으나, 원본 Windows linked worktree의 stdin 소실 결함 #1 때문에 O1 새 batch를 만들지 못했다. 사용자 휴식 결정으로 전체 검증은 미완료 안전 정지했다. 최종 테스트 bytes 전체 suite·문서 #4·README 전수·사후 보존 inventory 및 구현자 check 단발 실패 재현 등이 남는다. 기존 expected failure 3건과 Unity 입력 partial은 해소되지 않았다. 새 기능 CI 파일럿은 후속 목표이고 Unity·게임·DB 검증은 이번 범위 밖이다. 부분 판정 원문과 남은 검증·재개 명령은 아래 재개 지점에서 연결한다. 아래 실행 기록은 당시 발행/진행 상태의 이력이며 최신 상태는 재개 지점을 따른다.
+구조 검증의 unittest·대역 실행·기록 재생·CodeRules 실사에 이어, 재개 뒤 신규 Opus가 원본 Windows linked worktree의 stdin 결함 #1 해소와 새 Compare batch를 확인했다. 최종 테스트 bytes 전체 suite, 문서 #4·README, 사후 보존 inventory와 기존 테스트 실패 분류도 실행했다. 구현자 CodeGraph check 단발 실패는 두 번의 시도에서 재현되지 않았고 원인은 미상이다. 남은 검증은 O1 기본 포인터 전환 뒤 전체 suite와 문서 #5–7 수정의 독립 재실사다. 기존 expected failure 3건, Unity 입력 partial, 범위 밖 CodeRules All 진단은 남아 있다. 실제 CI 파일럿·Unity·게임·DB는 이번 검증 범위 밖이다. 아래 실행 기록과 재개 지점은 당시 이력이며, 최신 상태·원문은 마지막 「재개 실행」을 따른다.
 
 ## 실행 기록
 
@@ -207,3 +221,25 @@ PR165 병합 주체는 미확정이다. 메인은 Codex·Claude 세션 기록, c
 | `M` | `99_Tools/Architecture/run-wsl.sh` | `5859e8b904d3cbd7fece623efa0ec837b29a09877b4c891f4e1e1a252371a9d1` |
 
 원본 목록과 관측 시각은 `E/pause-file-hashes.json`이다. 이 goal 파일 자체는 별도 재개 기록 커밋에 포함되어 위 미커밋 목록에서 제외한다. 재개 시 13개 파일의 실제 bytes와 목록을 대조하며 로컬 Git 제외 원시 근거도 함께 보존한다.
+## 재개 실행
+
+- 2026-10-04 KST: 메인 msg_5e2a16ad590b(2026-10-03T16:00:47Z)가 전달한 사용자 원문 “이어서 진행하자”에 따라 재개했다. 원문은 resume-20261004-message.json, 사전 SHA/목록 대조는 resume-20261004-hash-check.json이다. HEAD 8ab617ea4ebc86bb28cfaa6d47afea4f1eee0564·미커밋 13파일 불변, fetch 뒤 main 5616573 동일과 열린 PR 0을 확인했다. main/Astra 현재 pane의 실제 incarnation도 재확인했다.
+- 재개 첫 계약은 behavior-fix-1-contract.md다. 제품 execution_status.py의 stdin 소유 경계만 신규 Sol이 수정하고 테스트·문서·설정·원본 보존 자료는 읽기 전용이다. 새 자기 evidence/runtime에서 원본 linked worktree의 수정 전후를 확인한다. 초기 제품 결함 #1 재현 1회, 수정 후 재검증은 당시 0회다.
+- Rules goal 「정본 반영 전 적용 중인 사용자 결정」을 확인했다. 마일스톤 msg_39d7be6b2eb9의 연결 goal 로드맵은 이 goal 종료 점검 때 초안을 내며 현 범위에 새 구현을 넣지 않는다. 메인 결정 msg_71e41e231d55의 기존 실패 전수 분류(a 옛 구현 단정 / b fixture·환경 / c 실제 회귀 / d 미확정)는 후속 Opus 계약에 원문 그대로 포함한다. 이전 재개 기록의 두 결정 “미수신”은 휴식 시점 관측이며 이번 확인으로 보완됐다.
+- 큰 공식 계약이 input_accepted 뒤 turn_start_unobserved이면 JSON draft를 확인한다. 새 pane·다른 입력 없음·계약 크기에 맞는 placeholder라는 조건을 모두 확인했을 때만 내용 없이 Enter 1회로 제출한다. 이 담당 Astra 복구 권한은 같은 재개 메시지에 명시됐으며 일반 사용자 draft에는 적용하지 않는다. 기존 범위/goal 종료 점검·자동 착수 금지/capacity 한정 예외는 그대로다.
+- 제품 #1 수정 신규 Sol은 Task task_e351e24f0d9d / Dispatch ctx_a6d9a09d2d92, pane term_b32274b3-0827-4e80-9ae2-03fb018ec7f2, incarnation aa5c3cb5-cc46-43e9-9ccd-07b294537a5f다. 최초 명령 codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh, 화면 GPT-6.1-Sol xhigh, backend unknown. 첫 화면은 빈 prompt·tui-idle satisfied였다. worker-start는 input_accepted/turn_start_unobserved로 반환됐고 JSON draft는 공식 계약 placeholder 16,628자였다. 다른 입력이 없는 신규 pane에서 메인 허용대로 Enter 단독 1회(bytesWritten 1)를 보낸 후 Working·agent_status live/working을 확인했다. behavior-fix-1-{split,ready,start,start-screen,enter-recovery,after-enter}.json에 원문을 보존한다. 최초 receipt를 ready로 소급하지 않는다. 제품 쓰기는 신규 Sol에만 부여했고 테스트 writer는 아직 없다.
+- 메인 범위 판정 msg_cc5c63a1a4ba(16:08:58Z, check-fix-1-3.json)는 기존 check 재채점 로그 재기록의 재설계/자동 봉인을 범위 밖으로 정했다. README의 “검증 기준 batch root에서 check 재실행 금지” 안내 한 줄은 현재 실행 안내 범위다. 신규 Opus는 원본 과거 evidence 불변과 보호 경계를 확인하고, O1 pointer 이동 뒤 해당 batch의 모든 command.json/time.txt hash를 별도 근거에 보존하며 PR 본문에 기존 동작을 명시한다. 현재 Sol의 제품 #1 수정과 구분해 진행한다.
+- 2026-10-03T16:28:11Z에 같은 Sol 화면의 Selected model is at capacity를 최초 관측했다. 이는 휴식 체크포인트의 “미관측” 이후 새 상태이며 제품 결함 재검증 횟수가 아니다. msg_801886e6b582에 따라 같은 세션/task에서 1→2→5→10분 재시도를 적용하고 30분 지속 실패 전에는 모델을 바꾸지 않는다. background terminal 1과 미완료 자기 보고를 보존하고 msg_672db4589712로 같은 범위 재개를 알렸다.
+- capacity 첫 재시도는 16:29:11Z 이후 같은 pane에 태그 있는 메시지 확인 안내를 한 번 제출했다. receipt는 input_accepted였고 후속 화면 Working 및 실제 orchestration check 실행을 확인했다. msg_69185cce0206(16:30:22Z)에서 동일 task/dispatch의 재개 확인이 도착했다. capacity가 30분 지속된 상태가 아니므로 모델 전환하지 않는다. 보존 새 before의 늦은 시점은 msg_27d34482102d로 한계 구분을 요청했다.
+
+- 제품 #1 Sol은 worker_done msg_d8e6da4fe9d9(16:51:01Z), outcome succeeded로 정산했다. 보고 behavior-fix-1-implementation/report.md(SHA f71db8d5d89e32492002ff1669b873fbfe36408ad18ec0e72d386b9ef06f3ad1), 최종 제품 1401a3c34f2e4b31c0518a90baa6b25273e4f28003eb767566844a5ea191f13a를 읽고 원시 표본과 대조했다. 회귀 1실패→1 OK, 원본 기본 Roslyn/명시 Compare 각 path/prepare/measure/check와 batch 13/28명령 exit 0, 전체 86건/O1 실패 1/기존 xfail 3은 자체 결과다. 독립 판정은 당시 0회이며 O1 포인터는 변경하지 않았다.
+- 쓰기 종료 16:48:52Z 및 release 뒤 정확한 Sol pane/incarnation·idle를 확인해 close(ptyKilled true), delivery ack를 마쳤다. capacity는 첫 1분 재시도 복귀 뒤 마감 때 재발했고, 두 번째는 1→2분 재시도 후 완료했다. 모델 전환 없이 GPT-6.1-Sol xhigh 표시/backend unknown을 유지했다. 원본 보호 8개 root/비로그 cache의 관측 일치와 npm _logs 변화·순회 시점 한계는 보고 원문에 남겼다.
+- Sol 정산 뒤 README에 승인된 check 재실행 금지 한 줄을 반영했다. 새 Opus는 이 문서 bytes와 기존 문서 #4, 재개/보존 정의, 제품 #1과 이전 미완료 동작 실사를 함께 독립 판정한다.
+- 신규 독립 Opus 검증을 Task task_d794be115444 / Dispatch ctx_57265bd08535로 발행했다. pane term_d8973019-f78f-445a-8232-b450285401af, incarnation fc9c6f3d-c49e-429b-8325-c8d65e7258d4, 최초 명령 claude --model claude-opus-5-5, 화면 Opus 5.5 xhigh/Claude Code 2.1.288, backend unknown이다. 빈 최초 prompt·선택창 없음·tui-idle satisfied를 직접 확인했고 worker-start는 ready/input_accepted/turnStart observed였다. behavior-fix-1-review-{contract.md,split.json,ready.json,before-start-show.json,first-screen.json,start.json}에 보존했다. 테스트·자기 근거 쓰기만 부여했으며 제품·설정·문서는 읽기 전용이다. README 최종 539f11b9...와 _logs 제외 결정·기존 테스트 실패 분류 원문을 계약에 포함했다.
+
+- 신규 Opus는 worker_done `msg_4a77567a6b76`(2026-10-03T17:58:19Z), Task `task_d794be115444` / Dispatch `ctx_57265bd08535`로 검증 작업을 완료했다. 판정 전문은 `E/behavior-fix-1-verification/verdict.md`, SHA256 `e429b953ab4ab5e3e62b5d55f08f0ad11015718df75fe2e0e83e832836197415`다. Astra가 전문·맥락 메모와 실제 테스트·원시 실행·보존 표본을 대조했다. release 뒤 실제 pane/incarnation·완료 화면을 확인하고 close(ptyKilled true)·delivery ack를 마쳤다.
+- 제품 #1은 첫 독립 재검증 1회차에 해소됐고 새 제품 결함은 0건이다. 최종 89건은 정상 85/O1 실패 1/xfail 3/skip 0/exit 1이다. 이전 테스트 63건은 같은 현재 제품·명령·HOME에서 실패 7/error 2/xfail 3/exit 1이며, 기존 실패 9항목의 분류는 a+b 5·b 4·c 0·d 0이다. 최종 테스트 실행(17:15Z) 뒤 이전 테스트를 원본 위치에서 재생(17:18Z)했고 13파일을 백업 hash대로 복원했다. 이는 테스트 버전 비교이며 시간상 이전→이후 실행이라고 표현하지 않는다.
+- 원본 checkout의 새 Compare root는 `E/behavior-fix-1-verification/compare-execution`, batch는 `runs/20261003T170218569325Z`다. prepare/measure/check와 batch 28명령은 exit 0이고, CodeGraph cold·warm1–3 뒤 Roslyn cold·warm1–3의 8회 분석은 모두 partial이다. 독립 27개 대조가 현재 구현 15파일·진입점 3개·manifest 입력 225개·외부 참조 157개를 확인했다. 기본 evidencePath는 아직 이전 값이다.
+- CodeGraph 보존 대상 (a) 설치 (b) lockfile에서 명령으로 도출한 의존 패키지의 index 항목 (c) 해당 blob은 불변이다. 보호 12개 root의 순차 inventory-1→2도 차이 0이다. 트리 밖 cache 두 경로·key와 _logs 관측은 위 보존 정의의 표가 정본이며 전체 cache 불변을 주장하지 않는다. CodeRules Changed는 대상 13·위반 0으로 PASS, All은 Architecture 밖 PS 진단 285·Management TS 실행 환경 부재·SQL deferred로 FAIL이다.
+- 문서 #4는 해소됐다. 새 문서 #5(최신 상태 출처 모순), #6(붙은 bullet), #7(숫자·식별자 공백)는 Astra가 이번 판정 뒤 수정했으며 신규 Opus의 재실사는 아직 미실행이다. 현재 한계와 상태는 마지막 재개 실행을 가리키도록 맞췄다. 같은 결함의 재검증 실패를 추가로 세지 않는다.
+- R1은 `Directory.Build.props`와 `Roslyn/Architecture.Roslyn.csproj`의 eol=crlf 속성에도 현재 작업 트리와 채택 후보 batch가 LF라는 조건이다. 지금 bytes는 일치하지만 다시 checkout되어 CRLF로 변하면 기본 해시 검사가 실패한다. 현재 근거 채택과 PR/README 조건 공개를 메인 `msg_b46aa0ceb266`으로 제안했다. 제품·속성·해시 정규화 변경은 하지 않으며 메인 범위 판정을 기다린다. 기존 CodeGraph check 단발 실패는 두 번 미재현·원인 미상으로 남긴다.
