@@ -67,15 +67,32 @@ SNAPSHOT_ARGS=()
 if [[ -n "$MANIFEST" ]]; then SNAPSHOT_ARGS=(--manifest "$MANIFEST"); fi
 run source-copy "$CLI" snapshot --root "$ROOT" --after "$SOURCE" --dotnet "$DOTNET" --out "$EVIDENCE/source-copy.json" "${SNAPSHOT_ARGS[@]}"
 cd -- "$SOURCE"
+REGISTRATION_ARGS=(--git-root "$ROOT")
+if [[ -n "$MANIFEST" ]]; then REGISTRATION_ARGS=(--manifest "$MANIFEST"); fi
+run projects "$CLI" projects --root "$SOURCE" --dotnet "$DOTNET" --out "$EVIDENCE/projects.json" "${REGISTRATION_ARGS[@]}"
+# Decode only the CLI-validated output. A NUL file preserves spaces and avoids hidden substitution exits.
+printf 'python3 decode projects.json to independent-projects.z\n' > "$EVIDENCE/project-targets.command.txt"
+code=0
+python3 - "$EVIDENCE/projects.json" "$EVIDENCE/independent-projects.z" <<'PY' || code=$?
+import json,sys
+with open(sys.argv[1],encoding='utf-8') as source, open(sys.argv[2],'wb') as target:
+    for path in json.load(source)['IndependentProjects']:
+        target.write(path.encode('utf-8')+b'\0')
+PY
+printf 'exit=%s\n' "$code" >> "$EVIDENCE/project-targets.command.txt"
+[[ "$code" == 0 ]] || fail "Project target decoding exited $code; evidence $EVIDENCE"
+mapfile -d '' -t INDEPENDENT_PROJECTS < "$EVIDENCE/independent-projects.z"
+FORMAT_PROJECTS=(Dawnholder.slnx "${INDEPENDENT_PROJECTS[@]}")
+FORMAT_NAMES=(product)
+for index in "${!INDEPENDENT_PROJECTS[@]}"; do FORMAT_NAMES+=("independent-$index"); done
 run product-restore restore Dawnholder.slnx
-run source-tool-restore restore 99_Tools/Formatting/Formatting.csproj
+for index in "${!INDEPENDENT_PROJECTS[@]}"; do
+  run "source-independent-$index-restore" restore "${INDEPENDENT_PROJECTS[$index]}"
+done
 for configuration in Debug Release; do
   run "shared-$configuration" build 98_Shared/Shared.csproj --configuration "$configuration" --no-restore --nologo
   run "clientnet-$configuration" build 04_ClientNet/Dawnholder.Client.Net.csproj --configuration "$configuration" --no-restore --nologo
 done
-if [[ -f "$SOURCE/99_Tools/Formatting.Tests/Formatting.Tests.csproj" ]]; then
-  run tests-restore restore 99_Tools/Formatting.Tests/Formatting.Tests.csproj
-fi
 if [[ -z "$MANIFEST" ]]; then
   MANIFEST="$EVIDENCE/input-manifest.json"
   run manifest "$CLI" manifest --root "$SOURCE" --git-root "$ROOT" --dotnet "$DOTNET" --out "$MANIFEST"
@@ -91,8 +108,8 @@ cmp -- "$EVIDENCE/plugins-before.sha256" "$EVIDENCE/plugins-after-setup.sha256" 
 # No stub is accepted while independent test ownership is pending.
 [[ -f "$SOURCE/99_Tools/Formatting.Tests/Formatting.Tests.csproj" ]] || fail 'Independent Formatting.Tests project is missing; tests and the complete check have not run.'
 run tests-build build 99_Tools/Formatting.Tests/Formatting.Tests.csproj --no-restore --nologo
-for entry in 'product:Dawnholder.slnx' 'tool:99_Tools/Formatting/Formatting.csproj' 'tests:99_Tools/Formatting.Tests/Formatting.Tests.csproj'; do
-  name=${entry%%:*}; project=${entry#*:}
+for index in "${!FORMAT_PROJECTS[@]}"; do
+  name=${FORMAT_NAMES[$index]}; project=${FORMAT_PROJECTS[$index]}
   run "$name-format" format whitespace "$project" --no-restore --verify-no-changes --exclude 98_Shared/Protocol/Generated/GenPackets.cs --report "$EVIDENCE/$name-format-report.json" --verbosity diagnostic
   run "$name-report" "$CLI" check-report --root "$SOURCE" --dotnet "$DOTNET" --manifest "$MANIFEST" --report "$EVIDENCE/$name-format-report.json" --zero
 done
@@ -102,14 +119,15 @@ mkdir -- "$SNAPSHOT"
 run snapshot-copy "$CLI" snapshot --root "$SOURCE" --after "$SNAPSHOT" --dotnet "$DOTNET" --manifest "$MANIFEST" --out "$EVIDENCE/snapshot-copy.json"
 cd -- "$SNAPSHOT"
 run snapshot-product-restore restore Dawnholder.slnx
-run snapshot-tool-restore restore 99_Tools/Formatting/Formatting.csproj
-run snapshot-tests-restore restore 99_Tools/Formatting.Tests/Formatting.Tests.csproj
+for index in "${!INDEPENDENT_PROJECTS[@]}"; do
+  run "snapshot-independent-$index-restore" restore "${INDEPENDENT_PROJECTS[$index]}"
+done
 for configuration in Debug Release; do
   run "snapshot-shared-$configuration" build 98_Shared/Shared.csproj --configuration "$configuration" --no-restore --nologo
   run "snapshot-clientnet-$configuration" build 04_ClientNet/Dawnholder.Client.Net.csproj --configuration "$configuration" --no-restore --nologo
 done
-for entry in 'product:Dawnholder.slnx' 'tool:99_Tools/Formatting/Formatting.csproj' 'tests:99_Tools/Formatting.Tests/Formatting.Tests.csproj'; do
-  name=${entry%%:*}; project=${entry#*:}
+for index in "${!FORMAT_PROJECTS[@]}"; do
+  name=${FORMAT_NAMES[$index]}; project=${FORMAT_PROJECTS[$index]}
   run "snapshot-$name-apply" format whitespace "$project" --no-restore --exclude 98_Shared/Protocol/Generated/GenPackets.cs --report "$EVIDENCE/snapshot-$name-report.json" --verbosity diagnostic
 done
 cd -- "$SOURCE"

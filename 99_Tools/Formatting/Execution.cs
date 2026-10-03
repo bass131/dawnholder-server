@@ -62,7 +62,7 @@ internal static class JsonFiles
 internal static class InputPaths
 {
     public static readonly string[] Trees = ["02_Server", "04_ClientNet", "98_Shared", "99_Tools"];
-    public static readonly string[] RootInputs = ["Dawnholder.slnx", "global.json", "Directory.Build.props", ".editorconfig", ".gitattributes", ".github/workflows/dotnet-tests.yml"];
+    public static readonly string[] RootInputs = ["Dawnholder.slnx", "global.json", "Directory.Build.props", ".editorconfig", ".gitattributes", ".github/workflows/dotnet-tests.yml", ProjectRegistration.IndependentList];
     public static readonly string[] OptionalRootInputs = ["Directory.Build.targets", "NuGet.config", "nuget.config", "packages.lock.json"];
     public const string Generated = "98_Shared/Protocol/Generated/GenPackets.cs";
     public const string ToolProject = "99_Tools/Formatting/Formatting.csproj";

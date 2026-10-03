@@ -1,15 +1,18 @@
 using System.Text;
+using System.Text.Json;
 
 namespace Dawnholder.Tools.Formatting.Tests.Support;
 
 /// <summary>
-/// A disposable Git repository shaped like the product layout: eight projects, the pinned
-/// global.json and the protected generated source. Product sources are never used as inputs.
+/// A disposable Git repository shaped like the product layout: eight slnx projects, an explicit
+/// independent-project list that registers none, the pinned global.json and the protected
+/// generated source. Product sources are never used as inputs.
 /// </summary>
 internal sealed class MiniRepository : IDisposable
 {
     public const string GeneratedPath = "98_Shared/Protocol/Generated/GenPackets.cs";
     public const string RegionsPath = "02_Server/Beta/Regions.cs";
+    public const string IndependentListPath = "99_Tools/Formatting/independent-projects.json";
 
     public static readonly string[] ProjectPaths =
     [
@@ -42,6 +45,10 @@ internal sealed class MiniRepository : IDisposable
         return repository;
     }
 
+    /// <summary>The registration document for projects kept outside the product slnx.</summary>
+    public static string IndependentList(params string[] projects) =>
+        "{\n  \"SchemaVersion\": 1,\n  \"Projects\": [" + string.Join(",", projects.Select(project => "\n    " + JsonSerializer.Serialize(project))) + (projects.Length == 0 ? "]\n}\n" : "\n  ]\n}\n");
+
     /// <summary>A Debug/Release gate plus a region no product configuration activates.</summary>
     public static string RegionsSource(string debugLine, string neverLine) =>
         "namespace Mini.Beta;\n\npublic static class Regions\n{\n    public static void Run(bool registered)\n    {\n#if DEBUG\n" + debugLine + "\n#else\n        Check(registered, \"release\");\n#endif\n#if DAWNHOLDER_NEVER_DEFINED\n" + neverLine + "\n#endif\n    }\n\n    private static void Check(bool value, string message)\n    {\n    }\n}\n";
@@ -72,10 +79,19 @@ internal sealed class MiniRepository : IDisposable
         return result.StandardOutput;
     }
 
-    public void Restore()
+    public void Restore(string target = "Dawnholder.slnx")
     {
-        var result = TestEnvironment.Run(TestEnvironment.Dotnet, Root, ["restore", "Dawnholder.slnx", "--nologo"]);
+        var result = TestEnvironment.Run(TestEnvironment.Dotnet, Root, ["restore", target, "--nologo"]);
         if (result.ExitCode != 0) throw new InvalidOperationException($"Mini repository restore failed: {result.Combined}");
+    }
+
+    /// <summary>Writes a project with one compiled source; registering it is up to the caller.</summary>
+    public void WriteProject(string project, string items = "")
+    {
+        Write(project, ProjectText(items));
+        var directory = Path.GetDirectoryName(project)!.Replace('\\', '/');
+        var name = Path.GetFileNameWithoutExtension(project).Replace(" ", string.Empty, StringComparison.Ordinal);
+        Write($"{directory}/{name}Source.cs", $"namespace Mini.{name};\n\npublic static class {name}Source\n{{\n    public static int Value() => 1;\n}}\n");
     }
 
     /// <summary>Copies tracked inputs (not bin/obj/.git) into a new directory, keeping bytes.</summary>
@@ -117,10 +133,11 @@ internal sealed class MiniRepository : IDisposable
         }
     }
 
-    private static string ProjectText()
+    private static string ProjectText(string items)
     {
         // Debug/Release keep the SDK defaults (DEBUG vs RELEASE symbols). No package references.
-        return "<Project Sdk=\"Microsoft.NET.Sdk\">\n  <PropertyGroup>\n    <TargetFramework>net10.0</TargetFramework>\n    <Nullable>enable</Nullable>\n    <LangVersion>latest</LangVersion>\n  </PropertyGroup>\n</Project>\n";
+        var body = items.Length == 0 ? string.Empty : "  " + items + "\n";
+        return "<Project Sdk=\"Microsoft.NET.Sdk\">\n  <PropertyGroup>\n    <TargetFramework>net10.0</TargetFramework>\n    <Nullable>enable</Nullable>\n    <LangVersion>latest</LangVersion>\n  </PropertyGroup>\n" + body + "</Project>\n";
     }
 
     private void WriteLayout()
@@ -135,13 +152,8 @@ internal sealed class MiniRepository : IDisposable
         Write(".gitattributes", "* -text\n");
         Write(".gitignore", "bin/\nobj/\n");
         Write(".github/workflows/dotnet-tests.yml", "name: mini\n");
-        foreach (var project in ProjectPaths)
-        {
-            Write(project, ProjectText());
-            var directory = Path.GetDirectoryName(project)!.Replace('\\', '/');
-            var name = Path.GetFileNameWithoutExtension(project);
-            Write($"{directory}/{name}Source.cs", $"namespace Mini.{name};\n\npublic static class {name}Source\n{{\n    public static int Value() => 1;\n}}\n");
-        }
+        Write(IndependentListPath, IndependentList());
+        foreach (var project in ProjectPaths) WriteProject(project);
 
         Write(GeneratedPath, "namespace Mini.Generated;\n\npublic static class GenPackets\n{\n    public const string Name = \"generated\";\n}\n");
         Write(RegionsPath, RegionsSource("        Check(registered, \"debug\");", "        var  hidden = 1;"));
