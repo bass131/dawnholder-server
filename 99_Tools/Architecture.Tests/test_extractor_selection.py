@@ -78,6 +78,55 @@ def _unowned_comparison_root(runtime, relative):
     return root, (relative, relative + "/rerun", relative + "/runs/rerun")
 
 
+# Parent of the owned roots that _owned_roots lets the product make; it is owned by nobody.
+OWNED_PARENT = ".backups/owned"
+
+
+def _owned_roots(runtime):
+    """Let the real run-wsl.sh make one owned root per owner selection and shape below OWNED_PARENT:
+    `prepared` holds the owner marker only (prepare), `measured` also latest-run.json and runs/
+    (stand-in measure). No settings value names them. Returns {(selection, shape): relative root}."""
+    roots = {}
+    for selection in ("roslyn", "compare"):
+        for shape, action in (("prepared", "prepare"), ("measured", "measure")):
+            relative = f"{OWNED_PARENT}/{selection}-{shape}"
+            completed = runtime.wsl(action, selection=selection, evidence=relative)
+            if completed.returncode != 0:
+                raise RuntimeError(f"{action} {relative} failed: {completed.stderr}")
+            root = runtime.source / relative
+            layout = ((root / ".dawnholder-execution.json").is_file(),
+                      (root / "latest-run.json").is_file() and (root / "runs").is_dir())
+            if layout != (True, shape == "measured"):
+                raise RuntimeError(f"unexpected owned layout {layout}: {relative}")
+            roots[(selection, shape)] = relative
+    return roots
+
+
+def _inside_owned_root(runtime, relative):
+    """Separate new roots inside an owned root: a missing child, a deep missing child, a folder the
+    owner already wrote and a missing child of it, and for a measured root one below its batch."""
+    root = runtime.source / relative
+    written = sorted(path.name for path in root.iterdir() if path.is_dir())[0]
+    candidates = [relative + "/nested", relative + "/nested/deeper/root",
+                  f"{relative}/{written}", f"{relative}/{written}/rerun"]
+    if (root / "runs").is_dir():
+        batch = sorted(path.name for path in (root / "runs").iterdir())[0]
+        candidates.append(f"{relative}/runs/{batch}/rerun")
+    return candidates
+
+
+def _names_root(text, root, separator):
+    """True when `text` names `root` itself, not only as the start of a longer path below it (the
+    requested root of a nested candidate begins with the protected root's path)."""
+    start = text.find(root)
+    while start != -1:
+        end = start + len(root)
+        if text[end:end + 1] != separator:
+            return True
+        start = text.find(root, end)
+    return False
+
+
 def _git_call_log(runtime):
     """PATH entry whose `git` appends its arguments to a log, then runs the real git.
 
@@ -390,6 +439,97 @@ class SelectionRejectionTests(SelectionCase):
                 owner = _read(runtime.source / sibling / ".dawnholder-execution.json")
                 self.assertEqual((str(runtime.source), "compare"), (owner["sourceRoot"], owner["selection"]))
         self.assertEqual(history, _tree(root))
+
+    def assert_refused_as_overlap(self, runtime, git, candidates, protected, selection=None):
+        """path and prepare refuse each candidate as an overlap that names one of the `protected`
+        roots itself, before the Git exclusion query, any stand-in call or any write below
+        .backups or HOME. `git` is the (environment, log) pair of _git_call_log."""
+        environment, git_calls = git
+        for evidence in candidates:
+            for action in ("path", "prepare"):
+                with self.subTest(f"{evidence} {action} {selection or runtime.selection}"):
+                    before, calls = self.snapshot(runtime), len(runtime.calls())
+                    completed = runtime.wsl(action, selection=selection, evidence=evidence, environment=environment)
+                    self.assertEqual(1, completed.returncode, completed.stdout)
+                    self.assertIn("overlap", completed.stderr.lower())
+                    self.assertTrue(any(_names_root(completed.stderr, str(root), "/") for root in protected),
+                                    completed.stderr)
+                    self.assertIn("Repair:", completed.stderr)
+                    self.assertEqual(before, self.snapshot(runtime), "nothing is written for a refused root")
+                    self.assertEqual("", git_calls.read_text(encoding="utf-8"), "refused before the Git query")
+                    self.assertEqual(calls, len(runtime.calls()), "no stand-in program started")
+
+    def test_a_new_root_inside_or_around_an_owned_root_is_refused_before_the_git_query(self):
+        """Defect #9 (behavior-fix-8-verification/verdict.md 7절, main msg_0a24ffa7fcbe): README
+        「선택과 실행」 refuses evidence that overlaps another owner's root. Another evidence root is
+        another runtime identity even for the same source and selection, so a separate new root
+        inside an owned root (prepared or measured, owned by roslyn or compare, asked for by the same
+        or the other selection; missing, deep, or below a folder the owner wrote) and a folder
+        enclosing owned roots are refused before the Git query or any write."""
+        runtime = self.start(selection="compare", prepare=False)
+        roots = _owned_roots(runtime)
+        git = _git_call_log(runtime)
+        owned = [runtime.source / relative for relative in roots.values()]
+        history = {root: _tree(root) for root in owned}
+        for relative in roots.values():
+            root = runtime.source / relative
+            self.assert_refused_as_overlap(runtime, git, _inside_owned_root(runtime, relative), (root,))
+            self.assert_refused_as_overlap(runtime, git, (relative + "/nested",), (root,), selection="roslyn")
+        self.assert_refused_as_overlap(runtime, git, (OWNED_PARENT,), owned)
+        self.assertEqual(history, {root: _tree(root) for root in owned})
+
+    def test_a_linked_owner_marker_refuses_what_lies_below_it(self):
+        """README 「선택과 실행」 refuses symlinked evidence. A folder whose owner marker is a link is
+        neither adopted nor passed over: a new root below it is refused, the link named, before the
+        Git query or any write."""
+        runtime = self.start(selection="compare", prepare=False)
+        elsewhere = runtime.root / "elsewhere"
+        elsewhere.mkdir()
+        (elsewhere / "owner.json").write_text(json.dumps({"sourceRoot": str(runtime.source), "selection": "compare"}),
+                                              encoding="utf-8")
+        root = runtime.source / ".backups/linked-owner"
+        root.mkdir(parents=True)
+        os.symlink(elsewhere / "owner.json", root / ".dawnholder-execution.json")
+        git = _git_call_log(runtime)
+        self.assert_refused_before_git(runtime, git, (".backups/linked-owner/nested",), "Linked",
+                                       root / ".dawnholder-execution.json")
+
+    def test_an_owned_root_is_reused_by_its_owner_beside_new_sibling_roots(self):
+        """Kept behavior (README 「선택과 실행」 "같은 owner의 근거 root는 재사용 가능", main
+        msg_0a24ffa7fcbe): each owned root, prepared or measured, is reused by its own source and
+        selection through path and prepare (a measured one through check too), keeping its owner,
+        and new roots beside owned roots are prepared. They reach the Git query, which keeps the
+        zero count of a refusal meaningful. The same root asked for by the other selection stays
+        refused by the owner check, not as an overlap."""
+        runtime = self.start(selection="compare", prepare=False)
+        roots = _owned_roots(runtime)
+        environment, git_calls = _git_call_log(runtime)
+        for (owner, shape), relative in roots.items():
+            marker = runtime.source / relative / ".dawnholder-execution.json"
+            recorded = marker.read_bytes()
+            for action in ("path", "check", "prepare") if shape == "measured" else ("path", "prepare"):
+                with self.subTest(f"{relative} {action} {owner}"):
+                    completed = runtime.wsl(action, selection=owner, evidence=relative, environment=environment)
+                    self.assertEqual(0, completed.returncode, completed.stderr)
+                    if action == "path":
+                        self.assertEqual(_read(marker)["runtimeRoot"], completed.stdout.strip())
+                    self.assertEqual(recorded, marker.read_bytes(), "the owner marker is kept")
+            other = "compare" if owner == "roslyn" else "roslyn"
+            for action in ("path", "prepare"):
+                with self.subTest(f"{relative} {action} {other}"):
+                    before = _tree(runtime.source / relative)
+                    completed = runtime.wsl(action, selection=other, evidence=relative, environment=environment)
+                    self.assertEqual(1, completed.returncode, completed.stdout)
+                    self.assertIn("belongs to another source/selection", completed.stderr)
+                    self.assertEqual(before, _tree(runtime.source / relative))
+        self.assertTrue(git_calls.read_text(encoding="utf-8"), "accepted roots reach the Git query")
+        for sibling in (OWNED_PARENT + "/new-compare", ".backups/sibling-compare"):
+            for action in ("path", "prepare"):
+                with self.subTest(f"{sibling} {action}"):
+                    completed = runtime.wsl(action, evidence=sibling, environment=environment)
+                    self.assertEqual(0, completed.returncode, completed.stderr)
+            owner = _read(runtime.source / sibling / ".dawnholder-execution.json")
+            self.assertEqual((str(runtime.source), "compare"), (owner["sourceRoot"], owner["selection"]))
 
     def test_evidence_root_must_be_confirmed_git_excluded(self):
         runtime = self.start(selection="roslyn", prepare=False)
@@ -762,7 +902,7 @@ class PowerShellEvidenceRootTests(SelectionCase):
     first shadows wsl.exe and only reports that the call was reached, so neither WSL nor the real
     HOME is touched. The PowerShell side of defect #8, with the cases of SelectionRejectionTests."""
 
-    def entry(self, runtime, action, evidence, trace_git=False):
+    def entry(self, runtime, action, evidence, trace_git=False, extractor="Compare"):
         script = subprocess.run(["wslpath", "-w", str(runtime.source / "99_Tools/Architecture/run-architecture.ps1")],
                                 capture_output=True, text=True, check=True, stdin=subprocess.DEVNULL).stdout.strip()
         # trace_git: a `git` function also reports each Git call, then still runs git.exe.
@@ -770,7 +910,7 @@ class PowerShellEvidenceRootTests(SelectionCase):
         command = "\n".join((
             "function wsl { [Console]::Out.WriteLine('WSL CALLED: ' + ($args -join ' ')); $global:LASTEXITCODE = 0 }",
             *((git,) if trace_git else ()),
-            f"& '{script}' -Action {action} -Extractor Compare -EvidencePath '{evidence}'",
+            f"& '{script}' -Action {action} -Extractor {extractor} -EvidencePath '{evidence}'",
             "exit $LASTEXITCODE",
         ))
         return subprocess.run(["pwsh.exe", "-NoProfile", "-NonInteractive", "-Command", command],
@@ -872,6 +1012,60 @@ class PowerShellEvidenceRootTests(SelectionCase):
         self.assertIn("WSL CALLED", completed.stdout)
         self.assertIn(sibling, completed.stdout)
         self.assertEqual(history, _tree(root))
+
+    def assert_overlap_refused_before_git_and_wsl(self, runtime, candidates, protected, extractor="Compare"):
+        """path, prepare and check refuse each candidate as an overlap that names one of the
+        `protected` roots itself (as a Windows path), before the Git query and the WSL call;
+        nothing below .backups changes."""
+        names = [self.windows(root).lower() for root in protected]
+        for evidence in candidates:
+            for action in ("path", "prepare", "check"):
+                with self.subTest(f"{evidence} {action} {extractor}"):
+                    before = _tree(runtime.source / ".backups")
+                    completed = self.entry(runtime, action, evidence, trace_git=True, extractor=extractor)
+                    self.assertEqual(1, completed.returncode, completed.stdout)
+                    self.assertNotIn("GIT CALLED", completed.stdout)
+                    self.assertNotIn("WSL CALLED", completed.stdout)
+                    self.assertIn("overlap", completed.stderr.lower())
+                    self.assertTrue(any(_names_root(completed.stderr.lower(), name, "\\") for name in names),
+                                    completed.stderr)
+                    self.assertIn("Repair:", completed.stderr)
+                    self.assertEqual(before, _tree(runtime.source / ".backups"),
+                                     "nothing is written for a refused root")
+
+    def test_a_new_root_inside_or_around_an_owned_root_is_refused_before_git_and_wsl(self):
+        """Defect #9 on the PowerShell side (main msg_0a24ffa7fcbe, README 「선택과 실행」): a separate
+        new root inside an owned root (prepared or measured, owned by roslyn or compare, asked for by
+        Compare or Roslyn) and a folder enclosing owned roots are refused before the Git query and
+        the WSL call."""
+        runtime = self.start(selection="compare", prepare=False, windows_worktree=WINDOWS_TEMPORARY)
+        roots = _owned_roots(runtime)
+        owned = [runtime.source / relative for relative in roots.values()]
+        for relative in roots.values():
+            root = runtime.source / relative
+            self.assert_overlap_refused_before_git_and_wsl(runtime, _inside_owned_root(runtime, relative)[:3], (root,))
+            self.assert_overlap_refused_before_git_and_wsl(runtime, (relative + "/nested",), (root,), extractor="Roslyn")
+        self.assert_overlap_refused_before_git_and_wsl(runtime, (OWNED_PARENT,), owned)
+
+    def test_an_owned_root_and_new_sibling_roots_reach_git_and_wsl(self):
+        """Kept behavior (README 「선택과 실행」 "같은 owner의 근거 root는 재사용 가능", main
+        msg_0a24ffa7fcbe): each owned root asked for by its owner selection, and new roots beside
+        owned roots, pass the PowerShell check through path and check and reach the Git query and
+        the WSL call; nothing below .backups changes."""
+        runtime = self.start(selection="compare", prepare=False, windows_worktree=WINDOWS_TEMPORARY)
+        roots = _owned_roots(runtime)
+        requests = [(relative, owner.capitalize()) for (owner, _), relative in roots.items()]
+        requests += [(OWNED_PARENT + "/new-compare", "Compare"), (".backups/sibling-compare", "Compare")]
+        for evidence, extractor in requests:
+            for action in ("path", "check"):
+                with self.subTest(f"{evidence} {action} {extractor}"):
+                    before = _tree(runtime.source / ".backups")
+                    completed = self.entry(runtime, action, evidence, trace_git=True, extractor=extractor)
+                    self.assertEqual(0, completed.returncode, completed.stderr)
+                    self.assertIn("GIT CALLED", completed.stdout)
+                    self.assertIn("WSL CALLED", completed.stdout)
+                    self.assertIn(evidence, completed.stdout)
+                    self.assertEqual(before, _tree(runtime.source / ".backups"))
 
 
 if __name__ == "__main__":

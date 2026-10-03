@@ -85,25 +85,36 @@ def is_unowned_comparison_root(root):
     return not marker.is_file()
 
 
+def assert_evidence_root_boundary(root, candidate):
+    """Protect stored roots without parsing or adopting their ownership markers."""
+    if is_unowned_comparison_root(root):
+        raise ValueError(
+            f"EvidencePath overlaps preserved comparison evidence with no current execution owner: {root}"
+        )
+    # Only the exact root may reuse its owner; nested roots derive a different runtime identity.
+    if root != candidate:
+        marker = root / OWNER_FILE
+        if marker.is_symlink():
+            raise ValueError(f"Linked execution owner marker: {marker}")
+        if marker.is_file():
+            raise ValueError(
+                f"EvidencePath overlaps owned execution evidence: {root} (requested root: {candidate})"
+            )
+
+
 def assert_preserved_comparison_path(source, evidence):
-    """Refuse overlap with unowned history independently of the current batch pointer."""
+    """Refuse overlap with stored roots independently of the current batch pointer."""
     backups = source / ".backups"
     ancestor = evidence
     # Ancestors protect missing children; descendants protect a requested enclosing root.
     while ancestor.is_relative_to(backups):
-        if is_unowned_comparison_root(ancestor):
-            raise ValueError(
-                f"EvidencePath overlaps preserved comparison evidence with no current execution owner: {ancestor}"
-            )
+        assert_evidence_root_boundary(ancestor, evidence)
         ancestor = ancestor.parent
     # Inspect only the candidate subtree, never unrelated .backups siblings or linked directories.
     pending = [evidence] if evidence.is_dir() else []
     while pending:
         directory = pending.pop()
-        if is_unowned_comparison_root(directory):
-            raise ValueError(
-                f"EvidencePath overlaps preserved comparison evidence with no current execution owner: {directory}"
-            )
+        assert_evidence_root_boundary(directory, evidence)
         for child in directory.iterdir():
             if not child.is_symlink() and child.is_dir():
                 pending.append(child)

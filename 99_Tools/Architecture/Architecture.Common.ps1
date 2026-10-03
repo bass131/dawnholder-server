@@ -61,16 +61,37 @@ function Test-ArchitectureUnownedComparisonRoot {
     return -not (Test-Path -LiteralPath $marker -PathType Leaf)
 }
 
+function Assert-ArchitectureEvidenceRootBoundary {
+    param([string]$Path, [string]$CandidatePath)
+    $overlapReason = 'EvidencePath overlaps preserved comparison evidence with no current execution owner:'
+    $ownedOverlapReason = 'EvidencePath overlaps owned execution evidence:'
+    if (Test-ArchitectureUnownedComparisonRoot -Path $Path) {
+        throw "$overlapReason $Path. Repair: choose a new .backups/ root."
+    }
+    # Only the exact root may reuse its owner; nested roots derive a different runtime identity.
+    if ($Path -ne $CandidatePath) {
+        $marker = Join-Path $Path '.dawnholder-execution.json'
+        if (Test-Path -LiteralPath $marker) {
+            $item = Get-Item -LiteralPath $marker -Force -ErrorAction Stop
+            if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+                throw "Linked execution owner marker: $marker. Repair: choose a new .backups/ root."
+            }
+            if (-not $item.PSIsContainer) {
+                $message = "$ownedOverlapReason $Path (requested root: $CandidatePath)."
+                throw "$message Repair: choose a new .backups/ root."
+            }
+        }
+    }
+}
+
 function Assert-ArchitecturePreservedComparisonPath {
     param([string]$Root, [string]$Path)
     $backups = [IO.Path]::GetFullPath((Join-Path $Root '.backups'))
-    $ancestor = [IO.Path]::GetFullPath($Path)
-    $overlapReason = 'EvidencePath overlaps preserved comparison evidence with no current execution owner:'
+    $candidate = [IO.Path]::GetFullPath($Path)
+    $ancestor = $candidate
     # Ancestors protect missing children; descendants protect a requested enclosing root.
     while ($ancestor) {
-        if (Test-ArchitectureUnownedComparisonRoot -Path $ancestor) {
-            throw "$overlapReason $ancestor. Repair: choose a new .backups/ root."
-        }
+        Assert-ArchitectureEvidenceRootBoundary -Path $ancestor -CandidatePath $candidate
         if ($ancestor -eq $backups) {
             break
         }
@@ -83,9 +104,7 @@ function Assert-ArchitecturePreservedComparisonPath {
     }
     while ($pending.Count -gt 0) {
         $directory = $pending.Pop()
-        if (Test-ArchitectureUnownedComparisonRoot -Path $directory) {
-            throw "$overlapReason $directory. Repair: choose a new .backups/ root."
-        }
+        Assert-ArchitectureEvidenceRootBoundary -Path $directory -CandidatePath $candidate
         foreach ($child in Get-ChildItem -LiteralPath $directory -Directory -Force -ErrorAction Stop) {
             if (-not ($child.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
                 $pending.Push($child.FullName)
