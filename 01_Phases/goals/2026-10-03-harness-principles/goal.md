@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **첫 BACKLOG 문서 단위 독립 PASS — [최신 검증·통합 기록](#첫-backlog-pr-검증과-통합)을 읽는다.** 결함 #1·#2·#3은 해소됐고 PR·CI·해당 PR 병합 승인 절차가 남았다. 아래 [재개 지점](#재개-지점)의 휴식·첫 재개 기록은 당시의 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본 문서·도구의 구현·검증·병합 실적과 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **첫 BACKLOG 문서 단위 독립 PASS·[PR #168](https://github.com/bass131/dawnholder-server/pull/168) 제출 — [최신 검증·통합 기록](#첫-backlog-pr-검증과-통합)을 읽는다.** 결함 #1·#2·#3은 해소됐고 CI 확인·메인 검토·해당 PR 병합 승인 단계다. 아래 [재개 지점](#재개-지점)의 휴식·첫 재개 기록은 당시의 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본 문서·도구의 구현·검증·병합 실적과 구분한다.
 
 ## 문제와 목표
 
@@ -456,4 +456,8 @@ Management 앵커는 메인 조율 `msg_7c5f1b5c4df5`에 따라 GameDev `d0458b7
 
 비차단 참고 N1~N6·R1~R3·R5~R12는 판정 원문에 보존한다(R4 해소). 특히 다른 파트 goal 미병합 동안의 로컬 탐색 경계, Management의 휴식 절→현재 진행 절 이동, GameDev CURRENT의 절대 경로와 Rules 상대 경로 4행 차이에 따른 향후 병합 충돌 가능성이 남는다. 다음에 병합하는 파트가 최신 main의 CURRENT를 기준으로 관련 네 행을 조율한다. 이번 PR에서 다른 파트 파일을 고치지 않는다. 최초 재개 때 저장하지 못한 identity/열린 PR 원시는 소급 재현하지 않았고, `pre-pr-*`는 16:35 UTC 무렵의 새 관측이다.
 
-다음 절차는 검증된 문서 커밋·명시 branch push·PR·실제 CI 확인 → 메인 R-2 대조와 사용자 해당 PR 병합 승인 → 합의된 중간 점검이다. 자동 병합을 예약하거나 후속 운영규칙 PR을 자동 시작하지 않는다. 이 문서 단위의 PASS는 전체 goal 완료나 후속 세 PR·Gardener 완료가 아니다.
+검증된 문서는 `641fb991b59a17e10e717ff5e4da0996fd588f20`으로 커밋하고 `git push -u origin docs/harness-backlog`로 게시했다. 이전 세 보존 커밋은 그대로다. [PR #168](https://github.com/bass131/dawnholder-server/pull/168)의 base는 제출 때 `5616573c32a2b2e0b677bc21b75e22a08d21f285`다. 이 PR 연결 기록을 추가한 커밋은 goal 메타데이터만 바꾸며, 검증된 BACKLOG·INDEX·CURRENT·RESUME은 보존한다.
+
+실제 CI 결과와 검사한 commit은 [PR Checks](https://github.com/bass131/dawnholder-server/pull/168/checks)에서 확인한다. 제출 직후 실행은 [code-rules](https://github.com/bass131/dawnholder-server/actions/runs/37138934729)와 [dotnet-tests](https://github.com/bass131/dawnholder-server/actions/runs/37138934750)이며, 이후 커밋에는 그 SHA의 새 실행 결과를 사용한다. 로컬 문서 PASS를 이 CI 결과로 대신하지 않는다.
+
+다음 절차는 최종 head의 실제 CI 확인 → 메인 R-2 대조와 사용자 **PR #168 병합 승인** → 합의된 중간 점검이다. 자동 병합을 예약하거나 후속 운영규칙 PR을 자동 시작하지 않는다. 이 문서 단위의 PASS는 전체 goal 완료나 후속 세 PR·Gardener 완료가 아니다.
