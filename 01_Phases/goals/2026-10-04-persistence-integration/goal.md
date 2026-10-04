@@ -1,8 +1,31 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **사용자1A/2B의 INSTALL-07 수정과 신규 Opus 최종05/06/07 한 회차를 정산했다. 오프라인 기능은 통과했으며 전체 절차 수용과 실제 DB 단계는 대기다.** 신규 판정은 전체 runner **1028 PASS / 0 FAIL / 9 OBSERVED**이고, Sol의 기존3 FAIL은 옛 오류 문구 단정으로 독립 분류·보완했다. 실제 DB 검증 도구 결함 **TESTDB-01(높음)**, Sol heartbeat 위반2구간과 신규 Opus 절차 이탈의 수용은 메인에 반환한다. 실제 DB·G2·U-01·D:·서비스는 미실행이다. 이전 task_b423e7cb2f25 verdict·중간 기록은 새 판정 근거에서 제외했고, 기존 테스트 +378은 새 검증자가 직접 감사했다. 추가 수정·검증 회차나 다음 goal은 자동 착수하지 않으며 첫 PR·G4·Gardener는 아직 완료되지 않았다.
+상태: **TESTDB-01을 새 Sol이 좁게 수정한 뒤, 신규 Opus 한 명이 TESTDB-01과 최종05/06/07을 처음부터 함께 판정한다.** 사용자 결정 `msg_6a82c1c724ad`로 이번 회차를 재개했으며 이전 두 검증 결과는 수용하지 않는다. 메인 `msg_4bcc54fa9ef0`은 같은 파일의 Invoke-Migrations6곳과 명시 Contract 입력 연결을 결함 수정에 필수인 승인 범위로 판정했다. 실제 DB·G2·U-01·D:·서비스는 미실행/메인 안내 및 사용자 행동 대기다. 첫 PR·G4·Gardener·전체 goal은 미완료이며 다음 goal은 자동 착수하지 않는다.
 
-## 최종 INSTALL-05·06·07 독립 판정 정산
+## 현재 사용자 결정 대조표 — TESTDB-01과 최종 재검증
+
+출처: 메인 `msg_6a82c1c724ad`, Orca created_at **2026-10-04T20:08:41Z**. 메인이 표기한 응답 시각은 **2026-10-05 05:0x KST, 메인 pane Enter 제출**이다. 메인이 전달한 사용자 결정이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. 원문은 `.backups/verification/2026-10-04-persistence-integration/testdb-01-user-decision.json`에 보존했다.
+
+> 「대시보드 결정 응답: 1) TESTDB-01 - 실제 DB 검사 도구 결함을 DB 단계 전에 고칠지 → A DB 단계 전에 좁게 고침 · 2) INSTALL-05·06·07 최종 검증 - 절차 이탈을 기록한 채 결과를 받아들일지 → B 새 검증자로 다시 · 3) ORCA 규칙 문서 256줄 - 09-29 옛 관찰 기록까지 밖으로 옮길지 → B 09-29 관찰 기록도 밖으로」
+
+| 결정 | 이번 적용 | 보존 경계 |
+|---|---|---|
+| 1 - TESTDB-01 좁은 수정 | 새 Sol이 Test-Database.ps1의 Complete Contract6호출 전달·명시 입력과 거부 문구2곳을 현재 계약에 맞춘다. 호출 인자·거부 패턴의 오프라인 AST 재발 검사는 이후 신규 Opus가 작성한다 | 승인 Contract 합성/우회, 실제 SQL 연결, 다른 제품 파일 정리 금지 |
+| 2 - 최종05/06/07 새 검증 | 새 Sol의 전체 쓰기·정산·정확 pane 종료 뒤 신규 Opus 한 명이 TESTDB-01과05/06/07을 같은 고정 상태에서 처음부터 판정하고 verdict에서 두 범위를 분리한다 | task_b423e7cb2f25·task_6342f72bb98d의 verdict/중간 기록/부모 요약은 판정 근거에서 제외. 0f3638d의 테스트4파일은 신뢰 입력이 아니라 실사 대상 |
+| 3 - ORCA 옛 관찰 이관 | Rules 담당 안건 | GameDev가 규칙 문서/과거 기록을 이동하지 않음 |
+
+- 메인 범위 판정 `msg_4bcc54fa9ef0`(2026-10-04T20:10:16Z): 사용자에게 보인 '인자1곳'과 실제6호출·입력 연결의 차이를 메인이 사용자에게 알리며, 같은 파일 안의 필수 수정으로 진행한다. 기존 승인 계획 읽기·대상 검증을 재사용하고 입력 부재는 실행 전에 명확히 거부한다. 기본값 우회/합성 금지. 완료 보고에는 실제6호출·입력·패턴2곳과 이 msg ID, 실제 DB 단계에 필요한 새 명령/입력 파일을 적는다. 이 판단을 사용자 직접 입력으로 격상하지 않는다.
+- 05 완료조건: 제품 소유 중단 사유를 식별하되 provider/native/임의 상세·inner 비밀을 출력/journal에 노출하지 않는다. 실제 Install 진입점·생산자/소비 경계를 오프라인에서도 확인한다.
+- 06 완료조건: 완료 journal 쓰기 실패 시 메모리의 Done과 디스크의 Pending을 구분하며 내구 상태 미확정·기록 여부를 사실대로 알린다. 자동 재시도/cleanup/후속SQL 금지, 디스크·.pending 보존 및 다음 실행의 연결 전 거부를 확인한다.
+- 07 완료조건: 예외 체인의 첫 실제 SqlException의 CLR Int32 Number만 전달하고 임의 Message/Data/같은 이름 속성은 번호 근거로 쓰지 않는다. Invoke-DatabaseSql과Invoke-DbScalar/NonQuery의 안전 전달 경계·성공 결과·명령 폐기·transaction 소유·비밀 억제 및 실제 Install 소비 경로를 보존한다.
+- 절차: 새 계약에 각 새 파일 전·각 시험 직후·단계 전환·완료 직전 check와 처리 후 ack를 명시한다. 일반 회신은 자기 태그 subject/body 및 정확 Task/Dispatch를 포함한 send를 사용한다. 공식 blocking ask는 전경이며 실제 reply를 읽은 뒤 baseline/harness/편집을 시작한다. heartbeat300초 상한과 당시 UTC 원시를 남긴다. Sol07 PROCEDURE-01(319/310초)은 미면제 기록으로 유지한다.
+- 통과 뒤에도 실제 DB 단계는 메인에 안내를 올리고 메인이 사용자에게 D: 연결·SQL 서비스와 G2 실행자/명령/시간 창을 안내한다. 오프라인 결과만으로 서비스를 시작하거나 실제 SQL을 실행하지 않는다. 로컬 checkpoint 허용과 push/PR/병합 경계는 유지한다.
+
+<!-- 현재 회차의 새 검증자는 위 현재 결정·완료조건만 읽고, 아래 두 이전 검증의 역사 결과·요약은 읽지 않는다. -->
+
+## 직전 최종 INSTALL-05·06·07 기록 — 사용자 결정으로 통과 미수용
+
+아래는 당시 정산 이력이다. 사용자2B(`msg_6a82c1c724ad`)에 따라 task_6342f72bb98d 및 앞선 task_b423e7cb2f25의 verdict·중간 기록·부모 요약은 새 판정 근거에서 제외한다.
 
 - 신규 `claude-opus-5-5` Task `task_6342f72bb98d` / Dispatch `ctx_6e8334cb088f`, 검증 기준 HEAD `347ce0bef346fd91c684d941f930a1e4528874c8`. 최초 명령과 화면 Opus5.5 xhigh를 확인했고 backend 실제 모델은 unknown이다. `verifies=task_dcc811b02548,task_340680800560`. 공식 `worker_done` **msg_42187fc9cf16**, 2026-10-04T19:54:12Z, outcome=succeeded는 검증 작업의 완료이며 전체 절차나 실제 DB의 통과가 아니다. 같은 메시지로 전체 쓰기 종료를 확인했다.
 - 판정 원문 `.backups/verification/2026-10-04-persistence-integration/installation-final-review/verdict.md`, SHA256 **`D1FCFAA1058EB9A321C1A747BE72CB65F4DB84449FC5BF26B0EB17E4F5F9E47E`**. 부모는 최종 원문 전체·실제 diff·context 실제 준수·원시 결과/hash를 직접 읽고 대조했다. 상세 수용 범위와 R-2 한계는 `installation-final-review-settlement.md`다.
