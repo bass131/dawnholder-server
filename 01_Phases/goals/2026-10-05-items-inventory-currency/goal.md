@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **PR1 #1·#2 독립 재검증 해결. 신규 #3 주석 계약 불일치로 통과 보류이며 좁은 수정·신규 검증을 준비한다. O-4는 메인 판단으로 PR1 한계 공개·PR2 표시 복구 조건을 확정했다. PR/병합 미실행.**
+상태: **PR1 #1·#2 독립 재검증 해결. 신규 #3 주석 수정과 자체 확인을 마쳤고 새 Opus 독립 실사를 준비한다. 독립 통과는 아직 보류다. O-4는 메인 판단으로 PR1 한계 공개·PR2 표시 복구 조건을 확정했다. PR/병합 미실행.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, branch `feat/items-inventory-currency-20261005`.
@@ -269,3 +269,11 @@ O-4 범위는 메인 `msg_b554a4b55c29`(20:08:41Z, `o4-main-scope-decision.json`
 보고 불일치: 최종 Opus 원문은 O-4 판단이 남았다고 적었지만 위 메인 결정은 이미 내려졌고20:09Z `msg_e2e93726d454`로 원문을 전달했다.20:07Z의 주석 후 한정검사 지시도 반영 확인 없이20:13Z 전체format2가 시작됐다. 최종 화면에는20:15Z의 태그 있는 메시지 확인 안내 draft가 남았다. 공개inbox 표시도 실제 회신한 앞 메시지가 read0여서 수신·처리 누락 원인은 미확정이다. 원판정을 고치지 않고 `astra-context.md`에 차이를 보존했으며 메인 `msg_2dd6954855cb`로 즉시 알렸다. 다음 계약은 현재 결정 원문을 최초 고정 입력으로 포함한다.
 
 정산: exact triple/tag allowed0·completed/done·같은 incarnation `ed20d00f-25e0-492b-981d-e084f380988c`와 최종 idle 확인, release retained/external/none→close ptyKilledtrue. **close 뒤 terminal list 재확인: 남은 작업자 pane0**(`opus-pr1-fix1-postclose-terminals.json`), 완료 delivery ack. 태그 있는 미제출 안내 draft는 사용자 직접지시나 pane 종료 보류 사유가 아니며 완료 세션을 재사용하지 않는다.
+
+### PR1 #3 주석 수정 완료 — 신규 독립 실사 전
+
+신규 Sol `task_74d5ec2d4743` / `ctx_63b9fa36c09d`는 `msg_cba40bedf4d6`(2026-10-04T20:50:19Z)로 쓰기 종료를 보고했다. 입력 HEAD `626e09a7c7f62957a094739e96e5f106194b9d3c`, 최종 `sol-pr1-fix2/report.md` SHA256 `7200F71639CAD9B10EE696CF712FFFEC134495A61786821004A1E67850FDB1B5`다. KillRewardPolicy:5-7의 머리 주석만 현재 임시 killer-only 정책·드롭 원천과 Registry의 처치자 owner 캡처/recipient 동일성 검토 필요를 설명하도록 바꿨다. 실행 코드·테스트·문서·프로토콜·DLL은 불변이다.
+
+자체 확인은 정확한 허용 치환 및 머리 주석 외 바이트 동일, UTF-8/LF/EOF/행 끝 공백, diff-check0, 보호102/102와 추가 고정입력10/10 불변이다. Astra도 최종 보고 전체·원시 명령/결과·실제 diff·103입력을 대조했다. 행동 테스트·Roslyn·빌드·봇·Unity·DB·전체서식은 이번에 실행하지 않았다. 이전85/85·919통과/skip5·botPASS·Unity356은 각각 앞선 실행 근거이며 이번 재실행이 아니다. #3 독립 해결은 새 Opus 판정 전까지 보류한다.
+
+정산: exact triple/tag allowed0, release retained/external/none 뒤 같은 incarnation `444d9baa-775d-4b86-8f8f-1ceba2be5035`·completed/done·최종 idle 대조 후 close ptyKilledtrue. 직후 terminal list의 남은 작업자 pane0(`sol-pr1-fix2-postclose-terminals.json`), 완료 delivery ack. 새로운 Opus는 주석과 현재 계약·목표의 정합성 및 O-4 메인 판단/PR2 필수조건을 독립 실사한다. PR/CI·병합은 아직 미실행이다.

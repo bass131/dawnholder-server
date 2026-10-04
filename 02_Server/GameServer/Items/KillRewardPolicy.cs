@@ -2,8 +2,9 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Items;
 
-// Temporary killer-only, deterministic content policy. Recipient selection and drop values have
-// one replacement point; an unsupported kind is a policy error, never an implicit normal reward.
+// Temporary deterministic killer-only policy; placeholder drop values live here.
+// Changing recipients also requires reviewing InventoryRegistry's killer connection owner capture
+// and recipient/owner validation. Unsupported kinds are policy errors, never implicit normal rewards.
 internal static class KillRewardPolicy
 {
     static readonly InventoryReward s_normal = new(10, new InventorySlot(ItemId.Material, 1));
