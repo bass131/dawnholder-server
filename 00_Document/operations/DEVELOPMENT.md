@@ -95,7 +95,17 @@ SQLFluff venv 절차·고정 의존성과 LT01/LT02 설정·어댑터 초안은 
 
 기본 출력은 `.backups/code-rules/run-.../`이며 `--output`으로 별도 부모 폴더를 지정할 수 있다. 매번 새 실행 폴더의 `results.json`, `results.txt`에 파일·규칙·줄·위반/실패 수를 남기고 명령 argv/cwd/timeout/exit와 원시 stdout/stderr를 보존한다. 관련 대상 0개는 `not-applicable`, 적용 도구 부재·버전/hash 불일치·parse/config/process 실패는 nonzero다. 자동 수정·baseline 생성은 없다.
 
-새 `code-rules.yml`은 PR에서 확인한 base와 실제 checkout의 `Changed`를 기본으로 사용한다. `workflow_dispatch`의 명시 `All`/`Changed`와 base 입력도 같은 검사기를 호출하며 All을 PR 필수나 cron으로 연결하지 않는다. 실패해도 검사 결과와 독립 테스트 로그만 artifact로 보존한다. 설치 캐시·전체 저장소를 올리지 않는다. 독립 테스트 진입점은 신규 Opus 소유 `99_Tools/CodeRules.Tests/code-rules.test.mjs`이며 부재/load 실패도 CI 실패다. 구현 자체 점검과 원격 PR/manual job 성공은 별개이며, 이 문서 작성 시점에 원격 job과 독립 테스트는 미실행이다. 타입/구문/서식 검사 성공은 가독성·설계·IPC 통합·게임/Unity·DB 검증을 대신하지 않는다.
+`code-rules.yml`은 PR에서 확인한 base와 실제 checkout의 `Changed`를 기본으로 사용한다. `workflow_dispatch`의 명시 `All`/`Changed`와 base 입력도 같은 검사기를 호출하며 All을 PR 필수나 cron으로 연결하지 않는다. 실패해도 검사 결과와 독립 테스트 로그만 artifact로 보존한다. 설치 캐시·전체 저장소를 올리지 않는다. 독립 테스트 진입점은 신규 Opus 소유 `99_Tools/CodeRules.Tests/code-rules.test.mjs`이며 부재/load 실패도 CI 실패다. 최초 초안의 “작성 시점 미실행”은 **2026-10-02 당시 상태**다. 이후 [PR166 - 코드 규칙 검사 도입의 CI 근거](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md#pr-166-병합과-최신-main-전체-검사)에 Linux 독립21/21과 Changed 선택 범위의 실제 실행, [PR167 - Linux import 후보 결함 수리의 실제 All](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md#pr-167의-실제-저장소-linux-all-추가-검증)에 독립28/28·TS57 및 세 typecheck 완료가 기록돼 있다. 그 All은 기존 PS289건/9파일로 checker exit1이며 SQL2 보류다. PSSA warning이라는 severity와 checker/CI 실패는 별개이고 정책을 완화하지 않았다. 이는 과거 실행 근거이며 현재 구현·새 helper·새 CI의 실적을 대신하지 않는다. 타입/구문/서식 검사 성공은 가독성·설계·IPC 통합·게임/Unity·DB 검증을 대신하지 않는다.
+
+## Orca 메시지 수신 보조
+
+Windows에서 실행 가능한 기존 Node로 로컬 UTF-8 JSON 입력 파일을 읽는다. 별도 패키지 설치나 .NET·DB·Unity·WSL 실행이 필요 없다.
+
+```powershell
+node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
+```
+
+입력 `message/expected`, 빈 heartbeat/공식 blocking ask의 예외와 지원 한계는 [ORCA 수신 정본](ORCA.md#dispatch-message-policy), 순수 API와 명령은 [Tools README](../../99_Tools/README.md#orca-메시지-수신-판정)에 있다. JSON stdout과 exit0(허용)/1(정책 위반)/2(입력·도구 실패)를 반환하고 메시지 전송·ack·라이프사이클·파일/네트워크 쓰기는 하지 않는다. 기존 workflow의 별도 신규 Opus 회귀 진입은 `99_Tools/Orca.Tests/message-policy.test.mjs`이며 부재/load 실패/nonzero는 실패다. 위 과거 CodeRules 실행을 이 신규 회귀의 성공으로 해석하지 않는다.
 
 ## 결과 해석
 

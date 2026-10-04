@@ -12,3 +12,4 @@
 | 전송·DB·분산 설계 | [서버 참고 색인](refs/game-server-programming/_index.md) |
 | 검증 | [도구·테스트](../domains/tooling.md), [검토 항목](../REVIEW_CHECKLIST.md) |
 | 작업 결과·설계 해설 보고서 | [REPORTING](REPORTING.md) |
+| 에이전트 작업 환경·반복 교정·목표 종료 점검 | [하네스 근거와 채택 경계](refs/agent-engineering/_index.md) |
