@@ -64,7 +64,7 @@ wsl -d Ubuntu -- python3 -B -m unittest discover -s 99_Tools/Architecture.Tests 
 
 로컬 비교 근거가 있으면 기본 suite는 settings의 `evidencePath/latest-run.json`이 가리키는 batch와 현재 실행 코드를 대조한다. 근거 없는 새 clone에서는 해당 재생 테스트가 skip되므로 사유와 실행 건수를 확인해야 한다. 전체 테스트의 성공은 새 추출 실행이나 Unity·DB 검증 완료를 뜻하지 않는다.
 
-기본 대조는 줄바꿈을 포함한 실제 bytes를 검사한다. 검증 batch `20261003T170218569325Z`의 `Directory.Build.props`와 `Roslyn/Architecture.Roslyn.csproj`는 LF지만 Git 속성은 `eol=crlf`다. 이 두 파일을 다시 checkout해 CRLF가 되면 기본 hash 대조가 실패한다. 저장소 루트에서 다음 명령의 `w/lf` 또는 `w/crlf`와 `attr/text eol=crlf`를 확인한다. 비교 자료나 파일을 검사 통과 목적으로 바꾸지 않는다.
+기본 대조는 줄바꿈을 포함한 실제 bytes를 검사한다. 새 검증 batch `20261004T053719804684Z`의 `Directory.Build.props`와 `Roslyn/Architecture.Roslyn.csproj`는 LF지만 Git 속성은 `eol=crlf`다. 이 두 파일을 다시 checkout해 CRLF가 되면 기본 hash 대조가 실패한다. 저장소 루트에서 다음 명령의 `w/lf` 또는 `w/crlf`와 `attr/text eol=crlf`를 확인한다. 비교 자료나 파일을 검사 통과 목적으로 바꾸지 않는다.
 
 ```powershell
 git ls-files --eol -- 99_Tools/Architecture/Directory.Build.props 99_Tools/Architecture/Roslyn/Architecture.Roslyn.csproj
@@ -73,9 +73,9 @@ git ls-files --eol -- 99_Tools/Architecture/Directory.Build.props 99_Tools/Archi
 이 batch를 당시 실제 bytes로 재생하려면 보존된 runtime의 `tool`을 명시한다. 다음 예시는 해당 로컬 보존 자료가 있는 WSL 저장소 루트에서 실행하며, 새 추출이나 `check`를 실행하지 않는다.
 
 ```bash
-ARCHITECTURE_EVIDENCE_BATCH="$PWD/.backups/verification/2026-10-03-codegraph-adapter-cleanup/behavior-fix-1-verification/compare-execution/runs/20261003T170218569325Z" \
-ARCHITECTURE_EVIDENCE_TOOL_ROOT=/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5-compare-dd085a73442a/tool \
-python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_*.py' -v
+ARCHITECTURE_EVIDENCE_BATCH="$PWD/.backups/verification/2026-10-03-codegraph-adapter-cleanup/behavior-fix-8-verification/compare-execution/runs/20261004T053719804684Z" \
+ARCHITECTURE_EVIDENCE_TOOL_ROOT=/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5-compare-83c93998c4af/tool \
+python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_final_batch_replay.py' -v
 ```
 과거 batch는 `ARCHITECTURE_EVIDENCE_BATCH`에 절대 경로 `<근거 root>/runs/<batch>`를 지정한다. 이때 당시 실제 실행 도구를 다음 중 하나 이상으로 명시해야 한다. 기본 실행은 이 변수들 없이 현재 저장소 코드를 검사한다.
 
@@ -86,12 +86,20 @@ python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Archi
 
 명시한 batch에 도구 출처를 지정하지 않거나 다른 코드가 들어 있으면 실패한다. 기록의 `implementationHead`만 믿거나 기록 hash끼리 비교하지 않는다. 당시 코드가 미커밋이었을 수도 있으므로 실제 바이트의 일치가 기준이다.
 
+이전 검증 batch `20261003T170218569325Z`도 보존된 도구 사본으로 재생할 수 있다.
+
+```bash
+ARCHITECTURE_EVIDENCE_BATCH="$PWD/.backups/verification/2026-10-03-codegraph-adapter-cleanup/behavior-fix-1-verification/compare-execution/runs/20261003T170218569325Z" \
+ARCHITECTURE_EVIDENCE_TOOL_ROOT=/home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5-compare-dd085a73442a/tool \
+python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_final_batch_replay.py' -v
+```
+
 다음은 로컬 보존 자료가 있는 checkout에서 확인한 과거 최종 batch와 commit의 조합이다. **WSL의 저장소 루트**에서 실행한다. 이 환경변수는 해당 명령에만 적용된다.
 
 ```bash
 ARCHITECTURE_EVIDENCE_BATCH="$PWD/.backups/verification/2026-10-02-architecture-extractor-comparison/implementation/runs/20261002T065831395290Z" \
 ARCHITECTURE_EVIDENCE_TOOL_COMMIT=d0dffd1feb6082c3ddeb50fed359e2cc94886bea \
-python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_*.py' -v
+python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_final_batch_replay.py' -v
 ```
 
 이 예시는 다른 과거 batch의 일치까지 보장하지 않는다. 다른 batch에는 그 실행 기록과 실제로 일치하는 commit 또는 보존 도구 사본이 필요하다. 과거 `latest-run.json`·batch·동결 답안을 현재 코드에 맞춰 수정하지 않는다.

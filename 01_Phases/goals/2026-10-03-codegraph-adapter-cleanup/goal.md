@@ -1,6 +1,6 @@
 # CodeGraph 연결 코드 정돈
 
-상태: **제품 #9는 신규 Opus의 독립 판정에서 해소됐고 #8 보호도 유지됐다.** 수정 제품 두 파일과 독립 테스트는 `52d66b041c18b15b80b12e85b1a81cf20ab9426b`로 커밋했다. 최종 독립 suite는 105건 중 정상 101·O1 실패 1·기존 expected failure 3·error 0·skip 0이다. 검증 세션은 정산·종료했으며, 새 Compare는 사용자 승인 대기로 미실행이다. 원문과 기록 한계·표현 정정은 `E/behavior-fix-9-verdict-audit.md`에 연결했다. 승인 뒤 새 실제 Compare 1회·별도 포인터 채택·신규 Opus 검증이 남아 **목표 전체는 미완료**다. 브랜치는 `feat/codegraph-adapter-cleanup-20261003`, 근거 root(E)는 `.backups/verification/2026-10-03-codegraph-adapter-cleanup/`다.
+상태: **새 실제 Compare 1회가 완료돼 신규 Opus가 채택 가능으로 판정했다. 별도 신규 Sol의 포인터 1필드 갱신과 신규 Opus 최종 검증이 남았다.** batch20261004T053719804684Z, prepare·measure·check 각1회 exit0, 명령28개 exit0, 현재도구 명시재생13건과 runtime O1재생1건 통과다. Sol의 포인터 한 필드 갱신 뒤 같은 기본 O1 명령은 변경 전1FAIL→변경 후1OK로 바뀌었고 신규 Opus 독립 확인은 남았다. 판정 요약의 9tree불변은 실제8tree불변·자기lock2개추가로 E/new-compare-verdict-audit.md에서 정정하고 메인에게 공개했다. 최종 Opus가 정정도 독립 실사한다. 제품·테스트는52d66b0/현재HEAD353f393, 브랜치는feat/codegraph-adapter-cleanup-20261003이다. 실제 Compare 추가 실행은 승인되지 않았다. 검증 뒤 PR 생성은 허용됐으나 해당 PR head 병합은 사용자 개별 승인이 필요하다. 목표 전체는 미완료다. E는 .backups/verification/2026-10-03-codegraph-adapter-cleanup/이다.
 
 ## 첫 재계획의 승인과 적용
 
@@ -304,3 +304,39 @@ PR165 병합 주체는 미확정이다. 메인은 Codex·Claude 세션 기록, c
 - release retained/external 뒤 정확incarnation·tui-idle·최종화면을대조하고pane을close(ptyKilledtrue),delivery_d65f1cd97565를ack했다. 완료세션은재사용하지않는다. 제품2개와test_extractor_selection.py를 `52d66b041c18b15b80b12e85b1a81cf20ab9426b`로커밋했고작업트리SHA는검증최종값그대로다. settings의선행포인터변경은미커밋으로보존한다. push/PR/병합은수행하지않았다.
 - 새실제Compare1회는메인에게기제출한 `E/defect-8-new-compare-scope.md` 범위이며사용자승인메시지를아직받지못했다. 승인뒤신규외부세션의실행·실제bytes대조→별도신규Sol포인터1필드→신규Opus최종suite·두과거근거replay·변이·56command/timemanifest대조가남는다. 기존근거/root/runtime·동결입력·CodeGraph설치와해당의존cache를보존한다. DB/Unity/CI파일럿/줄바꿈정규화/속성변경은범위밖이다.
 - 메인 `msg_ef24bb498654`(23:09:07Z)는 판정 원문·전체105 raw·#8열한개·신규5개 전후·mirror/test SHA·제품diff를 직접 R-2 대조해 일치로 보고했고, 9p 원인 미확정의 별도 감사 정정 방식에 동의했다. 새 Compare는 사용자 승인 전 계속 미실행하도록 지시했다. 원문 E/check-after-fix-9-1.json, ack E/main-fix-9-r2-ack.json.
+## 새 Compare 1회 사용자 승인 전달 — 2026-10-04
+
+메인 `msg_7c80b907be31`(2026-10-04T05:19:09Z)의 사용자 원문 전달은 **“A로 전부 진행”**, 업데이트 뒤 **“OK 다시 진행해줘”**다. 안건2 “코드 그래프 비교 1회 실행”의 A는 새 실제 Compare1회 승인이라는 설명을 받았다. 출처 from_handle은 현재 메인 `term_d88cb274-6098-46b8-8c65-8a64d4a3bc70`과 대조했고, 전달된 결정을 사용자 직접 입력으로 격상하지 않는다. 원문 `E/check-after-fix-9-2.json`, 수신 처리 `E/new-compare-approval-ack.json`.
+
+- 범위는 #8·#9 수정과 커밋(52d66b0,353f393) 뒤 기존 제출 `E/defect-8-new-compare-scope.md`의 새 Compare1회다. 새 root는 `E/behavior-fix-8-verification/compare-execution`이며 기존 근거·runtime/tool·동결 입력·관련 CodeGraph 설치/cache는 보존한다. 당시 범위안의 승인 전 표시는 역사 기록으로 보존하고 이 결정이 실행 권한을 추가한다.
+- 순서: 신규 Opus의 실제 Compare prepare→measure→check1회 및 실제bytes/보존대조 → 별도 신규 Sol의 settings evidencePath1필드 → 신규 Opus 최종기본suite·O1동일명령전후·두과거근거실제bytesreplay·변이·56개명령/시간manifest실사. O1단정완화/해시치환/skip추가로 닫지 않는다.
+- Compare가 실패하거나 결과가 예상과 다르면 재실행하지 않고 원시를 보존해 메인에 보고한다. 기존 partial 분석 상태는 알려진 한계로 그대로 공개하며 추출명령성공과 구분한다. 검증 뒤 CodeGraph PR 생성은 허용하되 병합은 해당 PR head에 대한 사용자 개별 승인 전 금지다.
+- 재개 환경은 Orca1.4.219/runtime43142801-5b63-4076-bd3f-ea671a095c0a다. 담당 Astra handle/Run은 현재 조회로 확인했다. 신규 Opus split은 성공했고 최초 명령 claude --model claude-opus-5-5, 화면 Opus5.5 xhigh/ClaudeCode2.1.289, backendunknown이다. 빈prompt와tui-idle를확인했으며 아직작업은미주입이다. orphanedtrue/paneRuntimeId-1도관측돼생존과화면배치증거를구분한다. 실제할당/실행결과는뒤에기록한다.
+- 신규 실제 Compare 검증 Task task_2b876fa19692 / Dispatch ctx_e144c6e9ac29를 발행했다. pane term_46ab3cf3-c6fe-41eb-b6d6-98d316486936, incarnation2fd0a295-e2ff-4efa-a289-44164fc30fd4. 계약 E/new-compare-review-contract.md(29,727bytes/SHA d081fc8d1811a283123c080c37f598de887e7666d976e1b977168a7490e8a04e). ready/input_accepted/turnStart observed와 실제 goal 읽기 착수를 확인했다. 실제 Compare 결과는 아직 없으며 후속 포인터는 미발행이다.
+
+## 적용 중 결정 — 신규 구현 Sol max
+
+메인 msg_89e1adf3d3ae(2026-10-04T05:21:24Z)의 사용자 원문 전달은 “아 참 그리고 Sol 구현자는 이제 6.1 Sol Max effort로 고정해줘”, 이어 “규칙에도 반영해줘”다. 현재 메인 from_handle과 대조했고 사용자 직접 입력으로 격상하지 않는다. 원문 E/check-new-compare-1.json.
+
+지금부터 신규 구현 Sol 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`다. 기존 R-5 xhigh와 같은 결함3회실패 뒤4번째시도 xhigh도 max로 대체하고 ultra는 쓰지 않는다. 첫화면 GPT-6.1-Sol max를 확인하며 다르면 대체하지 않고 메인에 보고한다. 메인이 Codex0.160.0 models_cache의 max 지원을 확인했다고 전달했다. 기존 실행중Sol은중단하지않고 Astra·Opus·capacity30분후Astra xhigh예외는그대로다. AGENTS/ORCA정본반영은Rules소유이며이goal에서만적용중결정으로기록한다. 현재이파트의실행작업자는Opus하나이고후속Sol초안은미발행이므로새모델/effort기준으로수정한다.
+## 새 Compare 1회 완료와 포인터 후속
+
+- 신규 Opus Task task_2b876fa19692/Dispatch ctx_e144c6e9ac29는 msg_ab6f6e425bd9(2026-10-04T05:47:49Z)로완료했다. 원문 E/new-compare-verification/verdict.md(34,559bytes,SHA b1a27ea2852537a2e06c205d15b5f3eb2c8b3251cde74d4bdbb7fa865f58e707)를Astra가전문읽고실제raw/currentSHA와대조했다. release/정확incarnation2fd0a295-e2ff-4efa-a289-44164fc30fd4·idle/close(ptyKilledtrue)/delivery1f565365cfb0 ack완료. 재사용하지않는다.
+- 실제원본Windows PS prepare05:36:10→05:36:49Z,measure05:36:49→05:38:24Z,check05:38:24→05:38:44Z 각1회exit0다. 새root E/behavior-fix-8-verification/compare-execution, batch20261004T053719804684Z, runtime /home/bass1/.cache/dawnholder/architecture/ff3952212f2c45d509f5-compare-83c93998c4af다. 명령28개exit0,CodeGraph4회뒤Roslyn4회,8run기존partial이다. 구현15개/진입점3개현재actualbytes와사본일치,입력225/외부157을대조했다. 새batch명시재생13건16.065초OK/runtimeO1재생1건0.038초OK다.
+- audit는40/41 OK/exit1로원시보존했다. snapshot차이는8run모두extractor.configHash뿐이고graph·validation·score는같다. config_chain actualbytes추적은현재Common/execution_status·HEAD·settings·새root/runtime출처변화로연결한다. 최초단정을고쳐재실행하거나근거hash를바꾸지않았다.
+- preservation-compare는기존8tree불변·locktree자기2개추가로exit1,별도item-compare는허용추가와다른대상불변을확인해exit0다. 최종첫문단/완료메시지의9tree불변요약과3절검사유형과장은 E/new-compare-verdict-audit.md에서원문보존정정했다. 완료전정정전송은이미completed로거절됐고메인msg_7221269d5849에즉시공개했다. 후속신규Opus가실사한다. CodeGraphcache는도출/기존관측트리항목범위이며전역전체불변을주장하지않는다.
+- 봉인manifest E/new-compare-verification/command-time-manifest.json은실측28쌍56파일/SHA b13e7388b5219b75bfb4cdefb20da398946364f76cb76b1df3cfe57ab516ce08이다. 새채택root도check재실행금지다. 기본O1같은명령전후1FAIL은기존root2포인터때문에남아있고신규Sol포인터1필드→신규Opus최종전체검증으로닫는다. 105suite/DB/Unity/CI는이번Compare작업에서는미실행이다.
+
+## 신규 포인터 Sol — 시작 미관측과 대리 복구
+
+신규Sol Task task_c929a5af020a/Dispatch ctx_e8ae9f32ce87, pane term_ce56ba64-6de4-4a0c-9416-228ae89df4c2/incarnation b38cc62f-703f-424e-97ec-504d92e5563c다. 최초명령 codex --model gpt-6.1-sol -c model_reasoning_effort=max, 첫화면GPT-6.1-Sol max/Codex0.160.0/빈prompt/cwd일치/tui-idle satisfied를확인했다. backend실제는unknown이다. 계약 E/new-pointer-contract.md(23,957bytes,SHA bbae184ff42a692bfd28ce6ecb5d464d4cd224d38a3729370ed9d5d250fdc0e1), 범위는settings evidencePath 한필드와자기근거다.
+
+최초worker-start는input_accepted지만outcome_unknown/turn_start_unobserved였다. draft18983chars만남아R5메인대리복구를요청했다(msg_a5a0f4f3fdfd). 메인msg_46d1feea90c9는05:53:35Z 같은draft에text없이Enter1회·05:53:36Z Working관측을보고했다. Astra는후속공식화면에서실제AGENTS/CLI읽기와Working, worker-show의providercodex/gpt-6.1-sol/activityworking/livenesslive(sourceagent_status)를확인했다. 최초미확인receipt는보존하고이후시작증거와구분한다. 중복발행·재전송·stop/abandon하지않았다.
+
+Astra의README는새batch/runtime와과거2batch명시replay예시를갱신했다(SHA f7d1724b182bc5ed4563829de8a2181216f72776efb841b235428dc9db6d6f7e). 기본suite명령은유지하고명시replay는test_final_batch_replay.py로좁혔다. 후속최종Opus의문서실사대상이며README/Astra문서외제품bytes는변경하지않았다.
+## 포인터 완료 정산과 최종 검증 전 체크포인트
+
+- 신규Sol 완료 msg_8d6303ddc66c(2026-10-04T06:11:20Z), Task task_c929a5af020a/Dispatch ctx_e8ae9f32ce87. 보고 E/new-pointer-implementation/report.md 11,535bytes/SHA59fabb6ad04b06041cc2062b5417a831a9815f15d1464ee5ae683a69d146b1e4 전문·단일diff·raw를Astra가실사했다. 제품쓰기종료06:04:42.674734Z,근거최종mtime06:09:49.9199293Z다. release/정확identity·idle/close(ptyKilledtrue)/delivery7c72fc4845b3 ack완료. 완료세션재사용없음.
+- evidencePath만root2→새root로바뀌었다. settings486bytes/LF9/CRLF0유지,SHA bd9954174abb0b029c4aa7e98074f263370e957ce3d44242f9c6735d1e88f939다. 원본HOME/override없이동일O1은06:04:05→06:04:12Z 1FAIL/6.843초에서06:05:07→06:05:14Z 1OK/6.826초가됐다. 세root/frozen/실행15개·entry3개/command-time56파일전후보존대조통과다. 자체검사이고최종독립판정은아직없다.
+- 채택직후manifest E/new-pointer-implementation/command-time-manifest.json SHA b1861443469774b6f615c3c71a4be3a6a24270e3975da34dccd894ae570af576는선행manifest와recordedUtc만다르고나머지필드/56개실측기록은같다(Astra재대조 E/new-pointer-manifest-observation.json). 원본batch settingsHash는소급수정하지않았다.
+- writer종료뒤06:12:40Z fetch한origin/main=3e07e1b0b318881701b5b7bab8adbe087b596420(PR169)이다. merge-base7fa1074이후51개파일은database/관련문서·goal/format-check이고동결225·Architecture36개·.gitattributes/CODE규칙과겹침0이다. 현재포인터/README/goal을체크포인트커밋한뒤이main을통합하고actualbytes불변을확인해신규Opus최종검증기준을고정한다. DB/새추출을실행하는작업이아니다.
