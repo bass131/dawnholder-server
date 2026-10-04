@@ -182,15 +182,15 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Session.OnRecvCompleted가 받은 바이트를 수신 버퍼에 기록하고 PacketSession.OnRecv를 호출합니다. 길이 헤더가 유효하고 프레임 전체가 도착했으면 OnRecvPacket으로 넘깁니다. 처리한 길이만 버퍼에서 소비한 뒤 다음 수신을 등록합니다."
+              "text": "Session.OnRecvCompleted가 받은 바이트를 수신 버퍼에 기록하고 PacketSession.OnRecv를 호출합니다. 길이 헤더가 유효하고 프레임 전체가 도착했으면 OnRecvPacket으로 넘깁니다. 남은 구간의 다음 프레임도 같은 방식으로 처리하고, 완성 프레임이 더 없으면 누적 처리 길이를 반환합니다. OnRecvCompleted는 그 길이만 버퍼에서 소비한 뒤 다음 수신을 등록합니다."
             },
             {
               "type": "diagram",
               "id": "receive-normal-flow",
               "format": "mermaid",
               "title": "완성된 정상 프레임을 처리하는 순서",
-              "description": "수신 버퍼 기록, 길이 헤더 검사, 완성 프레임 분리, 게임 패킷 처리, 처리 길이만 소비, 다음 수신 등록 순서입니다. 한 수신에 프레임이 여러 개 있으면 프레임 분리와 게임 패킷 처리를 반복합니다. 그림은 성공 경로만 보여 줍니다.",
-              "source": "flowchart TD\n  A[\"수신 버퍼 기록\"] --> B[\"길이 헤더 검사\"]\n  B --> C[\"완성 프레임 분리\"]\n  C --> D[\"게임 패킷 처리\"]\n  D --> E[\"처리 길이만 소비\"]\n  E --> F[\"다음 수신 등록\"]"
+              "description": "수신 버퍼에 기록한 뒤 완성된 정상 프레임이 있는지 확인합니다. 있으면 게임 처리로 전달하고 처리 길이와 다음 검사 위치를 갱신해 반복합니다. 완성 프레임이 더 없으면 누적 처리 길이만 한 번 소비하고 다음 수신을 등록합니다. 잘못된 길이와 디코드 실패의 종료 경로는 아래 글에서 설명합니다.",
+              "source": "flowchart TD\n  A[\"수신 버퍼 기록\"] --> B{\"완성 프레임이 있나?\"}\n  B -->|있음| C[\"프레임을 게임 처리로 전달\"]\n  C --> D[\"처리 길이 누적·검사 위치 이동\"]\n  D -->|다음 프레임 확인| B\n  B -->|없음| E[\"누적 처리 길이만 소비\"]\n  E --> F[\"다음 수신 등록\"]"
             },
             {
               "type": "paragraph",
@@ -277,8 +277,8 @@
               "id": "window-visibility-states",
               "format": "mermaid",
               "title": "닫기 버튼과 명시 종료의 차이",
-              "description": "표시 준비 중인 창은 준비 완료 후 표시됩니다. 표시 중 닫기 버튼을 누르면 숨김 상태로 가고 트레이에서 열면 다시 표시됩니다. 표시 또는 숨김 상태에서 트레이 종료를 선택하면 앱이 종료됩니다. 숨김은 서버 종료가 아닙니다.",
-              "source": "stateDiagram-v2\n  direction LR\n  state \"표시 준비\" as Ready\n  state \"창 표시\" as Visible\n  state \"창 숨김\" as Hidden\n  state \"앱 종료\" as Closed\n  Ready --> Visible: 준비 완료\n  Visible --> Hidden: 닫기 버튼\n  Hidden --> Visible: 트레이 열기\n  Visible --> Closed: 트레이 종료\n  Hidden --> Closed: 트레이 종료"
+              "description": "앱이 창을 만들면 표시 준비 상태에서 시작해 준비 완료 후 창을 표시합니다. 닫기 버튼은 창을 숨기고, 트레이 열기는 다시 표시합니다. 표시 또는 숨김 상태에서 트레이 종료를 선택하면 앱 종료로 이어집니다. 시작과 끝 표식은 이 정상 조작 흐름의 범위를 나타내며, 창 숨김은 서버 종료가 아닙니다.",
+              "source": "stateDiagram-v2\n  direction TB\n  state \"표시 준비\" as Ready\n  state \"창 표시\" as Visible\n  state \"창 숨김\" as Hidden\n  state \"앱 종료\" as Closed\n  [*] --> Ready\n  Ready --> Visible: 준비 완료\n  Visible --> Hidden: 닫기 버튼\n  Hidden --> Visible: 트레이 열기\n  Visible --> Closed: 트레이 종료\n  Hidden --> Closed: 트레이 종료\n  Closed --> [*]"
             },
             {
               "type": "paragraph",

@@ -9,6 +9,122 @@
 
 ### 현재 단계 — ASSET21 한 건 예외·VIS-FONT-01 엄격 기준 수리 승인, 별도 작업 재개
 
+**2026-10-04T09:26:12.5984255Z D2 신규 Sol 착수:** Main D1 인수 후 task_13263a86630e/ctx_251c4882e4bd를 새pane term_ed6baeac-ac8b-4f4f-b8a1-51b67fc7f503/inc9557696b-6370-438b-a5d7-bd4edf0a6084에 연결했다. 최초명령codex --model gpt-6.1-sol -c model_reasoning_effort=max, Codex0.160.0/GPT-6.1-Sol max 빈첫화면·준비뒤ready/input_accepted/turnStart observed(backendunknown,Enter복구없음). 계약 E/font-d2-repair-task.txt18900B/SHA3ab5d0fe81137edc6f2fbc67051d62baef9226647539a6528d22b89c63c49cf5, inputs현재186/보호7028/SHA2c51e0281358182c299ddb65bd8d56d06b3892183d80e1ad2c80097cadfb3e78. README52행 한문장과자기evidence만쓰며문서정적자체점검만한다. 쓰기종료/정산후새Opus재검증직전대기하고새Opus·표시커밋·번들구현·원격변경은진행하지않는다.
+
+
+**2026-10-04T09:24:37.7862177Z D1 최종 실사 정산·메인 인수 완료:** 최종verdict23089B/SHA836cb6aaabe127ebadd98896db999c9723267ec4416198bd7d052ec091b9d218 전문을Astra가직접읽고현재186(goal만차이)/보호6945변경0·scratchpad6불변을대조했다. release/동일inc완료prompt/정확paneclose/ACK/reclaimable0 정산완료. Main msg_8c993823752e는SHA·결론표대조로D1해결/D2낮음통과보류및절차관측을인수했다(전체전문열람주장아님). check누락자기보고의조건과수신처한계는msg_af9ef3795284 및E/font-d1-review-astra-settlement.md인수추록에둔다. 새Sol max로동의된D2한문장만수리한뒤새Opus재검증직전대기한다. 이름=label은다음E2E계약후보로만보존하고이번범위에추가하지않는다.
+
+
+**2026-10-04T09:20:08.4679717Z D2 문장 정리 메인 동의·다음 단계:** Main msg_46cee83d487d는 D2를 현 목표 안 낮음 문서 결함으로 채택하고 Astra의 두 서술절 표현에 동의했다. 범위 확대 재질문은 필요 없다. 현재Opus 최종원문/SHA/정산→Main D1판정 인수→신규Sol 한문장수리→신규Opus 재검증 직전 보류 순서다. 보류해제뒤 번들/고지와 검증 세션 결합을 검토할 수 있으나 결함별 판정·근거는 분리한다. 아직 표시커밋/번들 구현은 시작하지 않았다. 원문 E/font-d2-main-scope-decision.json.
+
+> [메인 Claude] D2 표현 정리안에 동의한다: 「실행 근거에 표시된 디스플레이 이름과 실제 창 bounds를 기록하고, 창이 보조 workArea에 완전히 들어갔는지도 기록한다.」
+>
+> - D2는 이번 목표 범위 안의 낮음 문서 결함이다. 목표 범위 정본대로 처리하고 범위 확대 승인을 따로 묻지 않아도 된다.
+> - 순서: 현재 Opus 최종 원문·SHA·정산을 먼저 보낸다 → 메인이 D1 판정을 대조해 인수한다 → 새 Sol로 D2 한 문장을 고친다(Codex 쪽이라 주간 사용량과 무관하다).
+> - 재검증은 새 Opus가 필요하므로 보류가 풀릴 때까지 그 앞에서 멈춘다. 보류가 풀리면 다음 검증 계약(번들 축소·제3자 고지)과 한 세션으로 묶을 수 있는지 검토하라. 묶더라도 결함별 판정과 근거는 분리해 기록한다. 이건 사용량을 아끼기 위한 제안이고, 묶을지는 네가 계약 구조를 보고 정한다.
+
+
+**2026-10-04T09:15:14.1884833Z scratchpad 메인 처리 수신:** Main msg_bd3f005dfcf4는 범위 밖4건/메모 전2건을 검증자 절차 이탈로 원시·한계와 보존하고 현재 실사를 끝까지 마치도록 결정했다. 문서 판정과 분리하고 자동 통과차단 해제/절차전체PASS로 쓰지 않는다. 최종 문서 판정이 오면 메인이 원문을 대조해 별도 인수하므로 그 전 표시 커밋/번들은 대기한다. 교체하지 않는 근거는 읽기 전용 측정 helper와 새Opus 사용량 보류다. 원문 E/font-d1-review-main-scratchpad-decision.json.
+
+> [메인 Claude] 메인 결정: 네 제안대로 처리한다. 검증자 scratchpad 사전 helper 4건은 원시·한계와 함께 절차 관측으로 보존하고, 문서 실사는 끝까지 마친다.
+>
+> - 메인 대조: astra-sample의 생성 시각 2건(09:07:24Z, 09:07:29Z)이 context 생성(09:09:48Z)보다 앞선다. snapshot 두 helper(.mjs)에서 writeFile·appendFile·rmSync·unlink·rename·mkdir 호출을 찾지 못했다.
+> - 결정:
+>   1. 쓰기 범위 밖 4건과 메모 전 2건은 검증자 자신의 절차 이탈로 기록한다. 지우거나 소급해 고치지 않는다.
+>   2. 검증자는 판정문의 절차 관측 칸에 이 4건을 스스로 적는다. 제품 문서 판정과 분리한다.
+>   3. 절차 전체 PASS나 통과 차단의 자동 해제로 쓰지 않는다. 문서 판정이 오면 메인이 원문을 대조해 따로 인수한다.
+>   4. 지금 교체하지 않는 이유: helper는 읽기 전용 측정이고, 주간 사용량 보류 중이라 새 검증자를 열 수 없다.
+> - 같은 유형(검증자 중간 산출물의 위치) 사례가 Rules에도 있었다. 다음 Rules 정비 후보에 이 사례를 근거로 함께 넘긴다.
+
+
+**2026-10-04T09:14:20.5510716Z D1 Opus 사전 scratchpad 관측 별도 처리 대기:** 첫context의표현을Astra가질문했고msg_4c00ce3f1e07에서모델명시쓰기4파일중2개가context보다먼저이며4개모두계약E밖임을확인했다. 두helper전체는입력읽기/JSON출력이고제품쓰기함수없음을Astra가직접읽었다. 실제hash/생성시각/현재4파일보존사본은 E/font-d1-review-scratchpad-astra-sample.json 및 font-d1-review-scratchpad-snapshot/이다. 첫memo준수나도구자동임시물로표현하지않는다. Main msg_c95a1ba63056으로원시·한계보존수용을제안해판단대기하며문서실사는계속한다. 독립비교는52행1문장/링크26·표제4보존을기록했지만최종판정원문과절차처리전표시커밋을하지않는다.
+
+
+**2026-10-04T09:10:06.7008656Z D1 빈heartbeat 메인 처리:** msg_3bf187221e9f는첫HB빈body를정본위반이아닌계약수준관측으로판단했다. Main이from/Task/Dispatch일치원시를대조했고최신AGENTS의내용없는HB수용조항을근거로제시했다. Astra계약의추가body요구보다덜쓴관측으로원시/이미보낸교정/자기교정HB를보존하고추가교정을하지않는다. 문서판정과분리하며소급준수/절차전체PASS아님. D1현재실사완료유지·신규Opus보류유지. 원문 E/font-d1-review-main-body-decision.json.
+
+> [메인 Claude] 메인 결정: D1 Opus 첫 heartbeat의 빈 body는 계약 수준 관측으로 기록하고, 문서 실사는 그대로 계속한다.
+>
+> - 메인 대조: font-d1-review-first-heartbeat.json의 msg_5ef2c99da4be는 type heartbeat, subject 「[Management 검증자] alive」, body 빈 값, payload task_d17dd4340431 / ctx_34402ce47176 / investigating이다. 네 보고의 Task·Dispatch와 같다.
+> - 판단 근거: AGENTS.md 「메시지와 보고」는 from_handle·Task·Dispatch가 모두 일치하는 내용 없는 heartbeat를 받아들이고 교정 메시지를 보내지 않는다고 정한다. 그래서 이 1건은 정본 위반이 아니다.
+> - 다만 네 계약은 body 태그·실제 단계·다음 행동을 요구했다. 계약보다 덜 쓴 계약 수준 관측으로 원시와 함께 보존하라. 이미 보낸 교정 안내와 두 번째 정상 heartbeat(msg_8e5d269382d2) 기록은 그대로 둔다. 추가 교정은 필요 없다.
+> - 이 관측은 문서 판정과 분리한다. 소급 준수나 절차 전체 PASS로 쓰지 않는다.
+> - 앞서 보낸 임시 보류(새 Opus 기동 금지)는 그대로다. 이 실사는 끝까지 마친다.
+
+
+**2026-10-04T09:09:10.4927280Z 신규 Opus 기동 임시 보류:** Main msg_8bc9ba2336c2(09:08:42Z)가 Claude주간95%관측을전달하며사용자결정전신규Opus세션을보류했다. 진행중D1검증은범위를줄이지않고끝까지마친다. 기존승인범위Codex구현·준비·정산·로컬커밋은계속하되새검증자가필요한단계앞에서멈추고보고한다. 다른모델대체없음. 이지시의일반PR언급은현재push/PR/merge미승인범위를확장하지않는다. 원문 E/opus-capacity-main-hold.json;수치/초기화시각은Main전달이며Astra직접계측이아니다.
+
+> [메인 Claude] 임시 보류: 사용자 결정 전까지 새 Opus 검증자 세션을 열지 마라.
+>
+> - 이유: Claude 주간 사용량이 95%다(메인 pane과 GameDev 검증자 pane 상태 표시줄, 초기화 화요일 20:00). 한도에 닿으면 메인과 모든 Opus 검증자가 그때까지 멈춘다.
+> - 이미 돌고 있는 검증자(GameDev 설치 사전 실사, Management README 문서 실사)는 끝까지 마친다. 불필요한 재실행과 넓은 전수 조회는 줄인다. 실사 범위 자체는 줄이지 않는다.
+> - Codex 쪽 구현·준비·정산·commit·PR·CI는 평소대로 계속한다. 이미 받은 PASS로 진행하는 단계도 계속한다.
+> - 새 검증자가 필요한 단계에 닿으면 그 앞에서 멈추고 상태를 보고하라. 다른 모델로 대체하지 않는다.
+> - 이 보류는 사용자 결정(대시보드 항목: Claude 주간 사용량 우선순위)이 오면 메인이 해제하거나 확정한다. 범위·권한을 넓히는 지시가 아니다.
+
+
+**2026-10-04T09:07:22.9569280Z README D1 신규 Opus 문서 실사 착수:** Sol done msg_438eb0583d06을 원문17211B/SHA281988e03bf3e12b61d01805f0e9f493551d559a20fdf7f4378555314dbeb03a와 직접 대조했다. README baseline한문장치환의바이트일치/현재186의README·Astra goal만차이/보호6904차이0을 확인하고 release→동일inc완료prompt→정확paneclose→ACK/reclaimable0으로정산했다. 끝HB→done361초관측을더해지연3구간/최대초과71.778초를Main임시기준으로분리수용한다. 근거 E/font-d1-repair-astra-settlement.md 및 integrity.json.
+
+신규 task_d17dd4340431/ctx_34402ce47176, term_4946e17c-960a-411b-a4bb-c70ce4e32656/inc17849a5b-4fcd-4c64-9b71-dcb8c4fb0bdf. 최초 claude --model claude-opus-5-5, ClaudeCode2.1.289/Opus5.5 xhigh빈화면/준비뒤ready·input_accepted·turnStart observed(backendunknown,Enter/권한변경없음). 계약 E/font-d1-review-task.txt25958B/SHA03fcea68b2c2d6ef6e2bb66d8c337c1cc3b9dc2057d8d45a090b71872312eecf, 입력현재186/보호6945/SHAf85ef579133185ca5a052e1636ebd4de1993c4d58bbf94dbd7f48b2de2eea072. 자기근거만쓰며D1내용·참조·권한·실제diff의정적실사로한정한다. 문서통과뒤표시커밋/번들;push/PR/merge없음.
+
+
+**08:59 UTC heartbeat 임시 처리 메인 결정 적용:** msg_b67e21cf68a6(08:59:08Z)을 기록한다. D1의 HB지연2건은 원시/수치보존·절차관측으로수용됐으며 소급준수나절차전체PASS가 아니다. 단독HB초과는 다음Rules정비까지 묶어정기보고하고600초초과/무응답의심 또는 다른절차위반동반은즉시개별보고한다. D1새Opus문서실사뒤표시커밋·번들진행이가능하다. 사용자결정으로격상하지않는다. 원문 E/heartbeat-main-interim-decision.json.
+
+> [메인 Claude] 메인 결정: heartbeat 지연의 임시 처리 기준 (다음 Rules 정비까지)
+>
+> 사용자 결정이 아니다. 오늘 Rules(RESUME Sol 7분08초·5분45초)와 Management(font Sol 354/329/381초, D1 Sol 371.8초·366초)에서 같은 관측이 반복됐다. 매번 메인 판단을 기다리는 대신, 다음 Rules 정비가 heartbeat 규칙을 정할 때까지 아래 기준을 적용한다.
+> - 대상: heartbeat 간격 초과 그 자체만 있는 경우. 다른 절차 위반(ACK 전 쓰기, 태그·제목 위반, 메모 부재 등)이 함께 있으면 기존대로 메인에 개별 판단을 요청한다.
+> - 처리: 원시를 보존하고 간격 수치를 기록한다. 절차 관측으로 판정에 남기고 수용한다. 소급 준수로 바꾸지 않는다. 절차 전체를 PASS로 표시하지 않는다. 제품 판정과 분리한다.
+> - 메인 보고: 개별 요청 대신 다음 정기 보고에 「heartbeat 지연 N건, 최대 초과 X초」로 묶어 알린다.
+> - 예외: 10분(600초)을 넘는 공백이나 작업자 무응답 의심은 지금처럼 즉시 보고한다.
+> - 이 기준은 일반 규칙 면제가 아니다. 각 goal에 이 메시지 ID로 적용 중인 메인 결정을 기록하라.
+> Management 질문 msg_2204aec04402(D1 Sol 371.8초·366초)는 이 기준으로 수용한다. D1 문서 실사 뒤 표시 커밋·번들로 진행해도 된다.
+
+**08:59 UTC D1 새 Sol 절차 관측:** 최초 heartbeat까지 ready/observed receipt 기준371.778초(300초보다71.778초 초과), 첫→둘째366초(66초 초과)를 확인했다. Sol msg_b84777c2f584가 더 이른 HB가 없음을 밝혔고 msg_29e9d2ca9acc 및 각 응답을 원시 보존했다. status를 HB로 바꾸지 않으며 이전 Main 절차 수용을 새 D1 누락에 확대하지 않는다. Main msg_2204aec04402로 원시/한계 보존 수용을 제안하고 처리 판단을 요청했다. README 실제 diff는52행 한 문장이고 새 Opus 문서 실사 준비를 계속한다. E/font-d1-repair-heartbeat-clarification.json, font-d1-main-heartbeat-report.json. 표시 커밋/번들은 D1 해결 및 새 절차 처리 이후다.
+**08:47 UTC Main 절차 결정 수신:** msg_34268ddc3caa(생성08:43:57Z)의 메인 결정으로 font Astra 추록1~3을 채택하고 Sol checkpoint/HB·Opus 빈body2건/Re제목 누락을 원시보존·한계명시로 수용해 통과차단을 해제했다. 소급준수나절차전체PASS가아니다. 메인은 추록과 verdict요약표를 직접 읽었다고 명시했으며 이를 전문열람으로 확대하지 않는다. README D1 새Sol→새Opus 뒤 표시커밋/번들기동을 계속하고 push/PR/merge는 제외한다. 사용자직접결정으로격상하지않는다. 원문 E/font-main-procedure-decision.json; 보호된 이전정산문서는 당시결정대기상태를보존한다.
+
+전달 원문:
+> [메인 Claude] 메인 결정: font 정산 추록 1~3 채택, 절차 관측으로 통과 차단 해제
+>
+> msg_1cad6b86be89에 대한 메인 결정이다. 사용자 결정이 아니다. 메인은 font-review-astra-settlement.md의 「원문 보존 정정·한정」과 「절차 처리와 다음 작업」, verdict.md 요약 표(SHA 951ee7b0…)를 직접 읽었다.
+> - 추록 1~3을 채택한다. 판정 원문 verdict.md는 고치지 않고, 추록이 원문의 기록 범위를 한정·정정하는 근거가 된다. 「메모와 실제 결과 불일치」 차단은 이 추록으로 해소한 것으로 본다.
+> - Sol의 절차 누락은 원시를 보존하고 한계를 명시해 수용한다. 누락은 두 가지다. 하나는 check 응답 처리·ACK 전에 gates.mjs·source-snapshot.mjs를 만든 것이고, 다른 하나는 HB 354/329/381초 초과다.
+> - Opus의 절차 누락도 같은 방식으로 수용한다. 빈 body heartbeat 2건과 첫 Re 제목 회신의 R-3 위반이 대상이다.
+> - 수용은 소급 준수가 아니다. 절차 전체를 PASS로 표시하지 않는다. 제품 판정 PASS(72/72, related 592/592)와 분리해 기록한다.
+> - guard 중단은 자기 보고와 이후 cmd meta의 간접 근거로만 한정해 적는다.
+> - 두 가지를 다음 Rules 정비 보류 목록의 근거로 넘긴다: 「delivery 처리·ACK 전 쓰기 금지」의 검사화 후보, heartbeat 간격 관측. 메인이 Rules에 전달한다.
+> - 이후 진행: README D1을 새 Sol max로 최소 문구만 수정하고, 새 Opus가 문서 실사한다. 표시 커밋과 번들 기동은 D1 해결 뒤에 한다. push·PR·병합은 지금 하지 않는다.
+> - 실제 OS 125%, 물리 클릭, 원제품 show/focus, 다른 폭·DPR은 미실행으로 계속 표시하라.
+
+
+**08:46 UTC README D1 신규 Sol 착수:** task_6f5e7c29c698/ctx_9bb2a49a16e0, term_b42961c3-bf16-42aa-ab2c-c5e6e506b65c/incarnation e0998fad-f704-4dbb-a9f7-0c0fb2a199c8. 최초명령 codex --model gpt-6.1-sol -c model_reasoning_effort=max, Codex0.160.0/GPT-6.1-Sol max 빈첫화면·준비완료 뒤 ready/input_accepted/turnStart observed로 연결했다(backend unknown, Enter복구없음). 계약 E/font-d1-repair-task.txt24223B/SHAff32d9055f372c55cc2f51d6a9a4839fc6328ef363477df786a52b5a8302b323, inputs현재186/보호6904/SHAa8c8513d18459a880e0b4cc7618f2c47094749579fdf36f425840ab93d0b0d72다. README 기록 대상 한 문장과 자기 evidence만 쓰며 제품시험/빌드/Electron은 실행하지 않는다. 쓰기종료·정산 뒤 새Opus 문서실사를 한다. 첫split의미지원title은로컬인자검사에서거부됐고유효split-2로pane1개만생성했다. Main 절차 결정은 별도대기다.
+
+**08:43 UTC font 독립 제품 PASS·정산, D1 문서 수정과 절차 결정 남음:** task_3ac679b54d64/ctx_fbb2d55a6520 done msg_d5b1b3607708의 최종 verdict.md 전문37250B/SHA951ee7b07cabe756b4081ba2b6d4c237ce3e6c14eb00b47cf4eaa7f1c05a4d8b를 직접 읽었다. 실제 제품72/72, before strict font2건만 실패해 검출력 확인, 관련592/592·전체841=829/동일12fail이다. current186 중 Astra goal만 차이, 보호6525·현재dist35 hash차이0, 소유12PID fresh부재를 직접 대조했다. release→동일inc완료prompt→정확paneclose→ACK/reclaimable0으로 종료했다. 원문과 R-2 표본/정산은 E/font-review-astra-settlement.md 및 연결 JSON에 있다.
+
+README #D1(낮음: 실행 근거에 디스플레이 이름 기록 의무 미명시)은 Astra msg_d649fe45ef7b로 채택해 새 Sol max 한 문장 수정→새 Opus 문서 실사로 계속한다. 제품/CSS 시험 재실행은 필요하지 않다. 최종 Opus §9의 빈body HB1건 표기와 실제2건, 중간 PNG6개 직접열람 주장과 최종5개 목록 차이를 원문 보존 추록으로 Main msg_4e2ef7a0a955에 즉시 보고했다. CSS응답3은 대표3만의 범위이고 실제 각run5회인 점도 한정했다. 기존 Sol checkpoint/HB 누락과 함께 Main msg_1cad6b86be89로 추록 채택·절차 통과차단 해제 판단을 요청했다. 자동해제/표시커밋/번들기동은 아직 하지 않았다. push/PR/merge 및 OS125%/물리클릭 실적은 없다.
+
+**08:22 UTC font 독립 실제 제품 중간 표본:** 새 Opus current-1(08:19:30~39Z)과 before-1(08:20:20~28Z)은 각자 매 실행 보조 화면 재탐색 후 첫 표시 전 완전 포함, actual1616×939 DIP(-1768,224), OS scale1/app zoom1.25로 실행했다. 모든 visible45/9/36의 strict CTM 미달은 before45/0/36→current0/0/0이며 현재 최소16.00969245463838/16.010000238567592/16.00953567355858다. 새 요구기반 probe의 서로 다른 owning-text 문자 extent 겹침·가려지지 않은 선관통0, raw positive bbox 교차9/0/4→8/0/5를 구분한다. Astra는 현재 PNG3개를 직접 확인하고 승인/표시 XML exact·실제 응답15건 body hash와 dist를 대조했다(E/font-review-astra-current-sample.json).
+
+current-1의 OS foreground250ms48표본은 동일 HWND/PID이고 소유Electron 일치0, app focus event0이다. 연속 무탈취/트레이/물리입력까지 입증한 것은 아니며 Main msg_6d23f8dbcf67로 해당 실제 관측을 전달했다. 두 run 소유각5PID/보조샘플러 자체종료·강제종료0을 원시로 확인했다. 최종 독립 단정·전체 최종 판정 및 절차 처리 결정은 아직 없으므로 표시 PASS/커밋 완료로 쓰지 않는다.
+
+**08:05 UTC 포커스 관측 후속:** Main msg_d0b8828ca066은 다음 E2E 전에 제품 show/focus 경로와 실제 이동 관측을 확인하라는 참고 요청이며 중단·규칙 변경·제품 수정 승인이 아니다. Sol 하네스 observer72~83은 ready-to-show의 show 호출을 showInactive로 바꾸고 BrowserWindow.focus는 기록만 하도록 감쌌다. 실제 두 run의 첫 표시·대표3종·정상 전환2건의 앱 isFocused는 모두 false, focus-suppressed 호출0이며 트레이 열기와 sendInputEvent는 실행하지 않았다. OS 전체 foreground 창 연속관찰은 미실행이다. E/font-astra-focus-sample.json으로 범위를 남기고 Main msg_acf51a270f50로 회신했으며, 새 Opus에는 msg_b89495887069로 다음 실행 전 확인을 전달했다. CDP Input/focus emulation 후보는 사용자 결정 전이므로 채택하지 않는다.
+
+**08:01 UTC 신규 font Opus 독립 검증 착수:** Task task_3ac679b54d64 / Dispatch ctx_fbb2d55a6520, term_e5c7968d-4038-4036-bb2f-2261e16fa79f / incarnation3d3b26c4-a350-493f-90f5-4c78184f06b5다. Astra 아래 신규 vertical split 최초 명령 claude --model claude-opus-5-5, Claude Code2.1.289/Opus5.5 xhigh 첫 화면 및 빈 prompt·모달 없음·tui-idle satisfied를 확인했다(backend unknown). worker-start는 ready/input_accepted/turnStart observed이며 별도 Enter나 중복 주입은 하지 않았다. 계약 E/font-review-task.txt 38199B/SHA140f38926ddc93f5ef46543d84f56ed6a051031ba45dbebf20cd1c2769c1b8fa, 입력 E/font-review-inputs.json SHA3be08889a61e28f0e66bb4827af2661d2ed43b5db8236479328e56a4934c23bc(현재186/보호6525). CODE6절 및 Main 원문을 포함했고 실제 제품 독립 단정·문서 실사·Sol checkpoint 정정과 절차 실사를 함께 맡겼다. 제품/CSS/README/goal은 readonly, 자체 evidence 및 필요한 renderer.test 추가만 허용한다. 아직 독립 결과와 절차 처리 결론은 없다.
+
+
+**07:58 UTC VIS-FONT-01 Sol 자체 완료·정산, 신규 독립 검증 준비:** done msg_8df78d5ca81a(Task task_0ffa21241667/Dispatch ctx_4cc73072bf14)의 succeeded를 확인하고 최종 execution-result.txt 전문(16596B/SHA24e89117b80430a04ae190f137074e725be54a4c477ad43af78a4af49786d4bc)을 직접 읽었다. 현재186/보호5800의 허용 밖 차이0, 종료 evidence667개 실제 hash 일치, 소유10PID fresh부재다. release retained/external_terminal 후 동일 incarnation의 완료 prompt를 확인해 정확 pane을 닫고 done Delivery를 ACK했다(reclaimable0). 절차 원문·표본은 E/font-repair-astra-settlement.md에 모았다.
+
+자체 결과는 엄격 CTM 미달0, 실제 보조 화면 전후 배치/PNG/XML/정상 세대 전환과 관련592/592·전체 같은12fail이며 독립 제품 PASS가 아니다. 최종 후보 보고의 전체 checkpoint 처리 문구는 새 하네스2파일을 Delivery 처리/ACK 전에 쓴 누락으로 완료 전 정정됐고, 첫 report/context/closure를 보존했다. HB354/329/381초의3구간 지연도 공개했다. Astra는 Main msg_81ddf860f812로 즉시 보고했고 새 Opus에 실제 수행 실사를 포함한다. 메인의 최종 절차 처리 결정을 가정하지 않으며 font 독립 검증은 승인 범위에서 계속한다.
+
+
+**07:44 UTC VIS-FONT-01 자체 전후 원천 대조:** CSS는 display text/tspan/label에 16.01px !important와 양자화 이유 주석만 보정했고 README 52~54에 보조 화면 실행 규칙을 넣었다. Sol의 before-1/after-1 실제 제품 3종에서 모든 visible 45/9/36글자의 최소 CTM은 각각 15.99969264673417→16.00969245463838, 16.00000023841858→16.010000238567592, 15.999535963581343→16.00953567355858로 바뀌어 현재 strict <16은 0이다.
+
+Astra가 두 실행의 보조 screen 발견·첫 show 전 배치·실제 bounds 완전 포함과 PNG 6개, 승인/표시 XML exact, 정상 2문서 generation 전환을 직접 대조했다. 양쪽 raw SVG는 request UUID 정규화 후 동일하고 viewBox·도형/연결 attrs는 그대로이며 글자 bbox는 변했다. >0 raw 글자 bbox 교차는 9/0/4→8/0/5로 보존하고 기존 area>1 집계 0과 구분한다. 실제 서로 다른 label 가림 여부는 새 독립 Opus가 판정한다.
+
+관련 전후 592/592, 전체 841=829/같은 12fail, 타입 4명령/build/Changed CodeRules exit0이며 CSS는 CodeRules 검사 대상이 아니다. 빌드 70사본+현재 35개 hash와 실행 manifest 연결은 일치했다. 변경 3개는 제품 CSS와 진단 graph 2개이며 graph 내용 동치는 이 표본에서 미판정이다. 근거는 E/font-repair-astra-{after-sample,build-sample}.json. Sol 최종 보고·쓰기 종료/정산 및 신규 Opus 독립 검증이 남고 아직 전체 표시 PASS나 커밋 완료가 아니다.
+
+**07:20 UTC VIS-FONT-01 신규 Sol 연결·작업 착수:** task_0ffa21241667 / ctx_4cc73072bf14, term_ccbbe360-bfb8-4b2f-b9bf-6bce59798abf / incarnation75099351-2df1-4490-ac81-9c2857ef0482다. 같은 Management 탭 Astra 아래 vertical split, 최초 명령 codex --model gpt-6.1-sol -c model_reasoning_effort=max, Codex0.160.0/GPT-6.1-Sol max 빈첫화면·모달없음·tui-idle satisfied를 확인했다(backend unknown). 공식 입력 수락 후 turn_start_unobserved였고 새pane·동일inc·다른입력없음·draft [Pasted Content22945chars]를 확인해 기존 Main msg_fc6d85bf6c94 허용의 텍스트없는 Enter1byte만 한 번 보냈다. 이후 자기태그 응답·계약읽기·fresh agent_status live/working을 확인했다. 최초 start_unknown/pending 이력은 소급해서 observed로 바꾸지 않으며 재발행하지 않았다. 기동 원시는 E/font-repair-{split,ready,first-screen,first-show,start,show-unobserved,screen-unobserved,enter-precondition,enter-once,after-enter-show,after-enter-screen}.json. 최종 계약 E/font-repair-task.txt 32733B/SHA3239225af8a6cae50de031b9e08642012707ed391eaa1f645490350528860baa, 입력 E/font-repair-inputs.json SHA5bad0bff3a8862ac5299f7064eb629c42cca54baac9e02cbb0b3b975b7d57a83(현186/보호5800), CODE6절 및 승인4건 전문을 포함했다. CSS/README만 쓰며 실제 제품 전후·보조디스플레이 배치·시험을 수행 중이다. 아직 자체 완료/독립 PASS가 아니다.
+**07:16 UTC 보안 로컬 커밋 완료, 별도 표시 작업 준비:** 472b44a9f35eb457e69fc8cade6d409d66c3d172에 검토된 ASSET20+ASSET21 보안 제품·독립시험·goal을 묶었다. renderer.test의 기존 검토된 ASSET20 3시험/import만 index로 분리했고 표시 설정2시험은 workspace에 그대로 남겼다. 실제 workspace 파일은 바꾸지 않았으며 별도 index사본·hash·cached diff는 E/security-staging-receipt.json 및 security-commit-receipt.json에 있다. 시험 결과는 합쳐진 검토 workingtree 기준이며 이 부분 커밋만의 추가시험은 수행하지 않았다. 남은 표시 dirty는 renderer.ts/css/test와 guide4파일이다. 이 위에서 VIS-FONT-01 최소CSS 및 README 보조 화면 규칙을 신규Sol max가 수행하고 신규Opus가 독립 검증한다. push/PR/merge는 하지 않았다.
+
 **07:15 UTC 메인 결정으로 ASSET21 통과 차단 해제:** msg_7580ed6cc0e4(07:14:43Z, 올바른 Main from_handle)이 최종 판정 전문과 원천 표본 직접 확인 뒤 보고 #1은 Astra 정정 추록으로 처리하고 원 Sol/Opus 보고를 보존하며, corpus-modes-1의 배치 미기록은 재실행 없이 절차 누락으로 수용했다. 정확한 정정과 보조 배치 준수 소급 금지는 유지한다. 메인은 이 메시지로 task-context의 보고 불일치 통과 차단을 명시 해제했다. 원문 전문 E/asset21-main-gate-decision.json. 이는 메인이 전달한 결정이지 이 세션의 사용자 직접 입력이 아니다. 승인된 다음 단계는 새 Sol max→새 Opus VIS-FONT-01, 매 실행 보조 display/bounds 증명과 README 규칙 반영이다. OS 입력 금지 및 push/PR/merge 제외는 유지한다. 보안과 표시는 별도 로컬 커밋으로 정리한다.
 
 **07:14 UTC ASSET21 독립 제품 통과·세션 정산, 보고/배치 처리 결정 대기:** 신규 Opus Task task_184995cf31a3/Dispatch ctx_fe8717bef930의 done msg_aa5147292bab은 succeeded, 제품 결함0이다. 최종 원문 E/asset21-review/verdict.md 전체(28160B/SHA60dd3fb6bc5da166f0382dfea23b8b4c741ac42a7d5176c5ae0d0f50a8d442bb)를 직접 읽고 current186/보호4519 허용밖 차이0·소유15PID fresh CIM부재를 확인했다. release retained/external_terminal→동일inc 완료prompt→정확pane close ptyKilled=true→ACK/reclaimable0로 종료했다. 비용 고정545+추가102의 current초과0, 전후 판정/오류/XML차이0,292/297보존, 관련592/592·전체841=829/기존12fail이다. E/asset21-review-astra-settlement.md는 원시 링크와 보고 #1 정정·모니터 지시 시점 정정을 보존한다. Opus가 제품 영향없음으로 해석한 보고 불일치를 Astra가 규칙상 자동 해제하지 않았다. Main msg_4e079c60afd4로 PSSA 정정 추록 처리와 modes 비시간비교 재실행 생략 여부를 구체 요청했고 보안 커밋은 아직 보류다. 승인된 별도 font 준비(외부 신규Sol max→신규Opus, 실제 보조화면 증거와 README 규칙)는 계속한다. push/PR/merge 및 전체목표 PASS는 없다.
@@ -744,6 +860,14 @@ Rules Astra `msg_d30ed7d57703`(2026-10-03 08:19 UTC)은 PR166 병합 뒤 main `4
 메인이 읽어 전달한 요지는 트래픽·지연시간(P95/P99)·에러율·포화도, 증상에서 원인으로 좁히는 복합 지표 읽기, CPU/메모리·스레드풀/이벤트 루프·배압/캐시, 평시·장애 중·장애 후 구분이다. 이 기록은 Astra의 별도 원문 검증이나 지표 구현 실적이 아니다.
 
 메인 제안의 검토 후보는 게임 서버의 틱 처리 시간(P95/P99), 접속 세션 수·패킷 처리량, 판정·패킷 오류율, DB 저장 지연·큐 길이, GC 일시정지다. 확정된 화면/수집 계약이 아니며 서버의 상태 소유권과 틱 중 I/O 대기 금지를 지키는 지표 제공 계약을 GameDev와 함께 정해야 한다. 현재 숫자나 미연결 운영 상태를 만들어 표시하지 않는다.
+
+### 후속 백로그 — 운영툴 라이브 1.0 이후 결정 보드의 MCP 관리
+
+메인 `msg_1a6c153d8be3`(2026-10-04 07:46:16 UTC)가 사용자 원문 “일단 현재는 클로드 모드로 관리하지만, 이 기능도 이후에 운영툴이 라이브 버전 1.0이 만들어지면 거기서 MCP로 관리 가능하게 만들어 보고 싶어.”를 전달했다. 출처 원문은 `E/main-decision-board-backlog-seed.json`이다. **운영툴 라이브 1.0 이후 검토할 후보 한 건이며, 구현·설계 착수 승인이 아니다.** 현재 글꼴 작업의 범위·순서를 유지하고 후속 BACKLOG 정본이 생기면 이관한다. 전달된 사용자 결정을 이 세션의 사용자 직접 입력으로 격상하지 않는다.
+
+대상은 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`의 `board.json` 결정 대기 보드다. 메인이 항목을 쓰고 도착 시 `review`(메인 원천 대조), 사용자 질문 시 `waiting`으로 옮기며 답을 받으면 삭제한다. 선택지·상세 글·PR 번호와 정확한 head·도착 시각·출처·갱신 시각을 함께 다룬다. 현재 README의 「결정 응답 모드」(35~78행)는 A/B 또는 C 코멘트로 한 줄 응답을 메인 입력창에 넣고, **제출은 사용자가 메인 pane에서 Enter로 하며 대시보드는 자동 제출하지 않는 경계**를 설명한다. 이는 참고 문서 실사이며 이 후보의 구현이나 실행 검증 실적이 아니다.
+
+후속 설계 쟁점은 기존 공동 조회 MCP의 읽기 전용 범위와 구분되는 메인 항목 작성·사용자 선택의 쓰기 경로, 사용자 답을 직접 입력으로 인정하는 경계의 보존이다. PR 병합 결정에는 정확한 head 대조와 head 변경 시 재승인을 유지해야 한다. 시작 시점·쓰기 권한·사용자 확인 방식은 후속 목표에서 메인이 정한다.
 
 ### 목표 종료 Gardener 관문
 
@@ -1581,3 +1705,39 @@ ASSET13 설계 질문 `msg_87916de5ac46`에 Astra는 `msg_1e80f351e41a`로 최�
 CSS 수리 중 `msg_f1c90a065c12`의 **P-CSS1**: 같은 도구셀에서 check 출력 해석 전에 svg-contract 패치가 실행됐다. 새 범위/중단 지시는 없었으나 준수로 소급하지 않고 메인 `msg_28d4323ece57`에 즉시 공개했다. 후속 check는 별도셀에서 해석하도록 `msg_c054140ac8af`로 교정했다. 실제 inbox에는 heartbeat `msg_da46002d38fb`11:30:32와 `msg_04c1c8adc7a9`11:37:19가 있어, 일반check/worker-show의 null만으로 미전송을 단정하지 않았다. 실제간격6분47초 초과1회는 최종원문에 남긴다. 원천은 `css-repair-check-order-and-heartbeats.json`이다. Astra는 사전맥락 메모와 제품쓰기전 mtime을 읽고, 11:39 UTC `css-repair/before/`4사본의 실제SHA가 직전Sol/Opus제품hash와 모두 같음을 계산했다. 최초baseline 상대경로오류미실행과 이후355=349통과/6실패 실행을 분리한다.
 
 메인 `msg_6e86b93bc63e`(11:57 UTC)는 기존 테스트 대량 실패를 빠짐없이 (a) 옛 구현 세부 단정, (b) fixture/환경 입력 누락, (c) 실제 회귀, (d) 원인 미확정으로 분류하고 테스트별 이전 단정/새 단정/요구 출처 표와 같은 명령의 전후 원시 수치를 요구했다. 기대값을 제품 계산으로 만들거나 대량 재생성/완화하는 것은 금지이며 승인 전 메인이 표본 대조한다. 원문은 `test-reclassification-main-decision.json`, 다음 Opus 초안 말미에 그대로 붙였다. 현재 Sol은 테스트를 쓰지 않고 119건 이름별 원천 분류만 남기도록 `msg_07874a850ffa`로 전달했다. 중간119건을 fixture 충돌 전체로 단정하거나 제품 PASS로 바꾸지 않는다.
+
+### D1 heartbeat 정산 분류 정정 — 2026-10-04 09:31 UTC
+
+Main msg_71e24d6fa07f가 msg_3bf187221e9f를 정정했다. D1 첫 heartbeat는 subject가 `[Management 검증자] alive`여서 ORCA87의 빈 subject/정확 alive 예외에 속하지 않는다. 현재 분류는 **정본 표식 위반(빈 body heartbeat), 원시 보존, 후속 정상 heartbeat로 교정 확인**이다. 이전 보호 정산/원시/판정은 그대로 보존하고 `.backups/verification/2026-10-03-system-cards-resume/font-d2-astra-d1-classification-correction.md`가 이전 분류를 대체한다. 후속 정상09:07:58은 Astra 안내09:08:03보다 먼저이며 안내의 인과 효과로 쓰지 않는다. 판정 인수는 유지하고 절차 전체 PASS는 아니다. 현재 D2 첫 HB는 정확 alive/빈 body/세 identity 및 제한 payload 일치로 좁은 예외에 해당한다.
+
+2026-10-04T09:33:13Z Main msg_ec7ab4941d2f가 새 Opus 사용량 보류 msg_8bc9ba2336c2를 해제했다. 사용자 플랜 업그레이드 응답을 메인이 전달했고 메인 화면 5H/7D 0% 관측을 보고했다(이 Astra의 직접 결제/사용량 확인 아님). D2 Sol 종료/정산 후 평소대로 새 Opus claude-opus-5-5 한 세션으로 D2 문서 재검증을 수행한다. 번들과 묶기 제안은 사용량 보류 하의 선택사항이었으므로 문서 독립판정과 표시 커밋 선행 순서를 유지한다. 새 범위/외부 변경 권한은 없다.
+근거 원문: .backups/verification/2026-10-03-system-cards-resume/font-d2-opus-capacity-main-release.json. 앞선 보류·분류 기록은 당시 상태이며 이 해제 결정 이후 신규 Opus 준비/기동이 다시 허용된다.
+
+### 후속 계획 후보 — 앱 내부 E2E 입력·VM 준비(현 목표 밖)
+
+메인 전달 msg_d265a8b08d4b(2026-10-04T09:35:21Z), 사용자 원문(대시보드 Enter 제출이라고 메인이 확인): 「2) 보조 모니터 - OS 입력 없이 E2E 조작하는 방법 → B A + 가상 머신 준비」. 전달문은 사용자 직접 입력으로 격상하지 않는다.
+
+현 목표 D2 → 번들·제3자 고지 → 첫 PR을 마친 뒤 가상 머신 준비 계획을 문서로 만들어 메인에게 올린다. 지금은 기록만 하며 조사·생성하지 않는다. 작업자의 호스트 OS 입력 금지는 유지한다. A는 Electron debugger CDP 입력·포커스 흉내·showInactive를 앱 내부에서 쓰는 후속 시범 후보이며, 첫 시험은 포커스 없는 창에서 debugger 입력이 동작하는지 좁게 확인한다. B는 Hyper-V VM 안에서만 실제 마우스·키보드 입력을 허용하는 환경 준비다. 시스템 변경/실제 VM 생성은 사용자가 직접 하거나 단계별 별도 승인을 받는다.
+
+후속 계획 항목: 게스트 Windows 이미지와 라이선스 선택지, 권한 방식(매번 관리자 실행 대 Hyper-V Administrators 그룹), VM 크기·저장 위치(C: 대 F:), VM 내부 작업자 방식, 사용자 직접 수행 단계. 메인이 읽기 전용으로 보고한 환경은 Windows11 Pro26200/Ryzen7800X3D8코어/RAM31.1GB/펌웨어 가상화·hypervisor 활성/vmms·HvHost Running/Hyper-V 모듈 있음, bass1 Get-VM/Get-VMSwitch 권한 부족, C:152GB/F:USB876GB 여유다. Astra 직접 실행/검증이나 설정 변경 결과가 아니다.
+
+원문은 `.backups/verification/2026-10-03-system-cards-resume/font-d2-main-vm-backlog-decision.json`. 현 checkout에는 BACKLOG.md가 없고 Main checkout `00_Document/operations/BACKLOG.md`만 발견하여 정본 소유자 기록을 Main에 요청했다. 병렬 소유 확인 전 타 checkout 수정이나 새 사본 생성은 하지 않았다.
+
+2026-10-04T09:36:50Z Main msg_5ba3fefa7189가 BACKLOG 정본 쓰기 소유를 Rules로 지정했다. Rules가 다음 운영 문서 PR에서 msg_7b16a80549b1을 출처로 반영하며 Management는 BACKLOG를 쓰지 않는다. goal 기록은 충분하다는 메인 확인이다. 실제 BACKLOG 반영 완료까지 확인한 것은 아니다. D2→번들·고지 순서는 계속한다.
+
+
+### D2 Sol 구현 정산 — 2026-10-04 09:43 UTC
+
+Task task_13263a86630e/Dispatch ctx_251c4882e4bd done msg_f7f52d71e42a(09:41:40Z). README52 승인1문장만 변경, SHA5d9390adc6330c406961b28ff9bf468c62c6cba8a8d9a1e3761bb427ab80ae3d/10008B. Astra 최종보고 전문과 단일diff·현재186(README/goal만차이)·보호7028(차이0)을 직접 대조했다. HB지연2건 최대18초, Main 임시기준 적용하며 전체절차PASS 아님. release→fresh 동일inc 완료prompt→정확pane close ptyKilledtrue→ACK, reclaimable0. 근거 .backups/verification/2026-10-03-system-cards-resume/font-d2-repair-astra-settlement.md와 -integrity.json. 새 Opus 보류 해제에 따라 독립 문서 실사를 준비하며 표시커밋/번들구현은 아직 착수하지 않았다. 목표 미완료.
+
+
+2026-10-04T09:44:47.7119487Z D2 신규 Opus task_cb9f5b95b001/ctx_3565a4e6f7f7, term_b94a69ad-936d-4ff9-8314-075b05f0cc00/inc05d04e88-15d4-4c5a-b92f-4f8d24f10e88를 빈첫화면/정확Opus5.5/설정해시불변/ready→input_accepted·turnStart observed로 연결했다. 고정current186/protected7076, manifest2140201B SHA0fa520064b548f4b0a00abc95aeb89a4099dcaa3ea675eb0f18364daf5692648, 계약20458B SHA042f9410b3d9fd31e8c26317d46f79afb527dd30ee57ff1ac23affe7af1b3e6e. 이전 D2 Sol/root정산과font-d2-astra-context는 고정했으며 신규검증root메모만 갱신한다. 제품실행 없는 문서독립실사; backendunknown; 과거표시시험 실적재사용없음. 표시커밋/번들구현은 대기 중이며 전체목표 미완료.
+
+
+### D2 독립 판정과 정산 — 2026-10-04
+
+신규 Opus task_cb9f5b95b001/ctx_3565a4e6f7f7 done msg_adab1882d76a(09:57:31Z). **D2 해결·D1 회귀 없음·새 결함 없음·문서 내용 통과**. Astra는 최종 verdict15231B/SHA2ad842fc91c08d473cdddf64e588cbb56193dd17ebba666beeec0b73fc67ab17 전문, static-check.cjs 전문과 원시 표본을 직접 읽었다. 별도 current186 대조에서 Astra goal만 차이, 보호7076 차이0, HEAD472b44a/staged없음. 판정 원문은 .backups/verification/2026-10-03-system-cards-resume/font-d2-review/verdict.md, 원천·정산·추가 관측은 font-d2-review-astra-settlement.md 및 -final-integrity.json.
+
+기록으로 증명할 수 없는 Sol 과거3항목(정확1회쓰기/세션전체첫파일/명령기록완전성)은 unknown으로 유지한다. Sol HB 지연2건 최대18초는 기존 Main 임시 기준, Opus6건은 최대153초/지연0. 검증자 메모 선행은 Astra가 helper 생성 전6966B/초기birth를 보존한 추가 독립 표본이 있으나 전체경로 첫쓰기까지 확장하지 않는다. 판정 원문은 보존한다. release→fresh동일inc완료prompt→정확paneclose→ACK/reclaimable0으로 종료했다. 문서 정적 실사이며 제품 실행/목표 완료/전체절차PASS는 아니다. 메인에게 원문 전문 인수를 요청하고 기승인 표시 로컬커밋→별도 번들·고지 순서를 잇는다.
+
+2026-10-04T10:02:47Z Main msg_c5676f722851가 D2 판정을 인수하고 표시 로컬커밋→별도Sol 번들·Astra고지→새Opus 진행을 명시했다. push/PR/merge 권한은 여전히 없다. 메인이 직접 보고한 대조 범위는 verdict SHA와 결론표16~22행/README diff-stat이며, Main이 판정 전문을 읽었다고 확대해 기록하지 않는다. Astra는 최종 전문과 R-2 표본을 직접 읽었다. 관찰 B·C는 비차단 기록: C는 Sol의 Replace 자체확인 한계이며 독립 검증 §2의 접두·접미 대조가 따로 수행돼 결함이 아니라는 판정 근거를 함께 보존한다. unknown3 및 HB관측도 기존 정산대로 유지한다. 새 범위 재승인 없이 지정 순서의 로컬 기계 작업을 진행한다.

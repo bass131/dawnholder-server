@@ -17,6 +17,7 @@ mermaid.initialize({
   securityLevel: 'strict',
   htmlLabels: false,
   theme: 'base',
+  look: 'classic',
   layout: 'dagre',
   maxTextSize: 4096,
   suppressErrorRendering: true,
@@ -28,9 +29,18 @@ mermaid.initialize({
     signalColor: '#155c57', signalTextColor: '#2a231b',
     noteBkgColor: '#fff3c4', noteBorderColor: '#715333', noteTextColor: '#2a231b',
   },
-  flowchart: { htmlLabels: false, nodeSpacing: 24, rankSpacing: 24, padding: 8, curve: 'linear', useMaxWidth: true },
-  sequence: { useMaxWidth: true, actorMargin: 64, messageMargin: 32, mirrorActors: false },
-  state: { useMaxWidth: true, padding: 8 },
+  flowchart: {
+    htmlLabels: false, nodeSpacing: 24, rankSpacing: 24, padding: 8,
+    wrappingWidth: 280, curve: 'linear', useMaxWidth: true,
+  },
+  // A self-message has zero horizontal span: right alignment keeps its label
+  // to the left of the actor lifeline without changing the message order.
+  sequence: {
+    useMaxWidth: true, actorMargin: 64, messageMargin: 32, mirrorActors: false,
+    messageAlign: 'right', actorFontSize: 16, messageFontSize: 16, noteFontSize: 16,
+    actorFontFamily: systemFont, messageFontFamily: systemFont, noteFontFamily: systemFont,
+  },
+  state: { useMaxWidth: true, padding: 8, rankSpacing: 32 },
 });
 
 function send(message: ChildMessage): void {

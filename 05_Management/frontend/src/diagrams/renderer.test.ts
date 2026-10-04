@@ -364,6 +364,44 @@ describe('approved XML node ownership and lifetime', () => {
   });
 });
 
+// Design-spec 2.8: diagram text uses the system font at 16 CSS px or more, and no decoration, pixel font or animation.
+// The configuration the child hands to Mermaid is the only place those choices enter the library's output.
+describe('Mermaid configuration for the representative diagrams', () => {
+  type Found = { path: string; value: unknown };
+  function collect(value: unknown, keyPattern: RegExp, path = ''): Found[] {
+    if (!value || typeof value !== 'object') return [];
+    return Object.entries(value as Record<string, unknown>).flatMap(([key, child]) => {
+      const here = path ? `${path}.${key}` : key;
+      return [...(keyPattern.test(key) ? [{ path: here, value: child }] : []), ...collect(child, keyPattern, here)];
+    });
+  }
+
+  it('sets every font size to at least 16 px and every font family to the system fonts', async () => {
+    await loadChild();
+    const config = mermaid.initialize.mock.calls.at(-1)?.[0] as unknown;
+    const sizes = collect(config, /fontsize/i);
+    const families = collect(config, /fontfamily/i);
+    expect(sizes.length).toBeGreaterThan(0);
+    expect(families.length).toBeGreaterThan(0);
+    for (const { path, value } of sizes) {
+      const pixels = typeof value === 'number' ? value : Number(/^(\d+(?:\.\d+)?)px$/.exec(String(value))?.[1]);
+      expect(pixels, path).toBeGreaterThanOrEqual(16);
+    }
+    for (const { path, value } of families) {
+      const names = String(value).split(',').map(name => name.trim().replace(/^["']|["']$/g, ''));
+      expect(names[0], path).toBe('Segoe UI');
+      expect(names, path).toContain('Malgun Gothic');
+      expect(String(value), path).not.toMatch(/galmuri|pixel/i);
+    }
+  });
+
+  it('chooses the plain look, not the hand-drawn or neo decoration', async () => {
+    await loadChild();
+    const config = mermaid.initialize.mock.calls.at(-1)?.[0] as { look?: unknown };
+    expect(config.look).toBe('classic');
+  });
+});
+
 // ASSET20 through the child flow: a state diagram whose Mermaid output carries the library initial marker
 // <circle class="state-start" r="7" width="14" height="14"> (goal 2026-10-04 00:37) must reach the parent as a string
 // the parent gate accepts, and the node shown after approval must be that same approved XML, with the marker drawn as
