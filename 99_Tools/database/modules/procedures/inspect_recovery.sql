@@ -1,0 +1,176 @@
+CREATE OR ALTER PROCEDURE dh.InspectRecovery
+    @SlotId int,
+    @AccountId uniqueidentifier,
+    @CharacterId uniqueidentifier,
+    @LockTimeoutMs int
+AS
+BEGIN
+    -- Contract discriminators used by this RPC; numeric values remain the v1 wire/ledger contract.
+    DECLARE @KnightClass tinyint = 0;
+    DECLARE @MageClass tinyint = 1;
+    -- Result codes are wire/ledger contracts; validation priority remains binding, fence, owner, sequence, game.
+    DECLARE @IdentityMismatch smallint = 203;
+    DECLARE @IntegrityFailure smallint = 207;
+    -- OwnerKind: 0 Free, 1 Runtime, 2 Recovery.
+    -- Kind: 1 Acquire, 2 Checkpoint, 3 ReleaseRuntime, 4 Recover, 5 ReleaseRecovery.
+    -- Errors: 51020 InvalidRequest, 51021 ambient transaction, 51022 applock,
+    -- 51023 schema/binding, 51024 mutation/snapshot, 51025 transaction count.
+    IF @@TRANCOUNT <> 0
+        THROW 51021, 'Ambient transaction is not accepted.', 1;
+    SET IMPLICIT_TRANSACTIONS OFF;
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+    IF @SlotId IS NULL OR @SlotId <> 1 OR @AccountId IS NULL OR @CharacterId IS NULL
+        OR @AccountId = '00000000-0000-0000-0000-000000000000'
+        OR @CharacterId = '00000000-0000-0000-0000-000000000000'
+        OR @LockTimeoutMs IS NULL OR @LockTimeoutMs < 1 OR @LockTimeoutMs > 2000
+        THROW 51020, 'InvalidRequest.', 1;
+    DECLARE @OperationId uniqueidentifier = NULL;
+    DECLARE @Kind int = NULL;
+    -- Lock and current authority (observed inside the slot transaction).
+    DECLARE @lockResult int;
+    DECLARE @boundAccount uniqueidentifier;
+    DECLARE @boundCharacter uniqueidentifier;
+    DECLARE @currentFence bigint;
+    DECLARE @currentOwnerKind tinyint;
+    DECLARE @currentOwner uniqueidentifier;
+    DECLARE @currentSequence bigint;
+    -- Game-row observations and opaque versions.
+    DECLARE @accountPresent bit = 0;
+    DECLARE @characterPresent bit = 0;
+    DECLARE @progressPresent bit = 0;
+    DECLARE @storedAccount uniqueidentifier;
+    DECLARE @storedClass tinyint;
+    DECLARE @characterVersion binary(8);
+    DECLARE @progressVersion binary(8);
+    DECLARE @mapId tinyint;
+    DECLARE @positionX real;
+    DECLARE @positionY real;
+    DECLARE @hp int;
+    DECLARE @storedMaxHp int;
+    DECLARE @bossUnlocked bit;
+    -- Current diagnostic JSON; historical replay proof belongs to the receipt.
+    DECLARE @storedProgress nvarchar(max);
+    -- Terminal proof (replay remains the original ledger snapshot).
+    DECLARE @status varchar(32) = 'Terminal';
+    DECLARE @outcome tinyint;
+    DECLARE @resultCode smallint;
+    DECLARE @resultSnapshot nvarchar(2048);
+    DECLARE @isReplay bit = 0;
+    DECLARE @recordedUtc datetime2(3);
+    -- Admission/recovery preflight exposes ordered deployment identity through execute-only roles.
+    -- Preflight boundary: 01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md, section 5.
+    -- Current transport contract: 01_Phases/goals/2026-10-02-persistence-repository/goal.md.
+    DECLARE @migrationManifest nvarchar(max);
+    DECLARE @productVersion nvarchar(128) = CONVERT(nvarchar(128), SERVERPROPERTY('ProductVersion'));
+    DECLARE @databaseName nvarchar(128) = DB_NAME();
+    DECLARE @schemaVersion int;
+    -- One transaction owns the slot lock, current observations, mutation and proof.
+    BEGIN TRY
+        BEGIN TRANSACTION;
+        EXEC dh.LockAndReadAuthority
+            @LockTimeoutMs = @LockTimeoutMs,
+            @lockResult = @lockResult OUTPUT,
+            @boundAccount = @boundAccount OUTPUT,
+            @boundCharacter = @boundCharacter OUTPUT,
+            @currentFence = @currentFence OUTPUT,
+            @currentOwnerKind = @currentOwnerKind OUTPUT,
+            @currentOwner = @currentOwner OUTPUT,
+            @currentSequence = @currentSequence OUTPUT;
+        IF @lockResult NOT IN (0, 1)
+        BEGIN
+            IF XACT_STATE() <> 0
+                ROLLBACK TRANSACTION;
+            THROW 51022, 'Slot application lock was not acquired.', 1;
+        END;
+        IF @boundAccount IS NULL
+            THROW 51023, 'Required slot binding is absent.', 1;
+        -- Preserve Authority → schema → Operation validation under the same transaction/applock.
+        EXEC dh.AssertPersistenceContract
+            @SchemaVersion = @schemaVersion OUTPUT;
+        EXEC dh.ReadCharacterState
+            @boundAccount = @boundAccount,
+            @boundCharacter = @boundCharacter,
+            @accountPresent = @accountPresent OUTPUT,
+            @characterPresent = @characterPresent OUTPUT,
+            @progressPresent = @progressPresent OUTPUT,
+            @storedAccount = @storedAccount OUTPUT,
+            @storedClass = @storedClass OUTPUT,
+            @characterVersion = @characterVersion OUTPUT,
+            @progressVersion = @progressVersion OUTPUT,
+            @mapId = @mapId OUTPUT,
+            @positionX = @positionX OUTPUT,
+            @positionY = @positionY OUTPUT,
+            @hp = @hp OUTPUT,
+            @storedMaxHp = @storedMaxHp OUTPUT,
+            @bossUnlocked = @bossUnlocked OUTPUT;
+        SET @migrationManifest = (SELECT Version AS version,
+            Name AS name,
+            Checksum AS checksum
+            FROM dh.SchemaVersion ORDER BY Version FOR JSON PATH);
+        IF @AccountId <> @boundAccount OR @CharacterId <> @boundCharacter
+        BEGIN
+            SET @status = 'IdentityMismatch';
+            SET @resultCode = @IdentityMismatch;
+        END
+        ELSE IF @characterPresent = 1 AND @storedAccount <> @boundAccount
+        BEGIN
+            SET @status = 'IdentityMismatch';
+            SET @resultCode = @IdentityMismatch;
+        END
+        ELSE IF (@characterPresent = 1 AND (@accountPresent = 0 OR @storedClass NOT IN (@KnightClass, @MageClass)))
+            OR (@progressPresent = 1 AND @characterPresent = 0)
+        BEGIN
+            SET @status = 'IntegrityFailure';
+            SET @resultCode = @IntegrityFailure;
+        END
+        ELSE
+            SET @status = 'Inspected';
+        SET @storedProgress = NULL;
+        IF @progressPresent = 1
+            EXEC dh.SerializeProgress
+                @mapId = @mapId,
+                @positionX = @positionX,
+                @positionY = @positionY,
+                @hp = @hp,
+                @storedMaxHp = @storedMaxHp,
+                @bossUnlocked = @bossUnlocked,
+                @Json = @storedProgress OUTPUT;
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF XACT_STATE() <> 0
+            ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
+    IF @@TRANCOUNT <> 0
+        THROW 51025, 'Transaction count did not return to zero.', 1;
+    -- Emit one terminal row only after COMMIT; Current* does not replace historical ResultSnapshot.
+    EXEC dh.EmitPersistenceResult
+        @status = @status,
+        @OperationId = @OperationId,
+        @outcome = @outcome,
+        @Kind = @Kind,
+        @resultCode = @resultCode,
+        @resultSnapshot = @resultSnapshot,
+        @isReplay = @isReplay,
+        @recordedUtc = @recordedUtc,
+        @databaseName = @databaseName,
+        @productVersion = @productVersion,
+        @schemaVersion = @schemaVersion,
+        @migrationManifest = @migrationManifest,
+        @boundAccount = @boundAccount,
+        @boundCharacter = @boundCharacter,
+        @currentOwnerKind = @currentOwnerKind,
+        @currentOwner = @currentOwner,
+        @currentFence = @currentFence,
+        @currentSequence = @currentSequence,
+        @accountPresent = @accountPresent,
+        @characterPresent = @characterPresent,
+        @storedClass = @storedClass,
+        @characterVersion = @characterVersion,
+        @progressPresent = @progressPresent,
+        @progressVersion = @progressVersion,
+        @storedProgress = @storedProgress;
+END;
