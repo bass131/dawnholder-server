@@ -1,8 +1,20 @@
 [CmdletBinding()]
 param(
-    [string]$Instance = $(if ($env:DAWNHOLDER_SQL_INSTANCE) { $env:DAWNHOLDER_SQL_INSTANCE } else { '.\SQLEXPRESS' }),
-    [string]$Database = $(if ($env:DAWNHOLDER_SQL_DATABASE) { $env:DAWNHOLDER_SQL_DATABASE } else { 'Dawnholder_Dev' })
+    [string]$Instance,
+    [string]$Database,
+    [string]$ApprovalPlanPath,
+    [string]$ExpectedApprovalPlanHash
 )
+# The reviewed plan, exact target and execution approval must all precede any connection attempt.
+. (Join-Path $PSScriptRoot 'test-environment/Environment.Common.ps1')
+$Contract = Read-TestEnvironmentApprovalPlan `
+    -ApprovalPlanPath $ApprovalPlanPath `
+    -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
+if ([string]::IsNullOrWhiteSpace($Instance)) {
+    throw 'Supply the explicit exact approved database and local instance; no fallback.'
+}
+Assert-TestEnvironmentTarget -Contract $Contract -Database $Database -Instance $Instance
+Assert-TestEnvironmentExecutionApproval -Contract $Contract
 . (Join-Path $PSScriptRoot 'Database.Common.ps1')
 
 function Assert-Equal($Expected, $Actual, [string]$Label) {
@@ -51,7 +63,7 @@ try {
     Write-Output 'PASS: column types/nullability, PK/unique/index, FK and trusted constraints catalog'
     $transaction = $connection.BeginTransaction()
     # Also verifies checksums, unknown versions and application locking; never commit test data.
-    Invoke-Migrations $connection $transaction
+    Invoke-Migrations -Connection $connection -Transaction $transaction -Phase Complete -Contract $Contract
     [void](Invoke-DbNonQuery $connection 'SET XACT_ABORT OFF;' @{} $transaction)
     [void](Invoke-DbNonQuery $connection @'
 INSERT dh.Account(AccountId) VALUES(@account);
@@ -68,17 +80,23 @@ AND p.SavedUtc IS NOT NULL AND c.CreatedUtc IS NOT NULL AND a.CreatedUtc IS NOT 
 '@ $argsSql $transaction) 'insert/read joins, coordinates, HP and defaults'
 
     $beforeReplay = Invoke-DbScalar $connection 'SELECT CONVERT(varchar(18),Version,1) FROM dh.CharacterProgress WHERE CharacterId=@character' $argsSql $transaction
-    Invoke-Migrations $connection $transaction
-    Invoke-Migrations $connection $transaction
+    Invoke-Migrations -Connection $connection -Transaction $transaction -Phase Complete -Contract $Contract
+    Invoke-Migrations -Connection $connection -Transaction $transaction -Phase Complete -Contract $Contract
     Assert-Equal $beforeReplay (Invoke-DbScalar $connection 'SELECT CONVERT(varchar(18),Version,1) FROM dh.CharacterProgress WHERE CharacterId=@character AND Hp=140' $argsSql $transaction) 'migration replay preserves populated row and rowversion'
     Assert-Equal 1 (Invoke-DbScalar $connection 'SELECT COUNT(*) FROM dh.SchemaVersion WHERE Version=1' @{} $transaction) 'migration replay has one version row'
     $transaction.Save('ChecksumGuard')
     [void](Invoke-DbNonQuery $connection "UPDATE dh.SchemaVersion SET Checksum=REPLICATE('0',64) WHERE Version=1" @{} $transaction)
-    Assert-Rejected { Invoke-Migrations $connection $transaction } 'checksum mismatch' 'changed migration history rejected'
+    Assert-Rejected -Action {
+        Invoke-Migrations -Connection $connection -Transaction $transaction -Phase Complete -Contract $Contract
+    } -Pattern '^Migration history has a hole, unknown name/version or checksum drift; do not rewrite applied history\.$' `
+        -Label 'changed migration history rejected'
     $transaction.Rollback('ChecksumGuard')
     $transaction.Save('UnknownVersionGuard')
     [void](Invoke-DbNonQuery $connection "INSERT dh.SchemaVersion(Version,Name,Checksum) VALUES(999999,N'unknown',REPLICATE('0',64))" @{} $transaction)
-    Assert-Rejected { Invoke-Migrations $connection $transaction } 'unknown migrations' 'unknown database migration rejected'
+    Assert-Rejected -Action {
+        Invoke-Migrations -Connection $connection -Transaction $transaction -Phase Complete -Contract $Contract
+    } -Pattern '^Database has unknown/newer migrations; use the matching tool revision without downgrading\.$' `
+        -Label 'unknown database migration rejected'
     $transaction.Rollback('UnknownVersionGuard')
     [void](Invoke-DbNonQuery $connection 'SET XACT_ABORT OFF;' @{} $transaction)
 
@@ -139,7 +157,9 @@ SELECT (SELECT COUNT(*) FROM dh.Account WHERE AccountId=@account)
         $transaction = $connection.BeginTransaction()
         try {
             [void](Invoke-DbNonQuery $connection $case.Sql @{} $transaction)
-            Assert-SqlError { Invoke-Migrations $connection $transaction } @($case.Number) $case.Label
+            Assert-SqlError {
+                Invoke-Migrations -Connection $connection -Transaction $transaction -Phase Complete -Contract $Contract
+            } @($case.Number) $case.Label
         } finally {
             if ($null -ne $transaction.Connection) { $transaction.Rollback() }
             $transaction.Dispose()

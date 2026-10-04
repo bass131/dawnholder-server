@@ -1,6 +1,6 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **TESTDB-01을 새 Sol이 좁게 수정한 뒤, 신규 Opus 한 명이 TESTDB-01과 최종05/06/07을 처음부터 함께 판정한다.** 사용자 결정 `msg_6a82c1c724ad`로 이번 회차를 재개했으며 이전 두 검증 결과는 수용하지 않는다. 메인 `msg_4bcc54fa9ef0`은 같은 파일의 Invoke-Migrations6곳과 명시 Contract 입력 연결을 결함 수정에 필수인 승인 범위로 판정했다. 실제 DB·G2·U-01·D:·서비스는 미실행/메인 안내 및 사용자 행동 대기다. 첫 PR·G4·Gardener·전체 goal은 미완료이며 다음 goal은 자동 착수하지 않는다.
+상태: **TESTDB-01의 신규 Sol 수정·자체 점검과 정산은 끝났고, 신규 Opus 한 명이 TESTDB-01과 최종05/06/07을 같은 고정 상태에서 처음부터 판정할 차례다.** Sol은 필수 절차 미충족으로 outcome=failed를 보고했으며 제품 독립 판정은 아직 없다. 사용자 결정 `msg_6a82c1c724ad`로 이번 회차를 재개했으며 이전 두 검증 결과는 수용하지 않는다. 메인 `msg_4bcc54fa9ef0`은 같은 파일의 Invoke-Migrations6곳과 명시 Contract 입력 연결을 결함 수정에 필수인 승인 범위로 판정했다. 실제 DB·G2·U-01·D:·서비스는 미실행/메인 안내 및 사용자 행동 대기다. 첫 PR·G4·Gardener·전체 goal은 미완료이며 다음 goal은 자동 착수하지 않는다.
 
 ## 현재 사용자 결정 대조표 — TESTDB-01과 최종 재검증
 
@@ -21,7 +21,16 @@
 - 절차: 새 계약에 각 새 파일 전·각 시험 직후·단계 전환·완료 직전 check와 처리 후 ack를 명시한다. 일반 회신은 자기 태그 subject/body 및 정확 Task/Dispatch를 포함한 send를 사용한다. 공식 blocking ask는 전경이며 실제 reply를 읽은 뒤 baseline/harness/편집을 시작한다. heartbeat300초 상한과 당시 UTC 원시를 남긴다. Sol07 PROCEDURE-01(319/310초)은 미면제 기록으로 유지한다.
 - 통과 뒤에도 실제 DB 단계는 메인에 안내를 올리고 메인이 사용자에게 D: 연결·SQL 서비스와 G2 실행자/명령/시간 창을 안내한다. 오프라인 결과만으로 서비스를 시작하거나 실제 SQL을 실행하지 않는다. 로컬 checkpoint 허용과 push/PR/병합 경계는 유지한다.
 
-<!-- 현재 회차의 새 검증자는 위 현재 결정·완료조건만 읽고, 아래 두 이전 검증의 역사 결과·요약은 읽지 않는다. -->
+## TESTDB-01 - 명시 승인 입력·6호출 수정 정산
+
+- 신규 `gpt-6.1-sol max`, Task `task_89841c629dd2` / Dispatch `ctx_3e6b31963b69`, 기준 HEAD `f4bf7948fff1f49cc636d45eafa88bd70e901522`. 부모가 최초 실행 명령과 화면을 확인했으며 backend 실제 모델은 unknown이다. 공식 ask `msg_8984b95512f9`에 대한 replyv1.1 `msg_bde691cef812` 뒤 자체 baseline/편집을 시작했다. 전체 쓰기 종료 `msg_f523de7a8918`(2026-10-04T20:58:27Z), outcome=failed는 필수 절차 미충족을 포함한 작업 결과이며 제품 결함 확정 횟수로 자동 환산하지 않는다.
+- `99_Tools/database/Test-Database.ps1` 하나만 +28/-8로 변경했다.3~6행에서 Instance/Database/ApprovalPlanPath/ExpectedApprovalPlanHash를 명시 입력으로 받고9~18행의 기존 승인 읽기·정확 대상·실행 승인 검증이54행 연결보다 앞선다.66/83/84/90/97/161행의6호출에 같은 Contract와 Complete를 전달하고91/98행 두 거부 패턴을 현재 throw에 맞췄다. SQL·기존 오류번호·Assert-SqlError·transaction 수명은 diff상 유지했다. 제품 SHA256 `76D7E6DFE387C494C6E94418B836682CFA78DF7B615A0EAFEFE26CFFAADDC5EB`.
+- 구현 보고 `.backups/verification/2026-10-04-persistence-integration/testdb-01-fix/report.md`, SHA256 `C6200DDE2DB0CC2B93546C72CFB672EED3F0668FE7073606ED95ADF7993CDD62`. 부모는 최종 원문/맥락 전체, 실제 diff,64개 고정 입력 및7suite 원시 결과를 대조했다. 같은 PS5.1 argv/cwd/env에서 전후 각각1028PASS/0FAIL/9OBSERVED exit0이며 연결 전 추출 진단은1/10→10/10이다. 전체 Test-Database 실행·실제 SQL·독립 통과는 아니다. 원시 집계 `testdb-01-parent-raw-accounting.json`, 최종 hash 대조 `testdb-01-parent-final-hashes.json`.
+- 절차 미면제: 초기 파일 원시 부재/표시 잘림(01), 진행 파일목록 전체 원시 부재(02), 새 Delivery를 읽기 전 context 편집(04), heartbeat390.8336951초 초과(05).03의check182.976/125.125초는 부모 `msg_be6be4401698`에 따라90~120초 운영 목표와 필수check·300초 상한을 구분한다. 초기 서버HB raw414초와 공식ask45초를 구분하면 잔여369초이며 전 구간300초 준수를 주장하지 않는다. 부모 계약의 첫 context 외 파일 금지/초기 파일 원시 요구 충돌도 분리했다. 기능 결과로 이탈을 면제하지 않았으며 메인에 발생 즉시 보고했다.
+- 정산 뒤 release는 external_terminal retained였다. 실제 handle/incarnation·done/idle 화면을 대조해 정확 Sol pane을 닫았고 ptyKilled=true를 확인했다. **close 뒤 terminal list 재확인2026-10-04T20:59:18.7005334Z: 남은 GameDev 작업자 pane0.** 메인·Astra·대시보드는 제외했다. 재사용하지 않는다. 메인 `msg_9bb4bf49c9cd`의 재마운트 관측에 따라 완료 보고/R-8 직전에도 시각과 함께 재확인한다. 앞선 검증자 pane 재출현 정리는 해당 과거 정산에 따로 보존했다.
+- 후속 신규 Opus는 이 최종 제품과0f3638d 테스트4파일을 실사하고 TESTDB-01 AST 재발 검사와05/06/07을 각각 판정한다. 이전 두 검증의 verdict·중간·부모 요약은 계속 배제한다. 실제 DB 단계에는 별도 검토한 승인 계획 절대 경로/대문자SHA256, 정확 Instance/Database와 실제 G2가 필요하며 새 실행 예시는 구현 보고에 있다. 메인이 사용자에게 D:·서비스·실행자/명령/시간 창을 안내할 때까지 미실행이다. 로컬 checkpoint만 남기고 push/PR/병합은 하지 않는다.
+
+<!-- 현재 회차의 새 검증자는 위 현재 결정·완료조건·TESTDB-01 정산만 읽고, 아래 두 이전 검증의 역사 결과·요약은 읽지 않는다. -->
 
 ## 직전 최종 INSTALL-05·06·07 기록 — 사용자 결정으로 통과 미수용
 
