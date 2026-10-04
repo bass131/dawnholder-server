@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-2026-10-05 KST, Rules 운영 정본 반영 목표다. **PR1 전체가 신규 Opus의 독립 문서 실사를 통과했다**(차단0·필수 미검토0, ORCA 실측249줄). 작성자와 검증자는 쓰기 종료·정산·pane 종료했다. 비차단 #8의 회차 표지는 Astra가 결과 기록과 함께 보완했고, 검증 후 변경분을 메인 R-2 대조에 전달한다. 이전 BLOCKED와 자체검사 실패 원시는 보존한다. 다음은 PR 생성·CI와 정확 head의 사용자 병합 승인이다. 아직 PR·CI·병합은 미실행이다. 이 파일이 기준·상태·결과의 정본이다.
+2026-10-05 KST, Rules 운영 정본 반영 목표다. **PR1 전체가 신규 Opus의 독립 문서 실사를 통과했다**(차단0·필수 미검토0, ORCA 실측249줄). 작성자와 검증자는 쓰기 종료·정산·pane 종료했다. 비차단 #8의 회차 표지는 Astra가 결과 기록과 함께 보완했고, 검증 후 변경분은 메인 R-2 대조 대상이다. 이전 BLOCKED와 자체검사 실패 원시는 보존한다. **[PR178](https://github.com/bass131/dawnholder-server/pull/178)을 생성했으며 사용자 병합 승인 대기**다. 정확한 head·CI 결과·메인 대조를 확인한 뒤 승인받고, 병합 전에는 PR2를 시작하지 않는다. 이 파일이 기준·상태·결과의 정본이다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - branch: `docs/operating-canon-20261005`. 기준: fetch한 `origin/main`의 `11aa4b83131bc6349f186a141cfea9c58d2230e3`.
@@ -278,7 +278,7 @@ Gardener2의 사용자 원문은 **「1) Gardener 후보 2개 - PR177 점검 근
 - 독립 실행 원시 `review-pr1-recheck-raw/00-commands.md`·`01`~`07`: 고정73파일/hash·diff 일치, ORCA249줄/39,800 bytes, 승인 단계별 원문 보존, 변경 줄 링크104개(로컬98정상·외부6미실행), 들어오는 anchor179개 정상. 검증자 도구 작성 오류2건은 원시에 보존했으며 성공으로 합산하지 않았다. Astra 표본은 `astra-pr1-recheck-source-check.json`이다.
 - 설계 관찰8건은 판정 원문에 보존한다. PR2 관련 외부 팀원 맥락은 기존 승인 범위에서 다루며, Rules 지위/Unity 관측 checkout/링크 글자/규칙 증가 기준/CodeMap 순서 등은 새 정책으로 채택하지 않는다. 복구 기록의 「제목 표기」는 실제 메시지 본문 머리의 시각 표기이며 subject 필드가 아니다. 이관 원문 자체는 바꾸지 않았다. 보관 브랜치 삭제와 삭제 뒤 일회성 안내 정리는 메인 담당이다.
 - release retained/external_terminal/processAction none → 같은 incarnation `533b714f-17e8-434d-9012-b50da5e212dd`와 완료 대화·빈 prompt 확인 → close ptyKilled=true. **2026-10-04T20:52:49Z(10-05 05:52:49 KST) terminal list에 Astra만 남아 작업자pane0**(`review-pr1-recheck-post-close-list.json`). 완료 보고 직전 목록을 다시 확인해 시각을 전달한다.
-- 제품 빌드·Unity·게임·DB·외부 URL·원격 ref는 이 재실사에서 미실행. PR·CI·병합은 아직 미실행이며 전체 goal은 PR2·Gardener·종료 점검까지 남아 있다.
+- 제품 빌드·Unity·게임·DB·외부 URL·원격 ref는 이 재실사에서 미실행했다. 이후 Astra가 PR178을 생성했다. 정확 head의 CI 결과는 GitHub Checks와 메인 보고·로컬 `pr1-final-ci.json`으로 대조하며 독립 문서 실사와 구분한다. 아직 병합하지 않았고 전체 goal은 PR2·Gardener·종료 점검까지 남아 있다.
 
 ### 다음 후보와 pane 재등장 관측
 
