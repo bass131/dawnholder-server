@@ -1,6 +1,6 @@
 # CodeGraph 연결 코드 정돈
 
-상태: **새 실제 Compare 1회가 완료돼 신규 Opus가 채택 가능으로 판정했다. 별도 신규 Sol의 포인터 1필드 갱신과 신규 Opus 최종 검증이 남았다.** batch20261004T053719804684Z, prepare·measure·check 각1회 exit0, 명령28개 exit0, 현재도구 명시재생13건과 runtime O1재생1건 통과다. Sol의 포인터 한 필드 갱신 뒤 같은 기본 O1 명령은 변경 전1FAIL→변경 후1OK로 바뀌었고 신규 Opus 독립 확인은 남았다. 판정 요약의 9tree불변은 실제8tree불변·자기lock2개추가로 E/new-compare-verdict-audit.md에서 정정하고 메인에게 공개했다. 최종 Opus가 정정도 독립 실사한다. 제품·테스트는52d66b0/현재HEAD353f393, 브랜치는feat/codegraph-adapter-cleanup-20261003이다. 실제 Compare 추가 실행은 승인되지 않았다. 검증 뒤 PR 생성은 허용됐으나 해당 PR head 병합은 사용자 개별 승인이 필요하다. 목표 전체는 미완료다. E는 .backups/verification/2026-10-03-codegraph-adapter-cleanup/이다.
+상태: **새 Compare와 포인터 갱신 뒤 신규 Opus의 독립 실행과 최종 문서 검증을 통과했고 세션 정산을 완료했다. PR 생성·기존 CI 확인과 해당 PR head의 사용자 병합 승인이 남았다.** 기본 전체105건은 정상102·기존xfail3·실패/오류/skip0·exit0이고 O1 단독 및 과거 두 배치·새 runtime 재생도 통과했다. 제품 결함은 없고 문서 D-1·D-2는 수정 후 해소됐다. 마지막 PR 본문의 SHA4383e87a…를 독립 판정과 연결했다. 독립 검증 기준은 HEAD1611051, 브랜치는feat/codegraph-adapter-cleanup-20261003이다. 새 Compare batch20261004T053719804684Z의 역사 HEAD353f393과 원문을 보존했다. “9tree불변” 요약은 실제8tree불변·자기lock2개추가라는 별도 정정을 신규 Opus가 원시로 재확인했다. 추가 Compare는 승인되지 않았다. 검증 뒤 PR 생성은 허용됐으며 해당 PR head의 병합은 사용자 개별 승인이 필요하다. 목표 전체는 미완료다. E=.backups/verification/2026-10-03-codegraph-adapter-cleanup/.
 
 ## 첫 재계획의 승인과 적용
 
@@ -340,3 +340,31 @@ Astra의README는새batch/runtime와과거2batch명시replay예시를갱신했�
 - evidencePath만root2→새root로바뀌었다. settings486bytes/LF9/CRLF0유지,SHA bd9954174abb0b029c4aa7e98074f263370e957ce3d44242f9c6735d1e88f939다. 원본HOME/override없이동일O1은06:04:05→06:04:12Z 1FAIL/6.843초에서06:05:07→06:05:14Z 1OK/6.826초가됐다. 세root/frozen/실행15개·entry3개/command-time56파일전후보존대조통과다. 자체검사이고최종독립판정은아직없다.
 - 채택직후manifest E/new-pointer-implementation/command-time-manifest.json SHA b1861443469774b6f615c3c71a4be3a6a24270e3975da34dccd894ae570af576는선행manifest와recordedUtc만다르고나머지필드/56개실측기록은같다(Astra재대조 E/new-pointer-manifest-observation.json). 원본batch settingsHash는소급수정하지않았다.
 - writer종료뒤06:12:40Z fetch한origin/main=3e07e1b0b318881701b5b7bab8adbe087b596420(PR169)이다. merge-base7fa1074이후51개파일은database/관련문서·goal/format-check이고동결225·Architecture36개·.gitattributes/CODE규칙과겹침0이다. 현재포인터/README/goal을체크포인트커밋한뒤이main을통합하고actualbytes불변을확인해신규Opus최종검증기준을고정한다. DB/새추출을실행하는작업이아니다.
+최종검증전통합결과: 포인터/README/goal 체크포인트 e0efe2cedf98c26b81f2578a65e4a008d404cb8f, 최신main3e07e1b 통합16110512b6b57948872da57481cfb7748c88b05f다. CURRENT 링크2행충돌은Architecture의실제재개-실행상대링크와Management의main worktree링크를유지해해결했다. 보호대조 E/new-pointer-review-before.json(06:14:08Z)은Architecture36개actualbytes변경0/동결225개SHA불일치0이다. 추가Compare는없고별도신규Opus가이HEAD에서전체suite/과거replay/문서·정정을최종검증한다. 원격push/PR/사용자병합승인은아직없다.
+## 신규 포인터 최종 독립 검증 — 진행 중
+
+신규 Opus Task task_c921ef075a0c / Dispatch ctx_50159ebb9f48을 HEAD1611051에서 시작했다. 최초 명령은 `claude --model claude-opus-5-5`, 빈 첫 화면은 Opus5.5 xhigh이며 실제 backend 모델은 unknown이다. worker-start는 ready/input_accepted/turnStart observed다. 계약은 `E/new-pointer-review-contract.md`(29,617bytes, SHA ab2073a5d24bc0a329a1e7c628662c8d6a7f372ff1be7ad8366a5292408904f3)이고 첫 화면·할당 근거는 `E/new-pointer-review-first-*`와 `new-pointer-review-start.json`이다.
+
+기본 전체 suite·같은 O1 명령 사후 독립 실행·과거 두 batch의 실제 도구 재생·출처 음성 검증·manifest/보존 대조·CodeRules Changed·README/CURRENT/goal/PR초안을 실사한다. Compare 판정 요약의 정정도 원시 근거로 독립 판정한다. 새 추출과 제품 쓰기는 허용하지 않았고, 최종 수치가 나온 뒤 Astra가 PR초안·goal을 갱신하면 검증자가 마지막 본문 SHA를 확인한다. 추가 Compare와 원격 CI는 현재 미실행이며 최종 판정은 아직 없다.
+
+## 최종 독립 실행 결과와 PR 발행 전 문서 확인
+
+신규 Opus Task task_c921ef075a0c / Dispatch ctx_50159ebb9f48의 status msg_5df86a3149f8(2026-10-04T06:48:07Z)와 ask msg_6c4de6c8c3cd를 수신했다. 실행·보존·회귀 실사는 끝났고 제품·문서 결함 번호는 없다. 최종 PR본문 실사와 verdict 작성은 아직 남았다. 원문은 E/check-new-pointer-review-27.json·동 -ack.json에 있으며 검증자는 마지막 본문 SHA를 판정에 기록한다.
+
+- 기본 전체 suite: 원본 WSL cwd, HOME=/home/bass1, evidence override 없이 자식 TMPDIR만 격리했다. 06:25:23.087565Z→06:41:28.065293Z, 105건/964.580초/정상102/기존 expected failure3/실패0/오류0/skip0/exit0이다. #8 회귀11개와 #9 경계5개를 실제 test ID로 확인했다. 근거는 V/raw/full-suite와 V/suite-summary.json이다(V=E/new-pointer-verification).
+- O1 동일 명령 독립 사후: 06:42:05.233165Z→06:42:12.558013Z, 1OK/7.160초/exit0. 선행 Sol의 같은 명령 before1FAIL→after1OK raw를 실사했고, 과거 root2의 execution_status.py 기록과 현재 바이트 차이를 재계산했다. 새 batch 구현15개·진입점3개는 현재 파일과 일치한다(V/o1-link.json). O1 자동 테스트 자체는 구현 파일을 검사하며 PowerShell 진입점은 별도 실측했다.
+- test_final_batch_replay.py 명시 재생: root1 batch20261002T065831395290Z + Git blob commit d0dffd1은13OK/11.351초, root2 batch20261003T170218569325Z + 보존runtime dd085a73442a/tool은13OK/9.630초, 새batch + 보존runtime83c93998c4af/tool은13OK/9.944초, 모두exit0이다. 새 추출은 수행하지 않았다.
+- 출처 음성6종은 각각 기대한FAIL/exit1이고 무변이 사본2개는OK/exit0이다. 출처 미지정·틀린commit1611051·없는tool root, 과거runtime runner.py 한줄변이, 현재 도구 사본 Directory.Build.props의 CRLF 변이, 올바른commit+틀린folder 혼합을 구분한다. 최초 사본 의존5건은 사본 부재 때문에 무효이며 raw를 남겼고, 한 WSL 세션 driver로 준비·실행한 -2 결과만 유효하다. 후속 읽기 전용 journal에는 사본 준비 종료06:43:14Z와 첫 검사06:43:38Z 사이에06:43:29Z 배포판power-off와06:43:36Z startup이 기록돼 있다. /tmp의tmpfs는06:50:25Z 후속 부팅에서 관측했다. 재시작에 따른 휘발성 사본 소멸이라는 검증자의 설명은 이 시간 연쇄와후속mount관측에 근거하며, power-off 사유가 idle 종료인지는 추정이다. 당시 mount나 삭제 순간을 직접 기록하지 않은 한계를 최종판정에서 구분한다. 앞선 같은journal boot구간을 근거로 재시작을 배제했던 중간화면 해석은 상세 journal 관측으로 대체됐으며 메인msg_15ecc031e14a에 후속 근거를 전달했다.
+- 사후 보존: root1 1255파일·root2 210·new 210·frozen-goal7 및 두 보존 runtime tool 각255파일이 사전·사후 동일하다. 도구36개·latest-run·새batch파일도 불변이다. Compare/Sol 두 manifest는 recordedUtc만 다르고 actual command/time56파일(28쌍)이 전후 일치했다. 이 기간 변경은 Astra의 PR초안뿐이었다. 이후 이번 goal/PR수치 갱신은 Astra 소유로 별도 수행했다.
+- Compare 원문 정정의 독립 실사: 기존9tree 중8불변·자기lock2추가, preservation-compare exit1/item-compare exit0/audit40/41 exit1을 원시로 재계산했다. 8run normalized는 extractor.configHash만 다르고 validation·score.json·score.csv 바이트는 같다. 양쪽 config actual SHA 연쇄와 새28명령exit0·CodeGraph→Roslyn 순서를 확인했다. 원문을 수정하지 않고 별도 감사 노트와 이번 최종판정으로 연결한다.
+- CodeRules Changed: origin/main3e07e1b 기준13대상/위반0/실패0/deferred0/exit0, 제외7개(문서·JSON·run-wsl.sh)를 구분했다. 06:36:16.6986452Z→06:36:19.6134376Z이며 기존 PSSA1.25.0 manifest를 재사용했고 ExecutionPolicy RemoteSigned/Bypass 미사용이다. 이번 All은 미실행이다.
+- README/CURRENT/goal 현재 절의 문서 결함은 없다. 비차단 관찰은 보존 diff.patch 사본의 CRLF48개(저장소 README는LF 유지)와 O1의 entryPointFiles 자동대조 부재다. R1 재checkout 한계·기존partial/xfail3·과거 cache관측 예외·새CI 보류를 유지한다. DB/Unity/게임/원격CI는 이번 독립 검증에서 미실행이다.
+
+최종 독립 판정 예정 경로는 E/new-pointer-verification/verdict.md다. 결과 수치를 반영한 PR초안과 이 목표 기록을 동일 ask ID로 회신한 뒤, 마지막 문서 실사와 worker_done 정산을 기다린다. 커밋·push·PR 생성·CI·사용자 승인·병합은 이 실행 검증과 구분해 이후 기계 기록을 남긴다.
+
+최종 문서 재실사 D-1/D-2: 신규 Opus ask msg_a5c9bacad1e3는 PR의 정정 검증 범위 표현이 전체 실제 파일 재순회로 읽힐 수 있음을 지적했고, 후속 journal 뒤 사본 원인 미확정만 남은 표현을 고치거나 PR에서는 원인을 생략하도록 반환했다. Astra는 D-1을 선행 inventory 재계산과 최종 실제 파일 재순회 범위로 나눴고, D-2는 PR 원인 문장을 제거하고 goal에 종료·재시작 및 tmpfs 관측 시점과 추론 경계를 적었다. 제품 결함은 없으며 이 문서 수정의 최종 실사는 아직 진행 중이다.
+## 최종 판정 정산 — PR 준비
+
+신규 Opus 최종 판정은 **통과**다. 원문 E/new-pointer-verification/verdict.md(34,579bytes, SHA256265f5e820dfe7569203eccc0c3c35d26e180dad86f5eb48c75954d7ef459a9ad)를 Astra가 전문 읽고 raw·문서SHA·최종상태와 대조했다. 완료 msg_c609b52e74d6(2026-10-04T07:00:45Z)는 outcome succeeded이며, worker-release 후 정확한 incarnation·idle을 확인하고 pane을 close(ptyKilledtrue), delivery_d430b10a7ea3를 ack했다. reclaimable은0이고 완료세션은 재사용하지 않는다.
+
+판정은 제품 결함0·문서D-1/D-2해소, PR초안4383e87a…/8,164bytes와 goal검토본350b7e4d…/108,991bytes를 확인했다. 그 뒤 이 단락과 현재상태의 정산 표기만 Astra가 기계 기록으로 추가했다. 메인에 원문·R2 표본을 전달했으나 메인의 R2 회신은 아직 받지 않았다. 승인된 커밋·push·PR생성과 기존CI 확인을 진행하며, 사용자 개별 승인 전 병합·자동병합은 하지 않는다. 목표 전체는 병합 전 미완료다.
