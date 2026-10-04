@@ -1,14 +1,24 @@
-"""Replay of the recorded comparison batch from local evidence.
+"""Replay of a recorded comparison batch from local evidence.
 
-The batch is found through the tool's own settings and latest-run pointer, or through
-ARCHITECTURE_EVIDENCE_BATCH. Evidence is Git-ignored local data, so every test here is
-skipped with the reason when it is absent. Scores are recounted from raw without the
-product scoring module."""
+By default the batch is the one latest-run.json names under the tool's configured evidencePath,
+and the code it recorded as executed must equal the current repository tool.
+
+ARCHITECTURE_EVIDENCE_BATCH replays another batch (an absolute `<root>/runs/<stamp>` folder);
+its evidence root is the folder holding that runs/. A replayed batch is compared with the bytes
+that ran then, named explicitly by ARCHITECTURE_EVIDENCE_TOOL_COMMIT (raw Git blobs of
+99_Tools/Architecture at that commit, without checkout conversion) and/or
+ARCHITECTURE_EVIDENCE_TOOL_ROOT (a preserved copy of the executed tool folder). The batch's own
+implementationHead is not trusted for this, because the tool may have been uncommitted when it
+ran; without either input the replay fails instead of comparing the record with itself.
+
+Evidence is Git-ignored local data, so every replay test here is skipped with the reason when
+it is absent. Scores are recounted from raw without the product scoring module."""
 import datetime
 import hashlib
 import json
 import os
 import pathlib
+import subprocess
 import tempfile
 import unittest
 
@@ -36,16 +46,22 @@ def _utc(text):
 
 def _locate():
     settings = _read(TOOL_ROOT / "comparison-settings.json")
-    evidence = mini_inputs.REPOSITORY_ROOT / settings["evidencePath"]
     override = os.environ.get("ARCHITECTURE_EVIDENCE_BATCH")
-    latest = evidence / "latest-run.json"
-    if not override and not latest.exists():
-        return None
-    batch = pathlib.Path(override) if override else pathlib.Path(_read(latest)["batch"])
+    if override:
+        batch = pathlib.Path(override)
+        # First-analysis records and every run of a batch live in the root above its runs/.
+        evidence = batch.parent.parent
+    else:
+        evidence = mini_inputs.REPOSITORY_ROOT / settings["evidencePath"]
+        latest = evidence / "latest-run.json"
+        if not latest.exists():
+            return None
+        batch = pathlib.Path(_read(latest)["batch"])
     goal = mini_inputs.REPOSITORY_ROOT / settings["goalPath"]
     return {
         "batch": batch,
         "evidence": evidence,
+        "replayed": bool(override),
         "goal": goal,
         "manifest": goal / "input-manifest.json",
         "freeze": mini_inputs.REPOSITORY_ROOT / settings["freezeRecordPath"],
@@ -54,6 +70,61 @@ def _locate():
 
 LOCATION = _locate()
 SKIP_REASON = "local comparison evidence is absent (Git-ignored); set ARCHITECTURE_EVIDENCE_BATCH to replay a batch"
+
+
+def _is_executed(relative):
+    path = pathlib.PurePosixPath(relative)
+    return path.suffix in EXECUTED_SUFFIXES and not GENERATED_FOLDERS & set(path.parts)
+
+
+def tool_files_in_folder(root):
+    """{tool-relative path: SHA256} of the executed files under a tool folder."""
+    root = pathlib.Path(root)
+    return {
+        path.relative_to(root).as_posix(): _sha256(path)
+        for path in sorted(root.rglob("*"))
+        if path.is_file() and _is_executed(path.relative_to(root).as_posix())
+    }
+
+
+def _git(repository, *arguments):
+    """Read-only Git query; a Windows worktree pointer is read through Windows Git from WSL."""
+    pointer = pathlib.Path(repository) / ".git"
+    if pointer.is_file() and ":/" in pointer.read_text(encoding="utf-8").replace("\\", "/"):
+        windows_root = subprocess.run(["wslpath", "-w", str(repository)], capture_output=True, text=True, check=True).stdout.strip()
+        command = ["git.exe", "-C", windows_root, *arguments]
+    else:
+        command = ["git", "-C", str(repository), *arguments]
+    return subprocess.run(command, capture_output=True, check=True).stdout
+
+
+def tool_files_at_commit(commit, repository=mini_inputs.REPOSITORY_ROOT):
+    """{tool-relative path: SHA256} of raw blobs (no checkout conversion) under 99_Tools/Architecture."""
+    prefix = "99_Tools/Architecture/"
+    files = {}
+    for entry in _git(repository, "ls-tree", "-r", "-z", "--full-tree", commit, "--", prefix).split(b"\0"):
+        if not entry:
+            continue
+        metadata, path = entry.split(b"\t", 1)
+        _, kind, blob = metadata.split()
+        relative = path.decode("utf-8")[len(prefix):]
+        if kind == b"blob" and _is_executed(relative):
+            files[relative] = hashlib.sha256(_git(repository, "cat-file", "blob", blob.decode())).hexdigest()
+    return files
+
+
+def tool_sources():
+    """Named byte sources to compare with the batch's recorded executed code."""
+    if not LOCATION["replayed"]:
+        return {"current repository tool": tool_files_in_folder(TOOL_ROOT)}
+    sources = {}
+    commit = os.environ.get("ARCHITECTURE_EVIDENCE_TOOL_COMMIT")
+    folder = os.environ.get("ARCHITECTURE_EVIDENCE_TOOL_ROOT")
+    if commit:
+        sources[f"Git {commit}"] = tool_files_at_commit(commit)
+    if folder:
+        sources[f"folder {folder}"] = tool_files_in_folder(folder) if pathlib.Path(folder).is_dir() else None
+    return sources
 
 
 def _reorder(value):
@@ -146,14 +217,17 @@ class FinalBatchReplayTests(unittest.TestCase):
         self.assertGreaterEqual(min(analysis_starts), earliest, "an analysis ran before the first-analysis record")
 
     def test_executed_code_matches_repository_tool(self):
+        """Recorded executed code equals the current tool, or for a replay the named bytes of then."""
         config = _read(self.batch / "config.json")
         recorded = {item["path"]: item["sha256"] for item in config["implementationFiles"]}
-        current = {}
-        for path in sorted(TOOL_ROOT.rglob("*")):
-            relative = path.relative_to(TOOL_ROOT)
-            if path.is_file() and path.suffix in EXECUTED_SUFFIXES and not GENERATED_FOLDERS & set(relative.parts):
-                current[relative.as_posix()] = _sha256(path)
-        self.assertEqual(current, recorded)
+        sources = tool_sources()
+        self.assertTrue(sources, "replaying a selected batch needs ARCHITECTURE_EVIDENCE_TOOL_COMMIT or "
+                                 "ARCHITECTURE_EVIDENCE_TOOL_ROOT naming the tool bytes that ran then; "
+                                 "the batch's own implementationHead and hashes are not an independent source")
+        for name, files in sources.items():
+            with self.subTest(name):
+                self.assertIsNotNone(files, f"tool folder is missing: {name}")
+                self.assertEqual(files, recorded)
         self.assertEqual([], [path for path in recorded if path.endswith(".py") and "/" not in path], "stale root modules must not be part of the executed tool")
         self.assertEqual(config["manifestHash"], _sha256(self.manifest))
 
@@ -248,6 +322,53 @@ class FinalBatchReplayTests(unittest.TestCase):
         unity_errors = [item for item in raw["diagnostics"] if item.get("project") == "Unity asmdef approximation" and item.get("severity") == "Error"]
         self.assertTrue(unity_errors)
         self.assertEqual("partial", _read(cold / "normalized.json")["status"])
+
+
+
+class ToolByteSourceTests(unittest.TestCase):
+    """The replay byte sources read real bytes: raw Git blobs and a folder, never the record."""
+
+    def setUp(self):
+        self._temporary = tempfile.TemporaryDirectory(prefix="architecture-tool-source-")
+        self.addCleanup(self._temporary.cleanup)
+        self.repository = pathlib.Path(self._temporary.name)
+        self.tool = self.repository / "99_Tools/Architecture"
+        self.files = {
+            "Pipeline/runner.py": b"print('ran then')\n",
+            "run-wsl.sh": b"#!/usr/bin/env bash\n",
+            "Roslyn/Program.cs": b"class P {}\n",
+            "Roslyn/bin/Debug/Generated.cs": b"// generated\n",
+            "comparison-settings.json": b"{}\n",
+            "CodeGraph/node_modules/x/index.cjs": b"// dependency\n",
+        }
+        for relative, data in self.files.items():
+            (self.tool / relative).parent.mkdir(parents=True, exist_ok=True)
+            (self.tool / relative).write_bytes(data)
+        # A checkout of these files would turn LF into CRLF; the replay must use the raw blob.
+        (self.repository / ".gitattributes").write_bytes(b"*.py text eol=crlf\n")
+        for command in (["init", "--quiet"], ["add", "-f", "."],
+                        ["-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "--quiet", "-m", "tool"]):
+            subprocess.run(["git", "-C", str(self.repository), *command], check=True, capture_output=True)
+
+    def expected(self, names):
+        return {name: hashlib.sha256(self.files[name]).hexdigest() for name in names}
+
+    def test_commit_source_is_raw_blob_bytes_of_executed_files_only(self):
+        executed = ["Pipeline/runner.py", "Roslyn/Program.cs", "run-wsl.sh"]
+        self.assertEqual(self.expected(executed), tool_files_at_commit("HEAD", self.repository))
+
+    def test_folder_source_reads_current_bytes_and_sees_a_changed_file(self):
+        executed = ["Pipeline/runner.py", "Roslyn/Program.cs", "run-wsl.sh"]
+        committed = tool_files_at_commit("HEAD", self.repository)
+        (self.tool / "Pipeline/runner.py").write_bytes(b"print('changed later')\n")
+        folder = tool_files_in_folder(self.tool)
+        self.assertEqual(sorted(executed), sorted(folder))
+        self.assertNotEqual(committed["Pipeline/runner.py"], folder["Pipeline/runner.py"])
+        self.assertEqual(hashlib.sha256(b"print('changed later')\n").hexdigest(), folder["Pipeline/runner.py"])
+
+    def test_unknown_commit_is_an_error_not_an_empty_match(self):
+        with self.assertRaises(subprocess.CalledProcessError):
+            tool_files_at_commit("0" * 40, self.repository)
 
 
 if __name__ == "__main__":

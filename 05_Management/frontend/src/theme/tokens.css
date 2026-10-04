@@ -46,6 +46,55 @@ button:disabled { cursor: default; }
 .record-tabs button[aria-pressed='true'], .record-system[aria-pressed='true'] { background: #e5f0e9; color: #155c57; }
 .record-missing { color: #9b2c22; }
 .control-buttons button { background: #e9dfc9; color: #5f5241; }
+
+.record-intro h3,
+.record-detail-body,
+.record-detail-group h4,
+.record-entry summary,
+.record-entry-body,
+.record-source h4,
+.record-source dd,
+.record-snapshot dd,
+.record-editor > summary,
+.record-file-label input {
+  color: var(--text);
+}
+
+.snapshot-tag,
+.record-runtime-bar > span,
+.record-file-label,
+.record-filters label,
+.record-filters input::placeholder,
+.guide-search input::placeholder,
+.record-source dt,
+.record-snapshot dt,
+.record-source p,
+.record-empty p,
+.record-editor,
+.user-table th,
+.evidence-row p {
+  color: var(--muted);
+}
+
+/* Status lists also appear on dark cards; only the light detail uses these tokens. */
+.record-detail .record-status dt {
+  color: var(--muted);
+}
+
+.record-detail .record-status dd {
+  color: var(--text);
+}
+
+.record-type,
+.record-evidence > summary {
+  color: var(--accent);
+}
+
+/* The existing link hover has a dark background and needs inverse text. */
+.record-link:hover {
+  color: var(--surface);
+}
+
 .development-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid #a8946e; }
 .development-tabs button { padding: 8px 16px; background: #e4d6b6; color: #2a231b; border: 0; border-top: 3px solid transparent; border-radius: 4px 4px 0 0; font-size: 13px; }
 .development-tabs button[aria-pressed='true'] { border-top-color: #1f6b66; color: #174f4b; background: #ece3cf; font-weight: 700; }

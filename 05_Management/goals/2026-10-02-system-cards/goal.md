@@ -12,7 +12,39 @@
 
 ### 재개 진행
 
+**현재 상태 — 글자색 수리와 main 통합 보존 독립 통과, 첫 PR 준비:** 신규 Opus `task_21cd97505ef2` / `ctx_843161023c1f` done `msg_535fc24a3ca1`은 검색 안내문 수리와 main 기계통합 보존을 통과·차단 없음으로 판정했다. 원문 E/placeholder-review/verdict.md 20,413B/SHA256 `0a0d375b1a482df779479e4409e1c9346e3c2b26dc0420de19c89b3bc1b58e25` 전체를 읽었다. 같은 실제 TEMP 빌드·renderer에서 안내문7상태는 4.4285921418776395→7.2872763095606805:1, 새 동적 Assert68/68·통합14/14가 통과했다. 검색 입력·Escape/삭제 복원·앞48줄 계산스타일·카드7장·도식3종·창/배율 보존을 확인했다. 이전864 suite/19상태 전체 재실행이나 사용자 색상 재확인은 아니다.
+
+Astra는 고정 tracked197/canonical48의 현재hash 불변, 원시 Assert집계·전후RGBA/PNG표본·TEMP2부재를 직접 대조했다(E/placeholder-review-astra-audit.json). 검증자의 제품·goal 쓰기는 없었으나 `git write-tree/status/diff`가 live index의 cache/stat을 다시 썼으며 staged tree77517248은 불변이었다. 이후 복사index/optional locks를 사용했고 최종보호변화0이라는 판정이다. HB421초·303초, 실패한 하네스 최초시도와 그 보완은 원시에 보존하며 전체절차PASS로 표현하지 않는다. release→동일inc 실제 완료화면→close→**2026-10-04T21:08:50.2898276Z terminal list: Astra만, 작업자0**→done ACK/reclaimable0으로 정산했다.
+
+최종 판정의 비차단 문서 #1(이전 현재상태 문구)은 이 첫 문장과 최신 절로 보완했고 #2(PR 초안의 suite 기준SHA 누락)는 기준 `3bfb614895a2e55c998b5f89a45738aee4d9d12e`와 최종PR head의 전체suite 미재실행을 명시한다. 이는 판정에 따른 Astra 결과기록 보완이며 별도 신규 Opus 재검증 실적으로 쓰지 않는다. 이번 수정은 tokens.css49줄뿐이며 정확제품hash54751d17…, 통합HEAD8870700/MERGE_HEAD11aa4b8는 판정입력과 같다. 이제 검증된 제품·main통합과 이 결과기록을 커밋해 첫PR을 발행한다. PR별 사용자 병합승인·CI확인·사용자색상재확인·Gardener/goal종료는 남아 있다.
+
+아래는 선행 회차의 당시 결과·범위이며 현재 단계는 위 첫 문단을 따른다.
+
+**선행48줄 색상 수리 독립 판정:** 새 Opus `task_4c00dc616e0e` / `ctx_12ec271b9522`의 `msg_84196da20fb5`가 미커밋 tokens.css 48줄 수리(SHA256 `fec12d9ba983a7ec226c0e74bf9dac6d6bea3aac0b390e25c3205e460525acc0`)를 통과·차단 없음으로 판정했다. 원문 E/contrast-review/verdict.md 22,973B / SHA256 `996af25d8c937cd84930167c71620720efc008ad62ca7f7022b0a2554bacc0f6` 전체를 읽었다. 같은 renderer 시험에서 일반/큰 글자 3,615관측 중 변경 전 1,801미달→변경 후0, 강제 hover/focus 1,622관측 미달0이다. 도식3종·상위7장·창/배율·CSP 보존, 기존 영향 테스트2파일은 전후3통과+같은8실패다. 전체864 suite/물리입력/사용자 재확인/CI는 미실행이며 관측 수를 고유 결함 수로 바꾸지 않는다. 도식은 showInactive 창의 native occlusion을 끈 프로세스 한정 계측 모드 결과다. 기본 숨김 모드의 도식 timeout·앞선 실패시도·native paint proxy 한계는 원시에 보존한다.
+
+Astra는 E/contrast-review-astra-hash-audit.json에서 tracked192/canonical48/cache1의 현재 hash 불변을 대조했다. 검증자 쓰기종료→release retained→동일inc 실제 완료화면 확인→close ptyKilledtrue→**terminal list 재확인: 작업자 pane0**→done ACK/reclaimable0으로 정산했다. 사전 메모의 추정시각은 실제 파일 생성시각으로 정정했고, 태그subject+빈body heartbeat8건은 표식 위반으로 원시 보존·교정 안내했다. 이후 정상HB까지 확인한 것은 아니며 내용 판정을 전체절차PASS로 쓰지 않는다. 정리 finish.mjs의 exit1은 소유 아닌 TEMP f의 오탐과 Astra 대기영수증 변화 때문이며 후속 정확경로 검사 잔존0·실제 소유 프로세스 종료를 구분해 읽었다. E/contrast-review-main-result.json으로 원문·한계·정산을 메인에 전달했다.
+
+새 비차단 결함 #1은 시스템 카드 검색 placeholder가 #757575 대 #fffaf0, 4.4285921418776395:1인 것이다. cfd1c9f의 브랜치 신설 화면이며 cached origin/main 경로부재를 확인했다. 메인 msg_bda37ee6f639·msg_4a843476b6ba의 이번 브랜치 유래 색상 문제 좁은 수리 권한에 따라 **theme/tokens.css 기존 muted selector 그룹에 해당 placeholder 한 항목만 추가**하는 새 Sol→새 Opus 회차를 진행한다. 앞48줄·배경/배치/폰트/도식/기능과 기존12실패/A01/O-1~O-3는 보존한다. E/placeholder-astra-context.md·placeholder-repair-task.txt가 범위와 원문 계약이다. 사용자 색상 재확인·main 통합·PR·CI·병합·goal 종료는 남아 있다.
+
+**사용자 화면 결과와 수리 착수 근거:** 메인 `msg_bda37ee6f639`·`msg_4a843476b6ba`가 전달한 사용자 결과는 **도식 3종·창 크기 문제 없음 / 개발 기록·유저 관리 글자색 부적합**이다. 전체 물리 확인 통과가 아니다. 최초 관측 2026-10-05 03:13:29 KST의 보조 화면은 OS 100%, 앱 125%, content 1600×900 DIP이며 사용자 원본 3장과 자동 재현을 구분해 E/physical-user-check-result.md에 보존했다. 사용자 원문과 시각의 한계도 그 기록에 있다.
+
+이번 branch의 새 밝은 theme 배경과 기존 고우선순위 자손 글자색이 결합한 회귀로 조사됐다. Git blob/import와 실제 CSSOM을 대조했으며 실제 main 앱 실행·독립 원인 판정은 아직 하지 않았다. 정정된 측정은 254개 읽기 관측 중 143개가 4.5:1 미만이고, 상태 간 반복을 제거한 element/pseudo selector는 측정 136개·저대비 88개(그중 viewport에서 관측된 저대비 61개)다. 이는 고유 CSS 규칙 수나 전체 앱 검증이 아니다. 첫 측정의 숨은 details 오집계는 제외하고 corrected 원시를 사용한다. 메인의 조건부 허용에 따라 **theme/tokens.css의 해당 밝은 surface 글자색만 새 Sol이 수리하고 새 Opus가 독립 테스트·실사**한다. 어두운 카드·도식·크기·배율·기록 기능, 기존 12실패/A01/O-1~O-3는 보존한다. 원시와 적용 범위는 E/contrast-origin-static.json·physical-contrast-astra-audit.json·contrast-repair-task.txt에 연결한다.
+
+실행 담당 `task_129a000a86ed` / `ctx_272edb6009ff`는 `msg_8f029d36ca04`로 쓰기 종료했다. Astra가 실행 영수증 전체와 tracked 193개·canonical 48개 현재 hash 불변, 소유 프로세스 세대 관측 301건의 실제 잔존 0, TEMP 부재를 대조했다(E/physical-final-astra-audit.json). release retained → 동일 incarnation 완료 화면 → close → **terminal list 재확인: 남은 작업자 pane 0**, Astra만 남았다(E/physical-prep-terminals-after-close.json). 최초 ready wait 영수증 부재·turn_start_unobserved와 일부 heartbeat 간격 한계는 완전 준수로 소급하지 않는다. 사용자 색상 재확인·새 독립 판정·main 통합·PR·CI·병합·goal 종료는 남아 있다.
+
+**이전 검증자 종료 보고 정정:** 아래 분류·SAC 판정의 `term_f2d21ada` close 영수증만으로 실제 검증자 화면이 사라졌다고 보고한 것은 근거가 부족했다. 메인 `msg_decb5aac272b` 지적 후 같은 tab/leaf에서 실제 완료 화면 `term_4af02bd4`(다른 PTY·incarnation)가 남은 것을 확인하고 닫았으며 사후 목록에서 부재를 확인했다. f2는 원래 launch/dispatch/close 대상이었다. 핸들이 달라진 시점·원인과 당시 실제 종료 OS 프로세스는 보존 기록만으로 unknown이다. 실제 판정 원문은 변경하지 않으며 종료 완료 주장만 정정한다. E/settlement-correction.md와 close 전·후 목록이 근거다. 이후 정산은 worker-list와 실제 화면을 대조하고 close 뒤 목록에서 소멸을 확인한다.
+
+아래 문단은 색상 확인 전 분류·SAC 판정의 경과이며, 화면 확인 대기·종료 상태는 위 최신 기록으로 대체한다.
+
 **재개 진행 — 분류·SAC 독립 판정 완료, 사용자 화면 확인 대기:** 신규 Opus `task_3b09b791e2f7` / `ctx_e0c9dcc61b43`의 `msg_e09fdaf1ec21`은 checkpoint `3bfb614895a2e55c998b5f89a45738aee4d9d12e`에서 **통과(차단 없음), 비차단 2건**이다. 기존 12건은 테스트 결함 10·환경 2이며 전체 suite는 864 = 852 통과 + 12 실패(exit 1)다. 단독 12개 재현, 진입 하네스 3/3, A01 파일 23/23과 부하 탐침 415 = 413 + 2를 구분한다. 판정 #1의 브랜치 유래와 첫 PR 영향은 [분류표](existing-failures.md)에 보충했고, #2 간헐 timeout은 미해결·수정 범위 밖으로 보고한다. 판정 원문 E/review-recovery2/verdict.md(26,291B, SHA256 `8007def12cce64b2b1d99fafc875092b97ba1fe7077236c0832ad55486869c88`) 전체를 읽었다. E/review-recovery2-astra-audit.json에서 Management 189개·canonical 출력 48개와 raw 50스트림, reporter 수치를 직접 대조했다. release → 동일 incarnation `4461ed5f-b60d-4171-b069-00574ab4dc11` 완료 화면 → 정확 pane close(ptyKilled true) → done ACK → reclaimable 0으로 종료했다. 제품·원본 테스트는 수정하지 않았다. 사용자 125% 확인, main 통합·PR·CI·병합·Gardener·전체 goal 종료는 미완료다.
+
+### 검색 안내문 구현 정산과 main 통합 준비 — 2026-10-04 20:42 UTC
+
+Sol `task_8e21e2fdf768` / `ctx_b5061efc350f` done `msg_1ea9d7c693de`가 tokens.css 기존 muted그룹에 `.guide-search input::placeholder` 한 줄을 추가했다. 결과 SHA256 `54751d173cd784216d2711a9e0779963bf7aa7be7ac3bf45d3f8df8523e8995b`, HEAD 대비49줄=앞48줄+이번1줄이다. 영수증 E/placeholder-repair/execution-result.md 6,238B/SHA256 `32f443ee3bd9fc23579dabd3df1936db4392ff72d9d73b703ec8273b774ecc8b` 전체를 읽고 새줄 제거 시 시작바이트 복원·보호11파일 불변을 직접 대조했다. 구현은 정적 자체점검만 수행했으며 동적 표시·독립 PASS가 아니다. Astra가 활성 맥락 메모에 raw recount 출처를 추가한 것을 첫 검사 exit1로 검출했고 msg_ab2cbd4f53c2로 작성자·범위불변을 확인했다. 초기입력은 hash일치 prefix를 사후복원한 것이며 사전snapshot으로 소급하지 않는다. 보고명령의 os error206은 프로세스 생성 전 거부, heartbeat452초 간격은 지연으로 보존한다.
+
+release→동일inc 실제 완료화면→close ptyKilledtrue→**2026-10-04T20:41:54.3384682Z terminal list: Astra만, 작업자0**→done ACK로 정산했다. 메인 msg_063a4ae43fa0의 임시 지시에 따라 보고/R-8 직전에도 목록을 다시 확인하고 시각을 기록한다. 닫은pane의 새handle 재출현은 메인의 로그 분석 전달이며 Astra 직접 로그분석 실적이 아니다. 재출현pane에 입력하지 않고 정확작업/완료화면을 확인한 뒤 정리한다.
+
+이후 최신 main을 다시 fetch해 `11aa4b83131bc6349f186a141cfea9c58d2230e3`를 확인하고 `git merge --no-ff --no-commit origin/main`으로 **로컬 통합 준비**했다. 충돌0, HEAD는8870700 그대로·MERGE_HEAD는11aa4b8이며 commit/push/PR/원격main 병합은 아직 없다. E/integration-before.json·integration-after.json에서 Management 파일바이트 보존, Management 밖 index내용이 origin/main과 같음, merge-tree와 실제 index를 대조한다. 새 Opus는 이 고정 통합입력에서 안내문 한 항목·기존보존·현재goal기록을 실사하고 독립테스트한다. 이전Sol규칙은8870700에 고정했으며 다음검증계약부터 통합된 최신규칙을 적용한다. 사용자 재확인·PR/CI·병합승인·Gardener/goal종료는 남아 있다.
 
 ### 정본 반영 전 적용 중인 사용자 결정
 

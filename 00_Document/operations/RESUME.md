@@ -21,17 +21,22 @@ GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, �
 
 1. 새 Astra(GameDev·Management·Architecture)의 배치는 [R-1](ORCA.md#r1-management-placement), 작업자 기동은 [R-5](ORCA.md#r5-worker-launch), 첫 화면 확인은 [R-6](ORCA.md#r6-first-screen)을 따른다. 이전 handle/Run/Task/Dispatch를 재사용하지 않는다.
    기본 세 파트와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. 현재 goal의 종료조건도 확인하며 이 문서에 상세 규칙을 복제하지 않는다.
-2. Astra의 목표 종료·재진입·중간 재개·인계 기록은 [R-8](ORCA.md#r8-astra-lifecycle)을 따른다.
-3. 메인은 시작 시 GameDev·Management·Architecture 세 Astra에 자기 handle을 알린다. 모든 세션 간 메시지 subject/body와 입력은 자기 발신 태그를 붙이고 `from_handle`과 대조한다. 회신 subject는 [R-3](ORCA.md#r3-reply-tag)을 따른다. 타 세션 터미널에는 태그와 Orca 메시지 확인 안내만 넣으며, 지시는 orchestration으로 전달한다. 표식 없는 터미널 입력만 사용자 직접 지시다.
-4. 작업자·검증자 세션은 작업 하나 후 정산·종료하고 재사용하지 않는다. 정상 완료는 `worker_done`·Astra 대조 후, 비정상 종료·막힘·무응답은 진단 기록 후 정산·종료한다. 수정·재검증에는 새 세션을 연다.
+2. 새 메인은 GameDev·Management·Architecture 세 Astra를 연 뒤 작업 현황 탭을 다시 띄운다. 현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다.
+
+   ```powershell
+   orca terminal create --worktree path:C:/Dev/DawnHolder_Project --title "작업 현황" --command "node C:/Dev/DawnHolder_Dashboard/dashboard.mjs"
+   ```
+
+   탭을 띄운 뒤 `C:/Dev/DawnHolder_Dashboard/board.json`의 결정 항목이 현재 상태와 맞도록 메인이 갱신한다. 세부 결정 운영 규칙은 [CLAUDE 「메인의 기록과 알림」](../../CLAUDE.md#메인의-기록과-알림)을 따른다.
+3. Astra의 목표 종료·재진입·중간 재개·인계 기록은 [R-8](ORCA.md#r8-astra-lifecycle)을 따른다.
+4. 메인은 시작 시 GameDev·Management·Architecture 세 Astra에 자기 handle을 알린다. 모든 세션 간 메시지 subject/body와 입력은 자기 발신 태그를 붙이고 `from_handle`과 대조한다. 회신 subject는 [R-3](ORCA.md#r3-reply-tag)을 따른다. 타 세션 터미널에는 태그와 Orca 메시지 확인 안내만 넣으며, 지시는 orchestration으로 전달한다. 표식 없는 터미널 입력만 사용자 직접 지시다.
+5. 작업자·검증자 세션은 작업 하나 후 정산·종료하고 재사용하지 않는다. 정상 완료는 `worker_done`·Astra 대조 후, 비정상 종료·막힘·무응답은 진단 기록 후 정산·종료한다. 수정·재검증에는 새 세션을 연다.
 
 ## 다음 조각을 시작하는 순서
 
-- 먼저 [계층형 모델 라우팅 시범과 코드 기준 재정립](../../01_Phases/goals/2026-10-01-hierarchical-routing-pilot/goal.md)의 구현·검증 결과와 PR 상태를 읽는다. 대상 4곳은 동작 보존 정리로 판정됐다. 계층형 라우팅 채택은 확정이고 C(작은 작업 예외 포함)는 미확정이다. 현재 Management 배치는 [R-1](ORCA.md#r1-management-placement)을 따른다.
-- [후속 후보와 판단 근거](../../01_Phases/goals/2026-10-01-refactor-record-corrections/open-items.md)의 메뉴 연결 probe·RegisterSend·HUD·UnityClientSession 후보는 유지한다. 메뉴 작업은 `MainMenuController`와 `ConnectionProbe`의 입력 캡처·요청 수명·실패 정리·늦은 callback 및 기존 fixture부터 설계하며 후보를 구현 완료나 확정된 UX로 해석하지 않는다.
-- source 교체·화면 종료 뒤 표시·재시도 같은 정책이 달라져야 하면 관찰 결과와 선택지를 사용자에게 올린다. 이후 표시 전용 HUD의 source binding을 별도 작은 조각으로 다룬다.
-- 범위·보존 계약·완료조건·파일 소유를 goal에 명시하고 최신 사용자 결정과 규칙 문서 반영 상태를 함께 확인한다. 실제 모델 확인 불가는 `unknown`으로 기록한다.
-- DB 상세 설계는 P1과 독립적으로 준비할 수 있다. [D0](../../01_Phases/goals/2026-09-29-persistence-design/design.md)를 다시 결정하지 말고 schema/transaction/실패·복구 기술 계약을 구체화한다. SQL schema 접근 가능과 GameServer 저장·복원 연동 완료를 구분한다.
+- [CURRENT](CURRENT.md)의 해당 파트 worktree·branch를 확인하고 그 goal의 「재개 지점」을 따른다. 상태와 다음 작업을 이 문서에 복제하지 않는다. 아직 병합되지 않은 다른 파트 goal은 해당 worktree에서 읽는다.
+- goal 종료 뒤에는 다음 goal을 자동으로 시작하지 않는다. 메인과 사용자가 결과·남은 위험·BACKLOG·마일스톤의 다음 순서를 점검한 뒤 다음 계획을 정하고 재개한다.
+- 정본 규칙에 아직 반영되지 않았지만 적용 중인 결정은 [Rules goal의 적용 결정](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#정본-반영-전-적용-중인-사용자-결정)을 확인한다. 사용자 결정과 메인 결정을 구분하고, 운영 규칙 PR 병합 뒤에는 그 절이 가리키는 정본을 따른다.
 
 ## Management와의 경계
 

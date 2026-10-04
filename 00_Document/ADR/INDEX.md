@@ -26,6 +26,7 @@ ADR은 선택 당시의 이유와 비용을 보존한다. 현재 운영 권한�
 | ADR-029 | [WSL에서 .NET 실행](harness/ADR-029-wsl2-dotnet-execution-standard.md) |
 | ADR-030 | [행동 상태의 서버 권위](gameplay/ADR-030-server-authoritative-action-rules.md) |
 | ADR-033 | [구조 이름과 책임 경계](tech-stack/ADR-033-structure-naming-boundaries.md) |
+| ADR-034 | [하네스 원칙과 목표 종료 점검](harness/ADR-034-harness-principles.md) |
 
 ADR-021・027・028・029는 기존 harness 경로에 있지만 기술 결정도 담고 있어 원문을 유지했다. 본문의 옛 도구・필수 절차는 당시 운영 기록이며 현재 지침을 덮어쓰지 않는다.
 

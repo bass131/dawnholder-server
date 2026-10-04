@@ -6,6 +6,7 @@
 |---|---|
 | 설치·빌드·실행·부작용 | [DEVELOPMENT](operations/DEVELOPMENT.md) |
 | 현재 기능과 후속 제품 범위 | [PRD](PRD.md) |
+| 외부 팀원의 게임 기획 첫 작업·산출물·PR 안내 | [게임 기획 문서 작업 안내](game-design/README.md) |
 | 시스템 구조·의존성·용어 | [ARCHITECTURE](ARCHITECTURE.md) |
 | 기능별 입력·판정·클라이언트 경로 | [FEATURE_MAP](FEATURE_MAP.md) |
 | 영역별 주요 파일·변경 계약·함정 | [domains](domains/INDEX.md) |
@@ -13,6 +14,7 @@
 | 코드 규칙·필요한 참고자료 | [conventions](conventions/INDEX.md) |
 | 검토할 항목 | [REVIEW_CHECKLIST](REVIEW_CHECKLIST.md) |
 | 다단계 목표 운영 | [목표 루프](../.agents/skills/dawnholder-goal-loop/SKILL.md) |
+| goal로 승격되기 전 후보 | [BACKLOG](operations/BACKLOG.md) |
 | 공통 계약·유지보수·영속성 단계 | [마일스톤 로드맵](../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md) |
 | DB 설계 전 리팩토링 순서 | [마일스톤 로드맵](../01_Phases/milestones/2026-09-29-refactor-before-persistence/roadmap.md) |
 | Orca 세션의 실행·제한 | [ORCA](operations/ORCA.md) |

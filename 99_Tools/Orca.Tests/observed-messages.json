@@ -1,0 +1,302 @@
+{
+  "purpose": "Real Orca messages copied verbatim for independent message-policy regressions.",
+  "copiedBy": "[Rules 검증자] task_565402eb59f9 / ctx_8fa3a4c5566c",
+  "expectations": "Expected behaviour is stated in message-policy.test.mjs with its rule source.",
+  "identities": {
+    "resumeLinkSol": {
+      "expected": {
+        "fromHandle": "term_2765654b-79f9-4a83-9c32-6e47e38fda47",
+        "taskId": "task_206430c1244f",
+        "dispatchId": "ctx_4c94e3f19113",
+        "tag": "[Rules Sol]"
+      },
+      "expectedSource": {
+        "paths": [
+          ".backups/verification/2026-10-03-harness-principles/resume-link-sol-start.json"
+        ],
+        "note": "worker-start receipt runId/taskId/dispatchId and terminal effect id"
+      }
+    },
+    "operatingRulesSol": {
+      "expected": {
+        "fromHandle": "term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23",
+        "taskId": "task_e9f7c0e835a8",
+        "dispatchId": "ctx_e99a28aa1f33",
+        "tag": "[Rules Sol]"
+      },
+      "expectedSource": {
+        "paths": [
+          ".backups/verification/2026-10-03-harness-principles/operating-rules/sol-start.json",
+          ".backups/verification/2026-10-03-harness-principles/operating-rules/sol-heartbeat-current-show.json"
+        ],
+        "note": "worker-start receipt effects (terminal) and worker-show dispatch.assigneeHandle/taskId/id"
+      }
+    }
+  },
+  "messages": {
+    "workerDoneStringPayload": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/resume-link-sol-done.json",
+        "sha256": "C61C57DCA4510AF64A1DB7C5DB7EF36EEB838AD29F2480987226C9D4F157A133",
+        "messageId": "msg_435e8678f010"
+      },
+      "message": {
+        "id": "msg_435e8678f010",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_2765654b-79f9-4a83-9c32-6e47e38fda47",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "[Rules Sol] 결함 #3 CURRENT Management 앵커 수리 완료",
+        "body": "[Rules Sol] CURRENT 10행의 Management fragment만 지정 slug로 수리하고 전후 사본·명령·해시·diff 근거를 기록했습니다. 실제 제목 및 GameDev 커밋의 slug 일치, 비대상 48입력 보존과 git diff --check HEAD exit0을 자체 확인했으며 독립 검증은 아닙니다. 제품·근거 쓰기를 종료했고 새 Opus의 독립 재검증과 Astra의 후속 처리가 남았습니다.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_206430c1244f\",\"dispatchId\":\"ctx_4c94e3f19113\",\"outcome\":\"succeeded\",\"filesModified\":[\"00_Document/operations/CURRENT.md\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/context.md\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/repair-command.txt\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/execution-command.txt\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/inputs-before.json\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/CURRENT-before.md\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/CURRENT-after.md\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/current-fragment.diff\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/inputs-after.json\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/self-check.json\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/repair-output.txt\",\".backups/verification/2026-10-03-harness-principles/resume-link-repair/report.md\"],\"reportPath\":\"C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active/.backups/verification/2026-10-03-harness-principles/resume-link-repair/report.md\"}",
+        "created_at": "2026-10-03T16:47:39Z",
+        "delivered_at": null,
+        "delivery_contract": "current_delivery"
+      }
+    },
+    "solWorkerDone": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/sol-completion.json",
+        "sha256": "1AD26A3344D5CEDFD4AD661A6A2C911252DE2BA85107C6AD6F48811ADC925357",
+        "messageId": "msg_5a860cb51d06"
+      },
+      "message": {
+        "id": "msg_5a860cb51d06",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "[Rules Sol] 운영 규칙과 수신 판정 구현 완료",
+        "body": "[Rules Sol] 허용 17경로에 운영 정본 이관과 순수 메시지 판정·CLI·기존 CI의 독립 회귀 단계를 구현하고 이관 45/45·원천 16개·결정 16/16 대조 및 수행 보고를 보존했습니다. 최종 구문·CLI smoke 16개의 예상 exit·보존 hash와 준비 환경 quick_validate 3/3 exit0을 확인했으며 초기 실행 실패와 heartbeat 형식·cadence 위반을 보고서에 공개했습니다. 신규 Opus의 독립 테스트·판정과 새 CI 실행은 남아 있으며 이번 succeeded는 할당 구현 수행 완료만 뜻합니다.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_e9f7c0e835a8\",\"dispatchId\":\"ctx_e99a28aa1f33\",\"outcome\":\"succeeded\",\"filesModified\":[\"AGENTS.md\",\"00_Document/conventions/CODE_CONVENTION.md\",\"00_Document/conventions/REPORTING.md\",\"00_Document/operations/ORCA.md\",\"00_Document/operations/DEVELOPMENT.md\",\"00_Document/operations/BACKLOG.md\",\"00_Document/operations/CURRENT.md\",\".agents/skills/dawnholder-goal-loop/SKILL.md\",\".agents/skills/dawnholder-goal-loop/references/orca-work.md\",\".agents/skills/dawnholder-goal-loop/references/milestones.md\",\".agents/skills/dawnholder-session-handoff/SKILL.md\",\".agents/skills/dawnholder-task-context/SKILL.md\",\".agents/skills/dawnholder-task-context/references/templates.md\",\"99_Tools/Orca/message-policy.mjs\",\"99_Tools/Orca/check-message.mjs\",\"99_Tools/README.md\",\".github/workflows/code-rules.yml\",\".backups/verification/2026-10-03-harness-principles/operating-rules/implementation/context.md\",\".backups/verification/2026-10-03-harness-principles/operating-rules/implementation/migration-map.md\",\".backups/verification/2026-10-03-harness-principles/operating-rules/implementation/decisions-map.md\",\".backups/verification/2026-10-03-harness-principles/operating-rules/implementation/report.md\"],\"reportPath\":\"C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active/.backups/verification/2026-10-03-harness-principles/operating-rules/implementation/report.md\"}",
+        "created_at": "2026-10-03T18:54:20Z",
+        "delivered_at": null,
+        "delivery_contract": "current_delivery"
+      }
+    },
+    "solEscalation": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/heartbeat-worker-message-inspection.json",
+        "sha256": "327C324A66AB31BB1FD13ACB140B60999BD046B748C7D9FC3ECA760492C0FCE8",
+        "messageId": "msg_71f7b777c296"
+      },
+      "message": {
+        "id": "msg_71f7b777c296",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "[Rules Sol] heartbeat 송신 원시와 수신 대조 요청",
+        "body": "[Rules Sol] 18:02 msg_a6df5cb379f7, 18:08 msg_624b92802e31, 후속 msg_a8e52b24bb88, 18:27 msg_851bec652bf4의 Sent receipt는 확인됐으나 수신/lastHeartbeatAt 갱신은 제가 확인하지 않았습니다. 앞서 subject에 태그를 붙이고 body를 생략했는데 새 순수 정책상 내용 있는 subject에 해당하여 body 태그 의무와 맞지 않음을 발견했고, 지금 live preamble 그대로 subject alive/body 생략으로 교정해 송신했습니다. null 관측 원인을 이 형식으로 단정하지 않으며 raw payload의 두 ID와 from_handle이 계약과 일치하는 사실 및 이전 네 송신을 수행 보고에 보존하니 현재 수신/정산 경계를 대조해 주세요.",
+        "type": "escalation",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_e9f7c0e835a8\",\"dispatchId\":\"ctx_e99a28aa1f33\"}",
+        "read": 0,
+        "sequence": 2492,
+        "created_at": "2026-10-03T18:28:03Z",
+        "delivered_at": null,
+        "sender_pane_key": "fefc8f0c-e03c-42fc-bef2-57464f7f07e1:ab56849c-69d4-4f7d-a00d-c3682e346c64",
+        "delivery_contract": "current_delivery",
+        "pointer_enter_pending": 0,
+        "pointer_pty_id": null,
+        "pointer_process_incarnation": null
+      }
+    },
+    "heartbeatAlive": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/heartbeat-worker-message-inspection.json",
+        "sha256": "327C324A66AB31BB1FD13ACB140B60999BD046B748C7D9FC3ECA760492C0FCE8",
+        "messageId": "msg_e36b193bbd62"
+      },
+      "message": {
+        "id": "msg_e36b193bbd62",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "alive",
+        "body": "",
+        "type": "heartbeat",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_e9f7c0e835a8\",\"dispatchId\":\"ctx_e99a28aa1f33\",\"phase\":\"reviewing\"}",
+        "read": 1,
+        "sequence": 2491,
+        "created_at": "2026-10-03T18:28:02Z",
+        "delivered_at": "2026-10-03T18:28:02Z",
+        "sender_pane_key": "fefc8f0c-e03c-42fc-bef2-57464f7f07e1:ab56849c-69d4-4f7d-a00d-c3682e346c64",
+        "delivery_contract": "current_delivery",
+        "pointer_enter_pending": 0,
+        "pointer_pty_id": null,
+        "pointer_process_incarnation": null
+      }
+    },
+    "heartbeatTaggedSubject1": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/heartbeat-worker-message-inspection.json",
+        "sha256": "327C324A66AB31BB1FD13ACB140B60999BD046B748C7D9FC3ECA760492C0FCE8",
+        "messageId": "msg_a6df5cb379f7"
+      },
+      "message": {
+        "id": "msg_a6df5cb379f7",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "[Rules Sol] alive",
+        "body": "",
+        "type": "heartbeat",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_e9f7c0e835a8\",\"dispatchId\":\"ctx_e99a28aa1f33\",\"phase\":\"investigating\"}",
+        "read": 1,
+        "sequence": 2440,
+        "created_at": "2026-10-03T18:02:05Z",
+        "delivered_at": "2026-10-03T18:02:05Z",
+        "sender_pane_key": "fefc8f0c-e03c-42fc-bef2-57464f7f07e1:ab56849c-69d4-4f7d-a00d-c3682e346c64",
+        "delivery_contract": "current_delivery",
+        "pointer_enter_pending": 0,
+        "pointer_pty_id": null,
+        "pointer_process_incarnation": null
+      }
+    },
+    "heartbeatTaggedSubject2": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/heartbeat-worker-message-inspection.json",
+        "sha256": "327C324A66AB31BB1FD13ACB140B60999BD046B748C7D9FC3ECA760492C0FCE8",
+        "messageId": "msg_624b92802e31"
+      },
+      "message": {
+        "id": "msg_624b92802e31",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "[Rules Sol] alive",
+        "body": "",
+        "type": "heartbeat",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_e9f7c0e835a8\",\"dispatchId\":\"ctx_e99a28aa1f33\",\"phase\":\"implementing\"}",
+        "read": 1,
+        "sequence": 2454,
+        "created_at": "2026-10-03T18:08:54Z",
+        "delivered_at": "2026-10-03T18:08:54Z",
+        "sender_pane_key": "fefc8f0c-e03c-42fc-bef2-57464f7f07e1:ab56849c-69d4-4f7d-a00d-c3682e346c64",
+        "delivery_contract": "current_delivery",
+        "pointer_enter_pending": 0,
+        "pointer_pty_id": null,
+        "pointer_process_incarnation": null
+      }
+    },
+    "heartbeatTaggedSubject3": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/heartbeat-worker-message-inspection.json",
+        "sha256": "327C324A66AB31BB1FD13ACB140B60999BD046B748C7D9FC3ECA760492C0FCE8",
+        "messageId": "msg_a8e52b24bb88"
+      },
+      "message": {
+        "id": "msg_a8e52b24bb88",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "[Rules Sol] alive",
+        "body": "",
+        "type": "heartbeat",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_e9f7c0e835a8\",\"dispatchId\":\"ctx_e99a28aa1f33\",\"phase\":\"implementing\"}",
+        "read": 1,
+        "sequence": 2480,
+        "created_at": "2026-10-03T18:23:42Z",
+        "delivered_at": "2026-10-03T18:23:42Z",
+        "sender_pane_key": "fefc8f0c-e03c-42fc-bef2-57464f7f07e1:ab56849c-69d4-4f7d-a00d-c3682e346c64",
+        "delivery_contract": "current_delivery",
+        "pointer_enter_pending": 0,
+        "pointer_pty_id": null,
+        "pointer_process_incarnation": null
+      }
+    },
+    "heartbeatTaggedSubject4": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/heartbeat-worker-message-inspection.json",
+        "sha256": "327C324A66AB31BB1FD13ACB140B60999BD046B748C7D9FC3ECA760492C0FCE8",
+        "messageId": "msg_851bec652bf4"
+      },
+      "message": {
+        "id": "msg_851bec652bf4",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "[Rules Sol] alive",
+        "body": "",
+        "type": "heartbeat",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_e9f7c0e835a8\",\"dispatchId\":\"ctx_e99a28aa1f33\",\"phase\":\"reviewing\"}",
+        "read": 1,
+        "sequence": 2489,
+        "created_at": "2026-10-03T18:27:02Z",
+        "delivered_at": "2026-10-03T18:27:02Z",
+        "sender_pane_key": "fefc8f0c-e03c-42fc-bef2-57464f7f07e1:ab56849c-69d4-4f7d-a00d-c3682e346c64",
+        "delivery_contract": "current_delivery",
+        "pointer_enter_pending": 0,
+        "pointer_pty_id": null,
+        "pointer_process_incarnation": null
+      }
+    },
+    "officialAskQuestion": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/sol-heartbeat-boundary-question.json",
+        "sha256": "3B5700202AF7C576AA9BCAD2AB13C2DC1792382604256DAC57352DA453AFD4B0",
+        "messageId": "msg_7634533175bb"
+      },
+      "message": {
+        "id": "msg_7634533175bb",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "dispatch:ctx_e99a28aa1f33",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "Question",
+        "body": "[Rules Sol] helper 빈 heartbeat 경계를 확인합니다. 실제 preamble의 subject alive와 body 없음 사례를 따라 subject가 alive 또는 공백/null/누락이고 body가 공백/null/누락이면 내용 없는 생존 신호로 정의하고, 비문자 텍스트·identity 누락은 입력불가 exit2로 분리하려 합니다. 이 경계를 승인된 원문의 구현 해석으로 사용해도 됩니까? Windows Python은 WindowsApps alias로 실행 불가이며 quick_validate는 native Python이 확인되지 않으면 미실행으로 보고하고 Node의 frontmatter/링크 자체확인을 수행하겠습니다.",
+        "type": "question",
+        "priority": "normal",
+        "thread_id": "msg_7634533175bb",
+        "payload": "{\"taskId\":\"task_e9f7c0e835a8\",\"dispatchId\":\"ctx_e99a28aa1f33\",\"question\":\"[Rules Sol] helper 빈 heartbeat 경계를 확인합니다. 실제 preamble의 subject alive와 body 없음 사례를 따라 subject가 alive 또는 공백/null/누락이고 body가 공백/null/누락이면 내용 없는 생존 신호로 정의하고, 비문자 텍스트·identity 누락은 입력불가 exit2로 분리하려 합니다. 이 경계를 승인된 원문의 구현 해석으로 사용해도 됩니까? Windows Python은 WindowsApps alias로 실행 불가이며 quick_validate는 native Python이 확인되지 않으면 미실행으로 보고하고 Node의 frontmatter/링크 자체확인을 수행하겠습니다.\",\"options\":[\"제안 경계로 진행\",\"빈 heartbeat 경계 수정\"]}",
+        "created_at": "2026-10-03T18:04:34Z",
+        "delivered_at": null,
+        "delivery_contract": "current_delivery"
+      }
+    },
+    "mainStatusToRun": {
+      "source": {
+        "path": ".backups/verification/2026-10-03-harness-principles/operating-rules/main-official-ask-decision.json",
+        "sha256": "2B182A04576006F73850CC13040B6F37A6C7CEA1401C833F626D16FF76CF81DC",
+        "messageId": "msg_09a19a463a74"
+      },
+      "message": {
+        "id": "msg_09a19a463a74",
+        "run_id": "run_a2cfcad665e6",
+        "from_handle": "term_d88cb274-6098-46b8-8c65-8a64d4a3bc70",
+        "to_handle": "run:run_a2cfcad665e6",
+        "subject": "[메인 Claude] 범위 판정 — 공식 blocking ask의 고정 subject 'Question' 예외 승인",
+        "body": "[메인 Claude] msg_923a9e9f75bd 범위 판정이다. 추천대로 정식화하라.\n- 예외: Orca 공식 blocking ask가 만드는 고정 subject 'Question'을 R-3 subject 태그 규칙의 예외로 넣는다. 근거는 같은 Orca 버전(1.4.218)의 ask --help에 subject 옵션이 없다는 것이다. 예외 문구에 버전과 근거 파일을 적는다.\n- 유지할 것: body 첫머리의 태그, 그리고 현재 Task·Dispatch·from_handle 대조. 이 셋 중 하나라도 어긋나면 처리하지 않고 메인에 보고하는 기존 규칙도 그대로다.\n- 범위 제한: 일반 send와 reply에는 이 예외를 주지 않는다. ask가 subject 옵션을 지원하게 되면 예외는 없어진다. 이 내용을 문구에 넣어라.\n- helper 처리: 이 형식을 예외로 정확히 인식하게 하라. 독립 테스트에는 세 가지 반례를 넣는다. body 태그가 없는 Question, from_handle이 어긋난 Question, 일반 send가 subject를 Question으로 흉내 낸 경우다.\n- 성격: 이 판정은 도구 제약을 문서에 맞추는 것이다. 새 권한이 아니고 범위도 커지지 않는다.",
+        "type": "status",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": null,
+        "created_at": "2026-10-03T18:06:16Z",
+        "delivered_at": null,
+        "delivery_contract": "current_delivery"
+      }
+    }
+  },
+  "officialAskEvidence": {
+    "cliVersion": "1.4.218",
+    "paths": [
+      ".backups/verification/2026-10-03-harness-principles/operating-rules/orca-ask-help.txt",
+      ".backups/verification/2026-10-03-harness-principles/operating-rules/sol-heartbeat-boundary-question.json"
+    ],
+    "note": "ask --help of 1.4.218 has no subject option; the question receipt carries the message id"
+  }
+}
