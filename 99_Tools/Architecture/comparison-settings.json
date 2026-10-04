@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "goalPath": "01_Phases/goals/2026-10-02-architecture-extractor-comparison",
-  "evidencePath": ".backups/verification/2026-10-02-architecture-extractor-comparison/implementation",
+  "evidencePath": ".backups/verification/2026-10-03-codegraph-adapter-cleanup/behavior-fix-8-verification/compare-execution",
   "freezeRecordPath": ".backups/verification/2026-10-02-architecture-extractor-comparison/freeze-record.json",
   "codegraphVersion": "1.6.1",
   "maxInstalledPackageBytes": 419430400,
