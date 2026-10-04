@@ -15,7 +15,7 @@
 
 ## 모델 라우팅
 
-- 메인 Claude `claude-opus-5-5` → 파트 리드 Astra `gpt-6-astra` → 구현 Sol `gpt-6.1-sol`, 독립 검증·테스트 작성·리뷰는 신규 `claude-opus-5-5` 세션으로 지정한다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다.
+- 메인 Claude `claude-opus-5-5` → 파트 리드 Astra `gpt-6-astra` → 구현 Sol `gpt-6.1-sol`(reasoning effort `max` 고정), 독립 검증·테스트 작성·리뷰는 신규 `claude-opus-5-5` 세션으로 지정한다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다.
 - [R-7 Fable goal 검토 시범](00_Document/operations/ORCA.md#r7-fable-pilot)은 해당 정본의 범위와 절차를 따른다.
 - 보고서 자료의 조사·설계 해설·본문·HTML·전용 생성 스크립트는 Astra가 작성한다. Sol에 보고서 작성·렌더링 구현을 맡기지 않는다. 독립 Opus가 내용·근거·표시를 검토하고 메인이 [작성 기준](00_Document/conventions/REPORTING.md)에 따라 사용자 최종 보고를 전달한다.
 - 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol capacity 장기 실패의 **신규 Astra 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.

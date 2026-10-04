@@ -119,7 +119,7 @@ Astra→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내�
 표준은 담당 Astra가 자기 pane 아래 새 작업자를 직접 기동하는 것이다. 메인 대리 기동은 기동 실패 때 요청하는 대안이다. 승인된 목표·공간·세션 범위 안에서 다음 순서로 진행한다.
 
 1. 설치된 `orca-cli`·`orchestration` 스킬로 CLI를 선택하고 버전 일치 가이드를 읽는다. 현재 runtime·담당 Astra handle·승인된 checkout을 확인한다.
-2. Sol은 `orca terminal split --terminal <Astra-handle> --direction vertical --command "codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh"`, 독립 Opus는 같은 split에 `--command "claude --model claude-opus-5-5"`로 연다. 시작 경로가 다르면 승인된 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. capacity 관측에 한정한 재시도/신규 작업자 예외는 [capacity 정본](#capacity-retry)을 따른다.
+2. Sol은 `orca terminal split --terminal <Astra-handle> --direction vertical --command "codex --model gpt-6.1-sol -c model_reasoning_effort=max"`, 독립 Opus는 같은 split에 `--command "claude --model claude-opus-5-5"`로 연다. 시작 경로가 다르면 승인된 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. capacity 관측에 한정한 재시도/신규 작업자 예외는 [capacity 정본](#capacity-retry)을 따른다.
 3. `orca terminal wait --terminal <새-handle> --for tui-idle --timeout-ms 90000`의 `satisfied`를 확인하고 [R-6](#r6-first-screen) 및 [세션 준비 절차](../../.agents/skills/dawnholder-session-handoff/SKILL.md#신규-prompt-준비-확인)를 따른다. timeout·busy·불명확한 화면에 작업을 주입하지 않는다.
 4. 준비된 **신규 세션의 최초 작업**을 `orca orchestration worker-start --terminal <새-handle> --worktree <확인한-작업-공간>`에 `--task <현재-Task>` 또는 `--spec <작업-계약>`을 붙여 연결한다. `--terminal`과 `--model`을 함께 쓰지 않는다. 모델 근거는 최초 실행 명령과 화면 표시이며 attach의 null launch 모델값을 실제 모델로 해석하지 않는다. 확인할 수 없는 backend는 `unknown`이다. 현재 Run·Task·Dispatch와 `input_accepted`·`turn_started` receipt를 구분해 기록한다.
    `turn_start_unobserved`이면 화면 tail만으로 판정하지 않고 [공식 계약 draft 복구](#official-contract-draft)의 JSON draft·계약·동일성 조건을 확인한다.
@@ -137,7 +137,7 @@ Astra→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내�
 <a id="confirmed-failures"></a>
 ### 확정 실패 집계와 Fable Advisor
 
-**같은 계약·같은 결함 번호**의 Sol `FAILED` 또는 독립 `NOT PASS`가 3회 확정되면 네 번째 시도를 신규 `gpt-6.1-sol xhigh`와 신규 읽기 전용 `claude-fable-5-1` Advisor로 한다. 같은 산출물의 FAILED/NOT PASS는 이중 집계하지 않고 조사 전용 세션·개발 중 자체 smoke 수리는 제외한다. 실패 세션은 작업 하나 뒤 정산·종료하며 재사용하지 않는다.
+**같은 계약·같은 결함 번호**의 Sol `FAILED` 또는 독립 `NOT PASS`가 3회 확정되면 네 번째 시도를 신규 `gpt-6.1-sol max`와 신규 읽기 전용 `claude-fable-5-1` Advisor로 한다. 같은 산출물의 FAILED/NOT PASS는 이중 집계하지 않고 조사 전용 세션·개발 중 자체 smoke 수리는 제외한다. 실패 세션은 작업 하나 뒤 정산·종료하며 재사용하지 않는다.
 
 담당 Astra는 Advisor 기동 전에 실패 이유와 **실패 원문 세 건 경로를 메인 status로 보고**한다. 사용자 사전 승인 규칙이므로 재승인을 기다리지 않는다. Advisor는 조언 파일 하나만 쓰고 제품·테스트·판정은 쓰지 않는다. 새 Sol은 구현 전에 Orca로 Advisor에게 **직접 질문**하고 조언·채택/거절 이유를 수행 보고에 남긴다. 리드 Astra가 구현을 떠맡지 않는다. 기동/모델/선택창은 R-5·R-6을 따른다. 네 번째도 실패하면 **다섯 번째 전에 메인 question으로 판단**을 받는다.
 
