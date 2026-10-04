@@ -41,6 +41,8 @@
 
 ## 재개 지점
 
+2026-10-05 이관 안내: 다음 「현재 상태」 문단은 원래 결과 기록 `21ae047` 시점의 종료 상태다. 그 원문은 별도 이관 커밋 `0cc8ff9`에 동일하게 보존했고, 현재 작업은 [운영 정본 반영](../2026-10-05-operating-canon/goal.md#재개-지점)으로 이동했다. 이 안내를 쓰는 시점에 PR1은 아직 병합되지 않았으며, 아래의 로컬 전용 상태·세션 대기를 이 안내 이후의 현재 상태로 해석하지 않는다.
+
 현재 상태: [PR177 - 팀원 합류 최소 정본](https://github.com/bass131/dawnholder-server/pull/177)의 병합·main CI·신규 Opus Gardener·Astra 종료 점검을 완료했다. 승인 head는 `46216347c70199ebf2a613c8d6994433eb6329e6`, merge commit은 `5f855dee397237b7bc10f6fe823de5b5d855d4ff`다. 최종 Gardener 원문은 로컬 `.backups/verification/2026-10-04-teammate-onboarding/gardener2-report.md`이고 종료 차단은 없다. 크래시로 중단된 이전 보고서는 판정에서 제외했다. 메인의 결과·후속 후보 확인과 R-8 세션 교체를 기다리며 다음 goal은 시작하지 않았다. 병합 이후 결과 기록은 로컬 checkpoint에만 있고 원격 main의 goal에는 반영되지 않았다.
 
 보류된 [하네스 goal](../2026-10-03-harness-principles/goal.md)은 별개로 유지한다. 과거 판정·테스트·PR175 성공을 이번 변경의 검증으로 사용하지 않는다.
