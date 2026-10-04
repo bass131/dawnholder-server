@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **운영 규칙 [PR #170](https://github.com/bass131/dawnholder-server/pull/170)에 PR169 이후 main 통합과 Sol max 고정 델타를 추가한다 — [새 적용 중 결정](#pr170-추가-적용-중-결정--sol-max와-current-통합)을 읽는다.** 기존 b72423f의 독립 PASS·R-2·CI 성공은 이전 입력의 근거이며 새 HEAD의 승인/CI가 아니다. 첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168)은 병합했다. 메인 `msg_063d3c6e4829`가 남은 세 PR 재개를 전달했고, 최신 `msg_1d1537b7d249`·`msg_830fcabe292d`가 이번 추가 범위·통합·재검증·push/CI를 지시했다. 전체 goal은 미완료이며 PR170의 새 HEAD에는 사용자 명시 병합 승인이 별도로 필요하다. 아래 과거 상태와 원시는 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [앞선 적용 결정](#정본-반영-전-적용-중인-사용자-결정)과 아래 새 결정을 후속 정본·도구의 구현 실적과 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **운영 규칙 [PR #170](https://github.com/bass131/dawnholder-server/pull/170)은 승인 HEAD `d300791090a489988484e209432b84de3163903b`를 병합했다. 다음 Rules PR는 결정 대시보드 운영의 정본화이며 CLAUDE·RESUME·이 goal만 다룬다 — [새 단위와 완료조건](#pr170-병합과-결정-대시보드-정본화)을 읽는다.** 첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168)도 병합했고 전체 goal은 아직 미완료다. 새 지시 원문은 메인 `msg_38b3b6162048`이며 메인이 전달한 사용자 결정으로 기록한다. PR170의 CI 후 로컬 체크포인트는 새 브랜치에 이관했으며 이전 판정/CI의 고정 입력으로 소급하지 않는다. 문서의 사실·경로 검사와 PowerShell 출력순서 후속 PR, 전체 목표 종료 점검은 남았다. 아래 과거 상태·원시는 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 범위 밖이며 ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)과 실제 구현·검증 결과를 구분한다.
 
 ## 문제와 목표
 
@@ -212,7 +212,21 @@ PR 경계는 **BACKLOG → 운영 규칙/참고 근거 → 사실 정정/경로 
 
 ## 정본 반영 전 적용 중인 사용자 결정
 
-2026-10-03의 적용 결정을 이 절 한 곳에서 찾는다. 사용자 발언은 모두 메인이 전달한 것이며 사용자 직접 입력으로 격상하지 않는다. 아래 인용은 표시한 Orca 메시지 원문의 일부이고 외부 저자의 직접 인용이 아니다. 사용자 결정과 메인 결정을 구분한다. 이미 적용할 운영 결정과 후속 정본·도구의 구현 완료는 다르며, 운영 규칙 PR 병합 뒤 이 절은 해당 정본 링크로 바꾼다. 원문 보존 파일은 Rules worktree의 로컬 근거다.
+2026-10-03 이후의 적용 결정을 이 절 한 곳에서 찾는다. 사용자 발언은 모두 메인이 전달한 것이며 사용자 직접 입력으로 격상하지 않는다. 아래 인용은 표시한 Orca 메시지 원문의 일부이고 외부 저자의 직접 인용이 아니다. 사용자 결정과 메인 결정을 구분한다. 이미 적용할 운영 결정과 후속 정본·도구의 구현 완료는 다르며, 운영 규칙 PR 병합 뒤 이 절은 해당 정본 링크로 바꾼다. 원문 보존 파일은 Rules worktree의 로컬 근거다.
+
+### 결정 대시보드 운영과 정본 반영
+
+메인이 전달한 사용자 결정 · `msg_38b3b6162048` · 2026-10-04T07:45:18Z
+
+> 그러면 결정사항 도착할때 대시보드에 전달하는 방향으로 작업방법 결정하자
+
+> 방금 대시보드 작업방식 맥락은 메모리에만 저장하면 이후 또 다른 메인 세션에서 작업이 누락할 수 있으니 규칙,맥락 최신화해서 시스템 최신화 하자 / 일단 현재는 클로드 모드로 관리하지만, 이 기능도 이후에 운영툴이 라이브 버전 1.0이 만들어지면 거기서 MCP로 관리 가능하게 만들어 보고 싶어.
+
+현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다. 메인의 결정 등록·review/waiting·필수 정보·채팅 일치·답 뒤 제거, 사용자 Enter 제출과 PR head 재대조를 [CLAUDE의 「메인의 기록과 알림」](../../../CLAUDE.md#메인의-기록과-알림)에 작성했고, 새 메인이 세 Astra를 연 뒤 현황 탭을 재개·갱신하는 단계를 [RESUME](../../../00_Document/operations/RESUME.md#세션-진입-배치)에 작성했다. 두 작성자의 쓰기는 끝났고 신규 독립 실사·새 PR/CI·병합은 아직이다. 작성 완료를 실행 검증으로 확대하지 않는다.
+
+운영툴 라이브 1.0의 MCP 관리 구상은 메인이 Management에 백로그 씨앗으로 따로 전달한다. Rules에서 도구 구현·백로그 중복 기록·REPORTING v2 확정을 하지 않는다. 보고서 형식은 사용자가 Chrome에서 다시 확인한 뒤 메인 별도 지시를 기다린다.
+
+원문: `.backups/verification/2026-10-03-harness-principles/dashboard-rules/main-decision.json`.
 
 ### 하네스 원칙과 적용 시점
 
@@ -598,3 +612,36 @@ Main msg_894bfc3cc2d9(2026-10-03T21:02:14Z)의 보완 완료를 받았다. `revi
 - 메인 `msg_3375202aa17f`(2026-10-04T06:06:39Z)의 결정으로 Astra가 현재 역할 계획·조사 범위 기록을 수정하고 새 Opus에게 이 델타만 재검증받는다. 같은 결함 #1의 첫 판정이며 재검증은 아직 미실행이다. CURRENT 인덱스는 Sol 종료 뒤 Astra가 해소했지만 merge commit·push·새 CI는 아직 수행하지 않았다.
 - 절차 관측 P-1은 heartbeat 간격 초과, P-2는 실제 heartbeat 3건의 subject `[Rules Sol] alive`·빈 body다. P-2 원문은 `sol-max/goal-repair/sol-heartbeats-source.json`에서 확인했고 수신 helper는 3건 모두 policy-violation/exit1이었다. O-1은 Astra 메모의 「첫 쓰기」 문구보다 수신·검색 근거가 33초 앞선 관측이다. 메인 `msg_742ce8715d60`·`msg_00d5e0d6c37a`·`msg_3375202aa17f`의 이번 판정 비차단 결정을 보존하며 소급 준수·절차 전체 PASS·일반 예외로 확대하지 않는다.
 - 후속 보류: 빈 heartbeat의 태그 subject 경계와 수신 정책 문구 정리를 다음 Rules 정비 후보에 둔다. 근거 파일의 사전 메모 경계 질문은 기존 후보를 유지한다. ORCA 144행의 max 결정 출처 보충은 비차단 후속이며, GameDev goal의 xhigh 잔존은 메인이 해당 파트에 전달한다. 이번 PR의 제품 범위를 넓히지 않는다.
+
+같은 heartbeat 정비 후보의 추가 근거: 메인 `msg_c7faa1c67afe`(2026-10-04T08:07:11Z)는 아래 대시보드 Sol의 7분08초·5분45초 간격을 「절차 관측 1건(heartbeat 지연), 제품과 분리」로 남기고 제품 실사를 계속하도록 결정했다. 원시는 `dashboard-rules/sol-start.json`, `sol-heartbeat-message.json`, `sol-heartbeat2-message.json`과 각 policy 결과다. 현재 태그·identity 판정은 allowed이며 간격 준수와 다르다. 제품 결함 번호·소급 준수·절차 전체 PASS·일반 면제로 바꾸지 않고 별도 신규 후보를 만들지 않는다.
+
+**위 문장의 결정 출처 정정 — 독립 결함 #1:** `msg_c7faa1c67afe`는 첫 간격 **7분08초만** 다뤘다. 두 번째 **5분45초**는 Astra가 `msg_abc13012057a`로 뒤에 보고했고, 이를 앞 메인 결정에 귀속한 위 문장은 Astra의 기록 오류다. 메인은 새 `msg_17a7e53d04ca`(2026-10-04T08:33:26Z)에서 두 번째 간격도 원시 보존·절차 관측·제품 판정과 분리로 처리한다고 결정했다. 이 새 결정을 앞 메시지의 범위로 소급하지 않는다. 사용자 결정이 아닌 메인 운영 판단이다. 기존 후보의 주제에는 **heartbeat 발신 간격**도 포함하며, 태그·빈 값 경계와 간격 관측을 구분해 찾도록 이 정정을 덧붙인다.
+
+### PR170 Sol max 재검증과 새 HEAD CI 완료
+
+- 새 Opus `task_e65761d5a3c7` / `ctx_5406fe7c8e44`의 판정은 **PASS, #1 해소, 새 차단 결함 0개**다. `sol-max/reverification/verdict.md` SHA256 `F2A96E87A6B446F2CB8B432D34DB0D1E66B6D1EB1AD3FE068EA4C3160E37B6EB`를 Astra가 전문 읽었다. goal 7줄 추가·3줄 삭제를 실사하고 첫 검증의 나머지 97개 입력과 새 입력 142개의 보존을 확인했다. 완료 `msg_3e25aebc0ca5`(06:25:42Z), release→동일 incarnation·최종턴 확인→close(ptyKilled=true)→ACK를 대조했다. 이번 Sol과 두 Opus는 모두 정산·종료했고 재사용하지 않는다.
+- O-1 관측 정정: 첫 판정의 「근거가 메모보다 33초 앞섬」은 메모 **수정 시각 05:24:30.976Z** 기준이었다. 생성 시각은 **05:23:55.508Z**로 결정 수신 근거보다 1.4초, 검색 근거보다 1.9초 앞선다. 생성 당시 내용은 관측하지 못했으므로 선후관계와 사전 준수를 확정하지 않는다. 기존 판정과 수정·생성 시각의 관측 범위를 함께 보존하고 `msg_6248c1d71c96`로 메인에 즉시 보고했다. P-1/P-2와 메인 비차단 판단, 원시 argv 응답에 command 필드가 없다는 한계도 그대로 남긴다.
+- Git: main `3e07e1b0b318881701b5b7bab8adbe087b596420` 통합은 `36325f20a571e170acc607aa97950baa99712771`, AGENTS/ORCA max 세 위치는 `f048f1d266ed2060d6a49fc7f8fbc24510aa3c81`, 현재 goal 수정은 **`d300791090a489988484e209432b84de3163903b`**로 구분해 push했다. CURRENT만 충돌했고 해소 결과는 기존 ours와 같으며 상대 goal 링크를 유지했다. 해소 diff는 `sol-max/implementation/current-vs-theirs.diff`다. 원격 PR27경로·blob이 제출 HEAD와 모두 일치한다.
+- [새 code-rules/check](https://github.com/bass131/dawnholder-server/actions/runs/37182846546/job/111378705071)는 success다. Linux Node22.23.3, Orca22/22·checker28/28·실패/skip0이다. 수집27·제외27·일반 정적 검사대상0·dirtyfalse이며 helper는 별도 테스트로 확인했다. 일반 정적 분석27건으로 확대하지 않는다.
+- [새 dotnet-tests/test](https://github.com/bass131/dawnholder-server/actions/runs/37182846544/job/111378705186)는 success다. 실제 SDK10.0.301, 포맷·입력 보존 검사와 빌드 성공, 테스트839건 중834통과·5skip·실패0이다. 기존 경고4건(SA1201·SA1202·xUnit2031 두 건)과 skip5건을 보존한다. 로컬 .NET·게임·DB·Unity를 새로 실행한 것은 아니다.
+- 두 job의 실제 checkout **`88b67cb63af411d762c6e5890a0c814a48eb6d8d`**는 위 base/head를 부모로 두며 tree **`b71bc45a181cd60d2d51a2aba0022f17b0d8a54f`**가 제출 HEAD와 같다. code-rules artifact의 base/checkout/27경로를 대조했다. .NET formatter 상세 manifest는 runner 경로만 로그에 남고 artifact0개여서 다운로드/hash 독립 대조는 하지 못했다. CI 원시와 비교·hash는 `sol-max/ci-final-summary.json`, `ci-code-rules-input-comparison.json`, `pr-merge-input-comparison.json`, 두 run JSON과 로그에 보존한다.
+- 현재 PR170은 OPEN·자동 병합 없음이다. 판정 뒤 이 머리와 절만 상태 기록으로 덧붙여 **별도 로컬 체크포인트**에 두며, 승인 대상 원격 HEAD d300791과 새 CI 입력에 소급 포함하거나 추가 push하지 않는다. 메인에 최종 원문·변경·근거·리스크를 전달해 새 R-2와 사용자 병합 승인 절차로 넘긴다. 과거 xhigh 결정의 최신 max 연결, 후속 후보 위치·메인 메시지별 대응 보완은 비차단 후속으로 보존하고 이번 제품 범위를 넓히지 않는다. 환경/경로 검사와 PowerShell 출력순서 PR, 전체 goal 종료는 아직 남았다.
+
+### PR170 병합과 결정 대시보드 정본화
+
+- 메인 `msg_38b3b6162048`은 사용자가 메인 pane에서 Enter로 제출한 「2) PR170 - 운영 규칙 정비와 Sol max 고정 병합 → A 승인 (head d300791)」과 정확한 전체 head의 실행 위임을 전달했다. 원격 head 일치와 OPEN/MERGEABLE/CLEAN·자동병합 없음을 확인하고 `gh pr merge 170 --repo bass131/dawnholder-server --merge --match-head-commit d300791090a489988484e209432b84de3163903b`를 실행했다. 병합 결과 **`3f0cb5e2861574ea1e6b092875de27694897b21d`**, 2026-10-04T07:48:11Z, MERGED를 확인해 `msg_daa97f79acfb`로 메인에 즉시 알렸다. 최초 재조회 UNKNOWN은 병합 명령 실행 전 중단했고 다시 MERGEABLE을 확인했다. 병합 전 push·CURRENT 수정은 없었다.
+- 새 단위는 당시 최신 main `3f0cb5e`에서 만든 `docs/decision-dashboard-rules`다. 로컬 상태 체크포인트 c38a5aa를 7631a6e로 이관했고 차이는 goal 한 파일뿐이다. 과거 PR170/CI 고정 입력과 이관 시점을 구분한다. 같은 goal의 추가 문서 PR이며 전체 목표나 새 파트를 만들지 않는다.
+- 소유권: `CLAUDE.md`는 메인 Claude가 원문 계약을 받은 뒤 작성, `00_Document/operations/RESUME.md`는 신규 외부 Sol `gpt-6.1-sol max`, 이 goal·계약·Git은 Rules Astra가 쓴다. 두 작성자 종료 뒤 신규 외부 Opus 한 명이 변경 세 파일·메모·원문·실제 diff를 정적 실사한다. 구현/검증 세션은 작업 하나 후 정산·종료한다.
+- 완료조건: 위 사용자 원문 두 개와 출처 보존, 결정 도착 시 board 등록·review/waiting·선택지/상세/PR 정확한 head/도착·출처·갱신 시각·답 뒤 제거·채팅 일치, README 형식 준수, 사용자 Enter 제출·자동 제출 금지·병합 직전 head 재대조, 세 Astra 뒤 현황 탭 생성 명령·board 최신화가 정본에서 이어져야 한다. 현재 개인 도구 범위와 향후 MCP 구상을 구분한다.
+- 독립 실사·CI·새 PR 생성까지 진행한 뒤 해당 PR의 사용자 명시 병합 승인을 메인에게 요청한다. 검증 지적은 이 범위에서 수정·새 검증하고, 별도 개선·보고서 형식·대시보드 도구 변경·MCP 구현·CURRENT 충돌 해소는 하지 않는다. 게임·DB·Unity·실제 대시보드 UI/E2E 실행을 문서 실사로 대신했다고 보고하지 않는다. 근거는 `dashboard-rules/`에 모은다.
+- 작성 종료: 메인 `msg_0db466697dad`의 CLAUDE 두 항목 추가와 SHA256 `AC05090193AD25EF148F14B838B4397A5A606628DE63C5652FDEBC5FFE5A8CB1`를 실제 파일과 대조했다. 새 Sol `task_6c3e464de67f` / `ctx_2e0a8fa67e3d`는 RESUME 10줄 추가·3줄 삭제를 완료했고 `msg_e2ae3ade8215`(08:11:16Z)와 보고 `implementation/report.md` SHA256 `D03D84A82E3B034713683DFD0238ABBA6C19D422D9E2F219474890114541CF2E`를 대조했다. release→동일 incarnation·최종턴 확인→close(ptyKilled=true)→ACK로 정산했다. 메인·Sol 자체점검은 독립 PASS가 아니다.
+- 원천 보충: 메인 메모의 07:55:37Z는 쓰기 전 시계 조회이며 파일 생성07:56:05Z·제품 쓰기07:56:15Z와 구분한다(`msg_b928d48b672f`, `main/timestamps.md`). 최초 메모 내용을 생성 순간에 직접 관측한 것은 아니다. 외부 README의 최초 계약 사본0f7919c4와 후속 acca6241은 별도로 보존했다(`msg_4f2efa644603`, `dashboard-readme-version.diff`). 필드·상태·절 제목은 같고 UI/갱신 설명만 바뀌었다. heartbeat 처리의 메인 판단은 위 기존 후보에 연결했다.
+- 이 두 종료 뒤 Astra가 이 상태 기록을 쓴 다음 제품·계약·보고·원시를 `dashboard-rules/verification-inputs.json`으로 고정해 신규 Opus에게 넘긴다. 작성자별 입력 시점과 이후 goal 상태 기록을 구분한다. 검증자의 최종 판정 전까지 세 제품과 고정 근거를 추가 수정하지 않는다.
+
+### 대시보드 정본 첫 독립 판정과 기록 정정
+
+- 신규 Opus `task_0b9aa1d1bcb1` / `ctx_915bca875efd`의 첫 판정은 **차단(#1, #2)**다. `dashboard-rules/verification/verdict.md` SHA256 `CCB254B6EDC7C049CC4011962315B6514264CBDC20BF077EFBF38A225987A79E`를 Astra가 전문 읽었다. CLAUDE·RESUME의 요구·문구·명령·링크·보존에는 지적이 없었다. #1은 위 메인 결정의 귀속 범위, #2는 Astra `context.md`가 실존하지 않는 `pr170-merge-command.txt`를 실제 근거 사슬에 적은 오류다. 구현자나 검증자 책임으로 돌리지 않는다.
+- 명령 기록 경계: PR170 병합 명령은 출력 없이 성공했고 Tee 파일은 생성되지 않았다. 해당 이름을 실제 원시로 적은 메모와 v1 목록은 잘못됐다. 없는 로그를 사후에 만들지 않으며 병합 사실의 저장 근거는 기존 `pr170-before-merge-recheck.json`, `pr170-merged.json`과 merge `3f0cb5e`다. 이전 명령 서술을 별도로 보존된 argv/stdout 파일의 증명으로 읽지 않는다. 원래 메모를 보존하고 `dashboard-rules/context.md` 끝에 #2 정정을 덧붙였다.
+- 입력 목록 정정: v1은 63행 중 비실존 1행(bytes0/sha256 null)을 포함했고 Get-Item·Get-FileHash 비종료 오류 뒤에도 검증 발행이 진행됐다. 메인 `msg_44204a7e7a1c`는 원문 보존·그 행만 제외·같은 검증자의 실사 계속을 결정했다. v2는 62행이지만 PowerShell JSON 변환으로 UTC 문자열이 같은 순간의 +09:00 표기로 바뀌어 「메타데이터 불변」 설명도 정정했다. v1·v2·그 비교 결과를 그대로 보존하고, v1의 raw bytes에서 해당 행만 뺀 **v3**(SHA256 `4082184702da5173b637b8dd889752c0ca596d6a9aeaf7548b91049644263314`)와 `manifest-v1-v3.diff`·`manifest-v3-comparison.json`을 명시 전달했다. 그 시점의 나머지 62개 실제 파일은 모두 bytes/hash가 같았다. 첫 판정은 v2를 대상으로 적혀 있고 v3 후속 반영은 확인되지 않아 새 재검증 입력에서 구분한다.
+- 메인 `msg_17a7e53d04ca`는 P-2의 새 처리 결정과 함께 Astra 소유 goal·context 두 기록만 정정하고 신규 Opus에게 델타 재검증을 맡기도록 지시했다. 위 #1 정정과 맥락 메모 #2 정정은 첫 판정 뒤의 새 입력이다. 기존 판정·고정 목록·제품 두 문서는 고치지 않는다. 첫 검증자는 완료 `msg_b7478a917fae` 뒤 release·동일 incarnation/최종턴 확인·close(ptyKilled=true)·ACK로 정산했고 재사용하지 않는다.
+- 후속 후보: 메인 `msg_44204a7e7a1c`가 요청한 **근거 목록 생성 시 즉시 실패**를 기존 근거/인용 검사 후보의 추가 근거로 남긴다. `Get-Item`·`Get-FileHash`의 `-ErrorAction Stop`과 목록 실제 경로 확인, JSON 변환 전후 원문/메타데이터 차이를 검증하고 나서 발행하는 방법을 다음 정비에서 검토한다. 새 도구·정책을 이번 PR에 구현하지 않는다. 첫 검증자의 메모 hash 오기 정정과 최초 간격 스크립트 실패 출력 미보존, Sol 메모의 과거 시점 문장(O-3)도 원문에 남아 있으며 소급 성공으로 바꾸지 않는다.
