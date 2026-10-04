@@ -673,3 +673,11 @@ Main msg_894bfc3cc2d9(2026-10-03T21:02:14Z)의 보완 완료를 받았다. `revi
 - 같은 중간 산출물 후보의 두 번째 사례: 메인 `msg_917379b74339`(09:14:28Z)는 Management D1 Opus가 계약 밖 자기 Claude scratchpad에 읽기 전용 helper4개를 만들고 그중2개가 맥락 메모보다 앞섰다고 전했다. 출처는 management-active의 `.backups/verification/2026-10-03-system-cards-resume/font-d1-review-scratchpad-disclosure.json`과 메인 결정 `msg_c95a1ba63056`이다. Rules가 원시를 직접 실사한 결과로 주장하지 않는다. 메인은 Claude Code의 기본 scratchpad 안내와 계약의 허용 위치 충돌을 후보 검토에 함께 다루도록 요청했다. 이번 PR이나 현재 판정 양식은 수정하지 않는다.
 - 같은 heartbeat 후보의 추가 근거: 메인 `msg_cf6ea0eba4e1`(09:31:13Z)은 Management D1 Opus `msg_5ef2c99da4be`(09:06:59Z)와 GameDev Sol `msg_22557258c839`(09:29:52Z)의 「[태그] alive」 subject/빈 body를 전했다. identity가 맞더라도 빈 heartbeat 예외(subject 빈 값 또는 정확한 alive)에 들지 않는 사례이며 메인도 요약 문장만 보고 첫 사례를 오분류한 뒤 정정했다고 전했다. preamble에 두 허용 모양을 예시로 넣거나 AGENTS 요약에 subject 경계를 명시하는 안을 기존 후보에 붙인다. Rules가 타 파트 원시를 직접 실사한 것으로 표현하지 않고 이번 PR에서 정책·문구를 바꾸지 않는다.
 - **사용량 임시 보류 해제 `msg_6888230d2ab9`(09:33:13Z):** 메인은 사용자 Enter 제출 원문 「1) Claude 주간 사용량 96% - 화요일 20:00 초기화 전까지 우선순위 → C 코멘트 「Max 20으로 플랜 방금 업그레이드 완료」」와 메인 pane Usage5H/7D0% 관측을 전달하고 위 `msg_9804ff1ccb62`의 새 Opus 기동 보류를 해제했다. 사용자 직접 입력으로 격상하지 않으며 기존 승인 범위·파트당 검증자1명·claude-opus-5-5·다른 모델 대체 금지를 유지한다. Rules는 현재 새 검증자가 필요한 단계가 아니며 PR173의 사용자 병합 승인 대기 상태다. 통합 report와 msg_5b25f9b6b600의 「보류중」은 이 메시지 수신 전 상태다.
+
+#### 다음 운영 문서 PR 반영 대기 — Management E2E 입력 후보
+
+메인 `msg_4ac97f9a40b4`(2026-10-04T09:36:50Z)은 **다음 운영 문서 PR에서 BACKLOG 한 줄**을 추가하도록 요청했다. 현재 PR173에는 넣지 않는다. 항목은 「운영툴 E2E 입력 — 앱 내부 입력 시범(Electron debugger CDP, 포커스 흉내, showInactive) + Hyper-V 가상 머신 준비 계획. 소유 Management, 현재 목표 종료 뒤.」다.
+
+메인이 전달한 사용자 Enter 제출 원문은 「2) 보조 모니터 - OS 입력 없이 E2E 조작하는 방법 → B A + 가상 머신 준비」다. 원전달 `msg_d265a8b08d4b`, Management goal 기록 `msg_7b16a80549b1`을 이번 메시지가 재전달했다. Rules가 두 원메시지를 직접 수신·실사했거나 이를 사용자 직접 입력으로 받았다고 표현하지 않는다. 원문은 `dashboard-rules/main-backlog-e2e-request.json`에 보존했다.
+
+BACKLOG가 Management 브랜치에 없어 운영 문서 소유자인 Rules가 한 곳에서 반영한다는 것은 메인의 배치 설명이다. 기존 BACKLOG의7필드·상태 계약을 따르고 담당 후보 Management·선행 조건 현재 목표 종료 뒤를 보존한다. 현재 상태는 **수신·출처/시점 기록 완료, BACKLOG 정본 반영·독립 검증은 다음 운영 문서 PR에 대기**다. 같은 PR에 승인된 다른 후보를 묶을 수 있으나 이 요청 자체의 제품 범위는 한 줄이고 E2E 구현·가상 머신 설치 권한을 만들지 않는다. 다음 정본 쓰기는 기존 신규 Sol/신규 Opus 절차로 진행한다. 이번 수신에서 새 branch/worker/PR은 열지 않았으며 PR173의 head·CI·판정은 그대로다.
