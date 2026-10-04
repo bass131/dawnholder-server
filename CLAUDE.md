@@ -4,6 +4,7 @@
 
 ## Claude Code 세션의 경계
 
+- 이 파일의 메인·Orca·검증자 운영은 이 머신의 로컬 세션에 적용한다. 사람 팀원이 자기 머신에서 실행하는 세션은 Claude Code라도 AGENTS의 [외부 팀원 세션](AGENTS.md#외부-팀원-세션) 절만 따르며, 로컬 파트 생성·goal·검증자 기동 절차를 적용하지 않는다.
 - Claude 세션의 역할은 둘이다. 메인 Claude는 방향 설정·파트 분할·사용자 조율·결과 통합·사용자 보고·병합 승인 요청을 맡고, 저장소 파일은 이 CLAUDE.md만 쓴다. Opus 검증자는 담당 Astra가 연 세션에서 실사·판정하고 판정에 필요한 테스트 파일만 쓴다. 제품 코드는 고치지 않고 결함을 번호로 보고한다.
 - 예외로 [R-7](00_Document/operations/ORCA.md#r7-fable-pilot) 한정 시범의 Fable goal 검토자는 메인이 승인한 시범 목표에서만 열리며, 해당 목표의 `goal-review.md`만 쓴다.
 - 생산 코드는 AGENTS.md 라우팅대로 Codex 작업자가 쓴다. 사용자가 Claude에게 직접 작성을 지시했을 때만 메인 Claude가 쓰고, 보고에 실제 작성 모델을 적는다.
@@ -21,8 +22,9 @@
 
 ## 메인 세션 진입
 
-- 사용자는 세션을 마칠 때 Astra를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 GameDev Astra를 메인 pane의 분할로, Management Astra를 Management worktree 탭에, Architecture Astra를 Architecture worktree 탭에 다시 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)).
-- 세 Astra가 준비되면 메인 handle을 Orca 메시지로 알린다.
+- 사용자는 세션을 마칠 때 Astra를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 리드 Astra를 다시 연다. 마감 구간의 리드는 GameDev·Content·Rules·CodeMap·Management 다섯이다. GameDev Astra는 메인 pane의 분할로, 나머지는 승인된 각 worktree 탭에 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)).
+- CodeMap은 Architecture 파트의 표시 이름이자 분석·검사 책임의 이름이다. 작업 경로와 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` 태그는 그대로 쓴다.
+- 리드 Astra가 준비되면 메인 handle을 Orca 메시지로 알린다.
 - 메인이 직접 하는 운영 의무는 세 가지다. 세부는 각 링크의 정본을 따른다.
   - 목표가 끝나면 그 Astra pane을 닫고 새로 연다([R-8](00_Document/operations/ORCA.md#r8-astra-lifecycle)).
   - 새 세션 첫 화면의 선택창은 메인이 처리하고 설정 불변을 확인한다([R-6](00_Document/operations/ORCA.md#r6-first-screen)).
@@ -42,3 +44,4 @@
 - 사용자 결정이 필요한 응답(병합 승인·범위 판단·의존성 승인·디자인 확인)에는 PushNotification을 함께 보낸다. 알림 앞머리는 `결정 필요: 번호 - 작업내용`이다([표기 정본](00_Document/conventions/REPORTING.md#사용자-최종-보고-형식)). 일상 진행 보고에는 보내지 않는다.
 - 사용자 결정 요청은 도착하면 작업 현황 대시보드의 `board.json`에 올린다. 대시보드는 저장소 밖 개인 도구(`C:/Dev/DawnHolder_Dashboard`)이며, 현재는 Claude Code 쪽 개인 도구로 운영한다. 원천 대조 중에는 `review`, 사용자에게 물을 때는 `waiting`으로 두고 선택지·상세 글·PR 번호와 정확한 head·도착 시각·출처·갱신 시각을 채운다. 답을 받으면 항목을 지운다. 필드 형식은 대시보드 README의 「결정 응답 모드」·「결정 항목의 수명」을 따른다. 채팅의 결정 요청과 대시보드 항목은 같은 내용이어야 한다. 새 세션의 대시보드 재기동은 [RESUME](00_Document/operations/RESUME.md#세션-진입-배치)를 따른다.
 - 대시보드가 메인 입력창에 넣은 "대시보드 결정 응답: …" 문장은 사용자가 메인 pane에서 Enter로 제출해야 사용자 입력이다. 대시보드는 자동 제출하지 않는다. PR 항목은 병합 지시 전에 문장 속 head와 현재 head를 다시 대조한다.
+- 우편함 메시지를 하나 처리할 때마다 대시보드 helper `node C:/Dev/DawnHolder_Dashboard/board.mjs stale`로 낡은 파트 줄과 답하지 않은 질문을 확인하고, 같은 helper로 고친다. 파트 줄의 형식과 명령은 대시보드 README를 따른다.
