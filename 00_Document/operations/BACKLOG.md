@@ -34,6 +34,7 @@
 | `npm-engine-warning` | CI npm engines 경고 노출 | 메인이 전달한 EBADENGINE 경고의 요약 누락 문제 | 메인 전달·2026-10-03·`msg_c9bc79f8ec43`가 재전달한 `msg_d5453356cc75` | warning 파일럿·npm 버전 증거·경고 포함/미포함 fixture·실측, Management engines 조율; 해소/승격은 사용자 판단 | Rules·Management | 대기 |
 | `server-operations-view` | 운영툴 서버 운영 시각화 | 사용자 2026-10-03 요청을 메인이 전달 | 메인 전달·2026-10-03·`msg_c9bc79f8ec43`가 재전달한 `msg_acba01cbf81e` | DB 연동 뒤, 참고 출처는 구현 조사 때 확인 | Management | 대기 |
 | `work-status-view` | 운영툴 작업 현황 화면 | 작업 중·예정·결정 대기를 상시 보는 화면 요청 | 메인 전달·2026-10-03·`msg_c9bc79f8ec43`, 개인 CLI 참고 허용 `msg_c1412c982ac5` | 표시 범위·소유 조율과 별도 goal 승격 검토 | Management | 대기 |
+| `management-e2e-input` | 운영툴 E2E 입력 — 앱 내부 입력 시범(Electron debugger CDP, 포커스 흉내, showInactive) + Hyper-V 가상 머신 준비 계획 | OS 입력 없는 보조 모니터 E2E 조작의 다음 계획 보존; Management 브랜치에 BACKLOG가 없다는 메인 설명에 따라 Rules가 main 기준 운영 문서 한 곳에 반영해 checkout 간 동시 쓰기 방지 | 메인 Claude 재전달·2026-10-04T09:36:50Z·`msg_4ac97f9a40b4`; 이 메시지가 메인 전달 `msg_d265a8b08d4b`·Management goal 기록 `msg_7b16a80549b1`을 재전달(두 원메시지 직접 실사 안 함); 메인이 전달한 사용자 대시보드 결정 응답(Enter 제출) 원문 「2) 보조 모니터 - OS 입력 없이 E2E 조작하는 방법 → B A + 가상 머신 준비」 | Management 현재 목표 종료 뒤 별도 goal 승격 검토; 후보 등록은 E2E/VM 구현 착수·설치 허가 아님 | Management | 대기 |
 
 ## 후보별 경계
 
