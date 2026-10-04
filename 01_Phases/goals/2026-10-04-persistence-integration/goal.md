@@ -1,6 +1,6 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **TESTDB-01의 신규 Sol 수정·자체 점검과 정산은 끝났고, 신규 Opus 한 명이 TESTDB-01과 최종05/06/07을 같은 고정 상태에서 처음부터 판정할 차례다.** Sol은 필수 절차 미충족으로 outcome=failed를 보고했으며 제품 독립 판정은 아직 없다. 사용자 결정 `msg_6a82c1c724ad`로 이번 회차를 재개했으며 이전 두 검증 결과는 수용하지 않는다. 메인 `msg_4bcc54fa9ef0`은 같은 파일의 Invoke-Migrations6곳과 명시 Contract 입력 연결을 결함 수정에 필수인 승인 범위로 판정했다. 실제 DB·G2·U-01·D:·서비스는 미실행/메인 안내 및 사용자 행동 대기다. 첫 PR·G4·Gardener·전체 goal은 미완료이며 다음 goal은 자동 착수하지 않는다.
+상태: **TESTDB-01 수정과 신규 Opus의 TESTDB-01·INSTALL-05/06/07 오프라인 기능 판정은 끝났으나, 신규 검증도 필수 절차 미충족으로 outcome=failed를 반환해 결과 수용 판단을 기다린다.** 최종 테스트는1081PASS/0FAIL/9OBSERVED이며 기능 결과로 절차 이탈을 면제하지 않는다. 사용자 결정 `msg_6a82c1c724ad`에 따른 이번 새 검증을 수행했으며 이전 두 검증 결과는 계속 수용하지 않는다. 같은 파일6호출·명시 입력 범위는 메인 `msg_4bcc54fa9ef0`에 근거한다. 실제 DB·G2·U-01·D:·서비스는 미실행/메인 안내 및 사용자 행동 대기다. 첫 PR·G4·Gardener·전체 goal은 미완료이며 다음 검증 회차나 goal을 자동 착수하지 않는다.
 
 ## 현재 사용자 결정 대조표 — TESTDB-01과 최종 재검증
 
@@ -30,7 +30,17 @@
 - 정산 뒤 release는 external_terminal retained였다. 실제 handle/incarnation·done/idle 화면을 대조해 정확 Sol pane을 닫았고 ptyKilled=true를 확인했다. **close 뒤 terminal list 재확인2026-10-04T20:59:18.7005334Z: 남은 GameDev 작업자 pane0.** 메인·Astra·대시보드는 제외했다. 재사용하지 않는다. 메인 `msg_9bb4bf49c9cd`의 재마운트 관측에 따라 완료 보고/R-8 직전에도 시각과 함께 재확인한다. 앞선 검증자 pane 재출현 정리는 해당 과거 정산에 따로 보존했다.
 - 후속 신규 Opus는 이 최종 제품과0f3638d 테스트4파일을 실사하고 TESTDB-01 AST 재발 검사와05/06/07을 각각 판정한다. 이전 두 검증의 verdict·중간·부모 요약은 계속 배제한다. 실제 DB 단계에는 별도 검토한 승인 계획 절대 경로/대문자SHA256, 정확 Instance/Database와 실제 G2가 필요하며 새 실행 예시는 구현 보고에 있다. 메인이 사용자에게 D:·서비스·실행자/명령/시간 창을 안내할 때까지 미실행이다. 로컬 checkpoint만 남기고 push/PR/병합은 하지 않는다.
 
-<!-- 현재 회차의 새 검증자는 위 현재 결정·완료조건·TESTDB-01 정산만 읽고, 아래 두 이전 검증의 역사 결과·요약은 읽지 않는다. -->
+## TESTDB-01·INSTALL-05/06/07 - 신규 검증 정산, 절차 수용 미정
+
+- 신규 외부 `claude-opus-5-5`, Task `task_e82ec9e41a7a` / Dispatch `ctx_5d2c63961810`, 고정 HEAD `c99ee9f15bd18cc20579c902c0ccdf9b410e31cd`. 부모가 최초 명령과 Opus5.5 xhigh 화면을 확인했으며 backend는 unknown이다. 공식 ask `msg_35374ad3add5`에 대한 replyv1.1 `msg_685b23d84fcb` 뒤 실행했다. 완료 `msg_63b9493ad3ec`(2026-10-04T22:19:59Z), outcome=failed는 아래 절차 실패이며 제품 결함 확정 횟수로 자동 환산하지 않는다.
+- 판정 원문 `.backups/verification/2026-10-04-persistence-integration/installation-renewed-review/verdict.md`, SHA256 `01F27DD4E842718D78B39C41710EE71AEEDD5C008CCB68D1B4A7866253196543`. TESTDB-01·05·06·07은 각각 오프라인 PASS이며 현재 제품 결함은 없다고 판정했다. 원문과 context 전체를 부모가 직접 읽었다. 실제 SQL·DB·서비스·Test-Database의 첫 연결 뒤 본문은 미실행이다.
+- 쓰기는 테스트3파일뿐이다. `TestDatabaseContract.Tests.ps1` 신규943행/36단정, `Invoke-OfflineTests.ps1` 등록, `TestEnvironmentLifecycle.Tests.ps1` +190행/17단정이다. 05 보간 상세 노출·고정 사유 누락 및 TESTDB 환경값 우회의 검출 공백을 보완했다. 부모 재집계는 기준선1028/0/9→최종1081/0/9, 두 실행 exit0, 기존1037개 이름·판정 유지와 신규53PASS를 확인했다. WorkRoot만 다르고 argv/cwd/자식 환경이 같았다. 반사실15종의19실행 모두 의도한 FAIL이며 사본별 제품39파일 중 지정1파일만 달랐다. 일부 Lifecycle 반사실은17단정 추가 전 버전이며 최종 전체 실행과 구분한다.
+- 절차 미면제: V-01은 새 Delivery를 읽기 전 편집, P-03은 새 파일 직전 check 누락3건, P-04는 inbox 전체 원본을 저장했다가 자기 메시지 메타데이터만 남기고 원본을 삭제한 일이다. P-03/P-04는 최종 보고에서 처음 공개됐다. 제외 대상 메시지를 읽지 않았다는 것은 검증자 진술이며 삭제된 원본 때문에 독립 확인에 한계가 있다. 함수8→9 오기는 최종 원문에서 정정됐다. 완료 payload는 filesModified1개만 담아 실제3파일과 다른 점도 메인에 보고했다(`msg_04a1c4be95d9`).
+- 부모 보존 Delivery의 최종 heartbeat는54회, 원시간격120초 초과10회(공식 ask 구간 포함1회),300초 초과0회, 최대283초다. 검증자 원문의52회/9회는22:14:25Z까지 스냅샷으로 마지막2신호를 포함하지 않은 값이며 원문을 덮어쓰지 않고 범위를 보정했다(`msg_7e4407ec172c`).
+- 부모 근거는 같은 evidence 루트의 `installation-renewed-review-parent-final-accounting.json`, `-parent-counterfactual-audit.json`, `-parent-input-hashes.json`, `-parent-heartbeat-audit-complete.json`, `-protected-after.json`, `-settlement.md`다. 고정 입력83개는 승인된 기존 테스트2개만 달랐고 신규 테스트1개는 별도 대조했다. Unity 실물3·skip S3·stash2는 보존됐다. 독립 표본 대조는 코드·승인/미승인 진입 원시·반사실 원천을 확인한 범위이며 실제 DB 검증을 대신하지 않는다.
+- failed 정산을 접수하고 release(external_terminal retained) 뒤 동일 incarnation·settled/done·idle 화면을 확인해 정확 pane을 닫았다. **close 직후2026-10-04T22:22:34.2762100Z: 남은 GameDev 작업자 pane0.** 종료된 Dispatch로 보낸 접수 알림은 dispatch_inactive로 거부돼 미전달로 보존했고 재사용하지 않았다. 메인 완료 보고 직전 목록을 다시 확인한다. 테스트3파일과 goal의 로컬 checkpoint만 남기며 push/PR/병합과 다음 검증 회차는 자동 진행하지 않는다.
+
+<!-- 아래 두 이전 검증의 역사 결과·요약은 이번 신규 검증 입력에서 제외됐다. 이번 회차 원문과 절차 이탈은 위 정산으로 보존하며, 향후 새 검증의 입력 범위는 새 계약으로 정한다. -->
 
 ## 직전 최종 INSTALL-05·06·07 기록 — 사용자 결정으로 통과 미수용
 

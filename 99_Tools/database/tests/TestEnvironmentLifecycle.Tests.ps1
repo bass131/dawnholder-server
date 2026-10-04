@@ -2064,6 +2064,196 @@ foreach ($name in $unknownCases.Keys) {
             $summary + '>')
 }
 
+# Interpolated product reasons (05 completion condition: identify product reasons without arbitrary detail). Each
+# pair follows one throw format of Environment.Common.ps1, Module.Common.ps1 or SqlError.Common.ps1 with two different
+# variable parts. Both summaries must be identified and equal, and neither may contain its own variable part; the
+# product's reported constants are not used as expected values.
+$interpolatedPairs = [ordered]@{
+    'plan field differs' = @{
+        Messages = @(
+            'Lifecycle manifest differs from the independently supplied approval plan: ApprovalPlanHash.',
+            'Lifecycle manifest differs from the independently supplied approval plan: RecoveryCredentialPath.')
+        Details = @('ApprovalPlanHash', 'RecoveryCredentialPath')
+    }
+    'lifecycle field missing' = @{
+        Messages = @('Missing lifecycle field: RuntimeCredentialHash.', 'Missing lifecycle field: MigrationManifest.')
+        Details = @('RuntimeCredentialHash', 'MigrationManifest')
+    }
+    'database identity key' = @{
+        Messages = @('Database identity changed: DatabaseGuid.', 'Database identity changed: OwnerSid.')
+        Details = @('DatabaseGuid', 'OwnerSid')
+    }
+    'manifest object location' = @{
+        Messages = @(
+            'Expected an object at C:\fixture-root\database\modules\manifest.json.',
+            'Expected an object at modules/procedures/read_admission.sql.')
+        Details = @('manifest.json', 'read_admission')
+    }
+    'manifest field location' = @{
+        Messages = @(
+            ('Unexpected manifest fields at C:\fixture-root\database\modules\manifest.json; use the reviewed ' +
+                'bundle format.'),
+            'Unexpected manifest fields at modules/procedures/read_admission.sql; use the reviewed bundle format.')
+        Details = @('manifest.json', 'read_admission')
+    }
+    'module structure status' = @{
+        Messages = @(
+            'Module source structure violation: modules/procedures/internal/notes.sql is not registered',
+            'Module source structure unavailable: C:/fixture-root/win.ini could not be read')
+        Details = @('notes.sql', 'win.ini')
+    }
+    'module checksum path' = @{
+        Messages = @(
+            ('Module source checksum mismatch: modules/procedures/read_admission.sql; update the reviewed bundle and ' +
+                'declaration together.'),
+            ('Module source checksum mismatch: modules/functions/can_enter_map.sql; update the reviewed bundle and ' +
+                'declaration together.'))
+        Details = @('read_admission', 'can_enter_map')
+    }
+    'module batch path' = @{
+        Messages = @(
+            'Module files are one batch and cannot contain GO: modules/procedures/read_admission.sql.',
+            'Module files are one batch and cannot contain GO: modules/functions/can_enter_map.sql.')
+        Details = @('read_admission', 'can_enter_map')
+    }
+    'module definition path' = @{
+        Messages = @(
+            'Module object/kind/expected definition mismatch: modules/procedures/read_admission.sql.',
+            'Module object/kind/expected definition mismatch: modules/functions/can_enter_map.sql.')
+        Details = @('read_admission', 'can_enter_map')
+    }
+    'module DDL kind and path' = @{
+        Messages = @(
+            'Expected one CREATE OR ALTER PROCEDURE batch at modules/procedures/read_admission.sql.',
+            'Expected one CREATE OR ALTER FUNCTION batch at modules/functions/can_enter_map.sql.')
+        Details = @('read_admission', 'can_enter_map')
+    }
+    'dependency order names' = @{
+        Messages = @('Dependency must precede dh.ReadAdmission: dh.CanEnterMap.',
+            'Dependency must precede dh.SaveProgress: dh.ReadAdmission.')
+        Details = @('CanEnterMap', 'SaveProgress')
+    }
+    'dependency contract path' = @{
+        Messages = @(
+            ('Dependency contract mismatch: modules/procedures/read_admission.sql; declare the operation''s actual ' +
+                'helper responsibilities.'),
+            ('Dependency contract mismatch: modules/functions/can_enter_map.sql; declare the operation''s actual ' +
+                'helper responsibilities.'))
+        Details = @('read_admission', 'can_enter_map')
+    }
+    'registered drift name' = @{
+        Messages = @(
+            'Registered/actual module drift: dh.ReadAdmission; refuse overwrite, including unchanged source.',
+            'Registered/actual module drift: dh.SaveProgress; refuse overwrite, including unchanged source.')
+        Details = @('ReadAdmission', 'SaveProgress')
+    }
+    'unchanged metadata name' = @{
+        Messages = @('Unchanged source has different reviewed definition metadata: dh.ReadAdmission.',
+            'Unchanged source has different reviewed definition metadata: dh.SaveProgress.')
+        Details = @('ReadAdmission', 'SaveProgress')
+    }
+    'declared release name' = @{
+        Messages = @(
+            'Already-declared release has different source registration: dh.ReadAdmission; refuse repair.',
+            'Already-declared release has different source registration: dh.SaveProgress; refuse repair.')
+        Details = @('ReadAdmission', 'SaveProgress')
+    }
+    'SQL wrapper number' = @{
+        Messages = @(
+            ('Test environment SQL command failed (provider number 547); raw SQL and provider text suppressed. ' +
+                'Preserve manifest.'),
+            ('Test environment SQL command failed (provider number 51001); raw SQL and provider text suppressed. ' +
+                'Preserve manifest.'))
+        Details = @('provider number 547', 'provider number 51001')
+    }
+}
+foreach ($name in $interpolatedPairs.Keys) {
+    $pair = $interpolatedPairs[$name]
+    # Plain exceptions without Data, so the two summaries can differ only through the reported reason.
+    $summaries = @($pair.Messages | ForEach-Object {
+            Get-TestEnvironmentFailureSummary -Exception ([InvalidOperationException]::new($_))
+        })
+    $identified = @($summaries | Where-Object { $_ -cmatch $unclassifiedReason }).Count -eq 0
+    $sameReason = $summaries[0] -ceq $summaries[1]
+    $shown = @(0, 1 | Where-Object { $summaries[$_].Contains($pair.Details[$_]) } |
+            ForEach-Object { $pair.Details[$_] })
+    Assert-True -Name ("an interpolated product reason is identified as one constant without its detail: $name") `
+        -Condition ($identified -and $sameReason -and $shown.Count -eq 0) `
+        -Detail ('identified=' + $identified + '; same=' + $sameReason + '; shown=' + ($shown -join ',') +
+            '; summaries=<' + ($summaries -join '> <') + '>')
+}
+
+# Installer-owned constant reasons (05 completion condition: product reasons stay identified). The functions below are
+# the installer functions Install reaches inside the guarded lifecycle try; their constant throw texts are read from
+# the product files and passed through the real summary. The product reason list is not used as an expected value.
+$installerFunctions = [ordered]@{
+    'Install-Database.ps1' = @('Invoke-TestEnvironmentInstall')
+    'Database.Common.ps1' = @('Invoke-Migrations', 'New-DbCommand')
+    'Module.Common.ps1' = @(
+        'Get-DatabaseMigrationSources', 'Read-ModuleBundle', 'ConvertFrom-DatabaseJsonRows',
+        'Assert-DatabaseMigrationHistory', 'Invoke-ModuleBundle', 'Assert-DatabaseModuleState'
+    )
+}
+
+function Get-ConstantThrowText {
+    param([Parameter(Mandatory)][Management.Automation.Language.ThrowStatementAst]$Throw)
+    # throw 'text' or throw ('text'); a rethrow, variable or built message is not a constant reason.
+    $pipeline = $Throw.Pipeline
+    while ($pipeline -is [Management.Automation.Language.PipelineAst] -and
+        @($pipeline.PipelineElements).Count -eq 1 -and
+        $pipeline.PipelineElements[0] -is [Management.Automation.Language.CommandExpressionAst]) {
+        $expression = $pipeline.PipelineElements[0].Expression
+        if ($expression -is [Management.Automation.Language.StringConstantExpressionAst]) {
+            return $expression.Value
+        }
+        if ($expression -isnot [Management.Automation.Language.ParenExpressionAst]) {
+            break
+        }
+        $pipeline = $expression.Pipeline
+    }
+    return $null
+}
+
+$installerReasons = New-Object 'Collections.Generic.List[object]'
+$unresolvedFunctions = @()
+foreach ($file in $installerFunctions.Keys) {
+    $parseTokens = $null
+    $parseErrors = $null
+    $fileAst = [Management.Automation.Language.Parser]::ParseFile((Join-Path $script:ToolRoot $file),
+        [ref]$parseTokens, [ref]$parseErrors)
+    foreach ($functionName in $installerFunctions[$file]) {
+        $definitions = @($fileAst.FindAll({
+                    param($node)
+                    $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -ceq $functionName
+                }, $true))
+        if ($parseErrors.Count -ne 0 -or $definitions.Count -ne 1) {
+            $unresolvedFunctions += $file + ':' + $functionName
+            continue
+        }
+        $throws = @($definitions[0].FindAll({
+                    param($node)
+                    $node -is [Management.Automation.Language.ThrowStatementAst]
+                }, $true))
+        foreach ($throw in $throws) {
+            $text = Get-ConstantThrowText -Throw $throw
+            if ($null -eq $text) {
+                continue
+            }
+            $summary = Get-TestEnvironmentFailureSummary -Exception ([InvalidOperationException]::new($text))
+            $installerReasons.Add([pscustomobject]@{
+                    Site = $file + ':' + $throw.Extent.StartLineNumber + ' ' + $functionName
+                    Identified = $summary -cnotmatch $unclassifiedReason
+                })
+        }
+    }
+}
+$unidentifiedReasons = @($installerReasons | Where-Object { -not $_.Identified } | ForEach-Object Site)
+Assert-True -Name 'every constant installer reason that Install reaches stays identified at the reporting boundary' `
+    -Condition ($unresolvedFunctions.Count -eq 0 -and $installerReasons.Count -gt 0 -and
+        $unidentifiedReasons.Count -eq 0) `
+    -Detail ('reasons=' + $installerReasons.Count + '; unresolved=' + ($unresolvedFunctions -join ',') +
+        '; unidentified=' + ($unidentifiedReasons -join ' | '))
+
 # ---- INSTALL-07 at Invoke-DatabaseSql (final review contract requirement 3; user decision msg_6b139eecb44e). The
 # product function runs in a child scope where only New-DatabaseSqlCommand returns a recording fake command. It throws
 # in-memory SqlException objects from New-TestSqlException or returns fixture values; no SqlCommand, connection open or
