@@ -83,13 +83,60 @@ jobs:
           set -euo pipefail
           mkdir -p "$MODULE_BOUNDARIES_EVIDENCE/tests"
           export MODULE_BOUNDARIES_TEST_WORK="$MODULE_BOUNDARIES_EVIDENCE/tests/work"
-          printf '%s\n' 'python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p test_module_boundaries.py -v' \
+          printf '%s\n' 'Python unittest discover: test_module_boundaries*.py; require actual requirement and discovery execution; counts.json' \
             > "$MODULE_BOUNDARIES_EVIDENCE/tests/command.txt"
           set +e
           /usr/bin/time -p -o "$MODULE_BOUNDARIES_EVIDENCE/tests/time.txt" \
-            python3 -B -m unittest discover -s 99_Tools/Architecture.Tests \
-            -t 99_Tools/Architecture.Tests -p test_module_boundaries.py -v \
-            > "$MODULE_BOUNDARIES_EVIDENCE/tests/stdout.txt" 2> "$MODULE_BOUNDARIES_EVIDENCE/tests/stderr.txt"
+            python3 -B - "$MODULE_BOUNDARIES_EVIDENCE/tests/counts.json" \
+            > "$MODULE_BOUNDARIES_EVIDENCE/tests/stdout.txt" 2> "$MODULE_BOUNDARIES_EVIDENCE/tests/stderr.txt" <<'PY'
+          import json, pathlib, sys, unittest
+
+          tests_root = "99_Tools/Architecture.Tests"
+          suite = unittest.defaultTestLoader.discover(
+              tests_root, pattern="test_module_boundaries*.py", top_level_dir=tests_root,
+          )
+
+          def test_ids(node):
+              if isinstance(node, unittest.TestSuite):
+                  return [name for child in node for name in test_ids(child)]
+              return [node.id()]
+
+          collected = test_ids(suite)
+
+          class ObservedResult(unittest.TextTestResult):
+              def __init__(self, *arguments, **keywords):
+                  super().__init__(*arguments, **keywords)
+                  self.started_tests = []
+
+              def startTest(self, test):
+                  self.started_tests.append(test.id())
+                  super().startTest(test)
+
+          result = unittest.TextTestRunner(verbosity=2, resultclass=ObservedResult).run(suite)
+          skipped = {test.id() for test, _ in result.skipped}
+          counts = {
+              "collected": len(collected), "testsRun": result.testsRun,
+              "executed": result.testsRun - len(result.skipped), "skipped": len(result.skipped),
+              "failures": len(result.failures), "errors": len(result.errors),
+              "requiredSuites": {},
+          }
+          for module in ("test_module_boundaries", "test_module_boundaries_discovery"):
+              prefix = module + "."
+              found = sum(name.startswith(prefix) for name in collected)
+              executed = sum(name.startswith(prefix) and name not in skipped for name in result.started_tests)
+              counts["requiredSuites"][module] = {"collected": found, "executed": executed}
+          counts["requiredSuitesExecuted"] = all(
+              entry["collected"] > 0 and entry["collected"] == entry["executed"]
+              for entry in counts["requiredSuites"].values()
+          )
+          with pathlib.Path(sys.argv[1]).open("x", encoding="utf-8") as report:
+              json.dump(counts, report, indent=2)
+              report.write("\n")
+          print(json.dumps(counts, indent=2))
+          if not counts["requiredSuitesExecuted"]:
+              print("Required module boundary suites were absent or skipped", file=sys.stderr)
+          raise SystemExit(0 if result.wasSuccessful() and counts["requiredSuitesExecuted"] else 1)
+          PY
           boundary_exit=$?
           printf '%s\n' "$boundary_exit" > "$MODULE_BOUNDARIES_EVIDENCE/tests/exit.txt"
           cat "$MODULE_BOUNDARIES_EVIDENCE/tests/stdout.txt" "$MODULE_BOUNDARIES_EVIDENCE/tests/stderr.txt"
@@ -160,6 +207,7 @@ jobs:
             ${{ runner.temp }}/module-boundaries-evidence/warning-demo/summary.md
             ${{ runner.temp }}/module-boundaries-evidence/warning-demo/stages/
             ${{ runner.temp }}/module-boundaries-evidence/tests/*.txt
+            ${{ runner.temp }}/module-boundaries-evidence/tests/counts.json
             ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/source/
             ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/result.json
             ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/analysis.json

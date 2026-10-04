@@ -56,7 +56,11 @@ CodeGraph는 저장소의 고정 package/lock에 맞는 1.6.1 Linux x64 bundle, 
 
 ## 테스트와 과거 결과
 
-설치에 의존하지 않는 Python 테스트는 WSL에서 다음과 같이 실행한다.
+설치에 의존하지 않는 기본 Python 테스트는 WSL에서 다음과 같이 실행한다.
+SDK 공개 진입을 사용하는 모듈 경계 요구사항 suite는
+`MODULE_BOUNDARIES_TEST_WORK`가 없으면 사유와 함께 skip한다. 기본 discovery는
+이 suite의 import/discovery/setUp에서 외부 명령과 출력 쓰기가 없는지도 검사한다.
+독립 모듈 경계 suite는 별도 `MODULE_BOUNDARIES_INDEPENDENT_WORK` opt-in을 유지한다.
 
 ```powershell
 wsl -d Ubuntu -- python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_*.py' -v
@@ -85,6 +89,11 @@ python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Archi
 | `ARCHITECTURE_EVIDENCE_TOOL_ROOT` | 당시 실행한 도구 사본 디렉터리. 기록에 대응하는 파일의 실제 hash를 읽는다. |
 
 명시한 batch에 도구 출처를 지정하지 않거나 다른 코드가 들어 있으면 실패한다. 기록의 `implementationHead`만 믿거나 기록 hash끼리 비교하지 않는다. 당시 코드가 미커밋이었을 수도 있으므로 실제 바이트의 일치가 기준이다.
+
+서버 모듈 경계 도구도 `99_Tools/Architecture`의 전체 도구 집합에 포함된다.
+이 도구가 없던 과거 로컬 batch와 현재 도구를 기본 명령으로 대조하면 파일 집합이
+달라 실패한다. 과거 실행을 검증할 때는 당시 bytes를 위 환경변수로 명시한다.
+이 명시적 과거 재생의 통과는 현재 전체 suite의 통과를 뜻하지 않는다.
 
 이전 검증 batch `20261003T170218569325Z`도 보존된 도구 사본으로 재생할 수 있다.
 
@@ -117,7 +126,7 @@ python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Archi
 하며 저장소 `.backups/` 또는 CI의 `RUNNER_TEMP` 안에 둔다.
 
 ```bash
-# 현재 작업 트리: HEAD 외 미커밋 입력은 input hash/workspaceStatus로 구분한다.
+# 현재 작업 트리: HEAD 외 변경은 input hash/workspaceStatus/workspaceUntrackedInputs로 구분한다.
 bash 99_Tools/Architecture/check-module-boundaries.sh \
   --output-root .backups/architecture/module-boundaries/current-run
 
@@ -126,7 +135,8 @@ main_sha=$(git rev-parse origin/main)
 bash 99_Tools/Architecture/check-module-boundaries.sh \
   --source-ref "$main_sha" --output-root .backups/architecture/module-boundaries/main-run
 
-# 이 검사 자체의 요구사항 테스트만 실행한다.
+# SDK10.0.301이 필요한 요구사항 suite를 명시 opt-in으로 실행한다.
+# WORK는 .backups 또는 RUNNER_TEMP 아래의 존재하지 않는 새 절대 경로다.
 MODULE_BOUNDARIES_TEST_WORK="$PWD/.backups/architecture/module-boundaries/tests" \
 python3 -B -m unittest discover -s 99_Tools/Architecture.Tests \
   -t 99_Tools/Architecture.Tests -p test_module_boundaries.py -v
@@ -136,6 +146,19 @@ Windows PowerShell에서는 같은 명령 앞에 `wsl -d Ubuntu --`를 붙인다
 새 출력 이름을 선택한다. 경로의 root 이탈·symlink·이미 존재하는 출력·소스와
 겹치는 별도 출력은 쓰기 전에 거부한다. 이 초기 거부는 stderr와 nonzero로
 확인하며, 과거 결과를 이번 결과로 해석하지 않는다.
+요구사항 suite는 WORK 미설정 때만 skip한다. 빈 값·상대 경로·symlink·기존 WORK는
+실패하며 기본 위치로 대체하지 않는다. 명시 opt-in 뒤 SDK 부재도 nonzero 실패다.
+모든 fixture·외부 실행 결과는 지정한 WORK 안에 남긴다. 전용 CI는 요구사항과
+discovery 회귀를 함께 실행해 수집/실행/skip 건수를 `tests/counts.json`에 기록하고,
+두 suite 중 하나가 수집되지 않거나 skip하면 job을 실패시킨다.
+
+workspace 모드의 `sourceSha`는 Git HEAD다. `workspaceStatus`는 추적된 파일의
+변경 상태이며, `workspaceUntrackedInputs`는 실제 snapshot manifest에 포함된
+미추적 입력의 상대 경로 목록이다. Git 추적 집합과 이 입력 목록만 대조하므로
+관련 없는 미추적 파일·ignore된 `.backups/` 과거 근거는 목록에 넣지 않는다.
+ignore된 파일이라도 snapshot 입력이면 미추적 목록에 포함된다.
+`--source-ref`의 `git_blobs` 모드는 원본 blob만 사용하고 이 목록은 비어 있다.
+현재 workspace bytes와 blob의 차이는 각 실행의 `input.sha256`/manifest로 확인한다.
 Windows가 만든 Orca linked worktree는 WSL의 `/mnt/<drive>`로 Git metadata
 경로를 읽고 backlink가 이 checkout을 가리키는지 대조한다. `.git` 포인터와
 설정을 수정하지 않으며 Git 명령에는 `GIT_OPTIONAL_LOCKS=0`을 적용한다.

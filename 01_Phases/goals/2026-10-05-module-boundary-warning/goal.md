@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **첫 신규 Opus 판정은 차단이다. 세 규칙과 실제 소스 검사는 통과했지만 기존 설치 무관 테스트 묶음에 .NET 의존 테스트가 섞이는 보존 회귀 #1이 확인돼 신규 Sol 수정과 신규 Opus 재검증으로 진행한다. 실제 PR checkout/CI는 아직 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **#1·#2의 신규 Sol 수정과 자체 회귀를 받았으며 신규 Opus 재검증으로 진행한다. 기본 전체 테스트는 실패했고 Windows 4사례 #ENV-1의 보존 영향은 미확정이다. 독립 통과·PR 준비 완료가 아니며 실제 PR checkout/CI도 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -142,3 +142,18 @@ WSL linked worktree의 Git metadata 경로로 최초 실제 진입이 실패한 
 - #3 - fixture 집계 표기: 낮음·비차단. 위 실측 문장의 건수 표기를 정정했고 과거 Sol 보고에는 이 정정 위치를 연결한다.
 
 독립 fixture 24건, 별도 실제 소스 테스트2건(공개 CLI3회), Sol suite28건은 통과했다. main `11aa4b8`·HEAD `db97c2f` blob은 같은 입력 hash이고 각56.144초·54.272초, workspace는42.792초였으며 세 실행의 boundary coverage46/46·위반0이다. 이는 통과한 실행 범위이며 #1 때문에 전체 독립 판정은 차단이다. 실제 source46파일 표본 대조와 설계 관찰7개는 판정 원문에 있다. 후속 설계 확장은 이 수정에 넣지 않는다. #1의 확정 실패는1회이며 두 crash와 검증자의 real-1 하네스 시행착오는 제외한다. 다음 단계는 신규 Sol의 #1·#2 수정, 신규 Opus 재검증, 실제 PR CI(새 csproj의 format-check 포함)다.
+
+### 1 - 첫 수정의 정산과 독립 재검증 입력
+
+수정 Task `task_4c659d8ba3ae` / Dispatch `ctx_0579d742b91b`, 시작·종료 HEAD `7c9253be6e8dd562c933b8b0c6428d35d3ea4ee7`. 신규 Sol의 최초 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, Astra가 확인한 화면은 GPT-6.1-Sol max이며 backend는 unknown이다. 첫 receipt는 input_accepted/turn_start_unobserved였다. 공식 계약 draft를 R-5 기준으로 대조한 뒤 textless Enter를 한 번 보내고 실제 Working·계약 수신을 확인했다. 이 후속 관측을 최초 turn_started receipt로 바꾸지 않는다(`correction-draft-recovery.md`).
+
+2026-10-04T20:05:41Z `msg_73128e95b4fd`의 succeeded·쓰기 종료와 `correction/report.md` 전체를 대조했다. report SHA256은 `0379F164EB3ABE886CC16F6B2320D3197ACC4059603972D9D5964DF7F73F0D47`이다. succeeded는 #1·#2 수리와 미확정까지 보존한 인계 완료이며 전체 테스트·goal 통과가 아니다. Astra는 최종6파일 hash와 보호60파일의 보존을 대조했다. 이전 보고/원시는 수정하지 않았다. 보고의 `verification/frozen-suite-impact/command.json` 표기는 실제 `verification/work/frozen-suite-impact/command.json`을 가리킨다. 이 경로 정정은 원문을 덮어쓰지 않는 포인터다.
+
+- #1: WORK 미설정의 SDK 요구사항 suite는 사유 있는 skip이다. stdlib discovery 회귀5개는 같은 명령에서 실패5→통과5, 명시 WORK/SDK 부재의 기존 probe는1실패/exit1을 유지했다. 로컬 CI fragment는 요구사항29·discovery5를 실제 실행했고 independent26은 별도 opt-in 부재로 skip했다. 필수 요구사항 전체 skip 재현은 guard가 exit1로 거부했다. `tests/counts.json`도 artifact 대상으로 추가했다.
+- #2: 실제 snapshot 경로만 Git 추적 집합과 대조해 `workspaceUntrackedInputs`를 기록한다. 자기 Git fixture의 실제 공개 CLI 회귀1개는 실패1→통과1이다. 운영 Git과 ignore된 과거 근거는 수정하거나 전수 수집하지 않는다.
+- 기본 전체 명령은165건/실패2/오류22/skip55/expected failures3/exit1, wall1487.518초였다. 자체 분류는 감사의 SDK 인자 오차단10·Windows TMP 범위12·drvfs 실행권한1·과거 batch와 현재 도구 집합 차이1이다. 전체 goal이 실행 파일11개를 추가했으므로 현재 전체 도구와 과거 batch의 bytes 일치 검사는 실패한다. 공통 기존 파일 변경·누락은0이며 명시 과거 재생 성공을 기본 전체 성공으로 대체하지 않는다. README에 이 차이를 명시했다.
+- 별도20개 메서드 재실행도 실패2/오류22/exit1, wall171.695초였다. 감사의 `/dev/null` 오차단20개와 **d #ENV-1 4메서드**를 분리했다. #ENV-1은 PowerShellEvidenceRootTests의 inside/around owned root·owned/sibling roots 오류2개와 WindowsWorktreeEntryTests의 full-size capture·stdin capture 실패2개다. Git 단독 실행은 세 stdin 조건에서 성공해 원인은 미확정이다. 새 Opus가 원시·환경·이번 전체 goal의 보존 영향을 좁게 판정하며 이를 통과나 확정 제품 실패 횟수로 세지 않는다.
+
+수정 원시는 `.backups/verification/2026-10-05-module-boundary-warning/correction/work/`의 red/green·ci-green·ci-skip-guard·sdk-absent-opt-in·default-all·environment-errors-fixed와 전수 분류 파일이다. 최종 도구 hash `3df98b67f766c562da9310e91f8b51040417439d1de7fe9e1613fa1186cce3ec`로 당시 remote main `11aa4b83131bc6349f186a141cfea9c58d2230e3`의 blob과 current HEAD7c9253b workspace를 실행해 양쪽 C#91파일477096bytes·Compile91/91·boundary46/46·세 규칙0·clean/exit0을 기록했다. 내부/외부 시간은 main66.294734/66.524552초, current52.252331/52.544837초다. mode/input hash가 다르고 병렬 실행했으므로 성능 개선 주장이 아니다. 원시는 actual-main/actual-current와 final-artifact-binding.json이다.
+
+release 뒤 동일 incarnation·idle·최종 화면을 대조하고 pane을 닫았다(`correction-close.json`, ptyKilled true). **close 뒤 terminal list 재확인: 남은 작업자 pane 0** (`correction-post-close-terminals.json`, Astra만 남음). 메인 리마인드 `msg_dbcbfff75f02`는 전달된 기존 절차 확인이며 새 사용자 직접 지시로 격상하지 않는다. 다음 검증은 새 세션이며 이전 작업자는 재사용하지 않는다. 이 기록 이후의 goal/계약/Git 쓰기는 Astra의 후속 통합이다.

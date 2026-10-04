@@ -1,7 +1,9 @@
 """Hand-written requirement fixtures; never generated from checker policy/results."""
 
 import json
+import os
 import pathlib
+import subprocess
 
 
 PROJECT = "02_Server/GameServer/GameServer.csproj"
@@ -55,6 +57,56 @@ def write_fixture(root, mode="matrix"):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(content, encoding="utf-8")
     return root
+
+
+def write_git_fixture(root, owner_root):
+    """Create history only in a new test fixture beneath the explicit owned work.
+
+    Git identity, signing and hooks are process-local options; no operating
+    checkout index, user configuration, remote or existing fixture is changed.
+    """
+    owner = pathlib.Path(owner_root).resolve(strict=True)
+    root = pathlib.Path(root)
+    if not root.is_absolute() or any(path.is_symlink() for path in (root, *root.parents)):
+        raise ValueError("Git fixture must use a direct absolute path")
+    root = root.resolve()
+    if owner not in root.parents or root.exists():
+        raise ValueError("Git fixture must be new and strictly below the owned work root")
+    write_fixture(root, "clean")
+    (root / ".gitignore").write_text(".backups/\n", encoding="utf-8")
+    environment = dict(os.environ, GIT_OPTIONAL_LOCKS="0")
+    prefix = [
+        "git", "-c", "user.name=Module Boundary Fixture", "-c", "user.email=fixture@example.invalid",
+        "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgSign=false",
+        "-c", "core.excludesFile=/dev/null", "-c", "init.defaultBranch=fixture",
+    ]
+    records = []
+
+    def git(*arguments):
+        command = [*prefix, *arguments]
+        completed = subprocess.run(command, cwd=root, env=environment, capture_output=True, text=True, timeout=30)
+        records.append({
+            "argv": command, "cwd": str(root), "exitCode": completed.returncode,
+            "stdout": completed.stdout, "stderr": completed.stderr,
+        })
+        (root.parent / "fixture-git-commands.json").write_text(json.dumps(records, indent=2) + "\n", encoding="utf-8")
+        if completed.returncode:
+            raise RuntimeError(f"Owned fixture Git failed: {completed.stderr}")
+        return completed.stdout.strip()
+
+    git("init", "--quiet")
+    git("add", "--", ".")
+    git("commit", "--quiet", "--no-gpg-sign", "--message", "Track clean module boundary fixture")
+    revision = git("rev-parse", "HEAD")
+    untracked = "02_Server/GameServer/Handlers/UntrackedDependency.cs"
+    (root / untracked).write_text(
+        f"namespace {NS}.Handlers; public class UntrackedDependency {{ public global::{NS}.Maps.GameMap? Map; }}\n",
+        encoding="utf-8",
+    )
+    (root / "notes.md").write_text("Unrelated untracked fixture note.\n", encoding="utf-8")
+    (root / ".backups").mkdir()
+    (root / ".backups/ignored-evidence.txt").write_text("Ignored fixture evidence.\n", encoding="utf-8")
+    return {"root": root, "head": revision, "untrackedPath": untracked}
 
 
 if __name__ == "__main__":

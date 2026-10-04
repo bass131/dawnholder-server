@@ -1,6 +1,7 @@
 """Contract v1 requirement TDD through the same public Linux/CI entry point."""
 
 import importlib.util
+import hashlib
 import json
 import os
 import pathlib
@@ -9,20 +10,37 @@ import time
 import unittest
 import uuid
 
-from support.module_boundary_fixture import PROJECT, write_fixture
+from support.module_boundary_fixture import PROJECT, write_fixture, write_git_fixture
 
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 ENTRY = REPO / "99_Tools/Architecture/check-module-boundaries.sh"
 RULES = REPO / "99_Tools/Architecture/Boundaries/module-boundaries.json"
-DEFAULT_WORK = REPO / ".backups/architecture/module-boundaries-tests"
-WORK = pathlib.Path(os.environ.get("MODULE_BOUNDARIES_TEST_WORK", DEFAULT_WORK)) / uuid.uuid4().hex
+WORK_VALUE = os.environ.get("MODULE_BOUNDARIES_TEST_WORK")
+WORK = None
+SKIP_REASON = "Set MODULE_BOUNDARIES_TEST_WORK to a new owned absolute directory to run SDK10.0.301 requirement checks"
 
 
+@unittest.skipIf(WORK_VALUE is None, SKIP_REASON)
 class ModuleBoundaryRequirements(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        WORK.mkdir(parents=True)
+        global WORK
+        if not WORK_VALUE or not pathlib.Path(WORK_VALUE).is_absolute():
+            raise ValueError("MODULE_BOUNDARIES_TEST_WORK must be a nonempty absolute path")
+        root = pathlib.Path(WORK_VALUE)
+        if ".." in root.parts or any(path.is_symlink() for path in (root, *root.parents)):
+            raise ValueError("MODULE_BOUNDARIES_TEST_WORK must not traverse parents or a symlink")
+        permitted = [REPO / ".backups"]
+        runner_temp = os.environ.get("RUNNER_TEMP")
+        if runner_temp and pathlib.Path(runner_temp).is_absolute():
+            permitted.append(pathlib.Path(runner_temp))
+        if not any(parent in root.parents for parent in permitted):
+            raise ValueError("MODULE_BOUNDARIES_TEST_WORK must be below .backups or RUNNER_TEMP")
+        if root.exists():
+            raise ValueError("MODULE_BOUNDARIES_TEST_WORK must be a new owned directory")
+        root.mkdir(parents=True)
+        WORK = root
         cls.cache = {}
 
     def invoke(self, mode="matrix", extra=(), environment=None, cache=False):
@@ -249,6 +267,52 @@ class ModuleBoundaryRequirements(unittest.TestCase):
 
     def test_project_root_escape_is_rejected(self):
         self.assert_failure(extra=("--project", "../outside.csproj"), reason="unsafe_path")
+
+    def test_workspace_untracked_source_provenance_matches_snapshot(self):
+        run = WORK / uuid.uuid4().hex
+        fixture = write_git_fixture(run / "source", WORK)
+        source = fixture["root"]
+        revision = fixture["head"]
+        untracked = fixture["untrackedPath"]
+        results = {}
+        index_path = source / ".git/index"
+        index_before = index_path.read_bytes()
+        for mode, extra in (("workspace", ()), ("git_blobs", ("--source-ref", revision))):
+            output = run / mode
+            command = [
+                "bash", str(ENTRY), "--source-root", str(source),
+                "--output-root", str(output), *extra,
+            ]
+            started = time.perf_counter()
+            completed = subprocess.run(command, cwd=REPO, capture_output=True, text=True, timeout=660)
+            (run / f"{mode}-command.json").write_text(json.dumps({
+                "argv": command, "exitCode": completed.returncode,
+                "elapsedSeconds": time.perf_counter() - started,
+            }, indent=2) + "\n", encoding="utf-8")
+            (run / f"{mode}-stdout.txt").write_text(completed.stdout, encoding="utf-8")
+            (run / f"{mode}-stderr.txt").write_text(completed.stderr, encoding="utf-8")
+            self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+            result = json.loads((output / "result.json").read_text(encoding="utf-8"))
+            self.assertEqual(result["executionStatus"], "completed")
+            self.assertEqual(result["sourceSha"], revision)
+            self.assertEqual(result["checkoutSha"], revision)
+            self.assertEqual(result["sourceMode"], mode)
+            results[mode] = result
+        workspace = results["workspace"]
+        blobs = results["git_blobs"]
+        self.assertEqual(workspace.get("workspaceUntrackedInputs"), [untracked])
+        self.assertEqual(blobs.get("workspaceUntrackedInputs"), [])
+        workspace_files = {item["path"]: item for item in workspace["input"]["files"]}
+        blob_paths = {item["path"] for item in blobs["input"]["files"]}
+        self.assertEqual(workspace_files[untracked]["sha256"], hashlib.sha256((source / untracked).read_bytes()).hexdigest())
+        self.assertNotIn(untracked, blob_paths)
+        self.assertIn("02_Server/GameServer/Maps/GameMap.cs", blob_paths)
+        self.assertNotIn("notes.md", workspace_files)
+        self.assertNotIn(".backups/ignored-evidence.txt", workspace_files)
+        self.assertNotEqual(workspace["input"]["sha256"], blobs["input"]["sha256"])
+        self.assertGreater(workspace["ruleCounts"]["MB001"], 0)
+        self.assertEqual(blobs["ruleCounts"], {"MB001": 0, "MB002": 0, "MB003": 0})
+        self.assertEqual(index_path.read_bytes(), index_before, "Public inspection must not modify the fixture index")
 
     def test_owned_process_timeout_is_recorded(self):
         module_path = REPO / "99_Tools/Architecture/Boundaries/processes.py"

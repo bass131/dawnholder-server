@@ -209,6 +209,16 @@ def execute(options, output, result):
     manifest = snapshot_inputs(source, snapshot, project, policy, options.max_source_files, options.max_source_bytes, revision, git)
     write_json(output / "input-manifest.json", manifest)
     result["input"] = manifest
+    result["workspaceUntrackedInputs"] = []
+    if result["sourceMode"] == "workspace":
+        # Query only snapshotted paths. Broad untracked status would enumerate
+        # unrelated files; ignored inputs still need provenance if snapshotted.
+        paths = [entry["path"] for entry in manifest["files"]]
+        tracked = set(git([
+            "ls-files", "--cached", "-z", "--",
+            *[":(literal)" + path for path in paths],
+        ]).split("\0"))
+        result["workspaceUntrackedInputs"] = sorted(path for path in paths if path not in tracked)
     result["inputSnapshotElapsedSeconds"] = time.perf_counter() - snapshot_started
     pin = json.loads((snapshot / "global.json").read_text())["sdk"]
     if pin.get("version") != SDK or pin.get("rollForward") != "disable":
