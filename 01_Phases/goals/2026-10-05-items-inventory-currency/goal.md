@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **PR1 #1·#2 독립 재검증 해결. 신규 #3 주석 수정과 자체 확인을 마쳤고 새 Opus 독립 실사를 준비한다. 독립 통과는 아직 보류다. O-4는 메인 판단으로 PR1 한계 공개·PR2 표시 복구 조건을 확정했다. PR/병합 미실행.**
+상태: **PR1 구현·독립 검증 완료, #1·#2·#3 해결·열린 차단 결함 없음. 정확한 PR head의 CI와 사용자 명시 승인 후 병합한다. O-4는 PR1 한계 공개·PR2 표시 복구 필수조건으로 관리한다. PR2 UI·실제 플레이와 전체 goal은 미완료다.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, branch `feat/items-inventory-currency-20261005`.
@@ -277,3 +277,13 @@ O-4 범위는 메인 `msg_b554a4b55c29`(20:08:41Z, `o4-main-scope-decision.json`
 자체 확인은 정확한 허용 치환 및 머리 주석 외 바이트 동일, UTF-8/LF/EOF/행 끝 공백, diff-check0, 보호102/102와 추가 고정입력10/10 불변이다. Astra도 최종 보고 전체·원시 명령/결과·실제 diff·103입력을 대조했다. 행동 테스트·Roslyn·빌드·봇·Unity·DB·전체서식은 이번에 실행하지 않았다. 이전85/85·919통과/skip5·botPASS·Unity356은 각각 앞선 실행 근거이며 이번 재실행이 아니다. #3 독립 해결은 새 Opus 판정 전까지 보류한다.
 
 정산: exact triple/tag allowed0, release retained/external/none 뒤 같은 incarnation `444d9baa-775d-4b86-8f8f-1ceba2be5035`·completed/done·최종 idle 대조 후 close ptyKilledtrue. 직후 terminal list의 남은 작업자 pane0(`sol-pr1-fix2-postclose-terminals.json`), 완료 delivery ack. 새로운 Opus는 주석과 현재 계약·목표의 정합성 및 O-4 메인 판단/PR2 필수조건을 독립 실사한다. PR/CI·병합은 아직 미실행이다.
+
+### PR1 #3 독립 실사 — 해결과 PR 관문
+
+신규 Opus `task_a8d72f3da04a` / `ctx_11d278cb5d8e`는 `msg_96aa35e65e1f`(2026-10-04T21:10:33Z)로 **#3 해결·새 결함 없음**을 판정했다. 입력 HEAD `6b9da371fa7b94fadb56283031c81cd1887eed2a`, 최종 `opus-pr1-fix2/report.md` SHA256 `1A1C3D84A8C69729D06C5DE3354AB5B91BD36B1F1F7F58D36FD397DAEBBBFA55`, `verdict.json` SHA256 `333BE25D11C2192C826A1A25F71287625391019621856B4466D5D8EB968CD4CF`다. Astra가 두 원문 전체와 실제 diff/명령/입력·이전 실행 표본을 대조했다.
+
+현재 임시 killer-only·드롭 위치·Registry의 처치자 owner 캡처와 recipient 검사가 새 주석에 정확히 드러난다. 주석 외 바이트는 동일하고, 고정 입력115/115·규칙6절누락0·서식바이트/diff-check를 확인했다. #1·#2의 이전 해결은 유지하며 새 기능 검증으로 확대하지 않는다. O-7은 설계 초안:34의 한 지점 교체 표현에 대한 비차단 관찰이다. 메인 원문은 「바꾸기 쉬운 자리」였고 실제 구현에서 수혜자 교체는 Registry의 owner 결합 검토도 필요하다. 현재 분배 정책을 바꾸거나 열린 기획 질문을 닫지 않았다.
+
+O-4 메인 판단과 goal:25·:174의 PR2 필수조건 반영, 이전 보고 불일치의 원문 보존·미확정 원인도 독립 대조했다. 이번에는 행동 테스트·빌드·봇·Unity·전체서식·DB·CI를 새로 실행하지 않았다. 앞선85/85·919통과/skip5·봇PASS·Unity356은 각각 그 실행 HEAD/입력 근거이며 현재 재실행이 아니다. 정적 goal 대조의 raw exit1은 마지막 grep이 닫힌 Sol handle0건을 센 기대된 부재다. Claude 안전 검사에 한 번 거부된 검사 명령은 삭제 없는 스크립트로 수행했고 중간 사본을 보존했다.
+
+정산: exact triple/tag allowed0, release retained/external/none, 같은 incarnation `4980ff5b-6ca6-42db-9738-4712a2d82257`·completed/done·최종 idle 확인 뒤 close ptyKilledtrue, 직후 terminal list 작업자0(`opus-pr1-fix2-postclose-terminals.json`), delivery ack. 현재 결함 계열의 열린 차단은 없으며 남은 PR 관문은 **정확한 head CI, PR 본문의 「맵 전환 틈의 처치 push 없음, 표시 복구는 PR2」 공개, 그 PR 병합 직전 사용자 명시 승인**이다. CI/PR 원격 실행 원시는 같은 로컬 근거 root에 보존하고 메인에 전달한다. PR1을 전체 goal 완료나 PR2 UI 완료로 처리하지 않는다.
