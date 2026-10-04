@@ -136,7 +136,7 @@ Sol은 FEATURE_MAP·ENTRY_POINTS·domains의 저장소 경로 존재 검사를 `
 PR 경계는 **BACKLOG → 운영 규칙/참고 근거 → 사실 정정/경로 검사 → 출력 순서 고정**이다. 착수 때 사실 정정과 legacy 정비는 검토 성격이 달라 분리하기로 했고, 최신 `msg_238982aa5d26`으로 legacy PR 자체를 이번 goal에서 제외했다. BACKLOG 이후 독립이고 파일이 겹치지 않는 작업은 준비 상태에 따라 순서를 조정한다. ADR-035의 선행 PR 병합 전에는 그 파일을 쓰지 않는다. PR마다 정확한 사용자 병합 승인을 받는다. 정책 제안 자체와 사용자 결정 뒤 실제 정책 변경은 구분한다.
 
 - Astra: goal·계약·출처 조사·설계 설명·ADR/보고 자료·결과 통합·담당 브랜치 commit/push/PR. 구현 전체를 직접 대신하지 않는다.
-- 새 Sol `gpt-6.1-sol xhigh`: 할당 제품·기계 문서 정비 파일만 쓴다. 테스트 파일·Git commit/push·추가 위임 권한은 없다.
+- 새 Sol `gpt-6.1-sol max`: 할당 제품·기계 문서 정비 파일만 쓴다. 테스트 파일·Git commit/push·추가 위임 권한은 없다.
 - 신규 Opus `claude-opus-5-5`: 작성 종료 뒤 실제 diff/원시 실행부터 독립 실사, 테스트 파일과 판정 근거만 쓴다. 문서만 변경한 단위는 정적 실사, 코드 단위는 독립 테스트까지 수행한다. 파트당 동시 검증자는 하나다.
 - Gardener: 목표 전체 PR 병합·결과 기록 뒤, R-8 직전 신규 Opus. 보고서 하나만 쓰고 최대 두 후보만 제안한다. goal 상태 문장의 시점 경과가 재발했는지도 관측한다.
 - GameDev의 DB·SQL·서버 영속성·MSSQL과 Management catalog/frontend는 다른 파트 소유다. 쓰기 조율이 필요한 공유 문서는 자연 지점과 정확한 파일 소유권을 합의한다. SQLFluff 보류를 임의 해제하지 않는다.
@@ -589,8 +589,12 @@ Main msg_894bfc3cc2d9(2026-10-03T21:02:14Z)의 보완 완료를 받았다. `revi
 
 메인 `msg_1d1537b7d249`(2026-10-04T05:21:38Z)가 사용자 발언 「아 참 그리고 Sol 구현자는 이제 6.1 Sol Max effort로 고정해줘」와 「규칙에도 반영해줘」를 전달했다. **구현 Sol은 이 작업부터 `gpt-6.1-sol`, reasoning effort `max`로 고정한다.** 메인 전달 사실이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. 정본 반영 전부터 적용하며 문서 변경·신규 세션 실행·기존 런타임 변경을 구분한다. 원문은 `operating-rules/sol-max/main-decision.json`이다.
 
-- 변경 범위: 같은 PR170에서 AGENTS 모델 라우팅, ORCA R5 Sol 최초 기동과 같은 결함3회 뒤 네 번째 Sol 시도의 effort를 max로 맞춘다. 현행 `.agents/skills`·참고 문서·RESUME 등의 Sol 기동 표기도 검색하되 현재 첫 검색은 위 두 파일의 세 위치만 해당한다. 과거 수행 기록의 xhigh는 당시 사실로 보존한다.
+- 변경 범위: 같은 PR170에서 AGENTS 모델 라우팅, ORCA R5 Sol 최초 기동과 같은 결함3회 뒤 네 번째 Sol 시도의 effort를 max로 맞춘다. 현행 `.agents/skills`·참고 문서·RESUME 등의 첫 검색은 위 두 파일의 세 위치만 찾았으나, 독립 실사 결함 #1로 이 goal의 현재 역할 계획도 포함해 max로 맞춘다. 과거 수행·결정 원문의 xhigh는 당시 사실로 보존한다.
 - 보존: Astra `gpt-6-astra xhigh`, Opus 검증자, capacity30분 예외의 신규 Astra xhigh 전환을 바꾸지 않는다. `ultra`는 쓰지 않는다. Codex0.160.0/models_cache의 Sol max 지원은 메인 관측과 이 세션의 별도 로컬 조회가 일치하며 backend 실제 모델의 증명은 아니다.
 - 메인 `msg_830fcabe292d`(05:23:33Z)는 PR169 병합 뒤 최신 main 통합을 지시했다. gh와 fetch에서 PR169의 MERGED(05:22:34Z), 승인 head `3a80e885d32e40f830be2b389bf8fd162578e3d6`, merge/main `3e07e1b0b318881701b5b7bab8adbe087b596420`을 확인했다. CURRENT만 기존 상대 링크 관례로 해소하고, 다른 파일에 충돌이 나면 멈춰 메인에 보고한다. 다른 파트 goal이 main에 없어 생기는 기존 링크 문제는 후속으로 남긴다.
 - 소유/순서: Astra의 사전 맥락·goal 적용 결정·Git merge 준비 → 새 Sol max가 CURRENT 충돌 문구와 effort 델타 수정 → 새 Opus 한 명이 두 변경의 실제 diff·링크·표기·보존 및 기동 근거를 함께 독립 실사 → Astra commit/push·새HEAD CI → 메인 R-2와 사용자 PR170 재승인. 제품 구현·검증 판정을 Astra가 대신하지 않으며 충돌 해소 자체의 diff는 CURRENT 줄에 한정한다.
-- 기존 로컬 상태 체크포인트 `e096ceb5632a556c47a8e3158d6b5cb9ebb211dc`는 별도 선행 커밋으로 보존한다. 위 이전 절의 「원격 미포함」은 b72423f 제출 당시 상태다. 이번 추가 범위의 goal 상태 기록과 새 통합 결과를 검증/보고할 때 이전 입력과 분리한다. 새 단위의 사전 맥락·원문·계약·전후 diff는 `operating-rules/sol-max/`에 둔다. 현재 새 델타 구현·독립 판정·새CI는 아직 미실행이다.
+- 기존 로컬 상태 체크포인트 `e096ceb5632a556c47a8e3158d6b5cb9ebb211dc`는 별도 선행 커밋으로 보존한다. 위 이전 절의 「원격 미포함」은 b72423f 제출 당시 상태다. 이번 추가 범위의 goal 상태 기록과 새 통합 결과를 검증/보고할 때 이전 입력과 분리한다. 새 단위의 사전 맥락·원문·계약·전후 diff는 `operating-rules/sol-max/`에 둔다.
+- Sol `task_d12d3e304aa6` / `ctx_7443c598648f`가 CURRENT 상대 링크·AGENTS/ORCA 세 위치를 구현하고 정산·종료했다. 최초 명령 기록과 화면은 `gpt-6.1-sol max`, backend unknown이다. 신규 Opus `task_38e6a9f2188a` / `ctx_ed8b36b8d876`의 첫 판정은 **차단(#1)**: 제품 델타·보존·98입력은 일치하지만 현재 goal 역할 계획이 xhigh로 남았다. 이는 Sol 계약 위반이 아니라 Astra의 검색 범위 누락이다. 판정 원문 `sol-max/verification/verdict.md`(SHA256 `D40A9F442B0F8FE735890F02E8404A4C02FD20E571D802980D8572602617A8C7`)와 종료 원시를 보존한다.
+- 메인 `msg_3375202aa17f`(2026-10-04T06:06:39Z)의 결정으로 Astra가 현재 역할 계획·조사 범위 기록을 수정하고 새 Opus에게 이 델타만 재검증받는다. 같은 결함 #1의 첫 판정이며 재검증은 아직 미실행이다. CURRENT 인덱스는 Sol 종료 뒤 Astra가 해소했지만 merge commit·push·새 CI는 아직 수행하지 않았다.
+- 절차 관측 P-1은 heartbeat 간격 초과, P-2는 실제 heartbeat 3건의 subject `[Rules Sol] alive`·빈 body다. P-2 원문은 `sol-max/goal-repair/sol-heartbeats-source.json`에서 확인했고 수신 helper는 3건 모두 policy-violation/exit1이었다. O-1은 Astra 메모의 「첫 쓰기」 문구보다 수신·검색 근거가 33초 앞선 관측이다. 메인 `msg_742ce8715d60`·`msg_00d5e0d6c37a`·`msg_3375202aa17f`의 이번 판정 비차단 결정을 보존하며 소급 준수·절차 전체 PASS·일반 예외로 확대하지 않는다.
+- 후속 보류: 빈 heartbeat의 태그 subject 경계와 수신 정책 문구 정리를 다음 Rules 정비 후보에 둔다. 근거 파일의 사전 메모 경계 질문은 기존 후보를 유지한다. ORCA 144행의 max 결정 출처 보충은 비차단 후속이며, GameDev goal의 xhigh 잔존은 메인이 해당 파트에 전달한다. 이번 PR의 제품 범위를 넓히지 않는다.
