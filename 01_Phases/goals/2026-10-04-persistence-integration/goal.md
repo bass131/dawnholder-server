@@ -1,6 +1,6 @@
 # 실제 SQL 설치·엔진 판정과 저장소·제한 복구 통합
 
-상태: **중간 마감. 독립 재검증에서 INSTALL-01~04 해소, INSTALL-05 부분 해소와 신규 INSTALL-06이 남았다(960 PASS/2 FAIL/9 OBSERVED). 마지막 Sol 기동은 직접1회·메인 대리3회 모두 실패해 Task/Dispatch 미발행으로 보류했다.** 메인의 후속 결정에 따라 현재 작업 트리를 체크포인트 commit/push(PR 없음)로 보존하고 새 작업 없이 대기한다. 전체 goal은 미완료이며 실제 DB·G2·D:·서비스 단계는 실행하지 않았다.
+상태: **중간 마감. 독립 재검증에서 INSTALL-01~04 해소, INSTALL-05 부분 해소와 신규 INSTALL-06이 남았다(960 PASS/2 FAIL/9 OBSERVED). 마지막 Sol 분할4회는 CLI handle 대기 시간 초과 뒤 실제 pane4개가 늦게 등록됐고, 사용자 결정 A에 따라 메인이 미사용 상태로 모두 종료했다. Task/Dispatch는 미발행이다.** 현재 작업 트리를 체크포인트 commit/push(PR 없음)로 보존하고 새 작업 없이 대기한다. 전체 goal은 미완료이며 실제 DB·G2·D:·서비스 단계는 실행하지 않았다.
 
 ## 사용자 중간 마감 결정
 
@@ -11,16 +11,17 @@
 - 사용자 행동이 필요한 D: 연결, 실제 DB/G2, 화면 확인과 서비스 시작은 마감 뒤로 미룬다. 기존 실행 초안은 승인되지 않은 상태를 유지한다.
 - 마감 지점에서 메인에 **“중간 마감 도달”**을 보고한다. 상태·branch/HEAD·미커밋 파일 수·잔여 결함/후보·재개 첫 단계를 포함하고, 이후 새 작업 없이 대기한다. 이 중간 마감을 전체 goal 완료나 Gardener/R-8 완료로 표현하지 않는다.
 
-### 기동 실패에 따른 마감 지점 변경
+### 분할 시간 초과와 미사용 pane 종료
 
-메인 `msg_6454aa8d5367`(2026-10-04T11:22:37Z)이 대리 기동 실패 뒤 **현재 작업 트리의 체크포인트 commit/push(PR 없음)**를 지시했다. 따라서 위 “통과하면” 조건으로 마지막 회차를 계속 기다리지 않고, 미해결05·06을 그대로 기록해 중간 마감한다.
+메인 `msg_6454aa8d5367`(2026-10-04T11:22:37Z)이 CLI 기동 오류 뒤 **현재 작업 트리의 체크포인트 commit/push(PR 없음)**를 지시했다. 이후 `msg_c5c2fc99f8e1`(11:25:24Z)이 실제 pane4개 생성을 정정했고, `msg_8b903351e9f0`(11:26:19Z)이 **사용자 결정 A: 남은 Sol pane4개를 모두 닫고 마지막 수정 회차 없이 중간 마감**을 전달했다. 사용자 결정의 원문 출처는 이 메인 전달 메시지이며 사용자 직접 입력으로 격상하지 않는다. 미해결05·06을 그대로 기록해 마감한다.
 
-- 담당 Astra의 split은 `Timed out waiting for split pane handle`로 실패했다. 원시는 `installation-final-fix-launch.json`(요청 `88aba1a8-cef3-4a71-b095-41cc1646d18d`)과 `final-fix-split-timeout-terminals.json`이다. Task·Dispatch·제품 쓰기는 시작하지 않았다.
-- 메인이 보고한 대리3회: 11:19:30Z `f217bd79-2459-463c-8fd8-b4c97dfcb103`, 11:20:34Z `28d595f1-73a0-407e-a02a-8cc7a2a08d0c`, 11:20:56Z `4f61ce9b-ab67-454b-9bf3-6782f9f00745`. 모두 같은 timeout이고 각 terminal list7개/새handle·잔여pane 없음이다. 이는 메인 메시지의 관측이며 Astra 직접 실측3회로 표현하지 않는다. 원문 `delivery_7e579977e120.json`에 보존했다.
+- 담당 Astra의 split은 `Timed out waiting for split pane handle`을 반환했다. 원시는 `installation-final-fix-launch.json`(요청 `88aba1a8-cef3-4a71-b095-41cc1646d18d`)과 `final-fix-split-timeout-terminals.json`이다. CLI 오류는 pane 미생성을 뜻하지 않았다. Task·Dispatch·제품 쓰기는 시작하지 않았다.
+- 메인이 보고한 대리3회: 11:19:30Z `f217bd79-2459-463c-8fd8-b4c97dfcb103`, 11:20:34Z `28d595f1-73a0-407e-a02a-8cc7a2a08d0c`, 11:20:56Z `4f61ce9b-ab67-454b-9bf3-6782f9f00745`. 모두 같은 timeout을 반환했다. 당시 terminal list7개/새handle 없음 관측은 늦은 등록 전의 순간 상태였으며 잔여pane 없음의 최종 근거가 아니다. 메인 관측의 원문은 `delivery_7e579977e120.json`, 정정과 종료 결정은 `delivery_66e1b721c0e8.json`에 보존했다.
+- **4회 모두 실제 pane 생성**: `term_cd61ed89-c7ee-48d2-99a5-bf8725ec32a1`, `term_69745747-339b-4347-927b-91566629d23c`, `term_de69b3c4-dd25-4c07-9eed-7b8f984e5ba7`, `term_061b904e-9cb0-4de1-b7f2-86410851f553`. 메인이 종료 직전에 네 개 모두 GPT-6.1-Sol max 첫 화면의 빈 prompt·draft 없음·Task/Dispatch 미연결을 재확인한 뒤 `terminal close`로 종료했다(4건 모두 ok). 이 생성/종료는 메인 전달 관측이며 Astra가 attach·입력·종료한 것이 아니다.
 - 준비 계약 `installation-final-fix-contract.md` SHA256 `45A82670D5A7933A117D77258D3C7AC54659A76CC7DF00B64B1A449FF7FAC10E`, 입력 `installation-final-fix-inputs.json` SHA256 `3B91112EA3EB564F4D1C931DD5357F35444CCF6A1AA742ED8D2076B5EE27FDE8`. 두 파일은 기동 전 역사 입력이며 **미발행**이다. 제품 범위는 Environment.Common/New-TestDatabase 두 파일, INSTALL-05 잔여·06의 마지막 Sol→Opus 한 회차다.
 - 새 탭 생성·배치 우회·모델 대체·Astra 직접 구현은 하지 않는다. 메인 현황판 `term_4d1431ae-66ff-4f50-b396-bad517e0672d`는 건드리지 않는다. 분할 실패 원인 확인은 마감 뒤 메인이 따로 맡는다.
-- **재개 첫 단계: Sol 기동 경로 확인 → installation-final-fix 계약으로 마지막 회차(새 Sol → 새 Opus).** 재개 승인 후 현재 HEAD·goal/메모 hash를 다시 고정하고 위 역사 입력을 그대로 실행 권한으로 쓰지 않는다. 마지막 회차 뒤에도 남으면 새 회차를 열지 않고 번호·원시·다음 할 일을 기록한다.
-- 체크포인트의 실제 commit/push/원격head·보존 결과는 로컬 `mid-closeout-checkpoint.json`에 둔다. 중간 마감은 제품 PASS·G2 승인·실제 DB 성공·전체 goal 종료를 의미하지 않는다.
+- **재개 첫 단계: Sol 기동 경로 확인 → installation-final-fix 계약으로 마지막 회차(새 Sol → 새 Opus).** 재개 승인 후 현재 HEAD·goal/메모 hash를 다시 고정하고 위 역사 입력을 그대로 실행 권한으로 쓰지 않는다. **분할이 시간 초과로 끝나면 바로 재시도하지 않고 기다린 뒤 terminal list를 다시 확인한다.** 마지막 회차 뒤에도 남으면 새 회차를 열지 않고 번호·원시·다음 할 일을 기록한다.
+- 최초 체크포인트 `4bdbbcb1179fb83b1bd1af73ca973247a1aad9d8`의 실제 commit/push·보존은 로컬 `mid-closeout-checkpoint.json`, 이 정정 후 최신 결과는 `mid-closeout-final-checkpoint.json`에 둔다. 메인 `msg_398ecf11f1c9`의 요청대로 정정만 후속 커밋으로 남기며 중간 마감은 제품 PASS·G2 승인·실제 DB 성공·전체 goal 종료를 의미하지 않는다.
 
 ## 재개 지점
 
@@ -34,7 +35,7 @@
 
 ## 현재 실사 결과와 보류
 
-- 최신 판정 `installation-recheck-2/verdict.md` SHA256 `1A85FE1DB53A7F450DC3BB8CC9703682C3A3BFCDD8EB682A1158E3C5A038FD69`: 01~04 해소, 05는 Install의 DB identity 변경 사유가 Unclassified로 사라지는 잔여, 06은 완료 journal 쓰기 실패 뒤 디스크 Pending인데 not Pending이라고 안내하는 새 결함이다. 둘 다 fail-closed와 자원 보존은 유지하지만 미해결이다. 마지막 수정 회차는 기동 실패로 보류했다. 05는 첫 재검증 실패1회, 06은 최초 발견이다.
+- 최신 판정 `installation-recheck-2/verdict.md` SHA256 `1A85FE1DB53A7F450DC3BB8CC9703682C3A3BFCDD8EB682A1158E3C5A038FD69`: 01~04 해소, 05는 Install의 DB identity 변경 사유가 Unclassified로 사라지는 잔여, 06은 완료 journal 쓰기 실패 뒤 디스크 Pending인데 not Pending이라고 안내하는 새 결함이다. 둘 다 fail-closed와 자원 보존은 유지하지만 미해결이다. 마지막 수정 회차는 CLI 시간 초과 후 사용자 결정 A에 따라 미사용 pane4개를 정리하고 미발행으로 보류했다. 05는 첫 재검증 실패1회, 06은 최초 발견이다.
 - 부모 `recheck-source-audit.json`에서 최종 전체960/2/9·기존 lifecycle53개 전부 유지·제품35와 기타 고정 입력 불변·변경 테스트1개·Unity3/S3/stash2 보존을 대조했다. lifecycle76/2/1이며 새 OBSERVED1은 비-int SqlNumber 합성 입력의 journal 잔존이다. 실제 비-SqlException fallback 정수는 Closed 연결 helper에서 관측했고 SqlException 분기는 소스 계약만 확인했다. 실제 SQL은 미실행이다.
 - 재검증 절차 관측: baseline 실행과 첫 편집의 겹침은 원본 harness hash/53행 동일 근거로 범위를 확인했다. 단계별 inbox check 누락으로 부모 지시 확인이 늦어 추가 재실행이 필요했고, 무효 launch2/parser2·자기 시험 정규식 오류1도 원문 §11에 있다. `msg_7c384bec95e7`로 즉시 메인에 보고했다. 부모 서버 시각 대조의 heartbeat 최대 간격221초/300초 초과0과 별개이며 **절차 전체 PASS로 표현하지 않는다**. 원문은 보존하고 `recheck-settlement.md`에 인수 범위를 남긴다.
 - 판정 원문 `.backups/verification/2026-10-04-persistence-integration/installation-review-1/verdict.md`, SHA256 `80C03344EBB19D9C93974030497B1C5C5F7F956F3531DE8B8FDF6BC75B4E825F`. 새 시험17 PASS/36 FAIL(상류 실패 연쇄29건 포함), 기존6 suite 전후884 PASS/0 FAIL/8 OBSERVED다. 실제 DB·U-01·OS/ACL/DPAPI는 미실행이다.
@@ -126,5 +127,5 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 ## 원문 근거
 
 - 이번 로컬 근거 root: `.backups/verification/2026-10-04-persistence-integration/`. 초기 사전 메모 `astra-context.md`, 후속 `astra-followup-context.md`, 진입/이관 `branch-checkpoint.json`, 독립 `installation-review-1/verdict.md`, 부모 원시 대조 `review-source-audit.json`, 정산 `review-settlement.md`. 후속 기록은 초기 고정 입력을 덮어쓰지 않는다.
-- 최신 수정/판정은 `installation-fix-1/report.md`와 `installation-recheck-2/verdict.md`, 부모 원천 대조는 `fix-source-audit.json`/`recheck-source-audit.json`이다. 중간 마감 맥락은 `astra-closeout-context.md`, 실제 Git 정산은 `mid-closeout-checkpoint.json`이다.
+- 최신 수정/판정은 `installation-fix-1/report.md`와 `installation-recheck-2/verdict.md`, 부모 원천 대조는 `fix-source-audit.json`/`recheck-source-audit.json`이다. 중간 마감 맥락은 `astra-closeout-context.md`, 최신 Git 정산은 `mid-closeout-final-checkpoint.json`이다.
 - 이전 승인 초안/승인 전달과 종료 checkpoint: `.backups/verification/2026-10-03-persistence-repository/{successor-goal-draft.md,successor-goal-review-delivery.json,closeout-pr171-checkpoint.json}`. 원문은 덮어쓰지 않는다.
