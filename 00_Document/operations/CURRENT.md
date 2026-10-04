@@ -7,10 +7,10 @@
 | GameDev | [영속성 저장소](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#재개-지점) |
 | Rules | [하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#재개-지점) |
 | Architecture | [CodeGraph adapter 정비](../../01_Phases/goals/2026-10-03-codegraph-adapter-cleanup/goal.md#재개-실행) |
-| Management | [시스템 카드](../../05_Management/goals/2026-10-02-system-cards/goal.md#재개-지점--2026-10-03-사용자-휴식) |
+| Management | [시스템 카드](C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active/05_Management/goals/2026-10-02-system-cards/goal.md#재개-지점--2026-10-03-사용자-휴식) |
 
 - GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-repository-d1b-20261002`
-- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/harness-backlog`
+- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/harness-operating-rules`
 - Architecture: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `feat/codegraph-adapter-cleanup-20261003`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-m2-system-cards`
 
