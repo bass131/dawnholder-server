@@ -1,6 +1,15 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **두 번째 PC 크래시 후 고정 입력 보존을 확인했고 신규 Opus 강 독립 검증을 다시 준비한다.** 수정·검증 비교 기준은 `2372ba4bc10d932ce52aeb032cea60707d911c1b`다. 첫 PR 종료 범위·G4는 메인 `msg_b7074e6a1c4a` 승인 상태다. 마지막 Sol 자체 시험은 7 suite 962 PASS/0 FAIL/9 OBSERVED로 남았지만 최종 보고·정산 전에 크래시로 중단됐다. 이는 독립 PASS가 아니다. 실제 DB·G2·U-01·D:·서비스는 미실행/사용자 행동 대기다. 직전 독립 판정의 INSTALL-05 잔여·06은 새 판정 전까지 해소로 확정하지 않는다.
+상태: **신규 Opus의 INSTALL-05/06 오프라인 해소 판정과 부모 원시 대조를 마쳤다. INSTALL-07 처리 및 검증 절차 위반 3건의 수용은 메인 결정 대기다.** 7 suite 988 PASS/0 FAIL/9 OBSERVED이며 실제 DB·G2·U-01·D:·서비스는 미실행/사용자 행동 대기다. 비교 기준 `2372ba4bc10d932ce52aeb032cea60707d911c1b`, 검증 시점 로컬 checkpoint `91c6e902834c55416b59f8c8dbfe9a00e4c18da8`와 테스트 +378/-0을 구분한다. 첫 PR 종료 범위·G4는 메인 `msg_b7074e6a1c4a` 승인 상태다. 마지막 회차 뒤 잔여 결함이므로 추가 수정·검증을 자동 착수하지 않는다.
+
+## 마지막 독립 검증 결과와 결정 대기
+
+- 검증 `task_b423e7cb2f25` / `ctx_98f332cbffd1`, 대상 구현 `verifies=task_dcc811b02548`. 판정 원문 `.backups/verification/2026-10-04-persistence-integration/installation-resume-review-2/verdict.md`, SHA256 `821C1D41C397DC1E984C73BE06CC6191A01D98CBDFF5BF91F4E98FC93946D749`. 신규 `claude-opus-5-5`의 최초 명령·화면 Opus5.5 xhigh를 확인했고 backend 실제 모델은 unknown이다.
+- 05/06은 오프라인 실사·독립 단언26개·실제 설치 진입점의 stub 실행으로 해소 판정했다. 같은 PS5.1 자식 환경의 전체 baseline962/0/9→final988/0/9, lifecycle104/0/1이다. 수정 전 제품2파일만 되돌린 근거 사본의 반사실 시험은 lifecycle88/16/1로 기존2·신규14 실패를 검출했다. 실제 SQL·OS·U-01·PSSA·CI 성공으로 치환하지 않는다.
+- 부모 `crash2-review-final-parent-audit.json`에서 7개 원시 재집계·신규26/기존 누락0/결과 변경0/OBSERVED9 동일·실행 중 입력38개 변화0을 확인했다. 고정 입력83개 중 소유 테스트1개만 변경됐고 제품35·Unity 실물3·skip-worktree S3·stash2는 보존됐다. 부모 R-2 표본/한계와 인수는 `crash2-review-settlement.md`에 둔다.
+- **INSTALL-07 — 중간·기존 코드·05/06 비차단:** PS5.1에서 .NET SqlException이 MethodInvocationException으로 감싸져 Environment.Common:886~893의 번호가0, Database.Common:101~127 경로는 번호 없음으로 보고된다. 인메모리 예외/.NET throw 및 command fixture에서 관측했으며 실제 SqlCommand·엔진은 미실행이다. 비밀 억제·fail-closed·자원 보존은 유지된다. 실제 G2 전 번호 추출 경계를 좁게 고칠지 메인이 결정한다.
+- **절차 3건은 통과 수용 대기:** 공식 blocking ask를 background로 실행해 승인보다 baseline 시작이 약14초 앞섰다. `check` 미ack로 부모 후속 질문2건을 늦게 받았고 heartbeat 한 간격이319초(19초 초과)였다. 테스트 첫 편집은 승인·baseline 종료 뒤였고 실행 원시는 수정하지 않았다. 원본 transcript 표본 `crash2-review-timing-original-sample.json`과 검증자 설명을 대조해 `msg_41e0613a595d`로 즉시 메인에 보고했다. verdict 결론의 ‘적용 규칙 위반 없음’은 이 절차 관측과 함께 읽어야 하며, task-context 기준에 따라 메인 결정 전 절차 전체 PASS나 무조건 통과로 인수하지 않는다.
+- 검증자 `worker_done`의 task outcome=succeeded는 검증 작업 완료다. 원문·diff·원시 대조 뒤 release(external_terminal retained)와 동일 incarnation의 정확 pane 종료(ptyKilled=true)를 완료했다. 재사용하지 않는다. 현재 회신 주소는 `run:run_6ba3f644755b`이며 새 위임·원격 push·PR·병합은 하지 않았다.
 
 ## 2026-10-05 01:15 KST 두 번째 크래시와 복구
 
@@ -18,12 +27,16 @@
 출처는 메인 `msg_ac202aff9b99`(2026-10-04T14:56:49Z)와 읽기 전용 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-04/`의 아래 파일이다. 이들은 메인이 전달한 사용자 결정이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. Rules가 운영 정본으로 옮기기 전까지 이 goal과 다음 계약에 적용한다.
 
 - `plan-scopes-draft.md` 사용자 원문: **“1) GameDev: 영속화 goal을 첫 PR에서 닫고 마감용 「게임 저장 고리」로 → A 첫 PR에서 닫음”**. 첫 PR 뒤 저장소·제한 복구 두 번째 PR은 이번 goal에서 제외한다. 다음 순서는 인스턴스 맵 수명→게임 저장 고리이며 자동 착수하지 않는다.
-- `HANDOFF.md` 결정1 사용자 원문 **“OK 그렇게 가자”**: 범위를 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건 및 PR 경계로 적고 착수 전 메인이 확인한다. 범위 안 완료조건을 막는 결함만 수정하며 같은 산출물 수정이 3회를 넘으면 메인 체크포인트 알림을 보낸다.
+- `HANDOFF.md` 결정1 사용자 원문 **“OK 그렇게 가자”**: 범위를 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건 및 PR 경계로 적고 착수 전 사용자·메인이 승인한다. 이 goal의 범위는 위 사용자 결정과 메인 `msg_b7074e6a1c4a`로 확인됐다. 범위 안 완료조건을 막는 결함만 수정하며 같은 산출물 수정이 3회를 넘으면 메인 체크포인트 알림을 보낸다.
 - `routing-draft.md` 사용자 원문: **“1) 작업 유형별 표와 모델 평가 권고 16개 배치 → A 승인 · 2) 설계 4범주 작업은 구현 전에 Fable이 불변식 목록 작성(시범) → A 시범 도입 · 3) Sol effort 시험은 보류하고 max 유지 → A 보류 · 4) 작업별 자동 기록 범위 → A 둘 다 · 5) 검증 강도 2등급 4주 시범 → A 시범 도입 · 6) 규칙 문서는 지금 늘지 않게만, 가지치기는 10-31 평가 때 → A 증가만 멈춤 · 7) 사람용 코드 따라읽기 문서는 지금 만들지 않음 → A 지금 안 함”**.
 - 위 라우팅의 즉시 적용: 계약 경로 실존 확인, 예문 대신 요구 항목/판정 기준, 관련 규칙 절 원문만 포함하고 제외 이유 표시, 검증 harness 파일화/판단별 Assert 변수, 설계 결정 차단 시 한 줄 대안, 보고 수치의 원시 파일 추적. 판정에는 `verifies` 대상 Task 및 결함 번호·심각도·차단·귀속과 「설계 관찰(비차단)」를 둔다. 설치·I/O 진입 경로는 stub 뒤에서라도 1회 실행해야 하며 함수 정의 점검만으로 PASS를 주지 않는다.
 - 이번 goal의 검증 등급은 **강**(DB·설치·I/O·실패 수명)이다. 신규 Opus의 실사·독립 테스트·실제 진입 경로 실행이 필요하고 오프라인 진입과 실제 SQL/U-01을 구분한다. 등급 시범은 10-31 재평가다. `HANDOFF.md` TDD 결정 원문 **“A”**는 새 goal부터 적용하므로 진행 중이던 이번 goal은 기존 방식이다. 구현 Sol `gpt-6.1-sol` max, 검증 신규 `claude-opus-5-5`를 유지한다.
 - `deadline-roadmap-draft.md` 사용자 원문 **“1) 필수선 → A 필수선 승인 · 2) Docker 분산 → A 마감 뒤 · 3) 게임을 두 파트로 → A 둘로 나눔 · 4) 도구·운영 파트는 마감까지 게임 속도를 돕는 일만 → B 오늘 순서대로”**. 11월 첫째 주 졸업작품 전시회 평가에 PPT·플레이 녹화로 마을 광장→길드 거점→파티 인스턴스 던전→보상→성장→재접속 유지를 보인다. 10-28 기능 동결 목표, 상점·연구 2순위다.
 - Fable 사전 설계 시범은 Content 첫 goal 및 GameDev의 **다음** 인스턴스 맵 수명·게임 저장 고리에 한정한다. 구현 전 불변식/전제 출처를 goal-review.md에 쓰고 메인이 원문 확인한 뒤 구현한다. 이번 05/06 마지막 수정에 새 사전 Fable 관문을 소급하지 않는다. ORCA의 같은 계약·번호 확정 실패 3회 규칙은 유지한다.
+
+### 메인 운영 결정 — Orca 1.4.217 공식 질문 예외
+
+메인 `msg_c06902677d91`(2026-10-04T16:49:33Z)은 Orca **1.4.217 동안** R-3의 공식 blocking ask `Question` / 공식 `reply --id` subject 예외를 같은 조건으로 적용했다. 사용자 직접 결정으로 격상하지 않는다. 실제 help에 subject 옵션이 없음을 확인했으며 body 자기 태그·현재 from_handle·Task·Dispatch 원시 대조는 유지한다. 일반 send에는 예외가 없고 helper에217을218로 가장하지 않는다. 수동 원천 대조를 기록하며 **1.4.218 이상 또는 subject 옵션 지원 시 이 한정 적용은 종료**한다. 원문 `crash2-main-ask-reply-exception.json`, 절차 보충v2.1 `msg_2e6f44b2d9fa`, 검증 중 goal 고정 유지/종료 뒤 반영 회신 `msg_6489dd98c315`가 근거다. blocking ask의 응답 대기 의무는 면제하지 않는다.
 
 ## 현재 범위·PR 경계
 
@@ -71,9 +84,9 @@
 - 수정 Sol Task `task_10ee107139ee`/Dispatch `ctx_4fb9710dc625`도 쓰기 종료·원문 대조·release·정확 pane 종료했다. 자기 점검은 독립 판정으로 쓰지 않고 위 신규 검증자에게 넘겼다.
 - 첫 재검증 Opus Task `task_32164d72f32a`/Dispatch `ctx_2a0a1c3853f1`는 `msg_1a5fa823d2ce`로 쓰기 종료했고 원문/원시 대조·release·정확 pane 종료했다. 해당 Task 성공은 실사 완료이며 제품 판정은 통과 아님이다.
 
-## 현재 실사 결과와 보류
+## 이전 실사 이력과 실제 DB 보류
 
-- 최신 판정 `installation-recheck-2/verdict.md` SHA256 `1A85FE1DB53A7F450DC3BB8CC9703682C3A3BFCDD8EB682A1158E3C5A038FD69`: 01~04 해소, 05는 Install의 DB identity 변경 사유가 Unclassified로 사라지는 잔여, 06은 완료 journal 쓰기 실패 뒤 디스크 Pending인데 not Pending이라고 안내하는 새 결함이다. 둘 다 fail-closed와 자원 보존은 유지하지만 미해결이다. 마지막 수정 회차는 CLI 시간 초과 후 사용자 결정 A에 따라 미사용 pane4개를 정리하고 미발행으로 보류했다. 05는 첫 재검증 실패1회, 06은 최초 발견이다.
+- 당시 판정 `installation-recheck-2/verdict.md` SHA256 `1A85FE1DB53A7F450DC3BB8CC9703682C3A3BFCDD8EB682A1158E3C5A038FD69`: 01~04 해소, 05는 Install의 DB identity 변경 사유가 Unclassified로 사라지는 잔여, 06은 완료 journal 쓰기 실패 뒤 디스크 Pending인데 not Pending이라고 안내하는 새 결함이었다. 둘 다 fail-closed와 자원 보존은 유지했다. 당시 마지막 수정 회차는 CLI 시간 초과 후 사용자 결정 A에 따라 미사용 pane4개를 정리하고 미발행으로 보류했다. 05는 첫 재검증 실패1회, 06은 최초 발견이며 현재 결과는 맨 위 마지막 독립 검증 절을 따른다.
 - 부모 `recheck-source-audit.json`에서 최종 전체960/2/9·기존 lifecycle53개 전부 유지·제품35와 기타 고정 입력 불변·변경 테스트1개·Unity3/S3/stash2 보존을 대조했다. lifecycle76/2/1이며 새 OBSERVED1은 비-int SqlNumber 합성 입력의 journal 잔존이다. 실제 비-SqlException fallback 정수는 Closed 연결 helper에서 관측했고 SqlException 분기는 소스 계약만 확인했다. 실제 SQL은 미실행이다.
 - 재검증 절차 관측: baseline 실행과 첫 편집의 겹침은 원본 harness hash/53행 동일 근거로 범위를 확인했다. 단계별 inbox check 누락으로 부모 지시 확인이 늦어 추가 재실행이 필요했고, 무효 launch2/parser2·자기 시험 정규식 오류1도 원문 §11에 있다. `msg_7c384bec95e7`로 즉시 메인에 보고했다. 부모 서버 시각 대조의 heartbeat 최대 간격221초/300초 초과0과 별개이며 **절차 전체 PASS로 표현하지 않는다**. 원문은 보존하고 `recheck-settlement.md`에 인수 범위를 남긴다.
 - 판정 원문 `.backups/verification/2026-10-04-persistence-integration/installation-review-1/verdict.md`, SHA256 `80C03344EBB19D9C93974030497B1C5C5F7F956F3531DE8B8FDF6BC75B4E825F`. 새 시험17 PASS/36 FAIL(상류 실패 연쇄29건 포함), 기존6 suite 전후884 PASS/0 FAIL/8 OBSERVED다. 실제 DB·U-01·OS/ACL/DPAPI는 미실행이다.
@@ -165,7 +178,8 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 
 - Content `msg_47ffacf96779`와 GameDev 회신 `msg_58eaccfd4a15`의 합의: 기존 PDL 1~34의 순서·ID를 보존하고 Content PR1은 C_InventoryRequest / S_InventorySnapshot / C_ItemUse / S_ItemUseResult를 35~38로 append한다. Content PR1 병합 뒤 GameDev는 39부터 사용한다. 패킷 수가 바뀌면 양쪽 goal의 범위를 다시 대조한다.
 - PDL·생성물·ProtocolVersion·등록의 현재 단일 writer는 Content다. GameDev는 이번 DB 도구 단계에 게임 파일을 쓰지 않는다. Content checkout에서 GameSession·GameWorld·HandlerRegistry의 최소 등록·처치 콜백·세션 정리 연결을 순차 작성하도록 허용했으며 예정 심볼·변경 경계와 쓰기 종료/head를 요청했다. 기존 quest/party 순서·상태 소유는 보존한다.
-- 저장 인터페이스는 GameDev 소유다. 새 DTO/API는 아직 미확정이므로 Content는 임의 확장 hook 대신 메모리 상태의 소유/읽기/변경 경계를 정리하고 다음 게임 저장 고리에서 조율한다. Content 현재 Run `run_add8d9f825f4`, 우리 회신은 `run:run_495ed90b4d12`다. 이 합의는 게임 저장 구현 착수 승인이 아니다.
+- 저장 인터페이스는 GameDev 소유다. 새 DTO/API는 아직 미확정이므로 Content는 임의 확장 hook 대신 메모리 상태의 소유/읽기/변경 경계를 정리하고 다음 게임 저장 고리에서 조율한다. Content 현재 Run `run_add8d9f825f4`, 우리 회신은 `run:run_6ba3f644755b`다. 이전 `run:run_495ed90b4d12`는 크래시 전 역사 주소다. 이 합의는 게임 저장 구현 착수 승인이 아니다.
+- Content의 후속 서버↔봇7777 사용은 `msg_bdfa6a2616cf`→`msg_6eca0797e9a9`→`msg_2a741de60801`로 조율했다. GameDev는 현재 해당 port를 쓰지 않으며 Content가 자기 승인 범위에서 순차 사용 전후 통지·정확 head/명령·직전 listener 소유 확인을 한다. 17:15:09Z Listen0은 그 시점 관측이며 이후 점유 보장이 아니다. 마지막 회신 시 Content는 아직 서버/봇 미실행이라고 보고했다. 다른 파트의 구현·시험 수치는 직접 검증 실적으로 인수하지 않는다.
 
 ## 범위 밖과 점검 지점
 
@@ -177,6 +191,6 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 ## 원문 근거
 
 - 이번 로컬 근거 root: `.backups/verification/2026-10-04-persistence-integration/`. 초기 사전 메모 `astra-context.md`, 후속 `astra-followup-context.md`, 진입/이관 `branch-checkpoint.json`, 독립 `installation-review-1/verdict.md`, 부모 원시 대조 `review-source-audit.json`, 정산 `review-settlement.md`. 후속 기록은 초기 고정 입력을 덮어쓰지 않는다.
-- 최신 수정/판정은 `installation-fix-1/report.md`와 `installation-recheck-2/verdict.md`, 부모 원천 대조는 `fix-source-audit.json`/`recheck-source-audit.json`이다. 중간 마감 맥락은 `astra-closeout-context.md`, 최신 Git 정산은 `mid-closeout-final-checkpoint.json`이다.
+- 이전 수정/판정은 `installation-fix-1/report.md`와 `installation-recheck-2/verdict.md`, 당시 부모 원천 대조는 `fix-source-audit.json`/`recheck-source-audit.json`이다. 중간 마감 맥락은 `astra-closeout-context.md`, 당시 Git 정산은 `mid-closeout-final-checkpoint.json`이다. 현재 원문/부모 대조/정산은 맨 위 마지막 독립 검증 절을 따른다.
 - 이번 재개 사전 메모는 `astra-resume-scope-context.md`다. 새 계약/고정 입력은 중간 마감 당시 미발행 계약과 구분해 보존한다.
 - 이전 승인 초안/승인 전달과 종료 checkpoint: `.backups/verification/2026-10-03-persistence-repository/{successor-goal-draft.md,successor-goal-review-delivery.json,closeout-pr171-checkpoint.json}`. 원문은 덮어쓰지 않는다.
