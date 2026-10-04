@@ -141,7 +141,11 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 1. 메인 범위 확인(`msg_763b1fa21bf5`)과 GameDev ID/공유 파일/저장 경계 합의(`msg_58eaccfd4a15`)를 완료했다.
 2. Fable 고정 입력·검토·정산·종료와 메인 원문 확인을 완료했다. INV-06/S-3를 현재 도달 경로에 맞춰 정리했다.
-3. 위 불변식과 구체 API/패킷 필드를 담은 최종 계약을 고정한다. 테스트 선행 → Sol → 신규 Opus 순으로 진행한다.
+3. 최종 요구사항/패킷 계약은 `.backups/verification/2026-10-05-items-inventory-currency/pr1-acceptance.md`, 선행 TDD 계약은 같은 폴더 `tdd-contract.md`(SHA256 `8E2968D6E7EC1C5008D304F4535A1695BFB8429274DFF013ABAC180F5168B23E`)다. 복구 시점/기준 SHA 보충은 `tdd-recovery-addendum.md`에 두며 테스트 요구와 쓰기 권한은 바꾸지 않는다. 신규 Opus 테스트 선행 → Sol → 별도 신규 Opus 순으로 진행한다.
+
+### 2026-10-05 크래시 중단과 복구
+
+메인 `msg_0f4da872f048`은 00:45 KST PC 블루스크린으로 중단됐으며 분석 뒤 지금 재개하고 재발을 지켜보는 사용자 결정을 전달했다. 중단 당시 HEAD는 `a6691d15208ef1e39e4a38a26b6494f4169a8dc3`; TDD Opus `term_688234aa-5bf4-4074-ab30-434b39e0caac`는 준비 화면까지 확인했으나 Task/Dispatch 발행 전이었다. 복구 후 Astra가 clean 상태·계약 hash 일치·테스트/부분 산출물 부재를 확인했다. 따라서 인계할 크래시 중단 부분 결과는 없으며 크래시는 확정 실패로 집계하지 않는다. 실패한 대화 복원 뒤 shell로 남은 pane `term_5108245d-780e-4879-adf3-7bfab62bdb3a`만 화면 확인 후 종료했다. 새 Content handle `term_934c3c85-da3d-439c-9b9f-101154b3c5e8`에 기존 Run `run_add8d9f825f4`를 재바인딩했고, 같은 TDD 요구를 새 `claude-opus-5-5` 세션에 발행한다. Fable 원문·채택 커밋과 이전 증거는 그대로 보존한다. 메인의 덤프 분석/무손실 보고를 Astra의 자체 검증으로 격상하지 않는다.
 
 ## 실제 결과와 미실행
 
