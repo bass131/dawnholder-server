@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **운영 규칙 [PR #170](https://github.com/bass131/dawnholder-server/pull/170)은 승인 HEAD `d300791090a489988484e209432b84de3163903b`를 병합했다. 다음 Rules PR는 결정 대시보드 운영의 정본화이며 CLAUDE·RESUME·이 goal만 다룬다 — [새 단위와 완료조건](#pr170-병합과-결정-대시보드-정본화)을 읽는다.** 첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168)도 병합했고 전체 goal은 아직 미완료다. 새 지시 원문은 메인 `msg_38b3b6162048`이며 메인이 전달한 사용자 결정으로 기록한다. PR170의 CI 후 로컬 체크포인트는 새 브랜치에 이관했으며 이전 판정/CI의 고정 입력으로 소급하지 않는다. 문서의 사실·경로 검사와 PowerShell 출력순서 후속 PR, 전체 목표 종료 점검은 남았다. 아래 과거 상태·원시는 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 범위 밖이며 ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)과 실제 구현·검증 결과를 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **결정 대시보드 정본화 [PR #173](https://github.com/bass131/dawnholder-server/pull/173)은 제출 HEAD `2218af61b842594997d160eb7524bb5e6b2e8402`로 OPEN이며 독립 정적 실사 PASS를 분리 인수했다. 두 CI는 성공했고 사용자 명시 병합 승인은 아직이다 — [최신 상태와 절차 관측](#대시보드-정본-pr173-독립-검증과-통합)을 먼저 읽는다.** 운영 규칙 PR170(승인 d300791 → 병합3f0cb5e)과 BACKLOG PR168은 병합했다. 전체 goal은 미완료이며 문서 사실·경로 검사, PowerShell 출력순서 후속 PR과 전체 종료 점검은 남았다. 이 머리·최신 절은 PR 제출 뒤의 로컬 상태 체크포인트로 제출 HEAD·독립 판정·CI 입력과 구분하고 추가 push하지 않는다. 새 Opus 기동은 메인 msg_9804ff1ccb62의 사용량 임시 보류를 따른다. 과거 상태·원문을 보존하며 All 비교/승격/helper와 legacy 통합·삭제·보관은 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)과 실제 결과를 구분한다.
 
 ## 문제와 목표
 
@@ -222,7 +222,7 @@ PR 경계는 **BACKLOG → 운영 규칙/참고 근거 → 사실 정정/경로 
 
 > 방금 대시보드 작업방식 맥락은 메모리에만 저장하면 이후 또 다른 메인 세션에서 작업이 누락할 수 있으니 규칙,맥락 최신화해서 시스템 최신화 하자 / 일단 현재는 클로드 모드로 관리하지만, 이 기능도 이후에 운영툴이 라이브 버전 1.0이 만들어지면 거기서 MCP로 관리 가능하게 만들어 보고 싶어.
 
-현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다. 메인의 결정 등록·review/waiting·필수 정보·채팅 일치·답 뒤 제거, 사용자 Enter 제출과 PR head 재대조를 [CLAUDE의 「메인의 기록과 알림」](../../../CLAUDE.md#메인의-기록과-알림)에 작성했고, 새 메인이 세 Astra를 연 뒤 현황 탭을 재개·갱신하는 단계를 [RESUME](../../../00_Document/operations/RESUME.md#세션-진입-배치)에 작성했다. 두 작성자의 쓰기는 끝났고 신규 독립 실사·새 PR/CI·병합은 아직이다. 작성 완료를 실행 검증으로 확대하지 않는다.
+현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다. 메인의 결정 등록·review/waiting·필수 정보·채팅 일치·답 뒤 제거, 사용자 Enter 제출과 PR head 재대조를 [CLAUDE의 「메인의 기록과 알림」](../../../CLAUDE.md#메인의-기록과-알림)에 작성했고, 새 메인이 세 Astra를 연 뒤 현황 탭을 재개·갱신하는 단계를 [RESUME](../../../00_Document/operations/RESUME.md#세션-진입-배치)에 작성했다. 위 문구의 작성은 끝났다. 첫 독립 판정의 기록 결함 #1·#2를 정정하고 신규 Opus의 델타 PASS를 메인 msg_28763da370fc로 분리 인수해 PR173에 제출했다. 두 CI는 성공했고 병합은 아직이며 [최신 상태](#대시보드-정본-pr173-독립-검증과-통합)와 제출 뒤 로컬 기록을 구분한다. 정적 실사를 대시보드 실행 검증으로 확대하지 않는다.
 
 운영툴 라이브 1.0의 MCP 관리 구상은 메인이 Management에 백로그 씨앗으로 따로 전달한다. Rules에서 도구 구현·백로그 중복 기록·REPORTING v2 확정을 하지 않는다. 보고서 형식은 사용자가 Chrome에서 다시 확인한 뒤 메인 별도 지시를 기다린다.
 
@@ -645,3 +645,29 @@ Main msg_894bfc3cc2d9(2026-10-03T21:02:14Z)의 보완 완료를 받았다. `revi
 - 입력 목록 정정: v1은 63행 중 비실존 1행(bytes0/sha256 null)을 포함했고 Get-Item·Get-FileHash 비종료 오류 뒤에도 검증 발행이 진행됐다. 메인 `msg_44204a7e7a1c`는 원문 보존·그 행만 제외·같은 검증자의 실사 계속을 결정했다. v2는 62행이지만 PowerShell JSON 변환으로 UTC 문자열이 같은 순간의 +09:00 표기로 바뀌어 「메타데이터 불변」 설명도 정정했다. v1·v2·그 비교 결과를 그대로 보존하고, v1의 raw bytes에서 해당 행만 뺀 **v3**(SHA256 `4082184702da5173b637b8dd889752c0ca596d6a9aeaf7548b91049644263314`)와 `manifest-v1-v3.diff`·`manifest-v3-comparison.json`을 명시 전달했다. 그 시점의 나머지 62개 실제 파일은 모두 bytes/hash가 같았다. 첫 판정은 v2를 대상으로 적혀 있고 v3 후속 반영은 확인되지 않아 새 재검증 입력에서 구분한다.
 - 메인 `msg_17a7e53d04ca`는 P-2의 새 처리 결정과 함께 Astra 소유 goal·context 두 기록만 정정하고 신규 Opus에게 델타 재검증을 맡기도록 지시했다. 위 #1 정정과 맥락 메모 #2 정정은 첫 판정 뒤의 새 입력이다. 기존 판정·고정 목록·제품 두 문서는 고치지 않는다. 첫 검증자는 완료 `msg_b7478a917fae` 뒤 release·동일 incarnation/최종턴 확인·close(ptyKilled=true)·ACK로 정산했고 재사용하지 않는다.
 - 후속 후보: 메인 `msg_44204a7e7a1c`가 요청한 **근거 목록 생성 시 즉시 실패**를 기존 근거/인용 검사 후보의 추가 근거로 남긴다. `Get-Item`·`Get-FileHash`의 `-ErrorAction Stop`과 목록 실제 경로 확인, JSON 변환 전후 원문/메타데이터 차이를 검증하고 나서 발행하는 방법을 다음 정비에서 검토한다. 새 도구·정책을 이번 PR에 구현하지 않는다. 첫 검증자의 메모 hash 오기 정정과 최초 간격 스크립트 실패 출력 미보존, Sol 메모의 과거 시점 문장(O-3)도 원문에 남아 있으며 소급 성공으로 바꾸지 않는다.
+
+### 대시보드 정본 PR173 독립 검증과 통합
+
+- 신규 Opus `task_5fe9ca32e526` / `ctx_813db8bec5fa`는 첫 판정 #1·#2를 독립 재검증해 **PASS, 두 결함 해소, 새 차단0**으로 판정했다. 원문 `dashboard-rules/reverification/verdict.md` SHA256 `90C2C563F2585A4B6B0648A668CF6B7F834BF0D7277AE39F102B52D76FC1936A`를 Astra가 전문 읽었다. v1→v2의 UTC 표기 변경→v3의 raw 한 행 삭제를 직접 대조했고, 현재98입력과 역사 v3의60개 불변/2개 승인 정정을 확인했다. CLAUDE·RESUME는 첫 판정 때와 같은 바이트여서 그 실사 결과를 인용하며 새 전체 실사로 포장하지 않는다.
+- 요청·첫 명령·첫 화면은 `claude-opus-5-5` / Opus5.5 xhigh이며 backend는 unknown이다. 신규 검증자의 메모 생성08:50:38.333Z는 첫 raw08:50:52.412Z보다 앞선 관측이고 생성 순간 내용은 직접 보지 않았다. `msg_64422041b7c4`의 현재 identity·Task·Dispatch·tag 정책 allowed와 native completed를 대조했다. release retained → 같은 incarnation `c0f8ae58-a788-4c95-a824-affe7932c4c5`·완료 최종턴 → close ptyKilled=true → ACK를 `reopus-*.json`, 특히 `reopus-done-ack.json`에 보존했다. 신규 검증자는 종료했고 재사용하지 않는다.
+- **검증자 TEMP 계약 위반:** 검증자는08:51:49Z 허용 밖 `/tmp/x`에 goal diff7282bytes를 쓰고08:52:24Z 자기 파일을 삭제했다. `reverification/raw/03z-temp-write-deviation.txt`와 판정에 자기 보고했고 판정 미사용이라고 적었다. Astra는 결론의 「적용 규칙 위반: 없다」와 충돌할 수 있음을 `msg_8113f8abe57d`로 즉시 보고했다. 메인은 원문·raw·현재 파일 부재를 R-2 표본으로 직접 확인하고 **`msg_28763da370fc`**에서 제품 델타 PASS만 분리 인수하고 추가 독립 판정 없이 commit/PR/CI를 계속하도록 결정했다. 해당 문장을 검증자 자신의 절차 전체로 읽지 않으며 계약 위반을 소급 준수로 바꾸지 않는다. 앞선 `msg_14f4a5f8931e`는 Re subject 오류로 교정을 요청한 원문이고 적용 출처는 교정 재발신이다.
+- 제출: 기준 main `3f0cb5e2861574ea1e6b092875de27694897b21d`, 선행 goal 체크포인트 `7631a6e`, 제품·goal 기록 커밋 **`2218af61b842594997d160eb7524bb5e6b2e8402`**를 push해 PR173을 열었다. 세 파일의 committed blob이 재검증 manifest의 검토 바이트와 모두 같다(`integration/committed-inputs.json`). 자동 병합 없음이며 PR173의 별도 사용자 명시 승인이 필요하다. 이 로컬 상태 기록은 제출 뒤 작성돼 PR173·CI 입력에 포함되지 않는다.
+- [code-rules/check](https://github.com/bass131/dawnholder-server/actions/runs/37191220054/job/111403633777)는 success다. Linux Node22.23.3에서 checker28/28·Orca22/22 독립 회귀가 통과했다. 수집3·제외3·일반 정적 대상0·dirtyfalse이며 문서3개를 언어별 검사했다고 확대하지 않는다. npm10.9.9와 요구>=11의 경고·Action Node20 전환 경고를 보존했다.
+- [dotnet-tests/test](https://github.com/bass131/dawnholder-server/actions/runs/37191220052/job/111403634012)는 success다. 실제 SDK10.0.301, 포맷·입력 보존 검사와 빌드 성공, 839건 중834통과·5skip·실패0이다. 기존 SA1201·SA1202·xUnit2031 두 건의 경고4건과 skip5건을 보존한다. 로컬 .NET·실제 대시보드·새 세션 재개·UI/OS 입력/E2E·게임·DB·Unity를 새로 실행하지 않았다.
+- 두 job의 실제 checkout **`75bbda64111930e8cd127e21ccca4da454eb5acb`**는 위 base/head를 부모로 두며 tree **`c5b8295c94859a6a1fee2b8a07844a7c1cf7d90e`**가 제출 head와 같다. 원격3경로/blob과 검토바이트, code-rules artifact의 입력/base/checkout·설정15개를 대조했다. .NET formatter 상세 manifest는 runner 경로만 로그에 남고 artifact0개라 다운로드/hash 대조는 못했다. 원시는 `dashboard-rules/integration/ci-final-summary.json`, `ci-code-rules-input-comparison.json`, 두 CI run JSON·로그·artifact와 `pr173-ci-complete.json`이다.
+- heartbeat 실측은 `integration/heartbeat-intervals.json`에 있다. 이번 Sol은 지연2건·최대 초과128초(간격428초/345초, 기준300초), 신규 Opus는 지연0건·최대 간격271초다. 메인 임시 기준의 보고 형식에 맞춘 수치이며 기존 두 지연의 처리 출처를 소급 변경하지 않는다. 절차 전체 PASS가 아니다.
+
+#### 재검증 R-1~R-7과 원문 보존 경계
+
+- R-1: Astra context 정정은 원문 문장·줄 순서를 보존했으나 마지막 CR1바이트가 없어졌다. 텍스트 보존과 바이트 불변을 구분하며 원래6271bytes 사본은 `repair1/astra-context-before.md`에 그대로 있다. 판정과 기존 context를 다시 고치지 않는다.
+- R-2: 위 이전 절의 「P-2」는 **대시보드 Sol 두 번째 heartbeat5분45초**다. 다른 단위의 같은 번호 관측과 구분한다. R-3: 이 체크포인트에서 머리·대시보드 결정 절의 상태를 갱신하고 현재 절로 연결했다. 과거 수행 절의 당시 상태를 소급 수정하지 않는다.
+- R-4: 기존 `dashboard-rules/context.md`:30의 「기존 문장」 대상은 그 메모가 아니라 **이 goal의 잘못된 두 간격 귀속 문장과 바로 아래 #1 정정**이다. R-5: 첫 Opus의 ACK는 당시 Astra가 실행 관측했으나 검증자 검색 범위에서 저장 원시를 찾지 못했다. 미확인이며 미수행 확정이 아니다. 이번 새 검증자의 ACK 원시는 위 파일에 별도로 보존했다.
+- R-6: PR170 병합 결과는 전후 JSON과 git commit으로 확인되지만 명령 argv·stdout·exit를 별도 파일로 보존한 근거는 없다. 「출력 없이 정상 종료」는 당시 Astra 관측 진술이며 독립 원시 확인으로 넓히지 않는다. R-7: 첫 Opus의 「Python이 없다」는 WindowsApps alias exit49보다 넓은 표현이다. 기존 venv Python3.14.4로 exit0 실행이 확인됐고 설치·업데이트는 하지 않았다. 후속 범위 정정은 `repair1/report.md`와 이번 판정에 있으며 첫 판정 원문은 유지한다.
+
+#### 다음 Rules 정비 후보의 추가 근거와 임시 메인 결정
+
+- 메인 `msg_9cdcc0e5422a`(08:43:58Z)는 Management font 작업의 Sol이 delivery 처리·ACK 전 근거2파일을 쓴 관측(Management `msg_81ddf860f812`)과 Opus의 빈 body heartbeat2건·Re 제목 회신을 전했다. 기존 heartbeat·ACK 후보에 **delivery 처리·ACK 전 쓰기 경계**의 검사화 근거로 붙인다. 이 파트가 Management 원시를 직접 검증한 것이 아니며 새 정책·검사를 이번 PR에 만들지 않는다.
+- **적용 중인 메인 결정 `msg_e643faa63c51`(08:59:08Z), 사용자 결정 아님:** 다음 Rules 정비까지 heartbeat 간격 초과 그 자체만 있는 경우 원시·실제 간격을 보존하고 절차 관측으로 수용하며 제품 판정과 분리한다. 소급 준수·절차 전체 PASS·일반 면제가 아니다. 정기 보고에 「지연 N건, 최대 초과 X초」로 묶는다. 다른 절차 위반 동반은 개별 판단, 600초 넘는 공백 또는 무응답 의심은 즉시 보고한다. 기존 대시보드 Sol 두 지연은 각각의 원결정 출처를 유지하며 새 결정을 과거 출처로 소급하지 않는다.
+- 메인 `msg_28763da370fc`의 후속 후보: 검증자 중간 산출물의 허용 위치를 분명히 안내하는 안과 판정 양식의 「기존 네 차단 사유」가 제품 대상임을 표제에서 드러내는 안을 기존 절차/판정 개선 후보에 붙인다. 이번 계약도 `reverification/raw/`와 TEMP 금지를 이미 명시했으므로 문구만으로 준수를 보장했다고 하지 않는다. 범위/입력/정적 검사를 실제로 강제하는 구현은 아직 없다.
+- **적용 중인 임시 보류 `msg_9804ff1ccb62`(09:08:41Z), 메인 결정:** Claude 주간 사용량95% 관측에 따라 사용자 우선순위 결정 전 새 Opus 세션을 열지 않는다. 이미 진행 중 작업은 마치고 Codex 준비·정산·commit·PR·CI와 기존 PASS 이후 단계는 계속한다. 새 검증자가 필요한 단계 앞에서 메인에게 보고하며 다른 모델로 대체하지 않는다. Rules의 이번 Opus는 보류 전에 완료·종료했고 후속 신규 검증자를 열지 않았다.
+- 같은 중간 산출물 후보의 두 번째 사례: 메인 `msg_917379b74339`(09:14:28Z)는 Management D1 Opus가 계약 밖 자기 Claude scratchpad에 읽기 전용 helper4개를 만들고 그중2개가 맥락 메모보다 앞섰다고 전했다. 출처는 management-active의 `.backups/verification/2026-10-03-system-cards-resume/font-d1-review-scratchpad-disclosure.json`과 메인 결정 `msg_c95a1ba63056`이다. Rules가 원시를 직접 실사한 결과로 주장하지 않는다. 메인은 Claude Code의 기본 scratchpad 안내와 계약의 허용 위치 충돌을 후보 검토에 함께 다루도록 요청했다. 이번 PR이나 현재 판정 양식은 수정하지 않는다.
