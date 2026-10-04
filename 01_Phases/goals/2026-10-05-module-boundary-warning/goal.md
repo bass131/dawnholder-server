@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **두 차례 PC 크래시의 부분 결과를 보존한 뒤 신규 Sol이 구현과 자체 점검을 완료했다. 현재 main·작업본 실측과 쓰기 종료를 확인했고 신규 Opus 독립 검증을 준비한다. 독립 판정·실제 PR checkout/CI는 아직 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **첫 신규 Opus 판정은 차단이다. 세 규칙과 실제 소스 검사는 통과했지만 기존 설치 무관 테스트 묶음에 .NET 의존 테스트가 섞이는 보존 회귀 #1이 확인돼 신규 Sol 수정과 신규 Opus 재검증으로 진행한다. 실제 PR checkout/CI는 아직 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -120,7 +120,7 @@ Rules `msg_9396505985f8`는 전용 module-boundaries.yml과 현재 Rules 문서 
 
 최종 신규 Sol은 `term_29b12d78-055e-4ecd-bc9c-6bf29e5cc717` / Dispatch `ctx_6a3d879452a9`이며 Task는 위와 같다. 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 GPT-6.1-Sol max, backend unknown으로 구분한다. 2026-10-04T17:38:08Z `msg_5aeb72e7b029`의 succeeded·쓰기 종료와 `implementation-recovery-2/report.md`를 대조했다. release 뒤 동일 incarnation·idle·화면을 확인하고 해당 pane을 닫았다(`implementation-close.json`, ptyKilled true). 이전 두 크래시 dispatch의 비정상 중단을 이 정상 정산으로 대체하지 않는다.
 
-동일 산출물의 기능 수정 세 차례 뒤 가독성 쓰기를 네 번째로 진행하는 checkpoint는 `msg_13966bbd2f5e`·메인 보고 `msg_459430abbbe8`·진행 회신 `msg_f4fa153cd24f`와 `crash-recovery-2/fourth-write-checkpoint.json`에 남겼다. 요구사항·기대값·범위 변경 없이 진행했으며 개발 중 red/smoke와 인프라 중단은 확정 실패 집계에 넣지 않는다. 현재 확정 실패는 0회다.
+동일 산출물의 기능 수정 세 차례 뒤 가독성 쓰기를 네 번째로 진행하는 checkpoint는 `msg_13966bbd2f5e`·메인 보고 `msg_459430abbbe8`·진행 회신 `msg_f4fa153cd24f`와 `crash-recovery-2/fourth-write-checkpoint.json`에 남겼다. 요구사항·기대값·범위 변경 없이 진행했으며 개발 중 red/smoke와 인프라 중단은 확정 실패 집계에 넣지 않는다. 이 구현 종료 시점의 확정 실패는 0회였고 이후 첫 독립 판정의 #1로 1회가 됐다.
 
 최종 자체 테스트는 동일 공개 unittest 명령으로 28건/실패0/오류0/exit0이고 원시는 `implementation-recovery-2/work/green-final-2/`다. 외부 명령 경과시간은57.795초다. 최초 red, 복구 baseline22건 중10실패, red-2의4실패 및 각 수정 분류를 보고서와 원시에 보존했으며 기대값 완화로 성공시키지 않았는지는 신규 Opus가 독립 판정한다. Astra는 최종17파일의 hash와 보고 manifest 일치를 기계 대조했다.
 
@@ -129,6 +129,16 @@ Rules `msg_9396505985f8`는 전용 module-boundaries.yml과 현재 Rules 문서 
 | main 원본 | `11aa4b83131bc6349f186a141cfea9c58d2230e3` / git_blobs | C#91파일477,096bytes, Compile91/91, boundary46/46, MB001/2/3 각0, clean/exit0 | 54.273초 / 54.532초 |
 | 현재 작업본 | `270406d64e62cefc542cbdd8f9a3b9f90ad49f3f` + 미커밋 도구 / workspace | 같은 C#·coverage·규칙 결과, 실제 PR checkout은 아님 | 42.954초 / 43.208초 |
 
-최종 도구 input hash는 두 실행 모두 `263ad09bf0bec0640467684f2c4bce2371a7884910d48493e774187fdf86877d`다. 원시는 `work/main-2/`, `work/current-2/` 및 각각 `main-command-2/`, `current-command-2/`이고 main resolve는 `main-resolution-2.json`이다. 두 입력 수집 방식이 다르며 프로젝트/props 줄바꿈으로 입력 hash도 달라 속도 개선으로 해석하지 않는다. 별도 fixture는 MB0018·MB0023·MB0031의 총12 warning/exit0을 냈다(`fixture-annotation-observations-2.json`); 실제 source 위반0과 합산하지 않는다.
+최종 도구 input hash는 두 실행 모두 `263ad09bf0bec0640467684f2c4bce2371a7884910d48493e774187fdf86877d`다. 원시는 `work/main-2/`, `work/current-2/` 및 각각 `main-command-2/`, `current-command-2/`이고 main resolve는 `main-resolution-2.json`이다. 두 입력 수집 방식이 다르며 프로젝트/props 줄바꿈으로 입력 hash도 달라 속도 개선으로 해석하지 않는다. 별도 fixture는 MB001 8건·MB002 3건·MB003 1건의 총12 warning/exit0을 냈다(`fixture-annotation-observations-2.json`); 실제 source 위반0과 합산하지 않는다. 이전 goal과 구현 보고의 붙여 쓴 집계 표기는 독립 결함 #3에 따라 여기서 정정하며 과거 보고 원본은 보존한다.
 
 WSL linked worktree의 Git metadata 경로로 최초 실제 진입이 실패한 원시도 보존했다. 최종 도구는 drive mount/backlink를 대조하고 Git pointer·index·설정을 쓰지 않는 read-only 경로를 사용한다. 제품 build/emit·DLL copy·서버/Unity/DB 실행은 수행하지 않았다. workflow 정적 검사와 로컬 annotation 문자열은 실제 GitHub PR job/표시를 대신하지 않는다. 다음은 고정된 구현 입력에 대한 신규 Opus 실사·독립 테스트, 이후 PR의 정확한 head/checkout·실제 CI 확인과 메인 보고다.
+
+### 첫 독립 판정과 범위 안 수정
+
+검증 Task `task_905ee1ba5f4d` / Dispatch `ctx_7458b85e1903`는 구현 Task `task_b266e9eb59bb`를 실사했다. 고정 HEAD는 `db97c2f2afb533a598ffe7cc32cfcd0ba8884f50`이고 56개 입력 hash 일치를 확인했다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. `msg_0bc7264ad147`의 failed·쓰기 종료와 `verification/verdict.md` 원문(SHA256 `57682669BF7372B6EA251D1C799ED5407B2E1213820E67BE79C8D15B97E211F1`)을 대조한 뒤 release·동일성·idle·close를 마쳤다.
+
+- #1 - 기존 설치 무관 테스트 발견 경로의 보존 회귀: 중간·차단, Astra의 계약 경로 지정과 Sol의 보존 검증에 공동 귀속한다. 기본 `test_*.py`가 새 SDK 의존 suite를 수집하고 SDK 부재 시 실패한다. 원시는 `verification/work/frozen-suite-impact/`다. 구현 보고의 실행 경로 분리 주장과 실제 보존 동작 불일치는 메인 `msg_edd8f2985ceb`로 즉시 보고했다. 명시 opt-in이 없으면 사유 있는 skip·외부 실행/기본 출력 쓰기 없음, opt-in인 CI·로컬은 실제 검사와 도구 실패를 유지하도록 수리한다.
+- #2 - workspace 미추적 source의 상태 기록 누락: 낮음·비차단. 입력에는 포함되지만 `--untracked-files=no`로 상태에 표시되지 않는 문제를 같은 수정에서 보완하고 자기 소유 fixture로 재현한다.
+- #3 - fixture 집계 표기: 낮음·비차단. 위 실측 문장의 건수 표기를 정정했고 과거 Sol 보고에는 이 정정 위치를 연결한다.
+
+독립 fixture 24건, 별도 실제 소스 테스트2건(공개 CLI3회), Sol suite28건은 통과했다. main `11aa4b8`·HEAD `db97c2f` blob은 같은 입력 hash이고 각56.144초·54.272초, workspace는42.792초였으며 세 실행의 boundary coverage46/46·위반0이다. 이는 통과한 실행 범위이며 #1 때문에 전체 독립 판정은 차단이다. 실제 source46파일 표본 대조와 설계 관찰7개는 판정 원문에 있다. 후속 설계 확장은 이 수정에 넣지 않는다. #1의 확정 실패는1회이며 두 crash와 검증자의 real-1 하네스 시행착오는 제외한다. 다음 단계는 신규 Sol의 #1·#2 수정, 신규 Opus 재검증, 실제 PR CI(새 csproj의 format-check 포함)다.
