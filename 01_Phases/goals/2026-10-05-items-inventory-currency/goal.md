@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **선행 TDD와 PR1 서버 구현·자체 점검 완료. 신규 Opus 독립 검증 준비. PR/병합 미실행.**
+상태: **PR1 신규 Opus 독립 검증 차단(#1 이동 중 처치 보상 누락). 검증자 정산·종료 완료, 신규 Sol 수정 준비. PR/병합 미실행.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, branch `feat/items-inventory-currency-20261005`.
@@ -196,3 +196,32 @@ Astra가 최종 보고·TRX 카운터·raw exit·해시·공유 파일 diff를 �
 완료 메시지는 exact handle/Task/Dispatch·태그 helper allowed/exit0으로 대조했다. worker-release의 retained/external·processAction none 뒤 동일 incarnation `34153d1c-14c7-40ab-b86e-2c639285d3c5`와 최종 idle 화면을 확인해 해당 pane만 종료했다(ptyKilled=true). 근거는 `sol-pr1-completion.json`·`sol-pr1-completion-policy.json`·`sol-pr1-preclose.json`·`sol-pr1-close.json`이다. Delivery를 ack했고 reclaimable0이며 완료 작업자는 재사용하지 않는다.
 
 후속 실행 조율: GameDev `msg_6eca0797e9a9`는 7777 점유/계획 없음과 순차 사용에 동의했다. 메인 `msg_02cdfd027894`는 Content 자기 checkout/Library에서 설치 Unity6000.4.7f1의 revision·실행 전 프로세스·전후 자산 변경을 대조하는 batch 검증 배정을 허용했다. 두 원문은 `gamedev-port-agreement.json`, `unity-ownership-main.json`이다. 실행 직전 다시 소유를 확인하며 타 프로세스·Library를 건드리지 않는다. scene/prefab 저작과 MCP는 메인 전용이다. 현재 실제 봇·Unity·DB·독립 판정·PR/CI는 미실행이다.
+
+### PR1 첫 독립 검증 — 차단과 수정 인계
+
+신규 Opus `task_7d1bef8088b1` / `ctx_5f3e6866eb7d`는 `msg_b182362d946a`(2026-10-04T18:51:30Z)로 검증 쓰기 종료를 보고했다. 검증 작업의 outcome succeeded와 제품 판정은 다르며 **제품은 NOT PASS**다. 입력 HEAD `326267713f90c32dbd86b33edcef48217a026fed`, verifies `task_7cc288fe9f80`. 원문 `opus-pr1/report.md` SHA256 `D1DAC7F8F4CB47A3A1D17833FA4223DFFC76E3E932A8DBA5214C1BA636C564E1`, `verdict.json` SHA256 `D1862B94A69CEFE421A69AC32B709F4D348F7118C154A9FBA145A9102F41E569`를 로컬 근거 root에 보존했다. Astra는 최종 원문 전체·실패 표본/대조군·TRX/XML·봇 관측·파일 diff/hash·서식 raw exit를 직접 대조했다.
+
+| 번호 - 작업내용 | 판정·근거 | 다음 처리 |
+|---|---|---|
+| 1 - 이동 틈의 처치 보상 누락 | 중간 심각도·차단. HuntingGround에서 처치와 Town 포탈을 같은 틱에 제출하면 실제 적 사망/도착은 성공하지만 보상 뒤 조회 revision0(기대1). InventoryRegistry의 맵 순회 수혜자/활성 판정이 두 단계 MapMigration 사이 공백을 종료로 오인한다. `InventoryLifecycleRaceTests:47`, `opus-pr1/runs/items-run2`, `full-suite-2`. 뒤 순서 맵/한 틱 간격 이동 대조군은 통과. | 신규 Sol 수정→새 Opus. 같은 요구 계약·#1의 확정 NOT PASS **1회**. 초기 RED·자체 점검 수리·도구 오류·크래시·동일 산출물 반복 실행은 추가 집계하지 않음. |
+| 2 - 기능 탐색 문서와 v17 이력 보완 | 낮음·코드 판정 비차단이나 PR 전 필요. FEATURE_MAP·server/protocol 영역에 경제 흐름이 없고 ProtocolVersion 이력은 v16까지. Sol 최초 문서 허용 범위 밖이었던 계약 누락은 Astra 보조 귀속. | 같은 신규 Sol 계약에 관련 문서와 이력 주석만 포함. 별도 새 목표/정책은 만들지 않음. |
+
+| 독립 실행 | 실제 결과 | 범위·한계 |
+|---|---|---|
+| 원형 wire | 26/26, exit0 | 기존 TDD 파일 불변 |
+| Items 독립 | 67전체/66통과/1실패(#1), exit1 | 신규41+기존26. 상한·overflow·revision끝·불변snapshot·고아·guard·송신 실패 포함 |
+| 전체 slnx 빌드·서버 테스트 | 전906전체/899통과/2실패/5skip→후906/900/1실패(#1)/5skip, exit1 | 기존 BossBehaviorTests의 version16 단정만 요구17에 맞춰 분류(a) 수정. 같은 명령의 원시 전후 보존. 기존 skip5는 미실행 |
+| 실제 InventorySmoke | helper exit0, PASS1/FAIL0 | Golem 평타3/Hit3 처치→rev1/재화10/주머니1→사용 rev2/재화60/주머니0→같은 bytes 재전송 Stale/불변. CheatCommand 없음. 종료 뒤7777/listener/서버·봇 없음·lock free |
+| Unity6000.4.7f1(f3c3c4248748) | EditMode356/356/0실패/0skip, exit0 | 기존348+신규호환8. 자기 checkout/새 Library. 실제 UI·PlayMode·플레이는 PR2 미실행 |
+| 생성물·Shared 소비자 | 격리 재생성 CR 차이 제외 동일, Shared metadata/상수/IL 차이0 | ClientNet DLL은 hash 불변. 원본 DLL/meta 쓰기 없음 |
+| 공식 format-check | exit0, 제품0/265·독립0/5·0/17·0/9, 도구 테스트244/244 | 원본 자동 수정 없음. 실행 18:37:06Z~18:49:40Z. 프로세스 한정 ExecutionPolicy Bypass 기록 |
+
+선행 wire 첫 실행 TRX 경로 변환, 신규 테스트 using 누락, DLL 비교 스크립트 타입 문자열화는 검증 하네스 오류로 원시와 후속 정상 실행을 구분했다. 종료 manifest는 raw exit1·68/69 일치이며 유일 차이는 허용된 봇 `Program.cs` 등록이다. 이를 입력69/69나 제품 변조로 보고하지 않는다. 신규 테스트3, 기존 version 테스트 수정1, 봇 시나리오/등록2, Unity 호환 테스트/meta2의 8파일만 검증자가 썼다.
+
+Unity 부수 변경은 ProjectSettings.asset의 Standalone 정의에서 SENTIS_ANALYTICS_ENABLED가 빠진 1줄이며 원인은 미확정이다. 메인 `msg_7691eaa0154c`에 따라 정산 뒤 사본·diff/hash 보존 후 HEAD로 복원했다(`ProjectSettings-approved-restore.json`, diff exit0). PR에 넣지 않는다. 원본 Shared/ClientNet DLL/meta·Packages·기존 Assets meta는 불변이다. Unity가 저장소 밖 기본 TestResults.xml도 썼다는 사실은 원문 E-2에 남았다.
+
+관찰 O-1/O-4의 이동 중 요청/drop 및 지연 push 유실은 실제 관측/소스 추론을 구분하고 #1 수정의 영향과 후속 PR2 조회 경계에서 확인한다. O-2의 max revision에서 stale 요청은 이미 불일치로 거부되므로 Stale 우선순위를 유지한다. RevisionExhausted는 수락 가능한 **새 변경**의 wrap 방지 요구이며 stale 거부 코드를 바꾸는 정책은 추가하지 않는다. O-3 현 클라이언트의 새36번 경고/drop은 PR2 핸들러에서 해소한다. O-5 handler/session ID 중복 검사는 방어적 중복 관찰로 일괄 정리하지 않는다.
+
+정산: 정확 handle/Task/Dispatch 태그 helper allowed/exit0, worker-release retained/external 뒤 동일 incarnation `65c0c264-feff-413b-9c5a-a939dfdddfba`·최종 idle·agentTerminalHandle을 대조하고 close ptyKilled=true. **close 뒤 terminal list 재확인: 남은 작업자 pane 0**(Content Astra 하나만 남음, `opus-pr1-postclose-terminals.json`). Delivery ack 완료, 작업자 재사용 없음. 메인 `msg_4416da4d9f23`의 종료 후 목록 대조를 적용했다.
+
+GameDev `msg_1bbca7872520`은 #1 수정에 Items 내부 우선, GameWorld 경제 연결·GameSession 경제 수명 등록/해제의 최소 변경에 동의했다. 공용 IsActiveSession/SendToEntity 의미·entity 발급/소유권·맵 순회/이동 순서·Quest/Party/전투·MapMigration/GameMap은 보존한다. 등록/상태의 단일 tick 소유, closing/disconnect/늦은 queued reward/다른 owner 거부와 정리를 새 계약에 넣는다. 공유 경제 연결 밖 변경이 필요하면 쓰기 전 정확 심볼/이유를 다시 조율한다. 현재 제품 수정·재검증·PR/CI·DB는 미실행이며 승인된 goal 안의 수정 루프를 계속한다.
