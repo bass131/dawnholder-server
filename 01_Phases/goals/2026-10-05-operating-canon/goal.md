@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-2026-10-05 KST, Rules 새 목표다. 메인 지시 `msg_05ba75ccd7f9`의 범위를 아래에 옮겼으며 **메인 범위 확인 전**이다. 문서 작성 위임·독립 실사·PR은 아직 시작하지 않았다. 이 파일이 기준·상태·결과의 정본이다.
+2026-10-05 KST, Rules 새 목표다. 메인 지시 `msg_05ba75ccd7f9`의 범위를 아래에 옮겼고, 메인 `msg_cf9c705dcf36`(2026-10-04T17:14:53Z)이 승인 초안과 일치·범위 변경 없음을 확인해 **PR1 계약 고정·Sol 발행을 허용했다**. 독립 실사·PR은 아직 시작하지 않았다. 이 파일이 기준·상태·결과의 정본이다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - branch: `docs/operating-canon-20261005`. 기준: fetch한 `origin/main`의 `11aa4b83131bc6349f186a141cfea9c58d2230e3`.
@@ -34,7 +34,7 @@
 - 규칙 문서 가지치기(2026-10-31 Gardener 평가 때), 하네스 마무리·새 helper·경로 검사 구현·토큰 기록·TDD 규칙 문구(후속 goal).
 - 제품 코드·테스트 기능·새 검사·workflow 구현, Unity 설정·skip-worktree 상태·SAC·방화벽·전역 설정 변경, 원격 보관 브랜치 삭제.
 - 다른 파트의 제품 구현·현재 goal 재계획·후속 goal 착수. 조사 보고·초안의 미채택 추천을 새 정책으로 채택하지 않는다.
-- Gardener2 후보 2개는 채택 결정 수신 전 반영하지 않는다. 기존 BACKLOG ID에 연결하고 새 후보를 중복 생성하지 않는다.
+- Gardener2는 메인이 전달한 사용자 결정 `msg_7bfc0ca278f5`에 따라 기존 두 BACKLOG 행의 근거만 연결한다. 새 후보·검사 구현·기존 촉발 조건 변경·goal-state-drift 행 갱신은 하지 않는다.
 
 ### 관찰 가능한 완료조건
 
@@ -101,10 +101,12 @@
 | 크래시 확정 실패 제외·새 세션·checkpoint | msg_bcd8d484a61d 및 최초 메인 지시 | PR1 ORCA. 부분 결과 보존과 판정 근거를 분리, push/PR/병합 권한 유지 |
 | 1.4.220/1.4.217 복구 관측 | 메인 최초 지시·HANDOFF | PR1 ORCA에 시점 있는 운영 관측. 자동 복구 보장·원인 확정 아님 |
 | PR177 비차단 #2 label / #3 외부 경계 | msg_4eb82c2222fc / 기존 goal | #2 원시 경로를 대조하고 원래 보고 보존, #3 PR1 적용 경계 보완 |
-| Gardener2 후보 2개 | 기존 goal / 사용자 결정 대기 | 채택 통지 전 보류. powershell-all-evidence·contract-context-check 기존 ID로 연결 |
+| Gardener2 후보 2개 | msg_7bfc0ca278f5 / gardener2-report.md 정리 후보 절 | PR1 powershell-all-evidence·contract-context-check 기존 행에 관측 근거만 연결. 새 행·촉발 조건 변경·goal-state-drift 행 갱신 없음 |
+
+Gardener2의 사용자 원문은 **「1) Gardener 후보 2개 - PR177 점검 근거를 기존 BACKLOG 후보에 연결 → A 두 근거를 기존 행에 연결」**(메인 전달, 2026-10-05 02시대 KST)이다. 원문 보고서 SHA256 `d566c5285cc1e74bd8b8e6aaf8ff4a9bf5f5270985a5d16b6d90c0b0e19f8c2d`, 전달은 로컬 `main-gardener-decision.json`에 보존했다. 후보1의 문서 인용 결함 2건과 사람 검토 검출, 후보2의 helper 중복 2회·CRLF 거짓 불일치·메모 선행 이탈 1건·birthtime 재설정 거짓 위반 관측만 해당 행에 덧붙인다. helper 구현은 후속 범위이며 기존 촉발 조건은 유지한다.
 
 ## 현재 결과와 다음 작업
 
 - 새 runtime·handle·incarnation·Orca 1.4.217 확인, 새 Run 생성과 READY 회신 완료(`msg_73dc772120f0`). 모델 화면 GPT-6-Astra xhigh, backend unknown.
 - 기존 브랜치 clean과 PR177 기록 4커밋의 대상 파일을 확인하고 최신 main에서 새 branch를 생성했다.
-- 다음: 이 범위를 메인에게 확인받고 PR1 계약을 고정한다. Sol·Opus·PR·CI·병합·Gardener는 미실행이다.
+- 메인 범위 확인 `msg_cf9c705dcf36`과 Gardener 후보 근거 연결 결정 `msg_7bfc0ca278f5`를 반영했다. 다음은 PR1 계약 고정과 Sol 발행이다. Sol·Opus·PR·CI·병합·Gardener는 아직 미실행이다.
