@@ -1,6 +1,6 @@
 # Management 결정과 이유
 
-요구 내용의 원본은 [requirements](requirements.md)다. 여기에는 선택과 이유를 ID로 연결하며 작업 상태/실적은 [README](README.md)가 연결하는 각 목표에서만 관리한다. 기준일 2026-09-30.
+요구 내용의 원본은 [requirements](requirements.md)다. 여기에는 선택과 이유를 ID로 연결하며 작업 상태/실적은 [README](README.md)가 연결하는 각 목표에서만 관리한다. 기준일 2026-09-30, 후속 확정 반영 2026-10-02.
 
 ## D-01
 
@@ -56,11 +56,13 @@ Public Trust Test·Private Trust·자체서명을 현재 SAC를 유지하는 공
 
 ## D-09
 
-**확정:** 사용자의 기존 화면이 투박하다는 지적과 웹 디자인 참고 요청에 따라 [R-12](requirements.md#r-12)의 차분한 다크 콘솔·절제된 blue 방향을 선택했다. 가는 사이드바와 낮은 헤더, 상태 요약과 넓은 로그 영역으로 운영 화면의 구성을 정리한다. 미연결·비활성 제어·메뉴 의미를 보존한다.
+**이전 선택:** 사용자의 기존 화면이 투박하다는 지적과 웹 디자인 참고 요청에 따라 당시 [R-12](requirements.md#r-12)의 차분한 다크 콘솔·절제된 blue 방향을 선택했다. 가는 사이드바와 낮은 헤더, 상태 요약과 넓은 로그 영역으로 운영 화면의 구성을 정리했다. 미연결·비활성 제어·메뉴 의미의 보존은 유지한다.
 
-레이아웃/간격 참고는 [shadcn blocks](https://ui.shadcn.com/blocks)·[sidebar](https://ui.shadcn.com/blocks/sidebar), [Tabler vertical layout](https://preview.tabler.io/layout-vertical.html)·[admin template](https://tabler.io/admin-template)다. 직접 SVG/CSS로 구성하며 템플릿 전체 복사·설치나 패키지 추가를 하지 않는다.
+당시 레이아웃/간격 참고는 [shadcn blocks](https://ui.shadcn.com/blocks)·[sidebar](https://ui.shadcn.com/blocks/sidebar), [Tabler vertical layout](https://preview.tabler.io/layout-vertical.html)·[admin template](https://tabler.io/admin-template)다. 직접 SVG/CSS로 구성했고 템플릿 전체 복사·설치나 패키지 추가는 하지 않았다.
 
 두 프로젝트의 라이선스 원본은 MIT로 확인했다: [shadcn LICENSE.md](https://github.com/shadcn-ui/ui/blob/main/LICENSE.md), [Tabler LICENSE](https://github.com/tabler/tabler/blob/dev/LICENSE). 이는 참고 출처 기록이며 외부 구현 코드를 복사했다는 뜻이 아니다. 실제 변경과 검증 결과는 [데스크톱 창 목표](goals/2026-09-30-desktop-shell/goal.md)에만 기록한다.
+
+**2026-10-02 후속 확정:** 메인이 전달한 사용자 확인으로 상점 장부 앱 + 퀘스트 게시판 카드의 혼합안 r2 수정본을 선택했다. 밝은 데이터 면의 읽기 쉬움과 카드 구분을 함께 얻기 위함이다. 승인 목업 SHA-256은 `bd0f9afa2b85acc650880124a52c1c80e1a7a60c3d1d3e33594ddb34350eded1`이다. Moonlighter·Stardew Valley 공식 화면은 시각 비교에만 사용했고 게임 자산은 복사하지 않았다. 생성 그림·Galmuri 제품 번들과 출처/라이선스는 R-12·[자산 명세](goals/2026-10-02-system-cards/asset-spec.md), 도식은 R-14/D-11을 따른다. 승인 범위·실제 상태는 [시스템 카드 goal](goals/2026-10-02-system-cards/goal.md)에 둔다.
 
 ## D-10
 
@@ -69,6 +71,28 @@ Public Trust Test·Private Trust·자체서명을 현재 SAC를 유지하는 공
 일반 로그 최근 10분 조회와 서버당 최대 7일·1GB 보존, 조사 근거의 별도 보존도 확정했다. 자동 수집·갱신 주기, 쓰기/실행 권한, 등록·회전 세부 계약 등 [남은 결정](goals/2026-09-30-system-records/shared-read-agreements.md#다음-결정)은 유지한다. 이 선택은 구현 실적이 아니다.
 
 2026-10-01 후속 재개 지시로 읽기 전용 공동 조회를 [M-1 goal](goals/2026-10-01-shared-read-mcp/goal.md) 범위에서 진행한다. 메인을 통해 전달된 사용자 결정에 따라 management-active 작업 트리의 catalog를 정본으로 사용한다. 미병합 편집도 공동으로 조회하고 응답 hash/revision으로 자료 버전을 구분하기 위한 선택이다. 실제 개발 세션 연결 설정과 서버 등록·로그 후속 구현은 별도 범위로 남는다. SDK·응답 한도 등 기술 계약과 승인 근거는 해당 goal을 따른다.
+
+## D-11
+
+**확정:** R-14를 위해 Mermaid 12.0.0 로컬 번들과 별도 sandbox 문서에서의 렌더/표시를 선택했다. 텍스트 원천과 여러 흐름 종류를 보존하면서 자체 배치 엔진의 부담을 줄이려는 선택이다. 설치 명령은 frontend의 `npm install --save-exact --ignore-scripts mermaid@12.0.0`이다. 메인 style 제한을 유지하고 자식 style 허용·고정 frame 진입·메시지/ACK 검증을 묶는다. 초기 opaque file 자식은 JS/CSS 차단으로 통합에 실패했다. 2026-10-03 메인 `msg_b67b1860b10c`가 전달한 사용자 승인으로 부모 file index는 보존하고 도식 HTML/IIFE/CSS 3파일 GET만 `dh-diagram://renderer/`의 고정 매핑으로 제공한다. scheme 특권은 standard/secure만 쓰며 CSP 우회·allow-same-origin·unsafe-eval·webSecurity 해제를 허용하지 않는다. 상세 경계는 R-14와 design-spec 8.3을 따른다. 새 통합과 내장 의존성/고지 관문은 실행·독립 검증 전이다.
+
+**URL 조건 후속 확정:** 메인 `msg_f9952b4413ea`가 전달한 사용자 승인으로 Chromium 정규화 뒤 handler 수신 URL과 고정 주소 3개의 정확 문자열 일치를 기준으로 한다. 원래 port·userinfo·dot-segment·host 대소문자 표기의 전면 거부는 보장하지 않는다. 응답 파일은 고정 표에서만 선택하고 URL의 경로·쿼리로 파일 경로를 만들지 않으며 비GET 405·기타 주소 404를 유지한다. 기존 격리/CSP/IPC/이동/수명 조건은 그대로다. 정규화의 실제 관찰·자동 테스트·Electron 변경 시 재실행 기준은 design-spec 8.3과 goal의 결정 기록을 따른다.
+
+**공개 저장소 후속 조건:** 메인 `msg_d442a1ace671`이 전한 사용자 결정에 따라 제3자 번들 반입 금지, EPL 코드의 제품 산출물 제외, lodash-es의 수정 버전 override를 조건으로 유지한다. 최초 지정 4.18.0은 deprecated 빌드 결함이 확인돼 `msg_a7ffb3ccb82e`가 정확한 4.18.1로 조정했다. `msg_a1146ac1df16`은 ESM core 입력→Vite 자체 IIFE 출력임을 확인했다. 별도 배포 산출물에 이미 포함된 하위 코드를 피하고 alias/override 적용을 확인하려는 선택이다. Unlicense는 허용 목록에 추가하고 DOMPurify는 Apache-2.0, khroma는 동봉 MIT를 채택한다. elkjs는 설치만 허용한다. 실제 빌드 그래프·결과물·audit·렌더 검증과 제3자 고지는 구현 완료조건이며 아직 충족했다고 기록하지 않는다.
+
+사용자의 시각 복잡도 우려를 반영해 대표 3종의 125% Electron 캡처와 독립 디자인 비평, 메인을 통한 사용자 확인을 전체 도식 작성의 선행조건으로 둔다. 복잡하면 구조화 데이터→자체 SVG/CSS, 도식별 손 CSS, GPT-Image를 비교해 올린다. 생성 이미지는 라벨·수정·diff 한계 때문에 사실 도식에 부적합하고 장식에 한정하자는 것은 메인의 의견이며 사용자 확정 선택으로 격상하지 않는다. Mermaid 제거와 lock 복구는 대안 전환 때 허용된 되돌리기 범위다. MCP 쓰기는 후속이다.
+
+## D-12
+
+**확정:** R-15는 이번 목표에서 시스템/개발 기록 양쪽 summary와 각 상세 필드의 표시 위계를 정한다. 기존 구조·ID·원문·조회/저장을 유지하면서 첫 화면 설명을 줄이기 위함이다. 짧은 소개는 완성 문장·160 code point로 쓰고 기존 긴 원문 호환을 보존한다. 타임라인·MCP 쓰기·과거 기록 일괄 정비는 후속이다.
+
+## D-13
+
+**확정:** R-16은 내용 영역 1600×900 DIP·125%로 CSS 1280×720 구성을 확보하고 사용자 창/배율을 checkout별 복원한다. 외곽과 내용을 구분하며 작은 작업 영역에서는 반응형 접근을 우선한다. 기존 창 숨김/트레이 수명을 보존하고 명시 종료의 마지막 대기값은 즉시 저장 시도한다. 살아 있는 창의 저장 실패는 즉시 비차단 안내하되 연속 실패 중 한 번만 표시하고 저장 성공 때 초기화한다. 명시 종료의 실패나 500ms 초과는 다음 실행에 한 번 안내한 뒤 기록을 지운다. 메인 `msg_f85b875114b7`이 종료 문맥만 바꾼 Q-01임을 확인해 이전의 모든 실패를 다음 실행으로 미루던 문구를 정정했다.
+
+## D-14
+
+**확정:** R-17은 문서와 같은 매핑 SHA의 파일 단위 Git 원문을 표시한다. 설명 근거와 다른 작업 트리 코드를 보여 주지 않으려는 선택이다. 앱 checkout HEAD와의 내용 비교 및 미커밋 미비교를 명시한다. 추가 구문 강조 패키지 없이 시작하며 심볼 이동·Architecture 실제 연결은 후속으로 남긴다.
 
 ## 기록 원칙
 

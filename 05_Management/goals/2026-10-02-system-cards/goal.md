@@ -1,9 +1,164 @@
 # 시스템 카드 첫 PR — 대표 도식의 보안·표시·번들 관문 (추적 번호 M-2)
 
+<a id="resume-2026-10-04"></a>
+## 현재 진행 — 2026-10-04 재개
+
+메인 `msg_fc6d85bf6c94`가 전달한 사용자 “이어서 진행하자”에 따라 **휴식을 끝내고 CSS 보안 독립 재검증부터 재개한다.** 16:01 UTC(한국 10-04 01:01) 원격 main은 `5616573c32a2b2e0b677bc21b75e22a08d21f285`, 열린 PR은 없고 HEAD는 `eabf72c783e5f998c94fa71818da34e2cfc66dcf`다. 미커밋 103파일의 목록·SHA는 휴식 기록의 제품/테스트102개와 메인 후속 지시로 보강한 goal 최종 `add615bfcc9c256810a98901be9ebc434883f121592bcd5f6945d16cb24753ec`에 모두 일치했다. 이후 이 재개 상태 문구만 Astra가 갱신했다. 차이 발생을 숨기거나 이전 snapshot을 덮어쓰지 않는다.
+
+첫 작업은 신규 `claude-opus-5-5`의 ASSET12~14 첫 수정 후 독립 재검증·119실패 전수 분류·수정 테스트 요구근거표다. Task `task_8b2c838a649e` / Dispatch `ctx_1015176592de`를 신규 pane에서 최초 명령·Opus5.5 xhigh 화면·준비 상태 확인 뒤 연결했다(backend unknown). `input_accepted`·`turnStart observed`, 동일 incarnation의 live/working을 확인했고 Enter 복구는 필요 없었다. 최종 계약 `E/css-review-task.txt`에는 첫 발행 전 CODE6절·메인 분류 원문이 모두 포함됐다. 고정 입력은 `E/css-review-inputs.json`, 원시 기동은 `E/css-review-start.json` 및 관련 receipt다. **17:01 UTC 독립 판정은 제품 NOT PASS**이며 다음 정산 절을 따른다. 메인 재개 회신은 `msg_2655805ed10e`다.
+
+### 현재 단계 — 5차 보안·비용 PASS 정산, 시각09~11 준비
+
+**2026-10-04 00:19 UTC 최종 정산:** 신규 Opus task_4b0dbdcb66d9/ctx_fa3caceabe04 완료 msg_7843a76d508d의 제품 비용·승인보존 판정은 PASS다. ASSET19 첫 재검증 해결, ASSET12/15/16/18 유지이며 새 ASSET20은 없다. 최종 `E/cost-review-fifth/verdict.md` 141행/17191byte/SHA256 `e23f38bce470226a44b7eb7f0555ba2db0a815f91e62f3990b1e7da6e7df5321` 전문과 원시 표본을 Astra가 직접 대조했다. 독립28시험 추가 후 관련481/481(exit0), 전체730=718/12(exit1), 기존 실패12개 불변이다. 실제450입력×양쪽5회 최악53.4/97.7ms, 이전승인292→292/출력차이0, AST72/37/76/6 고유키 차이0, 최종빌드35파일 hash 일치다. 정상3종 PNG/ACK·XML동치·CSP0을 대조했으나 시각09~11과 사용자 OS125% 확인은 남는다.
+
+고정104+1986근거에서 제품변경0/허용시험1+Astra goal만 달랐다. DSL4097 잘못된 진단표시는 원시를 보존하고 실제 ASCII/한글4096·4097 별도5회로 정정했다. 사전 scratch5파일·자동HB 보장 미검증·일부 과거 판정 부분읽기를 구분해 전체절차PASS로 넓히지 않는다. 소유 Electron28+HB루프3 PID fresh 잔존0, release→동일incarnation/완료/빈prompt→정확pane close/ptyKilled→전체Delivery ACK·reclaimable0을 마쳤다. 원문/대조/한계/정산은 `E/cost-review-fifth-astra-settlement.md`다. 제품·시각은 메인 msg_d695135a9d67에 따라 별도 Task/커밋으로 유지하고, 기존 승인 범위의 시각09~11→번들/고지→사용자125%→첫PR을 진행한다. 현재 commit/push/PR은 미수행이다.
+
+**23:48 UTC 독립검증 중간 실사:** task_4b0dbdcb66d9/ctx_fa3caceabe04는 계속 live/working이다. 기준선 실제 related453/453(exit0),전체702=690/12(exit1),119분류a5/b102/d12를 E/cost-review-fifth-astra-baseline-sample.json에 대조했다. 신규 독립시험28개를 계약시험 끝에 추가했고 기존52669char prefix불변을 확인했다. 사본 mutation 원시는 현재264/264·4차253/11·이전원본261/3이며 최종같은명령 후검증이나 Chromium PASS가 아니다. 23:46 고정104+1986개 재해시는 허용시험1파일과Astra goal메타 외 차이0(제품불변),HEAD/branch/dirty104 유지다. E/cost-review-fifth-astra-interim-integrity.json.
+
+검증자 context가 말한 사전scratch2프로그램 외 phase/log/result3파일이 scratch-record.json에 공개됐다. 자동4분HB루프는 모델진행·부모생존을 판별하지 않으므로 실제 agent_status를 별도로 확인하며, 첫HB실제23:17:10 및 종료보장미검증·소유루프정산을 보완요청했다(msg_d830c6ac4520). 과거 parser/css부분읽기와 gate/cost-fourth전문읽기도 구분한다. 메인 msg_bb9c63e4e739/msg_0ed0d95eb21c에 즉시 공개했다. 경계시험의표시명 인자2개/행3값 불일치는 단정불변으로 명료화요청(msg_1b694644b651), 최종시험전이다. Chromium입력/비용5회·승인출력·정상3종·CODE/type/build·verdict 및 정산이 남았다.
+
+**23:17 UTC 신규 독립검증 최초 연결:** 신규 claude-opus-5-5 pane term_90e46a76-59cf-4c23-8ad8-c97adcc4a132/incarnation3a429394-43db-40f6-88ce-1402905c4b10에서 Opus5.5 xhigh/ClaudeCode2.1.288 첫화면13행·빈prompt·tui-idle satisfied를 확인했다(backend unknown). Task task_4b0dbdcb66d9/Dispatch ctx_fa3caceabe04의 최초 연결은 ready/input_accepted/turnStart observed이며 중복/Enter복구 없이 시작했다. 계약 E/cost-review-fifth-task.txt SHA66dbec508a355e9738c95defdd759801c4e40492a5413d89c0c78514398767a4에는 관련 CODE6절 및 메인 원문 전체를 첨부했다. 입력 manifest E/cost-review-fifth-inputs.json SHA308d082035b3ee579fe03dd982316da7e0882807d472d2f6916d04f0d2e532be는 제품/시험/goal104개와 보호근거1986개를 고정한다. 제품 읽기전용·허용시험/자기근거 쓰기만 발행했고 실사 후 독립 시험/실제 Chromium·승인보존·정상표시 판정까지 감독한다. 시각09~11/번들/사용자125%는 후속이며 이번5차실패시6차금지다.
+
+**23:11 UTC Sol 정산 완료:** worker_done msg_8645cbb17c38(23:10:58, task_1d7da07dda7f/ctx_0578eaf4537e, 자체작업 succeeded)을 받았다. 최종 E/cost-repair-fifth/execution-result.md 94행/17520byte/SHA910d882adeb2c646997257e4cf4ead06859b444406065638311d0d6f38d10d68 전문과 실제 diff·원시를 대조했다. 제품 static-svg 1파일/시험불변, 실제802×양쪽5회 최악61.5/182.5ms,276대조 이전221→현재221 및 출력차이0, XML642파일 실제byte/hash와 직접byte동치, 정상3종PNG/ACK/CSP를 확인했다. 관련453/453·전체702=690/12이며 독립 제품PASS가 아니다.
+
+표현76개의 고유키/미설명 대조와 추가3분기 검증이 끝났다. serializer 현재최대1572089자/원본자식4.6ms를 이전917004 오인용에서 정정했고31a 수신/파일읽기 시점을 분리했다. 최종 heartbeat 추가구간은23:01:58→23:09:20의7분22초로 실제확인해 기존3구간과 함께4구간으로 보존했다. E/cost-repair-fifth-astra-settlement.md와 cost-fifth-astra-{802,xml,final}-sample.json. 소유35PID fresh조회0, release→동일incarnation/완료/빈prompt→정확pane close/ptyKilled→ACK/reclaimable0을 마쳤다. 다음은 메인 승인 범위의 신규 Opus 독립검증이며 5차실패시6차금지·OS금지·기존미확정12/시각09~11/사용자125%는 유지한다.
+
+**22:43 UTC 자체 실행 보완·표현 계측 원천 불일치:** cost-2 exit0의 실제799×양쪽5회 최악은 부모61.5ms/자식182.5ms,273대조의 이전승인219→현재219/승인출력차이0이다. main-1 exit0 정상3종PNG를 Astra가 직접 열었고 승인XML=표시XML, ACK246.6/154.0/187.9ms, diagram부모SVG0, 정상/전체main CSP0을 원시에서 확인했다. box9 합성click/Esc H5복귀와 provider입력 IFRAME초점·OS미실행은 분리한다(E/cost-fifth-astra-{cost2,main}-sample.json).
+
+Sol의 함수72/regex37/표현76 전수설명 보고 msg_6a9249c19e5c를 대조하던 중 실제 표현 AST76행이 시작위치 key충돌3그룹/4행 병합으로 최종72key가 된 것을 발견했다. coverage-summary는 함수/regex만 미설명을 검사한다. E/cost-fifth-expression-key-audit.json에 실제key/source/hash를 보존했고 살아있는 Sol에 과거원시보존·유일AST span키·표현미도달이유검사를 자기하네스에서 보완하도록 요청했다(msg_bf67e53063ea). 메인 즉시공개 msg_1507b3d80360. 제품추가수정/6차가 아니며 최종근거·독립검증 전 상태를 유지한다.
+
+**22:37 UTC 자문 정산·실제 변경 확인:** Fable task_5466b0b01691/ctx_a22536366db5는 worker_done msg_401f1e934f47로 완료했다. 최종 E/cost-advisor-fifth/fable-advice.md SHA256 de1725f95b4bc0ff606e30fb7605a65c4ace0b1f7a8bd6bd8f5238efeb020f61/70228byte를 이미 전문 읽은 판본과 실제 변경 전체로 대조했다. 최종 P17의 잘못된 문구 치환·중복은 Sol 지적과 실제 diff에서 확인했다. 원문을 보존하고 E/cost-advisor-fifth-errata.md로 정정 의미와 비채택 범위를 기록, 메인 msg_4258ee0b52df에 즉시 공개했다. 당시 두 heartbeat 지연 외 최신 표본에는5분19초 간격이 추가되어 총2회라 하지 않는다. release→동일incarnation/완료/빈prompt→정확pane close/ptyKilled→ACK, reclaimable0. 자문 완료는 제품 PASS가 아니다.
+
+Sol은 직접 Q1/Q2/Q3와 구현 전 전제표·R0 채택/대안 보류를 기록한 뒤 Astra msg_d4a53f4d5e46 허용에 따라22:31:22 UTC static-svg.ts만 처음 수정했다(SHA3f8544b42122337232be768bf3f8f63b7d801b9e2c4f5c51e71bc92e88676343). 기존 전진 TreeWalker의 부모 membership으로 symbol 간접 자손을 표시하고 모든 기존 검사/refs/animation/neo/query 뒤 폐기 style의 확장·청구·대입만 생략한다. retained E 공유예산 C+n, 순서·정책·cap·시간 계약은 유지한다. 최신 조언 5e55fbad/de1725 읽기는 첫 쓰기 뒤 실제 시각이며 소급하지 않는다.
+
+초기 corpus 충돌은 inputs-2의777개로 수정해 Astra가 전수 재해시했다. inputs-3 추가799개 중 nested-marker3개의 직접경로 오류는 측정 전에 inputs-4의 symbol→g→marker 경로로 정정하고 이전 자료를 보존했다. Astra22:36 전수 actual byte/hash 대조는799행/799이름/799파일/오류0, manifest c49664b5a2ff5fbf24811802ad15e4fa373b7102d362c7a27961fe1ad41f6bf0(E/cost-fifth-corpus799-final-astra-audit.json). 자체 reporter 관련453/453, 전체702=690/12를 원시에서 확인했다. 비용 cost-1은 cost-end 후 clone 하네스 오류/exit2라 전체성공이 아니며 실행 근거·미완료 단계의 분리를 요청했다. 자체 최종보고·쓰기종료·신규 Opus 독립검증 전이다. 5차 실패시6차금지/OS금지/미확정12/시각09~11/사용자125%를 유지한다.
+
+**22:10 UTC 구현 전 원천 대조:** Sol 직접 Q1 msg_65fa3292482d/Q2 msg_59b6cc9fef2e와 context 전제별 소스 줄을 읽었다. 22:04 고정177개 재대조는 Astra goal 메타 외176개 일치, 제품/시험 쓰기 전이다. 관련453=451/2 및 전체702=688/14 기준선 reporter의 실제 hash와 수치를 대조했고 오류 전파2차는 child2/recorder2를 확인했다. E/cost-fifth-astra-baseline-sample.json에 검토 범위를 보존한다.
+
+Sol의 corpus777개 actualbyte/hash 확인 보고 msg_461c11fce0fb와 달리 새 대상 manifest777행은 고유465파일/중복파일명104그룹/실제byte·hash불일치312행이었다. 크기별 입력이 같은 대상 파일을 가리킨다. 원문 manifest SHA2cb5986544496b718187d29884319c29ee6d04f599c48c5844615f120b2d4586을 Astra 사본으로 보존했고 Sol에 고유 이름·충돌 거부·작성 후 실파일 검증을 요청했다(msg_f263d5e0f3e2). 메인 즉시 공개 msg_ff6e46568d1f. 수정 전 corpus는 완료 근거가 아니며 제품5차 실패 판정과 구분한다. E/cost-fifth-corpus-collision-audit.json 및 cost-fifth-inputs-draft-collision-manifest.json.
+
+공통 계약의 `@65536 및 @262144 SHA96b1...` 문구에 Sol이 hash 귀속 문제를 제기했다. Astra 실제대조에서 65536byte는 fdfc387a4022c367a0440e0d5bdf998769239c9a85ebd9ec374a82a19aa6bc69, 262144byte는96b1...이다. 원문은 보존하고 E/cost-fifth-contract-errata.md로 명료화했으며 두 작업자와 메인 msg_a2c652b02524에 공개했다. 원천 확인과 새 대상 파일의 무결성을 별도로 본다.
+
+생존 알림은 전송·수신을 구분한다. Sol heartbeat 네 건(21:56:06/21:59:34/22:04:23/22:06:42)은 bounded inbox와 raw receipt에 있고 최대 전송간격4분49초다. coordinator check 미표시만으로 전송 누락 판정은 하지 않으며 메인 msg_18adee894a24로 보완했다. Fable 직접 수신 간격21:56:32→22:05:25의8분53초는 별도 관찰이며 최종 원문과 대조한다. 해당 delivery/read 표시를 인지 증거로 격상하지 않는다.
+**21:55 UTC 5차 신규 세션 최초 연결:** 네 번째 Opus 정산 후 메인 msg_6b159abbb02f에 따라 새 Fable task_5466b0b01691/ctx_a22536366db5(terminal term_f2a6d34f-44d9-448b-8b1a-ac1ce49c6e11, incarnation f3d8bb06-427a-463b-b743-e8679c5b8927)와 새 Sol task_1d7da07dda7f/ctx_0578eaf4537e(terminal term_d669c740-76cd-4de7-80cd-f3fc5617a05e, incarnation462a2207-9b42-4e6a-bbb2-4c8a306b19b3)를 같은 Management 탭의 Astra 아래에 열었다. 최초 명령의 지정 모델과 Fable5.1 xhigh/ClaudeCode2.1.288 및 GPT-6.1-Sol xhigh/Codex0.160.0 화면·빈prompt·tui-idle을 확인했다. backend 실제모델은 둘다 unknown이다.
+
+Advisor는 ready/input_accepted/turnStart observed, Sol은 최초 input_accepted/turn_start_unobserved였다. 새 pane의 공식 계약 붙여넣기 draft23698chars만 남고 다른입력이 없는 것을 fresh JSON으로 확인해 메인 msg_fc6d85bf6c94 허용조건에 따라 텍스트없는 Enter1회(bytesWritten1)를 보냈다. 이후 동일incarnation·agent_status live/working 및 실제 계약읽기를 확인했다. 최초unknown receipt를 보존하며 중복발행·재기동은 하지 않았다. Advisor에 지정Sol 신원/dispatch를 msg_aac90a686820으로 바인딩했고 직접 질문·답변·후속 종료와 채택기각/전제별source줄 기록 전에 제품쓰기를 금지했다.
+
+고정입력 E/cost-fifth-inputs.json SHA2565e41964a240d2f4e8443740931c9bf5f7477a11fd89e8cf0c18bf27b2b5c3ad4는104파일+73보호근거이며 두 발행직전177개재대조일치다. 최종계약은 E/cost-advisor-fifth-task.txt(SHA66253789a5a3a0713be3a4447b339dcd994d671ab369a69f895d56b6366cbe75), E/cost-repair-fifth-task.txt(아래hash), 전문CODE6절·네최종판정 경로/hash·ASSET19 전부·errata·현재관련453/2실패·전체702/14실패를 반영했다. 계약/launch/unknown/Enter/binding 원시는 E/cost-{advisor,repair}-fifth-*.json에 보존했다. 5차실패시6차금지·OS금지·기존미확정12·시각09~11·사용자125%는 유지한다.
+Sol 최종 계약 SHA256: 0e9d70924a732a33fc37fd843b34278982a38ca485aff94de733b218bd6249a0.
+
+
+**21:45 UTC 네 번째 Opus 정산 완료:** `worker_done msg_8c51e55bbfbe`(21:41:40 UTC, 검증 작업 succeeded/제품 **NOT PASS**)를 받았다. 새 제품 번호는 **ASSET19 LOW** 하나이며, 관련453=451/2·전체702=688/14의 새 두 실패는 같은 회귀를 재현한다. 기존 단정 변경0, 신규시험8, renderer 이름/주석1정정, 기존119분류 유지다. 최종 `E/cost-review-fourth/verdict.md` 289행/SHA256 `1c96dbf0b97624d039d968cec66afb983054984abb98257f5acff384f056c9c7` 전문을 읽고 원천 표본과 대조했다.
+
+원문은 이미 내려진 메인의 4차 집계/5차 결정을 미결로 남겼다. `msg_c87ad4ff525a` 전달 뒤에도 미반영된 사실과 cost-1의 Electron exit2/바깥 recorder exit0 차이를 메인 `msg_95e22d59156c`로 공개했다. 원문은 불변으로 두고 `E/cost-review-fourth-errata.md`에 실제 결정·원시를 연결한다. 다른 입력군의 1998.6ms/24.1ms를 같은 입력의 속도비로 쓰지 않는다. 완료 검증자는 재사용하지 않는다.
+
+Astra 재계산에서104파일의 변경은 시험2+Astra goal뿐, 보호근거40개 불변, git 경로104개 일치다. 최종보고 hash를 재확인했고 소유25PID번호 fresh CIM 잔존0이다. release는 external_terminal retained/processAction none, 이어 동일incarnation `1e6cca4d-885f-4e05-b094-4aad2cda78bd`·완료/빈prompt를 확인한 뒤 정확pane close `ptyKilled:true`, 완료Delivery 전체ACK·reclaimable0을 기록했다. 근거 `E/cost-review-fourth-{completion,release,before-close-show,before-close-screen,close,completion-ack,after-close-workers}.json`, `E/cost-review-fourth-astra-{baseline,cost,main,final}-sample.json`.
+
+유효 비용222입력×양쪽5회는 부모43.3ms/자식104.8ms, 별도값86입력은31/30.5ms이며 계측/원본 판정차이0이다. 승인 보존은131→127로 실패한다. 정상3종 ACK243.3/174.3/192.2ms·XML일치·정상/전체main CSP0·직접PNG열람과 최종build/main전/현재35hash일치를 확인했다. box9의 프로그램스크롤·합성click/Esc는 유지, provider mouse의IFRAME focus와 실제OS125%·물리클릭 미실행은 구분한다. cost-1과 values-1은 무효 진단으로 보존한다. 시각09~11·미확정12·번들/고지는 후속 범위다.
+
+다음은 메인 승인된 새 Fable 설계 자문과 새 Sol5차이며 **아직 기동 전**이다. `E/cost-fifth-context.md`, 두 `*-fifth-task-draft.txt`, `cost-fifth-rules-appendix.txt`는 미발행 준비물이다. 최종 판정·정정·모든번호·고정입력·새신원을 반영한 별도 발행본을 만든다. 5차 실패 시6차 금지는 유지한다. 원격main 최신 확인은 `7fa107488df3eb8133bb8a51e6eb746903ab94fe`(#168, 이전5616573대비6문서경로)이며 AGENTS/CLAUDE/CODE·Management제품/시험 변경은없다. 현재HEAD eabf72와checkout을보존했고fetch/merge/rebase는하지않았다. 우리브랜치열린PR0. 근거 `E/cost-fifth-remote-check.json`, 메인알림 `msg_cfce5e01c99d`.
+
+**21:21 UTC 메인 결정 수신:** `msg_6b159abbb02f`는 ASSET19를 별도 원인 번호로 두되 **비용 수리의 네 번째 완료 실패**로 집계했다. 시간 상한과 승인 보존은 함께 완료조건이므로, 이번 시간 초과 재발 여부와 완료 실패 횟수를 구분한다. 현 Opus가 전체 판정·시험을 끝내고 정산한 뒤 반환된 모든 번호를 5차 계약 하나에 모은다. 새 `claude-fable-5-1` Advisor는 확장 결과를 만들기 전 정확하거나 촘촘한 비용 상한 계산 한 설계에 집중하며, 제거되는 symbol/filter의 간접 style 경로·기존 승인 출력의 바이트 보존·style 순서 위험을 포함한다. 조언 파일 하나만 쓴다. 새 `gpt-6.1-sol xhigh`는 구현 전에 직접 상담·채택/기각·각 전제의 실제 소스 줄을 기록한다. 중첩 symbol 및 16384/65536/262144 회귀 계열을 보존 corpus에 포함하고 이후 신규 Opus가 독립 검증한다. **5차도 실패하면 6차를 열지 않고 메인으로 올려 사용자 선택을 받는다.** 현 검증 종료 전 새 세션은 열지 않는다. OS 금지·미확정12·시각09~11·사용자125%는 유지한다. 결정 원문 `E/cost-fifth-main-decision.json` SHA256 `caf961b955a2e4fe63b49a4858fa90b1253c6ea3868f656747fefe5b5e47d39d`; 전달 `msg_c87ad4ff525a`, 수신 회신 `msg_340c49e13510`.
+
+**21:20 UTC Chromium 승인 보존 회귀 확인·메인 질문:** 신규 Opus 중간 원문 `msg_ad0d3e457496`와 `E/cost-review-fourth/runtime/cost-2/compare.ndjson`을 대조했다. `font-symbol-removed@16384`의 파일 크기 16384byte 및 SHA `75dbc09fbdc5713eefc0d97060e87432f381e0e74282448da28562ec9bc0edd2`가 manifest와 일치한다. 이전 자식은 5573byte 결과를 승인하고 부모도 그 결과를 승인했으나, 현재 자식은 사전 거부한다. 같은 계열 65536/262144 및 `budget-symbol-over@262144`도 동일한 승인 차이다. **ASSET19는 비용 수리의 승인 보존 회귀이며, 현재 비용 실측의 시간 초과와 구분한다.** 최종 전수 판정은 아직 작성 전이고 검증자는 나머지 실사·시험·정상3종을 계속한다.
+
+유효 cost-2는 222입력, 부모 최악43.3ms·자식104.8ms, 250/500ms 초과와 crash0, exit0이다. cost-1은 하네스 입력 경로 오류 exit2로 중단되어 전수 근거에서 제외한다. 원시 승인 집계는 이전131/현재127/양쪽127·출력차이0이다. 중간 메시지의 “양쪽123” 오차를 Astra가 발견해 검증자 `msg_2028cbd6a480`와 메인 `msg_8f22805d7206`에 공개·정정 요청했다. 원본 간 승인 차이와 계측 불일치 판정은 별도이며, 진단 cost 실행 CSP90도 정상 실행 CSP0으로 바꾸지 않는다.
+
+메인 question `msg_06615a1c9b85`로 이 회귀의 부류 집계 및 현 Opus 정산 뒤 다음 수리 방식·추가 Fable 여부를 물었다. **결정 전 새 수리 세션·제품 쓰기를 시작하지 않으며 현 독립 검증은 계속한다.** 승인 없는 다섯 번째 수리, Astra 직접 구현, OS 입력, 테스트 기대값 완화는 없다. 원문 `E/cost-review-fourth-main-preservation-question.json`, `E/cost-review-fourth-chromium-disclosure.json`, 원천 표본은 해당 입력 파일 및 compare/cost/exit 원시다.
+
+**21:10 UTC 승인 보존 회귀 후보 공개:** 신규 Opus의 사전 맥락 전문과 Sol 최종 보고를 대조했다. 보고의 “제거되는 symbol 안 style 불허” 전제와 달리 실제 내용 모델은 `symbol → g → style` 및 `symbol → g → defs → style`을 허용한다. Astra는 소스 불일치를 메인 `msg_c1192f3a2f52`로 즉시 공개했다. 검증자 `msg_cf38e1eb5c10`의 jsdom 이전/현재 원본 대조에서 rootId 1000자·bare 규칙 600개 입력은 이전 자식 승인(출력 1103byte), 현재 자식 거부이며 K250 대조는 양쪽 승인이다. **Chromium·최종 출력 부모 승인 대조 전이므로 ASSET19 후보이며 제품 판정 전**이다. 시간 초과 재발과 승인 보존 회귀를 구분하고, 확정되면 부류 집계와 다음 수리 방식을 메인 question으로 올린다. 임의 다섯 번째 수리는 시작하지 않는다. 관련 기준선 445/445, 전체 694=682/12와 과거 119건 분류 연결을 확인했다. 근거 `E/cost-review-fourth/context.md`, `runtime/jsdom/probe-1.json`, `cmd/*-before.*`, `E/cost-review-fourth-premise-disclosure.json`, 메인 후속 `msg_845ee8fd7c9b`.
+
+**21:02 UTC 사용량 해제 뒤 같은 세션 재개 확인:** 검증자 heartbeat `msg_cf338f4945d2`와쓰기전고정입력알림 `msg_7a35b110c26d`를수신했다. `task_f532ebb61c60/ctx_9994c8d35f66`,terminal/incarnation `term_22b654c5-b397-4164-a4bd-9ea99776da2a / 1e6cca4d-885f-4e05-b094-4aad2cda78bd`를다시확인했고live/working·화면Opus5.5 xhigh로조사중이다. Astra도144개고정입력을재대조하여goal현재절의Astra소유메타갱신1건만차이임을확인했다(제품·시험·40근거일치). 실제독립실사/시험은사용량해제뒤이번에시작하며아직판정없음이다. 중복기동/모델대체/추가입력없음. 근거 `E/cost-review-fourth-resumed-{heartbeat,show,screen}.json`과쓰기전알림원문.
+
+**20:38 UTC 신규 Opus 연결 후 외부 사용량 제한:** R5/R6에 따라 자기pane 아래 `claude --model claude-opus-5-5` 새vertical split을 열었다. 새terminal `term_22b654c5-b397-4164-a4bd-9ea99776da2a`,incarnation `1e6cca4d-885f-4e05-b094-4aad2cda78bd`,같은checkout·runtime를확인했다. 최초13행전체화면에Claude Code2.1.288/Opus5.5 xhigh·빈prompt·선택창없음,tui-idle satisfied를확인한뒤최초연결했다. `task_f532ebb61c60/ctx_9994c8d35f66`,ready/input_accepted/turn_started observed이며backend실제모델unknown이다. 계약 `E/cost-review-fourth-task.txt` SHA `d20dc538de0b4922ffbf8f1b046cdff35e42679787a5087aaf0e08a3e923cce7`,입력104파일+40근거 manifest SHA `af69ff6b26cb1c43e0f5ec2461c280259c490efb842fb41b4e02ffcb43e2c67b`를주입직전재검사했다.
+
+요청직후실제화면에 `You've hit your session limit · resets 6am (Asia/Seoul)`와 `continuing automatically at 6am`,0tokens가표시됐다. 2026-10-04 06:00 KST=2026-10-03 21:00 UTC까지외부사용량해제를기다리는상태이며독립실사/시험은미실행이다. 제품4차실패나검증완료로세지않는다. 같은Task/Dispatch/pane를보존하고중복발행·추가입력·reset·모델대체·설정변경·임의close는하지않았다. 다음진입은정확ctx의worker-list/show와Orca check로자동재개/메시지를확인하며,현재goal이끝난것으로취급하지않는다. 근거 `E/cost-review-fourth-{split,idle,before-start-show,before-start-screen,start,after-start-show,after-start-screen}.json`.
+
+**20:36 UTC Sol 정산 완료:** `task_3ddcaf5ca54a/ctx_57c2f1ad5b6e`의 `worker_done msg_8b5e5cdaefb2`(20:35:25, 자체작업succeeded)를 받았다. `E/cost-repair-fourth/execution-result.md` 최종SHA `bcb83add92d5e1914734dd1803f299a6deb80b6c6733bc93c2bc8734293e4a06` 전문을 읽고116입력hash를 재계산했다(제품2+Astra goal만변경,tests불변),15PID번호fresh CIM잔존0. release는external_terminal retained/processAction none, 이후동일incarnation `e046995c-66ee-4840-a57a-5ad328e6e4fe`·완료/빈prompt를확인해정확pane close `ptyKilled:true`,completion delivery전체ACK,reclaimable0을기록했다. 근거 `E/cost-repair-fourth-{completion,release,before-close-show,before-close-screen,close,completion-ack,after-close-workers}.json`, `E/cost-fourth-settlement-sample.json`. 새Opus만독립판정하며 제품PASS는아직없다.
+
+최종실사에서 cost-final-1은438비용section완료뒤preservation setup clone오류가났으나기존하네스종료경쟁이exit0으로가린것을확인했다. run전체성공으로세지않고coverage-final-1의보존20/계측126과main-final-1을별도근거로쓴다. 반환hash저장주장은실제직접문자열동등비교boolean/반환hash·원문미저장으로최종정정됐다(`msg_dcd0dd9c5071`,메인즉시공개`msg_41c06ef301e7`). heartbeat6분20초/7분03초/5분03초누락도원문에공개되어전체절차PASS가아니다. Astra의빌드표본은20:01snapshot35/20:17현재동일이며시험뒤20:00재빌드사실을보존한다(표현정정`msg_34719f0d95de`). OS입력금지/미확정12/시각09~11/첫PR사용자125%확인은그대로다.
+
+**20:12 UTC 자체 점검 원천 표본 — 최종 보고·독립 판정 전:** 관련445/445, 전체694=682통과/기존미확정12실패를 원시와 대조했다(새실패0, 직전ASSET18만 제거). Chromium438입력×양쪽5회에서 부모최악55.8ms/자식122.6ms, ASSET18동일hash 두최대입력은3.1/2.8ms 사전거부다. 정확262144byte승인/+1거부 각5회, 측정438파일의실제bytes/hash일치, 보존20개판정·출력동일 및 계측126입력판정차이0을 확인했다. 정상3종PNG직접열람·ACK233.3/162.8/180.6ms·표시XML일치·정상CSP0, 소유15PID번호fresh CIM잔존0이다. deep-node대조2개거부, provider클릭후IFRAME포커스와 합성click/Esc H5복귀, OS125%물리입력미실행은 분리한다. 시작104파일+12근거에서 변경은 제품2파일과Astra goal뿐이며tests불변이다. `E/cost-fourth-astra-source-sample.json`, 메인status `msg_c6b5e896aae8`. Sol은 최종 함수표·보고 작성 중이며 독립PASS로 승격하지 않는다.
+
+**19:54 UTC 자문 채택·기각 기록 뒤 Sol 구현 시작:** Sol도 같은 trim 하한 틈을 독립적으로 발견해 `msg_578859b18d85`로 올렸다. 최초 직접상담은 끝났고 추가문의는 완료Advisor의 `dispatch_inactive`로 거절되어 재사용/대체세션은 만들지 않았다. Astra `msg_e220bf03be69`에 따라 기존치환순서·문서예산 `MAX_SVG_BYTES+원본svg.length≤2MAX`와 후속제거/정규화 하한 전제를 같은범위에서 확인한다. 원R1의 MAX 예산과 I1/I4의 과도한 일반화는 채택하지 않는다. Sol `context.md`의 직접Q&A/hash·부분기각·대안근거 기록 시각19:54:18.880은 제품2파일 첫수정19:54:21.055보다 앞선다. 자체 결과/독립판정은 아직 미완료다. 자기heartbeat6분20초 초과 공개 `msg_a3f0b53c9050`, 근거 `E/cost-fourth-{sol-trim-escalation,trim-design-decision,trim-main-status}.json`.
+
+**19:49 UTC Advisor 정산·Sol 채택 판단 중:** Sol 직접질문 `msg_536935b0462c`(19:38:07) → Fable 직접회신 `msg_c12d737546a6`(동일thread·정확Sol dispatch)을 원시에서 확인했다. 조언 `E/cost-advisor/fable-advice.md` SHA256 `aaf05b4896e0584144e209086c435d22a87bb67bb48ce56d1a9fb03501806c10` 전문을 읽었고 완료 `msg_50d8fee4f866` 뒤 release·동일incarnation/완료/빈prompt·정확pane close/ptyKilled·ACK·reclaimable0을 확인했다. 자문은 측정·시험·독립판정이 아니다. Sol 사전메모 전문·고정104/근거12 대조와 제품쓰기0 보고도 확인했다.
+
+원천 대조에서 R1의 ‘중간CSS 길이가 최종크기의 하한이라 승인집합불변’ 논증에 후속 selector trim/split/join 축소가 빠진 점을 발견했다. 현재 소스추론이며 네 번째 제품실패 확정은 아니다. Sol에 `msg_46dced259b4d`로 합법공백×font증폭 조합의 이전승인 보존과 I1/I4 상한 범위를 채택 전에 확인하도록 보냈다. 자문의 읽기표는 parser-review ASSET12절·제품9/근거7 hash로 한정되므로 계약의 세 판정 전문/완료본문의 ‘전부일치’와 구분한다. 메인 즉시공개 `msg_847a93c8a100`, 정산 `msg_6dc177e08b91`; 종합 `E/cost-fourth-supervision.json`. 실제 bare 규칙은69자/scoped L+68이며 직전 Opus의67/66 표기는2자오차다. 원시248,985,486자·1998.6ms와 ASSET18결론은 변하지 않는다.
+
+Fable 종료화면에서 사용량한도·오전6시 자동재개 안내를 관측했으나 조언/worker_done은 완료된 상태였다. 완료pane은 닫았고 재사용하지 않는다. 새Opus가용성은 기동 전까지 미확인이며 대체모델을 쓰지 않는다. Sol은 자기하네스 준비와 직접자문 채택·기각 뒤 허용수리를 계속한다. heartbeat원천32:15→39:35 7분20초,39:35→완료46:41 7분06초(대기호출예외여부 미확인)를 한구간만 적은 완료본문과 구분해 보존한다.
+
+**19:33 UTC 신규 두 세션 착수:** Fable Advisor `task_3e8ae5f0e393` / `ctx_85f68c716886`, pane `term_b3ec7903-9cbf-4817-a126-813fdd017d18`, incarnation `d8048996-881a-4bc7-84e6-63fc8cefc588`는 `claude --model claude-fable-5-1`로 열었다. Fable5.1 xhigh·ClaudeCode2.1.288·올바른cwd·tui-idle·선택창 없는 첫화면을 확인했고 ready/input_accepted/turnStart observed·live/working이다. 쓰기는 `E/cost-advisor/fable-advice.md` 하나, 독립 Opus 대체가 아니다.
+
+신규 Sol `task_3ddcaf5ca54a` / `ctx_57c2f1ad5b6e`, pane `term_840aed4a-f8fd-4dfd-8546-125d83779902`, incarnation `e046995c-66ee-4840-a57a-5ad328e6e4fe`는 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`로 열었다. Codex0.160.0·GPT-6.1-Sol xhigh·cwd·빈 첫prompt 확인 뒤 첫 start는 input_accepted/turn_start_unobserved였다. JSON draft `[Pasted Content 20563 chars]`, 새pane·동일incarnation·다른입력없음을 재확인해 메인 `msg_fc6d85bf6c94` 조건에 따라 텍스트 없이 Enter1byte를 한 번 보냈다. 이후 live/working과 자기태그 착수를 관측했다. 최초unknown receipt를 성공으로 바꾸거나 계약을 재전송하지 않았다. 두 세션 backend는 unknown이다.
+
+Fable기동 전 메인status `msg_8c457d1f08e1`, 상호수신자 바인딩 `msg_df5a415e9ead`, Sol착수/goal메타 소유 예외 `msg_0211ca6c522e`를 보냈다. 직접질문→Advisor확정회신/한파일→Sol채택기각기록→제품쓰기 순서를 감독한다. 계약은 `E/cost-advisor-task.txt`(13186chars/SHA256 `2c5995002c6a1d976691e0634e1568a76e8be01bcd4ee32ce68faf18555e1670`), `E/cost-repair-fourth-task.txt`(15489chars/`6296a2e0e5484074c16952d33d7cba3b40cab0134ec158d871a44c5def12ac95`), 고정입력 `E/cost-fourth-inputs.json`(104파일·근거12개)이다. CODE6절과 부류/3회실패/OS금지·예외종료 원문을 최초발행 전에 포함했다. 원시 `E/cost-advisor-*`, `E/cost-repair-fourth-*`. 네 번째 실패 시 다섯 번째 전 메인question 원칙은 유지한다.
+
+**19:27 UTC 독립 Opus 정산 완료:** 완료 `msg_2bf962269e78`은 검증 작업 succeeded/제품 **NOT PASS(ASSET18)**다. 최종 `E/gate-review/verdict.md` SHA256 `da2fb5359a7a3a6341be129b430daffbfad6eb61e9a4913125dd7710af58813c`를 전문 열람하고 실제 제품104파일 hash·테스트diff·원시시간·최종 정상3종 PNG/ACK·소유25PID 부재를 대조했다. ASSET15/16/17은 첫 독립 재검증에서 해결,12/13/14는 해결 유지다. 관련445=444/1,전체694=681/13이며 새 실패는18 한 건, 기존 미확정12는 보류를 유지한다. 테스트2파일만 변경되고 제품은 불변이다.
+
+최종 유효 관문 근거는 `runtime/gates-2`(354행, 부모77.5ms/자식155.2ms)와 `runtime/amplify-1`(자식1998.6ms)다. gates-1 계측의 판정불일치14건과 입력 builder의 잘못된 크기 표기는 최종 근거에서 제외됐다. 정상3종 ACK229/153.1/177.5ms·부모 도식SVG0·정상/전체main CSP0, box9벡터의 스크롤 뒤 버튼 적중과 합성복귀를 확인했다. 진단CSP123건의 원인은 parse실패 구간 상관관계이며 오류문서 내용을 직접 확인한 증거는 아니다. heartbeat 두 구간 초과도 공개되어 전체 절차PASS로 세지 않는다. Astra 표본 `E/gate-review-astra-sample.json`.
+
+release 뒤 동일 incarnation·완료/빈prompt를 재확인하고 정확 pane을 닫아 `ptyKilled:true`, 완료Delivery ACK·reclaimable0을 확인했다. 원시 `E/gate-review-{completion,release,before-close-show,before-close-screen,close,completion-ack,after-close-workers}.json`. 다음은 아래 사전 승인에 따른 새 Fable Advisor와 새 Sol이며 아직 기동 전이다. OS 입력 금지·시각09~11/번들 후속·I04 보류는 유지한다.
+
+### 정산된 Opus — 관문 비용 부류·복귀 버튼 독립 검증 이력
+
+**19:08 UTC ASSET18 확인 — 비용 부류 세 번째 확정 실패:** 검증자 `msg_bb24a8fd4b27`과 `E/gate-review/runtime/amplify-1/cost-summary.json`·`exit.json`을 Astra가 대조했다. 원본 소스의 Chromium 관문 진단에서 허용 크기262144byte 입력의 자식 최악1943.4ms, 262103byte 변형1998.6ms(각5회)로 계약500ms를 넘었다. 부모 최악3.5ms다. `static-svg.ts`의 bare 글꼴 규칙 치환이 긴rootId를 반복 삽입해 약2.49억 자 중간 문자열을 만들며, 입력 크기4배에서 시간은 약15배가 된다. 이 조합은 이번 수리 전부터 있었으나 Sol의 전수 비용 근거와 첫 측정 입력이 놓쳤다. 최초326사례의 시간 통과를 최악조합 통과로 소급하지 않는다.
+
+메인 `msg_ccc29ac0f603`의 ‘허용 크기 안의 적대 입력 관문 비용’ 부류(12/15/16)에18도 해당하므로 현재 확정 실패는 **3회**다. 서로 다른 위치·번호로 초기화하지 않는다. 실제guide/Mermaid 정상경로에서 이 입력의 생성 가능성은 미실행이며 함수경계 요구의 실패로 보고한다. 진단 자식프로세스의 실행 전체 peak working set4,043,380KB와 종료 `aliveOwned:[]`을 구분해 기록한다. 메인 즉시 보고 `msg_0b8afba3f654`, 검증자 계속 지시 `msg_d3f8af4d38ff`; 근거 `E/gate-review-asset18-{disclosure,main-report,worker-followup}.json`.
+
+현재 Opus는 나머지 전수검증·독립 시험·정상3종/17·규칙 실사·최종 원문을 마친 뒤 정산·종료한다. 그 뒤 메인 `msg_22a9b4109ee7`의 사전 승인대로 실패 원문3개와 이유를 status 보고하고 **새 Sol(gpt-6.1-sol xhigh)+새 Fable Advisor(claude-fable-5-1)**를 열며 재승인을 기다리지 않는다. Sol은 구현 전 Advisor에게 Orca로 직접 질문하고 채택·기각 이유를 기록한다. Advisor는 읽기 전용이며 조언 파일 하나만 쓴다. Astra 직접 구현·완료 세션 재사용·독립 Opus 대체는 하지 않는다. 네 번째도 실패하면 다섯 번째 전에 메인 question이 필요하다. 아직 추가 세션은 열지 않았다. 결정 원문은 Rules에서 보존한 `E/main-three-failure-final-decision-source.json`(SHA256 `80163449db78f84a67b1890ad6a859e093110ba54bee7aabd933d35c9c828c99`)이며 사용자 직접 입력으로 격상하지 않는다.
+
+신규 `claude-opus-5-5` 외부 세션에 Task `task_6a21acaf672d` / Dispatch `ctx_5a01e7313566`을 발행했다. pane `term_a6bdc854-aa84-417e-8974-41813f7c3cac`, incarnation `f547a532-5238-4c40-9eb1-b46d88ec6a28`; 최초 명령 `claude --model claude-opus-5-5`, Claude Code2.1.288·Opus5.5 xhigh 화면·올바른 cwd·tui-idle·선택창 없는 첫 prompt를 확인했다. backend unknown이며 attach launch model null을 실제 모델로 해석하지 않는다. `ready`·`input_accepted`·`turnStart observed`, 동일 세션 live/working이다. Enter 복구·중복 발행은 없었다.
+
+최종 계약 `E/gate-review-task.txt`는17113chars/SHA256 `3fdc15106b9807ab896c22ec63e2a998a331759c0bc501f3a7c4f4f401e4fdcd`, 고정입력 `E/gate-review-inputs.json`은104파일·근거11개/SHA256 `8af74481216c57130f1ea84aeb8ef4d90863a9c28b24f0fdea15115fbb0675e8`이다. 메인 부류·119분류·OS금지 원문과 CODE6절 전문을 발행 전 포함·대조했다. 제품 읽기 전용, 관련 테스트/fixture와 자기 근거만 쓰며 현재 OS입력 예외는 없다. Astra goal 메타 변경은 별도로 알려 동시 제품 쓰기와 구분한다. 기동 근거 `E/gate-review-{split,idle,before-start-show,before-start-screen,start,after-start-show,owner-followup}.json`.
+
+### 18:26 UTC — 관문 비용 수리 Sol 정산
+
+Sol 완료 `msg_f7779f70b589`(18:25:36 UTC)는 수리 작업 `succeeded`이며 제품 독립 PASS는 아니다. 최종 원문 `E/gate-repair/execution-result.txt` SHA256 `d991c04671befd55adeee92884ca05190e4e0b06986184a2c18c017e0991165f`를 전문 열람했다. 제품6개 최종 SHA·실제diff 표본3개·원시5회시간·관련442/442와 전체691=679/12·CodeRules37/0/0·정상3종 PNG/ACK·소유프로세스 정산을 대조했다. AST71함수/37regex 중 SVG관문70/32의 완전성·최대입력 대응은 새 Opus가 독립 판정한다. 기존 미확정12는 그대로 남는다.
+
+최종 공개관문 자기실측 최악은 부모81.8ms/자식208ms이며 계약250/500ms 안이다. source 비용 근거와 native query의 구조상한은 엔진 선형성 보증과 구분한다. 이전 OS클릭1회 사고, 한시재시도0회 중단, heartbeat5분24초 초과, wrapper0/childexit1의 차이는 원문에 공개돼 있으며 전체 절차PASS로 세지 않는다. Astra 표본 원문은 `E/gate-repair-astra-sample.json`이다.
+
+`worker-release`는 external terminal retained/processAction none을 반환했다. 새 show에서 동일 incarnation `f80b797e-78e5-43b1-95ba-5b098ef80df4`와 완료·빈prompt를 확인한 뒤 해당 pane만 닫아 `ptyKilled:true`를 받았고 완료 Delivery를 ACK했다. 근거 `E/gate-repair-{completion,release,before-close-show,before-close-screen,close,completion-ack}.json`. 완료 작업자는 재사용하지 않는다. 다음 신규 Opus의 보안 독립검증을 마친 뒤 승인된 시각09~11 → 번들/고지 → 사용자125% → 첫PR 순서를 따른다.
+
+### 기동 이력 — 관문 비용 부류·복귀 버튼 수리 Sol (정산 완료)
+
+Task `task_3aa2df084f66` / Dispatch `ctx_ac8f53bea970`, 신규 `gpt-6.1-sol xhigh` 세션은 위 정산 절에 따라 종료했다. 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`, Codex0.160.0·GPT-6.1-Sol xhigh 화면·올바른 cwd·tui-idle·빈 첫 prompt를 확인했다(backend unknown). 원래 worker-start는 input_accepted 뒤 turn_start_unobserved였고, 새 pane·다른 입력 없음·JSON draft의 `[Pasted Content 19330 chars]`를 확인해 메인 `msg_fc6d85bf6c94`가 허용한 텍스트 없는 Enter 1byte를 보냈다. 이후 동일 incarnation의 live/working 및 자기 태그 작업 착수를 확인했다. 원래 unknown receipt를 성공으로 고쳐 쓰지 않으며 중복 발행·계약 재전송은 하지 않았다. 기동 원시 `E/gate-repair-{split,idle,before-start-show,before-start-screen,start,unknown-show,unknown-screen,enter-precheck,before-enter-screen,enter,after-enter-show,after-enter-screen}.json`, 메인 회신 `msg_d559e29343fb`.
+
+최초 발행 계약 `E/gate-repair-task.txt`는14258chars/SHA256 `cf77f192f3fbd57e6adb726a2625e72cf4763969ba34202bfcc2b1ba714760d6`이며 최신 메인 원문·CODE6절 전문·부류2회·숫자 기준을 포함했다. 고정 입력 `E/gate-repair-inputs.json`의103경로와 근거6개는 발행 당시 snapshot으로 보존한다. 제품 쓰기는 Sol, 테스트는 다음 신규 Opus 소유다. 현재 goal의 기동 메타데이터 갱신은 `msg_778b57100d3a`로 작업자에게 알린 Astra 소유 변경이다.
+
+설계 질문 `msg_4e845a2dae66`에 Astra는 `msg_756880efe669`로 누적 구조 작업량 상한을 CSS 엔진 호출 전에 검사·소비하는 방안과 `renderer.css` 표시 영역의 `contain:layout paint`·`overflow:hidden` 최소 격리를 선택하도록 답했다. 상한 숫자와 selector길이/토큰·DOM노드/깊이·호출횟수·누적 계산 근거, 전체 관문 실측, 임계 직전/경계/초과를 요구했다. 계산식 자체를 브라우저 엔진 선형 보장으로 부르지 않으며 정상3종·정확256KiB 단순정상·크기/스크롤·버튼/Esc/focus 보존을 실제 확인해야 한다. 구현·검증 성공 판정은 아직 아니다. 원문 `E/gate-repair-design-{question,reply}.json`.
+
+**17:49 UTC 중간 상태와 절차 사고:** Sol 자체 최종 테스트는 관련442/442, 전체691=679/12이며 기존 미확정12는 유지한다. 최종 성능·전수 목록·원문은 정리 중이고 독립 PASS는 아직 없다. `msg_3961b967e96c`는 OS 입력 확인에서 소유PID14480/window5311900 metadata를 받았으나 캡처에 다른 앱이 보였고, 화면 검토 전에 같은 도구 호출에서 클릭1회를 보낸 실수를 공개했다. 실제 입력 효과는 미확인이고 다른 앱 무영향으로 단정하지 않는다. 추가 OS 입력은 중단하며 정확한 소유 진단PID만 생성시각 대조 후 정리한다. Astra는 메인 `msg_d0d9275ca830`으로 즉시 보고하고 작업자 `msg_967d61bf4074`에 원시 명령·캡처·응답·효과/미확인을 보존하도록 전달했다. OS물리 검증 및 전체 절차 준수의 성공으로 집계하지 않으며 새 Opus가 최종 원문과 실제 근거를 대조한다. 원문 `E/gate-repair-os-input-{incident,main-report,followup}.json`.
+
+### 17:04 UTC 독립 검증 정산·다음 보안 수리
+
+`E/css-review/verdict.md` SHA256 `ddb9579d854a70ca4f62bc398880dbb3c37d3abe9e1c95cdb3bab798234fe591`를 Astra가 전문 읽었다. `worker_done` `msg_c7d0e2813894`의 succeeded는 검토 수행 완료이며 제품 PASS가 아니다. release → 동일 incarnation의 완료/빈 prompt → 정확 pane close(ptyKilled true) → completion ACK를 완료했고 reclaimable은 0이다. 실제 정산 receipt는 `E/css-review-{completion,release,before-close-show,before-close-screen,close,completion-ack}.json`이다.
+
+| 번호 | 현재 판정 | 수정 후 독립 재검증 완료 횟수 |
+|---|---|---|
+| ASSET12 MED | selector 검사 비용 해결 | 1 |
+| ASSET13 LOW | 무범위 selector가 자식 문서를 고르던 원인 해결. 복귀 버튼의 box 겹침은 새 원인 ASSET17로 남음 | 1 |
+| ASSET14 LOW | 관련 공통 검사·renderer 가독성 해결 | 1 |
+| ASSET15 MED | 선언 값 공백의 제곱 검사 비용. 부모 131345byte 진단 약6.0초 정지 | 0, 신규 |
+| ASSET16 MED | 부모 검사 사본의 미종결 태그 정규식 비용. 131307byte 진단 약25.6초 정지 | 0, 신규 |
+| ASSET17 LOW | 허용된 root box 스타일이 자식 복귀 버튼을 덮음 | 0, 신규 |
+
+번호15~17은 이전 제품에도 존재했고 이번 독립 검증에서 새로 확인했다. 이전13의 구체 재현은 `button`·`:root` 등 무범위 selector이며17은 root를 고르는 CSS box 배치의 다른 원인이다. **원문 §3의 “msg_1e80f351e41a가 완료조건을 selector로 좁혔다”는 해석은 채택하지 않는다.** 그 메시지는 구현 문법 선택 승인이고 전체 SVG 범위·복귀 동작 보존을 축소하지 않았다. 원인별 번호는 유지하되 전체 보안 완료는15~17수리 전 주장하지 않으며, 같은 결함의 실패 횟수를 새 번호로 초기화하지 않는다.
+
+**메인 부류 집계·전수 수리 지시 `msg_ccc29ac0f603`(17:04:26 UTC):** ASSET12·15·16은 위치가 달라도 “허용 크기 안의 적대 입력에서 관문 검사 시간이 늘어나는” 같은 부류이며 **확정 실패2회**다. 다음에 같은 부류가 한 번 더 실패하면 Fable Advisor 조건에 들어간다. 위 번호별 재검증 횟수와 별도로 이 부류 집계를 따른다. 신규 Sol은 부모·자식 관문의 모든 검사 함수/정규식/스캐너를 목록화하고 선형 비용 또는 구조상한 근거를 남기며, 새 Opus는 목록 전체에 최대 허용 크기의 병적 입력을 대응해 실측한다. 계약 성능 기준은 실제 Chromium에서 최종 SVG 최대262144byte의 입력당 부모 관문250ms·자식 관문500ms 이내(각5회 최악값)로 정한다. 단일 pass·좁은 구조상한·측정 가능한 비용 제한을 사용하되 cap·5초수명·정상3종 보존을 약화하지 않는다. 환경경합은 기록하며 상한을 임의 완화하지 않는다. ASSET17은 별개 부류이고, 메인은 위13/17해석 및 다음 신규 Opus의 주석 보완을 확인했다. 원문 `E/gate-cost-main-directive.json`.
+
+전후 같은 전체 명령은604=485통과119실패 → 691=676통과15실패, 관련355=248/107 → 442=439/3이다. `classification-119.md`의 a5/b102/c0/d12를 원시119와 대소문자 구분 대조해 누락·추가0을 확인했다. 기존 비도식12는 원인 미확정·실패 그대로이며 I04 다음계획 경계를 유지한다. 새 실패3은15·16의 시간 시험이다. CodeRules36대상/위반0, tests tsconfig·desktop build exit0. 실제 정상3종 ACK259/173/189ms, 부모 도식 SVG0, 고정3자산, PNG3장 확인과 두 실행 소유PID10개 종료를 원시와 대조했다. 직접 검사·approve 생략 삽입 진단과 정상 앱 경로, 합성 입력과 미실행 OS 입력/배율125%는 구분한다.
+
+절차 보완도 남긴다. Opus는 reporter 덮어쓰기 뒤 같은 명령 재측정과 heartbeat 5분 초과3구간을 공개했다. Astra가16:59:53 `msg_380c42e92a23`으로 요청한 `diagram-static-svg.test.ts`의 오래된 “제품 innerHTML 표시” 주석 정정은 미반영·미회신이다. 미수신 원인은 단정하지 않으며 **다음 신규 Opus가 테스트 주석과 실제 경로의 차이를 정리한다.** 완료 세션은 재사용하지 않는다. 메인 보고 `msg_8e84ca0f4903`, Astra 표본 `E/css-review-astra-sample.md`. 다음은 승인된 첫PR 보안 범위 안에서 신규 Sol의15~17수리 → 신규 Opus 재검증이며 시각09~11·번들/고지·사용자125%·PR 순서는 보존한다. commit/push는 아직 없다.
+
+**16:23 UTC 중간 확인·Astra 집계 정정:** 검증자 `msg_6ec616863d62`는 입력108개 SHA 일치와 기준선604=485통과119실패/관련355=248통과107실패를 직접 재현했다. 내가 이전에 쓴 고유 fullName117개는 PowerShell 기본 대소문자 무시 집계의 오류였다. 실제 Sol·Opus raw 모두 대소문자 구분 고유명119개이고 차이0이다(`foreignobject`/`FOREIGNOBJECT`, `Title`/`TITLE` 두 쌍). `E/css-review-name-case-audit.json`에 대조를 보존하고 메인 `msg_6b19496ef301`로 즉시 공개했다. 최초 계약 파일은 이력/hash를 유지하고 후속 `msg_e48f4d9923ef`로 정정했다. 119건 전수 분류·파일/이름/발생순서 식별 요구는 유지한다. 검증자는 자체 기록 도구의 reporter JSON 덮어쓰기 후 같은 명령 재측정 경위를 공개했으며 최종 원문에 남긴다. 추가 검사 비용·SVG 배치 후보는 실제 Chromium 재현 전이라 아직 확정 결함이 아니다.
+
+`E`와 기존 범위·보존동작·후속 순서는 아래 휴식 기록과 같다. 같은 runtime/메인·Astra incarnation을 재확인해 기존 Run `run_22f0bad430b4`를 계속 사용하되 작업자는 신규 세션 하나만 연다. 메인은 `turn_start_unobserved` 때 **새 pane·다른 입력 없음·JSON draft가 공식 계약 크기의 붙여넣기 placeholder**인 조건을 확인한 경우에만 Astra의 텍스트 없는 Enter 단독 복구를 지금 허용했다. 조건 불충족은 메인에 보고하며 묵묵한 재전송·대체 모델·권한 우회는 하지 않는다. 원문 `E/checkpoint/main-resume-2026-10-04.json`이다.
+
 <a id="checkpoint-2026-10-03-rest"></a>
 ## 재개 지점 — 2026-10-03 사용자 휴식
 
-**휴식으로 대기 중이며 목표는 미완료다. 새 작업자는 발행하지 않았다.** 메인 `msg_8c6660eb9c58`이 전달한 사용자 결정에 따라 마지막 Sol의 현재 작업 보고만 마친 뒤 정산·종료했다. 보안 수정의 독립 검증부터 남아 있으며 제품 PASS·사용자 시각 승인·PR 병합은 성립하지 않았다. 사용자가 재개하고 메인이 현재 담당·권한을 확인한 뒤 아래 첫 단계로 이어간다. 이 절이 최신 상태이며 아래의 과거 “진행 중” 기록은 해당 시점의 이력이다.
+**휴식 시점 기록 — 당시 목표는 미완료이고 새 작업자는 발행하지 않았다.** 메인 `msg_8c6660eb9c58`이 전달한 사용자 결정에 따라 마지막 Sol의 현재 작업 보고만 마친 뒤 정산·종료했다. 보안 수정의 독립 검증부터 남아 있으며 제품 PASS·사용자 시각 승인·PR 병합은 성립하지 않았다. 이 절은 보존한 휴식 기준선이고 현재 진행은 위 2026-10-04 재개 절을 따른다. 아래의 과거 “진행 중” 기록도 해당 시점의 이력이다.
 
 ### 위치·보존·다음 세션의 진입
 
@@ -11,7 +166,7 @@
 - worktree: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch: `feat/management-m2-system-cards`.
 - 기록 전 HEAD: `e638845c19e1fb7fbeafc216638c4722388d42e6`. 마지막 통합 base: `5616573c32a2b2e0b677bc21b75e22a08d21f285` (`origin/main`의 당시 값). 이후 원격 main을 새로 fetch한 실적은 없으므로 원격 최신이라고 부르지 않는다.
 - 이 goal만 `docs: preserve management pause checkpoint`로 별도 커밋한다. 자기 commit SHA를 파일에 순환 기록하지 않는다. 재개 때 `git log -1 --format=%H --grep='docs: preserve management pause checkpoint'`와 현재 HEAD를 대조한다. 실제 커밋 SHA·최종 상태는 아래 근거 폴더의 `checkpoint/final-state.json` 및 메인 회신에 남긴다.
-- 12:10:18 UTC `git ls-remote --heads origin refs/heads/feat/management-m2-system-cards`는 exit 0·결과 없음이었다. 해당 원격 branch가 없으므로 **로컬 커밋만, push하지 않는다**. upstream은 `origin/main`을 가리키므로 기본 `git push`를 실행하지 않는다. PR·CI·병합도 아직 없다.
+- 12:10:18 UTC `git ls-remote --heads origin refs/heads/feat/management-m2-system-cards`는 exit 0·결과 없음이었다. 해당 원격 branch가 없으므로 **로컬 커밋만, push하지 않는다**. upstream은 `origin/main`을 가리키므로 기본 `git push`를 실행하지 않는다. 향후 승인된 첫 원격 push는 `git push -u origin feat/management-m2-system-cards`처럼 branch를 명시하고, 이후 upstream이 `origin/feat/management-m2-system-cards`인지 확인한다(`msg_56141ab37a18`; 현재는 문구만 보강, push 없음). PR·CI·병합도 아직 없다.
 - 근거 루트 **E**는 이 worktree의 `.backups/verification/2026-10-03-system-cards-resume/`, 이전 근거 **E2**는 `.backups/verification/2026-10-02-management-m2-system-cards/`다. 이 절에서 E/E2 뒤 상대 경로는 해당 로컬 폴더를 뜻한다. 두 폴더는 Git 제외다.
 - 기록 전 103개 파일은 `E/checkpoint/dirty-files-before-checkpoint.json`과 `checkpoint/worktree-files/`에 경로·SHA256·바이트 및 사본으로 보존했다(11,055,648 bytes). 이 goal 커밋 뒤 나머지 **102개는 미커밋 그대로** 남긴다. `status-before.txt`, `tracked-before.patch`도 보존한다. **로컬 커밋만 복제하면 제품과 실행 근거는 복원되지 않으므로 이 worktree와 E/E2를 함께 보존한다.**
 - 새 Astra는 현재 AGENTS·목표 루프·task-context·ORCA R-5/R-6/R-8 및 아래 적용 결정 링크를 읽고, 실제 branch/HEAD/미커밋 SHA와 현재 메인 주소를 확인한다. 과거 handle·Run·Task·Dispatch·capability를 실행 권한으로 재사용하지 않는다. main 통합이 필요하면 현재 파일 소유와 안전한 경계를 먼저 확인하며 다른 목표 branch로 초기화하지 않는다.
@@ -31,7 +186,7 @@ Sol 최초 명령은 `codex --model gpt-6.1-sol -c model_reasoning_effort=xhigh`
 최종 원문을 Astra가 전문으로 읽었다. `worker-release`는 external terminal이라 retained/processAction none이었다. release 후 동일 terminal `term_deff4410-f47f-4a13-9829-31980e005d07` / incarnation `c4446bbe-0411-438e-b82a-d4e3590cbbd9`의 settled/done·빈 prompt를 확인해 해당 pane만 닫았다(`css-repair-close.json`, **ptyKilled true**). completion Delivery ACK와 reclaimable 빈 목록을 확인했다. 현재 실행 중인 이 목표의 작업자는 없고 이 휴식 이후 신규 작업자를 열지 않았다. 상세 receipt는 `css-repair-{release,before-close-show,before-close-screen,close,completion-ack}.json`, `checkpoint/reclaimable-after-close.json`이다.
 
 - 전체 자체 테스트 **604 = 485통과·119실패**, 관련355 = 248통과·107실패다. Sol의 임시 분류는 a5/b102/c관측0/d12이고 79건은 정상 대조 fixture에서 먼저 실패해 뒤 보안 assertion에 도달하지 않았다. **119개 모두 독립 분류 전**이며 회귀 없음·보안 검증 통과로 바꾸지 않는다. 이전 독립 결과는 604 = 586통과·18실패였다. 양쪽의 12건은 보안 조각 전 같은 이름의 실패일 뿐 main 기준 무관 실패라는 증거가 아니다.
-- `failure-observations.json`의 119행과 raw119실패를 Astra가 파일+fullName+중복 횟수로 대조해 누락 0을 확인했다. 고유 fullName은 117개이므로 다음 표는 같은 이름의 서로 다른 케이스도 구분한다. 공통 requirement 문구는 테스트별 요구사항 출처를 대신하지 않는다.
+- `failure-observations.json`의 119행과 raw119실패를 Astra가 대조했다. 당시 고유 fullName을117개로 쓴 것은 대소문자 무시 집계의 오류였으며 위 2026-10-04 재개 절에서 **대소문자 구분119개**로 정정했다. 대소문자 변형도 각각 식별하고 파일+fullName+발생순서를 보존한다. 공통 requirement 문구는 테스트별 요구사항 출처를 대신하지 않는다.
 - Sol 실제 실행에서 CodeRulesChanged 36대상/0진단/0검사 실패, 타입3종·tests tsconfig·desktop build exit0이었다. IIFE는 7,369,991 bytes이며 번들 축소가 완료된 상태가 아니다. Git 제외 생성물과 명령 원시는 `E/css-repair/`에 있다.
 - 실제 Electron 대표3종 최종 ACK는 486.4/237.5/257.3ms, 높이504/440/192, 마커12/8/2였다. 부모 도식 SVG0·CSP0·XML namespace/동일 노드·정리 상태를 원시 로그에서 Astra가 대조했다. 앱 zoom1.25/DPR1.25/CSS1280×720이며 **OS125% 확인과 다르다**. Astra는 server-session PNG 한 장만 직접 열었고 나머지 두 장의 시각 검토는 자체 보고 범위다.
 - 긴 CSS·host id 충돌·XML 보존은 실제 Chromium에서 수행한 별도 진단이며 일부 삽입은 승인 IPC를 생략했다. 정상 guide 경로의 공격 성공/실패 실적으로 합치지 않는다. 버튼/Esc 복귀는 synthetic/unverified 입력에서 IFRAME→H5를 관찰했지만 OS 물리 입력 검증은 아니다. runtime 위조·redirect·GC·OS125% 등 미실행 범위는 원문 그대로 유지한다.
@@ -203,7 +358,7 @@ guide는 `05_Management/records/system-guide.json`, SHA256 `64d76f1f6921cbeffbdc
 
 메인 `msg_f0c6d2fdf3eb`의 `from_handle`을 현재 메인 `term_d88cb274-6098-46b8-8c65-8a64d4a3bc70` / `C:/Dev/DawnHolder_Project`와 대조했다. 아래 사용자 결정은 **메인이 전달한 결정**이며 사용자 직접 입력으로 격상하지 않는다. 원문은 `.backups/verification/2026-10-03-system-cards-resume/entry-messages.json`, 진입 Git 상태는 같은 폴더 `entry-git-state.json`에 있다. 과거 Run·Task·Dispatch와 작업자를 재사용하지 않는다.
 
-**최신 확인 — 사용자 휴식·Sol 정산 완료, 독립 재검증 미착수:** 위 「재개 지점」을 따른다. 마지막 독립 판정은 NOT PASS이며 ASSET12~14 수리 Sol은 현재 작업 보고를 마치고 종료했다. 자체 전체604=485통과/119실패를 독립 PASS로 바꾸지 않는다. 시각09~11·번들/고지·사용자125%·첫 PR은 남아 있고 새 작업자를 발행하지 않는다.
+**2026-10-03 휴식 직전 확인(이력):** 당시 마지막 독립 판정은 NOT PASS이며 ASSET12~14 수리 Sol은 현재 작업 보고를 마치고 종료했다. 자체 전체604=485통과/119실패를 독립 PASS로 바꾸지 않았고 시각09~11·번들/고지·사용자125%·첫 PR이 남아 있었다. 당시 신규 발행은 멈췄으며 현재 진행은 상단 「현재 진행 — 2026-10-04 재개」를 따른다.
 
 **11:00 UTC 사용자 점검 결정:** 메인 `msg_27593cdc7ca0`가 전달한 결정으로 이 goal의 완료를 **첫 PR**로 재설정했다. 보안07/08과 확정된 새 번호, 시각09~11, 번들 축소·제3자 고지(V01~03), 사용자125%확인까지 진행한다. 전체 corpus·18ID·읽기MCP, R-15~17, 매핑 드리프트, I-03~05는 아래 범위 밖 표의 출처와 함께 다음 계획으로 옮겼다. 이전 임시 동결은 계획 때 범위 확정·루프 내 필수수리·새 작업은 보류 기록 원칙으로 대체됐다. 원문 `main-first-pr-scope-decision.json`이며 사용자 직접 입력으로 격상하지 않는다. 당시 실행 중이던 Opus의 결과는 아래 정산 이력에 남겼다.
 
@@ -502,7 +657,7 @@ PR 병합과 goal 결과 기록 뒤 R-8 교체 직전에 신규 `claude-opus-5-5
 메인 `msg_27593cdc7ca0`의 사용자 결정으로 범위를 재계획했다. 허용 경로는 기존 `05_Management/frontend`, 대표 도식 자료3종, 이 goal와 관련 Management 정본/고지다. 제품은 새 Sol, 본문·정본·고지는 Astra, 독립 실사·테스트는 새 Opus가 맡는다. 현재 구현된 기본 카드 UI·고정 guide 조회와 자산을 보존하되 전체 카드 자료를 추가 작성하지 않는다.
 
 1. ASSET07/08과 이번 독립 검증에서 확정된 새 보안 번호를 수리한다. 기존01~06의 자산·정적SVG·실제ACK·격리 동작과 보존 계약을 유지한다. 새 후보는 최종 판정 전 해결/실패 횟수로 확정하지 않는다.
-2. 대표 호출·패킷·상태 도식의 시각09~11을 별도 Task/커밋으로 수정하고 기존 design-spec2.8과 기준 코드에 대조한다. 실제125% 독립 판정 뒤 메인을 통해 사용자 확인을 받는다.
+2. 대표 호출·패킷·상태 도식의 시각09~11을 별도 Task/커밋으로 수정하고 기존 design-spec2.8과 기준 코드에 대조한다. 독립 검증은 Electron app zoom1.25의 캡처·치수를 실제 OS125%/물리입력과 구분한다. 메인 `msg_1876ced49dcc`에 따라 실제125% 화면·물리클릭 확인은 첫 PR 승인 단계의 사용자 확인으로 넘긴다.
 3. `msg_e4a38159a4e3` 조건으로 허용3종/dagre loader 범위의 번들을 만들고 V01~03 정본·제3자 고지를 최종 포함 근거로 완성한다. 의존성·격리·고정3파일·URL·5초수명 조건을 완화하지 않는다.
 4. 기존 catalog ID·기록·원문·초안·편집/저장/충돌·백업, 미연결 운영 표시를 보존한다. 이번 변경이 만든 실패와 계약/규칙 위반은 루프 안에서 수리하고, 무관한 기존 실패는 숨기지 않고 PR에 기록한다. I-03~05 전체 검증/개선은 다음 계획으로 옮기며 이를 완료로 표시하지 않는다.
 5. 기본 내용1600×900 DIP·125%와 도식 최초 고정 frame 진입 예외는 현재 구현대로 유지한다. 창/배율 복원·추가 조작과 매핑 Git 코드보기는 이번에 구현하지 않는다. mainFrame IPC·다른 탐색/redirect/새창 차단, MCP 쓰기·임의 파일/URL/shell 금지는 유지한다.
@@ -527,6 +682,8 @@ PR 생성은 허용하되 독립 판정·최종 원문/원천 표본·관련 검
 | 매핑 SHA 코드보기 R-17·HEAD 비교 | `msg_0d5cb951629f`, `msg_b1aa36494e55`; 별도 Git/IPC·한도·취소 경계 |
 | 매핑 경로 드리프트 warning 검사 | `msg_f0c6d2fdf3eb`; 현재 대표 자료 확인과 자동 검사 도구화를 분리 |
 | I-03 전체 카드 배치, I-04 기존 테스트 실패/확장 실사, I-05 전체 UI·편집/검색/클립보드 실증 | 10/2 Sol 원문/쓰기 종료 `msg_f55e3386c542`, 완료 `msg_0821253fc6a9`; `diagram-gate/sol-integration/execution-result.txt`. 관련 현재 변경의 새 실패는 여전히 루프 안이며 무관 기존 실패는 PR에 공개 |
+| OS 입력 전 대상 창 확인과 입력 분리 | `msg_1876ced49dcc`, Sol 사고 `msg_3961b967e96c`; 같은 부류 재발 방지의 보류 항목. 이번 goal 종료까지 작업자·검증자의 OS클릭/키입력/드래그를 금지하고 캡처 관측만 허용한다. 자동 재개·운영 도구 수정 권한이 아니다. |
+| OS 재시도 검사기의 생성시각 비교 | 메인 `msg_77fb9d052d4c`; `E/gate-repair/foreground-os-retry.ps1:9`의 DateTime 문자열 재파싱이 시간대·소수초를 잃었다. 근거 `E/gate-repair/runtime/os-retry-1/identity-conversion-diagnostic.json`·`abort-request.json`. 지금 수정하지 않고 검사기 재사용 때 고친다. 추가 OS 재시도 권한이 아니다. |
 
 기존 제외도 유지한다: 타임라인·MCP 쓰기·에이전트 기록 자동수집, 전체 Architecture 뷰어, 서버/DB/로그 연동·새 게임 기능, 과거 기록 일괄 정비, 편집기 전면 재설계, 다른 파트/root 운영 파일·Unity·공유DLL/프로토콜 변경. BACKLOG메뉴/nextSteps·PS서식·도식 미적 개선·서버 지표 참고는 아래 후속 기록만 보존한다. 새 후보는 한 줄 보류 기록으로 남기고 메인 승인 요청으로 올리지 않는다.
 
@@ -611,8 +768,23 @@ Sol에게 구현 설명 본문 작성을 맡기지 않는다. `msg_44e5a4be4ebe`
 
 ## 완료조건과 독립 검증
 
+**첫 PR 전 사용자 직접 확인 목록 — 메인 `msg_77fb9d052d4c`:** 메인이 최종 같은 빌드의 125% 화면을 사용자에게 보여 확인받는다. 현재 한시 OS 창은 종료됐으며 사용자의 새 허용을 메인이 전달하기 전 추가 OS 창을 열지 않는다.
+
+| 사용자가 볼 것 | 사용자가 누를 것과 확인할 결과 |
+|---|---|
+| 대표 호출·패킷·상태 도식 3종을 125%에서 열어 글자·선·화살촉·라벨 겹침·잘림과 본문 설명의 관계를 본다. | 각 대표 문서를 선택해 읽고 시각 수용 여부를 확인한다. |
+| 도식 아래의 ‘문서로 돌아가기’ 버튼이 도식에 덮이지 않고 보이는지 본다. | 버튼을 직접 한 번 눌러 해당 본문 제목으로 포커스가 돌아오는지 확인한다. 현재 OS 물리 클릭은 미검증이다. |
+
+**한시 예외 종료 — 18:17 UTC 중단:** 압축 후 원문 재독 질문 `msg_45ca1d387471`을 Astra가 받아 `msg_ffaa8278b643`으로 확인한 뒤 현재 Sol만 진행했다. 소유 PID44900 생성시각 검사 오류로 전면화 전에 중단했고, 이번 전면화·OS클릭·키·드래그는 모두0회다. `identity-conversion-diagnostic.json`은 DateTime을 문자열로 재파싱하면서 시간대·소수초가 소실됐음을 보여주며 PID 재사용이나 다른 foreground 확인을 뜻하지 않는다. 실제 클릭·후캡처·125% 확인은 미실행이다. 자연종료와 `aliveOwned:[]`을 원시 대조했고 즉시 일반 OS입력 금지로 복귀했다. 추가 재시도는 없으며 이전 클릭1회 사고는 별개로 보존한다. Sol 원문 `msg_2af461d31de6`·`msg_73155477a759`, 근거 `E/gate-repair/runtime/os-retry-1/`, 메인 결과 `msg_9b544835b119` 및 `E/gate-repair-os-retry-main-result.json`.
+
+**압축 후 재독 확인:** 메인 `msg_5d053ef7cb03`에 따라 Sol은 자동압축 뒤 아래 한시 예외의 원문 `msg_3ac19d021ba8`을 다시 읽었다는 회신을 보내며, Astra가 받기 전에는 OS입력을 하지 않는다. `msg_39c3993f16d2`로 blocking ask와 확인답변 절차를 전달했다. 만료가 가까워 절차를 모두 마칠 수 없으면 클릭 없이 미수행으로 보고한다. 원문 `E/gate-repair-os-retry-reread-{main-decision,worker}.json`.
+
+**한시 예외 — 메인 `msg_df457e92d6a2`:** 사용자가 PC 조작을 멈추고 재시도를 요청했다는 전달에 따라 2026-10-03 **18:05:29~18:30:29 UTC**(한국10-04 03:05:29~03:30:29)에만 현재 Sol `task_3aa2df084f66`/`ctx_ac8f53bea970` 한 명의 ASSET17 복귀 버튼 OS클릭1회와 현재배율 캡처를 허용한다. 시스템 설정·다른 OS입력은 금지한다. OS API 전면화 → 실제 foreground PID/제목 확인 → 캡처 → 별도 단계의 직접 이미지 검토(운영툴·가림없음·버튼좌표) → 별도 클릭1회 → 후캡처·효과 확인 순서이며 불일치/불명확이면 클릭하지 않는다. 종료·중단 즉시 또는 만료 때 일반 금지로 복귀한다. 원문 `E/gate-repair-os-retry-main-decision.json`, 단독 위임 `E/gate-repair-os-retry-worker-contract.json`. 결과는 Sol 자기 관측이고 첫 PR의 사용자125%확인을 대체하지 않는다. 이전 사고는 보존한다.
+
+**OS 입력 제한 — 메인 `msg_1876ced49dcc`(2026-10-03 17:50:16 UTC):** 이번 goal이 끝날 때까지 작업자와 검증자는 computer-use 등의 OS 수준 클릭·키 입력·드래그를 쓰지 않는다. 캡처만 하는 관측은 허용한다. 독립 검증의 Electron app zoom1.25·DPR·OS 배율 및 합성 진단을 구분하고, 실제125% 화면과 물리클릭 확인은 첫 PR 승인 단계에서 사용자에게 받는다. 이는 아래 시각/최종 번들/사용자 관문의 실행 책임을 명시한 최신 결정이다. 사고의 외부 효과는 미확인으로 남기고 전체 절차 준수 성공으로 바꾸지 않는다. 원문 `E/gate-repair-os-ban-main-decision.json`, 사고 상세 1차 원시 대조 `E/gate-repair-os-incident-detail-main.json`.
+
 1. **보안:** 신규 Opus가 ASSET07/08과 확정된 새 번호의 실제 diff·원문·독립 반례를 검증해 해결 판정한다. ASSET01~06의 정상3종·부모CSP/DOM·고정3GET·정확URL·XML표시·승인/취소/늦은결과·5초 수명 보존을 확인한다. 실제 제품·진단 사본·double·미실행을 구분한다.
-2. **대표 내용·시각:** Astra가 기준commit의 호출 반복/패킷 의미/창 상태를 유지해09~11을 수정하고 새Opus가 실제125% Electron 원본PNG3종·치수·글꼴·라벨/선/화살촉·시작종료/관계 의미를 design-spec2.8과 독립 대조한다. 사용자 확인을 메인을 통해 받는다. 전체 corpus나 전체18ID 연결을 완료조건으로 더하지 않는다.
+2. **대표 내용·시각:** Astra가 기준commit의 호출 반복/패킷 의미/창 상태를 유지해09~11을 수정하고 새Opus가 Electron app zoom1.25의 원본PNG3종·치수·글꼴·라벨/선/화살촉·시작종료/관계 의미를 design-spec2.8과 독립 대조한다. 실제125% 화면·물리클릭은 첫 PR 승인 단계에 메인을 통해 사용자 확인을 받는다. 전체 corpus나 전체18ID 연결을 완료조건으로 더하지 않는다.
 3. **최종 번들:** 허용3종/dagre 표 한곳·Object.hasOwn·버전/원천hash/import집합 변화 시 actionable build실패·제외loader 명시실패를 구현하고 독립 시험한다. 새최종 graph/module 목록·bundle hash/bytes와 실제3종 ACK/CSP/125%를 다시 확인한다. core12.0.0·override4.18.1·EPL제외·격리 조건을 유지하고 기존 측정으로 대체하지 않는다.
 4. **고지·정본:** V01~03을 현재 첫PR범위·실제 포함 원시와 대조해 새Opus가 해결 판정한다. Astra가 원저작/라이선스·글꼴/그림 출처를 최종 고지에 반영하며 미확인 구성/법률 판단 미실행을 구분한다. 고지 검토 전 I-02 완료·배포 준비를 선언하지 않는다.
 5. **검사·유지보수:** 해당 변경의 typecheck/Changed CodeRules·build·관련 독립 시험·전체 기존 테스트 결과를 남긴다. 이번 변경의 새 실패와 규칙위반은 수리하고 무관 기존 실패/이관 I03~05는 PR에 공개한다. Opus가 상태소유·실패수명·가독성·책임/이름/주석·사전맥락/실제준수 표를 사람 검토한다. 린터/type 성공으로 대체하지 않는다.

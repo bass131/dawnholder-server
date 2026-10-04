@@ -6,7 +6,8 @@
 
 ## 문서 지도
 
-- [현재 공동 조회 MCP 목표](goals/2026-10-01-shared-read-mcp/goal.md): 읽기 전용 공동 조회의 범위·계약·상태·검증 근거.
+- [현재 시스템 카드와 구현 설명 목표](goals/2026-10-02-system-cards/goal.md): 승인 범위·현재 단계·대표 도식 확인 관문·남은 작업의 원본.
+- [공동 조회 MCP 목표](goals/2026-10-01-shared-read-mcp/goal.md): 기존 읽기 전용 공동 조회의 범위·계약·검증 근거.
 - [공동 조회 MCP 사용 안내](MCP.md): 빌드·조회 순서·버전 처리와 실제 세션 연결 전 검토할 설정 예시.
 - [이전 세션 종료 정리 목표](goals/2026-10-01-session-closeout/goal.md).
 - [문맥 정정 목표](goals/2026-10-01-context-corrections/goal.md): 사실·상태·출처 정정과 독립 검토·병합 결과의 원본.
