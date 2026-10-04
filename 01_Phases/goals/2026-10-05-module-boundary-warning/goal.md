@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **메인 범위 확인 완료, 설계·TDD 구현 계약 준비. 구현·테스트 작성·검사 실행·workflow 발행은 아직 시작하지 않았다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **두 차례 PC 크래시의 부분 결과를 보존한 뒤 신규 Sol이 구현과 자체 점검을 완료했다. 현재 main·작업본 실측과 쓰기 종료를 확인했고 신규 Opus 독립 검증을 준비한다. 독립 판정·실제 PR checkout/CI는 아직 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -8,7 +8,8 @@
 - 승인 순서 원문: 「4) 범위 - CodeMap: 종료 기록 PR → 모듈 경계 검사 warning 시범 → 기능 테스트 CI 시범 → A 승인」.
 - 읽기 전용 원천: `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-04/`의 `HANDOFF.md` 오늘 확정 결정 1~15, `plan-scopes-draft.md` CodeMap 절, `routing-draft.md`, `deadline-roadmap-draft.md`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active`. 브랜치 `feat/module-boundary-warning-20261005`, 시작 base/HEAD `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`(fetch한 origin/main). 실행 기준 main은 측정 직전에 다시 resolve하여 SHA를 원시에 남긴다.
-- 선행 발행: [176 - CodeGraph 종료 기록](https://github.com/bass131/dawnholder-server/pull/176), head `d34b39d32acfa017912354aee40c52be730a1e8f`. 별도 PR이며 이 goal의 코드·범위를 섞지 않는다. PR176 생성 시 CI는 실행 중, 병합은 미수행이다.
+- 선행 발행: [176 - CodeGraph 종료 기록](https://github.com/bass131/dawnholder-server/pull/176), head `d34b39d32acfa017912354aee40c52be730a1e8f`. 사용자 개별 승인 전달 `msg_d3f9773b7353` 뒤 2026-10-04T15:32:05Z에 merge `11aa4b83131bc6349f186a141cfea9c58d2230e3`로 병합했다. main push .NET run `37213367199`의 전체 job/step success를 원시 `2026-10-04-codemap-resume/pr176-main-ci-final.json`에서 확인했다. 이 기록은 이 goal의 구현 검증이 아니다.
+- PR176 정정 포인터(메인 `msg_00f588e41468`/`msg_6a86e2ba3c2c`): 이전 goal은 커밋·발행·병합됐고 `msg_33bba3450aad`로 동결이 해제됐다. 이전 CURRENT의 O6는 O-6을 가리킨다. 과거 원문의 당시 상태를 현재 상태로 읽지 않는다.
 - 사전 맥락과 전달 원문: `.backups/verification/2026-10-04-codemap-resume/astra-context.md`, `main-request.json`. 이후 이 goal의 원시·계약·독립 판정은 `.backups/verification/2026-10-05-module-boundary-warning/`에 둔다.
 
 ## 범위
@@ -99,6 +100,35 @@ Rules `msg_9396505985f8`는 전용 module-boundaries.yml과 현재 Rules 문서 
 
 보고 수치·실행 도구의 실제 진입 요구, 사용자 개별 PR 병합 승인과 완료 뒤 자동 착수 금지는 메인 msg_33bba3450aad를 그대로 적용한다. 졸업작품 마감의 10-28 기능 동결 목표와 도구 파트 승인 순서 유지 결정은 deadline-roadmap-draft.md 머리 및 HANDOFF.md 결정14를 따른다.
 
+별도 **메인 운영 결정** `msg_90ffd91a86bb`(2026-10-04T16:49:33Z)은 Orca1.4.217에서 공식 blocking ask의 고정 subject `Question`과 subject 옵션이 없는 공식 reply의 R-3 예외를 한시 적용한다. body 자기 태그와 현재 from_handle·Task·Dispatch 대조는 유지하며 일반 send의 subject 태그는 면제하지 않는다. 수신 helper를1.4.218로 가장하지 않고 해당 버전에서는 원시를 수동 대조한다.1.4.218 이상 업그레이드 또는 subject 옵션 지원 시 이 예외는 끝난다. 근거는 `crash-recovery-2/r3-1217-main-decision.json`, `orca-ask-help.txt`, `orca-reply-help.txt`다. 구현 중 고정 입력은 바꾸지 않고 쓰기 종료 뒤 이 단락에 반영했다. 이를 사용자 직접 입력이나 전역 정본 변경으로 표현하지 않는다.
+
 ## 재개 지점
 
-메인 확인과 Rules 소유 회신을 처리했다. PR176 문서 검증자는 작업 하나를 마쳐 정산·종료했고 새 goal branch로 복귀했다. CURRENT 링크·계약의 정확 쓰기 파일·원문 규칙·실행 자원·입력 버전을 고정하고 신규 Sol에 TDD부터 발행한다. 현재 warning 도구 구현·독립 판정·실측은 미실행이다. PR176의 최종 CI·개별 병합 승인은 이 goal과 별도 추적한다.
+메인 확인과 Rules 소유 회신 뒤 Task `task_b266e9eb59bb`를 Sol에 발행했다. 구현 전 TDD 원시 `implementation/work/red/command.json`은 22 tests, failures 21/errors 1, exit 1이며 실제 공개 진입 부재 등으로 실패했다. 이는 구현 전 실패 근거이며 green 또는 독립 통과가 아니다. 아래 두 복구는 당시 이력이며 최종 완료 근거는 마지막 「구현 종료와 검증 인계」에 둔다. 앞선 implementation/·implementation-recovery-1/의 기록을 새 작업자의 실행으로 소급하지 않는다.
+
+### 2026-10-05 크래시 복구
+
+메인 `msg_41295b025418`(2026-10-04T16:00:09Z)은 2026-10-05 00:45 KST 블루스크린(0x3B)으로 모든 프로세스가 종료됐고 사용자 전달 결정 「지금 재개하고 재발을 지켜봄」에 따라 재개하라고 지시했다. 이전 Sol `term_857ddf96-8b91-4bbe-839a-6c7df3138689` / Dispatch `ctx_33011d2c9783`은 TDD red 후 구현 중이었으며 쓰기 종료·worker_done이 없다. 디스크의 Boundaries/·공개 .py/.sh·TDD 및 support 14파일은 **크래시로 중단된 부분 결과**이고 `crash-recovery/partial-files/`와 `partial-manifest.json`에 원본과 hash를 보존했다. 자동 복구의 failed/abandoned 표시는 같은 계약·결함의 확정 실패 집계에 넣지 않는다. Astra는 현재 handle `term_c4cec985-1da6-448b-bbf8-975b3e4b0b69`에서 기존 Run `run_04e869ec070e`를 generation 2로 재연결했고 메인에게 `msg_fed3186fd0d3`으로 확인 회신했다. 죽은 세션을 재사용하지 않고 신규 gpt-6.1-sol max에 같은 Task의 retry를 발행한다. 기존 계약 v1은 `crash-recovery/implementation-contract.v1.md`(SHA256 `C162C702EE6609A826D1B05E22D532DE71C277C9F48E52F194BD7948F0CECAF6`)에 보존하고 현재 implementation-contract.md의 복구 머리말과 새 recovery-input-manifest.json을 적용한다. 독립 검증은 최종 쓰기 종료 뒤 신규 Opus가 처음부터 수행한다. 쓰기 종료된 결과의 로컬 checkpoint commit만 추가 허용됐으며 push·PR·병합 권한은 기존대로다.
+
+위 근거의 상대 경로는 `.backups/verification/2026-10-05-module-boundary-warning/` 기준이다. 다음 단계는 신규 Sol 준비/모델/최초 attach 관측 → 부분 결과의 남은 구현·실측 → 쓰기 종료 → 신규 Opus의 실사·독립 테스트 → 실제 PR CI와 메인 보고다. 다음 기능 테스트 CI goal은 자동 시작하지 않는다.
+
+### 두 번째 중단과 복구
+
+메인 `msg_db6123bf7067`(2026-10-04T16:40:31Z)은 2026-10-05 01:15 KST 두 번째 블루스크린(0x44)과 기존 작업자 종료를 확인하고, 사용자 전달 결정 「둘 다 하자, 안랩 세이프 트랜잭션도 지우고, Orca도 이전버전으로 다운그레이드하자」에 따른 환경 조치 뒤 작업을 재개하라고 지시했다. 신규 Sol이었던 `term_7f575b9d-e177-4ac5-a5b0-940c52996be1` / `ctx_d2ab7915063a`도 완료 보고 없이 중단됐으며 `implementation-recovery-1/`의 메모·중간 실행은 보존하고 완료 판정으로 쓰지 않는다. 14개 부분 제품 파일은 `crash-recovery-2/partial-files/`와 manifest에 다시 고정했다. Orca1.4.217/runtime `c37fa9b2-410f-4791-ac59-9ad67570b6ef`의 가이드와 실제 명령을 확인하고 Astra `term_a9aa8dd7-e5ba-43fb-b6f5-5efa57fad718`에서 같은 Run을 generation3으로 재연결했다. 메인에게 `msg_3f410a202e0e`로 착수 전 상태를 회신했다. 두 크래시 모두 확정 결함 실패 집계에서 제외하고, 같은 Task의 신규 Sol max가 현재 계약의 복구 r2와 `recovery-2-input-manifest.json`을 적용한다. 이번 첫 메모·보고·실행 원시는 `implementation-recovery-2/`이며 앞선 두 구현 시도의 근거는 읽기 전용이다. 이전 r1 계약 원본은 `crash-recovery-2/implementation-contract.r1.md`(SHA256 `96192ADE5538EDF31DBC3429A34FF49F07ADC92D623593FFD104C3D4F6A73C41`)에 보존했다. 범위·완료조건·독립 검증·PR별 병합 승인 규칙은 그대로다.
+
+### 구현 종료와 검증 인계
+
+최종 신규 Sol은 `term_29b12d78-055e-4ecd-bc9c-6bf29e5cc717` / Dispatch `ctx_6a3d879452a9`이며 Task는 위와 같다. 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 GPT-6.1-Sol max, backend unknown으로 구분한다. 2026-10-04T17:38:08Z `msg_5aeb72e7b029`의 succeeded·쓰기 종료와 `implementation-recovery-2/report.md`를 대조했다. release 뒤 동일 incarnation·idle·화면을 확인하고 해당 pane을 닫았다(`implementation-close.json`, ptyKilled true). 이전 두 크래시 dispatch의 비정상 중단을 이 정상 정산으로 대체하지 않는다.
+
+동일 산출물의 기능 수정 세 차례 뒤 가독성 쓰기를 네 번째로 진행하는 checkpoint는 `msg_13966bbd2f5e`·메인 보고 `msg_459430abbbe8`·진행 회신 `msg_f4fa153cd24f`와 `crash-recovery-2/fourth-write-checkpoint.json`에 남겼다. 요구사항·기대값·범위 변경 없이 진행했으며 개발 중 red/smoke와 인프라 중단은 확정 실패 집계에 넣지 않는다. 현재 확정 실패는 0회다.
+
+최종 자체 테스트는 동일 공개 unittest 명령으로 28건/실패0/오류0/exit0이고 원시는 `implementation-recovery-2/work/green-final-2/`다. 외부 명령 경과시간은57.795초다. 최초 red, 복구 baseline22건 중10실패, red-2의4실패 및 각 수정 분류를 보고서와 원시에 보존했으며 기대값 완화로 성공시키지 않았는지는 신규 Opus가 독립 판정한다. Astra는 최종17파일의 hash와 보고 manifest 일치를 기계 대조했다.
+
+| 자체 실측 입력 | source SHA / 입력 모드 | 실제 범위와 결과 | 검사 내부 / 외부 명령 시간 |
+|---|---|---|---|
+| main 원본 | `11aa4b83131bc6349f186a141cfea9c58d2230e3` / git_blobs | C#91파일477,096bytes, Compile91/91, boundary46/46, MB001/2/3 각0, clean/exit0 | 54.273초 / 54.532초 |
+| 현재 작업본 | `270406d64e62cefc542cbdd8f9a3b9f90ad49f3f` + 미커밋 도구 / workspace | 같은 C#·coverage·규칙 결과, 실제 PR checkout은 아님 | 42.954초 / 43.208초 |
+
+최종 도구 input hash는 두 실행 모두 `263ad09bf0bec0640467684f2c4bce2371a7884910d48493e774187fdf86877d`다. 원시는 `work/main-2/`, `work/current-2/` 및 각각 `main-command-2/`, `current-command-2/`이고 main resolve는 `main-resolution-2.json`이다. 두 입력 수집 방식이 다르며 프로젝트/props 줄바꿈으로 입력 hash도 달라 속도 개선으로 해석하지 않는다. 별도 fixture는 MB0018·MB0023·MB0031의 총12 warning/exit0을 냈다(`fixture-annotation-observations-2.json`); 실제 source 위반0과 합산하지 않는다.
+
+WSL linked worktree의 Git metadata 경로로 최초 실제 진입이 실패한 원시도 보존했다. 최종 도구는 drive mount/backlink를 대조하고 Git pointer·index·설정을 쓰지 않는 read-only 경로를 사용한다. 제품 build/emit·DLL copy·서버/Unity/DB 실행은 수행하지 않았다. workflow 정적 검사와 로컬 annotation 문자열은 실제 GitHub PR job/표시를 대신하지 않는다. 다음은 고정된 구현 입력에 대한 신규 Opus 실사·독립 테스트, 이후 PR의 정확한 head/checkout·실제 CI 확인과 메인 보고다.

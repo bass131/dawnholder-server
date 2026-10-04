@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0",
+  "project": "02_Server/GameServer/GameServer.csproj",
+  "areas": {
+    "Handlers": "02_Server/GameServer/Handlers",
+    "Maps": "02_Server/GameServer/Maps",
+    "Sessions": "02_Server/GameServer/Sessions"
+  },
+  "rules": [
+    {
+      "id": "MB001",
+      "from": "Handlers",
+      "to": "Maps",
+      "severity": "warning",
+      "allowedTypes": [],
+      "reason": "Handlers submit validated requests through Sessions; Maps owns map state and its systems.",
+      "repair": "Submit through the session boundary instead of referencing a Maps type or member directly; hand product changes to the owning part.",
+      "sources": ["00_Document/ARCHITECTURE.md#요청과-상태-변경", "00_Document/FEATURE_MAP.md#기능-지도"]
+    },
+    {
+      "id": "MB002",
+      "from": "Maps",
+      "to": "Handlers",
+      "severity": "warning",
+      "allowedTypes": [],
+      "reason": "Map state/simulation does not depend on incoming packet handlers; existing Maps to Sessions sending is allowed.",
+      "repair": "Keep packet request handling outside Maps and retain Maps to Sessions sending; hand product changes to the owning part.",
+      "sources": ["00_Document/ARCHITECTURE.md#요청과-상태-변경", "02_Server/GameServer/Maps/MapPacketPublisher.cs"]
+    },
+    {
+      "id": "MB003",
+      "from": "Sessions",
+      "to": "Handlers",
+      "severity": "warning",
+      "allowedTypes": [
+        "Dawnholder.Server.GameServer.Handlers.HandlerRegistry",
+        "Dawnholder.Server.GameServer.Handlers.IPacketHandler"
+      ],
+      "reason": "Sessions dispatches via the exact registry/interface contract, without depending on concrete handlers.",
+      "repair": "Use the existing HandlerRegistry/IPacketHandler dispatcher contract instead of concrete handlers; hand product changes to the owning part.",
+      "sources": ["02_Server/GameServer/Sessions/GameSession.cs#OnRecvPacket", "00_Document/ARCHITECTURE.md#요청과-상태-변경"]
+    }
+  ],
+  "occurrenceUnit": "One resolved original type/member per syntax span and target declaration, per rule; repeated lexical uses count separately, identical observations are deduplicated.",
+  "exclusions": [
+    "bin/obj and generated .g.cs/.generated.cs boundary files; generated project inputs still participate in compilation",
+    "Namespaces alone, comments, strings and inactive preprocessor branches are not compiled references",
+    "Only original type/member declarations inside the three areas enter the reference list; external/other-area targets are excluded, and same-area references are allowed",
+    "Reflection/dynamic runtime targets and actor/tick safety are outside this static check",
+    "Areas are physical declaration/source folders; moving code outside them changes classification and is a known limitation"
+  ],
+  "allowedDirections": ["Maps -> Sessions (sending/connection)", "Handlers -> Sessions (submission)", "Sessions -> Maps"]
+}
