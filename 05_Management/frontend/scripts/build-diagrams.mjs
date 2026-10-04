@@ -3,14 +3,17 @@ import { readFile, writeFile, copyFile, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative, resolve } from 'node:path';
+import { createDiagramLoaderPolicy } from './diagram-loader-policy.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const dist = join(root, 'dist');
 const mermaidManifest = JSON.parse(await readFile(join(root, 'node_modules/mermaid/package.json'), 'utf8'));
 const lodashManifest = JSON.parse(await readFile(join(root, 'node_modules/lodash-es/package.json'), 'utf8'));
 const project = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
-if (mermaidManifest.version !== '12.0.0' || lodashManifest.version !== project.overrides?.['lodash-es']) throw new Error('승인된 Mermaid/lodash-es 고정을 확인하세요.');
-if (mermaidManifest.exports['.'].import !== './dist/mermaid.core.mjs') throw new Error('Mermaid ESM core 입력 계약이 바뀌었습니다.');
+const loaderPolicy = await createDiagramLoaderPolicy(root);
+if (lodashManifest.version !== project.overrides?.['lodash-es']) {
+  throw new Error('package.json overrides.lodash-es와 scripts/diagram-loader-policy.mjs의 승인 버전 고정을 함께 검토하세요.');
+}
 const graph = [];
 const output = [];
 await build({
@@ -21,7 +24,7 @@ await build({
     lib: { entry: join(root, 'src/diagrams/renderer.ts'), formats: ['iife'], name: 'ManagementDiagramRenderer', fileName: () => 'diagram-renderer.js' },
     rolldownOptions: { output: { codeSplitting: false, comments: { legal: true } } },
   },
-  plugins: [{
+  plugins: [loaderPolicy.plugin, {
     name: 'diagram-build-contract',
     async generateBundle(_options, bundle) {
       for (const id of this.getModuleIds()) {
@@ -36,6 +39,12 @@ await build({
       if (graph.some(module => /[\\/]node_modules[\\/]elkjs(?:[\\/]|$)/.test(module.id))) throw new Error('제품 graph에 EPL elkjs 모듈이 있습니다.');
       if (!graph.some(module => module.id.replaceAll('\\', '/').endsWith('/mermaid/dist/mermaid.core.mjs'))) throw new Error('ESM core를 graph에서 찾을 수 없습니다.');
       if (!graph.some(module => /[\\/]node_modules[\\/]lodash-es[\\/]/.test(module.id))) throw new Error('lodash-es 실제 모듈을 graph에서 찾을 수 없습니다.');
+      for (const edge of loaderPolicy.metadata.blockedEdges) {
+        const originalTarget = resolve(root, dirname(edge.importer), edge.target).replaceAll('\\', '/');
+        if (graph.some(module => module.id.replaceAll('\\', '/') === originalTarget)) {
+          throw new Error(`제외 loader 원천이 제품 graph에 남았습니다: ${edge.importer} → ${edge.target}`);
+        }
+      }
       // Rolldown reports collapsed dynamic chunks as self references. Inspect both that graph and actual script syntax.
       if (output.length !== 1 || output.some(chunk => chunk.imports.length || chunk.dynamicImports.some(name => name !== chunk.fileName))) throw new Error('sandbox에는 외부 import 없는 단일 classic script만 허용합니다.');
       for (const asset of Object.values(bundle)) {
@@ -71,5 +80,5 @@ for (const id of included) {
 await mkdir(dist, { recursive: true });
 await copyFile(join(root, 'diagram-renderer.html'), join(dist, 'diagram-renderer.html'));
 await copyFile(join(root, 'src/diagrams/renderer.css'), join(dist, 'diagram-renderer.css'));
-await writeFile(join(dist, 'diagram-build-graph.json'), JSON.stringify({ vite: '8.3.1', input: mermaidManifest.exports['.'].import, mermaidVersion: mermaidManifest.version, lodashVersion: lodashManifest.version, graph, output, includedPackages: [...packages.values()], bundleBytes: bundle.length, bundleSha256: createHash('sha256').update(bundle).digest('hex') }, null, 2));
+await writeFile(join(dist, 'diagram-build-graph.json'), JSON.stringify({ vite: '8.3.1', input: mermaidManifest.exports['.'].import, mermaidVersion: mermaidManifest.version, lodashVersion: lodashManifest.version, loaderPolicy: loaderPolicy.metadata, graph, output, includedPackages: [...packages.values()], bundleBytes: bundle.length, bundleSha256: createHash('sha256').update(bundle).digest('hex') }, null, 2));
 console.info(`[diagrams] core→IIFE ${bundle.length} bytes; ${graph.length} resolved modules; ${included.length} output module IDs; ${packages.size} packages; lodash-es ${lodashManifest.version}; elkjs excluded`);
