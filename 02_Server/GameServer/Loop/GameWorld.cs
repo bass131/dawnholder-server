@@ -85,8 +85,6 @@ public class GameWorld
 
         _inventory = new InventoryRegistry(
             IsActiveSession,
-            entityId => _maps.Values.Select(map => map.GetPlayer(entityId)?.Owner)
-                .FirstOrDefault(session => session != null && !session.IsClosing),
             SendToEntity);
 
         _scheduler = new TickScheduler(OnTick);

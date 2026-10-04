@@ -65,6 +65,8 @@ namespace Shared.Protocol;
 ///         퀘스트 즉시완료(호출자 killCount=BossUnlockKillCount → S_QuestUpdate + 보스 해금). 빌드 클라 포함
 ///         모든 빌드에 키+전송(가드 없음), 서버가 허용 결정(헌법 #3 — 클라 입력 untrusted). 시연 편의로
 ///         AllowCheats 기본 ON(프로덕션 배포 시 false). append-only, ID 34 — 기존 ID 33(S_PortalLocked) 시프트 0.
+///   - v17: 아이템·인벤토리·재화 — C_InventoryRequest/S_InventorySnapshot/C_ItemUse/S_ItemUseResult
+///         (ID 35..38) append. 고정 8슬롯·revision과 사용 결과를 전달하며 기존 ID 1..34는 불변.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).

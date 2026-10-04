@@ -526,6 +526,10 @@ public class GameSession : PacketSession
             PlayerEntity entity = map.AddPlayer(self, spawnPos, self._stats);
             self._entityId = entity.EntityId;
 
+            // Economy admission follows the actual player owner, before sends can fail/close.
+            // World close cleanup ends this registration; portal moves keep the same lifetime.
+            self._world?.Inventory.Register(self, entity.EntityId);
+
             S_EnterMap pkt = new S_EnterMap
             {
                 entityId = entity.EntityId,

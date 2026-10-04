@@ -4,25 +4,45 @@ using Shared.GameData;
 
 namespace Dawnholder.Server.GameServer.Items;
 
-// World-owned connection lifetimes, independent of PlayerEntity recreation during map migration.
-// Only enqueue methods run off-tick. GameWorld drains this actor after Quest and forgets closed
-// connections before draining jobs; each job also rechecks the current session/entity owner.
+// World-tick owner of connection registrations and lazy economy state. Register runs after an
+// actual map admission; Forget runs during World close cleanup. Map migration changes neither.
+// Requests enqueue off-tick; kill callbacks capture the registered owner on-tick. GameWorld
+// drains jobs after Quest, and each job rechecks that connection's ownership and closing state.
 internal sealed class InventoryRegistry
 {
     readonly ConcurrentQueue<Action> _pendingJobs = new();
+    readonly Dictionary<int, GameSession> _registeredSessions = new();
     readonly Dictionary<GameSession, Entry> _states = new(ReferenceEqualityComparer.Instance);
-    readonly Func<GameSession, int, bool> _isActiveSession;
-    readonly Func<int, GameSession?> _findSession;
+    readonly Func<GameSession, int, bool> _ownsJoiningPlayer;
     readonly Action<int, ArraySegment<byte>> _sendToEntity;
 
     internal InventoryRegistry(
-        Func<GameSession, int, bool> isActiveSession,
-        Func<int, GameSession?> findSession,
+        Func<GameSession, int, bool> ownsJoiningPlayer,
         Action<int, ArraySegment<byte>> sendToEntity)
     {
-        _isActiveSession = isActiveSession ?? throw new ArgumentNullException(nameof(isActiveSession));
-        _findSession = findSession ?? throw new ArgumentNullException(nameof(findSession));
+        _ownsJoiningPlayer = ownsJoiningPlayer ?? throw new ArgumentNullException(nameof(ownsJoiningPlayer));
         _sendToEntity = sendToEntity ?? throw new ArgumentNullException(nameof(sendToEntity));
+    }
+
+    internal void Register(GameSession session, int entityId)
+    {
+        // Map presence proves initial admission only. The economic lifetime remains registered
+        // across the gap between source removal and destination arrival during a portal move.
+        if (entityId <= 0 || session.EntityId != entityId || session.IsClosing ||
+            !_ownsJoiningPlayer(session, entityId))
+        {
+            return;
+        }
+
+        if (_registeredSessions.TryGetValue(entityId, out GameSession? owner))
+        {
+            if (!ReferenceEquals(owner, session))
+                throw new InvalidOperationException("Inventory entity already belongs to another connection.");
+            return;
+        }
+        if (_registeredSessions.Values.Any(registered => ReferenceEquals(registered, session)))
+            throw new InvalidOperationException("Inventory connection owner changed.");
+        _registeredSessions.Add(entityId, session);
     }
 
     internal void EnqueueInventoryRequest(GameSession session, int entityId)
@@ -55,14 +75,20 @@ internal sealed class InventoryRegistry
 
     internal void EnqueueKill(int killerId, EnemyKind kind, int enemyId)
     {
-        // The existing lethal path fires once. Capture only values, without retaining a dead
-        // EnemyEntity or installing receipt/TTL/GC state alongside the combat owner.
-        if (killerId <= 0) return;
-        _pendingJobs.Enqueue(() => ApplyKill(killerId, kind, enemyId));
+        // The lethal callback runs on the World tick. Capture its current connection owner as
+        // well as values so a late job cannot reward another lifetime that acquires the same ID.
+        // No dead EnemyEntity or receipt/TTL/GC state is retained alongside the combat owner.
+        if (killerId <= 0 || !_registeredSessions.TryGetValue(killerId, out GameSession? session)) return;
+        _pendingJobs.Enqueue(() => ApplyKill(session, killerId, kind, enemyId));
     }
 
     internal void Forget(GameSession session)
     {
+        if (_registeredSessions.TryGetValue(session.EntityId, out GameSession? owner) &&
+            ReferenceEquals(owner, session))
+        {
+            _registeredSessions.Remove(session.EntityId);
+        }
         _states.Remove(session);
         session.CompleteInventoryRequest();
     }
@@ -100,11 +126,10 @@ internal sealed class InventoryRegistry
         });
     }
 
-    void ApplyKill(int killerId, EnemyKind kind, int enemyId)
+    void ApplyKill(GameSession session, int killerId, EnemyKind kind, int enemyId)
     {
         (int recipientId, InventoryReward reward) = KillRewardPolicy.Resolve(killerId, kind, enemyId);
-        GameSession? session = _findSession(recipientId);
-        if (session == null || !IsActive(session, recipientId)) return;
+        if (!IsActive(session, recipientId)) return;
 
         Entry entry = GetOrCreate(session, recipientId);
         InventoryResult result = InventoryTransitions.Grant(entry.State, reward, out InventoryState next);
@@ -117,7 +142,8 @@ internal sealed class InventoryRegistry
     }
 
     bool IsActive(GameSession session, int entityId)
-        => session.EntityId == entityId && !session.IsClosing && _isActiveSession(session, entityId);
+        => session.EntityId == entityId && !session.IsClosing &&
+            _registeredSessions.TryGetValue(entityId, out GameSession? owner) && ReferenceEquals(owner, session);
 
     Entry GetOrCreate(GameSession session, int entityId)
     {

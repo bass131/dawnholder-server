@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **PR1 신규 Opus 독립 검증 차단(#1 이동 중 처치 보상 누락). 검증자 정산·종료 완료, 신규 Sol 수정 준비. PR/병합 미실행.**
+상태: **PR1 #1·#2 첫 수정과 자체 확인 완료, 신규 Opus 재검증 준비. 마지막 독립 판정은 #1 차단이며 아직 PASS가 아니다. PR/병합 미실행.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, branch `feat/items-inventory-currency-20261005`.
@@ -225,3 +225,22 @@ Unity 부수 변경은 ProjectSettings.asset의 Standalone 정의에서 SENTIS_A
 정산: 정확 handle/Task/Dispatch 태그 helper allowed/exit0, worker-release retained/external 뒤 동일 incarnation `65c0c264-feff-413b-9c5a-a939dfdddfba`·최종 idle·agentTerminalHandle을 대조하고 close ptyKilled=true. **close 뒤 terminal list 재확인: 남은 작업자 pane 0**(Content Astra 하나만 남음, `opus-pr1-postclose-terminals.json`). Delivery ack 완료, 작업자 재사용 없음. 메인 `msg_4416da4d9f23`의 종료 후 목록 대조를 적용했다.
 
 GameDev `msg_1bbca7872520`은 #1 수정에 Items 내부 우선, GameWorld 경제 연결·GameSession 경제 수명 등록/해제의 최소 변경에 동의했다. 공용 IsActiveSession/SendToEntity 의미·entity 발급/소유권·맵 순회/이동 순서·Quest/Party/전투·MapMigration/GameMap은 보존한다. 등록/상태의 단일 tick 소유, closing/disconnect/늦은 queued reward/다른 owner 거부와 정리를 새 계약에 넣는다. 공유 경제 연결 밖 변경이 필요하면 쓰기 전 정확 심볼/이유를 다시 조율한다. 현재 제품 수정·재검증·PR/CI·DB는 미실행이며 승인된 goal 안의 수정 루프를 계속한다.
+
+### PR1 첫 수정 완료 — 신규 독립 재검증 전
+
+신규 Sol `task_8650a2393592` / `ctx_0e9661cf734f`는 `msg_352f616c04fb`(2026-10-04T19:30:47Z)로 #1·#2 수정과 쓰기 종료를 보고했다. 입력 checkpoint `0f956d08076031b98a1dc24f68b06f0912478312`, 지정/화면 gpt-6.1-sol max, backendunknown. 최종 `sol-pr1-fix1/report.md` SHA256 `CC6B5671585993BA8247897702C4ABCEF0D3F8E45A7C537F7223C0F6EE4C8313`, 쓰기 종료19:30:12.2035820Z와 원시 hash는 `evidence-hashes.json`에 있다. Astra는 보고 전체와 종료 시각 추가·실제7파일 diff·TRX/raw exit·입력hash 대조를 읽었다.
+
+경제 등록은 실제 GameSession 입장/AddPlayer 뒤에만 생성하고 기존 World close의 Forget에서 해제한다. InventoryRegistry가 entity→session 소유를 맵 존재와 분리해 확인하며 lazy 경제 상태를 유지한다. 처치 값과 함께 당시 등록 세션 참조를 고정해 늦은 다른 수명 지급을 거부하는 선택이다. 이는 죽은 EnemyEntity를 붙잡지 않는 기존 목적을 유지하는 수명 증명 변경이며 receipt/TTL/재시도/DB 구조를 추가하지 않는다. 공용 IsActiveSession은 등록 시 입장 확인으로만 사용하고 그 본문·SendToEntity·맵/전투/Quest/Party는 보존했다. 공유 diff는 GameWorld 생성자2줄 삭제와 GameSession 경제 등록/주석4줄 추가다.
+
+문서 #2는 FEATURE_MAP·server/protocol 영역의 실제 경제 입력/소유/수명/wire 탐색 경로와 ProtocolVersion v17 주석2줄을 보완했다. Current17·PDL/generated·실제 wire·DLL은 바꾸지 않았다. 제품/문서7파일 외 변경은 없다. 최초 메모는 구현 전에 작성했고 실제 준수 위치를 완료 뒤 갱신했다.
+
+| 자체 실행 | 실제 결과·원시 | 한계 |
+|---|---|---|
+| 같은 Items 명령 전후 | 67전체/66통과/1실패→67/67/0, raw exit1→0. `runs/items-before`, `items-after` | 테스트 기대값/파일 불변. 후 실행 TRX는04_07_14 파일이며 함께 보관한 전 실행 사본과 합산하지 않음 |
+| 전체 slnx 빌드/테스트 | 906전체/901실행·통과/0실패/기존skip5, raw exit0. `runs/full-suite` | skip5는 미실행. 새 등록 branch별 독립 시험은 아직 없음 |
+| 공식 서식 | raw exit0, 도구244/244, report4개0건, Debug/Release262파일 보존.19:10:55Z~19:22:49Z | 프로세스한정Bypass 명령 기록. 원본 자동 수정 없음 |
+| 최종 입력·보호 | 입력82 중75불변/허용7변경/예상밖0, 테스트154파일 집합/hash 불변, DLL/meta·PDL/generated 보호6불변, diff-check0 | `state-after.json`·`state-after.exit.txt`; 리드도82입력을 재대조 |
+
+O-1의 queued 조회는 이동 틈에도 snapshot(rev1) 응답이 관측됐다. 반면 새로 들어오는 migrating 입력 gate는 기존 drop을 유지한다. **O-4는 이번 실행에서 push none/뒤 조회rev1로 관측**됐으며 보상 상태 보존을 push 도착 보장으로 확대하지 않는다. 공용 map 송신의 제한은 현재 문서에 명시했고 메인 `msg_0ec9c3ef81b1`에 보고했다. 새 Opus는 이 계약 적합성·등록의 실제 수명/owner/종료·지연 피해 경계를 판정한다. 원본 Shared 소비자 입력이 같으면 이전 HEAD3262677의 Unity356/356 근거를 대조하되 새 HEAD에서 실행한 것으로 보고하지 않는다.
+
+정산은 exact triple/tag helper allowed/exit0, worker-list completed/succeeded·실제 pane/동일 incarnation `21aa4d61-01f1-44c5-b730-6dd9e66baabf`·최종idle 대조 후 release retained/none→close ptyKilled=true다. **close 뒤 terminal list 재확인: 남은 작업자 pane0**(`sol-pr1-fix1-postclose-terminals.json`). Delivery ack, 작업자 재사용 없음. #1의 확정 실패 횟수는1회 그대로이며 자체 GREEN을 독립 PASS로 처리하지 않는다. 전용7777/InventorySmoke·Unity·DB·CI·PR은 이 수정 작업에서 미실행이다. 다음 단계는 신규 Opus의 수정 실사·독립 테스트·실제봇 재검증이다.
