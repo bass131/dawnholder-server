@@ -6,6 +6,7 @@
 |---|---|
 | 설치·빌드·실행·부작용 | [DEVELOPMENT](operations/DEVELOPMENT.md) |
 | 현재 기능과 후속 제품 범위 | [PRD](PRD.md) |
+| 외부 팀원의 게임 기획 첫 작업·산출물·PR 안내 | [게임 기획 문서 작업 안내](game-design/README.md) |
 | 시스템 구조·의존성·용어 | [ARCHITECTURE](ARCHITECTURE.md) |
 | 기능별 입력·판정·클라이언트 경로 | [FEATURE_MAP](FEATURE_MAP.md) |
 | 영역별 주요 파일·변경 계약·함정 | [domains](domains/INDEX.md) |
