@@ -147,6 +147,8 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 메인 `msg_0f4da872f048`은 00:45 KST PC 블루스크린으로 중단됐으며 분석 뒤 지금 재개하고 재발을 지켜보는 사용자 결정을 전달했다. 중단 당시 HEAD는 `a6691d15208ef1e39e4a38a26b6494f4169a8dc3`; TDD Opus `term_688234aa-5bf4-4074-ab30-434b39e0caac`는 준비 화면까지 확인했으나 Task/Dispatch 발행 전이었다. 복구 후 Astra가 clean 상태·계약 hash 일치·테스트/부분 산출물 부재를 확인했다. 따라서 인계할 크래시 중단 부분 결과는 없으며 크래시는 확정 실패로 집계하지 않는다. 실패한 대화 복원 뒤 shell로 남은 pane `term_5108245d-780e-4879-adf3-7bfab62bdb3a`만 화면 확인 후 종료했다. 새 Content handle `term_934c3c85-da3d-439c-9b9f-101154b3c5e8`에 기존 Run `run_add8d9f825f4`를 재바인딩했고, 같은 TDD 요구를 새 `claude-opus-5-5` 세션에 발행한다. Fable 원문·채택 커밋과 이전 증거는 그대로 보존한다. 메인의 덤프 분석/무손실 보고를 Astra의 자체 검증으로 격상하지 않는다.
 
+두 번째 중단은 메인 `msg_ee7d35eac69a`가 전달한 01:15 KST BSOD다. 중단 당시 HEAD `756c7ec76fc7fe6f6d74b6f13221588df9d40a48`, 선행 TDD Task `task_2c4281b259c6`/Dispatch `ctx_0ce465ca2b10`/Opus `term_20c0bd8b-9b83-45bf-b2d4-3dcd61b77bd1`이 조사 중이었다. 복구 때 다시 clean 상태·신규 테스트/tdd 폴더 부재를 확인하여 보존할 부분 산출물이나 유효 RED/판정은 없다. runtime은 해당 Dispatch를 terminal_missing/abandoned·failed로 정산했지만 크래시는 제품 확정 실패에 포함하지 않는다. 메인이 전달한 사용자 조치 뒤 현재 Orca1.4.217 가이드를 재확인하고 같은 Run을 Content `term_857393a1-53a9-4546-b3f2-d2f48918696f`에 연결했다. 동일 Task의 retry-of로 새 Opus를 발행하며 처음부터 테스트를 작성/실행한다. 원 TDD 요구/계약은 그대로이고 두 번째 실행 메타데이터 정본은 같은 근거 폴더 `tdd-recovery2-addendum.md`/`tdd-recovery2-input-manifest.json`이다. 앞선 복구 계약·Fable 결과·미발행 Sol 준비본은 보존한다.
+
 ## 실제 결과와 미실행
 
 - 맥락 메모, 목적별 브랜치, goal·CURRENT, 메인 범위 확인, GameDev·Rules 경계 합의, 초기 goal commit과 외부 Fable 설계 검토·정산·종료까지 수행했다. 검토 입력/결과 원문·receipt는 로컬 근거 폴더에 보존했다.
