@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **결정 대시보드 정본화 [PR #173](https://github.com/bass131/dawnholder-server/pull/173)은 제출 HEAD `2218af61b842594997d160eb7524bb5e6b2e8402`로 OPEN이며 독립 정적 실사 PASS를 분리 인수했다. 두 CI는 성공했고 사용자 명시 병합 승인은 아직이다 — [최신 상태와 절차 관측](#대시보드-정본-pr173-독립-검증과-통합)을 먼저 읽는다.** 운영 규칙 PR170(승인 d300791 → 병합3f0cb5e)과 BACKLOG PR168은 병합했다. 전체 goal은 미완료이며 문서 사실·경로 검사, PowerShell 출력순서 후속 PR과 전체 종료 점검은 남았다. 이 머리·최신 절은 PR 제출 뒤의 로컬 상태 체크포인트로 제출 HEAD·독립 판정·CI 입력과 구분하고 추가 push하지 않는다. 새 Opus 기동의 사용량 임시 보류(msg_9804ff1ccb62)는 메인 msg_6888230d2ab9로 해제됐으며 기존 범위·동시1명·모델 규칙은 그대로다. 과거 상태·원문을 보존하며 All 비교/승격/helper와 legacy 통합·삭제·보관은 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)과 실제 결과를 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **결정 대시보드 [PR #173](https://github.com/bass131/dawnholder-server/pull/173)은 승인 HEAD `2218af61b842594997d160eb7524bb5e6b2e8402`를 `cafd0b37d9e7eeeefb00f7c9a6c3390edbc11858`로 병합했다. main 반영을 확인했고 병합 후 CI는 진행 중이다 — [최신 병합 상태](#pr173-승인-병합과-main-확인)를 먼저 읽는다.** 운영 규칙 PR170과 BACKLOG PR168도 병합했다. 전체 goal은 미완료이며 문서 사실·경로 검사, PowerShell 출력순서 후속 PR과 전체 종료 점검은 남았다. Management E2E 입력 후보는 다음 운영 문서 PR의 BACKLOG 한 줄로 반영할 대기 항목이다. 이 로컬 상태 기록은 PR173 승인·병합 입력과 별도이며 이전 로컬 체크포인트도 push하지 않았다. 새 Opus 기동의 사용량 임시 보류는 msg_6888230d2ab9로 해제됐고 기존 범위·동시1명·모델 규칙을 유지한다. 과거 상태·원문을 보존하며 All 비교/승격/helper와 legacy 통합·삭제·보관은 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)과 실제 결과를 구분한다.
 
 ## 문제와 목표
 
@@ -222,7 +222,7 @@ PR 경계는 **BACKLOG → 운영 규칙/참고 근거 → 사실 정정/경로 
 
 > 방금 대시보드 작업방식 맥락은 메모리에만 저장하면 이후 또 다른 메인 세션에서 작업이 누락할 수 있으니 규칙,맥락 최신화해서 시스템 최신화 하자 / 일단 현재는 클로드 모드로 관리하지만, 이 기능도 이후에 운영툴이 라이브 버전 1.0이 만들어지면 거기서 MCP로 관리 가능하게 만들어 보고 싶어.
 
-현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다. 메인의 결정 등록·review/waiting·필수 정보·채팅 일치·답 뒤 제거, 사용자 Enter 제출과 PR head 재대조를 [CLAUDE의 「메인의 기록과 알림」](../../../CLAUDE.md#메인의-기록과-알림)에 작성했고, 새 메인이 세 Astra를 연 뒤 현황 탭을 재개·갱신하는 단계를 [RESUME](../../../00_Document/operations/RESUME.md#세션-진입-배치)에 작성했다. 위 문구의 작성은 끝났다. 첫 독립 판정의 기록 결함 #1·#2를 정정하고 신규 Opus의 델타 PASS를 메인 msg_28763da370fc로 분리 인수해 PR173에 제출했다. 두 CI는 성공했고 병합은 아직이며 [최신 상태](#대시보드-정본-pr173-독립-검증과-통합)와 제출 뒤 로컬 기록을 구분한다. 정적 실사를 대시보드 실행 검증으로 확대하지 않는다.
+현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다. 메인의 결정 등록·review/waiting·필수 정보·채팅 일치·답 뒤 제거, 사용자 Enter 제출과 PR head 재대조를 [CLAUDE의 「메인의 기록과 알림」](../../../CLAUDE.md#메인의-기록과-알림)에 작성했고, 새 메인이 세 Astra를 연 뒤 현황 탭을 재개·갱신하는 단계를 [RESUME](../../../00_Document/operations/RESUME.md#세션-진입-배치)에 작성했다. 위 문구의 작성은 끝났다. 첫 독립 판정의 기록 결함 #1·#2를 정정하고 신규 Opus의 델타 PASS를 메인 msg_28763da370fc로 분리 인수해 PR173에 제출했다. 두 PR CI 성공 뒤 승인 head로 PR173을 병합했다. [병합과 main 확인](#pr173-승인-병합과-main-확인), 병합 후 CI, 제출 뒤 로컬 기록을 구분한다. 정적 실사를 대시보드 실행 검증으로 확대하지 않는다.
 
 운영툴 라이브 1.0의 MCP 관리 구상은 메인이 Management에 백로그 씨앗으로 따로 전달한다. Rules에서 도구 구현·백로그 중복 기록·REPORTING v2 확정을 하지 않는다. 보고서 형식은 사용자가 Chrome에서 다시 확인한 뒤 메인 별도 지시를 기다린다.
 
@@ -681,3 +681,11 @@ Main msg_894bfc3cc2d9(2026-10-03T21:02:14Z)의 보완 완료를 받았다. `revi
 메인이 전달한 사용자 Enter 제출 원문은 「2) 보조 모니터 - OS 입력 없이 E2E 조작하는 방법 → B A + 가상 머신 준비」다. 원전달 `msg_d265a8b08d4b`, Management goal 기록 `msg_7b16a80549b1`을 이번 메시지가 재전달했다. Rules가 두 원메시지를 직접 수신·실사했거나 이를 사용자 직접 입력으로 받았다고 표현하지 않는다. 원문은 `dashboard-rules/main-backlog-e2e-request.json`에 보존했다.
 
 BACKLOG가 Management 브랜치에 없어 운영 문서 소유자인 Rules가 한 곳에서 반영한다는 것은 메인의 배치 설명이다. 기존 BACKLOG의7필드·상태 계약을 따르고 담당 후보 Management·선행 조건 현재 목표 종료 뒤를 보존한다. 현재 상태는 **수신·출처/시점 기록 완료, BACKLOG 정본 반영·독립 검증은 다음 운영 문서 PR에 대기**다. 같은 PR에 승인된 다른 후보를 묶을 수 있으나 이 요청 자체의 제품 범위는 한 줄이고 E2E 구현·가상 머신 설치 권한을 만들지 않는다. 다음 정본 쓰기는 기존 신규 Sol/신규 Opus 절차로 진행한다. 이번 수신에서 새 branch/worker/PR은 열지 않았으며 PR173의 head·CI·판정은 그대로다.
+
+### PR173 승인 병합과 main 확인
+
+- 메인 `msg_13d3a4bf1f33`(2026-10-04T09:44:23Z)이 사용자 Enter 제출 원문 「1) PR173 - 결정 대시보드 운영과 세션 재개 규칙 정본화 병합 → A 병합 승인 (head 2218af6)」과 전체 head `2218af61b842594997d160eb7524bb5e6b2e8402`에 한정된 병합 명령을 전달했다. Astra는 원메시지의 from_handle/subject/body와 병합 직전 OPEN/MERGEABLE/CLEAN·auto null·정확 head를 재대조했다. 로컬 체크포인트1e01c26·a130a35·2497762는 이 승인에 포함되지 않으며 push하지 않았다.
+- `gh pr merge 173 --repo bass131/dawnholder-server --merge --match-head-commit 2218af61b842594997d160eb7524bb5e6b2e8402`를 실행해 exit0·MERGED(2026-10-04T09:46:03Z), merge **`cafd0b37d9e7eeeefb00f7c9a6c3390edbc11858`**를 확인했다. 이번에는 빈 combined stdout/stderr도 실제 argv·시작/종료시각·exit와 함께 `dashboard-rules/integration/pr173-merge-execution.json`에 명시 보존했다. 별도 stdout과 stderr로 분리 보존한 것은 아니다.
+- fetch 뒤 origin/main이 위 merge와 같고 `merge-base --is-ancestor` exit0이었다. merge 부모는 `02b3e8b8d13287c7ef32c0210836166d8d52c6f8`와 승인 head이며 다른 PR의 main 변경도 포함한다. merge tree `287d736dae1822df45e083a7a67b64bd89ca6792`를 과거 PR 합성 tree와 같다고 주장하지 않는다. CLAUDE·RESUME·goal 세 파일은 승인 head와 bytes/hash가 같았다(`pr173-merged-input-comparison.json`). 메인에 `msg_f96b9d68997e`로 병합·main 확인·CI 시작을 즉시 보고했다.
+- 병합 후 main push [dotnet-tests run37193207626](https://github.com/bass131/dawnholder-server/actions/runs/37193207626)은 merge cafd0b3에서 시작해 진행 중이다. 기존 PR CI 성공과 이번 push CI 완료를 구분한다. 현 workflow에서 code-rules는 pull_request/workflow_dispatch이고 main push로는 새 실행하지 않는다. 후속 실행·검증 결과는 완료 뒤 기록한다.
+- 다음 BACKLOG 한 줄 등은 최신 main의 **새 브랜치·새 PR**에서 신규 Sol 작성/신규 Opus 독립 실사로 진행할 후속 단위다. 이 병합 승인으로 다음 PR의 병합이나 E2E/VM 구현 권한이 생기지 않는다. 근거는 `integration/pr173-merge-context.md`, `pr173-merge-approval.json`·ACK, `pr173-before-merge.json`, `pr173-merged.json`, `pr173-main-confirmation.json`, `pr173-postmerge-runs-start.json`에 있다.
