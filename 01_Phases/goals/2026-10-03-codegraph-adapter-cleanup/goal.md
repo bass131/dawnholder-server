@@ -1,6 +1,6 @@
 # CodeGraph 연결 코드 정돈
 
-상태: **새 Compare와 포인터 갱신 뒤 신규 Opus의 독립 실행과 최종 문서 검증을 통과했고 세션 정산을 완료했다. PR 생성·기존 CI 확인과 해당 PR head의 사용자 병합 승인이 남았다.** 기본 전체105건은 정상102·기존xfail3·실패/오류/skip0·exit0이고 O1 단독 및 과거 두 배치·새 runtime 재생도 통과했다. 제품 결함은 없고 문서 D-1·D-2는 수정 후 해소됐다. 마지막 PR 본문의 SHA4383e87a…를 독립 판정과 연결했다. 독립 검증 기준은 HEAD1611051, 브랜치는feat/codegraph-adapter-cleanup-20261003이다. 새 Compare batch20261004T053719804684Z의 역사 HEAD353f393과 원문을 보존했다. “9tree불변” 요약은 실제8tree불변·자기lock2개추가라는 별도 정정을 신규 Opus가 원시로 재확인했다. 추가 Compare는 승인되지 않았다. 검증 뒤 PR 생성은 허용됐으며 해당 PR head의 병합은 사용자 개별 승인이 필요하다. 목표 전체는 미완료다. E=.backups/verification/2026-10-03-codegraph-adapter-cleanup/.
+상태: **새 Compare와 포인터 갱신 뒤 신규 Opus의 독립 실행과 최종 문서 검증을 통과했고 세션 정산을 완료했다. PR #172를 생성했다. 최신 head의 기존 CI 확인과 사용자 개별 병합 승인이 남았다.** 기본 전체105건은 정상102·기존xfail3·실패/오류/skip0·exit0이고 O1 단독 및 과거 두 배치·새 runtime 재생도 통과했다. 제품 결함은 없고 문서 D-1·D-2는 수정 후 해소됐다. 마지막 PR 본문의 SHA4383e87a…를 독립 판정과 연결했다. 독립 검증 기준은 HEAD1611051, 브랜치는feat/codegraph-adapter-cleanup-20261003이다. 새 Compare batch20261004T053719804684Z의 역사 HEAD353f393과 원문을 보존했다. “9tree불변” 요약은 실제8tree불변·자기lock2개추가라는 별도 정정을 신규 Opus가 원시로 재확인했다. 추가 Compare는 승인되지 않았다. 검증 뒤 PR 생성은 허용됐으며 해당 PR head의 병합은 사용자 개별 승인이 필요하다. 목표 전체는 미완료다. E=.backups/verification/2026-10-03-codegraph-adapter-cleanup/.
 
 ## 첫 재계획의 승인과 적용
 
@@ -368,3 +368,8 @@ Astra의README는새batch/runtime와과거2batch명시replay예시를갱신했�
 신규 Opus 최종 판정은 **통과**다. 원문 E/new-pointer-verification/verdict.md(34,579bytes, SHA256265f5e820dfe7569203eccc0c3c35d26e180dad86f5eb48c75954d7ef459a9ad)를 Astra가 전문 읽고 raw·문서SHA·최종상태와 대조했다. 완료 msg_c609b52e74d6(2026-10-04T07:00:45Z)는 outcome succeeded이며, worker-release 후 정확한 incarnation·idle을 확인하고 pane을 close(ptyKilledtrue), delivery_d430b10a7ea3를 ack했다. reclaimable은0이고 완료세션은 재사용하지 않는다.
 
 판정은 제품 결함0·문서D-1/D-2해소, PR초안4383e87a…/8,164bytes와 goal검토본350b7e4d…/108,991bytes를 확인했다. 그 뒤 이 단락과 현재상태의 정산 표기만 Astra가 기계 기록으로 추가했다. 메인에 원문·R2 표본을 전달했으나 메인의 R2 회신은 아직 받지 않았다. 승인된 커밋·push·PR생성과 기존CI 확인을 진행하며, 사용자 개별 승인 전 병합·자동병합은 하지 않는다. 목표 전체는 병합 전 미완료다.
+## PR #172 — 사용자 병합 승인 대기
+
+PR은 [CodeGraph 실행 분리와 Roslyn 기본 선택](https://github.com/bass131/dawnholder-server/pull/172)이다. 최종 판정 정산을 기록한 커밋 d46f8be5eef29a91962461c76e27497e2db7fbeb를 push한 뒤 생성했다. 원격 본문은 독립 실사된 E/pr-body-draft.md(8,164bytes, SHA4383e87a3c0c47b362d70345be750374ab1a274ce3adf95eac09cbf3fe9f8540)와 문자열이 정확히 같다. base3e07e1b, MERGEABLE을 확인했고 기존 code-rules와dotnet-tests가 기동됐다. 07:03:42Z 도구·테스트·README·settings36개 actualSHA를 최종 검증 상태와 다시 대조해 불일치0이었다(E/pr-172-created.json, E/pr-172-byte-preservation.json).
+
+이 PR 번호 기록은 목표 문서만의 후속 기계 커밋이다. 제품·테스트·독립 검증 본문은 바꾸지 않는다. 최신 head와 CI 결과는 [PR 체크](https://github.com/bass131/dawnholder-server/pull/172/checks) 및 E/pr-172-checks-final.json의 실제 조회로 연결한다. 메인 R2 회신과 사용자 병합 승인은 아직 받지 않았으며 자동병합은 설정하지 않았다. 메인은 최종 판정 원문을 직접 읽고 R2 대조 후 해당 PR의 최종 head로 사용자 승인을 요청한다. 목표 전체 완료, 병합 뒤 Gardener와 R8 정산은 그 후 단계다.
