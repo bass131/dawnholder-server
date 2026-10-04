@@ -256,6 +256,7 @@ $master = $null
 $connection = $null
 $cleanupStep = $null
 $cleanupStarted = $false
+$cleanupResourceAttempted = $false
 try {
     $manifest = Read-TestEnvironmentManifest -Contract $Contract -Database $Database -ManifestPath $ManifestPath
     if ($Mode -eq 'Execute' -and
@@ -299,6 +300,16 @@ try {
             Identity = $manifest.DatabaseIdentity
         })
     Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
+    $dropParameters = @{
+        id = (New-DatabaseSqlParameter -Type Int -Value ([int]$manifest.DatabaseIdentity.DatabaseId))
+        created = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.CreationTime -Size 33)
+        owner = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.OwnerSid -Size 170)
+        goal = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.GoalMarker -Size 128)
+        guid = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.DatabaseGuid -Size 36)
+        database = (New-DatabaseSqlParameter -Type NVarChar -Value $Database -Size 128)
+    }
+    # Parameter preparation can fail before any destructive call is attempted.
+    $cleanupResourceAttempted = $true
     [void](Invoke-DatabaseSql `
             -Connection $master `
             -Sql @'
@@ -323,14 +334,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE session_id <> @@SPID AND data
 DECLARE @dropSql nvarchar(max) = N'DROP DATABASE ' + QUOTENAME(@database) + N';';
 EXEC sys.sp_executesql @stmt = @dropSql;
 '@ `
-            -Parameters @{
-            id = (New-DatabaseSqlParameter -Type Int -Value ([int]$manifest.DatabaseIdentity.DatabaseId))
-            created = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.CreationTime -Size 33)
-            owner = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.OwnerSid -Size 170)
-            goal = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.GoalMarker -Size 128)
-            guid = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.DatabaseIdentity.DatabaseGuid -Size 36)
-            database = (New-DatabaseSqlParameter -Type NVarChar -Value $Database -Size 128)
-        } `
+            -Parameters $dropParameters `
             -Result NonQuery)
     $manifest.Cleanup.Steps[0].Status = 'Done'
     Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
@@ -385,7 +389,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
         }
         $manifest.Cleanup.Steps = @($manifest.Cleanup.Steps) + $record
         Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
-        $user = Get-LocalUser -Name 'dh_d1b_recovery' -ErrorAction Stop
+        $user = Get-LocalUser -Name $Contract.RecoveryLocalName -ErrorAction Stop
         if ($user.SID.Value -cne $manifest.WindowsAccountSid) {
             throw 'Windows SID changed; preserve account.'
         }
@@ -420,22 +424,44 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
     Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
     Write-Output 'Exact DB and recorded principal/credential resources removed. Nonsecret manifests, evidence, empty directories and any Windows profile retained.'
 } catch {
+    $failure = $_.Exception
+    $failureCode = Get-DatabaseFailureCode -Exception $failure
+    $failureSummary = Get-TestEnvironmentFailureSummary -Exception $failure
+    $journalStatus = 'No cleanup failure journal write was attempted.'
+    $executionStatus = $(if ($cleanupResourceAttempted) {
+            'Resource deletion was attempted; cleanup may be partial.'
+        } else {
+            'Stopped before resource deletion was attempted.'
+        })
     if ($cleanupStarted) {
-        $manifest.Cleanup.State = 'Failed'
-        $manifest.Cleanup | Add-Member `
-            -MemberType NoteProperty `
-            -Name Failure `
-            -Value (Get-DatabaseFailureCode `
-                -Exception $_.Exception) `
-            -Force
-        foreach ($record in @($manifest.Cleanup.Steps)) {
-            if ($record.Status -ceq 'Pending') {
-                $record.Status = 'Failed'
+        # An in-memory failure state is durable only after this write succeeds.
+        try {
+            $manifest.Cleanup.State = 'Failed'
+            $manifest.Cleanup | Add-Member `
+                -MemberType NoteProperty `
+                -Name Failure `
+                -Value $failureCode `
+                -Force
+            foreach ($record in @($manifest.Cleanup.Steps)) {
+                if ($record.Status -ceq 'Pending') {
+                    $record.Status = 'Failed'
+                }
             }
+            Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
+            $journalStatus = 'Cleanup failure journal write succeeded.'
+            if ($cleanupResourceAttempted) {
+                $journalStatus = 'Cleanup failure journal write succeeded. ' +
+                    'Attempted partial cleanup is recorded as failed; deletion outcomes remain unconfirmed.'
+            }
+        } catch {
+            $journalStatus = 'Cleanup failure journal write failed; durable state is unconfirmed. {0}' -f (
+                Get-TestEnvironmentFailureSummary -Exception $_.Exception
+            )
         }
-        Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
     }
-    throw 'Test environment cleanup stopped; partial cleanup is recorded. Preserve remaining resources and ask the coordinator; no forced cleanup or automatic retry.'
+    $message = 'Test environment cleanup stopped. {0} Original failure: {1} Journal: {2} ' +
+        'Preserve remaining resources and ask the coordinator; no forced cleanup or automatic retry.'
+    throw ($message -f $executionStatus, $failureSummary, $journalStatus)
 } finally {
     if ($null -ne $connection) {
         $connection.Dispose()

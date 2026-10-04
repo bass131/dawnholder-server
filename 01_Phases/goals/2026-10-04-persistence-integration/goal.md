@@ -1,14 +1,50 @@
 # 실제 SQL 설치·엔진 판정과 저장소·제한 복구 통합
 
-상태: **메인이 새 goal 범위·완료조건·순서를 확인했고 DB 접속 없는 첫 위임을 허용했다. G2 독립 실사·DB 접속·계정/비밀 실행은 아직 하지 않았다.** 기존 설치 제품은 이전 goal에서 쓰기 종료됐으므로 신규 Opus의 설치 경로 정적 실사/오프라인 시험부터 시작하고, 제품 결함이 있으면 신규 Sol로 수정한다.
+상태: **중간 마감. 독립 재검증에서 INSTALL-01~04 해소, INSTALL-05 부분 해소와 신규 INSTALL-06이 남았다(960 PASS/2 FAIL/9 OBSERVED). 마지막 Sol 기동은 직접1회·메인 대리3회 모두 실패해 Task/Dispatch 미발행으로 보류했다.** 메인의 후속 결정에 따라 현재 작업 트리를 체크포인트 commit/push(PR 없음)로 보존하고 새 작업 없이 대기한다. 전체 goal은 미완료이며 실제 DB·G2·D:·서비스 단계는 실행하지 않았다.
+
+## 사용자 중간 마감 결정
+
+메인 `msg_06ab6853f32e`(2026-10-04T11:10:02Z)가 사용자 원문 **“결정대기 관련에서 현황판에 업데이트가 안됬네, 일단 A긴 해”**를 전달했다. 메인이 제안한 A안은 “지금부터 새 착수 동결: 진행 중인 검증·결함 수정 루프만 끝내고 새 goal·PR 범위는 열지 않는다”다. 메인 전달이며 사용자 직접 메시지로 격상하지 않는다.
+
+- GameDev 마감 단위는 INSTALL-05 잔여·06의 **신규 Sol1회→신규 Opus1회** 수정·재검증이다. 이 마지막 회차 뒤 결함이 남으면 번호·원시·다음 할 일을 이 goal에 기록하고 멈춘다.
+- 통과하면 현재 작업 브랜치에서 체크포인트 commit/push까지 한다. 새 PR은 만들지 않는다. 새 goal·계획·PR 범위를 열지 않고 다음 후보는 기록만 한다.
+- 사용자 행동이 필요한 D: 연결, 실제 DB/G2, 화면 확인과 서비스 시작은 마감 뒤로 미룬다. 기존 실행 초안은 승인되지 않은 상태를 유지한다.
+- 마감 지점에서 메인에 **“중간 마감 도달”**을 보고한다. 상태·branch/HEAD·미커밋 파일 수·잔여 결함/후보·재개 첫 단계를 포함하고, 이후 새 작업 없이 대기한다. 이 중간 마감을 전체 goal 완료나 Gardener/R-8 완료로 표현하지 않는다.
+
+### 기동 실패에 따른 마감 지점 변경
+
+메인 `msg_6454aa8d5367`(2026-10-04T11:22:37Z)이 대리 기동 실패 뒤 **현재 작업 트리의 체크포인트 commit/push(PR 없음)**를 지시했다. 따라서 위 “통과하면” 조건으로 마지막 회차를 계속 기다리지 않고, 미해결05·06을 그대로 기록해 중간 마감한다.
+
+- 담당 Astra의 split은 `Timed out waiting for split pane handle`로 실패했다. 원시는 `installation-final-fix-launch.json`(요청 `88aba1a8-cef3-4a71-b095-41cc1646d18d`)과 `final-fix-split-timeout-terminals.json`이다. Task·Dispatch·제품 쓰기는 시작하지 않았다.
+- 메인이 보고한 대리3회: 11:19:30Z `f217bd79-2459-463c-8fd8-b4c97dfcb103`, 11:20:34Z `28d595f1-73a0-407e-a02a-8cc7a2a08d0c`, 11:20:56Z `4f61ce9b-ab67-454b-9bf3-6782f9f00745`. 모두 같은 timeout이고 각 terminal list7개/새handle·잔여pane 없음이다. 이는 메인 메시지의 관측이며 Astra 직접 실측3회로 표현하지 않는다. 원문 `delivery_7e579977e120.json`에 보존했다.
+- 준비 계약 `installation-final-fix-contract.md` SHA256 `45A82670D5A7933A117D77258D3C7AC54659A76CC7DF00B64B1A449FF7FAC10E`, 입력 `installation-final-fix-inputs.json` SHA256 `3B91112EA3EB564F4D1C931DD5357F35444CCF6A1AA742ED8D2076B5EE27FDE8`. 두 파일은 기동 전 역사 입력이며 **미발행**이다. 제품 범위는 Environment.Common/New-TestDatabase 두 파일, INSTALL-05 잔여·06의 마지막 Sol→Opus 한 회차다.
+- 새 탭 생성·배치 우회·모델 대체·Astra 직접 구현은 하지 않는다. 메인 현황판 `term_4d1431ae-66ff-4f50-b396-bad517e0672d`는 건드리지 않는다. 분할 실패 원인 확인은 마감 뒤 메인이 따로 맡는다.
+- **재개 첫 단계: Sol 기동 경로 확인 → installation-final-fix 계약으로 마지막 회차(새 Sol → 새 Opus).** 재개 승인 후 현재 HEAD·goal/메모 hash를 다시 고정하고 위 역사 입력을 그대로 실행 권한으로 쓰지 않는다. 마지막 회차 뒤에도 남으면 새 회차를 열지 않고 번호·원시·다음 할 일을 기록한다.
+- 체크포인트의 실제 commit/push/원격head·보존 결과는 로컬 `mid-closeout-checkpoint.json`에 둔다. 중간 마감은 제품 PASS·G2 승인·실제 DB 성공·전체 goal 종료를 의미하지 않는다.
 
 ## 재개 지점
 
 - 작업 경로 `C:/Dev/DawnHolder_Project`, branch `feat/persistence-integration-20261004`. 최신 main 기준 `3f0cb5e2861574ea1e6b092875de27694897b21d`에서 시작했다.
 - 이전 종료 checkpoint `f137bbb6ca2a7b5bc424769f8083d2d9814dc32c`를 `2c3522e075cd3f68804f80dec1735f368669eb0e`로 cherry-pick했다. 이전 goal만 +9/-2이며 이 목표의 첫 PR에 포함한다. 원본 branch/commit은 유지한다.
 - Unity 실물3 SHA·skip-worktree S3·stash2는 전환 전후 일치한다. 근거는 `.backups/verification/2026-10-04-persistence-integration/branch-checkpoint.json`이다. 상태가 깨끗하다는 Git 출력만으로 사용자 파일 보존을 판단하지 않는다.
-- 다음: 실행 경계와 설치 도구의 필요한 변경을 좁힐 첫 외부 Opus 계약을 만든다. 비밀 없는 실행 계획의 최종 입력·executor·정확 명령·시간 창과 실제 실행 경로를 신규 Opus가 G2에서 실사하기 전에는 DB에 접속하지 않는다.
-- 이번 세션의 Run/Task/Dispatch는 아직 없다. 이전 목표 식별자를 실행 권한으로 재사용하지 않는다. 세션 신원·할당·사전 메모는 아래 로컬 근거에 보존한다.
+- 다음: 재개 승인 뒤 Sol 기동 경로 확인→고정 입력 갱신→위 마지막 수정 회차다. 현재는 새 작업 없이 대기한다. 실제 DB/G2는 마감 뒤이며 검토 초안은 ExecutionApproved=false/G2=null을 유지한다.
+- 현재 Run `run_da60626aa8de`. 첫 Opus Task `task_19f35f0a16b0`/Dispatch `ctx_7aa1fb01a3ce`는 작업 완료·정산·정확 pane 종료했다. task outcome=succeeded는 실사 완료이며 제품 판정은 FAIL이다. 이전 목표 식별자를 실행 권한으로 재사용하지 않는다.
+- 수정 Sol Task `task_10ee107139ee`/Dispatch `ctx_4fb9710dc625`도 쓰기 종료·원문 대조·release·정확 pane 종료했다. 자기 점검은 독립 판정으로 쓰지 않고 위 신규 검증자에게 넘겼다.
+- 첫 재검증 Opus Task `task_32164d72f32a`/Dispatch `ctx_2a0a1c3853f1`는 `msg_1a5fa823d2ce`로 쓰기 종료했고 원문/원시 대조·release·정확 pane 종료했다. 해당 Task 성공은 실사 완료이며 제품 판정은 통과 아님이다.
+
+## 현재 실사 결과와 보류
+
+- 최신 판정 `installation-recheck-2/verdict.md` SHA256 `1A85FE1DB53A7F450DC3BB8CC9703682C3A3BFCDD8EB682A1158E3C5A038FD69`: 01~04 해소, 05는 Install의 DB identity 변경 사유가 Unclassified로 사라지는 잔여, 06은 완료 journal 쓰기 실패 뒤 디스크 Pending인데 not Pending이라고 안내하는 새 결함이다. 둘 다 fail-closed와 자원 보존은 유지하지만 미해결이다. 마지막 수정 회차는 기동 실패로 보류했다. 05는 첫 재검증 실패1회, 06은 최초 발견이다.
+- 부모 `recheck-source-audit.json`에서 최종 전체960/2/9·기존 lifecycle53개 전부 유지·제품35와 기타 고정 입력 불변·변경 테스트1개·Unity3/S3/stash2 보존을 대조했다. lifecycle76/2/1이며 새 OBSERVED1은 비-int SqlNumber 합성 입력의 journal 잔존이다. 실제 비-SqlException fallback 정수는 Closed 연결 helper에서 관측했고 SqlException 분기는 소스 계약만 확인했다. 실제 SQL은 미실행이다.
+- 재검증 절차 관측: baseline 실행과 첫 편집의 겹침은 원본 harness hash/53행 동일 근거로 범위를 확인했다. 단계별 inbox check 누락으로 부모 지시 확인이 늦어 추가 재실행이 필요했고, 무효 launch2/parser2·자기 시험 정규식 오류1도 원문 §11에 있다. `msg_7c384bec95e7`로 즉시 메인에 보고했다. 부모 서버 시각 대조의 heartbeat 최대 간격221초/300초 초과0과 별개이며 **절차 전체 PASS로 표현하지 않는다**. 원문은 보존하고 `recheck-settlement.md`에 인수 범위를 남긴다.
+- 판정 원문 `.backups/verification/2026-10-04-persistence-integration/installation-review-1/verdict.md`, SHA256 `80C03344EBB19D9C93974030497B1C5C5F7F956F3531DE8B8FDF6BC75B4E825F`. 새 시험17 PASS/36 FAIL(상류 실패 연쇄29건 포함), 기존6 suite 전후884 PASS/0 FAIL/8 OBSERVED다. 실제 DB·U-01·OS/ACL/DPAPI는 미실행이다.
+- 최초 실사에서는 INSTALL-01 연결 문자열 builder 대입과 INSTALL-02 두 번째 journal 교체가 차단이었다. 03 동등 경로 lock, 04 cleanup의 계정명 상수, 05 안전한 중단 이유 소실/실제와 다른 기록 안내를 포함해 메인 `msg_16b3c72e78a6`가01~05 신규 Sol 수정을 지시했다. 외부 예외 원문 대신 비밀 없는 고정 사유와 실제 journal 기록 여부만 전달한다는 요구를 적용했다. 이후 해소/잔여는 위 최신 판정을 따른다.
+- 실제 DB 보류: 읽기 전용 OS 관측에서 `MSSQL$SQLEXPRESS`는 Stopped/Manual, 등록 실행파일은 `D:\MSSQL2025\MSSQL17.SQLEXPRESS\MSSQL\Binn\sqlservr.exe`, 현재 D:는 DriveNotFound다. 단순 서비스 시작 요청은 철회했고 메인 `msg_d3a5681379d0`가 D: 원래 환경을 사용자에게 확인 중이다. 볼륨·서비스/UAC·재설치·경로 변경은 승인되지 않았다. DB 폐기 승인과 서비스 종료를 구분하며 원래 Stopped 복귀 여부는 G4 별도 결정이다.
+- 신규 Opus 보류 이력: 메인 `msg_b4cec1593dd6`가 잠시 보류했으나 **`msg_e7e773056b87`로 해제**했다. 메인이 전달한 사용자 원문은 “1) Claude 주간 사용량 96% - 화요일 20:00 초기화 전까지 우선순위 → C 코멘트 「Max 20으로 플랜 방금 업그레이드 완료」”다. 신규 `claude-opus-5-5`로 재검증하며 파트당 동시 검증자1명·기존 범위는 유지한다.
+- D: 사용자 결정: 메인 `msg_da0d5b05b80e`가 “5) SQL Express - 설치된 D: 드라이브가 없어 DB 단계가 막힘 → A D: 드라이브 다시 연결”을 전달했다. 사용자가 직접 연결하며 이후 메인이 읽기 전용 재확인 후 서비스 시작을 별도 사용자 판단으로 올린다. 이 답은 서비스/UAC/DB 접속 승인이 아니다. 전달 시점에는 여전히 C:/F:만 관측됐다.
+- 수정 결과: `installation-fix-1/report.md` SHA256 `339F6254EF5DA2391D152D99E39326FFE2275D7F9B9C197D7605D3576E1F0A6B`. lifecycle17/36→Sol 최초51/2→진단 보완53/0, 기존6 suite884/0/8 유지. 부모 `fix-source-audit.json`에서 실제 집계937/0/8·제품4변경/31불변·테스트2 및 Unity3/S3/stash2 보존을 대조했다. OBSERVED8은 검사 대상 제외4건과 실제 엔진 미관측4건이며 성공으로 합산하지 않는다. 정확 Name/Detail은 audit와 report에 있다.
+- 수정 절차 정산: `fix-settlement.md`에 표식 교정1건과 cadence5건(336/345/353/313/436초, 최대초과136초)을 개별 관측으로 보존했다. 메인 `msg_7cf40e2e0771`, `msg_d0eae81bb1a1`, `msg_9624ef1d523c`를 적용하며 절차 전체 PASS로 바꾸지 않는다. 신규 검증에 이 이력과 자체 시험의 범위/미실행을 전달한다.
+- 절차 기록: heartbeat 임시 기준 `msg_9cdcc96cf620`과 개별 결정 정본 `msg_c9552132e2f7`을 적용했다. 1,656/803/764초 세 공백과 판정문 기록 누락은 **미준수**로 보존한다. 메인 `msg_16b3c72e78a6` 결정에 따라 원문을 덮지 않고 부모 `review-settlement.md`에 보충했다. 절차 전체 PASS로 바꾸지 않으며 제품 FAIL 목록만 수정 근거로 인수한다. 초기 입력의 helper3개 누락/보충과 종료35개 hash 실측도 이 부록에 있다.
 
 ## 결정 출처와 선행 결과
 
@@ -89,5 +125,6 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 
 ## 원문 근거
 
-- 이번 로컬 근거 root: `.backups/verification/2026-10-04-persistence-integration/`. 사전 메모 `astra-context.md`, 진입/이관 `branch-checkpoint.json`. 현재 단계는 계획이며 독립 판정 파일은 아직 없다.
+- 이번 로컬 근거 root: `.backups/verification/2026-10-04-persistence-integration/`. 초기 사전 메모 `astra-context.md`, 후속 `astra-followup-context.md`, 진입/이관 `branch-checkpoint.json`, 독립 `installation-review-1/verdict.md`, 부모 원시 대조 `review-source-audit.json`, 정산 `review-settlement.md`. 후속 기록은 초기 고정 입력을 덮어쓰지 않는다.
+- 최신 수정/판정은 `installation-fix-1/report.md`와 `installation-recheck-2/verdict.md`, 부모 원천 대조는 `fix-source-audit.json`/`recheck-source-audit.json`이다. 중간 마감 맥락은 `astra-closeout-context.md`, 실제 Git 정산은 `mid-closeout-checkpoint.json`이다.
 - 이전 승인 초안/승인 전달과 종료 checkpoint: `.backups/verification/2026-10-03-persistence-repository/{successor-goal-draft.md,successor-goal-review-delivery.json,closeout-pr171-checkpoint.json}`. 원문은 덮어쓰지 않는다.

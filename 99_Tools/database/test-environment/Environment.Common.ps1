@@ -447,7 +447,8 @@ function Write-TestEnvironmentManifest(
         $file.Dispose()
     }
     if ([IO.File]::Exists($Manifest.ManifestPath)) {
-        [IO.File]::Replace($temporary, $Manifest.ManifestPath, $null)
+        # Preserve a null backup path through the PowerShell string-argument binder.
+        [IO.File]::Replace($temporary, $Manifest.ManifestPath, [NullString]::Value)
     }
     else {
         [IO.File]::Move($temporary, $Manifest.ManifestPath)
@@ -495,15 +496,16 @@ function Assert-TestEnvironmentExecutor(
 function Assert-TestEnvironmentLocalAccountAbsent(
     $Contract
 ) {
+    $existing = $null
     try {
         $existing = Get-LocalUser -Name $Contract.RecoveryLocalName -ErrorAction Stop
-        if ($null -ne $existing) {
-            throw 'Test environment Windows account name occupied; no adoption.'
-        }
     } catch {
         if ($_.FullyQualifiedErrorId -notlike 'UserNotFound*') {
             throw 'Cannot prove the exact Windows account name is absent.'
         }
+    }
+    if ($null -ne $existing) {
+        throw 'Test environment Windows account name occupied; no adoption.'
     }
 }
 
@@ -563,6 +565,76 @@ function Get-DatabaseFailureCode(
         SqlNumber = $Exception.Data['DatabaseSqlNumber']
         Detail = 'Provider/native text suppressed; inspect the last planned and recorded identity.'
     }
+}
+
+function Get-TestEnvironmentStopReason(
+    [Exception]$Exception
+) {
+    # Only exact product-owned literals can become a reported stop reason.
+    $safeReasons = @(
+        'Manifest already exists; this one-time lifetime cannot be restarted.'
+        'Database creation is one-time and create-only.'
+        'A target lifecycle directory already exists; no adoption.'
+        'An exact database/login name is occupied; no adoption or rotation.'
+        'Test environment Windows account name occupied; no adoption.'
+        'Cannot prove the exact Windows account name is absent.'
+        'Pending manifest remains; preserve it for coordinator inspection.'
+        'An incomplete attempt or cleanup exists; preserve resources and request coordinator reconciliation.'
+        'This one-time step has already been attempted.'
+        'Invalid step transition.'
+        'Install 001 first, leave its fixture to the independent verifier, then install 002+ in the same database.'
+        'Installer core requires the lifecycle-owned manifest lock and exact connection.'
+        'Installer requires the recorded active test-environment installation step.'
+        'Test environment shared-memory connection failed; no fallback, provider text suppressed.'
+        'Exact local instance and privileged SQL executor required.'
+        'Engine changed; a new golden-vector decision is required.'
+        'Exact database identity missing or ambiguous.'
+        'No recorded created database identity; no adoption.'
+        'Database is not online; preserve it.'
+        'Owner/goal marker mismatch; no adoption or cleanup.'
+        'Cleanup settlement is incomplete; no deletion is authorized by it.'
+        'Evidence must be durable, nonsecret files within this goal evidence directory.'
+        'Preserved evidence hash mismatch.'
+        'A task-owned connection is not settled.'
+        'Invalid settled request.'
+        'Terminal request lacks payload/outcome evidence.'
+        'SQL login identity missing/unknown/changed; no deletion.'
+        'Cannot inspect exact Windows account identity.'
+        'Windows account identity missing/unknown/changed; no deletion.'
+        'Unknown credential file exists; do not read/delete it.'
+        'Child identity manifest changed.'
+        'Unknown child identity manifest exists.'
+        'Remaining target connections/requests/transactions/locks; stop and preserve resources.'
+        'Recorded binding disappeared; preserve resources.'
+        'Held/mismatched binding or temporary trigger remains; cleanup does not release/drop it.'
+        'Archived ledger count changed.'
+        'Terminal operation evidence is absent.'
+        'Terminal operation evidence differs from settlement.'
+        'Manifest changed after review.'
+        'Cleanup was already attempted; explicit reconciliation is required.'
+        'Windows SID changed; preserve account.'
+        'Unexpected credential file ACL.'
+        'Credential hash changed; preserve it.'
+    )
+    foreach ($reason in $safeReasons) {
+        if ([string]::Equals($Exception.Message, $reason, [StringComparison]::Ordinal)) {
+            return $reason
+        }
+    }
+    return 'Unclassified failure; provider/native text suppressed.'
+}
+
+function Get-TestEnvironmentFailureSummary(
+    [Exception]$Exception
+) {
+    $reason = Get-TestEnvironmentStopReason -Exception $Exception
+    $failureCode = Get-DatabaseFailureCode -Exception $Exception
+    $safeSqlNumber = 'unavailable'
+    if ($failureCode.SqlNumber -is [int]) {
+        $safeSqlNumber = [string]$failureCode.SqlNumber
+    }
+    return ('{0} FailureCode={1}; HResult={2}; SqlNumber={3}.' -f
+        $reason, $failureCode.ErrorType, $failureCode.HResult, $safeSqlNumber)
 }
 
 function Fail-TestEnvironmentStep(
@@ -729,18 +801,18 @@ function Open-TestEnvironmentDatabase(
         -ManifestPath $Manifest.ManifestPath
     Assert-TestEnvironmentExecutor -Contract $Contract
     $builder = [Data.SqlClient.SqlConnectionStringBuilder]::new()
-    $builder.DataSource = 'lpc:' + $Manifest.Instance
-    $builder.InitialCatalog = $(if ($Master) {
+    $builder['Data Source'] = 'lpc:' + $Manifest.Instance
+    $builder['Initial Catalog'] = $(if ($Master) {
             'master'
         } else {
             $Database
         })
-    $builder.IntegratedSecurity = $true
-    $builder.Encrypt = $true
-    $builder.TrustServerCertificate = $true
-    $builder.Pooling = $false
-    $builder.ConnectTimeout = 5
-    $builder.ApplicationName = 'Dawnholder.TestEnvironment'
+    $builder['Integrated Security'] = $true
+    $builder['Encrypt'] = $true
+    $builder['TrustServerCertificate'] = $true
+    $builder['Pooling'] = $false
+    $builder['Connect Timeout'] = 5
+    $builder['Application Name'] = 'Dawnholder.TestEnvironment'
     $connection = [Data.SqlClient.SqlConnection]::new($builder.ConnectionString)
     try {
         try {
