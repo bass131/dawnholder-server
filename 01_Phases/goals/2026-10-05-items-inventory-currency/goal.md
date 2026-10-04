@@ -124,6 +124,8 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ## 정본 반영 전 적용 중인 사용자 결정
 
+별도 **메인 운영 결정** `msg_1fc59e1efddb`(2026-10-04T16:49:33Z)은 Orca1.4.217 동안 공식 blocking ask의 고정 subject Question과 공식 reply --id 자동 subject에 기존 R-3 예외를 동일 조건으로 한정 적용한다. 사용자 직접 지시로 격상하지 않는다. body 자기 태그와 현재 from_handle/Task/Dispatch 대조는 유지하고 일반 send에는 예외가 없다. 로컬 ask/reply --help의 subject 옵션 부재를 `orca217-ask-help.txt`, `orca217-reply-help.txt`에, 원문을 `orca217-policy-message.json`에 보존했다(모두 이 goal 근거 폴더). helper에1.4.218로 가장하지 않으며 실제 해당 사례는 원시를 사람이 대조해 기록한다. 이번 TDD에는 실제 ask/reply 사례가 없었고 일반 worker_done은 기존 helper에서 allowed/exit0이었다. 결정은 `msg_5b2e7e3005d0`으로 진행 작업자에게 전달했으며 고정 goal은 쓰기 종료 후 갱신했다. Orca1.4.218 이상 또는 subject 옵션 지원 때 이 한정 적용은 종료한다.
+
 출처는 메인 `msg_53fec7129c14`와 읽기 전용 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-04/` 아래 파일들이다. Rules의 정본 반영 전까지 이 goal에 적용한다. 최신 전달 결정과 기존 규칙이 다르면 해당 적용 범위에서 최신 결정을 따른다.
 
 | 원문/전달 결정 | 출처 | 이 goal에 적용 |
@@ -141,7 +143,7 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 1. 메인 범위 확인(`msg_763b1fa21bf5`)과 GameDev ID/공유 파일/저장 경계 합의(`msg_58eaccfd4a15`)를 완료했다.
 2. Fable 고정 입력·검토·정산·종료와 메인 원문 확인을 완료했다. INV-06/S-3를 현재 도달 경로에 맞춰 정리했다.
-3. 최종 요구사항/패킷 계약은 `.backups/verification/2026-10-05-items-inventory-currency/pr1-acceptance.md`, 선행 TDD 계약은 같은 폴더 `tdd-contract.md`(SHA256 `8E2968D6E7EC1C5008D304F4535A1695BFB8429274DFF013ABAC180F5168B23E`)다. 복구 시점/기준 SHA 보충은 `tdd-recovery-addendum.md`에 두며 테스트 요구와 쓰기 권한은 바꾸지 않는다. 신규 Opus 테스트 선행 → Sol → 별도 신규 Opus 순으로 진행한다.
+3. 최종 요구사항/패킷 계약은 `.backups/verification/2026-10-05-items-inventory-currency/pr1-acceptance.md`, 선행 TDD 계약은 같은 폴더 `tdd-contract.md`(SHA256 `8E2968D6E7EC1C5008D304F4535A1695BFB8429274DFF013ABAC180F5168B23E`)다. 복구 시점/기준 SHA 보충은 recovery/recovery2 파일에 보존한다. 선행 TDD는 아래와 같이 완료했고 다음은 고정 구현 계약을 새 Sol max에 발행한 뒤 별도 신규 Opus 실사·독립 테스트다.
 
 ### 2026-10-05 크래시 중단과 복구
 
@@ -152,5 +154,22 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 ## 실제 결과와 미실행
 
 - 맥락 메모, 목적별 브랜치, goal·CURRENT, 메인 범위 확인, GameDev·Rules 경계 합의, 초기 goal commit과 외부 Fable 설계 검토·정산·종료까지 수행했다. 검토 입력/결과 원문·receipt는 로컬 근거 폴더에 보존했다.
-- 제품·테스트 변경, .NET/봇/Unity 실행, 구현 후 독립 판정, PR/CI/병합: 아직 수행하지 않았다. 테스트 통과·실제 게임 동작·DB 저장을 주장하지 않는다.
+- 신규 테스트와 선행 WSL .NET 실행은 아래 근거대로 수행했다. 제품 변경, 실제 서버↔봇/Unity 실행, 구현 후 독립 판정, PR/CI/병합은 아직 수행하지 않았다. 제품 통과·실제 게임 동작·DB 저장을 주장하지 않는다.
 - 범위 밖 후보: 후속 던전 콘텐츠·길드/거점·마을 연출·상점/연구는 메인 승인 로드맵에 이미 있는 다음 목표이며 자동 착수하지 않는다.
+
+### 선행 TDD 완료 — 제품 PASS 아님
+
+신규 Opus의 `task_2c4281b259c6`/`ctx_156e286a9070`은 `msg_9f515d0665e5`(2026-10-04T17:06:48Z)로 테스트 쓰기 종료와 succeeded를 보고했다. 원문은 `.backups/verification/2026-10-05-items-inventory-currency/tdd/report.md`, 사전 메모는 `tdd/context.md`다. 새 `02_Server/GameServer.Tests/Items/InventoryWireContractTests.cs` 608줄/17메서드/26케이스의 최종 SHA256은 `B8D2CBFCD0270BBB178A3425DE58E099218257AD916974FF5C7F8D1FB2D84D5F`다. 제품/기존 테스트는 쓰지 않았고 wire 기대값은 계약의 고정 표에서 판독하며 실제 세션·공격/지연 피해·World 콜백을 실행한다.
+
+| 실행 | SDK/범위 | 실제 결과 | 의미 |
+|---|---|---|---|
+| `tdd/red-run2` | WSL10.0.301·InventoryWireContractTests | 빌드 성공, 26실행/23실패/3통과/0skip, raw exit1 | 23건 모두 경제 출력 부재의 Assert.Single 실패. 제품 미구현 RED |
+| `tdd/baseline-session-cleanup` | 기존 SessionCleanupTests | 15/15, exit0 | 기존 fixture 기준 |
+| `tdd/baseline-enemy-death-killer` | 기존 HandleEnemyDeathKillerTests | 4/4, exit0 | 기존 처치 경로 기준 |
+| `tdd/red-run1` | 첫 harness logger 인자 오류 | raw exit127 | 판정 제외, 원시 보존. 수정한 harness로 red-run2 재실행 |
+
+Astra는 원문·전체 테스트·harness·TRX 원시 카운터/실패 메시지·Git 상태·파일 hash를 대조했다. 통과3은 두 공격/실제 지연 피해의 positive control2와 경제 미구현에서도 무응답인 종료 가드1이다. 사용 replay/in-flight·100번째 보상 거부·이동/재접속·불량 입력의 후반 단정은 첫 경제 출력 부재로 **미도달**이며 구현 후 최초 실행/독립 검증이 필요하다. currency/revision 상한, 내부 고아 상태, guard 예외, 불변 snapshot과 전송 실패도 후속 독립 검증 범위다. 전체 테스트·봇·Unity·서식 검사는 미실행이다. RED와 첫 harness 오류는 제품 확정 실패로 집계하지 않는다.
+
+TDD 가정 D1~D6의 구현 전 정리: 3틱은 테스트 허용폭이고 제품 지연 SLA가 아니다. 결과 itemId는 요청 값을 되돌리고, 새 불량 경제 입력은 무응답 drop하며 연결을 유지한다. 성공 보상마다 snapshot push1건, 보상 거부에는 별도 통지를 요구하지 않고 조회로 현재 상태를 확인한다. 이는 현재 핸들러/전송 관례에 맞춘 작은 구현 선택이며 기존 임시 데이터/범위를 바꾸지 않는다. 원 acceptance와 TDD 원문은 보존하고 구현 계약에 명시한다.
+
+완료 메시지의 세 identity/태그를 기존 수신 helper로 검증(allowed/exit0)한 뒤 worker-release를 수행했다. attached external pane이므로 retained/none이었고 동일 incarnation·완료 화면·빈 prompt를 확인하여 해당 pane만 close(ptyKilled=true)했다. `tdd-completion.json`, `tdd-completion-policy.json`, `tdd-settlement.json`, `tdd-close.json`에 보존하고 Delivery를 ack했다. 재사용하지 않는다.
