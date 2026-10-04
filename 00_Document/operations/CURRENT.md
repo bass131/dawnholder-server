@@ -6,13 +6,13 @@
 |---|---|
 | GameDev | [영속성 저장소](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#재개-지점) |
 | Content | [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) |
-| Rules | [하네스 원칙 채택과 문서 정비 — 운영 규칙 PR 재개와 설계](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#운영-규칙-pr-재개와-설계) |
+| Rules | [팀원 합류 최소 정본](../../01_Phases/goals/2026-10-04-teammate-onboarding/goal.md#재개-지점) · [보류된 하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#운영-규칙-pr-재개와-설계) |
 | Architecture | [CodeGraph adapter 정비](../../01_Phases/goals/2026-10-03-codegraph-adapter-cleanup/goal.md#재개-실행) |
 | Management | [시스템 카드](../../05_Management/goals/2026-10-02-system-cards/goal.md#재개-지점--2026-10-03-사용자-휴식) |
 
 - GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-repository-d1b-20261002`
 - Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-currency-20261005`
-- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/harness-operating-rules`
+- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/teammate-onboarding`
 - Architecture: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `feat/codegraph-adapter-cleanup-20261003`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-m2-system-cards`
 
