@@ -3,6 +3,7 @@ using System.Net;
 using System.Numerics;
 using Dawnholder.Server.GameServer.Combat;
 using Dawnholder.Server.GameServer.Handlers;
+using Dawnholder.Server.GameServer.Items;
 using Dawnholder.Server.GameServer.Loop;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Maps.Transitions;
@@ -36,6 +37,10 @@ public class GameSession : PacketSession
     // queued AddPlayer가 이미 닫힌 세션을 owner로 박지 못하게 + cleanup이 멱등하게 보장.
     // 0=open, 1=closing/closed. Interlocked.Exchange로 atomic.
     int _closing;
+
+    // Separate from movement budgets. One queued economic request owns this guard until its
+    // tick job finishes (including send failure), or the connection closes.
+    int _inventoryRequestPending;
 
     // handshake 완료 플래그. OnRecvPacket 첫 진입에서 false면 → handshake 패킷만 허용,
     // 다른 패킷 = 즉시 Disconnect. first-packet 강제 = isolation 보장 (version 검증 전 다른 패킷 차단).
@@ -113,6 +118,7 @@ public class GameSession : PacketSession
     public override void OnDisconnected(EndPoint endPoint)
     {
         if (Interlocked.Exchange(ref _closing, 1) == 1) return;
+        CompleteInventoryRequest();
         Console.WriteLine($"[GameSession] OnDisconnected from {endPoint}");
         RequestWorldClose();
     }
@@ -416,6 +422,17 @@ public class GameSession : PacketSession
         PartyFlow.Leave(world, this, _entityId);
     }
 
+    internal void SubmitInventoryRequest()
+        => SubmitEconomyRequest((inventory, entityId) => inventory.EnqueueInventoryRequest(this, entityId));
+
+    internal void SubmitItemUse(ItemId itemId, uint expectedRevision)
+    {
+        if (!ItemCatalog.IsDefined(itemId)) return;
+        SubmitEconomyRequest((inventory, entityId) => inventory.EnqueueItemUse(this, entityId, itemId, expectedRevision));
+    }
+
+    internal void CompleteInventoryRequest() => Interlocked.Exchange(ref _inventoryRequestPending, 0);
+
 #if DEBUG
     // [시연 디버그 치트] C_CheatCommand 처리. 유일 호출자=CheatCommandHandler(둘 다 #if DEBUG).
     //   Release에는 부재(치트 사슬 빌드타임 봉합, 헌법 #3 / SN-02).
@@ -550,4 +567,32 @@ public class GameSession : PacketSession
 
     // 종료 대상을 소켓 스레드의 순간적인 맵 조회로 결정하지 않는다.
     protected virtual void RequestWorldClose() => _world?.RequestSessionClose(this);
+
+    void SubmitEconomyRequest(Action<InventoryRegistry, int> enqueue)
+    {
+        GameWorld? world = _world;
+        int entityId = _entityId;
+        if (world == null || IsClosing || !_handshakeCompleted || !HasSelectedClass ||
+            entityId < 0 || Volatile.Read(ref _migrating) != 0)
+        {
+            return;
+        }
+        if (Interlocked.CompareExchange(ref _inventoryRequestPending, 1, 0) != 0) return;
+
+        try
+        {
+            if (IsClosing)
+            {
+                CompleteInventoryRequest();
+                return;
+            }
+            enqueue(world.Inventory, entityId);
+        }
+        catch
+        {
+            // Queue/closure allocation can fail before a job exists to run its finally.
+            CompleteInventoryRequest();
+            throw;
+        }
+    }
 }

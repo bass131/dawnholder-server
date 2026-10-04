@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **Fable 원문·보완 goal 메인 확인 완료·선행 TDD 준비. 제품·테스트 구현 미착수.**
+상태: **선행 TDD와 PR1 서버 구현·자체 점검 완료. 신규 Opus 독립 검증 준비. PR/병합 미실행.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, branch `feat/items-inventory-currency-20261005`.
@@ -143,7 +143,8 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 1. 메인 범위 확인(`msg_763b1fa21bf5`)과 GameDev ID/공유 파일/저장 경계 합의(`msg_58eaccfd4a15`)를 완료했다.
 2. Fable 고정 입력·검토·정산·종료와 메인 원문 확인을 완료했다. INV-06/S-3를 현재 도달 경로에 맞춰 정리했다.
-3. 최종 요구사항/패킷 계약은 `.backups/verification/2026-10-05-items-inventory-currency/pr1-acceptance.md`, 선행 TDD 계약은 같은 폴더 `tdd-contract.md`(SHA256 `8E2968D6E7EC1C5008D304F4535A1695BFB8429274DFF013ABAC180F5168B23E`)다. 복구 시점/기준 SHA 보충은 recovery/recovery2 파일에 보존한다. 선행 TDD는 아래와 같이 완료했고 다음은 고정 구현 계약을 새 Sol max에 발행한 뒤 별도 신규 Opus 실사·독립 테스트다.
+3. 최종 요구사항/패킷 계약은 `.backups/verification/2026-10-05-items-inventory-currency/pr1-acceptance.md`, 선행 TDD 계약은 같은 폴더 `tdd-contract.md`(SHA256 `8E2968D6E7EC1C5008D304F4535A1695BFB8429274DFF013ABAC180F5168B23E`)다. 복구 시점/기준 SHA 보충은 recovery/recovery2 파일에 보존한다. 선행 TDD와 `sol-pr1-contract.md`의 구현은 아래와 같이 완료했다. 다음은 신규 Opus의 보고·diff 실사, 독립 테스트, 실제 서버↔봇 및 Unity 소비자 검증이다.
+4. 현재 Content Run은 `run_add8d9f825f4`, coordinator `term_857393a1-53a9-4546-b3f2-d2f48918696f`다. GameDev의 새 Run `run_6ba3f644755b`에 공유 파일 쓰기 종료 head/diff와 실제 봇 실행 시작·종료를 알린다. PR1 병합 전 사용자 승인을 기다리며 PR2를 먼저 착수하지 않는다.
 
 ### 2026-10-05 크래시 중단과 복구
 
@@ -154,7 +155,7 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 ## 실제 결과와 미실행
 
 - 맥락 메모, 목적별 브랜치, goal·CURRENT, 메인 범위 확인, GameDev·Rules 경계 합의, 초기 goal commit과 외부 Fable 설계 검토·정산·종료까지 수행했다. 검토 입력/결과 원문·receipt는 로컬 근거 폴더에 보존했다.
-- 신규 테스트와 선행 WSL .NET 실행은 아래 근거대로 수행했다. 제품 변경, 실제 서버↔봇/Unity 실행, 구현 후 독립 판정, PR/CI/병합은 아직 수행하지 않았다. 제품 통과·실제 게임 동작·DB 저장을 주장하지 않는다.
+- 신규 테스트·선행 WSL 실행과 PR1 제품 구현·자체 점검은 아래 근거대로 수행했다. 실제 서버↔봇/Unity 실행, 구현 후 독립 판정, PR/CI/병합은 아직 수행하지 않았다. 제품의 독립 통과·실제 게임 동작·DB 저장을 주장하지 않는다.
 - 범위 밖 후보: 후속 던전 콘텐츠·길드/거점·마을 연출·상점/연구는 메인 승인 로드맵에 이미 있는 다음 목표이며 자동 착수하지 않는다.
 
 ### 선행 TDD 완료 — 제품 PASS 아님
@@ -173,3 +174,25 @@ Astra는 원문·전체 테스트·harness·TRX 원시 카운터/실패 메시�
 TDD 가정 D1~D6의 구현 전 정리: 3틱은 테스트 허용폭이고 제품 지연 SLA가 아니다. 결과 itemId는 요청 값을 되돌리고, 새 불량 경제 입력은 무응답 drop하며 연결을 유지한다. 성공 보상마다 snapshot push1건, 보상 거부에는 별도 통지를 요구하지 않고 조회로 현재 상태를 확인한다. 이는 현재 핸들러/전송 관례에 맞춘 작은 구현 선택이며 기존 임시 데이터/범위를 바꾸지 않는다. 원 acceptance와 TDD 원문은 보존하고 구현 계약에 명시한다.
 
 완료 메시지의 세 identity/태그를 기존 수신 helper로 검증(allowed/exit0)한 뒤 worker-release를 수행했다. attached external pane이므로 retained/none이었고 동일 incarnation·완료 화면·빈 prompt를 확인하여 해당 pane만 close(ptyKilled=true)했다. `tdd-completion.json`, `tdd-completion-policy.json`, `tdd-settlement.json`, `tdd-close.json`에 보존하고 Delivery를 ack했다. 재사용하지 않는다.
+
+### PR1 서버 구현과 자체 점검 — 독립 판정 전
+
+신규 Sol `task_7cc288fe9f80`/`ctx_1652144986fc`는 `msg_65a9cc131b56`(2026-10-04T18:04:31Z)로 구현·근거 쓰기 종료와 succeeded를 보고했다. 지정/화면은 gpt-6.1-sol max, backend actual model은 unknown이다. 구현 입력 HEAD는 TDD와 최신 main 문서를 통합한 `a44272fb0219304c8c5324bd3698edfcaeec1967`이다. 원문 `sol-pr1/report.md`의 최종 SHA256은 `AB509475377D353078CC8D8207A9C866D4F4FC14F5F1EA2BA2ADFE6BF499F3E6`이며 첫 맥락·최종 파일/hash와 원시 실행은 같은 폴더에 있다.
+
+구현은 Shared 아이템 정의/불변 슬롯과 서버 Items의 상태·전이·처치 정책·World 큐, 두 Inventory 핸들러, 합의한 GameSession/GameWorld/HandlerRegistry 최소 연결, ID35..38 append·version17·실제 생성물·Shared.dll의 21제품파일이다. ClientNet도 빌드했지만 DLL hash가 같아 diff에는 없다. 고정 TDD 파일, 기존 전투/맵/quest 파일, .meta, 생성기 소스와 설정은 보존했다. 메모리 상태의 맵 이동 유지·종료 정리와 참조 교체 commit을 구현했으며 DB hook/receipt/TTL/GC dedup·보상 치트는 추가하지 않았다.
+
+| 실행 | 실제 결과·원시 위치 | 범위와 한계 |
+|---|---|---|
+| Windows 실제 생성기, Shared/ClientNet build | 각각 exit0, `sol-pr1/generate-packets`·`windows-*-build` | DLL 복사와 .meta hash 대조. Unity 실행을 대신하지 않음 |
+| 고정 wire 테스트 | 26실행/26통과/0실패/0skip, `sol-pr1/wire-run2` TRX·exit0 | 선행 RED에서 미도달인 사용/replay/busy/스택 상한/이동/종료/불량 입력 후반 단정 실행 |
+| 관련 기존 회귀 | 87실행/87통과/0실패/0skip, `sol-pr1/regression-run1` TRX·exit0 | 종료·처치·이동·지연 피해·dash·handshake·quest·party의 9클래스. 전체 스위트는 미실행 |
+| 공식 서식 진입점 | exit0, 제품 report0건, Debug/Release258파일 보존, 도구 테스트244/244, 원본291입력 검증 | `sol-pr1/format-evidence`, 프로세스 한정 ExecutionPolicy Bypass 사용 기록. 원본 제품 자동 서식 수정 없음 |
+| 변경/프로토콜 대조 | 허용21파일·보호19입력·기존34패킷 본문 보존, `sol-pr1/final-source-audit` | 생성기 header 갱신과 새 생성물의 행 끝 공백48건을 공개. 전체 diff-check exit2, 생성물 제외 exit0 |
+
+첫 `wire-run1`은 Sol이 작성한 다중 행 guard의 IDE0011 빌드 오류로 테스트에 도달하지 못했고 같은 작업의 중괄호 수정 뒤 같은 필터를 재실행했다. 테스트 기대값을 바꾸지 않았다. 선행 RED·이 자체 빌드 실패·크래시를 독립 검증의 제품 확정 실패로 집계하지 않는다. 재화/overflow·revision 극한, 내부 고아 상태·guard 예외·송신 실패 미재지급·snapshot 불변성은 아직 코드 경로 설명이며 신규 Opus의 독립 실행 범위로 남는다.
+
+Astra가 최종 보고·TRX 카운터·raw exit·해시·공유 파일 diff를 직접 대조했다. 보고 형식 보충 v1(`msg_2e530f5ec365`)은 최초 메인의 [소스]/[추론]/[미측정] 요건만 전달했고 원 구현 계약은 바꾸지 않았다. 빌드 시각 대조 중 리드가 ClientNet에 Shared 참조가 있다고 잘못 추정한 지시를 보냈으나 실제 csproj/props/stdout 대조로 즉시 철회했다(`msg_85ecbdfb9770`, 메인 정정 `msg_b9f366fdf750`). 두 빌드는 서로 다른 출력 경로이며 추가 재빌드는 시작하지 않았다. 이 리드 오판·정정은 `astra-context.md`와 Sol 최종 보고에 보존하며 작업자 위반으로 집계하지 않는다.
+
+완료 메시지는 exact handle/Task/Dispatch·태그 helper allowed/exit0으로 대조했다. worker-release의 retained/external·processAction none 뒤 동일 incarnation `34153d1c-14c7-40ab-b86e-2c639285d3c5`와 최종 idle 화면을 확인해 해당 pane만 종료했다(ptyKilled=true). 근거는 `sol-pr1-completion.json`·`sol-pr1-completion-policy.json`·`sol-pr1-preclose.json`·`sol-pr1-close.json`이다. Delivery를 ack했고 reclaimable0이며 완료 작업자는 재사용하지 않는다.
+
+후속 실행 조율: GameDev `msg_6eca0797e9a9`는 7777 점유/계획 없음과 순차 사용에 동의했다. 메인 `msg_02cdfd027894`는 Content 자기 checkout/Library에서 설치 Unity6000.4.7f1의 revision·실행 전 프로세스·전후 자산 변경을 대조하는 batch 검증 배정을 허용했다. 두 원문은 `gamedev-port-agreement.json`, `unity-ownership-main.json`이다. 실행 직전 다시 소유를 확인하며 타 프로세스·Library를 건드리지 않는다. scene/prefab 저작과 MCP는 메인 전용이다. 현재 실제 봇·Unity·DB·독립 판정·PR/CI는 미실행이다.
