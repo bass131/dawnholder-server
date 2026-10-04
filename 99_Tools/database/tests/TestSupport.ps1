@@ -433,6 +433,48 @@ function New-FakeSqlConnection {
     return $connection
 }
 
+function New-TestSqlException {
+    param(
+        [Parameter(Mandatory)][int]$Number,
+        [Parameter(Mandatory)][string]$Message,
+        [Exception]$InnerException = $null
+    )
+    # An in-memory System.Data.SqlClient.SqlException for offline error-boundary tests. It is built through the
+    # provider's non-public constructors, so it never comes from a SqlCommand or an engine. An unknown provider shape
+    # stops here instead of falling back to another exception type that would make a negative test pass vacuously.
+    $flags = [Reflection.BindingFlags]'Instance, NonPublic'
+    $leading = @([int], [byte], [byte], [string], [string], [string], [int])
+    $errorConstructors = @([Data.SqlClient.SqlError].GetConstructors($flags) | Where-Object {
+            $types = @($_.GetParameters() | ForEach-Object ParameterType)
+            $leadingMatches = $types.Count -ge $leading.Count -and
+                @(0..($leading.Count - 1) | Where-Object { $types[$_] -ne $leading[$_] }).Count -eq 0
+            $restSupported = @($types | Select-Object -Skip $leading.Count |
+                    Where-Object { $_ -ne [uint32] -and $_ -ne [Exception] }).Count -eq 0
+            $leadingMatches -and $restSupported
+        } | Sort-Object { $_.GetParameters().Count })
+    $collectionConstructor = [Data.SqlClient.SqlErrorCollection].GetConstructor($flags, $null, [Type[]]@(), $null)
+    $addError = [Data.SqlClient.SqlErrorCollection].GetMethod('Add', $flags)
+    $exceptionConstructor = [Data.SqlClient.SqlException].GetConstructor(
+        $flags,
+        $null,
+        [Type[]]@([string], [Data.SqlClient.SqlErrorCollection], [Exception], [Guid]),
+        $null)
+    if ($errorConstructors.Count -eq 0 -or $null -eq $collectionConstructor -or $null -eq $addError -or
+        $null -eq $exceptionConstructor) {
+        throw 'Unsupported in-memory SqlException provider shape; no fallback exception is substituted.'
+    }
+    $errorConstructor = $errorConstructors[0]
+    # Number, state, class, server, message, procedure, line; trailing win32 code 0 and no inner provider error.
+    $values = @($Number, [byte]1, [byte]16, 'offline-fixture', $Message, 'offline_fixture_procedure', 1)
+    foreach ($parameter in @($errorConstructor.GetParameters() | Select-Object -Skip $leading.Count)) {
+        $values += $(if ($parameter.ParameterType -eq [uint32]) { [uint32]0 } else { $null })
+    }
+    $sqlError = $errorConstructor.Invoke([object[]]$values)
+    $errors = $collectionConstructor.Invoke(@())
+    [void]$addError.Invoke($errors, @($sqlError))
+    return $exceptionConstructor.Invoke(@($Message, $errors, $InnerException, [Guid]::Empty))
+}
+
 function Invoke-PowerShellFile {
     param(
         [Parameter(Mandatory)][string]$File,

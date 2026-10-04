@@ -37,6 +37,9 @@ $global:HarnessRoot = [IO.Path]::GetFullPath($ScenarioRoot).TrimEnd('\')
 $global:HarnessRun = $RunName
 $global:HarnessCallsPath = Join-Path $ScenarioRoot 'calls.jsonl'
 $global:HarnessBehavior = $request.Behavior
+$global:HarnessToolRoot = $toolRoot
+# Written by the suite from TestSupport.ps1; loaded only by the INSTALL-07 end-to-end behavior below.
+$global:HarnessSqlExceptionFactory = Join-Path $PSScriptRoot 'sql-exception-factory.ps1'
 
 # Product definitions: the executor stub keeps the real approval check, and the probe below needs them loaded.
 . (Join-Path $toolRoot 'test-environment/Environment.Common.ps1')
@@ -207,6 +210,31 @@ function global:Invoke-HarnessMigrations {
     $approved = $null -ne $Contract -and $Contract.ExecutionApproved -eq $true
     $detail = 'Approved=' + $approved + ';Database=' + $Connection.Database
     Write-HarnessCall -Name ('Migrations.' + $Phase) -Detail $detail
+    if ($global:HarnessBehavior.MigrationSqlNumber) {
+        # INSTALL-07 end to end: the runner's first command fails in the product Invoke-DbNonQuery that
+        # Install-Database.ps1 dot-sourced. Only this lookup bypasses its blocking alias; the fake command throws an
+        # in-memory SqlException with provider-like text, so no SqlCommand or engine is reached.
+        . $global:HarnessSqlExceptionFactory
+        $real = @(Get-Command -Name 'Invoke-DbNonQuery' -CommandType Function)
+        $file = $(if ($real.Count -eq 1) {
+                [IO.Path]::GetFullPath([string]$real[0].ScriptBlock.File)
+            } else {
+                'resolved=' + $real.Count
+            })
+        Write-HarnessCall -Name 'Migrations.ProductNonQuery' -Detail $file
+        $expectedFile = [IO.Path]::GetFullPath((Join-Path $global:HarnessToolRoot 'Database.Common.ps1'))
+        if (-not [string]::Equals($file, $expectedFile, [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'Offline harness could not resolve the product Invoke-DbNonQuery.'
+        }
+        $failure = New-TestSqlException -Number ([int]$global:HarnessBehavior.MigrationSqlNumber) `
+            -Message 'Provider text near FAKE-SENTINEL-E2E-5T Password=fake-not-a-secret'
+        $command = [pscustomobject]@{ CommandText = ''; CommandTimeout = 0; Transaction = $null; Failure = $failure }
+        $command | Add-Member -MemberType ScriptMethod -Name ExecuteNonQuery -Value { throw $this.Failure }
+        $command | Add-Member -MemberType ScriptMethod -Name Dispose -Value { }
+        $fakeConnection = [pscustomobject]@{ Database = $Connection.Database; Command = $command }
+        $fakeConnection | Add-Member -MemberType ScriptMethod -Name CreateCommand -Value { $this.Command }
+        $null = & $real[0] -Connection $fakeConnection -Sql 'offline harness migration batch'
+    }
     'Offline harness recorded the migration request.'
 }
 
@@ -440,6 +468,9 @@ exit 0
 '@
 $harnessPath = Join-Path $script:SuiteRoot 'lifecycle-harness.ps1'
 Write-FixtureText -Path $harnessPath -Text $harnessSource
+# The harness process does not load TestSupport.ps1; it receives only this factory, copied from its definition.
+$factoryText = 'function global:New-TestSqlException {' + "`n" + ${function:New-TestSqlException}.ToString() + "`n}`n"
+Write-FixtureText -Path (Join-Path $script:SuiteRoot 'sql-exception-factory.ps1') -Text $factoryText
 
 function New-DraftPlanObject {
     param([Parameter(Mandatory)][string]$Root)
@@ -547,6 +578,7 @@ function Invoke-LifecycleRun {
         FailSqlNumber = 51199
         PendingAt = ''
         StubMigrations = $false
+        MigrationSqlNumber = 0
         SecretFilesVerified = $false
         SchemaRows = @()
         LocalUsers = @()
@@ -1862,6 +1894,23 @@ Assert-True -Name 'that journal keeps the marker step Pending and state Planned,
     -Condition ($diskPending -and $pendingKept -and $diskAsAtLastCall -and $lastName -ceq 'Sql.ReadMarkers') `
     -Detail ('diskPending=' + $diskPending + '; pendingKept=' + $pendingKept + '; lastCall=' + $lastName + '; disk=<' +
         (Get-DiskJournalSummary -Manifest $manifest) + '>; atLastCall=<' + $lastJournal + '>')
+# Supplement from the final independent review (INSTALL-06 requirement: the next run is refused before connecting):
+# neither a repeated Create nor the following Install adopts that unconfirmed state or touches the journal.
+$unconfirmedHash = Get-FileHashHex -Path $durableCreate.ManifestPath
+$retries = @(
+    (Invoke-LifecycleRun -Scenario $durableCreate -Arguments @{ Action = 'Create' }),
+    (Invoke-LifecycleRun -Scenario $durableCreate -Arguments @{ Action = 'Install'; Phase = 'Baseline001' } `
+            -Behavior @{ StubMigrations = $true; SchemaRows = $baselineRows })
+)
+$retriesRefused = @($retries | Where-Object {
+        -not ($_.Completed -and $_.Threw -and @(Find-Calls -Run $_ -Pattern $noConnection).Count -eq 0)
+    }).Count -eq 0
+$retriesLeftJournal = $diskPending -and (Get-FileHashHex -Path $durableCreate.ManifestPath) -ceq $unconfirmedHash -and
+    (Get-PendingWriteText -Scenario $durableCreate) -ceq $interruptedWrite
+Assert-True -Name 'a Create or Install after the unconfirmed marker completion stops before any connection' `
+    -Condition ($retriesRefused -and $retriesLeftJournal) `
+    -Detail ('refused=' + $retriesRefused + '; journalAndPendingKept=' + $retriesLeftJournal + '; ' +
+        (@($retries | ForEach-Object { Format-RunDetail -Run $_ }) -join ' | '))
 
 # Install: the write that journals the step Pending fails, so the runner must not start and nothing is claimed.
 $durableStart = New-LifecycleScenario -Name 'durable-install-start'
@@ -2014,6 +2063,250 @@ foreach ($name in $unknownCases.Keys) {
         -Detail ('secretHidden=' + $secretHidden + '; innerNotAdopted=' + $innerNotAdopted + '; summary=<' +
             $summary + '>')
 }
+
+# ---- INSTALL-07 at Invoke-DatabaseSql (final review contract requirement 3; user decision msg_6b139eecb44e). The
+# product function runs in a child scope where only New-DatabaseSqlCommand returns a recording fake command. It throws
+# in-memory SqlException objects from New-TestSqlException or returns fixture values; no SqlCommand, connection open or
+# engine is involved. Each expected number is the first SqlException the case's fixture puts in the chain.
+$fakeProviderText = 'FAKE-SENTINEL-PROVIDER-6R Password=fake-not-a-secret'
+
+function Invoke-ProductDatabaseSql {
+    param(
+        [Parameter(Mandatory)][scriptblock]$Execute,
+        [Parameter(Mandatory)][ValidateSet('Scalar', 'NonQuery', 'Rows')][string]$Mode
+    )
+    return & {
+        param($ProductFile, $Run, $ResultMode)
+        . $ProductFile
+        $log = New-Object 'Collections.Generic.List[string]'
+        # Defined after the product import, so Invoke-DatabaseSql resolves this command factory in this scope.
+        function New-DatabaseSqlCommand {
+            param($Connection, $Sql, $Parameters, $Transaction)
+            $log.Add('Create')
+            $command = [pscustomobject]@{ Log = $log; Run = $Run }
+            $command | Add-Member -MemberType ScriptMethod -Name ExecuteScalar -Value {
+                $this.Log.Add('Scalar')
+                return (& $this.Run)
+            }
+            $command | Add-Member -MemberType ScriptMethod -Name ExecuteNonQuery -Value {
+                $this.Log.Add('NonQuery')
+                return (& $this.Run)
+            }
+            $command | Add-Member -MemberType ScriptMethod -Name ExecuteReader -Value {
+                $this.Log.Add('Reader')
+                # The comma keeps the reader one object instead of enumerating its records.
+                return , (& $this.Run)
+            }
+            $command | Add-Member -MemberType ScriptMethod -Name Dispose -Value { $this.Log.Add('Dispose') }
+            return $command
+        }
+        $file = [string](Get-Command -Name 'Invoke-DatabaseSql' -CommandType Function).ScriptBlock.File
+        $connection = [Data.SqlClient.SqlConnection]::new('Data Source=lpc:.\OFFLINESTUB;Initial Catalog=master')
+        $value = $null
+        $failure = $null
+        try {
+            $value = Invoke-DatabaseSql -Connection $connection -Sql 'SELECT 1' -Result $ResultMode
+        }
+        catch {
+            $failure = $_.Exception
+        }
+        finally {
+            $state = [string]$connection.State
+            $connection.Dispose()
+        }
+        [pscustomobject]@{
+            File = $file
+            Value = $value
+            Failure = $failure
+            Calls = @($log)
+            ConnectionState = $state
+        }
+    } $commonFile $Execute $Mode
+}
+
+$sqlFailureCases = @(
+    @{
+        Name = 'a wrapped real SqlException'
+        Expected = 547
+        Execute = { throw (New-TestSqlException -Number 547 -Message ('Provider text ' + $fakeProviderText)) }
+    },
+    @{
+        Name = 'the first real SqlException before a deeper one'
+        Expected = 2627
+        Execute = {
+            $deeper = New-TestSqlException -Number 51123 -Message ('Deeper provider text ' + $fakeProviderText)
+            throw (New-TestSqlException -Number 2627 -Message ('Provider text ' + $fakeProviderText) `
+                    -InnerException $deeper)
+        }
+    },
+    @{
+        Name = 'a real SqlException below a non-SQL wrapper'
+        Expected = 1222
+        Execute = {
+            $sql = New-TestSqlException -Number 1222 -Message ('Provider text ' + $fakeProviderText)
+            throw ([InvalidOperationException]::new('Wrapper text ' + $fakeProviderText, $sql))
+        }
+    },
+    @{
+        Name = 'a real SqlException that also carries a same-name Number property'
+        Expected = 515
+        Execute = {
+            $sql = New-TestSqlException -Number 515 -Message ('Provider text ' + $fakeProviderText)
+            $sql | Add-Member -MemberType NoteProperty -Name Number -Value 999 -Force
+            throw $sql
+        }
+    },
+    @{
+        Name = 'a non-SQL error whose message, Data and Number look like a SQL number'
+        Expected = 0
+        Execute = {
+            $lookalike = [InvalidOperationException]::new(
+                'Test environment SQL command failed (provider number 547); ' + $fakeProviderText,
+                [Exception]::new('Inner text ' + $fakeProviderText))
+            $lookalike.Data['DatabaseSqlNumber'] = 547
+            $lookalike | Add-Member -MemberType NoteProperty -Name Number -Value 547
+            throw $lookalike
+        }
+    },
+    @{
+        Name = 'a plain non-SQL error'
+        Expected = 0
+        Execute = { throw ('Native text ' + $fakeProviderText) }
+    }
+)
+$commonFull = [IO.Path]::GetFullPath($commonFile)
+foreach ($case in $sqlFailureCases) {
+    $observations = foreach ($mode in @('Scalar', 'NonQuery', 'Rows')) {
+        $result = Invoke-ProductDatabaseSql -Execute $case.Execute -Mode $mode
+        $failure = $result.Failure
+        $number = $(if ($null -ne $failure) { $failure.Data['DatabaseSqlNumber'] } else { $null })
+        $text = $(if ($null -ne $failure) { $failure.ToString() } else { '' })
+        $readerMode = $(if ($mode -ceq 'Rows') { 'Reader' } else { $mode })
+        [pscustomobject]@{
+            Mode = $mode
+            Ok = [string]::Equals([IO.Path]::GetFullPath($result.File), $commonFull,
+                [StringComparison]::OrdinalIgnoreCase) -and
+                $number -is [int] -and $number -eq $case.Expected -and
+                $failure -is [InvalidOperationException] -and $null -eq $failure.InnerException -and
+                -not $text.Contains('FAKE-SENTINEL') -and -not $text.Contains('Password=') -and
+                ($result.Calls -join ',') -ceq ('Create,' + $readerMode + ',Dispose') -and
+                $result.ConnectionState -ceq 'Closed'
+            Detail = $mode + ':number=' + $number + ',calls=' + ($result.Calls -join '>') + ',connection=' +
+                $result.ConnectionState
+        }
+    }
+    Assert-True -Name ("Invoke-DatabaseSql boundary: $($case.Name) -> number $($case.Expected), no provider text") `
+        -Condition (@($observations | Where-Object { -not $_.Ok }).Count -eq 0) `
+        -Detail (@($observations | ForEach-Object Detail) -join '; ')
+}
+
+$scalar = Invoke-ProductDatabaseSql -Mode Scalar -Execute { 'scalar-fixture' }
+$nonQuery = Invoke-ProductDatabaseSql -Mode NonQuery -Execute { 3 }
+$rowsTable = [Data.DataTable]::new()
+[void]$rowsTable.Columns.Add('Version', [int])
+[void]$rowsTable.Rows.Add(1)
+[void]$rowsTable.Rows.Add(2)
+$script:RowsReader = $rowsTable.CreateDataReader()
+$rows = Invoke-ProductDatabaseSql -Mode Rows -Execute { , $script:RowsReader }
+$rowsValue = $(if ($rows.Value -is [Data.DataTable]) {
+        @($rows.Value.Rows | ForEach-Object { [int]$_.Version }) -join ','
+    } else {
+        'not a table'
+    })
+Assert-True -Name 'Invoke-DatabaseSql success -> Scalar/NonQuery/Rows values unchanged; command and reader disposed' `
+    -Condition ($null -eq $scalar.Failure -and $scalar.Value -ceq 'scalar-fixture' -and
+        ($scalar.Calls -join ',') -ceq 'Create,Scalar,Dispose' -and
+        $null -eq $nonQuery.Failure -and $nonQuery.Value -eq 3 -and
+        ($nonQuery.Calls -join ',') -ceq 'Create,NonQuery,Dispose' -and
+        $null -eq $rows.Failure -and $rowsValue -ceq '1,2' -and $script:RowsReader.IsClosed -and
+        ($rows.Calls -join ',') -ceq 'Create,Reader,Dispose') `
+    -Detail ('scalar=' + $scalar.Value + '; nonQuery=' + $nonQuery.Value + '; rows=' + $rowsValue + '; readerClosed=' +
+        $script:RowsReader.IsClosed + '; calls=' + ($scalar.Calls -join '>') + '|' + ($nonQuery.Calls -join '>') +
+        '|' + ($rows.Calls -join '>'))
+
+# A fresh runspace that loads only Environment.Common.ps1 resolves the boundary to the shared file next to it.
+$fresh = [PowerShell]::Create()
+$resolvedBoundary = ''
+$freshErrors = 0
+try {
+    $null = $fresh.AddScript('param($File) . $File; ' +
+        '[string](Get-Command -Name New-DatabaseSqlFailure -CommandType Function).ScriptBlock.File').
+        AddArgument($commonFile)
+    $resolvedBoundary = [string](@($fresh.Invoke()) -join '')
+    $freshErrors = $fresh.Streams.Error.Count
+    if ($resolvedBoundary) {
+        # The import uses '../SqlError.Common.ps1'; compare the normalized path.
+        $resolvedBoundary = [IO.Path]::GetFullPath($resolvedBoundary)
+    }
+}
+catch {
+    # A missing boundary stops the probe; record it as this assertion's failure instead of ending the suite.
+    $resolvedBoundary = 'probe stopped: ' + $_.Exception.Message
+    $freshErrors = $freshErrors + 1
+}
+finally {
+    $fresh.Dispose()
+}
+$expectedBoundary = [IO.Path]::GetFullPath((Join-Path $script:ToolRoot 'SqlError.Common.ps1'))
+$boundaryResolved = $resolvedBoundary -and $freshErrors -eq 0 -and [string]::Equals(
+    $resolvedBoundary, $expectedBoundary, [StringComparison]::OrdinalIgnoreCase)
+Assert-True -Name 'Environment.Common.ps1 resolves New-DatabaseSqlFailure to the shared SqlError.Common.ps1' `
+    -Condition $boundaryResolved -Detail ('resolved=' + $resolvedBoundary + '; errors=' + $freshErrors)
+
+# ---- INSTALL-07 end to end through the real Install entry point. The runner's first command fails with the fixture
+# number 51001 inside the product Invoke-DbNonQuery (harness MigrationSqlNumber). Requirement 3 with 05/06: the
+# executor and the journal keep that number, provider text stays out, the step is journaled Failed, and nothing
+# retries or cleans up; the next Install stops before any connection.
+$sqlNumberInstall = New-LifecycleScenario -Name 'install-sql-number-end-to-end'
+$null = Invoke-LifecycleRun -Scenario $sqlNumberInstall -Arguments @{ Action = 'Plan' }
+$null = Invoke-LifecycleRun -Scenario $sqlNumberInstall -Arguments @{ Action = 'Create' }
+$before = Get-ManifestState -Scenario $sqlNumberInstall
+$run = Invoke-LifecycleRun -Scenario $sqlNumberInstall -Arguments @{ Action = 'Install'; Phase = 'Baseline001' } `
+    -Behavior @{ StubMigrations = $true; SchemaRows = $baselineRows; MigrationSqlNumber = 51001 }
+$productCalls = @(Find-Calls -Run $run -Pattern '^Migrations\.ProductNonQuery$')
+$expectedRunner = [IO.Path]::GetFullPath((Join-Path $script:ToolRoot 'Database.Common.ps1'))
+$reachedProduct = $productCalls.Count -eq 1 -and
+    [string]::Equals([string]$productCalls[0].Detail, $expectedRunner, [StringComparison]::OrdinalIgnoreCase)
+$reportedText = Get-RunOutcomeText -Scenario $sqlNumberInstall -Run $run
+$numberShown = $run.Message -cmatch '\b51001\b'
+$reasonClassified = $run.Message -cnotmatch $unclassifiedReason
+$textHidden = -not $reportedText.Contains('FAKE-SENTINEL') -and -not $reportedText.Contains('Password=')
+Assert-True -Name 'Install: the product migration command SQL number reaches the executor; provider text hidden' `
+    -Condition ($before -ceq 'Created' -and $run.Completed -and $run.Threw -and $reachedProduct -and $numberShown -and
+        $reasonClassified -and $textHidden) `
+    -Detail ('before=' + $before + '; product=' + $reachedProduct + '; number=' + $numberShown + '; classified=' +
+        $reasonClassified + '; hidden=' + $textHidden + '; ' + (Format-RunDetail -Run $run))
+$manifest = Read-LifecycleManifest -Scenario $sqlNumberInstall
+$journalText = Get-JournalText -Scenario $sqlNumberInstall
+$installStep = @($(if ($null -ne $manifest) { $manifest.Steps | Where-Object Name -CEQ 'InstallBaseline001' }))
+$journalNumber = $(if ($installStep.Count -eq 1 -and $null -ne $installStep[0].Failure) {
+        $installStep[0].Failure.SqlNumber
+    } else {
+        $null
+    })
+$journaledFailed = $installStep.Count -eq 1 -and $installStep[0].Status -ceq 'Failed' -and $journalNumber -eq 51001 -and
+    $manifest.State -ceq 'Created'
+$journalHidden = $journalText -and -not $journalText.Contains('FAKE-SENTINEL') -and
+    -not $journalText.Contains('Password=')
+$claimMatchesDisk = $run.Message -cmatch $claimsJournalWritten -and $run.Message -cnotmatch $claimsJournalWriteFailed
+Assert-True -Name 'that Install step is journaled Failed with the same SQL number, no provider text, as claimed' `
+    -Condition ($journaledFailed -and $journalHidden -and $claimMatchesDisk) `
+    -Detail ('failed=' + $journaledFailed + '; journalNumber=' + $journalNumber + '; hidden=' + $journalHidden +
+        '; claim=' + $claimMatchesDisk + '; disk=<' + (Get-DiskJournalSummary -Manifest $manifest) + '>')
+$lastCall = Get-LastCall -Run $run
+$lastName = $(if ($null -ne $lastCall) { [string]$lastCall.Name } else { 'none' })
+$noCleanup = @(Find-Calls -Run $run -Pattern '^(Sql\.Drop|RemoveLocalUser|Blocked\.)').Count -eq 0
+$failedHash = Get-FileHashHex -Path $sqlNumberInstall.ManifestPath
+$retry = Invoke-LifecycleRun -Scenario $sqlNumberInstall -Arguments @{ Action = 'Install'; Phase = 'Baseline001' } `
+    -Behavior @{ StubMigrations = $true; SchemaRows = $baselineRows }
+$retryRefusedEarly = $retry.Completed -and $retry.Threw -and
+    @(Find-Calls -Run $retry -Pattern $noConnection).Count -eq 0
+$retryLeftJournal = (Get-FileHashHex -Path $sqlNumberInstall.ManifestPath) -ceq $failedHash
+Assert-True -Name 'nothing runs after that SQL failure and the next Install stops before any connection' `
+    -Condition ($lastName -ceq 'Migrations.ProductNonQuery' -and $noCleanup -and $retryRefusedEarly -and
+        $retryLeftJournal) `
+    -Detail ('lastCall=' + $lastName + '; noCleanup=' + $noCleanup + '; refusedEarly=' + $retryRefusedEarly +
+        '; journalKept=' + $retryLeftJournal + '; ' + (Format-RunDetail -Run $retry))
 
 # ---- Every run stayed inside the shadowed boundary set and the harness ran the product each time.
 $escaped = @($script:AllRuns | Where-Object { $_.HarnessExit -ne 0 -or -not $_.Completed })

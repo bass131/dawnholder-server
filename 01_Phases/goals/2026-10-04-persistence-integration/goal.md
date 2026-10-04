@@ -1,8 +1,23 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **사용자1A/2B의 INSTALL-07 Sol 수정·쓰기·정산은 끝났고, 신규 Opus 한 명의 최종05/06/07 독립 판정으로 진행한다.** Sol의 전체 runner3 FAIL과 heartbeat 위반2구간은 미해소/미면제이며 제품·절차 PASS가 아니다. 직전 검증 task_b423e7cb2f25의05/06 통과는 수용하지 않는다. 해당 판정/중간 기록은 보존만 하고 새 판정 근거에서 제외하며, 로컬 checkpoint `23bdea865f1b18f6b96c40e797a52b00705310ff`의 테스트 +378/-0은 감사할 입력이다. 실제 DB·G2·U-01·D:·서비스는 미실행/사용자 행동 대기다. 첫 PR 종료 범위·G4는 유지되며 마지막 회차 경계는 아래 사용자 결정으로 이번 한 번 열렸다.
+상태: **사용자1A/2B의 INSTALL-07 수정과 신규 Opus 최종05/06/07 한 회차를 정산했다. 오프라인 기능은 통과했으며 전체 절차 수용과 실제 DB 단계는 대기다.** 신규 판정은 전체 runner **1028 PASS / 0 FAIL / 9 OBSERVED**이고, Sol의 기존3 FAIL은 옛 오류 문구 단정으로 독립 분류·보완했다. 실제 DB 검증 도구 결함 **TESTDB-01(높음)**, Sol heartbeat 위반2구간과 신규 Opus 절차 이탈의 수용은 메인에 반환한다. 실제 DB·G2·U-01·D:·서비스는 미실행이다. 이전 task_b423e7cb2f25 verdict·중간 기록은 새 판정 근거에서 제외했고, 기존 테스트 +378은 새 검증자가 직접 감사했다. 추가 수정·검증 회차나 다음 goal은 자동 착수하지 않으며 첫 PR·G4·Gardener는 아직 완료되지 않았다.
 
-## INSTALL-07 수정 정산 — 신규 독립 판정 대기
+## 최종 INSTALL-05·06·07 독립 판정 정산
+
+- 신규 `claude-opus-5-5` Task `task_6342f72bb98d` / Dispatch `ctx_6e8334cb088f`, 검증 기준 HEAD `347ce0bef346fd91c684d941f930a1e4528874c8`. 최초 명령과 화면 Opus5.5 xhigh를 확인했고 backend 실제 모델은 unknown이다. `verifies=task_dcc811b02548,task_340680800560`. 공식 `worker_done` **msg_42187fc9cf16**, 2026-10-04T19:54:12Z, outcome=succeeded는 검증 작업의 완료이며 전체 절차나 실제 DB의 통과가 아니다. 같은 메시지로 전체 쓰기 종료를 확인했다.
+- 판정 원문 `.backups/verification/2026-10-04-persistence-integration/installation-final-review/verdict.md`, SHA256 **`D1FCFAA1058EB9A321C1A747BE72CB65F4DB84449FC5BF26B0EB17E4F5F9E47E`**. 부모는 최종 원문 전체·실제 diff·context 실제 준수·원시 결과/hash를 직접 읽고 대조했다. 상세 수용 범위와 R-2 한계는 `installation-final-review-settlement.md`다.
+- 같은 PS5.1 래퍼/자식 PSModulePath/프로세스 한정 Bypass의 baseline **985/3/9 exit1 → final-2 1028/0/9 exit0**. baseline3 FAIL은 모두 (a) 옛 세부 단정이며 오류 존재·번호·원문 억제와 소유 rollback/caller transaction을 별도 관측했다. 첫 final은 테스트 import probe 보완 전 중간 결과로 보존하고 최종 수치로 쓰지 않는다. 부모 `installation-final-review-final2-parent-audit.json`에서7 suite 재집계와 stdout/stderr/results SHA, 실행 중 입력 변화0을 확인했다.
+- 05 사유 식별·비밀 억제,06 완료 journal 쓰기 실패의 내구 상태 미확정·Pending 보존·재실행 거부,07 첫 실제 SqlException의 CLR Int32 Number·안전 예외·실제 Install 진입점의 오프라인 전달이 통과했다. 실제 SqlCommand/SQL 엔진 시험은 아니다. 반사실은05/06 **94/22/1**,07 module **72/21/3**·lifecycle **109/7/1**, C1 **90/3/3**으로 결함 판별을 확인했다. 반사실 사본48파일씩의 출처 대조는 `installation-final-review-counterfactual-provenance-parent.json`이다.
+- 승인 replyv1.1 `msg_be0b8df3cb4a`의 테스트4파일만 변경했다: Lifecycle·ModuleDeployment·TestSupport의 공용 in-memory SqlException fixture·Test-Database의 Assert-SqlError. 최종 diff **+684/-9**, 제품·goal·문서·고정 근거는 검증 종료까지 불변이며 테스트4개 hash는 final-2 이후 동일하다. Lifecycle 기존26단정을 유지하고 Create 재실행 거부1개를 보완했다. 기존 검증의 판정 수치를 기대값으로 사용하지 않았다.
+- **TESTDB-01 — 높음, 기존 테스트 도구 결함, 실제 DB 단계 사용 차단:** Test-Database.ps1:54의 Invoke-Migrations는 Complete의 승인 Contract가 없고 :77/:81의 거부 문구가 현재 제품과 어긋난다. 이번05/06/07 제품 결함은 아니지만 현 스크립트로 실제 DB 검증을 진행할 수 없다. 쓰기 소유 Assert-SqlError 밖이라 미수정이며 처리 방식·추가 회차는 메인 결정이다. 사유 목록 중복·비-lifecycle 문구·번호 키 상수화 O-1~O-3은 낮음/비차단 관찰로만 반환한다.
+- **절차 수용 미결:** Sol heartbeat319/310초는 미면제다. 신규 Opus는 일반 회신의 subject·Task/Dispatch 누락1건을 재송신해 교정했으나 이력을 보존했고, check checkpoint 누락 여러 구간으로 메시지 수신이 최대10분12초 늦었다. 종료 원시는 `installation-final-review/procedure-receipts.md`다. 공식 ask 회신19:06:43Z 뒤 래퍼 작성19:07:55.433Z·baseline19:08:25.955Z 순서를 확인했다. 신규 heartbeat37건의 서버 최대191초로300초 초과0이지만 이를 다른 절차 이탈의 면제로 쓰지 않는다. 원래 ask tool 입력은 clipping되어 명령 전체 실사라고 주장하지 않는다.
+- **초안과 원시 차이 정정:** 부모가 TESTDB 행 번호와05 AST expression6 설명 누락·출력 끝행 잘림을 발견해 즉시 메인에 보고했다. 보간3은 기존216표본에 포함됐고, 미확인 상수3은 새 진단에서 모두 분류됐다. 잘린 원본을 보존하고 새 완전 출력으로216/미분류0/노출0을 확인했다. 최종 판정에 정정 이력을 남겼으며 이력 자체를 삭제하거나 절차 무위반으로 바꾸지 않는다.
+- 보고·원천 인수 뒤 release는 external_terminal retained였고, worker-list의 실제 handle·같은 incarnation·idle 화면을 대조해 정확 검증 pane을 닫았다(ptyKilled=true). **close 뒤 terminal list 재확인: 남은 GameDev 작업자 pane 0.** `installation-final-review-release.json`, `installation-final-review-before-close-terminal.json`, `installation-final-review-close.json`, `installation-final-review-after-close-terminals.json`에 보존했다. 메인·Astra·대시보드는 작업자 수에 넣지 않는다. 재사용하지 않는다.
+- Unity 실물3/S3/stash2 보존을 부모가 직접 확인했다. 승인된 로컬 checkpoint만 남기며 push·PR·병합·실제 SQL/DB/U-01·서비스/UAC/D:/OS계정/ACL/DPAPI/WSL/Unity/CI는 수행하지 않았다. 승인 PSSA manifest 부재는 미실행으로 남긴다.
+
+## INSTALL-07 수정 정산 — 당시 신규 독립 판정 대기 기록
+
+아래는 Sol 정산 시점의 기록이다. 이후3 FAIL의 독립 분류와 C1 보완은 위 최종 판정을 따른다.
 
 - 구현 `task_340680800560` / `ctx_d31947f9a35b`, 기준 HEAD `23bdea865f1b18f6b96c40e797a52b00705310ff`. 신규 `gpt-6.1-sol max` 최초 실행 명령과 화면을 부모가 확인했고 backend 실제 모델은 unknown이다. 전체 쓰기 종료 `msg_fd2d73e35013` 뒤 `msg_c256650bd00a`의 명시 outcome=failed로 정산했다. 이 outcome은 기존 runner 실패·절차 위반을 포함한 보고이며 제품 확정 실패 횟수로 임의 환산하지 않는다.
 - `Database.Common.ps1`·`test-environment/Environment.Common.ps1`와 사전 설계 replyv1.1 `msg_96e09f2195e5`에서 승인한 신규 `SqlError.Common.ps1`만 제품 쓰기를 했다. 첫 실제 SqlException의 CLR Int32 Number와 원문/inner 없는 안전 예외를 공통화했다.05/06 로직과 기존 테스트9파일은 변경하지 않았다.

@@ -12,10 +12,16 @@ function Assert-Equal($Expected, $Actual, [string]$Label) {
 function Assert-SqlError([scriptblock]$Action, [int[]]$Numbers, [string]$Label) {
     try { & $Action | Out-Null }
     catch {
+        # Invoke-Db* replace provider errors with a safe error whose Data keeps only the CLR Int32 SQL number
+        # (SqlError.Common.ps1). Raw provider exceptions, message text and non-Int32 values are not SQL numbers here.
+        $number = $null
         $errorObject = $_.Exception
-        while ($null -ne $errorObject -and $errorObject -isnot [System.Data.SqlClient.SqlException]) { $errorObject = $errorObject.InnerException }
-        if ($null -eq $errorObject -or $errorObject.Number -notin $Numbers) { throw }
-        Write-Output "PASS: $Label (SQL $($errorObject.Number))"
+        while ($null -ne $errorObject -and $null -eq $number) {
+            if ($errorObject.Data['DatabaseSqlNumber'] -is [int]) { $number = $errorObject.Data['DatabaseSqlNumber'] }
+            $errorObject = $errorObject.InnerException
+        }
+        if ($null -eq $number -or $number -notin $Numbers) { throw }
+        Write-Output "PASS: $Label (SQL $number)"
         return
     }
     throw "$Label unexpectedly succeeded."
