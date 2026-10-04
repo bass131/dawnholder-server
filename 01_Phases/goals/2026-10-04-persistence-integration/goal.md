@@ -1,8 +1,46 @@
-# 실제 SQL 설치·엔진 판정과 저장소·제한 복구 통합
+# 실제 SQL 설치·엔진 판정
 
-상태: **중간 마감. 독립 재검증에서 INSTALL-01~04 해소, INSTALL-05 부분 해소와 신규 INSTALL-06이 남았다(960 PASS/2 FAIL/9 OBSERVED). 마지막 Sol 분할4회는 CLI handle 대기 시간 초과 뒤 실제 pane4개가 늦게 등록됐고, 사용자 결정 A에 따라 메인이 미사용 상태로 모두 종료했다. Task/Dispatch는 미발행이다.** 현재 작업 트리를 체크포인트 commit/push(PR 없음)로 보존하고 새 작업 없이 대기한다. 전체 goal은 미완료이며 실제 DB·G2·D:·서비스 단계는 실행하지 않았다.
+상태: **두 번째 PC 크래시 후 고정 입력 보존을 확인했고 신규 Opus 강 독립 검증을 다시 준비한다.** 수정·검증 비교 기준은 `2372ba4bc10d932ce52aeb032cea60707d911c1b`다. 첫 PR 종료 범위·G4는 메인 `msg_b7074e6a1c4a` 승인 상태다. 마지막 Sol 자체 시험은 7 suite 962 PASS/0 FAIL/9 OBSERVED로 남았지만 최종 보고·정산 전에 크래시로 중단됐다. 이는 독립 PASS가 아니다. 실제 DB·G2·U-01·D:·서비스는 미실행/사용자 행동 대기다. 직전 독립 판정의 INSTALL-05 잔여·06은 새 판정 전까지 해소로 확정하지 않는다.
 
-## 사용자 중간 마감 결정
+## 2026-10-05 01:15 KST 두 번째 크래시와 복구
+
+메인 `msg_01dcc2f82c5c`(2026-10-04T16:40:31Z)가 두 번째 블루스크린과 사용자 원문 **「둘 다 하자, 안랩 세이프 트랜잭션도 지우고, Orca도 이전버전으로 다운그레이드하자」**를 전달했다. 보안 제품 제거·덤프 해석·데이터 손실 없음은 메인 보고이며 이 세션 수행이나 사용자 직접 입력으로 격상하지 않는다. 실제 CLI는 1.4.217로 확인하고 해당 버전 가이드를 다시 읽었다. 죽은 검증자 `task_be5ae41c496f` / `ctx_6ae9b6f4b789` / `term_2cb15f32-1ae9-40cb-b3e2-0e72adc8bd44`는 자동 abandoned/failed terminal_missing·capability revoked이고 최종 판정이 없다. **크래시로 중단된 부분 결과**로 남기며 중간 기록을 판정 근거로 승계하지 않는다. `crash2-input-audit.json`에서 이전 고정 입력79개가 모두 일치하고 검증 evidence 폴더/최종 판정/테스트 변경이 없음을 확인했다. 기존 원시는 보존하고 제품 확정 실패에 더하지 않는다. 새 자기 pane `term_5eb9b1ed-99af-4ffa-a845-f11d4df76ab1`, runtime `c37fa9b2-410f-4791-ac59-9ad67570b6ef`, 현 Run **`run_6ba3f644755b`**이며 메인 `term_00d42610-7480-4fad-be06-ac8f4d9b131d`에 `msg_1f3acbd73c0d`로 새 주소를 보냈다. 이전 Run·handle은 역사이고 옛 inbox는0건이다. 메인 허용에 따라 종료 확인된 제품2·goal만 로컬 checkpoint에 남기고, 같은 검증 범위의 신규 `claude-opus-5-5`를 새 계약/입력/근거 폴더로 발행해 처음부터 판정한다. push·PR·병합 및 실제DB·D:·서비스/UAC는 별도 기존 경계를 유지한다.
+## 2026-10-05 00:45 KST 크래시와 복구(이전 Run 역사)
+
+- 메인 `msg_89a81699367a`(2026-10-04T16:00:09Z)가 PC 블루스크린·전체 프로세스 종료와 사용자 결정 **「지금 재개하고 재발을 지켜봄」**을 전달했다. 사용자 직접 입력으로 격상하지 않는다. 죽은 Sol `task_dcc811b02548` / `ctx_0e647dde42ff` / `term_53a75ba3-3a34-4e84-8c68-b6791773f80a`는 Orca에서 abandoned/failed terminal_missing이다. 크래시는 같은 계약·번호의 제품 확정 실패에 더하지 않는다. Sol 재기동 없이 디스크를 인수하고 신규 Opus로 진행하라는 메인 지시를 적용한다.
+- 제품 쓰기 종료 status `msg_39d452061d25`(15:35:12Z)는 남아 있고 제품2파일은 당시 전체 실행 전후/부모 hash와 일치한다. **최종 report.md·worker_done·context 실제 준수 갱신은 없으며 보고 조각은 「크래시로 중단된 부분 결과」다.** 부모가 실제 diff·고정 입력·원시7파일을 대조한 `crash-recovery-settlement.md`는 Sol 완료 보고나 독립 판정을 대신하지 않는다. 최종 시험962/0/9와 Unity3/S3/stash2 보존은 `crash-recovery-source-audit.json`에서 확인했다. 비교48개 중 부모 맥락 메모의 복구 절 추가1개만 달랐고 제품·테스트·goal은 크래시 전 실측과 같았다.
+- Sol 변경은 Environment.Common의 안전 사유 exact/template 분류와 New-TestDatabase의 내구 상태 미확정 안내다. 초기 시험62/16/1 중 환경 유래14건은 자식 PSModulePath만 빈 값으로 보정해 제품/테스트 무변경76/2/1로 복원됐고, 제품 수정 뒤78/0/1이 됐다. 전역 설정 변경은 없었다. wrapper 호출 편차·heartbeat300초 기준 초과3건(ask 제외22/12/8초)·최종 정산 누락은 부모 인수 기록에 보존하며 절차 전체 PASS로 바꾸지 않는다.
+- 새 자기 pane `term_0448526f-a712-4397-a802-6d001d3ac077`, runtime `7dedef4a-9af4-4cb2-bd73-2da55712cc94`, **당시 Run `run_3038fbaaa770`**. 메인 새 pane `term_f4b4d463-b205-4f2a-96f6-3ff1b7f61598`에 `msg_d23ca5304cfb`로 회신 주소를 알렸다. 이전 Run `run_495ed90b4d12`·handle은 역사다. 과거 inbox의 미확인 Content 주소 안내는 이미 합의한 경계이며 새 작업 지시가 아니었다. 옛 외부 자원은 retained/nextAction none·terminal null로 남아 있어 임의 다른 pane 종료나 reset을 하지 않았다.
+- 다음은 신규 `claude-opus-5-5` 한 세션의 처음부터 실사·독립 테스트·오프라인 진입 실행이다. 메인 지시로 부모 인수 문서를 제공하지만 부족한 필수 근거를 PASS로 완화하지 않는다. 이번 판정 뒤 잔여 결함은 메인에 반환하고 추가 수정 회차를 자동 열지 않는다. 실제 DB/서비스/UAC는 별도 승인 대기를 유지한다.
+- Content 추가 경계는 `resume-content-symbol-boundary.json` / `resume-content-dead-guard-candidate.json`에 보존했다. Content가 전달한 메인 원천 대조에 따라 처치 receipt는 철회했고 기존 death gate의 회귀를 시험한다. GameDev 후속 후보 `enemy-hit-dead-guard`는 ApplyImmediateEnemyHit의 IsDead 사전검사 보강이며 기존 호출자 guard가 있다는 **Content 전달 관측**이다. 현재 제품 변경/직접 검증 실적으로 쓰지 않고 BACKLOG 등록은 메인/Rules에 조율한다.
+## 정본 반영 전 적용 중인 사용자 결정
+
+출처는 메인 `msg_ac202aff9b99`(2026-10-04T14:56:49Z)와 읽기 전용 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-04/`의 아래 파일이다. 이들은 메인이 전달한 사용자 결정이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. Rules가 운영 정본으로 옮기기 전까지 이 goal과 다음 계약에 적용한다.
+
+- `plan-scopes-draft.md` 사용자 원문: **“1) GameDev: 영속화 goal을 첫 PR에서 닫고 마감용 「게임 저장 고리」로 → A 첫 PR에서 닫음”**. 첫 PR 뒤 저장소·제한 복구 두 번째 PR은 이번 goal에서 제외한다. 다음 순서는 인스턴스 맵 수명→게임 저장 고리이며 자동 착수하지 않는다.
+- `HANDOFF.md` 결정1 사용자 원문 **“OK 그렇게 가자”**: 범위를 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건 및 PR 경계로 적고 착수 전 메인이 확인한다. 범위 안 완료조건을 막는 결함만 수정하며 같은 산출물 수정이 3회를 넘으면 메인 체크포인트 알림을 보낸다.
+- `routing-draft.md` 사용자 원문: **“1) 작업 유형별 표와 모델 평가 권고 16개 배치 → A 승인 · 2) 설계 4범주 작업은 구현 전에 Fable이 불변식 목록 작성(시범) → A 시범 도입 · 3) Sol effort 시험은 보류하고 max 유지 → A 보류 · 4) 작업별 자동 기록 범위 → A 둘 다 · 5) 검증 강도 2등급 4주 시범 → A 시범 도입 · 6) 규칙 문서는 지금 늘지 않게만, 가지치기는 10-31 평가 때 → A 증가만 멈춤 · 7) 사람용 코드 따라읽기 문서는 지금 만들지 않음 → A 지금 안 함”**.
+- 위 라우팅의 즉시 적용: 계약 경로 실존 확인, 예문 대신 요구 항목/판정 기준, 관련 규칙 절 원문만 포함하고 제외 이유 표시, 검증 harness 파일화/판단별 Assert 변수, 설계 결정 차단 시 한 줄 대안, 보고 수치의 원시 파일 추적. 판정에는 `verifies` 대상 Task 및 결함 번호·심각도·차단·귀속과 「설계 관찰(비차단)」를 둔다. 설치·I/O 진입 경로는 stub 뒤에서라도 1회 실행해야 하며 함수 정의 점검만으로 PASS를 주지 않는다.
+- 이번 goal의 검증 등급은 **강**(DB·설치·I/O·실패 수명)이다. 신규 Opus의 실사·독립 테스트·실제 진입 경로 실행이 필요하고 오프라인 진입과 실제 SQL/U-01을 구분한다. 등급 시범은 10-31 재평가다. `HANDOFF.md` TDD 결정 원문 **“A”**는 새 goal부터 적용하므로 진행 중이던 이번 goal은 기존 방식이다. 구현 Sol `gpt-6.1-sol` max, 검증 신규 `claude-opus-5-5`를 유지한다.
+- `deadline-roadmap-draft.md` 사용자 원문 **“1) 필수선 → A 필수선 승인 · 2) Docker 분산 → A 마감 뒤 · 3) 게임을 두 파트로 → A 둘로 나눔 · 4) 도구·운영 파트는 마감까지 게임 속도를 돕는 일만 → B 오늘 순서대로”**. 11월 첫째 주 졸업작품 전시회 평가에 PPT·플레이 녹화로 마을 광장→길드 거점→파티 인스턴스 던전→보상→성장→재접속 유지를 보인다. 10-28 기능 동결 목표, 상점·연구 2순위다.
+- Fable 사전 설계 시범은 Content 첫 goal 및 GameDev의 **다음** 인스턴스 맵 수명·게임 저장 고리에 한정한다. 구현 전 불변식/전제 출처를 goal-review.md에 쓰고 메인이 원문 확인한 뒤 구현한다. 이번 05/06 마지막 수정에 새 사전 Fable 관문을 소급하지 않는다. ORCA의 같은 계약·번호 확정 실패 3회 규칙은 유지한다.
+
+## 현재 범위·PR 경계
+
+| 항목 | 승인 초안에 맞춘 범위 |
+|---|---|
+| 만들 것 | INSTALL-05/06 수정·독립 재검증, 승인 시험 DB의 최종 설치와 실제 엔진 U-01 판정, 첫 PR과 G4 정산·종료 기록 |
+| 건드릴 곳 | `99_Tools/database/`의 설치 수명·검증 도구와 해당 테스트, 이 goal·필요한 설치/실행 근거. 마지막 Sol의 제품 쓰기는 `test-environment/Environment.Common.ps1`와 `New-TestDatabase.ps1` 두 파일로 한정 |
+| 하지 않을 것 | 001 변경, 저장소/제한 복구 두 번째 PR, `PersistenceRecovery`, 실제 recovery Windows principal 최소권한 실증, D1a 시험 행렬 전체, crash 복구, 게임/Unity 연동·PDL·다른 파트 구현, 서비스/UAC/SQL 무승인 실행 |
+| 관찰 가능한 완료조건 | 05/06 독립 PASS와 01~04 보존, 승인된 실제 엔진의 최종 설치·U-01 원시, 필요한 CI·문서 실사, 정확 head에 대한 사용자 병합 승인, G4 인수 및 goal 결과·Gardener·종료 점검 |
+
+**PR은 설치·엔진 판정 한 경계다.** 첫 PR 병합 뒤 G4·결과 기록·Gardener·메인 종료 점검·R-8로 이 goal을 닫는다. 저장소·복구 두 번째 PR을 이어 여는 이전 계획은 철회됐다. 이번 마지막 수정 1회→독립 재검증 1회 뒤 결함이 남으면 원시/번호와 다음 할 일을 메인에 보고하고 추가 회차는 열지 않는다.
+
+## 이전 중간 마감 결정(역사)
+
+이 절의 새 착수 동결·PR 없음·전체 goal 미종료는 당시 결정이다. 현재 실행 범위는 위 재개 결정과 아래 범위가 우선하며, 원문 기록을 당시 성공/승인으로 재해석하지 않는다.
+
+### 사용자 중간 마감 결정
 
 메인 `msg_06ab6853f32e`(2026-10-04T11:10:02Z)가 사용자 원문 **“결정대기 관련에서 현황판에 업데이트가 안됬네, 일단 A긴 해”**를 전달했다. 메인이 제안한 A안은 “지금부터 새 착수 동결: 진행 중인 검증·결함 수정 루프만 끝내고 새 goal·PR 범위는 열지 않는다”다. 메인 전달이며 사용자 직접 메시지로 격상하지 않는다.
 
@@ -28,8 +66,8 @@
 - 작업 경로 `C:/Dev/DawnHolder_Project`, branch `feat/persistence-integration-20261004`. 최신 main 기준 `3f0cb5e2861574ea1e6b092875de27694897b21d`에서 시작했다.
 - 이전 종료 checkpoint `f137bbb6ca2a7b5bc424769f8083d2d9814dc32c`를 `2c3522e075cd3f68804f80dec1735f368669eb0e`로 cherry-pick했다. 이전 goal만 +9/-2이며 이 목표의 첫 PR에 포함한다. 원본 branch/commit은 유지한다.
 - Unity 실물3 SHA·skip-worktree S3·stash2는 전환 전후 일치한다. 근거는 `.backups/verification/2026-10-04-persistence-integration/branch-checkpoint.json`이다. 상태가 깨끗하다는 Git 출력만으로 사용자 파일 보존을 판단하지 않는다.
-- 다음: 재개 승인 뒤 Sol 기동 경로 확인→고정 입력 갱신→위 마지막 수정 회차다. 현재는 새 작업 없이 대기한다. 실제 DB/G2는 마감 뒤이며 검토 초안은 ExecutionApproved=false/G2=null을 유지한다.
-- 현재 Run `run_da60626aa8de`. 첫 Opus Task `task_19f35f0a16b0`/Dispatch `ctx_7aa1fb01a3ce`는 작업 완료·정산·정확 pane 종료했다. task outcome=succeeded는 실사 완료이며 제품 판정은 FAIL이다. 이전 목표 식별자를 실행 권한으로 재사용하지 않는다.
+- 현재 재개는 위 크래시 복구 절을 따른다. 이전 Run `run_495ed90b4d12`와 `msg_ceabbe68669d`는 크래시 전 주소 이력이다. 실제 DB/G2는 D:·서비스·실행자/명령/시간 창 승인 대기이며 검토 초안의 ExecutionApproved=false/G2=null을 유지한다.
+- 이전 Run `run_da60626aa8de`는 역사다. 새 세션은 재사용하지 않고 새 Run 바인딩 직후 메인에 회신 주소를 알린다. 첫 Opus Task `task_19f35f0a16b0`/Dispatch `ctx_7aa1fb01a3ce`는 작업 완료·정산·정확 pane 종료했다. task outcome=succeeded는 실사 완료이며 제품 판정은 FAIL이다.
 - 수정 Sol Task `task_10ee107139ee`/Dispatch `ctx_4fb9710dc625`도 쓰기 종료·원문 대조·release·정확 pane 종료했다. 자기 점검은 독립 판정으로 쓰지 않고 위 신규 검증자에게 넘겼다.
 - 첫 재검증 Opus Task `task_32164d72f32a`/Dispatch `ctx_2a0a1c3853f1`는 `msg_1a5fa823d2ce`로 쓰기 종료했고 원문/원시 대조·release·정확 pane 종료했다. 해당 Task 성공은 실사 완료이며 제품 판정은 통과 아님이다.
 
@@ -63,24 +101,22 @@
 | 책임 | 할 일 | 보존·제외 |
 |---|---|---|
 | SQL 설치·엔진 | 승인된 시험 DB에 최종 001 및 migration002~004/modules 설치, 검증기·설치 수명 도구의 실제 결함 수정, 최초 빈 scalar5개 U-01 실증 | 001 원문/checksum, 공개9RPC·29열·결과/오류/grant·tx 계약. 설치 불가 과거 중간 tree 사용 금지 |
-| 독립 저장소 | `02_Server/Persistence/` net10 library, immutable 요청/token/result/options, typed SQL adapter와 recovery interface, 단일 deadline·unknown 처리 | GameSession/GameWorld/Host 의존·GameServer composition·actor/Ready·Unity 연결은 D2/D3 |
-| 제한 복구 | `99_Tools/PersistenceRecovery/`의 Inspect/Recover/Release/Resolve, 전용 Windows principal launcher 및 승인된 PowerShell/System.Data.SqlClient 경로 | 임의 SQL/RPC/DB/endpoint/credential, Management UI·범용 관리자 기능 제외 |
-| 독립 검증 | 별도 Persistence.Tests, database/tests fixture/fault 및 Test-Database 현행 계약, 실제 Windows/WSL 연결·권한·동시성 | 제품 코드는 Sol만, 테스트 작성·판정은 신규 Opus만 |
-| 통합 문서 | MSSQL 안내·D2 소비 계약·판정/미실행·PR/자원 정산 | 운영 지침·정책·다른 파트 파일의 무관한 정리 제외 |
+| 독립 검증 | database/tests fixture/fault 및 Test-Database의 이번 설치·U-01 관련 계약 | 제품은 Sol만, 독립 테스트/판정은 신규 Opus만. 저장소·WSL 연결·최소권한 전체 행렬은 이번 완료조건에서 제외 |
+| 통합 문서 | 설치/실행 안내·판정/미실행·첫 PR/자원 정산 | D2 소비 계약·운영 정책·다른 파트 파일의 무관한 정리 제외 |
 
-승인된 `Microsoft.Data.SqlClient 6.1.7` 추가/restore는 구현 시 공식 지원/patch를 재확인한다. 다른 버전·의존성이 필요하면 메인 판단을 받는다. SqlDbType/길이와 엄격한 단일 result·29열·JSON 계약, 취소/timeout의 unknown을 보존한다. 새 operation ID 자동 생성·DB/메모리 fallback·부분 결과 성공 판정은 하지 않는다. 게임 틱에서 I/O 완료를 기다리지 않는다.
+저장소 및 `Microsoft.Data.SqlClient 6.1.7` 추가/restore는 이번 scope에서 제외한다. 제품 SQL의 9RPC·29열·JSON·결과/오류/grant·transaction 계약은 보존한다. 새 operation ID 자동 생성·DB/메모리 fallback·부분 결과 성공 판정을 추가하지 않는다. 게임 틱에서 I/O 완료를 기다리지 않는 조건은 후속 게임 저장 고리에도 유지한다.
 
 ## DB 접속 경계 G0·G1·G2
 
 | 경계 | 고정 내용 |
 |---|---|
-| G0 범위/설계 | 독립 저장소·제한 복구·검증을 위 범위로 분리. 제품/테스트/판정 소유를 Task별 명시. 새 라이브러리/범용 도구 권한을 만들지 않음 |
-| G1 대상/수명 | 로컬 `.\SQLEXPRESS`, 시험 DB **Dawnholder_Dev_D1b_20261002 하나의 신규 생성→최종 설치→시험→최종 폐기 수명**. 기존 동명 자원이 있으면 중단하며 채택/DROP/재생성하지 않음. PR 사이 같은 DB 보존 |
+| G0 범위/설계 | 첫 PR의 설치·엔진 판정만. 제품/테스트/판정 소유를 Task별 명시. 새 라이브러리/범용 도구 권한을 만들지 않음 |
+| G1 대상/수명 | 로컬 `.\SQLEXPRESS`, 시험 DB **Dawnholder_Dev_D1b_20261002 하나의 신규 생성→최종 설치→시험→최종 폐기 수명**. 기존 동명 자원이 있으면 중단하며 채택/DROP/재생성하지 않음. 첫 PR 검토 중 보존하고 아래 G4 확인 뒤 정산 |
 | G1 principal | runtime SQL login **dh_d1b_runtime_20261002**, 해당 DB dh_runtime만. recovery **YYH_DESKTOP\dh_d1b_recovery** 비관리자 Windows 계정, 해당 DB dh_recovery만. 동명 계정 채택 금지 |
 | G1 연결/TLS | 관리 local shared memory, Windows/WSL `tcp:127.0.0.1,14330`. Encrypt Mandatory(기존 도구 true), 해당 fixture만 TrustServerCertificate=true. 저장소 기본 false·자동 fallback 금지 |
 | G1 binding | slot1, AccountId `828e39df-ba5d-4209-86ea-4e9ec1a43ed5`, CharacterId `686e8071-daa1-404d-af7d-d4bb2442748c` |
 | G2 설치 경로 | 실제 실행할 provision/install/cleanup 최종 diff·hash, 비밀 없는 승인 계획/manifest, 정확 executor/명령/시간 창·ACL/identity·부작용을 신규 Opus가 **최초 접속 전에** 정적 실사 |
-| G2 복구 경로 | 아직 미구현인 launcher/저장소가 초기 설치 실사로 승인됐다고 하지 않음. 구현 후 **해당 경로 첫 실행 전에** 최종 diff·identity/secret 전달/ACL을 새 Opus가 추가 실사. 실행 경로 수정도 재실사 |
+| G2 복구 경로 | 이번 goal에서 제외. 미구현 launcher/저장소나 recovery 실증이 초기 설치 실사로 승인됐다고 하지 않음 |
 
 기존 승인에는 DB 존재기간 만료가 정해져 있지 않다. Astra가 실제 작업자/명령에 대한 시간 창을 따로 고정하며 자원의 한 번 수명과 구분한다. G2 전에는 SQL 접속·비밀 읽기·외부 구성을 하지 않는다. 관리자/UAC 단계는 정확 명령·실행자·시간 창을 메인에 미리 전달한다. 사용자 직접 실행이 필요한 경우 메인이 요청한다.
 
@@ -90,37 +126,51 @@ G2 통과 후 첫 접속은 DB_NAME/instance/endpoint·ProductVersion/patch·col
 
 ## 작업 순서·소유·PR 경계
 
-1. **계획·설치 경로 준비:** 메인에 이 초안을 전달한다. 기존 승인 계획·도구를 재사용해 필요한 변경과 정확 파일 소유를 좁힌다. 신규 Sol(gpt-6.1-sol max)이 제품만 작성한다. 제품 쓰기 종료 뒤 새 Opus(claude-opus-5-5)가 G2 설치 경로·보고/실제 diff를 실사하고 필요한 테스트를 작성한다.
+1. **범위 확인·마지막 수정:** 메인에 새 범위와 G4안을 전달한다. 확인 뒤 새 고정 입력/계약으로 신규 Sol(gpt-6.1-sol max)의 05/06 수정 1회와 쓰기 종료 뒤 신규 Opus(claude-opus-5-5)의 독립 재검증 1회를 진행한다. 등급은 강이며 설치 진입 경로를 stub 뒤에서라도 실행한다. 잔여 결함은 다음 회차를 자동 발행하지 않고 메인에 보고한다.
 2. **조기 엔진 판정:** G2 통과한 명령만 한 실행자·한 DB writer 시간 창으로 수행한다. 승인 DB를 한 번 만들고 최종001~004/modules를 설치한다. 신규 Opus가 schema/설치와 빈 scalar5개 U-01을 실제 엔진에서 먼저 판정한다. 실패는 raw 보존→새 Sol 좁은 수정→새 Opus 재검증으로 해소한다.
-3. **첫 PR — 설치·엔진 판정:** 필요한 설치/검증 도구 현행화, 실제 schema/U-01 근거, 새 goal과 이전 종료 checkpoint를 묶는다. 제품 SQL 외부 계약은 유지한다. 저장소 구현 전에 실제 엔진 불확실성을 줄이고 사용자가 별도로 검토할 수 있어 분리한다. 정확 PR head와 CI/미실행을 보고하고 개별 사용자 병합 승인을 받는다. 동일 DB는 계속 보존한다.
-4. **저장소·복구 구현:** 첫 PR 병합을 반영한 최신 main의 후속 branch에서 같은 goal을 이어간다. 첫 엔진 판정 뒤 신규 Sol이 저장소와 복구 경계를 좁은 Task로 순차 구현한다. 새 Opus가 최종 경로의 G2 추가 실사 및 독립 테스트를 수행한다. 한 작업자/검증자 한 Task 뒤 정산·종료하며 재사용하지 않는다.
-5. **독립 통합·두 번째 PR:** D1a 시험 행렬을 실제 DB·Windows/WSL에서 판정하고 필요한 수정·재검증을 완료한다. 저장소·복구·동시성/unknown·프로젝트 등록 및 소비 안내를 두 번째 PR로 묶는다. 각 PR은 별도 사용자 병합 승인, 자동 병합 금지다.
-6. **전체 goal 정산:** 아래 G4를 마치고 모든 PR/결과 기록 뒤 신규 Opus Gardener를 수행한다. 메인/사용자가 결과·남은 위험·BACKLOG·다음 계획을 점검한 뒤 R-8 교체한다. 첫 PR만으로 goal 종료나 Gardener/R8을 실행하지 않는다.
+3. **첫 PR — 설치·엔진 판정:** 필요한 설치/검증 도구 현행화, 실제 schema/U-01 근거, goal과 이전 종료 checkpoint를 묶는다. 제품 SQL 외부 계약은 유지한다. 정확 PR 번호·head·CI·미실행·G4 상태를 메인에 보고하고 해당 PR의 사용자 명시 병합 승인을 받는다. DB는 검토와 재현이 끝날 때까지 보존한다.
+4. **전체 goal 정산:** 첫 PR 병합 뒤 메인이 확인한 아래 G4를 수행하고 결과를 기록한다. 신규 Opus Gardener→메인/사용자 종료 점검→R-8로 종료한다. 같은 goal의 저장소·복구 두 번째 PR은 열지 않는다.
+
+실제 DB 대기 중에는 메인이 허용한 다음 「인스턴스 맵 수명」 goal 초안·Fable 검토 준비만 최신 main의 별도 branch에서 할 수 있다. 현재 checkout의 쓰기/검증 중 branch를 전환하지 않는다. 새 공간·기동이 필요하면 메인과 배치를 확인한다. 구현은 다음 goal 범위와 Fable 원문을 메인이 확인한 뒤이며, 이 문구만으로 다음 goal을 자동 착수하지 않는다.
 
 PR 분할은 줄 수 상한이 아니라 독립 판정 가능한 경계에 따른다. 엔진 결과가 완료조건/범위를 바꾸면 의존 작업 전에 메인 판단을 받는다. 범위 안 제품 결함은 승인 반복 없이 고치며 최신 ORCA의 같은 계약/번호 확정 실패 집계 규칙을 따른다.
 
-Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한다. Sol은 정확히 할당된 제품 파일만, Opus는 정확히 할당된 테스트·판정만 쓴다. 제품 파일은 `99_Tools/database/`의 필요한 부분, `02_Server/Persistence/`, `99_Tools/PersistenceRecovery/`, 필요한 프로젝트 등록/WSL sync로 제한한다. `Test-Database.ps1`의 검증 동작과 독립 시험 장치는 Opus 소유로 배정한다. 동시 DB writer와 같은 파일 동시 쓰기는 금지한다.
+Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한다. Sol은 할당된 설치 제품 파일만, Opus는 할당된 테스트·판정만 쓴다. `Test-Database.ps1`의 검증 동작과 독립 시험 장치는 Opus 소유로 배정한다. 동시 DB writer와 같은 파일 동시 쓰기는 금지한다. Content와의 `GameSession`·`GameWorld`·`HandlerRegistry` 소유 및 PDL/생성물 단일 writer 조율은 유지하되 이번 설치 Task에 게임 파일 쓰기를 넣지 않는다.
 
 ## 관찰 가능한 완료조건
 
-시험 기대값의 정본은 [D1a verification-plan](../2026-10-01-persistence-technical-design/verification-plan.md)의 S01–S11, C01–C13, O01–O07, U01–U11, R01–R05와 [technical-spec](../2026-10-01-persistence-technical-design/technical-spec.md)이다. 오래된 미승인 상태 문구는 위 G0/G1의 후속 결정을 적용하되 시험 기대를 완화하지 않는다.
+이번 필수 범위는 아래 설치·U-01이다. [D1a verification-plan](../2026-10-01-persistence-technical-design/verification-plan.md) 및 [technical-spec](../2026-10-01-persistence-technical-design/technical-spec.md)의 관련 SQL 계약을 유지하되 S01–S11/C01–C13/O01–O07/U01–U11/R01–R05 **전체 행렬을 이번 통과로 주장하지 않는다**. 제외는 사용자 범위 결정이며 시험 기대값을 고쳐 통과시키지 않는다.
 
 | 완료조건 | 필수 관측 |
 |---|---|
 | 실제 엔진 U-01 | scalar FOR JSON5개의 빈 집합/SQL NULL/명시 `[]` 결과를 실제 엔진에서 수집. 최초 설치/catalog read, malformed/unknown/drift 거부. D1a 시험 ID U01과 별개이며 source/fake/대상0으로 대체 불가 |
 | schema/설치 | 001 checksum·기존 게임 행 보존, 최종001~004/modules 설치·재실행 무변경·중간 실패 원자성·catalog 변조 거부, CHECK parent_column_id/definition 실제 대조 |
-| 최소권한 | runtime 및 실제 recovery Windows principal의 양성 RPC, 직접 DML/DDL·교차 role RPC 음성, SID/ORIGINAL_LOGIN/상속·legacy writer 부재, trigger 제거 뒤 잔여 조회 |
-| 저장 계약 | 초기3행/Authority/Operation 원자성, token conflict/alias, 결과 종류·판정 순서·historical/current 분리, patch별 golden vector·float roundtrip, 입력 거부 전 불필요 쓰기 없음 |
-| 경쟁·unknown | 실제 독립 SqlConnection A/B와 관측/barrier, old/new-first·stale release·late acquire·seal. receipt 폐기/transport 손실 별도, fault 위치·실제 commit·before/after 증빙 |
-| 환경 구분 | Windows와 WSL의 net10/6.1.7 실제 연결·RPC 각각 판정. Windows PowerShell/System.Data.SqlClient recovery S06을 .NET Windows S07 성공으로 치환하지 않음 |
+| 설치 도구 수명 | 05/06 독립 PASS, 01~04 및 비밀 억제·identity 대조·한 번 수명·journal 보존. 오프라인/실제 SQL·권한 실행을 구분하고 entrypoint 실행 근거를 제시 |
+| 환경 구분 | 실제 엔진의 OS·SQL version/patch·연결 경로와 실행자를 기록. 오프라인 stub 성공을 DB·OS계정/ACL/DPAPI 성공으로 치환하지 않음 |
 | 문서/규칙/CI | 사전 메모·관련 규칙 원문·실제 준수 위치·독립 판정 연결, 가독성/책임/배치·30초 탐색 실사, 해당 Changed/서식/빌드/테스트/CI의 실제 입력과 원시 근거 |
-| G4 정산 | operation/owner/connection·임시 trigger/권한/프로세스 정산 후 정확 DB identity 재확인 및 최종 폐기. 이번 생성 login/Windows계정/credential 각각 SID·manifest 대조 후 정리. 잔여는 보고하며 강제 rollback/타 세션 kill/profile 임의 삭제 금지 |
+| G4 정산 | 메인이 확인한 아래 정산안에 따라 실제 생성 자원과 미생성 자원을 구분하고, 정확 identity/manifest·실행 원시·잔여를 기록. 미실행/미확정 정리를 완료로 기록하지 않음 |
 
-각 엔진 시나리오에 명령·UTC·exit·OS/SDK/package/native dependency·코드 SHA·비밀 없는 DB identity·before/after 행/token/proof·fault 위치·commit 여부를 남긴다. 미실행은 환경과 영향을 적고 메인 판단 없이 완료로 합치지 않는다. O06/ U01/ R02는 저장소 계약까지만 확인하며 실제 Ready/actor/Host/Unity·L01–L04·E01–E04는 이번 통합 성공에 넣지 않는다.
+각 엔진 시나리오에 명령·UTC·exit·OS/사용 도구·SQL patch·코드 SHA·비밀 없는 DB identity·before/after·fault 위치·commit 여부를 남긴다. 미실행은 환경과 영향을 적고 메인 판단 없이 완료로 합치지 않는다. 저장소/복구·실제 Ready/actor/Host/Unity·L01–L04·E01–E04는 이번 성공에 넣지 않는다.
+
+## G4 정산안(메인 확인 완료)
+
+메인 `msg_b7074e6a1c4a`가 아래 정산안을 승인했다. 실제 SQL/서비스 실행은 별도 승인 경계를 유지한다. 다음 게임 저장 고리에서 기존 시험 자원을 이어 쓰지 않고 검증된 설치 도구로 새 승인 환경을 설치한다.
+
+- **첫 PR 검토 중 보존:** 승인된 하나의 DB와 이번 설치에 실제 생성한 자원은 재현에 필요한 동안 보존한다. 이력이 없는 동명 자원은 채택하지 않는다. 다음 goal용으로 연장 보존하거나 같은 이름으로 재생성하는 권한은 만들지 않는다.
+- **병합 뒤 정리:** 실행 중 operation/connection·임시 trigger/권한·자기 소유 프로세스를 정산한 뒤 DB identity를 다시 확인하여 승인된 단일 시험 DB를 최종 폐기한다. 이번에 생성된 login·Windows 계정·credential은 SID/manifest를 대조해 기존 승인 cleanup 경로로 정리한다. 미생성 자원은 정리 불필요로 기록한다. identity 불일치·활성 owner·정리 실패에는 강제 DROP/rollback·타 세션 kill·profile 임의 삭제 없이 잔여를 메인에 보고한다.
+- **종료 뒤 보존:** 비밀 없는 승인 계획/manifest·journal·schema/U-01/정리 원시·판정·PR/CI/결정 기록은 로컬 근거와 goal에 보존한다. 비밀 값·credential 파일을 검증 자료로 복제하거나 Git에 넣지 않는다. 이후 게임 저장 고리는 새 범위/자원 승인을 사용한다.
+- **별도 사용자 판단:** D: 연결은 사용자 직접 행동이다. SQL 서비스 시작·UAC·G2의 정확 실행자/명령/시간 창은 실행 전에 메인을 통해 승인받는다. DB 폐기는 서비스 종료 승인이 아니므로 원래 Stopped 상태로 복귀할지도 별도로 확인한다. 정산안 승인만으로 외부 실행을 시작하지 않는다.
+
+## Content와의 기술 경계
+
+- Content `msg_47ffacf96779`와 GameDev 회신 `msg_58eaccfd4a15`의 합의: 기존 PDL 1~34의 순서·ID를 보존하고 Content PR1은 C_InventoryRequest / S_InventorySnapshot / C_ItemUse / S_ItemUseResult를 35~38로 append한다. Content PR1 병합 뒤 GameDev는 39부터 사용한다. 패킷 수가 바뀌면 양쪽 goal의 범위를 다시 대조한다.
+- PDL·생성물·ProtocolVersion·등록의 현재 단일 writer는 Content다. GameDev는 이번 DB 도구 단계에 게임 파일을 쓰지 않는다. Content checkout에서 GameSession·GameWorld·HandlerRegistry의 최소 등록·처치 콜백·세션 정리 연결을 순차 작성하도록 허용했으며 예정 심볼·변경 경계와 쓰기 종료/head를 요청했다. 기존 quest/party 순서·상태 소유는 보존한다.
+- 저장 인터페이스는 GameDev 소유다. 새 DTO/API는 아직 미확정이므로 Content는 임의 확장 hook 대신 메모리 상태의 소유/읽기/변경 경계를 정리하고 다음 게임 저장 고리에서 조율한다. Content 현재 Run `run_add8d9f825f4`, 우리 회신은 `run:run_495ed90b4d12`다. 이 합의는 게임 저장 구현 착수 승인이 아니다.
 
 ## 범위 밖과 점검 지점
 
-- 중간 점검: 첫 실제 엔진 판정/첫 PR 검토 및 동일 DB 보존 확인. 전체 점검: 모든 PR·G4·결과·Gardener 뒤. Q-1B는 DB 통합 뒤 사용자와 다음 계획에서 이어간다.
+- 중간 점검: 마지막 수정/독립 재검증, 실제 DB 행동 대기, 첫 엔진 판정/PR 검토. 전체 점검: 첫 PR 병합·G4·결과·Gardener 뒤. Q-1B/ADR-035는 첫 PR 뒤 다음 계획에서 검토하며 자동 착수하지 않는다.
+- 마감 뒤 후보 `persistence-recovery-post-deadline`: 기존 저장소·제한 복구 두 번째 PR 묶음, PersistenceRecovery, Windows principal 최소권한 실증, D1a 시험 행렬 전체·crash 복구. 원천 `msg_ac202aff9b99` 및 plan-scopes-draft.md. 공용 [BACKLOG](../../../00_Document/operations/BACKLOG.md) 등록은 소유자와 조율 중이며 아직 등록 완료로 보고하지 않는다. 마감용 저장소·확장 스키마·간단 로그인/게임 저장은 승인된 다음 「게임 저장 고리」 범위에서 다시 설계하며 이 보류 묶음의 자동 재개와 구분한다.
 - C1(PS·SQL 120자 초과 식), C2(참조0 SQL 지역 선언)는 **검사 후보 채택/구현을 보류**한다. 기존 작성 규칙을 면제한다는 뜻은 아니다. 근거는 이전 goal의 Gardener와 메인 msg_5322a941f836. 공용 BACKLOG 등록/ID는 담당 파트와 조율하며 여기에는 상세 후보 장부를 만들지 않는다.
 - Rules의 SQLFluff 재시범/구조 CLI·tests CI 연결은 기존 예정 후속과 소유를 확인하며 이 목표에 자동 포함하지 않는다. 새 기능·정책·도구·다른 영역 정리·게임 연동은 다음 계획 후보로 남긴다.
 
@@ -128,4 +178,5 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 
 - 이번 로컬 근거 root: `.backups/verification/2026-10-04-persistence-integration/`. 초기 사전 메모 `astra-context.md`, 후속 `astra-followup-context.md`, 진입/이관 `branch-checkpoint.json`, 독립 `installation-review-1/verdict.md`, 부모 원시 대조 `review-source-audit.json`, 정산 `review-settlement.md`. 후속 기록은 초기 고정 입력을 덮어쓰지 않는다.
 - 최신 수정/판정은 `installation-fix-1/report.md`와 `installation-recheck-2/verdict.md`, 부모 원천 대조는 `fix-source-audit.json`/`recheck-source-audit.json`이다. 중간 마감 맥락은 `astra-closeout-context.md`, 최신 Git 정산은 `mid-closeout-final-checkpoint.json`이다.
+- 이번 재개 사전 메모는 `astra-resume-scope-context.md`다. 새 계약/고정 입력은 중간 마감 당시 미발행 계약과 구분해 보존한다.
 - 이전 승인 초안/승인 전달과 종료 checkpoint: `.backups/verification/2026-10-03-persistence-repository/{successor-goal-draft.md,successor-goal-review-delivery.json,closeout-pr171-checkpoint.json}`. 원문은 덮어쓰지 않는다.

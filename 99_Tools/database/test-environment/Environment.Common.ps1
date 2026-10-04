@@ -570,7 +570,7 @@ function Get-DatabaseFailureCode(
 function Get-TestEnvironmentStopReason(
     [Exception]$Exception
 ) {
-    # Only exact product-owned literals can become a reported stop reason.
+    # Exact product literals are returned from this list, never copied from an exception or its inner text.
     $safeReasons = @(
         'Manifest already exists; this one-time lifetime cannot be restarted.'
         'Database creation is one-time and create-only.'
@@ -615,10 +615,119 @@ function Get-TestEnvironmentStopReason(
         'Windows SID changed; preserve account.'
         'Unexpected credential file ACL.'
         'Credential hash changed; preserve it.'
+        # These checks can also be reached after the lifecycle entry point has entered its guarded try.
+        'Draft plan cannot execute. Coordinator must review actual G2 approval and deliver its exact plan hash.'
+        'Supply the explicit exact approved database and local instance; no fallback.'
+        'Test environment path is not the exact approved absolute path.'
+        'Test environment paths must not traverse reparse points.'
+        'Lifecycle encryption values must retain their boolean contract.'
+        'Invalid manifest version/slot/state type.'
+        'Invalid recorded engine observation.'
+        'Invalid recorded created database identity.'
+        'Invalid recorded migration identity.'
+        'Recorded migrations must retain the reviewed ordered contiguous version/name contract.'
+        'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version remains one.'
+        'Invalid recorded SID.'
+        'Invalid recorded hash.'
+        'Invalid lifecycle step history.'
+        'Run as the separately approved machine/SID; no alternate identity is adopted.'
+        'Use an approved elevated Windows PowerShell with the same executor SID; no automatic UAC.'
+        'Unsupported Test environment SQL parameter type.'
+        'Test environment SQL parameter type/length mismatch.'
+        'SQL size is required.'
+        'Invalid SQL parameter name.'
+        'Typed SQL parameters required.'
+        # The installer keeps its own throw contract; only its fixed product reasons cross this reporting boundary.
+        'SQL tool parameters need a supported explicit CLR value; no provider inference.'
+        'Complete installation needs an explicit reviewed test-environment contract.'
+        'Incomplete migration history after application.'
+        'Module manifest must be UTF-8 without BOM, LF, and a final newline; do not normalize its identity.'
+        'Module manifest version/encoding differs from the reviewed current release.'
+        'Module SQL file set differs from the exact reviewed bundle; remove extras or restore missing files.'
+        'Invalid module path/checksum/dependency list; use the reviewed exact paths.'
+        'Permissions must be the final single bundle entry without an engine definition.'
+        'Permissions source must contain only the nine reviewed individual EXECUTE grants.'
+        'Incomplete module bundle; no module may be silently omitted.'
+        'Migration files must be the reviewed contiguous version/name set; reject holes, duplicates and extras.'
+        'Immutable 001 source checksum drift; restore the reviewed baseline.'
+        'Database has unknown/newer migrations; use the matching tool revision without downgrading.'
+        'Migration history has a hole, unknown name/version or checksum drift; do not rewrite applied history.'
+        'Expected the complete database JSON row array, including [] for no rows.'
+        'Existing module registration/object set is incomplete or unexpected; refuse adoption or overwrite.'
+        'Unregistered/missing/unexpected module; restore or review it before deploying a new declaration.'
+        'Module deployment requires the caller-owned migration transaction.'
+        'Current bundle differs from its migration declaration; a different bundle needs a new release version.'
+        'Module release history has an unknown, missing-schema or malformed declaration; refuse deployment.'
     )
     foreach ($reason in $safeReasons) {
         if ([string]::Equals($Exception.Message, $reason, [StringComparison]::Ordinal)) {
             return $reason
+        }
+    }
+    # Interpolated throws retain their direct-call contract. Match complete, bounded templates and return constants:
+    # keys, paths, object names and structure/provider details are never part of the reported reason.
+    $manifestKey = '(?:SchemaVersion|Goal|GoalMarker|G0|G1|G2|Machine|Instance|InstanceName|Endpoint|' +
+        'Database|SlotId|AccountId|CharacterId|RuntimeLogin|RecoveryPrincipal|RecoveryLocalName|ExecutorSid|' +
+        'Encrypt|TrustServerCertificate|ManifestPath|SettlementPath|PrivateDirectory|IdentityDirectory|' +
+        'IdentityPath|RuntimeCredentialPath|RecoveryCredentialPath|ApprovalPlanPath|ApprovalPlanHash)'
+    $lifecycleKey = '(?:State|Engine|DatabaseIdentity|MigrationManifest|WindowsAccountSid|RuntimeLoginSid|' +
+        'RecoveryLoginSid|RuntimeUserSid|RecoveryUserSid|RuntimeCredentialHash|RecoveryCredentialHash|' +
+        'IdentityHash|Steps|Cleanup)'
+    $identityKey = '(?:DatabaseId|CreationTime|OwnerSid|DatabaseGuid|Collation|Rcsi)'
+    $modulePath = '(?:modules/(?:functions|procedures(?:/internal)?)/[a-z_]{1,80}\.sql|modules/permissions\.sql)'
+    $moduleName = 'dh\.[A-Za-z][A-Za-z0-9_]{0,127}'
+    switch -CaseSensitive -Regex ($Exception.Message) {
+        ('\ALifecycle manifest differs from the independently supplied approval plan: ' + $manifestKey + '\.\z') {
+            return 'Lifecycle manifest differs from the independently supplied approval plan; preserve it.'
+        }
+        ('\AMissing lifecycle field: ' + $lifecycleKey + '\.\z') {
+            return 'A required lifecycle manifest field is missing; preserve it.'
+        }
+        ('\ADatabase identity changed: ' + $identityKey + '\.\z') {
+            return 'Database identity changed; preserve resources and request coordinator reconciliation.'
+        }
+        '\AExpected an object at [^\r\n]{1,1024}\.\z' {
+            return 'Module manifest requires an object at the reviewed bundle location.'
+        }
+        '\AUnexpected manifest fields at [^\r\n]{1,1024}; use the reviewed bundle format\.\z' {
+            return 'Module manifest fields differ from the reviewed bundle format.'
+        }
+        '\AModule source structure (?:violation|unavailable): [^\r\n]{1,16384}\z' {
+            return 'Module source structure is not compliant or could not be inspected; preserve resources.'
+        }
+        ('\AModule source checksum mismatch: ' + $modulePath +
+            '; update the reviewed bundle and declaration together\.\z') {
+            return 'Module source checksum differs from the reviewed bundle and declaration.'
+        }
+        ('\AModule files are one batch and cannot contain GO: ' + $modulePath + '\.\z') {
+            return 'Module SQL must remain a single batch without GO.'
+        }
+        ('\AModule object/kind/expected definition mismatch: ' + $modulePath + '\.\z') {
+            return 'Module object, kind or expected definition differs from the reviewed bundle.'
+        }
+        ('\AExpected one CREATE OR ALTER (?:FUNCTION|PROCEDURE) batch at ' + $modulePath + '\.\z') {
+            return 'Module SQL requires one reviewed CREATE OR ALTER batch.'
+        }
+        ('\ADependency must precede ' + $moduleName + ': [^\r\n]{0,1024}\.\z') {
+            return 'Module dependency order differs from the reviewed bundle.'
+        }
+        ('\ADependency contract mismatch: ' + $modulePath +
+            '; declare the operation''s actual helper responsibilities\.\z') {
+            return 'Module dependency declarations differ from their reviewed responsibilities.'
+        }
+        ('\ARegistered/actual module drift: ' + $moduleName +
+            '; refuse overwrite, including unchanged source\.\z') {
+            return 'Registered and actual module definitions differ; refuse overwrite.'
+        }
+        ('\AUnchanged source has different reviewed definition metadata: ' + $moduleName + '\.\z') {
+            return 'Unchanged module source has different reviewed definition metadata.'
+        }
+        ('\AAlready-declared release has different source registration: ' + $moduleName + '; refuse repair\.\z') {
+            return 'Already-declared module release has different source registration; refuse repair.'
+        }
+        ('\ATest environment SQL command failed \(provider number -?\d{1,10}\); ' +
+            'raw SQL and provider text suppressed\. Preserve manifest\.\z') {
+            return 'Test environment SQL command failed; raw SQL and provider text suppressed. Preserve manifest.'
         }
     }
     return 'Unclassified failure; provider/native text suppressed.'

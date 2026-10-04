@@ -241,7 +241,8 @@ COMMIT;
                 )
             }
         } else {
-            $journalStatus = 'No failure journal write was attempted; the active step is not Pending.'
+            # Completion changes memory before writing; a non-Pending value cannot prove the durable state.
+            $journalStatus = 'No failure journal write was attempted; durable state is unconfirmed.'
         }
     }
     $message = 'Test environment database lifecycle stopped; preserve manifest and all resources. ' +
