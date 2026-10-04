@@ -10,7 +10,13 @@
 - **관찰 가능한 완료조건:** 12건 각각의 분류와 실제 재현 근거, 신규 Opus 독립 실사, 사용자 125% 확인, 정확한 PR/head/CI/미실행 범위 보고, 해당 PR의 사용자 명시 병합 승인·병합과 결과 기록. 전체 suite 무실패를 완료조건으로 바꾸거나 기존 실패를 숨기지 않는다.
 - **PR 경계·검증 등급:** 기존 시스템 카드 첫 PR 하나에 현재 승인 범위만 통합한다. 기존 제품 변경은 강(보안·I/O·50줄 이상), 이번 SAC 문서는 정적 실사이며 검증 세션 생략은 없다. 진행 중이던 goal이므로 새 goal TDD 규칙을 소급하지 않는다. 사용자 화면/병합 관문과 독립 검증을 분리한다.
 
+### 재개 진행
+
+**재개 진행 — 분류·SAC 독립 판정 완료, 사용자 화면 확인 대기:** 신규 Opus `task_3b09b791e2f7` / `ctx_e0c9dcc61b43`의 `msg_e09fdaf1ec21`은 checkpoint `3bfb614895a2e55c998b5f89a45738aee4d9d12e`에서 **통과(차단 없음), 비차단 2건**이다. 기존 12건은 테스트 결함 10·환경 2이며 전체 suite는 864 = 852 통과 + 12 실패(exit 1)다. 단독 12개 재현, 진입 하네스 3/3, A01 파일 23/23과 부하 탐침 415 = 413 + 2를 구분한다. 판정 #1의 브랜치 유래와 첫 PR 영향은 [분류표](existing-failures.md)에 보충했고, #2 간헐 timeout은 미해결·수정 범위 밖으로 보고한다. 판정 원문 E/review-recovery2/verdict.md(26,291B, SHA256 `8007def12cce64b2b1d99fafc875092b97ba1fe7077236c0832ad55486869c88`) 전체를 읽었다. E/review-recovery2-astra-audit.json에서 Management 189개·canonical 출력 48개와 raw 50스트림, reporter 수치를 직접 대조했다. release → 동일 incarnation `4461ed5f-b60d-4171-b069-00574ab4dc11` 완료 화면 → 정확 pane close(ptyKilled true) → done ACK → reclaimable 0으로 종료했다. 제품·원본 테스트는 수정하지 않았다. 사용자 125% 확인, main 통합·PR·CI·병합·Gardener·전체 goal 종료는 미완료다.
+
 ### 정본 반영 전 적용 중인 사용자 결정
+
+메인 결정 `msg_b4989b8c754b`: Orca 1.4.217 동안 R-3의 공식 blocking ask 고정 subject와 `reply --id`의 subject 예외를 같은 조건으로 적용한다. body 자기 태그·실제 from_handle·Task·Dispatch 대조는 유지하며 일반 send에는 적용하지 않는다. E/crash2-ask-help.txt·crash2-reply-help.txt에 해당 버전 도움말을 보존했고 E/crash2-r3-decision.json이 원문이다. 1.4.218로 가장하거나 버전 한정 helper의 자동 증명을 재사용하지 않았다. 이번 완료 메시지의 발신·ID·원문은 Astra가 직접 대조했다. 1.4.218 이상 또는 subject 옵션 지원 시 이 한정 적용은 종료한다.
 
 출처는 메인의 위 메시지와 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-04/`의 `HANDOFF.md` 결정 1~15, `routing-draft.md`, `plan-scopes-draft.md` Management 절, `deadline-roadmap-draft.md`다. 메인이 전달한 사용자 원문이며 사용자 직접 입력으로 격상하지 않는다. Rules의 정본 반영 전까지 이 범위에 적용한다.
 

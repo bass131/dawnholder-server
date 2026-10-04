@@ -1,8 +1,10 @@
 # 기존 suite 실패 분류 — 2026-10-05 재개
 
-작성: Management Astra. 조사 기준 HEAD `719767f2276b14bace29ef98b621e191efef99e9`, 최초 작성 당시 문서 변경은 미커밋이었다. **독립 판정 전 분류 초안**이며 수정 승인이 아니다. 범위와 다음 결정은 [goal](goal.md#현재-재개-범위--2026-10-05)을 따른다.
+작성: Management Astra. 조사 기준 HEAD `719767f2276b14bace29ef98b621e191efef99e9`, 최초 작성 당시 문서 변경은 미커밋이었다. 로컬 checkpoint `3bfb614`의 분류·SAC 정정은 신규 Opus 독립 판정에서 **통과(차단 없음)**했다. 아래 판정 반영은 수정 승인이 아니다. 범위와 다음 결정은 [goal](goal.md#현재-재개-범위--2026-10-05)을 따른다.
 
 기존 실패 12건의 직접 실패 원인은 **테스트 결함 10건, 환경 2건**으로 분류한다. 이 12건에서 제품 결함을 확정한 항목은 없지만, 중도 실패 뒤의 assertion까지 통과했다는 뜻은 아니다. 제품·기존 테스트·canonical MCP 출력은 이번 조사에서 변경하지 않았다.
+
+여기서 **기존**은 이 브랜치의 앞선 검증에서도 관찰했다는 뜻이다. B01~B10은 이 브랜치가 바꾼 화면 진입·링크·창 크기·IPC 계약과 옛 테스트 기대의 불일치다. 첫 PR은 이 10건의 기대 불일치를 main에 함께 들여온다. 이는 origin/main과 소스·이력을 대조한 판정이며 main에서 시험을 실행한 결과는 아니다. B11~B12의 현재 PC canonical 출력 불일치는 별도 환경 문제다. 독립 판정의 비차단 결함 #1에 따라 출처를 보충했다.
 
 ## 실제 실행과 근거
 
@@ -45,11 +47,21 @@ npm test -- --reporter=json --outputFile=C:/Users/bass1/orca/workspaces/DawnHold
 
 `tests/diagram-loader-policy.test.ts:133`의 `product renderer graph with the policy keeps the allowed loader modules and replaces every other registered loader before resolution`이 전체 실행에서 5000ms 한도를 넘겼다. 같은 설정의 파일 실행은 통과했으므로 **전체 실행에서의 timeout 관찰**로 남긴다. 환경 부하와 테스트 시간 예산 중 정확한 인과는 아직 확정하지 않는다. 기존 12건에 섞거나 해결 완료로 세지 않는다.
 
-실제 제한 실행 명령은 `npm test -- tests/diagram-loader-policy.test.ts --reporter=json --outputFile=<E/sol/diagram-file.reporter.json의 절대 경로>`다. 정확한 argv는 `E/sol/diagram-file.meta.json`, 원시는 reporter와 `failures/A01.txt`다. 제품·설정·timeout을 바꾸지 않았으며 전체 suite를 반복해 통과 결과를 고르지 않았다. 신규 Opus가 영향과 차단 여부를 독립 판정한다.
+실제 제한 실행 명령은 `npm test -- tests/diagram-loader-policy.test.ts --reporter=json --outputFile=<E/sol/diagram-file.reporter.json의 절대 경로>`다. 정확한 argv는 `E/sol/diagram-file.meta.json`, 원시는 reporter와 `failures/A01.txt`다. 제품·설정·timeout을 바꾸지 않았으며 전체 suite를 반복해 통과 결과를 고르지 않았다. 영향과 차단 여부의 신규 Opus 판정은 아래에 연결한다.
 
 ## 한계와 결정 경계
 
 - B01~B10은 직접 실패 지점의 분류다. 이를 고친 뒤 추가 실패가 없다고 보장하지 않으며, 중도 실패 뒤 저장·충돌·IPC 거부 등의 assertion은 이번 실행에서 검증되지 않았다.
 - B11~B12는 현재 출력 불일치 관찰이다. 기존 빌드 helper와 같은 digest 공식을 계산한 것은 독립적인 빌드 알고리즘 정확성 증명이 아니다. canonical 출력은 보존했다.
 - 이번 단위는 기존 실패를 분류하고 SAC 문서만 정정했다. 12건의 수정 여부는 메인·사용자가 결정한다. 사용자 물리 125% 화면, .NET/WSL·DB·Unity·게임, 배포본과 원격 CI는 이번 조사에서 실행하지 않았다.
-- 신규 Opus 판정과 원문 경로는 아직 없다. 독립 실사 후 goal에 최종 판정·추가 한계와 연결하며 이 초안을 독립 통과로 인용하지 않는다.
+- B09의 기존 외곽 크기 테스트 교체는 R-16의 향후 완료조건에 이미 있다. 이번 분류 범위의 테스트 수정 권한으로 해석하지 않는다.
+
+## 독립 판정 반영
+
+신규 Opus `task_3b09b791e2f7` / `ctx_e0c9dcc61b43`는 `3bfb614`에서 분류와 SAC 정정을 통과로 판정했다. 원문은 `E/review-recovery2/verdict.md`, SHA256 `8007def12cce64b2b1d99fafc875092b97ba1fe7077236c0832ad55486869c88`다. Astra는 원문 전체와 실행 수치를 직접 읽고 `E/review-recovery2-astra-audit.json`에 원천 대조를 남겼다. 이 절과 위 출처 보충은 그 판정의 통합 기록이다.
+
+- 독립 전체 1회: **864 = 852 통과 + 12 실패, exit 1**. 기준선과 실패 이름이 같으며, 표의 단독 명령 12개도 각각 의도한 1개 실패를 재현했다. 선택에서 제외된 시험은 통과로 세지 않는다.
+- 진입 원인 하네스는 소유 임시 복사본에서 3/3 통과했다. 기록 탭을 연 뒤 catalog 읽기 2회가 관찰돼 B02의 후속 `toHaveBeenCalledOnce()`도 진입만 고쳐서는 맞지 않을 가능성이 있다. 제품 기능 전체 통과 판정은 아니다.
+- A01은 이번 전체 3969.17ms, 파일 단독 277.62ms로 통과했다(파일 23/23). 무거운 파일과 함께 실행한 탐침도 A01은 통과했으며 전체 탐침은 B11·B12가 남아 415 = 413 통과 + 2 실패였다. 인과는 미확정이고 해소로 세지 않는다.
+- 비차단 결함 #2: A01은 이 브랜치의 `719767f`가 추가한 시험으로 첫 PR에도 간헐 timeout 위험이 포함된다. 시간 예산 등의 수정은 별도 결정이다. Management npm 시험은 현재 CI 밖이므로 CI 통과가 이를 해소하지 않는다.
+- SAC 정정은 지적 없음이다. 두 크래시의 중간 검증 자료는 이 판정 근거로 쓰지 않았다. 사용자 125%·main 통합·PR·원격 CI는 여전히 미실행이다.
