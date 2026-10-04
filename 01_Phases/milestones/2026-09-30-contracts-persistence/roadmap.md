@@ -5,7 +5,7 @@
 | P0 | 통합 기준선·영역별 소유권/요청/상태 계약·평가 기준선 | 기존 PR 정리 및 사용자 승인 범위 | [기준선](../../goals/2026-09-30-contracts-baseline/goal.md) |
 | P1 | 클라이언트/UI 기능 명령·요청 수명·binding | P0 계약과 평가 기준선 | [P1a 파티 응답](../../goals/2026-09-30-party-invite-command/goal.md); 후속 조각은 착수 시 생성 |
 | P2 / D1a | 영속성 schema·transaction·authority·실패/복구 기술 설계 | 기존 D0 및 P0; P1과 독립 설계 가능 | [기술 계약](../../goals/2026-10-01-persistence-technical-design/goal.md) |
-| P3 / D1b | 신규 migration·저장소·격리 SQL 검증 도구 | P2 계약과 구체 SQL 시험 권한 | 착수 시 생성 |
+| P3 / D1b | 신규 migration·저장소·격리 SQL 검증 도구 | P2 계약과 구체 SQL 시험 권한 | [저장소와 격리 검증](../../goals/2026-10-02-persistence-repository/goal.md) |
 | P4 / D2 | bounded 저장 작업·actor 결과 적용·종료 수명 | P3 저장 계약과 검증 | 착수 시 생성 |
 | P5 / D3 | Loading gate·권위 class·공유 프로토콜·Unity 적용 | P4 입장/저장 수명; 계약 확정 후 소비자 설계 준비 가능 | 착수 시 생성 |
 | P6 | Management 서버 command/query/event 계약과 최소 adapter | Management 세션 협의; 저장 완료 adapter는 P4에 의존 | 착수 시 생성 |
