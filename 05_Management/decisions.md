@@ -50,9 +50,11 @@
 
 **확정/미결정:** Windows 창은 Electron을 채택했고 서명은 최대한 비용 없이 진행하기를 원한다. 서명 방식·가입 가능 여부는 아직 미결정이다. 로컬 개발 실행을 먼저 관찰하며 기존 [차단 관찰](requirements.md#조사-관찰과-미실행)을 Electron 실패 증거로 대체하지 않는다. 개발 실행 성공도 배포 EXE/설치프로그램이나 SAC 전체 검증으로 확대하지 않는다.
 
+**현재 PC 정책(메인 전달):** 메인 `msg_5a1316ef5e10`과 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-04/HANDOFF.md` 결정 10에 따르면 사용자가 이 PC의 SAC를 직접 껐고 메인이 확인했으며 2026-10-04 22:39 KST부터 Off다. 이 빌드에서 재활성화가 가능하다는 전달 사실이며 이 정정 작업의 OS 설정 직접 관측·변경 실적이 아니다. 2026-09-30 SAC On·차단 이벤트는 과거 사실로 보존하고 서버·테스트의 WSL 표준은 유지한다. 배포 EXE/설치프로그램·다른 PC·SAC On 환경의 검증은 미실행이다.
+
 사용자는 **개인 개발자**라고 답했다. 법적 소재지는 별도 명시하지 않았다. 2026-09-30 전달된 서명 조사 기준, Microsoft Artifact Signing Public Trust는 한국 소재 조직이 대상에 포함되며 개인은 미국/캐나다 소재로 제한된다. 따라서 한국 소재 개인이라면 대상이 아니다. 사용자의 소재지나 가입 가능 여부를 확정하지 않았고, 서명서비스 가입·비용·구매 결정은 없다. [공식 가입 안내](https://learn.microsoft.com/en-us/azure/artifact-signing/quickstart)
 
-Public Trust Test·Private Trust·자체서명을 현재 SAC를 유지하는 공개신뢰 해결책으로 단정하지 않는다. [공식 신뢰 모델](https://learn.microsoft.com/en-us/azure/artifact-signing/concept-trust-models)
+2026-09-30 조사에서 다룬 Public Trust Test·Private Trust·자체서명을 SAC On 조건의 공개신뢰 해결책으로 단정하지 않는다. 현재 PC의 Off 사실로 서명 방식·가입 가능 여부가 결정된 것도 아니며 외부 정책·가입자격은 이번 정정에서 새로 조사하거나 재확정하지 않았다. [공식 신뢰 모델](https://learn.microsoft.com/en-us/azure/artifact-signing/concept-trust-models)
 
 ## D-09
 

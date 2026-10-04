@@ -18,6 +18,7 @@
 ## R-03
 
 - **확정:** 화면은 React + TypeScript + Vite, Windows 독립 창은 Electron, WSL 관리백엔드는 C# ASP.NET Core를 채택한다. 게임서버 실행 환경도 WSL이다. 기술 채택과 실제 구현·실행 실적은 구분한다.
+- **현재 PC 정책(메인 전달):** 사용자가 이 PC의 SAC를 직접 껐고 메인이 확인했으며, 2026-10-04 22:39 KST부터 Off다. 이 빌드에서는 재활성화가 가능하다는 전달 사실이며 OS 설정의 독립 관측·변경 실적이 아니다. 서버·테스트의 WSL 표준은 유지한다. 출처와 과거 On 관찰은 [조사 관찰과 미실행](#조사-관찰과-미실행)에 구분한다.
 - **확정된 비용 선호:** 서명은 최대한 비용 없이 진행하기를 원한다. 무료 공개신뢰 서명이 확보되었다는 의미는 아니다.
 - **미결정:** 코드서명 방식/가입 가능 여부. 사용자는 개인 개발자이며 법적 소재지는 별도 확인하지 않았다. Electron 개발 실행 결과는 해당 목표에 기록하고 배포 EXE/설치프로그램의 SAC 실행과 구분한다.
 - **목표별 완료조건:** [초기화 목표](goals/2026-09-30-foundation/goal.md#관찰-가능한-완료조건)는 strict TS·로컬 화면 기반, [데스크톱 창 목표](goals/2026-09-30-desktop-shell/goal.md)는 기존 화면의 Electron 개발 실행 가능성 확인에 한정한다. 실제 관리백엔드 연동은 후속 목표다.
@@ -125,13 +126,17 @@
 
 ## 조사 관찰과 미실행
 
-기존 읽기 전용 조사에서 전달받은 2026-09-30 관찰이다. 조사 지정 모델 `gpt-6.1-sol`, 확인된 실제 모델 `unknown`.
+**2026-09-30 과거 관찰:** 기존 읽기 전용 조사에서 전달받은 기록이다. 조사 지정 모델 `gpt-6.1-sol`, 확인된 실제 모델 `unknown`.
 
 - Windows 11 Pro `10.0.26200`, Smart App Control(SAC) On, Defender 실시간 보호 On.
 - CodeIntegrity/Operational의 2026-08-29 09:58:43 KST event 3077 Record 399347과 event 3033 Record 399345: `testhost.exe`가 프로젝트 `Dawnholder.Tools.HeadlessBot.dll`을 로드할 때 서명수준 위반 기록.
 - Policy ID `{0283ac0f-fff1-49ae-ada1-8a933130cad6}`. 2026-09-17 event 3099 Record 399669은 동일 ID의 `VerifiedAndReputableDesktop` 정책 로드 기록이다.
 - 기존 `dotnet.exe` 서명은 Valid, 프로젝트 DLL/EXE는 NotSigned였다. 이는 특정 로드 차단 관찰이며 Windows .NET 전체 차단이나 새 관리앱 차단으로 확대해석하지 않는다.
-- 정책 변경과 새 EXE 실행 테스트는 미수행이다. 이 과거 관찰은 이후 채택한 Electron의 실행 실패 증거가 아니며 서명 방식은 아직 미결정이다.
+- 당시 조사에서는 정책 변경과 새 EXE 실행 테스트를 수행하지 않았다. 이 과거 관찰은 이후 채택한 Electron의 실행 실패 증거가 아니며 서명 방식은 아직 미결정이다.
+
+**현재 PC 정책(메인 전달):** 메인 `msg_5a1316ef5e10`과 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-04/HANDOFF.md` 결정 10에 따르면 사용자가 SAC를 직접 껐고 메인이 확인했다. 이 PC는 2026-10-04 22:39 KST부터 SAC Off이며 이 빌드에서는 재활성화가 가능하다고 전달받았다. 이 문서 정정에서 OS 설정을 직접 관측하거나 변경하지 않았다. 서버·테스트의 WSL 표준은 유지한다.
+
+**미결정·미실행:** 서명 방식·가입 가능 여부는 미결정이다. 배포 EXE/설치프로그램, 다른 PC, SAC On 환경에서의 검증은 미실행이며 현재 Off 전달 사실이나 로컬 개발 실행으로 이를 완료했다고 보지 않는다. 외부 정책·가입자격은 이번 정정에서 새로 조사하거나 재확정하지 않았다.
 
 해석 기준: [SAC 코드서명 안내](https://learn.microsoft.com/en-us/windows/apps/develop/smart-app-control/code-signing-for-smart-app-control), [Code Integrity 이벤트 설명](https://learn.microsoft.com/en-us/windows/security/application-security/application-control/app-control-for-business/operations/event-id-explanations). 서명 후보의 자격 미결정은 [D-08](decisions.md#d-08)에 있다.
 
