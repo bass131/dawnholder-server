@@ -1,6 +1,6 @@
 # 하네스 원칙 채택과 문서 정비
 
-2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **운영 규칙 [PR #170](https://github.com/bass131/dawnholder-server/pull/170)의 독립 재검증 PASS·메인 R-2 표본 일치·CI 두 job 성공을 확인했다. 해당 PR의 사용자 병합 승인은 대기 중이다 — [PR·CI 결과와 체크포인트](#운영-규칙-pr170과-ci-완료-체크포인트)를 읽는다.** 첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168)은 병합했다. 메인 `msg_063d3c6e4829`가 사용자 “재개”와 남은 세 PR 계획 승인을 전달했고 `msg_cca37bd31a41`가 이번 단위의 commit/push/PR/CI 진행을 지시했다. 전체 goal은 미완료이며 각 PR 병합 승인은 별도다. 아래 휴식·첫 재개·중간 점검 기록은 당시 상태를 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [적용 결정](#정본-반영-전-적용-중인-사용자-결정)은 지금 지킬 운영 결정이며, 후속 정본·도구의 구현 실적과 구분한다.
+2026-10-03 작성, 2026-10-04 재개 `[Rules Astra]`. **운영 규칙 [PR #170](https://github.com/bass131/dawnholder-server/pull/170)에 PR169 이후 main 통합과 Sol max 고정 델타를 추가한다 — [새 적용 중 결정](#pr170-추가-적용-중-결정--sol-max와-current-통합)을 읽는다.** 기존 b72423f의 독립 PASS·R-2·CI 성공은 이전 입력의 근거이며 새 HEAD의 승인/CI가 아니다. 첫 BACKLOG [PR #168](https://github.com/bass131/dawnholder-server/pull/168)은 병합했다. 메인 `msg_063d3c6e4829`가 남은 세 PR 재개를 전달했고, 최신 `msg_1d1537b7d249`·`msg_830fcabe292d`가 이번 추가 범위·통합·재검증·push/CI를 지시했다. 전체 goal은 미완료이며 PR170의 새 HEAD에는 사용자 명시 병합 승인이 별도로 필요하다. 아래 과거 상태와 원시는 보존한다. All 비교/승격/helper와 legacy 통합·삭제·보관은 이번 범위 밖이다. ADR-035는 GameDev 첫 SQL 구조 PR 병합 뒤 작성한다. [앞선 적용 결정](#정본-반영-전-적용-중인-사용자-결정)과 아래 새 결정을 후속 정본·도구의 구현 실적과 구분한다.
 
 ## 문제와 목표
 
@@ -584,3 +584,13 @@ Main msg_894bfc3cc2d9(2026-10-03T21:02:14Z)의 보완 완료를 받았다. `revi
 - 두 job이 실제 checkout한 합성 merge **`e3cc90126ff48864cb091391c9974dec58c3ccc8`**의 parents는 위 base와 head이며, tree **`e2446cf3ac780d6832e0b93eefc615f3f0b35d84`**가 제출 HEAD의 tree와 같다. code-rules artifact의 checkout·base·27변경 경로와 원격27blob을 대조했다. .NET formatter 상세 manifest는 runner 경로만 로그에 남고 해당 workflow의 artifact는0개이므로 상세 manifest를 다운로드해 직접 hash 대조했다고 보고하지 않는다.
 - 원시는 `operating-rules/ci-code-rules-run.json`, `ci-code-rules.log`, `ci-initial-code-rules/`, `ci-initial-input-comparison.json`, `pr-merge-input-comparison.json`, `ci-dotnet-run.json`, `ci-dotnet-job.json`, `ci-dotnet.log`, `pr-ci-complete.json`이다. 기존 npm 버전 요구 차이와 action Node 런타임 경고를 보존했다. 중간 GitHub 조회504 두 건은 CI 실패가 아니며 이후 조회·완료 로그 확보가 정상화됐다.
 - **이 머리·절은 CI 완료 뒤의 로컬 상태 기록이며 원격 PR170의 diff와 CI 입력에 포함되지 않는다.** 로컬 문서 체크포인트를 만들고 승인 대상 원격 HEAD와 별도로 메인에 보고한다. 승인·병합 뒤 다음 허용 branch에 이관하며, 현재 다음 PR나 branch를 시작하지 않는다. 메인이 해당 PR의 사용자 명시 병합 승인을 요청할 수 있도록 번호·job·실제 입력 대조·판정 원문을 전달한다. 전체 goal 종료나 다음 단위 착수 승인을 받은 상태가 아니다.
+
+### PR170 추가 적용 중 결정 — Sol max와 CURRENT 통합
+
+메인 `msg_1d1537b7d249`(2026-10-04T05:21:38Z)가 사용자 발언 「아 참 그리고 Sol 구현자는 이제 6.1 Sol Max effort로 고정해줘」와 「규칙에도 반영해줘」를 전달했다. **구현 Sol은 이 작업부터 `gpt-6.1-sol`, reasoning effort `max`로 고정한다.** 메인 전달 사실이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. 정본 반영 전부터 적용하며 문서 변경·신규 세션 실행·기존 런타임 변경을 구분한다. 원문은 `operating-rules/sol-max/main-decision.json`이다.
+
+- 변경 범위: 같은 PR170에서 AGENTS 모델 라우팅, ORCA R5 Sol 최초 기동과 같은 결함3회 뒤 네 번째 Sol 시도의 effort를 max로 맞춘다. 현행 `.agents/skills`·참고 문서·RESUME 등의 Sol 기동 표기도 검색하되 현재 첫 검색은 위 두 파일의 세 위치만 해당한다. 과거 수행 기록의 xhigh는 당시 사실로 보존한다.
+- 보존: Astra `gpt-6-astra xhigh`, Opus 검증자, capacity30분 예외의 신규 Astra xhigh 전환을 바꾸지 않는다. `ultra`는 쓰지 않는다. Codex0.160.0/models_cache의 Sol max 지원은 메인 관측과 이 세션의 별도 로컬 조회가 일치하며 backend 실제 모델의 증명은 아니다.
+- 메인 `msg_830fcabe292d`(05:23:33Z)는 PR169 병합 뒤 최신 main 통합을 지시했다. gh와 fetch에서 PR169의 MERGED(05:22:34Z), 승인 head `3a80e885d32e40f830be2b389bf8fd162578e3d6`, merge/main `3e07e1b0b318881701b5b7bab8adbe087b596420`을 확인했다. CURRENT만 기존 상대 링크 관례로 해소하고, 다른 파일에 충돌이 나면 멈춰 메인에 보고한다. 다른 파트 goal이 main에 없어 생기는 기존 링크 문제는 후속으로 남긴다.
+- 소유/순서: Astra의 사전 맥락·goal 적용 결정·Git merge 준비 → 새 Sol max가 CURRENT 충돌 문구와 effort 델타 수정 → 새 Opus 한 명이 두 변경의 실제 diff·링크·표기·보존 및 기동 근거를 함께 독립 실사 → Astra commit/push·새HEAD CI → 메인 R-2와 사용자 PR170 재승인. 제품 구현·검증 판정을 Astra가 대신하지 않으며 충돌 해소 자체의 diff는 CURRENT 줄에 한정한다.
+- 기존 로컬 상태 체크포인트 `e096ceb5632a556c47a8e3158d6b5cb9ebb211dc`는 별도 선행 커밋으로 보존한다. 위 이전 절의 「원격 미포함」은 b72423f 제출 당시 상태다. 이번 추가 범위의 goal 상태 기록과 새 통합 결과를 검증/보고할 때 이전 입력과 분리한다. 새 단위의 사전 맥락·원문·계약·전후 diff는 `operating-rules/sol-max/`에 둔다. 현재 새 델타 구현·독립 판정·새CI는 아직 미실행이다.
