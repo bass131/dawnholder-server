@@ -1,4 +1,6 @@
 # Definitions only. Import performs no database, identity, account, ACL or credential I/O.
+. (Join-Path $PSScriptRoot '../SqlError.Common.ps1')
+
 function Read-TestEnvironmentApprovalPlan {
     param(
         [string]$ApprovalPlanPath,
@@ -884,14 +886,7 @@ function Invoke-DatabaseSql(
         }
     } catch {
         # Do not rethrow a provider error: CREATE LOGIN errors can contain generated SQL/passwords.
-        $number = $(if ($_.Exception -is [Data.SqlClient.SqlException]) {
-                $_.Exception.Number
-            } else {
-                0
-            })
-        $safeError = [InvalidOperationException]::new("Test environment SQL command failed (provider number $number); raw SQL and provider text suppressed. Preserve manifest.")
-        $safeError.Data['DatabaseSqlNumber'] = $number
-        throw $safeError
+        throw (New-DatabaseSqlFailure -Exception $_.Exception)
     } finally {
         $command.Dispose()
     }

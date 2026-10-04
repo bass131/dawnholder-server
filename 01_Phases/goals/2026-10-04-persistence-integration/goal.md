@@ -1,8 +1,20 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **신규 Opus의 INSTALL-05/06 오프라인 해소 판정과 부모 원시 대조를 마쳤다. INSTALL-07 처리 및 검증 절차 위반 3건의 수용은 메인 결정 대기다.** 7 suite 988 PASS/0 FAIL/9 OBSERVED이며 실제 DB·G2·U-01·D:·서비스는 미실행/사용자 행동 대기다. 비교 기준 `2372ba4bc10d932ce52aeb032cea60707d911c1b`, 검증 시점 로컬 checkpoint `91c6e902834c55416b59f8c8dbfe9a00e4c18da8`와 테스트 +378/-0을 구분한다. 첫 PR 종료 범위·G4는 메인 `msg_b7074e6a1c4a` 승인 상태다. 마지막 회차 뒤 잔여 결함이므로 추가 수정·검증을 자동 착수하지 않는다.
+상태: **사용자1A/2B의 INSTALL-07 Sol 수정·쓰기·정산은 끝났고, 신규 Opus 한 명의 최종05/06/07 독립 판정으로 진행한다.** Sol의 전체 runner3 FAIL과 heartbeat 위반2구간은 미해소/미면제이며 제품·절차 PASS가 아니다. 직전 검증 task_b423e7cb2f25의05/06 통과는 수용하지 않는다. 해당 판정/중간 기록은 보존만 하고 새 판정 근거에서 제외하며, 로컬 checkpoint `23bdea865f1b18f6b96c40e797a52b00705310ff`의 테스트 +378/-0은 감사할 입력이다. 실제 DB·G2·U-01·D:·서비스는 미실행/사용자 행동 대기다. 첫 PR 종료 범위·G4는 유지되며 마지막 회차 경계는 아래 사용자 결정으로 이번 한 번 열렸다.
 
-## 마지막 독립 검증 결과와 결정 대기
+## INSTALL-07 수정 정산 — 신규 독립 판정 대기
+
+- 구현 `task_340680800560` / `ctx_d31947f9a35b`, 기준 HEAD `23bdea865f1b18f6b96c40e797a52b00705310ff`. 신규 `gpt-6.1-sol max` 최초 실행 명령과 화면을 부모가 확인했고 backend 실제 모델은 unknown이다. 전체 쓰기 종료 `msg_fd2d73e35013` 뒤 `msg_c256650bd00a`의 명시 outcome=failed로 정산했다. 이 outcome은 기존 runner 실패·절차 위반을 포함한 보고이며 제품 확정 실패 횟수로 임의 환산하지 않는다.
+- `Database.Common.ps1`·`test-environment/Environment.Common.ps1`와 사전 설계 replyv1.1 `msg_96e09f2195e5`에서 승인한 신규 `SqlError.Common.ps1`만 제품 쓰기를 했다. 첫 실제 SqlException의 CLR Int32 Number와 원문/inner 없는 안전 예외를 공통화했다.05/06 로직과 기존 테스트9파일은 변경하지 않았다.
+- 보고 원문 `.backups/verification/2026-10-04-persistence-integration/installation-07-fix/report.md`, SHA256 `D1474829F7E89E8724EB16D2FBA53616D44216EB4A568EBC33DF1F6FFA3EC56B`. 같은 PS5.1 runner 자체 실행은988/0/9 exit0→985/3/9 exit1, 연결 없는 자체 probe는23/0이다. 부모는 실제 diff·원시7개 결과 재집계·보고/hash를 대조했다. 근거 `installation-07-parent-raw-audit.json`, `installation-07-final-parent-audit.json`. 독립 PASS나 실제 SQL 성공이 아니다.
+- 남은3 FAIL은 ModuleDeployment의 provider 원문 문구 조건과 연결된다. Sol은 옛 구현 단정으로 분류했지만 신규 Opus가 실제 오류 전파·후속 차단·소유 rollback/caller transaction 사건을 독립 판정한다. `INSTALL-07-C1`은 Test-Database.ps1의 Assert-SqlError가 raw SqlException inner를 요구하는 소비 계약이다. 신규 Opus가 검증 동작 소유권 안에서 감사·보완하며 실제 DB 스크립트를 실행하지 않는다.
+- **PROCEDURE-01 미면제:** heartbeat 서버 간격319초와310초로300초 상한을 각각 넘었다. Sol과 부모가 원시를 대조했고 메인에 `msg_28f9a4f79486`, `msg_ea821cb41915`로 알렸다. 공식 ask 회신 뒤 harness/baseline 시작 시각을 확인했으나 부모가 본 원래 ask tool 명령은 clipping되어 전체 명령 실사로 표현하지 않는다. 최종 절차 수용은 메인 결정 전 통과 처리하지 않는다.
+- 정산 원문 수용 뒤 release는 external_terminal retained였고, worker-list의 실제 handle·동일 incarnation·idle 화면을 대조해 정확 Sol pane을 닫았다(ptyKilled=true). **close 뒤 terminal list 재확인: 남은 GameDev 작업자 pane 0.** 근거 `installation-07-release.json`, `installation-07-before-close-terminal.json`, `installation-07-close.json`, `installation-07-after-close-terminals.json`. 메인 msg_5a7d25739e5b의 후확인 지침을 적용했고 세션은 재사용하지 않는다.
+- 다음은 새 고정 checkpoint/입력/계약의 신규 Opus 한 회차다. Lifecycle 기존 추가분 감사, ModuleDeployment 영향 단정, Test-Database Assert-SqlError 검증 동작을 맡긴다. Sol 자체 결과는 감사할 입력이며 독립 결론을 대신하지 않는다. Unity 실물3/S3/stash2를 보존했고 push·PR·병합·실제 DB/서비스는 수행하지 않았다.
+
+## 직전 독립 검증 기록 — 사용자 결정으로 통과 미수용
+
+아래는 당시 결과와 부모 관측의 보존 기록이다. 사용자2B(`msg_6b139eecb44e`)로 직전 verdict와 중간 기록은 새 판정 근거로 사용하지 않는다. 아래의 결정 대기·권고는 당시 이력이며 현재 행동은 다음 사용자 결정 절을 따른다.
 
 - 검증 `task_b423e7cb2f25` / `ctx_98f332cbffd1`, 대상 구현 `verifies=task_dcc811b02548`. 판정 원문 `.backups/verification/2026-10-04-persistence-integration/installation-resume-review-2/verdict.md`, SHA256 `821C1D41C397DC1E984C73BE06CC6191A01D98CBDFF5BF91F4E98FC93946D749`. 신규 `claude-opus-5-5`의 최초 명령·화면 Opus5.5 xhigh를 확인했고 backend 실제 모델은 unknown이다.
 - 05/06은 오프라인 실사·독립 단언26개·실제 설치 진입점의 stub 실행으로 해소 판정했다. 같은 PS5.1 자식 환경의 전체 baseline962/0/9→final988/0/9, lifecycle104/0/1이다. 수정 전 제품2파일만 되돌린 근거 사본의 반사실 시험은 lifecycle88/16/1로 기존2·신규14 실패를 검출했다. 실제 SQL·OS·U-01·PSSA·CI 성공으로 치환하지 않는다.
@@ -34,6 +46,15 @@
 - `deadline-roadmap-draft.md` 사용자 원문 **“1) 필수선 → A 필수선 승인 · 2) Docker 분산 → A 마감 뒤 · 3) 게임을 두 파트로 → A 둘로 나눔 · 4) 도구·운영 파트는 마감까지 게임 속도를 돕는 일만 → B 오늘 순서대로”**. 11월 첫째 주 졸업작품 전시회 평가에 PPT·플레이 녹화로 마을 광장→길드 거점→파티 인스턴스 던전→보상→성장→재접속 유지를 보인다. 10-28 기능 동결 목표, 상점·연구 2순위다.
 - Fable 사전 설계 시범은 Content 첫 goal 및 GameDev의 **다음** 인스턴스 맵 수명·게임 저장 고리에 한정한다. 구현 전 불변식/전제 출처를 goal-review.md에 쓰고 메인이 원문 확인한 뒤 구현한다. 이번 05/06 마지막 수정에 새 사전 Fable 관문을 소급하지 않는다. ORCA의 같은 계약·번호 확정 실패 3회 규칙은 유지한다.
 
+### 2026-10-05 사용자1A/2B — INSTALL-07 수정과 최종 상태 재검증
+
+메인 `msg_6b139eecb44e`(2026-10-04T17:45:30Z)가 대시보드 응답의 사용자 원문 **「1) INSTALL-07 - 실제 DB 설치 전에 SQL 오류 번호 전달을 고칠지 → A 설치 전에 좁게 고침 · 2) INSTALL-05·06 검증 - 절차 위반 3건을 적은 채 결과를 받아들일지 → B 새 검증자로 다시」**를 전달했다. 메인은 제출 시각을2026-10-05 02:47 KST로 표기했고, Orca created_at은 위 값이다. 이 시각 차이는 원문대로 보존하며 사용자 직접 입력으로 격상하지 않는다. 원문은 로컬 `installation-07-user-decision.json`이다.
+
+- 신규 Sol은 INSTALL-07만 수정한다. 내부 예외 체인의 첫 SqlException의 Int32 Number만 안전하게 추출하고 Invoke-DbScalar·Invoke-DbNonQuery에도 같은 전달 경계를 적용한다. provider 문구 억제·fail-closed·05/06 수정·기존 상태/자원 수명은 보존한다. 기존 goal 방식이며 TDD/Fable을 소급하지 않는다.
+- 쓰기 종료 뒤 신규 Opus **한 명**이07 반영 최종 제품 상태에서05/06/07을 처음부터 판정한다. task_b423e7cb2f25의 verdict·중간 기록은 판정 근거로 쓰지 않고 보존만 한다. 테스트 +378/-0은 새 검증자가 유지·보완·교체를 스스로 판단해 근거를 남길 감사 입력이다. 이전 통과 수치가 기대값이나 수용 기준이 아니다.
+- 새 계약은 공식 blocking ask를 **전경으로 실행하고 회신을 받은 뒤** baseline/harness 등 다음 단계를 시작하도록 한다. check의 delivery는 처리 직후 ack하고 heartbeat300초 상한을 지키며 긴 실행/probe 전후에 보낸다. 세 항목의 원시 시각 영수증을 판정에 남기고 어긋나면 ‘적용 규칙 위반 없음’이라고 쓰지 않는다.
+- 이 결정은 마지막 회차 뒤 자동 착수 금지 경계를 **이번 한 번** 연다.05/06을07 전 상태에서 별도로 통과시키지 않는다. 실제 SQL·DB·U-01·D:·서비스·UAC·OS계정/ACL/DPAPI는 계속 사용자 대기이며 로컬 checkpoint 허용·push/PR/병합 경계는 유지한다. 메인 기본 순서를 `msg_e84194a9871c`로 수신 확인했다.
+
 ### 메인 운영 결정 — Orca 1.4.217 공식 질문 예외
 
 메인 `msg_c06902677d91`(2026-10-04T16:49:33Z)은 Orca **1.4.217 동안** R-3의 공식 blocking ask `Question` / 공식 `reply --id` subject 예외를 같은 조건으로 적용했다. 사용자 직접 결정으로 격상하지 않는다. 실제 help에 subject 옵션이 없음을 확인했으며 body 자기 태그·현재 from_handle·Task·Dispatch 원시 대조는 유지한다. 일반 send에는 예외가 없고 helper에217을218로 가장하지 않는다. 수동 원천 대조를 기록하며 **1.4.218 이상 또는 subject 옵션 지원 시 이 한정 적용은 종료**한다. 원문 `crash2-main-ask-reply-exception.json`, 절차 보충v2.1 `msg_2e6f44b2d9fa`, 검증 중 goal 고정 유지/종료 뒤 반영 회신 `msg_6489dd98c315`가 근거다. blocking ask의 응답 대기 의무는 면제하지 않는다.
@@ -42,12 +63,12 @@
 
 | 항목 | 승인 초안에 맞춘 범위 |
 |---|---|
-| 만들 것 | INSTALL-05/06 수정·독립 재검증, 승인 시험 DB의 최종 설치와 실제 엔진 U-01 판정, 첫 PR과 G4 정산·종료 기록 |
-| 건드릴 곳 | `99_Tools/database/`의 설치 수명·검증 도구와 해당 테스트, 이 goal·필요한 설치/실행 근거. 마지막 Sol의 제품 쓰기는 `test-environment/Environment.Common.ps1`와 `New-TestDatabase.ps1` 두 파일로 한정 |
+| 만들 것 | INSTALL-07 좁은 수정과 최종05/06/07 신규 독립 재검증, 승인 시험 DB의 최종 설치와 실제 엔진 U-01 판정, 첫 PR과 G4 정산·종료 기록 |
+| 건드릴 곳 | `99_Tools/database/`의 설치 수명·검증 도구와 해당 테스트, 이 goal·필요한 설치/실행 근거.07 Sol의 기본 제품 쓰기는 `Database.Common.ps1`와 `test-environment/Environment.Common.ps1`이며 필요한 공유 helper 배치는 사전 설계에서 책임·범위를 확인한다.05/06 로직은 보존 |
 | 하지 않을 것 | 001 변경, 저장소/제한 복구 두 번째 PR, `PersistenceRecovery`, 실제 recovery Windows principal 최소권한 실증, D1a 시험 행렬 전체, crash 복구, 게임/Unity 연동·PDL·다른 파트 구현, 서비스/UAC/SQL 무승인 실행 |
-| 관찰 가능한 완료조건 | 05/06 독립 PASS와 01~04 보존, 승인된 실제 엔진의 최종 설치·U-01 원시, 필요한 CI·문서 실사, 정확 head에 대한 사용자 병합 승인, G4 인수 및 goal 결과·Gardener·종료 점검 |
+| 관찰 가능한 완료조건 | 최종05/06/07 신규 독립 PASS와01~04 보존, 승인된 실제 엔진의 최종 설치·U-01 원시, 필요한 CI·문서 실사, 정확 head에 대한 사용자 병합 승인, G4 인수 및 goal 결과·Gardener·종료 점검 |
 
-**PR은 설치·엔진 판정 한 경계다.** 첫 PR 병합 뒤 G4·결과 기록·Gardener·메인 종료 점검·R-8로 이 goal을 닫는다. 저장소·복구 두 번째 PR을 이어 여는 이전 계획은 철회됐다. 이번 마지막 수정 1회→독립 재검증 1회 뒤 결함이 남으면 원시/번호와 다음 할 일을 메인에 보고하고 추가 회차는 열지 않는다.
+**PR은 설치·엔진 판정 한 경계다.** 첫 PR 병합 뒤 G4·결과 기록·Gardener·메인 종료 점검·R-8로 이 goal을 닫는다. 저장소·복구 두 번째 PR을 이어 여는 이전 계획은 철회됐다. 사용자1A/2B로 승인된07 수정1회→최종05/06/07 독립 재검증1회 뒤 결함이 남으면 원시/번호와 다음 할 일을 메인에 보고하고 추가 회차는 열지 않는다.
 
 ## 이전 중간 마감 결정(역사)
 
@@ -139,7 +160,7 @@ G2 통과 후 첫 접속은 DB_NAME/instance/endpoint·ProductVersion/patch·col
 
 ## 작업 순서·소유·PR 경계
 
-1. **범위 확인·마지막 수정:** 메인에 새 범위와 G4안을 전달한다. 확인 뒤 새 고정 입력/계약으로 신규 Sol(gpt-6.1-sol max)의 05/06 수정 1회와 쓰기 종료 뒤 신규 Opus(claude-opus-5-5)의 독립 재검증 1회를 진행한다. 등급은 강이며 설치 진입 경로를 stub 뒤에서라도 실행한다. 잔여 결함은 다음 회차를 자동 발행하지 않고 메인에 보고한다.
+1. **사용자1A/2B 후 수정·재검증:** 새 고정 입력/계약으로 신규 Sol(gpt-6.1-sol max)의07 수정1회와 쓰기 종료 뒤 신규 Opus(claude-opus-5-5)의 최종05/06/07 독립 재검증1회를 진행한다. 직전 판정/중간기록은 보존만 한다. 등급은 강이며 설치 진입 경로를 stub 뒤에서라도 실행한다. 잔여 결함은 다음 회차를 자동 발행하지 않고 메인에 보고한다.
 2. **조기 엔진 판정:** G2 통과한 명령만 한 실행자·한 DB writer 시간 창으로 수행한다. 승인 DB를 한 번 만들고 최종001~004/modules를 설치한다. 신규 Opus가 schema/설치와 빈 scalar5개 U-01을 실제 엔진에서 먼저 판정한다. 실패는 raw 보존→새 Sol 좁은 수정→새 Opus 재검증으로 해소한다.
 3. **첫 PR — 설치·엔진 판정:** 필요한 설치/검증 도구 현행화, 실제 schema/U-01 근거, goal과 이전 종료 checkpoint를 묶는다. 제품 SQL 외부 계약은 유지한다. 정확 PR 번호·head·CI·미실행·G4 상태를 메인에 보고하고 해당 PR의 사용자 명시 병합 승인을 받는다. DB는 검토와 재현이 끝날 때까지 보존한다.
 4. **전체 goal 정산:** 첫 PR 병합 뒤 메인이 확인한 아래 G4를 수행하고 결과를 기록한다. 신규 Opus Gardener→메인/사용자 종료 점검→R-8로 종료한다. 같은 goal의 저장소·복구 두 번째 PR은 열지 않는다.
@@ -158,7 +179,7 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 |---|---|
 | 실제 엔진 U-01 | scalar FOR JSON5개의 빈 집합/SQL NULL/명시 `[]` 결과를 실제 엔진에서 수집. 최초 설치/catalog read, malformed/unknown/drift 거부. D1a 시험 ID U01과 별개이며 source/fake/대상0으로 대체 불가 |
 | schema/설치 | 001 checksum·기존 게임 행 보존, 최종001~004/modules 설치·재실행 무변경·중간 실패 원자성·catalog 변조 거부, CHECK parent_column_id/definition 실제 대조 |
-| 설치 도구 수명 | 05/06 독립 PASS, 01~04 및 비밀 억제·identity 대조·한 번 수명·journal 보존. 오프라인/실제 SQL·권한 실행을 구분하고 entrypoint 실행 근거를 제시 |
+| 설치 도구 수명 | 최종05/06/07 신규 독립 PASS,01~04 및 비밀 억제·identity 대조·한 번 수명·journal 보존. 오프라인/실제 SQL·권한 실행을 구분하고 entrypoint 실행 근거를 제시 |
 | 환경 구분 | 실제 엔진의 OS·SQL version/patch·연결 경로와 실행자를 기록. 오프라인 stub 성공을 DB·OS계정/ACL/DPAPI 성공으로 치환하지 않음 |
 | 문서/규칙/CI | 사전 메모·관련 규칙 원문·실제 준수 위치·독립 판정 연결, 가독성/책임/배치·30초 탐색 실사, 해당 Changed/서식/빌드/테스트/CI의 실제 입력과 원시 근거 |
 | G4 정산 | 메인이 확인한 아래 정산안에 따라 실제 생성 자원과 미생성 자원을 구분하고, 정확 identity/manifest·실행 원시·잔여를 기록. 미실행/미확정 정리를 완료로 기록하지 않음 |
