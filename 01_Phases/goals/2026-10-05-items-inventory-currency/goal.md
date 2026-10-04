@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **PR1 #1·#2 첫 수정과 자체 확인 완료, 신규 Opus 재검증 준비. 마지막 독립 판정은 #1 차단이며 아직 PASS가 아니다. PR/병합 미실행.**
+상태: **PR1 #1·#2 독립 재검증 해결. 신규 #3 주석 계약 불일치로 통과 보류이며 좁은 수정·신규 검증을 준비한다. O-4는 메인 판단으로 PR1 한계 공개·PR2 표시 복구 조건을 확정했다. PR/병합 미실행.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, branch `feat/items-inventory-currency-20261005`.
@@ -22,7 +22,7 @@
 ### PR 경계와 점검
 
 1. **데이터·서버 규칙·패킷**: Shared 아이템 정의/데이터, 서버 경제 상태와 규칙, 처치 보상·사용·조회 연결, 양쪽 직렬화/버전 및 봇 시나리오. 서버의 불변식·거부 경로, 실제 서버↔봇 경로, 기존 회귀를 독립 검증한다. Unity 공유 DLL/패킷 소비자 호환성을 확인하며 인벤토리 화면 완성은 PR2다.
-2. **클라이언트 인벤토리 UI**: 서버 상태 미러, 수신 핸들러, 최소 인벤토리/재화 표시와 사용 입력, 세션 정리·씬 수명 연결. 독립 Unity 테스트와 실제 플레이로 전체 완료조건을 확인한다. PR1 사용자 병합 승인 뒤 최신 main에서 이 goal의 후속 브랜치를 만든다.
+2. **클라이언트 인벤토리 UI**: 서버 상태 미러, 수신 핸들러, 최소 인벤토리/재화 표시와 사용 입력, 세션 정리·씬 수명 연결. **맵 전환 완료 뒤 재조회로 이동 틈의 처치 보상 표시를 복구하는 것을 필수 완료조건과 테스트에 포함한다**(메인 판단 `msg_b554a4b55c29`, 사용자 결정 아님). 독립 Unity 테스트와 실제 플레이로 전체 완료조건을 확인한다. PR1 사용자 병합 승인 뒤 최신 main에서 이 goal의 후속 브랜치를 만든다. PR2가 미뤄지거나 빠지면 표시 복구 한계가 남는 사실을 메인에 보고한다.
 
 각 PR은 신규 Opus 검증, 정확한 head의 CI와 원시 실행 근거를 메인에 보고한 뒤 **그 PR 병합 직전 사용자 명시 승인**을 받는다. 자동 병합하지 않는다. 중간 점검은 PR1 결과/승인 시점, 종료 점검은 전체 PR 병합·결과·Gardener 뒤다. 같은 산출물 수정이 3회를 넘으면 메인에 체크포인트를 알리며 확정 실패 집계는 별도 ORCA 정본을 따른다.
 
@@ -171,7 +171,7 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 Astra는 원문·전체 테스트·harness·TRX 원시 카운터/실패 메시지·Git 상태·파일 hash를 대조했다. 통과3은 두 공격/실제 지연 피해의 positive control2와 경제 미구현에서도 무응답인 종료 가드1이다. 사용 replay/in-flight·100번째 보상 거부·이동/재접속·불량 입력의 후반 단정은 첫 경제 출력 부재로 **미도달**이며 구현 후 최초 실행/독립 검증이 필요하다. currency/revision 상한, 내부 고아 상태, guard 예외, 불변 snapshot과 전송 실패도 후속 독립 검증 범위다. 전체 테스트·봇·Unity·서식 검사는 미실행이다. RED와 첫 harness 오류는 제품 확정 실패로 집계하지 않는다.
 
-TDD 가정 D1~D6의 구현 전 정리: 3틱은 테스트 허용폭이고 제품 지연 SLA가 아니다. 결과 itemId는 요청 값을 되돌리고, 새 불량 경제 입력은 무응답 drop하며 연결을 유지한다. 성공 보상마다 snapshot push1건, 보상 거부에는 별도 통지를 요구하지 않고 조회로 현재 상태를 확인한다. 이는 현재 핸들러/전송 관례에 맞춘 작은 구현 선택이며 기존 임시 데이터/범위를 바꾸지 않는다. 원 acceptance와 TDD 원문은 보존하고 구현 계약에 명시한다.
+TDD 가정 D1~D6의 구현 전 정리: 3틱은 테스트 허용폭이고 제품 지연 SLA가 아니다. 결과 itemId는 요청 값을 되돌리고, 새 불량 경제 입력은 무응답 drop하며 연결을 유지한다. 성공 보상마다 **기존 경로로 snapshot 전송 시도 1회, 맵 전환 중 생략 가능, 상태 보존·이후 조회로 확인**한다. 보상 거부에는 별도 통지를 요구하지 않고 조회로 현재 상태를 확인한다. 기존의 「snapshot push1건」 표현은 acceptance:32와 공용 SendToEntity의 silent skip 보존 계약을 충분히 반영하지 못해 메인 판단 `msg_b554a4b55c29`로 바로잡았다(사용자 결정 아님). PR1에는 이 알려진 한계를 공개하고 PR2에는 맵 전환 완료 뒤 재조회·표시 복구를 필수로 둔다. 원 acceptance와 TDD 원문은 보존한다.
 
 완료 메시지의 세 identity/태그를 기존 수신 helper로 검증(allowed/exit0)한 뒤 worker-release를 수행했다. attached external pane이므로 retained/none이었고 동일 incarnation·완료 화면·빈 prompt를 확인하여 해당 pane만 close(ptyKilled=true)했다. `tdd-completion.json`, `tdd-completion-policy.json`, `tdd-settlement.json`, `tdd-close.json`에 보존하고 Delivery를 ack했다. 재사용하지 않는다.
 
@@ -244,3 +244,28 @@ GameDev `msg_1bbca7872520`은 #1 수정에 Items 내부 우선, GameWorld 경제
 O-1의 queued 조회는 이동 틈에도 snapshot(rev1) 응답이 관측됐다. 반면 새로 들어오는 migrating 입력 gate는 기존 drop을 유지한다. **O-4는 이번 실행에서 push none/뒤 조회rev1로 관측**됐으며 보상 상태 보존을 push 도착 보장으로 확대하지 않는다. 공용 map 송신의 제한은 현재 문서에 명시했고 메인 `msg_0ec9c3ef81b1`에 보고했다. 새 Opus는 이 계약 적합성·등록의 실제 수명/owner/종료·지연 피해 경계를 판정한다. 원본 Shared 소비자 입력이 같으면 이전 HEAD3262677의 Unity356/356 근거를 대조하되 새 HEAD에서 실행한 것으로 보고하지 않는다.
 
 정산은 exact triple/tag helper allowed/exit0, worker-list completed/succeeded·실제 pane/동일 incarnation `21aa4d61-01f1-44c5-b730-6dd9e66baabf`·최종idle 대조 후 release retained/none→close ptyKilled=true다. **close 뒤 terminal list 재확인: 남은 작업자 pane0**(`sol-pr1-fix1-postclose-terminals.json`). Delivery ack, 작업자 재사용 없음. #1의 확정 실패 횟수는1회 그대로이며 자체 GREEN을 독립 PASS로 처리하지 않는다. 전용7777/InventorySmoke·Unity·DB·CI·PR은 이 수정 작업에서 미실행이다. 다음 단계는 신규 Opus의 수정 실사·독립 테스트·실제봇 재검증이다.
+
+### PR1 첫 수정 독립 재검증 — #1·#2 해결, #3 수정 인계
+
+신규 Opus `task_76046842e657` / `ctx_26a909d5c2d5`는 `msg_27e1c69d0b09`(2026-10-04T20:26:20Z)로 쓰기를 종료했다. 입력 HEAD `03c4ce6d63de5932bd277b889c2995aa44890374`, verifies `task_8650a2393592`. 최종 `opus-pr1-fix1/report.md` SHA256 `90977C9DC9EF016097BC91F244B4B6BC04267DB7157039816D630CB35444E76C`, `verdict.json` SHA256 `721F9CB99C20B37D3AC90D920E8418CB7509EB42DF3547B0B9EFD149F3080ECB`를 로컬 근거 root에 보존했다. Astra는 두 원문 전체, 새 테스트 두 파일, 실제 TRX·봇/서식/입력 대조와 #3 관련 소스를 읽었다. 검증 작업은 succeeded지만 **제품은 #3으로 통과 보류**다.
+
+| 번호 - 작업내용 | 독립 판정·근거 | 다음 처리 |
+|---|---|---|
+| 1 - 이동 틈의 처치 보상 누락 | 해결. 원형 재현·두 대조군 통과, 실제 Mage 지연 피해의 이동 틈 처치와 틈에서 받은 골렘 주머니 사용도 통과. 종료 전후 등록/상태/플레이어 정리, queued 입장·늦은 job·다른 owner 경계 확인 | 회귀 테스트 유지. 기존 확정 실패1회 뒤 해결이며 새 #3과 합산하지 않음 |
+| 2 - 기능 탐색 문서와 v17 이력 | 해결. 실제 등록·해제·wire·소유 흐름과 문서 일치, 상대 링크51/0 및 두 새 앵커의 네 링크 확인 | 유지 |
+| 3 - 수혜자 교체 지점 주석과 등록 owner 결합 | 신규 낮음·규칙 차단1회. KillRewardPolicy:5-6은 수혜자 선택의 교체 지점이 하나라고 하지만 Registry:81-82는 처치자 세션을 캡처하고 :131-132는 recipient와 그 owner의 동일성을 요구한다. 현재 killer-only 동작에는 영향 없음. 소스 대조이며 다른 수혜자 정책 실행은 하지 않음 | 새 Sol이 현재 정책/owner 결합을 설명하는 주석을 최소 수정하고 신규 Opus가 문서·동작 불변을 실사. 새 분배 정책이나 기능 확장 없음 |
+
+| 실제 독립 실행 | 결과·원시 | 범위·한계 |
+|---|---|---|
+| 원형/추가 Items | 67/67 → 18경계 추가 후85/85. 최종 주석 바이트 `items-new-3`도85/85, exit0 | 신규 테스트의 두 대조군은 처음 지연 push와 조회 창을 섞은 fixture 오류가 있었으며 정착 틱과 push1건 단정으로 수정. 요구값 완화 없음 |
+| 수정 전 판별 대조 | `prefix-control-1` 76/68/8, exit1 | 세 보상 동작 실패와 새 등록 필드 부재 다섯 건을 구분. fixture 전용 owner 파일은 이전 생성자와 맞지 않아 제외 |
+| 전체 slnx | 924전체/919실행·통과/0실패/기존skip5, `full-suite-1` exit0 | 새 테스트 주석 정정 전 바이트, 실행 토큰은 동일. CI의 정확한 `--no-incremental` 명령은 아직 미실행 |
+| 실제 InventorySmoke | PASS1/FAIL0, exit0,19:58:29Z~19:58:51Z | 실제 골렘3타/Hit3 → rev1/재화10/주머니1 → 사용rev2/60 → 동일bytes Stale·불변. 이동 틈 네트워크 타이밍 자체는 미재현 |
+| 서식·입력·공유 소비 | format-check2회 exit0, 최종제품0/267·독립0/5·0/17·0/9·보존264·도구244/244. 입력95/95, 추적제품diff0. Shared IL차이0 | 최종 주석 바이트의 추가 전체 실행은 후속 한정검사 지시와 처리 관계가 확인되지 않아 아래에 별도 기록 |
+| Unity | 같은 소비 입력 hash와 이전356/356을 대조 | **HEAD3262677의 이전 실행**이며 현재 재실행·UI/PlayMode/실제플레이 완료가 아님. DB·PR·CI 미실행 |
+
+O-4 범위는 메인 `msg_b554a4b55c29`(20:08:41Z, `o4-main-scope-decision.json`)가 **현재 goal 범위 안 구체화라는 메인 판단**으로 정했다. 기존 SendToEntity와 전송 시도1회·맵 전환 중 생략 가능·상태 보존/이후 조회를 유지한다. 캡처 session 직접 송신 대안은 채택하지 않았다. PR1 알려진 한계에 「맵 전환 틈의 처치 push 없음, 표시 복구는 PR2」를 적고 PR2 맵 전환 완료 뒤 재조회·표시 복구를 필수 검증한다. 위 PR 경계와 D1~D6 문구는 검증 쓰기 종료 뒤 이 판단대로 수정했다. 이 판단은 독립 PASS나 병합 승인이 아니다.
+
+보고 불일치: 최종 Opus 원문은 O-4 판단이 남았다고 적었지만 위 메인 결정은 이미 내려졌고20:09Z `msg_e2e93726d454`로 원문을 전달했다.20:07Z의 주석 후 한정검사 지시도 반영 확인 없이20:13Z 전체format2가 시작됐다. 최종 화면에는20:15Z의 태그 있는 메시지 확인 안내 draft가 남았다. 공개inbox 표시도 실제 회신한 앞 메시지가 read0여서 수신·처리 누락 원인은 미확정이다. 원판정을 고치지 않고 `astra-context.md`에 차이를 보존했으며 메인 `msg_2dd6954855cb`로 즉시 알렸다. 다음 계약은 현재 결정 원문을 최초 고정 입력으로 포함한다.
+
+정산: exact triple/tag allowed0·completed/done·같은 incarnation `ed20d00f-25e0-492b-981d-e084f380988c`와 최종 idle 확인, release retained/external/none→close ptyKilledtrue. **close 뒤 terminal list 재확인: 남은 작업자 pane0**(`opus-pr1-fix1-postclose-terminals.json`), 완료 delivery ack. 태그 있는 미제출 안내 draft는 사용자 직접지시나 pane 종료 보류 사유가 아니며 완료 세션을 재사용하지 않는다.
