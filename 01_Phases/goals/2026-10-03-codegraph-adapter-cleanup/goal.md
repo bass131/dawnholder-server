@@ -1,6 +1,6 @@
 # CodeGraph 연결 코드 정돈
 
-상태: **제품 구현·독립 검증과 PR #172 병합·병합 후 .NET CI는 완료했다. 결과 기록의 신규 Opus 재검증도 통과했고 [PR #174](https://github.com/bass131/dawnholder-server/pull/174)를 생성했다. PR #174 최종 head의 CI 확인·사용자 개별 병합 승인·병합과 Gardener·메인 종료 점검·R-8은 아직 남았다.** 사용자 재승인 head는 1b768d5c5206370ff9d76f43a4bce08ea7018eb1, merge commit과 확인한 main은 02b3e8b8d13287c7ef32c0210836166d8d52c6f8이다. 최신 사실은 맨 아래 「PR #172 병합과 목표 종료 정산」을 기준으로 하며, 아래 이전 상태·승인 대기 문장은 당시의 기록으로 보존한다. 제품·테스트·원시 근거는 이 결과 기록에서 변경하지 않는다. E=.backups/verification/2026-10-03-codegraph-adapter-cleanup/.
+상태: **Architecture 중간 마감 지점에 도달했다. 제품 PR #172·결과 기록 PR #174의 승인 병합, 두 PR의 CI와 병합 후 main CI 확인, 신규 Opus Gardener·Astra 종료 점검을 마쳤다. 새 목표·PR 범위·기능 테스트 CI 파일럿은 동결하며 메인/사용자 마감 판단과 메인의 R-8을 기다린다.** Gardener 후보 2건은 미채택이고 추가 제품 결함 보고는 없었다(조사 범위 한정). 상태 문구 관찰 G-1과 보고서 집계 표기 불일치는 미해결 관찰로 인계한다. PR #174 merge는 3deca5742ec8d28a7afabf85b852ea5c6c2899b0이다. 최신 상태는 맨 아래 「PR #174 병합과 goal 종료 점검」이며 이전 현재 상태 문장은 당시 기록이다. 병합 뒤 goal 운영 결과 한 파일은 로컬 미커밋으로 보존한다. E=.backups/verification/2026-10-03-codegraph-adapter-cleanup/.
 
 ## 첫 재계획의 승인과 적용
 
@@ -406,3 +406,29 @@ v3 재검증 정산(검증 뒤 발생한 기계 기록): 신규 Opus Task task_1
 
 후속 관찰과 남은 승인: 새 판정의 O-A(첫 상태 문장에 당시 재검증 단계 생략), O-B(초기 검증자의 삭제 시각 보고와 권한창 시각 불일치), O-C(check 응답의 수신UTC 부재)는 비차단이다. O-B의 초기 보고와 화면 원문은 보존하며 정확 삭제 시각을 확정하지 않는다. 새 검증자의 “10:11Z 이후 재삭제”는 화면에 근거한 추론이고 Astra의 직접 관측이 아니다. 세 관찰은 메인 msg_2c9e82db4588에 전달했다. 새 검증자는 지정 work/만 사용했고 권한 거부·재시도는 없었다고 보고했으며 하네스 자동 tool-results 저장은 별도로 공개했다. 제품·테스트·Compare·빌드·DB·Unity·CI 재실행은 없었다. 재검증·정산은 마쳤으나 결과 기록 PR의 생성·정확 head 사용자 개별 승인·병합, Gardener·종료 점검·R-8은 남았다.
 결과 기록 PR 생성(검증 뒤 기계 기록): [PR #174](https://github.com/bass131/dawnholder-server/pull/174)를 branch docs/codegraph-cleanup-closeout-20261004에서 main 대상으로 생성했다. 생성 직전 커밋은 81c77ffb6dbdb2b7b95b4d319b36475b4d1a7229이며, 이 PR 번호와 첫 상태 문장 갱신은 후속 기계 기록 커밋으로 구분한다. 생성 조회에서 변경은 goal 한 파일, base cafd0b3, MERGEABLE·autoMerge null을 확인했고 두 기존 CI가 시작됐다. 근거는 E/closeout-publish의 first-commit.json·pr-create.txt·pr-created.json이다. 최종 head와 CI는 [PR 체크](https://github.com/bass131/dawnholder-server/pull/174/checks)의 실제 결과로 확인한다. PR #172 승인은 이 PR에 적용하지 않으며 사용자 개별 승인 전 병합하지 않는다.
+
+## PR #174 병합과 goal 종료 점검
+
+메인 msg_8a5e521aded0(2026-10-04T11:08:18Z)은 사용자가 대시보드 응답으로 제출한 「1) PR174 - 구조 분석 종료 기록 병합 (head cb9ebd4) → A 병합 승인 (head cb9ebd4)」을 전달했다. 이 전달을 사용자 직접 입력으로 격상하지 않는다. Astra는 병합 직전 full head cb9ebd4fd86d655ca1840c1e90978f9f1516a9e7·OPEN·MERGEABLE·CLEAN·check/test SUCCESS·autoMerge null을 재확인하고 지정 명령 `gh pr merge 174 --repo bass131/dawnholder-server --merge --match-head-commit cb9ebd4fd86d655ca1840c1e90978f9f1516a9e7`을 실행했다(exit 0). [PR #174](https://github.com/bass131/dawnholder-server/pull/174)는 11:09:48Z에 병합됐고 merge commit은 `3deca5742ec8d28a7afabf85b852ea5c6c2899b0`이다. fetch한 origin/main과 같으며, `git merge-base --is-ancestor` 명령·시각·exit 0을 E/pr-174-post-merge/main-inclusion.json에 보존했다. 승인·전후 상태·명령은 같은 폴더 main-approval.json·before-merge.json·merge-command.json·after-merge.json이다. HEAD는 승인 head에 그대로 있고 goal blob은 merge commit과 동일했다.
+
+승인 head의 최종 CodeRules run37196046844(10:40:23Z)와 .NET run37196046821(11:01:29Z)은 모든 job step까지 SUCCESS였다(E/closeout-publish의 code-rules-final.json·dotnet-final.json·pr-final.json·final-summary.json). 병합 뒤 main push [.NET run37197788438](https://github.com/bass131/dawnholder-server/actions/runs/37197788438)도 2026-10-04T11:32:34Z에 SUCCESS로 완료됐다. head3deca57·event push·전체 job step 성공을 실제 응답 E/pr-174-post-merge/dotnet-final.json과 대조했다. 처음 실행 중 관측은 같은 폴더 runs-1.json으로 보존하며 원격 테스트 건수는 주장하지 않는다. CodeRules는 main push 자동 trigger가 없어 병합 뒤 새 실행을 주장하지 않는다.
+
+메인 지시에 따라 main CI 확인 뒤 전체 goal의 신규 Opus Gardener·종료 점검을 진행한다. Gardener는 보고서 한 파일에 검사화 후보 최대 두 개만 제안하며 채택·구현·다음 goal 발행은 하지 않는다. 기능 테스트 CI 파일럿은 착수하지 않고, 사용자의 전체 작업 중간 마감 판단과 메인의 R-8을 기다린다. 이 절과 첫 상태는 병합 뒤 로컬 운영 결과이며 PR #174의 승인 head를 바꾸지 않는다.
+
+중간 마감 A안 — 사용자 결정 전달: 메인 msg_3cb85bf23b53(2026-10-04T11:10:03Z)은 사용자 원문 「결정대기 관련에서 현황판에 업데이트가 안됬네, 일단 A긴 해」와 직전 A안 「지금부터 새 착수 동결: 진행 중인 검증·결함 수정 루프만 끝내고 새 goal·PR 범위는 열지 않는다」를 전달했다. 사용자 직접 입력으로 격상하지 않는다. 새 goal·계획·PR 범위를 열지 않고 후보만 기록한다. 지금 단위의 결함 수정은 추가 한 회차(새 Sol 1회→새 Opus 1회)만 허용하며, 그 뒤 남으면 결함 번호·원시·다음 할 일을 여기에 남기고 멈춘다. D: 드라이브·실제 DB·화면 확인·서비스 시작 등 사용자 행동이 필요한 단계는 마감 뒤로 미룬다. 기존 PR 승인은 해당 PR에만 유효하다. 원문은 E/pr-174-post-merge/main-mid-close-freeze.json이다.
+
+Architecture 마감 지점은 승인된 PR174 병합→main CI 확인→Gardener→종료 점검이다. 기능 테스트 CI 파일럿은 마감 뒤로 미룬다. 이 지점에서 메인에 「중간 마감 도달」로 상태·브랜치/HEAD·미커밋 파일 수·남은 결함/후보·재개 첫 단계를 보고하고 새 작업 없이 대기한다. 이후 사용자는 메인 세션 하나에서 큰 그림과 설계를 논의하며, 종료 점검 보고 뒤 R-8 pane 정리는 메인이 맡는다.
+
+Gardener 입력 고정: E/gardener-input의 goal-gardener-input.md·input-manifest.json·verdict-source-index.json·review-contract.md로 현재 goal 결과, 독립 판정 원문과 승인/병합/CI 원시를 연결한다. 신규 Opus는 E/gardener/report.md 한 파일에 사전 맥락과 점검 결과를 기록한다. 쓰기는 해당 보고서로 한정하고 제품·goal·기존 근거를 바꾸거나 후속 작업을 발행하지 않는다. 후보 제안의 채택 여부와 전체 중간 마감은 메인/사용자의 판단으로 남긴다.
+
+Gardener 정산: 신규 Opus Task task_bc9bc006dd84/Dispatch ctx_aa12e28afd45는 E/gardener/report.md 한 파일(34,359bytes, SHA256 `4175d9730a4ee3bd7257896bab6fea55e3bb68a154cfb625d4ae0126188275b4`)에 사전 맥락과 후보 2건을 작성하고 msg_d973bd7cb892(11:49:33Z, succeeded)로 완료했다. Astra는 원문 전문·발신/Task/Dispatch·고정 입력35개 불변·당시 goal SHA4ee9b148…를 대조하고 release→정확 incarnation/idle/화면→close(ptyKilled true)→delivery_326629682990 ack를 수행했다. E/gardener-input의 worker-done-events.json·acceptance-state.json·review-release.json·review-final-show.json·review-final-idle.json·review-final-screen.json·review-close.json·review-done-ack.json이 근거다. 이후 이 종료 기록은 Astra의 기계 기록이며 Gardener 입력 버전으로 소급하지 않는다.
+
+미채택 후보는 두 개다. (1) goal 상태 드리프트의 기계 검사 부분집합은 [기존 BACKLOG](../../../00_Document/operations/BACKLOG.md)의 `goal-state-drift`에 연결하는 근거 보충 제안이다. (2) 반복 복사된 실행 근거 기록 helper의 정본화·fixture 검증은 기존 안정 ID가 없는 제안이다. 상세·빈도·검사화 방법·비용·한계는 Gardener 원문에만 두며 BACKLOG를 편집하거나 새 goal·PR·실행 계획을 발행하지 않았다. 이미 예정된 기능 테스트 CI 파일럿, 근거 root의 check 재기록, R1 줄바꿈 후속도 새 후보로 중복 착수하지 않는다.
+
+남은 관찰과 원문 한계: G-1은 goal 3행의 최신 절과 역사 기록 117행의 「최신 상태·원문」 문구가 서로 다른 절을 가리킨다는 Gardener 관찰이며 차단 판정이 아니다. 첫 상태의 역사 기록 구분 아래 후속 문서 드리프트 대상으로 인계하고 새 수정 범위를 열지 않는다. 보고서 후보1 본문은 판정 6개를 분모로 적었지만 마지막 준수 연결 표는 5개라고 적어 표기가 일치하지 않는다. Astra는 이 불일치를 원문 변경 없이 공개하며 해당 수치를 새로운 확정 집계로 재사용하지 않는다. 또 보고서의 `/dev/stdin` 리다이렉트 Permission denied는 셸 실행 오류로 기재돼 있고, Claude 권한 확인 거부·재시도 없음이라는 보고와 구분한다. 후보2의 과거 상수 exitCode 기록은 당시 작성자가 무효로 공개·보존하고 다시 기록한 건으로, 현재 성공 근거에 쓰였다고 확대하지 않는다.
+
+Astra 종료 점검: 관찰 가능한 제품 완료조건의 근거는 기존 신규 Opus 최종 PASS(E/new-pointer-verification/verdict.md)이며 제품 검사·Compare를 다시 실행하지 않았다. 결과 기록 v3의 D-1/D-2 해소는 E/closeout-reverification/verdict.md의 PASS, 통합은 PR172·PR174 각각의 정확-head 사용자 승인 전달·병합 원시와 각 main CI 성공으로 연결한다. 기존 partial·xfail3·R1·#9 범위 밖 미검토 두 건·게임/Unity/DB 미수행을 해소로 바꾸지 않는다. Gardener는 새 제품 결함을 보고하지 않았으나 제품 전체를 재검증한 것은 아니다. 후보·G-1·집계 표기 불일치·O-B 시각/관측 한계·O-C 수신UTC 부재·CURRENT O6은 후속으로 남긴다.
+
+중간 마감 인계: branch `docs/codegraph-cleanup-closeout-20261004`, HEAD `cb9ebd4fd86d655ca1840c1e90978f9f1516a9e7`를 유지한다. Git 미커밋은 이 goal.md 한 파일이며 로컬 `.backups/verification/` 원문은 Git 제외 자료다. 새 commit/push/PR은 발행하지 않는다. 재개 첫 단계는 메인/사용자의 큰 그림·설계 논의와 동결 해제/다음 범위 결정 확인, 그다음 이 미커밋 goal 결과와 Gardener 원문 인계다. 기능 테스트 CI 파일럿을 자동 착수하지 않는다. 메인에게 「중간 마감 도달」을 보고한 뒤 새 작업 없이 대기하며 R-8 pane 정리는 메인이 수행한다.
+
+보고 빈도 결정: 메인 msg_6aa42a038203(11:42:13Z)에 따라 경과 status·진행 중 화면/원시 재대조를 중단하고 내용 없는 heartbeat는 별도 응답·파일 기록하지 않았다. 완료 이벤트 뒤에만 원문 대조·정산을 수행했다. 원문은 E/gardener-input/main-event-only-reporting.json이다.
