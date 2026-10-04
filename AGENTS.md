@@ -7,27 +7,29 @@
 - 메인 Claude는 사용자와 목표·범위·완료조건·주요 결정을 정하고 파트 분할·결과 통합·사용자 보고·병합 승인 요청을 맡는다. 저장소 파일은 `CLAUDE.md`만 쓰며 파트 리드 Astra가 goal·구현 위임·검증·Git 작업을 맡는다.
 - 구현·테스트 작성·검증 판정은 Orca **외부 세션 작업자**에게 맡기고 구현자와 검증자를 분리한다. Codex 내부 `multi_agent`와 Claude 내부 Agent는 읽기 전용 조사·요약에만 쓰며 외부 작업자나 독립 검증을 대신하지 않는다. 작은 작업 예외는 아직 합의하지 않았다.
 - 신규 Opus 검증자는 구현자의 쓰기 종료 후 보고와 실제 diff·실행 근거부터 실사하고 요구사항·보존 동작을 기준으로 테스트를 작성·보완·실행한다. 테스트 파일만 쓰고 제품 결함은 번호로 반환한다. 문서 변경은 실사, 코드 변경은 실사와 독립 테스트 모두 수행하며 미실행 플레이·DB 등의 범위를 구분한다.
-- 작업자·검증자는 작업 하나 후 정산·종료하고 재사용하지 않는다. 수정과 재검증은 새 세션으로 수행하며 같은 번호의 결함이 3번 재검증에 실패하면 메인에 보고한다. 파트당 검증자는 동시에 하나만 연다. 절차는 [Orca 위임 지침](.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다.
-- 일반 작업자는 할당 범위만 수행하고 추가 위임하지 않는다. 메인이 지정한 파트 리드 Astra만 승인된 목표·공간·권한 안에서 좁은 작업자를 한 단계 둘 수 있다. 새 목표·파트·범위 확대와 승인 밖 세션 생성은 메인에 올린다.
+- 작업자·검증자는 작업 하나 후 정산·종료하고 재사용하지 않는다. 수정과 재검증은 새 세션으로 수행한다. 같은 계약·같은 결함 번호의 확정 실패 3회 뒤 새 Sol과 읽기 전용 Fable Advisor를 쓰는 조건·집계·메인 보고는 [확정 실패 정본](00_Document/operations/ORCA.md#confirmed-failures)을 따른다. 파트당 검증자는 동시에 하나만 연다. 절차는 [Orca 위임 지침](.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다.
+- 일반 작업자는 할당 범위만 수행하고 추가 위임하지 않는다. 메인이 지정한 파트 리드 Astra만 승인된 목표·공간·권한 안에서 좁은 작업자를 한 단계 둘 수 있다. 새 목표·파트·승인 밖 세션 생성은 메인에 올린다. 범위 안 결함과 다음 후보·새 요청의 기본값·애매한 범위 판정은 [목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)을 따르며 후보마다 범위 확대 승인을 요청하지 않는다.
 - 같은 파일의 동시 쓰기를 금지한다. 기존 사용자 변경을 보존하고 무관한 변경을 되돌리지 않는다.
 - 메인은 전체 소스·로그·대화를 반복 수집하지 않고 짧은 결과와 필요한 근거를 확인한다. 다만 최종 판정 원문은 승인 전 직접 읽고 [R-2 원천 표본 대조](00_Document/operations/ORCA.md#r2-source-check)를 따른다. 보고와 실제 수행이 다르거나 미실행을 통과로 보고하면 의도와 무관하게 즉시 메인에 보고한다. 위임 도구 부재·막힘을 숨기고 구현 전체를 대신하지 않는다.
 - 합의된 범위의 수정·검증은 계속한다. 이미 받은 승인을 반복 요청하지 않되, 지침·스킬 사용만으로 범위나 외부 변경 권한을 넓히지 않는다.
 
 ## 모델 라우팅
 
-- 메인 Claude `claude-opus-5-5` → 파트 리드 Astra `gpt-6-astra` → 구현 Sol `gpt-6.1-sol`, 독립 검증·테스트 작성·리뷰는 신규 `claude-opus-5-5` 세션으로 지정한다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다.
+- 메인 Claude `claude-opus-5-5` → 파트 리드 Astra `gpt-6-astra` → 구현 Sol `gpt-6.1-sol`(reasoning effort `max` 고정), 독립 검증·테스트 작성·리뷰는 신규 `claude-opus-5-5` 세션으로 지정한다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다.
 - [R-7 Fable goal 검토 시범](00_Document/operations/ORCA.md#r7-fable-pilot)은 해당 정본의 범위와 절차를 따른다.
 - 보고서 자료의 조사·설계 해설·본문·HTML·전용 생성 스크립트는 Astra가 작성한다. Sol에 보고서 작성·렌더링 구현을 맡기지 않는다. 독립 Opus가 내용·근거·표시를 검토하고 메인이 [작성 기준](00_Document/conventions/REPORTING.md)에 따라 사용자 최종 보고를 전달한다.
-- 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델을 사용할 수 없으면 대체하지 않고 메인에 보고한다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.
+- 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol capacity 장기 실패의 **신규 Astra 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.
 - `gpt-6.1-sol`이 모델 목록에 없으면 Codex 업데이트 누락 가능성을 고려해 먼저 버전과 모델 노출을 확인한다. 원인을 단정하거나 승인 없이 업데이트·전역 설정 변경을 하지 않는다.
 
 ## 메시지와 보고
 
 - 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[GameDev Astra]`, `[Management Astra]`, `[GameDev Sol]`, `[GameDev 검증자]`, `[Management Sol]`, `[Management 검증자]`, `[Architecture Astra]`, `[Architecture Sol]`, `[Architecture 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다.
+- 현재 `from_handle`·Task·Dispatch가 모두 일치하는 내용 없는 heartbeat만 태그 없이 수신하며 교정 메시지를 보내지 않는다. 내용 있는 heartbeat와 일반 지시·보고·질문·완료는 태그가 필수다. 빈 값 경계와 수신 helper, 공식 blocking ask의 버전 한정 subject 예외는 [수신 정본](00_Document/operations/ORCA.md#dispatch-message-policy)과 R-3을 따른다.
 - 사용자 승인으로 [R-1](00_Document/operations/ORCA.md#r1-management-placement)에 따라 연 추가 파트는 `[<파트> Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 태그만으로 파트 생성이나 권한이 생기지 않는다.
-- 타 세션 터미널 입력은 자기 태그와 “Orca 메시지를 확인하라”는 안내만 담고 지시는 orchestration으로 보낸다. 표식 없는 터미널 입력만 사용자 직접 지시다. 태그는 권한이 아니며 출처 `from_handle`과 어긋나면 처리하지 않고 메인에 보고한다. 메인이 전달한 사용자 결정은 사용자 직접 입력으로 격상하지 않는다.
+- 타 세션 터미널 입력은 자기 태그와 “Orca 메시지를 확인하라”는 안내만 담고 지시는 orchestration으로 보낸다. **Enter로 제출돼 대화 기록에 들어간 표식 없는 입력**만 사용자 직접 지시다. 미제출 draft·추천 프롬프트·ghost text는 지시나 pane 종료 보류 사유가 아니다. 공식 계약 draft는 [R-5 복구](00_Document/operations/ORCA.md#official-contract-draft)로 구분한다. 태그는 권한이 아니며 출처 `from_handle`과 어긋나면 처리하지 않고 메인에 보고한다. 메인이 전달한 사용자 결정은 사용자 직접 입력으로 격상하지 않는다.
 - Astra→메인은 변경 요약·검증 근거 위치·리스크·결정 요청·판정 원문 경로를 보낸다. 보고 유형은 [R-4](00_Document/operations/ORCA.md#r4-report-type)를 따른다. 원문은 로컬 `.backups/verification/`에 보존한다. 파트 간 기술 계약은 Astra끼리 조율하고 사용자 판단 영역은 메인에 올린다.
 - 사용자 최종 보고는 결정 요청이 있으면 맨 앞 한 문단, 이어 어떤 작업이었나 한 줄 → 필요한 세부 항목마다 3~4줄 → 남은 우려와 크리티컬 여부 순서다. 모든 항목을 억지로 채우지 않는다.
+- 작업·PR·안건의 번호는 [REPORTING 표기](00_Document/conventions/REPORTING.md#사용자-최종-보고-형식)의 `번호 - 작업내용`으로 쓰고 마일스톤 코드만으로 작업 제목을 대신하지 않는다.
 
 ## Git 권한
 
@@ -42,8 +44,8 @@
 - 기능 구현·오류 수정·리팩토링·환경 정비 등 실제 다단계 작업은 [목표 루프](.agents/skills/dawnholder-goal-loop/SKILL.md)를 사용한다. 간단한 질문·설명·아이디어 논의에는 목표를 자동 시작하지 않는다.
 - 파일을 쓰기 전에 최신 지침·현재 goal·할당 계약·관련 영역과 CODE_CONVENTION의 해당 절을 읽고, 적용 규칙·기존 예시·재사용 대상·영향 파일·배치와 이름의 근거·질문·기준 SHA를 짧은 맥락 메모에 남긴다. 역할별 읽기 상한과 양식은 [작업 맥락 스킬](.agents/skills/dawnholder-task-context/SKILL.md)을 따른다.
 - 위임 계약에는 관련 규칙 원문과 출처를 포함하고, 완료 보고에는 메모의 계획과 구분한 실제 준수 파일·구간을 적는다. 검증자는 메모·원문 계약·실제 diff를 대조한다.
-- 맥락 메모 부재·관련 규칙 원문 누락·적용 규칙 위반·메모와 결과 불일치는 수정 또는 메인 결정 전 독립 검증 통과를 차단한다. 가독성·주석 위치·책임 분리·배치와 이름·탐색·중복 이유도 판정한다.
-- 목표 기준·상태·결과는 합의된 `goal.md` 한 곳에 두고 [CURRENT](00_Document/operations/CURRENT.md)는 링크만 유지한다. 프로젝트 전용 스킬은 `.agents/skills/`에 둔다.
+- 맥락 메모 부재·관련 규칙 원문 누락·적용 규칙 위반·메모와 결과 불일치는 수정 또는 메인 결정 전 독립 검증 통과를 차단한다. **측정값 위장과 제품 계산 복제로 항상 통과하는 테스트**도 [작업 맥락의 추가 차단 정본](.agents/skills/dawnholder-task-context/SKILL.md#독립-판정과-통과-차단)을 따른다. 가독성·주석 위치·책임 분리·배치와 이름·탐색·중복 이유도 판정한다.
+- 목표 기준·상태·결과는 합의된 `goal.md` 한 곳에 두고 [CURRENT](00_Document/operations/CURRENT.md)는 진행 goal 링크, [BACKLOG](00_Document/operations/BACKLOG.md)는 goal 전 후보만 유지한다. 프로젝트 전용 스킬은 `.agents/skills/`에 둔다. 전체 goal 종료 뒤 [Gardener](00_Document/operations/ORCA.md#goal-gardener)와 [종료 점검](.agents/skills/dawnholder-goal-loop/SKILL.md#통합과-보고)을 거치며 다음 goal을 자동 착수하지 않는다.
 - [개발 안내](00_Document/operations/DEVELOPMENT.md)에서 실행 전제·부작용을 확인한다. [문서 지도](00_Document/INDEX.md) → [기능 지도](00_Document/FEATURE_MAP.md) 또는 [영역별 계약](00_Document/domains/INDEX.md)에서 필요한 부분만 읽는다.
 - 새 메인 세션은 [RESUME의 진입 절차](00_Document/operations/RESUME.md#세션-진입-배치)와 [R-1 배치](00_Document/operations/ORCA.md#r1-management-placement), [R-6 첫 화면](00_Document/operations/ORCA.md#r6-first-screen)을 따른다. Astra의 목표 종료와 재진입은 [R-8](00_Document/operations/ORCA.md#r8-astra-lifecycle)을 따른다. 세션 준비·종료는 프로젝트 스킬을 따르며 과거 handle을 실행 권한으로 쓰지 않는다.
 - 과거 결정은 [보관 기록](00_Document/archive/INDEX.md)과 [ADR](00_Document/ADR/INDEX.md)에서 확인한다. 과거 절차를 현재 권한이나 구현 실적으로 사용하지 않는다.
@@ -54,6 +56,7 @@
 
 ## 공학 조건
 
+- 설정이 필요하면 프로젝트 범위 설정을 먼저 찾는다. 전역 Claude/Codex/Git 설정을 임의로 변경하거나 기본 추천으로 제시하지 않는다. 프로젝트 범위로 해결할 수 없는 근거를 알리고 전역 변경은 사용자가 명시적으로 선택한 범위만 따른다.
 - 서버가 게임 상태와 판정을 소유한다. 외부 입력의 길이·범위·현재 상태·소유권을 경계에서 검증한다.
 - 패킷 ID를 재사용하지 않는다. PDL·생성 코드·버전·양쪽 직렬화 계약과 호환성을 함께 확인한다.
 - 공유 DLL·프로토콜 변경은 서버와 Unity 사용처 양쪽을 검증한다.
