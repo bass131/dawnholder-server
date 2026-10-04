@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **#1·#2의 신규 Sol 수정과 자체 회귀를 받았으며 신규 Opus 재검증으로 진행한다. 기본 전체 테스트는 실패했고 Windows 4사례 #ENV-1의 보존 영향은 미확정이다. 독립 통과·PR 준비 완료가 아니며 실제 PR checkout/CI도 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **신규 Opus 재검증은 #1·#2·#3 해소와 #ENV-1의 하네스 원인을 확인했으나 새 보존 결함 #4로 차단이다. #4 수리의 배치·테스트 변경 경계는 메인 판단을 기다린다. PR은 미발행이며 실제 PR checkout/CI도 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -157,3 +157,22 @@ WSL linked worktree의 Git metadata 경로로 최초 실제 진입이 실패한 
 수정 원시는 `.backups/verification/2026-10-05-module-boundary-warning/correction/work/`의 red/green·ci-green·ci-skip-guard·sdk-absent-opt-in·default-all·environment-errors-fixed와 전수 분류 파일이다. 최종 도구 hash `3df98b67f766c562da9310e91f8b51040417439d1de7fe9e1613fa1186cce3ec`로 당시 remote main `11aa4b83131bc6349f186a141cfea9c58d2230e3`의 blob과 current HEAD7c9253b workspace를 실행해 양쪽 C#91파일477096bytes·Compile91/91·boundary46/46·세 규칙0·clean/exit0을 기록했다. 내부/외부 시간은 main66.294734/66.524552초, current52.252331/52.544837초다. mode/input hash가 다르고 병렬 실행했으므로 성능 개선 주장이 아니다. 원시는 actual-main/actual-current와 final-artifact-binding.json이다.
 
 release 뒤 동일 incarnation·idle·최종 화면을 대조하고 pane을 닫았다(`correction-close.json`, ptyKilled true). **close 뒤 terminal list 재확인: 남은 작업자 pane 0** (`correction-post-close-terminals.json`, Astra만 남음). 메인 리마인드 `msg_dbcbfff75f02`는 전달된 기존 절차 확인이며 새 사용자 직접 지시로 격상하지 않는다. 다음 검증은 새 세션이며 이전 작업자는 재사용하지 않는다. 이 기록 이후의 goal/계약/Git 쓰기는 Astra의 후속 통합이다.
+
+### 2 - 첫 수정 재검증의 차단 판정과 정산
+
+검증 Task `task_1f0f92b97833` / Dispatch `ctx_676f7d7555e0`는 수정 Task `task_4c659d8ba3ae`를 검증했다. 고정 HEAD `54ba0b79f112a26f890e1d192c135472275eb809`, 계약 v1과 입력140파일을 사용했다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. 최초 receipt는 input_accepted와 turn_started 모두 관측됐다. `msg_d0d7b2d7981f`(2026-10-04T21:23:12Z)의 failed·쓰기 종료 뒤 Astra가 판정 전체와 보호140파일·신규 테스트2파일 hash를 대조했다. 보호 입력 불일치는0이다.
+
+판정 원문은 `.backups/verification/2026-10-05-module-boundary-warning/reverification/verdict.md`, SHA256 `CEA83FA980CA157D2E2140963FF61651E973B31949B6B16098A5670206EF158B`다. 이하 원시는 같은 `reverification/work/` 아래다. 원문을 덮어쓰지 않는다.
+
+- #1·#2·#3: 해소. 신규 독립 suite27건은 실패0/오류0/exit0, 외부1117.642초다(`final-suite`). 내부 workflow 원문 실행은 요구사항29·discovery5를 실제 실행했고, opt-out은 SDK·process/socket/write 사건0과 사유 있는 skip을 확인했다. 미추적 provenance는 자기 Git fixture의7사례에서 실제 bytes·입력 목록·Git 상태를 대조했다.
+- #ENV-1: (b) 하네스 TMPDIR 깊이로 원인 확정. 두 Windows Git 경로 모두 cwd258자는 시작하고259자는 실패했다. 현재 HEAD에서 짧은 owned TMPDIR의 기존4메서드가 통과하고, 깊은 TMPDIR에서는 같은 `git.exe: Invalid argument`가 재현됐다(`f/`, 최종 `z/env1-*`). 현재 전체 goal을 포함한 실행에서 보존 영향은 관측되지 않았다. 문서화된 시스템 임시 경로·비 drvfs 실행은 수행하지 않았다.
+- 기본 전체 실패의 전수 재판정: 이전165건 실행 자체는 실패로 보존했다. 감사 때문에 실행되지 못했던20메서드는 frozen-a의9건, frozen-b의7건, ENV-1의4건에서 실제 통과했다. drvfs에서 chmod가 실행권한을 제거하지 못하는 기존 실패는(b)이고, 현재 도구 파일 집합 실패는(a)의 옛 폴더 단정이지만 기존 테스트 변경 금지 때문에 보존 회귀 #4로 남는다. 미분류0, 기존 테스트·동결 자료 변경0이다. 전체165 명령 통과로 대체하지 않는다.
+- **#4 - 새 도구 배치에 따른 기본 비교 테스트 실패:** 중간·차단. 전체 goal이 `99_Tools/Architecture`에 실행 파일11개를 추가해 `test_executed_code_matches_repository_tool`의 현재 폴더 전체/과거 batch 목록 비교가 실패한다. 원시 `batch-tool-set/comparison.json`에서 base955002a의15파일=기록15파일, 현재26파일은 공통15파일 bytes동일+추가11이다. Astra 배치 계약과 최초 Sol의 보존 실사에 공동 귀속한다. README 공개나 명시 과거 재생으로 기본 suite red를 해소했다고 보지 않는다. 같은 #4의 첫 독립 확정 실패1회이며 #1은1회 뒤 해소됐다. 크래시·감사·검증자 하네스 오류는 이 집계에서 제외한다.
+
+**원문 건수 정정 포인터:** verdict 「실행과 미실행」의 independent-26 `23 ok`는 원시 `independent-26/stderr.txt`의 ok행 **24개**와 다르다. 최초26메서드는24통과·실제 진입2메서드의3오류/exit1이었다. 누락한 SHA 환경을 채운 해당 class만 재실행해2/2통과/exit0,162.965초를 기록했다(`independent-real`). 합친26사례 통과 관측이며 단일26건 명령 통과가 아니다. Astra가 `msg_8ba2a3021f39`로 즉시 메인에 알렸다.
+
+최종 실제 source 실행(`z/current-*`)은 workspace HEAD54ba0b7, HEAD54ba0b7 blob, main11aa4b8 blob 각각 C#91파일477096bytes·Compile91/91·boundary46/46·세 규칙0·completed clean/exit0이다. 내부/외부 초는 workspace46.186/46.412, HEAD54.727/54.932, main55.528/55.735다. tool hash는 수정 자체 실행과 같은 `3df98b67f766c562da9310e91f8b51040417439d1de7fe9e1613fa1186cce3ec`이고 blob input hash끼리 같다. 디스크/Blob의 프로젝트 줄바꿈 차이와 병행 실행이 있어 성능 개선 주장으로 쓰지 않는다. 실제 PR CI·warning 표시·artifact·format-check, Release·게임/Unity/제품DB 검증은 미실행이다.
+
+release 뒤 incarnation `56c67856-20ef-4644-a494-273a10635cbc`, idle·완료 화면·빈 prompt를 확인하고 pane을 닫았다(`reverification-close.json`, ptyKilled true). **close 뒤 terminal list 재확인: 남은 작업자 pane0, 2026-10-04T21:26:01.8704615Z**(`reverification-post-close-terminals.json`). 메인 `msg_6628eaf6f1d6`은 Orca1.4.217에서 완료 pane이 새 handle로 재등장할 수 있다는 관측과, 종료 직후뿐 아니라 보고/R-8 직전 재확인을 지시했다. 재등장한 완료 pane에는 입력하지 않고 화면을 실사한 뒤 종료한다. 현재 worker는 재사용하지 않는다.
+
+#4 대안은 ① 새 검사기와 공개 진입을 Architecture 밖의 형제 책임 폴더로 이동하고 경로·CI·서식 등록·새 테스트를 갱신, ② 기존 동결 테스트의 비교 도구 소유 목록을 좁히는 변경 승인, ③ 기본 red를 알려진 한계로 수용이다. Astra는 기존 동결 자료와 기대값을 보존하는①을 권고한다. 현 goal의 명시 배치와 기존 테스트 금지 경계가 걸리므로 메인 판단 전 의존 수정을 발행하지 않는다. 이는 최종 판정 후의 제안이며 아직 채택·구현된 결정이 아니다. 비차단 설계 관찰 O8~O13과 이전7개는 판정 원문에 남기고 무관한 정리로 확장하지 않는다.
