@@ -284,7 +284,26 @@ function presentationValid(tag: string, name: string, value: string, refs: strin
   return !!check && check(value, refs);
 }
 
-function attributeError(attr: Attr, tag: string, context: SvgContext): string | null {
+// Mermaid's initial marker carries inert box dimensions on a circle. Admit
+// only its exact, canonical decimal diameter pair in raw library output.
+export function mermaidStateStartCircle(node: Element): boolean {
+  if (node.localName !== 'circle' || node.prefix || node.namespaceURI !== SVG_NAMESPACE) return false;
+  const markerClass = node.getAttributeNode('class');
+  const radius = node.getAttributeNode('r');
+  const width = node.getAttributeNode('width');
+  const height = node.getAttributeNode('height');
+  if (!markerClass || markerClass.namespaceURI || markerClass.value !== 'state-start'
+    || !radius || radius.namespaceURI || !width || width.namespaceURI || !height || height.namespaceURI) return false;
+  if (!scalar.test(radius.value) || radius.value.includes('e') || radius.value.includes('E')) return false;
+  const radiusNumber = Number(radius.value);
+  const diameter = radiusNumber * 2;
+  return Number.isFinite(radiusNumber) && radiusNumber > 0 && Number.isFinite(diameter)
+    && radius.value === String(radiusNumber)
+    && width.value === String(diameter) && !width.value.includes('e')
+    && height.value === width.value;
+}
+
+function attributeError(attr: Attr, tag: string, context: SvgContext, stateStart: boolean): string | null {
   const name = context.inspection && attr.name === INSPECTION_STYLE ? 'style' : attr.name;
   const value = attr.value;
   const refs = context.refs;
@@ -307,6 +326,8 @@ function attributeError(attr: Attr, tag: string, context: SvgContext): string | 
     if (!transform(value, refs)) return 'SVG transform 형식을 확인하세요.';
   } else if (metadata.has(name) || textAttributes.has(name)) {
     return metadataError(name, value, refs);
+  } else if (stateStart && (name === 'width' || name === 'height')) {
+    return null;
   } else if (context.raw && name === 'filter') {
     if (!reference(value, refs)) return '지원하지 않는 SVG filter입니다.';
     const target = refs.at(-1);
@@ -349,8 +370,12 @@ export function svgDocumentError(doc: Document, options: SvgOptions = {}): strin
     if (tag === 'style' && !stylesheetValid(node.textContent ?? '', context)) {
       return '렌더 결과에 외부 참조 또는 지원하지 않는 정적 CSS가 있습니다.';
     }
-    for (const attr of Array.from(node.attributes)) {
-      const error = attributeError(attr, tag, context);
+    const stateStart = context.raw && mermaidStateStartCircle(node);
+    // Materializing a large NamedNodeMap pays for every Attr before an early refusal.
+    for (let index = 0; index < node.attributes.length; index++) {
+      const attr = node.attributes.item(index);
+      if (!attr) continue;
+      const error = attributeError(attr, tag, context, stateStart);
       if (error) return error;
     }
     node = walker.nextNode() as Element | null;

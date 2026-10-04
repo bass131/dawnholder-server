@@ -10,6 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import { prepareStaticDiagram, staticDiagramSvg } from '../src/diagrams/static-svg';
 import { svgError } from '../src/diagrams/svg-check';
+import { svgDocumentError } from '../src/diagrams/svg-contract';
 import callSvg from './diagram-static-svg/mermaid-flowchart-call.svg?raw';
 import packetSvg from './diagram-static-svg/mermaid-sequence-packet.svg?raw';
 import stateSvg from './diagram-static-svg/mermaid-state-window.svg?raw';
@@ -1150,4 +1151,341 @@ describe('an unused library symbol is checked whole, then leaves without its sty
     expect(svgError(childOutputOf(large)!)).toBeNull();
     expect.soft(second.ms / Math.max(first.ms, 5), 'child growth for 4x input').toBeLessThan(8);
   }, 120_000);
+});
+
+// ASSET20 (goal 2026-10-04 00:37; main decision msg_996428c33ef1). A state diagram that starts with [*] makes Mermaid 12
+// write its initial marker as <circle class="state-start" r="7" width="14" height="14">. width and height are not circle
+// geometry, so they draw nothing. Only this exact library form may pass the child: the class alone, both dimensions
+// equal to 2r, and every number written as JavaScript writes it (the library sets them from numbers). The child must
+// drop exactly those two attributes and the result must meet the shared final check. Every other form stays refused,
+// and the parent never admits the raw form. Expectations come from what the circle draws, not from the adapter's code.
+describe('the initial-state circle passes the child only in its exact library form, without its inert box (ASSET20)', () => {
+  const group = (circle: string, id = 'd-state-root_start-0') =>
+    `<g class="node default" id="${id}" data-look="neo" transform="translate(60, 30)">${circle}</g>`;
+  const exact = '<circle class="state-start" r="7" width="14" height="14"></circle>';
+  const serialized = (svg: string) => new XMLSerializer().serializeToString(parse(svg).documentElement);
+  const attributesOf = (element: Element) =>
+    Object.fromEntries(element.getAttributeNames().sort().map(name => [name, element.getAttribute(name)]));
+  const circlesOf = (root: Element) => Array.from(root.getElementsByTagNameNS(SVG, 'circle')).map(attributesOf);
+
+  it('accepts the exact form in the child only, and shows the same circle without width and height', () => {
+    const input = base(group(exact));
+    expect(wellFormed(input)).toBe(true);
+    expect(verdict(input)).toEqual({ parent: 'refused', child: 'accepted' });
+    const prepared = prepareStaticDiagram(input);
+    expect(staticDiagramSvg(input)).toBe(prepared.svg);
+    expect(prepared.svg).toBe(serialized(base(group('<circle class="state-start" r="7"></circle>'))));
+    expect(circlesOf(prepared.root)).toEqual([{ class: 'state-start', r: '7' }]);
+    expect(svgError(prepared.svg)).toBeNull();
+    const reparsed = parse(prepared.svg);
+    expect(reparsed.querySelector('parsererror')).toBeNull();
+    expect(reparsed.documentElement.isEqualNode(prepared.root)).toBe(true);
+  });
+
+  it('refuses the same circle wherever the general contract applies: parent, general mode and inspection mode', () => {
+    const input = base(group(exact));
+    expect(svgError(input)).not.toBeNull();
+    expect(svgDocumentError(parse(input))).not.toBeNull();
+    expect(svgDocumentError(parse(input), { mermaid: false })).not.toBeNull();
+    expect(svgDocumentError(parse(input), { inspection: true })).not.toBeNull();
+    expect(svgDocumentError(parse(input), { mermaid: true })).toBeNull();
+  });
+
+  it.each([
+    ['a half-pixel radius', '<circle class="state-start" r="0.5" width="1" height="1"/>', '0.5'],
+    ['a fractional radius', '<circle class="state-start" r="1.25" width="2.5" height="2.5"/>', '1.25'],
+    ['another attribute order', '<circle height="14" width="14" r="7" class="state-start"/>', '7'],
+    ['character references that read as the same digits', '<circle class="state-start" r="7" width="&#49;&#52;" height="1&#x34;"/>', '7'],
+    [
+      'the largest radius JavaScript still writes without an exponent',
+      '<circle class="state-start" r="100000000000000000000" width="200000000000000000000" height="200000000000000000000"/>',
+      '100000000000000000000',
+    ],
+  ])('accepts %s and keeps only class and r', (_name, circle, radius) => {
+    const input = base(group(circle));
+    expect(wellFormed(input)).toBe(true);
+    expect(verdict(input)).toEqual({ parent: 'refused', child: 'accepted' });
+    const prepared = prepareStaticDiagram(input);
+    expect(circlesOf(prepared.root)).toEqual([{ class: 'state-start', r: radius }]);
+    expect(svgError(prepared.svg)).toBeNull();
+    expect(parse(prepared.svg).documentElement.isEqualNode(prepared.root)).toBe(true);
+  });
+
+  it('cleans every exact marker of a diagram and leaves ordinary circles byte for byte', () => {
+    const input = base(group(exact) + group(exact, 'd-state-inner_start-1') + '<circle cx="5" cy="5" r="3"/>');
+    expect(verdict(input)).toEqual({ parent: 'refused', child: 'accepted' });
+    const prepared = prepareStaticDiagram(input);
+    expect(circlesOf(prepared.root)).toEqual([
+      { class: 'state-start', r: '7' }, { class: 'state-start', r: '7' }, { cx: '5', cy: '5', r: '3' },
+    ]);
+    for (const ordinary of ['<circle cx="5" cy="5" r="3"/>', '<circle class="state-start" r="7"/>', '<circle class="state-end" r="7"/>']) {
+      const plain = base(group(ordinary));
+      expect(verdict(plain), ordinary).toEqual(both('accepted'));
+      expect(staticDiagramSvg(plain), ordinary).toBe(plain);
+    }
+  });
+
+  const longZeros = '0'.repeat(400);
+  const refusedCircles: [string, string][] = [
+    // class
+    ['the end class', '<circle class="state-end" r="7" width="14" height="14"/>'],
+    ['an extra class', '<circle class="state-start node" r="7" width="14" height="14"/>'],
+    ['a leading space in the class', '<circle class=" state-start" r="7" width="14" height="14"/>'],
+    ['a trailing space in the class', '<circle class="state-start " r="7" width="14" height="14"/>'],
+    ['another letter case in the class', '<circle class="State-start" r="7" width="14" height="14"/>'],
+    ['an empty class', '<circle class="" r="7" width="14" height="14"/>'],
+    ['no class', '<circle r="7" width="14" height="14"/>'],
+    ['a namespaced class instead of class', '<circle xmlns:x="urn:x" x:class="state-start" r="7" width="14" height="14"/>'],
+    // sizes against the radius
+    ['width and height equal to r', '<circle class="state-start" r="7" width="7" height="7"/>'],
+    ['twice the diameter', '<circle class="state-start" r="7" width="28" height="28"/>'],
+    ['width and height that differ', '<circle class="state-start" r="7" width="14" height="15"/>'],
+    ['only width', '<circle class="state-start" r="7" width="14"/>'],
+    ['only height', '<circle class="state-start" r="7" height="14"/>'],
+    ['no radius', '<circle class="state-start" width="14" height="14"/>'],
+    ['a pixel unit on the box', '<circle class="state-start" r="7" width="14px" height="14px"/>'],
+    ['a percentage box', '<circle class="state-start" r="7" width="14%" height="14%"/>'],
+    ['a decimal point on the box', '<circle class="state-start" r="7" width="14.0" height="14.0"/>'],
+    ['a plus sign on the box', '<circle class="state-start" r="7" width="+14" height="+14"/>'],
+    ['a leading zero on the box', '<circle class="state-start" r="7" width="014" height="014"/>'],
+    ['spaces around the box', '<circle class="state-start" r="7" width=" 14" height="14 "/>'],
+    ['an exponent box', '<circle class="state-start" r="7" width="1.4e1" height="1.4e1"/>'],
+    ['a hexadecimal box', '<circle class="state-start" r="7" width="0xe" height="0xe"/>'],
+    // radius text that JavaScript never writes for a number
+    ['radius 7.0', '<circle class="state-start" r="7.0" width="14" height="14"/>'],
+    ['radius 7.', '<circle class="state-start" r="7." width="14" height="14"/>'],
+    ['radius +7', '<circle class="state-start" r="+7" width="14" height="14"/>'],
+    ['radius 07', '<circle class="state-start" r="07" width="14" height="14"/>'],
+    ['radius 7e0', '<circle class="state-start" r="7e0" width="14" height="14"/>'],
+    ['radius 7E0', '<circle class="state-start" r="7E0" width="14" height="14"/>'],
+    ['radius .5', '<circle class="state-start" r=".5" width="1" height="1"/>'],
+    ['radius with a unit', '<circle class="state-start" r="7px" width="14" height="14"/>'],
+    ['radius 1e-7 written with an exponent', '<circle class="state-start" r="1e-7" width="2e-7" height="2e-7"/>'],
+    ['radius 0.0000001, which JavaScript writes as 1e-7', '<circle class="state-start" r="0.0000001" width="0.0000002" height="0.0000002"/>'],
+    [
+      'a diameter that JavaScript writes as 1e+21',
+      '<circle class="state-start" r="500000000000000000000" width="1000000000000000000000" height="1000000000000000000000"/>',
+    ],
+    ['the same diameter in exponent form', '<circle class="state-start" r="500000000000000000000" width="1e+21" height="1e+21"/>'],
+    ['Infinity', '<circle class="state-start" r="Infinity" width="Infinity" height="Infinity"/>'],
+    ['NaN', '<circle class="state-start" r="NaN" width="NaN" height="NaN"/>'],
+    ['a negative radius', '<circle class="state-start" r="-7" width="-14" height="-14"/>'],
+    ['a zero radius', '<circle class="state-start" r="0" width="0" height="0"/>'],
+    ['a negative zero radius', '<circle class="state-start" r="-0" width="0" height="0"/>'],
+    ['a radius that overflows to Infinity', `<circle class="state-start" r="1${longZeros}" width="2${longZeros}" height="2${longZeros}"/>`],
+    ['a radius that underflows to zero', `<circle class="state-start" r="0.${longZeros}1" width="0.${longZeros}2" height="0.${longZeros}2"/>`],
+    // the same box on other elements
+    ['an ellipse', '<ellipse class="state-start" rx="7" ry="7" width="14" height="14"/>'],
+    ['a path', '<path class="state-start" d="M0,0 L1,1" width="14" height="14"/>'],
+    ['a group', '<g class="state-start" r="7" width="14" height="14"/>'],
+    ['a line', '<line class="state-start" x1="0" x2="1" y1="0" y2="1" width="14" height="14"/>'],
+    ['a text', '<text class="state-start" x="1" y="1" width="14" height="14">시작</text>'],
+    ['a prefixed SVG circle', `<s:circle xmlns:s="${SVG}" class="state-start" r="7" width="14" height="14"/>`],
+    ['a circle in another namespace', '<x:circle xmlns:x="urn:x" class="state-start" r="7" width="14" height="14"/>'],
+    ['a circle in the XHTML namespace', `<circle xmlns="${XHTML}" class="state-start" r="7" width="14" height="14"/>`],
+    // additions to the exact circle
+    ['an event handler', '<circle class="state-start" r="7" width="14" height="14" onclick="alert(1)"/>'],
+    ['a load handler', '<circle class="state-start" r="7" width="14" height="14" onload="alert(1)"/>'],
+    ['an external style url', '<circle class="state-start" r="7" width="14" height="14" style="fill:url(https://example.invalid/p)"/>'],
+    ['an external paint', '<circle class="state-start" r="7" width="14" height="14" fill="url(https://example.invalid/p#x)"/>'],
+    ['a dangling filter reference', '<circle class="state-start" r="7" width="14" height="14" filter="url(#d-nothing)"/>'],
+    ['an x position, which a circle does not have', '<circle class="state-start" r="7" width="14" height="14" x="1"/>'],
+    ['an unknown attribute', '<circle class="state-start" r="7" width="14" height="14" foo="1"/>'],
+    ['a namespaced width beside the pair', '<circle xmlns:x="urn:x" class="state-start" r="7" width="14" height="14" x:width="14"/>'],
+    ['an xlink width beside the pair', '<circle class="state-start" r="7" width="14" height="14" xlink:width="14"/>'],
+    ['an upper-case WIDTH beside the pair', '<circle class="state-start" r="7" width="14" height="14" WIDTH="14"/>'],
+    ['an animation child', '<circle class="state-start" r="7" width="14" height="14"><set attributeName="r" to="70"/></circle>'],
+    ['text inside the circle', '<circle class="state-start" r="7" width="14" height="14">시작</circle>'],
+    ['an inexact second marker beside an exact one', `${exact}<circle class="state-start" r="7" width="14" height="15"/>`],
+    ['an ellipse with a box beside an exact marker', `${exact}<ellipse rx="1" ry="1" width="2" height="2"/>`],
+  ];
+
+  it.each(refusedCircles)('refuses %s in both gates', (_name, circles) => {
+    const input = base(group(circles));
+    expect(wellFormed(input)).toBe(true);
+    expect(verdict(control)).toEqual(both('accepted'));
+    expect(verdict(input)).toEqual(both('refused'));
+  });
+
+  it.each([
+    ['a doctype', `<!DOCTYPE svg>${base(group(exact))}`],
+    ['an internal entity that writes the box', `<!DOCTYPE svg [<!ENTITY w "14">]>${base(group('<circle class="state-start" r="7" width="&w;" height="&w;"/>'))}`],
+    ['a processing instruction', `<?xml-stylesheet href="https://example.invalid/x.css"?>${base(group(exact))}`],
+  ])('refuses %s around an exact marker before parsing', (_name, input) => {
+    expect(wellFormed(input)).toBe(true);
+    expect(verdict(input)).toEqual(both('refused'));
+  });
+
+  it('keeps the raw input cap: an exact marker in a page of exactly 256 KiB passes, one more byte does not', () => {
+    const page = (pad: number) => base(group(exact) + `<desc>${'p'.repeat(pad)}</desc>`);
+    const pad = MAX_SVG_BYTES - byteLength(page(0));
+    expect(byteLength(page(pad))).toBe(MAX_SVG_BYTES);
+    expect(childGate(page(pad))).toBe('accepted');
+    expect(svgError(prepareStaticDiagram(page(pad)).svg)).toBeNull();
+    expect(verdict(page(pad + 1))).toEqual(both('refused'));
+  });
+
+  it('refuses very long radius and box digits without a crash', () => {
+    const digits = 100_000;
+    const cases = [
+      `<circle class="state-start" r="${'9'.repeat(digits)}" width="1" height="1"/>`,
+      `<circle class="state-start" r="7" width="${'1'.repeat(digits)}" height="14"/>`,
+      `<circle class="state-start" r="7.${'0'.repeat(digits)}" width="14" height="14"/>`,
+      `<circle class="state-start" r="0.${'0'.repeat(digits)}1" width="0" height="0"/>`,
+    ];
+    for (const circle of cases) {
+      const input = base(group(circle));
+      expect(byteLength(input)).toBeLessThan(MAX_SVG_BYTES);
+      expect(verdict(input)).toEqual(both('refused'));
+    }
+  });
+});
+
+// ASSET21 (goals/2026-10-02-system-cards/goal.md, user decision relayed in msg_7feaa0279af6): one element may carry
+// tens of thousands of attributes inside 256 KiB. The decision must stay the contract's first refusal in the
+// element's attribute order, and every attribute before it is still judged. Ordinary attributes keep their written
+// order in jsdom and in Chromium, so no case here depends on where Chromium lists xmlns declarations. These cases
+// judge decisions and messages only. jsdom's own XML parser slows down faster than linearly with the attribute count,
+// so they stay at a few thousand attributes; the 27,000-attribute shapes and every timing are judged in real
+// Chromium (runtime evidence), never against jsdom time.
+describe('an element with thousands of attributes is decided by its first refused attribute (ASSET21)', () => {
+  // Unique names outside the SVG vocabulary, in the order they are written.
+  const unknown = (count: number) => Array.from({ length: count }, (_, index) => ` q${index.toString(36)}=""`).join('');
+  const named = (name: string) => `지원하지 않는 정적 SVG 속성: ${name}`;
+  const namespaceRefusal = '지원하지 않는 SVG 속성 namespace입니다.';
+  // The parent's message, and the shared contract in the child's raw first check and its general final check.
+  const messages = (input: string) => ({
+    parent: svgError(input),
+    raw: svgDocumentError(parse(input), { mermaid: true }),
+    general: svgDocumentError(parse(input)),
+  });
+  const everywhere = (message: string | null) => ({ parent: message, raw: message, general: message });
+  const valid = ' x="1" y="1" width="1" height="1" fill="#715333" class="box"';
+
+  it.each([500, 2_500])('names the first of %i unknown attributes in the parent and in both child checks', count => {
+    const accepted = base('<rect id="d-many" width="1" height="1"/>');
+    const input = base(`<rect id="d-many" width="1" height="1"${unknown(count)}/>`);
+    expect(byteLength(input)).toBeLessThanOrEqual(MAX_SVG_BYTES);
+    expect(wellFormed(input)).toBe(true);
+    expect(parse(input).querySelector('#d-many')!.attributes).toHaveLength(count + 3);
+    expect(messages(accepted)).toEqual(everywhere(null));
+    expect(verdict(accepted)).toEqual(both('accepted'));
+    expect(messages(input)).toEqual(everywhere(named('q0')));
+    expect(verdict(input)).toEqual(both('refused'));
+  });
+
+  it.each([
+    ['before the allowed attributes', (tail: string) => `<rect${tail}${valid}/>`],
+    ['after the allowed attributes', (tail: string) => `<rect${valid}${tail}/>`],
+    ['between allowed attributes', (tail: string) => `<rect x="1" y="1" width="1"${tail} height="1" fill="#715333" class="box"/>`],
+  ])('names the first unknown attribute when the unknown run stands %s', (_name, rect) => {
+    expect(messages(base(`<rect${valid}/>`))).toEqual(everywhere(null));
+    const input = base(rect(unknown(2_500)));
+    expect(wellFormed(input)).toBe(true);
+    expect(messages(input)).toEqual(everywhere(named('q0')));
+  });
+
+  it('still judges the last attribute when every earlier one is allowed', () => {
+    expect(messages(base(`<rect${valid} stroke="#715333" opacity="0.5"/>`))).toEqual(everywhere(null));
+    expect(messages(base(`<rect${valid} stroke="#715333" opacity="0.5" q-last=""/>`))).toEqual(everywhere(named('q-last')));
+  });
+
+  it.each([
+    ['an unsafe paint value', ' fill="url(https://example.invalid/x)"', named('fill')],
+    ['a namespaced reference on a rect', ' xlink:href="#d-node"', namespaceRefusal],
+    ['an id that is already used', ' id="d-node"', 'SVG ID 형식을 확인하세요.'],
+  ])('reports %s or a later unknown name, whichever is written first', (_name, refused, message) => {
+    const first = base(`<rect width="1" height="1"${refused}${unknown(2_500)}/>`);
+    const later = base(`<rect width="1" height="1"${unknown(2_500)}${refused}/>`);
+    expect(wellFormed(first)).toBe(true);
+    expect(wellFormed(later)).toBe(true);
+    expect(messages(first)).toEqual(everywhere(message));
+    expect(messages(later)).toEqual(everywhere(named('q0')));
+  });
+
+  it('keeps every allowed attribute of an element, in written order, when the child re-serializes its output', () => {
+    // The exact initial marker makes the child clean and re-serialize, so the kept rect is real serializer output.
+    const written = [['x', '1'], ['y', '1'], ['width', '4'], ['height', '4'], ['rx', '1'], ['class', 'box'], ['fill', '#715333'],
+      ['stroke', '#715333'], ['stroke-width', '1'], ['opacity', '0.5'], ['transform', 'translate(1,1)'], ['data-id', 'x'], ['aria-label', 'x']];
+    const rect = `<rect id="d-all"${written.map(([name, value]) => ` ${name}="${value}"`).join('')}/>`;
+    const marker = '<g class="node default" id="d-state-root_start-0"><circle class="state-start" r="7" width="14" height="14"></circle></g>';
+    const prepared = prepareStaticDiagram(base(rect + marker));
+    expect(prepared.svg).not.toBe(base(rect + marker));
+    const kept = parse(prepared.svg).querySelector('#d-all')!;
+    expect(Array.from(kept.attributes, attr => [attr.name, attr.value])).toEqual([['id', 'd-all'], ...written]);
+    expect(svgError(prepared.svg)).toBeNull();
+  });
+
+  // Nested groups; every level carries the same allowed attributes and `middle` goes on one level halfway down.
+  const levelAttributes = ' class="node" fill="#715333" stroke="#715333" stroke-width="1" opacity="0.5"'
+    + ' transform="translate(1,1)" font-size="12" font-family="sans-serif" data-id="x" aria-label="x"';
+  function nested(depth: number, deepest: string, middle = '') {
+    let open = '';
+    for (let level = 0; level < depth; level++) open += `<g${levelAttributes}${level === depth >> 1 ? middle : ''}>`;
+    return open + deepest + '</g>'.repeat(depth);
+  }
+
+  it('accepts deep nesting where every level carries many allowed attributes, and returns the same document', () => {
+    const input = base(nested(300, '<rect width="1" height="1"/>'));
+    expect(byteLength(input)).toBeLessThanOrEqual(MAX_SVG_BYTES);
+    expect(messages(input)).toEqual(everywhere(null));
+    expect(verdict(input)).toEqual(both('accepted'));
+    const prepared = prepareStaticDiagram(input);
+    expect(prepared.root.isEqualNode(parse(input).documentElement)).toBe(true);
+    expect(svgError(prepared.svg)).toBeNull();
+  });
+
+  it('judges every level of a deep nest, then names the first unknown attribute of the deepest element', () => {
+    const input = base(nested(300, `<rect width="1" height="1"${unknown(2_500)}/>`));
+    expect(wellFormed(input)).toBe(true);
+    expect(messages(input)).toEqual(everywhere(named('q0')));
+    expect(verdict(input)).toEqual(both('refused'));
+  });
+
+  it('reports an unknown attribute on a middle level before the deepest element is reached', () => {
+    const input = base(nested(300, `<rect width="1" height="1"${unknown(2_500)}/>`, ' q-middle=""'));
+    expect(messages(input)).toEqual(everywhere(named('q-middle')));
+  });
+
+  // Namespace attributes spread over many elements: each use repeats the exact SVG and xlink declarations.
+  const use = (extra = '', xlink = XLINK) => `<use xmlns="${SVG}" xmlns:xlink="${xlink}" xlink:href="#d-node" x="1"${extra}/>`;
+  const uses = (count: number, last = use(), middle = use()) => Array.from({ length: count },
+    (_, index) => index === count - 1 ? last : index === count >> 1 ? middle : use()).join('');
+
+  it('accepts thousands of elements that repeat the exact SVG and xlink declarations, and keeps every reference', () => {
+    const input = base(uses(2_000));
+    expect(byteLength(input)).toBeLessThanOrEqual(MAX_SVG_BYTES);
+    expect(messages(input)).toEqual(everywhere(null));
+    expect(verdict(input)).toEqual(both('accepted'));
+    const kept = Array.from(prepareStaticDiagram(input).root.getElementsByTagNameNS(SVG, 'use'));
+    expect(kept).toHaveLength(2_000);
+    expect(kept.every(node => node.getAttributeNS(XLINK, 'href') === '#d-node')).toBe(true);
+  });
+
+  it.each([
+    ['another namespace declaration', use(' xmlns:ev="http://www.w3.org/2001/xml-events"'), namespaceRefusal],
+    ['a different xlink namespace', use('', 'urn:wrong'), 'SVG namespace가 올바르지 않습니다.'],
+    ['xlink:href on a rect', '<rect xlink:href="#d-node" width="1" height="1"/>', namespaceRefusal],
+    ['another xlink attribute', use(' xlink:title="t"'), namespaceRefusal],
+    ['an xml:lang attribute', use(' xml:lang="en"'), namespaceRefusal],
+    ['a group in another default namespace', '<g xmlns="urn:x"/>', '허용하지 않는 SVG 요소: g'],
+  ])('after thousands of accepted declarations, refuses %s on the last element', (_name, last, message) => {
+    const input = base(uses(2_000, last));
+    expect(wellFormed(input)).toBe(true);
+    expect(messages(input)).toEqual(everywhere(message));
+    expect(verdict(input)).toEqual(both('refused'));
+  });
+
+  it.each([
+    ['an unknown name before a namespace refusal', use(' q-middle=""'), use(' xlink:title="t"'), named('q-middle')],
+    ['a namespace refusal before an unknown name', use(' xlink:title="t"'), use(' q-last=""'), namespaceRefusal],
+  ])('reports the earlier element first: %s', (_name, middle, last, message) => {
+    expect(messages(base(uses(2_000, last, middle)))).toEqual(everywhere(message));
+  });
+
+  it('accepts the exact declarations on every level of a deep nest and refuses another one on the deepest level', () => {
+    const nest = (deepest: string) => `<g xmlns="${SVG}" xmlns:xlink="${XLINK}" fill="#715333">`.repeat(500) + deepest + '</g>'.repeat(500);
+    expect(messages(base(nest(use())))).toEqual(everywhere(null));
+    expect(messages(base(nest(use(' xmlns:ev="http://www.w3.org/2001/xml-events"'))))).toEqual(everywhere(namespaceRefusal));
+  });
 });

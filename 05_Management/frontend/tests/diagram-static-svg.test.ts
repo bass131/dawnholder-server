@@ -425,3 +425,81 @@ describe('effects that reach the displayed SVG are refused (ASSET-08)', () => {
     expect(child === null ? [] : displayedEffects(child)).toEqual([]);
   });
 });
+
+// ASSET20: the representative state guide now starts with [*], and Mermaid 12 then adds the initial marker
+// <circle class="state-start" r="7" width="14" height="14"> inside the node layer (goal 2026-10-04 00:37). The marker
+// must still be drawn as the same filled circle in the same place, the rest of the diagram must come out exactly as it
+// would without the marker's inert box, and the parent must accept the shown string. A box the library never writes
+// stays a refusal of the whole block.
+describe('state diagram with the library initial marker (ASSET20)', () => {
+  const STATE = 'mermaid-state-window.svg';
+  const marker = (circle: string) => mutate(STATE, (doc, id) => {
+    const nodes = doc.querySelector('g.nodes');
+    expect(nodes, 'node layer').not.toBeNull();
+    addElement(doc, nodes!, `<g class="node default" id="${id}-state-root_start-0" data-look="neo" transform="translate(130.48, 16)">${circle}</g>`);
+  });
+  const startCircles = (doc: Document) => Array.from(doc.getElementsByTagNameNS(SVG, 'circle'))
+    .filter(circle => circle.getAttribute('class') === 'state-start');
+
+  it('draws the same marker circle in the same place, and the rest equals the output without the inert box', () => {
+    const raw = marker('<circle class="state-start" r="7" width="14" height="14"></circle>');
+    const drawnOnly = marker('<circle class="state-start" r="7"></circle>');
+    expect(childOutcome(raw)).toBe('accepted');
+    expect(svgError(raw)).not.toBeNull();
+    const shown = staticDiagramSvg(raw);
+    expect(shown).toBe(staticDiagramSvg(drawnOnly));
+    expect(svgError(shown)).toBeNull();
+    expect(staticDiagramSvg(shown)).toBe(shown);
+    expect(htmlDisplayProblems(shown)).toEqual([]);
+
+    const doc = parse(shown);
+    const circles = startCircles(doc);
+    expect(circles.map(attributes)).toEqual([{ class: 'state-start', r: '7' }]);
+    expect(circles[0]!.parentElement?.getAttribute('transform')).toBe('translate(130.48, 16)');
+    expect(labels(doc)).toEqual(labels(parse(staticDiagramSvg(fixture(STATE)))));
+    // The library rule that fills the marker still reaches it in the shown SVG.
+    const fills = cssBlocks(styleText(doc)).filter(block => block.prelude.includes('circle.state-start'));
+    expect(fills.length).toBeGreaterThan(0);
+    for (const block of fills) expect(selectedIndexes(doc, circles, block.prelude)).toBe('0');
+  });
+
+  it.each([
+    ['a box that is not twice the radius', '<circle class="state-start" r="7" width="14" height="15"></circle>'],
+    ['only one box dimension', '<circle class="state-start" r="7" width="14"></circle>'],
+    ['the box on a circle of another class', '<circle class="state-end" r="7" width="14" height="14"></circle>'],
+    ['an event handler on the marker', '<circle class="state-start" r="7" width="14" height="14" onclick="alert(1)"></circle>'],
+  ])('refuses the whole block for %s', (_name, circle) => {
+    const raw = marker(circle);
+    expect(childOutcome(raw)).toBe('refused');
+    expect(svgError(raw)).not.toBeNull();
+  });
+});
+
+// ASSET21: real state-diagram output whose initial marker carries thousands of unknown attributes, still inside the
+// 256 KiB input cap. The child must refuse the whole diagram, never clean width/height and show the rest. The exact
+// marker without them stays the accepted control, so a child that refuses everything fails here too. jsdom's XML
+// parser slows down faster than linearly with the attribute count, so the 27,000-attribute marker is judged in real
+// Chromium (runtime evidence) and these cases stay at a few thousand.
+describe('the initial marker with thousands of unknown attributes in real Mermaid output (ASSET21)', () => {
+  const STATE = 'mermaid-state-window.svg';
+  const unknown = (count: number) => Array.from({ length: count }, (_, index) => ` q${index.toString(36)}=""`).join('');
+  const marker = (circle: string) => mutate(STATE, (doc, id) => {
+    addElement(doc, doc.querySelector('g.nodes')!, `<g class="node default" id="${id}-state-root_start-0" data-look="neo" transform="translate(130.48, 16)">${circle}</g>`);
+  });
+  const startCircle = (svg: string) => Array.from(parse(svg).getElementsByTagNameNS(SVG, 'circle'))
+    .find(circle => circle.getAttribute('class') === 'state-start');
+
+  it.each([
+    ['after the exact box', (tail: string) => `<circle class="state-start" r="7" width="14" height="14"${tail}></circle>`],
+    ['before the exact box', (tail: string) => `<circle class="state-start" r="7"${tail} width="14" height="14"></circle>`],
+  ])('refuses the whole diagram when thousands of unknown attributes stand %s', (_name, circle) => {
+    expect(childOutcome(marker(circle('')))).toBe('accepted');
+    for (const count of [500, 2_500]) {
+      const raw = marker(circle(unknown(count)));
+      expect(new TextEncoder().encode(raw).byteLength, 'inside the input cap').toBeLessThanOrEqual(256 * 1024);
+      expect(startCircle(raw)!.attributes).toHaveLength(count + 4);
+      expect(childOutcome(raw)).toBe('refused');
+      expect(svgError(raw)).not.toBeNull();
+    }
+  });
+});

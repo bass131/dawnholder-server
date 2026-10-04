@@ -4,6 +4,7 @@ import {
   MERMAID_ROOT_FONT_RULE,
   mermaidAnimationRule,
   mermaidRootFontRule,
+  mermaidStateStartCircle,
   svgCssError,
   svgDocumentError,
   svgInputError,
@@ -150,6 +151,13 @@ export function prepareStaticDiagram(svg: string): StaticDiagram {
   // The shared raw contract already inspected every original node and value.
   // Collect references solely to decide whether library symbols are unused.
   for (const node of nodes) {
+    // The complete raw document passed the shared contract above. These
+    // library-only dimensions have no circle geometry effect in final SVG.
+    if (mermaidStateStartCircle(node)) {
+      node.removeAttribute('width');
+      node.removeAttribute('height');
+      changed = true;
+    }
     for (const attr of Array.from(node.attributes)) {
       if (attr.localName === 'href') refs.push(attr.value.slice(1));
       else if (attr.name !== 'xmlns' && attr.name !== 'xmlns:xlink') svgCssError(attr.value, refs);

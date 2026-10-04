@@ -3,6 +3,7 @@
 /// <reference types="vite/client" />
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import packetSvg from '../../tests/diagram-static-svg/mermaid-sequence-packet.svg?raw';
+import stateSvg from '../../tests/diagram-static-svg/mermaid-state-window.svg?raw';
 import { svgError } from './svg-check';
 
 const mermaid = vi.hoisted(() => ({ initialize: vi.fn(), render: vi.fn() }));
@@ -360,5 +361,51 @@ describe('approved XML node ownership and lifetime', () => {
     fromParent({ ...identity, type: 'diagram:approve' });
     expect(display().childElementCount).toBe(0);
     expect(types()).toEqual(['diagram:ready', 'diagram:failed']);
+  });
+});
+
+// ASSET20 through the child flow: a state diagram whose Mermaid output carries the library initial marker
+// <circle class="state-start" r="7" width="14" height="14"> (goal 2026-10-04 00:37) must reach the parent as a string
+// the parent gate accepts, and the node shown after approval must be that same approved XML, with the marker drawn as
+// a circle of radius 7 and no inert box. A marker the library never writes fails the block without a result.
+describe('state diagram with the library initial marker in the child flow (ASSET20)', () => {
+  const withMarker = (circle: string) => {
+    const marked = stateSvg.replace('<g class="nodes">', `<g class="nodes"><g class="node default" id="mark-start" transform="translate(130.48, 16)">${circle}</g>`);
+    expect(marked).not.toBe(stateSvg);
+    return marked;
+  };
+  const start = async (rawSvg: string) => {
+    mermaid.render.mockResolvedValueOnce({ svg: rawSvg });
+    await loadChild();
+    fromParent({ ...identity, type: 'diagram:init' });
+    fromParent({ ...identity, type: 'diagram:render', source: 'stateDiagram-v2\n  [*] --> A\n  A --> [*]', title: '제목', description: '설명' });
+    await settle();
+  };
+
+  it('sends a result the parent accepts and shows exactly that XML, with the marker as a plain circle', async () => {
+    await start(withMarker('<circle class="state-start" r="7" width="14" height="14"></circle>'));
+    expect(types()).toEqual(['diagram:ready', 'diagram:result']);
+    const approved = String(sent.at(-1)!.svg);
+    expect(svgError(approved)).toBeNull();
+    fromParent({ ...identity, type: 'diagram:approve' });
+    expect(types()).toEqual(['diagram:ready', 'diagram:result', 'diagram:shown']);
+    const shown = display().querySelector('svg');
+    expect(shown).not.toBeNull();
+    expect(display().querySelectorAll('svg')).toHaveLength(1);
+    expect(new XMLSerializer().serializeToString(shown!)).toBe(approved);
+    const markers = Array.from(shown!.querySelectorAll('circle.state-start'));
+    expect(markers.map(circle => circle.getAttributeNames().sort())).toEqual([['class', 'r']]);
+    expect(markers[0]!.getAttribute('r')).toBe('7');
+  });
+
+  it.each([
+    ['a box that is not twice the radius', '<circle class="state-start" r="7" width="14" height="15"></circle>'],
+    ['the box on another class', '<circle class="state-end" r="7" width="14" height="14"></circle>'],
+  ])('fails the block without a result for %s', async (_name, circle) => {
+    await start(withMarker(circle));
+    expect(types()).toEqual(['diagram:ready', 'diagram:failed']);
+    fromParent({ ...identity, type: 'diagram:approve' });
+    expect(display().hidden).toBe(true);
+    expect(display().innerHTML).toBe('');
   });
 });
