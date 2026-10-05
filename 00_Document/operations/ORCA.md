@@ -71,7 +71,7 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 
 불일치가 있으면 해당 보고를 통과 근거로 삼지 않고 차이와 필요한 보완을 기록한다. 표본 대조를 전수 검증으로 표현하지 않는다. 메인 전달 사례는 R-2 grep 대조와 smoke의 `handlerRuns` 상수 발견이다. [완료된 내장 컴포넌트 null 감사](../../01_Phases/goals/2026-10-01-native-component-null-audit/goal.md)의 검색 범위·원시 근거·미실행 한계는 관련 로컬 기록이며, smoke 사례의 관찰 출처는 [main-request.json](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-1)이다.
 
-독립 검증자의 “전부 / 없음” 주장과 **대상 0건으로 얻은 PASS**도 대조 대상이다. 대상 수·언어·OS와 실제 실행 명령/원시 출력에서 무엇을 검사했는지 확인하고, 구현자 목록을 재사용하지 않고 같은 범위를 독립 열거했는지 본다. 기존 테스트를 고쳤다면 [실패 전수 분류 표](../../.agents/skills/dawnholder-task-context/references/templates.md#검증-판정)에서 표본을 골라 요구사항 원문과 대조한다. 이 메인 표본은 검증자에게 할당된 전수 분류/대조를 대신하지 않는다. 보고와 수행 불일치·미실행을 통과로 기록한 경우는 의도와 무관하게 즉시 메인에 보고한다.
+독립 검증자의 “전부 / 없음” 주장과 **대상 0건으로 얻은 PASS**도 대조 대상이다. 대상 수·언어·OS와 실제 실행 명령/원시 출력에서 무엇을 검사했는지 확인하고, 구현자 목록을 재사용하지 않고 같은 범위를 독립 열거했는지 본다. [검증 강도 시범](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범)의 goal·계약 등급/이유와 실제 요구 범위도 대조한다. 기존 테스트를 고쳤다면 [실패 전수 분류 표](../../.agents/skills/dawnholder-task-context/references/templates.md#검증-판정)에서 표본을 골라 요구사항 원문과 대조한다. 이 메인 표본은 검증자에게 할당된 전수 분류/대조를 대신하지 않는다. 보고와 수행 불일치·미실행을 통과로 기록한 경우는 의도와 무관하게 즉시 메인에 보고한다.
 
 <a id="r3-reply-tag"></a>
 ### R-3 — 회신 subject의 발신 태그
@@ -82,7 +82,7 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 
 **Orca 1.4.218 공식 blocking `ask`가 생성한 고정 subject `Question`**도 subject 태그의 한정 예외다. 같은 버전 `ask --help`에는 subject 옵션이 없다. body 첫머리 태그와 현재 `from_handle`·Task·Dispatch 대조는 유지하며 하나라도 어긋나면 처리하지 않고 메인에 보고한다. 일반 `send`와 `reply`에 이 새 ask 예외를 적용하지 않는다. 위 reply 고유 예외는 별도 근거와 범위대로 유지한다. **ask가 subject 옵션을 지원하면 ask 예외는 없어진다.** 근거는 [공식 ask 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-ask)다. 값만으로 공식 출처를 증명했다고 주장하지 않으며 [수신 helper](#dispatch-message-policy)의 별도 expected 근거를 확인한다.
 
-**Orca 1.4.217 임시 확장:** 이 버전인 동안 위 공식 blocking `ask`의 고정 `Question`과 공식 질문에 대한 `reply --id`만 같은 조건의 subject 예외로 인정한다. body 첫머리 자기 태그·현재 `from_handle`·Task·Dispatch와 공식 receipt를 대조하고, 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`는 제외다. **1.4.218 이상으로 올리거나 해당 ask/reply 명령이 subject 옵션을 지원하면 이 1.4.217 확장은 종료**한다. 위 1.4.218 근거·예외는 별도 범위로 유지한다. 메인 결정·시각·help 근거는 [1.4.217 임시 적용의 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-14217-source)에 있다.
+**Orca 1.4.217 임시 확장(종료):** 당시 이 버전인 동안 위 공식 blocking `ask`의 고정 `Question`과 공식 질문에 대한 `reply --id`만 같은 조건의 subject 예외로 인정했다. body 첫머리 자기 태그·현재 `from_handle`·Task·Dispatch와 공식 receipt를 대조하고, 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`는 제외다. **1.4.218 이상으로 올리거나 해당 ask/reply 명령이 subject 옵션을 지원하면 이 1.4.217 확장은 종료**하며 위 1.4.218 근거·예외는 별도 범위로 유지한다. 메인 결정·시각·help 근거는 [1.4.217 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-14217-source)에 보존한다. 현재 **1.4.220 복귀로 임시 확장은 종료**됐다. [복귀 결정·시점과 실제 help](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-14220-return)에 따라 현재 ask/reply help 양쪽의 subject 옵션 부재를 확인한 공식 ask/reply에만 위 body·identity·receipt 조건으로 적용한다. 해당 명령이 subject 옵션을 지원하면 그 예외는 종료하며 일반 send에는 적용하지 않는다. help 확인은 실제 ask/reply 호출 실증과 구분하고 다른 버전 지원을 주장하지 않는다.
 
 <a id="run-reply-address"></a>
 ### Run 회신 주소와 receipt 확인
@@ -116,7 +116,7 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
 
 지원 대상은 **활성 Dispatch의 작업자 메시지 수신 정책**이다. 일반 Main terminal-only 메시지, blocking reply의 기존 subject 예외, 다른 message type, 원격 진위 검증은 지원하지 않는다. 이 보조의 허용이 런타임 진위·현재 작업 완료·수명주기 전환을 증명하지 않는다. 현재 CLI와 receipt/사람 대조가 계속 필요하다. 자체 smoke는 독립 회귀와 구분하며 신규 Opus가 정상·각 ID 불일치·오래된 Dispatch·내용 있는 heartbeat·payload/CLI 실패와 공식 Question의 무태그 body/틀린 발신/일반 send 모방 반례를 독립 검증한다.
 
-위 helper의 공식 ask 근거는 `cliVersion: "1.4.218"` 한정이다. R-3의 1.4.217 확장을 이 helper의 지원으로 가장하지 않는다. 지원하지 않는 버전/문맥은 사람이 실제 질문·답변 receipt와 현재 identity·body 태그를 직접 대조하고 그 원시 경로·버전·확인 범위를 판정과 goal에 남긴다. 이 문서 반영은 helper 코드 변경이 아니다.
+위 helper의 공식 ask 근거는 `cliVersion: "1.4.218"` 한정이다. 종료된 R-3의 1.4.217 확장이나 현재1.4.220을 이 helper의 지원으로 가장하지 않으며 실제1.4.220을 입력의1.4.218로 바꾸지 않는다. 지원하지 않는 버전/문맥은 사람이 실제 질문·답변 receipt와 현재 identity·body 태그를 직접 대조하고 그 원시 경로·버전·확인 범위를 판정과 goal에 남긴다. 이 문서 반영은 helper 코드 변경이 아니다.
 
 **Orca1.4.218의 2026-10-03 관측:** worker-show의 `lastHeartbeatAt=null`과 일반 Run check의 빈 결과에도 공개 inbox에는 해당 Run·Task·Dispatch·from_handle이 일치하는 heartbeat 5건과 `read=1`/`delivered_at`이 있었다. 저장·전달 처리는 원문·주소·identity·시각·receipt로 대조하고 null이나 빈 check만으로 송신 누락·프로세스 종료를 확정하지 않는다. 전송/저장, 정책 허용, 현재 liveness, 완료/정산을 구분하며 inbox 표시를 coordinator의 실제 본문 검토로 확대하지 않는다. 형식·runtime 버그·자동 소비 중 무엇이 원인인지는 미확정이다. 근거는 [메인 정정 요청](../../.backups/verification/2026-10-03-harness-principles/operating-rules/main-heartbeat-observation-decision.json) `msg_29e3012b0274`(18:29:20Z), [inbox 원시](../../.backups/verification/2026-10-03-harness-principles/operating-rules/heartbeat-worker-message-inspection.json), [worker-show 원시](../../.backups/verification/2026-10-03-harness-principles/operating-rules/sol-heartbeat-current-show.json)다. 앞 4건의 태그 있는 subject/빈 body 불일치와 cadence 공백, Astra의 앞 송신 누락 안내 정정은 수행 보고에 따로 보존하며 새 실패 집계나 runtime 수정으로 확대하지 않는다.
 
@@ -157,7 +157,7 @@ Astra→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내�
 
 담당 Astra는 Advisor 기동 전에 실패 이유와 **실패 원문 세 건 경로를 메인 status로 보고**한다. 사용자 사전 승인 규칙이므로 재승인을 기다리지 않는다. Advisor는 조언 파일 하나만 쓰고 제품·테스트·판정은 쓰지 않는다. 새 Sol은 구현 전에 Orca로 Advisor에게 **직접 질문**하고 조언·채택/거절 이유를 수행 보고에 남긴다. 리드 Astra가 구현을 떠맡지 않는다. 기동/모델/선택창은 R-5·R-6을 따른다. 네 번째도 실패하면 **다섯 번째 전에 메인 question으로 판단**을 받는다.
 
-이 규칙의 출처는 [확정 실패 승인 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-confirmed)이다. [R-7 goal 검토 시범](#r7-fable-pilot)과 역할·시점·파일 권한이 다르다. 같은 부류 BACKLOG 출처 결함의 특정 사례를 모든 번호별 집계의 대체 규칙으로 쓰지 않는다.
+이 규칙의 출처는 [확정 실패 승인 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-confirmed)이다. [R-7 구현 전 설계 검토 시범](#r7-fable-pilot)과 역할·시점·파일 권한이 다르다. 같은 부류 BACKLOG 출처 결함의 특정 사례를 모든 번호별 집계의 대체 규칙으로 쓰지 않는다.
 
 <a id="crash-recovery"></a>
 ### 크래시 중단과 checkpoint
@@ -189,16 +189,16 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 D1a verification-2의 [종료 전 화면](../../.backups/verification/2026-10-01-persistence-technical-design/review-2-before-close-read.json)은 전체 49행(`limited=false`)에서 `/auto-mode-setup` 안내 창이 관측되지 않고 일반 `auto mode on` 상태줄이 보인 기록이다. [판정 원문](../../.backups/verification/2026-10-01-persistence-technical-design/verification-2/verdict.md)과 [해당 완료 goal](../../01_Phases/goals/2026-10-01-persistence-technical-design/goal.md)은 문서 실사 범위를 제공한다. 안내 미관측은 **해당 종료 화면에 한정한 관찰**이며 첫 화면이나 전역 설정 효과의 검증이 아니다.
 
 <a id="r7-fable-pilot"></a>
-### R-7 — Fable goal 검토 한정 시범
+### R-7 — Fable 구현 전 설계 검토 한정 시범
 
-큰 목표 **2~3개에 한정한 시범**으로 신규 `claude-fable-5-1`의 goal 검토를 평가한다. 정식 기본 모델 라우팅을 대체하지 않는다. 메인이 승인한 시범 목표에서만 다음 순서로 수행한다.
+실패 수명·보호 집합·오류 분류·비용 상한의 **4범주에 닿는 작업 2~3개 한정 시범**으로 신규 `claude-fable-5-1`이 Sol 구현 계약 발행 전에 설계를 검토한다. 기존 goal 검토 시범을 이 형태로 넓힌 [승인 결정](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#요구사항-원천과-적용-결정)이며 정식 기본 모델 라우팅·Sol max와 [확정 실패3회 뒤 Fable Advisor](#confirmed-failures)를 대체하지 않는다. 메인이 승인한 시범 목표에서만 다음 순서로 수행한다.
 
 1. 목표·범위·완료조건을 담은 `goal.md`를 commit한다.
-2. 신규 `claude-fable-5-1` 세션에 검토를 맡기고 쓰기는 해당 목표의 `goal-review.md`만 허용한다.
+2. 신규 `claude-fable-5-1` 읽기 전용 세션에 검토를 맡기고 유일한 출력인 해당 목표의 `goal-review.md`에 「불변식 목록 + 전제 [소스]/[추론]/[미측정]」를 쓴다. 제품·테스트·goal은 쓰지 않는다.
 3. 메인이 검토 원문을 직접 확인한다.
 4. 지적을 검토해 goal을 보완한다.
 5. 메인이 보완 goal을 승인한다.
-6. Sol 구현을 발행한다.
+6. 승인 뒤 불변식 파일을 고정 입력으로 Sol 계약·구현을 발행하고, **해당 시범 작업에서만** Sol 보고 전제를 [소스]/[추론]/[미측정]으로 표시한다.
 
 평가 기준은 **“메인이 놓친 문제를 실제로 찾았나”**다. 메인 전달 관찰에 따르면 1회차 M-1에서 의미 있는 지적 7건을 찾았고, 그중 #3(Windows rename 간섭)은 구현에서 실측됐다. 이는 [main-request.json](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-1)에 보존한 메인의 관찰 보고이며 이번 문서 작업자가 M-1 구현·실측을 직접 검증한 결과가 아니다. 이번 운영 규칙 문서 목표에서는 Fable 세션을 열거나 새 시범 목표를 시작하지 않는다.
 

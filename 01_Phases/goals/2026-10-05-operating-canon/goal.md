@@ -2,10 +2,10 @@
 
 ## 재개 지점
 
-2026-10-05 KST, Rules 운영 정본 반영 목표다. **PR1 전체가 신규 Opus의 독립 문서 실사를 통과했다**(차단0·필수 미검토0, ORCA 실측249줄). 작성자와 검증자는 쓰기 종료·정산·pane 종료했다. 비차단 #8의 회차 표지는 Astra가 결과 기록과 함께 보완했고, 검증 후 변경분은 메인 R-2 대조 대상이다. 이전 BLOCKED와 자체검사 실패 원시는 보존한다. **[PR178](https://github.com/bass131/dawnholder-server/pull/178)을 생성했으며 사용자 병합 승인 대기**다. 정확한 head·CI 결과·메인 대조를 확인한 뒤 승인받고, 병합 전에는 PR2를 시작하지 않는다. 이 파일이 기준·상태·결과의 정본이다.
+2026-10-05 KST, Rules 운영 정본 반영 목표다. **[PR178 - 운영 결정 정본 반영](https://github.com/bass131/dawnholder-server/pull/178)은 승인된 head `8f9c109`로 병합됐고 `origin/main` 포함을 확인했다.** **[PR181 - 계약·판정 양식과 검증 시범 정비](https://github.com/bass131/dawnholder-server/pull/181)를 생성했으며 신규 Opus 독립 문서 실사를 통과했다**(차단0·필수 미검토0). 작성자와 검증자는 쓰기 종료·정산·pane 종료했다. 비차단 #1~#3은 메인 결정 B에 따라 전체 종료 때 정리하며, #5의 당시 실행 원시 부재와 #6의 최초 명령 원시 한계를 아래에 명시했다. 정확 head의 CI와 메인 R-2 확인 뒤 해당 PR의 사용자 병합 승인을 받는 단계이며 **아직 PR181을 병합하지 않았다**. 전체 종료 점검도 남아 있다. 이 파일이 기준·상태·결과의 정본이다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: `docs/operating-canon-20261005`. 기준: fetch한 `origin/main`의 `11aa4b83131bc6349f186a141cfea9c58d2230e3`.
+- 현재 PR2 branch: `docs/operating-contracts-20261005`. 기준: fetch한 `origin/main`의 `ecca463c6e4bb8d4aa44a75aaa57c581c1c5c70c`. PR1의 `docs/operating-canon-20261005`·기준 `11aa4b83131bc6349f186a141cfea9c58d2230e3`는 역사 기준이다.
 - 기존 `docs/teammate-onboarding`의 `a550eda`·`f35aee2`·`e0d4fe7`·`21ae047`은 보존한다. PR177 결과 기록만 PR1에 별도 커밋으로 이관한다. 이전 Run·Task·Dispatch는 실행 권한으로 재사용하지 않는다.
 - 새 Run `run_2e3ef4cc0150`, 회신 주소 `run:run_2e3ef4cc0150`. 식별자는 이번 진입의 관측이며 다음 세션의 실행 권한이 아니다.
 - 로컬 근거: `.backups/verification/2026-10-05-operating-canon/`. 사전 메모 `astra-context.md`, 최초 메인 원문 `main-request.txt`.
@@ -20,6 +20,7 @@
 - PR1: 보관 브랜치의 현재 안내 3곳(AGENTS·README·.gitignore) 정리. 과거 goal 언급은 유지하며 원격 `archive/claude-setup-2026-09-29` 삭제는 이 PR 병합 뒤 메인이 수행한다.
 - PR1: PR177의 로컬 결과 기록 4커밋을 별도 기록 커밋으로 옮겨 원격 재개 상태 드리프트를 해소한다. 원시와 숫자·명령 label의 연결을 대조한다.
 - PR2: 계약 작성 권고 6개, I/O·설치·실행 도구의 진입 경로 실행 기준, 작업 맥락 스킬의 관련 없는 절 제외와 누락 차단의 관계, 판정의 기계 판독 표·설계 관찰 절, Fable 설계 검토 한정 시범, 검증 강도 2등급 시범을 관련 정본·양식에 반영한다.
+- PR2 추가 입력: 메인 `msg_6ad750003633`이 포함을 승인한 Orca 1.4.220 복귀·1.4.217 임시 확장 종료. 아래 시점/원천을 기록하고 실제 help 확인·body/identity/receipt 대조 조건과 helper의 버전 한계를 구분한다. helper 코드나 전역 설정은 바꾸지 않는다.
 
 ### 건드릴 곳
 
@@ -285,3 +286,74 @@ Gardener2의 사용자 원문은 **「1) Gardener 후보 2개 - PR177 점검 근
 메인 `msg_03395836b2df`(2026-10-04T20:29:42Z)는 close 직후와 완료 보고·R-8 직전의 terminal list/시각 확인을 임시 적용하고, 정본화는 이번 PR1 밖의 다음 후보로만 기록하라고 했다. 후보: **완료 작업자 pane의 재등장 여부를 보고 직전 다시 확인하는 정산 정본 보완**. 새 BACKLOG 행·현재 정본·PR2 범위를 추가하지 않으며 다음 goal 자동 착수 없음.
 
 실제20:34:13Z에 종료한 r3 Sol의 같은 leaf가 새 handle `term_b8450582-e7f0-409f-ac82-37b642231be9`로 보였다. 완료 대화와 빈 prompt를 제한 read/show로 확인하고 입력 없이 정확 새 handle을 close했다.20:34:52Z 재확인에는 Astra와 당시 활성 Opus만 남았다(`reappeared-pane-first-read.json`·`first-show.json`·`close.json`·`post-close-audit.json`). 원인과 메인이 말한 전체6회는 Rules의 재검증 결과가 아니다.
+
+## PR178 병합과 PR2 착수
+
+위 PR1 승인 대기·미병합 표현은 당시 기록이다. 메인 `msg_6ad750003633`(2026-10-05T05:43:21Z)이 사용자 원문 **「1) PR178 - 운영 정본 반영 PR1 병합 승인 → A 이 head로 병합 승인 (head 8f9c109)」**을 전달했다. 정확 head `8f9c1090283051ed3575af67fccf410be516d6c0`와 MERGEABLE·CI check/test SUCCESS를 대조하고 `gh pr merge 178 --merge --match-head-commit`에 이 full SHA를 넣어 실행했다(exit0). 실제 병합시각은 **05:44:29Z**, merge OID **`ecca463c6e4bb8d4aa44a75aaa57c581c1c5c70c`**다. fetch 후 05:44:43.442Z의 `origin/main`과 같으며 `git merge-base --is-ancestor` exit0이다. 원시는 E의 `main-pr178-merge-approval.json`·`pr178-before-merge.json`·`pr178-merged.json`·`pr178-main-inclusion.json`, 메인 보고는 `msg_6906b0b39c50`이다.
+
+같은 main을 기준으로 `docs/operating-contracts-20261005`를 생성했다. PR2는 앞서 승인된 범위이며 별도 목표가 아니다. 작성 허용은 AGENTS, ORCA, goal-loop와 orca-work, task-context와 templates, CODE_CONVENTION·REPORTING의 해당 부분이다. 기존 goal·계약·Git는 Astra가 관리한다. CURRENT/PR180은 건드리지 않으며 원격 보관 브랜치 삭제는 메인 담당이다. 문서 실사 등급으로 새 Sol → 새 Opus → PR/CI → 해당 head 사용자 승인 순서를 유지한다. ORCA 249줄 기준·250줄 상한과 PR1 역사 이관·anchor를 보존한다. 실제 Fable 시범, helper/토큰/TDD 구현, 다음 후보 채택은 제외한다.
+
+<a id="orca-14220-return"></a>
+### Orca 1.4.220 복귀·1.4.217 확장 종료
+
+메인 `msg_4d48de7fd22b`(2026-10-05T05:33:53Z)은 14:22 KST 업데이트와 세션 종료, 14:24/14:27 재부팅 및 사용자 작업 재개 결정을 전달했다. 본문 머리의 14:50 KST와 실제 메시지 생성14:33:53 KST를 구분한다. Rules는 Windows/daemon 원인을 다시 감사하지 않았고 CLI **1.4.220**·새 runtime `120aecfa-9f94-4533-9594-48a22f1853ba`·현재 신원과 Run 재바인딩을 직접 확인했다. `run-use` 후 consumer_generation2, 열린 Dispatch0·실제 작업자pane0을 확인한 시점 기록은 E의 `resume-20261005-result-and-candidate.md`와 원시에 있다. 이전 식별자를 현재 실행 권한으로 쓰지 않았다.
+
+CLI 1.4.220의 실제 `ask --help`·`reply --help` 양쪽에 subject 옵션이 없음을 확인했다(E의 `resume-20261005-ask-help.txt`·`resume-20261005-reply-help.txt`). **1.4.217 임시 확장은 종료됐다.** 메인이 허용한 현재 help 확인 후 공식 ask/reply의 조건부 적용은 body 자기 태그·현재 from/Task/Dispatch·공식 receipt 직접 대조를 유지하고 일반 send에는 적용하지 않는다. 실제 ask/reply 호출 실증은 수행하지 않았다. helper의 `cliVersion: 1.4.218` 한계를 유지하고 현재 버전을 가장하지 않는다. 이 시점 기록·정본 일관성 반영을 PR2 입력으로 포함하라는 권한은 후속 `msg_6ad750003633`에서 명시됐다. pane 재등장 후보 등 다른 후보는 포함되지 않았다.
+
+## PR2 작성 결과와 독립 실사 입력
+
+신규 `gpt-6.1-sol max`의 Task `task_af9d31457534` / Dispatch `ctx_f5ff8f023475`가 `msg_90d37e3a3485`(2026-10-05T06:26:07Z)로 모든 쓰기 종료를 보고했다. 초기 실행 명령은 Astra가 실행하고 `sol-pr2-launch-notes.md`에 기록한 요청이며 **보존한 split receipt에는 명령 필드가 없다**. 화면 GPT-6.1-Sol max와 최초 attach의 input_accepted·turn_started는 각각 initial-read/worker-start 원시로 확인했고 backend는 unknown이다. 초기 명령 서술을 CLI가 반환한 명령 증거로 합치지 않는다(독립 비차단 #6에 따른 한계 표시). 제품8파일은 이 작성자 한 명이 썼고 Astra는 goal·계약·근거만 썼다. 작성자는 추가 위임·Git 변이·제품/DB/Unity/게임·Fable 실행을 하지 않았다고 보고했으며 독립 실사는 아래 범위로 대조했다.
+
+| PR2 요구 | 작성된 실제 정본·양식 |
+|---|---|
+| 계약 권고6개·관련 없는 절 제외/관련 원문 차단 | task-context 「파일 쓰기 전 메모와 원문 계약」, templates의 맥락/계약; goal-loop·orca-work·AGENTS 진입 |
+| 실제 진입 실행·미실행 판정 | task-context 「독립 판정과 통과 차단」, templates 실행/미실행 |
+| 실제 verifies·결함 심각도/차단/귀속·비차단 설계 관찰 | templates 「검증 판정」과 task-context 연결 |
+| 4범주·2~3작업 Fable 불변식/전제 시범 | ORCA R-7, 기존 goal-review.md 한 출력·메인 확인/보완/승인·Sol 보고 표식 한정 |
+| 강/약 4주 시범·문서 실사 | goal-loop 「검증 강도 4주 시범」, ORCA R-2와 AGENTS/CODE/orca-work 연결 |
+| 원시 수치·미측정/추론/과거 구분 | REPORTING 「수치와 원시 근거」, task-context·templates 연결 |
+| 1.4.220 복귀·1.4.217 종료 | ORCA R-3·helper 버전 한계와 위 orca-14220-return |
+
+작성 보고 [sol-pr2-report.md](../../../.backups/verification/2026-10-05-operating-canon/sol-pr2-report.md) 전체·실제 diff와 context를 Astra가 읽었다. `sol-pr2-raw/numbers-read.json`이 원시 JSON에서 읽은 자체점검 값은 입력23/mismatch0, 문서8파일 추가99·삭제26줄(goal 제외), ORCA249→249줄·기존 명시anchor15 보존, 로컬링크245/기존실패4/신규실패0이다. `document-check.json`의 최초 링크 수집 오류와 수정 r1/final은 별도 원시로 보존한다. `astra-pr2-sol-source-check.json`의 현재8파일 hash는 `finish-audit.json`과 모두 같았다. 자체점검과 Astra 대조는 독립 통과가 아니다.
+
+기존 ORCA57·144·189의 역사 `.backups` 근거4개는 현재 checkout에 없으며 작성자가 보존·보고했다. 외부URL1개·제품 실행·실제 ask/reply 호출·새 Fable 시범은 미실행이다. release retained/external_terminal/processAction none 뒤 동일 incarnation `3aa84792-b8ab-435d-a0ce-7fa027274276`의 종료 대화·빈 prompt를 확인해 close했고, `sol-pr2-post-close-list.json` 및 보고 직전 `pr2-sol-report-pane-audit.json`에서 작업자pane0을 확인했다. 작성 세션은 재사용하지 않는다.
+
+### PR2 절차 관측과 메인 결정
+
+현재 정확 Dispatch의 공개 Run heartbeat5건을 `--all --types heartbeat`로 대조한 인접 created_at 간격은 **422·317·445·354초**다. `pr2-current-heartbeats-audit.json`·`pr2-heartbeat-intervals.json`은 원문과 DateTimeOffset 차이 계산을 보존한다. 빈 check만으로 송신 누락·프로세스 종료·원인을 단정한 것이 아니다. 완료보고는 cadence 전체 준수를 주장하지 않았다. 완료 직후 보충 송신은 `dispatch_inactive`로 거부돼 미전달이며 재사용하지 않았다.
+
+메인 `msg_158a26b172b6`(2026-10-05T06:28:47Z, `main-pr2-procedure-decision.json`)은 **절차 이탈로 goal·독립 입력에 기록하고 문서 실사·검증을 계속**하도록 결정했다. 면제나 현행 절차 폐지가 아니며, 사용자의 GameDev 결정을 Rules에 자동 확장한 것이 아니다. 같은 구조 원인에 같은 처리를 적용했다는 **메인 결정**으로 기록하고 사용자 직접 승인으로 격상하지 않는다.
+
+같은 메시지는 **이번 PR2 신규 Opus 검증 계약에 한해** 세션 scratchpad 임시파일을 허용하되 판정 근거 스크립트·출력은 E에 사본/SHA256을 남기고 저장소/기타 경로 쓰기를 금지하도록 승인했다. 첫 context 전 계약·지침 읽기는 raw 보존 대상에서 제외하고 메모 첫 절에 읽은 경로/hash/시각을 남기는 초기 읽기 구간도 이 계약에 명시한다. 출처 `msg_c3f64416ffee`와 현재 결정을 계약에 붙인다. 미래 양식 정본화와 구분하며 PR2 제품 정책에 이 예외를 새로 넣지 않는다.
+
+### 다음 하네스 목표 입력 후보 묶음
+
+아래는 메인이 기록을 요청한 **후속 후보**이며 PR2 정본 구현이나 다음 goal 착수·현행 차단 완화가 아니다. 채택·범위는 해당 goal 계획 때 사용자와 정한다. 기존 pane 재등장 후보를 아래 묶음에 연결하며 중복 후보로 세지 않는다.
+
+- **긴 작업의 절차 자동화와 수용 기준:** heartbeat wrapper·쓰기 직전 check helper/hook, 기능/절차 수용을 분리해 절차 사유만으로 전체 재검증을 반복하지 않는 조건. `msg_9960eb3721c6`(05:55:03Z, `pr2-check-01.json`)이 전달한 사용자 GameDev 원문 「A 기능 수용, 절차 원인은 자동화로 따로」와 메인의 Fable 조사/표본 대조가 출처다. 조사 경로 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-05/gamedev-failure-investigation.md`의 내용·횟수는 Rules 재검증 실적이 아니다. close 뒤/보고 직전 실제 list 재확인 후보는 기존 `msg_03395836b2df`의 현재 임시 운영과 연결한다.
+- **계약의 원문·초기 읽기·임시파일 경계:** hash 고정 공용 원문으로 계약을 줄이는 안(현재 원문 포함 의무와 충돌해 채택 시 사용자 판단), 첫 메모 전 읽기 구간 정의, Claude 세션 scratchpad와 근거 사본/hash의 경계. 초기 읽기는 `msg_e6596ea0041d`(06:11:55Z, `pr2-check-17.json`), scratchpad는 `msg_c3f64416ffee`(06:27:11Z, `main-scratchpad-candidate.json`)의 메인 관측/후보 요청이다. 부모 계약 충돌과 검증자 이탈의 분류를 구분한다. 이번 PR2 검증 계약 한정 메인 결정은 위에 따로 기록하며 공용 양식 채택으로 확대하지 않는다.
+
+## PR2 독립 실사 결과와 통합
+
+- 새 Opus Task `task_d64bd39b4bea` / Dispatch `ctx_2e6b3ade83b6`, 완료 `msg_6fc8ff3dc4b6`(2026-10-05T06:56:25Z). 지정 `claude-opus-5-5`, Astra 요청 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh·backend unknown. 최초 요청 명령은 Astra 도구 실행/launch-notes 기록이며 split receipt에 그 명령 필드는 없다. 최초 attach ready/input_accepted/turn_started 원시를 보존했다.
+- [판정 원문](../../../.backups/verification/2026-10-05-operating-canon/review-pr2-verdict.md)을 Astra가 전부 읽었다. **문서 실사 통과, 차단0·관련 필수 미검토0**, 비차단 #1~#6·설계 관찰 O1~O7이다. 문서/실행 결과와 heartbeat 절차 이탈 처리의 메인 결정을 구분했다. 검증자의 scratchpad는 미사용이었다.
+- 독립 원시 `review-pr2-raw/review-checks.json`: 고정56파일·diff 동일성, 제품8파일 추가99/삭제26, ORCA249줄/명시anchor15/기존빈줄 위치/변경8줄, 로컬링크245(기존실패4·신규0), 변경 줄 링크51(로컬50 정상·외부1 미실행), 추적 Markdown234개에서 들어오는anchor216개 정상. 실제 문서1·가상4의 시나리오5개는 `scenario-walkthrough.md`에 있다. 자동 선택/미래 준수 보장이 아니다.
+- 독립 harness는 `review-checks.mjs` exit0, `review-supplement.mjs` **exit1**이다. 후자의 한 판단이 Sol 종료 뒤 Astra의 정상 goal/context 갱신을 입력 위반으로 잡아 과잉 엄격으로 분류했다(`00-commands.md`). 실패 원시를 보존하며 전체 검사를 exit0로 바꾸지 않는다. 표시 전용 조회 오류2건도 그 기록에 남아 있다. Astra 표본 대조와 현재56hash 일치는 `astra-pr2-review-source-check.json`이다.
+- release retained/external_terminal/processAction none → 같은 incarnation `42c0255f-5f4b-428a-ab5e-90868dde8224`와 완료 대화·빈 prompt 확인 → close ptyKilled=true → close 뒤/보고 직전 list에 작업자pane0을 확인했다(`review-pr2-post-close-list.json`·`pr2-review-report-pane-audit.json`). 검증 세션은 재사용하지 않는다.
+
+| 비차단 번호 | 내용·처리 경계 |
+|---|---|
+| #1 - BACKLOG 검증 시범 상태 | verification-depth-policy의 미결 문구. Sol 허용8파일 밖이며 전체 종료의 BACKLOG 연결 경계. 메인 결정 B에 따라 전체 goal 종료 때 #1~#3을 함께 정리 |
+| #2 - 마일스톤 참조 안내 | milestones.md:17의 작은 작업 예외 미합의 문구. #1과 함께 전체 종료 때 정리 |
+| #3 - 메인 지침의 Fable 명칭 | CLAUDE.md:9의 goal 검토자 명칭. 권한은 현재 R-7과 일치하며 메인 소유. 전체 종료 보고에 정확한 변경 문구를 보내고 메인이 그 시점에 수정 |
+| #4 - 약 검증 결함 누출 표현 | templates.md:200의 「새 결함」이 누출과 달리 읽힐 수 있음. 정본은 누출이며 비차단 다음 수정 기회로 기록. 제품 문서를 Astra가 직접 고치지 않음 |
+| #5 - Sol 인라인 실행 원시 부재 | contract-source-check.json·numbers-read.json을 만든 인라인 두 단계는 명령/코드·stdout/stderr·exit 원시가 보존되지 않았음. 보고의 당시 exit0는 원시로 입증하지 못한다. 값은 저장 harness와 독립 재계산으로 확인됐으나 과거 실행 증명으로 소급하지 않음 |
+| #6 - 초기 요청 명령의 증거 한계 | 위 작성 결과 문단과 Opus 기동 기록에서 Astra의 요청 명령 서술과 split receipt의 명령 부재를 구분해 보완. 독립 판정 뒤 goal 기록 변경이므로 별도 diff/hash를 메인 R-2에 제공 |
+
+O1~O7은 판정 원문에 보존한다. 현재 질문 예외의 배치, 줄수/bytes 증가 기준, 계약 시점 줄수/등급, Fable 기동 주체·시범 집계, 보호 문장 반복, manifest 명령/exit, 실제 진입 양식의 적용 범위에 관한 관찰이며 새 정책으로 채택하지 않았다. 기존 BACKLOG의 rule-document-pruning·human-code-walkthrough 미결 표현은 PR1부터 남은 범위 밖 상태로 별도 보고하며 이번 결함 수에 합치지 않는다. 제품 빌드·Unity·게임·DB·CI·외부URL·실제 Fable·ask/reply는 이 독립 실사에서 미실행했다.
+
+메인 `msg_c6796839d667`(2026-10-05T06:58:54Z, `main-pr2-nonblocking-decision.json`)은 #1~#3의 **B 전체 종료 때 묶어 정리**를 결정했다. 실제 권한은 더 엄격하고 독립 판정이 비차단이므로 PR 전 수정 회차를 추가하지 않으며, #4~#6 위 처리 계획을 승인했다. #6을 포함한 검증 후 goal 기록 diff는 메인이 R-2에서 직접 확인한다. 결과 기록 commit/PR·정확 head CI 진행 지시이며 **PR2 병합 승인과는 다르다**. 메인은 CI 뒤 R-2를 거쳐 사용자에게 해당 PR 병합 승인을 묻는다.
+
+### PR181 제출 기록
+
+제품 문서 commit `9682e08`, 독립 결과·PR178 병합 기록 commit `8254645`를 담당 Rules Astra가 작성·push하고 [PR181](https://github.com/bass131/dawnholder-server/pull/181)을 생성했다. 정확한 제출 head와 CI 상태는 해당 PR의 GitHub Checks 및 로컬 `pr181-final-ci.json`의 시점 있는 원시로 확인한다. PR 생성·CI 성공·메인 판단을 사용자 병합 승인으로 간주하지 않는다. 검증 후 goal 기록 증분은 `goal-pr2-post-review.diff`와 `astra-pr2-post-review-integration.json`으로 메인 R-2에 전달하며, 제품8파일은 독립 판정 당시 hash를 보존한다.
