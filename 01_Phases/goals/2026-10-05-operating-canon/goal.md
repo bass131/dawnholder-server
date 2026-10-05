@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-2026-10-05 KST, Rules 운영 정본 반영 목표다. **[PR178 - 운영 결정 정본 반영](https://github.com/bass131/dawnholder-server/pull/178)은 승인된 head `8f9c109`로 병합됐고 `origin/main` 포함을 확인했다.** **PR2 - 계약·판정 양식 정비는 신규 Opus의 독립 문서 실사를 통과했다**(차단0·필수 미검토0). 작성자와 검증자는 쓰기 종료·정산·pane 종료했다. 비차단 #1~#3은 메인 결정 B에 따라 전체 종료 때 정리하며, #5의 당시 실행 원시 부재와 #6의 최초 명령 원시 한계를 아래에 명시했다. 결과 기록·PR/CI를 진행하며 메인 R-2·해당 PR 사용자 병합 승인과 전체 종료 점검이 남았다. 이 파일이 기준·상태·결과의 정본이다.
+2026-10-05 KST, Rules 운영 정본 반영 목표다. **[PR178 - 운영 결정 정본 반영](https://github.com/bass131/dawnholder-server/pull/178)은 승인된 head `8f9c109`로 병합됐고 `origin/main` 포함을 확인했다.** **[PR181 - 계약·판정 양식과 검증 시범 정비](https://github.com/bass131/dawnholder-server/pull/181)를 생성했으며 신규 Opus 독립 문서 실사를 통과했다**(차단0·필수 미검토0). 작성자와 검증자는 쓰기 종료·정산·pane 종료했다. 비차단 #1~#3은 메인 결정 B에 따라 전체 종료 때 정리하며, #5의 당시 실행 원시 부재와 #6의 최초 명령 원시 한계를 아래에 명시했다. 정확 head의 CI와 메인 R-2 확인 뒤 해당 PR의 사용자 병합 승인을 받는 단계이며 **아직 PR181을 병합하지 않았다**. 전체 종료 점검도 남아 있다. 이 파일이 기준·상태·결과의 정본이다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - 현재 PR2 branch: `docs/operating-contracts-20261005`. 기준: fetch한 `origin/main`의 `ecca463c6e4bb8d4aa44a75aaa57c581c1c5c70c`. PR1의 `docs/operating-canon-20261005`·기준 `11aa4b83131bc6349f186a141cfea9c58d2230e3`는 역사 기준이다.
@@ -353,3 +353,7 @@ CLI 1.4.220의 실제 `ask --help`·`reply --help` 양쪽에 subject 옵션이 �
 O1~O7은 판정 원문에 보존한다. 현재 질문 예외의 배치, 줄수/bytes 증가 기준, 계약 시점 줄수/등급, Fable 기동 주체·시범 집계, 보호 문장 반복, manifest 명령/exit, 실제 진입 양식의 적용 범위에 관한 관찰이며 새 정책으로 채택하지 않았다. 기존 BACKLOG의 rule-document-pruning·human-code-walkthrough 미결 표현은 PR1부터 남은 범위 밖 상태로 별도 보고하며 이번 결함 수에 합치지 않는다. 제품 빌드·Unity·게임·DB·CI·외부URL·실제 Fable·ask/reply는 이 독립 실사에서 미실행했다.
 
 메인 `msg_c6796839d667`(2026-10-05T06:58:54Z, `main-pr2-nonblocking-decision.json`)은 #1~#3의 **B 전체 종료 때 묶어 정리**를 결정했다. 실제 권한은 더 엄격하고 독립 판정이 비차단이므로 PR 전 수정 회차를 추가하지 않으며, #4~#6 위 처리 계획을 승인했다. #6을 포함한 검증 후 goal 기록 diff는 메인이 R-2에서 직접 확인한다. 결과 기록 commit/PR·정확 head CI 진행 지시이며 **PR2 병합 승인과는 다르다**. 메인은 CI 뒤 R-2를 거쳐 사용자에게 해당 PR 병합 승인을 묻는다.
+
+### PR181 제출 기록
+
+제품 문서 commit `9682e08`, 독립 결과·PR178 병합 기록 commit `8254645`를 담당 Rules Astra가 작성·push하고 [PR181](https://github.com/bass131/dawnholder-server/pull/181)을 생성했다. 정확한 제출 head와 CI 상태는 해당 PR의 GitHub Checks 및 로컬 `pr181-final-ci.json`의 시점 있는 원시로 확인한다. PR 생성·CI 성공·메인 판단을 사용자 병합 승인으로 간주하지 않는다. 검증 후 goal 기록 증분은 `goal-pr2-post-review.diff`와 `astra-pr2-post-review-integration.json`으로 메인 R-2에 전달하며, 제품8파일은 독립 판정 당시 hash를 보존한다.
