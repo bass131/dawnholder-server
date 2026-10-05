@@ -90,6 +90,11 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 - 나머지는 기본값이다: O2·O5·DevelopmentRecords 문구는 다음 계획 후보, heartbeat 이탈은 절차 이탈로 기록하고 확정 실패 집계에서 뺀다. #3·#4 정정은 커밋해 좁힌 재실사에 넣는다.
 - 이 goal의 진척 단계도 원문 형식에 맞췄다. PR1은 「PR188 병합」이 됐다. PR2는 PR 번호가 아직 없어 아침에 PR을 만들면 그 번호로 바꾼다.
 - 순서: 이 정정 commit → Sol 1회 → 새 Opus가 `c129955` 이후 diff만 좁게 재실사 → push → 승인 묶음. PR 생성은 아침 사용자 확인으로 한다. 메인은 Codex 주간 한도가 10-05 23:19 KST에 새로 시작돼 이번 Sol은 크레딧을 쓰지 않는다고 전달했다(메인 전달, Rules 실측 아님).
+- 보완 Sol 발행: 계약 E/sol-pr2-fix-contract.md v1(원문 msg_1f0a928c2d90·msg_251c879ef46a·msg_7389741195ba 직접 인용), 고정 입력 E/sol-pr2-fix-inputs.json·path-check(astra-pr2-fix-inputs.mjs, exit 0, 누락 0), 발행 HEAD `514273c`. 메인 알림 `msg_0d3212298b33`. 첫 화면은 선택창 없이 GPT-6.1-Sol max·PR2 branch(E/sol-pr2-fix-first-screen.json), backend unknown. worker-start: Task `task_434ab791a70e`, Dispatch `ctx_5f1190f380d3`, terminal `term_f6252b20-41fd-4474-b26e-b7461eedcbb3`, incarnation `13c1853d…`, `input_accepted`·turn 시작 관측.
+- 보완 Sol 공식 ask `msg_a56362f6d8c9`(16:58:06Z): goal.md hash 차이를 물었다. 원인은 위 발행 기록 한 줄(numstat 1/0)이다. 계약이 이 절을 '같아야 하는 절'로 지정한 채 그 안에 기록을 넣은 Astra 계약 설계 문제다. 답 `msg_43fac3a94743`: 현재 입력으로 진행, 계약 보충 1(17:00Z)로 이후 기록은 이 줄 아래에만 덧붙인다. 원문 E/sol-pr2-fix-question-goal-hash*.json.
+- 보완 Sol 완료 `msg_14dc44e36abd`(17:18:33Z, worker_done succeeded), 수신 helper `allowed`/exit 0. 변경은 ORCA:137(#1)·goal-loop SKILL:16·18(#2·O1)·AGENTS:45(O3) 세 문서 추가 4/삭제 4, `git diff --check` exit 0이다. Astra가 [완료 보고](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/sol-pr2-fix/report.md)와 실제 diff를 읽었다. 자체점검은 독립 실사가 아니다.
+- 보완 Sol의 절차 관찰: heartbeat 5분 초과 두 구간(17:00Z→17:07Z 약 6분 51초와 그 다음 구간)을 `msg_146f61205c9d`·`msg_cfa3eb02f89d`로 스스로 알렸다. 빈 heartbeat의 subject를 정확한 `alive` 대신 `[Rules Sol] alive`로 보내 수신 helper가 `policy-violation`(body-tag)으로 판정했다. identity는 일치했고 내용은 없어 처리할 것이 없었다(E/sol-pr2-fix-heartbeat-policy-input.json). 계약의 「내용 있는 메시지는 [Rules Sol]로 시작」을 빈 heartbeat에도 적용한 것으로 추정한다. 최초 실행 명령은 Sol이 볼 수 있는 receipt에 없어 「확인 불가」로 보고됐다. 실제 명령은 이 리드가 실행한 split `codex --model gpt-6.1-sol -c model_reasoning_effort=max`다.
+- 정산: worker-release `retained`/external_terminal/none. `tui-idle` 뒤 같은 incarnation `13c1853d…`의 최종 대화·빈 prompt를 확인하고 close(`ptyKilled=true`)했다. 직후 rules-active 목록은 이 리드 하나다(E/sol-pr2-fix-release.json·before-close-2·close·after-close-list).
 
 ## 진척 단계
 
