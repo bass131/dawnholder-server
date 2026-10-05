@@ -22,7 +22,7 @@ from support import module_boundary_independent_fixture as sources
 
 REPO = pathlib.Path(__file__).resolve().parents[3]
 TESTS = REPO / "99_Tools/Architecture.Tests"
-ENTRY = REPO / "99_Tools/Architecture/check-module-boundaries.sh"
+ENTRY = REPO / "99_Tools/ModuleBoundaries/check-module-boundaries.sh"
 WORKFLOW = REPO / ".github/workflows/module-boundaries.yml"
 WORK_VARIABLE = "MODULE_BOUNDARIES_EXECUTION_WORK"
 MAIN_SHA_VARIABLE = "MODULE_BOUNDARIES_EXECUTION_MAIN_SHA"

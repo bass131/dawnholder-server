@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **#4 수리 방안 A의 신규 Sol 구현과 정산을 마쳤다. 기존 고정 테스트는 같은 기본 명령에서 실패1→통과1이며 보호168파일은 그대로다. 신규 Opus가 독립 테스트 경로 적응·실행·R-2 보완을 수행할 단계로, #4 해소 판정은 아직 없다. #1·#2·#3은 해소됐고 #ENV-1은 하네스 원인으로 확정됐다. PR은 미발행이며 실제 PR checkout/CI도 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **#4 형제 폴더 분리의 신규 Opus 독립 검증이 통과했다. 기본 고정 테스트1건·독립26건·실행계약25건과 R-2 같은 명령 보완을 확인했다. 이번 이동에서 발견한 #5 Python 캐시 ignore 누락(낮음·비차단)은 신규 Sol/Opus로 좁게 보완한다. #1·#2·#3·#4는 해소됐고 #ENV-1은 하네스 원인이다. PR 미발행, 실제 PR CI/경고 표시/artifact/format-check는 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -204,3 +204,15 @@ R-2의 이전 iter-g 단정 원본 Edit/성공 응답은 `iter-g-source-check/so
 추가 확인한 한계: 당시 실패는 `-k CurrentSourceEntry`의6메서드/3subTest실패였고 수정 후 성공은 필터 없는 전체27건이었다. 같은 argv의 수정 후 원시는 발견하지 못해 메인 `msg_f700cecff788`에 즉시 보고했고, 복원 자료 보완은 `msg_9bf75357648e`로 알렸다. 이를 동일 명령 전후 성공으로 표현하지 않는다. 신규 Opus에게 요구사항·원본 패치 실사와 자기 소유 복사본의 좁은 같은 명령 전후 보완을 배정한다.
 
 다음은 고정된 구현 입력의 신규 Opus 경로 적응·독립 실행·#4 판정이며 실제 PR CI와 메인 R-2는 그 뒤다. PR별 병합 승인은 아직 없고, push 시 원격 브랜치를 반드시 명시한다. 이번 자체 점검/정산을 goal 완료나 독립 통과로 처리하지 않는다.
+### 5 - 형제 폴더 분리 독립 통과와 캐시 ignore 보완
+
+신규 Opus Task `task_81bf6525cbca`/Dispatch `ctx_4581b7be2dc9`가 `msg_e12a744da7b1`(2026-10-05T07:03:41Z)로 succeeded·쓰기 종료를 보고했다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. 판정 원문 `.backups/verification/2026-10-05-module-boundary-warning/relocation-review/verdict.md` SHA256 `E5BCF3D45FA5759F3247C0F06001114A82D89D3481E4557395BACE45179497BB` 전체와 실제 테스트3파일 diff를 Astra가 읽고, 보호277파일·허용4파일의 최종 hash 차이0을 직접 대조했다(`relocation-review-astra-source-check.json`).
+
+- #4 해소: HEAD47e79dd에서 기본 frozen 명령은 override 없이1실행·0skip·통과/exit0, 외부6.679초였다. 기존15파일·고정 테스트·기록 batch는 보존됐다. 같은 독립 명령은 수정 전26건 실패→26/26통과, 실행계약은 기존24건 중13실패→기존24+신규1=25/25통과였다. 경로 누락은(b)로 전수 분류했으며 정책 기대값은 유지했다. 새 테스트는 실제 tool props와 NuGet restore graph로 독립 경계 보존을 확인한다.
+- 정확한 workflow 원문은 수집88 중 요구사항29+discovery5=34실행통과, 독립54skip이며 필수 suite all-skip은 exit1로 거부했다. Windows 환경3메서드/전체165 suite는 이동과 무관해 재실행하지 않았다. 과거 실행을 이번 실적으로 더하지 않는다.
+- 두 독립 suite의 별도 실제 CLI6회는 workspace/HEAD47e79dd blob/main ecca463c blob 각각 C#91파일477096bytes·Compile91/91·boundary46/46·규칙0·exit0이었다. 실행계약 내부/외부 초는48.214/48.405,60.155/60.344,60.974/61.173이고, 별도 독립 실제진입은50.009/50.203,62.860/63.059,55.644/55.826이다. 병행 실행·입력 줄바꿈 차이가 있어 성능 비교가 아니다. 도구 hash018d2243…와 정책 hash190ffa7c…는 구현 원시와 같다.
+- R-2: 원본 Edit/원천1150·1153행과 파생 before/after 차이 하나를 직접 대조해 요구사항에 맞는 단정이라고 판정했다. 자기 Git fixture(13197adc 원본216파일, 당시 도구bytes와 동일)에서 iter-g와 같은 argv의6건을 실행해3subTest실패→6/6통과를 보완했다(`relocation-review/work/r2/run-before`, `run-after`). 복원본·자기 fixture의 신규 실행이며 당시 원시의 동일argv 성공으로 소급하지 않는다.
+- Sol ps 관측은 provider rollout 원천345·349행과 추가자료 `relocation-ps-source/`의 hash를 직접 대조했다. pgid427의 행0 관측은06:25 시점이며06:23의 단독 증거가 아니다. 원시 경로 누락은 보고 품질 관찰로 남겼고 이전 보고를 덮어쓰지 않았다.
+- release 뒤 같은 incarnation의 idle/완료 화면과 빈 prompt를 확인해 close했다. **2026-10-05T07:06:12Z 실제 목록의 Architecture 작업자0**, 보고 직전 재확인도0이다. 메인 `msg_5d5f4f2a4812`로 원문/위험/다음 단계를 전달했다. #4 확정 실패1회 이력은 유지한다.
+
+새 #5는 이동한 Python 모듈에 옛 `Architecture/.gitignore`의 `__pycache__/`가 적용되지 않아 `-B` 없는 실제 import 뒤 cache가 Git 미추적으로 나타나는 문제다. 낮음·비차단이며 공개/CI 기본 명령에는 영향이 없지만 이번 이동이 만든 보존 누락이므로 현재 goal의 범위 내 수정으로 처리한다. 설계는 루트 `.gitignore`에 `/99_Tools/ModuleBoundaries/__pycache__/`만 한정 추가하는 것이다. 전역 ignore 확대나 새 실행 도구/정책을 넣지 않고 신규 Sol max 구현·신규 Opus 독립 테스트를 사용한다. 제품 파일 manifest에 새 파일을 더하거나 이미 통과한 단정을 약화하지 않는다. PR/실제 CI와 개별 병합 승인은 이후이며 O-R1~4의 무관한 정리는 하지 않는다.

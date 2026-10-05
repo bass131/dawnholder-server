@@ -6,6 +6,8 @@ Requirement sources, never the checker's own calculations:
 - .backups/verification/2026-10-05-module-boundary-warning/correction-contract.md
   requirements 1-6 (#1 opt-out/opt-in, SDK absence still fails, #2 provenance) and
   reverification-contract.md judgments 2-6 and #ENV-1.
+- relocation-review-contract.md items 2/3/5: the checker moved to 99_Tools/ModuleBoundaries
+  (user choice A, msg_7fb35a20cd35) with its own props; expectations are unchanged.
 
 Opt-in: MODULE_BOUNDARIES_EXECUTION_WORK names a new absolute directory below the
 repository .backups/. Without it every class skips at import with no process, network
@@ -72,8 +74,10 @@ class DefaultDiscoveryWithoutOptIn(unittest.TestCase):
             program.chmod(0o755)
         harness = cls.folder / "discovery_harness.py"
         harness.write_text(fixture.DISCOVERY_HARNESS, encoding="utf-8")
-        # The earlier default output root, and the tool/test trees a discovery could write into.
-        watched = (fixture.REPO / ".backups/architecture", fixture.REPO / "99_Tools/Architecture", fixture.TESTS)
+        # The earlier default output root, and the tool/test trees a discovery could write into:
+        # the frozen comparison tool and, since the relocation, the checker's own folder.
+        watched = (fixture.REPO / ".backups/architecture", fixture.REPO / "99_Tools/Architecture",
+                   fixture.REPO / "99_Tools/ModuleBoundaries", fixture.TESTS)
         before = [(path.exists(), fixture.tree_state(path)) for path in watched]
         cls.summary_path = cls.folder / "summary.json"
         cls.discovery = fixture.run_recorded(
@@ -129,7 +133,7 @@ class DefaultDiscoveryWithoutOptIn(unittest.TestCase):
         self.assertTrue(sentinel_assert, self.sentinel_log.read_text(encoding="utf-8") if not sentinel_assert else "")
 
     def test_default_repository_outputs_and_tools_are_unchanged(self):
-        unchanged_assert = self.unchanged == [True, True, True]
+        unchanged_assert = self.unchanged == [True, True, True, True]
         self.assertTrue(unchanged_assert, "a default output, tool or test tree changed during opt-out discovery")
 
     def test_documented_default_pattern_still_collects_the_boundary_modules(self):
@@ -412,12 +416,13 @@ class CurrentSourceEntry(unittest.TestCase):
                 self.assertEqual(coverage["compiledInputFiles"], coverage["inputSourceFiles"])
 
     def test_tool_policy_limits_and_time_are_traceable(self):
-        boundaries = fixture.REPO / "99_Tools/Architecture/Boundaries"
-        # The checker itself plus its two public entry files must be traceable; extra build
-        # inputs may be recorded too, but every recorded hash must be today's bytes.
-        required = {f"99_Tools/Architecture/Boundaries/{path.name}" for path in boundaries.iterdir() if path.is_file()}
-        required |= {"99_Tools/Architecture/check-module-boundaries.sh", "99_Tools/Architecture/check-module-boundaries.py"}
-        policy_hash = hashlib.sha256((boundaries / "module-boundaries.json").read_bytes()).hexdigest()
+        checker = fixture.REPO / "99_Tools/ModuleBoundaries"
+        # Since the relocation the checker, its two public entry files and its own build props
+        # share one folder; every file there except documentation must be traceable. Extra
+        # build inputs may be recorded too, but every recorded hash must be today's bytes.
+        required = {f"99_Tools/ModuleBoundaries/{path.name}" for path in checker.iterdir()
+                    if path.is_file() and path.suffix != ".md"}
+        policy_hash = hashlib.sha256((checker / "module-boundaries.json").read_bytes()).hexdigest()
         for label, result in self.results.items():
             with self.subTest(label=label):
                 recorded = {item["path"]: item["sha256"] for item in result["tool"]["files"]}
@@ -431,6 +436,20 @@ class CurrentSourceEntry(unittest.TestCase):
                 self.assertTrue(0 < result["elapsedSeconds"] <= self.runs[label].elapsed)
                 self.assertEqual(result["violationCount"], len(result["violations"]))
                 self.assertEqual(result["violationCount"], sum(result["ruleCounts"].values()))
+
+    def test_tool_build_stops_at_its_own_props_and_restores_no_package(self):
+        # The checker adds no NuGet dependency (ModuleBoundaries README). Its tool copy sits
+        # below this repository, whose root props add an analyzer package, so MSBuild must
+        # stop at the checker's own props that the relocation moved beside it.
+        own_props = (fixture.REPO / "99_Tools/ModuleBoundaries/Directory.Build.props").read_bytes()
+        for label, run in self.runs.items():
+            with self.subTest(label=label):
+                tool = run.folder / "result/work/tool"
+                props_assert = (tool / "Directory.Build.props").read_bytes() == own_props
+                assets = fixture.read_json(tool / "obj/project.assets.json")
+                no_package_assert = assets["libraries"] == {} and not any(assets["targets"].values())
+                self.assertTrue(props_assert, "the tool build did not use the checker's own props")
+                self.assertTrue(no_package_assert, sorted(assets["libraries"]))
 
     def test_unchanged_server_blobs_give_the_same_input_hash(self):
         if "main-blobs" not in self.results:

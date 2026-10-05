@@ -15,8 +15,8 @@ import uuid
 
 
 REPO = pathlib.Path(__file__).resolve().parents[3]
-ENTRY = REPO / "99_Tools/Architecture/check-module-boundaries.sh"
-RULES = REPO / "99_Tools/Architecture/Boundaries/module-boundaries.json"
+ENTRY = REPO / "99_Tools/ModuleBoundaries/check-module-boundaries.sh"
+RULES = REPO / "99_Tools/ModuleBoundaries/module-boundaries.json"
 SERVER = "02_Server/GameServer"
 PROJECT = f"{SERVER}/GameServer.csproj"
 NS = "Dawnholder.Server.GameServer"
