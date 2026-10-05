@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. 최신 `origin/main` `cf9f69571e6c5833d79c56f5467cc55c62b0859c`에서 `ci/npm-engine-warning-20261005`를 만들었다. 현재는 PR1 계약 준비이며 구현·독립 검증·CI·PR·병합은 아직 수행하지 않았다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
+Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. 최신 `origin/main` `cf9f69571e6c5833d79c56f5467cc55c62b0859c`에서 `ci/npm-engine-warning-20261005`를 만들었다. **PR1 Sol 구현·쓰기 종료·정산을 확인했고 신규 Opus 강 검증을 준비한다.** 독립 판정·이번 PR CI·PR·병합은 아직 없다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - 근거 폴더 E: `.backups/verification/2026-10-05-ci-warning-operating-followup/`(Git 제외).
@@ -12,9 +12,9 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 ## 진척 단계
 
 - [x] 범위 확인과 최신 main 기준 확정
-- [>] 새 목표·소유 경계·PR1 계약 준비
-- [ ] PR1 npm 경고 표시 구현
-- [ ] PR1 독립 강 검증과 실제 CI 확인
+- [x] 새 목표·소유 경계·PR1 계약 준비
+- [x] PR1 npm 경고 표시 구현
+- [>] PR1 독립 강 검증과 실제 CI 확인
 - [ ] PR1 사용자 승인과 병합
 - [ ] PR2 운영 문서·Core 명칭 정비
 - [ ] 메인 CLAUDE.md 반영과 독립 문서 실사
@@ -90,4 +90,12 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 
 ## 현재 결과
 
-2026-10-05: 메인 범위 확인, 최신 main·PR185/PR179 병합 읽기 대조, 새 branch와 Run 생성, 사전 맥락 작성 완료. 구현 Task와 독립 판정은 아직 없다. PR별 승인 요청은 완성된 diff·판정·CI를 준비한 뒤 메인에게 보낸다.
+2026-10-05: 메인 범위 확인, 최신 main·PR185/PR179 병합 읽기 대조, 새 branch와 Run 생성, 사전 맥락·goal/CURRENT checkpoint `f079a629771f878340b80a3643ad335074d0d81e`를 작성했다. PR별 승인 요청은 완성된 diff·판정·CI를 준비한 뒤 메인에게 보낸다.
+
+### PR1 구현 종료와 독립 검증 입력
+
+신규 외부 Sol `task_266a685657fd`·`ctx_153af9e8e1aa`가 `msg_4bdab1e43f45`(2026-10-05T12:27:33Z, succeeded)로 쓰기를 끝냈다. 최초 split 명령의 `gpt-6.1-sol max`와 화면을 대조했고 backend는 unknown이다. [완료 보고](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/sol-pr1/report.md)와 실제 diff·`final-observations.json`을 Astra가 읽었다. 제품은 workflow 한 파일 추가58/삭제0(`final-numstat.stdout.txt`), 디스크 bytes SHA256 `5A51E155177780C7406CEC468D3681787B6C41ACC6EF6852A641DC6151FC25BF`다. npm 버전·exit 원시와 별도 always 경고 표시 단계가 추가됐고 기존 npm argv·후속 검사/회귀/업로드 구간은 유지됐다.
+
+자체 대역 실행은 npm 성공/실패 exit와 표시 경계를 관측했으며 실제 npm 설치·GitHub CI·기존 회귀 suite·게임/DB/Unity는 미실행이다. 최초 WSL→Windows Node 환경 전달 실패는 원시를 보존한 자체 환경 보완이며 독립 확정 실패 집계로 세지 않는다. 이것은 구현자 자체점검이고 독립 통과 판정이 아니다. Astra의 `astra-sol-pr1-input-audit.json`에서 제품을 제외한 고정 입력 bytes를 다시 대조했다. 완료 메시지는 현재 identity/Task/Dispatch/tag/outcome과 수신 helper allowed를 확인했다. release(external_terminal/processAction none) 뒤 동일 incarnation·최종 대화·빈 prompt를 확인해 exact pane close(ptyKilled=true)했고 직후 목록은 Rules Astra 하나다. 계약/원시를 보존한 뒤 이 goal의 진척을 갱신했다.
+
+변경 전 실제 근거는 [PR185 code-rules run 37302498710](https://github.com/bass131/dawnholder-server/actions/runs/37302498710)이다. E/baseline-pr185-code-rules의 `setup/npm.stderr.txt`는 EBADENGINE과 current Node v22.23.3/npm10.9.9, required npm>=11을 담고 있다. Node는 별도 node-version.txt로도 확인했다. 당시 standalone npm --version은 저장되지 않아 npm 값은 stderr current 필드 근거다. `baseline-observation.json`에 조회/다운로드 명령과 hash를 연결했으며 과거 CI success를 이번 변경의 실행으로 쓰지 않는다.
