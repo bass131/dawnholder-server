@@ -1,9 +1,9 @@
 # 아이템·인벤토리·재화
 
-상태: **PR1 구현·독립 검증 완료, #1·#2·#3 해결·열린 차단 결함 없음. 정확한 PR head의 CI와 사용자 명시 승인 후 병합한다. O-4는 PR1 한계 공개·PR2 표시 복구 필수조건으로 관리한다. PR2 UI·실제 플레이와 전체 goal은 미완료다.**
+상태: **PR180 병합 완료(`8d1e885`). PR2 결함1~3은 독립 해소됐고, HUD 겹침 결함4는 두 번째 Sol이 한 파일 +12/-3으로 수정·자체 EditMode404/404·PlayMode8/8을 마쳤다. 2026-10-05T14:33Z 새 Opus 리드가 같은 Run을 이어받았다. 결함4 후속 신규 독립 Opus `task_bce6064a15f5`는 batch 범위 판정으로 마감했다(새 차단 결함·회귀 0, #4는 640×480에서 해소 관측). 802×451·1920×1080 MCP 실화면은 아침 새 Opus가 PR head에서 확인한다. PR2 커밋·main 통합·PR·CI를 밤사이 체크포인트로 만든다. PR2 전체 통과·병합과 goal 종료는 미완료다.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, branch `feat/items-inventory-currency-20261005`.
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, 현재 PR2 branch `feat/items-inventory-ui-20261005`(base `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`). PR1 branch는 `feat/items-inventory-currency-20261005`였다.
 - 착수 원천: 메인 Claude `msg_53fec7129c14`(2026-10-04T14:56:48Z). 메인이 전달한 사용자 결정이며 사용자 직접 입력으로 격상하지 않는다.
 - 범위 확인: 메인 `msg_763b1fa21bf5`(2026-10-04T15:04:28Z). 4항목·PR 경계 및 사용/세션 정리/기존 계약 보존이 승인 범위 안임을 확인했고 goal commit·Fable 진행과 신규 Opus 선행 TDD 구성을 허용했다.
 - 목표의 기준·상태·결과는 이 파일에 둔다. 로컬 원문·계약·판정은 `.backups/verification/2026-10-05-items-inventory-currency/`에 보존한다.
@@ -114,7 +114,7 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 | 사용/수명 | 소유하지 않은 아이템, 잘못된 수량/종류/현재 상태, 동일 사용 요청 재전달, 종료/맵 이동과 지연 요청을 다룬다. 실제 gate·queue·처치 callback 진입을 확인한다. |
 | 프로토콜 | 기존 ID·정의 순서 보존, 새 패킷 왕복/불량 길이·범위, 버전 불일치 gate, 서버와 Shared/ClientNet 소비자 빌드. 생성기는 실제 PDL 경로로 실행하고 diff를 확인한다. |
 | 봇 실제 경로 | 해당 goal 전용 근거로 실제 서버 연결·공격/처치·획득 snapshot·재화 증가·사용 결과를 관찰한다. debug 보상 직접 주입만으로 처치 경로 완료를 주장하지 않는다. |
-| Unity | 컴파일·EditMode 테스트와 실제 인벤토리 표시/아이템 사용 플레이. 새 `.meta`와 기존 GUID/직렬화/문자열 경로 보존. scene/prefab 작업·MCP는 메인 소유. .NET 통과로 Unity 완료를 대신하지 않는다. |
+| Unity | 컴파일·EditMode 테스트와 실제 인벤토리 표시/아이템 사용 플레이. 새 `.meta`와 기존 GUID/직렬화/문자열 경로 보존. 실제 플레이 단계의 신규 독립 Opus가 메인에 시트를 요청한 뒤 opt-in Unity MCP를 사용한다(`msg_844ffbe24d73`). scene/prefab 저작은 PR2 범위 밖이다. .NET 통과로 Unity 완료를 대신하지 않는다. |
 | 기존 동작 | 전투/사망·respawn·quest/party·맵 이동·종료의 영향 회귀. 기존 테스트 실패는 전수 분류하고 수정한 기대값은 요구사항 원천과 전후 같은 명령 결과를 남긴다. |
 
 - 검증자의 harness는 파일로 둔다. 복합 Assert는 판단별 변수로 나누고 판정에는 `verifies=대상 task`, 결함 번호·심각도·차단 여부·귀속, `설계 관찰(비차단)`을 넣는다. 설계 결정으로 막히면 한 줄 대안을 함께 반환한다.
@@ -123,6 +123,22 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 - 보고 수치는 원시 결과 파일에서 읽고 명령·환경·exit·성공/실패/skip·미실행을 분리한다.
 
 ## 정본 반영 전 적용 중인 사용자 결정
+
+메인 `msg_f565ecb26653`(2026-10-05T14:18:42Z)의 사용자 원문은 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」다. 이후 `msg_571418f891d9`(14:23:54Z)의 원문 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 교체 시점 앞당기기 → A 작업자가 빈 시점에 바로 교체」가 **교체 시점만 대체**했다. 메인 전달이며 이 세션의 직접 사용자 입력으로 격상하지 않는다. 다음 리드는 `claude-opus-5-5` xhigh, 구현 Sol max·신규 독립 Opus 분리는 유지한다. AGENTS의 기존 Astra 문구보다 이 사용자 결정이 해당 범위에서 우선한다. 지금 Content는 결함4 Sol 정산까지만 수행했고 새 Sol·검증자·Gardener 발행 없이 아래 인계 준비 뒤 턴을 종료한다. 사용자가 잠들었으므로 병합 승인·Unity Editor/MCP 등 사용자 손이 필요한 실행은 아침까지 대기한다.
+
+같은 메인 지시에 따라 우편함은 `orca orchestration check --wait --timeout-ms 600000`으로 바꾸고 짧은 상태/화면 조회를 줄였다. 실제600000 대기1회는 메시지 도착으로 끝났으며, 인계 준비 완료 발신 후에는 우편함을 다시 열거나 백그라운드 watch를 남기지 않는다. 원문은 근거 폴더의 `main-lead-opus-wait-decision.json`, `main-lead-immediate-handoff-decision.json`이다.
+
+메인 `msg_16add9c27b4d`(2026-10-05T14:58:54Z)가 전달한 사용자 원문은 「PR로 체크포인트만 잘 만들어 놓으면 다음 작업 진행해도 되니까 할 수 있는 부분까지 해봐」, 앞선 원문은 「나 진짜 자러갈게, 자율적으로 할 수 있는 부분은 진행해줘」다. 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 메인 운영 해석은 범위 안 단위를 PR 체크포인트(PR·CI·독립 검증·승인 묶음)로 만들고 다음 단위로 가는 것, 병합 전 PR 위에 쌓을 수 있는 것, 병합은 PR별 사용자 승인, 범위 밖 새 goal은 범위 초안만, 사용자 손이 필요한 일은 아침, Sol은 띄울 때 메인에 한 줄 통지다. 원문 `lead-opus-inbox-4.json`.
+
+메인 운영 판단 `msg_5e769cc95c8c`(15:00:28Z)는 Unity MCP 시트 예약을 `task_bce6064a15f5`에서 아침의 새 Opus로 옮기도록 허용했다. 조건은 현재 검증자를 batch 판정으로 좁혀 판정에 「MCP 실화면 미실행 — 아침 새 Opus로 이관」을 적게 하는 것, 정산 때 relay 종료 확인, 아침 Opus는 `msg_94ffc6cbe0f0`과 같은 조건, PR2 커밋에서 cloud3 ProjectSettings와 사용자 MinimapRT를 빼고 커밋 직전 staged 목록을 원시로 남기는 것이다. 원문 `lead-opus-inbox-5.json`.
+
+메인 운영 지시 `msg_2b281320df53`(2026-10-05T14:34:35Z): 우편함 대기는 heartbeat만 깨움 조건에서 빼고 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question" --timeout-ms 900000`으로 연다. 작업자 실행 중 빈 대기가 3번 이어지면 worker-show의 lastHeartbeatAt을 한 번 확인한다. 원문 `lead-opus-inbox-1.json`.
+
+메인 `msg_82735bd92cff`(2026-10-05T09:37:40Z)가 전달한 사용자 원문은 「그리고 계획에 오버되는 부분은 다음 계획 편성에 포함시키고, 일단 현재 작업 목표 달성 우선」이다. 메인 pane에서 Enter로 제출된 사용자 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 원문은 `current-goal-priority-decision.json`에 보존했다. 현재 goal의 완료조건과 범위 안 결함 수정을 우선하며, 이후 새 범위 밖 후보·개선 권고·비차단 지적·새 요청은 아래 다음 계획 후보에 출처와 함께 기록만 한다. 다음 계획은 메인이 사용자와 정하고, 애매한 범위는 메인에 좁게 질문한다. 이 결정은 진행 계약의 재발행·중단을 요구하지 않는다.
+
+메인 `msg_844ffbe24d73`(2026-10-05T08:43:24Z)이 전달한 사용자 원문은 「대시보드 결정 응답: 1) Unity 시트 번갈아 쓰기 - 필요한 세션만 연결하는 방식으로 바꿀지 → A 필요한 세션만 켜기(opt-in) · 2) 목표 진척 자동 갱신 - 단계 완료를 어디서 읽을지 → A PR 자동 + goal.md 체크리스트」다. 앞선 코멘트는 「…연결 가능한 MCP의 시트가 1개인거지, MCP로 연결된 세션을 해제하고 다른 세션으로 연결하는건 가능해. 갈아 끼우면서 번갈아서 쓰는 방식으로 가도 괜찮을거 같은데…」와 「…하나의 에이전트 세션에만 시트 하나씩 할당시킬 수 있어서, Content가 전담해야 할 거 같은데」다. 출처는 메인 pane에서 Enter 제출된 대시보드 결정이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. 전달 원문은 `pr2-tdd-completion-and-main-unity-decision.json`에 보존했다.
+
+이 결정은 아래 역사 기록의 MCP 메인 전용 배정을 대체한다. Content 실제 플레이의 독립 Opus를 띄우기 전에 메인에 하나뿐인 시트를 요청하고, 현황판 소유 등록 뒤 `claude --model claude-opus-5-5 --mcp-config C:/Users/bass1/.unity/claude-mcp.json`으로 기동한다. Astra·Sol에는 MCP를 연결하지 않는다. 기존 relay 세션 두 개가 닫히기 전 Unity를 새로 열지 않는다. Opus 계약에는 시작 전 Unity.exe/relay·프로젝트 경로 확인, batch와 대화형 에디터 순차 사용, GameDev와 7777 조율, 크래시 뒤 잔존 relay 보고와 시트 획득 시점 관측을 넣는다. scene/prefab 저작은 범위 밖이다. 진척 단계는 Astra가 상태 변경 때 갱신하며 PR 번호가 정해지면 병합 단계에 실제 번호를 적는다.
 
 별도 **메인 운영 결정** `msg_1fc59e1efddb`(2026-10-04T16:49:33Z)은 Orca1.4.217 동안 공식 blocking ask의 고정 subject Question과 공식 reply --id 자동 subject에 기존 R-3 예외를 동일 조건으로 한정 적용한다. 사용자 직접 지시로 격상하지 않는다. body 자기 태그와 현재 from_handle/Task/Dispatch 대조는 유지하고 일반 send에는 예외가 없다. 로컬 ask/reply --help의 subject 옵션 부재를 `orca217-ask-help.txt`, `orca217-reply-help.txt`에, 원문을 `orca217-policy-message.json`에 보존했다(모두 이 goal 근거 폴더). helper에1.4.218로 가장하지 않으며 실제 해당 사례는 원시를 사람이 대조해 기록한다. 이번 TDD에는 실제 ask/reply 사례가 없었고 일반 worker_done은 기존 helper에서 allowed/exit0이었다. 결정은 `msg_5b2e7e3005d0`으로 진행 작업자에게 전달했으며 고정 goal은 쓰기 종료 후 갱신했다. Orca1.4.218 이상 또는 subject 옵션 지원 때 이 한정 적용은 종료한다.
 
@@ -141,10 +157,65 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ## 재개 지점
 
+현재 실행 지점은 아래 [결함4 후속 독립 판정](#결함4-후속-독립-판정--batch-범위-실화면은-아침)의 「다음 단위」다. 발행 경위는 [결함4 후속 독립 검증 발행](#결함4-후속-독립-검증-발행--2026-10-05)에 있다. 바로 아래 인계 블록은 새 리드 진입 시점의 기준으로 보존한다.
+
+### 리드 교체 인계 — 2026-10-05T14:27Z
+
+이 블록은 다음 `claude-opus-5-5` 리드가 대화 맥락 없이 읽을 현재 실행 지점이다. **새 리드가 이 브랜치의 유일한 commit/push 담당**이다. 인계 자체는 커밋하지 않았다. 이전 Content Astra는 아래 정산을 마치고 메인에 인계한 뒤 종료하며, 제품/테스트 구현·독립 검증을 직접 대신하지 않는다.
+
+| 항목 | 현재 값·근거 |
+|---|---|
+| Run | `run_add8d9f825f4`. 메인이 새 pane을 연 뒤 `orca orchestration run-use`의 현 버전 help를 확인해 같은 Run을 이어받는다. 새 Run을 중복 생성하지 않는다. |
+| Worktree / branch / HEAD | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` / `feat/items-inventory-ui-20261005` / `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`. PR2 커밋·push·PR 생성은 아직 없다. |
+| 근거 root E | `.backups/verification/2026-10-05-items-inventory-currency/`. 이 블록의 짧은 근거 경로는 모두 E 아래다. `.backups`는 로컬 원문 보존이며 PR에 넣지 않는다. |
+| Orca 관측 | 1.4.220, runtime `120aecfa-9f94-4533-9594-48a22f1853ba`. 현재 이전리드 handle `term_1fc1da2b-96ad-41f2-95d8-e6ee8b545c5b`는 역사 주소로만 보존하고 새 권한으로 쓰지 않는다. 메인 handle `term_072d2ee9-df16-43ce-b86c-122c9de316c0`, GameDev `run:run_6ba3f644755b`도 사용 전에 현재 identity를 확인한다. |
+| 작업자 | **0**. `lead-handoff-worker-list.json`: 전체18rows/hasMorefalse/모두nextActionnone,17완료+옛BSOD폐기1. 방금 Sol의 term_1088e54e-b352-4ccf-b451-7e8991ae2180는 close 뒤 실제 부재이며 Content에는 리드 pane만 남았다. 완료 세션 재사용 금지. |
+| Unity·환경 | `sol-pr2-fix2-postclose-gate.json` 14:25:36Z: Unity0/relay0/프로젝트 lock없음, AudioMasterMute DWord0, SelectedCharacterClass1. 서버/WSL/7777은 이번 Sol이 사용하지 않았다. 이전 Opus 서버 종료/7777해제 근거는 `opus-pr2-fix1/runs/server/server-2-stop.json`. 실제 재실행 전 점유를 다시 확인한다. |
+
+**정산한 마지막 작업:** Sol `task_5f7f4e01ed5e` / `ctx_0bef8e140f29`, formal 완료 `msg_ec4ed8442cfd`(14:24:30Z). 지정/화면 `gpt-6.1-sol max`, backend unknown. report `sol-pr2-fix2/report.md` SHA256 `2D87AE26F9A991B0B9D6784A3480A5DF87C5E70ABF5C97C4593A578BF03FD9C9`와 `context-before.md`, `audit/owned.diff`, 실제 batch `runs/editmode-1`·`runs/inventory-playmode-1`을 먼저 읽는다. 제품은 `InventoryPanelView.cs`의 실제 `character_status` 하단 경계 기반 여백/남은 높이 scale만 +12/-3; 최종 제품 SHA256 `1DE7847E3D636B6FCE2D4B578A56BEE8AFC66A987C1F87C16E1CE1A3C8A6DAF8`. 자체404/404·8/8·둘exit0, 음소거 각각0→1→0. 기존 meta1144/tests34 보존. Astra의 실제 `audit-sol-pr2-fix2-settlement.ps1`은172inputs/허용제품1+자동settings1/예상밖0/XML2를 확인했으며 별도 독립 제품 검증은 아니다. completion-worker/release/preclose-identity/close/postclose-gate/completion-ack의 `sol-pr2-fix2-` receipt로 정산했다.
+
+**아직 열린 제품 문제:** 결함4는 이전 신규 Opus의 R8 차단이다. 802×451에서 기존 HUD가 제목 첫 획을5.89×20.56px 덮었다. 첫 확정 실패1회이며 이번 Sol 자체 GREEN은 독립 해소가 아니다. 기존 scene coverage는 문제 HUD 존재를 보장하지 않아, 다음 검증은 HUD/패널 생성·활성 존재를 먼저 단정하고 교집합0을 검사해야 한다. 802×451·1920×1080/resize에서 실제 크기와 screenshot supersize를 구분하고 전체 패널/문구/8슬롯/최대값/버튼·기존 입력을 보존한다. 이전 독립 원문 `opus-pr2-fix1/report.md` SHA256 `8BF2E595E82A1FBB1BA0B7009F0612EBE700D373217EA621325F3F41FB24E494`가 원형이며 #1~3 해소, 기존29실패 a25/b4/c0/d0·404/404·scene8/8,10/10·실서버각1/1·실제 획득10/사용60은 그 당시 결과다. 이를 새 실행으로 세지 않는다. 실제 사람손/DB/CI/Player build는 미실행이다.
+
+**미커밋 파일과 이유:** 정확한 개별 경로/상태/hash는 `lead-handoff-uncommitted.json` 및 `lead-handoff-git-status.txt`에 보존했다. 아래 그룹이 현재 의도된 산출물이며 통째로 reset/stash/clean하지 않는다.
+
+| 경로 묶음 | 이유·처리 |
+|---|---|
+| FEATURE_MAP.md, domains/client.md, operations/BACKLOG.md | PR2 기능/책임 문서, 이전CI 전투 smoke 및 SENTIS drift 후속 후보. BACKLOG는 최신main과 양쪽행을 보존해 통합할 대상. |
+| 이 goal.md | 현재 goal의 결과·사용자 결정·인계 기록. 이번 인계 추가도 미커밋이다. |
+| Scripts/Combat/CombatBootstrap.cs, Input/LocalPlayerInput.cs, Network/MainThreadDispatcher.cs·MapEntryCoordinator.cs·NetworkService.cs·UnityClientSession.cs | 최초 PR2의 부트스트랩/수명 연결, 첫 수정의 timeout/입력 경계. 기존 산출물을 보존한다. |
+| 신규 Scripts/Input/GameplayPointerInput, Network/Handlers/Inventory 및 InventoryRequestController·InventoryTimeoutScheduler, State/InventorySnapshotState·InventoryState, UI/InventoryPanel·InventoryPanelView와 새 meta | 최초 구현+첫 수정+두 번째 HUD 수정. 기존 GUID/byte 사본을 보존하고 아직 독립 최종 PASS 전이다. |
+| 기존 EditMode ClientSessionGeneration·ComponentEnsureRegression·InventoryProtocolCompatibility·MapEntryBinding·PartyInviteResponseContract, PlayMode MapEntryPlayFixture; 신규 InventoryClientContract·InventoryClientTestSupport·InventoryPresentation·InventorySceneLifecycle·InventoryServerIntegration와 meta | 선행TDD/두 독립 Opus의 요구·보존 검사와 fixture 보완. 최신 Sol은 테스트를 쓰지 않았다. 실패29 분류/수정 원문은 이전 Opus report에 있다. |
+| **ProjectSettings/ProjectSettings.asset** | 사용자 결정 `msg_39c94249a203`: cloudProjectId1094041a-5db2-4e67-9ca2-c413d1238be3/projectName03_Client/organizationIdroy_131은 **이PC 로컬만 유지, 커밋/옛값복원 금지**. hook 우회 금지. SENTIS 자동 제거 한 줄은 승인된 정산으로 복원 완료, 전체hash A58A3CDFB7F41C338D1542B6EF22BDAF793BBD73DFD5D0E6DEFFAEA79CBDF157(`ProjectSettings-pr2-fix2-restore.json`). |
+| **Assets/Resources/MinimapRT.renderTexture** | 기존 사용자 변경. 보호hash 유지, PR2 stage/되돌리기 금지. |
+
+**다음 행동(새 리드 배치 뒤):**
+1. 현재 identity/Run·branch/HEAD·미커밋 목록·작업자0을 확인하고 이 블록/마지막 Sol 원문 및 이전 Opus 차단 원문을 읽는다. 메인에 같은 Run의 새 회신 주소를 알린다.
+2. 사용자 손이 필요한 일은 아침까지 보류한다. 메인 배치/재개 지시 전 새 세션을 임의로 열지 않는다. 후속 독립 검증 초안 `opus-pr2-fix2-brief-draft.md`와 준비 스크립트 `prepare-opus-pr2-fix2.ps1`, `opus-pr2-fix2-preflight.ps1`은 **미발행·미실행**이며 Opus Task/pane/최종 계약은 아직 없다. 새 리드의 현재 권한·입력으로 최종화/실제 preflight를 수행해야 한다.
+3. MCP 시트1개는 메인 `msg_94ffc6cbe0f0`가 이 후속 신규 Opus에 예약했으나 아직 미사용·소유Task없음. 새 Task 생성 후 goal에 소유를 등록하고 사용 가능 여부를 메인과 현재 상태로 확인한다. GameDev 충돌 없음 정정본 `msg_e2c1e9f2234b`는 `opus-pr2-fix2-gamedev-confirmation.json`; 직전 포트/clone writer 실측을 대체하지 않는다.
+4. 새 검증은 MCP없는 batch부터, 종료/lock해제 뒤 정확프로젝트 `content-active/03_Client`·Unity6000.4.7f1을 메인에 알린다. **이번 연결의 사용자 「Editor 열림·연결 승인 준비 완료」 전달 전 첫 MCP 금지**. 첫 호출은 기존audioMasterMute관측→true, Connection revoked는 재시도/우회없이 보고한다. 열린Editor중 batch/registry harness 금지.
+5. 모든 Unity 실행은 원값→mute→복원과 최종 native값 대조를 남긴다. Main `msg_833c357e684e`는 exact HKCU `Software\Unity Technologies\Unity Editor 5.x` / `AudioMasterMute_h3604209190`만 batch 전 임시 변경·finally복원 허용(다른Unity0,이미1이면쓰기없음,다른prefs/OS볼륨/추적설정불변). 원문/부록은 `sol-pr2-fix2-audio-decision-main.json`·`sol-pr2-fix2-audio-addendum-v1.1.md`. 이전 Opus의 음소거1회 누락과 메인 비차단 정산은 아래 기존기록대로 공개한다.
+6. 새 독립 PASS 뒤 최신main 통합/필요CI/PR2를 진행한다. 마지막 **읽기 전용** main관측은635865038e174ee5591530f6bd83e2e698e0b077(+55commits/144files),Unity변경0·현변경교집합BACKLOG만·새architecture-tests/module-boundaries CI. fetch/merge하지 않았으며 `pr2-fix2-main-*-observed.json`은 재확인 필요하다. PR180은 이미 병합됐고 PR2 병합은 **정확 PR/head의 새 사용자 명시 승인**이 필요하다. 자동병합 금지. 전체PR결과 뒤 Gardener/종료점검; 다음goal자동착수 금지.
+
+이전 리드의 마지막 inbox ACK는 `sol-pr2-fix2-completion-ack.json` count0이다. 실행 중인 watch/대기 명령은 없다. 다음 리드가 필요한 과거정보는 이 goal과 E의 명시 원문에서 좁게 읽으며 전체 로그/대화를 수집하지 않는다.
+
+### 이전 착수 경계(역사)
+
 1. 메인 범위 확인(`msg_763b1fa21bf5`)과 GameDev ID/공유 파일/저장 경계 합의(`msg_58eaccfd4a15`)를 완료했다.
 2. Fable 고정 입력·검토·정산·종료와 메인 원문 확인을 완료했다. INV-06/S-3를 현재 도달 경로에 맞춰 정리했다.
-3. 최종 요구사항/패킷 계약은 `.backups/verification/2026-10-05-items-inventory-currency/pr1-acceptance.md`, 선행 TDD 계약은 같은 폴더 `tdd-contract.md`(SHA256 `8E2968D6E7EC1C5008D304F4535A1695BFB8429274DFF013ABAC180F5168B23E`)다. 복구 시점/기준 SHA 보충은 recovery/recovery2 파일에 보존한다. 선행 TDD와 `sol-pr1-contract.md`의 구현은 아래와 같이 완료했다. 다음은 신규 Opus의 보고·diff 실사, 독립 테스트, 실제 서버↔봇 및 Unity 소비자 검증이다.
-4. 현재 Content Run은 `run_add8d9f825f4`, coordinator `term_857393a1-53a9-4546-b3f2-d2f48918696f`다. GameDev의 새 Run `run_6ba3f644755b`에 공유 파일 쓰기 종료 head/diff와 실제 봇 실행 시작·종료를 알린다. PR1 병합 전 사용자 승인을 기다리며 PR2를 먼저 착수하지 않는다.
+3. PR1의 최종 요구/패킷 계약은 `.backups/verification/2026-10-05-items-inventory-currency/pr1-acceptance.md`다. 구현·독립 검증과 승인 병합은 아래 실제 기록을 따른다. PR2는 같은 근거 폴더의 새 계약으로 신규 Opus 선행 테스트 → 신규 Sol 구현 → 신규 Opus 실사·독립 테스트·실제 클라이언트 경로 순서로 진행한다. 이전 실행을 PR2 검증으로 재사용하지 않는다.
+4. Content Run은 `run_add8d9f825f4`다. 현재 handle은 실행 전에 runtime에서 재확인하고 과거 handle을 실행 권한으로 쓰지 않는다. GameDev Run `run_6ba3f644755b`에 PR1 공유 writer 해제를 전달했고 현재 client 연결/맵 경계의 예정 쓰기 없음 회신을 받았다(`msg_6610fe6da8a3`). 실제 서버·봇·Unity 실행은 기존 소유와 프로세스를 재확인해 조율한다.
+
+## 진척 단계
+
+- [x] 설계 검토·범위 확정
+- [x] 서버 아이템·재화 구현
+- [x] 서버 독립 검증·수정
+- [x] PR180 병합
+- [x] 인벤토리 화면 구현
+- [>] 화면 독립 검증(결함4 batch 범위 해소 관측, 16:9 실화면은 아침 새 Opus)
+- [>] 실제 플레이 최종 확인(획득·사용 경로 확인, HUD 배치 수정 뒤 실화면 재확인은 아침)
+- [ ] 화면 PR CI·병합
+- [ ] 결과 기록·종료
 
 ### 2026-10-05 크래시 중단과 복구
 
@@ -295,3 +366,148 @@ O-4 메인 판단과 goal:25·:174의 PR2 필수조건 반영, 이전 보고 불
 검증 수행에는 **쓰기 경계 위반 1건**(허용 근거 폴더 밖 `%TEMP%/blob-goal.md` 생성·삭제, 자기 공개)과 **보고 정확성 결함 1건**(공개한 위반을 보고서의 「위반 없음」·`ruleViolation=false`로 판정)이 있었다. Astra는 `msg_cf79870933be`로 즉시 메인에 보고하고 커밋을 보류했다. 메인 `msg_65f045869377`(2026-10-05T06:24:40Z)은 직접 문서 diff·원문 hash·임시 파일 부재를 대조한 뒤, 영속 변경 없음·고정 입력 불변·두 구간 문서 실사라는 근거로 **내용 판정을 수용하고 새 Opus 재실사 없이 진행**하도록 결정했다. 두 결함을 면제하거나 일반 TEMP 쓰기 예외로 만들지 않는다. 첫 `git status`의 index mtime 갱신도 공개됐으나 내용 hash·2846줄은 불변이다. 관련 원문·메인 결정은 `pr1-main-sync-scope-decision.json`과 정산 근거에 보존한다.
 
 두 작업자는 각각 정확한 완료·동일성 대조 후 release→close→실제 terminal list 작업자0→ACK로 정산했고 재사용하지 않았다. O1~O3 비차단 관찰은 메인 지시대로 이번 변경 범위 밖으로 두었다. 이 절은 메인이 명시한 goal·정산 기록이며, 독립 검증 입력에 사후 추가한 Astra 기록이다. 새 merge head의 CI와 변경 범위 대조, 그 head에 대한 사용자 재승인·병합은 별도 관문이다. 기존 ce3267a 승인을 새 head 승인으로 확대하지 않으며 PR2의 맵 전환 후 재조회·표시 복구와 전체 goal은 미완료다.
+
+### PR180 승인 병합과 PR2 착수 — 2026-10-05
+
+메인 `msg_a61c279bc351`(2026-10-05T07:17:31Z)이 전달한 사용자 대시보드 결정은 새 head `3ee38bf` 병합 승인이다. 메인이 전달한 사용자 결정이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. 현재 head·CLEAN·두 SUCCESS를 확인하고 `gh pr merge --merge --match-head-commit 3ee38bf357f64542543fd1de0c7583d1a9b9bec6`를 실행했다. 실제 merge는 `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`(2026-10-05T08:05:38Z), 부모는 `466aa025b7934ad058bb78636885cce18f0a96eb`·승인 head다. fetch된 origin/main에 포함됨을 `merge-base --is-ancestor` exit0으로 확인하고 clean 상태에서 PR2 브랜치를 만들었다. 원문은 근거 폴더의 `pr1-new-head-approval.json`·`pr1-merged.json`; 메인 보고 `msg_3eb08acaec89`다.
+
+CI `37272468313`의 첫 실행은 924개 중 918통과·1실패·5skip, 동일 head의 한 번 재실행은 919통과·0실패·5skip이었다. 실패는 `CombatSmoke_ZeroLag_Succeeds`의 공격 거리 15초 수렴 timeout이며 원인 미확정이다. 재실행 성공을 원인 해결로 표현하지 않는다. 원시는 `pr1-main-sync-ci-dotnet.log`·`pr1-main-sync-ci-dotnet-attempt2.log`와 `pr1-main-sync-ci-audit.json`에 보존했다. 메인이 같은 테스트의 두 번째 흔들림으로 판단해 Content BACKLOG 후보 기록을 지시했다. 후보 등록은 PR2 제품 수정이나 테스트 완화를 허용하지 않는다.
+
+PR2의 검증 등급은 **강**(연결 종료/세대·맵 전환 실패 수명, 서버 상태 표시·패킷 경계 및 제품+테스트 50줄 이상 예상)이다. 예상 규모를 실측처럼 보고하지 않으며 완료 diff의 파일/줄 수를 원시 명령으로 기록한다. 이 goal은 이미 R-7 검토와 메인 보완 승인을 받았고 `goal-review.md`의 INV-19 및 채택 내용을 고정 입력으로 유지한다. 같은 PR2 범위의 기존 검토를 새 검토 실적으로 부풀리지 않는다. UI는 기존 공유 데이터와 v17 패킷을 소비하고 scene/prefab 저작·DB·서버 정책은 변경하지 않는다.
+
+### PR2 선행 TDD 정산과 문서 후보 — 2026-10-05
+
+신규 Opus task_60b2e07c356a / ctx_a325a125aa44는 msg_301a774a11a7로 선행 RED 준비를 완료했다. InventoryClientContractTests·InventoryClientTestSupport와 새 meta 2개를 썼고 Unity6000.4.7f1(f3c3c4248748) EditMode filter를 한 번 실행했다. XML은 32건/1통과/31실패/0skip, exit2·error CS0이며 27건은 InventoryState 미구현, 4건은 Ready 뒤 조회 미송신이다. 통과 1건은 실패 진입의 음성 보존 단정이다. 제품 PASS나 제품 확정 실패 집계가 아니다. 입력35/35와 기존 meta1129개는 불변이었다. R5 사용 잠금/재시도·R6/R7 표시/입력·R8 UI·실제 플레이·기존 전체 회귀는 후속 독립 검증 범위다. 공개 Instance 표면 명확화 v1.1은 msg_d7097e76067b에 대한 msg_660d77c31a56 공식 reply로 고정했다.
+
+원문은 근거 root의 opus-pr2-tdd/report.md(SHA256 44DB17A6E0C3FB09738F5764A36A63F7446CC7DF227CDB590A05B80A4F7502DD), verdict.json(183DF41DC4AD8DE1A2E2BDFF7C041535EE7C4D59B6C85D5B413D4FD29665BE00), runs/unity-editmode-red-1/editmode-results.xml(49447C19BC477D9C9E6FE602F9398E0F7D672738BCF08B18183D7A0B12E938E9)이다. Astra는 원문과 수치·실제 diff를 대조했다. 정확한 완료/태그/identity 확인→release retained/external/none→동일 incarnation idle→close ptyKilled true→실제 terminal list 작업자0 순으로 정산했고 재사용하지 않는다.
+
+Unity는 ProjectSettings.asset의 SENTIS define 한 줄을 바꿨다. 기존 메인 msg_7691eaa0154c에 같은 변경의 반복 복원이 명시되어 있어 사본 보존 후 이 파일만 HEAD로 복원했다(934110…→C1412…·diff0, ProjectSettings-pr2-tdd-approved-restore.json). 반복 후보 한 줄은 다음 Sol에 배정한다. LocalLow TestResults.xml·GiCache 자동 쓰기는 당시 계약 경계 판정 미확정으로 메인에 msg_dd707149348e로 보고했다. 삭제하거나 위반 없음으로 바꾸지 않는다. batch는 08:37:20~08:38:33Z, 새 Unity 결정은 08:43:24Z 수신이며 이후 Unity 재실행은 없다. 다른 기존 relay 종료 확인과 이 자동 부산물 정산 판단을 기다리며 제품 구현 준비는 계속한다.
+
+별도 Sol task_b54380de9967 / ctx_6b1ca1c2b7ab는 BACKLOG에 combat-smoke-zero-lag-flaky 한 행만 추가하고 정산·종료했다. 원문 sol-backlog/report.md(SHA256 2AF58A952CEE5E26598461C8BA8C358E5FE83877AF02AEF1E191D6B2CC25A7BD), 실제 +1/-0과 자체 점검을 확인했고 신규 독립 Opus의 문서 실사는 아직이다. 한 heartbeat의 subject/body 정책 불일치는 교정 후 올바른 alive를 확인했으며 원문·교정 내역을 보존한다. 같은 head 재실행 성공은 원인 해결이 아니고 이 후보의 조사는 PR2 제품 범위 밖이다.
+
+메인 정산 결정 msg_5c94db82c2ab(08:54:22Z): LocalLow의 두 자동 부산물은 저장소·제품·전역 설정 영향이 없어 이번 경계 위반으로 집계하지 않으며, 이를 명시하지 않은 것은 **Astra 계약 누락**으로 귀속한다. 원본 TestResults.xml과 공유 GiCache는 삭제하지 않는다. Astra가 보존한 결과 사본은 59,838B/mtime08:38:31Z/SHA49447C…2E938E9로 명시 결과 XML과 동일했다(pr2-tdd-localLow-copy.json). 다음 실행은 결과 절대 경로·허용 LocalLow/Unity/Caches·그 밖의 추가 경로 보존/보고 및 relay0 관문을 계약에 넣는다. 다만 기존 command.json에는 이미 -testResults가 명시돼 있고 editor.log14282~14283은 두 경로 저장을 연속 기록하므로 옵션 미지정 원인/지정만으로 예방된다는 주장은 확인되지 않는다. 이 사실은 msg_6cc7f2907d06으로 즉시 정정 보고했다. 08:55:40Z 관측은 Unity.exe0/relay1(17:25 GameDev 소속 PID33908)이므로 아직 새 Unity 실행을 허용한 것으로 처리하지 않는다.
+
+### PR2 제품 구현과 자체 점검 완료 — 독립 판정 전
+
+신규 Sol task_4666c26b7ec7 / ctx_a14947307438의 msg_504293836734(2026-10-05T09:46:50Z)는 상태 미러·수신 검증·Ready 뒤 재조회·runtime 8슬롯 UI/사용 입력·기능 문서와 승인 SENTIS 후보 한 행의 구현 완료를 보고했다. 현재 HEAD8d1e885의 미커밋 산출물이며 자체 diff22파일(C#11·문서3·신규meta8), +878/-3줄이다. 선행 TDD4파일·Astra goal·먼저 쓴 CombatSmoke 후보 행은 이 Task 수치에 포함하지 않는다. 보고 원문 sol-pr2/report.md SHA256 615006F7D60FECD87BE1BF2337259B107E4A652D296E75C3AD53B08FD871C95F와 audit/owned.diff·output.json을 보존했다. 강 등급은 실제 변경 규모와 연결/전환 수명·패킷 경계에서도 유지된다.
+
+자체 Unity6000.4.7f1의 InventoryClientContractTests 두 실행은 각각32통과/0실패/0skip·exit0이다. 두 번째는 패널 disable의 Canvas/입력 수명 보완 뒤09:29:18~09:29:33Z에 수행했다. 같은32개를 두 번 실행한 것이며64개 요구로 합산하지 않는다. XML SHA는 첫9A2134F1A077A5D558F141952CCC1BDDB4326FCBF8DD3ED8161DD04E589C4257, 둘째E4764A815453812885F377CD1AB8C3F98055BDCF9F2FBF1283F9E9FEF2B9BD05다. Astra는 두 XML의 실제 case수와 결과·command/result·현재 diff·최종 제품 hash를 대조했다. 마지막 실행 뒤 C# 변경0이며 신규 폴더 meta의 공백3개만 정리됐고 이 정리 뒤 Unity를 재실행하지 않았다. 이는 독립 PASS가 아니다. 전체 EditMode·PlayMode·실제 UI/클릭/resize·GameServer 경로·timeout/송신 실패/상세 결과·구독 수 검증은 후속 Opus에 남긴다.
+
+실행 전 relay/프로젝트 Unity/unknownUnity0을 직접 확인했다. 반복 SENTIS 한 줄과 LocalLow 중복 XML/GiCache는 허용 자동 부산물로 사본·hash·시각을 보존했고 직접 설정 수리를 하지 않았다. Astra는 정산 뒤 같은 설정 파일만 기존 반복 복원 결정 msg_7691eaa0154c에 따라 HEAD로 복원했다(ProjectSettings-pr2-sol-approved-restore.json, diff0). 이후 정산 대조는 보호 입력51/51·기존meta1131/1131·tests31/31·최종 제품22/22 hash 일치다(sol-pr2-astra-settlement-audit.json). 첫 자체 audit의 no-index exit1 분류 오류와 새 폴더 meta 공백은 원시를 보존해 정정했으며, 사전 메모의 최초 시각 추정은 파일 생성09:05:50Z→첫 제품09:09:51Z metadata로 보완됐다. 최종 원문은 이 제한을 공개한다.
+
+정산: 정확한 완료 identity/태그 allowed0→release retained/external/none→동일 incarnation6401d3a0-5311-46a9-9d77-41de14995cc2와 completed/done·최종 idle 확인→close ptyKilledtrue→실제 terminal list의 Content 작업자0→ACK. 재사용하지 않는다. 메인 msg_08bc350cce6b는 이후 신규 독립 Opus 한 세션의 Unity MCP 시트를 예약했고, 기동 직전 relay0 재확인·지정 mcp-config·handle/incarnation/Task와 시트 획득 관측 보고·종료 후 relay0 반납을 조건으로 했다. 수정 회차나 다른 세션에 승계하지 않는다. GameDev msg_9c760e2da884는 7777/Unity 사용 계획 충돌 없음에 동의했지만 Windows 관측뿐이므로 실제 실행 직전 Windows/WSL·소유를 다시 확인한다. 두 원문은 opus-pr2-seat-decision.json과 sol-pr2-heartbeat-ack-1.json에 있다.
+
+### PR2 첫 독립 검증 — 결함 3건과 수정 인계
+
+신규 Opus `task_387c600bca06` / `ctx_c63817055b98`는 `msg_609c3c077c4c`(2026-10-05T11:27:48Z)로 쓰기를 종료하고 **차단**을 판정했다. 원문은 근거 root의 `opus-pr2-review/report.md`·`verdict.json`, 고정 계약은 `opus-pr2-review-contract.md`와 `opus-pr2-test-scope-addendum-1.md`다. 실제 모델은 첫 실행 명령과 화면의 Opus5.5·xhigh로 구분하며 backend는 unknown이다. 제품 파일은 변경하지 않았고 테스트 3개와 meta 3개를 추가하고 기존 테스트/fixture 6개를 보완했다.
+
+| 번호 - 작업내용 | 독립 관측과 후속 | 확정 실패 |
+|---|---|---|
+| 1 - 편집기 지연 입력 보존 | 5초 인벤토리 timeout이 같은 delay 전제의 FIFO와 공유되어 50ms intent가 약4.98초 지연. `SimulatedLatencyIntents_AreNotHeldBehindTheInventoryTimeout` RED. 기존 송신 순서·세대·맵 epoch·timeout 비용 상한을 보존해 수정한다. | 이번 PR2 계약 1회 |
+| 2 - 인벤토리 클릭과 공격 입력 분리 | 실제 포인터 사용 클릭이 C_ItemUse1과 C_Attack1을 함께 전송. 로그 관측이며 공격 부재 단정은 아직 없다. UI 밖 마우스·키보드 공격을 유지하며 수정하고 새 Opus가 단정과 보존 대조군을 보완한다. | 이번 PR2 계약 1회 |
+| 3 - 실제 화면의 인벤토리 글자 표시 | 제목·재화·새로고침 칸 높이30이 TMP 선호 높이38.18/30.54보다 작아 characterCount0. `RealTown_EveryPanelLabelIsDrawnOnScreen` RED. 문자열 일치만으로 표시 성공을 판단하지 않는다. | 이번 PR2 계약 1회 |
+
+원시 XML은 전체 EditMode388/356통과/32실패 →400/400/0, 기존 장면10/10, 신규 인벤토리 장면5/3통과/2실패, 실제 서버 inventory1/1·기존 mapentry1/1이다. 기존 실패32건은 a26·b6·미분류0으로 전수 분류됐고 원래 generation/map epoch/party/component 요구는 보존했다. 대화형 실제 화면에서는 골렘·일반 적 처치로 재화20·재료1·주머니1, 포인터 사용 후 revision3·재화70을 관측했다. 입력은 가상 Input System 장치이며 메뉴 진입은 직접 호출했다. **사람 손 입력·플레이어 빌드·DB·CI는 미실행**이다. 현재 화면/입력 결함이 있어 데이터 경로 실행을 전체 PASS로 표현하지 않는다.
+
+Astra는 판정 원문·메모·XML 6실행의 카운터·화면 crop/driver·규칙과 파일 경계 표본을 대조했다. `audit-opus-pr2-settlement.ps1`의 실제 실행 결과는 `opus-pr2-astra-settlement-audit.json`이며 입력106·기존meta1139·기존tests31 중 허용 테스트/보고한 설정 외 drift0이다. 새 제품 테스트 실행이나 독립 전수 감사로 합산하지 않는다. 완료 identity/태그 allowed0→release retained/external/none→동일 incarnation idle→close ptyKilledtrue→실제 terminal list 부재·Unity0/relay0→메인 시트 반환 `msg_7bfb22d99da5`→ACK를 마쳤다. 이번 시트 예약은 종료됐고 다음 Opus에 승계하지 않는다.
+
+규칙 위반 1건: 검증자가 11:12Z scratchpad TEMP에 `patch-driver.mjs`를 직접 쓰고 11:14:05Z 삭제했다고 보고했다. 원문은 보존했고 즉시 메인 `msg_50aa1f494011`로 보고했다. 메인 운영 판단 `msg_dc98852233ed`는 차단 판정의 결함1~3을 유효한 수정 입력으로 쓰되 위반을 기록하고 다음 계약에 임시 쓰기 금지 원문과 실제 필요한 driver 경로를 명시하도록 했다. Sol 보고의 `UnityClientSession.cs:391` 짧은 버퍼 guard 설명 누락(O1)도 같은 메시지로 보고했으며 신규 Sol 보고에서 기존 변경까지 정정한다. 비차단 관찰은 아래 후보로만 둔다.
+
+### Unity 연결·설정에 관한 적용 결정
+
+이번 Opus의 첫 MCP 성공은10:38:47Z였고 이후 Connection revoked가 발생했다. 사용자가 시트 미준비(`msg_7397defef4aa`)→결제·시트1개 활성(`msg_ec9f594e0014`)→연결 승인 완료(`msg_3eb283d8fb90`)를 메인을 통해 알렸다. 승인 전 추가 시도를 하지 않았고 무부작용 확인 성공11:09:03Z 뒤 실제 화면 검증을 재개했다. 이는 사용자 진술·실제 호출 결과를 구분한 기록이며 거부의 기술 원인 확정이 아니다. 사용자가 이동한 보조 모니터 위치는 유지했다. 현재 작업에 추가로 켤 MCP 옵션은 관측되지 않았고, DLL 참조·Reflection 제한은 우회하지 않았다. 새 Opus는 기동 직전 메인에 시트를 요청하고 새 연결 승인 필요 여부를 확인한다.
+
+메인 `msg_d1f7f41b5e47`(2026-10-05T11:28:08Z)이 전달한 최초 사용자 원문: 「1) 아이템·인벤토리 PR - Unity 클라우드 연결이 새 조직(roy_131)으로 바뀐 것을 유지할지 → A 새 연결 유지, 이 PR에 별도 커밋」. `ProjectSettings.asset`의 cloudProjectId=`1094041a-5db2-4e67-9ca2-c413d1238be3`, projectName=`03_Client`, organizationId=`roy_131`을 유지하라는 결정이었다. 변경 주체는 미확정이며 사용자 시트 활성화·재승인 시점과 겹친다. 원본은 `ProjectSettings-pr2-opus-cloud-observed.asset`에 보존했다. **아래 후속 사용자 결정이 별도 커밋 지시를 대체했다.**
+
+별도 커밋은 실제 시도했으나 `.githooks/pre-commit:20-44`가 cloud-only 변경을 자동 unstage하고 exit1로 차단했다. 해당 훅은 팀원마다 다른 Cloud 식별자를 서로 덮는 것을 막는 기존 정책이다. HEAD8d1e885와 빈 index는 그대로이며, 새 연결3필드는 로컬에 보존했고 반복 SENTIS 한줄만 복원했다(`ProjectSettings-pr2-opus-sentis-restore.json`). 질문 `msg_91fad2c9d350` 뒤 메인 `msg_39c94249a203`(11:41:44Z)이 전달한 새 사용자 원문은 「2) 아이템·인벤토리 PR - 새 클라우드 연결을 커밋하지 않고 이 PC에만 둘지 (앞 결정 수정) → A 이 PC에만 유지, 커밋 안 함」이다. **3필드는 작업 파일에만 유지하고 커밋에서 제외한다. 훅 수정·우회·예외는 없다.** 앞선 메인의 「다른 작업 공간은 이 PR 병합으로 맞춰진다」 설명은 철회됐다. 머신·작업 공간마다 자기 연결값을 유지하는 정책을 따른다. 원문은 `pr2-fix1-launch-inbox.json`; 기능 수정·검증은 계속한다.
+
+메인 `msg_dc98852233ed`는 결함1~3의 신규 Sol→신규 Opus를 범위 안 수정으로 확인했다. timer3파일은 GameDev `msg_ab490f5d317b`, LocalPlayerInput와 Input helper는 `msg_da0c9a9e5f61`로 쓰기 충돌 없음을 확인했다. 최종 파일/설계와 쓰기 종료·head를 공유한다. 최초 제품 산출물의 수정 회차는 다음 Sol부터1회이며 각 결함의 이번 첫 NOT PASS를 중복 집계하지 않는다.
+
+### PR2 첫 수정 완료와 신규 독립 검증
+
+Sol `task_bddf83472162` / `ctx_f0a2608585b6`는 완료 `msg_a46555948f65`(2026-10-05T12:16:21Z)로 쓰기를 종료했다. 원문은 `sol-pr2-fix1/report.md`(SHA256 `3FE3C29D631D9C3B65578EC177EFD99A1AE100514168F232C4CA89D285869C05`), 실제 diff는 `audit/output-final/owned.diff`다. 요청/화면은 gpt-6.1-sol max·Codex0.160.0, backend는 unknown이다. 변경10파일 +145/-15(C#7·문서1·meta2): 취소 가능한 인벤토리 응답 timer를 지연 송신 FIFO와 분리하고, 실제 포인터의 UI raycast로 공격 시작을 차단하며, TMP 표시 영역 높이를 늘렸다. 기존 송신 순서·키보드/외부 포인터 공격·scene 수명은 신규 독립 판정 대상이다.
+
+자체 실행은 전체 EditMode400/371통과/29실패/skip0(exit2), InventoryScene5/5(exit0)다. 29실패의 a25/b4/c0/d0은 **Sol의 잠정 분류**이며 독립 판정이 아니다. 50ms 입력의 약0.06초 처리·UI클릭 extra attack0은 raw 로그 관측이고 특히 공격 부재 단정/보존 대조군은 새 Opus가 보완해야 한다. 이번 수정에서 실제 서버/MCP/실화면·사람 손 입력·플레이어 빌드·DB·CI는 미실행이다. O1 short-buffer guard 누락은 수정 보고에서 설명했으나 전용 테스트는 미실행이다. 기존 결함별 확정 실패는 각1회이며 자체검사 실패를 중복 집계하지 않는다.
+
+증거 helper 오류도 공개됐다. 초기126개 hash는 기록했지만 ownership 문자열 오타 때문에 소스7개 bytes사본을 누락했다. 12:06:31.347Z에 이번 hunk만 메모리에서 역적용하고 고정 manifest SHA256과 정확히 같은7개 사본만 보충했다(`audit/baseline-copy-correction.json`). 제품은 바꾸지 않았고 사전사본이었다고 소급하지 않는다. 불완전한 이전 audit/output도 보존했다. 신규 Opus가 보고 원문·시각·방법·사본 hash를 실사한다.
+
+Astra는 보고 전문·실제 diff·XML과 보호 hash를 대조했다. `sol-pr2-fix1-astra-settlement-audit.json`은 입력126/meta1142/tests34의 예상밖 drift0을 확인한 정산 감사이며 독립 제품 검증이 아니다. 완료 exact identity/태그 allowed0→release retained/external/none→동일 incarnation idle→close ptyKilledtrue→실제 pane 부재·Unity0/relay0→ACK를 마쳤다. 재사용하지 않는다. 반복 SENTIS 한줄은 사본 보존 뒤 승인 복원했고(`ProjectSettings-pr2-fix1-sentis-restore.json`) cloud3은 로컬에만 유지했다.
+
+**당시 Unity MCP 시트 예약: Content 신규 Opus `task_b0289b7469b8` — 메인 배정 `msg_f1c8f2912c9f`. 현재는 아래 정산으로 반납했다.** 새 계약 `opus-pr2-fix1-contract.md`와 발행 전 manifest/preflight를 고정했다. 메인 `msg_354b8f93e257`에 따라 report.md 하나(기계 판독 표 포함), 사전메모·이름을 열거한 테스트/하네스·raw 폴더만 직접 썼다. 첫 검증의 TEMP 위반을 삭제하거나 면제하지 않는다. 메인 기존 실패 분류 원문을 새 계약에 그대로 붙였다.
+
+먼저 MCP 없는 배치 검증을 수행한다. batch 종료·Unity/lock 해제 뒤 Astra에 공식 ask로 사용자 Editor 열기 가능 시점을 알리고, 자기 프로젝트 `content-active/03_Client`(Unity6000.4.7f1 f3c3c4248748)를 중복 없이 연다. **메인이 사용자 「Editor 열림·연결 승인 준비 완료」를 전달하기 전 첫 MCP 호출은 금지**한다. 거부/철회 시 반복·우회 없이 보고한다. GameDev `msg_d7b3af49558b`는 현재/예정7777·Unity 사용충돌 없음을 회신했으나 실제 실행 직전 Windows/WSL 소유 gate를 다시 확인한다. 검증 정산 때 시트 반납을 기록한다. 현재 예약/Task 생성은 실제 호출 성공을 뜻하지 않는다.
+
+### PR2 첫 수정 독립 판정 — 이전 3건 해소, HUD 겹침 1건 차단
+
+신규 Opus `task_b0289b7469b8` / `ctx_142e1d49d252`는 `msg_579110db7dd3`(2026-10-05T13:35:31Z)로 쓰기를 종료했다. 원문 `opus-pr2-fix1/report.md` SHA256은 `8BF2E595E82A1FBB1BA0B7009F0612EBE700D373217EA621325F3F41FB24E494`다. 최초 명령은 `claude --model claude-opus-5-5 --mcp-config C:/Users/bass1/.unity/claude-mcp.json`, 화면은 Claude Code2.1.289·Opus5.5 xhigh, backend는 unknown이다. 역할은 독립 검증 완료이며 **제품 판정은 차단**이다.
+
+**4 - 기존 HUD와 인벤토리 제목의 겹침 수정**: 802×451 실제 Town·사냥터에서 HUD `character_status`(sortingOrder10)가 패널(5)의 왼쪽 위 5.89×20.56px를 덮고 제목 첫 글자 획에 닿는다. `InventoryPanelView.Resize`의 위쪽150단위 배치가 원인이고 R8의 기존 HUD 겹침 없음 요구에 걸린다. 낮음이지만 차단이다. 최초 구현 `task_4666c26b7ec7` 귀속이며 첫 수정은 이를 만들거나 키우지 않았다. **이 번호의 첫 확정 실패 1회**다. 이전 #1~#3은 해소됐고 중복 집계하지 않는다. 일시적인 퀘스트 팝업이나 O7 접기·토글 후보와 구분한다. 사각형 교차 검사로 전환 가능하다고 반환했지만 자동 RED는 미작성이다. 쓰기 종료 뒤 새 Sol의 패널 배치 수정과 새 Opus의 실제 장면 회귀 검사를 수행한다.
+
+기존 EditMode 실패29건은 a25/b4/c0/d0으로 전수 분류됐다. 원래 요구를 보존해 fixture를 보완한 같은 명령의 결과는400/371/29→400/400/0, 추가 테스트4개 뒤404/404다. 인벤토리 장면은5/5→8/8, 기존 맵 장면10/10, 실제 서버 inventory/mapentry각1/1이다. 새 단정은 짧은 수신 버퍼 거부 뒤 정상 패킷 적용, timeout 취소·예외 격리·실제5초 간격/3회상한, UI 클릭 공격 부재와 월드/키보드 공격 대조군, 최대값/문구의 실제 글리프 표시다. 테스트9파일만 수정했고 기존meta1144와 보호파일은 보존됐다.
+
+실화면에서는 메뉴도 가상 포인터로 클릭했고 직접 메뉴 호출 대역은0이었다. Town→일시정지/재개→포털→사냥터→골렘 처치→재화10/주머니1→사용 클릭→rev2/재화60을 확인했다. 서버 C_Attack은 Enter3+월드클릭1의4회이며 사용·새로고침 뒤 추가 공격이 없다. 사람 손·touch·1920×1080 실창·플레이어 빌드·DB·CI는 미실행이다. 1604×902 캡처는802×451 화면의2배 렌더이며 별도 창 해상도 검증이 아니다.
+
+Astra는185줄 판정 전문·driver로그 전체·화면2장·입력 대조군/수신 guard 단정 표본을 읽었다. `audit-opus-pr2-fix1-settlement.ps1` 실제 결과는 `opus-pr2-fix1-astra-settlement-audit.json`: 입력160/meta1144/tests34, 허용테스트9와 보고된설정1 외 예상밖drift0, XML12개를 대조했다. 새로운 독립 제품 검증으로 합산하지 않는다. 완료 identity/태그allowed0→release→같은incarnation idle/done→close ptyKilledtrue→실제pane부재·Unity0/relay0/lock없음(13:39:31Z)→ACK를 마쳤다. **시트 반납 `msg_b7b613acee68`**. 다음 검증자는 새로 예약하며 이 세션을 재사용하지 않는다.
+
+### Unity 음소거·로컬 상태 정산
+
+메인 `msg_962ec7e0fe5a`가 전달한 사용자 원문은 「유니티 에디트모드나 실제 에디터로 플레이모드로 테스트할때, 사운드는 음소거 해달라고 전달해줘」다. **이후 Content의 모든 Unity 실행에 세션 한정 음소거와 원상 복원 증거를 적용**한다. 추적 오디오 설정·직렬화 값은 바꾸지 않는다. 원문과 적용 단계는 `opus-pr2-fix1-audio-addendum-v1.1.md`에 보존했다.
+
+절차 편차: `after-editmode-all-2`(12:58:25Z 시작)는 명시 음소거 없이 실행됐고 실제 무음 여부는 미측정이다. 요청 전 미적용7회(Edit3/Play4)와 구분한다. 최초 회신의6회 오기와 일반 회신 태그/payload 누락은 교정 재발송 `msg_1574eb623b76`에 남겼다. 정정 지시 발송12:57:04Z와 검증자의 실제 읽기 시점 미확정을 구분한다. 메인 운영 판단 `msg_da7abd0167fe`는 이 편차를 기록하고 이후 명시 적용·복원 증거로 정산하며 제품 차단 사유로 올리지 않도록 했다. 사용자 직접 결정으로 격상하지 않는다.
+
+PlayMode4회는 `MapEntryPlayFixture.Prepare`에서 AudioListener.volume0, Cleanup에서 이전 값을 복원했다. 메인 `msg_0070dfdd4761`이 전달한 사용자 「Editor 열림·연결 승인 준비 완료」 뒤 첫 MCP호출13:10:28.72Z가 성공했고 audioMasterMute False→True를 확인했다. 대화형 종료13:17:45Z에False로 복원, Editor 종료 뒤 `AudioMasterMute_h3604209190` DWord0도 확인했다. 자기 서버는SIGINT20초뒤SIGTERM/launcherexit143, Editor는직접Exit(0)요청뒤프로세스소멸이며 OSexit는미수집이다. 7777·lock해제를 확인했다.
+
+메인 운영 판단 `msg_2de31caf1c5d`에 따라 Astra가 정산 후 동일SENTIS define순서 한줄만 복원했다(E030A834…→A58A3CDF…, cloud3로컬유지). Knight선택으로바뀐 제품 Editor PlayerPrefs `SelectedCharacterClass_h323074203`은 사전hash/현재DWord0을 대조해 원래1로 복원했다(13:42:03Z). Editor/MCP 재기동과 이를 위한 추적파일변경은0이다. 근거 `ProjectSettings-pr2-fix1-review-restore.json`, `opus-pr2-fix1-playerprefs-restored.json`. layouts/cache/sessionprefs는 같은 메인 판단대로 기록만 남겼다.
+
+## 다음 계획 후보
+
+메인 msg_82735bd92cff 이후 새 범위 밖 후보·비차단 지적·새 요청은 이 절에 출처와 함께 기록만 한다. 이전 BACKLOG의 combat-smoke-zero-lag-flaky와 unity-sentis-define-drift는 기존 후보로 유지하며 이번 PR2의 원인 조사·수리 범위로 승격하지 않는다.
+
+- Unity 엔진 업그레이드 검토 — 출처 msg_8b8e828ec7e8, 이번 goal 착수 아님.
+- 기존 HUD Gold mock의 서버 재화 연결 또는 숨김 — `opus-pr2-review/report.md` O6, 메인 msg_dc98852233ed; 현재 범위 밖.
+- 인벤토리 패널 접힘·토글 등 시야 개선 — 같은 보고 O7와 메인 msg_dc98852233ed; 현재 요구 위반은 아니며 다음 제품 디자인 판단.
+- 종료 경로의 중복 null 정리·게임플레이 씬 목록 중복·Ready 관찰자 오류 격리·EditMode 상태 생성 안내 — 같은 보고 O2~O5의 비차단 관찰, 다음 계획 후보만.
+- 범용 dispatcher와 인벤토리 deadline 의존 방향·drainer 탐색 주석·실제 바인딩과 낡은 주석 일치·정적 scheduler 테스트 정리 — `opus-pr2-fix1/report.md` O-1/O-2/O-7와 가독성 관찰, 다음 계획 후보만.
+- 일반 HUD Graphic 위 마우스 공격 차단의 UX 범위·작은 화면의 한글 폰트 판독성 — 같은 보고 O-3/O-6. 전자는 소스 추론이며 미실측이고 GameDev와 제품 디자인 판단이 필요하다. 이번 HUD 제목 겹침4번과 구분한다.
+- 상시 패널 면적·퀘스트 알림의 일시 가림 — 같은 보고 O-4/O-5, 기존 O7 후속 후보에 포함한다.
+- `InventoryPanelView.cs:103` `top = 150f`의 이유 주석(HUD가 없을 때의 기본 상단 여백) 복원, HUD 영역 목록으로의 일반화, `"character_status"` 이름 의존의 문서화 — `opus-pr2-fix2/report.md`의 가독성 후속 1과 O-1/O-2. 동작 영향 없음, 비차단.
+- batch 640×480 고정이라 16:9 자동 회귀를 batch로 할 수 없는 공백 — 같은 보고 O-3. 아침 실화면 계약에서 다루고, 상시 자동화 수단은 다음 계획 후보로만 둔다.
+- 다음 Content goal 「던전 인스턴스 콘텐츠·보상」 범위 초안 — 메인 지시 `msg_16add9c27b4d` 4항에 따라 `msg_b9768c16772e`로 보냈다(사본 근거 폴더 `next-goal-dungeon-scope-draft-sent.md`). 착수는 메인 계획 검토와 사용자 승인 뒤다.
+- Unity AI Assistant 패키지 업그레이드로 MCP 연결 상한 제거 범위 초안 — 메인 요청 `msg_b30e645172e0`, 회신 `msg_b7d6727d60ab`(사본 `next-goal-unity-ai-assistant-scope-draft-sent.md`). 의존성 변경이라 사용자 승인 전 구현하지 않는다.
+
+### PR2 두 번째 수정 발행
+
+새 Sol Task `task_5f7f4e01ed5e`가 결함4의 `InventoryPanelView.cs` 배치만 수정한다. 제품/테스트 소유는 분리하고 원시 실제 화면 RED 및 R8 HUD 무겹침을 기준으로 한다. 계약 `sol-pr2-fix2-contract.md`, 입력 `sol-pr2-fix2-inputs.json`, 실제 경로 검사 `sol-pr2-fix2-preflight.json`; dispatch 뒤 이 goal과 보호 입력은 동결한다. 전체 PR2 강 검증은 유지하며 다음 신규 Opus가 자동 HUD 교집합 검사와 실제 표시를 재검증한다.
+
+메인 `msg_833c357e684e`는 사용자 세션 음소거·복원 권한 안에서 기존 Editor mute 저장값 하나의 임시 변경을 허용했다. 다른 Unity0 확인, 실행 직전 원값 원시 기록, 이미1이면 쓰지 않음, 다른 preference/추적 설정/OS 볼륨 불변, finally 원값 복원·정산 재확인을 조건으로 한다. 원문과 적용 방법은 `sol-pr2-fix2-audio-decision-main.json`, 발행 전 실행 부록 `sol-pr2-fix2-audio-addendum-v1.1.md`에 고정했다.
+
+### 결함4 후속 독립 검증 발행 — 2026-10-05
+
+새 리드 `claude-opus-5-5`(handle `term_85786471-7462-436b-835a-ee170221fcf2`)가 메인 `msg_c563e879791f`로 진입했다. 같은 Run `run_add8d9f825f4`를 run-use로 이어받았고 READY는 `msg_7d288f29b1e0`이다. 인계 블록과 실제 상태의 차이는 없었다. 미커밋 47/47개 hash가 같고 작업자 0, Unity Editor·relay 0이다(`lead-opus-entry-uncommitted-compare.json`).
+
+| 항목 | 값 |
+|---|---|
+| Task | `task_bce6064a15f5`, 신규 `[Content 검증자]` `claude-opus-5-5`. verifies `task_4666c26b7ec7`·`task_bddf83472162`·`task_5f7f4e01ed5e`·문서 `task_b54380de9967` |
+| 계약 | `opus-pr2-fix2-contract.md` SHA256 `D32D9F2F8419332063DFF8284AB9D2093A798CEB5CECA2CD4B294C6F4E7DA7DD`. 이전 리드 초안에 새 리드 고지와 야간 진행 절을 더했다. 원 초안은 `opus-pr2-fix2-brief-draft-prev-lead.md`로 보존했다 |
+| **Unity MCP 시트** | **`task_bce6064a15f5` 반납(MCP 호출 0) → 아침 새 Opus로 이관, 메인 `msg_5e769cc95c8c`**. 처음 배정은 `msg_94ffc6cbe0f0`이다 |
+| 검증 등급 | 강. 전체 PR2의 제품+테스트 50줄 이상, 상태·실패 수명, 패킷 경계가 대상이다 |
+
+MCP 없는 batch를 밤에 먼저 돌리는 것은 리드 판단이다. 메인이 이 판단을 맡겼고, 시트 예약이 batch 선행을 이미 조건으로 둔다. 검증자는 Codex 크레딧을 쓰지 않는다. batch 종료 ask 뒤에는 아침 사용자 「Editor 열림·연결 승인 준비 완료」 전달까지 MCP 첫 호출을 하지 않는다. batch에서 차단 결함이 확정되면 MCP 단계 없이 마감할지 리드가 회신한다.
+
+preflight는 이 세션 PATH에 rg가 없어 `git ls-files --cached --others --exclude-standard`로 meta·test 목록을 만든다. 같은 시점 개수 1144·34가 기존 manifest와 같음을 확인했다. 이 goal은 dispatch 뒤 검증자 쓰기 종료까지 동결하고, 그 사이 기록은 리드 메모 `astra-context.md`에 둔다.
+
+### 결함4 후속 독립 판정 — batch 범위, 실화면은 아침
+
+신규 Opus `task_bce6064a15f5` / `ctx_72a094a4d357`는 `msg_430558ef367e`(2026-10-05T15:17:29Z)로 쓰기를 종료했다. 원문은 `opus-pr2-fix2/report.md`(SHA256 `F2F00EC0DB4A448821C83E083D7FF4FAD7767A24B34AD23D9D8C211A27E4D3EE`)다. 메인 `msg_5e769cc95c8c`에 따라 범위 축소 통지 v2(`opus-pr2-fix2-scope-reduction-v2.md`, `msg_7ed1a695c011`)로 MCP 실화면 단계를 뺐다. **판정은 batch 범위이며 PR2 전체 PASS가 아니다.**
+
+| 항목 | 결과 |
+|---|---|
+| 결함4 | batch 640×480의 Town·사냥터·사용 결과 6시점(scripted 3, 실서버 3)에서 HUD 존재와 양성 대조를 먼저 단정한 뒤 HUD Graphic·패널 교집합 0, 버튼 가림 0. 802×451·1920×1080은 **MCP 실화면 미실행 — 아침 새 Opus로 이관**, 판정 보류 |
+| 회귀 | 새 차단 결함 0, 기존 실패 0. EditMode 404/404, 인벤토리 장면 9/9(신규 HUD 교집합 테스트 1 포함), 맵 장면 10/10, 실서버 인벤토리 1/1 |
+| 테스트 변경 | `InventorySceneLifecycleTests.cs` +260/-0(`HudOverlapProbe`, 새 테스트 1), `InventoryServerIntegrationTests.cs` +3/-0. 기존 단정 삭제·완화 0 |
+| batch 화면 한계 | batch는 `-screen-width/-height`를 줘도 640×480 고정이다(`runs/screen-arg-probe-1`). 16:9 확인은 실화면 단계가 필요하다 |
+| 미실행 | MCP 실화면, 리사이즈, 사람 손 입력, touch, Player build, DB, CI |
+
+리드 정산: 판정 본문 전문과 부록의 계약 원문 동일성(SHA256 `42D7EE19…`)을 확인하고, 판정 로직 표본(`InventorySceneLifecycleTests.cs:166-241`)을 직접 읽었다. 정산 감사 `opus-pr2-fix2-astra-settlement-audit.json`은 입력 182, meta 1144, tests 34, 허용 변경 3, 예상 밖 0, XML 6개 수치·hash 일치다. 독립 제품 검증으로 세지 않는다. ProjectSettings의 SENTIS 자동 제거 한 줄만 기존 승인(`msg_7691eaa0154c`, `msg_2de31caf1c5d`)대로 복원했다(EEE969AE → A58A3CDF, cloud3 유지). release → 같은 incarnation 확인 → close ptyKilled true → relay PID 34856·Unity·lock·7777 모두 0, 음소거 0(15:19:27Z). 검증자 보고의 관찰로, 첫 batch 중 자기 relay가 batch Unity에 붙어 unity-mcp 도구 목록이 노출됐다(원인 미확인, MCP 호출 0).
+
+다음 단위: PR2 커밋(사용자 MinimapRT·로컬 cloud3 ProjectSettings 제외, staged 목록 원시 보존) → 최신 main 통합 → push·PR·CI → 아침 새 Opus의 PR head 실화면 확인(시트 이관 `msg_5e769cc95c8c`) → 승인 묶음.
