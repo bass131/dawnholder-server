@@ -43,14 +43,19 @@ PR1은 새 workflow와 진입/goal 기록이다. 제품·기존 검사 정책·R
 
 ### 새 CodeMap 리드(Opus) 진입
 
-메인 `msg_d681f9361224`(2026-10-05T14:52:52Z, E/`lead-opus/entry-inbox.json`)에 따라 `claude-opus-5-5` xhigh 리드가 아래 인계를 이어받았다. 발신 태그는 `[Architecture Astra]` 그대로이며 backend 실제 모델은 unknown이다. 쓰기 전 메모는 E/`lead-opus/context.md`다.
+E는 이 goal의 Git 제외 근거 폴더 `.backups/verification/2026-10-05-architecture-tests-ci/`다. 메인 `msg_d681f9361224`(2026-10-05T14:52:52Z, E/`lead-opus/entry-inbox.json`)에 따라 `claude-opus-5-5` xhigh 리드가 아래 인계를 이어받았다. 발신 태그는 `[Architecture Astra]` 그대로이며 backend 실제 모델은 unknown이다. 쓰기 전 메모는 E/`lead-opus/context.md`다.
 
-- Run: `orca orchestration run-use --id run_3abaa3ef999c` exit0. coordinator는 `term_4841a13f-a115-4cbc-9854-f5ed39dd6e29`, `consumer_generation` 2다(E/`lead-opus/run-use-1.json`). 회신 주소는 `run:run_3abaa3ef999c`다.
-- 진입 대조: HEAD `e5690a3`, 미커밋은 이 goal 한 파일(+37/-3)이었다. Run의 작업자 7개는 retained이고 reclaimable은 0개다(E/`lead-opus/worker-list-entry.json`). 이 worktree의 터미널은 새 리드 pane 하나다(E/`lead-opus/terminals-entry.json`). 아래 인계 블록과 다른 점은 없었다.
+- Run: `orca orchestration run-use --id run_3abaa3ef999c`의 응답은 `ok: true`다. coordinator는 `term_4841a13f-a115-4cbc-9854-f5ed39dd6e29`, `consumer_generation` 2다(E/`lead-opus/run-use-1.json`). 명령 exit는 화면에서만 봤고 파일로 보존하지 않았다. 회신 주소는 `run:run_3abaa3ef999c`다.
+- 진입 대조: HEAD `e5690a3`와 미커밋 goal 한 파일은 인계 원시 E/`lead-handoff-final-state.json`의 `head`·`status`와 같았다. 진입 때 화면에서 본 goal numstat +37/-3은 원시를 보존하지 않았다. Run의 작업자는 `counts.retained` 7, `page.total` 7이다(E/`lead-opus/worker-list-entry.json`). reclaimable 조회 결과는 화면에서만 봤고 보존하지 않았다. 이 worktree의 터미널은 새 리드 pane 하나다(E/`lead-opus/terminals-entry.json`). 아래 인계 블록과 다른 점은 없었다.
 - 메인 결정(관찰1): 종료 기록 PR 병합 뒤의 최종 Run/Task 상태는 로컬 E에만 기록하고 추가 PR은 만들지 않는다. 종료 기록 PR이 병합되면 메인이 R-8로 이 pane을 닫는다. 다음 goal은 시작하지 않는다.
-- 다음 행동: 이 기록까지 commit·push → 종료 기록 PR과 CI → DIRTY면 아래 절차로 최신 main 통합 → 메인에 승인 묶음.
+- 4ea2bfb 뒤 메인 지시: `msg_fbb93c6e8927`(E/`lead-opus/mail-2.json`)은 밤사이 PR 체크포인트로 진행하되 병합은 PR별 사용자 승인 뒤에만 하라고 전달했다. `msg_d840b8f7193d`(E/`lead-opus/mail-3.json`)는 `gh pr create`·`gh pr merge`가 사용자 확인 창 대상이라 PR 생성은 아침에 하라고 알렸다. `msg_4e5d009d632d`(E/`lead-opus/mail-4-message.json`)는 push 단독 실행과 delta 문서 실사를 허용했다.
+- push 보류: 첫 push 시도는 PR 생성과 묶여 확인 창이 닫히며 거절됐다. 메인은 이를 메인의 Esc였다고 밝혔다. 다음 push 시도는 Claude Code auto mode 분류기가 막았다. 사용자가 이 pane에서 허용하기 전에는 push하지 않는다.
+- delta 문서 실사: 신규 Opus Task `task_25974da163c7`/Dispatch `ctx_47f992dde403`가 e5690a3→4ea2bfb를 **차단(결함 #1, 낮음)**으로 판정했다. 원문은 E/`closeout-delta-review/verdict.md`(SHA256 `0696E25616C69C31F659D8E9826E82DD83057ADB846EDFAF921602B1044E67D2`)다. 이 절의 원시 표시와 아래 #2~#4·관찰 수정이 그 대응이다. 이 수정 commit의 재실사 결과는 goal에 다시 쓰지 않고 E/`closeout-delta-review-2/`와 메인 승인 묶음으로 전달한다.
+- 남은 순서: 수정 commit의 신규 Opus 재실사 → 사용자 허용 뒤 push → 아침에 사용자 확인 창에서 종료 기록 PR 생성과 CI → DIRTY면 아래 절차로 최신 main 통합 → 메인에 승인 묶음.
 
 ### 리드 교체 인계 — 작업자가 빈 시점에 즉시 Opus로 전환
+
+이 블록은 이전 Codex 리드가 e5690a3 시점에 남긴 인계 기록이다. 현재 상태와 남은 순서는 위 새 리드 절을 따른다.
 
 메인 `msg_e832db7f29b8`(2026-10-05T14:23:54Z, E/`closeout-review-done-ack.json`)에 따라 이 Astra는 **종료 기록 PR을 열지 않고 인계한다**. 진행하던 검증자는 정산·close했고 새 작업자는 발행하지 않는다. 다음 리드 `claude-opus-5-5` xhigh를 메인이 열며, 같은 Run을 `orca orchestration run-use`로 이어받는다. 이 결정은 과거 “현재 goal 종료 뒤 교체” 계획을 대체한다.
 
@@ -60,7 +65,7 @@ PR1은 새 workflow와 진입/goal 기록이다. 제품·기존 검사 정책·R
 - Git 미커밋: 이 `goal.md` 한 파일. 검증 후 판정·참조 보완·메인 결정·인계를 기록했다. 커밋하지 않고 넘기며 **새 리드가 이 branch의 유일 commit/push 담당**이 된다. CURRENT 변경은 위 HEAD에 포함돼 있다.
 - PR187은 merge `635865038e174ee5591530f6bd83e2e698e0b077`로 병합됐다. 종료 기록 branch는 아직 push하지 않았고 종료 기록 PR도 없다.
 - 작업자: E/`lead-handoff-tasks.json`·`lead-handoff-workers.json`의 Task/Dispatch 7개는 모두 완료다(제품 통과와 생명주기 완료는 별개). E/`lead-handoff-terminals.json`에서 이 worktree에는 Astra pane만 남았다. 역사 Run 메타데이터는 보존된다.
-- 대기: 우편함 exec66244는 완료·exit0을 회수했다. 새 우편함 대기나 `gh run watch`는 열지 않았으며 인계 후 다시 시작하지 않는다.
+- 대기: 마지막 우편함 대기(출력 원시 E/`closeout-review-longwait-1.json`)는 완료·exit0을 회수했다. 새 우편함 대기나 `gh run watch`는 열지 않았으며 인계 후 다시 시작하지 않는다.
 - E: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active/.backups/verification/2026-10-05-architecture-tests-ci/`(Git 제외 로컬 근거).
 
 다음 행동은 새 identity/Run 연결 확인 → 미커밋 diff·아래9항의 판정/원시 대조 → 종료 기록 PR 준비다. 검증 후 추가한 현재 기록을 고정 e5690a3의 검토본으로 주장하지 않는다. 새 제품 구현·추가 Gardener·다음 goal은 시작하지 않는다.
@@ -76,11 +81,11 @@ Gardener 후보 두 개(아래 다음 계획 후보)는 최종 승인 묶음에 
 ### 적용 중인 사용자 결정
 
 - 메인 `msg_04c32f941129`(2026-10-05T14:18:43Z, E/`closeout-review-wait-4.json`)의 전달 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」. 리드 Opus xhigh·구현 Sol max·독립 신규 Opus이며 AGENTS 문구 반영은 Rules 후속 범위다.
-- **교체 시점은 최신 결정으로 대체:** 메인 `msg_e832db7f29b8`의 전달 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 교체 시점 앞당기기 → A 작업자가 빈 시점에 바로 교체」. 작업자가 모두 끝났으므로 지금 인계한다. 메인 전달을 이 세션의 사용자 직접 입력으로 격상하지 않으며 새 리드가 이미 기동됐다고 주장하지 않는다.
+- **교체 시점은 최신 결정으로 대체:** 메인 `msg_e832db7f29b8`의 전달 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 교체 시점 앞당기기 → A 작업자가 빈 시점에 바로 교체」. 작업자가 모두 끝나 그 시점에 인계했다. 메인 전달을 사용자 직접 입력으로 격상하지 않는다. 인계 기록 당시에는 새 리드가 아직 기동되기 전이었다.
 
 메인 `msg_7b2085ef0fec`(2026-10-05T10:58:02Z)는 이 범위를 사용자 사전 결정과 일치한다고 대조하고 구현자 발행을 지시했다. 전체 수집·기존 opt-in 유지·skip/expected failure 분리·0건/발견 오류 비통과에 동의했다. 메인의 범위 대조이며 새 사용자 직접 입력이나 병합 승인은 아니다. 원문은 근거 폴더의 `scope-wait-1.json`이다.
 
-새 Run `run_3abaa3ef999c`, coordinator `term_b6c748f5-f8bd-4532-acb4-14df49bf8c79`다. 첫 독립 Opus의 NOT PASS 결함 #1을 새 Sol이 수정했고 신규 Opus의 로컬 강 재검증을 통과했다. [187 - Architecture 전체 테스트 PR CI](https://github.com/bass131/dawnholder-server/pull/187)는 실제 CI 네 검사 성공·메인 R-2·사용자 개별 승인 뒤 head `e93443a8894a51af22f77fcc185f82442f217e6a`를 병합했다. merge `635865038e174ee5591530f6bd83e2e698e0b077`의 main 반영은 아래 7항, Gardener 결과·정산은 8항에 있다. 현재 branch `docs/architecture-tests-ci-closeout-20261005`에서 발행 이후 기록과 이 인계를 별도 종료 기록 PR로 통합한다. 그 PR도 독립 문서 실사와 별도 사용자 병합 승인이 필요하다. 종료 점검·R-8이 남았으며 다음 goal은 착수하지 않는다. 이전 Run·Task·Dispatch를 재사용하지 않는다.
+새 Run `run_3abaa3ef999c`의 당시 coordinator는 `term_b6c748f5-f8bd-4532-acb4-14df49bf8c79`였다(현재는 위 새 리드 절). 첫 독립 Opus의 NOT PASS 결함 #1을 새 Sol이 수정했고 신규 Opus의 로컬 강 재검증을 통과했다. [187 - Architecture 전체 테스트 PR CI](https://github.com/bass131/dawnholder-server/pull/187)는 실제 CI 네 검사 성공·메인 R-2·사용자 개별 승인 뒤 head `e93443a8894a51af22f77fcc185f82442f217e6a`를 병합했다. merge `635865038e174ee5591530f6bd83e2e698e0b077`의 main 반영은 아래 7항, Gardener 결과·정산은 8항에 있다. 현재 branch `docs/architecture-tests-ci-closeout-20261005`에서 발행 이후 기록과 이 인계를 별도 종료 기록 PR로 통합한다. 그 PR도 독립 문서 실사와 별도 사용자 병합 승인이 필요하다. 종료 점검·R-8이 남았으며 다음 goal은 착수하지 않는다. 이전 Run·Task·Dispatch를 재사용하지 않는다.
 
 ## 진척 단계
 
@@ -89,7 +94,7 @@ Gardener 후보 두 개(아래 다음 계획 후보)는 최종 승인 묶음에 
 - [x] 독립 재검증
 - [x] PR 발행·실제 CI 확인
 - [x] PR187 병합 승인·병합
-- [>] 결과 기록·종료 — Gardener·종료 문서 실사 완료, 새 Opus 리드가 이어받음. 종료 기록 PR·개별 승인·전체 goal 종료 점검이 남음
+- [>] 결과 기록·종료 — Gardener·종료 문서 실사(e5690a3) 완료, 새 Opus 리드가 이어받음. 사후 기록 delta 실사(1회 차단, 수정 뒤 재실사)·push·종료 기록 PR·개별 승인·전체 goal 종료 점검이 남음
 
 메인 `msg_f528e0003d13`(2026-10-05T11:20:40Z)의 현황판 진척 표기 요청을 Sol 쓰기 종료 뒤 다음 goal 버전에 반영했다. Sol 계약의 이전 goal/hash는 근거 폴더 `goal-sol-v1.md`로 보존하고 신규 검증에는 이 버전을 고정한다.
 
@@ -161,7 +166,7 @@ artifact `architecture-tests-37313558262-1`(ID11346982122)은 파일15개·ZIP19
 
 Astra는 병합 전 조회에서 정확 head·OPEN·draft 아님·CLEAN·네 검사 SUCCESS·자동 병합 없음을 확인했다(`pr187-premerge-fresh.json`). 이 파일에는 조회 JSON 본문만 있고 호출 시각·명령·exit 메타데이터는 없다. Gardener가 지적한 근거 한계이며 과거 호출 시각을 새로 계측했다고 쓰지 않는다. 지정 명령 `gh pr merge 187 --merge --match-head-commit e93443a8894a51af22f77fcc185f82442f217e6a`은 exit0이었다. 실제 병합 시각 `2026-10-05T13:46:16Z`, merge commit `635865038e174ee5591530f6bd83e2e698e0b077`이며 fetch한 origin/main과 동일하고 ancestor 검사 exit0을 확인했다. 원시는 `pr187-merge-invocation.json`·`pr187-merged.json`·`pr187-main-reflection.json`이다. 자동 병합 예약과 브랜치 삭제는 수행하지 않았다.
 
-제품 완료조건과 PR187 병합은 충족했다. 최신 main `6358650`에서 종료 기록 branch를 만들고 기존 로컬 사후 goal 기록을 보존해 옮겼다. CURRENT에서는 CodeMap의 branch만 갱신했다. 이 PR의 대상은 CURRENT·goal 두 문서이며 제품·테스트·workflow 변경은 없다. 문서 실사 등급이며 최종 검증 commit 기준의 파일·줄 수는 `closeout-final-diff.json`에 남긴다. 앞선 `closeout-diff.json`은 중간 편집 상태의 과거 근거로 보존한다. R-7 구현 전 설계 시범은 코드/새 설계가 없어 해당하지 않는다. 이 기록의 원시 수치·출처·승인·절차 사고 처리·다음 리드 경계를 신규 Opus가 독립 실사한다.
+제품 완료조건과 PR187 병합은 충족했다. 최신 main `6358650`에서 종료 기록 branch를 만들고 기존 로컬 사후 goal 기록을 보존해 옮겼다. CURRENT에서는 CodeMap의 branch만 갱신했다. 이 PR의 대상은 CURRENT·goal 두 문서이며 제품·테스트·workflow 변경은 없다. 문서 실사 등급이며 e5690a3 검토본 기준의 파일·줄 수는 `closeout-final-diff.json`이다. 그 뒤 commit의 수치는 재개 지점의 새 리드 절과 그 근거를 따른다. 앞선 `closeout-diff.json`은 중간 편집 상태의 과거 근거로 보존한다. R-7 구현 전 설계 시범은 코드/새 설계가 없어 해당하지 않는다. 이 기록의 원시 수치·출처·승인·절차 사고 처리·다음 리드 경계를 신규 Opus가 독립 실사한다.
 
 **적용한 운영 해석:** 메인 `msg_ccd16077ebfa`(2026-10-05T13:50:16Z, `closeout-mail-1.json`)는 제품 PR187 병합과 로컬 결과 기록이 끝났으므로 지금 Gardener를 수행하고 그 결과를 종료 기록 PR 하나에 담도록 판단했다. 종료 기록 PR은 결과를 원격에 통합하는 기록 단계이며 이 해석을 새 규칙·정본 변경이나 사용자 직접 결정으로 격상하지 않는다.
 
@@ -173,14 +178,14 @@ Astra는 병합 전 조회에서 정확 head·OPEN·draft 아님·CLEAN·네 검
 
 - 원문은 결함 #1 확정 실패1회·수정/재검증·실제 CI 성공·경고·harness 실패·절차 편차를 구분했다. 명시적 경고 억제는 선택한 workflow 원문 검사에서 관측되지 않았으며 stock unittest의 ResourceWarning7건과 runner의 가시성 차이는 기존 O-6로 남았다. 허용 밖 임시 쓰기는 이 goal에서 확인한1건이고 메인의 다른 파트 포함3건 진술과 합산하지 않았다. Gardener의 자체 PowerShell 경로 읽기 실패도 제품 실패로 세지 않는다.
 - Astra는 보호67파일 hash 불일치0·HEAD/status 보존, 실제 harness4파일의366+351+1274+527=2518줄과 `.backups/` Git 제외, 선택한 실패 원시를 직접 대조했다(`gardener-astra-source-check.json`). 허용 출력은 `gardener/report.md` 한 파일이며 provider의 자동 기록과 의도적 파일 쓰기를 구분했다. 선택한 보호 집합 밖 전체 불변이나 Git metadata 무쓰기를 단정하지 않는다.
-- 비차단 문서 지적4건을 보존한다. 중간 diff 수치의 시차는 최종 commit 뒤 새 `closeout-final-diff.json`으로 해소한다. 병합 전 조회의 메타데이터 누락은 위7항에서 한계를 공개한다. 계약의 “FEATURE_MAP의 Architecture 항목”은 실제 없는 항목을 지시한 Astra 오기로, `msg_8991793d578b`에서 인정하고 동일 계약의 goal/workflow를 진입점으로 사용했다. 고정 계약은 보존하고 새 문서 실사 계약은 실제 존재하는 진입점을 지정한다. BACKLOG의 이미 구현된 CI 후보 문구는 이번 두 문서 밖이라 메인에게 정비 주체와 후속 처리로 전달한다.
+- 비차단 문서 지적4건을 보존한다. 중간 diff 수치의 시차는 e5690a3 commit 뒤 새 `closeout-final-diff.json`으로 해소했다. 이후 head의 수치는 재개 지점을 따른다. 병합 전 조회의 메타데이터 누락은 위7항에서 한계를 공개한다. 계약의 “FEATURE_MAP의 Architecture 항목”은 실제 없는 항목을 지시한 Astra 오기로, `msg_8991793d578b`에서 인정하고 동일 계약의 goal/workflow를 진입점으로 사용했다. 고정 계약은 보존하고 새 문서 실사 계약은 실제 존재하는 진입점을 지정한다. BACKLOG의 이미 구현된 CI 후보 문구는 이번 두 문서 밖이라 메인에게 정비 주체와 후속 처리로 전달한다.
 - release의 external_terminal/retained 뒤 같은 incarnation `5678d0be-15f7-4598-98dd-ec7a1dd473cc`·idle·완료 화면·빈 prompt를 확인해 close했다(ptyKilled true). 정산은 `gardener-release.json`·`gardener-end-idle.json`·`gardener-end-show.json`·`gardener-end-screen.json`·`gardener-close.json`이며 검토 goal은 `goal-gardener-input.md`에 보존했다. 다음 실사는 새 Opus에게만 발행한다.
 
 ### 9 - 종료 문서 실사 결과
 
 신규 Opus Task `task_9ed1d2a927c8`/Dispatch `ctx_59cf04f7b9cd`는 `msg_7689134d4f02`(2026-10-05T14:22:13Z, `closeout-review-longwait-1.json`)로 고정 HEAD `e5690a3801f71be7c347c92f7f005fc31343108e`의 CURRENT·goal 두 문서(+58/-5)를 **문서 실사 통과**로 판정했다. 원문 `closeout-review/verdict.md` SHA256 `90B43D81E3CDF14F713B51F88802ACF39A6FC9B7D8D3777E15C39BA0CDBF31FD` 전체150줄과 메모를 Astra가 읽었다. 고정80파일 불일치0·HEAD/status 보존·낮은 결함 #1의 실제 incarnation/idle 값을 대조했다(`closeout-review-astra-source-check.json`). 제품/테스트/CI 재실행이나 추가 CI 감사가 아니다.
 
-같은 incarnation `b98bcdd9-0f62-4886-974b-7c4747ba18d8`·idle·완료 화면·빈 prompt 확인 뒤 release/close했다. 근거는 `closeout-review-{release,end-idle,end-show,end-screen,close}.json`이며 판정 입력은 `goal-closeout-review-input.md`에 보존했다. 검증 후 낮은 참조 누락 #1의 두 경로와 메인 결정·인계를 이 goal에 기록했다. 이 사후 기록은 검토본 e5690a3과 구분한다. 설계 관찰1~5는 원문에 보존하고 관찰1의 최종 상태 기록 위치 결정은 재개 지점에 남긴다.
+release 뒤 같은 incarnation `b98bcdd9-0f62-4886-974b-7c4747ba18d8`·idle·완료 화면·빈 prompt를 확인해 close했다. 근거는 `closeout-review-{release,end-idle,end-show,end-screen,close}.json`이며 판정 입력은 `goal-closeout-review-input.md`에 보존했다. 검증 후 낮은 참조 누락 #1의 두 경로와 메인 결정·인계를 이 goal에 기록했다. 이 사후 기록은 검토본 e5690a3과 구분한다. 설계 관찰1~5는 원문에 보존하고 관찰1의 최종 상태 기록 위치 결정은 재개 지점에 남긴다.
 
 ## 다음 계획 후보
 
@@ -199,6 +204,6 @@ Gardener의 정리 후보는 두 개이며 원문 `gardener/report.md`의 「정
 
 **다음 리드는 Opus 시범**이다. 메인 `msg_17b8549e5ebd`(2026-10-05T13:03:28Z)가 메인 pane에 Enter로 제출된 사용자 결정을 전달했다. 사용자 원문은 「대시보드 결정 응답: 1) 모델 라우팅 - 파트 리드를 Opus로 바꾸는 시범 → A 리드 Opus xhigh, 구현은 Sol max 유지」다. 메인이 전달한 결정을 이 세션의 사용자 직접 입력으로 격상하지 않는다. 원문 수신은 `ci-wait-1.json`이고 수신 회신은 `msg_df1dbf962d79`다. 회신의 Orca inbox 원본 레코드를 사후 보존한 `next-lead-reply-recovered.json`은 최초 send receipt와 구분한다.
 
-최초 계획은 현재 goal을 Astra가 끝낸 뒤 교체하는 것이었다. **재개 지점의 최신 메인 전달 `msg_e832db7f29b8`가 교체 시점을 대체했으므로 작업자가 빈 지금 같은 goal을 새 Opus 리드에게 인계한다.** 구현은 `gpt-6.1-sol max`, 독립 검증은 신규 Opus를 유지한다. 새 리드 기동은 메인이 맡고 현재 런타임 모델이 이미 바뀌었다고 주장하지 않는다.
+최초 계획은 현재 goal을 Astra가 끝낸 뒤 교체하는 것이었다. **재개 지점의 메인 전달 `msg_e832db7f29b8`가 교체 시점을 대체했으므로 작업자가 빈 시점에 같은 goal을 새 Opus 리드에게 인계했다.** 구현은 `gpt-6.1-sol max`, 독립 검증은 신규 Opus를 유지한다. 새 리드 기동은 메인이 맡았고 실제 진입은 재개 지점의 새 리드 절에 있다.
 
 다음 리드는 위의 열린 후속 후보와 `architecture-tests.yml`의 CodeMap 소유 경계를 이어받는다. Rules는 `code-rules.yml`과 npm 경고 작업을 소유하며 기존 Architecture 제품/tests·module-boundaries 정책을 이번 CI goal에서 넓히지 않았다. 종료 시 실제 Run/Task와 CI 상태를 다시 대조해 남은 작업 없음 여부를 로컬 E에 기록한다(재개 지점의 메인 결정). 이 기록 시점에는 PR187 병합과 CI 네 검사 성공, Gardener·앞선 작업자 정산·종료가 완료됐지만 coordinator Run `run_3abaa3ef999c`의 종료 기록 PR·종료 점검·R-8 절차가 남아 있어 종료·인계 완료를 주장하지 않는다. 이후 역사 Run 메타데이터의 보존과 활성 Task/Dispatch가 없다는 관측을 구분한다.
