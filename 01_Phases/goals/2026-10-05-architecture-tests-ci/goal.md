@@ -43,16 +43,16 @@ PR1은 새 workflow와 진입/goal 기록이다. 제품·기존 검사 정책·R
 
 메인 `msg_7b2085ef0fec`(2026-10-05T10:58:02Z)는 이 범위를 사용자 사전 결정과 일치한다고 대조하고 구현자 발행을 지시했다. 전체 수집·기존 opt-in 유지·skip/expected failure 분리·0건/발견 오류 비통과에 동의했다. 메인의 범위 대조이며 새 사용자 직접 입력이나 병합 승인은 아니다. 원문은 근거 폴더의 `scope-wait-1.json`이다.
 
-새 Run `run_3abaa3ef999c`, coordinator `term_b6c748f5-f8bd-4532-acb4-14df49bf8c79`다. 첫 독립 Opus의 NOT PASS 결함 #1을 새 Sol이 수정했고 신규 Opus의 로컬 강 재검증을 통과했다. 현재는 PR 발행·실제 CI 확인 단계이며 병합은 미수행이다. 실제 Actions 결과는 확보 후 별도 기록하고 로컬 통과와 구분한다. 이전 Run·Task·Dispatch를 재사용하지 않는다.
+새 Run `run_3abaa3ef999c`, coordinator `term_b6c748f5-f8bd-4532-acb4-14df49bf8c79`다. 첫 독립 Opus의 NOT PASS 결함 #1을 새 Sol이 수정했고 신규 Opus의 로컬 강 재검증을 통과했다. [187 - Architecture 전체 테스트 PR CI](https://github.com/bass131/dawnholder-server/pull/187)는 실제 CI 네 검사 성공·메인 R-2·사용자 개별 승인 뒤 head `e93443a8894a51af22f77fcc185f82442f217e6a`를 병합했다. merge `635865038e174ee5591530f6bd83e2e698e0b077`의 main 반영은 아래 7항, Gardener 결과·정산은 8항에 있다. 현재 branch `docs/architecture-tests-ci-closeout-20261005`에서 발행 이후 기록과 이 인계를 별도 종료 기록 PR로 통합한다. 그 PR도 독립 문서 실사와 별도 사용자 병합 승인이 필요하다. 종료 점검·R-8이 남았으며 다음 goal은 착수하지 않는다. 이전 Run·Task·Dispatch를 재사용하지 않는다.
 
 ## 진척 단계
 
 - [x] 범위·goal 확정
 - [x] workflow 구현과 자체 점검 — 독립 결함 #1 수정 포함
 - [x] 독립 재검증
-- [>] PR 발행·실제 CI 확인
-- [ ] 병합 승인·병합
-- [ ] 결과 기록·종료
+- [x] PR 발행·실제 CI 확인
+- [x] PR187 병합 승인·병합
+- [>] 결과 기록·종료 — Gardener 완료, 종료 기록 PR·종료 점검·R-8 대기
 
 메인 `msg_f528e0003d13`(2026-10-05T11:20:40Z)의 현황판 진척 표기 요청을 Sol 쓰기 종료 뒤 다음 goal 버전에 반영했다. Sol 계약의 이전 goal/hash는 근거 폴더 `goal-sol-v1.md`로 보존하고 신규 검증에는 이 버전을 고정한다.
 
@@ -99,6 +99,46 @@ Opus Task `task_789f0cef8c0f`/Dispatch `ctx_86ceb6e0214f`는 구현 Task `task_f
 - release 뒤 같은 incarnation `4c784277-fc13-40c7-9296-ada9063d642d`·idle·완료화면·빈 prompt를 확인해 close했다(ptyKilled true). 근거는 `review-2-release.json`·`review-2-before-close.json`·`review-2-close-screen.json`·`review-2-close.json`이다. 검증 입력 goal은 `goal-review-2-input.md`에 보존했다.
 - 실제 GitHub 호스트·checkout/setup-python/upload-artifact·PR merge checkout과 원격 artifact는 아직 미실행이다. 로컬 강 통과를 실제 PR CI나 전체 goal 완료로 표현하지 않는다. 신규 PR을 발행한 뒤 그 원시와 현재 workflow 동일성을 새 독립 Opus가 확인한다.
 
+### 5 - PR187 실제 CI 성공과 원시 확인
+
+[architecture-tests run37313558262](https://github.com/bass131/dawnholder-server/actions/runs/37313558262)는 PR187 HEAD `e93443a`의 pull_request 실행이며 **completed/success**다. 실제 checkout·setup-python3.14.4·tests·finalize·upload가 모두 성공했다. code-rules·module-boundaries·dotnet-tests도 성공했다. Architecture 원시는 `pr-ci-1/run-final.json`·`run-api.json`·`jobs-api.json`, 네 검사 최신 조회는 `pr-checks-approval-source.json`이다. 다른 세 workflow의 내부 결과까지 이 goal에서 독립 감사했다고 확대하지 않는다.
+
+PR 임시 merge `9807351b30e53127238132816e43a74c64c81fd6`의 부모는 base `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`과 PR head `e93443a8894a51af22f77fcc185f82442f217e6a`다. 검증 HEAD·PR head·임시 merge의 workflow Git blob은 모두 `bb62da66fc39bac3ea6103d29bf804fdf1496415`다(`pr-ci-1/source-objects.json`). artifact의 expected/actual checkout SHA도 이 merge SHA와 일치한다.
+
+artifact `architecture-tests-37313558262-1`(ID11346982122)은 파일15개·ZIP19226bytes이며 원격 digest와 다운로드 ZIP의 SHA256 `1676DA29016A305B8A867B77ADEF026D2D2F63D9DAAD87D5A089499BFEC96A97`가 일치한다. 로컬 보존은 `pr-ci-1/artifact.zip`·`artifact/`, 다운로드 명령/시각/exit는 `download-invocation.json`이다. raw result는 **199수집, 85실행, 정상성공82, skip114, expected failure3, 실패/오류0**이고 process·finalize exit0이다. 실행 시작/끝의 원시 문자열은 `2026-10-05T13:01:19.583031+00:00`~`2026-10-05T13:09:00.086554+00:00`이며 로컬 측정과 성능 비교로 확대하지 않는다. Actions 업로드14일 보존 설정과 현재 다운로드 성공을 실제 만료 후 가용성 보장으로 표현하지 않는다.
+
+로그 `pr-ci-1/logs-attempt.txt`에서 checkout/upload action의 Node20 폐기·Node24 강제 실행 안내와 upload의 url.parse(DEP0169)·punycode(DEP0040) deprecation 경고가 관측됐다. 해당 run은 성공했고 기존 Rules npm EBADENGINE과 다른 상위 action 경고다. 현재 완료조건을 막지 않아 후속 후보로 남긴다. 실제 원격 성공 경로를 확인했으며 실패·취소 경로의 원격 재현 실적으로 확대하지 않는다. 그 실패 전파 검증은 앞선 로컬 독립 fixture 근거로 구분한다. 아래 문서 실사는 이 CI를 새로 실행하거나 추가 감사하는 작업이 아니다.
+
+### 6 - 추가 감사의 절차 사고와 문서 교정
+
+추가 CI 감사 Opus Task `task_351c552a3217`/Dispatch `ctx_cea667e33876`는 `msg_d48b8895ee03`(2026-10-05T13:30:24Z)로 쓰기 종료를 보고했다. 요청·최초 실행은 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. 원문 `pr-ci-review/verdict.md` SHA256 `9947E30768954889B38105E962B0618FD2D3EB146A156AF23CBFB231AD9BBBF2` 전체를 Astra가 읽었다. **이 추가 감사 판정은 PR 통과 근거에서 제외한다.**
+
+- 계약은 `pr-ci-review/` 아래만 쓰도록 했지만 검증자가 Git Bash `/tmp/x_local.txt` 생성·삭제를 스스로 밝힌 뒤 결론에 “적용 규칙 위반 없음”이라고 적었다. 해당 임시 경로의 사전 부재와 소유는 확인되지 않았고 영향 없음으로 단정하지 않는다. Astra는 모순을 메인 `msg_a667ee7c270b`로 즉시 보고했다. `pr-ci-review/context.md`와 판정의 원문은 그대로 보존한다.
+- 메인 `msg_34bd1fd959e6`(2026-10-05T13:33:21Z, `pr-ci-review-done-ack.json`)의 운영 판단은 이 추가 감사 판정 제외·새 CI 재감사 생략이다. 정본의 독립 구현 검증은 기존 `review-2/verdict.md` 로컬 강 검증이고, 실제 CI는 Astra가 원시를 확인한 뒤 메인이 승인 전에 R-2 표본을 대조한다. 이 운영 판단을 사용자 결정이나 병합 승인으로 격상하지 않는다. 메인은 같은 유형 세 번째 사례를 Rules 후속 후보에 추가한다고 알렸으며 여기서는 사례만 기록한다.
+- 유효한 문서 지적 #2는 Astra가 반영했다. PowerShell 기본 JSON 파싱이 UTC 문자열을 KST로 변환했는데 이전 goal이 이를 원시 시각이라고 잘못 불렀다. 같은 시점이며 측정값은 바뀌지 않았다. 원시의 정확한 UTC 문자열로 위 5항을 교정하고, 수집 경계에서 `ConvertFrom-Json -DateKind String`을 사용한다. 최초 사례로 goal에 남기며 새 전역 반복 규칙은 만들지 않는다. 기존 파생 `pr-ci-1/astra-artifact-check.json`과 당시 goal `goal-pr-ci-review-input.md`는 덮어쓰지 않는다. 교정본은 종료 기록 PR의 문서 실사 대상으로 남긴다.
+- 원문 전체와 선택 원시 대조 후 고정51개 leaf 불일치0을 확인했다(`pr-ci-review-astra-source-check.json`). release의 external_terminal/retained 뒤 같은 incarnation `16ae25ea-07f4-4f69-9c55-f75a6290a3f3`·idle·빈 prompt를 확인해 정확 pane을 close했다(ptyKilled true). `pr-ci-review-release.json`·`pr-ci-review-close-screen.json`·`pr-ci-review-close.json`이 정산 근거다. 원시 관측은 참고로 보존하되 이 절차 사고를 통과라고 인용하지 않는다.
+
+### 7 - PR187 사용자 승인 병합과 종료 기록
+
+메인 `msg_365199ec3452`(2026-10-05T13:45:19Z)가 전달한 사용자 원문은 「대시보드 결정 응답: 1) PR187 - Architecture 전체 테스트 PR CI 병합 승인 → A 이 head로 병합 승인 (head e93443a8894a51af22f77fcc185f82442f217e6a)」다. 메인이 전달한 결정이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. 메인은 전달 전에 `review-2` 판정 hash·결론과 actual CI run의 head·artifact digest를 직접 대조했다고 알렸다. 이는 메인의 R-2 보고이며 Astra의 별도 검증 실적으로 합산하지 않는다. 원문은 `pr187-user-approval.json`이다.
+
+Astra는 병합 전 조회에서 정확 head·OPEN·draft 아님·CLEAN·네 검사 SUCCESS·자동 병합 없음을 확인했다(`pr187-premerge-fresh.json`). 이 파일에는 조회 JSON 본문만 있고 호출 시각·명령·exit 메타데이터는 없다. Gardener가 지적한 근거 한계이며 과거 호출 시각을 새로 계측했다고 쓰지 않는다. 지정 명령 `gh pr merge 187 --merge --match-head-commit e93443a8894a51af22f77fcc185f82442f217e6a`은 exit0이었다. 실제 병합 시각 `2026-10-05T13:46:16Z`, merge commit `635865038e174ee5591530f6bd83e2e698e0b077`이며 fetch한 origin/main과 동일하고 ancestor 검사 exit0을 확인했다. 원시는 `pr187-merge-invocation.json`·`pr187-merged.json`·`pr187-main-reflection.json`이다. 자동 병합 예약과 브랜치 삭제는 수행하지 않았다.
+
+제품 완료조건과 PR187 병합은 충족했다. 최신 main `6358650`에서 종료 기록 branch를 만들고 기존 로컬 사후 goal 기록을 보존해 옮겼다. CURRENT에서는 CodeMap의 branch만 갱신했다. 이 PR의 대상은 CURRENT·goal 두 문서이며 제품·테스트·workflow 변경은 없다. 문서 실사 등급이며 최종 검증 commit 기준의 파일·줄 수는 `closeout-final-diff.json`에 남긴다. 앞선 `closeout-diff.json`은 중간 편집 상태의 과거 근거로 보존한다. R-7 구현 전 설계 시범은 코드/새 설계가 없어 해당하지 않는다. 이 기록의 원시 수치·출처·승인·절차 사고 처리·다음 리드 경계를 신규 Opus가 독립 실사한다.
+
+**적용한 운영 해석:** 메인 `msg_ccd16077ebfa`(2026-10-05T13:50:16Z, `closeout-mail-1.json`)는 제품 PR187 병합과 로컬 결과 기록이 끝났으므로 지금 Gardener를 수행하고 그 결과를 종료 기록 PR 하나에 담도록 판단했다. 종료 기록 PR은 결과를 원격에 통합하는 기록 단계이며 이 해석을 새 규칙·정본 변경이나 사용자 직접 결정으로 격상하지 않는다.
+
+이 해석에 따라 수행한 [Gardener](../../../00_Document/operations/ORCA.md#goal-gardener)의 결과는 아래 8항이다. 후보 제안은 규칙 채택·제품 수정·다음 goal 착수가 아니다. 현재는 신규 Opus 문서 실사→종료 기록 PR→메인 R-2→사용자 개별 병합 승인 순서로 진행한다. 메인/사용자의 종료 점검·R-8 전에는 이 전체 goal이 끝났다고 보고하지 않는다. 최종 정산과 남은 Task/Dispatch의 원시는 같은 근거 폴더에 보존하며 실제 수행 뒤 이 goal의 인계에 연결한다.
+
+### 8 - Gardener 회고와 종료 문서 준비
+
+신규 Opus Task `task_99a3ce70f4d5`/Dispatch `ctx_fc85d89f47bf`는 `msg_c166a10b2994`(2026-10-05T14:05:49Z)로 회고 완료·쓰기 종료를 보고했다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. 원문 `gardener/report.md` SHA256 `6144A93716B3D66193946370D568701C4B4746C6763C54C19CBAC1C966083E68` 267줄 전체를 Astra가 읽었다. 이는 원시를 읽는 회고이며 제품·테스트·CI 신규 실행이나 종료 문서의 최종 독립 실사가 아니다.
+
+- 원문은 결함 #1 확정 실패1회·수정/재검증·실제 CI 성공·경고·harness 실패·절차 편차를 구분했다. 명시적 경고 억제는 선택한 workflow 원문 검사에서 관측되지 않았으며 stock unittest의 ResourceWarning7건과 runner의 가시성 차이는 기존 O-6로 남았다. 허용 밖 임시 쓰기는 이 goal에서 확인한1건이고 메인의 다른 파트 포함3건 진술과 합산하지 않았다. Gardener의 자체 PowerShell 경로 읽기 실패도 제품 실패로 세지 않는다.
+- Astra는 보호67파일 hash 불일치0·HEAD/status 보존, 실제 harness4파일의366+351+1274+527=2518줄과 `.backups/` Git 제외, 선택한 실패 원시를 직접 대조했다(`gardener-astra-source-check.json`). 허용 출력은 `gardener/report.md` 한 파일이며 provider의 자동 기록과 의도적 파일 쓰기를 구분했다. 선택한 보호 집합 밖 전체 불변이나 Git metadata 무쓰기를 단정하지 않는다.
+- 비차단 문서 지적4건을 보존한다. 중간 diff 수치의 시차는 최종 commit 뒤 새 `closeout-final-diff.json`으로 해소한다. 병합 전 조회의 메타데이터 누락은 위7항에서 한계를 공개한다. 계약의 “FEATURE_MAP의 Architecture 항목”은 실제 없는 항목을 지시한 Astra 오기로, `msg_8991793d578b`에서 인정하고 동일 계약의 goal/workflow를 진입점으로 사용했다. 고정 계약은 보존하고 새 문서 실사 계약은 실제 존재하는 진입점을 지정한다. BACKLOG의 이미 구현된 CI 후보 문구는 이번 두 문서 밖이라 메인에게 정비 주체와 후속 처리로 전달한다.
+- release의 external_terminal/retained 뒤 같은 incarnation `5678d0be-15f7-4598-98dd-ec7a1dd473cc`·idle·완료 화면·빈 prompt를 확인해 close했다(ptyKilled true). 정산은 `gardener-release.json`·`gardener-end-idle.json`·`gardener-end-show.json`·`gardener-end-screen.json`·`gardener-close.json`이며 검토 goal은 `goal-gardener-input.md`에 보존했다. 다음 실사는 새 Opus에게만 발행한다.
+
 ## 다음 계획 후보
 
 범위 밖 개선은 [BACKLOG](../../../00_Document/operations/BACKLOG.md) 기존 기능 테스트 CI 후보와 연결하고 이번 workflow에 선행 구현하지 않는다. 운영툴 vitest·DB 오프라인 PowerShell·새 폴더 보존 검사·Windows 경로 예산 검사도 현재 목표 밖이다.
@@ -106,3 +146,16 @@ Opus Task `task_789f0cef8c0f`/Dispatch `ctx_86ceb6e0214f`는 구현 Task `task_f
 첫 검증의 비차단 관찰 O1~O8은 `review/verdict.md`에 보존한다. expected-failure만 있는 실행 정책, Python pin 중복, exit 상수 가독성, inline runner 책임 분리, 초기화/마감 중복, 기존 sqlite ResourceWarning, 자체 점검 중복 assertion, README/BACKLOG의 CI 인지는 후속 후보이며 결함 #1 수정에 포함하지 않는다.
 
 재검증 N-1~N-3은 `review-2/verdict.md`의 비차단 관찰이다. package `__init__.py`의 SkipTest로 하위 파일이 발견되지 않으면 exit2가 되는 N-1은 현재 suite 영향0이고 전체 파일 발견 불가를 비통과로 처리하는 이번 계약에 부합한다. Astra는 현재 동작을 수용하고 향후 package 단위 skip 도입 시 별도 분류·안내를 검토할 후보로 둔다. 잘못된 모듈명/load_tests/skip의 원인 안내 세분화(N-2), private Python hook과 pin 변경 시 재검증 의무의 주석 보강(N-3)도 현재 제품 변경으로 확대하지 않는다.
+
+Gardener의 정리 후보는 두 개이며 원문 `gardener/report.md`의 「정리 후보와 검사화」에 근거·비용·잡음·소유 경계를 보존한다. 아직 채택·구현되지 않았다.
+
+- **1 - runner 회귀 fixture의 저장소 편입**: 결함 #1과 실패 전파 fixture가 Git 제외 근거 폴더에만 있고 YAML 재생 harness4파일2518줄이 반복되는 관측을 기존 O-4에 연결한다. runner 분리와 저장소 fixture 테스트로 누락/0건/실패 전파·Python pin 변경을 검사하는 CodeMap 후속 후보다. 구현자/검증자 독립 분리는 유지하며 자기 테스트의 순환 위험과 추가 실행 비용은 후속 설계·실측이 필요하다.
+- **2 - 고정 입력 대조의 정본 읽기 전용 helper**: 이 goal의 manifest6개·별도 대조 helper2회·관련 실패2건을 기존 BACKLOG `contract-context-check` 후보에 연결한다. stdout 출력·Git 환경 설정·경로 검증·부재/읽기 실패/불일치 exit와 fixture가 제안이다. 운영 정본 helper인 만큼 Rules 소유 후보이며 CodeMap이 단독 채택하지 않는다. 다른 goal의 Gardener2 원문은 이 worktree에서 미확인이다.
+
+## 다음 goal 인계 — 전달된 사용자 결정
+
+**다음 리드는 Opus 시범**이다. 메인 `msg_17b8549e5ebd`(2026-10-05T13:03:28Z)가 메인 pane에 Enter로 제출된 사용자 결정을 전달했다. 사용자 원문은 「대시보드 결정 응답: 1) 모델 라우팅 - 파트 리드를 Opus로 바꾸는 시범 → A 리드 Opus xhigh, 구현은 Sol max 유지」다. 메인이 전달한 결정을 이 세션의 사용자 직접 입력으로 격상하지 않는다. 원문 수신은 `ci-wait-1.json`이고 수신 회신은 `msg_df1dbf962d79`다. 회신의 Orca inbox 원본 레코드를 사후 보존한 `next-lead-reply-recovered.json`은 최초 send receipt와 구분한다.
+
+현재 goal은 이 Astra가 그대로 마무리하며 중간에 리드를 바꾸지 않는다. 목표 종료/R-8 때 메인이 Astra 대신 `claude-opus-5-5` xhigh 리드를 열고 이 인계를 읽게 한다. 구현은 `gpt-6.1-sol max`, 독립 검증은 신규 Opus를 유지한다. CodeMap이 첫 시범 파트가 될 예정이라는 메인 전달이며 현재 런타임 모델이 바뀌었다는 뜻은 아니다.
+
+다음 리드는 위의 열린 후속 후보와 `architecture-tests.yml`의 CodeMap 소유 경계를 이어받는다. Rules는 `code-rules.yml`과 npm 경고 작업을 소유하며 기존 Architecture 제품/tests·module-boundaries 정책을 이번 CI goal에서 넓히지 않았다. 종료 시 실제 Run/Task와 CI 상태를 다시 대조해 남은 작업 없음 여부를 인계에 기입한다. 이 기록 시점에는 PR187 병합과 CI 네 검사 성공, Gardener·앞선 작업자 정산·종료가 완료됐지만 coordinator Run `run_3abaa3ef999c`의 종료 기록 PR·종료 점검·R-8 절차가 남아 있어 종료·인계 완료를 주장하지 않는다. 이후 역사 Run 메타데이터의 보존과 활성 Task/Dispatch가 없다는 관측을 구분한다.
