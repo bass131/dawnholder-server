@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **신규 Opus 재검증은 #1·#2·#3 해소와 #ENV-1의 하네스 원인을 확인했으나 새 보존 결함 #4로 차단이다. #4 수리의 배치·테스트 변경 경계는 메인 판단을 기다린다. PR은 미발행이며 실제 PR checkout/CI도 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **#4 수리 방안 A(새 검사기의 형제 폴더 분리)가 사용자 선택으로 승인됐다. 신규 Sol 수정→신규 Opus 재검증으로 진행하며, #4 해소 판정은 아직 없다. #1·#2·#3은 해소됐고 #ENV-1은 하네스 원인으로 확정됐다. PR은 미발행이며 실제 PR checkout/CI도 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -24,7 +24,7 @@
 
 ### 건드릴 곳
 
-- CodeMap 제품 도구와 규칙: `99_Tools/Architecture/` 안의 모듈 경계 검사 책임, 필요한 현재 입력/Roslyn 연결과 코드 가까운 `README.md`. 기존 도구를 CodeMap 이름으로 일괄 이동하지 않는다.
+- CodeMap 제품 도구와 규칙: 새 경계 검사기는 `99_Tools/ModuleBoundaries/`에 둔다(#4 사용자 선택 A, `msg_7fb35a20cd35`). 기존 `99_Tools/Architecture/`의 고정 비교 도구·테스트·과거 기록은 보존하고 README에서 별도 진입을 연결한다. 현재 입력/Roslyn 연결과 코드 가까운 안내를 함께 옮기며 기존 도구 전체를 일괄 이동하지 않는다.
 - 요구사항 테스트·fixture와 독립 테스트: `99_Tools/Architecture.Tests/`의 새 검사 관련 파일. 구현자 TDD 파일과 독립 검증자 파일의 쓰기 소유를 계약에서 구분한다.
 - CI: 신규 `.github/workflows/module-boundaries.yml` 제안. 기존 `.github/workflows/code-rules.yml`·`dotnet-tests.yml`은 수정하지 않는 경계로 Rules와 조율 중이다(`msg_19e875227fe4`). 합의 전 workflow 쓰기를 시작하지 않는다.
 - 기존 CI의 명시 등록 보존: `99_Tools/Formatting/independent-projects.json`에 새 Architecture 검사 프로젝트 항목 하나만 추가한다. CODE_CONVENTION 「C# 공백 서식」의 파트별 자기 도구 등록 권한을 따르며 Formatting 검사 코드는 변경하지 않는다.
@@ -176,3 +176,14 @@ release 뒤 동일 incarnation·idle·최종 화면을 대조하고 pane을 닫�
 release 뒤 incarnation `56c67856-20ef-4644-a494-273a10635cbc`, idle·완료 화면·빈 prompt를 확인하고 pane을 닫았다(`reverification-close.json`, ptyKilled true). **close 뒤 terminal list 재확인: 남은 작업자 pane0, 2026-10-04T21:26:01.8704615Z**(`reverification-post-close-terminals.json`). 메인 `msg_6628eaf6f1d6`은 Orca1.4.217에서 완료 pane이 새 handle로 재등장할 수 있다는 관측과, 종료 직후뿐 아니라 보고/R-8 직전 재확인을 지시했다. 재등장한 완료 pane에는 입력하지 않고 화면을 실사한 뒤 종료한다. 현재 worker는 재사용하지 않는다.
 
 #4 대안은 ① 새 검사기와 공개 진입을 Architecture 밖의 형제 책임 폴더로 이동하고 경로·CI·서식 등록·새 테스트를 갱신, ② 기존 동결 테스트의 비교 도구 소유 목록을 좁히는 변경 승인, ③ 기본 red를 알려진 한계로 수용이다. Astra는 기존 동결 자료와 기대값을 보존하는①을 권고한다. 현 goal의 명시 배치와 기존 테스트 금지 경계가 걸리므로 메인 판단 전 의존 수정을 발행하지 않는다. 이는 최종 판정 후의 제안이며 아직 채택·구현된 결정이 아니다. 비차단 설계 관찰 O8~O13과 이전7개는 판정 원문에 남기고 무관한 정리로 확장하지 않는다.
+
+### 3 - 4번 결함의 형제 폴더 분리 승인과 재개
+
+위의 대기/미채택은 당시 상태다. 메인 `msg_7fb35a20cd35`(2026-10-05T05:43:21Z, 발신 `term_072d2ee9-df16-43ce-b86c-122c9de316c0`)는 대시보드 결정 응답을 사용자가 메인 pane에서 Enter로 제출했다고 밝히며 다음 원문을 전달했다: 「2) #4 - 모듈 경계 검사기를 기존 도구 폴더 밖으로 옮길지 → A 새 검사기를 형제 폴더로 분리」. 메인이 전달한 사용자 결정으로 기록하며 이 세션의 사용자 직접 입력으로 격상하지 않는다. 원문은 `.backups/verification/2026-10-05-module-boundary-warning/relocation-main-decision.json`이다.
+
+- 새 경계 검사기12파일(기존 실행 집합에 잡힌11파일과 규칙 JSON)을 `99_Tools/ModuleBoundaries/`로 옮기고 공개 진입·runner/manifest의 상대 위치, 독립 도구 props, 전용 workflow, 서식 등록 한 항목, README와 새 검사 테스트 경로를 갱신한다. 기존 Architecture 폴더에 실행 shim을 남기지 않는다. 고정 테스트·과거 기록15파일은 수정하지 않으며 같은 고정 테스트가 수정 없이 통과해야 한다.
+- 신규 Sol max는 제품과 자기 요구사항 테스트를 맡고, 신규 Opus는 쓰기 종료 뒤 이전 독립 테스트 경로의 적응·기대값 보존 및 새 결과를 독립 판정한다. #4의 첫 확정 실패1회는 유지하며 승인 자체를 해소나 실패 횟수 초기화로 처리하지 않는다. 관련 없는 설계 관찰 정리를 추가하지 않는다.
+- upstream이 origin/main으로 잡혀 있음을 직접 확인했다. PR용 push는 반드시 `git push -u origin feat/module-boundary-warning-20261005`처럼 원격 브랜치 이름을 명시한다. 인자 없는 push를 쓰지 않는다. 이번 결정은 수리 범위 승인이고 PR별 병합 승인은 별도다.
+- 병합 승인 전 메인은 R-2로 `reverification/work/iter-g/`의 실패 원시와 당시 검증자가 `test_tool_policy_limits_and_time_are_traceable` 단정을 고친 전후 diff를 직접 대조한다. Astra는 원본 patch/소스가 확보된 범위와 재구성 여부를 구별하고 실제 경로를 최종 보고에 포함한다.
+
+재개 지시 `msg_2ea5b1ac69c6`에 따라 Orca1.4.220/runtime `120aecfa-9f94-4533-9594-48a22f1853ba`를 확인하고 기존 Run `run_04e869ec070e`를 새 Astra `term_bbb26c42-6253-452a-b2f9-a231fbf68a0c`에 generation4로 재연결했다. R-3의1.4.217 임시 확장은 종료됐으며1.4.220 ask/reply help 모두 subject 옵션이 없음을 확인했다. 기존 정상 종료 작업자는 재사용하지 않으며, 업데이트·재부팅은 새 확정 실패로 세지 않는다. 보고/R-8 직전 terminal list 재확인은 계속 적용한다. 이전 세션 종료 후 HEAD318e8a0·clean과 판정 hash 보존을 확인했고 상세 원시는 `resume-orca-1220-*`다.
