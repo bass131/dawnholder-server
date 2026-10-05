@@ -4,6 +4,35 @@
 
 Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. 최신 `origin/main` `cf9f69571e6c5833d79c56f5467cc55c62b0859c`에서 `ci/npm-engine-warning-20261005`를 만들었다. **PR1의 첫 검증은 절차 사고로 보류했고, 같은 HEAD의 신규 Opus 강 재검증을 통과한 뒤 PR188을 만들었다.** 현재 PR188 head는 main/CURRENT 통합 뒤 `68e7ba204289b57f83369b2df2c333aa5e3fe99f`다. 동일 제품 입력의 독립 판정을 유지하는 메인 판단과 제품 blob 근거는 아래 통합 기록에 있다. 새 head의 4개 CI가 모두 성공했고 사용자 병합 승인도 전달됐다. 병합 명령은 권한 확인 창에 막혀 아침에 다시 실행한다(아래 「PR188 병합 대기와 밤사이 진행」). 메인의 밤사이 지시에 따라 PR2는 PR188 위에 쌓은 `docs/operating-followup-core-20261006` branch에서 시작했다. PR2 PR 생성도 아침이다. 아래 제출 후 기록은 로컬 갱신으로 현재 PR188 head에도 포함되지 않으며 PR2 메타데이터와 신규 문서 실사에 연결한다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
+- 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
+- 근거 폴더 E: `.backups/verification/2026-10-05-ci-warning-operating-followup/`(Git 제외).
+- Astra 사전 메모: [astra-context.md](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/astra-context.md). 메인 범위 원문: [main-scope-confirmation.json](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/main-scope-confirmation.json).
+- 현재 Run `run_993867656376`, 회신 주소 `run:run_993867656376`. 이전 목표의 Run·Task·Dispatch는 재사용하지 않는다.
+
+### 리드 교체 인계 — 2026-10-05T14:27:56Z
+
+**메인 `msg_25102e277345`(14:23:54Z)의 최신 지시에 따라 현재 Astra는 인계 뒤 턴을 끝낸다.** 외부 작업자는 0명이며 신규 Sol·검증자·Gardener를 띄우지 않는다. 메인이 이 pane을 닫고 `claude-opus-5-5` 신규 리드를 기동해 같은 Run을 이어받는다. 목표 완료나 PR 병합이 아니다. 사용자 결정 원문은 아래 「적용 중인 사용자 결정」에 있다.
+
+- 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
+- Run `run_993867656376`, 회신 주소 `run:run_993867656376`. 새 리드는 메인의 기동 계약에 따라 이 Run을 run-use로 이어받고 새 terminal identity를 사용한다. 이전 handle은 실행 권한으로 재사용하지 않는다.
+- 인계하는 현 terminal `term_e76a0334-431a-4aea-88c3-4b1785c01810`, incarnation `36035400-a5b2-4d11-bb11-4216cd899e81`. 메인 현재 수신 주소 `term_072d2ee9-df16-43ce-b86c-122c9de316c0`, 확인 incarnation `3cead0a4-7c9d-47e3-bbc3-6fac5410693b`. 다음 세션은 live identity를 다시 확인한다.
+- branch `ci/npm-engine-warning-20261005`; 로컬/마지막 push HEAD `68e7ba204289b57f83369b2df2c333aa5e3fe99f`. 부모는 독립 검증 head `09f7ff1823a9568cfcca6641673deebc07e18ef1`과 main `635865038e174ee5591530f6bd83e2e698e0b077`이다.
+- PR [188 - npm engines 경고 노출](https://github.com/bass131/dawnholder-server/pull/188)은 열려 있고 **사용자 병합 승인은 없다**. 마지막 확인은 MERGEABLE·자동 병합 없음이며 후임이 승인 묶음 직전 fresh로 재확인한다. PR 본문은 E/pr1-body.md로 갱신됐으나 최종 .NET 결과는 아직 반영하지 않았다. → 이후: 본문은 14:31Z에 반영했고, 승인은 14:51Z `msg_a82fbd4155e1`로 전달됐다(아래 두 절).
+- 유일한 tracked 미커밋 파일은 **이 goal.md**다. PR 제출 이후 판정/CI·절차 사고·후속 사용자 결정·이 인계 기록이며 검증된 PR188 head를 유지하려고 제외했다. PR2에서 함께 독립 문서 실사 후 반영한다. 덮어쓰거나 PR188에 무심코 stage하지 않는다. E는 Git 제외 로컬 원시다. 이후 branch의 유일한 commit/push 담당은 신규 리드다.
+- 외부 Sol과 두 Opus는 worker_done·release·정확 pane close를 끝냈다. live worktree 목록도 현 Astra 한 개다. 재사용하지 않는다. 기존 발행 중 계약/작업자는 없다.
+- E=`.backups/verification/2026-10-05-ci-warning-operating-followup/`. 채택 판정은 `review-pr1-2/verdict.md`, SHA256 `E236F9B35076C92DB3E11C128DA4465209BF10A8B62FBFAB62B7F25FA6461A15`. 첫 `review-pr1/verdict.md`는 scratchpad 직접 쓰기와 차단0 결론의 절차 사고로 최종 통과에서 제외됐다. 삭제하지 않는다.
+- 최종 강 판정의 pwsh 자동 캐시 분류는 메인 `msg_5a76e35cb304`가 수용했다. 기존 판정의 동일 제품 적용은 `msg_a678d816f1e5`·`msg_6f8f2d376551` 운영 판단과 E/pr188-main-integration-proof.json·pr188-main-integration-remerge.diff로 연결한다. 재실행한 판정으로 주장하지 않는다.
+- 새 head의 CI 원시는 **E/pr188-68e7ba2-ci/**다. `observation.json`은 3/4 성공 상태까지이고 .NET은 pending이다. `code-rules-run.json`·`code-rules-annotations.json`·`code-rules/setup/`·`architecture-tests/result.json`·`module-boundaries.log`를 읽으면 수치/원천을 대조할 수 있다. 실제 CI checkout `557359304f154fe7864fafa21a5f5d6d8acdc06c`의 부모는 main6358650과 PR head68e7ba2(`checkout.json`).
+- 새 head 실행: code-rules `37321310874` 성공, module-boundaries `37321310614` 성공, architecture-tests `37321310621` 성공, **dotnet-tests `37321310853` / job `111800779998` 최종 미수집**. 이전 head의 .NET run `37317676334`는 새 head의 승인 근거에서 제외한다. → 이후: .NET 결과는 14:29Z에 수집했다(「새 Opus 리드 진입」 절).
+- 원시 확인 요약: 실제 Node v22.23.3/npm10.9.9·설치 exit0, warning annotation1개와 원시 EBADENGINE5줄 일치. CodeRules28/28·Orca22/22; 언어별 checker 대상0/N/A. Architecture 수집199/실행85/정상성공82/예상실패3/skip114/실패0/오류0/미발견파일0. module-boundaries 실제 소스 clean·exit0, 요구 회귀94개. 독립 로컬 실패·중단·무경고는 npm 대역으로 검증했으며 실제 CI는 경고 포함 설치 성공 사례다.
+- 열린 한계: 실제 GitHub job summary 웹 렌더는 미확인이다. report step 성공·실제 annotation·독립 로컬 렌더와 구분한다. 메인 `msg_1ca34c70d1eb`는 비차단 한계로 수용했지만 사용자 승인 요청에도 명시해야 한다. 게임/DB/Unity는 미실행이다.
+- 다음 행동 1: 메인 기동/Run 인계 확인 뒤 .NET 새 run의 최종 결과·원시 로그를 수집해 위 observation과 PR 본문을 갱신한다. 지금 Astra는 이를 기다리지 않는다. → 완료(「새 Opus 리드 진입」 절).
+- 다음 행동 2: PR188 head·전체4개checks·mergeStateStatus를 fresh 확인한다. DIRTY면 메인의 CURRENT 통합 지시대로 타 파트 줄 보존, remerge-diff/동일 제품 blob 근거, 새 head 전체 CI와 새 승인 묶음이 필요하다. 승인된 head가 바뀌면 새 개별 승인을 받는다.
+- 다음 행동 3: 메인에 PR188 정확 head·4개CI·변경 요약·원시 위치·최종 판정 원문/SHA·한계를 묶어 보낸다. 메인이 R-2 뒤 사용자 개별 병합 승인을 요청한다. **사용자는 잠들었으므로 병합 승인·Unity Editor/MCP·Procmon/SQL 등 사용자 손이 필요한 일은 아침까지 대기한다.**
+- 다음 행동 4: PR188 개별 승인/병합 뒤에만 최신 main의 새 PR2 branch로 진행한다. 이 로컬 goal diff를 안전하게 옮기고 아래 확정 범위와 E/pr2-preparation-notes.md를 사용한다. CLAUDE.md는 메인 작성/쓰기 종료 뒤 통합한다. 신규 작업자 발행은 메인 신규 리드 계약에서 확인한다. → 대체됨: 15:01Z 무렵 밤사이 결정 `msg_b9073b3b0464`·`msg_b6bee67a4609`에 따라 PR188 병합 전에 그 위에 쌓아 시작했다(「PR188 병합 대기와 밤사이 진행」 절).
+- 꼭 필요한 원천: 범위 `msg_251c879ef46a`, PR2 BACKLOG 소유 `msg_c7b3813b519b`, 완료 CI 후보 정리 `msg_f43ee6f5d226`, 통합/판정 유지 `msg_a678d816f1e5`·`msg_6f8f2d376551`, 자동캐시/summary 한계 `msg_5a76e35cb304`·`msg_1ca34c70d1eb`, 10분 대기·다섯 리드 전환 `msg_22cb1701a2cf`, **즉시 인계로 시점을 대체한 최신 결정 `msg_25102e277345`**. 각각 아래 결과/결정 및 E의 main-*.json에 연결했다.
+- 종료 조치: 10분 Orca 대기는 해당 메시지 수신으로 끝났다. 로컬 `gh run watch 37321310853` 프로세스(PID32380)는 명령줄을 확인하고 중단했다. 원격 CI는 취소하지 않았다. 새 우편함 대기나 watch를 열지 않고 메인에 인계 완료 후 턴을 끝낸다.
+
 ### 새 Opus 리드 진입 — 2026-10-05T14:29Z
 
 메인 `msg_8b304ea78b58`(14:28:42Z)로 `claude-opus-5-5` 리드가 진입했다. 발신 handle은 인계 기록의 메인 terminal·incarnation과 같다. 태그는 `[Rules Astra]`를 유지한다. 적용 근거는 아래 「적용 중인 사용자 결정」이며 AGENTS·CLAUDE 정본 반영은 다음 계획 후보다.
@@ -14,13 +43,13 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 - 14:30:08Z fresh 조회: head `68e7ba2`, base `6358650`, 4개 checks SUCCESS, MERGEABLE·CLEAN, 자동 병합 없음. 4개 요약은 E/pr188-68e7ba2-ci/observation-final.json이다. 기존 observation.json(3/4 시점)은 보존했다.
 - PR 본문의 "새 head CI 확인 중" 줄을 최종 4개 결과로 바꿨다(E/pr1-body-final.md). 편집 뒤 head 불변·CLEAN을 다시 확인했다.
 - 메인에 READY `msg_6799fd96a744`(14:32:24Z)와 승인 묶음 `msg_f024a1166d91`(14:33:19Z, E/lead-opus-entry/pr188-approval-bundle.md)을 보냈다. 사용자 개별 승인은 아직 없다.
-- 다음 행동: 우편함 대기로 승인 전달을 기다린다. 승인이 오면 같은 head·CLEAN을 재확인한 뒤 병합하고, 최신 main에서 PR2 branch를 만든다. DIRTY가 되면 `msg_6f8f2d376551` 절차를 따른다.
+- 다음 행동: 우편함 대기로 승인 전달을 기다린다. 승인이 오면 같은 head·CLEAN을 재확인한 뒤 병합하고, 최신 main에서 PR2 branch를 만든다. DIRTY가 되면 `msg_6f8f2d376551` 절차를 따른다. → 이후: 병합 명령은 확인 창에 막혔고, PR2는 밤사이 결정대로 PR188 위에 쌓았다(다음 절).
 
 ### PR188 병합 대기와 밤사이 진행 — 2026-10-05T15:42Z
 
 - 메인 `msg_a82fbd4155e1`(14:51:38Z)이 사용자 원문 「대시보드 결정 응답: 1) PR188 - npm engines 경고 노출 병합 승인 → A 이 head로 병합 승인 (head 68e7ba204289b57f83369b2df2c333aa5e3fe99f) · 2) PR189 …」를 전달했다. 메인 전달이며 직접 입력으로 격상하지 않는다. 원문 E/pr188-merge/main-approval-delivery.json.
 - 직전 fresh 확인(E/pr188-merge/pre-merge-state.json): head `68e7ba2`, OPEN·MERGEABLE·CLEAN, 4개 checks SUCCESS, 자동 병합 없음.
-- **병합 명령이 권한 확인 규칙에 막힘 → 메인이 확인 창을 닫음, 사용자 거절 아님.** `gh pr merge 188 --merge --match-head-commit 68e7ba2…`는 사용자 설정의 ask 규칙 `Bash(gh pr merge*)`에 걸렸다. 메인 `msg_b6bee67a4609`(15:01:19Z)가 Esc로 창만 닫았다. 승인과 head는 유효하며, 아침에 같은 명령을 다시 실행해 사용자가 창에서 직접 확인한다. API 직접 호출·설정 변경 같은 우회는 쓰지 않는다. 병합 직후 PR188은 OPEN·head `68e7ba2`·CLEAN 그대로임을 확인했다.
+- **병합 명령이 권한 확인 규칙에 막힘 → 메인이 확인 창을 닫음, 사용자 거절 아님.** `gh pr merge 188 --merge --match-head-commit 68e7ba2…`는 사용자 설정의 ask 규칙 `Bash(gh pr merge*)`에 걸렸다. 메인 `msg_b6bee67a4609`(15:01:19Z)가 Esc로 창만 닫았다. 승인과 head는 유효하며, 아침에 같은 명령을 다시 실행해 사용자가 창에서 직접 확인한다. API 직접 호출·설정 변경 같은 우회는 쓰지 않는다. 병합 명령이 확인 창에 막힌 뒤 `gh pr view`로 OPEN·head `68e7ba2`·CLEAN을 다시 봤으나 그 조회 원시는 보존하지 않았다(독립 실사 #3). 아침 병합 직전에 fresh로 다시 확인하고 원시를 남긴다.
 - 메인 `msg_b9073b3b0464`(14:58:54Z)가 사용자 원문 「PR로 체크포인트만 잘 만들어 놓으면 다음 작업 진행해도 되니까 할 수 있는 부분까지 해봐」를 전달했다. 메인 해석: 승인 범위 안에서는 멈추지 않고 끝난 단위를 체크포인트로 만든 뒤 다음 단위로 간다. 앞 PR이 병합 전이면 그 위에 쌓고 본문 첫 줄에 「PR### 위에 쌓음」을 쓴다. 승인된 작업의 Sol은 메인에 한 줄로 알리고 띄운다.
 - 메인 `msg_2d509db3b54b`(15:40:48Z): `gh pr create*`·`gh pr merge*`도 ask 규칙 대상이다. 밤에는 commit·push까지 하고, PR은 만들지 않고 base·head·title·body 파일만 E에 준비한다. 가능한 로컬 검사의 원시는 남기되 원격 CI 통과로 적지 않는다.
 - 다음 단위: PR2를 PR188 branch 위에 쌓아 시작한다. 원문 묶음은 E/main-overnight-messages-peek.json이다.
@@ -34,51 +63,46 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 - Sol 공식 ask `msg_c8c69bbdc6d9`(15:49:07Z): goal.md hash가 manifest와 다르다고 물었다. 원인은 Astra가 manifest 뒤에 쓴 위 발행 기록 6줄이다(HEAD blob AE59EAA3…, 디스크 6158B8CD…, numstat 6/0). 발신 `dispatch:ctx_098d7dffd487`·payload Task/Dispatch·body 태그·id=thread_id를 대조했다. 답 `msg_bf2a2976cf91`: 계약 보충 1(15:50Z)로 현재 bytes를 보충 입력으로 기록해 진행한다. Astra는 자기 진행 기록 절만 더 쓸 수 있다. 원문 E/sol-pr2-question-goal-hash*.json.
 - Sol 완료 `msg_15efebe73ff4`(16:19:53Z, worker_done succeeded). 수신 helper `check-message.mjs`는 현재 terminal·Task·Dispatch·`[Rules Sol]` 기대값으로 `allowed`/exit 0이었다(E/sol-pr2-completion-policy-*.json). 수정 파일은 허용 8개, 문서 numstat 추가 40/삭제 23이다. CLAUDE.md·goal은 Sol이 쓰지 않았다. [완료 보고](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/sol-pr2/report.md)와 실제 diff를 Astra가 읽었다. 자체점검 9항목 실패 0은 작성자 점검이며 독립 실사가 아니다.
 - Sol이 스스로 밝힌 절차 이탈: heartbeat 5분 주기를 15:51Z~16:05Z와 그 뒤 두 구간에서 지키지 못했다. 내용 있는 heartbeat `msg_47239180c586`로 알렸다. 산출물 결함이 아니라 절차 이탈로 기록하며 독립 실사에도 입력으로 준다.
-- 범위 밖 발견: CLAUDE.md 25의 현행 GameDev 두 곳(메인 반영 대상), CODE_CONVENTION 77의 현행 담당 GameDev(계약 밖 파일). 열린 질문: Unity 시트를 넘길 때 반납·해제 순서(원천 없음, 만들지 않음).
+- 범위 밖 발견: CLAUDE.md 25의 현행 GameDev 두 곳(메인 반영 대상), CODE_CONVENTION 77의 현행 담당 GameDev(계약 밖 파일). 열린 질문: Unity 시트를 넘길 때 반납·해제 순서. → 정정(독립 실사 #1): 원천은 세션 종료 때 시트 해제만 말하고, 현황판 보유 표시 해제·인계 순서는 없다(`msg_1f0a928c2d90` 「그 세션이 닫히면 시트가 풀린다」). Astra 계약이 원문 대신 이전 goal 요약을 줘서 R-5 문구에서 빠졌고, 보완 Sol이 넣는다(아래 「PR2 보완 결정」).
 - 정산: worker-release `retained`/external_terminal/processAction none. 같은 incarnation `cd4a6ea9…`의 빈 prompt를 확인한 뒤 terminal close(`ptyKilled=true`)했다. 직후 rules-active 목록은 이 리드 하나다(E/sol-pr2-release.json·before-close·close·after-close-list-raw).
 - Sol 문서는 commit `e6f5dfc`, 이 기록은 `dc87ab2`로 push했다. 메인에 「CLAUDE.md 반영 요청」 `msg_f75fbd3cff6d`(16:21:39Z, E/claude-md-request-to-main.md)를 보냈다. 메인 `msg_d8d8bf0aa049`(16:26:43Z)가 rules-active의 CLAUDE.md 25줄 한 줄만 쓰고 쓰기 종료를 알렸다. Astra가 diff 1/1·`git diff --check`를 확인하고 그대로 commit `257ecf8`했다. 메인은 CODE_CONVENTION 77줄 범위 판단에서 기본값(다음 계획 후보)을 택했다.
 
-### 리드 교체 인계 — 2026-10-05T14:27:56Z
+### PR2 독립 문서 실사 발행
 
-**메인 `msg_25102e277345`(14:23:54Z)의 최신 지시에 따라 현재 Astra는 인계 뒤 턴을 끝낸다.** 외부 작업자는 0명이며 신규 Sol·검증자·Gardener를 띄우지 않는다. 메인이 이 pane을 닫고 `claude-opus-5-5` 신규 리드를 기동해 같은 Run을 이어받는다. 목표 완료나 PR 병합이 아니다. 사용자 결정 원문은 아래 「적용 중인 사용자 결정」에 있다.
+- 고정 대상 HEAD `c1299550d6649d4ddaacab952cb92cc41a3d4efc`(push 완료), BASE PR188 head `68e7ba2`, 변경 파일 10개(문서 8 + CLAUDE + goal). 계약 E/review-pr2-contract.md v1, 고정 입력 E/review-pr2-inputs.json·review-pr2-path-check.json(astra-review-pr2-inputs.mjs, exit 0, 누락 0). 등급은 문서 실사, R-7 비대상이다. 쓰기 경계는 E/review-pr2/{context.md, verdict.md, work/}이며 scratchpad 금지 원문을 넣었다.
+- R-5대로 이 리드 pane을 split해 `claude --model claude-opus-5-5`로 열었다. 첫 화면은 선택창 없이 Opus 5.5 xhigh·rules-active였다(E/review-pr2-first-screen.json). backend는 unknown이다. worker-start: Task `task_e94988babacd`, Dispatch `ctx_06b24a231b5c`, terminal `term_71825ffe-f9db-45c8-9e34-7c82dca34397`, incarnation `6034b90c…`, `input_accepted`·turn 시작 관측(E/review-pr2-worker-start.json).
 
-- 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- Run `run_993867656376`, 회신 주소 `run:run_993867656376`. 새 리드는 메인의 기동 계약에 따라 이 Run을 run-use로 이어받고 새 terminal identity를 사용한다. 이전 handle은 실행 권한으로 재사용하지 않는다.
-- 인계하는 현 terminal `term_e76a0334-431a-4aea-88c3-4b1785c01810`, incarnation `36035400-a5b2-4d11-bb11-4216cd899e81`. 메인 현재 수신 주소 `term_072d2ee9-df16-43ce-b86c-122c9de316c0`, 확인 incarnation `3cead0a4-7c9d-47e3-bbc3-6fac5410693b`. 다음 세션은 live identity를 다시 확인한다.
-- branch `ci/npm-engine-warning-20261005`; 로컬/마지막 push HEAD `68e7ba204289b57f83369b2df2c333aa5e3fe99f`. 부모는 독립 검증 head `09f7ff1823a9568cfcca6641673deebc07e18ef1`과 main `635865038e174ee5591530f6bd83e2e698e0b077`이다.
-- PR [188 - npm engines 경고 노출](https://github.com/bass131/dawnholder-server/pull/188)은 열려 있고 **사용자 병합 승인은 없다**. 마지막 확인은 MERGEABLE·자동 병합 없음이며 후임이 승인 묶음 직전 fresh로 재확인한다. PR 본문은 E/pr1-body.md로 갱신됐으나 최종 .NET 결과는 아직 반영하지 않았다.
-- 유일한 tracked 미커밋 파일은 **이 goal.md**다. PR 제출 이후 판정/CI·절차 사고·후속 사용자 결정·이 인계 기록이며 검증된 PR188 head를 유지하려고 제외했다. PR2에서 함께 독립 문서 실사 후 반영한다. 덮어쓰거나 PR188에 무심코 stage하지 않는다. E는 Git 제외 로컬 원시다. 이후 branch의 유일한 commit/push 담당은 신규 리드다.
-- 외부 Sol과 두 Opus는 worker_done·release·정확 pane close를 끝냈다. live worktree 목록도 현 Astra 한 개다. 재사용하지 않는다. 기존 발행 중 계약/작업자는 없다.
-- E=`.backups/verification/2026-10-05-ci-warning-operating-followup/`. 채택 판정은 `review-pr1-2/verdict.md`, SHA256 `E236F9B35076C92DB3E11C128DA4465209BF10A8B62FBFAB62B7F25FA6461A15`. 첫 `review-pr1/verdict.md`는 scratchpad 직접 쓰기와 차단0 결론의 절차 사고로 최종 통과에서 제외됐다. 삭제하지 않는다.
-- 최종 강 판정의 pwsh 자동 캐시 분류는 메인 `msg_5a76e35cb304`가 수용했다. 기존 판정의 동일 제품 적용은 `msg_a678d816f1e5`·`msg_6f8f2d376551` 운영 판단과 E/pr188-main-integration-proof.json·pr188-main-integration-remerge.diff로 연결한다. 재실행한 판정으로 주장하지 않는다.
-- 새 head의 CI 원시는 **E/pr188-68e7ba2-ci/**다. `observation.json`은 3/4 성공 상태까지이고 .NET은 pending이다. `code-rules-run.json`·`code-rules-annotations.json`·`code-rules/setup/`·`architecture-tests/result.json`·`module-boundaries.log`를 읽으면 수치/원천을 대조할 수 있다. 실제 CI checkout `557359304f154fe7864fafa21a5f5d6d8acdc06c`의 부모는 main6358650과 PR head68e7ba2(`checkout.json`).
-- 새 head 실행: code-rules `37321310874` 성공, module-boundaries `37321310614` 성공, architecture-tests `37321310621` 성공, **dotnet-tests `37321310853` / job `111800779998` 최종 미수집**. 이전 head의 .NET run `37317676334`는 새 head의 승인 근거에서 제외한다.
-- 원시 확인 요약: 실제 Node v22.23.3/npm10.9.9·설치 exit0, warning annotation1개와 원시 EBADENGINE5줄 일치. CodeRules28/28·Orca22/22; 언어별 checker 대상0/N/A. Architecture 수집199/실행85/정상성공82/예상실패3/skip114/실패0/오류0/미발견파일0. module-boundaries 실제 소스 clean·exit0, 요구 회귀94개. 독립 로컬 실패·중단·무경고는 npm 대역으로 검증했으며 실제 CI는 경고 포함 설치 성공 사례다.
-- 열린 한계: 실제 GitHub job summary 웹 렌더는 미확인이다. report step 성공·실제 annotation·독립 로컬 렌더와 구분한다. 메인 `msg_1ca34c70d1eb`는 비차단 한계로 수용했지만 사용자 승인 요청에도 명시해야 한다. 게임/DB/Unity는 미실행이다.
-- 다음 행동 1: 메인 기동/Run 인계 확인 뒤 .NET 새 run의 최종 결과·원시 로그를 수집해 위 observation과 PR 본문을 갱신한다. 지금 Astra는 이를 기다리지 않는다.
-- 다음 행동 2: PR188 head·전체4개checks·mergeStateStatus를 fresh 확인한다. DIRTY면 메인의 CURRENT 통합 지시대로 타 파트 줄 보존, remerge-diff/동일 제품 blob 근거, 새 head 전체 CI와 새 승인 묶음이 필요하다. 승인된 head가 바뀌면 새 개별 승인을 받는다.
-- 다음 행동 3: 메인에 PR188 정확 head·4개CI·변경 요약·원시 위치·최종 판정 원문/SHA·한계를 묶어 보낸다. 메인이 R-2 뒤 사용자 개별 병합 승인을 요청한다. **사용자는 잠들었으므로 병합 승인·Unity Editor/MCP·Procmon/SQL 등 사용자 손이 필요한 일은 아침까지 대기한다.**
-- 다음 행동 4: PR188 개별 승인/병합 뒤에만 최신 main의 새 PR2 branch로 진행한다. 이 로컬 goal diff를 안전하게 옮기고 아래 확정 범위와 E/pr2-preparation-notes.md를 사용한다. CLAUDE.md는 메인 작성/쓰기 종료 뒤 통합한다. 신규 작업자 발행은 메인 신규 리드 계약에서 확인한다.
-- 꼭 필요한 원천: 범위 `msg_251c879ef46a`, PR2 BACKLOG 소유 `msg_c7b3813b519b`, 완료 CI 후보 정리 `msg_f43ee6f5d226`, 통합/판정 유지 `msg_a678d816f1e5`·`msg_6f8f2d376551`, 자동캐시/summary 한계 `msg_5a76e35cb304`·`msg_1ca34c70d1eb`, 10분 대기·다섯 리드 전환 `msg_22cb1701a2cf`, **즉시 인계로 시점을 대체한 최신 결정 `msg_25102e277345`**. 각각 아래 결과/결정 및 E의 main-*.json에 연결했다.
-- 종료 조치: 10분 Orca 대기는 해당 메시지 수신으로 끝났다. 로컬 `gh run watch 37321310853` 프로세스(PID32380)는 명령줄을 확인하고 중단했다. 원격 CI는 취소하지 않았다. 새 우편함 대기나 watch를 열지 않고 메인에 인계 완료 후 턴을 끝낸다.
+### PR2 독립 문서 실사 결과
 
-- 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- 근거 폴더 E: `.backups/verification/2026-10-05-ci-warning-operating-followup/`(Git 제외).
-- Astra 사전 메모: [astra-context.md](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/astra-context.md). 메인 범위 원문: [main-scope-confirmation.json](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/main-scope-confirmation.json).
-- 현재 Run `run_993867656376`, 회신 주소 `run:run_993867656376`. 이전 목표의 Run·Task·Dispatch는 재사용하지 않는다.
+- 완료 `msg_39f3f8e5950d`(16:49:25Z, worker_done succeeded). 수신 helper는 현재 terminal·Task·Dispatch·`[Rules 검증자]` 기대값으로 `allowed`/exit 0이었다(E/review-pr2-completion-policy-*.json). [판정 원문](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/review-pr2/verdict.md) SHA256 `FBED6AF4EF9A7424AB10EF613C7BE9D2B5F1D995DCE0707109BACAD6F9443C2C`. 대상은 HEAD `c129955`의 BASE..HEAD 10개 파일이다.
+- 결론은 통과다. 통과 차단 0, 비차단 결함 4다. 추가 줄 링크 38개와 변경 파일로 들어오는 anchor 링크 180개는 실패 0이다. GameDev 잔여 13줄은 모두 보존 대상이다. 세 시나리오를 따라갔고 goal 표본 14개 중 13개가 원시와 일치했다. 범위 밖 직접 쓰기는 0이다.
+- 결함 #1(낮음): R-5가 원천 `msg_1f0a928c2d90`의 「그 세션이 닫히면 시트가 풀린다」를 빠뜨렸다. 이 goal도 「원천 없음」으로 잘못 적었다. 원인은 Astra 계약이 원문 대신 이전 goal 요약을 준 것이다.
+- 결함 #2(낮음): goal-loop 「기준과 상태」의 진척 문단이 원천의 「PR 번호와 「병합」」 뜻, 단계 수 5~10개(최대 12)·이름 한글 14자 이하, 「Astra만 쓴다」를 잃었다. 원인은 같다.
+- 결함 #3·#4(낮음, Astra 기록): 「병합 직후」 확인 서술의 원시 부재, 재개 지점 하위 절의 순서와 대체 표시. 판정 뒤 이 goal의 작업 트리에서 정정했다(시각순 재배치, `→` 대체 표시, #1·#3 문구).
+- 관찰: O1 「CURRENT 자기 줄」이 표 행인지 경로 줄인지 모호, O2 공유 자원 Unity 행에서 R-5 링크 없음, O3 전환 문구가 원천 「요구하지 않는다」보다 강함, O4 Core checkout의 옛 AGENTS, O5 ORCA 191의 현재형 환경 사실, O6 `[>]` 위치. O6은 위 진척 단계에서 고쳤다.
+- 절차 이탈: Sol(약 13분·5분30초·5분25초)과 검증자(6분15초)의 heartbeat 주기 초과. 산출물 결함이 아니며 확정 실패 집계에 넣지 않는다. 처분은 메인이 정한다.
+- 정산: worker-release `retained`/external_terminal/none, 같은 incarnation `6034b90c…`의 빈 prompt 확인 뒤 close(`ptyKilled=true`). 직후 rules-active 목록은 이 리드 하나다(E/review-pr2-release.json·before-close·close·after-close-list).
+
+### PR2 보완 결정
+
+- 결정 요청 `msg_4232fed1a22e`(16:52:09Z, E/review-pr2-decision-request.md)에 메인 `msg_0f630e567b1d`(16:53:12Z, E/main-pr2-fix-decision-delivery.json)가 「A 이번 PR 보완」으로 답했다. 근거는 #1·#2가 PR2가 정본화하려는 사용자 결정 원문을 빠뜨린 것이라 완료조건 안이라는 것이다. 메인 운영 판단이며 사용자 결정이 아니다. 메인은 R-2로 판정 SHA256과 원격 head `c129955`를 확인했다.
+- 보완 범위: #1 R-5에 「그 세션이 닫히면 시트가 풀린다」, #2 진척 문단에 PR 번호와 「병합」 표기의 뜻·단계 5~10개(최대 12)·이름 한글 14자 이하·Astra만 쓴다, O1 「CURRENT 자기 줄」 명확화, O3 AGENTS 전환 문구를 원천 「중간 변경을 요구하지 않는다」로 맞춤. 새 계약은 원문을 직접 인용한다. PR 생성 전 번호 표기는 원천에 없어 만들지 않는다.
+- 나머지는 기본값이다: O2·O5·DevelopmentRecords 문구는 다음 계획 후보, heartbeat 이탈은 절차 이탈로 기록하고 확정 실패 집계에서 뺀다. #3·#4 정정은 커밋해 좁힌 재실사에 넣는다.
+- 이 goal의 진척 단계도 원문 형식에 맞췄다. PR1은 「PR188 병합」이 됐다. PR2는 PR 번호가 아직 없어 아침에 PR을 만들면 그 번호로 바꾼다.
+- 순서: 이 정정 commit → Sol 1회 → 새 Opus가 `c129955` 이후 diff만 좁게 재실사 → push → 승인 묶음. PR 생성은 아침 사용자 확인으로 한다. 메인은 Codex 주간 한도가 10-05 23:19 KST에 새로 시작돼 이번 Sol은 크레딧을 쓰지 않는다고 전달했다(메인 전달, Rules 실측 아님).
 
 ## 진척 단계
 
-- [x] 범위 확인과 최신 main 기준 확정
-- [x] 새 목표·소유 경계·PR1 계약 준비
-- [x] PR1 npm 경고 표시 구현
-- [x] PR1 독립 강 검증과 실제 CI 확인
-- [ ] PR1 사용자 승인과 병합
-- [>] PR2 운영 문서·Core 명칭 정비
-- [ ] 메인 CLAUDE.md 반영과 독립 문서 실사
-- [ ] PR2 사용자 승인과 병합
+- [x] 범위와 기준 확정
+- [x] 소유 경계·PR1 계약
+- [x] npm 경고 표시 구현
+- [x] PR1 독립 검증과 CI
+- [ ] PR188 병합
+- [x] 운영 문서·Core 정비
+- [>] CLAUDE 반영·문서 실사
+- [ ] PR2 병합
 - [ ] 결과 기록과 Gardener
-- [ ] 메인 종료 점검과 R-8 인계
+- [ ] 종료 점검과 R-8 인계
 
 ## 범위
 
@@ -200,6 +224,9 @@ PR187 병합 뒤 CURRENT의 인접한 Rules/CodeMap 줄에서 충돌이 생겼�
 - 메인 `msg_9291578c67e9`(13:50:28Z, E/main-gardener-order-candidate-delivery.json): ORCA goal-gardener의 「전체 goal의 모든 PR 병합과 결과 기록 뒤, R-8 직전」에 종료 기록 PR 포함 여부와 순서를 명시하는 후속 후보. CodeMap 질문 `msg_f763909fe3f0`에 메인은 앞 사례(PR182 → Gardener → PR184, Gardener → PR186)를 들어 「제품 PR 병합과 로컬 결과 기록 뒤 Gardener, 그 결과를 종료 기록 PR 하나에 포함」이라고 답했다(`msg_ccd16077ebfa`). 메인 전달 운영 판단으로 기록하며 현재 PR2 정본 범위는 넓히지 않는다.
 
 - PR2 작성 중 발견(E/sol-pr2/report.md, 메인 `msg_d8d8bf0aa049` 기본값 수용): `00_Document/conventions/CODE_CONVENTION.md` 77줄의 현행 등록 검사 코드 담당이 아직 GameDev다. PR2 「건드릴 곳」 밖이라 고치지 않았고, AGENTS의 Core 전환 정본으로 해석할 수 있다. 다음 계획에서 Core로 맞춘다.
-- 같은 출처의 열린 질문: Unity MCP 시트를 다음 세션에 넘길 때의 반납·연결 해제 순서는 원천이 없어 R-5에 만들지 않았다. 다음 계획에서 사용자·메인 결정과 함께 정한다.
+- 같은 출처의 열린 질문: 원천은 세션 종료 때 시트 해제만 말하고, 현황판 보유 표시 해제·인계 순서는 없다(독립 실사 #1 정정). 이 순서는 R-5에 만들지 않았다. 다음 계획에서 사용자·메인 결정과 함께 정한다.
+- 독립 실사 범위 밖 발견: `05_Management/frontend/src/DevelopmentRecords.tsx` 46줄의 화면 문구 「규칙은 GameDev 원문을 참조하세요」가 현행 이름이다. Management 소유 코드라 PR2에 넣지 않는다. 메인 `msg_0f630e567b1d`: 지금 Management에 전달하지 않고, Management 다음 goal 계획 때 메인이 넘긴다.
+- 독립 실사 관찰 O2·O5(메인 `msg_0f630e567b1d` 기본값): ORCA 「공유 자원」의 Unity 행에서 R-5 opt-in으로 가는 링크 추가, ORCA R-6 「환경 사실」 문장의 GameDev에 당시 이름 표시. 둘 다 탐색·가독성 보완이다.
+- heartbeat 주기 이탈(메인 `msg_0f630e567b1d`: 절차 이탈로 기록, 확정 실패 집계 제외): 이전 goal의 [다음 하네스 목표 입력 후보 묶음](../2026-10-05-operating-canon/goal.md#다음-하네스-목표-입력-후보-묶음) 「긴 작업의 절차 자동화와 수용 기준」(heartbeat wrapper)에 이번 원시를 더한다. 원시는 E/sol-pr2/{review,deviation,closing}-heartbeat-command.json·settlement-observation.json과 E/review-pr2/verdict.md 「자기 쓰기 감사」다. 이전 goal 파일은 고치지 않는다.
 
 위 후보는 메인이 전달한 **「계획에 오버되는 부분은 다음 계획 편성에 포함시키고, 일단 현재 작업 목표 달성 우선」** 경계에 따라 기록한 것이며 새 작업 채택/착수가 아니다.
