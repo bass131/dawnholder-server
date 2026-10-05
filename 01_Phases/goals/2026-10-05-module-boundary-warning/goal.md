@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **[182 - 서버 모듈 경계 warning 시범](https://github.com/bass131/dawnholder-server/pull/182)의 구현·독립 검증과 head `4d66ebf`의 실제 CI 3종이 통과했다. 최신 main·PR 입력은 C#105파일·경계48/48·위반0이다. #1~#5는 해소됐고 #ENV-1은 하네스 원인이다. 초기 Git 조회의 절차 이탈은 메인 `msg_7f900276388e` 결정에 따라 한계로 기록하고 제품 판정은 수용한다. 이 결과 기록 이후 head의 CI 상태와 사용자 개별 병합 승인은 별도이며 아직 병합하지 않았다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **[182 - 서버 모듈 경계 warning 시범](https://github.com/bass131/dawnholder-server/pull/182)은 사용자 승인 head `0d57dc6`로 2026-10-05T09:21:28Z 병합됐다(merge `4ab4d674b895d14c3ad2f4ff6c7e3cc2adbe1783`). 독립 검증과 최종 head CI 3종이 통과했고 main 반영을 확인했다. #1~#5 해소·#ENV-1 하네스 원인, 절차 이탈과 미확정 한계는 유지한다. 신규 Opus Gardener도 완료했으며 종료 기록의 문서 통합·메인/사용자 종료 점검이 남았다. 다음 goal은 R-8 이후 새 Astra가 시작한다.** CodeMap 표시 이름과 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` 태그를 유지한다.
 
 ## 진척 단계
 
@@ -11,10 +11,10 @@
 - [x] 검사기 폴더 분리
 - [x] 캐시 무시 설정 보완
 - [x] PR182 CI 확인
-- [>] PR182 병합
-- [ ] 결과 기록·종료
+- [x] PR182 병합
+- [>] 결과 기록·종료
 
-CI 단계의 완료 근거는 아래9절의 실제 기능 head `4d66ebf` 3종 통과다. 이후 goal 기록만 바뀐 head의 자동 CI와 사용자 승인 확인은 PR 병합 단계에서 계속한다. `[>]`는 진행 중이며 승인 또는 병합 완료를 뜻하지 않는다.
+CI 단계는 독립 검증 head `4d66ebf`와 최종 기록 head `0d57dc6`의 실제 3종 통과를 근거로 한다. 최종 head의 CI·승인·병합 근거는 아래10절에 있다. `[>]`는 현재 결과 기록·Gardener·종료 점검 진행 상태이며 전체 goal 종료를 뜻하지 않는다.
 
 ## 원천과 기준
 
@@ -119,7 +119,7 @@ Rules `msg_9396505985f8`는 전용 module-boundaries.yml과 현재 Rules 문서 
 
 ## 재개 지점
 
-2026-10-05 최신 상태는 맨 위 상태와 아래 「9 - 실제 PR CI·최신 입력 독립 통과와 메인 절차 판단」을 따른다. 다음은 결과 기록 이후 정확한 PR head의 CI 확인과 메인 R-2·사용자 개별 병합 승인이다. 승인 전 병합하지 않으며 다음 기능 테스트 CI goal도 자동 착수하지 않는다. 이하 실행 기록은 당시 입력·범위별 이력이며 새 실행으로 소급하지 않는다. 최종 대조 자료는 `.backups/verification/2026-10-05-module-boundary-warning/pr-ci/`와 `pr-ci-review/`에 둔다.
+2026-10-05 최신 상태는 맨 위 상태와 아래 「10 - 최종 head CI와 사용자 승인 병합」을 따른다. PR182 병합·main 반영·Gardener를 확인했고 종료 기록의 문서 통합과 메인/사용자 종료 점검이 남았다. 최신 인계는 아래11절과 「다음 goal 사전 결정」을 따른다. 다음 기능 테스트 CI goal은 자동 착수하지 않는다. 이하 실행 기록은 당시 입력·범위별 이력이며 새 실행으로 소급하지 않는다. 원시 근거는 `.backups/verification/2026-10-05-module-boundary-warning/`에 둔다.
 
 메인 확인과 Rules 소유 회신 뒤 Task `task_b266e9eb59bb`를 Sol에 발행했다. 구현 전 TDD 원시 `implementation/work/red/command.json`은 22 tests, failures 21/errors 1, exit 1이며 실제 공개 진입 부재 등으로 실패했다. 이는 구현 전 실패 근거이며 green 또는 독립 통과가 아니다. 앞선 implementation/·implementation-recovery-1/의 기록을 새 작업자의 실행으로 소급하지 않는다.
 
@@ -277,3 +277,45 @@ release 뒤 동일 incarnation `08dd44ee-cdaf-4ceb-9982-b957cbdc87aa`, idle·완
 **메인 절차 판단:** 검증자가 계약을 읽기 전 첫 `git status`를 `GIT_OPTIONAL_LOCKS=0` 없이 실행한 사실을 context/판정8절에 기록했다. index mtime08:09:33Z·보호244·staged/status 불변은 관측됐으나 metadata 폴더08:14:06Z 변화의 출처는 미확정이다. Astra는 원문12절 「적용 규칙 위반 관측 없음」을 모든 절차 준수로 인용하지 않고 `msg_9045d2fb70c2`로 즉시 보고했다. 메인 `msg_7f900276388e`(08:40:43Z)는 이를 검증자 조회 방식의 절차 이탈로 기록하되 제품의 적용 규칙 위반은 아니므로 PR182 승인 근거로 판정 통과를 수용하고 새 검증 회차를 열지 않기로 결정했다. 이는 **메인 결정이며 사용자 직접 결정이나 PR 병합 승인이 아니다.** 원문은 `pr-ci-review-main-procedure-decision.json`이다. Rules의 첫 맥락 메모 전 읽기 구간 정의 후보에 반복 사례로 연결한다. 앞선 캐시 검증의 index metadata 미확정과 Sol 최초 실패 편집 raw 부재도 그대로 남긴다.
 
 release 뒤 동일 incarnation `9a29cbb8-fbfc-41b0-bc0f-57615fcfd5b0`, idle·완료 화면·빈 prompt를 확인하고 close했다(ptyKilled true). **2026-10-05T08:40:58Z 실제 목록의 Architecture 작업자0**(`pr-ci-review-post-close-terminals.json`)이다. 원문/고정 입력을 보존하고 이 결과 기록만 후속 커밋한다. 이후 head의 CI는 위4d66ebf 실행과 구분해 확인한다. 병합 전 메인은 앞서 전달된 R-2 원본 Edit/당시 iter-g 실패/신규 같은 명령 재생 자료(`msg_22d6537c5ff9`)를 대조하며 개별 사용자 승인은 아직 없다. 제품 DB·Unity·게임플레이·Release와 기존165 suite/Windows 환경 전체 재실행은 이번 검증 범위 밖이다.
+### 10 - 최종 head CI와 사용자 승인 병합
+
+최종 기록 head `0d57dc6ebcca689d7533b69113302fcf2f2788f9`는 독립 실사 head `4d66ebf` 대비 이 goal 한 파일만 바뀌었다. 보호244파일을 재대조해 goal 외243파일 hash가 같고 제품·도구·테스트·workflow diff0, working/staged clean임을 확인했다(`pr-ci/final-protected-followup.json`). 이는 Astra의 기계 대조이며 새 독립 실사로 바꾸지 않는다.
+
+- 최종 [module-boundaries](https://github.com/bass131/dawnholder-server/actions/runs/37285682919), [code-rules](https://github.com/bass131/dawnholder-server/actions/runs/37285682938), [.NET](https://github.com/bass131/dawnholder-server/actions/runs/37285682916) 모두 성공했다. 실제 merge checkout `07e05ca90ede5b754d80551b495d16f00690bf3b`에서 C#105파일517589bytes·Compile105/105·경계48/48·위반0, 테스트94수집/34실행/60skip·필수29+5 실행이다. 입력·도구·정책 hash는 최초 실사한 CI와 같다. `.NET` format-check 성공·빌드 경고4/오류0·테스트924 중919통과/5skip을 실제 원시 로그에서 읽었다. 프로젝트별 format raw 미업로드와 annotation10/fixture12의 한계는9절과 같다.
+- 최종 artifact ZIP493338bytes SHA256 `002c4e4766d6f17084d4bbc03db614286da9e7a0f9f585a7cc03499e81f83607`은 API digest와 일치한다. 근거는 `pr-ci/final-module-observation.json`, `pr-ci/final-artifact-integrity.json`, `pr-ci/final-dotnet-run.json`, `pr-ci/final-dotnet-log.txt`, `pr-ci/final-dotnet-observation.json`이다. 중간 goal 기록 head2821419/21fa27c의 대체된 CI 취소는 `superseded-*-runs.json`에 따로 남겼고 제품 실패나 새 검증으로 세지 않았다.
+- 메인 `msg_f2f932fb4396`(09:14:11Z)은 최종 판정 전체·세 판정 hash·goal-only diff·경계48·.NET 수치·artifact digest와 실제 production·같은 argv의 R-2 새 재생1→0을 직접 대조해 일치했다고 회신했다. 메인 수행 보고이며 Astra의 새 검증으로 집계하지 않는다. 원문은 `pr182-main-r2-confirmed-awaiting-user.json`이다.
+- 메인 `msg_c28bb70de03c`(09:20:15Z)는 사용자가 메인 pane에서 Enter로 제출한 원문의 해당 항목 「1) PR182 - 서버 모듈 경계 warning 시범 병합 승인 → A 이 head로 병합 승인 (head 0d57dc6)」을 전달했다. 전체 원문은 `pr182-user-merge-approval.json`에 보존한다. 다른 PR·DB 항목은 이 세션의 권한이 아니며 메인 전달을 이 세션의 사용자 직접 입력으로 격상하지 않는다.
+- 승인 전 09:12:28Z의 `pr-ci/final-pr-state.json`(OPEN/MERGEABLE/CLEAN·CI3종 성공)과 메인이 승인 전달에 적은 09:19:47Z 상태 확인에 연결해 `gh pr merge 182 --repo bass131/dawnholder-server --merge --match-head-commit 0d57dc6ebcca689d7533b69113302fcf2f2788f9`를 실행했다. 09:21:28Z merge `4ab4d674b895d14c3ad2f4ff6c7e3cc2adbe1783`, 부모 `8d1e8856`/`0d57dc6`이며 fetch한 origin/main과 동일했다. PR head와 merge tree 동일성은 아래11절의 별도 사후 관측에 연결한다. `pr182-merge-command.json`, `pr182-merged-state.json`, `pr182-main-inclusion.json`에 실제 결과가 있다. 이후 병합 commit의 main push CI 결과는 아래11절에서 PR CI와 구분한다.
+
+제품 완료조건과 PR182 병합은 충족했다. Gardener의 실제 결과와 정산은 아래11절이며 후보 제안은 채택·구현과 구분한다. 종료 기록 문서 통합과 메인/사용자 종료 점검·R-8이 남아 마지막 진척 단계는 진행 중이다.
+### 11 - Gardener와 종료 인계
+
+신규 Opus5.5 Gardener Task `task_b6c9698dbde6`/Dispatch `ctx_6a43a5492f98`는 `msg_eeda78234ccf`(2026-10-05T09:43:48Z)로 succeeded·쓰기 종료를 보고했다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. 읽기 전용 회고와 현재 결과 기록의 문서 실사이며 제품·테스트 재실행이 아니다. 한 파일 `gardener/report.md`만 썼고 SHA256은 `1A84C7CD7D063633CAB3695754A597D4C8F1FB785D4D160F317B3321A0A2295D`다. Astra는 원문 전체·보호249파일 hash차이0·HEAD/status 보존을 대조했다(`gardener-astra-source-check.json`).
+
+- Gardener는 다섯 판정 hash·결함 #1~#5·#ENV-1·CI/병합 원시를 표본 대조했다. 과거 「23 ok」와 원시24·수정 보고의 없는 경로는 이 goal의 기존 정정과 일치한다. 경고 억제·설정 완화는 선택한 패턴/해당 원문의 점검에서 관측하지 못했으며 전체 코드 안전성 판정이 아니다. 후보는 아래 「다음 계획 후보」에만 연결하고 현재 구현하지 않는다.
+- G-1(낮음·비차단)은 10절 두 주장의 로컬 원시 연결 누락이다. 승인 뒤 Astra 상태 조회 출력은 당시 저장 파일로 연결되지 않았으므로 문장을 승인 전 저장 상태·메인의 승인 전달·정확 head 병합 성공으로 한정했다. tree 비교는 **Gardener 뒤 새로 관측한** `pr182-tree-followup.json`에서 head/merge의 tree가 모두 `f343bd2d34a73162096b144e904bba3a91f69252`, `git diff --quiet` exit0임을 확인했다. 과거 원시를 복원했다고 쓰지 않으며 Gardener 원문은 보존한다. CURRENT의 CodeMap branch 값과 축약된 CI 원시 경로도 함께 보완했다.
+- Gardener 첫 메모의 `09:3xZ`는 미계측 추정 오기였다. Astra 지적 `msg_7b3c84596483` 뒤 원문을 남기고 파일 CreationTimeUtc `09:28:18.3890081Z`로 정정했다. Astra 사전 메모의 수기 `09:22Z` 오기도 원문과 실제 파일 mtime을 구분해 정정했다. `gardener-launch.md`의 첫 관측 부재와 이후 생성도 구분한다. 이 사실은 `msg_ee1fe43703c0`으로 메인에 공개했으며 정확한 계측/전절차 준수로 포장하지 않는다.
+- release·동일 incarnation `eb869dee-0b0d-416c-a0f0-d237419c14e6`·idle·완료 화면·빈 prompt를 확인해 close했고, **09:45:09Z 실제 Architecture 목록은 Astra만**이었다. 원시는 `gardener-{release,end-idle,end-show,end-screen,close}.json`, `gardener-post-close-summary.json`이다. Gardener의 한정 후속 메시지가 mailbox 출력에 없었으나 보존 receipt로 읽었다는 관찰은 원문5.2절에 남아 있다. 이를 런타임 전송 실패로 확정하지 않는다.
+- 병합 commit `4ab4d674`의 main push [.NET run37289496939](https://github.com/bass131/dawnholder-server/actions/runs/37289496939)는 success다. `pr-ci/merge-main-run.json`과 `pr-ci/merge-main-log.txt`에서 format-check 통과·빌드 경고4/오류0·테스트924 중919통과/5skip을 직접 읽었다. 후속 PR183의 main commit `05cb171` 실행은 별도이며 Gardener 09:42:31Z 관측 당시 진행 중이었다. PR182 결과에 더하지 않는다.
+
+신규 Opus의 종료 문서 실사 Task `task_1d3ac0427e7f`/Dispatch `ctx_abce1b75cdd5`는 고정 head `99b628195a9f4c345b053145cb306cc83d436799`의 CURRENT·goal 두 파일(+44/-6)을 통과로 판정했다(`msg_ca37379bd614`, 2026-10-05T10:03:23Z). 원문 `closeout-review/verdict.md` SHA256 `982919AAA2634EE22E4E5081664C359E696E8ED8544ABE3A9E3755B8872E5A54` 전체를 Astra가 읽고 보호24파일 차이0·clean을 대조했다(`closeout-review-astra-source-check.json`). 제품·테스트·CI 재실행 판정이 아니다. 동일 incarnation·idle·빈 prompt·release/close 뒤 10:05:27Z 실제 Architecture 목록은 Astra만이었다(`closeout-review-post-close-summary.json`).
+
+메인 `msg_d72d119ff51e`(10:06:31Z, `closeout-review-main-interpretation-decision.json`)는 원문 말미 「병합 승인 근거가 아니다」를 사용자 개별 승인을 대신하지 않고 PR 상태·CI가 실사 범위 밖이라는 경계로 판단했다. 고정99b6281의 독립 문서 통과 근거로 사용하며 표현 수정·새 판정은 불필요하다는 메인 결정이다. O-1~O-6은 다음 계획 기록만 남기는 처리에 동의했다. 이 결정을 PR184 사용자 병합 승인으로 격상하지 않는다. 이 두 문단과 아래 관찰 연결은 검증 후의 Astra 결과 기록이며 고정 입력/원문은 보존한다.
+종료 기록만 별도 `docs/module-boundary-warning-closeout-20261005` 브랜치에 모았다. 다음 기능 테스트 goal의 착수 브랜치가 아니다. 문서 통합과 메인/사용자의 종료 점검이 끝난 뒤 R-8로 메인이 이 Astra pane을 닫고 새 Astra를 연다. 새 Astra는 현재 identity와 READY·새 goal의 범위를 확인하며 이 Run/Dispatch를 실행 권한으로 재사용하지 않는다.
+
+## 다음 계획 후보
+
+메인 `msg_9ebb62ac97b5`(receipt 2026-10-05T09:37:41Z)가 전달한 사용자 원문은 「그리고 계획에 오버되는 부분은 다음 계획 편성에 포함시키고, 일단 현재 작업 목표 달성 우선」이다. 원문·메인 적용 설명은 `current-goal-priority-main-decision.json`에 있다. 이 세션의 사용자 직접 입력으로 격상하지 않으며 범위 밖 권고는 아래 출처만 남기고 현재 goal에 구현하지 않는다. 문구의 사용자 제출 시각은 메인의 근사 설명과 receipt 생성 시각을 구분한다.
+
+- **도구 추가·이동의 폴더 범위 계약 보존 검사**: Gardener3절 후보1, #1·#4·#5의3건을 원시로 연결한다. 동결 폴더 파일 집합 fixture와 Python 도구의 bytecode ignore 검사를 제안했다. 기존 [BACKLOG의 기능 테스트 CI 예정 작업](../../../00_Document/operations/BACKLOG.md)과 아래 다음 goal에 범위 입력으로 넘기며 추가 검사의 채택·동결 fixture 변경 권한은 새 범위 판단으로 남긴다. 현재 CI의 skip을 통과로 바꾸거나 검사를 새로 만들지 않았다.
+- **Windows 하네스 경로 예산 사전 검사**: Gardener3절 후보2, #ENV-1과 재검증 work/d의2건을 연결한다. 실행 전 Windows 경로·접미 예산을 확인하는 helper/fixture 제안이며 WSL→Windows 실행에 한정된 근거다. [BACKLOG](../../../00_Document/operations/BACKLOG.md)의 `representative-platform-fixtures`와 인접하지만 새 채택·구현은 아니다.
+- 보고-원시 연결6건은 기존 `powershell-all-evidence`·`goal-state-drift`, 무보호 Git 조회2건은 기존 `contract-context-check`의 추가 근거로만 넘긴다. 집계·원시는 Gardener2.2절/3절이며 새 검사·정본 규칙을 채택하지 않는다. 숫자는 Gardener가 선택한 같은 부류 기준의 회고 집계이며 전체 저장소 집계가 아니다.
+
+- 종료 문서 실사의 **O-1~O-6**은 `closeout-review/verdict.md`의 「설계 관찰(비차단)」에 원시와 대안을 보존했다. 경로 표기·설명 표지·메시지 원시 연결·당시 생성 시각의 현재 재확인 한계·메인 근사 시각 불일치·제목 앞 빈 줄 관찰이며 번호 결함은 없다. 사용자 현재 목표 우선 지시에 따라 이번에 다듬지 않고 다음 계획의 기록 품질 후보로만 넘긴다. Gardener의 새 후보2개와 별개인 비차단 문서 관찰이고, 추가 검사 채택·구현은 없다.
+## 다음 goal 사전 결정
+
+메인 `msg_0937ac1fc5f3`(2026-10-05T09:36:42Z)가 전달한 사용자 원문은 「대시보드 결정 응답: 1) 백로그 마감 - Rules·CodeMap 종료 뒤 다음 작업을 병렬로 정할지 → A 두 파트 병렬 착수 · 2) 백로그 마감 - 운영툴 「작업 현황」 화면 후보를 폐기할지 → A 폐기」다. 원문과 메인 설명은 `next-goal-predecision-main.json`, 수신 회신은 `next-goal-predecision-ack.json`에 보존했다. 사용자 직접 입력과 메인이 전달한 설명을 구분하며 현재 goal은 확대하지 않는다.
+
+- 현재 goal의 결과 기록·Gardener·종료 점검과 R-8 뒤 **새 CodeMap Astra**가 「Architecture 테스트 전체를 PR CI에서 돌리기」를 새 goal로 시작한다. `99_Tools/Architecture.Tests` 전체의 수집·실행·skip 수와 실패 전파를 원시로 확인하는 단계다. 보존된 `deferred-ci/architecture-tests.yml`은 출발점이며 새 goal에서 실제 경로·내용·권한을 다시 실사한다. 이 세션은 해당 goal·브랜치·구현을 만들지 않는다.
+- 운영툴 vitest는 PR179 병합 뒤, DB 오프라인 PowerShell은 GameDev 첫 PR 뒤의 별도 단계다. `99_Tools/database/tests`의 현재 GameDev 쓰기를 침범하지 않는다. 전체 기능 테스트 CI 계획을 이번 Architecture 단계 승인으로 확대하지 않는다.
+- Rules는 병렬로 npm 엔진 경고 CI 표시·진척 체크리스트·Unity opt-in 정본화를 준비한다는 메인 설명이다. 새 CodeMap workflow와 Rules의 `code-rules.yml` 소유를 다시 대조하고, npm ci가 필요한 후속 단계에서는 EBADENGINE 방식을 Rules와 맞춘다. 다른 파트의 실제 착수·완료를 이 기록으로 주장하지 않는다.
