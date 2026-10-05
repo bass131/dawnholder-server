@@ -16,6 +16,7 @@
 | 포탈·맵 이동 | `Handlers/Zone/EnterPortalHandler.cs` → `GameSession.SubmitEnterPortal` → `Maps/Transitions/MapMigration.cs`; `Maps/PortalTable.cs` | `Network/Handlers/Zone/MapTransitionHandler.cs`, `Network/SceneRouter.cs` |
 | 파티 | `Handlers/Party/` → `Party/PartyFlow.cs`; `PartyRegistry.cs`, `PartyState.cs`, `PartyNotifier.cs` | `Network/Handlers/Party/`, `State/PartyState.cs`, `UI/PartyInvitePopup.cs` → `PartyInviteResponseCommand.cs`, `PartyMemberHud.cs` |
 | 처치 진행·보스 해금 | `Loop/GameWorld.cs`의 처치 콜백 → `Quest/QuestRegistry.cs`의 solo/party 진행·해금; `QuestConstants.cs` | `Network/Handlers/Quest/`, `State/QuestState.cs`, `UI/QuestProgressHud.cs` |
+| 아이템·인벤토리·재화 | `Handlers/Inventory/` → `GameSession.SubmitInventoryRequest/SubmitItemUse` → `Items/InventoryRegistry.cs`의 연결 등록·상태 → `InventoryTransitions.cs`; 처치 입력은 `GameWorld.MakeMap` → `InventoryRegistry.EnqueueKill/ApplyKill` → `KillRewardPolicy.cs` | PR1은 공유 데이터와 v17 패킷 계약까지. 상태 미러·수신 핸들러·인벤토리 UI는 PR2에서 구현 |
 
 ## 공통 계약
 
@@ -31,5 +32,7 @@
 ## 상태의 수명
 
 플레이어 HP·스탯·맵 위치는 현재 실행 중 서버가 소유한다. 입력 큐, 재조정 기록, 이동 중 플래그, 미응답 파티 초대는 임시 상태다. [D0 설계](../01_Phases/goals/2026-09-29-persistence-design/design.md)는 고정 계정/캐릭터 하나의 identity·최초 class·안전 checkpoint를 저장 대상으로 정했다. 재접속은 Town·풀 HP이며 quest/보스 해금은 세션 한정이다. [PlayerSnapshot](../02_Server/GameServer/Maps/PlayerSnapshot.cs) 전체의 DB 저장을 뜻하지 않으며 GameServer 저장·복원 연동은 후속 구현이다.
+
+아이템·재화·revision은 World 틱의 `InventoryRegistry`가 연결 수명 동안 메모리로 소유한다. 실제 입장 뒤 등록하고 맵 이동의 소속 공백에서도 유지하며, 종료 시 등록과 상태를 지우고 재접속은 빈 상태로 시작한다. DB 저장은 구현하지 않았다. 입력·보상·종료 경계는 [서버 경제 계약](domains/server.md#경제-상태와-연결-수명), 패킷은 [v17 경제 계약](domains/protocol.md#v17-경제-패킷)에서 확인한다.
 
 함수별 디버깅 출발점은 [ENTRY_POINTS](conventions/ENTRY_POINTS.md), 과거 변경 이유는 [영역별 기록](archive/INDEX.md)에서 찾는다.

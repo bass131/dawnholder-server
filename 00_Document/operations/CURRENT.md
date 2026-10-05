@@ -5,7 +5,7 @@
 | 파트 | 목표 상태와 재개 안내 |
 |---|---|
 | GameDev | [영속성 저장소](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#재개-지점) |
-| Content | 아이템·인벤토리·재화 · 미통합 로컬 goal: `01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점`(해당 worktree 내부 경로). [Content worktree 안내](#content-worktree) |
+| Content | [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) |
 | Rules | [운영 정본 반영](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#재개-지점) · [보류된 하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#운영-규칙-pr-재개와-설계) |
 | CodeMap(Architecture) | [CodeGraph adapter 정비](../../01_Phases/goals/2026-10-03-codegraph-adapter-cleanup/goal.md#재개-실행) |
 | Management | [시스템 카드](../../05_Management/goals/2026-10-02-system-cards/goal.md#재개-지점--2026-10-03-사용자-휴식) |
@@ -16,6 +16,6 @@
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `feat/codegraph-adapter-cleanup-20261003`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-m2-system-cards`
 
-Content goal은 미통합 로컬 기록으로, 위 worktree 내부 경로를 해당 Content worktree에서 연다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
+Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 
 [다음 세션 재개 절차](RESUME.md) · [정본 반영 전 적용 결정](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#정본-반영-전-적용-중인-사용자-결정)

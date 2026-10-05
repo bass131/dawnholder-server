@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Handlers.Combat;
+using Dawnholder.Server.GameServer.Handlers.Inventory;
 using Dawnholder.Server.GameServer.Handlers.Movement;
 using Dawnholder.Server.GameServer.Handlers.Party;
 using Dawnholder.Server.GameServer.Handlers.Session;
@@ -34,6 +35,8 @@ internal static class HandlerRegistry
             { PacketID.C_PartyInvite,    new PartyInviteHandler() },
             { PacketID.C_PartyRespond,   new PartyRespondHandler() },
             { PacketID.C_PartyLeave,     new PartyLeaveHandler() },
+            { PacketID.C_InventoryRequest, new InventoryRequestHandler() },
+            { PacketID.C_ItemUse,        new ItemUseHandler() },
 #if DEBUG
             // [빌드타임 봉합 — 헌법 #3] 치트는 DEBUG 빌드에만 등록. Release는 미등록 →
             //   C_CheatCommand가 unknown PacketID로 silent drop(빌드 클라가 F8 눌러도 무반응).

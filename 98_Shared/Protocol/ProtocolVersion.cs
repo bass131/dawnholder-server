@@ -38,7 +38,8 @@ namespace Shared.Protocol;
 ///         S_HitResult 끝에 hitEffect(byte) append. 원거리 평타(서버 확정 투사체 + 지연 데미지) ·
 ///         최소 스킬 시스템(C_SkillUse 쿨다운 권위) · 썬더볼트 AoE가 신규 패킷 의존이라 옛 클라 빠른
 ///         cutoff 위해 한 묶음 bump. S_HitResult는 *끝에* byte append(기존 5필드 오프셋 불변).
-///         PDL이 가변 길이 list 미지원이라 썬더볼트 타격은 적별 S_HitResult(hitEffect=2)로 회피.
+///         썬더볼트 타격은 적별 S_HitResult(hitEffect=2)로 전송. 생성기 list 템플릿은 있으나
+///         호스트 endian/NET_LEGACY 경로는 이 계약에서 사용·검증하지 않았다.
 ///         ID 23~25 — 기존 enum 시프트 0.
 ///   - v12: M4.11 Phase 01 — S_EntityState 끝에 serverTick(int) append. 적 보간 시간축 통일
 ///         (RemoteEntity가 S_Snapshot의 serverTick 보간을 쓰지만 S_EntityState엔 미박힘 → desync 봉합).
@@ -58,12 +59,14 @@ namespace Shared.Protocol;
 ///         S_PartyInviteRecv/S_PartyUpdate/S_PartyError/S_QuestUpdate/S_PortalLocked, ID 26~33). 프로젝트 첫
 ///         플레이어 간 협동(파티 초대/수락 2명 + 공유 40킬 + 보스 포탈 잠금)이 신규 패킷 의존이라 옛 클라 빠른
 ///         cutoff 위해 한 묶음 bump. 기존 ID 25(S_SkillCast)까지 시프트 0(append-only, 맨 아래 추가).
-///         PDL 가변 list 미지원 → 파티 정원 2 고정(S_PartyUpdate member0/member1 2슬롯, 빈=0).
+///         파티 정원 2 고정(S_PartyUpdate member0/member1 2슬롯, 빈=0). list 템플릿은 미사용·미검증.
 ///         모든 C_Party* 행위자=GameSession._entityId 강제(패킷에 행위자 필드 X — 도용 차단, 헌법 #3).
 ///   - v16: M5+ (시연용 디버그) — C_CheatCommand(34) 신설. 클라 F8 → 서버 AllowCheats 게이트 통과 시
 ///         퀘스트 즉시완료(호출자 killCount=BossUnlockKillCount → S_QuestUpdate + 보스 해금). 빌드 클라 포함
 ///         모든 빌드에 키+전송(가드 없음), 서버가 허용 결정(헌법 #3 — 클라 입력 untrusted). 시연 편의로
 ///         AllowCheats 기본 ON(프로덕션 배포 시 false). append-only, ID 34 — 기존 ID 33(S_PortalLocked) 시프트 0.
+///   - v17: 아이템·인벤토리·재화 — C_InventoryRequest/S_InventorySnapshot/C_ItemUse/S_ItemUseResult
+///         (ID 35..38) append. 고정 8슬롯·revision과 사용 결과를 전달하며 기존 ID 1..34는 불변.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -77,6 +80,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. v16 = M5+ 시연용 디버그 치트 C_CheatCommand 신설 (ID 34).</summary>
-    public const ushort Current = 16;
+    /// <summary>현재 프로토콜 버전. v17 = 경제 조회/고정 8슬롯 snapshot/사용/결과 append (ID 35..38).</summary>
+    public const ushort Current = 17;
 }

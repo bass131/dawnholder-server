@@ -413,4 +413,38 @@
     <packet name="C_CheatCommand">
         <byte name="cheatType"/>
     </packet>
+    <!-- Server-authoritative economy. Fixed eight slots, ItemId order, empty slots = 0/0.
+         Append-only IDs 35..38; reserved must be zero, expectedRevision prevents use replay. -->
+    <packet name="C_InventoryRequest">
+        <byte name="reserved"/>
+    </packet>
+    <packet name="S_InventorySnapshot">
+        <uint name="revision"/>
+        <int name="currency"/>
+        <int name="slot0ItemId"/>
+        <int name="slot0Count"/>
+        <int name="slot1ItemId"/>
+        <int name="slot1Count"/>
+        <int name="slot2ItemId"/>
+        <int name="slot2Count"/>
+        <int name="slot3ItemId"/>
+        <int name="slot3Count"/>
+        <int name="slot4ItemId"/>
+        <int name="slot4Count"/>
+        <int name="slot5ItemId"/>
+        <int name="slot5Count"/>
+        <int name="slot6ItemId"/>
+        <int name="slot6Count"/>
+        <int name="slot7ItemId"/>
+        <int name="slot7Count"/>
+    </packet>
+    <packet name="C_ItemUse">
+        <int name="itemId"/>
+        <uint name="expectedRevision"/>
+    </packet>
+    <packet name="S_ItemUseResult">
+        <byte name="result"/>
+        <int name="itemId"/>
+        <uint name="revision"/>
+    </packet>
 </PDL>
