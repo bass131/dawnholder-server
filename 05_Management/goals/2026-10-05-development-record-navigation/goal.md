@@ -86,6 +86,8 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 
 제품·직접 검증·사용 안내는 **PR 1개**다. 최신 main의 이 브랜치에서 구현·독립 검증 뒤 PR을 생성하고, 정확 head의 CI·메인 R-2 원천 대조 뒤 사용자 개별 병합 승인을 받는다. 자동 병합은 하지 않는다. 정상 구현/검증 작업자는 한 작업 뒤 정산·종료한다. 목표 전체의 병합/결과 기록 뒤 신규 Opus Gardener·종료 점검을 수행한다. 별도 종료 문서 PR이 필요하면 그 PR도 개별 승인을 받는다. 다음 goal은 자동 시작하지 않는다.
 
+PR189 최초 조회는 main `635865038e174ee5591530f6bd83e2e698e0b077`에 대해 DIRTY였다. merge `2711ebd`에서 CURRENT의 CodeMap 줄은 main, Management 줄은 이 목표를 보존했다. E/`main-merge-remerge-diff.txt`의 충돌 해결은 CURRENT 한 파일뿐이며 제품6·시험3 blob은 통합 전후 모두 같다(E/`main-merge-evidence.json`). main의 Architecture CI와 그 goal은 main 내용 그대로 들어왔다. **동일 제품 입력의 기존 독립 판정을 유지**하며 새 head에서 로컬 강 검증을 새로 수행했다고 표현하지 않는다. 승인 묶음은 새 head의 전체 CI와 fresh 병합 상태를 확인한 뒤 보낸다.
+
 ## 후속 후보와 서버 운영 시각화 근거
 
 기존 [BACKLOG `server-operations-view`](../../../00_Document/operations/BACKLOG.md)은 **이번 B안에서도 독립 후보**다. 수정본 `msg_a88dc21abaf8`과 최종 승인 `msg_1da9a73ad0d2`를 후보 근거로 보존한다. 다음 실시간 첫 goal의 좁은 후보는 **서버/실행 식별·최근 관측 시각 + 기존 틱 통계 + 결측/단절 표시**다. Core와 지표 의미/단위·발생/수집 시각·전달 경로·갱신/단절·읽기 권한을 먼저 합의한다. CPU·접속자·오류율·DB 패널은 원천 확인 뒤 편성하며, 오류율에는 대상/분모 계약도 필요하다.
