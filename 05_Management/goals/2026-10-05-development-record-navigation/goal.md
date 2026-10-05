@@ -8,8 +8,10 @@
 - [x] 독립 강 검증과 직접 영향 시험 정비
 - [x] 최종 전체 시험·Electron 화면 확인
 - [x] PR 발행·CI·메인 원천 대조
-- [>] 사용자 개별 승인·PR 병합 — 승인 전달 받음, 병합 명령은 사용자 확인 창 대기
-- [>] Gardener·종료 기록 통합
+- [x] Gardener 점검
+- [>] 종료 기록 문서 실사
+- [ ] PR189 병합
+- [ ] 종료 기록 PR 병합
 
 ## 재개 지점
 
@@ -37,9 +39,9 @@ Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/m
 
 - **교체 원천:** 메인 `msg_5ae22b5ca4ae`(2026-10-05T14:23:54Z)의 사용자 결정 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 교체 시점 앞당기기 → A 작업자가 빈 시점에 바로 교체」. 이전 목표 종료 후 교체 시점을 대체한다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다.
 - **인계 시점 상태:** 이전 Codex 리드는 head `94f9a1e`(원격 push 완료), PR189 OPEN·`MERGEABLE`/`UNSTABLE`, CI 네 개 진행 중 상태로 인계했다(E/`pr-at-lead-handoff.json`). 구현 Sol과 독립 Opus는 모두 쓰기 종료·release·정확 pane close·Delivery ACK를 마쳐 살아 있는 작업자가 없었다. 미커밋은 이 goal 한 파일이었다.
-- **새 리드 진입:** 메인 `msg_a8dced49f427`(2026-10-05T14:27:14Z)로 Opus 리드가 진입했다. handle `term_73de6775-fe1a-4d84-b972-485d21054a67`, 최초 명령은 메인이 띄운 `claude-opus-5-5`, 화면 표시 `Opus 5.5 ⚡xhigh`, backend unknown이다. `run-use --id run_6e57ab3c5f70`이 takeover 없이 성공했다(E/`opus-lead-run-use.json`). READY는 `msg_bd0d7dd8643a`다. 인계 기록과 실제 상태의 차이는 그 사이 CI 두 개가 SUCCESS로 끝난 것뿐이었다.
+- **새 리드 진입:** 메인 `msg_a8dced49f427`(2026-10-05T14:27:14Z, 원문 E/`opus-lead-entry-message.json`)로 Opus 리드가 진입했다. handle `term_73de6775-fe1a-4d84-b972-485d21054a67`, 최초 명령은 메인이 띄운 `claude-opus-5-5`, 화면 표시 `Opus 5.5 ⚡xhigh`, backend unknown이다. `run-use --id run_6e57ab3c5f70`이 takeover 없이 성공했다(E/`opus-lead-run-use.json`). READY는 `msg_bd0d7dd8643a`다. 인계 기록과 실제 상태의 차이는 그 사이 CI 두 개가 SUCCESS로 끝난 것뿐이었다.
 - **인계 기록의 커밋 위치:** 이 인계 기록은 PR189 head를 흔들지 않도록 제품 branch에 커밋하지 않았다. 종료 기록 branch에서 처음 커밋한다.
-- **오발송 정정:** 새 리드가 메인 회신 명령에 남은 시험 줄 때문에 태그 없는 subject `x` 메시지 `msg_3d1d54589856`을 자기 Run 주소로 보냈다. 받는 사람은 리드 자신뿐이었다. 지시로 처리하지 않고 ack했으며 메인에 `msg_050fd7ac1f4a`로 정정 보고했다. 리드 실수의 첫 발생으로 이 goal에만 기록한다.
+- **오발송 정정:** 새 리드가 메인 회신 명령에 남은 시험 줄 때문에 태그 없는 subject `x` 메시지 `msg_3d1d54589856`을 자기 Run 주소로 보냈다. 받는 사람은 리드 자신뿐이었다. 메인에 `msg_050fd7ac1f4a`로 정정 보고했다. 그 메시지는 `delivery_b34db721b145`로 리드에게 돌아왔고(E/`stray-message-delivery.json`), 지시로 처리하지 않고 ack했다(E/`gardener-inbox-1.json`의 `acknowledged`). 리드 실수의 첫 발생으로 이 goal에만 기록한다.
 - **필수 원천:** `review/verdict.md` 전문(23249 bytes, SHA256 `C3B93409B4381E138BEAB62572644A14C6D3FC230698DEC253F7D793F2009994`), `astra-source-audit.json`, `review/raw/final-full-vitest.json`, `review/electron/summary.json`, `main-merge-evidence.json`, `lead-immediate-handoff-decision.json`. 완료조건은 이 goal과 고정 `inputs/goal-review-v1.md`, 검증 계약은 `review-contract-v1.md`와 보충1이다.
 
 ### 종료 단계
@@ -48,6 +50,7 @@ Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/m
 
 - **Gardener:** 신규 `claude-opus-5-5` 읽기 전용, 보고서 E/`gardener-report.md` 한 파일이다. 이 goal의 독립 결함·CI 실패·새 경고 억제·임시 우회·드리프트 중 Management TS/frontend 소유분을 본다. 반복 빈도 순 후보 최대 2건과 검사화 방법만 제안한다. 결과는 아래 「Gardener 결과」에 적는다.
 - **종료 기록 문서 실사:** 이 종료 기록 diff는 문서 변경이라 신규 Opus 문서 실사를 거친다. 판정은 E/`closeout-review/verdict.md`다.
+- **CURRENT:** Management 경로 줄의 branch를 종료 기록 branch로 바꿨다. 표의 goal 링크는 같은 goal이라 그대로 둔다. 제품·테스트·BACKLOG·README는 이 종료 기록에서 바꾸지 않는다.
 - 새 Sol은 띄우지 않는다. 승인 범위 밖 새 goal은 구현하지 않는다.
 
 #### Gardener 결과
@@ -61,7 +64,7 @@ Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/m
 - **두 번째 발생:** 두 후보 모두 이전 목표 Gardener가 제안한 유형이 다시 관측된 두 번째 발생이다. CODE 「교정 층과 반복 규칙」의 반복 규칙 검토 시점에 해당한다. 채택은 메인을 거친 사용자 결정이며, 구현은 일반 목표 루프로 한다. 이번 목표에서는 구현하지 않는다.
 - **종료 기록 사실 불일치 F1·F2(경미):** F1은 origin/main `6358650`의 인용 원천이 그 값을 담지 않은 파일이었던 것이다. F2는 이미 끝난 즉시 교체를 R-8 미래형으로 쓴 것이다. 두 곳 모두 위 「PR189 승인과 병합 대기」와 「적용 중인 사용자 결정」에서 정정했다. 정정의 판정은 종료 기록 문서 실사가 맡는다.
 - **억제·완화:** PR189 제품 diff의 추가 956줄에서 지정 패턴의 새 경고 억제·설정 완화는 0건이다. 패턴과 범위 안의 결과이며 전수 재감사가 아니다. PR189 CI 로그는 E에 없어 CI 경고는 미측정이다.
-- **미대조 4건:** 원시가 E에 없어 대조하지 못한 주장이 4건이다. 진입 메시지 `msg_a8dced49f427` 원문, 운영 지시 `msg_2c7fd80be0a5` 원문, 오발송 ack, 메인 R-2 기록이다. 위반으로 세지 않는다.
+- **미대조 4건:** 원시가 E에 없어 대조하지 못한 주장이 4건이다. 진입 메시지 `msg_a8dced49f427` 원문, 운영 지시 `msg_2c7fd80be0a5` 원문, 오발송 ack, 메인 R-2 기록이다. 위반으로 세지 않는다. Gardener 종료 뒤 리드가 앞의 세 원시를 E/`opus-lead-entry-message.json`, `mailbox-types-instruction.json`, `stray-message-delivery.json`·`gardener-inbox-1.json`으로 보존했다. 메인 R-2 기록은 메인 소유라 이 폴더에 없다.
 - **후보로 고르지 않은 관찰:** 작업 트리 혼합 EOL로 인한 거짓 hash 불일치는 BACKLOG `contract-context-check` 근거로 이미 등록돼 있다. `00_Document/FEATURE_MAP.md`에 Management 구간이 없고 `05_Management/README.md` 문서 지도에 이 goal이 없는 점은 두 번째 관찰이다. 문서 지도 갱신은 다음 계획 판단으로 넘기며 이 종료 기록 PR에서 바꾸지 않는다.
 - **리드 표본 대조:** 리드가 원천을 직접 다시 확인한 표본은 넷이다. WQL 오류 문자열은 두 원시 파일 모두에 있었다. 워크플로 4개의 `vitest|npm test` 일치는 0건이었다. F1 파일에 `6358650`이 없었다. F2 문장은 실제 69행에 있었다. 네 표본 모두 보고서와 일치했다. 이 대조는 표본이며 Gardener 점검 전체의 재수행이 아니다.
 
@@ -79,7 +82,7 @@ Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/m
 
 - 메인 `msg_9a95637fe94e`(2026-10-05T14:18:43Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」. 앞선 「A 리드 Opus xhigh, 구현은 Sol max 유지」를 다섯 파트로 넓힌 결정이다. **교체 시점은 후속 `msg_5ae22b5ca4ae`의 작업자가 빈 즉시 교체로 대체됐다.** 그 즉시 교체는 위 「리드 교체 인계 기록」대로 2026-10-05T14:27에 끝났다. R-8이 아니라 `msg_5ae22b5ca4ae`의 절차(메인이 이전 pane을 닫고 새 Opus 리드가 같은 Run을 이어받음)였다. 목표 종료 뒤의 R-8 교체는 「재개 지점」의 다음 일 3번을 따른다. Sol max·신규 Opus 검증자는 유지한다. AGENTS의 리드 모델 문구는 아직 Astra이며 정본 반영은 Rules의 다음 계획 후보다. 메인 전달을 사용자 직접 입력으로 격상하지 않는다.
 - 같은 메시지의 운영 지시로 이후 Orca 우편함의 서버 대기값은 `check --wait --timeout-ms 600000`으로 적용한다. 실행 도구는 비동기 session을 반환하도록 두고 60초를 넘는 단일 차단 호출을 사용하지 않는다. 메시지 도착 때 즉시 깨어나는 대기이며 짧은 우편함·화면 반복 조회를 피한다.
-- 메인 운영 지시 `msg_2c7fd80be0a5`(2026-10-05T14:34:35Z): 우편함 대기는 heartbeat를 뺀 8개 type의 `--types` 필터와 `--timeout-ms 900000`을 쓴다.
+- 메인 운영 지시 `msg_2c7fd80be0a5`(2026-10-05T14:34:35Z): 우편함 대기는 heartbeat를 뺀 8개 type의 `--types` 필터와 `--timeout-ms 900000`을 쓴다. 원문은 E/`mailbox-types-instruction.json`이다.
 - 메인 `msg_053edb4e968d`(2026-10-05T14:13:56Z): 승인 묶음 직전 fresh `mergeStateStatus`를 확인한다. DIRTY이면 최신 main을 merge해 CURRENT의 다른 파트 줄과 자기 줄을 함께 보존한다. 충돌 해결이 CURRENT에 한정되고 제품 blob이 같다는 remerge-diff 원시가 있을 때만 **동일 제품 입력의 기존 판정 유지**로 표현하고 새 head 전체 CI를 수집한다. 승인 뒤 다른 PR 병합으로 DIRTY가 되면 옛 head 승인을 사용하지 않고 다시 이 절차와 새 승인을 거친다. 원문 두 건은 E/`main-pr-and-routing-decisions.json`에 보존한다.
 
 ## 이번 goal에서 만들 것
