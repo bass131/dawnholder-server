@@ -104,7 +104,9 @@ Rules `msg_9396505985f8`는 전용 module-boundaries.yml과 현재 Rules 문서 
 
 ## 재개 지점
 
-메인 확인과 Rules 소유 회신 뒤 Task `task_b266e9eb59bb`를 Sol에 발행했다. 구현 전 TDD 원시 `implementation/work/red/command.json`은 22 tests, failures 21/errors 1, exit 1이며 실제 공개 진입 부재 등으로 실패했다. 이는 구현 전 실패 근거이며 green 또는 독립 통과가 아니다. 아래 두 복구는 당시 이력이며 최종 완료 근거는 마지막 「구현 종료와 검증 인계」에 둔다. 앞선 implementation/·implementation-recovery-1/의 기록을 새 작업자의 실행으로 소급하지 않는다.
+2026-10-05 최신 상태는 맨 위 상태와 아래 「7 - 캐시 ignore 독립 통과와 PR 준비」 및 「8 - 최신 main 통합과 실제 PR 확인」을 따른다. 구현·독립 검증 뒤 최신 main을 통합했으며, 다음은 명시 feature branch push·PR과 실제 CI/경고/artifact/format-check, 최신 main 실측, 메인 R-2 및 PR별 병합 승인이다. 승인 전 병합하지 않으며 다음 기능 테스트 CI goal도 자동 착수하지 않는다. 이하 실행 기록은 당시 입력·범위별 이력이며 새 실행으로 소급하지 않는다.
+
+메인 확인과 Rules 소유 회신 뒤 Task `task_b266e9eb59bb`를 Sol에 발행했다. 구현 전 TDD 원시 `implementation/work/red/command.json`은 22 tests, failures 21/errors 1, exit 1이며 실제 공개 진입 부재 등으로 실패했다. 이는 구현 전 실패 근거이며 green 또는 독립 통과가 아니다. 앞선 implementation/·implementation-recovery-1/의 기록을 새 작업자의 실행으로 소급하지 않는다.
 
 ### 2026-10-05 크래시 복구
 
@@ -237,3 +239,11 @@ release·같은 incarnation/idle/완료 화면을 확인하고 close했다. **20
 - 판정7절은 초기 Git Bash status/diff 일부가 `GIT_OPTIONAL_LOCKS=0` 없이 실행되어 index stat metadata가 갱신됐을 가능성을 인정한다. staged 내용·보호 파일 불변은 관측됐으나 모든 Git metadata 쓰기 부재는 확인하지 못했다. Astra는 `msg_c97a1a90f66a`로 즉시 메인에 알렸고 원문의 「운영 Git 쓰기 없음」을 더 넓은 무쓰기 증거로 인용하지 않는다. Sol 최초 실패 편집의 원시 stdout/stderr 부재(O-C2)도 요약 JSON과 구분해 보존한다.
 
 release 뒤 동일 incarnation `08dd44ee-cdaf-4ceb-9982-b957cbdc87aa`, idle·완료 화면·빈 prompt를 확인해 close했다(ptyKilled true). 종료 직후 실제 terminal list에는 Architecture Astra만 남고 작업자0이었다(`cache-ignore-review-post-close-terminals.json`, UTC는 같은 이름의 time.txt). Delivery `delivery_824250f56641`을 ack했다. 다음 단계는 테스트/goal 커밋, 최신 main의 운영 문서 통합, 명시 feature branch push·PR, 실제 CI·경고 표시·artifact·format-check 확인과 메인의 R-2/개별 병합 승인이다.
+
+### 8 - 최신 main 통합과 실제 PR 확인
+
+캐시 독립 테스트/goal은 `7e4d601`에 커밋했다. main `466aa025b7934ad058bb78636885cce18f0a96eb`의 운영 정본을 feature에 통합한 `28d45d9`에서 CURRENT 충돌은 main 전체를 보존하고 CodeMap의 goal 링크와 branch 두 값만 반영했다. 검사기/테스트/workflow/서버 입력 변경0이고 `.gitignore`의 main 변경은 과거 보관 안내 주석뿐이다.
+
+이후 main이 Content PR180 병합 `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`으로 진행해 서버 Items/Handlers/Sessions·Shared 등의38파일이 추가/변경됐다. feature 통합 `5b2942d`는 충돌 없이 main 변경을 보존했다. 이전 C#91파일/477096bytes 실측은 새 main의 결과가 아니므로 최신 고정 main과 PR을 별도로 확인한다. 비교 원시는 `pr-main-advance-466aa025.json`, `pr-main-advance-8d1e8856.json`, 사전 통합 판단은 `pr-main-integration-context.md`다. 완료된 두 검증의 고정 입력/원문은 변경하지 않는다.
+
+실제 PR head와 merge checkout, production 결과와 별도 warning fixture, 테스트 실행/skip 수·annotation·artifact·format-check를 분리해 기록한다. 새 독립 Opus가 최신 main 실제 공개 진입과 PR 증거를 좁게 실사한다. 이 시점의 PR/실제 CI는 아직 미실행이고 개별 병합 승인은 없다.
