@@ -432,7 +432,7 @@ O1은 Astra 소유 goal의 LF 저장으로 경고 잡음만 정리했다. O2(작
 
 Unity MCP는 필요한 세션만 opt-in하며 시트1개 사용 전 메인에게 요청하고 보유 세션을 현황판에 적은 뒤 기동한다. 메인은 사용자 전역 `unity-mcp` 등록 제거·백업 보존·자기 relay 종료를 보고했고, 설정은 저장소 밖 `C:/Users/bass1/.unity/claude-mcp.json`에 있다고 전달했다. 필요한 Claude 세션에만 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 전역 작업은 메인의 보고이며 Rules의 실행/독립 검증 실적이 아니다. Rules는 Unity 사용 계획이 없고 에디터를 열지 않는다. 기존 다른 파트 Opus relay의 수명도 임의 조작하지 않는다.
 
-당시 다음 Rules 목표 후보는 **R-5의 Unity MCP opt-in·시트 보유 절차**와 **goal-loop의 진척 체크리스트 형식** 정본 반영이었다. 기존 BACKLOG `goal-loop-improvement`와의 범위 대조는 종료 점검에서 수행하지 않았으며, Main `msg_7a6308e271f8`의 처분 기록 지시에 따라 다음 Rules goal의 원천·중복 대조로 이월한다. Unity·체크리스트 정본화는 이후 `msg_a1fe33623cbe`의 다음 goal 사전 결정에 포함돼 별도 후보 등록 조율을 대신한다. **PR183 head 유지**는 `msg_1f0a928c2d90`의 메인 명시이고, 당시 ORCA·goal-loop·BACKLOG를 추가로 바꾸지 않은 것은 승인 범위를 보존한 **Astra 판단**이다. 정본 반영 완료나 다음 goal 착수로 기록하지 않는다.
+당시 다음 Rules 목표 후보는 **R-5의 Unity MCP opt-in·시트 보유 절차**와 **goal-loop의 진척 체크리스트 형식** 정본 반영이었다. 기존 BACKLOG `goal-loop-improvement`와의 범위 대조는 종료 점검에서 수행하지 않았다. Main `msg_7a6308e271f8`은 이 처분 기록의 좁은 정정을 지시했고, 다음 Rules goal의 원천·중복 대조로 이월할 대상은 **Astra가 첫 판정 #2의 제안과 `msg_021c2965af7e`에 따라 선택**했다. Unity·체크리스트 정본화는 이후 `msg_a1fe33623cbe`의 다음 goal 사전 결정에 포함돼 별도 후보 등록 조율을 대신한다. **PR183 head 유지**는 `msg_1f0a928c2d90`의 메인 명시이고, 당시 ORCA·goal-loop·BACKLOG를 추가로 바꾸지 않은 것은 승인 범위를 보존한 **Astra 판단**이다. 정본 반영 완료나 다음 goal 착수로 기록하지 않는다.
 
 ### PR183 병합과 전체 PR 결과
 
@@ -440,7 +440,7 @@ Unity MCP는 필요한 세션만 opt-in하며 시트1개 사용 전 메인에게
 
 병합 전 정확 head `bca454435c0bb4a27249168c773e884836eb04b2`·OPEN/MERGEABLE/CLEAN·두 CI SUCCESS를 재확인했다. 첫 `gh pr merge 183 --merge --match-head-commit`은 `Base branch was modified`로 exit1이었다(`pr183-merge-command.json`). 같은 시점 PR182가 `4ab4d674`로 병합됐음을 읽기 조회한 뒤 승인 head를 바꾸지 않고 상태/CI 재대조·fetch·같은 full SHA 재시도(exit0)로 완료했다(`pr183-before-merge-retry.json`·`pr183-base-refresh.json`·`pr183-merge-retry-command.json`). 자동 병합 예약은 쓰지 않았다.
 
-실제 mergedAt은 **2026-10-05T09:22:36Z**, merge는 **`05cb171b130de9e39b9cc9a1b063d76ec6c1d878`**이다. `pr183-main-inclusion.json`의 2026-10-05T09:23:02.0890808+00:00 fetch에서 origin/main이 같은 SHA이며 포함 검사 exit0이다. 실제 병합 부모는 `4ab4d674b895d14c3ad2f4ff6c7e3cc2adbe1783 bca454435c0bb4a27249168c773e884836eb04b2`다. PR183 CI의 테스트 merge `207d5f82…`(부모8d1e8856/bca4544)와 실제 최신 main 병합을 구분하고 재시도 뒤 새 CI를 실행했다고 주장하지 않는다. 메인 완료 전달은 `msg_049e86f29a5a`다.
+실제 mergedAt은 **2026-10-05T09:22:36Z**, merge는 **`05cb171b130de9e39b9cc9a1b063d76ec6c1d878`**이다. `pr183-main-inclusion.json`의 2026-10-05T09:23:02.0890808+00:00 fetch에서 origin/main이 같은 SHA이며 포함 검사 exit0이다. 실제 병합 부모는 `4ab4d674b895d14c3ad2f4ff6c7e3cc2adbe1783 bca454435c0bb4a27249168c773e884836eb04b2`다. PR183 CI의 테스트 merge `207d5f82…`(부모8d1e8856/bca4544)와 실제 최신 main 병합을 구분하고 재시도 뒤 새 CI를 실행했다고 주장하지 않는다. **Astra가 메인에 보낸 병합 완료 보고**는 `msg_049e86f29a5a`다.
 
 정확 head CI는 code-rules37284634210·dotnet-tests37284634221 모두 SUCCESS다(`pr183-final-ci.json`·명령·collector exit0). Changed 언어 대상0/N/A와 별도 회귀28/28·Orca22/22를 구분한다. .NET 원시 표본은 **총924·통과919·건너뜀5, 빌드 오류0·경고4**다(`pr183-dotnet-source-sample.json`·전체 로그). 이 테스트 수는 Content 병합을 포함한 해당 CI 실행 값이며 Rules 문서 작업의 새 테스트 작성 수가 아니다. DB/게임/Unity/Fable·외부 URL 실행의 미실행 범위도 유지한다.
 
@@ -471,6 +471,9 @@ Main `msg_021c2965af7e`(receipt created_at 2026-10-05T09:37:41Z, [원문](../../
 | 1 - 문서 실사 정적 검사 공통 도구 | Gardener 후보1: 링크/anchor 구현9개, 첫 실행 결함3건, 검출 가능 문서 결함3사건/4곳은 제안자의 추론을 포함. 하네스 goal의 경로 검사 계획과 일부 중복 | 다음 계획 자료. 자동 검사 구현·BACKLOG 행 추가·채택 없음 |
 | 2 - 실행 근거 기록과 출처 대조 도구 | Gardener 후보2: 독립 지적4건, Astra3·Sol1. REPORTING 후속 helper·powershell-all-evidence와 일부 중복. 자동 검사가 막았을지는 미실행 | 다음 계획 자료. 기존 원시/판정 보존, 새 규칙·도구 채택 없음 |
 
+- `goal-loop-improvement` 원천·중복 대조 이월: [PR183 제출 뒤 적용 결정](#pr183-제출-뒤-적용한-사용자-결정)의 미실행·Astra 처분을 다음 계획에서 대조한다. 첫 판정 #2와 `msg_021c2965af7e`가 출처이며 현재 수행 완료가 아니다.
+- 검증자 자기 준수 결론 점검: [첫 판정 보류 절](#종료-기록-첫-판정-보류와-정정독립-재실사)의 후보 한 줄을 연결한다. Main `msg_7a6308e271f8`의 다음 계획 입력이며 현재 새 규칙·검사·helper 채택이 아니다.
+
 기존 `goal-state-drift`에는 두 goal 연속 로컬 결과 기록/원격 상태 차이 관측, 기존 다음 하네스 heartbeat 후보에는 PR2 및 종료 Sol의 주기 초과 원시를 연결한다. 새로운 Gardener 후보 수에 합치지 않는다. 상세 발생·빈도·검사화 방법·유지비/오검출·중복은 원문 해당 절에 있다. 이전 PR2 #4·O1~O7 및 기존 후보를 이 표 두 개로 폐기하거나 대체하지 않는다.
 
 ## 다음 goal 사전 결정
@@ -498,7 +501,7 @@ Main `msg_a84ae621841d`(2026-10-05T10:25:09Z, [전달 원문](../../../.backups/
 
 같은 메시지는 PR183 head 유지 조건이 병합으로 끝났다고 명시하고, 로컬 미커밋으로 R-8을 넘기지 않도록 최신 main의 종료 기록 전용 브랜치·goal 기록 커밋·신규 Opus 좁은 문서 실사·CI/PR을 지시했다. 이것은 같은 goal의 기록 통합이며 다음 goal 착수가 아니다. `final-record-base-check.json`의 fetch exit0·origin/main `05cb171…`와 기존 HEAD/main goal blob 차이0을 확인하고, `final-record-branch.json`의 branch 생성 exit0·goal bytes/hash 보존을 확인했다. 직전 goal은 `goal-before-final-record-branch.md`에 보존했다.
 
-이번 tracked 쓰기는 이 goal 한 파일이다. CURRENT의 Rules goal 링크는 이미 현재 경로를 가리키므로 변경하지 않는다. 새 Opus는 실제 goal diff와 CURRENT 링크·필요 원시만 읽고 보고서 한 파일에 사전 맥락과 독립 결과를 남긴다. 기존 Gardener 판정·원시는 보존하고 새 Gardener를 반복 기동하지 않는다. 현재 체크리스트는 종료 점검을 완료하고 종료 기록 통합 단계를 추가한 11단계다.
+이번 tracked 쓰기는 이 goal 한 파일이다. CURRENT의 Rules goal 링크는 이미 현재 경로를 가리키므로 변경하지 않는다. 새 Opus는 실제 goal diff와 CURRENT 링크·필요 원시만 읽고 보고서 한 파일에 사전 맥락과 독립 결과를 남긴다. 기존 Gardener 판정·원시는 보존하고 새 Gardener를 반복 기동하지 않는다. 현재 체크리스트는 종료 점검을 완료하고 **PR185 병합** 단계를 추가한 11단계다.
 
 기존 workflow는 **code-rules·module-boundaries**가 PR 또는 수동 dispatch, **dotnet-tests**가 PR 또는 main/feature push에서 실행된다. 종료 기록 docs 브랜치의 push만으로 이 세 PR 검사가 자동 실행되지 않는다. Astra가 Main에게 보낸 초기 안내 `msg_077649c02576`은 둘만 적었으나, 첫 실사 #1과 실제 `.github/workflows/module-boundaries.yml` 대조로 그 누락을 확인했다. PR185의 최종 head에서 세 check 전체를 확인해 메인 보고·사용자 승인을 받는다. workflow를 바꾸거나 CI 미실행을 성공으로 쓰지 않는다. 최종 PR의 사용자 개별 승인·병합 뒤 Main이 R-8로 이 pane을 닫고 새 Astra가 다음 goal을 시작한다.
 
@@ -511,3 +514,9 @@ Main `msg_a84ae621841d`(2026-10-05T10:25:09Z, [전달 원문](../../../.backups/
 Main은 내용상 지적 #1(CI 목록), #2(중복 대조 이월), #3(Main 명시와 Astra 판단의 귀속)과 O1(병합 뒤 진척 표시)을 이 PR의 goal 안에서 좁게 정정하도록 했다. 위 해당 절을 고쳤으며 PR185 번호가 붙은 마지막 병합 단계와 조건부 종료 안내로 O1을 반영했다. 새 Opus는 이전 판정을 참고 입력으로만 받고 최종 head의 **PR 전체 diff(goal 한 파일)**를 독립 재실사한다. 계약에는 Main 원문 **「쓰기는 판정 파일 하나, 임시 파일 포함 그 밖의 쓰기 0, 출력은 파이프·stdout으로만, 범위 밖 쓰기가 생기면 결론에 규칙 위반으로 적는다」**를 넣는다. 재실사와 세 CI가 끝나기 전에는 최종 통과나 병합 승인을 주장하지 않는다.
 
 다음 계획 후보 추가: 검증자의 자기 준수 결론과 실제 수행 대조를 강화하는 방법은 Main `msg_7a6308e271f8`의 지시에 따라 다음 계획 입력 한 줄로만 남긴다. 현재 goal에 새 규칙·검사·helper를 구현하지 않는다.
+
+### 재실사 후 좁은 정정의 적용 결정
+
+재실사 원문 `E/final-record-recheck-verdict.md`(SHA256 `e66c4ef0044d8cc25756f1f971247d9f2231687fa42dfafacc90061990843f3d`)은 후보 절 연결 누락 #1을 차단, 결정 주체 #2·송신 방향 #3을 비차단으로 판정했다. Main `msg_f4bacae5a701`(2026-10-05T11:17:28Z, `E/main-final-record-location-decision.json`)은 이 세 항목과 O1 단계명만 정정하고 **세 번째 Opus 없이 승인 전 Main R-2로 `fbc36ee..새 head` diff를 직접 대조**하도록 결정했다. 네 항목 밖으로 번지거나 20줄을 넘으면 멈춰 보고하고 신규 Opus 재실사로 전환한다. 이번 메인 운영 판단이며 사용자 결정·병합 승인·일반 검증 면제가 아니다. 새 head의 CI 세 종을 확인한 뒤 사용자 개별 병합 승인을 받는다.
+
+같은 메인 결정은 재검증자가 공개한 heartbeat 한 번의 `>/dev/null`을 판정 근거가 아닌 대기 출력 폐기로 보아 비차단 관찰로 기록하도록 했다. 첫 검증자의 직접 TEMP 쓰기 위반과 원판정 보류는 유지한다.
