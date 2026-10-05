@@ -2,6 +2,13 @@
 
 상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다.
 
+## 적용 중인 사용자 결정
+
+- **밤사이 PR 체크포인트 진행.** 메인 `msg_eaaee133d8a1`(2026-10-05T14:58:53Z)이 전달한 사용자 원문: 「PR로 체크포인트만 잘 만들어 놓으면 다음 작업 진행해도 되니까 할 수 있는 부분까지 해봐」, 앞선 원문 「나 진짜 자러갈게, 자율적으로 할 수 있는 부분은 진행해줘」. 메인 해석: 끝난 단위는 PR·CI·독립 검증·승인 묶음으로 만들고 같은 goal의 다음 단위로 넘어간다. 병합 전 PR 위에 쌓을 수 있고 본문 첫 줄에 「PR### 위에 쌓음」을 적는다. 병합은 PR별 사용자 승인 뒤에만 한다. 범위 밖 새 goal은 subject 「범위 초안」으로 초안만 보낸다. 병합·Unity·Procmon·SQL처럼 사용자 손이 필요한 일은 아침까지 기다린다. Sol은 띄울 때 메인에 한 줄로 알린다. 회신은 `msg_f21a86b993e8`(체크포인트 draft PR, 병합 경계 결정 항목, 인스턴스 맵 수명 범위 초안)이다. 메인 전달을 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+- **최신 교체 시점: 작업자가 빈 즉시.** 메인 `msg_a06c22ea6f38`(2026-10-05T14:23:53Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 교체 시점 앞당기기 → A 작업자가 빈 시점에 바로 교체」. 아래 목표 종료 후 교체 시점을 대체한다. 신규 Sol·검증자·Gardener는 열지 않고 진행 중 작업자만 정산·close한다. 이 goal의 「재개 지점 → 리드 교체 인계」를 남긴 뒤 Main 보고·턴 종료하며 우편함 대기를 재개하지 않는다. 다음 `claude-opus-5-5 xhigh` 리드의 생성·같은 Run 인수는 메인이 맡는다. 사용자는 잠들었으므로 사용자 손작업·병합 승인은 아침까지 기다린다. 메인 전달을 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+- 메인 `msg_d934a18a4afd`(2026-10-05T14:18:42Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」. 앞 결정 「A 리드 Opus xhigh, 구현은 Sol max 유지」를 다섯 파트로 확대한다. 이 목표의 종료 기록 PR 병합·Gardener 뒤 메인이 R-8로 현재 pane을 닫고 새 리드를 `claude-opus-5-5 xhigh`로 연다. 현재 진행 중인 리드를 바꾸지 않으며 Sol max·신규 Opus 검증자는 유지한다. 메인 전달을 이 pane의 사용자 직접 입력으로 격상하지 않는다. AGENTS의 리드 모델 문구는 아직 Astra이며 정본 반영 전에는 이 기록/원문이 적용 근거다.
+- 같은 메인 지시로 Orca 우편함은 `orca orchestration check --wait --timeout-ms 600000`으로 대기한다. 실행 도구는 장기 명령을 세션 ID로 반환할 수 있으므로 명령 자체의10분 대기는 유지하고, 같은 Run에 중복 check를 열지 않는다. 새 메시지/구체적 멈춤 의심이 없으면 짧은 상태·화면 조회를 반복하지 않는다.
+
 ## 진척 단계
 
 - [x] 설치 도구 결함 수정
@@ -15,7 +22,7 @@
 - [ ] 시험 DB 정리
 - [ ] 결과 기록·종료
 
-현재 표시된 DB 생성 실행 단계는 **서비스 시작 실패 중단·관리자 추가 읽기 실사 완료·Procmon v2 신규 차단 보완 대기·최신 main 로컬 통합 중**이다. 원인은 미확정이며 DB 생성·설치 성공으로 표시하지 않는다. PR 번호는 아직 없다. 이 체크리스트는 상태 전환 때 담당 Astra가 갱신한다.
+현재 표시된 DB 생성 실행 단계는 **서비스 시작 실패 중단·관리자 읽기 실사 완료·최신 main 로컬 통합 완료·Procmon v4 NOT PASS(PROC-15) 정산·Opus 리드 인수·Procmon v5 작성 완료와 신규 Opus 문서 실사**다. v5 판정과 사용자 실행 승인은 아직 없다. 원인은 미확정이며 DB 생성·설치 성공으로 표시하지 않는다. PR 번호는 아직 없다. 이 체크리스트는 상태 전환 때 담당 리드가 갱신한다.
 
 ## DB 장치 전제 정정 — C:\myVHDX.vhdx
 
@@ -109,6 +116,10 @@
 
 - v2 신규 Opus task_2b39d98614ba/ctx_b5db768392c6은 `msg_d1ebe5c4439c`(12:56:56Z)로 NOT PASS를 반환했다. 판정 원문 `procmon-review-v2/verdict.md` 38948bytes/SHA `1AFBCCB78910134E62A02F09925BC5F4493C1FBCC206DFC85312CDA3B23C9F2E` 전체를 읽었고20입력 사후 불일치0이다. v1 PROC-01~07은 해결, 신규 차단PROC-08은 세션 변수 reproRoot가 없는 새 창에서 바인딩 오류 뒤 start/stop이 진행될 수 있는 경계다. PROC-08 첫 확정 실패로 기록하며 검증자의 동일계열 PROC-01 합산 시2회 의견도 보존했다. PROC-09~11은 post-create 성공표시 한계·전달 파일 동일성·실제 driver 이름의 비차단 후속이다. PS5.1 AST10블록 오류0/metadata는 검증자 보고이며 공개 transcript는 부분 clipped, cursor 조회는 transcript_parse_failed여서 전수 원천 실사로 확대하지 않는다. worker_done 원문/ACK/release/정확 동일성·완료빈prompt 확인 후 close ptyKilled=true·전체 목록0으로 정산했다. 메인 `msg_b69ef76c09ec`로 보고했다.
 - 메인 `msg_099087b4dbcc`(12:38:07Z)의 로컬 갱신 전달을 받아 검증 종료 뒤 미커밋 BACKLOG/goal 보존 커밋과 지정 main `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`의 현 브랜치 통합을 수행한다. 사전 메모 `main-integration-context.md`, 전 상태 `main-integration-before.json`, 고정 입력37행/중복 제외24사본 `main-integration-fixed-inputs.json`에 보존했다. 통합 전 HEAD38a5b75 기준 ahead11/behind110이다. 사용자 직접 입력으로 격상하지 않으며 rebase/강제push/PR병합/DB·서비스·Procmon 실행은 없다. 통합 뒤 새 정본을 읽고 다음 v3 계약에 적용한다.
+
+- 위 통합은 기록 보존 `99dd80e2f903ab65eaf6e52e5db2fa7e9c213c61` 뒤 merge `9a663901abc14ad4ca85b21d5dc371f34ee507c4`로 끝났고 main 대비13/0이다. CURRENT.md 한 충돌은 현재 GameDev goal/branch와 main의 다른 파트 안내를 보존해 해결했다. Unity3개 로컬SHA/S플래그·DB제품39개·보존 입력37행의 사후 불일치0이며 `main-integration-after.json`에 있다. 전체staged diff check exit2의48공백은 main과 동일한 GenPackets blob으로 확인했고 무관한 생성 코드는 고치지 않았다. 수동 문서 검사exit0·merge 직후tracked clean이다. 결과 원문 `main-integration-result.md`, 메인 회신 `msg_2c9b597bfd51`. push/PR병합·제품 실행검증은 하지 않았다.
+- 새10규칙 파일이 지정 main blob과 일치함을 확인하고 AGENTS·ORCA·goal-loop·task-context·orca-work·양식·CODE/REPORTING 변경을 읽었다. 다음 계약부터 문서/강/약 등급·원시 변경 수·경로 기계 확인·저장 harness/원시·verifies와 결함 귀속·설계 관찰을 적용한다. Procmon 수정은 **문서 실사**이며 실제 서비스 실행 PASS가 아니다. 실제 설치/DB/I/O 도구의 다음 코드 계약은 강 등급 실제 진입 실행과 미실행 보류를 적용한다. 이전 고정 계약을 소급하지 않으며 산출물 수정3회 초과와 번호별 확정 실패3회는 별도 기록한다.
+- v3 사전 맥락 `procmon-revision-context-v3.md` 뒤 두 새 Markdown 사본을 썼다. 만들 것=08~11 보완 승인안/해석과 통합 사실 보고, 건드릴 곳=진단 근거·goal, 하지 않을 것=제품/helper 구현·서비스/Procmon/DB 실행·권한/장치 변경, 완료조건=신규 독립 문서 실사와 메인 승인 패킷 전달이다. 두 번째 보완으로3A/4 표식 경로를 블록 안 고정 절대값으로 바꾸고 파일 단위 제출·전달 byte/SHA 대응, post-create 성공표시 한계, 실제 driver 전체 목록 대조를 명시했다. 실제 납품 제품이 없는 수동 승인 절차라 문서의 명령/설명 층에서 교정했으며 전역 규칙·새검사 도구를 만들지 않았다. v3 판정/사용자 실행 승인은 아직 전이다.
 
 ## 사용자 지시 — 현재 목표 달성 우선
 
@@ -367,6 +378,26 @@
 
 ## 재개 지점
 
+### 리드 교체 인계 — 2026-10-05T14:35Z 이후
+
+이 블록이 현재 재개 정본이며 아래 과거 Run/실행 안내보다 우선한다. 인계 근거는 `.backups/verification/2026-10-04-persistence-integration`(이하 E), 진단 폴더는 `E/g2-service-diagnosis`(이하 D)다. 현재 담당 Astra는 인계 보고 뒤 쓰기·commit/push·대기를 종료한다.
+
+- **주소·Git:** Run `run_6ba3f644755b`; worktree `C:/Dev/DawnHolder_Project`, 전체 ID `8fd4be8c-601c-4d91-89b5-8167ed8c0977::C:/Dev/DawnHolder_Project`; branch `feat/persistence-integration-20261004`; HEAD `9a663901abc14ad4ca85b21d5dc371f34ee507c4`. local main `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1` 대비 ahead13/behind0. main 통합은 완료됐고 v3 독립 실사로 대조됐다. 원격 push/PR 병합은 하지 않았다.
+- **미커밋:** 추적 파일은 이 `goal.md` 하나. main 통합 뒤 v3/v4 판정·사용자 결정·Content 경계·이번 인계를 기록한 변경이며 커밋하지 않았다. `.backups`의 판정·receipt·계약·원시 자료는 로컬 보존이다. 다음 리드가 이 브랜치의 유일한 commit/push 담당이다. Unity 실물3/skip-worktree 등 기존 사용자 상태를 건드리지 않는다.
+- **현재 작업자0:** v4 Opus `task_cc3fd98069e0`/`ctx_da6abad33b85`는 완료·원문 대조·release·동일 pane 확인·close까지 끝났다. D/procmon-review-v4/{release,preclose-show,preclose-screen,close,postclose-terminals,completion-ack}.json. 전체 terminal list truncated=false, 대상0/메인1/Astra1. E/lead-handoff-worker-list.json의14행은 completed11/failed3·모두 외부 retained 역사이며 활성 Dispatch가 아니다. `retained`를 살아 있는 작업자로 해석하지 않는다. 실행 중 대기·watch 명령은 없다.
+- **최종 판정:** D/procmon-review-v4/verdict.md, 33587bytes/SHA256 `C6F221BA75D0A9C27B6DE75C616D0FCE3C94ED1CFDD80036407EAFD7C8B88F37`, **NOT PASS**. PROC-12·13 해결/14 정정, 신규 차단 PROC-15 첫 확정 실패: 0번이 준비 성공 전에 reproRoot를 만들어 실패/새 창 재제출 뒤 다음 준비 guard를 통과시킨다. PROC-16은 findings의 오래된 상태·맥락 참조(비차단). 입력24 재해시 불일치0, 저장 harness/공개 실제 실행 표본은 같은 폴더 astra-input-audit.json·astra-source-audit.json·settlement.md. 13블록·native9의 정적 검사이며 SQL/Procmon 실행 성공이 아니다.
+- **다음 행동1:** 메인이 새 Opus 리드를 배치해 같은 Run을 `orca orchestration run-use`로 인수시킨다. 정확한 현재 CLI 도움말과 새 handle/모델 표시를 확인하고 메인에 회신 주소를 알린다. 과거 handle을 실행 권한으로 재사용하지 않는다. 현재 Main `term_072d2ee9-df16-43ce-b86c-122c9de316c0`도 전송 전 실제 identity를 확인한다.
+- **다음 행동2:** 메인의 재개 범위 안에서 v4 판정 PROC-15/16과 정산을 읽고 v5 수정 계획을 잡는다. 최소 후보는 준비 마지막 성공 뒤에만 세션 완료 상태 공개·3A에도 준비 완료 guard, findings 현재 상태/맥락 정정이다. 새 창/부분 실패에서 후속 쓰기·Procmon·SCM이 막히는지 모든 생산자/소비자 경계를 본다. O-1 NoProfile 확인, O-2 이벤트 UTC 의존 설명, O-3 준비 실패 뒤 transcript 정산은 원문을 보고 처리한다. 4A 재제출 권한이나 자동 helper를 임의 추가하지 않는다.
+- **다음 행동3:** v5는 같은 산출물 네 번째 보완이다. 메인 체크포인트 `msg_c95b05bbe71b`로 알렸으나 이후 읽은 교체 지시 때문에 아직 수정·신규 실사에 착수하지 않았다. 번호별 실패 집계는 메인 `msg_2503d287afae`를 따른다(PROC-15 첫 실패, Fable 조건 아님). 고정 v1~v4/판정은 보존하고 새 버전·쓰기 전 맥락·관련 규칙 원문 계약 뒤 신규 Opus 문서 실사가 필요하다. 새 세션 기동은 이 Astra가 하지 않는다.
+- **메인 후속 확인:** `msg_d9b9c452eee2`(2026-10-05T14:35:08Z, E/lead-handoff-completion-ack.json)는 v5를 **새 Opus 리드가 기존 범위의 문서 작성·신규 Opus 전수 실사까지** 맡도록 확정했다. 고칠 세 가지는 준비 성공 끝에만 상태 공개, 3A 준비 확인, 상태 문구 정정이다. 원문 위치는 D/procmon-review-v4/verdict.md의 「PROC-15」·「PROC-16」 절, 대상 문서는 procmon-reproduction-approval-v4.md:65와 admin-read-4-findings-v4.md:3·35다. 같은 산출물 네 번째 보완 체크포인트는 아침 Main 사용자 보고 사항이며 같은 번호 3회/Fable 조건이 아니다. SQL·Procmon·다운로드·재시도 권한은 늘지 않는다.
+- **다음 행동4:** 독립 PASS 뒤에만 Main에 원문·원시·잔여 위험과 구체적인 새 사용자 승인안을 보낸다. 최종 사용자 손작업은 아침 이후다. 승인 전 attempt-01 폴더·approval-record·실제 전달 ps1은 만들지 않았으며 SQL 시작·다운로드·Procmon·승격·DB/ACL/감사/VHD 변경은 계속 미실행이다. 기존20:00 KST G2 승인은 만료됐고 v4 문서의 T~T+30분은 미승인 제안이다.
+- **SQL 열린 문제:** 10:30 사용자 SQL 시작은 master/mastlog OS5로 실패했고 재시도하지 않았다. DB 생성·설치 미실행, 마지막 실제 서비스 관측11:55:56Z Stopped/Manual(현재 시각 재관측 아님). 실제 장치는 `C:\myVHDX.vhdx`→D:, USB가 아니다. 관리자 읽기4 원시 D/main-raw/admin-read-4.txt와 해석 admin-read-4-findings-v4.md가 있으며 원인은 미확정이다. v4 findings의 'v3 독립 판정 대기'는 PROC-16으로 확인된 낡은 문구다. 정산에서 사실을 바로잡았고 frozen 파일은 바꾸지 않았다.
+- **캐시 판단:** 메인 `msg_e74f940dc196`에 따라 StartupProfileData 가능성은 「harness 자동 저장 관측」이며 검증자 직접 쓰기 위반으로 세지 않는다. 주체/시각 귀속 미확정, 삭제/원복 없음. 전달 시도는 완료 뒤 dispatch_inactive로 실패했다. 원문의 「위반(가능성)1」과 Main 운영 판단을 D/procmon-review-v4/settlement.md에서 구분한다.
+- **Content 경계:** `msg_058bc22983d3` 보고로 결함4 Sol 완료·close, HEAD8d1e885/미커밋 InventoryPanelView 하나 +12/-3, 자체 EditMode404/404·InventoryScene8/8, HUD 독립 판정 미실행. Content는 Unity0/relay0/lock없음·실서버/WSL/7777 비사용을 보고했고 같은 리드 교체로 멈춘다. 이는 Content 보고이며 GameDev가 재검증한 값이 아니다. 새 Content 리드는 `run_add8d9f825f4`와 content-active/01_Phases/goals/2026-10-05-items-inventory-currency/goal.md:154를 인수한다. 공유 자원 재사용 전 실제 소유를 다시 확인한다.
+- **필수 메시지/원천:** 즉시 교체 `msg_a06c22ea6f38`와 Content `msg_058bc22983d3` 원문 D/procmon-review-v4/completion-ack.json; v4 worker_done `msg_734437365cb4`; 체크포인트 Main 보고 `msg_c95b05bbe71b`(E/g2-procmon-v4-notpass-main-corrected.json); 캐시 결정 `msg_e74f940dc196`; 전수 오류 중단·번호 집계 `msg_2503d287afae`. 최초5단계 질문 `msg_05b5d610b58d`는 `msg_8ea855dcc88a`(10:29:39Z)로 이미 회신됐다. 같은 알림을 새 실행 승인으로 처리하지 않는다.
+
+### 이전 재개 기록 — 역사
+
 - 작업 경로 `C:/Dev/DawnHolder_Project`, branch `feat/persistence-integration-20261004`. 최신 main 기준 `3f0cb5e2861574ea1e6b092875de27694897b21d`에서 시작했다.
 - 이전 종료 checkpoint `f137bbb6ca2a7b5bc424769f8083d2d9814dc32c`를 `2c3522e075cd3f68804f80dec1735f368669eb0e`로 cherry-pick했다. 이전 goal만 +9/-2이며 이 목표의 첫 PR에 포함한다. 원본 branch/commit은 유지한다.
 - Unity 실물3 SHA·skip-worktree S3·stash2는 전환 전후 일치한다. 근거는 `.backups/verification/2026-10-04-persistence-integration/branch-checkpoint.json`이다. 상태가 깨끗하다는 Git 출력만으로 사용자 파일 보존을 판단하지 않는다.
@@ -467,6 +498,7 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 
 ## Content와의 기술 경계
 
+- Content `msg_00cd9ab7b74f`(2026-10-05T14:03:28Z)의 후속 UI 조율: 신규 Sol task_5f7f4e01ed5e/ctx_0bef8e140f29가 InventoryPanelView만 수정 중이고 이후 새 Opus의 Unity6000.4.7f1 배치·실화면/서버 검증을 계획했다. Astra는 공식 reply `msg_53f4de085b52`로 GameDev의 현재/가까운 예정 Unity·7777·WSL clone f202c234f8d5af97f4f2/해당 파일 사용·쓰기 없음, Content의 직전 실제 owner gate·자기 자원 정산 조건을 회신했다. 전체 머신의 새 실측으로 확대하지 않는다. 새 판정·head·실행/미실행·반납과 이전29실패 분류의 원문을 요청했으며 아직 후속 결과를 받지 않았다. 일반 파트 조율 질문에 reply를 써 subject가 Re: [Content Astra]가 된 것은 R-3 예외 적용 오류였다. Content msg_1f1059c9c985 지적 뒤 자기 태그 send로 정정했다. 원문/정정은 g2-content-followup-ui-runtime-reply.json·g2-content-followup-ui-runtime-correction.json, 메인 즉시 보고는 g2-content-reply-policy-correction-main.json이다. Content는 이전29실패 분류 원문 opus-pr2-fix1/report.md(SHA8BF2E595E82A1FBB1BA0B7009F0612EBE700D373217EA621325F3F41FB24E494)와 before/fixture-editmode-all을 전달했다. a25/b4/c0/d0, 같은400개29F→P/삭제0/P→F0·신규4후404/404는 Content 전달 보고이며 GameDev 직접/신규 검증으로 인수하지 않는다.
 - Content `msg_1cb1f2ecda60`(12:18:47Z)은 HEAD8d1e885에서 Sol10파일 +145/-15 쓰기 종료·정산/종료와 자체 PlayMode5/5·EditMode371/400(29실패)을 보고했다. 이는 독립 PASS나 GameDev 직접 검증이 아니다. GameDev는 `msg_d7b3af49558b`로 현재/예정7777·Unity 사용없음, Content 실행 직전 Windows/WSL 소유 gate·자기프로세스 정산 조건을 회신했다. Content `msg_bfe8bccabca0`(12:31:31Z)은 신규 Opus task_b0289b7469b8/ctx_142e1d49d252, 먼저 MCP없는batch와 종료 확인 뒤 사용자Editor준비/연결승인, 최종29실패 독립분류·head·7777/Unity반납 후속 공유를 통지했다. 아직 후속 결과를 수신/검증하지 않았다.
 - Content `msg_c3ca18543e25`(11:48:02Z)는 신규 Sol `task_bddf83472162`/`ctx_f0a2608585b6` 시작을 통지했다. 기존 타이머3파일·LocalPlayerInput에 InventoryPanelView/InventoryPanel·client 영역 문서 관련절, 필요 시 InventoryTimeoutScheduler/GameplayPointerInput helper가 후보이며 실제 선택·쓰기 종료/head는 후속 통지 대기다. timeout/지연송신 간섭·UI 클릭 공격전파·TMP 가독성 범위에서 송신순서/세대·epoch/취소·종료·유한timer, UI 밖 마우스·UI 위 포인터의 키보드 공격·이동/스킬·서버cooldown, v17 IDs35~38·자산/바인딩 보존을 전달받았다. GameDev의 직접 수행/검증 실적으로 인수하지 않는다.
 - Content `msg_0f7d087d1f23`의 PR2 결함2 후속 후보 LocalPlayerInput.cs 공격 입력·UI 포인터 경계 및 같은 Input 폴더 helper에는 GameDev 현재/예정 쓰기가 없다. `msg_da0c9a9e5f61`(`g2-content-input-ownership-delivered.json`)로 소유 충돌 없음을 회신하고 최종 파일/설계·쓰기 종료/head를 요청했다. 기존 바인딩·UI 밖/키보드 공격·이동/스킬·서버 cooldown·v17 IDs35~38 보존 조건의 범위 안 조율이며 일반 입력 재설계·자산 변경으로 넓히지 않는다. 메인 승인과 실제 중복 송신 재현은 Content 전달 관측으로 구분한다. 첫 송신의 `run_not_found`는 `g2-content-input-ownership-reply.json`에 보존했고 현재 terminal identity 확인 뒤 명시 `--run` 없이 송신해 같은 Content run으로 라우팅된 성공 receipt를 얻었다.
@@ -489,3 +521,27 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 - 이전 수정/판정은 `installation-fix-1/report.md`와 `installation-recheck-2/verdict.md`, 당시 부모 원천 대조는 `fix-source-audit.json`/`recheck-source-audit.json`이다. 중간 마감 맥락은 `astra-closeout-context.md`, 당시 Git 정산은 `mid-closeout-final-checkpoint.json`이다. 현재 원문/부모 대조/정산은 맨 위 마지막 독립 검증 절을 따른다.
 - 이번 재개 사전 메모는 `astra-resume-scope-context.md`다. 새 계약/고정 입력은 중간 마감 당시 미발행 계약과 구분해 보존한다.
 - 이전 승인 초안/승인 전달과 종료 checkpoint: `.backups/verification/2026-10-03-persistence-repository/{successor-goal-draft.md,successor-goal-review-delivery.json,closeout-pr171-checkpoint.json}`. 원문은 덮어쓰지 않는다.
+
+## Procmon v3 독립 판정·정산과 v4 보완
+
+- 신규 Opus task_e24e869db5e7/ctx_590bf15acee9의 msg_c316ff20312c(2026-10-05T13:37:58Z)는 문서 실사 NOT PASS다. PROC-08~11은 해결, 신규 차단 PROC-12 첫 확정 실패(표식 Out-File 실패 뒤 sc.exe 계속 실행 가능), 비차단 PROC-13(창 오류 선호값 전제)·14(통합 메모 시점 표기)다. 원문 `.backups/verification/2026-10-04-persistence-integration/g2-service-diagnosis/procmon-review-v3/verdict.md`,32779bytes/SHA2568DB84E552F2836B202C6D2DF21B8550E12938E5BDC1FBD520D3F9BBE9363DFF6를 Astra가 전체 읽었다. 실제 SQL/Procmon/문서 코드블록 실행은 없으며 Out-File 오류는 공식 문서/PS7 소스에 따른 정적 판단이다.
+- 부모 대조는 같은 폴더의 astra-input-audit.json(고정35행 bytes/SHA 불일치0)·astra-source-audit.json(저장 harness/원시·공개 run-3 호출/출력 표본)·settlement.md다. PS5.1 AST10/오류0·매개변수89/미해석0, run-3 13:31:17~21Z exit0을 원시와 대조했다. 공개 transcript는 sourceExact=true/contentComplete=false로 일부 잘려 전체 대화 감사로 확대하지 않는다. worker_done ACK→release(retained/external)→fresh 동일 pane/완료 화면 확인→close ptyKilled=true, 전체 terminal list truncated=false·대상0/메인1/Astra1을 확인했다. 검증자 재사용은 없다.
+- 최신 main의 기계 통합 보고는 독립 원시와 일치했다. merge9a663901abc14ad4ca85b21d5dc371f34ee507c4, 부모99dd80e/e9c78a0, ahead13/behind0, CURRENT의 현 GameDev/다른 파트 보존, incoming GenPackets.cs 동일blob의48공백, Unity3 SHA/Sflag·DB39·사본37행/24개·규칙10 보존이다. 제품 기능 시험·원격 push·PR 병합은 미실행이다.
+- PROC-14 정정: main-integration-context.md의 「충돌 해결 전 추가 메모」는 **CURRENT 해결과 함께 남긴 기록**이다. CURRENT mtime13:01:07.0215865Z·메모mtime13:01:07.0225842Z라 사전 순서를 증명하지 못한다. 최초 메모는 checkpoint goal의 언급으로 존재가 확인됐다. 원문을 보존하고 여기/settlement에서 정정한다. 메인 msg_4e223683c0a8로 즉시 보고했으며 msg_2503d287afae가 이 정정을 지시했다.
+- 검증자의 계열 의견은 원문대로 보존한다: 기전 기준 PROC-08+12=2회, PROC-01까지 합치면3회. **메인 msg_2503d287afae(13:40:12Z)의 운영 판단은 번호 기준 유지, PROC-12 첫 실패, Fable Advisor 조건 비발동**이다. 사용자 결정으로 격상하지 않는다. 같은 산출물 v4는 세 번째 보완이고 '수정3회 초과'와 같은 계약/번호 확정실패3회는 별도다.
+- 같은 메인 메시지에 따라 Astra가 procmon-revision-context-v4.md를 먼저 작성하고 승인안 v4·findings v4를 보완했다. 모든 PowerShell 블록의 첫머리 Stop·try/catch, native LASTEXITCODE 확인, 루트/UTC/EXE 전제 실패 중단, 이벤트 로그·transcript 정산 분리와13블록 전수 점검표·파일 대응을 넣었다. 창의 세션 선호값 Stop 유지 영향은 새 승인안에 명시하고 실제 파일 전달/실행은 하지 않았다. 신규 Opus의 전수 실사 전이며 SQL/Procmon 새 사용자 실행 승인은 없다.
+- 다음 계약의 Opus 쓰기는 context.md/verdict.md와 사전 지정 work/만 허용한다. scratchpad·TEMP·/tmp·홈 등 범위 밖 임시 쓰기를 명시 금지하고, 결론에 스스로 밝힌 범위 밖 쓰기를 하나씩 위반으로 나열하도록 한다. 이전 판정은 참고 입력이며 전체 블록의 실패 뒤 실행 방지 경로를 독립 대조한다.
+- v4 신규 Opus task_cc3fd98069e0/ctx_da6abad33b85를2026-10-05T14:00Z에 발행했다. 새 pane term_d5657537-8f4b-4fa0-bc79-30d2dc69dd07/incarnation591b4cee-1ca4-4148-b782-18a50a2cef96, 최초 명령 claude --model claude-opus-5-5/화면Opus5.5 xhigh, backend unknown이다. procmon-review-v4의 contract·24입력·path-check·goal 사본·split/show/screen/readiness/start receipt로 고정했다. 승인안50007bytes/SHA44F9D082B7DB30919332CF15BF36EB243507804AC7E8E510ED9D3325C2474FCE, findings6682bytes/SHA523296C2C24BDEB0D38A86705A9593DDDE60408207C7FDC6BFD0A6A9C103429C. msg_75e4a84641c2로 '이 폴더'의 절대 기준 경로를 명확히 전달했으며 입력/요구/쓰기 범위는 바꾸지 않았다. 메인 기동 보고는 msg_242e2163cc8b다. 판정 대기이며 실제 실행/승인은 없다.
+
+## Opus 리드 인수와 Procmon v5 보완
+
+- 메인 `msg_11187f3ffecc`(2026-10-05T14:39:57Z)로 새 Core(GameDev) 리드가 진입했다. 요청 모델 `claude-opus-5-5` xhigh, 화면 표시 「Opus 5.5 ⚡xhigh」, backend unknown이다. 태그는 `[GameDev Astra]`를 유지한다. 위 「적용 중인 사용자 결정」의 즉시 교체(`msg_a06c22ea6f38`)와 다섯 리드 Opus 전환(`msg_d934a18a4afd`)을 메인이 전달한 원문으로 적용한 것이며, 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+- 같은 Run `run_6ba3f644755b`를 `run-use`로 인수했다. coordinator는 `term_e990cbd0-f51a-48fc-8c83-3da69be70248`, consumer_generation3, legacy0이라 `--takeover-legacy`는 쓰지 않았다. receipt와 진입 지시 원문은 E/opus-lead-entry/의 `run-use.json`·`entry-inbox.json`이다. 회신 주소 `run:run_6ba3f644755b`와 READY는 `msg_bf7da37c66f8`로 메인에 보냈다.
+- 인계 블록과 실제 상태 대조: HEAD `9a66390`·main 대비 ahead13/behind0·미커밋 goal.md 하나·작업자14행 모두 retained(completed11/failed3)·활성 Dispatch0이 일치했다. 추가 관측은 이 worktree의 pwsh 터미널 `term_6a29b66e-3763-4ef1-bd1d-b2fcae1e5628` 하나다. 소유가 확인되지 않아 건드리지 않았다.
+- Run 우편함의 Content 새 리드 통지 `msg_33238c11bddc`(Unity batch·7777 사용 예정)에 GameDev의 Unity·7777·Content clone 사용 계획이 없음을 `msg_3b21f7592c5a`로 회신했다. Content 보고 수치는 GameDev 검증 실적이 아니다.
+- 리드 문서 작성 방식은 위 v2(114행)·v3(121행)·v4(531행) 기록과 AGENTS의 「보고서 자료·본문은 Astra 작성」으로 확인했다. v5도 리드가 썼다.
+- v5 범위는 메인 `msg_d9b9c452eee2`가 정한 세 가지다. 준비 성공 끝에만 상태 공개, 3A 준비 확인, findings 상태 문구 정정이다. 사전 메모는 D/`procmon-revision-context-v5.md`, 산출물은 D/`procmon-reproduction-approval-v5.md`(58599bytes / SHA256 `5F7EAB809304B3BE87ED9E438051003CE0B3E447CC424D1474D3A50C9B00CCB2`)와 D/`admin-read-4-findings-v5.md`(6836bytes / `896D722E92336A5C8BA8E07E682B831C94768467554F31CA02298CE42E941E4C`)다. 원시 numstat은 승인안 +74/-23, findings +3/-3이며 D/`procmon-v5-diff-evidence.json`에 있다.
+- 수정 내용: 0번은 지역 이름으로 준비하고 마지막 문장에서만 `$reproRoot`를 공개한다. 같은 기전인 1B의 `$reproApprovedExeHash`도 마지막 문장에서만 공개한다. 3A는 `$reproRoot`와 `$reproProcmon`을 sc start 전에 확인한다. 세션 변수의 생산자·공개 시점·소비자 표, 4B→4C·4D 순서, 0번 실패 뒤 6번만 내는 정산을 적었다. v4 판정의 O-1·O-2 앞부분(재제출 권한)·O-5·O-6은 범위 밖이라 바꾸지 않았고 다음 판단 후보로 메인에 보고한다.
+- 작성자 자체 점검은 PS5.1 파싱 13블록·오류0, 공개 변수가 각 블록 마지막 문장임을 확인한 것이다(D/`procmon-v5-author-check/`). 독립 판정이 아니며 코드블록·SQL·Procmon 실행은 없다.
+- v5는 같은 산출물의 네 번째 보완이다. 「수정 3회 초과」 메인 체크포인트는 아침에 메인이 사용자에게 보고한다. PROC-15는 첫 확정 실패이고 같은 번호 3회·Fable 조건이 아니다. 다음은 신규 Opus 문서 실사 하나다. 판정 전에는 PASS를 주장하지 않으며 사용자 실행 승인도 없다.
+- v5 신규 Opus `task_dcebe40d9e1e`/`ctx_e346abf84cfc`를 2026-10-05T14:52:42Z(receipt 파일 mtime)에 발행했다. 새 pane `term_465d2634-33c9-4136-b5bb-ea9c4adb3196`/incarnation `889d98ab-12a3-41fb-8f15-1a5e6b877c4d`, 최초 명령 `claude --model claude-opus-5-5`, 첫 화면 Opus 5.5 xhigh·선택창 없음, readiness satisfied=true, input_accepted/turn_started 관측, backend unknown이다. 계약·고정 입력25개·path-check·goal 사본·split/readiness/first-screen/first-show/worker-start receipt는 D/`procmon-review-v5/`에 있다. 쓰기는 그 폴더의 context.md·verdict.md·work/만 허용했다. 판정 대기이며 실제 실행·승인은 없다.
