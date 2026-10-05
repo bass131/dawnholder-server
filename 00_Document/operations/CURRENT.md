@@ -8,7 +8,7 @@
 | Content | [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) |
 | Rules | [운영 정본 반영](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#재개-지점) · [보류된 하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#운영-규칙-pr-재개와-설계) |
 | CodeMap(Architecture) | [Architecture 테스트 전체 PR CI](../../01_Phases/goals/2026-10-05-architecture-tests-ci/goal.md#재개-지점) |
-| Management | [시스템 카드](../../05_Management/goals/2026-10-02-system-cards/goal.md#재개-지점--2026-10-03-사용자-휴식) |
+| Management | [시스템 카드 종료 기록](../../05_Management/goals/2026-10-02-system-cards/goal.md#병합-결과와-종료-인계) |
 
 - GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-repository-d1b-20261002`
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-currency-20261005`
