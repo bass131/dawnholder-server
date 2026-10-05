@@ -43,14 +43,14 @@ PR1은 새 workflow와 진입/goal 기록이다. 제품·기존 검사 정책·R
 
 메인 `msg_7b2085ef0fec`(2026-10-05T10:58:02Z)는 이 범위를 사용자 사전 결정과 일치한다고 대조하고 구현자 발행을 지시했다. 전체 수집·기존 opt-in 유지·skip/expected failure 분리·0건/발견 오류 비통과에 동의했다. 메인의 범위 대조이며 새 사용자 직접 입력이나 병합 승인은 아니다. 원문은 근거 폴더의 `scope-wait-1.json`이다.
 
-새 Run `run_3abaa3ef999c`, coordinator `term_b6c748f5-f8bd-4532-acb4-14df49bf8c79`다. 첫 독립 Opus의 NOT PASS 결함 #1을 새 Sol이 수정하고 자체 실행·정산·종료했다. 다음은 신규 Opus 재검증이다. 실제 PR CI·PR 발행·병합은 아직 수행하지 않았다. 이전 Run·Task·Dispatch를 재사용하지 않는다.
+새 Run `run_3abaa3ef999c`, coordinator `term_b6c748f5-f8bd-4532-acb4-14df49bf8c79`다. 첫 독립 Opus의 NOT PASS 결함 #1을 새 Sol이 수정했고 신규 Opus의 로컬 강 재검증을 통과했다. 현재는 PR 발행·실제 CI 확인 단계이며 병합은 미수행이다. 실제 Actions 결과는 확보 후 별도 기록하고 로컬 통과와 구분한다. 이전 Run·Task·Dispatch를 재사용하지 않는다.
 
 ## 진척 단계
 
 - [x] 범위·goal 확정
 - [x] workflow 구현과 자체 점검 — 독립 결함 #1 수정 포함
-- [>] 독립 재검증
-- [ ] PR 발행·실제 CI 확인
+- [x] 독립 재검증
+- [>] PR 발행·실제 CI 확인
 - [ ] 병합 승인·병합
 - [ ] 결과 기록·종료
 
@@ -89,8 +89,20 @@ Opus Task `task_789f0cef8c0f`/Dispatch `ctx_86ceb6e0214f`는 구현 Task `task_f
 - 최초 Git 읽기2건은 **GIT_OPTIONAL_LOCKS=0 없이 실행됨**: batch12:04:08.883Z의 `git rev-parse HEAD`·`git status --short`, 출력 HEAD57674ed와 기존 goal 수정, exit0. 개별 subprocess 시각은 미계측이다. 이후 적용 batch는12:05:02.321Z의 branch 조회이며 원문은 `repair-1/git-initial-calls.jsonl`이다. 메인 `msg_d502a1d3b49c`(`repair-1-wait-2.json`)가 기록·이후 준수·새 Opus 원시 대조로 처리하도록 결정했고, 같은 Sol 재발에는 적용하지 않는다. 성공/무해로 단정하지 않으며 새 검증 계약에 두 원문과 후속 감사 요구를 포함한다.
 - 자체 harness run1은 WSL의 Windows worktree Git 경로 준비 실패(exit128), run2는 YAML chomping과 추출 문자열 끝 줄바꿈 비교로 테스트 진입 전 중단했다. 원시를 보존한 run3에서 실제 파싱 YAML을 실행했다. 동일 harness 총4버전 체크포인트 `msg_2206557bfe8c`를 메인에게 `msg_9f86e4fa31af`로 전달했다. 제품 확정 실패 횟수와 구분하며 결함 #1의 확정 NOT PASS는 여전히1회다.
 
+### 4 - 독립 재검증 통과와 PR 준비
+
+신규 Opus Task `task_3a37647bbb27`/Dispatch `ctx_f9bedf6ffe3d`는 수정 Task `task_7c1e21e71e3f`를 검증하고 `msg_215bc166a0ec`(2026-10-05T12:56:08Z)로 **로컬 강 검증 통과·결함 #1 해소·새 차단 결함 없음**을 보고했다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. 원문 `review-2/verdict.md` SHA256 `8A18AAD1FEA3218DD5B1765EE82EDA22F203AA944966D73EBB4D3B34341BDA60` 전체를 Astra가 읽었다.
+
+- 검증 HEAD는 최신 main `e9c78a0f`의 종료 기록을 통합한 `e9b704fcf3e737addf9bc79353aec5033d058266`이다. CURRENT의 인접 행 충돌은 CodeMap 새 goal과 main의 Management 종료 링크를 모두 보존했다. 제품 변경은 workflow 한 파일이며 main 대비 CURRENT 2줄 교체와 이 goal만 더해진다. 통합 원시는 `review-2-integration.json`이다.
+- 고정 HEAD의 커밋된 YAML을 새 WSL depth-1 clone에서 실행했다. **12파일 발견, 199수집, 85실행, 정상성공82, skip114, expected failure3, 실패/오류0**을 stock unittest·AST·git ls-files와 ID 단위로 독립 대조했고 실제 suite 대조30개가 일치했다. 보존26·수정경계15개 fixture는 기대대로였고 probe3개는 관찰로 구분한다. 원시는 `review-2/raw/run-1/`이며 tests 단계85.66초는 로컬 측정이다.
+- Astra는 결함 #1의 unavailable exit2·counts null·누락경로/이유/수리 안내, 실제 suite result와 대조30개, Git 감사의 최초 미설정2건·이후 shell/WSL 재발0을 원시에서 확인했다. 보호635개 leaf와 외부 Sol 원천 hash 불일치0, HEAD·빈 status를 확인했다(`review-2-astra-source-check.json`). index stat 갱신 여부는 사후 관측 불가다. 메인 편차 처리 조건을 독립 검증했으며 무해로 단정하지 않는다.
+- release 뒤 같은 incarnation `4c784277-fc13-40c7-9296-ada9063d642d`·idle·완료화면·빈 prompt를 확인해 close했다(ptyKilled true). 근거는 `review-2-release.json`·`review-2-before-close.json`·`review-2-close-screen.json`·`review-2-close.json`이다. 검증 입력 goal은 `goal-review-2-input.md`에 보존했다.
+- 실제 GitHub 호스트·checkout/setup-python/upload-artifact·PR merge checkout과 원격 artifact는 아직 미실행이다. 로컬 강 통과를 실제 PR CI나 전체 goal 완료로 표현하지 않는다. 신규 PR을 발행한 뒤 그 원시와 현재 workflow 동일성을 새 독립 Opus가 확인한다.
+
 ## 다음 계획 후보
 
 범위 밖 개선은 [BACKLOG](../../../00_Document/operations/BACKLOG.md) 기존 기능 테스트 CI 후보와 연결하고 이번 workflow에 선행 구현하지 않는다. 운영툴 vitest·DB 오프라인 PowerShell·새 폴더 보존 검사·Windows 경로 예산 검사도 현재 목표 밖이다.
 
 첫 검증의 비차단 관찰 O1~O8은 `review/verdict.md`에 보존한다. expected-failure만 있는 실행 정책, Python pin 중복, exit 상수 가독성, inline runner 책임 분리, 초기화/마감 중복, 기존 sqlite ResourceWarning, 자체 점검 중복 assertion, README/BACKLOG의 CI 인지는 후속 후보이며 결함 #1 수정에 포함하지 않는다.
+
+재검증 N-1~N-3은 `review-2/verdict.md`의 비차단 관찰이다. package `__init__.py`의 SkipTest로 하위 파일이 발견되지 않으면 exit2가 되는 N-1은 현재 suite 영향0이고 전체 파일 발견 불가를 비통과로 처리하는 이번 계약에 부합한다. Astra는 현재 동작을 수용하고 향후 package 단위 skip 도입 시 별도 분류·안내를 검토할 후보로 둔다. 잘못된 모듈명/load_tests/skip의 원인 안내 세분화(N-2), private Python hook과 pin 변경 시 재검증 의무의 주석 보강(N-3)도 현재 제품 변경으로 확대하지 않는다.
