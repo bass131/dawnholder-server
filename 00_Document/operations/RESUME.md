@@ -11,7 +11,7 @@
 
 ## Git와 문서 보존
 
-GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, 현재 branch/HEAD, 원격 main과의 차이를 먼저 확인한다. 현재 branch·기준 commit은 CURRENT의 goal, 이전 준비 branch는 P1a 종료 절에 있다. branch 이름만 보고 다음 구현이 시작됐다고 판단하지 않는다.
+Core 작업 경로는 `C:/Dev/DawnHolder_Project`다. 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다. `git status --short`, 현재 branch/HEAD, 원격 main과의 차이를 먼저 확인한다. 현재 branch·기준 commit은 CURRENT의 goal, 이전 준비 branch는 P1a 종료 절에 있다. branch 이름만 보고 다음 구현이 시작됐다고 판단하지 않는다.
 
 2026-09-30 맥락 문서 checkpoint `b3cf78a`는 기존 준비 branch에 보존됐으며, 2026-10-01 정정 branch에 `147ef1c`로 가져왔다. 이후 push·PR·병합 상태는 정정 goal에서 확인한다. 기존 변경이나 이 문서 commit을 버리거나 무조건 main으로 전환하지 않는다. 새 checkout에 이 문서가 없다면 기존 작업 경로의 [로컬 인계](../../.backups/handoffs/2026-09-30-game-dev-next-session.md)와 checkpoint를 확인한다. `CLAUDE.md`는 PR149로 main에 병합됐고 소유자는 Claude 메인이다. 상세 출처는 정정 goal에 있다. PR 병합에는 해당 PR에 대한 사용자 명시 승인이 필요하다.
 
@@ -42,7 +42,7 @@ GameDev 작업 경로는 `C:/Dev/DawnHolder_Project`다. `git status --short`, �
 
 운영툴 문서는 Management 메인이 `05_Management`에서 관리한다. 기존 별도 worktree는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`이며 해당 작업 공간의 README/재개 문서를 확인한다. root의 05 사본이 상대 세션의 로컬 문서 갱신까지 포함한다고 가정하지 않는다.
 
-첫 개발기록 공동 조회는 파티 UI·DB 구현에 의존하지 않는다. 실제 서버 등록·로그 조회 전에 GameDev의 `02_Server`/실행 wrapper와 Management의 `05` 등록·조회·보존 계약을 조율한다. 합의 범위와 현재 한계는 P1a goal의 종료 절과 상대 세션의 정식 goal을 따른다. 조회 성공을 서버 제어·DB 저장·로그 삭제 권한으로 확대하지 않는다.
+첫 개발기록 공동 조회는 파티 UI·DB 구현에 의존하지 않는다. 실제 서버 등록·로그 조회 전에 Core의 `02_Server`/실행 wrapper와 Management의 `05` 등록·조회·보존 계약을 조율한다. 합의 범위와 현재 한계는 P1a goal의 종료 절과 상대 세션의 정식 goal을 따른다. 조회 성공을 서버 제어·DB 저장·로그 삭제 권한으로 확대하지 않는다.
 
 Orca 연결은 현재 runtime과 정확한 worktree/handle/incarnation을 다시 확인한다. 이전 인계의 ID는 당시 관측값이며 실행 권한이 아니다. 새 세션이 필요하면 [session-handoff](../../.agents/skills/dawnholder-session-handoff/SKILL.md)를 사용하되 세션 생성·종료는 사용자 범위 안에서만 한다. 기존 Run/Task/Dispatch를 재사용하지 않는다.
 

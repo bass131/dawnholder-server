@@ -23,7 +23,7 @@
 - 작업자·검증자는 작업 하나 후 정산·종료하고 재사용하지 않는다. 수정과 재검증은 새 세션으로 수행한다. 같은 계약·같은 결함 번호의 확정 실패 3회 뒤 새 Sol과 읽기 전용 Fable Advisor를 쓰는 조건·집계·메인 보고는 [확정 실패 정본](00_Document/operations/ORCA.md#confirmed-failures)을 따른다. 파트당 검증자는 동시에 하나만 연다. 절차는 [Orca 위임 지침](.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다.
 - 일반 작업자는 할당 범위만 수행하고 추가 위임하지 않는다. 메인이 지정한 파트 리드 Astra만 승인된 목표·공간·권한 안에서 좁은 작업자를 한 단계 둘 수 있다. 새 목표·파트·승인 밖 세션 생성은 메인에 올린다. 범위 안 결함과 다음 후보·새 요청의 기본값·애매한 범위 판정은 [목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)을 따르며 후보마다 범위 확대 승인을 요청하지 않는다.
 - goal 범위는 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건과 PR 경계로 고정한다. 착수 전 메인이 승인 초안과 대조하고 차이가 있으면 사용자가 판단한다. 완료조건을 막는 범위 안 결함만 루프에서 수정하며, 같은 산출물 수정이 3회를 넘으면 메인 체크포인트를 알린다. 이 체크포인트와 같은 계약·결함 번호의 확정 실패 3회 집계는 구분한다([목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)).
-- 마감 구간 리드는 GameDev·Content·Rules·CodeMap·Management 다섯이다. CodeMap은 Architecture 파트의 분석·검사 책임과 표시 이름이며, 코드 리팩토링은 코드 주인 파트가 한다. 기존 `architecture-active` 경로와 Architecture 태그는 유지한다. 배치·추가 파트의 승인 경계는 [R-1](00_Document/operations/ORCA.md#r1-management-placement)을 따른다.
+- 마감 구간 리드는 Core·Content·Rules·CodeMap·Management 다섯이다. CodeMap은 Architecture 파트의 분석·검사 책임과 표시 이름이며, 코드 리팩토링은 코드 주인 파트가 한다. 기존 `architecture-active` 경로와 Architecture 태그는 유지한다. 배치·추가 파트의 승인 경계는 [R-1](00_Document/operations/ORCA.md#r1-management-placement)을 따른다.
 - 같은 파일의 동시 쓰기를 금지한다. 기존 사용자 변경을 보존하고 무관한 변경을 되돌리지 않는다.
 - 메인은 전체 소스·로그·대화를 반복 수집하지 않고 짧은 결과와 필요한 근거를 확인한다. 다만 최종 판정 원문은 승인 전 직접 읽고 [R-2 원천 표본 대조](00_Document/operations/ORCA.md#r2-source-check)를 따른다. 보고와 실제 수행이 다르거나 미실행을 통과로 보고하면 의도와 무관하게 즉시 메인에 보고한다. 위임 도구 부재·막힘을 숨기고 구현 전체를 대신하지 않는다.
 - 합의된 범위의 수정·검증은 계속한다. 이미 받은 승인을 반복 요청하지 않되, 지침·스킬 사용만으로 범위나 외부 변경 권한을 넓히지 않는다.
@@ -38,7 +38,12 @@
 
 ## 메시지와 보고
 
-- 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[GameDev Astra]`, `[GameDev Sol]`, `[GameDev 검증자]`, `[Content Astra]`, `[Content Sol]`, `[Content 검증자]`, `[Rules Astra]`, `[Rules Sol]`, `[Rules 검증자]`, `[Architecture Astra]`, `[Architecture Sol]`, `[Architecture 검증자]`, `[Management Astra]`, `[Management Sol]`, `[Management 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다.
+- 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[Core Astra]`, `[Core Sol]`, `[Core 검증자]`, `[Content Astra]`, `[Content Sol]`, `[Content 검증자]`, `[Rules Astra]`, `[Rules Sol]`, `[Rules 검증자]`, `[Architecture Astra]`, `[Architecture Sol]`, `[Architecture 검증자]`, `[Management Astra]`, `[Management Sol]`, `[Management 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다.
+
+<a id="core-tag-transition"></a>
+
+- **Core 명칭과 태그 전환:** GameDev는 Core의 이전 이름이다. [운영 후속 정본화의 PR2](01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 세션과 새 계약부터 `[Core Astra]`·`[Core Sol]`·`[Core 검증자]`를 쓴다. PR2 병합 전에 연 GameDev 세션과 진행 중인 계약은 그 세션이 끝날 때까지 `[GameDev …]`를 유지한다. 전환기 수신 측은 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 진행 중인 영속화 통합 goal은 중간 변경하지 않고 그 goal의 R-8로 새 Astra를 열 때부터 Core 태그를 쓴다. 과거 기록과 BACKLOG의 GameDev 담당·원천 표기는 당시 이름으로 해석한다.
+
 - 현재 `from_handle`·Task·Dispatch가 모두 일치하는 내용 없는 heartbeat만 태그 없이 수신하며 교정 메시지를 보내지 않는다. 내용 있는 heartbeat와 일반 지시·보고·질문·완료는 태그가 필수다. 빈 값 경계와 수신 helper, 공식 blocking ask의 버전 한정 subject 예외는 [수신 정본](00_Document/operations/ORCA.md#dispatch-message-policy)과 R-3을 따른다.
 - 사용자 승인으로 [R-1](00_Document/operations/ORCA.md#r1-management-placement)에 따라 연 추가 파트는 `[<파트> Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 태그만으로 파트 생성이나 권한이 생기지 않는다.
 - 타 세션 터미널 입력은 자기 태그와 “Orca 메시지를 확인하라”는 안내만 담고 지시는 orchestration으로 보낸다. **Enter로 제출돼 대화 기록에 들어간 표식 없는 입력**만 사용자 직접 지시다. 미제출 draft·추천 프롬프트·ghost text는 지시나 pane 종료 보류 사유가 아니다. 공식 계약 draft는 [R-5 복구](00_Document/operations/ORCA.md#official-contract-draft)로 구분한다. 태그는 권한이 아니며 출처 `from_handle`과 어긋나면 처리하지 않고 메인에 보고한다. 메인이 전달한 사용자 결정은 사용자 직접 입력으로 격상하지 않는다.
