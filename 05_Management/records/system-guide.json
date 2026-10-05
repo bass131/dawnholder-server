@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "revision": "2026-10-02-representative-diagrams",
+  "asOf": "2026-10-02",
+  "coverage": "representative-diagrams",
+  "coverageNote": "대표 도식 3종을 먼저 확인하는 자료입니다. 나머지 하위 시스템 설명은 아직 작성하지 않았습니다.",
+  "cards": [
+    {
+      "id": "server",
+      "parentId": null,
+      "title": "게임 서버",
+      "summary": "입력을 검증하고 월드와 게임 판정을 관리합니다.",
+      "relatedSystemIds": []
+    },
+    {
+      "id": "client",
+      "parentId": null,
+      "title": "Unity 클라이언트",
+      "summary": "플레이어 입력과 게임 화면을 연결합니다.",
+      "relatedSystemIds": []
+    },
+    {
+      "id": "client-net",
+      "parentId": null,
+      "title": "클라이언트 전송",
+      "summary": "연결 시도와 패킷 송수신을 담당합니다.",
+      "relatedSystemIds": []
+    },
+    {
+      "id": "shared",
+      "parentId": null,
+      "title": "공유 계약",
+      "summary": "양쪽이 함께 사용하는 패킷과 게임 데이터를 정의합니다.",
+      "relatedSystemIds": []
+    },
+    {
+      "id": "tools",
+      "parentId": null,
+      "title": "개발·검증 도구",
+      "summary": "코드 생성과 개발 환경, 회귀 검증을 돕습니다.",
+      "relatedSystemIds": []
+    },
+    {
+      "id": "management",
+      "parentId": null,
+      "title": "운영툴",
+      "summary": "관리창과 개발 기록, 근거 탐색을 제공합니다.",
+      "relatedSystemIds": []
+    },
+    {
+      "id": "automation",
+      "parentId": null,
+      "title": "자동화·저장소 규칙",
+      "summary": "CI와 저장소 훅, 작성 기준을 연결합니다.",
+      "relatedSystemIds": []
+    },
+    {
+      "id": "server.network",
+      "parentId": "server",
+      "title": "서버 전송 계층",
+      "summary": "수신 바이트에서 완성된 프레임을 분리해 게임 세션에 전달합니다.",
+      "status": "code-present",
+      "relatedSystemIds": [
+        "transport"
+      ],
+      "documentId": "server.network.receive",
+      "codeReference": {
+        "commitSha": "17044c42c5e0a593f8d943e6cc04f3816e0dedb0",
+        "mappings": [
+          {
+            "path": "02_Server/Network/Session.cs",
+            "kind": "file",
+            "namespace": "Dawnholder.Server.Network",
+            "role": "프레임 분리와 비동기 수신 수명"
+          },
+          {
+            "path": "02_Server/Network/FrameValidator.cs",
+            "kind": "file",
+            "namespace": "Dawnholder.Server.Network",
+            "role": "프레임 길이 검증"
+          },
+          {
+            "path": "02_Server/GameServer/Sessions/GameSession.cs",
+            "kind": "file",
+            "namespace": "Dawnholder.Server.GameServer.Sessions",
+            "role": "완성 패킷의 게임 핸들러 전달"
+          }
+        ]
+      }
+    },
+    {
+      "id": "server.session",
+      "parentId": "server",
+      "title": "세션·핸들러",
+      "summary": "첫 패킷과 프로토콜 버전을 검사하고 게임 진입 조건을 관리합니다.",
+      "status": "code-present",
+      "relatedSystemIds": [
+        "connection"
+      ],
+      "documentId": "server.session.handshake",
+      "codeReference": {
+        "commitSha": "17044c42c5e0a593f8d943e6cc04f3816e0dedb0",
+        "mappings": [
+          {
+            "path": "02_Server/GameServer/Sessions/GameSession.cs",
+            "kind": "file",
+            "namespace": "Dawnholder.Server.GameServer.Sessions",
+            "role": "최초 패킷 검사와 세션 상태"
+          },
+          {
+            "path": "02_Server/GameServer/Handlers/Session/HandshakeHandler.cs",
+            "kind": "file",
+            "namespace": "Dawnholder.Server.GameServer.Handlers.Session",
+            "role": "프로토콜 버전 검증"
+          },
+          {
+            "path": "03_Client/Assets/Scripts/Network/UnityClientSession.cs",
+            "kind": "file",
+            "namespace": "Dawnholder.Client.Network",
+            "role": "최초 handshake 송신"
+          },
+          {
+            "path": "03_Client/Assets/Scripts/Network/Handlers/Session/HandshakeResultHandler.cs",
+            "kind": "file",
+            "namespace": "Dawnholder.Client.Network.Handlers.Session",
+            "role": "결과의 메인 스레드 반영"
+          },
+          {
+            "path": "99_Tools/PacketGenerator/PDL.xml",
+            "kind": "file",
+            "role": "handshake 패킷 필드 정의"
+          }
+        ]
+      }
+    },
+    {
+      "id": "management.desktop",
+      "parentId": "management",
+      "title": "Electron 셸",
+      "summary": "관리창의 표시와 숨김, 트레이 열기와 종료를 관리합니다.",
+      "status": "code-present",
+      "relatedSystemIds": [
+        "management-desktop"
+      ],
+      "documentId": "management.desktop.lifecycle",
+      "codeReference": {
+        "commitSha": "17044c42c5e0a593f8d943e6cc04f3816e0dedb0",
+        "mappings": [
+          {
+            "path": "05_Management/frontend/electron/main.ts",
+            "kind": "file",
+            "role": "창과 트레이의 수명"
+          }
+        ]
+      }
+    }
+  ],
+  "documents": [
+    {
+      "id": "server.network.receive",
+      "cardId": "server.network",
+      "title": "수신 바이트를 게임 패킷으로 전달하는 과정",
+      "sourceCommit": "17044c42c5e0a593f8d943e6cc04f3816e0dedb0",
+      "sourceRefs": [
+        {
+          "path": "02_Server/Network/Session.cs",
+          "symbol": "Session.OnRecvCompleted, PacketSession.OnRecv"
+        },
+        {
+          "path": "02_Server/Network/FrameValidator.cs",
+          "symbol": "FrameValidator.TryValidateFrameHeader"
+        },
+        {
+          "path": "02_Server/GameServer/Sessions/GameSession.cs",
+          "symbol": "GameSession.OnRecvPacket"
+        }
+      ],
+      "sections": [
+        {
+          "id": "receive-call-flow",
+          "title": "정상 프레임의 호출 흐름",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "Session.OnRecvCompleted가 받은 바이트를 수신 버퍼에 기록하고 PacketSession.OnRecv를 호출합니다. 길이 헤더가 유효하고 프레임 전체가 도착했으면 OnRecvPacket으로 넘깁니다. 남은 구간의 다음 프레임도 같은 방식으로 처리하고, 완성 프레임이 더 없으면 누적 처리 길이를 반환합니다. OnRecvCompleted는 그 길이만 버퍼에서 소비한 뒤 다음 수신을 등록합니다."
+            },
+            {
+              "type": "diagram",
+              "id": "receive-normal-flow",
+              "format": "mermaid",
+              "title": "완성된 정상 프레임을 처리하는 순서",
+              "description": "수신 버퍼에 기록한 뒤 완성된 정상 프레임이 있는지 확인합니다. 있으면 게임 처리로 전달하고 처리 길이와 다음 검사 위치를 갱신해 반복합니다. 완성 프레임이 더 없으면 누적 처리 길이만 한 번 소비하고 다음 수신을 등록합니다. 잘못된 길이와 디코드 실패의 종료 경로는 아래 글에서 설명합니다.",
+              "source": "flowchart TD\n  A[\"수신 버퍼 기록\"] --> B{\"완성 프레임이 있나?\"}\n  B -->|있음| C[\"프레임을 게임 처리로 전달\"]\n  C --> D[\"처리 길이 누적·검사 위치 이동\"]\n  D -->|다음 프레임 확인| B\n  B -->|없음| E[\"누적 처리 길이만 소비\"]\n  E --> F[\"다음 수신 등록\"]"
+            },
+            {
+              "type": "paragraph",
+              "text": "길이 헤더는 2바이트이며 전체 프레임 크기는 4~4096바이트여야 합니다. 길이가 잘못되면 즉시 연결을 끊고, 유효한 프레임이 덜 도착했으면 그 바이트는 소비하지 않고 다음 수신을 기다립니다. 디코드 예외와 버퍼 처리 실패도 연결 종료로 처리합니다. 이 문서는 기준 commit의 코드를 읽은 설명이며 실제 소켓 실행 결과가 아닙니다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "server.session.handshake",
+      "cardId": "server.session",
+      "title": "접속 직후 프로토콜 버전을 확인하는 과정",
+      "sourceCommit": "17044c42c5e0a593f8d943e6cc04f3816e0dedb0",
+      "sourceRefs": [
+        {
+          "path": "03_Client/Assets/Scripts/Network/UnityClientSession.cs",
+          "symbol": "UnityClientSession.OnConnected"
+        },
+        {
+          "path": "02_Server/GameServer/Sessions/GameSession.cs",
+          "symbol": "GameSession.OnRecvPacket, CompleteHandshakeAndEnter, RejectHandshake"
+        },
+        {
+          "path": "02_Server/GameServer/Handlers/Session/HandshakeHandler.cs",
+          "symbol": "HandshakeHandler.Handle"
+        },
+        {
+          "path": "03_Client/Assets/Scripts/Network/Handlers/Session/HandshakeResultHandler.cs",
+          "symbol": "HandshakeResultHandler.Handle"
+        },
+        {
+          "path": "99_Tools/PacketGenerator/PDL.xml",
+          "symbol": "C_Handshake, S_HandshakeResult"
+        }
+      ],
+      "sections": [
+        {
+          "id": "handshake-packet-flow",
+          "title": "버전이 일치할 때의 패킷 흐름",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "Unity 클라이언트는 연결 직후 첫 패킷으로 C_Handshake에 자신의 프로토콜 버전을 보냅니다. 서버는 첫 패킷의 종류를 검사하고 버전이 일치하면 완료 상태를 기록한 뒤 S_HandshakeResult(ok=true)를 보냅니다. 클라이언트는 결과 적용을 메인 스레드에 예약하고, 그 작업에서 성공 상태와 알림을 반영합니다."
+            },
+            {
+              "type": "diagram",
+              "id": "handshake-success-packets",
+              "format": "mermaid",
+              "title": "프로토콜 버전 확인의 성공 경로",
+              "description": "Unity 클라이언트가 C_Handshake를 보내고 서버가 버전을 검사한 뒤 S_HandshakeResult의 성공 결과를 돌려줍니다. 클라이언트의 결과 반영은 메인 스레드 작업에서 이루어집니다. 이 교환 자체가 월드 진입 완료를 의미하지는 않습니다.",
+              "source": "sequenceDiagram\n  participant C as Unity 클라이언트\n  participant S as 게임 서버\n  C-->>S: C_Handshake · clientVersion\n  S->>S: 첫 패킷과 버전 검사\n  S-->>C: S_HandshakeResult · ok=true\n  Note over C: 메인 스레드에서 성공 반영"
+            },
+            {
+              "type": "paragraph",
+              "text": "버전 불일치 시 서버는 실패 결과의 송신을 시도한 뒤 연결을 끊습니다. 응답이 실제 상대에게 도착한다고 보장하는 흐름은 아닙니다. 첫 패킷이 handshake가 아니거나 완료 뒤 handshake를 반복해도 연결을 끊습니다. 정상 handshake만으로 월드에 들어가지는 않으며 캐릭터 선택과 별도 진입 조건이 필요합니다. PDL의 과거 설명 주석보다 실제 GameSession의 진입 조건을 기준으로 썼으며 게임·네트워크 실행 검증은 하지 않았습니다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "management.desktop.lifecycle",
+      "cardId": "management.desktop",
+      "title": "관리창을 숨기고 다시 열거나 종료하는 과정",
+      "sourceCommit": "17044c42c5e0a593f8d943e6cc04f3816e0dedb0",
+      "sourceRefs": [
+        {
+          "path": "05_Management/frontend/electron/main.ts",
+          "symbol": "ready-to-show, close, openWindow, before-quit, will-quit"
+        }
+      ],
+      "sections": [
+        {
+          "id": "window-state-flow",
+          "title": "창 표시와 앱 종료의 상태 전이",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "관리창은 숨겨진 상태로 만들어지고 표시 준비가 끝나면 열립니다. 닫기 버튼은 창을 숨기며 트레이와 앱은 유지합니다. 트레이의 열기나 더블클릭으로 다시 표시하고, 트레이의 종료는 앱 종료 상태로 전환해 창과 트레이를 정리합니다."
+            },
+            {
+              "type": "diagram",
+              "id": "window-visibility-states",
+              "format": "mermaid",
+              "title": "닫기 버튼과 명시 종료의 차이",
+              "description": "앱이 창을 만들면 표시 준비 상태에서 시작해 준비 완료 후 창을 표시합니다. 닫기 버튼은 창을 숨기고, 트레이 열기는 다시 표시합니다. 표시 또는 숨김 상태에서 트레이 종료를 선택하면 앱 종료로 이어집니다. 시작과 끝 표식은 이 정상 조작 흐름의 범위를 나타내며, 창 숨김은 서버 종료가 아닙니다.",
+              "source": "stateDiagram-v2\n  direction TB\n  state \"표시 준비\" as Ready\n  state \"창 표시\" as Visible\n  state \"창 숨김\" as Hidden\n  state \"앱 종료\" as Closed\n  [*] --> Ready\n  Ready --> Visible: 준비 완료\n  Visible --> Hidden: 닫기 버튼\n  Hidden --> Visible: 트레이 열기\n  Visible --> Closed: 트레이 종료\n  Hidden --> Closed: 트레이 종료\n  Closed --> [*]"
+            },
+            {
+              "type": "paragraph",
+              "text": "명시 종료가 시작되면 isQuitting이 닫기 이벤트의 숨김 동작을 해제하고, will-quit에서 트레이 참조를 정리합니다. 시작 실패의 app.exit(1)은 이 정상 조작 그림에서 생략했습니다. 기준 commit의 창 수명만 설명하며 새 창 배율·설정 저장 기능이 구현됐다는 뜻은 아닙니다. 실제 종료나 서버·DB 상태를 이번 문서 작성에서 실행 검증하지 않았습니다."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -21,6 +21,7 @@ using Dawnholder.Tools.HeadlessBot.Scenarios;
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario TeleportSmoke
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario BossGate
 //   HeadlessBot --host 127.0.0.1 --port 7777 --scenario PartyQuest
+//   HeadlessBot --host 127.0.0.1 --port 7777 --scenario InventorySmoke
 //   HeadlessBot --scenario smoke   (단순 connect 검증)
 
 string host = "127.0.0.1";
@@ -231,6 +232,16 @@ if (string.Equals(scenarioName, "PartyQuest", StringComparison.OrdinalIgnoreCase
     Console.WriteLine($"      partyFormed={r.PartyFormed} " +
                       $"sharedCountA={r.SharedCountA} sharedCountB={r.SharedCountB} " +
                       $"targetCount={r.TargetCount} disbanded={r.Disbanded}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
+if (string.Equals(scenarioName, "InventorySmoke", StringComparison.OrdinalIgnoreCase))
+{
+    InventorySmoke.Result r = await InventorySmoke.Run(host, port);
+    Console.WriteLine($"[Bot] InventorySmoke: success={r.Success} " +
+                      $"entity={r.LocalEntityId} golem={r.GolemEntityId} attacks={r.AttacksSent}");
+    foreach (string observation in r.Observations) Console.WriteLine($"      {observation}");
     if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
     return r.Success ? 0 : 1;
 }

@@ -1,0 +1,76 @@
+.system-cards { font-size: 15px; }
+.guide-toolbar, .guide-navigation { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.guide-toolbar { justify-content: space-between; margin-bottom: 8px; }
+.guide-navigation button { padding: 4px 8px; font-size: 12px; background: #e4d6b6; border: 0; border-radius: 8px 0 0 8px; }
+.guide-search { font-size: 12px; display: flex; gap: 8px; align-items: center; }
+.guide-search input { max-width: 320px; width: 240px; padding: 4px 8px; background: #fffaf0; border: 1px solid #8a7650; box-shadow: inset 0 2px 0 #a8946e30; }
+.coverage-note { padding: 4px 8px; border-left: 3px solid #7d5200; font-size: 12px; color: #5f5241; margin-bottom: 8px; }
+.guide-title, .board-title { font: 700 24px/1.5 Galmuri11, "Malgun Gothic", sans-serif; margin: 12px 0; }
+.board-title { width: fit-content; margin: 12px auto; padding: 4px 16px; color: #fff1d6; border: 4px solid #24170d; background: url('../theme/assets/tex-wood.png') #3b2a1e; }
+.quest-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding: 24px; background: url('../theme/assets/tex-cork.png') #a8743f; border: 12px solid #3b2a1e; border-image: url('../theme/assets/tex-wood.png') 12 / 12px; box-shadow: inset 0 2px 8px #24170d60; }
+.quest-list { list-style: none; padding: 0; margin: 0; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; gap: 24px; }
+.quest-board:has(.board-note):not(:has(.empty-guide)) { grid-template-rows: repeat(2, auto); }
+.quest-board:has(.board-note):not(:has(.empty-guide)) .quest-list { grid-row: 1 / 3; grid-template-rows: subgrid; }
+.quest-board:has(.board-note):not(:has(.empty-guide)) .board-note { grid-column: 4; grid-row: 2; }
+.quest-card { position: relative; min-height: 184px; height: 100%; padding: 16px 12px 12px 24px; background: #fbf3df; border-bottom: 4px solid #d6c299; box-shadow: 1px 4px 4px #24170d35; transform: rotate(-1deg); transition: transform 120ms ease-out; }
+.quest-list li:nth-child(even) .quest-card { transform: rotate(1deg); }
+.quest-card::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 1px; background: #d9998a; }
+.quest-card:hover, .quest-card:focus-within { transform: rotate(0); }
+.quest-pin { position: absolute; top: -4px; left: calc(50% - 4px); width: 8px; height: 8px; background: #c8473a; border: 2px solid #1a120b; box-shadow: 2px 2px 0 #24170d60; }
+.card-emblem { display: block; width: 64px; height: 64px; margin-bottom: 4px; }
+.quest-card h4 { font: 800 16px/1.35 "Segoe UI", "Malgun Gothic", sans-serif; margin-bottom: 8px; }
+.quest-card h4 a { color: #2a231b; text-decoration: none; }
+.quest-card h4 a::after { content: ''; position: absolute; inset: 0; }
+.quest-card h4 a:focus-visible { outline: none; }
+.quest-card:focus-within { outline: 3px solid #1a120b; box-shadow: 0 0 0 6px #fff4c0; }
+.quest-card p { font-size: 13px; line-height: 1.5; }
+.quest-card .quest-meta { margin-top: 8px; color: #155c57; font-size: 12px; }
+.quest-status { display: flex; align-items: center; gap: 8px; color: #1f6b3a; margin-top: 8px; }
+.small-stamp { width: 24px; height: 24px; }
+.card-id { display: block; margin-top: 8px; color: #5f5241; font-size: 12px; }
+.board-note { padding: 16px; background: #fff3c4; box-shadow: 1px 4px 4px #24170d35; transform: rotate(1deg); font-size: 12px; }
+.board-note h4 { margin-bottom: 8px; font-weight: 700; }
+.board-note p { margin: 4px 0; }
+.stamp-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin-top: 8px; }
+.stamp-legend span { display: flex; gap: 4px; align-items: center; }
+.empty-guide { grid-column: 1 / -1; }
+.system-index { margin: 8px 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.system-index button { display: flex; align-items: center; gap: 4px; padding: 4px 8px; background: #e4d6b6; border: 0; border-top: 3px solid transparent; font-size: 12px; }
+.system-index button[aria-pressed='true'] { border-top-color: #155c57; background: #fffaf0; }
+.index-emblem { width: 32px; height: 32px; }
+.ledger-page { padding: 16px 20px 20px 48px; position: relative; background: #fffaf0; border: 1px solid #a8946e; box-shadow: 0 3px 0 #e4d6b6, 0 4px 0 #a8946e; }
+.ledger-page::before { content: ''; position: absolute; left: 32px; top: 0; bottom: 0; width: 1px; background: #d9998a; }
+.document-note { background: #fff3c4; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; }
+.document-summary { font-size: 15px; margin-bottom: 12px; }
+.document-baseline { display: grid; gap: 4px; padding: 8px 12px; border-left: 3px solid #155c57; background: #e5f0e9; font-size: 12px; }
+.document-toc { display: flex; gap: 12px; margin: 12px 0; }
+.document-toc a, .search-results a { color: #155c57; }
+.document-section { margin-top: 20px; }
+.document-section h4 { font-size: 18px; font-weight: 700; border-bottom: 3px double #a8946e; padding-bottom: 8px; margin-bottom: 12px; }
+.document-section h5 { font-size: 16px; font-weight: 700; margin: 12px 0 8px; }
+.document-section > p { margin: 12px 0; font-size: 15px; line-height: 1.7; }
+.related-records { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12px; margin-bottom: 8px; }
+.related-records button, .diagram-block button, .guide-state button, .guide-reload, .search-results button { padding: 4px 8px; font-size: 12px; border: 1px solid #8a7650; margin: 4px 0; }
+.diagram-block { margin: 16px 0; padding: 12px; border: 1px solid #a8946e; background: #fffaf0; }
+.diagram-block h5 { margin-top: 0; }
+.diagram-status { color: #5f5241; font-size: 12px; margin-bottom: 8px; }
+.diagram-frame { display: block; width: 100%; max-width: 960px; border: 0; background: #fffaf0; }
+.diagram-block figcaption { margin: 8px 0; font-size: 15px; line-height: 1.7; }
+.diagram-block figcaption strong { font-size: 13px; }
+.diagram-block summary { cursor: pointer; font-size: 13px; }
+.diagram-block pre { margin: 8px 0; padding: 12px; overflow: auto; background: #f3e9d2; font: 13px/1.5 Consolas, monospace; white-space: pre-wrap; }
+.mapping-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+.mapping-table th, .mapping-table td { text-align: left; border-bottom: 1px solid #a8946e; padding: 8px; vertical-align: top; }
+.mapping-table code { word-break: break-all; }
+.guide-snapshot { font-size: 12px; margin: 16px 0 4px; }
+.guide-snapshot dd { margin: 0 0 8px 12px; }
+.guide-state { padding: 24px; }
+.guide-state h3 { font-size: 18px; margin-bottom: 12px; }
+.guide-state p { margin-bottom: 8px; }
+.search-results ul { padding-left: 20px; }
+.search-results li { margin: 16px 0; }
+@container (max-width: 1180px) { .quest-board { grid-template-columns: repeat(3, minmax(0, 1fr)); } .quest-board:has(.board-note):not(:has(.empty-guide)) { grid-template-rows: repeat(3, auto); } .quest-board:has(.board-note):not(:has(.empty-guide)) .quest-list { grid-row: 1 / 4; } .quest-board:has(.board-note):not(:has(.empty-guide)) .board-note { grid-column: 2; grid-row: 3; } }
+@container (max-width: 860px) { .quest-board { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 20px; } .quest-board:has(.board-note):not(:has(.empty-guide)) { grid-template-rows: repeat(4, auto); } .quest-board:has(.board-note):not(:has(.empty-guide)) .quest-list { grid-row: 1 / 5; } .quest-board:has(.board-note):not(:has(.empty-guide)) .board-note { grid-column: 2; grid-row: 4; } .guide-toolbar { align-items: start; } .guide-search { flex-wrap: wrap; } .ledger-page { padding-left: 32px; } .ledger-page::before { left: 20px; } }
+@container (max-width: 560px) { .system-index span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } .mapping-table { display: block; overflow: auto; } .guide-title, .board-title { font-size: 12px; } }
+@container (max-width: 480px) { .quest-board { display: block; } .quest-list { display: grid; grid-template-columns: 1fr; } .board-note { margin-top: 24px; } }
+@media (prefers-reduced-motion: reduce) { .quest-card { transition: none; } }

@@ -1,4 +1,5 @@
 using Dawnholder.Server.GameServer.Combat;
+using Dawnholder.Server.GameServer.Items;
 using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
@@ -47,6 +48,9 @@ public class GameWorld
     // Cross-map quest state, connected to copied membership and disband cleanup in the constructor.
     readonly QuestRegistry _quest;
 
+    // Connection-lifetime economy; unlike PlayerEntity, it survives map migration.
+    readonly InventoryRegistry _inventory;
+
     /// <summary>
     /// 맵별 terrain/content 쌍을 주입받는 생성자 — **필수 인자** (default 없음).
     /// <para>
@@ -79,6 +83,10 @@ public class GameWorld
             { MapId.Ending,        MakeMap(MapId.Ending,        provider) },
         };
 
+        _inventory = new InventoryRegistry(
+            IsActiveSession,
+            SendToEntity);
+
         _scheduler = new TickScheduler(OnTick);
         if (Interlocked.CompareExchange(ref _instance, this, null) != null)
             throw new InvalidOperationException("GameWorld는 단일 인스턴스만 허용");
@@ -98,6 +106,8 @@ public class GameWorld
     public long CurrentTick => _scheduler.CurrentTick;
 
     public TickScheduler Scheduler => _scheduler;
+
+    internal InventoryRegistry Inventory => _inventory;
 
     /// <summary>
     /// 전역 entity id 발급. 각 GameMap이 ctor에서 주입받는 Func&lt;int&gt;.
@@ -214,6 +224,7 @@ public class GameWorld
                 map.RemovePlayerBySession(session);
             }
             if (entityId >= 0) PartyFlow.CleanupOnDisconnect(this, entityId);
+            _inventory.Forget(session);
             session.CompleteWorldLeave();
             foreach (var entry in removed)
                 entry.Map.BroadcastToAll(new S_PlayerLeave { entityId = entry.EntityId }.Write(), except: session);
@@ -231,6 +242,7 @@ public class GameWorld
         //   맵 Tick과 Quest.Tick은 같은 틱 스레드에서 순차 실행(GameWorld.OnTick).
         //   미래 맵 멀티스레드화 대비 방어적 — 현재는 0~1틱 지연만 발생.
         Action<int, EnemyEntity> onKill = (killerId, target) =>
+        {
             _quest.EnqueueJob(() =>
             {
                 if (EnemyCatalog.For(target.Kind).IsBoss)
@@ -238,6 +250,10 @@ public class GameWorld
                 else
                     QuestNotifier.Send(this, _quest.OnKill(killerId));
             });
+
+            // Independent of boss quest reset; the economy job retains only immutable values.
+            _inventory.EnqueueKill(killerId, target.Kind, target.EntityId);
+        };
 
         if (provider.TryGetValue(id, out var pair))
             return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill);
@@ -257,6 +273,7 @@ public class GameWorld
 
             Party.Tick(tickNumber);
             Quest.Tick(tickNumber);
+            _inventory.Tick();
             foreach (TaskCompletionSource completion in barriers) completion.TrySetResult();
         }
         catch (Exception ex)

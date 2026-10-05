@@ -34,7 +34,7 @@ try {
     if ($exitCode -ne 0) {
         throw "Approved npm install failed: $exitCode"
     }
-    foreach ($name in @('codegraph','codegraph-linux-x64')) {
+    foreach ($name in @('codegraph', 'codegraph-linux-x64')) {
         $packagePath = "99_Tools/Architecture/CodeGraph/node_modules/@colbymchenry/$name/package.json"
         $package = Get-Content -LiteralPath $packagePath -Raw | ConvertFrom-Json
         Copy-Item -LiteralPath $packagePath -Destination (Join-Path $evidence "$name-package.json")

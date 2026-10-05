@@ -1,0 +1,1579 @@
+{
+  "schemaVersion": 1,
+  "note": "Generation completion times are coordinator observations; backend model is not exposed. Source images are preserved unchanged.",
+  "assets": [
+    {
+      "name": "emblem-server.png",
+      "prompt": "Use case: stylized-concept. Asset: original game-management UI emblem-server.png. Create a single small steel-blue server rack tower with tiny brass indicator lights, centered isolated object, genuinely transparent background. Original pixel art designed on a 32x32 logical pixel grid, crisp one-logical-pixel dark #1a120b outline, simple readable silhouette, upper-left light, no badge/backplate, at most 12 colors. Palette: steel blue #6f9bd1, dark walnut #3b2a1e, brass #e3b24a with up to two shading steps. Output target is a 64x64 PNG (2x nearest-neighbor display of logical pixels); keep large pixel blocks and no antialiasing if higher export resolution is used. No text, letters, numbers, logos, people, animals, copyrighted game characters or copied existing game artwork. Transparent alpha outside the object, no magenta background, no ground shadow.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "source": "assets/source/emblem-server.png",
+      "transparent": true,
+      "generatedAtObservedUtc": "2026-10-02 05:10:23 UTC",
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 352417,
+        "sha256": "a707f2e6d00a1aa7820ad3b39239e0b9f2e0684bd4b1e7b258095d07cd179c9d"
+      },
+      "final": {
+        "path": "assets/emblem-server.png",
+        "width": 64,
+        "height": 64,
+        "logicalGrid": [
+          32,
+          32
+        ],
+        "opaqueColorCount": 12,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 521,
+        "byteBudget": 4096,
+        "sha256": "fce8465ca99e2d3388b8be594b7b25208cc1ead9475ebcd2bab0798ce08c5cfe"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "weighted median-cut palette <=12",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 401,
+          "y": 260,
+          "w": 455,
+          "h": 784
+        },
+        "palette": [
+          [
+            44,
+            70,
+            112
+          ],
+          [
+            68,
+            101,
+            150
+          ],
+          [
+            70,
+            80,
+            100
+          ],
+          [
+            99,
+            101,
+            102
+          ],
+          [
+            52,
+            81,
+            126
+          ],
+          [
+            61,
+            91,
+            134
+          ],
+          [
+            57,
+            61,
+            76
+          ],
+          [
+            57,
+            72,
+            100
+          ],
+          [
+            106,
+            145,
+            199
+          ],
+          [
+            123,
+            164,
+            217
+          ],
+          [
+            41,
+            41,
+            51
+          ],
+          [
+            43,
+            49,
+            67
+          ]
+        ]
+      }
+    },
+    {
+      "name": "emblem-client.png",
+      "prompt": "Use case: stylized-concept. Asset: emblem-client.png, original game-management UI emblem. Subject: a compact vintage monitor, its screen showing a single green hill and golden sun, green #5fb27f casing accents. One object composition, centered on genuinely transparent alpha with modest empty padding, no badge or background plate. Original pixel art designed on a 32x32 logical grid for a 64x64 UI icon. Bold readable silhouette, crisp one-logical-pixel #1a120b dark outline, upper-left light. Restricted palette, at most 12 flat colors with two-step shading: #1a120b #3b2a1e #e3b24a #fdf6e6 plus the subject accent. No smooth gradients, no antialiasing, no ground plane or shadow. No text, letters, numbers, logos, people, animals, existing game characters or copied artwork. Preserve genuine transparent background, not magenta.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:12:49 UTC",
+      "source": "assets/source/emblem-client.png",
+      "transparent": true,
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 497182,
+        "sha256": "396e188ba7b18a70a2f46648452aba70b1f549316378c04f8151d0db8299d7aa"
+      },
+      "final": {
+        "path": "assets/emblem-client.png",
+        "width": 64,
+        "height": 64,
+        "logicalGrid": [
+          32,
+          32
+        ],
+        "opaqueColorCount": 12,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 571,
+        "byteBudget": 4096,
+        "sha256": "0424186ee0b84d300ee3eea6c12bcf48e43308d9dab2f46f7cb4e5723e5d61fb"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "weighted median-cut palette <=12",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 238,
+          "y": 233,
+          "w": 803,
+          "h": 812
+        },
+        "palette": [
+          [
+            52,
+            92,
+            65
+          ],
+          [
+            140,
+            180,
+            144
+          ],
+          [
+            185,
+            178,
+            123
+          ],
+          [
+            89,
+            150,
+            111
+          ],
+          [
+            105,
+            174,
+            130
+          ],
+          [
+            251,
+            242,
+            226
+          ],
+          [
+            42,
+            30,
+            18
+          ],
+          [
+            52,
+            47,
+            32
+          ],
+          [
+            205,
+            220,
+            192
+          ],
+          [
+            250,
+            240,
+            222
+          ],
+          [
+            62,
+            117,
+            84
+          ],
+          [
+            86,
+            103,
+            79
+          ]
+        ]
+      }
+    },
+    {
+      "name": "emblem-client-net.png",
+      "prompt": "Use case: stylized-concept. Create one original pixel-art game-management UI emblem representing client network transport. TWO CHUNKY TEAL DATA CONNECTOR PLUGS with brass contact tips meet diagonally at the center, with a thick coiled cable looping above and below them. Build a COMPACT NEARLY SQUARE silhouette: opaque subject bounding box aspect ratio 0.9 to 1.1, filling most of the square in BOTH height and width. This replaces an unreadably thin horizontal connector icon; avoid a horizontal strip, thin wire, wing or moustache silhouette. The two blocky plug bodies should each be large enough to remain recognizable when the full image is shown at 32px. Design like a 32x32 logical grid icon destined for exact 64x64 and 32x32 UI use. Bold crisp one-logical-pixel dark outline #1a120b, upper-left lighting, flat two-step shading, at most 12 colors: dark brown #1a120b, brown #3b2a1e, teal #3fa7a7 and its dark/light variants, brass #e3b24a, cream #fdf6e6. Modest transparent padding, centered, genuinely transparent alpha background. No badge, background plate, ground shadow, scenery, text, letters, numbers, logos, people, animals or copied game art. No smooth gradient or antialiasing. The cable coil contributes substantial vertical volume; overall shape should have similar height and visual weight to a small server rack or monitor icon.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 06:04:36 UTC",
+      "source": "assets/source/emblem-client-net-fix-1.png",
+      "transparent": true,
+      "revisionReason": "Independent design critique D-03: square composition for 64px and 32px legibility",
+      "previousVersions": [
+        {
+          "name": "emblem-client-net.png",
+          "prompt": "Use case: stylized-concept. Asset: emblem-client-net.png, original game-management UI emblem. Subject: two teal #3fa7a7 connector plugs meeting in the center, with one tiny brass spark between the joined tips. One object composition, centered on genuinely transparent alpha with modest empty padding, no badge or background plate. Original pixel art designed on a 32x32 logical grid for a 64x64 UI icon. Bold readable silhouette, crisp one-logical-pixel #1a120b dark outline, upper-left light. Restricted palette, at most 12 flat colors with two-step shading: #1a120b #3b2a1e #e3b24a #fdf6e6 plus the subject accent. No smooth gradients, no antialiasing, no ground plane or shadow. No text, letters, numbers, logos, people, animals, existing game characters or copied artwork. Preserve genuine transparent background, not magenta.",
+          "tool": "image_gen__imagegen",
+          "requestedModel": "Codex built-in GPT-Image",
+          "visibleModel": "not exposed",
+          "backendModel": "unknown",
+          "generatedAtObservedUtc": "2026-10-02 05:12:49 UTC",
+          "source": "assets/source/emblem-client-net.png",
+          "transparent": true,
+          "sourceInfo": {
+            "width": 1254,
+            "height": 1254,
+            "bytes": 296159,
+            "sha256": "0960062ac3d84527b8ffab5c1b115d68a383fdb7c5c26926029562b167fef2c8"
+          },
+          "final": {
+            "path": "assets/emblem-client-net.png",
+            "width": 64,
+            "height": 64,
+            "logicalGrid": [
+              32,
+              32
+            ],
+            "opaqueColorCount": 12,
+            "alphaValues": [
+              0,
+              255
+            ],
+            "bytes": 334,
+            "byteBudget": 4096,
+            "sha256": "31edef0b61f5dbeb65cd8b24a13062c7963b9e447b1cb5720e90fc1566f3b378"
+          },
+          "normalization": {
+            "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+            "authorization": "msg_548ad283088e",
+            "steps": [
+              "crop to alpha>=128 bounds",
+              "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+              "alpha threshold 128 to 0/255",
+              "weighted median-cut palette <=12",
+              "nearest-neighbor 2x"
+            ],
+            "crop": {
+              "x": 14,
+              "y": 446,
+              "w": 1226,
+              "h": 362
+            },
+            "palette": [
+              [
+                58,
+                120,
+                121
+              ],
+              [
+                147,
+                164,
+                137
+              ],
+              [
+                30,
+                44,
+                39
+              ],
+              [
+                34,
+                73,
+                72
+              ],
+              [
+                84,
+                134,
+                128
+              ],
+              [
+                82,
+                166,
+                169
+              ],
+              [
+                62,
+                58,
+                40
+              ],
+              [
+                50,
+                89,
+                88
+              ],
+              [
+                35,
+                89,
+                91
+              ],
+              [
+                37,
+                106,
+                111
+              ],
+              [
+                129,
+                95,
+                42
+              ],
+              [
+                243,
+                199,
+                88
+              ]
+            ]
+          },
+          "archivedFinalPath": "assets/history/emblem-client-net-r2.png"
+        }
+      ],
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 831386,
+        "sha256": "c1e4c834061bc160680caa953607898f80893a226392c00fd93a280c55890cec"
+      },
+      "final": {
+        "path": "assets/emblem-client-net.png",
+        "width": 64,
+        "height": 64,
+        "logicalGrid": [
+          32,
+          32
+        ],
+        "opaqueColorCount": 12,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 711,
+        "byteBudget": 4096,
+        "sha256": "0f5666988216c5f898414ce9b23e82bea2f2997da4980f3869473016c50288b8"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "weighted median-cut palette <=12",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 109,
+          "y": 40,
+          "w": 1037,
+          "h": 1175
+        },
+        "palette": [
+          [
+            52,
+            164,
+            162
+          ],
+          [
+            78,
+            103,
+            91
+          ],
+          [
+            20,
+            88,
+            86
+          ],
+          [
+            27,
+            121,
+            121
+          ],
+          [
+            52,
+            78,
+            69
+          ],
+          [
+            45,
+            122,
+            120
+          ],
+          [
+            25,
+            31,
+            24
+          ],
+          [
+            22,
+            58,
+            54
+          ],
+          [
+            124,
+            100,
+            54
+          ],
+          [
+            185,
+            151,
+            86
+          ],
+          [
+            81,
+            163,
+            158
+          ],
+          [
+            87,
+            189,
+            185
+          ]
+        ]
+      }
+    },
+    {
+      "name": "emblem-shared.png",
+      "prompt": "Use case: stylized-concept. Asset: emblem-shared.png, original game-management UI emblem. Subject: one curled parchment scroll with a red wax seal, warm amber #d39a3c edges and pale cream paper. One object composition, centered on genuinely transparent alpha with modest empty padding, no badge or background plate. Original pixel art designed on a 32x32 logical grid for a 64x64 UI icon. Bold readable silhouette, crisp one-logical-pixel #1a120b dark outline, upper-left light. Restricted palette, at most 12 flat colors with two-step shading: #1a120b #3b2a1e #e3b24a #fdf6e6 plus the subject accent. No smooth gradients, no antialiasing, no ground plane or shadow. No text, letters, numbers, logos, people, animals, existing game characters or copied artwork. Preserve genuine transparent background, not magenta.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:12:50 UTC",
+      "source": "assets/source/emblem-shared.png",
+      "transparent": true,
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 519808,
+        "sha256": "8a60d63695b283e149bad658c2e7977c616ad2a94bccea95ad02e969c0118182"
+      },
+      "final": {
+        "path": "assets/emblem-shared.png",
+        "width": 64,
+        "height": 64,
+        "logicalGrid": [
+          32,
+          32
+        ],
+        "opaqueColorCount": 12,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 591,
+        "byteBudget": 4096,
+        "sha256": "50a985de6d16923b4ebc6e912a8b50a599c5d5df91ceceb53127ee62ee5a6c42"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "weighted median-cut palette <=12",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 93,
+          "y": 187,
+          "w": 1079,
+          "h": 912
+        },
+        "palette": [
+          [
+            120,
+            79,
+            35
+          ],
+          [
+            253,
+            243,
+            218
+          ],
+          [
+            50,
+            27,
+            11
+          ],
+          [
+            89,
+            52,
+            21
+          ],
+          [
+            164,
+            119,
+            41
+          ],
+          [
+            170,
+            138,
+            84
+          ],
+          [
+            148,
+            63,
+            35
+          ],
+          [
+            193,
+            41,
+            39
+          ],
+          [
+            214,
+            159,
+            56
+          ],
+          [
+            230,
+            187,
+            102
+          ],
+          [
+            234,
+            211,
+            164
+          ],
+          [
+            251,
+            236,
+            202
+          ]
+        ]
+      }
+    },
+    {
+      "name": "emblem-tools.png",
+      "prompt": "Use case: stylized-concept. Asset: emblem-tools.png, original game-management UI emblem. Subject: a crossed small hammer and wrench, purple #a47fd0 steel tools with walnut handles and brass accents. Centered readable object on genuine transparent alpha with modest empty padding, no badge/backplate. Original pixel art drawn on a 32x32 logical grid for a 64x64 UI emblem. Crisp blocky pixels, one-logical-pixel #1a120b dark outline, upper-left light. At most 12 flat colors with two-step shading: #1a120b #3b2a1e #e3b24a #fdf6e6 and the subject accent. No text, letters, numbers, logos, people, animals, existing game characters, copied art, smooth gradients or antialiasing. Transparent background, no magenta, no ground plane or cast shadow.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:17:13 UTC",
+      "source": "assets/source/emblem-tools.png",
+      "transparent": true,
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 444566,
+        "sha256": "3749238f99ae8f7dd3e1fe5a7de95f5451874b75318f5413bcbb8cf8cca43a7e"
+      },
+      "final": {
+        "path": "assets/emblem-tools.png",
+        "width": 64,
+        "height": 64,
+        "logicalGrid": [
+          32,
+          32
+        ],
+        "opaqueColorCount": 12,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 549,
+        "byteBudget": 4096,
+        "sha256": "9535cdaba8878296f9fa0da07e620a29f8a8ec1c4b318caf66c4d43da5381c3d"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "weighted median-cut palette <=12",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 130,
+          "y": 194,
+          "w": 994,
+          "h": 858
+        },
+        "palette": [
+          [
+            104,
+            60,
+            35
+          ],
+          [
+            148,
+            87,
+            50
+          ],
+          [
+            189,
+            152,
+            91
+          ],
+          [
+            176,
+            150,
+            177
+          ],
+          [
+            154,
+            113,
+            203
+          ],
+          [
+            181,
+            149,
+            211
+          ],
+          [
+            45,
+            27,
+            22
+          ],
+          [
+            66,
+            41,
+            31
+          ],
+          [
+            73,
+            50,
+            76
+          ],
+          [
+            101,
+            78,
+            106
+          ],
+          [
+            117,
+            81,
+            149
+          ],
+          [
+            138,
+            99,
+            179
+          ]
+        ]
+      }
+    },
+    {
+      "name": "emblem-management.png",
+      "prompt": "Use case: stylized-concept. Asset: emblem-management.png, original game-management UI emblem. Subject: an open bookkeeping ledger with a single feather quill resting diagonally across it, terracotta #d07560 cover, cream blank pages. Centered readable object on genuine transparent alpha with modest empty padding, no badge/backplate. Original pixel art drawn on a 32x32 logical grid for a 64x64 UI emblem. Crisp blocky pixels, one-logical-pixel #1a120b dark outline, upper-left light. At most 12 flat colors with two-step shading: #1a120b #3b2a1e #e3b24a #fdf6e6 and the subject accent. No text, letters, numbers, logos, people, animals, existing game characters, copied art, smooth gradients or antialiasing. Transparent background, no magenta, no ground plane or cast shadow.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:16:36 UTC",
+      "source": "assets/source/emblem-management.png",
+      "transparent": true,
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 810785,
+        "sha256": "8abf3fcdbac4cd1877008f9d90fadea461d5aecfab62fcc41eec6aa5b2c125a9"
+      },
+      "final": {
+        "path": "assets/emblem-management.png",
+        "width": 64,
+        "height": 64,
+        "logicalGrid": [
+          32,
+          32
+        ],
+        "opaqueColorCount": 12,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 637,
+        "byteBudget": 4096,
+        "sha256": "b6a291b646a7d1f2a60223c1e23f5aa1b173968eb49eb72c1bb03bde764f4c27"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "weighted median-cut palette <=12",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 56,
+          "y": 155,
+          "w": 1142,
+          "h": 949
+        },
+        "palette": [
+          [
+            252,
+            243,
+            226
+          ],
+          [
+            246,
+            234,
+            209
+          ],
+          [
+            96,
+            48,
+            30
+          ],
+          [
+            122,
+            81,
+            53
+          ],
+          [
+            179,
+            158,
+            124
+          ],
+          [
+            198,
+            173,
+            131
+          ],
+          [
+            153,
+            126,
+            82
+          ],
+          [
+            178,
+            138,
+            76
+          ],
+          [
+            221,
+            197,
+            151
+          ],
+          [
+            236,
+            217,
+            179
+          ],
+          [
+            154,
+            80,
+            51
+          ],
+          [
+            153,
+            107,
+            58
+          ]
+        ]
+      }
+    },
+    {
+      "name": "emblem-automation.png",
+      "prompt": "Use case: stylized-concept. Asset: emblem-automation.png, original game-management UI emblem. Subject: two visibly interlocking mechanical gears, one large and one small, slate gray #8e98a3 and warm brass accent. Centered readable object on genuine transparent alpha with modest empty padding, no badge/backplate. Original pixel art drawn on a 32x32 logical grid for a 64x64 UI emblem. Crisp blocky pixels, one-logical-pixel #1a120b dark outline, upper-left light. At most 12 flat colors with two-step shading: #1a120b #3b2a1e #e3b24a #fdf6e6 and the subject accent. No text, letters, numbers, logos, people, animals, existing game characters, copied art, smooth gradients or antialiasing. Transparent background, no magenta, no ground plane or cast shadow.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:17:13 UTC",
+      "source": "assets/source/emblem-automation.png",
+      "transparent": true,
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 546716,
+        "sha256": "4eff04e0a416f7a480406dd6555a152faa238c93a0fc76d19a24000ffa203c4e"
+      },
+      "final": {
+        "path": "assets/emblem-automation.png",
+        "width": 64,
+        "height": 64,
+        "logicalGrid": [
+          32,
+          32
+        ],
+        "opaqueColorCount": 12,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 628,
+        "byteBudget": 4096,
+        "sha256": "ec4736023b6914783936fff1ab45a9b3f261464417e1b1b4d93208ed0e7e3441"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "weighted median-cut palette <=12",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 117,
+          "y": 189,
+          "w": 1020,
+          "h": 878
+        },
+        "palette": [
+          [
+            47,
+            37,
+            31
+          ],
+          [
+            79,
+            77,
+            79
+          ],
+          [
+            102,
+            106,
+            113
+          ],
+          [
+            147,
+            155,
+            166
+          ],
+          [
+            133,
+            136,
+            140
+          ],
+          [
+            191,
+            168,
+            115
+          ],
+          [
+            160,
+            117,
+            39
+          ],
+          [
+            217,
+            163,
+            54
+          ],
+          [
+            161,
+            167,
+            173
+          ],
+          [
+            194,
+            194,
+            190
+          ],
+          [
+            63,
+            51,
+            43
+          ],
+          [
+            88,
+            62,
+            31
+          ]
+        ]
+      }
+    },
+    {
+      "name": "stamp-present.png",
+      "prompt": "Use case: stylized-concept. Asset: stamp-present.png, an original game UI status rubber-stamp impression. Only two concentric solid circular outlines with a bold check-mark shape centered inside. Exactly one flat ink color #1f6b3a; all uninked areas genuinely transparent alpha, no background paper or plate. Centered, circular stamp fills about 80% of a square frame. Pixel-art stamp designed on a 24x24 logical grid for 48x48 display, large crisp blocky shapes, sparse slightly distressed edges that remain readable at small size. No text, letters, numbers, extra symbols, logos, gradients, shadows, characters, copied game assets. Keep the main shape strong and the prescribed circle-border type unmistakable.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:20:55 UTC",
+      "source": "assets/source/stamp-present.png",
+      "transparent": true,
+      "ink": "#1f6b3a",
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 591357,
+        "sha256": "f8e08179f5b51614108ebc477e1ba6f05d84b4b656f9e38085aa6e1b26aa2f0d"
+      },
+      "final": {
+        "path": "assets/stamp-present.png",
+        "width": 48,
+        "height": 48,
+        "logicalGrid": [
+          24,
+          24
+        ],
+        "opaqueColorCount": 1,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 235,
+        "byteBudget": 3072,
+        "sha256": "626b5f61dcf8840b105cf4350ad760798d7bf0f8d573b5af8d06275c461a1ab4"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "map all ink to specified single color",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 45,
+          "y": 41,
+          "w": 1161,
+          "h": 1170
+        },
+        "palette": [
+          [
+            31,
+            107,
+            58
+          ]
+        ]
+      }
+    },
+    {
+      "name": "stamp-partial.png",
+      "prompt": "Use case: stylized-concept. Asset: stamp-partial.png, an original game UI status rubber-stamp impression. Only one solid circular outline, with the left half of the inside filled with ink and the right half empty transparent. Exactly one flat ink color #7d5200; all uninked areas genuinely transparent alpha, no background paper or plate. Centered, circular stamp fills about 80% of a square frame. Pixel-art stamp designed on a 24x24 logical grid for 48x48 display, large crisp blocky shapes, sparse slightly distressed edges that remain readable at small size. No text, letters, numbers, extra symbols, logos, gradients, shadows, characters, copied game assets. Keep the main shape strong and the prescribed circle-border type unmistakable.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:19:40 UTC",
+      "source": "assets/source/stamp-partial.png",
+      "transparent": true,
+      "ink": "#7d5200",
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 514033,
+        "sha256": "dfb58b410d3dbad9ce560fbc5eb4423043daf9c81f38bcb0bb7a8a46f4ed6e13"
+      },
+      "final": {
+        "path": "assets/stamp-partial.png",
+        "width": 48,
+        "height": 48,
+        "logicalGrid": [
+          24,
+          24
+        ],
+        "opaqueColorCount": 1,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 195,
+        "byteBudget": 3072,
+        "sha256": "10f368bfa03dcf2b0b51ae32e648b105bf5e8822c20f0da69ae1e800da82e1e0"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "map all ink to specified single color",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 79,
+          "y": 81,
+          "w": 1096,
+          "h": 1093
+        },
+        "palette": [
+          [
+            125,
+            82,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "name": "stamp-absent.png",
+      "prompt": "Use case: stylized-concept. Asset: stamp-absent.png, an original game UI status rubber-stamp impression. Only one clearly dashed circular outline with a short thick horizontal bar centered inside. Exactly one flat ink color #9b2c22; all uninked areas genuinely transparent alpha, no background paper or plate. Centered, circular stamp fills about 80% of a square frame. Pixel-art stamp designed on a 24x24 logical grid for 48x48 display, large crisp blocky shapes, sparse slightly distressed edges that remain readable at small size. No text, letters, numbers, extra symbols, logos, gradients, shadows, characters, copied game assets. Keep the main shape strong and the prescribed circle-border type unmistakable.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:20:16 UTC",
+      "source": "assets/source/stamp-absent.png",
+      "transparent": true,
+      "ink": "#9b2c22",
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 305962,
+        "sha256": "acf7ae3d90dac69856ebfe43575bca1e03130ee32513dfa850d67b0b01610656"
+      },
+      "final": {
+        "path": "assets/stamp-absent.png",
+        "width": 48,
+        "height": 48,
+        "logicalGrid": [
+          24,
+          24
+        ],
+        "opaqueColorCount": 1,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 210,
+        "byteBudget": 3072,
+        "sha256": "d6c4ec727760705db9659f9f7e686ca8c3b25659469724d75ec875d191688347"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "map all ink to specified single color",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 87,
+          "y": 90,
+          "w": 1080,
+          "h": 1066
+        },
+        "palette": [
+          [
+            155,
+            44,
+            34
+          ]
+        ]
+      }
+    },
+    {
+      "name": "stamp-disconnected.png",
+      "prompt": "Use case: stylized-concept. Asset: stamp-disconnected.png, an original game UI status rubber-stamp impression. Only one clearly dotted circular outline, with two broken separated chain links centered inside. Exactly one flat ink color #4f5560; all uninked areas genuinely transparent alpha, no background paper or plate. Centered, circular stamp fills about 80% of a square frame. Pixel-art stamp designed on a 24x24 logical grid for 48x48 display, large crisp blocky shapes, sparse slightly distressed edges that remain readable at small size. No text, letters, numbers, extra symbols, logos, gradients, shadows, characters, copied game assets. Keep the main shape strong and the prescribed circle-border type unmistakable.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:20:55 UTC",
+      "source": "assets/source/stamp-disconnected.png",
+      "transparent": true,
+      "ink": "#4f5560",
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 370916,
+        "sha256": "7ae2f61fd98fc7b2791dee72bb6b6c9c79aa6feb7b1a6e82e0777f54f28b222e"
+      },
+      "final": {
+        "path": "assets/stamp-disconnected.png",
+        "width": 48,
+        "height": 48,
+        "logicalGrid": [
+          24,
+          24
+        ],
+        "opaqueColorCount": 1,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 224,
+        "byteBudget": 3072,
+        "sha256": "0fb6ff58d7d151ff6e421fd627a975a0d72fba4e85d9fb88a50fcab6bef3eca5"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "map all ink to specified single color",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 71,
+          "y": 71,
+          "w": 1112,
+          "h": 1113
+        },
+        "palette": [
+          [
+            79,
+            85,
+            96
+          ]
+        ]
+      }
+    },
+    {
+      "name": "tex-cork.png",
+      "prompt": "Use case: stylized-concept. Asset: original pixel-art seamless cork-board tile for a game management UI. Fill the complete square image with a uniform flat top-down cork surface, small low-contrast irregular granules, no objects, no border, no text, no shadows or lighting gradients. Average warm mid-brown #a8743f with restrained #8a5a2e #c08a4f #d9a866 and sparse #6b4423 speckles. 64x64 logical pixel grid for 128x128 display, maximum 16 flat colors, crisp pixel edges, no smooth gradients or photographic texture. Seamlessly tileable horizontally and vertically: opposite edges must match, no conspicuous bands, no central focal point. Original artwork, no specific game copied. Opaque image.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:23:25 UTC",
+      "source": "assets/source/tex-cork.png",
+      "transparent": false,
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 1272904,
+        "sha256": "e17637ade4074e0feb9e3aded80b6e1c74836e9ba2a2d3a3b3a2e27128a787d0"
+      },
+      "final": {
+        "path": "assets/tex-cork.png",
+        "width": 128,
+        "height": 128,
+        "logicalGrid": [
+          64,
+          64
+        ],
+        "opaqueColorCount": 16,
+        "alphaValues": [
+          255
+        ],
+        "bytes": 3313,
+        "byteBudget": 16384,
+        "sha256": "acbebbf056521dbd5192d2df327c13f09eb644b35e134a2bf451e376cb73ed1a"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "area-average entire source to 32x32",
+          "mirror horizontally and vertically into seamless 64x64 logical tile",
+          "weighted median-cut palette <=16",
+          "nearest-neighbor 2x"
+        ],
+        "crop": null,
+        "palette": [
+          [
+            175,
+            118,
+            60
+          ],
+          [
+            164,
+            108,
+            55
+          ],
+          [
+            178,
+            120,
+            61
+          ],
+          [
+            170,
+            113,
+            57
+          ],
+          [
+            162,
+            107,
+            54
+          ],
+          [
+            173,
+            116,
+            58
+          ],
+          [
+            180,
+            123,
+            63
+          ],
+          [
+            184,
+            127,
+            65
+          ],
+          [
+            166,
+            110,
+            56
+          ],
+          [
+            167,
+            111,
+            56
+          ],
+          [
+            171,
+            113,
+            57
+          ],
+          [
+            172,
+            115,
+            58
+          ],
+          [
+            168,
+            111,
+            56
+          ],
+          [
+            169,
+            112,
+            56
+          ],
+          [
+            156,
+            101,
+            51
+          ],
+          [
+            159,
+            104,
+            52
+          ]
+        ]
+      }
+    },
+    {
+      "name": "tex-wood.png",
+      "prompt": "Use case: stylized-concept. Asset: original pixel-art seamless dark walnut plank tile for a game UI noticeboard frame and sidebar. Full-frame flat top-down wood, two or three horizontal planks with thin horizontal seams and very subtle short grain. Average dark #4b3222, palette #24170d #3b2a1e #4b3222 #5d4432 #7a5a3e. 64x64 logical pixel grid for 128x128 display, maximum 16 flat colors. Small restrained texture, no large knots or focal point, no perspective, no cast shadows, no highlights, no objects, no text. Match opposite edges for seamless horizontal and vertical tiling with no border. Crisp original pixel artwork, not photographic, not any existing game art. Opaque image.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:23:02 UTC",
+      "source": "assets/source/tex-wood.png",
+      "transparent": false,
+      "sourceInfo": {
+        "width": 1254,
+        "height": 1254,
+        "bytes": 957577,
+        "sha256": "67ecd89328f5cdfa4270a39e2a6e348f2508155ead9ccf9c506dab847adb6390"
+      },
+      "final": {
+        "path": "assets/tex-wood.png",
+        "width": 128,
+        "height": 128,
+        "logicalGrid": [
+          64,
+          64
+        ],
+        "opaqueColorCount": 15,
+        "alphaValues": [
+          255
+        ],
+        "bytes": 2768,
+        "byteBudget": 16384,
+        "sha256": "920eafce6ec0aa8d7150187c15bea2e743be79fc8981c51edc6ed691ca9c528b"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "area-average entire source to 32x32",
+          "mirror horizontally and vertically into seamless 64x64 logical tile",
+          "weighted median-cut palette <=16",
+          "nearest-neighbor 2x"
+        ],
+        "crop": null,
+        "palette": [
+          [
+            82,
+            53,
+            31
+          ],
+          [
+            71,
+            46,
+            27
+          ],
+          [
+            79,
+            51,
+            29
+          ],
+          [
+            77,
+            50,
+            29
+          ],
+          [
+            78,
+            50,
+            29
+          ],
+          [
+            83,
+            54,
+            31
+          ],
+          [
+            86,
+            55,
+            32
+          ],
+          [
+            65,
+            42,
+            24
+          ],
+          [
+            69,
+            45,
+            26
+          ],
+          [
+            75,
+            49,
+            28
+          ],
+          [
+            80,
+            51,
+            30
+          ],
+          [
+            81,
+            52,
+            30
+          ],
+          [
+            74,
+            48,
+            28
+          ],
+          [
+            75,
+            49,
+            28
+          ],
+          [
+            72,
+            47,
+            27
+          ],
+          [
+            73,
+            47,
+            27
+          ]
+        ]
+      }
+    },
+    {
+      "name": "ledger-head.png",
+      "prompt": "Use case: stylized-concept. Asset: original pixel-art game-management sidebar header, 176x96 final display, designed on an 88x48 logical pixel grid. A warm shop-counter still life: open blank ledger book, feather quill in an ink pot, small stack of brass coins, tiny oil lamp. Wide compact composition with all objects fully contained and modest transparent padding; no complete surrounding room or landscape. Upper-left warm light. Genuine transparent alpha background. Chunky crisp pixels, simple readable silhouettes, one-logical-pixel dark #1a120b outlines with lighter brass edges readable on dark walnut #3b2a1e. Limited palette maximum 24 colors from walnut #3b2a1e #5d4432, brass #e3b24a #b5862a, paper #fdf6e6 #f3e9d2 and muted terracotta #d07560. No text, letters, numbers, logos, people, animals, copyrighted characters, copied game assets, smooth gradients, magenta backdrop or ground shadow.",
+      "tool": "image_gen__imagegen",
+      "requestedModel": "Codex built-in GPT-Image",
+      "visibleModel": "not exposed",
+      "backendModel": "unknown",
+      "generatedAtObservedUtc": "2026-10-02 05:23:25 UTC",
+      "source": "assets/source/ledger-head.png",
+      "transparent": true,
+      "sourceInfo": {
+        "width": 1698,
+        "height": 926,
+        "bytes": 1053099,
+        "sha256": "e64c13c6844a876ca770e679621e93cb52fd50259b8b4988e360f415cefec126"
+      },
+      "final": {
+        "path": "assets/ledger-head.png",
+        "width": 176,
+        "height": 96,
+        "logicalGrid": [
+          88,
+          48
+        ],
+        "opaqueColorCount": 24,
+        "alphaValues": [
+          0,
+          255
+        ],
+        "bytes": 2433,
+        "byteBudget": 16384,
+        "sha256": "8e3c4d19dde411267c7fdea769c881eeb9d2b9a8ea63116bc0c354c1adc28fd2"
+      },
+      "normalization": {
+        "tool": "Existing Node.js built-in fs/zlib/crypto; no packages",
+        "authorization": "msg_548ad283088e",
+        "steps": [
+          "crop to alpha>=128 bounds",
+          "premultiplied exact area-average shrink, preserve aspect ratio and center with logical padding",
+          "alpha threshold 128 to 0/255",
+          "weighted median-cut palette <=24",
+          "nearest-neighbor 2x"
+        ],
+        "crop": {
+          "x": 10,
+          "y": 9,
+          "w": 1677,
+          "h": 909
+        },
+        "palette": [
+          [
+            77,
+            45,
+            17
+          ],
+          [
+            81,
+            53,
+            34
+          ],
+          [
+            38,
+            21,
+            10
+          ],
+          [
+            56,
+            34,
+            18
+          ],
+          [
+            146,
+            92,
+            35
+          ],
+          [
+            151,
+            102,
+            62
+          ],
+          [
+            178,
+            132,
+            65
+          ],
+          [
+            179,
+            144,
+            103
+          ],
+          [
+            195,
+            169,
+            134
+          ],
+          [
+            216,
+            186,
+            145
+          ],
+          [
+            113,
+            69,
+            39
+          ],
+          [
+            118,
+            91,
+            65
+          ],
+          [
+            212,
+            158,
+            69
+          ],
+          [
+            214,
+            172,
+            110
+          ],
+          [
+            242,
+            223,
+            190
+          ],
+          [
+            247,
+            231,
+            201
+          ],
+          [
+            249,
+            236,
+            207
+          ],
+          [
+            248,
+            235,
+            209
+          ],
+          [
+            234,
+            191,
+            135
+          ],
+          [
+            234,
+            208,
+            168
+          ],
+          [
+            176,
+            94,
+            52
+          ],
+          [
+            195,
+            96,
+            62
+          ],
+          [
+            104,
+            59,
+            23
+          ],
+          [
+            118,
+            77,
+            25
+          ]
+        ]
+      }
+    }
+  ],
+  "normalizedAtUtc": "2026-10-02T06:06:25.011Z",
+  "finalImageBytes": 13586,
+  "normalizationScript": ".backups/verification/2026-10-02-management-m2-system-cards/r2/asset-fix-1/normalize-assets.mjs",
+  "normalizationScriptSha256": "867608d8fa9ccd0687cef7a0c2842f10a72603a739f9478cdb32d42f07285ad2"
+}

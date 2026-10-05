@@ -1,0 +1,21 @@
+:root { color-scheme: light; background: #fffaf0; color: #2a231b; font: 16px/1.5 "Segoe UI", "Malgun Gothic", sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 8px; overflow: auto; }
+#staging { position: absolute; visibility: hidden; width: min(944px, calc(100% - 16px)); }
+/* SVG box styles may move its root; contain their layout/paint below controls. */
+#display { width: 100%; max-width: 944px; margin: 0 auto; contain: layout paint; overflow: hidden; }
+#display svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+#display svg text, #display svg .label { font-family: "Segoe UI", "Malgun Gothic", sans-serif; }
+/* SVG layout quantization can shrink 16px below the strict minimum; a small
+   display-only margin overrides per-label fonts while preserving staging layout. */
+#display svg text, #display svg tspan, #display svg .label { font-size: 16.01px !important; }
+/* Mermaid shares arrowhead definitions between solid and dashed messages. */
+#display svg .messageLine0 { stroke: #715333 !important; }
+#display svg .messageLine1 { stroke: #155c57 !important; }
+#display svg marker[id$="-arrowhead"] path { fill: context-stroke !important; stroke: context-stroke !important; }
+/* Edge labels already paint after paths; their library background is translucent. */
+#display svg .edgeLabels .background,
+#display svg .edgeLabel rect { fill: #fffaf0 !important; opacity: 1 !important; }
+button { font: inherit; color: #155c57; background: #fffaf0; border: 1px solid #8a7650; padding: 4px 8px; margin-top: 8px; cursor: pointer; }
+button:focus-visible { outline: 3px solid #0b57d0; outline-offset: 2px; }
+[hidden] { display: none !important; }
