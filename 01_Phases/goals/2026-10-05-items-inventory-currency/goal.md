@@ -287,3 +287,11 @@ O-4 범위는 메인 `msg_b554a4b55c29`(20:08:41Z, `o4-main-scope-decision.json`
 O-4 메인 판단과 goal:25·:174의 PR2 필수조건 반영, 이전 보고 불일치의 원문 보존·미확정 원인도 독립 대조했다. 이번에는 행동 테스트·빌드·봇·Unity·전체서식·DB·CI를 새로 실행하지 않았다. 앞선85/85·919통과/skip5·봇PASS·Unity356은 각각 그 실행 HEAD/입력 근거이며 현재 재실행이 아니다. 정적 goal 대조의 raw exit1은 마지막 grep이 닫힌 Sol handle0건을 센 기대된 부재다. Claude 안전 검사에 한 번 거부된 검사 명령은 삭제 없는 스크립트로 수행했고 중간 사본을 보존했다.
 
 정산: exact triple/tag allowed0, release retained/external/none, 같은 incarnation `4980ff5b-6ca6-42db-9738-4712a2d82257`·completed/done·최종 idle 확인 뒤 close ptyKilledtrue, 직후 terminal list 작업자0(`opus-pr1-fix2-postclose-terminals.json`), delivery ack. 현재 결함 계열의 열린 차단은 없으며 남은 PR 관문은 **정확한 head CI, PR 본문의 「맵 전환 틈의 처치 push 없음, 표시 복구는 PR2」 공개, 그 PR 병합 직전 사용자 명시 승인**이다. CI/PR 원격 실행 원시는 같은 로컬 근거 root에 보존하고 메인에 전달한다. PR1을 전체 goal 완료나 PR2 UI 완료로 처리하지 않는다.
+
+### PR180 main 동기화와 검증 수행 판정 — 2026-10-05
+
+메인 `msg_afa082de8aed`·`msg_776da3f3047e`에 따라 PR178의 main `ecca463c6e4bb8d4aa44a75aaa57c581c1c5c70c`를 받았다. 새 Sol `task_3d180a6651ab` / `ctx_b870b7e58397`가 CURRENT:8의 Content 상대 링크와 :19의 첫 문장만 해소했고 다른 행·문장은 PR178 쪽을 보존했다. 신규 Opus `task_7d72e6c4fbf1` / `ctx_02654575ca7f`의 `msg_39272b51fad0`은 문서 정적 실사 통과·내용 결함 0을 보고했다. 원문은 로컬 근거 root의 `opus-pr1-main-sync/report.md`(SHA256 `474ECAB3CAAB7904C2CE849B57AB07BA9FE65D173C44F89AFCFED196716CC5BE`)와 `verdict.json`(SHA256 `3F11F9B07A4FE02AD19514CB61E4AA03223AC5EE6D741E88951131EEBBA75C27`)이며 그대로 보존한다. 고정 입력35/35·index 내용 불변과 문서 두 구간을 Astra도 대조했다. 빌드·테스트·Unity·봇·DB·CI를 이 실사에서 실행하지 않았다.
+
+검증 수행에는 **쓰기 경계 위반 1건**(허용 근거 폴더 밖 `%TEMP%/blob-goal.md` 생성·삭제, 자기 공개)과 **보고 정확성 결함 1건**(공개한 위반을 보고서의 「위반 없음」·`ruleViolation=false`로 판정)이 있었다. Astra는 `msg_cf79870933be`로 즉시 메인에 보고하고 커밋을 보류했다. 메인 `msg_65f045869377`(2026-10-05T06:24:40Z)은 직접 문서 diff·원문 hash·임시 파일 부재를 대조한 뒤, 영속 변경 없음·고정 입력 불변·두 구간 문서 실사라는 근거로 **내용 판정을 수용하고 새 Opus 재실사 없이 진행**하도록 결정했다. 두 결함을 면제하거나 일반 TEMP 쓰기 예외로 만들지 않는다. 첫 `git status`의 index mtime 갱신도 공개됐으나 내용 hash·2846줄은 불변이다. 관련 원문·메인 결정은 `pr1-main-sync-scope-decision.json`과 정산 근거에 보존한다.
+
+두 작업자는 각각 정확한 완료·동일성 대조 후 release→close→실제 terminal list 작업자0→ACK로 정산했고 재사용하지 않았다. O1~O3 비차단 관찰은 메인 지시대로 이번 변경 범위 밖으로 두었다. 이 절은 메인이 명시한 goal·정산 기록이며, 독립 검증 입력에 사후 추가한 Astra 기록이다. 새 merge head의 CI와 변경 범위 대조, 그 head에 대한 사용자 재승인·병합은 별도 관문이다. 기존 ce3267a 승인을 새 head 승인으로 확대하지 않으며 PR2의 맵 전환 후 재조회·표시 복구와 전체 goal은 미완료다.

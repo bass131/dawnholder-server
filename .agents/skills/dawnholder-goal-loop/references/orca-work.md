@@ -2,6 +2,8 @@
 
 구현·테스트 작성·검증 판정을 외부 세션에 맡길 때 읽는다. 역할·모델·태그는 [AGENTS](../../../../AGENTS.md), 공유 자원과 관찰 기록은 [ORCA.md](../../../../00_Document/operations/ORCA.md)에 있다. 내부 서브에이전트는 읽기 전용 조사·요약에만 쓴다.
 
+여기서 외부 세션 작업자는 **이 머신에서 담당 Astra가 기동하는 로컬 Orca 작업자**다. 사람 팀원이 자기 머신에서 실행하는 세션에는 이 기동·goal·Sol·검증자·배치 절차를 적용하지 않는다. 팀원 권한은 [AGENTS 외부 팀원 세션](../../../../AGENTS.md#외부-팀원-세션), 산출물 안내는 `00_Document/game-design/README.md`를 따른다. 담당 문서의 품질 기준을 적용해도 `game-design/` 밖 쓰기 권한은 생기지 않는다.
+
 ## 역할과 작업 계약
 
 메인 Claude는 목표·사용자 결정을 관리하고, 지정 파트 리드 Astra만 승인된 목표·공간·권한 안에서 좁은 구현·검증 작업을 한 단계 분할한다. 일반 작업자는 재귀 위임하지 않는다. 새 목표·승인 밖 세션 생성은 메인에 올린다. 새 후보·범위 안 수정·애매함/완료조건 변경의 판정은 [goal-loop 범위 정본](../SKILL.md#기준과-상태)을 따른다. 독립 목표는 최신 main의 별도 worktree/branch, 같은 목표의 구현·검증은 파일 소유를 순차 이전하는 같은 branch를 사용한다.
@@ -42,6 +44,7 @@
 - 내용 없는 heartbeat와 공식 blocking ask의 subject 한정 예외·세 identity 대조·상태 변이 없는 수신 helper는 [수신 정본](../../../../00_Document/operations/ORCA.md#dispatch-message-policy)을 따른다. 태그/정책 판정을 worker_done 정산이나 자동 ack로 해석하지 않는다.
 - 정상 완료는 정확한 `worker_done`과 원문을 Astra가 대조한 뒤 `worker-release`, 해당 작업 pane의 정산·동일성을 확인한 뒤 `terminal close`로 닫는다. 이미 닫혔으면 다시 닫지 않는다. release가 `retained`여도 승인된 작업 하나가 끝난 정확한 pane인지 확인한 뒤 프로젝트의 종료 규칙을 적용한다. 메인·Astra·다른 사용자 세션은 종료하지 않는다.
 - 실패·막힘·무응답은 관측 사실·명령·미완료 결과·원문을 진단 기록으로 보존한 뒤 상태에 맞는 공식 정산/중단 절차와 종료를 수행한다. timeout만으로 성공·프로세스 종료를 주장하거나 중복 작업자를 만들지 않는다. 원격/대상 동일성을 확인하지 못하면 임의 다른 대상을 닫지 않고 메인에 보고한다.
+- 크래시 중단은 [크래시 정본](../../../../00_Document/operations/ORCA.md#crash-recovery)을 따른다. 확정 실패 집계에서 제외하고 죽은 세션은 새 세션으로 대체한다. 중간 산출물은 크래시로 중단된 부분 결과로 보존하며 통과 판정에 재사용하지 않는다. 쓰기 종료가 확인된 산출물의 Astra 로컬 checkpoint 허용과 기존 Git·병합 권한을 구분한다.
 - 결함 수정과 재검증은 새 세션으로 발행한다. 완료 세션을 `worker-start --terminal`로 다음 작업에 재사용하지 않는다. 정산과 terminal close 결과를 goal 근거에 남기고 전체 Delivery를 처리한 뒤 acknowledge한다.
 - Astra의 목표 종료와 재진입은 [R-8](../../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)을 따른다.
 - 전체 goal의 PR/결과 뒤 [Gardener](../../../../00_Document/operations/ORCA.md#goal-gardener)·사용자 종료 점검과 다음 계획을 거친다. 첫 PR마다 새 Gardener를 자동 추가하거나 다음 goal을 자동 발행하지 않는다.
