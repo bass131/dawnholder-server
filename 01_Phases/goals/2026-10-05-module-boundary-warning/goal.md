@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **#4 형제 폴더 분리와 #5 Python 캐시 ignore 보존 수리 모두 신규 Opus 독립 검증을 통과했다. #1·#2·#3·#4·#5는 해소됐고 #ENV-1은 하네스 원인이다. 캐시 회귀6건은 opt-in이며 기본 CI 상시 실행으로 집계하지 않는다. 검증 중 초기 Git status의 index stat metadata 쓰기 여부는 미확정이나 보호 파일과 staged 내용은 보존됐다. PR 미발행, 실제 PR CI/경고 표시/artifact/format-check는 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **[182 - 서버 모듈 경계 warning 시범](https://github.com/bass131/dawnholder-server/pull/182)의 구현·독립 검증과 head `4d66ebf`의 실제 CI 3종이 통과했다. 최신 main·PR 입력은 C#105파일·경계48/48·위반0이다. #1~#5는 해소됐고 #ENV-1은 하네스 원인이다. 초기 Git 조회의 절차 이탈은 메인 `msg_7f900276388e` 결정에 따라 한계로 기록하고 제품 판정은 수용한다. 이 결과 기록 이후 head의 CI 상태와 사용자 개별 병합 승인은 별도이며 아직 병합하지 않았다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -104,7 +104,7 @@ Rules `msg_9396505985f8`는 전용 module-boundaries.yml과 현재 Rules 문서 
 
 ## 재개 지점
 
-2026-10-05 최신 상태는 맨 위 상태와 아래 「7 - 캐시 ignore 독립 통과와 PR 준비」 및 「8 - 최신 main 통합과 실제 PR 확인」을 따른다. 구현·독립 검증 뒤 최신 main을 통합했으며, 다음은 명시 feature branch push·PR과 실제 CI/경고/artifact/format-check, 최신 main 실측, 메인 R-2 및 PR별 병합 승인이다. 승인 전 병합하지 않으며 다음 기능 테스트 CI goal도 자동 착수하지 않는다. 이하 실행 기록은 당시 입력·범위별 이력이며 새 실행으로 소급하지 않는다.
+2026-10-05 최신 상태는 맨 위 상태와 아래 「9 - 실제 PR CI·최신 입력 독립 통과와 메인 절차 판단」을 따른다. 다음은 결과 기록 이후 정확한 PR head의 CI 확인과 메인 R-2·사용자 개별 병합 승인이다. 승인 전 병합하지 않으며 다음 기능 테스트 CI goal도 자동 착수하지 않는다. 이하 실행 기록은 당시 입력·범위별 이력이며 새 실행으로 소급하지 않는다. 최종 대조 자료는 `.backups/verification/2026-10-05-module-boundary-warning/pr-ci/`와 `pr-ci-review/`에 둔다.
 
 메인 확인과 Rules 소유 회신 뒤 Task `task_b266e9eb59bb`를 Sol에 발행했다. 구현 전 TDD 원시 `implementation/work/red/command.json`은 22 tests, failures 21/errors 1, exit 1이며 실제 공개 진입 부재 등으로 실패했다. 이는 구현 전 실패 근거이며 green 또는 독립 통과가 아니다. 앞선 implementation/·implementation-recovery-1/의 기록을 새 작업자의 실행으로 소급하지 않는다.
 
@@ -247,3 +247,18 @@ release 뒤 동일 incarnation `08dd44ee-cdaf-4ceb-9982-b957cbdc87aa`, idle·완
 이후 main이 Content PR180 병합 `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`으로 진행해 서버 Items/Handlers/Sessions·Shared 등의38파일이 추가/변경됐다. feature 통합 `5b2942d`는 충돌 없이 main 변경을 보존했다. 이전 C#91파일/477096bytes 실측은 새 main의 결과가 아니므로 최신 고정 main과 PR을 별도로 확인한다. 비교 원시는 `pr-main-advance-466aa025.json`, `pr-main-advance-8d1e8856.json`, 사전 통합 판단은 `pr-main-integration-context.md`다. 완료된 두 검증의 고정 입력/원문은 변경하지 않는다.
 
 실제 PR head와 merge checkout, production 결과와 별도 warning fixture, 테스트 실행/skip 수·annotation·artifact·format-check를 분리해 기록한다. 새 독립 Opus가 최신 main 실제 공개 진입과 PR 증거를 좁게 실사한다. 이 시점의 PR/실제 CI는 아직 미실행이고 개별 병합 승인은 없다.
+
+### 9 - 실제 PR CI·최신 입력 독립 통과와 메인 절차 판단
+
+[182 - 서버 모듈 경계 warning 시범](https://github.com/bass131/dawnholder-server/pull/182)을 head `4d66ebf68fdda354c8796920be5400c89f446a7e`, base `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`으로 발행했다. 실제 merge checkout `c263040f77414be8b0a8c9796f206eb016fedec2`의 tree는 PR head와 같다. 독립 실사 Task `task_d42d87fe65b3`/Dispatch `ctx_f9998789db82`는 `msg_11cbb8515080`(2026-10-05T08:38:53Z)으로 succeeded·쓰기 종료를 보고했다. 최초 명령 `claude --model claude-opus-5-5`, Astra가 본 화면 Opus5.5 xhigh, backend unknown이다. 판정 원문 `pr-ci-review/verdict.md` SHA256 `38F4A7E748F3A4BE88DF95FDC2C3134A2E48E5D535AD0395252360CE0AF3ED1C` 전체와 맥락·실제 명령/결과·CI 원시를 Astra가 직접 읽고 보호244파일 불일치0·HEAD/status/staged 보존을 대조했다(`pr-ci-review-astra-source-check.json`). 이하 상대 근거는 이 goal의 `.backups/verification/2026-10-05-module-boundary-warning/` 기준이다.
+
+- 최신 main `8d1e8856`과 PR head `4d66ebf`의 공개 CLI를 같은 SDK10.0.301·도구·정책·git_blobs 모드로 순차 실행했다. 각각 C#105파일517589bytes·Compile105/105·경계48/48·위반0·completed/clean·exit0이다. 내부/외부 시간은 main59.437/59.655초, PR57.048/57.245초다. 입력111파일 bytes를 Git blob과 독립 대조해 차이0, 경계48개는 Git tree와 집합이 같다. 원시는 `pr-ci-review/work/cli-main`, `cli-pr`, `audit-1.json`이다. 이전91파일 실측을 최신 결과로 소급하지 않는다.
+- 실제 [module-boundaries run37281959954](https://github.com/bass131/dawnholder-server/actions/runs/37281959954), [code-rules run37281959891](https://github.com/bass131/dawnholder-server/actions/runs/37281959891), [.NET run37281959883](https://github.com/bass131/dawnholder-server/actions/runs/37281959883)는 같은 head·attempt1의 모든 step이 success다. .NET은 실제 format-check·빌드·테스트를 수행했고924건 중919통과·5skip이다. 로컬 검사기 자체 build/제품 restore만 수행한 범위와 CI의 제품 빌드를 구분한다.
+- module artifact `module-boundaries-37281959954-1`의 zip493308bytes·SHA256 `ac1801a0674a2edfdb1b801e7b5b976d251ed0ccb5d3b7220b1498f6ec137637`은 API·업로드 로그와 일치하고 추출681파일 bytes도 같다. production은 위105/48·위반0·exit0·16.633초다. 테스트는94수집/34실행/60skip, 필수 요구사항29+discovery5 모두 실행·실패0이다. 캐시 회귀6건은 opt-in skip에 포함되며 CI 상시 실행으로 집계하지 않는다.
+- 별도 fixture는12위반(MB0018·MB0023·MB0031)/exit0이다. stdout·summary·artifact에는12건 전부 있고 GitHub annotation/API와 실제 페이지 DOM에는 정책 경고 앞10건(MB0018·MB0022)이 표시됐다. 플랫폼 경고1·notice1은 별도다. MB003 annotation 표시는 미관측이다(O-P1). Astra가 확보한 실제 runner2.337.0 [공개 원문](https://github.com/actions/runner/blob/v2.337.0/src/Runner.Worker/ExecutionContext.cs#L144)의 유형별10건 상한은 이 관측과 일치한다. 이 원문은 검증자가 판정에 사용한 자료와 구분한 Astra 보충 근거이며 원문 판정의 추론 문장을 수정하지 않는다. 화면 근거 범위는 `pr182-browser-observation.md`다.
+- 로컬 input hash `ba66d66644eaceca4ce35283556a5a95841006996f8021fd99782e4d20c78bcb`와 CI `b5a9395096bb66fb84f019777ae466fde45944e2cccca1b5e35657d2d133e968`, 로컬 tool018d2243…와 CI af7d0d1f…의 차이는 입력 csproj/props4개와 도구 csproj/props2개다. 독립 `eol-audit.json`은6개 모두 `.gitattributes`의 LF→CRLF checkout 변환과 hash가 정확히 같음을 확인했다. C#105파일 bytes와 policy190ffa7c…는 같다. 시간·hash 차이를 성능 개선이나 다른 코드 실행의 증거로 쓰지 않는다.
+- 통합은 main 변경 전부 반영·feature 변경 전부 보존, 최신 main 대비 CURRENT의 CodeMap 두 값만 차이임을 독립 확인했다. 7e4d601 이후 도구·정책·테스트·workflow·서식 등록 diff는0이다. O-P3의 새 검사기 Python code-rules 범위 제외는 이동 전에도 존재한 별도 소유 설정이다. O-P6: format-check 실제 step/pass 줄과 등록·실패 전파 제어 흐름은 확인했지만 프로젝트별 raw는 기존 CI가 업로드하지 않아 직접 확인하지 못했다. 이 한계를 전체 raw 확인으로 바꾸지 않는다.
+
+**메인 절차 판단:** 검증자가 계약을 읽기 전 첫 `git status`를 `GIT_OPTIONAL_LOCKS=0` 없이 실행한 사실을 context/판정8절에 기록했다. index mtime08:09:33Z·보호244·staged/status 불변은 관측됐으나 metadata 폴더08:14:06Z 변화의 출처는 미확정이다. Astra는 원문12절 「적용 규칙 위반 관측 없음」을 모든 절차 준수로 인용하지 않고 `msg_9045d2fb70c2`로 즉시 보고했다. 메인 `msg_7f900276388e`(08:40:43Z)는 이를 검증자 조회 방식의 절차 이탈로 기록하되 제품의 적용 규칙 위반은 아니므로 PR182 승인 근거로 판정 통과를 수용하고 새 검증 회차를 열지 않기로 결정했다. 이는 **메인 결정이며 사용자 직접 결정이나 PR 병합 승인이 아니다.** 원문은 `pr-ci-review-main-procedure-decision.json`이다. Rules의 첫 맥락 메모 전 읽기 구간 정의 후보에 반복 사례로 연결한다. 앞선 캐시 검증의 index metadata 미확정과 Sol 최초 실패 편집 raw 부재도 그대로 남긴다.
+
+release 뒤 동일 incarnation `9a29cbb8-fbfc-41b0-bc0f-57615fcfd5b0`, idle·완료 화면·빈 prompt를 확인하고 close했다(ptyKilled true). **2026-10-05T08:40:58Z 실제 목록의 Architecture 작업자0**(`pr-ci-review-post-close-terminals.json`)이다. 원문/고정 입력을 보존하고 이 결과 기록만 후속 커밋한다. 이후 head의 CI는 위4d66ebf 실행과 구분해 확인한다. 병합 전 메인은 앞서 전달된 R-2 원본 Edit/당시 iter-g 실패/신규 같은 명령 재생 자료(`msg_22d6537c5ff9`)를 대조하며 개별 사용자 승인은 아직 없다. 제품 DB·Unity·게임플레이·Release와 기존165 suite/Windows 환경 전체 재실행은 이번 검증 범위 밖이다.
