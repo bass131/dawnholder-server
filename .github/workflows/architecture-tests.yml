@@ -1,0 +1,377 @@
+name: architecture-tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      ARCHITECTURE_PYTHON_VERSION: '3.14.4'
+      ARCHITECTURE_TESTS: '99_Tools/Architecture.Tests'
+      PYTHONDONTWRITEBYTECODE: '1'
+      GIT_OPTIONAL_LOCKS: '0'
+    steps:
+      # Create evidence before checkout/setup so preparation failures remain visible.
+      - name: Initialize job-local evidence
+        id: initialize
+        shell: bash
+        env:
+          EXPECTED_CHECKOUT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          architecture_output="$RUNNER_TEMP/architecture-tests-results"
+          architecture_work="$RUNNER_TEMP/architecture-tests-work"
+          mkdir -p "$architecture_output" "$architecture_work"
+          printf 'ARCHITECTURE_OUTPUT=%s\n' "$architecture_output" >> "$GITHUB_ENV"
+          printf 'TMPDIR=%s\n' "$architecture_work" >> "$GITHUB_ENV"
+          printf '%s\n' "$EXPECTED_CHECKOUT" > "$architecture_output/expected-sha.txt"
+          printf '%s\n' "$ARCHITECTURE_PYTHON_VERSION" > "$architecture_output/requested-python.txt"
+          printf '%s\n' "$ARCHITECTURE_TESTS" > "$architecture_output/target.txt"
+          uname -a > "$architecture_output/runner-platform.txt"
+          : > "$architecture_output/stdout.txt"
+          : > "$architecture_output/stderr.txt"
+
+      - uses: actions/checkout@v4
+        id: checkout
+        with:
+          persist-credentials: false
+
+      - name: Set up Python (standard-library tests, existing opt-ins unchanged)
+        id: python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14.4'
+          architecture: x64
+
+      - name: Collect and run all Architecture unittests
+        id: tests
+        shell: bash
+        env:
+          PYTHON_EXECUTABLE: ${{ steps.python.outputs.python-path }}
+          EXPECTED_CHECKOUT: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          printf '%s\n' "$PYTHON_EXECUTABLE -B -; unittest discover $ARCHITECTURE_TESTS test_*.py" \
+            > "$ARCHITECTURE_OUTPUT/command.txt"
+          set +e
+          "$PYTHON_EXECUTABLE" -B - > "$ARCHITECTURE_OUTPUT/stdout.txt" 2> "$ARCHITECTURE_OUTPUT/stderr.txt" <<'PY'
+          import datetime
+          import json
+          import os
+          import pathlib
+          import platform
+          import subprocess
+          import sys
+          import traceback
+          import unittest
+
+
+          class ObservedResult(unittest.TextTestResult):
+              def __init__(self, *args, **kwargs):
+                  super().__init__(*args, **kwargs)
+                  self.started_tests = []
+                  self.stopped_tests = []
+                  self.successful_tests = []
+                  self.skipped_started_tests = []
+                  self.active_test = None
+
+              def startTest(self, test):
+                  self.active_test = test
+                  self.started_tests.append(test.id())
+                  super().startTest(test)
+
+              def stopTest(self, test):
+                  self.stopped_tests.append(test.id())
+                  super().stopTest(test)
+                  self.active_test = None
+
+              def addSuccess(self, test):
+                  self.successful_tests.append(test.id())
+                  super().addSuccess(test)
+
+              def addSkip(self, test, reason):
+                  # Fixture/subtest skips have no matching case start. Subtract only
+                  # whole-case skips from testsRun; record every skip reason separately.
+                  if test is self.active_test:
+                      self.skipped_started_tests.append(test.id())
+                  super().addSkip(test, reason)
+
+
+          def utc_now():
+              return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+          def test_ids(suite):
+              for item in suite:
+                  if isinstance(item, unittest.TestSuite):
+                      yield from test_ids(item)
+                  else:
+                      yield item.id()
+
+
+          def capture_result(record, result):
+              if result is None:
+                  return
+              skipped_started = set(result.skipped_started_tests)
+              executed_tests = [
+                  name for name in result.started_tests if name not in skipped_started
+              ]
+              record['counts'].update({
+                  'started': result.testsRun,
+                  'executed': len(executed_tests),
+                  'success': len(result.successful_tests),
+                  'failures': len(result.failures),
+                  'errors': len(result.errors),
+                  'skips': len(result.skipped),
+                  'skipped_started': len(result.skipped_started_tests),
+                  'expected_failures': len(result.expectedFailures),
+                  'unexpected_successes': len(result.unexpectedSuccesses),
+              })
+              record['started_tests'] = result.started_tests
+              record['executed_tests'] = executed_tests
+              record['stopped_tests'] = result.stopped_tests
+              record['runner_stop_requested'] = result.shouldStop
+              record['outcomes'] = {
+                  'success': result.successful_tests,
+                  'failures': [
+                      {'test': test.id(), 'traceback': detail}
+                      for test, detail in result.failures
+                  ],
+                  'errors': [
+                      {'test': test.id(), 'traceback': detail}
+                      for test, detail in result.errors
+                  ],
+                  'skips': [
+                      {'test': test.id(), 'reason': reason}
+                      for test, reason in result.skipped
+                  ],
+                  'expected_failures': [
+                      {'test': test.id(), 'traceback': detail}
+                      for test, detail in result.expectedFailures
+                  ],
+                  'unexpected_successes': [test.id() for test in result.unexpectedSuccesses],
+              }
+
+
+          def set_outcome(record, state, reason, repair, exit_code):
+              record.update(state=state, reason=reason, repair=repair, exit_code=exit_code)
+
+
+          def run_suite(record):
+              result = None
+              phase = 'environment'
+              try:
+                  if platform.python_version() != record['requested_python']:
+                      raise RuntimeError('Prepared Python does not match the workflow patch pin.')
+                  checkout = subprocess.run(
+                      ['git', 'rev-parse', 'HEAD'],
+                      check=True, capture_output=True, text=True, timeout=30,
+                  )
+                  record['checkout_sha'] = checkout.stdout.strip()
+                  if record['checkout_sha'] != record['expected_checkout_sha']:
+                      raise RuntimeError('Input checkout SHA does not match github.sha.')
+                  tests_root = pathlib.Path(record['target']).resolve()
+                  if not tests_root.is_dir():
+                      raise FileNotFoundError(f'Test directory is missing: {tests_root}')
+                  record['test_files'] = sorted(
+                      path.relative_to(pathlib.Path.cwd()).as_posix()
+                      for path in tests_root.rglob('test_*.py') if path.is_file()
+                  )
+                  phase = 'discovery'
+                  loader = unittest.TestLoader()
+                  suite = loader.discover(
+                      start_dir=str(tests_root), pattern='test_*.py',
+                      top_level_dir=str(tests_root),
+                  )
+                  # Import errors become synthetic _FailedTest cases. Preserve those
+                  # raw IDs, but do not report them as a completed collection.
+                  record['discovered_tests'] = list(test_ids(suite))
+                  record['discovery_errors'] = list(loader.errors)
+                  if loader.errors:
+                      for error in loader.errors:
+                          print(error, file=sys.stderr)
+                      set_outcome(
+                          record, 'unavailable', 'unittest discovery could not import/load the suite.',
+                          'Fix the import/load error in stderr.txt for the recorded target and rerun.', 2,
+                      )
+                      return
+                  record['discovery_complete'] = True
+                  record['counts']['collected'] = suite.countTestCases()
+                  record['collected_tests'] = record['discovered_tests']
+                  if record['counts']['collected'] == 0:
+                      set_outcome(
+                          record, 'unavailable', 'unittest collected zero tests.',
+                          'Restore test_*.py cases under the recorded target path and rerun.', 2,
+                      )
+                      return
+                  print(f"Collected {record['counts']['collected']} tests from {record['target']}", flush=True)
+                  phase = 'execution'
+
+                  def create_result(*args, **kwargs):
+                      nonlocal result
+                      result = ObservedResult(*args, **kwargs)
+                      return result
+
+                  runner = unittest.TextTestRunner(
+                      stream=sys.stderr, verbosity=2, resultclass=create_result,
+                  )
+                  runner.run(suite)
+                  capture_result(record, result)
+                  runner.stream.writeln(f"Observed counts: {record['counts']}")
+                  if result.shouldStop or result.started_tests != result.stopped_tests:
+                      set_outcome(
+                          record, 'unavailable', 'The unittest runner stopped before completing the suite.',
+                          'Inspect started/stopped IDs and stderr.txt; fix the interrupted runner and rerun.', 2,
+                      )
+                  elif not result.wasSuccessful():
+                      set_outcome(
+                          record, 'failed', 'Tests or fixtures reported failures, errors or unexpected successes.',
+                          'Fix the recorded failing test/product or fixture contract and rerun this suite.', 1,
+                      )
+                  elif record['counts']['executed'] == 0:
+                      set_outcome(
+                          record, 'unavailable', 'No collected case was attempted without a whole-case skip.',
+                          'Inspect skip reasons in result.json; restore the required prerequisites and rerun.', 2,
+                      )
+                  else:
+                      set_outcome(
+                          record, 'passed', 'Executed cases satisfied unittest expectations.',
+                          'Review skips and expected failures separately; neither counts as a normal success.', 0,
+                      )
+              except BaseException as error:
+                  capture_result(record, result)
+                  traceback.print_exc()
+                  set_outcome(
+                      record, 'unavailable',
+                      f'{phase} could not complete: {type(error).__name__}: {error}',
+                      'Inspect stderr.txt; repair the recorded environment, checkout, discovery or interrupted runner and rerun.',
+                      2,
+                  )
+
+
+          output = pathlib.Path(os.environ['ARCHITECTURE_OUTPUT'])
+          record = {
+              'schema_version': 1,
+              'started_at': utc_now(),
+              'requested_python': os.environ['ARCHITECTURE_PYTHON_VERSION'],
+              'python_version': platform.python_version(),
+              'python_build': sys.version,
+              'python_executable': sys.executable,
+              'platform': platform.platform(),
+              'expected_checkout_sha': os.environ['EXPECTED_CHECKOUT'],
+              'checkout_sha': None,
+              'target': os.environ['ARCHITECTURE_TESTS'],
+              'pattern': 'test_*.py',
+              'cwd': str(pathlib.Path.cwd()),
+              'command': [sys.executable, '-B', '-'],
+              'environment': {
+                  key: os.environ.get(key) for key in (
+                      'PYTHONDONTWRITEBYTECODE', 'GIT_OPTIONAL_LOCKS', 'TMPDIR',
+                      'MODULE_BOUNDARIES_TEST_WORK', 'MODULE_BOUNDARIES_INDEPENDENT_WORK',
+                      'MODULE_BOUNDARIES_EXECUTION_WORK', 'MODULE_BOUNDARIES_INDEPENDENT_REAL',
+                      'ARCHITECTURE_EVIDENCE_BATCH',
+                  )
+              },
+              'discovery_complete': False,
+              'counts': dict.fromkeys([
+                  'collected', 'started', 'executed', 'success', 'failures', 'errors',
+                  'skips', 'skipped_started', 'expected_failures', 'unexpected_successes',
+              ]),
+              'count_contract': {
+                  'collected': 'Cases in the completely discovered suite; null on incomplete discovery.',
+                  'started': 'unittest testsRun, including whole-case skips and per-case setup errors.',
+                  'executed': 'Started cases excluding whole-case skips; includes failed per-case setup attempts.',
+                  'success': 'addSuccess cases only; excludes skips and expected failures.',
+                  'skips': 'All skip events, including module/class fixtures and subtests; not a case count.',
+                  'failures_errors': 'unittest events, including fixture errors and failing subtests.',
+              },
+          }
+          print(json.dumps({
+              key: record[key] for key in (
+                  'python_version', 'python_build', 'python_executable', 'platform',
+                  'expected_checkout_sha', 'target', 'cwd', 'environment',
+              )
+          }), flush=True)
+          run_suite(record)
+          record['finished_at'] = utc_now()
+          temporary_result = output / 'result.tmp'
+          temporary_result.write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
+          temporary_result.replace(output / 'result.json')
+          # A killed interpreter, including os._exit(0), cannot claim completion.
+          (output / 'completed.txt').write_text(str(record['exit_code']) + '\n', encoding='utf-8')
+          print(json.dumps(record['counts']), flush=True)
+          print(f"{record['state']}: {record['reason']}\nNext: {record['repair']}", flush=True)
+          sys.exit(record['exit_code'])
+          PY
+          architecture_exit=$?
+          printf '%s\n' "$architecture_exit" > "$ARCHITECTURE_OUTPUT/exit.txt"
+          cat "$ARCHITECTURE_OUTPUT/stdout.txt" "$ARCHITECTURE_OUTPUT/stderr.txt"
+          exit "$architecture_exit"
+
+      - name: Finalize evidence and reject incomplete execution
+        if: always()
+        shell: bash
+        env:
+          INITIALIZE_OUTCOME: ${{ steps.initialize.outcome }}
+          CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          PYTHON_OUTCOME: ${{ steps.python.outcome }}
+          TEST_OUTCOME: ${{ steps.tests.outcome }}
+          EXPECTED_CHECKOUT: ${{ github.sha }}
+          PREPARED_PYTHON_VERSION: ${{ steps.python.outputs.python-version }}
+        run: |
+          set -euo pipefail
+          architecture_output="$RUNNER_TEMP/architecture-tests-results"
+          mkdir -p "$architecture_output"
+          touch "$architecture_output/stdout.txt" "$architecture_output/stderr.txt"
+          printf '%s\n' "$ARCHITECTURE_PYTHON_VERSION" > "$architecture_output/requested-python.txt"
+          printf '%s\n' "$PREPARED_PYTHON_VERSION" > "$architecture_output/setup-python-version.txt"
+          printf '%s\n' "$EXPECTED_CHECKOUT" > "$architecture_output/expected-sha.txt"
+          printf '%s\n' "$ARCHITECTURE_TESTS" > "$architecture_output/target.txt"
+          uname -a > "$architecture_output/runner-platform.txt"
+          if [[ "$CHECKOUT_OUTCOME" == success ]]; then
+            git rev-parse HEAD > "$architecture_output/checkout-sha.txt" \
+              2> "$architecture_output/checkout-stderr.txt" || true
+          fi
+          architecture_exit=null
+          if [[ -s "$architecture_output/exit.txt" ]]; then
+            read -r architecture_exit < "$architecture_output/exit.txt" || architecture_exit=null
+          fi
+          if [[ ! "$architecture_exit" =~ ^[0-9]{1,3}$ ]]; then
+            architecture_exit=null
+          fi
+          printf '{"initialize":"%s","checkout":"%s","python_setup":"%s","tests":"%s","process_exit":%s}\n' \
+            "$INITIALIZE_OUTCOME" "$CHECKOUT_OUTCOME" "$PYTHON_OUTCOME" "$TEST_OUTCOME" "$architecture_exit" \
+            > "$architecture_output/steps.json"
+          if [[ "$INITIALIZE_OUTCOME" != success || "$CHECKOUT_OUTCOME" != success || \
+                "$PYTHON_OUTCOME" != success || "$TEST_OUTCOME" == skipped || \
+                "$TEST_OUTCOME" == cancelled ]] || \
+             [[ ! -s "$architecture_output/result.json" || ! -s "$architecture_output/completed.txt" ]] || \
+             [[ "$architecture_exit" != "$(cat "$architecture_output/completed.txt" 2>/dev/null || true)" ]]; then
+            if [[ -f "$architecture_output/result.json" ]]; then
+              mv "$architecture_output/result.json" "$architecture_output/partial-result.json"
+            fi
+            printf '{"schema_version":1,"state":"unavailable","reason":"Preparation/execution incomplete: initialize=%s, checkout=%s, python_setup=%s, tests=%s.","repair":"Inspect steps.json, stderr.txt, partial-result.json (if present) and checkout/setup Actions logs; repair the failed phase or interrupted runner and rerun.","counts":null,"exit_code":2}\n' \
+              "$INITIALIZE_OUTCOME" "$CHECKOUT_OUTCOME" "$PYTHON_OUTCOME" "$TEST_OUTCOME" \
+              > "$architecture_output/result.json"
+            printf '%s\n' 'unavailable: preparation/execution incomplete; see steps.json and Actions logs.' \
+              >> "$architecture_output/stderr.txt"
+            architecture_exit=2
+          fi
+          cat "$architecture_output/result.json"
+          printf '%s\n' "$architecture_exit" > "$architecture_output/finalize-exit.txt"
+          exit "$architecture_exit"
+
+      - name: Preserve each run's evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-tests-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/architecture-tests-results/
+          if-no-files-found: error
+          retention-days: 14
