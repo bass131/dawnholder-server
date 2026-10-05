@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-2026-10-05 KST, Rules 운영 정본 반영 목표다. **[PR178 - 운영 결정 정본 반영](https://github.com/bass131/dawnholder-server/pull/178), [PR181 - 계약·판정 양식과 검증 시범 정비](https://github.com/bass131/dawnholder-server/pull/181), [PR183 - 운영 정본 종료 정리](https://github.com/bass131/dawnholder-server/pull/183)은 각각 사용자 승인 head로 병합됐고 `origin/main` 포함을 확인했다.** 각 작성자와 신규 독립 검증자는 쓰기 종료·정산·pane 종료했다. PR183 문서 실사 통과(차단0·필수 미검토0), 정확 head CI 성공 뒤 `05cb171`로 병합됐다. 비차단 등록 이유 표지는 메인 A로 다음 해당 행 수정 기회에 남겼고, Astra의 계산 방법 설명은 goal/context에서 교정해 원시와 사후 diff를 보존했다. 전체 PR 결과와 신규 Gardener 결과를 기록했다. **Gardener는 새 차단 의문 없음·후보2개 제안으로 종료됐고 메인 종료 점검도 통과했다. 현재 같은 goal의 종료 기록 전용 PR을 준비한다.** 이 PR의 독립 실사·CI·사용자 개별 병합 승인 뒤 R-8로 넘긴다. 다음 목표 사전 결정은 아래에 보존했으며, 이 세션은 다음 goal·브랜치를 착수하지 않았다. 이 파일이 기준·상태·결과의 정본이다.
+2026-10-05 KST, Rules 운영 정본 반영 목표다. **[PR178 - 운영 결정 정본 반영](https://github.com/bass131/dawnholder-server/pull/178), [PR181 - 계약·판정 양식과 검증 시범 정비](https://github.com/bass131/dawnholder-server/pull/181), [PR183 - 운영 정본 종료 정리](https://github.com/bass131/dawnholder-server/pull/183)은 각각 사용자 승인 head로 병합됐고 `origin/main` 포함을 확인했다.** 각 작성자와 신규 독립 검증자는 쓰기 종료·정산·pane 종료했다. PR183 문서 실사 통과(차단0·필수 미검토0), 정확 head CI 성공 뒤 `05cb171`로 병합됐다. 비차단 등록 이유 표지는 메인 A로 다음 해당 행 수정 기회에 남겼고, Astra의 계산 방법 설명은 goal/context에서 교정해 원시와 사후 diff를 보존했다. 전체 PR 결과와 신규 Gardener 결과를 기록했다. **Gardener는 새 차단 의문 없음·후보2개 제안으로 종료됐고 메인 종료 점검도 통과했다. [PR185 - 운영 정본 목표 종료 기록 보존](https://github.com/bass131/dawnholder-server/pull/185)이 이 goal의 마지막 기록 통합이다.** PR185의 최종 head 독립 재실사·세 CI·사용자 개별 승인 뒤 병합되면 기록 통합과 이 goal을 종료하고 Main이 R-8로 넘긴다. 해당 PR의 실제 병합 상태를 위 링크에서 확인하며 병합 전에는 완료로 해석하지 않는다. 다음 목표 사전 결정은 아래에 보존했으며, 이 세션은 다음 goal·브랜치를 착수하지 않았다. 이 파일이 기준·상태·결과의 정본이다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - 현재 종료 기록 branch: `docs/operating-canon-final-records-20261005`. 기준: fetch한 `origin/main`의 `05cb171b130de9e39b9cc9a1b063d76ec6c1d878`. PR183의 `docs/operating-canon-closeout-20261005`·기준 `466aa025b7934ad058bb78636885cce18f0a96eb`, PR2의 `docs/operating-contracts-20261005`·기준 `ecca463c6e4bb8d4aa44a75aaa57c581c1c5c70c`, PR1의 `docs/operating-canon-20261005`·기준 `11aa4b83131bc6349f186a141cfea9c58d2230e3`는 역사 기준이다.
@@ -22,7 +22,7 @@
 - [x] PR183 병합
 - [x] 반복 문제 점검
 - [x] 종료 점검
-- [>] 종료 기록 통합
+- [>] PR185 병합
 
 ## 범위
 
@@ -432,7 +432,7 @@ O1은 Astra 소유 goal의 LF 저장으로 경고 잡음만 정리했다. O2(작
 
 Unity MCP는 필요한 세션만 opt-in하며 시트1개 사용 전 메인에게 요청하고 보유 세션을 현황판에 적은 뒤 기동한다. 메인은 사용자 전역 `unity-mcp` 등록 제거·백업 보존·자기 relay 종료를 보고했고, 설정은 저장소 밖 `C:/Users/bass1/.unity/claude-mcp.json`에 있다고 전달했다. 필요한 Claude 세션에만 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 전역 작업은 메인의 보고이며 Rules의 실행/독립 검증 실적이 아니다. Rules는 Unity 사용 계획이 없고 에디터를 열지 않는다. 기존 다른 파트 Opus relay의 수명도 임의 조작하지 않는다.
 
-다음 Rules 목표 후보는 **R-5의 Unity MCP opt-in·시트 보유 절차**와 **goal-loop의 진척 체크리스트 형식** 정본 반영이다. 체크리스트는 기존 BACKLOG `goal-loop-improvement`와의 범위를 종료 점검에서 대조하고 Unity 항목의 후보 등록은 그때 조율한다. 메인의 명시대로 PR183 head·ORCA·goal-loop·BACKLOG는 이번 새 결정 때문에 바꾸지 않는다. 정본 반영 후보를 기록한 것이며 다음 goal은 사용자 결정 전 착수하지 않는다.
+당시 다음 Rules 목표 후보는 **R-5의 Unity MCP opt-in·시트 보유 절차**와 **goal-loop의 진척 체크리스트 형식** 정본 반영이었다. 기존 BACKLOG `goal-loop-improvement`와의 범위 대조는 종료 점검에서 수행하지 않았으며, Main `msg_7a6308e271f8`의 처분 기록 지시에 따라 다음 Rules goal의 원천·중복 대조로 이월한다. Unity·체크리스트 정본화는 이후 `msg_a1fe33623cbe`의 다음 goal 사전 결정에 포함돼 별도 후보 등록 조율을 대신한다. **PR183 head 유지**는 `msg_1f0a928c2d90`의 메인 명시이고, 당시 ORCA·goal-loop·BACKLOG를 추가로 바꾸지 않은 것은 승인 범위를 보존한 **Astra 판단**이다. 정본 반영 완료나 다음 goal 착수로 기록하지 않는다.
 
 ### PR183 병합과 전체 PR 결과
 
@@ -500,4 +500,14 @@ Main `msg_a84ae621841d`(2026-10-05T10:25:09Z, [전달 원문](../../../.backups/
 
 이번 tracked 쓰기는 이 goal 한 파일이다. CURRENT의 Rules goal 링크는 이미 현재 경로를 가리키므로 변경하지 않는다. 새 Opus는 실제 goal diff와 CURRENT 링크·필요 원시만 읽고 보고서 한 파일에 사전 맥락과 독립 결과를 남긴다. 기존 Gardener 판정·원시는 보존하고 새 Gardener를 반복 기동하지 않는다. 현재 체크리스트는 종료 점검을 완료하고 종료 기록 통합 단계를 추가한 11단계다.
 
-기존 workflow는 code-rules가 PR 또는 수동 dispatch, dotnet-tests가 PR 또는 main/feature push에서 실행된다. 종료 기록 docs 브랜치의 push만으로 양쪽 CI가 돌지 않으므로 독립 실사 → PR 발행 → 정확 head CI → 메인 보고·사용자 승인 순서를 Main `msg_077649c02576`으로 알렸다. workflow를 바꾸거나 CI 미실행을 성공으로 쓰지 않는다. 최종 PR의 사용자 개별 승인·병합 뒤 Main이 R-8로 이 pane을 닫고 새 Astra가 다음 goal을 시작한다.
+기존 workflow는 **code-rules·module-boundaries**가 PR 또는 수동 dispatch, **dotnet-tests**가 PR 또는 main/feature push에서 실행된다. 종료 기록 docs 브랜치의 push만으로 이 세 PR 검사가 자동 실행되지 않는다. Astra가 Main에게 보낸 초기 안내 `msg_077649c02576`은 둘만 적었으나, 첫 실사 #1과 실제 `.github/workflows/module-boundaries.yml` 대조로 그 누락을 확인했다. PR185의 최종 head에서 세 check 전체를 확인해 메인 보고·사용자 승인을 받는다. workflow를 바꾸거나 CI 미실행을 성공으로 쓰지 않는다. 최종 PR의 사용자 개별 승인·병합 뒤 Main이 R-8로 이 pane을 닫고 새 Astra가 다음 goal을 시작한다.
+
+## 종료 기록 첫 판정 보류와 정정·독립 재실사
+
+첫 신규 Opus `task_1663faf63722`·`ctx_139f730aa3bb`는 `msg_661df3388b2c`(2026-10-05T10:42:28Z)로 쓰기를 끝냈다. [원판정](../../../.backups/verification/2026-10-05-operating-canon/final-record-verdict.md) SHA256 `1679e3fb4a29a5c777d6c376140fb1e60a7582809941035867cc597659d56075`는 문서 실사 통과·비차단3건을 보고했지만, 허용외 TEMP 쓰기를 공개하고도 결론에는 규칙 위반이 없다고 적었다. Astra는 이를 `msg_937b92194027`로 즉시 보고했다. Main `msg_7a6308e271f8`(10:45:02Z, [운영 판단 원문](../../../.backups/verification/2026-10-05-operating-canon/main-final-record-recheck-decision.json))은 이 판정을 **최종 통과 근거로 쓰지 않도록** 결정했다. 사용자 결정이나 새 일반 규칙으로 확대하지 않는다.
+
+실제 도구 원시는 [TEMP 사고 표본](../../../.backups/verification/2026-10-05-operating-canon/final-record-temp-incident-source.json)에 보존했다. 검증자는10:32:38.743Z `git diff`를 `C:/Users/bass1/AppData/Local/Temp/x`에 썼고, 실제 크기22,402bytes를 확인한 뒤10:32:47.655Z 삭제 명령·48.390Z 삭제 성공을 기록했다. 사전 맥락 첫 Write는 그 뒤10:33:47.109Z다. 허용외 쓰기와 사전 맥락 이전 파일 쓰기이며 삭제로 위반이 사라지지 않는다. 저장된 읽기 전용 추출 스크립트 `inspect-final-record-temp-incident.mjs`·명령/exit0·stdout/stderr와 최초 대조40/40·HEAD/clean 감사 `astra-final-record-review-source-check.json`은 서로 다른 근거다. TEMP 쓰기 전 기존 파일 존재 여부는 미확인이다. 원판정/계약/메모를 고치지 않았고 검증자는 정산·동일 incarnation 대조·pane 종료했다.
+
+Main은 내용상 지적 #1(CI 목록), #2(중복 대조 이월), #3(Main 명시와 Astra 판단의 귀속)과 O1(병합 뒤 진척 표시)을 이 PR의 goal 안에서 좁게 정정하도록 했다. 위 해당 절을 고쳤으며 PR185 번호가 붙은 마지막 병합 단계와 조건부 종료 안내로 O1을 반영했다. 새 Opus는 이전 판정을 참고 입력으로만 받고 최종 head의 **PR 전체 diff(goal 한 파일)**를 독립 재실사한다. 계약에는 Main 원문 **「쓰기는 판정 파일 하나, 임시 파일 포함 그 밖의 쓰기 0, 출력은 파이프·stdout으로만, 범위 밖 쓰기가 생기면 결론에 규칙 위반으로 적는다」**를 넣는다. 재실사와 세 CI가 끝나기 전에는 최종 통과나 병합 승인을 주장하지 않는다.
+
+다음 계획 후보 추가: 검증자의 자기 준수 결론과 실제 수행 대조를 강화하는 방법은 Main `msg_7a6308e271f8`의 지시에 따라 다음 계획 입력 한 줄로만 남긴다. 현재 goal에 새 규칙·검사·helper를 구현하지 않는다.
