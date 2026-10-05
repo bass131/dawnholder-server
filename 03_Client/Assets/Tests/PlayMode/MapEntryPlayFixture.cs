@@ -160,6 +160,8 @@ namespace Dawnholder.Client.Tests.PlayMode
         InputSettings _originalInputSettings;
         InputSettings _runtimeInputSettings;
         bool _oldRunInBackground;
+        float _oldListenerVolume;
+        bool _listenerMuted;
         PlayerInput _pairedPlayer;
         internal UnityClientSession Session => UnityClientSession.Instance;
         internal LocalPlayerMovement Player => LocalPlayerMovement.Instance;
@@ -171,6 +173,11 @@ namespace Dawnholder.Client.Tests.PlayMode
         internal IEnumerator Prepare(bool production)
         {
             Assert.IsTrue(Application.isPlaying, "this lane must execute real Unity PlayMode");
+            // User request via main (opus-pr2-fix1-audio-addendum-v1.1.md): silence test play for this session only.
+            // AudioListener.volume is a runtime value, never a project setting; sources still play, nothing is heard.
+            _oldListenerVolume = AudioListener.volume;
+            AudioListener.volume = 0f;
+            _listenerMuted = true;
             yield return Wait(() => NetworkService.Instance != null && SceneTransition.Instance != null, "persistent services");
             _service = NetworkService.Instance;
             Assert.IsFalse(_service.IsConnected, "fixture must not adopt another session");
@@ -356,6 +363,7 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Restore(() => InputSystem.settings = _originalInputSettings);
                 Restore(() => Application.runInBackground = _oldRunInBackground);
             }
+            if (_listenerMuted) Restore(() => AudioListener.volume = _oldListenerVolume);
             Restore(() => { if (_runtimeInputSettings != null) UnityEngine.Object.Destroy(_runtimeInputSettings); });
             if (errors.Count != 0) throw new AggregateException("Test fixture runtime restoration failed", errors);
         }

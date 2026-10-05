@@ -99,6 +99,8 @@ namespace Dawnholder.Client.Tests
         EntryBindingFixture _views;
         int _latency;
         readonly List<Action> _delayed = new();
+        readonly List<float> _delays = new();
+        readonly List<float> _deadlines = new();
 
         [SetUp]
         public void Setup()
@@ -107,7 +109,8 @@ namespace Dawnholder.Client.Tests
             _latency = UnityClientSession.SimulatedLatencyMs;
             UnityClientSession.SimulatedLatencyMs = 100;
             _queue = new ManualConnectionQueue();
-            _session = new UnityClientSession(() => true, _queue.Post, (action, _) => _delayed.Add(action));
+            _session = new UnityClientSession(() => true, _queue.Post, (action, delay) => { _delayed.Add(action); _delays.Add(delay); },
+                (action, seconds) => _deadlines.Add(seconds));
             _session.Publish();
             SessionTestTools.Handshake(_session, _queue);
             _views = new EntryBindingFixture(_session);
@@ -119,6 +122,8 @@ namespace Dawnholder.Client.Tests
             _session?.Cleanup();
             _views?.Dispose();
             _delayed.Clear();
+            _delays.Clear();
+            _deadlines.Clear();
             UnityClientSession.SimulatedLatencyMs = _latency;
         }
 
@@ -285,6 +290,7 @@ namespace Dawnholder.Client.Tests
             Assert.IsFalse(EntryBindingFixture.Field<bool>(_views.Player, "_jumpEdgeThisTick"));
             Assert.IsFalse(EntryBindingFixture.Field<bool>(_views.Player, "_impulsePending"));
             _views.Ready();
+            ReadyInventoryQuery.Consume(null, _delayed, _delays, 0, _deadlines);
             Assert.AreEqual(0f, EntryBindingFixture.Field<float>(_views.Player, "_sendAccumulator"), "readiness must not restore old elapsed time");
             _views.Player.SetMoveX(1);
             EntryBindingFixture.SetField(_views.Player, "_sendAccumulator", Constants.TickDuration);
@@ -304,6 +310,7 @@ namespace Dawnholder.Client.Tests
             Assert.IsTrue(_views.Player.CanUseDash, "blocked skill cannot consume its prediction cooldown");
             Assert.IsEmpty(_delayed);
             _views.Ready();
+            ReadyInventoryQuery.Consume(null, _delayed, _delays, 0, _deadlines);
             SessionTestTools.Call(input, "TrySendSkill", SkillId.Dash, CharacterClass.Knight);
             Assert.IsFalse(_views.Player.CanUseDash);
             Assert.AreEqual(1, _delayed.Count, "normal skill must schedule one intent after Ready");
@@ -335,6 +342,7 @@ namespace Dawnholder.Client.Tests
             {
                 _views.Begin();
                 _views.Ready();
+                ReadyInventoryQuery.Consume(sockets, _delayed, _delays, 0, _deadlines);
                 _session.SendIntent(new C_Ping { clientTimestampMs = 3 }.Write());
                 Assert.AreEqual(1, _delayed.Count);
                 if (changeEntry) { _views.Begin(1); _views.Ready(); }
