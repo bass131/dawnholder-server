@@ -6,13 +6,13 @@
 |---|---|
 | GameDev | [영속성 저장소](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#재개-지점) |
 | Content | [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) |
-| Rules | [운영 정본 반영](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#재개-지점) · [보류된 하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#운영-규칙-pr-재개와-설계) |
+| Rules | [CI npm 경고와 운영 후속 정본화](../../01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#재개-지점) |
 | CodeMap(Architecture) | [서버 모듈 경계 warning 시범](../../01_Phases/goals/2026-10-05-module-boundary-warning/goal.md#재개-지점) |
 | Management | [시스템 카드](../../05_Management/goals/2026-10-02-system-cards/goal.md#재개-지점--2026-10-03-사용자-휴식) |
 
 - GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-repository-d1b-20261002`
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-currency-20261005`
-- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/operating-canon-20261005`
+- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `ci/npm-engine-warning-20261005`
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `docs/module-boundary-warning-closeout-20261005`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-m2-system-cards`
 
