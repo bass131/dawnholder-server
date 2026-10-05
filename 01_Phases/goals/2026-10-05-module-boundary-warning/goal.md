@@ -2,6 +2,18 @@
 
 상태: **[182 - 서버 모듈 경계 warning 시범](https://github.com/bass131/dawnholder-server/pull/182)의 구현·독립 검증과 head `4d66ebf`의 실제 CI 3종이 통과했다. 최신 main·PR 입력은 C#105파일·경계48/48·위반0이다. #1~#5는 해소됐고 #ENV-1은 하네스 원인이다. 초기 Git 조회의 절차 이탈은 메인 `msg_7f900276388e` 결정에 따라 한계로 기록하고 제품 판정은 수용한다. 이 결과 기록 이후 head의 CI 상태와 사용자 개별 병합 승인은 별도이며 아직 병합하지 않았다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
+## 진척 단계
+
+- [x] 범위·설계 확정
+- [x] 요구사항 테스트 작성
+- [x] 경계 검사기 구현
+- [x] 독립 검증·결함 수정
+- [x] 검사기 폴더 분리
+- [x] 캐시 무시 설정 보완
+- [>] PR182 CI 확인
+- [ ] PR182 병합
+- [ ] 결과 기록·종료
+
 ## 원천과 기준
 
 - 메인 재개 지시 `msg_33bba3450aad`(2026-10-04T14:56:48Z), 실제 발신 `term_145bd5f0-00a7-4887-a187-16bf935db560`와 현행 메인 terminal을 대조했다. 전달된 사용자 결정을 직접 사용자 입력으로 격상하지 않는다.
@@ -11,6 +23,7 @@
 - 선행 발행: [176 - CodeGraph 종료 기록](https://github.com/bass131/dawnholder-server/pull/176), head `d34b39d32acfa017912354aee40c52be730a1e8f`. 사용자 개별 승인 전달 `msg_d3f9773b7353` 뒤 2026-10-04T15:32:05Z에 merge `11aa4b83131bc6349f186a141cfea9c58d2230e3`로 병합했다. main push .NET run `37213367199`의 전체 job/step success를 원시 `2026-10-04-codemap-resume/pr176-main-ci-final.json`에서 확인했다. 이 기록은 이 goal의 구현 검증이 아니다.
 - PR176 정정 포인터(메인 `msg_00f588e41468`/`msg_6a86e2ba3c2c`): 이전 goal은 커밋·발행·병합됐고 `msg_33bba3450aad`로 동결이 해제됐다. 이전 CURRENT의 O6는 O-6을 가리킨다. 과거 원문의 당시 상태를 현재 상태로 읽지 않는다.
 - 사전 맥락과 전달 원문: `.backups/verification/2026-10-04-codemap-resume/astra-context.md`, `main-request.json`. 이후 이 goal의 원시·계약·독립 판정은 `.backups/verification/2026-10-05-module-boundary-warning/`에 둔다.
+- 정본 반영 전 적용 결정: 메인 `msg_20df2f3dc80d`(2026-10-05T08:43:24Z)는 사용자가 메인 pane에서 Enter로 제출한 대시보드 원문 「대시보드 결정 응답: 1) Unity 시트 번갈아 쓰기 - 필요한 세션만 연결하는 방식으로 바꿀지 → A 필요한 세션만 켜기(opt-in) · 2) 목표 진척 자동 갱신 - 단계 완료를 어디서 읽을지 → A PR 자동 + goal.md 체크리스트」를 전달했다. 이 세션의 사용자 직접 입력으로 격상하지 않는다. 원문 receipt는 `main-progress-checklist-decision.json`이다. 위 `## 진척 단계`는 Astra가 goal 상태 변경과 함께 관리하고 현황판은 goal/PR 병합 상태를 직접 읽는다. 검증 고정 입력은 수정하지 않고 검증자 종료 후 첫 허용 갱신에 반영했다. Unity MCP는 필요한 새 Claude 세션만 별도 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 사용하며 시트 요청·배정은 메인 소유다. 전역 등록 제거·백업·relay 종료는 메인의 적용 보고이며 이 세션의 수행 실적으로 쓰지 않는다. 현재 CodeMap은 Unity 사용 계획이 없다.
 
 ## 범위
 
