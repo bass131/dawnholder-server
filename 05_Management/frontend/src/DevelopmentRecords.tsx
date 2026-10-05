@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { readCatalog, catalogReferenceErrors, MAX_CATALOG_BYTES, type RecordCatalog } from './recordCatalog';
 import CatalogExplorer from './developmentRecords/CatalogExplorer';
 
-export default function DevelopmentRecords() {
+export default function DevelopmentRecords({ active = true }: { active?: boolean }) {
   const [catalog, setCatalog] = useState<RecordCatalog | null>(null);
   const [version, setVersion] = useState<string | null>(null);
   const [draftVersion, setDraftVersion] = useState<string | null>(null);
@@ -95,7 +95,7 @@ export default function DevelopmentRecords() {
   return <div>
     <div className="record-runtime-bar"><button className="record-link" type="button" disabled={busy} onClick={() => void reload()}>기록 새로고침</button><label className="record-file-label">JSON 파일 불러오기<input ref={inputRef} type="file" accept=".json,application/json" disabled={busy || dirty} onChange={event => { const file = event.target.files?.[0]; void importFile(file); event.target.value = ''; }} /></label><span>{dirty ? '저장하지 않은 편집 초안 있음' : '실행 중 읽기·편집 가능'}</span></div>
     <p className={failure ? 'record-runtime-notice record-missing' : 'record-runtime-notice'} role="status">{notice}</p>
-    {catalog ? <CatalogExplorer data={catalog} /> : <div className="record-empty"><h3>시스템 기록을 읽을 수 없습니다.</h3><p>기록 새로고침을 시도하거나 아래 기록 편집에서 JSON을 불러와 저장하세요.</p></div>}
+    {catalog ? <CatalogExplorer data={catalog} active={active} /> : <div className="record-empty"><h3>시스템 기록을 읽을 수 없습니다.</h3><p>기록 새로고침을 시도하거나 아래 기록 편집에서 JSON을 불러와 저장하세요.</p></div>}
     <details className="record-editor"><summary>기록 편집 {dirty ? '· 미저장 초안' : ''}</summary><p>현재 화면은 마지막으로 읽은 기록입니다. JSON 파일 불러오기는 초안만 바꿉니다. 명시적으로 저장할 때 05_Management/records/catalog.json을 갱신합니다. 자동 갱신은 하지 않습니다. 저장한 내용은 같은 파일을 읽는 공동 조회 MCP의 다음 요청에 반영됩니다.</p><label>카탈로그 JSON<textarea aria-describedby="record-editor-help" value={draft} disabled={busy} spellCheck={false} onChange={event => updateDraft(event.target.value, event.target.value !== loadedText)} /></label><p id="record-editor-help">새로고침은 편집 초안을 보존합니다. 변경을 버리려면 편집 취소를 선택하세요. 직전 정상 기록 백업은 복구용이며 변경 근거가 아닙니다.</p>{draftError && <p className="record-missing" role="alert">{draftError}</p>}<div className="record-editor-actions"><button className="record-link" type="button" disabled={busy || !draft} onClick={validateDraft}>초안 검증</button><button className="record-link" type="button" disabled={busy || !dirty || !draftBaselineAvailable || !window.systemRecords} onClick={() => void save()}>검증 후 기록 저장</button><button className="record-link" type="button" disabled={busy || !dirty} onClick={() => { updateDraft(loadedText, false); setDraftVersion(version); setDraftBaselineAvailable(baselineAvailable); setNotice('편집 초안을 취소하고 마지막으로 읽은 원문으로 돌아갔습니다.'); }}>편집 취소 · 초안 버리기</button></div></details>
   </div>;
 }

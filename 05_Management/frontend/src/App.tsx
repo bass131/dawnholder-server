@@ -86,7 +86,7 @@ export default function App() {
             <div hidden={activeSection !== 'development'}>
               <div className="development-tabs" aria-label="개발 현황 보기"><button type="button" aria-pressed={developmentView === 'cards'} onClick={() => setDevelopmentView('cards')}>시스템 카드</button><button type="button" aria-pressed={developmentView === 'records'} onClick={() => setDevelopmentView('records')}>개발 기록 · 기록 편집</button></div>
               <div hidden={developmentView !== 'cards'}><SystemCardsView active={activeSection === 'development' && developmentView === 'cards'} openRecords={() => setDevelopmentView('records')} /></div>
-              <div hidden={developmentView !== 'records'}><DevelopmentRecords /></div>
+              <div hidden={developmentView !== 'records'}><DevelopmentRecords active={activeSection === 'development' && developmentView === 'records'} /></div>
             </div>
           </section>
         </main>
