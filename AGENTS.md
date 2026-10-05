@@ -18,8 +18,8 @@
 ## 역할과 범위
 
 - 메인 Claude는 사용자와 목표·범위·완료조건·주요 결정을 정하고 파트 분할·결과 통합·사용자 보고·병합 승인 요청을 맡는다. 저장소 파일은 `CLAUDE.md`만 쓰며 파트 리드 Astra가 goal·구현 위임·검증·Git 작업을 맡는다.
-- 구현·테스트 작성·검증 판정은 Orca **외부 세션 작업자**에게 맡기고 구현자와 검증자를 분리한다. Codex 내부 `multi_agent`와 Claude 내부 Agent는 읽기 전용 조사·요약에만 쓰며 외부 작업자나 독립 검증을 대신하지 않는다. 작은 작업 예외는 아직 합의하지 않았다.
-- 신규 Opus 검증자는 구현자의 쓰기 종료 후 보고와 실제 diff·실행 근거부터 실사하고 요구사항·보존 동작을 기준으로 테스트를 작성·보완·실행한다. 테스트 파일만 쓰고 제품 결함은 번호로 반환한다. 문서 변경은 실사, 코드 변경은 실사와 독립 테스트 모두 수행하며 미실행 플레이·DB 등의 범위를 구분한다.
+- 구현·테스트 작성·검증 판정은 Orca **외부 세션 작업자**에게 맡기고 구현자와 검증자를 분리한다. Codex 내부 `multi_agent`와 Claude 내부 Agent는 읽기 전용 조사·요약에만 쓰며 외부 작업자나 독립 검증을 대신하지 않는다. 독립 세션을 생략하는 작은 작업 예외는 없다. 승인된 [검증 강도 4주 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범)을 적용한다.
+- 신규 Opus 검증자는 구현자의 쓰기 종료 후 보고와 실제 diff·실행 근거부터 실사하고 요구사항·보존 동작을 기준으로 위 등급의 필수 검증을 수행한다. 테스트 파일만 쓰고 제품 결함은 번호로 반환한다. 문서 실사·강/약 코드 검증과 미실행 플레이·DB 등의 범위를 구분하며 [실제 진입 실행 판정](.agents/skills/dawnholder-task-context/SKILL.md#독립-판정과-통과-차단)을 따른다.
 - 작업자·검증자는 작업 하나 후 정산·종료하고 재사용하지 않는다. 수정과 재검증은 새 세션으로 수행한다. 같은 계약·같은 결함 번호의 확정 실패 3회 뒤 새 Sol과 읽기 전용 Fable Advisor를 쓰는 조건·집계·메인 보고는 [확정 실패 정본](00_Document/operations/ORCA.md#confirmed-failures)을 따른다. 파트당 검증자는 동시에 하나만 연다. 절차는 [Orca 위임 지침](.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다.
 - 일반 작업자는 할당 범위만 수행하고 추가 위임하지 않는다. 메인이 지정한 파트 리드 Astra만 승인된 목표·공간·권한 안에서 좁은 작업자를 한 단계 둘 수 있다. 새 목표·파트·승인 밖 세션 생성은 메인에 올린다. 범위 안 결함과 다음 후보·새 요청의 기본값·애매한 범위 판정은 [목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)을 따르며 후보마다 범위 확대 승인을 요청하지 않는다.
 - goal 범위는 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건과 PR 경계로 고정한다. 착수 전 메인이 승인 초안과 대조하고 차이가 있으면 사용자가 판단한다. 완료조건을 막는 범위 안 결함만 루프에서 수정하며, 같은 산출물 수정이 3회를 넘으면 메인 체크포인트를 알린다. 이 체크포인트와 같은 계약·결함 번호의 확정 실패 3회 집계는 구분한다([목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)).
@@ -31,7 +31,7 @@
 ## 모델 라우팅
 
 - 메인 Claude `claude-opus-5-5` → 파트 리드 Astra `gpt-6-astra` → 구현 Sol `gpt-6.1-sol`(reasoning effort `max` 고정), 독립 검증·테스트 작성·리뷰는 신규 `claude-opus-5-5` 세션으로 지정한다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다.
-- [R-7 Fable goal 검토 시범](00_Document/operations/ORCA.md#r7-fable-pilot)은 해당 정본의 범위와 절차를 따른다.
+- [R-7 Fable 구현 전 설계 검토 시범](00_Document/operations/ORCA.md#r7-fable-pilot)은 4범주·2~3작업 한정으로 해당 정본의 범위와 절차를 따른다. 기본 모델 배정과 확정 실패 3회 뒤 Advisor를 대체하지 않는다.
 - 보고서 자료의 조사·설계 해설·본문·HTML·전용 생성 스크립트는 Astra가 작성한다. Sol에 보고서 작성·렌더링 구현을 맡기지 않는다. 독립 Opus가 내용·근거·표시를 검토하고 메인이 [작성 기준](00_Document/conventions/REPORTING.md)에 따라 사용자 최종 보고를 전달한다.
 - 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol capacity 장기 실패의 **신규 Astra 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.
 - `gpt-6.1-sol`이 모델 목록에 없으면 Codex 업데이트 누락 가능성을 고려해 먼저 버전과 모델 노출을 확인한다. 원인을 단정하거나 승인 없이 업데이트·전역 설정 변경을 하지 않는다.
@@ -58,7 +58,7 @@
 
 - 기능 구현·오류 수정·리팩토링·환경 정비 등 실제 다단계 작업은 [목표 루프](.agents/skills/dawnholder-goal-loop/SKILL.md)를 사용한다. 간단한 질문·설명·아이디어 논의에는 목표를 자동 시작하지 않는다.
 - 파일을 쓰기 전에 최신 지침·현재 goal·할당 계약·관련 영역과 CODE_CONVENTION의 해당 절을 읽고, 적용 규칙·기존 예시·재사용 대상·영향 파일·배치와 이름의 근거·질문·기준 SHA를 짧은 맥락 메모에 남긴다. 역할별 읽기 상한과 양식은 [작업 맥락 스킬](.agents/skills/dawnholder-task-context/SKILL.md)을 따른다.
-- 위임 계약에는 관련 규칙 원문과 출처를 포함하고, 완료 보고에는 메모의 계획과 구분한 실제 준수 파일·구간을 적는다. 검증자는 메모·원문 계약·실제 diff를 대조한다.
+- 위임 계약은 [작업 맥락 정본](.agents/skills/dawnholder-task-context/SKILL.md#파일-쓰기-전-메모와-원문-계약)의 경로 기계 확인·요구/판정 기준·관련 원문/제외 이유·harness·대안·원시 수치 기준을 적용한다. 완료 보고에는 메모의 계획과 구분한 실제 준수 파일·구간을 적고, 검증자는 메모·원문 계약·실제 diff와 [판정 양식](.agents/skills/dawnholder-task-context/references/templates.md#검증-판정)의 실제 Task 연결·결함 귀속·설계 관찰을 대조한다.
 - 맥락 메모 부재·관련 규칙 원문 누락·적용 규칙 위반·메모와 결과 불일치는 수정 또는 메인 결정 전 독립 검증 통과를 차단한다. **측정값 위장과 제품 계산 복제로 항상 통과하는 테스트**도 [작업 맥락의 추가 차단 정본](.agents/skills/dawnholder-task-context/SKILL.md#독립-판정과-통과-차단)을 따른다. 가독성·주석 위치·책임 분리·배치와 이름·탐색·중복 이유도 판정한다.
 - 목표 기준·상태·결과는 합의된 `goal.md` 한 곳에 두고 [CURRENT](00_Document/operations/CURRENT.md)는 진행 goal 링크, [BACKLOG](00_Document/operations/BACKLOG.md)는 goal 전 후보만 유지한다. 프로젝트 전용 스킬은 `.agents/skills/`에 둔다. 전체 goal 종료 뒤 [Gardener](00_Document/operations/ORCA.md#goal-gardener)와 [종료 점검](.agents/skills/dawnholder-goal-loop/SKILL.md#통합과-보고)을 거치며 다음 goal을 자동 착수하지 않는다.
 - [개발 안내](00_Document/operations/DEVELOPMENT.md)에서 실행 전제·부작용을 확인한다. [문서 지도](00_Document/INDEX.md) → [기능 지도](00_Document/FEATURE_MAP.md) 또는 [영역별 계약](00_Document/domains/INDEX.md)에서 필요한 부분만 읽는다.
