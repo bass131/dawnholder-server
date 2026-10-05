@@ -214,7 +214,7 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 - [x] 인벤토리 화면 구현
 - [>] 화면 독립 검증(결함4 batch 범위 해소 관측, 16:9 실화면은 아침 새 Opus)
 - [>] 실제 플레이 최종 확인(획득·사용 경로 확인, HUD 배치 수정 뒤 실화면 재확인은 아침)
-- [ ] 화면 PR CI·병합
+- [>] 화면 PR CI·병합(PR191 생성, 아침 실화면 확인 뒤 승인 요청)
 - [ ] 결과 기록·종료
 
 ### 2026-10-05 크래시 중단과 복구
@@ -511,3 +511,5 @@ preflight는 이 세션 PATH에 rg가 없어 `git ls-files --cached --others --e
 리드 정산: 판정 본문 전문과 부록의 계약 원문 동일성(SHA256 `42D7EE19…`)을 확인하고, 판정 로직 표본(`InventorySceneLifecycleTests.cs:166-241`)을 직접 읽었다. 정산 감사 `opus-pr2-fix2-astra-settlement-audit.json`은 입력 182, meta 1144, tests 34, 허용 변경 3, 예상 밖 0, XML 6개 수치·hash 일치다. 독립 제품 검증으로 세지 않는다. ProjectSettings의 SENTIS 자동 제거 한 줄만 기존 승인(`msg_7691eaa0154c`, `msg_2de31caf1c5d`)대로 복원했다(EEE969AE → A58A3CDF, cloud3 유지). release → 같은 incarnation 확인 → close ptyKilled true → relay PID 34856·Unity·lock·7777 모두 0, 음소거 0(15:19:27Z). 검증자 보고의 관찰로, 첫 batch 중 자기 relay가 batch Unity에 붙어 unity-mcp 도구 목록이 노출됐다(원인 미확인, MCP 호출 0).
 
 다음 단위: PR2 커밋(사용자 MinimapRT·로컬 cloud3 ProjectSettings 제외, staged 목록 원시 보존) → 최신 main 통합 → push·PR·CI → 아침 새 Opus의 PR head 실화면 확인(시트 이관 `msg_5e769cc95c8c`) → 승인 묶음.
+
+PR2 체크포인트: 커밋 `3085a20a`(제품)·`bf28954d`(테스트)·`66b02372`(기능 문서·BACKLOG)·`6852237a`(goal), main 55커밋 merge `a3136b6c`(겹친 파일은 BACKLOG.md 하나, 충돌 없음). 사용자 MinimapRT와 로컬 cloud3 ProjectSettings는 커밋에서 뺐고 커밋마다 staged 목록을 근거 폴더 `pr2-commit-1..4-staged.txt`, `pr2-merge-main-staged.txt`로 남겼다. [PR191 - 클라이언트 인벤토리 화면과 서버 동기화](https://github.com/bass131/dawnholder-server/pull/191). 이 PR의 CI는 Unity 테스트를 돌리지 않고, 로컬 code-rules도 `03_Client/` 제외로 대상 0건이었다. CI 결과를 클라이언트 검증으로 세지 않는다. 병합 승인 요청은 아침 실화면 확인 뒤에 한다.
