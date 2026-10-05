@@ -13,7 +13,7 @@
 
 ## 재개 지점
 
-상태는 **독립 강 검증 통과·PR 준비**다. 제품 결함 0건, 비차단 관찰 O1~O5가 있다. 전체 시험은 902개 중 897통과·5실패이며 실패 5건은 범위 밖 기존 단정/환경으로 분류됐다. Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch는 `feat/management-record-navigation-20261005`, 시작 main은 `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`이다. 목표 준비 `270e6ce`, 구조 `41c26fe`, 동작 `163217f`, 검증 입력 `67f8aebe6515e66876d5f329c7c9dfef0cb4c239`, 검증 시험 커밋 `3cbe421`을 순서대로 보존한다. 사용자 병합 승인과 Gardener는 아직 남았다.
+상태는 **독립 강 검증 통과·PR 발행·CI/메인 원천 대조 진행**이다. [189 - 개발 기록 목록에서 전체 페이지 상세로 탐색](https://github.com/bass131/dawnholder-server/pull/189)을 발행했고 아직 사용자 개별 병합 승인을 받지 않았다. 제품 결함 0건, 비차단 관찰 O1~O5가 있다. 전체 시험은 902개 중 897통과·5실패이며 실패 5건은 범위 밖 기존 단정/환경으로 분류됐다. Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch는 `feat/management-record-navigation-20261005`, 시작 main은 `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`이다. 목표 준비 `270e6ce`, 구조 `41c26fe`, 동작 `163217f`, 검증 입력 `67f8aebe6515e66876d5f329c7c9dfef0cb4c239`, 검증 시험 커밋 `3cbe421`을 순서대로 보존한다. 다음은 정확 head의 CI와 fresh 병합 상태를 모아 메인에게 승인 묶음을 보내는 일이다. 승인 뒤 병합, 신규 Opus Gardener·종료 기록 PR의 별도 승인/병합, R-8 리드 전환 순서이며 다음 goal은 자동 시작하지 않는다.
 
 근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-05-development-record-navigation/`이다. 시작 맥락은 E/`astra-context.md`, 승인 원문은 E/`main-approval-receipt.json`, 사용자 출력 기준선은 E/`user-artifacts-before.json`, 프로필 추가 관측은 E/`user-profile-before.json`이다. 경로·상태는 새 세션 진입 때 실제 Git/Orca 조회와 대조한다.
 
@@ -26,6 +26,12 @@
 메인 pane에서 Enter로 제출됐다는 전달이며 이 세션의 사용자 직접 입력으로 격상하지 않는다. 승인 대상은 수정본 `msg_a88dc21abaf8`의 **개발 기록 공통 범위 — 원안 유지**, 원안은 `msg_5ad25cc13cb8`이다. 이전 대기 `msg_baf7c4952efa`와 수정 요청 `msg_766df62b6083`을 승인으로 쓰지 않는다.
 
 메인은 5개 완료조건, 제품 경계, 제품 PR 1개, 신규 Sol(max) → 신규 Opus 강 검증, 직접 시험 진입 수정, 같은 명령 전후 실패 분류, 최종 전체 suite 1회 공개, Gardener·종료 기록을 함께 승인 전달했다. 새 브랜치·goal·CURRENT Management 진입, 계약 발행과 PR 생성은 허용됐으며 **각 PR 병합 직전 사용자 명시 승인**은 별도다.
+
+## 적용 중인 사용자 결정
+
+- 메인 `msg_9a95637fe94e`(2026-10-05T14:18:43Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」. 앞선 「A 리드 Opus xhigh, 구현은 Sol max 유지」를 다섯 파트로 넓힌 결정이다. 현재 목표 중에는 Astra를 유지하고 **종료 기록 PR 병합과 Gardener 뒤** 메인이 R-8로 이 pane을 닫아 `claude-opus-5-5` xhigh 새 리드를 연다. Sol max·신규 Opus 검증자는 유지한다. AGENTS의 리드 모델 문구는 아직 Astra이며 정본 반영은 Rules의 다음 계획 후보다. 메인 전달을 사용자 직접 입력으로 격상하지 않는다.
+- 같은 메시지의 운영 지시로 이후 Orca 우편함의 서버 대기값은 `check --wait --timeout-ms 600000`으로 적용한다. 실행 도구는 비동기 session을 반환하도록 두고 60초를 넘는 단일 차단 호출을 사용하지 않는다. 메시지 도착 때 즉시 깨어나는 대기이며 짧은 우편함·화면 반복 조회를 피한다.
+- 메인 `msg_053edb4e968d`(2026-10-05T14:13:56Z): 승인 묶음 직전 fresh `mergeStateStatus`를 확인한다. DIRTY이면 최신 main을 merge해 CURRENT의 다른 파트 줄과 자기 줄을 함께 보존한다. 충돌 해결이 CURRENT에 한정되고 제품 blob이 같다는 remerge-diff 원시가 있을 때만 **동일 제품 입력의 기존 판정 유지**로 표현하고 새 head 전체 CI를 수집한다. 승인 뒤 다른 PR 병합으로 DIRTY가 되면 옛 head 승인을 사용하지 않고 다시 이 절차와 새 승인을 거친다. 원문 두 건은 E/`main-pr-and-routing-decisions.json`에 보존한다.
 
 ## 이번 goal에서 만들 것
 
