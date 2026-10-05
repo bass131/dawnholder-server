@@ -1,6 +1,35 @@
 # 시스템 카드 첫 PR — 대표 도식의 보안·표시·번들 관문 (추적 번호 M-2)
 
-## 현재 재개 범위 — 2026-10-05
+## 현재 추가 수정 범위 — 개발 현황의 작업 이름 정리
+
+메인 `msg_f5293de719b3`(2026-10-05T06:04:33Z)이 전달한 사용자 원문은 「OK 폰트 색상은 잘 돌아왔네, 근데 이제 마지막 문제는 개발현황에 M1b 같은 축약어 때문에 어떤걸 이야기하는지 잘 모르겠어」이며, 이번 PR에서 고침(A) / 병합 뒤 다음 작업(B) 중 「A」를 선택했다. 사용자 직접 입력으로 격상하지 않고 메인 전달 출처를 보존한다. 이 명시 결정으로 아래 선행 재개 범위에 표시 이름 수정을 추가한다. 기존 허용 파일 목록에 catalog가 없다는 점은 착수 전 `msg_1b2a44be23dc`로 메인에 알렸다.
+
+- **만들 것:** `05_Management/records/catalog.json`의 사용자 표시 문장에 들어간 내부 마일스톤·단계 코드를 해당 goal 제목에서 확인한 작업 내용 이름으로 바꾼다. 다른 화면 표시 데이터도 같은 원칙으로 조사하고 실제 문제가 있으면 함께 정리하며 없으면 조사 범위를 보고한다. 제목·본문은 무엇을 했는지로 쓰고, 꼭 필요한 추적 코드만 뒤 괄호에 둔다.
+- **건드릴 곳과 소유권:** 신규 Sol은 catalog와 같은 문제가 확인된 `records/system-guide.json`의 표시 문장만 쓴다. 신규 Opus는 독립 검사·영향 테스트·판정만 쓰고 Astra는 이 goal·계약·결과·Git을 맡는다. 허용 밖 표시 데이터가 발견되면 실제 소비 경로와 함께 소유권을 확인한다.
+- **보존과 하지 않을 것:** 사용자 수용된 `frontend/src/theme/tokens.css`(SHA256 `54751d173cd784216d2711a9e0779963bf7aa7be7ac3bf45d3f8df8523e8995b`)와 배치·동작을 유지한다. PR 번호·파일 경로·id·locator·버전/해시·기준시점·배열/관계·과거 사실과 검증 수치는 바꾸지 않는다. 역사 기록을 최신 상태로 갱신하거나 기존 12실패/범위 밖 문제·새 기능을 수리하지 않는다.
+- **완료조건과 순서:** 신규 Sol 수정·쓰기 종료·정산 → 신규 Opus의 표시 문자열 기계 검사와 사람이 읽기 쉬운지 판정·직접 영향 테스트 → Astra의 기계 commit/push → 새 head CI → 메인 R-2 → 새 head의 같은 왼쪽 보조 화면·앱125% 실물 재확인 → 해당 새 head의 별도 사용자 병합 승인이다. 이전 색상 수용이나 CI를 새 head의 병합 승인으로 사용하지 않는다.
+
+적용 사용자 원문(2026-10-02, 메인 전달): 「운영툴에 작성하는 작업관련 게시글에 D1,D2같은 프로젝트에서만 쓰이는 마일스톤 명칭으로 특정 작업의 작업명을 대체하면 시간이 좀 지나고 봤을때 이해하기 어려우니까 라벨링을 자제해야해」. 관련 CODE 원문·읽기/소유권·보존 계약은 E/`display-names-astra-context.md`와 `display-names-repair-task.txt`에 고정한다. E는 `.backups/verification/2026-10-05-system-cards-close/`다.
+
+**현재 상태:** 기준 HEAD `6c9c50bd65cef36eb5fba899fa40ffd837ab4070`, PR179 OPEN. 이 head의 두 CI 최종 결과는 성공이며 .NET 최초 실패와 1회 재실행 성공은 E/`first-pr-ci-audit.md`에 함께 보존했다. 사용자는 왼쪽 보조 실물 창·앱125%에서 글자색을 수용했다. catalog 표시91문장과 직접 영향 테스트를 새 Opus가 차단 없음으로 판정했고, Astra가 원문·실제 diff·반례·실행 원시를 대조해 통합 수용했다. 아래 첫 PASS의 단정 약화는 두 번째 독립 검증에서 반례로 재현하고 정확 문자열로 보완했다. 이제 승인된 기계 commit/push와 새 head CI를 진행한다. 메인 대조·새 head 실물 재확인·별도 병합 승인은 남아 있다.
+
+최종 독립 검증 `task_f66496e0d477` / `ctx_3ddcee5d16ab`의 done `msg_cdbe1f5c2b18`과 E/`display-names-polish-review/verdict.md`(SHA256 `0d795471dc4c7cc9f8e1f78fbcb144ece3ad1f83059b1c7ece823e1d8f1bcb05`) 전체를 읽었다. HEAD 대비 변경91문장·보완 전 대비34문장, 보호 필드/구조/숫자/PR/ID 불변이다. 같은 영향 명령 전후43개=36통과/기존7실패, 새 실패0, 타입4종 exit0이다. 하네스14개 실행은 matcher 수용/거부를 관측해 기록한 것으로, 별도14개 요구사항 assertion 통과나 원래 UI 테스트 통과로 확대하지 않는다. 원래 UI 단정은 숨은 기록 탭 때문에 미도달이다. Astra는 고정19입력 중 허용된 테스트 한 파일의 두 줄만 바뀐 것, 보호 파일의 예상 밖 변화0, 실제 TEMP 부재와 실행 원시 수치를 직접 확인했다(E/`display-names-polish-review-astra-audit.json`). 빈 타입 로그는 실제 `npm run -s` 호출과 즉시 exit0 원문으로 대조했다(E/`display-names-polish-review-typecheck-source.json`).
+
+비차단 #7은 구현 칸의 「설계와 구현 분할 완료」 오독 가능성으로 뒤의 연동 미완료·summary가 의미를 보완한다. 실물 재확인에 연결한다. #8은 새 코드 검출기의 괄호·hash/경로·범위 경계 한계이며 현재 데이터 영향은 없고 후속 후보로 보존한다. 검색 알고리즘은 그대로지만 「생성기」 검색에서 관련 기록/근거가 빠지는 등 이름에 따른 검색 결과는 바뀐다. local-only 원천, 전체suite·실물·CI 미실행, heartbeat359초 한 번과 최초 실행기 문법 실패를 보존하며 전체 절차PASS로 표현하지 않는다. 판정의 최초 호출 기록 부재는 검증자의 미확인 범위다. 실제 최초 `claude --model claude-opus-5-5` 명령·화면5.5 xhigh는 E/`display-names-polish-review-launch-command.json`에 있으며 backend는 unknown이다. 정산은 Node에서 정확 junction의 cmd rmdir 후 marker가 있는 TEMP 삭제였다. 원문 판정은 수정하지 않고 이 한계·근거를 메인 `msg_b7381db86101`로 전달했다. release·동일inc 완료화면·close 뒤 **2026-10-05T08:34:28.3912927Z 목록 Astra만/작업자0**으로 정산했다. 이전 goal 입력은 E/`display-names-goal.polish-review-input.md`에 보존한다.
+
+첫 검증 `task_f8f5d9be7033` / `ctx_e3a19bfbfb5e`의 done `msg_c679a53acf4b`와 판정 원문 E/`display-names-review/verdict.md`(SHA256 `12b2a7da50c4fd4d31ca3e8d599f15ac8f527afb6a80e8697f3d17c6940339b0`)는 그대로 보존한다. 신규 표시 이름 검사와 직접 영향 테스트는 HEAD 사본·문장 수정·테스트 보완의 같은 명령에서 각각43개=33통과/10실패→35/8→36/7이며, 최종7실패는 기존 숨은 기록 탭의 B02~B08이다. 기존3종·테스트 전용 타입 검사는 exit0, 전체suite·실물·CI는 미실행이다. `records-store.test.ts:105`의 추가 영향 단정은 공식 질문 `msg_07d4855eaba4`와 회신 `msg_cdeab83ae0cc`로 한 줄 소유를 확인해 해소했다. 원문 소유 기록은 E/`display-names-review-test-ownership.md`다.
+
+보완 Sol `task_be641ddce02a` / `ctx_4a7cf136331f`는 done `msg_ab958d55a656`(2026-10-05T08:11:23Z)로 catalog 표시34문구의 의미·구분점·대표 이름 보완을 종료했다. #3 같은 원인의 `/records/6/status` 한 곳을 포함한8곳, 나머지는 #1/#2/#5 관련 문장이다. 원문 E/`display-names-polish-repair/execution-result.md` SHA256 `7dc5c4c132d2f333e9bf87c918074ee7f5270f894e34e80649e67e3dc79d3c18`, catalog SHA256 `ff9ff699d12012c88b3c4972c593ee063aad20109f58fe72822f3b1c4a560c9a`다. 같은 영향 명령은 전후43개=36통과/기존7실패이며 새 실패0, 숨은 UI 단정은 미도달이다. Astra는 보호357항목·원본출력48항목(합산405항목/유일356경로)을 현재hash와 직접 대조해 변화0을 확인했다(E/`display-names-polish-repair-astra-audit.json`). 검색 결과 변화·전체suite/빌드/실물/CI·타입검사 미실행·초기 과출력/heartbeat 전수 미감사 한계를 보존한다. release·동일inc 완료화면·close 뒤 **2026-10-05T08:12:03.2520964Z 목록 Astra만/작업자0**으로 정산했다. 이전 goal 입력은 E/`display-names-goal.polish-repair-input.md`에 보존하고 새 Opus가 현재 제품과 #6 테스트 단정을 독립 재검토한다. 아직 통합 판정·commit/push 전이다.
+
+후속은 이 판정의 #1 계획 제목 범위, #2 실제 복구 강조, #3 구분점7곳, #5 같은 작업 이름의 일관성을 신규 Sol이 같은 catalog 표시 문장 안에서 보완하고 신규 Opus가 독립 재검토한다. Astra 추가 관측 #6은 `DevelopmentRecords.test.tsx:59/63`의 넓은 정규식이 작업 식별 의미를 약하게 만든 점이며, 판정의 「완화 없음」과 실제 diff 차이를 `msg_682a32567f99`로 메인에 즉시 보고했다. 테스트 보완·판정은 새 Opus 소유다. 제품 사전·새 기능·기존12실패 수리로 넓히지 않는다. 첫 검증자는 release·동일inc 완료화면·close 뒤 **2026-10-05T07:38:27.3663005Z 목록 Astra만/작업자0**으로 정산됐으며 재사용하지 않는다. 이전 goal 입력은 E/`display-names-goal.review1-input.md`, 후속 읽기·소유·검증 계획은 E/`display-names-polish-astra-context.md`에 있다.
+
+표시 이름 구현 Sol `task_662e643440f6` / `ctx_113d2108fb8d`의 done `msg_906f63966c82` 뒤 release·동일inc 완료화면 확인·close를 수행했고 **2026-10-05T07:07:19.3988391Z terminal list는 Astra만/작업자0**이었다. 원문 E/`display-names-repair/execution-result.md`(SHA256 `c156cd54cd52a45917169b0eaae418e2f15496dadba04dd30e84487ece23f3f8`)와 전후 대응·고정 제목/표·검사 원시를 새 Opus 입력으로 삼는다. 자체 검사에서 catalog 표시476문자열 중91개 변경, system-guide 전체149문자열 같은 문제0, 보호236파일/원본출력48파일 불변을 보고했다. 영향 UI 테스트는 같은 명령 전후 각각7개=0통과+7실패로 변경 문구 확인에 도달하지 못했다. reporter 최초 집계 null 교정·정산 guard 첫 실패·초기 HTML 과출력 및 heartbeat cadence 전수 미감사 한계를 보존하며 자체 검사를 독립 PASS로 표현하지 않는다. 이 goal과 Astra 메모의 상태 갱신은 Sol 종료 뒤에 수행하며 이전 입력 사본을 E에 보존한다.
+
+실물 실행 Sol `task_e1a3b06a60b2` / `ctx_2bcd86830ed6`은 done `msg_f742b769c567` 뒤 release·동일inc 완료화면 확인·close로 정산했다. **2026-10-05T06:15:12.0428986Z terminal list는 Astra만/작업자0**이었다. 앱/launcher/TEMP 잔존0, Astra 직접 tracked193/canonical48 hash불변을 대조했다. 원문 E/`physical-recheck/execution-result.md`(SHA256 `2597ee51cd702154b0570cb33e22d031fd1e581a276ae298363d319b555606a4`)와 `physical-recheck-astra-final-audit.json`·`physical-recheck-final-terminals.json`에 연결한다. DOM/PNG 불일치·focus0→1 정정·첫 정산 실패 후 보완 성공·heartbeat 간격315/357/532초를 보존하며 전체 절차PASS로 표현하지 않는다. 실물 사용자 수용과 자동 캡처의 한계를 분리한다.
+
+아래는 선행 회차의 범위와 당시 상태다. 이번 추가 수정의 현재 상태는 위 절을 따른다.
+
+## 선행 재개 범위 — 2026-10-05
 
 메인 `msg_5a1316ef5e10`(2026-10-04 14:56:42 UTC)의 재개 지시로 아래 중간 마감의 새 착수 동결을 이번 범위에 한해 해제한다. 시작 branch `feat/management-m2-system-cards`, HEAD `719767f2276b14bace29ef98b621e191efef99e9`, 작업 트리는 clean이었다. 전체 목표는 아직 미완료이며, 이 범위 절을 메인이 확인한 뒤 작업자를 발행한다.
 

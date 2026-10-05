@@ -102,7 +102,7 @@ describe('canonical record contract', () => {
     expect(canonical.systems.map(system => system.id)).toEqual(expect.arrayContaining(['combat', 'persistence', 'management-records', 'transport', 'party', 'quest']));
     expect(canonical.systems.find(system => system.id === 'persistence')?.implementationStatus).toMatch(/미완료/);
     expect(canonical.records.find(record => record.id === 'verify-combined')?.status).toMatch(/최신 main 재실행 아님/);
-    expect(canonical.records.find(record => record.id === 'plan-contracts')?.status).toMatch(/P1~P7 미착수/);
+    expect(canonical.records.find(record => record.id === 'plan-contracts')?.status).toMatch(/클라이언트\/UI 적용부터 저장·복원 종합 검증까지의 후속 단계 미착수/);
     for (const source of canonical.sources) {
       expect(source.section.length).toBeGreaterThan(0);
       if (source.kind === 'git') expect(source.revision).toMatch(/^[a-f0-9]{40}$/);
