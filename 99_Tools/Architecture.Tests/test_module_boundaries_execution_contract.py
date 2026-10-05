@@ -8,6 +8,9 @@ Requirement sources, never the checker's own calculations:
   reverification-contract.md judgments 2-6 and #ENV-1.
 - relocation-review-contract.md items 2/3/5: the checker moved to 99_Tools/ModuleBoundaries
   (user choice A, msg_7fb35a20cd35) with its own props; expectations are unchanged.
+- goal section 5 and cache-ignore-contract.md (#5): bytecode that a plain import writes
+  beside the relocated checker stays out of Git's change candidates, while sources there,
+  the former folder's cache and caches of other folders keep their earlier visibility.
 
 Opt-in: MODULE_BOUNDARIES_EXECUTION_WORK names a new absolute directory below the
 repository .backups/. Without it every class skips at import with no process, network
@@ -17,11 +20,14 @@ MODULE_BOUNDARIES_EXECUTION_MAIN_SHA optionally names the resolved main commit t
 
 import fnmatch
 import hashlib
+import importlib.util
+import json
 import os
 import pathlib
 import re
 import shutil
 import sys
+import textwrap
 import time
 import unittest
 
@@ -561,6 +567,159 @@ class WindowsWorktreeEnvironmentCases(unittest.TestCase):
         self.assertTrue(failed_assert, summary)
         self.assertIn("git.exe: Invalid argument", (summary["failures"] + summary["errors"])[0][1])
         self.assertEqual(summary["blockedWrites"], [])
+
+
+# goal section 5: the approved fix is one root .gitignore rule for the relocated checker's cache.
+CHECKER_FOLDER = "99_Tools/ModuleBoundaries"
+# The checker's former folder, whose cache the existing 99_Tools/Architecture/.gitignore excludes.
+FORMER_CHECKER_FOLDER = "99_Tools/Architecture/Boundaries"
+# A sibling tool and a deeper path with the same name: the rule must not reach them.
+UNRELATED_CACHE_FOLDERS = ("99_Tools/OtherTool", "nested/99_Tools/ModuleBoundaries")
+IMPORT_FOLDERS = (CHECKER_FOLDER, FORMER_CHECKER_FOLDER, *UNRELATED_CACHE_FOLDERS)
+IGNORE_FILES = (".gitignore", "99_Tools/Architecture/.gitignore")
+NEW_SOURCE = f"{CHECKER_FOLDER}/new_module_probe.py"
+# Without --global/--system config and with an empty global excludes file only the copied
+# ignore files decide, so a developer's own `__pycache__/` exclude cannot hide a regression.
+FIXTURE_GIT_ENVIRONMENT = {"GIT_CONFIG_GLOBAL": "/dev/null", "GIT_CONFIG_NOSYSTEM": "1", "GIT_OPTIONAL_LOCKS": "0"}
+IMPORT_CODE = textwrap.dedent('''\
+    import json, sys
+    sys.path.insert(0, sys.argv[1])
+    import processes
+    print(json.dumps({"dontWriteBytecode": sys.dont_write_bytecode, "pycachePrefix": sys.pycache_prefix,
+                      "module": processes.__file__}))
+    ''')
+
+
+def porcelain(output):
+    """{path: XY} from `git status --porcelain=v1 -z`; this fixture has no renames."""
+    return {entry[3:]: entry[:2] for entry in output.split("\0") if entry}
+
+
+def ignore_matches(output):
+    """{path: (source, line, pattern)} from `git check-ignore -z -v -n`; empty fields mean no match."""
+    fields = output.split("\0")
+    return {fields[index + 3]: tuple(fields[index:index + 3]) for index in range(0, len(fields) - 3, 4)}
+
+
+@unittest.skipIf(WORK_VALUE is None, SKIP_REASON)
+class ImportedBytecodeStaysIgnored(unittest.TestCase):
+    """#5: a plain import (no -B) beside the checker, observed by Git on an owned fixture.
+
+    The fixture holds today's bytes of both ignore files and of the real processes.py,
+    copied into the checker folder and the comparison folders. Expectations come from the
+    goal wording; the ignore patterns are never parsed, and cache paths are what the
+    import actually wrote.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.folder = fixture.new_folder("bytecode-ignore")
+        cls.root = cls.folder / "repository"
+        cls.hooks = cls.folder / "empty-hooks"
+        cls.hooks.mkdir()
+        cls.checker_before = fixture.tree_state(fixture.REPO / CHECKER_FOLDER)
+        module = (fixture.REPO / CHECKER_FOLDER / "processes.py").read_bytes()
+        copies = {path: (fixture.REPO / path).read_bytes() for path in IGNORE_FILES}
+        copies.update({f"{folder}/processes.py": module for folder in IMPORT_FOLDERS})
+        for relative, data in copies.items():
+            target = cls.root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+        fixture.write_json(cls.folder / "fixture-inputs.json",
+                           {path: hashlib.sha256(data).hexdigest() for path, data in copies.items()})
+        for label, arguments in (("init", ("init", "--quiet")), ("add", ("add", "--all")),
+                                 ("commit", ("commit", "--quiet", "--message", "Ignore files and module copies"))):
+            run = cls.git(label, *arguments)
+            if run.returncode:
+                raise RuntimeError(f"fixture git {label} failed: {run.stderr}")
+        (cls.root / NEW_SOURCE).write_text("VALUE = 1\n", encoding="utf-8")
+        # run_recorded turns bytecode off for every child; an empty value turns it back on
+        # for this one, and the child reports what its interpreter actually decided.
+        cls.imports = {
+            folder: fixture.run_recorded(
+                fixture.new_folder("bytecode-import"), [sys.executable, "-c", IMPORT_CODE, cls.root / folder],
+                cwd=cls.root, set_environment={"PYTHONDONTWRITEBYTECODE": ""}, unset=("PYTHONPYCACHEPREFIX",),
+                timeout=60,
+            )
+            for folder in IMPORT_FOLDERS
+        }
+        cls.caches = sorted(path.relative_to(cls.root).as_posix() for path in cls.root.rglob("*.pyc")
+                            if ".git" not in path.relative_to(cls.root).parts)
+        fixture.write_json(cls.folder / "generated-caches.json", {
+            path: hashlib.sha256((cls.root / path).read_bytes()).hexdigest() for path in cls.caches})
+        sources = [NEW_SOURCE, *(f"{folder}/processes.py" for folder in IMPORT_FOLDERS)]
+        cls.queries = {
+            "status": cls.git("status", "status", "--porcelain=v1", "-z", "--untracked-files=all"),
+            "status-ignored": cls.git("status-ignored", "status", "--porcelain=v1", "-z", "--untracked-files=all",
+                                      "--ignored"),
+            # Exit 1 only says that no given path matched; the -n lines still list every path.
+            "check-ignore": cls.git("check-ignore", "check-ignore", "-z", "--stdin", "-v", "-n", "--no-index",
+                                    stdin_text="".join(f"{path}\0" for path in (*cls.caches, *sources))),
+        }
+        cls.status = porcelain(cls.queries["status"].stdout)
+        cls.ignored_status = porcelain(cls.queries["status-ignored"].stdout)
+        cls.matches = ignore_matches(cls.queries["check-ignore"].stdout)
+        cls.checker_after = fixture.tree_state(fixture.REPO / CHECKER_FOLDER)
+
+    @classmethod
+    def git(cls, label, *arguments, stdin_text=None):
+        prefix = ["git", "-C", cls.root, "-c", "user.name=Bytecode Ignore Fixture",
+                  "-c", "user.email=bytecode-ignore@example.invalid", "-c", "commit.gpgSign=false",
+                  "-c", f"core.hooksPath={cls.hooks}", "-c", "core.excludesFile=/dev/null",
+                  "-c", "init.defaultBranch=fixture"]
+        return fixture.run_recorded(fixture.new_folder(f"bytecode-git-{label}"), [*prefix, *arguments], cwd=cls.root,
+                                    set_environment=FIXTURE_GIT_ENVIRONMENT, timeout=60, stdin_text=stdin_text)
+
+    def setUp(self):
+        # A cache that was never written, or a Git query that failed, would let every
+        # visibility check pass vacuously.
+        for folder, run in self.imports.items():
+            self.assertEqual(run.returncode, 0, f"{folder}: {run.output[-2000:]}")
+            self.assertTrue(self.caches_in(folder), f"the import wrote no bytecode below {folder}")
+        for label, run in self.queries.items():
+            self.assertIn(run.returncode, (0, 1) if label == "check-ignore" else (0,), f"{label}: {run.stderr}")
+
+    def caches_in(self, folder):
+        return [path for path in self.caches if path.startswith(f"{folder}/__pycache__/")]
+
+    def test_the_import_child_writes_real_interpreter_bytecode(self):
+        for folder, run in self.imports.items():
+            with self.subTest(folder=folder):
+                reported = json.loads(run.stdout)
+                self.assertEqual((reported["dontWriteBytecode"], reported["pycachePrefix"]), (False, None))
+                self.assertEqual(reported["module"], str(self.root / folder / "processes.py"))
+                for cache in self.caches_in(folder):
+                    self.assertEqual((self.root / cache).read_bytes()[:4], importlib.util.MAGIC_NUMBER, cache)
+
+    def test_checker_cache_is_ignored_by_the_root_file_and_hidden_from_status(self):
+        for cache in self.caches_in(CHECKER_FOLDER):
+            with self.subTest(cache=cache):
+                self.assertNotIn(cache, self.status)
+                self.assertEqual(self.ignored_status.get(cache), "!!")
+                self.assertEqual(self.matches[cache][0], ".gitignore")
+
+    def test_former_checker_cache_keeps_its_existing_exclusion(self):
+        for cache in self.caches_in(FORMER_CHECKER_FOLDER):
+            with self.subTest(cache=cache):
+                self.assertNotIn(cache, self.status)
+                self.assertEqual(self.ignored_status.get(cache), "!!")
+                self.assertEqual(self.matches[cache][0], "99_Tools/Architecture/.gitignore")
+
+    def test_sources_beside_the_checker_stay_change_candidates(self):
+        self.assertEqual(self.status.get(NEW_SOURCE), "??", self.status)
+        for source in (NEW_SOURCE, f"{CHECKER_FOLDER}/processes.py"):
+            with self.subTest(source=source):
+                self.assertEqual(self.matches[source], ("", "", ""))
+
+    def test_caches_outside_the_checker_folder_stay_visible(self):
+        for folder in UNRELATED_CACHE_FOLDERS:
+            for cache in self.caches_in(folder):
+                with self.subTest(cache=cache):
+                    self.assertEqual(self.status.get(cache), "??", self.status)
+                    self.assertEqual(self.matches[cache], ("", "", ""))
+
+    def test_the_operating_checker_folder_gets_no_bytecode(self):
+        self.assertEqual(self.checker_before, self.checker_after)
 
 
 if __name__ == "__main__":

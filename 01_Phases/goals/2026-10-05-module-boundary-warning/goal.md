@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **#4 형제 폴더 분리의 신규 Opus 독립 검증이 통과했다. 기본 고정 테스트1건·독립26건·실행계약25건과 R-2 같은 명령 보완을 확인했다. 이번 이동에서 발견한 #5 Python 캐시 ignore 누락(낮음·비차단)은 신규 Sol 수리·정산을 마쳤고 신규 Opus의 한정 독립 검증을 남겼다. #1·#2·#3·#4는 해소됐고 #ENV-1은 하네스 원인이다. PR 미발행, 실제 PR CI/경고 표시/artifact/format-check는 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **#4 형제 폴더 분리와 #5 Python 캐시 ignore 보존 수리 모두 신규 Opus 독립 검증을 통과했다. #1·#2·#3·#4·#5는 해소됐고 #ENV-1은 하네스 원인이다. 캐시 회귀6건은 opt-in이며 기본 CI 상시 실행으로 집계하지 않는다. 검증 중 초기 Git status의 index stat metadata 쓰기 여부는 미확정이나 보호 파일과 staged 내용은 보존됐다. PR 미발행, 실제 PR CI/경고 표시/artifact/format-check는 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -225,3 +225,15 @@ R-2의 이전 iter-g 단정 원본 Edit/성공 응답은 `iter-g-source-check/so
 자기 Git fixture에서 실제 -B 없는 import로 pyc를 생성한 동일 probe는 15관측 중13통과·2실패/exit1→15통과·0실패/exit0이었다. raw `cache-ignore/work/{before,after}`에 실제 argv/env/exit/time·import stdout·Git status를 남겼다. 새 cache만 제외로 바뀌고 옛 cache 제외와 정상 .py·다른 경로 cache 비제외는 유지했다. 이는 전용 probe의 관측 수이며 저장소 suite 실행 수가 아니다. SDK/제품/서버/DB/Unity·실제 CI는 실행하지 않았다.
 
 release·같은 incarnation/idle/완료 화면을 확인하고 close했다. **2026-10-05T07:35:17Z 실제 Architecture 목록은 Astra만, 작업자0**이다. 다음 신규 Opus는 이 한정 diff와 보고/raw를 실사하고 실제 Git fixture 회귀·기본 opt-out·frozen 단일 보존을 확인한다. 앞선 SDK/정책26·실행25/R2 전체를 재실행한 것으로 집계하지 않는다. PR 발행/CI·경고 표시/artifact/format-check·개별 병합 승인은 남아 있다.
+
+### 7 - 캐시 ignore 독립 통과와 PR 준비
+
+신규 Opus Task `task_de247305f6b9`/Dispatch `ctx_b9aae7317054`가 `msg_0947f28d7852`(2026-10-05T07:57:03Z)로 succeeded·쓰기 종료를 보고했다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이며 ready/input_accepted/turnStart를 관측했다. Astra는 판정 전체 `.backups/verification/2026-10-05-module-boundary-warning/cache-ignore-review/verdict.md`(SHA256 `0902264AADAEEE0101E4D53CB1DBD7F3D8D0D212719F30E6768BFF571765D8A9`)와 맥락·실제 diff·실패/통과 원시를 읽고 보호380파일 불변·허용 테스트1파일 변경·staged 내용 불변을 직접 대조했다(`cache-ignore-review-astra-source-check.json`).
+
+- #5 해소: 실행계약에 추가한 `ImportedBytecodeStaysIgnored` 6건은 실제 -B 없는 Python import의 pyc 생성과 Git 상태를 관측한다. 동일 최종 테스트/argv로 옛 ignore 복사본은1실패/exit1, 새 ignore 복사본과 실제 checkout은6/6통과/exit0이다. 전역 `__pycache__/` 보조 변이는2실패여서 경로 한정 기대값의 실효성도 확인했다. 원시는 `cache-ignore-review/work/replay-before`, `replay-after`, `final-actual`, `replay-mutation-global`이다.
+- opt-in 없는 기본 discovery 보존7건은 전후7/7통과했다. 기본 수집은88→94, skip83→89이며 실제 실행5건은 그대로다. 추가6건은 opt-in이므로 기본 CI 상시 실행이 아니다. CI는 별도 요구사항 opt-in을 사용하므로 실제 실행/skip 수는 실제 PR artifact에서 다시 확인한다.
+- frozen #4 기본 명령은 override 없이1/1·0skip·exit0,6.606초였다. 기존15파일·기록 batch·고정 테스트 hash 불변을 확인했다. 앞선 SDK 정책26·실행계약25·R-2·Windows 환경 검사는 이번 한정 검증에서 반복 실행하지 않았다.
+- 최초 새 테스트 초안은 `check-ignore -z`에 `--stdin`을 빠뜨려6실패했다. 이를 보존하고 보완했으며 기존 기대값 변경이나 제품 확정 실패로 세지 않는다. 최종 전후 재생은 같은 테스트 bytes를 사용했다.
+- 판정7절은 초기 Git Bash status/diff 일부가 `GIT_OPTIONAL_LOCKS=0` 없이 실행되어 index stat metadata가 갱신됐을 가능성을 인정한다. staged 내용·보호 파일 불변은 관측됐으나 모든 Git metadata 쓰기 부재는 확인하지 못했다. Astra는 `msg_c97a1a90f66a`로 즉시 메인에 알렸고 원문의 「운영 Git 쓰기 없음」을 더 넓은 무쓰기 증거로 인용하지 않는다. Sol 최초 실패 편집의 원시 stdout/stderr 부재(O-C2)도 요약 JSON과 구분해 보존한다.
+
+release 뒤 동일 incarnation `08dd44ee-cdaf-4ceb-9982-b957cbdc87aa`, idle·완료 화면·빈 prompt를 확인해 close했다(ptyKilled true). 종료 직후 실제 terminal list에는 Architecture Astra만 남고 작업자0이었다(`cache-ignore-review-post-close-terminals.json`, UTC는 같은 이름의 time.txt). Delivery `delivery_824250f56641`을 ack했다. 다음 단계는 테스트/goal 커밋, 최신 main의 운영 문서 통합, 명시 feature branch push·PR, 실제 CI·경고 표시·artifact·format-check 확인과 메인의 R-2/개별 병합 승인이다.
