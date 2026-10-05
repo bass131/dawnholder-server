@@ -5,15 +5,15 @@
 - [x] 사용자 범위 승인과 새 브랜치 준비
 - [x] 목표·맥락 메모·구현 계약 고정
 - [x] 목록·상세·복귀 구현
-- [>] 독립 강 검증과 직접 영향 시험 정비
-- [ ] 최종 전체 시험·Electron 화면 확인
-- [ ] PR 발행·CI·메인 원천 대조
+- [x] 독립 강 검증과 직접 영향 시험 정비
+- [x] 최종 전체 시험·Electron 화면 확인
+- [>] PR 발행·CI·메인 원천 대조
 - [ ] 사용자 개별 승인·PR 병합
 - [ ] Gardener·종료 기록 통합
 
 ## 재개 지점
 
-상태는 **구현 완료·독립 강 검증 준비**다. 독립 검증·Electron 실행은 아직 하지 않았다. Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch는 `feat/management-record-navigation-20261005`, 시작 main/HEAD는 `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`이다. 목표/CURRENT 준비 커밋은 `270e6ce`, 구조 추출은 `41c26fe`, 화면 동작 구현은 `163217f`다. 이전 goal의 Run·Task·Dispatch는 재사용하지 않는다.
+상태는 **독립 강 검증 통과·PR 준비**다. 제품 결함 0건, 비차단 관찰 O1~O5가 있다. 전체 시험은 902개 중 897통과·5실패이며 실패 5건은 범위 밖 기존 단정/환경으로 분류됐다. Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch는 `feat/management-record-navigation-20261005`, 시작 main은 `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`이다. 목표 준비 `270e6ce`, 구조 `41c26fe`, 동작 `163217f`, 검증 입력 `67f8aebe6515e66876d5f329c7c9dfef0cb4c239`, 검증 시험 커밋 `3cbe421`을 순서대로 보존한다. 사용자 병합 승인과 Gardener는 아직 남았다.
 
 근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-05-development-record-navigation/`이다. 시작 맥락은 E/`astra-context.md`, 승인 원문은 E/`main-approval-receipt.json`, 사용자 출력 기준선은 E/`user-artifacts-before.json`, 프로필 추가 관측은 E/`user-profile-before.json`이다. 경로·상태는 새 세션 진입 때 실제 Git/Orca 조회와 대조한다.
 
@@ -99,3 +99,23 @@ DB 복구가 모든 모니터링의 기술적 전제는 아니지만 기존 DB �
 - 기존 출력 35개 hash는 유지됐다. 프로필은 39파일 비교 일치, 기준 hash 부재 33파일, 현재 읽기 불가 1파일로 전체 동일성은 미판정이다(E/`sol/raw/user-preservation.json`). Sol은 원본 build/앱·TEMP·OS 입력을 실행하지 않았다.
 - 정상 정산은 E/`sol-done-receipt.json` → `sol-release.json`의 retained/external_terminal → `sol-before-close.json`의 정확 incarnation/종료 화면 → `sol-close.json`의 ptyKilled true → Delivery ACK 순서다. Task 하나 뒤 종료했고 새 작업에 재사용하지 않는다.
 - 범위 안 확정 실패 집계와 같은 산출물 수정 3회 초과 체크포인트는 구분해 기록한다. 첫 구현은 완료했으나 독립 판정·확정 실패 집계는 없다.
+- 신규 검증 Task `task_dd0b310a4875`, Dispatch `ctx_5e161fc44abd`, handle `term_ae7f9dad-ece2-4ba0-a2f9-9d354f8088d6`, incarnation `4a0f3fd0-dec4-41d0-9a0b-cc22510ad9af`. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus 5.5 xhigh, backend unknown이다. ready와 선택창 없는 첫 화면, input_accepted/turn_started를 확인했다(E/`review-launch.json`, `review-ready.json`, `review-first-screen-read2.json`, `review-worker-start.json`). 첫 terminal read의 잘못된 `--lines` 인자는 거절됐으며 `--screen --limit`로 바로잡은 원문을 함께 보존한다.
+- 검증 고정 계약 E/`review-contract-v1.md`는 CODE 관련 7절과 메인 테스트 분류 `msg_71e41e231d55` 전문을 포함한다. 경로 검사 입력 41개/출력 부모 3개 모두 존재(exit0), hash는 E/`review-inputs-manifest.json`에 있다. 이 live goal의 상태 갱신은 고정 `inputs/goal-review-v1.md`를 수정하지 않는다. 판정 원문 예정은 E/`review/verdict.md`다.
+
+### 검증 중 범위 명확화와 원천 대조
+
+공식 질문 `msg_f1e6f7e73654`(2026-10-05T13:30:43Z)에 대해 Astra는 `msg_a1cc08d10c82`로 `tests/catalog-display-names.test.ts`의 직접 영향 화면 시험 한 곳을 기존 단계 코드 검사 범위를 유지한 목록/상세 순회로 보완하도록 답했다. 승인된 직접 영향 시험 정비의 경로 명확화이며 새 기능·완료조건·무관한 시험 수리를 추가하지 않는다. 원 고정 계약은 보존했고 보충 E/`review-supplement-1.md`와 입력 hash/부모 경로 확인을 이후 시험 쓰기에 적용한다. App의 기존 skip-link 단정은 여전히 수정 제외다.
+
+질문의 Sol baseline hash와 Git blob hash 차이는 메인 `msg_ce7ef6919fbe`로 즉시 공유했다. 이후 검증자 `msg_b49a460cf4e7`(2026-10-05T13:38:16Z)가 base LF에 일부 줄 끝 CR만 재구성하면 baseline hash가 정확히 일치함을 확인해 앞선 불일치 표현을 철회했다. `DevelopmentRecords.tsx` 55·56행과 `styles.css` 124·189·205행이며 다른 12입력은 LF hash가 같다. Astra는 E/`review/raw/baseline-eol-check.json`의 재구성 결과/`contentEqualToBaseModuloEol=true`를 직접 읽고 메인 `msg_db775c6b81c6`로 해소를 알렸다. 시각 전 제품 쓰기 호출 부재의 rollout 대조는 검증자가 수행한 범위이며 Astra의 전체 rollout 재검사가 아니다. 보고-실제 불일치나 확정 실패로 집계하지 않는다. 원문은 E/`review-question-1.json`, `review-question-1-reply.json`, `baseline-eol-resolution-receipt.json`이다. 원시를 보존하고 검증자의 독립 base TEMP 재현(39개 중 31통과·8실패)과 구분한다.
+
+Orca 1.4.220 ask/reply의 subject 옵션 부재는 현재 help 원문으로 확인했다. 실제 공식 ask 호출·현재 sender/Task/Dispatch·질문 body를 `review-question-1-trace50.json`과 대조하고 R-3의 현재 한정 예외로 `reply --id`를 사용했다. `Re: Question` subject를 태그가 붙은 것처럼 보고하지 않으며 body 자기 태그와 공식 answered receipt를 보존한다.
+
+### 독립 판정과 PR 입력
+
+- 신규 Opus 최종 `msg_1282ed2be342`(2026-10-05T14:04:27Z): **통과**, verifies `task_f04cba20f402`, 제품 결함 0. 판정 원문 E/`review/verdict.md`, 메모 `review/context.md`, 완료 receipt `review-done-receipt.json`이다. 검증자는 쓰기를 종료했고 release→정확 incarnation/종료 화면→정확 pane close(ptyKilled true)→Delivery ACK로 정산했다. 재사용하지 않는다.
+- 직접 영향 시험은 같은 명령의 39개 중 30통과·9실패에서 38통과·1실패로 바뀌었다. 남은 한 건은 기존 App skip-link 단정이다. 신규 독립 탐색 시험 10/10, TEMP 결함 주입 대조군 10/10 및 9종 모두 검출·원복, noEmit 3종 exit0을 확인했다. 최종 전체 suite는 1회, 33파일 902개 중 897통과·5실패(exit1)다. 원시는 E/`review/raw/{before,after,after-new,after-tsc,final}-commands.json`과 `final-full-vitest.json`이다.
+- 남은 5실패: `App.test.tsx`의 skip-link 부재 단정 1건, `desktop-main.test.ts`의 옛 창 크기/IPC 채널 수 2건은 과거 `cfd1c9f` 이후의 오래된 단정이다. `mcp-v3-build.test.ts`와 `mcp-v3-r1-build.test.ts` 각 1건은 원본 `mcp-dist`의 낡은 digest 환경이다. MCP digest 입력 19개와 Electron main은 이번 goal에서 바뀌지 않았다. 범위 밖 수리를 하지 않았으며 전체 suite 무실패라고 보고하지 않는다.
+- 소유 TEMP build exit0 후 실제 Electron 보조 `24G2W1G4`·1920×1080·OS scale1·content1600×900·앱 zoom1.25에서 목록→상세→연결→복귀·필터·키보드·초안·좁은 폭을 관측했다. 21/21, focus0, 소유 프로세스 4개 정상 종료/잔여0, TEMP3곳 정리다. E/`review/electron/summary.json`, `placement.json`, `exit.json`, PNG 원문을 보존한다. 첫 harness 시도는 숨은 카드의 뒤로 버튼을 눌러 중단돼 `attempt-1`에 보존했고 제품 결함으로 세지 않았다.
+- 기존 출력35/35와 비교 가능한 프로필39/39 hash가 같다. 프로필34개는 기준 hash 부재로 비교 불가이며 전체 동일성을 주장하지 않는다. Vitest의 원본 `node_modules/.vite` 결과 캐시 쓰기는 원문에 공개한 실행 부수효과다. 원본 build/설치/의존성 교체는 하지 않았다. 실제 저장 버튼, 사라진 ID·숨은 화면 포커스의 Electron 경로, Windows OS 배율125와 Chromium 접근성 트리는 미측정이다. 해당 상태/포커스 경로는 jsdom에서 확인했다.
+- Astra는 판정 전문과 실제 시험 diff, 숫자 원시·변이2종·화면3장·보존/정리 근거를 표본 대조했다(E/`astra-source-audit.json`). 검증자의 전수 분류를 대신하지 않는다. 이 대조에서 `final-classification.json.changedFiles` 첫 경로의 `05_Management`가 `5_Management`로 잘린 helper trim/slice 표기 오류를 발견했다. 원문은 보존하고 실제 Git13경로를 따로 대조해 5실패 귀속·902/897/5 수치에 영향 없음을 기록, 메인 `msg_b344e4decb2a`로 보고했다. 원문 말미의 표현은 **5실패·4파일** 원시 수와 구분한다.
+- 비차단 O1(상세 진입 시 복귀 바가 위로 밀림)과 O5(카드 접근 이름의 구분자)는 다음 사용성 후보로 남긴다. O2(returnPoint 주석), O3(미사용 export/focus key), O4(범위 밖 theme의 죽은 선택자)는 같은 영역을 다시 만질 때 참고한다. 이번 완료조건을 막는 결함으로 판정되지 않아 추가 구현·새 goal을 자동 시작하지 않는다.
