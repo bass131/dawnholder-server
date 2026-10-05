@@ -6,7 +6,7 @@
 
 - 이 파일의 메인·Orca·검증자 운영은 이 머신의 로컬 세션에 적용한다. 사람 팀원이 자기 머신에서 실행하는 세션은 Claude Code라도 AGENTS의 [외부 팀원 세션](AGENTS.md#외부-팀원-세션) 절만 따르며, 로컬 파트 생성·goal·검증자 기동 절차를 적용하지 않는다.
 - Claude 세션의 역할은 둘이다. 메인 Claude는 방향 설정·파트 분할·사용자 조율·결과 통합·사용자 보고·병합 승인 요청을 맡고, 저장소 파일은 이 CLAUDE.md만 쓴다. Opus 검증자는 담당 Astra가 연 세션에서 실사·판정하고 판정에 필요한 테스트 파일만 쓴다. 제품 코드는 고치지 않고 결함을 번호로 보고한다.
-- 예외로 [R-7](00_Document/operations/ORCA.md#r7-fable-pilot) 한정 시범의 Fable goal 검토자는 메인이 승인한 시범 목표에서만 열리며, 해당 목표의 `goal-review.md`만 쓴다.
+- 예외로 [R-7](00_Document/operations/ORCA.md#r7-fable-pilot) 한정 시범의 Fable 구현 전 설계 검토자는 메인이 승인한 시범 목표에서만 열리며, 해당 목표의 `goal-review.md`만 쓴다.
 - 생산 코드는 AGENTS.md 라우팅대로 Codex 작업자가 쓴다. 사용자가 Claude에게 직접 작성을 지시했을 때만 메인 Claude가 쓰고, 보고에 실제 작성 모델을 적는다.
 - Claude 서브에이전트(Agent 도구)는 읽기 전용 조사·요약에만 쓴다. AGENTS.md가 요구하는 독립 검증이나 Orca 실행 증거를 대신하지 않는다.
 - 사용자 요청 없이 Codex 영역을 수정하지 않는다: `AGENTS.md`, `.agents/`, Codex CLI 설정.

@@ -2,10 +2,10 @@
 
 ## 재개 지점
 
-2026-10-05 KST, Rules 운영 정본 반영 목표다. **[PR178 - 운영 결정 정본 반영](https://github.com/bass131/dawnholder-server/pull/178)은 승인된 head `8f9c109`로 병합됐고 `origin/main` 포함을 확인했다.** **[PR181 - 계약·판정 양식과 검증 시범 정비](https://github.com/bass131/dawnholder-server/pull/181)를 생성했으며 신규 Opus 독립 문서 실사를 통과했다**(차단0·필수 미검토0). 작성자와 검증자는 쓰기 종료·정산·pane 종료했다. 비차단 #1~#3은 메인 결정 B에 따라 전체 종료 때 정리하며, #5의 당시 실행 원시 부재와 #6의 최초 명령 원시 한계를 아래에 명시했다. 정확 head의 CI와 메인 R-2 확인 뒤 해당 PR의 사용자 병합 승인을 받는 단계이며 **아직 PR181을 병합하지 않았다**. 전체 종료 점검도 남아 있다. 이 파일이 기준·상태·결과의 정본이다.
+2026-10-05 KST, Rules 운영 정본 반영 목표다. **[PR178 - 운영 결정 정본 반영](https://github.com/bass131/dawnholder-server/pull/178)과 [PR181 - 계약·판정 양식과 검증 시범 정비](https://github.com/bass131/dawnholder-server/pull/181)는 각각 사용자 승인 head로 병합됐고 `origin/main` 포함을 확인했다.** PR181은 신규 Opus 문서 실사 통과(차단0·필수 미검토0)와 정확 head CI 두 개의 성공 뒤 `466aa025`로 병합됐다. 작성자와 검증자는 쓰기 종료·정산·pane 종료했다. 메인 결정 B의 비차단 #1~#3은 새 Sol의 두 문서 작성과 메인의 CLAUDE 명칭 수정이 끝났고 새 Opus 문서 실사가 통과했다(차단0·필수 미검토0). 메인은 새 비차단 #1을 다음 해당 행 수정 기회로 남기고 이번 PR 진행을 결정했다. Astra는 #2 계산 방법 서술을 교정했으며 사후 diff를 R-2에 제공한다. 별도 종료 정리 PR/CI와 해당 PR의 사용자 병합 승인이 남아 있다. #5의 당시 실행 원시 부재와 #6의 최초 명령 원시 한계는 아래 기록에 보존한다. **종료 정리·신규 Gardener·전체 종료 점검은 아직 남아 있다.** 이 파일이 기준·상태·결과의 정본이다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- 현재 PR2 branch: `docs/operating-contracts-20261005`. 기준: fetch한 `origin/main`의 `ecca463c6e4bb8d4aa44a75aaa57c581c1c5c70c`. PR1의 `docs/operating-canon-20261005`·기준 `11aa4b83131bc6349f186a141cfea9c58d2230e3`는 역사 기준이다.
+- 현재 종료 정리 branch: `docs/operating-canon-closeout-20261005`. 기준: fetch한 `origin/main`의 `466aa025b7934ad058bb78636885cce18f0a96eb`. PR2의 `docs/operating-contracts-20261005`·기준 `ecca463c6e4bb8d4aa44a75aaa57c581c1c5c70c`, PR1의 `docs/operating-canon-20261005`·기준 `11aa4b83131bc6349f186a141cfea9c58d2230e3`는 역사 기준이다.
 - 기존 `docs/teammate-onboarding`의 `a550eda`·`f35aee2`·`e0d4fe7`·`21ae047`은 보존한다. PR177 결과 기록만 PR1에 별도 커밋으로 이관한다. 이전 Run·Task·Dispatch는 실행 권한으로 재사용하지 않는다.
 - 새 Run `run_2e3ef4cc0150`, 회신 주소 `run:run_2e3ef4cc0150`. 식별자는 이번 진입의 관측이며 다음 세션의 실행 권한이 아니다.
 - 로컬 근거: `.backups/verification/2026-10-05-operating-canon/`. 사전 메모 `astra-context.md`, 최초 메인 원문 `main-request.txt`.
@@ -52,6 +52,7 @@
 |---|---|---|
 | PR1 — 10-04~05 운영 결정 정본 반영 | 현재 운영 결정·추가 입력·숫자/원천 대조·PR177 결과 이관 | Sol 쓰기 종료 → 신규 Opus 문서 실사 → PR/CI → 메인 R-2 → 해당 PR 사용자 승인 |
 | PR2 — 계약·판정 양식 정비 | 권고 6개·진입 경로 실행·관련 절 선정·기계 판독·설계 관찰·Fable·검증 2등급 | PR1 통합 뒤 최신 main에서 후속 branch → 신규 Sol → 신규 Opus → PR/CI → 사용자 승인 |
+| 종료 정리 PR — 비차단 문구 정합화 | 메인 B 결정의 BACKLOG 검증 시범 상태·milestones 독립 세션 문구·메인 소유 CLAUDE Fable 명칭과 병합 결과 기록 | PR181 뒤 최신 main → 새 Sol 및 메인 각각 쓰기 종료 → 새 Opus 문서 실사 → PR/CI → 해당 PR 사용자 승인 |
 | 전체 종료 | 두 PR 결과·남은 위험·BACKLOG 연결 | 신규 Gardener → 메인/사용자 종료 점검 → R-8 |
 
 검증 등급은 **문서 실사**다. 제품 코드가 없으므로 이 goal의 TDD는 해당 없음이며, 제품 빌드·플레이·DB 실행을 문서 실사로 대체하거나 수행했다고 보고하지 않는다. 검증 세션을 생략하는 예외는 없다. 스킬·양식 변경은 실제 문서 작업 시나리오에 적용해 결과를 살피며 자동 선택·행동 강제를 보장하지 않는다.
@@ -357,3 +358,52 @@ O1~O7은 판정 원문에 보존한다. 현재 질문 예외의 배치, 줄수/b
 ### PR181 제출 기록
 
 제품 문서 commit `9682e08`, 독립 결과·PR178 병합 기록 commit `8254645`를 담당 Rules Astra가 작성·push하고 [PR181](https://github.com/bass131/dawnholder-server/pull/181)을 생성했다. 정확한 제출 head와 CI 상태는 해당 PR의 GitHub Checks 및 로컬 `pr181-final-ci.json`의 시점 있는 원시로 확인한다. PR 생성·CI 성공·메인 판단을 사용자 병합 승인으로 간주하지 않는다. 검증 후 goal 기록 증분은 `goal-pr2-post-review.diff`와 `astra-pr2-post-review-integration.json`으로 메인 R-2에 전달하며, 제품8파일은 독립 판정 당시 hash를 보존한다.
+
+## PR181 병합과 전체 종료 정리
+
+메인 `msg_11ac37438fcf`(2026-10-05T07:33:17Z, E의 `main-pr181-merge-approval.json`)가 사용자 원문 **「대시보드 결정 응답: 1) PR181 - 운영 정본 PR2(계약·판정 양식) 병합 승인 → A 이 head로 병합 승인 (head 5583304)」**을 전달했다. 메인 pane의 Enter 제출을 메인이 확인한 전달이며 Rules의 사용자 직접 수신으로 격상하지 않는다. 메인은 R-2 원문/표본과 사후 goal diff를 확인했다고 보고했다.
+
+Astra는 PR의 OPEN·MERGEABLE·CLEAN, 정확 head `5583304e062188ef4ae8be3e03c63e0483cef6de`·check/test SUCCESS를 다시 조회하고 `gh pr merge 181 --merge --match-head-commit`에 이 full SHA를 지정했다(exit0). 실제 mergedAt은 **07:34:07Z**, merge OID는 **`466aa025b7934ad058bb78636885cce18f0a96eb`**다. fetch 뒤 **07:34:32.902Z**의 `origin/main`과 같고 포함 검사 exit0이다. 원시는 `pr181-before-merge.json`·`pr181-merge-command.json`·`pr181-merged.json`·`pr181-main-inclusion.json`이며 메인 보고는 `msg_b744cb676fb1`이다.
+
+정확 head CI는 `code-rules` run37275610660와 `dotnet-tests` run37275610669 모두 성공했다. `pr181-final-ci.json`·`pr181-final-ci-commands.json`은 조회 명령/exit·실제 PR 테스트 merge checkout `8798e7ba…`와 부모 base/head를 보존한다. CodeRules는 Changed 언어 대상0/N/A와 별도 도구 회귀28/28·Orca22/22를 구분한다(`pr181-code-rules-source-sample.json`). .NET 원시 로그/표본의 총839·통과834·건너뜀5, 빌드 오류0·경고4를 그대로 기록하며 모두 실행/통과했다고 표현하지 않는다(`pr181-final-dotnet-log.stdout.txt`·`pr181-dotnet-source-sample.json`). CI와 독립 문서 실사는 별개다. 실제 Unity/게임/DB·Fable·ask/reply는 미실행이다.
+
+Main의 같은 병합 전달은 비차단 **#1~#3 정리(B) → Gardener → 전체 종료 점검**을 지시했다. 정리는 새 goal이 아니라 이 goal의 미완료 문서 정합성 작업이다. 승인 범위는 BACKLOG `verification-depth-policy`의 현재 결정·승격 연결, `milestones.md`의 독립 세션 문구, 메인 소유 `CLAUDE.md`의 Fable 명칭이다. 기존 ID·출처·무관한 후보 및 권한을 보존하고 정책을 복제하지 않는다. Sol 허용 파일은 앞의 두 문서이며 CLAUDE는 메인의 쓰기 종료 뒤 실사한다. goal·계약·Git는 Astra 소유다. #4·O1~O7와 다음 하네스 후보는 여기서 구현/채택하지 않는다. 문서 정리이므로 문서 실사 등급이며 R-7 실행은 해당 없음이다.
+
+`docs/operating-canon-closeout-20261005`는 위 시점 최신 main `466aa025`에서 만든 종료 정리 branch다. 종료 정리 PR도 새 Sol/새 Opus·정확 head CI·해당 PR의 사용자 명시 병합 승인을 거친다. 원래 두 본 PR과 종료 정리 PR의 결과를 통합한 뒤 신규 Gardener를 연다. 당시 Content PR180은 OPEN이고 별도 담당이 병합 진행 중이었다. Rules는 PR180/CURRENT의 Content 변경과 메인 담당 원격 보관 브랜치 삭제를 수행하지 않는다. 사전 메모는 `astra-closeout-context.md`, 분기 원시는 `closeout-base.json`이다.
+
+메인은 `msg_9e8f1cb84334`(07:35:59Z)로 CLAUDE9의 「Fable goal 검토자는」→「Fable 구현 전 설계 검토자는」 한 곳 쓰기 종료를 알렸다. Astra가 실제 +1/-1 diff·나머지 문장 보존·SHA256 `5ecdac7c34916d2db498afdbe0e82bd130eddb6581ff55a8e56e85c8e4ca35af`를 대조했다(`main-closeout-claude-write-end.json`). 이는 메인 작성이며 Sol/Astra의 문서 작성 실적으로 기록하지 않는다. 해당 파일을 새 Sol·Opus의 읽기 전용 고정 입력으로 포함한다.
+
+### 종료 정리 작성 결과와 독립 실사 준비
+
+신규 Sol Task `task_734f3e690b0e` / Dispatch `ctx_9be68e47d169`가 `msg_6f96c206dce7`(2026-10-05T08:00:19Z)로 모든 쓰기 종료를 보고했다. 지정/초기 요청은 `gpt-6.1-sol max`, 최초 화면은 Codex0.160.0 / GPT-6.1-Sol max, backend는 unknown이다. 초기 명령은 Astra의 `sol-closeout-launch-request.json`과 실행 결과에 보존했으며 split receipt에 명령 필드가 있다는 뜻이 아니다. `sol-closeout-worker-start.json`은 첫 연결 ready/input_accepted/turn_started를 보이며 추가 Enter 복구는 없었다.
+
+[완료 보고](../../../.backups/verification/2026-10-05-operating-canon/sol-closeout-report.md) 전체와 실제 diff를 Astra가 읽었다. Sol은 BACKLOG17·30·51의 등록 역사/승격 연결과 milestones17의 독립 세션/검증 시범 연결만 수정했다. 저장 `sol-closeout-raw/initial-results.json`·`final-results.json`의 자체점검은 initial31/31·final45/45, 제품2파일 추가6/삭제4줄, 후보22행 중 다른21행 보존, 최종 로컬링크27/실패0·외부1 미실행이다. 실행은 각 `*-execution.json`의 exit0이며 프로세스 한정 PowerShell ExecutionPolicy Bypass 사용을 기록했다. 제품 빌드·DB/게임·CI·Fable은 이 작성 작업에서 미실행이고 자체점검은 독립 통과가 아니다.
+
+`astra-closeout-sol-source-check.json`(08:01:40Z)은 Sol 쓰기 종료 뒤 입력20 중 두 허용 제품만 바뀌고 다른18입력(Main CLAUDE/Astra goal 포함)이 보존됐음을 보인다. 이후 Astra가 이 결과 기록을 추가하므로 과거 manifest의 goal/context hash를 현재 파일에 무조건 적용하지 않는다. 당시 사본 `goal-closeout-sol-input.md`·`astra-closeout-context-sol-input.md`와 다음 검증 manifest를 연결한다. 두 제품과 Main CLAUDE는 독립 실사 입력을 고정하는 동안 바꾸지 않는다.
+
+release retained/external_terminal/processAction none 뒤 같은 incarnation `68d88d07-fe08-4ef9-a1c6-67e26e1ae87b`의 완료 대화·빈 prompt를 확인해 close(ptyKilled=true)했고 실제 목록에 Astra만 남았다(`sol-closeout-release.json`·`before-close-*`·`close.json`·`post-close-list.json`). 보고 직전 목록을 다시 확인하며 완료 Sol은 재사용하지 않는다.
+
+### 종료 정리 절차 관측과 원시 계산 교정
+
+Sol이 인용한 live preamble의 heartbeat 주기는5분(`msg_b104749a4713`)이다. `closeout-run-heartbeats-all.json`에서 현재 from/Task/Dispatch에 정확히 맞는3건을 저장 script `measure-closeout-heartbeats.mjs`로 추출했다. CLI public dispatchedAt07:38:40을 이 Run의 UTC로 해석한 최초 간격은373초이고, 명시 UTC heartbeat 인접 간격은 **368·324초**다(`closeout-heartbeats-final.json`·명령/exit0/stdout). 최초 주입부터의 값은 실제 모델 사고 시작 시각이 아니며 전송 지연 원인은 확정하지 않는다. Sol은 두 후속 간격에 차단 wait/ask가 없었다고 보고했고 전체 주기 준수를 통과로 주장하지 않았다.
+
+메인 `msg_7b48ee4c8283`(07:51:30Z, `main-closeout-procedure-decision.json`)은 **관측을 goal/독립 입력에 기록하고 문서 결과와 분리해 계속(A)**, 같은 Sol의 후속300초 초과도 원시만 남겨 같은 처리로 계속하도록 결정했다. 내용 결함과 섞인 때만 다시 올린다. PR2의 처리를 이번 계약에 자동 확장한 것이 아니라 이번 별도 메인 결정이다. 면제·사용자 결정의 일반 확장·새 규칙·범위 확대가 아니며 위 다음 하네스 heartbeat wrapper 후보에 반복 관측으로만 연결한다. 결정 전달 `msg_98be2f3ed7a7`을 Sol이 읽고 완료 보고에 기록했다.
+
+별도로 **Astra의 최초 간격 근거 생성 오류**를 보존한다. PowerShell이 파싱한 DateTime을 로컬 문자열로 다시 읽는 인라인 계산 때문에 첫 JSON에는 **-32027초**가 저장됐고, 메인 송신 본문의373초와 달랐다. 즉시 `msg_2e3c39a52779`로 알렸으며 최초 파일은 `closeout-initial-heartbeat-observation-invalid.json`으로 남겼다. 당시 교정 script `measure-closeout-heartbeat.ps1`은 **끝 시각만 원문 JSON에서 읽고, 시작 시각은 당시 관측값 `2026-10-05T07:38:40Z`를 상수로 입력했다.** `closeout-heartbeat-measure-*`의 명령·stdout·exit0은 이 입력의 차373초를 보여 주며 시작값을 저장 원시에서 읽었다는 증명은 아니다. 시작값의 시간대 없는 public worker-show 원시는 이후 **08:02:36Z**에 `sol-closeout-final-worker-show.json`으로 저장됐고, 그 뒤 `measure-closeout-heartbeats.mjs`가 해당 원시를 읽어 UTC 해석을 명시하고373·368·324초를 재계산했다. 최초 오류와 ps1의 부정확한 출처 설명을 소급 통과로 바꾸거나 Sol에게 귀속하지 않는다. 아래 신규 Opus는 현재 수치의 원시 연결을 확인했고 ps1 방법 서술은 Astra의 비차단 #2로 판정했다. 일반 검사/helper·새 규칙 구현으로 확대하지 않았다.
+
+### 종료 정리 독립 판정과 사후 기록
+
+신규 외부 Opus Task `task_48929c3f0c4a` / Dispatch `ctx_aa001a771b72`가 `msg_2feeeaece319`(2026-10-05T08:28:20Z)로 **문서 실사 통과·차단0·필수 미검토0**와 모든 쓰기 종료를 보고했다. 계약v1 hash `8f6fbfd9…`, 고정 diff `7d4c9539…`의 미커밋4파일을 실사했다. 지정/초기 명령은 `claude --model claude-opus-5-5`, 최초 화면 Opus5.5 xhigh, backend unknown이며 첫 연결 ready/input_accepted/turn_started였다. 판정 원문 `E/review-closeout-verdict.md` SHA256 `e31d04da5cadaa522a4ce9f796739e5dfe864fecda0271cb63533c6d033f24ef` 전체와 실제 근거를 Astra가 읽었다.
+
+독립 저장 검사 run-04는 **88검사·83통과·5실패, exit1**이다(`review-closeout-raw/review-checks-04.json`·`run-04-execution.json`). #1 한 검사와 #2 세 판단 변수, Sol 메모 상태줄의 시제 갱신에 대한 과잉검출 O3 한 검사를 전수 분류했다. 01·03의 검사 코드 오류와 모든 실패 원시는 보존하며 exit0·전수 통과로 바꾸지 않는다. 실제 문서 읽기 S1~S5와 링크9/anchor5 실재를 확인했고 외부URL2·제품 빌드/DB/게임/Fable·ask/reply·이번 CI는 미실행했다. PR181 CI와 이번 CI는 별개다.
+
+| 비차단 결함 | 실제 처리·권한 |
+|---|---|
+| #1 - BACKLOG 등록 이유 | BACKLOG30의 이유 칸이 옛 등록 이유에서 현재 처분 설명으로 바뀜. 메인 `msg_b62e380115b0`(08:31:36Z, `main-closeout-nonblocking-decision.json`)의 **A 결정**에 따라 이번 PR은 그대로 진행한다. 옛 이유는 Git 이력과 승격 문단으로 추적되며 다음에 이 행을 수정할 때 등록 이유 표지를 반영할 후보로 남긴다. 추가 Sol/Opus 회차·Astra 직접 제품 수정·새 후보 행 등록은 하지 않는다 |
+| #2 - Astra 계산 방법 설명 | 위 절과 `astra-closeout-context.md`에서 ps1의 시작 상수·끝 원시, 뒤의 worker-show 저장과 mjs 원시 재계산을 구분했다. 잘못된 invalid 파일·ps1/그 출력·원판정은 보존한다. 메인 같은 결정의 범위대로 goal/context 설명만 교정하고 사후 diff를 R-2에 보낸다 |
+
+O1은 Astra 소유 goal의 LF 저장으로 경고 잡음만 정리했다. O2(작은 대조 원시 연결), O3(사전 메모 상태줄 갱신의 추적 비용), O4(AGENTS 상세 anchor)는 판정 원문에 남은 관찰이며 기존 근거 helper/계약 맥락 후보와 다음 해당 문서 수정 기회의 검토 자료다. 이 goal에서 검사 구현·정책 채택·새 목표로 승격하지 않는다.
+
+검증 쓰기 종료 뒤 `astra-closeout-review-source-check.json`과 저장 script/명령/exit0은 고정87입력의 bytes/hash 불변을 확인했다. 그 뒤 이전 goal/context 사본 `goal-closeout-review-input.md`·`astra-closeout-context-review-input.md`를 보존하고 Astra 기록만 갱신했다. 제품3파일과 원판정/원시는 유지한다. 사후 `goal-closeout-post-review.diff`·`context-closeout-post-review.diff`·`astra-closeout-post-review-integration.json`은 최초 판정에 포함됐다고 주장하지 않고 메인 R-2 대조 자료로 구분한다.
+
+검증자는 release retained/external_terminal/processAction none 뒤 동일 incarnation `7aa68328-9734-4e8f-9705-431d4bc85f2e`의 완료 대화/빈 prompt를 확인해 close(ptyKilled=true)했고 실제 목록에 Astra만 남았다(`review-closeout-release.json`·`before-close-*`·`close.json`·`post-close-list.json`). 보고 직전 목록도 다시 확인했다. 완료 세션은 재사용하지 않으며 아직 종료 정리 PR/CI·해당 head 사용자 승인·전체 결과 뒤 Gardener/종료 점검이 남았다.
