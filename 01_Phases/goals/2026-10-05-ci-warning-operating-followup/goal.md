@@ -81,7 +81,7 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 - 결함 #3·#4(낮음, Astra 기록): 「병합 직후」 확인 서술의 원시 부재, 재개 지점 하위 절의 순서와 대체 표시. 판정 뒤 이 goal의 작업 트리에서 정정했다(시각순 재배치, `→` 대체 표시, #1·#3 문구).
 - 관찰: O1 「CURRENT 자기 줄」이 표 행인지 경로 줄인지 모호, O2 공유 자원 Unity 행에서 R-5 링크 없음, O3 전환 문구가 원천 「요구하지 않는다」보다 강함, O4 Core checkout의 옛 AGENTS, O5 ORCA 191의 현재형 환경 사실, O6 `[>]` 위치. O6은 위 진척 단계에서 고쳤다.
 - 절차 이탈: Sol(약 13분·5분30초·5분25초)과 검증자(6분15초)의 heartbeat 주기 초과. 산출물 결함이 아니며 확정 실패 집계에 넣지 않는다. 처분은 메인이 정한다.
-- 정산: worker-release `retained`/external_terminal/none, 같은 incarnation `6034b90c…`의 빈 prompt 확인 뒤 close(`ptyKilled=true`). 직후 rules-active 목록은 이 리드 하나다(E/review-pr2-release.json·before-close·close·after-close-list).
+- 정산: worker-release `retained`/external_terminal/none, 같은 incarnation `6034b90c…`의 빈 prompt 확인 뒤 close(`ptyKilled=true`). 직후 rules-active 목록은 이 리드 하나다(E/review-pr2-release.json·before-close·before-close-list·close·after-close-list). incarnation은 before-close-list에 있다.
 
 ### PR2 보완 결정
 
@@ -94,19 +94,27 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 - 보완 Sol 공식 ask `msg_a56362f6d8c9`(16:58:06Z): goal.md hash 차이를 물었다. 원인은 위 발행 기록 한 줄(numstat 1/0)이다. 계약이 이 절을 '같아야 하는 절'로 지정한 채 그 안에 기록을 넣은 Astra 계약 설계 문제다. 답 `msg_43fac3a94743`: 현재 입력으로 진행, 계약 보충 1(17:00Z)로 이후 기록은 이 줄 아래에만 덧붙인다. 원문 E/sol-pr2-fix-question-goal-hash*.json.
 - 보완 Sol 완료 `msg_14dc44e36abd`(17:18:33Z, worker_done succeeded), 수신 helper `allowed`/exit 0. 변경은 ORCA:137(#1)·goal-loop SKILL:16·18(#2·O1)·AGENTS:45(O3) 세 문서 추가 4/삭제 4, `git diff --check` exit 0이다. Astra가 [완료 보고](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/sol-pr2-fix/report.md)와 실제 diff를 읽었다. 자체점검은 독립 실사가 아니다.
 - 보완 Sol의 절차 관찰: heartbeat 5분 초과 두 구간(17:00Z→17:07Z 약 6분 51초와 그 다음 구간)을 `msg_146f61205c9d`·`msg_cfa3eb02f89d`로 스스로 알렸다. 빈 heartbeat의 subject를 정확한 `alive` 대신 `[Rules Sol] alive`로 보내 수신 helper가 `policy-violation`(body-tag)으로 판정했다. identity는 일치했고 내용은 없어 처리할 것이 없었다(E/sol-pr2-fix-heartbeat-policy-input.json). 계약의 「내용 있는 메시지는 [Rules Sol]로 시작」을 빈 heartbeat에도 적용한 것으로 추정한다. 최초 실행 명령은 Sol이 볼 수 있는 receipt에 없어 「확인 불가」로 보고됐다. 실제 명령은 이 리드가 실행한 split `codex --model gpt-6.1-sol -c model_reasoning_effort=max`다.
-- 정산: worker-release `retained`/external_terminal/none. `tui-idle` 뒤 같은 incarnation `13c1853d…`의 최종 대화·빈 prompt를 확인하고 close(`ptyKilled=true`)했다. 직후 rules-active 목록은 이 리드 하나다(E/sol-pr2-fix-release.json·before-close-2·close·after-close-list).
+- 정산: worker-release `retained`/external_terminal/none. `tui-idle` 뒤 같은 incarnation `13c1853d…`의 최종 대화·빈 prompt를 확인하고 close(`ptyKilled=true`)했다. 직후 rules-active 목록은 이 리드 하나다(E/sol-pr2-fix-release.json·before-close-2·before-close-list·close·after-close-list). incarnation은 before-close-list에, 최종 대화는 before-close-2에 있다. 정산 때의 `tui-idle` 대기 원시는 저장하지 않았다.
+- 보완 커밋 87c3a13(문서 세 개)·7bff758(goal 기록)을 push했다. 메인 순서는 재실사 뒤 push였으나, 검증자가 고정 HEAD를 원격과 대조할 수 있게 재실사 전에 push했다. PR은 없어 외부 영향은 branch 갱신뿐이다.
+- 좁힌 재실사 발행: [계약 v1](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/review-pr2-2-contract.md), 고정 HEAD 7bff758·PREV c1299550의 diff 4파일, 입력 manifest E/review-pr2-2-inputs.json(누락 0, 원격 head 일치). 새 pane `claude --model claude-opus-5-5` 첫 화면은 선택창 없이 Opus 5.5 xhigh·빈 prompt였다. Task task_b2cc0ad2cf44 / Dispatch ctx_26e0da1ad937, incarnation 58fa433c…(E/review-pr2-2-split·first-screen·worker-start.json).
+- 리드 절차 이탈(첫 발생): 문맥 압축 뒤 이 리드의 우편함 대기가 메인 지시 `msg_20663b7c7598`의 `--types` 목록과 달랐다. heartbeat를 넣고 dispatch·merge_ready·question을 빠뜨렸다. 17:30Z에 원문(E/main-wait-types-instruction.json)을 다시 읽고 정확한 8개 목록으로 고쳤다. 고치기 전 `--peek`의 대기 메시지는 0건이라 놓친 메시지는 없다. 원인은 압축 요약이 목록 내용을 옮기지 않은 것이다.
+- 로컬 CI 대응 검사(원격 CI 아님, 메인 `msg_2d509db3b54b` 3번): checker 대상 0건 PASS, CodeRules 독립 회귀 27 통과·1 skip·0 실패(첫 실행은 analyzer·WSL 환경 변수 누락으로 19 실패, 원시 보존), Orca 22/22. 나머지 세 workflow는 바뀐 문서를 읽는 코드가 0건이라 실행하지 않았다(E/pr2-local-ci/summary.md). PR 생성 입력은 E/pr2-create.md·pr2-body.md에 준비했다.
+- 좁힌 재실사 결과: `msg_6f3528b4fc95`(17:40:41Z, worker_done succeeded, payload `task_b2cc0ad2cf44`/`ctx_26e0da1ad937`), 수신 helper `allowed`/exit 0. [판정 원문](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/review-pr2-2/verdict.md) SHA256 `02F947FDF3E5FA0C1C7105EAD695BF522F2C61405072F3D79AFE041BC9AA3ADB`. 통과, 차단 0, 새 결함 0이다. 1차 #1~#4와 O1·O3·O6이 해소됐고, 작성 Task 변경은 네 문단 안이며 문단 밖 bytes는 PREV와 같다. 추가 줄 링크 10/10, 들어오는 anchor 링크 163/163, goal 표본 22/22 사실 일치, 범위 밖 직접 쓰기 0이다.
+- 재실사 비차단 관찰 처분(Astra): N2(진척 단계의 계획 번호 PR1·PR2)는 끝난 단계 이름에서 계획 번호를 빼고, 생성 전 PR 단계를 「운영 문서 PR 병합」으로 두었다. 현황판이 `PRd+`를 GitHub 번호로 읽어 다른 PR(#1·#2)을 가리킬 위험을 피하려는 것이며 정본 규칙이 아니다. PR을 만들면 실제 번호로 바꾼다. N3에 맞춰 15자 이름 두 개를 14자 이하로 줄였다. N4는 「요구사항 원천과 적용 결정」의 요약을 원천 표현으로 맞췄다. N5는 정산 근거 파일 표기를 고쳤다. N1은 그 절에 원문 줄을 보존했고, 정본 링크 변경은 다음 계획 후보로 둔다. N6은 heartbeat 후보에 넣는다. 이 정정은 재실사 뒤 Astra 기록 변경이며 승인 묶음에 diff로 공개한다.
+- 재실사 검증자 정산: worker-release(`--dispatch ctx_26e0da1ad937`) `retained`/external_terminal/none. `tui-idle` 대기 원시(E/review-pr2-2-before-close-wait.json)를 저장하고, 같은 incarnation `58fa433c…`(before-close-list)의 최종 대화·빈 prompt(before-close)를 확인한 뒤 close(`ptyKilled=true`)했다. 직후 rules-active 목록은 이 리드 하나다(after-close-list). 검증자 heartbeat는 10회, 최장 간격 약 2분 49초였다.
+- Orca 관찰: `--types`에서 heartbeat를 빼도 Orca가 heartbeat마다 이 리드 터미널에 「You have 1 orchestration message」 알림을 넣어 Claude 리드는 매번 깨어났다(17:30Z~17:40Z 6회). 쌓인 heartbeat 6건은 worker-release 뒤 `--peek`에서 0건이 됐다. 메시지 ID는 이 리드의 peek 출력에만 있고 원시 파일로 저장하지 않았다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
-- [x] 소유 경계·PR1 계약
+- [x] 소유 경계·작업 계약
 - [x] npm 경고 표시 구현
-- [x] PR1 독립 검증과 CI
-- [ ] PR188 병합
+- [x] 경고 독립 검증과 CI
+- [>] PR188 병합
 - [x] 운영 문서·Core 정비
-- [>] CLAUDE 반영·문서 실사
-- [ ] PR2 병합
-- [ ] 결과 기록과 Gardener
+- [x] CLAUDE 반영·실사
+- [ ] 운영 문서 PR 병합
+- [ ] 결과 기록·Gardener
 - [ ] 종료 점검과 R-8 인계
 
 ## 범위
@@ -159,10 +167,21 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 
 이전 목표의 [다음 goal 사전 결정](../2026-10-05-operating-canon/goal.md#다음-goal-사전-결정)에는 메인 `msg_a1fe33623cbe`(09:36:42Z)의 원문과 작업 현황 후보 폐기 결정을 보존했다. [PR183 제출 뒤 적용 결정](../2026-10-05-operating-canon/goal.md#pr183-제출-뒤-적용한-사용자-결정)의 `msg_1f0a928c2d90`는 Unity opt-in과 PR 자동+goal 체크리스트 선택의 원천이다. 신규 진입 `msg_7389741195ba`(11:51:38Z)는 현황판의 각 worktree CURRENT 자기 줄/진척 읽기 변경, 시트 활성화 후 Unity의 Edit > Project Settings > AI > Unity MCP 재승인 관찰을 전달했다. 이는 메인의 관찰이며 이번 Rules의 Unity 실행 실증이 아니다. 새 연결마다 재승인을 물을 수 있다는 범위로 기록한다.
 
+이전 goal의 적용 결정 절은 원문이 아닌 요약이다. 그 요약의 「10단계」는 정본의 「5~10개(최대 12)」와 다르다(재실사 관찰 N1). 그래서 `msg_1f0a928c2d90`(2026-10-05T08:43:24Z, 메인 전달)의 해당 원문 줄을 여기 보존한다. 원시는 Git 밖 `.backups/verification/2026-10-05-operating-canon/main-progress-checklist-unity-decision.json`이다.
+
+> 사용자 원문: 「대시보드 결정 응답: 1) Unity 시트 번갈아 쓰기 - 필요한 세션만 연결하는 방식으로 바꿀지 → A 필요한 세션만 켜기(opt-in) · 2) 목표 진척 자동 갱신 - 단계 완료를 어디서 읽을지 → A PR 자동 + goal.md 체크리스트」
+>
+> 1. goal.md에 아래 형식의 절을 하나 둔다. 제목은 정확히 「## 진척 단계」, 위치는 상태·재개 지점 절 바로 뒤를 권한다.
+> 2. 단계는 goal 완료조건·PR 계획 기준 5~10개(최대 12), 이름은 한글 14자(화면 폭 30) 이하. G2·M1b 같은 마일스톤 코드·내부 약어를 쓰지 않는다. PR 단계는 「PR182 병합」처럼 PR 번호와 「병합」을 함께 적는다. 현황판이 그 PR의 병합을 gh에서 보면 스스로 끝냄으로 표시한다.
+> 3. 단계 상태가 바뀔 때 goal 상태를 갱신하는 그 시점에 함께 체크한다. Astra만 쓴다. Sol·검증자에게 맡기지 않는다.
+>
+> - 이제 새로 여는 Claude 세션은 기본으로 Unity MCP에 연결되지 않는다. Unity가 필요한 세션만 기동 명령에 --mcp-config C:/Users/bass1/.unity/claude-mcp.json 을 붙인다.
+> - 시트는 하나다. 쓰기 전에 메인에 요청하고, 메인이 현황판에 보유 세션을 적은 뒤 띄운다. 그 세션이 닫히면 시트가 풀린다.
+
 메인 `msg_251c879ef46a`의 **운영 결정**:
 
 - PR2 병합 뒤 새로 여는 세션과 새 계약은 `[Core Astra]`·`[Core Sol]`·`[Core 검증자]`를 사용한다. PR2 이전에 연 GameDev 세션과 진행 계약은 그 세션이 끝날 때까지 `[GameDev …]`를 유지한다. 전환기 수신자는 두 태그를 같은 파트로 인정하되 현재 from_handle·Task·Dispatch 대조를 계속한다.
-- 진행 중 영속화 통합 goal을 중간 변경하지 않으며 그 goal의 R-8로 새 Astra를 열 때부터 Core 태그를 쓴다.
+- 진행 중인 영속화 통합 goal에는 중간 변경을 요구하지 않는다. 그 goal의 R-8로 새 Astra를 열 때부터 Core 태그를 쓴다.
 - PR2 문서가 확정되면 Rules가 「CLAUDE.md 반영 요청」을 보낸다. 메인이 rules-active의 CLAUDE.md만 쓴 뒤 쓰기 종료를 알려야 Rules가 통합한다. Sol·검증자는 이 파일을 쓰지 않는다.
 - 대시보드는 이미 Core/GameDev를 같은 Core 파트로 읽는다는 메인 설명이며 코드·실행 검증은 이번 범위 밖이다.
 
@@ -233,5 +252,9 @@ PR187 병합 뒤 CURRENT의 인접한 Rules/CodeMap 줄에서 충돌이 생겼�
 - 독립 실사 범위 밖 발견: `05_Management/frontend/src/DevelopmentRecords.tsx` 46줄의 화면 문구 「규칙은 GameDev 원문을 참조하세요」가 현행 이름이다. Management 소유 코드라 PR2에 넣지 않는다. 메인 `msg_0f630e567b1d`: 지금 Management에 전달하지 않고, Management 다음 goal 계획 때 메인이 넘긴다.
 - 독립 실사 관찰 O2·O5(메인 `msg_0f630e567b1d` 기본값): ORCA 「공유 자원」의 Unity 행에서 R-5 opt-in으로 가는 링크 추가, ORCA R-6 「환경 사실」 문장의 GameDev에 당시 이름 표시. 둘 다 탐색·가독성 보완이다.
 - heartbeat 주기 이탈(메인 `msg_0f630e567b1d`: 절차 이탈로 기록, 확정 실패 집계 제외): 이전 goal의 [다음 하네스 목표 입력 후보 묶음](../2026-10-05-operating-canon/goal.md#다음-하네스-목표-입력-후보-묶음) 「긴 작업의 절차 자동화와 수용 기준」(heartbeat wrapper)에 이번 원시를 더한다. 원시는 E/sol-pr2/{review,deviation,closing}-heartbeat-command.json·settlement-observation.json과 E/review-pr2/verdict.md 「자기 쓰기 감사」다. 이전 goal 파일은 고치지 않는다.
+- 재실사 관찰 N1(메인 결정 대상): goal-loop SKILL:16 「진척 적용 결정」과 ORCA:137 「Unity opt-in 적용 기록」 원천 링크가 이전 goal의 요약 절로 간다. 다음 계획에서 이 goal의 「요구사항 원천과 적용 결정」(원문 보존)으로 바꿀지 정한다.
+- 재실사 관찰 N3: 진척 단계 이름의 「한글 14자(화면 폭 30)」는 영문이 섞이면 문자 수와 화면 폭이 갈린다. 진척 절 검사(BACKLOG `goal-state-drift`)를 만들 때 기준을 하나로 정한다.
+- 재실사 관찰 N6: 보완 Sol의 마지막 heartbeat(17:13:31Z)에서 worker_done(17:18:33Z)까지 5분 2초다. heartbeat 후보에 「간격 계산에 상태 보고·worker_done을 포함하는지」 기준을 함께 넣는다.
+- Orca heartbeat 알림: `--types`로 heartbeat를 깨움에서 빼도 Orca 터미널 알림 때문에 Claude 리드는 heartbeat마다 깨어난다(위 「Orca 관찰」). 메인의 heartbeat 깨움 제외 목적과 리드 모델 전환 후보에 함께 넘긴다.
 
 위 후보는 메인이 전달한 **「계획에 오버되는 부분은 다음 계획 편성에 포함시키고, 일단 현재 작업 목표 달성 우선」** 경계에 따라 기록한 것이며 새 작업 채택/착수가 아니다.
