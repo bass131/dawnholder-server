@@ -3,9 +3,9 @@
 ## 진척 단계
 
 - [x] 사용자 범위 승인과 새 브랜치 준비
-- [>] 목표·맥락 메모·구현 계약 고정
-- [ ] 목록·상세·복귀 구현
-- [ ] 독립 강 검증과 직접 영향 시험 정비
+- [x] 목표·맥락 메모·구현 계약 고정
+- [x] 목록·상세·복귀 구현
+- [>] 독립 강 검증과 직접 영향 시험 정비
 - [ ] 최종 전체 시험·Electron 화면 확인
 - [ ] PR 발행·CI·메인 원천 대조
 - [ ] 사용자 개별 승인·PR 병합
@@ -13,9 +13,9 @@
 
 ## 재개 지점
 
-상태는 **승인 범위의 구현 준비**다. 실제 제품 구현·테스트·Electron 실행은 아직 하지 않았다. Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch는 `feat/management-record-navigation-20261005`, 시작 main/HEAD는 `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`이다. 이전 goal의 Run·Task·Dispatch는 재사용하지 않는다.
+상태는 **구현 완료·독립 강 검증 준비**다. 독립 검증·Electron 실행은 아직 하지 않았다. Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch는 `feat/management-record-navigation-20261005`, 시작 main/HEAD는 `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`이다. 목표/CURRENT 준비 커밋은 `270e6ce`, 구조 추출은 `41c26fe`, 화면 동작 구현은 `163217f`다. 이전 goal의 Run·Task·Dispatch는 재사용하지 않는다.
 
-근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-05-development-record-navigation/`이다. 시작 맥락은 E/`astra-context.md`, 승인 원문은 E/`main-approval-receipt.json`, 사용자 산출물 기준선은 E/`user-artifacts-before.json`이다. 경로·상태는 새 세션 진입 때 실제 Git/Orca 조회와 대조한다.
+근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-05-development-record-navigation/`이다. 시작 맥락은 E/`astra-context.md`, 승인 원문은 E/`main-approval-receipt.json`, 사용자 출력 기준선은 E/`user-artifacts-before.json`, 프로필 추가 관측은 E/`user-profile-before.json`이다. 경로·상태는 새 세션 진입 때 실제 Git/Orca 조회와 대조한다.
 
 ## 요청 원천과 승인
 
@@ -54,7 +54,7 @@
 - DevelopmentRecords의 파일 읽기·JSON 초안·명시 저장·충돌·백업 경계를 유지한다. Electron IPC/preload/MCP, 패키지/lockfile/tsconfig, theme tokens, 시스템 카드 제품 파일, 런처는 바꾸지 않는다.
 - 과거 [R-15](../../requirements.md#r-15)의 짧은 소개·160 code point 입력 검사·저장 경계 변경·전체 자료 정비를 이번 범위로 자동 재개하지 않는다. 이번 새 승인에 따라 목록에서는 요약을 숨기며 summary 원문은 상세에 보존한다. 나머지 R-15 후속은 별도다.
 - A안의 과거 로그 화면/해석과 실제 서버 운영 시각화, DB 과정의 새 글, 전역 시험 helper/CI 신설, 무관한 기존 실패 수리, 실물 공통 도구, 백로그 메뉴, 타임라인·자동 수집을 구현하지 않는다.
-- 원본 `frontend/dist/`, `frontend/desktop-dist/`, `.verification/desktop-profile`은 사용자 산출물이다. 기존 파일 35개를 사전 hash로 관측했으며 삭제·덮어쓰기·원본 build를 하지 않는다. 실제 빌드/앱/쓰기 시험은 소유 실행 공간에서 한다.
+- 원본 `frontend/dist/`, `frontend/desktop-dist/`, `frontend/.verification/desktop-profile`은 사용자 산출물이다. 출력 35개를 사전 hash로 관측했으며 삭제·덮어쓰기·원본 build를 하지 않는다. 프로필 73파일 중 34파일은 다른 프로세스 사용으로 hash를 읽지 못했으므로 전체 프로필 보존 대조 완료로 표현하지 않는다. 실제 빌드/앱/쓰기 시험은 소유 실행 공간에서 한다.
 
 ## 관찰 가능한 완료조건
 
@@ -86,10 +86,16 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 
 DB 복구가 모든 모니터링의 기술적 전제는 아니지만 기존 DB 뒤 우선순위는 임의로 바꾸지 않는다. 저장/복원 성공·실패·지연과 DB 풀/쿼리 상태는 DB 연동과 실제 실행 근거가 필요하다. Core의 SQL Server 시작 실패는 메인 전달 상태이며 이 goal의 재현/진단/수리 범위가 아니다. [kciter 참고 글](https://kciter.so/posts/server-monitoring-analysis-guide/)과 [Google SRE 원전](https://sre.google/sre-book/monitoring-distributed-systems/)을 초안 조사에서 읽었으나 게임 측 데이터 계약이나 실제 관측을 대신하지 않는다.
 
-BACKLOG 행은 다른 파트의 소유/동시 쓰기를 확인한 뒤 이 근거 절로 연결한다. 기존 후보의 별도 진행 장부를 만들지 않는다. 다른 후속은 이전 [goal의 다음 계획 후보](../2026-10-02-system-cards/goal.md#현재-목표-우선과-다음-계획-후보)와 기존 예정 목표로 연결하며 후보 구현은 하지 않는다.
+메인 운영 판단 `msg_aa20ce33cc57`(2026-10-05T12:48:54Z)으로 Management가 BACKLOG의 해당 행 하나에 이 절/승인 메시지 연결을 추가한다. 다른 행/표/절은 바꾸지 않는다. 다른 worktree/branch에서의 Rules/Core 변경은 실제 파일 동시 쓰기와 구분하고 최신 main 통합 때 양쪽 의도를 보존한다. 원문은 E/`backlog-ownership-message.json`이다. 기존 후보의 별도 진행 장부를 만들지 않는다. 다른 후속은 이전 [goal의 다음 계획 후보](../2026-10-02-system-cards/goal.md#현재-목표-우선과-다음-계획-후보)와 기존 예정 목표로 연결하며 후보 구현은 하지 않는다.
 
 ## 결과와 열린 사항
 
-- 새 goal/계약 준비 중. 구현 Task·Dispatch·원문·검증 결과는 실제 발행/정산 뒤 기록한다.
-- 시작 원본 사용자 산출물 35개 hash 실패 0은 `user-artifacts-before.json`의 배열/오류 필드에서 읽은 값이다. 새 실행이나 제품 통과 실적은 아니다.
-- 범위 안 확정 실패 집계와 같은 산출물 수정 3회 초과 체크포인트는 구분해 기록한다. 현재 발행 전이며 실패 집계 없음.
+- Run `run_6e57ab3c5f70`, 구현 Task `task_f04cba20f402`, Dispatch `ctx_99e361d0a8c2`. 구현자 handle `term_56de706c-51f0-4088-b5e0-2a89d035de9b`, incarnation `31c33bc7-7c7a-4712-b473-bb45af611dda`, runtime `120aecfa-9f94-4533-9594-48a22f1853ba`다. 현재 회신 주소는 `run:run_6e57ab3c5f70`이며 메인에 바인딩 직후 알렸다.
+- Sol 최초 기동은 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 GPT-6.1-Sol max, backend unknown이다. 새 vertical pane의 준비 `satisfied:true`, 선택창 없는 첫 화면을 확인하고 최초 Task를 연결했다. attach launch 모델 null은 실제 모델로 해석하지 않는다. receipt의 `input_accepted`와 `turn_started`를 모두 관측했다. 근거는 E/`sol-launch.json`, `sol-ready.json`, `sol-first-screen-*.json`, `sol-worker-start.json`이다.
+- 고정 계약은 E/`sol-contract-v1.md`, 입력은 E/`inputs/goal-v1.md` 및 `inputs-manifest.json`이다. 경로 검사 `contract-path-check.json`은 같은 cwd의 입력 18개/신규 출력 부모 4개 존재, exit0을 기록한다. live goal 상태 갱신은 이 고정 요구사항을 바꾸지 않는다.
+- 시작 출력 35개 hash 실패 0은 `user-artifacts-before.json`의 배열/오류 필드에서 읽은 값이다. 최초 manifest가 프로필 경로를 `05_Management/.verification/desktop-profile`로 잘못 지정했으므로 이 숫자는 출력만의 결과다. `electron/main.ts`의 실제 경로로 추가 관측한 `user-profile-before.json`은 73파일/34 hash 실패(다른 프로세스 사용)를 기록한다. 어떤 원본 build/앱 실행도 하기 전 발견했고 메인 `msg_41732fa4e7e9`로 즉시 정정 보고했다. Sol에는 `msg_d76a409366b9`로 v1 보존 경로를 명시 보충하고 기존 고정 계약/사본은 바꾸지 않았다. 새 실행이나 제품 통과 실적은 아니다.
+- 구현 완료 `msg_01cad9ed06c7`(2026-10-05T13:19:35Z)은 `succeeded`와 제품·근거 쓰기 종료를 명시한다. 보고/메모 원문은 E/`sol/execution-result.md`, E/`sol/context.md`다. 제품 6개 hash가 최종 manifest와 일치하며 구조 사본 3개를 index에 기계 반영한 뒤 구조/동작을 별도 커밋했다. 원본 작업 파일을 바꾸지 않았고 테스트는 아직 미수정이다.
+- Sol 자체 noEmit 3종은 기준선/구조/최종에서 모두 exit0, 직접 시험은 각 11개 중 3통과·8실패였다. 원시는 E/`sol/raw/*-commands.json`, `direct-test-summary.json`, `failure-classification.json`이다. 기록 탭 진입 실패 7건과 기존 App 단정 1건의 자체 분류이며, 새 기능의 독립 통과나 회귀 부재로 해석하지 않는다. 실제 변경 6파일 553추가/79삭제는 `feature-delta.json.totalVsHead`에서 읽었다.
+- 기존 출력 35개 hash는 유지됐다. 프로필은 39파일 비교 일치, 기준 hash 부재 33파일, 현재 읽기 불가 1파일로 전체 동일성은 미판정이다(E/`sol/raw/user-preservation.json`). Sol은 원본 build/앱·TEMP·OS 입력을 실행하지 않았다.
+- 정상 정산은 E/`sol-done-receipt.json` → `sol-release.json`의 retained/external_terminal → `sol-before-close.json`의 정확 incarnation/종료 화면 → `sol-close.json`의 ptyKilled true → Delivery ACK 순서다. Task 하나 뒤 종료했고 새 작업에 재사용하지 않는다.
+- 범위 안 확정 실패 집계와 같은 산출물 수정 3회 초과 체크포인트는 구분해 기록한다. 첫 구현은 완료했으나 독립 판정·확정 실패 집계는 없다.
