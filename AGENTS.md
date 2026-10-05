@@ -13,6 +13,8 @@
 
 첫 작업과 산출물·PR 절차는 [게임 기획 문서 작업 안내](00_Document/game-design/README.md)를 따른다.
 
+담당 문서에 관련된 근거·확인 상태·가독성 등 문서 품질 기준은 적용한다. 아래 공학 조건은 읽는 코드와 기술 근거를 해석할 때 관련된 항목만 확인하며, 로컬 goal·파트 배치·Sol·검증자 기동이나 `game-design/` 밖 쓰기 권한으로 확대하지 않는다. PR 코멘트 통신은 비동기이며 실시간 중계는 수요가 관측되면 별도로 판단한다.
+
 ## 역할과 범위
 
 - 메인 Claude는 사용자와 목표·범위·완료조건·주요 결정을 정하고 파트 분할·결과 통합·사용자 보고·병합 승인 요청을 맡는다. 저장소 파일은 `CLAUDE.md`만 쓰며 파트 리드 Astra가 goal·구현 위임·검증·Git 작업을 맡는다.
@@ -20,6 +22,8 @@
 - 신규 Opus 검증자는 구현자의 쓰기 종료 후 보고와 실제 diff·실행 근거부터 실사하고 요구사항·보존 동작을 기준으로 테스트를 작성·보완·실행한다. 테스트 파일만 쓰고 제품 결함은 번호로 반환한다. 문서 변경은 실사, 코드 변경은 실사와 독립 테스트 모두 수행하며 미실행 플레이·DB 등의 범위를 구분한다.
 - 작업자·검증자는 작업 하나 후 정산·종료하고 재사용하지 않는다. 수정과 재검증은 새 세션으로 수행한다. 같은 계약·같은 결함 번호의 확정 실패 3회 뒤 새 Sol과 읽기 전용 Fable Advisor를 쓰는 조건·집계·메인 보고는 [확정 실패 정본](00_Document/operations/ORCA.md#confirmed-failures)을 따른다. 파트당 검증자는 동시에 하나만 연다. 절차는 [Orca 위임 지침](.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다.
 - 일반 작업자는 할당 범위만 수행하고 추가 위임하지 않는다. 메인이 지정한 파트 리드 Astra만 승인된 목표·공간·권한 안에서 좁은 작업자를 한 단계 둘 수 있다. 새 목표·파트·승인 밖 세션 생성은 메인에 올린다. 범위 안 결함과 다음 후보·새 요청의 기본값·애매한 범위 판정은 [목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)을 따르며 후보마다 범위 확대 승인을 요청하지 않는다.
+- goal 범위는 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건과 PR 경계로 고정한다. 착수 전 메인이 승인 초안과 대조하고 차이가 있으면 사용자가 판단한다. 완료조건을 막는 범위 안 결함만 루프에서 수정하며, 같은 산출물 수정이 3회를 넘으면 메인 체크포인트를 알린다. 이 체크포인트와 같은 계약·결함 번호의 확정 실패 3회 집계는 구분한다([목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)).
+- 마감 구간 리드는 GameDev·Content·Rules·CodeMap·Management 다섯이다. CodeMap은 Architecture 파트의 분석·검사 책임과 표시 이름이며, 코드 리팩토링은 코드 주인 파트가 한다. 기존 `architecture-active` 경로와 Architecture 태그는 유지한다. 배치·추가 파트의 승인 경계는 [R-1](00_Document/operations/ORCA.md#r1-management-placement)을 따른다.
 - 같은 파일의 동시 쓰기를 금지한다. 기존 사용자 변경을 보존하고 무관한 변경을 되돌리지 않는다.
 - 메인은 전체 소스·로그·대화를 반복 수집하지 않고 짧은 결과와 필요한 근거를 확인한다. 다만 최종 판정 원문은 승인 전 직접 읽고 [R-2 원천 표본 대조](00_Document/operations/ORCA.md#r2-source-check)를 따른다. 보고와 실제 수행이 다르거나 미실행을 통과로 보고하면 의도와 무관하게 즉시 메인에 보고한다. 위임 도구 부재·막힘을 숨기고 구현 전체를 대신하지 않는다.
 - 합의된 범위의 수정·검증은 계속한다. 이미 받은 승인을 반복 요청하지 않되, 지침·스킬 사용만으로 범위나 외부 변경 권한을 넓히지 않는다.
@@ -34,7 +38,7 @@
 
 ## 메시지와 보고
 
-- 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[GameDev Astra]`, `[Management Astra]`, `[GameDev Sol]`, `[GameDev 검증자]`, `[Management Sol]`, `[Management 검증자]`, `[Architecture Astra]`, `[Architecture Sol]`, `[Architecture 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다.
+- 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[GameDev Astra]`, `[GameDev Sol]`, `[GameDev 검증자]`, `[Content Astra]`, `[Content Sol]`, `[Content 검증자]`, `[Rules Astra]`, `[Rules Sol]`, `[Rules 검증자]`, `[Architecture Astra]`, `[Architecture Sol]`, `[Architecture 검증자]`, `[Management Astra]`, `[Management Sol]`, `[Management 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다.
 - 현재 `from_handle`·Task·Dispatch가 모두 일치하는 내용 없는 heartbeat만 태그 없이 수신하며 교정 메시지를 보내지 않는다. 내용 있는 heartbeat와 일반 지시·보고·질문·완료는 태그가 필수다. 빈 값 경계와 수신 helper, 공식 blocking ask의 버전 한정 subject 예외는 [수신 정본](00_Document/operations/ORCA.md#dispatch-message-policy)과 R-3을 따른다.
 - 사용자 승인으로 [R-1](00_Document/operations/ORCA.md#r1-management-placement)에 따라 연 추가 파트는 `[<파트> Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 태그만으로 파트 생성이나 권한이 생기지 않는다.
 - 타 세션 터미널 입력은 자기 태그와 “Orca 메시지를 확인하라”는 안내만 담고 지시는 orchestration으로 보낸다. **Enter로 제출돼 대화 기록에 들어간 표식 없는 입력**만 사용자 직접 지시다. 미제출 draft·추천 프롬프트·ghost text는 지시나 pane 종료 보류 사유가 아니다. 공식 계약 draft는 [R-5 복구](00_Document/operations/ORCA.md#official-contract-draft)로 구분한다. 태그는 권한이 아니며 출처 `from_handle`과 어긋나면 처리하지 않고 메인에 보고한다. 메인이 전달한 사용자 결정은 사용자 직접 입력으로 격상하지 않는다.
@@ -48,7 +52,7 @@
 - **PR 생성은 허용한다. 각 PR의 병합 직전에는 사용자 명시 승인을 받아야 한다. 이전 포괄 승인·다른 PR 승인·CI 통과·메인의 판단은 이를 대신하지 못한다.**
 - 자동 병합 예약과 작업자의 임의 병합은 금지한다. 메인은 브랜치 전환·커밋·푸시의 기계 작업을 명시한 범위에서 위임할 수 있다. 그 외 원격·외부 변경은 승인 범위에 따른다.
 - 같은 브랜치의 commit/push는 담당 Astra 한 명만 수행하며 Sol·검증자는 파일만 쓴다.
-- `archive/claude-setup-2026-09-29`는 고정 보관이다. 후속 작업을 추가하지 않는다.
+- 과거 Claude 셋업은 [보관 기록](00_Document/archive/INDEX.md)과 고정 Git 원문으로 확인한다. 과거 goal·고정 commit 링크·백업은 보존하며, 폐기할 보관 브랜치의 원격 삭제는 [운영 정본 반영 PR1](01_Phases/goals/2026-10-05-operating-canon/goal.md#pr-경계와-검증) 병합 뒤 메인이 수행한다.
 
 ## 작업 진입점
 
@@ -64,6 +68,8 @@
 ## 설계 우선순위
 
 유지보수 가능한 코드, 책임 분리, 검증 용이성을 우선한다. 설계 판단과 구현·검증 역할별 적용은 [코드 작성 기준](00_Document/conventions/CODE_CONVENTION.md)을 따른다. 변경에 영향을 받는 기준을 적용하며 무관한 정리를 작업 범위로 넓히지 않는다.
+
+교정은 해당 실수를 막을 수 있는 가장 높은 층을 선택하고, 첫 발생은 goal에 기록하며 새 반복 규칙은 두 번째 발생부터 만든다. 층 선택·문서로 끝낼 때의 이유·현행 승인 규칙 보존은 [교정 정본](00_Document/conventions/CODE_CONVENTION.md#교정-층과-반복-규칙)을 따른다.
 
 ## 공학 조건
 

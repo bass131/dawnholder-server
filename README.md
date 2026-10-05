@@ -50,7 +50,7 @@
 
 ### 이전 AI 협업 환경
 
-Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식 캐시로 구성했던 환경은 [고정 보관 브랜치](https://github.com/bass131/dawnholder-server/tree/archive/claude-setup-2026-09-29)에서 확인할 수 있습니다. 과거 작업·운영 정책은 [영역별 보관](00_Document/archive/INDEX.md)에서 요약과 고정 Git 원문으로 확인합니다. 역사 자료의 절차를 현행 규칙으로 자동 적용하지 않습니다.
+Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식 캐시로 구성했던 환경은 [고정 Git 원문](https://github.com/bass131/dawnholder-server/tree/f0f23f781dc49d8bf67c0019b948696c36ed6c00)에서 확인할 수 있습니다. 과거 작업·운영 정책은 [영역별 보관](00_Document/archive/INDEX.md)에서 요약과 고정 Git 원문으로 확인합니다. 역사 자료의 절차를 현행 규칙으로 자동 적용하지 않습니다.
 
 ## 폴더 구조
 
