@@ -36,6 +36,7 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 - Sol이 스스로 밝힌 절차 이탈: heartbeat 5분 주기를 15:51Z~16:05Z와 그 뒤 두 구간에서 지키지 못했다. 내용 있는 heartbeat `msg_47239180c586`로 알렸다. 산출물 결함이 아니라 절차 이탈로 기록하며 독립 실사에도 입력으로 준다.
 - 범위 밖 발견: CLAUDE.md 25의 현행 GameDev 두 곳(메인 반영 대상), CODE_CONVENTION 77의 현행 담당 GameDev(계약 밖 파일). 열린 질문: Unity 시트를 넘길 때 반납·해제 순서(원천 없음, 만들지 않음).
 - 정산: worker-release `retained`/external_terminal/processAction none. 같은 incarnation `cd4a6ea9…`의 빈 prompt를 확인한 뒤 terminal close(`ptyKilled=true`)했다. 직후 rules-active 목록은 이 리드 하나다(E/sol-pr2-release.json·before-close·close·after-close-list-raw).
+- Sol 문서는 commit `e6f5dfc`, 이 기록은 `dc87ab2`로 push했다. 메인에 「CLAUDE.md 반영 요청」 `msg_f75fbd3cff6d`(16:21:39Z, E/claude-md-request-to-main.md)를 보냈다. 메인 `msg_d8d8bf0aa049`(16:26:43Z)가 rules-active의 CLAUDE.md 25줄 한 줄만 쓰고 쓰기 종료를 알렸다. Astra가 diff 1/1·`git diff --check`를 확인하고 그대로 commit `257ecf8`했다. 메인은 CODE_CONVENTION 77줄 범위 판단에서 기본값(다음 계획 후보)을 택했다.
 
 ### 리드 교체 인계 — 2026-10-05T14:27:56Z
 
@@ -197,5 +198,8 @@ PR187 병합 뒤 CURRENT의 인접한 Rules/CodeMap 줄에서 충돌이 생겼�
 - **리드 Opus 라우팅 정본화 후보의 최신 범위**는 메인 `msg_22cb1701a2cf`의 다섯 리드 전체 전환 결정이다. 앞선 CodeMap 한 곳 시범보다 이 결정을 우선하며 AGENTS 리드 모델·R-5 리드 기동·R-8 재진입 모델·RESUME 진입 절차·리드 우편함 대기 값을 다음 계획에서 정비한다. 메인이 조사 중인 heartbeat 필요성/입력 토큰 절감 결과는 같은 후보에 추후 연결한다. 최근 3시간 입력176M 중 리드91%라는 배경 수치는 메인 측정이며 Rules 실측이 아니다. 현재 PR2 정본 범위는 늘리지 않는다.
 - 위 후보의 교체 시점은 `msg_25102e277345`의 「작업자가 빈 시점에 바로 교체」로 갱신한다. 이전 사용자 원문은 이력으로 보존하며 다음 계획의 라우팅/재진입 문구가 목표 종료까지 기다리도록 잘못 남지 않게 한다. 현재 PR2 범위는 그대로다.
 - 메인 `msg_9291578c67e9`(13:50:28Z, E/main-gardener-order-candidate-delivery.json): ORCA goal-gardener의 「전체 goal의 모든 PR 병합과 결과 기록 뒤, R-8 직전」에 종료 기록 PR 포함 여부와 순서를 명시하는 후속 후보. CodeMap 질문 `msg_f763909fe3f0`에 메인은 앞 사례(PR182 → Gardener → PR184, Gardener → PR186)를 들어 「제품 PR 병합과 로컬 결과 기록 뒤 Gardener, 그 결과를 종료 기록 PR 하나에 포함」이라고 답했다(`msg_ccd16077ebfa`). 메인 전달 운영 판단으로 기록하며 현재 PR2 정본 범위는 넓히지 않는다.
+
+- PR2 작성 중 발견(E/sol-pr2/report.md, 메인 `msg_d8d8bf0aa049` 기본값 수용): `00_Document/conventions/CODE_CONVENTION.md` 77줄의 현행 등록 검사 코드 담당이 아직 GameDev다. PR2 「건드릴 곳」 밖이라 고치지 않았고, AGENTS의 Core 전환 정본으로 해석할 수 있다. 다음 계획에서 Core로 맞춘다.
+- 같은 출처의 열린 질문: Unity MCP 시트를 다음 세션에 넘길 때의 반납·연결 해제 순서는 원천이 없어 R-5에 만들지 않았다. 다음 계획에서 사용자·메인 결정과 함께 정한다.
 
 위 후보는 메인이 전달한 **「계획에 오버되는 부분은 다음 계획 편성에 포함시키고, 일단 현재 작업 목표 달성 우선」** 경계에 따라 기록한 것이며 새 작업 채택/착수가 아니다.
