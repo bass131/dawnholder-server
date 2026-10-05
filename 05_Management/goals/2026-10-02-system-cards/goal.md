@@ -10,10 +10,11 @@
 - [x] PR179 발행·CI
 - [x] 개발 현황 축약어 정리
 - [x] CI·실물 화면 재확인
-- [>] PR179 병합
-- [ ] 결과 기록·종료
+- [x] PR179 병합
 
-적용 중인 사용자 결정은 메인 `msg_9dd4600cea13`(2026-10-05T08:43:24Z)의 전달이다. 원문: 「대시보드 결정 응답: 1) Unity 시트 번갈아 쓰기 - 필요한 세션만 연결하는 방식으로 바꿀지 → A 필요한 세션만 켜기(opt-in) · 2) 목표 진척 자동 갱신 - 단계 완료를 어디서 읽을지 → A PR 자동 + goal.md 체크리스트」. 메인 pane에서 사용자가 Enter로 제출했다는 전달이며 사용자 직접 입력으로 격상하지 않는다. 원문 메시지와 형식 조건은 E/`goal-progress-user-decision.json`에 보존했다. 고정 검증 입력이 종료된 뒤 Astra가 기존 목표 상태에 맞춰10단계·진행중1개를 기록했다. 현황판은 goal과 PR 병합 상태를 읽으며 이 기록 자체가 병합 승인이나 완료가 아니다.
+**이 종료 기록 PR 병합으로 기록 통합과 goal 종료.** 앞의 9개 실행 단계는 완료됐다. 이 문서 PR의 최종 head 독립 실사·CI·사용자 개별 승인 뒤 실제로 병합되면 마지막 기록 통합과 이 goal을 종료하고, 메인이 R-8로 넘긴다. 병합 전에는 이 조건을 완료로 해석하지 않는다. 병합 여부는 `docs/management-system-cards-closeout` 브랜치의 PR에서 확인한다.
+
+적용 중인 사용자 결정은 메인 `msg_9dd4600cea13`(2026-10-05T08:43:24Z)의 전달이다. 원문: 「대시보드 결정 응답: 1) Unity 시트 번갈아 쓰기 - 필요한 세션만 연결하는 방식으로 바꿀지 → A 필요한 세션만 켜기(opt-in) · 2) 목표 진척 자동 갱신 - 단계 완료를 어디서 읽을지 → A PR 자동 + goal.md 체크리스트」. 메인 pane에서 사용자가 Enter로 제출했다는 전달이며 사용자 직접 입력으로 격상하지 않는다. 원문 메시지와 형식 조건은 E/`goal-progress-user-decision.json`에 보존했다. 이전 검증 입력이 종료된 뒤 당시 상태에 맞춰 10단계·진행 중 1개를 기록했으며, 최신 메인 `msg_1c0af5224a0e`의 종료 기록 지시에 따라 마지막 표기를 위 조건부 문장으로 바꿨다. 현황판은 goal과 PR 병합 상태를 읽으며 이 기록 자체가 병합 승인이나 완료가 아니다.
 
 같은 결정의 Unity MCP는 필요한 세션만 연결한다. 메인이 사용자 전역 등록을 제거하고 `C:/Users/bass1/.unity/claude-mcp.json`에 설정을 보존했다고 전달했다. 이 파트는 직접 설정을 변경하거나 Unity에 연결하지 않았다. 필요해지면 먼저 메인에게 시트를 요청하고 메인이 보유 세션을 기록한 뒤 해당 신규 세션에만 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 현재 계획에는 Unity 사용이 없다.
 
@@ -28,7 +29,27 @@
 
 적용 사용자 원문(2026-10-02, 메인 전달): 「운영툴에 작성하는 작업관련 게시글에 D1,D2같은 프로젝트에서만 쓰이는 마일스톤 명칭으로 특정 작업의 작업명을 대체하면 시간이 좀 지나고 봤을때 이해하기 어려우니까 라벨링을 자제해야해」. 관련 CODE 원문·읽기/소유권·보존 계약은 E/`display-names-astra-context.md`와 `display-names-repair-task.txt`에 고정한다. E는 `.backups/verification/2026-10-05-system-cards-close/`다.
 
-**현재 상태:** 제품·테스트 수정 `0bf6d3d47b44249192c970bbafe2da87cf83b85e`와 진척 기록 `e8aff61d524fe1e89d5e537e816c10f588559682`를 PR179에 push했다. e8aff61의 두 CI·메인 R-2·왼쪽 보조 화면 앱125% 사용자 수용을 마쳤고, 비차단 #7 문구는 사용자가 그대로 유지하기로 했다. 실물 작업자의 앱·TEMP·세션은 정산·종료했다. 이 결정 기록 커밋의 최종 head CI와 **그 head의 별도 사용자 병합 승인**은 다음 단계이며 아직 병합하지 않았다. 진척의 「CI·실물 화면 재확인」 완료는 e8aff61의 결과이고, 기록 커밋 CI는 「PR179 병합」 준비에 포함한다.
+**현재 상태:** PR179는 사용자 승인 head `c577208c87ef76214da577ca439f6bfd6842bda5`로 2026-10-05T10:38:26Z 병합됐다. 병합 commit `7e760ba97ff8a2f402699909919389d4dfdfa1a9`와 원격 main 반영을 직접 확인했다. 제품·독립 검증·CI·왼쪽125% 화면 수용·결과 기록·신규 Opus Gardener 수행과 해당 작업자 정산은 끝났다. Gardener의 집계 오류는 원문과 정정 근거를 보존했고 메인이 정정·한계를 수용했다. 남은 마지막 단계는 이 종료 기록 문서 PR의 독립 실사·CI·사용자 개별 승인·병합이다. 이 PR 병합으로 기록 통합과 goal을 종료하며, 다음 목표는 메인이 사용자와 정한 뒤 R-8로 연 신규 Astra가 시작한다. PR179에 후속 기록이 이미 들어 있었다고 표현하지 않는다.
+
+### 병합 결과와 종료 인계
+
+메인 `msg_38d7121d76be`(2026-10-05T10:31:30Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) PR179 - 운영툴 시스템 카드·개발 현황 작업 이름 병합 승인 → A 이 head로 병합 승인 (head c577208)」. 메인의 제출 시각 설명10:32Z 무렵은 메시지 실제 시각과 구분한다. 사용자 직접 입력으로 격상하지 않는다. fresh PR head·OPEN/CLEAN/MERGEABLE·CI3 SUCCESS를 확인한 뒤 `gh pr merge 179 --merge --match-head-commit c577208c87ef76214da577ca439f6bfd6842bda5`로 병합했다. 자동 병합 예약·브랜치 삭제·로컬 전환은 하지 않았다. 원문과 영수증은 E/`acceptance-user-merge-approval.json`, `merge-preflight.json`, `merge-result.json`, `merge-main-verification.json`이다.
+
+최종 head의 code-rules `37294039834`, module-boundaries `37294039841`, dotnet-tests `37294039853`는 attempt1 SUCCESS다. .NET은 924개=919통과/0실패/5skip이고 기존 분석기 경고 4위치(StyleCop·xUnit)가 남는다. 모듈 경계 실제 대상은 completed/clean·no_violations·exit0이며 별도 fixture 예시의 12 warnings와 구분한다. 세 CI checkout은 `5caa90c18edb6af8d79f06ab4585efad80f2feb3`; parents는 main `05cb171b130de9e39b9cc9a1b063d76ec6c1d878`와 승인 head다. 실제 병합 tree `eccdb2a5be604cf1f328b931333b5c0e7df1fa39`도 CI merge tree와 같고, Management subtree `bd3e2b74e9c3173a96561d08eb955ab193f62b12`는 승인 head와 같다. 원시는 E/`acceptance-final-ci.json`, `acceptance-ci-input.json`과 세 `acceptance-*-a1.log`다. 메인은 승인 메시지에서 e8→c577의 goal 한 파일(+28/−4), 화면 수용 frontend tree 보존, 최종 .NET 원시924/919/5를 직접 확인했다고 보고했다.
+
+잔여 범위는 기준 `3bfb614895a2e55c998b5f89a45738aee4d9d12e`의 frontend 전체 864개 중 852통과/12실패(최종 head 전체 재실행 없음)와 이름 수정 영향 명령의 7실패, 앞선 CI CombatSmoke 최초 실패/재실행 성공 및 원인 미확정, 검출기 #8, 실물 작업의 focus·heartbeat·정산 과정 한계다. 이들을 해결·전부 통과로 기록하지 않는다. 독립 판정·사용자 수용·실행별 미실행 경계는 아래 원문 연결을 유지한다. 후보 채택·새 구현은 종료 점검에서 메인과 사용자가 정한다.
+
+### Gardener 결과·정정과 종료 점검 인계
+
+신규 Opus `task_0fb0917dea8a` / `ctx_fb5bb56677f6`의 읽기 전용 Gardener는 done `msg_6b8303ad4a39`(2026-10-05T10:58:13Z)로 끝났다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus 5.5/xhigh, backend unknown이다. 보고서 E/`gardener-report.md` SHA256 `f16a795cb7598ae2fd54367d53297d2af29a196eb4cc93a84f774f8c4027bfd1` 전체를 읽었으며 쓰기는 그 한 파일뿐이다. 종료 기록 15항목과 지정 diff/패턴 범위를 대조해 새 차단 사항을 보고하지 않았다. CI 합성 commit tree의 독립 재도출·원격 상태 재조회·병합 명령 별도 영수증 대조는 하지 않았으므로 전수 판정이나 전체 절차 PASS로 표현하지 않는다. Astra는 기존 GitHub commit 원시 `acceptance-ci-merge-commit.json`과 실제 merge tree 일치를 별도로 확인했다.
+
+후속 후보는 ① 숨은 기록 탭의 공통 시험 진입 helper와 Management vitest CI 연결, ② 실물 앱 실행·관찰·소유 TEMP 정산 helper 및 fixture 정리다. 현재 목표 밖 제안이며 채택·구현·CI 정책 승격은 하지 않았다. 기존 테스트 실패를 숨기거나 승인 없이 warning/차단 정책을 바꾸는 권한도 아니다. 후보의 첫 실패 5건 집계는 과거 goal 요약을 사용했고 원시 전부 재감사는 하지 않았다는 한계를 유지한다.
+
+**집계 정정:** Gardener는 깊이 3까지의 스크립트 합계를 114개로 적었지만, 실제 JSONL 명령 `toolu_01EhL6bbxFhCUgKxsr63YHaX`의 14개 폴더 출력 합계와 Astra 독립 열거는 모두 **109개**다. 개별 helper 표는 다른 명령 `toolu_01JSUz2Tf36xHUD4FFfRuq74`의 깊이 제한 없는 검색이므로 observer 9파일/9버전·finish 6/6 등은 그 범위에서 재현됐다. 최초 Astra 표본이 표까지 깊이 3으로 해석했던 한계도 정정한다. 원문은 바꾸지 않았고, 메인에 불일치와 원인 대조를 즉시 보고했다. 원시 명령/출력·계산은 E/`gardener-helper-source-extract.json`, `gardener-astra-count-correction.json`이다. 정정은 Astra의 원천 대조이며 새 독립 재검증으로 표시하지 않는다.
+
+고정 입력 37개와 Management 추적 파일 190개는 Gardener 종료 시 bytes/hash 변화 없이 보존됐다(E/`gardener-astra-audit.json`). done과 보고 원문 대조 뒤 release·동일 incarnation 완료 화면·close를 수행했고 `gardener-final-terminals.json`에는 Astra만 남았다. 정산 연결은 `gardener-lifecycle-audit.json`이다. 비차단 문서 관찰 두 개는 위 결과 단락의 측정 기준 commit/미재실행 표시와 「분석기 경고」 명칭으로 명료화했다. 당시 로컬 미커밋 기록과 다음 DB 과정 후보는 메인 `msg_d1682bb77312`로 인계했으며, 아래 지시에 따라 이 문서 PR로 보존한다.
+
+메인 `msg_1c0af5224a0e`(2026-10-05T11:07:24Z)는 운영 판단으로 Gardener 집계 정정(114→109)과 한계를 수용하고, 기록 유실·혼합을 막기 위해 최신 main의 새 문서 브랜치에서 종료 기록을 통합하도록 지시했다. 사용자 직접 지시나 새 제품 범위로 격상하지 않는다. 원문은 E/`closeout-document-pr-main-instruction.json`이다. 기준 main `e6324907e716105b1256f2376f96998ad567b3ca`에서 `docs/management-system-cards-closeout`을 만들고, goal과 CURRENT의 Management 링크만 갱신한다. 제품·테스트·BACKLOG는 바꾸지 않는다. 신규 Opus의 좁은 문서 실사와 최종 head CI를 거친 뒤 이 PR의 사용자 개별 병합 승인을 받는다. 이전 PR179 승인으로 대신하지 않는다. 후보 채택·다음 Management goal은 이 PR 병합 뒤 메인과 사용자가 정한다.
 
 ### 작업 이름의 CI·메인 대조·사용자 실물 수용
 
@@ -46,6 +67,9 @@ Astra가 직접 tracked194+canonical48=242개 bytes/hash·출력 집합 변화0,
 
 메인 `msg_5bd58f057f41`(2026-10-05T09:37:41Z)의 사용자 원문: 「그리고 계획에 오버되는 부분은 다음 계획 편성에 포함시키고, 일단 현재 작업 목표 달성 우선」. 메인의 제출 시각 설명09:40Z 무렵과 메시지 실제 시각은 구분한다. 원문은 E/`current-goal-priority-user-decision.json`에 보존했다. 범위 안 완료조건은 계속 수행하고 범위 밖 후보·비차단 개선·새 요청은 이 goal에서 실행하지 않는다. 다음 계획은 메인이 사용자와 편성하며 이 지시만으로 진행 계약을 중단하거나 재발행하지 않는다.
 
+- 다음 계획 첫 후보 — 실제 DB 1단계 과정·의도 기록: 메인 `msg_2ecb51e414d5`(2026-10-05T10:24:30Z)의 사용자 원문 「그러면 지금까지 한 일련의 과정들이 무슨 의도고 왜 했어야했는데 운영툴 기록에도 작성해줘」.
+- Gardener 후보 1 — 화면 시험의 공통 진입 helper와 Management vitest CI 연결. 기존 실패 분류·미도달 단정·비용/잡음과 정책 승격의 사용자 판단을 포함한 다음 계획 제안이다. 현재 구현하지 않으며 원천은 E/`gardener-report.md`의 후보 1이다.
+- Gardener 후보 2 — 실물 실행·관찰·소유 TEMP 정산 helper와 Windows fixture 정리. 위치·채택·구현은 다음 계획에서 정하며, 원천 보고서의 합계 오류와 집계 범위 정정은 위 Gardener 결과 절을 따른다.
 - 표시 이름 검출기 #8의 괄호·hash/경로·범위 경계 한계: 최종 독립 판정의 비차단 후속 후보다. 현재 데이터 영향은 없으며 이번 PR에서 추가 구현하지 않는다. 원천 E/`display-names-polish-review/verdict.md`.
 - 기존 앱 내부 E2E 입력·VM 준비 후보는 아래 「후속 계획 후보 — 앱 내부 E2E 입력·VM 준비」의 원천과 보류 상태를 유지한다. 현재 goal 밖이며 자동 착수하지 않는다.
 - 운영툴 「작업 현황」 화면 후보는 사용자 폐기로 종료한다. 아래 역할 방향 절에 결정 원문을 연결하며 BACKLOG 행 정리는 소유자인 Rules의 다음 goal에서 한다.
