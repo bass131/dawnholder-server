@@ -35,6 +35,20 @@
 | `server-operations-view` | 운영툴 서버 운영 시각화 | 사용자 2026-10-03 요청을 메인이 전달 | 메인 전달·2026-10-03·`msg_c9bc79f8ec43`가 재전달한 `msg_acba01cbf81e` | DB 연동 뒤, 참고 출처는 구현 조사 때 확인 | Management | 대기 |
 | `work-status-view` | 운영툴 작업 현황 화면 | 작업 중·예정·결정 대기를 상시 보는 화면 요청 | 메인 전달·2026-10-03·`msg_c9bc79f8ec43`, 개인 CLI 참고 허용 `msg_c1412c982ac5` | 표시 범위·소유 조율과 별도 goal 승격 검토 | Management | 대기 |
 
+## 영속 통합 goal에서 연결한 후보
+
+[실제 SQL 설치·엔진 판정 goal](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md)에서 메인 전달에 따라 남긴 후속 후보다. 등록은 이번 G2 범위의 구현이나 새 goal 착수를 뜻하지 않는다.
+
+| ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
+|---|---|---|---|---|---|---|
+| `powershell-dotnet-boundary-checklist` | PowerShell과 .NET 경계 체크리스트 | builder indexer·`[NullString]`·예외 체인 관련 실패에서 경계 확인 항목을 검토 | 메인 전달·2026-10-05T05:55:03Z·`msg_d57b6b7d08d2`, Fable 읽기 전용 조사 요약을 바탕으로 후보만 기록 지시 | 실제 원천 재확인·DB 단계 뒤 별도 범위와 사용자 채택 판단 | GameDev | 대기 |
+| `database-allowlist-drift-test` | DB allowlist 드리프트 probe의 정식 테스트 승격 | 검증자가 사용한 AST probe의 유지·회귀 검사 가치 검토 | 메인 전달·2026-10-05T05:55:03Z·`msg_d57b6b7d08d2`, 현재 TESTDB·INSTALL goal 범위에는 넣지 않음 | probe 원문·범위·오탐 및 기존 테스트 중복 대조 뒤 별도 goal 판단 | GameDev | 대기 |
+| `combat-smoke-timeout-investigation` | CombatSmoke_ZeroLag_Succeeds 간헐 timeout 조사 | 서버 제품 diff가 없다고 전달된 두 CI에서 15초 timeout. 원인은 미확정이며 flake·회귀로 단정하지 않음 | 메인 전달·2026-10-05T06:53:29Z·`msg_65740b4635b6`; 아래 두 사례와 Content 원시 경로는 재전달 근거 | G2·첫 PR 뒤 사용자와 조사 착수·범위를 결정. 후보 등록만으로 테스트 변경·서버 조사에 착수하지 않음 | GameDev | 대기 |
+
+`combat-smoke-timeout-investigation`의 메인 전달 사례(원시 직접 미열람): PR179 Management는 서버 diff 0인 attempt1에서 실패하고 같은 head 재실행은 통과했으며 직전 head는 12초 통과했다. run ID는 이번 전달에서 미제공이다. PR180 Content는 새 head `3ee38bf`(최근 merge 제품 diff 0이라고 전달됨)의 dotnet run `37272468313` attempt1에서 테스트 :59의 target1이 15초 안에 공격거리2로 수렴하지 못했다. 같은 제품 코드 `ce3267a`의 CI `37235164389`는 12초 통과했고, 전달 시점에는 같은 head 1회 재실행 중이었다.
+
+메인은 해당 테스트와 EmergencyCombatSmoke 소스가 `11aa4b8` 이후 불변이라고 전달했다. 조사로 확인한 결론이 아니다. 원시 위치는 Content worktree `content-active/.backups/verification/2026-10-05-items-inventory-currency/pr1-main-sync-ci-*`다. G2 실사 중 수신했으며 입력 동결 해제 뒤 후보만 기록했다.
+
 ## 후보별 경계
 
 `powershell-all-evidence`는 All 비교·승격 제안과 인용/집계 helper를 **한 후보**로 묶는다. 세 파트 PS 정리의 실제 병합 완료 뒤 별도 goal에서 최신 main을 측정한다. 이번 하네스 목표의 구현·종료 범위에는 포함하지 않으며, helper를 먼저 구현하지 않는다. 과거 PS289를 현재 잔여 수로 가정하거나 파트 회신만으로 All 재측정을 완료했다고 기록하지 않는다.

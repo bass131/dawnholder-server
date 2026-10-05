@@ -1,6 +1,219 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **TESTDB-01 수정과 신규 Opus의 TESTDB-01·INSTALL-05/06/07 오프라인 기능 판정은 끝났으나, 신규 검증도 필수 절차 미충족으로 outcome=failed를 반환해 결과 수용 판단을 기다린다.** 최종 테스트는1081PASS/0FAIL/9OBSERVED이며 기능 결과로 절차 이탈을 면제하지 않는다. 사용자 결정 `msg_6a82c1c724ad`에 따른 이번 새 검증을 수행했으며 이전 두 검증 결과는 계속 수용하지 않는다. 같은 파일6호출·명시 입력 범위는 메인 `msg_4bcc54fa9ef0`에 근거한다. 실제 DB·G2·U-01·D:·서비스는 미실행/메인 안내 및 사용자 행동 대기다. 첫 PR·G4·Gardener·전체 goal은 미완료이며 다음 검증 회차나 goal을 자동 착수하지 않는다.
+상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다.
+
+## 진척 단계
+
+- [x] 설치 도구 결함 수정
+- [x] 검사 도구 결함 수정
+- [x] 오프라인 독립 검증
+- [x] DB 생성 계획 실사
+- [>] DB 생성 실행
+- [ ] 설치·판정 계획 실사
+- [ ] 실제 DB 설치·판정
+- [ ] 첫 PR·CI·병합
+- [ ] 시험 DB 정리
+- [ ] 결과 기록·종료
+
+현재 표시된 DB 생성 실행 단계는 **서비스 시작 실패 중단·관리자 추가 읽기 실사 완료·Procmon v2 신규 차단 보완 대기·최신 main 로컬 통합 중**이다. 원인은 미확정이며 DB 생성·설치 성공으로 표시하지 않는다. PR 번호는 아직 없다. 이 체크리스트는 상태 전환 때 담당 Astra가 갱신한다.
+
+## DB 장치 전제 정정 — C:\myVHDX.vhdx
+
+출처는 메인 `msg_f061272f74cb`(2026-10-05T09:44:24Z), 원문은 `.backups/verification/2026-10-04-persistence-integration/g2-postreview-check-delivery_3fb2e6e641d1.json`이다. 메인이 전달한 사용자 원문을 그대로 보존하며 이 pane의 직접 입력으로 격상하지 않는다.
+
+> 「USB 연결은 무슨 말이야? 애초에 DB는 저번에 C드라이브에 가상 드라이브로 마운트 했던거로 기억하는데」
+>
+> 「그 부분 맥락이 제대로 저장이 안됬으면 프로젝트에도 갱신해주고, 프로젝트 메모리에도 갱신해줘」
+
+- **실행 전제는 `C:\myVHDX.vhdx`를 D:로 마운트하는 것이다.** `msg_064e2cdd5db7`의 MountedDevices 해석만으로 D:를 SanDisk USB로 판단한 메인의 보고는 틀렸으며, 이를 옮겼던 이 goal과 v1 안내의 현재 전제를 정정한다. 과거 메시지·v1 파일은 덮어쓰지 않는다.
+- 메인의09:4xZ 읽기 관측 보고: 파일 존재·21,479,030,784 bytes·LastWrite2026-10-01 04:22 로컬, 가상 크기20GiB, Get-DiskImage Attached=False. SQL Setup의 SQLPath/SQLBinRoot는 `D:\MSSQL2025\MSSQL17.SQLEXPRESS\MSSQL`/그 아래 `Binn`이며 Microsoft 가상 디스크 과거 장치2개가 있었다. MountedDevices의 SanDisk 값은 현재 SQL 장치라는 근거가 아니다. GameDev가 이 OS 관측을 직접 실행했다고 주장하지 않는다.
+- 메인은 저장소01_Phases/00_Document와 자신의 메모리에서 myVHDX/vhdx 기록0건을 보고했다. 실행 전제 누락을 여기서 기록한다. 프로젝트 메모리 갱신 요청도 위 사용자 원문에 포함되며, 이 GameDev가 메인의 프로젝트 메모리를 갱신한 실적으로 쓰지 않는다.
+- 메인의 승격 마운트 시도는 권한 확인에서 거부돼 실행되지 않았다고 보고됐다. 마운트는 **사용자가 직접** 탐색기 더블클릭 또는 관리자 창에서 한다. 마운트 뒤 메인이 D:와 `D:\MSSQL2025\MSSQL17.SQLEXPRESS\MSSQL\Binn\sqlservr.exe`를 읽기 확인해 알린다. D:가 아닌 문자가 붙으면 바꾸지 않고 중단해 사용자 판단을 받는다.
+- 정정 시점에는 마운트 완료도 미확인이었으나 후속 `msg_8739f507da55`에서 사용자 완료와 메인 경로 확인이 보고됐다(아래). 과거 마운트 해제 사유·자동 마운트 여부는 계속 **미확인**이다. 서비스/SQL 실행까지 추정하지 않으며 기존 D:·서비스 경로·승인 기한·단일 사용자 창·고정 v4 계획은 유지한다.
+- 새 안내 `g2-stage1-main-guide-v2.md` SHA256 `B197C30A2033F6557F19980CB0FC7E67301899FB42828D4996EE26E79A4ABCCB`로 장치 전제와1단계 손 작업만 정정했다. v1 SHA `35FACDB6BA12F82985185B4903880452949A9A85D9CC19FA02F46BCDBDF0F4F0`은 역사로 보존한다. 차이는 `g2-stage1-main-guide-v2.patch`다. 명령 원본·review/execution JSON은 변경하지 않는다.
+- 현재 목표의 실제 base `3f0cb5e2861574ea1e6b092875de27694897b21d`→HEAD `38a5b7524a02872a4ce21cbd6fe6d186608d07c0` 변경15개 중 문서는 CURRENT·이전/현재 goal뿐이며 공용 DB 실행 안내 변경은 없다. 메인 요청3의 조건에 따라 DEVELOPMENT/MSSQL 문서 신규 변경은 다음 계획 후보로 남긴다. 오래된 local main과의 넓은 diff는 이 PR 범위 근거로 쓰지 않았다.
+
+### 마운트 완료 보고와 승격 창 안내
+
+- 메인 `msg_8739f507da55`(2026-10-05T09:50:08Z), 원문 `g2-postreview-check-delivery_37225c0c4d14.json`의 사용자 전달: 「마운트 완료, 이거 매번 커맨드 입력하기 귀찮은데, 더 효율적인 방법 없나」. 이 pane의 직접 입력과 구분한다.
+- 메인이 비승격 PS5.1 읽기로 `C:\myVHDX.vhdx` Attached=True, D: 존재=True, 고정 sqlservr.exe=True, `MSSQL$SQLEXPRESS` Stopped/Manual을 관측했다고 보고했다. execution-plan/window의 고정 SHA 일치도 메인 보고다. GameDev 자체 재관측이나 서비스/SQL 실행 실적으로 쓰지 않는다.
+- 장치 준비 안내는 완료됐고 메인이 사용자에게 RunAs 원본(execution-plan.md:62–65)을 전달한다고 알렸다. 이 보고 시점에는 RunAs/UAC 완료·준비 성공이 미관측이었으며 후속 사용자 완료 보고는 아래에 구분한다. 이는 DB1단계 안의 안내2단계이며, 미승인 DB2단계의 착수가 아니다.
+- 반복 명령 효율화/자동 마운트 질문은 메인 판단대로 DB1단계 뒤 승격 실행 창 밖에서 다룬다. 현재 transcript/계획에 자동화나 새 명령을 섞지 않는다.
+
+### 사용자 RunAs 완료 보고·Prepare 원시 대기
+
+- 메인 `msg_961a70732dd6`(2026-10-05T10:02:58Z), 원문 `g2-postreview-check-delivery_66c999c5bf9b.json`의 사용자 전달: 「일단 관리자 파워쉘 열어줬어」. 당시 메인은 사용자가 RunAs 블록/UAC를 수행했다고 해석했으나 후속 `msg_b1c3bcbcbed2`에서 창 경위를 정정했다. 앞 보고는 확정 실행 근거로 사용하지 않는다.
+- 당시 후보로 전달된 powershell PID27020·10952는 후속 정정에서 메인 자신의 조회 프로세스로 철회됐다. 이 번호를 승인된 승격 창 identity로 사용하지 않는다. **Prepare의 실제 PID/권한 원시** 대조 요구는 유지한다.
+- 메인은 execution-window.md:10–145를 추출해 `$approvedHash`의 빈 문자열만 최종 execution SHA `2D799C5CF038A9A657E42464B9198590D047A83896B3E58C615097152AD03DC6`로 바꿨고 한 줄 diff만 있다고 보고했다. 사용자에게 이 준비 블록을 전달하는 단계다. 제품/고정 원본을 변경한 것이 아니다.
+- 출력 원시를 받으면 같은 PID·PS5.1 Desktop·정확 실행자 SID/관리자·제품39/불일치0·승인 hash/G2와 정상 반환을 확인해 안내4단계 진행 여부를 메인에 회신한다. **아직 Prepare 성공이나4단계 진행을 판정하지 않았다.** 현재 DB1단계의 사용자 창만 사용하며 다른 프로세스 재실행·환경 우회·자동 마운트를 섞지 않는다.
+
+### 고정 RunAs 창 경위 정정과 Prepare 제출 여부
+
+- 메인 `msg_b1c3bcbcbed2`(2026-10-05T10:05:55Z), 원문 `g2-postreview-check-delivery_da3ae7bf91f7.json`. 사용자 “한번 확인 해줄래?” 요청 뒤 메인은 관리자 창 PID19928(10:02:09Z 시작, 부모 explorer.exe)을 발견했다고 보고했다. 직접 연 창이라는 것은 **메인의 추정**이며 승격 CommandLine은 비승격에서 보이지 않았다. 앞의 PID27020/10952는 메인 조회 프로세스라 철회했다.
+- 메인은 고정 RunAs 옵션·작업 위치가 확인되지 않은 창에 Prepare를 넣지 말고, 미제출 draft가 있으면 Ctrl+C로 취소 후 닫도록 안내했다. 새 비승격 일반 창 PID25896을 열어 고정 RunAs 블록을 제공했고, 새 관리자 창의 부모를 확인한 뒤 Prepare를 전달할 계획이라고 보고했다. GameDev가 창을 생성/종료하거나 명령을 실행하지 않았다.
+- 메인은 실행 근거 폴더가 없으므로 Prepare 미실행이며 재시도 금지에 해당하지 않는다고 판단했다. **GameDev의 직접 관측은10:06:59.3519608Z 폴더 부재와 고정 window SHA 일치까지**다. 원본12행 Set-Location,14–15행 hash 검사/throw는 CreateDirectory25행보다 앞서므로 폴더 부재만으로 Enter 제출이 없었다고 증명하지 않는다. 실제로 해당 오류가 발생했다는 뜻도 아니다.
+- 부모는 `msg_adde4c040327`로 이 근거 한계를 즉시 메인에 알리고 사용자 미제출 확인 또는 입력/오류 화면 근거를 요청했다. 그 전까지 **메인의 미실행 판단 보고와 GameDev의 Prepare 제출 여부 미확정**을 구분한다. Prepare PASS·제품 결함/실패·안내4단계 진행을 새로 판정하지 않는다.
+- 메인 `msg_7d34e77ac271`(10:08:54Z)은 CreateDirectory 위치 정정을 수용하고19928 창의 Enter 제출 여부는 사용자에게 물었으나 아직 답이 없다고 확인했다. 같은 메시지의 새 관측은 PID27772(10:07:51Z 시작, 부모25896, 관리자 제목)이며 고정 RunAs에서 열린 창이라는 메인 판단이다. 이전19928은 아직 열려 있어 닫도록 안내했다고 보고했다. 창 종료 완료나 Prepare 성공으로 기록하지 않는다.
+- 메인은 최종 SHA만 채운 준비 블록과 클립보드가 같다고 확인했다고 보고했다. 이는 실제 Enter 제출 확인과 다르다. 부모는 `msg_f50812a9188d`로 고정 execution-window.md:5의 실패 뒤 새 창 재시도 금지에 따라 **19928의 미제출 확인 뒤 새 창 Prepare 제출** 경계를 짚었다. 당시 사용자 답/실행 원시 대기였으며 새 제품 결함·실패를 추정하지 않았다. 원문은 `g2-postreview-check-delivery_02e10b3347ba.json`이다.
+- 메인 `msg_bcff9c9b9034`(10:11:33Z)의 사용자 원문은 「순서가 꼬여서 다시 해야할 거 같은데, 처음부터 차근차근 다시 알려줘」다. 메인은19928/27772/25896 종료, VHDX Attached=True·D:/sqlservr.exe=True·서비스Stopped/Manual·실행 근거 폴더 부재·fixture 폴더09:00Z 뒤 새 파일 없음으로 보고했다. 본문 관측 시각은10:14Z 무렵이라고 적혀 있으며 서버 시각과 구분한다. 이들을 GameDev 직접 관측이나 Prepare 미제출의 확정 증거로 바꾸지 않는다.
+- 후속 메인 `msg_e5e9002552bd`(10:12:33Z)는 새 일반 창19308(10:11:33Z)의 자식 관리자 창13864(10:12:01Z 시작)를 보고했다. 사용자 원문 「Ok 다음 스텝 알려줘」는 **19928에서 Enter를 누르지 않았다는 명시 답이 아니다**. 메인은 그 답을 먼저 받은 뒤에만 새 창의 Prepare 붙여넣기를 안내한다고 밝혔다. 실제 Prepare 결과/권한/PID 원시 판정은 계속 대기한다. 두 원문은 `g2-postreview-check-delivery_8fed7f9900aa.json`에 보존했다.
+
+### 사용자 미제출 확인과 파일 dot-source 제출
+
+- 메인 `msg_30f819e07631`(2026-10-05T10:15:52Z)의 사용자 원문은 「안 눌렀어」다. 메인의 질문은 「19:02에 직접 열었던 관리자 창에서 Enter를 누른 적 없지?」였으므로 **19928 창의 준비 블록 미제출을 사용자 답으로 확인**했다. 원문은 `g2-file-submission-question-ack.json`의 후속 Delivery에 보존하고 읽은 뒤 별도 ack했다. 앞의 폴더 부재 추정과 구분한다.
+- 메인 `msg_7cf2ec2b5892`(10:15:29Z)의 사용자 원문: 「출력이 너가 설명하는거랑 달라서 좀 어려운데, 그냥 너가 의도하는 스크립트를 파일형태로 만들어서 내가 관리자 권한으로 파워셀로 실행하는건 안되나?」. 메인은13864 창의 콘솔 선택 모드로 붙여넣기가 안 됐다고 보고하고, 고정 준비 블록을 UTF-8 BOM 파일로 제공하는 안을 제시했다. 원문은 `g2-postreview-check-delivery_f2c46e6970f5.json`이다.
+- 부모는 메인 scratchpad의 `stage1/03-prepare.ps1`을 읽어 **136행 전수 내용이 고정 execution-window.md:10–145에서 승인 hash만 채운 것과 일치**함을 확인했다. SHA256 `0FFB7E52DA604A2EB78224148647CF9283E365BB6F1B5681F595D550F449E35D`,7485bytes, UTF-8 BOM EFBBBF. 현 PS7.6.6 Core parser 관측은 오류0/최상위1문장이며 실제 PS5.1 실행 검증으로 쓰지 않는다.
+- 부모는 `msg_866a7808f927`로 **동일 승격 창에서 같은 블록 파일을 dot-source하는 제출 방식**을 수용했다. caller scope와 PID/guard 경계를 유지하는 운영 판단이며 제품·원본 v4 블록 변경이나 새 독립 검증 PASS가 아니다. 다른 프로세스의 `-File` 실행으로 바꾸지 않는다. 이후 단계도 블록별 원본 범위/hash와 사본을 보존하며 한 번에 하나씩 실행한다.
+- 원본 경로는 `C:\Users\bass1\AppData\Local\Temp\claude\C--Dev-DawnHolder-Project\9ebc9ab5-3c30-4e51-8f05-498590f3b15a\scratchpad\stage1\03-prepare.ps1`이다.10:18:58.3736460Z에 같은 근거 root의 `g2-stage1-submissions/03-prepare.ps1`로 byte 동일 보존했고 `03-prepare-source-audit.json`에 원본 범위·양쪽 SHA·행 대조·제안 호출줄을 남겼다. 이것은 **실행 근거가 아닌 제출 파일 사본**이며 실제 실행 폴더를 대신 만들지 않았다.
+- Prepare 최초 dot-source 호출은 Start-Transcript보다 앞이므로 그 호출줄이 transcript에 반드시 남는다고 주장하지 않는다. 정확 호출줄·파일 사본/hash를 별도 보존하고 실제 사용자 제출/출력은 후속 원시로 확인한다. **Prepare 성공·정확 실행 PID/권한·안내4단계 진행은 아직 판정 전**이다.
+
+### Prepare·장치 확인과 실제 서비스 시작 실패
+
+- 메인 `msg_039a453e53e8`/`msg_6a0842a8512c`는 상속 PSModulePath로 비승격 PS5.1의 Get-FileHash가 실패했고, 환경을 정리해 연 일반 창30952의 자식 관리자 창27280을 사용했다고 보고했다.13864는 종료,31212는 별도 직접 열린 창이었다.31212 미제출은 당시 메인의 추정이며19928의 사용자 명시 답과 구분한다. 이후 `msg_05b5d610b58d`가31212 종료를 보고했다.
+- 메인 `msg_ffbdac44e36c`/`msg_05b5d610b58d`와 GameDev의 직접 원시 읽기: Prepare10:21:09Z, PID/OriginalPid27280, PS5.1.26100.9444 Desktop, 사용자 SID 끝1001, Administrator=true, ProcessExecutionPolicy=Bypass다. 제품39개 각 기대/실측 hash·bytes 불일치0이며 최종 execution SHA와 G2가 일치한다. Prepare 원시 SHA는 `04FC9D1EA4347C7988369E8E7245095B5FA8A890473E94C8DBC1107B0E1E59B5`다.
+- 사용자19:23:22 KST의04-device-check 입력과 출력에서 D: FileSystem, 고정 sqlservr.exe 경로, 서비스 Stopped/Manual을 직접 확인했다. GameDev는 `msg_8ea855dcc88a`(10:29:39Z)로5단계 진행 가능을 답했다. 이 판단은 당시 전제 충족이며 뒤 서비스 성공을 보장하거나 실패를 통과로 바꾼 것이 아니다.
+- 사용자19:30:15 KST의05-service-start 입력은 같은 PID와39/0·승인 대조를 통과했으나,19:30:17에 Start-Service가 `StartServiceFailed`로 종료했다. GameDev는 실제 transcript를 읽고 `msg_c0e17bfe4e4f`로 후속 실행 중단을 알렸다. ServiceStart preflight SHA는 `81F478612BB17F887E06AFC7C454F3917E84403EF73E9CD973436B5EC57ACD7C`다. guard 성공과 서비스 시작 실패를 구분한다.
+- 메인 `msg_bb4e79208936`은 재시도 없음, 서비스 Stopped, 이벤트17204의 master.mdf/mastlog.ldf OS 오류5, 종료 코드114, 정상으로 보이는 파일/볼륨/ACL 관측을 보고했다. 장치 수준 보안이라는 설명은 **미검증 가설**이다. GameDev가 이벤트·ACL을 직접 실사한 결과가 아니며 원시 보존 경로를 요청했다. 제품 결함 번호나 새 정적 검증 실패로 집계하지 않는다.
+- GameDev는10:34Z 및10:35:31Z 읽기 전용 Get-Service로 Stopped/Manual을 직접 확인했다. `msg_76ef967ed273`로 ServiceStop 생략과 고정14-close-transcript만 제출하도록 답했다. 원시에서 같은 PID의 UserWindowClosing10:35:12.5767948Z와 transcript end를 확인했다. DB A1/A2/B2/A3/B3와 서비스 재시도는 이 transcript에 없다.
+- `g2-stage1-submissions/`에03을 포함한 제출 파일11개를 byte 사본으로 보존했다. 나머지10개는 `remaining-blocks-source-audit.json`에 고정 문서 범위·SHA·줄 전수 일치를 남겼다.04/05/13의 목록 들여쓰기3칸만 제거됐고 다른 내용은 동일하다. 부모 비교의 첫 A1 들여쓰기 처리 오류와 수정도 audit에 명시했으며 제품/제출 파일은 고치지 않았다.
+- 원시 사본은 근거 root의 `g2-stage1-observations/service-start-failure/`다.10:35:31Z 보존 transcript5477bytes의 SHA는 `83E413B2128A364787D25F3A09ACFA646C444ADF131D792C1F21EA7077BECEA4`다. Prepare/ServiceStart preflight와 audit를 함께 보존했고, 이후 종료 확인은 별도 기록으로 보완한다. 원본 transcript와 고정 v4 계획은 수정하지 않았다.
+- 읽기 전용 원인 조사는 현재 목표의 막힘 해소 범위다. 재마운트·ACL/서비스 설정 변경·재시작 등 외부 변경과 재실행은 구체적 수정안·명령·실행자·시간 창 및 필요한 사용자 승인을 거친다. 기존 승인 잔여 시간이나 종료 기록을 재실행 권한으로 쓰지 않는다. 새 목표와 범위 밖 자동화는 착수하지 않는다.
+
+### 적용 중인 사용자 결정 — Astra·Fable 5.1 합동조사
+
+메인 `msg_fdd03a37dd07`(2026-10-05T10:42:43Z)이 전달한 사용자 원문:
+
+> 「그리고 방금 DB1 단계는 Astra한테 Fable5.1이랑 합동조사 맡겨줘」
+
+- 이번 ServiceStart 실패 원인을 Astra와 신규 `claude-fable-5-1` 외부 세션이 읽기 전용으로 조사한다. 확정 실패3회 Advisor나 R-7 goal 시범이 아닌 이번 사용자 지시다. 현재 goal 범위이며 새 목표를 시작하지 않는다.
+- Fable은 조사 보고1개만 쓴다. 제품·테스트·goal·판정 파일은 쓰지 않고 추가 위임하지 않는다. 작업 하나 뒤 정산·종료하며 재사용하지 않는다. 요청 모델·최초 명령·화면 표시와 backend unknown을 구분한다. R-6 선택창은 메인이 처리한다.
+- Astra와 Fable 모두 서비스 시작/중지/설정, VHDX 분리/재마운트, ACL/소유권, 승격 실행, SQL 접속, registry 쓰기, 예약 작업 등록을 하지 않는다. 관리자 읽기가 필요한 자료는 정확 명령과 필요성을 메인에 올린다. 수정·재실행과 부팅 자동 마운트 등록은 원인 확인과 필요한 사용자 승인 뒤로 둔다.
+- 결과는 확정 원인 또는 남은 가설·근거, 실행 주체·권한·명령·되돌리기·시간 창이 있는 다음 계획으로 메인에게 보낸다. 범위 밖 개선은 다음 계획 후보만 남긴다.
+- 기동 결과: 신규 term_1158d01d-c28d-4dd5-883e-7d2ea111f6c9, incarnation31b76cf4-9a45-4cf9-8f73-50c119cf9e9b. 최초 명령 `claude --model claude-fable-5-1`, 첫 화면 Fable5.1/xhigh·선택창 없음, readiness satisfied=true다. Task `task_8be85acaae74` / Dispatch `ctx_9a883914b492`의 최초 연결에서 input_accepted/turn_started를 관측했다. backend는 unknown이며 설정 파일을 변경하지 않았다. 계약/20개 입력/receipt는 근거 root의 `g2-service-diagnosis/`에 보존한다.
+- Astra 추가 읽기에서 DATA·master/mastlog FullControl SID와 실제 서비스 SID의 일치, 조회 경로 DACL에 Deny 미발견, VHDX→PhysicalDrive1→D: 연결을 확인했다. 장치 SecuritySDS null은 허용 증거가 아니다. 상세는 `astra-readonly-findings.md`와 `readonly-*` 원시다. 원인 미확정이며 메인 `msg_376a964d850f`로 사용자 관리자 창의 ERRORLOG 메타데이터/160행 읽기만 요청했다. 서비스 재시작·마운트/권한 변경은 요청하지 않았다.
+- 메인 `msg_44fafab68c50`의 사용자 전달 「다른 관리자 파워쉘 열어서 돌렸어. 확인해줘」와 결과를 직접 대조했다. 실제 RunAtUtc10:55:58.4864468Z, User bass1/Admin True다. ERRORLOG는 이번 시작10:30:15–16Z 내용을 포함하고 LastWrite10:30:16Z였다. 같은 D: Log에 기록된 사실은 볼륨 전체 차단 가설을 약화하지만 DATA 파일 열기 거부 원인은 아직 미확정이다. 수집 텍스트·콘솔·script는 `g2-service-diagnosis/main-raw/errorlog-*`에 byte 사본/SHA로 보존했고 Fable에 `msg_19ee0b8f29e1`로 보충했다. 새 창의 최종 실제 호출은 스크립트 경로 직접 실행이며 G2 dot-source/서비스 재시도와 구분한다.
+
+- Fable은 `msg_3c57f4e34d62`(11:23:42Z)로 보고를 완료했다. 원문 `g2-service-diagnosis/fable-investigation.md`는36785bytes/SHA `28D3ADEE85B1484EFA88E95FD8CEFEA741B226F7D5268F2140306A038E7718BE`로 보존했다. Astra 실사에서 ERRORLOG 보충 입력 미반영, 접근/감사 해석의 과잉 확정, 재현 초안 원복 부족, 시각 표기 등 FJ-1~5를 발견해 별도 `astra-fable-settlement.md`에 수용/미수용 근거와 최소 후속 읽기를 기록했다. Fable succeeded를 독립 PASS나 재실행 승인으로 사용하지 않는다.
+- 11:26:59Z 읽기에서 서비스 Stopped/Manual, 고정20개 및 제품39개 hash/bytes 불일치0을 확인했다. SQL 서비스/DB 재시도·ACL/VHD/감사 정책 변경은 없다. 메인 `msg_0728276c7d53`로 보고 불일치를 즉시 알렸고, 보정 송신이 완료 Dispatch에 거절된 사실은 `msg_6c35e0ccc9c5`로 정정했다. 완료 세션은 재사용하지 않았다.
+- worker-release의 external_terminal retained 뒤 정확 terminal/incarnation과 완료 화면·빈 prompt를 확인해 Fable pane만 닫았다. `fable-close.json` ptyKilled=true, 전체 목록에서 해당 handle0/메인·Astra 보존, reclaimable0을 확인했다. 다음은 사용자 관리자 창의 필터 인스턴스·SACL·감사 정책·기존 Security 사건 읽기4항목이며, 상세 명령·실행자·한계는 통합 보고에 있다. Fable의 SACL+재시작 초안은 그대로 실행하지 않는다. 새 재현은 읽기 결과 뒤 명령·원복·서비스 종료·새 시간 창을 완결해 필요한 사용자 승인을 받는다. 기존20:00 KST 실행 창은 종료됐다.
+
+- 메인 `msg_3eb122d386a4`(11:32:22Z)는 통합 보고의 SHA/핵심 절 직접 확인과 관리자 읽기4항목을 사용자에게 파일 방식으로 요청했음을 알렸다. GameDev도 `admin-read-4.ps1` 전체2702bytes/SHA `682D9CFDA31B6C73B4C130D9D532168066E01C04960FF05FDEAA6B25197FACA4`를 읽어4항목/출력 수집 범위를 확인하고 `g2-service-diagnosis/main-raw/`에 byte 사본·audit를 보존했다. 에이전트는 실행하지 않았다. 사용자 실행 통보와 `diag/admin-read-4.txt` 결과 수신을 기다리며 실제 관측·원인 판정은 아직 추가하지 않는다.
+
+- 메인 `msg_9bc5e34deaac`(11:53:28Z)의 사용자 전달 「읽었어 확인해줘」 뒤 결과10218bytes/SHA `5BDE3F1900C5994D5E205E7F01DDA7CF0CE0B6CE83BFED2563659104573EB38E` 전체를 직접 읽고 `main-raw/admin-read-4.txt`·보존 audit에 byte 사본을 남겼다. 실제RunAtUtc11:52:38.1857443Z/AdminTrue/PS5.1.26100.9444, 호출 화면은 미수신이다. D: 필터6개,4경로의 서비스SID FA·S:미표시, File System 감사No Auditing과 Security NoMatchingEventsFound는 원인/거부 계층을 확정하지 못한다.11:55:56Z 서비스Stopped/Manual이다.
+- 해석 원문은 `g2-service-diagnosis/admin-read-4-findings.md`, 다음 미승인안은 `procmon-reproduction-approval-v1.md`다. 사용자 직접 Procmon4.11 다운로드/서명·EULA·드라이버·수집과 SQL시작1회/Running시즉시중지, 승인시각부터30분·종료/원복 한계·원시보존을 제안한다. 다운로드·Procmon·SQL 재현은 아직 하지 않았으며 메인 `msg_038c08afda45`로 신규Opus 문서 정적실사 준비를 알렸다. 검토 중 원문을 고정하고 승인/실행으로 격상하지 않는다.
+
+- 신규 Opus `task_1bcb2cb71737`/`ctx_27e46ad9d66e`가 승인안/해석 보고의 독립 정적실사를 시작했다. 최초명령 `claude --model claude-opus-5-5`, 첫 화면Opus5.5/xhigh·선택창없음, backend unknown, readiness satisfied 및 input_accepted/turn_started를 확인했다.17개 입력과 goal 사본을 고정했고 `procmon-review-v1/verdict.md`1개만 쓴다. 판정 전 사용자 실행/다운로드·서비스 변경은 없다.
+
+- v1 Opus는 `msg_18b7f41124d4`(12:19:41Z)로 NOT PASS를 반환했다. 원문33176bytes/SHA `FB53F2CB193CFD3FC25C0CDAFF03186DDAF4458EC53348C48ED57F8B50FD4957` 전체를 읽고17개 고정 입력 불일치0과 PS5.1 AST/metadata 수행 표본을 대조했다. PROC-01 시작/반복읽기 혼합, PROC-02 폴더 준비 주체 충돌, PROC-03 상위 필터 미관측 한계 누락은 각 확정 실패1회다. PROC-04~07은 후속 보완이다. 완료 payload succeeded는 실사 완료이며 승인안 PASS가 아니다. release 뒤 정확 동일성/완료 화면을 확인해 pane을 닫았고 ptyKilled=true·전체 목록 해당 handle0이다. 메인 `msg_4a6c67ba520a`로 차단 결과와 보완/신규 실사를 알렸다.
+- 쓰기 전 `procmon-revision-context-v2.md`를 만들고 `admin-read-4-findings-v2.md`·`procmon-reproduction-approval-v2.md`에 7개 항목을 보완했다. 시작/중지 표식 및 독립 반복읽기, 사용자 단일 폴더 준비·시도폴더 밖 승인 기록, 상위 필터 완료 한계/실제 로드 고도 확인, 정확 대상·ERRORLOG 보관본 영향·ZIP/서명/native exit/잔여 설정·시점별 원천을 명시했다. v1/판정/17입력은 보존하며 v2를 아직 PASS로 표시하지 않는다. 실제 도구·서비스·DB 작업은 미실행이고 새 사용자 승인 전 실행하지 않는다.
+
+- v2 신규 Opus task_2b39d98614ba/ctx_b5db768392c6은 `msg_d1ebe5c4439c`(12:56:56Z)로 NOT PASS를 반환했다. 판정 원문 `procmon-review-v2/verdict.md` 38948bytes/SHA `1AFBCCB78910134E62A02F09925BC5F4493C1FBCC206DFC85312CDA3B23C9F2E` 전체를 읽었고20입력 사후 불일치0이다. v1 PROC-01~07은 해결, 신규 차단PROC-08은 세션 변수 reproRoot가 없는 새 창에서 바인딩 오류 뒤 start/stop이 진행될 수 있는 경계다. PROC-08 첫 확정 실패로 기록하며 검증자의 동일계열 PROC-01 합산 시2회 의견도 보존했다. PROC-09~11은 post-create 성공표시 한계·전달 파일 동일성·실제 driver 이름의 비차단 후속이다. PS5.1 AST10블록 오류0/metadata는 검증자 보고이며 공개 transcript는 부분 clipped, cursor 조회는 transcript_parse_failed여서 전수 원천 실사로 확대하지 않는다. worker_done 원문/ACK/release/정확 동일성·완료빈prompt 확인 후 close ptyKilled=true·전체 목록0으로 정산했다. 메인 `msg_b69ef76c09ec`로 보고했다.
+- 메인 `msg_099087b4dbcc`(12:38:07Z)의 로컬 갱신 전달을 받아 검증 종료 뒤 미커밋 BACKLOG/goal 보존 커밋과 지정 main `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`의 현 브랜치 통합을 수행한다. 사전 메모 `main-integration-context.md`, 전 상태 `main-integration-before.json`, 고정 입력37행/중복 제외24사본 `main-integration-fixed-inputs.json`에 보존했다. 통합 전 HEAD38a5b75 기준 ahead11/behind110이다. 사용자 직접 입력으로 격상하지 않으며 rebase/강제push/PR병합/DB·서비스·Procmon 실행은 없다. 통합 뒤 새 정본을 읽고 다음 v3 계약에 적용한다.
+
+## 사용자 지시 — 현재 목표 달성 우선
+
+출처는 메인 `msg_4225094298bb`(Orca created_at **2026-10-05T09:37:40Z**)다. 메인 본문은 사용자 제출을 **09:40Z 무렵**으로 적었다. 이 시각 차이는 원문대로 구분해 보존한다. 전달 원문은 `.backups/verification/2026-10-04-persistence-integration/g2-postreview-check-delivery_3f07b129f6a2.json`에 있으며, 메인이 전달한 사용자 지시를 이 pane의 직접 입력으로 격상하지 않는다.
+
+> 「그리고 계획에 오버되는 부분은 다음 계획 편성에 포함시키고, 일단 현재 작업 목표 달성 우선」
+
+- 현재 goal 완료조건을 먼저 달성한다. 작업 중 나온 범위 밖 후보·개선 권고·비차단 지적·새 요청은 지금 goal의 실행 범위에 넣지 않고 아래 `다음 계획 후보`에 출처와 함께 적는다. 다음 계획은 메인이 사용자와 편성하며 자동 착수하지 않는다.
+- 범위 안 결함과 완료조건에 필요한 수정은 계속한다. 판단이 애매하면 범위를 넓히지 않고 메인에 한 줄로 묻는다. 이 지시만으로 진행 작업을 중단하거나 계약을 다시 발행하지 않는다.
+- 정본 반영은 메인이 Rules의 다음 goal 후보로 넘긴다. 이 기록이 AGENTS/운영 정본 반영 완료를 뜻하지 않는다. 아래 과거의 비차단 후속 권고는 현재 goal의 자동 추가 작업으로 해석하지 않는다.
+- 현재 승인된 DB1단계/사용자 실행자/20:00 KST 기한/서비스 종료/2단계 별도 승인 경계는 유지한다. 새 실행 실적은 아직 없다.
+
+## 다음 계획 후보
+
+메인 `msg_4225094298bb`에 따라 **기록만** 한다. 기존 BACKLOG 항목과 과거 후보 원문은 그대로 두고 여기서는 출처를 연결한다. 아래 개선이 실제 현재 완료조건을 막는 결함으로 확인되면 그 사실을 근거로 현재 범위 안 수정인지 판정하며, 후보라는 이름으로 필요한 수정을 생략하지 않는다.
+
+| 후보 | 내용과 출처 | 현재 처리 |
+|---|---|---|
+| N4·N5 - PowerShell 긴 줄 정리 | v4 판정 `g2-static-review-v4/verdict.md` N4/N5, 메인 `msg_495e251286b7`·`msg_3bdeb93efd84`. 과거 긴 줄은 범위 밖, 신규 Start-Transcript122자 한 줄은 이번 명시 비차단 | 일반 가독성 개선은 다음 계획 후보. splatting 권고와 향후 수정 시 실사 필요를 보존하며 현재 승인된 블록은 변경하지 않음 |
+| N6 - 실패 뒤 종료 안내 정리 | 같은 v4 판정 N6: 준비 실패 뒤 후속 블록 중지와 마지막 기록 종료 안내의 차이 | 현재 고정 순서와 중단 경계를 유지하고 문서 개선은 다음 계획 후보 |
+| N7 - 관측 단계 이름 검사 순서 | 같은 v4 판정 N7: guard의 대소문자 무시 검사 뒤 정확 이름 검사 | 현재 대문자 B2/B3 원본 사용, 검사 순서 개선은 다음 계획 후보 |
+| N8 - PSModulePath/hash 환경 의존 | 같은 v4 판정 N8: 실제 RunAs 미관측, Get-FileHash 미해석 시 Prepare에서 SQL·서비스 전에 중단 | 환경 견고성 개선은 다음 계획 후보. 승인된 위험·중단 경계 유지, 실제 실행 실패가 생기면 완료조건 영향으로 별도 판정 |
+| PowerShell/.NET 경계·allowlist probe | 메인 `msg_d57b6b7d08d2`; BACKLOG의 `powershell-dotnet-boundary-checklist`, `database-allowlist-drift-test` | 기존 후보 등록 유지, 지금 체크리스트/테스트를 구현하지 않음 |
+| CombatSmoke timeout 원인 조사 | 메인 `msg_65740b4635b6`; BACKLOG의 `combat-smoke-timeout-investigation` | 원인 미확정. 현재 goal 조사/테스트 범위에 넣지 않음 |
+| 적 피격 dead-guard | 기존 goal의 Content 전달 `resume-content-dead-guard-candidate.json`, `enemy-hit-dead-guard` | 전달 관측만 보존, 직접 검증/제품 변경 미착수 |
+| 마감 뒤 복구와 검사 후보 | 메인 `msg_ac202aff9b99`·plan-scopes-draft.md의 `persistence-recovery-post-deadline`, 기존 범위 밖 절의 Q-1B/ADR-035·C1/C2(`msg_5322a941f836`)·Rules 도구 후속 | 기존 제외/보류와 다음 계획 경계 유지. 이번 목표에 자동 편입하지 않음 |
+| DB 가상 디스크 실행 전제 문서 | `persistence-db-vhd-prerequisite`, 메인 `msg_f061272f74cb` 및 위 사용자 원문. `C:\myVHDX.vhdx`→D:와 고정 SQL 경로, 해제/자동 마운트 미확인 구분 | 현재 goal에는 즉시 정정했다. 이 PR에 공용 실행 안내 변경이 없으므로 DEVELOPMENT/MSSQL 등 정본 한 줄 반영은 다음 계획 후보로만 기록 |
+| 가상 디스크 반복 준비 효율화 | `persistence-vhd-mount-convenience`, 질문 `msg_8739f507da55` 후 메인 `msg_9715b62aed0e`가 사용자 A 선택 전달 | 부팅 때 자동 마운트 선택. DB1단계 뒤 메인이 사용자와 별도 관리자 창에서 조율하며 GameDev는 실행하지 않음. 예약 작업 등록·동작 검증 완료는 미보고 |
+
+`persistence-vhd-mount-convenience` 결정 출처는 메인 `msg_9715b62aed0e`(Orca2026-10-05T09:58:26Z), 원문 `g2-postreview-check-delivery_31fec47b0c0a.json`이다. 메인 본문이 적은 사용자 제출은10:0xZ 무렵이며 서버 시각과 구분해 보존한다. 전달된 사용자 원문:
+
+> 「대시보드 결정 응답: 1) SQL 가상 디스크(D:) - 부팅 때 자동으로 붙일지 → A 부팅 때 자동 마운트」
+
+메인이 설명한 A는 **DB1단계가 끝난 뒤**, 별도 관리자 창에서 사용자가 시작 시 SYSTEM 권한으로 `Mount-DiskImage`를 수행하는 예약 작업 **하나**를 등록하는 안이다. 메인이 사용자와 OS 설정을 직접 조율하며 **GameDev는 실행하지 않는다**. SQL 서비스는 Manual을 유지하고1단계 transcript 창에 섞지 않는다. 이 결정/원문만 후보에 기록하며 현재 goal의 범위 확대나 새 작업 착수로 취급하지 않는다.
+
+## 실제 DB 1단계 사용자 승인과 실행 JSON
+
+- 메인 `msg_31fb076e492d`(2026-10-05T09:20:15Z)의 from_handle은 `term_072d2ee9-df16-43ce-b86c-122c9de316c0`다. 원문은 `.backups/verification/2026-10-04-persistence-integration/g2-postreview-check-delivery_1027b2f1eb1f.json`에 보존하고 전체 읽기 뒤 별도 호출에서 ack했다. 메인이 전달한 사용자 결정이며 이 pane의 직접 입력으로 격상하지 않는다.
+- 해당 사용자 원문은 「3) 실제 DB 1단계 - 시험 DB 생성·기본 스키마 설치를 지금 실행할지 → A 지금부터 20:00 KST까지 실행 승인 · 4) 실제 DB 1단계 - 끝난 뒤 SQL 서비스를 끌지 → A 1단계 끝나면 바로 끄기」다. 같은 원문의 PR182/183 병합 항목은 이 goal의 실행 권한이 아니다.
+- 승인 범위는 `g2-v4-approval-request.md` SHA256 `B20B994053096AE6902B91948D04D74E1AF0774C1C741BA2458A1A6E8F9DA0D3`의 고정1단계다. 사용자 YYH_DESKTOP\bass1가 같은 승격 Windows PowerShell5.1 Desktop 창에서 수행하며 종료는2026-10-05 20:00 KST/11:00Z다. Astra는 SQL·서비스·UAC·transcript·비밀을 실행하지 않았다.
+- 09:23:48.7493745Z에 별도 `g2-preparation-v4/approval-plan.execution.json`(1548 bytes)을 CreateNew로 작성했다. SHA256 `2D799C5CF038A9A657E42464B9198590D047A83896B3E58C615097152AD03DC6`. review 원본(1535 bytes) SHA256 `4728B4C3EA2B0061F507C1F442EDA23A06E0C3DA9EF817D2AB66593D14C2F128`은 바뀌지 않았다.
+- 변환은 0-based byte로 review[70,5] false→execution[70,4] true, review[273,4] null→execution[272,18]의 `"msg_31fb076e492d"` 두 값뿐이다. 바깥3구간 직접 bytes/hash 일치, 역치환 전체 bytes 일치, JSON 키·그 외 값 일치, 실제 파일 readback 일치를 확인했다. 방법/원시는 같은 근거 root의 `g2-execution-approval-transform.ps1`, `g2-execution-approval-byte-audit.json`, stdout/stderr/receipt, `g2-execution-approval-preflight.json`이다. 변환 직전 제품39·계획5의 hash 대조 불일치0이다.
+- 메인 `msg_064e2cdd5db7`(09:24:56Z)은 node로 파일 bytes를 직접 읽고 두 구간·바깥3구간·역치환·키 차이·첫3bytes·CRLF31개 일치를 확인했다고 보고했다. 위 SHA를 최종 execution SHA로 사용자에게 전달한다고 밝혔다. 메인의 직접 대조 원시를 Astra가 새로 실행했다고 주장하지 않는다.
+- 메인은 같은 메시지에서 D:를 USBSTOR SanDisk3.2Gen1/PnP Unknown으로 해석했으나 이는 **후속 `msg_f061272f74cb`에서 철회된 잘못된 장치 해석**이다. 현재 전제와 확인 경계는 위 가상 디스크 정정 절을 따른다.
+- 당시 `g2-stage1-main-guide.md` SHA256 `35FACDB6BA12F82985185B4903880452949A9A85D9CC19FA02F46BCDBDF0F4F0`에 정확한 원본 행·짧은 안내·다음 단계 전 확인을 작성해 메인 `msg_e42c97833884`로 전달했다. 장치 전제 정정 뒤에는 위 **v2 안내**를 사용한다. 실제 사용자 전달/실행은 아직 관측하지 않았다. B2/B3 선택문도 각각 한 입력이며 메인은 한 블록씩 전달한다. B2 원시 대조 뒤에만 A3를 진행한다.
+- 끝의 순서는 B3 출력·관측 기록→ServiceStop→Stop-Transcript 종료 블록이다. ServiceStop guard가 transcript-open을 요구하는 검증된 원본 순서를 유지한다.20:00 KST 이후 새 블록을 시작하지 않고 진행 명령은 강제 kill하지 않는다. 만료 시 남은 서비스/부분 상태는 보존해 메인에 보고한다.2단계·cleanup/DROP은 승인되지 않았다.
+- 실제 준수 연결은 `g2-execution-approval-context.md`의 사전 계획→byte audit·고정 블록 안내·본 승인 기록이다. 제품/테스트·원본 review/명령 문서·검증 판정문은 변경하지 않았고 commit/push도 하지 않았다.
+
+## G2 v4 정산과 실행 승인 전 기록
+
+- 신규 Opus `task_7ebbe4dba5bd` / `ctx_c48ba317b6ce`, 완료 `msg_a92e4ac2164b`(2026-10-05T08:49:07Z). 판정 원문은 `.backups/verification/2026-10-04-persistence-integration/g2-static-review-v4/verdict.md`, SHA256 `66EE97555DEBF62BC0C2D1F98B75543197E80DA0F1D6A4FC4AEF1FC90A389A4F`다. **1단계 정적 PASS**, 준비·단계·종료·후속 참조 총16블록을 독립 PS5.1 AST와 순수 합성 host 의미로 실사했다. 실제 ConsoleHost 붙여넣기·UAC·SQL의 성공을 뜻하지 않는다.
+- G2-07은 새 원인 최초 확정1회 뒤 해소됐다. 같은 결함 두 번째 실패나 3회 절차를 집계하지 않는다. 메인 `msg_3bdeb93efd84`(08:49:44Z)는 N5 - Start-Transcript 대입 줄의 122자(들여쓰기 제외)를 **이번 한 줄에 한정한 메인 결정으로 명시 비차단 수용**했다. 규칙 전체 면제가 아니다. 다음 execution-window.md 수정 때 splatting으로 120자 이내로 바꾸고 그때 실사에 포함한다. v5는 열지 않는다.
+- N6 - 실패 뒤 종료 블록 안내 차이, N7 - 단계 이름 검사 순서의 대소문자 문제는 비차단 후속이다. N8 - 상속 PSModulePath에 따른 Get-FileHash 미해석은 실제 RunAs 환경 미관측으로 판단 보류다. 해석 실패 시 Prepare에서 SQL·서비스 전에 중단하며 동일 창 재시도/환경 우회 없이 원시와 부분 파일을 보존한다. 승인 안건에 이 위험을 포함한다.
+- 부모가 판정·최종 맥락 전체와 독립 AST/합성 입력/실행 원시를 대조했다. 08:58:00.4160401Z 감사에서 고정86개·제품39개·보호 Unity3/S3/stash2 불변, 보고74항목(파일18+폴더56)을 풀어 실제356개와 일치했다. 명령56건 stdout/stderr/exit 원시 대조 불일치0이며 첫 hash 관측 실패1건은 보존됐다. heartbeat13건(bootstrap 포함) 최대142.302초, 루프 종료08:46:50Z. 절차 P1~P7 및 폴더 단위 보고·중간 inventory hash 한계는 별도 정산에 보존한다.
+- 정산·최종 감사는 같은 근거 root의 `g2-v4-review-settlement.md`, `g2-v4-parent-final-audit.json`이다. release는 external_terminal retained였고 정확 handle/incarnation·done/빈 prompt를 확인한 뒤 close(ptyKilled=true)했다. 08:56:35.6219831Z 전체 목록에서 검증자0, 해당 root tab에 Main/Astra2개가 보였다. 당시 관측으로만 기록하며 다른 세션의 종료를 추정하지 않는다. 검증자는 재사용하지 않는다.
+- 이 goal 갱신 전 동결본을 `g2-v4-goal-reviewed.md`에 byte 동일 보존했다(SHA256 `78C02A2227895D8B30B23BF30A87A3FA70EC0D358B276D63222CB2B27136F56C`). 동결86개의 불변 관측은 갱신 전 시점이며 이번 상태 기록으로 현재 goal hash가 달라지는 것을 숨기지 않는다. v4 계획·검증 원문·BACKLOG·제품은 변경하지 않았다.
+- **09:04Z 승인 전 정산 시점**의 메인 승인 자료는 `g2-v4-approval-request.md`였다. review SHA는 `4728B4C3EA2B0061F507C1F442EDA23A06E0C3DA9EF817D2AB66593D14C2F128`, false/null이었고 execution JSON은 없었다. 당시 제안 시간 창은2026-10-05 16:00–20:00 KST로 미승인이었다. 이후 실제 승인은 위 절에 구분해 기록했다.
+
+## 사용자 결정 반영 — 진척 표시와 Unity 연결
+
+출처는 메인 `msg_6667efa197d7`(2026-10-05T08:43:24Z), 보존 원문 `g2-v4-check-delivery_c98211c1ecc0.json`이다. 메인이 전달한 사용자 결정이며 이 세션의 사용자 직접 입력으로 격상하지 않는다.
+
+> 「대시보드 결정 응답: 1) Unity 시트 번갈아 쓰기 - 필요한 세션만 연결하는 방식으로 바꿀지 → A 필요한 세션만 켜기(opt-in) · 2) 목표 진척 자동 갱신 - 단계 완료를 어디서 읽을지 → A PR 자동 + goal.md 체크리스트」
+
+- goal의 단일 `진척 단계` 절을 상태의 원천으로 쓴다. 완료는 `[x]`, 진행은 `[>]` 최대1개, 나머지는 `[ ]`다. 승인·준비 상태를 실제 실행 실적으로 바꾸지 않는다.
+- 새 Claude 세션의 Unity 연결은 필요한 경우만 opt-in한다. GameDev가 연결이 필요하면 기동 전 메인에 단일 MCP 자리 예약을 요청하고 사용 종료 뒤 해제한다. 이번 G2는 Unity를 사용하지 않는다.
+- 메인은 전역 unity-mcp 제거/백업 및 외부 opt-in 설정 `C:/Users/bass1/.unity/claude-mcp.json`, 자신의 relay 종료를 보고했다. 이는 메인 보고이며 GameDev가 전역 설정을 변경하거나 독립 관측한 실적이 아니다. 실행 중 relay가 붙은 검증자를 종료하기 전 Unity Editor를 열지 않는 경계도 유지했다.
+
+## G2 v3 정산과 v4 보완
+
+- 신규 Opus task_64a8d09c4bd6 / ctx_81a59ed4872f, worker_done msg_33b9c6f24e4f의 내용 판정은 **NOT PASS**다. 원문 `.backups/verification/2026-10-04-persistence-integration/g2-static-review-v3/verdict.md`, SHA256 `43EC3ED1FC098984CB0E053090B1961CC8D539BD162956A446785AE3D807E1F6`. outcome=succeeded는 정적 실사 완료만 뜻한다. G2-02/06 해소, G2-07(줄별 제출 시 앞 오류 뒤 transcript flag/전역 적재가 독립 실행될 수 있음) 차단이다.
+- 메인 msg_495e251286b7(08:09:02Z)은 새 원인 G2-07 최초 확정1회, G2-02 확정2회에서 해소를 결정했다. 3회 절차는 이번에 적용하지 않는다. v4는 모든 사용자 붙여넣기 블록을 단일 문장·오류 중단·실제 결과에서만 성공 flag 설정 기준으로 점검하고, B2/B3도 자기 guard 직후 공통 정의를 다시 읽는다. N1 정책 문자열·N2 hash 조기검사·N3 제출 순서도 보완하며 N4는 과거 범위 밖으로 유지한다.
+- 부모는 판정/맥락 전체, 관련 계획과 AST·합성 host 의미의 스크립트/원시를 대조했다. 입력79개·제품39·보호 Unity3/S3/stash2 불변, evidence15개 보고/실제 일치다. 추가 scratchpad2개는 payload 경로 오기가 있어 원시 argv/실제 경로를 별도 대조했다. completion-inventory의 log/cap hash는 중간 스냅샷이며 부모 최종 감사와 구분했다. 원시 선보존 누락 head1회는 내용 판정과 분리해 기록했다.
+- 정산은 `g2-v3-review-settlement.md`, 실제 최종 근거는 `g2-v3-parent-final-audit.json`(같은 근거 root)이다. release 후 정확 handle/incarnation·done/빈 prompt를 확인해 close했고, 08:11:26.2319979Z 목록에서 해당 검증자0/root Main·Astra·dashboard3개를 확인했다. 재사용하지 않는다.
+- v4 입력은 같은 root의 `g2-preparation-v4/`이며 v3 당시 goal/BACKLOG 사본은 v4/v3-snapshots에 보존한다. 모든 명령 블록의 AST 원시를 새 Opus 계약에 포함한다. 제품/테스트를 바꾸거나 실제 SQL·서비스·UAC·transcript·비밀을 실행하지 않는다. v4 독립 판정 전 통과를 주장하지 않는다.
+
+## G2 v2 정산과 v3 보완
+
+- 신규 Opus `task_8f83c996bc89` / `ctx_8677ba8ba155`의 원문 `g2-static-review-v2/verdict.md`(이하 근거 root는 `.backups/verification/2026-10-04-persistence-integration/`), SHA256 `4E3DA45B3292E9775BABAA18595A25B4F5CE44CEE23E0BCB371E115DCE5C014D`. **G2 NOT PASS**이며 worker_done succeeded는 실사 완료다. G2-01/03/04/05 차단 해소, G2-02 잔여(실행자 경로·단계 식별/원시 불일치) 누적2회, G2-06(실행 직전 제품 소스 hash 대조 부재) 최초1회다. G2-02의 RunAs 작업 경로는 판단 보류였다.
+- 부모가 최종 판정·맥락 전체, AST/주장 원시·관측 스크립트·실제 계획을 대조했다. 고정64입력·제품39 불변, 실제 작성192개와 보고192개 일치, scratchpad 사본32개 hash 일치, 보호 Unity3파일/S3/stash2개 불변. 테스트/SQL/서비스/UAC는 미실행이다. 자세한 원시는 `g2-v2-parent-final-audit.json`, `g2-v2-parent-procedure-audit.json`, 정산은 `g2-v2-review-settlement.md`다.
+- 절차는 면제하지 않는다. 허용 밖 Temp 파일1개, 메모 뒤 HB8건+help1건 raw 누락, 실패한 append 명령의 화면 기록 한계를 원문대로 보존했다. Delivery3건 ack와 서버 HB14건 최대235초를 대조했다. 결과는 메인 `msg_e80d73288d29`, raw 누락 확인은 `msg_4b78ffbcaf93`로 보고했다.
+- 검증자를 release한 뒤 정확 handle/incarnation·done/빈 prompt를 확인해 close(ptyKilled=true)했다. **2026-10-05T07:23:10.1709389Z** root 목록에는 Main/Astra/dashboard3개만 있고 해당 검증자 pane0이다. 재사용하지 않는다.
+- v3의 `execution-window.md`는 명시 Set-Location·같은 PID·transcript·단계 식별/제품39hash·승인 재확인을, `execution-plan.md`/`observations.md`는 단계별 전경 호출과 종료 기록을 연결한다. 새 제품/helper/테스트 파일을 구현하지 않는다. v1/v2 자료는 유지하고 당시 goal/BACKLOG 사본을 `g2-preparation-v3/v2-snapshots/`에 보존했다. 새 Opus의 독립 판정 전 통과를 주장하지 않는다.
+- 메인 `msg_65740b4635b6`의 CombatSmoke_ZeroLag_Succeeds timeout 두 사례는 동결 해제 후 BACKLOG의 `combat-smoke-timeout-investigation`으로 기록했다. 원시 직접 조사·서버 테스트·G2 범위 확대는 하지 않았다. 조사 착수는 G2·첫 PR 뒤 사용자와 정한다.
+
+## G2 최초 판정과 v2 재실사
+
+- 최초 신규 Opus `task_3fdc5af4b691` / `ctx_1cb1b01ce1e9`의 판정은 **G2 NOT PASS**다. 원문 `.backups/verification/2026-10-04-persistence-integration/g2-static-review/verdict.md`, SHA256 `C4FA6F24659EAD6D970FA55A0D83BCDC42BFE5DF5376B4450BF61B869CEA8196`. G2-01 승인 순환, G2-02 정확 승격 셸, G2-04 접속 요구 대응, G2-05 실제 준수 표가 차단이며 G2-03 BACKLOG 배치는 후속이다. 같은 계약/번호 최초 확정 실패 각 1회로 기록하고 절차 사실과 중복 집계하지 않는다.
+- 메인 결정 `msg_1614ee341e94`(2026-10-05T06:26:18Z): review SHA `4728B4C3EA2B0061F507C1F442EDA23A06E0C3DA9EF817D2AB66593D14C2F128`와 두 토큰만 바꾸는 규칙을 사용자 승인 대상으로 한다. G2는 위 메인 전달 msg ID이고 실제 사용자 승인 전에는 false/null을 유지한다. 동일 승격 Windows PowerShell5.1 Desktop에서 A1→A2→B2 SELECT→메인 원시 대조→A3→B3 SELECT로 제안한다. 이 결정은 실제 실행 승인이 아니다.
+- v2 입력은 `.backups/verification/2026-10-04-persistence-integration/g2-preparation-v2/`의 `execution-plan.md`, `observations.md`, `context.md`, hash manifest와 계약이다. 신규 판정 위치는 `g2-static-review-v2/`다. v1 원본은 유지하며 당시 goal/BACKLOG 사본은 v2/v1-snapshots에 보존했다. goal의 최초 접속 요구 문장은 유지하고 단계별 표로 실제 기록과 미준비를 구분한다.
+- v1 정산 `.backups/verification/2026-10-04-persistence-integration/g2-review-settlement.md`: 고정55입력·제품39개 불변, 검증자 pane release/close 및 2026-10-05T06:27:13.0071073Z 목록 소멸 확인. worker_done의 succeeded는 실사 작업 완료이며 G2 PASS가 아니다. 재사용하지 않는다.
+- 절차는 별도 기록한다. bootstrap 원시 요구 충돌은 메인 `msg_71aba25a9765`로 작업자 실패에서 제외됐으나 이후 CLI 원시5건 누락은 면제하지 않는다. scratchpad3파일/경로 오기/Delivery 미ack 반복은 실제 근거대로 보존한다. 메인 `msg_f1e4b3c965ca`(06:27:11Z)는 scratchpad를 Claude Code 기본 지시와 부모 계약 충돌로 설명했고, 다음 계약에는 자기 scratchpad 허용·근거 사본/hash 및 읽은 Delivery ack를 명시한다. 부모가 backend 기본 지시를 독립 관측했다고 하지 않는다.
+
+
+## 2026-10-05 기능 수용과 G2 준비
+
+- 메인 전달 사용자 원문: 「1) TESTDB·INSTALL 재검증 - 원인 조사 뒤: 기능 통과를 받고 실제 DB 단계로 갈지 → A 기능 수용, 절차 원인은 자동화로 따로」. 출처는 대시보드 결정 응답(메인 pane Enter, 메인 표기15:0x KST)이며 이 세션의 사용자 직접 입력으로 격상하지 않는다.
+- 직전 보류 `msg_e53d8d8cd185` 뒤 내려진 결정이다. 신규 task_e82ec9e41a7a의 기능 결과만 수용하며 V-01·P-03·P-04·filesModified 불일치와 앞선 Sol 절차 이탈은 아래 개별 기록/집계를 유지한다. 과거 두 검증을 소급 수용하거나 절차 전체 PASS로 바꾸지 않는다.
+- 메인의 Fable 내부 읽기 전용 조사 보고는 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-05/gamedev-failure-investigation.md`다. 메인은 제품 결함7건이 PowerShell 환경 도구에 있고5→2→1→0으로 수렴했으며 check/heartbeat 규칙과 긴 실행의 도구 형태 불일치가 반복 절차 실패의 주원인이라고 전달했다. 이는 메인 조사 요약이며 이 세션의 전수 실사·독립 검증·Orca 실행 증거가 아니다.
+- 실행 준비/정적 실사 근거는 `.backups/verification/2026-10-04-persistence-integration/g2-preparation/`와 후속 `g2-static-review/`에 둔다. 기존 승인 초안·verification 원문은 덮어쓰거나 지우거나 옮기지 않는다. 검토 계획은 ExecutionApproved=false/G2=null이며 실제 lifecycle manifest를 사전 합성하지 않는다. 최초 생성 전 DB/principal 존재와 엔진/자원 identity는 미관측으로 남긴다.
+- 승인 대상·한 번 수명·경로는 아래 G1 그대로다. 현재 D:는 OS 목록에 없고 `MSSQL$SQLEXPRESS`는 Stopped/Manual이다(이번 읽기 전용 원시는 `g2-preparation/environment-observation.json`). 사용자에게 D: 연결과 서비스 시작/종료 선택을 메인이 안내하며 이 관측은 DB 접속·서비스 조작 승인이 아니다.
+- 신규 계약에서는 300초를 넘길 수 있는 명령을 background로 실행하고 대기 중 heartbeat를 보내며, check 결과를 읽은 뒤 별도 도구 호출로 편집한다. 새로운 규칙/helper를 만들지 않으며 자동화는 Rules의 후속 후보 범위다.
+- GameDev 후속 후보 `powershell-dotnet-boundary-checklist`, `database-allowlist-drift-test`는 [BACKLOG](../../../00_Document/operations/BACKLOG.md)에 출처와 함께 후보로만 기록한다. 이번 G2 제품/테스트 범위로 확대하지 않는다.
+- 이번 재개는 Orca1.4.220, 기존 Run `run_6ba3f644755b` generation2에 재연결했다.1.4.217 임시 ask/reply 예외는 종료했으며1.4.220 help의 subject 옵션 부재를 직접 확인한 뒤 공식 blocking 질문의 한정 예외/identity 대조만 적용한다. 준비·실사 중 commit/push는 하지 않는다.
+- 메인 단계 판단 `msg_5d2ef0b0289f`(2026-10-05T06:01:02Z): G2 1단계는 최초 연결→Create→Baseline001과 도중 실패/중단 시 기존 cleanup 소스·hash·호출·실제 manifest 입력·보존 조건의 정적 실사다. Complete/U-01/최종 cleanup 실행은 fixture와 실제 manifest·settlement가 생긴 뒤2단계 실사·정확 hash 확정으로 분리하며 **사용자 실행 승인은 단계마다** 받는다. G2 1단계가 정상/실패 cleanup 실행까지 포괄 승인하는 것은 아니다.
 
 ## 현재 사용자 결정 대조표 — TESTDB-01과 최종 재검증
 
@@ -254,6 +467,10 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
 
 ## Content와의 기술 경계
 
+- Content `msg_1cb1f2ecda60`(12:18:47Z)은 HEAD8d1e885에서 Sol10파일 +145/-15 쓰기 종료·정산/종료와 자체 PlayMode5/5·EditMode371/400(29실패)을 보고했다. 이는 독립 PASS나 GameDev 직접 검증이 아니다. GameDev는 `msg_d7b3af49558b`로 현재/예정7777·Unity 사용없음, Content 실행 직전 Windows/WSL 소유 gate·자기프로세스 정산 조건을 회신했다. Content `msg_bfe8bccabca0`(12:31:31Z)은 신규 Opus task_b0289b7469b8/ctx_142e1d49d252, 먼저 MCP없는batch와 종료 확인 뒤 사용자Editor준비/연결승인, 최종29실패 독립분류·head·7777/Unity반납 후속 공유를 통지했다. 아직 후속 결과를 수신/검증하지 않았다.
+- Content `msg_c3ca18543e25`(11:48:02Z)는 신규 Sol `task_bddf83472162`/`ctx_f0a2608585b6` 시작을 통지했다. 기존 타이머3파일·LocalPlayerInput에 InventoryPanelView/InventoryPanel·client 영역 문서 관련절, 필요 시 InventoryTimeoutScheduler/GameplayPointerInput helper가 후보이며 실제 선택·쓰기 종료/head는 후속 통지 대기다. timeout/지연송신 간섭·UI 클릭 공격전파·TMP 가독성 범위에서 송신순서/세대·epoch/취소·종료·유한timer, UI 밖 마우스·UI 위 포인터의 키보드 공격·이동/스킬·서버cooldown, v17 IDs35~38·자산/바인딩 보존을 전달받았다. GameDev의 직접 수행/검증 실적으로 인수하지 않는다.
+- Content `msg_0f7d087d1f23`의 PR2 결함2 후속 후보 LocalPlayerInput.cs 공격 입력·UI 포인터 경계 및 같은 Input 폴더 helper에는 GameDev 현재/예정 쓰기가 없다. `msg_da0c9a9e5f61`(`g2-content-input-ownership-delivered.json`)로 소유 충돌 없음을 회신하고 최종 파일/설계·쓰기 종료/head를 요청했다. 기존 바인딩·UI 밖/키보드 공격·이동/스킬·서버 cooldown·v17 IDs35~38 보존 조건의 범위 안 조율이며 일반 입력 재설계·자산 변경으로 넓히지 않는다. 메인 승인과 실제 중복 송신 재현은 Content 전달 관측으로 구분한다. 첫 송신의 `run_not_found`는 `g2-content-input-ownership-reply.json`에 보존했고 현재 terminal identity 확인 뒤 명시 `--run` 없이 송신해 같은 Content run으로 라우팅된 성공 receipt를 얻었다.
+- Content `msg_9768f21b2aa3`의 PR2 타이머 후속 후보 MainThreadDispatcher.cs·InventoryRequestController.cs·UnityClientSession.cs 및 지연 송신 경계에는 GameDev 현재/예정 쓰기가 없다. `msg_ab490f5d317b`로 기존 승인 범위의 순차 수정 소유 충돌 없음을 회신하고 최종 대상·타이머 계약·쓰기 종료/head 통지를 요청했다. 보고된 회귀 수치/원시는 GameDev 직접 검증 실적이 아니다.
 - Content `msg_47ffacf96779`와 GameDev 회신 `msg_58eaccfd4a15`의 합의: 기존 PDL 1~34의 순서·ID를 보존하고 Content PR1은 C_InventoryRequest / S_InventorySnapshot / C_ItemUse / S_ItemUseResult를 35~38로 append한다. Content PR1 병합 뒤 GameDev는 39부터 사용한다. 패킷 수가 바뀌면 양쪽 goal의 범위를 다시 대조한다.
 - PDL·생성물·ProtocolVersion·등록의 현재 단일 writer는 Content다. GameDev는 이번 DB 도구 단계에 게임 파일을 쓰지 않는다. Content checkout에서 GameSession·GameWorld·HandlerRegistry의 최소 등록·처치 콜백·세션 정리 연결을 순차 작성하도록 허용했으며 예정 심볼·변경 경계와 쓰기 종료/head를 요청했다. 기존 quest/party 순서·상태 소유는 보존한다.
 - 저장 인터페이스는 GameDev 소유다. 새 DTO/API는 아직 미확정이므로 Content는 임의 확장 hook 대신 메모리 상태의 소유/읽기/변경 경계를 정리하고 다음 게임 저장 고리에서 조율한다. Content 현재 Run `run_add8d9f825f4`, 우리 회신은 `run:run_6ba3f644755b`다. 이전 `run:run_495ed90b4d12`는 크래시 전 역사 주소다. 이 합의는 게임 저장 구현 착수 승인이 아니다.
