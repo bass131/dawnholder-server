@@ -182,3 +182,6 @@ logs/
 # ─────────────────────────────────────────────
 99_Tools/BgmComposer/out/
 99_Tools/BgmComposer/soundfont/
+
+# Python bytecode beside the module boundary checker.
+/99_Tools/ModuleBoundaries/__pycache__/

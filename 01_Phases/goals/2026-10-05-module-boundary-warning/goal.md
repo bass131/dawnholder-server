@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **#4 형제 폴더 분리의 신규 Opus 독립 검증이 통과했다. 기본 고정 테스트1건·독립26건·실행계약25건과 R-2 같은 명령 보완을 확인했다. 이번 이동에서 발견한 #5 Python 캐시 ignore 누락(낮음·비차단)은 신규 Sol/Opus로 좁게 보완한다. #1·#2·#3·#4는 해소됐고 #ENV-1은 하네스 원인이다. PR 미발행, 실제 PR CI/경고 표시/artifact/format-check는 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **#4 형제 폴더 분리의 신규 Opus 독립 검증이 통과했다. 기본 고정 테스트1건·독립26건·실행계약25건과 R-2 같은 명령 보완을 확인했다. 이번 이동에서 발견한 #5 Python 캐시 ignore 누락(낮음·비차단)은 신규 Sol 수리·정산을 마쳤고 신규 Opus의 한정 독립 검증을 남겼다. #1·#2·#3·#4는 해소됐고 #ENV-1은 하네스 원인이다. PR 미발행, 실제 PR CI/경고 표시/artifact/format-check는 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -216,3 +216,12 @@ R-2의 이전 iter-g 단정 원본 Edit/성공 응답은 `iter-g-source-check/so
 - release 뒤 같은 incarnation의 idle/완료 화면과 빈 prompt를 확인해 close했다. **2026-10-05T07:06:12Z 실제 목록의 Architecture 작업자0**, 보고 직전 재확인도0이다. 메인 `msg_5d5f4f2a4812`로 원문/위험/다음 단계를 전달했다. #4 확정 실패1회 이력은 유지한다.
 
 새 #5는 이동한 Python 모듈에 옛 `Architecture/.gitignore`의 `__pycache__/`가 적용되지 않아 `-B` 없는 실제 import 뒤 cache가 Git 미추적으로 나타나는 문제다. 낮음·비차단이며 공개/CI 기본 명령에는 영향이 없지만 이번 이동이 만든 보존 누락이므로 현재 goal의 범위 내 수정으로 처리한다. 설계는 루트 `.gitignore`에 `/99_Tools/ModuleBoundaries/__pycache__/`만 한정 추가하는 것이다. 전역 ignore 확대나 새 실행 도구/정책을 넣지 않고 신규 Sol max 구현·신규 Opus 독립 테스트를 사용한다. 제품 파일 manifest에 새 파일을 더하거나 이미 통과한 단정을 약화하지 않는다. PR/실제 CI와 개별 병합 승인은 이후이며 O-R1~4의 무관한 정리는 하지 않는다.
+### 6 - 캐시 ignore 수리 정산과 독립 검증 입력
+
+신규 Sol Task `task_89c1732b9374`/Dispatch `ctx_46a3d7beba05`가 `msg_cb764990f0ed`(2026-10-05T07:33:41Z)로 succeeded·쓰기 종료를 보고했다. 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 GPT-6.1-Sol max, backend unknown이며 최초 attach는 ready/input_accepted/turnStart observed였다. 보고 전체 `.backups/verification/2026-10-05-module-boundary-warning/cache-ignore/report.md` SHA256 `0B9BA63EAB59A24FEE0C1D35A134C15FEA0B1EBAA0F35FBE8C67439999F4BD84`와 context·실제 diff·원시 표본을 Astra가 읽었다.
+
+제품 변경은 루트 `.gitignore` 끝의 빈 줄·목적 주석·`/99_Tools/ModuleBoundaries/__pycache__/` 한 규칙으로 3줄이다. 기존8933bytes 전체 prefix와 CRLF를 보존했으며 보호289입력 hash 차이0, 운영 변경은 이 파일 하나였다(`cache-ignore-astra-source-check.json`). 최초 편집은 두 파일 출력 경계 혼동으로 없는 기준점을 찾다 쓰기 전에 중단됐고, 원시 `edit-attempt-1.json`을 보존한 뒤 정상 위치에 추가했다. 제품 실패나 성공 실적으로 바꾸지 않는다.
+
+자기 Git fixture에서 실제 -B 없는 import로 pyc를 생성한 동일 probe는 15관측 중13통과·2실패/exit1→15통과·0실패/exit0이었다. raw `cache-ignore/work/{before,after}`에 실제 argv/env/exit/time·import stdout·Git status를 남겼다. 새 cache만 제외로 바뀌고 옛 cache 제외와 정상 .py·다른 경로 cache 비제외는 유지했다. 이는 전용 probe의 관측 수이며 저장소 suite 실행 수가 아니다. SDK/제품/서버/DB/Unity·실제 CI는 실행하지 않았다.
+
+release·같은 incarnation/idle/완료 화면을 확인하고 close했다. **2026-10-05T07:35:17Z 실제 Architecture 목록은 Astra만, 작업자0**이다. 다음 신규 Opus는 이 한정 diff와 보고/raw를 실사하고 실제 Git fixture 회귀·기본 opt-out·frozen 단일 보존을 확인한다. 앞선 SDK/정책26·실행25/R2 전체를 재실행한 것으로 집계하지 않는다. PR 발행/CI·경고 표시/artifact/format-check·개별 병합 승인은 남아 있다.
