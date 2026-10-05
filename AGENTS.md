@@ -42,7 +42,7 @@
 
 <a id="core-tag-transition"></a>
 
-- **Core 명칭과 태그 전환:** GameDev는 Core의 이전 이름이다. [운영 후속 정본화의 PR2](01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 세션과 새 계약부터 `[Core Astra]`·`[Core Sol]`·`[Core 검증자]`를 쓴다. PR2 병합 전에 연 GameDev 세션과 진행 중인 계약은 그 세션이 끝날 때까지 `[GameDev …]`를 유지한다. 전환기 수신 측은 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 진행 중인 영속화 통합 goal은 중간 변경하지 않고 그 goal의 R-8로 새 Astra를 열 때부터 Core 태그를 쓴다. 과거 기록과 BACKLOG의 GameDev 담당·원천 표기는 당시 이름으로 해석한다.
+- **Core 명칭과 태그 전환:** GameDev는 Core의 이전 이름이다. [운영 후속 정본화의 PR2](01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 세션과 새 계약부터 `[Core Astra]`·`[Core Sol]`·`[Core 검증자]`를 쓴다. PR2 병합 전에 연 GameDev 세션과 진행 중인 계약은 그 세션이 끝날 때까지 `[GameDev …]`를 유지한다. 전환기 수신 측은 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 진행 중인 영속화 통합 goal에는 중간 변경을 요구하지 않는다. 그 goal의 R-8로 새 Astra를 열 때부터 Core 태그를 쓴다. 과거 기록과 BACKLOG의 GameDev 담당·원천 표기는 당시 이름으로 해석한다.
 
 - 현재 `from_handle`·Task·Dispatch가 모두 일치하는 내용 없는 heartbeat만 태그 없이 수신하며 교정 메시지를 보내지 않는다. 내용 있는 heartbeat와 일반 지시·보고·질문·완료는 태그가 필수다. 빈 값 경계와 수신 helper, 공식 blocking ask의 버전 한정 subject 예외는 [수신 정본](00_Document/operations/ORCA.md#dispatch-message-policy)과 R-3을 따른다.
 - 사용자 승인으로 [R-1](00_Document/operations/ORCA.md#r1-management-placement)에 따라 연 추가 파트는 `[<파트> Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 태그만으로 파트 생성이나 권한이 생기지 않는다.

@@ -134,7 +134,7 @@ Astra→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내�
 
 표준은 담당 Astra가 자기 pane 아래 새 작업자를 직접 기동하는 것이다. 메인 대리 기동은 기동 실패 때 요청하는 대안이다. 승인된 목표·공간·세션 범위 안에서 다음 순서로 진행한다.
 
-**Unity MCP opt-in:** Unity MCP는 필요한 세션만 켠다. 시트는 1개이므로 사용 전 메인에게 요청하고, 메인이 보유 세션을 현황판에 적은 뒤 기동한다. 필요한 Claude 세션에만 아래 최초 실행 명령에 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 설정은 저장소 밖 파일이며 전역 등록이 아니다. 사용자 결정과 설정 경로의 출처는 [Unity opt-in 적용 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#pr183-제출-뒤-적용한-사용자-결정)이다.
+**Unity MCP opt-in:** Unity MCP는 필요한 세션만 켠다. 시트는 1개이므로 사용 전 메인에게 요청하고, 메인이 보유 세션을 현황판에 적은 뒤 기동한다. 그 세션이 닫히면 시트가 풀린다. 필요한 Claude 세션에만 아래 최초 실행 명령에 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 설정은 저장소 밖 파일이며 전역 등록이 아니다. 사용자 결정과 설정 경로의 출처는 [Unity opt-in 적용 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#pr183-제출-뒤-적용한-사용자-결정)이다.
 
 메인이 보고한 연결 관측은 다음과 같다. 시트가 없으면 첫 호출 뒤 「Connection revoked」가 났고, 시트를 활성화한 뒤에도 Unity의 **Edit > Project Settings > AI > Unity MCP**에서 연결을 다시 승인해야 풀렸다. 새 MCP 연결마다 다시 승인을 물을 수 있다. 이 관측과 전역 `unity-mcp` 등록 제거는 메인의 보고이며 Rules의 Unity 실행·실증이 아니다([후속 관측 출처](../../01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정)).
 
