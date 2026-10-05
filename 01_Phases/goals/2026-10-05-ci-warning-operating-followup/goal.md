@@ -2,12 +2,36 @@
 
 ## 재개 지점
 
-Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. 최신 `origin/main` `cf9f69571e6c5833d79c56f5467cc55c62b0859c`에서 `ci/npm-engine-warning-20261005`를 만들었다. **PR1의 첫 검증은 절차 사고로 보류했고, 같은 HEAD의 신규 Opus 강 재검증을 통과한 뒤 PR188을 만들었다.** 현재 PR188 head는 main/CURRENT 통합 뒤 `68e7ba204289b57f83369b2df2c333aa5e3fe99f`다. 동일 제품 입력의 독립 판정을 유지하는 메인 판단과 제품 blob 근거는 아래 통합 기록에 있다. 새 head의 4개 CI가 모두 성공했고 사용자 병합 승인도 전달됐다. 병합 명령은 권한 확인 창에 막혀 아침에 다시 실행한다(아래 「PR188 병합 대기와 밤사이 진행」). 메인의 밤사이 지시에 따라 PR2는 PR188 위에 쌓은 `docs/operating-followup-core-20261006` branch에서 시작했다. PR2 PR 생성도 아침이다. 아래 제출 후 기록은 로컬 갱신으로 현재 PR188 head에도 포함되지 않으며 PR2 메타데이터와 신규 문서 실사에 연결한다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
+Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. **세션은 2026-10-05T22:35Z 사용자 지시로 멈췄다. 다음 세션의 리드는 바로 아래 「세션 마무리 상태」만 읽고 이어간다.** 그 아래 하위 절은 시각순 진행 기록이며, 그 안의 「아침」은 「다음 세션」으로 읽는다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - 근거 폴더 E: `.backups/verification/2026-10-05-ci-warning-operating-followup/`(Git 제외).
 - Astra 사전 메모: [astra-context.md](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/astra-context.md). 메인 범위 원문: [main-scope-confirmation.json](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/main-scope-confirmation.json).
-- 현재 Run `run_993867656376`, 회신 주소 `run:run_993867656376`. 이전 목표의 Run·Task·Dispatch는 재사용하지 않는다.
+- 이 세션의 Run은 `run_993867656376`였다. 다음 리드는 새 handle·새 Run 연결로 시작하며, 이전 Run·Task·Dispatch·handle을 실행 권한으로 쓰지 않는다.
+
+### 세션 마무리 상태 — 2026-10-05T22:35Z (다음 세션 시작점)
+
+메인 `msg_839b59777aea`(22:33:57Z)가 전달한 사용자 원문: 「일단 나중에 더 진행해보자, 현재 멈춘 기준으로 각 세션들 재개포인트 잡아주고 전부 마무리하자 / 나중에 새로운 세션에서 이어서 하지 뭐」. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다.
+
+- **Git**: branch `docs/operating-followup-core-20261006`, 이 재개 기록을 담은 commit이 HEAD다. 직전 push head는 `a488b1bf6bf35d11aa2f0c62ef5f0e96e74c4b12`다. 다음 세션은 `git rev-parse HEAD @{u}`와 `git status`로 먼저 확인한다.
+- **PR188 - npm engines 경고 노출**: OPEN, head `68e7ba204289b57f83369b2df2c333aa5e3fe99f`, mergeStateStatus CLEAN, 미병합(22:34Z `gh pr view`). 그 head의 CI 4개는 성공했다. 사용자 병합 승인은 이 정확한 head로 전달됐고(`msg_a82fbd4155e1`), 병합 명령만 확인 창에 막혔다.
+- **PR2 - 운영 후속 결정과 Core 명칭 정본화**: PR 미생성, 위 branch에 push만 했다. 문서 실사 통과(c1299550), 보완 뒤 좁힌 재실사 통과(7bff758). 재실사 뒤 goal 기록 커밋(a488b1b와 이 재개 기록)은 재판정 전이다. 원격 CI는 PR이 없어 돌지 않았고, 로컬 대응 검사만 했다([E/pr2-local-ci/summary.md](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/pr2-local-ci/summary.md)).
+- **사용자 결정 대기**: 현황판 결정 목록에 Rules 항목은 없다(22:34Z board.json 조회). 사용자 손이 필요한 일은 셋이다. PR188 병합 확인 창, PR2 생성 확인 창, PR2 개별 병합 승인(아래 재실사·R-2 뒤 새 요청)이다.
+- **살아 있는 작업자**: 0. rules-active 터미널은 이 리드 하나였고 메인이 닫는다.
+
+다음 세션 순서(메인 `msg_455215cd0e21`·`msg_839b59777aea`):
+
+1. PR188 병합 확인: 이미 병합됐는지 `gh pr view 188`로 본다. 아니면 메인 신호 뒤 head·CLEAN을 fresh로 확인하고 원시를 저장한 뒤 `gh pr merge 188 --merge --match-head-commit 68e7ba204289b57f83369b2df2c333aa5e3fe99f`를 실행한다. 사용자가 확인 창에서 직접 확인한다. head가 바뀌었으면 이 승인은 쓰지 않는다. 자동 병합·branch 삭제는 하지 않는다.
+2. 최신 main을 PR2 branch에 merge하고 push한다. CURRENT 인접 줄이 충돌하면 다른 파트 줄을 보존한다.
+3. PR2 생성: [E/pr2-create.md](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/pr2-create.md)의 base main·title·명령과 본문 [E/pr2-body.md](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/pr2-body.md)를 쓴다. 본문의 head 문장을 새 head로 고친 뒤 실행하고, 사용자가 확인 창에서 직접 확인한다. 생성 뒤 진척 단계 「운영 문서 PR 병합」을 「PR### 병합」으로 바꾼다.
+4. PR2의 정확한 head로 원격 CI 4개를 받고 원시를 저장한다.
+5. 7bff758 이후 delta만 보는 신규 Opus 좁힌 재실사 1회. 그 결과는 goal에 쓰지 않고 E와 승인 묶음으로만 전달한다.
+6. 메인 R-2 → 정확한 head의 사용자 개별 병합 승인 → 병합.
+7. 결과 기록 → Gardener → 메인 종료 점검 → R-8. 다음 goal은 자동 착수하지 않는다.
+
+적용 중인 메인 결정: `msg_251c879ef46a`(범위·Core 전환), `msg_b9073b3b0464`·`msg_2d509db3b54b`(PR188 위에 쌓기, PR 생성·병합은 사용자 확인 창, 우회 금지), `msg_a82fbd4155e1`(PR188 병합 승인 전달), `msg_0f630e567b1d`(PR2 보완 A와 기본값), `msg_455215cd0e21`(다음 세션 좁힌 재실사, 결과는 goal에 쓰지 않음, N1·N2 기본값), `msg_20663b7c7598`(우편함 대기 `--types` 8개), `msg_9a751493f4f8`·`msg_1076ae16562f`(검증자 쓰기 경계), `msg_839b59777aea`(세션 마무리). 원문은 E의 해당 delivery JSON에 있다.
+
+다음 리드가 알아 둘 도구 사실: `gh pr create`·`gh pr merge`는 사용자 설정의 확인 창 대상이며 우회하지 않는다. Sol은 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 검증자는 `claude --model claude-opus-5-5`로 리드 pane에서 split한다. 로컬 CodeRules 회귀는 `CODE_RULES_PSSA_MANIFEST`(E/pr2-local-ci/code-rules-tests-2/command.txt의 analyzer 경로)와 `CODE_RULES_WSL_DISTRIBUTION=Ubuntu`가 있어야 한다.
 
 ### 리드 교체 인계 — 2026-10-05T14:27:56Z
 
@@ -103,6 +127,15 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 - 재실사 비차단 관찰 처분(Astra): N2(진척 단계의 계획 번호 PR1·PR2)는 끝난 단계 이름에서 계획 번호를 빼고, 생성 전 PR 단계를 「운영 문서 PR 병합」으로 두었다. 현황판이 `PRd+`를 GitHub 번호로 읽어 다른 PR(#1·#2)을 가리킬 위험을 피하려는 것이며 정본 규칙이 아니다. PR을 만들면 실제 번호로 바꾼다. N3에 맞춰 15자 이름 두 개를 14자 이하로 줄였다. N4는 「요구사항 원천과 적용 결정」의 요약을 원천 표현으로 맞췄다. N5는 정산 근거 파일 표기를 고쳤다. N1은 그 절에 원문 줄을 보존했고, 정본 링크 변경은 다음 계획 후보로 둔다. N6은 heartbeat 후보에 넣는다. 이 정정은 재실사 뒤 Astra 기록 변경이며 승인 묶음에 diff로 공개한다.
 - 재실사 검증자 정산: worker-release(`--dispatch ctx_26e0da1ad937`) `retained`/external_terminal/none. `tui-idle` 대기 원시(E/review-pr2-2-before-close-wait.json)를 저장하고, 같은 incarnation `58fa433c…`(before-close-list)의 최종 대화·빈 prompt(before-close)를 확인한 뒤 close(`ptyKilled=true`)했다. 직후 rules-active 목록은 이 리드 하나다(after-close-list). 검증자 heartbeat는 10회, 최장 간격 약 2분 49초였다.
 - Orca 관찰: `--types`에서 heartbeat를 빼도 Orca가 heartbeat마다 이 리드 터미널에 「You have 1 orchestration message」 알림을 넣어 Claude 리드는 매번 깨어났다(17:30Z~17:40Z 6회). 쌓인 heartbeat 6건은 worker-release 뒤 `--peek`에서 0건이 됐다. 메시지 ID는 이 리드의 peek 출력에만 있고 원시 파일로 저장하지 않았다.
+- 체크포인트 묶음 `msg_827c103e2a0c`(17:44Z, E/pr2-checkpoint-bundle.md)를 메인에 보내고, 빈 prompt를 확인한 뒤 터미널 안내를 보냈다. 지금 필요한 사용자 결정은 없고, N1·N2는 기본값으로 진행했다고 알렸다. 아침 순서는 PR188 병합 → 최신 main merge → PR 생성이다.
+- 메인 `msg_455215cd0e21`(17:45:16Z, E/main-pr2-checkpoint-reply-delivery.json, 메인 운영 판단): R-2 대조 끝(원격 head a488b1b, 두 SHA256, 재실사 뒤 goal diff 32/9 일치). 결정은 다섯이다.
+  1. 재실사 뒤 goal 변경 a488b1b는 재판정이 없다. 아침에 PR188 병합과 최신 main merge를 마친 head에 대해 7bff758 이후 delta만 보는 신규 Opus 좁힌 재실사를 한 번 연다. PR 생성과 CI는 그 전에 해도 된다. 병합 승인 요청은 그 재실사 통과 뒤다.
+  2. 그 재실사 결과는 goal에 다시 쓰지 않고 E와 승인 묶음으로만 전달한다. 기록이 새 미검토 delta를 만드는 반복을 끊기 위해서다.
+  3. N1·N2 기본값을 받는다.
+  4. 재실사 전 push는 첫 발생 절차 이탈로 기록한다. 외부 영향이 branch 갱신뿐이라 다른 조치는 없다. `--types` 이탈은 고쳤으니 기록만 둔다.
+  5. Orca 터미널 알림이 heartbeat마다 Claude 리드를 깨우는 관찰은 다음 계획 후보로 둔다.
+- 리드 절차 이탈(첫 발생, 메인 결정 4): 메인 순서 「재실사 → push」와 달리 재실사 전에 push했다(위 87c3a13·7bff758 push 줄). 외부 영향은 branch 갱신뿐이다.
+- 세션 마무리: 메인 `msg_839b59777aea`(22:33:57Z)로 이 세션을 멈췄다. 재개 지점은 위 「세션 마무리 상태」다. 새 Sol·검증자·Gardener는 띄우지 않았다.
 
 ## 진척 단계
 
