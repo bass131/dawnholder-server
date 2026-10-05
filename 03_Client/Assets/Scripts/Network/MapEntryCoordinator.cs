@@ -25,6 +25,9 @@ namespace Dawnholder.Client.Network
             _finishBindings = finishBindings;
         }
 
+        // Completion observers see Ready, after HP and roster binding have finished.
+        public event Action<MapEntryCoordinator> Ready;
+
         public MapEntryState State { get; private set; }
         public long Epoch { get; private set; }
         public byte MapId { get; private set; }
@@ -111,7 +114,11 @@ namespace Dawnholder.Client.Network
                         SpawnApplied = RequiresPlayer;
                         if (HasHp) _applyHp(CurrentHp, MaxHp);
                         if (IsCurrent(epoch)) _finishBindings?.Invoke(this);
-                        if (IsCurrent(epoch)) State = MapEntryState.Ready;
+                        if (IsCurrent(epoch))
+                        {
+                            State = MapEntryState.Ready;
+                            Ready?.Invoke(this);
+                        }
                     }
                     catch (Exception error) { Fail(epoch, error); }
                     if (Epoch == epoch) break;

@@ -75,6 +75,9 @@ namespace Dawnholder.Client.Network
                 catch (Exception ex) { Debug.LogException(ex); }
             }
 
+            // Response deadlines have cancellable owners and never enter the simulated-send FIFO.
+            InventoryTimeoutScheduler.DrainDue(Time.realtimeSinceStartupAsDouble);
+
             // 지연 큐 drain — 헤드가 due 됐을 때만 처리. FIFO + 동일 delay 가정이라 헤드만 보면 됨.
             float now = Time.realtimeSinceStartup;
             while (true)

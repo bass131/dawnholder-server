@@ -12,6 +12,7 @@ using Dawnholder.Client.Net;
 using Dawnholder.Client.State;
 using Dawnholder.Client.Network.Handlers;
 using Dawnholder.Client.Network.Handlers.Combat;
+using Dawnholder.Client.Network.Handlers.Inventory;
 using Dawnholder.Client.Network.Handlers.Party;
 using Dawnholder.Client.Network.Handlers.Quest;
 using Dawnholder.Client.Network.Handlers.Roster;
@@ -45,6 +46,7 @@ namespace Dawnholder.Client.Network
         public bool IsClosed => Volatile.Read(ref _closed) != 0 || IsDisconnected;
         bool CanApply => !IsClosed && _isCurrent();
         public MapEntryCoordinator Entry { get; }
+        public InventoryRequestController Inventory { get; }
         LocalPlayerMovement _entryPlayer;
         long _playerEpoch;
         SceneTransition _sceneLoader;
@@ -113,6 +115,8 @@ namespace Dawnholder.Client.Network
                 { PacketID.S_PartyError,         new PartyErrorHandler() },
                 { PacketID.S_PortalLocked,       new PortalLockedHandler() },
                 { PacketID.S_QuestUpdate,        new QuestUpdateHandler() },
+                { PacketID.S_InventorySnapshot,  new InventorySnapshotHandler() },
+                { PacketID.S_ItemUseResult,      new ItemUseResultHandler() },
             };
 
         // Editor only 송신 latency 시뮬레이션.
@@ -124,7 +128,7 @@ namespace Dawnholder.Client.Network
 #endif
 
         public UnityClientSession(Func<bool> isCurrent = null, Action<Action> post = null,
-            Action<Action, float> postDelayed = null)
+            Action<Action, float> postDelayed = null, Action<Action, float> postInventoryTimeout = null)
         {
             _isCurrent = isCurrent ?? (() => ReferenceEquals(Instance, this));
             _post = post ?? MainThreadDispatcher.Enqueue;
@@ -132,7 +136,12 @@ namespace Dawnholder.Client.Network
             Entry = new MapEntryCoordinator(CommitEntry, ApplyEntryHp, FailEntry,
                 entry => { if (entry.RequiresPlayer) RosterBuffer.Drain(); });
             RosterBuffer = new RosterTransitionBuffer(() => CanApply);
+            // Response time and simulated transmission are independent execution boundaries.
+            Inventory = new InventoryRequestController(this, postInventoryTimeout);
+            Entry.Ready += OnEntryReady;
         }
+
+        void OnEntryReady(MapEntryCoordinator entry) => Inventory.OnGameplayReady(entry.Epoch);
 
         public void Activate(Socket socket)
         {
@@ -297,6 +306,8 @@ namespace Dawnholder.Client.Network
             LocalEntityId = null;
             LastReceivedServerTick = 0;
             Entry.Close();
+            Entry.Ready -= OnEntryReady;
+            Inventory.Dispose();
             if (_sceneLoader != null && _sceneRequestId != 0) _sceneLoader.CancelRequest(_sceneRequestId);
             _sceneRequestId = 0;
             _entryPlayer = null;
@@ -378,6 +389,7 @@ namespace Dawnholder.Client.Network
         /// </summary>
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
+            if (buffer.Array == null || buffer.Count < 4) return;
             ushort packetId = BinaryPrimitives.ReadUInt16LittleEndian(
                 new ReadOnlySpan<byte>(buffer.Array!, buffer.Offset + 2, 2));
 
