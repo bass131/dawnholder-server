@@ -27,7 +27,7 @@ Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/m
 
 ### PR189 승인과 병합 대기
 
-- **승인 묶음:** head `94f9a1e`의 CI 4개가 모두 SUCCESS로 끝났다. code-rules 14:25:00Z, module-boundaries 14:25:42Z, architecture-tests 14:31:05Z, dotnet-tests 14:41:12Z다. 그 뒤 fresh 조회는 `MERGEABLE`/`CLEAN`, origin/main은 `6358650` 그대로였다(E/`pr-approval-bundle-state.json`). 리드는 메인에 승인 묶음 `msg_21ac8995a09e`를 보냈다(E/`approval-bundle-sent.json`).
+- **승인 묶음:** head `94f9a1e`의 CI 4개가 모두 SUCCESS로 끝났다. code-rules 14:25:00Z, module-boundaries 14:25:42Z, architecture-tests 14:31:05Z, dotnet-tests 14:41:12Z다. 그 뒤 fresh 조회는 `MERGEABLE`/`CLEAN`이었다(E/`pr-approval-bundle-state.json`). 같은 때 리드가 조회한 origin/main은 `6358650` 그대로였다. 이 값은 `gh` 출력이 아니라 리드의 `git rev-parse` 관측이며 E/`opus-lead-head-input-check.json`과 승인 묶음 본문에 있다. 두 PR 상태 파일에는 관측 시각 필드가 없고, 시각은 묶음 메시지의 created_at 14:42:43Z로 확인한다. 리드는 메인에 승인 묶음 `msg_21ac8995a09e`를 보냈다(E/`approval-bundle-sent.json`).
 - **R-2 보충:** 새 리드는 판정 원문 SHA256을 다시 계산해 일치를 확인했다. 검증 시험 커밋 `3cbe421`에서 head까지 `05_Management/frontend` diff는 0이다. 최종 suite 입력 17개 중 15개는 head blob과 같고, 2개(`styles.css`, `records/system-guide.json`)는 작업 트리의 CR만 다르다(E/`opus-lead-head-input-check.json`).
 - **승인 전달:** 메인 `msg_09f05dbcba5d`(2026-10-05T14:51:38Z)가 사용자 원문을 전달했다. 원문은 「대시보드 결정 응답: … 2) PR189 - 개발 기록 목록에서 전체 페이지 상세로 탐색 병합 승인 → A 이 head로 병합 승인 (head 94f9a1e5e8dd8b46e82c54174b64f4198e9bb0c8)」다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다. 승인은 이 head에만 해당한다(E/`merge-approval-relay.json`).
 - **병합 시도:** 병합 직전 fresh 조회는 head `94f9a1e`, `CLEAN`, CI 4/4 SUCCESS, 자동 병합 없음이었다(E/`pre-merge-fresh.json`). 병합 명령은 ask 규칙 `Bash(gh pr merge*)`의 사용자 확인 창에서 멈췄다. **메인이 확인 창을 닫았으며 사용자 거절이 아니다**(메인 `msg_0627c486562c`). 승인과 head는 그대로 유효하다.
@@ -52,7 +52,18 @@ Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/m
 
 #### Gardener 결과
 
-아직 수행 전이다.
+신규 Opus `task_c36f86e6fa47` / `ctx_6ff80e2a81ec`의 읽기 전용 Gardener가 done `msg_856200bca7d0`(2026-10-05T16:22:17Z, outcome succeeded)으로 끝났다.
+
+- **기동과 정산:** 리드 pane 아래 vertical split `claude --model claude-opus-5-5`로 열었다. 첫 화면은 선택창 없이 `Opus 5.5 with xhigh effort`였고 backend는 unknown이다. handle `term_5d490fe7-205e-4e79-8b28-4c3f43c824da`, incarnation `76cad6d5-8316-418c-80c2-fd42039e09e3`이다. `worker-start --terminal`의 `input_accepted`와 turn 시작을 관측했다(E/`gardener-launch.json`, `gardener-ready.json`, `gardener-first-screen-read.json`, `gardener-start.json`). done 원문 대조 뒤 release는 `retained`/`external_terminal`이었다. 같은 incarnation의 완료 화면을 확인하고 pane을 닫았다(`ptyKilled true`). reclaimable은 0이다(E/`gardener-release.json`, `gardener-before-close.json`, `gardener-final-screen.json`, `gardener-close.json`, `gardener-final-terminals.json`).
+- **입력과 쓰기:** 계약 E/`gardener-task.txt`, 입력 manifest E/`gardener-inputs.json`(53개, SHA256 `010fb8e4…`)이다. 종료 뒤 같은 스크립트로 다시 해시해 입력 53개가 모두 그대로임을 확인했다(E/`gardener-inputs-after.json`). 쓰기는 보고서 E/`gardener-report.md` 한 파일이다(45113 bytes, SHA256 `df277f558c5902e6237b578bf8c3e48d11371b643cca98b2a8f877c3c62f8b92`). Git 작업 트리 변경은 없었다.
+- **후보 1 — 검증 실행 helper를 회차마다 다시 써서 같은 잠재 결함이 재발함:** PS5.1 배열이 WQL 필터로 들어가 `0x80041017`로 멈춘 결함이 이전 시스템 카드 목표와 이번 목표에서 두 번 났다. 이번 목표 안에서도 검증 helper의 첫 시도 결함이 4건이었다(결과 파일 덮어씀, Electron attempt-1, WQL, porcelain 경로 잘림). 제안은 소유 TEMP 정리·프로세스 identity·사용자 산출물 보존 목록을 정본 helper 하나로 묶고, Windows fixture 시험으로 단정하는 것이다.
+- **후보 2 — Management vitest가 CI 밖임:** 워크플로 4개 모두 vitest를 실행하지 않는다. 이번 목표에서 제품 변경이 만든 시험 드리프트 1건(`catalog-display-names`)은 검증자의 직접 영향 명령에서만 드러났다. 기존 5실패는 두 목표 연속으로 main에 남았는데 PR189 CI는 4/4 SUCCESS였다. 제안은 Management `vitest run`을 warning 파일럿 job으로 두고, 기준선 5건 밖의 새 실패 이름만 진단하는 것이다.
+- **두 번째 발생:** 두 후보 모두 이전 목표 Gardener가 제안한 유형이 다시 관측된 두 번째 발생이다. CODE 「교정 층과 반복 규칙」의 반복 규칙 검토 시점에 해당한다. 채택은 메인을 거친 사용자 결정이며, 구현은 일반 목표 루프로 한다. 이번 목표에서는 구현하지 않는다.
+- **종료 기록 사실 불일치 F1·F2(경미):** F1은 origin/main `6358650`의 인용 원천이 그 값을 담지 않은 파일이었던 것이다. F2는 이미 끝난 즉시 교체를 R-8 미래형으로 쓴 것이다. 두 곳 모두 위 「PR189 승인과 병합 대기」와 「적용 중인 사용자 결정」에서 정정했다. 정정의 판정은 종료 기록 문서 실사가 맡는다.
+- **억제·완화:** PR189 제품 diff의 추가 956줄에서 지정 패턴의 새 경고 억제·설정 완화는 0건이다. 패턴과 범위 안의 결과이며 전수 재감사가 아니다. PR189 CI 로그는 E에 없어 CI 경고는 미측정이다.
+- **미대조 4건:** 원시가 E에 없어 대조하지 못한 주장이 4건이다. 진입 메시지 `msg_a8dced49f427` 원문, 운영 지시 `msg_2c7fd80be0a5` 원문, 오발송 ack, 메인 R-2 기록이다. 위반으로 세지 않는다.
+- **후보로 고르지 않은 관찰:** 작업 트리 혼합 EOL로 인한 거짓 hash 불일치는 BACKLOG `contract-context-check` 근거로 이미 등록돼 있다. `00_Document/FEATURE_MAP.md`에 Management 구간이 없고 `05_Management/README.md` 문서 지도에 이 goal이 없는 점은 두 번째 관찰이다. 문서 지도 갱신은 다음 계획 판단으로 넘기며 이 종료 기록 PR에서 바꾸지 않는다.
+- **리드 표본 대조:** 리드가 원천을 직접 다시 확인한 표본은 넷이다. WQL 오류 문자열은 두 원시 파일 모두에 있었다. 워크플로 4개의 `vitest|npm test` 일치는 0건이었다. F1 파일에 `6358650`이 없었다. F2 문장은 실제 69행에 있었다. 네 표본 모두 보고서와 일치했다. 이 대조는 표본이며 Gardener 점검 전체의 재수행이 아니다.
 
 ## 요청 원천과 승인
 
@@ -66,7 +77,7 @@ Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/m
 
 ## 적용 중인 사용자 결정
 
-- 메인 `msg_9a95637fe94e`(2026-10-05T14:18:43Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」. 앞선 「A 리드 Opus xhigh, 구현은 Sol max 유지」를 다섯 파트로 넓힌 결정이다. **교체 시점은 후속 `msg_5ae22b5ca4ae`의 작업자가 빈 즉시 교체로 대체됐다.** 메인이 R-8로 이 pane을 닫아 `claude-opus-5-5` xhigh 새 리드를 연다. Sol max·신규 Opus 검증자는 유지한다. AGENTS의 리드 모델 문구는 아직 Astra이며 정본 반영은 Rules의 다음 계획 후보다. 메인 전달을 사용자 직접 입력으로 격상하지 않는다.
+- 메인 `msg_9a95637fe94e`(2026-10-05T14:18:43Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」. 앞선 「A 리드 Opus xhigh, 구현은 Sol max 유지」를 다섯 파트로 넓힌 결정이다. **교체 시점은 후속 `msg_5ae22b5ca4ae`의 작업자가 빈 즉시 교체로 대체됐다.** 그 즉시 교체는 위 「리드 교체 인계 기록」대로 2026-10-05T14:27에 끝났다. R-8이 아니라 `msg_5ae22b5ca4ae`의 절차(메인이 이전 pane을 닫고 새 Opus 리드가 같은 Run을 이어받음)였다. 목표 종료 뒤의 R-8 교체는 「재개 지점」의 다음 일 3번을 따른다. Sol max·신규 Opus 검증자는 유지한다. AGENTS의 리드 모델 문구는 아직 Astra이며 정본 반영은 Rules의 다음 계획 후보다. 메인 전달을 사용자 직접 입력으로 격상하지 않는다.
 - 같은 메시지의 운영 지시로 이후 Orca 우편함의 서버 대기값은 `check --wait --timeout-ms 600000`으로 적용한다. 실행 도구는 비동기 session을 반환하도록 두고 60초를 넘는 단일 차단 호출을 사용하지 않는다. 메시지 도착 때 즉시 깨어나는 대기이며 짧은 우편함·화면 반복 조회를 피한다.
 - 메인 운영 지시 `msg_2c7fd80be0a5`(2026-10-05T14:34:35Z): 우편함 대기는 heartbeat를 뺀 8개 type의 `--types` 필터와 `--timeout-ms 900000`을 쓴다.
 - 메인 `msg_053edb4e968d`(2026-10-05T14:13:56Z): 승인 묶음 직전 fresh `mergeStateStatus`를 확인한다. DIRTY이면 최신 main을 merge해 CURRENT의 다른 파트 줄과 자기 줄을 함께 보존한다. 충돌 해결이 CURRENT에 한정되고 제품 blob이 같다는 remerge-diff 원시가 있을 때만 **동일 제품 입력의 기존 판정 유지**로 표현하고 새 head 전체 CI를 수집한다. 승인 뒤 다른 PR 병합으로 DIRTY가 되면 옛 head 승인을 사용하지 않고 다시 이 절차와 새 승인을 거친다. 원문 두 건은 E/`main-pr-and-routing-decisions.json`에 보존한다.
