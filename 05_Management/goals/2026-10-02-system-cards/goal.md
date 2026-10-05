@@ -9,8 +9,8 @@
 - [x] 글자색 수정
 - [x] PR179 발행·CI
 - [x] 개발 현황 축약어 정리
-- [>] CI·실물 화면 재확인
-- [ ] PR179 병합
+- [x] CI·실물 화면 재확인
+- [>] PR179 병합
 - [ ] 결과 기록·종료
 
 적용 중인 사용자 결정은 메인 `msg_9dd4600cea13`(2026-10-05T08:43:24Z)의 전달이다. 원문: 「대시보드 결정 응답: 1) Unity 시트 번갈아 쓰기 - 필요한 세션만 연결하는 방식으로 바꿀지 → A 필요한 세션만 켜기(opt-in) · 2) 목표 진척 자동 갱신 - 단계 완료를 어디서 읽을지 → A PR 자동 + goal.md 체크리스트」. 메인 pane에서 사용자가 Enter로 제출했다는 전달이며 사용자 직접 입력으로 격상하지 않는다. 원문 메시지와 형식 조건은 E/`goal-progress-user-decision.json`에 보존했다. 고정 검증 입력이 종료된 뒤 Astra가 기존 목표 상태에 맞춰10단계·진행중1개를 기록했다. 현황판은 goal과 PR 병합 상태를 읽으며 이 기록 자체가 병합 승인이나 완료가 아니다.
@@ -28,11 +28,33 @@
 
 적용 사용자 원문(2026-10-02, 메인 전달): 「운영툴에 작성하는 작업관련 게시글에 D1,D2같은 프로젝트에서만 쓰이는 마일스톤 명칭으로 특정 작업의 작업명을 대체하면 시간이 좀 지나고 봤을때 이해하기 어려우니까 라벨링을 자제해야해」. 관련 CODE 원문·읽기/소유권·보존 계약은 E/`display-names-astra-context.md`와 `display-names-repair-task.txt`에 고정한다. E는 `.backups/verification/2026-10-05-system-cards-close/`다.
 
-**현재 상태:** 기준 HEAD `6c9c50bd65cef36eb5fba899fa40ffd837ab4070`, PR179 OPEN. 이 head의 두 CI 최종 결과는 성공이며 .NET 최초 실패와 1회 재실행 성공은 E/`first-pr-ci-audit.md`에 함께 보존했다. 사용자는 왼쪽 보조 실물 창·앱125%에서 글자색을 수용했다. catalog 표시91문장과 직접 영향 테스트를 새 Opus가 차단 없음으로 판정했고, Astra가 원문·실제 diff·반례·실행 원시를 대조해 통합 수용했다. 아래 첫 PASS의 단정 약화는 두 번째 독립 검증에서 반례로 재현하고 정확 문자열로 보완했다. 이제 승인된 기계 commit/push와 새 head CI를 진행한다. 메인 대조·새 head 실물 재확인·별도 병합 승인은 남아 있다.
+**현재 상태:** 제품·테스트 수정 `0bf6d3d47b44249192c970bbafe2da87cf83b85e`와 진척 기록 `e8aff61d524fe1e89d5e537e816c10f588559682`를 PR179에 push했다. e8aff61의 두 CI·메인 R-2·왼쪽 보조 화면 앱125% 사용자 수용을 마쳤고, 비차단 #7 문구는 사용자가 그대로 유지하기로 했다. 실물 작업자의 앱·TEMP·세션은 정산·종료했다. 이 결정 기록 커밋의 최종 head CI와 **그 head의 별도 사용자 병합 승인**은 다음 단계이며 아직 병합하지 않았다. 진척의 「CI·실물 화면 재확인」 완료는 e8aff61의 결과이고, 기록 커밋 CI는 「PR179 병합」 준비에 포함한다.
+
+### 작업 이름의 CI·메인 대조·사용자 실물 수용
+
+e8aff61의 code-rules `37285804071`과 dotnet-tests `37285804059`는 attempt1 SUCCESS다. .NET은924개=919통과/0실패/5skip이며 기존 경고4위치와 액션 Node20 지원 중단 안내가 있어 경고0으로 보고하지 않는다. 실제 checkout `8aae62535e8d926621664b0c1a29739ebba00f4b`는 main `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`와 e8aff61의 합성 merge다. `05_Management` subtree는 head와 같은 `e1ad43120f323dfe3d5451221b608414608646fa`이며 전체 tree 동일이나 로컬 main 재통합을 주장하지 않는다. 원시는 E/`display-names-final-ci.json`, `display-names-final-ci-input.json`, 두 `display-names-final-*-a1.log`다. 이전6c9 CI의 최초 실패/재실행은 `first-pr-ci-audit.md`에 보존한다.
+
+메인 `msg_c0157694f468`(2026-10-05T09:09:28Z)은 판정 전체·정확 PR/head/checks·테스트59/63행과 고정 draft/D0 goal·반례6개·전후43/36/7의 같은 실패를 직접 대조해 일치했다고 회신했다. CI 원시·타입검사 원천·정산 파일은 다시 열지 않았다고 명시했으므로 전수 감사로 확대하지 않는다. 원문 E/`display-names-main-r2-reply.json`, 원천 경로/해시 목록은 `display-names-main-r2-index.md`다.
+
+메인 `msg_be71c9e4fcb9`(실제 메시지2026-10-05T09:37:07Z)가 전달한 사용자 원문 전문: 「대시보드 결정 응답: 1) 백로그 마감 - Rules·CodeMap 종료 뒤 다음 작업을 병렬로 정할지 → A 두 파트 병렬 착수 · 2) 백로그 마감 - 운영툴 「작업 현황」 화면 후보를 폐기할지 → A 폐기 · 3) PR179 - 개발 현황 작업 이름: 왼쪽 화면에서 바뀐 이름을 받아들일지 → A 화면 수용 (head e8aff61) · 4) PR179 - 「구현」 칸의 「구현 분할 완료」 문구를 그대로 둘지 → A 그대로 둔다」. 메인의 사용자 제출 시각 표현은09:38Z 무렵이며 실제 메시지 시각과 구분한다. 이 goal의 실물 결정은3)·4)이고 다른 파트 병렬 착수는 이 파트의 권한으로 쓰지 않는다. 메인은 ready PNG의 구현 줄과 뒤의 「GameServer 저장·복원 연동 미완료」도 직접 확인했다. 사용자 직접 입력으로 격상하지 않으며 원문은 E/`display-names-physical-user-acceptance.json`이다. 추가 문구 수정·재검증 회차 없이 유지하고, 병합 승인은 별도로 받는다.
+
+실물 Sol `task_df57ff5bbd38` / `ctx_73ca2f8a75dc`는 같은 e8aff61을 소유 TEMP에서 desktop:build exit0으로 실행했다. 실제 보조 `24G2W1G4/id1293279524`, OS100%·앱125%, outer(-1768,237,1616,939)/content1600×900DIP/fit=true를 기록하고 showInactive했다. ready는 영속성 구현 문장과 인접 요약, 별도 PNG는 「독립 창·트레이와 읽기 전용 운영 콘솔」 상세를 보여 주며 Astra도 두 PNG와 DOM의 일치를 직접 확인했다. 사용자 확인 종료 지시 `msg_178373132b0f` 후 scoped app.quit·native PowerShell 정산을 수행했다. done `msg_ffebad96f2c0`(2026-10-05T09:58:25Z), 원문 E/`display-names-physical/execution-result.md` SHA256 `20232e02be91db34e47e4dbe042b7150dd8718862412554b246d3b73c532587b`와 정산을 대조한 뒤 release·동일inc 완료화면·close했고 `display-names-physical-final-terminals.json`의 마지막 목록은 Astra만/작업자0이다.
+
+Astra가 직접 tracked194+canonical48=242개 bytes/hash·출력 집합 변화0, 앱/launcher·소유 TEMP 부재와 원래 node_modules 존재를 확인했다(E/`display-names-physical-astra-preservation-audit.json`). ready focus0·종료 전3과 전체 window/webContents focus 각4를 구분한다. 종료 전 실제 화면은 시스템 카드였고 숨은 기록 DOM을 현재 표시로 쓰지 않았다. Sol의 children4 표기는 Electron 총4(main1+child3)로 정정했다. quit requestId 형식 거부와 PS5 PID배열 WQL 오류는 각각 정산 전/삭제 전 중단됐고 세 번째 native 정산exit0이다. 최초 실패 helper 생성세대 미수집·첫 build 외부wrapper exitnull/실제 npm child0·heartbeat373/298/446/327/327초 및 초기3건 형식 오류·일반 Re: 회신 교정도 원문에 남겼다. 초기 heartbeat 발신 부재 추정은 durable receipt로 정정했으며 coordinator 미관측 원인은 미확정이다. 이 결과를 전체 절차PASS나 독립 실물 판정으로 표현하지 않는다.
+
+### 현재 목표 우선과 다음 계획 후보
+
+메인 `msg_5bd58f057f41`(2026-10-05T09:37:41Z)의 사용자 원문: 「그리고 계획에 오버되는 부분은 다음 계획 편성에 포함시키고, 일단 현재 작업 목표 달성 우선」. 메인의 제출 시각 설명09:40Z 무렵과 메시지 실제 시각은 구분한다. 원문은 E/`current-goal-priority-user-decision.json`에 보존했다. 범위 안 완료조건은 계속 수행하고 범위 밖 후보·비차단 개선·새 요청은 이 goal에서 실행하지 않는다. 다음 계획은 메인이 사용자와 편성하며 이 지시만으로 진행 계약을 중단하거나 재발행하지 않는다.
+
+- 표시 이름 검출기 #8의 괄호·hash/경로·범위 경계 한계: 최종 독립 판정의 비차단 후속 후보다. 현재 데이터 영향은 없으며 이번 PR에서 추가 구현하지 않는다. 원천 E/`display-names-polish-review/verdict.md`.
+- 기존 앱 내부 E2E 입력·VM 준비 후보는 아래 「후속 계획 후보 — 앱 내부 E2E 입력·VM 준비」의 원천과 보류 상태를 유지한다. 현재 goal 밖이며 자동 착수하지 않는다.
+- 운영툴 「작업 현황」 화면 후보는 사용자 폐기로 종료한다. 아래 역할 방향 절에 결정 원문을 연결하며 BACKLOG 행 정리는 소유자인 Rules의 다음 goal에서 한다.
+
+아래 구현·검증 회차별 기록은 당시 관측이다. 최신 통합·수용 상태와 남은 병합 절차는 위 단락을 따른다.
 
 최종 독립 검증 `task_f66496e0d477` / `ctx_3ddcee5d16ab`의 done `msg_cdbe1f5c2b18`과 E/`display-names-polish-review/verdict.md`(SHA256 `0d795471dc4c7cc9f8e1f78fbcb144ece3ad1f83059b1c7ece823e1d8f1bcb05`) 전체를 읽었다. HEAD 대비 변경91문장·보완 전 대비34문장, 보호 필드/구조/숫자/PR/ID 불변이다. 같은 영향 명령 전후43개=36통과/기존7실패, 새 실패0, 타입4종 exit0이다. 하네스14개 실행은 matcher 수용/거부를 관측해 기록한 것으로, 별도14개 요구사항 assertion 통과나 원래 UI 테스트 통과로 확대하지 않는다. 원래 UI 단정은 숨은 기록 탭 때문에 미도달이다. Astra는 고정19입력 중 허용된 테스트 한 파일의 두 줄만 바뀐 것, 보호 파일의 예상 밖 변화0, 실제 TEMP 부재와 실행 원시 수치를 직접 확인했다(E/`display-names-polish-review-astra-audit.json`). 빈 타입 로그는 실제 `npm run -s` 호출과 즉시 exit0 원문으로 대조했다(E/`display-names-polish-review-typecheck-source.json`).
 
-비차단 #7은 구현 칸의 「설계와 구현 분할 완료」 오독 가능성으로 뒤의 연동 미완료·summary가 의미를 보완한다. 실물 재확인에 연결한다. #8은 새 코드 검출기의 괄호·hash/경로·범위 경계 한계이며 현재 데이터 영향은 없고 후속 후보로 보존한다. 검색 알고리즘은 그대로지만 「생성기」 검색에서 관련 기록/근거가 빠지는 등 이름에 따른 검색 결과는 바뀐다. local-only 원천, 전체suite·실물·CI 미실행, heartbeat359초 한 번과 최초 실행기 문법 실패를 보존하며 전체 절차PASS로 표현하지 않는다. 판정의 최초 호출 기록 부재는 검증자의 미확인 범위다. 실제 최초 `claude --model claude-opus-5-5` 명령·화면5.5 xhigh는 E/`display-names-polish-review-launch-command.json`에 있으며 backend는 unknown이다. 정산은 Node에서 정확 junction의 cmd rmdir 후 marker가 있는 TEMP 삭제였다. 원문 판정은 수정하지 않고 이 한계·근거를 메인 `msg_b7381db86101`로 전달했다. release·동일inc 완료화면·close 뒤 **2026-10-05T08:34:28.3912927Z 목록 Astra만/작업자0**으로 정산했다. 이전 goal 입력은 E/`display-names-goal.polish-review-input.md`에 보존한다.
+비차단 #7은 구현 칸의 「설계와 구현 분할 완료」 오독 가능성으로 뒤의 연동 미완료·summary가 의미를 보완한다. 이후 실물 확인에서 사용자가 유지하기로 한 결정은 위 절에 기록했다. #8은 새 코드 검출기의 괄호·hash/경로·범위 경계 한계이며 현재 데이터 영향은 없고 후속 후보로 보존한다. 검색 알고리즘은 그대로지만 「생성기」 검색에서 관련 기록/근거가 빠지는 등 이름에 따른 검색 결과는 바뀐다. local-only 원천, 전체suite·실물·CI 미실행, heartbeat359초 한 번과 최초 실행기 문법 실패를 보존하며 전체 절차PASS로 표현하지 않는다. 판정의 최초 호출 기록 부재는 검증자의 미확인 범위다. 실제 최초 `claude --model claude-opus-5-5` 명령·화면5.5 xhigh는 E/`display-names-polish-review-launch-command.json`에 있으며 backend는 unknown이다. 정산은 Node에서 정확 junction의 cmd rmdir 후 marker가 있는 TEMP 삭제였다. 원문 판정은 수정하지 않고 이 한계·근거를 메인 `msg_b7381db86101`로 전달했다. release·동일inc 완료화면·close 뒤 **2026-10-05T08:34:28.3912927Z 목록 Astra만/작업자0**으로 정산했다. 이전 goal 입력은 E/`display-names-goal.polish-review-input.md`에 보존한다.
 
 첫 검증 `task_f8f5d9be7033` / `ctx_e3a19bfbfb5e`의 done `msg_c679a53acf4b`와 판정 원문 E/`display-names-review/verdict.md`(SHA256 `12b2a7da50c4fd4d31ca3e8d599f15ac8f527afb6a80e8697f3d17c6940339b0`)는 그대로 보존한다. 신규 표시 이름 검사와 직접 영향 테스트는 HEAD 사본·문장 수정·테스트 보완의 같은 명령에서 각각43개=33통과/10실패→35/8→36/7이며, 최종7실패는 기존 숨은 기록 탭의 B02~B08이다. 기존3종·테스트 전용 타입 검사는 exit0, 전체suite·실물·CI는 미실행이다. `records-store.test.ts:105`의 추가 영향 단정은 공식 질문 `msg_07d4855eaba4`와 회신 `msg_cdeab83ae0cc`로 한 줄 소유를 확인해 해소했다. 원문 소유 기록은 E/`display-names-review-test-ownership.md`다.
 
@@ -1910,6 +1932,8 @@ Astra가 Sol embedded-source-evidence.json14449B 전문과 DOMPurify header/Roug
 Main msg_3485e21d8942(2026-10-04T10:44:37Z)이 전달한 사용자 원문: 「오케이 현황 관리 모드가 훨씬 보기 편해졌네, 기존에 운영툴에도 현황관리 넣으면 어떨까 했는데, 그냥 우리 현황판 모드로 작업하는게 더 편할거 같다, 운영관리툴에는 완성된 작업 기준과 이후 작업 어떻게 해야할지로 정리하는 방향으로 가는게 더 좋겠다, 실시간성은 클로드 모드가 훨씬 좋다」. 메인 전달을 사용자 직접 입력으로 격상하지 않는다.
 
 메인 해석은 현황판=C:/Dev/DawnHolder_Dashboard의 터미널 대시보드이며 실시간 작업 현황은 그 대시보드가 맡고, Management는 완성된 작업·완료 기준·이후 작업을 정리한다는 것이다. 해석과 원문이 다르면 원문 우선이다. 현재 I-02 범위/진행과 시스템 카드·기록 목록은 유지한다. 실제 제거/제품 변경은 다음 계획에서 사용자 확인 뒤이며 지금 구현하지 않는다.
+
+**후속 사용자 확인 — 2026-10-05:** 메인 `msg_b101768ef103`(2026-10-05T09:36:42Z)이 전달한 사용자 원문은 「대시보드 결정 응답: 1) 백로그 마감 - Rules·CodeMap 종료 뒤 다음 작업을 병렬로 정할지 → A 두 파트 병렬 착수 · 2) 백로그 마감 - 운영툴 「작업 현황」 화면 후보를 폐기할지 → A 폐기」다. 이 파트에는2)가 적용된다. 위의 「실제 제거는 다음 계획에서 사용자 확인 뒤」에 대한 사용자 확인으로 기록하며, 운영툴 작업 현황 후보는 폐기하고 작업 현황은 CLI 현황판에서 계속 본다. BACKLOG 행 정리는 쓰기 소유자인 Rules가 다음 goal에서 하며 Management는 BACKLOG나 제품을 수정하지 않는다. 새 작업 착수 권한으로 확대하지 않는다. 원문은 E/`work-status-candidate-discard-user-decision.json`이고 사용자 직접 입력으로 격상하지 않는다.
 
 후속 요청(아직 조사/작성 전): 기존 계획·설계·BACKLOG 중 운영툴 실시간 현황(세션 상태·진행 중 작업·자동 갱신 등) 항목을 근거 위치와 함께 유지/축소/제거 후보로 정리해 메인에 보고한다. goal·BACKLOG·종료 기록 등을 읽는 다음 작업 지도의 표시 형태 후보를 한 단락으로 작성한다. I-02 Sol 정산과 신규 Opus 진행이 우선이며, 이 후속 읽기/초안은 그 진행을 방해하지 않는 때 수행한다. BACKLOG 쓰기 소유는 기존 Rules 결정을 유지하고 이번 요청은 목록/후보 보고이지 즉시 정본 제거 권한이 아니다. 원문 E/management-live-status-direction-main.json.
 
