@@ -72,6 +72,23 @@ jobs:
           import unittest
 
 
+          class ObservedLoader(unittest.TestLoader):
+              def __init__(self):
+                  super().__init__()
+                  self.discovered_files = set()
+
+              def _find_test_path(self, full_path, pattern, namespace=False):
+                  suite, should_recurse = super()._find_test_path(
+                      full_path, pattern, namespace=namespace,
+                  )
+                  # The pinned file hook also observes empty modules and import-level
+                  # skips, which cannot be identified from collected case IDs alone.
+                  path = pathlib.Path(full_path)
+                  if path.is_file() and suite is not None:
+                      self.discovered_files.add(path.resolve())
+                  return suite, should_recurse
+
+
           class ObservedResult(unittest.TextTestResult):
               def __init__(self, *args, **kwargs):
                   super().__init__(*args, **kwargs)
@@ -184,7 +201,7 @@ jobs:
                       for path in tests_root.rglob('test_*.py') if path.is_file()
                   )
                   phase = 'discovery'
-                  loader = unittest.TestLoader()
+                  loader = ObservedLoader()
                   suite = loader.discover(
                       start_dir=str(tests_root), pattern='test_*.py',
                       top_level_dir=str(tests_root),
@@ -193,12 +210,49 @@ jobs:
                   # raw IDs, but do not report them as a completed collection.
                   record['discovered_tests'] = list(test_ids(suite))
                   record['discovery_errors'] = list(loader.errors)
+                  record['discovered_test_files'] = []
+                  record['undiscovered_test_files'] = []
+                  for test_file in record['test_files']:
+                      path = pathlib.Path(test_file).absolute()
+                      if path.resolve() in loader.discovered_files:
+                          record['discovered_test_files'].append(test_file)
+                          continue
+                      non_package_directories = []
+                      for parent in path.parents:
+                          if parent == tests_root:
+                              break
+                          if not (parent / '__init__.py').is_file():
+                              non_package_directories.append(
+                                  parent.relative_to(pathlib.Path.cwd()).as_posix()
+                              )
+                      reason = 'unittest discovery did not reach this test file.'
+                      if non_package_directories:
+                          reason += (
+                              ' Discovery does not recurse through non-package directories: '
+                              + ', '.join(non_package_directories)
+                          )
+                      repair = (
+                          'Add __init__.py along the package path or move the file to a discoverable '
+                          'location with a valid Python module name; check package load_tests '
+                          'traversal and rerun.'
+                      )
+                      record['undiscovered_test_files'].append({
+                          'file': test_file, 'reason': reason, 'repair': repair,
+                      })
+                      print(f'unavailable: {test_file}: {reason}\nNext: {repair}', file=sys.stderr)
                   if loader.errors:
                       for error in loader.errors:
                           print(error, file=sys.stderr)
                       set_outcome(
                           record, 'unavailable', 'unittest discovery could not import/load the suite.',
                           'Fix the import/load error in stderr.txt for the recorded target and rerun.', 2,
+                      )
+                      return
+                  if record['undiscovered_test_files']:
+                      set_outcome(
+                          record, 'unavailable', 'unittest discovery did not reach all test_*.py files.',
+                          'Repair each path in undiscovered_test_files as described there and in stderr.txt; rerun.',
+                          2,
                       )
                       return
                   record['discovery_complete'] = True
