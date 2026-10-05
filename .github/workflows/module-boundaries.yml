@@ -1,0 +1,219 @@
+name: module-boundaries
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DOTNET_ADD_GLOBAL_TOOLS_TO_PATH: "0"
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: "false"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      MODULE_BOUNDARIES_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Initialize job-local SDK and evidence paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            printf 'MODULE_BOUNDARIES_EVIDENCE=%s\n' "$RUNNER_TEMP/module-boundaries-evidence"
+            printf 'DOTNET_INSTALL_DIR=%s\n' "$RUNNER_TEMP/module-boundaries-sdk"
+            printf 'DOTNET_CLI_HOME=%s\n' "$RUNNER_TEMP/module-boundaries-setup/cli-home"
+            printf 'NUGET_PACKAGES=%s\n' "$RUNNER_TEMP/module-boundaries-setup/nuget/packages"
+            printf 'NUGET_HTTP_CACHE_PATH=%s\n' "$RUNNER_TEMP/module-boundaries-setup/nuget/http"
+            printf 'NUGET_PLUGINS_CACHE_PATH=%s\n' "$RUNNER_TEMP/module-boundaries-setup/nuget/plugins"
+            printf 'NUGET_SCRATCH=%s\n' "$RUNNER_TEMP/module-boundaries-setup/nuget/scratch"
+          } >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/module-boundaries-evidence/setup"
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Record and verify checkout and exact SDK
+        shell: bash
+        env:
+          EXPECTED_CHECKOUT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$MODULE_BOUNDARIES_EVIDENCE/setup/checkout-sha.txt"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_CHECKOUT"
+          printf '%s\n' "$MODULE_BOUNDARIES_PR_HEAD_SHA" > "$MODULE_BOUNDARIES_EVIDENCE/setup/pr-head-sha.txt"
+          git status --porcelain=v1 > "$MODULE_BOUNDARIES_EVIDENCE/setup/workspace-status.txt"
+          dotnet --info > "$MODULE_BOUNDARIES_EVIDENCE/setup/dotnet-info.txt"
+          python3 --version > "$MODULE_BOUNDARIES_EVIDENCE/setup/python-version.txt"
+          test "$(dotnet --version)" = "10.0.301"
+          printf 'DAWNHOLDER_DOTNET=%s\n' "$(command -v dotnet)" >> "$GITHUB_ENV"
+
+      # The public checker builds only its SDK tool. Product restore/design-time
+      # compilation occurs in its new snapshot, without product build or emit.
+      - name: Inspect current PR sources and emit warnings
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$MODULE_BOUNDARIES_EVIDENCE/logs"
+          printf '%s\n' "bash 99_Tools/ModuleBoundaries/check-module-boundaries.sh --output-root $MODULE_BOUNDARIES_EVIDENCE/production --github-annotations" \
+            > "$MODULE_BOUNDARIES_EVIDENCE/logs/production-command.txt"
+          set +e
+          bash 99_Tools/ModuleBoundaries/check-module-boundaries.sh \
+            --output-root "$MODULE_BOUNDARIES_EVIDENCE/production" --github-annotations \
+            > "$MODULE_BOUNDARIES_EVIDENCE/logs/production-stdout.txt" \
+            2> "$MODULE_BOUNDARIES_EVIDENCE/logs/production-stderr.txt"
+          boundary_exit=$?
+          printf '%s\n' "$boundary_exit" > "$MODULE_BOUNDARIES_EVIDENCE/logs/production-exit.txt"
+          cat "$MODULE_BOUNDARIES_EVIDENCE/logs/production-stdout.txt" "$MODULE_BOUNDARIES_EVIDENCE/logs/production-stderr.txt"
+          exit "$boundary_exit"
+
+      - name: Run checker requirement regressions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$MODULE_BOUNDARIES_EVIDENCE/tests"
+          export MODULE_BOUNDARIES_TEST_WORK="$MODULE_BOUNDARIES_EVIDENCE/tests/work"
+          printf '%s\n' 'Python unittest discover: test_module_boundaries*.py; require actual requirement and discovery execution; counts.json' \
+            > "$MODULE_BOUNDARIES_EVIDENCE/tests/command.txt"
+          set +e
+          /usr/bin/time -p -o "$MODULE_BOUNDARIES_EVIDENCE/tests/time.txt" \
+            python3 -B - "$MODULE_BOUNDARIES_EVIDENCE/tests/counts.json" \
+            > "$MODULE_BOUNDARIES_EVIDENCE/tests/stdout.txt" 2> "$MODULE_BOUNDARIES_EVIDENCE/tests/stderr.txt" <<'PY'
+          import json, pathlib, sys, unittest
+
+          tests_root = "99_Tools/Architecture.Tests"
+          suite = unittest.defaultTestLoader.discover(
+              tests_root, pattern="test_module_boundaries*.py", top_level_dir=tests_root,
+          )
+
+          def test_ids(node):
+              if isinstance(node, unittest.TestSuite):
+                  return [name for child in node for name in test_ids(child)]
+              return [node.id()]
+
+          collected = test_ids(suite)
+
+          class ObservedResult(unittest.TextTestResult):
+              def __init__(self, *arguments, **keywords):
+                  super().__init__(*arguments, **keywords)
+                  self.started_tests = []
+
+              def startTest(self, test):
+                  self.started_tests.append(test.id())
+                  super().startTest(test)
+
+          result = unittest.TextTestRunner(verbosity=2, resultclass=ObservedResult).run(suite)
+          skipped = {test.id() for test, _ in result.skipped}
+          counts = {
+              "collected": len(collected), "testsRun": result.testsRun,
+              "executed": result.testsRun - len(result.skipped), "skipped": len(result.skipped),
+              "failures": len(result.failures), "errors": len(result.errors),
+              "requiredSuites": {},
+          }
+          for module in ("test_module_boundaries", "test_module_boundaries_discovery"):
+              prefix = module + "."
+              found = sum(name.startswith(prefix) for name in collected)
+              executed = sum(name.startswith(prefix) and name not in skipped for name in result.started_tests)
+              counts["requiredSuites"][module] = {"collected": found, "executed": executed}
+          counts["requiredSuitesExecuted"] = all(
+              entry["collected"] > 0 and entry["collected"] == entry["executed"]
+              for entry in counts["requiredSuites"].values()
+          )
+          with pathlib.Path(sys.argv[1]).open("x", encoding="utf-8") as report:
+              json.dump(counts, report, indent=2)
+              report.write("\n")
+          print(json.dumps(counts, indent=2))
+          if not counts["requiredSuitesExecuted"]:
+              print("Required module boundary suites were absent or skipped", file=sys.stderr)
+          raise SystemExit(0 if result.wasSuccessful() and counts["requiredSuitesExecuted"] else 1)
+          PY
+          boundary_exit=$?
+          printf '%s\n' "$boundary_exit" > "$MODULE_BOUNDARIES_EVIDENCE/tests/exit.txt"
+          cat "$MODULE_BOUNDARIES_EVIDENCE/tests/stdout.txt" "$MODULE_BOUNDARIES_EVIDENCE/tests/stderr.txt"
+          exit "$boundary_exit"
+
+      # A clean production run needs a separate labelled fixture to demonstrate
+      # GitHub's warning renderer. Its counts never enter production result.json.
+      - name: Demonstrate warning rendering when production is clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          demo_decision=$(python3 - "$MODULE_BOUNDARIES_EVIDENCE/production/result.json" <<'PY'
+          import json, sys
+          result = json.load(open(sys.argv[1], encoding="utf-8"))
+          if result["executionStatus"] != "completed":
+              raise SystemExit("Production did not complete; no fixture substitutes for it")
+          print("clean" if result["violationCount"] == 0 else "warnings")
+          PY
+          )
+          if [[ "$demo_decision" == "warnings" ]]; then
+            printf '%s\n' 'Production already emitted real warnings; fixture demonstration skipped.' \
+              > "$MODULE_BOUNDARIES_EVIDENCE/logs/demo-skipped.txt"
+            exit 0
+          fi
+          python3 -B 99_Tools/Architecture.Tests/support/module_boundary_fixture.py \
+            "$MODULE_BOUNDARIES_EVIDENCE/warning-fixture"
+          set +e
+          bash 99_Tools/ModuleBoundaries/check-module-boundaries.sh \
+            --source-root "$MODULE_BOUNDARIES_EVIDENCE/warning-fixture" \
+            --output-root "$MODULE_BOUNDARIES_EVIDENCE/warning-demo" \
+            --input-kind fixture --github-annotations \
+            > "$MODULE_BOUNDARIES_EVIDENCE/logs/demo-stdout.txt" \
+            2> "$MODULE_BOUNDARIES_EVIDENCE/logs/demo-stderr.txt"
+          boundary_exit=$?
+          printf '%s\n' "$boundary_exit" > "$MODULE_BOUNDARIES_EVIDENCE/logs/demo-exit.txt"
+          cat "$MODULE_BOUNDARIES_EVIDENCE/logs/demo-stdout.txt" "$MODULE_BOUNDARIES_EVIDENCE/logs/demo-stderr.txt"
+          exit "$boundary_exit"
+
+      - name: Publish separate production and demonstration summaries
+        if: always()
+        shell: bash
+        run: |
+          for boundary_result in production warning-demo; do
+            if [[ -f "$MODULE_BOUNDARIES_EVIDENCE/$boundary_result/summary.md" ]]; then
+              cat "$MODULE_BOUNDARIES_EVIDENCE/$boundary_result/summary.md" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          if [[ ! -f "$MODULE_BOUNDARIES_EVIDENCE/production/result.json" ]]; then
+            printf '%s\n' 'Module boundary production inspection did not produce a result; inspect failed setup/execution steps.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Preserve raw evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: module-boundaries-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: error
+          # Do not upload disposable SDK/restore/build caches and copied binaries.
+          path: |
+            ${{ runner.temp }}/module-boundaries-evidence/setup/
+            ${{ runner.temp }}/module-boundaries-evidence/logs/
+            ${{ runner.temp }}/module-boundaries-evidence/production/*.json
+            ${{ runner.temp }}/module-boundaries-evidence/production/summary.md
+            ${{ runner.temp }}/module-boundaries-evidence/production/stages/
+            ${{ runner.temp }}/module-boundaries-evidence/warning-fixture/
+            ${{ runner.temp }}/module-boundaries-evidence/warning-demo/*.json
+            ${{ runner.temp }}/module-boundaries-evidence/warning-demo/summary.md
+            ${{ runner.temp }}/module-boundaries-evidence/warning-demo/stages/
+            ${{ runner.temp }}/module-boundaries-evidence/tests/*.txt
+            ${{ runner.temp }}/module-boundaries-evidence/tests/counts.json
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/source/
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/result.json
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/analysis.json
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/input-manifest.json
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/tool-manifest.json
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/invocation.json
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/command.json
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/stdout.txt
+            ${{ runner.temp }}/module-boundaries-evidence/tests/work/**/stderr.txt

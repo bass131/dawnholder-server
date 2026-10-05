@@ -2,6 +2,8 @@
 
 동결한 소스 입력에서 구조 snapshot과 비교 근거를 만든다. 기본 추출기는 Roslyn이며 CodeGraph와 두 도구 비교는 명시적으로 선택한다. 현재 HEAD를 새로 수집하는 도구는 아니다. 분석 상태와 명령 실행 상태를 별도로 기록한다.
 
+현재 checkout·Git blob의 서버 모듈 경계 검사는 [ModuleBoundaries 안내](../ModuleBoundaries/README.md)에서 찾는다.
+
 ## 실행 전제
 
 아래 Windows 명령은 저장소 루트의 PowerShell 7.6.6(`pwsh`)을 기준으로 한다. WSL Ubuntu, Python 3, Git, rsync, flock 및 [comparison-settings.json](comparison-settings.json)이 가리키는 동결 manifest·freeze-record·외부 참조가 필요하다. Roslyn과 Compare는 `global.json`의 SDK 10.0.301을 설정의 `dotnetRelativePath`에 준비해야 한다. CodeGraph 단독은 Roslyn restore/추출을 실행하지 않는다.
@@ -56,7 +58,13 @@ CodeGraph는 저장소의 고정 package/lock에 맞는 1.6.1 Linux x64 bundle, 
 
 ## 테스트와 과거 결과
 
-설치에 의존하지 않는 Python 테스트는 WSL에서 다음과 같이 실행한다.
+설치에 의존하지 않는 기본 Python 테스트는 WSL에서 다음과 같이 실행한다.
+SDK 공개 진입을 사용하는 모듈 경계 요구사항 suite는
+`MODULE_BOUNDARIES_TEST_WORK`가 없으면 사유와 함께 skip한다. 기본 discovery는
+이 suite의 import/discovery/setUp에서 외부 명령과 출력 쓰기가 없는지도 검사한다.
+독립 suite의 `MODULE_BOUNDARIES_INDEPENDENT_WORK`, 실제 소스 opt-in
+`MODULE_BOUNDARIES_INDEPENDENT_REAL`, 실행 계약 suite의
+`MODULE_BOUNDARIES_EXECUTION_WORK` 설정은 [새 도구의 테스트 안내](../ModuleBoundaries/README.md#테스트-opt-in)를 따른다.
 
 ```powershell
 wsl -d Ubuntu -- python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Architecture.Tests -p 'test_*.py' -v
@@ -85,6 +93,10 @@ python3 -B -m unittest discover -s 99_Tools/Architecture.Tests -t 99_Tools/Archi
 | `ARCHITECTURE_EVIDENCE_TOOL_ROOT` | 당시 실행한 도구 사본 디렉터리. 기록에 대응하는 파일의 실제 hash를 읽는다. |
 
 명시한 batch에 도구 출처를 지정하지 않거나 다른 코드가 들어 있으면 실패한다. 기록의 `implementationHead`만 믿거나 기록 hash끼리 비교하지 않는다. 당시 코드가 미커밋이었을 수도 있으므로 실제 바이트의 일치가 기준이다.
+
+이 폴더의 기본 비교 대상은 동결 입력을 추출·비교하는 도구다.
+현재 서버 소스 검사는 형제 [ModuleBoundaries](../ModuleBoundaries/README.md)의
+공개 진입과 정책에서 실행한다. 두 도구의 소스 집합과 실행 근거를 구분한다.
 
 이전 검증 batch `20261003T170218569325Z`도 보존된 도구 사본으로 재생할 수 있다.
 

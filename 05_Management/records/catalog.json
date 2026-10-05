@@ -3,7 +3,7 @@
   "revision": "2026-10-01-r2",
   "asOf": "2026-09-30T09:05:09Z",
   "sourceCommit": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
-  "scopeNote": "2026-09-30 09:05:09 UTC의 상태와 고정 과거 근거를 재구성한 설명용 스냅샷이다. 실시간 운영·GitHub 조회나 자동 갱신이 아니다. PR140~145는 전달된 최종 상태로 MERGED를 반영했다. P0는 정식 문서·예비조사·평가 준비 중이며 완료가 아니고 P1~P7은 미착수다. GameServer 저장·복원 연동, Management 운영 API·MCP 조회·3D 표현은 미완료/미구현이다. 과거 실행과 이번 기록 작성, 원문 정본과 탐색용 설명을 구분한다. 작성 지정 모델 gpt-6-astra, 확인된 실제 runtime unknown. Management 새 경로 앱과 실제 1280×720 검증은 이 기준시점에 미실행이며 이후 결과는 현재 goal에 별도로 기록한다. 2026-10-01-r2는 Management 문서 출처 6개를 동일 내용의 공개 Git commit·저장소 상대경로로 전환한 revision이다. asOf·sourceCommit·시스템/기록의 역사 내용은 유지하며 내용 최신성 또는 실행 검증의 갱신이 아니다.",
+  "scopeNote": "2026-09-30 09:05:09 UTC의 상태와 고정 과거 근거를 재구성한 설명용 스냅샷이다. 실시간 운영·GitHub 조회나 자동 갱신이 아니다. PR140~145는 전달된 최종 상태로 MERGED를 반영했다. 기준선·계약·평가는 정식 문서·예비조사·평가 준비 중이며 완료가 아니고 클라이언트/UI 적용부터 저장·복원 종합 검증까지의 후속 단계는 미착수다. GameServer 저장·복원 연동, Management 운영 API·MCP 조회·3D 표현은 미완료/미구현이다. 과거 실행과 이번 기록 작성, 원문 정본과 탐색용 설명을 구분한다. 작성 지정 모델 gpt-6-astra, 확인된 실제 runtime unknown. Management 새 경로 앱과 실제 1280×720 검증은 이 기준시점에 미실행이며 이후 결과는 현재 goal에 별도로 기록한다. 2026-10-01-r2는 Management 문서 출처 6개를 동일 내용의 공개 Git commit·저장소 상대경로로 전환한 revision이다. asOf·sourceCommit·시스템/기록의 역사 내용은 유지하며 내용 최신성 또는 실행 검증의 갱신이 아니다.",
   "sources": [
     {
       "id": "combat-map-code",
@@ -87,7 +87,7 @@
     },
     {
       "id": "s1-goal",
-      "title": "S1 즉시 적 피해",
+      "title": "즉시 피해 처리 책임 통합과 정적 CI 첫 적용",
       "kind": "git",
       "locator": "01_Phases/goals/2026-09-30-immediate-enemy-hit/goal.md",
       "revision": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
@@ -97,7 +97,7 @@
     },
     {
       "id": "s2-goal",
-      "title": "S2 패킷 표현",
+      "title": "서버 패킷 표현 책임 통합",
       "kind": "git",
       "locator": "01_Phases/goals/2026-09-30-server-packet-publication/goal.md",
       "revision": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
@@ -107,7 +107,7 @@
     },
     {
       "id": "s3-goal",
-      "title": "S3 종료 정리",
+      "title": "서버 종료 오류 경로의 자원 정리 보장",
       "kind": "git",
       "locator": "01_Phases/goals/2026-09-30-session-disconnect-cleanup/goal.md",
       "revision": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
@@ -117,7 +117,7 @@
     },
     {
       "id": "s4-goal",
-      "title": "S4 원격 보간",
+      "title": "원격 보간 계산과 Unity 적용 경계 분리",
       "kind": "git",
       "locator": "01_Phases/goals/2026-09-30-remote-interpolation/goal.md",
       "revision": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
@@ -127,7 +127,7 @@
     },
     {
       "id": "s5-goal",
-      "title": "S5 생성기 실패",
+      "title": "도구 실패 결과와 종합 회귀·보고",
       "kind": "git",
       "locator": "01_Phases/goals/2026-09-30-generator-exit-and-rollout-report/goal.md",
       "revision": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
@@ -137,7 +137,7 @@
     },
     {
       "id": "m2a-goal",
-      "title": "M2a 파티·퀘스트",
+      "title": "파티 멤버십과 퀘스트 상태·통보 분리",
       "kind": "git",
       "locator": "01_Phases/goals/2026-09-30-refactor-party-quest/goal.md",
       "revision": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
@@ -147,7 +147,7 @@
     },
     {
       "id": "m2b-goal",
-      "title": "M2b 스탯·현재 상태",
+      "title": "기본 스탯과 현재 상태·캡처·이동 값 분리",
       "kind": "git",
       "locator": "01_Phases/goals/2026-09-30-refactor-player-state/goal.md",
       "revision": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
@@ -157,7 +157,7 @@
     },
     {
       "id": "d0-goal",
-      "title": "D0 영속성 설계",
+      "title": "작은 범위의 DB 연동 설계와 구현 분할",
       "kind": "git",
       "locator": "01_Phases/goals/2026-09-29-persistence-design/goal.md",
       "revision": "c27b03e888986f2ec8c593cd6c626a9c515595e1",
@@ -177,51 +177,51 @@
     },
     {
       "id": "report-s1",
-      "title": "유지보수 보고서 #s1",
+      "title": "유지보수 보고서 · 즉시 피해 처리 책임 통합",
       "kind": "local",
       "locator": "C:/Dev/DawnHolder_Project/.backups/reports/2026-09-30-maintainability-rollout/index.html",
       "revision": "SHA256:C377B860455DFA071C01D692511C626A1258E29FDA289988D259C97A7363BBC0",
-      "section": "#s1",
+      "section": "즉시 피해 처리 책임 통합 (#s1)",
       "availability": "local-only",
       "note": "과거 실행 근거. 보고서의 OPEN 표시는 오래된 스냅샷이며 PR140~145는 후속 보정에서 MERGED. 테스트를 최신 main에서 다시 실행한 결과는 아니다."
     },
     {
       "id": "report-s2",
-      "title": "유지보수 보고서 #s2",
+      "title": "유지보수 보고서 · 서버 패킷 표현 책임 통합",
       "kind": "local",
       "locator": "C:/Dev/DawnHolder_Project/.backups/reports/2026-09-30-maintainability-rollout/index.html",
       "revision": "SHA256:C377B860455DFA071C01D692511C626A1258E29FDA289988D259C97A7363BBC0",
-      "section": "#s2",
+      "section": "서버 패킷 표현 책임 통합 (#s2)",
       "availability": "local-only",
       "note": "과거 실행 근거. 보고서의 OPEN 표시는 오래된 스냅샷이며 PR140~145는 후속 보정에서 MERGED. 테스트를 최신 main에서 다시 실행한 결과는 아니다."
     },
     {
       "id": "report-s3",
-      "title": "유지보수 보고서 #s3",
+      "title": "유지보수 보고서 · 서버 종료 오류 경로의 자원 정리 보장",
       "kind": "local",
       "locator": "C:/Dev/DawnHolder_Project/.backups/reports/2026-09-30-maintainability-rollout/index.html",
       "revision": "SHA256:C377B860455DFA071C01D692511C626A1258E29FDA289988D259C97A7363BBC0",
-      "section": "#s3",
+      "section": "서버 종료 오류 경로의 자원 정리 보장 (#s3)",
       "availability": "local-only",
       "note": "과거 실행 근거. 보고서의 OPEN 표시는 오래된 스냅샷이며 PR140~145는 후속 보정에서 MERGED. 테스트를 최신 main에서 다시 실행한 결과는 아니다."
     },
     {
       "id": "report-s4",
-      "title": "유지보수 보고서 #s4",
+      "title": "유지보수 보고서 · 원격 보간 계산과 Unity 적용 분리",
       "kind": "local",
       "locator": "C:/Dev/DawnHolder_Project/.backups/reports/2026-09-30-maintainability-rollout/index.html",
       "revision": "SHA256:C377B860455DFA071C01D692511C626A1258E29FDA289988D259C97A7363BBC0",
-      "section": "#s4",
+      "section": "원격 보간 계산과 Unity 적용 분리 (#s4)",
       "availability": "local-only",
       "note": "과거 실행 근거. 보고서의 OPEN 표시는 오래된 스냅샷이며 PR140~145는 후속 보정에서 MERGED. 테스트를 최신 main에서 다시 실행한 결과는 아니다."
     },
     {
       "id": "report-s5",
-      "title": "유지보수 보고서 #s5",
+      "title": "유지보수 보고서 · 도구 실패 결과와 종합 회귀·보고",
       "kind": "local",
       "locator": "C:/Dev/DawnHolder_Project/.backups/reports/2026-09-30-maintainability-rollout/index.html",
       "revision": "SHA256:C377B860455DFA071C01D692511C626A1258E29FDA289988D259C97A7363BBC0",
-      "section": "#s5",
+      "section": "도구 실패 결과와 종합 회귀·보고 (#s5)",
       "availability": "local-only",
       "note": "과거 실행 근거. 보고서의 OPEN 표시는 오래된 스냅샷이며 PR140~145는 후속 보정에서 MERGED. 테스트를 최신 main에서 다시 실행한 결과는 아니다."
     },
@@ -263,7 +263,7 @@
       "revision": "SHA256:D2649FE0DBE9039EFE201D419DE8EB202204E437347F0F28E44D6C5DC95BFD36",
       "section": "현재 기준선과 보존할 완료 결과·단계와 독립 완료조건",
       "availability": "local-only",
-      "note": "초안 승인 사실과 단계 범위의 근거. P0 정식 문서 준비 이후 상태는 후속 보정을 따른다."
+      "note": "초안 승인 사실과 단계 범위의 근거. 기준선·계약·평가의 정식 문서 준비 이후 상태는 후속 보정을 따른다."
     },
     {
       "id": "workspace-split",
@@ -347,11 +347,11 @@
     },
     {
       "id": "status-update",
-      "title": "Game Dev 최종 병합·P0 상태 보정",
+      "title": "Game Dev 최종 병합 / 기준선·계약·평가 상태 보정",
       "kind": "handoff",
       "locator": "msg_b5283836b43f @ 2026-09-30T09:05:09Z",
       "revision": "message:msg_b5283836b43f",
-      "section": "PR141/143/144/145 병합·최종 main·P0 준비·P1~P7 미착수",
+      "section": "PR141/143/144/145 병합 / 최종 main / 기준선·계약·평가 준비 / 클라이언트/UI 적용부터 저장·복원 종합 검증까지의 후속 단계 미착수",
       "availability": "local-only",
       "note": "메인으로 전달된 Game Dev 메시지의 기준시점 관찰. 기존 PR140/142 병합과 합쳐 PR140~145 MERGED로 보정한다. 실시간 조회·자동 갱신 결과가 아니다."
     }
@@ -365,17 +365,17 @@
       "responsibility": "GameSession은 세션 검증과 제출을, 클라이언트 NetworkService는 연결·수신 적용 경계를 소유한다.",
       "behavior": [
         "수신 프레임→핸들러→세션 검증·제출→맵 큐 순으로 요청을 전달한다.",
-        "M1b의 연결 generation 경계로 이전 연결의 결과와 현재 수명을 구분한다."
+        "클라이언트 연결 수명 정리의 연결 generation 경계로 이전 연결의 결과와 현재 수명을 구분한다."
       ],
       "implementationStatus": "기존 구현 있음 / 이번 기능 지도 재구성에서는 생산 코드 변경 없음",
-      "integrationStatus": "M1b PR132 완료·병합 / S3 PR143 병합",
-      "verificationStatus": "M3 과거 종합 회귀 근거 연결 / 이 카드의 전체 분기 개별 검증은 미확인",
+      "integrationStatus": "클라이언트 연결 수명 정리 PR132 완료·병합 / 서버 종료 오류 경로의 자원 정리 보장 PR143 병합",
+      "verificationStatus": "설정·주석 정리와 전체 회귀·재평가의 과거 근거 연결 / 이 카드의 전체 분기 개별 검증은 미확인",
       "limitations": [
         "정식 인증·다중 캐릭터·영속 class 입장 연동은 완료 기능이 아니다.",
         "모든 callback 경쟁·장시간 접속은 미검증."
       ],
       "nextSteps": [
-        "영속 class 확정 이후 spawn하는 P5 입장 계약을 후속 목표에서 연결한다."
+        "영속 class 확정 이후 spawn하는 게임 입장·공유 프로토콜 연동 입장 계약을 후속 목표에서 연결한다."
       ],
       "sourceIds": [
         "feature-map",
@@ -407,9 +407,9 @@
       ],
       "implementationStatus": "기존 구현 있음 / 이번 기능 지도 재구성에서는 생산 코드 변경 없음",
       "integrationStatus": "기준 commit에 포함 / 신규 실행 검증 아님",
-      "verificationStatus": "M3 과거 종합 회귀 근거 연결 / 이 카드의 전체 분기 개별 검증은 미확인",
+      "verificationStatus": "설정·주석 정리와 전체 회귀·재평가의 과거 근거 연결 / 이 카드의 전체 분기 개별 검증은 미확인",
       "limitations": [
-        "예측·전송 전체 재설계나 성능 계측은 이번 S단계 범위가 아니다."
+        "예측·전송 전체 재설계나 성능 계측은 이번 피해·패킷·종료·보간·도구 경계 정비 범위가 아니다."
       ],
       "nextSteps": [
         "물리·입력 계약을 바꿀 때 양쪽 소비자와 거부 경로를 확인한다."
@@ -440,11 +440,11 @@
         "평타는 GameSession.SubmitAttack→맵 큐→CombatSystem·액션, Dash는 SubmitSkillUse→맵 큐→SkillSystem·액션으로 들어간 뒤 공통 즉시 피해 처리로 이어진다.",
         "즉시 피해는 HP 반영→공격자 지정→Hit 후 치사 시 Death→보스이며 아직 clear 전일 때만 StageClear→적 제거→비보스만 respawn 등록→처치 callback 순서를 보존한다. 보스 재출현은 별도 경로다.",
         "공통 메서드는 생존 여부를 반환한다. 생존 적의 넉백은 공격별 정책으로 남고 즉시 피해의 음수 HP 통지도 유지한다.",
-        "S1 생산 비교 기준은 a3c4e15→2b533c7이며 삭제된 액션 후처리는 GameMap으로 이동한 것이다."
+        "즉시 피해 처리 책임 통합 생산 비교 기준은 a3c4e15→2b533c7이며 삭제된 액션 후처리는 GameMap으로 이동한 것이다."
       ],
-      "implementationStatus": "기존 전투 구현 + S1 공통 피해 처리 구현 완료",
+      "implementationStatus": "기존 전투 구현 + 즉시 피해의 공통 후처리 통합 완료",
       "integrationStatus": "PR140 MERGED / 기준 commit 반영",
-      "verificationStatus": "S1 신규12·.NET815 통과/전체820(기존skip5)·전투봇2 성공; 과거 고정 실행",
+      "verificationStatus": "즉시 피해 처리 통합의 신규12·.NET815 통과/전체820(기존skip5)·전투봇2 성공; 과거 고정 실행",
       "limitations": [
         "GameMap의 전투 결과·사망 연계 결합은 남는다.",
         "지연 피해 정책 통합·밸런스 변경·모든 동시성·성능 개선을 검증하지 않았다."
@@ -489,7 +489,7 @@
       ],
       "implementationStatus": "기존 구현 있음 / 이번 기능 지도 재구성에서는 생산 코드 변경 없음",
       "integrationStatus": "기준 commit에 포함 / 신규 실행 검증 아님",
-      "verificationStatus": "M3 과거 종합 회귀 근거 연결 / 이 카드의 전체 분기 개별 검증은 미확인",
+      "verificationStatus": "설정·주석 정리와 전체 회귀·재평가의 과거 근거 연결 / 이 카드의 전체 분기 개별 검증은 미확인",
       "limitations": [
         "전체 스킬 밸런스·애니메이션·모든 거부 조건의 개별 실행은 이 기록에서 미확인."
       ],
@@ -523,8 +523,8 @@
         "EnemyRegistry는 VisualFootOffset이 반영된 좌표를 공통 원격 보간에 전달한다."
       ],
       "implementationStatus": "기존 구현 있음 / 이번 기능 지도 재구성에서는 생산 코드 변경 없음",
-      "integrationStatus": "S1 PR140·S2 PR142·S4 PR144 병합",
-      "verificationStatus": "S2 실제 Tick 경로와 S4 실제 prefab·registry EditMode 계약 확인",
+      "integrationStatus": "즉시 피해 처리 책임 통합 PR140·서버 패킷 표현 책임 통합 PR142·원격 보간 계산과 Unity 적용 분리 PR144 병합",
+      "verificationStatus": "서버 패킷 표현 책임 통합 실제 Tick 경로와 원격 보간 계산과 Unity 적용 분리 실제 prefab·registry EditMode 계약 확인",
       "limitations": [
         "즉시 telegraph 발행은 기존 경로다.",
         "실제 플레이의 외관·오디오·jitter 체감은 이 근거로 보장하지 않는다."
@@ -561,17 +561,17 @@
       "responsibility": "서버 엔티티와 관련 시스템이 현재 상태를, Shared의 기본 스탯·공식이 양쪽 공통 정의를 소유한다.",
       "behavior": [
         "피해·사망·리스폰 판정은 서버에서 수행하고 클라이언트 HUD는 결과를 표시한다.",
-        "M2b는 mutable PlayerStats.Hp와 기본 정의의 혼동을 줄이고 캡처 뒤 공유 정의가 바뀌는 경로를 정리했다."
+        "기본 스탯과 현재 상태 분리는 mutable PlayerStats.Hp와 기본 정의의 혼동을 줄이고 캡처 뒤 공유 정의가 바뀌는 경로를 정리했다."
       ],
-      "implementationStatus": "기존 상태 구현 + M2b 분리 완료",
+      "implementationStatus": "기존 상태 구현 + 기본 스탯과 현재 상태 분리 완료",
       "integrationStatus": "PR135 완료·병합 / Shared 소비자 반영은 해당 목표 근거",
-      "verificationStatus": "M2b 양쪽 소비자 검증 목표 완료·M3 과거 회귀 연결",
+      "verificationStatus": "기본 스탯과 현재 상태 분리의 양쪽 소비자 검증 목표 완료 / 설정·주석 정리와 전체 회귀·재평가의 과거 근거 연결",
       "limitations": [
         "공개 Shared ABI 변경이므로 기존 바이너리 호환을 이름 유지로 보장하지 않는다.",
         "DTO와 snapshot이 있다는 사실은 DB 저장 구현을 뜻하지 않는다."
       ],
       "nextSteps": [
-        "D0의 저장 대상과 실행 중 임시 상태를 구분해 영속 연동을 진행한다."
+        "작은 범위의 DB 연동 설계와 구현 분할에서 정한 저장 대상과 실행 중 임시 상태를 구분해 영속 연동을 진행한다."
       ],
       "sourceIds": [
         "feature-map",
@@ -603,11 +603,11 @@
         "최초 EnterMap 또는 MapTransition→HP→등록 전 roster→본인 제외 join의 순서를 유지한다."
       ],
       "implementationStatus": "기존 구현 있음 / 이번 기능 지도 재구성에서는 생산 코드 변경 없음",
-      "integrationStatus": "M1c PR133 완료·병합 / S2 PR142 병합",
-      "verificationStatus": "M1c 완료 기반·S2 실제 최초 입장/portal 이동 계약 검증",
+      "integrationStatus": "클라이언트 씬 진입·맵 전환 정리 PR133 완료·병합 / 서버 패킷 표현 책임 통합 PR142 병합",
+      "verificationStatus": "클라이언트 씬 진입·맵 전환 정리 완료 기반 / 서버 패킷 표현 책임 통합 실제 최초 입장/portal 이동 계약 검증",
       "limitations": [
         "모든 씬 callback 경쟁·사람의 실제 플레이를 전수 검증한 것은 아니다.",
-        "DB Loading gate와 저장 class 확정은 후속 P5 계획이다."
+        "DB Loading gate와 저장 class 확정은 후속 게임 입장·공유 프로토콜 연동 계획이다."
       ],
       "nextSteps": [
         "기존 Ready 순서와 entry 경계를 보존하면서 영속 입장 계약을 추가한다."
@@ -640,16 +640,16 @@
       "responsibility": "PartyFlow·PartyRegistry·PartyState는 파티 상태를, PartyNotifier는 통지를 담당한다.",
       "behavior": [
         "Party 핸들러가 기능 흐름으로 요청을 전달하고 서버 결과가 client PartyState·초대 popup·멤버 HUD에 반영된다.",
-        "M2a는 Quest의 mutable PartyState 직접 변경을 복사 조회값·불변 결과 경계로 정리했다."
+        "파티 멤버십과 퀘스트 상태·통보 분리는 Quest의 mutable PartyState 직접 변경을 복사 조회값·불변 결과 경계로 정리했다."
       ],
       "implementationStatus": "기존 구현 있음 / 이번 기능 지도 재구성에서는 생산 코드 변경 없음",
-      "integrationStatus": "M2a PR134 완료·병합",
-      "verificationStatus": "M2a 완료 근거·M3 종합 회귀 / 모든 UI 상호작용은 미검증",
+      "integrationStatus": "파티 멤버십과 퀘스트 상태·통보 분리 PR134 완료·병합",
+      "verificationStatus": "파티 멤버십과 퀘스트 상태·통보 분리 완료 근거 / 설정·주석 정리와 전체 회귀·재평가 근거 / 모든 UI 상호작용은 미검증",
       "limitations": [
-        "P1의 PartyInvitePopup 기능 명령 분리와 binding 개선은 계획이다."
+        "클라이언트/UI 기능 명령·수명 정리의 PartyInvitePopup 기능 명령 분리와 binding 개선은 계획이다."
       ],
       "nextSteps": [
-        "P1에서 기존 pending 소비·popup 정책을 보존하는 작은 목표부터 적용한다."
+        "클라이언트/UI 기능 명령·수명 정리에서 기존 pending 소비·popup 정책을 보존하는 작은 목표부터 적용한다."
       ],
       "sourceIds": [
         "feature-map",
@@ -678,11 +678,11 @@
       "behavior": [
         "GameWorld의 처치 callback에서 Quest 진행을 갱신하고 기존 job 안에서 결과를 통지한다.",
         "클라이언트 QuestState·QuestProgressHud는 서버 결과를 표시한다.",
-        "D0 정책에서 quest와 보스 해금은 세션 한정이다."
+        "작은 범위의 DB 연동 설계와 구현 분할에서 정한 정책에 따라 quest와 보스 해금은 세션 한정이다."
       ],
       "implementationStatus": "기존 구현 있음 / 이번 기능 지도 재구성에서는 생산 코드 변경 없음",
-      "integrationStatus": "M2a PR134 완료·병합",
-      "verificationStatus": "M2a 완료·M3 과거 회귀; standalone PartyQuest를 모든 공동 처치 증명으로 확대하지 않음",
+      "integrationStatus": "파티 멤버십과 퀘스트 상태·통보 분리 PR134 완료·병합",
+      "verificationStatus": "파티 멤버십과 퀘스트 상태·통보 분리 완료 / 설정·주석 정리와 전체 회귀·재평가의 과거 근거; standalone PartyQuest를 모든 공동 처치 증명으로 확대하지 않음",
       "limitations": [
         "장기 퀘스트 저장·경제 보상 시스템은 현재 완료 범위가 아니다."
       ],
@@ -717,7 +717,7 @@
         "TryAdvance(deltaTime, out position)의 결과가 있을 때 adapter가 Transform에 적용한다.",
         "Initialize·SnapInterpolation·ClearBuffer의 서로 다른 reset 의미와 snapshot 직후 callback을 보존한다."
       ],
-      "implementationStatus": "기존 표현 + S4 상태 분리 구현 완료",
+      "implementationStatus": "기존 표현 + 원격 보간 상태와 Unity 적용 분리 완료",
       "integrationStatus": "PR144 MERGED",
       "verificationStatus": "Unity EditMode275/275·대상31·기준선adapter12; 기존자산28 hash 보존",
       "limitations": [
@@ -752,7 +752,7 @@
         "GameMap은 기존 publisher로 연결하는 얇은 진입점이다.",
         "입장 roster와 broadcast의 자기 제외·closing 세션 필터를 보존한다."
       ],
-      "implementationStatus": "S2 표현 책임 통합 구현 완료",
+      "implementationStatus": "서버 패킷 표현 책임 통합 구현 완료",
       "integrationStatus": "PR142 MERGED",
       "verificationStatus": "신규11·관련95·.NET826 통과/831(기존skip5); 실제 입장·이동·Tick 확인",
       "limitations": [
@@ -789,7 +789,7 @@
         "서버·클라이언트 양쪽 FrameValidator 계약을 확인한다.",
         "서버 Session은 최초 종료만 알리고 callback 이후 정리하며, 실패 시 원래 예외를 보존한다."
       ],
-      "implementationStatus": "기존 전송 + S3 종료 오류 수정 완료",
+      "implementationStatus": "기존 전송 + 서버 종료 오류 경로의 자원 정리 보장 수정 완료",
       "integrationStatus": "PR143 MERGED",
       "verificationStatus": "실제 loopback 신규5·관련22·.NET808 통과/813(기존skip5)",
       "limitations": [
@@ -822,17 +822,17 @@
       "responsibility": "PDL은 정의 원본, PacketGenerator는 생성, 각 소비자는 직렬화·호환성 검증을 담당한다.",
       "behavior": [
         "PDL→생성 diff→ProtocolVersion→서버/클라이언트/봇 소비자 순서로 변경 영향을 확인한다.",
-        "S5는 출력 실패를 exit1로 전달하며 생성 bytes와 XML 예외 의미는 유지한다."
+        "도구 실패 결과와 종합 회귀·보고에서 생성기 출력 실패를 exit1로 전달하도록 고쳤으며 생성 bytes와 XML 예외 의미는 유지한다."
       ],
-      "implementationStatus": "공유 계약·생성기 구현 + S5 실패 코드 수정 완료",
+      "implementationStatus": "공유 계약·생성기 구현 + 도구 실패 결과와 종합 회귀·보고의 생성기 수정 완료",
       "integrationStatus": "PR145 MERGED / Shared .NET Standard2.1 소비 계약 유지",
-      "verificationStatus": "S5 실제 subprocess3·.NET806 통과/811(기존skip5)·전체PDL 원시92915 bytes 일치",
+      "verificationStatus": "도구 실패 결과와 종합 회귀·보고의 생성기 검증: 실제 subprocess3·.NET806 통과/811(기존skip5)·전체PDL 원시92915 bytes 일치",
       "limitations": [
         "패킷 ID 재사용 금지. 필드 끝 추가도 자동 하위 호환으로 가정하지 않는다.",
         "원자적 파일 쓰기·TTY 대기는 검증/제공 범위 밖이다."
       ],
       "nextSteps": [
-        "P5 새 입장 wire가 확정되면 단일 writer가 PDL·생성물·버전·양쪽 사용처를 함께 변경한다."
+        "게임 입장·공유 프로토콜 연동의 새 입장 wire가 확정되면 단일 writer가 PDL·생성물·버전·양쪽 사용처를 함께 변경한다."
       ],
       "sourceIds": [
         "feature-map",
@@ -859,21 +859,21 @@
       "id": "persistence",
       "title": "DB·캐릭터 저장과 복원",
       "area": "후속 기반",
-      "summary": "D0의 저장 범위와 재접속 정책은 설계 완료다. DB schema 접속이 되어 있어도 GameServer가 실제 상태를 저장하고 복원하는 연동은 아직 완료되지 않았다.",
+      "summary": "작은 범위의 DB 연동 설계와 구현 분할에서 캐릭터 저장 범위와 재접속·복원 정책을 정했고, 설계 목표는 완료됐다. DB schema 접속이 되어 있어도 GameServer가 실제 상태를 저장하고 복원하는 연동은 아직 완료되지 않았다.",
       "responsibility": "서버가 게임 상태를 소유하고 후속 repository·authority·operation 계약이 안전한 저장과 복원 수명을 맡도록 설계한다.",
       "behavior": [
         "확정 정책: identity/class·안전 checkpoint, 최초 class 유지, 재접속 Town·풀 HP.",
         "quest/보스 해금은 세션 한정이며 게임 틱은 DB I/O 완료를 기다리지 않는다."
       ],
-      "implementationStatus": "D0 설계 완료 / GameServer 저장·복원 연동 미완료",
-      "integrationStatus": "D0 PR137 병합 / P1~P7 미착수",
-      "verificationStatus": "D0 독립 문서 리뷰 완료 / 실제 runtime commit·release·복구 실행 미완료",
+      "implementationStatus": "작은 범위의 DB 연동 설계와 구현 분할 완료 / GameServer 저장·복원 연동 미완료",
+      "integrationStatus": "작은 범위의 DB 연동 설계와 구현 분할 PR137 병합 / 클라이언트/UI 적용부터 저장·복원 종합 검증까지의 후속 단계 미착수",
+      "verificationStatus": "작은 범위의 DB 연동 설계와 구현 분할 독립 문서 리뷰 완료 / 실제 runtime commit·release·복구 실행 미완료",
       "limitations": [
         "schema 접속을 runtime 저장 성공으로 표시하지 않는다.",
         "crash 무손실 복구·임의 authority 탈취를 새로 약속하지 않는다."
       ],
       "nextSteps": [
-        "P2 기술 계약→P3 격리 SQL→P4 작업 수명→P5 입장→P7 실제 복구 검증을 순서대로 진행한다."
+        "영속 저장 기술 설계→저장소 구현·격리 SQL 검증→서버 저장 작업 큐·수명 정리→게임 입장·공유 프로토콜 연동→실제 저장·복원·복구 종합 검증·평가를 순서대로 진행한다."
       ],
       "sourceIds": [
         "d0-goal",
@@ -896,22 +896,22 @@
       "id": "engineering",
       "title": "작성 기준·회귀·개발 도구",
       "area": "개발 플랫폼",
-      "summary": "서버 테스트·headless bot·Unity 검증과 문서 계약을 연결한다. M0~M3와 S단계의 과거 실행을 이번 기록 작성 실적으로 합치지 않는다.",
+      "summary": "서버 테스트·headless bot·Unity 검증과 문서 계약을 연결한다. 리팩토링 운영과 실행·평가 기준선부터 설정·주석 정리와 전체 회귀·재평가까지의 작업과 피해·패킷·종료·보간·도구 경계 정비의 과거 실행을 이번 기록 작성 실적으로 합치지 않는다.",
       "responsibility": "Game Dev는 실행 전제·코드 계약·진행 goal을 유지하고 구현·독립 테스트·보고 역할을 분리한다.",
       "behavior": [
         "한정된 생산8파일에 표기 규칙을 오류 적용했다. CI가 설계 적절성 자체를 판정하는 것은 아니다.",
         "WSL helper는 workspace 잠금과 소유 프로세스 경계를 지키며 다른 7777 listener를 종료하지 않는다.",
         "인계는 접수·turn 시작·READY를 구분한다."
       ],
-      "implementationStatus": "기존 도구·S0 기준·정적 검사·인계 절차 완료",
-      "integrationStatus": "PR140~145 모두 MERGED / P0 준비 중",
+      "implementationStatus": "기존 도구, 작성·검증 기준 정비, 정적 검사, 인계 절차 완료",
+      "integrationStatus": "PR140~145 모두 MERGED / 기준선·계약·평가 준비 중",
       "verificationStatus": "과거 S합성 .NET834/839(기존skip5)·봇2/2; 합성 Unity 재실행 아님",
       "limitations": [
-        "M0→M3 29/32→31/32는 제한된 비맹검 답안 평가이며 전체 품질 점수가 아니다.",
-        "P0 평가 PASS를 선기록하지 않는다."
+        "리팩토링 운영과 실행·평가 기준선의 29/32→설정·주석 정리와 전체 회귀·재평가의 31/32는 제한된 비맹검 답안 평가이며 전체 품질 점수가 아니다.",
+        "기준선·계약·평가 작업의 평가 PASS를 선기록하지 않는다."
       ],
       "nextSteps": [
-        "P0에서 고정 과제·채점·모델/effort·열람/시간 측정 조건을 정하고 실제 평가를 수행한다."
+        "기준선·계약·평가에서 고정 과제·채점·모델/effort·열람/시간 측정 조건을 정하고 실제 평가를 수행한다."
       ],
       "sourceIds": [
         "tooling-contract",
@@ -989,7 +989,7 @@
         "개별 GM 명령·자동제재·복구 횟수/간격·인증은 미결정."
       ],
       "nextSteps": [
-        "Game Dev와 P6 명령·조회·이벤트·권한·완료 의미를 합의한다.",
+        "Game Dev와 운영툴·서버의 명령·조회·이벤트·권한·완료 의미를 합의한다.",
         "저장 완료 기반 종료는 GameServer 영속 연동 결과에 의존한다."
       ],
       "sourceIds": [
@@ -1089,9 +1089,9 @@
       "id": "verify-immediate-hit",
       "type": "검증",
       "title": "실제 공격 경로의 결과와 순서 보존",
-      "summary": "신규 12개, 전체 .NET 815 통과·기존 5 skip, 전투 봇 2개 성공을 과거 S1 근거로 연결한다.",
+      "summary": "신규 12개, 전체 .NET 815 통과·기존 5 skip, 전투 봇 2개 성공을 과거 즉시 피해 처리 책임 통합 근거로 연결한다.",
       "reason": "추출한 메서드만 검사하면 실제 액션의 호출 순서와 후속 넉백 회귀를 놓칠 수 있다.",
-      "status": "과거 고정 S1 실행 완료 / 이번 재실행 아님",
+      "status": "과거 고정 즉시 피해 처리 책임 통합 실행 완료 / 이번 재실행 아님",
       "systemIds": [
         "combat",
         "character-state",
@@ -1230,7 +1230,7 @@
       "title": "파티·진행도와 캐릭터 상태의 소유 분리",
       "summary": "Party는 멤버십·초대를, Quest는 진행·해금과 결과를, Notifier는 패킷 생성을 맡는다. 기본 스탯과 현재 상태·캡처 값도 구분했다.",
       "reason": "다른 영역의 mutable 상태 직접 쓰기와 캡처 뒤 바뀔 수 있는 공유 정의를 줄이기 위한 변경이다.",
-      "status": "M2a PR134·M2b PR135 완료·병합",
+      "status": "파티 멤버십과 퀘스트 상태·통보 분리 PR134 / 기본 스탯과 현재 상태 분리 PR135 완료·병합",
       "systemIds": [
         "party",
         "quest",
@@ -1254,9 +1254,9 @@
     {
       "id": "verify-m3",
       "type": "검증",
-      "title": "M0~M3의 완료 기반과 회귀",
-      "summary": "M1b 연결 수명·M1c 맵 진입·M2 상태 모델·M3 회귀를 이미 완료한 기반으로 연결한다.",
-      "reason": "S단계 설명이 이전 완료 영역을 미착수로 되돌리거나 새 실적으로 재계산하지 않도록 한다.",
+      "title": "리팩토링 운영과 실행·평가 기준선부터 설정·주석 정리와 전체 회귀·재평가까지의 완료 기반",
+      "summary": "클라이언트 연결 수명, 씬 진입·맵 전환, 파티·퀘스트 소유권·상태 모델, 설정·주석 정리와 전체 회귀·재평가를 이미 완료한 기반으로 연결한다.",
+      "reason": "피해·패킷·종료·보간·도구 경계 정비 설명이 이전 완료 영역을 미착수로 되돌리거나 새 실적으로 재계산하지 않도록 한다.",
       "status": "과거 단계 완료·병합 / 이번 재실행 아님",
       "systemIds": [
         "connection",
@@ -1276,12 +1276,12 @@
         "report-measurement"
       ],
       "details": [
-        "M3 당시 .NET 803/808(기존 skip 5), Unity EditMode 249, 자동 실제 씬 10, 실제 서버 왕복 1, 봇 4종을 확인했다.",
-        "M0 29/32→M3 31/32는 동일 네 과제의 비맹검 답안 평가였다. 정확 모델·effort는 unknown이며 탐색 계측이 불완전했다."
+        "설정·주석 정리와 전체 회귀·재평가 당시 .NET 803/808(기존 skip 5), Unity EditMode 249, 자동 실제 씬 10, 실제 서버 왕복 1, 봇 4종을 확인했다.",
+        "리팩토링 운영과 실행·평가 기준선의 29/32→설정·주석 정리와 전체 회귀·재평가의 31/32는 동일 네 과제의 비맹검 답안 평가였다. 정확 모델·effort는 unknown이며 탐색 계측이 불완전했다."
       ],
       "limitations": [
         "해당 수치를 모든 시스템의 개별 완전 검증으로 해석하지 않는다.",
-        "S단계 재평가·인과적 생산성 향상·실제 탐색 시간 개선을 측정하지 않았다."
+        "피해·패킷·종료·보간·도구 경계 정비의 재평가·인과적 생산성 향상·실제 탐색 시간 개선을 측정하지 않았다."
       ],
       "nextSteps": []
     },
@@ -1319,9 +1319,9 @@
       "id": "decision-d0",
       "type": "결정",
       "title": "저장할 상태와 재접속 정책 확정",
-      "summary": "D0는 identity/class와 안전 checkpoint 범위를 정한 설계 완료다.",
+      "summary": "작은 범위의 DB 연동 설계와 구현 분할은 identity/class와 안전 checkpoint 범위를 정한 설계 목표이며 완료됐다.",
       "reason": "실행 중 임시 상태를 모두 저장한다고 가정하지 않고 좁은 제품 계약을 고정한다.",
-      "status": "D0 PR137 설계 완료·병합 / GameServer 저장·복원 미완료",
+      "status": "작은 범위의 DB 연동 설계와 구현 분할 PR137 완료·병합 / GameServer 저장·복원 미완료",
       "systemIds": [
         "persistence",
         "character-state",
@@ -1338,7 +1338,7 @@
         "DB schema 접속과 GameServer의 acquire/load·commit/release·복원 연결은 다른 완료 상태다."
       ],
       "limitations": [
-        "이번 D0 근거는 문서 검토이며 실제 SQL 장애 재현이나 runtime 저장 성공 근거가 아니다."
+        "작은 범위의 DB 연동 설계와 구현 분할의 근거는 문서 검토이며 실제 SQL 장애 재현이나 runtime 저장 성공 근거가 아니다."
       ],
       "nextSteps": [
         "기술 명세·격리 SQL·비동기 수명·입장 gate·실제 복구 순으로 독립 목표를 진행한다."
@@ -1347,10 +1347,10 @@
     {
       "id": "plan-contracts",
       "type": "계획",
-      "title": "P0 기준선 준비와 P1~P7 후속 단계",
-      "summary": "P0는 정식 목표 문서와 예비 조사·평가 준비 단계다. P1~P7 구현은 미착수다.",
+      "title": "기준선·계약·평가 준비와 클라이언트·영속성 및 운영툴·서버 계약 후속 계획",
+      "summary": "기준선·계약·평가는 정식 목표 문서와 예비 조사·평가 준비 단계다. 클라이언트/UI 적용부터 저장·복원 종합 검증까지의 후속 단계 구현은 미착수다.",
       "reason": "유지보수 계약과 실제 저장·복원을 단계별 독립 완료조건으로 다룬다.",
-      "status": "P0 진행·완료 아님 / P1~P7 미착수",
+      "status": "기준선·계약·평가 진행·완료 아님 / 클라이언트/UI 적용부터 저장·복원 종합 검증까지의 후속 단계 미착수",
       "systemIds": [
         "connection",
         "party",
@@ -1367,11 +1367,11 @@
         "status-update"
       ],
       "details": [
-        "P1 UI 기능 명령·수명, P2 D1a 기술 명세, P3 D1b 저장소·격리 SQL, P4 D2 서버 작업 수명, P5 D3 입장·프로토콜, P6 Management 계약, P7 D4 종합 복구 검증이다.",
-        "P0 정식 goal의 Game Dev 소유권은 유지한다. Management는 관찰 시점을 표시한 계획 표현을 제공한다."
+        "후속 단계는 클라이언트/UI 기능 명령·수명 정리, 영속 저장 기술 설계, 저장소 구현·격리 SQL 검증, 서버 저장 작업 큐·수명 정리, 게임 입장·공유 프로토콜 연동, 운영툴·서버 명령·조회·이벤트 계약, 저장·복원·복구 종합 검증·평가로 나뉜다.",
+        "기준선·계약·평가 정식 goal의 Game Dev 소유권은 유지한다. Management는 관찰 시점을 표시한 계획 표현을 제공한다."
       ],
       "limitations": [
-        "초안 승인·브랜치 준비·문서 검토를 구현 또는 P0 완료로 취급하지 않는다.",
+        "초안 승인·브랜치 준비·문서 검토를 구현 또는 기준선·계약·평가 완료로 취급하지 않는다.",
         "후속 SQL 실행 대상과 권한·명령 목록은 별도로 구체화해야 한다."
       ],
       "nextSteps": []
@@ -1382,7 +1382,7 @@
       "title": "작성 기준과 독립 검증·인계",
       "summary": "메인은 범위와 통합을, 구현자는 생산 코드를, 별도 검증자는 계약 기반 테스트를 소유한다.",
       "reason": "구조 이동과 행동 보존·오류 검출을 구분하고 작업 수신 상태를 명시하기 위해서다.",
-      "status": "S0 기준 완료 / PR140 정적 검사·PR141 인계 절차 병합",
+      "status": "작성·검증 기준 정비 완료 / PR140 정적 검사·PR141 인계 절차 병합",
       "systemIds": [
         "engineering",
         "management-records"
@@ -1393,7 +1393,7 @@
         "status-update"
       ],
       "details": [
-        "S1/S2의 한정된 생산 8파일에 SA1201·SA1202·IDE0011을 오류 적용했다. 이는 표기 규칙이며 아키텍처 자동 판정은 아니다.",
+        "즉시 피해 처리 책임 통합/서버 패킷 표현 책임 통합의 한정된 생산 8파일에 SA1201·SA1202·IDE0011을 오류 적용했다. 이는 표기 규칙이며 아키텍처 자동 판정은 아니다.",
         "인계의 input_accepted·turn_started·실제 READY를 구분하며 침묵을 수신 확인으로 취급하지 않는다."
       ],
       "limitations": [
@@ -1404,7 +1404,7 @@
     {
       "id": "verify-combined",
       "type": "검증",
-      "title": "당시 S단계 소스 합성 회귀",
+      "title": "당시 피해·패킷·종료·보간·도구 경계 정비 소스 합성 회귀",
       "summary": "고정된 미병합 소스를 합성한 과거 결과는 .NET 834 통과·기존 skip 5, 봇 2/2다.",
       "reason": "각 PR 개별 결과와 함께 변경 조합의 실행 근거를 남긴다.",
       "status": "과거 합성 검증 완료 / 최신 main 재실행 아님",
@@ -1419,7 +1419,7 @@
         "report-evidence"
       ],
       "details": [
-        "입력은 main a3c4e15 + S2(S1 포함)2e6b8c3 + S3 c459201 + S4 4f084af + S5 7b4ce82였다.",
+        "입력은 main a3c4e15 + 서버 패킷 표현 책임 통합(즉시 피해 처리 책임 통합 포함) 2e6b8c3 + 서버 종료 오류 경로의 자원 정리 보장 c459201 + 원격 보간 계산과 Unity 적용 분리 4f084af + 도구 실패 결과와 종합 회귀·보고 7b4ce82였다.",
         "WSL .NET SDK10.0.300/runtime10.0.8에서 강제 build exit0·warning4·error0, 전체 839 중 pass834·기존 skip5."
       ],
       "limitations": [
@@ -1506,7 +1506,7 @@
         "Docker 분산 운영·정식 인증·경제 시스템은 이번 범위에 자동 포함되지 않는다."
       ],
       "nextSteps": [
-        "P6 command/query/event·권한·진행과 완료 의미를 합의하고 D2 저장 수명과 연결한다."
+        "운영툴·서버의 command/query/event·권한·진행과 완료 의미를 합의하고 서버 저장 작업 큐·수명과 연결한다."
       ]
     },
     {

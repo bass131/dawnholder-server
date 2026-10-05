@@ -42,14 +42,16 @@ function makeElectronHost() {
   });
   const image = { isEmpty: vi.fn(() => false) };
   const session = { defaultSession: {
-    setPermissionRequestHandler: vi.fn(), setPermissionCheckHandler: vi.fn(),
+    setPermissionRequestHandler: vi.fn(), setPermissionCheckHandler: vi.fn(), on: vi.fn(),
   } };
+  // R-14 local asset delivery: main now registers the fixed diagram scheme. Its contract is tested in diagram-asset-desktop.test.ts.
+  const protocol = { registerSchemesAsPrivileged: vi.fn(), handle: vi.fn() };
   const BrowserWindow = vi.fn(function (_options: import('electron').BrowserWindowConstructorOptions) { return window; });
   const Tray = vi.fn(function () { return tray; });
   const Menu = { buildFromTemplate: vi.fn((items: Array<{ label?: string; type?: string; click?: () => void }>) => items) };
   const nativeImage = { createFromPath: vi.fn(() => image) };
   const ipcMain = { handle: vi.fn() };
-  return { app, window, tray, image, closeEvent, BrowserWindow, Tray, Menu, nativeImage, session, ipcMain };
+  return { app, window, tray, image, closeEvent, BrowserWindow, Tray, Menu, nativeImage, session, ipcMain, protocol };
 }
 
 let host: ReturnType<typeof makeElectronHost>;

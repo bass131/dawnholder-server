@@ -6,7 +6,8 @@
 
 ## 문서 지도
 
-- [현재 공동 조회 MCP 목표](goals/2026-10-01-shared-read-mcp/goal.md): 읽기 전용 공동 조회의 범위·계약·상태·검증 근거.
+- [현재 시스템 카드와 구현 설명 목표](goals/2026-10-02-system-cards/goal.md): 승인 범위·현재 단계·대표 도식 확인 관문·남은 작업의 원본.
+- [공동 조회 MCP 목표](goals/2026-10-01-shared-read-mcp/goal.md): 기존 읽기 전용 공동 조회의 범위·계약·검증 근거.
 - [공동 조회 MCP 사용 안내](MCP.md): 빌드·조회 순서·버전 처리와 실제 세션 연결 전 검토할 설정 예시.
 - [이전 세션 종료 정리 목표](goals/2026-10-01-session-closeout/goal.md).
 - [문맥 정정 목표](goals/2026-10-01-context-corrections/goal.md): 사실·상태·출처 정정과 독립 검토·병합 결과의 원본.
@@ -47,6 +48,10 @@ npm run desktop:start
 ```
 
 Node 지원 범위는 [package.json](frontend/package.json)의 engines를 따른다. 의존성은 lockfile로 고정한다. dev는 `127.0.0.1:5173`, preview는 `127.0.0.1:4173`만 사용하며 포트 충돌 시 실패한다. 다른 프로세스를 종료하지 않는다.
+
+실제 운영툴(Electron)을 띄우는 E2E·스크린샷·화면 확인은 보조 디스플레이에서 수행한다. 실행마다 앱 내부 `screen` API로 주/보조 디스플레이의 이름·id, bounds/workArea, scaleFactor를 다시 확인하고, 가능하면 처음 표시 전에 창을 배치한다. 실행 근거에 표시된 디스플레이 이름과 실제 창 bounds를 기록하고, 창이 보조 workArea에 완전히 들어갔는지도 기록한다. Electron의 DIP 좌표·물리 px·OS 배율과 앱 zoom을 구분하며, 당일 좌표를 고정 설정으로 쓰거나 과거 실행의 준수를 소급하지 않는다.
+
+보조 디스플레이가 없거나 요청한 창이 그 안에 들어가지 않으면 임의 축소·배율 변경·주 모니터 대체 없이 중지하고 파트 리드에게 보고한다. OS 수준 합성 마우스·키보드·computer use와 전면화는 금지하며, 앱 내부 창 배치·관측·캡처 수단을 사용한다. 실행 하네스에 위치 지정 방법을 두고, 제품 코드 변경이 필요하면 먼저 파트 리드를 통해 메인에 범위 판단을 요청한다.
 
 저장소의 [dotnet-tests CI](../.github/workflows/dotnet-tests.yml)는 .NET build/test만 실행하며 `05_Management`의 npm test/build는 실행하지 않는다. CI 성공과 위 로컬 Management 검증 실적은 별개다.
 

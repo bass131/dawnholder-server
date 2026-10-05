@@ -14,7 +14,7 @@
 | 담당 후보 | 소유 조율 대상이며 확정 배정이 아님 |
 | 상태 | 아래 세 값 중 하나 |
 
-상태는 `대기`, `goal 승격 → 링크`, `폐기 + 이유`로 제한한다. 승격 시 실제 `goal.md` 링크를, 폐기 시 이유와 결정 출처를 기록한다. 승격한 작업의 진행·검증·완료 결과는 링크된 goal에서 관리한다. 최초 12개와 아래 이관 후보 7개는 모두 `대기`다. 최초 12개 ID·출처·조건·7필드는 보존한다.
+상태는 `대기`, `goal 승격 → 링크`, `폐기 + 이유`로 제한한다. 승격 시 실제 `goal.md` 링크를, 폐기 시 이유와 결정 출처를 기록한다. 승격한 작업의 진행·검증·완료 결과는 링크된 goal에서 관리한다. 최초 12개와 아래 이관 후보 7개는 등록 당시 모두 `대기`였다. 현재 `verification-depth-policy`의 승격은 해당 행에서 연결하며 나머지 후보의 상태는 유지한다. 최초 12개 ID·출처·조건·7필드는 보존한다.
 
 ## 후보
 
@@ -27,7 +27,7 @@
 | `goal-loop-improvement` | 작업 루프 자기 개선·그래프 설계 | 반복 작업의 개선 구조 검토 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 현 루프의 실제 수행 근거 대조 | Rules | 대기 |
 | `powershell-all-evidence` | 파트 PS 정리 후 All 비교·승격 제안과 문서 근거 인용/집계 비교 helper | 세 파트 정리 결과를 원시 근거와 대조하고 PS 정책을 판단 | 메인 전달·2026-10-03·`msg_8639aeaf7a12`(08:32:32Z, 인용 helper 채택)·`msg_d5453356cc75`(10:17:49Z, 집계 helper 통합)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달; `msg_c1412c982ac5`(10:39:09Z, 이번 목표에서 All/helper를 백로그로 분리); 메인 전달 `msg_7bfc0ca278f5`(2026-10-04T17:11:41Z), Gardener2 후보1의 문서 인용 결함 2건·사람 검출 관측을 기존 인용검사 근거에 연결 | **촉발 조건: 세 파트(GameDev·Architecture·Management) PS 정리 병합 완료.** 이후 별도 goal 승격 검토 | Rules | 대기 |
 | `workflow-definition-lint` | workflow 정의 lint | workflow 정의 오류 조기 검출; 전달된 [이전 목표의 결함 #4](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md) | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | actionlint류 도구 도입 사용자 승인 | Rules | 대기 |
-| `verification-depth-policy` | 검증 강도 차등·작은 작업 예외 | 검증 범위 차등의 미결 사용자 판단 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 메인→사용자 정책 결정; 현 독립 검증 유지 | 메인→사용자 | 대기 |
+| `verification-depth-policy` | 검증 강도 차등·작은 작업 예외 | 승인된 검증 강도 시범의 goal 연결 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 등록 시 조건: 메인→사용자 정책 결정; 현 독립 검증 유지. 현재 결정: [승인 근거](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#요구사항-원천과-적용-결정)·[검증 강도 시범 정본](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범) | 메인→사용자 | goal 승격 → [운영 정본 반영](../../01_Phases/goals/2026-10-05-operating-canon/goal.md) |
 | `rule-document-pruning` | 규칙 문서 가지치기 | 규칙 유지 범위의 미결 사용자 판단 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 기존 명시 정비와 구분해 메인→사용자 정책 결정 | 메인→사용자 | 대기 |
 | `human-code-walkthrough` | 사람용 코드 따라읽기 문서 | 사람용 탐색 문서 도입의 미결 사용자 판단 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 목적·유지비와 도입 여부를 메인→사용자가 결정 | 메인→사용자 | 대기 |
 | `post-db-static-analysis` | DB 뒤 정적 분석기 단계 | 유지보수성 후속 강화 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | DB 연동 뒤, 대상·담당 소유 조율 | 관련 영역 소유자와 조율 필요 | 대기 |
@@ -50,7 +50,9 @@ PS 정책 판단에서는 PSSA 진단 severity, checker 상태/exit, CI job 실�
 
 `npm-engine-warning`은 warning 파일럿으로 npm 버전 증거를 남기고 EBADENGINE annotation/요약 노출과 경고 포함·미포함 fixture를 확인할 후보다. 실측 뒤 경고 해소 방법 또는 승격 여부를 사용자가 판단하며 Management의 engines 계약과 조율한다. 이번 등록은 도구 구현·CI 변경·engines 수정이나 해소/승격 결정을 뜻하지 않는다.
 
-`verification-depth-policy`, `rule-document-pruning`, `human-code-walkthrough`는 각각 별도의 미결 정책이다. 사용자 결정 전 현행 독립 검증과 CODE_CONVENTION의 주석 정책을 유지한다. 기존에 개별 승인된 문서 정비를 일반 가지치기 승인으로 확대하지 않는다.
+`verification-depth-policy`는 [운영 정본 반영](../../01_Phases/goals/2026-10-05-operating-canon/goal.md) goal로 승격했다. 승인된 [검증 강도 4주 시범](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범)의 문서 실사·강/약 구분은 독립 세션을 생략하는 작은 작업 예외를 허용하지 않는다.
+
+`rule-document-pruning`, `human-code-walkthrough`는 각각 별도의 미결 정책이다. 사용자 결정 전 현행 독립 검증과 CODE_CONVENTION의 주석 정책을 유지한다. 기존에 개별 승인된 문서 정비를 일반 가지치기 승인으로 확대하지 않는다.
 
 `server-operations-view`의 [kciter 서버 모니터링 분석 가이드](https://kciter.so/posts/server-monitoring-analysis-guide/)는 사용자 전달 참고 URL이다. 본문은 읽지 않았으며 요약하거나 구현 근거로 확정하지 않는다.
 
