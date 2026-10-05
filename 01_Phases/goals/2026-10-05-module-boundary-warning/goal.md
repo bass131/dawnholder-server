@@ -298,6 +298,9 @@ release 뒤 동일 incarnation `9a29cbb8-fbfc-41b0-bc0f-57615fcfd5b0`, idle·완
 - release·동일 incarnation `eb869dee-0b0d-416c-a0f0-d237419c14e6`·idle·완료 화면·빈 prompt를 확인해 close했고, **09:45:09Z 실제 Architecture 목록은 Astra만**이었다. 원시는 `gardener-{release,end-idle,end-show,end-screen,close}.json`, `gardener-post-close-summary.json`이다. Gardener의 한정 후속 메시지가 mailbox 출력에 없었으나 보존 receipt로 읽었다는 관찰은 원문5.2절에 남아 있다. 이를 런타임 전송 실패로 확정하지 않는다.
 - 병합 commit `4ab4d674`의 main push [.NET run37289496939](https://github.com/bass131/dawnholder-server/actions/runs/37289496939)는 success다. `pr-ci/merge-main-run.json`과 `pr-ci/merge-main-log.txt`에서 format-check 통과·빌드 경고4/오류0·테스트924 중919통과/5skip을 직접 읽었다. 후속 PR183의 main commit `05cb171` 실행은 별도이며 Gardener 09:42:31Z 관측 당시 진행 중이었다. PR182 결과에 더하지 않는다.
 
+신규 Opus의 종료 문서 실사 Task `task_1d3ac0427e7f`/Dispatch `ctx_abce1b75cdd5`는 고정 head `99b628195a9f4c345b053145cb306cc83d436799`의 CURRENT·goal 두 파일(+44/-6)을 통과로 판정했다(`msg_ca37379bd614`, 2026-10-05T10:03:23Z). 원문 `closeout-review/verdict.md` SHA256 `982919AAA2634EE22E4E5081664C359E696E8ED8544ABE3A9E3755B8872E5A54` 전체를 Astra가 읽고 보호24파일 차이0·clean을 대조했다(`closeout-review-astra-source-check.json`). 제품·테스트·CI 재실행 판정이 아니다. 동일 incarnation·idle·빈 prompt·release/close 뒤 10:05:27Z 실제 Architecture 목록은 Astra만이었다(`closeout-review-post-close-summary.json`).
+
+메인 `msg_d72d119ff51e`(10:06:31Z, `closeout-review-main-interpretation-decision.json`)는 원문 말미 「병합 승인 근거가 아니다」를 사용자 개별 승인을 대신하지 않고 PR 상태·CI가 실사 범위 밖이라는 경계로 판단했다. 고정99b6281의 독립 문서 통과 근거로 사용하며 표현 수정·새 판정은 불필요하다는 메인 결정이다. O-1~O-6은 다음 계획 기록만 남기는 처리에 동의했다. 이 결정을 PR184 사용자 병합 승인으로 격상하지 않는다. 이 두 문단과 아래 관찰 연결은 검증 후의 Astra 결과 기록이며 고정 입력/원문은 보존한다.
 종료 기록만 별도 `docs/module-boundary-warning-closeout-20261005` 브랜치에 모았다. 다음 기능 테스트 goal의 착수 브랜치가 아니다. 문서 통합과 메인/사용자의 종료 점검이 끝난 뒤 R-8로 메인이 이 Astra pane을 닫고 새 Astra를 연다. 새 Astra는 현재 identity와 READY·새 goal의 범위를 확인하며 이 Run/Dispatch를 실행 권한으로 재사용하지 않는다.
 
 ## 다음 계획 후보
@@ -308,6 +311,7 @@ release 뒤 동일 incarnation `9a29cbb8-fbfc-41b0-bc0f-57615fcfd5b0`, idle·완
 - **Windows 하네스 경로 예산 사전 검사**: Gardener3절 후보2, #ENV-1과 재검증 work/d의2건을 연결한다. 실행 전 Windows 경로·접미 예산을 확인하는 helper/fixture 제안이며 WSL→Windows 실행에 한정된 근거다. [BACKLOG](../../../00_Document/operations/BACKLOG.md)의 `representative-platform-fixtures`와 인접하지만 새 채택·구현은 아니다.
 - 보고-원시 연결6건은 기존 `powershell-all-evidence`·`goal-state-drift`, 무보호 Git 조회2건은 기존 `contract-context-check`의 추가 근거로만 넘긴다. 집계·원시는 Gardener2.2절/3절이며 새 검사·정본 규칙을 채택하지 않는다. 숫자는 Gardener가 선택한 같은 부류 기준의 회고 집계이며 전체 저장소 집계가 아니다.
 
+- 종료 문서 실사의 **O-1~O-6**은 `closeout-review/verdict.md`의 「설계 관찰(비차단)」에 원시와 대안을 보존했다. 경로 표기·설명 표지·메시지 원시 연결·당시 생성 시각의 현재 재확인 한계·메인 근사 시각 불일치·제목 앞 빈 줄 관찰이며 번호 결함은 없다. 사용자 현재 목표 우선 지시에 따라 이번에 다듬지 않고 다음 계획의 기록 품질 후보로만 넘긴다. Gardener의 새 후보2개와 별개인 비차단 문서 관찰이고, 추가 검사 채택·구현은 없다.
 ## 다음 goal 사전 결정
 
 메인 `msg_0937ac1fc5f3`(2026-10-05T09:36:42Z)가 전달한 사용자 원문은 「대시보드 결정 응답: 1) 백로그 마감 - Rules·CodeMap 종료 뒤 다음 작업을 병렬로 정할지 → A 두 파트 병렬 착수 · 2) 백로그 마감 - 운영툴 「작업 현황」 화면 후보를 폐기할지 → A 폐기」다. 원문과 메인 설명은 `next-goal-predecision-main.json`, 수신 회신은 `next-goal-predecision-ack.json`에 보존했다. 사용자 직접 입력과 메인이 전달한 설명을 구분하며 현재 goal은 확대하지 않는다.
