@@ -56,11 +56,11 @@ describe('system discovery and evidence', () => {
     const user = await enter();
     await user.click(screen.getByRole('button', { name: /^변경·결정·검증·계획/ }));
     await user.selectOptions(screen.getByRole('combobox', { name: '기록 종류' }), '계획');
-    await user.click(screen.getByText('P0 기준선 준비와 P1~P7 후속 단계'));
-    expect(screen.getByText('P0 진행·완료 아님 / P1~P7 미착수')).toBeVisible();
+    await user.click(screen.getByText('기준선·계약·평가 준비와 클라이언트·영속성 및 운영툴·서버 계약 후속 계획'));
+    expect(screen.getByText(/^기준선·계약·평가 진행·완료 아님 \/ 클라이언트\/UI 적용부터 저장·복원 종합 검증까지의 후속 단계 미착수$/)).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'DB·캐릭터 저장과 복원 →' }));
     const detail = screen.getByRole('region', { name: '선택한 시스템 상세' });
-    expect(within(detail).getByText(/D0 설계 완료 \/ GameServer 저장·복원 연동 미완료/)).toBeVisible();
+    expect(within(detail).getByText('작은 범위의 DB 연동 설계와 구현 분할 완료 / GameServer 저장·복원 연동 미완료')).toBeVisible();
     const evidence = detail.querySelector(':scope > .record-detail-body > .record-evidence > summary');
     expect(evidence).not.toBeNull(); await user.click(evidence!);
     expect(within(evidence!.parentElement!).getByText('01_Phases/goals/2026-09-29-persistence-design/goal.md')).toBeVisible();

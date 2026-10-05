@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import DevelopmentRecords from './DevelopmentRecords';
+import SystemCardsView from './systemCards/SystemCardsView';
+import ThemeImage from './theme/ThemeImage';
 
 const sections = {
   operations: { title: '서버 운영', description: '서버 상태와 원본 로그를 확인합니다.' },
@@ -59,10 +61,13 @@ function Users() {
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<Section>('operations');
+  const [developmentView, setDevelopmentView] = useState<'cards' | 'records'>('cards');
   const section = sections[activeSection];
   return (
     <div className="management">
+      <a className="skip-link" href="#management-section">본문으로 건너뛰기</a>
       <div className="sidebar">
+        <ThemeImage name="ledger-head" className="ledger-brand-image" />
         <div className="brand"><span className="brand-mark" aria-hidden="true">D</span><h1><span>Dawnholder</span>{' '}<span className="brand-subtitle">Management</span></h1></div>
         <nav aria-label="관리 영역">{navigation.map((key, index) => (
           <button className="nav-item" key={key} type="button" aria-pressed={activeSection === key} aria-controls="management-section" onClick={() => setActiveSection(key)}><Icon name={key} /><span className="priority">{index + 1}</span>{' '}<span className="nav-title">{sections[key].title}</span></button>
@@ -73,14 +78,20 @@ export default function App() {
         <header className="toolbar"><div className="breadcrumb"><span>Management</span><Icon name="arrow" /><span>{section.title}</span></div><span className="toolbar-context">로컬 워크스페이스</span></header>
         <main>
           <section id="management-section" aria-labelledby="section-heading">
-            <div className="page-heading"><h2 id="section-heading">{section.title}</h2><p>{section.description}</p></div>
+            {activeSection === 'development' && <h2 id="section-heading" className="visually-hidden">개발 현황</h2>}
+            {activeSection !== 'development' && <div className="page-heading"><h2 id="section-heading">{section.title}</h2><p>{section.description}</p></div>}
             <aside className="connection-notice" aria-label="연결 상태"><strong>관리 기능 미연결</strong><p>{activeSection === 'development' ? '시스템 기록은 로컬 파일에서 읽습니다. 서버의 실시간 상태는 미연결입니다.' : '실제 상태와 이력은 확인할 수 없습니다.'}</p></aside>
             {activeSection === 'operations' && <Operations />}
             {activeSection === 'users' && <Users />}
-            <div hidden={activeSection !== 'development'}><DevelopmentRecords /></div>
+            <div hidden={activeSection !== 'development'}>
+              <div className="development-tabs" aria-label="개발 현황 보기"><button type="button" aria-pressed={developmentView === 'cards'} onClick={() => setDevelopmentView('cards')}>시스템 카드</button><button type="button" aria-pressed={developmentView === 'records'} onClick={() => setDevelopmentView('records')}>개발 기록 · 기록 편집</button></div>
+              <div hidden={developmentView !== 'cards'}><SystemCardsView active={activeSection === 'development' && developmentView === 'cards'} openRecords={() => setDevelopmentView('records')} /></div>
+              <div hidden={developmentView !== 'records'}><DevelopmentRecords /></div>
+            </div>
           </section>
         </main>
       </div>
+      <footer className="app-status"><span>관리 기능 미연결 · 서버 실시간 상태 미연결</span><span>로컬 자료 · 자동 갱신 안 됨</span></footer>
     </div>
   );
 }

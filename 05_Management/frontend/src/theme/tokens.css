@@ -1,0 +1,103 @@
+@font-face { font-family: Galmuri11; src: url('./assets/Galmuri11-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+:root {
+  color-scheme: light; color: #2a231b; background: #e9dfc9;
+  --surface: #fffaf0; --border: #a8946e; --muted: #5f5241; --accent: #155c57;
+  --page: #fffaf0; --text: #2a231b; --paper: #fbf3df; --wood: #3b2a1e;
+}
+body { background: #e9dfc9; word-break: keep-all; overflow-wrap: anywhere; }
+h2, h3, h4, h5 { color: var(--text); }
+.management { height: 100vh; min-height: 0; padding-bottom: 32px; container-type: inline-size; }
+.sidebar { padding: 8px 8px 16px; background: linear-gradient(#3b2a1e9e, #3b2a1e9e), url('./assets/tex-wood.png'); color: #f5ecda; border-color: #24170d; }
+.ledger-brand-image { width: 176px; height: 96px; align-self: center; margin-bottom: 8px; }
+.brand { gap: 8px; padding: 8px; }
+.brand h1 { font: 700 12px/1.6 Galmuri11, "Malgun Gothic", sans-serif; }
+.brand-mark, .brand-subtitle, .sidebar-footer { color: #f5ecda; }
+.sidebar nav { margin-top: 24px; }
+.nav-item, .nav-item .icon, .priority { color: #f5ecda; }
+.nav-item:hover, .nav-item[aria-pressed="true"] { color: #f5ecda; background: #5d4432; border-radius: 0; }
+.nav-item[aria-pressed="true"]::before { background: #e3b24a; width: 4px; }
+.nav-item[aria-pressed="true"] .icon { color: #f5ecda; }
+.workspace { display: flex; flex-direction: column; min-height: 0; background: #ece3cf; }
+.toolbar { min-height: 48px; padding: 12px 20px; background: #f7f1e3; }
+.breadcrumb > span:first-child, .breadcrumb .icon, .toolbar-context { color: #5f5241; }
+main { overflow: auto; width: 100%; min-height: 0; padding: 12px 20px 20px; }
+.page-heading h2 { font: 700 24px/1.5 Galmuri11, "Malgun Gothic", sans-serif; }
+.connection-notice { padding-bottom: 8px; margin-bottom: 8px; color: #5f5241; }
+.connection-notice strong, .connection-notice p { color: #5f5241; }
+.connection-notice strong::before { background: #7d5200; border-radius: 0; }
+.app-status { position: fixed; bottom: 0; width: 100%; height: 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 16px; background: #2b1d13; color: #f5ecda; font-size: 12px; z-index: 10; }
+.app-status > span:first-child::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 8px; background: #e3b24a; }
+.pixel-image { image-rendering: pixelated; object-fit: contain; }
+.image-fallback { display: inline-block; font-weight: 700; text-align: center; }
+.skip-link { position: fixed; z-index: 20; left: 8px; top: -80px; padding: 8px 16px; background: #fffaf0; color: #155c57; }
+.skip-link:focus { top: 8px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+button, input, select, textarea { color: #2a231b; font: inherit; }
+button { background: #fffaf0; border-color: #8a7650; cursor: pointer; }
+button:disabled { cursor: default; }
+:where(button, a, input, select, textarea, summary):focus-visible, :where(h3, h4, h5)[tabindex]:focus { outline: 3px solid #0b57d0; outline-offset: 3px; }
+.sidebar :focus-visible, .app-status :focus-visible { outline-color: #ffd66b; }
+[hidden] { display: none !important; }
+/* Existing records retain their editor behavior; the shared surfaces use the ledger palette. */
+.work-panel, .panel-heading, .panel-footer, .record-entry, .record-source, .record-editor, .record-snapshot, .record-empty, .record-system, .record-detail, .record-table { background: #fffaf0; border-color: #a8946e; }
+.summary-item dt, .summary-value, .summary-reason, .panel-heading > span, .log-empty p, .table-empty p, .panel-footer, .operations-bar p, .row-state, .table-empty h4, .record-muted { color: #5f5241; }
+.record-runtime-bar, .record-snapshot, .record-filters, .record-intro, .record-runtime-notice { color: #2a231b; }
+.record-link, .record-links button, .record-tabs button, .record-editor-actions button, .record-editor textarea, .record-filters input, .record-filters select { background: #fffaf0; color: #155c57; border-color: #8a7650; }
+.record-tabs button[aria-pressed='true'], .record-system[aria-pressed='true'] { background: #e5f0e9; color: #155c57; }
+.record-missing { color: #9b2c22; }
+.control-buttons button { background: #e9dfc9; color: #5f5241; }
+
+.record-intro h3,
+.record-detail-body,
+.record-detail-group h4,
+.record-entry summary,
+.record-entry-body,
+.record-source h4,
+.record-source dd,
+.record-snapshot dd,
+.record-editor > summary,
+.record-file-label input {
+  color: var(--text);
+}
+
+.snapshot-tag,
+.record-runtime-bar > span,
+.record-file-label,
+.record-filters label,
+.record-filters input::placeholder,
+.guide-search input::placeholder,
+.record-source dt,
+.record-snapshot dt,
+.record-source p,
+.record-empty p,
+.record-editor,
+.user-table th,
+.evidence-row p {
+  color: var(--muted);
+}
+
+/* Status lists also appear on dark cards; only the light detail uses these tokens. */
+.record-detail .record-status dt {
+  color: var(--muted);
+}
+
+.record-detail .record-status dd {
+  color: var(--text);
+}
+
+.record-type,
+.record-evidence > summary {
+  color: var(--accent);
+}
+
+/* The existing link hover has a dark background and needs inverse text. */
+.record-link:hover {
+  color: var(--surface);
+}
+
+.development-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid #a8946e; }
+.development-tabs button { padding: 8px 16px; background: #e4d6b6; color: #2a231b; border: 0; border-top: 3px solid transparent; border-radius: 4px 4px 0 0; font-size: 13px; }
+.development-tabs button[aria-pressed='true'] { border-top-color: #1f6b66; color: #174f4b; background: #ece3cf; font-weight: 700; }
+@media (max-width: 820px) { .management { grid-template-columns: 150px minmax(0, 1fr); } .ledger-brand-image { display: none; } }
+@media (max-width: 560px) { .management { display: flex; flex-direction: column; } .sidebar { padding: 4px 8px; } .brand, .sidebar-footer { display: none; } .sidebar nav { display: flex; margin-top: 0; } .nav-item { justify-content: center; } .priority { display: none; } .workspace { flex: 1; } main { padding: 8px 12px; } .app-status > span:last-child { display: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

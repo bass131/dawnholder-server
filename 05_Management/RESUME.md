@@ -9,14 +9,14 @@
 ## 최소 읽기 순서
 
 1. 루트 [AGENTS](../AGENTS.md)와 [현재 규칙 적용 goal](goals/2026-10-01-routing-adoption/goal.md). PR153 종료 근거는 [세션 종료 정리 goal](goals/2026-10-01-session-closeout/goal.md), PR151 종료 근거는 [문맥 정정 goal](goals/2026-10-01-context-corrections/goal.md)에서 확인한다.
-2. [현재 공동 조회 MCP goal](goals/2026-10-01-shared-read-mcp/goal.md): 승인 범위·현재 단계·실행 근거와 남은 결정의 원본. [공동 조회·로그 합의](goals/2026-09-30-system-records/shared-read-agreements.md)는 사용자와 정한 순서·첫 구현 경계·후속 로그 계약이다. PR147 병합과 당시 검증은 [기존 goal](goals/2026-09-30-system-records/goal.md#현재-상태)을 따른다.
+2. [현재 시스템 카드와 구현 설명 goal](goals/2026-10-02-system-cards/goal.md): 승인 범위·현재 단계·실행 근거·대표 도식 확인 관문과 남은 작업의 원본. 현재 상단과 최신 결정, 활성 작업 계약을 먼저 읽는다. 기존 읽기 MCP의 근거는 [공동 조회 goal](goals/2026-10-01-shared-read-mcp/goal.md), 후속 로그 계약은 [공동 조회·로그 합의](goals/2026-09-30-system-records/shared-read-agreements.md)에 둔다. PR147 병합과 당시 검증은 [기존 goal](goals/2026-09-30-system-records/goal.md#현재-상태)을 따른다.
 3. 세션 배치는 루트 [RESUME의 세션 진입 배치](../00_Document/operations/RESUME.md#세션-진입-배치)를 따른다. 실제 다단계 작업을 재개할 때 [목표 루프](../.agents/skills/dawnholder-goal-loop/SKILL.md)와 [실행 안내](../00_Document/operations/DEVELOPMENT.md)의 영향 범위를 읽는다. 과거 전체 소스·로그·대화를 모으지 않는다.
 
 ## 재개 첫 행동
 
 이번 세션에 허용된 범위와 지시 출처를 먼저 확인한다. 이어 `git status --short --branch`와 `git log -1 --format="%H %s" -- 05_Management`로 실제 로컬 변경·문서 커밋을 확인하고 위 goal의 관찰과 비교한다. 맥락 갱신만으로 후속 보류가 해제되지는 않는다.
 
-과거 문서 checkpoint `8c6fbd57` 이식과 문맥 정정은 PR151 병합으로 끝났다. [당시 종료 기록](goals/2026-09-30-system-records/goal.md#오늘-작업-종료다음-세션-재개)의 이식 절차를 다시 실행하지 않는다. 읽기 전용 MCP 재개 범위는 [현재 goal](goals/2026-10-01-shared-read-mcp/goal.md)로 확정됐다. 해당 goal의 단계와 실제 로컬 변경을 대조해 이어가며, 서버 등록·로그 조회·쓰기·실행 제어는 계속 후속 범위다. MCP 정본은 management-active 작업 트리이며 실제 개발 세션의 연결 설정 적용은 별도 결정이다.
+과거 문서 checkpoint `8c6fbd57` 이식과 문맥 정정은 PR151 병합으로 끝났다. [당시 종료 기록](goals/2026-09-30-system-records/goal.md#오늘-작업-종료다음-세션-재개)의 이식 절차를 다시 실행하지 않는다. 현재 재개 범위는 [시스템 카드와 구현 설명 goal](goals/2026-10-02-system-cards/goal.md)을 따른다. 실제 로컬 변경과 해당 goal의 최신 결정·활성 작업 계약을 대조해 이어가며, 자동 압축 뒤에도 이 확인을 반복한다. 서버 등록·로그 조회·MCP 쓰기·실행 제어와 실제 개발 세션의 MCP 연결 설정은 이 목표의 범위가 아니다. MCP 정본은 management-active 작업 트리다.
 
 ## 소유권과 다음 결정
 
