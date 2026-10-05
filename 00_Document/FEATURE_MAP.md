@@ -16,7 +16,7 @@
 | 포탈·맵 이동 | `Handlers/Zone/EnterPortalHandler.cs` → `GameSession.SubmitEnterPortal` → `Maps/Transitions/MapMigration.cs`; `Maps/PortalTable.cs` | `Network/Handlers/Zone/MapTransitionHandler.cs`, `Network/SceneRouter.cs` |
 | 파티 | `Handlers/Party/` → `Party/PartyFlow.cs`; `PartyRegistry.cs`, `PartyState.cs`, `PartyNotifier.cs` | `Network/Handlers/Party/`, `State/PartyState.cs`, `UI/PartyInvitePopup.cs` → `PartyInviteResponseCommand.cs`, `PartyMemberHud.cs` |
 | 처치 진행·보스 해금 | `Loop/GameWorld.cs`의 처치 콜백 → `Quest/QuestRegistry.cs`의 solo/party 진행·해금; `QuestConstants.cs` | `Network/Handlers/Quest/`, `State/QuestState.cs`, `UI/QuestProgressHud.cs` |
-| 아이템·인벤토리·재화 | `Handlers/Inventory/` → `GameSession.SubmitInventoryRequest/SubmitItemUse` → `Items/InventoryRegistry.cs`의 연결 등록·상태 → `InventoryTransitions.cs`; 처치 입력은 `GameWorld.MakeMap` → `InventoryRegistry.EnqueueKill/ApplyKill` → `KillRewardPolicy.cs` | PR1은 공유 데이터와 v17 패킷 계약까지. 상태 미러·수신 핸들러·인벤토리 UI는 PR2에서 구현 |
+| 아이템·인벤토리·재화 | `Handlers/Inventory/` → `GameSession.SubmitInventoryRequest/SubmitItemUse` → `Items/InventoryRegistry.cs`의 연결 등록·상태 → `InventoryTransitions.cs`; 처치 입력은 `GameWorld.MakeMap` → `InventoryRegistry.EnqueueKill/ApplyKill` → `KillRewardPolicy.cs` | `Network/Handlers/Inventory/` → `State/InventoryState.cs`·`InventorySnapshotState.cs`; `MapEntryCoordinator.Ready` → `Network/InventoryRequestController.cs`의 재조회·사용/결과 → `UI/InventoryPanel.cs`·`InventoryPanelView.cs` |
 
 ## 공통 계약
 
