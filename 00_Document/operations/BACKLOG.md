@@ -25,7 +25,7 @@
 | `diagram-design` | 도식 디자인 개선 | 설명 그림의 개선 요청 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 구체 화면·불편 확인과 소유 조율 | Rules·Management 협의 | 대기 |
 | `report-response-format` | ASD-STE100·HTML 답변 방식 | 보고 방식 탐색 요청 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 프로젝트 적합성 확인과 도입 여부 사용자 판단 | Rules | 대기 |
 | `goal-loop-improvement` | 작업 루프 자기 개선·그래프 설계 | 반복 작업의 개선 구조 검토 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 현 루프의 실제 수행 근거 대조 | Rules | 대기 |
-| `powershell-all-evidence` | 파트 PS 정리 후 All 비교·승격 제안과 문서 근거 인용/집계 비교 helper | 세 파트 정리 결과를 원시 근거와 대조하고 PS 정책을 판단 | 메인 전달·2026-10-03·`msg_8639aeaf7a12`(08:32:32Z, 인용 helper 채택)·`msg_d5453356cc75`(10:17:49Z, 집계 helper 통합)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달; `msg_c1412c982ac5`(10:39:09Z, 이번 목표에서 All/helper를 백로그로 분리) | **촉발 조건: 세 파트(GameDev·Architecture·Management) PS 정리 병합 완료.** 이후 별도 goal 승격 검토 | Rules | 대기 |
+| `powershell-all-evidence` | 파트 PS 정리 후 All 비교·승격 제안과 문서 근거 인용/집계 비교 helper | 세 파트 정리 결과를 원시 근거와 대조하고 PS 정책을 판단 | 메인 전달·2026-10-03·`msg_8639aeaf7a12`(08:32:32Z, 인용 helper 채택)·`msg_d5453356cc75`(10:17:49Z, 집계 helper 통합)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달; `msg_c1412c982ac5`(10:39:09Z, 이번 목표에서 All/helper를 백로그로 분리); 메인 전달 `msg_7bfc0ca278f5`(2026-10-04T17:11:41Z), Gardener2 후보1의 문서 인용 결함 2건·사람 검출 관측을 기존 인용검사 근거에 연결 | **촉발 조건: 세 파트(GameDev·Architecture·Management) PS 정리 병합 완료.** 이후 별도 goal 승격 검토 | Rules | 대기 |
 | `workflow-definition-lint` | workflow 정의 lint | workflow 정의 오류 조기 검출; 전달된 [이전 목표의 결함 #4](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md) | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | actionlint류 도구 도입 사용자 승인 | Rules | 대기 |
 | `verification-depth-policy` | 검증 강도 차등·작은 작업 예외 | 검증 범위 차등의 미결 사용자 판단 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 메인→사용자 정책 결정; 현 독립 검증 유지 | 메인→사용자 | 대기 |
 | `rule-document-pruning` | 규칙 문서 가지치기 | 규칙 유지 범위의 미결 사용자 판단 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 기존 명시 정비와 구분해 메인→사용자 정책 결정 | 메인→사용자 | 대기 |
@@ -41,6 +41,8 @@
 `powershell-all-evidence`는 All 비교·승격 제안과 인용/집계 helper를 **한 후보**로 묶는다. 세 파트 PS 정리의 실제 병합 완료 뒤 별도 goal에서 최신 main을 측정한다. 이번 하네스 목표의 구현·종료 범위에는 포함하지 않으며, helper를 먼저 구현하지 않는다. 과거 PS289를 현재 잔여 수로 가정하거나 파트 회신만으로 All 재측정을 완료했다고 기록하지 않는다.
 
 승격 검토의 근거에는 인용의 경로·줄·JSON Pointer·값 대조와 집계의 파일/규칙/파트 수·최소 줄·진단 identity 차이·소유 맵(존재 여부와 unknown)을 포함한다. 원시 인용 대조와 집계 생성의 책임을 나누고 의미 판정은 독립 Opus가 맡는다. 속성 순서만 다른 JSON·섞인 줄·소유 불명 경로 등 외부 관찰 가능한 fixture로 검증할 후보이며 아직 구현·실행한 결과가 아니다.
+
+PR177 Gardener2의 [정리 후보1](../../.backups/verification/2026-10-04-teammate-onboarding/gardener2-report.md#정리-후보)은 `goal.md:51` 원본의 없는 관측 인용과 `sol-report.md:44`의 없는 label 인용 **2건**을 기록했고, 둘 다 사람 검토에서 검출했다. 메인이 전달한 사용자 A 결정은 이 원시 관측을 기존 인용검사 근거에 연결하는 것뿐이다. [전달 원문](../../.backups/verification/2026-10-05-operating-canon/main-gardener-decision.json)의 범위대로 기존 촉발 조건을 유지하고 새 helper·행·검사를 구현하지 않는다.
 
 PS 정책 판단에서는 PSSA 진단 severity, checker 상태/exit, CI job 실패 여부를 따로 실측한다. 목표가 기록한 현행 선택 PS 진단의 exit1과 warning 파일럿의 충돌 지점을 확인하고, 이미 존재하는 차단 효과를 이름 변경만으로 새 성과로 기록하지 않는다. 기존 CI 완화나 새 error gate 적용은 메인→사용자 결정 뒤 별도 동작 변경으로 다룬다.
 
@@ -63,7 +65,7 @@ PS 정책 판단에서는 PSSA 진단 severity, checker 상태/exit, CI job 실�
 | ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
 |---|---|---|---|---|---|---|
 | `registration-error-repair` | 도구 등록 오류의 수리 안내 | Architecture O2로 전달된 등록 누락 진단에 수정 방법이 없음 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda의 Architecture O2 안건 직접 대조, 개별 판정 원시 미확인 | 해당 오류 원문/현재 동작 재확인·Formatting 코드 GameDev 소유 조율 | GameDev·Rules 협의 | 대기 |
-| `contract-context-check` | 위임 계약과 사전 맥락 누락의 검사화 | 규칙 원문 누락·읽기 순서 이탈의 반복 여부 검토 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda의 Management P-01 사례, 사건 원시 미확인 | 현행 메모/원문 계약과 실제 이탈 근거 대조·검사 범위/오탐 검토 | Rules·해당 파트 | 대기 |
+| `contract-context-check` | 위임 계약과 사전 맥락 누락의 검사화 | 규칙 원문 누락·읽기 순서 이탈의 반복 여부 검토 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda의 Management P-01 사례, 사건 원시 미확인; 메인 전달 `msg_7bfc0ca278f5`(2026-10-04T17:11:41Z), Gardener2 후보2의 helper 중복 2회·CRLF 거짓 불일치·메모 선행 이탈 1건·birthtime 재설정 관측 연결 | 현행 메모/원문 계약과 실제 이탈 근거 대조·검사 범위/오탐 검토 | Rules·해당 파트 | 대기 |
 | `intermediate-commit-validation` | 중간 커밋의 보존·검증 확인 | GameDev 중간 tree가 단계별 검증 원칙과 달랐다는 안건 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda 안건, 개별 중간 tree/실행 미확인 | 해당 SHA·보존 동작·실행 근거와 GameDev 계획 대조 | GameDev·Rules 협의 | 대기 |
 | `goal-state-drift` | goal 상태 기록 형식과 드리프트 검사 | goal 산문 상태/시점 정정 중 다른 오류가 재발한 안건 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda의 Architecture 문서 #1→#4 및 Rules Gardener 후속 관찰, 개별 실패 원시 미확인 | 다음 Gardener/현재 goal의 실제 상태 근거·형식/검사 비용 대조 | Rules·각 파트 | 대기 |
 | `representative-platform-fixtures` | 대표 입력과 플랫폼 실행 근거 | PR166 Changed의 TS0건 통과 뒤 Linux JSON import 후보 오류 | 메인 전달 inventory E·`msg_168d9aa35710`(2026-10-03); replan-agenda 및 이전 맥락 goal의 PR167 실제 Linux/독립28회귀 근거 | PR167에서 이미 고친 범위 제외·향후 대표 fixture/플랫폼 필요를 실제 결함에 한정 검토 | Rules·도구 소유자 | 대기 |
@@ -73,3 +75,14 @@ PS 정책 판단에서는 PSSA 진단 severity, checker 상태/exit, CI job 실�
 E절의 「다음 일」27개 정리·ID/goal 링크 드리프트는 Management의 `05_Management/goals/2026-10-02-system-cards/goal.md`에 이미 예정된 **백로그 메뉴 후속 목표**로 연결한다. management-active 원문의 「첫 재계획 사용자 결정」·백로그 후속 계약(`msg_6e281afe2167`)·「범위 밖 목록 — 다음 계획으로 이관」을 대조했다. 현재 시스템 카드 goal에는 주입하지 않고 새 후보를 중복 등록하지 않는다. Management 전체 corpus·기록 소개/상세·창/배율 복원·코드 보기·매핑 드리프트·I-03~05도 그 goal의 출처 있는 범위 밖 표를 정본으로 연결한다([해당 worktree 진입](CURRENT.md)).
 
 Architecture 기능 테스트 CI 파일럿은 architecture-active의 `01_Phases/goals/2026-10-03-codegraph-adapter-cleanup/goal.md` 「PR 경계와 범위 밖」에 보존된 다음 계획 첫 후보다. 실제 goal/보존 workflow를 대조했고 중복 후보를 만들지 않는다. 다른 checkout에만 있는 목표의 경로·상태는 [CURRENT](CURRENT.md)에서 해당 worktree를 찾아 확인하며 이 문서에 상태를 복사하지 않는다. 외부 URL 내용 확인이나 운영 화면 구현은 이 이관 작업에서 수행하지 않는다.
+
+PR177 Gardener2의 [정리 후보2](../../.backups/verification/2026-10-04-teammate-onboarding/gardener2-report.md#정리-후보)는 원문 대조 helper의 독립 구현 **2회**, CRLF 꼬리로 인한 거짓 불일치, 메모 선행의 실제 이탈 **1건**, 다시 쓰기에서 생성 시각이 재설정되어 birthtime 사후 검사가 거짓 위반을 낸 관측을 남겼다. [사용자 A 전달](../../.backups/verification/2026-10-05-operating-canon/main-gardener-decision.json)은 `contract-context-check`의 근거 연결만 허용했다. 기존 선행 조건을 유지하고 구현은 후속에 두며, `goal-state-drift` 행은 이번 결정으로 갱신하지 않는다. 이 단락의 수치는 Gardener 원문 관측이며 이번 작성자가 새로 실행한 helper 결과가 아니다.
+
+## 마감 뒤 후보
+
+등록 전 기존 ID의 중복 부재를 확인했다. 아래 등록은 메인 `msg_05ba75ccd7f9`(2026-10-05 02시대 KST)이 전달한 후속 경계이며 새 goal 착수·제품 구현·실제 도달성 재검증의 완료를 뜻하지 않는다.
+
+| ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
+|---|---|---|---|---|---|---|
+| `persistence-recovery-post-deadline` | 영속화 제한 복구·principal 실증·전체 시험 행렬·crash 복구 | 기존 두 번째 PR의 PersistenceRecovery·Windows principal 실증·D1a 전체 행렬·crash 복구를 마감 뒤로 분리 | GameDev `msg_e1afafb84002`(2026-10-04T15:05:07Z), [전달 원문](../../.backups/verification/2026-10-05-operating-canon/msg_e1afafb84002.json); 메인 `msg_05ba75ccd7f9` 재전달, 승인된 [파트별 범위 사본](../../.backups/verification/2026-10-05-operating-canon/sources/plan-scopes-draft.md) | 11월 전시회 마감 뒤 별도 goal 승격 검토·현재 GameDev goal의 종료/보존 자원·실제 환경 경계 재확인; 저장소 자체의 마감용 구현은 게임 저장 고리 goal과 구분 | GameDev | 대기 |
+| `enemy-hit-dead-guard` | 즉시 적 타격의 IsDead 사전 가드 | `ApplyImmediateEnemyHit`의 죽은 대상 사전 거부 검토 후보; 실제 도달성은 이번 문서 작업에서 재검증하지 않음 | GameDev `msg_0a650b7e1c8b`(2026-10-04T16:11:42Z), [전달 원문](../../.backups/verification/2026-10-05-operating-canon/msg_0a650b7e1c8b.json)의 Content 전달 근거 `resume-content-dead-guard-candidate.json`·담당 goal; 메인 `msg_05ba75ccd7f9` 재전달 | 11월 전시회 마감 뒤 실제 경로·보존 전투 동작 재확인 및 코드 주인과 범위 조율 | GameDev·Content 협의 | 대기 |
