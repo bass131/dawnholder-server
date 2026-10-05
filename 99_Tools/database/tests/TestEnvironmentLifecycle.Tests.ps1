@@ -772,8 +772,8 @@ foreach ($case in @(
     $run = Invoke-LifecycleRun -Scenario $draft -Arguments $case -RealReader
     Assert-True -Name ("draft plan $($case.Action) stops before the lock file, manifest and every I/O boundary") `
         -Condition ($run.Completed -and $run.Message -cmatch '^Draft plan cannot execute' -and
-            -not [IO.File]::Exists($draft.ManifestPath + '.lock') -and -not [IO.File]::Exists($draft.ManifestPath) -and
-            @(Find-Calls -Run $run -Pattern '^(Open|Sql\.|AccountAbsent|GetLocalUser|Migrations\.)').Count -eq 0) `
+        -not [IO.File]::Exists($draft.ManifestPath + '.lock') -and -not [IO.File]::Exists($draft.ManifestPath) -and
+        @(Find-Calls -Run $run -Pattern '^(Open|Sql\.|AccountAbsent|GetLocalUser|Migrations\.)').Count -eq 0) `
         -Detail (Format-RunDetail -Run $run)
 }
 $boundaryText = Read-FixtureText -Path (Join-Path $draft.Root 'run01.boundary.json')
@@ -820,10 +820,10 @@ Assert-True -Name 'marker bootstrap runs only after CreateDatabase is Done with 
     -Condition ($journal -cmatch 'CreateDatabase:Done,InitializeDatabaseMarkers:Pending$') -Detail $journal
 Assert-True -Name 'Create records the exact database identity and leaves state Created with both steps Done' `
     -Condition ($before -ceq 'Planned' -and $create.Completed -and -not $create.Threw -and
-        $manifest.State -ceq 'Created' -and $null -ne $manifest.DatabaseIdentity -and
-        [string]$manifest.DatabaseIdentity.DatabaseGuid -ceq $fixtureDatabaseGuid -and
-        (Get-StepStatus -Manifest $manifest -Name 'CreateDatabase') -ceq 'Done' -and
-        (Get-StepStatus -Manifest $manifest -Name 'InitializeDatabaseMarkers') -ceq 'Done') `
+    $manifest.State -ceq 'Created' -and $null -ne $manifest.DatabaseIdentity -and
+    [string]$manifest.DatabaseIdentity.DatabaseGuid -ceq $fixtureDatabaseGuid -and
+    (Get-StepStatus -Manifest $manifest -Name 'CreateDatabase') -ceq 'Done' -and
+    (Get-StepStatus -Manifest $manifest -Name 'InitializeDatabaseMarkers') -ceq 'Done') `
     -Detail (Format-RunDetail -Run $create)
 
 $before = Get-ManifestState -Scenario $order
@@ -842,7 +842,7 @@ $manifest = Read-LifecycleManifest -Scenario $order
 $migrations = @(Find-Calls -Run $baseline -Pattern '^Migrations\.')
 Assert-True -Name 'Baseline001 reaches the runner once, for phase Baseline001, after journaling its step Pending' `
     -Condition ($migrations.Count -eq 1 -and $migrations[0].Name -ceq 'Migrations.Baseline001' -and
-        [string]$migrations[0].Journal -cmatch '^State=Created;.*InstallBaseline001:Pending$') `
+    [string]$migrations[0].Journal -cmatch '^State=Created;.*InstallBaseline001:Pending$') `
     -Detail (Format-RunDetail -Run $baseline)
 Assert-True -Name 'Baseline001 leaves state Baseline001 with exactly the 001 row recorded' -Condition (
     $before -ceq 'Created' -and -not $baseline.Threw -and $manifest.State -ceq 'Baseline001' -and
@@ -887,8 +887,8 @@ foreach ($case in @(
         -Behavior @{ StubMigrations = $true; SchemaRows = $completeRows }
     Assert-True -Name ("$($case.Name) after Installed is refused without its side effect or a journal change") `
         -Condition ($installedBefore -ceq 'Installed' -and $run.Completed -and $run.Threw -and
-            @(Find-Calls -Run $run -Pattern $case.Pattern).Count -eq 0 -and
-            (Get-FileHashHex -Path $order.ManifestPath) -ceq $installedHash) `
+        @(Find-Calls -Run $run -Pattern $case.Pattern).Count -eq 0 -and
+        (Get-FileHashHex -Path $order.ManifestPath) -ceq $installedHash) `
         -Detail ('before=' + $installedBefore + '; ' + (Format-RunDetail -Run $run))
 }
 
@@ -929,10 +929,10 @@ $step = @($manifest.Steps | Where-Object Name -CEQ 'CreateDatabase')
 $failedJournaled = $step.Count -eq 1 -and $step[0].Status -ceq 'Failed'
 Assert-True -Name 'failed CREATE DATABASE journals CreateDatabase Failed with the safe failure code and no identity' `
     -Condition ($before -ceq 'Planned' -and $failure.Completed -and
-        $failure.Message -cmatch 'preserve manifest and all resources' -and $failedJournaled -and
-        [int]$step[0].Failure.SqlNumber -eq 51199 -and $manifest.State -ceq 'Planned' -and
-        $null -eq $manifest.DatabaseIdentity -and
-        @(Find-Calls -Run $failure -Pattern '^Sql\.InitializeMarkers$').Count -eq 0) `
+    $failure.Message -cmatch 'preserve manifest and all resources' -and $failedJournaled -and
+    [int]$step[0].Failure.SqlNumber -eq 51199 -and $manifest.State -ceq 'Planned' -and
+    $null -eq $manifest.DatabaseIdentity -and
+    @(Find-Calls -Run $failure -Pattern '^Sql\.InitializeMarkers$').Count -eq 0) `
     -Detail (Format-RunDetail -Run $failure)
 $failedHash = Get-FileHashHex -Path $failedCreate.ManifestPath
 foreach ($case in @(
@@ -951,8 +951,8 @@ $run = Invoke-LifecycleRun -Scenario $failedCreate -Entry Remove `
     -Arguments (Get-RemoveArguments -Scenario $failedCreate -Mode 'Execute')
 Assert-True -Name 'cleanup Execute after an unrecorded database identity drops nothing and changes no journal' `
     -Condition ($failedJournaled -and $run.Completed -and $run.Threw -and
-        @(Find-Calls -Run $run -Pattern '^(Open|Sql\.Drop)').Count -eq 0 -and
-        (Get-FileHashHex -Path $failedCreate.ManifestPath) -ceq $failedHash) `
+    @(Find-Calls -Run $run -Pattern '^(Open|Sql\.Drop)').Count -eq 0 -and
+    (Get-FileHashHex -Path $failedCreate.ManifestPath) -ceq $failedHash) `
     -Detail ('failedJournaled=' + $failedJournaled + '; ' + (Format-RunDetail -Run $run))
 
 # ---- The real installer core and runner stop at the offline boundary; the one-time step stays Failed.
@@ -966,10 +966,10 @@ $step = @($manifest.Steps | Where-Object Name -CEQ 'InstallBaseline001')
 $runnerFailed = $step.Count -eq 1 -and $step[0].Status -ceq 'Failed'
 Assert-True -Name 'runner failure inside Baseline001 journals the step Failed and keeps state Created without rows' `
     -Condition ($before -ceq 'Created' -and $install.Completed -and $install.Threw -and $runnerFailed -and
-        -not [string]::IsNullOrWhiteSpace([string]$step[0].Failure.ErrorType) -and $manifest.State -ceq 'Created' -and
-        @($manifest.MigrationManifest).Count -eq 0 -and @(Find-Calls -Run $install -Pattern '^Blocked\.').Count -eq 0) `
+    -not [string]::IsNullOrWhiteSpace([string]$step[0].Failure.ErrorType) -and $manifest.State -ceq 'Created' -and
+    @($manifest.MigrationManifest).Count -eq 0 -and @(Find-Calls -Run $install -Pattern '^Blocked\.').Count -eq 0) `
     -Detail ('before=' + $before + '; ' + (Format-RunDetail -Run $install) + '; failure=' +
-        ($step | ConvertTo-Json -Compress -Depth 4))
+    ($step | ConvertTo-Json -Compress -Depth 4))
 $retry = Invoke-LifecycleRun -Scenario $runner -Arguments @{ Action = 'Install'; Phase = 'Baseline001' } `
     -Behavior @{ StubMigrations = $true; SchemaRows = $baselineRows }
 Assert-True -Name 'Baseline001 retry after a runner failure is refused before any connection' -Condition (
@@ -1000,7 +1000,7 @@ $installed = $status -ceq 'Done' -and $reached -eq 1
 Assert-True -Name 'an accepted equivalent manifest path is refused before journaling or installs normally' `
     -Condition ($before -ceq 'Created' -and $install.Completed -and ($refusedEarly -or $installed)) `
     -Detail ('before=' + $before + '; InstallBaseline001=' + $status + '; runner calls=' + $reached + '; ' +
-        (Format-RunDetail -Run $install))
+    (Format-RunDetail -Run $install))
 
 # ---- The installer core, called directly with the lock opened from the path the entry point received.
 $coreContract = New-ApprovedContract -Root (Join-Path $script:SuiteRoot 'installer-core')
@@ -1101,8 +1101,8 @@ $preview = Invoke-LifecycleRun -Scenario $cleanup -Entry Remove -Behavior $clean
 $previewElevated = @($preview.Calls | Where-Object { $_.Name -ceq 'Executor' -and $_.Detail -ceq 'Administrator=True' })
 Assert-True -Name 'OnlinePreview passes the identity/settlement preflight and changes no resource or journal' `
     -Condition ($cleanupReady -and $preview.Completed -and -not $preview.Threw -and $previewElevated.Count -eq 0 -and
-        (Get-FileHashHex -Path $cleanup.ManifestPath) -ceq $reviewedHash -and
-        @(Find-Calls -Run $preview -Pattern '^(Sql\.Drop|RemoveLocalUser)').Count -eq 0) `
+    (Get-FileHashHex -Path $cleanup.ManifestPath) -ceq $reviewedHash -and
+    @(Find-Calls -Run $preview -Pattern '^(Sql\.Drop|RemoveLocalUser)').Count -eq 0) `
     -Detail ('cleanupReady=' + $cleanupReady + '; ' + (Format-RunDetail -Run $preview))
 
 $arguments = Get-RemoveArguments -Scenario $cleanup -Mode 'Execute'
@@ -1116,8 +1116,8 @@ $run = Invoke-LifecycleRun -Scenario $cleanup -Entry Remove -Behavior $cleanupBe
     -Arguments (Get-RemoveArguments -Scenario $cleanup -Mode 'Execute' -ManifestHash ('A' * 64))
 Assert-True -Name 'cleanup Execute with a manifest hash other than the reviewed one is refused before any connection' `
     -Condition ($cleanupReady -and $run.Completed -and $run.Threw -and
-        @(Find-Calls -Run $run -Pattern $noConnection).Count -eq 0 -and
-        (Get-FileHashHex -Path $cleanup.ManifestPath) -ceq $reviewedHash) `
+    @(Find-Calls -Run $run -Pattern $noConnection).Count -eq 0 -and
+    (Get-FileHashHex -Path $cleanup.ManifestPath) -ceq $reviewedHash) `
     -Detail ('cleanupReady=' + $cleanupReady + '; ' + (Format-RunDetail -Run $run))
 
 $execute = Invoke-LifecycleRun -Scenario $cleanup -Entry Remove -Behavior $cleanupBehavior `
@@ -1139,12 +1139,12 @@ $manifest = Read-LifecycleManifest -Scenario $cleanup
 $removed = @(Find-Calls -Run $execute -Pattern '^RemoveLocalUser$')
 Assert-True -Name 'cleanup removes the recorded account by its SID and the recorded credentials, then records Removed' `
     -Condition ($execute.Completed -and -not $execute.Threw -and $removed.Count -eq 1 -and
-        [string]$removed[0].Detail -ceq $recoveryAccountSid -and $manifest.State -ceq 'Removed' -and
-        $null -ne $manifest.Cleanup -and $manifest.Cleanup.State -ceq 'Done' -and
-        -not [IO.File]::Exists($cleanup.RuntimeCredentialPath) -and
-        -not [IO.File]::Exists($cleanup.RecoveryCredentialPath)) `
+    [string]$removed[0].Detail -ceq $recoveryAccountSid -and $manifest.State -ceq 'Removed' -and
+    $null -ne $manifest.Cleanup -and $manifest.Cleanup.State -ceq 'Done' -and
+    -not [IO.File]::Exists($cleanup.RuntimeCredentialPath) -and
+    -not [IO.File]::Exists($cleanup.RecoveryCredentialPath)) `
     -Detail ('cleanup=' + ($manifest.Cleanup | ConvertTo-Json -Compress -Depth 5) + '; ' +
-        (Format-RunDetail -Run $execute))
+    (Format-RunDetail -Run $execute))
 
 # ---- A failed DROP is journaled as a partial cleanup and blocks automatic retry and later lifecycle steps.
 $dropFailure = New-LifecycleScenario -Name 'cleanup-drop-failure'
@@ -1158,13 +1158,13 @@ $manifest = Read-LifecycleManifest -Scenario $dropFailure
 $cleanupSteps = @(if ($null -ne $manifest.Cleanup) { $manifest.Cleanup.Steps })
 Assert-True -Name 'failed DROP leaves CleanupStarted with cleanup Failed, its step Failed and the safe failure code' `
     -Condition ($dropReady -and $failedDrop.Completed -and
-        $failedDrop.Message -cmatch 'partial cleanup is recorded' -and $manifest.State -ceq 'CleanupStarted' -and
-        $null -ne $manifest.Cleanup -and
-        $manifest.Cleanup.State -ceq 'Failed' -and
-        [int]$manifest.Cleanup.Failure.SqlNumber -eq 51199 -and $cleanupSteps.Count -eq 1 -and
-        $cleanupSteps[0].Name -ceq 'DropDatabase' -and $cleanupSteps[0].Status -ceq 'Failed') `
+    $failedDrop.Message -cmatch 'partial cleanup is recorded' -and $manifest.State -ceq 'CleanupStarted' -and
+    $null -ne $manifest.Cleanup -and
+    $manifest.Cleanup.State -ceq 'Failed' -and
+    [int]$manifest.Cleanup.Failure.SqlNumber -eq 51199 -and $cleanupSteps.Count -eq 1 -and
+    $cleanupSteps[0].Name -ceq 'DropDatabase' -and $cleanupSteps[0].Status -ceq 'Failed') `
     -Detail ('dropReady=' + $dropReady + '; cleanup=' + ($manifest.Cleanup | ConvertTo-Json -Compress -Depth 5) +
-        '; ' + (Format-RunDetail -Run $failedDrop))
+    '; ' + (Format-RunDetail -Run $failedDrop))
 $cleanupFailed = (Get-ManifestState -Scenario $dropFailure) -ceq 'CleanupStarted'
 $startedHash = Get-FileHashHex -Path $dropFailure.ManifestPath
 $cleanupRetry = Invoke-LifecycleRun -Scenario $dropFailure -Entry Remove `
@@ -1194,7 +1194,7 @@ $literalLookups = @(foreach ($lookup in $accountLookups) {
         $elements = @($lookup.CommandElements)
         for ($index = 1; $index -lt $elements.Count - 1; $index++) {
             $isName = $elements[$index] -is [Management.Automation.Language.CommandParameterAst] -and
-                $elements[$index].ParameterName -ceq 'Name'
+            $elements[$index].ParameterName -ceq 'Name'
             if ($isName -and $elements[$index + 1] -is [Management.Automation.Language.StringConstantExpressionAst]) {
                 'line ' + $lookup.Extent.StartLineNumber + ': ' + $elements[$index + 1].Value
             }
@@ -1227,7 +1227,7 @@ Assert-True -Name 'the lifecycle connection builder statements are located in Op
     -Detail ('statements=' + $builderStatements.Count)
 # The product statements read the function's own $Manifest, $Master and $Database parameters.
 $builderLines = @('param($Manifest, [switch]$Master, [string]$Database)') +
-    @($builderStatements | ForEach-Object { $_.Extent.Text }) + @('return , $builder')
+@($builderStatements | ForEach-Object { $_.Extent.Text }) + @('return , $builder')
 $builderBlock = [scriptblock]::Create($builderLines -join "`n")
 $builderArguments = @{
     Manifest = [pscustomobject]@{ Instance = '.\FIXTURE' }
@@ -1343,9 +1343,9 @@ $run = Invoke-LifecycleRun -Scenario $occupiedReport -Arguments @{ Action = 'Cre
     -Behavior @{ PreflightDatabaseCount = 1 }
 Assert-True -Name 'an occupied exact name is reported as a classified reason with no journal write claimed' `
     -Condition ($plannedHash -cne 'absent' -and $run.Completed -and $run.Threw -and
-        $run.Message -cmatch '(?i)\boccupied\b' -and $run.Message -cnotmatch $unclassifiedReason -and
-        $run.Message -cmatch $claimsNoJournalWrite -and $run.Message -cnotmatch $claimsJournalWritten -and
-        (Get-FileHashHex -Path $occupiedReport.ManifestPath) -ceq $plannedHash) `
+    $run.Message -cmatch '(?i)\boccupied\b' -and $run.Message -cnotmatch $unclassifiedReason -and
+    $run.Message -cmatch $claimsNoJournalWrite -and $run.Message -cnotmatch $claimsJournalWritten -and
+    (Get-FileHashHex -Path $occupiedReport.ManifestPath) -ceq $plannedHash) `
     -Detail (Format-RunDetail -Run $run)
 
 # Create: unsuppressed provider text and an inner exception, as an unknown failure could carry them.
@@ -1364,7 +1364,7 @@ $leaks = @(@($fakeSecret, $fakeInnerSecret, 'Password=') | Where-Object {
 $status = Get-ScenarioStepStatus -Scenario $providerText -Name 'CreateDatabase'
 Assert-True -Name 'unsuppressed provider and inner exception text reach neither the executor nor the journal' `
     -Condition ($run.Completed -and $run.Threw -and $journalText -and $leaks.Count -eq 0 -and
-        @(Find-Calls -Run $run -Pattern '^Sql\.CreateDatabase$').Count -eq 1) `
+    @(Find-Calls -Run $run -Pattern '^Sql\.CreateDatabase$').Count -eq 1) `
     -Detail ('leaks=' + ($leaks -join '|') + '; ' + (Format-RunDetail -Run $run))
 Assert-True -Name 'an unclassified failure is reported only by its exception type and numeric SQL code' -Condition (
     $run.Message -cmatch $unclassifiedReason -and $run.Message -cmatch '\bSystem\.InvalidOperationException\b' -and
@@ -1428,7 +1428,7 @@ $journalOutcome = $(if (-not $journalKeepsCode) {
 Add-TestResult -Name 'the failure journal keeps a non-numeric code value only when no product producer emits one' `
     -Outcome $journalOutcome `
     -Detail ('journalKeepsRawCode=' + $journalKeepsCode + '; producerStoresInt=' + $producerStoresInt +
-        '; the journal copies Exception.Data verbatim, the product producer stores provider number or 0')
+    '; the journal copies Exception.Data verbatim, the product producer stores provider number or 0')
 
 # Create: the failure journal write itself fails after the original failure.
 $failureWrite = New-LifecycleScenario -Name 'stop-report-failure-journal-write'
@@ -1439,11 +1439,11 @@ $status = Get-ScenarioStepStatus -Scenario $failureWrite -Name 'CreateDatabase'
 $pendingText = Get-PendingWriteText -Scenario $failureWrite
 Assert-True -Name 'a failed failure-journal write keeps the original SQL code and claims no journal record' `
     -Condition ($run.Completed -and $run.Threw -and $run.Message -cmatch '\b51199\b' -and
-        $run.Message -cmatch $claimsJournalWriteFailed -and $run.Message -cmatch $claimsUnconfirmed -and
-        $run.Message -cnotmatch $claimsJournalWritten) -Detail (Format-RunDetail -Run $run)
+    $run.Message -cmatch $claimsJournalWriteFailed -and $run.Message -cmatch $claimsUnconfirmed -and
+    $run.Message -cnotmatch $claimsJournalWritten) -Detail (Format-RunDetail -Run $run)
 Assert-True -Name 'after a failed failure-journal write the step stays Pending and the interrupted write is kept' `
     -Condition (@(Find-Calls -Run $run -Pattern '^Sql\.CreateDatabase$').Count -eq 1 -and $status -ceq 'Pending' -and
-        $pendingText -ceq $interruptedWrite) -Detail ('CreateDatabase=' + $status + '; pending=' + $pendingText)
+    $pendingText -ceq $interruptedWrite) -Detail ('CreateDatabase=' + $status + '; pending=' + $pendingText)
 
 # Install: the completion write of a step whose side effect already ran fails. The execution plan has the executor
 # compare exit, journal and identity after each command, so the message must not misstate the durable step state.
@@ -1457,9 +1457,9 @@ $status = Get-ScenarioStepStatus -Scenario $completionWrite -Name 'InstallBaseli
 $pendingText = Get-PendingWriteText -Scenario $completionWrite
 Assert-True -Name 'a failed completion write is not reported as a non-Pending step while the journal holds Pending' `
     -Condition ($before -ceq 'Created' -and $run.Completed -and $run.Threw -and $status -ceq 'Pending' -and
-        @(Find-Calls -Run $run -Pattern '^Migrations\.Baseline001$').Count -eq 1 -and
-        $pendingText -ceq $interruptedWrite -and $run.Message -cnotmatch $claimsJournalWritten -and
-        $run.Message -cnotmatch '(?i)\bstep is not pending\b') `
+    @(Find-Calls -Run $run -Pattern '^Migrations\.Baseline001$').Count -eq 1 -and
+    $pendingText -ceq $interruptedWrite -and $run.Message -cnotmatch $claimsJournalWritten -and
+    $run.Message -cnotmatch '(?i)\bstep is not pending\b') `
     -Detail ('before=' + $before + '; InstallBaseline001=' + $status + '; ' + (Format-RunDetail -Run $run))
 
 # Install: the instance reports another identity for the exact name than the journal recorded.
@@ -1478,9 +1478,9 @@ $run = Invoke-LifecycleRun -Scenario $identityChange -Arguments @{ Action = 'Ins
     -Behavior @{ StubMigrations = $true; SchemaRows = $baselineRows }
 Assert-True -Name 'an unexpected database identity at Install is reported as an identity stop, not unclassified' `
     -Condition ($identityReady -and $run.Completed -and $run.Threw -and
-        @(Find-Calls -Run $run -Pattern '^Migrations\.').Count -eq 0 -and
-        (Get-FileHashHex -Path $identityChange.ManifestPath) -ceq $changedHash -and
-        $run.Message -cmatch '(?i)\bidentity\b' -and $run.Message -cnotmatch $unclassifiedReason) `
+    @(Find-Calls -Run $run -Pattern '^Migrations\.').Count -eq 0 -and
+    (Get-FileHashHex -Path $identityChange.ManifestPath) -ceq $changedHash -and
+    $run.Message -cmatch '(?i)\bidentity\b' -and $run.Message -cnotmatch $unclassifiedReason) `
     -Detail ('identityReady=' + $identityReady + '; ' + (Format-RunDetail -Run $run))
 
 # Cleanup: refused before deletion with a classified reason; nothing is claimed as recorded.
@@ -1491,10 +1491,10 @@ $run = Invoke-LifecycleRun -Scenario $prereject -Entry Remove `
     -Arguments (Get-RemoveArguments -Scenario $prereject -Mode 'Execute' -ManifestHash ('A' * 64))
 Assert-True -Name 'a cleanup refused before deletion says so with a classified reason and claims no journal record' `
     -Condition ($ready -and $run.Completed -and $run.Threw -and $run.Message -cmatch $claimsStoppedBeforeDeletion -and
-        $run.Message -cnotmatch $claimsDeletionAttempted -and $run.Message -cmatch $claimsNoJournalWrite -and
-        $run.Message -cnotmatch $claimsJournalWritten -and $run.Message -cnotmatch $unclassifiedReason -and
-        (Get-FileHashHex -Path $prereject.ManifestPath) -ceq $reviewed -and
-        @(Find-Calls -Run $run -Pattern '^(Sql\.Drop|RemoveLocalUser)').Count -eq 0) `
+    $run.Message -cnotmatch $claimsDeletionAttempted -and $run.Message -cmatch $claimsNoJournalWrite -and
+    $run.Message -cnotmatch $claimsJournalWritten -and $run.Message -cnotmatch $unclassifiedReason -and
+    (Get-FileHashHex -Path $prereject.ManifestPath) -ceq $reviewed -and
+    @(Find-Calls -Run $run -Pattern '^(Sql\.Drop|RemoveLocalUser)').Count -eq 0) `
     -Detail ('ready=' + $ready + '; ' + (Format-RunDetail -Run $run))
 
 # Cleanup: the plan's account name now belongs to an account with another SID than the journal recorded.
@@ -1524,11 +1524,11 @@ $run = Invoke-LifecycleRun -Scenario $startWrite -Entry Remove -Behavior @{ Pend
     -Arguments (Get-RemoveArguments -Scenario $startWrite -Mode 'Execute')
 Assert-True -Name 'a failed CleanupStarted write reports no deletion and an unconfirmed journal, journal unchanged' `
     -Condition ($ready -and $run.Completed -and $run.Threw -and $run.Message -cmatch $claimsStoppedBeforeDeletion -and
-        $run.Message -cmatch $claimsJournalWriteFailed -and $run.Message -cmatch $claimsUnconfirmed -and
-        $run.Message -cnotmatch $claimsJournalWritten -and
-        (Get-FileHashHex -Path $startWrite.ManifestPath) -ceq $reviewed -and
-        (Get-PendingWriteText -Scenario $startWrite) -ceq $interruptedWrite -and
-        @(Find-Calls -Run $run -Pattern '^Sql\.Drop').Count -eq 0) `
+    $run.Message -cmatch $claimsJournalWriteFailed -and $run.Message -cmatch $claimsUnconfirmed -and
+    $run.Message -cnotmatch $claimsJournalWritten -and
+    (Get-FileHashHex -Path $startWrite.ManifestPath) -ceq $reviewed -and
+    (Get-PendingWriteText -Scenario $startWrite) -ceq $interruptedWrite -and
+    @(Find-Calls -Run $run -Pattern '^Sql\.Drop').Count -eq 0) `
     -Detail ('ready=' + $ready + '; ' + (Format-RunDetail -Run $run))
 
 # Cleanup: DROP was attempted and failed, then the failure journal write fails too.
@@ -1541,8 +1541,8 @@ $manifest = Read-LifecycleManifest -Scenario $dropWrite
 $cleanupSteps = @(if ($null -ne $manifest.Cleanup) { $manifest.Cleanup.Steps })
 Assert-True -Name 'an attempted deletion whose failure journal write fails is reported as attempted and unconfirmed' `
     -Condition ($ready -and $run.Completed -and $run.Threw -and $run.Message -cmatch $claimsDeletionAttempted -and
-        $run.Message -cmatch $claimsJournalWriteFailed -and $run.Message -cmatch $claimsUnconfirmed -and
-        $run.Message -cnotmatch $claimsJournalWritten -and $run.Message -cmatch '\b51199\b') `
+    $run.Message -cmatch $claimsJournalWriteFailed -and $run.Message -cmatch $claimsUnconfirmed -and
+    $run.Message -cnotmatch $claimsJournalWritten -and $run.Message -cmatch '\b51199\b') `
     -Detail ('ready=' + $ready + '; ' + (Format-RunDetail -Run $run))
 Assert-True -Name 'that journal keeps CleanupStarted with its DROP step Pending and the interrupted write' -Condition (
     $manifest.State -ceq 'CleanupStarted' -and $null -ne $manifest.Cleanup -and
@@ -1557,9 +1557,9 @@ $dropManifest = Read-LifecycleManifest -Scenario $dropFailure
 $dropSteps = @(if ($null -ne $dropManifest.Cleanup) { $dropManifest.Cleanup.Steps })
 Assert-True -Name 'an attempted cleanup reported as recorded is Failed on disk with its deletion outcome unconfirmed' `
     -Condition ($dropReady -and (Get-FileHashHex -Path $dropFailure.ManifestPath) -ceq $startedHash -and
-        $failedDrop.Message -cmatch $claimsJournalWritten -and $failedDrop.Message -cmatch $claimsDeletionAttempted -and
-        $failedDrop.Message -cmatch $claimsUnconfirmed -and $null -ne $dropManifest.Cleanup -and
-        $dropManifest.Cleanup.State -ceq 'Failed' -and $dropSteps.Count -eq 1 -and $dropSteps[0].Status -ceq 'Failed') `
+    $failedDrop.Message -cmatch $claimsJournalWritten -and $failedDrop.Message -cmatch $claimsDeletionAttempted -and
+    $failedDrop.Message -cmatch $claimsUnconfirmed -and $null -ne $dropManifest.Cleanup -and
+    $dropManifest.Cleanup.State -ceq 'Failed' -and $dropSteps.Count -eq 1 -and $dropSteps[0].Status -ceq 'Failed') `
     -Detail (Format-RunDetail -Run $failedDrop)
 
 # ---- The real Assert-TestEnvironmentLocalAccountAbsent with only the OS Get-LocalUser cmdlet replaced. The harness
@@ -1600,7 +1600,7 @@ function Invoke-RealLocalAccountAbsent {
         $stubFile = $(if ($stub.CommandType -eq 'Function') { [string]$stub.ScriptBlock.File } else { '' })
         $helperFile = $(if ($helper.CommandType -eq 'Function') { [string]$helper.ScriptBlock.File } else { '' })
         $resolved = [string]::Equals($stubFile, $StubFile, [StringComparison]::OrdinalIgnoreCase) -and
-            [string]::Equals($helperFile, $ProductFile, [StringComparison]::OrdinalIgnoreCase)
+        [string]::Equals($helperFile, $ProductFile, [StringComparison]::OrdinalIgnoreCase)
         $failure = $null
         if ($resolved) {
             # The helper must stop on its own, not because the caller turned every error into a terminating one.
@@ -1615,7 +1615,7 @@ function Invoke-RealLocalAccountAbsent {
         [pscustomobject]@{
             Resolved = $resolved
             Resolution = 'Get-LocalUser=' + $stub.CommandType + ':' + $stubFile + ', helper=' + $helper.CommandType +
-                ':' + $helperFile
+            ':' + $helperFile
             Failure = $failure
             Lookups = @($lookups)
         }
@@ -1784,16 +1784,16 @@ foreach ($case in $refusalCases) {
     $valueHidden = -not $case.Hidden -or -not (Get-RunOutcomeText -Scenario $refusals -Run $run).Contains($case.Hidden)
     Assert-True -Name ("Install refused for $($case.Name) reports that classified reason before the runner") `
         -Condition ($refusalsReady -and $stoppedBeforeRunner -and $journalUnchanged -and $reasonNamed -and
-            $reasonClassified -and $valueHidden) `
+        $reasonClassified -and $valueHidden) `
         -Detail ('ready=' + $refusalsReady + '; stoppedBeforeRunner=' + $stoppedBeforeRunner + '; journalUnchanged=' +
-            $journalUnchanged + '; named=' + $reasonNamed + '; classified=' + $reasonClassified + '; valueHidden=' +
-            $valueHidden + '; ' + (Format-RunDetail -Run $run))
+        $journalUnchanged + '; named=' + $reasonNamed + '; classified=' + $reasonClassified + '; valueHidden=' +
+        $valueHidden + '; ' + (Format-RunDetail -Run $run))
 }
 
 # Create: unknown failures shaped like a classified reason but carrying extra provider-like text stay suppressed in
 # the executor message and never reach the journal.
 $sqlWrapperText = 'Test environment SQL command failed (provider number 51199); raw SQL and provider text ' +
-    'suppressed. Preserve manifest.'
+'suppressed. Preserve manifest.'
 $lookalikeCases = @(
     @{ Name = 'identity'; Message = 'Database identity changed: DatabaseGuid. ' + $fakeSecret },
     @{ Name = 'sql-wrapper'; Message = $sqlWrapperText + ' ' + $fakeSecret }
@@ -1808,13 +1808,13 @@ foreach ($case in $lookalikeCases) {
     $failureInjected = @(Find-Calls -Run $run -Pattern '^Sql\.CreateDatabase$').Count -eq 1
     $reportHidesSecret = -not $reportedText.Contains('FAKE-SENTINEL') -and -not $reportedText.Contains('Password=')
     $journalHidesSecret = $journalText -and -not $journalText.Contains('FAKE-SENTINEL') -and
-        -not $journalText.Contains('Password=')
+    -not $journalText.Contains('Password=')
     $reportedAsUnknown = $run.Message -cmatch $unclassifiedReason -and $run.Message -cnotmatch $claimsIdentityStop
     Assert-True -Name ("an unknown $($case.Name)-shaped failure with extra text is suppressed and not journaled") `
         -Condition ($run.Completed -and $run.Threw -and $failureInjected -and $reportHidesSecret -and
-            $journalHidesSecret -and $reportedAsUnknown) `
+        $journalHidesSecret -and $reportedAsUnknown) `
         -Detail ('injected=' + $failureInjected + '; reportHides=' + $reportHidesSecret + '; journalHides=' +
-            $journalHidesSecret + '; unknown=' + $reportedAsUnknown + '; ' + (Format-RunDetail -Run $run))
+        $journalHidesSecret + '; unknown=' + $reportedAsUnknown + '; ' + (Format-RunDetail -Run $run))
 }
 
 # Install: the completion write after the runner returned fails. Completion marks the step Done in memory before it
@@ -1834,20 +1834,20 @@ $originalNamed = $run.Message -cmatch $claimsPendingWrite -and $run.Message -cno
 $noCompletionOutput = @(Get-RunOutput -Scenario $durableInstall -Run $run).Count -eq 0
 Assert-True -Name 'a failed Install completion write reports an unconfirmed durable state and claims no record' `
     -Condition ($before -ceq 'Created' -and $run.Completed -and $run.Threw -and $sideEffectRan -and
-        $statesUnconfirmed -and $claimsNoRecord -and $originalNamed -and $noCompletionOutput) `
+    $statesUnconfirmed -and $claimsNoRecord -and $originalNamed -and $noCompletionOutput) `
     -Detail ('before=' + $before + '; sideEffect=' + $sideEffectRan + '; unconfirmed=' + $statesUnconfirmed +
-        '; noRecordClaim=' + $claimsNoRecord + '; originalNamed=' + $originalNamed + '; noOutput=' +
-        $noCompletionOutput + '; ' + (Format-RunDetail -Run $run))
+    '; noRecordClaim=' + $claimsNoRecord + '; originalNamed=' + $originalNamed + '; noOutput=' +
+    $noCompletionOutput + '; ' + (Format-RunDetail -Run $run))
 $diskPending = $null -ne $manifest -and $manifest.State -ceq 'Created' -and
-    (Get-StepStatus -Manifest $manifest -Name 'InstallBaseline001') -ceq 'Pending' -and
-    @($manifest.MigrationManifest).Count -eq 0
+(Get-StepStatus -Manifest $manifest -Name 'InstallBaseline001') -ceq 'Pending' -and
+@($manifest.MigrationManifest).Count -eq 0
 $pendingKept = (Get-PendingWriteText -Scenario $durableInstall) -ceq $interruptedWrite
 $lastJournal = $(if ($null -ne $lastCall) { [string]$lastCall.Journal } else { 'no call' })
 $diskAsAtLastCall = (Get-DiskJournalSummary -Manifest $manifest) -ceq $lastJournal
 Assert-True -Name 'after that failed completion write the disk journal still holds the step Pending, as before it' `
     -Condition ($diskPending -and $pendingKept -and $diskAsAtLastCall) `
     -Detail ('diskPending=' + $diskPending + '; pendingKept=' + $pendingKept + '; disk=<' +
-        (Get-DiskJournalSummary -Manifest $manifest) + '>; atLastCall=<' + $lastJournal + '>')
+    (Get-DiskJournalSummary -Manifest $manifest) + '>; atLastCall=<' + $lastJournal + '>')
 $lastName = $(if ($null -ne $lastCall) { [string]$lastCall.Name } else { 'none' })
 $nothingAfterWrite = $lastName -ceq 'Sql.ReadSchemaVersion'
 $noCleanup = @(Find-Calls -Run $run -Pattern '^(Sql\.Drop|RemoveLocalUser|Blocked\.)').Count -eq 0
@@ -1860,11 +1860,11 @@ $retry = Invoke-LifecycleRun -Scenario $durableInstall -Arguments @{ Action = 'I
 $retryConnections = @(Find-Calls -Run $retry -Pattern $noConnection).Count
 $retryRefusedEarly = $retry.Completed -and $retry.Threw -and $retryConnections -eq 0
 $retryLeftJournal = (Get-FileHashHex -Path $durableInstall.ManifestPath) -ceq $unconfirmedHash -and
-    (Get-PendingWriteText -Scenario $durableInstall) -ceq $interruptedWrite
+(Get-PendingWriteText -Scenario $durableInstall) -ceq $interruptedWrite
 Assert-True -Name 'an Install retry after the unconfirmed completion stops before any connection, changing nothing' `
     -Condition ($diskPending -and $retryRefusedEarly -and $retryLeftJournal) `
     -Detail ('refusedEarly=' + $retryRefusedEarly + '; journalAndPendingKept=' + $retryLeftJournal + '; ' +
-        (Format-RunDetail -Run $retry))
+    (Format-RunDetail -Run $retry))
 
 # Create: the same completion-write failure for InitializeDatabaseMarkers, after the database and markers exist.
 $durableCreate = New-LifecycleScenario -Name 'durable-create-markers-completion'
@@ -1880,12 +1880,12 @@ $originalNamed = $run.Message -cmatch $claimsPendingWrite -and $run.Message -cno
 $noCompletionOutput = @(Get-RunOutput -Scenario $durableCreate -Run $run).Count -eq 0
 Assert-True -Name 'a failed marker completion write in Create reports an unconfirmed durable state, no record' `
     -Condition ($run.Completed -and $run.Threw -and $markersRan -and $statesUnconfirmed -and $claimsNoRecord -and
-        $originalNamed -and $noCompletionOutput) `
+    $originalNamed -and $noCompletionOutput) `
     -Detail ('markers=' + $markersRan + '; unconfirmed=' + $statesUnconfirmed + '; noRecordClaim=' + $claimsNoRecord +
-        '; originalNamed=' + $originalNamed + '; noOutput=' + $noCompletionOutput + '; ' + (Format-RunDetail -Run $run))
+    '; originalNamed=' + $originalNamed + '; noOutput=' + $noCompletionOutput + '; ' + (Format-RunDetail -Run $run))
 $diskPending = $null -ne $manifest -and $manifest.State -ceq 'Planned' -and $null -ne $manifest.DatabaseIdentity -and
-    (Get-StepStatus -Manifest $manifest -Name 'CreateDatabase') -ceq 'Done' -and
-    (Get-StepStatus -Manifest $manifest -Name 'InitializeDatabaseMarkers') -ceq 'Pending'
+(Get-StepStatus -Manifest $manifest -Name 'CreateDatabase') -ceq 'Done' -and
+(Get-StepStatus -Manifest $manifest -Name 'InitializeDatabaseMarkers') -ceq 'Pending'
 $pendingKept = (Get-PendingWriteText -Scenario $durableCreate) -ceq $interruptedWrite
 $lastJournal = $(if ($null -ne $lastCall) { [string]$lastCall.Journal } else { 'no call' })
 $diskAsAtLastCall = (Get-DiskJournalSummary -Manifest $manifest) -ceq $lastJournal
@@ -1893,24 +1893,24 @@ $lastName = $(if ($null -ne $lastCall) { [string]$lastCall.Name } else { 'none' 
 Assert-True -Name 'that journal keeps the marker step Pending and state Planned, unchanged after the failed write' `
     -Condition ($diskPending -and $pendingKept -and $diskAsAtLastCall -and $lastName -ceq 'Sql.ReadMarkers') `
     -Detail ('diskPending=' + $diskPending + '; pendingKept=' + $pendingKept + '; lastCall=' + $lastName + '; disk=<' +
-        (Get-DiskJournalSummary -Manifest $manifest) + '>; atLastCall=<' + $lastJournal + '>')
+    (Get-DiskJournalSummary -Manifest $manifest) + '>; atLastCall=<' + $lastJournal + '>')
 # Supplement from the final independent review (INSTALL-06 requirement: the next run is refused before connecting):
 # neither a repeated Create nor the following Install adopts that unconfirmed state or touches the journal.
 $unconfirmedHash = Get-FileHashHex -Path $durableCreate.ManifestPath
 $retries = @(
     (Invoke-LifecycleRun -Scenario $durableCreate -Arguments @{ Action = 'Create' }),
     (Invoke-LifecycleRun -Scenario $durableCreate -Arguments @{ Action = 'Install'; Phase = 'Baseline001' } `
-            -Behavior @{ StubMigrations = $true; SchemaRows = $baselineRows })
+        -Behavior @{ StubMigrations = $true; SchemaRows = $baselineRows })
 )
 $retriesRefused = @($retries | Where-Object {
         -not ($_.Completed -and $_.Threw -and @(Find-Calls -Run $_ -Pattern $noConnection).Count -eq 0)
     }).Count -eq 0
 $retriesLeftJournal = $diskPending -and (Get-FileHashHex -Path $durableCreate.ManifestPath) -ceq $unconfirmedHash -and
-    (Get-PendingWriteText -Scenario $durableCreate) -ceq $interruptedWrite
+(Get-PendingWriteText -Scenario $durableCreate) -ceq $interruptedWrite
 Assert-True -Name 'a Create or Install after the unconfirmed marker completion stops before any connection' `
     -Condition ($retriesRefused -and $retriesLeftJournal) `
     -Detail ('refused=' + $retriesRefused + '; journalAndPendingKept=' + $retriesLeftJournal + '; ' +
-        (@($retries | ForEach-Object { Format-RunDetail -Run $_ }) -join ' | '))
+    (@($retries | ForEach-Object { Format-RunDetail -Run $_ }) -join ' | '))
 
 # Install: the write that journals the step Pending fails, so the runner must not start and nothing is claimed.
 $durableStart = New-LifecycleScenario -Name 'durable-install-start'
@@ -1922,15 +1922,15 @@ $run = Invoke-LifecycleRun -Scenario $durableStart -Arguments @{ Action = 'Insta
 $manifest = Read-LifecycleManifest -Scenario $durableStart
 $runnerSkipped = @(Find-Calls -Run $run -Pattern '^Migrations\.').Count -eq 0
 $claimsFailedWrite = $run.Message -cmatch $claimsJournalWriteFailed -and $run.Message -cmatch $claimsUnconfirmed -and
-    $run.Message -cnotmatch $claimsJournalWritten
+$run.Message -cnotmatch $claimsJournalWritten
 $noStepOnDisk = $null -ne $manifest -and $manifest.State -ceq 'Created' -and
-    (Get-StepStatus -Manifest $manifest -Name 'InstallBaseline001') -ceq 'absent'
+(Get-StepStatus -Manifest $manifest -Name 'InstallBaseline001') -ceq 'absent'
 $pendingKept = (Get-PendingWriteText -Scenario $durableStart) -ceq $interruptedWrite
 Assert-True -Name 'a failed Pending write at Install start never starts the runner and claims no journal record' `
     -Condition ($before -ceq 'Created' -and $run.Completed -and $run.Threw -and $runnerSkipped -and
-        $claimsFailedWrite -and $noStepOnDisk -and $pendingKept) `
+    $claimsFailedWrite -and $noStepOnDisk -and $pendingKept) `
     -Detail ('before=' + $before + '; runnerSkipped=' + $runnerSkipped + '; failedWriteClaim=' + $claimsFailedWrite +
-        '; noStepOnDisk=' + $noStepOnDisk + '; pendingKept=' + $pendingKept + '; ' + (Format-RunDetail -Run $run))
+    '; noStepOnDisk=' + $noStepOnDisk + '; pendingKept=' + $pendingKept + '; ' + (Format-RunDetail -Run $run))
 
 # ---- The real reporting boundary in this process, outside the harness run count above: real product producers
 # feed the real Get-TestEnvironmentFailureSummary. Module and migration producers read byte copies below the suite
@@ -1946,7 +1946,7 @@ $wrapperHidesSql = -not $producerSummary.Contains('SELECT 1')
 Assert-True -Name 'the real SQL wrapper failure is summarized as classified with its numeric code and no SQL text' `
     -Condition ($producerStoresInt -and $wrapperClassified -and $wrapperCodeShown -and $wrapperHidesSql) `
     -Detail ('classified=' + $wrapperClassified + '; codeShown=' + $wrapperCodeShown + '; hidesSql=' +
-        $wrapperHidesSql + '; summary=<' + $producerSummary + '>')
+    $wrapperHidesSql + '; summary=<' + $producerSummary + '>')
 
 function Invoke-RealReasonProducer {
     param(
@@ -1991,7 +1991,7 @@ function Invoke-RealReasonProducer {
         [pscustomobject]@{
             Ready = $resolved -and $contained -and $stubbed
             Resolution = $producerName + '=' + $command.CommandType + ':' + $definedIn + '; contained=' + $contained +
-                '; sqlEntryPointsStubbed=' + $stubbed
+            '; sqlEntryPointsStubbed=' + $stubbed
             BlockedHits = @($blockedHits)
             Failure = $failure
         }
@@ -2035,8 +2035,8 @@ foreach ($case in $producerCases) {
     Assert-True -Name ("the real product reason for $($case.Name) reaches the summary classified without its detail") `
         -Condition ($produced.Ready -and $stayedOffline -and $reasonClassified -and $detailHidden) `
         -Detail ('resolution=' + $produced.Resolution + '; blocked=' + (@($produced.BlockedHits) -join ',') +
-            '; classified=' + $reasonClassified + '; detailHidden=' + $detailHidden + '; summary=<' + $summary +
-            '>; rawLength=' + $raw.Length)
+        '; classified=' + $reasonClassified + '; detailHidden=' + $detailHidden + '; summary=<' + $summary +
+        '>; rawLength=' + $raw.Length)
 }
 
 # Unknown text: requirement 1 suppresses provider/native/inner and arbitrary strings, even when shaped like a reason.
@@ -2061,7 +2061,7 @@ foreach ($name in $unknownCases.Keys) {
     Assert-True -Name ("unknown failure text is suppressed: $name") `
         -Condition ($secretHidden -and $innerNotAdopted -and $suppressed) `
         -Detail ('secretHidden=' + $secretHidden + '; innerNotAdopted=' + $innerNotAdopted + '; summary=<' +
-            $summary + '>')
+        $summary + '>')
 }
 
 # Interpolated product reasons (05 completion condition: identify product reasons without arbitrary detail). Each
@@ -2092,7 +2092,7 @@ $interpolatedPairs = [ordered]@{
     'manifest field location' = @{
         Messages = @(
             ('Unexpected manifest fields at C:\fixture-root\database\modules\manifest.json; use the reviewed ' +
-                'bundle format.'),
+            'bundle format.'),
             'Unexpected manifest fields at modules/procedures/read_admission.sql; use the reviewed bundle format.')
         Details = @('manifest.json', 'read_admission')
     }
@@ -2105,9 +2105,9 @@ $interpolatedPairs = [ordered]@{
     'module checksum path' = @{
         Messages = @(
             ('Module source checksum mismatch: modules/procedures/read_admission.sql; update the reviewed bundle and ' +
-                'declaration together.'),
+            'declaration together.'),
             ('Module source checksum mismatch: modules/functions/can_enter_map.sql; update the reviewed bundle and ' +
-                'declaration together.'))
+            'declaration together.'))
         Details = @('read_admission', 'can_enter_map')
     }
     'module batch path' = @{
@@ -2136,9 +2136,9 @@ $interpolatedPairs = [ordered]@{
     'dependency contract path' = @{
         Messages = @(
             ('Dependency contract mismatch: modules/procedures/read_admission.sql; declare the operation''s actual ' +
-                'helper responsibilities.'),
+            'helper responsibilities.'),
             ('Dependency contract mismatch: modules/functions/can_enter_map.sql; declare the operation''s actual ' +
-                'helper responsibilities.'))
+            'helper responsibilities.'))
         Details = @('read_admission', 'can_enter_map')
     }
     'registered drift name' = @{
@@ -2161,9 +2161,9 @@ $interpolatedPairs = [ordered]@{
     'SQL wrapper number' = @{
         Messages = @(
             ('Test environment SQL command failed (provider number 547); raw SQL and provider text suppressed. ' +
-                'Preserve manifest.'),
+            'Preserve manifest.'),
             ('Test environment SQL command failed (provider number 51001); raw SQL and provider text suppressed. ' +
-                'Preserve manifest.'))
+            'Preserve manifest.'))
         Details = @('provider number 547', 'provider number 51001')
     }
 }
@@ -2180,7 +2180,7 @@ foreach ($name in $interpolatedPairs.Keys) {
     Assert-True -Name ("an interpolated product reason is identified as one constant without its detail: $name") `
         -Condition ($identified -and $sameReason -and $shown.Count -eq 0) `
         -Detail ('identified=' + $identified + '; same=' + $sameReason + '; shown=' + ($shown -join ',') +
-            '; summaries=<' + ($summaries -join '> <') + '>')
+        '; summaries=<' + ($summaries -join '> <') + '>')
 }
 
 # Installer-owned constant reasons (05 completion condition: product reasons stay identified). The functions below are
@@ -2250,9 +2250,9 @@ foreach ($file in $installerFunctions.Keys) {
 $unidentifiedReasons = @($installerReasons | Where-Object { -not $_.Identified } | ForEach-Object Site)
 Assert-True -Name 'every constant installer reason that Install reaches stays identified at the reporting boundary' `
     -Condition ($unresolvedFunctions.Count -eq 0 -and $installerReasons.Count -gt 0 -and
-        $unidentifiedReasons.Count -eq 0) `
+    $unidentifiedReasons.Count -eq 0) `
     -Detail ('reasons=' + $installerReasons.Count + '; unresolved=' + ($unresolvedFunctions -join ',') +
-        '; unidentified=' + ($unidentifiedReasons -join ' | '))
+    '; unidentified=' + ($unidentifiedReasons -join ' | '))
 
 # ---- INSTALL-07 at Invoke-DatabaseSql (final review contract requirement 3; user decision msg_6b139eecb44e). The
 # product function runs in a child scope where only New-DatabaseSqlCommand returns a recording fake command. It throws
@@ -2376,13 +2376,13 @@ foreach ($case in $sqlFailureCases) {
             Mode = $mode
             Ok = [string]::Equals([IO.Path]::GetFullPath($result.File), $commonFull,
                 [StringComparison]::OrdinalIgnoreCase) -and
-                $number -is [int] -and $number -eq $case.Expected -and
-                $failure -is [InvalidOperationException] -and $null -eq $failure.InnerException -and
-                -not $text.Contains('FAKE-SENTINEL') -and -not $text.Contains('Password=') -and
-                ($result.Calls -join ',') -ceq ('Create,' + $readerMode + ',Dispose') -and
-                $result.ConnectionState -ceq 'Closed'
+            $number -is [int] -and $number -eq $case.Expected -and
+            $failure -is [InvalidOperationException] -and $null -eq $failure.InnerException -and
+            -not $text.Contains('FAKE-SENTINEL') -and -not $text.Contains('Password=') -and
+            ($result.Calls -join ',') -ceq ('Create,' + $readerMode + ',Dispose') -and
+            $result.ConnectionState -ceq 'Closed'
             Detail = $mode + ':number=' + $number + ',calls=' + ($result.Calls -join '>') + ',connection=' +
-                $result.ConnectionState
+            $result.ConnectionState
         }
     }
     Assert-True -Name ("Invoke-DatabaseSql boundary: $($case.Name) -> number $($case.Expected), no provider text") `
@@ -2405,14 +2405,14 @@ $rowsValue = $(if ($rows.Value -is [Data.DataTable]) {
     })
 Assert-True -Name 'Invoke-DatabaseSql success -> Scalar/NonQuery/Rows values unchanged; command and reader disposed' `
     -Condition ($null -eq $scalar.Failure -and $scalar.Value -ceq 'scalar-fixture' -and
-        ($scalar.Calls -join ',') -ceq 'Create,Scalar,Dispose' -and
-        $null -eq $nonQuery.Failure -and $nonQuery.Value -eq 3 -and
-        ($nonQuery.Calls -join ',') -ceq 'Create,NonQuery,Dispose' -and
-        $null -eq $rows.Failure -and $rowsValue -ceq '1,2' -and $script:RowsReader.IsClosed -and
-        ($rows.Calls -join ',') -ceq 'Create,Reader,Dispose') `
+    ($scalar.Calls -join ',') -ceq 'Create,Scalar,Dispose' -and
+    $null -eq $nonQuery.Failure -and $nonQuery.Value -eq 3 -and
+    ($nonQuery.Calls -join ',') -ceq 'Create,NonQuery,Dispose' -and
+    $null -eq $rows.Failure -and $rowsValue -ceq '1,2' -and $script:RowsReader.IsClosed -and
+    ($rows.Calls -join ',') -ceq 'Create,Reader,Dispose') `
     -Detail ('scalar=' + $scalar.Value + '; nonQuery=' + $nonQuery.Value + '; rows=' + $rowsValue + '; readerClosed=' +
-        $script:RowsReader.IsClosed + '; calls=' + ($scalar.Calls -join '>') + '|' + ($nonQuery.Calls -join '>') +
-        '|' + ($rows.Calls -join '>'))
+    $script:RowsReader.IsClosed + '; calls=' + ($scalar.Calls -join '>') + '|' + ($nonQuery.Calls -join '>') +
+    '|' + ($rows.Calls -join '>'))
 
 # A fresh runspace that loads only Environment.Common.ps1 resolves the boundary to the shared file next to it.
 $fresh = [PowerShell]::Create()
@@ -2421,7 +2421,7 @@ $freshErrors = 0
 try {
     $null = $fresh.AddScript('param($File) . $File; ' +
         '[string](Get-Command -Name New-DatabaseSqlFailure -CommandType Function).ScriptBlock.File').
-        AddArgument($commonFile)
+    AddArgument($commonFile)
     $resolvedBoundary = [string](@($fresh.Invoke()) -join '')
     $freshErrors = $fresh.Streams.Error.Count
     if ($resolvedBoundary) {
@@ -2456,16 +2456,16 @@ $run = Invoke-LifecycleRun -Scenario $sqlNumberInstall -Arguments @{ Action = 'I
 $productCalls = @(Find-Calls -Run $run -Pattern '^Migrations\.ProductNonQuery$')
 $expectedRunner = [IO.Path]::GetFullPath((Join-Path $script:ToolRoot 'Database.Common.ps1'))
 $reachedProduct = $productCalls.Count -eq 1 -and
-    [string]::Equals([string]$productCalls[0].Detail, $expectedRunner, [StringComparison]::OrdinalIgnoreCase)
+[string]::Equals([string]$productCalls[0].Detail, $expectedRunner, [StringComparison]::OrdinalIgnoreCase)
 $reportedText = Get-RunOutcomeText -Scenario $sqlNumberInstall -Run $run
 $numberShown = $run.Message -cmatch '\b51001\b'
 $reasonClassified = $run.Message -cnotmatch $unclassifiedReason
 $textHidden = -not $reportedText.Contains('FAKE-SENTINEL') -and -not $reportedText.Contains('Password=')
 Assert-True -Name 'Install: the product migration command SQL number reaches the executor; provider text hidden' `
     -Condition ($before -ceq 'Created' -and $run.Completed -and $run.Threw -and $reachedProduct -and $numberShown -and
-        $reasonClassified -and $textHidden) `
+    $reasonClassified -and $textHidden) `
     -Detail ('before=' + $before + '; product=' + $reachedProduct + '; number=' + $numberShown + '; classified=' +
-        $reasonClassified + '; hidden=' + $textHidden + '; ' + (Format-RunDetail -Run $run))
+    $reasonClassified + '; hidden=' + $textHidden + '; ' + (Format-RunDetail -Run $run))
 $manifest = Read-LifecycleManifest -Scenario $sqlNumberInstall
 $journalText = Get-JournalText -Scenario $sqlNumberInstall
 $installStep = @($(if ($null -ne $manifest) { $manifest.Steps | Where-Object Name -CEQ 'InstallBaseline001' }))
@@ -2475,14 +2475,14 @@ $journalNumber = $(if ($installStep.Count -eq 1 -and $null -ne $installStep[0].F
         $null
     })
 $journaledFailed = $installStep.Count -eq 1 -and $installStep[0].Status -ceq 'Failed' -and $journalNumber -eq 51001 -and
-    $manifest.State -ceq 'Created'
+$manifest.State -ceq 'Created'
 $journalHidden = $journalText -and -not $journalText.Contains('FAKE-SENTINEL') -and
-    -not $journalText.Contains('Password=')
+-not $journalText.Contains('Password=')
 $claimMatchesDisk = $run.Message -cmatch $claimsJournalWritten -and $run.Message -cnotmatch $claimsJournalWriteFailed
 Assert-True -Name 'that Install step is journaled Failed with the same SQL number, no provider text, as claimed' `
     -Condition ($journaledFailed -and $journalHidden -and $claimMatchesDisk) `
     -Detail ('failed=' + $journaledFailed + '; journalNumber=' + $journalNumber + '; hidden=' + $journalHidden +
-        '; claim=' + $claimMatchesDisk + '; disk=<' + (Get-DiskJournalSummary -Manifest $manifest) + '>')
+    '; claim=' + $claimMatchesDisk + '; disk=<' + (Get-DiskJournalSummary -Manifest $manifest) + '>')
 $lastCall = Get-LastCall -Run $run
 $lastName = $(if ($null -ne $lastCall) { [string]$lastCall.Name } else { 'none' })
 $noCleanup = @(Find-Calls -Run $run -Pattern '^(Sql\.Drop|RemoveLocalUser|Blocked\.)').Count -eq 0
@@ -2490,13 +2490,13 @@ $failedHash = Get-FileHashHex -Path $sqlNumberInstall.ManifestPath
 $retry = Invoke-LifecycleRun -Scenario $sqlNumberInstall -Arguments @{ Action = 'Install'; Phase = 'Baseline001' } `
     -Behavior @{ StubMigrations = $true; SchemaRows = $baselineRows }
 $retryRefusedEarly = $retry.Completed -and $retry.Threw -and
-    @(Find-Calls -Run $retry -Pattern $noConnection).Count -eq 0
+@(Find-Calls -Run $retry -Pattern $noConnection).Count -eq 0
 $retryLeftJournal = (Get-FileHashHex -Path $sqlNumberInstall.ManifestPath) -ceq $failedHash
 Assert-True -Name 'nothing runs after that SQL failure and the next Install stops before any connection' `
     -Condition ($lastName -ceq 'Migrations.ProductNonQuery' -and $noCleanup -and $retryRefusedEarly -and
-        $retryLeftJournal) `
+    $retryLeftJournal) `
     -Detail ('lastCall=' + $lastName + '; noCleanup=' + $noCleanup + '; refusedEarly=' + $retryRefusedEarly +
-        '; journalKept=' + $retryLeftJournal + '; ' + (Format-RunDetail -Run $retry))
+    '; journalKept=' + $retryLeftJournal + '; ' + (Format-RunDetail -Run $retry))
 
 # ---- Every run stayed inside the shadowed boundary set and the harness ran the product each time.
 $escaped = @($script:AllRuns | Where-Object { $_.HarnessExit -ne 0 -or -not $_.Completed })

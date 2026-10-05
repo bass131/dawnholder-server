@@ -403,10 +403,10 @@ $engine.FailNumber = 51001
 $run = Invoke-Complete -Engine $engine
 Assert-True -Name 'strict catalog SqlException -> its number propagates without provider text, owned tx rolled back' `
     -Condition ($run.ErrorSqlNumber -is [int] -and $run.ErrorSqlNumber -eq 51001 -and -not $run.ErrorHasInner -and
-        -not $run.Error.Contains('FAKE-SENTINEL') -and -not $run.Error.Contains('Fake catalog failure') -and
-        ($run.Transactions -join ',') -ceq 'Begin,Rollback,Dispose') `
+    -not $run.Error.Contains('FAKE-SENTINEL') -and -not $run.Error.Contains('Fake catalog failure') -and
+    ($run.Transactions -join ',') -ceq 'Begin,Rollback,Dispose') `
     -Detail ('sqlNumber=' + $run.ErrorSqlNumber + '; inner=' + $run.ErrorHasInner + '; tx=' +
-        ($run.Transactions -join ',') + '; error=' + $run.Error)
+    ($run.Transactions -join ',') + '; error=' + $run.Error)
 
 # Engine definition text different from the reviewed source stays fail-closed before metadata is written.
 $engine = New-EngineState -AppliedMigrations 1
@@ -518,7 +518,7 @@ $run = Invoke-Runner -Engine $engine -Action {
 }
 Assert-True -Name 'caller-supplied transaction SqlException -> number propagates, provider text hidden, tx left open' `
     -Condition ($run.ErrorSqlNumber -is [int] -and $run.ErrorSqlNumber -eq 51001 -and -not $run.ErrorHasInner -and
-        -not $run.Error.Contains('FAKE-SENTINEL') -and ($run.Transactions -join ',') -ceq 'Begin') `
+    -not $run.Error.Contains('FAKE-SENTINEL') -and ($run.Transactions -join ',') -ceq 'Begin') `
     -Detail ('sqlNumber=' + $run.ErrorSqlNumber + '; tx=' + ($run.Transactions -join ',') + '; error=' + $run.Error)
 
 # ---- INSTALL-07 boundary at Invoke-DbScalar/Invoke-DbNonQuery (contract requirement 3). In-memory SqlException
@@ -629,12 +629,12 @@ foreach ($entryPoint in @('Invoke-DbScalar', 'Invoke-DbNonQuery')) {
         $text = $(if ($null -ne $failure) { $failure.ToString() } else { '' })
         $numbered = $number -is [int] -and $number -eq $case.Expected
         $safe = $failure -is [InvalidOperationException] -and $null -eq $failure.InnerException -and
-            -not $text.Contains('FAKE-SENTINEL') -and -not $text.Contains('Password=')
+        -not $text.Contains('FAKE-SENTINEL') -and -not $text.Contains('Password=')
         $order = ($connection.Log -join ',') -ceq ('Create,' + $mode + ':tx=True,Dispose')
         Assert-True -Name ("$entryPoint boundary: $($case.Name) -> number $($case.Expected), no provider text") `
             -Condition ($numbered -and $safe -and $order) `
             -Detail ('number=' + $number + '; safe=' + $safe + '; calls=' + ($connection.Log -join ',') + '; error=' +
-                $(if ($null -ne $failure) { $failure.Message } else { 'none' }))
+            $(if ($null -ne $failure) { $failure.Message } else { 'none' }))
     }
     $successValue = @{ Scalar = 'scalar-fixture'; NonQuery = 3 }[$mode]
     $connection = New-RecordingConnection -Execute { $successValue }
@@ -654,9 +654,9 @@ $sqlErrorAst = [Management.Automation.Language.Parser]::ParseFile($sqlErrorFile,
     [ref]$parseErrors)
 $topLevel = @($sqlErrorAst.EndBlock.Statements)
 $onlyDefinitions = $parseErrors.Count -eq 0 -and $null -eq $sqlErrorAst.ParamBlock -and
-    $null -eq $sqlErrorAst.BeginBlock -and $null -eq $sqlErrorAst.ProcessBlock -and $topLevel.Count -eq 1 -and
-    $topLevel[0] -is [Management.Automation.Language.FunctionDefinitionAst] -and
-    $topLevel[0].Name -ceq 'New-DatabaseSqlFailure'
+$null -eq $sqlErrorAst.BeginBlock -and $null -eq $sqlErrorAst.ProcessBlock -and $topLevel.Count -eq 1 -and
+$topLevel[0] -is [Management.Automation.Language.FunctionDefinitionAst] -and
+$topLevel[0].Name -ceq 'New-DatabaseSqlFailure'
 $fresh = [PowerShell]::Create()
 $resolvedBoundary = ''
 $freshErrors = 0
@@ -664,7 +664,7 @@ try {
     $databaseFile = Join-Path $script:ToolRoot 'Database.Common.ps1'
     $null = $fresh.AddScript('param($File) . $File; ' +
         '[string](Get-Command -Name New-DatabaseSqlFailure -CommandType Function).ScriptBlock.File').
-        AddArgument($databaseFile)
+    AddArgument($databaseFile)
     $resolvedBoundary = [string](@($fresh.Invoke()) -join '')
     $freshErrors = $fresh.Streams.Error.Count
 }
@@ -678,7 +678,7 @@ finally {
 }
 Assert-True -Name 'SqlError.Common.ps1 only defines New-DatabaseSqlFailure; Database.Common.ps1 resolves to that file' `
     -Condition ($onlyDefinitions -and $freshErrors -eq 0 -and
-        [string]::Equals($resolvedBoundary, $sqlErrorFile, [StringComparison]::OrdinalIgnoreCase)) `
+    [string]::Equals($resolvedBoundary, $sqlErrorFile, [StringComparison]::OrdinalIgnoreCase)) `
     -Detail ('onlyDefinitions=' + $onlyDefinitions + '; resolved=' + $resolvedBoundary + '; errors=' + $freshErrors)
 
 # ---- Test-Database.ps1 Assert-SqlError consumes that safe number (INSTALL-07-C1). Only the function definition is
@@ -720,7 +720,7 @@ $listed = Invoke-AssertSqlError -Numbers @(547) -Action {
 $listedText = ($listed.Output -join "`n")
 Assert-True -Name 'Assert-SqlError accepts the listed SQL number kept by Invoke-DbNonQuery, without provider text' `
     -Condition ($consumerReady -and $null -eq $listed.Failure -and
-        $listedText -ceq 'PASS: offline consumer case (SQL 547)') `
+    $listedText -ceq 'PASS: offline consumer case (SQL 547)') `
     -Detail ('output=' + $listedText + '; error=' + $(if ($listed.Failure) { $listed.Failure.Message } else { 'none' }))
 
 $script:ConsumerConnection = New-RecordingConnection -Execute $sqlFailureCases[0].Execute
@@ -776,7 +776,7 @@ foreach ($shape in $rejectedShapes.Keys) {
         $consumerReady -and $result.Output.Count -eq 0 -and $null -ne $result.Failure -and
         $result.Failure.Message -cne 'offline consumer case unexpectedly succeeded.') `
         -Detail ('rethrown=' + $(if ($result.Failure) { $result.Failure.GetType().FullName } else { 'none' }) +
-            '; output=' + ($result.Output -join ' | '))
+        '; output=' + ($result.Output -join ' | '))
 }
 
 # The catalog drift checks of Test-Database run Invoke-Migrations inside the test's own transaction. The fake catalog
@@ -795,9 +795,9 @@ $driftTransactions = @($script:Connection.Log |
         Where-Object { $_.Mode -in @('Begin', 'Commit', 'Rollback', 'Dispose') } | ForEach-Object Mode)
 Assert-True -Name 'Assert-SqlError accepts a catalog SQL number from Invoke-Migrations, leaving the test transaction' `
     -Condition ($consumerReady -and $null -eq $drift.Failure -and
-        ($drift.Output -join '') -ceq 'PASS: offline consumer case (SQL 51004)' -and
-        ($driftTransactions -join ',') -ceq 'Begin') `
+    ($drift.Output -join '') -ceq 'PASS: offline consumer case (SQL 51004)' -and
+    ($driftTransactions -join ',') -ceq 'Begin') `
     -Detail ('output=' + ($drift.Output -join '') + '; tx=' + ($driftTransactions -join ',') + '; error=' +
-        $(if ($drift.Failure) { $drift.Failure.Message } else { 'none' }))
+    $(if ($drift.Failure) { $drift.Failure.Message } else { 'none' }))
 
 Complete-TestSuite

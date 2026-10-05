@@ -57,7 +57,7 @@ function Get-CommandArguments {
 function Test-VariableArgument {
     param($Argument, [Parameter(Mandatory)][string]$Name)
     return $Argument -is [Management.Automation.Language.VariableExpressionAst] -and
-        $Argument.VariablePath.UserPath -ieq $Name
+    $Argument.VariablePath.UserPath -ieq $Name
 }
 
 function Get-AssignedRoots {
@@ -110,16 +110,16 @@ $defaulted = @($parameters | Where-Object { $null -ne $_.DefaultValue } | ForEac
 Assert-True -Name 'entry takes explicit Instance/Database and reviewed plan path/hash with no default value' `
     -Condition ($missingInputs.Count -eq 0 -and $defaulted.Count -eq 0) `
     -Detail ('parameters=' + ($parameterNames -join ',') + '; missing=' + ($missingInputs -join ',') +
-        '; defaults=' + ($defaulted -join ' | '))
+    '; defaults=' + ($defaulted -join ' | '))
 
 $environmentReads = @(Find-Ast -Root $scriptAst -Predicate {
         param($node)
         ($node -is [Management.Automation.Language.VariableExpressionAst] -and
-            $node.VariablePath.DriveName -ieq 'env') -or
+        $node.VariablePath.DriveName -ieq 'env') -or
         ($node -is [Management.Automation.Language.StringConstantExpressionAst] -and
-            $node.Value -match 'DAWNHOLDER_SQL_') -or
+        $node.Value -match 'DAWNHOLDER_SQL_') -or
         ($node -is [Management.Automation.Language.InvokeMemberExpressionAst] -and
-            $node.Member.Extent.Text -ieq 'GetEnvironmentVariable')
+        $node.Member.Extent.Text -ieq 'GetEnvironmentVariable')
     } | ForEach-Object { $_.Extent.StartLineNumber.ToString() + ':' + $_.Extent.Text })
 Assert-True -Name 'Test-Database.ps1 reads no environment value (no instance/database fallback)' `
     -Condition ($environmentReads.Count -eq 0) -Detail ($environmentReads -join ' | ')
@@ -127,7 +127,7 @@ Assert-True -Name 'Test-Database.ps1 reads no environment value (no instance/dat
 $contractAssignments = @(Find-Ast -Root $scriptAst -Predicate {
         param($node)
         $node -is [Management.Automation.Language.AssignmentStatementAst] -and
-            @(Get-AssignedRoots -Left $node.Left) -icontains 'Contract'
+        @(Get-AssignedRoots -Left $node.Left) -icontains 'Contract'
     })
 $readerBinding = $false
 $readerStatement = $null
@@ -135,31 +135,31 @@ if ($contractAssignments.Count -eq 1) {
     $assignment = $contractAssignments[0]
     $readerCalls = @(Get-CommandCalls -Root $assignment.Right -Name 'Read-TestEnvironmentApprovalPlan')
     $whole = $assignment.Left -is [Management.Automation.Language.VariableExpressionAst] -and
-        $assignment.Right -is [Management.Automation.Language.PipelineAst] -and
-        @($assignment.Right.PipelineElements).Count -eq 1 -and $readerCalls.Count -eq 1
+    $assignment.Right -is [Management.Automation.Language.PipelineAst] -and
+    @($assignment.Right.PipelineElements).Count -eq 1 -and $readerCalls.Count -eq 1
     if ($whole) {
         $binding = Get-CommandArguments -Command $readerCalls[0]
         $readerBinding = $binding.Positional.Count -eq 0 -and $binding.Named.Count -eq 2 -and
-            (Test-VariableArgument -Argument $binding.Named['ApprovalPlanPath'] -Name 'ApprovalPlanPath') -and
-            (Test-VariableArgument -Argument $binding.Named['ExpectedApprovalPlanHash'] `
-                    -Name 'ExpectedApprovalPlanHash')
+        (Test-VariableArgument -Argument $binding.Named['ApprovalPlanPath'] -Name 'ApprovalPlanPath') -and
+        (Test-VariableArgument -Argument $binding.Named['ExpectedApprovalPlanHash'] `
+            -Name 'ExpectedApprovalPlanHash')
         $readerStatement = $assignment
     }
 }
 Assert-True -Name 'the Contract is assigned once, from the reviewed plan reader with the entry path and hash' `
     -Condition $readerBinding `
     -Detail ('assignments=' + (@($contractAssignments | ForEach-Object {
-                    $_.Extent.StartLineNumber.ToString() + ':' + ($_.Extent.Text -replace '\s+', ' ')
-                }) -join ' | '))
+                $_.Extent.StartLineNumber.ToString() + ':' + ($_.Extent.Text -replace '\s+', ' ')
+            }) -join ' | '))
 
 # No later write may synthesize or relax approval: no member/index write on any variable for the approval fields, no
 # variable cmdlets and no Contract argument other than the reader result.
 $approvalWrites = @(Find-Ast -Root $scriptAst -Predicate {
         param($node)
         $node -is [Management.Automation.Language.AssignmentStatementAst] -and
-            $node.Left -isnot [Management.Automation.Language.VariableExpressionAst] -and
-            ($node.Left.Extent.Text -match '(?i)ExecutionApproved|\bG2\b' -or
-                @(Get-AssignedRoots -Left $node.Left) -icontains 'Contract')
+        $node.Left -isnot [Management.Automation.Language.VariableExpressionAst] -and
+        ($node.Left.Extent.Text -match '(?i)ExecutionApproved|\bG2\b' -or
+        @(Get-AssignedRoots -Left $node.Left) -icontains 'Contract')
     })
 $variableCommands = @('Add-Member', 'Set-Variable', 'New-Variable', 'Remove-Variable', 'Clear-Variable') |
     ForEach-Object { Get-CommandCalls -Root $scriptAst -Name $_ }
@@ -177,10 +177,10 @@ $contractArguments = @(Find-Ast -Root $scriptAst -Predicate {
 $foreignContract = @($contractArguments | Where-Object { -not $_.Ok } | ForEach-Object Line)
 Assert-True -Name 'nothing rewrites the Contract or approval fields, and every -Contract is that reader result' `
     -Condition ($approvalWrites.Count -eq 0 -and @($variableCommands).Count -eq 0 -and $foreignContract.Count -eq 0 -and
-        $contractArguments.Count -ge 8) `
+    $contractArguments.Count -ge 8) `
     -Detail ('approvalWrites=' + (@($approvalWrites | ForEach-Object { $_.Extent.Text }) -join ' | ') +
-        '; variableCommands=' + @($variableCommands).Count + '; contractArguments=' + $contractArguments.Count +
-        '; foreign=' + ($foreignContract -join ','))
+    '; variableCommands=' + @($variableCommands).Count + '; contractArguments=' + $contractArguments.Count +
+    '; foreign=' + ($foreignContract -join ','))
 
 $topLevel = @($scriptAst.EndBlock.Statements)
 function Get-TopLevelIndex {
@@ -196,14 +196,14 @@ function Get-TopLevelIndex {
 $targetChecks = @(Get-CommandCalls -Root $scriptAst -Name 'Assert-TestEnvironmentTarget' | Where-Object {
         $binding = Get-CommandArguments -Command $_
         $binding.Positional.Count -eq 0 -and
-            (Test-VariableArgument -Argument $binding.Named['Contract'] -Name 'Contract') -and
-            (Test-VariableArgument -Argument $binding.Named['Database'] -Name 'Database') -and
-            (Test-VariableArgument -Argument $binding.Named['Instance'] -Name 'Instance')
+        (Test-VariableArgument -Argument $binding.Named['Contract'] -Name 'Contract') -and
+        (Test-VariableArgument -Argument $binding.Named['Database'] -Name 'Database') -and
+        (Test-VariableArgument -Argument $binding.Named['Instance'] -Name 'Instance')
     })
 $approvalChecks = @(Get-CommandCalls -Root $scriptAst -Name 'Assert-TestEnvironmentExecutionApproval' | Where-Object {
         $binding = Get-CommandArguments -Command $_
         $binding.Positional.Count -eq 0 -and
-            (Test-VariableArgument -Argument $binding.Named['Contract'] -Name 'Contract')
+        (Test-VariableArgument -Argument $binding.Named['Contract'] -Name 'Contract')
     })
 $connectionStatements = @(Get-CommandCalls -Root $scriptAst -Name 'Open-LocalDatabase' | ForEach-Object {
         Get-TopLevelIndex -Node $_
@@ -219,7 +219,7 @@ $gatesFirst = $firstConnection -ge 0 -and $lateGates.Count -eq 0
 Assert-True -Name 'reader, exact target (with Instance) and execution approval run before any Open-LocalDatabase' `
     -Condition $gatesFirst `
     -Detail ('gateStatements=' + ($gateIndexes -join ',') + '; firstConnectionStatement=' + $firstConnection +
-        '; targetChecks=' + $targetChecks.Count + '; approvalChecks=' + $approvalChecks.Count)
+    '; targetChecks=' + $targetChecks.Count + '; approvalChecks=' + $approvalChecks.Count)
 
 $runnerCalls = @(Get-CommandCalls -Root $scriptAst -Name 'Invoke-Migrations')
 Assert-Equal -Name 'Test-Database.ps1 calls Invoke-Migrations six times (msg_4bcc54fa9ef0)' -Expected 6 `
@@ -231,11 +231,11 @@ $runnerBindings = @($runnerCalls | ForEach-Object {
         [pscustomobject]@{
             Line = $_.Extent.StartLineNumber
             Ok = $binding.Positional.Count -eq 0 -and $keys -ieq 'Connection,Contract,Phase,Transaction' -and
-                (Test-VariableArgument -Argument $binding.Named['Connection'] -Name 'connection') -and
-                (Test-VariableArgument -Argument $binding.Named['Transaction'] -Name 'transaction') -and
-                $phase -is [Management.Automation.Language.StringConstantExpressionAst] -and
-                $phase.Value -ceq 'Complete' -and
-                (Test-VariableArgument -Argument $binding.Named['Contract'] -Name 'Contract')
+            (Test-VariableArgument -Argument $binding.Named['Connection'] -Name 'connection') -and
+            (Test-VariableArgument -Argument $binding.Named['Transaction'] -Name 'transaction') -and
+            $phase -is [Management.Automation.Language.StringConstantExpressionAst] -and
+            $phase.Value -ceq 'Complete' -and
+            (Test-VariableArgument -Argument $binding.Named['Contract'] -Name 'Contract')
             Text = $_.Extent.Text -replace '\s+', ' '
         }
     })
@@ -287,11 +287,11 @@ $rejectionChecks = @(Get-CommandCalls -Root $scriptAst -Name 'Assert-Rejected' |
     })
 Assert-True -Name 'two migration rejection checks use constant patterns after a drift and an unknown-version stimulus' `
     -Condition ($rejectionChecks.Count -eq 2 -and
-        @($rejectionChecks | Where-Object { -not $_.Constant }).Count -eq 0 -and
-        ((@($rejectionChecks | ForEach-Object Stimulus) | Sort-Object) -join ',') -ceq 'ChecksumDrift,UnknownVersion') `
+    @($rejectionChecks | Where-Object { -not $_.Constant }).Count -eq 0 -and
+    ((@($rejectionChecks | ForEach-Object Stimulus) | Sort-Object) -join ',') -ceq 'ChecksumDrift,UnknownVersion') `
     -Detail (@($rejectionChecks | ForEach-Object {
-                $_.Line.ToString() + ':' + $_.Stimulus + ':' + $_.Pattern
-            }) -join ' | ')
+            $_.Line.ToString() + ':' + $_.Stimulus + ':' + $_.Pattern
+        }) -join ' | ')
 
 # ---- 2. The extracted Assert-Rejected and both patterns against the real runner's rejections.
 $assertRejected = $scriptAst.Find({
@@ -385,16 +385,16 @@ $control = Invoke-RunnerCase -Connection (New-RunnerFixture -History $appliedRow
 Assert-True -Name 'fixture: the recomputed applied history passes the runner history check (control)' `
     -Condition ($control.Commands -gt 2) `
     -Detail ('commandsBeforeStop=' + $control.Commands + '; error=' +
-        $(if ($control.Failure) { $control.Failure.Message }))
+    $(if ($control.Failure) { $control.Failure.Message }))
 
 $drift = Invoke-RunnerCase -Connection (New-RunnerFixture -History $driftRows) -Contract $script:FixtureContract
 $unknown = Invoke-RunnerCase -Connection (New-RunnerFixture -History $unknownRows) -Contract $script:FixtureContract
 Assert-True -Name 'the runner leaves the caller transaction open on both history rejections' `
     -Condition ($null -ne $drift.Failure -and $null -ne $unknown.Failure -and
-        $drift.Transactions -ceq 'Begin' -and $unknown.Transactions -ceq 'Begin' -and
-        $drift.Commands -eq 2 -and $unknown.Commands -eq 2) `
+    $drift.Transactions -ceq 'Begin' -and $unknown.Transactions -ceq 'Begin' -and
+    $drift.Commands -eq 2 -and $unknown.Commands -eq 2) `
     -Detail ('drift=' + $drift.Transactions + '/' + $drift.Commands + '; unknown=' + $unknown.Transactions + '/' +
-        $unknown.Commands)
+    $unknown.Commands)
 $driftMessage = $(if ($drift.Failure) { $drift.Failure.Message } else { '' })
 $unknownMessage = $(if ($unknown.Failure) { $unknown.Failure.Message } else { '' })
 
@@ -447,14 +447,14 @@ $othersAccepted = @($matrix | Where-Object { $_.Check -cne $_.Case -and $_.Accep
 Assert-True -Name 'each pattern accepts the real runner rejection that follows its own stimulus' `
     -Condition ($driftMessage -and $unknownMessage -and $ownAccepted -eq 2) `
     -Detail ('drift=<' + $driftMessage + '>; unknown=<' + $unknownMessage + '>; ' + (@($matrix | Where-Object {
-                    $_.Check -ceq $_.Case
-                } | ForEach-Object { $_.Check + ':' + $_.Accepted + ':' + $_.Error }) -join ' | '))
+                $_.Check -ceq $_.Case
+            } | ForEach-Object { $_.Check + ':' + $_.Accepted + ':' + $_.Error }) -join ' | '))
 Assert-True -Name 'no pattern accepts the other rejection, Contract gate, lock SQL failure or extended/old text' `
     -Condition ($matrix.Count -eq 2 * $script:Cases.Count -and $othersAccepted.Count -eq 0) `
     -Detail ('accepted=' + (@($othersAccepted | ForEach-Object { $_.Check + '<-' + $_.Case }) -join ',') +
-        '; rethrown=' + (@($matrix | Where-Object { -not $_.Accepted } | ForEach-Object {
-                    $_.Check + '<-' + $_.Case
-                }) -join ','))
+    '; rethrown=' + (@($matrix | Where-Object { -not $_.Accepted } | ForEach-Object {
+                $_.Check + '<-' + $_.Case
+            }) -join ','))
 
 # ---- 3. The real Test-Database.ps1 file up to its first SqlConnection, in a separate Windows PowerShell process.
 # Fail-closed inspectability: every way the entry and the files it dot-sources could construct a SqlConnection must be
@@ -544,10 +544,10 @@ function Test-EntryInspectable {
                     $head = $node.CommandElements[0]
                     $allowed = ($node.InvocationOperator -eq 'Dot' -and
                         $head -is [Management.Automation.Language.ParenExpressionAst]) -or
-                        $head -is [Management.Automation.Language.ScriptBlockExpressionAst] -or
-                        ((Test-VariableArgument -Argument $head -Name 'Action') -and $null -ne $function -and
-                            @($function.Parameters |
-                                    Where-Object { $_.Name.VariablePath.UserPath -ieq 'Action' }).Count)
+                    $head -is [Management.Automation.Language.ScriptBlockExpressionAst] -or
+                    ((Test-VariableArgument -Argument $head -Name 'Action') -and $null -ne $function -and
+                    @($function.Parameters |
+                            Where-Object { $_.Name.VariablePath.UserPath -ieq 'Action' }).Count)
                     if (-not $allowed) {
                         $issues += 'unknown dynamic invocation at ' + $where + ': ' + $node.Extent.Text
                     }
@@ -580,7 +580,7 @@ $inspection = Test-EntryInspectable -Entry $testDatabasePath
 Assert-True -Name 'entry boundary is inspectable: every SqlConnection construction is a form the harness blocks' `
     -Condition $inspection.Ready `
     -Detail ('files=' + ($inspection.Files -join ',') + '; sites=' + ($inspection.Sites -join ' | ') + '; issues=' +
-        ($inspection.Issues -join ' | '))
+    ($inspection.Issues -join ' | '))
 
 $harnessSource = @'
 param(
@@ -902,8 +902,8 @@ if ($inspection.Ready) {
         $run = Invoke-EntryCase -Name $case.Name -Plan $plan -Arguments $case.Arguments -Environment $environment
         Assert-True -Name ("Test-Database refuses $($case.Name) before any SqlConnection, at the expected gate") `
             -Condition ($run.Completed -and $run.Threw -and $run.Connections.Count -eq 0 -and
-                $run.Blocked.Count -eq 0 -and $run.Output.Count -eq 0 -and
-                [string]::Equals($run.Message, $case.Expected, [StringComparison]::Ordinal)) `
+            $run.Blocked.Count -eq 0 -and $run.Output.Count -eq 0 -and
+            [string]::Equals($run.Message, $case.Expected, [StringComparison]::Ordinal)) `
             -Detail (Format-EntryRun -Run $run)
     }
 
@@ -927,9 +927,9 @@ if ($inspection.Ready) {
         }
         Assert-True -Name ("$($case.Name) reaches the first SqlConnection only for the exact instance and database") `
             -Condition ($run.Completed -and $run.Threw -and $run.Message -ceq $harnessSentinel -and
-                $run.Connections.Count -eq 1 -and $run.Connections[0] -ceq $exactTarget -and
-                $run.Blocked.Count -eq 0 -and
-                ($run.Output -join '|') -ceq ($preConnectionRefusals -join '|')) `
+            $run.Connections.Count -eq 1 -and $run.Connections[0] -ceq $exactTarget -and
+            $run.Blocked.Count -eq 0 -and
+            ($run.Output -join '|') -ceq ($preConnectionRefusals -join '|')) `
             -Detail (Format-EntryRun -Run $run)
     }
 }
@@ -937,7 +937,7 @@ $unshadowed = @($script:EntryRuns | Where-Object { $_.Exit -ne 0 -or -not $_.Com
 Assert-True -Name 'every entry run resolved its shadowed boundaries and completed in the harness' `
     -Condition ($inspection.Ready -and $script:EntryRuns.Count -eq ($refusals.Count + 2) -and $unshadowed.Count -eq 0) `
     -Detail ('runs=' + $script:EntryRuns.Count + '; failed=' + (@($unshadowed | ForEach-Object {
-                    $_.Name + ':exit=' + $_.Exit + ':' + $_.StdErr
-                }) -join ' | '))
+                $_.Name + ':exit=' + $_.Exit + ':' + $_.StdErr
+            }) -join ' | '))
 
 Complete-TestSuite

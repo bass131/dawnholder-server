@@ -447,11 +447,11 @@ function New-TestSqlException {
     $errorConstructors = @([Data.SqlClient.SqlError].GetConstructors($flags) | Where-Object {
             $types = @($_.GetParameters() | ForEach-Object ParameterType)
             $leadingMatches = $types.Count -ge $leading.Count -and
-                @(0..($leading.Count - 1) | Where-Object { $types[$_] -ne $leading[$_] }).Count -eq 0
+            @(0..($leading.Count - 1) | Where-Object { $types[$_] -ne $leading[$_] }).Count -eq 0
             $restSupported = @($types | Select-Object -Skip $leading.Count |
                     Where-Object { $_ -ne [uint32] -and $_ -ne [Exception] }).Count -eq 0
-            $leadingMatches -and $restSupported
-        } | Sort-Object { $_.GetParameters().Count })
+                $leadingMatches -and $restSupported
+            } | Sort-Object { $_.GetParameters().Count })
     $collectionConstructor = [Data.SqlClient.SqlErrorCollection].GetConstructor($flags, $null, [Type[]]@(), $null)
     $addError = [Data.SqlClient.SqlErrorCollection].GetMethod('Add', $flags)
     $exceptionConstructor = [Data.SqlClient.SqlException].GetConstructor(

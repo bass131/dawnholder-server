@@ -451,7 +451,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
             $journalStatus = 'Cleanup failure journal write succeeded.'
             if ($cleanupResourceAttempted) {
                 $journalStatus = 'Cleanup failure journal write succeeded. ' +
-                    'Attempted partial cleanup is recorded as failed; deletion outcomes remain unconfirmed.'
+                'Attempted partial cleanup is recorded as failed; deletion outcomes remain unconfirmed.'
             }
         } catch {
             $journalStatus = 'Cleanup failure journal write failed; durable state is unconfirmed. {0}' -f (
@@ -460,7 +460,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
         }
     }
     $message = 'Test environment cleanup stopped. {0} Original failure: {1} Journal: {2} ' +
-        'Preserve remaining resources and ask the coordinator; no forced cleanup or automatic retry.'
+    'Preserve remaining resources and ask the coordinator; no forced cleanup or automatic retry.'
     throw ($message -f $executionStatus, $failureSummary, $journalStatus)
 } finally {
     if ($null -ne $connection) {

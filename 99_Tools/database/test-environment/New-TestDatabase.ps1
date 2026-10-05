@@ -246,7 +246,7 @@ COMMIT;
         }
     }
     $message = 'Test environment database lifecycle stopped; preserve manifest and all resources. ' +
-        'Original failure: {0} Journal: {1} No automatic retry/cleanup.'
+    'Original failure: {0} Journal: {1} No automatic retry/cleanup.'
     throw ($message -f $failureSummary, $journalStatus)
 } finally {
     if ($null -ne $connection) {

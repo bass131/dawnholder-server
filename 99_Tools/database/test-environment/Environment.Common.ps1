@@ -669,12 +669,12 @@ function Get-TestEnvironmentStopReason(
     # Interpolated throws retain their direct-call contract. Match complete, bounded templates and return constants:
     # keys, paths, object names and structure/provider details are never part of the reported reason.
     $manifestKey = '(?:SchemaVersion|Goal|GoalMarker|G0|G1|G2|Machine|Instance|InstanceName|Endpoint|' +
-        'Database|SlotId|AccountId|CharacterId|RuntimeLogin|RecoveryPrincipal|RecoveryLocalName|ExecutorSid|' +
-        'Encrypt|TrustServerCertificate|ManifestPath|SettlementPath|PrivateDirectory|IdentityDirectory|' +
-        'IdentityPath|RuntimeCredentialPath|RecoveryCredentialPath|ApprovalPlanPath|ApprovalPlanHash)'
+    'Database|SlotId|AccountId|CharacterId|RuntimeLogin|RecoveryPrincipal|RecoveryLocalName|ExecutorSid|' +
+    'Encrypt|TrustServerCertificate|ManifestPath|SettlementPath|PrivateDirectory|IdentityDirectory|' +
+    'IdentityPath|RuntimeCredentialPath|RecoveryCredentialPath|ApprovalPlanPath|ApprovalPlanHash)'
     $lifecycleKey = '(?:State|Engine|DatabaseIdentity|MigrationManifest|WindowsAccountSid|RuntimeLoginSid|' +
-        'RecoveryLoginSid|RuntimeUserSid|RecoveryUserSid|RuntimeCredentialHash|RecoveryCredentialHash|' +
-        'IdentityHash|Steps|Cleanup)'
+    'RecoveryLoginSid|RuntimeUserSid|RecoveryUserSid|RuntimeCredentialHash|RecoveryCredentialHash|' +
+    'IdentityHash|Steps|Cleanup)'
     $identityKey = '(?:DatabaseId|CreationTime|OwnerSid|DatabaseGuid|Collation|Rcsi)'
     $modulePath = '(?:modules/(?:functions|procedures(?:/internal)?)/[a-z_]{1,80}\.sql|modules/permissions\.sql)'
     $moduleName = 'dh\.[A-Za-z][A-Za-z0-9_]{0,127}'
@@ -698,7 +698,7 @@ function Get-TestEnvironmentStopReason(
             return 'Module source structure is not compliant or could not be inspected; preserve resources.'
         }
         ('\AModule source checksum mismatch: ' + $modulePath +
-            '; update the reviewed bundle and declaration together\.\z') {
+        '; update the reviewed bundle and declaration together\.\z') {
             return 'Module source checksum differs from the reviewed bundle and declaration.'
         }
         ('\AModule files are one batch and cannot contain GO: ' + $modulePath + '\.\z') {
@@ -714,11 +714,11 @@ function Get-TestEnvironmentStopReason(
             return 'Module dependency order differs from the reviewed bundle.'
         }
         ('\ADependency contract mismatch: ' + $modulePath +
-            '; declare the operation''s actual helper responsibilities\.\z') {
+        '; declare the operation''s actual helper responsibilities\.\z') {
             return 'Module dependency declarations differ from their reviewed responsibilities.'
         }
         ('\ARegistered/actual module drift: ' + $moduleName +
-            '; refuse overwrite, including unchanged source\.\z') {
+        '; refuse overwrite, including unchanged source\.\z') {
             return 'Registered and actual module definitions differ; refuse overwrite.'
         }
         ('\AUnchanged source has different reviewed definition metadata: ' + $moduleName + '\.\z') {
@@ -728,7 +728,7 @@ function Get-TestEnvironmentStopReason(
             return 'Already-declared module release has different source registration; refuse repair.'
         }
         ('\ATest environment SQL command failed \(provider number -?\d{1,10}\); ' +
-            'raw SQL and provider text suppressed\. Preserve manifest\.\z') {
+        'raw SQL and provider text suppressed\. Preserve manifest\.\z') {
             return 'Test environment SQL command failed; raw SQL and provider text suppressed. Preserve manifest.'
         }
     }
