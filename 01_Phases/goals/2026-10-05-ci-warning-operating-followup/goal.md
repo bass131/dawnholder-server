@@ -26,6 +26,17 @@ Rules의 새 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 g
 - 다음 단위: PR2를 PR188 branch 위에 쌓아 시작한다. 원문 묶음은 E/main-overnight-messages-peek.json이다.
 - PR2 branch `docs/operating-followup-core-20261006`을 PR188 head `68e7ba2`에서 만들었다. 첫 commit `689dbe9`는 이 goal의 제출 뒤 로컬 기록이고, 이어서 CURRENT의 Rules 자기 줄 branch를 바꿨다. 진척 단계는 PR1 병합이 사용자 확인을 기다리는 동안 실제 진행 중인 PR2를 `[>]`로 둔다.
 
+### PR2 문서 작성 발행
+
+- 사전 메모 E/astra-pr2-context.md, 계약 E/sol-pr2-contract.md v1. 등급은 문서 실사, R-7 비대상이다. 고정 입력 hash·경로 확인은 E/sol-pr2-inputs.json·sol-pr2-path-check.json(astra-pr2-inputs.mjs, exit 0, 누락 0)이다. 발행 HEAD는 `ffa5db5`다.
+- 메인에 기동을 알렸다(`msg_228226cd2e02`). R-5대로 이 리드 pane을 split해 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`로 열었다. 첫 화면은 선택창 없이 rules-active 경로·GPT-6.1-Sol max·PR2 branch 표시였다(E/sol-pr2-first-screen.json). backend는 unknown이다.
+- worker-start: Task `task_205f6f0cb41c`, Dispatch `ctx_098d7dffd487`, terminal `term_8653f0b7-e0b8-4b16-b50b-a3d013d157dd`, `input_accepted`·turn 시작 관측(E/sol-pr2-worker-start.json).
+- Sol 공식 ask `msg_c8c69bbdc6d9`(15:49:07Z): goal.md hash가 manifest와 다르다고 물었다. 원인은 Astra가 manifest 뒤에 쓴 위 발행 기록 6줄이다(HEAD blob AE59EAA3…, 디스크 6158B8CD…, numstat 6/0). 발신 `dispatch:ctx_098d7dffd487`·payload Task/Dispatch·body 태그·id=thread_id를 대조했다. 답 `msg_bf2a2976cf91`: 계약 보충 1(15:50Z)로 현재 bytes를 보충 입력으로 기록해 진행한다. Astra는 자기 진행 기록 절만 더 쓸 수 있다. 원문 E/sol-pr2-question-goal-hash*.json.
+- Sol 완료 `msg_15efebe73ff4`(16:19:53Z, worker_done succeeded). 수신 helper `check-message.mjs`는 현재 terminal·Task·Dispatch·`[Rules Sol]` 기대값으로 `allowed`/exit 0이었다(E/sol-pr2-completion-policy-*.json). 수정 파일은 허용 8개, 문서 numstat 추가 40/삭제 23이다. CLAUDE.md·goal은 Sol이 쓰지 않았다. [완료 보고](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/sol-pr2/report.md)와 실제 diff를 Astra가 읽었다. 자체점검 9항목 실패 0은 작성자 점검이며 독립 실사가 아니다.
+- Sol이 스스로 밝힌 절차 이탈: heartbeat 5분 주기를 15:51Z~16:05Z와 그 뒤 두 구간에서 지키지 못했다. 내용 있는 heartbeat `msg_47239180c586`로 알렸다. 산출물 결함이 아니라 절차 이탈로 기록하며 독립 실사에도 입력으로 준다.
+- 범위 밖 발견: CLAUDE.md 25의 현행 GameDev 두 곳(메인 반영 대상), CODE_CONVENTION 77의 현행 담당 GameDev(계약 밖 파일). 열린 질문: Unity 시트를 넘길 때 반납·해제 순서(원천 없음, 만들지 않음).
+- 정산: worker-release `retained`/external_terminal/processAction none. 같은 incarnation `cd4a6ea9…`의 빈 prompt를 확인한 뒤 terminal close(`ptyKilled=true`)했다. 직후 rules-active 목록은 이 리드 하나다(E/sol-pr2-release.json·before-close·close·after-close-list-raw).
+
 ### 리드 교체 인계 — 2026-10-05T14:27:56Z
 
 **메인 `msg_25102e277345`(14:23:54Z)의 최신 지시에 따라 현재 Astra는 인계 뒤 턴을 끝낸다.** 외부 작업자는 0명이며 신규 Sol·검증자·Gardener를 띄우지 않는다. 메인이 이 pane을 닫고 `claude-opus-5-5` 신규 리드를 기동해 같은 Run을 이어받는다. 목표 완료나 PR 병합이 아니다. 사용자 결정 원문은 아래 「적용 중인 사용자 결정」에 있다.
