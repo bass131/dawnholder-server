@@ -18,7 +18,7 @@
 - [>] DB 생성 실행
 - [ ] 설치·판정 계획 실사
 - [ ] 실제 DB 설치·판정
-- [ ] 첫 PR·CI·병합
+- [>] 첫 PR·CI·병합
 - [ ] 시험 DB 정리
 - [ ] 결과 기록·종료
 
@@ -378,9 +378,34 @@
 
 ## 재개 지점
 
-### 리드 교체 인계 — 2026-10-05T14:35Z 이후
+### 세션 마무리 — 2026-10-05T22:34Z 기준
 
-이 블록이 현재 재개 정본이며 아래 과거 Run/실행 안내보다 우선한다. 인계 근거는 `.backups/verification/2026-10-04-persistence-integration`(이하 E), 진단 폴더는 `E/g2-service-diagnosis`(이하 D)다. 현재 담당 Astra는 인계 보고 뒤 쓰기·commit/push·대기를 종료한다.
+이 블록이 현재 재개 정본이다. 아래 「리드 교체 인계」와 그보다 앞의 기록은 역사다. 근거 폴더는 `.backups/verification/2026-10-04-persistence-integration`(이하 E)와 `E/g2-service-diagnosis`(이하 D)다. 마무리 지시는 메인 `msg_7589d8bf6bcc`(2026-10-05T22:33:57Z)다. 이 지시가 전달한 사용자 원문은 「일단 나중에 더 진행해보자, 현재 멈춘 기준으로 각 세션들 재개포인트 잡아주고 전부 마무리하자 / 나중에 새로운 세션에서 이어서 하지 뭐」다. 메인 전달은 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+
+- **새 세션의 시작:** 다음 리드는 새 handle과 새 Run 연결로 시작한다. 이전 Run `run_6ba3f644755b`, 이전 Task·Dispatch, 이전 handle(이 리드 `term_e990cbd0-…`, 작업자 pane들)은 실행 권한으로 쓰지 않는다. 메인 handle도 전송 전에 `orca terminal list --json`으로 다시 확인한다. 태그 전환(Core)은 운영 PR2 병합 뒤에 적용한다. 다음 세션도 PR2 병합 전이면 `[GameDev Astra]`·`[GameDev Sol]`·`[GameDev 검증자]`를 쓴다.
+- **Git:** worktree `C:/Dev/DawnHolder_Project`, branch `feat/persistence-integration-20261004`. 마무리 직전 HEAD는 `7ff1ca3cee29ad8793188a9ed33adb8fad04b50f`이고 원격과 같았다. 그 위에 이 재개 지점 기록 커밋 하나를 더해 push한다. 최종 head는 메인 마무리 보고와 `git log -1`로 확인한다. 이 기록 커밋 push로 PR #190 CI가 다시 돈다. 다음 세션은 최종 head의 CI 4개를 먼저 확인한다. Unity 실물 3파일의 skip-worktree와 stash 2개는 사용자 상태라 건드리지 않는다.
+- **PR #190(draft):** base `main`. `7ff1ca3c`에서 원격 CI 4/4 통과(code-rules `37349041978`, module-boundaries `37349041974`, architecture-tests `37349041869`, dotnet-tests `37349041836`)를 메인도 `gh pr checks`로 확인했다. 담긴 것은 설치·검사 도구 수정, DB 1단계 기록, code-rules 들여쓰기 수정이다. 들여쓰기 수정은 공백 전용 `1a3aa94`와 구조 수정 `e6023a0`으로 나뉜다. 둘 다 독립 검증을 거쳐 재검증 PASS(E/`pr190-ci/brace-review-1/verdict.md`)다. 본문 갱신안은 E/`pr190-ci/pr190-body-update-draft.md`에 있다. PR 생성·병합·상태 변경은 사용자 확인 창(`gh pr create*`·`gh pr merge*` ask 규칙)에서만 한다(`msg_425d8150a8bf`, `msg_cea5804b3883`).
+- **작업자:** 살아 있는 작업자 pane은 0이다. worker-list 19행은 succeeded 16·failed 3이며 모두 외부 retained 역사다. 실행 중인 우편함 대기·watch도 없다.
+- **사용자 결정 대기(현황판 이름):**
+  1. `procmon-run-approval`: Procmon 1회 관측 실행 승인. v5 문서 실사 PASS(D/`procmon-review-v5/verdict.md`). 승인 전에는 전달 ps1·승인 기록·attempt 폴더를 만들지 않는다.
+  2. `pr190-boundary`: PR #190 병합 경계. 리드 추천은 B(엔진 판정까지 이 PR에 쌓은 뒤 병합)다. 병합 자체는 정확한 head에 대한 사용자 개별 승인이 따로 필요하다.
+  3. `plan-core-f38df6e2`: 다음 goal 「인스턴스 맵 수명」 범위 초안(E/`next-goal-instance-map-lifecycle-scope-draft.md`, `msg_f38df6e22655`). 승인 전에는 브랜치·goal·Fable·Sol을 만들지 않는다.
+  4. PR190 본문 갱신안: 위 파일을 PR에 반영할지.
+  5. OBS-1: 이어지는 줄 199곳이 첫 줄과 같은 깊이로 붙은 가독성 문제. 식 구조 변경은 리드 계약, 검사 설정 조정은 사용자 판단이다(E/`pr190-ci/indentation-review-1/verdict.md` 「설계 관찰」).
+- **메인 보고 몫(사용자 보고):** 같은 산출물(Procmon 승인안) 네 번째 보완 체크포인트, heredoc과 `gh pr create`를 이어 실행했을 때 확인 창이 관측되지 않은 사실(15:01:15Z).
+- **다음 세션에서 할 순서:**
+  1. 새 리드 기동, 새 Run 연결, 메인에 회신 주소 알림.
+  2. 최종 head의 PR #190 CI를 확인한다.
+  3. 사용자 결정 1~5를 메인을 통해 받는다.
+  4. `procmon-run-approval`이 승인되면 v5 문서대로 전달 ps1과 승인 기록을 만든다. 사용자가 관리자 PS5.1 창에서 1회 관측하고, 원시를 정산한다. 재시도는 없다.
+  5. `pr190-boundary` 결정에 따라 병합하거나 엔진 판정을 이 PR에 쌓는다.
+  6. 범위 초안이 승인되면 새 goal을 최신 main에서 시작한다.
+- **적용 중인 메인 결정:** 밤사이 PR 체크포인트 `msg_eaaee133d8a1`, Procmon v5 범위 `msg_d9b9c452eee2`, harness 자동 저장 분류 PS5.1 `msg_e74f940dc196`·PS7 `msg_105b6cd9e698`, PR 확인 규칙 `msg_425d8150a8bf`·`msg_cea5804b3883`, IND-01 처리 순서 `msg_105b6cd9e698`, CI 실패 시 Sol은 메인에 먼저 올림 `msg_cd28b106e53b`, 마무리 `msg_7589d8bf6bcc`.
+- **SQL 열린 문제:** 그대로다. 10:30Z 사용자 SQL 시작이 master/mastlog OS 오류 5로 실패했고 재시도하지 않았다. DB 생성·설치는 미실행이고 원인은 미확정이다. 실제 장치는 `C:\myVHDX.vhdx`→D:다.
+
+### 리드 교체 인계 — 2026-10-05T14:35Z 이후(역사)
+
+이 블록은 당시 재개 정본이었다. 지금은 위 「세션 마무리」가 우선한다. 인계 근거는 `.backups/verification/2026-10-04-persistence-integration`(이하 E), 진단 폴더는 `E/g2-service-diagnosis`(이하 D)다. 현재 담당 Astra는 인계 보고 뒤 쓰기·commit/push·대기를 종료한다.
 
 - **주소·Git:** Run `run_6ba3f644755b`; worktree `C:/Dev/DawnHolder_Project`, 전체 ID `8fd4be8c-601c-4d91-89b5-8167ed8c0977::C:/Dev/DawnHolder_Project`; branch `feat/persistence-integration-20261004`; HEAD `9a663901abc14ad4ca85b21d5dc371f34ee507c4`. local main `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1` 대비 ahead13/behind0. main 통합은 완료됐고 v3 독립 실사로 대조됐다. 원격 push/PR 병합은 하지 않았다.
 - **미커밋:** 추적 파일은 이 `goal.md` 하나. main 통합 뒤 v3/v4 판정·사용자 결정·Content 경계·이번 인계를 기록한 변경이며 커밋하지 않았다. `.backups`의 판정·receipt·계약·원시 자료는 로컬 보존이다. 다음 리드가 이 브랜치의 유일한 commit/push 담당이다. Unity 실물3/skip-worktree 등 기존 사용자 상태를 건드리지 않는다.
@@ -571,3 +596,8 @@ Astra는 goal/위임 계약/비밀 없는 실행 계획/결과/Git를 소유한�
   - 오프라인 작업본·기준선: 1081/0/9이고 결과 1090쌍이 같다.
   비차단 관찰은 OBS-1(범위 밖)과 OBS-2다. OBS-2는 꼬리 `$null`을 두 식 모두 허용한다는 것이다. 실제 reflection으로는 도달할 수 없어 결함 번호를 붙이지 않았다. IND-01 패턴을 AST 검사로 바꾸는 것은 「가능(후보)」이며 이 goal 범위 밖이다. 같은 번호의 확정 실패는 1회로 끝났다. 원천 표본 대조와 종료 기록(release retained, close ptyKilled=true, 대상 0)은 같은 폴더 `settlement.md`에 있다.
 - 커밋: 공백 전용 `1a3aa940`(7파일 216/216, `git diff -w` 0줄)과 구조 수정 `e6023a0d`(TestSupport.ps1 4/4)를 하네스 원칙 5에 따라 나눴다. 다음은 이 goal 기록 커밋을 더해 push하고 PR #190 CI를 다시 확인하는 것이다. PR 생성·병합·상태 변경은 하지 않는다(`msg_425d8150a8bf`, `msg_cea5804b3883`).
+- push: 17:31:13Z에 `ee5a2191..7ff1ca3c`를 PR #190 브랜치에 push했다. PR은 새로 만들거나 편집하지 않았다. 본문 갱신안은 E/`pr190-ci/pr190-body-update-draft.md`에 있다. 메인에 `msg_dea2dff1a76f`로 브랜치·head·본문 경로·남은 확인 항목을 보냈다. 새 head의 원격 CI는 감시 중이다.
+- 메인 `msg_cd28b106e53b`(17:45:16Z): R-2 대조를 마쳤다(원격 head `7ff1ca3`, 재검증 판정 SHA·결론·강 필수 기재 확인). PR 본문 편집은 아침에 사용자 확인 자리에서 정한다. 원격 CI 결과는 한 줄로 보낸다. 실패가 나오면 범위 안 결함인지 분류만 하고, 수정 Sol은 메인에 올린 뒤 띄운다. 범위 초안은 승인 전이라 착수하지 않는다.
+- PR #190 head `7ff1ca3c`의 원격 CI는 4개 workflow 모두 통과다: code-rules `37349041978`, module-boundaries `37349041974`, architecture-tests `37349041869`, dotnet-tests `37349041836`. 원시는 E/`pr190-ci/runs-after-ci2.json`과 `pr190-checks-watch-2.txt`에 있다. 메인에 `msg_37af1db0c7c8`로 한 줄 보고했다. 이 PR에서 밤사이 할 일은 끝났다. 남은 것은 사용자 결정(Procmon 실행 승인, 병합 경계, 정확한 head 병합 승인)과 범위 초안 승인이다.
+- 18:15Z께 Claude Code가 시스템 메모리 부족을 이유로 Astra의 우편함 대기(`check --wait`)를 중단했다. 받은 Delivery는 없었다(출력 `[killed]`뿐). 안내에 따라 스스로 다시 열지 않는다. 새 메시지는 터미널 알림을 받으면 처리한다. ACK하지 않은 Delivery는 다음 check에서 다시 전달된다.
+- 세션 마무리: 메인 `msg_7589d8bf6bcc`(22:33:57Z)에 따라 「재개 지점 → 세션 마무리 — 2026-10-05T22:34Z 기준」을 현재 재개 정본으로 썼다. 새 Sol·검증자·Gardener는 띄우지 않았다. 살아 있는 작업자 pane은 0이다(worker-list 원시 E/`opus-lead-entry/worker-list-closeout.json`). 보고 뒤 우편함 대기를 열지 않는다.
