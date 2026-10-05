@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **PR180 병합 완료(`8d1e885`). PR2 결함1~3은 독립 해소됐고, HUD 겹침 결함4는 두 번째 Sol이 한 파일 +12/-3으로 수정·자체 EditMode404/404·PlayMode8/8을 마쳤다. 2026-10-05T14:33Z 새 Opus 리드가 같은 Run을 이어받았다. 결함4 후속 신규 독립 Opus `task_bce6064a15f5`는 batch 범위 판정으로 마감했다(새 차단 결함·회귀 0, #4는 640×480에서 해소 관측). 802×451·1920×1080 MCP 실화면은 아침 새 Opus가 PR head에서 확인한다. PR2 커밋·main 통합·PR·CI를 밤사이 체크포인트로 만든다. PR2 전체 통과·병합과 goal 종료는 미완료다.**
+상태: **PR180 병합 완료(`8d1e885`). PR2 결함1~3은 독립 해소됐고, HUD 겹침 결함4는 두 번째 Sol이 한 파일 +12/-3으로 수정·자체 EditMode404/404·PlayMode8/8을 마쳤다. 결함4 후속 신규 독립 Opus `task_bce6064a15f5`는 batch 범위 판정으로 마감했다(새 차단 결함·회귀 0, #4는 640×480에서 해소 관측). PR2는 [PR191](https://github.com/bass131/dawnholder-server/pull/191)(head `bf151cea`, CI 4개 성공)로 올렸다. 메인 `msg_a7a1bc67b528`(2026-10-05T22:33:57Z)이 전달한 사용자 지시로 세션을 마무리했고, 802×451·1920×1080 MCP 실화면 확인과 PR191 병합 승인은 다음 세션에서 한다. 이어갈 곳은 [세션 마무리 재개 지점](#세션-마무리-재개-지점)이다. PR2 전체 통과·병합과 goal 종료는 미완료다.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, 현재 PR2 branch `feat/items-inventory-ui-20261005`(base `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`). PR1 branch는 `feat/items-inventory-currency-20261005`였다.
@@ -157,9 +157,42 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ## 재개 지점
 
-현재 실행 지점은 아래 [결함4 후속 독립 판정](#결함4-후속-독립-판정--batch-범위-실화면은-아침)의 「다음 단위」다. 발행 경위는 [결함4 후속 독립 검증 발행](#결함4-후속-독립-검증-발행--2026-10-05)에 있다. 바로 아래 인계 블록은 새 리드 진입 시점의 기준으로 보존한다.
+### 세션 마무리 재개 지점
 
-### 리드 교체 인계 — 2026-10-05T14:27Z
+다음 세션의 Content 리드는 이 블록만 읽고 이어간다. 기록 근거는 메인 `msg_a7a1bc67b528`(2026-10-05T22:33:57Z)이 전달한 사용자 원문 「일단 나중에 더 진행해보자, 현재 멈춘 기준으로 각 세션들 재개포인트 잡아주고 전부 마무리하자 / 나중에 새로운 세션에서 이어서 하지 뭐」다. 세부 경위는 아래 [결함4 후속 독립 판정](#결함4-후속-독립-판정--batch-범위-실화면은-다음-세션)과 근거 폴더의 `astra-context.md` 마지막 절에 있다.
+
+**다음 리드는 새 handle로 시작하고, Run 연결은 그 세션의 메인 지시대로 새로 한다. 이전 Run(`run_add8d9f825f4`)·Task·Dispatch·handle(`term_85786471…` 포함)은 기록일 뿐 실행 권한으로 쓰지 않는다.**
+
+| 항목 | 멈춘 시점의 값 |
+|---|---|
+| 작업 공간 | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` |
+| branch / HEAD / push | `feat/items-inventory-ui-20261005` / 이 재개 지점 commit(아래 「마무리 commit」) / origin과 같게 push. 그 직전 PR head는 `bf151cea31928bf304069d2b5bd9da5de8b16095` |
+| PR | [PR191 - 클라이언트 인벤토리 화면과 서버 동기화](https://github.com/bass131/dawnholder-server/pull/191), OPEN, mergeable. head `bf151cea`에서 CI 4개(dotnet-tests·architecture-tests·code-rules·module-boundaries) 성공. 이 CI는 Unity 테스트를 돌리지 않고, code-rules는 `03_Client/` 제외로 대상 0건이다. 마무리 commit을 push하면 head가 바뀌므로 CI를 다시 확인한다 |
+| main | 마지막 확인 `origin/main` = `635865038e174ee5591530f6bd83e2e698e0b077`(PR191에 merge됨) |
+| 로컬에만 둔 변경 | `03_Client/Assets/Resources/MinimapRT.renderTexture`(사용자 변경), `03_Client/ProjectSettings/ProjectSettings.asset`(이 PC 전용 cloud3, 사용자 결정 `msg_39c94249a203`). **커밋·되돌리기 금지**. SENTIS 한 줄은 A58A3CDF 기준으로 복원된 상태다 |
+| 작업자·실행 자원 | 살아 있는 작업자 pane 0, reclaimable 0, Unity.exe 0, relay 0, 7777 0, 음소거 값 0 |
+| 우편함 | 마지막 Delivery `delivery_424151f11418`을 2026-10-05T22:37:48Z에 ack했고 그 뒤 미처리 0. 읽지 못한 메시지 ID는 없다 |
+
+**사용자 결정 대기(현황판 이름 그대로)**
+
+1. **PR191(head bf151ce) 실화면 Opus 확인** — 사용자가 `content-active/03_Client`(Unity 6000.4.7f1)를 Editor로 열고 Unity MCP 연결을 승인해야 한다. 시트는 메인 `msg_5e769cc95c8c`로 새 Opus에 이관됐고 조건은 `msg_94ffc6cbe0f0`과 같다.
+2. **우편함 읽기 분류기 차단의 처리 방법** — 이 Content pane에서 Enter로 제출된 사용자 직접 입력 「우편함 확인 허용할게. orca orchestration check로 밀린 메시지를 읽고, 메인의 세션 마무리 지시(msg_a7a1bc67b528)대로 재개 지점을 정리해.」로 해소됐다. 그 입력 뒤 `check`로 밀린 묶음을 읽고 22:37:48Z에 ack했다. 현황판 항목은 메인이 정리한다.
+3. **plan-content-b9768c16(던전)** — 다음 Content goal 「던전 인스턴스 콘텐츠·보상」 범위 초안(`msg_b9768c16772e`). 클리어 보상 수혜자, 기존 적·보스 재사용 두 질문이 들어 있다.
+4. **plan-content-b7d6727d(Unity AI Assistant 업그레이드)** — MCP 연결 상한 제거 범위 초안(`msg_b7d6727d60ab`). 의존성 변경이라 사용자 승인 전 구현하지 않는다.
+5. PR191 병합 승인 — 1의 판정이 PASS일 때 정확한 head로 요청한다.
+
+**다음 세션에서 할 순서**
+
+1. 새 리드 진입: AGENTS·CLAUDE·CURRENT → 이 블록 → 「정본 반영 전 적용 중인 사용자 결정」. 메인 지시대로 Run을 연결하고 READY를 보낸다. 미처리 우편함부터 처리한다.
+2. 상태 대조: `git status`가 위 두 로컬 파일뿐인지, HEAD가 origin과 같은지, PR191 head·CI를 확인한다. main이 더 나아갔으면 최신 main을 merge하고 CI를 다시 받는다.
+3. 실화면 계약: `opus-pr2-fix2-contract.md`와 `opus-pr2-fix2-scope-reduction-v2.md`에서 빠진 범위(802×451·1920×1080 실창, MCP 실제 gameplay 흐름, 리사이즈, 사람 손과 구분한 실제 UI 입력)를 새 신규 Opus 계약으로 만든다. 대상은 PR191 head다. `opus-pr2-fix2/harness/interactive-driver.cs`는 실행되지 않은 v1 산출물이며 쓸지는 새 계약이 정한다.
+4. 기동: 메인에 시트를 요청하고 `claude --model claude-opus-5-5 --mcp-config C:/Users/bass1/.unity/claude-mcp.json`로 연다. 사용자 「Editor 열림·연결 승인 준비 완료」 전달 전 첫 MCP 호출 금지, 첫 호출은 audioMasterMute 관찰 뒤 true. 사용자가 연 Editor가 있는 동안 같은 폴더에 batch·registry harness 금지. 이전 검증에서 batch 중 자기 relay가 batch Unity에 붙은 관찰(원인 미확인)을 계약에 넣는다.
+5. 판정 뒤: PASS면 PR191 정확한 head·판정 원문·CI로 승인 묶음을 메인에 보낸다. 병합은 사용자 승인 뒤 `gh pr merge`를 실행하고 사용자가 확인 창에서 직접 확인한다(`msg_8664ee9d9f2d`, 우회 금지). 결함이면 새 Sol(메인에 한 줄 통지) → 새 Opus로 고친다.
+6. 병합 뒤: goal 결과 기록 → Gardener → 종료 기록 PR → R-8. 다음 goal은 자동으로 시작하지 않는다.
+
+**적용 중인 메인 결정**: `msg_c563e879791f`(Opus 리드 진입), `msg_2b281320df53`(우편함 `--types`), `msg_16add9c27b4d`(PR 체크포인트 방식), `msg_5e769cc95c8c`·`msg_94ffc6cbe0f0`(시트 이관·조건), `msg_833c357e684e`(Unity 음소거 harness), `msg_8664ee9d9f2d`(`gh pr create/merge`는 사용자 확인, PR191은 그 안내 전에 만들어 그대로 둠), `msg_f306c6d43edf`(자기 백그라운드 출력은 Read 도구로 읽는 것이 기본 경로), `msg_39c94249a203`(cloud3 로컬 유지), `msg_7691eaa0154c`·`msg_2de31caf1c5d`(SENTIS 한 줄 복원), `msg_82735bd92cff`(현재 goal 우선), `msg_a7a1bc67b528`(세션 마무리).
+
+### 리드 교체 인계 — 2026-10-05T14:27Z (역사)
 
 이 블록은 다음 `claude-opus-5-5` 리드가 대화 맥락 없이 읽을 현재 실행 지점이다. **새 리드가 이 브랜치의 유일한 commit/push 담당**이다. 인계 자체는 커밋하지 않았다. 이전 Content Astra는 아래 정산을 마치고 메인에 인계한 뒤 종료하며, 제품/테스트 구현·독립 검증을 직접 대신하지 않는다.
 
@@ -212,9 +245,9 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 - [x] 서버 독립 검증·수정
 - [x] PR180 병합
 - [x] 인벤토리 화면 구현
-- [>] 화면 독립 검증(결함4 batch 범위 해소 관측, 16:9 실화면은 아침 새 Opus)
-- [>] 실제 플레이 최종 확인(획득·사용 경로 확인, HUD 배치 수정 뒤 실화면 재확인은 아침)
-- [>] 화면 PR CI·병합(PR191 생성, 아침 실화면 확인 뒤 승인 요청)
+- [>] 화면 독립 검증(결함4 batch 범위 해소 관측, 16:9 실화면은 다음 세션 새 Opus)
+- [>] 실제 플레이 최종 확인(획득·사용 경로 확인, HUD 배치 수정 뒤 실화면 재확인은 다음 세션)
+- [>] 화면 PR CI·병합(PR191 생성·CI 4개 성공, 다음 세션 실화면 확인 뒤 승인 요청)
 - [ ] 결과 기록·종료
 
 ### 2026-10-05 크래시 중단과 복구
@@ -471,7 +504,7 @@ PlayMode4회는 `MapEntryPlayFixture.Prepare`에서 AudioListener.volume0, Clean
 - 일반 HUD Graphic 위 마우스 공격 차단의 UX 범위·작은 화면의 한글 폰트 판독성 — 같은 보고 O-3/O-6. 전자는 소스 추론이며 미실측이고 GameDev와 제품 디자인 판단이 필요하다. 이번 HUD 제목 겹침4번과 구분한다.
 - 상시 패널 면적·퀘스트 알림의 일시 가림 — 같은 보고 O-4/O-5, 기존 O7 후속 후보에 포함한다.
 - `InventoryPanelView.cs:103` `top = 150f`의 이유 주석(HUD가 없을 때의 기본 상단 여백) 복원, HUD 영역 목록으로의 일반화, `"character_status"` 이름 의존의 문서화 — `opus-pr2-fix2/report.md`의 가독성 후속 1과 O-1/O-2. 동작 영향 없음, 비차단.
-- batch 640×480 고정이라 16:9 자동 회귀를 batch로 할 수 없는 공백 — 같은 보고 O-3. 아침 실화면 계약에서 다루고, 상시 자동화 수단은 다음 계획 후보로만 둔다.
+- batch 640×480 고정이라 16:9 자동 회귀를 batch로 할 수 없는 공백 — 같은 보고 O-3. 다음 세션 실화면 계약에서 다루고, 상시 자동화 수단은 다음 계획 후보로만 둔다.
 - 다음 Content goal 「던전 인스턴스 콘텐츠·보상」 범위 초안 — 메인 지시 `msg_16add9c27b4d` 4항에 따라 `msg_b9768c16772e`로 보냈다(사본 근거 폴더 `next-goal-dungeon-scope-draft-sent.md`). 착수는 메인 계획 검토와 사용자 승인 뒤다.
 - Unity AI Assistant 패키지 업그레이드로 MCP 연결 상한 제거 범위 초안 — 메인 요청 `msg_b30e645172e0`, 회신 `msg_b7d6727d60ab`(사본 `next-goal-unity-ai-assistant-scope-draft-sent.md`). 의존성 변경이라 사용자 승인 전 구현하지 않는다.
 
@@ -489,14 +522,14 @@ PlayMode4회는 `MapEntryPlayFixture.Prepare`에서 AudioListener.volume0, Clean
 |---|---|
 | Task | `task_bce6064a15f5`, 신규 `[Content 검증자]` `claude-opus-5-5`. verifies `task_4666c26b7ec7`·`task_bddf83472162`·`task_5f7f4e01ed5e`·문서 `task_b54380de9967` |
 | 계약 | `opus-pr2-fix2-contract.md` SHA256 `D32D9F2F8419332063DFF8284AB9D2093A798CEB5CECA2CD4B294C6F4E7DA7DD`. 이전 리드 초안에 새 리드 고지와 야간 진행 절을 더했다. 원 초안은 `opus-pr2-fix2-brief-draft-prev-lead.md`로 보존했다 |
-| **Unity MCP 시트** | **`task_bce6064a15f5` 반납(MCP 호출 0) → 아침 새 Opus로 이관, 메인 `msg_5e769cc95c8c`**. 처음 배정은 `msg_94ffc6cbe0f0`이다 |
+| **Unity MCP 시트** | **`task_bce6064a15f5` 반납(MCP 호출 0) → 다음 세션 새 Opus로 이관, 메인 `msg_5e769cc95c8c`**. 처음 배정은 `msg_94ffc6cbe0f0`이다 |
 | 검증 등급 | 강. 전체 PR2의 제품+테스트 50줄 이상, 상태·실패 수명, 패킷 경계가 대상이다 |
 
 MCP 없는 batch를 밤에 먼저 돌리는 것은 리드 판단이다. 메인이 이 판단을 맡겼고, 시트 예약이 batch 선행을 이미 조건으로 둔다. 검증자는 Codex 크레딧을 쓰지 않는다. batch 종료 ask 뒤에는 아침 사용자 「Editor 열림·연결 승인 준비 완료」 전달까지 MCP 첫 호출을 하지 않는다. batch에서 차단 결함이 확정되면 MCP 단계 없이 마감할지 리드가 회신한다.
 
 preflight는 이 세션 PATH에 rg가 없어 `git ls-files --cached --others --exclude-standard`로 meta·test 목록을 만든다. 같은 시점 개수 1144·34가 기존 manifest와 같음을 확인했다. 이 goal은 dispatch 뒤 검증자 쓰기 종료까지 동결하고, 그 사이 기록은 리드 메모 `astra-context.md`에 둔다.
 
-### 결함4 후속 독립 판정 — batch 범위, 실화면은 아침
+### 결함4 후속 독립 판정 — batch 범위, 실화면은 다음 세션
 
 신규 Opus `task_bce6064a15f5` / `ctx_72a094a4d357`는 `msg_430558ef367e`(2026-10-05T15:17:29Z)로 쓰기를 종료했다. 원문은 `opus-pr2-fix2/report.md`(SHA256 `F2F00EC0DB4A448821C83E083D7FF4FAD7767A24B34AD23D9D8C211A27E4D3EE`)다. 메인 `msg_5e769cc95c8c`에 따라 범위 축소 통지 v2(`opus-pr2-fix2-scope-reduction-v2.md`, `msg_7ed1a695c011`)로 MCP 실화면 단계를 뺐다. **판정은 batch 범위이며 PR2 전체 PASS가 아니다.**
 
@@ -510,6 +543,6 @@ preflight는 이 세션 PATH에 rg가 없어 `git ls-files --cached --others --e
 
 리드 정산: 판정 본문 전문과 부록의 계약 원문 동일성(SHA256 `42D7EE19…`)을 확인하고, 판정 로직 표본(`InventorySceneLifecycleTests.cs:166-241`)을 직접 읽었다. 정산 감사 `opus-pr2-fix2-astra-settlement-audit.json`은 입력 182, meta 1144, tests 34, 허용 변경 3, 예상 밖 0, XML 6개 수치·hash 일치다. 독립 제품 검증으로 세지 않는다. ProjectSettings의 SENTIS 자동 제거 한 줄만 기존 승인(`msg_7691eaa0154c`, `msg_2de31caf1c5d`)대로 복원했다(EEE969AE → A58A3CDF, cloud3 유지). release → 같은 incarnation 확인 → close ptyKilled true → relay PID 34856·Unity·lock·7777 모두 0, 음소거 0(15:19:27Z). 검증자 보고의 관찰로, 첫 batch 중 자기 relay가 batch Unity에 붙어 unity-mcp 도구 목록이 노출됐다(원인 미확인, MCP 호출 0).
 
-다음 단위: PR2 커밋(사용자 MinimapRT·로컬 cloud3 ProjectSettings 제외, staged 목록 원시 보존) → 최신 main 통합 → push·PR·CI → 아침 새 Opus의 PR head 실화면 확인(시트 이관 `msg_5e769cc95c8c`) → 승인 묶음.
+이후 단위: PR2 커밋·최신 main 통합·push·PR·CI는 아래 체크포인트로 마쳤다. 남은 순서는 [세션 마무리 재개 지점](#세션-마무리-재개-지점)에 있다.
 
 PR2 체크포인트: 커밋 `3085a20a`(제품)·`bf28954d`(테스트)·`66b02372`(기능 문서·BACKLOG)·`6852237a`(goal), main 55커밋 merge `a3136b6c`(겹친 파일은 BACKLOG.md 하나, 충돌 없음). 사용자 MinimapRT와 로컬 cloud3 ProjectSettings는 커밋에서 뺐고 커밋마다 staged 목록을 근거 폴더 `pr2-commit-1..4-staged.txt`, `pr2-merge-main-staged.txt`로 남겼다. [PR191 - 클라이언트 인벤토리 화면과 서버 동기화](https://github.com/bass131/dawnholder-server/pull/191). 이 PR의 CI는 Unity 테스트를 돌리지 않고, 로컬 code-rules도 `03_Client/` 제외로 대상 0건이었다. CI 결과를 클라이언트 검증으로 세지 않는다. 병합 승인 요청은 아침 실화면 확인 뒤에 한다.
