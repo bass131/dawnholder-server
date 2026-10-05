@@ -16,8 +16,8 @@ from processes import run_process, utc_now, write_json
 
 
 SDK = "10.0.301"
-REPO = pathlib.Path(__file__).resolve().parents[3]
-BOUNDARIES = REPO / "99_Tools/Architecture/Boundaries"
+REPO = pathlib.Path(__file__).resolve().parents[2]
+BOUNDARIES = REPO / "99_Tools/ModuleBoundaries"
 
 
 def argument_parser():
@@ -232,19 +232,12 @@ def execute(options, output, result):
     tool = output / "work/tool"
     tool.mkdir()
     for path in sorted(BOUNDARIES.iterdir()):
-        if path.is_file() and path.suffix in (".cs", ".csproj", ".py", ".json"):
+        if path.is_file() and path.suffix in (".cs", ".csproj", ".py", ".json", ".sh", ".props"):
             no_links(path)
             result["tool"]["files"].append(file_record(path, str(path.relative_to(REPO))))
             if path.suffix in (".cs", ".csproj"):
                 shutil.copyfile(path, tool / path.name)
-    for path in (
-        REPO / "99_Tools/Architecture/Directory.Build.props",
-        REPO / "99_Tools/Architecture/check-module-boundaries.py",
-        REPO / "99_Tools/Architecture/check-module-boundaries.sh",
-    ):
-        no_links(path)
-        result["tool"]["files"].append(file_record(path, str(path.relative_to(REPO))))
-    shutil.copyfile(REPO / "99_Tools/Architecture/Directory.Build.props", tool / "Directory.Build.props")
+    shutil.copyfile(BOUNDARIES / "Directory.Build.props", tool / "Directory.Build.props")
     shutil.copyfile(snapshot / "global.json", tool / "global.json")
     result["tool"]["inputSha256"] = hashlib.sha256(json.dumps(result["tool"]["files"], sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     write_json(output / "tool-manifest.json", result["tool"])

@@ -1,6 +1,6 @@
 # 서버 모듈 경계 warning 시범
 
-상태: **#4 수리 방안 A(새 검사기의 형제 폴더 분리)가 사용자 선택으로 승인됐다. 신규 Sol 수정→신규 Opus 재검증으로 진행하며, #4 해소 판정은 아직 없다. #1·#2·#3은 해소됐고 #ENV-1은 하네스 원인으로 확정됐다. PR은 미발행이며 실제 PR checkout/CI도 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
+상태: **#4 수리 방안 A의 신규 Sol 구현과 정산을 마쳤다. 기존 고정 테스트는 같은 기본 명령에서 실패1→통과1이며 보호168파일은 그대로다. 신규 Opus가 독립 테스트 경로 적응·실행·R-2 보완을 수행할 단계로, #4 해소 판정은 아직 없다. #1·#2·#3은 해소됐고 #ENV-1은 하네스 원인으로 확정됐다. PR은 미발행이며 실제 PR checkout/CI도 미실행이다.** CodeMap 역할은 분석·검사이고 태그는 정본 반영 전까지 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]`를 유지한다.
 
 ## 원천과 기준
 
@@ -187,3 +187,20 @@ release 뒤 incarnation `56c67856-20ef-4644-a494-273a10635cbc`, idle·완료 화
 - 병합 승인 전 메인은 R-2로 `reverification/work/iter-g/`의 실패 원시와 당시 검증자가 `test_tool_policy_limits_and_time_are_traceable` 단정을 고친 전후 diff를 직접 대조한다. Astra는 원본 patch/소스가 확보된 범위와 재구성 여부를 구별하고 실제 경로를 최종 보고에 포함한다.
 
 재개 지시 `msg_2ea5b1ac69c6`에 따라 Orca1.4.220/runtime `120aecfa-9f94-4533-9594-48a22f1853ba`를 확인하고 기존 Run `run_04e869ec070e`를 새 Astra `term_bbb26c42-6253-452a-b2f9-a231fbf68a0c`에 generation4로 재연결했다. R-3의1.4.217 임시 확장은 종료됐으며1.4.220 ask/reply help 모두 subject 옵션이 없음을 확인했다. 기존 정상 종료 작업자는 재사용하지 않으며, 업데이트·재부팅은 새 확정 실패로 세지 않는다. 보고/R-8 직전 terminal list 재확인은 계속 적용한다. 이전 세션 종료 후 HEAD318e8a0·clean과 판정 hash 보존을 확인했고 상세 원시는 `resume-orca-1220-*`다.
+
+### 4 - 형제 폴더 분리 구현 정산과 독립 검증 입력
+
+메인 승인 범위의 신규 Sol Task `task_dfe32963981f`/Dispatch `ctx_d311716fd79c`가 `msg_5b84ca4b433c`(2026-10-05T06:33:30Z)로 쓰기 종료와 자체 succeeded를 보고했다. 원문은 `.backups/verification/2026-10-05-module-boundary-warning/relocation/report.md`, SHA256 `325C3D2A288D4C1ED08E38D5D440CB8F27B65C85F2FEDB0C2A726D5AF7365D05`다. 요청/최초 실행 명령은 `gpt-6.1-sol max`, 화면도 GPT-6.1-Sol max이며 backend는 unknown이다. 최초 명령은 Astra의 `relocation-launch.md`에서 확인하고 worker attach의 null launch 값과 구분한다.
+
+- 제품12파일을 `99_Tools/ModuleBoundaries/`로 모으고 새 독립 props·README, 공개 import/runner 깊이·tool manifest 수집, workflow 공개 경로3곳, 서식 등록 한 항목, 자기 요구사항 경로3문자열을 맞췄다. C#/csproj·정책·inputs/processes·shell은 이전 bytes와 같고 기존 실행 shim은 남기지 않았다. 독립4파일은 다음 신규 Opus 소유로 남겼다.
+- 같은 기본 `test_executed_code_matches_repository_tool` 명령은 batch/tool override 없이1실패→1통과, skip0이었다. `relocation/work/frozen-red`와 `frozen-green`의 실제 argv/cwd/env·stderr를 보존했다. 비교 도구 현재15=기록15와 전후 공통 hash 차이0이며 고정 테스트/과거 batch는 미수정이다.
+- 실제 workflow heredoc 실행은 수집87 중 요구사항29+discovery5=34실행통과, 독립53skip, 실패/오류0, exit0·76.628954초였다. `workflow-test-command/counts.json`에서 실제 수를 확인한다. 독립53을 통과로 집계하지 않는다.
+- 새 CLI의 workspace HEAD13197adc와 pinned main ecca463c blob은 각각 C#91/477096bytes·Compile91/91·boundary46/46·위반0·exit0이다. 내부/외부 초는58.297962/58.494090과55.864320/56.091280이다. tool hash `018d224328034fcd06de1980c8bcc06d076fd30f64eab75449078850a8fccd97`, policy hash는 이전과 같다. `relocation/work/current-workspace`, `current-main`과 바깥 command.json에 원시가 있다. 제품 emit·게임/Unity/DB·실제 PR CI는 미실행이다.
+- Astra가 보고 전체·context 실제 준수·최종30경로 상태/hash(기존16/신규14)·보호168을 대조했고 차이/허용 밖 경로0이었다. `relocation-final-source-check.json`에 근거를 보존했다. 같은 incarnation의 idle/완료 화면을 확인하고 release/close를 수행했다. 06:34:36Z 실제 목록은 Astra1개만이었으며 Delivery를 ack했다. 신규 Opus 발행/보고 직전 목록도 다시 확인한다.
+- 마지막 closeout의 최초 exit1은 과거 workflow PID427이 현재 closeout에 재사용된 자기 하네스(b)였다. 서로 다른 실제 시작 시각·자기 argv/group과 후속 ps를 대조했고 종료 명령을 발행하지 않았다. 최초 소스/실패와 보완 후 같은 inner argv exit0을 `relocation/work/closeout*`에 보존했다. #4의 새 확정 실패로 집계하지 않으며 신규 Opus가 원시를 실사한다.
+
+R-2의 이전 iter-g 단정 원본 Edit/성공 응답은 `iter-g-source-check/source-edit.json`, `original-edit.patch`, 실패 원시는 `reverification/work/iter-g`에 있다. 최초 Write1·Edit11·Bash 치환2의 원문/성공 응답으로 만든 `derived-before-test.py.txt`와 `derived-after-test.py.txt`는 당시 디스크 사본과 구분한 파생 복원본이다. after SHA256 `C78421C92277FECD47A9B811DD517564E3DE70045AEE51CB0B3F97EBB2B1D86E`는 현재 보호 테스트와 bytes가 일치하고 before는 `B072195EEF0C85515DCF1113057E7CF1D14047FB98D2A5785AA0BF32565003B8`이다. `reconstruction.json`에 중간 hash와 원천 줄·UUID·tool ID를 보존했다.
+
+추가 확인한 한계: 당시 실패는 `-k CurrentSourceEntry`의6메서드/3subTest실패였고 수정 후 성공은 필터 없는 전체27건이었다. 같은 argv의 수정 후 원시는 발견하지 못해 메인 `msg_f700cecff788`에 즉시 보고했고, 복원 자료 보완은 `msg_9bf75357648e`로 알렸다. 이를 동일 명령 전후 성공으로 표현하지 않는다. 신규 Opus에게 요구사항·원본 패치 실사와 자기 소유 복사본의 좁은 같은 명령 전후 보완을 배정한다.
+
+다음은 고정된 구현 입력의 신규 Opus 경로 적응·독립 실행·#4 판정이며 실제 PR CI와 메인 R-2는 그 뒤다. PR별 병합 승인은 아직 없고, push 시 원격 브랜치를 반드시 명시한다. 이번 자체 점검/정산을 goal 완료나 독립 통과로 처리하지 않는다.

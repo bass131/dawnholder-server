@@ -64,10 +64,10 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$MODULE_BOUNDARIES_EVIDENCE/logs"
-          printf '%s\n' "bash 99_Tools/Architecture/check-module-boundaries.sh --output-root $MODULE_BOUNDARIES_EVIDENCE/production --github-annotations" \
+          printf '%s\n' "bash 99_Tools/ModuleBoundaries/check-module-boundaries.sh --output-root $MODULE_BOUNDARIES_EVIDENCE/production --github-annotations" \
             > "$MODULE_BOUNDARIES_EVIDENCE/logs/production-command.txt"
           set +e
-          bash 99_Tools/Architecture/check-module-boundaries.sh \
+          bash 99_Tools/ModuleBoundaries/check-module-boundaries.sh \
             --output-root "$MODULE_BOUNDARIES_EVIDENCE/production" --github-annotations \
             > "$MODULE_BOUNDARIES_EVIDENCE/logs/production-stdout.txt" \
             2> "$MODULE_BOUNDARIES_EVIDENCE/logs/production-stderr.txt"
@@ -164,7 +164,7 @@ jobs:
           python3 -B 99_Tools/Architecture.Tests/support/module_boundary_fixture.py \
             "$MODULE_BOUNDARIES_EVIDENCE/warning-fixture"
           set +e
-          bash 99_Tools/Architecture/check-module-boundaries.sh \
+          bash 99_Tools/ModuleBoundaries/check-module-boundaries.sh \
             --source-root "$MODULE_BOUNDARIES_EVIDENCE/warning-fixture" \
             --output-root "$MODULE_BOUNDARIES_EVIDENCE/warning-demo" \
             --input-kind fixture --github-annotations \

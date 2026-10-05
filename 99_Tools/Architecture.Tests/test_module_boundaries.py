@@ -14,8 +14,8 @@ from support.module_boundary_fixture import PROJECT, write_fixture, write_git_fi
 
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-ENTRY = REPO / "99_Tools/Architecture/check-module-boundaries.sh"
-RULES = REPO / "99_Tools/Architecture/Boundaries/module-boundaries.json"
+ENTRY = REPO / "99_Tools/ModuleBoundaries/check-module-boundaries.sh"
+RULES = REPO / "99_Tools/ModuleBoundaries/module-boundaries.json"
 WORK_VALUE = os.environ.get("MODULE_BOUNDARIES_TEST_WORK")
 WORK = None
 SKIP_REASON = "Set MODULE_BOUNDARIES_TEST_WORK to a new owned absolute directory to run SDK10.0.301 requirement checks"
@@ -315,7 +315,7 @@ class ModuleBoundaryRequirements(unittest.TestCase):
         self.assertEqual(index_path.read_bytes(), index_before, "Public inspection must not modify the fixture index")
 
     def test_owned_process_timeout_is_recorded(self):
-        module_path = REPO / "99_Tools/Architecture/Boundaries/processes.py"
+        module_path = REPO / "99_Tools/ModuleBoundaries/processes.py"
         spec = importlib.util.spec_from_file_location("module_boundary_processes", module_path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
