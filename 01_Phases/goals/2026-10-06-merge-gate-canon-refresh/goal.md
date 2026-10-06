@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 한계 문구 보정(`97fa7b8`)도 끝났다. 신규 Opus 재검증 중이다(아래 「PR1 재검증」). 다음은 PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 한계 문구 보정(`97fa7b8`)도 끝났다. 재검증 판정은 차단(R1·R2)이고 D1~D5는 해결됐다(아래 「PR1 재검증」). 동작 계약 v2.2로 신규 Sol 수정 → 신규 Opus 재검증 → PR1이다.
 
 ## 진척 단계
 
@@ -291,6 +291,26 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 리드 넘김 셋: 공백 든 따옴표 값의 한계 판단, 231행 「운영은 `--merge`만」, 235행 일반 한계 문구.
   - 경로 기계 확인은 E/reverify-contract-pathcheck.txt(17:11:35Z)다.
 - Task `task_d3d0d79e85b5`, Dispatch `ctx_f3b9568303f7`이다. receipt는 input_accepted, turnStart observed다(E/reverify-worker-start.json).
+- 질문 1: 공식 ask `msg_fb5d3aea0d05`(17:18:35Z). 출처는 사람 대조로 확인했다(E/session/reverify-question1-manual-check.md). 계약 허용 실행 밖 무해 관측 두 건을 물었다.
+  - (1) Monitor 도구로 상태 폴더 경로만 든 echo 한 번. hook 등록 matcher(Bash와 파일 도구) 밖의 셸 실행 도구가 관문을 거치는지 보는 관측이다.
+  - (2) 값 옵션이 pr과 merge 사이에 낀 형태의 로컬 `--help` 한 번. gh가 그 형태를 merge 하위 명령으로 해석하는지 보는 관측이다.
+  - 리드 답 `msg_895bc2d0d224`(17:19:46Z): 둘 다 조건부 허용(계약 v1 보충). (1)은 다른 셸 실행 도구(예: PowerShell 도구)에도 같은 echo를 도구마다 한 번 허용했다. 병합·push·gh는 그 길로 실행하지 않는다. hook을 거치지 않으면 결함 후보로 판정한다. (2)는 실행 전 remote 원시를 남기고, help가 아니면 즉시 멈춘다.
+- 판정: worker_done `msg_9e7e4184b6e4`(17:34:57Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/reverify-worker-done-check-output.json). 판정 원문은 [E/reverify/verdict.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/reverify/verdict.md)이고 결론은 **차단(FAIL), 새 결함 R1·R2**다.
+  - 해결 확인: 첫 판정 D1~D5, O3·O8·O9, 가독성 지적 둘이 모두 해결됐다. 고정 86건에 새 회귀 시험 8건(`command-words.test.mjs`, 수정 전 제품에서 6/8 실패)을 더해 94/94, Orca 22/22다. 실제 진입 4a 세 건(`not-main-checkout`·`bad-form`·`push-main`)이 막혔고 4b headless 두 턴이 통과 경로대로 돌았다. 이관 원문 일곱 블록이 goal과 글자까지 같다. ORCA 249줄·다섯 문서 92,494 bytes다.
+  - R1(차단): 셸 도구 `Monitor`가 hook matcher 밖이다. 같은 echo가 Bash에서는 `protected-path`로 막히고 Monitor에서는 실행됐다. 같은 길로 병합·main push도 hook을 비켜 간다고 추론한다. 이 세션에 PowerShell 도구는 없었다.
+  - R2(차단): subshell·명령 치환 안과 줄 이음 뒤의 main push를 놓친다. `(cd r && git push origin main)`, `out=$(git push origin main)`, `(git push --all)`, 줄 이음 refspec이 결정 없음이다. push 인자 읽기가 `)`와 줄 이음을 다루지 않아서다.
+  - R3(비차단): `-R`·`--repo` 밖의 값 옵션이 `pr`과 `merge` 사이에 끼면 놓친다. gh 2.92.0은 그 형태를 merge로 해석한다(로컬 help 관측). git `--attr-source`도 같다. 검증자는 의도적 우회 문구에 든다고 봤다.
+  - R4(비차단): `gh api` 판정만 넓힌 명령 낱말을 쓰지 않는다(`GH api`, `gh.exe api`).
+  - 리드 넘김 판정: 공백 든 따옴표 값은 문서화된 한계와 동작이 맞다. 다만 값 건너뛰기에서만 따옴표를 존중하면 `bash -c` 안을 잃지 않는다(O-R1). 231행은 충분하다. 235행 일반 문구는 들어갔다.
+  - 관찰: O-R2 Bash의 상태 폴더 문자열 비교가 `//`·`/./`를 접지 않는다. O-R6 hook·settings 파일 자체를 고치면 관문이 바뀐다. O-R7 예약 prompt(CronCreate·ScheduleWakeup)가 줄 그대로 UserPromptSubmit에 오면 에이전트가 스스로 승인 기록을 만들 수 있다.
+- 리드 R-2 표본 대조: E/reverify/real-entry-blocked.md 「보충 관측 1」과 observe.jsonl의 P·G·GA행을 직접 읽었고 판정문과 같았다. 재검증자 시험은 리드가 `b2e3718`로 커밋했다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/reverify-release.json, reverify-before-close.json, reverify-close.json).
+- **리드 결정(범위 안 결함, 루프에서 수정)**: R1·R2는 완료조건 3의 「정본 문장이 hook 동작과 맞음」을 깨는 범위 안 결함이라 고친다. 메인에는 알린다.
+  - 코드로 막는 것: R1(matcher에 `Monitor`, Monitor의 병합은 늘 `non-bash-merge`), R2(줄 이음 접기와 단순 명령 경계를 쓰는 낱말 규칙 하나), R4(gh api에 명령 낱말), O-R1(값 옵션의 따옴표 값 건너뛰기), O-R2(겹친 구분자·`/./` 접기), git `--attr-source`, O-R7(prompt 도구 CronCreate·ScheduleWakeup·SendMessage·RemoteTrigger의 입력에 `병합 승인:`이 있으면 `approval-injection`).
+  - O-R7을 넣은 이유: 이 관문이 막으려는 위험이 에이전트의 스스로 승인이다. 기존 「다른 터미널로 승인 문장 주입 차단」을 같은 층에서 넓히는 일이라 비용이 작다. 실제 전달 모양은 완료조건 5에서 그대로 잰다.
+  - 한계로 적는 것: R3의 gh 쪽(값 옵션을 `merge` 앞으로 옮기는 형태는 의도적 우회), matcher 밖 도구, hook·settings 자체 수정(O-R6). `pr` 뒤 아무 곳의 `merge`를 병합 시도로 보는 안은 `gh pr create --title merge` 같은 정상 명령을 막아서 쓰지 않는다(재검증자 시험의 경계 사례).
+  - 동작 계약은 [E/merge-gate-behavior-spec-v2.2.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec-v2.2.md)다(SHA256 `67d63f4b…`). 수정은 신규 Sol 한 명이 코드·README·ORCA를 고치고, 신규 Opus가 재검증한다.
+  - 수정 횟수: 코드는 두 번째, ORCA 병합 관문 절은 세 번째 수정이다. 한 번 더 고치게 되면 3회를 넘으므로 메인 체크포인트를 알린다.
 
 ## 요구사항 원천과 적용 결정
 
