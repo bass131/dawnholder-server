@@ -56,7 +56,7 @@ PR2 — 나머지 정본 현행화 (요청서 항목 1·3~8과 BACKLOG 등록)
 
 ### 건드릴 곳
 
-- PR1: `.claude/settings.json`(신규), `99_Tools/<목적 이름>/`·`99_Tools/<목적 이름>.Tests/`(신규), `.github/workflows/code-rules.yml`(시험 단계 하나), `99_Tools/README.md`(진입 한 줄), 필요하면 `.gitignore` 한 줄, AGENTS.md 「Git 권한」과 「공학 조건」의 hook 예외 문장, ORCA.md, goal-loop SKILL.md 「통합과 보고」, CLAUDE.md(메인), 이 goal과 CURRENT Rules 줄.
+- PR1: `.claude/settings.json`(신규), `99_Tools/<목적 이름>/`·`99_Tools/<목적 이름>.Tests/`(신규), `.github/workflows/code-rules.yml`(시험 단계 하나), `99_Tools/README.md`(진입 한 줄), 필요하면 `.gitignore` 한 줄, AGENTS.md 「Git 권한」과 「공학 조건」의 hook 예외 문장, ORCA.md, goal-loop SKILL.md 「통합과 보고」, R-1 배치 변경의 파급인 RESUME.md 「세션 진입」 2단계와 session-handoff SKILL.md 25행(메인 `msg_162e0fefc66b`), CLAUDE.md(메인), 이 goal과 CURRENT Rules 줄.
 - PR2: AGENTS.md(모델 라우팅·역할), ORCA.md, RESUME.md, CURRENT.md, BACKLOG.md, goal-loop SKILL.md, orca-work.md, 00_Document/INDEX.md, CLAUDE.md(메인), 이 goal.
 - CLAUDE.md는 메인만 쓴다. 리드가 쓰기 창을 열면 메인이 rules-active에서 고치고 리드가 커밋한다.
 
@@ -135,6 +135,8 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 메인 전용 폴더와 병합 형태: 리드 질문 `msg_388f710eb4ba`에 메인 `msg_729105efa64c`(14:43:33Z, E/session/wait10-msg_729105efa64c.raw.txt)가 답했다.
   - 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/main-active`다. Core는 `C:/Dev/DawnHolder_Project`에 남고 별도 탭으로 옮긴다. 폴더·표식 생성과 첫 세션의 작업 공간 신뢰 창은 PR1 병합 뒤 사용자·메인이 한다.
   - 병합 명령은 `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 형태다. `--delete-branch`는 붙이지 않는다.
+  - R-1 파급: RESUME 「세션 진입」 2단계와 session-handoff SKILL 25행도 PR1에서 맞춘다. 작업 현황 탭의 `--worktree`는 main-active로 바꾼다. 같은 승인 항목(R-1 배치 변경)의 결과라 범위 확대가 아니라고 메인이 판단했다(`msg_162e0fefc66b`, 14:46:25Z). CLAUDE.md 「메인 세션 진입」의 Core 분할 문장은 메인이 PR1 CLAUDE.md 변경에 넣는다.
+- 병합 실패 뒤 기록: 「설계 기본값」에서 미뤘던 질문의 답은 「되살리지 않는다」다. 동작 계약 v2는 PreToolUse 통과 때 `usedAt`을 쓰고 되돌리는 경로가 없다. 그래서 병합 명령이 실패하면(head 변경으로 409 등) 새 승인 문장이 필요하다. 정본 문장에 이 점을 적는다.
 - PR1 병합 경로의 위험과 대비안: 구현이 rules-active에 `.claude/settings.json`을 만든 뒤 이 리드 세션에 hook이 바로 실리는지는 모른다(완료조건 5의 실측 항목). 바로 실리면 이 checkout에는 표식이 없어 리드 pane의 PR1 병합이 `not-main-checkout`으로 막힌다. 그러면 리드는 우회하지 않고 메인에 올린다. 메인이 `C:/Dev/DawnHolder_Project`에서 같은 단독 명령으로 병합한다. 사용자 승인과 head 재대조는 그대로다(메인 `msg_729105efa64c` 2항). 리드는 settings 생성 직후 무해한 명령 한 번으로 반영 여부를 재서 이 goal에 남긴다.
 
 ### 선행 시험
@@ -190,6 +192,12 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - Codex 세션의 병합 차단: 저장소 `.codex/` 프로젝트 hook으로 같은 판정을 거는 방법. 신뢰한 프로젝트에서만 읽고 hook 내용이 바뀔 때마다 사용자 검토가 필요하다(초안 세부 근거 4). 사용자 질문 1 A로 이번에는 하지 않는다.
 - 에이전트용 GitHub 계정 분리와 ruleset 보강: 서버 쪽에서 모든 세션을 막는 대안. 비용은 계정·classic 토큰·이 PC의 gh·git 로그인 전환이다(초안 세부 근거 3). ruleset 관리자 우회를 「PR로만」으로 바꾸는 더 싼 중간안은 문서 확인 전이다.
 - 우편함 대기 `&`·`/dev/null` 차단 hook: 묶음 2 계획 12에서 같은 PreToolUse 층으로 다룬다.
+
+<a id="orca-moved-history"></a>
+
+## ORCA에서 옮긴 서술
+
+ORCA 250줄 상한(완료조건 7)을 지키려고 ORCA의 역사 서술을 이 절로 옮긴다. PR1 정본 문장 작업 뒤 리드가 원문과 원래 위치를 넣는다.
 
 ## 관찰 기록
 
