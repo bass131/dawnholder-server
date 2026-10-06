@@ -339,6 +339,19 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 실제 진입 4a는 Bash(없는 PR 병합, 괄호 감싼 main push)와 Monitor(상태 경로 echo, 없는 원격으로 `HEAD:main` push)다. Monitor로 병합 명령은 실행하지 않는다. prompt 도구는 실제로 부르지 않고 hook JSON 시험으로만 본다. 4b는 headless 두 턴이다.
   - 경로 기계 확인은 E/reverify2-contract-pathcheck.txt(18:02:24Z)다.
 - Task `task_50f0319245c9`, Dispatch `ctx_4de7b95d6fb5`다. receipt는 input_accepted, turnStart observed다(E/reverify2-worker-start.json).
+- 판정: worker_done `msg_c5fbeb993932`(18:21:17Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/reverify2-worker-done-check-output.json). 판정 원문은 [E/reverify2/verdict.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/reverify2/verdict.md)이고 결론은 **차단(FAIL), 새 결함 S1·S2**다.
+  - 해결 확인: R1·R4·O-R2·O-R7·`--attr-source`가 해결됐고 R2는 지정 형태가 모두 해결됐다. 새 회귀 시험 16건(수정 전 제품에서 11건 실패)을 더해 MergeGate 110/110, Orca 22/22다. 실제 진입 4a 네 건(Bash 둘, Monitor 둘)이 막혔고 4b headless 두 턴이 통과 경로대로 돌았다. D2~D5는 유지됐다.
+  - S1(차단, 회귀): 단순 명령 경계가 낱말 안의 `${…}`·`$(…)`까지 자른다. `git -C "${REPO}" push origin main`, `git push origin ${SHA}:main`, `gh -R ${REPO} pr merge …` 같은 형태가 수정 전(`047e0db`)에는 막혔는데 지금은 결정 없음이다. 원인은 동작 계약 v2.2 4절 「단순 명령」 문장이다(리드 귀속).
+  - S2(차단, 회귀): 값 옵션의 따옴표 값이 낱말 끝에서 닫히지 않으면(`"$HOME"/repo`, 닫히지 않은 따옴표) 나머지 낱말을 모두 값으로 건너뛴다. v2.2가 그 경우를 정하지 않았고 구현이 fail-open을 골랐다.
+  - S3(비차단): 값 중간에서 열리는 따옴표(`-c user.name="A B"`)는 여전히 놓친다. 회귀는 아니지만 한계 예시가 지워진 상태다.
+  - 가독성 지적: `commandWords`가 단순 명령 목록을 돌려주는데 이름이 드러내지 않는다(비차단). `optionValueEnd`에 닫는 따옴표가 없을 때의 동작 주석이 없다(S2와 같은 수정).
+- 리드 R-2 표본 대조: observe.jsonl의 V·Q행과 observe-branch.jsonl을 직접 읽었고 판정문과 같았다. S1 두 형태와 S2 두 형태를 커밋된 제품에 다시 넣어 모두 결정 없음을 확인했고, 대조군 `git -C "$REPO" push origin main`은 막혔다(E/lead-reverify2-sample.txt). 새 시험 두 파일의 SHA256이 판정문과 같았고 110/110을 다시 확인한 뒤 `c2472b4`로 커밋했다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/reverify2-release.json, reverify2-before-close.json, reverify2-close.json).
+- **리드 결정(범위 안 결함, 루프에서 수정, 메인 체크포인트)**: S1·S2는 ORCA 233의 막는 대상과 동작이 어긋나는 범위 안 회귀라 고친다. S3도 같은 함수에서 함께 고친다. 문서 bytes 여유가 3뿐이라 한계 예시를 되살리는 것보다 싸다.
+  - 동작 계약 v2.3([E/merge-gate-behavior-spec-v2.3.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec-v2.3.md)): 단순 명령 목록을 두 읽기의 합으로 바꾼다. 하나는 v2.2 경계 읽기이고, 다른 하나는 낱말 안 치환을 자리 낱말로 묶은 읽기다. 어느 쪽에서든 찾으면 막으므로 읽기를 더해도 막는 형태가 줄지 않는다. 건너뛰는 옵션·값 낱말은 따옴표가 닫히는 낱말까지 묶고, 닫히지 않으면 한 낱말만 건너뛴다(fail-closed).
+  - 같은 실수를 막는 검사: 수정 계약의 완료조건에 「이전 세 commit 중 하나라도 막던 관찰 형태는 모두 막힌다」는 비교 원시를 넣는다. 세 번째 판정에서 나온 회귀는 넓힌 규칙이 이전 규칙의 부분집합이 아니었기 때문이다.
+  - ORCA 문장은 v2.3 동작과 이미 맞아서 고치지 않는다. README 「병합 관문」의 셸 판정 문장만 고친다.
+  - 수정 횟수: 코드는 세 번째 수정이고, ORCA 병합 관문 절은 이번에 고치지 않아 세 번에 머문다. 규칙상 3회 초과는 아니다. 다만 같은 PR의 독립 판정이 세 번 연속 차단이라, 재검증 때 메인에 약속한 대로 체크포인트를 알린다. 결함 번호가 매번 달라 확정 실패 3회 집계에는 해당하지 않는다.
 
 ## 요구사항 원천과 적용 결정
 
