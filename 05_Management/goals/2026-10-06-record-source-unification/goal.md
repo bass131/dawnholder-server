@@ -16,17 +16,18 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-06 22:5x KST, PR196 병합 뒤 PR2 branch의 첫 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-06 23:1x KST, PR2 설계 문서 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 열린 작업자·검증자는 없었다.
 
-당시 예정 순서는 다음과 같다.
+당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
-1. 리드가 PR2 맥락 메모를 쓰고, TDD 선행 시험 계약을 발행한다. 시험 작성자는 신규 `claude-opus-5-5`이고, 계약 판정 기준에 「적용 중인 메인 결정」 2항의 경로 경계 거절 사례 8종을 넣는다.
-2. 실패하는 요구 시험과 그 원시 결과가 생기면 신규 `gpt-6.1-sol`(max)에게 구현을 맡긴다.
-3. 구현 뒤 다른 신규 `claude-opus-5-5`가 강 등급으로 독립 검증한다. 실제 Electron 확인은 「설계와 검증 경계」를 따른다.
-4. PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인.
-5. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
+1. 신규 `claude-opus-5-5` 시험 작성자가 기록 읽기 경계의 실패하는 요구 시험과 원시 결과를 만든다. 계약 판정 기준에 「적용 중인 메인 결정」 2항의 경로 경계 거절 사례 8종을 넣는다.
+2. 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
+3. 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고, 신규 Sol이 MCP를 구현한다.
+4. 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증한다. 실제 Electron 확인은 「설계와 검증 경계」를 따른다.
+5. PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인.
+6. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
 
 근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run은 `run_3fa510a50602`다. 2026-10-06 22:4x KST Orca 재시작으로 리드 handle이 `term_d2c6dac2…`에서 `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`으로 바뀌었고, 리드가 run-use로 Run을 다시 묶었다(E/`run-use-after-restart.json`). handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
 
@@ -216,6 +217,18 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **PR 생성과 CI:** 리드가 메인에 알린 뒤(`msg_a99807425be9`) PR196을 만들었다(2026-10-06T11:36:21Z). head `562a0c78b781f157e7403899cfaf50ed33378004`에서 module-boundaries·code-rules·architecture-tests·dotnet-tests 4개가 모두 success였다(E/`pr1-ci-final.txt`).
 - **승인과 병합:** 리드의 승인 묶음(`msg_581e68a420af`) 뒤 메인 `msg_f6dba519f08c`가 사용자 원문 「대시보드 결정 응답: 1) PR196 - 운영툴 기록 원본 일원화 문서 병합 승인 → A 지금 head로 병합 (head 562a0c78b781f157e7403899cfaf50ed33378004)」을 전달했다(메인 전달, 사용자 직접 입력으로 격상하지 않음). 리드가 직전 head를 다시 조회하고 `gh pr merge 196 --merge --match-head-commit 562a0c78…`로 병합했다. 병합 commit `a47a02765c87d9794933f461a9c71ac7d4369d51`, 2026-10-06T13:48:22Z다(E/`pr1-post-merge-state.json`).
 - **Orca 재시작:** PR196 승인 대기 중 Orca가 재시작돼 리드 탭이 복구되지 않았다. 메인이 리드 대화 기록을 `claude --resume`으로 새 탭에 다시 열었고(`msg_92dcde92b30d`), 리드가 run-use로 Run을 다시 묶었다. 이전 세션의 CI 감시와 우편함 대기는 재시작으로 끝났다.
+
+### PR2 설계
+
+리드가 구현 전 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다. 시험 작성자·Sol·검증자가 같은 문서를 기준으로 쓴다. 판단이 들어간 선택은 다음과 같다.
+
+- 출처 `local`·`handoff`는 지우지 않고 앱·MCP에서 읽지 않는 링크로 남긴다. `section`은 Markdown이 아닌 출처와 파일 처음부터 읽는 경우에 `null`이다.
+- 잘못된 locator는 색인 전체가 아니라 그 링크만 끊는다. 색인 계약은 키 집합을 엄격히 검사해 서술·상태 필드가 다시 들어오지 못하게 한다.
+- 원문 읽기는 출처 ID로만 받는다. 거절 사례 8종은 각각 고정 코드·reason으로 앱과 MCP 양쪽에서 시험한다.
+- 색인 검사 CLI는 앱과 같은 원문 읽기 모듈을 Node 기본 TypeScript 실행으로 불러온다. 별도 컴파일이나 검사 전용 사본보다 판정이 갈릴 위험이 작다.
+- PR2를 시험 작성 → 구현 → 데이터 전환 → MCP 시험 → MCP 구현 → 독립 검증의 여섯 작업으로 나눈다. Codex 컨텍스트(273k)와 같은 파일 단일 쓰기를 고려한 분할이다.
+- 이 PR이 `catalog-store.ts`의 저장 경계를 없애므로 CODE_CONVENTION 「TypeScript·Electron 작성」의 예시가 사라진다. 병합 뒤 메인을 거쳐 Rules에 문구 갱신을 제안한다.
+- 리드 절차 누락(첫 발생): 리드가 설계 문서와 이 goal 갱신을 PR2 맥락 메모보다 먼저 썼다. 메모(E/`astra-context.md` 「PR2 맥락」)는 그 뒤에 썼고 두 파일의 사전 기록으로 소급하지 않는다. 이후 PR2 계약·문서 쓰기의 사전 메모다.
 
 ### 진입과 준비
 
