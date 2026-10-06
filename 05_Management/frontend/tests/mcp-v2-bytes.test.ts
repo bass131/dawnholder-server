@@ -101,12 +101,17 @@ describe('canonical catalog through the production entry: per-tool bytes', () =>
         }
       }
       // Design 「MCP」 new tools over the same stdio budget: the first page of every versioned
-      // source section, local-only sources refused, and every guide card with its document.
+      // Markdown source section, other sources refused, and every guide card with its document.
+      // 「색인 형식」 출처 표 and 「원문 구간 읽기 경계」 step 6: only an exact lowercase `.md` git
+      // locator is read; any other versioned extension is SOURCE_NOT_READABLE with reason extension.
       for (const source of canonical.sources) {
         const exchange = await paced(proc, 'read_source_section', { id: source.id, expectedHash: hash }, stats);
-        if (source.availability === 'versioned') {
+        if (source.availability === 'versioned' && source.locator.endsWith('.md')) {
           const envelope = expectSuccess('read_source_section', outcome(exchange));
           expect((envelope.data as { source: unknown }).source).toEqual(source);
+        } else if (source.availability === 'versioned') {
+          const refused = expectError('read_source_section', outcome(exchange), 'SOURCE_NOT_READABLE');
+          expect(refused.error.details?.reason).toBe('extension');
         } else {
           expectError('read_source_section', outcome(exchange), 'SOURCE_NOT_READABLE');
         }
