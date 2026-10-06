@@ -73,7 +73,65 @@ jobs:
         run: |
           set -euo pipefail
           printf '%s\n' 'npm ci --ignore-scripts --no-audit --no-fund' > "$RULES_OUTPUT/setup/npm-command.txt"
+          node --version > "$RULES_OUTPUT/setup/npm-node-version.txt"
+          npm --version > "$RULES_OUTPUT/setup/npm-version.txt"
+          set +e
           npm ci --ignore-scripts --no-audit --no-fund > "$RULES_OUTPUT/setup/npm.stdout.txt" 2> "$RULES_OUTPUT/setup/npm.stderr.txt"
+          npm_exit=$?
+          set -e
+          printf '%s\n' "$npm_exit" > "$RULES_OUTPUT/setup/npm-exit.txt"
+          exit "$npm_exit"
+
+      - name: Report npm engine warnings
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const setup = path.join(process.env.RULES_OUTPUT, 'setup');
+          function readSetup(name) {
+            try {
+              return fs.readFileSync(path.join(setup, name), 'utf8');
+            } catch (error) {
+              if (error.code === 'ENOENT') return null;
+              throw error;
+            }
+          }
+          const nodeVersion = readSetup('npm-node-version.txt')?.trim() || 'not recorded';
+          const npmVersion = readSetup('npm-version.txt')?.trim() || 'not recorded';
+          const npmExit = readSetup('npm-exit.txt')?.trim() || null;
+          const logs = ['npm.stdout.txt', 'npm.stderr.txt'].map(readSetup);
+          const warnings = logs.flatMap(log => (log ?? '').split(/\r?\n/)
+            .filter(line => /^npm warn EBADENGINE\b/i.test(line)));
+          const observation = warnings.length
+            ? 'Observed npm EBADENGINE warnings; warnings do not change the install exit.'
+            : npmExit === null || logs.includes(null)
+              ? 'Not fully observed: installation exit or captured logs are missing (skipped or interrupted).'
+              : 'No npm EBADENGINE warnings observed in captured installation output.';
+          const details = [
+            `Node: ${nodeVersion}`,
+            `npm: ${npmVersion}`,
+            `npm ci exit: ${npmExit ?? 'not recorded (skipped or interrupted)'}`,
+            '', observation,
+            ...(warnings.length ? ['', 'Captured npm EBADENGINE lines:', ...warnings] : []),
+          ].join('\n');
+          // A fence longer than the captured text keeps npm output inside a Markdown code block.
+          let fenceLength = 3;
+          for (const ticks of details.matchAll(/`+/g)) {
+            fenceLength = Math.max(fenceLength, ticks[0].length + 1);
+          }
+          const fence = '`'.repeat(fenceLength);
+          const summary = `### Management npm engines\n\n${fence}text\n${details}\n${fence}\n`;
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary, 'utf8');
+          if (warnings.length) {
+            // Only an escaped annotation is printed; raw logs remain in the existing artifact.
+            const message = warnings.join('\n').replace(/%/g, '%25')
+              .replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+            process.stdout.write(`::warning title=npm EBADENGINE::${message}\n`);
+          }
+          NODE
 
       # SQL installation and lint remain deferred until the SQL modules split is complete,
       # followed by a new modules/verify-schema applicability pilot and an adoption decision.
