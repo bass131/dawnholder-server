@@ -11,7 +11,7 @@
 | Management | [시스템 카드 종료 기록](../../05_Management/goals/2026-10-02-system-cards/goal.md#병합-결과와-종료-인계) |
 
 - GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-repository-d1b-20261002`
-- <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-currency-20261005`
+- <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-ui-20261005`
 - Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/operating-canon-20261005`
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `ci/architecture-tests-20261005`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-m2-system-cards`
