@@ -76,11 +76,11 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 <a id="r3-reply-tag"></a>
 ### R-3 — 회신 subject의 발신 태그
 
-회신 subject 첫머리는 **답하는 세션 자신의 태그**로 시작한다. body 첫머리의 자기 태그와 `from_handle` 대조도 기존 [태그 규칙](../../AGENTS.md#메시지와-보고)을 따른다. 메인이 전달한 관찰 사례는 자동 `Re: [메인 Claude] …` 제목들이다. 일반 회신은 자동 `Re:`를 그대로 쓰지 않고 `orca orchestration send --subject "[자기 태그] …"`로 보낸다. 같은 대화로 묶어야 하면 현재 대화의 `--thread-id`를 붙인다.
+회신 subject·body 첫머리는 **회신 세션 자신의 태그**로 시작하며 `from_handle`도 [태그 규칙](../../AGENTS.md#메시지와-보고)대로 대조한다. 메인이 전달한 관찰은 자동 `Re: [메인 Claude] …` 제목이다. 일반 회신은 자동 `Re:` 대신 `orca orchestration send --subject "[자기 태그] …"`로 보내고, 같은 대화는 현재 대화의 `--thread-id`로 묶는다.
 
-**blocking ask / worker question 답변은 CLI 계약대로 `reply --id`를 사용한다.** Orca CLI **1.4.218**의 `orchestration reply --help`에는 subject 지정 옵션이 없음을 확인했다. [승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-reply)에 따라 이 경우만 subject 자기 태그 의무의 버전 한정 예외로 두고, **body 첫머리의 자기 태그와 수신자의 `from_handle` 대조는 유지한다.** 지원하지 않는 플래그를 만들거나 subject가 수정됐다고 보고하지 않는다. 일반 `send`로 대체한 답변이 blocking question을 해결했다고 주장하지 않는다. 이 예외의 근거는 [전달 원문](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-3)과 [로컬 reply help](../../.backups/verification/2026-10-01-operations-rules/reply-help.txt)다.
+**blocking ask / worker question에는 CLI 계약의 `reply --id`로 답한다.** Orca CLI **1.4.218** `orchestration reply --help`의 subject 옵션 부재를 확인했다. [승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-reply)대로 이 경우만 subject 자기 태그 의무의 버전 한정 예외며, **body 첫머리 자기 태그·수신자의 `from_handle` 대조는 유지한다.** 없는 플래그를 만들거나 subject 수정·일반 `send`의 blocking question 해결을 주장하지 않는다. 근거는 [전달 원문](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-3)과 [로컬 reply help](../../.backups/verification/2026-10-01-operations-rules/reply-help.txt)다.
 
-**Orca 1.4.218 공식 blocking `ask`가 생성한 고정 subject `Question`**도 subject 태그의 한정 예외다. 같은 버전 `ask --help`에는 subject 옵션이 없다. body 첫머리 태그와 현재 `from_handle`·Task·Dispatch 대조는 유지하며 하나라도 어긋나면 처리하지 않고 메인에 보고한다. 일반 `send`와 `reply`에 이 새 ask 예외를 적용하지 않는다. 위 reply 고유 예외는 별도 근거와 범위대로 유지한다. **ask가 subject 옵션을 지원하면 ask 예외는 없어진다.** 근거는 [공식 ask 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-ask)다. 값만으로 공식 출처를 증명했다고 주장하지 않으며 [수신 helper](#dispatch-message-policy)의 별도 expected 근거를 확인한다. 1.4.220 복귀 뒤 subject 옵션이 없는 공식 ask/reply도 위 body·identity·receipt 조건을 따르며, 지원되면 예외는 종료한다. 종료된 1.4.217 확장과 복귀 근거는 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
+**Orca 1.4.218 공식 blocking `ask`의 고정 subject `Question`**은 subject 태그 예외다(같은 버전 `ask --help`에 subject 옵션 없음). body 첫머리 태그·현재 `from_handle`·Task·Dispatch를 대조해 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`·`reply`는 제외하고 위 reply 예외의 별도 근거·범위를 유지한다. **ask가 subject 옵션을 지원하면 종료**한다. [공식 ask 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-ask)와 [수신 helper](#dispatch-message-policy)의 별도 expected 근거로 공식 출처를 확인하며 값만으로 증명하지 않는다. 현재 **1.4.220 복귀**는 ask/reply help 양쪽의 subject 옵션 부재를 확인한 공식 ask/reply에만 위 태그·identity와 공식 receipt 대조를 적용한다. 불일치 처리·일반 send 제외는 위와 같고 해당 명령의 subject 옵션 지원 시 예외가 끝난다. help 확인은 실제 ask/reply 호출 실증과 구분하고 다른 버전 지원을 주장하지 않는다. 종료된 1.4.217 확장·복귀 근거는 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 있다.
 
 <a id="run-reply-address"></a>
 ### Run 회신 주소와 receipt 확인
@@ -198,7 +198,7 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 5. 메인이 보완 goal을 승인한다.
 6. 승인 뒤 불변식 파일을 고정 입력으로 Sol 계약·구현을 발행하고, **해당 시범 작업에서만** Sol 보고 전제를 [소스]/[추론]/[미측정]으로 표시한다.
 
-평가 기준은 **“메인이 놓친 문제를 실제로 찾았나”**다. 메인 전달 관찰에 따르면 1회차 M-1에서 의미 있는 지적 7건을 찾았고, 그중 #3(Windows rename 간섭)은 구현에서 실측됐다. 이는 [main-request.json](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-1)에 보존한 메인의 관찰 보고이며 이번 문서 작업자가 M-1 구현·실측을 직접 검증한 결과가 아니다. 이번 운영 규칙 문서 목표에서는 Fable 세션을 열거나 새 시범 목표를 시작하지 않는다.
+평가 기준은 **“메인이 놓친 문제를 실제로 찾았나”**다. M-1 관찰·출처와 미검증 구분은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다. 이번 운영 규칙 문서 목표에서는 Fable 세션을 열거나 새 시범 목표를 시작하지 않는다.
 
 <a id="r8-astra-lifecycle"></a>
 ### R-8 — 목표 단위 Astra 세션 교체
@@ -224,15 +224,15 @@ R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Pha
 <a id="merge-gate"></a>
 ## 병합 관문
 
-[R-1](#r1-management-placement)의 메인 checkout에서 메인 세션만 병합한다. 사용자가 만든 `.claude/state/merge-gate/main-checkout` 파일의 존재로 식별한다. checkout·표식 생성과 첫 세션의 작업 공간 신뢰 창은 PR1 병합 뒤 사용자·메인이 처리하고, 병합 뒤 최신 main을 fast-forward로 받는다. 적용 확인과 세션 중 settings 변경의 즉시 반영 여부는 [goal 완료조건 5](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#관찰-가능한-완료조건)에 기록한다.
+[R-1](#r1-management-placement)의 메인 checkout에서 메인 세션만(하위 에이전트 제외) 병합한다. 사용자 생성 `.claude/state/merge-gate/main-checkout` 파일 존재로 식별한다. PR1 병합 뒤 사용자·메인이 checkout·표식 생성과 첫 세션의 작업 공간 신뢰 창을 처리한다. 병합 뒤 최신 main을 fast-forward로 받는다. 적용 확인·세션 중 settings 변경 즉시 반영 여부는 [goal 완료조건 5](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#관찰-가능한-완료조건)에 기록한다.
 
-사용자가 메인 창에 `병합 승인: PR<번호> head <40자 hex>`를 Enter로 제출한다. 앞뒤 공백을 뺀 입력 **전체**가 이 한 줄일 때만 세션별 파일에 기록한다. 같은 세션·PR·head에만 30분 동안 한 번 유효하다. 「대시보드 결정 응답」이나 다른 문장 안의 승인 줄은 기록하지 않으며, 세션을 다시 열면 이전 기록을 쓸 수 없다.
+사용자가 메인 창에 `병합 승인: PR<번호> head <40자 hex>`를 Enter로 제출한다. 앞뒤 공백 제외 입력 **전체**가 이 한 줄일 때만 session_id별 파일에 기록한다. 같은 세션·PR·head에 30분·한 번만 유효하다. 「대시보드 결정 응답」·다른 문장 안의 승인 줄은 기록하지 않는다. 새 세션은 이전 기록을 못 쓰며, `--resume`으로 이어 연 같은 세션은 30분 안의 미사용 기록이 남는다. `--continue`는 미측정이다.
 
-운영 명령은 `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 형태다. hook은 `--merge`·`--squash`·`--rebase` 중 하나를 형태로 받지만 운영은 `--merge`만 쓴다. `--delete-branch`·`--auto`·`--admin` 등 다른 인자는 막힌다. PreToolUse 통과 때 기록을 소비하며 실패해도 새 승인이 필요하다. 리드는 PR 번호·정확한 head 40자·CI·독립 검증 판정 원문으로 준비 보고와 병합 뒤 goal 기록을 맡고 병합은 실행하지 않는다.
+운영은 `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 명령만 쓴다. hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받는다. 다른 인자(`--delete-branch`·`--auto`·`--admin` 등)는 막힌다. PreToolUse 통과 때 기록을 소비하며 실패도 새 승인이 필요하다(아래 겹친 쓰기 한계 제외). 리드는 PR 번호·정확한 head 40자·CI·독립 검증 판정 원문으로 준비 보고하고 병합 뒤 goal을 기록한다. 병합은 실행하지 않는다.
 
-모든 Claude Code 세션에서 복합 명령·heredoc·`bash -c`·명령 치환 안의 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main branch의 refspec 없는 push 포함), 상태 폴더 쓰기와 그 경로가 든 Bash, 다른 터미널로의 승인 문장 주입을 막는다. [결과 코드·상세 형태](../../99_Tools/README.md)와 [확인 창 승인 예외](../../AGENTS.md#공학-조건)는 각 정본을 따른다.
+모든 Claude Code 세션의 복합·heredoc·`bash -c`·명령 치환 속 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main branch에서 refspec 없음·`HEAD`·`@` 포함), 상태 폴더 쓰기·경로가 든 Bash, 다른 터미널로 승인 문장 주입을 막는다. [결과 코드·상세 형태](../../99_Tools/README.md)와 [확인 창 승인 예외](../../AGENTS.md#공학-조건)를 따른다.
 
-한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 문자열 판정의 의도적 우회, 하위 폴더·settings 부재 시 hook 없음, GitHub ruleset 관리자 우회 유지. 병합 문자열이 든 검색 명령도 막으므로 Grep·Read를 쓴다.
+한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 별칭·스크립트 파일·변수 속 명령 미판정, 하위 폴더·settings 부재 또는 hook 프로세스 미실행(node 부재 등) 시 보호 없음, GitHub ruleset 관리자 우회 유지. 같은 세션의 겹친 기록 쓰기(병합끼리·승인 제출과 병합)는 소비 기록을 되살리거나 두 번 통과시킬 수 있다(순차 호출 전제, 승인된 PR·head만). 병합 문자열 검색도 막혀 Grep·Read를 쓴다.
 
 ## 공유 자원
 
