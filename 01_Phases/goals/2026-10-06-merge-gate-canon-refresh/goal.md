@@ -392,6 +392,20 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 메인 관심인 일상 명령 영향을 관찰 항목으로 넣었다.
   - 경로 기계 확인은 E/reverify3-contract-pathcheck.txt(19:06:49Z)다.
 - Task `task_9f42955ee99f`, Dispatch `ctx_39a5532903dd`다. receipt는 input_accepted, turnStart observed다(E/reverify3-worker-start.json).
+- 판정: worker_done `msg_498aaa66b2e5`(19:30:17Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/reverify3-worker-done-check-output.json). 판정 원문은 [E/reverify3/verdict.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/reverify3/verdict.md)이고 결론은 **통과(PASS), 차단 결함 없음**이다.
+  - 해결 확인: S1·S2·S3와 가독성 지적 둘이 해결됐다. 마지막 그물이 v2.3의 세 조건·적용 순서·오탐·일상 대조군대로 동작한다. 이전 commit이 막던 관찰 32행이 모두 막힌다(회귀 0). D1~D5와 R1·R2·R4·O-R2·O-R7은 해결 유지이고, O-R1은 「부분」에서 「해결」로 올라갔다.
+  - 시험: 기존 세 시험의 네 형태만 `suspect-words` 기대로 옮겼다(실패 분류 a, v2.3 요구 변경). 새 시험 두 파일 16건은 수정 전 제품(`c06aa784`)에서 10건 실패한다. MergeGate 126/126, Orca 22/22다.
+  - 실제 진입: 4a 네 건(Bash 셋 `not-main-checkout`·`push-main`·`suspect-words`, Monitor 하나 `suspect-words`)이 막혔다. 4b headless 두 턴에서 정식 단독 병합이 그물에 걸리지 않고 allow → PermissionRequest allow → 실행(원격 없음 실패)으로 갔다. 하위 Claude가 먼저 낸 복합 형태는 `compound-command`로 막혔고 기록은 그대로였다(O-T4).
+  - T1(비차단, 하): 그물 조건 3이 강제 push refspec `+main`을 main 대상 낱말로 세지 않는다. 정밀 읽기가 놓치는 따옴표 값 속 `;`와 겹칠 때만 결정 없음이고 회귀가 아니다. 고칠 곳은 동작 계약 문장(맨 앞 `+`를 뗀 낱말로 비교)이다.
+  - 가독성 지적 1(비차단): 새 이유 주석 세 줄만 한국어이고 파일의 다른 주석은 영어다. 원인은 리드가 수정 계약에 한국어 문장을 준 것이다(리드 귀속).
+  - 관찰 O-T1(메인 관심): v2.3 오탐 범주에 드는 일상 형태가 막힌다. 예는 같은 줄의 `git merge main`과 작업 branch push, 영어 `merge`가 든 PR 제목, push와 main이 함께 든 커밋 메시지·echo 문구다. 작업 branch push, `origin/main` 범위 표기, `gh pr view --json mergeable`, 한국어 제목의 `gh pr create`, 우편함 명령은 막히지 않는다. O-T3: 정식 단독 병합이 그물을 건너뛰는 근거가 조기 반환뿐이고 주석이 없다.
+- 리드 R-2 표본 대조:
+  - 같은 명령을 다시 돌렸다. MergeGate 126/126, Orca 22/22, 새 시험 두 파일 SHA256이 판정문과 같다(E/lead-reverify3-green-check.txt).
+  - 고친 기존 시험 diff 세 hunk를 읽었다. 네 형태만 결정 없음 목록에서 빠져 `suspect-words` 단언으로 옮겨졌고 다른 명령은 그대로다. 시험 이름에는 「unless the last net words meet」 꼬리만 붙었다.
+  - E/reverify3/boundary-check.jsonl은 55행 가운데 `changed:true`가 7행이다. 모두 네 형태이고 결정 없음 → `suspect-words`다. E/reverify3/real-entry-blocked.md의 4a 원문 네 건이 판정문과 같다.
+  - 검증자 시험은 리드가 `b41a433`으로 커밋했다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/reverify3-release.json, reverify3-before-close.json, reverify3-close.json).
+- **리드 결정(PR1 범위)**: T1, 주석 언어, O-T3는 PR1에서 고치지 않고 후속 후보로 둔다. 셋 다 비차단이고 회귀가 아니다. 고치려면 코드 네 번째 수정과 독립 재검증 한 바퀴가 더 든다. PR2에서 BACKLOG에 같은 규칙으로 기록한다. O-T1은 리드·메인 운영 주의이며, PR1 제목은 한국어로 쓴다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -435,6 +449,7 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - Codex 세션의 병합 차단: 저장소 `.codex/` 프로젝트 hook으로 같은 판정을 거는 방법. 신뢰한 프로젝트에서만 읽고 hook 내용이 바뀔 때마다 사용자 검토가 필요하다(초안 세부 근거 4). 사용자 질문 1 A로 이번에는 하지 않는다.
 - 에이전트용 GitHub 계정 분리와 ruleset 보강: 서버 쪽에서 모든 세션을 막는 대안. 비용은 계정·classic 토큰·이 PC의 gh·git 로그인 전환이다(초안 세부 근거 3). ruleset 관리자 우회를 「PR로만」으로 바꾸는 더 싼 중간안은 문서 확인 전이다.
 - 우편함 대기 `&`·`/dev/null` 차단 hook: 묶음 2 계획 12에서 같은 PreToolUse 층으로 다룬다.
+- 병합 관문 후속(세 번째 재검증 비차단): T1 그물 조건 3의 `+main`(동작 계약 「맨 앞 `+`를 뗀 낱말」 보정), `merge-policy.mjs`의 한국어 이유 주석 세 줄을 파일 관례인 영어로, O-T3 정식 단독 병합이 그물을 건너뛰는 이유 주석. 원천은 E/reverify3/verdict.md다.
 
 <a id="orca-moved-history"></a>
 
