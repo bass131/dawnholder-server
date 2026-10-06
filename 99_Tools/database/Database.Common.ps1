@@ -1,6 +1,8 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+. (Join-Path $PSScriptRoot 'SqlError.Common.ps1')
+
 function Open-LocalDatabase(
     [string]$Instance,
     [string]$Database
@@ -107,6 +109,8 @@ function Invoke-DbScalar(
     $command = New-DbCommand -Connection $Connection -Sql $Sql -Parameters $Parameters -Transaction $Transaction
     try {
         return $command.ExecuteScalar()
+    } catch {
+        throw (New-DatabaseSqlFailure -Exception $_.Exception)
     } finally {
         $command.Dispose()
     }
@@ -121,6 +125,8 @@ function Invoke-DbNonQuery(
     $command = New-DbCommand -Connection $Connection -Sql $Sql -Parameters $Parameters -Transaction $Transaction
     try {
         return $command.ExecuteNonQuery()
+    } catch {
+        throw (New-DatabaseSqlFailure -Exception $_.Exception)
     } finally {
         $command.Dispose()
     }

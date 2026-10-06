@@ -4,13 +4,13 @@
 
 | 파트 | 목표 상태와 재개 안내 |
 |---|---|
-| GameDev | [영속성 저장소](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#재개-지점) |
+| GameDev | [실제 SQL 설치·저장소 통합](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#재개-지점) |
 | Content | [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) |
 | Rules | [CI npm 경고와 운영 후속 정본화](../../01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#재개-지점) |
 | CodeMap(Architecture) | [Architecture 테스트 전체 PR CI](../../01_Phases/goals/2026-10-05-architecture-tests-ci/goal.md#재개-지점) |
 | Management | [개발 기록의 목록과 전체 페이지 상세](../../05_Management/goals/2026-10-05-development-record-navigation/goal.md#재개-지점) |
 
-- GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-repository-d1b-20261002`
+- GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-integration-20261004`
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-currency-20261005`
 - Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `ci/npm-engine-warning-20261005`
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `ci/architecture-tests-20261005`

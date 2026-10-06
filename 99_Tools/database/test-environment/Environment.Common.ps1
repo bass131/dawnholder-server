@@ -1,4 +1,6 @@
 # Definitions only. Import performs no database, identity, account, ACL or credential I/O.
+. (Join-Path $PSScriptRoot '../SqlError.Common.ps1')
+
 function Read-TestEnvironmentApprovalPlan {
     param(
         [string]$ApprovalPlanPath,
@@ -447,7 +449,8 @@ function Write-TestEnvironmentManifest(
         $file.Dispose()
     }
     if ([IO.File]::Exists($Manifest.ManifestPath)) {
-        [IO.File]::Replace($temporary, $Manifest.ManifestPath, $null)
+        # Preserve a null backup path through the PowerShell string-argument binder.
+        [IO.File]::Replace($temporary, $Manifest.ManifestPath, [NullString]::Value)
     }
     else {
         [IO.File]::Move($temporary, $Manifest.ManifestPath)
@@ -495,15 +498,16 @@ function Assert-TestEnvironmentExecutor(
 function Assert-TestEnvironmentLocalAccountAbsent(
     $Contract
 ) {
+    $existing = $null
     try {
         $existing = Get-LocalUser -Name $Contract.RecoveryLocalName -ErrorAction Stop
-        if ($null -ne $existing) {
-            throw 'Test environment Windows account name occupied; no adoption.'
-        }
     } catch {
         if ($_.FullyQualifiedErrorId -notlike 'UserNotFound*') {
             throw 'Cannot prove the exact Windows account name is absent.'
         }
+    }
+    if ($null -ne $existing) {
+        throw 'Test environment Windows account name occupied; no adoption.'
     }
 }
 
@@ -563,6 +567,185 @@ function Get-DatabaseFailureCode(
         SqlNumber = $Exception.Data['DatabaseSqlNumber']
         Detail = 'Provider/native text suppressed; inspect the last planned and recorded identity.'
     }
+}
+
+function Get-TestEnvironmentStopReason(
+    [Exception]$Exception
+) {
+    # Exact product literals are returned from this list, never copied from an exception or its inner text.
+    $safeReasons = @(
+        'Manifest already exists; this one-time lifetime cannot be restarted.'
+        'Database creation is one-time and create-only.'
+        'A target lifecycle directory already exists; no adoption.'
+        'An exact database/login name is occupied; no adoption or rotation.'
+        'Test environment Windows account name occupied; no adoption.'
+        'Cannot prove the exact Windows account name is absent.'
+        'Pending manifest remains; preserve it for coordinator inspection.'
+        'An incomplete attempt or cleanup exists; preserve resources and request coordinator reconciliation.'
+        'This one-time step has already been attempted.'
+        'Invalid step transition.'
+        'Install 001 first, leave its fixture to the independent verifier, then install 002+ in the same database.'
+        'Installer core requires the lifecycle-owned manifest lock and exact connection.'
+        'Installer requires the recorded active test-environment installation step.'
+        'Test environment shared-memory connection failed; no fallback, provider text suppressed.'
+        'Exact local instance and privileged SQL executor required.'
+        'Engine changed; a new golden-vector decision is required.'
+        'Exact database identity missing or ambiguous.'
+        'No recorded created database identity; no adoption.'
+        'Database is not online; preserve it.'
+        'Owner/goal marker mismatch; no adoption or cleanup.'
+        'Cleanup settlement is incomplete; no deletion is authorized by it.'
+        'Evidence must be durable, nonsecret files within this goal evidence directory.'
+        'Preserved evidence hash mismatch.'
+        'A task-owned connection is not settled.'
+        'Invalid settled request.'
+        'Terminal request lacks payload/outcome evidence.'
+        'SQL login identity missing/unknown/changed; no deletion.'
+        'Cannot inspect exact Windows account identity.'
+        'Windows account identity missing/unknown/changed; no deletion.'
+        'Unknown credential file exists; do not read/delete it.'
+        'Child identity manifest changed.'
+        'Unknown child identity manifest exists.'
+        'Remaining target connections/requests/transactions/locks; stop and preserve resources.'
+        'Recorded binding disappeared; preserve resources.'
+        'Held/mismatched binding or temporary trigger remains; cleanup does not release/drop it.'
+        'Archived ledger count changed.'
+        'Terminal operation evidence is absent.'
+        'Terminal operation evidence differs from settlement.'
+        'Manifest changed after review.'
+        'Cleanup was already attempted; explicit reconciliation is required.'
+        'Windows SID changed; preserve account.'
+        'Unexpected credential file ACL.'
+        'Credential hash changed; preserve it.'
+        # These checks can also be reached after the lifecycle entry point has entered its guarded try.
+        'Draft plan cannot execute. Coordinator must review actual G2 approval and deliver its exact plan hash.'
+        'Supply the explicit exact approved database and local instance; no fallback.'
+        'Test environment path is not the exact approved absolute path.'
+        'Test environment paths must not traverse reparse points.'
+        'Lifecycle encryption values must retain their boolean contract.'
+        'Invalid manifest version/slot/state type.'
+        'Invalid recorded engine observation.'
+        'Invalid recorded created database identity.'
+        'Invalid recorded migration identity.'
+        'Recorded migrations must retain the reviewed ordered contiguous version/name contract.'
+        'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version remains one.'
+        'Invalid recorded SID.'
+        'Invalid recorded hash.'
+        'Invalid lifecycle step history.'
+        'Run as the separately approved machine/SID; no alternate identity is adopted.'
+        'Use an approved elevated Windows PowerShell with the same executor SID; no automatic UAC.'
+        'Unsupported Test environment SQL parameter type.'
+        'Test environment SQL parameter type/length mismatch.'
+        'SQL size is required.'
+        'Invalid SQL parameter name.'
+        'Typed SQL parameters required.'
+        # The installer keeps its own throw contract; only its fixed product reasons cross this reporting boundary.
+        'SQL tool parameters need a supported explicit CLR value; no provider inference.'
+        'Complete installation needs an explicit reviewed test-environment contract.'
+        'Incomplete migration history after application.'
+        'Module manifest must be UTF-8 without BOM, LF, and a final newline; do not normalize its identity.'
+        'Module manifest version/encoding differs from the reviewed current release.'
+        'Module SQL file set differs from the exact reviewed bundle; remove extras or restore missing files.'
+        'Invalid module path/checksum/dependency list; use the reviewed exact paths.'
+        'Permissions must be the final single bundle entry without an engine definition.'
+        'Permissions source must contain only the nine reviewed individual EXECUTE grants.'
+        'Incomplete module bundle; no module may be silently omitted.'
+        'Migration files must be the reviewed contiguous version/name set; reject holes, duplicates and extras.'
+        'Immutable 001 source checksum drift; restore the reviewed baseline.'
+        'Database has unknown/newer migrations; use the matching tool revision without downgrading.'
+        'Migration history has a hole, unknown name/version or checksum drift; do not rewrite applied history.'
+        'Expected the complete database JSON row array, including [] for no rows.'
+        'Existing module registration/object set is incomplete or unexpected; refuse adoption or overwrite.'
+        'Unregistered/missing/unexpected module; restore or review it before deploying a new declaration.'
+        'Module deployment requires the caller-owned migration transaction.'
+        'Current bundle differs from its migration declaration; a different bundle needs a new release version.'
+        'Module release history has an unknown, missing-schema or malformed declaration; refuse deployment.'
+    )
+    foreach ($reason in $safeReasons) {
+        if ([string]::Equals($Exception.Message, $reason, [StringComparison]::Ordinal)) {
+            return $reason
+        }
+    }
+    # Interpolated throws retain their direct-call contract. Match complete, bounded templates and return constants:
+    # keys, paths, object names and structure/provider details are never part of the reported reason.
+    $manifestKey = '(?:SchemaVersion|Goal|GoalMarker|G0|G1|G2|Machine|Instance|InstanceName|Endpoint|' +
+    'Database|SlotId|AccountId|CharacterId|RuntimeLogin|RecoveryPrincipal|RecoveryLocalName|ExecutorSid|' +
+    'Encrypt|TrustServerCertificate|ManifestPath|SettlementPath|PrivateDirectory|IdentityDirectory|' +
+    'IdentityPath|RuntimeCredentialPath|RecoveryCredentialPath|ApprovalPlanPath|ApprovalPlanHash)'
+    $lifecycleKey = '(?:State|Engine|DatabaseIdentity|MigrationManifest|WindowsAccountSid|RuntimeLoginSid|' +
+    'RecoveryLoginSid|RuntimeUserSid|RecoveryUserSid|RuntimeCredentialHash|RecoveryCredentialHash|' +
+    'IdentityHash|Steps|Cleanup)'
+    $identityKey = '(?:DatabaseId|CreationTime|OwnerSid|DatabaseGuid|Collation|Rcsi)'
+    $modulePath = '(?:modules/(?:functions|procedures(?:/internal)?)/[a-z_]{1,80}\.sql|modules/permissions\.sql)'
+    $moduleName = 'dh\.[A-Za-z][A-Za-z0-9_]{0,127}'
+    switch -CaseSensitive -Regex ($Exception.Message) {
+        ('\ALifecycle manifest differs from the independently supplied approval plan: ' + $manifestKey + '\.\z') {
+            return 'Lifecycle manifest differs from the independently supplied approval plan; preserve it.'
+        }
+        ('\AMissing lifecycle field: ' + $lifecycleKey + '\.\z') {
+            return 'A required lifecycle manifest field is missing; preserve it.'
+        }
+        ('\ADatabase identity changed: ' + $identityKey + '\.\z') {
+            return 'Database identity changed; preserve resources and request coordinator reconciliation.'
+        }
+        '\AExpected an object at [^\r\n]{1,1024}\.\z' {
+            return 'Module manifest requires an object at the reviewed bundle location.'
+        }
+        '\AUnexpected manifest fields at [^\r\n]{1,1024}; use the reviewed bundle format\.\z' {
+            return 'Module manifest fields differ from the reviewed bundle format.'
+        }
+        '\AModule source structure (?:violation|unavailable): [^\r\n]{1,16384}\z' {
+            return 'Module source structure is not compliant or could not be inspected; preserve resources.'
+        }
+        ('\AModule source checksum mismatch: ' + $modulePath +
+        '; update the reviewed bundle and declaration together\.\z') {
+            return 'Module source checksum differs from the reviewed bundle and declaration.'
+        }
+        ('\AModule files are one batch and cannot contain GO: ' + $modulePath + '\.\z') {
+            return 'Module SQL must remain a single batch without GO.'
+        }
+        ('\AModule object/kind/expected definition mismatch: ' + $modulePath + '\.\z') {
+            return 'Module object, kind or expected definition differs from the reviewed bundle.'
+        }
+        ('\AExpected one CREATE OR ALTER (?:FUNCTION|PROCEDURE) batch at ' + $modulePath + '\.\z') {
+            return 'Module SQL requires one reviewed CREATE OR ALTER batch.'
+        }
+        ('\ADependency must precede ' + $moduleName + ': [^\r\n]{0,1024}\.\z') {
+            return 'Module dependency order differs from the reviewed bundle.'
+        }
+        ('\ADependency contract mismatch: ' + $modulePath +
+        '; declare the operation''s actual helper responsibilities\.\z') {
+            return 'Module dependency declarations differ from their reviewed responsibilities.'
+        }
+        ('\ARegistered/actual module drift: ' + $moduleName +
+        '; refuse overwrite, including unchanged source\.\z') {
+            return 'Registered and actual module definitions differ; refuse overwrite.'
+        }
+        ('\AUnchanged source has different reviewed definition metadata: ' + $moduleName + '\.\z') {
+            return 'Unchanged module source has different reviewed definition metadata.'
+        }
+        ('\AAlready-declared release has different source registration: ' + $moduleName + '; refuse repair\.\z') {
+            return 'Already-declared module release has different source registration; refuse repair.'
+        }
+        ('\ATest environment SQL command failed \(provider number -?\d{1,10}\); ' +
+        'raw SQL and provider text suppressed\. Preserve manifest\.\z') {
+            return 'Test environment SQL command failed; raw SQL and provider text suppressed. Preserve manifest.'
+        }
+    }
+    return 'Unclassified failure; provider/native text suppressed.'
+}
+
+function Get-TestEnvironmentFailureSummary(
+    [Exception]$Exception
+) {
+    $reason = Get-TestEnvironmentStopReason -Exception $Exception
+    $failureCode = Get-DatabaseFailureCode -Exception $Exception
+    $safeSqlNumber = 'unavailable'
+    if ($failureCode.SqlNumber -is [int]) {
+        $safeSqlNumber = [string]$failureCode.SqlNumber
+    }
+    return ('{0} FailureCode={1}; HResult={2}; SqlNumber={3}.' -f
+        $reason, $failureCode.ErrorType, $failureCode.HResult, $safeSqlNumber)
 }
 
 function Fail-TestEnvironmentStep(
@@ -703,14 +886,7 @@ function Invoke-DatabaseSql(
         }
     } catch {
         # Do not rethrow a provider error: CREATE LOGIN errors can contain generated SQL/passwords.
-        $number = $(if ($_.Exception -is [Data.SqlClient.SqlException]) {
-                $_.Exception.Number
-            } else {
-                0
-            })
-        $safeError = [InvalidOperationException]::new("Test environment SQL command failed (provider number $number); raw SQL and provider text suppressed. Preserve manifest.")
-        $safeError.Data['DatabaseSqlNumber'] = $number
-        throw $safeError
+        throw (New-DatabaseSqlFailure -Exception $_.Exception)
     } finally {
         $command.Dispose()
     }
@@ -729,18 +905,18 @@ function Open-TestEnvironmentDatabase(
         -ManifestPath $Manifest.ManifestPath
     Assert-TestEnvironmentExecutor -Contract $Contract
     $builder = [Data.SqlClient.SqlConnectionStringBuilder]::new()
-    $builder.DataSource = 'lpc:' + $Manifest.Instance
-    $builder.InitialCatalog = $(if ($Master) {
+    $builder['Data Source'] = 'lpc:' + $Manifest.Instance
+    $builder['Initial Catalog'] = $(if ($Master) {
             'master'
         } else {
             $Database
         })
-    $builder.IntegratedSecurity = $true
-    $builder.Encrypt = $true
-    $builder.TrustServerCertificate = $true
-    $builder.Pooling = $false
-    $builder.ConnectTimeout = 5
-    $builder.ApplicationName = 'Dawnholder.TestEnvironment'
+    $builder['Integrated Security'] = $true
+    $builder['Encrypt'] = $true
+    $builder['TrustServerCertificate'] = $true
+    $builder['Pooling'] = $false
+    $builder['Connect Timeout'] = 5
+    $builder['Application Name'] = 'Dawnholder.TestEnvironment'
     $connection = [Data.SqlClient.SqlConnection]::new($builder.ConnectionString)
     try {
         try {
