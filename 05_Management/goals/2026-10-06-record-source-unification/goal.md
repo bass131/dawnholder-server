@@ -186,6 +186,8 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 
 [분류표](next-steps-classification.md)를 원천 재대조로 확정했다. 로드맵 연결 10, 폐기(변경 규칙 사본) 9, 폐기(사용자 결정) 1, 완료 삭제 3, 애매 2(한 묶음), 나눔 1, 일부 완료+이관 1이다. 초안의 애매 3건 중 평가 실행 여부(#16)는 기준선 goal의 실행·채점 기록이 있어 완료 삭제로 바꿨다. BACKLOG 이관 행은 `management-launcher-real-run` 하나다. 결정 요청 후보는 실제 원격 플레이 확인과 시스템 지도 3D 표현 두 건이다.
 
+리드가 이관 행과 결정 요청 후보를 `msg_33365ac784b2`(E/`nextsteps-transfer-and-decisions.txt`)로 메인에 보냈다. 먼저 `decision_gate` 유형으로 보낸 같은 본문은 「No active Dispatch belongs to this message sender」 오류를 받았지만 `msg_54535201beaa`로 도착했다(E/`nextsteps-transfer-and-decisions-rejected.json`). 메인은 `msg_b1bf869e87fd`(2026-10-06T10:38:19Z, E/`wait-7.json`)로 받았다. 결정 요청 후보 2건은 현황판 결정 대기에 올렸고, 사용자 답이 올 때까지 두 행은 「애매」로 둔다. 이관 행은 다음 Rules goal 입력에 넣었다.
+
 ### 진입과 준비
 
 - **진입:** 새 Run `run_3fa510a50602`(E0/`run-create.json`), READY `msg_fa27c1982e46`(E0/`ready-sent.json`). 진입 때 worktree는 종료 기록 branch `docs/management-record-navigation-closeout`(HEAD `e37f261`, origin/main보다 19 뒤, 미커밋 0)이었다.
