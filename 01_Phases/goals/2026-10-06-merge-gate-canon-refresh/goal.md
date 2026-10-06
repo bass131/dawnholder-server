@@ -366,6 +366,9 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 완료 기준은 108/110(예상된 두 경계 시험 실패만)과 Orca 22/22, 이전 세 commit 비교 점검에서 deny → 결정 없음 0행, S 형태가 정밀 판정 코드로 막힘, 일상 대조군 결정 없음, 다섯 문서 bytes 92,500 이하다.
   - 경로 기계 확인은 E/fix4-contract-pathcheck.txt다.
 - Task `task_dfeb9343c1e0`, Dispatch `ctx_4effd22f2f42`다. receipt는 input_accepted, turnStart observed다(E/fix4-worker-start.json).
+- 질문 1: 공식 ask `msg_2cf6486d758b`(18:46:16Z). 출처는 사람 대조로 확인했다(E/session/fix4-question1-manual-check.md). v2.3 구현 뒤 기존 시험이 107 통과·3 실패였다. 계약이 지정한 두 경계 시험 밖에 `blocked-commands.test.mjs`의 「§4 Bash 6 and §6 …」이 `gh pr create --title "merge gate" --body "draft"` 때문에 실패했다.
+  - 원인: 리드의 발행 전 영향 분석이 `assertNoDecision`만 찾고 같은 역할의 도우미 `assertCommandsUndecided`를 빠뜨렸다(리드 귀속). 두 도우미로 다시 돌리니 뒤집히는 기존 시험은 세 개, 고유 형태는 넷이 전부였다. 네 형태 모두 v2.3 「일부러 받아들이는 오탐」에 든다.
+  - 리드 답 `msg_5ca0ec61d214`(18:47:23Z, 계약 v1 보충 1): 예상 실패를 세 시험·네 형태로 넓히고 완료 기준을 107/110으로 바꾼다. 제품 규칙은 좁히지 않는다. 동작 계약 파일·hash는 그대로 두고, 끝 「판본」의 「세 형태」 이력 문장은 이 보충으로 고친다.
 
 ## 요구사항 원천과 적용 결정
 
