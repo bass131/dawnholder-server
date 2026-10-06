@@ -16,13 +16,13 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**PR1 문서 작성 끝, 문서 실사 준비.** 2026-10-06 사용자 범위 승인 뒤 최신 main `9ee7ae1`에서 branch `docs/management-record-source-20261006`을 만들고 이 goal을 고정했다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 아직 작업자·검증자는 없다.
+**PR1 1차 문서 실사 차단(W1~W4) 뒤 정정, 좁힌 재실사 준비.** 2026-10-06 사용자 범위 승인 뒤 최신 main `9ee7ae1`에서 branch `docs/management-record-source-20261006`을 만들고 이 goal을 고정했다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 1차 문서 실사 검증자는 정산·종료했고, 지금 열린 작업자·검증자는 없다.
 
 다음 순서는 다음과 같다.
 
 1. 끝남: 리드가 PR1 문서로 결정·요구 반영, 낡은 사실·상태 정정, [27개 분류표](next-steps-classification.md), DB 1단계 과정 문서를 썼다.
 2. 끝남: DB 1단계 문서의 위치·분담 조율과 사실 검토는 아래 「Core 조율 결과」와 「Core 사실 검토」에 끝났다.
-3. 신규 gpt-6-astra 문서 실사 → PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인. 27개 분류의 이관 행 세 개는 메인을 거쳐 Rules에 보낸다(「적용 중인 메인 결정」 5항). 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
+3. 1차 신규 gpt-6-astra 문서 실사가 `3fc61360`을 차단(W1~W4)으로 판정했고 리드가 정정했다(아래 「PR1 문서 실사」). 다음은 정정 delta의 신규 gpt-6-astra 좁힌 재실사 → PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인이다. 27개 분류의 이관 행 세 개는 메인을 거쳐 Rules에 보낸다(「적용 중인 메인 결정」 5항). 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
 4. PR2·PR3은 PR1 병합 뒤 각각 최신 main의 새 branch에서 시작한다.
 
 근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run `run_3fa510a50602`, 리드 handle `term_d2c6dac2-5fb3-401e-98f3-8f6ecba0cdd6`은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
@@ -185,11 +185,23 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 
 ### 「다음 할 일」 27개 분류
 
-[분류표](next-steps-classification.md)를 원천 재대조로 확정했다. 로드맵 연결 10, 폐기(변경 규칙 사본) 9, 폐기(사용자 결정) 1, 완료 삭제 3, BACKLOG 이관(사용자 결정) 2(한 묶음), 나눔 1, 일부 완료+이관 1이다. 초안의 애매 3건 중 평가 실행 여부(#16)는 기준선 goal의 실행·채점 기록이 있어 완료 삭제로 바꿨다. 처음 확정 때 BACKLOG 이관 행은 `management-launcher-real-run` 하나였고, 결정 요청 후보는 실제 원격 플레이 확인과 시스템 지도 3D 표현 두 건이었다.
+[분류표](next-steps-classification.md)를 원천 재대조로 확정했다. 로드맵 연결 10, 폐기(변경 규칙 사본) 8, 폐기(조건부 지침) 1(#13, 1차 실사 W4로 옮김), 폐기(사용자 결정) 1, 완료 삭제 3, BACKLOG 이관(사용자 결정) 2(한 묶음), 나눔 1, 일부 완료+이관 1이다. 초안의 애매 3건 중 평가 실행 여부(#16)는 기준선 goal의 실행·채점 기록이 있어 완료 삭제로 바꿨다. 처음 확정 때 BACKLOG 이관 행은 `management-launcher-real-run` 하나였고, 결정 요청 후보는 실제 원격 플레이 확인과 시스템 지도 3D 표현 두 건이었다.
 
 리드가 이관 행과 결정 요청 후보를 `msg_33365ac784b2`(E/`nextsteps-transfer-and-decisions.txt`)로 메인에 보냈다. 먼저 `decision_gate` 유형으로 보낸 같은 본문은 「No active Dispatch belongs to this message sender」 오류를 받았지만 `msg_54535201beaa`로 도착했다(E/`nextsteps-transfer-and-decisions-rejected.json`). 메인은 `msg_b1bf869e87fd`(2026-10-06T10:38:19Z, E/`wait-7.json`)로 받았다. 결정 요청 후보 2건은 현황판 결정 대기에 올렸고, 사용자 답이 올 때까지 두 행은 「애매」로 둔다. 이관 행은 다음 Rules goal 입력에 넣었다.
 
 사용자는 두 건 모두 BACKLOG 이관을 골랐다(위 「적용 중인 사용자 결정」). 문서 실사를 띄우기 전이라 분류표에 바로 반영하고 이관 행 `remote-play-check`·`system-map-3d`를 더했다. 두 행은 메인을 거쳐 Rules에 보낸다.
+
+### PR1 문서 실사
+
+- **1차(차단):** 신규 `[Management 검증자]`(지정 gpt-6-astra xhigh, 관찰 화면 「GPT-6-Astra xhigh」, Codex v0.160.1, backend unknown)가 고정 HEAD `3fc61360`(13파일 +427/-23)을 실사했다. Task `task_540f21cc5321`, Dispatch `ctx_cd666930972a`, worker_done `msg_942f5fb8060c`(2026-10-06T11:00:54Z). 판정 원문은 E/`pr1-doc-review/verdict.md`(SHA-256 `2598e31a…`)다.
+- 차단 네 건과 정정:
+  - W1: DB 문서가 실행 당일 관측(`Attached=False`)을 「평소 분리」로, 메인의 제한된 검색을 「어디에도」로 넓혔다. 관측 범위대로 고쳤다.
+  - W2: DB 문서가 「이후 블록마다 같은 guard를 반복한다」고 썼으나 장치 확인·관측 종류 선택·기록 종료 블록에는 guard가 없다. guard를 부르는 블록과 부르지 않는 블록을 나누고, 실제 통과는 준비·서비스 시작 블록으로 한정했다.
+  - W3: 분류표 이관 행 `management-launcher-real-run`의 출처 칸에 전달자·날짜·msg ID가 없었다. BACKLOG 「항목 계약」대로 채웠다.
+  - W4: #13의 근거(protocol.md 30행)는 범위 제외 문장이라 같은 변경 규칙이 아니다. 같은 규칙이 정본에 없음을 확인하고 새 분류 「폐기(조건부 지침)」로 옮겼다. 이 처분은 리드 판단이다.
+- 비차단 Q1(#20 근거의 Game Dev 의미 검토 범위)은 「전투 서술」로 좁혔다. Q2(재개 지점의 「아직 검증자는 없다」)는 이 갱신으로 처리했다.
+- 함께 반영한 메인 결정: 검증자 질문(`msg_6d3e4c6f8aa0`)에 계획 35번 원천을 답하다가(`msg_2e2464a0fae4`), 이관 행 `management-launcher-real-run`이 메인 계획 35번의 「실행 배치 실물 검증」과 겹침을 찾았다. 리드가 메인에 물었고(`msg_bd113ff74c06`), 메인이 「B 별도 행 유지」로 답했다(`msg_da1c987f7ff0`, 메인의 운영 판단). 분류표 #25 근거에 그 대조 결과를 적었다.
+- 검증자 절차 한계: 판정 집필 구간의 heartbeat 간격이 5분을 넘었다고 검증자가 판정에 스스로 적었다. 문서 결함과 구분한다.
 
 ### 진입과 준비
 
