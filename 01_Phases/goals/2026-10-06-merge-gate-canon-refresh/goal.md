@@ -8,14 +8,14 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험 작성자(신규 Opus)와 PR1 정본 문장 작성자(Sol max)가 병렬로 작업 중이다(아래 「선행 시험」, 「PR1 정본 문장」). 메인은 CLAUDE.md를 쓴다. 그 뒤는 구현(Sol max, 계약 초안 E/impl-contract-head.md) → 독립 검증(신규 Opus) → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험은 끝났다(`597839c`, 아래 「선행 시험」). PR1 정본 문장 작성자(Sol max)가 작업 중이고, CLAUDE.md는 메인이 써서 `00d180b`로 들어갔다. 다음은 구현(Sol max, 계약 초안 E/impl-contract-head.md) → 독립 검증(신규 Opus) → PR1이다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
 - [x] 병합 관문 설계 실측
-- [>] 병합 관문 선행 시험
-- [ ] 병합 관문 구현·검증
+- [x] 병합 관문 선행 시험
+- [>] 병합 관문 구현·검증
 - [ ] 관문 PR 병합
 - [ ] 관문 적용 확인
 - [ ] 정본 현행화 작성·실사
@@ -149,6 +149,14 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - PermissionRequest는 정확한 단독 병합 형태가 아닌 명령에 허용을 내지 않는다. `usedCommand`가 같은 위조 기록이 있어도 마찬가지다.
   - `state-write-failed`와 기록 쓰기 실패는 권한·파일 배치로 시험한다. root 환경은 이유를 출력하고 skip한다.
   - Node 24.15에서 `node --test <디렉터리>`는 시험을 찾지 않는다(작업자 실측). 실행 명령과 CI 단계는 `*.test.mjs` glob 형태로 쓴다.
+- 질문 2: 작업자 공식 ask `msg_9b8170d7ed56`(14:55:39Z)에 리드가 `msg_6e39f24eb8d9`(14:56:01Z)로 답했다. 출처는 사람 대조로 확인했다. 동작 계약 v2 4절 Bash 3의 해석을 정했다. refspec 인자마다 목적지를 본다. 목적지는 맨 앞 `+`를 뗀 뒤 마지막 `:` 뒤이고, `:`가 없으면 인자 전체다. 목적지가 `main`이나 `refs/heads/main`이면 `push-main`이다. 그래서 `HEAD:refs/heads/main`도 막힌다. main을 포함한 다른 이름(`feat/main-fix` 등)은 결정 없음이다. 구현 계약에도 같은 문장을 넣는다.
+
+- 결과: 작업자 worker_done `msg_7d8b46d20e3c`(15:02:44Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/tdd-worker-done-check-*.json). 보고서는 [E/tdd/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/tdd/report.md)다.
+  - 시험 다섯 파일과 공용 fixture 한 파일, 합계 1,273줄, 74건이다. 동작 계약 §1~§6과 리드 답 두 건을 덮고 차단 코드 17개를 모두 덮는다.
+  - 빨간 실행(`node --test 99_Tools/MergeGate.Tests/*.test.mjs`)은 통과 2, 실패 72, exit 1이다. 실패 원인은 hook 진입 부재 66, settings 부재 3, workflow 단계 부재 3이고, 시험 자체 오류는 0이다.
+  - 덮지 않은 경우: 계약이 정하지 않아 기대값을 만들지 않은 경우가 있다(대문자 hex 명령, `--match-head-commit=<값>` 형태, 30분·120초 정확 경계, 손상된 기록 파일 등). 보고서 「미실행과 덮지 않은 것」에 있다. 초록 확인과 Linux CI는 미실행이다.
+- 리드 R-2 표본 대조: 시험 파일 여섯 개의 SHA256이 red-run.txt 머리와 같았다. 같은 명령을 리드가 다시 돌려 74/2/72, exit 1, 진입 부재 66을 확인했다(E/lead-red-run-check.txt). `blocked-commands` 머리 주석과 `merge-command`의 compound 시험을 읽었다. 기대값은 동작 계약 문자열이고, 제품 판정을 복제한 계산은 없었다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/tdd-release.json, tdd-before-close.json, tdd-close.json). 시험은 리드가 `597839c`로 checkpoint commit했다. 구현 계약은 시험을 이 commit과 `git diff --exit-code`로 고정한다. 이 checkout은 autocrlf라 작업 파일 hash보다 Git 대조가 정확하다.
 
 ### PR1 정본 문장
 
@@ -161,6 +169,11 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 메인의 맥락 메모는 저장소 밖 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-06/claude-md-merge-gate-context.md`다.
   - `#merge-gate` anchor는 정본 문장 작성자가 ORCA에 만든다. 생기는지 결과와 대조하고, CLAUDE.md도 독립 검증 대상에 넣는다(메인 요청).
 - 질문 1: 작업자 공식 ask `msg_e68397743197`(14:50:56Z)에 리드가 `msg_c8cd55372204`(14:51:22Z)로 답했다. 출처는 사람 대조로 확인했다(E/docs-question1-manual-check.md). 답의 요지는 hook 사실과 운영 규칙을 갈라 쓰는 것이다. hook은 방식 플래그 셋 중 하나를 형태로 받는다(동작 계약 v2 4절). 운영 명령은 `--merge` 하나다. 동작 계약 보정은 필요 없다.
+- 질문 2: 작업자 공식 ask `msg_a683a99bb68e`(14:57:17Z)가 길이 초과를 알렸다. 첫 초안은 ORCA 258줄이었다. 규칙 문서 합계는 95,188 bytes로 착수 때 92,500보다 2,688 bytes 많았다. R-8 적용 시점과 관찰 기록 두 절을 이미 옮긴 뒤의 수치다. 작업자는 PR2 후보 세 문단도 옮기자고 물었다. 리드는 `msg_36d4e1629d5b`(14:57:56Z)로 답했다.
+  - 먼저 중복을 줄인다. 상세는 ORCA `#merge-gate` 한 곳에 두고, 다른 문서는 짧은 문장과 링크만 둔다. 공학 조건 예외의 조건은 줄이지 않는다.
+  - 그래도 넘치면 후보를 R-6 D1a → R-3 1.4.217 → R-5 실패 이력 순서로 필요한 만큼만 쓴다.
+  - 셋을 다 써도 넘치면 다시 묻는다.
+  - 이유는 세 후보가 PR2에도 필요한 감축 여지이기 때문이다.
 
 ## 요구사항 원천과 적용 결정
 
