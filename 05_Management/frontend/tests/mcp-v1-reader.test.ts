@@ -349,7 +349,8 @@ describe('native file operations', () => {
         const path = join(root, name);
         await writeFile(path, bytes);
         const snapshot = await nativeReader(path).readSnapshot(live());
-        const ui = await createCatalogStore(path, join(root, 'backup', `${name}.last-good.json`)).read();
+        // Record index v2 (index-v2-design.md 「Electron 경계」): the store takes only the catalog path.
+        const ui = await createCatalogStore(path).read();
         expect(ui.ok).toBe(true);
         expect(snapshot.metadata.hash).toBe(ui.ok ? ui.version : '');
         expect(snapshot.metadata.hash).toBe(decodedTextHash(bytes));
@@ -364,15 +365,9 @@ describe('native file operations', () => {
     const canonical = fileURLToPath(new URL('../../records/catalog.json', import.meta.url));
     const before = await readFile(canonical);
     const snapshot = await createCatalogReader({ catalogPath: canonical, fileOperations: nodeCatalogFileOperations }).readSnapshot(live());
-    const scratch = await mkdtemp(join(tmpdir(), 'dawnholder-v1-reader-'));
-    try {
-      // read() never touches the backup path; it points into a scratch dir anyway.
-      const ui = await createCatalogStore(canonical, join(scratch, 'never-written.json')).read();
-      expect(ui.ok && ui.version).toBe(snapshot.metadata.hash);
-    } finally {
-      expect(resolve(scratch).startsWith(join(resolve(tmpdir()), 'dawnholder-v1-reader-'))).toBe(true);
-      await rm(scratch, { recursive: true, force: true });
-    }
+    // Record index v2 (index-v2-design.md 「Electron 경계」): the store takes only the catalog path.
+    const ui = await createCatalogStore(canonical).read();
+    expect(ui.ok && ui.version).toBe(snapshot.metadata.hash);
     expect(snapshot.metadata.hash).toBe(sha256(before));
     const parsed = JSON.parse(before.toString('utf8')) as { revision: string; asOf: string; sourceCommit: string };
     expect(snapshot.metadata).toMatchObject({ revision: parsed.revision, asOf: parsed.asOf, sourceCommit: parsed.sourceCommit });

@@ -157,19 +157,19 @@ describe('UI sharing and preserved contracts', () => {
     const store = read('electron/catalog-store.ts');
     expect(store).toContain("import { catalogHash } from './catalog-hash.js';");
     expect(store.includes('createHash')).toBe(false);
-    expect([...store.matchAll(/catalogHash\(/g)].length).toBeGreaterThanOrEqual(3);
+    expect([...store.matchAll(/catalogHash\(/g)].length).toBeGreaterThanOrEqual(1);
     expect(read('electron/catalog-hash.ts')).toContain("createHash('sha256').update(text, 'utf8').digest('hex')");
-    // The renamer is used only for the final catalog rename; the backup rename stays native.
-    expect([...store.matchAll(/renameCatalog\(/g)]).toHaveLength(1);
-    expect(store).toContain('await renameCatalog(temporaryPath, path);');
-    expect(store).toContain('await rename(backupTemporary, backupPath);');
+    // Record index v2 (goal 2026-10-06-record-source-unification 「만들 것」 3, index-v2-design.md
+    // 「Electron 경계」): the store only reads, so no rename, backup or lock remains in it.
+    expect(/\b(rename|unlink|writeFile|mkdir)\b/.test(store)).toBe(false);
   });
 
-  it('the rename override is not reachable from IPC, config or environment', () => {
+  it('the store is built only from the fixed catalog path and no save path reaches IPC', () => {
     const electronMain = read('electron/main.ts');
-    expect(electronMain).toMatch(/createCatalogStore\(\s*fileURLToPath\(new URL\('\.\.\/\.\.\/records\/catalog\.json', import\.meta\.url\)\),\s*fileURLToPath\(new URL\('\.\.\/\.\.\/\.verification\/system-records-last-good\.json', import\.meta\.url\)\),?\s*\)/);
-    const rename = read('electron/catalog-rename.ts');
-    expect(/process\.(env|argv)/.test(rename)).toBe(false);
-    expect(read('electron/preload.cts').includes('rename')).toBe(false);
+    expect(electronMain).toMatch(/createCatalogStore\(\s*fileURLToPath\(new URL\('\.\.\/\.\.\/records\/catalog\.json', import\.meta\.url\)\),?\s*\)/);
+    expect(electronMain.includes('system-records-last-good')).toBe(false);
+    expect(existsSync(join(frontend, 'electron', 'catalog-rename.ts'))).toBe(false);
+    const preload = read('electron/preload.cts');
+    expect(/rename|save/i.test(preload)).toBe(false);
   });
 });

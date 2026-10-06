@@ -5,7 +5,9 @@
 //   copy (old ignored output in the canonical tree is not evidence for the current source).
 // - serverInfo.version is a build digest that changes with every MCP source, shared module,
 //   build config and lockfile input, and not with catalog data (which needs no rebuild).
-// - A UI store save in the copy is read by the copy's MCP entry with the same hash, no rebuild.
+// - A catalog edit in the copy is read by the UI store and the copy's MCP entry with the same hash,
+//   no rebuild. The UI save and its backup were removed with the record index v2 (goal
+//   2026-10-06-record-source-unification 「만들 것」 3, index-v2-design.md 「Electron 경계」).
 // Source edits for the digest checks happen only inside the TEMP copy.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
@@ -56,7 +58,6 @@ describe.runIf(process.platform === 'win32')('fresh build in an owned TEMP 05 co
     measure('entry-paths', { desktop, mcp });
     expect(desktop['../../records/catalog.json']).toBe(copy.catalog);
     expect(mcp['../../../records/catalog.json']).toBe(copy.catalog);
-    expect(desktop['../../.verification/system-records-last-good.json']).toBe(copy.backup);
     for (const path of [...Object.values(desktop), ...Object.values(mcp)]) {
       expect(path.startsWith(copy.root + sep)).toBe(true);
       expect(path).not.toBe(CANONICAL_CATALOG);
@@ -82,12 +83,12 @@ describe.runIf(process.platform === 'win32')('fresh build in an owned TEMP 05 co
     expect(desktop.bare.some(name => name.startsWith('@modelcontextprotocol/') || name === 'zod')).toBe(false);
   });
 
-  it('a UI store save in the copy is served by the copy\'s MCP entry on the next request: same hash function, no rebuild, version is the build digest', async () => {
+  it('a catalog edit in the copy is read by the UI store and the copy\'s MCP entry with the same hash, no rebuild, version is the build digest', async () => {
     const original = readFileSync(copy.catalog, 'utf8');
     const marked = original.replace(/"revision": "[^"]+"/, '"revision": "v3-build-copy-marker"');
     expect(marked).not.toBe(original);
     writeFileSync(copy.catalog, marked);
-    const store = createCatalogStore(copy.catalog, copy.backup);
+    const store = createCatalogStore(copy.catalog);
     const transport = new StdioClientTransport({ command: process.execPath, args: [join(copy.frontend, 'mcp-dist', 'mcp', 'main.js')], cwd: FRONTEND, stderr: 'pipe' });
     const client = new Client({ name: 'v3-build', version: '0.0.0' }, { supportedProtocolVersions: ['2025-11-25'] });
     await client.connect(transport);
@@ -103,15 +104,7 @@ describe.runIf(process.platform === 'win32')('fresh build in an owned TEMP 05 co
       expect(first.snapshot.revision).toBe('v3-build-copy-marker');
       expect(client.getServerVersion()?.version).toBe(baseVersion);
       expect(baseVersion).not.toContain(first.snapshot.sourceCommit);
-
-      const next = marked.replace('"revision": "v3-build-copy-marker"', '"revision": "v3-build-copy-saved"');
-      const saved = await store.save({ text: next, expectedVersion: first.snapshot.hash });
-      expect(saved.ok).toBe(true);
-      const after = await read();
-      expect(after.snapshot.revision).toBe('v3-build-copy-saved');
-      expect(saved.ok && saved.version).toBe(after.snapshot.hash);
       expect(builtVersion(copy.frontend)).toBe(baseVersion);
-      expect(readFileSync(copy.backup, 'utf8')).toBe(marked);
     } finally {
       await client.close();
     }

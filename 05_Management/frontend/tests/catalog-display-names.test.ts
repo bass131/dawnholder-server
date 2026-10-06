@@ -11,7 +11,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import catalogFile from '../../records/catalog.json';
 import guideFile from '../../records/system-guide.json';
-import { catalogReferenceErrors, readCatalog, type CatalogResult } from '../electron/catalog-contract';
+import { catalogReferenceErrors, readCatalog } from '../electron/catalog-contract';
 import DevelopmentRecords from '../src/DevelopmentRecords';
 
 // An upper-case M/S/D/P with a number (optionally one lower-case suffix), or "<letter>단계".
@@ -81,24 +81,23 @@ function explainUnclassified(pointers: string[]): string {
   ].join(' ')).join('\n');
 }
 
-// Sentences rendered by DevelopmentRecords.tsx (snapshot note, Sources, Status, Items, card and entry text).
+// Sentences rendered by DevelopmentRecords.tsx (list and detail titles, areas and 원문 section headings).
+// Record index v2 (goal 2026-10-06-record-source-unification 「만들 것」 1, index-v2-design.md 「색인 형식」):
+// the narrative and status fields are gone, so only titles, areas and sections remain sentences.
 const CATALOG_FIELDS: FieldRules = {
   display: [
-    /^\/scopeNote$/,
-    /^\/sources\/\d+\/(title|section|note)$/,
-    /^\/systems\/\d+\/(title|area|summary|responsibility|implementationStatus|integrationStatus|verificationStatus)$/,
-    /^\/systems\/\d+\/(behavior|limitations|nextSteps)\/\d+$/,
-    /^\/records\/\d+\/(title|summary|reason|status)$/,
-    /^\/records\/\d+\/(details|limitations|nextSteps)\/\d+$/,
+    /^\/sources\/\d+\/(title|section)$/,
+    /^\/systems\/\d+\/(title|area)$/,
+    /^\/records\/\d+\/title$/,
   ],
   exact: [
-    [/^\/(revision|asOf|sourceCommit)$/, 'record version, snapshot time and commit hash'],
-    [/^\/sources\/\d+\/(id|locator|revision)$/, 'evidence id, exact path and version/hash'],
+    [/^\/sources\/\d+\/(id|locator)$/, 'source id and exact path or message id'],
     [/^\/sources\/\d+\/(kind|availability)$/, 'contract enum'],
     [/^\/(systems|records)\/\d+\/id$/, 'reference identity'],
     [/^\/systems\/\d+\/(sourceIds|relatedSystemIds|recordIds)\/\d+$/, 'reference id'],
     [/^\/records\/\d+\/(systemIds|sourceIds)\/\d+$/, 'reference id'],
     [/^\/records\/\d+\/type$/, 'contract enum'],
+    [/^\/records\/\d+\/pullRequests\/\d+\/mergeCommit$/, 'merge commit hash'],
   ],
 };
 
@@ -167,10 +166,6 @@ describe('development records data', () => {
     const found = findings(display);
     expect(found, explain(found)).toEqual([]);
   });
-  it('reads the requirement example as a work name next to its PR number', () => {
-    expect(display.some(leaf => leaf.text.includes('클라이언트 연결 수명 정리 PR132 완료·병합'))).toBe(true);
-    expect(display.filter(leaf => leaf.text.includes('M1b')).map(leaf => leaf.pointer)).toEqual([]);
-  });
   it('remains a valid catalog with complete references', () => {
     const catalog = readCatalog(catalogFile);
     expect(catalog).not.toBeNull();
@@ -189,11 +184,15 @@ describe('system guide data', () => {
 });
 
 describe('rendered development records', () => {
+  // Checked inside the test so an invalid catalog fails that test instead of the whole file.
   const catalog = readCatalog(catalogFile);
-  if (!catalog) throw new Error('Invalid canonical catalog');
-  const loaded: CatalogResult = { ok: true, catalog, text: JSON.stringify(catalog), version: 'a'.repeat(64) };
   beforeEach(() => {
-    vi.stubGlobal('systemRecords', { readCatalog: vi.fn(async () => loaded), saveCatalog: vi.fn() });
+    // Read-only bridge of index-v2-design.md 「Electron 경계」: no editable text, no save.
+    vi.stubGlobal('systemRecords', {
+      readCatalog: vi.fn(async () => ({ ok: true, catalog, version: 'a'.repeat(64) })),
+      readSection: vi.fn(async () => ({ ok: false, code: 'missing', reason: null, message: '원문 파일을 찾을 수 없습니다.' })),
+      readCheckout: vi.fn(async () => ({ ok: true, checkout: { state: 'unknown', reason: 'no-git' } })),
+    });
     // jsdom has no layout; opening a detail scrolls its heading into view.
     Element.prototype.scrollIntoView = vi.fn();
   });
@@ -207,7 +206,8 @@ describe('rendered development records', () => {
     return texts;
   }
 
-  it('shows systems, records and evidence without stage codes on the records screen', async () => {
+  it('shows systems, records and sources without stage codes on the records screen', async () => {
+    if (!catalog) throw new Error('Invalid canonical catalog');
     // DevelopmentRecords renders every catalog sentence across its lists and full-page details;
     // App.tsx only switches the hidden tab around it.
     // Opening every system and record detail takes dozens of clicks, so no artificial delay runs between them.
@@ -216,7 +216,7 @@ describe('rendered development records', () => {
     await screen.findByRole('searchbox', { name: '검색' });
     const browser = container.querySelector('.records-browser');
     if (!browser) throw new Error('Records browser was not rendered');
-    // Lists show only titles and states, so every other sentence is read by opening each item's detail.
+    // Lists show only areas, types and titles, so every other sentence is read by opening each item's detail.
     async function detailTexts(root: Element, listName: string): Promise<Leaf[]> {
       const texts: Leaf[] = [];
       const count = within(screen.getByRole('list', { name: listName })).getAllByRole('button').length;
@@ -230,23 +230,17 @@ describe('rendered development records', () => {
       return texts;
     }
     const views: [RegExp, string | null, (texts: string[]) => void][] = [
-      [/^시스템\s*\d/, '시스템 목록', texts => catalog.systems.forEach(system => expect(texts).toContain(system.summary))],
-      [/^변경·결정·검증·계획/, '기록 목록', texts => catalog.records.forEach(record => expect(texts).toContain(record.title))],
-      [/^근거\s*\d/, null, texts => catalog.sources.forEach(source => expect(texts).toContain(source.note))],
+      [/^시스템\s*\d/, '시스템 목록', texts => catalog.systems.forEach(system => expect(texts.join('\n')).toContain(system.title))],
+      [/^변경·결정·검증·계획/, '기록 목록', texts => catalog.records.forEach(record => expect(texts.join('\n')).toContain(record.title))],
+      [/^출처\s*\d/, null, texts => catalog.sources.forEach(source => expect(texts.join('\n')).toContain(source.title))],
     ];
     for (const [name, listName, covers] of views) {
       await user.click(screen.getByRole('button', { name }));
       const texts = renderedTexts(browser);
       if (listName) texts.push(...await detailTexts(browser, listName));
       covers(texts.map(leaf => leaf.text));
-      expect(texts.map(leaf => leaf.text)).toContain(catalog.scopeNote);
       const found = findings(texts);
       expect(found, explain(found)).toEqual([]);
     }
-    await user.click(screen.getByRole('button', { name: /^시스템\s*\d/ }));
-    const firstSystem = within(screen.getByRole('list', { name: '시스템 목록' })).getAllByRole('button')[0];
-    if (!firstSystem) throw new Error('System list is empty');
-    await user.click(firstSystem);
-    expect(screen.getByText(/^클라이언트 연결 수명 정리 PR132 완료·병합/)).toBeVisible();
   });
 });
