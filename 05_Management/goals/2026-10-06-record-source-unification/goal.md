@@ -16,15 +16,15 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 02:0x KST, PR2 데이터 전환 commit 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 03:2x KST, PR2 MCP 선행 시험 commit 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」). 세 작업자는 정산·종료했고 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」). 네 작업자는 정산·종료했고 열린 작업자·검증자는 없었다.
 
 당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
 1. (끝남) 신규 `claude-opus-5-5` 시험 작성자의 기록 읽기 경계 선행 시험.
 2. (끝남) 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
-3. 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고(화면 시험 시간 상한 포함), 신규 Sol이 MCP를 구현하고 `mcp-dist`를 새로 빌드한다.
+3. (MCP 시험 끝남) 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고(화면 시험 시간 상한 포함), 신규 Sol이 MCP를 구현하고 `mcp-dist`를 새로 빌드한다.
 4. 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증한다. 실제 Electron 확인은 「설계와 검증 경계」를 따른다.
 5. PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인.
 6. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
@@ -258,6 +258,15 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **화면 시험 시간 초과:** 실제 색인의 상세를 모두 여는 `catalog-display-names`의 rendered 시험이 전체 실행에서는 5012ms·5029ms로 시간 초과했고 단독 실행에서는 3117ms에 통과했다. 상세가 36개에서 67개로 늘어서다. 시험 시간 상한은 4단계 시험 작성자가 그 시험에 명시한다([색인 v2 설계](index-v2-design.md) 「시험과 기존 실패」).
 - **리드 대조:** 시험 수치와 파일별 실패 분포를 원시 JSON에서 다시 셌다. `records:check`를 직접 다시 실행해 같은 결과를 얻었다. catalog SHA-256, 범위(catalog 한 파일), 맥락 메모 생성(01:12 KST)이 첫 catalog 쓰기(01:30 KST)보다 앞섬을 확인했다. 기록 4개의 PR 번호·병합 commit을 git 원시와, Markdown 구간 53개 전부를 파일의 정확한 제목과 대조했다. 전수 대조는 6단계 검증자 몫이다.
 - **설계 보충:** MCP 조사에서 지금의 MCP 경계 시험이 앱 공유 모듈을 3개만 허용해 설계의 재사용과 충돌함을 찾았다. [색인 v2 설계](index-v2-design.md) 「MCP」에 카드 store 재사용, `main.ts` 고정 경로, MCP 빌드 경계 표, TEMP 사본 helper 확장, `mcp-dist` 재빌드와 B11·B12 재판정을 더했다.
+
+### PR2 MCP 선행 시험
+
+- **설계 고정(4단계 전):** 시험과 구현이 같은 이름을 쓰도록 MCP 서버 주입 지점 세 개(`readGuide`·`readSourceSection`·`readCheckout`), `read_source_section`의 UTF-16 페이지 규칙, 카드 목록 규칙, 오류 코드 표를 설계에 고정했다(`08b2c3ed`).
+- **작업:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)가 MCP v2의 실패하는 요구 시험을 썼다. Task `task_d9d03a4667d9`, Dispatch `ctx_eef4ef928046`, worker_done `msg_6a4c4ae1cc92`(2026-10-06T18:08:59Z). 계약 E/`pr2-t2-task.txt`(SHA-256 `432502ae…`), 보고 E/`pr2-t2/report.md`.
+- **리드 답(보충 v1.1·v1.2):** 질문 7건에 답했고 설계 「MCP」에 같은 내용을 반영했다. 판단이 들어간 것은 넷이다. 카드 도구는 카드 자료만, 기록 도구는 색인만 읽는다(한쪽 파일이 깨져도 다른 쪽 조회가 막히지 않게). `readCheckout`은 성공 응답의 마지막에만 부른다. 색인을 읽은 뒤의 원문 오류는 색인 hash를 snapshot에 싣는다. 원문 결과 `load`(예상 밖 I/O 실패)는 새 코드 `SOURCE_UNREADABLE`(재시도 가능)이다. 설계 「원문 구간 읽기 경계」가 `load`를 빠뜨린 것은 설계 누락이며 함께 고쳤다(제품에는 2단계부터 있다).
+- **결과:** 새 시험 파일 6개와 기존 MCP 시험·helper 22개를 고쳤다(+2353/−396). 리드가 시험 파일만 `948279df`로 commit했다. 같은 명령의 결과는 쓰기 전 1014개 중 936 통과·67 실패·11 미실행에서 쓴 뒤 1193개 중 918 통과·264 실패·11 미실행이다(수집 실패 0). 실패·미실행 275건은 5단계 구현 예정 238, 5단계 재빌드 예정 33, B11·B12(새 출력 기준으로 고침, 재빌드 예정) 각 1, B01·B09 각 1이다. 회귀·원인 미확정은 0건이다. 화면 시험 시간 상한은 (시스템+기록 수)×250ms(지금 16,750ms)다.
+- **리드 대조:** 쓴 뒤 수치를 원시 JSON에서 다시 셌고 범위가 `tests/` 28개뿐임을 확인했다. 거절 사례 8종 시험이 code·`details.reason`을 `toEqual`로 단정함을 표본으로 읽었다. 새 시험의 제품 import는 시험 대상(서버·리더)과 앱 store·타입뿐이다.
+- **맥락 메모 시점 관찰:** 메모 파일의 현재 생성 시각(03:08 KST)이 첫 새 시험 파일(02:20 KST)보다 늦다. 작업 끝에 파일을 통째로 다시 쓰면서 생성 시각이 바뀐 것으로 보인다. 첫 쓰기 전 메모의 근거는 메모 본문의 작성 시점 기록(02:1x KST)과, Orca가 17:14:55Z(02:14 KST)에 받은 heartbeat 「context memo written; starting test files」다. 6단계 검증자에게 이 점을 알린다.
 
 ### 진입과 준비
 

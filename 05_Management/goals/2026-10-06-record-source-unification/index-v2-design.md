@@ -52,6 +52,8 @@
 8. 읽기: 연 handle의 `fstat`이 일반 파일이 아니거나 앞 단계 `lstat`의 dev·ino와 다르면 `changed`다. 7단계와 8단계 사이에 파일이 바뀐 경우만 여기 온다. 1 MiB 넘으면 `too-large`(reason `file`)다. 읽기 전후 stat이 다르면 `changed`, 엄격한 UTF-8이 아니면 `invalid-encoding`이다. 제한 읽기 방식은 `system-guide-store.ts`를 따른다.
 9. 구간: 제목이 없으면 `section-missing`, 둘 이상이면 `section-ambiguous`, 256 KiB 넘으면 `too-large`(reason `section`)다.
 
+7·8단계에서 파일 없음이 아닌 예상 밖 I/O 오류(권한 거부 등)는 `load`(reason `null`)다. 색인 검사는 이를 그 출처의 실행 못 함으로 다룬다(「색인 검사」).
+
 성공 결과는 `{ ok: true, sourceId, path, heading, text, bytes }`이다. `path`는 locator 그대로, `bytes`는 `text`의 UTF-8 바이트 수다. `section: null`이면 `heading`도 `null`이고 `text`는 BOM을 뺀 파일 전체다(256 KiB 상한은 그대로). 실패 결과는 `{ ok: false, code, reason, message }`다. `reason`은 위 표기 값 또는 `null`이고 `message`는 고정 한국어 문장이며 입력·경로·원시 오류를 담지 않는다. IPC 발신자가 신뢰되지 않으면 `denied`다.
 
 진입 함수는 둘이고 모두 `electron/source-section-store.ts`에서 export한다(`source-section-contract.ts`는 순수 판정만). 시험과 구현이 같은 이름을 쓴다. 같은 방식으로 `createCheckoutStore`는 `electron/checkout-store.ts`, `checkRecordIndex`는 `electron/record-index-check.ts`에서 export한다.
@@ -131,7 +133,7 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 
 - 스냅샷 메타데이터는 `{ hash }` 하나다. 기록 도구는 색인 파일 SHA-256, 카드 도구는 `system-guide.json` SHA-256이다. 앱의 `version`과 같은 계산(`catalog-hash.ts`의 UTF-8 해석 텍스트 해시)이므로 같은 파일이면 같은 값이다.
 - `read_source_section`은 원문 구간 경계 모듈을 그대로 쓴다. 출처 ID로만 받고 경로 입력은 없다. `text`는 UTF-16 offset 기준으로 잘라 응답이 16 KiB를 넘지 않게 한다(대리 쌍을 가르지 않는다). `offset > 0`이면 `expectedSectionHash`가 필수이며(`VERSION_REQUIRED`) 다르면 `VERSION_CONFLICT`다. `sectionHash`는 구간 텍스트의 SHA-256이다.
-- 새 오류 코드: `SOURCE_NOT_READABLE`·`SOURCE_PATH_REJECTED`·`SOURCE_MISSING`·`SOURCE_TOO_LARGE`·`SOURCE_CHANGED_DURING_READ`·`SOURCE_INVALID_ENCODING`·`SECTION_MISSING`·`SECTION_AMBIGUOUS`, 카드 파일용 `GUIDE_MISSING`·`GUIDE_UNREADABLE`·`GUIDE_TOO_LARGE`·`GUIDE_INVALID`·`GUIDE_CHANGED_DURING_READ`. reason은 `details.reason`의 고정 값이고 경로를 담지 않는다. 출처 ID가 없으면 지금처럼 `NOT_FOUND`다.
+- 새 오류 코드: `SOURCE_NOT_READABLE`·`SOURCE_PATH_REJECTED`·`SOURCE_MISSING`·`SOURCE_TOO_LARGE`·`SOURCE_CHANGED_DURING_READ`·`SOURCE_INVALID_ENCODING`·`SOURCE_UNREADABLE`·`SECTION_MISSING`·`SECTION_AMBIGUOUS`, 카드 파일용 `GUIDE_MISSING`·`GUIDE_UNREADABLE`·`GUIDE_TOO_LARGE`·`GUIDE_INVALID`·`GUIDE_CHANGED_DURING_READ`. reason은 `details.reason`의 고정 값이고 경로를 담지 않는다. 출처 ID가 없으면 지금처럼 `NOT_FOUND`다.
 - 검증은 새로 빌드한 실행본(`npm run mcp:build` → `mcp-dist`)으로 한다. 빌드 digest 시험의 기준은 그 새 출력이다.
 - 카드 도구는 `system-guide-store.ts`의 `createSystemGuideStore`를 요청마다 새로 만들어 읽는다. 앱과 같은 판정·hash를 쓰려는 선택이다. 요청마다 만들므로 앱 store의 `busy`(한 store의 동시 읽기 거절)는 MCP에서 생기지 않는다. 결과 코드는 `missing`→`GUIDE_MISSING`, `load`→`GUIDE_UNREADABLE`, `too-large`→`GUIDE_TOO_LARGE`, `invalid`→`GUIDE_INVALID`, `changed`→`GUIDE_CHANGED_DURING_READ`로 바꾼다. 대안인 MCP 전용 카드 리더는 같은 판정을 두 곳에 두게 된다.
 - `read_source_section`의 `checkout`은 `createCheckoutStore({ repositoryRoot }).read()`의 결과(`CheckoutInfo`)다.
@@ -170,6 +172,12 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 - `list_guide_cards`: 입력은 `list_systems`와 같은 `query`(256자)·`limit`(1~50, 기본 10)·`offset`(0~100,000)·`expectedHash`다. `query`는 `matchesQuery`로 카드 `id`·`title`·`summary`를 찾는다. 순서는 카드 자료의 배열 순서다. 미리보기는 `{ id, parentId, title, relatedSystemIds, documentId, lookupSupported, truncatedFields }`이고 `title`은 80 UTF-16 code unit에서 자른다. `documentId`가 없으면 `null`, `lookupSupported`는 `id`가 128자 이하인지다. 목록 예산(기본 8 KiB, 그 밖 16 KiB)은 기존 목록 도구와 같다.
 - `get_guide_card`: 입력 `id`는 1~128자다. 결과는 `{ card, document }`이고 `card`는 카드 객체 전체, `document`는 `card.documentId`와 같은 `id`의 구현 설명 문서 전체 또는 `null`이다. 카드가 없으면 `NOT_FOUND`다.
 - 새 도구 세 개도 읽기 전용 annotation(`readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`, `openWorldHint: false`)을 쓰고 `inputSchemas`·`outputSchemas`에 들어간다.
+- 도구마다 읽는 자료가 다르다. 카드 도구 두 개는 `readGuide`만 부르고 `readSnapshot`을 부르지 않는다. 기록 도구 다섯 개와 `read_source_section`은 `readGuide`를 부르지 않는다. 색인이 깨져도 카드 조회가 막히지 않고, 카드 자료가 깨져도 기록 조회가 막히지 않게 하려는 선택이다.
+- `readCheckout`은 `read_source_section`의 응답이 성공으로 끝날 때만 맨 마지막에 부른다. 원문 실패와 `expectedSectionHash` 불일치에서는 부르지 않는다.
+- 오류 응답의 `snapshot`: `GUIDE_*`는 `null`이다(카드 자료를 읽지 못해 hash가 없다). `SOURCE_*`·`SECTION_*`와 `expectedSectionHash` 불일치는 색인 metadata `{ hash }`다. 기존 `NOT_FOUND`·`VERSION_CONFLICT`처럼 어느 색인 버전의 링크가 끊겼는지 알려 준다.
+- 카드 미리보기 `title`의 80자 자르기는 기존 목록 미리보기와 같은 `previewText`(끝이 대리 쌍 가운데면 79)다.
+- 원문 결과 `load`(예상 밖 I/O 실패)는 `SOURCE_UNREADABLE`(재시도 가능, `details` 생략)이다. 원인이 색인이 아니라 출처 파일이므로 `CATALOG_UNREADABLE`로 바꾸지 않는다.
+- `read_source_section`의 처리 순서: `readSourceSection` → 실패 코드 변환 → `sectionHash` 계산과 `expectedSectionHash` 비교 → `offset` 대리 쌍 검사(`INVALID_ARGUMENT`) → `readCheckout` → 조각 크기 결정(`RESPONSE_TOO_LARGE`). 색인을 읽은 뒤 생기는 이 오류들의 `snapshot`은 색인 metadata `{ hash }`다.
 
 | 원천 결과 | MCP 오류 코드 | 재시도 가능 |
 |---|---|---|
@@ -179,6 +187,7 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 | 원문 `too-large` | `SOURCE_TOO_LARGE` | 아니오 |
 | 원문 `changed` | `SOURCE_CHANGED_DURING_READ` | 예 |
 | 원문 `invalid-encoding` | `SOURCE_INVALID_ENCODING` | 아니오 |
+| 원문 `load` | `SOURCE_UNREADABLE` | 예 |
 | 원문 `section-missing` | `SECTION_MISSING` | 아니오 |
 | 원문 `section-ambiguous` | `SECTION_AMBIGUOUS` | 아니오 |
 | 카드 `missing` | `GUIDE_MISSING` | 예 |
