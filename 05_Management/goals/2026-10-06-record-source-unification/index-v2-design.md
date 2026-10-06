@@ -98,6 +98,7 @@
 
 - `system-records:save`와 `catalog-store.ts`의 저장·백업·잠금·충돌 처리, `catalog-rename.ts`를 없앤다. `catalog-store.ts`는 읽기 전용 store로 남긴다. CODE_CONVENTION의 TS·Electron 절이 이 파일을 관례 출발점으로 링크하므로 파일을 지우지 않는다.
 - 모든 처리기는 지금의 `trustedSender`를 먼저 거친다. preload는 `systemRecords.readCatalog()`·`readSection(sourceId)`·`readCheckout()`과 `systemGuide.readGuide()`만 노출한다.
+- 의존 방향은 원문·checkout 계약 → 색인 계약이다. `catalog-contract.ts`는 `source-section-contract.ts`·`checkout-contract.ts`를 import하지 않는다. 세 결과를 묶는 renderer bridge 타입(`systemRecords`)은 `src/recordsBridge.d.ts`에 둔다. 색인 계약이 거꾸로 import하면 순환이 생기고, MCP 빌드 그래프에 원문 모듈이 4·5단계보다 먼저 들어간다.
 - `catalog-store.ts`의 `.verification/system-records-last-good.json` 백업 경로 인자는 없앤다. 이미 있는 사용자 산출물 파일은 지우지 않는다.
 
 ## 화면
