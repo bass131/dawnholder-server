@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 범위가 확정됐다. 다음은 설계 실측(아래 「설계 기본값과 실측 대기」)이다. 실측 결과로 설계를 확정한 뒤 선행 시험 → 구현 → 독립 검증 → PR1 순서로 간다.
+- **현재 위치**: 설계 실측이 끝났다(아래 「설계 실측 결과」·「실측 뒤 설계」). PermissionRequest hook을 쓸지에 대한 사용자 답을 기다린다. 답이 오면 설계를 확정하고 선행 시험 → 구현 → 독립 검증 → PR1 순서로 간다. 선행 시험 계약 초안은 E/tdd-contract.md에 준비한다.
 
 ## 진척 단계
 
@@ -107,6 +107,32 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   3. Agent 도구로 띄운 하위 에이전트의 Bash 호출에도 PreToolUse가 돌고 같은 session_id가 오는가.
   4. 폴더 단위 표식(Git 제외 로컬 파일 또는 `.claude/settings.local.json`의 env)이 hook에서 읽히는가.
 
+### 설계 실측 결과
+
+신규 `claude-opus-5-5` 작업자(Task `task_f860d83833a9`, Dispatch `ctx_73d3b8c57caa`)가 headless `claude -p` 6회로 쟀다. 보고서는 [E/design-probe/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/design-probe/report.md)다. 리드가 r2·r4·r5·r6 원시를 표본 대조했고 보고서와 일치했다. 모두 Claude Code 2.1.291, auto 모드, headless 조건의 관측이다. headless에는 확인 창이 없어서 ask가 이기면 거부로 끝난다. 대화형 확인 창의 실제 생략 여부는 완료조건 5에서 다시 본다.
+
+| 실측 | 관측 |
+|---|---|
+| 1 PreToolUse allow 대 전역 ask | 넘지 못했다. debug에 「Hook returned 'allow' for Bash, but an ask rule … requires the full permission pipeline」가 찍힌 뒤 PermissionRequest 단계로 갔고 권한 거부로 끝났다(r2). deny 대조군은 hook에서 막혔다(r3). |
+| 1 (d) PermissionRequest allow(계약 v1.1) | 실행됐다(r6, `permission_denials: []`). PermissionRequest 입력에는 `tool_use_id`가 없다. |
+| 2 입력·환경 | hook은 Git Bash로 돌고 node가 실행된다. `CLAUDE_PROJECT_DIR`와 입력 `cwd`는 세션을 띄운 폴더다. 하위 폴더에서 띄우면 그 폴더의 `.claude/`에서만 프로젝트 settings를 찾는다(r4). UserPromptSubmit `prompt`는 입력 원문과 바이트 단위로 같다. |
+| 3 하위 에이전트 | 하위 에이전트의 Bash에도 PreToolUse가 돈다. session_id는 상위와 같고 `agent_id`·`agent_type`으로 구분된다. 하위 에이전트 보고는 같은 prompt_id의 UserPromptSubmit(`<agent-message …>`로 시작)으로 상위에 다시 들어온다(r5). |
+| 4 표식 | `--settings`의 env, 띄울 때의 셸 env, cwd 폴더의 표식 파일이 모두 hook에 닿는다. |
+
+계약 보충 v1.1: 작업자의 공식 ask `msg_c6abad2711b8`(14:17:34Z)에 리드가 `msg_ed0a900bdce4`(14:18:06Z)로 조건 (d) 1회를 허용했다. 같은 명령·같은 세션 한정 방식이고 금지 조건은 그대로다. Orca CLI 1.4.221이라 질문은 수신 helper의 공식 ask 예외 밖이어서 사람 대조로 처리했다(E/design-probe-question1-manual-check.md). worker_done `msg_f23a3ecc67f2`는 수신 helper allowed/exit 0이다. 정산은 release retained/external_terminal/none이고, 같은 handle의 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/design-probe-*.json).
+
+### 실측 뒤 설계
+
+승인 범위 안에서 리드가 정한 것이다. 「메인 확인 대기」 줄은 메인 답 뒤에 확정한다.
+
+- 메인 전용 폴더는 저장소의 별도 checkout(worktree) **루트**로 둔다. 프로젝트 settings를 세션 폴더의 `.claude/`에서만 찾기 때문이다(실측 2). 하위 폴더에서 띄운 세션에는 hook이 걸리지 않는다. 이 한계를 정본 문장에 적는다.
+- 메인 식별은 메인 전용 checkout의 Git 제외 표식 파일(`.claude/state/` 아래)로 한다. `CLAUDE_PROJECT_DIR` 기준으로 읽는다(실측 4). 경로 비교는 구분자(`/`와 `\`)를 맞춘다. 표식은 사용자가 설정 단계에서 만든다. hook은 에이전트가 표식·기록 폴더에 쓰는 것을 막는다.
+- 하위 에이전트 호출(`agent_id` 있음)은 메인 세션 안이어도 병합을 통과시키지 않는다(실측 3).
+- 승인 기록 조건: prompt **전체**가 승인 문장 한 줄과 정확히 일치할 때만 기록한다. 앞뒤 공백만 허용하고, 여러 줄 중 한 줄이 맞는 경우는 받지 않는다(메인 `msg_2442c561dd9f` 3항). 형식은 `병합 승인: PR<번호> head <40자 hex>`로 고정한다(같은 메시지 2항). 근거는 r5의 실제 재진입 입력이다. 하위 에이전트 보고의 prompt 원문은 `<agent-message from="a3a3f93dba75a3113">`로 시작하는 10줄, 648자였다. 본문 줄은 두 칸씩 들여써져 있었고 `</agent-message>`로 끝났다(E/design-probe/raw/hooklog/r5.jsonl의 두 번째 UserPromptSubmit). 그래서 이 조건이면 그 안의 승인 줄은 기록을 만들지 못한다. background task 알림의 재진입 모양은 이번 실측에서 재지 않았다. 시험 반례로 덮는다. 입력 출처를 가르는 필드는 관측되지 않았다.
+- 통과는 단독 병합 명령 형태만 받는다. 복합 명령·heredoc·`bash -c` 안의 병합 시도는 기록이 있어도 막는다. 복합 명령은 ask 규칙 매칭이 최선 노력이라, 통과를 허용하면 확인 단계 없이 실행될 수 있다.
+- 사용자 결정 대기: 질문 2 A(확인 창 없이 통과)는 PreToolUse allow만으로는 되지 않는다(실측 1). PermissionRequest hook이 승인 기록과 정확히 맞는 병합 명령에만 allow를 내는 방식은 headless에서 확인됐다(실측 1 d). 리드는 메인에 이 방식을 물었다(`msg_7dbb6b6e9a89`). 메인 `msg_2442c561dd9f` 1항이 이것을 사용자에게 묻기로 했다. 이유는 이 hook이 확인 창을 대신 승인하는 장치라 AGENTS 공학 조건의 예외가 되기 때문이다. 메인이 범위 검토 때 「못 넘으면 A여도 B처럼 동작한다」고 사용자에게 말한 것도 이유다. 현황판 항목은 `rules-permreq-hook`이다. 선행 시험 작성자는 답 뒤에 기동한다. 계약 초안은 A·B 공통으로 준비한다.
+- 메인 확인: 위 설계(메인 식별 표식, 하위 에이전트 병합 차단, 단독 명령만 통과, 메인 폴더는 worktree 루트)는 승인 범위 안이다. 「하위 폴더에서 띄운 세션에는 hook이 없다」 한계는 정본 문장에 적는다(`msg_2442c561dd9f` 4항).
+
 ## 요구사항 원천과 적용 결정
 
 메인이 전달한 사용자 결정은 사용자 직접 입력과 구분한다. 이번 착수의 원천은 다음과 같다.
@@ -148,3 +174,7 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - Codex 세션의 병합 차단: 저장소 `.codex/` 프로젝트 hook으로 같은 판정을 거는 방법. 신뢰한 프로젝트에서만 읽고 hook 내용이 바뀔 때마다 사용자 검토가 필요하다(초안 세부 근거 4). 사용자 질문 1 A로 이번에는 하지 않는다.
 - 에이전트용 GitHub 계정 분리와 ruleset 보강: 서버 쪽에서 모든 세션을 막는 대안. 비용은 계정·classic 토큰·이 PC의 gh·git 로그인 전환이다(초안 세부 근거 3). ruleset 관리자 우회를 「PR로만」으로 바꾸는 더 싼 중간안은 문서 확인 전이다.
 - 우편함 대기 `&`·`/dev/null` 차단 hook: 묶음 2 계획 12에서 같은 PreToolUse 층으로 다룬다.
+
+## 관찰 기록
+
+- heartbeat 깨움(PR2 항목 6의 근거): 설계 실측 동안 우편함 대기는 `--types`로 heartbeat를 뺐다. 그래도 Orca가 작업자 heartbeat(14:11:42Z, 14:16:17Z, 14:18:53Z, 14:24:03Z)마다 리드 터미널에 「You have 1 orchestration message」 안내를 넣었다. 리드는 그때마다 깨어나 소비하지 않는 `inbox` 조회로 heartbeat임을 확인했다. 대기를 겹쳐 열지는 않았다.
