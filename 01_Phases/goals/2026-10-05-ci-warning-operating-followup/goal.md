@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. **세션은 2026-10-05T22:35Z 사용자 지시로 멈췄다. 다음 세션의 리드는 바로 아래 「세션 마무리 상태」만 읽고 이어간다.** 그 아래 하위 절은 시각순 진행 기록이며, 그 안의 「아침」은 「다음 세션」으로 읽는다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
+Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. **세션은 2026-10-05T22:35Z 사용자 지시로 멈췄고, 2026-10-06 세션이 이어받았다. 리드는 바로 아래 「세션 마무리 상태」와 그다음 「2026-10-06 세션 진행」을 읽고 이어간다.** 그 아래 하위 절은 시각순 진행 기록이며, 그 안의 「아침」은 「다음 세션」으로 읽는다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - 근거 폴더 E: `.backups/verification/2026-10-05-ci-warning-operating-followup/`(Git 제외).
@@ -32,6 +32,16 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 적용 중인 메인 결정: `msg_251c879ef46a`(범위·Core 전환), `msg_b9073b3b0464`·`msg_2d509db3b54b`(PR188 위에 쌓기, PR 생성·병합은 사용자 확인 창, 우회 금지), `msg_a82fbd4155e1`(PR188 병합 승인 전달), `msg_0f630e567b1d`(PR2 보완 A와 기본값), `msg_455215cd0e21`(다음 세션 좁힌 재실사, 결과는 goal에 쓰지 않음, N1·N2 기본값), `msg_20663b7c7598`(우편함 대기 `--types` 8개), `msg_9a751493f4f8`·`msg_1076ae16562f`(검증자 쓰기 경계), `msg_839b59777aea`(세션 마무리). 원문은 E의 해당 delivery JSON에 있다.
 
 다음 리드가 알아 둘 도구 사실: `gh pr create`·`gh pr merge`는 사용자 설정의 확인 창 대상이며 우회하지 않는다. Sol은 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 검증자는 `claude --model claude-opus-5-5`로 리드 pane에서 split한다. 로컬 CodeRules 회귀는 `CODE_RULES_PSSA_MANIFEST`(E/pr2-local-ci/code-rules-tests-2/command.txt의 analyzer 경로)와 `CODE_RULES_WSL_DISTRIBUTION=Ubuntu`가 있어야 한다.
+
+### 2026-10-06 세션 진행
+
+근거 폴더는 E/session-20261006/이다.
+
+- **진입**: 메인 `msg_bf63c20c8abe`(06:05:31Z, 원문 요지 main-entry-delivery.md)로 새 `claude-opus-5-5` 리드가 진입했다. handle `term_e7ff3c36-4773-46c9-a49e-1a9dedec8058`, incarnation `ac92237b-8da7-4ffc-b90d-31aaee30789c`, 화면 표시 Opus 5.5 xhigh, backend unknown. 태그는 `[Rules Astra]`다.
+- **Run**: 새 Run `run_85d02ac657b0`(회신 주소 `run:run_85d02ac657b0`, run-create.json)을 만들었다. 이전 Run `run_993867656376`은 쓰지 않는다.
+- **진입 상태 대조**(06:06Z, entry-git-state.txt·entry-pr188-state.json): HEAD `94739ac`가 원격과 같고 미커밋 파일은 없었다. 재개 정본의 「직전 push head a488b1b」와 달리 재개 기록 commit까지 push돼 있었다. 그 밖의 차이는 없었다. READY는 `msg_7eadda409ece`(06:07:40Z)다.
+- **PR188 병합**: 메인 신호 `msg_18b638edcad0`(06:08:51Z, main-pr188-merge-signal-delivery.json) 뒤 fresh 확인은 OPEN·head `68e7ba2`·CLEAN·CI 4/4였다(E/pr188-merge/pre-merge-state-20261006.json). `gh pr merge 188 --merge --match-head-commit 68e7ba204289b57f83369b2df2c333aa5e3fe99f`를 사용자가 확인 창에서 승인했고, 06:18:24Z에 merge `064cbd0`으로 병합됐다(post-merge-state-20261006.json). 원격 PR188 branch는 저장소 설정 `delete_branch_on_merge: true`로 자동 삭제됐다. 병합 명령에는 삭제 옵션이 없었다.
+- **최신 main merge**: `064cbd0`을 merge한 `573b6f4`의 트리는 직전 `94739ac`와 같다. 두 부모가 이미 이 branch에 있었기 때문이다. PR diff 파일은 PR2 경계 10개다(pr2-main-merge-proof.json·pr2-main-merge-remerge.diff).
 
 ### 리드 교체 인계 — 2026-10-05T14:27:56Z
 
@@ -143,10 +153,10 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 - [x] 소유 경계·작업 계약
 - [x] npm 경고 표시 구현
 - [x] 경고 독립 검증과 CI
-- [>] PR188 병합
+- [x] PR188 병합
 - [x] 운영 문서·Core 정비
 - [x] CLAUDE 반영·실사
-- [ ] 운영 문서 PR 병합
+- [>] 운영 문서 PR 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 점검과 R-8 인계
 
@@ -267,6 +277,7 @@ PR187 병합 뒤 CURRENT의 인접한 Rules/CodeMap 줄에서 충돌이 생겼�
 
 ## 적용 중인 사용자 결정
 
+- 메인 `msg_bf63c20c8abe`(2026-10-06T06:05:31Z)가 전달한 이번 세션 사용자 원문: **「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」** 메인 전달이며 직접 입력으로 격상하지 않는다. 메인 해석: 현재 goal의 남은 일을 먼저 한다. 다음 goal 범위 초안과 Gardener 후보는 나중에 한꺼번에 검토하므로 지금 새로 쓰거나 올리지 않는다.
 - 메인 운영 지시 `msg_20663b7c7598`(14:34:35Z, E/main-wait-types-instruction.json): 우편함 대기에 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`를 붙여 heartbeat 단독 깨움을 뺀다. 사용자 결정이 아니라 메인 지시다.
 - **최신 교체 시점**: 메인 `msg_25102e277345`(2026-10-05T14:23:54Z)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 교체 시점 앞당기기 → A 작업자가 빈 시점에 바로 교체」**다. 메인 전달이며 직접 입력으로 격상하지 않는다. 아래 「각 목표 끝날 때」 시점만 대체한다. 현재 Rules는 작업자가 없으므로 지금 인계하며 신규 Sol/검증자/Gardener 금지, 인계 뒤 새 대기/watch 없이 턴 종료, 메인이 pane 종료·새 Opus 리드 기동/같은 Run 인계를 맡는다. 다음 리드 모델은 claude-opus-5-5(앞선 xhigh 선택 유지), Sol max·신규 Opus 검증자는 유지한다. 원문 E/main-immediate-lead-handoff-decision.json. Codex 한도/크레딧 소진 수치는 메인 전달 배경이며 Rules 실측이 아니다.
 - 메인 `msg_22cb1701a2cf`(2026-10-05T14:18:42Z)가 전달한 사용자 원문: **「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」**. 메인 전달이며 직접 입력으로 격상하지 않는다. 즉시 우편함 대기는 `orca orchestration check --wait --timeout-ms 600000`(10분)으로 늘리고 짧은 반복 조회를 줄인다. 각 현재 목표의 종료 기록 PR 병합·Gardener 뒤 메인이 R-8로 기존 pane을 닫고 `claude-opus-5-5 xhigh` 신규 리드를 연다. 현재 리드를 중간 변경하지 않으며 Sol max·신규 Opus 검증자는 유지한다. AGENTS의 현행 Astra 문구와 실제 적용 결정을 구분하고, 정본 반영 전 이 goal 기록을 근거로 인계한다. 원문은 E/main-all-leads-opus-long-wait-decision.json이다.
