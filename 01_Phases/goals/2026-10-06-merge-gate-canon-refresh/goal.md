@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험은 끝났다(`597839c`, 아래 「선행 시험」). PR1 정본 문장 작성자(Sol max)가 작업 중이고, CLAUDE.md는 메인이 써서 `00d180b`로 들어갔다. 다음은 구현(Sol max, 계약 초안 E/impl-contract-head.md) → 독립 검증(신규 Opus) → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현 Sol이 작업 중이다(아래 「구현」). 다음은 독립 검증(신규 Opus) → PR1이다.
 
 ## 진척 단계
 
@@ -186,6 +186,16 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   2. ORCA `#merge-gate`의 「세션을 다시 열면 이전 기록을 쓸 수 없다」는 리드 계약에서 나온 문장이다. `--resume`가 session_id를 유지하는지는 실측하지 않았다. 실측하거나, 표현을 「다른 session_id」 기준으로 고친다.
   3. ORCA 새 절은 하위 에이전트 병합 차단을 직접 적지 않는다. AGENTS 「Git 권한」에는 있다. 30초 탐색으로 찾을 수 있는지 본다.
   4. 공학 조건 예외 문장의 조건이 hook 실제 동작과 같은지 대조한다(메인 `msg_895f7ffa4512`).
+
+### 구현
+
+- 작업자: 신규 `gpt-6.1-sol` max, 태그 `[Rules Sol]`. 리드 pane 아래 vertical split이고 handle은 `term_7d282bd9-bc45-4cfc-a10f-558f23845cfa`다. 첫 화면은 Codex v0.160.1, GPT-6.1-Sol max였다. 권한 표시는 기존 Codex 설정 그대로인 Full Access였고 선택창은 없었다(E/impl-first-screen.json). backend는 unknown이다.
+- 계약: [E/impl-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/impl-contract.md) v1, SHA256 `ad1bf52c…`이다.
+  - 고정 입력은 HEAD `8a28713`, 동작 계약 v2, 선행 시험 commit `597839c`다. 시험은 `git diff --exit-code`로 대조한다.
+  - 명세 보충(리드 결정)도 계약에 넣었다. 손상된 기록은 기록 없음으로 본다. 예상하지 못한 예외는 PreToolUse에서 `invalid-input`으로 막는다. main push 목적지 판정과 PermissionRequest의 단독 병합 형태 조건도 넣었다.
+  - `.claude/settings.json`은 마지막에 쓰고 쓴 즉시 리드에게 알린다. 이 리드 세션에 hook이 바로 실릴 수 있어서다. 미완성 hook이 리드 명령을 막지 않게 하고, 반영 여부를 그 시점에 재기 위한 조건이다.
+  - 경로 기계 확인은 E/impl-contract-pathcheck.txt(15:23:54Z)다.
+- Task `task_414ac0f46898`, Dispatch `ctx_0fde254166f7`이다. receipt는 input_accepted, turnStart observed다(15:24:17Z, E/impl-worker-start.json).
 
 ## 요구사항 원천과 적용 결정
 
