@@ -54,6 +54,8 @@
 
 7·8단계에서 파일 없음이 아닌 예상 밖 I/O 오류(권한 거부 등)는 `load`(reason `null`)다. 색인 검사는 이를 그 출처의 실행 못 함으로 다룬다(「색인 검사」).
 
+경계의 한계: 7단계의 `lstat`·realpath 판정은 hard link를 잡지 못한다. 루트 밖 파일을 가리키는 hard link가 루트 안에 있으면 읽힌다. git은 hard link를 저장하지 않아 로컬에서 직접 만들어야 생기며, 승인된 거절 기준(아래 8종) 밖이라 이번 범위에서 막지 않는다(메인 결정 `msg_883836e1208a` 2항, 후속 후보).
+
 성공 결과는 `{ ok: true, sourceId, path, heading, text, bytes }`이다. `path`는 locator 그대로, `bytes`는 `text`의 UTF-8 바이트 수다. `section: null`이면 `heading`도 `null`이고 `text`는 BOM을 뺀 파일 전체다(256 KiB 상한은 그대로). 실패 결과는 `{ ok: false, code, reason, message }`다. `reason`은 위 표기 값 또는 `null`이고 `message`는 고정 한국어 문장이며 입력·경로·원시 오류를 담지 않는다. IPC 발신자가 신뢰되지 않으면 `denied`다.
 
 진입 함수는 둘이고 모두 `electron/source-section-store.ts`에서 export한다(`source-section-contract.ts`는 순수 판정만). 시험과 구현이 같은 이름을 쓴다. 같은 방식으로 `createCheckoutStore`는 `electron/checkout-store.ts`, `checkRecordIndex`는 `electron/record-index-check.ts`에서 export한다.
