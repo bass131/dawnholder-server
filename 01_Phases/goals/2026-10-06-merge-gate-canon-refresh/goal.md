@@ -196,6 +196,19 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - `.claude/settings.json`은 마지막에 쓰고 쓴 즉시 리드에게 알린다. 이 리드 세션에 hook이 바로 실릴 수 있어서다. 미완성 hook이 리드 명령을 막지 않게 하고, 반영 여부를 그 시점에 재기 위한 조건이다.
   - 경로 기계 확인은 E/impl-contract-pathcheck.txt(15:23:54Z)다.
 - Task `task_414ac0f46898`, Dispatch `ctx_0fde254166f7`이다. receipt는 input_accepted, turnStart observed다(15:24:17Z, E/impl-worker-start.json).
+- 질문 1(동시 호출): 작업자 공식 ask `msg_53de60036b2e`(15:33:03Z)는 hook 시험 67건이 통과했다고 알렸다. 그리고 같은 세션의 병합 PreToolUse 두 개가 동시에 돌 때를 물었다. 읽은 뒤 rename하는 방식만으로는 같은 승인이 두 번 통과할 수 있다. 출처는 사람 대조로 확인했다(E/impl-question1-manual-check.md). 리드는 `msg_603a060484d9`(15:33:36Z)로 잠금 없이 순차 호출 계약으로 두라고 답했다.
+  - 이유 1: 두 번 통과해도 같은 PR·같은 head의 병합이 두 번 시도될 뿐이다. 두 번째는 GitHub이 이미 병합된 PR이라 거부한다.
+  - 이유 2: 잠금이 남으면 모든 병합이 막힌다. 상태 폴더는 에이전트 쓰기가 막힌 곳이라 사람이 손으로 치워야 한다.
+  - 코드에 이유 주석을 두고 보고서 남은 위험에 적게 했다. 독립 검증이 이 판단을 다시 본다.
+- 질문 2(동시 호출의 다른 PR): 작업자 공식 ask `msg_7d91dc57ccce`(15:35:57Z)가 더 넓은 경우를 짚었다. 기록 파일은 세션별 배열을 통째로 rename한다. 그래서 다른 PR 두 개가 동시에 통과하면 늦게 쓴 쪽이 다른 PR의 `usedAt`을 null로 되돌릴 수 있다. 리드는 `msg_a504a6a2452c`(15:36:25Z)로 잠금 없는 순차 계약을 유지하고 한계를 정확히 적으라고 답했다.
+  - 영향 범위는 사용자가 승인한 그 PR·head의 기록뿐이다. 그 PR이 이미 병합됐으면 GitHub이 재시도를 거부한다. 첫 병합이 실패한 PR이라면 30분 안에 새 승인 없이 한 번 더 시도될 수 있다. 정본 「실패하면 새 승인이 필요하다」와 어긋나는 유일한 경로다.
+  - 적을 곳은 코드 주석, 보고서 남은 위험, README 한 줄이다. ORCA 한계 목록에 넣을지는 독립 검증 뒤 리드가 정한다.
+- settings 작성과 세션 중 반영 실측(완료조건 5의 실측 항목 첫 관측): 작업자가 hook 시험 67건 통과 뒤 마지막으로 `.claude/settings.json`을 썼다(mtime 15:38:28Z, 알림 `msg_f332a932d61e`, 수신 helper allowed).
+  - 리드 세션은 settings가 없을 때 시작했다. 1분 안에 상태 폴더 경로가 든 무해한 `ls`가 `merge-gate:protected-path`로 막혔다. Claude Code 2.1.291에서 프로젝트 hook이 세션을 다시 시작하지 않아도 실렸다.
+  - 원시는 [E/hot-reload-probe.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/hot-reload-probe.md)다. 한 세션 한 번의 관측이다.
+  - 결과로 이 리드 pane의 PR1 병합은 `not-main-checkout`으로 막힌다. 메인 대비안(`msg_729105efa64c` 2항)으로 간다.
+  - 메인에 알렸다(`msg_3a305afc406c`). 순서 주의도 함께 보냈다. 메인 checkout(Core branch)이 PR1 뒤 main을 받으면 메인 세션에도 hook이 실린다. 그런데 그 checkout에는 표식이 없다. 그래서 main-active와 표식을 먼저 만든 뒤 병합해야 한다.
+  - 리드 운영: 이 세션의 Bash에 상태 폴더 경로나 병합 명령 문자열을 넣지 않는다. 검색은 Grep·Read, 그런 문자열이 든 기록은 Write 도구로 쓴다.
 
 ## 요구사항 원천과 적용 결정
 
