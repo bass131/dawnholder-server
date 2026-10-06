@@ -4,7 +4,7 @@ import { parseBacklogTables } from './backlog-table.js';
 import { catalogReferenceIssues, isRecordId, validateCatalog } from './catalog-contract.js';
 import type { RecordCatalog, RecordSource } from './catalog-contract.js';
 import { readCatalogFile } from './catalog-store.js';
-import { sourcePathParts } from './source-section-contract.js';
+import { sourcePathParts, sourceReadability } from './source-section-contract.js';
 import type { SourceSectionCode, SourceSectionFailure } from './source-section-contract.js';
 import { createSourceSectionStore, inspectSourceFile } from './source-section-store.js';
 
@@ -129,7 +129,7 @@ export async function checkRecordIndex({ repositoryRoot }: { repositoryRoot: str
         }
         continue;
       }
-      if (source.locator.endsWith('.md')) {
+      if (sourceReadability(source) === null) {
         const result = await sections.read(source);
         if (!result.ok) sourceFailure(source, result);
       } else {

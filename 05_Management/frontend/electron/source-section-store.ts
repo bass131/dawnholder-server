@@ -5,7 +5,13 @@ import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { isRecordId } from './catalog-contract.js';
 import type { CatalogResult, RecordSource } from './catalog-contract.js';
-import { extractSourceSection, MAX_SOURCE_FILE_BYTES, sourcePathParts, sourceSectionFailure } from './source-section-contract.js';
+import {
+  extractSourceSection,
+  MAX_SOURCE_FILE_BYTES,
+  sourcePathParts,
+  sourceReadability,
+  sourceSectionFailure,
+} from './source-section-contract.js';
 import type { SourceSectionFailure, SourceSectionResult } from './source-section-contract.js';
 
 const nativeRealpath = promisify(realpathCallback.native);
@@ -56,12 +62,16 @@ export async function inspectSourceFile({ repositoryRoot, locator }: { repositor
 
 export function createSourceSectionStore({ repositoryRoot }: { repositoryRoot: string }) {
   async function read(source: RecordSource): Promise<SourceSectionResult> {
-    if (source.kind !== 'git') {
-      return sourceSectionFailure('not-readable', source.kind === 'local' ? 'local-only' : 'handoff');
+    const unreadableReason = sourceReadability(source);
+    if (unreadableReason === 'local-only' || unreadableReason === 'handoff') {
+      return sourceSectionFailure('not-readable', unreadableReason);
     }
     const parts = sourcePathParts(source.locator);
     if (!parts.ok) return parts;
-    if (!source.locator.endsWith('.md')) return sourceSectionFailure('not-readable', 'extension');
+    // Invalid paths take priority over a git source's unsupported extension.
+    if (unreadableReason === 'extension') {
+      return sourceSectionFailure('not-readable', unreadableReason);
+    }
     const file = await resolveSourceFile(repositoryRoot, parts.parts);
     if (!file.ok) return file;
 
