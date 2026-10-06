@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 한계 문구 보정도 끝났다. 다음은 신규 Opus 재검증 → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 한계 문구 보정(`97fa7b8`)도 끝났다. 신규 Opus 재검증 중이다(아래 「PR1 재검증」). 다음은 PR1이다.
 
 ## 진척 단계
 
@@ -280,6 +280,17 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
     - 235행 한계가 「문자열 판정의 의도적 우회 가능(별칭·스크립트 파일·변수 속 명령, 공백 든 따옴표 값의 낱말 분리 …)」이 됐다. bytes는 R-2 66·74행의 같은 절 중복을 합쳐 맞췄다. ORCA는 249줄·41,623 bytes이고 다섯 문서 합은 92,494다.
     - 리드 표본 대조: ORCA word-diff를 읽었다. 바뀐 행은 66·74·235뿐이다. R-2의 조건(보고 승인 전 판정 원문 읽기와 원천 표본 대조, 기록 형식, 전부/없음 주장, 독립 열거, 시범 등급 대조, 실패 분류 표본, 검증자 전수 분류 대체 금지, 불일치 즉시 보고)과 링크가 남아 있다.
   - 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/fix2-release.json, fix2-before-close.json, fix2-close.json).
+  - 리드가 문서 `97fa7b8`로 커밋했다.
+
+### PR1 재검증
+
+- 검증자: 신규 `claude-opus-5-5`, 태그 `[Rules 검증자]`(검증자 모델 시범의 보안 경계 예외). 리드 pane 아래 vertical split이고 handle은 `term_94817359-840a-4465-816b-3c962b8cf99b`다. 첫 화면은 Claude Code v2.1.291, Opus 5.5 xhigh, auto mode on으로 첫 검증자와 같았다. 선택창은 없었다(E/reverify-first-screen.json). backend는 unknown이다.
+- 계약: [E/reverify-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/reverify-contract.md) v1, SHA256 `5d6223b7…`, 고정 HEAD `d1b9038`이다. 강 등급이다.
+  - 대상은 첫 판정 D1~D5와 O3·O8·O9, 가독성 지적 둘의 해결 여부와 PR1 전체의 보존이다.
+  - 필수 항목은 v2.1 회귀 시험(새 파일), 실제 진입 4a(낱말 사이 옵션 형태 포함)·4b(headless 두 턴), bytes를 줄인 곳의 현행 규칙 보존 대조다.
+  - 리드 넘김 셋: 공백 든 따옴표 값의 한계 판단, 231행 「운영은 `--merge`만」, 235행 일반 한계 문구.
+  - 경로 기계 확인은 E/reverify-contract-pathcheck.txt(17:11:35Z)다.
+- Task `task_d3d0d79e85b5`, Dispatch `ctx_f3b9568303f7`이다. receipt는 input_accepted, turnStart observed다(E/reverify-worker-start.json).
 
 ## 요구사항 원천과 적용 결정
 
