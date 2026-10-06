@@ -25,7 +25,9 @@ $suites = @(
     @{ File = 'ModuleHashLiterals.Tests.ps1'; Directory = 'module-hash-literals' },
     @{ File = 'ModuleBundle.Tests.ps1'; Directory = 'module-bundle' },
     @{ File = 'ModuleDeployment.Tests.ps1'; Directory = 'module-deployment' },
-    @{ File = 'EnvironmentGuards.Tests.ps1'; Directory = 'environment-guards' }
+    @{ File = 'TestEnvironmentLifecycle.Tests.ps1'; Directory = 'test-environment-lifecycle' },
+    @{ File = 'EnvironmentGuards.Tests.ps1'; Directory = 'environment-guards' },
+    @{ File = 'TestDatabaseContract.Tests.ps1'; Directory = 'test-database-contract' }
 )
 $exe = [Diagnostics.Process]::GetCurrentProcess().Path
 $summary = New-Object 'Collections.Generic.List[object]'

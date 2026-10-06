@@ -1,10 +1,17 @@
 # SQL 영속성 구조와 오프라인 검증
 
-상태: **2026-10-04 [PR169](https://github.com/bass131/dawnholder-server/pull/169) 병합·결과 기록·Gardener·보정 문서 실사와 메인 정산 판단을 마쳤다. 종료 기록은 별도 문서 PR의 개별 병합 승인을 거쳐 보존하며, 그 병합 뒤 R-8과 사용자 점검을 기다린다.** 문서 보정은 내용상 통과했으며 검증자의 허용 밖 쓰기 V-1·V-2는 계약 준수 PASS로 바꾸지 않고 운영 위반으로 보존한다. 제품 병합 커밋은 `3e07e1b0b318881701b5b7bab8adbe087b596420`이며 GitHub main 반영을 확인했다. 독립 검증5는 884PASS/0FAIL/8OBS·오류 주입15종 검출, 최종 PR169 head의 두 CI도 성공했다. 작업자 두 세션은 모두 정산·종료했다. 실제 SQL/DB/G2·계정·저장소/복구 통합은 범위 밖이며 다음 goal은 자동 시작하지 않는다.
+상태: **2026-10-04 SQL 영속성 구조·오프라인 검증 목표를 완료했다. [PR169](https://github.com/bass131/dawnholder-server/pull/169)와 종료 기록 [PR171](https://github.com/bass131/dawnholder-server/pull/171)이 각각 사용자 승인 뒤 병합됐고, Gardener·보정 문서 실사·메인 정산을 마쳐 R-8 세션 교체를 위한 checkpoint를 남긴다.** 문서 보정은 내용상 통과했으며 검증자의 허용 밖 쓰기 V-1·V-2는 계약 준수 PASS로 바꾸지 않고 운영 위반으로 보존한다. 제품 병합 커밋은 `3e07e1b0b318881701b5b7bab8adbe087b596420`, 종료 기록 병합은 `bca2adf0c1b16ef467212151a9dc9bd3680bff79`이며 main 반영을 확인했다. 독립 검증5는 884PASS/0FAIL/8OBS·오류 주입15종 검출, 두 PR의 최종 head CI도 성공했다. 작업자 두 세션은 모두 정산·종료했다. 실제 SQL/DB/G2·계정·저장소/복구 통합은 이번 목표의 미실행 범위이며 다음 목표는 새 Astra가 시작한다.
 
 ## 재개 지점
 
-### 현재 상태 — 종료 기록 PR·개별 병합 승인·R-8 대기 (2026-10-04)
+### 현재 상태 — PR171 병합 완료·R-8 인계 checkpoint (2026-10-04)
+
+- **승인과 병합:** 메인 `msg_b640b383ec7e`(2026-10-04T07:45:18Z)가 사용자 대시보드 원문 1번 「PR171 … A 승인 (head c57ae94)」를 전달했다. 정확 head `c57ae94ba659c8511f44396214be4c8d418c71da`와 OPEN/MERGEABLE/CLEAN·두 CI 성공·자동 병합 예약 없음을 재대조하고, 지정 `gh pr merge 171 --repo bass131/dawnholder-server --merge --match-head-commit c57ae94ba659c8511f44396214be4c8d418c71da`을 한 번 실행(exit0)했다. 실제 병합은 07:46:53Z, merge SHA `bca2adf0c1b16ef467212151a9dc9bd3680bff79`이며 fetch한 main의 ancestor다. 승인 전문·명령·실제 결과는 `.backups/verification/2026-10-03-persistence-repository/closeout-pr171-{merge-approval,merge-command,merged,main-inclusion}.json`에 보존한다.
+- **종료 기록 PR의 CI:** 최종 head의 `code-rules` [37182501986](https://github.com/bass131/dawnholder-server/actions/runs/37182501986)는 선택 언어 대상0(문서1개 제외)·검사 도구 회귀28PASS/0FAIL/0SKIP다. `dotnet-tests` [37182501940](https://github.com/bass131/dawnholder-server/actions/runs/37182501940)는 formatting/input 보존·build 성공, 834PASS/0FAIL/5SKIP(총839), 기존 경고4/오류0이다. 실제 CI checkout `6cc11b94b9c363eb1a12e60f7d6e2802d5473f0e`와 병합 commit은 구분한다. 원문·대조는 `closeout-pr-audit.md`와 `closeout-pr-ci-summary.json`이다.
+- **Gardener와 checkpoint:** 아래에 기록된 Gardener와 보정 실사는 이미 정산·종료했고, 메인 `msg_8bb059f8ab9c`의 추가 작업자·재검증 없음 결정을 유지한다. 기존 판정/보고 hash와 완료·종료 receipt를 인계하며 새 실사 실행으로 표현하지 않는다. 병합 뒤 이 결과와 다음 목표 승인만 로컬 checkpoint commit으로 보존하고 main 반영된 PR171과 구분한다. 실제 checkpoint SHA·보호 입력·현재 branch는 `closeout-pr171-checkpoint.json`에 둔다. 메인이 현재 pane을 닫고 새 GameDev Astra를 열며, 이 세션은 새 goal을 만들거나 다음 실행을 시작하지 않는다.
+- **다음 목표: 사용자 승인됨(위 원문 3번).** 메인 `msg_b640b383ec7e`가 전달한 승인 범위는 시험 DB SQL 설치·U-01 판정·저장소와 제한 복구 통합·Q-1B이며 새 GameDev Astra가 시작한다. C1·C2는 보류 목록에만 둔다.
+
+### 이전 단계 — 종료 기록 PR·개별 병합 승인·R-8 대기 (2026-10-04)
 
 - **승인 출처:** 메인 Claude의 `msg_940e339b0892`(2026-10-04T05:19:08Z)가 사용자 원문 “A로 전부 진행”, 업데이트 뒤 “OK 다시 진행해줘”를 전달했다. 안건1의 A는 PR169 병합 승인이며 대상 head는 `3a80e885d32e40f830be2b389bf8fd162578e3d6`이다. 이 세션의 사용자 직접 입력으로 격상하지 않는다. 승인 전문은 `.backups/verification/2026-10-03-persistence-repository/astra-review-5/pr169-merge-approval.json`에 보존했다.
 - **병합 실행:** 승인 head·OPEN/MERGEABLE/CLEAN·check/test SUCCESS를 재확인하고 `gh pr merge 169 --repo bass131/dawnholder-server --merge --match-head-commit 3a80e885d32e40f830be2b389bf8fd162578e3d6`을 한 번 실행해 exit0을 받았다. 실제 병합은 2026-10-04T05:22:34Z, merge SHA `3e07e1b0b318881701b5b7bab8adbe087b596420`이다. gh PR은 MERGED, main ref는 같은 SHA, compare는 identical/behind0이며 fetch 후 ancestor도 확인했다. `pr169-{before-merge,merge-command,merged,main-inclusion}.json`이 원문이다. Unity 사용자3파일/skip-worktree와 stash2개는 보존했다.
