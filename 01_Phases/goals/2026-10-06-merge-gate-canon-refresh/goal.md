@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현 Sol이 작업 중이다(아래 「구현」). 다음은 독립 검증(신규 Opus) → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 다음은 동작 계약 v2.1로 신규 Sol 수정 → 신규 Opus 재검증 → PR1이다.
 
 ## 진척 단계
 
@@ -234,6 +234,22 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 실제 진입 실행. 막히는 경로는 검증자 세션에서 없는 PR 번호로 잰다. 통과 경로는 원격 없는 임시 저장소에서 headless 두 턴으로 잰다. 두 번째 턴은 `--resume`으로 이어서, session_id 유지 여부도 함께 잰다.
   - 리드 넘김 다섯 가지, 동시 호출 결정, 정본 문장과 CLAUDE.md 대조도 포함한다. 경로 기계 확인은 E/verify-contract-pathcheck.txt다.
 - Task `task_219e1ceb840d`, Dispatch `ctx_38275325f17c`다. receipt는 input_accepted, turnStart observed다(15:47:42Z, E/verify-worker-start.json).
+- 판정: worker_done `msg_d696162ce32a`(16:11:32Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/verify-worker-done-check-output.json). 판정 원문은 [E/verify/verdict.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/verify/verdict.md)이고 결론은 **차단(FAIL), 결함 D1·D2**다.
+  - 수행 범위: 고정 시험 74/74와 Orca 22/22를 다시 돌렸다. 보완 시험 두 파일 12건을 새로 써서 86/86이 됐다. 실제 진입은 검증자 세션의 차단 2건(`not-main-checkout`, `push-main`)이다. 원격 없는 임시 저장소의 headless 두 턴으로 통과 경로도 쟀다. 기록 생성, PreToolUse allow, ask 규칙, PermissionRequest allow, 실행 순서였고 gh는 원격이 없어 실패했다.
+  - D1(차단): 낱말 사이에 옵션이 낀 형태를 놓친다. `git -C <경로> push origin main`, `git -c k=v push …`, `git --no-pager push …`, `gh pr -R <repo> merge …`, `gh pr --repo=<repo> merge … --admin`이 모두 결정 없음이다. 전역 ask 규칙도 접두 일치라 못 잡는다. ORCA 「모든 세션 main push 차단」과 어긋난다. 리드 넘김 5가 재현됐다.
+  - D2(차단): `--resume`은 session_id를 유지한다. 1턴 기록을 2턴이 소비하고 명령이 실행됐다(E/verify/raw/real-entry-log.txt). ORCA 「세션을 다시 열면 이전 기록을 쓸 수 없다」가 사실과 다르다.
+  - D3(비차단): 파일 도구 경로의 `./`·`../`·`//`를 정규화하지 않아 보호 폴더 Write가 결정 없음이다.
+  - D4(비차단): R-3 축약이 현행 세부 세 가지를 잃었다. 「ask/reply help 양쪽 확인」, 「help 확인과 실제 호출 실증 구분」, 「다른 버전 지원 주장 안 함」이다. 「위 … receipt 조건」은 위에 없는 조건을 가리킨다.
+  - D5(비차단): 한계 문장이 경로 하나를 빠뜨렸다. 승인 문장 제출과 병합 통과가 겹치면 소비된 기록이 되살아난다(임시 폴더 20회 중 9회).
+  - 관찰: O3 `git push origin @`(main 위) 결정 없음, O8 hook 실행 실패 시 보호 없음(추론), O9 ORCA 절에 「(하위 에이전트 제외)」, O10 SendMessage 전달 모양 미측정, O11 RESUME 전환 문구. 가독성 지적은 둘이다. 「맨 앞이 아니면 compound」 규칙이 특수문자 검사와 한 조건식에 섞였다. 같은 형태 판정을 두 번 부른다.
+- 리드 R-2 표본 대조: observe.jsonl의 A행(낱말 사이 옵션)과 real-entry-log.txt의 2턴 블록을 직접 읽었고 판정문과 같았다. 검증자 시험 두 파일은 리드가 `5a43d42`로 커밋했다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/verify-release.json, verify-before-close.json, verify-close.json).
+- **리드 결정(범위 안 결함, 루프에서 수정)**: D1~D5는 모두 승인된 PR1 범위와 완료조건 3 안의 결함이다. 그래서 메인 결정을 기다리지 않고 고치며 메인에는 알린다. 같은 산출물의 수정은 이번이 첫 번째다.
+  - D1은 판정을 넓힌다(검증자 권장안). 한계 수용안은 쓰지 않는다. `git -C`는 절대 경로를 권하는 환경의 보통 관용구라서다. 넓힌 판정에 걸린 형태는 형태 조건에서 `bad-form`으로 막히므로 메인의 정식 명령에는 영향이 없다. 같은 비용으로 대문자·경로·`.exe` 명령 낱말과 O3 `@`도 덮는다.
+  - 동작 계약은 [E/merge-gate-behavior-spec-v2.1.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec-v2.1.md)다(SHA256 `ce113621…`). v2는 고정 입력 이력으로 그대로 둔다. 바뀐 곳은 4절 명령 낱말·하위 명령 정의(D1), push `@`(O3), 통과 조건 1·3·4의 명시, 파일 도구 경로 정규화(D3), 6절 동시 호출 한계(D5)다.
+  - 문서는 D2 문장, D4 세 구절 복원, D5와 O8 한계, O9, 넓힌 판정에 맞춘 우회 한계 문구를 고친다. 늘어난 bytes는 같은 PR의 다섯 문서에서 현행 규칙을 잃지 않고 줄인다(완료조건 7). 못 줄이면 작업자가 멈추고 리드가 메인에 올린다.
+  - 순서: 신규 Sol 한 명이 코드·문서를 고친다. 기존 시험 86건은 바꾸지 않고 통과해야 한다. 그다음 신규 Opus 재검증자가 v2.1 시험을 쓰고 D1~D5와 실제 진입을 다시 판정한다.
+  - O10은 완료조건 5 적용 확인 때 잰다. O11·O2·O6은 PR2 후보로 둔다.
 
 ## 요구사항 원천과 적용 결정
 
