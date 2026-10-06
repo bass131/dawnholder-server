@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 다음은 한계 문구 보정(신규 Sol) → 신규 Opus 재검증 → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 한계 문구 보정도 끝났다. 다음은 신규 Opus 재검증 → PR1이다.
 
 ## 진척 단계
 
@@ -273,6 +273,13 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 리드 넘김(재검증): 231행이 「운영은 `--merge`만 쓴다」를 따로 적지 않고 운영 명령 예시에만 남겼다. 읽는 사람에게 충분한지 판정을 받는다.
 - 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/fix-release.json, fix-before-close.json, fix-close.json).
 - 리드 결정: 발견 1은 신규 Sol의 짧은 문서 보정으로 고친다. 같은 산출물(ORCA 병합 관문 절)의 두 번째 수정이다. 코드와 동작 계약 v2.1은 바꾸지 않는다. 그 뒤 재검증으로 간다.
+- 한계 문구 보정 작업자: 신규 `gpt-6.1-sol` max, 태그 `[Rules Sol]`, handle `term_33fe7dc4-c19e-4111-b628-3f9c53df39fd`(리드 pane 아래 vertical split). 첫 화면은 이전 작업자와 같았고 선택창은 없었다(E/fix2-first-screen.json). backend는 unknown이다.
+  - 계약: [E/fix2-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/fix2-contract.md) v1, SHA256 `d72f8cc6…`, 고정 HEAD `8317762`. 쓰기는 ORCA뿐이다. 235행에 일반 한계와 예시(별칭·스크립트·변수, 공백 든 따옴표 값)를 쓴다. ORCA는 41,629 bytes 이하로 맞추고, 이미 축약한 행은 다시 줄이지 않는다. 경로 기계 확인은 E/fix2-contract-pathcheck.txt(16:55:07Z)다.
+  - Task `task_951d23eb65d4`, Dispatch `ctx_4177b04981c9`다. receipt는 input_accepted, turnStart observed다(E/fix2-worker-start.json).
+  - 결과: worker_done `msg_e9dc1fad1691`(17:09:58Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/fix2-worker-done-check-output.json). 보고서는 [E/fix2/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/fix2/report.md)다.
+    - 235행 한계가 「문자열 판정의 의도적 우회 가능(별칭·스크립트 파일·변수 속 명령, 공백 든 따옴표 값의 낱말 분리 …)」이 됐다. bytes는 R-2 66·74행의 같은 절 중복을 합쳐 맞췄다. ORCA는 249줄·41,623 bytes이고 다섯 문서 합은 92,494다.
+    - 리드 표본 대조: ORCA word-diff를 읽었다. 바뀐 행은 66·74·235뿐이다. R-2의 조건(보고 승인 전 판정 원문 읽기와 원천 표본 대조, 기록 형식, 전부/없음 주장, 독립 열거, 시범 등급 대조, 실패 분류 표본, 검증자 전수 분류 대체 금지, 불일치 즉시 보고)과 링크가 남아 있다.
+  - 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/fix2-release.json, fix2-before-close.json, fix2-close.json).
 
 ## 요구사항 원천과 적용 결정
 
