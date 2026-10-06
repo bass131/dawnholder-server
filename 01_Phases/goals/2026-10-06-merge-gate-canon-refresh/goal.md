@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 한계 문구 보정(`97fa7b8`)도 끝났다. 재검증 판정은 차단(R1·R2)이고 D1~D5는 해결됐다(아래 「PR1 재검증」). 동작 계약 v2.2로 신규 Sol 수정 → 신규 Opus 재검증 → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 한계 문구 보정(`97fa7b8`)도 끝났다. 재검증 판정은 차단(R1·R2)이고 D1~D5는 해결됐다(아래 「PR1 재검증」). 동작 계약 v2.2 수정이 끝났다(코드 `b9e1d2a`, 문서 `178ab0b`, 아래 「PR1 재검증 결함 수정」). 다음은 신규 Opus 두 번째 재검증 → PR1이다.
 
 ## 진척 단계
 
@@ -321,6 +321,15 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 기존 시험 94건이 바뀌지 않고 통과해야 한다. ORCA는 41,629 bytes 이하로 맞추고 이미 축약한 행은 다시 줄이지 않는다.
   - 경로 기계 확인은 E/fix3-contract-pathcheck.txt(17:42:21Z)다.
 - Task `task_ac622f2a804c`, Dispatch `ctx_53c8fd49a1ed`다. receipt는 input_accepted, turnStart observed다(E/fix3-worker-start.json).
+- settings 갱신 알림 `msg_e8eacf171f92`(17:54:01Z, status, 수신 helper allowed). 리드가 곧바로 이 세션에서 Monitor로 상태 폴더 경로 echo를 시도했고 `protected-path`로 막혔다. matcher 변경이 약 20초 안에 진행 중인 세션에 실렸다(E/hot-reload-probe-2.md, 완료조건 5 실측의 둘째 관측).
+- 결과: worker_done `msg_d5ef48a05373`(18:00:24Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/fix3-worker-done-check-output.json). 보고서는 [E/fix3/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/fix3/report.md)다. 리드가 코드 `b9e1d2a`(merge-policy·settings·README)와 문서 `178ab0b`(ORCA)로 나눠 커밋했다.
+  - 코드: `commandWords`가 줄 이음 접기·단순 명령 경계(괄호·중괄호 포함)·따옴표 값 건너뛰기를 한 곳에서 맡고, 병합·gh api·push 판정이 이를 함께 쓴다. Monitor 병합은 `non-bash-merge`, prompt 도구는 중첩 문자열의 `병합 승인:`을 `approval-injection`으로 막는다. `--attr-source`, 상태 경로의 겹친 구분자·`/./` 접기, 모든 도구의 `tool_input` 객체 조건이 들어갔다.
+  - 문서: ORCA 233(Bash·Monitor, 예약·전달 prompt 주입)과 235(공백 따옴표 예시 제거, R3 예시, 등록 밖 도구·hook/settings 자체 수정)를 고쳤다. README에 matcher·`non-bash-merge`·판정 규칙·한계를 맞췄다.
+- 리드 R-2 표본 대조:
+  - 같은 명령을 다시 돌렸다. MergeGate 94/94, Orca 22/22, 둘 다 exit 0이었다. 기존 시험은 `047e0db0`과 같다. ORCA는 249줄·41,626 bytes, 다섯 문서 합은 92,497이다(E/lead-fix3-green-check.txt).
+  - 코드 diff와 ORCA·README·settings word-diff를 읽었다. 진입(`claude-hook.mjs`)은 바뀌지 않았고 branch 조회는 도구와 무관하게 `branch` 결과를 처리한다.
+  - 자체 점검 E/fix3/self-check.jsonl 97행(점검 96건 모두 통과, 임시 폴더 잔류 없음)을 읽었다. 재검증 P·H1·GA·B행의 결정 없음 형태가 모두 차단이 됐다. G행(R3)은 계약대로 결정 없음이다. 경계 사례와 정식 통과·소비·확인 창 허용·두 번째 사용 차단은 그대로였다. 승인 기록이 있어도 Monitor 병합은 막히고 기록을 쓰지 않았다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/fix3-release.json, fix3-before-close.json, fix3-close.json).
 
 ## 요구사항 원천과 적용 결정
 
