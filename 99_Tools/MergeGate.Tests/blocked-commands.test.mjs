@@ -180,14 +180,13 @@ test('§4 file tools: other paths are left alone', async t => {
   }
 });
 
-test('§4 Bash 6 and §6: commands that are not merge attempts get no decision', async t => {
+test('§4 Bash 6 and §6: commands that are not merge attempts get no decision unless the last net words meet', async t => {
   const commands = [
     'git status',
     'git log --oneline -5',
     'git fetch origin && git status',
     'gh pr view 1',
     'gh pr view 12 --json mergeable',
-    'gh pr create --title "merge gate" --body "draft"',
     'gh pr list --state open',
     'gh pr checks 12',
     'npm test',
@@ -195,6 +194,13 @@ test('§4 Bash 6 and §6: commands that are not merge attempts get no decision',
   await assertCommandsUndecided(t, commands);
   await assertCommandsUndecided(t, commands, { marker: false });
   await assertCommandsUndecided(t, commands, { agent: true });
+  // Behavior contract v2.3 「마지막 그물」 (SHA256 2fcfe94c…0e10) and the lead's supplement 1 to the fix
+  // contract (msg_5ca0ec61d214) accept this false positive: a gh command whose title has the word merge.
+  const titled = 'gh pr create --title "merge gate" --body "draft"';
+  await assertCommandBlocked(t, [titled], 'suspect-words');
+  await assertCommandBlocked(t, [titled], 'suspect-words', { marker: false });
+  const approved = await approvedProject(t);
+  assertDeny(runHook(approved, bashInput(approved.project, titled, { agent: true })), 'suspect-words', `${titled} (subagent)`);
 });
 
 test('§4 input errors invalid-input: non-JSON stdin, missing fields, non-string command', async t => {

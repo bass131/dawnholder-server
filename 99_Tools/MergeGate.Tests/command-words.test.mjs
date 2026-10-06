@@ -117,7 +117,7 @@ test('§4 command words: git pushes to main behind global options or other spell
   }
 });
 
-test('§4 boundaries: other branches, non-push git commands and gh pr commands that are not merge get no decision', async t => {
+test('§4 boundaries: other branches, non-push git commands and gh pr commands that are not merge get no decision unless the last net words meet', async t => {
   const fixture = await createProject(t);
   const commands = [
     'git push origin feat/x',
@@ -127,15 +127,18 @@ test('§4 boundaries: other branches, non-push git commands and gh pr commands t
     'git stash push',
     'git stash push -m wip',
     'git log --grep push',
-    'git -C . log --grep push origin main',
     'gh pr view 12',
     'gh pr -R owner/repo view 12',
     'gh pr list --state merged',
     'gh pr checks 12',
-    'gh pr create --title merge --body text',
     'gh repo view',
   ];
   for (const command of commands) assertNoDecision(runHook(fixture, bashInput(fixture.project, command)), command);
+  // Behavior contract v2.3 「마지막 그물」 (SHA256 2fcfe94c…0e10) accepts these false positives: push with
+  // the word main, and a gh command whose title has the word merge.
+  for (const command of ['git -C . log --grep push origin main', 'gh pr create --title merge --body text']) {
+    assertDeny(runHook(fixture, bashInput(fixture.project, command)), 'suspect-words', command);
+  }
 });
 
 test('§4 Bash 3 (v2.1 @): a push of @ looks up the branch of the input cwd', async t => {

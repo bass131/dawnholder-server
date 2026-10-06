@@ -132,7 +132,7 @@ test('§4 condition 1: merges behind a parenthesis, a brace or a substitution ar
   }
 });
 
-test('§4 boundaries: other branches, quoted values on other branches and non-merge gh commands get no decision', async t => {
+test('§4 boundaries: other branches, quoted values on other branches and non-merge gh commands get no decision unless the last net words meet', async t => {
   const fixture = await createProject(t);
   const commands = [
     '(git push origin feat/x)',
@@ -140,13 +140,16 @@ test('§4 boundaries: other branches, quoted values on other branches and non-me
     'out=$(git log --grep push)',
     'git -C "C:/My Repo" push origin feat/x',
     'git --attr-source HEAD push origin feat/main-fix',
-    'git push -o "main" origin feat/x',
     'git stash push',
-    'gh pr create --title merge --body text',
     '(gh pr view 12)',
     'GH api repos/o/r/pulls/12',
     'gh.exe api repos/o/r/issues/12/comments',
     'ls .claude/state/x',
   ];
   for (const command of commands) assertNoDecision(runHook(fixture, bashInput(fixture.project, command)), command);
+  // Behavior contract v2.3 「마지막 그물」 (SHA256 2fcfe94c…0e10) accepts these false positives: push with
+  // the word main, and a gh command whose title has the word merge.
+  for (const command of ['git push -o "main" origin feat/x', 'gh pr create --title merge --body text']) {
+    assertDeny(runHook(fixture, bashInput(fixture.project, command)), 'suspect-words', command);
+  }
 });
