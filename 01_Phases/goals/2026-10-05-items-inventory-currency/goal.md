@@ -174,9 +174,9 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 | 항목 | 보류 시점의 값 |
 |---|---|
 | 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` / `feat/items-inventory-ui-20261005` |
-| HEAD / push | 이 보류 기록 commit(문서만 변경, origin과 같게 push). 그 직전 PR head는 `9eb38781b8c0e3e5fb079af13f445d0b2b238451`이다 |
+| HEAD / push | 이 정정 commit(origin과 같게 push). 순서는 PR head `9eb38781b8c0e3e5fb079af13f445d0b2b238451` → 보류 기록 `d19744ab`(문서만) → main 통합 merge `64d55165`(CURRENT 충돌만 해소) → 이 정정 commit(goal 세 줄)이다 |
 | PR | [PR191 - 클라이언트 인벤토리 화면과 서버 동기화](https://github.com/bass131/dawnholder-server/pull/191), OPEN. `9eb38781`에서 CI 4개 성공. 보류 기록 push로 head가 바뀌므로 재개 때 CI를 다시 확인한다. 이 CI는 Unity 테스트를 돌리지 않는다 |
-| main | 마지막 확인 `origin/main` = `635865038e174ee5591530f6bd83e2e698e0b077`(2026-10-06 06:0xZ, PR191에 포함) |
+| main | `origin/main` = `9ee7ae1f8bc9afabfb6f80e735bfd406daf59b16`을 merge commit 시각 2026-10-06T11:10:40Z에 통합했다(71커밋, PR2 코드 영역 02_Server·03_Client·04_ClientNet·98_Shared 변경 0). 보류 기록 push 직후 CURRENT 인접 줄 충돌로 PR이 DIRTY가 되어 통합했다 |
 | 로컬에만 둔 변경 | `03_Client/ProjectSettings/ProjectSettings.asset`: 이 PC 전용 cloud 3필드, 사용자 결정 `msg_39c94249a203`에 따라 **커밋·되돌리기 금지**(SHA256 `A58A3CDF…`). `03_Client/Assets/Resources/MinimapRT.renderTexture`: status는 M이지만 Git 내용은 HEAD와 같다(`git hash-object` = index blob `5b41c3fe`, `git diff --exit-code` 0). `core.autocrlf=true`에서 작업 파일이 LF라 생기는 줄바꿈 표시 차이다. 커밋할 내용이 없으며 그대로 둔다 |
 | 작업자·실행 자원 | 작업자 pane 0, reclaimable 0, Unity.exe 0, relay 0, 7777 0, 음소거 값 0. Unity MCP 시트는 검증자 종료로 반납했다(MCP 호출 0) |
 
@@ -191,7 +191,7 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 **열린 것**
 
-1. 보류 기록 delta(`9eb38781`..보류 기록 commit의 goal·CURRENT 문서 변경)의 독립 문서 실사. 아직 열지 않았고 **병합 전 필수**다.
+1. 보류 기록 delta의 독립 문서 실사. 대상은 `9eb38781` 이후 이 branch의 goal 변경, merge `64d55165`의 CURRENT 충돌 해소(main 쪽 행 유지 + Content branch 한 줄), main 통합 자체의 PR2 영향 없음이다. 아직 열지 않았고 **병합 전 필수**다.
 2. PR191 실화면 독립 검증. 보류 중이다.
 3. PR191 병합 승인. 실화면 PASS 뒤 정확한 head로 요청한다.
 4. goal 결과 기록 → Gardener → 종료 기록 PR → R-8.
