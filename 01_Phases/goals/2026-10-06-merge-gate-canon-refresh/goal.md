@@ -225,6 +225,16 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - **독립 검증으로 넘길 의심점(리드 넘김 5)**: 병합 시도 판정은 `gh`·`pr`·`merge`가 공백만 두고 붙어 있을 때만 잡는다. 그래서 `gh pr -R <repo> merge …`처럼 사이에 플래그가 낀 형태는 병합 시도로 보지 않는다. main push 판정도 같아서 `git -C . push origin main`을 잡지 않는다. 두 형태 모두 전역 ask 규칙(`gh pr merge*` 접두 일치)에도 걸리지 않는다. 동작 계약 4절의 「세 낱말이 차례로 나옴」이 「붙어 있음」인지 「순서대로 나옴」인지 애매하다. 검증자가 재현하고 판정한다.
 - 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/impl-release.json, impl-before-close.json, impl-close.json).
 
+### PR1 독립 검증
+
+- 검증자: 신규 `claude-opus-5-5`, 태그 `[Rules 검증자]`. 검증자 모델 시범의 보안 경계 예외에 해당한다. 리드 pane 아래 vertical split이고 handle은 `term_d461bb14-d265-4aad-a8f8-be1bfbef4bfe`다. 첫 화면은 Claude Code v2.1.291, Opus 5.5 xhigh, auto mode on이었고 선택창은 없었다(E/verify-first-screen.json). backend는 unknown이다.
+- 계약: [E/verify-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/verify-contract.md) v1, SHA256 `a7d44cfe…`, 고정 입력 HEAD는 `658e640`이다. 강 등급이다. 필수 항목은 세 가지다.
+  - diff·근거 실사.
+  - 독립 보완 시험 작성·실행.
+  - 실제 진입 실행. 막히는 경로는 검증자 세션에서 없는 PR 번호로 잰다. 통과 경로는 원격 없는 임시 저장소에서 headless 두 턴으로 잰다. 두 번째 턴은 `--resume`으로 이어서, session_id 유지 여부도 함께 잰다.
+  - 리드 넘김 다섯 가지, 동시 호출 결정, 정본 문장과 CLAUDE.md 대조도 포함한다. 경로 기계 확인은 E/verify-contract-pathcheck.txt다.
+- Task `task_219e1ceb840d`, Dispatch `ctx_38275325f17c`다. receipt는 input_accepted, turnStart observed다(15:47:42Z, E/verify-worker-start.json).
+
 ## 요구사항 원천과 적용 결정
 
 메인이 전달한 사용자 결정은 사용자 직접 입력과 구분한다. 이번 착수의 원천은 다음과 같다.
