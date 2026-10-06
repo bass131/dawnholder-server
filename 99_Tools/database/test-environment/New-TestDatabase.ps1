@@ -220,14 +220,34 @@ COMMIT;
         })
     Write-Output "Install $Phase recorded; fixtures and independent SQL tests remain pending."
 } catch {
+    $failure = $_.Exception
+    $failureCode = Get-DatabaseFailureCode -Exception $failure
+    $failureSummary = Get-TestEnvironmentFailureSummary -Exception $failure
+    $journalStatus = 'No failure journal write was attempted.'
     if ($null -ne $manifest -and $stepName) {
-        Fail-TestEnvironmentStep `
-            -Contract $Contract `
-            -Manifest $manifest `
-            -Name $stepName `
-            -FailureCode (Get-DatabaseFailureCode -Exception $_.Exception)
+        $pendingStep = @($manifest.Steps | Where-Object Name -ceq $stepName)
+        if ($pendingStep.Count -eq 1 -and $pendingStep[0].Status -ceq 'Pending') {
+            # A failed journal write must not replace the original stop reason or imply persistence.
+            try {
+                Fail-TestEnvironmentStep `
+                    -Contract $Contract `
+                    -Manifest $manifest `
+                    -Name $stepName `
+                    -FailureCode $failureCode
+                $journalStatus = 'Failure journal write succeeded.'
+            } catch {
+                $journalStatus = 'Failure journal write failed; durable state is unconfirmed. {0}' -f (
+                    Get-TestEnvironmentFailureSummary -Exception $_.Exception
+                )
+            }
+        } else {
+            # Completion changes memory before writing; a non-Pending value cannot prove the durable state.
+            $journalStatus = 'No failure journal write was attempted; durable state is unconfirmed.'
+        }
     }
-    throw 'Test environment database lifecycle stopped; preserve manifest and all resources. No automatic retry/cleanup.'
+    $message = 'Test environment database lifecycle stopped; preserve manifest and all resources. ' +
+    'Original failure: {0} Journal: {1} No automatic retry/cleanup.'
+    throw ($message -f $failureSummary, $journalStatus)
 } finally {
     if ($null -ne $connection) {
         $connection.Dispose()

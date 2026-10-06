@@ -4,17 +4,17 @@
 
 | 파트 | 목표 상태와 재개 안내 |
 |---|---|
-| GameDev | [영속성 저장소](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#재개-지점) |
+| Core | [실제 SQL 설치·저장소 통합](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#재개-지점) |
 | Content | [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) |
-| Rules | [운영 정본 반영](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#재개-지점) · [보류된 하네스 원칙 채택과 문서 정비](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#운영-규칙-pr-재개와-설계) |
+| Rules | [CI npm 경고와 운영 후속 정본화](../../01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#재개-지점) |
 | CodeMap(Architecture) | [Architecture 테스트 전체 PR CI](../../01_Phases/goals/2026-10-05-architecture-tests-ci/goal.md#재개-지점) |
-| Management | [시스템 카드 종료 기록](../../05_Management/goals/2026-10-02-system-cards/goal.md#병합-결과와-종료-인계) |
+| Management | [개발 기록의 목록과 전체 페이지 상세](../../05_Management/goals/2026-10-05-development-record-navigation/goal.md#재개-지점) |
 
-- GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-repository-d1b-20261002`
+- Core: `C:/Dev/DawnHolder_Project` · `feat/persistence-integration-20261004`
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-ui-20261005`
-- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/operating-canon-20261005`
-- CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `ci/architecture-tests-20261005`
-- Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-m2-system-cards`
+- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/operating-followup-core-20261006`
+- CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `docs/architecture-tests-ci-closeout-20261005`
+- Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `docs/management-record-navigation-closeout`(종료 기록)
 
 Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 

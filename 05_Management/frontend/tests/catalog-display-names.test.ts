@@ -5,7 +5,7 @@
 // Exact values — ids, locators, revisions/hashes, PR numbers, D-/R- decision ids, analyzer ids — are
 // not stage codes; their fields are listed below with the reason they stay exact.
 import '@testing-library/jest-dom/vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -194,6 +194,8 @@ describe('rendered development records', () => {
   const loaded: CatalogResult = { ok: true, catalog, text: JSON.stringify(catalog), version: 'a'.repeat(64) };
   beforeEach(() => {
     vi.stubGlobal('systemRecords', { readCatalog: vi.fn(async () => loaded), saveCatalog: vi.fn() });
+    // jsdom has no layout; opening a detail scrolls its heading into view.
+    Element.prototype.scrollIntoView = vi.fn();
   });
   afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
@@ -206,26 +208,45 @@ describe('rendered development records', () => {
   }
 
   it('shows systems, records and evidence without stage codes on the records screen', async () => {
-    // DevelopmentRecords renders every catalog sentence; App.tsx only switches the hidden tab around it.
-    const user = userEvent.setup();
+    // DevelopmentRecords renders every catalog sentence across its lists and full-page details;
+    // App.tsx only switches the hidden tab around it.
+    // Opening every system and record detail takes dozens of clicks, so no artificial delay runs between them.
+    const user = userEvent.setup({ delay: null });
     const { container } = render(createElement(DevelopmentRecords));
     await screen.findByRole('searchbox', { name: '검색' });
     const browser = container.querySelector('.records-browser');
     if (!browser) throw new Error('Records browser was not rendered');
-    const views: [RegExp, (texts: string[]) => void][] = [
-      [/^시스템\s*\d/, texts => catalog.systems.forEach(system => expect(texts).toContain(system.summary))],
-      [/^변경·결정·검증·계획/, texts => catalog.records.forEach(record => expect(texts).toContain(record.title))],
-      [/^근거\s*\d/, texts => catalog.sources.forEach(source => expect(texts).toContain(source.note))],
+    // Lists show only titles and states, so every other sentence is read by opening each item's detail.
+    async function detailTexts(root: Element, listName: string): Promise<Leaf[]> {
+      const texts: Leaf[] = [];
+      const count = within(screen.getByRole('list', { name: listName })).getAllByRole('button').length;
+      for (let index = 0; index < count; index++) {
+        const item = within(screen.getByRole('list', { name: listName })).getAllByRole('button')[index];
+        if (!item) throw new Error(`${listName} item ${index} disappeared`);
+        await user.click(item);
+        texts.push(...renderedTexts(root));
+        await user.click(screen.getByRole('button', { name: '목록으로' }));
+      }
+      return texts;
+    }
+    const views: [RegExp, string | null, (texts: string[]) => void][] = [
+      [/^시스템\s*\d/, '시스템 목록', texts => catalog.systems.forEach(system => expect(texts).toContain(system.summary))],
+      [/^변경·결정·검증·계획/, '기록 목록', texts => catalog.records.forEach(record => expect(texts).toContain(record.title))],
+      [/^근거\s*\d/, null, texts => catalog.sources.forEach(source => expect(texts).toContain(source.note))],
     ];
-    for (const [name, covers] of views) {
+    for (const [name, listName, covers] of views) {
       await user.click(screen.getByRole('button', { name }));
       const texts = renderedTexts(browser);
+      if (listName) texts.push(...await detailTexts(browser, listName));
       covers(texts.map(leaf => leaf.text));
       expect(texts.map(leaf => leaf.text)).toContain(catalog.scopeNote);
       const found = findings(texts);
       expect(found, explain(found)).toEqual([]);
     }
     await user.click(screen.getByRole('button', { name: /^시스템\s*\d/ }));
+    const firstSystem = within(screen.getByRole('list', { name: '시스템 목록' })).getAllByRole('button')[0];
+    if (!firstSystem) throw new Error('System list is empty');
+    await user.click(firstSystem);
     expect(screen.getByText(/^클라이언트 연결 수명 정리 PR132 완료·병합/)).toBeVisible();
   });
 });
