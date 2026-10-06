@@ -4,9 +4,11 @@ const approvalLifetime = 30 * 60 * 1000;
 const permissionWindow = 120 * 1000;
 const mergeMethods = new Set(['--merge', '--squash', '--rebase']);
 const fileTools = new Set(['Write', 'Edit', 'MultiEdit', 'NotebookEdit']);
+const shellTools = new Set(['Bash', 'Monitor']);
+const promptTools = new Set(['CronCreate', 'ScheduleWakeup', 'SendMessage', 'RemoteTrigger']);
 // These options take their value from the next word, which is not a subcommand or refspec.
 const ghValueOptions = new Set(['-R', '--repo']);
-const gitValueOptions = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--super-prefix', '--config-env']);
+const gitValueOptions = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--super-prefix', '--config-env', '--attr-source']);
 const pushValueOptions = new Set(['--repo', '--receive-pack', '--exec', '--push-option', '-o']);
 
 const blockReasons = {
@@ -18,14 +20,15 @@ const blockReasons = {
   'already-used': '승인 기록을 이미 사용했다. 실패한 병합도 재사용할 수 없으므로 새 승인 문장을 받아라.',
   'missing-match-head-commit': '병합 명령에 --match-head-commit <40자>가 없다. = 형태는 받지 않으므로 승인받은 전체 head를 별도 인자로 넣어라.',
   'forbidden-flag': '--auto 또는 --admin 병합은 금지된다. 자동 병합이나 관리자 우회 없이 단독 병합 명령을 사용하라.',
-  'bad-form': '허용된 단독 병합 형태가 아니다. 낱말 사이 옵션·대문자·경로·.exe 명령 낱말은 받지 않는다. gh pr merge <번호> <방식 하나> --match-head-commit <40자 hex>만 사용하라.',
+  'bad-form': '허용된 단독 병합 형태가 아니다. 판정된 낱말 사이 옵션·대문자·경로·.exe 명령 낱말은 받지 않는다. gh pr merge <번호> <방식 하나> --match-head-commit <40자 hex>만 사용하라.',
   'compound-command': '병합 시도가 복합 명령이나 감싼 명령 안에 있다. 다른 명령·리다이렉트·치환 없이 gh pr merge만 실행하라.',
+  'non-bash-merge': 'Bash 밖 셸 도구의 병합 시도다. 병합은 Bash 도구의 단독 명령으로만 한다.',
   'api-merge': 'gh api를 통한 PR 병합·자동 병합은 금지된다. 메인 세션에서 승인받은 gh pr merge 단독 명령을 사용하라.',
   'push-main': 'main 목적지 또는 --all·--mirror push는 금지된다. 작업 브랜치를 push하고 PR로 통합하라.',
   'branch-lookup-failed': 'push의 현재 branch를 확인할 수 없다. hook 입력 cwd의 저장소와 git 상태를 확인하라.',
   'protected-path': '명령·파일 도구가 보호된 병합 관문 상태 폴더를 가리킨다. 에이전트가 표식·기록을 읽거나 수정하지 마라.',
-  'approval-injection': '다른 터미널에 병합 승인 문장을 넣는 명령이다. 사용자가 메인 창에 승인 문장을 직접 제출해야 한다.',
-  'invalid-input': 'hook 입력 또는 실행 환경을 해석하지 못했다. 유효한 hook JSON·session_id·tool_name과 Bash command 문자열을 확인하라.',
+  'approval-injection': '다른 터미널이나 예약·전달 prompt에 병합 승인 문장을 넣는 입력이다. 승인 문장은 사용자가 메인 창에 직접 입력한다.',
+  'invalid-input': 'hook 입력 또는 실행 환경을 해석하지 못했다. 유효한 hook JSON·session_id·tool_name·tool_input 객체와 Bash command 문자열을 확인하라.',
   'state-write-failed': '통과 직전 승인 사용 기록을 저장하지 못했다. 상태 폴더의 접근 권한·파일 상태를 확인한 뒤 다시 실행하라.',
 };
 
@@ -57,7 +60,10 @@ function blocked(code) {
 }
 
 function protectedPath(value) {
-  return typeof value === 'string' && /\.claude\/state\/merge-gate(?:\/|\b)/i.test(value.replaceAll('\\', '/'));
+  if (typeof value !== 'string') return false;
+  // Commands are text, not one filesystem path: fold separators and dots without resolving '..'.
+  const normalized = value.replaceAll('\\', '/').replace(/\/+/g, '/').replace(/\/(?:\.\/)+/g, '/');
+  return /\.claude\/state\/merge-gate(?:\/|\b)/i.test(normalized);
 }
 
 function protectedFilePath(value, cwd) {
@@ -80,11 +86,21 @@ function isCommandWord(word, name) {
   return filename === name || filename === name + '.exe';
 }
 
-// Delimiters expose words inside wrappers too; aliases, files and variable evaluation stay outside this policy.
+// §4: merge, API and push share simple-command boundaries, including wrappers and line continuations.
+// Quoted command text remains visible; only known option values respect their closing quote.
 function commandWords(command) {
-  return [...command.matchAll(/[^\s;&|`<>()]+/g)].map(match => ({
-    value: unquote(match[0]), end: match.index + match[0].length,
-  }));
+  return command.replace(/\\\r?\n/g, ' ').split(/[;&|`<>(){}\r\n]/)
+    .map(part => part.trim().split(/\s+/).filter(Boolean).map(raw => ({ raw, value: unquote(raw) })))
+    .filter(words => words.length > 0);
+}
+
+function optionValueEnd(words, optionIndex) {
+  let index = optionIndex + 1;
+  const quote = words[index]?.raw[0];
+  if (quote === '"' || quote === "'") {
+    while (index < words.length - 1 && !words[index].raw.endsWith(quote)) index += 1;
+  }
+  return index;
 }
 
 // §4 command words: skip options and their separate values before comparing the first subcommand words.
@@ -96,7 +112,7 @@ function findSubcommands(words, executable, subcommands, valueOptions) {
     for (let index = start + 1; index < words.length; index += 1) {
       const word = words[index].value;
       if (word.startsWith('-')) {
-        if (valueOptions.has(word)) index += 1;
+        if (valueOptions.has(word)) index = optionValueEnd(words, index);
         continue;
       }
       if (word !== subcommands[part]) break;
@@ -113,7 +129,8 @@ function findSubcommands(words, executable, subcommands, valueOptions) {
 function validToolInput(input) {
   return isObject(input) && isSessionId(input.session_id) &&
     typeof input.tool_name === 'string' && input.tool_name.trim().length > 0 &&
-    (input.tool_name !== 'Bash' || (isObject(input.tool_input) && typeof input.tool_input.command === 'string'));
+    isObject(input.tool_input) &&
+    (input.tool_name !== 'Bash' || typeof input.tool_input.command === 'string');
 }
 
 // §4 conditions 1–4 precede checkout, agent and record checks.
@@ -140,26 +157,27 @@ function inspectMergeCommand(command) {
   return { kind: 'merge', pr: Number(words[3]), head: head.toLowerCase(), command };
 }
 
-function inspectPushes(command, commandTokens) {
+function inspectPushes(commands) {
   let branchNeeded = false;
-  for (const pushIndex of findSubcommands(commandTokens, 'git', ['push'], gitValueOptions)) {
-    const tail = command.slice(commandTokens[pushIndex].end).split(/[;&|`<>\r\n]/, 1)[0];
-    const words = tail.trim().split(/\s+/).filter(Boolean).map(unquote);
-    const positional = [];
-    let remoteByOption = false;
-    for (let index = 0; index < words.length; index += 1) {
-      const word = words[index];
-      if (word === '--all' || word === '--mirror') return 'main';
-      if (word === '--repo' || word.startsWith('--repo=')) remoteByOption = true;
-      if (pushValueOptions.has(word)) index += 1;
-      else if (!word.startsWith('-')) positional.push(word);
+  for (const tokens of commands) {
+    for (const pushIndex of findSubcommands(tokens, 'git', ['push'], gitValueOptions)) {
+      const words = tokens.slice(pushIndex + 1);
+      const positional = [];
+      let remoteByOption = false;
+      for (let index = 0; index < words.length; index += 1) {
+        const word = words[index].value;
+        if (word === '--all' || word === '--mirror') return 'main';
+        if (word === '--repo' || word.startsWith('--repo=')) remoteByOption = true;
+        if (pushValueOptions.has(word)) index = optionValueEnd(words, index);
+        else if (!word.startsWith('-')) positional.push(word);
+      }
+      const refspecs = remoteByOption ? positional : positional.slice(1);
+      for (const refspec of refspecs) {
+        const destination = refspec.replace(/^\+/, '').split(':').at(-1);
+        if (destination === 'main' || destination === 'refs/heads/main') return 'main';
+      }
+      if (refspecs.length === 0 || refspecs.some(refspec => /^\+?(?:HEAD|@)$/.test(refspec))) branchNeeded = true;
     }
-    const refspecs = remoteByOption ? positional : positional.slice(1);
-    for (const refspec of refspecs) {
-      const destination = refspec.replace(/^\+/, '').split(':').at(-1);
-      if (destination === 'main' || destination === 'refs/heads/main') return 'main';
-    }
-    if (refspecs.length === 0 || refspecs.some(refspec => /^\+?(?:HEAD|@)$/.test(refspec))) branchNeeded = true;
   }
   return branchNeeded ? 'branch' : 'none';
 }
@@ -171,6 +189,11 @@ function otherCommandDecision(command) {
   return { kind: 'none' };
 }
 
+function containsApprovalText(value) {
+  if (typeof value === 'string') return value.includes('병합 승인:');
+  return value !== null && typeof value === 'object' && Object.values(value).some(containsApprovalText);
+}
+
 // Classify before touching state: ordinary commands never read approval files.
 export function preparePreToolUse(input) {
   if (!validToolInput(input)) return blocked('invalid-input');
@@ -178,15 +201,22 @@ export function preparePreToolUse(input) {
     const paths = [input.tool_input?.file_path, input.tool_input?.notebook_path];
     return paths.some(path => protectedFilePath(path, input.cwd)) ? blocked('protected-path') : { kind: 'none' };
   }
-  if (input.tool_name !== 'Bash') return { kind: 'none' };
+  // A scheduled or forwarded prompt can reach UserPromptSubmit, so protect every nested string value.
+  if (promptTools.has(input.tool_name)) {
+    return containsApprovalText(input.tool_input) ? blocked('approval-injection') : { kind: 'none' };
+  }
+  if (!shellTools.has(input.tool_name) || typeof input.tool_input.command !== 'string') return { kind: 'none' };
   const command = input.tool_input.command;
-  const words = commandWords(command);
-  if (findSubcommands(words, 'gh', ['pr', 'merge'], ghValueOptions).length > 0) return inspectMergeCommand(command);
-  if (/\bgh\s+api\b/.test(command) &&
+  const commands = commandWords(command);
+  if (commands.some(words => findSubcommands(words, 'gh', ['pr', 'merge'], ghValueOptions).length > 0)) {
+    // Only Bash has the standalone merge permission path; Monitor must never consume an approval.
+    return input.tool_name === 'Monitor' ? blocked('non-bash-merge') : inspectMergeCommand(command);
+  }
+  if (commands.some(words => findSubcommands(words, 'gh', ['api'], ghValueOptions).length > 0) &&
       (/\bpulls\/[0-9]+\/merge\b/.test(command) || /\b(?:mergePullRequest|enablePullRequestAutoMerge)\b/.test(command))) {
     return blocked('api-merge');
   }
-  const push = inspectPushes(command, words);
+  const push = inspectPushes(commands);
   if (push === 'main') return blocked('push-main');
   const fallback = otherCommandDecision(command);
   return push === 'branch' ? { kind: 'branch', fallback } : fallback;
