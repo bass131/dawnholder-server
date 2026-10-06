@@ -150,6 +150,45 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 - 소유 TEMP 사본으로 빌드하는 시험 helper(`tests/mcp-v3/temp-copy.ts`)는 지금 `catalog.json`만 복사한다. 카드 자료와 원문 구간 시험에 필요한 저장소 파일을 복사하도록 4단계에서 늘린다.
 - `mcp-dist`는 Git 제외 빌드 출력이고 지금은 2026-10-02의 v1 빌드다. 5단계가 `npm run mcp:build`로 새로 만든다(goal 「만들 것」 4의 「새로 빌드한 실행본」). 빌드 전에 옛 출력을 근거 폴더에 복사해 둔다. 기존 실패 B11·B12는 옛 출력과 비교하던 시험이므로 새 출력 기준으로 다시 판정한다.
 
+**MCP 서버 주입 지점.** 시험과 구현이 같은 이름을 쓴다. `createCatalogServer(options)`의 `CatalogServerOptions`에 아래 셋을 더한다. 기존 `readSnapshot`·`version`·`now`·`onToolHandlerEntered`는 그대로다.
+
+| 이름 | 형식 | `main.ts`의 연결 |
+|---|---|---|
+| `readGuide` | `(signal: AbortSignal) => Promise<GuideResult>` | 요청마다 `createSystemGuideStore(<카드 경로>).read()` |
+| `readSourceSection` | `(source: RecordSource, signal: AbortSignal) => Promise<SourceSectionResult>` | `createSourceSectionStore({ repositoryRoot }).read(source)` |
+| `readCheckout` | `(signal: AbortSignal) => Promise<CheckoutInfo>` | `createCheckoutStore({ repositoryRoot }).read()` |
+
+대안은 서버가 `repositoryRoot`와 카드 경로를 받아 store를 직접 만드는 것이었다. 그러면 메모리 안 시험도 파일 시스템 fixture를 만들어야 하고, 앱과 MCP의 store 연결이 두 곳으로 갈린다. 주입 지점은 `main.ts` 한 곳에서만 실제 store에 잇는다. signal은 취소 확인에 쓰며 store 자체는 signal을 받지 않는다.
+
+**도구 규칙.**
+
+- 스냅샷: 기록 도구 다섯 개와 `read_source_section`의 `snapshot`은 `{ hash: <색인 hash> }`, 카드 도구 두 개의 `snapshot`은 `{ hash: <카드 자료 version> }`이다. 카드 자료 version은 `GuideResult.version`이다. `expectedHash`는 각 도구의 `snapshot.hash`와 비교하고 다르면 `VERSION_CONFLICT`(`details.expectedHash`)다.
+- 판정 순서는 기존 도구와 같다. 취소 → 받아들임(동시·빈도) → 앞 페이지 버전 필수 검사 → 자료 읽기 → `expectedHash` 비교 → ID 찾기(`NOT_FOUND`) → 도구별 처리다. `VERSION_REQUIRED` 대상은 `list_systems`·`search_records`·`list_guide_cards`의 `offset > 0`과 `expectedHash` 없음, `read_source_section`의 `offset > 0`과 `expectedSectionHash` 없음이다.
+- `read_source_section`: 입력 `id`는 1~128자, `offset`은 0~262,144 정수, `expectedSectionHash`·`expectedHash`는 소문자 64자리 hex다. 스냅샷에서 출처를 찾은 뒤 `readSourceSection(source)`를 부른다. 실패 결과는 아래 표의 코드로 바꾸고 `details.reason`에 결과의 `reason`을 그대로 넣는다(`null`이면 `details`를 생략). 성공하면 `sectionHash`(구간 `text`의 UTF-8 SHA-256)를 계산하고, `offset > 0`이면 `expectedSectionHash`와 비교해 다르면 `VERSION_CONFLICT`(`details.expectedSectionHash`)다. 그 뒤 `readCheckout()`으로 `checkout`을 채운다.
+- 페이지: `offset`과 `returned`·`total`·`nextOffset`은 `text`의 UTF-16 code unit 기준이다. `total`은 `text.length`다. 서버는 응답 전체(기존 `responseBytes` 기준)가 16 KiB를 넘지 않는 가장 긴 조각을 `offset`부터 돌려준다. 조각 끝이 대리 쌍 가운데면 한 칸 줄인다. `offset`이 대리 쌍 가운데면 `INVALID_ARGUMENT`다. `offset ≥ total`이면 `text: ''`, `returned: 0`, `nextOffset: null`이다. 마지막 조각의 `nextOffset`은 `null`이다. 빈 조각으로도 16 KiB를 넘으면(긴 출처 필드 등) 기존처럼 `RESPONSE_TOO_LARGE`다. `offset < total`인데 문자 하나도 담지 못해도 `RESPONSE_TOO_LARGE`다.
+- 결과의 `source`는 `get_source`와 같은 출처 객체, `path`는 locator, `heading`은 결과의 `heading`(구간이 `null`이면 `null`)이다.
+- `list_guide_cards`: 입력은 `list_systems`와 같은 `query`(256자)·`limit`(1~50, 기본 10)·`offset`(0~100,000)·`expectedHash`다. `query`는 `matchesQuery`로 카드 `id`·`title`·`summary`를 찾는다. 순서는 카드 자료의 배열 순서다. 미리보기는 `{ id, parentId, title, relatedSystemIds, documentId, lookupSupported, truncatedFields }`이고 `title`은 80 UTF-16 code unit에서 자른다. `documentId`가 없으면 `null`, `lookupSupported`는 `id`가 128자 이하인지다. 목록 예산(기본 8 KiB, 그 밖 16 KiB)은 기존 목록 도구와 같다.
+- `get_guide_card`: 입력 `id`는 1~128자다. 결과는 `{ card, document }`이고 `card`는 카드 객체 전체, `document`는 `card.documentId`와 같은 `id`의 구현 설명 문서 전체 또는 `null`이다. 카드가 없으면 `NOT_FOUND`다.
+- 새 도구 세 개도 읽기 전용 annotation(`readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true`, `openWorldHint: false`)을 쓰고 `inputSchemas`·`outputSchemas`에 들어간다.
+
+| 원천 결과 | MCP 오류 코드 | 재시도 가능 |
+|---|---|---|
+| 원문 `not-readable` | `SOURCE_NOT_READABLE` | 아니오 |
+| 원문 `path-rejected` | `SOURCE_PATH_REJECTED` | 아니오 |
+| 원문 `missing` | `SOURCE_MISSING` | 아니오 |
+| 원문 `too-large` | `SOURCE_TOO_LARGE` | 아니오 |
+| 원문 `changed` | `SOURCE_CHANGED_DURING_READ` | 예 |
+| 원문 `invalid-encoding` | `SOURCE_INVALID_ENCODING` | 아니오 |
+| 원문 `section-missing` | `SECTION_MISSING` | 아니오 |
+| 원문 `section-ambiguous` | `SECTION_AMBIGUOUS` | 아니오 |
+| 카드 `missing` | `GUIDE_MISSING` | 예 |
+| 카드 `load` | `GUIDE_UNREADABLE` | 예 |
+| 카드 `too-large` | `GUIDE_TOO_LARGE` | 아니오 |
+| 카드 `invalid` | `GUIDE_INVALID` | 아니오 |
+| 카드 `changed` | `GUIDE_CHANGED_DURING_READ` | 예 |
+
+원문 `missing`은 끊긴 링크라서 재시도로 풀리지 않는다. 카드 `missing`·`load`는 색인 파일의 `CATALOG_MISSING`·`CATALOG_UNREADABLE`과 같은 이유로 재시도 가능이다. 카드의 `busy`·`denied`와 원문의 `invalid-request`·`index-unavailable`·`unknown-source`·`denied`는 MCP 경로에서 생기지 않는다(입력 스키마·스냅샷·요청마다 새 store). 생기면 기존처럼 고정 문장으로 진단을 남기고 `CATALOG_UNREADABLE`이다. 새 오류 코드의 고정 문장은 한국어 한 문장이며 입력·locator·경로·원시 오류를 담지 않는다. 문구는 5단계가 정하고, 시험은 코드마다 문장이 고정이고 위 내용을 담지 않음을 단정한다.
+
 ## 색인 검사
 
 `electron/record-index-check.ts`가 검사 본체(시험 대상)다. `scripts/check-record-index.mjs`가 CLI이고 `npm run records:check`로 실행한다. CLI는 Node 기본 TypeScript 실행으로 앱과 같은 원문 읽기 모듈을 그대로 불러온다. NodeNext 관례의 `.js` import를 `.ts` 원본으로 잇는 작은 resolve hook(`scripts/ts-source-loader.mjs`, `node:module`의 `register`)을 쓴다. 대안은 둘이었다. 별도 tsconfig로 컴파일하면 출력 폴더와 빌드 단계가 늘고, 검사 전용 JS 사본을 두면 앱과 판정이 갈릴 수 있다. 그래서 같은 코드를 쓰는 쪽을 골랐다. CLI가 불러오는 모듈은 지울 수 있는 TypeScript 문법만 쓴다(enum·namespace·생성자 매개변수 속성 없음).
