@@ -369,6 +369,18 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 질문 1: 공식 ask `msg_2cf6486d758b`(18:46:16Z). 출처는 사람 대조로 확인했다(E/session/fix4-question1-manual-check.md). v2.3 구현 뒤 기존 시험이 107 통과·3 실패였다. 계약이 지정한 두 경계 시험 밖에 `blocked-commands.test.mjs`의 「§4 Bash 6 and §6 …」이 `gh pr create --title "merge gate" --body "draft"` 때문에 실패했다.
   - 원인: 리드의 발행 전 영향 분석이 `assertNoDecision`만 찾고 같은 역할의 도우미 `assertCommandsUndecided`를 빠뜨렸다(리드 귀속). 두 도우미로 다시 돌리니 뒤집히는 기존 시험은 세 개, 고유 형태는 넷이 전부였다. 네 형태 모두 v2.3 「일부러 받아들이는 오탐」에 든다.
   - 리드 답 `msg_5ca0ec61d214`(18:47:23Z, 계약 v1 보충 1): 예상 실패를 세 시험·네 형태로 넓히고 완료 기준을 107/110으로 바꾼다. 제품 규칙은 좁히지 않는다. 동작 계약 파일·hash는 그대로 두고, 끝 「판본」의 「세 형태」 이력 문장은 이 보충으로 고친다.
+  - Sol이 답을 늦게 읽어 「회신 대기」 status(`msg_946e61b2af17`)를 보냈다. 리드가 답 위치를 안내했고(`msg_4eac80a343cb`) Sol이 같은 질문 ID로 원문을 회수해 반영했다(`msg_0c102e06c5da`). Sol은 heartbeat 주기 초과 두 구간(319초, 420초)을 보고서에 스스로 적었다.
+- 결과: worker_done `msg_652a803dcda5`(19:03:14Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/fix4-worker-done-check-output.json). 보고서는 [E/fix4/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/fix4/report.md)다. 리드가 코드 `d0caf8f`(merge-policy·README)와 문서 `f8d9751`(ORCA)로 나눠 커밋했다.
+  - 코드: `simpleCommands`가 경계 읽기와 치환 묶음 읽기를 합친다. `quotedWordEnd`가 건너뛰는 옵션·값 낱말을 따옴표가 닫힐 때까지 묶고, 닫히지 않으면 한 낱말만 건너뛴다. `suspectWords`가 마지막 그물이며, 정밀 차단·정식 단독 형태 다음, branch 조회 전에 본다. 새 차단 코드는 `suspect-words`다.
+  - 문서: ORCA 233에 그물 항목을 넣고 235에서 R3 예시를 뺐다(두 행 증감 합 0 bytes). README 표에 `suspect-words` 행을 더하고 셸 판정 문장을 v2.3에 맞췄다.
+  - Sol 자체 점검은 hook 호출 310회, 단언 440/440이다. 이전 세 commit과의 비교 47행 가운데 deny였던 32행이 모두 deny이고, deny → 결정 없음은 0행이다. S 형태 62회가 모두 정밀 판정 코드로 막혔다. 그물 34회는 `suspect-words`, 일상 대조 36회는 결정 없음이다.
+- 리드 R-2 표본 대조:
+  - 같은 명령을 다시 돌렸다. MergeGate는 110건 중 107 통과·3 실패이고, 실패는 보충 1의 세 시험 이름과 같다. Orca는 22/22다(E/lead-fix4-check.txt).
+  - 코드 diff와 ORCA·README diff를 읽었다. ORCA는 233·235행만 바뀌었고 문장이 계약과 같다. 적용 순서는 정밀 차단 → 단독 병합 형태 → 그물 → branch 조회로 v2.3과 같다.
+  - 리드 표본 16행(S1 셋, S2 둘, S3 하나, 그물 넷, 일상 다섯, 정식 단독 하나)을 작업 트리 제품에 넣었다. 모두 기대와 같았다(E/lead-fix4-check.txt). 비교표 E/fix4/comparison.md의 요약 행도 deny → 결정 없음 0행이다.
+  - 관찰: 새 주석 세 줄은 한국어이고 파일의 기존 주석은 영어다. 독립 검증자의 가독성 판정에 넘긴다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/fix4-release.json, fix4-before-close.json, fix4-close.json).
+- 리드 세션 관측: 작업 트리의 정책 파일이 바뀐 순간부터 리드 세션의 hook도 새 그물로 판정한다(hook이 실행 때 정책 파일을 읽음). 리드는 명령 문자열에 그물 낱말 조합을 쓰지 않는다.
 
 ## 요구사항 원천과 적용 결정
 
