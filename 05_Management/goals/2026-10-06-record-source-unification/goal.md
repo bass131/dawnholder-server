@@ -16,13 +16,13 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**PR1 문서 작성 중.** 2026-10-06 사용자 범위 승인 뒤 최신 main `9ee7ae1`에서 branch `docs/management-record-source-20261006`을 만들고 이 goal을 고정했다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 아직 작업자·검증자는 없다.
+**PR1 문서 작성 끝, 문서 실사 준비.** 2026-10-06 사용자 범위 승인 뒤 최신 main `9ee7ae1`에서 branch `docs/management-record-source-20261006`을 만들고 이 goal을 고정했다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 아직 작업자·검증자는 없다.
 
 다음 순서는 다음과 같다.
 
-1. 리드가 PR1 문서를 쓴다: 결정·요구 반영, 낡은 사실·상태 정정, 「다음 할 일」 27개 분류표, DB 1단계 과정 문서.
-2. DB 1단계 문서의 위치와 쓰기·검토 분담을 Core 리드와 조율한다(아래 「적용 중인 메인 결정」 4항).
-3. 신규 gpt-6-astra 문서 실사 → PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인.
+1. 끝남: 리드가 PR1 문서로 결정·요구 반영, 낡은 사실·상태 정정, [27개 분류표](next-steps-classification.md), DB 1단계 과정 문서를 썼다.
+2. 끝남: DB 1단계 문서의 위치·분담 조율과 사실 검토는 아래 「Core 조율 결과」와 「Core 사실 검토」에 끝났다.
+3. 신규 gpt-6-astra 문서 실사 → PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인. 27개 분류의 이관 행과 결정 요청 후보 2건은 메인에 보낸다(「적용 중인 메인 결정」 5항).
 4. PR2·PR3은 PR1 병합 뒤 각각 최신 main의 새 branch에서 시작한다.
 
 근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run `run_3fa510a50602`, 리드 handle `term_d2c6dac2-5fb3-401e-98f3-8f6ecba0cdd6`은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
@@ -174,8 +174,20 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - 원천: Core checkout의 로컬 `.backups/verification/2026-10-04-persistence-integration/`의 `g2-stage1-main-guide.md`(v2·patch 포함), `g2-stage1-submissions/`, `g2-stage1-execution/`, `g2-stage1-observations/`, 서비스 시작 실패 진단 `g2-service-diagnosis/`를 읽기 전용으로 대조한다. Git 제외 자료라 문서에는 「로컬 증거 경로」라고 밝힌 평문 경로로 적거나 goal의 해당 기록을 가리킨다.
 - 검증 배정: 과정 기록이라 DB·영속 데이터를 바꾸는 작업이 아니다. 시범대로 신규 gpt-6-astra 문서 실사다.
 
+### Core 사실 검토
+
+리드가 초안(80행, SHA-256 `4790a873…`)을 `msg_0a48f37abbb2`(E/`core-db-doc-review-request.txt`)로 보냈다. Core 리드가 `msg_aae81338f70f`(2026-10-06T10:26:58Z, E/`core-db-doc-review-reply.json`)로 사실 오류 1건과 정확도 4건을 돌려줬다. 발신 handle은 위 Core coordinator와 같다. 나머지 사실은 원천과 맞다고 했다.
+
+- 사실 오류: 안전장치 표의 `-NoProfile` 이유. 프로필 스크립트만 막고 상속 환경 변수는 막지 못한다. 원천은 Core checkout의 로컬 증거 경로 `.backups/verification/2026-10-04-persistence-integration/g2-preparation-v4/execution-plan.md`(Git 제외) 39·64행이다. 리드가 그 두 행과 대조해 고쳤다.
+- 정확도: 승격 마운트 시도의 주체(메인), 모듈 경로 실패 창(비승격 PowerShell 5.1, PID 30952 → 27280), 기록 부재의 검색 범위(01_Phases·00_Document·메인 메모리 0건), 2단계 범위(Complete·U-01·정리).
+- 다섯 곳 모두 반영했다. Core는 문서 실사 검증자가 `-NoProfile` 문장을 같은 두 행과 다시 대조해 달라고 했다.
+
+### 「다음 할 일」 27개 분류
+
+[분류표](next-steps-classification.md)를 원천 재대조로 확정했다. 로드맵 연결 10, 폐기(변경 규칙 사본) 9, 폐기(사용자 결정) 1, 완료 삭제 3, 애매 2(한 묶음), 나눔 1, 일부 완료+이관 1이다. 초안의 애매 3건 중 평가 실행 여부(#16)는 기준선 goal의 실행·채점 기록이 있어 완료 삭제로 바꿨다. BACKLOG 이관 행은 `management-launcher-real-run` 하나다. 결정 요청 후보는 실제 원격 플레이 확인과 시스템 지도 3D 표현 두 건이다.
+
 ### 진입과 준비
 
 - **진입:** 새 Run `run_3fa510a50602`(E0/`run-create.json`), READY `msg_fa27c1982e46`(E0/`ready-sent.json`). 진입 때 worktree는 종료 기록 branch `docs/management-record-navigation-closeout`(HEAD `e37f261`, origin/main보다 19 뒤, 미커밋 0)이었다.
 - **27개 분류 초안:** 승인 전 읽기 조사로 E0/`nextsteps-classification-draft.md`를 만들었다. 확정 전 원천을 다시 대조한다.
-- **열린 질문:** DB 1단계 문서 위치(Core 조율), PR3 시험 작성자 모델(메인), 27개 중 애매 3건(실제 원격 플레이 확인, 평가 실행 여부, 3D 표현)의 처리.
+- **열린 질문:** PR3 시험 작성자 모델(PR3 계약 전 메인), 27개 중 결정 요청 후보 2건(실제 원격 플레이 확인, 시스템 지도 3D 표현). DB 1단계 문서 위치는 Core 조율로 닫혔다.
