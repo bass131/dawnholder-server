@@ -79,6 +79,8 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 5. Rules로 갈 제안은 메인에 보낸다. 메인이 새 Rules 리드의 goal 입력에 넣는다. 위치 규칙·문서 지도·색인 검사 CI·목표 사이 main 유지 제안 5건은 `msg_026b701e3728`로 보냈다. BACKLOG 이관 행은 27개 분류 확정 뒤 보낸다.
 6. 종료 점검 후보 2(vitest CI)는 계획 14번, 후보 1(검증 실행 helper)은 계획 11번에 속하며 둘 다 묶음 2다. 이 goal에 넣지 않는다.
 
+메인 `msg_27b8e5c2e6fb`(2026-10-06T14:13:29Z, E/`wait-24.json`)의 PR2 파일 확인: 리드가 올린(`msg_f125f5e23ac6`) `package.json`·`src/recordsBridge.d.ts`·`src/recordCatalog.ts`·`src/styles.css`는 승인된 PR2 범위에 딸린 파일이라 Sol 계약에 넣는다. `package.json`은 scripts의 `"records:check"` 한 줄만 바꾼다. dependencies·devDependencies와 lockfile이 바뀌면 의존성 변경이라 쓰기 전에 메인에 올린다. 검증 계약에 `package.json`·lockfile의 실제 diff 확인을 넣는다.
+
 메인 `msg_dbff8df03e07`의 운영 지시: `gh pr create`와 `gh pr merge`는 사용자 확인 창 대상이므로 실행 직전에 메인에 알린다. 병합은 PR마다 메인이 그 head에 대한 사용자 승인을 전달한 뒤에만 한다. 초안과 goal이 달라지는 곳이 생기면 쓰기 전에 메인에 알린다. 우편함 대기는 8개 type `--types` 필터와 `--timeout-ms 900000`을 쓴다(진입 메시지).
 
 ## 만들 것

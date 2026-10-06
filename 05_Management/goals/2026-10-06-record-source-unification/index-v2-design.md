@@ -54,9 +54,14 @@
 
 성공 결과는 `{ ok: true, sourceId, path, heading, text, bytes }`이고 실패 결과는 `{ ok: false, code, reason, message }`다. `reason`은 위 표기 값 또는 `null`이고 `message`는 고정 한국어 문장이며 입력·경로·원시 오류를 담지 않는다. IPC 발신자가 신뢰되지 않으면 `denied`다.
 
+진입 함수는 둘이다. 시험과 구현이 같은 이름을 쓴다.
+
+- `createSourceSectionStore({ repositoryRoot })` → `{ read(source: RecordSource): Promise<SourceSectionResult> }`. 4~9단계다. MCP는 자기 스냅샷에서 출처를 찾은 뒤 이 함수를 부른다.
+- `createSourceSectionReader({ readCatalog, store })` → `{ read(input: unknown): Promise<SourceSectionResult> }`. 1~3단계 뒤 `store.read`에 넘긴다. `readCatalog`는 `() => Promise<CatalogResult>`다. IPC 처리기는 `trustedSender` 확인 뒤 이 `read`에 그대로 위임한다.
+
 ### 거절 사례 8종
 
-메인 결정(`msg_4c7e21aeead6` 2항)의 사례다. PR2 시험은 사례마다 앱 경계(IPC 처리기를 거친 결과)와 MCP 도구 결과를 모두 확인한다.
+메인 결정(`msg_4c7e21aeead6` 2항)의 사례다. PR2 시험은 사례마다 앱 쪽 진입(`createSourceSectionReader().read`, 시험용 루트와 fixture 색인)과 MCP 도구 결과를 모두 확인한다. IPC 처리기 시험은 발신자 거절과 위임 연결을 확인한다. `main.ts`의 루트·색인 경로는 고정이라 fixture를 넣을 수 없기 때문이다.
 
 | 사례 | 예시 | 앱 결과 | MCP 오류 |
 |---|---|---|---|
@@ -80,7 +85,7 @@
 3. `<gitdir>/HEAD`가 `ref: refs/heads/<이름>`이면 branch, 40 또는 64자리 hex면 분리된 HEAD다. ref 이름은 `refs/heads/`로 시작하고 `..`·역슬래시·제어 문자·`.`로 시작하는 구간·`.lock` 끝이 없어야 한다(`ref-invalid`).
 4. ref 값은 `<gitdir>/<ref>` → `<commondir>/<ref>` → `<commondir>/packed-refs` 순으로 찾는다(`#`·`^` 줄 무시). 없으면 `ref-missing`이다.
 
-결과는 `{ state: 'known', branch: string | null, head: string }` 또는 `{ state: 'unknown', reason }`이다. reason은 `no-git`·`link`·`pointer-invalid`·`backlink-mismatch`·`head-invalid`·`ref-invalid`·`ref-missing`·`too-large`·`load`다. 참고 구현은 `99_Tools/ModuleBoundaries/inputs.py`의 `git_command`(역링크 확인, 4096 바이트 상한)다.
+진입 함수는 `createCheckoutStore({ repositoryRoot })` → `{ read(): Promise<CheckoutInfo> }`다. 결과는 `{ state: 'known', branch: string | null, head: string }` 또는 `{ state: 'unknown', reason }`이다. reason은 `no-git`·`link`·`pointer-invalid`·`backlink-mismatch`·`head-invalid`·`ref-invalid`·`ref-missing`·`too-large`·`load`다. 참고 구현은 `99_Tools/ModuleBoundaries/inputs.py`의 `git_command`(역링크 확인, 4096 바이트 상한)다.
 
 ## Electron 경계
 
@@ -132,7 +137,13 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 
 `electron/record-index-check.ts`가 검사 본체(시험 대상)다. `scripts/check-record-index.mjs`가 CLI이고 `npm run records:check`로 실행한다. CLI는 Node 기본 TypeScript 실행으로 앱과 같은 원문 읽기 모듈을 그대로 불러온다. NodeNext 관례의 `.js` import를 `.ts` 원본으로 잇는 작은 resolve hook(`scripts/ts-source-loader.mjs`, `node:module`의 `register`)을 쓴다. 대안은 둘이었다. 별도 tsconfig로 컴파일하면 출력 폴더와 빌드 단계가 늘고, 검사 전용 JS 사본을 두면 앱과 판정이 갈릴 수 있다. 그래서 같은 코드를 쓰는 쪽을 골랐다. CLI가 불러오는 모듈은 지울 수 있는 TypeScript 문법만 쓴다(enum·namespace·생성자 매개변수 속성 없음).
 
-검사 묶음은 셋이고 묶음마다 실행 상태(실행함/실행 못 함)를 따로 낸다. 진단 줄은 `severity 코드 위치 — 원인 — 고치는 방법` 형식이며 마지막 줄에 묶음별 상태와 오류·warning 수를 낸다.
+검사 본체의 진입 함수는 `checkRecordIndex({ repositoryRoot }): Promise<RecordIndexCheckResult>`다. 결과는 `{ diagnostics, groups, exitCode }`이고 진단은 `{ severity: 'error' | 'warning', code, location, cause, fix }`, 묶음 상태는 `{ group: 'index' | 'goals' | 'backlog', ran: boolean }`이다. CLI는 진단마다 `<severity> <code> <location> — <cause> — 고치는 방법: <fix>` 한 줄을 내고, 마지막 줄에 `records:check index=<ran|failed> goals=<ran|failed> backlog=<ran|failed> errors=<수> warnings=<수>`를 낸다.
+
+검사 묶음은 셋이고 묶음마다 실행 상태를 따로 낸다. 파일을 읽지 못한 경우(색인 파일 없음·읽기 실패, goals 폴더 목록 실패, BACKLOG 없음·읽기 실패, 출처 파일의 `load`·`changed`)는 그 묶음의 실행 못 함이고 정책 위반 진단으로 바꾸지 않는다. 진단 코드는 아래로 고정한다. `location`은 색인이면 `catalog.json`과 문제 객체의 ID·키(ID가 없으면 배열 위치), goal이면 goal 폴더 경로, 백로그면 `BACKLOG.md:<행>`을 담는다.
+
+- 색인 error: `CATALOG_INVALID`(JSON·스키마·허용 밖 키·중복 ID), `REFERENCE_BROKEN`, `LOCATOR_INVALID`(local 경로 모양·handoff ID 모양), `SOURCE_PATH_REJECTED`(cause에 reason), `SOURCE_NOT_READABLE`(git 출처의 확장자에 `section` 지정), `SOURCE_MISSING`, `SOURCE_TOO_LARGE`, `SOURCE_INVALID_ENCODING`, `SECTION_MISSING`, `SECTION_AMBIGUOUS`.
+- goal warning: `GOAL_NOT_INDEXED`.
+- 백로그 warning: `BACKLOG_ID_FORMAT`, `BACKLOG_ID_DUPLICATE`, `BACKLOG_GOAL_LINK_MISSING`, `BACKLOG_PROMOTION_LINK_MISSING`, `BACKLOG_TABLE_FORMAT`.
 
 | 묶음 | error(끊긴 링크) | warning(파일럿) |
 |---|---|---|
@@ -169,6 +180,8 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 | 4 | 신규 Opus 시험 작성자 | MCP v2의 실패하는 요구 시험: DTO, 새 도구 세 개, 거절 사례(MCP), 경계·빌드 시험, fixture v2 |
 | 5 | 신규 Sol | MCP 제품 코드와 새 빌드 |
 | 6 | 신규 Opus 독립 검증자 | PR 전체 강 등급 검증과 실제 Electron 확인 |
+
+`package.json`은 scripts의 `"records:check"` 한 줄만 바꾼다. 의존성·lockfile 변경은 쓰기 전에 메인에 올린다(메인 `msg_27b8e5c2e6fb`).
 
 2와 3 사이, 4와 5 사이에는 MCP 시험이 실패한 채 남는다. 각 완료 보고는 그 실패를 예정된 실패로 따로 적는다. 리드는 단계마다 README·MCP.md의 사용 흐름과 재빌드 조건을 쓴다.
 
