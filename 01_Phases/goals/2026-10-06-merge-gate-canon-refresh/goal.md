@@ -382,6 +382,17 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/fix4-release.json, fix4-before-close.json, fix4-close.json).
 - 리드 세션 관측: 작업 트리의 정책 파일이 바뀐 순간부터 리드 세션의 hook도 새 그물로 판정한다(hook이 실행 때 정책 파일을 읽음). 리드는 명령 문자열에 그물 낱말 조합을 쓰지 않는다.
 
+### PR1 세 번째 재검증
+
+- 검증자: 신규 `claude-opus-5-5`, 태그 `[Rules 검증자]`(검증자 모델 시범의 보안 경계 예외). 리드 pane 아래 vertical split이고 handle은 `term_de54af9a-aaba-4b1d-bb33-1685d27c62a7`이다. 첫 화면은 Claude Code v2.1.292, Opus 5.5 xhigh, auto mode on이다. 이전 검증자(v2.1.291)보다 Claude Code 판이 하나 올라갔다. 선택창은 없었다(E/reverify3-first-screen.json). backend는 unknown이다.
+- 계약: [E/reverify3-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/reverify3-contract.md) v1, SHA256 `61eb5cb3…`, 고정 HEAD `222f660`, 동작 계약 v2.3과 수정 계약 보충 1. 강 등급이다.
+  - 대상은 S1·S2·S3와 가독성 지적 둘의 해결, 마지막 그물의 동작, 이전 판정 결함들의 해결 유지다.
+  - 기존 시험 세 개는 네 형태만 `suspect-words` 기대로 옮길 수 있고, 실패 분류 표를 판정문에 남긴다(메인 R-2 대상).
+  - 실제 진입 4a는 Bash 셋(없는 PR 병합, 경로 변수를 쓴 main push, 그물만 걸리는 fetch·push 묶음)과 Monitor 하나(같은 그물 형태)다. 4b는 headless 두 턴이다.
+  - 메인 관심인 일상 명령 영향을 관찰 항목으로 넣었다.
+  - 경로 기계 확인은 E/reverify3-contract-pathcheck.txt(19:06:49Z)다.
+- Task `task_9f42955ee99f`, Dispatch `ctx_39a5532903dd`다. receipt는 input_accepted, turnStart observed다(E/reverify3-worker-start.json).
+
 ## 요구사항 원천과 적용 결정
 
 메인이 전달한 사용자 결정은 사용자 직접 입력과 구분한다. 이번 착수의 원천은 다음과 같다.
