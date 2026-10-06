@@ -16,16 +16,16 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 03:2x KST, PR2 MCP 선행 시험 commit 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 03:5x KST, PR2 MCP 구현 commit 뒤의 문서 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」). 네 작업자는 정산·종료했고 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」). 다섯 작업자는 정산·종료했고 열린 작업자·검증자는 없었다.
 
 당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
 1. (끝남) 신규 `claude-opus-5-5` 시험 작성자의 기록 읽기 경계 선행 시험.
 2. (끝남) 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
-3. (MCP 시험 끝남) 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고(화면 시험 시간 상한 포함), 신규 Sol이 MCP를 구현하고 `mcp-dist`를 새로 빌드한다.
-4. 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증한다. 실제 Electron 확인은 「설계와 검증 경계」를 따른다.
+3. (끝남) 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고(화면 시험 시간 상한 포함), 신규 Sol이 MCP를 구현하고 `mcp-dist`를 새로 빌드한다.
+4. 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증한다. 실제 Electron 확인은 「설계와 검증 경계」를 따른다. 4단계 시험 결함(`mcp-v2-bytes`의 비 `.md` 출처 성공 단정) 정정도 이 검증자가 맡는다.
 5. PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인.
 6. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
 
@@ -267,6 +267,16 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **결과:** 새 시험 파일 6개와 기존 MCP 시험·helper 22개를 고쳤다(+2353/−396). 리드가 시험 파일만 `948279df`로 commit했다. 같은 명령의 결과는 쓰기 전 1014개 중 936 통과·67 실패·11 미실행에서 쓴 뒤 1193개 중 918 통과·264 실패·11 미실행이다(수집 실패 0). 실패·미실행 275건은 5단계 구현 예정 238, 5단계 재빌드 예정 33, B11·B12(새 출력 기준으로 고침, 재빌드 예정) 각 1, B01·B09 각 1이다. 회귀·원인 미확정은 0건이다. 화면 시험 시간 상한은 (시스템+기록 수)×250ms(지금 16,750ms)다.
 - **리드 대조:** 쓴 뒤 수치를 원시 JSON에서 다시 셌고 범위가 `tests/` 28개뿐임을 확인했다. 거절 사례 8종 시험이 code·`details.reason`을 `toEqual`로 단정함을 표본으로 읽었다. 새 시험의 제품 import는 시험 대상(서버·리더)과 앱 store·타입뿐이다.
 - **맥락 메모 시점 관찰:** 메모 파일의 현재 생성 시각(03:08 KST)이 첫 새 시험 파일(02:20 KST)보다 늦다. 작업 끝에 파일을 통째로 다시 쓰면서 생성 시각이 바뀐 것으로 보인다. 첫 쓰기 전 메모의 근거는 메모 본문의 작성 시점 기록(02:1x KST)과, Orca가 17:14:55Z(02:14 KST)에 받은 heartbeat 「context memo written; starting test files」다. 6단계 검증자에게 이 점을 알린다.
+
+### PR2 MCP 구현
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max」, backend unknown)이 MCP를 색인 v2와 새 도구 세 개(`read_source_section`·`list_guide_cards`·`get_guide_card`)로 바꾸고 `mcp-dist`를 실제 작업 트리에서 다시 빌드했다. Task `task_965b0ff1fb91`, Dispatch `ctx_e05f9a6df34a`, worker_done `msg_92c8dbf80965`(2026-10-06T18:52:59Z). 계약 E/`pr2-s3-task.txt`(SHA-256 `8658d473…`), 보고 E/`pr2-s3/report.md`.
+- **리드 답:** 질문 둘에 답했다. 4단계 시험 `mcp-v2-bytes`의 canonical 시험은 versioned 출처를 모두 성공으로 단정하는데, 설계는 git 출처 중 소문자 `.md`만 읽는다(실제 색인의 `.cs` 출처 둘은 `SOURCE_NOT_READABLE`·`extension`). 이것을 4단계 시험 결함으로 분류해 남겨도 되고 6단계 검증자가 고친다고 답했다(`msg_f900979a7a68`). 작업 중 생긴 goal 변경은 리드 기록이라 Sol 범위 판정에서 분리하라고 답했다(`msg_b82fdedc2c7d`).
+- **결과:** `mcp/` 제품 파일 6개 수정·3개 신규(+565/−88)다. 기존 다섯 도구의 조회는 `catalog-record-tools.ts`로 옮겼고, 원문 구간과 카드 처리는 `catalog-source-tool.ts`·`catalog-guide-tools.ts`가 맡는다. 경로 판정·구간 추출·카드 판정·checkout은 앱 `electron/` 모듈을 그대로 쓴다. 새 오류 코드 14개의 고정 문장은 보고 부록에 있다. 같은 명령의 전체 시험은 쓰기 전 1193개 중 918 통과·264 실패·11 미실행에서 재빌드 뒤 1190 통과·3 실패·0 미실행이다. 남은 실패는 B01·B09와 위 시험 결함이다. 4단계가 이번 단계에 넘긴 273건 중 272건이 통과했다. 타입 검사 셋과 `records:check`는 exit 0이다. 새 빌드 버전은 `0.0.0+sha256.ea3beb5e…`이고 `mcp-dist`는 13파일에서 22파일(설계의 electron 공유 모듈 9개와 MCP 13개)이 됐다.
+- **리드 대조:** 쓴 뒤 수치를 원시 JSON에서 다시 셌다. 세 타입 검사·`records:check`·빌드의 meta exit를 읽었다. 현재 `mcp-dist` 22파일의 SHA-256이 after 목록과 모두 같음을 다시 계산했다. 보호 산출물 561파일의 전후 대조가 같다. 맥락 메모의 생성 시각(03:16:33 KST)이 쓰기 전 시험(03:16:57 시작)과 첫 제품 파일 시각(03:20:58)보다 앞서고, 쓰기 전 시험 수치가 4단계 결과와 같다. 범위는 `mcp/` 9개와 리드의 goal 변경뿐이다. 프로세스 실행 호출이 없고 `main.ts`의 고정 경로 셋이 설계와 같음을 읽었다.
+- **commit:** `f8aaae02`. 기존 조회의 이관 hunk가 `catalog-server.ts`의 새 주입·분기 hunk와 섞여 있어 구조 commit을 따로 나누지 않았다. 나누려면 시험하지 않은 중간 상태를 리드가 만들어야 하기 때문이다. 이 사정은 commit 본문에 적었다.
+- **문서:** `05_Management/MCP.md`를 도구 여덟 개, 고정 경로 셋, `snapshot.hash` 하나, 원문 구간의 페이지·오류, 공유 앱 모듈을 포함한 재빌드 조건으로 고쳤다.
+- **리드 절차 위반(파트 첫 발생, 세션 전체 네 번째):** 2026-10-07 03:31:58 KST에 리드가 우편함 대기 `orca orchestration check --wait`를 `&`와 `/dev/null`로 띄웠다(CLAUDE.md 「백그라운드 `&`나 `/dev/null` 리다이렉트로 출력을 버리지 않는다」 위반). 리드는 자기 고아 프로세스 하나만 껐고, 다른 세션의 check 프로세스는 두었다. 끈 뒤 peek가 0건이었고, inbox에도 5단계 Sol의 마지막 질문 `msg_4fbb22870bdc`와 리드 답 `msg_f900979a7a68` 뒤 새 메시지가 없어 유실은 없었다. 대기는 `run_in_background`와 `tee`로 하나만 다시 열었다. 메인 보고는 `msg_7b1146198e16`이다. 메인 답 `msg_839e3dbccd57`에 따르면 10-06에 메인 두 번, Rules 리드 한 번이 먼저 있었다. 반복 규칙은 Rules가 맡는다(Rules goal PR2의 대기 정책 정본 문장, 대기 차단 hook은 다음 묶음 후보). 메인이 Rules 요청서에 이 건을 더했다.
 
 ### 진입과 준비
 
