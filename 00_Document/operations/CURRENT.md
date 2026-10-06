@@ -12,7 +12,7 @@
 
 - Core: `C:/Dev/DawnHolder_Project` · `feat/persistence-integration-20261004`
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-currency-20261005`
-- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/operating-followup-core-20261006`
+- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/operating-followup-closeout-20261006`
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `docs/architecture-tests-ci-closeout-20261005`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-record-navigation-20261005`
 

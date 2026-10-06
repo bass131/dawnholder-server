@@ -2,7 +2,7 @@
 
 ## 재개 지점
 
-Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. **세션은 2026-10-05T22:35Z 사용자 지시로 멈췄고, 2026-10-06 세션이 이어받았다. 리드는 바로 아래 「세션 마무리 상태」와 그다음 「2026-10-06 세션 진행」을 읽고 이어간다.** 그 아래 하위 절은 시각순 진행 기록이며, 그 안의 「아침」은 「다음 세션」으로 읽는다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
+Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal·본 PR 두 개의 범위를 확인했다. **세션은 2026-10-05T22:35Z 사용자 지시로 멈췄고, 2026-10-06 세션이 이어받아 PR193까지 병합했다. 리드는 바로 아래 「세션 마무리 상태」와 그다음 「2026-10-06 세션 진행」을 읽고, 그 절 끝의 「현재 위치」에서 이어간다.** 그 아래 하위 절은 시각순 진행 기록이며, 그 안의 「아침」은 「다음 세션」으로 읽는다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - 근거 폴더 E: `.backups/verification/2026-10-05-ci-warning-operating-followup/`(Git 제외).
@@ -14,9 +14,9 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 메인 `msg_839b59777aea`(22:33:57Z)가 전달한 사용자 원문: 「일단 나중에 더 진행해보자, 현재 멈춘 기준으로 각 세션들 재개포인트 잡아주고 전부 마무리하자 / 나중에 새로운 세션에서 이어서 하지 뭐」. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다.
 
 - **Git**: branch `docs/operating-followup-core-20261006`, 이 재개 기록을 담은 commit이 HEAD다. 직전 push head는 `a488b1bf6bf35d11aa2f0c62ef5f0e96e74c4b12`다. 다음 세션은 `git rev-parse HEAD @{u}`와 `git status`로 먼저 확인한다.
-- **PR188 - npm engines 경고 노출**: OPEN, head `68e7ba204289b57f83369b2df2c333aa5e3fe99f`, mergeStateStatus CLEAN, 미병합(22:34Z `gh pr view`). 그 head의 CI 4개는 성공했다. 사용자 병합 승인은 이 정확한 head로 전달됐고(`msg_a82fbd4155e1`), 병합 명령만 확인 창에 막혔다.
+- **PR188 - npm engines 경고 노출**: OPEN, head `68e7ba204289b57f83369b2df2c333aa5e3fe99f`, mergeStateStatus CLEAN, 미병합(22:34Z `gh pr view`, 조회 원시는 저장하지 않았다). 그 head의 CI 4개는 성공했다. 사용자 병합 승인은 이 정확한 head로 전달됐고(`msg_a82fbd4155e1`), 병합 명령만 확인 창에 막혔다.
 - **PR2 - 운영 후속 결정과 Core 명칭 정본화**: PR 미생성, 위 branch에 push만 했다. 문서 실사 통과(c1299550), 보완 뒤 좁힌 재실사 통과(7bff758). 재실사 뒤 goal 기록 커밋(a488b1b와 이 재개 기록)은 재판정 전이다. 원격 CI는 PR이 없어 돌지 않았고, 로컬 대응 검사만 했다([E/pr2-local-ci/summary.md](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/pr2-local-ci/summary.md)).
-- **사용자 결정 대기**: 현황판 결정 목록에 Rules 항목은 없다(22:34Z board.json 조회). 사용자 손이 필요한 일은 셋이다. PR188 병합 확인 창, PR2 생성 확인 창, PR2 개별 병합 승인(아래 재실사·R-2 뒤 새 요청)이다.
+- **사용자 결정 대기**: 현황판 결정 목록에 Rules 항목은 없다(22:34Z board.json 조회, 조회 원시는 저장하지 않았다). 사용자 손이 필요한 일은 셋이다. PR188 병합 확인 창, PR2 생성 확인 창, PR2 개별 병합 승인(아래 재실사·R-2 뒤 새 요청)이다.
 - **살아 있는 작업자**: 0. rules-active 터미널은 이 리드 하나였고 메인이 닫는다.
 
 다음 세션 순서(메인 `msg_455215cd0e21`·`msg_839b59777aea`):
@@ -37,13 +37,21 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 
 근거 폴더는 E/session-20261006/이다.
 
-- **진입**: 메인 `msg_bf63c20c8abe`(06:05:31Z, 원문 요지 main-entry-delivery.md)로 새 `claude-opus-5-5` 리드가 진입했다. handle `term_e7ff3c36-4773-46c9-a49e-1a9dedec8058`, incarnation `ac92237b-8da7-4ffc-b90d-31aaee30789c`, 화면 표시 Opus 5.5 xhigh, backend unknown. 태그는 `[Rules Astra]`다.
+- **진입**: 메인 `msg_bf63c20c8abe`(06:05:31Z, 요지 main-entry-delivery.md, Orca inbox에서 사후 보존한 원문 main-entry-delivery-raw.json)로 새 `claude-opus-5-5` 리드가 진입했다. handle `term_e7ff3c36-4773-46c9-a49e-1a9dedec8058`, incarnation `ac92237b-8da7-4ffc-b90d-31aaee30789c`, 화면 표시 Opus 5.5 xhigh, backend unknown. 태그는 `[Rules Astra]`다.
 - **Run**: 새 Run `run_85d02ac657b0`(회신 주소 `run:run_85d02ac657b0`, run-create.json)을 만들었다. 이전 Run `run_993867656376`은 쓰지 않는다.
 - **진입 상태 대조**(06:06Z, entry-git-state.txt·entry-pr188-state.json): HEAD `94739ac`가 원격과 같고 미커밋 파일은 없었다. 재개 정본의 「직전 push head a488b1b」와 달리 재개 기록 commit까지 push돼 있었다. 그 밖의 차이는 없었다. READY는 `msg_7eadda409ece`(06:07:40Z)다.
-- **PR188 병합**: 메인 신호 `msg_18b638edcad0`(06:08:51Z, main-pr188-merge-signal-delivery.json) 뒤 fresh 확인은 OPEN·head `68e7ba2`·CLEAN·CI 4/4였다(E/pr188-merge/pre-merge-state-20261006.json). `gh pr merge 188 --merge --match-head-commit 68e7ba204289b57f83369b2df2c333aa5e3fe99f`를 사용자가 확인 창에서 승인했고, 06:18:24Z에 merge `064cbd0`으로 병합됐다(post-merge-state-20261006.json). 원격 PR188 branch는 저장소 설정 `delete_branch_on_merge: true`로 자동 삭제됐다. 병합 명령에는 삭제 옵션이 없었다.
-- **최신 main merge**: `064cbd0`을 merge한 `573b6f4`의 트리는 직전 `94739ac`와 같다. 두 부모가 이미 이 branch에 있었기 때문이다. PR diff 파일은 PR2 경계 10개다(pr2-main-merge-proof.json·pr2-main-merge-remerge.diff).
+- **PR188 병합**: 메인 신호 `msg_18b638edcad0`(06:08:51Z, main-pr188-merge-signal-delivery.json) 뒤 fresh 확인은 OPEN·head `68e7ba2`·CLEAN·CI 4/4였다(E/pr188-merge/pre-merge-state-20261006.json). `gh pr merge 188 --merge --match-head-commit 68e7ba204289b57f83369b2df2c333aa5e3fe99f`를 사용자가 확인 창에서 승인했고, 06:18:24Z에 merge `064cbd0`으로 병합됐다(post-merge-state-20261006.json). 원격 PR188 branch는 저장소 설정 `delete_branch_on_merge: true`로 자동 삭제됐다. 병합 명령에는 삭제 옵션이 없었다. 당시 설정 조회 원시는 저장하지 않았고, 06:53:55Z 사후 재조회에서 같은 값을 확인했다(repo-settings-requery.txt).
+- **최신 main merge**: `064cbd0`을 merge한 `573b6f4`의 트리는 직전 `94739ac`와 같다. `064cbd0`의 두 부모(`6358650`·`68e7ba2`)가 이미 이 branch에 있었기 때문이다. PR diff 파일은 PR2 경계 10개다(pr2-main-merge-proof.json·pr2-main-merge-remerge.diff).
 - **PR 생성**: 메인에 생성 직전 알림 `msg_e5fcce06871f`(06:20:59Z, pr2-create-notice-to-main.md)를 보냈다. `gh pr create`를 사용자가 확인 창에서 승인해 [193 - 운영 후속 결정과 Core 명칭 정본화](https://github.com/bass131/dawnholder-server/pull/193)가 06:22:59Z에 생겼다. 생성 head는 `af7515b`, 본문은 pr2-body-20261006.md다(pr193-created-state.json).
 - **PR189 뒤 main merge**: Management PR189가 같은 시각 merge `a90426a`로 병합돼 PR193이 DIRTY가 됐다. BACKLOG의 붙은 세 행이 충돌했다. 이 branch의 `npm-engine-warning`·`work-status-view` 행과 main의 `server-operations-view` 행을 각각 살려 `386d078`로 merge했다. CURRENT는 자동 병합돼 main의 Management goal·branch 줄을 유지한다. 두 파일 모두 「병합 결과와 main의 차이 = 이 branch의 변경」, 「병합 결과와 이 branch의 차이 = main의 변경」을 확인했다(pr2-main-merge2-proof.json·pr2-main-merge2-remerge.diff).
+- **3차 좁힌 재실사**: head `6e5422d`를 고정해 신규 Opus를 R-5대로 이 pane split으로 열었다(메인 알림 `msg_4fb17c130e16`, Task `task_55f5c4161e9c`, Dispatch `ctx_7143456b811b`, 계약 E/review-pr2-3-contract.md). 완료는 `msg_f8a14fb8f6cd`(06:49:37Z, worker_done succeeded)이고 수신 helper는 allowed/exit 0이었다. 정산은 release retained/external_terminal/none, 같은 incarnation의 빈 prompt 확인 뒤 close(ptyKilled=true)다(E/review-pr2-3-*.json). 판정 내용은 메인 결정 2에 따라 여기 쓰지 않는다. 판정 원문 경로와 요약은 승인 묶음 pr193-approval-bundle.md에 있다.
+- **PR190·PR192 뒤 main merge**: 재실사 중 Core PR190(main `afa1272`)이 CURRENT의 Core 두 줄을 새 goal 링크·branch로 바꿔 PR193이 다시 DIRTY가 됐다. 재실사가 끝난 뒤 이름은 이 branch의 Core, 링크·branch는 main 값으로 합쳐 `f0919f5`로 merge했다. 그 head의 CI 4개가 성공한 직후 Architecture PR192(main `7596944`)가 CodeMap 경로 줄을 바꿔 다시 DIRTY가 됐다. 붙은 두 줄을 이 branch의 Rules 줄과 main의 CodeMap 줄로 살려 `c037b21`로 merge했다. 근거는 pr2-main-merge3·merge4의 proof.json·remerge.diff다. 메인 알림은 `msg_4dd65b71748e`(06:49:25Z)다.
+- **CI**: `6e5422d`·`f0919f5`·`c037b21` 세 head 모두 CI 4개 SUCCESS다. 최종 head `c037b21`은 07:38:25Z에 CLEAN이었고 dotnet-tests는 924개 중 919 통과·5 skip·실패 0이다. 원시는 pr193-{6e5422d,f0919f5,c037b21}-ci/다.
+- **승인 묶음과 R-2**: 승인 묶음 `msg_b45d887506f0`(07:19:07Z)과 CI 보충 `msg_269a21dce14d`(07:38:44Z)를 보냈다. 메인 `msg_d95168db347e`(07:41:23Z, main-pr193-r2-reply-delivery.json, 메인 운영 판단)가 R-2 일치를 알렸다. 재실사 뒤 CURRENT 해결뿐인 merge 두 개에는 `msg_6f8f2d376551`을 적용해 기존 판정을 유지하고 새 실사는 열지 않는다. PR194와는 시험 merge 충돌이 없어 순서 조정이 필요 없다.
+- **휴식 정지**: 메인 `msg_7d23e8619ead`(07:57:46Z, main-pause-delivery.json)로 우편함 대기를 끄고 빈 prompt로 멈췄다. 진행 중인 쓰기·push는 없었다.
+- **PR193 병합**: 메인 `msg_efdaf0cda61a`(08:19:04Z, resume-check-delivery.json)가 사용자 원문 「1안건 A, 2안건 A로 가자」를 전달했다. 2안건 A가 head `c037b216b8d457affce12fc5068c512cdae5c071` 병합 승인이다. 메인 전달이며 직접 입력으로 격상하지 않는다. 08:19:20Z fresh 확인은 OPEN·draft 아님·CLEAN·CI 4/4였다(pr193-pre-merge-state.json). `gh pr merge 193 --merge --match-head-commit c037b216b8d457affce12fc5068c512cdae5c071`을 사용자가 확인 창에서 승인했고, 08:19:34Z에 merge `9eed55f`로 병합됐다(pr193-post-merge-state.json). 원격 branch는 같은 저장소 설정으로 자동 삭제됐다.
+- **종료 기록**: 최신 main `9eed55f`에서 branch `docs/operating-followup-closeout-20261006`을 만들었다. 이 goal과 CURRENT의 Rules 자기 줄만 고친다. 맥락 메모는 astra-closeout-context.md다.
+- **현재 위치**: 재개 순서 7의 「결과 기록」이다. Gardener를 지금 띄울지는 메인 질문 `msg_b5a96821d603`의 답을 기다린다. 이번 세션 사용자 지시로 후속 계획 검토를 미뤘기 때문이다. 그 뒤 순서는 종료 기록 신규 Opus 문서 실사 → 종료 기록 PR(확인 창) → CI → 개별 승인·병합 → 메인 종료 점검 → R-8이다.
 
 ### 리드 교체 인계 — 2026-10-05T14:27:56Z
 
@@ -158,8 +166,8 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 - [x] PR188 병합
 - [x] 운영 문서·Core 정비
 - [x] CLAUDE 반영·실사
-- [>] PR193 병합
-- [ ] 결과 기록·Gardener
+- [x] PR193 병합
+- [>] 결과 기록·Gardener
 - [ ] 종료 점검과 R-8 인계
 
 ## 범위
@@ -277,8 +285,23 @@ PR187 병합 뒤 CURRENT의 인접한 Rules/CodeMap 줄에서 충돌이 생겼�
 
 메인 `msg_6f8f2d376551`(14:13:57Z, E/main-current-merge-order-decision.json)은 Rules·CodeMap·Management의 인접 CURRENT 수정 PR을 준비된 순서로 승인 요청하되 일부러 기다리지 않도록 했다. 승인 묶음 직전 fresh mergeStateStatus를 대조하고 DIRTY면 최신 main/타 파트 줄을 보존해 통합, remerge-diff와 동일 제품 blob을 남긴 뒤 새 head의 전체 CI를 확인한다. CURRENT 해결뿐이면 동일 제품 입력의 독립 판정을 유지한다. 승인 묶음 뒤 다시 DIRTY가 되면 옛 head 승인을 새 head에 적용하지 않고 같은 확인과 새 개별 승인을 받는다. 이번 통합에 대한 메인 운영 판단이며 자동 병합 권한이나 PR2 정본 범위 확장이 아니다.
 
+### 두 PR 병합과 완료조건 대조
+
+두 PR 모두 정확한 head의 독립 검증·CI 뒤 사용자 개별 승인으로 병합했다. E는 위 근거 폴더다.
+
+| 완료조건 | 결과 | 근거와 한계 |
+|---|---|---|
+| 1 - PR1 실제 workflow 진입과 실제 CI 확인 | 충족 | 독립 테스트가 실제 workflow run 블록을 실행했다(review-pr1-2/verdict.md). 실제 CI는 warning annotation·artifact·기존 검사를 확인했다(E/pr188-68e7ba2-ci/). 실제 GitHub job summary 웹 렌더는 미확인이며 메인 `msg_1ca34c70d1eb`가 비차단 한계로 수용했다. 병합 뒤 PR193 CI의 code-rules 로그에도 같은 EBADENGINE warning이 나왔다(E/session-20261006/pr193-6e5422d-ci/run-37423591934.log). |
+| 2 - PR1 신규 Opus 강 검증 | 충족 | review-pr1-2/verdict.md(SHA256 `E236F9B3…`). 첫 검증은 절차 사고로 최종 근거에서 뺐다. |
+| 3 - PR2 신규 Opus 문서 실사(CLAUDE.md 포함) | 충족 | 1차 `c1299550` 통과(비차단 결함 4개 보완), 2차 `7bff758` 통과, 3차 `6e5422d` 재실사. 3차 내용은 메인 결정 2에 따라 승인 묶음(E/session-20261006/pr193-approval-bundle.md)에만 둔다. |
+| 4 - 두 PR 개별 승인과 병합 | 충족 | [188 - npm engines 경고 노출](https://github.com/bass131/dawnholder-server/pull/188): head `68e7ba2`, 승인 전달 `msg_a82fbd4155e1`, merge `064cbd0`. [193 - 운영 후속 결정과 Core 명칭 정본화](https://github.com/bass131/dawnholder-server/pull/193): head `c037b21`, 승인 전달 `msg_efdaf0cda61a`, merge `9eed55f`. |
+| 4 - 결과 기록·Gardener·종료 점검·R-8 | 진행 중 | 이 기록이 결과 기록이다. Gardener·종료 점검·R-8은 「재개 지점」의 「현재 위치」를 따른다. |
+
+게임·DB·Unity는 이 goal에서 실행하지 않았다.
+
 ## 적용 중인 사용자 결정
 
+- 메인 `msg_efdaf0cda61a`(2026-10-06T08:19:04Z)가 전달한 사용자 원문: **「1안건 A, 2안건 A로 가자」**. 메인 전달이며 직접 입력으로 격상하지 않는다. 메인 설명에 따르면 2안건 A는 PR193을 지금 방식으로 먼저 병합하는 것이다. 1안건 A는 설계 결정 「병합은 메인 창에서만, 사용자 제출 문장 기반 승인 기록 hook」이다. 이 설계의 구현은 다음 Rules goal로 따로 열고, 메인이 범위 초안을 만들어 사용자 승인을 받는다. 이 goal은 그 구현을 하지 않는다.
 - 메인 `msg_bf63c20c8abe`(2026-10-06T06:05:31Z)가 전달한 이번 세션 사용자 원문: **「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」** 메인 전달이며 직접 입력으로 격상하지 않는다. 메인 해석: 현재 goal의 남은 일을 먼저 한다. 다음 goal 범위 초안과 Gardener 후보는 나중에 한꺼번에 검토하므로 지금 새로 쓰거나 올리지 않는다.
 - 메인 운영 지시 `msg_20663b7c7598`(14:34:35Z, E/main-wait-types-instruction.json): 우편함 대기에 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`를 붙여 heartbeat 단독 깨움을 뺀다. 사용자 결정이 아니라 메인 지시다.
 - **최신 교체 시점**: 메인 `msg_25102e277345`(2026-10-05T14:23:54Z)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 교체 시점 앞당기기 → A 작업자가 빈 시점에 바로 교체」**다. 메인 전달이며 직접 입력으로 격상하지 않는다. 아래 「각 목표 끝날 때」 시점만 대체한다. 현재 Rules는 작업자가 없으므로 지금 인계하며 신규 Sol/검증자/Gardener 금지, 인계 뒤 새 대기/watch 없이 턴 종료, 메인이 pane 종료·새 Opus 리드 기동/같은 Run 인계를 맡는다. 다음 리드 모델은 claude-opus-5-5(앞선 xhigh 선택 유지), Sol max·신규 Opus 검증자는 유지한다. 원문 E/main-immediate-lead-handoff-decision.json. Codex 한도/크레딧 소진 수치는 메인 전달 배경이며 Rules 실측이 아니다.
