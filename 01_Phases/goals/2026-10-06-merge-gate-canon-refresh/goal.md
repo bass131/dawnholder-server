@@ -209,6 +209,21 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 결과로 이 리드 pane의 PR1 병합은 `not-main-checkout`으로 막힌다. 메인 대비안(`msg_729105efa64c` 2항)으로 간다.
   - 메인에 알렸다(`msg_3a305afc406c`). 순서 주의도 함께 보냈다. 메인 checkout(Core branch)이 PR1 뒤 main을 받으면 메인 세션에도 hook이 실린다. 그런데 그 checkout에는 표식이 없다. 그래서 main-active와 표식을 먼저 만든 뒤 병합해야 한다.
   - 리드 운영: 이 세션의 Bash에 상태 폴더 경로나 병합 명령 문자열을 넣지 않는다. 검색은 Grep·Read, 그런 문자열이 든 기록은 Write 도구로 쓴다.
+  - 메인 확인 `msg_2b0047c0429e`(15:39:57Z): PR1은 대비안으로 병합한다. 메인 checkout은 PR1 병합 전까지 main을 받지 않는다. 병합 뒤 순서는 다섯 단계다.
+    1. main-active를 만든다.
+    2. 표식을 만든다.
+    3. 메인 세션을 다시 연다.
+    4. 완료조건 5의 적용 확인을 한다.
+    5. 그 뒤에 다른 checkout들이 main을 받는다.
+  - 리드 진입 안내에 한 줄을 더할지는 PR2에서 판단한다. 세션 중 반영이 한 번의 관측이라는 한계는 그대로 둔다.
+- 결과: worker_done `msg_25136896f256`(15:45:20Z, outcome succeeded)은 수신 helper allowed/exit 0이다(E/impl-worker-done-check-*.json). 보고서는 [E/impl/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/impl/report.md)다. 리드가 `26cb8b3`으로 커밋했다.
+  - 제품 파일과 줄 수: `99_Tools/MergeGate/merge-policy.mjs` 211(순수 판정), `approval-store.mjs` 45(기록 읽기·임시 파일+rename 쓰기), `claude-hook.mjs` 76(진입), `.claude/settings.json` 36, workflow +25, README +18이다.
+  - 선행 시험은 `597839c`와 같다(`git diff --exit-code`).
+- 리드 R-2 표본 대조:
+  - 같은 명령을 다시 돌렸다. MergeGate 74/74, Orca 22/22, 둘 다 exit 0이었다(E/lead-green-run-check.txt).
+  - 세 제품 파일과 README·workflow diff를 읽었다. 순수 판정·기록·진입이 나뉘어 있다. 판정 순서는 동작 계약 4절 순서다. 동시 호출 한계 주석은 rename 옆에 있다.
+  - **독립 검증으로 넘길 의심점(리드 넘김 5)**: 병합 시도 판정은 `gh`·`pr`·`merge`가 공백만 두고 붙어 있을 때만 잡는다. 그래서 `gh pr -R <repo> merge …`처럼 사이에 플래그가 낀 형태는 병합 시도로 보지 않는다. main push 판정도 같아서 `git -C . push origin main`을 잡지 않는다. 두 형태 모두 전역 ask 규칙(`gh pr merge*` 접두 일치)에도 걸리지 않는다. 동작 계약 4절의 「세 낱말이 차례로 나옴」이 「붙어 있음」인지 「순서대로 나옴」인지 애매하다. 검증자가 재현하고 판정한다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/impl-release.json, impl-before-close.json, impl-close.json).
 
 ## 요구사항 원천과 적용 결정
 
