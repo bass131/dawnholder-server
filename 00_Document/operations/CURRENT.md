@@ -10,7 +10,7 @@
 | CodeMap(Architecture) | [Architecture 테스트 전체 PR CI](../../01_Phases/goals/2026-10-05-architecture-tests-ci/goal.md#재개-지점) |
 | Management | [개발 기록의 목록과 전체 페이지 상세](../../05_Management/goals/2026-10-05-development-record-navigation/goal.md#재개-지점) |
 
-- GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-integration-20261004`
+- GameDev: `C:/Dev/DawnHolder_Project` · `feat/persistence-engine-judgment-20261006`
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-currency-20261005`
 - Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `ci/npm-engine-warning-20261005`
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `ci/architecture-tests-20261005`

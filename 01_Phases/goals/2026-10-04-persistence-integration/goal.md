@@ -5,7 +5,11 @@
 ## 적용 중인 사용자 결정
 
 - **2026-10-06 사용자 결정 4건(Core 해당 1·2·4·5).** 메인 `msg_a00fe953e76c`(2026-10-06T06:13:15Z)가 전달했다. 메인 본문은 사용자 제출을 15:12 KST 전후로 적었다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 원문(Core 해당 항목): 「1) SQL 시작 실패 진단 - Procmon 1회 관측 실행 승인 → A 승인 (승인안 v5대로 1회) · 2) PR190 - 설치·검사 도구와 DB 1단계 기록 병합 시점 → A 지금 체크포인트로 병합 (head 9d095a2eb2893ae3048a179d477cad877c2316eb) · 4) PR190 - 본문 갱신안 반영 여부 → A 갱신안 그대로 반영 (head 9d095a2eb2893ae3048a179d477cad877c2316eb) · 5) OBS-1 - PowerShell 이어지는 줄 199곳 가독성 처리 방법 → A 그대로 두고 후속 후보로」.
-  - 1) Procmon: 메인 `msg_c50ddd7ef3dc`가 승인 T를 보수적으로 15:11 KST(06:11Z)로 확정했다. 메인이 수신 직후 찍은 시각이 15:12:39 KST이고 사용자 제출은 그보다 조금 앞이기 때문이다. 새 시작 요청 마감은 T+20(15:31 KST), 창 종료는 T+30(15:41 KST)이다. 단계 카드에는 리드 추정 15:32/15:42를 적었고 메인은 카드를 그대로 전달했다. 확정 마감은 15:31/15:41로 적용한다. 승인 기록은 D/`procmon-approval-record-v5.json`이다. 전달 파일 13개는 D/`procmon-submissions-v5/`에 있다(승인안 코드블록과 줄 불일치 0, PS5.1 파싱 오류 0, `source-audit.json`). 사용자 단계 카드는 `msg_0eda0a2a7be5`로 메인에 보냈다. 실행 결과는 아래에 따로 적는다.
+  - 1) Procmon: 메인 `msg_c50ddd7ef3dc`가 승인 T를 보수적으로 15:11 KST(06:11Z)로 확정했다. 메인이 수신 직후 찍은 시각이 15:12:39 KST이고 사용자 제출은 그보다 조금 앞이기 때문이다. 새 시작 요청 마감은 T+20(15:31 KST), 창 종료는 T+30(15:41 KST)이다. 단계 카드에는 리드 추정 15:32/15:42를 적었고 메인은 카드를 그대로 전달했다. 확정 마감은 15:31/15:41로 적용한다.
+    - 첫 창은 쓰지 않았다(메인 `msg_0d5fd0b1881b`, 06:26:17Z). 사용자가 15:24 KST에 절차를 다시 설명해 달라고 했고, 창 열기·00 준비도 시작 전이어서 15:31 시작 마감을 지킬 수 없었다. 06:26Z 읽기에서 시도 폴더는 없었다. 새 창은 사용자 결정 `procmon-rewindow` 대기다. 승인 기록의 첫 창 시각은 그대로 두고 `firstWindowOutcome`만 더했다.
+    - **도우미 세션으로 진행(사용자 결정).** 메인 `msg_b4590ca38e66`(06:33:24Z) 전달 원문: 「1) Procmon 관측 - 승인 시간을 새로 잡을지 → C 코멘트 「메인 세션의 오케스트레이션 입력이 과다하게 몰려서, 도우미용 Opus 세션을 통해 같이 해봐야 할 거 같아」」. 메인 해석: 사용자가 직접 대화하는 도우미 Opus 세션과 진행하고 메인은 중계하지 않는다. 새 T는 사용자가 도우미 pane에 「Procmon 시작」을 Enter로 제출한 시각이고, 그 pane의 사용자 입력은 사용자 직접 지시다. 규칙은 v5 그대로다. 사용자 손 절차를 도우미 세션으로 넘긴 첫 사례라 goal 기록으로 둔다.
+    - 도우미: 새 탭 「Procmon 도우미」 `term_161d113c-198d-44c5-9ac8-6b8a9cc80b72`(incarnation `f1d5bf05-84e4-42ee-988b-818d406e6c9e`), 최초 명령 `claude --model claude-opus-5-5`, 첫 화면 Opus 5.5 xhigh·선택창 없음, readiness satisfied=true, backend unknown. Task `task_49488d72e352`/Dispatch `ctx_ac327f19d269`, input_accepted·turn_started 관측. 배치는 R-1 split 대신 메인 지시의 새 탭이다(리드 pane split이 좁음). 태그는 AGENTS 목록의 GameDev Opus 작업자 태그 `[GameDev 검증자]`에 subject 「Procmon 도우미」를 붙인다. 도우미는 실행하지 않고 안내·대조만 하며 쓰기는 `procmon-helper/session-log.md` 하나다. 계약·입력·receipt는 D/`procmon-helper/`에 있다.
+    - **진행 방식 A(사용자 결정).** 메인 `msg_bd0ddeb11c7a`(06:39:16Z) 전달 원문: 「대시보드 결정 응답: 1) Procmon 관측 - 사용자 입력을 어떻게 줄일지 → A 승인안 v5 그대로, 입력만 줄임」. 도우미 계약 보충 v1.1(D/`procmon-helper/contract-v1.1-mode-A.md`)은 네 가지를 더했다. 첫째, 파일마다 전체 SHA256 비교 뒤에만 dot-source하는 한 줄 명령이다. 리드는 이것이 v5 확인과 같거나 더 엄격하다고 판정했다(PS5.1 파서 13줄 오류 0, 무해 시험으로 scope 유지·불일치 미실행 확인, 신규 독립 실사는 없음). 둘째, transcript·산출 파일을 도우미가 직접 읽는다. 셋째, 화면은 스크린샷이나 읽기 전용 캡처로 확인하고 입력·클릭은 보내지 않는다. 넷째, 사용자는 「다음」만 말하면 된다. 보류 해제는 `msg_acc2d8d57b64`, 메인 준비 통지는 `msg_8c1efe6dae87`이다. 승인 기록은 D/`procmon-approval-record-v5.json`이다. 전달 파일 13개는 D/`procmon-submissions-v5/`에 있다(승인안 코드블록과 줄 불일치 0, PS5.1 파싱 오류 0, `source-audit.json`). 사용자 단계 카드는 `msg_0eda0a2a7be5`로 메인에 보냈다. 실행 결과는 아래에 따로 적는다.
   - 2) PR 경계 변경: 선택지 효과 원문은 「도구 수정과 DB 1단계 기록을 먼저 main에 넣고, 엔진 판정은 다음 PR로 나눈다. goal의 PR 경계가 바뀐다. CI 수정·검증 뒤 병합 승인을 따로 묻는다.」다. 이 답은 병합 승인이 아니다. 병합은 최종 head에 대한 사용자 승인을 메인이 따로 받아 전달한 뒤에만 한다. 바뀐 경계는 아래 「현재 범위·PR 경계」에 적었다.
   - 4) PR #190 본문: E/`pr190-ci/pr190-body-update-draft.md`를 06:17Z께 `gh pr edit`로 그대로 반영했다(head `9d095a2` 불변, 전후 원시 `pr190-body-{before,after}-edit.json`). 경계 변경과 어긋나는 문장(1·26행)은 지시대로 고치지 않고 메인에 보고했다.
   - 5) OBS-1: 코드 변경 없이 「다음 계획 후보」에 기록했다.
@@ -24,11 +28,12 @@
 - [>] DB 생성 실행
 - [ ] 설치·판정 계획 실사
 - [ ] 실제 DB 설치·판정
-- [>] 첫 PR·CI·병합
+- [x] 체크포인트 PR #190 병합
+- [ ] 엔진 판정 PR·CI·병합
 - [ ] 시험 DB 정리
 - [ ] 결과 기록·종료
 
-현재 표시된 DB 생성 실행 단계는 **서비스 시작 실패 중단·관리자 읽기 실사 완료·최신 main 로컬 통합 완료·Procmon v5 문서 실사 PASS(사용자 실행 승인 대기)·체크포인트 draft PR #190과 code-rules 들여쓰기 수정(독립 재검증 PASS)**이다. 원인은 미확정이며 DB 생성·설치 성공으로 표시하지 않는다. 병합 경계와 병합은 사용자 결정 대기다. 이 체크리스트는 상태 전환 때 담당 리드가 갱신한다.
+현재 표시된 DB 생성 실행 단계는 **서비스 시작 실패 중단·관리자 읽기 실사 완료·Procmon v5 문서 실사 PASS와 사용자 실행 승인(도우미 세션으로 진행 대기)**이다. 원인은 미확정이며 DB 생성·설치 성공으로 표시하지 않는다. 체크포인트 PR #190은 2026-10-06에 병합됐다(아래 「PR #190 병합 결과」). 엔진 판정은 새 branch `feat/persistence-engine-judgment-20261006`의 다음 PR이다. 이 체크리스트는 상태 전환 때 담당 리드가 갱신한다.
 
 ## DB 장치 전제 정정 — C:\myVHDX.vhdx
 
@@ -393,6 +398,14 @@
 - 새 Run은 `run_b36cc92a4cf4`(회신 주소 `run:run_b36cc92a4cf4`), coordinator는 `term_8cc7e174-29a4-4127-97dd-25d933159ecc`다. READY는 `msg_1601ff8f922c`로 보냈다. 원시는 E/`opus-lead-entry/2026-10-06/`에 있다.
 - 상태 대조: HEAD `9d095a2`가 origin과 같고 미커밋은 0이다. PR #190은 draft·MERGEABLE이다. CI는 4/4 SUCCESS다(code-rules `37383429133`, module-boundaries `37383429143`, architecture-tests `37383429119`, dotnet-tests `37383429189`). 작업자는 0이다. origin/main은 PR #187 병합으로 5커밋 앞서 있다(behind 5 / ahead 18).
 - 아래 「세션 마무리」의 다음 세션 순서 1·2는 끝났다. 3번 사용자 결정은 `msg_a00fe953e76c`로 받았다(위 「적용 중인 사용자 결정」). Procmon은 승인돼 단계 카드를 보냈고, PR #190은 체크포인트 병합 경계로 바뀌었다. 그 밖의 재개 정본은 아래 블록이다.
+
+### PR #190 병합 결과 — 2026-10-06
+
+- 사용자 승인: 메인 `msg_73734ed584bf`(06:43:03Z) 전달 원문 「대시보드 결정 응답: 1) PR190 - 설치·검사 도구와 DB 1단계 기록 병합 승인 → A 본문 4문장 고친 뒤 병합 (head 79c79501816798ae70cc2db9b80a78eb1fb0cb55)」. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+- 본문: 1·13·22·26행만 지금 사실로 고쳤다(06:43Z, head 불변). 전후 원시와 줄 차이는 E/`pr190-ci/pr190-body-{before,after}-4lines.json`·`pr190-body-4lines.diff`다. 메인이 GitHub 실제 본문을 대조한 뒤 병합 신호 `msg_0ae05512224e`를 보냈다.
+- 병합: 06:44:33Z 직전 조회는 head `79c79501`·CLEAN이었다. 리드가 `gh pr merge 190 --merge --match-head-commit 79c79501816798ae70cc2db9b80a78eb1fb0cb55`를 단독 Bash 호출로 실행했고, 사용자가 확인 창을 승인했다(메인 확인). 도구 결과는 출력 없음이었다.
+- 결과(메인 `msg_0f86846d922b`의 읽기 전용 조회): state MERGED, mergedAt 2026-10-06T06:44:47Z, merge commit `afa12722048b446a2d475e870395c5259cdbc04d`, mergedBy bass131. 원격 branch는 저장소 설정(delete_branch_on_merge)으로 GitHub이 지웠다. 리드의 병합 직후 결과 조회는 auto mode 분류기가 「Merge Without Review」로 거부했고, 리드는 같은 조회를 다른 방법으로 다시 시도하지 않았다.
+- 후속: 최신 main `afa1272`에서 `feat/persistence-engine-judgment-20261006`을 만들었다. Unity 실물 3파일 SHA·skip-worktree 3·stash 2는 전환 전후가 같다(E/`engine-branch-{before,after}.txt`). 이 branch의 다음 PR이 엔진 판정(설치·U-01) 경계다. G4·결과 기록·Gardener·R-8은 그 PR 병합 뒤다.
 
 ### 세션 마무리 — 2026-10-05T22:34Z 기준
 
