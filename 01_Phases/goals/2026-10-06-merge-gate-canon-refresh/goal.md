@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 수정 중이다(아래 「PR1 결함 수정」). 다음은 신규 Opus 재검증 → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 고쳤다(코드 `335bce6`, 문서 `56c29a8`, 아래 「PR1 결함 수정」). 다음은 한계 문구 보정(신규 Sol) → 신규 Opus 재검증 → PR1이다.
 
 ## 진척 단계
 
@@ -260,6 +260,19 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - bytes는 ORCA 41,629 이하로 맞춘다. 같은 절의 중복 합치기 → 역사 서술 옮기기 순서다. 그래도 모자라면 멈추고 묻는다.
   - 경로 기계 확인은 E/fix-contract-pathcheck.txt(16:22:32Z)다.
 - Task `task_64f9b3228b87`, Dispatch `ctx_96a40f8ffe73`이다. receipt는 input_accepted, turn_started다(E/fix-worker-start.json).
+- 중간 보고 `msg_b5eb2054ebd7`(16:37:03Z, status, 수신 helper allowed): 같은 절 축약 뒤에도 ORCA가 227 bytes 넘어 R-7 M-1 관찰 두 문장을 옮겼다. 리드가 아래 「ORCA에서 옮긴 서술」에 넣었다(대조 E/lead-moved-check-fix.txt).
+- 결과: worker_done `msg_69dc5a4e3d2f`(16:51:05Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/fix-worker-done-check-output.json). 보고서는 [E/fix/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/fix/report.md)다. 리드가 코드 `335bce6`(MergeGate 세 파일·README)와 문서 `56c29a8`(ORCA)로 나눠 커밋했다.
+  - 코드: 명령 낱말·하위 명령 판정(`commandWords`·`findSubcommands`), 파일 도구 경로 정규화(`protectedFilePath`), `@` 조회, 맨 앞 명령 낱말 조건의 분리와 이유 주석, 값 옵션 목록 주석, `=` 형태 사유, 중복 호출 이유 주석, 동시성 주석 확장이다.
+  - 문서: ORCA 229(D2), 227(O9), 233(`HEAD`·`@`), 235(D1·D5·O8), 83(D4)과 bytes를 맞춘 79·81·83·201의 축약이다. README 한계 줄과 코드 표를 v2.1에 맞췄다.
+- 리드 R-2 표본 대조:
+  - 같은 명령을 다시 돌렸다. MergeGate 86/86, Orca 22/22, 둘 다 exit 0이었다. 기존 시험은 `eb10c809`와 같다. 커밋된 ORCA는 249줄·41,627 bytes이고 다섯 문서 합은 92,498이다(E/lead-fix-green-check.txt).
+  - 코드 diff 전체와 문서 word-diff를 읽었다. 보고서 「축약·이관 대조」 표의 원문·바꾼 문장·남은 위치가 실제 diff와 같았다. 79·81·83행 축약에서 조건·주체·예외·링크가 빠진 곳은 찾지 못했다. D4의 세 구절과 receipt 대조가 83행에 있다.
+  - 자체 점검 원시 E/fix/self-check.jsonl 89행을 읽었다. 첫 판정 A행 가운데 결정 없음이던 11개가 모두 차단(`bad-form`·`forbidden-flag`·`push-main`)이 됐다. 정식 단독 명령의 통과·소비·확인 창 허용·두 번째 사용 차단은 그대로였다.
+  - **리드 발견 1(문서, 보정 필요)**: 235행 한계의 일반 문구 「문자열 판정의 의도적 우회」가 「별칭·스크립트 파일·변수 속 명령 미판정」으로 바뀌었다. 정본 어디에도 일반 문구가 남지 않아 완료조건 3의 「문자열 판정의 의도적 우회 가능성」을 채우지 못한다. 원인은 수정 계약 「문서」 3의 문장이 맞추기와 바꾸기 중 어느 쪽인지 모호했던 것이다(리드 귀속).
+  - **리드 발견 2(재검증 넘김)**: 낱말은 공백으로 나눈다(동작 계약 v2.1 4절). 그래서 `git -C "공백 든 경로" push …`처럼 공백이 든 따옴표 값은 쪼개져 push로 보이지 않는다. 따옴표를 존중하게 나누면 `bash -c "…"` 안의 명령을 잃으므로 이번 PR에서는 계약 범위의 한계로 두고, 위 일반 문구의 예시에 넣는다. 재검증자가 이 판단을 다시 본다.
+  - 리드 넘김(재검증): 231행이 「운영은 `--merge`만 쓴다」를 따로 적지 않고 운영 명령 예시에만 남겼다. 읽는 사람에게 충분한지 판정을 받는다.
+- 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/fix-release.json, fix-before-close.json, fix-close.json).
+- 리드 결정: 발견 1은 신규 Sol의 짧은 문서 보정으로 고친다. 같은 산출물(ORCA 병합 관문 절)의 두 번째 수정이다. 코드와 동작 계약 v2.1은 바꾸지 않는다. 그 뒤 재검증으로 간다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -310,6 +323,8 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 
 ORCA 250줄 상한(완료조건 7)을 지키려고 PR1에서 ORCA의 역사 서술을 이 절로 옮겼다. 정본 문장 작업자가 원문을 `E/docs/moved-from-orca.md`에 보존했고, 리드가 기준 `e37ac7a`의 ORCA 행과 글자까지 같은지 기계로 대조했다(E/lead-moved-check.txt, 6블록 모두 같음). 이 절에 옮기면서 두 가지만 바꿨다. 상대 링크는 이 파일 위치에서 열리게 고쳤고, 원문의 `##` 제목은 굵은 글씨로 바꿨다.
 
+PR1 결함 수정에서 한 블록을 더 옮겼다(「R-7 M-1 관찰」). 수정 작업자가 같은 절 축약 뒤에도 ORCA가 상한을 227 bytes 넘는다고 보고했고(`msg_b5eb2054ebd7`), 계약의 두 번째 방법을 썼다. 원문은 `E/fix/moved-from-orca.md`에 있다. 리드가 기준 `eb10c80`의 ORCA 201행과 글자까지 같은지, 남은 행이 현행 평가 기준과 Fable 기동 경계를 지키는지 기계로 대조했다(E/lead-moved-check-fix.txt, 모두 같음). 바꾼 것은 상대 링크뿐이다.
+
 ### R-3 Orca 1.4.217 임시 확장(종료)과 1.4.220 복귀
 
 원래 위치: ORCA 85행(`e37ac7a`).
@@ -327,6 +342,12 @@ ORCA 250줄 상한(완료조건 7)을 지키려고 PR1에서 ORCA의 역사 서�
 원래 위치: ORCA 193행(`e37ac7a`).
 
 D1a verification-2의 [종료 전 화면](../../../.backups/verification/2026-10-01-persistence-technical-design/review-2-before-close-read.json)은 전체 49행(`limited=false`)에서 `/auto-mode-setup` 안내 창이 관측되지 않고 일반 `auto mode on` 상태줄이 보인 기록이다. [판정 원문](../../../.backups/verification/2026-10-01-persistence-technical-design/verification-2/verdict.md)과 [해당 완료 goal](../2026-10-01-persistence-technical-design/goal.md)은 문서 실사 범위를 제공한다. 안내 미관측은 **해당 종료 화면에 한정한 관찰**이며 첫 화면이나 전역 설정 효과의 검증이 아니다.
+
+### R-7 M-1 관찰
+
+원래 위치: ORCA 201행 가운데 두 문장(`eb10c80`). 같은 행의 평가 기준과 Fable 기동 경계는 ORCA에 남았다.
+
+메인 전달 관찰에 따르면 1회차 M-1에서 의미 있는 지적 7건을 찾았고, 그중 #3(Windows rename 간섭)은 구현에서 실측됐다. 이는 [main-request.json](../2026-10-05-operating-canon/goal.md#orca-source-table-1)에 보존한 메인의 관찰 보고이며 이번 문서 작업자가 M-1 구현·실측을 직접 검증한 결과가 아니다.
 
 ### R-8 적용 시점 두 문단
 
