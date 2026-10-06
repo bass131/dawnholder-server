@@ -54,7 +54,7 @@
 
 성공 결과는 `{ ok: true, sourceId, path, heading, text, bytes }`이다. `path`는 locator 그대로, `bytes`는 `text`의 UTF-8 바이트 수다. `section: null`이면 `heading`도 `null`이고 `text`는 BOM을 뺀 파일 전체다(256 KiB 상한은 그대로). 실패 결과는 `{ ok: false, code, reason, message }`다. `reason`은 위 표기 값 또는 `null`이고 `message`는 고정 한국어 문장이며 입력·경로·원시 오류를 담지 않는다. IPC 발신자가 신뢰되지 않으면 `denied`다.
 
-진입 함수는 둘이다. 시험과 구현이 같은 이름을 쓴다.
+진입 함수는 둘이고 모두 `electron/source-section-store.ts`에서 export한다(`source-section-contract.ts`는 순수 판정만). 시험과 구현이 같은 이름을 쓴다. 같은 방식으로 `createCheckoutStore`는 `electron/checkout-store.ts`, `checkRecordIndex`는 `electron/record-index-check.ts`에서 export한다.
 
 - `createSourceSectionStore({ repositoryRoot })` → `{ read(source: RecordSource): Promise<SourceSectionResult> }`. 4~9단계다. MCP는 자기 스냅샷에서 출처를 찾은 뒤 이 함수를 부른다.
 - `createSourceSectionReader({ readCatalog, store })` → `{ read(input: unknown): Promise<SourceSectionResult> }`. 1~3단계 뒤 `store.read`에 넘긴다. `readCatalog`는 `() => Promise<CatalogResult>`다. IPC 처리기는 `trustedSender` 확인 뒤 이 `read`에 그대로 위임한다.
