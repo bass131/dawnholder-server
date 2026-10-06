@@ -48,11 +48,11 @@
 4. 읽을 수 있는 종류인가: `local`·`handoff`는 `not-readable`(reason `local-only`·`handoff`).
 5. 경로 모양: 드라이브 문자 → 절대 경로 → 상위 경로 → 그 밖의 잘못된 모양 순으로 `path-rejected`(reason `drive`·`absolute`·`parent`·`invalid`). 역슬래시·빈 구간·`.` 구간·제어 문자·와일드카드·`:`는 `invalid`다.
 6. 확장자: 정확히 소문자 `.md`가 아니면 `not-readable`(reason `extension`). `.MD`·`.md.txt`·`.cs`·`.html`이 여기 걸린다.
-7. 파일 시스템: 루트부터 구간마다 `lstat`해 심볼릭 링크·정션이 있으면 `path-rejected`(reason `link`), 없으면 `missing`이다. 대상의 native realpath가 `realpath(루트)`에 구간을 이은 경로와 문자열로 다르면 `path-rejected`(reason `case`)다. 대소문자를 구분하지 않는 Windows 파일 시스템에서 대소문자만 다른 경로를 잡는다(구분하는 파일 시스템에서는 `missing`).
-8. 읽기: 연 handle의 `fstat`이 일반 파일이 아니거나 앞 단계 `lstat`의 dev·ino와 다르면 `changed`다. 1 MiB 넘으면 `too-large`(reason `file`)다. 읽기 전후 stat이 다르면 `changed`, 엄격한 UTF-8이 아니면 `invalid-encoding`이다. 제한 읽기 방식은 `system-guide-store.ts`를 따른다.
+7. 파일 시스템: 루트부터 구간마다 `lstat`해 심볼릭 링크·정션이 있으면 `path-rejected`(reason `link`), 없으면 `missing`이다. 대상의 native realpath가 `realpath(루트)`에 구간을 이은 경로와 문자열로 다르면 `path-rejected`(reason `case`)다. 대소문자를 구분하지 않는 Windows 파일 시스템에서 대소문자만 다른 경로를 잡는다(구분하는 파일 시스템에서는 `missing`). 마지막 구간의 `lstat`이 일반 파일이 아니면(예: `.md` 이름의 디렉터리) `not-readable`(reason `not-file`)이다.
+8. 읽기: 연 handle의 `fstat`이 일반 파일이 아니거나 앞 단계 `lstat`의 dev·ino와 다르면 `changed`다. 7단계와 8단계 사이에 파일이 바뀐 경우만 여기 온다. 1 MiB 넘으면 `too-large`(reason `file`)다. 읽기 전후 stat이 다르면 `changed`, 엄격한 UTF-8이 아니면 `invalid-encoding`이다. 제한 읽기 방식은 `system-guide-store.ts`를 따른다.
 9. 구간: 제목이 없으면 `section-missing`, 둘 이상이면 `section-ambiguous`, 256 KiB 넘으면 `too-large`(reason `section`)다.
 
-성공 결과는 `{ ok: true, sourceId, path, heading, text, bytes }`이고 실패 결과는 `{ ok: false, code, reason, message }`다. `reason`은 위 표기 값 또는 `null`이고 `message`는 고정 한국어 문장이며 입력·경로·원시 오류를 담지 않는다. IPC 발신자가 신뢰되지 않으면 `denied`다.
+성공 결과는 `{ ok: true, sourceId, path, heading, text, bytes }`이다. `path`는 locator 그대로, `bytes`는 `text`의 UTF-8 바이트 수다. `section: null`이면 `heading`도 `null`이고 `text`는 BOM을 뺀 파일 전체다(256 KiB 상한은 그대로). 실패 결과는 `{ ok: false, code, reason, message }`다. `reason`은 위 표기 값 또는 `null`이고 `message`는 고정 한국어 문장이며 입력·경로·원시 오류를 담지 않는다. IPC 발신자가 신뢰되지 않으면 `denied`다.
 
 진입 함수는 둘이다. 시험과 구현이 같은 이름을 쓴다.
 
@@ -102,17 +102,17 @@
 
 ## 화면
 
-개발 기록 탭은 읽기 전용이다. 기록 편집·JSON 불러오기·초안 검증·저장·편집 취소가 없다. 시험이 같은 이름으로 찾도록 아래 문구를 고정한다.
+개발 현황의 보기 전환 버튼 「개발 기록 · 기록 편집」은 「개발 기록」으로 바꾼다. 개발 기록 탭은 읽기 전용이다. 기록 편집·JSON 불러오기·초안 검증·저장·편집 취소가 없다. 시험이 같은 이름으로 찾도록 아래 문구를 고정한다.
 
 - 위 막대: 「기록 새로고침」 버튼, 상태 문장(`role="status"`), 「읽은 checkout: 」으로 시작하는 줄. 알면 `<branch> · HEAD <앞 12자리>`, 분리된 HEAD면 `분리된 HEAD · HEAD <앞 12자리>`, 모르면 `알 수 없음`이다.
 - 소개의 스냅샷 정보는 「기록 색인 버전 <SHA-256 앞 12자리>」 하나다. 기준일·소스 commit·범위 메모는 없다.
-- 목록: 시스템은 분야·제목, 기록은 종류·제목, 출처는 제목·종류·경로·구간이다. 상태 문구는 없다.
+- 보기 전환 버튼은 「시스템 N」·「변경·결정·검증·계획 N」·「출처 N」이다(이전 「근거」를 「출처」로). 목록: 시스템은 분야·제목, 기록은 종류·제목, 출처는 제목·종류·경로·구간이다. 상태 문구는 없다.
 - 검색: 시스템은 ID·제목·분야·연결 출처 제목, 기록은 ID·제목·`#PR번호`·연결 출처 제목, 출처는 ID·제목·경로·구간이 대상이다.
 - 시스템 상세: 분야, 관련 시스템, 연결 기록, 「원문」 목록. 기록 상세: 종류, `PR #<번호> · 병합 <앞 7자리>` 줄, 연결 시스템, 「원문」 목록. 「원문」 목록은 접지 않고 늘 보인다(이전 「근거 N개」 접기와 `evidenceOpen` 복원은 없앤다).
 - 「원문」 목록의 읽을 수 있는 출처는 접근 이름 `<출처 제목> 원문 읽기` 버튼이다. 읽지 않는 출처는 `<출처 제목> · 앱에서 읽지 않음(로컬 전용 | 전달 메시지 | Markdown 아님)`과 locator를 글자로 보인다.
 - 버튼을 누르면 출처 화면으로 이동한다(이동 기록에 쌓여 「← 뒤로」로 돌아온다). 제목은 출처 제목, 메타는 경로와 구간 제목(또는 「파일 처음부터」)이다. 본문은 `aria-label="원문 구간"`인 `<pre>`에 글자 그대로 넣는다. Markdown을 HTML로 바꾸지 않는다.
-- 읽기 실패는 `role="alert"`로 「끊긴 링크: 」 뒤에 고정 문장을 보인다. 이전에 읽은 다른 구간의 본문을 남겨 보이지 않는다. 늦게 도착한 이전 요청의 결과는 지금 출처 화면에 반영하지 않는다.
-- 출처 목록 보기에서 출처를 누르면 같은 출처 화면으로 간다.
+- 읽기 실패는 `role="alert"`로 「끊긴 링크: 」 뒤에 읽기 실패 결과의 `message`를 그대로 보인다. 이전에 읽은 다른 구간의 본문을 남겨 보이지 않는다. 늦게 도착한 이전 요청의 결과는 지금 출처 화면에 반영하지 않는다.
+- 출처 목록 보기의 항목도 「원문」 목록과 같다. 읽을 수 있는 출처는 `<출처 제목> 원문 읽기` 버튼이고 누르면 같은 출처 화면으로 간다. 읽지 않는 출처는 글자로 보인다.
 
 ## MCP
 
@@ -141,7 +141,7 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 
 검사 묶음은 셋이고 묶음마다 실행 상태를 따로 낸다. 파일을 읽지 못한 경우(색인 파일 없음·읽기 실패, goals 폴더 목록 실패, BACKLOG 없음·읽기 실패, 출처 파일의 `load`·`changed`)는 그 묶음의 실행 못 함이고 정책 위반 진단으로 바꾸지 않는다. 진단 코드는 아래로 고정한다. `location`은 색인이면 `catalog.json`과 문제 객체의 ID·키(ID가 없으면 배열 위치), goal이면 goal 폴더 경로, 백로그면 `BACKLOG.md:<행>`을 담는다.
 
-- 색인 error: `CATALOG_INVALID`(JSON·스키마·허용 밖 키·중복 ID), `REFERENCE_BROKEN`, `LOCATOR_INVALID`(local 경로 모양·handoff ID 모양), `SOURCE_PATH_REJECTED`(cause에 reason), `SOURCE_NOT_READABLE`(git 출처의 확장자에 `section` 지정), `SOURCE_MISSING`, `SOURCE_TOO_LARGE`, `SOURCE_INVALID_ENCODING`, `SECTION_MISSING`, `SECTION_AMBIGUOUS`.
+- 색인 error: `CATALOG_INVALID`(JSON·스키마·허용 밖 키·중복 ID), `REFERENCE_BROKEN`, `LOCATOR_INVALID`(local 경로 모양·handoff ID 모양), `SOURCE_PATH_REJECTED`(cause에 reason), `SOURCE_NOT_READABLE`(git 출처의 확장자에 `section` 지정, 일반 파일 아님), `SOURCE_MISSING`, `SOURCE_TOO_LARGE`, `SOURCE_INVALID_ENCODING`, `SECTION_MISSING`, `SECTION_AMBIGUOUS`.
 - goal warning: `GOAL_NOT_INDEXED`.
 - 백로그 warning: `BACKLOG_ID_FORMAT`, `BACKLOG_ID_DUPLICATE`, `BACKLOG_GOAL_LINK_MISSING`, `BACKLOG_PROMOTION_LINK_MISSING`, `BACKLOG_TABLE_FORMAT`.
 
