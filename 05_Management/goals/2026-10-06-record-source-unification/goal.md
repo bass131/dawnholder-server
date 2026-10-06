@@ -3,9 +3,9 @@
 ## 진척 단계
 
 - [x] 범위 승인과 goal 고정
-- [>] 결정·문서 정정 작성
-- [ ] 문서 PR 병합
-- [ ] 색인 선행 시험 작성
+- [x] 결정·문서 정정 작성
+- [x] PR196 병합
+- [>] 색인 선행 시험 작성
 - [ ] 색인 전환 구현·검증
 - [ ] 색인 PR 병합
 - [ ] 백로그 메뉴 구현·검증
@@ -16,19 +16,19 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-06 20:2x KST, PR1 2차 문서 실사(좁힌 재실사) 판정을 반영한 정정 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」의 「PR1 문서 실사」 절, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-06 22:5x KST, PR196 병합 뒤 PR2 branch의 첫 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. 2026-10-06 사용자 범위 승인 뒤 최신 main `9ee7ae1`에서 branch `docs/management-record-source-20261006`을 만들고 이 goal을 고정했다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. PR1 문서는 1차 문서 실사(차단 W1~W4)와 2차 좁힌 재실사(차단 X1)를 거쳐 두 번 정정했다. 두 검증자는 정산·종료했고, 그 시점에 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 열린 작업자·검증자는 없었다.
 
 당시 예정 순서는 다음과 같다.
 
-1. 끝남: 리드가 PR1 문서로 결정·요구 반영, 낡은 사실·상태 정정, [27개 분류표](next-steps-classification.md), DB 1단계 과정 문서를 썼다.
-2. 끝남: DB 1단계 문서의 위치·분담 조율과 사실 검토는 아래 「Core 조율 결과」와 「Core 사실 검토」에 끝났다.
-3. 끝남: 1차·2차 신규 gpt-6-astra 문서 실사와 그에 따른 정정(아래 「PR1 문서 실사」).
-4. 예정: 2차 정정 delta의 신규 gpt-6-astra 좁힌 재실사 → PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인. 27개 분류의 이관 행 세 개는 메인을 거쳐 Rules에 보낸다(「적용 중인 메인 결정」 5항). 첫 행은 메인이 다음 Rules goal 입력에 넣었다(`msg_b1bf869e87fd`). 사용자 결정에 따른 두 행은 `msg_2f00062564f8`로 보냈고, 메인이 다음 Rules goal 입력에 넣었다고 회신했다(`msg_bc53f0de661b`). 첫 행의 출처 칸도 W3 정정 문장으로 바꿨다고 했다. 다음 Rules goal이 시작 전이라 BACKLOG 반영 자체는 아직이다. 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
-5. 예정: PR2·PR3은 PR1 병합 뒤 각각 최신 main의 새 branch에서 시작한다.
+1. 리드가 PR2 맥락 메모를 쓰고, TDD 선행 시험 계약을 발행한다. 시험 작성자는 신규 `claude-opus-5-5`이고, 계약 판정 기준에 「적용 중인 메인 결정」 2항의 경로 경계 거절 사례 8종을 넣는다.
+2. 실패하는 요구 시험과 그 원시 결과가 생기면 신규 `gpt-6.1-sol`(max)에게 구현을 맡긴다.
+3. 구현 뒤 다른 신규 `claude-opus-5-5`가 강 등급으로 독립 검증한다. 실제 Electron 확인은 「설계와 검증 경계」를 따른다.
+4. PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인.
+5. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
 
-근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run `run_3fa510a50602`, 리드 handle `term_d2c6dac2-5fb3-401e-98f3-8f6ecba0cdd6`은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
+근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run은 `run_3fa510a50602`다. 2026-10-06 22:4x KST Orca 재시작으로 리드 handle이 `term_d2c6dac2…`에서 `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`으로 바뀌었고, 리드가 run-use로 Run을 다시 묶었다(E/`run-use-after-restart.json`). handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
 
 ## 요청 원천과 승인
 
@@ -209,6 +209,13 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
   - X2(비차단): 재실사 계약이 메인 결정 `msg_da1c987f7ff0`의 원시를 E/`wait-12.json`으로 잘못 적었다(실제 E/`wait-11.json`). 리드가 `msg_9b1387d94527`로 정정했고 저장소 문서에는 영향이 없다.
   - O1(비차단 관찰): DB 문서 32행 「각자 필요한 확인만 한다」를 실제 행위(장치 확인·관측 종류 지정·기록 종료)로 구체화했다.
 - 검증자 절차 한계: 1차 판정 집필 구간의 heartbeat 간격이 5분을 넘었다고 검증자가 판정에 스스로 적었다. 문서 결함과 구분한다.
+
+### PR196 병합
+
+- **3차(좁힌 재실사, 통과):** 신규 `[Management 검증자]`(지정 gpt-6-astra xhigh, 관찰 화면 「GPT-6-Astra xhigh」, backend unknown)가 delta `3f028104..562a0c78`을 통과로 판정했다. X1·Q2·O1은 해소됐고 새 결함은 없었다. Task `task_78855f959ba5`, worker_done `msg_2853f48e37e2`(2026-10-06T11:33:44Z), 판정 원문은 E/`pr1-recheck2/verdict.md`(SHA-256 `4ee5ae46…`)다.
+- **PR 생성과 CI:** 리드가 메인에 알린 뒤(`msg_a99807425be9`) PR196을 만들었다(2026-10-06T11:36:21Z). head `562a0c78b781f157e7403899cfaf50ed33378004`에서 module-boundaries·code-rules·architecture-tests·dotnet-tests 4개가 모두 success였다(E/`pr1-ci-final.txt`).
+- **승인과 병합:** 리드의 승인 묶음(`msg_581e68a420af`) 뒤 메인 `msg_f6dba519f08c`가 사용자 원문 「대시보드 결정 응답: 1) PR196 - 운영툴 기록 원본 일원화 문서 병합 승인 → A 지금 head로 병합 (head 562a0c78b781f157e7403899cfaf50ed33378004)」을 전달했다(메인 전달, 사용자 직접 입력으로 격상하지 않음). 리드가 직전 head를 다시 조회하고 `gh pr merge 196 --merge --match-head-commit 562a0c78…`로 병합했다. 병합 commit `a47a02765c87d9794933f461a9c71ac7d4369d51`, 2026-10-06T13:48:22Z다(E/`pr1-post-merge-state.json`).
+- **Orca 재시작:** PR196 승인 대기 중 Orca가 재시작돼 리드 탭이 복구되지 않았다. 메인이 리드 대화 기록을 `claude --resume`으로 새 탭에 다시 열었고(`msg_92dcde92b30d`), 리드가 run-use로 Run을 다시 묶었다. 이전 세션의 CI 감시와 우편함 대기는 재시작으로 끝났다.
 
 ### 진입과 준비
 
