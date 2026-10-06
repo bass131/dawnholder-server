@@ -26,15 +26,15 @@ R-1~R-8의 상세는 이 절에만 둔다. 다른 현재 운영 문서·프로�
 로컬 `.backups/` 근거는 Git 제외 자료다. 전달 사실과 직접 보존된 실행 근거를 구분하며, 문서 반영을 runtime 전환·새 실행 성공으로 보고하지 않는다.
 
 <a id="r1-management-placement"></a>
-### R-1 — GameDev·Content·Rules·CodeMap·Management 세션 배치
+### R-1 — Core·Content·Rules·CodeMap·Management 세션 배치
 
-마감 구간 리드는 **GameDev·Content·Rules·CodeMap·Management 다섯**이다. 승인 응답·시각은 [다섯 리드 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-leads)에 있다. 게임은 GameDev 서버 기반과 Content 콘텐츠 두 파트로 나누며, 다른 파트의 구현·진행 상태는 각 goal에서 확인한다.
+마감 구간 리드는 **Core·Content·Rules·CodeMap·Management 다섯**이다. 승인 응답·시각은 [다섯 리드 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-leads)에 있다. 게임은 Core 서버 기반과 Content 콘텐츠 두 파트로 나누며, 다른 파트의 구현·진행 상태는 각 goal에서 확인한다. Core의 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다.
 
-GameDev Astra는 메인 Claude 옆 `horizontal split`, Content·Rules·CodeMap·Management Astra는 승인된 각 worktree의 별도 탭에 연다. CodeMap은 Architecture 파트의 **분석·검사 책임과 표시 이름**이다. 코드 리팩토링은 코드 주인 파트가 맡고, 표시 이름을 이유로 `architecture-active` 경로나 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` 태그를 바꾸지 않는다.
+Core Astra는 메인 Claude 옆 `horizontal split`, Content·Rules·CodeMap·Management Astra는 승인된 각 worktree의 별도 탭에 연다. CodeMap은 Architecture 파트의 **분석·검사 책임과 표시 이름**이다. 코드 리팩토링은 코드 주인 파트가 맡고, 표시 이름을 이유로 `architecture-active` 경로나 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` 태그를 바꾸지 않는다.
 
 | 리드 | 이 머신의 작업 경로 | 발신 태그 |
 |---|---|---|
-| GameDev | `C:/Dev/DawnHolder_Project` | `[GameDev Astra]`·`[GameDev Sol]`·`[GameDev 검증자]` |
+| Core | `C:/Dev/DawnHolder_Project` | `[Core Astra]`·`[Core Sol]`·`[Core 검증자]` |
 | Content | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` | `[Content Astra]`·`[Content Sol]`·`[Content 검증자]` |
 | Rules | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` | `[Rules Astra]`·`[Rules Sol]`·`[Rules 검증자]` |
 | CodeMap | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` | `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` |
@@ -133,6 +133,10 @@ Astra→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내�
 ### R-5 — Astra 직접 기동과 메인 대리 기동
 
 표준은 담당 Astra가 자기 pane 아래 새 작업자를 직접 기동하는 것이다. 메인 대리 기동은 기동 실패 때 요청하는 대안이다. 승인된 목표·공간·세션 범위 안에서 다음 순서로 진행한다.
+
+**Unity MCP opt-in:** Unity MCP는 필요한 세션만 켠다. 시트는 1개이므로 사용 전 메인에게 요청하고, 메인이 보유 세션을 현황판에 적은 뒤 기동한다. 그 세션이 닫히면 시트가 풀린다. 필요한 Claude 세션에만 아래 최초 실행 명령에 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 설정은 저장소 밖 파일이며 전역 등록이 아니다. 사용자 결정과 설정 경로의 출처는 [Unity opt-in 적용 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#pr183-제출-뒤-적용한-사용자-결정)이다.
+
+메인이 보고한 연결 관측은 다음과 같다. 시트가 없으면 첫 호출 뒤 「Connection revoked」가 났고, 시트를 활성화한 뒤에도 Unity의 **Edit > Project Settings > AI > Unity MCP**에서 연결을 다시 승인해야 풀렸다. 새 MCP 연결마다 다시 승인을 물을 수 있다. 이 관측과 전역 `unity-mcp` 등록 제거는 메인의 보고이며 Rules의 Unity 실행·실증이 아니다([후속 관측 출처](../../01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정)).
 
 1. 설치된 `orca-cli`·`orchestration` 스킬로 CLI를 선택하고 버전 일치 가이드를 읽는다. 현재 runtime·담당 Astra handle·승인된 checkout을 확인한다.
 2. Sol은 `orca terminal split --terminal <Astra-handle> --direction vertical --command "codex --model gpt-6.1-sol -c model_reasoning_effort=max"`, 독립 Opus는 같은 split에 `--command "claude --model claude-opus-5-5"`로 연다. 시작 경로가 다르면 승인된 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. capacity 관측에 한정한 재시도/신규 작업자 예외는 [capacity 정본](#capacity-retry)을 따른다.

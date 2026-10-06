@@ -44,7 +44,7 @@ WSL 빌드는 Windows 원본 Unity DLL을 갱신하지 않는다. DLL 반영은 
 
 Windows 원본 Git에서 입력 manifest를 만들고 전용 WSL 복제본을 검사한다.
 
-제품 프로젝트는 `Dawnholder.slnx`의 명시 집합을 사용한다. slnx 밖의 독립 도구는 `99_Tools/Formatting/independent-projects.json`의 `SchemaVersion: 1`, `Projects` 배열에 저장소 상대 csproj 경로로 등록한다. 기본 목록은 Formatting과 Formatting.Tests이며 새 도구를 추가하는 파트가 자기 PR에서 해당 항목을 추가한다. 등록 검사 코드는 GameDev가 소유한다. 목록 자체도 입력 manifest와 hash 대조에 포함되며, 중복·없는 경로·제품과의 중복·미등록 csproj/C# 입력은 실패한다.
+제품 프로젝트는 `Dawnholder.slnx`의 명시 집합을 사용한다. slnx 밖의 독립 도구는 `99_Tools/Formatting/independent-projects.json`의 `SchemaVersion: 1`, `Projects` 배열에 저장소 상대 csproj 경로로 등록한다. 기본 목록은 Formatting과 Formatting.Tests이며 새 도구를 추가하는 파트가 자기 PR에서 해당 항목을 추가한다. 등록 검사 코드는 Core가 소유한다. 목록 자체도 입력 manifest와 hash 대조에 포함되며, 중복·없는 경로·제품과의 중복·미등록 csproj/C# 입력은 실패한다.
 
 두 집합은 restore, 실제 Debug/Release Compile 수집, whitespace 검사·snapshot 적용, 보존 비교에 모두 연결된다. formatter 실행 준비에 필요한 bootstrap과 전체 등록 대상의 검사를 구분한다. `Formatting.Tests`의 필수 실행은 유지하며, 다른 독립 도구의 모든 기능 테스트를 이 등록만으로 자동 실행하지는 않는다. 각 파트가 자기 테스트의 CI 연결을 소유한다.
 
