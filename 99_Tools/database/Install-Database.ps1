@@ -17,8 +17,11 @@ function Invoke-TestEnvironmentInstall {
         [IO.FileStream]$ManifestLock
     )
     Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
+    Assert-TestEnvironmentPath -Path $ManifestPath -Expected $Contract.ManifestPath
+    $expectedLockPath = [IO.Path]::GetFullPath($ManifestPath + '.lock')
     if ($null -eq $ManifestLock -or -not $ManifestLock.CanWrite -or
-        $ManifestLock.Name -ine ($ManifestPath + '.lock') -or $Connection.Database -cne $Database) {
+        -not [string]::Equals($ManifestLock.Name, $expectedLockPath, [StringComparison]::OrdinalIgnoreCase) -or
+        $Connection.Database -cne $Database) {
         throw 'Installer core requires the lifecycle-owned manifest lock and exact connection.'
     }
     $manifest = Read-TestEnvironmentManifest -Contract $Contract -Database $Database -ManifestPath $ManifestPath
