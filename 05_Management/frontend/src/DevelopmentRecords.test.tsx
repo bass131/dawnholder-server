@@ -22,6 +22,8 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 async function enter() {
   const user = userEvent.setup(); render(<App />);
   await user.click(screen.getByRole('button', { name: '3 개발 현황' }));
+  // 개발 현황은 시스템 카드 탭으로 열린다. 개발 기록은 그 옆 탭을 열어야 보인다.
+  await user.click(screen.getByRole('button', { name: '개발 기록 · 기록 편집' }));
   await screen.findByRole('searchbox', { name: '검색' });
   return user;
 }
@@ -34,18 +36,22 @@ async function editor() {
 describe('system discovery and evidence', () => {
   it('loads through the runtime bridge and filters with empty results and keyboard activation', async () => {
     const user = await enter();
-    expect(read).toHaveBeenCalledOnce();
+    // App은 시스템 카드와 개발 기록 화면을 모두 마운트해 두고, 두 화면이 각각 한 번씩 기록을 읽는다.
+    expect(read).toHaveBeenCalledTimes(2);
     expect(screen.getByText('읽은 스냅샷 · 게임 실시간 연동 아님')).toBeVisible();
     const search = screen.getByRole('searchbox', { name: '검색' });
     await user.type(search, 'GameMap 즉시');
     expect(screen.getByText('1개 결과')).toBeVisible();
-    const card = screen.getByRole('button', { name: /게임 플레이 전투·피해·사망 처리/ });
+    const card = screen.getByRole('button', { name: /전투·피해·사망 처리/ });
     card.focus(); await user.keyboard('{Enter}');
-    const detail = screen.getByRole('region', { name: '선택한 시스템 상세' });
-    expect(within(detail).getByRole('heading', { name: '전투·피해·사망 처리' })).toBeVisible();
-    await waitFor(() => expect(detail).toHaveFocus());
+    const detail = screen.getByRole('region', { name: '전투·피해·사망 처리' });
+    const heading = within(detail).getByRole('heading', { name: '전투·피해·사망 처리' });
+    expect(heading).toBeVisible();
+    await waitFor(() => expect(heading).toHaveFocus());
     expect(within(detail).getByText(/PR140 MERGED/)).toBeVisible();
-    await user.clear(search); await user.type(search, 'no-such-system-xyz');
+    await user.click(screen.getByRole('button', { name: '목록으로' }));
+    await user.clear(screen.getByRole('searchbox', { name: '검색' }));
+    await user.type(screen.getByRole('searchbox', { name: '검색' }), 'no-such-system-xyz');
     expect(screen.getByText('검색 결과가 없습니다.')).toBeVisible();
     await user.click(screen.getByRole('button', { name: '필터 초기화' }));
     await user.selectOptions(screen.getByRole('combobox', { name: '분야' }), 'Management');
@@ -59,7 +65,7 @@ describe('system discovery and evidence', () => {
     await user.click(screen.getByText('기준선·계약·평가 준비와 클라이언트·영속성 및 운영툴·서버 계약 후속 계획'));
     expect(screen.getByText(/^기준선·계약·평가 진행·완료 아님 \/ 클라이언트\/UI 적용부터 저장·복원 종합 검증까지의 후속 단계 미착수$/)).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'DB·캐릭터 저장과 복원 →' }));
-    const detail = screen.getByRole('region', { name: '선택한 시스템 상세' });
+    const detail = screen.getByRole('region', { name: 'DB·캐릭터 저장과 복원' });
     expect(within(detail).getByText('작은 범위의 DB 연동 설계와 구현 분할 완료 / GameServer 저장·복원 연동 미완료')).toBeVisible();
     const evidence = detail.querySelector(':scope > .record-detail-body > .record-evidence > summary');
     expect(evidence).not.toBeNull(); await user.click(evidence!);
@@ -137,6 +143,7 @@ describe('draft editing without accidental data loss', () => {
   it('reports missing runtime authority instead of claiming that records loaded', async () => {
     vi.stubGlobal('systemRecords', undefined); render(<App />);
     await userEvent.click(screen.getByRole('button', { name: '3 개발 현황' }));
+    await userEvent.click(screen.getByRole('button', { name: '개발 기록 · 기록 편집' }));
     expect(screen.getByText(/기록 연결을 사용할 수 없습니다/)).toBeVisible();
     expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
   });
