@@ -174,6 +174,18 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 그래도 넘치면 후보를 R-6 D1a → R-3 1.4.217 → R-5 실패 이력 순서로 필요한 만큼만 쓴다.
   - 셋을 다 써도 넘치면 다시 묻는다.
   - 이유는 세 후보가 PR2에도 필요한 감축 여지이기 때문이다.
+- 중간 보고 `msg_21fe57cd4ac1`(15:03:59Z, 수신 helper allowed): 중복을 줄인 뒤에도 넘쳐 세 후보를 모두 썼다. 순서는 R-6 → R-3 → R-5였다. 결과는 ORCA 249줄, 다섯 문서 92,478 bytes(착수 92,500, -22)다. 수치는 완료 보고 뒤 리드가 다시 잰다.
+  - **PR2 영향**: 범위 초안이 정한 ORCA 감축 후보(R-3 1.4.217, R-5 실패 이력, R-8 적용 시점, R-6 D1a, 관찰 기록 두 절)는 PR1이 모두 썼다. PR2는 ORCA에 Orca 절차 다섯 가지와 대기 정책 등을 더한다. 그래서 PR2 계획 때 새 감축 방법을 메인과 정해야 한다. 완료조건 7은 그대로 둔다. PR1 보고에 함께 올린다.
+- 결과: worker_done `msg_55d1b979a7ca`(15:20:48Z, outcome succeeded)는 수신 helper allowed/exit 0이다(E/docs-worker-done-check-*.json). 보고서는 [E/docs/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/docs/report.md)다. 리드가 `4ae9622`로 커밋했다.
+  - 바뀐 곳: AGENTS 「Git 권한」(병합 주체·승인 문장·금지 대상)과 「공학 조건」(PermissionRequest hook 예외 한 문장), ORCA 새 절 `#merge-gate`와 R-1 배치, goal-loop 「통합과 보고」 한 구절, RESUME 2단계, 세션 인계 스킬 25행.
+  - 수치(리드 재측정): ORCA 249줄이다. 다섯 문서 합계는 92,500 bytes로 착수 때와 같다. 파일별로는 AGENTS +798, goal-loop +116, RESUME +41, 세션 인계 스킬 -4, ORCA -951이다. CLAUDE.md는 메인 몫으로 따로 재서 8,199 → 8,197이다.
+  - 옮긴 원문: 여섯 블록이 기준 `e37ac7a`의 ORCA 행과 글자까지 같다(E/lead-moved-check.txt). 리드가 아래 「ORCA에서 옮긴 서술」에 넣었다. 링크 11개 중 8개가 열린다. 나머지 3개는 Git 제외 로컬 백업 파일의 부재이고, 원래 ORCA에서도 이 checkout 기준으로 없던 것이다(E/lead-goal-moved-links.txt).
+  - 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/docs-release.json, docs-before-close.json, docs-close.json).
+- 리드 실사에서 독립 검증으로 넘길 점:
+  1. R-3 축약: 1.4.217 문단을 옮기면서 현행 규칙 일부를 한 문장으로 줄였다. 「help 확인과 실제 호출 실증의 구분」, 「다른 버전 지원을 주장하지 않음」 같은 세부가 빠졌다. 현행 규칙이 보존됐는지 대조한다.
+  2. ORCA `#merge-gate`의 「세션을 다시 열면 이전 기록을 쓸 수 없다」는 리드 계약에서 나온 문장이다. `--resume`가 session_id를 유지하는지는 실측하지 않았다. 실측하거나, 표현을 「다른 session_id」 기준으로 고친다.
+  3. ORCA 새 절은 하위 에이전트 병합 차단을 직접 적지 않는다. AGENTS 「Git 권한」에는 있다. 30초 탐색으로 찾을 수 있는지 본다.
+  4. 공학 조건 예외 문장의 조건이 hook 실제 동작과 같은지 대조한다(메인 `msg_895f7ffa4512`).
 
 ## 요구사항 원천과 적용 결정
 
@@ -222,7 +234,51 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 
 ## ORCA에서 옮긴 서술
 
-ORCA 250줄 상한(완료조건 7)을 지키려고 ORCA의 역사 서술을 이 절로 옮긴다. PR1 정본 문장 작업 뒤 리드가 원문과 원래 위치를 넣는다.
+ORCA 250줄 상한(완료조건 7)을 지키려고 PR1에서 ORCA의 역사 서술을 이 절로 옮겼다. 정본 문장 작업자가 원문을 `E/docs/moved-from-orca.md`에 보존했고, 리드가 기준 `e37ac7a`의 ORCA 행과 글자까지 같은지 기계로 대조했다(E/lead-moved-check.txt, 6블록 모두 같음). 이 절에 옮기면서 두 가지만 바꿨다. 상대 링크는 이 파일 위치에서 열리게 고쳤고, 원문의 `##` 제목은 굵은 글씨로 바꿨다.
+
+### R-3 Orca 1.4.217 임시 확장(종료)과 1.4.220 복귀
+
+원래 위치: ORCA 85행(`e37ac7a`).
+
+**Orca 1.4.217 임시 확장(종료):** 당시 이 버전인 동안 위 공식 blocking `ask`의 고정 `Question`과 공식 질문에 대한 `reply --id`만 같은 조건의 subject 예외로 인정했다. body 첫머리 자기 태그·현재 `from_handle`·Task·Dispatch와 공식 receipt를 대조하고, 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`는 제외다. **1.4.218 이상으로 올리거나 해당 ask/reply 명령이 subject 옵션을 지원하면 이 1.4.217 확장은 종료**하며 위 1.4.218 근거·예외는 별도 범위로 유지한다. 메인 결정·시각·help 근거는 [1.4.217 승인 출처](../2026-10-05-operating-canon/goal.md#orca-14217-source)에 보존한다. 현재 **1.4.220 복귀로 임시 확장은 종료**됐다. [복귀 결정·시점과 실제 help](../2026-10-05-operating-canon/goal.md#orca-14220-return)에 따라 현재 ask/reply help 양쪽의 subject 옵션 부재를 확인한 공식 ask/reply에만 위 body·identity·receipt 조건으로 적용한다. 해당 명령이 subject 옵션을 지원하면 그 예외는 종료하며 일반 send에는 적용하지 않는다. help 확인은 실제 ask/reply 호출 실증과 구분하고 다른 버전 지원을 주장하지 않는다.
+
+### R-5 실패 이력과 후속 성공
+
+원래 위치: ORCA 148행(`e37ac7a`).
+
+실패 이력과 후속 성공을 구분한다. [내장 컴포넌트 null 감사의 당시 기록](../2026-10-01-native-component-null-audit/goal.md#세션-관측과-다음-경계)은 Astra의 split 기동 1회 실패와 메인 대리 기동 뒤 최초 attach 성공을 구분한다. 이후 D1a 검증자와 Management Fable/Sol 성공은 메인 전달 관찰이다. D1a의 직접 기동 경위는 [완료 goal](../2026-10-01-persistence-technical-design/goal.md#독립-실사와-보완)에 있고, [review-2-start.json](../../../.backups/verification/2026-10-01-persistence-technical-design/review-2-start.json)은 최초 attach의 ready·`input_accepted`·`turn_started`를 보존한다. 1차 D1a의 미보존 원응답과 2차 보존 receipt를 혼동하지 않는다. 이전의 “분할→연결 성공은 아직 미검증”을 현재 전체 상태로 사용하지 않는다.
+
+### R-6 D1a 종료 화면 관찰
+
+원래 위치: ORCA 193행(`e37ac7a`).
+
+D1a verification-2의 [종료 전 화면](../../../.backups/verification/2026-10-01-persistence-technical-design/review-2-before-close-read.json)은 전체 49행(`limited=false`)에서 `/auto-mode-setup` 안내 창이 관측되지 않고 일반 `auto mode on` 상태줄이 보인 기록이다. [판정 원문](../../../.backups/verification/2026-10-01-persistence-technical-design/verification-2/verdict.md)과 [해당 완료 goal](../2026-10-01-persistence-technical-design/goal.md)은 문서 실사 범위를 제공한다. 안내 미관측은 **해당 종료 화면에 한정한 관찰**이며 첫 화면이나 전역 설정 효과의 검증이 아니다.
+
+### R-8 적용 시점 두 문단
+
+원래 위치: ORCA 218~220행(`e37ac7a`).
+
+적용 시점은 **이번 운영 규칙 PR 목표가 끝나면 GameDev Astra부터**, **M-1 PR 병합 뒤 Management Astra**다. 이번 문서 작업이 현재 Astra 세션을 직접 닫는 작업을 포함하지는 않는다. 결정 배경으로 메인은 하루 동안 운영한 GameDev Astra가 자동 압축 후 사용률 6%, M-1 Management Astra는 1시간 만에 58%였다고 전달했다. 이 수치는 [main-request-r8.json](../2026-10-05-operating-canon/goal.md#orca-source-table-2)의 당시 관찰이며 현재 사용률이나 교체 완료를 의미하지 않는다.
+
+위 적용 시점은 2026-10-01 결정 당시 목표를 가리킨 역사 기록이다. 현재 하네스 goal의 첫 BACKLOG PR 병합을 전체 goal 종료나 R-8 시점으로 해석하지 않는다.
+
+### 관찰 기록: 2026-09-29
+
+원래 위치: ORCA 245~249행(`e37ac7a`).
+
+**관찰 기록: 2026-09-29**
+
+두 시도는 시작 방식과 확인 범위가 다르다. 연결·작업 주입·완료 수신을 각각 구분한다.
+
+당시 두 시도의 관측·식별자 원문은 [2026-09-29 관찰 기록](../2026-10-05-operating-canon/goal.md#orca-20260929-history)에 보존했다.
+
+### 관찰 기록: 2026-10-04~05
+
+원래 위치: ORCA 251~253행(`e37ac7a`).
+
+**관찰 기록: 2026-10-04~05**
+
+메인이 전달한 이 PC의 당시 관측·출처·시각·확인 한계는 [환경·복구 기록](../2026-10-05-operating-canon/goal.md#pr1-environment-observations)에서 확인한다.
 
 ## 관찰 기록
 
