@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 다음은 동작 계약 v2.1로 신규 Sol 수정 → 신규 Opus 재검증 → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험(`597839c`), 정본 문장(`4ae9622`), CLAUDE.md(`00d180b`, 메인)가 끝났다. 구현(`26cb8b3`)과 독립 검증이 끝났고 판정은 차단(D1·D2)이다(아래 「PR1 독립 검증」). 동작 계약 v2.1로 신규 Sol이 수정 중이다(아래 「PR1 결함 수정」). 다음은 신규 Opus 재검증 → PR1이다.
 
 ## 진척 단계
 
@@ -250,6 +250,16 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 문서는 D2 문장, D4 세 구절 복원, D5와 O8 한계, O9, 넓힌 판정에 맞춘 우회 한계 문구를 고친다. 늘어난 bytes는 같은 PR의 다섯 문서에서 현행 규칙을 잃지 않고 줄인다(완료조건 7). 못 줄이면 작업자가 멈추고 리드가 메인에 올린다.
   - 순서: 신규 Sol 한 명이 코드·문서를 고친다. 기존 시험 86건은 바꾸지 않고 통과해야 한다. 그다음 신규 Opus 재검증자가 v2.1 시험을 쓰고 D1~D5와 실제 진입을 다시 판정한다.
   - O10은 완료조건 5 적용 확인 때 잰다. O11·O2·O6은 PR2 후보로 둔다.
+- 메인 알림: `msg_daf6153a050b`(16:19:33Z, status). 메인 pane이 빈 prompt여서 확인 안내를 한 번 넣었다.
+
+### PR1 결함 수정
+
+- 작업자: 신규 `gpt-6.1-sol` max, 태그 `[Rules Sol]`. 리드 pane 아래 vertical split이고 handle은 `term_1e768a4f-a1c8-418a-8595-73ffb74e7bc3`다. 첫 화면은 Codex v0.160.1, GPT-6.1-Sol max, Full Access·never로 이전 작업자들과 같았다. 선택창은 없었다(E/fix-first-screen.json). backend는 unknown이다.
+- 계약: [E/fix-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/fix-contract.md) v1, SHA256 `c1058cce…`이다. 고정 입력은 HEAD `eb10c80`, 동작 계약 v2.1, 판정 E/verify/verdict.md다.
+  - 쓰기 허용은 MergeGate 세 제품 파일, README 「병합 관문」 절, ORCA다. 시험 폴더는 쓰지 않는다. 기존 86건이 바뀌지 않고 통과해야 한다.
+  - bytes는 ORCA 41,629 이하로 맞춘다. 같은 절의 중복 합치기 → 역사 서술 옮기기 순서다. 그래도 모자라면 멈추고 묻는다.
+  - 경로 기계 확인은 E/fix-contract-pathcheck.txt(16:22:32Z)다.
+- Task `task_64f9b3228b87`, Dispatch `ctx_96a40f8ffe73`이다. receipt는 input_accepted, turn_started다(E/fix-worker-start.json).
 
 ## 요구사항 원천과 적용 결정
 
