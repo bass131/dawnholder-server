@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험 작성자(신규 Opus)가 작업 중이다(아래 「선행 시험」). 그 뒤는 구현(Sol max) → 독립 검증(신규 Opus) → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험 작성자(신규 Opus)와 PR1 정본 문장 작성자(Sol max)가 병렬로 작업 중이다(아래 「선행 시험」, 「PR1 정본 문장」). 메인은 CLAUDE.md를 쓴다. 그 뒤는 구현(Sol max, 계약 초안 E/impl-contract-head.md) → 독립 검증(신규 Opus) → PR1이다.
 
 ## 진척 단계
 
@@ -149,6 +149,13 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - PermissionRequest는 정확한 단독 병합 형태가 아닌 명령에 허용을 내지 않는다. `usedCommand`가 같은 위조 기록이 있어도 마찬가지다.
   - `state-write-failed`와 기록 쓰기 실패는 권한·파일 배치로 시험한다. root 환경은 이유를 출력하고 skip한다.
   - Node 24.15에서 `node --test <디렉터리>`는 시험을 찾지 않는다(작업자 실측). 실행 명령과 CI 단계는 `*.test.mjs` glob 형태로 쓴다.
+
+### PR1 정본 문장
+
+- 작성자: 신규 `gpt-6.1-sol` max, 태그 `[Rules Sol]`. 리드 pane 아래 vertical split이고 handle은 `term_712a7b91-c89c-4a9f-b5d6-1ebb4983bae4`이다. 첫 화면은 Codex v0.160.1, GPT-6.1-Sol max였다. 권한 표시는 기존 Codex 설정 그대로인 Full Access였고 선택창은 없었다(E/docs-first-screen.json). backend는 unknown이다.
+- 계약: [E/docs-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/docs-contract.md) v1, SHA256 `71ba479e…`, 고정 입력은 HEAD `e37ac7a`와 동작 계약 v2다. 경로 기계 확인은 E/docs-contract-pathcheck.txt(14:49:26Z)다. 선행 시험 작성자와 쓰는 파일이 겹치지 않아 병렬로 돌린다.
+- Task `task_171a81f24c1b`, Dispatch `ctx_0b8d6f802321`. receipt는 input_accepted, turnStart observed다(E/docs-worker-start.json).
+- CLAUDE.md: 메인에 쓰기 창을 열었다(`msg_f7e308d60e6d`, 14:50:10Z). 메인이 끝을 알리면 리드가 diff를 보고 커밋한다.
 
 ## 요구사항 원천과 적용 결정
 
