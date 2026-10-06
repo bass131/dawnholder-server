@@ -16,15 +16,15 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 01:1x KST, PR2 제품 구현 commit 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 02:0x KST, PR2 데이터 전환 commit 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」). 두 작업자는 정산·종료했고 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」). 세 작업자는 정산·종료했고 열린 작업자·검증자는 없었다.
 
 당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
 1. (끝남) 신규 `claude-opus-5-5` 시험 작성자의 기록 읽기 경계 선행 시험.
-2. (제품 코드 끝남) 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
-3. 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고, 신규 Sol이 MCP를 구현한다.
+2. (끝남) 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
+3. 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고(화면 시험 시간 상한 포함), 신규 Sol이 MCP를 구현하고 `mcp-dist`를 새로 빌드한다.
 4. 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증한다. 실제 Electron 확인은 「설계와 검증 경계」를 따른다.
 5. PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인.
 6. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
@@ -248,6 +248,16 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **결과:** 제품 파일 23개를 바꿨다(새 9, 고침 13, 지움 1, +1244/−361). 리드가 `1c7824e2`로 commit했다. package.json은 scripts의 `records:check` 한 줄만 늘었고 lockfile·시험·`catalog.json`·`mcp/`·문서는 바뀌지 않았다. 전체 시험은 1014개 중 936 통과·67 실패·11 미실행, 수집 실패 0이다. 실패는 데이터 전환 대기 11, MCP 4단계 예정 54, 기존 B01·B09 각 1이다. 미실행 11건은 v1 DTO 타입 검사에 막힌 MCP build 시험 두 파일이며 B11·B12는 해소로 판정하지 않는다. typecheck와 desktop:typecheck는 exit 0, mcp:typecheck는 exit 1(오류 34개 모두 `mcp/`의 v1 DTO 세 파일)이다. `records:check`는 실제 색인이 아직 v1이라 `CATALOG_INVALID` 하나로 exit 1이다.
 - **리드 대조:** 위 수치와 파일별 실패 분포를 E/`pr2-s1/after/vitest.json`에서 다시 셌고, typecheck 3종·CLI의 meta exit와 출력, package diff, 보호 경로 diff를 원시로 확인했다. 맥락 메모 생성(00:13:14 KST)이 첫 제품 파일 생성(00:21:41 KST)보다 앞선다. 강 등급 독립 판정은 6단계 검증자에게 남는다.
 - **남은 일:** 실제 색인이 v1이라 새 화면은 지금 데이터 오류를 표시한다. 3단계 데이터 전환이 이 상태를 푼다. 실제 Electron 화면·build는 실행하지 않았다.
+
+### PR2 데이터 전환
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max」, backend unknown)이 `catalog.json` 한 파일을 schemaVersion 2로 바꿨다. Task `task_eed4dd374ef1`, Dispatch `ctx_bbff70573c4a`, worker_done `msg_4b539f625b69`(2026-10-06T16:54:27Z). 계약은 고정 파일 E/`pr2-s2-task.txt`(SHA-256 `0b8bf63b…`), 보고는 E/`pr2-s2/report.md`, 전환표는 E/`pr2-s2/conversion.md`다.
+- **계약 보충과 리드 판단:** 네 건이다. v1.1은 완료조건 8의 DB 1단계 문서 출처를 더했다. v1.2는 옛 MCP 실행본(`mcp-dist`, 10-02 v1 빌드) 때문에 새로 실패하는 시험을 4단계 예정으로 분류하게 했다. v1.3은 Sol 질문 `msg_896c5425b368`에 답해 goal 제목 앞의 단계 코드를 이름 뒤 괄호로 옮기게 했다. 근거는 `catalog-display-names` 시험이 적은 사용자 규칙이다. 같은 답에서 `management-records` 시스템 출처로 `decisions.md`의 D-16을 허용했다. FEATURE_MAP·ARCHITECTURE에 Management 항목이 없다. Sol 질문 `msg_95d520b78548`에는 아래 화면 시험 시간 초과를 4단계 시험 소유 후속으로 넘기도록 답했다.
+- **리드 계약 누락(첫 발생):** 3단계 계약이 고정 입력으로 가리킨 완료조건 8을 「만들 것」에 적지 않았다. 계약의 「쓰기 전 통과하던 시험이 쓴 뒤 실패하면 결함」도 옛 MCP 실행본을 고려하지 않았다. 두 건 모두 Sol의 첫 catalog 쓰기 전에 보충으로 고쳤다.
+- **결과:** 출처 68(git 55·local 12·handoff 1)·시스템 18·기록 49다. 기존 ID와 순서는 그대로다. 9-30 이후 goal 31개가 새 기록이 됐다. 리드가 `623b560b`로 commit했다(+1164/−693). `records:check`는 exit 0, error 0, warning 11이며 warning은 모두 9-29 goal의 `GOAL_NOT_INDEXED`다. 전체 시험은 전환 전과 같은 1014개 중 936 통과·67 실패·11 미실행이지만 실패 구성이 바뀌었다. 데이터 전환 대기 11건 중 9건이 통과했고, `mcp-v1-reader`의 canonical hash 시험 1건은 MCP v1 DTO 때문에 4단계 예정으로 남았다. 나머지 1건은 아래 화면 시험이다. 옛 MCP 실행본 때문에 MCP stdio 시험 9건이 새로 실패했다(4단계 예정). typecheck·desktop:typecheck는 exit 0, mcp:typecheck는 2단계와 같은 오류 34개다.
+- **화면 시험 시간 초과:** 실제 색인의 상세를 모두 여는 `catalog-display-names`의 rendered 시험이 전체 실행에서는 5012ms·5029ms로 시간 초과했고 단독 실행에서는 3117ms에 통과했다. 상세가 36개에서 67개로 늘어서다. 시험 시간 상한은 4단계 시험 작성자가 그 시험에 명시한다([색인 v2 설계](index-v2-design.md) 「시험과 기존 실패」).
+- **리드 대조:** 시험 수치와 파일별 실패 분포를 원시 JSON에서 다시 셌다. `records:check`를 직접 다시 실행해 같은 결과를 얻었다. catalog SHA-256, 범위(catalog 한 파일), 맥락 메모 생성(01:12 KST)이 첫 catalog 쓰기(01:30 KST)보다 앞섬을 확인했다. 기록 4개의 PR 번호·병합 commit을 git 원시와, Markdown 구간 53개 전부를 파일의 정확한 제목과 대조했다. 전수 대조는 6단계 검증자 몫이다.
+- **설계 보충:** MCP 조사에서 지금의 MCP 경계 시험이 앱 공유 모듈을 3개만 허용해 설계의 재사용과 충돌함을 찾았다. [색인 v2 설계](index-v2-design.md) 「MCP」에 카드 store 재사용, `main.ts` 고정 경로, MCP 빌드 경계 표, TEMP 사본 helper 확장, `mcp-dist` 재빌드와 B11·B12 재판정을 더했다.
 
 ### 진입과 준비
 

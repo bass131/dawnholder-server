@@ -133,6 +133,22 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 - `read_source_section`은 원문 구간 경계 모듈을 그대로 쓴다. 출처 ID로만 받고 경로 입력은 없다. `text`는 UTF-16 offset 기준으로 잘라 응답이 16 KiB를 넘지 않게 한다(대리 쌍을 가르지 않는다). `offset > 0`이면 `expectedSectionHash`가 필수이며(`VERSION_REQUIRED`) 다르면 `VERSION_CONFLICT`다. `sectionHash`는 구간 텍스트의 SHA-256이다.
 - 새 오류 코드: `SOURCE_NOT_READABLE`·`SOURCE_PATH_REJECTED`·`SOURCE_MISSING`·`SOURCE_TOO_LARGE`·`SOURCE_CHANGED_DURING_READ`·`SOURCE_INVALID_ENCODING`·`SECTION_MISSING`·`SECTION_AMBIGUOUS`, 카드 파일용 `GUIDE_MISSING`·`GUIDE_UNREADABLE`·`GUIDE_TOO_LARGE`·`GUIDE_INVALID`·`GUIDE_CHANGED_DURING_READ`. reason은 `details.reason`의 고정 값이고 경로를 담지 않는다. 출처 ID가 없으면 지금처럼 `NOT_FOUND`다.
 - 검증은 새로 빌드한 실행본(`npm run mcp:build` → `mcp-dist`)으로 한다. 빌드 digest 시험의 기준은 그 새 출력이다.
+- 카드 도구는 `system-guide-store.ts`의 `createSystemGuideStore`를 요청마다 새로 만들어 읽는다. 앱과 같은 판정·hash를 쓰려는 선택이다. 요청마다 만들므로 앱 store의 `busy`(한 store의 동시 읽기 거절)는 MCP에서 생기지 않는다. 결과 코드는 `missing`→`GUIDE_MISSING`, `load`→`GUIDE_UNREADABLE`, `too-large`→`GUIDE_TOO_LARGE`, `invalid`→`GUIDE_INVALID`, `changed`→`GUIDE_CHANGED_DURING_READ`로 바꾼다. 대안인 MCP 전용 카드 리더는 같은 판정을 두 곳에 두게 된다.
+- `read_source_section`의 `checkout`은 `createCheckoutStore({ repositoryRoot }).read()`의 결과(`CheckoutInfo`)다.
+- MCP `main.ts`의 고정 경로는 셋이다. `mcp-dist/mcp/main.js` 기준 색인 `../../../records/catalog.json`, 카드 `../../../records/system-guide.json`, 저장소 루트 `../../../../`다.
+
+**MCP 빌드 경계.** MCP가 앱 모듈을 재사용하므로 지금의 경계 시험(허용 공유 모듈 3개, 허용 bare import, 금지 호출, 파일 열기 위치)을 아래로 바꾼다. 시험 갱신은 4단계, 구현은 5단계다.
+
+| 항목 | 지금 | 바뀐 뒤 |
+|---|---|---|
+| 빌드 그래프의 `electron/` 모듈 | `catalog-contract`·`catalog-hash`·`catalog-query` | 그 셋과 `source-section-contract`·`source-section-store`·`checkout-contract`·`checkout-store`·`system-guide-contract`·`system-guide-store`. `main`·`preload`·`catalog-store`·`src/`는 계속 금지 |
+| 허용 bare import | MCP SDK 두 개, `node:crypto`, `node:fs/promises`, `node:url`, `zod` | 그 목록과 `node:fs`·`node:path`·`node:util` |
+| 파일 열기 | MCP 리더만 | MCP 리더와 위 store 세 개(`source-section-store`·`checkout-store`·`system-guide-store`) |
+| 프로세스 실행 금지 | `exec(` 문자열 검사 | 목적은 그대로다. `child_process` import와 프로세스 실행 호출을 막고, 정규식의 `.exec(` 호출은 허용한다 |
+
+- 빌드 digest는 위 모듈이 그래프에 들어오므로 그 파일 변경에도 바뀌어야 한다. 색인·카드 데이터 변경에는 바뀌지 않는다.
+- 소유 TEMP 사본으로 빌드하는 시험 helper(`tests/mcp-v3/temp-copy.ts`)는 지금 `catalog.json`만 복사한다. 카드 자료와 원문 구간 시험에 필요한 저장소 파일을 복사하도록 4단계에서 늘린다.
+- `mcp-dist`는 Git 제외 빌드 출력이고 지금은 2026-10-02의 v1 빌드다. 5단계가 `npm run mcp:build`로 새로 만든다(goal 「만들 것」 4의 「새로 빌드한 실행본」). 빌드 전에 옛 출력을 근거 폴더에 복사해 둔다. 기존 실패 B11·B12는 옛 출력과 비교하던 시험이므로 새 출력 기준으로 다시 판정한다.
 
 ## 색인 검사
 
@@ -168,6 +184,7 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 - 시험 파일은 `05_Management/frontend/tests/`와 화면 시험 위치(`src/*.test.tsx`)의 기존 관례를 따른다. Node 환경 시험은 `// @vitest-environment node` 머리를 쓴다.
 - 이 PR이 없애거나 바꾸는 계약을 단정하던 기존 시험은 (a) 옛 구현 세부 단정으로 분류하고, 근거 요구(goal 「만들 것」 항목, 이 문서 절)와 함께 고치거나 지운다. 저장·rename 시험(`records-store`의 저장 부분, `mcp-v1-rename`, `mcp-v3-r1-rename`, `mcp-v3-r1/rename-contract.ts`)은 저장 제거에 따라 지운다.
 - 이미 알려진 실패 B01·B09·B10·B11·B12와 가끔의 A01은 [기존 실패 분류](../2026-10-02-system-cards/existing-failures.md)에 있다. 이 PR이 같은 시험 파일을 다시 쓰면 그 실패를 포함해 전 실패를 다시 분류한다. 관계없는 실패는 고치지 않는다.
+- 실제 색인의 시스템·기록 상세를 모두 여는 화면 시험(`tests/catalog-display-names.test.ts`의 rendered 시험)은 실행 시간이 색인 항목 수에 비례한다. 데이터 전환 뒤 상세가 36개에서 67개로 늘어, 전체 실행에서는 기본 5000ms를 넘었고 단독 실행에서는 3117ms에 통과했다(3단계 보고 E/`pr2-s2/report.md`). 그 시험의 시간 상한은 4단계 시험 작성자가 시험에 명시한다.
 
 ## 작업 순서와 소유
 
