@@ -206,6 +206,10 @@ describe('rendered development records', () => {
     return texts;
   }
 
+  // The test opens every system and record detail with two clicks, so its run time grows with the
+  // item count and passed the 5 s default under a full parallel run. 250 ms per opened item leaves
+  // about five times the per-item time of a run alone.
+  const RENDER_TIMEOUT_MS = Math.max(5_000, (catalogFile.systems.length + catalogFile.records.length) * 250);
   it('shows systems, records and sources without stage codes on the records screen', async () => {
     if (!catalog) throw new Error('Invalid canonical catalog');
     // DevelopmentRecords renders every catalog sentence across its lists and full-page details;
@@ -242,5 +246,5 @@ describe('rendered development records', () => {
       const found = findings(texts);
       expect(found, explain(found)).toEqual([]);
     }
-  });
+  }, RENDER_TIMEOUT_MS);
 });

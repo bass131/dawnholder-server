@@ -107,14 +107,18 @@ function expectNameRefusal(exchange: Exchange, name: string): Observation {
   return observed;
 }
 
+// Design 「MCP」: the five record tools and the three new tools.
 const NORMAL_CALLS: Array<[ToolName, Record<string, unknown>]> = [
   ['list_systems', {}], ['search_records', { systemId: 'sys-alpha' }], ['get_system', { id: 'sys-alpha' }],
   ['get_record', { id: 'rec-1' }], ['get_source', { id: 'src-a' }],
+  ['read_source_section', { id: 'src-a' }], ['list_guide_cards', {}], ['get_guide_card', { id: 'server' }],
 ];
+// Card tools read the guide, not the index (Astra 보충 v1.1 Q3).
+const INDEX_READING_CALLS = NORMAL_CALLS.filter(([tool]) => tool !== 'list_guide_cards' && tool !== 'get_guide_card').length;
 
 for (const era of ERAS) {
   describe(`${era}: unknown tool names after the V1-01 fix`, () => {
-    it('every unknown string name gets one fixed protocol error before the handler and the catalog, and the five tools still work', async () => {
+    it('every unknown string name gets one fixed protocol error before the handler and the catalog, and the eight tools still work', async () => {
       const backing = fileBacked(linkedCatalog());
       const harness = await open(era, backing.readSnapshot);
       // An array, not an object: a '__proto__' label would set the prototype instead of a key.
@@ -139,7 +143,7 @@ for (const era of ERAS) {
 
       for (const [tool, args] of NORMAL_CALLS) expectSuccess(tool, toOutcome(await harness.callTool(tool, args)));
       expect(harness.entered).toEqual(NORMAL_CALLS.map(([tool]) => tool));
-      expect(backing.reads).toBe(5);
+      expect(backing.reads).toBe(INDEX_READING_CALLS);
     });
 
     it('unknown names with hostile arguments are refused the same way; arguments are not validated, echoed or read', async () => {
@@ -364,7 +368,7 @@ for (const era of ERAS) {
       expect(file.openHandles.size).toBe(0);
     });
 
-    it('tools/list still lists exactly the five strict tools with output schemas, and the name gate admits exactly that set', async () => {
+    it('tools/list still lists exactly the eight strict tools with output schemas, and the name gate admits exactly that set', async () => {
       const backing = fileBacked(linkedCatalog());
       const harness = await open(era, backing.readSnapshot);
       const { tools } = await harness.client.listTools();
@@ -376,7 +380,7 @@ for (const era of ERAS) {
       }
       // Every listed name passes the gate (reaches the handler); a refusal would be -32602.
       for (const tool of tools) {
-        const args = tool.name === 'list_systems' || tool.name === 'search_records' ? {} : { id: 'sys-alpha' };
+        const args = ['list_systems', 'search_records', 'list_guide_cards'].includes(tool.name) ? {} : { id: 'sys-alpha' };
         const envelope = expectEnvelope(tool.name as ToolName, toOutcome(await harness.callTool(tool.name, args)));
         expect(envelope.ok || envelope.error.code === 'NOT_FOUND').toBe(true);
       }

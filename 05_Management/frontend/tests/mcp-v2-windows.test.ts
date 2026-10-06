@@ -19,9 +19,13 @@ const pool = processPool();
 afterEach(async () => { await pool.closeAll(); });
 afterAll(() => { removeTempRoots(); });
 
-// A realistic-size fixture: the canonical catalog's text (read-only) with a varying revision.
-const BASE = JSON.parse(readFileSync(CANONICAL_CATALOG, 'utf8')) as Record<string, unknown>;
-const versionText = (revision: string) => JSON.stringify({ ...BASE, revision }, null, 2);
+// A realistic-size fixture: the canonical catalog's text (read-only) with a varying marker. Record
+// index v2 rejects any extra key (index-v2-design.md 「색인 형식」), so the marker goes into the first
+// system's title instead of a hand-written revision.
+const BASE = JSON.parse(readFileSync(CANONICAL_CATALOG, 'utf8')) as { systems: Array<{ title: string }> } & Record<string, unknown>;
+const versionText = (marker: string) => JSON.stringify({
+  ...BASE, systems: BASE.systems.map((system, index) => (index === 0 ? { ...system, title: `${system.title} ${marker}` } : system)),
+}, null, 2);
 
 interface ReaderStats {
   calls: number; ok: number; codes: Record<string, number>; unknownHashes: number; afterErrorRecovered: number; afterErrorPending: boolean;

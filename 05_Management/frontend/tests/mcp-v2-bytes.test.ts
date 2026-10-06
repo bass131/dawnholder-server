@@ -3,14 +3,15 @@
 // Application bytes = server-authored {content, structuredContent, isError} as on the wire
 // (<= 16,384; default list target 8,192 unless one item). Wire bytes = whole JSON-RPC line;
 // overhead = wire - application (id, jsonrpc, modern resultType/_meta). Canonical numbers come
-// from the production entry (read-only); multilingual/escaping/link-array/metadata limits use
-// TEMP fixtures through the V2 fixture entry. Pages are walked with the first page's hash.
+// from the production entry (read-only); multilingual/escaping/link-array/snapshot limits use
+// TEMP v2 fixtures through the V2 fixture entry. Pages are walked with the first page's hash. Both
+// entries run the built mcp-dist, so these tests wait for the step-5 rebuild (pr2-t2 contract J).
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
 import type { DevelopmentRecord, RecordCatalog, SystemRecord } from '../electron/catalog-contract';
 import { DEFAULT_PAGE_TARGET, MAX_RESULT, codeUnitCompare, expectEnvelope, expectError, expectSuccess, makeCatalog, makeRecord, makeSource, makeSystem, type ToolName } from './mcp-fixtures';
-import { CANONICAL_CATALOG, ERAS, StdioProcess, removeTempRoots, sleep, tempRoot, type Era, type Exchange } from './mcp-v2/harness';
+import { CANONICAL_CATALOG, CANONICAL_GUIDE, ERAS, StdioProcess, removeTempRoots, sleep, tempRoot, type Era, type Exchange } from './mcp-v2/harness';
 import { closeAndCheck, outcome, processPool, writeCatalog } from './mcp-v2/support';
 
 const pool = processPool();
@@ -99,12 +100,44 @@ describe('canonical catalog through the production entry: per-tool bytes', () =>
           samples.push(sample(tool, item.id, exchange));
         }
       }
+      // Design 「MCP」 new tools over the same stdio budget: the first page of every versioned
+      // source section, local-only sources refused, and every guide card with its document.
+      for (const source of canonical.sources) {
+        const exchange = await paced(proc, 'read_source_section', { id: source.id, expectedHash: hash }, stats);
+        if (source.availability === 'versioned') {
+          const envelope = expectSuccess('read_source_section', outcome(exchange));
+          expect((envelope.data as { source: unknown }).source).toEqual(source);
+        } else {
+          expectError('read_source_section', outcome(exchange), 'SOURCE_NOT_READABLE');
+        }
+        samples.push(sample('read_source_section', source.id, exchange));
+      }
+      const guide = JSON.parse(readFileSync(CANONICAL_GUIDE, 'utf8')) as { cards: Array<{ id: string }> };
+      const cardIds: string[] = [];
+      let guideHash: string | undefined;
+      for (let offset: number | null = 0, page = 0; offset !== null && page < 100; page += 1) {
+        const exchange = await paced(proc, 'list_guide_cards', { offset, ...(guideHash ? { expectedHash: guideHash } : {}) }, stats);
+        const envelope = expectSuccess('list_guide_cards', outcome(exchange));
+        guideHash ??= envelope.snapshot.hash;
+        const data = envelope.data as { items: Array<{ id: string }>; paging: { nextOffset: number | null } };
+        const measured = sample('list_guide_cards', `cards@${offset}`, exchange, data.items.length);
+        if (data.items.length > 1) expect(measured.app).toBeLessThanOrEqual(DEFAULT_PAGE_TARGET);
+        samples.push(measured);
+        cardIds.push(...data.items.map(item => item.id));
+        offset = data.paging.nextOffset;
+      }
+      expect(cardIds).toEqual(guide.cards.map(card => card.id));
+      for (const id of cardIds) {
+        const exchange = await paced(proc, 'get_guide_card', { id, expectedHash: guideHash }, stats);
+        expectSuccess('get_guide_card', outcome(exchange));
+        samples.push(sample('get_guide_card', id, exchange));
+      }
       return { era: proc.options.era, samples, stats };
     }));
     const report: Record<string, unknown> = {};
     for (const { era, samples, stats } of results) {
       const firstDefault = (prefix: string) => samples.find(item => item.label === `${prefix}@0`);
-      const perTool = Object.fromEntries((['list_systems', 'search_records', 'get_system', 'get_record', 'get_source'] as const).map(tool => {
+      const perTool = Object.fromEntries((['list_systems', 'search_records', 'get_system', 'get_record', 'get_source', 'read_source_section', 'list_guide_cards', 'get_guide_card'] as const).map(tool => {
         const max = byMax(samples, item => item.tool === tool);
         return [tool, max && { maxApp: max.app, label: max.label, wire: max.wire, client: max.client, overhead: overhead(max) }];
       }));
@@ -119,28 +152,31 @@ describe('canonical catalog through the production entry: per-tool bytes', () =>
     console.info(`[V2-MEASURE] canonical-bytes ${JSON.stringify(report)}`);
     for (const proc of procs) await closeAndCheck(proc);
     expect(readFileSync(CANONICAL_CATALOG).equals(before)).toBe(true);
-  }, 120_000);
+  }, 240_000);
 });
 
 // ------------------------------------------------------------------ fixtures
 
+// Record index v2 fixtures (index-v2-design.md 「색인 형식」): only v2 keys, IDs of [a-z0-9-], titles
+// equal to their trim(); sizes come from titles, areas and link arrays instead of narrative fields.
 const koreanMix = (length: number, seed: number) => Array.from({ length }, (_, index) => '가나다라마바사아자차카타파하漢字😀'.charAt((index + seed) % 15)).join('');
 function multilingualCatalog(): RecordCatalog {
   const systems = Array.from({ length: 40 }, (_, index) => makeSystem(`sys-ml-${String(index).padStart(2, '0')}`, {
-    title: `${koreanMix(90, index)}`, summary: `요약 ${koreanMix(200, index)}`, area: index % 3 ? '게임 기반' : 'Management',
-    implementationStatus: koreanMix(100, index + 1), integrationStatus: koreanMix(100, index + 2), verificationStatus: koreanMix(100, index + 3),
+    title: `제목 ${koreanMix(90, index)}`, area: `${index % 3 ? '게임 기반' : 'Management'} ${koreanMix(100, index + 1)}`,
   }));
-  return makeCatalog({ revision: '다국어-r1-"인용"', systems });
+  return makeCatalog({ systems });
 }
 const ESCAPES = '\u0001\u0002\u001f"\\  </script>\t\n';
+// Brackets keep escape-heavy titles valid: v2 titles may not start or end with whitespace.
+const bracketed = (text: string) => `[${text}]`;
 function escapingCatalog(): RecordCatalog {
-  const systems = [makeSystem('sys-esc', { title: ESCAPES.repeat(8) })];
+  const systems = [makeSystem('sys-esc', { title: bracketed(ESCAPES.repeat(8)) })];
   const records = Array.from({ length: 30 }, (_, index) => makeRecord(`rec-esc-${String(index).padStart(2, '0')}`, {
-    title: ESCAPES.repeat(7), summary: ESCAPES.repeat(14), status: `${ESCAPES}${'\u0007'.repeat(60)}`, systemIds: ['sys-esc'],
+    title: bracketed(`${ESCAPES.repeat(7)}${'\u0007'.repeat(60)}`), systemIds: ['sys-esc'],
   }));
-  return makeCatalog({ revision: 'esc-\u0001-"r"', systems, records });
+  return makeCatalog({ systems, records });
 }
-const longId = (index: number) => `sys-long-${String(index).padStart(4, '0')}-${'L'.repeat(100 - 14)}`;
+const longId = (index: number) => `sys-long-${String(index).padStart(4, '0')}-${'l'.repeat(100 - 14)}`;
 function linkArrayCatalog(): RecordCatalog {
   const systems = Array.from({ length: 120 }, (_, index) => makeSystem(longId(index)));
   const records = [
@@ -149,27 +185,23 @@ function linkArrayCatalog(): RecordCatalog {
     makeRecord('rec-c-huge', { systemIds: systems.map(item => item.id) }),
     makeRecord('rec-d-after', { systemIds: [longId(1)] }),
   ];
-  return makeCatalog({ revision: 'links-r1', systems, records });
+  return makeCatalog({ systems, records });
 }
 function detailCatalog(): RecordCatalog {
-  const sources = [makeSource('src-fit', { note: 'n'.repeat(6_000) }), makeSource('src-huge', { note: '노'.repeat(6_000) })];
+  const sources = [makeSource('src-fit', { title: `출처 ${'n'.repeat(6_000)}` }), makeSource('src-huge', { title: `출처 ${'노'.repeat(6_000)}` })];
   const systems: SystemRecord[] = [
-    makeSystem('sys-fit', { behavior: Array.from({ length: 60 }, (_, index) => `행동 ${index} ${'b'.repeat(90)}`), sourceIds: ['src-fit'] }),
-    makeSystem('sys-huge', { behavior: Array.from({ length: 200 }, (_, index) => `행동 ${index} ${'b'.repeat(90)}`) }),
+    makeSystem('sys-fit', { title: `행동 ${'b'.repeat(6_000)}`, sourceIds: ['src-fit'] }),
+    makeSystem('sys-huge', { title: `행동 ${'b'.repeat(18_000)}` }),
   ];
   const records: DevelopmentRecord[] = [
-    makeRecord('rec-fit', { details: Array.from({ length: 30 }, () => `상세 ${'d'.repeat(180)}`), systemIds: ['sys-fit'] }),
-    makeRecord('rec-huge', { details: Array.from({ length: 30 }, () => `상세 ${'"'.repeat(300)}`), systemIds: ['sys-huge'] }),
+    makeRecord('rec-fit', { title: `상세 ${'d'.repeat(6_000)}`, systemIds: ['sys-fit'] }),
+    makeRecord('rec-huge', { title: `상세 ${'"'.repeat(9_000)}`, systemIds: ['sys-huge'] }),
   ];
-  return makeCatalog({ revision: 'detail-r1', systems, records, sources });
+  return makeCatalog({ systems, records, sources });
 }
-function metadataCatalog(units: number): RecordCatalog {
-  return makeCatalog({
-    revision: `메타-${'r'.repeat(units)}`, systems: Array.from({ length: 5 }, (_, index) => makeSystem(`sys-meta-${index}`)),
-    records: [makeRecord('rec-meta', { systemIds: ['sys-meta-0'] })],
-  });
+function smallCatalog(): RecordCatalog {
+  return makeCatalog({ systems: Array.from({ length: 5 }, (_, index) => makeSystem(`sys-meta-${index}`)), records: [makeRecord('rec-meta', { systemIds: ['sys-meta-0'] })] });
 }
-
 async function bothEras(label: string, catalog: RecordCatalog, body: (proc: StdioProcess, era: Era) => Promise<Record<string, unknown>>) {
   const root = tempRoot(`bytes-${label}`);
   const path = join(root, 'catalog.json');
@@ -193,10 +225,11 @@ describe('fixtures through the fixture entry: pagination budget and oversize fai
       expect(byDefault.ids).toEqual(ids);
       expect(byMax50.ids).toEqual(ids);
       const first = expectSuccess('list_systems', outcome(await proc.call('list_systems', { limit: 1 })));
-      const item = (first.data as { items: Array<{ title: string; summary: string; truncatedFields: string[] }> }).items[0];
-      expect(item?.truncatedFields.sort()).toEqual(['implementationStatus', 'integrationStatus', 'summary', 'title', 'verificationStatus']);
+      // Design 「MCP」 tool table: only the title is cut (80 units), the area stays whole.
+      const item = (first.data as { items: Array<{ title: string; area: string; truncatedFields: string[] }> }).items[0];
+      expect(item?.truncatedFields).toEqual(['title']);
       expect(item?.title.length).toBeLessThanOrEqual(80);
-      expect(item?.summary.length).toBeLessThanOrEqual(160);
+      expect(item?.area).toBe(catalog.systems[0]?.area);
       const defaults = samples.filter(entry => entry.label.startsWith('ml-default'));
       const max50 = samples.filter(entry => entry.label.startsWith('ml-50'));
       return {
@@ -218,7 +251,7 @@ describe('fixtures through the fixture entry: pagination budget and oversize fai
       expect(byDefault.ids).toEqual(ids);
       expect(byMax50.ids).toEqual(ids);
       const detail = expectSuccess('get_record', outcome(await proc.call('get_record', { id: 'rec-esc-00' })));
-      expect((detail.data as { record: { title: string } }).record.title).toBe(ESCAPES.repeat(7));
+      expect((detail.data as { record: { title: string } }).record.title).toBe(catalog.records[0]?.title);
       return {
         defaultReturned: samples.filter(entry => entry.label.startsWith('esc-default')).map(entry => entry.returned),
         limit50Returned: samples.filter(entry => entry.label.startsWith('esc-50')).map(entry => entry.returned),
@@ -227,7 +260,7 @@ describe('fixtures through the fixture entry: pagination budget and oversize fai
     });
   }, 60_000);
 
-  it('long link arrays: an 8-16 KiB summary is returned alone; a >16 KiB summary is RESPONSE_TOO_LARGE at its offset; the caller can resume after it', async () => {
+  it('long link arrays: an 8-16 KiB preview is returned alone; a >16 KiB preview is RESPONSE_TOO_LARGE at its offset; the caller can resume after it', async () => {
     await bothEras('links', linkArrayCatalog(), async proc => {
       const samples: Sample[] = [];
       const stats = { waits: 0 };
@@ -272,26 +305,22 @@ describe('fixtures through the fixture entry: pagination budget and oversize fai
     });
   }, 60_000);
 
-  it('metadata: large-but-fitting metadata still pages one item at a time; oversized metadata is omitted (snapshot null, metadataOmitted)', async () => {
-    await bothEras('metadata-fit', metadataCatalog(5_000), async proc => {
+  // Design 「MCP」 스냅샷: metadata is the fixed-size `{ hash }`; the v1 hand-written metadata that
+  // could overflow and be omitted no longer exists (「색인 형식」).
+  it('metadata: every page and error over stdio carries the fixed-size { hash } snapshot, never metadataOmitted', async () => {
+    await bothEras('metadata', smallCatalog(), async proc => {
       const samples: Sample[] = [];
-      const walked = await walkAll(proc, 'list_systems', {}, 'meta-fit', samples, { waits: 0 });
+      const walked = await walkAll(proc, 'list_systems', {}, 'meta', samples, { waits: 0 });
       expect(walked.ids).toHaveLength(5);
-      return { returned: samples.map(entry => entry.returned), app: samples.map(entry => entry.app) };
-    });
-    await bothEras('metadata-over', metadataCatalog(17_000), async proc => {
       const seen: Record<string, unknown> = {};
-      for (const [tool, args] of [['list_systems', {}], ['search_records', {}], ['get_system', { id: 'sys-meta-0' }], ['get_record', { id: 'missing-id' }], ['get_system', { id: 'sys-meta-0', expectedHash: 'f'.repeat(64) }]] as const) {
+      for (const [tool, args, code] of [['get_record', { id: 'missing-id' }, 'NOT_FOUND'], ['get_system', { id: 'sys-meta-0', expectedHash: 'f'.repeat(64) }, 'VERSION_CONFLICT']] as const) {
         const exchange = await proc.call(tool, args);
-        const envelope = expectEnvelope(tool, outcome(exchange));
-        expect(envelope.ok).toBe(false);
-        if (envelope.ok) continue;
-        expect(envelope.snapshot).toBeNull();
-        expect(envelope.error.details?.metadataOmitted).toBe(true);
-        expect(exchange.responseLine?.text.includes('rrrrrrrrrrrrrrrrrrrr')).toBe(false);
-        seen[`${tool}:${JSON.stringify(args).slice(0, 30)}`] = { code: envelope.error.code, details: envelope.error.details, app: exchange.appBytes, wire: exchange.wireBytes };
+        const envelope = expectError(tool, outcome(exchange), code);
+        expect(envelope.snapshot).toEqual({ hash: walked.hash });
+        expect(envelope.error.details?.metadataOmitted).toBeUndefined();
+        seen[tool] = { code: envelope.error.code, app: exchange.appBytes, wire: exchange.wireBytes };
       }
-      return seen;
+      return { returned: samples.map(entry => entry.returned), app: samples.map(entry => entry.app), seen };
     });
   }, 60_000);
 });

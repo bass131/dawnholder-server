@@ -4,7 +4,13 @@
 // clock and counters reported over a Node IPC side channel. stdout stays the MCP protocol;
 // this entry never writes to stdout or stderr itself.
 //
+// Record index v2 (index-v2-design.md 「MCP 서버 주입 지점」): it also wires the built stores
+// (mcp-dist/electron: system-guide, source-section, checkout) like main.ts. Until step 5 rebuilds
+// mcp-dist those modules are absent and this entry fails to start.
+//
 // argv: --mode real|controlled  --catalog <path>  --clock real|frozen|advancing  --version <s>
+//       --guide <path>            default: system-guide.json next to the catalog (main.ts layout)
+//       --repository-root <path>  default: two folders above the catalog folder (main.ts layout)
 //   real        real Node file I/O on <path>, wrapped only to count open/close per request
 //   controlled  in-memory bytes loaded once from <path>; open/stat/read/close can be paused,
 //               failed or replaced by IPC commands (deterministic interference/cancellation)
@@ -12,9 +18,13 @@
 //               {c:'failNext',op,code}
 // IPC events:   {t:'ready'} {t:'reached',op} {t:'counters',...}
 import { readFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import { createCatalogReader, nodeCatalogFileOperations } from '../../mcp-dist/mcp/catalog-reader.js';
 import { createCatalogServer } from '../../mcp-dist/mcp/catalog-server.js';
+import { createCheckoutStore } from '../../mcp-dist/electron/checkout-store.js';
+import { createSourceSectionStore } from '../../mcp-dist/electron/source-section-store.js';
+import { createSystemGuideStore } from '../../mcp-dist/electron/system-guide-store.js';
 
 const args = new Map();
 for (let index = 2; index < process.argv.length; index += 2) args.set(process.argv[index], process.argv[index + 1]);
@@ -23,10 +33,13 @@ const catalogPath = args.get('--catalog');
 const clock = args.get('--clock') ?? 'real';
 const version = args.get('--version') ?? 'v2-fixture';
 if (!catalogPath) throw new Error('fixture entry needs --catalog');
+const guidePath = args.get('--guide') ?? join(dirname(catalogPath), 'system-guide.json');
+const repositoryRoot = args.get('--repository-root') ?? resolve(dirname(catalogPath), '..', '..');
 
 const counters = {
   factoryCalls: 0, factoryEras: [], entered: 0, enteredByTool: {}, readSnapshotCalls: 0, readSnapshotOk: 0, readSnapshotErrors: {},
   openAttempts: 0, openFailures: {}, opens: 0, closes: 0, openedPaths: [], openAtSettle: 0, maxConcurrentReads: 0,
+  readGuideCalls: 0, readSourceSectionCalls: 0, readCheckoutCalls: 0,
 };
 const send = message => { if (process.connected) process.send(message); };
 
@@ -124,6 +137,13 @@ async function readSnapshot(signal) {
   }
 }
 
+// Same wiring as main.ts: a new guide store per request; one section and one checkout store.
+const sectionStore = createSourceSectionStore({ repositoryRoot });
+const checkoutStore = createCheckoutStore({ repositoryRoot });
+const readGuide = () => { counters.readGuideCalls += 1; return createSystemGuideStore(guidePath).read(); };
+const readSourceSection = source => { counters.readSourceSectionCalls += 1; return sectionStore.read(source); };
+const readCheckout = () => { counters.readCheckoutCalls += 1; return checkoutStore.read(); };
+
 let tick = 0;
 const now = clock === 'frozen' ? () => 0 : clock === 'advancing' ? () => (tick += 1000) : undefined;
 
@@ -151,7 +171,7 @@ serveStdio(({ era }) => {
   counters.factoryCalls += 1;
   counters.factoryEras.push(era);
   return createCatalogServer({
-    readSnapshot, version, ...(now ? { now } : {}),
+    readSnapshot, readGuide, readSourceSection, readCheckout, version, ...(now ? { now } : {}),
     onToolHandlerEntered: name => { counters.entered += 1; counters.enteredByTool[name] = (counters.enteredByTool[name] ?? 0) + 1; },
   });
 });

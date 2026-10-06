@@ -1,17 +1,19 @@
 // @vitest-environment node
-// V1: D3 domain error envelope, version rules, error priority and metadata omission.
+// Domain error envelope, version rules, error priority and the fixed-size snapshot. Goal D3 rules
+// stay; index-v2-design.md 「MCP」 (스냅샷 `{ hash }`, 도구 규칙 판정 순서, new tools) and
+// 「색인 형식」 (no hand-written metadata) replace the v1 metadata expectations.
 import { afterEach, describe, expect, it } from 'vitest';
 import { CatalogReadError } from '../mcp/catalog-errors';
 import type { CatalogSnapshot } from '../mcp/catalog-reader';
 import {
-  ControlledCatalogFile, ERROR_CODES, MAX_CATALOG, catalogBytes, connectHarness, expectEnvelope, expectError, expectSuccess, fileBacked,
-  linkedCatalog, makeCatalog, makeRecord, makeSource, makeSystem, osError, type ErrorCode, type ErrorEnvelope, type Harness, type Paging,
-  type ToolName,
+  ControlledCatalogFile, LEGACY_ERROR_CODES, MAX_CATALOG, catalogBytes, connectHarness, expectEnvelope, expectError, expectSuccess, fileBacked,
+  guideResultOf, linkedCatalog, linkedGuide, makeCatalog, makeRecord, makeSource, makeSystem, osError,
+  type ErrorCode, type ErrorEnvelope, type Harness, type Paging, type ReadGuide, type ToolName,
 } from './mcp-fixtures';
 
 const harnesses: Harness[] = [];
-async function open(readSnapshot: (signal: AbortSignal) => Promise<CatalogSnapshot>, now?: () => number) {
-  const harness = await connectHarness(now ? { readSnapshot, now } : { readSnapshot });
+async function open(readSnapshot: (signal: AbortSignal) => Promise<CatalogSnapshot>, options: { now?: () => number; readGuide?: ReadGuide } = {}) {
+  const harness = await connectHarness({ readSnapshot, ...options });
   harnesses.push(harness);
   return harness;
 }
@@ -20,7 +22,9 @@ afterEach(async () => { await Promise.all(harnesses.splice(0).map(harness => har
 const WRONG_HASH = 'f'.repeat(64);
 const validArgs: Record<ToolName, Record<string, unknown>> = {
   list_systems: {}, search_records: {}, get_system: { id: 'sys-alpha' }, get_record: { id: 'rec-1' }, get_source: { id: 'src-a' },
+  read_source_section: { id: 'src-a' }, list_guide_cards: {}, get_guide_card: { id: 'server' },
 };
+const GUIDE_TOOLS = new Set<ToolName>(['list_guide_cards', 'get_guide_card']);
 
 function failing(code: ErrorCode, details?: Record<string, number | string[]>) {
   let reads = 0;
@@ -28,29 +32,38 @@ function failing(code: ErrorCode, details?: Record<string, number | string[]>) {
 }
 
 describe('version rules', () => {
-  it('VERSION_REQUIRED for offset > 0 without expectedHash, before any I/O, whatever the catalog state', async () => {
+  // Design 「도구 규칙」: VERSION_REQUIRED also covers list_guide_cards and read_source_section.
+  it('VERSION_REQUIRED for offset > 0 without its version, before any I/O, whatever the catalog state', async () => {
     const missing = failing('CATALOG_MISSING');
     const harness = await open(missing.readSnapshot);
-    for (const [tool, args] of [['list_systems', { offset: 1 }], ['search_records', { offset: 5, systemId: 'no-such-system' }], ['list_systems', { offset: 100000, query: 'x' }]] as const) {
+    const cases = [
+      ['list_systems', { offset: 1 }], ['search_records', { offset: 5, systemId: 'no-such-system' }], ['list_systems', { offset: 100000, query: 'x' }],
+      ['list_guide_cards', { offset: 2 }], ['read_source_section', { id: 'src-a', offset: 2 }],
+    ] as const;
+    for (const [tool, args] of cases) {
       const envelope = expectError(tool, await harness.call(tool, args), 'VERSION_REQUIRED');
       expect(envelope.snapshot).toBeNull();
       expect(envelope.error.retryable).toBe(false);
     }
     expect(missing.reads).toBe(0);
+    expect(harness.injected.guide).toBe(0);
+    expect(harness.injected.section).toEqual([]);
     // offset 0 (explicit or default) does not need a hash.
     expectError('list_systems', await harness.call('list_systems', { offset: 0 }), 'CATALOG_MISSING');
     expect(missing.reads).toBe(1);
   });
 
-  it('VERSION_CONFLICT on every tool returns only the requested hash and the current metadata', async () => {
+  // Design 「도구 규칙」 스냅샷: card tools compare with the guide version, the rest with the index hash.
+  it('VERSION_CONFLICT on every tool returns only the requested hash and that tool\'s current { hash }', async () => {
     const catalog = linkedCatalog();
     const harness = await open(fileBacked(catalog).readSnapshot);
     const current = expectSuccess('list_systems', await harness.call('list_systems')).snapshot;
+    const guideCurrent = { hash: guideResultOf(linkedGuide()).version };
     for (const tool of Object.keys(validArgs) as ToolName[]) {
       const envelope = expectError(tool, await harness.call(tool, { ...validArgs[tool], expectedHash: WRONG_HASH }), 'VERSION_CONFLICT');
-      expect(envelope.snapshot).toEqual(current);
-      expect(envelope.error.details).toEqual({ expectedHash: WRONG_HASH });
-      expect(envelope.error.retryable).toBe(false);
+      expect(envelope.snapshot, tool).toEqual(GUIDE_TOOLS.has(tool) ? guideCurrent : current);
+      expect(envelope.error.details, tool).toEqual({ expectedHash: WRONG_HASH });
+      expect(envelope.error.retryable, tool).toBe(false);
     }
   });
 
@@ -62,13 +75,12 @@ describe('version rules', () => {
     const pinned = first.snapshot.hash;
     expectSuccess('get_system', await harness.call('get_system', { id: 'sys-beta', expectedHash: pinned }));
     const edited = linkedCatalog();
-    edited.revision = 'fixture-r2';
     edited.systems.push(makeSystem('sys-0new', { title: '새 시스템' }));
     file.replace(catalogBytes(edited));
     const second = expectError('list_systems', await harness.call('list_systems', { limit: 2, offset: 2, expectedHash: pinned }), 'VERSION_CONFLICT');
-    expect(second.snapshot?.revision).toBe('fixture-r2');
     expect(second.snapshot?.hash).not.toBe(pinned);
     expectError('get_system', await harness.call('get_system', { id: 'sys-beta', expectedHash: pinned }), 'VERSION_CONFLICT');
+    expectError('read_source_section', await harness.call('read_source_section', { id: 'src-a', expectedHash: pinned }), 'VERSION_CONFLICT');
     const fresh = expectSuccess<{ items: Array<{ id: string }>; paging: Paging }>('list_systems', await harness.call('list_systems', { limit: 2 }));
     expect(fresh.snapshot.hash).toBe(second.snapshot?.hash);
     expect(fresh.data.items.map(item => item.id)).toEqual(['sys-0new', 'sys-alpha']);
@@ -79,8 +91,9 @@ describe('version rules', () => {
 describe('D3 decision order', () => {
   // Each case pairs two (or more) faults; the earlier stage must win.
   it('I/O and size faults precede JSON/schema/reference, which precede expectedHash, which precedes ID existence', async () => {
-    const cases: Array<{ label: string; build: () => (signal: AbortSignal) => Promise<CatalogSnapshot>; tool: ToolName; args: Record<string, unknown>; code: ErrorCode }> = [
+    const cases: Array<{ label: string; build: () => (signal: AbortSignal) => Promise<CatalogSnapshot>; readGuide?: ReadGuide; tool: ToolName; args: Record<string, unknown>; code: ErrorCode }> = [
       { label: 'missing beats conflict + unknown id', build: () => failing('CATALOG_MISSING').readSnapshot, tool: 'get_system', args: { id: 'nope', expectedHash: WRONG_HASH }, code: 'CATALOG_MISSING' },
+      { label: 'missing beats conflict + unknown source', build: () => failing('CATALOG_MISSING').readSnapshot, tool: 'read_source_section', args: { id: 'nope', expectedHash: WRONG_HASH }, code: 'CATALOG_MISSING' },
       {
         label: 'unreadable beats conflict + unknown systemId',
         build: () => { const file = new ControlledCatalogFile(catalogBytes(linkedCatalog())); file.failNext('open', osError('EACCES')); return file.reader().readSnapshot; },
@@ -109,19 +122,25 @@ describe('D3 decision order', () => {
         tool: 'get_record', args: { id: 'nope', expectedHash: WRONG_HASH }, code: 'CATALOG_REFERENCE_BROKEN',
       },
       { label: 'conflict beats unknown id', build: () => fileBacked(linkedCatalog()).readSnapshot, tool: 'get_system', args: { id: 'nope', expectedHash: WRONG_HASH }, code: 'VERSION_CONFLICT' },
+      { label: 'conflict beats unknown source', build: () => fileBacked(linkedCatalog()).readSnapshot, tool: 'read_source_section', args: { id: 'nope', expectedHash: WRONG_HASH }, code: 'VERSION_CONFLICT' },
       { label: 'conflict beats unknown systemId', build: () => fileBacked(linkedCatalog()).readSnapshot, tool: 'search_records', args: { systemId: 'nope', expectedHash: WRONG_HASH }, code: 'VERSION_CONFLICT' },
       {
         label: 'conflict beats oversized detail',
-        build: () => fileBacked(makeCatalog({ systems: [makeSystem('big', { behavior: Array.from({ length: 40 }, () => 'b'.repeat(1000)) })] })).readSnapshot,
+        build: () => fileBacked(makeCatalog({ systems: [makeSystem('big', { title: 'b'.repeat(40_000) })] })).readSnapshot,
         tool: 'get_system', args: { id: 'big', expectedHash: WRONG_HASH }, code: 'VERSION_CONFLICT',
       },
       { label: 'unknown systemId beats an empty page past total', build: () => fileBacked(linkedCatalog()).readSnapshot, tool: 'search_records', args: { systemId: 'nope', offset: 0, query: 'zzz' }, code: 'NOT_FOUND' },
+      {
+        label: 'guide missing beats conflict + unknown card', build: () => fileBacked(linkedCatalog()).readSnapshot,
+        readGuide: async () => ({ ok: false, code: 'missing', message: 'x' }), tool: 'get_guide_card', args: { id: 'nope', expectedHash: WRONG_HASH }, code: 'GUIDE_MISSING',
+      },
+      { label: 'guide conflict beats unknown card', build: () => fileBacked(linkedCatalog()).readSnapshot, tool: 'get_guide_card', args: { id: 'nope', expectedHash: WRONG_HASH }, code: 'VERSION_CONFLICT' },
     ];
     for (const testCase of cases) {
-      const harness = await open(testCase.build());
+      const harness = await open(testCase.build(), testCase.readGuide ? { readGuide: testCase.readGuide } : {});
       const envelope = expectError(testCase.tool, await harness.call(testCase.tool, testCase.args), testCase.code);
       expect(envelope.error.code, testCase.label).toBe(testCase.code);
-      if (testCase.code.startsWith('CATALOG_')) expect(envelope.snapshot, testCase.label).toBeNull();
+      if (testCase.code.startsWith('CATALOG_') || testCase.code.startsWith('GUIDE_')) expect(envelope.snapshot, testCase.label).toBeNull();
     }
   });
 
@@ -138,7 +157,7 @@ describe('D3 decision order', () => {
 });
 
 describe('domain error envelope hygiene', () => {
-  it('reachable error codes carry fixed bounded messages, the retryable table, no data and no echo of input, paths, OS text or raw JSON', async () => {
+  it('reachable record error codes carry fixed bounded messages, the retryable table, no data and no echo of input, paths, OS text or raw JSON', async () => {
     const observed = new Map<ErrorCode, ErrorEnvelope>();
     const record = (tool: ToolName, envelope: ErrorEnvelope) => {
       const json = JSON.stringify(envelope);
@@ -162,53 +181,52 @@ describe('domain error envelope hygiene', () => {
     await run(new ControlledCatalogFile(new TextEncoder().encode('{"SENTINEL_RAW_JSON": [')).reader().readSnapshot, 'get_source', { id: 'x' });
     await run(new ControlledCatalogFile(catalogBytes(makeCatalog({ systems: [makeSystem('s', { recordIds: ['ghost-record'] })] }))).reader().readSnapshot, 'list_systems', {});
     const changing = new ControlledCatalogFile(catalogBytes(linkedCatalog()));
-    changing.onNext('read', () => changing.replace(catalogBytes(makeCatalog({ revision: 'r-other-length' }))));
+    changing.onNext('read', () => changing.replace(catalogBytes(makeCatalog({ systems: [makeSystem('other-length')] }))));
     await run(changing.reader().readSnapshot, 'search_records', {});
     await run(fileBacked(linkedCatalog()).readSnapshot, 'get_record', { id: 'SENTINEL_UNKNOWN_ID' });
     await run(fileBacked(linkedCatalog()).readSnapshot, 'search_records', { systemId: 'SENTINEL_UNKNOWN_SYSTEM' });
     await run(fileBacked(linkedCatalog()).readSnapshot, 'get_system', { id: 'sys-alpha', expectedHash: WRONG_HASH });
     await run(fileBacked(linkedCatalog()).readSnapshot, 'list_systems', { offset: 1, query: 'SENTINEL_QUERY' });
-    await run(fileBacked(makeCatalog({ sources: [makeSource('big', { note: `SENTINEL_BODY${'n'.repeat(20_000)}` })] })).readSnapshot, 'get_source', { id: 'big' });
+    await run(fileBacked(makeCatalog({ sources: [makeSource('big', { title: `SENTINEL_BODY${'n'.repeat(20_000)}` })] })).readSnapshot, 'get_source', { id: 'big' });
 
     // The broken-reference examples are catalog IDs by design; only the sentinel-free form is checked above.
     const broken = observed.get('CATALOG_REFERENCE_BROKEN');
     expect(broken?.error.details).toEqual({ count: 1, examples: expect.any(Array) });
     expect(observed.get('VERSION_CONFLICT')?.error.details).toEqual({ expectedHash: WRONG_HASH });
     expect(observed.get('RESPONSE_TOO_LARGE')?.snapshot).not.toBeNull();
-    expect([...observed.keys()].sort()).toEqual(ERROR_CODES.filter(code => !['INVALID_ARGUMENT', 'RATE_LIMITED', 'REQUEST_CANCELLED'].includes(code)).sort());
+    expect([...observed.keys()].sort()).toEqual(LEGACY_ERROR_CODES.filter(code => !['INVALID_ARGUMENT', 'RATE_LIMITED', 'REQUEST_CANCELLED'].includes(code)).sort());
     for (const [code, envelope] of observed) expect(envelope.error.retryable, code).toBe(['CATALOG_MISSING', 'CATALOG_UNREADABLE', 'CATALOG_CHANGED_DURING_READ'].includes(code));
   });
 
-  it('oversized snapshot metadata is replaced by snapshot:null with details.metadataOmitted on success and error paths', async () => {
+  // Design 「MCP」 스냅샷: metadata is the fixed-size `{ hash }`, so it always fits and is kept;
+  // the v1 hand-written revision/asOf/sourceCommit that could overflow no longer exist (「색인 형식」).
+  it('the fixed-size { hash } snapshot is kept on success and error paths of a large catalog, with no metadataOmitted', async () => {
     const catalog = linkedCatalog();
-    catalog.revision = `r-${'😀'.repeat(5_000)}`;
-    catalog.sourceCommit = `"\\${'c'.repeat(3_000)}`;
+    catalog.systems.push(makeSystem('huge', { title: `"\\${'😀'.repeat(5_000)}` }));
     const harness = await open(fileBacked(catalog).readSnapshot);
-    const cases: Array<[ToolName, Record<string, unknown>, ErrorCode, Record<string, unknown>]> = [
-      ['list_systems', {}, 'RESPONSE_TOO_LARGE', { metadataOmitted: true }],
-      ['search_records', { query: 'zzz-none' }, 'RESPONSE_TOO_LARGE', { metadataOmitted: true }],
-      ['get_system', { id: 'sys-alpha' }, 'RESPONSE_TOO_LARGE', { metadataOmitted: true }],
-      ['get_source', { id: 'src-a' }, 'RESPONSE_TOO_LARGE', { metadataOmitted: true }],
-      ['get_record', { id: 'missing' }, 'NOT_FOUND', { metadataOmitted: true }],
-      ['search_records', { systemId: 'missing' }, 'NOT_FOUND', { metadataOmitted: true }],
-      ['get_record', { id: 'rec-1', expectedHash: WRONG_HASH }, 'VERSION_CONFLICT', { expectedHash: WRONG_HASH, metadataOmitted: true }],
+    const cases: Array<[ToolName, Record<string, unknown>, ErrorCode, Record<string, unknown> | undefined]> = [
+      ['get_system', { id: 'huge' }, 'RESPONSE_TOO_LARGE', undefined],
+      ['get_record', { id: 'missing' }, 'NOT_FOUND', undefined],
+      ['search_records', { systemId: 'missing' }, 'NOT_FOUND', undefined],
+      ['read_source_section', { id: 'missing' }, 'NOT_FOUND', undefined],
+      ['get_record', { id: 'rec-1', expectedHash: WRONG_HASH }, 'VERSION_CONFLICT', { expectedHash: WRONG_HASH }],
     ];
     for (const [tool, args, code, details] of cases) {
       const envelope = expectError(tool, await harness.call(tool, args), code);
-      expect(envelope.snapshot).toBeNull();
-      expect(envelope.error.details).toEqual(details);
+      expect(envelope.snapshot, tool).toEqual({ hash: expect.stringMatching(/^[a-f0-9]{64}$/) });
+      expect(envelope.error.details, tool).toEqual(details);
     }
   });
 
-  it('metadata that still fits keeps every result within 16 KiB and the default page still progresses', async () => {
-    const catalog = makeCatalog({ asOf: 'a'.repeat(3_500), systems: Array.from({ length: 12 }, (_, index) => makeSystem(`s${String(index).padStart(2, '0')}`)) });
+  it('large previews keep every result within 16 KiB and the default page still progresses', async () => {
+    const catalog = makeCatalog({ systems: Array.from({ length: 12 }, (_, index) => makeSystem(`s${String(index).padStart(2, '0')}`, { area: `영역 ${'a'.repeat(3_500)}` })) });
     const harness = await open(fileBacked(catalog).readSnapshot);
     let offset = 0;
     let hash: string | undefined;
     const seen: string[] = [];
     for (let guard = 0; guard < 20; guard += 1) {
       const page = expectSuccess<{ items: Array<{ id: string }>; paging: Paging }>('list_systems', await harness.call('list_systems', { offset, ...(hash ? { expectedHash: hash } : {}) }));
-      expect(page.snapshot.asOf).toBe(catalog.asOf);
+      expect(Object.keys(page.snapshot)).toEqual(['hash']);
       hash ??= page.snapshot.hash;
       expect(page.data.items.length).toBeGreaterThan(0);
       seen.push(...page.data.items.map(item => item.id));

@@ -1,7 +1,8 @@
 // @vitest-environment node
-// V1: snapshot reader I/O boundary with injected, pausable file operations, the native
-// bounded read, error mapping without leaks, cancellation/finally close, and the hash
-// shared with the UI store. No sleeps: every interleaving is driven by explicit gates.
+// Snapshot reader I/O boundary with injected, pausable file operations, the native bounded
+// read, error mapping without leaks, cancellation/finally close, and the hash shared with the UI
+// store. index-v2-design.md 「MCP」 스냅샷 (`{ hash }` only) and 「색인 형식」 (v2 keys) replace the
+// v1 metadata. No sleeps: every interleaving is driven by explicit gates.
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -12,7 +13,7 @@ import { CatalogReadError } from '../mcp/catalog-errors';
 import { createCatalogReader, nodeCatalogFileOperations, type CatalogFileOperations, type CatalogSnapshot } from '../mcp/catalog-reader';
 import {
   ControlledCatalogFile, FIXTURE_PATH, MAX_CATALOG, abortError, catalogBytes, catalogOfExactSize, decodedTextHash, linkedCatalog,
-  makeCatalog, makeRecord, makeSystem, osError, sha256, type FileOp,
+  makeCatalog, makeRecord, makeSource, makeSystem, osError, sha256, type FileOp,
 } from './mcp-fixtures';
 
 const live = () => new AbortController().signal;
@@ -49,7 +50,7 @@ describe('snapshot reader with injected I/O', () => {
     expect(file.openedPaths).toEqual([FIXTURE_PATH]);
     expect(file.readRequests).toEqual([MAX_CATALOG + 1]);
     expect(file.openHandles.size).toBe(0);
-    expect(snapshot.metadata).toEqual({ hash: decodedTextHash(bytes), revision: catalog.revision, asOf: catalog.asOf, sourceCommit: catalog.sourceCommit });
+    expect(snapshot.metadata).toEqual({ hash: decodedTextHash(bytes) });
     expect(snapshot.metadata.hash).toBe(sha256(bytes));
     expect(snapshot.catalog).toEqual(catalog);
     expect(deepFrozen(snapshot)).toBe(true);
@@ -58,8 +59,9 @@ describe('snapshot reader with injected I/O', () => {
     expect(() => { (systems[0] as Record<string, unknown>).title = 'mutated'; }).toThrow(TypeError);
     expect(() => { (snapshot.metadata as unknown as Record<string, unknown>).hash = 'mutated'; }).toThrow(TypeError);
     // Later file changes never reach an already returned snapshot.
-    file.replace(catalogBytes(makeCatalog({ revision: 'changed' })));
-    expect(snapshot.metadata.revision).toBe(catalog.revision);
+    file.replace(catalogBytes(makeCatalog({ systems: [makeSystem('changed')] })));
+    expect(snapshot.metadata.hash).toBe(sha256(bytes));
+    expect(snapshot.catalog).toEqual(catalog);
   });
 
   it('releases the handle before producing any parse/validation outcome', async () => {
@@ -80,9 +82,11 @@ describe('snapshot reader with injected I/O', () => {
   });
 
   describe('change detection between the two stats', () => {
+    // One system whose ID length stays fixed, so a same-size rewrite only swaps one character.
+    const changeBase = (id: string) => makeCatalog({ systems: [makeSystem(id)] });
     const cases: Array<[string, (file: ControlledCatalogFile) => void]> = [
-      ['size and mtime change while read is pending', file => file.replace(catalogBytes(makeCatalog({ revision: 'r2-longer-revision' })))],
-      ['same-size rewrite with mtime change', file => file.replace(catalogBytes(makeCatalog({ revision: 'fixture-r2' })))],
+      ['size and mtime change while read is pending', file => file.replace(catalogBytes(makeCatalog({ systems: [makeSystem('r2-longer-revision')] })))],
+      ['same-size rewrite with mtime change', file => file.replace(catalogBytes(changeBase('fixture-r2')))],
       ['growth without timestamp change', file => file.replace(new Uint8Array([...file.bytes, 0x20, 0x20]), false)],
       ['shrink without timestamp change', file => file.replace(file.bytes.slice(0, file.bytes.byteLength - 1), false)],
       ['atomic replacement (inode/file id change)', file => { file.ino += 1; }],
@@ -91,7 +95,7 @@ describe('snapshot reader with injected I/O', () => {
     ];
     for (const [label, mutate] of cases) {
       it(`${label} → CATALOG_CHANGED_DURING_READ, no partial data, handle closed`, async () => {
-        const file = new ControlledCatalogFile(catalogBytes(makeCatalog()));
+        const file = new ControlledCatalogFile(catalogBytes(changeBase('fixture-r1')));
         const read = file.pause('read');
         const result = file.reader().readSnapshot(live());
         pending.push(result.catch(() => undefined));
@@ -111,7 +115,7 @@ describe('snapshot reader with injected I/O', () => {
       const result = file.reader().readSnapshot(live());
       pending.push(result.catch(() => undefined));
       await read.reached;
-      file.replace(catalogBytes(makeCatalog({ revision: 'r2-longer-revision' })));
+      file.replace(catalogBytes(makeCatalog({ systems: [makeSystem('r2-longer-revision')] })));
       read.release();
       expect((await readFailure(result)).code).toBe('CATALOG_CHANGED_DURING_READ');
     });
@@ -136,7 +140,7 @@ describe('snapshot reader with injected I/O', () => {
   describe('2 MiB source limit', () => {
     it('accepts exactly 2,097,152 bytes and rejects 2,097,153 by stat without reading', async () => {
       const exact = new ControlledCatalogFile(catalogOfExactSize(MAX_CATALOG));
-      expect((await exact.reader().readSnapshot(live())).catalog.schemaVersion).toBe(1);
+      expect((await exact.reader().readSnapshot(live())).catalog.schemaVersion).toBe(2);
       const over = new ControlledCatalogFile(catalogOfExactSize(MAX_CATALOG + 1));
       expect((await readFailure(over.reader().readSnapshot(live()))).code).toBe('CATALOG_TOO_LARGE');
       expect(over.log).toEqual(['open', 'stat', 'close']);
@@ -188,10 +192,14 @@ describe('snapshot reader with injected I/O', () => {
       ['invalid JSON with raw sentinel', new TextEncoder().encode('{"revision": "SENTINEL_RAW_JSON", '), 'CATALOG_INVALID'],
       ['empty file', new Uint8Array(), 'CATALOG_INVALID'],
       ['UTF-8 BOM before JSON', new Uint8Array([0xef, 0xbb, 0xbf, ...catalogBytes(makeCatalog())]), 'CATALOG_INVALID'],
-      ['schemaVersion 2', catalogBytes({ ...makeCatalog(), schemaVersion: 2 }), 'CATALOG_INVALID'],
+      ['schemaVersion 1 (the old index)', catalogBytes({ ...makeCatalog(), schemaVersion: 1 }), 'CATALOG_INVALID'],
+      ['old top-level metadata key', catalogBytes({ ...makeCatalog(), revision: 'SENTINEL_REVISION' }), 'CATALOG_INVALID'],
+      ['old narrative field on a system', catalogBytes(makeCatalog({ systems: [{ ...makeSystem('s'), summary: 'SENTINEL_SUMMARY' } as never] })), 'CATALOG_INVALID'],
+      ['git source marked local-only', catalogBytes(makeCatalog({ sources: [makeSource('src', { availability: 'local-only' })] })), 'CATALOG_INVALID'],
+      ['uppercase id', catalogBytes(makeCatalog({ systems: [makeSystem('SENTINEL-UPPER')] })), 'CATALOG_INVALID'],
       ['missing systems array', catalogBytes({ ...makeCatalog(), systems: undefined }), 'CATALOG_INVALID'],
       ['invalid record type', catalogBytes(makeCatalog({ records: [{ ...makeRecord('r'), type: 'SENTINEL_TYPE' as '변경' }] })), 'CATALOG_INVALID'],
-      ['non-string list member', catalogBytes(makeCatalog({ systems: [{ ...makeSystem('s'), behavior: [1 as unknown as string] }] })), 'CATALOG_INVALID'],
+      ['non-string list member', catalogBytes(makeCatalog({ systems: [{ ...makeSystem('s'), sourceIds: [1 as unknown as string] }] })), 'CATALOG_INVALID'],
       ['duplicate system id', catalogBytes(makeCatalog({ systems: [makeSystem('SENTINEL_DUP'), makeSystem('SENTINEL_DUP')] })), 'CATALOG_INVALID'],
       ['blank id', catalogBytes(makeCatalog({ records: [makeRecord('   ')] })), 'CATALOG_INVALID'],
       ['top-level array', catalogBytes([makeCatalog()]), 'CATALOG_INVALID'],
@@ -207,7 +215,8 @@ describe('snapshot reader with injected I/O', () => {
     }
 
     it('broken references report the total and at most five examples of at most 128 units', async () => {
-      const longMissing = `missing-${'😀'.repeat(100)}`;
+      // A valid v2 ID of 128 units (design 「색인 형식」); the example text around it exceeds 128.
+      const longMissing = `missing-${'m'.repeat(120)}`;
       const catalog = makeCatalog({
         systems: [makeSystem('s1', { sourceIds: ['no-src-1'], relatedSystemIds: ['no-sys'], recordIds: ['no-rec'] })],
         records: [makeRecord('r1', { systemIds: ['s1', longMissing], sourceIds: ['no-src-2', 'no-src-3', 'no-src-4'] })],
@@ -268,14 +277,14 @@ describe('snapshot reader with injected I/O', () => {
   });
 
   it('re-reads on every request: no cache, no fallback to an earlier good snapshot', async () => {
-    const file = new ControlledCatalogFile(catalogBytes(makeCatalog({ revision: 'first' })));
+    const file = new ControlledCatalogFile(catalogBytes(makeCatalog({ systems: [makeSystem('first')] })));
     const reader = file.reader();
     const first = await reader.readSnapshot(live());
     file.replace(new TextEncoder().encode('{ broken'));
     expect((await readFailure(reader.readSnapshot(live()))).code).toBe('CATALOG_INVALID');
-    file.replace(catalogBytes(makeCatalog({ revision: 'third' })));
+    file.replace(catalogBytes(makeCatalog({ systems: [makeSystem('third')] })));
     const third = await reader.readSnapshot(live());
-    expect([first.metadata.revision, third.metadata.revision]).toEqual(['first', 'third']);
+    expect([first.catalog.systems[0]?.id, third.catalog.systems[0]?.id]).toEqual(['first', 'third']);
     expect(third.metadata.hash).not.toBe(first.metadata.hash);
     expect(file.opened).toBe(3);
     expect(file.closed).toBe(3);
@@ -337,12 +346,12 @@ describe('native file operations', () => {
       await writeFile(join(root, 'huge.json'), new Uint8Array(3 * MAX_CATALOG).fill(0x20));
       expect((await readFailure(nativeReader(join(root, 'huge.json')).readSnapshot(live()))).code).toBe('CATALOG_TOO_LARGE');
       await writeFile(join(root, 'exact.json'), catalogOfExactSize(MAX_CATALOG));
-      expect((await nativeReader(join(root, 'exact.json')).readSnapshot(live())).catalog.schemaVersion).toBe(1);
+      expect((await nativeReader(join(root, 'exact.json')).readSnapshot(live())).catalog.schemaVersion).toBe(2);
     });
 
     it('MCP snapshot hash equals the UI store version on the same bytes, including invalid UTF-8', async () => {
       const valid = catalogBytes(linkedCatalog());
-      const text = new TextDecoder().decode(catalogBytes(makeCatalog({ scopeNote: 'INVALID_UTF8_MARK' })));
+      const text = new TextDecoder().decode(catalogBytes(makeCatalog({ systems: [makeSystem('s', { title: 'INVALID_UTF8_MARK' })] })));
       const [head, tail] = text.split('INVALID_UTF8_MARK') as [string, string];
       const invalid = new Uint8Array([...new TextEncoder().encode(head), 0xff, 0xfe, 0xc3, ...new TextEncoder().encode(tail)]);
       for (const [name, bytes] of [['valid.json', valid], ['invalid-utf8.json', invalid]] as const) {
@@ -369,9 +378,8 @@ describe('native file operations', () => {
     const ui = await createCatalogStore(canonical).read();
     expect(ui.ok && ui.version).toBe(snapshot.metadata.hash);
     expect(snapshot.metadata.hash).toBe(sha256(before));
-    const parsed = JSON.parse(before.toString('utf8')) as { revision: string; asOf: string; sourceCommit: string };
-    expect(snapshot.metadata).toMatchObject({ revision: parsed.revision, asOf: parsed.asOf, sourceCommit: parsed.sourceCommit });
+    expect(Object.keys(snapshot.metadata)).toEqual(['hash']);
     expect((await readFile(canonical)).equals(before)).toBe(true);
-    console.info(`[V1-MEASURE] canonical bytes=${before.byteLength} hash=${snapshot.metadata.hash} revision=${snapshot.metadata.revision}`);
+    console.info(`[V1-MEASURE] canonical bytes=${before.byteLength} hash=${snapshot.metadata.hash}`);
   });
 });

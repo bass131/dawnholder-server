@@ -9,7 +9,9 @@ import { InMemoryTransport, type McpServer, type Transport } from '@modelcontext
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import type { CatalogSnapshot } from '../../mcp/catalog-reader';
 import { createCatalogServer } from '../../mcp/catalog-server';
-import { advancingClock, flushMicrotasks, type CallOutcome } from '../mcp-fixtures';
+import {
+  advancingClock, defaultReadCheckout, defaultReadGuide, defaultReadSourceSection, flushMicrotasks, type CallOutcome,
+} from '../mcp-fixtures';
 
 export type Era = 'legacy' | 'modern';
 export const ERAS: readonly Era[] = ['legacy', 'modern'];
@@ -115,8 +117,10 @@ export async function connectR1(options: {
   const servers: McpServer[] = [];
   const entered: string[] = [];
   const connection = serveStdio(() => {
+    // Design 「MCP 서버 주입 지점」: the new tools read through injected functions (fixture defaults).
     const server = createCatalogServer({
-      readSnapshot: options.readSnapshot, version: 'v1-r1-fixture', now: options.now ?? advancingClock(),
+      readSnapshot: options.readSnapshot, readGuide: defaultReadGuide, readSourceSection: defaultReadSourceSection, readCheckout: defaultReadCheckout,
+      version: 'v1-r1-fixture', now: options.now ?? advancingClock(),
       onToolHandlerEntered: name => { entered.push(name); },
     });
     servers.push(server);
