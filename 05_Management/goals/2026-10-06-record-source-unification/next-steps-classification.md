@@ -33,7 +33,7 @@ PR2가 catalog에서 nextSteps 필드를 빼면 이 표가 27개의 처분 기�
 | 8 | S:map-entry | Ready 순서·entry 경계를 보존하며 영속 입장 계약 추가 | 로드맵 연결 P5 | 로드맵 P5 |
 | 9 | S:party | UI 명령·수명 정리의 작은 목표부터 | 로드맵 연결 P1 | 로드맵 P1 「후속 조각은 착수 시 생성」 |
 | 10 | S:quest | UI binding 변경에도 서버 권위·세션 reset 계약 보존 | 폐기(변경 규칙 사본) | [영역별 계약](../../../01_Phases/goals/2026-09-30-contracts-baseline/contracts.md) 15행 「세션 한정 … reset 값 갱신 뒤 알림 순서 보존」, AGENTS 공학 조건 「서버가 게임 상태와 판정을 소유한다」 |
-| 11 | S:remote-rendering | 실제 원격 이동·순간 이동을 별도 플레이로 확인 | 애매 | 아래 「결정 요청 후보」 1 |
+| 11 | S:remote-rendering | 실제 원격 이동·순간 이동을 별도 플레이로 확인 | BACKLOG 이관(사용자 결정) | 아래 「사용자 결정」 1 |
 | 12 | S:packet-publication | 표현 필드 변경은 PDL·버전·양쪽 소비자와 검토 | 폐기(변경 규칙 사본) | [protocol.md](../../../00_Document/domains/protocol.md) 3·7행의 변경 절차, AGENTS 공학 조건의 PDL·버전 항목 |
 | 13 | S:transport | 진행 중 I/O 수명 변경은 별도 재현·계약 | 폐기(변경 규칙 사본) | protocol.md 30행 「진행 중 I/O의 전체 수명은 이 계약의 변경 범위가 아니다」 |
 | 14 | S:protocol | 새 입장 wire 확정 때 단일 writer가 PDL·생성물·버전·양쪽 변경 | 로드맵 연결 P5 | 로드맵 P5 「공유 프로토콜」 |
@@ -43,9 +43,9 @@ PR2가 catalog에서 nextSteps 필드를 빼면 이 표가 27개의 처분 기�
 | 18 | S:management-operations | 운영툴·서버의 명령·조회·이벤트·권한·완료 의미 합의 | 로드맵 연결 P6 | 로드맵 P6. 메인 계획 35번(운영툴 큰 기능)과 겹치므로 따로 등록하지 않는다 |
 | 19 | S:management-operations | 저장 완료 기반 종료는 영속 연동에 의존 | 로드맵 연결 P4·P6 | 로드맵 P6 「저장 완료 adapter는 P4에 의존」, [R-06](../../requirements.md#r-06) |
 | 20 | S:management-records | 시스템 설명·공통 기록·원문 대응 독립 검증 | 완료 삭제 | [system-records 검증](../2026-09-30-system-records/verification.md#판정) PASS, Game Dev 의미 검토 PASS, PR147 병합 |
-| 21 | S:management-records | 항목별 서술 소유권·장기 조회 API·3D 표현 협의 | 나눔: 소유권은 폐기(사용자 결정), API는 완료 삭제, 3D는 애매 | 소유권: goal 「적용 중인 사용자 결정」의 기록 원본 일원화. API: [공동 조회 goal](../2026-10-01-shared-read-mcp/goal.md)의 읽기 전용 MCP(PR159). 3D: 아래 「결정 요청 후보」 2 |
+| 21 | S:management-records | 항목별 서술 소유권·장기 조회 API·3D 표현 협의 | 나눔: 소유권은 폐기(사용자 결정), API는 완료 삭제, 3D는 BACKLOG 이관(사용자 결정) | 소유권: goal 「적용 중인 사용자 결정」의 기록 원본 일원화. API: [공동 조회 goal](../2026-10-01-shared-read-mcp/goal.md)의 읽기 전용 MCP(PR159). 3D: 아래 「사용자 결정」 2 |
 | 22 | R:change-immediate-hit | 공통 메서드에 공격별 분기가 늘면 책임 경계 재검토 | 폐기(변경 규칙 사본) | [CODE_CONVENTION](../../../00_Document/conventions/CODE_CONVENTION.md) 9행 「변경 이유가 여러 도메인에 걸치면 책임 분리를 검토한다」 |
-| 23 | R:change-interpolation | 실제 원격 플레이어·적 이동·순간 이동·맵 이동 확인 | 애매(11과 묶음) | 아래 「결정 요청 후보」 1 |
+| 23 | R:change-interpolation | 실제 원격 플레이어·적 이동·순간 이동·맵 이동 확인 | BACKLOG 이관(사용자 결정, 11과 묶음) | 아래 「사용자 결정」 1 |
 | 24 | R:decision-d0 | 기술 명세·격리 SQL·비동기 수명·입장 gate·실제 복구 순으로 진행 | 로드맵 연결 P2~P7 | 로드맵 P2~P7 |
 | 25 | R:change-launcher | 새 경로 실제 실행과 1280×720·클리핑 검증 | 일부 완료 + BACKLOG 이관 | 창 확인은 #17과 같다. 실행 배치의 실제 더블클릭 성공은 [README](../../README.md) 34행에 「미검증」으로 남아 있다. 아래 「BACKLOG 이관 행」 |
 | 26 | R:decision-management-backend | 운영툴·서버 계약 합의와 저장 작업 큐 연결 | 로드맵 연결 P6 | #18과 같다 |
@@ -59,27 +59,27 @@ PR2가 catalog에서 nextSteps 필드를 빼면 이 표가 27개의 처분 기�
 | 폐기(변경 규칙 사본) | 9 | 2, 3, 4, 5, 6, 10, 12, 13, 22 |
 | 폐기(사용자 결정) | 1 | 27 |
 | 완료 삭제 | 3 | 16, 17, 20 |
-| 애매 | 2 | 11, 23(한 묶음) |
+| BACKLOG 이관(사용자 결정) | 2 | 11, 23(한 묶음) |
 | 나눔 | 1 | 21 |
 | 일부 완료 + BACKLOG 이관 | 1 | 25 |
 
-합계는 27이다. 초안에서 애매로 둔 #16은 기준선 goal의 실행·채점 기록을 찾아 완료 삭제로 바꿨다. #22는 조건부 지침이 아니라 CODE_CONVENTION 책임 분리 규칙의 사본으로 근거를 고쳤다.
+합계는 27이다. 애매로 올린 두 묶음(#11·#23, #21의 3D)은 사용자 결정으로 BACKLOG 이관이 됐다. 초안에서 애매로 둔 #16은 기준선 goal의 실행·채점 기록을 찾아 완료 삭제로 바꿨다. #22는 조건부 지침이 아니라 CODE_CONVENTION 책임 분리 규칙의 사본으로 근거를 고쳤다.
 
 ## BACKLOG 이관 행
 
-메인을 거쳐 Rules에 보낼 행이다. 이 문서는 BACKLOG를 직접 쓰지 않는다. 메인이 다음 Rules goal 입력에 넣었다(`msg_b1bf869e87fd`).
+메인을 거쳐 Rules에 보낼 행이다. 이 문서는 BACKLOG를 직접 쓰지 않는다. 첫 행은 메인이 다음 Rules goal 입력에 넣었다(`msg_b1bf869e87fd`). 뒤의 두 행은 아래 「사용자 결정」에 따라 더했다.
 
 | ID | 제목 | 이유 | 출처 | 선행 조건 | 담당 후보 | 상태 |
 |---|---|---|---|---|---|---|
 | `management-launcher-real-run` | 운영툴 실행 배치의 실제 더블클릭 확인 | README의 사용자 진입점이 「미검증」으로 남아 있다. 배치 분기 시험은 stub START였다 | catalog nextSteps #25(`change-launcher`), 이 분류표 | 사람이 직접 더블클릭해야 한다. OS 합성 입력은 금지다 | Management | 대기 |
+| `remote-play-check` | 실제 원격 플레이 확인 | 원격 보간 goal이 실서버 원격 플레이·시각 jitter·성능을 미실행으로 남겼고 이후 실행 기록이 없다 | 사용자 결정·2026-10-06·메인 전달 `msg_dfd3843e9464`, catalog nextSteps #11(`remote-rendering`)·#23(`change-interpolation`), 이 분류표 | 로드맵 P7 「게임 회귀」 단계와 겹치는지 확인 | Core | 대기 |
+| `system-map-3d` | 운영툴 시스템 지도 3D 표현 | 9-30 이주 협의안의 Three.js 시스템 지도 후보가 처분 없이 남아 있다 | 사용자 결정·2026-10-06·메인 전달 `msg_dfd3843e9464`, catalog nextSteps #21(`management-records`), 이 분류표 | 색인 전환 뒤 표시할 관계 자료와 필요성 확인 | Management | 대기 |
 
-## 결정 요청 후보
+## 사용자 결정
 
-리드가 처분을 정하지 못한 두 건이다. 메인이 현황판 결정 대기에 올렸고(`msg_b1bf869e87fd`), 사용자 답이 올 때까지 「애매」로 둔다.
+리드가 처분을 정하지 못한 두 건을 메인을 거쳐 물었다(`msg_33365ac784b2`, 같은 본문의 `msg_54535201beaa`). 메인 `msg_dfd3843e9464`(2026-10-06T10:40:27Z)가 전달한 사용자 원문은 다음과 같다. 메인 전달이므로 사용자 직접 입력으로 격상하지 않는다.
 
-1. **실제 원격 플레이 확인(#11·#23).** [원격 보간 goal](../../../01_Phases/goals/2026-09-30-remote-interpolation/goal.md) 51행은 실서버 원격 플레이·시각 jitter·성능을 미실행으로 남겼다. 이후 goal에서 실행 기록을 찾지 못했다. 로드맵 P7 「게임 회귀」가 포함한다는 문장은 없다.
-   - 추천: BACKLOG 이관. 담당 후보는 GameDev, 선행 조건은 「P7 게임 회귀 범위와 겹치는지 확인」이다.
-   - 대안: 폐기. 고르면 미실행 사실은 원격 보간 goal에만 남는다.
-2. **시스템 지도 3D 표현(#21의 3D).** 9-30 [이주 협의안](../2026-09-30-system-records/migration-consultation.md) 16행의 Three.js 시스템 지도 표현 후보다. 시스템 서술이 색인에서 빠지고 운영툴 역할이 「완성된 작업 기준과 이후 작업 정리」로 정해진 뒤 다시 확인한 적이 없다.
-   - 추천: BACKLOG 이관. 담당 후보는 Management, 선행 조건은 「색인 전환 뒤 표시할 관계 자료와 필요성 확인」이다.
-   - 대안: 폐기. 고르면 협의안의 후보 기록만 남는다.
+> 대시보드 결정 응답: 1) 원격 플레이 실제 확인 - 백로그로 옮길지 폐기할지 → A 백로그로 옮긴다 · 2) 시스템 지도 3D 표현 - 백로그로 옮길지 폐기할지 → A 백로그로 옮긴다
+
+1. **실제 원격 플레이 확인(#11·#23).** [원격 보간 goal](../../../01_Phases/goals/2026-09-30-remote-interpolation/goal.md) 51행은 실서버 원격 플레이·시각 jitter·성능을 미실행으로 남겼다. 이후 goal에서 실행 기록을 찾지 못했다. 로드맵 P7 「게임 회귀」가 포함한다는 문장은 없다. 현황판의 A 선택지 글은 「담당 후보는 Core다. 선행 조건은 게임 회귀 단계와 겹치는지 확인하는 것이다.」였다.
+2. **시스템 지도 3D 표현(#21의 3D).** 9-30 [이주 협의안](../2026-09-30-system-records/migration-consultation.md) 16행의 Three.js 시스템 지도 표현 후보다. 시스템 서술이 색인에서 빠지고 운영툴 역할이 「완성된 작업 기준과 이후 작업 정리」로 정해진 뒤 다시 확인한 적이 없었다. 현황판의 A 선택지 글은 「담당 후보는 Management다. 선행 조건은 색인 전환 뒤 표시할 관계 자료와 필요성을 확인하는 것이다.」였다.
