@@ -90,14 +90,14 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 7. **「다음 할 일」 27개 분류(항목 22):** catalog nextSteps 27개(시스템 21, 기록 6)를 완료 삭제·BACKLOG 이관·폐기로 나누고, 이미 예정된 로드맵 단계는 「로드맵 연결」로 표시한다. 근거 표는 이 폴더의 `next-steps-classification.md`다. 애매한 항목만 메인을 거쳐 결정 요청으로 올리고 이관 행은 Rules에 보낸다.
 8. **결정·요구 반영(항목 19):** requirements·decisions에 기록 원본 일원화와 운영툴 역할 방향을 출처와 함께 넣는다. R-10·D-10의 「catalog 공동 원본」, R-13 소급 정비, R-15의 summary 길이 검사는 대상이 사라지므로 바뀐 이유와 함께 고친다. R-01의 장기 우선순위 문장은 사용자 결정 없이 바꾸지 않고 「후속 작업 순서」만 실제 기록으로 정정한다.
 9. **낡은 사실·상태 정정(항목 23):** README(기본 창 1600×900 DIP·125%, CI 워크플로 4개와 vitest 미포함, 「원본 한 곳」, revision 설명, 문서 지도의 빠진 goal), RESUME(현재 goal 안내), 병합됐는데 OPEN·승인 전·[>]로 남은 Management goal 4건의 상태 줄을 고친다. 과거 본문은 소급 수정하지 않는다.
-10. **DB 1단계 과정·의도 문서(항목 20):** 프로젝트 Markdown 한 편으로 쓰고 기록 색인이 가리킨다. 위치는 Core 마일스톤 폴더 `01_Phases/milestones/2026-09-30-contracts-persistence/`를 추천하며 Core 조율로 정한다. 보고서 성격이라 리드가 쓰고 독립 문서 실사를 받는다.
+10. **DB 1단계 과정·의도 문서(항목 20):** 영속 연동 goal의 실제 DB 1단계(시험 DB 생성·기본 스키마 001 설치 시도)를 다루는 프로젝트 Markdown 한 편이다. 위치는 Core와 합의한 `01_Phases/goals/2026-10-04-persistence-integration/db-stage1-intent-and-process.md`다(아래 「Core 조율 결과」). 보고서 성격이라 리드가 쓰고, Core가 사실·용어를 검토하며, 독립 문서 실사를 받는다. 기록 색인이 이 문서를 가리킨다.
 11. **위치 규칙 제안(항목 24):** 보고서 폴더 두 곳, Management goal 위치, 문서 지도의 운영툴 진입 제안을 메인을 거쳐 Rules에 보낸다(`msg_026b701e3728`). 직접 쓰지 않는다.
 
 ## 건드릴 곳과 소유권
 
 | 소유자 | 파일과 책임 |
 |---|---|
-| Management 리드 | 이 goal과 부속 문서, `00_Document/operations/CURRENT.md`의 Management 줄, `05_Management/` README·RESUME·requirements·decisions·MCP.md, 끝난 Management goal 4건의 상태 줄, DB 1단계 문서(조율된 위치), 위임 계약·근거·Git |
+| Management 리드 | 이 goal과 부속 문서, `00_Document/operations/CURRENT.md`의 Management 줄, `05_Management/` README·RESUME·requirements·decisions·MCP.md, 끝난 Management goal 4건의 상태 줄, `01_Phases/goals/2026-10-04-persistence-integration/db-stage1-intent-and-process.md` 새 파일 하나(Core 동의, 병합 뒤 소유는 Core), 위임 계약·근거·Git |
 | 신규 Sol | PR2: `05_Management/records/catalog.json`, `05_Management/frontend/electron/`의 catalog 계약·조회·저장 제거·원문 구간 읽기, `preload.cts`, `05_Management/frontend/src/DevelopmentRecords*`·`src/developmentRecords/`, `App.tsx` 필요 부분, `05_Management/frontend/mcp/`, 색인 검사 스크립트. PR3: 백로그 메뉴 |
 | TDD 선행 시험 작성자·독립 검증자 | 해당 PR의 시험 파일만 쓴다. 제품 파일은 읽기 전용이다 |
 
@@ -106,7 +106,7 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 ## 하지 않을 것
 
 - 운영 백엔드·서버 등록·로그, 시스템 카드 전체 자료, 창·배율 복원(R-16), 코드 보기(R-17), 매핑 드리프트, 서버 운영 시각화, 결정 보드 MCP, 운영툴 테스트 CI 편입(묶음 2), MCP의 실제 개발 세션 연결.
-- 00_Document·01_Phases·AGENTS·BACKLOG·`.agents`·Codex 설정·`.github` 직접 쓰기. 예외는 CURRENT의 Management 줄과, Core가 동의한 경우의 DB 1단계 문서 한 파일이다.
+- 00_Document·01_Phases·AGENTS·BACKLOG·`.agents`·Codex 설정·`.github` 직접 쓰기. 예외는 CURRENT의 Management 줄과, Core가 동의한 DB 1단계 문서 새 파일 하나다. 영속 연동 goal의 `goal.md`는 건드리지 않는다.
 - `system-guide.json` 형식 변경, 구현 설명 3건의 이동.
 - 무관한 기존 실패 수리. 이번 변경이 영향을 준 시험만 고치고 기존 실패는 전수 분류한다.
 - 사용자 산출물(`frontend/dist`, `desktop-dist`, `.verification`)의 삭제·덮어쓰기, 전역 설정 변경, 다음 goal 자동 착수.
@@ -163,6 +163,18 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - 서버 운영 시각화: [BACKLOG `server-operations-view`](../../../00_Document/operations/BACKLOG.md).
 
 ## 결과와 열린 사항
+
+### Core 조율 결과
+
+리드가 `msg_a942a2fbbe0f`(E/`core-db-doc-coordination.txt`)로 묻고, Core 리드가 `msg_4fa0930581dc`(2026-10-06T10:20:45Z, E/`core-db-doc-reply.json`)로 네 질문 모두 동의했다. 발신 handle `term_8cc7e174-29a4-4127-97dd-25d933159ecc`는 Core Run `run_b36cc92a4cf4`의 coordinator와 같다(E/`core-run-identity.txt`). 태그 `[GameDev Astra]`는 AGENTS Core 전환 정본에 따라 같은 파트로 인정한다.
+
+- 위치: `01_Phases/goals/2026-10-04-persistence-integration/db-stage1-intent-and-process.md`. 다른 goal 폴더의 부속 문서 관례와 같다.
+- 분담: Management가 새로 쓰고 PR1에 넣는다. Core는 사실·용어를 검토하며 병합 뒤 소유는 Core다. Core branch의 같은 폴더 `goal.md` 미커밋 수정과 겹치지 않는다. 초안이 준비되면 Core 우편함에 보내고 Core 터미널에 안내를 넣는다. Core는 지금 우편함 대기를 열지 않는다.
+- 결과 서술 조건: 1단계는 Prepare·장치 확인까지 했고 SQL 서비스 시작 실패로 멈췄으며 DB 생성과 001 설치는 실행하지 않았다. master 파일 OS 오류 5는 관측된 증상으로만 쓰고 원인으로 쓰지 않는다. 10-06의 새 사실(Procmon 관측 시도, Windows Update의 SQL GDR 패치 자동 실행과 실패)은 섞지 않고 goal 링크로만 잇는다. goal.md 링크는 파일 머리나 「재개 지점」 같은 안정된 절에 건다.
+- 원천: Core checkout의 로컬 `.backups/verification/2026-10-04-persistence-integration/`의 `g2-stage1-main-guide.md`(v2·patch 포함), `g2-stage1-submissions/`, `g2-stage1-execution/`, `g2-stage1-observations/`, 서비스 시작 실패 진단 `g2-service-diagnosis/`를 읽기 전용으로 대조한다. Git 제외 자료라 문서에는 「로컬 증거 경로」라고 밝힌 평문 경로로 적거나 goal의 해당 기록을 가리킨다.
+- 검증 배정: 과정 기록이라 DB·영속 데이터를 바꾸는 작업이 아니다. 시범대로 신규 gpt-6-astra 문서 실사다.
+
+### 진입과 준비
 
 - **진입:** 새 Run `run_3fa510a50602`(E0/`run-create.json`), READY `msg_fa27c1982e46`(E0/`ready-sent.json`). 진입 때 worktree는 종료 기록 branch `docs/management-record-navigation-closeout`(HEAD `e37f261`, origin/main보다 19 뒤, 미커밋 0)이었다.
 - **27개 분류 초안:** 승인 전 읽기 조사로 E0/`nextsteps-classification-draft.md`를 만들었다. 확정 전 원천을 다시 대조한다.
