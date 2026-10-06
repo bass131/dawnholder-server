@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 다음은 선행 시험 작성(신규 Opus) → 구현(Sol max) → 독립 검증(신규 Opus) → PR1이다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 선행 시험 작성자(신규 Opus)가 작업 중이다(아래 「선행 시험」). 그 뒤는 구현(Sol max) → 독립 검증(신규 Opus) → PR1이다.
 
 ## 진척 단계
 
@@ -56,7 +56,7 @@ PR2 — 나머지 정본 현행화 (요청서 항목 1·3~8과 BACKLOG 등록)
 
 ### 건드릴 곳
 
-- PR1: `.claude/settings.json`(신규), `99_Tools/<목적 이름>/`·`99_Tools/<목적 이름>.Tests/`(신규), `.github/workflows/code-rules.yml`(시험 단계 하나), `99_Tools/README.md`(진입 한 줄), 필요하면 `.gitignore` 한 줄, AGENTS.md 「Git 권한」, ORCA.md, goal-loop SKILL.md 「통합과 보고」, CLAUDE.md(메인), 이 goal과 CURRENT Rules 줄.
+- PR1: `.claude/settings.json`(신규), `99_Tools/<목적 이름>/`·`99_Tools/<목적 이름>.Tests/`(신규), `.github/workflows/code-rules.yml`(시험 단계 하나), `99_Tools/README.md`(진입 한 줄), 필요하면 `.gitignore` 한 줄, AGENTS.md 「Git 권한」과 「공학 조건」의 hook 예외 문장, ORCA.md, goal-loop SKILL.md 「통합과 보고」, CLAUDE.md(메인), 이 goal과 CURRENT Rules 줄.
 - PR2: AGENTS.md(모델 라우팅·역할), ORCA.md, RESUME.md, CURRENT.md, BACKLOG.md, goal-loop SKILL.md, orca-work.md, 00_Document/INDEX.md, CLAUDE.md(메인), 이 goal.
 - CLAUDE.md는 메인만 쓴다. 리드가 쓰기 창을 열면 메인이 rules-active에서 고치고 리드가 커밋한다.
 
@@ -133,6 +133,12 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 확인 창 대신 승인: 질문 2 A(확인 창 없이 통과)는 PreToolUse allow만으로는 되지 않는다(실측 1). 그래서 PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 내고, 그 밖에는 결정을 내지 않는다(실측 1 d). 리드 질문은 `msg_7dbb6b6e9a89`였다. 메인 `msg_2442c561dd9f` 1항이 사용자에게 물었다. 이유는 이 hook이 확인 창을 대신 승인하는 장치라 AGENTS 공학 조건의 예외가 되기 때문이다. 사용자는 A를 골랐다(아래 「적용 중인 사용자 결정」). 병합이 아닌 다른 ask 대상 명령에는 어떤 경우에도 allow를 내지 않는다.
 - 메인 확인: 위 설계(메인 식별 표식, 하위 에이전트 병합 차단, 단독 명령만 통과, 메인 폴더는 worktree 루트)는 승인 범위 안이다. 「하위 폴더에서 띄운 세션에는 hook이 없다」 한계는 정본 문장에 적는다(`msg_2442c561dd9f` 4항).
 
+### 선행 시험
+
+- 작성자: 신규 `claude-opus-5-5`(질문 4 A), 태그 `[Rules 검증자]`. 리드 pane 아래 vertical split이고 handle은 `term_c9566fb0-430e-4940-a546-c64f60c1d0e1`이다. 첫 화면은 Opus 5.5 xhigh, auto mode on, 선택창 없음이었다(E/tdd-first-screen.json). backend는 unknown이다.
+- 계약: [E/tdd-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/tdd-contract.md) v1, SHA256 `5d9b0db3…`, 고정 입력은 HEAD `f1a75fd`와 동작 계약 v2(`d16918f6…`)다. 쓰기는 `99_Tools/MergeGate.Tests/`와 E/tdd/뿐이다. 경로 기계 확인은 E/tdd-contract-pathcheck.txt다.
+- Task `task_788b4ccc4532`, Dispatch `ctx_6871e9ac3b77`. worker-start receipt는 input_accepted, turnStart observed다. receipt 파일 저장 시각은 14:36:18Z다(E/tdd-worker-start.json).
+
 ## 요구사항 원천과 적용 결정
 
 메인이 전달한 사용자 결정은 사용자 직접 입력과 구분한다. 이번 착수의 원천은 다음과 같다.
@@ -159,7 +165,7 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 
 - **검증자 모델 시범**: 위 원문(18:1x KST). 메인 진입 지시 `msg_3902e180080c`의 임시 규칙은 다음과 같다. 문서 실사와 코드 검증(강·약)의 독립 검증자는 신규 `gpt-6-astra` xhigh다(split에 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`). DB·영속 데이터, 프로토콜·공유 DLL, 보안 경계를 바꾸는 작업과 해당 여부가 애매한 작업은 신규 `claude-opus-5-5`가 검증한다. Gardener, 확정 실패 뒤 Advisor, R-7 설계 검토는 대상이 아니다. 선행 시험 작성자도 대상이 아니다(질문 4 A). 구현자·검증자 분리, 작업 하나 뒤 정산·종료, 파트당 검증자 동시 하나, 테스트 파일만 쓰기, 판정 양식과 통과 차단 사유, 태그는 그대로다. 판정의 지정 모델·관찰 모델 칸을 채운다.
 - **리드 Opus**: 다섯 리드는 `claude-opus-5-5` xhigh다(`msg_22cb1701a2cf`, 교체 시점은 `msg_25102e277345`). 원문은 직전 Rules goal에 있다. 정본의 「파트 리드 Astra `gpt-6-astra`」와 R-1 기동 명령은 PR2 전까지 낡은 문장이다.
-- **확인 창 대신 승인**: 메인 `msg_af033fe88521`(2026-10-06T14:33:33Z, E/session/wait7-msg_af033fe88521.raw.txt)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 병합 관문 - 승인이 맞을 때 확인 창을 hook이 대신 승인할지 → A hook이 대신 승인한다」**다. PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 낸다. 메인은 AGENTS 공학 조건 「Claude 권한 확인을 건너뛰는 플래그·설정 변경은 금지」에 이 hook의 예외 문장(사용자 결정 원문 링크)을 넣으라고 했다.
+- **확인 창 대신 승인**: 메인 `msg_af033fe88521`(2026-10-06T14:33:33Z, E/session/wait7-msg_af033fe88521.raw.txt)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 병합 관문 - 승인이 맞을 때 확인 창을 hook이 대신 승인할지 → A hook이 대신 승인한다」**다. PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 낸다. 메인은 AGENTS 공학 조건 「Claude 권한 확인을 건너뛰는 플래그·설정 변경은 금지」에 이 hook의 예외 문장(사용자 결정 원문 링크)을 넣으라고 했다. 넣는 곳은 PR1이다. 리드 제안 `msg_043ef990dff0`에 메인 `msg_895f7ffa4512`(14:36:43Z, E/session/wait8-msg_895f7ffa4512.raw.txt)가 동의했다. PR1 병합 때 hook이 살아나므로 정본과 동작이 어긋나는 구간을 없애기 위해서다. 예외 문장에는 사용자 결정 원문과 이 절의 링크를 단다. 독립 검증 계약에는 「예외 문장의 조건이 hook 실제 동작과 일치」 대조를 넣는다.
 - **병합 관문**: 1안건 A(위 원문). PR1 병합과 적용 확인 전까지 병합은 지금 방식(리드 pane, 사용자 확인 창, 메인의 병합 신호)으로 한다.
 - **후속 계획의 일괄 검토**: 메인 `msg_bf63c20c8abe`가 전달한 원문 「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」. 현재 goal 밖 후보는 BACKLOG로 모으고 개별 승인을 받지 않는다.
 - 메인 운영 지시(사용자 결정 아님): 우편함 대기는 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`로 heartbeat 단독 깨움을 뺀다(`msg_20663b7c7598`). 대기는 Bash 백그라운드로 한 번에 하나만 열고 `&`·`/dev/null`로 출력을 버리지 않는다(`msg_3902e180080c`).
