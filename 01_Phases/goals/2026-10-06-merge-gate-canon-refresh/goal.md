@@ -132,12 +132,21 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 통과는 단독 병합 명령 형태만 받는다. 복합 명령·heredoc·`bash -c` 안의 병합 시도는 기록이 있어도 막는다. 복합 명령은 ask 규칙 매칭이 최선 노력이라, 통과를 허용하면 확인 단계 없이 실행될 수 있다.
 - 확인 창 대신 승인: 질문 2 A(확인 창 없이 통과)는 PreToolUse allow만으로는 되지 않는다(실측 1). 그래서 PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 내고, 그 밖에는 결정을 내지 않는다(실측 1 d). 리드 질문은 `msg_7dbb6b6e9a89`였다. 메인 `msg_2442c561dd9f` 1항이 사용자에게 물었다. 이유는 이 hook이 확인 창을 대신 승인하는 장치라 AGENTS 공학 조건의 예외가 되기 때문이다. 사용자는 A를 골랐다(아래 「적용 중인 사용자 결정」). 병합이 아닌 다른 ask 대상 명령에는 어떤 경우에도 allow를 내지 않는다.
 - 메인 확인: 위 설계(메인 식별 표식, 하위 에이전트 병합 차단, 단독 명령만 통과, 메인 폴더는 worktree 루트)는 승인 범위 안이다. 「하위 폴더에서 띄운 세션에는 hook이 없다」 한계는 정본 문장에 적는다(`msg_2442c561dd9f` 4항).
+- 메인 전용 폴더와 병합 형태: 리드 질문 `msg_388f710eb4ba`에 메인 `msg_729105efa64c`(14:43:33Z, E/session/wait10-msg_729105efa64c.raw.txt)가 답했다.
+  - 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/main-active`다. Core는 `C:/Dev/DawnHolder_Project`에 남고 별도 탭으로 옮긴다. 폴더·표식 생성과 첫 세션의 작업 공간 신뢰 창은 PR1 병합 뒤 사용자·메인이 한다.
+  - 병합 명령은 `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 형태다. `--delete-branch`는 붙이지 않는다.
+- PR1 병합 경로의 위험과 대비안: 구현이 rules-active에 `.claude/settings.json`을 만든 뒤 이 리드 세션에 hook이 바로 실리는지는 모른다(완료조건 5의 실측 항목). 바로 실리면 이 checkout에는 표식이 없어 리드 pane의 PR1 병합이 `not-main-checkout`으로 막힌다. 그러면 리드는 우회하지 않고 메인에 올린다. 메인이 `C:/Dev/DawnHolder_Project`에서 같은 단독 명령으로 병합한다. 사용자 승인과 head 재대조는 그대로다(메인 `msg_729105efa64c` 2항). 리드는 settings 생성 직후 무해한 명령 한 번으로 반영 여부를 재서 이 goal에 남긴다.
 
 ### 선행 시험
 
 - 작성자: 신규 `claude-opus-5-5`(질문 4 A), 태그 `[Rules 검증자]`. 리드 pane 아래 vertical split이고 handle은 `term_c9566fb0-430e-4940-a546-c64f60c1d0e1`이다. 첫 화면은 Opus 5.5 xhigh, auto mode on, 선택창 없음이었다(E/tdd-first-screen.json). backend는 unknown이다.
 - 계약: [E/tdd-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/tdd-contract.md) v1, SHA256 `5d9b0db3…`, 고정 입력은 HEAD `f1a75fd`와 동작 계약 v2(`d16918f6…`)다. 쓰기는 `99_Tools/MergeGate.Tests/`와 E/tdd/뿐이다. 경로 기계 확인은 E/tdd-contract-pathcheck.txt다.
 - Task `task_788b4ccc4532`, Dispatch `ctx_6871e9ac3b77`. worker-start receipt는 input_accepted, turnStart observed다. receipt 파일 저장 시각은 14:36:18Z다(E/tdd-worker-start.json).
+- 질문 1: 작업자 공식 ask `msg_93f732ba921f`(14:42:58Z)에 리드가 `msg_eaa7a91f2cee`(14:43:48Z)로 답했다. 출처는 사람 대조로 확인했다(E/tdd-question1-manual-check.md, CLI 1.4.221).
+  - workflow 시험은 단계 본문을 실제 bash로 돌린다. 기존 Orca 시험과 같은 방식이다. 단계는 시험 부재·load 실패·실패에서 nonzero로 끝나고, command·stdout·stderr·exit를 `$RULES_OUTPUT/merge-gate-independent-tests/`에 남긴다. 동작 계약 밖의 리드 결정이라 구현 계약에도 넣는다.
+  - PermissionRequest는 정확한 단독 병합 형태가 아닌 명령에 허용을 내지 않는다. `usedCommand`가 같은 위조 기록이 있어도 마찬가지다.
+  - `state-write-failed`와 기록 쓰기 실패는 권한·파일 배치로 시험한다. root 환경은 이유를 출력하고 skip한다.
+  - Node 24.15에서 `node --test <디렉터리>`는 시험을 찾지 않는다(작업자 실측). 실행 명령과 CI 단계는 `*.test.mjs` glob 형태로 쓴다.
 
 ## 요구사항 원천과 적용 결정
 
