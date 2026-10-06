@@ -25,7 +25,7 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 1. 끝남: 리드가 PR1 문서로 결정·요구 반영, 낡은 사실·상태 정정, [27개 분류표](next-steps-classification.md), DB 1단계 과정 문서를 썼다.
 2. 끝남: DB 1단계 문서의 위치·분담 조율과 사실 검토는 아래 「Core 조율 결과」와 「Core 사실 검토」에 끝났다.
 3. 끝남: 1차·2차 신규 gpt-6-astra 문서 실사와 그에 따른 정정(아래 「PR1 문서 실사」).
-4. 예정: 2차 정정 delta의 신규 gpt-6-astra 좁힌 재실사 → PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인. 27개 분류의 이관 행 세 개는 메인을 거쳐 Rules에 보낸다(「적용 중인 메인 결정」 5항). 첫 행은 메인이 다음 Rules goal 입력에 넣었고(`msg_b1bf869e87fd`), 사용자 결정에 따른 두 행은 `msg_2f00062564f8`로 메인에 보냈다. 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
+4. 예정: 2차 정정 delta의 신규 gpt-6-astra 좁힌 재실사 → PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인. 27개 분류의 이관 행 세 개는 메인을 거쳐 Rules에 보낸다(「적용 중인 메인 결정」 5항). 첫 행은 메인이 다음 Rules goal 입력에 넣었다(`msg_b1bf869e87fd`). 사용자 결정에 따른 두 행은 `msg_2f00062564f8`로 보냈고, 메인이 다음 Rules goal 입력에 넣었다고 회신했다(`msg_bc53f0de661b`). 첫 행의 출처 칸도 W3 정정 문장으로 바꿨다고 했다. 다음 Rules goal이 시작 전이라 BACKLOG 반영 자체는 아직이다. 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
 5. 예정: PR2·PR3은 PR1 병합 뒤 각각 최신 main의 새 branch에서 시작한다.
 
 근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run `run_3fa510a50602`, 리드 handle `term_d2c6dac2-5fb3-401e-98f3-8f6ecba0cdd6`은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
