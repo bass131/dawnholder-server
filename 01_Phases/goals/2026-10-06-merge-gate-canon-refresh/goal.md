@@ -311,6 +311,16 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 한계로 적는 것: R3의 gh 쪽(값 옵션을 `merge` 앞으로 옮기는 형태는 의도적 우회), matcher 밖 도구, hook·settings 자체 수정(O-R6). `pr` 뒤 아무 곳의 `merge`를 병합 시도로 보는 안은 `gh pr create --title merge` 같은 정상 명령을 막아서 쓰지 않는다(재검증자 시험의 경계 사례).
   - 동작 계약은 [E/merge-gate-behavior-spec-v2.2.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec-v2.2.md)다(SHA256 `67d63f4b…`). 수정은 신규 Sol 한 명이 코드·README·ORCA를 고치고, 신규 Opus가 재검증한다.
   - 수정 횟수: 코드는 두 번째, ORCA 병합 관문 절은 세 번째 수정이다. 한 번 더 고치게 되면 3회를 넘으므로 메인 체크포인트를 알린다.
+- 메인 알림: `msg_c3c6c9cdf6c0`(17:40:51Z, status). 메인 pane이 빈 prompt여서 확인 안내를 한 번 넣었다.
+
+### PR1 재검증 결함 수정
+
+- 작업자: 신규 `gpt-6.1-sol` max, 태그 `[Rules Sol]`, handle `term_b9dc49d8-69f6-4ae8-af6e-c3905fbf406c`(리드 pane 아래 vertical split). 첫 화면은 이전 작업자와 같았고 선택창은 없었다(E/fix3-first-screen.json). backend는 unknown이다.
+- 계약: [E/fix3-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/fix3-contract.md) v1, SHA256 `0a93ad59…`, 고정 HEAD `047e0db`, 동작 계약 v2.2.
+  - 쓰기 허용은 MergeGate 세 제품 파일, `.claude/settings.json`의 PreToolUse matcher, README 「병합 관문」 절, ORCA다. settings는 마지막에 쓰고 즉시 리드에게 알린다(리드 세션에 바로 실림).
+  - 기존 시험 94건이 바뀌지 않고 통과해야 한다. ORCA는 41,629 bytes 이하로 맞추고 이미 축약한 행은 다시 줄이지 않는다.
+  - 경로 기계 확인은 E/fix3-contract-pathcheck.txt(17:42:21Z)다.
+- Task `task_ac622f2a804c`, Dispatch `ctx_53c8fd49a1ed`다. receipt는 input_accepted, turnStart observed다(E/fix3-worker-start.json).
 
 ## 요구사항 원천과 적용 결정
 
