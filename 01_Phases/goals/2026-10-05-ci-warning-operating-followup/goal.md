@@ -51,7 +51,9 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 - **휴식 정지**: 메인 `msg_7d23e8619ead`(07:57:46Z, main-pause-delivery.json)로 우편함 대기를 끄고 빈 prompt로 멈췄다. 진행 중인 쓰기·push는 없었다.
 - **PR193 병합**: 메인 `msg_efdaf0cda61a`(08:19:04Z, resume-check-delivery.json)가 사용자 원문 「1안건 A, 2안건 A로 가자」를 전달했다. 2안건 A가 head `c037b216b8d457affce12fc5068c512cdae5c071` 병합 승인이다. 메인 전달이며 직접 입력으로 격상하지 않는다. 08:19:20Z fresh 확인은 OPEN·draft 아님·CLEAN·CI 4/4였다(pr193-pre-merge-state.json). `gh pr merge 193 --merge --match-head-commit c037b216b8d457affce12fc5068c512cdae5c071`을 사용자가 확인 창에서 승인했고, 08:19:34Z에 merge `9eed55f`로 병합됐다(pr193-post-merge-state.json). 원격 branch는 같은 저장소 설정으로 자동 삭제됐다.
 - **종료 기록**: 최신 main `9eed55f`에서 branch `docs/operating-followup-closeout-20261006`을 만들었다. 이 goal과 CURRENT의 Rules 자기 줄만 고친다. 맥락 메모는 astra-closeout-context.md다.
-- **현재 위치**: 재개 순서 7의 「결과 기록」이다. Gardener를 지금 띄울지는 메인 질문 `msg_b5a96821d603`의 답을 기다린다. 이번 세션 사용자 지시로 후속 계획 검토를 미뤘기 때문이다. 그 뒤 순서는 종료 기록 신규 Opus 문서 실사 → 종료 기록 PR(확인 창) → CI → 개별 승인·병합 → 메인 종료 점검 → R-8이다.
+- **Gardener**: 메인 질문 `msg_b5a96821d603`에 메인 `msg_50a57807853f`(09:14:40Z)가 사용자 결정을 전달했다(원문은 「적용 중인 사용자 결정」). 메인에 기동 알림 `msg_1ca7e561ff48`(09:16:54Z)을 보내고 신규 `claude-opus-5-5` Gardener를 R-5대로 이 pane split으로 열었다(Task `task_2647cdcc566b`, Dispatch `ctx_3625324d5056`, 계약 E/gardener-contract.md, 고정 HEAD `6e86ab6`). 완료는 `msg_05af58413dcc`(09:33:09Z, worker_done succeeded)이고 수신 helper는 allowed/exit 0이었다. 정산은 release retained/external_terminal/none, 같은 incarnation의 빈 prompt 확인 뒤 close(ptyKilled=true)다(E/gardener-*.json).
+- **Gardener 보고서**: [E/gardener/report.md](../../../.backups/verification/2026-10-05-ci-warning-operating-followup/gardener/report.md)(SHA256 `47CDCFEC…D812`, 340줄). 보고서의 집계는 확정 실패 0, 번호 매긴 비차단 결함 5(모두 낮음), 경고 억제·설정 완화 0, CI 실패·재실행 0이다. 정리 후보 2개는 기존 후보에 반복 근거를 더하는 제안이다(조회·기동 관측의 원시 저장 helper, 계약 경계 원장 helper). 사용자가 계획을 한꺼번에 검토할 때 보며, 이 goal은 채택·착수·BACKLOG 등록을 하지 않는다.
+- **현재 위치**: 재개 순서 7에서 결과 기록과 Gardener가 끝났다. 이 commit 뒤 순서는 종료 기록 독립 문서 실사(신규 `gpt-6-astra` xhigh, 검증자 모델 시범의 첫 적용) → 종료 기록 PR(확인 창) → CI → 승인 묶음 → 개별 승인·병합 → 메인 종료 점검 → R-8이다. 다음 goal은 R-8 뒤 새 리드가 시작하며(「다음 계획 후보」 첫 줄), 이 pane에서 착수하지 않는다.
 
 ### 리드 교체 인계 — 2026-10-05T14:27:56Z
 
@@ -167,7 +169,8 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 - [x] 운영 문서·Core 정비
 - [x] CLAUDE 반영·실사
 - [x] PR193 병합
-- [>] 결과 기록·Gardener
+- [x] 결과 기록·Gardener
+- [>] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8 인계
 
 ## 범위
@@ -295,12 +298,14 @@ PR187 병합 뒤 CURRENT의 인접한 Rules/CodeMap 줄에서 충돌이 생겼�
 | 2 - PR1 신규 Opus 강 검증 | 충족 | review-pr1-2/verdict.md(SHA256 `E236F9B3…`). 첫 검증은 절차 사고로 최종 근거에서 뺐다. |
 | 3 - PR2 신규 Opus 문서 실사(CLAUDE.md 포함) | 충족 | 1차 `c1299550` 통과(비차단 결함 4개 보완), 2차 `7bff758` 통과, 3차 `6e5422d` 재실사. 3차 내용은 메인 결정 2에 따라 승인 묶음(E/session-20261006/pr193-approval-bundle.md)에만 둔다. |
 | 4 - 두 PR 개별 승인과 병합 | 충족 | [188 - npm engines 경고 노출](https://github.com/bass131/dawnholder-server/pull/188): head `68e7ba2`, 승인 전달 `msg_a82fbd4155e1`, merge `064cbd0`. [193 - 운영 후속 결정과 Core 명칭 정본화](https://github.com/bass131/dawnholder-server/pull/193): head `c037b21`, 승인 전달 `msg_efdaf0cda61a`, merge `9eed55f`. |
-| 4 - 결과 기록·Gardener·종료 점검·R-8 | 진행 중 | 이 기록이 결과 기록이다. Gardener·종료 점검·R-8은 「재개 지점」의 「현재 위치」를 따른다. |
+| 4 - 결과 기록·Gardener·종료 점검·R-8 | 진행 중 | 이 기록이 결과 기록이다. Gardener는 끝났다(E/gardener/report.md). 종료 기록 PR·종료 점검·R-8은 「재개 지점」의 「현재 위치」를 따른다. |
 
 게임·DB·Unity는 이 goal에서 실행하지 않았다.
 
 ## 적용 중인 사용자 결정
 
+- 메인 `msg_50a57807853f`(2026-10-06T09:14:40Z, E/session-20261006/main-gardener-answer-verifier-pilot-delivery.json)가 전달한 사용자 원문: **「대시보드 결정 응답: 5) Rules 목표 종료 점검(Gardener) - 지금 띄울지 → A 지금 실행, 검토는 나중」**. 메인 전달이며 직접 입력으로 격상하지 않는다. Gardener를 지금 실행했고, 정리 후보는 사용자가 계획을 한꺼번에 검토할 때 본다.
+- 같은 메시지가 전달한 사용자 원문: **「대시보드 결정 응답: 3) 검증자 모델 - Astra 검증을 시범으로 시작할지 → A 10-31까지 시범으로 시작」**. 메인 전달이며 직접 입력으로 격상하지 않는다. 메인 설명에 따르면 정본(AGENTS 모델 라우팅·ORCA R-5) 반영 전까지 새로 여는 문서 실사와 코드 검증의 독립 검증자는 신규 `gpt-6-astra` xhigh다. 기동은 split `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`다. DB·영속 데이터, 프로토콜·공유 DLL, 보안 경계를 바꾸는 작업과 해당 여부가 애매한 작업은 신규 `claude-opus-5-5`가 검증한다. Gardener·확정 실패 뒤 Advisor·R-7 설계 검토는 대상이 아니다. 모델 부재나 capacity 장기 실패는 Opus로 대체하지 않고 메인에 보고하며, 판정의 지정 모델·관찰 모델 칸을 채운다. 이 goal의 첫 적용은 종료 기록 독립 문서 실사다. 정본 문장은 다음 Rules goal에서 시범 조항으로 넣는다.
 - 메인 `msg_efdaf0cda61a`(2026-10-06T08:19:04Z)가 전달한 사용자 원문: **「1안건 A, 2안건 A로 가자」**. 메인 전달이며 직접 입력으로 격상하지 않는다. 메인 설명에 따르면 2안건 A는 PR193을 지금 방식으로 먼저 병합하는 것이다. 1안건 A는 설계 결정 「병합은 메인 창에서만, 사용자 제출 문장 기반 승인 기록 hook」이다. 이 설계의 구현은 다음 Rules goal로 따로 열고, 메인이 범위 초안을 만들어 사용자 승인을 받는다. 이 goal은 그 구현을 하지 않는다.
 - 메인 `msg_bf63c20c8abe`(2026-10-06T06:05:31Z)가 전달한 이번 세션 사용자 원문: **「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」** 메인 전달이며 직접 입력으로 격상하지 않는다. 메인 해석: 현재 goal의 남은 일을 먼저 한다. 다음 goal 범위 초안과 Gardener 후보는 나중에 한꺼번에 검토하므로 지금 새로 쓰거나 올리지 않는다.
 - 메인 운영 지시 `msg_20663b7c7598`(14:34:35Z, E/main-wait-types-instruction.json): 우편함 대기에 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`를 붙여 heartbeat 단독 깨움을 뺀다. 사용자 결정이 아니라 메인 지시다.
@@ -309,6 +314,7 @@ PR187 병합 뒤 CURRENT의 인접한 Rules/CodeMap 줄에서 충돌이 생겼�
 
 ## 다음 계획 후보
 
+- **다음 goal 입력**: 묶음 1 「병합 관문과 운영 정본 현행화」, 사용자 승인 원문 「OK A로 가자, 현황판도 업데이트 해줘」, 메인 전달 `msg_8e58e5bb197c`(2026-10-06T09:26:18Z, E/session-20261006/main-next-goal-bundle1-delivery.json).
 - 메인 `msg_9a751493f4f8`·`msg_1076ae16562f`(13:33:22Z): 검증 계약에 보조 스크립트 허용 폴더를 지정하고 scratchpad·TEMP·`/tmp`·홈을 포함한 허용 밖 임시 쓰기를 명시 금지한다. 판정의 결론 절은 스스로 밝힌 범위 밖 쓰기를 하나씩 규칙 위반으로 나열하게 한다. CodeMap PR187의 CI 감사 검증자가 `/tmp/x_local.txt`를 만들었다 지웠다고 밝히고도 위반 없다고 썼다는 세 번째 사례(CodeMap `msg_a667ee7c270b`)는 메인 전달 관측이며 Rules가 그 세션을 독립 실사한 것은 아니다. 현재 PR2 정본 범위에는 넣지 않는다.
 - 메인 `msg_2a9682a1728b`(13:03:28Z, E/main-lead-opus-pilot-candidate-delivery.json)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 모델 라우팅 - 파트 리드를 Opus로 바꾸는 시범 → A 리드 Opus xhigh, 구현은 Sol max 유지」**다. 메인 전달이며 Rules의 직접 사용자 입력으로 격상하지 않는다. 리드 Opus 시범 결과를 AGENTS 라우팅·R-5·역할/태그·세션 진입 정본에 반영하는 다음 후보에 Astra의 45초 우편함 반복 대기 개선을 묶는다. CLAUDE.md는 메인만 쓰고 첫 시범 파트는 CodeMap 예정이며, 적용 근거는 해당 파트 goal의 사용자 원문이다. 메인이 전달한 최근24시간 입력토큰88%/12%·Astra호출7,333회 중 약60% 대기/조회·호출별 약14만 문맥은 메인 측정이며 Rules 실측이 아니다. 현재 goal 범위/실행 모델을 바꾸지 않는다.
 - 새 독립 판정의 비차단 관찰2: npm 표시의 경계 테스트를 저장소 회귀/CI에 연결할 필요는 후속에서 검토한다. 현재 별도 parser 비채택·제품 한 파일 경계를 유지한다. 관찰1(운영 문서 탐색)은 PR2의 승인된 BACKLOG 처분과 이 goal 링크로 연결하며 DEVELOPMENT의 허용 범위를 임의 확대하지 않는다.
