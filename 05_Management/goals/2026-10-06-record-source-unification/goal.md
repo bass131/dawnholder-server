@@ -16,14 +16,14 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 00:1x KST, PR2 선행 시험 commit 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 01:1x KST, PR2 제품 구현 commit 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했고(아래 「PR2 설계」), 1단계 선행 시험이 끝나 `736d3637`로 commit됐다(아래 「PR2 선행 시험」). 1단계 작업자는 정산·종료했고 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」). 두 작업자는 정산·종료했고 열린 작업자·검증자는 없었다.
 
 당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
 1. (끝남) 신규 `claude-opus-5-5` 시험 작성자의 기록 읽기 경계 선행 시험.
-2. 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
+2. (제품 코드 끝남) 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
 3. 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고, 신규 Sol이 MCP를 구현한다.
 4. 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증한다. 실제 Electron 확인은 「설계와 검증 경계」를 따른다.
 5. PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인.
@@ -240,6 +240,14 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **리드 대조:** 위 수치를 두 원시 JSON에서 다시 셌다. 리드가 14:27:36Z에 따로 읽은 작업자 화면에 맥락 메모의 준수 연결 표가 쓰이고 있었고, 첫 시험 파일 생성은 14:28:43Z다. 거절 사례 8종은 사례마다 code·reason을 `toEqual`로 단정한다.
 - **미작성(이유 있음):** 읽기 전후 stat 차이로 생기는 `changed`와 색인 검사 출처 파일의 읽기 실패는 제품 hook 없이 결정적으로 재현할 수 없어 쓰지 않았다. 7~8단계 사이 파일 교체 사례만 썼다.
 - **2단계 전 알릴 점:** 작업자가 설계 확인용 일회용 대역을 E/`pr2-t1/selfcheck/reference/`에 만들었다(제품 아님). 구현 Sol에게는 읽지 말라고 계약에 적는다.
+
+### PR2 구현
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max」, backend unknown)이 2단계 제품 코드를 썼다. Task `task_c5613a741647`, Dispatch `ctx_d18ecd40fec9`, worker_done `msg_9274b8506e78`(2026-10-06T16:01:30Z). 계약은 고정 파일 E/`pr2-s1-task.txt`(SHA-256 `7be122f3…`), 보고는 E/`pr2-s1/report.md`다.
+- **계약 보충:** 두 질문에 리드가 답했다. v1.1은 색인 계약과 원문 계약의 type import 순환을 끊었다. renderer bridge 타입을 `src/recordsBridge.d.ts`로 옮겨 의존 방향을 「원문·checkout 계약 → 색인 계약」 한 방향으로 두고, 그 결과 MCP 정적 경계 시험 두 건이 통과했다. v1.2는 옛 v1 계약 원문 한 줄을 고쳐 보는 MCP build 시험(R04)을 4단계 예정으로 분류했다(E/`pr2-s1/supplement-v1.1.txt`·`supplement-v1.2.txt`).
+- **결과:** 제품 파일 23개를 바꿨다(새 9, 고침 13, 지움 1, +1244/−361). 리드가 `1c7824e2`로 commit했다. package.json은 scripts의 `records:check` 한 줄만 늘었고 lockfile·시험·`catalog.json`·`mcp/`·문서는 바뀌지 않았다. 전체 시험은 1014개 중 936 통과·67 실패·11 미실행, 수집 실패 0이다. 실패는 데이터 전환 대기 11, MCP 4단계 예정 54, 기존 B01·B09 각 1이다. 미실행 11건은 v1 DTO 타입 검사에 막힌 MCP build 시험 두 파일이며 B11·B12는 해소로 판정하지 않는다. typecheck와 desktop:typecheck는 exit 0, mcp:typecheck는 exit 1(오류 34개 모두 `mcp/`의 v1 DTO 세 파일)이다. `records:check`는 실제 색인이 아직 v1이라 `CATALOG_INVALID` 하나로 exit 1이다.
+- **리드 대조:** 위 수치와 파일별 실패 분포를 E/`pr2-s1/after/vitest.json`에서 다시 셌고, typecheck 3종·CLI의 meta exit와 출력, package diff, 보호 경로 diff를 원시로 확인했다. 맥락 메모 생성(00:13:14 KST)이 첫 제품 파일 생성(00:21:41 KST)보다 앞선다. 강 등급 독립 판정은 6단계 검증자에게 남는다.
+- **남은 일:** 실제 색인이 v1이라 새 화면은 지금 데이터 오류를 표시한다. 3단계 데이터 전환이 이 상태를 푼다. 실제 Electron 화면·build는 실행하지 않았다.
 
 ### 진입과 준비
 
