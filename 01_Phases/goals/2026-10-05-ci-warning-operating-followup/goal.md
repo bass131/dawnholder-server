@@ -42,6 +42,8 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 - **진입 상태 대조**(06:06Z, entry-git-state.txt·entry-pr188-state.json): HEAD `94739ac`가 원격과 같고 미커밋 파일은 없었다. 재개 정본의 「직전 push head a488b1b」와 달리 재개 기록 commit까지 push돼 있었다. 그 밖의 차이는 없었다. READY는 `msg_7eadda409ece`(06:07:40Z)다.
 - **PR188 병합**: 메인 신호 `msg_18b638edcad0`(06:08:51Z, main-pr188-merge-signal-delivery.json) 뒤 fresh 확인은 OPEN·head `68e7ba2`·CLEAN·CI 4/4였다(E/pr188-merge/pre-merge-state-20261006.json). `gh pr merge 188 --merge --match-head-commit 68e7ba204289b57f83369b2df2c333aa5e3fe99f`를 사용자가 확인 창에서 승인했고, 06:18:24Z에 merge `064cbd0`으로 병합됐다(post-merge-state-20261006.json). 원격 PR188 branch는 저장소 설정 `delete_branch_on_merge: true`로 자동 삭제됐다. 병합 명령에는 삭제 옵션이 없었다.
 - **최신 main merge**: `064cbd0`을 merge한 `573b6f4`의 트리는 직전 `94739ac`와 같다. 두 부모가 이미 이 branch에 있었기 때문이다. PR diff 파일은 PR2 경계 10개다(pr2-main-merge-proof.json·pr2-main-merge-remerge.diff).
+- **PR 생성**: 메인에 생성 직전 알림 `msg_e5fcce06871f`(06:20:59Z, pr2-create-notice-to-main.md)를 보냈다. `gh pr create`를 사용자가 확인 창에서 승인해 [193 - 운영 후속 결정과 Core 명칭 정본화](https://github.com/bass131/dawnholder-server/pull/193)가 06:22:59Z에 생겼다. 생성 head는 `af7515b`, 본문은 pr2-body-20261006.md다(pr193-created-state.json).
+- **PR189 뒤 main merge**: Management PR189가 같은 시각 merge `a90426a`로 병합돼 PR193이 DIRTY가 됐다. BACKLOG의 붙은 세 행이 충돌했다. 이 branch의 `npm-engine-warning`·`work-status-view` 행과 main의 `server-operations-view` 행을 각각 살려 `386d078`로 merge했다. CURRENT는 자동 병합돼 main의 Management goal·branch 줄을 유지한다. 두 파일 모두 「병합 결과와 main의 차이 = 이 branch의 변경」, 「병합 결과와 이 branch의 차이 = main의 변경」을 확인했다(pr2-main-merge2-proof.json·pr2-main-merge2-remerge.diff).
 
 ### 리드 교체 인계 — 2026-10-05T14:27:56Z
 
@@ -156,7 +158,7 @@ Rules의 목표다. 메인 `msg_251c879ef46a`(2026-10-05T11:56:05Z)가 한 goal�
 - [x] PR188 병합
 - [x] 운영 문서·Core 정비
 - [x] CLAUDE 반영·실사
-- [>] 운영 문서 PR 병합
+- [>] PR193 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 점검과 R-8 인계
 
