@@ -16,9 +16,9 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 04:4x KST, PR2 독립 검증 판정 뒤의 문서 정정 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 05:0x KST, PR2 V2 수정 commit 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. 여섯 세션은 정산·종료했고 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`으로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 일곱 세션은 정산·종료했고 열린 작업자·검증자는 없었다.
 
 당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
@@ -290,6 +290,13 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **리드 절차 위반(첫 발생):** V1은 리드가 commit을 묶으면서 생겼다. 「PR 경계와 종료」의 「구조 변경과 동작 변경은 서로 다른 커밋」을 리드 commit 단계에서 지키지 못했다. 메인 결정 `msg_883836e1208a` 1항에 따라 현 이력을 받아들인다(force push 없음). PR 본문에 `f8aaae02`가 구조와 동작을 섞었다는 한 줄을 남긴다.
 - **처리:** 검증자의 시험 두 파일(T1 정정, 빌드된 MCP 진입점 독립 시험)을 `f9a1cc8e`로 commit했다. V3~V5와 아래 4단계 메모 원인 정정은 리드가 고쳤다. V2는 범위 안 규칙 위반이라 루프에서 고친다. 새 Sol이 두 곳을 helper 결과로 분기하게 바꾸고 설계 판정 순서를 지킨다. store가 MCP 빌드 그래프에 있으므로 `mcp-dist`를 다시 빌드한다. 그 뒤 새 Opus가 좁혀 재검증한다.
 - **비차단 관찰:** O1(색인이 깨지면 `records:check`가 모든 goal에 warning을 냄), O3(hard link는 경로 거절이 못 잡음, 거절 8종 밖), O4(tests 타입 검사 script 없음)는 「후속 후보」에 적었다. O3은 메인 결정 `msg_883836e1208a` 2항에 따라 범위 밖이고 설계 「원문 구간 읽기 경계」에 한계로 적었다. O2(fence 판정 두 곳)는 PR3 착수 때 판단한다. O5(문서 PR196이 기록 6개의 PR 목록에 들어감)는 first-parent 규칙 그대로 둔다. O6(4단계 메모 생성 시각의 원인)은 「PR2 MCP 선행 시험」에서 정정했다.
+
+### PR2 V2 수정
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max」, backend unknown)이 V2를 고치고 `mcp-dist`를 다시 빌드했다. Task `task_34aca609f6db`, Dispatch `ctx_4a46cdc3722a`, worker_done `msg_9a048764baf6`(2026-10-06T20:00:22Z). 계약 E/`pr2-s4-task.txt`(SHA-256 `3252b244…`), 보고 E/`pr2-s4/report.md`.
+- **결과:** `source-section-store.ts`와 `record-index-check.ts`가 `sourceReadability(source)` 결과로 분기한다. store는 설계 순서(종류 → 경로 모양 → 확장자)를 지켜, 잘못된 git 경로는 확장자보다 먼저 거절된다. 같은 명령의 전체 시험은 쓰기 전과 쓴 뒤 모두 1196개 중 1194 통과이고 실패는 B01·B09로 같다. 타입 검사 셋과 `records:check`(error 0, warning 11)는 통과했다. `mcp-dist`는 22파일 중 `electron/source-section-store.js`와 `build-info.js`만 바뀌었고 새 버전은 `0.0.0+sha256.1b38a0e7…`이다. 보호 산출물 561파일은 그대로다.
+- **리드 대조:** diff가 계약의 두 파일·분기 순서와 같음을 읽었다. 전후 수치와 실패 이름을 원시 JSON에서 다시 셌다. 메모 생성(04:47:25 KST)이 쓰기 전 시험(04:50)과 제품 파일 시각(04:51)보다 앞선다. `electron/`·`mcp/`의 `.endsWith('.md')`는 helper 한 곳뿐이다. 현재 `mcp-dist` 22파일의 SHA-256이 after 목록과 같다.
+- **commit:** `bd40e3a6`(동작 보존 정리). 기존 시험에는 「경로 모양 거절이 확장자 거절보다 앞선다」 단정이 없어, 좁힌 재검증자가 판정 순서 보존 시험을 더한다.
 
 ### 진입과 준비
 
