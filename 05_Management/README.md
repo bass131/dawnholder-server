@@ -68,10 +68,10 @@ Node 지원 범위는 [package.json](frontend/package.json)의 engines를 따른
 
 개발 기록 자료는 `records/catalog.json`, 시스템 카드 자료는 `records/system-guide.json`으로 나뉘어 있다. [D-16](decisions.md#d-16)에 따라 기록의 원본은 프로젝트 문서이고 catalog는 원문 색인이다. 색인 전환으로 수기 `revision`·`asOf`·`sourceCommit`·`scopeNote`와 서술·상태 필드를 없앴고, 색인 버전은 파일 내용의 SHA-256이다. 전환 결과는 [기록 원본 일원화 목표](goals/2026-10-06-record-source-unification/goal.md)의 「PR2 데이터 전환」을 따른다.
 
-앱은 두 파일을 읽기만 하고 편집·불러오기·저장은 없다. 파일 읽기는 Electron 창에서만 제공하며 브라우저 개발 화면에는 파일 연결이 없어 미연결 안내를 표시한다. 색인을 바꾸려면 파일을 직접 고친 뒤 frontend에서 `npm run records:check`로 검사하고 앱의 「기록 새로고침」으로 다시 읽는다. 기록 내용 변경에는 앱 재빌드가 필요하지 않다. 예전 저장 기능이 남긴 `.verification/system-records-last-good.json`은 사용자 산출물로 그대로 두며 앱은 더 쓰지 않는다.
+앱은 두 파일을 읽기만 하고 편집·불러오기·저장은 없다. 파일 읽기는 Electron 창에서만 제공하며 브라우저 개발 화면에는 파일 연결이 없어 미연결 안내를 표시한다. 색인을 바꾸려면 파일을 직접 고친 뒤 frontend에서 `npm run records:check`로 검사하고 앱의 「기록 새로고침」으로 다시 읽는다. 기록 내용 변경에는 앱 재빌드가 필요하지 않다. 예전 저장 기능은 마지막 정상본을 `05_Management/.verification/system-records-last-good.json`에 남겼다. 이 파일이 있는 checkout에서는 사용자 산출물로 그대로 두며 앱은 더 읽거나 쓰지 않는다.
 
 `npm run records:check`는 앱과 같은 원문 읽기 모듈로 색인의 형식·참조와 git 출처의 경로·파일·구간을 검사한다. 색인에 없는 goal과 BACKLOG 표의 ID·goal 링크 어긋남은 warning으로 알린다. 진단마다 원인·위치·고치는 방법을 한 줄로 내고, 마지막 줄에 묶음별 실행 상태와 error·warning 수를 낸다. 종료 코드는 파일을 읽지 못한 묶음이 있으면 2, error가 있으면 1, 아니면 0이다. warning은 시범 단계이며 CI에는 아직 연결하지 않았다. 진단 코드는 [색인 v2 설계](goals/2026-10-06-record-source-unification/index-v2-design.md)의 「색인 검사」에 있다.
 
-별도 DB는 없다. 읽기 전용 MCP와 공통 조회 모듈의 구현·검증 상태는 [공동 조회 목표](goals/2026-10-01-shared-read-mcp/goal.md)를 따른다. Three.js·Git/서버 자동 갱신·서버 제어·유저 변경·운영 API는 후속 범위다. Game Dev 규칙·기술 계약·진행 goal/CURRENT와 과거 근거는 정본 소유권을 유지한다. 기존 테스트와 실제 화면 검증 결과는 [개발기록 재구성 목표](goals/2026-09-30-system-records/goal.md)에서 확인한다.
+별도 DB는 없다. 읽기 전용 MCP의 사용법은 [MCP 안내](MCP.md)에 있다. 처음 구현과 검증은 [공동 조회 목표](goals/2026-10-01-shared-read-mcp/goal.md), 색인 v2와 원문·카드 도구는 [기록 원본 일원화 목표](goals/2026-10-06-record-source-unification/goal.md)의 「PR2 MCP 구현」을 따른다. Three.js·Git/서버 자동 갱신·서버 제어·유저 변경·운영 API는 후속 범위다. Game Dev 규칙·기술 계약·진행 goal/CURRENT와 과거 근거는 정본 소유권을 유지한다. 기존 테스트와 실제 화면 검증 결과는 [개발기록 재구성 목표](goals/2026-09-30-system-records/goal.md)에서 확인한다.
 
 프로젝트 공통 권한·역할은 [AGENTS](../AGENTS.md), 실행 부작용은 [개발 안내](../00_Document/operations/DEVELOPMENT.md)를 따른다. Management 상세 맥락은 이 영역에서 관리하고 기존 Game Dev 메인과 범위·소유권을 조율한다.

@@ -150,7 +150,7 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 
 - 빌드 digest는 위 모듈이 그래프에 들어오므로 그 파일 변경에도 바뀌어야 한다. 색인·카드 데이터 변경에는 바뀌지 않는다.
 - 소유 TEMP 사본으로 빌드하는 시험 helper(`tests/mcp-v3/temp-copy.ts`)는 지금 `catalog.json`만 복사한다. 카드 자료와 원문 구간 시험에 필요한 저장소 파일을 복사하도록 4단계에서 늘린다.
-- `mcp-dist`는 Git 제외 빌드 출력이고 지금은 2026-10-02의 v1 빌드다. 5단계가 `npm run mcp:build`로 새로 만든다(goal 「만들 것」 4의 「새로 빌드한 실행본」). 빌드 전에 옛 출력을 근거 폴더에 복사해 둔다. 기존 실패 B11·B12는 옛 출력과 비교하던 시험이므로 새 출력 기준으로 다시 판정한다.
+- `mcp-dist`는 Git 제외 빌드 출력이다. 이 설계를 쓸 때는 2026-10-02의 v1 빌드였고, 5단계가 `npm run mcp:build`로 새로 만들었다(goal 「만들 것」 4의 「새로 빌드한 실행본」, 결과는 goal 「PR2 MCP 구현」). 빌드 전에 옛 출력을 근거 폴더에 복사해 둔다. 기존 실패 B11·B12는 옛 출력과 비교하던 시험이므로 새 출력 기준으로 다시 판정한다.
 
 **MCP 서버 주입 지점.** 시험과 구현이 같은 이름을 쓴다. `createCatalogServer(options)`의 `CatalogServerOptions`에 아래 셋을 더한다. 기존 `readSnapshot`·`version`·`now`·`onToolHandlerEntered`는 그대로다.
 
