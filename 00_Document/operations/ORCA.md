@@ -30,7 +30,7 @@ R-1~R-8의 상세는 이 절에만 둔다. 다른 현재 운영 문서·프로�
 
 마감 구간 리드는 **Core·Content·Rules·CodeMap·Management 다섯**이다. 승인 응답·시각은 [다섯 리드 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-leads)에 있다. 게임은 Core 서버 기반과 Content 콘텐츠 두 파트로 나누며, 다른 파트의 구현·진행 상태는 각 goal에서 확인한다. Core의 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다.
 
-Core Astra는 메인 Claude 옆 `horizontal split`, Content·Rules·CodeMap·Management Astra는 승인된 각 worktree의 별도 탭에 연다. CodeMap은 Architecture 파트의 **분석·검사 책임과 표시 이름**이다. 코드 리팩토링은 코드 주인 파트가 맡고, 표시 이름을 이유로 `architecture-active` 경로나 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` 태그를 바꾸지 않는다.
+메인 Claude는 같은 저장소의 worktree 루트 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/main-active`에서 열고 이 checkout에 파일을 쓰지 않는다. 메인 전용 checkout 준비 전까지는 기존 배치를 쓴다. Core Astra는 `C:/Dev/DawnHolder_Project`, 나머지 리드는 승인된 각 worktree의 별도 탭에서 연다. CodeMap은 Architecture의 **분석·검사 책임과 표시 이름**이며 리팩토링은 코드 주인 파트가 맡는다. `architecture-active` 경로와 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` 태그는 유지한다.
 
 | 리드 | 이 머신의 작업 경로 | 발신 태그 |
 |---|---|---|
@@ -40,10 +40,10 @@ Core Astra는 메인 Claude 옆 `horizontal split`, Content·Rules·CodeMap·Man
 | CodeMap | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` | `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` |
 | Management | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` | `[Management Astra]`·`[Management Sol]`·`[Management 검증자]` |
 
-아래 `<main-handle>`과 worktree placeholder는 현재 조회한 handle·승인된 checkout 절대 경로로 바꾼다. 경로·태그만으로 새 파트나 작업 권한이 생기지 않는다.
+아래 worktree placeholder는 승인된 checkout 절대 경로로 바꾼다. 경로·태그만으로 새 파트나 작업 권한이 생기지 않는다.
 
 ```text
-orca terminal split --terminal <main-handle> --direction horizontal --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
+orca terminal create --worktree "path:C:/Dev/DawnHolder_Project" --title "Core Astra" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
 orca terminal create --worktree "path:<content-active>" --title "Content Astra" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
 orca terminal create --worktree "path:<rules-active>" --title "Rules Astra" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
 orca terminal create --worktree "path:<management-active>" --title "Management Astra" --command "codex --model gpt-6-astra -c model_reasoning_effort=xhigh"
@@ -80,9 +80,7 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 
 **blocking ask / worker question 답변은 CLI 계약대로 `reply --id`를 사용한다.** Orca CLI **1.4.218**의 `orchestration reply --help`에는 subject 지정 옵션이 없음을 확인했다. [승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-reply)에 따라 이 경우만 subject 자기 태그 의무의 버전 한정 예외로 두고, **body 첫머리의 자기 태그와 수신자의 `from_handle` 대조는 유지한다.** 지원하지 않는 플래그를 만들거나 subject가 수정됐다고 보고하지 않는다. 일반 `send`로 대체한 답변이 blocking question을 해결했다고 주장하지 않는다. 이 예외의 근거는 [전달 원문](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-3)과 [로컬 reply help](../../.backups/verification/2026-10-01-operations-rules/reply-help.txt)다.
 
-**Orca 1.4.218 공식 blocking `ask`가 생성한 고정 subject `Question`**도 subject 태그의 한정 예외다. 같은 버전 `ask --help`에는 subject 옵션이 없다. body 첫머리 태그와 현재 `from_handle`·Task·Dispatch 대조는 유지하며 하나라도 어긋나면 처리하지 않고 메인에 보고한다. 일반 `send`와 `reply`에 이 새 ask 예외를 적용하지 않는다. 위 reply 고유 예외는 별도 근거와 범위대로 유지한다. **ask가 subject 옵션을 지원하면 ask 예외는 없어진다.** 근거는 [공식 ask 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-ask)다. 값만으로 공식 출처를 증명했다고 주장하지 않으며 [수신 helper](#dispatch-message-policy)의 별도 expected 근거를 확인한다.
-
-**Orca 1.4.217 임시 확장(종료):** 당시 이 버전인 동안 위 공식 blocking `ask`의 고정 `Question`과 공식 질문에 대한 `reply --id`만 같은 조건의 subject 예외로 인정했다. body 첫머리 자기 태그·현재 `from_handle`·Task·Dispatch와 공식 receipt를 대조하고, 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`는 제외다. **1.4.218 이상으로 올리거나 해당 ask/reply 명령이 subject 옵션을 지원하면 이 1.4.217 확장은 종료**하며 위 1.4.218 근거·예외는 별도 범위로 유지한다. 메인 결정·시각·help 근거는 [1.4.217 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-14217-source)에 보존한다. 현재 **1.4.220 복귀로 임시 확장은 종료**됐다. [복귀 결정·시점과 실제 help](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-14220-return)에 따라 현재 ask/reply help 양쪽의 subject 옵션 부재를 확인한 공식 ask/reply에만 위 body·identity·receipt 조건으로 적용한다. 해당 명령이 subject 옵션을 지원하면 그 예외는 종료하며 일반 send에는 적용하지 않는다. help 확인은 실제 ask/reply 호출 실증과 구분하고 다른 버전 지원을 주장하지 않는다.
+**Orca 1.4.218 공식 blocking `ask`가 생성한 고정 subject `Question`**도 subject 태그의 한정 예외다. 같은 버전 `ask --help`에는 subject 옵션이 없다. body 첫머리 태그와 현재 `from_handle`·Task·Dispatch 대조는 유지하며 하나라도 어긋나면 처리하지 않고 메인에 보고한다. 일반 `send`와 `reply`에 이 새 ask 예외를 적용하지 않는다. 위 reply 고유 예외는 별도 근거와 범위대로 유지한다. **ask가 subject 옵션을 지원하면 ask 예외는 없어진다.** 근거는 [공식 ask 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-ask)다. 값만으로 공식 출처를 증명했다고 주장하지 않으며 [수신 helper](#dispatch-message-policy)의 별도 expected 근거를 확인한다. 1.4.220 복귀 뒤 subject 옵션이 없는 공식 ask/reply도 위 body·identity·receipt 조건을 따르며, 지원되면 예외는 종료한다. 종료된 1.4.217 확장과 복귀 근거는 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
 
 <a id="run-reply-address"></a>
 ### Run 회신 주소와 receipt 확인
@@ -143,9 +141,7 @@ Astra→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내�
 3. `orca terminal wait --terminal <새-handle> --for tui-idle --timeout-ms 90000`의 `satisfied`를 확인하고 [R-6](#r6-first-screen) 및 [세션 준비 절차](../../.agents/skills/dawnholder-session-handoff/SKILL.md#신규-prompt-준비-확인)를 따른다. timeout·busy·불명확한 화면에 작업을 주입하지 않는다.
 4. 준비된 **신규 세션의 최초 작업**을 `orca orchestration worker-start --terminal <새-handle> --worktree <확인한-작업-공간>`에 `--task <현재-Task>` 또는 `--spec <작업-계약>`을 붙여 연결한다. `--terminal`과 `--model`을 함께 쓰지 않는다. 모델 근거는 최초 실행 명령과 화면 표시이며 attach의 null launch 모델값을 실제 모델로 해석하지 않는다. 확인할 수 없는 backend는 `unknown`이다. 현재 Run·Task·Dispatch와 `input_accepted`·`turn_started` receipt를 구분해 기록한다.
    `turn_start_unobserved`이면 화면 tail만으로 판정하지 않고 [공식 계약 draft 복구](#official-contract-draft)의 JSON draft·계약·동일성 조건을 확인한다.
-5. 기동·연결 실패는 `failedStage`·`residualResources`·화면·receipt를 보존하고 메인에 대리 기동을 요청한다. 결과나 주입 여부가 불명확하면 중복 발행하지 않고 공식 recovery를 따른다. 미사용 pane 종료도 대상 동일성과 정산 상태를 확인한 뒤 수행한다. 대리 기동 뒤에는 실제 새 pane의 경로·runtime·incarnation·준비를 다시 확인하고 최초 연결한다.
-
-실패 이력과 후속 성공을 구분한다. [내장 컴포넌트 null 감사의 당시 기록](../../01_Phases/goals/2026-10-01-native-component-null-audit/goal.md#세션-관측과-다음-경계)은 Astra의 split 기동 1회 실패와 메인 대리 기동 뒤 최초 attach 성공을 구분한다. 이후 D1a 검증자와 Management Fable/Sol 성공은 메인 전달 관찰이다. D1a의 직접 기동 경위는 [완료 goal](../../01_Phases/goals/2026-10-01-persistence-technical-design/goal.md#독립-실사와-보완)에 있고, [review-2-start.json](../../.backups/verification/2026-10-01-persistence-technical-design/review-2-start.json)은 최초 attach의 ready·`input_accepted`·`turn_started`를 보존한다. 1차 D1a의 미보존 원응답과 2차 보존 receipt를 혼동하지 않는다. 이전의 “분할→연결 성공은 아직 미검증”을 현재 전체 상태로 사용하지 않는다.
+5. 기동·연결 실패는 `failedStage`·`residualResources`·화면·receipt를 보존하고 메인에 대리 기동을 요청한다. 결과나 주입 여부가 불명확하면 중복 발행하지 않고 공식 recovery를 따른다. 미사용 pane 종료도 대상 동일성과 정산 상태를 확인한 뒤 수행한다. 대리 기동 뒤에는 실제 새 pane의 경로·runtime·incarnation·준비를 다시 확인하고 최초 연결한다. 실패 이력과 후속 성공의 원문은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
 
 <a id="capacity-retry"></a>
 ### capacity 재시도와 신규 작업자 예외
@@ -188,9 +184,7 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 
 미제출 draft·추천 프롬프트·ghost text는 사용자 지시가 아니며 그것만으로 pane 종료를 보류하지 않는다. Enter로 제출돼 대화 기록에 들어간 표식 없는 입력과 구분한다. 사용자가 실제 작성 중인 prompt를 건드리지 않는 경계와 공식 주입 계약의 [조건부 draft 복구](#official-contract-draft)를 함께 적용한다.
 
-환경 사실: GameDev·Management·Architecture 세 checkout에 Git 제외 `.claude/settings.local.json`이 있고 `skillOverrides`의 `auto-mode-setup` 값은 `off`다. Architecture checkout에는 메인이 같은 `skillOverrides` 내용을 복사해 두었다. 이번 문서 작업에서 이 파일들은 읽기 전용이다. 이 값이 모든 세션·화면의 안내를 억제한다고 보장하지 않는다.
-
-D1a verification-2의 [종료 전 화면](../../.backups/verification/2026-10-01-persistence-technical-design/review-2-before-close-read.json)은 전체 49행(`limited=false`)에서 `/auto-mode-setup` 안내 창이 관측되지 않고 일반 `auto mode on` 상태줄이 보인 기록이다. [판정 원문](../../.backups/verification/2026-10-01-persistence-technical-design/verification-2/verdict.md)과 [해당 완료 goal](../../01_Phases/goals/2026-10-01-persistence-technical-design/goal.md)은 문서 실사 범위를 제공한다. 안내 미관측은 **해당 종료 화면에 한정한 관찰**이며 첫 화면이나 전역 설정 효과의 검증이 아니다.
+환경 사실: GameDev·Management·Architecture 세 checkout에 Git 제외 `.claude/settings.local.json`이 있고 `skillOverrides`의 `auto-mode-setup` 값은 `off`다. Architecture checkout에는 메인이 같은 `skillOverrides` 내용을 복사해 두었다. 이번 문서 작업에서 이 파일들은 읽기 전용이다. 이 값이 모든 세션·화면의 안내를 억제한다고 보장하지 않는다. D1a 종료 화면 관찰은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
 
 <a id="r7-fable-pilot"></a>
 ### R-7 — Fable 구현 전 설계 검토 한정 시범
@@ -215,9 +209,8 @@ D1a verification-2의 [종료 전 화면](../../.backups/verification/2026-10-01
 
 PR 리뷰 수정이 남아 있는 동안이나 목표 중간에는 수동으로 비우지 않는다. 자동 압축이 일어나면 현재 `goal.md`로 이어간다. 문서에 아직 없는 운영 감각은 소유권 범위 안에서 RESUME 또는 goal에 기록해 다음 세션에 넘긴다. 작업자·검증자의 작업 하나 뒤 정산·종료 규칙과 Astra의 목표 단위 교체를 구분한다.
 
-적용 시점은 **이번 운영 규칙 PR 목표가 끝나면 GameDev Astra부터**, **M-1 PR 병합 뒤 Management Astra**다. 이번 문서 작업이 현재 Astra 세션을 직접 닫는 작업을 포함하지는 않는다. 결정 배경으로 메인은 하루 동안 운영한 GameDev Astra가 자동 압축 후 사용률 6%, M-1 Management Astra는 1시간 만에 58%였다고 전달했다. 이 수치는 [main-request-r8.json](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-2)의 당시 관찰이며 현재 사용률이나 교체 완료를 의미하지 않는다.
-
-위 적용 시점은 2026-10-01 결정 당시 목표를 가리킨 역사 기록이다. 현재 하네스 goal의 첫 BACKLOG PR 병합을 전체 goal 종료나 R-8 시점으로 해석하지 않는다.
+<a id="관찰-기록-2026-09-29"></a><a id="관찰-기록-2026-10-0405"></a>
+R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
 
 <a id="goal-gardener"></a>
 ### 목표 종료 Gardener 4주 파일럿
@@ -227,6 +220,19 @@ PR 리뷰 수정이 남아 있는 동안이나 목표 중간에는 수동으로 
 반복 빈도와 원시 근거를 바탕으로 정리 후보를 **최대 두 개** 제안하고 후보마다 lint·테스트·fixture·정본 helper 등 검사화 방법을 적는다. 없으면 없음으로 마친다. 검사 실행불가와 실제 위반을 나누며 직접 수정·규칙 채택·다음 goal 발행 권한은 없다. 후보 채택은 메인을 거쳐 사용자가 결정하고 수정은 일반 목표 루프로 한다. **2026-10-31 무렵 비용·잡음으로 지속 여부를 평가**한다. 작은 목표 예외는 미합의이며 첫 PR마다 새 점검을 의무화하지 않는다.
 
 출처는 [Gardener 사용자 채택 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-gardener)이다. Gardener의 제안과 채택/실제 구현 완료를 구분한다.
+
+<a id="merge-gate"></a>
+## 병합 관문
+
+[R-1](#r1-management-placement)의 메인 checkout에서 메인 세션만 병합한다. 사용자가 만든 `.claude/state/merge-gate/main-checkout` 파일의 존재로 식별한다. checkout·표식 생성과 첫 세션의 작업 공간 신뢰 창은 PR1 병합 뒤 사용자·메인이 처리하고, 병합 뒤 최신 main을 fast-forward로 받는다. 적용 확인과 세션 중 settings 변경의 즉시 반영 여부는 [goal 완료조건 5](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#관찰-가능한-완료조건)에 기록한다.
+
+사용자가 메인 창에 `병합 승인: PR<번호> head <40자 hex>`를 Enter로 제출한다. 앞뒤 공백을 뺀 입력 **전체**가 이 한 줄일 때만 세션별 파일에 기록한다. 같은 세션·PR·head에만 30분 동안 한 번 유효하다. 「대시보드 결정 응답」이나 다른 문장 안의 승인 줄은 기록하지 않으며, 세션을 다시 열면 이전 기록을 쓸 수 없다.
+
+운영 명령은 `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 형태다. hook은 `--merge`·`--squash`·`--rebase` 중 하나를 형태로 받지만 운영은 `--merge`만 쓴다. `--delete-branch`·`--auto`·`--admin` 등 다른 인자는 막힌다. PreToolUse 통과 때 기록을 소비하며 실패해도 새 승인이 필요하다. 리드는 PR 번호·정확한 head 40자·CI·독립 검증 판정 원문으로 준비 보고와 병합 뒤 goal 기록을 맡고 병합은 실행하지 않는다.
+
+모든 Claude Code 세션에서 복합 명령·heredoc·`bash -c`·명령 치환 안의 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main branch의 refspec 없는 push 포함), 상태 폴더 쓰기와 그 경로가 든 Bash, 다른 터미널로의 승인 문장 주입을 막는다. [결과 코드·상세 형태](../../99_Tools/README.md)와 [확인 창 승인 예외](../../AGENTS.md#공학-조건)는 각 정본을 따른다.
+
+한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 문자열 판정의 의도적 우회, 하위 폴더·settings 부재 시 hook 없음, GitHub ruleset 관리자 우회 유지. 병합 문자열이 든 검색 명령도 막으므로 Grep·Read를 쓴다.
 
 ## 공유 자원
 
@@ -241,13 +247,3 @@ PR 리뷰 수정이 남아 있는 동안이나 목표 중간에는 수동으로 
 사용자는 Unity 설정 **3파일의 skip-worktree 숨김을 유지**했다. 대상은 `03_Client/Packages/manifest.json`, `03_Client/Packages/packages-lock.json`, `03_Client/ProjectSettings/ProjectSettings.asset`이다. 이유는 머신마다 다른 AI 패키지와 Unity Cloud 조직 연결이다. 게임 설정(productName·해상도·bundleVersion·커서)만 부분 커밋하는 일은 후속 담당 범위이며, Rules는 파일·인덱스 숨김 상태를 바꾸지 않는다. 근거는 [HANDOFF 결정 5](../../.backups/verification/2026-10-05-operating-canon/sources/handoff-decisions.md)와 운영 정본 goal의 승인 범위다.
 
 원문 로그는 목표 evidence 또는 TEMP에 보관한다. 메인에는 변경·검증 요약과 근거 위치를 전달한다. 이 지침은 운영 규약이며 실행·컨텍스트 격리를 기술적으로 강제하는 별도 시스템이 아니다.
-
-## 관찰 기록: 2026-09-29
-
-두 시도는 시작 방식과 확인 범위가 다르다. 연결·작업 주입·완료 수신을 각각 구분한다.
-
-당시 두 시도의 관측·식별자 원문은 [2026-09-29 관찰 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-20260929-history)에 보존했다.
-
-## 관찰 기록: 2026-10-04~05
-
-메인이 전달한 이 PC의 당시 관측·출처·시각·확인 한계는 [환경·복구 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#pr1-environment-observations)에서 확인한다.
