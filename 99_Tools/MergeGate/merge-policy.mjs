@@ -1,7 +1,13 @@
+import { posix, win32 } from 'node:path';
+
 const approvalLifetime = 30 * 60 * 1000;
 const permissionWindow = 120 * 1000;
 const mergeMethods = new Set(['--merge', '--squash', '--rebase']);
 const fileTools = new Set(['Write', 'Edit', 'MultiEdit', 'NotebookEdit']);
+// These options take their value from the next word, which is not a subcommand or refspec.
+const ghValueOptions = new Set(['-R', '--repo']);
+const gitValueOptions = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--super-prefix', '--config-env']);
+const pushValueOptions = new Set(['--repo', '--receive-pack', '--exec', '--push-option', '-o']);
 
 const blockReasons = {
   'not-main-checkout': '메인 checkout 표식이 없다. 사용자가 준비한 메인 전용 checkout에서 병합하라.',
@@ -10,9 +16,9 @@ const blockReasons = {
   'head-mismatch': '승인 head와 명령의 head가 다르다. 현재 head를 다시 확인하고 사용자에게 새 승인 문장을 받아라.',
   expired: '승인 기록의 유효 시간 30분이 지났거나 생성 시각이 유효하지 않다. 사용자에게 새 승인 문장을 받아라.',
   'already-used': '승인 기록을 이미 사용했다. 실패한 병합도 재사용할 수 없으므로 새 승인 문장을 받아라.',
-  'missing-match-head-commit': '병합 명령에 --match-head-commit <40자>가 없다. 승인받은 전체 head를 인자로 넣어라.',
+  'missing-match-head-commit': '병합 명령에 --match-head-commit <40자>가 없다. = 형태는 받지 않으므로 승인받은 전체 head를 별도 인자로 넣어라.',
   'forbidden-flag': '--auto 또는 --admin 병합은 금지된다. 자동 병합이나 관리자 우회 없이 단독 병합 명령을 사용하라.',
-  'bad-form': '허용된 단독 병합 형태가 아니다. gh pr merge <번호> <방식 하나> --match-head-commit <40자 hex>만 사용하라.',
+  'bad-form': '허용된 단독 병합 형태가 아니다. 낱말 사이 옵션·대문자·경로·.exe 명령 낱말은 받지 않는다. gh pr merge <번호> <방식 하나> --match-head-commit <40자 hex>만 사용하라.',
   'compound-command': '병합 시도가 복합 명령이나 감싼 명령 안에 있다. 다른 명령·리다이렉트·치환 없이 gh pr merge만 실행하라.',
   'api-merge': 'gh api를 통한 PR 병합·자동 병합은 금지된다. 메인 세션에서 승인받은 gh pr merge 단독 명령을 사용하라.',
   'push-main': 'main 목적지 또는 --all·--mirror push는 금지된다. 작업 브랜치를 push하고 PR로 통합하라.',
@@ -54,6 +60,56 @@ function protectedPath(value) {
   return typeof value === 'string' && /\.claude\/state\/merge-gate(?:\/|\b)/i.test(value.replaceAll('\\', '/'));
 }
 
+function protectedFilePath(value, cwd) {
+  if (typeof value !== 'string' || value.length === 0) return false;
+  const filePath = value.replaceAll('\\', '/');
+  const directory = typeof cwd === 'string' ? cwd.replaceAll('\\', '/') : '';
+  const paths = /^(?:[a-z]:|\/\/)/i.test(filePath) || /^(?:[a-z]:|\/\/)/i.test(directory) ? win32 : posix;
+  // Explicit join/normalize resolves relative paths without resolve() reading the process cwd.
+  const normalized = (paths.isAbsolute(filePath) ? paths.normalize(filePath) : paths.join(directory, filePath))
+    .replaceAll('\\', '/').toLowerCase();
+  return /(?:^|\/)\.claude\/state\/merge-gate(?:\/|$)/.test(normalized);
+}
+
+function unquote(word) {
+  return word.replace(/^['"]|['"]$/g, '');
+}
+
+function isCommandWord(word, name) {
+  const filename = unquote(word).split(/[\\/]/).at(-1).toLowerCase();
+  return filename === name || filename === name + '.exe';
+}
+
+// Delimiters expose words inside wrappers too; aliases, files and variable evaluation stay outside this policy.
+function commandWords(command) {
+  return [...command.matchAll(/[^\s;&|`<>()]+/g)].map(match => ({
+    value: unquote(match[0]), end: match.index + match[0].length,
+  }));
+}
+
+// §4 command words: skip options and their separate values before comparing the first subcommand words.
+function findSubcommands(words, executable, subcommands, valueOptions) {
+  const ends = [];
+  for (let start = 0; start < words.length; start += 1) {
+    if (!isCommandWord(words[start].value, executable)) continue;
+    let part = 0;
+    for (let index = start + 1; index < words.length; index += 1) {
+      const word = words[index].value;
+      if (word.startsWith('-')) {
+        if (valueOptions.has(word)) index += 1;
+        continue;
+      }
+      if (word !== subcommands[part]) break;
+      part += 1;
+      if (part === subcommands.length) {
+        ends.push(index);
+        break;
+      }
+    }
+  }
+  return ends;
+}
+
 function validToolInput(input) {
   return isObject(input) && isSessionId(input.session_id) &&
     typeof input.tool_name === 'string' && input.tool_name.trim().length > 0 &&
@@ -63,15 +119,17 @@ function validToolInput(input) {
 // §4 conditions 1–4 precede checkout, agent and record checks.
 function inspectMergeCommand(command) {
   const trimmed = command.trim();
-  if (/[;&|`<>\r\n]/.test(trimmed) || trimmed.includes('$(') ||
-      !/^gh\s+pr\s+merge\b/.test(trimmed) || /\bbash\s+-c\b/.test(trimmed)) {
+  if (/[;&|`<>\r\n]/.test(trimmed) || trimmed.includes('$(') || /\bbash\s+-c\b/.test(trimmed)) {
     return blocked('compound-command');
   }
   const words = trimmed.split(/\s+/);
+  // A merge wrapped in another command or an environment assignment cannot be a standalone invocation.
+  if (!isCommandWord(words[0], 'gh')) return blocked('compound-command');
   if (words.some(word => /^--(?:auto|admin)(?:=|$)/.test(word))) return blocked('forbidden-flag');
   const headFlag = words.indexOf('--match-head-commit');
   if (headFlag < 0 || headFlag === words.length - 1) return blocked('missing-match-head-commit');
-  if (words.length !== 7 || !/^[1-9][0-9]*$/.test(words[3]) || !Number.isSafeInteger(Number(words[3]))) {
+  if (words.length !== 7 || words[0] !== 'gh' || words[1] !== 'pr' || words[2] !== 'merge' ||
+      !/^[1-9][0-9]*$/.test(words[3]) || !Number.isSafeInteger(Number(words[3]))) {
     return blocked('bad-form');
   }
   const flags = words.slice(4);
@@ -82,18 +140,18 @@ function inspectMergeCommand(command) {
   return { kind: 'merge', pr: Number(words[3]), head: head.toLowerCase(), command };
 }
 
-function inspectPushes(command) {
+function inspectPushes(command, commandTokens) {
   let branchNeeded = false;
-  for (const match of command.matchAll(/\bgit\s+push\b/g)) {
-    const tail = command.slice(match.index + match[0].length).split(/[;&|`<>\r\n]/, 1)[0];
-    const words = tail.trim().split(/\s+/).filter(Boolean).map(word => word.replace(/^['"]|['"]$/g, ''));
+  for (const pushIndex of findSubcommands(commandTokens, 'git', ['push'], gitValueOptions)) {
+    const tail = command.slice(commandTokens[pushIndex].end).split(/[;&|`<>\r\n]/, 1)[0];
+    const words = tail.trim().split(/\s+/).filter(Boolean).map(unquote);
     const positional = [];
     let remoteByOption = false;
     for (let index = 0; index < words.length; index += 1) {
       const word = words[index];
       if (word === '--all' || word === '--mirror') return 'main';
       if (word === '--repo' || word.startsWith('--repo=')) remoteByOption = true;
-      if (['--repo', '--receive-pack', '--exec', '--push-option', '-o'].includes(word)) index += 1;
+      if (pushValueOptions.has(word)) index += 1;
       else if (!word.startsWith('-')) positional.push(word);
     }
     const refspecs = remoteByOption ? positional : positional.slice(1);
@@ -101,7 +159,7 @@ function inspectPushes(command) {
       const destination = refspec.replace(/^\+/, '').split(':').at(-1);
       if (destination === 'main' || destination === 'refs/heads/main') return 'main';
     }
-    if (refspecs.length === 0 || refspecs.some(refspec => /^\+?HEAD$/.test(refspec))) branchNeeded = true;
+    if (refspecs.length === 0 || refspecs.some(refspec => /^\+?(?:HEAD|@)$/.test(refspec))) branchNeeded = true;
   }
   return branchNeeded ? 'branch' : 'none';
 }
@@ -118,16 +176,17 @@ export function preparePreToolUse(input) {
   if (!validToolInput(input)) return blocked('invalid-input');
   if (fileTools.has(input.tool_name)) {
     const paths = [input.tool_input?.file_path, input.tool_input?.notebook_path];
-    return paths.some(protectedPath) ? blocked('protected-path') : { kind: 'none' };
+    return paths.some(path => protectedFilePath(path, input.cwd)) ? blocked('protected-path') : { kind: 'none' };
   }
   if (input.tool_name !== 'Bash') return { kind: 'none' };
   const command = input.tool_input.command;
-  if (/\bgh\s+pr\s+merge\b/.test(command)) return inspectMergeCommand(command);
+  const words = commandWords(command);
+  if (findSubcommands(words, 'gh', ['pr', 'merge'], ghValueOptions).length > 0) return inspectMergeCommand(command);
   if (/\bgh\s+api\b/.test(command) &&
       (/\bpulls\/[0-9]+\/merge\b/.test(command) || /\b(?:mergePullRequest|enablePullRequestAutoMerge)\b/.test(command))) {
     return blocked('api-merge');
   }
-  const push = inspectPushes(command);
+  const push = inspectPushes(command, words);
   if (push === 'main') return blocked('push-main');
   const fallback = otherCommandDecision(command);
   return push === 'branch' ? { kind: 'branch', fallback } : fallback;

@@ -51,6 +51,7 @@ async function handleHook(input) {
   }
 
   if (input.hook_event_name === 'PermissionRequest') {
+    // Avoid state I/O for unrelated commands; the pure evaluator repeats this guard for direct callers.
     if (!canRequestMergePermission(input)) return null;
     const store = approvalStore(process.env.CLAUDE_PROJECT_DIR, input.session_id);
     if (!await store.hasMarker()) return null;

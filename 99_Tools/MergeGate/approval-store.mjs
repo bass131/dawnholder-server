@@ -34,8 +34,9 @@ export function approvalStore(projectDirectory, sessionId) {
       try {
         await writeFile(temporaryPath, `${JSON.stringify(record)}\n`, { encoding: 'utf8', flag: 'wx' });
         // Same-directory rename commits one complete record before a merge can be allowed.
-        // The approved contract assumes sequential hooks: concurrent writes can duplicate a pass
-        // or restore another PR's unused record. No lock is added because a crash could strand it.
+        // Sequential hooks are assumed: overlapping merges, or a prompt and merge, can duplicate
+        // a pass or restore a consumed approval. Only the originally approved PR/head can return.
+        // No lock is added because a crash could strand it.
         await rename(temporaryPath, recordPath);
       } finally {
         await rm(temporaryPath, { force: true });
