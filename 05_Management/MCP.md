@@ -1,6 +1,6 @@
 # 개발 기록 공동 조회
 
-Management 앱과 에이전트는 `management-active/05_Management/records/catalog.json`을 같은 원본으로 읽는다. MCP는 로컬 stdio child process로 동작하며 Management 창이 필요 없다. 현재 구현·검증 상태와 남은 결정은 [M-1 goal](goals/2026-10-01-shared-read-mcp/goal.md)에서 확인한다. 이 안내나 SDK 시험은 실제 Codex/Claude 개발 세션의 연결 완료를 뜻하지 않는다.
+Management 앱과 에이전트는 `management-active/05_Management/records/catalog.json`을 같은 원본으로 읽는다. MCP는 로컬 stdio child process로 동작하며 Management 창이 필요 없다. 현재 구현·검증 상태와 남은 결정은 [공동 조회 goal](goals/2026-10-01-shared-read-mcp/goal.md)(PR159·PR161 종료)에서 확인한다. 이 안내나 SDK 시험은 실제 Codex/Claude 개발 세션의 연결 완료를 뜻하지 않는다.
 
 ## 준비와 실행
 

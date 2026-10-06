@@ -169,6 +169,8 @@ V3는 **빌드된 Electron main의 실제 위치·package main과 빌드된 MCP 
 
 ## 현재 상태와 근거
 
+**종료 확인(2026-10-06, 이후 goal 기록):** 종료 기록 [PR #161](https://github.com/bass131/dawnholder-server/pull/161)은 2026-10-02T02:51:36Z에 head `f39042e`로 병합됐다(merge `333fe20`). 이 goal은 종료됐다. 아래 「PR161의 병합은 사용자 별도 명시 승인 전」은 병합 전 기록이다. 실제 개발 세션 연결은 2026-10-06 사용자 결정으로 다음 계획에 남았다. 확인 원시는 [운영툴 기록 원본 일원화 goal](../2026-10-06-record-source-unification/goal.md)의 근거 폴더 `ended-goal-pr-states.txt`다.
+
 **M-1의 구현·독립 검증·[PR #159](https://github.com/bass131/dawnholder-server/pull/159) 병합을 마쳤다. 병합 커밋은 `96cc89a83d9abd305a46d025333382e86488ca2f`, 시각은 2026-10-02 02:03:27 UTC(11:03:27 KST)다.** 최종 V3-R1은 249/249, 제품 차단 0건·새 제품 결함 0건·참고 9건이며 V3-01/02와 R01~R09는 승인 범위에서 해소됐다. 실제 개발 세션 연결(D4)은 별도 결정 전이며 시작하지 않았다. 병합 결과와 PR158 O-7의 RESUME 안내를 담은 두 문서는 독립 정적 실사 PASS·필수 결함0 후 [후속 PR #161](https://github.com/bass131/dawnholder-server/pull/161)로 올렸고, 작업자 정산을 마쳤다. PR161은 별도 사용자 병합 승인 전이다. V2 보고 과장, V3 GUI 미확인 합성 클릭, Sol 환경 복구 표현, V3-R1 수치 오기와 정리 절차 이탈은 아래 원문·감사 기록을 유지하며 성공으로 소급하지 않는다.
 
 - 실제 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
