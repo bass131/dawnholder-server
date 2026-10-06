@@ -331,6 +331,15 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 자체 점검 E/fix3/self-check.jsonl 97행(점검 96건 모두 통과, 임시 폴더 잔류 없음)을 읽었다. 재검증 P·H1·GA·B행의 결정 없음 형태가 모두 차단이 됐다. G행(R3)은 계약대로 결정 없음이다. 경계 사례와 정식 통과·소비·확인 창 허용·두 번째 사용 차단은 그대로였다. 승인 기록이 있어도 Monitor 병합은 막히고 기록을 쓰지 않았다.
 - 정산: release는 retained/external_terminal/none이었다. 빈 prompt를 확인한 뒤 close(ptyKilled=true)했다(E/fix3-release.json, fix3-before-close.json, fix3-close.json).
 
+### PR1 두 번째 재검증
+
+- 검증자: 신규 `claude-opus-5-5`, 태그 `[Rules 검증자]`(검증자 모델 시범의 보안 경계 예외). 리드 pane 아래 vertical split이고 handle은 `term_d3511f07-0f0c-4b89-9140-72c6f31b3d20`이다. 첫 화면은 Claude Code v2.1.291, Opus 5.5 xhigh, auto mode on으로 이전 검증자와 같았다. 선택창은 없었다(E/reverify2-first-screen.json). backend는 unknown이다.
+- 계약: [E/reverify2-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/reverify2-contract.md) v1, SHA256 `91939a2e…`, 고정 HEAD `c06aa78`, 동작 계약 v2.2. 강 등급이다.
+  - 대상은 재검증 결함 R1·R2·R4와 O-R1·O-R2·O-R7, `--attr-source`, 한계 문구의 해결 여부와 첫 판정 D1~D5를 포함한 PR1 전체의 보존이다.
+  - 실제 진입 4a는 Bash(없는 PR 병합, 괄호 감싼 main push)와 Monitor(상태 경로 echo, 없는 원격으로 `HEAD:main` push)다. Monitor로 병합 명령은 실행하지 않는다. prompt 도구는 실제로 부르지 않고 hook JSON 시험으로만 본다. 4b는 headless 두 턴이다.
+  - 경로 기계 확인은 E/reverify2-contract-pathcheck.txt(18:02:24Z)다.
+- Task `task_50f0319245c9`, Dispatch `ctx_4de7b95d6fb5`다. receipt는 input_accepted, turnStart observed다(E/reverify2-worker-start.json).
+
 ## 요구사항 원천과 적용 결정
 
 메인이 전달한 사용자 결정은 사용자 직접 입력과 구분한다. 이번 착수의 원천은 다음과 같다.
