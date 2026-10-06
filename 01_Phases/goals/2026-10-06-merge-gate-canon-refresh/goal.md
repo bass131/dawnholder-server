@@ -155,7 +155,12 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 작성자: 신규 `gpt-6.1-sol` max, 태그 `[Rules Sol]`. 리드 pane 아래 vertical split이고 handle은 `term_712a7b91-c89c-4a9f-b5d6-1ebb4983bae4`이다. 첫 화면은 Codex v0.160.1, GPT-6.1-Sol max였다. 권한 표시는 기존 Codex 설정 그대로인 Full Access였고 선택창은 없었다(E/docs-first-screen.json). backend는 unknown이다.
 - 계약: [E/docs-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/docs-contract.md) v1, SHA256 `71ba479e…`, 고정 입력은 HEAD `e37ac7a`와 동작 계약 v2다. 경로 기계 확인은 E/docs-contract-pathcheck.txt(14:49:26Z)다. 선행 시험 작성자와 쓰는 파일이 겹치지 않아 병렬로 돌린다.
 - Task `task_171a81f24c1b`, Dispatch `ctx_0b8d6f802321`. receipt는 input_accepted, turnStart observed다(E/docs-worker-start.json).
-- CLAUDE.md: 메인에 쓰기 창을 열었다(`msg_f7e308d60e6d`, 14:50:10Z). 메인이 끝을 알리면 리드가 diff를 보고 커밋한다.
+- CLAUDE.md: 메인에 쓰기 창을 열었다(`msg_f7e308d60e6d`, 14:50:10Z). 메인이 `msg_fa7b6383881e`(14:52:44Z)로 쓰기 종료를 알렸다. 리드가 diff를 확인하고 `00d180b`로 CLAUDE.md만 커밋했다.
+  - 바뀐 곳은 셋이다. 메인 역할에 병합 실행(ORCA `#merge-gate` 링크)을 넣었다. 메인 세션 진입의 배치를 main-active와 Core 별도 탭으로 바꿨다. 대시보드 결정 응답이 승인 기록을 만들지 않는다는 점과 병합 절차를 적었다.
+  - bytes는 8199 → 8197이고 numstat은 9/9다. sha256 앞 16자 `e257703e080e5886`은 리드가 다시 재서 일치했다. 늘어난 만큼 같은 파일의 중복 문장을 줄였다. 줄인 문장은 외부 팀원 줄의 절차 비적용 반복, 터미널 알림의 작업 중 금지 반복, 대시보드 필드 나열이다. 같은 뜻은 링크한 AGENTS·session-handoff·대시보드 README에 있다.
+  - 메인의 맥락 메모는 저장소 밖 `C:/Dev/DawnHolder_Dashboard/main-notes/2026-10-06/claude-md-merge-gate-context.md`다.
+  - `#merge-gate` anchor는 정본 문장 작성자가 ORCA에 만든다. 생기는지 결과와 대조하고, CLAUDE.md도 독립 검증 대상에 넣는다(메인 요청).
+- 질문 1: 작업자 공식 ask `msg_e68397743197`(14:50:56Z)에 리드가 `msg_c8cd55372204`(14:51:22Z)로 답했다. 출처는 사람 대조로 확인했다(E/docs-question1-manual-check.md). 답의 요지는 hook 사실과 운영 규칙을 갈라 쓰는 것이다. hook은 방식 플래그 셋 중 하나를 형태로 받는다(동작 계약 v2 4절). 운영 명령은 `--merge` 하나다. 동작 계약 보정은 필요 없다.
 
 ## 요구사항 원천과 적용 결정
 
