@@ -8,13 +8,13 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이다. PR2 branch는 PR1 병합 뒤 최신 main에서 만든다(제안 이름 `docs/canon-refresh-20261006`).
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_af8ac4fc-29c5-4c97-8671-0279b10a9688`. Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**: 설계 실측이 끝났다(아래 「설계 실측 결과」·「실측 뒤 설계」). PermissionRequest hook을 쓸지에 대한 사용자 답을 기다린다. 답이 오면 설계를 확정하고 선행 시험 → 구현 → 독립 검증 → PR1 순서로 간다. 선행 시험 계약 초안은 E/tdd-contract.md에 준비한다.
+- **현재 위치**: 설계가 확정됐다(아래 「실측 뒤 설계」). 동작 계약은 [E/merge-gate-behavior-spec.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/merge-gate-behavior-spec.md) v2다. 다음은 선행 시험 작성(신규 Opus) → 구현(Sol max) → 독립 검증(신규 Opus) → PR1이다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
-- [>] 병합 관문 설계 실측
-- [ ] 병합 관문 선행 시험
+- [x] 병합 관문 설계 실측
+- [>] 병합 관문 선행 시험
 - [ ] 병합 관문 구현·검증
 - [ ] 관문 PR 병합
 - [ ] 관문 적용 확인
@@ -130,7 +130,7 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 하위 에이전트 호출(`agent_id` 있음)은 메인 세션 안이어도 병합을 통과시키지 않는다(실측 3).
 - 승인 기록 조건: prompt **전체**가 승인 문장 한 줄과 정확히 일치할 때만 기록한다. 앞뒤 공백만 허용하고, 여러 줄 중 한 줄이 맞는 경우는 받지 않는다(메인 `msg_2442c561dd9f` 3항). 형식은 `병합 승인: PR<번호> head <40자 hex>`로 고정한다(같은 메시지 2항). 근거는 r5의 실제 재진입 입력이다. 하위 에이전트 보고의 prompt 원문은 `<agent-message from="a3a3f93dba75a3113">`로 시작하는 10줄, 648자였다. 본문 줄은 두 칸씩 들여써져 있었고 `</agent-message>`로 끝났다(E/design-probe/raw/hooklog/r5.jsonl의 두 번째 UserPromptSubmit). 그래서 이 조건이면 그 안의 승인 줄은 기록을 만들지 못한다. background task 알림의 재진입 모양은 이번 실측에서 재지 않았다. 시험 반례로 덮는다. 입력 출처를 가르는 필드는 관측되지 않았다.
 - 통과는 단독 병합 명령 형태만 받는다. 복합 명령·heredoc·`bash -c` 안의 병합 시도는 기록이 있어도 막는다. 복합 명령은 ask 규칙 매칭이 최선 노력이라, 통과를 허용하면 확인 단계 없이 실행될 수 있다.
-- 사용자 결정 대기: 질문 2 A(확인 창 없이 통과)는 PreToolUse allow만으로는 되지 않는다(실측 1). PermissionRequest hook이 승인 기록과 정확히 맞는 병합 명령에만 allow를 내는 방식은 headless에서 확인됐다(실측 1 d). 리드는 메인에 이 방식을 물었다(`msg_7dbb6b6e9a89`). 메인 `msg_2442c561dd9f` 1항이 이것을 사용자에게 묻기로 했다. 이유는 이 hook이 확인 창을 대신 승인하는 장치라 AGENTS 공학 조건의 예외가 되기 때문이다. 메인이 범위 검토 때 「못 넘으면 A여도 B처럼 동작한다」고 사용자에게 말한 것도 이유다. 현황판 항목은 `rules-permreq-hook`이다. 선행 시험 작성자는 답 뒤에 기동한다. 계약 초안은 A·B 공통으로 준비한다.
+- 확인 창 대신 승인: 질문 2 A(확인 창 없이 통과)는 PreToolUse allow만으로는 되지 않는다(실측 1). 그래서 PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 내고, 그 밖에는 결정을 내지 않는다(실측 1 d). 리드 질문은 `msg_7dbb6b6e9a89`였다. 메인 `msg_2442c561dd9f` 1항이 사용자에게 물었다. 이유는 이 hook이 확인 창을 대신 승인하는 장치라 AGENTS 공학 조건의 예외가 되기 때문이다. 사용자는 A를 골랐다(아래 「적용 중인 사용자 결정」). 병합이 아닌 다른 ask 대상 명령에는 어떤 경우에도 allow를 내지 않는다.
 - 메인 확인: 위 설계(메인 식별 표식, 하위 에이전트 병합 차단, 단독 명령만 통과, 메인 폴더는 worktree 루트)는 승인 범위 안이다. 「하위 폴더에서 띄운 세션에는 hook이 없다」 한계는 정본 문장에 적는다(`msg_2442c561dd9f` 4항).
 
 ## 요구사항 원천과 적용 결정
@@ -159,6 +159,7 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 
 - **검증자 모델 시범**: 위 원문(18:1x KST). 메인 진입 지시 `msg_3902e180080c`의 임시 규칙은 다음과 같다. 문서 실사와 코드 검증(강·약)의 독립 검증자는 신규 `gpt-6-astra` xhigh다(split에 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`). DB·영속 데이터, 프로토콜·공유 DLL, 보안 경계를 바꾸는 작업과 해당 여부가 애매한 작업은 신규 `claude-opus-5-5`가 검증한다. Gardener, 확정 실패 뒤 Advisor, R-7 설계 검토는 대상이 아니다. 선행 시험 작성자도 대상이 아니다(질문 4 A). 구현자·검증자 분리, 작업 하나 뒤 정산·종료, 파트당 검증자 동시 하나, 테스트 파일만 쓰기, 판정 양식과 통과 차단 사유, 태그는 그대로다. 판정의 지정 모델·관찰 모델 칸을 채운다.
 - **리드 Opus**: 다섯 리드는 `claude-opus-5-5` xhigh다(`msg_22cb1701a2cf`, 교체 시점은 `msg_25102e277345`). 원문은 직전 Rules goal에 있다. 정본의 「파트 리드 Astra `gpt-6-astra`」와 R-1 기동 명령은 PR2 전까지 낡은 문장이다.
+- **확인 창 대신 승인**: 메인 `msg_af033fe88521`(2026-10-06T14:33:33Z, E/session/wait7-msg_af033fe88521.raw.txt)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 병합 관문 - 승인이 맞을 때 확인 창을 hook이 대신 승인할지 → A hook이 대신 승인한다」**다. PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 낸다. 메인은 AGENTS 공학 조건 「Claude 권한 확인을 건너뛰는 플래그·설정 변경은 금지」에 이 hook의 예외 문장(사용자 결정 원문 링크)을 넣으라고 했다.
 - **병합 관문**: 1안건 A(위 원문). PR1 병합과 적용 확인 전까지 병합은 지금 방식(리드 pane, 사용자 확인 창, 메인의 병합 신호)으로 한다.
 - **후속 계획의 일괄 검토**: 메인 `msg_bf63c20c8abe`가 전달한 원문 「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」. 현재 goal 밖 후보는 BACKLOG로 모으고 개별 승인을 받지 않는다.
 - 메인 운영 지시(사용자 결정 아님): 우편함 대기는 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`로 heartbeat 단독 깨움을 뺀다(`msg_20663b7c7598`). 대기는 Bash 백그라운드로 한 번에 하나만 열고 `&`·`/dev/null`로 출력을 버리지 않는다(`msg_3902e180080c`).
