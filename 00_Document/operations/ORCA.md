@@ -230,9 +230,9 @@ R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Pha
 
 운영은 `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 명령만 쓴다. hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받는다. 다른 인자(`--delete-branch`·`--auto`·`--admin` 등)는 막힌다. PreToolUse 통과 때 기록을 소비하며 실패도 새 승인이 필요하다(아래 겹친 쓰기 한계 제외). 리드는 PR 번호·정확한 head 40자·CI·독립 검증 판정 원문으로 준비 보고하고 병합 뒤 goal을 기록한다. 병합은 실행하지 않는다.
 
-모든 Claude Code 세션의 복합·heredoc·`bash -c`·명령 치환 속 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main branch에서 refspec 없음·`HEAD`·`@` 포함), 상태 폴더 쓰기·경로가 든 Bash, 다른 터미널로 승인 문장 주입을 막는다. [결과 코드·상세 형태](../../99_Tools/README.md)와 [확인 창 승인 예외](../../AGENTS.md#공학-조건)를 따른다.
+모든 Claude Code 세션의 Bash·Monitor에서 복합·heredoc·`bash -c`·명령 치환 속 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main에서 refspec 없음·`HEAD`·`@` 포함), 상태 폴더 쓰기·경로가 든 명령, 터미널·예약/전달 prompt로 승인 문장 주입을 막는다. [결과·상세 형태](../../99_Tools/README.md)와 [확인 창 승인 예외](../../AGENTS.md#공학-조건)를 따른다.
 
-한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 문자열 판정의 의도적 우회 가능(별칭·스크립트 파일·변수 속 명령, 공백 든 따옴표 값의 낱말 분리: `git -C "공백 든 경로" push …`는 push 미판정), 하위 폴더·settings 부재 또는 hook 프로세스 미실행(node 부재 등) 시 보호 없음, GitHub ruleset 관리자 우회 유지. 같은 세션의 겹친 기록 쓰기(병합끼리·승인 제출과 병합)는 소비 기록을 되살리거나 두 번 통과시킬 수 있다(순차 호출 전제, 승인된 PR·head만). 병합 문자열 검색도 막혀 Grep·Read를 쓴다.
+한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 문자열 판정의 의도적 우회 가능(별칭·스크립트 파일·변수 속 명령, `-R`·`--repo` 밖 값 옵션의 `merge` 앞 이동), 등록 밖 도구·hook/settings 자체 수정과 하위 폴더·settings 부재·hook 미실행(node 부재 등)은 보호하지 않는다. GitHub ruleset 관리자 우회 유지. 같은 세션의 겹친 기록 쓰기(병합끼리·승인 제출과 병합)는 소비 기록 복원·두 번 통과가 가능하다(순차 호출 전제, 승인된 PR·head만). 병합 문자열 검색도 막혀 Grep·Read를 쓴다.
 
 ## 공유 자원
 
