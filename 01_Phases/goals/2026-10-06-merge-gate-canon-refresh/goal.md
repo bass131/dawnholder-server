@@ -352,6 +352,20 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 같은 실수를 막는 검사: 수정 계약의 완료조건에 「이전 세 commit 중 하나라도 막던 관찰 형태는 모두 막힌다」는 비교 원시를 넣는다. 세 번째 판정에서 나온 회귀는 넓힌 규칙이 이전 규칙의 부분집합이 아니었기 때문이다.
   - ORCA 문장은 v2.3 동작과 이미 맞아서 고치지 않는다. README 「병합 관문」의 셸 판정 문장만 고친다.
   - 수정 횟수: 코드는 세 번째 수정이고, ORCA 병합 관문 절은 이번에 고치지 않아 세 번에 머문다. 규칙상 3회 초과는 아니다. 다만 같은 PR의 독립 판정이 세 번 연속 차단이라, 재검증 때 메인에 약속한 대로 체크포인트를 알린다. 결함 번호가 매번 달라 확정 실패 3회 집계에는 해당하지 않는다.
+- 메인 체크포인트: 리드 `msg_2704c3113567`(18:28:41Z, status). 메인 `msg_aef901676635`(18:29:13Z, E/session/wait35-main-checkpoint-reply.raw.txt)가 계속 진행에 동의하고 **마지막 그물**을 요청했다(메인 운영 판단, 사용자 결정 아님).
+  - 요청 요지: 세 번 연속 차단의 공통 원인은 정밀하게 읽은 결과만 막는다는 점이다. 원문 문자열에 `gh`·`merge`, `gh` `api`·병합 낱말, `push`·main 대상 낱말이 함께 있으면 단독 병합 형태가 아닌 한 막는다. 오탐은 받아들이고, 일상 명령 대조군을 시험에 넣고, 막히는 일상 형태는 「나눠서 실행」 안내와 함께 남긴다.
+  - 리드 반영(`msg_0a5ad6da7a21`, 18:38:50Z): 코드는 새 `suspect-words`로 하고 정밀 차단이 먼저다. 낱말 규칙은 v2.3 4절 「마지막 그물」이다. 그물이 기존 경계 시험 두 개(세 형태)를 뒤집으므로 Sol은 시험을 고치지 않고 108/110과 실패 분류 표를 내며, 다음 독립 검증자가 기대값을 고친다. ORCA는 233에 그물 항목을 넣고 235에서 이제 막히는 R3 예시를 빼서 증감 합 0 bytes다. 「나눠 실행」 안내와 오탐 목록은 README와 차단 사유 문구에 둔다. 그물이 R3의 gh 쪽과 `HEAD:heads/main`도 막는다.
+  - 메인 수락 `msg_ef3d9080e819`(18:39:10Z, E/session/wait36-main-net-ack.raw.txt): 네 가지 모두 이의 없음. ORCA 병합 관문 절의 네 번째 수정(3회 초과)은 메인 요청에 따른 것이라 이 메시지로 체크포인트를 수락했다. 메인도 이후 메시지 제목과 명령 문자열에 push·main 낱말을 함께 쓰지 않는다.
+  - 동작 계약 v2.3 최종 SHA256은 `2fcfe94c…`다.
+
+### PR1 두 번째 재검증 결함 수정
+
+- 작업자: 신규 `gpt-6.1-sol` max, 태그 `[Rules Sol]`, handle `term_8e517197-58f8-4a43-832d-f2df6c36d8b6`(리드 pane 아래 vertical split). 첫 화면은 Codex v0.160.1, GPT-6.1-Sol max, Full Access로 이전 작업자와 같았고 선택창은 없었다(E/fix4-first-screen.json). backend는 unknown이다.
+- 계약: [E/fix4-contract.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/fix4-contract.md) v1, SHA256 `2eb52c5e…`, 고정 HEAD `dc4e4f9`, 동작 계약 v2.3.
+  - 쓰기 허용은 `merge-policy.mjs`, README 「병합 관문」 절, ORCA 233·235행(정해진 문장)이다.
+  - 완료 기준은 108/110(예상된 두 경계 시험 실패만)과 Orca 22/22, 이전 세 commit 비교 점검에서 deny → 결정 없음 0행, S 형태가 정밀 판정 코드로 막힘, 일상 대조군 결정 없음, 다섯 문서 bytes 92,500 이하다.
+  - 경로 기계 확인은 E/fix4-contract-pathcheck.txt다.
+- Task `task_dfeb9343c1e0`, Dispatch `ctx_4effd22f2f42`다. receipt는 input_accepted, turnStart observed다(E/fix4-worker-start.json).
 
 ## 요구사항 원천과 적용 결정
 
