@@ -66,7 +66,7 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 | 색인 검사 대응 | 아래 「색인 검사」 | 같음. 새 코드 `BACKLOG_GOAL_LINK_REJECTED`와 `line: null`의 위치를 더한다 |
 | 화면·IPC | 없음 | 아래 「Electron 경계」·「화면」 |
 
-1단계는 성공 경로의 진단 코드·문장·순서·위치와 종료 코드, 실패 경로의 묶음 실행 상태와 이미 낸 warning까지 지금과 같아야 한다. 기존 `record-index-check.test.ts`의 백로그 시험이 그대로 통과하는 것이 최소 기준이다.
+`backlogIssueKind`는 옮기는 코드가 아니라 새 함수라 2단계에 더한다. 1단계는 성공 경로의 진단 코드·문장·순서·위치와 종료 코드, 실패 경로의 묶음 실행 상태와 이미 낸 warning까지 지금과 같아야 한다. 기존 `record-index-check.test.ts`의 백로그 시험이 그대로 통과하는 것이 최소 기준이다.
 
 2단계의 BACKLOG 읽기 결과 대응과 고정 문장은 다음과 같다. 원문 읽기 경계를 쓰므로 링크·junction·대소문자·크기 상한(파일 1 MiB, `section: null`이면 내용 전체가 구간 상한 256 KiB 안)·엄격 UTF-8·읽는 동안 바뀜 판정이 앱의 원문 읽기와 같아진다.
 
@@ -86,7 +86,7 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 2단계에서 goal 링크마다 아래 순서로 판정한다. 앞 단계에서 결론이 나면 멈춘다.
 
 1. 대상: 셀의 상대 링크 중 `01_Phases/goals/` 또는 `05_Management/goals/`를 지나는 것(지금 `backlogGoalLinks` 그대로). `#` 뒤는 뺀다.
-2. 퍼센트 해독. 실패하면 `BACKLOG_GOAL_LINK_REJECTED`, reason `invalid`.
+2. 퍼센트 해독. 실패하거나, 해독한 경로에 `\`가 있으면 `BACKLOG_GOAL_LINK_REJECTED`, reason `invalid`. `\`를 경로 구분자로 해석하는 운영체제와 아닌 운영체제의 판정이 갈리지 않게 풀기 전에 거절한다(선행 시험 보고의 질문 3).
 3. `00_Document/operations` 기준으로 풀어 저장소 루트 상대 POSIX 경로로 바꾼다. 루트 밖이면 `BACKLOG_GOAL_LINK_REJECTED`, reason `parent`.
 4. `inspectSourceFile({ repositoryRoot, locator })`의 결과로 판정한다.
    - 성공: 문제 없음.
@@ -136,7 +136,7 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
   - `ok: false`: 결과의 `message`.
   - 이전에 읽은 결과가 있는데 다시 읽기가 실패하면 이전 후보를 그대로 보이고 「갱신 실패: 이전에 읽은 백로그를 표시합니다.」를 덧붙인다.
 - 요약 한 줄: `후보 N개 · 형식 오류 a · 어긋남 b · 확인 불가 c`. 세 수는 `backlogIssueKind`와 `uncheckedLinks`로 센다.
-- 후보: `group` 제목별로 파일 순서대로 묶는다. 후보마다 ID, 제목, 상태, 담당 후보, 이유, 출처, 선행 조건, 위치 `BACKLOG.md:<행>`을 평문으로 보인다.
+- 후보: `group` 제목별로 파일 순서대로 묶는다. `group`이 null인 후보(첫 `## ` 제목 앞의 표)는 제목 없이 맨 앞에 보인다. 후보마다 ID, 제목, 상태, 담당 후보, 이유, 출처, 선행 조건, 위치 `BACKLOG.md:<행>`을 평문으로 보인다.
 - 문제 표시: 그 행의 문제를 종류 이름(「형식 오류」 또는 「어긋남」)과 cause, 「고치는 방법: <fix>」로 보인다. 확인하지 못한 링크는 「확인 불가」와 링크, 「다시 읽기로 다시 확인하세요.」로 보인다. 행에 붙지 않는 문제(`line`이 null이거나 후보 행이 아닌 행)는 후보 목록 위 「표 형식 오류」 영역에 보인다.
 - 읽기 전용: 조작 요소는 탭과 「다시 읽기」뿐이다. 입력·선택·contenteditable·링크(`a`) 요소를 두지 않는다. 셀의 Markdown은 렌더링하지 않고 React 텍스트로 그대로 보인다.
 - 앱 zoom 125%의 보조 화면(1920×1080)에서 메뉴에 가로 스크롤이 생기지 않아야 한다. 스타일은 `styles.css`의 기존 관례를 따른다.

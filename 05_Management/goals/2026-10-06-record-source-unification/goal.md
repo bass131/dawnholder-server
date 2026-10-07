@@ -16,13 +16,13 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 15:0x KST, PR3 설계 고정.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 15:3x KST, PR3 선행 시험 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
 그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`, 8단계 재검증자의 판정 순서 시험은 `aacf35bd`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」·「PR2 좁힌 재검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 좁힌 재검증은 통과(비차단 W1, 리드가 정정)였다. 여덟 세션은 정산·종료했고 열린 작업자·검증자는 없었다. PR2는 PR197로 병합됐다(병합 commit `8c920d4d`).
 
-**PR3 상태(2026-10-07 15:0x KST):**
+**PR3 상태(2026-10-07 15:3x KST):**
 
-- **지금 단계:** PR2는 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 병합됐다(아래 「PR197 병합」). PR3 branch `feat/management-backlog-menu-20261007`을 최신 main `94fc6845`(PR198 병합, PR197 포함)에서 만들었다. 리드가 PR3 경계와 인터페이스를 [백로그 메뉴 설계](backlog-menu-design.md)에 고정했다(아래 「PR3 설계」). 다음 할 일은 신규 `claude-opus-5-5`의 TDD 선행 시험 → 신규 `gpt-6.1-sol`의 두 단계 구현(구조 → 리드 commit → 동작) → 다른 신규 `claude-opus-5-5`의 강 등급 독립 검증 → PR 준비 보고다.
+- **지금 단계:** PR2는 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 병합됐다(아래 「PR197 병합」). PR3 branch `feat/management-backlog-menu-20261007`을 최신 main `94fc6845`(PR198 병합, PR197 포함)에서 만들었다. 리드가 PR3 경계와 인터페이스를 [백로그 메뉴 설계](backlog-menu-design.md)에 고정했고(아래 「PR3 설계」), 선행 시험은 `2cb7ee2b`로 commit됐다(아래 「PR3 선행 시험」). 다음 할 일은 신규 `gpt-6.1-sol`의 두 단계 구현(구조 → 리드 commit → 동작) → 다른 신규 `claude-opus-5-5`의 강 등급 독립 검증 → PR 준비 보고다.
 - **병합 관문:** 이 PR부터 리드는 병합하지 않는다. PR 생성 뒤 정확한 head·CI·판정 원문을 메인에 보고하면, 메인이 R-2 뒤 사용자 승인을 받아 메인 전용 checkout에서 병합한다(메인 `msg_371394a813a7`, AGENTS 「Git 권한」).
 - **작업자·검증자:** 살아 있는 pane은 없다.
 - **Run과 재진입:** Run은 `run_3fa510a50602`다. 리드 handle은 `term_052ec1b2-cd90-4270-acbd-33f8cc36f9a8`(이 세션의 관측값이며 다음 리드의 실행 권한이 아님)이다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
@@ -331,6 +331,15 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - BACKLOG 읽기와 goal 링크 존재 확인은 2단계에서 앱의 원문 읽기 경계(`createSourceSectionStore`·`inspectSourceFile`)를 쓴다. 링크·대소문자·크기·인코딩 판정이 앱 원문 읽기와 같아진다. 위반은 「형식 오류」·「어긋남」, 예상 밖 I/O 오류는 「확인 불가」로 나눈다.
 - O2(fence 판정 두 곳)는 통합하지 않고 규칙만 맞춘다. 통합하면 MCP 공유 모듈과 canonical `mcp-dist` 재빌드가 따라온다. 통합은 「후속 후보」에 적었다.
 - 독립 검증자 조건은 메인 결정 `msg_caa43cc537b5`로 신규 `claude-opus-5-5`다. 새 IPC 채널이 생기므로 설계 표의 조건으로도 같은 결론이다.
+
+### PR3 선행 시험
+
+- **작업:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)가 설계의 A~G 요구 시험을 썼다. Task `task_d4bf93ca6a48`, Dispatch `ctx_e46d1a11c12c`, worker_done `msg_2381a3babfb9`(2026-10-07T06:32:09Z). 계약 E/`pr3-t1-task.txt`(SHA-256 `60ca669f…`), 보고 E/`pr3-t1/report.md`(SHA-256 `718b616f…`).
+- **계약 보충 v1.1:** 채널 목록을 고정한 기존 시험 `desktop-main`·`diagram-asset-desktop`의 단정 한 줄씩과 preload 노출 이름 단정의 변경을 허용했다(질문 `msg_3f868711c73d`, 답 `msg_7306054f0128`). 리드 계약이 이 두 파일을 빠뜨렸다(리드 계약 누락, 이 goal의 두 번째 계약 누락이며 첫 번째는 PR2 3단계).
+- **결과:** 새 시험 파일 7개·helper 1개, 기존 시험 5개 변경(+1049/−11). 리드가 시험 파일만 `2cb7ee2b`로 commit했다. 1단계 뒤 통과할 A는 `tests/backlog-store.test.ts` 한 파일(시험 5개)에만 있다. 같은 명령의 결과는 쓰기 전 1198개 중 1196 통과에서 쓴 뒤 1210개 중 1193 통과·17 실패·수집 실패 6파일이다. 실패는 B01·B09, 채널 목록을 고친 기존 시험 4개(a), 2단계 예정 11개이고, 수집 실패는 모듈·화면 부재다. 회귀·원인 미확정은 0건이다. 결정적으로 재현할 수 없는 확인 불가·읽는 동안 바뀜 시험은 이유와 함께 미작성이다.
+- **리드 대조:** 두 원시 JSON에서 수치와 실패 17개·수집 실패 6파일을 다시 셌다. 범위가 시험 파일뿐임을 git status로, 채널 목록 diff 두 줄과 A 시험의 고정 문장이 6ab9cc7a의 `record-index-check.ts` 문장과 같음을 읽었다. 작업자 도구 호출 기록에서 메모 Write(06:10:10Z)가 첫 시험 파일 Write(06:13:51Z)보다 앞선다(E/`pr3-t1-memo-timeline.json`).
+- **열린 질문의 처리:** 1단계의 `npm run typecheck`는 새 화면 시험 import 1건만 예정 실패로 허용한다. `%5C`가 해독된 `\`는 풀기 전에 `invalid`로 거절하고, `group`이 없는 후보는 제목 없이 맨 앞에 보이며, `backlogIssueKind`는 2단계에 더한다(설계 보충). `desktop-main.test.ts:97`의 낡은 주석과 `\` 시험은 독립 검증자에게 맡긴다.
+- **구현 전 알릴 점:** 작업자가 설계 확인용 일회용 대역을 E/`pr3-t1/selfcheck/reference/`에 만들었다(제품 아님). 구현 Sol에게는 읽지 말라고 계약에 적는다.
 
 ### 진입과 준비
 
