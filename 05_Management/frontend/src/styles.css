@@ -212,3 +212,23 @@ h4 { font-size: 13px; font-weight: 450; color: #b7c2d1; }
 .record-editor textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .record-editor-actions { display: flex; flex-wrap: wrap; gap: 9px; }
 .record-link:disabled { opacity: .5; cursor: not-allowed; }
+
+.backlog-browser { min-width: 0; max-width: 100%; font-size: 13px; overflow-wrap: anywhere; container: development-backlog / inline-size; }
+.backlog-summary { margin: 14px 0 20px; color: var(--muted); }
+.backlog-group { min-width: 0; margin-top: 24px; }
+.backlog-group h3, .backlog-table-issues h3 { margin-bottom: 12px; color: #cfdbed; font-size: 18px; }
+.backlog-candidates { display: grid; gap: 12px; min-width: 0; margin: 0; padding: 0; list-style: none; }
+.backlog-candidate { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+.backlog-id { margin-bottom: 5px; color: var(--muted); font: 12px/1.5 Consolas, monospace; }
+.backlog-candidate h4 { color: #cfdbed; font-size: 16px; white-space: pre-wrap; }
+.backlog-fields { display: grid; gap: 8px; margin: 14px 0 0; }
+.backlog-fields > div { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 10px; min-width: 0; }
+.backlog-fields dt { color: var(--muted); }
+.backlog-fields dd { min-width: 0; margin: 0; color: #c1cde0; white-space: pre-wrap; }
+.backlog-table-issues { min-width: 0; padding: 16px; border: 1px solid #80684d; border-radius: 6px; background: var(--surface); }
+.backlog-problem { min-width: 0; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); color: #e3c194; white-space: pre-wrap; }
+.backlog-problem-kind { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 600; }
+.backlog-problem p + p { margin-top: 5px; }
+@container development-backlog (max-width: 600px) {
+  .backlog-fields > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}

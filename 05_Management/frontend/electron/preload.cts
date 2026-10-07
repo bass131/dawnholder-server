@@ -9,3 +9,6 @@ contextBridge.exposeInMainWorld('systemRecords', {
 contextBridge.exposeInMainWorld('systemGuide', {
   readGuide: () => ipcRenderer.invoke('system-guide:read'),
 });
+contextBridge.exposeInMainWorld('systemBacklog', {
+  readBacklog: () => ipcRenderer.invoke('system-backlog:read'),
+});

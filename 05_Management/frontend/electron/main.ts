@@ -6,6 +6,7 @@ import { createSystemGuideStore } from './system-guide-store.js';
 import { createSourceSectionReader, createSourceSectionStore } from './source-section-store.js';
 import { sourceSectionFailure } from './source-section-contract.js';
 import { createCheckoutStore } from './checkout-store.js';
+import { createBacklogStore } from './backlog-store.js';
 import { diagramAssets, diagramScheme } from './diagram-asset-contract.js';
 import { createDiagramAssetHandler } from './diagram-asset-handler.js';
 
@@ -33,6 +34,7 @@ const sectionReader = createSourceSectionReader({
   store: createSourceSectionStore({ repositoryRoot }),
 });
 const checkoutStore = createCheckoutStore({ repositoryRoot });
+const backlogStore = createBacklogStore({ repositoryRoot });
 function trustedSender(event: IpcMainInvokeEvent): boolean {
   return !!mainWindow && !mainWindow.isDestroyed() && event.sender === mainWindow.webContents && event.senderFrame === mainWindow.webContents.mainFrame && event.senderFrame.url === indexUrl;
 }
@@ -47,6 +49,7 @@ ipcMain.handle('system-records:read-checkout', async event => {
   return { ok: true, checkout: await checkoutStore.read() };
 });
 ipcMain.handle('system-guide:read', event => trustedSender(event) ? guideStore.read() : denied);
+ipcMain.handle('system-backlog:read', event => trustedSender(event) ? backlogStore.read() : denied);
 
 app.whenReady().then(async () => {
   protocol.handle(diagramScheme, createDiagramAssetHandler(new URL('../dist/', import.meta.url)));
