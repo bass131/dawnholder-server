@@ -131,6 +131,8 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 - 본체는 `src/DevelopmentBacklog.tsx`다(`DevelopmentRecords.tsx`와 나란한 이름). 커지면 `src/developmentBacklog/`에 나눈다.
 - 읽기: mount 때 한 번 읽고 「다시 읽기」 버튼으로 다시 읽는다. 진행 중이면 겹쳐 부르지 않는다. 늦게 도착한 이전 응답은 버린다. `DevelopmentRecords.tsx`의 양식을 따른다.
 - 상태 문장
+  - 읽는 중: 백로그를 읽는 중입니다.
+  - 읽음: 백로그 파일을 읽었습니다. 자동 갱신은 하지 않습니다.
   - bridge 없음: 백로그 연결을 사용할 수 없습니다. 데스크톱 앱에서 실행하세요.
   - invoke 거부: 백로그 연결에서 응답을 받지 못했습니다.
   - `ok: false`: 결과의 `message`.
@@ -139,7 +141,8 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 - 후보: `group` 제목별로 파일 순서대로 묶는다. `group`이 null인 후보(첫 `## ` 제목 앞의 표)는 제목 없이 맨 앞에 보인다. 후보마다 ID, 제목, 상태, 담당 후보, 이유, 출처, 선행 조건, 위치 `BACKLOG.md:<행>`을 평문으로 보인다.
 - 문제 표시: 그 행의 문제를 종류 이름(「형식 오류」 또는 「어긋남」)과 cause, 「고치는 방법: <fix>」로 보인다. 확인하지 못한 링크는 「확인 불가」와 링크, 「다시 읽기로 다시 확인하세요.」로 보인다. 행에 붙지 않는 문제(`line`이 null이거나 후보 행이 아닌 행)는 후보 목록 위 「표 형식 오류」 영역에 보인다.
 - 읽기 전용: 조작 요소는 탭과 「다시 읽기」뿐이다. 입력·선택·contenteditable·링크(`a`) 요소를 두지 않는다. 셀의 Markdown은 렌더링하지 않고 React 텍스트로 그대로 보인다.
-- 앱 zoom 125%의 보조 화면(1920×1080)에서 메뉴에 가로 스크롤이 생기지 않아야 한다. 스타일은 `styles.css`의 기존 관례를 따른다.
+- 앱 zoom 125%의 보조 화면(1920×1080)에서 메뉴에 가로 스크롤이 생기지 않아야 한다. 규칙은 `styles.css`에 둔다.
+- 글자색: `styles.css`는 예전 어두운 테마의 고정 색이 남은 파일이고, 밝은 테마는 뒤에 로드되는 `theme/tokens.css`가 `:root` 변수와 알려진 class 덮어쓰기로 만든다. 그래서 새 규칙의 글자색은 고정 색을 쓰지 않고 테마 변수만 쓴다. 제목·후보 제목·값 칸은 `var(--text)`, 라벨·요약·ID는 `var(--muted)`, 문제 글자는 `var(--warning)`이다. `--warning`은 `tokens.css`의 `:root`에 더하는 `#7d5200`(밝은 테마 연결 안내 표식의 주황)이다. 읽는 글자는 실제 배경 위에서 대비 4.5:1 이상(24px 이상 또는 18.66px·700 이상의 큰 글자는 3:1)이어야 한다. 독립 검증 결함 #1(`.backlog-*` 네 규칙의 고정 색, 실측 1.10~1.64:1)의 수정 기준이다.
 
 ## 시험
 
@@ -150,6 +153,7 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 - 실제 자료: 실제 BACKLOG.md를 store로 읽어 성공·형식 오류 0·모든 후보에 `group`이 있음을 단정한다. 행 수처럼 Rules가 바꾸는 값은 고정하지 않는다. 새 판정이 실제 BACKLOG에서 어긋남을 내면 BACKLOG를 고치지 않고 보고한다.
 - 채널 수를 고정한 기존 `records-ipc-preload.test.ts` 시험처럼 이 PR이 바꾸는 계약을 단정하던 시험은 옛 구현 세부 단정으로 분류하고 이 문서 절을 근거로 고친다.
 - 기대값은 고정 입력과 손으로 정한 값으로 둔다. 제품 해석·판정을 시험 안에서 다시 계산하지 않는다.
+- 글자 대비 회귀 시험(결함 #1 수정 라운드, 메인 `msg_6bae84d02fa1`): 「이후 작업」 탭의 읽는 글자 대비를 실제 Chromium renderer에서 잰다. 저장소의 `electron` 개발 의존성으로 숨긴 창을 띄우고, 실제 `App`이 「이후 작업」 탭에서 만든 DOM에 `src/main.tsx`가 import하는 CSS를 같은 순서로 적용한다. jsdom은 이 앱의 cascade와 `var()`를 renderer처럼 계산하지 않아 쓰지 않는다. 글자마다 computed color를 불투명해질 때까지 조상 배경에 합성한 색과 비교해 WCAG 2 상대 휘도로 계산하고, 위 「글자색」 기준을 단정한다. 화면의 글자 종류마다 측정 대상이 하나 이상 있어야 하며 대상 0개는 실패다. 앱 전체 대비 시험과 `styles.css` 고정 색 금지 검사는 goal 「후속 후보」이며 이 PR에서 하지 않는다.
 
 ## 작업 순서와 소유
 
@@ -159,6 +163,9 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 | 2 구현 1단계(구조) | 신규 `gpt-6.1-sol` max | `electron/backlog-contract.ts`·`backlog-store.ts`(새), `record-index-check.ts` | 질문으로 멈춤 → 리드 commit |
 | 2 구현 2단계(동작) | 같은 Sol | 위 파일과 `backlog-table.ts`·`main.ts`·`preload.cts`, `src/DevelopmentBacklog.tsx`·`recordsBridge.d.ts`·`App.tsx`·`styles.css` | 리드 commit |
 | 3 독립 검증(강) | 다른 신규 `claude-opus-5-5` | 판정에 필요한 시험 파일만 | 판정 원문 |
+| 4 대비 회귀 시험 | 신규 `claude-opus-5-5` | `tests/` | 리드가 시험만 commit |
+| 5 결함 #1 수정 | 신규 `gpt-6.1-sol` max | `src/styles.css`의 `.backlog-*` 규칙, `src/theme/tokens.css`의 `:root` 한 줄 | 리드 commit |
+| 6 재검증 | 다른 신규 `claude-opus-5-5` | 판정에 필요한 시험 파일만 | 판정 원문 |
 
 - 독립 검증은 실제 Electron에서 메뉴를 확인한다. 소유 TEMP 사본·자기 프로필·자기 프로세스만 쓰고, 사본의 BACKLOG를 바꿔 형식 오류·어긋남과 파일 없음 상태를 본다. 보조 화면 identity·bounds·scaleFactor와 앱 zoom 125%를 실행 때 관측한다. OS 합성 입력·전면화는 쓰지 않는다. 실행하지 못한 부분은 통과로 적지 않는다.
 - MCP는 백로그 모듈에 닿지 않는다. 독립 검증은 MCP closure 시험과 canonical `mcp-dist` digest 시험이 이 PR 뒤에도 그대로 통과하는지 본다.

@@ -210,7 +210,7 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 
 - 색인 error: `CATALOG_INVALID`(JSON·스키마·허용 밖 키·중복 ID), `REFERENCE_BROKEN`, `LOCATOR_INVALID`(local 경로 모양·handoff ID 모양), `SOURCE_PATH_REJECTED`(cause에 reason), `SOURCE_NOT_READABLE`(git 출처의 확장자에 `section` 지정, 일반 파일 아님), `SOURCE_MISSING`, `SOURCE_TOO_LARGE`, `SOURCE_INVALID_ENCODING`, `SECTION_MISSING`, `SECTION_AMBIGUOUS`.
 - goal warning: `GOAL_NOT_INDEXED`.
-- 백로그 warning: `BACKLOG_ID_FORMAT`, `BACKLOG_ID_DUPLICATE`, `BACKLOG_GOAL_LINK_MISSING`, `BACKLOG_PROMOTION_LINK_MISSING`, `BACKLOG_TABLE_FORMAT`.
+- 백로그 warning: `BACKLOG_ID_FORMAT`, `BACKLOG_ID_DUPLICATE`, `BACKLOG_GOAL_LINK_MISSING`, `BACKLOG_PROMOTION_LINK_MISSING`, `BACKLOG_TABLE_FORMAT`, `BACKLOG_GOAL_LINK_REJECTED`(PR3, cause에 reason. 판정 순서는 [백로그 메뉴 설계](backlog-menu-design.md) 「goal 링크 판정 순서」).
 
 | 묶음 | error(끊긴 링크) | warning(파일럿) |
 |---|---|---|
