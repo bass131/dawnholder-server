@@ -123,6 +123,13 @@ export const bashInput = (project, command, options) => ({
   tool_use_id: 'toolu_merge_gate_regression',
 });
 
+// The Monitor shell tool (contract v2.2 §1) with the Bash input fields and its own tool input.
+export const monitorInput = (project, command, options) => ({
+  ...bashInput(project, command, options),
+  tool_name: 'Monitor',
+  tool_input: { command, description: 'merge gate regression input', timeout_ms: 60000 },
+});
+
 export const permissionInput = (project, command, options) => ({
   ...common(project, options),
   hook_event_name: 'PermissionRequest',

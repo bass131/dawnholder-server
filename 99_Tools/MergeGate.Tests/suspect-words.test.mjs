@@ -1,16 +1,20 @@
-// Independent regressions for the last net of behavior contract v2.3 (E/merge-gate-behavior-spec-v2.3.md,
-// SHA256 2fcfe94c…0e10), its place in the decision order and the pass path it must leave alone.
+// Independent regressions for the last net that behavior contract v2.3 added, as behavior contract v3.1
+// (E/merge-gate-behavior-spec-v3.1.md, SHA256 3e6a358f…7fff) keeps it, its place in the decision order
+// and the pass path it must leave alone. v3 makes the net read the masked command string of
+// 「글 가리기(v3)」; the masking, 「실행기 찾기(v3.1)」 and the T1 change of hit 3 (a leading + dropped)
+// are covered in text-masking.test.mjs. Here the masking changes only the two forms v3 moved to the
+// everyday forms; every other form keeps its v2.3 decision.
 // Every expected decision and code below is read from that contract, not from 99_Tools/MergeGate:
 // - §4 「마지막 그물」: for the shell tools Bash and Monitor, (1) a precise block keeps its code,
 //   (2) a merge attempt that meets pass conditions 1–4 skips the net and goes on with condition 5,
 //   (3) anything else meets the net, and a hit is suspect-words without a branch lookup. Raw words
-//   are runs of letters, digits and _ . / : @ + - in the original text, compared in lower case. A hit
+//   are runs of letters, digits and _ . / : @ + - in the masked command string, compared in lower case. A hit
 //   is (1) a gh word (gh or gh.exe after the last /) with the word merge, (2) a gh word with api and
 //   a word ending in /merge or containing mergepullrequest or enablepullrequestautomerge, or (3) the
 //   word push with main, a word ending in :main or heads/main, --all or --mirror.
 // - 「일부러 받아들이는 오탐」 examples are suspect-words and 「막지 않는 일상 형태」 are decision none.
-//   The lead's supplement 1 to the fix contract (msg_5ca0ec61d214, E/fix4/contract-supplement1.json)
-//   counts `gh pr create --title "merge gate" --body "draft"` as the fourth accepted form.
+//   v3 moved `gh pr create --title "merge gate" --body "draft"` and `git commit -m "fix(gate): push to
+//   main"` from the accepted false positives to the everyday forms (user approval 1A, msg_9dc312f58c0f).
 // - §4 「통과 조건」 5–11 and §5 for the exact standalone merge: not-main-checkout, subagent,
 //   no-approval, head-mismatch, expired, then the allow that records usedAt and usedCommand, the
 //   PermissionRequest allow for the same command and already-used on the second use.
@@ -165,10 +169,8 @@ test('§4 last net order: the net blocks before the branch lookup', async t => {
 test('§4 last net: the accepted false positives are suspect-words', async t => {
   await assertSuspect(t, [
     'gh pr create --title merge --body text',
-    'gh pr create --title "merge gate" --body "draft"',
     'git fetch origin main && git push origin feat/x',
     'git push origin feat/x && gh pr create --base main',
-    'git commit -m "fix(gate): push to main"',
     'git push origin feat/x # (main)',
     'git -C . log --grep push origin main',
     'git push -o "main" origin feat/x',
@@ -189,6 +191,9 @@ test('§4 last net: the everyday forms the contract names get no decision', asyn
     'gh pr checks 12',
     'gh pr list --state merged',
     'git commit -m "docs: record the gate"',
+    // Added to the everyday forms by v3 (user approval 1A, msg_9dc312f58c0f).
+    'gh pr create --title "merge gate" --body "draft"',
+    'git commit -m "fix(gate): push to main"',
   ];
   for (const command of commands) {
     assertNoDecision(runHook(fixture, bashInput(fixture.project, command)), `Bash ${command}`);

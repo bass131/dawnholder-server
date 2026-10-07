@@ -12,6 +12,9 @@
 //   judged by its destination (leading + dropped, the part after the last :, else the whole
 //   argument); main and refs/heads/main are push-main, other names containing main
 //   (feat/main-fix, main-backup, refs/heads/main-old) get no decision.
+// - behavior contract v3.1 (E/merge-gate-behavior-spec-v3.1.md, SHA256 3e6a358f…7fff) 「마지막 그물」 and
+//   「글 가리기(v3)」: a gh pr create whose quoted title holds the word merge is an everyday form with no
+//   decision; the masking itself is covered in text-masking.test.mjs.
 // Branch lookups use throwaway local repositories (`git init -b main`, no remote). Push and merge
 // commands are only strings inside hook input; nothing here runs them.
 //
@@ -194,13 +197,13 @@ test('§4 Bash 6 and §6: commands that are not merge attempts get no decision u
   await assertCommandsUndecided(t, commands);
   await assertCommandsUndecided(t, commands, { marker: false });
   await assertCommandsUndecided(t, commands, { agent: true });
-  // Behavior contract v2.3 「마지막 그물」 (SHA256 2fcfe94c…0e10) and the lead's supplement 1 to the fix
-  // contract (msg_5ca0ec61d214) accept this false positive: a gh command whose title has the word merge.
+  // Behavior contract v3.1 「마지막 그물」 (SHA256 3e6a358f…7fff) lists this form among the everyday forms
+  // since v3: 「글 가리기(v3)」 masks the quoted title and body of gh pr create (user approval 1A,
+  // msg_9dc312f58c0f), so the word merge in the title no longer meets the net.
   const titled = 'gh pr create --title "merge gate" --body "draft"';
-  await assertCommandBlocked(t, [titled], 'suspect-words');
-  await assertCommandBlocked(t, [titled], 'suspect-words', { marker: false });
-  const approved = await approvedProject(t);
-  assertDeny(runHook(approved, bashInput(approved.project, titled, { agent: true })), 'suspect-words', `${titled} (subagent)`);
+  await assertCommandsUndecided(t, [titled]);
+  await assertCommandsUndecided(t, [titled], { marker: false });
+  await assertCommandsUndecided(t, [titled], { agent: true });
 });
 
 test('§4 input errors invalid-input: non-JSON stdin, missing fields, non-string command', async t => {
