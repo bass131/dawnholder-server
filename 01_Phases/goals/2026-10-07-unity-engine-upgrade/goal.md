@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드를 관계 점검 뒤 지우고 다시 열어 잰다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드를 지운다. 관계 점검으로 지울 파일 123개가 정해졌고(런타임 의존 0), 지운 뒤 다시 열어 잰다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -17,12 +17,19 @@
 | 하지 않을 것 | 게임 코드·씬·프리팹·콘텐츠 수정, Force Reserialize Assets, 6.7 Beta·7000 Alpha, 안건 2에서 고르지 않은 패키지, MCP 승인 우회(EditorPrefs 직접 수정·화면 자동 클릭), C:/Dev checkout의 skip-worktree 세 파일, 전역 설정, content-active의 PR191 branch와 로컬 두 파일, `04_ClientNet`·`98_Shared` 변경(csproj 주석의 「Unity 6.4 LTS」 표기는 다음 계획 후보), 병합 실행 |
 | 관찰 가능한 완료조건 | (1) ProjectVersion이 6000.6.4f1 (12bfff696524)이고 lock은 Unity가 해석한 결과다(손 편집 없음). (2) 추적 파일 변경 전체가 분류표에 들어간다. 기존 `.meta` 전부의 `guid:` 값이 전후 같고(개수와 불일치 0을 기계 대조) 삭제·신규 `.meta`가 없다. 기계 로컬 값(cloud 3필드 등)은 커밋에 없다. (3) 같은 명령의 EditMode 전체·PlayMode 수치가 기준선(6000.4.7f1, 같은 main) = 엔진 커밋 뒤 = AI Assistant 커밋 뒤다. 실패는 (a)~(d)로 전수 분류한다. (4) 6.6에서 실제 경로 1회: 클라이언트가 로컬 서버(7777)에 붙는 기존 PlayMode 실서버 경로 또는 동등한 실제 진입. (5) 새 패키지 소스에서 상한 검사 부재와 신원 키 방식을 file:line으로 기록한다. (6) 사용자가 Editor를 열고 승인한 뒤 첫 무해 MCP 호출이 상한 거부 없이 성공하고, 컴파일과 Play 진입 뒤 두 번째 호출도 성공한다. 음소거 값은 원래대로 돌린다. (7) relay 실행 파일 hash 전후와 옛 패키지 worktree에서의 영향을 기록한다. (8) 문서·ADR·설치 안내(hash 고정 링크)가 새 버전을 가리킨다. (9) worktree별 영향과 되돌리기 절차가 goal에 있다 |
 
-「안건 2」는 아래 승인된 결정의 2A다. 위 네 항목은 초안 v2의 범위 표를 문구 그대로 옮겼다. 착수 뒤 바뀐 것은 넷이다([승인된 결정](#승인된-결정)).
+「안건 2」는 아래 승인된 결정의 2A다. 위 네 항목은 초안 v2의 범위 표를 문구 그대로 옮겼다. 착수 뒤 바뀐 것은 다섯이다([승인된 결정](#승인된-결정)).
 
 - 메인 범위 판정 `msg_98f1c822d84e`으로 「건드릴 곳」에 테스트 한 줄이 더해졌다.
 - 사용자 결정 A(`msg_0f223740ea22`)로 완료조건 (3)의 「엔진 커밋 뒤 = AI Assistant 커밋 뒤」는 「업그레이드 커밋 뒤」 한 번이 됐다. 「엔진 커밋 뒤」를 잴 수 없는 이유는 [PR 경계](#pr-경계와-점검)에 있다.
 - 사용자 결정(`msg_0af85d53aa50`)으로 「건드릴 곳」에 `03_Client/Assets/Art/Environment/Others/Cainos/Third Party/Lucid Editor/Editor/Experimental/`의 `SimpleTreeView.cs`·`TreeMenu.cs`와 각 `.cs.meta`, 네 파일의 삭제가 더해졌다. 완료조건 (2)의 「삭제 `.meta` 없음」은 이 두 `.meta`만 사용자 결정 예외다.
 - 사용자 결정(`msg_626eb68b0772`)으로 삭제 범위가 `03_Client/Assets/Art/Environment/Others/Cainos/Third Party/Lucid Editor/Editor/` 아래 에디터 코드 전체와 그것을 상속하는 Cainos 에디터 스크립트로 넓어졌다. 지울 파일은 읽기 전용 관계 점검 표로 정하고, 「건드릴 곳」과 완료조건 (2)의 `.meta` 삭제 예외는 그 표로 갱신한다. Prop 애니메이션·상호작용 런타임 코드와 Lucid Editor Runtime 속성은 지우지 않는다.
+- 관계 점검 표와 메인 판단(`msg_ff681cef67de`)으로 지울 파일이 추적 파일 123개로 정해졌다. 이것이 「건드릴 곳」의 삭제 전체이고, 위 Experimental 네 파일도 이 안에 들어간다. 경로 기준은 `03_Client/Assets/Art/Environment/Others/Cainos/`다.
+  - `Third Party/Lucid Editor/Editor/` 폴더 전체: `.cs` 56개, 각 `.cs.meta` 56개, 하위 폴더 `.meta` 5개(`Attributes`·`Experimental`·`Extensions`·`InspectorProperty`·`Utils`).
+  - 그 폴더의 `Third Party/Lucid Editor/Editor.meta`.
+  - `Pixel Art Platformer - Village Props/Script/Editor/`의 `ChestEditor.cs`·`ElevatorEditor.cs`와 각 `.cs.meta`.
+  - 그 폴더의 `Pixel Art Platformer - Village Props/Script/Editor.meta`.
+  - 완료조건 (2)의 「삭제 `.meta` 없음」은 이 표의 `.meta` 65개(`.cs.meta` 58, 폴더 `.meta` 7)만 사용자 결정 예외다. guid 목록은 관계표(`sol-relations/relations.json`)에 있다. 그 밖의 삭제·신규 `.meta`와 guid 불일치는 여전히 0이어야 한다.
+  - 지운 뒤 빈 폴더 7개도 디스크에서 지운다. 폴더가 남으면 Unity가 새 guid로 폴더 `.meta`를 만들기 때문이다.
 
 ### PR 경계와 점검
 
@@ -83,6 +90,12 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
   - 메인 해석: 방향은 B다. Lucid Editor의 Editor 폴더 코드와 그것을 상속하는 Cainos 에디터 스크립트(ChestEditor·ElevatorEditor)를 지운다. Prop 애니메이션·상호작용 런타임 코드(Chest·Elevator·MovingPlatform·Lucid Runtime 속성 등)는 지우지 않는다.
   - 절차: 새 Sol이 읽기 전용으로 지울 후보와 파일마다 근거 표를 만든다. 근거는 (a) 런타임 코드(Editor 폴더 밖 `.cs`) 참조 0, (b) prefab·scene·asset의 m_Script GUID 참조 0, (c) 우리 게임 코드(Cainos 밖) 참조 0, (d) 남는 에디터 코드가 참조하지 않거나 함께 지워짐이다. Editor 폴더 밖 파일이 후보에 들어가거나 (a)~(c) 중 하나라도 0이 아니면 지우지 말고 묻는다.
   - 리드가 표를 원시로 표본 대조해 메인에 보내고, 메인이 표본 대조한 뒤 진행을 알린다. 사용자 재확인은 런타임 의존이 나올 때만이다. 그 뒤 새 Sol이 표의 파일과 각 `.meta`만 지우고(앞서 지운 Experimental 두 파일 포함) 6.6으로 다시 열어 잰다. 커밋 둘 구조는 그대로다.
+- 관계표의 「묻기」 4개 처리(메인 `msg_ff681cef67de`, 2026-10-07T12:42:31Z, 리드 요청 `msg_5d06f372b151`): 메인 결정이며 사용자 결정이 아니다. 메인은 사용자에게 보고했다. 위 절차의 「사용자 재확인은 런타임 의존이 나올 때만」에 따른 판단이다.
+  - 회신 원문: 「제외하고 진행」. Temp 사본은 「후보를 참조하는 다른 코드가 아니라 updater가 만든 후보 자신의 수정본이라 판정 범위에서 뺀다. 4개는 「지움」이다.」
+  - 대상 4개: `EditorIcons.cs`·`SerializeReferenceDropdown.cs`와 각 `.meta`. 판정을 「묻기」로 만든 것은 `03_Client/Temp/ScriptUpdater/` 아래 사본 하나다. 그 사본은 Git 제외 경로이고, 앞선 측정 열기 때 6.6 API updater가 만들었다.
+  - 그래서 표의 123개 전부가 「지움」이다.
+  - 삭제·측정 계약의 Temp 대책 조건(메인 동의 원문): 「Unity Editor가 그 worktree에서 꺼진 상태를 먼저 확인하고 03_Client/Temp를 비운다(비우기 전후 원시). 열기 뒤 삭제 경로 123개 재출현 0을 확인한다. Library는 건드리지 않는다.」
+  - 다른 오류가 나오면 고치기 전에 묻는다.
 
 ## 검증 계획
 
@@ -116,17 +129,21 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 
 | 항목 | 값 |
 |---|---|
-| 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / `chore/unity-engine-upgrade-20261007`(upstream 없음) |
+| 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / `chore/unity-engine-upgrade-20261007`(upstream `origin`에는 goal 커밋만 있다. PR은 아직 없다) |
 | 기준 | `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0` |
 | 리드 Run | `run_dd3bf2daea68`(2026-10-07 Content 리드, `content-active` pane) |
 | Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼고, 6000.6.4f1 열기(모두 컴파일 실패)를 네 번 거쳤다. 뒤의 두 열기에서 AI Assistant 2.20.0-pre.2가 PackageCache에 들어왔다. 네 열기의 부분 변경·삭제와 잠금 파일은 리드가 정리해 추적 파일은 HEAD와 같다(`lead-restore-first-open.txt`, `lead-restore-remeasure.txt`, `lead-restore-upgrade-open.txt`, `lead-restore-measure.txt`) |
-| 작업자 | 기준선 Sol, 엔진 첫 열기 Sol, 테스트 작성 Opus, 재열기 Sol, 업그레이드 열기 Sol, 측정 Sol 정산·종료(아래 결과). 살아 있는 작업자 0. 작업자 pane을 닫을 때 그 pane을 split한 기준 pane이 함께 exited된 일이 두 번 있었다(처음 「Terminal 1」, 새로 만든 기준 pane). 다음 작업자 전에 같은 worktree에 기준 pane을 새로 만든다 |
+| 작업자 | 기준선 Sol, 엔진 첫 열기 Sol, 테스트 작성 Opus, 재열기 Sol, 업그레이드 열기 Sol, 측정 Sol, 관계 점검 Sol 정산·종료(아래 결과). 살아 있는 작업자 0. 작업자 pane을 닫을 때 그 pane을 split한 기준 pane이 함께 exited된 일이 세 번 있었다(처음 「Terminal 1」, 그 뒤 새로 만든 기준 pane 둘). 다음 작업자 전에 같은 worktree에 기준 pane을 새로 만든다 |
 | 로컬 checkpoint | 테스트 두 줄(blob `bf98cbf5`)은 이 goal 커밋 위의 push하지 않은 로컬 commit에 둔다. 기존 harness의 사전 gate가 깨끗한 작업 트리를 요구해서다. 업그레이드 커밋을 만들 때 합친다 |
 
 다음 순서:
 
-1. 관계 점검 Sol(읽기 전용, 지울 후보와 (a)~(d) 근거 표) → 리드 표본 대조 → 메인 표본 대조와 진행 알림.
-2. 삭제·측정 Sol(manifest의 AI Assistant 한 줄과 표의 파일 삭제 → 6.6 한 번 열기 → 로그 error 줄 전수 → 분류표 → 같은 harness의 EditMode·PlayMode 전체 → 새 패키지 소스 정적 확인 대조) → 정산 → 리드 업그레이드 커밋(checkpoint와 합침).
+1. 관계 점검(Sol 표 → 리드 표본 대조 → 메인 표본 대조와 진행 알림)은 끝났다(아래 결과, 메인 `msg_ff681cef67de`).
+2. 삭제·측정 Sol → 정산 → 리드 업그레이드 커밋(checkpoint와 합침). Sol이 할 일은 차례로 다음과 같다.
+   - manifest의 AI Assistant 한 줄을 바꾸고, 표의 123개와 빈 폴더 7개를 지운다.
+   - worktree의 Unity가 꺼졌는지 확인한 뒤 `03_Client/Temp`를 비운다.
+   - 6.6으로 한 번 열고, 로그의 error 줄을 전수로 뽑는다. 삭제 경로 123개가 다시 생기지 않았는지 확인한다.
+   - 분류표를 만들고, 같은 harness로 EditMode·PlayMode 전체를 잰다. 새 패키지 소스의 정적 확인을 대조한다.
 3. 문서 커밋 → 신규 Opus 독립 검증(MCP 확인 직전 메인에 알림) → PR·CI → 메인 승인 요청.
 4. 병합 뒤: 결과 기록 → Gardener → 종료 기록 → R-8. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다.
 
@@ -216,6 +233,31 @@ Sol `task_9cf22ad2da19`(Dispatch `ctx_0826018fe9b0`, 지정·화면 `gpt-6.1-sol
 - 리드 대조(12:05Z): 「error 」 4줄, `.meta` 대조 두 파일과 guid를 원시와 작업 트리에서 다시 읽었다. 현재 Unity 0이다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다. 닫은 뒤 새로 만든 기준 pane도 exited됐다.
 - 리드 정리: 관계 점검을 HEAD 기준으로 하도록 manifest·lock과 Experimental 네 파일을 HEAD에서 되살리고, 새 asset과 잠금 파일을 지웠다(`lead-restore-measure.txt`).
 
+### Lucid Editor 관계 점검 — 읽기 전용, 리드·메인 표본 대조
+
+Sol `task_ca7dae29abca`(Dispatch `ctx_11ec28d046c8`, 지정·화면 `gpt-6.1-sol max`, backend unknown)가 계약 v1(SHA256 `7722735d…454a`)대로 checkpoint HEAD `439c742e`에서 실행했다. 파일 삭제와 Unity 실행은 하지 않았고, 추적 파일 변경은 0이다. 산출물은 셋이다.
+
+- 표 `sol-relations/relations.md`(SHA256 `85522e6d…9a52`)
+- 기계 판독 `sol-relations/relations.json`(SHA256 `d9e9a321…f6f634`)
+- 보고 `sol-relations/report.md`(SHA256 `2e82de6e…e19d7`)
+
+결과는 다음과 같다.
+
+- 후보는 123개다. `.cs` 58개, `.cs.meta` 58개, 폴더 `.meta` 7개다. 리드의 출발 집합과 같아, 더하거나 뺀 것은 0이다. 판정은 지움 119, 묻기 4였고, 메인 판단으로 123개 모두 지움이 됐다([승인된 결정](#승인된-결정)).
+- (b) guid 65개는 `Assets`·`ProjectSettings`·`Packages` 전체에서 자기 `.meta`에만 있다. Asset Serialization은 Force Text이고, 바이너리 직렬화 파일은 0이다. 바이너리 헤더로 의심되는 파일 222개 안의 비문자열 참조까지 없다고 증명하지는 못한다(작업자 공개 한계).
+- (a)(c)(d) 남는 런타임 코드와 우리 게임 코드는 후보 형식을 실제로 쓰지 않는다(0줄). 남는 Cainos 런타임은 39개다(Lucid Runtime 34개, `Chest`·`Elevator`·`MovingPlatform`·`BoundingPlatform`·`SecondOrderDynamics`). `Chest.cs`·`Elevator.cs`의 `using Cainos.LucidEditor;`는 문제없다. Runtime 파일이 그 namespace를 계속 선언하므로 삭제 뒤에도 해석된다. `ChestEditor`·`ElevatorEditor`는 `LucidEditor`를 상속하지만 함께 지워진다.
+- 「묻기」 4개의 원인은 `03_Client/Temp/ScriptUpdater/` 아래 `SerializeReferenceDropdown.cs` 사본 하나다.
+  - `updates.txt`가 이 사본을 Assets의 후보 자신에 짝지었다. 원본과의 차이는 107행 `children` → `childList` 한 줄이다.
+  - Git 제외 경로(`.gitignore:44`)에 있고, 11:42Z 측정 열기 때 생겼다.
+- 리드 대조(12:4xZ, `lead-sample-relations.md`)는 다섯 가지를 직접 확인했다.
+  - 후보를 `git ls-files`로 다시 셌다.
+  - guid 65개를 전체에서 grep했다.
+  - 형식 이름 71개를 후보 밖 `.cs` 181개에서 grep했다. 걸린 37줄은 모두 namespace·using·주석이었다.
+  - asmdef가 0개임을 확인했다.
+  - Temp 사본의 diff와 `updates.txt`를 읽었다.
+- 메인 대조(`msg_ff681cef67de`): 후보 재계수, Temp 사본, guid 표본 둘, namespace를 확인했다.
+- 작업자 자기 보고: heartbeat 5분 간격을 한 번 넘겼다(5분 46초). release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다. 닫은 뒤 기준 pane이 다시 exited됐다.
+
 ### 교정 기록
 
 첫 발생만 기록한다. 반복 규칙은 두 번째 발생부터 만든다.
@@ -230,3 +272,4 @@ Sol `task_9cf22ad2da19`(Dispatch `ctx_0826018fe9b0`, 지정·화면 `gpt-6.1-sol
 - 엔진이 강제하지 않아 그대로 둔 패키지의 새 버전 목록 — 승인 2A. 업그레이드 뒤 실제 목록을 여기에 적는다.
 - 6.7 LTS 이동 검토 — 6.7 LTS는 연말 예정(공식 페이지, 날짜 미정). 11월 마감 뒤 판단.
 - Cainos 에셋을 우리 아트 스타일의 새 sprite·애니메이션으로 재창조. 그때 Design 파트(worktree)가 필요하고, R-1 추가 파트는 사용자 승인 대상이다. 사용자 원문 「음 사실 아트파일만 필요하고, 솔직히 코드는 필요 없긴한데」(메인 `msg_0af85d53aa50`)와 「… 나중에 우리가 새로 sprite 에셋이나 애니메이션을 새로 우리 게임 아트스타일로 재 창조해야할거야, 그때 Design 워크트리가 또 필요할거임」(메인 `msg_626eb68b0772`). 이번 goal에서 착수하지 않는다.
+- Content 게임 goal(아이템 PR191 보류분·던전)은 이 goal의 다음이 아니다. Rules 운영 셋업 2·3단계(TDD 정본화·검증자 임시 쓰기 경계, 넘긴 후보 도착 확인)가 병합된 뒤에 연다. 그 첫 계획에는 기존 마일스톤 규칙([milestones](../../../.agents/skills/dawnholder-goal-loop/references/milestones.md))대로 Core와 묶은 「11월 마감 고리」 로드맵 초안을 넣는다. 사용자 원문 「대시보드 결정 응답: 1) Core·Content 재개 시점 - 최소 운영 셋업 몇 단계 뒤에 게임 goal을 다시 열지 → A 3단계 뒤 재개」(메인 `msg_de382995358d`, 메인 전달이며 직접 입력으로 격상하지 않는다).
