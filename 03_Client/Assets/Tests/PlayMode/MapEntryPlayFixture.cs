@@ -158,6 +158,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         bool _globalsCaptured;
         bool _ownsConnection;
         InputSettings _originalInputSettings;
+        InputSettings _originalInputSettingsCopy;
         InputSettings _runtimeInputSettings;
         bool _oldRunInBackground;
         PlayerInput _pairedPlayer;
@@ -182,6 +183,10 @@ namespace Dawnholder.Client.Tests.PlayMode
             _originalInputSettings = InputSystem.settings;
             _oldRunInBackground = Application.runInBackground;
             _globalsCaptured = true;
+            // Input System 1.20.0 destroys replaced settings flagged HideAndDontSave (its default when the project has
+            // no InputSettings asset); 1.19.0 keeps them. Restore from an untouched copy if the original does not survive.
+            _originalInputSettingsCopy = UnityEngine.Object.Instantiate(_originalInputSettings);
+            _originalInputSettingsCopy.hideFlags = HideFlags.HideAndDontSave;
             _runtimeInputSettings = UnityEngine.Object.Instantiate(_originalInputSettings);
             _runtimeInputSettings.hideFlags = HideFlags.HideAndDontSave;
             _runtimeInputSettings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
@@ -353,10 +358,18 @@ namespace Dawnholder.Client.Tests.PlayMode
                 Restore(() => Time.timeScale = _oldScale);
                 Restore(() => ClassLoadout.SessionSelectedClass = _oldClass);
                 Restore(() => UnityClientSession.SimulatedLatencyMs = _oldLatency);
-                Restore(() => InputSystem.settings = _originalInputSettings);
+                // Unity null check, not ??: a destroyed original reads as null, and its copy takes its place.
+                Restore(() =>
+                {
+                    InputSettings restored = _originalInputSettings != null ? _originalInputSettings : _originalInputSettingsCopy;
+                    if (restored != null) InputSystem.settings = restored;
+                });
                 Restore(() => Application.runInBackground = _oldRunInBackground);
             }
-            Restore(() => { if (_runtimeInputSettings != null) UnityEngine.Object.Destroy(_runtimeInputSettings); });
+            // Destroy only the copies the Input System no longer uses. A copy it still uses (normally the restored one)
+            // is its settings now; destroying that would break the next Prepare.
+            foreach (InputSettings copy in new[] { _runtimeInputSettings, _originalInputSettingsCopy })
+                Restore(() => { if (copy != null && copy != InputSystem.settings) UnityEngine.Object.Destroy(copy); });
             if (errors.Count != 0) throw new AggregateException("Test fixture runtime restoration failed", errors);
         }
     }

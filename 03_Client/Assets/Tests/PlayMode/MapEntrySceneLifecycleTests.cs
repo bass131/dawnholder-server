@@ -361,6 +361,70 @@ namespace Dawnholder.Client.Tests.PlayMode
             AssertOverlayReleased();
         }
 
+        // Independent check of the fixture's InputSettings save/restore across repeated tests. Expected values are the
+        // global settings captured before the first Prepare, not anything the fixture computes.
+        [UnityTest]
+        public IEnumerator RepeatedFixtureCycles_RestoreGlobalInputSettingsValues_WithoutGrowingSettingsObjects()
+        {
+            const int cycles = 3;
+            Assert.IsTrue(InputSystem.settings != null, "precondition: Input System has live global settings");
+            string originalValues = JsonUtility.ToJson(InputSystem.settings);
+            HideFlags originalHideFlags = InputSystem.settings.hideFlags;
+            int originalObjectCount = Resources.FindObjectsOfTypeAll<InputSettings>().Length;
+            for (int cycle = 0; cycle < cycles; cycle++)
+            {
+                InputSettings beforePrepare = InputSystem.settings;
+                HideFlags beforePrepareFlags = beforePrepare.hideFlags;
+                _fixture = new MapEntryPlayFixture();
+                yield return _fixture.Prepare(false);
+                Assert.AreNotEqual(originalValues, JsonUtility.ToJson(InputSystem.settings), $"cycle {cycle}: fixture must swap in its runtime settings");
+                // Diagnostic only: whether the replaced settings object survives depends on the Input System version.
+                Debug.Log($"[InputSettings cycle] cycle={cycle} hideFlags={beforePrepareFlags} destroyedByPrepare={beforePrepare == null}");
+                MapEntryPlayFixture prepared = _fixture;
+                _fixture = new MapEntryPlayFixture(); // TearDown then has nothing left to clean.
+                yield return prepared.Cleanup();
+                yield return null; // Object.Destroy completes at the end of the frame.
+                Assert.IsTrue(InputSystem.settings != null, $"cycle {cycle}: global settings must stay alive");
+                Assert.AreEqual(originalValues, JsonUtility.ToJson(InputSystem.settings), $"cycle {cycle}: settings values must be restored");
+                Assert.AreEqual(originalHideFlags, InputSystem.settings.hideFlags, $"cycle {cycle}: ownership flags must be restored");
+                Assert.AreEqual(originalObjectCount, Resources.FindObjectsOfTypeAll<InputSettings>().Length, $"cycle {cycle}: InputSettings objects must not grow");
+            }
+        }
+
+        // The other restore branch: an original the Input System does not treat as temporary (like a project
+        // InputSettings asset) survives the swap, so the fixture must restore that object itself and destroy both copies.
+        [UnityTest]
+        public IEnumerator SurvivingOriginalSettings_IsRestoredAsItself_AndBothFixtureCopiesAreDestroyed()
+        {
+            InputSettings previousGlobal = InputSystem.settings;
+            Assert.IsTrue(previousGlobal != null, "precondition: Input System has live global settings");
+            int otherObjectsBefore = Resources.FindObjectsOfTypeAll<InputSettings>().Count(item => item != previousGlobal);
+            var persistentLike = UnityEngine.Object.Instantiate(previousGlobal);
+            // Any value other than HideAndDontSave is kept by the 1.20.0 setter; DontUnloadUnusedAsset keeps it loaded.
+            persistentLike.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            InputSystem.settings = persistentLike;
+            string persistentValues = JsonUtility.ToJson(persistentLike);
+
+            yield return _fixture.Prepare(false);
+            Assert.AreNotSame(persistentLike, InputSystem.settings, "precondition: fixture must swap in its runtime settings");
+            MapEntryPlayFixture prepared = _fixture;
+            _fixture = new MapEntryPlayFixture(); // TearDown then has nothing left to clean.
+            yield return prepared.Cleanup();
+            yield return null; // Object.Destroy completes at the end of the frame.
+
+            Assert.AreSame(persistentLike, InputSystem.settings, "a surviving original must be restored as itself");
+            Assert.AreEqual(persistentValues, JsonUtility.ToJson(persistentLike), "the original's values must stay untouched");
+            int otherObjectsAfter = Resources.FindObjectsOfTypeAll<InputSettings>().Count(item => item != persistentLike && item != previousGlobal);
+            Assert.AreEqual(otherObjectsBefore, otherObjectsAfter, "both fixture copies must be destroyed");
+
+            // Hand the Input System a temporary settings object again, as the project has no InputSettings asset.
+            var temporary = UnityEngine.Object.Instantiate(persistentLike);
+            temporary.hideFlags = HideFlags.HideAndDontSave;
+            InputSystem.settings = temporary;
+            UnityEngine.Object.Destroy(persistentLike);
+            if (previousGlobal != null) UnityEngine.Object.Destroy(previousGlobal);
+        }
+
         void AssertOverlayReleased()
         {
             Assert.IsFalse(_fixture.Loader.IsTransitioning);

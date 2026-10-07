@@ -173,8 +173,8 @@ namespace Dawnholder.Client.Tests
             bool clrNull = ReferenceEquals(value, null);
             string runtimeType = clrNull ? "<clr-null>" : value.GetType().FullName;
             string text = clrNull ? "<clr-null>" : Probe(() => value.ToString());
-            string id = clrNull ? "<clr-null>" : Probe(() => value.GetInstanceID().ToString());
-            return $"clrRefNull={clrNull} unityEqNull={value == null} runtimeType={runtimeType} toString={text} instanceId={id}";
+            string id = clrNull ? "<clr-null>" : Probe(() => value.GetEntityId().ToString());
+            return $"clrRefNull={clrNull} unityEqNull={value == null} runtimeType={runtimeType} toString={text} entityId={id}";
         }
 
         static string Probe(Func<string> read)
