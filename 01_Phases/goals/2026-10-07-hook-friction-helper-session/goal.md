@@ -56,7 +56,7 @@ PR2 — 정본·스킬·BACKLOG(문서)
 5. BACKLOG 첫 변경(Management 넘김 원문 그대로).
    - 「Management에서 이관한 후보」에 `management-text-contrast-guard` 새 행(1A).
    - `contract-context-check` 출처 칸에 Management goal 종료 Gardener 후보 1 근거(2A)와 Z1(PR202 리드 메모 사후 작성) 연결. 행의 ID·최초 7필드는 보존한다.
-   - `mailbox-output-loss-hook` 출처 칸에 송신 결과 파이프 끊김 네 파일 근거 연결.
+   - `mailbox-output-loss-hook` 출처 칸에 송신 결과 끊김 네 파일 근거 연결. 파이프 원인은 두 파일에서 확인됐고 나머지 두 파일은 당시 명령을 확인하지 못했다(넘김 원문).
    - `merge-gate-code-followup` 상태를 이 goal 승격 링크로 바꾼다. 남는 O2·O6는 「다음 계획 후보」로 두고 종료 때 미해결이면 새 행으로 등록한다.
 6. CLAUDE.md 서브에이전트 문장에 「메인 개인 도구 폴더 한정, 사용자 결정마다」 예외 한 줄(질문 2 A, 메인 작성, 리드가 커밋). **보류**: 메인 쓰기를 분류기가 거부했다(아래 「PR2 작성」).
 
@@ -97,7 +97,7 @@ PR2 — 정본·스킬·BACKLOG(문서)
 | 1 - 그물 오탐 줄이기(멈춤, 분리 시험 후속 goal로 넘김) | 판정 코드·시험·도구 README·ORCA 그물 문장·goal·CURRENT | 강: 보안 경계와 실행 도구. 선행 시험은 신규 Opus(시범 대상 아님), 구현은 Sol max, 독립 검증은 신규 Opus(시범의 보안 경계 배정) |
 | 2 - 정본·스킬·BACKLOG | 문서만 | 문서 실사. 작성은 Sol max, 실사는 신규 `gpt-6-astra` xhigh(시범). CLAUDE.md 문장은 저장소 밖 메인 개인 도구에 관한 것이라 보안 경계로 보지 않는다(메인 `msg_53e10a4d10c3`) |
 
-- 순서: PR1 → PR2. 둘 다 ORCA와 이 goal을 고치므로 PR2 branch는 PR1 병합 뒤 최신 main에서 만든다. PR1 검증 동안 PR2 계약 준비(읽기)는 한다.
+- 순서(최초 계획, 사용자 결정 `msg_1108186019ec`로 대체): PR1 → PR2. 둘 다 ORCA와 이 goal을 고치므로 PR2 branch는 PR1 병합 뒤 최신 main에서 만든다. PR1 검증 동안 PR2 계약 준비(읽기)는 한다. 현재는 PR1을 멈추고 PR2를 최신 main에서 만들었다(「적용 중인 사용자 결정」의 「이 goal은 PR2로 마침」).
 - R-7: 그물 변경은 「보호 집합」 범주에 닿지만 메인 결정(`msg_53e10a4d10c3`)으로 비적용이다. 이전 goal의 판단(`msg_bc4cea4b161f` 1항)과 같다.
 - 규칙 문서 bytes: PR1은 ORCA 그물 문장을 고쳐 써 증가 0이 목표다. PR2의 증가분(AGENTS 태그 구절·R-1 문장·PR 검수 문장)은 ORCA 「병합 관문」 첫 문단의 지난 적용 기록 두 문장(118 + 201 bytes)을 이 goal로 옮겨 상쇄한다. 부족하면 실사 전에 메인과 정한다.
 
@@ -253,6 +253,9 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - bytes 질문 둘: 첫 안은 묶음 102,715(57 초과)였다. 리드 답 `msg_79ebb6870aef`(AGENTS 새 링크 생략, Sol이 새로 쓰거나 고치는 문장만 축약, 기존 규칙 문장 이동·삭제 없음)와 `msg_fed05fbf59f7`(goal-loop 「통합과 보고」 첫 문단 고쳐 쓰기 허용)로 102,658이 됐다. 메인 결정이 필요한 기존 문장 이동은 없었다(E/session/check55-check.md·check56-check.md).
 - 결과(커밋 `7515a41b` 정본·스킬, `5ad58438` BACKLOG): 여섯 파일 묶음 102,658(기준과 같음), ORCA 250행, 새 스킬 8,245 bytes, BACKLOG 행 52→53. 상대 링크 231·base anchor 87 실패 0, BACKLOG 보존 검사 통과(Sol 원시 E/pr2/, 리드 R-2 E/lead-check/pr2-r2-check.md와 pr2-r2-measure.txt).
 - **CLAUDE.md 보류**: 메인 `msg_b2357afafebb`(19:01:38Z)에 따르면 메인이 rules-active `CLAUDE.md` 11행 뒤에 예외 한 줄을 쓰려 했고 auto mode 분류기가 「Self-Modification」으로 거부했다. 파일은 그대로다(8,195 bytes). 리드·작업자·검증자도 쓰지 않는다. PR2는 이 줄 없이 진행하고 독립 실사의 CLAUDE.md 항목은 「사용자 확인 대기로 보류」다. 아침에 사용자가 직접 넣거나 허용 방법을 정하며, 들어오면 별도 커밋과 메인 R-2로 PR2에 더한다. 메인 문안은 「  - 예외: 메인 개인 도구 폴더(`C:/Dev/DawnHolder_Dashboard`)의 쓰기는 사용자 결정마다 서브에이전트에 맡길 수 있다. 메인은 결과를 직접 확인한다. 저장소 파일과 다른 파트 영역에는 적용하지 않는다.」다.
+- 독립 문서 실사(신규 `gpt-6-astra` xhigh, Task `task_79934908506a`, 판정 E/pr2-review/verdict.md, 검증 HEAD `0136a3a5`): **차단 V1**. BACKLOG `mailbox-output-loss-hook` 덧붙임이 송신 결과 끊김 네 파일을 모두 파이프 원인으로 적었다. 넘김 원문과 Management goal은 파이프 원인 확인 두 파일과 당시 명령 미확인 두 파일을 구분한다. 귀속은 리드 계약(「쓸 내용」 6-c)과 이 goal 59행이다. 나머지 요구·보존·bytes·링크·권한·현실 시나리오 셋은 지적 없음, CLAUDE.md는 보류로 판정했다. 설계 관찰 O1(100행 최초 순서 문장)은 리드가 표식을 붙였다. 리드 R-2는 E/lead-check/pr2-review-r2-check.md다.
+  - 확정 실패 집계: PR2 작성 계약 V1 1회(귀속 리드 계약·goal).
+  - 처리: 리드가 59행을 원문 확인 수준으로 고쳤다. BACKLOG 덧붙임은 새 Sol 수정 세션이 고치고, 새 검증자가 수정분을 좁혀 재실사한다.
 
 <a id="orca-moved-history"></a>
 ## ORCA에서 옮긴 적용 기록
