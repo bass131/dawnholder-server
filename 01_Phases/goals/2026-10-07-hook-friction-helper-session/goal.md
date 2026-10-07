@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch: PR1은 `fix/hook-net-false-positives-20261007`(base `8e498440`)다. PR2는 PR1 병합 뒤 최신 main에서 만든다.
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T16:2xZ): 첫 독립 검증이 FAIL(차단 V1·V2)이라 수정 회차 중이다. 동작 계약 v3.2, 수정 회차 선행 시험, Sol 수정이 끝나 커밋됐다(아래 「PR1 수정 회차」). 다음은 신규 Opus 재검증이다. 계약 초안은 E/verify2-contract-head.md다. push 전이다.
+- **현재 위치**(2026-10-07T18:2xZ): 수정 회차 재검증이 FAIL(차단 W1 하나)이었다(아래 「PR1 재검증(수정 회차, FAIL)」). 사용자 결정으로 PR1은 멈추고 branch를 보존한다. 다음은 자격 증명 분리 시험 계획 초안을 메인에 보내고 승인을 기다리는 것이다(「적용 중인 사용자 결정」의 「PR1 멈춤과 자격 증명 분리 시험」).
 - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실린다. PR1 구현 중에는 이 checkout의 hook이 고치는 중인 판정 코드를 바로 쓴다(아래 「위험」).
 
 ## 진척 단계
@@ -145,6 +145,20 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - **보조 세션의 상시 「보조 메인」 승격**: 메인 `msg_b279e2d2759e`(14:00:40Z, E/session/wait9.raw.txt)가 전달한 원문은 **「보조 메인 세션을 몇번 돌려보니까 엄청 편하고 좋은데, 현황판에 정식으로 승격해줘, 지금은 규칙점검 Opus로 되어있는데 / 이름 바꿔줘」**다. 메인은 현황판 표시를 「보조 메인 Opus」로 고쳤고 보조 pane에 태그 `[보조 메인 Opus]`를 쓰라고 보냈다. PR2 반영: 보조 세션 진입 스킬과 AGENTS 태그 구절의 예시를 `[보조 메인 Opus]`로 바꾸고, 메인 옆에 상시로 두는 보조가 있을 수 있다는 한 줄을 넣는다. 형식 `[<용도> <모델>]`과 「태그는 권한이 아님」은 그대로다. 결정 범위는 이름과 상시 자리뿐이다. 상시 보조에 새 권한·절차가 필요해 보이면 넣지 않고 메인에 묻는다.
 - **작업자 하나에 받침 pane을 만들지 않음**(정본 반영 전 적용 중): 메인 `msg_e62c4989b3dc`(14:23:02Z, E/session/wait11.raw.txt)가 전달한 원문은 **「음 아마 우리 규칙에서 문장상 모호한게 있었나보네, 창 하나를 띄울때는 굳이 Pane을 하나 더 만들어서 Agent를 할당할 필요는 없어」**다. 계기는 unity-upgrade-active 탭의 빈 「Terminal 1」 받침 pane이다. 메인 해석: 같은 worktree면 리드 pane split, 다른 worktree면 `orca terminal create --worktree <선택자> --command <최초 실행 명령>`으로 바로 연다. 정본(ORCA R-1·R-5 2단계) 문장 정리는 승인된 PR2 범위 밖이라 다음 Rules goal 후보로 둔다(아래 「다음 계획 후보」). 이 goal은 빈 pane을 만들지 않았다. Sol은 정산된 선행 시험 pane에서 split했다.
 - **Advisor 모델 대안**(정본 반영 전 적용 중): 메인 `msg_87c0fed69b04`(13:30:23Z)·`msg_6439bbd9ef9b`(13:32:07Z, E/session/wait5.raw.txt)가 전달한 원문은 **「음 만약에 Advisor가 필요하면 Astra로 체크해보는거도 방법이야」**와 확인 **「OK, Advisor로 Fable 5.1도 있지만 GPT 6 Astra도 가능한점을 고려해줘」**다. 해석(사용자 확인으로 확정): 확정 실패 3회 뒤 Advisor는 신규 읽기 전용 `claude-fable-5-1`이 기본이고, 리드가 신규 읽기 전용 `gpt-6-astra` xhigh를 대안으로 고를 수 있다. 고르면 이유를 수행 기록에 남긴다. 기동 조건·기동 전 메인 보고·조언 파일 하나·새 Sol의 채택 기록·R-5·R-6은 그대로다. ORCA·AGENTS 반영은 이 goal 범위 밖이며 메인 씨앗 파일에 정본 반영 후보로 있다.
+- **safeguard 차단 시 검증자 대체**(정본 반영 전 적용 중): 메인 `msg_1aa6aa9fa263`(16:40:00Z, E/session/check31.raw.txt)이 전달한 원문은 **「만약 또 SafeGuard로 막히면 Astra로 대체해서 진행해줘」**다. 메인 해석은 다음과 같다.
+  - 조건은 Opus 검증자에게 「Opus 5.5's safeguards flagged this session」 선택창이 다시 뜨는 것이다. 창에서는 고르지 않는다. 「Switch automatically」(Opus 4.8 전환)는 계속 금지이고, 이 대체는 실행 중 모델 변경이 아니라 세션 교체다.
+  - Opus 검증자는 산출물을 근거 폴더에 둔 채 정산·종료하고 막힌 시각과 화면 문구를 남긴다.
+  - 같은 계약으로 신규 `gpt-6-astra` xhigh 검증자를 새 Task·Dispatch로 열고 R-5·R-6을 따른다. 판정은 새 검증자가 독립으로 다시 한다. Opus 부분 산출물을 참고 입력으로 줄지는 리드가 정해 계약에 적는다.
+  - 대체하면 메인에 status 한 통(막힌 시각, 새 handle, 모델 표시)을 보낸다.
+- **실행 시점 검사 안 먼저 검토**: 메인 `msg_882e45455690`(17:19:05Z, E/session/check47.raw.txt)이 전달한 사용자 원문 셋이다(메인 창 Enter 제출, 메인 전달).
+  - 계기 질문: **「그러면 검증 조건에 Read랑 Write 툴은 제외하고, 나머지 실행관련된 Tool을 Call할때 직전에 검증하는 방식으로 그물망 구현하는건 안되나?」**
+  - 판단 기준: **「흠 확실히 좀 까다로운 문제네, 검증기를 통해서 솔직히 명령어 텍스트를 검사하는건 문제가 안되는데, 얼마나 속도적 병목이 없는지가 핵심인거 같아」**
+  - 결정: **「대시보드 결정 응답: 1) Rules PR1 - 다음 수정 회차 전에 「실제 실행 시점 검사」 안을 리드가 먼저 검토할지 → A 검토 먼저」**
+  - 메인 지시: 다음 수정 회차는 이 검토 뒤 사용자 결정으로 시작한다. 비교 대상은 A안 실행 시점 검사(git pre-push hook, gh 래퍼, 글자 그물 축소)와 B안 지금 방향의 가리기 축소다. 리드 v3.3 계획(`msg_ef093e2120a8`)은 B안으로 쓴다(`msg_278a7130befd`). 검토는 읽기 전용이며 산출은 근거 폴더 비교 문서와 메인 결정 요청 한 통이다.
+  - 리드 결정 요청 `msg_eac0fa1f3d89`(「B 먼저」 추천, E/runtime-check-comparison.md) 뒤 메인 `msg_72a64f4bed5a`(18:04:16Z, E/session/check49.raw.txt)가 전달한 원문은 **「대시보드 결정 응답: 1) Rules PR1 - 가리기 수정 한 회차 더(B)냐, PR1 멈추고 자격 증명 분리 시험(C)이냐 → C 코멘트 「일단 이건 더 논의 해보자」」**다. 「C 코멘트」는 현황판 의견 칸이며 메인 지시대로 C 선택이 아니라 미결·논의 중으로 읽었다. 아래 결정으로 닫혔다.
+- **PR1 멈춤과 자격 증명 분리 시험**: 메인 `msg_0e7cb4fe6f52`(18:19:23Z, E/session/check49.raw.txt)이 전달한 원문은 **「대시보드 결정 응답: 1) Rules PR1 - 병합 통제를 「대화형 유지 + 자격 증명 분리」로 바꾸는 시험을 할지 → A 대화형 유지 분리 시험」**이다(메인 창 Enter 제출, 메인 전달). 위 「미결·논의 중」은 이 결정으로 닫는다.
+  - 사용자에게 보인 A: PR1 수정은 멈추고 branch는 보존한다. 에이전트가 병합하지 못하는 좁은 토큰과 push용 deploy key로 바꾸는 시험을 먼저 한다. 통과하면 글자 그물·가리기 코드를 걷는 새 Rules goal로 가고, 병합은 지금처럼 승인 한 줄을 치면 메인이 한다. 고르지 않은 B는 가리기 수정 한 회차로 PR1을 병합하는 안이었다.
+  - 메인 지시: v3.3과 선행 시험은 열지 않는다. branch `fix/hook-net-false-positives-20261007`(head `ed320419`, GitHub PR 없음)는 삭제·force push·rebase 없이 보존한다. 지금 hook과 그물은 시험 동안 그대로 둔다. 리드는 자격 증명 분리 시험 계획 초안을 메인에 status로 보내고, GitHub 설정·자격 증명·원격을 건드리는 실행은 초안 승인 뒤에만 한다. main을 직접 대상으로 하는 push·병합 시도는 넣지 않고, 토큰 값·개인 키는 메일·goal·로그·화면·저장소에 남기지 않는다.
 
 ## 현재 결과
 
@@ -190,8 +204,31 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 리드 R-2(E/lead-check/impl2-r2-check.md): 네 파일 hash, 시험 수, harness, 재현 결과가 Sol 보고와 같다. 보호 파일 diff 없음. 비차단 관찰: Sol이 작업 36분 동안 heartbeat를 보내지 않았다.
 - 커밋(push 전): `d2fb23f0` O-T3 주석만(구조), `be093211` 동작과 문서. inert-text의 주석 변경은 바뀐 읽기를 설명하고 동작 hunk와 섞여 있어 동작 커밋에 함께 뒀다(커밋 메시지에 적음). 커밋 파일 hash가 Sol 최종과 같다. Sol pane은 16:22:18Z에 닫았고 리드 pane은 그대로다.
 
+### PR1 재검증(수정 회차, FAIL)
+
+- Opus 재검증: 신규 `claude-opus-5-5`, Task `task_4e391a7fdd7c`, Dispatch `ctx_79d41b550e17`, 계약 E/verify2-contract.md(`c9603d29…`).
+  - 16:3xZ에 탐침 표를 쓰던 중 「Model switch」 선택창(「Opus 5.5's safeguards flagged this session … Switch to Opus 4.8 …?」)에서 멈췄다. 메인이 고르지 않고 Esc로 취소했고(`msg_56cf0ff441de`) 리드가 재개 dispatch `msg_06a6e4baa29e`를 보냈다.
+  - 16:50:37Z에 선택창이 다시 떠 위 「safeguard 차단 시 검증자 대체」대로 바꿨다(메인 지시 `msg_47708ee158ad`). Dispatch는 failed/operator_close(16:50:56Z)다. 판정이 없어 확정 실패 집계에서 뺀다.
+  - 산출물 34개는 E/verify2/에 두고 새 검증자에게 주지 않았다(정산 E/verify2-opus-settlement.md).
+- 대체 재검증: 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh · Full Access」, Codex v0.160.1, backend unknown), Task `task_a5f6d858bd2d`, Dispatch `ctx_28f276dccc0c`, spec E/verify2a-spec.md(`ef7f4f4a…`, 보충 + 같은 계약). worker-start가 `turn_start_unobserved`라 draft 복구대로 Enter 한 번을 보냈다(E/verify2a-draft-recovery.md). 판정 E/verify2a/verdict.md, worker_done `msg_8810c52a48c7`(17:16:57Z).
+- 기대대로인 것: MergeGate 306/306, Orca 22/22, v3.1 제품 사본 271/35(실패 이름이 선행 시험과 같음), 원문 harness 두 cwd 10/10(「풀림 7건」 유지), 첫 검증 지정 D·G 68행이 v2.3과 같은 코드, 일상 T 72행 변화 없음, 문서 bytes 102,648·ORCA 250줄·링크 8/8. V1·V2·V4·V5·V6·O1·O2·O4는 닫혔다. 6b(실제 Claude 세션 확인)는 Codex 세션이라 미실행이며 리드 몫이다.
+- 차단 W1: 조건문·반복문(`if … fi`, `for`·`while`·`until … done`) 안의 따옴표 heredoc은 출력이 `fi`·`done` 뒤 파이프로 넘어가도 가려져 결정 없음이 된다(v2.3은 막음). reader가 `()`·`{}` 묶음만 기억해 파이프 표시가 마지막 낱말에만 붙는다. v3.1부터 있던 결함이며 귀속은 impl2 계약(Task `task_8ad06eae8c39`)이다.
+- W2(메인 수용·종결, 비차단): 검증자가 escalation `msg_155705daf8e4`로 올렸다.
+  - 사실: 수정 회차 선행 시험 작성자(Task `task_15f6e834cd37`)의 맥락 메모 E/tdd2/context.md는 「이 작업의 첫 쓰기」라고 적었다. 보고서 §11.4는 15:12~15:21Z에 orca receipt 다섯 개를 Claude Code scratchpad(TEMP 아래)에 썼다가 15:21:29Z에 근거 폴더로 옮겼다고 자진 보고했다. 메모는 15:20:20Z, 시험 파일 수정은 15:26:34Z다.
+  - **정정: 메모의 「첫 쓰기」 주장은 TEMP receipt를 빼고 맞다.**
+  - 리드 결정 요청 `msg_8a8efab2d8df`에 대한 메인 결정 `msg_f1b350feddc3`(17:10:20Z, 사용자에게 보고)은 **「W2 수용·종결」**이다. 근거는 메모 규칙의 목적(대상 파일을 쓰기 전에 규칙·근거를 남김)이 지켜졌고 시험 내용·결과에 닿지 않았다는 것이다.
+  - 조건: 교정은 계약 양식 후보(아래 「다음 계획 후보」)로 남긴다. 이번 목표의 다음 계약에는 「Claude Code scratchpad도 TEMP다, receipt는 처음부터 근거 폴더 아래」를 유지한다. 메인은 「같은 이탈이 다시 나오면 두 번째 발생이라 반복 규칙 대상」이라고 했다.
+- 비차단 관찰: Q1은 부분 문법 reader의 유지비다(지원 밖 문법은 원문을 돌려주는 경계를 명시하는 방향). Q2는 시험 473·474·525행의 보이지 않는 공백을 다음 수정 때 ` `·`　`으로 쓰자는 것이다.
+- 리드 R-2(E/lead-check/verify2a-r2-check.md): 판정 본문에서 따로 만든 행으로 W1을 실제 hook 진입과 Git Bash 무해 표식으로 재현했다(w1-repro.mjs). 독립 W1 시험 4/4 실패, suite 306/306·22/22, 풀린 378행 분류의 표본 대조가 판정과 같다.
+- 확정 실패 집계: impl2 계약의 W1 1회. 같은 산출물(inert-text.mjs) 수정은 다음이 두 번째다.
+- 검증자 pane은 17:19:01Z에 닫았다. 리드 pane은 그대로다.
+- 리드 수정 계획(메인 보고 `msg_ef093e2120a8`): 동작 계약 v3.3은 「bash와 다르게 읽을 수 있는 꼴」에 명령 자리의 복합 명령 낱말을 더해 읽기 실패로 둔다(막는 쪽). 리드 사전 점검(E/lead-check/w1-fix-option-check.txt, 제품 아님)에서 census 풀림 7건과 일상 T 18행은 그대로였다. 탐침 681개 중에서는 N1~N4가 막히고 if 안 echo 메모 하나(A27)가 v2.3처럼 다시 막혔다.
+- 다음: 메인 지시 `msg_278a7130befd`로 v3.3을 보류하고 두 안을 비교해 결정을 요청했다(`msg_eac0fa1f3d89`). 사용자 결정(`msg_0e7cb4fe6f52`)으로 v3.3·두 번째 수정 회차는 열지 않고 PR1을 멈춘다. 확정 실패 집계는 impl2 계약 W1 1회에서 멈춘다.
+
 ## 다음 계획 후보
 
 - `merge-gate-code-followup`의 O2(비ASCII 공백)·O6(이상한 session_id): 이 goal 밖이다. 종료 때 미해결이면 BACKLOG 새 행으로 등록한다.
 - Claude 작업자의 TEMP 쓰기(두 번째 발생): 첫 선행 시험 작성자의 `/tmp` 쓰기(첫 발생)에 이어, 수정 회차 선행 시험 작성자가 orca receipt를 Claude Code 세션 scratchpad(TEMP 아래)에 썼다가 근거 폴더로 옮겼다. 원인은 Claude Code가 scratchpad를 안내하고 계약은 「그 밖의 TEMP 쓰기 금지」만 적은 데 있다. 교정 후보는 위임 계약 양식(작업 맥락 스킬 templates)에 「Claude Code가 안내하는 scratchpad도 TEMP다. receipt·임시 파일은 근거 폴더 아래에 쓴다」를 넣는 것이다. 이 goal의 PR2 범위 밖이라 종료 때 BACKLOG 새 행으로 등록하고, 그 전까지 이 goal의 Claude 계약에 그 문장을 넣는다.
+- 실행 시점 검사·역할 분리(다음 Rules goal 설계 입력): 리드 비교 문서 E/runtime-check-comparison.md, 결정 요청 `msg_eac0fa1f3d89`. 그 뒤 도착한 메인 보충 `msg_9ff8eb25d846`(구조화된 도구 경로, 리드급 전면 거부와 메인 요청 인터페이스, 막는 층 셋)과 `msg_a7ce1ae26151`(세션 권한 판별 근거)은 사용자 원문과 함께 E/next-goal-inputs-runtime-role-split.md에 보관했다(메인 지시 `msg_4b7fc0b428af`). 메인이 설명한 「병합 자체를 사람 행동으로 빼는 안」은 사용자 판단 전이라 후보로만 둔다. PR1 결정 뒤 종료 때 BACKLOG 새 행 후보다.
+- Claude safeguard와 병합 관문 검증(첫 발생): 병합·push 문구를 많이 다루는 검증은 Opus 5.5 safeguard 선택창에 걸릴 수 있다(위 「PR1 재검증(수정 회차, FAIL)」). 반복 규칙은 두 번째 발생부터다. 생기면 교정 층(계약 양식 또는 검증자 배정)을 정하고, 종료 때 BACKLOG 새 행 후보로 본다.
 - 작업자 pane 배치 문장 정리(ORCA R-1·R-5 2단계): 같은 worktree는 리드 pane split, 다른 worktree는 `terminal create --worktree`로 바로 열고 빈 받침 pane을 만들지 않는다(사용자 결정 `msg_e62c4989b3dc`). split close 때 부모 pane이 꺼지는 Orca 1.4.222 관측과 함께 다룬다. 종료 때 BACKLOG 새 행으로 등록한다.
