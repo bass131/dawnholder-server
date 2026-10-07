@@ -347,7 +347,7 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 ### PR3 구현
 
 - **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max · Full Access · never」, backend unknown)을 Task `task_eaa49db2f2b2`, Dispatch `ctx_646a00e3e826`로 시작했다. 계약 E/`pr3-s1-task.txt`(SHA-256 `79ebae0d…`), 경로 검사 E/`pr3-s1-path-check.txt`(exit 0). 1단계(구조) 뒤 질문으로 멈추면 리드가 commit하고 2단계(동작)를 진행시킨다.
-- **리드 절차 위반(파트 두 번째 발생):** 2026-10-07 06:38:36Z에 리드가 goal commit·push 명령 끝에 우편함 대기를 `&`와 `/dev/null`로 붙여 띄웠다(CLAUDE.md 「백그라운드 `&`나 `/dev/null` 리다이렉트로 출력을 버리지 않는다」 위반, 첫 발생은 위 「PR2 MCP 구현」). 06:38:57Z에 그 프로세스 하나만 껐고 다른 세션의 check 프로세스는 두었다. 꺼진 뒤 peek에는 그 대기가 받지 않는 Sol heartbeat 하나뿐이었고 inbox에도 다른 메시지가 없어 유실은 없었다(E/`check-after-stray-wait.json`·`inbox-after-stray-wait.json`). 대기는 단독 호출과 `tee`로 하나만 다시 열었다. 메인 보고는 `msg_9f655bb20a2c`다. 반복 규칙과 대기 차단 hook은 Rules 소유다.
+- **리드 절차 위반(파트 두 번째 발생):** 2026-10-07 06:38:36Z에 리드가 goal commit·push 명령 끝에 우편함 대기를 `&`와 `/dev/null`로 붙여 띄웠다(CLAUDE.md 「백그라운드 `&`나 `/dev/null` 리다이렉트로 출력을 버리지 않는다」 위반, 첫 발생은 위 「PR2 MCP 구현」). 06:38:57Z에 그 프로세스 하나만 껐고 다른 세션의 check 프로세스는 두었다. 꺼진 뒤 peek에는 그 대기가 받지 않는 Sol heartbeat 하나뿐이었고 inbox에도 다른 메시지가 없어 유실은 없었다(E/`check-after-stray-wait.json`·`inbox-after-stray-wait.json`). 대기는 단독 호출과 `tee`로 하나만 다시 열었다. 메인 보고는 `msg_9f655bb20a2c`다. 메인 답 `msg_939757d4c6a1`은 같은 리드·같은 실수의 두 번째라 문서 규칙으로는 부족하고 막는 층은 hook이라고 판단했다. 메인이 Rules에 후속 후보로 넘긴다(Rules PR2 범위 밖). 리드는 대기를 다른 명령과 묶지 않은 단독 백그라운드 호출로만 연다.
 
 ### 진입과 준비
 
