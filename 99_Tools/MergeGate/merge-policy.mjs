@@ -1,5 +1,7 @@
 import { posix, win32 } from 'node:path';
 
+import { maskInertText } from './inert-text.mjs';
+
 const approvalLifetime = 30 * 60 * 1000;
 const permissionWindow = 120 * 1000;
 const mergeMethods = new Set(['--merge', '--squash', '--rebase']);
@@ -215,8 +217,11 @@ function suspectWords(command) {
   if (hasGh && words.includes('merge')) return true;
   if (hasGh && words.includes('api') && words.some(word => word.endsWith('/merge') ||
       word.includes('mergepullrequest') || word.includes('enablepullrequestautomerge'))) return true;
-  return words.includes('push') && words.some(word => word === 'main' || word.endsWith(':main') ||
-    word.endsWith('heads/main') || word === '--all' || word === '--mirror');
+  return words.includes('push') && words.some(rawWord => {
+    const word = rawWord.replace(/^\+/, '');
+    return word === 'main' || word.endsWith(':main') || word.endsWith('heads/main') ||
+      word === '--all' || word === '--mirror';
+  });
 }
 
 // Classify before touching state: ordinary commands never read approval files.
@@ -232,21 +237,23 @@ export function preparePreToolUse(input) {
   }
   if (!shellTools.has(input.tool_name) || typeof input.tool_input.command !== 'string') return { kind: 'none' };
   const command = input.tool_input.command;
-  const commands = simpleCommands(command);
+  // Checks 1–3 and the net read masked text; checks 4–5 and merge pass conditions read the original.
+  const maskedCommand = maskInertText(command);
+  const commands = simpleCommands(maskedCommand);
   if (commands.some(words => findSubcommands(words, 'gh', ['pr', 'merge'], ghValueOptions).length > 0)) {
     // Only Bash has the standalone merge permission path; Monitor must never consume an approval.
     // An exact standalone merge bypasses the safety net (gh + merge) and proceeds to checkout, agent and approval checks.
     return input.tool_name === 'Monitor' ? blocked('non-bash-merge') : inspectMergeCommand(command);
   }
   if (commands.some(words => findSubcommands(words, 'gh', ['api'], ghValueOptions).length > 0) &&
-      (/\bpulls\/[0-9]+\/merge\b/.test(command) || /\b(?:mergePullRequest|enablePullRequestAutoMerge)\b/.test(command))) {
+      (/\bpulls\/[0-9]+\/merge\b/.test(maskedCommand) || /\b(?:mergePullRequest|enablePullRequestAutoMerge)\b/.test(maskedCommand))) {
     return blocked('api-merge');
   }
   const push = inspectPushes(commands);
   if (push === 'main') return blocked('push-main');
   const fallback = otherCommandDecision(command);
   if (fallback.kind === 'decision') return fallback;
-  if (suspectWords(command)) return blocked('suspect-words');
+  if (suspectWords(maskedCommand)) return blocked('suspect-words');
   return push === 'branch' ? { kind: 'branch', fallback } : fallback;
 }
 

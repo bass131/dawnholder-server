@@ -230,8 +230,8 @@ R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Pha
 hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받지만 운영 방식은 `--merge`다. `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 명령만 쓴다. 다른 인자(`--delete-branch`·`--auto`·`--admin` 등)는 막힌다. PreToolUse 통과 때 기록을 소비하며 실패도 새 승인이 필요하다(아래 겹친 쓰기 한계 제외). 리드는 PR 번호·정확한 head 40자·CI·독립 검증 판정 원문으로 준비 보고하고 병합 뒤 goal을 기록한다. 병합은 실행하지 않는다.
 승인 묶음 직전 fresh `mergeStateStatus`를 본다. DIRTY면 최신 main을 통합하고 CURRENT 등 타 파트 줄을 보존한다. remerge-diff·동일 제품 blob과 새 head 전체 CI를 남긴다. main 병합·CURRENT 해결뿐이면 적용 이유와 함께 기존 독립 판정을 유지한다. 묶음 뒤 head가 바뀌면 옛 승인을 쓰지 않고 새 head의 새 승인 줄을 받는다. 통과 뒤 goal·문서를 고쳤으면 승인 요청 전 최종 head의 바뀐 부분을 한 번 재실사한다. 독립 판정 없는 보완은 승인 묶음에 올리지 않는다. 재실사 결과는 goal을 고치지 않고 근거 폴더·승인 묶음으로만 전한다([운영 판단 원천](#pr2-source)).
 
-모든 Claude Code 세션의 Bash·Monitor에서 복합·heredoc·`bash -c`·치환 속 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main에서 refspec 없음·`HEAD`·`@`), 단독 병합 밖의 gh·merge나 push·main 낱말 동반 명령, 상태 폴더 쓰기·경로가 든 명령, 터미널·예약/전달 prompt로 승인 문장 주입을 막는다. [결과·상세 형태](../../99_Tools/README.md)와 [확인 창 승인 예외](../../AGENTS.md#공학-조건)를 따른다.
-리드·작업자 Claude 세션에도 마지막 그물이 실린다. 단독 병합 밖 명령에 gh·merge 또는 push·main 낱말이 함께 있으면 막히므로 PR 제목·본문·커밋 문구는 파일로 넘기고 push와 다른 명령은 나눠 실행한다.
+모든 Claude Code 세션의 Bash·Monitor에서 복합·heredoc·`bash -c`·치환 속 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main의 refspec 없음·`HEAD`·`@`), 상태 폴더 쓰기·경로와 터미널·예약/전달 prompt의 승인 주입을 막는다. [상세 형태](../../99_Tools/README.md#병합-관문)와 [확인 창 예외](../../AGENTS.md#공학-조건)를 따른다.
+리드·작업자에도 그물을 적용한다. 파일로 가는 따옴표 구분자 heredoc 본문과 글만 다루는 명령의 따옴표 문구는 낱말에서 뺀다. 같은 명령에 셸·인터프리터 실행이 있으면 빼지 않는다. 그 밖의 gh·merge 또는 push·main 낱말 동반 명령은 막히므로 나눠 실행한다.
 
 한계: 직접 입력·붙여넣기·터미널 주입 출처 미구분, Codex 미적용, 문자열 판정의 의도적 우회 가능(별칭·스크립트 파일·변수 속 명령), 등록 밖 도구·hook/settings 자체 수정과 하위 폴더·settings 부재·hook 미실행(node 부재 등)은 보호하지 않는다. GitHub ruleset 관리자 우회 유지. 같은 세션의 겹친 기록 쓰기(병합끼리·승인 제출과 병합)는 소비 기록 복원·두 번 통과가 가능하다(순차 호출 전제, 승인된 PR·head만). 병합 문자열 검색도 막혀 Grep·Read를 쓴다.
 
