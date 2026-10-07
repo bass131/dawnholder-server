@@ -8,10 +8,10 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이고 [#198](https://github.com/bass131/dawnholder-server/pull/198)로 병합됐다(아래 「PR1 병합」). PR2는 그 병합 commit `94fc6845`에서 만든 `docs/canon-refresh-20261006`이다.
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_62d7bc65-8590-4240-a6bb-7caad4e6b3da`(Claude Code 2.1.292 업데이트 뒤 같은 대화를 다시 연 세션, 이전 `term_af8ac4fc-…`). Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T05:50Z):
-  - 지금 단계: PR1이 [#198](https://github.com/bass131/dawnholder-server/pull/198)로 병합됐다(05:37:08Z, 병합 commit `94fc6845`, 아래 「PR1 병합」). 지금은 완료조건 5 적용 확인 중이다(아래 「관문 적용 확인」). 다음은 남은 측정 → PR2 작성 계약이다.
-  - 완료조건 5의 남은 일: 메인 창 측정은 메인이 main-active에서 재시작한 뒤 메인이 한다. 리드 pane 측정은 메인의 재시작 알림을 받은 뒤 메인에 예고하고 이 pane에서 한다. 세션 중 반영 셋째 관측은 Management 리드와 조율해 끝냈다.
-  - 메인 쪽 상태: 메인이 main-active를 만들었다(branch main, HEAD `94fc6845`). 표식은 아직 없고 사용자가 만든다. 그 뒤 메인이 재시작하고 새 handle을 알린다.
+- **현재 위치**(2026-10-07T05:55Z):
+  - 지금 단계: PR1이 [#198](https://github.com/bass131/dawnholder-server/pull/198)로 병합됐고(05:37:08Z, 병합 commit `94fc6845`, 아래 「PR1 병합」) 완료조건 5 적용 확인을 마쳤다(아래 「관문 적용 확인」). 다음은 PR2 작성 계약 → Sol 작성 → 신규 `gpt-6-astra` 실사다.
+  - 완료조건 5: 메인 창(`no-approval`), 리드 pane(`not-main-checkout`), 세션 중 반영 셋째 관측이 끝났다. SendMessage 전달 모양만 분류기 거부로 미측정이다.
+  - 메인 쪽 상태: 메인은 main-active의 새 세션 `term_b0a92ae1-…`이고 표식이 있다. PR2는 그 창의 승인 줄로 병합한다(완료조건 8).
   - 살아 있는 작업자·검증자 pane: 없다.
   - 다시 열 때: Run은 `run_93a27bd491a9`다. rules-active에서 새 리드를 `claude-opus-5-5` xhigh로 열고, 새 handle을 `orca orchestration run-use`로 같은 Run에 묶는다. 그 뒤 이 절과 「관문 적용 확인」을 읽는다. 우편함 대기는 E/session/의 가장 큰 번호 wait 원시에서 처리한 delivery를 `--ack`로 넘겨 하나 연다. 메인 handle은 매번 `orca terminal list --json`으로 확인한다.
   - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실려 있다. 명령 문자열에 gh·merge나 push·main 낱말 조합을 쓰지 않고, 본문은 파일로 넘긴다. 승인 묶음을 보낸 PR의 branch에는 push하지 않는다(head가 옮겨진다, 아래 「PR1 병합」).
@@ -24,7 +24,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - [x] 병합 관문 선행 시험
 - [x] 병합 관문 구현·검증
 - [x] PR198 병합
-- [>] 관문 적용 확인
+- [x] 관문 적용 확인
 - [ ] 정본 현행화 작성·실사
 - [ ] 정본 PR 병합
 - [ ] 결과 기록·Gardener
@@ -439,8 +439,19 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 세션 중 반영 셋째 관측(끝): Management 리드가 받기 전에 물었고(`msg_7eba3371f44c`), 리드가 받기 전후 탐침 절차를 보냈다(`msg_eecf9fa95144`). 결과는 `msg_91def97e8eeb`(05:43:15Z)다.
   - settings가 없던 management-active에서 시작한 2.1.292 세션이 main을 받자(05:42:43Z) 9초 안의 첫 Bash 탐침부터 `protected-path`로 막혔다. 재시작은 없었고 확인 창도 뜨지 않았다.
   - 원시는 [E/hot-reload-probe-3.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/hot-reload-probe-3.md)다. 앞의 두 관측(2.1.291, settings 생성과 matcher 변경)과 합쳐 세 번 모두 재시작 없이 실렸다. 판마다 한두 번의 관측이라는 한계는 그대로 둔다.
-- 메인 창(대기): 메인이 main-active에서 재시작한 뒤 기록 없는 병합 시도를 한 번 내고 원시를 남긴다.
-- 리드 pane(대기): 메인 재시작 알림을 받은 뒤 메인에 예고하고, 이 pane에서 없는 PR 번호의 head 고정 단독 명령을 한 번 낸다. 이 checkout에는 표식이 없으니 기대 코드는 `not-main-checkout`이다. hook이 실리지 않았다면 전역 ask 규칙으로 확인 창이 뜰 수 있어 예고한다.
+- 사용자 지시: 메인 `msg_9186af903cab`(05:50:36Z, 새 메인 `term_b0a92ae1-…`)가 전달한 원문(메인 창에서 Enter로 제출, 14:50 KST 무렵)은 「관문 적용 확인 측정 두개도 진행해줘」다. 메인은 확인 창 가능성을 사용자에게 미리 알렸다.
+- 메인 창(끝): 메인 `msg_e68466524759`(05:51:21Z, 원문 [E/apply-check-main-window.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/apply-check-main-window.md)).
+  - main-active에서 PR198 병합 뒤 새로 연 메인 본체(하위 에이전트 아님)가 승인 줄 제출 없이 없는 PR 번호의 정식 단독 명령을 냈다.
+  - 결과는 `no-approval` deny다. 확인 창은 뜨지 않았고 명령은 실행되지 않았다.
+  - 판정 순서상 표식 검사(`not-main-checkout`)를 지나 기록 검사에서 막혔으므로 main-active에 표식이 있다는 것도 보인다. 같은 세션에서 앞서 표식 폴더 `ls`가 `protected-path`로 막혀, hook이 세션 시작부터 실려 있었다.
+- 리드 pane(끝): 메인 예고(`msg_14a51ea3aeaa` 3항) 뒤 메인 지시로 05:50:46Z~05:50:54Z에 rules-active 리드 pane에서 같은 꼴의 단독 명령을 냈다.
+  - 결과는 `not-main-checkout` deny다. 확인 창은 뜨지 않았고 명령은 실행되지 않았다.
+  - 원시는 [E/apply-check-lead-pane.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/apply-check-lead-pane.md)이고 회신은 `msg_1e150a481bc3`다.
+- 예약·전달 prompt(O10·O-R7, 리드 pane, 표식 없는 checkout이라 기록이 생길 수 없다):
+  - 승인 문장 꼴(없는 PR, 0 head)을 넣은 CronCreate와 SendMessage(자기 세션 대상)가 둘 다 `approval-injection`으로 막혔다.
+  - 문구 없는 SendMessage로 전달 모양을 재려던 시도는 auto mode 분류기가 거부했다. 다른 경로로 다시 시도하지 않아 SendMessage의 실제 전달 모양은 미측정이다. 도구 설명에는 받는 쪽에 `<cross-session-message from=…>`로 감싸 도착한다고 적혀 있다(문서 근거).
+  - 무해 CronCreate 한 번은 05:51:33Z에 실행돼 세션 큐에 들어갔다(대화 기록의 `scheduled_task_fire`). 원시는 [E/apply-check-prompt-tools.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/apply-check-prompt-tools.md)다.
+- 판정: 완료조건 5의 세 실측(메인 창, 리드 pane, 세션 중 반영)이 끝났다. 남은 미측정은 SendMessage 전달 모양 하나이며, hook이 그 입력을 이미 막으므로 PR2 진행을 막지 않는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -475,7 +486,7 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 
 ## 현재 결과
 
-- PR1 병합 관문: #198로 병합됐다(`94fc6845`, 「PR1 병합」). 적용 확인은 진행 중이다.
+- PR1 병합 관문: #198로 병합됐다(`94fc6845`, 「PR1 병합」). 적용 확인을 마쳤다(「관문 적용 확인」).
 - PR2 정본 현행화: 아직 없다.
 
 ## 다음 계획 후보
