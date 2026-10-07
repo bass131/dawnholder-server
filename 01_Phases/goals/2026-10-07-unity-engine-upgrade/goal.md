@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 테스트 한 줄(CS0619)과 기존 AI Assistant 2.7.0-pre.3(UAC0005) 때문에 두 번 다 컴파일되지 않았다. 테스트 한 줄은 고쳤고, 사용자 결정 A대로 AI Assistant 2.20.0-pre.2를 같은 열기에서 올려 엔진 전환과 한 커밋으로 묶는다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 세 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 두 파일을 지운 뒤 다시 열어 잰다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -17,16 +17,17 @@
 | 하지 않을 것 | 게임 코드·씬·프리팹·콘텐츠 수정, Force Reserialize Assets, 6.7 Beta·7000 Alpha, 안건 2에서 고르지 않은 패키지, MCP 승인 우회(EditorPrefs 직접 수정·화면 자동 클릭), C:/Dev checkout의 skip-worktree 세 파일, 전역 설정, content-active의 PR191 branch와 로컬 두 파일, `04_ClientNet`·`98_Shared` 변경(csproj 주석의 「Unity 6.4 LTS」 표기는 다음 계획 후보), 병합 실행 |
 | 관찰 가능한 완료조건 | (1) ProjectVersion이 6000.6.4f1 (12bfff696524)이고 lock은 Unity가 해석한 결과다(손 편집 없음). (2) 추적 파일 변경 전체가 분류표에 들어간다. 기존 `.meta` 전부의 `guid:` 값이 전후 같고(개수와 불일치 0을 기계 대조) 삭제·신규 `.meta`가 없다. 기계 로컬 값(cloud 3필드 등)은 커밋에 없다. (3) 같은 명령의 EditMode 전체·PlayMode 수치가 기준선(6000.4.7f1, 같은 main) = 엔진 커밋 뒤 = AI Assistant 커밋 뒤다. 실패는 (a)~(d)로 전수 분류한다. (4) 6.6에서 실제 경로 1회: 클라이언트가 로컬 서버(7777)에 붙는 기존 PlayMode 실서버 경로 또는 동등한 실제 진입. (5) 새 패키지 소스에서 상한 검사 부재와 신원 키 방식을 file:line으로 기록한다. (6) 사용자가 Editor를 열고 승인한 뒤 첫 무해 MCP 호출이 상한 거부 없이 성공하고, 컴파일과 Play 진입 뒤 두 번째 호출도 성공한다. 음소거 값은 원래대로 돌린다. (7) relay 실행 파일 hash 전후와 옛 패키지 worktree에서의 영향을 기록한다. (8) 문서·ADR·설치 안내(hash 고정 링크)가 새 버전을 가리킨다. (9) worktree별 영향과 되돌리기 절차가 goal에 있다 |
 
-「안건 2」는 아래 승인된 결정의 2A다. 위 네 항목은 초안 v2의 범위 표를 문구 그대로 옮겼다. 착수 뒤 바뀐 것은 둘이다([승인된 결정](#승인된-결정)).
+「안건 2」는 아래 승인된 결정의 2A다. 위 네 항목은 초안 v2의 범위 표를 문구 그대로 옮겼다. 착수 뒤 바뀐 것은 셋이다([승인된 결정](#승인된-결정)).
 
 - 메인 범위 판정 `msg_98f1c822d84e`으로 「건드릴 곳」에 테스트 한 줄이 더해졌다.
 - 사용자 결정 A(`msg_0f223740ea22`)로 완료조건 (3)의 「엔진 커밋 뒤 = AI Assistant 커밋 뒤」는 「업그레이드 커밋 뒤」 한 번이 됐다. 「엔진 커밋 뒤」를 잴 수 없는 이유는 [PR 경계](#pr-경계와-점검)에 있다.
+- 사용자 결정(`msg_0af85d53aa50`)으로 「건드릴 곳」에 `03_Client/Assets/Art/Environment/Others/Cainos/Third Party/Lucid Editor/Editor/Experimental/`의 `SimpleTreeView.cs`·`TreeMenu.cs`와 각 `.cs.meta`, 네 파일의 삭제가 더해졌다. 완료조건 (2)의 「삭제 `.meta` 없음」은 이 두 `.meta`만 사용자 결정 예외다.
 
 ### PR 경계와 점검
 
 PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용자 결정 A(`msg_0f223740ea22`)로 엔진 커밋과 AI Assistant 커밋을 합쳤다. 구조와 동작을 나누는 [하네스 원칙](../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙) 5에 맞춰 커밋마다 원인을 구분한다. 이 goal 문서 커밋은 그 앞에 따로 둔다.
 
-1. **업그레이드 커밋**: 테스트 한 줄, manifest의 AI Assistant 한 줄(2.20.0-pre.2), 그 상태로 6.6이 한 번 열며 만든 ProjectVersion·manifest·lock·ProjectSettings 변경. 직후 회귀 수치를 잰다. 분류표는 lock 항목마다 「엔진 강제」와 「AI Assistant 의존」을 나눈다.
+1. **업그레이드 커밋**: 테스트 한 줄, manifest의 AI Assistant 한 줄(2.20.0-pre.2), Lucid Editor 두 파일과 `.meta` 삭제, 그 상태로 6.6이 한 번 열며 만든 ProjectVersion·manifest·lock·ProjectSettings 변경. 직후 회귀 수치를 잰다. 분류표는 lock 항목마다 「엔진 강제」와 「AI Assistant 의존」을 나눈다.
 2. **문서 커밋**: DEVELOPMENT·client.md·ADR·goal 결과.
 
 「엔진 커밋 뒤」를 잴 수 없는 이유: 2.7.0-pre.3은 6.6 분석기 오류(UAC0005)로 컴파일되지 않는다. 컴파일이 실패하면 Unity는 ProjectVersion을 6000.4.7f1로 둔 채 끝나, 엔진 전환만 담은 커밋을 Unity 생성 결과로 만들 수 없다. 두 커밋으로 나누려면 한 번에 해석되는 lock을 손으로 쪼개야 하는데, 이는 완료조건 (1)에 어긋난다. 이 이유는 PR 본문에도 적는다.
@@ -71,6 +72,12 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
   - 측정은 기준선(6000.4.7f1) 대 업그레이드 커밋 뒤 한 번이다. 「엔진 커밋 뒤」 측정 불가 사유를 goal과 PR 본문에 적는다.
   - 2.20.0-pre.2도 6.6에서 컴파일되지 않거나, 테스트 한 줄·AI Assistant 밖의 다른 컴파일 오류가 나오면 고치기 전에 다시 묻는다.
   - 리드 교정(로그의 error 줄 전체를 진단 코드 구분 없이 뽑아 보고와 개수 대조)을 다음 Sol 계약과 리드 원시 대조에 바로 적용한다.
+- Lucid Editor 두 파일 삭제(메인 `msg_0af85d53aa50`, 2026-10-07T11:17:26Z, 리드 결정 요청 `msg_1f8ec97c7b67`): 리드는 A(10곳에 `<int>`)와 B(업그레이드 중단)를 올렸다. 사용자 원문은 메인 창에서 Enter로 제출된 두 문장이다. 첫째는 「음 사실 아트파일만 필요하고, 솔직히 코드는 필요 없긴한데」다. 둘째는 메인이 다시 낸 선택지(A 막힌 두 파일만 삭제, B 10곳 고침)에 대한 답 「오케이, 어차피 업데이트 할 이유도 없을거고, 그리고 어차피 에디터 코드 쓸 이유도 없으니, 막힌 두 파일만 삭제하자」다. 메인 전달이며 직접 입력으로 격상하지 않는다.
+  - 지울 것은 `03_Client/Assets/Art/Environment/Others/Cainos/Third Party/Lucid Editor/Editor/Experimental/`의 `SimpleTreeView.cs`·`SimpleTreeView.cs.meta`·`TreeMenu.cs`·`TreeMenu.cs.meta` 네 파일뿐이다. 같은 폴더의 `TextFieldPopup`·`Toolbar`, Lucid Editor의 다른 파일, Cainos 스크립트는 그대로 둔다.
+  - 「건드릴 곳」에 네 파일 삭제를 더하고, 완료조건 (2)의 「삭제 `.meta` 없음」은 이 두 `.meta`만 예외로 둔다. 업그레이드 커밋에 함께 넣는다.
+  - 삭제는 생산 코드 라우팅대로 새 Sol이 하고, 6.6으로 다시 열어 측정까지 간다. error 줄 전수 대조는 그대로다. 또 다른 파일 오류가 나오면 고치기 전에 다시 묻는다.
+  - 메인 확인 사실: 두 파일은 서로만 참조한다. Chest·Elevator 등 Cainos 스크립트는 Lucid Editor Runtime 속성을 쓰므로 Lucid Editor 전체 삭제는 안 된다. Chest·Elevator·MovingPlatform을 쓰는 prefab·scene은 Cainos 폴더 안에만 있고 바깥 참조는 0이다(GUID grep).
+  - 서드파티 재가져오기 때 이 삭제가 덮어써지는 위험은 PR 본문에 사실로만 적는다(사용자 원문 「어차피 업데이트 할 이유도 없을거고」).
 
 ## 검증 계획
 
@@ -107,13 +114,13 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 | 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / `chore/unity-engine-upgrade-20261007`(upstream 없음) |
 | 기준 | `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0` |
 | 리드 Run | `run_dd3bf2daea68`(2026-10-07 Content 리드, `content-active` pane) |
-| Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼고, 6000.6.4f1 열기(둘 다 컴파일 실패)를 두 번 거쳤다. 두 열기의 부분 변경과 잠금 파일은 리드가 정리했다(`lead-restore-first-open.txt`, `lead-restore-remeasure.txt`) |
-| 작업자 | 기준선 Sol, 엔진 첫 열기 Sol, 테스트 작성 Opus, 재열기 Sol 정산·종료(아래 결과). 살아 있는 작업자 0, 「Terminal 1」은 기준 pane |
+| Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼고, 6000.6.4f1 열기(셋 다 컴파일 실패)를 세 번 거쳤다. 마지막 열기에서 AI Assistant 2.20.0-pre.2가 PackageCache에 들어왔다. 세 열기의 부분 변경과 잠금 파일은 리드가 정리했다(`lead-restore-first-open.txt`, `lead-restore-remeasure.txt`, `lead-restore-upgrade-open.txt`) |
+| 작업자 | 기준선 Sol, 엔진 첫 열기 Sol, 테스트 작성 Opus, 재열기 Sol, 업그레이드 열기 Sol 정산·종료(아래 결과). 살아 있는 작업자 0. 처음 기준 pane 「Terminal 1」은 업그레이드 열기 Sol pane을 닫을 때 함께 exited됐다. 다음 작업자 전에 같은 worktree에 기준 pane을 새로 만든다 |
 | 로컬 checkpoint | 테스트 두 줄(blob `bf98cbf5`)은 이 goal 커밋 위의 push하지 않은 로컬 commit에 둔다. 기존 harness의 사전 gate가 깨끗한 작업 트리를 요구해서다. 업그레이드 커밋을 만들 때 합친다 |
 
 다음 순서:
 
-1. 업그레이드 Sol 계약(manifest의 AI Assistant 한 줄 → 6.6 한 번 열기 → 로그 error 줄 전수 → 분류표(엔진 강제·AI Assistant 의존) → 같은 harness의 EditMode·PlayMode 전체 → 새 패키지 소스 정적 확인) → 정산 → 리드 업그레이드 커밋(checkpoint와 합침).
+1. 측정 Sol 계약(manifest의 AI Assistant 한 줄과 Lucid Editor 네 파일 삭제 → 6.6 한 번 열기 → 로그 error 줄 전수 → 분류표(엔진 강제·AI Assistant 의존·사용자 결정 삭제) → 같은 harness의 EditMode·PlayMode 전체 → 새 패키지 소스 정적 확인 대조) → 정산 → 리드 업그레이드 커밋(checkpoint와 합침).
 2. 문서 커밋 → 신규 Opus 독립 검증(MCP 확인 직전 메인에 알림) → PR·CI → 메인 승인 요청.
 3. 병합 뒤: 결과 기록 → Gardener → 종료 기록 → R-8. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다.
 
@@ -177,6 +184,20 @@ Sol `task_25df1a718eef`(Dispatch `ctx_f3b07049d9f8`, 지정·화면 `gpt-6.1-sol
 - 리드 대조(10:55Z): 두 로그의 「error 」 줄을 리드가 따로 뽑아 8줄·4줄과 코드별 개수가 작업자 집계와 같음을 확인했다. 현재 세 파일 SHA256이 첫 열기 사본과 같고 Unity 0이었다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다.
 - 리드 정리: 사용자 결정 A의 다음 열기를 깨끗한 상태에서 하도록 manifest·lock을 HEAD로 되돌리고 새 asset과 잠금 파일을 지웠다(`lead-restore-remeasure.txt`).
 
+### AI Assistant 2.20.0-pre.2 업그레이드 열기 — 컴파일 실패(Lucid Editor), 자체 점검
+
+Sol `task_dc04bf3e6a75`(Dispatch `ctx_d28b5138f39a`, 지정·화면 `gpt-6.1-sol max`, backend unknown)가 계약 v1(SHA256 `6370bf6e…55b2`)대로 checkpoint HEAD `16b2253b`에서 실행했다. 보고 `sol-upgrade/report.md`(SHA256 `74c67c5e…a0ab`), 분류표 `sol-upgrade/classification.json`(SHA256 `22e7205a…c1fb`), 정적 확인 `sol-upgrade/ai-assistant-source.md`(SHA256 `948c4d0d…cde1`).
+
+- 기동: worker-start가 `turn_start_unobserved`였다. pane의 draft가 공식 preamble과 같은 크기의 붙여넣기 placeholder여서, 리드가 [공식 계약 draft 복구](../../../00_Document/operations/ORCA.md#official-contract-draft)대로 텍스트 없는 Enter를 한 번 보냈다. 시작은 관측했다(`sol-upgrade-draft-identity.txt`).
+- manifest의 AI Assistant 한 줄을 2.20.0-pre.2로 바꾸고 연 결과 exit 1(55.7초)이다. ProjectVersion은 6000.4.7f1로 남았다. 「error 」 줄은 31줄이다(제목 1, CS0619 30, UAC0005 0). 고유 위치는 Lucid Editor `SimpleTreeView.cs` 9곳과 `TreeMenu.cs` 1곳이다(`TreeView`·`TreeViewItem`·`TreeViewState` 「is now deprecated」). AI Assistant 쪽 오류 줄은 없다.
+- lock 변화 38항목: 엔진 강제 35, AI Assistant 목표 1, AI Assistant 의존 2(`com.unity.cloud.gltfast` 제거, 공유 의존 `com.unity.nuget.mono-cecil` 1.11.6 유지·깊이 변화). 기존 ProjectSettings 변화 0, SENTIS drift 없음, `.meta` 1129 → 1129이고 불일치·삭제·신규 0이다.
+- relay SHA256·크기·수정 시각은 전후 같다. 이번 batch 열기에서는 새 패키지가 relay를 덮어쓰지 않았다. 대화형 Editor 시작 때의 동작은 미확인이다. 음소거 0 → 1 → 0이다.
+- 새 패키지 소스 정적 확인(완료조건 (5) 근거, 독립 판정 전):
+  - 상한: `AcpEntitlementWiring.cs:45~62`가 개발용 override가 없으면 `ConnectionPolicy.Unlimited`를 설치한다. 연결 수 계측과 cap 판정 코드(`ConnectionCensus.cs:515~560`)는 남아 있다. 그래서 「상한 검사 코드가 없다」가 아니라 「기본 정책에서 상한이 적용되지 않는다」가 맞는 표현이다.
+  - 신원 키: `ExecutableIdentityComparer.cs:56~76`이 서명이 유효하면 `Signed:<경로>:<SignaturePublisher>`, 서명이 없으면 `Hash:<SHA256>`을 쓴다. 파일 버전과 MCP clientInfo는 키에 들어가지 않는다. 서명된 같은 경로의 실행 파일은 업데이트 뒤에도 같은 키다. 서명 없는 실행 파일은 내용이 바뀌면 키가 달라진다(코드 기반 추정).
+- 리드 대조(11:31Z): 「error 」 31줄, 정적 확인 두 인용(`ExecutableIdentityComparer.cs:56~76`, `AcpEntitlementWiring.cs:45~62`)을 원문에서 다시 읽었다. 현재 Unity 0이다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다.
+- 리드 정리: 다음 열기를 깨끗한 상태에서 하도록 manifest·lock을 HEAD로 되돌리고 새 asset과 잠금 파일을 지웠다(`lead-restore-upgrade-open.txt`).
+
 ### 교정 기록
 
 첫 발생만 기록한다. 반복 규칙은 두 번째 발생부터 만든다.
@@ -190,3 +211,4 @@ Sol `task_25df1a718eef`(Dispatch `ctx_f3b07049d9f8`, 지정·화면 `gpt-6.1-sol
 - `04_ClientNet/Dawnholder.Client.Net.csproj`의 「Unity 6.4 LTS」 주석 표기 — 이 goal의 「하지 않을 것」(04_ClientNet 변경 금지). 출처 초안 v2.
 - 엔진이 강제하지 않아 그대로 둔 패키지의 새 버전 목록 — 승인 2A. 업그레이드 뒤 실제 목록을 여기에 적는다.
 - 6.7 LTS 이동 검토 — 6.7 LTS는 연말 예정(공식 페이지, 날짜 미정). 11월 마감 뒤 판단.
+- Cainos 에셋 아트만 남기고 코드 정리 — 사용자 원문 「음 사실 아트파일만 필요하고, 솔직히 코드는 필요 없긴한데」(메인 `msg_0af85d53aa50`). 바깥 참조 0, 샘플 prefab의 빠진 스크립트 처리 필요. 이번 goal에서 착수하지 않는다.
