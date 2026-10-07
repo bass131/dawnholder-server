@@ -344,6 +344,11 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **열린 질문의 처리:** 1단계의 `npm run typecheck`는 새 화면 시험 import 1건만 예정 실패로 허용한다. `%5C`가 해독된 `\`는 풀기 전에 `invalid`로 거절하고, `group`이 없는 후보는 제목 없이 맨 앞에 보이며, `backlogIssueKind`는 2단계에 더한다(설계 보충). `desktop-main.test.ts:97`의 낡은 주석과 `\` 시험은 독립 검증자에게 맡긴다.
 - **구현 전 알릴 점:** 작업자가 설계 확인용 일회용 대역을 E/`pr3-t1/selfcheck/reference/`에 만들었다(제품 아님). 구현 Sol에게는 읽지 말라고 계약에 적는다.
 
+### PR3 구현
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max · Full Access · never」, backend unknown)을 Task `task_eaa49db2f2b2`, Dispatch `ctx_646a00e3e826`로 시작했다. 계약 E/`pr3-s1-task.txt`(SHA-256 `79ebae0d…`), 경로 검사 E/`pr3-s1-path-check.txt`(exit 0). 1단계(구조) 뒤 질문으로 멈추면 리드가 commit하고 2단계(동작)를 진행시킨다.
+- **리드 절차 위반(파트 두 번째 발생):** 2026-10-07 06:38:36Z에 리드가 goal commit·push 명령 끝에 우편함 대기를 `&`와 `/dev/null`로 붙여 띄웠다(CLAUDE.md 「백그라운드 `&`나 `/dev/null` 리다이렉트로 출력을 버리지 않는다」 위반, 첫 발생은 위 「PR2 MCP 구현」). 06:38:57Z에 그 프로세스 하나만 껐고 다른 세션의 check 프로세스는 두었다. 꺼진 뒤 peek에는 그 대기가 받지 않는 Sol heartbeat 하나뿐이었고 inbox에도 다른 메시지가 없어 유실은 없었다(E/`check-after-stray-wait.json`·`inbox-after-stray-wait.json`). 대기는 단독 호출과 `tee`로 하나만 다시 열었다. 메인 보고는 `msg_9f655bb20a2c`다. 반복 규칙과 대기 차단 hook은 Rules 소유다.
+
 ### 진입과 준비
 
 - **진입:** 새 Run `run_3fa510a50602`(E0/`run-create.json`), READY `msg_fa27c1982e46`(E0/`ready-sent.json`). 진입 때 worktree는 종료 기록 branch `docs/management-record-navigation-closeout`(HEAD `e37f261`, origin/main보다 19 뒤, 미커밋 0)이었다.
