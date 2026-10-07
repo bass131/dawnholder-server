@@ -366,6 +366,10 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **리드 문서 수정:** 결함 #2는 `index-v2-design.md` 코드 목록에 새 코드를 더해 고쳤다. 관찰 O2(읽는 중·읽음 문장 미기재)는 백로그 메뉴 설계 「화면」 상태 문장에 더했다. 결함 #1의 수정 기준(새 규칙은 테마 변수만, 문제 글자는 `tokens.css` `:root`에 더하는 `--warning: #7d5200`, 실제 배경 위 4.5:1)과 대비 회귀 시험, 작업 순서 4~6을 설계에 더했다. `#7d5200`은 리드 계산으로 `#fffaf0` 위 6.56:1, `#ece3cf` 위 5.34:1이다. 나머지 관찰 O1(탭 mount 때 읽기)·O3(표 형식 문장 위치)·O4(fence 두 벌, 기존 후속 후보)·O5(앱 전체 대비, 기존 후속 후보)·O6(하네스 cache 쓰기)는 PR3에서 바꾸지 않는다.
 - **리드 절차 위반(파트 두 번째 발생):** 2026-10-07 06:38:36Z에 리드가 goal commit·push 명령 끝에 우편함 대기를 `&`와 `/dev/null`로 붙여 띄웠다(CLAUDE.md 「백그라운드 `&`나 `/dev/null` 리다이렉트로 출력을 버리지 않는다」 위반, 첫 발생은 위 「PR2 MCP 구현」). 06:38:57Z에 그 프로세스 하나만 껐고 다른 세션의 check 프로세스는 두었다. 꺼진 뒤 peek에는 그 대기가 받지 않는 Sol heartbeat 하나뿐이었고 inbox에도 다른 메시지가 없어 유실은 없었다(E/`check-after-stray-wait.json`·`inbox-after-stray-wait.json`). 대기는 단독 호출과 `tee`로 하나만 다시 열었다. 메인 보고는 `msg_9f655bb20a2c`다. 메인 답 `msg_939757d4c6a1`은 같은 리드·같은 실수의 두 번째라 문서 규칙으로는 부족하고 막는 층은 hook이라고 판단했다. 메인이 Rules에 후속 후보로 넘긴다(Rules PR2 범위 밖). 리드는 대기를 다른 명령과 묶지 않은 단독 백그라운드 호출로만 연다.
 
+### PR3 결함 #1 수정 라운드
+
+- **대비 회귀 시험:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)를 Task `task_1826a074f60b`, Dispatch `ctx_2fe90f3487a1`로 시작했다. 계약 E/`pr3-ct-task.txt`(SHA-256 `79d227bf…`, 고정 입력 `fc362b97`). 실제 Chromium 숨긴 창에서 「이후 작업」 탭 글자 대비를 재고, 지금은 `.backlog-*` 네 규칙의 요소만 미달로 실패해야 하며, 소유 TEMP 사본에서 설계 「글자색」대로 고치면 통과함을 보이게 했다. 이번 라운드 계약의 규칙 원문에는 CODE_CONVENTION 「교정 층과 반복 규칙」을 더했다. 발행 전 영향 시험 검색은 E/`pr3-c-affected-test-search.txt`(기존 참조 0)다.
+
 ### 진입과 준비
 
 - **진입:** 새 Run `run_3fa510a50602`(E0/`run-create.json`), READY `msg_fa27c1982e46`(E0/`ready-sent.json`). 진입 때 worktree는 종료 기록 branch `docs/management-record-navigation-closeout`(HEAD `e37f261`, origin/main보다 19 뒤, 미커밋 0)이었다.
