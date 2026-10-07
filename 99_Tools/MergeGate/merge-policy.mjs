@@ -242,7 +242,7 @@ export function preparePreToolUse(input) {
   const commands = simpleCommands(maskedCommand);
   if (commands.some(words => findSubcommands(words, 'gh', ['pr', 'merge'], ghValueOptions).length > 0)) {
     // Only Bash has the standalone merge permission path; Monitor must never consume an approval.
-    // An exact standalone merge bypasses the safety net (gh + merge) and proceeds to checkout, agent and approval checks.
+    // Precise checks fully read an exact merge; the safety net would always block its gh and merge words.
     return input.tool_name === 'Monitor' ? blocked('non-bash-merge') : inspectMergeCommand(command);
   }
   if (commands.some(words => findSubcommands(words, 'gh', ['api'], ghValueOptions).length > 0) &&
