@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드를 지운다. 관계 점검으로 지울 파일 123개가 정해졌고(런타임 의존 0), 지운 뒤 다시 열어 잰다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다(EditMode 356/356). PlayMode는 0/11이다. 원인은 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 즉시 파괴해, 테스트 fixture의 설정 저장·복원이 깨지는 것으로 추정한다. 사용자 결정대로 그 fixture 구간을 고친 뒤 다시 잰다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -17,7 +17,7 @@
 | 하지 않을 것 | 게임 코드·씬·프리팹·콘텐츠 수정, Force Reserialize Assets, 6.7 Beta·7000 Alpha, 안건 2에서 고르지 않은 패키지, MCP 승인 우회(EditorPrefs 직접 수정·화면 자동 클릭), C:/Dev checkout의 skip-worktree 세 파일, 전역 설정, content-active의 PR191 branch와 로컬 두 파일, `04_ClientNet`·`98_Shared` 변경(csproj 주석의 「Unity 6.4 LTS」 표기는 다음 계획 후보), 병합 실행 |
 | 관찰 가능한 완료조건 | (1) ProjectVersion이 6000.6.4f1 (12bfff696524)이고 lock은 Unity가 해석한 결과다(손 편집 없음). (2) 추적 파일 변경 전체가 분류표에 들어간다. 기존 `.meta` 전부의 `guid:` 값이 전후 같고(개수와 불일치 0을 기계 대조) 삭제·신규 `.meta`가 없다. 기계 로컬 값(cloud 3필드 등)은 커밋에 없다. (3) 같은 명령의 EditMode 전체·PlayMode 수치가 기준선(6000.4.7f1, 같은 main) = 엔진 커밋 뒤 = AI Assistant 커밋 뒤다. 실패는 (a)~(d)로 전수 분류한다. (4) 6.6에서 실제 경로 1회: 클라이언트가 로컬 서버(7777)에 붙는 기존 PlayMode 실서버 경로 또는 동등한 실제 진입. (5) 새 패키지 소스에서 상한 검사 부재와 신원 키 방식을 file:line으로 기록한다. (6) 사용자가 Editor를 열고 승인한 뒤 첫 무해 MCP 호출이 상한 거부 없이 성공하고, 컴파일과 Play 진입 뒤 두 번째 호출도 성공한다. 음소거 값은 원래대로 돌린다. (7) relay 실행 파일 hash 전후와 옛 패키지 worktree에서의 영향을 기록한다. (8) 문서·ADR·설치 안내(hash 고정 링크)가 새 버전을 가리킨다. (9) worktree별 영향과 되돌리기 절차가 goal에 있다 |
 
-「안건 2」는 아래 승인된 결정의 2A다. 위 네 항목은 초안 v2의 범위 표를 문구 그대로 옮겼다. 착수 뒤 바뀐 것은 다섯이다([승인된 결정](#승인된-결정)).
+「안건 2」는 아래 승인된 결정의 2A다. 위 네 항목은 초안 v2의 범위 표를 문구 그대로 옮겼다. 착수 뒤 바뀐 것은 여섯이다([승인된 결정](#승인된-결정)).
 
 - 메인 범위 판정 `msg_98f1c822d84e`으로 「건드릴 곳」에 테스트 한 줄이 더해졌다.
 - 사용자 결정 A(`msg_0f223740ea22`)로 완료조건 (3)의 「엔진 커밋 뒤 = AI Assistant 커밋 뒤」는 「업그레이드 커밋 뒤」 한 번이 됐다. 「엔진 커밋 뒤」를 잴 수 없는 이유는 [PR 경계](#pr-경계와-점검)에 있다.
@@ -30,12 +30,13 @@
   - 그 폴더의 `Pixel Art Platformer - Village Props/Script/Editor.meta`.
   - 완료조건 (2)의 「삭제 `.meta` 없음」은 이 표의 `.meta` 65개(`.cs.meta` 58, 폴더 `.meta` 7)만 사용자 결정 예외다. guid 목록은 관계표(`sol-relations/relations.json`)에 있다. 그 밖의 삭제·신규 `.meta`와 guid 불일치는 여전히 0이어야 한다.
   - 지운 뒤 빈 폴더 7개도 디스크에서 지운다. 폴더가 남으면 Unity가 새 guid로 폴더 `.meta`를 만들기 때문이다.
+- 사용자 결정 A(`msg_4aa892767efc`)로 「건드릴 곳」에 `03_Client/Assets/Tests/PlayMode/MapEntryPlayFixture.cs`의 입력 설정 저장·복원 구간(현재 160~161·182~189·356·359행)이 더해졌다. 단언과 다른 테스트 동작은 바꾸지 않는다.
 
 ### PR 경계와 점검
 
 PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용자 결정 A(`msg_0f223740ea22`)로 엔진 커밋과 AI Assistant 커밋을 합쳤다. 구조와 동작을 나누는 [하네스 원칙](../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙) 5에 맞춰 커밋마다 원인을 구분한다. 이 goal 문서 커밋은 그 앞에 따로 둔다.
 
-1. **업그레이드 커밋**: 테스트 한 줄, manifest의 AI Assistant 한 줄(2.20.0-pre.2), 관계 점검 표에 따른 Lucid Editor 에디터 코드와 `.meta` 삭제, 그 상태로 6.6이 한 번 열며 만든 ProjectVersion·manifest·lock·ProjectSettings 변경. 직후 회귀 수치를 잰다. 분류표는 lock 항목마다 「엔진 강제」와 「AI Assistant 의존」을 나눈다.
+1. **업그레이드 커밋**: 테스트 한 줄, PlayMode fixture의 입력 설정 저장·복원 수정, manifest의 AI Assistant 한 줄(2.20.0-pre.2), 관계 점검 표에 따른 Lucid Editor 에디터 코드와 `.meta` 삭제, 그 상태로 6.6이 열기와 측정에서 만든 변경. 그 변경은 ProjectVersion·manifest·lock·ProjectSettings·URP 전역 설정과 새 설정 asset 둘이다. 분류표 기준으로 넣고, 줄 끝만 바뀐 파일은 뺀다. 직후 회귀 수치를 잰다. 분류표는 lock 항목마다 「엔진 강제」와 「AI Assistant 의존」을 나눈다.
 2. **문서 커밋**: DEVELOPMENT·client.md·ADR·goal 결과.
 
 「엔진 커밋 뒤」를 잴 수 없는 이유: 2.7.0-pre.3은 6.6 분석기 오류(UAC0005)로 컴파일되지 않는다. 컴파일이 실패하면 Unity는 ProjectVersion을 6000.4.7f1로 둔 채 끝나, 엔진 전환만 담은 커밋을 Unity 생성 결과로 만들 수 없다. 두 커밋으로 나누려면 한 번에 해석되는 lock을 손으로 쪼개야 하는데, 이는 완료조건 (1)에 어긋난다. 이 이유는 PR 본문에도 적는다.
@@ -96,6 +97,12 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
   - 그래서 표의 123개 전부가 「지움」이다.
   - 삭제·측정 계약의 Temp 대책 조건(메인 동의 원문): 「Unity Editor가 그 worktree에서 꺼진 상태를 먼저 확인하고 03_Client/Temp를 비운다(비우기 전후 원시). 열기 뒤 삭제 경로 123개 재출현 0을 확인한다. Library는 건드리지 않는다.」
   - 다른 오류가 나오면 고치기 전에 묻는다.
+- PlayMode fixture 수정(메인 `msg_4aa892767efc`, 2026-10-07T13:50:48Z, 리드 결정 요청 `msg_8703e1ea06ad`): 사용자 원문은 메인 창에서 Enter로 제출된 「대시보드 결정 응답: 1) Unity 6.6 - PlayMode 0/11을 고치려고 테스트 fixture 수정을 업그레이드 범위에 넣을지 → A 범위에 넣고 고침」이다. 메인 전달이며 직접 입력으로 격상하지 않는다.
+  - 신규 Opus 테스트 작성자가 `MapEntryPlayFixture.cs`의 입력 설정 저장·복원 구간만 고친다. 단언과 다른 테스트 동작은 바꾸지 않는다.
+  - 작성자는 고친 방식이 1.20.0 동작(임시 설정 즉시 파괴)에 기대는지, 1.19.0으로 돌아가도 안전한지를 보고에 한 줄로 남긴다.
+  - 그 뒤 새 Sol이 같은 작업 트리에서 EditMode·서버 lane·PlayMode를 다시 잰다.
+  - 원인 추정(첫 테스트 TearDown, 나머지 10개 SetUp)이 맞는지는 재측정 뒤 독립 검증이 원시로 판정한다.
+  - 커밋 전 독립 검증 항목에 둘을 둔다. 하나는 `ProjectSettings.asset` 57행 `m_StackTraceTypes` 끝의 `i`, 다른 하나는 relay 교체의 영향이다. MCP Accept 단계 전에는 메인에 미리 알린다(시트 1개).
 
 ## 검증 계획
 
@@ -114,7 +121,7 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 | 기계 로컬 값 | Editor를 열면 Unity Cloud 연결 cloud 3필드가 ProjectSettings에 생길 수 있다(content-active 선례, 추정). SENTIS define 한 줄 자동 제거도 반복 관측됐다(PR191 branch의 BACKLOG 후보 `unity-sentis-define-drift`, main 미반영). 둘 다 엔진 변경과 분리해 커밋에서 뺀다. 애매하면 메인에 올린다 |
 | 모든 worktree 영향 | 병합 뒤 main을 받은 worktree는 6.6 전용이 된다. 아직 main을 받지 않은 branch는 6000.4.7f1로 연다. 한 머신에 두 Editor가 깔린다. Library가 있는 곳은 C:/Dev checkout과 content-active다(2026-10-07 확인) |
 | 메인 checkout C:/Dev | manifest·lock·ProjectSettings 세 파일이 skip-worktree로 숨겨져 있고 로컬 AI Assistant는 2.11.0-pre.1이다. 이 PR이 세 파일을 모두 바꾸므로 병합 뒤 그 checkout의 main 받기가 멈출 수 있다 |
-| relay 공유 | relay는 Editor 시작 때 `%USERPROFILE%\.unity\relay\relay_win.exe`에 설치된다(공식 문서). 덮어쓰기 규칙은 문서에 없다. 업그레이드 전 SHA256은 `854f019d6c833f2ca8ab4dcacde31d18765ec1c6c83203d00364347de35ccd66`(수정 시각 2026-05-06)이다 |
+| relay 공유 | relay는 Editor 시작 때 `%USERPROFILE%\.unity\relay\relay_win.exe`에 설치된다(공식 문서). 덮어쓰기 규칙은 문서에 없다. 업그레이드 전 SHA256은 `854f019d6c833f2ca8ab4dcacde31d18765ec1c6c83203d00364347de35ccd66`(수정 시각 2026-05-06)이다. 컴파일이 처음 통과한 다섯째 열기 뒤 `0cd32f102a64fc8585671ec3ce82a78046011452a2b6d5f655d90e26369e014b`(100,741,544 bytes, 수정 시각 2026-10-06 23:18 KST)로 바뀌었다. 2.20.0-pre.2 Editor가 배포본으로 덮어쓴 것으로 추정한다. 옛 패키지 worktree(content-active 2.7.0-pre.3, C:/Dev 2.11.0-pre.1)도 이제 이 relay를 쓴다 |
 | Library 되돌리기 비용 | 6.6이 연 Library는 6.4로 되돌아가지 않는다고 본다(추정). 되돌리면 Library를 지우고 6.4로 다시 만든다 |
 | 마감 영향 | 11월 마감 전 엔진 변경이다. 기준선 비교와 실제 경로 1회를 완료조건에 둔 이유다 |
 
@@ -132,20 +139,20 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 | 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / `chore/unity-engine-upgrade-20261007`(upstream `origin`에는 goal 커밋만 있다. PR은 아직 없다) |
 | 기준 | `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0` |
 | 리드 Run | `run_dd3bf2daea68`(2026-10-07 Content 리드, `content-active` pane) |
-| Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼고, 6000.6.4f1 열기(모두 컴파일 실패)를 네 번 거쳤다. 뒤의 두 열기에서 AI Assistant 2.20.0-pre.2가 PackageCache에 들어왔다. 네 열기의 부분 변경·삭제와 잠금 파일은 리드가 정리해 추적 파일은 HEAD와 같다(`lead-restore-first-open.txt`, `lead-restore-remeasure.txt`, `lead-restore-upgrade-open.txt`, `lead-restore-measure.txt`) |
-| 작업자 | 기준선 Sol, 엔진 첫 열기 Sol, 테스트 작성 Opus, 재열기 Sol, 업그레이드 열기 Sol, 측정 Sol, 관계 점검 Sol 정산·종료(아래 결과). 살아 있는 작업자 0. 작업자 pane을 닫을 때 그 pane을 split한 기준 pane이 함께 exited된 일이 세 번 있었다(처음 「Terminal 1」, 그 뒤 새로 만든 기준 pane 둘). 다음 작업자 전에 같은 worktree에 기준 pane을 새로 만든다 |
-| 로컬 checkpoint | 테스트 두 줄(blob `bf98cbf5`)은 이 goal 커밋 위의 push하지 않은 로컬 commit에 둔다. 기존 harness의 사전 gate가 깨끗한 작업 트리를 요구해서다. 업그레이드 커밋을 만들 때 합친다 |
+| Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼다. 그 뒤 6000.6.4f1 열기를 다섯 번 거쳤고, 앞의 넷은 컴파일 실패였다. 앞의 네 열기가 남긴 부분 변경은 리드가 HEAD로 정리했다(`lead-restore-*.txt`). 다섯째 열기(Lucid 123개 삭제 뒤)는 컴파일됐고, 그 상태와 이어진 측정 결과를 작업 트리에 둔다 |
+| 작업자 | 기준선 Sol, 엔진 첫 열기 Sol, 테스트 작성 Opus, 재열기 Sol, 업그레이드 열기 Sol, 측정 Sol, 관계 점검 Sol, 삭제·측정 Sol 정산·종료(아래 결과). 살아 있는 작업자 0. 작업자 pane을 닫을 때 기준 pane이 함께 exited된 일이 세 번 있었다. 마지막 삭제·측정 Sol을 닫을 때는 기준 pane(`term_dc0ef06f`)이 살아 있었다. 다음 작업자 전에 기준 pane이 살아 있는지 확인한다 |
+| 로컬 checkpoint | push하지 않은 로컬 commit을 goal 커밋 위에 둔다. 기존 harness의 사전 gate가 깨끗한 작업 트리를 요구해서다. 둘 다 업그레이드 커밋을 만들 때 합친다. (1) 테스트 두 줄(blob `bf98cbf5`). (2) 다섯째 열기와 측정이 만든 업그레이드 상태(manifest 한 줄과 123개 삭제 포함). 줄 끝만 바뀐 `MinimapRT.renderTexture`는 이 commit에서 빼고 HEAD로 되돌린다 |
 
 다음 순서:
 
 1. 관계 점검(Sol 표 → 리드 표본 대조 → 메인 표본 대조와 진행 알림)은 끝났다(아래 결과, 메인 `msg_ff681cef67de`).
-2. 삭제·측정 Sol → 정산 → 리드 업그레이드 커밋(checkpoint와 합침). Sol이 할 일은 차례로 다음과 같다.
-   - manifest의 AI Assistant 한 줄을 바꾸고, 표의 123개와 빈 폴더 7개를 지운다.
-   - worktree의 Unity가 꺼졌는지 확인한 뒤 `03_Client/Temp`를 비운다.
-   - 6.6으로 한 번 열고, 로그의 error 줄을 전수로 뽑는다. 삭제 경로 123개가 다시 생기지 않았는지 확인한다.
-   - 분류표를 만들고, 같은 harness로 EditMode·PlayMode 전체를 잰다. 새 패키지 소스의 정적 확인을 대조한다.
-3. 문서 커밋 → 신규 Opus 독립 검증(MCP 확인 직전 메인에 알림) → PR·CI → 메인 승인 요청.
-4. 병합 뒤: 결과 기록 → Gardener → 종료 기록 → R-8. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다.
+2. 삭제·측정 Sol은 끝났다(아래 결과). PlayMode 0/11이었다.
+3. 사용자 결정 A(`msg_4aa892767efc`)에 따라 다음을 한다.
+   - 신규 Opus 테스트 작성자가 fixture의 입력 설정 저장·복원을 고친다.
+   - 새 Sol이 같은 작업 트리에서 EditMode·서버 lane·PlayMode를 다시 잰다.
+   - 정산한 뒤 리드가 업그레이드 커밋을 만든다(checkpoint 둘과 합침).
+4. 문서 커밋 → 신규 Opus 독립 검증(MCP 확인 직전 메인에 알림) → PR·CI → 메인 승인 요청.
+5. 병합 뒤: 결과 기록 → Gardener → 종료 기록 → R-8. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다.
 
 ## 진척 단계
 
@@ -258,6 +265,42 @@ Sol `task_ca7dae29abca`(Dispatch `ctx_11ec28d046c8`, 지정·화면 `gpt-6.1-sol
 - 메인 대조(`msg_ff681cef67de`): 후보 재계수, Temp 사본, guid 표본 둘, namespace를 확인했다.
 - 작업자 자기 보고: heartbeat 5분 간격을 한 번 넘겼다(5분 46초). release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다. 닫은 뒤 기준 pane이 다시 exited됐다.
 
+### Lucid 123개 삭제 뒤 측정 — 컴파일 통과, PlayMode 전 실패, 자체 점검
+
+Sol `task_709082e8b853`(Dispatch `ctx_1794f1407528`, 지정·화면 `gpt-6.1-sol max`, backend unknown)가 계약 v1(SHA256 `3aaa47df…8e5f`)과 추가 지시 1(`541132a6…f207`)대로 checkpoint HEAD `a1ba0d80`에서 실행했다. 보고 `sol-delete/report.md`(SHA256 `e13d4f5a…6f05`), 분류표 `sol-delete/classification.json`(SHA256 `3dc4dae0…b50d`).
+
+- 준비: Unity 0을 확인하고 `03_Client/Temp`를 비웠다(6 → 0). manifest 한 줄을 바꾸고 고정 목록 123개와 빈 폴더 7개를 지웠다.
+- 열기: exit 0(137초), ProjectVersion 6000.6.4f1 (12bfff696524)이다. 「Scripts have compiler errors」는 없다.
+  - 「error 」 전수는 1줄이다. 19914행 「Batchmode quit successfully invoked」 다음 줄인 「Curl error 42: Callback aborted」이고, 종료 구간 네트워크 요청 취소로 분류했다(리드 답 `msg_e53c423586f7`, 메인 동의 `msg_960ff3ab8bbd`).
+  - 대소문자 무시 error 단어 줄은 기준선 EditMode 18·PlayMode 14, 열기 9다. 라이선스 줄은 기준선에도 있다. 기준선에 없던 새 종류는 Curl뿐이다.
+- 재출현: 열기 뒤와 측정 뒤 모두 123경로·7폴더가 0이다. `.meta`는 1129 → 1064, 삭제 65(고정 guid 집합과 같음), 신규·불일치 0이다. 남긴 Cainos 파일 753개는 byte 변화 0이다.
+- 패키지: 변화 38 = 엔진 강제 35 + AI 목표 1 + AI 의존 2. 앞선 두 열기의 lock과 차이 0이다. `com.unity.inputsystem` 1.19.0 → 1.20.0은 Editor manifest minimumVersion이라 엔진 강제다.
+- Unity 생성 변경은 다음과 같다.
+  - ProjectVersion·manifest·lock.
+  - URP GlobalSettings assetVersion 10 → 11.
+  - 새 `PhysicsCoreProjectSettings2D.asset`·`ProjectAuditorSettings.asset`.
+  - 테스트 뒤 `ProjectSettings.asset`(serializedVersion 28 → 30, 새 키, SENTIS 한 줄 drift). 57행 `m_StackTraceTypes` 끝에 `i`가 붙었다. 6.6 URP 템플릿(serializedVersion 29)에는 없다. 원인은 미확인이고 독립 검증 항목이다.
+  - `MinimapRT.renderTexture`는 줄 끝만 바뀌었다.
+- 측정:
+
+  | 플랫폼 | 기준선 6000.4.7f1 | 6000.6.4f1 |
+  |---|---|---|
+  | EditMode | 356/356 | 356/356(exit 0) |
+  | PlayMode | 11/11 | 0/11(exit 2) |
+
+  - `ComponentNullCharacterizationTests` 17개는 기준선과 같이 모두 통과했다.
+  - PlayMode 첫 테스트는 TearDown의 `InputSystem.settings` 복원에서 ArgumentNullException이 났다. 나머지 10개는 파괴된 InputSettings를 Instantiate하다가 MissingReferenceException이 났다. 실서버 경로도 fixture 준비에서 실패해 실제 진입은 미확인이다.
+- 리드 원인 분석(`lead-analysis-playmode-inputsettings.md`, 정적 읽기, 추정):
+  - 1.20.0 `InputManager.settings` setter(190~192)는 이전 settings가 `HideAndDontSave`면 `DestroyImmediate`한다. 1.19.0에는 이 줄이 없다.
+  - 프로젝트에 InputSettings 에셋이 없어 원래 settings는 그 임시 객체다. fixture가 사본으로 바꾸는 순간 원래 것이 파괴된다.
+  - `InputSystem.settings`를 쓰는 곳은 fixture뿐이다. 메인도 같은 줄들을 원천 대조했다(`msg_4aa892767efc`).
+- 자원: 매 batch 음소거는 0 → 1 → 0이었다. 작업자 서버만 Stop했고 7777은 비었다. Unity 0이다.
+- relay: `854f019d…cd66` → `0cd32f10…e014`로 바뀌었다(위 「위험과 되돌리기」).
+- AI Assistant 소스: 정적 확인 14개 파일의 hash와 행이 앞선 확인과 같다.
+- 작업자 자기 보고: 분류 문서 helper가 한 번 중단됐다. 첫 출력은 보존하고 문서 단계만 다시 돌렸다.
+- 리드 대조: heartbeat가 5분을 두 번 넘겼다(5분 45초, 6분 25초). 보고에는 적히지 않았다.
+- 리드 대조(13:4xZ): EditMode·PlayMode `results.xml` 집계, 디스크 `.meta` 1064, 재출현 0, relay 현재 hash, 음소거 0, 7777 listener 0, 두 버전 setter 비교를 원시와 현재 상태에서 다시 읽었다. release는 `retained/external_terminal`이었고 pane을 닫았다. 이번에는 기준 pane이 살아 있다.
+
 ### 교정 기록
 
 첫 발생만 기록한다. 반복 규칙은 두 번째 발생부터 만든다.
@@ -265,6 +308,11 @@ Sol `task_ca7dae29abca`(Dispatch `ctx_11ec28d046c8`, 지정·화면 `gpt-6.1-sol
 - 작업자 보고 오류: 엔진 Sol이 미추적 파일 이름을 원시를 읽기 전에 `EntityIdSettings.asset`으로 보고했고(`msg_5ad15110534c`), 21초 뒤 실제 이름 `PhysicsCoreProjectSettings2D.asset`으로 고쳤다(`msg_e6bb33655c16`). 리드는 고치기 전 이름을 메인에 전달했다가(`msg_1ae62a1c1a38`) git status 원시로 확인하고 정정했다(`msg_0070907addae`). 다음 계약의 차단 항목에 「원시를 읽기 전의 보고」를 넣었다.
 - 리드 계약 이탈: 엔진 Sol 계약은 「리드의 쓰기는 끝났다」고 적었지만, 리드가 작업 중(약 10:00Z)에 이 goal에 메인 범위 판정을 기록했다. 작업자가 최종 status에서 발견해 물었고(`msg_2003e93b047a`), 리드가 소유를 확인해 보고에서 분리했다. 다음부터 작업자 실행 중 리드 기록은 근거 폴더에만 두고 추적 파일은 정산 뒤 쓴다.
 - 컴파일 오류 보고 누락: 첫 열기 로그의 UAC0005 3줄을 엔진 Sol 보고·분류표가 빠뜨렸다(오류 추출이 CS 코드만 보았다). 리드는 보고된 줄만 표본 대조해 놓쳤고, 메인은 「오류는 테스트 한 줄」이라는 보고 위에서 범위를 판정했다. 재열기 1회 뒤에야 드러났다. 리드가 메인에 즉시 보고했고(`msg_d560680ed27c`), 메인도 로그를 직접 보지 않았던 사실을 사용자에게 바로잡아 알렸다(`msg_0f223740ea22`). 교정: 다음 계약과 리드 원시 대조에서 로그의 error 줄을 진단 코드 구분 없이 전부 뽑아 보고와 개수를 대조한다.
+- heartbeat 5분 간격 초과가 세 작업자 연속으로 반복됐다(측정 Sol, 관계 점검 Sol, 삭제·측정 Sol).
+  - 둘째 계약부터 「오래 걸리는 실행·보고 작성 전에 먼저 보낸다」를 넣었지만 막지 못했다.
+  - 마지막 작업자는 초과를 보고에 적지 않았다.
+  - 초과 폭은 1분 30초 이하였고, 작업 결과나 정산에 영향은 없었다.
+  - 반복 규칙은 heartbeat를 소유한 live preamble·ORCA 정본 층의 일이다. 그래서 이 goal에서는 기록만 하고 메인에 알린다.
 
 ## 다음 계획 후보
 
