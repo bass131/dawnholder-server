@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **범위 승인·worktree 준비 완료. 6000.4.7f1 기준선 측정 준비 중이고, 6.6 batch는 사용자의 Unity Hub 설치 완료(메인 알림) 뒤 시작한다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 사용자가 6000.6.4f1 설치를 마쳤고, 엔진 전환 작업자를 발행한다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -51,6 +51,13 @@ PR 하나에 커밋 셋이다(3A). 구조와 동작을 나누는 [하네스 원�
 - 완료조건 (6) MCP 확인은 시트가 1개라 메인이 사용자 Accept 일정을 잡는다. 그 단계 직전에 메인에 알린다.
 - C:/Dev checkout의 skip-worktree 세 파일 처리는 병합 직전에 메인이 사용자에게 묻는다.
 
+착수 뒤 메인 결정(모두 메인 전달·운영 판단이며 직접 입력으로 격상하지 않는다):
+
+- 배치 음소거(메인 `msg_6bbec1bd4219`, 2026-10-07T09:03:15Z): 이전 결정 `msg_833c357e684e`과 같은 조건을 이 goal의 모든 Unity batch에 적용한다. 정확한 HKCU `Software\Unity Technologies\Unity Editor 5.x` / `AudioMasterMute_h3604209190`만 batch 전 임시 1, finally 원래 값 복원, 다른 Unity 0일 때만, 이미 1이면 쓰지 않는다. 실행마다 「전 값 → 1 → 복원 값」을 원시로 남긴다. 완료조건 (6)의 대화형 Editor 단계에는 쓰지 않는다.
+- 7777(같은 메시지): 메인이 listener 0과 다른 파트의 게임 서버 미사용을 확인하고 Content 작업자에게 소유를 배정했다. 작업자는 시작 전 listener 0·다른 Unity 0을 확인하고 끝나면 해제를 원시로 남긴다.
+- 설치 확인(메인 `msg_d503ecc6f2dc`, 2026-10-07T09:07:54Z): 사용자 원문 「일단 지금 새로운 유니티 버전 설치가 다 끝났는데, 확인 가능한지 체크해봐줘」. 메인이 `C:\Program Files\Unity\Hub\Editor\6000.6.4f1\Editor\Unity.exe`의 ProductVersion `6000.6.4f1_12bfff696524`를 확인했다. 플랫폼 모듈은 Windows standalone과 Linux standalone이다(Linux는 추가 설치분, 빌드 대상과 무관한 환경 사실). 6.6 batch는 기준선 작업자가 끝나 다른 Unity가 0이 된 뒤 연다.
+- 작업자 배치(같은 메시지): `orca terminal split`에 작업 폴더 옵션이 없어, 리드 pane 대신 이 worktree 소속 「Terminal 1」을 split해 작업자를 연다. 소속 worktree와 cwd가 같아 R-1의 cwd만 옮기는 우회를 피한다. 메인이 승인했고 다음 작업자도 같게 연다. 「Terminal 1」은 기준 pane으로 남기고 작업자 정산 때 닫지 않는다.
+
 ## 검증 계획
 
 - 등급: 강. 설치·실행 환경 변경이고 모든 Unity 실행과 MCP에 닿는다. 줄 수가 아니라 영역 기준이다.
@@ -86,20 +93,21 @@ PR 하나에 커밋 셋이다(3A). 구조와 동작을 나누는 [하네스 원�
 | 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / `chore/unity-engine-upgrade-20261007`(upstream 없음) |
 | 기준 | `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0` |
 | 리드 Run | `run_dd3bf2daea68`(2026-10-07 Content 리드, `content-active` pane) |
-| Unity | 이 worktree에는 아직 Library가 없다. 6000.6.4f1 설치는 사용자 몫이며 메인이 완료를 알린다 |
+| Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼다. 6000.6.4f1은 설치됐다(메인 `msg_d503ecc6f2dc`) |
+| 작업자 | 기준선 Sol 정산·종료(아래 결과). 살아 있는 작업자 0, 「Terminal 1」은 기준 pane |
 
 다음 순서:
 
-1. 기준선 Sol 계약(6000.4.7f1, EditMode·PlayMode 전체, 서버 lane) → 결과 정산.
-2. 메인의 Hub 설치 완료 알림 → 엔진·AI Assistant Sol 계약(커밋 1·2의 변경 생성과 측정, 분류표).
-3. 리드 커밋 1·2 → 문서 커밋 → 신규 Opus 독립 검증(MCP 확인 직전 메인에 알림) → PR·CI → 메인 승인 요청.
+1. 엔진 전환 Sol 계약(6000.6.4f1로 batch 첫 열기, 변경 분류표, 같은 harness로 EditMode·PlayMode 전체) → 결과 정산 → 리드 엔진 커밋.
+2. AI Assistant Sol 계약(manifest 한 줄과 Unity 재해석 lock, 같은 측정, 새 패키지 소스 정적 확인) → 정산 → 리드 커밋.
+3. 문서 커밋 → 신규 Opus 독립 검증(MCP 확인 직전 메인에 알림) → PR·CI → 메인 승인 요청.
 4. 병합 뒤: 결과 기록 → Gardener → 종료 기록 → R-8. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다.
 
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] 기준선 측정
-- [ ] 엔진 6.6 전환
+- [x] 기준선 측정
+- [>] 엔진 6.6 전환
 - [ ] AI Assistant 올림
 - [ ] 문서·ADR 갱신
 - [ ] 독립 검증
@@ -108,7 +116,22 @@ PR 하나에 커밋 셋이다(3A). 구조와 동작을 나누는 [하네스 원�
 
 ## 실제 결과와 미실행
 
-아직 없다. 패키지·엔진 변경과 Unity 실행은 0이다.
+### 6000.4.7f1 기준선 — 자체 점검, 독립 판정 전
+
+Sol `task_140b8f96e4fd`(Dispatch `ctx_8c2f3e765fff`, 지정·화면 `gpt-6.1-sol max`, backend unknown)이 계약 v1(SHA256 `46593deb…ce98d`)대로 HEAD `8a09417a`에서 실행했다. 보고 `sol-baseline/report.md`(SHA256 `40603ac8…bc2a5`).
+
+| 플랫폼 | total | passed | failed | skipped | Unity exit |
+|---|---:|---:|---:|---:|---:|
+| EditMode 전체 | 356 | 356 | 0 | 0 | 0 |
+| PlayMode 전체 | 11 | 11 | 0 | 0 | 0 |
+
+- 실서버 경로 `MapEntryServerIntegrationTests.ProductionServer_TownHuntingGroundTown_KeyboardPortalsPreserveEntityHpAndRoster`가 Passed였다. 서버는 이 worktree의 WSL 복사본에서 띄우고 자기 서버만 내렸다.
+- 기준 목록: 03_Client 추적 파일 2105개, `.meta` guid 1129개(`sol-baseline/inventory/`). 다음 단계의 기계 대조 입력이다.
+- 음소거는 두 실행 모두 0 → 1 → 0이다. 실제 음향 출력은 재지 않았다.
+- 같은 harness를 다음 단계에서 Unity 경로만 바꿔 쓴다: `harness/Run-UnityTests.ps1` SHA256 `8C7A3869…7B21`, 공통 helper `6C519AFC…2A1AC`.
+- 리드 대조(09:35Z): 두 `results.xml`의 test-run 속성(356/356, 11/11, failed 0)과 실서버 테스트 Passed를 원시에서 다시 읽었다. 사후 음소거 값 0, Unity 0, 7777 listener 0(Windows·WSL)을 확인했다. release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true). 회수 대기 작업자는 0이다.
+- Unity가 기준선 실행 중 스스로 바꾼 두 파일: `ProjectSettings.asset`의 Standalone `SENTIS_ANALYTICS_ENABLED;` 제거 한 줄(SHA256 C1412CD2… → 934110CB…, 이전 goal에서 관측된 것과 같은 쌍)과 `MinimapRT.renderTexture` 줄바꿈(Git blob 같음). 작업자는 사본·diff를 남기고 그대로 두었다. 리드가 엔진 전환 전에 둘 다 HEAD 상태로 되돌렸고, 실행 전 hash와 같아졌다(`lead-restore-baseline-drift.txt`). 엔진 전환에서 생기는 변경만 따로 보이게 하려는 것이다.
+- 독립 판정은 아직 없다. 신규 Opus 검증의 입력이다.
 
 ## 다음 계획 후보
 
