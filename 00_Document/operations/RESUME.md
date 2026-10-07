@@ -1,6 +1,6 @@
 # 다음 세션 재개
 
-이 문서는 읽는 순서와 재개 절차다. 현재 상태·결정·결과는 [CURRENT](CURRENT.md)가 가리키는 goal을 정본으로 삼는다. [기록 정정](../../01_Phases/goals/2026-10-01-refactor-record-corrections/goal.md)은 PR150으로 병합됐다. [P1a 종료 기록](../../01_Phases/goals/2026-09-30-party-invite-command/goal.md)과 [로드맵](../../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md)은 이전 완료와 남은 의존성을 제공한다. 라우팅 시범은 성공했고 계층형 라우팅은 사용자 결정으로 전역 채택됐다. PR·규칙 문서 반영 상태는 goal에서 확인하며 P1b·DB·게임 정책 구현을 자동 시작하지 않는다.
+이 문서는 읽는 순서와 재개 절차다. 현재 상태·결정·결과는 [CURRENT](CURRENT.md)가 가리키는 goal을 정본으로 삼는다. 이전 정정·checkpoint·라우팅 서술은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
 
 ## 최소 읽기
 
@@ -11,9 +11,7 @@
 
 ## Git와 문서 보존
 
-Core 작업 경로는 `C:/Dev/DawnHolder_Project`다. 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다. `git status --short`, 현재 branch/HEAD, 원격 main과의 차이를 먼저 확인한다. 현재 branch·기준 commit은 CURRENT의 goal, 이전 준비 branch는 P1a 종료 절에 있다. branch 이름만 보고 다음 구현이 시작됐다고 판단하지 않는다.
-
-2026-09-30 맥락 문서 checkpoint `b3cf78a`는 기존 준비 branch에 보존됐으며, 2026-10-01 정정 branch에 `147ef1c`로 가져왔다. 이후 push·PR·병합 상태는 정정 goal에서 확인한다. 기존 변경이나 이 문서 commit을 버리거나 무조건 main으로 전환하지 않는다. 새 checkout에 이 문서가 없다면 기존 작업 경로의 [로컬 인계](../../.backups/handoffs/2026-09-30-game-dev-next-session.md)와 checkpoint를 확인한다. `CLAUDE.md`는 PR149로 main에 병합됐고 소유자는 Claude 메인이다. 상세 출처는 정정 goal에 있다. PR 병합에는 해당 PR에 대한 사용자 명시 승인이 필요하다.
+Core 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active`다. 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다. `git status --short`, 현재 branch/HEAD, 원격 main과의 차이를 먼저 확인한다. 현재 branch·기준 commit은 CURRENT의 goal, 이전 준비 branch는 P1a 종료 절에 있다. branch 이름만 보고 다음 구현이 시작됐다고 판단하지 않는다. 기존 변경을 버리거나 무조건 main으로 전환하지 않는다.
 
 ## 세션 진입 배치
 
@@ -24,7 +22,7 @@ Core 작업 경로는 `C:/Dev/DawnHolder_Project`다. 기존 명칭과 세션·�
 2. 새 메인은 [R-1의 메인 전용 checkout](ORCA.md#r1-management-placement)에서 열고 Astra를 연 뒤 작업 현황 탭을 다시 띄운다. 현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다.
 
    ```powershell
-   orca terminal create --worktree path:C:/Users/bass1/orca/workspaces/DawnHolder_Project/main-active --title "작업 현황" --command "node C:/Dev/DawnHolder_Dashboard/dashboard.mjs"
+   orca terminal create --worktree path:C:/Dev/DawnHolder_Project --title "작업 현황" --command "node C:/Dev/DawnHolder_Dashboard/dashboard.mjs"
    ```
 
    탭을 띄운 뒤 `C:/Dev/DawnHolder_Dashboard/board.json`의 결정 항목이 현재 상태와 맞도록 메인이 갱신한다. 세부 결정 운영 규칙은 [CLAUDE 「메인의 기록과 알림」](../../CLAUDE.md#메인의-기록과-알림)을 따른다.
@@ -36,7 +34,7 @@ Core 작업 경로는 `C:/Dev/DawnHolder_Project`다. 기존 명칭과 세션·�
 
 - [CURRENT](CURRENT.md)의 해당 파트 worktree·branch를 확인하고 그 goal의 「재개 지점」을 따른다. 상태와 다음 작업을 이 문서에 복제하지 않는다. 아직 병합되지 않은 다른 파트 goal은 해당 worktree에서 읽는다.
 - goal 종료 뒤에는 다음 goal을 자동으로 시작하지 않는다. 메인과 사용자가 결과·남은 위험·BACKLOG·마일스톤의 다음 순서를 점검한 뒤 다음 계획을 정하고 재개한다.
-- 정본 규칙에 아직 반영되지 않았지만 적용 중인 결정은 [Rules goal의 적용 결정](../../01_Phases/goals/2026-10-03-harness-principles/goal.md#정본-반영-전-적용-중인-사용자-결정)을 확인한다. 사용자 결정과 메인 결정을 구분하고, 운영 규칙 PR 병합 뒤에는 그 절이 가리키는 정본을 따른다.
+- 정본 규칙에 아직 반영되지 않았지만 적용 중인 결정은 [Rules goal의 적용 결정](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#적용-중인-사용자-결정)을 확인한다. 사용자 결정과 메인 결정을 구분하고, 운영 규칙 PR 병합 뒤에는 그 절이 가리키는 정본을 따른다.
 
 ## Management와의 경계
 
