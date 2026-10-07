@@ -87,7 +87,7 @@ function isCommandWord(word, name) {
   return filename === name || filename === name + '.exe';
 }
 
-// 읽기를 더해도 막는 형태가 줄지 않게 경계 읽기와 치환 묶음 읽기의 합으로 본다.
+// Combine boundary and substitution reads so broader reading never removes previously blocked forms.
 function simpleCommands(command) {
   const boundaryRead = command.replace(/\\\r?\n/g, ' ');
   let substitutionRead = boundaryRead;
@@ -101,7 +101,7 @@ function simpleCommands(command) {
     .filter(words => words.length > 0);
 }
 
-// 닫히지 않는 따옴표는 처음 낱말만 건너뛰어 예상 밖 입력에서도 막는 쪽으로 기운다.
+// An unclosed quote skips only its first word to keep unexpected input on the blocking side.
 function quotedWordEnd(words, start) {
   let quote = null;
   for (let index = start; index < words.length; index += 1) {
@@ -208,7 +208,7 @@ function containsApprovalText(value) {
   return value !== null && typeof value === 'object' && Object.values(value).some(containsApprovalText);
 }
 
-// 정밀 판정이 놓친 형태를 원문 낱말로 막는 안전망이며 오탐을 받아들인다.
+// The word safety net blocks forms missed by precise checks and accepts false positives.
 function suspectWords(command) {
   const words = (command.match(/[A-Za-z0-9_./:@+\-]+/g) ?? []).map(word => word.toLowerCase());
   const hasGh = words.some(word => ['gh', 'gh.exe'].includes(word.split('/').at(-1)));
@@ -235,6 +235,7 @@ export function preparePreToolUse(input) {
   const commands = simpleCommands(command);
   if (commands.some(words => findSubcommands(words, 'gh', ['pr', 'merge'], ghValueOptions).length > 0)) {
     // Only Bash has the standalone merge permission path; Monitor must never consume an approval.
+    // An exact standalone merge bypasses the safety net (gh + merge) and proceeds to checkout, agent and approval checks.
     return input.tool_name === 'Monitor' ? blocked('non-bash-merge') : inspectMergeCommand(command);
   }
   if (commands.some(words => findSubcommands(words, 'gh', ['api'], ghValueOptions).length > 0) &&
