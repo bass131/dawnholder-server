@@ -192,6 +192,31 @@ jobs:
           cat "$orca_results/stdout.txt" "$orca_results/stderr.txt"
           exit "$orca_exit"
 
+      - name: Run independent MergeGate regressions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          merge_gate_results="$RULES_OUTPUT/merge-gate-independent-tests"
+          mkdir -p "$merge_gate_results"
+          printf '%s\n' 'node --test 99_Tools/MergeGate.Tests/*.test.mjs' > "$merge_gate_results/command.txt"
+          shopt -s nullglob
+          merge_gate_tests=(99_Tools/MergeGate.Tests/*.test.mjs)
+          set +e
+          if test "${#merge_gate_tests[@]}" -gt 0; then
+            node --test "${merge_gate_tests[@]}" \
+              > "$merge_gate_results/stdout.txt" 2> "$merge_gate_results/stderr.txt"
+            merge_gate_exit=$?
+          else
+            : > "$merge_gate_results/stdout.txt"
+            printf '%s\n' 'Independent test suite is missing: 99_Tools/MergeGate.Tests/*.test.mjs' \
+              > "$merge_gate_results/stderr.txt"
+            merge_gate_exit=1
+          fi
+          printf '%s\n' "$merge_gate_exit" > "$merge_gate_results/exit.txt"
+          cat "$merge_gate_results/stdout.txt" "$merge_gate_results/stderr.txt"
+          exit "$merge_gate_exit"
+
       - name: Preserve results even on failure
         if: always()
         uses: actions/upload-artifact@v4

@@ -22,7 +22,7 @@ description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 �
 
 - [RESUME의 진입 절차](../../../00_Document/operations/RESUME.md#세션-진입-배치)와 [R-1 배치](../../../00_Document/operations/ORCA.md#r1-management-placement), [R-8 Astra 수명](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)을 따른다.
 - 마감 구간 다섯 리드(Core·Content·Rules·CodeMap·Management)와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. Core의 기존 명칭과 태그 전환은 [AGENTS Core 전환 정본](../../../AGENTS.md#core-tag-transition)을 따른다. CodeMap의 기존 Architecture 경로·태그를 유지하며, 이 스킬이 추가 파트의 상시 배치나 생성 권한을 만들지 않는다.
-- 메인은 준비된 현재 리드들에 자기 handle을 Orca 메시지로 공유한다. Core 리드는 메인 옆 horizontal, 작업자·검증자는 각 Astra 아래 vertical split이다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
+- 메인은 준비된 현재 리드들에 자기 handle을 Orca 메시지로 공유한다. Core 리드는 R-1의 별도 탭, 작업자·검증자는 각 Astra 아래 vertical split이다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
 
 ## 신규 prompt 준비 확인
 

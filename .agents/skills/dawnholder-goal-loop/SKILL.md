@@ -81,7 +81,7 @@ goal 범위 절은 **만들 것·건드릴 곳·하지 않을 것·관찰 가능
 
 ## 통합과 보고
 
-Astra는 판정 원문과 필요한 근거를 메인에 전달하고 승인된 범위의 commit/push/PR을 맡는다. 메인은 판정 원문을 읽고 [R-2 원천 표본 대조](../../../00_Document/operations/ORCA.md#r2-source-check)를 따른 뒤 사용자에게 최종 보고한다. 병합 권한과 자동 병합 금지는 최신 [AGENTS](../../../AGENTS.md#git-권한)를 따른다. 구현·검증 완료와 승인·병합 대기를 구분한다.
+Astra는 판정 원문과 필요한 근거를 메인에 전달하고 승인된 범위의 commit/push/PR을 맡는다. 메인은 판정 원문을 읽고 [R-2 원천 표본 대조](../../../00_Document/operations/ORCA.md#r2-source-check)를 따른 뒤 사용자에게 최종 보고한다. 병합 권한·자동 병합 금지는 [AGENTS](../../../AGENTS.md#git-권한)를 따르며 [병합 관문](../../../00_Document/operations/ORCA.md#merge-gate)의 준비 보고는 Astra, 실행은 메인이 맡는다. 구현·검증 완료와 승인·병합 대기를 구분한다.
 
 Astra의 복귀 보고는 변경 요약·검증 근거 위치·리스크·결정 요청·판정 원문 경로로 구성하고 유형은 [R-4](../../../00_Document/operations/ORCA.md#r4-report-type)를 따른다. 원문 로그와 작업자 전체 대화는 붙이지 않는다. 사용자 최종 보고 형식은 [AGENTS의 메시지와 보고](../../../AGENTS.md#메시지와-보고)를 따른다.
 

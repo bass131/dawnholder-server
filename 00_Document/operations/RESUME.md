@@ -21,10 +21,10 @@ Core 작업 경로는 `C:/Dev/DawnHolder_Project`다. 기존 명칭과 세션·�
 
 1. 새 Astra의 배치는 [R-1의 현재 리드 배치](ORCA.md#r1-management-placement), 작업자 기동은 [R-5](ORCA.md#r5-worker-launch), 첫 화면 확인은 [R-6](ORCA.md#r6-first-screen)을 따른다. 이전 handle/Run/Task/Dispatch를 재사용하지 않는다.
    현재 리드와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. 현재 goal의 종료조건도 확인하며 이 문서에 상세 규칙을 복제하지 않는다.
-2. 새 메인은 [R-1의 현재 리드 배치](ORCA.md#r1-management-placement)에 따라 Astra를 연 뒤 작업 현황 탭을 다시 띄운다. 현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다.
+2. 새 메인은 [R-1의 메인 전용 checkout](ORCA.md#r1-management-placement)에서 열고 Astra를 연 뒤 작업 현황 탭을 다시 띄운다. 현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다.
 
    ```powershell
-   orca terminal create --worktree path:C:/Dev/DawnHolder_Project --title "작업 현황" --command "node C:/Dev/DawnHolder_Dashboard/dashboard.mjs"
+   orca terminal create --worktree path:C:/Users/bass1/orca/workspaces/DawnHolder_Project/main-active --title "작업 현황" --command "node C:/Dev/DawnHolder_Dashboard/dashboard.mjs"
    ```
 
    탭을 띄운 뒤 `C:/Dev/DawnHolder_Dashboard/board.json`의 결정 항목이 현재 상태와 맞도록 메인이 갱신한다. 세부 결정 운영 규칙은 [CLAUDE 「메인의 기록과 알림」](../../CLAUDE.md#메인의-기록과-알림)을 따른다.
