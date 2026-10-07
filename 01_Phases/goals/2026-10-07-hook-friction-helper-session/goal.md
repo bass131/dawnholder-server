@@ -246,13 +246,21 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 아침에 남은 것: 보호 branch 거부(U3 뒤), 병합 세 형태 403(사용자), ⑤ 브라우저, 선택 ④(b)·(라) 시험, ⑦ 정리. 순서는 메인 보고 `msg_27ff509d7f16` 「아침 순서」 1~8이다. 1번(`trial/cred-protected` 만들기)도 사용자 아침 답과 묶어 그때 한다(메인 `msg_1dfa956a845b`).
 - 메인 대조(`msg_1dfa956a845b`): 원격 ref·PR #205·worktree 설정·main sha 기록이 일치했다. **불일치 1건, 확인 보류**: 리드 보고는 「토큰 접두어 패턴 검색 0건」인데 메인이 근거 폴더 전체에서 리터럴 `github_pat_`을 세니 파일 1개가 걸렸다. 메인이 열어 보려 했으나 auto mode 분류기가 막았고, 리드도 그 파일을 열거나 찾지 않는다(메인 지시). 리드 스캔은 18:48Z의 `grep -rl -E "github_pat_|gho_[A-Za-z0-9]{20}"`이며 대상은 E/credential-trial/와 E/session/뿐이었다. 그 뒤 리드가 쓴 결과 문서 머리말은 검색한 패턴 이름을 글자로 적었다(리드 기억, 미확인). 근거 폴더는 Git 밖이라 원격 노출 경로는 없다. 사용자가 아침에 직접 보거나 허용 여부를 정한다.
 
+<a id="orca-moved-history"></a>
+## ORCA에서 옮긴 적용 기록
+
+PR2는 규칙 문서 bytes를 상쇄하려고 ORCA 「병합 관문」 첫 문단의 지난 적용 기록 두 문장을 여기로 옮긴다(「PR 경계와 검증」). 원래 자리는 main `7086d45b`의 ORCA 226행이다. 「PR1」은 [병합 관문 goal](../2026-10-06-merge-gate-canon-refresh/goal.md)의 PR1이다. 링크 경로만 이 파일 기준으로 바꿨다.
+
+- 「PR1 병합 뒤 사용자·메인이 checkout·표식 생성과 첫 세션의 작업 공간 신뢰 창을 처리한다.」
+- 「적용 확인·세션 중 settings 변경 즉시 반영 여부는 [goal 완료조건 5](../2026-10-06-merge-gate-canon-refresh/goal.md#관찰-가능한-완료조건)에 기록한다.」
+
 ## 다음 계획 후보
 
 - `merge-gate-code-followup`의 O2(비ASCII 공백)·O6(이상한 session_id): 이 goal 밖이다. 종료 때 미해결이면 BACKLOG 새 행으로 등록한다.
 - Claude 작업자의 TEMP 쓰기(두 번째 발생): 첫 선행 시험 작성자의 `/tmp` 쓰기(첫 발생)에 이어, 수정 회차 선행 시험 작성자가 orca receipt를 Claude Code 세션 scratchpad(TEMP 아래)에 썼다가 근거 폴더로 옮겼다. 원인은 Claude Code가 scratchpad를 안내하고 계약은 「그 밖의 TEMP 쓰기 금지」만 적은 데 있다. 교정 후보는 위임 계약 양식(작업 맥락 스킬 templates)에 「Claude Code가 안내하는 scratchpad도 TEMP다. receipt·임시 파일은 근거 폴더 아래에 쓴다」를 넣는 것이다. 이 goal의 PR2 범위 밖이라 종료 때 BACKLOG 새 행으로 등록하고, 그 전까지 이 goal의 Claude 계약에 그 문장을 넣는다.
 - 실행 시점 검사·역할 분리(다음 Rules goal 설계 입력): 리드 비교 문서 E/runtime-check-comparison.md, 결정 요청 `msg_eac0fa1f3d89`. 그 뒤 도착한 메인 보충 `msg_9ff8eb25d846`(구조화된 도구 경로, 리드급 전면 거부와 메인 요청 인터페이스, 막는 층 셋)과 `msg_a7ce1ae26151`(세션 권한 판별 근거)은 사용자 원문과 함께 E/next-goal-inputs-runtime-role-split.md에 보관했다(메인 지시 `msg_4b7fc0b428af`). 메인이 설명한 「병합 자체를 사람 행동으로 빼는 안」은 사용자 판단 전이라 후보로만 둔다. PR1 결정 뒤 종료 때 BACKLOG 새 행 후보다.
 - Claude safeguard와 병합 관문 검증(첫 발생): 병합·push 문구를 많이 다루는 검증은 Opus 5.5 safeguard 선택창에 걸릴 수 있다(위 「PR1 재검증(수정 회차, FAIL)」). 반복 규칙은 두 번째 발생부터다. 생기면 교정 층(계약 양식 또는 검증자 배정)을 정하고, 종료 때 BACKLOG 새 행 후보로 본다.
-- 자격 증명 분리 후속 goal(이 goal의 PR1 몫을 받음, `msg_1108186019ec`): 아침 시험 3·4가 통과하면 R-5 기동에 `GH_CONFIG_DIR`, R-1 배치에 에이전트 worktree 설정 세 줄을 넣고 글자 그물·가리기 코드를 걷는다. 사용자 결정 후보는 (라)·(가), 프로젝트 범위 보강 후보는 (나)다(위 「자격 증명 분리 시험」·E/credential-trial/results-overnight.md). PR1 branch `13fe344d`의 시험·판정 원시는 출발 자료다. PR2에서 분리 방향과 겹쳐 뺀 문장은 아래 둘이며 이 goal에서 다시 쓴다.
+- 자격 증명 분리 후속 goal(이 goal의 PR1 몫을 받음, `msg_1108186019ec`): PR1 몫은 그물 오탐 줄이기와 BACKLOG `merge-gate-code-followup`의 후속 세 건(T1 `+main`, 한국어 주석 영어화, O-T3 이유 주석)이다. 아침 시험 3·4가 통과하면 R-5 기동에 `GH_CONFIG_DIR`, R-1 배치에 에이전트 worktree 설정 세 줄을 넣고 글자 그물·가리기 코드를 걷는다. 사용자 결정 후보는 (라)·(가), 프로젝트 범위 보강 후보는 (나)다(위 「자격 증명 분리 시험」·E/credential-trial/results-overnight.md). PR1 branch `13fe344d`의 시험·판정 원시는 출발 자료다. PR2에서 분리 방향과 겹쳐 뺀 문장은 아래 둘이며 이 goal에서 다시 쓴다.
   - 보조 세션 스킬 초안(`C:/Dev/DawnHolder_Dashboard/plans/helper-session-skill-draft.md`) 38행 「gh·merge 또는 push·main 낱말이 함께 든 명령은 막힌다. 그런 문자열 검색은 Grep·Read 도구로 하고, 메시지 본문은 파일로 넘긴다.」 PR2 스킬에는 병합 관문 링크만 둔다.
   - 같은 초안 44행의 이유 「본문 낱말이 명령 문자열에 섞여 hook에 막히는 일을 피한다.」
 - 작업자 pane 배치 문장 정리(ORCA R-1·R-5 2단계): 같은 worktree는 리드 pane split, 다른 worktree는 `terminal create --worktree`로 바로 열고 빈 받침 pane을 만들지 않는다(사용자 결정 `msg_e62c4989b3dc`). split close 때 부모 pane이 꺼지는 Orca 1.4.222 관측과 함께 다룬다. 종료 때 BACKLOG 새 행으로 등록한다.
