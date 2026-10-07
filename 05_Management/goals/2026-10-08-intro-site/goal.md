@@ -8,7 +8,7 @@
 - [x] 페이지 본문 작성
 - [x] 배포 workflow 구현
 - [>] 독립 검증
-- [ ] 제품 PR 병합
+- [ ] PR207 병합
 - [ ] 배포 확인
 - [ ] Gardener 점검
 - [ ] 종료 기록 PR 병합
@@ -17,12 +17,12 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-08 04:3x KST, goal 고정 직후.** 이 문단은 그 시점의 상태다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-08 06:03 KST, V1 결함 수정 commit 직전.** 이 문단은 그 시점의 상태다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-- **지금 단계:** 범위 초안 v2가 승인됐고(아래 「요청 원천과 승인」) 이 goal을 고정했다. branch `feat/intro-site-20261008`을 최신 main `7086d45b`에서 만들었다. 다음은 신규 `claude-opus-5-5` 선행 시험 작성자의 공개 안전·문구·렌더 harness다.
+- **지금 단계:** 제품 PR207(branch `feat/intro-site-20261008`, base `7086d45b`)의 독립 검증 V1이 차단(#1·#2·#3)을 냈고, 리드가 셋을 고쳤다(아래 「V1 결함 수정」). 다음은 신규 `claude-opus-5-5` 재검증 V2이고, 통과하면 메인에 병합 승인 요청을 보낸다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run과 재진입:** Run은 `run_605925c36641`, 리드 handle은 `term_59adfc07-455c-493b-b4bc-1e2583b08ff9`(이 세션의 관측값이며 다음 리드의 실행 권한이 아님)다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
-- **작업자·검증자:** 아직 없다.
+- **작업자·검증자:** T1·S1·V1은 정산하고 닫았다. 지금 열린 작업자는 없다.
 - **근거 폴더 E:** 저장소 로컬 `.backups/verification/2026-10-08-intro-site/`(Git 제외). 범위 단계 근거는 `.backups/verification/2026-10-08-intro-page-scope/`(E0)다. 리드 맥락 메모는 E/`astra-context.md`다.
 
 ## 요청 원천과 승인
@@ -139,6 +139,7 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 
 - README의 낡은 운영 문장 두 개 정정: 메인 결정 2에 따라 Rules 후속이다. 초안 v1 위험 7(E0/`scope-draft-v1.md` 130행)이 짚은 문장은 README 14행(「현재는 Codex 메인 세션이 목표와 결정을 관리」)과 65행(`.agents/skills/`를 「Codex 스킬」로 부름)이다. AGENTS 현행은 「메인 Claude」다.
 - 공개 안전 검사의 CI 편입: harness의 허용 목록·내부 정보 패턴·기술 용어 검사를 workflow 조립 단계에 넣는 일. 이번 범위 밖이다.
+- V1 설계 관찰에서 온 후보(비차단, E/`verify/verdict.md` 「설계 관찰」): 조립 job의 저장소 전체 checkout을 사이트 폴더만 받도록 줄이기(O2, Management), 쓰기 권한 job의 action을 commit SHA로 고정할지와 저장소 전체 action 고정 정책(O3, CodeMap·Rules 판단), workflow 안 조립 bash를 저장소 스크립트로 옮기기(O5, 다음 workflow 수정 때 Management), PRD 14행의 인벤토리 구분 갱신(O8, Rules).
 - 범위 밖 기존 위험(초안 9절 5, 이번에 고치지 않음): 유료 Asset Store 패키지 원본이 공개 저장소에 있다. 폰트 NOTICE가 임시 출처 표기 상태다. README 34행의 「ComfyUI 기반 AI 파이프라인」 표기와 일부 그림의 다른 생성 표식이 맞지 않는다.
 
 ## 결과와 열린 사항
@@ -169,3 +170,21 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 - 그림 사본은 E/`tools/make-web-images.ps1`로 사이트 폴더에 만들었다. staging 실행과 SHA256이 같아 결정적이다(E/`tools/site-images.sha256`). 합계 571,331 B다(E/`tools/manifest-site.json`의 `outputBytes` 합).
 - 사이트 commit `c6fa9d95`, 진입 링크 commit `5a57d8c4`.
 - harness 통과(리드 자체 점검이며 독립 판정 아님): 첫 `check-site --mode source --online`은 exit 1이었다. README의 두 표 앞에 설명 문단이 있어 표 머리글 위치가 접점 3절과 달랐다(`fact-table-header`, `image-table-header`). 설명을 표 뒤로 옮긴 뒤 exit 0, 검사 10개 모두 passed였다(E/`lead-run/check-site-2.json`). `check-render`는 exit 0이었다. 데스크톱 clientWidth 1265, 그림 6개 로드, 절 6개 표시였다(E/`lead-run/check-render-1.json`, 화면 사진 E/`lead-run/render-1-shots/`).
+
+### 독립 검증 V1(강)
+
+- 발행: 신규 `claude-opus-5-5`, pane `term_5aef681e…`(split 최초 실행 명령 `claude --model claude-opus-5-5`, 화면 표시 `Opus 5.5 xhigh`, backend unknown), Task `task_4a29e8b8e360`, Dispatch `ctx_b6ee8db0c5dc`. 계약 E/`contracts/v1-task.md`(SHA256 `cb2cb8c3…906d`), 대상 head `a5691d8d`.
+- `worker_done` `msg_d7b4ae46a4c1`(2026-10-07T20:59:33Z, outcome succeeded). 발신 pane·Task·Dispatch가 발행 기록과 일치했다. 판정 원문 E/`verify/verdict.md`.
+- 판정: **차단(#1·#2·#3).** #1은 이야기 절의 마을 주민 대사(F04)가 현재 게임 화면에 나오지 않는 것이다. 원천 `NpcVillager.prefab`을 참조하는 장면·prefab이 기준 commit에 없고, 2026-06-01 `a8ec485a`부터 어느 장면에도 배치되지 않았다. 사용자 결정 Q2와 메인 결정 1 위반이다. #2는 사이트 README 허용 목록 규칙에 v1.1 숨김 구간 거부가 빠진 것, #3은 근거 폴더 그림 스크립트의 120자 초과 호출 세 줄이다.
+- 지적 없음: PR run `37682714836`의 조립 성공·배포 skipped, artifact 8파일과 허용 목록·조립 로그 SHA·head blob 일치, 산출물에 돌린 `check-site --mode assembled --online`·`check-render` exit 0, 조립 본문 독립 시험 42/42(변형 3개 모두 검출), 기존 workflow 4개 성공, 나머지 사실 25개 일치.
+- 리드 R-2 표본: #1 원시(E/`verify/raw/f04-villager-placement.txt`)를 다시 확인했다. 기준 commit에서 villager GUID를 `.unity`·`.prefab`·`.asset`·`.cs`로 찾으면 0건이다. Town 장면의 대장장이·잡화점 대사 두 개를 직접 풀어 읽었다(E/`lead-run/decode-dialog.mjs`).
+- 정산: `worker-release` 결과 `retained`. pane 대기(`✳`, 빈 프롬프트)를 확인하고 `terminal close`로 닫았다(E/`v1-release.json`, E/`v1-close.json`).
+
+### V1 결함 수정(리드, 사이트 산출물 수정 1회째)
+
+- **#1:** 이야기 절의 인용을 빌드 장면 `Town.unity`의 활성 NPC 대장장이 대사로 바꿨다(`Town.unity:5986-5988`, 대화 창 표시 `NpcInteractable.cs:84`). 「만들 것」 1이 이미 허용한 가게 주인의 화면 대사라 범위 안이다. 「만들 것」 1의 「마을 주민의 대사」는 그 prefab이 장면에 있다는 잘못된 전제였고, 승인 문구는 바꾸지 않고 이 기록으로 남긴다. 화면 이름이 없어 「마을 대장장이」라는 일반 명칭을 쓴다(메인 결정 1). 사이트 README 근거표 F04와 아래 설명 문단도 같이 고쳤다.
+- **#2:** 사이트 README 「공개 허용 목록」에 「`.`으로 시작하는 구간(숨김 파일·폴더)」을 더했다.
+- **#3:** E/`tools/make-web-images.ps1`의 세 호출을 인자 한 줄씩 나눴다(커밋 대상 아님). 다시 돌린 그림 6장의 SHA256이 커밋된 사본과 같다(E/`lead-run/rerun-images.sha256`, E/`lead-run/committed-images.sha256`).
+- 같이 반영한 관찰: O9(「첫 퀘스트」 → 「퀘스트 「마을의 위협」의 목표」, 게임의 퀘스트는 하나), O8(F18 근거에 `00_Document/operations/CURRENT.md:7` 추가), O7(이 goal의 재개 지점 갱신).
+- 반영하지 않은 관찰: O1(산출물 루트 디렉터리 0700)은 배포 요구 문서에 권한 조건이 없고(E/`lead-run/upload-readme-v5.md` 「tar 파일 조건」) 완료조건을 막는다는 근거가 없어 고치지 않는다. 완료조건 8 배포 확인에서 보고, 실패하면 수정 PR을 둔다. O2·O3·O5·O8의 PRD 갱신은 「후속 후보」, O4는 기존 후속 후보(CI 편입), O6은 범위 밖이다.
+- 리드 자체 점검(독립 판정 아님): 수정 뒤 `check-site --mode source --online` exit 0·진단 0, `check-render` exit 0(E/`lead-run/fix1/`). 데스크톱 화면 사진에서 이야기 절을 직접 봤다.

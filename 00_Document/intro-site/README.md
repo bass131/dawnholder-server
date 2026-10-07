@@ -13,7 +13,7 @@
 `publish-files.txt`가 공개 파일의 유일한 목록이다. 파일을 더하거나 빼는 일도 PR과 병합 승인을 거친다.
 
 - UTF-8(BOM 없음)과 LF로 쓴다. 한 줄에 경로 하나다. 빈 줄과 `#`으로 시작하는 줄은 무시한다. 앞뒤 공백은 쓰지 않는다.
-- 경로는 이 폴더 기준 상대 경로이고 구분자는 `/`다. 절대 경로·드라이브 문자·`\`·`..`·`.` 구간·앞머리 `-`·중복 줄은 쓸 수 없다.
+- 경로는 이 폴더 기준 상대 경로이고 구분자는 `/`다. 절대 경로·드라이브 문자·`\`·`..`·`.` 구간·`.`으로 시작하는 구간(숨김 파일·폴더)·앞머리 `-`·중복 줄은 쓸 수 없다.
 - 이 폴더 안의 일반 파일만 넣을 수 있다. 디렉터리·symlink는 안 된다. `README.md`와 `publish-files.txt` 자신은 넣지 않는다.
 
 ## 공개하지 않는 정보
@@ -55,8 +55,8 @@
 | F01 | 친구들과 함께 사냥을 떠나는 2D 사이드스크롤 RPG | `00_Document/PRD.md:3` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F02 | 개발 중인 프로토타입 | `00_Document/PRD.md:3` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F03 | 한국어로 즐기는 PC 게임을 목표로 만들고 있다 | `00_Document/PRD.md:18` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
-| F04 | 마을 주민 대사 「보스가 마을을 위협하고 있어요. 도와주세요! 사냥터는 오른쪽에 있습니다.」 | `03_Client/Assets/Prefabs/Characters/NpcVillager.prefab:154-156`; `03_Client/Assets/Scripts/Gameplay/NpcInteractable.cs:20` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
-| F05 | 첫 퀘스트 이름 「마을의 위협」, 목표 「사냥터의 몬스터 처치」 | `03_Client/Assets/Scripts/UI/QuestProgressHud.cs:31-32` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
+| F04 | 마을 대장장이 대사 「어이, 모험가! 무기 손질이 필요하면 들러. ...가게는 아직 준비 중이지만 말이야.」 | `03_Client/Assets/Scenes/01.PlayArea/Town.unity:5986-5988`; `03_Client/Assets/Scripts/Gameplay/NpcInteractable.cs:84` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
+| F05 | 퀘스트 이름 「마을의 위협」, 목표 「사냥터의 몬스터 처치」 | `03_Client/Assets/Scripts/UI/QuestProgressHud.cs:31-32` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F06 | 옆으로 펼쳐진 맵을 달리고 점프한다 | `00_Document/PRD.md:3`; `00_Document/PRD.md:9` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F07 | 근접 공격·원거리 공격, 직업마다 다른 스킬 | `00_Document/PRD.md:10`; `98_Shared/GameData/Combat/SkillCatalog.cs:34-36` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F08 | 친구를 파티에 초대하고 수락하면 함께 사냥한다 | `00_Document/PRD.md:11`; `00_Document/FEATURE_MAP.md:17`; `03_Client/Assets/Scripts/UI/PartyInvitePopup.cs:194`; `03_Client/Assets/Scripts/UI/PartyInvitePopup.cs:212` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
@@ -69,7 +69,7 @@
 | F15 | 마을 → 사냥터 → 보스 → 결과 화면 → 다시 마을 | `02_Server/GameServer/Maps/PortalTable.cs:68-74`; `02_Server/GameServer/Maps/PortalTable.cs:81-94`; `02_Server/GameServer/Maps/PortalTable.cs:101-115`; `02_Server/GameServer/Maps/PortalTable.cs:120-126` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F16 | 만나게 될 몬스터: 슬라임, 골렘, 보스 | `98_Shared/GameData/Enums/EnemyKind.cs:8-10`; `03_Client/Assets/Resources/EnemyVisualTable.asset:16-21` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F17 | 개발 중: 아이템과 인벤토리 | `00_Document/FEATURE_MAP.md:19`; `00_Document/PRD.md:14` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
-| F18 | 개발 중: 캐릭터 저장과 다시 접속했을 때 이어하기 | `00_Document/PRD.md:13` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
+| F18 | 개발 중: 캐릭터 저장과 다시 접속했을 때 이어하기 | `00_Document/PRD.md:13`; `00_Document/operations/CURRENT.md:7` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F19 | 계획: 사냥으로 얻은 자원으로 길드 거점 발전, 길드 창고와 거점 시설 | `00_Document/PRD.md:3`; `00_Document/PRD.md:14` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F20 | 2026년 6월 첫 시연을 마쳤다 | `README.md:22`; `README.md:84` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F21 | 2026년 11월 19일 졸업작품 마감 | `README.md:85` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
@@ -81,4 +81,4 @@
 
 기준 commit은 모두 `7086d45b92b76742d8c11facbf8a1031b81d0853`이다. 행 번호는 그 commit의 파일 기준이다.
 
-F04의 대사는 마을 주민 prefab에 직렬화된 화면 문자열이다. F11·F13의 근접·원거리는 공격 범위 값(`CombatConstants.cs:21`의 기사 1.5, `:58`의 마법사 11.0)과 마법사 투사체 속도(`:62`)로, 체력·속도는 `PlayerStats.cs`의 기사 150·4와 마법사 80·6으로 대조했다. F12·F14의 스킬 이름은 화면 문자열이 없어 직업 제한 표(`SkillCatalog.cs`)와 열거값 주석을 대조한 일반 명칭이다. F16의 슬라임은 일반 몬스터(`EnemyKind` 0)에 연결된 그림(`EnemyVisualTable.asset` → `Prefabs/Enemies/Enemy_Normal.prefab` → `Art/Enemy/Slime/Slime_Idle.png`)이다. 보스의 고유 이름은 원천에 없어 쓰지 않는다.
+F04의 대사는 빌드 장면 `Town.unity`에 배치된 대장장이(`Npc_BlackSmith`)의 대화 문자열이고, 상호작용하면 대화 창에 그대로 보인다(`NpcInteractable.cs:84`). 장면에 배치되지 않은 prefab의 문자열은 화면에 나오지 않으므로 원천으로 쓰지 않는다. 대장장이의 화면 이름은 없어 일반 명칭으로 쓴다. F11·F13의 근접·원거리는 공격 범위 값(`CombatConstants.cs:21`의 기사 1.5, `:58`의 마법사 11.0)과 마법사 투사체 속도(`:62`)로, 체력·속도는 `PlayerStats.cs`의 기사 150·4와 마법사 80·6으로 대조했다. F12·F14의 스킬 이름은 화면 문자열이 없어 직업 제한 표(`SkillCatalog.cs`)와 열거값 주석을 대조한 일반 명칭이다. F16의 슬라임은 일반 몬스터(`EnemyKind` 0)에 연결된 그림(`EnemyVisualTable.asset` → `Prefabs/Enemies/Enemy_Normal.prefab` → `Art/Enemy/Slime/Slime_Idle.png`)이다. 보스의 고유 이름은 원천에 없어 쓰지 않는다.
