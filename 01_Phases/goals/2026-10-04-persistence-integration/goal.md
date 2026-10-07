@@ -1,9 +1,20 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다.
+상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 SQL 시작 거부 조사 실행 파일 v3가 신규 Opus 문서 실사 PASS를 받았고, 사용자 1회 실행을 기다린다(아래 「재개 지점」).
 
 ## 적용 중인 사용자 결정
 
+- **2026-10-08 SQL 시작 거부 조사 재개: 오늘 밤 준비, 실행은 다음 날 사용자.** 메인 `msg_5b07aebde0ed`(2026-10-07T19:29:19Z)가 전달했다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+  - 원문 1: 「대시보드 결정 응답: 1) Core SQL 시작 실패 조사 - 게임 재개 조건과 떼어 오늘 밤 준비부터 시작할지 → A 오늘 밤 준비 시작」. 사용자에게 보인 A 설명 원문: 「오늘 밤 Core 리드를 다시 띄워 관리자 실행 파일 초안을 쓰고 신규 Opus 문서 실사까지 받는다. 여기까지 네 손이 필요 없다. 내일 네가 VHDX를 마운트하고 관리자 창에서 1회 실행한다. 인스턴스 맵 코드는 그대로 게임 재개 뒤다.」
+  - 원문 2: 「대시보드 결정 응답: 1) Core SQL 준비 - 새 Core 리드와 실사자를 근거 폴더 허용(--add-dir)으로 띄울지 → A 띄울 때 허용」. 리드와 리드가 여는 문서 실사자만 `claude --add-dir C:/Dev/DawnHolder_Project/.backups`로 띄운다. 다른 플래그·다른 세션에는 넓히지 않는다.
+  - 아래 10-06 보류(「SQL조사는 일단 뒤로 두고 …」)는 SQL 조사에 한해 풀렸다. 인스턴스 맵의 게임 재개 조건은 그대로다.
+  - 메인이 정한 한계: 관리자 실행, SQL 시작, Procmon, 서비스·레지스트리·Defender 설정 변경은 하지 않는다. 읽기 전용 조사도 비관리자 범위만 한다. 인스턴스 맵 branch·goal은 만들지 않는다.
+- **2026-10-08 인스턴스 맵 계획 v2 승인(전부 A), 착수는 게임 재개 조건 뒤.** 메인 `msg_b7796186084b`(2026-10-07T19:11:06Z) 전달 원문: 「대시보드 결정 응답: … 2) 계획 검토 - Core 인스턴스 맵 계획 v2·마감 로드맵 초안 - 안건 4개(추천 전부 A) → A 승인 (초안 msg_2bb9a8e31741)」. 메인 전달이며 격상하지 않는다.
+  - 안건 1 길드 거점 제외, 2 사냥터·보스방 둘 다, 3 보스 처치 때 그 복사본의 파티 진행만 초기화, 4 core-active에서 최신 main으로 새 branch.
+  - 로드맵 초안의 저장소 반영도 승인으로 본다(메인 판단). 인스턴스 맵 goal의 제품 PR에 `01_Phases/milestones/2026-10-08-deadline-play-loop/roadmap.md`를 넣고 goal이 링크한다.
+  - 운영 셋업 3단계 병합 뒤 메인 착수 신호가 오기 전에는 branch·goal 파일·작업자를 만들지 않는다. R-7 Fable 설계 검토는 해당이며 남은 수는 메인이 착수 전에 알린다.
+- **2026-10-08 Content 던전 goal v3 승인: 새 던전 맵 없음.** 메인 `msg_3d121eafaef2`(2026-10-07T19:18:07Z) 전달 원문: 「대시보드 결정 응답: 1) 계획 검토 - Content 던전 goal 초안 v3 - Core 승인에 맞춤, 질문 3개(추천 전부 A) → A 승인 (초안 msg_65404cd248e6)」. 메인 전달이며 격상하지 않는다.
+  - Core에 닿는 것: 지금의 사냥터 → 보스방 복사본 길이 던전이고 새 MapId가 없다. 마을 복귀는 Core의 「서버가 시키는 이동」 진입점을 Content가 부른다. 던전 PR1은 PDL 39번부터 쓰며, Core의 다음 패킷 변경과 동시에 열리면 먼저 병합되는 쪽이 앞 번호를 갖는다.
 - **2026-10-07 게임 재개 조건과 「계획만 갱신」.** 메인 `msg_5d4d0b768d90`(2026-10-07T18:45:48Z)이 전달했다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다.
   - 조건(10-07 21:08 KST 사용자 결정, 메인 요약): 운영 셋업 3단계(hook 정리 → TDD·임시 쓰기 경계 → 후보 도착 확인)가 병합된 뒤 Core·Content 게임 goal을 연다. 현황판도 이 goal(SQL 설치·판정)을 같은 관문 뒤에 둔다.
   - 원문: 「대시보드 결정 응답: … 2) Core·Content 게임 재개 - 오늘 밤 계획만 다시 쓸지, 조건을 풀고 Core 구현을 시작할지 → A 계획만 갱신」. 사용자에게 보인 A 설명 원문: 「조건은 그대로 둔다. Core 리드를 띄워 인스턴스 맵 초안을, Content 리드는 Unity 마무리 뒤 던전 초안과 PR191 재개 계획을 최신 main 기준으로 다시 써 아침 계획 검토로 올린다.」
@@ -414,9 +425,38 @@
 
 ## 재개 지점
 
+### SQL 시작 거부 조사 준비 — 2026-10-08
+
+기록 시각은 2026-10-07T21:45:06Z(`date -u`)다. 메인 `msg_5b07aebde0ed`(19:29:19Z)의 「오늘 밤 할 일」 4번에 따라 남긴다. **이 블록이 현재 재개 정본이고 아래 소절은 역사다.** E = `.backups/verification/2026-10-04-persistence-integration`, D = E/`g2-service-diagnosis`.
+
+- **지금 단계:** 고친 A의 관리자 실행 파일 v3가 신규 Opus 문서 실사에서 PASS를 받았다. PASS는 「사용자 실행으로 전달 가능」이라는 뜻이고 실행 성공이 아니다. 다음은 사용자가 VHDX를 마운트하고 관리자 창 1회, 일반 창 1회를 실행하는 것이다. SQL은 켜지 않는다. 이 goal의 나머지(엔진 판정 PR, 설치)는 SQL 시작 문제가 풀린 뒤다.
+- **이번 세션 결과**
+  - 실행 파일: D/`sql-deny-submissions-v3/`. `sql-deny-diagnosis.ps1`(SHA256 `2BA3EF42A0216A0C81C3FC04A5A4BFEA0EDF05D7A901EC0F80EFCD2AA220B2FF`), `sql-deny-inputs.json`(`21285DC7BDE4A41D3EB181E08694553E7AC931D8D61525B42045C98283B0ADC3`), 사용자 카드 `step-card.md`. v1·v2 폴더는 실사 원본으로 남겼다.
+  - 실사 3회: v1 NOT PASS(차단 SDA-01·02·04), v2 NOT PASS(차단 SDB-01, Defender 제외 목록이 4개에서 잘림), v3 PASS(차단 0). 판정 원문은 D/`sql-deny-review-v1~v3/verdict.md`다. v3 판정 SHA256은 `024AE06F09F3D8827C809CB63FAD34D898B481B614B6211D3A716197394F325D`다. 같은 산출물 수정은 2회였다.
+  - 리드 맥락 메모: D/`sql-deny-admin-read-context-v1~v3.md`. 작성자 자체점검(독립 검증 아님): D/`sql-deny-author-check-v1~v3/`. v3는 42항목 PASS이고, v2 스크립트에 돌린 음성 대조가 FAIL을 냈다.
+  - 열기 시험 플래그 근거: Microsoft Learn 「SQL Server I/O fundamentals」는 CreateFile에 `FILE_FLAG_WRITE_THROUGH`를 쓰고 I/O가 비동기라고 적는다. no-buffering과 공유 모드는 공식 근거가 없어 가정으로 표기했다.
+  - 메인 보고: 진행 `msg_c28872a150e9`·`msg_3b62b75ed9f2`, 내일 실행 안내 `msg_e64e309057af`.
+- **결과 판독 기준(v3 실사의 비차단 항목에서 정함)**
+  - 백업 성공 여부는 백업 폴더 README가 아니라 D/`sql-deny-attempt-01/40-cold-copy-check.txt`와 `manifest.csv`로 판단한다. README 첫 줄은 실패 경로에서도 「정지 중 사본」이라고 쓴다(SDC-01).
+  - 복원 승인안을 쓸 때는 `not backed up` 파일을 빼고, manifest에서 `SourceSha256`과 `CopySha256`이 같은 행만 대상으로 한다.
+  - DATA cold copy 섹션이 failed여도 master·mastlog 두 사본이 검증되면 열기 시험은 돈다(C-3).
+  - Log robocopy가 실패하면 Log 사본 해시 목록이 남지 않는다(C-1). 이때는 `/UNILOG` 로그를 본다.
+  - 나머지 관찰 C-2·C-4·C-5는 기록만 하고 고치지 않았다.
+- **다음 할 일 순서**
+  1. 사용자가 카드대로 실행하고 메인에 「끝」을 알린다.
+  2. 메인 신호 뒤 Core 리드가 근거 폴더를 읽는다. 판독 축은 관리자·일반 창 열기 시험의 차이(여는 방식 대 SQL 서비스 실행 맥락), ±5초 이벤트, Defender 제외·탐지·5007이다. 결과를 판독해 다음 단계 안을 메인에 올린다.
+  3. 인스턴스 맵 goal은 승인된 계획 v2대로, 게임 재개 관문 뒤 메인 착수 신호를 받아 연다(위 「적용 중인 사용자 결정」).
+- **사용자 손·결정 대기:** VHDX 마운트와 두 번의 실행.
+- **PR·branch:** 열린 Core PR은 없다. branch `feat/persistence-engine-judgment-20261006`에 이 기록을 commit·push한다. origin/main 대비 뒤처진 상태는 그대로이고 main은 받지 않았다.
+- **작업자·검증자:** 이번 세션에 문서 실사자 3명을 차례로 열었다. Task는 `task_591d52cbf152`·`task_960e82c8b85c`·`task_5ab7fe496771`다. 셋 모두 release와 idle 확인 뒤 pane을 닫았다(ptyKilled true). 살아 있는 pane은 리드 하나다.
+- **근거 폴더 쓰기 허용:** 리드와 실사자는 사용자 결정 A대로 `--add-dir C:/Dev/DawnHolder_Project/.backups`로 띄웠다. 세션을 닫으면 사라진다.
+- **리드와 Run:** 리드 handle은 `term_46a398d1-d6af-4290-acb9-548f458f0874`다. 요청 모델은 `claude-opus-5-5` xhigh, 화면 표시는 「Opus 5.5 ⚡xhigh」, backend는 unknown이다. Run `run_b36cc92a4cf4`(회신 주소 `run:run_b36cc92a4cf4`)를 그대로 쓴다. 다시 열면 새 handle에서 `run-use --id run_b36cc92a4cf4`를 실행한 뒤 우편함을 확인한다.
+- **원시:** E/`opus-lead-entry/2026-10-08-sql-prep/`에 진입 기록, 대기·ack, 진행·안내 본문과 receipt가 있다. 실사자 기동·정산 원시는 각 D/`sql-deny-review-v*/`에 있다.
+- **미추적 파일:** `01_Phases/reports/2026-10-06-procmon-sql-start-diagnosis/`는 그대로 미추적이다.
+
 ### 리드 재진입과 다음 goal 계획 — 2026-10-08
 
-기록 시각은 2026-10-07T19:06:38Z(`date -u`)다. 메인 `msg_ccb3dfc31b6b`(18:58:14Z)의 요청으로 남긴다. 사용자가 잠들기 전에 리드 세션을 모두 닫는다. **이 블록이 현재 재개 정본이고 아래 소절은 역사다.**
+기록 시각은 2026-10-07T19:06:38Z(`date -u`)다. 메인 `msg_ccb3dfc31b6b`(18:58:14Z)의 요청으로 남긴다. 사용자가 잠들기 전에 리드 세션을 모두 닫는다. 이 블록은 위 「SQL 시작 거부 조사 준비」 블록 전의 재개 정본이었고, 지금은 역사다.
 
 - **지금 단계:** 이 goal은 보류 그대로다. SQL 시작 거부 조사(고친 A)는 게임 재개 관문(운영 셋업 3단계 병합) 뒤에 연다. 이번 세션은 다음 goal 계획만 다시 썼다.
 - **이번 세션 결과**
