@@ -7,11 +7,21 @@ export function matchesQuery(query: string, values: string[]): boolean {
 }
 
 export function filterSystems(catalog: RecordCatalog, query: string, area: string): SystemRecord[] {
-  return catalog.systems.filter(system => (!area || system.area === area) && matchesQuery(query, [system.id, system.title, system.area, system.summary, system.responsibility, ...system.behavior]));
+  return catalog.systems.filter(system => (!area || system.area === area)
+    && matchesQuery(query, [system.id, system.title, system.area, ...sourceTitles(catalog, system.sourceIds)]));
 }
 
 export function filterRecords(catalog: RecordCatalog, query: string, area: string, type: string): DevelopmentRecord[] {
-  return catalog.records.filter(record => (!type || record.type === type) && (!area || record.systemIds.some(id => catalog.systems.some(system => system.id === id && system.area === area))) && matchesQuery(query, [record.id, record.title, record.summary, record.reason, ...record.details]));
+  return catalog.records.filter(record => (!type || record.type === type)
+    && (!area || record.systemIds.some(id => catalog.systems.some(system => system.id === id && system.area === area)))
+    && matchesQuery(query, [record.id, record.title, ...record.pullRequests.map(pr => `#${pr.number}`), ...sourceTitles(catalog, record.sourceIds)]));
+}
+
+function sourceTitles(catalog: RecordCatalog, ids: string[]): string[] {
+  return ids.flatMap(id => {
+    const source = catalog.sources.find(item => item.id === id);
+    return source ? [source.title] : [];
+  });
 }
 
 export function compareCatalogIds(a: { id: string }, b: { id: string }): number {

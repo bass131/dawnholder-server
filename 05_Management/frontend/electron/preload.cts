@@ -3,7 +3,8 @@ const { contextBridge, ipcRenderer } = electron;
 
 contextBridge.exposeInMainWorld('systemRecords', {
   readCatalog: () => ipcRenderer.invoke('system-records:read'),
-  saveCatalog: (input: { text: string; expectedVersion: string | null }) => ipcRenderer.invoke('system-records:save', input),
+  readSection: (sourceId: string) => ipcRenderer.invoke('system-records:read-section', sourceId),
+  readCheckout: () => ipcRenderer.invoke('system-records:read-checkout'),
 });
 contextBridge.exposeInMainWorld('systemGuide', {
   readGuide: () => ipcRenderer.invoke('system-guide:read'),

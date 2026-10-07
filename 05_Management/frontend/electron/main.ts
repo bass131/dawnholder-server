@@ -3,6 +3,9 @@ import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, protocol, session, Tray, type IpcMainInvokeEvent } from 'electron';
 import { createCatalogStore } from './catalog-store.js';
 import { createSystemGuideStore } from './system-guide-store.js';
+import { createSourceSectionReader, createSourceSectionStore } from './source-section-store.js';
+import { sourceSectionFailure } from './source-section-contract.js';
+import { createCheckoutStore } from './checkout-store.js';
 import { diagramAssets, diagramScheme } from './diagram-asset-contract.js';
 import { createDiagramAssetHandler } from './diagram-asset-handler.js';
 
@@ -23,16 +26,26 @@ let isQuitting = false;
 const indexPath = fileURLToPath(new URL('../dist/index.html', import.meta.url));
 const indexUrl = new URL('../dist/index.html', import.meta.url).href;
 const guideStore = createSystemGuideStore(fileURLToPath(new URL('../../records/system-guide.json', import.meta.url)));
-const recordsStore = createCatalogStore(
-  fileURLToPath(new URL('../../records/catalog.json', import.meta.url)),
-  fileURLToPath(new URL('../../.verification/system-records-last-good.json', import.meta.url)),
-);
+const recordsStore = createCatalogStore(fileURLToPath(new URL('../../records/catalog.json', import.meta.url)));
+const repositoryRoot = fileURLToPath(new URL('../../../', import.meta.url));
+const sectionReader = createSourceSectionReader({
+  readCatalog: () => recordsStore.read(),
+  store: createSourceSectionStore({ repositoryRoot }),
+});
+const checkoutStore = createCheckoutStore({ repositoryRoot });
 function trustedSender(event: IpcMainInvokeEvent): boolean {
   return !!mainWindow && !mainWindow.isDestroyed() && event.sender === mainWindow.webContents && event.senderFrame === mainWindow.webContents.mainFrame && event.senderFrame.url === indexUrl;
 }
 const denied = { ok: false, code: 'denied', message: '이 창에는 기록 접근 권한이 없습니다.' } as const;
 ipcMain.handle('system-records:read', event => trustedSender(event) ? recordsStore.read() : denied);
-ipcMain.handle('system-records:save', (event, input: unknown) => trustedSender(event) ? recordsStore.save(input) : denied);
+ipcMain.handle('system-records:read-section', (event, input: unknown) => {
+  if (!trustedSender(event)) return sourceSectionFailure('denied');
+  return sectionReader.read(input);
+});
+ipcMain.handle('system-records:read-checkout', async event => {
+  if (!trustedSender(event)) return denied;
+  return { ok: true, checkout: await checkoutStore.read() };
+});
 ipcMain.handle('system-guide:read', event => trustedSender(event) ? guideStore.read() : denied);
 
 app.whenReady().then(async () => {

@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('node:fs', async (original) => ({ ...await original<typeof import('node:fs')>(), mkdirSync: vi.fn() }));
-vi.mock('../electron/catalog-store.js', () => ({ createCatalogStore: vi.fn(() => ({ read: vi.fn(async () => ({ ok: true })), save: vi.fn(async () => ({ ok: true })) })) }));
+// Record index v2 (index-v2-design.md 「Electron 경계」): the catalog store only reads.
+vi.mock('../electron/catalog-store.js', () => ({ createCatalogStore: vi.fn(() => ({ read: vi.fn(async () => ({ ok: true })) })) }));
 vi.mock('../electron/system-guide-store.js', () => ({ createSystemGuideStore: vi.fn(() => ({ read: vi.fn(async () => ({ ok: true })) })) }));
 
 const documentUrl = 'dh-diagram://renderer/diagram-renderer.html';
@@ -153,10 +154,11 @@ describe('diagram frame entry and navigation decisions', () => {
     await start();
     const diagramFrame: Frame = { url: documentUrl, parent: host.mainFrame };
     const handlers = host.ipcMain.handle.mock.calls as unknown as [string, (event: unknown, input?: unknown) => Promise<unknown>][];
-    expect(handlers.map(([channel]) => channel).sort()).toEqual(['system-guide:read', 'system-records:read', 'system-records:save']);
+    expect(handlers.map(([channel]) => channel).sort()).toEqual(['system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section']);
     for (const [channel, handle] of handlers) {
       expect(await handle({ sender: host.contents, senderFrame: diagramFrame }, {}), channel).toMatchObject({ ok: false, code: 'denied' });
-      expect(await handle({ sender: host.contents, senderFrame: host.mainFrame }, {}), channel).toMatchObject({ ok: true });
+      // The owned main frame passes the sender check; what each store then returns is tested elsewhere.
+      expect(await handle({ sender: host.contents, senderFrame: host.mainFrame }, {}), channel).not.toMatchObject({ code: 'denied' });
     }
   });
 });

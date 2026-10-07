@@ -3,11 +3,11 @@
 ## 진척 단계
 
 - [x] 범위 승인과 goal 고정
-- [>] 결정·문서 정정 작성
-- [ ] 문서 PR 병합
-- [ ] 색인 선행 시험 작성
-- [ ] 색인 전환 구현·검증
-- [ ] 색인 PR 병합
+- [x] 결정·문서 정정 작성
+- [x] PR196 병합
+- [x] 색인 선행 시험 작성
+- [x] 색인 전환 구현·검증
+- [>] PR197 병합
 - [ ] 백로그 메뉴 구현·검증
 - [ ] 백로그 PR 병합
 - [ ] Gardener와 종료 기록
@@ -16,19 +16,30 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-06 20:2x KST, PR1 2차 문서 실사(좁힌 재실사) 판정을 반영한 정정 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」의 「PR1 문서 실사」 절, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 13:2x KST(04:2xZ), Claude Code 업데이트 재시작 전의 재개 지점 기록 commit(메인 요청 `msg_669a14a08918`).** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. 2026-10-06 사용자 범위 승인 뒤 최신 main `9ee7ae1`에서 branch `docs/management-record-source-20261006`을 만들고 이 goal을 고정했다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. PR1 문서는 1차 문서 실사(차단 W1~W4)와 2차 좁힌 재실사(차단 X1)를 거쳐 두 번 정정했다. 두 검증자는 정산·종료했고, 그 시점에 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`, 8단계 재검증자의 판정 순서 시험은 `aacf35bd`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」·「PR2 좁힌 재검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 좁힌 재검증은 통과(비차단 W1, 리드가 정정)였다. 여덟 세션은 정산·종료했고 열린 작업자·검증자는 없었다.
 
-당시 예정 순서는 다음과 같다.
+**재시작 전 상태(04:22Z 확인):**
 
-1. 끝남: 리드가 PR1 문서로 결정·요구 반영, 낡은 사실·상태 정정, [27개 분류표](next-steps-classification.md), DB 1단계 과정 문서를 썼다.
-2. 끝남: DB 1단계 문서의 위치·분담 조율과 사실 검토는 아래 「Core 조율 결과」와 「Core 사실 검토」에 끝났다.
-3. 끝남: 1차·2차 신규 gpt-6-astra 문서 실사와 그에 따른 정정(아래 「PR1 문서 실사」).
-4. 예정: 2차 정정 delta의 신규 gpt-6-astra 좁힌 재실사 → PR 생성 직전 메인 알림 → CI → 메인 R-2 → 사용자 개별 병합 승인. 27개 분류의 이관 행 세 개는 메인을 거쳐 Rules에 보낸다(「적용 중인 메인 결정」 5항). 첫 행은 메인이 다음 Rules goal 입력에 넣었다(`msg_b1bf869e87fd`). 사용자 결정에 따른 두 행은 `msg_2f00062564f8`로 보냈고, 메인이 다음 Rules goal 입력에 넣었다고 회신했다(`msg_bc53f0de661b`). 첫 행의 출처 칸도 W3 정정 문장으로 바꿨다고 했다. 다음 Rules goal이 시작 전이라 BACKLOG 반영 자체는 아직이다. 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
-5. 예정: PR2·PR3은 PR1 병합 뒤 각각 최신 main의 새 branch에서 시작한다.
+- **지금 단계:** PR2가 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 열려 있고 CI를 기다린다. 다음 할 일은 CI 결과 확인 → 메인 R-2 → 메인이 사용자 개별 병합 승인을 PR197의 정확한 head로 전달 → 리드 pane에서 병합이다.
+- **PR197 head:** 재시작 전 마지막 확인 head는 `8050073f673d12957c410b4173a5344d6bd874b2`다. 이 재개 지점 기록 commit을 push하면 head가 이 commit으로 바뀌고 CI가 다시 돈다. 정확한 40자 head는 메인 보고(「재개 지점 기록 완료」)와 `gh pr view 197 --json headRefOid`로 확인한다.
+- **CI(8050073f, 04:22Z):** `code-rules`·`module-boundaries`(check 둘) 통과, `architecture-tests`·`dotnet-tests`(test 둘) 진행 중. 새 head에서 다시 확인해야 한다.
+- **PR 본문:** 「PR head는 `8050073f`」 한 줄이 이 commit으로 낡는다. 재시작 뒤 첫 작업으로 본문(E/`pr2-pr-body.md`)의 head 줄을 새 head로 고쳐 `gh pr edit 197 --body-file`로 반영한다.
+- **메인에 보낼 것:** 아직 보내지 않은 결정 요청은 없다. CI 결과와 함께 「PR197 병합 승인 요청 준비」를 보내고, 메인 R-2와 사용자 승인 전달(정확한 head 포함)을 받는다.
+- **작업자·검증자:** 살아 있는 pane은 없다. 8단계까지 여덟 세션을 모두 정산하고 pane을 닫았다. PR197 병합까지 새 작업자는 띄우지 않는다.
+- **Run과 재진입:** Run은 `run_3fa510a50602`다. 다시 열면 새 리드 handle로 `orca orchestration run-use`를 해 이 Run을 묶고, 메인에 새 handle을 알린 뒤 `--types` 8개 필터의 우편함 대기를 하나만 연다. 직전 리드 handle `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`은 관측값이며 실행 권한이 아니다.
 
-근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run `run_3fa510a50602`, 리드 handle `term_d2c6dac2-5fb3-401e-98f3-8f6ecba0cdd6`은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
+당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
+
+1. (끝남) 신규 `claude-opus-5-5` 시험 작성자의 기록 읽기 경계 선행 시험.
+2. (끝남) 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
+3. (끝남) 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고(화면 시험 시간 상한 포함), 신규 Sol이 MCP를 구현하고 `mcp-dist`를 새로 빌드한다.
+4. (끝남) 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증했다(차단 V1·V2). V1은 메인 결정 `msg_883836e1208a` 1항에 따라 현 이력을 받아들였다. V2는 새 Sol이 고치고 `mcp-dist`를 다시 빌드했다. 다른 새 `claude-opus-5-5`가 좁혀 재검증해 통과했다.
+5. PR 생성 직전 메인 알림(`msg_2b9dbdc4f69f`) → PR197 생성 → CI → 메인 R-2 → 사용자 개별 병합 승인.
+6. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
+
+근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run은 `run_3fa510a50602`다. 2026-10-06 22:4x KST Orca 재시작으로 리드 handle이 `term_d2c6dac2…`에서 `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`으로 바뀌었고, 리드가 run-use로 Run을 다시 묶었다(E/`run-use-after-restart.json`). handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
 
 ## 요청 원천과 승인
 
@@ -78,7 +89,11 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 5. Rules로 갈 제안은 메인에 보낸다. 메인이 새 Rules 리드의 goal 입력에 넣는다. 위치 규칙·문서 지도·색인 검사 CI·목표 사이 main 유지 제안 5건은 `msg_026b701e3728`로 보냈다. BACKLOG 이관 행은 27개 분류 확정 뒤 보낸다.
 6. 종료 점검 후보 2(vitest CI)는 계획 14번, 후보 1(검증 실행 helper)은 계획 11번에 속하며 둘 다 묶음 2다. 이 goal에 넣지 않는다.
 
+메인 `msg_27b8e5c2e6fb`(2026-10-06T14:13:29Z, E/`wait-24.json`)의 PR2 파일 확인: 리드가 올린(`msg_f125f5e23ac6`) `package.json`·`src/recordsBridge.d.ts`·`src/recordCatalog.ts`·`src/styles.css`는 승인된 PR2 범위에 딸린 파일이라 Sol 계약에 넣는다. `package.json`은 scripts의 `"records:check"` 한 줄만 바꾼다. dependencies·devDependencies와 lockfile이 바뀌면 의존성 변경이라 쓰기 전에 메인에 올린다. 검증 계약에 `package.json`·lockfile의 실제 diff 확인을 넣는다.
+
 메인 `msg_dbff8df03e07`의 운영 지시: `gh pr create`와 `gh pr merge`는 사용자 확인 창 대상이므로 실행 직전에 메인에 알린다. 병합은 PR마다 메인이 그 head에 대한 사용자 승인을 전달한 뒤에만 한다. 초안과 goal이 달라지는 곳이 생기면 쓰기 전에 메인에 알린다. 우편함 대기는 8개 type `--types` 필터와 `--timeout-ms 900000`을 쓴다(진입 메시지).
+
+메인 `msg_883836e1208a`(2026-10-06T19:40:31Z, E/`wait-71.json`)의 PR2 독립 검증 처리: (1) V1(5단계 commit의 구조·동작 혼합)은 현 이력을 받아들이고 force push하지 않는다. PR 본문에 `f8aaae02`가 두 성격을 섞었다는 한 줄을 남긴다. (2) O3(hard link)는 이번 PR 범위 밖 후속 후보이며 Rules에 넘길 BACKLOG 후보 목록에 넣고 설계의 경로 경계 한계에 한 줄 적는다. (3) V2 수정과 좁힌 재검증은 계획대로 한다.
 
 ## 만들 것
 
@@ -160,7 +175,9 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 
 ## 후속 후보
 
-- 운영툴 테스트 CI 편입과 색인 검사 연결: 계획 묶음 2(14번), Rules·CodeMap.
+- 운영툴 테스트 CI 편입과 색인 검사 연결: 계획 묶음 2(14번), Rules·CodeMap. `tests/` 타입 검사 script가 없다는 PR2 검증 관찰 O4도 함께 본다.
+- 색인 검사 진단 품질: 색인이 깨지면(`CATALOG_INVALID`) goal 묶음이 빈 목록으로 돌아 모든 goal에 `GOAL_NOT_INDEXED` warning을 낸다(PR2 검증 관찰 O1, 코드 읽기 추론이며 미측정).
+- 원문 읽기 경계의 hard link: `lstat`·realpath 판정은 루트 밖을 가리키는 hard link를 잡지 못한다(PR2 검증 관찰 O3). 메인 결정 `msg_883836e1208a` 2항에 따라 이번 PR 범위 밖이며, 종료 때 Rules에 넘길 BACKLOG 후보 목록에 넣는다.
 - 검증 실행 helper 정본화: 계획 묶음 2(11번).
 - MCP 실제 세션 연결: 운영툴 라이브 1.0 이후 [결정 보드 MCP 후보](../2026-10-02-system-cards/goal.md#후속-백로그--운영툴-라이브-10-이후-결정-보드의-mcp-관리)와 함께 다음 계획에서 정한다.
 - 운영 백엔드·서버 등록·로그·시스템 카드 전체 자료: 메인 계획 35번(BACKLOG 등록 예정).
@@ -209,6 +226,93 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
   - X2(비차단): 재실사 계약이 메인 결정 `msg_da1c987f7ff0`의 원시를 E/`wait-12.json`으로 잘못 적었다(실제 E/`wait-11.json`). 리드가 `msg_9b1387d94527`로 정정했고 저장소 문서에는 영향이 없다.
   - O1(비차단 관찰): DB 문서 32행 「각자 필요한 확인만 한다」를 실제 행위(장치 확인·관측 종류 지정·기록 종료)로 구체화했다.
 - 검증자 절차 한계: 1차 판정 집필 구간의 heartbeat 간격이 5분을 넘었다고 검증자가 판정에 스스로 적었다. 문서 결함과 구분한다.
+
+### PR196 병합
+
+- **3차(좁힌 재실사, 통과):** 신규 `[Management 검증자]`(지정 gpt-6-astra xhigh, 관찰 화면 「GPT-6-Astra xhigh」, backend unknown)가 delta `3f028104..562a0c78`을 통과로 판정했다. X1·Q2·O1은 해소됐고 새 결함은 없었다. Task `task_78855f959ba5`, worker_done `msg_2853f48e37e2`(2026-10-06T11:33:44Z), 판정 원문은 E/`pr1-recheck2/verdict.md`(SHA-256 `4ee5ae46…`)다.
+- **PR 생성과 CI:** 리드가 메인에 알린 뒤(`msg_a99807425be9`) PR196을 만들었다(2026-10-06T11:36:21Z). head `562a0c78b781f157e7403899cfaf50ed33378004`에서 module-boundaries·code-rules·architecture-tests·dotnet-tests 4개가 모두 success였다(E/`pr1-ci-final.txt`).
+- **승인과 병합:** 리드의 승인 묶음(`msg_581e68a420af`) 뒤 메인 `msg_f6dba519f08c`가 사용자 원문 「대시보드 결정 응답: 1) PR196 - 운영툴 기록 원본 일원화 문서 병합 승인 → A 지금 head로 병합 (head 562a0c78b781f157e7403899cfaf50ed33378004)」을 전달했다(메인 전달, 사용자 직접 입력으로 격상하지 않음). 리드가 직전 head를 다시 조회하고 `gh pr merge 196 --merge --match-head-commit 562a0c78…`로 병합했다. 병합 commit `a47a02765c87d9794933f461a9c71ac7d4369d51`, 2026-10-06T13:48:22Z다(E/`pr1-post-merge-state.json`).
+- **Orca 재시작:** PR196 승인 대기 중 Orca가 재시작돼 리드 탭이 복구되지 않았다. 메인이 리드 대화 기록을 `claude --resume`으로 새 탭에 다시 열었고(`msg_92dcde92b30d`), 리드가 run-use로 Run을 다시 묶었다. 이전 세션의 CI 감시와 우편함 대기는 재시작으로 끝났다.
+
+### PR2 설계
+
+리드가 구현 전 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다. 시험 작성자·Sol·검증자가 같은 문서를 기준으로 쓴다. 판단이 들어간 선택은 다음과 같다.
+
+- 출처 `local`·`handoff`는 지우지 않고 앱·MCP에서 읽지 않는 링크로 남긴다. `section`은 Markdown이 아닌 출처와 파일 처음부터 읽는 경우에 `null`이다.
+- 잘못된 locator는 색인 전체가 아니라 그 링크만 끊는다. 색인 계약은 키 집합을 엄격히 검사해 서술·상태 필드가 다시 들어오지 못하게 한다.
+- 원문 읽기는 출처 ID로만 받는다. 거절 사례 8종은 각각 고정 코드·reason으로 앱과 MCP 양쪽에서 시험한다.
+- 색인 검사 CLI는 앱과 같은 원문 읽기 모듈을 Node 기본 TypeScript 실행으로 불러온다. 별도 컴파일이나 검사 전용 사본보다 판정이 갈릴 위험이 작다.
+- PR2를 시험 작성 → 구현 → 데이터 전환 → MCP 시험 → MCP 구현 → 독립 검증의 여섯 작업으로 나눈다. Codex 컨텍스트(273k)와 같은 파일 단일 쓰기를 고려한 분할이다.
+- 이 PR이 `catalog-store.ts`의 저장 경계를 없애므로 CODE_CONVENTION 「TypeScript·Electron 작성」의 예시가 사라진다. 병합 뒤 메인을 거쳐 Rules에 문구 갱신을 제안한다.
+- 리드 절차 누락(첫 발생): 리드가 설계 문서와 이 goal 갱신을 PR2 맥락 메모보다 먼저 썼다. 메모(E/`astra-context.md` 「PR2 맥락」)는 그 뒤에 썼고 두 파일의 사전 기록으로 소급하지 않는다. 이후 PR2 계약·문서 쓰기의 사전 메모다.
+
+### PR2 선행 시험
+
+- **작업:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)가 설계의 A~H 요구와 거절 사례 8종의 실패하는 요구 시험을 썼다. Task `task_f12056bdd3f6`, Dispatch `ctx_d9fd836f7aa7`, worker_done `msg_a7f03ddbeb37`(2026-10-06T15:05:48Z). 보고는 E/`pr2-t1/report.md`다. 계약은 Windows 명령줄 한도 때문에 고정 파일 E/`pr2-t1-task.txt`(SHA-256 `f1457744…`)로 넘겼다.
+- **설계 질문:** 작업자가 해석 질문 8건을 물었다. 리드가 답하고 설계 문서에 반영했다(`d51becac`, `25841139`). `.md` 이름의 디렉터리는 「읽는 동안 바뀜」이 아니라 `not-readable`·`not-file`로 바꿨다(Q3).
+- **결과:** 시험 파일 24개를 바꿨다(새 11, 고침 10, 지움 3, +2381/−1164). 리드가 시험 파일만 commit했다(`736d3637`). 같은 명령의 실행은 쓰기 전 902개 중 897 통과·5 실패, 쓴 뒤 924개 중 830 통과·94 실패·수집 실패 6파일이다(E/`pr2-t1/before`·`after`의 `vitest.json`). 실패 100건은 새 요구 예정 96건과 기존 B01·B09·B11·B12 4건으로 모두 분류됐고 실제 회귀·원인 미확정은 0건이다.
+- **리드 대조:** 위 수치를 두 원시 JSON에서 다시 셌다. 리드가 14:27:36Z에 따로 읽은 작업자 화면에 맥락 메모의 준수 연결 표가 쓰이고 있었고, 첫 시험 파일 생성은 14:28:43Z다. 거절 사례 8종은 사례마다 code·reason을 `toEqual`로 단정한다.
+- **미작성(이유 있음):** 읽기 전후 stat 차이로 생기는 `changed`와 색인 검사 출처 파일의 읽기 실패는 제품 hook 없이 결정적으로 재현할 수 없어 쓰지 않았다. 7~8단계 사이 파일 교체 사례만 썼다.
+- **2단계 전 알릴 점:** 작업자가 설계 확인용 일회용 대역을 E/`pr2-t1/selfcheck/reference/`에 만들었다(제품 아님). 구현 Sol에게는 읽지 말라고 계약에 적는다.
+
+### PR2 구현
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max」, backend unknown)이 2단계 제품 코드를 썼다. Task `task_c5613a741647`, Dispatch `ctx_d18ecd40fec9`, worker_done `msg_9274b8506e78`(2026-10-06T16:01:30Z). 계약은 고정 파일 E/`pr2-s1-task.txt`(SHA-256 `7be122f3…`), 보고는 E/`pr2-s1/report.md`다.
+- **계약 보충:** 두 질문에 리드가 답했다. v1.1은 색인 계약과 원문 계약의 type import 순환을 끊었다. renderer bridge 타입을 `src/recordsBridge.d.ts`로 옮겨 의존 방향을 「원문·checkout 계약 → 색인 계약」 한 방향으로 두고, 그 결과 MCP 정적 경계 시험 두 건이 통과했다. v1.2는 옛 v1 계약 원문 한 줄을 고쳐 보는 MCP build 시험(R04)을 4단계 예정으로 분류했다(E/`pr2-s1/supplement-v1.1.txt`·`supplement-v1.2.txt`).
+- **결과:** 제품 파일 23개를 바꿨다(새 9, 고침 13, 지움 1, +1244/−361). 리드가 `1c7824e2`로 commit했다. package.json은 scripts의 `records:check` 한 줄만 늘었고 lockfile·시험·`catalog.json`·`mcp/`·문서는 바뀌지 않았다. 전체 시험은 1014개 중 936 통과·67 실패·11 미실행, 수집 실패 0이다. 실패는 데이터 전환 대기 11, MCP 4단계 예정 54, 기존 B01·B09 각 1이다. 미실행 11건은 v1 DTO 타입 검사에 막힌 MCP build 시험 두 파일이며 B11·B12는 해소로 판정하지 않는다. typecheck와 desktop:typecheck는 exit 0, mcp:typecheck는 exit 1(오류 34개 모두 `mcp/`의 v1 DTO 세 파일)이다. `records:check`는 실제 색인이 아직 v1이라 `CATALOG_INVALID` 하나로 exit 1이다.
+- **리드 대조:** 위 수치와 파일별 실패 분포를 E/`pr2-s1/after/vitest.json`에서 다시 셌고, typecheck 3종·CLI의 meta exit와 출력, package diff, 보호 경로 diff를 원시로 확인했다. 맥락 메모 생성(00:13:14 KST)이 첫 제품 파일 생성(00:21:41 KST)보다 앞선다. 강 등급 독립 판정은 6단계 검증자에게 남는다.
+- **남은 일:** 실제 색인이 v1이라 새 화면은 지금 데이터 오류를 표시한다. 3단계 데이터 전환이 이 상태를 푼다. 실제 Electron 화면·build는 실행하지 않았다.
+
+### PR2 데이터 전환
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max」, backend unknown)이 `catalog.json` 한 파일을 schemaVersion 2로 바꿨다. Task `task_eed4dd374ef1`, Dispatch `ctx_bbff70573c4a`, worker_done `msg_4b539f625b69`(2026-10-06T16:54:27Z). 계약은 고정 파일 E/`pr2-s2-task.txt`(SHA-256 `0b8bf63b…`), 보고는 E/`pr2-s2/report.md`, 전환표는 E/`pr2-s2/conversion.md`다.
+- **계약 보충과 리드 판단:** 네 건이다. v1.1은 완료조건 8의 DB 1단계 문서 출처를 더했다. v1.2는 옛 MCP 실행본(`mcp-dist`, 10-02 v1 빌드) 때문에 새로 실패하는 시험을 4단계 예정으로 분류하게 했다. v1.3은 Sol 질문 `msg_896c5425b368`에 답해 goal 제목 앞의 단계 코드를 이름 뒤 괄호로 옮기게 했다. 근거는 `catalog-display-names` 시험이 적은 사용자 규칙이다. 같은 답에서 `management-records` 시스템 출처로 `decisions.md`의 D-16을 허용했다. FEATURE_MAP·ARCHITECTURE에 Management 항목이 없다. Sol 질문 `msg_95d520b78548`에는 아래 화면 시험 시간 초과를 4단계 시험 소유 후속으로 넘기도록 답했다.
+- **리드 계약 누락(첫 발생):** 3단계 계약이 고정 입력으로 가리킨 완료조건 8을 「만들 것」에 적지 않았다. 계약의 「쓰기 전 통과하던 시험이 쓴 뒤 실패하면 결함」도 옛 MCP 실행본을 고려하지 않았다. 두 건 모두 Sol의 첫 catalog 쓰기 전에 보충으로 고쳤다.
+- **결과:** 출처 68(git 55·local 12·handoff 1)·시스템 18·기록 49다. 기존 ID와 순서는 그대로다. 9-30 이후 goal 31개가 새 기록이 됐다. 리드가 `623b560b`로 commit했다(+1164/−693). `records:check`는 exit 0, error 0, warning 11이며 warning은 모두 9-29 goal의 `GOAL_NOT_INDEXED`다. 전체 시험은 전환 전과 같은 1014개 중 936 통과·67 실패·11 미실행이지만 실패 구성이 바뀌었다. 데이터 전환 대기 11건 중 9건이 통과했고, `mcp-v1-reader`의 canonical hash 시험 1건은 MCP v1 DTO 때문에 4단계 예정으로 남았다. 나머지 1건은 아래 화면 시험이다. 옛 MCP 실행본 때문에 MCP stdio 시험 9건이 새로 실패했다(4단계 예정). typecheck·desktop:typecheck는 exit 0, mcp:typecheck는 2단계와 같은 오류 34개다.
+- **화면 시험 시간 초과:** 실제 색인의 상세를 모두 여는 `catalog-display-names`의 rendered 시험이 전체 실행에서는 5012ms·5029ms로 시간 초과했고 단독 실행에서는 3117ms에 통과했다. 상세가 36개에서 67개로 늘어서다. 시험 시간 상한은 4단계 시험 작성자가 그 시험에 명시한다([색인 v2 설계](index-v2-design.md) 「시험과 기존 실패」).
+- **리드 대조:** 시험 수치와 파일별 실패 분포를 원시 JSON에서 다시 셌다. `records:check`를 직접 다시 실행해 같은 결과를 얻었다. catalog SHA-256, 범위(catalog 한 파일), 맥락 메모 생성(01:12 KST)이 첫 catalog 쓰기(01:30 KST)보다 앞섬을 확인했다. 기록 4개의 PR 번호·병합 commit을 git 원시와, Markdown 구간 53개 전부를 파일의 정확한 제목과 대조했다. 전수 대조는 6단계 검증자 몫이다.
+- **설계 보충:** MCP 조사에서 지금의 MCP 경계 시험이 앱 공유 모듈을 3개만 허용해 설계의 재사용과 충돌함을 찾았다. [색인 v2 설계](index-v2-design.md) 「MCP」에 카드 store 재사용, `main.ts` 고정 경로, MCP 빌드 경계 표, TEMP 사본 helper 확장, `mcp-dist` 재빌드와 B11·B12 재판정을 더했다.
+
+### PR2 MCP 선행 시험
+
+- **설계 고정(4단계 전):** 시험과 구현이 같은 이름을 쓰도록 MCP 서버 주입 지점 세 개(`readGuide`·`readSourceSection`·`readCheckout`), `read_source_section`의 UTF-16 페이지 규칙, 카드 목록 규칙, 오류 코드 표를 설계에 고정했다(`08b2c3ed`).
+- **작업:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)가 MCP v2의 실패하는 요구 시험을 썼다. Task `task_d9d03a4667d9`, Dispatch `ctx_eef4ef928046`, worker_done `msg_6a4c4ae1cc92`(2026-10-06T18:08:59Z). 계약 E/`pr2-t2-task.txt`(SHA-256 `432502ae…`), 보고 E/`pr2-t2/report.md`.
+- **리드 답(보충 v1.1·v1.2):** 질문 7건에 답했고 설계 「MCP」에 같은 내용을 반영했다. 판단이 들어간 것은 넷이다. 카드 도구는 카드 자료만, 기록 도구는 색인만 읽는다(한쪽 파일이 깨져도 다른 쪽 조회가 막히지 않게). `readCheckout`은 성공 응답의 마지막에만 부른다. 색인을 읽은 뒤의 원문 오류는 색인 hash를 snapshot에 싣는다. 원문 결과 `load`(예상 밖 I/O 실패)는 새 코드 `SOURCE_UNREADABLE`(재시도 가능)이다. 설계 「원문 구간 읽기 경계」가 `load`를 빠뜨린 것은 설계 누락이며 함께 고쳤다(제품에는 2단계부터 있다).
+- **결과:** 새 시험 파일 6개와 기존 MCP 시험·helper 22개를 고쳤다(+2353/−396). 리드가 시험 파일만 `948279df`로 commit했다. 같은 명령의 결과는 쓰기 전 1014개 중 936 통과·67 실패·11 미실행에서 쓴 뒤 1193개 중 918 통과·264 실패·11 미실행이다(수집 실패 0). 실패·미실행 275건은 5단계 구현 예정 238, 5단계 재빌드 예정 33, B11·B12(새 출력 기준으로 고침, 재빌드 예정) 각 1, B01·B09 각 1이다. 회귀·원인 미확정은 0건이다. 화면 시험 시간 상한은 (시스템+기록 수)×250ms(지금 16,750ms)다.
+- **리드 대조:** 쓴 뒤 수치를 원시 JSON에서 다시 셌고 범위가 `tests/` 28개뿐임을 확인했다. 거절 사례 8종 시험이 code·`details.reason`을 `toEqual`로 단정함을 표본으로 읽었다. 새 시험의 제품 import는 시험 대상(서버·리더)과 앱 store·타입뿐이다.
+- **맥락 메모 시점 관찰:** 메모 파일의 현재 생성 시각(03:08 KST)이 첫 새 시험 파일(02:20 KST)보다 늦다. 6단계 검증자가 도구 호출 기록으로 확인한 원인은 18:08:30Z의 `sed -i` 한 줄 치환이다. 이 치환과 Claude의 Write·Edit 도구는 파일을 교체하므로 생성 시각이 마지막 교체 시각이 된다(처음 기록의 「통째로 다시 쓰면서」는 원인 설명이 틀렸다). 처음 리드는 메모 본문의 작성 시점 기록(02:1x KST)과 heartbeat(17:14:55Z 「context memo written; starting test files」)를 근거로 들었다. 6단계 검증자는 heartbeat가 메모 쓰기 뒤에 보낸 것이라 그 자체로 선행을 증명하지 않는다고 보았다. 직접 근거는 작업자 도구 호출 기록의 17:12:50Z 메모 Write → 17:18:54Z 첫 시험 파일이다(E/`pr2-v1/raw/t2-memo-timeline.json`).
+
+### PR2 MCP 구현
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max」, backend unknown)이 MCP를 색인 v2와 새 도구 세 개(`read_source_section`·`list_guide_cards`·`get_guide_card`)로 바꾸고 `mcp-dist`를 실제 작업 트리에서 다시 빌드했다. Task `task_965b0ff1fb91`, Dispatch `ctx_e05f9a6df34a`, worker_done `msg_92c8dbf80965`(2026-10-06T18:52:59Z). 계약 E/`pr2-s3-task.txt`(SHA-256 `8658d473…`), 보고 E/`pr2-s3/report.md`.
+- **리드 답:** 질문 둘에 답했다. 4단계 시험 `mcp-v2-bytes`의 canonical 시험은 versioned 출처를 모두 성공으로 단정하는데, 설계는 git 출처 중 소문자 `.md`만 읽는다(실제 색인의 `.cs` 출처 둘은 `SOURCE_NOT_READABLE`·`extension`). 이것을 4단계 시험 결함으로 분류해 남겨도 되고 6단계 검증자가 고친다고 답했다(`msg_f900979a7a68`). 작업 중 생긴 goal 변경은 리드 기록이라 Sol 범위 판정에서 분리하라고 답했다(`msg_b82fdedc2c7d`).
+- **결과:** `mcp/` 제품 파일 6개 수정·3개 신규(+565/−88)다. 기존 다섯 도구의 조회는 `catalog-record-tools.ts`로 옮겼고, 원문 구간과 카드 처리는 `catalog-source-tool.ts`·`catalog-guide-tools.ts`가 맡는다. 경로 판정·구간 추출·카드 판정·checkout은 앱 `electron/` 모듈을 그대로 쓴다. 새 오류 코드 14개의 고정 문장은 보고 부록에 있다. 같은 명령의 전체 시험은 쓰기 전 1193개 중 918 통과·264 실패·11 미실행에서 재빌드 뒤 1190 통과·3 실패·0 미실행이다. 남은 실패는 B01·B09와 위 시험 결함이다. 4단계가 이번 단계에 넘긴 273건 중 272건이 통과했다. 타입 검사 셋과 `records:check`는 exit 0이다. 새 빌드 버전은 `0.0.0+sha256.ea3beb5e…`이고 `mcp-dist`는 13파일에서 22파일(설계의 electron 공유 모듈 9개와 MCP 13개)이 됐다.
+- **리드 대조:** 쓴 뒤 수치를 원시 JSON에서 다시 셌다. 세 타입 검사·`records:check`·빌드의 meta exit를 읽었다. 현재 `mcp-dist` 22파일의 SHA-256이 after 목록과 모두 같음을 다시 계산했다. 보호 산출물 561파일의 전후 대조가 같다. 맥락 메모의 생성 시각(03:16:33 KST)이 쓰기 전 시험(03:16:57 시작)과 첫 제품 파일 시각(03:20:58)보다 앞서고, 쓰기 전 시험 수치가 4단계 결과와 같다. 범위는 `mcp/` 9개와 리드의 goal 변경뿐이다. 프로세스 실행 호출이 없고 `main.ts`의 고정 경로 셋이 설계와 같음을 읽었다.
+- **commit:** `f8aaae02`. 기존 조회의 이관 hunk가 `catalog-server.ts`의 새 주입·분기 hunk와 섞여 있어 구조 commit을 따로 나누지 않았다. 나누려면 시험하지 않은 중간 상태를 리드가 만들어야 하기 때문이다. 이 사정은 commit 본문에 적었다.
+- **문서:** `05_Management/MCP.md`를 도구 여덟 개, 고정 경로 셋, `snapshot.hash` 하나, 원문 구간의 페이지·오류, 공유 앱 모듈을 포함한 재빌드 조건으로 고쳤다.
+- **리드 절차 위반(파트 첫 발생, 세션 전체 네 번째):** 2026-10-07 03:31:58 KST에 리드가 우편함 대기 `orca orchestration check --wait`를 `&`와 `/dev/null`로 띄웠다(CLAUDE.md 「백그라운드 `&`나 `/dev/null` 리다이렉트로 출력을 버리지 않는다」 위반). 리드는 자기 고아 프로세스 하나만 껐고, 다른 세션의 check 프로세스는 두었다. 끈 뒤 peek가 0건이었고, inbox에도 5단계 Sol의 마지막 질문 `msg_4fbb22870bdc`와 리드 답 `msg_f900979a7a68` 뒤 새 메시지가 없어 유실은 없었다. 대기는 `run_in_background`와 `tee`로 하나만 다시 열었다. 메인 보고는 `msg_7b1146198e16`이다. 메인 답 `msg_839e3dbccd57`에 따르면 10-06에 메인 두 번, Rules 리드 한 번이 먼저 있었다. 반복 규칙은 Rules가 맡는다(Rules goal PR2의 대기 정책 정본 문장, 대기 차단 hook은 다음 묶음 후보). 메인이 Rules 요청서에 이 건을 더했다.
+
+### PR2 독립 검증
+
+- **작업:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)가 PR2 전체(`a47a0276..cf8d235c`)를 강 등급으로 검증했다. Task `task_b9361ad5b5e6`, Dispatch `ctx_f5eef882e2c1`, worker_done `msg_1f2a08d5bf2a`(2026-10-06T19:37:25Z). 계약 E/`pr2-v1-task.txt`(SHA-256 `c12c120c…`), 판정 원문 E/`pr2-v1/verdict.md`(SHA-256 `63e887da…`).
+- **판정:** 차단(V1·V2). 기능 요구는 모두 충족이다(「만들 것」 1~5, 완료조건 1~4·8·10의 PR2 부분). 같은 명령의 전체 시험은 1193개 중 1190 통과에서 1196개 중 1194 통과가 됐고 남은 실패는 B01·B09뿐이다. 타입 검사 셋·`records:check`는 exit 0이다. 실제 Electron(보조 화면, 앱 125%)은 두 번째 시도에서 25/25다. 첫 시도의 실패 3건은 하네스 점검식 결함이었다. 거절 사례 8종은 앱·MCP·빌드된 MCP 진입점에서 설계 표와 같다. 데이터 전수 대조는 어긋남 0이고, 보호 산출물 583파일은 변경 0이다. 다섯 작업의 맥락 메모는 모두 첫 대상 파일보다 앞섰다(작업자 도구 호출 기록이 근거).
+- **결함:** V1은 5단계 commit `f8aaae02`에 구조와 동작이 섞인 것이다(서식 정리 hunk 안의 도구 설명 문구 변경 포함). V2는 「git이고 소문자 `.md`면 읽는다」 판정이 helper `sourceReadability` 밖 두 곳(`source-section-store.ts`, `record-index-check.ts`)에 다시 구현된 것이다. V3~V5는 README 두 문장과 설계 한 문장의 사실 불일치(비차단)다. T1(4단계 시험의 비 `.md` 성공 단정)은 검증자가 계약대로 정정했다.
+- **리드 절차 위반(첫 발생):** V1은 리드가 commit을 묶으면서 생겼다. 「PR 경계와 종료」의 「구조 변경과 동작 변경은 서로 다른 커밋」을 리드 commit 단계에서 지키지 못했다. 메인 결정 `msg_883836e1208a` 1항에 따라 현 이력을 받아들인다(force push 없음). PR 본문에 `f8aaae02`가 구조와 동작을 섞었다는 한 줄을 남긴다.
+- **처리:** 검증자의 시험 두 파일(T1 정정, 빌드된 MCP 진입점 독립 시험)을 `f9a1cc8e`로 commit했다. V3~V5와 아래 4단계 메모 원인 정정은 리드가 고쳤다. V2는 범위 안 규칙 위반이라 루프에서 고친다. 새 Sol이 두 곳을 helper 결과로 분기하게 바꾸고 설계 판정 순서를 지킨다. store가 MCP 빌드 그래프에 있으므로 `mcp-dist`를 다시 빌드한다. 그 뒤 새 Opus가 좁혀 재검증한다.
+- **비차단 관찰:** O1(색인이 깨지면 `records:check`가 모든 goal에 warning을 냄), O3(hard link는 경로 거절이 못 잡음, 거절 8종 밖), O4(tests 타입 검사 script 없음)는 「후속 후보」에 적었다. O3은 메인 결정 `msg_883836e1208a` 2항에 따라 범위 밖이고 설계 「원문 구간 읽기 경계」에 한계로 적었다. O2(fence 판정 두 곳)는 PR3 착수 때 판단한다. O5(문서 PR196이 기록 6개의 PR 목록에 들어감)는 first-parent 규칙 그대로 둔다. O6(4단계 메모 생성 시각의 원인)은 「PR2 MCP 선행 시험」에서 정정했다.
+
+### PR2 V2 수정
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max」, backend unknown)이 V2를 고치고 `mcp-dist`를 다시 빌드했다. Task `task_34aca609f6db`, Dispatch `ctx_4a46cdc3722a`, worker_done `msg_9a048764baf6`(2026-10-06T20:00:22Z). 계약 E/`pr2-s4-task.txt`(SHA-256 `3252b244…`), 보고 E/`pr2-s4/report.md`.
+- **결과:** `source-section-store.ts`와 `record-index-check.ts`가 `sourceReadability(source)` 결과로 분기한다. store는 설계 순서(종류 → 경로 모양 → 확장자)를 지켜, 잘못된 git 경로는 확장자보다 먼저 거절된다. 같은 명령의 전체 시험은 쓰기 전과 쓴 뒤 모두 1196개 중 1194 통과이고 실패는 B01·B09로 같다. 타입 검사 셋과 `records:check`(error 0, warning 11)는 통과했다. `mcp-dist`는 22파일 중 `electron/source-section-store.js`와 `build-info.js`만 바뀌었고 새 버전은 `0.0.0+sha256.1b38a0e7…`이다. 보호 산출물 561파일은 그대로다.
+- **리드 대조:** diff가 계약의 두 파일·분기 순서와 같음을 읽었다. 전후 수치와 실패 이름을 원시 JSON에서 다시 셌다. 메모 파일 생성 시각(04:47:25 KST)이 쓰기 전 시험(04:50)과 제품 파일 시각(04:51)보다 앞선다. 생성 시각은 파일 교체로 바뀔 수 있어 그 자체로는 근거가 아니다(6단계 O6). 8단계 재검증자가 작업자 도구 호출 기록(Codex rollout)으로 19:47:24.893Z 메모 → 19:51:00.774Z 제품 파일 순서를 확인했다(E/`pr2-v2/raw/s4-codex-timeline.json`). `electron/`·`mcp/`의 `.endsWith('.md')`는 helper 한 곳뿐이다. 현재 `mcp-dist` 22파일의 SHA-256이 after 목록과 같다.
+- **commit:** `bd40e3a6`(동작 보존 정리). 「경로 모양 거절이 확장자 거절보다 앞선다」 단정은 앱 쪽 기존 시험(`tests/source-section-boundary.test.ts`의 `../outside.MD` 사례)에만 있고 MCP 쪽에는 없었다. 처음 리드 기록은 「기존 시험에는 없다」고 잘못 적었다(8단계 W1). 좁힌 재검증자가 세 진입의 판정 순서 보존 시험을 더했다(아래 「PR2 좁힌 재검증」).
+
+### PR2 좁힌 재검증
+
+- **작업:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)가 `cf8d235c..373d8c93`를 강 등급으로 좁혀 재검증했다. Task `task_d8f3f012ca61`, Dispatch `ctx_efb72251d491`, worker_done `msg_20464a814b1f`(2026-10-06T20:24:06Z). 계약 E/`pr2-v2-task.txt`(SHA-256 `768670e8…`), 판정 원문 E/`pr2-v2/verdict.md`(SHA-256 `e889ec07…`).
+- **판정:** 통과(비차단 W1 하나). V2는 해소됐다. 새 시험 `tests/source-section-order.test.ts`가 판정 순서(종류 → 경로 모양 → 확장자 → 파일)를 앱 reader·빌드된 MCP 진입·색인 검사에서 단정한다. 같은 시험이 V2 수정 전(`cf8d235c`와 그때의 `mcp-dist`)에도 통과해 동작 보존을 보였고, 순서를 일부러 무너뜨린 TEMP 변형에서는 실패했다. 같은 명령의 전체 시험은 1196개 중 1194 통과에서 1198개 중 1196 통과가 됐고 실패는 B01·B09뿐이다. 타입 검사 셋·`records:check`(error 0, warning 11)는 같다. `mcp-dist` 버전은 현재 소스로 다시 계산한 digest와 같다. 보호 산출물 561파일은 변경 0이다. 리드 문서 정정 다섯 문장은 원천과 같다. hard link 한계는 관측으로 확인됐다.
+- **처리:** 새 시험을 `aacf35bd`로 commit했다. W1(기존 시험 서술)과 P3(메모 선행을 파일 생성 시각으로 판정한 리드 기록)은 위 「PR2 MCP 선행 시험」·「PR2 V2 수정」 문장에서 고쳤다. **리드 절차 위반(첫 발생):** P3는 6단계 O6가 근거로 쓰지 말라고 한 파일 생성 시각을 리드가 7단계 대조에 다시 쓴 것이다. 결론은 rollout으로 맞았다. 운영 규칙은 O6와 함께 Rules 몫이다. P1(`record-index-check.ts`의 helper 결과 변수 이름), P2(helper의 모르는 kind 처리, 색인 계약이 막아 도달 불가), P4(빌드된 MCP 배치 코드 두 곳)는 동작 영향이 없어 이번 PR에서 고치지 않는다.
 
 ### 진입과 준비
 

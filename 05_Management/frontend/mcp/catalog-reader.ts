@@ -7,9 +7,6 @@ import { catalogDetails } from './catalog-dto.js';
 
 export interface SnapshotMetadata {
   readonly hash: string;
-  readonly revision: string;
-  readonly asOf: string;
-  readonly sourceCommit: string;
 }
 
 export interface CatalogSnapshot {
@@ -101,7 +98,10 @@ export function createCatalogReader<Handle>(options: { catalogPath: string; file
       const references = catalogReferenceErrors(catalog);
       if (references.length) throw new CatalogReadError('CATALOG_REFERENCE_BROKEN', { count: references.length, examples: references.slice(0, 5).map(item => previewText(item, 128)) });
       checkCancelled(signal);
-      return freezeTree({ metadata: { hash: catalogHash(text), revision: catalog.revision, asOf: catalog.asOf, sourceCommit: catalog.sourceCommit }, catalog: catalogDetails(catalog) });
+      return freezeTree({
+        metadata: { hash: catalogHash(text) },
+        catalog: catalogDetails(catalog),
+      });
     } catch (error) {
       checkCancelled(signal);
       if (error instanceof CatalogReadError) throw error;

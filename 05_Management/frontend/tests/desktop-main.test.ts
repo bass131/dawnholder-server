@@ -4,7 +4,9 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const store = vi.hoisted(() => ({ read: vi.fn(async () => ({ ok: false, code: 'missing' })), save: vi.fn(async (_input: unknown) => ({ ok: false, code: 'invalid' })) }));
+// Record index v2 (goal 2026-10-06-record-source-unification 「만들 것」 3, index-v2-design.md
+// 「Electron 경계」): the catalog store only reads, so the double has no save.
+const store = vi.hoisted(() => ({ read: vi.fn(async () => ({ ok: false, code: 'missing' })) }));
 vi.mock('../electron/catalog-store.js', () => ({ createCatalogStore: vi.fn(() => store) }));
 
 vi.mock('node:fs', async (original) => ({
@@ -92,34 +94,33 @@ describe('desktop shell authority and lifetime contracts', () => {
 
   it('allows only the owned main frame to reach the fixed catalog store', async () => {
     await start();
-    expect(host.ipcMain.handle.mock.calls.map(call => call[0])).toEqual(['system-records:read', 'system-records:save']);
+    // index-v2-design.md 「Electron 경계」: three read channels and the guide channel, no save channel.
+    expect(host.ipcMain.handle.mock.calls.map(call => call[0]).sort()).toEqual([
+      'system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section',
+    ]);
     const read = host.ipcMain.handle.mock.calls.find(call => call[0] === 'system-records:read')?.[1];
-    const save = host.ipcMain.handle.mock.calls.find(call => call[0] === 'system-records:save')?.[1];
     const event = { sender: host.window.webContents, senderFrame: host.window.webContents.mainFrame };
     await read(event);
     expect(store.read).toHaveBeenCalledOnce();
-    const input = { text: '{}', expectedVersion: null, path: 'C:/not-the-catalog.json' };
-    await save(event, input);
-    expect(store.save).toHaveBeenCalledWith(input);
     for (const other of [{ ...event, sender: {} }, { ...event, senderFrame: { url: event.senderFrame.url } }]) {
       expect(await read(other)).toMatchObject({ ok: false, code: 'denied' });
-      expect(await save(other, input)).toMatchObject({ ok: false, code: 'denied' });
     }
+    const trustedUrl = event.senderFrame.url;
     event.senderFrame.url = 'file:///untrusted.html';
     expect(await read(event)).toMatchObject({ code: 'denied' });
+    event.senderFrame.url = trustedUrl;
     host.window.isDestroyed.mockReturnValue(true);
-    expect(await save(event, input)).toMatchObject({ code: 'denied' });
+    expect(await read(event)).toMatchObject({ code: 'denied' });
     expect(store.read).toHaveBeenCalledOnce();
-    expect(store.save).toHaveBeenCalledOnce();
   });
 
-  it('builds the store only from the module-relative 05 catalog and backup, without injected rename options', async () => {
+  it('builds the store only from the module-relative 05 catalog path, with no backup path', async () => {
     // V3: electron/ and desktop-dist/ are siblings, so this also fixes the built entry's paths.
+    // index-v2-design.md 「Electron 경계」 removes the .verification backup path argument.
     await start();
     const { createCatalogStore } = await import('../electron/catalog-store.js');
     expect(vi.mocked(createCatalogStore).mock.calls).toEqual([[
       fileURLToPath(new URL('../../records/catalog.json', import.meta.url)),
-      fileURLToPath(new URL('../../.verification/system-records-last-good.json', import.meta.url)),
     ]]);
   });
   it('rejects navigation, redirects, subframe navigation and new windows', async () => {

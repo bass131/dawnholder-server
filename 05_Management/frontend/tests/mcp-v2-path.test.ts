@@ -10,8 +10,8 @@ import { mkdir } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
-import { catalogBytes, expectSuccess, linkedCatalog } from './mcp-fixtures';
-import { CANONICAL_CATALOG, ERAS, FRONTEND, PRODUCTION_ENTRY, removeTempRoots, sha256, tempRoot, textHash, type JsonObject } from './mcp-v2/harness';
+import { catalogBytes, expectSuccess, guideBytes, linkedCatalog, linkedGuide } from './mcp-fixtures';
+import { CANONICAL_CATALOG, CANONICAL_GUIDE, ERAS, FRONTEND, PRODUCTION_ENTRY, removeTempRoots, sha256, tempRoot, textHash, type JsonObject } from './mcp-v2/harness';
 import { closeAndCheck, outcome, processPool } from './mcp-v2/support';
 
 const pool = processPool();
@@ -27,14 +27,23 @@ const rel = (path: string) => relative(DIST, path).replaceAll('\\', '/');
 describe('built output static boundary (mcp-dist, what the client runs)', () => {
   it('file set, import graph and forbidden APIs', () => {
     const files = distFiles();
-    // V3-R1: derived from the requirement instead of a frozen 12-file list. The output is exactly the
-    // compiled MCP adapter sources (mcp/*.ts) plus the three pure shared modules the goal allows; a
-    // store/rename/UI/Electron-runtime module, any other shared module or a stale file fails here, and
-    // every file still passes the import and API checks below.
+    // V3-R1: derived from the requirement instead of a frozen file list. The output is exactly the
+    // compiled MCP adapter sources (mcp/*.ts) plus the nine shared modules of index-v2-design.md
+    // 「MCP 빌드 경계」; catalog-store/rename/UI/Electron-runtime modules, any other shared module or a
+    // stale file fails here, and every file still passes the import and API checks below. The v1
+    // mcp-dist fails until step 5 rebuilds it.
     const adapter = readdirSync(join(FRONTEND, 'mcp')).filter(name => name.endsWith('.ts')).map(name => `mcp/${name.replace(/\.ts$/, '.js')}`);
-    const allowedShared = ['electron/catalog-contract.js', 'electron/catalog-hash.js', 'electron/catalog-query.js'];
-    expect(files.map(rel).sort()).toEqual([...allowedShared, ...adapter].sort());
-    const allowedBare = new Set(['@modelcontextprotocol/server', '@modelcontextprotocol/server/stdio', 'zod', 'node:fs/promises', 'node:url', 'node:crypto']);
+    const allowedShared = [
+      'electron/catalog-contract.js', 'electron/catalog-hash.js', 'electron/catalog-query.js', 'electron/source-section-contract.js', 'electron/source-section-store.js',
+      'electron/checkout-contract.js', 'electron/checkout-store.js', 'electron/system-guide-contract.js', 'electron/system-guide-store.js',
+    ];
+    // The MCP reader and the three stores are the only native file openers, all read-only.
+    const fileOpeners: Record<string, string[]> = {
+      'mcp/catalog-reader.js': ["path, 'r'"], 'electron/source-section-store.js': ["file.path, 'r'"],
+      'electron/checkout-store.js': ["path, 'r'"], 'electron/system-guide-store.js': ["path, 'r'"],
+    };
+    expect(files.map(rel).sort(), 'stale mcp-dist: rebuild with `npm run mcp:build` (step 5)').toEqual([...allowedShared, ...adapter].sort());
+    const allowedBare = new Set(['@modelcontextprotocol/server', '@modelcontextprotocol/server/stdio', 'zod', 'node:fs', 'node:fs/promises', 'node:path', 'node:url', 'node:util', 'node:crypto']);
     const imports: Record<string, string[]> = {};
     for (const file of files) {
       const source = readFileSync(file, 'utf8');
@@ -51,22 +60,27 @@ describe('built output static boundary (mcp-dist, what the client runs)', () => 
       }
       expect(/\bimport\s*\(/.test(source), `${rel(file)} dynamic import`).toBe(false);
       expect(/\brequire\s*\(/.test(source), `${rel(file)} require`).toBe(false);
-      for (const token of ['process.argv', 'process.env', 'process.cwd', 'roots/list', 'listRoots', 'writeFile', 'appendFile', 'rename(', 'unlink', 'rmSync', 'rm(', 'mkdir', 'fetch(', 'child_process', 'spawn', 'exec(', 'createWriteStream', 'http:', 'https:']) {
+      for (const token of ['process.argv', 'process.env', 'process.cwd', 'roots/list', 'listRoots', 'writeFile', 'appendFile', 'rename(', 'unlink', 'rmSync', 'rm(', 'mkdir', 'fetch(', 'child_process', 'createWriteStream', 'http:', 'https:']) {
         expect(source.includes(token), `${rel(file)} contains ${token}`).toBe(false);
       }
-      // The only native file open is the reader's read-only open (bare calls; method
+      // Design 「MCP 빌드 경계」: no process execution call; a regex `.exec(` stays legal.
+      expect(/(?<![.\w])(spawn|spawnSync|exec|execSync|execFile|execFileSync|fork)\s*\(/.exec(source)?.[0] ?? null, `${rel(file)} process call`).toBeNull();
+      // Native file opens are the reader's and the three stores' read-only opens (bare calls; method
       // definitions and fileOperations.open(...) delegation are not native opens).
       const opens = [...source.matchAll(/(?<![.\w]|async )open\(([^)]*)\)/g)].map(match => match[1]);
-      if (rel(file) === 'mcp/catalog-reader.js') expect(opens).toEqual(["path, 'r'"]);
-      else expect(opens, rel(file)).toEqual([]);
+      expect(opens, rel(file)).toEqual(fileOpeners[rel(file)] ?? []);
     }
     const main = readFileSync(join(DIST, 'mcp', 'main.js'), 'utf8');
-    // main supplies only the fixed reader and the build version: no clock, no observer.
-    expect(main).toMatch(/createCatalogServer\(\{\s*readSnapshot:\s*reader\.readSnapshot,\s*version:\s*BUILD_VERSION\s*\}\)/);
+    // main supplies the fixed reader, the three store seams and the build version: no clock, no observer.
+    const serverCall = main.slice(main.indexOf('createCatalogServer('), main.indexOf('createCatalogServer(') + 600);
+    for (const option of ['readSnapshot', 'readGuide', 'readSourceSection', 'readCheckout', 'BUILD_VERSION']) expect(serverCall, option).toContain(option);
     expect(main.includes('onToolHandlerEntered')).toBe(false);
     expect(/\bnow\s*:/.test(main)).toBe(false);
     expect(main).toContain("new URL('../../../records/catalog.json', import.meta.url)");
+    expect(main).toContain("new URL('../../../records/system-guide.json', import.meta.url)");
+    expect(main).toContain("new URL('../../../../', import.meta.url)");
     expect(fileURLToPath(new URL('../../../records/catalog.json', pathToFileURL(PRODUCTION_ENTRY)))).toBe(CANONICAL_CATALOG);
+    expect(fileURLToPath(new URL('../../../records/system-guide.json', pathToFileURL(PRODUCTION_ENTRY)))).toBe(CANONICAL_GUIDE);
     // V3-R1: the build identity is a content digest, not a pinned value; that it matches the current
     // sources is shown by a fresh TEMP build (tests/mcp-v3-build.test.ts, tests/mcp-v3-r1-build.test.ts).
     const buildInfo = readFileSync(join(DIST, 'mcp', 'build-info.js'), 'utf8');
@@ -77,16 +91,24 @@ describe('built output static boundary (mcp-dist, what the client runs)', () => 
 });
 
 describe('production entry ignores cwd, argv, env and client roots', () => {
-  it('both revisions, decoy catalogs everywhere: hash stays the canonical module-relative catalog; tools expose no path/URL input; server never asks for roots', async () => {
+  it('both revisions, decoy catalogs and guides everywhere: hashes stay the canonical module-relative files; tools expose no path/URL input; server never asks for roots', async () => {
     const canonicalBefore = readFileSync(CANONICAL_CATALOG);
     const canonicalHash = textHash(canonicalBefore);
+    // Design 「MCP」 fixed paths: the guide is also module-relative (../../../records/system-guide.json).
+    const canonicalGuideHash = textHash(readFileSync(CANONICAL_GUIDE));
     const root = tempRoot('path-decoy');
-    const decoy = catalogBytes({ ...linkedCatalog(), revision: 'SENTINEL_DECOY_REVISION' });
+    const decoy = catalogBytes(linkedCatalog());
+    const decoyGuide = guideBytes(linkedGuide());
+    expect(textHash(decoyGuide)).not.toBe(canonicalGuideHash);
     const decoyHash = textHash(decoy);
     expect(decoyHash).not.toBe(canonicalHash);
     // Decoys at every plausible cwd-relative location of '../../../records/catalog.json'.
     const decoyPaths = [join(root, 'catalog.json'), join(root, 'records', 'catalog.json'), join(root, 'a', 'b', 'c', 'records', 'catalog.json'), join(root, '05_Management', 'records', 'catalog.json')];
-    for (const path of decoyPaths) { await mkdir(dirname(path), { recursive: true }); writeFileSync(path, decoy); }
+    for (const path of decoyPaths) {
+      await mkdir(dirname(path), { recursive: true });
+      writeFileSync(path, decoy);
+      writeFileSync(join(dirname(path), 'system-guide.json'), decoyGuide);
+    }
     const cwd = join(root, 'a', 'b', 'c', 'd');
     await mkdir(cwd, { recursive: true });
     const decoyBefore = decoyPaths.map(path => sha256(readFileSync(path)));
@@ -101,15 +123,17 @@ describe('production entry ignores cwd, argv, env and client roots', () => {
     for (const proc of procs) {
       if (proc.options.era === 'legacy') await proc.client.sendRootsListChanged();
       const tools = (await proc.client.listTools()).tools;
-      expect(tools.map(tool => tool.name).sort()).toEqual(['get_record', 'get_source', 'get_system', 'list_systems', 'search_records']);
+      expect(tools.map(tool => tool.name).sort()).toEqual(['get_guide_card', 'get_record', 'get_source', 'get_system', 'list_guide_cards', 'list_systems', 'read_source_section', 'search_records']);
       for (const tool of tools) {
         const schema = tool.inputSchema as { additionalProperties?: unknown; properties?: Record<string, unknown> };
         expect(schema.additionalProperties).toBe(false);
-        for (const key of Object.keys(schema.properties ?? {})) expect(['query', 'area', 'type', 'systemId', 'limit', 'offset', 'id', 'expectedHash']).toContain(key);
+        for (const key of Object.keys(schema.properties ?? {})) expect(['query', 'area', 'type', 'systemId', 'limit', 'offset', 'id', 'expectedHash', 'expectedSectionHash']).toContain(key);
       }
       const listed = expectSuccess('list_systems', outcome(await proc.call('list_systems', {})));
       expect(listed.snapshot.hash).toBe(canonicalHash);
-      expect(listed.snapshot.revision).not.toBe('SENTINEL_DECOY_REVISION');
+      expect(Object.keys(listed.snapshot)).toEqual(['hash']);
+      const cards = expectSuccess('list_guide_cards', outcome(await proc.call('list_guide_cards', {})));
+      expect(cards.snapshot.hash).toBe(canonicalGuideHash);
       const firstId = (listed.data as { items: Array<{ id: string }> }).items[0]?.id;
       const detail = expectSuccess('get_system', outcome(await proc.call('get_system', { id: firstId })));
       expect(detail.snapshot.hash).toBe(canonicalHash);

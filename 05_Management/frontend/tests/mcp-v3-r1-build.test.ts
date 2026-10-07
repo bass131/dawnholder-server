@@ -2,8 +2,8 @@
 // V3-R1 (verifier-owned): code review follow-ups on the MCP build, checked only in owned TEMP 05
 // copies (tests/mcp-v3/temp-copy: node_modules is a read-only junction, cleanup unlinks it first).
 // - R05: the build digest follows the compiler's real source graph. New shared modules (runtime,
-//   transitive, type-only) count without editing any list; files outside the graph and catalog
-//   data do not; the same sources at another path give the same digest. The build clears only
+//   transitive, type-only) count without editing any list; files outside the graph, catalog
+//   data and guide data do not; the same sources at another path give the same digest. The build clears only
 //   mcp-dist, keeps mcp-dist/mcp/main.js where package.json starts it, and refuses links or any
 //   other output target without deleting anything.
 // - R01/R04: the type links added by the follow-ups really make the compiler reject a tool-table
@@ -79,10 +79,12 @@ describe.runIf(process.platform === 'win32')('R05: build digest and output clean
     expect(copy.buildMcp()).toBe(base);
   }, 120_000);
 
-  it('catalog data and a UI-only source are not inputs (the extra tsconfig inputs are measured)', () => {
-    const catalog = readFileSync(copy.catalog);
-    writeFileSync(copy.catalog, Buffer.concat([catalog, Buffer.from('\n')]));
-    try { expect(copy.buildMcp()).toBe(base); } finally { writeFileSync(copy.catalog, catalog); }
+  it('catalog data, guide data and a UI-only source are not inputs (the extra tsconfig inputs are measured)', () => {
+    for (const data of [copy.catalog, copy.guide]) {
+      const bytes = readFileSync(data);
+      writeFileSync(data, Buffer.concat([bytes, Buffer.from('\n')]));
+      try { expect(copy.buildMcp()).toBe(base); } finally { writeFileSync(data, bytes); }
+    }
     expect(withEdits(copy, { 'src/App.tsx': appendTo(copy, 'src/App.tsx', '\n// v3-r1 ui-only edit\n') }, () => copy.buildMcp())).toBe(base);
     // Not part of the MCP compile, yet hashed by the build script: recorded, not asserted.
     const extra = Object.fromEntries(['tsconfig.json', 'tsconfig.electron.json'].map(file => [file,
@@ -97,7 +99,8 @@ describe.runIf(process.platform === 'win32')('R05: build digest and output clean
       const version = other.buildMcp();
       measure('r05-path-independence', { root: other.root, version });
       expect(version).toBe(base);
-      expect(version).toBe(builtVersion(FRONTEND));
+      // The canonical mcp-dist keeps the previous sources' digest until the step-5 build (pr2-t2 J).
+      expect(version, 'canonical mcp-dist is older than the sources: rebuild in step 5').toBe(builtVersion(FRONTEND));
     } finally {
       measure('cleanup-other', other.remove());
     }
@@ -191,10 +194,10 @@ describe.runIf(process.platform === 'win32')('R01/R04: compiler-enforced links (
     const extra = withEdits(copy, { 'mcp/catalog-schemas.ts': schemas.replace(getSource as string, `${getSource as string}  extra_tool: output(z.strictObject({})),\n`) }, typecheck);
     // Registration in catalog-server stays explicit: a tool added to both schema tables but not
     // registered still compiles (residual of the minimal R01 option, measured only).
-    const inputLine = 'get_system: detailInput, get_record: detailInput, get_source: detailInput,';
-    expect(schemas).toContain(inputLine);
+    const inputLine = /get_source: detailInput,/.exec(schemas)?.[0];
+    expect(inputLine).toBeTruthy();
     const unregistered = withEdits(copy, { 'mcp/catalog-schemas.ts': schemas
-      .replace(inputLine, `${inputLine} extra_tool: detailInput,`)
+      .replace(inputLine as string, `${inputLine as string} extra_tool: detailInput,`)
       .replace(getSource as string, `${getSource as string}  extra_tool: output(z.strictObject({})),\n`) }, typecheck);
     measure('r01-output-schema-links', { missing: errors(missing.output), extra: errors(extra.output), unregisteredBothTables: unregistered.status });
     // The satisfies clause itself rejects both, not only a later use in catalog-server.
@@ -207,10 +210,14 @@ describe.runIf(process.platform === 'win32')('R01/R04: compiler-enforced links (
   it('R04: a contract field the zod detail schema lacks fails to compile; an extra zod-only field is measured', () => {
     const contract = readFileSync(join(copy.frontend, 'electron', 'catalog-contract.ts'), 'utf8');
     const schemas = readFileSync(join(copy.frontend, 'mcp', 'catalog-schemas.ts'), 'utf8');
-    expect(contract).toContain('  id: string; title: string; area: string; summary: string; responsibility: string;');
-    const contractOnly = withEdits(copy, { 'electron/catalog-contract.ts': contract.replace('  id: string; title: string; area: string; summary: string; responsibility: string;', '  id: string; title: string; area: string; summary: string; responsibility: string; r1Field: string;') }, typecheck);
-    expect(schemas).toContain('id: text, title: text, area: text, summary: text, responsibility: text, behavior: strings,');
-    const zodOnly = withEdits(copy, { 'mcp/catalog-schemas.ts': schemas.replace('id: text, title: text, area: text, summary: text, responsibility: text, behavior: strings,', 'id: text, title: text, area: text, summary: text, responsibility: text, behavior: strings, r1Field: text,') }, typecheck);
+    // Index v2 SystemRecord (index-v2-design.md 「색인 형식」): one field per line, ending in recordIds.
+    const systemEnd = '  relatedSystemIds: string[];\n  recordIds: string[];\n}';
+    expect(contract).toContain('export interface SystemRecord {\n  id: string;\n  title: string;\n  area: string;\n  sourceIds: string[];\n' + systemEnd);
+    const contractOnly = withEdits(copy, { 'electron/catalog-contract.ts': contract.replace(systemEnd, systemEnd.replace(/\}$/, '  r1Field: string;\n}')) }, typecheck);
+    // The zod detail schema's text is the step-5 product's; only its opening is anchored.
+    const zodOpening = /const system = z\.strictObject\(\{/.exec(schemas)?.[0];
+    expect(zodOpening).toBeTruthy();
+    const zodOnly = withEdits(copy, { 'mcp/catalog-schemas.ts': schemas.replace(zodOpening as string, `${zodOpening as string} r1Field: text,`) }, typecheck);
     measure('r04-dto-links', { contractOnly: { status: contractOnly.status, error: errors(contractOnly.output) }, zodOnly: { status: zodOnly.status, error: errors(zodOnly.output) } });
     expect(contractOnly.status).not.toBe(0);
     // The zod schema's own `satisfies z.ZodType<SystemRecord>` rejects it (TS1360), besides the DTO builder.

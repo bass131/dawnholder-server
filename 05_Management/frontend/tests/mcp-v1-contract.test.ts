@@ -1,6 +1,8 @@
 // @vitest-environment node
-// V1: five-tool surface, DTO/envelope contract, shared UI search semantics, paging and
-// the SDK strict-input refusal channel. Expectations come from goal D2/D3.
+// Tool surface, v2 DTO/envelope contract, search semantics shared with the screen, paging and
+// the SDK strict-input refusal channel. Expectations come from index-v2-design.md 「MCP」,
+// 「색인 형식」 and 「화면」 검색 (goal 「만들 것」 4); the unchanged rules keep goal D2/D3 of
+// the shared-read MCP goal.
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -9,9 +11,9 @@ import * as catalogQuery from '../electron/catalog-query';
 import * as uiCatalog from '../src/recordCatalog';
 import type { RecordCatalog } from '../electron/catalog-contract';
 import {
-  ControlledCatalogFile, TOOL_NAMES, baselineFilterRecords, baselineFilterSystems, catalogBytes, codeUnitCompare, connectHarness,
-  expectEnvelope, expectError, expectRefusal, expectSuccess, fileBacked, linkedCatalog, makeCatalog, makeRecord, makeSource, makeSystem,
-  refusalObservation, walkPages, type Harness, type Paging,
+  ControlledCatalogFile, TOOL_NAMES, catalogBytes, codeUnitCompare, connectHarness, expectEnvelope, expectError, expectRefusal,
+  expectSuccess, fileBacked, linkedCatalog, linkedGuide, makeCatalog, makeRecord, makeSource, makeSystem, refusalObservation,
+  screenFilterRecords, screenFilterSystems, walkPages, type Harness, type Paging,
 } from './mcp-fixtures';
 
 const harnesses: Harness[] = [];
@@ -27,19 +29,21 @@ type RecordItem = { id: string; type: string; systemIds: string[]; truncatedFiel
 type List<T> = { items: T[]; paging: Paging };
 
 describe('tool surface', () => {
-  it.each(['legacy', 'modern'] as const)('%s: exactly five read-only tools with strict D2 input bounds and output schemas, no catalog content', async era => {
+  // Design 「MCP」: the five record tools plus read_source_section, list_guide_cards, get_guide_card.
+  it.each(['legacy', 'modern'] as const)('%s: exactly eight read-only tools with strict input bounds and output schemas, no catalog content', async era => {
     const backing = fileBacked(linkedCatalog());
     const harness = await open(backing.readSnapshot, era);
     const { tools } = await harness.client.listTools();
     expect(tools.map(tool => tool.name).sort()).toEqual([...TOOL_NAMES].sort());
     expect(backing.reads).toBe(0);
+    expect(harness.injected.guide).toBe(0);
     const listing = JSON.stringify(tools);
-    for (const fixtureText of ['sys-alpha', 'Alpha 전투', 'rec-1', 'SENTINEL_LOCATOR', 'r-ä']) expect(listing.includes(fixtureText)).toBe(false);
+    for (const fixtureText of ['sys-alpha', 'Alpha 전투', 'rec-1', 'SENTINEL_LOCATOR', 'server.network']) expect(listing.includes(fixtureText)).toBe(false);
     const byName = Object.fromEntries(tools.map(tool => [tool.name, tool]));
     for (const tool of tools) {
       expect(tool.inputSchema.additionalProperties).toBe(false);
       expect(tool.outputSchema).toBeDefined();
-      expect(tool.annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false, openWorldHint: false });
+      expect(tool.annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
       const properties = tool.inputSchema.properties as Record<string, Record<string, unknown>>;
       expect(properties.expectedHash).toMatchObject({ type: 'string', pattern: '^[a-f0-9]{64}$' });
       // No path/URL/root style arguments on any tool.
@@ -58,7 +62,7 @@ describe('tool surface', () => {
     expect(searchProperties.type?.enum).toEqual(['변경', '결정', '검증', '계획']);
     expect(searchProperties.systemId).toMatchObject({ type: 'string', minLength: 1, maxLength: 128 });
     expect(Object.keys(byName.list_systems?.inputSchema.properties ?? {}).sort()).toEqual(['area', 'expectedHash', 'limit', 'offset', 'query']);
-    for (const name of ['get_system', 'get_record', 'get_source'] as const) {
+    for (const name of ['get_system', 'get_record', 'get_source', 'get_guide_card'] as const) {
       const schema = byName[name]?.inputSchema;
       expect(Object.keys(schema?.properties ?? {}).sort()).toEqual(['expectedHash', 'id']);
       expect(schema?.required).toEqual(['id']);
@@ -68,44 +72,51 @@ describe('tool surface', () => {
 });
 
 describe('envelopes and DTOs', () => {
-  it('list/search summaries carry exactly the D2 fields with catalog metadata, identical text and structured JSON', async () => {
+  // Design 「MCP」 tool table and 스냅샷: v2 previews and `snapshot: { hash }`.
+  it('list/search previews carry exactly the v2 fields with the { hash } snapshot, identical text and structured JSON', async () => {
     const catalog = linkedCatalog();
     const backing = fileBacked(catalog);
     const harness = await open(backing.readSnapshot);
     const systems = expectSuccess<List<SystemItem>>('list_systems', await harness.call('list_systems'));
-    expect(systems.snapshot).toEqual({ hash: expect.stringMatching(/^[a-f0-9]{64}$/), revision: 'r-ä-"quoted"', asOf: '2019-12-31T23:59:59Z', sourceCommit: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeef' });
-    expect(systems.data.items[0]).toEqual({
-      id: 'sys-alpha', title: 'Alpha 전투 "엔진"', area: '게임 기반', summary: '타격 판정과 😀 이모지', implementationStatus: '구현',
-      integrationStatus: '연결', verificationStatus: '검증', lookupSupported: true, truncatedFields: [],
-    });
+    expect(systems.snapshot).toEqual({ hash: expect.stringMatching(/^[a-f0-9]{64}$/) });
+    expect(systems.data.items[0]).toEqual({ id: 'sys-alpha', area: '게임 기반', title: 'Alpha 전투 "엔진" 😀', lookupSupported: true, truncatedFields: [] });
     const records = expectSuccess<List<RecordItem>>('search_records', await harness.call('search_records', { query: 'alpha' }));
     expect(records.data.items.find(item => item.id === 'rec-2')).toEqual({
-      id: 'rec-2', type: '결정', title: '동기화 결정', summary: 'Alpha Beta 공통', status: '완료', systemIds: ['sys-alpha', 'sys-beta'], lookupSupported: true, truncatedFields: [],
+      id: 'rec-2', type: '결정', title: '동기화 결정 Alpha Beta', systemIds: ['sys-alpha', 'sys-beta'], lookupSupported: true, truncatedFields: [],
     });
     expect(records.snapshot).toEqual(systems.snapshot);
   });
 
-  it('details return every contract field unmodified and drop unknown extra JSON fields', async () => {
+  // Design 「MCP」 tool table (v2 객체 전체).
+  it('details return every v2 field unmodified', async () => {
     const catalog = linkedCatalog();
-    const raw = JSON.parse(JSON.stringify(catalog)) as Record<string, unknown> & { systems: Array<Record<string, unknown>>; records: Array<Record<string, unknown>>; sources: Array<Record<string, unknown>> };
-    raw.systems[0] = { ...raw.systems[0], extraField: 'EXTRA_SENTINEL' };
-    raw.records[0] = { ...raw.records[0], extraField: 'EXTRA_SENTINEL' };
-    raw.sources[0] = { ...raw.sources[0], extraField: 'EXTRA_SENTINEL' };
-    raw.extraTop = 'EXTRA_SENTINEL';
-    const harness = await open(fileBacked(raw).readSnapshot);
+    const harness = await open(fileBacked(catalog).readSnapshot);
     for (const system of catalog.systems) {
-      const outcome = await harness.call('get_system', { id: system.id });
-      expect(expectSuccess<{ system: unknown }>('get_system', outcome).data.system).toEqual(system);
-      expect(JSON.stringify(outcome.authored).includes('EXTRA_SENTINEL')).toBe(false);
+      expect(expectSuccess<{ system: unknown }>('get_system', await harness.call('get_system', { id: system.id })).data.system).toEqual(system);
     }
     for (const record of catalog.records) {
-      const outcome = await harness.call('get_record', { id: record.id });
-      expect(expectSuccess<{ record: unknown }>('get_record', outcome).data.record).toEqual(record);
-      expect(JSON.stringify(outcome.authored).includes('EXTRA_SENTINEL')).toBe(false);
+      expect(expectSuccess<{ record: unknown }>('get_record', await harness.call('get_record', { id: record.id })).data.record).toEqual(record);
     }
     for (const source of catalog.sources) {
-      const outcome = await harness.call('get_source', { id: source.id });
-      expect(expectSuccess('get_source', outcome).data).toEqual({ source, evidenceRead: false, availabilityVerified: false });
+      expect(expectSuccess('get_source', await harness.call('get_source', { id: source.id })).data).toEqual({ source, evidenceRead: false, availabilityVerified: false });
+    }
+  });
+
+  // Design 「색인 형식」: any key outside the v2 key sets makes the whole index invalid.
+  it('an unknown extra key anywhere makes the index CATALOG_INVALID without echoing it', async () => {
+    const places: Array<(raw: Record<string, unknown> & Record<'systems' | 'records' | 'sources', Array<Record<string, unknown>>>) => void> = [
+      raw => { raw.extraTop = 'EXTRA_SENTINEL'; },
+      raw => { raw.systems[0] = { ...raw.systems[0], summary: 'EXTRA_SENTINEL' }; },
+      raw => { raw.records[0] = { ...raw.records[0], status: 'EXTRA_SENTINEL' }; },
+      raw => { raw.sources[0] = { ...raw.sources[0], note: 'EXTRA_SENTINEL' }; },
+      raw => { raw.revision = 'EXTRA_SENTINEL'; },
+    ];
+    for (const place of places) {
+      const raw = JSON.parse(JSON.stringify(linkedCatalog()));
+      place(raw);
+      const harness = await open(fileBacked(raw).readSnapshot);
+      const outcome = await harness.call('get_system', { id: 'sys-alpha' });
+      expectError('get_system', outcome, 'CATALOG_INVALID');
       expect(JSON.stringify(outcome.authored).includes('EXTRA_SENTINEL')).toBe(false);
     }
   });
@@ -115,7 +126,12 @@ describe('envelopes and DTOs', () => {
     try {
       const locatorPath = join(root, 'evidence.md');
       await writeFile(locatorPath, 'EVIDENCE_BODY_SENTINEL');
-      const catalog = makeCatalog({ sources: [makeSource('src-file', { locator: locatorPath, kind: 'local', availability: 'local-only' }), makeSource('src-url', { locator: 'https://example.invalid/x' })] });
+      const catalog = makeCatalog({
+        sources: [
+          makeSource('src-file', { locator: locatorPath, kind: 'local', availability: 'local-only', section: null }),
+          makeSource('src-url', { locator: 'https://example.invalid/x', section: null }),
+        ],
+      });
       const file = new ControlledCatalogFile(catalogBytes(catalog));
       const reader = file.reader();
       const harness = await open(signal => reader.readSnapshot(signal));
@@ -128,6 +144,7 @@ describe('envelopes and DTOs', () => {
       }
       expect(new Set(file.openedPaths)).toEqual(new Set([file.openedPaths[0]]));
       expect(file.openedPaths).toHaveLength(2);
+      expect(harness.injected.section).toEqual([]);
     } finally {
       expect(resolve(root).startsWith(resolve(tmpdir()))).toBe(true);
       await rm(root, { recursive: true, force: true });
@@ -158,19 +175,20 @@ describe('search semantics shared with the UI', () => {
     expect(uiCatalog.filterRecords).toBe(catalogQuery.filterRecords);
   });
 
-  it('shared filters keep the baseline (18c8ca6) UI semantics, and MCP lists equal them in code unit order', async () => {
+  // Design 「화면」 검색: systems by ID·title·area·linked source titles, records by ID·title·#PR·linked source titles.
+  it('shared filters follow the design screen search fields, and MCP lists equal them in code unit order', async () => {
     const catalog = linkedCatalog();
     const harness = await open(fileBacked(catalog).readSnapshot);
-    const queries = ['', '   ', 'alpha', 'ALPHA', 'alpha beta', '  beta   alpha ', '전투', '판정 😀', 'İstanbul', 'istanbul', 'gamma', 'line', '"엔진"', 'zzz-none', 'rec-1', 'sys-'];
+    const queries = ['', '   ', 'alpha', 'ALPHA', 'alpha beta', '  beta   alpha ', '전투', '판정', '따옴표', 'İstanbul', 'istanbul', 'gamma', '"엔진"', 'zzz-none', 'rec-1', 'sys-', '#101', '#7', 'beta 전달', '</script>'];
     const areas = ['', '게임 기반', '서버 플랫폼', 'Management', '없는 영역'];
     for (const query of queries) {
       for (const area of areas) {
-        const expectedSystems = baselineFilterSystems(catalog, query, area).map(item => item.id);
+        const expectedSystems = screenFilterSystems(catalog, query, area).map(item => item.id);
         expect(catalogQuery.filterSystems(catalog, query, area).map(item => item.id)).toEqual(expectedSystems);
         const systems = expectSuccess<List<SystemItem>>('list_systems', await harness.call('list_systems', { query, area, limit: 50 }));
         expect(systems.data.items.map(item => item.id)).toEqual([...expectedSystems].sort(codeUnitCompare));
         for (const type of ['', '변경', '결정', '검증', '계획']) {
-          const expectedRecords = baselineFilterRecords(catalog, query, area, type).map(item => item.id);
+          const expectedRecords = screenFilterRecords(catalog, query, area, type).map(item => item.id);
           expect(catalogQuery.filterRecords(catalog, query, area, type).map(item => item.id)).toEqual(expectedRecords);
           const args = { query, area, limit: 50, ...(type ? { type } : {}) };
           const records = expectSuccess<List<RecordItem>>('search_records', await harness.call('search_records', args));
@@ -194,14 +212,17 @@ describe('search semantics shared with the UI', () => {
     // Exact match: prefixes, case variants and padded IDs are other IDs.
     for (const systemId of ['sys-bet', 'SYS-BETA', ' sys-beta', 'sys-beta ']) expectError('search_records', await harness.call('search_records', { systemId }), 'NOT_FOUND');
     const missing = expectError('search_records', await harness.call('search_records', { systemId: 'no-such-system', query: 'zzz-none' }), 'NOT_FOUND');
-    expect(missing.snapshot?.revision).toBe(catalog.revision);
+    // Design 「MCP」 스냅샷: the error carries the index { hash } only.
+    expect(missing.snapshot).toEqual({ hash: expect.stringMatching(/^[a-f0-9]{64}$/) });
   });
 
-  it('orders by UTF-16 code units, not locale or code points', async () => {
-    const ids = ['b', 'ä', 'B', 'a10', '\uFF5E', 'a2', '\u{1F600}', 'a', 'Z', '가'];
+  // Design 「색인 형식」 limits IDs to [a-z0-9-], so the order is checked on the characters that remain
+  // (hyphen before digits before letters, digits not compared numerically).
+  it('orders by UTF-16 code units, not locale or numeric order', async () => {
+    const ids = ['b', 'a10', 'z', 'a2', 'a-b', 'ab', '9-a', 'a', '0'];
     const catalog = makeCatalog({ systems: ids.map(id => makeSystem(id)), records: ids.map(id => makeRecord(`r${id}`)) });
     const harness = await open(fileBacked(catalog).readSnapshot);
-    const expected = ['B', 'Z', 'a', 'a10', 'a2', 'b', 'ä', '가', '\u{1F600}', '\uFF5E'];
+    const expected = ['0', '9-a', 'a', 'a-b', 'a10', 'a2', 'ab', 'b', 'z'];
     expect([...ids].sort(codeUnitCompare)).toEqual(expected);
     const systems = expectSuccess<List<SystemItem>>('list_systems', await harness.call('list_systems', { limit: 50 }));
     expect(systems.data.items.map(item => item.id)).toEqual(expected);
@@ -244,6 +265,7 @@ describe('search semantics shared with the UI', () => {
     const second = await open(fileBacked(catalog).readSnapshot, 'modern');
     const calls: Array<[string, Record<string, unknown>]> = [
       ['list_systems', { query: 'a' }], ['search_records', { area: '게임 기반' }], ['get_system', { id: 'sys-beta' }], ['get_record', { id: 'rec-1' }], ['get_source', { id: 'src-b' }],
+      ['read_source_section', { id: 'src-a' }], ['list_guide_cards', {}], ['get_guide_card', { id: 'server.network' }],
     ];
     for (const [name, args] of calls) {
       const a = await first.call(name, args);
@@ -262,15 +284,18 @@ describe('strict input refusal channel', () => {
     ['unknown path key', 'list_systems', { 'C:\\Users\\SENTINEL_PATH_KEY\\secret.txt': 'SENTINEL_VALUE' }],
     ['unknown url key', 'get_source', { id: 'src-a', url: 'https://SENTINEL_URL.invalid/' }],
     ['path argument on detail', 'get_record', { id: 'rec-1', path: 'C:\\SENTINEL_PATH_VALUE' }],
+    ['path argument on section', 'read_source_section', { id: 'src-a', path: 'C:\\SENTINEL_PATH_VALUE' }],
     ['30k-unit unknown key', 'list_systems', { [longKey]: 1 }],
     ['300 unknown keys', 'search_records', manyKeys],
     ['nested object value', 'list_systems', { query: { SENTINEL_NESTED: 'SENTINEL_NESTED_VALUE' } }],
     ['array value', 'search_records', { type: ['SENTINEL_ARRAY'] }],
     ['query 257 units', 'list_systems', { query: `SENTINEL_Q${'q'.repeat(247)}` }],
     ['query 100k units', 'search_records', { query: `SENTINEL_Q${'q'.repeat(100_000)}` }],
+    ['card query 257 units', 'list_guide_cards', { query: `SENTINEL_Q${'q'.repeat(247)}` }],
     ['area 129 units', 'list_systems', { area: `SENTINEL_A${'a'.repeat(119)}` }],
     ['id 129 units', 'get_system', { id: `SENTINEL_ID${'i'.repeat(118)}` }],
     ['id 100k units', 'get_record', { id: `SENTINEL_ID${'i'.repeat(100_000)}` }],
+    ['card id 129 units', 'get_guide_card', { id: `SENTINEL_ID${'i'.repeat(118)}` }],
     ['empty id', 'get_source', { id: '' }],
     ['missing id', 'get_system', {}],
     ['empty systemId', 'search_records', { systemId: '' }],
@@ -283,11 +308,14 @@ describe('strict input refusal channel', () => {
     ['limit null', 'list_systems', { limit: null }],
     ['offset -1', 'list_systems', { offset: -1 }],
     ['offset 100001', 'search_records', { offset: 100001 }],
+    ['section offset 262145', 'read_source_section', { id: 'src-a', offset: 262_145 }],
     ['uppercase hash', 'get_system', { id: 'sys-alpha', expectedHash: 'A'.repeat(64) }],
     ['63-char hash', 'list_systems', { expectedHash: 'a'.repeat(63) }],
     ['sentinel hash', 'get_record', { id: 'rec-1', expectedHash: `SENTINEL_HASH${'0'.repeat(51)}` }],
+    ['sentinel section hash', 'read_source_section', { id: 'src-a', expectedSectionHash: `SENTINEL_HASH${'0'.repeat(51)}` }],
     ['offset on detail', 'get_record', { id: 'rec-1', offset: 1 }],
     ['systemId on list_systems', 'list_systems', { systemId: 'sys-alpha' }],
+    ['area on list_guide_cards', 'list_guide_cards', { area: 'SENTINEL_AREA' }],
     ['arguments array', 'list_systems', ['SENTINEL_ARRAY_ARGS']],
     ['arguments string', 'list_systems', 'SENTINEL_STRING_ARGS'],
   ];
@@ -307,7 +335,7 @@ describe('strict input refusal channel', () => {
       expect(Math.max(...Object.values(sizes).map(size => size.bytes))).toBeLessThanOrEqual(1024);
     });
 
-    it(`${era}: boundary values just inside the D2 limits are accepted`, async () => {
+    it(`${era}: boundary values just inside the input limits are accepted`, async () => {
       const catalog = makeCatalog({ systems: [makeSystem('s'.repeat(128))], records: [makeRecord('r'.repeat(128), { systemIds: ['s'.repeat(128)] })], sources: [makeSource('o'.repeat(128))] });
       const harness = await open(fileBacked(catalog).readSnapshot, era);
       const first = expectSuccess<List<SystemItem>>('list_systems', await harness.call('list_systems', { query: ' '.repeat(256), area: '', limit: 50, offset: 0 }));
@@ -345,5 +373,10 @@ describe('fixture sanity', () => {
     const parsed = readCatalog(JSON.parse(JSON.stringify(linkedCatalog()))) as RecordCatalog | null;
     expect(parsed).not.toBeNull();
     expect(catalogReferenceErrors(parsed as RecordCatalog)).toEqual([]);
+  });
+
+  it('linked guide fixture satisfies the app card validator', async () => {
+    const { readSystemGuide } = await import('../electron/system-guide-contract');
+    expect(readSystemGuide(JSON.parse(JSON.stringify(linkedGuide())))).not.toBeNull();
   });
 });

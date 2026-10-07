@@ -144,7 +144,7 @@ h4 { font-size: 13px; font-weight: 450; color: #b7c2d1; }
 .record-result { color: var(--muted); font-size: 12px; padding: 12px 0; }
 .record-cards { display: grid; gap: 10px; min-width: 0; margin: 0; padding: 0; list-style: none; }
 .record-cards li { min-width: 0; }
-.record-card { display: grid; grid-template-columns: minmax(0, .4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px 16px; align-items: start; width: 100%; padding: 14px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 7px; text-align: left; cursor: pointer; min-width: 0; overflow-wrap: anywhere; }
+.record-card { display: grid; grid-template-columns: minmax(0, .4fr) minmax(0, 1fr); gap: 8px 16px; align-items: start; width: 100%; padding: 14px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 7px; text-align: left; cursor: pointer; min-width: 0; overflow-wrap: anywhere; }
 .record-card:hover { background: #e5f0e9; border-color: var(--accent); }
 .record-area { color: var(--muted); font-size: 12px; }
 .record-item-title { color: var(--text); font-size: 15px; font-weight: 600; }
@@ -181,6 +181,8 @@ h4 { font-size: 13px; font-weight: 450; color: #b7c2d1; }
 .record-source dd, .record-snapshot dd { margin: 0; color: #c1cde0; }
 .record-source p { color: #9aaac0; font-size: 12px; }
 .record-path { overflow-wrap: anywhere; font-family: Consolas, monospace; }
+.record-checkout { margin: 10px 0; color: var(--muted); overflow-wrap: anywhere; }
+.record-section-text { margin: 12px 0 0; padding: 16px; max-width: 100%; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; font: 13px/1.65 Consolas, monospace; }
 .record-empty { padding: 28px 20px; border: 1px dashed var(--border); border-radius: 6px; }
 .record-empty p { margin-top: 8px; color: #98a7bb; font-size: 12px; }
 @container development-records (max-width: 600px) {

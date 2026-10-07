@@ -111,7 +111,8 @@ describe('concurrency: 4 slots, no queue', () => {
 
   it('every exit path returns its slot: success, read error, unexpected throw, VERSION_REQUIRED/CONFLICT, NOT_FOUND, RESPONSE_TOO_LARGE, cancellation', async () => {
     const catalog = linkedCatalog();
-    catalog.systems.push(makeSystem('big', { behavior: Array.from({ length: 40 }, () => 'b'.repeat(1_000)) }));
+    // Design 「색인 형식」: v2 has no behavior list, so the untruncated title makes the detail oversized.
+    catalog.systems.push(makeSystem('big', { title: 'b'.repeat(40_000) }));
     const gated = gatedReader(catalog);
     const harness = await open(gated.readSnapshot);
     const paths: Array<[string, Mode, ToolName, Record<string, unknown>, string]> = [

@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { filterRecords, filterSystems, matchesQuery, RECORD_TYPES, type RecordCatalog } from '../recordCatalog';
 import { RecordDetail, RecordSources, SystemDetail } from './RecordDetails';
+import SourceSection from './SourceSection';
 import {
   goBack,
   initialNavigation,
@@ -14,12 +15,17 @@ import {
   type ReturnPoint,
 } from './navigation';
 
-export default function CatalogExplorer({ data, active }: { data: RecordCatalog; active: boolean }) {
+export default function CatalogExplorer({ data, version, generation, active }: {
+  data: RecordCatalog;
+  version: string;
+  generation: number;
+  active: boolean;
+}) {
   const [navigation, setNavigation] = useState(initialNavigation);
   const browserRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const pendingPosition = useRef<'heading' | 'return' | null>(null);
-  const { location, returnPoint } = navigation.current;
+  const { location } = navigation.current;
   const { view, query, area, recordType, selection } = location;
   const systems = filterSystems(data, query, area);
   const records = filterRecords(data, query, area, recordType);
@@ -28,7 +34,7 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
       || data.systems.some(system => system.area === area && system.sourceIds.includes(source.id))
       || data.records.some(record => record.sourceIds.includes(source.id)
         && record.systemIds.some(id => data.systems.some(system => system.id === id && system.area === area)));
-    return matchesArea && matchesQuery(query, [source.id, source.title, source.locator, source.note, source.section]);
+    return matchesArea && matchesQuery(query, [source.id, source.title, source.locator, source.section ?? '']);
   });
   const areas = [...new Set(data.systems.map(system => system.area))];
   if (area && !areas.includes(area)) areas.push(area);
@@ -40,14 +46,17 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
   const selectedRecord = selection?.kind === 'record'
     ? data.records.find(record => record.id === selection.id)
     : undefined;
-  const selected = selectedSystem ?? selectedRecord;
-  const listTitle = view === 'systems' ? '시스템 목록' : view === 'records' ? '변경·결정·검증·계획 목록' : '근거';
+  const selectedSource = selection?.kind === 'source'
+    ? data.sources.find(source => source.id === selection.id)
+    : undefined;
+  const selected = selectedSystem ?? selectedRecord ?? selectedSource;
+  const listTitle = view === 'systems' ? '시스템 목록' : view === 'records' ? '변경·결정·검증·계획 목록' : '출처 목록';
   const title = selection ? selected?.title ?? '선택한 항목을 찾을 수 없습니다.' : listTitle;
   const resultCount = view === 'systems' ? systems.length : view === 'records' ? records.length : sources.length;
   const views = [
     ['systems', '시스템', systems.length],
     ['records', '변경·결정·검증·계획', records.length],
-    ['sources', '근거', sources.length],
+    ['sources', '출처', sources.length],
   ] as const;
 
   function scrollContainer() {
@@ -60,7 +69,6 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
       scrollLeft: container.scrollLeft,
       scrollTop: container.scrollTop,
       focusKey,
-      evidenceOpen: browserRef.current?.querySelector<HTMLDetailsElement>('.record-evidence')?.open ?? false,
     };
   }
 
@@ -95,7 +103,7 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
     pendingPosition.current = 'heading';
     setNavigation(previous => navigateTo(previous, {
       ...previous.current.location,
-      view: next.kind === 'system' ? 'systems' : 'records',
+      view: next.kind === 'system' ? 'systems' : next.kind === 'record' ? 'records' : 'sources',
       selection: next,
     }, point));
   }
@@ -129,22 +137,17 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
   return (
     <div className="records-browser" ref={browserRef}>
       <div className="record-intro">
-        <div><h3>시스템 기록</h3><p>시스템의 목적과 책임, 변경 이유와 검증 근거를 탐색합니다.</p></div>
+        <div><h3>개발 기록</h3><p>시스템과 기록에 연결된 출처의 원문을 읽습니다.</p></div>
         <span className="snapshot-tag">읽은 스냅샷 · 게임 실시간 연동 아님</span>
       </div>
-      <details className="record-snapshot">
-        <summary>기준일 {data.asOf} · 기록 버전 {data.revision}</summary>
-        <dl><div><dt>소스 commit</dt><dd className="record-path">{data.sourceCommit}</dd></div></dl>
-        <p>{data.scopeNote}</p>
-        <p>규칙은 GameDev 원문을 참조하세요. 여기의 구현·통합·검증 상태는 기록 상태이며 현재 게임 상태를 의미하지 않습니다. 자동 갱신되지 않습니다.</p>
-      </details>
+      <p className="record-snapshot">기록 색인 버전 {version.slice(0, 12)}</p>
       {!selection && (
         <div className="record-filters">
           <label>
             검색
             <input
               type="search"
-              placeholder="시스템, 기록, 근거 검색"
+              placeholder="시스템, 기록, 출처 검색"
               value={query}
               data-record-focus="search"
               onChange={event => filter({ query: event.target.value })}
@@ -190,7 +193,7 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
             data-record-focus={'view:' + key}
             onClick={() => changeView(key)}
           >
-            {label}<span>{count}</span>
+            {label} <span>{count}</span>
           </button>
         ))}
       </div>
@@ -212,7 +215,6 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
               key={selectionFocusKey(selection)}
               data={data}
               system={selectedSystem}
-              evidenceOpen={returnPoint.evidenceOpen}
               onOpen={openSelection}
             />
           ) : selectedRecord ? (
@@ -220,12 +222,13 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
               key={selectionFocusKey(selection)}
               data={data}
               record={selectedRecord}
-              evidenceOpen={returnPoint.evidenceOpen}
               onOpen={openSelection}
             />
+          ) : selectedSource ? (
+            <SourceSection key={`${selectedSource.id}:${generation}`} source={selectedSource} />
           ) : (
             <div className="record-detail-body" role="status">
-              <p>새로 읽은 기록에 {selection.kind === 'system' ? '시스템' : '기록'} ID “{selection.id}”가 없습니다.</p>
+              <p>새로 읽은 기록에 {selection.kind === 'system' ? '시스템' : selection.kind === 'record' ? '기록' : '출처'} ID “{selection.id}”가 없습니다.</p>
               <p>이전 화면이나 목록으로 돌아가 다시 선택하세요.</p>
             </div>
           )}
@@ -246,7 +249,6 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
                   >
                     <span className="record-area">{system.area}</span>
                     <span className="record-item-title">{system.title}</span>
-                    <span className="record-item-status">{system.implementationStatus}</span>
                   </button>
                 </li>
               ))}
@@ -264,13 +266,12 @@ export default function CatalogExplorer({ data, active }: { data: RecordCatalog;
                   >
                     <span className="record-type">{record.type}</span>
                     <span className="record-item-title">{record.title}</span>
-                    <span className="record-item-status">{record.status}</span>
                   </button>
                 </li>
               ))}
             </ul>
           )}
-          {view === 'sources' && sources.length > 0 && <RecordSources data={data} ids={sources.map(source => source.id)} />}
+          {view === 'sources' && sources.length > 0 && <RecordSources data={data} ids={sources.map(source => source.id)} onOpen={openSelection} />}
           {resultCount === 0 && (
             <div className="record-empty">
               <h4>검색 결과가 없습니다.</h4>

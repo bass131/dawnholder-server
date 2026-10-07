@@ -1,45 +1,26 @@
 import type { McpServer } from '@modelcontextprotocol/server';
-import { compareCatalogIds, filterRecords, filterSystems } from '../electron/catalog-query.js';
-import { recordDetails, recordSummary, sourceDetails, systemDetails, systemSummary } from './catalog-dto.js';
+import type { GuideResult } from '../electron/system-guide-contract.js';
 import { CatalogReadError, checkCancelled } from './catalog-errors.js';
 import { createCatalogAdmission } from './catalog-admission.js';
+import { queryGuideTools } from './catalog-guide-tools.js';
 import type { CatalogSnapshot } from './catalog-reader.js';
-import { DEFAULT_LIST_LIMIT, failure, listResponse, success, type CatalogResponse } from './catalog-response.js';
-import { inputSchemas, outputSchemas, type CatalogToolName, type ToolArguments } from './catalog-schemas.js';
+import { queryRecordTools } from './catalog-record-tools.js';
+import { failure } from './catalog-response.js';
+import type { CatalogResponse } from './catalog-response.js';
+import { inputSchemas, outputSchemas } from './catalog-schemas.js';
+import type { CatalogToolName, ToolArguments } from './catalog-schemas.js';
+import { querySourceTool } from './catalog-source-tool.js';
+import type { SourceToolReaders } from './catalog-source-tool.js';
 import { CatalogMcpServer } from './catalog-tool-name-transport.js';
 
-export interface CatalogServerOptions {
+export interface CatalogServerOptions extends SourceToolReaders {
   readSnapshot(signal: AbortSignal): Promise<CatalogSnapshot>;
+  readGuide(signal: AbortSignal): Promise<GuideResult>;
   version: string;
   now?: () => number;
   // Internal measurement seam: called only after SDK input validation, before
   // admission/semantic checks. Production neither supplies nor exposes it.
   onToolHandlerEntered?: (toolName: CatalogToolName) => void;
-}
-
-function querySnapshot(name: CatalogToolName, args: ToolArguments, snapshot: CatalogSnapshot): CatalogResponse {
-  const { metadata, catalog } = snapshot;
-  if (args.expectedHash !== undefined && args.expectedHash !== metadata.hash) return failure('VERSION_CONFLICT', metadata, { expectedHash: args.expectedHash });
-  if (name === 'list_systems') {
-    const items = filterSystems(catalog, args.query ?? '', args.area ?? '').sort(compareCatalogIds).map(systemSummary);
-    return listResponse(metadata, items, args.offset ?? 0, args.limit ?? DEFAULT_LIST_LIMIT);
-  }
-  if (name === 'search_records') {
-    if (args.systemId !== undefined && !catalog.systems.some(item => item.id === args.systemId)) return failure('NOT_FOUND', metadata);
-    const items = filterRecords(catalog, args.query ?? '', args.area ?? '', args.type ?? '')
-      .filter(item => args.systemId === undefined || item.systemIds.includes(args.systemId)).sort(compareCatalogIds).map(recordSummary);
-    return listResponse(metadata, items, args.offset ?? 0, args.limit ?? DEFAULT_LIST_LIMIT);
-  }
-  if (name === 'get_system') {
-    const item = catalog.systems.find(system => system.id === args.id);
-    return item ? success(metadata, { system: systemDetails(item) }) : failure('NOT_FOUND', metadata);
-  }
-  if (name === 'get_record') {
-    const item = catalog.records.find(record => record.id === args.id);
-    return item ? success(metadata, { record: recordDetails(item) }) : failure('NOT_FOUND', metadata);
-  }
-  const item = catalog.sources.find(source => source.id === args.id);
-  return item ? success(metadata, { source: sourceDetails(item), evidenceRead: false, availabilityVerified: false }) : failure('NOT_FOUND', metadata);
 }
 
 export function createCatalogServer(options: CatalogServerOptions): McpServer {
@@ -55,10 +36,28 @@ export function createCatalogServer(options: CatalogServerOptions): McpServer {
       checkCancelled(signal);
       // The SDK already rejects malformed/unknown inputs. This semantic check
       // precedes I/O, so later pages can never silently switch snapshots.
-      if ((name === 'list_systems' || name === 'search_records') && (args.offset ?? 0) > 0 && args.expectedHash === undefined) return failure('VERSION_REQUIRED');
-      const snapshot = await options.readSnapshot(signal);
-      checkCancelled(signal);
-      const result = querySnapshot(name, args, snapshot);
+      const laterPage = (args.offset ?? 0) > 0;
+      const listTool = name === 'list_systems' || name === 'search_records' || name === 'list_guide_cards';
+      if (laterPage && listTool && args.expectedHash === undefined) return failure('VERSION_REQUIRED');
+      if (laterPage && name === 'read_source_section' && args.expectedSectionHash === undefined) {
+        return failure('VERSION_REQUIRED');
+      }
+      let result: CatalogResponse;
+      if (name === 'list_guide_cards' || name === 'get_guide_card') {
+        // Card availability is independent of the record index, and vice versa.
+        const guide = await options.readGuide(signal);
+        checkCancelled(signal);
+        result = queryGuideTools(name, args, guide);
+      } else {
+        const snapshot = await options.readSnapshot(signal);
+        checkCancelled(signal);
+        if (args.expectedHash !== undefined && args.expectedHash !== snapshot.metadata.hash) {
+          return failure('VERSION_CONFLICT', snapshot.metadata, { expectedHash: args.expectedHash });
+        }
+        result = name === 'read_source_section'
+          ? await querySourceTool(args, snapshot, options, signal)
+          : queryRecordTools(name, args, snapshot);
+      }
       checkCancelled(signal);
       return result;
     } catch (error) {
@@ -75,24 +74,52 @@ export function createCatalogServer(options: CatalogServerOptions): McpServer {
 
   const annotations = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
   server.registerTool('list_systems', {
-    description: 'List system previews from the catalog. Use expectedHash for subsequent pages; catalog metadata describes recorded history.',
-    inputSchema: inputSchemas.list_systems, outputSchema: outputSchemas.list_systems, annotations,
+    description: 'List system previews from the record index. Use expectedHash for subsequent pages.',
+    inputSchema: inputSchemas.list_systems,
+    outputSchema: outputSchemas.list_systems,
+    annotations,
   }, (args, context) => handle('list_systems', args, context.mcpReq.signal));
   server.registerTool('search_records', {
     description: 'Search recorded changes, decisions, verification and plans with AND filters. Use expectedHash for subsequent pages.',
-    inputSchema: inputSchemas.search_records, outputSchema: outputSchemas.search_records, annotations,
+    inputSchema: inputSchemas.search_records,
+    outputSchema: outputSchemas.search_records,
+    annotations,
   }, (args, context) => handle('search_records', args, context.mcpReq.signal));
   server.registerTool('get_system', {
     description: 'Read the complete catalog system by ID, optionally fixed to expectedHash.',
-    inputSchema: inputSchemas.get_system, outputSchema: outputSchemas.get_system, annotations,
+    inputSchema: inputSchemas.get_system,
+    outputSchema: outputSchemas.get_system,
+    annotations,
   }, (args, context) => handle('get_system', args, context.mcpReq.signal));
   server.registerTool('get_record', {
     description: 'Read the complete catalog development record by ID, optionally fixed to expectedHash.',
-    inputSchema: inputSchemas.get_record, outputSchema: outputSchemas.get_record, annotations,
+    inputSchema: inputSchemas.get_record,
+    outputSchema: outputSchemas.get_record,
+    annotations,
   }, (args, context) => handle('get_record', args, context.mcpReq.signal));
   server.registerTool('get_source', {
     description: 'Read catalog source metadata only. The locator is not opened; evidenceRead and availabilityVerified are false.',
-    inputSchema: inputSchemas.get_source, outputSchema: outputSchemas.get_source, annotations,
+    inputSchema: inputSchemas.get_source,
+    outputSchema: outputSchemas.get_source,
+    annotations,
   }, (args, context) => handle('get_source', args, context.mcpReq.signal));
+  server.registerTool('read_source_section', {
+    description: 'Read a registered Markdown source by ID. Use expectedSectionHash for subsequent UTF-16 text pages and expectedHash to fix the record index.',
+    inputSchema: inputSchemas.read_source_section,
+    outputSchema: outputSchemas.read_source_section,
+    annotations,
+  }, (args, context) => handle('read_source_section', args, context.mcpReq.signal));
+  server.registerTool('list_guide_cards', {
+    description: 'List system card previews in guide order, searching card ID, title and summary. Use expectedHash for subsequent pages.',
+    inputSchema: inputSchemas.list_guide_cards,
+    outputSchema: outputSchemas.list_guide_cards,
+    annotations,
+  }, (args, context) => handle('list_guide_cards', args, context.mcpReq.signal));
+  server.registerTool('get_guide_card', {
+    description: 'Read a complete system card and its implementation document, optionally fixed to the guide expectedHash.',
+    inputSchema: inputSchemas.get_guide_card,
+    outputSchema: outputSchemas.get_guide_card,
+    annotations,
+  }, (args, context) => handle('get_guide_card', args, context.mcpReq.signal));
   return server;
 }
