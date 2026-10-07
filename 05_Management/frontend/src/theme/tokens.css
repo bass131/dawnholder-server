@@ -3,6 +3,7 @@
   color-scheme: light; color: #2a231b; background: #e9dfc9;
   --surface: #fffaf0; --border: #a8946e; --muted: #5f5241; --accent: #155c57;
   --page: #fffaf0; --text: #2a231b; --paper: #fbf3df; --wood: #3b2a1e;
+  --warning: #7d5200;
 }
 body { background: #e9dfc9; word-break: keep-all; overflow-wrap: anywhere; }
 h2, h3, h4, h5 { color: var(--text); }

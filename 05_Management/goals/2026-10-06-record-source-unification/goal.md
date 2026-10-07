@@ -7,28 +7,25 @@
 - [x] PR196 병합
 - [x] 색인 선행 시험 작성
 - [x] 색인 전환 구현·검증
-- [>] PR197 병합
-- [ ] 백로그 메뉴 구현·검증
-- [ ] 백로그 PR 병합
+- [x] PR197 병합
+- [x] 백로그 메뉴 구현·검증
+- [>] PR200 병합
 - [ ] Gardener와 종료 기록
 
 PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 병합」 형식으로 바꾼다.
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 13:2x KST(04:2xZ), Claude Code 업데이트 재시작 전의 재개 지점 기록 commit(메인 요청 `msg_669a14a08918`).** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 18:4x KST, PR200 생성 뒤 병합 승인 대기.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`, 8단계 재검증자의 판정 순서 시험은 `aacf35bd`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」·「PR2 좁힌 재검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 좁힌 재검증은 통과(비차단 W1, 리드가 정정)였다. 여덟 세션은 정산·종료했고 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`, 8단계 재검증자의 판정 순서 시험은 `aacf35bd`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」·「PR2 좁힌 재검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 좁힌 재검증은 통과(비차단 W1, 리드가 정정)였다. 여덟 세션은 정산·종료했고 열린 작업자·검증자는 없었다. PR2는 PR197로 병합됐다(병합 commit `8c920d4d`).
 
-**재시작 전 상태(04:22Z 확인):**
+**PR3 상태(2026-10-07 18:4x KST):**
 
-- **지금 단계:** PR2가 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 열려 있고 CI를 기다린다. 다음 할 일은 CI 결과 확인 → 메인 R-2 → 메인이 사용자 개별 병합 승인을 PR197의 정확한 head로 전달 → 리드 pane에서 병합이다.
-- **PR197 head:** 재시작 전 마지막 확인 head는 `8050073f673d12957c410b4173a5344d6bd874b2`다. 이 재개 지점 기록 commit을 push하면 head가 이 commit으로 바뀌고 CI가 다시 돈다. 정확한 40자 head는 메인 보고(「재개 지점 기록 완료」)와 `gh pr view 197 --json headRefOid`로 확인한다.
-- **CI(8050073f, 04:22Z):** `code-rules`·`module-boundaries`(check 둘) 통과, `architecture-tests`·`dotnet-tests`(test 둘) 진행 중. 새 head에서 다시 확인해야 한다.
-- **PR 본문:** 「PR head는 `8050073f`」 한 줄이 이 commit으로 낡는다. 재시작 뒤 첫 작업으로 본문(E/`pr2-pr-body.md`)의 head 줄을 새 head로 고쳐 `gh pr edit 197 --body-file`로 반영한다.
-- **메인에 보낼 것:** 아직 보내지 않은 결정 요청은 없다. CI 결과와 함께 「PR197 병합 승인 요청 준비」를 보내고, 메인 R-2와 사용자 승인 전달(정확한 head 포함)을 받는다.
-- **작업자·검증자:** 살아 있는 pane은 없다. 8단계까지 여덟 세션을 모두 정산하고 pane을 닫았다. PR197 병합까지 새 작업자는 띄우지 않는다.
-- **Run과 재진입:** Run은 `run_3fa510a50602`다. 다시 열면 새 리드 handle로 `orca orchestration run-use`를 해 이 Run을 묶고, 메인에 새 handle을 알린 뒤 `--types` 8개 필터의 우편함 대기를 하나만 연다. 직전 리드 handle `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`은 관측값이며 실행 권한이 아니다.
+- **지금 단계:** PR2는 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 병합됐다(아래 「PR197 병합」). PR3 branch `feat/management-backlog-menu-20261007`을 최신 main `94fc6845`(PR198 병합, PR197 포함)에서 만들었다. 리드가 PR3 경계와 인터페이스를 [백로그 메뉴 설계](backlog-menu-design.md)에 고정했고(아래 「PR3 설계」), 선행 시험은 `2cb7ee2b`로 commit됐다(아래 「PR3 선행 시험」). 구현은 구조 `b4b79337`, 동작 `5911f13f`로 commit됐다(아래 「PR3 구현」). 강 등급 독립 검증은 차단(결함 #1 글자 저대비, #2 문서 누락 비차단)이었고 검증자 시험은 `1d0740de`로 commit됐다(아래 「PR3 독립 검증」). #2와 관찰 O2는 리드가 문서로 고쳤다. 결함 #1 수정 라운드는 대비 회귀 시험 `951fae1e`, 수정 `94c774c0`, 재검증 통과(새 #3 낮음 비차단은 후속 후보)로 끝났다(아래 「PR3 결함 #1 수정 라운드」). PR 생성 직전 메인 알림(`msg_50390bffa806`) 뒤 [PR200](https://github.com/bass131/dawnholder-server/pull/200)을 만들었다. 다음 할 일은 CI 확인 → PR 준비 보고(정확한 head·CI·판정 원문) → 메인의 R-2와 사용자 개별 병합 승인 → 메인 병합 → goal 종료 점검과 Gardener다.
+- **병합 관문:** 이 PR부터 리드는 병합하지 않는다. PR 생성 뒤 정확한 head·CI·판정 원문을 메인에 보고하면, 메인이 R-2 뒤 사용자 승인을 받아 메인 전용 checkout에서 병합한다(메인 `msg_371394a813a7`, AGENTS 「Git 권한」).
+- **작업자·검증자:** 살아 있는 pane은 없다(PR3의 시험 작성자 둘·Sol 둘·검증자 둘 모두 정산·종료).
+- **Run과 재진입:** Run은 `run_3fa510a50602`다. 리드 handle은 `term_052ec1b2-cd90-4270-acbd-33f8cc36f9a8`(이 세션의 관측값이며 다음 리드의 실행 권한이 아님)이다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
 
 당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
@@ -36,8 +33,8 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 2. (끝남) 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
 3. (끝남) 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고(화면 시험 시간 상한 포함), 신규 Sol이 MCP를 구현하고 `mcp-dist`를 새로 빌드한다.
 4. (끝남) 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증했다(차단 V1·V2). V1은 메인 결정 `msg_883836e1208a` 1항에 따라 현 이력을 받아들였다. V2는 새 Sol이 고치고 `mcp-dist`를 다시 빌드했다. 다른 새 `claude-opus-5-5`가 좁혀 재검증해 통과했다.
-5. PR 생성 직전 메인 알림(`msg_2b9dbdc4f69f`) → PR197 생성 → CI → 메인 R-2 → 사용자 개별 병합 승인.
-6. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
+5. (끝남) PR 생성 직전 메인 알림(`msg_2b9dbdc4f69f`) → PR197 생성 → CI → 메인 R-2 → 사용자 개별 병합 승인 → 병합(`8c920d4d`).
+6. (진행) PR3(백로그 메뉴)은 최신 main `94fc6845`의 새 branch에서 시작했다. 시험 작성자와 독립 검증자는 메인 결정 `msg_caa43cc537b5`에 따라 각각 신규 `claude-opus-5-5`다.
 
 근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run은 `run_3fa510a50602`다. 2026-10-06 22:4x KST Orca 재시작으로 리드 handle이 `term_d2c6dac2…`에서 `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`으로 바뀌었고, 리드가 run-use로 Run을 다시 묶었다(E/`run-use-after-restart.json`). handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
 
@@ -76,6 +73,7 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 - **DB 1단계 과정·의도 기록(2026-10-05):** 메인 `msg_2ecb51e414d5`의 사용자 원문 「그러면 지금까지 한 일련의 과정들이 무슨 의도고 왜 했어야했는데 운영툴 기록에도 작성해줘」. 출처는 [시스템 카드 goal의 다음 계획 후보](../2026-10-02-system-cards/goal.md#현재-목표-우선과-다음-계획-후보)다.
 - **「다음 할 일」 정리와 백로그 메뉴(2026-10-03):** 메인 `msg_6e281afe2167`이 전한 「OK 그렇게 진행해줘」. 계약은 [시스템 카드 goal의 백로그 후속 절](../2026-10-02-system-cards/goal.md#후속-백로그--백로그-정본메뉴와-다음-일-정리)이다.
 - **「다음 할 일」 애매 두 묶음의 처분(2026-10-06 19:4x KST):** 메인 `msg_dfd3843e9464`(10:40:27Z, E/`wait-8.json`)가 전달한 원문 「대시보드 결정 응답: 1) 원격 플레이 실제 확인 - 백로그로 옮길지 폐기할지 → A 백로그로 옮긴다 · 2) 시스템 지도 3D 표현 - 백로그로 옮길지 폐기할지 → A 백로그로 옮긴다」. 현황판의 A 선택지 글은 1) 「담당 후보는 Core다. 선행 조건은 게임 회귀 단계와 겹치는지 확인하는 것이다.」, 2) 「담당 후보는 Management다. 선행 조건은 색인 전환 뒤 표시할 관계 자료와 필요성을 확인하는 것이다.」였다. 결과는 [분류표의 사용자 결정 절](next-steps-classification.md#사용자-결정)에 있다.
+- **운영툴 시험 CI 담당(2026-10-07):** 메인 `msg_85435d570141`(08:01:15Z, E/`check-98.json`)이 전달한 원문 「대시보드 결정 응답: 1) 규칙 백로그 점검 세션 - 닫을지 → A 닫음 · 2) 규칙 백로그 다음 순서 - 점검 추천 순서를 기본으로 쓸지 → A 추천 순서를 기본으로 · 3) 운영툴 시험 CI - 맡을 파트 → A Management」(메인 창 Enter 제출). Management에 해당하는 것은 3번이다. 계획 14번의 「운영툴 시험 CI」는 Management가 맡고, 남은 시험 실패(B01·B09) 정리와 CI 연결을 한 목표로 본다. 지금 착수하지 않는다(아래 「후속 후보」).
 - **새 goal부터 TDD(2026-10-04):** 원문 위치는 [운영 정본 반영 goal](../../../01_Phases/goals/2026-10-05-operating-canon/goal.md)의 85행과 메인의 `HANDOFF.md` 결정 「A」다. 문구 정본화는 Rules의 후속(계획 13번)이다. 이 goal은 Content goal의 적용 방식을 따른다.
 
 ## 적용 중인 메인 결정
@@ -94,6 +92,14 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 메인 `msg_dbff8df03e07`의 운영 지시: `gh pr create`와 `gh pr merge`는 사용자 확인 창 대상이므로 실행 직전에 메인에 알린다. 병합은 PR마다 메인이 그 head에 대한 사용자 승인을 전달한 뒤에만 한다. 초안과 goal이 달라지는 곳이 생기면 쓰기 전에 메인에 알린다. 우편함 대기는 8개 type `--types` 필터와 `--timeout-ms 900000`을 쓴다(진입 메시지).
 
 메인 `msg_883836e1208a`(2026-10-06T19:40:31Z, E/`wait-71.json`)의 PR2 독립 검증 처리: (1) V1(5단계 commit의 구조·동작 혼합)은 현 이력을 받아들이고 force push하지 않는다. PR 본문에 `f8aaae02`가 두 성격을 섞었다는 한 줄을 남긴다. (2) O3(hard link)는 이번 PR 범위 밖 후속 후보이며 Rules에 넘길 BACKLOG 후보 목록에 넣고 설계의 경로 경계 한계에 한 줄 적는다. (3) V2 수정과 좁힌 재검증은 계획대로 한다.
+
+메인 `msg_caa43cc537b5`(2026-10-07T05:38:47Z, 현행 정본 범위라 사용자에게 올리지 않은 메인 결정)의 PR3 처리: PR3 TDD 선행 시험 작성자는 신규 `claude-opus-5-5`이고, 독립 검증자도 다른 신규 `claude-opus-5-5`다(아래 「설계와 검증 경계」 표의 PR3 검증자 조건은 이 결정으로 확정). PR3 branch는 최신 main `94fc6845`에서 만든다. 메인 `msg_371394a813a7`의 운영 지시: PR198 병합으로 새 병합 관문이 적용된다. 리드는 병합하지 않고 PR 준비 보고만 한다. 명령 한 줄에 금지 낱말 조합을 쓰지 않고, commit 메시지·PR 제목·본문은 파일로 넘긴다.
+
+메인 `msg_1b2b2e6e0f2a`(2026-10-07T06:37:33Z, E/`wait-87.json`)의 리드 계약 누락 판단: PR2 3단계(완료조건 입력 누락)와 PR3 선행 시험(바꾸는 채널 목록을 고정한 기존 시험을 쓰기 허용에서 빠뜨린 영향 파일 누락)은 원인과 막는 방법이 달라 같은 갈래로 보지 않는다. 두 건 모두 작업자 질문으로 쓰기 전에 잡혀 지금 Rules에 반복 규칙 후보로 넘기지 않고 이 goal에 관찰로 기록한다. 이 goal의 남은 계약은 발행 전에 바꾸는 심볼·목록을 참조하는 기존 시험을 검색해 쓰기 허용 후보로 확인하고 그 검색 명령을 계약 근거에 남긴다. 영향 파일 누락이 같은 모양으로 한 번 더 나오면 Rules에 반복 규칙 후보로 올린다. 10-31 Gardener 평가 자료에 두 건을 넣는다.
+
+메인 `msg_6bae84d02fa1`(2026-10-07T07:33:45Z, E/`wait-94.json`)의 글자색 저대비 재발 방지 층: 같은 갈래의 사용자 관측이 PR179(`bc38a4c8`)에 이어 두 번째라 교정 층 정본(CODE_CONVENTION 「교정 층과 반복 규칙」)에 따라 문서보다 높은 층을 고른다. 이번 수정 라운드 안에서 「이후 작업」 탭 읽기 글자의 대비를 실제 renderer에서 재는 회귀 시험을 수정과 함께 넣는다. 결함 수정의 판정 근거라 PR3 범위 안이다. 전 화면 대비 시험이나 `styles.css` 고정 색 금지 검사처럼 앱 전체에 거는 장치는 「후속 후보」에 두 번째 발생 근거와 함께 기록만 하고, 착수는 사용자 범위 결정 뒤다. 결정 요청은 없다.
+
+메인 `msg_85435d570141`(2026-10-07T08:01:15Z)의 결함 #1 수정 처리: `src/theme/tokens.css`의 `:root`에 `--warning` 한 줄을 더하는 것은 결함 #1 수정에 필요한 최소 변경으로 받아들인다. 기존 규칙은 바꾸지 않는다. 설계의 소유 표에 그 한 줄을 적는다([백로그 메뉴 설계](backlog-menu-design.md) 「작업 순서와 소유」 5). 대비 회귀 시험을 먼저 실패로 확인하고 대상 0개를 실패로 보는 방식은 그대로 간다.
 
 ## 만들 것
 
@@ -175,9 +181,12 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 
 ## 후속 후보
 
-- 운영툴 테스트 CI 편입과 색인 검사 연결: 계획 묶음 2(14번), Rules·CodeMap. `tests/` 타입 검사 script가 없다는 PR2 검증 관찰 O4도 함께 본다.
+- 운영툴 시험 CI 편입과 색인 검사 연결: 계획 묶음 2(14번). 담당은 Management다(위 「적용 중인 사용자 결정」의 운영툴 시험 CI 담당, 메인 `msg_85435d570141`). 남은 시험 실패(B01·B09) 정리와 CI 연결을 한 목표로 본다. `tests/` 타입 검사 script가 없다는 PR2 검증 관찰 O4도 함께 본다. 확인 항목: PR3의 「이후 작업」 탭 대비 회귀 시험은 vitest 안에서 Electron을 띄우므로 Linux runner에서 가상 디스플레이 같은 실행 조건이 필요할 수 있다(미측정 추론). 착수는 다음 목표다.
 - 색인 검사 진단 품질: 색인이 깨지면(`CATALOG_INVALID`) goal 묶음이 빈 목록으로 돌아 모든 goal에 `GOAL_NOT_INDEXED` warning을 낸다(PR2 검증 관찰 O1, 코드 읽기 추론이며 미측정).
 - 원문 읽기 경계의 hard link: `lstat`·realpath 판정은 루트 밖을 가리키는 hard link를 잡지 못한다(PR2 검증 관찰 O3). 메인 결정 `msg_883836e1208a` 2항에 따라 이번 PR 범위 밖이며, 종료 때 Rules에 넘길 BACKLOG 후보 목록에 넣는다.
+- Markdown fence 판정 통합: `backlog-table.ts`와 `source-section-contract.ts`가 fence를 따로 판정한다(PR2 검증 관찰 O2). PR3는 규칙만 맞추고, 합치는 일은 MCP 공유 모듈 변경과 `mcp-dist` 재빌드가 따라 후속으로 둔다([백로그 메뉴 설계](backlog-menu-design.md) 「fence 판정」). 종료 때 Rules에 넘길 BACKLOG 후보 목록에 넣는다.
+- 앱 전체 글자 대비 장치: 전 화면 대비 시험이나 `styles.css` 고정 색 금지 검사. 밝은 테마 덮어쓰기에 없는 class가 예전 어두운 테마의 고정 색을 써서 글자가 흐려진 사용자 관측이 PR179(`bc38a4c8`)에 이어 PR3 「이후 작업」 탭에서 두 번째로 나왔다(위 「PR3 독립 검증」). 메인 `msg_6bae84d02fa1`에 따라 기록만 하고 착수는 사용자 범위 결정 뒤다.
+- 대비 회귀 시험의 방어 보강: PR3 재검증 결함 #3(CSS 경로가 디렉터리면 `link.sheet !== null` 방어가 작동하지 않음, 대안은 시트의 `cssRules.length` 확인과 디렉터리 사본 시험), 관찰 O1(`text-contrast.ts:189`가 main.tsx의 한 줄 CSS import 꼴만 찾음), O3(측정 창 1600 CSS px·zoom 1과 실제 앱 1280 CSS px·zoom 1.25의 차이, 지금 CSS에서는 값 차이 0). 담당은 Management다. 운영툴 시험 CI 목표에서 함께 볼 수 있다. 관찰 O2(json reporter가 실패 배열을 줄여 CI 로그에서 요소가 안 보임)는 위 운영툴 시험 CI 줄의 확인 항목이다. 관찰 O4(`styles.css` 백로그 블록에 고정 색 금지 이유 주석 없음)는 아래 앱 전체 글자 대비 장치와 함께 본다.
 - 검증 실행 helper 정본화: 계획 묶음 2(11번).
 - MCP 실제 세션 연결: 운영툴 라이브 1.0 이후 [결정 보드 MCP 후보](../2026-10-02-system-cards/goal.md#후속-백로그--운영툴-라이브-10-이후-결정-보드의-mcp-관리)와 함께 다음 계획에서 정한다.
 - 운영 백엔드·서버 등록·로그·시스템 카드 전체 자료: 메인 계획 35번(BACKLOG 등록 예정).
@@ -314,8 +323,69 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **판정:** 통과(비차단 W1 하나). V2는 해소됐다. 새 시험 `tests/source-section-order.test.ts`가 판정 순서(종류 → 경로 모양 → 확장자 → 파일)를 앱 reader·빌드된 MCP 진입·색인 검사에서 단정한다. 같은 시험이 V2 수정 전(`cf8d235c`와 그때의 `mcp-dist`)에도 통과해 동작 보존을 보였고, 순서를 일부러 무너뜨린 TEMP 변형에서는 실패했다. 같은 명령의 전체 시험은 1196개 중 1194 통과에서 1198개 중 1196 통과가 됐고 실패는 B01·B09뿐이다. 타입 검사 셋·`records:check`(error 0, warning 11)는 같다. `mcp-dist` 버전은 현재 소스로 다시 계산한 digest와 같다. 보호 산출물 561파일은 변경 0이다. 리드 문서 정정 다섯 문장은 원천과 같다. hard link 한계는 관측으로 확인됐다.
 - **처리:** 새 시험을 `aacf35bd`로 commit했다. W1(기존 시험 서술)과 P3(메모 선행을 파일 생성 시각으로 판정한 리드 기록)은 위 「PR2 MCP 선행 시험」·「PR2 V2 수정」 문장에서 고쳤다. **리드 절차 위반(첫 발생):** P3는 6단계 O6가 근거로 쓰지 말라고 한 파일 생성 시각을 리드가 7단계 대조에 다시 쓴 것이다. 결론은 rollout으로 맞았다. 운영 규칙은 O6와 함께 Rules 몫이다. P1(`record-index-check.ts`의 helper 결과 변수 이름), P2(helper의 모르는 kind 처리, 색인 계약이 막아 도달 불가), P4(빌드된 MCP 배치 코드 두 곳)는 동작 영향이 없어 이번 PR에서 고치지 않는다.
 
+### PR197 병합
+
+- **PR 생성과 CI:** 리드가 메인에 알린 뒤(`msg_2b9dbdc4f69f`) [PR197](https://github.com/bass131/dawnholder-server/pull/197)을 만들었다. 사용자 확인 창 때문에 생성은 2026-10-07 04:1xZ에 끝났다. 최종 head `0077309c502cf46f9cd180774eddd5645b245653`에서 code-rules·module-boundaries·architecture-tests·dotnet-tests 4개가 모두 통과했다(E/`pr197-checks-final.txt`). 본문의 head 줄은 재시작 뒤 이 head로 고쳤다(head 불변).
+- **Claude Code 업데이트 재시작:** 메인 요청(`msg_669a14a08918`)으로 재개 지점을 기록해 push했고(`0077309c`), 재시작 뒤 리드가 새 handle `term_052ec1b2-cd90-4270-acbd-33f8cc36f9a8`로 run-use했다(E/`run-use-after-claude-update.json`, consumer generation 3). 재시작 지시 `msg_83286ca6316d`는 Run 밖 터미널 주소라 우편함 check에 잡히지 않아 inbox로 읽었다.
+- **승인과 병합:** 리드의 승인 묶음(`msg_5aab06ffa5b9`) 뒤 메인 `msg_0792ee7d1508`이 사용자 원문 「대시보드 결정 응답: 1) PR197 - 운영툴 기록 색인 v2 전환 병합 승인 → A 병합 승인 (head 0077309c502cf46f9cd180774eddd5645b245653)」을 전달했다(메인 전달, 사용자 직접 입력으로 격상하지 않음). 메인 R-2는 일치였다. 리드가 직전 head를 다시 조회하고, 당시 방식(리드 pane, 사용자 확인 창, merge commit, head 고정)으로 병합했다. 병합 commit `8c920d4dbfcd8edf3e6187a6ae437e8b5c17e1f0`, 2026-10-07T05:34:55Z다(E/`pr197-merged.txt`). 원격 branch는 자동 삭제됐다.
+- **병합 관문 전환:** 곧이어 Rules의 PR198(병합 관문 hook과 정본 문장)이 병합됐다(`94fc6845`, 메인 `msg_371394a813a7`). 이제 리드는 병합하지 않고 PR 준비 보고만 한다. 병합은 메인 전용 checkout의 메인이 한다(AGENTS 「Git 권한」). PR197은 리드가 병합한 마지막 PR이다.
+- **세션 중 설정 반영 관측:** Rules 리드 요청(`msg_eecf9fa95144`)에 따라, PR3 branch를 만드는 받기 전후에 무해한 탐침을 한 번씩 실행했다. 받기 전 탐침은 그대로 실행됐다. 받은 뒤 9초 안의 탐침은 PreToolUse hook에 막혔다. 결과는 원문 그대로 Rules에 보냈다(`msg_91def97e8eeb`, E/`rules-hot-reload-probe-result.txt`).
+
+### PR3 설계
+
+리드가 구현 전 경계와 인터페이스를 [백로그 메뉴 설계](backlog-menu-design.md)에 고정했다. 사전 메모는 E/`astra-context.md` 「PR3 설계」다. 판단이 들어간 선택은 다음과 같다.
+
+- 백로그 행 판정은 지금 색인 검사 안에만 있다. 메뉴가 다시 구현하면 PR2 V2처럼 정책이 두 곳으로 갈려서, 판정을 `backlog-contract.ts`(순수)·`backlog-store.ts`(파일 I/O)로 옮기고 색인 검사와 메뉴가 같은 결과를 쓴다.
+- 구조와 동작을 다른 commit으로 남기려고 한 Sol 작업을 두 단계로 나눈다. 1단계는 지금 동작을 보존한 이동이고, 질문으로 멈춘 사이 리드가 commit한다. 리드가 hunk를 나누면 시험하지 않은 중간 상태가 생겨 이 방식을 골랐다.
+- BACKLOG 읽기와 goal 링크 존재 확인은 2단계에서 앱의 원문 읽기 경계(`createSourceSectionStore`·`inspectSourceFile`)를 쓴다. 링크·대소문자·크기·인코딩 판정이 앱 원문 읽기와 같아진다. 위반은 「형식 오류」·「어긋남」, 예상 밖 I/O 오류는 「확인 불가」로 나눈다.
+- O2(fence 판정 두 곳)는 통합하지 않고 규칙만 맞춘다. 통합하면 MCP 공유 모듈과 canonical `mcp-dist` 재빌드가 따라온다. 통합은 「후속 후보」에 적었다.
+- 독립 검증자 조건은 메인 결정 `msg_caa43cc537b5`로 신규 `claude-opus-5-5`다. 새 IPC 채널이 생기므로 설계 표의 조건으로도 같은 결론이다.
+
+### PR3 선행 시험
+
+- **작업:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)가 설계의 A~G 요구 시험을 썼다. Task `task_d4bf93ca6a48`, Dispatch `ctx_e46d1a11c12c`, worker_done `msg_2381a3babfb9`(2026-10-07T06:32:09Z). 계약 E/`pr3-t1-task.txt`(SHA-256 `60ca669f…`), 보고 E/`pr3-t1/report.md`(SHA-256 `718b616f…`).
+- **계약 보충 v1.1:** 채널 목록을 고정한 기존 시험 `desktop-main`·`diagram-asset-desktop`의 단정 한 줄씩과 preload 노출 이름 단정의 변경을 허용했다(질문 `msg_3f868711c73d`, 답 `msg_7306054f0128`). 리드 계약이 이 두 파일을 빠뜨렸다(리드 계약 누락 중 영향 파일 누락, 첫 발생). 메인 `msg_1b2b2e6e0f2a`는 PR2 3단계의 완료조건 입력 누락과 다른 갈래로 판단했다(위 「적용 중인 메인 결정」).
+- **영향 시험 검색:** 메인 결정에 따라 구현 계약 발행 뒤(발행 전이 아님) 바꾸는 심볼·목록(`parseBacklogTables`·`backlogGoalLinks`, 개발 현황 탭, `BACKLOG_*` 코드, preload 노출 이름, 「다시 읽기」 버튼 이름)을 참조하는 기존 시험을 검색했다. 선행 시험 작성자가 이미 다룬 파일 밖의 추가 대상은 0건이다(명령과 출력 E/`pr3-affected-test-search.txt`). 이후 계약은 발행 전에 검색한다.
+- **결과:** 새 시험 파일 7개·helper 1개, 기존 시험 5개 변경(+1049/−11). 리드가 시험 파일만 `2cb7ee2b`로 commit했다. 1단계 뒤 통과할 A는 `tests/backlog-store.test.ts` 한 파일(시험 5개)에만 있다. 같은 명령의 결과는 쓰기 전 1198개 중 1196 통과에서 쓴 뒤 1210개 중 1193 통과·17 실패·수집 실패 6파일이다. 실패는 B01·B09, 채널 목록을 고친 기존 시험 4개(a), 2단계 예정 11개이고, 수집 실패는 모듈·화면 부재다. 회귀·원인 미확정은 0건이다. 결정적으로 재현할 수 없는 확인 불가·읽는 동안 바뀜 시험은 이유와 함께 미작성이다.
+- **리드 대조:** 두 원시 JSON에서 수치와 실패 17개·수집 실패 6파일을 다시 셌다. 범위가 시험 파일뿐임을 git status로, 채널 목록 diff 두 줄과 A 시험의 고정 문장이 6ab9cc7a의 `record-index-check.ts` 문장과 같음을 읽었다. 작업자 도구 호출 기록에서 메모 Write(06:10:10Z)가 첫 시험 파일 Write(06:13:51Z)보다 앞선다(E/`pr3-t1-memo-timeline.json`).
+- **열린 질문의 처리:** 1단계의 `npm run typecheck`는 새 화면 시험 import 1건만 예정 실패로 허용한다. `%5C`가 해독된 `\`는 풀기 전에 `invalid`로 거절하고, `group`이 없는 후보는 제목 없이 맨 앞에 보이며, `backlogIssueKind`는 2단계에 더한다(설계 보충). `desktop-main.test.ts:97`의 낡은 주석과 `\` 시험은 독립 검증자에게 맡긴다.
+- **구현 전 알릴 점:** 작업자가 설계 확인용 일회용 대역을 E/`pr3-t1/selfcheck/reference/`에 만들었다(제품 아님). 구현 Sol에게는 읽지 말라고 계약에 적는다.
+
+### PR3 구현
+
+- **작업:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max · Full Access · never」, backend unknown)을 Task `task_eaa49db2f2b2`, Dispatch `ctx_646a00e3e826`로 시작했다. 계약 E/`pr3-s1-task.txt`(SHA-256 `79ebae0d…`), 경로 검사 E/`pr3-s1-path-check.txt`(exit 0). 1단계(구조) 뒤 질문으로 멈추면 리드가 commit하고 2단계(동작)를 진행시킨다.
+- **1단계(구조):** Sol이 백로그 블록을 `backlog-contract.ts`(새, 87줄)·`backlog-store.ts`(새, 55줄)로 옮기고 `record-index-check.ts`가 store 결과를 진단으로 옮기게 했다(+14/−38). 질문 `msg_5363b6317271`로 멈췄고 리드가 `b4b79337`로 commit했다. 전체 시험은 1230개 중 1198 통과·32 실패·수집 실패 1파일(화면)이고, A 5개가 통과했으며 쓰기 전 통과 시험의 회귀는 0이다. 남은 실패는 B01·B09, 채널 목록을 고친 기존 시험 4개, 2단계 예정 26개다. `records:check` 출력은 쓰기 전과 바이트 단위로 같다. 타입 검사는 계약대로 화면 시험 import 1건만 남았다. 원시는 E/`pr3-s1/stage1/`이다.
+- **1단계 리드 대조:** 수치와 파일별 실패를 원시 JSON에서 다시 셌고, `records:check` 출력 SHA-256이 쓰기 전과 같음을 확인했다(리드가 따로 실행한 출력은 npm 머리 네 줄만 다르다). diff가 순서·문장·첫 예상 밖 오류에서 멈춤까지 그대로 옮긴 구조 변경임을 읽었다. Codex rollout 기록에서 메모(06:39:25Z) → 쓰기 전 실행(06:40:18Z) → 첫 제품 파일(06:41:45Z) 순서다(E/`pr3-lead/raw/pr3-s1-stage1-codex-timeline.json`). 작업 중 Sol이 리드의 미커밋 goal 변경을 관측해 물었고(`msg_e6a61e299afa`), 리드가 commit한 뒤 범위에서 뺐다(`msg_427d47d2a876`). 2단계 진행 답은 `msg_7fe23ade2ba1`이다.
+- **2단계(동작):** Sol이 BACKLOG 읽기를 원문 읽기 경계로 바꾸고 goal 링크를 설계 순서(해독 실패·`\`·루트 밖 거절 → `inspectSourceFile`)로 판정하게 했다. 확인 불가 뒤에도 판정을 계속하고, ID 표 없음·백틱 fence 규칙·`group`·`backlogIssueKind`를 더했다. `system-backlog:read` 채널·preload·bridge 타입과 「이후 작업」 탭(`src/DevelopmentBacklog.tsx`, 148줄)을 만들었다. worker_done `msg_eea236e25f30`(2026-10-07T07:01:54Z), 보고 E/`pr3-s1/report.md`(SHA-256 `e957d41f…`). 리드가 `5911f13f`로 commit했다(9파일 +297/−38). 전체 시험은 1248개 중 1246 통과이고 실패는 B01·B09뿐이다. 타입 검사 셋과 `records:check`는 exit 0이고 `records:check` 출력은 쓰기 전과 같다(백로그 warning 0). MCP closure·digest 시험 16개가 `mcp-dist` 재빌드 없이 통과했다. 실제 BACKLOG는 후보 25개에 문제 0이다. 사용자 산출물 583파일의 지문은 바뀌지 않았다. 설계 보충의 `\` 거절은 시험이 없어 Sol이 보충 실행으로만 확인했다.
+- **2단계 리드 대조:** 원시 JSON에서 1248/1246/2와 남은 두 실패의 이름을 다시 셌다. 범위가 계약의 9파일뿐임을 git status로 봤다. store·table·main·preload·App diff가 설계와 같고 화면에 링크·입력·HTML 주입 요소가 없음을 읽었다. rollout 기록에서 2단계 메모 덧붙임(06:48:40Z)이 첫 2단계 제품 파일(06:49:43Z)보다 앞선다. Sol은 정산·종료했다.
+- **README:** 리드가 「이후 작업」 탭 안내 한 문단과 백로그 진단 문서 위치를 더했다(설계 「정본에 미칠 영향」).
+
+### PR3 독립 검증
+
+- **작업:** 다른 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)를 Task `task_6c3cc00c2cae`, Dispatch `ctx_86cfe140f597`로 시작했다. 계약 E/`pr3-v1-task.txt`(SHA-256 `8da4dafd…`). 발행 전 영향 시험 검색은 E/`pr3-v1-affected-test-search.txt`다(메인 결정 `msg_1b2b2e6e0f2a`).
+- **사용자 관측 결함(판정 전 보충 v1.1):** 메인 `msg_7eb04bb2fecc`(2026-10-07T07:31:41Z)가 사용자 원문 「내부 폰트 색상문제가 운영툴에 또 문제가 생겼네, 체크 한번 해줘」를 전달했다(메인 전달, 사용자 직접 입력으로 격상하지 않음). 검증자 캡처에서 「이후 작업」 탭의 묶음 제목·후보 제목·값 칸·「표 형식 오류」 패널 글자가 크림 배경 위 연한 색이다. 리드 관찰은 `5911f13f`의 `.backlog-*` 규칙이 예전 어두운 테마의 고정 색을 쓰고, PR179의 밝은 테마 덮어쓰기(`theme/tokens.css`)에 그 class가 없다는 것이다(원인 확정은 검증자 판정). 메인 지시대로 PR3 범위 안 결함으로 다루고, 실제 renderer 대비비 측정(본문 4.5:1)과 기존 화면 대비 유지 확인을 판정에 넣게 했다(보충 `msg_9ca747abdd96`, E/`pr3-v1-supplement-1.txt`). 수정은 새 Sol, 재검증은 새 세션이다. 메인 답은 `msg_97801cbd3dc6`이다.
+- **판정(차단 #1):** worker_done `msg_9cdcd84277e2`(07:55:58Z), 판정 E/`pr3-v1/verdict.md`(SHA-256 `7ef888a3…`). 결함 #1(높음, 차단): `5911f13f`의 `styles.css` `.backlog-*` 네 규칙의 고정 색(#cfdbed·#c1cde0·#e3c194) 때문에 묶음·후보 제목·값 칸·문제 글자가 실제 renderer(보조 화면, 앱 125%)에서 1.10~1.64:1이다. 원인은 `tokens.css`의 `h3, h4` 기본 규칙(특이도 0,0,1)이 class 선택자(0,1,1)에 지고 `.backlog-*`가 덮어쓰기 목록에 없는 것이다. 귀속은 구현(Sol)이고, 설계 「화면」이 「styles.css의 기존 관례」만 가리키고 대비 요구가 없던 점이 보조 요인(리드 설계·계약)이다. 기존 화면 네 장면 168행은 base `94fc6845`와 색·대비비가 모두 같고 미달 0(최소 5.94:1)이다. 결함 #2(낮음, 비차단): `index-v2-design.md` 「색인 검사」의 백로그 코드 목록에 `BACKLOG_GOAL_LINK_REJECTED`가 없다. 그 밖의 판정·경계·IPC·records:check·구조 보존(5변형 바이트 동일)·MCP·범위는 실행 원시로 확인됐다. vitest는 1248/1246에서 1255/1253이고(검증자 새 시험 7개, 회귀 0), 남은 실패는 B01·B09다. 「확인 불가」는 대역 실행이라 실제 I/O 오류 재현은 미실행이다.
+- **리드 원천 대조(R-2 방식):** 대비 원시 `contrast/pr3-attempt-1/contrast-05-backlog-real.json`이 357행 중 179행 미달이고, 네 색 조합의 대비비를 리드가 WCAG 식으로 다시 계산해 판정 표와 같았다(1.10·1.34·1.54·1.64). 기존 화면 네 장면은 base·PR3 원시의 행(요소·글자·색·배경·대비비·크기·굵기)이 모두 같다. vitest 전후 원시의 실패 이름이 B01·B09 둘이다. 작업 트리 변경은 검증자 시험 4개뿐이었다. 검증자 메모 첫 쓰기는 Claude 기록의 Write 호출 시각 07:10:21Z다(판정 표기 07:09:28Z와 53초 차이). 첫 시험 쓰기 07:20:45Z보다 앞서 선행 판정에는 영향이 없다.
+- **정산:** worker-release `retained`(external_terminal) 뒤 pane을 닫았다. 검증자 시험 4개(`backlog-store-boundary` 2시험 추가, 새 `backlog-store-unchecked`·`record-index-backlog-exception`, `desktop-main` 주석 한 줄)는 `1d0740de`로 commit했다.
+- **리드 문서 수정:** 결함 #2는 `index-v2-design.md` 코드 목록에 새 코드를 더해 고쳤다. 관찰 O2(읽는 중·읽음 문장 미기재)는 백로그 메뉴 설계 「화면」 상태 문장에 더했다. 결함 #1의 수정 기준(새 규칙은 테마 변수만, 문제 글자는 `tokens.css` `:root`에 더하는 `--warning: #7d5200`, 실제 배경 위 4.5:1)과 대비 회귀 시험, 작업 순서 4~6을 설계에 더했다. `#7d5200`은 리드 계산으로 `#fffaf0` 위 6.56:1, `#ece3cf` 위 5.34:1이다. 나머지 관찰 O1(탭 mount 때 읽기)·O3(표 형식 문장 위치)·O4(fence 두 벌, 기존 후속 후보)·O5(앱 전체 대비, 기존 후속 후보)·O6(하네스 cache 쓰기)는 PR3에서 바꾸지 않는다.
+- **리드 절차 위반(파트 두 번째 발생):** 2026-10-07 06:38:36Z에 리드가 goal commit·push 명령 끝에 우편함 대기를 `&`와 `/dev/null`로 붙여 띄웠다(CLAUDE.md 「백그라운드 `&`나 `/dev/null` 리다이렉트로 출력을 버리지 않는다」 위반, 첫 발생은 위 「PR2 MCP 구현」). 06:38:57Z에 그 프로세스 하나만 껐고 다른 세션의 check 프로세스는 두었다. 꺼진 뒤 peek에는 그 대기가 받지 않는 Sol heartbeat 하나뿐이었고 inbox에도 다른 메시지가 없어 유실은 없었다(E/`check-after-stray-wait.json`·`inbox-after-stray-wait.json`). 대기는 단독 호출과 `tee`로 하나만 다시 열었다. 메인 보고는 `msg_9f655bb20a2c`다. 메인 답 `msg_939757d4c6a1`은 같은 리드·같은 실수의 두 번째라 문서 규칙으로는 부족하고 막는 층은 hook이라고 판단했다. 메인이 Rules에 후속 후보로 넘긴다(Rules PR2 범위 밖). 리드는 대기를 다른 명령과 묶지 않은 단독 백그라운드 호출로만 연다.
+
+### PR3 결함 #1 수정 라운드
+
+- **대비 회귀 시험:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)를 Task `task_1826a074f60b`, Dispatch `ctx_2fe90f3487a1`로 시작했다. 계약 E/`pr3-ct-task.txt`(SHA-256 `79d227bf…`, 고정 입력 `fc362b97`). 실제 Chromium 숨긴 창에서 「이후 작업」 탭 글자 대비를 재고, 지금은 `.backlog-*` 네 규칙의 요소만 미달로 실패해야 하며, 소유 TEMP 사본에서 설계 「글자색」대로 고치면 통과함을 보이게 했다. 이번 라운드 계약의 규칙 원문에는 CODE_CONVENTION 「교정 층과 반복 규칙」을 더했다. 발행 전 영향 시험 검색은 E/`pr3-c-affected-test-search.txt`(기존 참조 0)다.
+- **대비 회귀 시험 결과:** worker_done `msg_c64a86651b5a`(08:33:47Z), 보고 E/`pr3-ct/report.md`(SHA-256 `8b27c8af…`). 새 시험 `tests/backlog-contrast.test.ts`(시험 2개: 글자 종류별 대상 0개 금지, 대비 4.5:1·큰 글자 3:1)와 helper `tests/renderer-contrast/text-contrast.ts`·`collect-text-styles.cjs`다. 실제 `App`을 jsdom에서 탭을 연 상태로 렌더해 직렬화하고, 숨긴 Electron(44.5.0) 창에서 `src/main.tsx`의 CSS 순서를 file URL로 걸어 잰다. 지금 HEAD에서는 대비 시험만 실패하고 미달 86행(두 장면 각 43행)이 모두 `.backlog-*` 네 규칙의 요소다. 소유 TEMP 사본에서 설계 「글자색」대로 다섯 곳만 바꾸면 2/2 통과다(최소 6.5557:1). 대상 0개·CSS 없음(실행 못 함)·`ELECTRON_RUN_AS_NODE` 경로는 실행으로 확인했다. Electron 쪽 시간 초과 등 실행 못 함 경로는 코드만 있고 실행 증거가 없다. 전체 vitest는 1257/1254이고(새 대비 시험 1 실패 예정, B01·B09), 기존 시험 상태 변화는 0이다. 보충 v1.1(`msg_8dbfbdcd2e5e`)로 tests 타입 검사를 한 번 허용했고 새 파일 오류는 0이다. 기존 tests 타입 오류 3건은 관찰 O4와 함께 계획 14번 후속이다. 단독 실행은 약 2.5초, Electron 자식은 약 0.3초다.
+- **리드 원천 대조:** `new-test-head/contrast-summary.json`의 장면별 네 규칙 밖 미달이 빈 배열이고, 미달 행의 글자색이 #cfdbed·#e3c194·#c1cde0 셋뿐이다. 사본 치환 기록은 설계의 다섯 곳과 같다. vitest 전후 대조의 상태 변화는 빈 배열이다. 메모 Write 08:13:24Z가 첫 시험 파일 Write 08:15:58Z보다 앞선다(Claude 기록). 작업 트리는 새 파일 3개뿐이었다. 시험 작성자는 정산·종료했고 시험은 `951fae1e`로 commit했다.
+- **판정 표 표기 차이(관찰):** 검증 판정 표는 「표 형식 오류」 제목 h3을 묶음 제목과 한 줄로 묶어 1.10으로 적었다. 같은 판정의 원시와 새 시험은 그 h3이 #fffaf0 위 1.34다. 측정 차이가 아니라 표기 차이다.
+- **결함 #1 수정:** 신규 `[Management Sol]`(지정 `gpt-6.1-sol` max, 관찰 화면 「GPT-6.1-Sol max · Full Access · never」, backend unknown)을 Task `task_ee13c6655c65`, Dispatch `ctx_350cd0581e11`로 시작했다. 계약 E/`pr3-cs-task.txt`(SHA-256 `fe4b0d22…`, 고정 입력 `3def4224`). 쓰는 곳은 `src/styles.css`의 네 `color` 값과 `src/theme/tokens.css` `:root`의 `--warning` 한 줄뿐이다. 발행 전 영향 시험 검색은 E/`pr3-cs-affected-test-search.txt`다(두 CSS를 읽는 시험은 새 대비 시험뿐, 쓰기 허용 기존 시험 0).
+- **수정 결과:** worker_done `msg_a560e2e6d45a`(08:52:50Z), 보고 E/`pr3-cs/report.md`(SHA-256 `f3e2b04f…`). `styles.css` 네 `color` 값(219·223·227행 `var(--text)`, 229행 `var(--warning)`)과 `tokens.css:6`의 `--warning: #7d5200;`만 바꿨다(numstat 4/4·1/0). 주석은 변수 이름과 설계 「글자색」으로 출처를 찾을 수 있다고 보고 쓰지 않았다. 대비 시험은 2/2 통과이고, 전체 vitest는 1257/1255로 상태가 바뀐 시험은 대비 시험 하나(실패→통과), 남은 실패는 B01·B09다. 대비 원시에서 두 장면 미달은 43→0이다. 규칙별 최소는 제목 1.0964→12.1469, 후보 제목 1.3449→14.8997, 값 칸 1.5436→14.8997, 문제 글자 1.6381→6.5557이다. 네 규칙 밖 63행은 원시 행 전체가 수정 전과 같다. 타입 검사 셋·records:check exit 0, 산출물 583파일 불변이다.
+- **리드 원천 대조:** vitest 전후 대조의 changed가 대비 시험 한 항목이고 수정 뒤 실패 이름이 B01·B09다. 수정 뒤 대비 원시의 두 장면 미달 0, 탭 최소 5.9409·5.9254다. 실제 diff가 계약의 다섯 곳과 같다. Codex rollout에서 메모 Add 08:41:58Z가 제품 Update 08:44:50Z보다 앞서고(E/`pr3-lead/raw/pr3-cs-codex-timeline.json`), 기록 모델은 `gpt-6.1-sol`·effort `max`다. Sol은 정산·종료했고 수정은 `94c774c0`으로 commit했다.
+- **재검증:** 다른 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)를 Task `task_130f5a44efc6`, Dispatch `ctx_dd433c65c132`로 시작했다. 계약 E/`pr3-cv-task.txt`(SHA-256 `29d4ca30…`, 대상 `3772c8a7..d3917542`). 소유 TEMP 빌드의 실제 앱 Electron에서 수정 전후 대비와 기존 화면 불변을 재고, 회귀 시험은 변이 네 가지로 항상 통과하지 않음을 보이게 했다. 발행 전 영향 시험 검색은 E/`pr3-cv-affected-test-search.txt`다.
+- **재검증 판정(통과):** worker_done `msg_897f9c586b69`(09:24:39Z), 판정 E/`pr3-cv/verdict.md`(SHA-256 `68b06c63…`). 결함 #1·#2는 해소됐다. 소유 TEMP 세 빌드(base·`3772c8a7`·`d3917542`)의 실제 앱 Electron(보조 화면, 앱 125%)에서 「이후 작업」 네 장면(실제 BACKLOG·문제 변형·확인 불가 대역·다시 읽기 실패)의 미달이 179·74·24·179행에서 모두 0이 됐다. 규칙별 최소는 1.0964→12.1469, 1.3449→14.8997, 1.5436→14.8997, 1.6381→6.5557이다. 기존 화면 네 장면 168행은 세 빌드에서 모든 필드가 같다. 회귀 시험은 변이 (가) 네 규칙 각각 고정 색 되돌림, (나) `--warning` 저대비, (다) 글자 종류 숨김, (라) CSS 없음에서 모두 떨어졌다. vitest는 1257/1255(B01·B09)이고 타입 검사 셋·records:check exit 0, 두 작업자 메모 선행, 문서 사실, 범위, 산출물 583파일 보존이 원시로 확인됐다. 새 결함 #3(낮음, 비차단, 시험 작성자 귀속): 추가 변이 (마)에서 `tokens.css`를 같은 이름의 디렉터리로 바꾸면 `collect-text-styles.cjs:22`의 `link.sheet !== null` 방어가 작동하지 않아 어두운 테마로 재고 통과한다. 미실행은 「확인 불가」의 실제 I/O 오류 재현, 회귀 시험의 Electron 쪽 실행 못 함 다섯 갈래, Linux·CI 실행이다.
+- **리드 원천 대조:** `raw/contrast-comparison.json`의 네 규칙 안 수정 전 미달 합이 456행(179+74+24+179), 수정 뒤 0이다. 수정 뒤 원시 `contrast/after-attempt-1/contrast-05~08`을 다시 세어 357·119·41·358행 모두 미달 0이다. 기존 화면 네 장면의 base 대 수정 뒤 전 필드 동일이 true다. vitest 원시가 1257/1255다. 변이 (마)의 원시에 세 시트가 모두 `applied: true`로 기록돼 있다. 판정이 원천을 찾지 못했다고 적은 보충 답 `msg_8dbfbdcd2e5e`는 우편함 기록(08:28:27Z, `dispatch:ctx_2fe90f3487a1` 앞)으로 확인해 E/`pr3-ct-answer-1-sent.json`에 남겼다. 재검증자는 저장소 파일을 쓰지 않았고 정산·종료했다.
+- **결함 #3 처리(리드 결정):** PR3에서 고치지 않고 후속 후보로 둔다. 빌드되는 제품에서는 CSS 경로가 디렉터리일 수 없고(vite 빌드 실패), 실제 CSS로 도는 기본 실행에는 영향이 없다. 고치려면 시험 작성·재검증 세션이 더 필요하다. 비차단 결함의 기본값은 후속 후보다(목표 범위 정본). 아래 「후속 후보」에 재검증 관찰 O1~O4와 함께 적었다.
+
 ### 진입과 준비
 
 - **진입:** 새 Run `run_3fa510a50602`(E0/`run-create.json`), READY `msg_fa27c1982e46`(E0/`ready-sent.json`). 진입 때 worktree는 종료 기록 branch `docs/management-record-navigation-closeout`(HEAD `e37f261`, origin/main보다 19 뒤, 미커밋 0)이었다.
 - **27개 분류 초안:** 승인 전 읽기 조사로 E0/`nextsteps-classification-draft.md`를 만들었다. 확정 전 원천을 다시 대조한다.
-- **열린 질문:** PR3 시험 작성자 모델(PR3 계약 전 메인). DB 1단계 문서 위치는 Core 조율로, 27개 중 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
+- **열린 질문:** 없음. PR3 시험 작성자 모델은 메인 결정 `msg_caa43cc537b5`로, DB 1단계 문서 위치는 Core 조율로, 27개 중 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
