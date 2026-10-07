@@ -8,21 +8,21 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch: PR2는 `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`)이고 이 goal 문서의 현행판이 여기에 있다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다.
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T19:0xZ): PR1은 멈추고 보존했다. 자격 증명 분리 시험의 밤사이 범위를 마쳤다(아래 「자격 증명 분리 시험」). 사용자 결정으로 이 goal은 PR2로 마치며 PR2를 진행한다(「적용 중인 사용자 결정」의 「이 goal은 PR2로 마침」).
+- **현재 위치**(2026-10-07T19:5xZ): PR1은 멈추고 보존했다. 자격 증명 분리 시험의 밤사이 범위를 마쳤다(아래 「자격 증명 분리 시험」). 사용자 결정으로 이 goal은 PR2로 마치며(「적용 중인 사용자 결정」의 「이 goal은 PR2로 마침」), PR2 작성과 리드 R-2를 마쳤다(아래 「PR2 작성」). 다음은 신규 `gpt-6-astra` xhigh 독립 문서 실사다. CLAUDE.md 한 줄은 보류다(사용자 아침 확인).
 - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실린다. PR1 구현 중에는 이 checkout의 hook이 고치는 중인 판정 코드를 바로 쓴다(아래 「위험」).
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
 - [x] 그물 설계와 선행 시험
-- [>] 그물 구현·검증
-- [ ] 그물 PR 병합
-- [ ] 정본·스킬 작성·실사
+- [x] 그물 멈춤·후속 이관
+- [x] 분리 시험 밤사이 몫
+- [>] 정본·스킬 작성·실사
 - [ ] 정본 PR 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 점검과 R-8 인계
 
-PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
+PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다. 그물 구현·검증과 그물 PR 병합 단계는 사용자 결정(`msg_1108186019ec`)으로 분리 시험 후속 goal에 넘겼다.
 
 ## 범위
 
@@ -58,7 +58,7 @@ PR2 — 정본·스킬·BACKLOG(문서)
    - `contract-context-check` 출처 칸에 Management goal 종료 Gardener 후보 1 근거(2A)와 Z1(PR202 리드 메모 사후 작성) 연결. 행의 ID·최초 7필드는 보존한다.
    - `mailbox-output-loss-hook` 출처 칸에 송신 결과 파이프 끊김 네 파일 근거 연결.
    - `merge-gate-code-followup` 상태를 이 goal 승격 링크로 바꾼다. 남는 O2·O6는 「다음 계획 후보」로 두고 종료 때 미해결이면 새 행으로 등록한다.
-6. CLAUDE.md 서브에이전트 문장에 「메인 개인 도구 폴더 한정, 사용자 결정마다」 예외 한 줄(질문 2 A, 메인 작성, 리드가 커밋).
+6. CLAUDE.md 서브에이전트 문장에 「메인 개인 도구 폴더 한정, 사용자 결정마다」 예외 한 줄(질문 2 A, 메인 작성, 리드가 커밋). **보류**: 메인 쓰기를 분류기가 거부했다(아래 「PR2 작성」).
 
 ### 건드릴 곳
 
@@ -245,6 +245,14 @@ PR2 — 정본·스킬·BACKLOG(문서)
   - ⑥ 넘어감: 환경을 빠뜨리면 gh는 관리자, 에이전트 설정에서도 사용자 지정 토큰 조회는 keyring 관리자, 에이전트 worktree의 https 직접 push는 막힘, 메인 checkout을 빌린 push는 관리자로 인증(dry-run).
 - 아침에 남은 것: 보호 branch 거부(U3 뒤), 병합 세 형태 403(사용자), ⑤ 브라우저, 선택 ④(b)·(라) 시험, ⑦ 정리. 순서는 메인 보고 `msg_27ff509d7f16` 「아침 순서」 1~8이다. 1번(`trial/cred-protected` 만들기)도 사용자 아침 답과 묶어 그때 한다(메인 `msg_1dfa956a845b`).
 - 메인 대조(`msg_1dfa956a845b`): 원격 ref·PR #205·worktree 설정·main sha 기록이 일치했다. **불일치 1건, 확인 보류**: 리드 보고는 「토큰 접두어 패턴 검색 0건」인데 메인이 근거 폴더 전체에서 리터럴 `github_pat_`을 세니 파일 1개가 걸렸다. 메인이 열어 보려 했으나 auto mode 분류기가 막았고, 리드도 그 파일을 열거나 찾지 않는다(메인 지시). 리드 스캔은 18:48Z의 `grep -rl -E "github_pat_|gho_[A-Za-z0-9]{20}"`이며 대상은 E/credential-trial/와 E/session/뿐이었다. 그 뒤 리드가 쓴 결과 문서 머리말은 검색한 패턴 이름을 글자로 적었다(리드 기억, 미확인). 근거 폴더는 Git 밖이라 원격 노출 경로는 없다. 사용자가 아침에 직접 보거나 허용 여부를 정한다.
+  - 보충(19:5xZ): 이 세션이 대화 압축 뒤 재개될 때 결과 문서(E/credential-trial/results-overnight.md)가 자동으로 다시 보였고, 그 4행이 검색한 패턴 이름 `github_pat_`·`gho_…`를 글자로 적고 있었다. 리드가 열거나 찾은 것은 아니다. 메인이 센 파일이 이 문서인지는 확인하지 않았다.
+
+### PR2 작성
+
+- 계약: E/pr2-contract.md(v1, SHA256 `23d202e0…`), 경로 확인 E/pr2-contract-pathcheck.txt, 리드 메모 E/astra-context.md 「PR2 작업 전 맥락」. 작성자 Sol `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max · Full Access · never · docs/hook-helper-session-canon-202610…」), Task `task_25e16a36335a`, Dispatch `ctx_6ba15fa46319`. 첫 연결은 `turn_start_unobserved`였고 draft 크기(20,479자 = 계약 15,692 + 머리말 4,787)가 맞아 Enter 한 번으로 복구했다(E/pr2-draft-recovery.md).
+- bytes 질문 둘: 첫 안은 묶음 102,715(57 초과)였다. 리드 답 `msg_79ebb6870aef`(AGENTS 새 링크 생략, Sol이 새로 쓰거나 고치는 문장만 축약, 기존 규칙 문장 이동·삭제 없음)와 `msg_fed05fbf59f7`(goal-loop 「통합과 보고」 첫 문단 고쳐 쓰기 허용)로 102,658이 됐다. 메인 결정이 필요한 기존 문장 이동은 없었다(E/session/check55-check.md·check56-check.md).
+- 결과(커밋 `7515a41b` 정본·스킬, `5ad58438` BACKLOG): 여섯 파일 묶음 102,658(기준과 같음), ORCA 250행, 새 스킬 8,245 bytes, BACKLOG 행 52→53. 상대 링크 231·base anchor 87 실패 0, BACKLOG 보존 검사 통과(Sol 원시 E/pr2/, 리드 R-2 E/lead-check/pr2-r2-check.md와 pr2-r2-measure.txt).
+- **CLAUDE.md 보류**: 메인 `msg_b2357afafebb`(19:01:38Z)에 따르면 메인이 rules-active `CLAUDE.md` 11행 뒤에 예외 한 줄을 쓰려 했고 auto mode 분류기가 「Self-Modification」으로 거부했다. 파일은 그대로다(8,195 bytes). 리드·작업자·검증자도 쓰지 않는다. PR2는 이 줄 없이 진행하고 독립 실사의 CLAUDE.md 항목은 「사용자 확인 대기로 보류」다. 아침에 사용자가 직접 넣거나 허용 방법을 정하며, 들어오면 별도 커밋과 메인 R-2로 PR2에 더한다. 메인 문안은 「  - 예외: 메인 개인 도구 폴더(`C:/Dev/DawnHolder_Dashboard`)의 쓰기는 사용자 결정마다 서브에이전트에 맡길 수 있다. 메인은 결과를 직접 확인한다. 저장소 파일과 다른 파트 영역에는 적용하지 않는다.」다.
 
 <a id="orca-moved-history"></a>
 ## ORCA에서 옮긴 적용 기록
@@ -263,4 +271,5 @@ PR2는 규칙 문서 bytes를 상쇄하려고 ORCA 「병합 관문」 첫 문�
 - 자격 증명 분리 후속 goal(이 goal의 PR1 몫을 받음, `msg_1108186019ec`): PR1 몫은 그물 오탐 줄이기와 BACKLOG `merge-gate-code-followup`의 후속 세 건(T1 `+main`, 한국어 주석 영어화, O-T3 이유 주석)이다. 아침 시험 3·4가 통과하면 R-5 기동에 `GH_CONFIG_DIR`, R-1 배치에 에이전트 worktree 설정 세 줄을 넣고 글자 그물·가리기 코드를 걷는다. 사용자 결정 후보는 (라)·(가), 프로젝트 범위 보강 후보는 (나)다(위 「자격 증명 분리 시험」·E/credential-trial/results-overnight.md). PR1 branch `13fe344d`의 시험·판정 원시는 출발 자료다. PR2에서 분리 방향과 겹쳐 뺀 문장은 아래 둘이며 이 goal에서 다시 쓴다.
   - 보조 세션 스킬 초안(`C:/Dev/DawnHolder_Dashboard/plans/helper-session-skill-draft.md`) 38행 「gh·merge 또는 push·main 낱말이 함께 든 명령은 막힌다. 그런 문자열 검색은 Grep·Read 도구로 하고, 메시지 본문은 파일로 넘긴다.」 PR2 스킬에는 병합 관문 링크만 둔다.
   - 같은 초안 44행의 이유 「본문 낱말이 명령 문자열에 섞여 hook에 막히는 일을 피한다.」
+- README 운영 주체 서술 정정(Rules 몫, 메인 결정): Management 리드 통지 `msg_81a1748512d3`(2026-10-07T19:39:40Z)에 따르면 `README.md` 14·65행이 운영 주체를 「Codex 메인 세션」·「Codex 스킬」로 적는다. 원천은 Management 소개 페이지 goal의 「후속 후보」다. 종료 때 BACKLOG 새 행 후보다.
 - 작업자 pane 배치 문장 정리(ORCA R-1·R-5 2단계): 같은 worktree는 리드 pane split, 다른 worktree는 `terminal create --worktree`로 바로 열고 빈 받침 pane을 만들지 않는다(사용자 결정 `msg_e62c4989b3dc`). split close 때 부모 pane이 꺼지는 Orca 1.4.222 관측과 함께 다룬다. 종료 때 BACKLOG 새 행으로 등록한다.
