@@ -372,6 +372,9 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 ### PR3 결함 #1 수정 라운드
 
 - **대비 회귀 시험:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)를 Task `task_1826a074f60b`, Dispatch `ctx_2fe90f3487a1`로 시작했다. 계약 E/`pr3-ct-task.txt`(SHA-256 `79d227bf…`, 고정 입력 `fc362b97`). 실제 Chromium 숨긴 창에서 「이후 작업」 탭 글자 대비를 재고, 지금은 `.backlog-*` 네 규칙의 요소만 미달로 실패해야 하며, 소유 TEMP 사본에서 설계 「글자색」대로 고치면 통과함을 보이게 했다. 이번 라운드 계약의 규칙 원문에는 CODE_CONVENTION 「교정 층과 반복 규칙」을 더했다. 발행 전 영향 시험 검색은 E/`pr3-c-affected-test-search.txt`(기존 참조 0)다.
+- **대비 회귀 시험 결과:** worker_done `msg_c64a86651b5a`(08:33:47Z), 보고 E/`pr3-ct/report.md`(SHA-256 `8b27c8af…`). 새 시험 `tests/backlog-contrast.test.ts`(시험 2개: 글자 종류별 대상 0개 금지, 대비 4.5:1·큰 글자 3:1)와 helper `tests/renderer-contrast/text-contrast.ts`·`collect-text-styles.cjs`다. 실제 `App`을 jsdom에서 탭을 연 상태로 렌더해 직렬화하고, 숨긴 Electron(44.5.0) 창에서 `src/main.tsx`의 CSS 순서를 file URL로 걸어 잰다. 지금 HEAD에서는 대비 시험만 실패하고 미달 86행(두 장면 각 43행)이 모두 `.backlog-*` 네 규칙의 요소다. 소유 TEMP 사본에서 설계 「글자색」대로 다섯 곳만 바꾸면 2/2 통과다(최소 6.5557:1). 대상 0개·CSS 없음(실행 못 함)·`ELECTRON_RUN_AS_NODE` 경로는 실행으로 확인했다. Electron 쪽 시간 초과 등 실행 못 함 경로는 코드만 있고 실행 증거가 없다. 전체 vitest는 1257/1254이고(새 대비 시험 1 실패 예정, B01·B09), 기존 시험 상태 변화는 0이다. 보충 v1.1(`msg_8dbfbdcd2e5e`)로 tests 타입 검사를 한 번 허용했고 새 파일 오류는 0이다. 기존 tests 타입 오류 3건은 관찰 O4와 함께 계획 14번 후속이다. 단독 실행은 약 2.5초, Electron 자식은 약 0.3초다.
+- **리드 원천 대조:** `new-test-head/contrast-summary.json`의 장면별 네 규칙 밖 미달이 빈 배열이고, 미달 행의 글자색이 #cfdbed·#e3c194·#c1cde0 셋뿐이다. 사본 치환 기록은 설계의 다섯 곳과 같다. vitest 전후 대조의 상태 변화는 빈 배열이다. 메모 Write 08:13:24Z가 첫 시험 파일 Write 08:15:58Z보다 앞선다(Claude 기록). 작업 트리는 새 파일 3개뿐이었다. 시험 작성자는 정산·종료했고 시험은 `951fae1e`로 commit했다.
+- **판정 표 표기 차이(관찰):** 검증 판정 표는 「표 형식 오류」 제목 h3을 묶음 제목과 한 줄로 묶어 1.10으로 적었다. 같은 판정의 원시와 새 시험은 그 h3이 #fffaf0 위 1.34다. 측정 차이가 아니라 표기 차이다.
 
 ### 진입과 준비
 
