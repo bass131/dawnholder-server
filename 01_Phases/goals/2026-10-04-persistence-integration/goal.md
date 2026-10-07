@@ -421,7 +421,7 @@
   3. 사용자가 1회 실행한다. 이 실행에 DATA 사본과 같은 조건의 열기 시험이 들어간다.
   4. 결과로 수정안을 정하거나 B(Procmon v5.1)로 간다.
   - 엔진 판정 PR(설치·U-01)은 SQL 시작 문제가 풀린 뒤다.
-- **PR·branch:** 열린 PR은 없다. `feat/persistence-engine-judgment-20261006`은 이 기록 commit으로 origin과 같다. 기록 직전 origin/main과 비교하면 54커밋 뒤처져 있다(PR #193 정본 9개, PR #195, PR #196 포함). main 통합 시점은 재개 때 정한다.
+- **PR·branch:** 열린 PR은 없다. `feat/persistence-engine-judgment-20261006`은 이 기록 commit으로 origin과 같다. 기록 직전 origin/main과 비교하면 54커밋 뒤처져 있다(PR #193 정본 9개, PR #195, PR #196 포함). main 통합 시점은 재개 때 정한다. 단 메인 `msg_e39f89324a78`에 따라 Rules PR #198(병합 관문) 병합과 메인 이동이 끝나기 전에는 이 checkout(`C:/Dev/DawnHolder_Project`)에 main을 받지 않는다. 받으면 같은 폴더의 메인 세션에 병합 관문 hook이 실려 PR #198 병합 대비안이 막힌다. 통합해도 되는 시점은 메인이 알린다.
 - **보고·답:** 메인에 보내지 않은 보고는 없다. 받을 답은 메인의 SQL 조사 재개 신호다.
 - **Management의 DB 1단계 과정 문서:** Core 사실 검토는 `msg_aae81338f70f`로 회신했다(사실 오류 1건, 정확도 4건).
   - 그 문서 `db-stage1-intent-and-process.md`는 PR #196으로 main의 이 폴더에 들어왔다. 합의대로 병합 뒤 소유는 Core다.
