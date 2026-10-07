@@ -3,11 +3,11 @@
 ## 진척 단계
 
 - [x] 범위 승인과 goal 고정
-- [>] 공개 안전 선행 시험
-- [ ] 웹용 그림 사본 만들기
-- [ ] 페이지 본문 작성
-- [ ] 배포 workflow 구현
-- [ ] 독립 검증
+- [x] 공개 안전 선행 시험
+- [x] 웹용 그림 사본 만들기
+- [x] 페이지 본문 작성
+- [x] 배포 workflow 구현
+- [>] 독립 검증
 - [ ] 제품 PR 병합
 - [ ] 배포 확인
 - [ ] Gardener 점검
@@ -48,6 +48,8 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 
 질문에서 뺀 기본값도 그대로다. 언어는 한국어만, 페이지는 한 장이다.
 
+**추가 그림 생성 허용(goal 고정 뒤):** 메인 `msg_f48d2798a0f6`(2026-10-07T19:35:25Z)이 전달한 사용자 원문(메인 창 Enter 제출)은 「만약에 Management한테 추가 아트워크가 필요하면 우리 게임 리소스 참고해서 GPT Sol한테 만들어달라고 그래」다. 메인 해석은 다음과 같다. Q4 A에 「필요하면 Sol 생성 그림 추가」가 더해진다. 작업자는 신규 `gpt-6.1-sol`(max)이다. 참고 원천은 프로젝트 자체 그림만 쓰고 유료 Asset Store 패키지는 참고 입력으로도 쓰지 않는다. 생성 그림에는 글자를 넣지 않고 실존 게임·캐릭터를 흉내 내지 않는다. 생성 그림은 사이트 폴더의 새 파일로만 두고 출처 표에 생성 모델·참고 원본·생성 날짜·SHA256을 적는다. 리드는 Sol 보고를 믿지 말고 실제 파일 위치와 SHA256을 직접 확인한다. **리드 판단(2026-10-08 04:4x KST): 지금은 만들지 않는다.** 저장소 그림 사본 6장으로 첫 화면·직업·몬스터 절이 모두 채워진다. 그림이 없는 절은 이야기·플레이·앞으로·소식인데, 「앞으로」의 길드 거점은 아직 게임에 없어서 그림을 만들면 있는 것처럼 보일 위험이 있다.
+
 ## 적용 중인 메인 결정
 
 메인 `msg_8a1a882241d3`의 판단(초안 9절 답)이다. 사용자 결정이 아니다.
@@ -57,7 +59,9 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 3. 그림 사본 생성 스크립트는 근거 폴더 E에 두고, 사본과 출처 표만 commit한다.
 4. v1 판단 중 사이트 폴더 `00_Document/intro-site/`(Management 소유), 문서 지도 한 행(이 PR, Rules에 미리 알림), harness 근거 폴더, R-7 비해당, 새 workflow의 Rules·CodeMap 통지는 그대로다.
 
-같은 메시지의 운영 지시: 우편함 대기는 하나만 연다. 사용자 결정이 필요한 범위 문제가 나오면 멈추고 status로 올린다. workflow 파일 push가 자격 증명으로 막히면 상태를 보존해 올린다. 확인 창이나 auto mode 분류기에 막히면 우회하지 않고 메인에 올린다. 병합 승인 요청에는 PR 번호·정확한 head·검증 판정 원문 경로·Pages 켜기 안내를 넣는다.
+메인 `msg_f1ea2864cafe`(2026-10-07T19:33:35Z)의 통지 주소: Rules는 `run:run_573214a00f1b`이고 답을 기다리지 않는다. CodeMap은 지금 리드가 없어 PR 본문과 이 goal에 「새 workflow 추가, CodeMap 통지 대기」로 적고 메인이 다음 CodeMap 세션에 전달한다. 리드는 Rules에 문서 지도 한 행과 새 workflow를 통지했다(`msg_81a1748512d3`).
+
+진입 메시지 `msg_8a1a882241d3`의 운영 지시: 우편함 대기는 하나만 연다. 사용자 결정이 필요한 범위 문제가 나오면 멈추고 status로 올린다. workflow 파일 push가 자격 증명으로 막히면 상태를 보존해 올린다. 확인 창이나 auto mode 분류기에 막히면 우회하지 않고 메인에 올린다. 병합 승인 요청에는 PR 번호·정확한 head·검증 판정 원문 경로·Pages 켜기 안내를 넣는다.
 
 ## 만들 것
 
@@ -139,4 +143,29 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 결과와 열린 사항
 
-아직 없다.
+### 작업자 발행
+
+- **T1 선행 시험(신규 `claude-opus-5-5`):** pane `term_dc17bfef…`, Task `task_1ba49ab2bc2b`, Dispatch `ctx_8867a991f3bd`. 계약 E/`contracts/t1-task.md`(SHA256 `e5dde107…63d9`), 발행 기록 E/`contracts/t1-issue.txt`. 화면 표시 `Opus 5.5 with xhigh effort`, backend unknown.
+- **S1 workflow(신규 `gpt-6.1-sol` max):** pane `term_fe526980…`, Task `task_6949ecf80996`, Dispatch `ctx_9cc00fe000a9`. 계약 E/`contracts/s1-task.md`(SHA256 `ff714b5e…3c81`), 발행 기록 E/`contracts/s1-issue.txt`. 화면 표시 `GPT-6.1-Sol max`(Codex v0.160.1), backend unknown.
+- **S1 계약 보충 v1.1:** Sol 질문 `msg_0a46b180596a`(2026-10-07T19:50:15Z)은 `actions/upload-pages-artifact` v5의 tar가 `.git`·`.github`를 항상, 숨김 구간을 기본값에서 빼서 목록과 산출물이 어긋날 수 있다고 했다(원시 E/`s1/raw/upload-pages-artifact-action-v5.stdout.txt` 17~39행, 리드 확인). 리드는 Sol의 두 선택지(숨김 포함 + `.git`·`.github` 거부 / 한계 기록) 대신 「`.`으로 시작하는 구간은 목록에서 거부하고 `include-hidden-files`는 기본값 유지」로 답했다. 공개할 숨김 파일이 없어 공개 범위를 넓힐 이유가 없고, 목록 단계에서 막으면 tar 제외 규칙과 목록이 항상 같아진다. 접점 정의는 E/`site-interface.md` v1.1(SHA256 `c0dad5f7…396c`)이고, 이미 발행한 T1에는 주입하지 않았다. 보충 규칙은 workflow 자체 점검과 독립 검증이 확인한다.
+
+### 선행 시험 결과(T1)
+
+- `worker_done` `msg_96d483ec3878`(2026-10-07T20:19:47Z, outcome succeeded). 발신 pane·Task·Dispatch가 발행 기록과 일치했다. 보고 E/`t1/report.md`.
+- 빨간 단계: 사이트 폴더가 없는 상태에서 `check-site.mjs --mode source`가 exit 1·`site-missing`, `check-render.mjs`가 exit 1·`site-index-missing`이었다(E/`t1/raw/red-check-site-source.json`, 리드가 원시 JSON의 `status`·`exitCode`·진단 코드를 직접 읽음).
+- `selftest.mjs`는 exit 0이었다. 사례 39개 중 37개 통과, 실패 0, 온라인 2개는 `--online` 별도 실행에서 통과했다(E/`t1/raw/selftest-summary.json`). harness 사본 변형 6개는 모두 selftest가 실패로 잡았다.
+- 작성자 해석 9개와 한계는 보고 「작성자 판단으로 정한 해석」·「미실행과 한계」에 있다. 리드는 기본값대로 받아들였다.
+- 정산: `worker-release` 결과 `retained`. pane이 대기(`✳`, tui-idle)인 것을 확인하고 `terminal close`로 닫았다(E/`t1-release.json`, E/`t1-close.json`).
+
+### workflow 구현(S1)
+
+- `worker_done` `msg_4c7b05b3883d`(2026-10-07T20:30:32Z, outcome succeeded, filesModified `.github/workflows/intro-site.yml`). 발신 pane·Task·Dispatch가 발행 기록과 일치했다. 보고 E/`s1/report.md`, 메모 E/`s1/sol-context.md`.
+- Sol 자체 점검(독립 검증 아님): workflow에서 기계 추출한 조립 bash 본문을 E/`s1/` 합성 fixture에 돌려 37/37 통과, `bash -n` 통과. v1.1 숨김 구간 거부를 적용했고(`intro-site.yml` 109~112행) 기존 workflow 4개는 바꾸지 않았다. YAML 문법·GitHub 실행·Linux 0644 권한은 미실행이라 PR CI에서 본다(WSL drvfs에서는 권한이 777로 보임).
+- action 버전: `actions/checkout@v7`(최신 v7.0.1), `actions/upload-pages-artifact@v5`(v5.0.0), `actions/deploy-pages@v5`(v5.0.1). 근거는 E/`s1/raw/*-latest.*`와 보고 「action 버전과 호환성 근거」다. 기존 workflow는 `checkout@v4`를 쓰므로 관례와 다르다. 리드는 최신 release 근거가 있어 받아들이고 독립 검증의 설계 관찰 대상으로 넘긴다.
+- 정산: `worker-release` 결과 `retained`. pane 대기를 확인하고 `terminal close`로 닫았다(E/`s1-release.json`, E/`s1-close.json`). 리드가 commit했다(`f48920be`).
+
+### 사이트 작성(리드)
+
+- 그림 사본은 E/`tools/make-web-images.ps1`로 사이트 폴더에 만들었다. staging 실행과 SHA256이 같아 결정적이다(E/`tools/site-images.sha256`). 합계 571,331 B다(E/`tools/manifest-site.json`의 `outputBytes` 합).
+- 사이트 commit `c6fa9d95`, 진입 링크 commit `5a57d8c4`.
+- harness 통과(리드 자체 점검이며 독립 판정 아님): 첫 `check-site --mode source --online`은 exit 1이었다. README의 두 표 앞에 설명 문단이 있어 표 머리글 위치가 접점 3절과 달랐다(`fact-table-header`, `image-table-header`). 설명을 표 뒤로 옮긴 뒤 exit 0, 검사 10개 모두 passed였다(E/`lead-run/check-site-2.json`). `check-render`는 exit 0이었다. 데스크톱 clientWidth 1265, 그림 6개 로드, 절 6개 표시였다(E/`lead-run/check-render-1.json`, 화면 사진 E/`lead-run/render-1-shots/`).
