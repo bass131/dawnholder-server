@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다. 그때 PlayMode는 0/11이었다. 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 파괴해 테스트 fixture의 저장·복원이 깨진 것으로 추정했다. 사용자 결정대로 그 구간을 고친 뒤 다시 재니 EditMode 356/356, PlayMode 11/11(실서버 경로 통과)로 기준선과 같다(자체 점검). 측정 중 Unity가 지운 기계별 SENTIS define 한 줄은 메인 결정대로 base 값으로 되돌려 커밋에서 뺐다. 신규 Opus 독립 검증은 PASS(차단 결함 0, 비차단 1)이고, 커밋된 tree에서 EditMode 356/356, PlayMode 11/11을 다시 냈다. 사용자 결정대로 검증자 테스트 2개를 업그레이드 커밋에 넣었다. 완료조건 (6) MCP 확인도 PASS다(차단 0, 비차단 1: relay 신원 키가 hash 기반이라 goal relay 줄을 고침). 그때 대화형 Editor가 6.6 형식으로 저장한 설정 두 파일을 사용자 결정대로 업그레이드 커밋에 넣었다. 그 커밋의 약 등급 재검증도 PASS다(EditMode 356/356, PlayMode 13/13, 차단 0). PR204가 사용자 승인으로 병합됐다(2026-10-07T18:01:57Z, merge commit `7086d45b`). 종료 Gardener도 끝났다(정리 후보 2, 채택 전). 남은 것은 종료 기록의 문서 실사·PR, 종료 점검, R-8이다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다. 그때 PlayMode는 0/11이었다. 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 파괴해 테스트 fixture의 저장·복원이 깨진 것으로 추정했다. 사용자 결정대로 그 구간을 고친 뒤 다시 재니 EditMode 356/356, PlayMode 11/11(실서버 경로 통과)로 기준선과 같다(자체 점검). 측정 중 Unity가 지운 기계별 SENTIS define 한 줄은 메인 결정대로 base 값으로 되돌려 커밋에서 뺐다. 신규 Opus 독립 검증은 PASS(차단 결함 0, 비차단 1)이고, 커밋된 tree에서 EditMode 356/356, PlayMode 11/11을 다시 냈다. 사용자 결정대로 검증자 테스트 2개를 업그레이드 커밋에 넣었다. 완료조건 (6) MCP 확인도 PASS다(차단 0, 비차단 1: relay 신원 키가 hash 기반이라 goal relay 줄을 고침). 그때 대화형 Editor가 6.6 형식으로 저장한 설정 두 파일을 사용자 결정대로 업그레이드 커밋에 넣었다. 그 커밋의 약 등급 재검증도 PASS다(EditMode 356/356, PlayMode 13/13, 차단 0). PR204가 사용자 승인으로 병합됐다(2026-10-07T18:01:57Z, merge commit `7086d45b`). 종료 Gardener도 끝났다(정리 후보 2, 채택 전). 종료 기록의 첫 문서 실사는 NOT PASS(차단 2: 리드 맥락 메모 사후 작성, 리드 대조 시각의 수기 기록)였고, 메인 결정대로 정정했다. 남은 것은 정정의 새 문서 실사, 종료 기록 PR, 종료 점검, R-8이다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -180,7 +180,8 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 9. 두 파일을 더한 커밋의 약 등급 재검증은 PASS(비차단 결함 1)로 끝났다(아래 결과). 결함 #1의 문구를 커밋 메시지와 이 goal에서 고치고 두 커밋을 다시 만들었다.
 10. push·PR204·CI·메인 승인 요청·병합은 끝났다(아래 「PR204 병합」).
 11. 결과 기록(`f1f9cc73`)과 종료 Gardener는 끝났다(아래 「종료 Gardener」). 정리 후보 둘은 채택 전이다.
-12. 다음 순서: 종료 기록 문서 실사(신규 `gpt-6-astra` xhigh) → 종료 기록 PR 하나 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다. 시작 전에 메인에 계획을 status로 알린다(메인 `msg_a31233c60bf2`).
+12. 종료 기록 문서 실사는 NOT PASS(차단 2)였다. 메인 결정 A(`msg_b8151750a5df`)대로 정정했다(아래 「종료 기록 문서 실사」).
+13. 다음 순서: 정정의 새 독립 문서 실사(신규 `gpt-6-astra` xhigh) → 종료 기록 PR 하나 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다. 시작 전에 메인에 계획을 status로 알린다(메인 `msg_a31233c60bf2`).
 
 ## 진척 단계
 
@@ -191,9 +192,9 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 - [x] 독립 검증
 - [x] MCP 연결 확인
 - [x] 설정 두 파일 재검증
-- [x] PR 병합
+- [x] PR204 병합
 - [x] 종료 Gardener
-- [>] 종료(문서 실사·종료 기록 PR·종료 점검·R-8)
+- [>] 종료 기록·점검
 
 ## 실제 결과와 미실행
 
@@ -210,7 +211,7 @@ Sol `task_140b8f96e4fd`(Dispatch `ctx_8c2f3e765fff`, 지정·화면 `gpt-6.1-sol
 - 기준 목록: 03_Client 추적 파일 2105개, `.meta` guid 1129개(`sol-baseline/inventory/`). 다음 단계의 기계 대조 입력이다.
 - 음소거는 두 실행 모두 0 → 1 → 0이다. 실제 음향 출력은 재지 않았다.
 - 같은 harness를 다음 단계에서 Unity 경로만 바꿔 쓴다: `harness/Run-UnityTests.ps1` SHA256 `8C7A3869…7B21`, 공통 helper `6C519AFC…2A1AC`.
-- 리드 대조(09:35Z): 두 `results.xml`의 test-run 속성(356/356, 11/11, failed 0)과 실서버 테스트 Passed를 원시에서 다시 읽었다. 사후 음소거 값 0, Unity 0, 7777 listener 0(Windows·WSL)을 확인했다. release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true). 회수 대기 작업자는 0이다.
+- 리드 대조(정확한 시각 미기록): 두 `results.xml`의 test-run 속성(356/356, 11/11, failed 0)과 실서버 테스트 Passed를 원시에서 다시 읽었다. 사후 음소거 값 0, Unity 0, 7777 listener 0(Windows·WSL)을 확인했다. release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true). 회수 대기 작업자는 0이다.
 - Unity가 기준선 실행 중 스스로 바꾼 두 파일: `ProjectSettings.asset`의 Standalone `SENTIS_ANALYTICS_ENABLED;` 제거 한 줄(SHA256 C1412CD2… → 934110CB…, 이전 goal에서 관측된 것과 같은 쌍)과 `MinimapRT.renderTexture` 줄바꿈(Git blob 같음). 작업자는 사본·diff를 남기고 그대로 두었다. 리드가 엔진 전환 전에 둘 다 HEAD 상태로 되돌렸고, 실행 전 hash와 같아졌다(`lead-restore-baseline-drift.txt`). 엔진 전환에서 생기는 변경만 따로 보이게 하려는 것이다.
 - 독립 판정은 아직 없다. 신규 Opus 검증의 입력이다.
 
@@ -223,7 +224,7 @@ Sol `task_5148d0531753`(Dispatch `ctx_cf508cb9ae6b`, 지정·화면 `gpt-6.1-sol
 - Unity가 컴파일 전에 만든 변경은 셋이다: `manifest.json`, `packages-lock.json`(lock 항목 35개 변화: core 21, 최소 버전 강제 14, 분류 불가 0. 모듈 physicscore2d·tetgen·timelinefoundation 추가, vr 제거), 새 `ProjectSettings/PhysicsCoreProjectSettings2D.asset`(2키). 기존 ProjectSettings의 byte 변화와 SENTIS 반복 drift는 없었다. AI Assistant는 2.7.0-pre.3 그대로였다.
 - `.meta` 1129 → 1129, guid 불일치·삭제·신규 0이다. relay SHA256·크기·수정 시각은 전후 같다(`854f019d…cd66`). 음소거 0 → 1 → 0이다.
 - 계약 축소(리드 `msg_80dcfd34ed46`, `msg_38ffb4483224`): 컴파일 실패 뒤 EditMode를 한 번 시도했으나, 첫 열기가 남긴 `Temp/UnityLockfile`(0바이트) 때문에 harness gate가 Unity를 띄우지 않았다(`executed=false`). 서버 lane·PlayMode는 미실행이다. 6.6 수치는 아직 없다.
-- 리드 대조(10:11Z): editor.log 두 줄, `upgradeOpenExit=1`, `.meta` 대조 수치, Unity 0, 음소거 0, Windows·WSL 7777 listener 0을 원시와 현재 상태에서 다시 읽었다. release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true).
+- 리드 대조(정확한 시각 미기록): editor.log 두 줄, `upgradeOpenExit=1`, `.meta` 대조 수치, Unity 0, 음소거 0, Windows·WSL 7777 listener 0을 원시와 현재 상태에서 다시 읽었다. release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true).
 - 리드 정리: 테스트 수정 뒤 다음 열기가 Unity 생성 변경 전체를 한 번에 남기도록 manifest·lock을 HEAD로 되돌리고 새 asset과 잠금 파일을 지웠다. 사본은 `sol-engine/runs/*/changed-files`·`untracked-files`에 같은 SHA256으로 있다(`lead-restore-first-open.txt`).
 
 ### 테스트 한 줄 — 작성자 자체 점검, 독립 판정 전
@@ -242,7 +243,7 @@ Sol `task_25df1a718eef`(Dispatch `ctx_f3b07049d9f8`, 지정·화면 `gpt-6.1-sol
 - 패키지 코드는 `#if UNITY_6000_5_OR_NEWER && !UNITY_EDITOR`일 때만 `CurrentAssemblies`를 쓰고, Editor에서는 `AppDomain.CurrentDomain.GetAssemblies()`를 쓴다. 6.6 분석기가 이를 오류로 막는다. PackageCache는 고치지 않는다.
 - Unity가 만든 세 파일(manifest·lock·`PhysicsCoreProjectSettings2D.asset`)은 첫 열기와 SHA256이 같다. `.meta` guid 변화와 relay 변화는 없다.
 - 계약 축소(리드 `msg_ba57bc88d457`): EditMode·PlayMode·서버 lane은 미실행이다. 두 로그의 error 줄 전수 추출을 더했다(`sol-remeasure/runs/diagnostics-final/all-error-lines.md`).
-- 리드 대조(10:55Z): 두 로그의 「error 」 줄을 리드가 따로 뽑아 8줄·4줄과 코드별 개수가 작업자 집계와 같음을 확인했다. 현재 세 파일 SHA256이 첫 열기 사본과 같고 Unity 0이었다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다.
+- 리드 대조(정확한 시각 미기록): 두 로그의 「error 」 줄을 리드가 따로 뽑아 8줄·4줄과 코드별 개수가 작업자 집계와 같음을 확인했다. 현재 세 파일 SHA256이 첫 열기 사본과 같고 Unity 0이었다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다.
 - 리드 정리: 사용자 결정 A의 다음 열기를 깨끗한 상태에서 하도록 manifest·lock을 HEAD로 되돌리고 새 asset과 잠금 파일을 지웠다(`lead-restore-remeasure.txt`).
 
 ### AI Assistant 2.20.0-pre.2 업그레이드 열기 — 컴파일 실패(Lucid Editor), 자체 점검
@@ -256,7 +257,7 @@ Sol `task_dc04bf3e6a75`(Dispatch `ctx_d28b5138f39a`, 지정·화면 `gpt-6.1-sol
 - 새 패키지 소스 정적 확인(완료조건 (5) 근거, 독립 판정 전):
   - 상한: `AcpEntitlementWiring.cs:45~62`가 개발용 override가 없으면 `ConnectionPolicy.Unlimited`를 설치한다. 연결 수 계측과 cap 판정 코드(`ConnectionCensus.cs:515~560`)는 남아 있다. 그래서 「상한 검사 코드가 없다」가 아니라 「기본 정책에서 상한이 적용되지 않는다」가 맞는 표현이다.
   - 신원 키: `ExecutableIdentityComparer.cs:56~76`이 서명이 유효하면 `Signed:<경로>:<SignaturePublisher>`, 서명이 없으면 `Hash:<SHA256>`을 쓴다. 파일 버전과 MCP clientInfo는 키에 들어가지 않는다. 서명된 같은 경로의 실행 파일은 업데이트 뒤에도 같은 키다. 서명 없는 실행 파일은 내용이 바뀌면 키가 달라진다(코드 기반 추정).
-- 리드 대조(11:31Z): 「error 」 31줄, 정적 확인 두 인용(`ExecutableIdentityComparer.cs:56~76`, `AcpEntitlementWiring.cs:45~62`)을 원문에서 다시 읽었다. 현재 Unity 0이다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다.
+- 리드 대조(정확한 시각 미기록): 「error 」 31줄, 정적 확인 두 인용(`ExecutableIdentityComparer.cs:56~76`, `AcpEntitlementWiring.cs:45~62`)을 원문에서 다시 읽었다. 현재 Unity 0이다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다.
 - 리드 정리: 다음 열기를 깨끗한 상태에서 하도록 manifest·lock을 HEAD로 되돌리고 새 asset과 잠금 파일을 지웠다(`lead-restore-upgrade-open.txt`).
 
 ### Lucid 두 파일 삭제 뒤 측정 열기 — 컴파일 실패(Lucid Editor 다른 줄), 자체 점검
@@ -268,7 +269,7 @@ Sol `task_9cf22ad2da19`(Dispatch `ctx_0826018fe9b0`, 지정·화면 `gpt-6.1-sol
 - 앞선 열기 로그에서 이 파일은 컴파일 명령의 파일 목록(3345행)에만 있었다. 앞선 오류는 `TreeView` 상속·시그니처 같은 선언 단계 오류였다. csc가 선언 오류가 있으면 메서드 본문 오류를 보고하지 않아 이번에야 드러난 것으로 추정한다.
 - `.meta` 1129 → 1127, 삭제 2(승인된 `SimpleTreeView.cs.meta`·`TreeMenu.cs.meta`), 불일치·신규 0이다. 패키지 분류는 엔진 강제 35, AI Assistant 목표 1, AI Assistant 의존 2로 앞선 열기와 같다.
 - 작업자 자기 보고: heartbeat 5분 간격을 한 번 넘겼고, 보고 생성 보조 스크립트가 두 번 중단됐다(원시 보존). Unity 재실행이나 추적 파일 추가 수정은 없었다.
-- 리드 대조(12:05Z): 「error 」 4줄, `.meta` 대조 두 파일과 guid를 원시와 작업 트리에서 다시 읽었다. 현재 Unity 0이다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다. 닫은 뒤 새로 만든 기준 pane도 exited됐다.
+- 리드 대조(정확한 시각 미기록): 「error 」 4줄, `.meta` 대조 두 파일과 guid를 원시와 작업 트리에서 다시 읽었다. 현재 Unity 0이다. release는 `retained/external_terminal`, 대기 화면 확인 뒤 pane을 닫았다. 닫은 뒤 새로 만든 기준 pane도 exited됐다.
 - 리드 정리: 관계 점검을 HEAD 기준으로 하도록 manifest·lock과 Experimental 네 파일을 HEAD에서 되살리고, 새 asset과 잠금 파일을 지웠다(`lead-restore-measure.txt`).
 
 ### Lucid Editor 관계 점검 — 읽기 전용, 리드·메인 표본 대조
@@ -286,8 +287,8 @@ Sol `task_ca7dae29abca`(Dispatch `ctx_11ec28d046c8`, 지정·화면 `gpt-6.1-sol
 - (a)(c)(d) 남는 런타임 코드와 우리 게임 코드는 후보 형식을 실제로 쓰지 않는다(0줄). 남는 Cainos 런타임은 39개다(Lucid Runtime 34개, `Chest`·`Elevator`·`MovingPlatform`·`BoundingPlatform`·`SecondOrderDynamics`). `Chest.cs`·`Elevator.cs`의 `using Cainos.LucidEditor;`는 문제없다. Runtime 파일이 그 namespace를 계속 선언하므로 삭제 뒤에도 해석된다. `ChestEditor`·`ElevatorEditor`는 `LucidEditor`를 상속하지만 함께 지워진다.
 - 「묻기」 4개의 원인은 `03_Client/Temp/ScriptUpdater/` 아래 `SerializeReferenceDropdown.cs` 사본 하나다.
   - `updates.txt`가 이 사본을 Assets의 후보 자신에 짝지었다. 원본과의 차이는 107행 `children` → `childList` 한 줄이다.
-  - Git 제외 경로(`.gitignore:44`)에 있고, 11:42Z 측정 열기 때 생겼다.
-- 리드 대조(12:4xZ, `lead-sample-relations.md`)는 다섯 가지를 직접 확인했다.
+  - Git 제외 경로(`.gitignore:44`)에 있다. 리드가 파일 속성에서 읽은 수정 시각이 2026-10-07 11:42Z라서(작업자에게 준 답, `sol-relations/raw/coordinator-ask.stdout.txt` 3행) 측정 열기 때 생긴 것으로 본다(추론).
+- 리드 대조(정확한 시각 미기록, `lead-sample-relations.md`)는 다섯 가지를 직접 확인했다.
   - 후보를 `git ls-files`로 다시 셌다.
   - guid 65개를 전체에서 grep했다.
   - 형식 이름 71개를 후보 밖 `.cs` 181개에서 grep했다. 걸린 37줄은 모두 namespace·using·주석이었다.
@@ -330,7 +331,7 @@ Sol `task_709082e8b853`(Dispatch `ctx_1794f1407528`, 지정·화면 `gpt-6.1-sol
 - AI Assistant 소스: 정적 확인 14개 파일의 hash와 행이 앞선 확인과 같다.
 - 작업자 자기 보고: 분류 문서 helper가 한 번 중단됐다. 첫 출력은 보존하고 문서 단계만 다시 돌렸다.
 - 리드 대조: heartbeat가 5분을 두 번 넘겼다(5분 45초, 6분 25초). 보고에는 적히지 않았다.
-- 리드 대조(13:4xZ): EditMode·PlayMode `results.xml` 집계, 디스크 `.meta` 1064, 재출현 0, relay 현재 hash, 음소거 0, 7777 listener 0, 두 버전 setter 비교를 원시와 현재 상태에서 다시 읽었다. release는 `retained/external_terminal`이었고 pane을 닫았다. 이번에는 기준 pane이 살아 있다.
+- 리드 대조(정확한 시각 미기록): EditMode·PlayMode `results.xml` 집계, 디스크 `.meta` 1064, 재출현 0, relay 현재 hash, 음소거 0, 7777 listener 0, 두 버전 setter 비교를 원시와 현재 상태에서 다시 읽었다. release는 `retained/external_terminal`이었고 pane을 닫았다. 이번에는 기준 pane이 살아 있다.
 
 ### PlayMode fixture 입력 설정 수정 — 작성자 자체 점검, 독립 판정 전
 
@@ -414,7 +415,7 @@ Sol `task_fd269354bea8`(Dispatch `ctx_f63b8e064c1f`, 지정·화면 `gpt-6.1-sol
 - 2회차 사전 gate: 고정 `Save-BaselineState.ps1`이 근거 폴더마다 Before gate를 한 번만 써서 막혔다. 검증자 질문(`msg_7b923adfd35d`)에 리드가 조건을 붙여 승인했다(`msg_930075533294`). 조건은 고정 harness만 쓰기, 실행 전후 상태 직접 기록, 추적 변경 셋 확인이다.
 - 더한 테스트: `03_Client/Assets/Tests/PlayMode/MapEntrySceneLifecycleTests.cs`(기존 파일, +64, 새 `.meta` 없음)의 `RepeatedFixtureCycles_RestoreGlobalInputSettingsValues_WithoutGrowingSettingsObjects`, `SurvivingOriginalSettings_IsRestoredAsItself_AndBothFixtureCopiesAreDestroyed`. 사용자 결정 1A(`msg_3dc8c0c52851`)로 업그레이드 커밋 `bebbb4e0`에 넣었다(파일 SHA256 `e9bb9c2e…217a`, 검증자 판정의 값과 같음).
 - 작업자 자기 보고: heartbeat 5분 간격을 두 번 넘겼다(5분 1초, 6분 41초).
-- 리드 대조(15:58~16:00Z):
+- 리드 대조(정확한 시각 미기록):
   - results.xml 네 개의 test-run 속성과 실서버 test-case Passed, 로그 13988행.
   - 더한 테스트 2개 Passed.
   - 새 프로젝트 사본 57·165행의 `i`.
@@ -438,7 +439,7 @@ Sol `task_fd269354bea8`(Dispatch `ctx_f63b8e064c1f`, 지정·화면 `gpt-6.1-sol
   - O2: 6.6 대화형 Editor 로그는 기본 경로가 아니라 `03_Client/Logs/Editor.log`(gitignore)에 쌓였다.
   - O3: Editor 안 Assistant 게이트웨이 relay가 컴파일 리로드 뒤 다시 붙지 않았다. 180초 뒤 꺼졌다가 Play 리로드 때 다시 떴다. MCP 경로는 named pipe라 영향이 없었다.
   - O4: 프로세스 목록 한 번이 게이트웨이 relay를 놓쳤다(원인 미확인, 판정 영향 없음).
-- 리드 대조(16:38~16:41Z):
+- 리드 대조(정확한 시각 미기록):
   - RunCommand 코드 원문 세 개가 각각 한 줄 호출과 `result.Log`뿐이다.
   - 두 번째 호출 응답에 `"success": true`와 런타임 로그 줄이 있다.
   - Editor.log 발췌에 컴파일 요청과 `successfully reloaded assembly`가 있다.
@@ -470,7 +471,7 @@ Sol `task_fd269354bea8`(Dispatch `ctx_f63b8e064c1f`, 지정·화면 `gpt-6.1-sol
 - 설계 관찰(비차단):
   - O1: 선택 실행 `-createProject`가 사용자 EditorPrefs 세 값(`LastUsedProjectPath`·`kWorkspacePath`·`kProjectBasePath`)을 지운 임시 경로로 바꿨다. 실행 전 값은 기록되지 않아 복원하지 않았다. 다음에 프로젝트를 열면 Unity가 다시 쓰는 값으로 보인다(추론). 앞선 독립 검증의 같은 실행도 같은 효과였을 수 있다(미확인). 아래 [교정 기록](#교정-기록)에 적었다.
   - O2: 음소거 쓰기·복원 절차가 harness 세 곳에 중복돼 있다. 다음 계획 후보로 둔다.
-- 리드 대조(17:36~17:40Z):
+- 리드 대조(정확한 시각 미기록):
   - results.xml 두 개의 test-run 속성이 356/356, 13/13이고 실패 0이다.
   - EditorPrefs 원시(`raw/63-probe-side-effects.txt`)에 세 값의 새 경로가 있다.
   - 최종 상태 원시(`raw/70-final-state.txt`)는 Unity 0, 음소거 0, 7777 listener 0이고, 실행마다 「0 → 1 → 0」이다.
@@ -505,16 +506,30 @@ Gardener `task_62754424b256`(Dispatch `ctx_67f8f8292155`, 최초 실행 `claude 
 - 후보 2(새 후보): PowerShell 보고 helper에서 큰따옴표 문자열 안 `$이름` 바로 뒤에 한글 조사가 붙어 StrictMode가 멈춘 실패다. 작성자 넷이 다섯 번 겪었다.
   - 검사화: 작성자가 실행 전에 부르는 AST 기반 자기 점검 helper(이름에 한글이 든 변수 표현 찾기) → 추적 `.ps1`·`.psm1` warning 파일럿 → 계약 양식 한 줄 순서다.
   - 소유는 Rules(helper·양식)·CodeMap(정적 진단)이다.
-- 리드 표본 대조(18:24~18:26Z): `sol-remeasure` stderr의 `'$ReductionMessageId에' 변수는 설정되지 않았으므로` 문구, `sol-delete` 첫 시도 stderr의 `'$ErrorDecisionId를'` 문구, 독립 검증 뒤와 재검증 뒤 SENTIS drift 사본의 같은 SHA256(`333733a3…`), MinimapRT 사본 `7123af77…`, `.gitattributes` 속성을 확인했다.
+- 리드 표본 대조(정확한 시각 미기록): `sol-remeasure` stderr의 `'$ReductionMessageId에' 변수는 설정되지 않았으므로` 문구, `sol-delete` 첫 시도 stderr의 `'$ErrorDecisionId를'` 문구, 독립 검증 뒤와 재검증 뒤 SENTIS drift 사본의 같은 SHA256(`333733a3…`), MinimapRT 사본 `7123af77…`, `.gitattributes` 속성을 확인했다.
 - 정산: release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true). 이 worktree 터미널은 0이다.
 - 채택과 소유는 메인을 거쳐 사용자가 정한다. 이 goal은 구현·BACKLOG 등록을 하지 않는다.
+
+### 종료 기록 문서 실사 — NOT PASS(차단 2), 정정 뒤 재실사 전
+
+신규 `gpt-6-astra` xhigh 실사자(Task `task_accc3443c4fe`, Dispatch `ctx_0a9806384ac4`, 최초 실행 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 화면 「GPT-6-Astra xhigh」, backend unknown)가 계약 v1(SHA256 `00ee5d93…bfbb`)대로 HEAD `7d8c71ba`를 실사했다. 판정 원문은 `doc-audit/verdict.md`(SHA256 `789a1d48…aee8`)이고, worker_done은 `msg_6084722213ed`다.
+
+- 범위: 종료 기록 branch의 goal·CURRENT 변경, PR204 재검증 뒤 goal 변경과 업그레이드 커밋 메시지 변경, 새 참조다. 뒤의 둘은 사후 실사라서 PR204 병합 승인을 바꾸지 않는다.
+- 판정: NOT PASS, 차단 2건이다. 그 밖의 tree 동일성·CI·병합 기록·참조·Gardener 인용·커밋 메시지 차이는 원천과 맞았다.
+- 결함 #1(차단): 리드가 종료 기록(goal·CURRENT)과 PR204 재검증 뒤 쓰기(goal·커밋 메시지) 전에 맥락 메모를 갱신하지 않았다. 완료 준수 칸도 「미작성」이었다.
+  - 메인 결정 `msg_b8151750a5df`(메인 결정이며 사용자 결정이 아님): 「#1 → A(사후 기록으로 수용)」.
+  - 리드는 정정 전 메모와 사후 보완 기록을 `astra-context-closeout.md`에 남겼다. 사후 보완은 사전 기록으로 소급하지 않는다. 아래 [교정 기록](#교정-기록)에 두 번째 발생으로 적었다.
+- 결함 #2(차단): 리드 대조 시각이 손으로 적은 어림값인데 관측처럼 읽혔다. 같은 부류 열한 줄을 「정확한 시각 미기록」으로 고쳤다(아래 교정 기록).
+- 리드 표본 대조(R-2): 업그레이드 커밋 `62228618`과 `71c98065`의 tree가 둘 다 `a9c1b2fa…`임을 직접 확인했다. 실사 원시 `raw/48-context-and-timestamps.txt`의 commit 시각으로 결함 #2의 두 모순을 확인했다.
+- 정산: release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true).
+- 다음: 정정 commit을 새 독립 문서 실사에 넘긴다.
 
 ### 교정 기록
 
 첫 발생만 기록한다. 반복 규칙은 두 번째 발생부터 만든다.
 
 - 작업자 보고 오류: 엔진 Sol이 미추적 파일 이름을 원시를 읽기 전에 `EntityIdSettings.asset`으로 보고했고(`msg_5ad15110534c`), 21초 뒤 실제 이름 `PhysicsCoreProjectSettings2D.asset`으로 고쳤다(`msg_e6bb33655c16`). 리드는 고치기 전 이름을 메인에 전달했다가(`msg_1ae62a1c1a38`) git status 원시로 확인하고 정정했다(`msg_0070907addae`). 다음 계약의 차단 항목에 「원시를 읽기 전의 보고」를 넣었다.
-- 리드 계약 이탈: 엔진 Sol 계약은 「리드의 쓰기는 끝났다」고 적었지만, 리드가 작업 중(약 10:00Z)에 이 goal에 메인 범위 판정을 기록했다. 작업자가 최종 status에서 발견해 물었고(`msg_2003e93b047a`), 리드가 소유를 확인해 보고에서 분리했다. 다음부터 작업자 실행 중 리드 기록은 근거 폴더에만 두고 추적 파일은 정산 뒤 쓴다.
+- 리드 계약 이탈: 엔진 Sol 계약은 「리드의 쓰기는 끝났다」고 적었지만, 리드가 작업 중에 이 goal에 메인 범위 판정을 기록했다. 기록한 정확한 시각은 남기지 않았다. 그 판정 메시지 `msg_98f1c822d84e`의 `created_at`(2026-10-07T09:49:48Z) 뒤이고, 작업자 질문 `msg_2003e93b047a`의 `created_at`(10:05:07Z) 전이다. 작업자가 최종 status에서 발견해 그 질문으로 물었고, 리드가 소유를 확인해 보고에서 분리했다. 다음부터 작업자 실행 중 리드 기록은 근거 폴더에만 두고 추적 파일은 정산 뒤 쓴다.
 - 컴파일 오류 보고 누락: 첫 열기 로그의 UAC0005 3줄을 엔진 Sol 보고·분류표가 빠뜨렸다(오류 추출이 CS 코드만 보았다). 리드는 보고된 줄만 표본 대조해 놓쳤고, 메인은 「오류는 테스트 한 줄」이라는 보고 위에서 범위를 판정했다. 재열기 1회 뒤에야 드러났다. 리드가 메인에 즉시 보고했고(`msg_d560680ed27c`), 메인도 로그를 직접 보지 않았던 사실을 사용자에게 바로잡아 알렸다(`msg_0f223740ea22`). 교정: 다음 계약과 리드 원시 대조에서 로그의 error 줄을 진단 코드 구분 없이 전부 뽑아 보고와 개수를 대조한다.
 - 커밋 구성 누락: 리드가 업그레이드 커밋을 만들 때 측정 tree를 그대로 넣으면서, 위험표가 「커밋에서 뺀다」고 정한 SENTIS define drift를 빼지 않았다. 리드가 검증자 계약을 쓰다가 스스로 찾아 메인에 올렸다(`msg_a5a934c8efd3`). 교정: 커밋을 만들기 전에 base 대비 diff를 위험표의 기계 로컬 값 목록(cloud 필드, SENTIS define)과 대조한다.
 - 리드 직접 편집 시도: 그 한 줄을 고치려고 리드가 제품 설정 파일 편집 명령을 냈고, Claude Code 권한 분류기가 거부했다(「Modify Shared Resources」, 명령은 실행되지 않음). 제품 파일 편집은 Sol 몫이다. 리드는 우회하지 않고 HEAD를 같은 tree로 되돌려 상태를 보존한 뒤 메인에 보고했다. 메인 결정(`msg_7146de24b2de`)대로 Sol에게 맡겼다.
@@ -527,6 +542,15 @@ Gardener `task_62754424b256`(Dispatch `ctx_67f8f8292155`, 최초 실행 `claude 
 - 결정 답 수신 지연: 리드가 우편함을 기다릴 때 깨우는 유형(`--types`)에서 `dispatch`를 빠뜨렸다. 메인이 사용자 결정 A를 dispatch 유형(`msg_3d959b3798a7`, 16:49:37Z)으로 보냈는데, 리드는 메인이 다시 알린 17:13:41Z(`msg_033db43efc8e`) 뒤에야 읽었다. 그동안 리드는 메인에 대기 알림을 보냈다. 약 24분 늦었고 작업 결과에는 영향이 없다. 교정: 리드의 우편함 대기는 `--types`에 `dispatch`를 넣거나, 결정 답을 기다릴 때는 유형을 거르지 않는다.
 - 사용자 EditorPrefs 변경: 재검증 계약이 선택 실행으로 허용한 6.6 batch `-createProject`가 사용자 EditorPrefs 세 값을 지운 임시 경로로 바꿨다. 계약은 이 부작용을 예상하지 못해 실행 전 값을 남기게 하지 않았다. 그래서 원래 값은 모르고 복원하지 않았다. 앞선 독립 검증 계약도 같은 실행을 허용했다. 교정: `-createProject`를 허용하는 다음 계약은 그 세 값의 전후를 원시로 남기고 원래 값으로 되돌리게 하거나, 그 실행을 빼고 다른 근거를 쓴다.
 - 진행 중에 바뀐 병합 관문 정본: 이 PR이 진행되는 동안 main에 병합 관문 정본 갱신(PR199)이 들어왔다. 새 정본은 승인 묶음에 두 가지를 요구한다. 하나는 main 통합 때의 remerge-diff·같은 제품 blob 근거이고, 다른 하나는 검증 통과 뒤 goal·문서를 고쳤을 때 최종 head의 바뀐 부분을 한 번 재실사한 기록이다. 리드는 승인 요청 때 이 갱신을 읽지 않았다. 그래서 remerge-diff는 병합 뒤에야 남겼고, 재검증 뒤 고친 goal 결과 기록과 결함 #1 문구에 대한 재실사 기록은 없다. 그 변경은 문서와 커밋 메시지뿐이고 tree의 제품 부분은 재검증한 것과 같다. 교정: main 통합 뒤에는 병합 관문 정본을 다시 읽고 승인 묶음을 그 기준으로 만든다.
+- 리드 맥락 메모 사후 작성(두 번째 발생): 리드가 종료 기록 commit `f1f9cc73`·`7d8c71ba`(goal·CURRENT)와 PR204 재검증 뒤 쓰기(goal, 업그레이드 커밋 메시지)를 하기 전에 맥락 메모를 갱신하지 않았다.
+  - 리드 메모 `astra-context.md`는 업그레이드 커밋을 로컬로 만든 기록에서 멈췄고, 준수 연결의 완료 칸은 「미작성」으로 남았다.
+  - 종료 기록 문서 실사가 차단 #1로 찾았고, 메인 결정 `msg_b8151750a5df`로 사후 기록으로 받아들였다. 사후 보완은 `astra-context-closeout.md`의 「사후 보완」 절에 작성 시각과 함께 남겼다. 기존 메모의 칸은 고치지 않았다.
+  - 첫 발생은 [운영툴 기록 원본 일원화 goal](../../../05_Management/goals/2026-10-06-record-source-unification/goal.md)의 PR202 실사 Z1(리드 메모 사후 작성)이다(메인 전달). 반복 규칙의 층 판단은 Rules 몫이고, 메인이 이 판정 경로를 근거로 넘긴다. 이 goal은 기록만 한다.
+- 리드 대조 시각의 수기 기록: 결과 절의 「리드 대조」 시각 열한 개는 리드가 대조할 때 `date -u`로 남긴 값이 아니라, 기록을 쓸 때 손으로 적은 값이었다.
+  - 재검증 뒤와 Gardener 뒤 두 줄에 적었던 범위(17:36~17:40Z, 18:24~18:26Z)는 그 줄을 담은 commit의 commit 시각보다 늦어 원천과 모순됐다. commit 시각은 `dd383e3d`가 2026-10-07T17:35:49Z, `7d8c71ba`가 18:24:18Z다(`git show -s --format=%cI`).
+  - 종료 기록 문서 실사가 그 둘을 차단 #2로, 독립 검증 뒤와 MCP 확인 뒤 두 줄을 범위 밖 알림으로 냈다. 리드가 같은 부류 일곱 줄을 더 찾아 열한 줄 모두 「정확한 시각 미기록」으로 고쳤다. 위 「리드 계약 이탈」의 어림 시각은 메시지 `created_at` 두 값 사이로 바꿨다.
+  - REPORTING 「수치와 원시 근거」의 「수기로 채운 상수나 예상값을 실제 계측처럼 쓰지 않는다」를 어겼다. 이 goal 밖의 같은 부류 여부는 확인하지 않았다.
+  - 교정: 결과에 시각을 적을 대조는 시작할 때 `date -u` 출력을 근거 폴더에 남기고 그 값만 옮긴다. 남기지 않았으면 시각을 적지 않는다.
 
 ## 다음 계획 후보
 
