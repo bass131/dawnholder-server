@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch: PR1은 `fix/hook-net-false-positives-20261007`(base `8e498440`)다. PR2는 PR1 병합 뒤 최신 main에서 만든다.
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T14:3xZ): 선행 시험과 Sol 구현이 끝나 커밋됐다(아래 「현재 결과」, push 전). 다음은 신규 Opus 독립 검증이다. 계약 초안은 E/verify-contract-head.md다.
+- **현재 위치**(2026-10-07T15:1xZ): 첫 독립 검증이 FAIL(차단 V1·V2)이다(아래 「PR1 독립 검증」). 메인이 O1을 받았다. 다음은 동작 계약 v3.2 → 신규 Opus 선행 시험 → 신규 Sol max 수정 → 신규 Opus 재검증이다. push 전이다.
 - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실린다. PR1 구현 중에는 이 checkout의 hook이 고치는 중인 판정 코드를 바로 쓴다(아래 「위험」).
 
 ## 진척 단계
@@ -127,6 +127,7 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 메인 결정 `msg_4e602fb57806`(13:22:13Z, E/session/wait4.raw.txt, 사용자 결정 아님): 1은 대안 「같은 명령에 셸·인터프리터 실행이 있으면 가리지 않음」으로 바꾼다(쓴 경로 추적 없이 넓은 쪽). 2는 동의. 리드가 동작 계약 v3.1(SHA256 `3e6a358f…`)과 선행 시험 계약 보충 v1.1(`msg_ec2d7bef05d9`)로 옮겼다. `node`가 실행기가 되면서 가리는 자리 「스크립트 파일 경로를 받은 node의 뒤 인자」는 쓸모가 없어 뺐다. 승인 범위 기본안에 「목록은 v3에서 확정한다」가 있다.
 - 메인 동의 `msg_589e4883d721`(13:33:12Z, E/session/wait6.raw.txt): v3.1과 「7건 풀림, 3건 유지」 정정을 승인 범위 안의 확정으로 본다. 08:38:19의 대가를 받아들이고, 쓰기와 실행이 함께 있을 때만 끄는 좁은 규칙은 만들지 않는다.
 - 선행 시험 질문 `msg_ad14f6e585f4`(13:39:07Z)과 리드 답 `msg_acb60f8728de`: 원문 harness는 저장소 아닌 임시 폴더와 feature branch 임시 저장소 두 cwd를 모두 기록한다.
+- 메인 결정 `msg_93a8d89ec8b1`(15:05:53Z, E/session/wait15.raw.txt, 사용자 결정 아님, 메인이 사용자에게 보고함): 리드 질문 `msg_bacd2d2a6a07`의 **O1 받음**. 치환 결과가 명령 이름이 되는 꼴과 가린 파일을 같은 명령의 gh api가 읽는 꼴은 실행되는 글이라 원문으로 판정한다(동작 계약 v3.2). 근거는 승인 범위의 두 원칙과 메인 결정 `msg_4e602fb57806`의 연장이며 막는 쪽으로만 바뀐다. 조건은 둘이다. 원문 harness에서 「풀림 7건」 중 다시 막히는 것이 생기면 구현 전에 메인에 알린다. 확정 실패는 구현 계약 기준 V1·V2 1회로 센다.
 
 ## 적용 중인 사용자 결정
 
@@ -167,6 +168,16 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 리드 R-2(E/lead-check/impl-r2-check.md): 재실행 수와 harness, 파일 hash가 Sol 보고와 같다. 문서·주석 표본 관찰 넷은 독립 검증 입력으로 넘긴다.
 - 커밋(push 전): `1e061c70` 주석만(구조), `26d1ba4b` 동작. 커밋된 파일 hash가 Sol 최종과 같다.
 - Sol pane은 14:2xZ에 닫았다. 부모인 선행 시험 pane은 꺼지지 않았다(1.4.222 부모 꺼짐 현상이 이번에는 재현되지 않음).
+
+### PR1 독립 검증(첫 회, FAIL)
+
+- 검증: 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown), Task `task_695c7f0024ae`, Dispatch `ctx_b6990132173c`, 계약 E/verify-contract.md(`e2d4b02d…`), 판정 E/verify/verdict.md, worker_done `msg_74d6ce1f851d`(14:57:23Z).
+- 기대대로인 것: MergeGate 261/261, Orca 22/22, 구현 전 사본 215/46, 원문 harness 두 cwd 10/10, 실제 세션 확인 두 번, 문서 bytes 102,645·ORCA 250줄·링크.
+- 차단 V1: 가리기 읽기가 몇몇 따옴표·공백 꼴을 bash와 다르게 읽어, 구현 전에 막히던 병합·push 꼴이 결정 없음이 된다. 차단 V2: 묶음 `( … )` 뒤의 파이프를 보지 못해 같은 일이 생긴다. 귀속은 둘 다 이번 Sol이다.
+- 비차단: V4(선행 시험 10:55:27 축소형 본문에 원문의 `node`·`gh` 낱말 누락), V5(README에서 정밀 판정의 따옴표 묶음 설명 누락), V6(O-T3 주석의 이유 누락). 설계 관찰 O1은 위 메인 결정으로 받았다. O2는 이번 수정에서 「main에서」로 되돌린다(+3 bytes). O3·O5는 bytes 여유(13) 때문에 하지 않는다. O6은 아래 「다음 계획 후보」로 둔다.
+- 리드 R-2(E/lead-check/verify-r2-check.md): 검증자 스크립트를 쓰지 않고 따로 쓴 스크립트(verify-r2-repro.mjs)로 V1 5행·V2 3행을 구현 전후 hook과 Git Bash 무해 표식으로 재현했다. 판정과 같다. V4·V5·V6도 원천에서 확인했다.
+- 확정 실패 집계: 구현 계약 기준 V1·V2 1회. 같은 산출물(inert-text.mjs) 수정은 이번이 첫 회다.
+- 검증자 pane은 정산 뒤 15:01:41Z에 닫았다(사용자 직접 지시 범위). 부모인 리드 pane은 살아 있다.
 
 ## 다음 계획 후보
 
