@@ -16,9 +16,19 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 05:3x KST, PR2를 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 만든 뒤의 goal 갱신 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 13:2x KST(04:2xZ), Claude Code 업데이트 재시작 전의 재개 지점 기록 commit(메인 요청 `msg_669a14a08918`).** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
 그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`, 8단계 재검증자의 판정 순서 시험은 `aacf35bd`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」·「PR2 좁힌 재검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 좁힌 재검증은 통과(비차단 W1, 리드가 정정)였다. 여덟 세션은 정산·종료했고 열린 작업자·검증자는 없었다.
+
+**재시작 전 상태(04:22Z 확인):**
+
+- **지금 단계:** PR2가 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 열려 있고 CI를 기다린다. 다음 할 일은 CI 결과 확인 → 메인 R-2 → 메인이 사용자 개별 병합 승인을 PR197의 정확한 head로 전달 → 리드 pane에서 병합이다.
+- **PR197 head:** 재시작 전 마지막 확인 head는 `8050073f673d12957c410b4173a5344d6bd874b2`다. 이 재개 지점 기록 commit을 push하면 head가 이 commit으로 바뀌고 CI가 다시 돈다. 정확한 40자 head는 메인 보고(「재개 지점 기록 완료」)와 `gh pr view 197 --json headRefOid`로 확인한다.
+- **CI(8050073f, 04:22Z):** `code-rules`·`module-boundaries`(check 둘) 통과, `architecture-tests`·`dotnet-tests`(test 둘) 진행 중. 새 head에서 다시 확인해야 한다.
+- **PR 본문:** 「PR head는 `8050073f`」 한 줄이 이 commit으로 낡는다. 재시작 뒤 첫 작업으로 본문(E/`pr2-pr-body.md`)의 head 줄을 새 head로 고쳐 `gh pr edit 197 --body-file`로 반영한다.
+- **메인에 보낼 것:** 아직 보내지 않은 결정 요청은 없다. CI 결과와 함께 「PR197 병합 승인 요청 준비」를 보내고, 메인 R-2와 사용자 승인 전달(정확한 head 포함)을 받는다.
+- **작업자·검증자:** 살아 있는 pane은 없다. 8단계까지 여덟 세션을 모두 정산하고 pane을 닫았다. PR197 병합까지 새 작업자는 띄우지 않는다.
+- **Run과 재진입:** Run은 `run_3fa510a50602`다. 다시 열면 새 리드 handle로 `orca orchestration run-use`를 해 이 Run을 묶고, 메인에 새 handle을 알린 뒤 `--types` 8개 필터의 우편함 대기를 하나만 연다. 직전 리드 handle `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`은 관측값이며 실행 권한이 아니다.
 
 당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
