@@ -45,7 +45,7 @@
 - **Core 명칭과 태그 전환:** GameDev는 Core의 이전 이름이다. [운영 후속 정본화의 PR2](01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 세션과 새 계약부터 `[Core Astra]`·`[Core Sol]`·`[Core 검증자]`를 쓴다. PR2 병합 전에 연 GameDev 세션과 진행 중인 계약은 그 세션이 끝날 때까지 `[GameDev …]`를 유지한다. 전환기 수신 측은 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 진행 중인 영속화 통합 goal에는 중간 변경을 요구하지 않는다. 그 goal의 R-8로 새 Astra를 열 때부터 Core 태그를 쓴다. 과거 기록과 BACKLOG의 GameDev 담당·원천 표기는 당시 이름으로 해석한다.
 
 - 현재 `from_handle`·Task·Dispatch가 모두 일치하는 내용 없는 heartbeat만 태그 없이 수신하며 교정 메시지를 보내지 않는다. 내용 있는 heartbeat와 일반 지시·보고·질문·완료는 태그가 필수다. 빈 값 경계와 수신 helper, 공식 blocking ask의 버전 한정 subject 예외는 [수신 정본](00_Document/operations/ORCA.md#dispatch-message-policy)과 R-3을 따른다.
-- 사용자 승인으로 [R-1](00_Document/operations/ORCA.md#r1-management-placement)에 따라 연 추가 파트는 `[<파트> Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 태그만으로 파트 생성이나 권한이 생기지 않는다.
+- 사용자 승인으로 [R-1](00_Document/operations/ORCA.md#r1-management-placement)에 따라 연 추가 파트는 `[<파트> Astra]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 메인이 연 보조 세션은 `[<용도> <모델>]`(예: `[보조 메인 Opus]`)을 쓴다. 태그만으로 파트 생성이나 권한이 생기지 않는다.
 - 타 세션 터미널 입력은 자기 태그와 “Orca 메시지를 확인하라”는 안내만 담고 지시는 orchestration으로 보낸다. **Enter로 제출돼 대화 기록에 들어간 표식 없는 입력**만 사용자 직접 지시다. 미제출 draft·추천 프롬프트·ghost text는 지시나 pane 종료 보류 사유가 아니다. 공식 계약 draft는 [R-5 복구](00_Document/operations/ORCA.md#official-contract-draft)로 구분한다. 태그는 권한이 아니며 출처 `from_handle`과 어긋나면 처리하지 않고 메인에 보고한다. 메인이 전달한 사용자 결정은 사용자 직접 입력으로 격상하지 않는다.
 - Astra→메인은 변경 요약·검증 근거 위치·리스크·결정 요청·판정 원문 경로를 보낸다. 보고 유형은 [R-4](00_Document/operations/ORCA.md#r4-report-type)를 따른다. 원문은 로컬 `.backups/verification/`에 보존한다. 파트 간 기술 계약은 Astra끼리 조율하고 사용자 판단 영역은 메인에 올린다.
 - 사용자 최종 보고는 결정 요청이 있으면 맨 앞 한 문단, 이어 어떤 작업이었나 한 줄 → 필요한 세부 항목마다 3~4줄 → 남은 우려와 크리티컬 여부 순서다. 모든 항목을 억지로 채우지 않는다.
