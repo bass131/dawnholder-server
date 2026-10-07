@@ -8,11 +8,11 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이고 [#198](https://github.com/bass131/dawnholder-server/pull/198)로 병합됐다(아래 「PR1 병합」). PR2는 그 병합 commit `94fc6845`에서 만든 `docs/canon-refresh-20261006`이고 [#199](https://github.com/bass131/dawnholder-server/pull/199)로 병합됐다(아래 「PR2 병합」). 종료 기록은 그 병합 commit `6d82929b`에서 만든 `docs/gate-canon-closeout-20261007`이다.
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_62d7bc65-8590-4240-a6bb-7caad4e6b3da`(Claude Code 2.1.292 업데이트 뒤 같은 대화를 다시 연 세션, 이전 `term_af8ac4fc-…`). Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T09:5xZ):
-  - 지금 단계: PR2가 좁힌 재실사 PASS 뒤 새 관문으로 병합됐다(아래 「PR2 재실사」·「PR2 병합」, 완료조건 6·7·8). 이 결과 기록 뒤 순서는 Gardener → 종료 기록 실사 → 종료 기록 PR·CI·승인 묶음 → 메인 종료 점검 → R-8이다(완료조건 9). 다음 goal은 R-8 뒤 새 리드가 범위 초안부터 하며 이 pane에서 착수하지 않는다(「다음 계획 후보」 첫 줄).
+- **현재 위치**(2026-10-07T10:16Z):
+  - 지금 단계: PR2가 좁힌 재실사 PASS 뒤 새 관문으로 병합됐고(아래 「PR2 재실사」·「PR2 병합」, 완료조건 6·7·8), 결과 기록과 Gardener가 끝났다(「종료 Gardener」). 남은 순서는 종료 기록 실사 → 종료 기록 PR·CI·승인 묶음 → 메인 종료 점검 → R-8이다(완료조건 9). 다음 goal은 R-8 뒤 새 리드가 범위 초안부터 하며 이 pane에서 착수하지 않는다(「다음 계획 후보」 첫 줄).
   - 완료조건 5: 끝났다(아래 「관문 적용 확인」, 맞바꾼 새 자리의 메인 창 덧붙임 포함). SendMessage 전달 모양만 분류기 거부로 미측정이다.
   - 메인 쪽 상태: 폴더 맞바꾸기 뒤 메인은 원래 clone `C:/Dev/DawnHolder_Project`(branch main, 표식 있음)의 새 세션 `term_cdc06c26-…`이다. 종료 기록 PR도 그 창의 승인 줄로 병합한다.
-  - 살아 있는 작업자·검증자 pane: 없다. PR2 재실사자는 정산하고 닫았다.
+  - 살아 있는 작업자·검증자 pane: 없다. Gardener는 정산하고 닫았다.
   - 다시 열 때: Run은 `run_93a27bd491a9`다. rules-active에서 새 리드를 `claude-opus-5-5` xhigh로 열고, 새 handle을 `orca orchestration run-use`로 같은 Run에 묶는다. 그 뒤 이 절과 「관문 적용 확인」을 읽는다. 우편함 대기는 E/session/의 가장 큰 번호 wait 원시에서 처리한 delivery를 `--ack`로 넘겨 하나 연다. 메인 handle은 매번 `orca terminal list --json`으로 확인한다.
   - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실려 있다. 명령 문자열에 gh·merge나 push·main 낱말 조합을 쓰지 않고, 본문은 파일로 넘긴다. 승인 묶음을 보낸 PR의 branch에는 push하지 않는다(head가 옮겨진다, 아래 「PR1 병합」).
 - 지난 위치 기록: 설계 확정 → 선행 시험(`597839c`)·정본 문장(`4ae9622`)·CLAUDE.md(`00d180b`, 메인) → 구현(`26cb8b3`) → 독립 검증 차단(D1·D2) → v2.1 수정(`335bce6`·`56c29a8`·`97fa7b8`) → 재검증 차단(R1·R2) → v2.2 수정(`b9e1d2a`·`178ab0b`) → 두 번째 재검증 차단(S1·S2) → v2.3 수정(`d0caf8f`·`f8d9751`) → 세 번째 재검증 통과(`b41a433`·`644915a`) → PR #198 병합(`94fc6845`) → 적용 확인 → PR2 Sol 작성 → 실사 차단(A1·A2) → 수정·BACKLOG 보강(`5caa5df`·`338effb`·`dee47a4`) → 좁힌 재실사 통과 → PR #199 병합(`6d82929b`).
@@ -27,8 +27,8 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - [x] 관문 적용 확인
 - [x] 정본 현행화 작성·실사
 - [x] 정본 PR 병합
-- [>] 결과 기록·Gardener
-- [ ] 종료 점검과 R-8 인계
+- [x] 결과 기록·Gardener
+- [>] 종료 점검과 R-8 인계
 
 PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 
@@ -569,9 +569,23 @@ ORCA `#merge-gate`대로 재실사 결과는 병합 전 goal에 넣지 않고 �
 - 승인 묶음: `msg_557dbad282a9`(09:07:25Z). PR·40자 head·CI·fresh mergeStateStatus·판정 원문·R-2 권장 표본·남은 위험·heartbeat 이탈을 담았다. 묶음 뒤 branch에 push하지 않았다.
 - 사용자 승인: 메인 `msg_fb883a667da6`(09:48:29Z, E/session/wait84.raw.txt)가 전달한 사용자 원문(메인 창 단독 제출)은 **「병합 승인: PR199 head dee47a4e9b172966fb0a227811a0180fcf4bcd7a」**다. 그 앞에 대시보드 결정 응답 「1) PR199 - 운영 정본 현행화(PR2) 병합 → A 승인 (head dee47a4e9b172966fb0a227811a0180fcf4bcd7a)」도 있었다. 메인 전달이며 직접 입력으로 격상하지 않는다. 수신은 사람 원천 대조로 처리했다(E/session/wait84-manual-check.md).
   - 메인 R-2는 일치였다. gh head·CLEAN·CI 4/4, 여섯 문서 합계 102,658 bytes와 ORCA 250줄의 독립 재계산, CLAUDE.md의 `4f64541` 뒤 무변경, 재실사 판정 전문, `dee47a4` 기준 goal 588·592행의 사용자 인용 글자 동일을 봤다.
-- 병합: 메인이 `C:/Dev/DawnHolder_Project`에서 head를 다시 대조한 뒤 단독 명령으로 실행했다. merge `6d82929b39c424e14128eca75a9215fb20ab8047`, mergedAt 09:47:59Z다. 메인 checkout은 이 commit으로 fast-forward했다. 원격 branch는 자동 삭제됐다. 새 관문으로 한 첫 병합이다(완료조건 8).
+- 병합(메인 보고): 메인이 `C:/Dev/DawnHolder_Project`에서 head를 다시 대조한 뒤 단독 명령으로 실행했다. merge `6d82929b39c424e14128eca75a9215fb20ab8047`, mergedAt 09:47:59Z다. 메인 checkout은 이 commit으로 fast-forward했다. 메인 창 승인 줄로 한 첫 병합이다(완료조건 8). 확인 창을 hook이 대신 승인했는지는 메인 보고에 없어 이 기록에서 단정하지 않는다.
+- 원격 branch: 리드 조회(09:49:11Z)에서 `docs/canon-refresh-20261006`이 원격에 없었다. 누가 지웠는지는 확인하지 않았다.
 - 리드 대조: `6d82929b`의 첫째 부모는 `94fc6845`, 둘째 부모와 PR headRefOid는 승인 head `dee47a4`이고 head와 병합 결과의 트리 차이는 없다(E/lead-pr199-merged-check.txt).
 - 그 뒤: 리드는 병합된 branch에 머물지 않고 rules-active에서 `6d82929b`로 종료 기록 branch를 만들었다(ORCA R-8의 메인 운영 판단). 맥락 메모는 E/closeout-astra-context.md다.
+
+### 종료 Gardener
+
+- 근거: 완료조건 9와 메인 `msg_fb883a667da6`의 순서다. 메인에 기동을 알렸다(`msg_402c52ef222d`, 09:56:24Z).
+- Gardener: 신규 `claude-opus-5-5`, 태그 `[Rules 검증자]`다. 리드 pane을 split해 `claude --model claude-opus-5-5`로 열었다(09:56:30Z, E/gardener-split.json). 첫 화면은 선택창 없이 「Claude Code v2.1.292 · Opus 5.5 with xhigh effort」, rules-active였다(E/gardener-first-screen.json). backend는 unknown이다. Task `task_4ec4b000f3fd`, Dispatch `ctx_1a107dbb5c3a`이고 receipt는 input_accepted, turnStart observed다(E/gardener-worker-start.json, 09:56:49Z).
+- 계약: E/gardener-contract.md v1(SHA256 `94ad6dd4…`, 고정 HEAD `10942eb`)이다. 쓰기는 E/gardener/report.md 한 파일이다. 입력 28개의 경로·hash는 E/gardener-inputs.json, 경로 확인은 E/gardener-path-check.txt다. O1~O3와 10-07 그물 오탐을 입력에 넣었다.
+- 완료: worker_done `msg_925c5596342c`(10:14:55Z, succeeded)이고 수신 helper가 허용했다(E/gardener-worker-done-check-output.json). 보고서는 [E/gardener/report.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/gardener/report.md)(SHA256 `8f7ebbf7…`, 347줄)다. 고정 입력 28/28과 HEAD·status는 시작과 끝이 같았고, 범위 밖 직접 쓰기는 0이라고 보고했다.
+  - 집계(보고서): 같은 계약·같은 결함 번호의 확정 실패 3회 도달 0, 번호 매긴 독립 결함 17(차단 8은 모두 해소), CI 실패·재실행 0, 승인 없는 경고 억제·설정 완화 0, 검사를 끈 우회 0이다.
+  - 정리 후보 둘(제안): ① 병합 관문 판정 형태 표를 저장소 시험 자료로 두고 「막힘 유지」를 CI에서 단정한다. 다음 goal 씨앗 ①과 BACKLOG `merge-gate-code-followup`에 근거를 더하는 형태다. ② 공식 ask 수신 helper의 Orca 1.4.218 고정을 상태 구분·help 확인 helper·fixture로 검사 가능하게 한다. BACKLOG `operating-reference-maintenance`에 근거를 더하는 형태다. 채택은 메인을 거쳐 사용자가 정한다. 이 goal은 채택·착수·BACKLOG 등록을 하지 않는다.
+  - O1~O3는 후보가 아니라고 봤다. O1은 10-31 평가 자료를 원시에서 다시 뽑는 근거, O2는 다음 정본 변경 때 문장 보완 후보, O3는 10-31 규칙 가지치기 평가 자료다.
+  - 기록 누락 하나: 「검증자 모델 시범」 관측 줄에 PR2 작성 Sol(`task_2a8a00b893a6`)의 마지막 heartbeat 06:45:41Z → worker_done 06:56:50Z 669초 구간이 빠졌다. 리드가 같은 원시로 다시 재서 확인했고 그 줄을 고쳤다.
+- 정산: release는 `retained`(`external_terminal`)였다. 빈 prompt와 제목 ✳를 확인하고 10:15:33Z에 pane을 닫았다(ptyKilled). 재조회에서 rules-active에는 리드만 있었다(E/gardener-release.json, -before-close.json, -close.json, -list-after-close.json).
+- 리드 이탈(첫 발생, 리드 귀속): Gardener 기동 뒤 리드가 고정 대상인 goal(추적 파일)과 Gardener 입력인 E/closeout-astra-context.md를 잠시 고쳤다. 고친 시작 시각은 재지 않았다(09:56:49Z 기동 뒤). goal은 09:57:39Z에 `git restore`로, 메모는 09:57:51Z 재검사 전에 글자 그대로 되돌렸다. 09:57:51Z 재검사에서 manifest 28개 hash 차이는 0, 추적 파일 변경도 0이었다. 보고서는 시작 확인이 09:57:01Z였고 끝 확인도 같았다고 적었다. 그 사이 Gardener가 바뀐 내용을 읽었는지는 모른다. 되돌린 수정 두 건은 Gardener 정산 뒤 다시 넣었다. 첫 발생이라 이 goal에만 적는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -598,7 +612,7 @@ ORCA `#merge-gate`대로 재실사 결과는 병합 전 goal에 넣지 않고 �
 정본 반영 전까지 적용하는 결정이다. PR2가 정본에 넣으면 각 줄에 반영 위치를 적는다. 모두 메인 전달이며 직접 입력으로 격상하지 않는다.
 
 - **검증자 모델 시범**: 위 원문(18:1x KST). 메인 진입 지시 `msg_3902e180080c`의 임시 규칙은 다음과 같다. 문서 실사와 코드 검증(강·약)의 독립 검증자는 신규 `gpt-6-astra` xhigh다(split에 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`). DB·영속 데이터, 프로토콜·공유 DLL, 보안 경계를 바꾸는 작업과 해당 여부가 애매한 작업은 신규 `claude-opus-5-5`가 검증한다. Gardener, 확정 실패 뒤 Advisor, R-7 설계 검토는 대상이 아니다. 선행 시험 작성자도 대상이 아니다(질문 4 A). 구현자·검증자 분리, 작업 하나 뒤 정산·종료, 파트당 검증자 동시 하나, 테스트 파일만 쓰기, 판정 양식과 통과 차단 사유, 태그는 그대로다. 판정의 지정 모델·관찰 모델 칸을 채운다. PR2 반영: goal-loop 스킬 「검증자 모델 시범(2026-10-31까지)」, AGENTS 「역할과 범위」·「모델 라우팅」, ORCA R-5 2단계, orca-work 「역할과 작업 계약」.
-  - 이 goal의 관측(10-31 평가 자료, 원시 E/session/inbox-after-bundle-200.raw.txt): PR2 문서 실사와 좁힌 재실사를 신규 `gpt-6-astra` xhigh로 두 번 돌렸다. 첫 실사는 FAIL로 A1·A2를 찾았다. 작성 Sol이 놓친 원천 표지와 리드 계약 문구에서 온 대조 대상이다(「PR2 문서 실사」). 화면 모델 질문이 1회 있었다. 재실사는 PASS였고, 계약에 첫 화면 표시를 넣자 질문이 0회였다. heartbeat 5분 초과는 첫 실사에서 마지막 heartbeat→worker_done 444초 한 구간, 재실사에서 360초·458초 두 구간이었다. 같은 날 Sol 두 세션(`gpt-6.1-sol` max, 시범 대상 아님)에도 308~382초 간격이 네 번 있었다.
+  - 이 goal의 관측(10-31 평가 자료, 원시 E/session/inbox-after-bundle-200.raw.txt): PR2 문서 실사와 좁힌 재실사를 신규 `gpt-6-astra` xhigh로 두 번 돌렸다. 첫 실사는 FAIL로 A1·A2를 찾았다. 작성 Sol이 놓친 원천 표지와 리드 계약 문구에서 온 대조 대상이다(「PR2 문서 실사」). 화면 모델 질문이 1회 있었다. 재실사는 PASS였고, 계약에 첫 화면 표시를 넣자 질문이 0회였다. heartbeat 5분 초과는 첫 실사에서 마지막 heartbeat→worker_done 444초 한 구간, 재실사에서 360초·458초 두 구간이었다. 같은 날 Sol 세 세션(`gpt-6.1-sol` max, 시범 대상 아님)에도 5분 초과 간격이 다섯 번 있었다. 실사 수정·BACKLOG 보강 Sol의 308~382초 네 번과 PR2 작성 Sol의 마지막 heartbeat→worker_done 669초 한 번이다. 669초는 처음 이 줄에서 빠졌다가 Gardener가 찾았다(「종료 Gardener」). PR2 작성 Sol의 공식 ask 뒤 간격 세 구간(399~427초)은 회신 시각이 원시에 없어 미확정이다.
 - **리드 Opus**: 다섯 리드는 `claude-opus-5-5` xhigh다(`msg_22cb1701a2cf`, 교체 시점은 `msg_25102e277345`). 원문은 직전 Rules goal에 있다. 정본의 「파트 리드 Astra `gpt-6-astra`」와 R-1 기동 명령은 PR2 전까지 낡은 문장이다. PR2 반영: AGENTS 「모델 라우팅」, ORCA R-1 기동 줄과 R-8 목표 중간 교체 문단. CLAUDE.md 세션 역할은 메인이 고친다.
 - **확인 창 대신 승인**: 메인 `msg_af033fe88521`(2026-10-06T14:33:33Z, E/session/wait7-msg_af033fe88521.raw.txt)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 병합 관문 - 승인이 맞을 때 확인 창을 hook이 대신 승인할지 → A hook이 대신 승인한다」**다. PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 낸다. 메인은 AGENTS 공학 조건 「Claude 권한 확인을 건너뛰는 플래그·설정 변경은 금지」에 이 hook의 예외 문장(사용자 결정 원문 링크)을 넣으라고 했다. 넣는 곳은 PR1이다. 리드 제안 `msg_043ef990dff0`에 메인 `msg_895f7ffa4512`(14:36:43Z, E/session/wait8-msg_895f7ffa4512.raw.txt)가 동의했다. PR1 병합 때 hook이 살아나므로 정본과 동작이 어긋나는 구간을 없애기 위해서다. 예외 문장에는 사용자 결정 원문과 이 절의 링크를 단다. 독립 검증 계약에는 「예외 문장의 조건이 hook 실제 동작과 일치」 대조를 넣는다. 반영: AGENTS 「공학 조건」 예외 문장(PR1).
 - **병합 관문**: 1안건 A(위 원문). PR1 병합과 적용 확인 전까지 병합은 지금 방식(리드 pane, 사용자 확인 창, 메인의 병합 신호)으로 한다. PR197·PR198이 이 방식의 마지막 병합이었다(「PR1 병합」). PR2는 적용 확인 뒤 새 관문으로 병합한다(완료조건 8). 반영: ORCA `#merge-gate`(PR1). PR2는 같은 절에 운영 방식 `--merge`, DIRTY 재통합과 좁힌 재실사, 리드 세션의 그물 안내를 더했다.
@@ -621,6 +635,7 @@ ORCA `#merge-gate`대로 재실사 결과는 병합 전 goal에 넣지 않고 �
 
 - PR1 병합 관문: #198로 병합됐다(`94fc6845`, 「PR1 병합」). 적용 확인을 마쳤다(「관문 적용 확인」).
 - PR2 정본 현행화: Sol 작성과 메인의 CLAUDE.md 수정이 끝났다(「PR2 작성」). 문서 실사는 FAIL(A1·A2)이었고 새 Sol이 고쳤다(「PR2 문서 실사」·「PR2 실사 수정」). BACKLOG 누락 행도 보강했다(「PR2 BACKLOG 보강」). 좁힌 재실사가 통과했고(「PR2 재실사」) #199로 병합됐다(`6d82929b`, 「PR2 병합」). 여유는 ORCA 0줄, 여섯 파일 2 bytes라 다음 정본 변경 때 다시 계측한다.
+- 종료 Gardener: 확정 실패 3회 도달 0, CI 실패 0, 승인 없는 완화 0이고 정리 후보 둘을 제안했다(「종료 Gardener」). 채택은 사용자가 정한다.
 
 ## 다음 계획 후보
 
@@ -654,6 +669,8 @@ ORCA `#merge-gate`대로 재실사 결과는 병합 전 goal에 넣지 않고 �
   - O1: 검증자 시범 평가 자료까지 가는 경로가 길다(goal-loop 52행 → 이 goal 적용 결정 → 원천 발췌 항목 3). 이 goal 몫의 관측은 「검증자 모델 시범」 줄에 직접 적었다.
   - O2: RESUME 20·45행의 「Run 재사용 금지」와 R-8의 같은 Run 인수 경계가 진입 문서에서 바로 안 보인다. base부터 있던 문장이다.
   - O3: ORCA `#merge-gate`의 231행 한 줄에 충돌 재통합·CI·재실사·head 승인 조건이 몰렸다. 줄 상한 때문에 뜻을 지우지 않는 조건으로 본다.
+  - Gardener 처리 제안: 셋 다 정리 후보가 아니다. O1·O3는 10-31 평가 자료, O2는 다음 정본 변경 때 문장 보완 후보다(「종료 Gardener」).
+- Gardener 정리 후보 둘(제안, 채택은 사용자): ① 병합 관문 판정 형태 표의 저장소 시험 자료화. 위 씨앗 ①과 BACKLOG `merge-gate-code-followup`에 근거를 더한다. ② 공식 ask 수신 helper의 버전 고정을 검사 가능한 상태로 바꾸기. BACKLOG `operating-reference-maintenance`에 근거를 더한다. 근거·검사화 방법·비용은 E/gardener/report.md 「정리 후보」다.
 
 <a id="orca-moved-history"></a>
 
