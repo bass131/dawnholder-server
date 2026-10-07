@@ -14,7 +14,7 @@
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-currency-20261005`
 - Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/canon-refresh-20261006`
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `docs/architecture-tests-ci-closeout-20261005`
-- Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/management-backlog-menu-20261007`
+- Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `docs/management-record-source-closeout-20261007`
 
 Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 
