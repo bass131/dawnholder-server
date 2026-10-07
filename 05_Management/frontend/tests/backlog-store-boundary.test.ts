@@ -64,6 +64,31 @@ describe('goal link judgement order (behaviour step)', () => {
     expect(issues).toEqual([rejected(lines[0]!, 'invalid')]);
   });
 
+  // Added by the independent verifier: step 2's decoded backslash rule (design supplement) had no repository test.
+  // Windows would read `\` as a separator, so without the rule the first link would name the existing managed
+  // goal.md and the second would leave the root (parent); both must stop at step 2 as invalid. A cell's `\\` is
+  // the table escape for one literal `\`, which reaches the link as is.
+  it('rejects a decoded backslash as REJECTED (invalid) before resolving it, where it would name an existing goal or leave the root', async () => {
+    const { result, issues, unchecked, lines } = await issuesForStatuses([
+      `goal 승격 → [역슬래시](../../${MANAGED_FOLDER}%5Cgoal.md)`,
+      'goal 승격 → [역슬래시로 밖](../../01_Phases/goals/..%5C..%5C..%5C..%5Coutside/goal.md)',
+      `goal 승격 → [셀의 역슬래시](../../${MANAGED_FOLDER}\\\\goal.md)`,
+    ]);
+    expect(result.ok).toBe(true);
+    expect(unchecked).toEqual([]);
+    expect(issues).toEqual([rejected(lines[0]!, 'invalid'), rejected(lines[1]!, 'invalid'), rejected(lines[2]!, 'invalid')]);
+  });
+
+  // Added by the independent verifier: step 4's path-rejected `invalid` from inspectSourceFile (the source path
+  // rules of index-v2-design.md 「원문 구간 읽기 경계」 5: `:` and control characters), after a successful decode.
+  it('rejects a decoded link that the source path rules call invalid (a colon, a control character) as REJECTED (invalid)', async () => {
+    const { issues, lines } = await issuesForStatuses([
+      `goal 승격 → [콜론](../../${MANAGED_FOLDER}/goal%3A.md)`,
+      `goal 승격 → [제어 문자](../../${MANAGED_FOLDER}/goal%01.md)`,
+    ]);
+    expect(issues).toEqual([rejected(lines[0]!, 'invalid'), rejected(lines[1]!, 'invalid')]);
+  });
+
   it('rejects a link that leaves the repository root as REJECTED (parent), even when a file exists there', async () => {
     repository.write(`../${INDEXED_GOAL}`, '# 저장소 밖 목표\n');
     const { issues, lines } = await issuesForStatuses([`goal 승격 → [밖](../../../${INDEXED_GOAL})`]);

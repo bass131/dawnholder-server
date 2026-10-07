@@ -94,7 +94,7 @@ describe('desktop shell authority and lifetime contracts', () => {
 
   it('allows only the owned main frame to reach the fixed catalog store', async () => {
     await start();
-    // index-v2-design.md 「Electron 경계」: three read channels and the guide channel, no save channel.
+    // index-v2-design.md and backlog-menu-design.md 「Electron 경계」: three read channels, the guide channel and the backlog channel, no save channel.
     expect(host.ipcMain.handle.mock.calls.map(call => call[0]).sort()).toEqual([
       'system-backlog:read', 'system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section',
     ]);
