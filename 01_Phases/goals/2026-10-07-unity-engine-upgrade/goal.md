@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다. 그때 PlayMode는 0/11이었다. 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 파괴해 테스트 fixture의 저장·복원이 깨진 것으로 추정했다. 사용자 결정대로 그 구간을 고친 뒤 다시 재니 EditMode 356/356, PlayMode 11/11(실서버 경로 통과)로 기준선과 같다(자체 점검). 측정 중 Unity가 지운 기계별 SENTIS define 한 줄은 메인 결정대로 base 값으로 되돌려 커밋에서 뺐다. 신규 Opus 독립 검증은 PASS(차단 결함 0, 비차단 1)이고, 커밋된 tree에서 EditMode 356/356, PlayMode 11/11을 다시 냈다. 사용자 결정대로 검증자 테스트 2개를 업그레이드 커밋에 넣었다. 완료조건 (6) MCP 확인도 PASS다(차단 0, 비차단 1: relay 신원 키가 hash 기반이라 goal relay 줄을 고침). 그때 대화형 Editor가 6.6 형식으로 저장한 설정 두 파일을 사용자 결정대로 업그레이드 커밋에 넣었다. 그 커밋의 약 등급 재검증도 PASS다(EditMode 356/356, PlayMode 13/13, 차단 0). PR204가 사용자 승인으로 병합됐다(2026-10-07T18:01:57Z, merge commit `7086d45b`). 남은 것은 종료 Gardener, 종료 기록 PR, 종료 점검, R-8이다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다. 그때 PlayMode는 0/11이었다. 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 파괴해 테스트 fixture의 저장·복원이 깨진 것으로 추정했다. 사용자 결정대로 그 구간을 고친 뒤 다시 재니 EditMode 356/356, PlayMode 11/11(실서버 경로 통과)로 기준선과 같다(자체 점검). 측정 중 Unity가 지운 기계별 SENTIS define 한 줄은 메인 결정대로 base 값으로 되돌려 커밋에서 뺐다. 신규 Opus 독립 검증은 PASS(차단 결함 0, 비차단 1)이고, 커밋된 tree에서 EditMode 356/356, PlayMode 11/11을 다시 냈다. 사용자 결정대로 검증자 테스트 2개를 업그레이드 커밋에 넣었다. 완료조건 (6) MCP 확인도 PASS다(차단 0, 비차단 1: relay 신원 키가 hash 기반이라 goal relay 줄을 고침). 그때 대화형 Editor가 6.6 형식으로 저장한 설정 두 파일을 사용자 결정대로 업그레이드 커밋에 넣었다. 그 커밋의 약 등급 재검증도 PASS다(EditMode 356/356, PlayMode 13/13, 차단 0). PR204가 사용자 승인으로 병합됐다(2026-10-07T18:01:57Z, merge commit `7086d45b`). 종료 Gardener도 끝났다(정리 후보 2, 채택 전). 남은 것은 종료 기록의 문서 실사·PR, 종료 점검, R-8이다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -179,7 +179,8 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 8. 완료조건 (6) MCP 확인은 PASS로 끝났다(아래 결과). 사용자 결정 A(`msg_3d959b3798a7`)로 대화형 설정 두 파일을 업그레이드 커밋에 넣고, 문서 커밋을 이 goal 갱신과 함께 다시 만들었다.
 9. 두 파일을 더한 커밋의 약 등급 재검증은 PASS(비차단 결함 1)로 끝났다(아래 결과). 결함 #1의 문구를 커밋 메시지와 이 goal에서 고치고 두 커밋을 다시 만들었다.
 10. push·PR204·CI·메인 승인 요청·병합은 끝났다(아래 「PR204 병합」).
-11. 다음 순서: 결과 기록(이 갱신) → 종료 Gardener(신규 Opus, 읽기 전용) → 결과 포함 종료 기록 PR 하나 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다. 시작 전에 메인에 계획을 status로 알린다(메인 `msg_a31233c60bf2`).
+11. 결과 기록(`f1f9cc73`)과 종료 Gardener는 끝났다(아래 「종료 Gardener」). 정리 후보 둘은 채택 전이다.
+12. 다음 순서: 종료 기록 문서 실사(신규 `gpt-6-astra` xhigh) → 종료 기록 PR 하나 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다. 시작 전에 메인에 계획을 status로 알린다(메인 `msg_a31233c60bf2`).
 
 ## 진척 단계
 
@@ -191,7 +192,8 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 - [x] MCP 연결 확인
 - [x] 설정 두 파일 재검증
 - [x] PR 병합
-- [>] 종료(Gardener·종료 기록 PR·종료 점검·R-8)
+- [x] 종료 Gardener
+- [>] 종료(문서 실사·종료 기록 PR·종료 점검·R-8)
 
 ## 실제 결과와 미실행
 
@@ -487,6 +489,25 @@ Sol `task_fd269354bea8`(Dispatch `ctx_f63b8e064c1f`, 지정·화면 `gpt-6.1-sol
 - 승인 요청: 리드 `msg_f403653f4f98`(PR head·CI·판정 원문 셋·표본 대조·남은 우려).
 - 병합(메인 `msg_a31233c60bf2`): 사용자 원문은 메인 창에서 단독 한 줄로 Enter 제출된 「병합 승인: PR204 head 11ba78898b12bec9b90167eb73655a22bebe4073」이다(메인 전달). 메인이 직전 head·상태를 대조하고 `--merge --match-head-commit`으로 병합했다. 2026-10-07T18:01:57Z, merge commit `7086d45b92b76742d8c11facbf8a1031b81d0853`이다. 메인은 R-2로 세 판정 SHA256과 결론, 재검증 results.xml, PR 파일 140개를 직접 봤다.
 - 병합 뒤: 원격 branch `chore/unity-engine-upgrade-20261007`는 지워졌다(`git ls-remote` 0줄). 종료 기록은 최신 main에서 만든 `docs/unity-upgrade-closeout-20261008`에서 한다. 메인 checkout의 skip-worktree 세 파일 처리는 메인이 사용자 답을 기다리는 중이며, 이 worktree 작업과는 무관하다(메인 전달).
+
+### 종료 Gardener — 보고서 완료, 정리 후보 2(채택 전)
+
+Gardener `task_62754424b256`(Dispatch `ctx_67f8f8292155`, 최초 실행 `claude --model claude-opus-5-5`, 화면 「Opus 5.5 with xhigh effort」, backend unknown, 검증자 모델 시범 대상 아님)가 계약 v1(SHA256 `c6d91fdc…152e`)대로 결과 기록 commit `f1f9cc73`을 기준으로 회고했다. 보고서는 `gardener/report.md`(SHA256 `3716bec1…3b41`), worker_done은 `msg_f7ebb100d68c`이다. 쓰기는 그 한 파일뿐이고 범위 밖 쓰기는 0이다. heartbeat 5분 초과도 0이다.
+
+- 분류: 확정 실패·CI 실패·새 경고 억제는 0이다.
+  - 비차단 결함 셋(세 판정의 각 #1)은 하위 종류가 달라 묶지 않았다.
+  - 사용자 환경 부작용 두 건(Hub 토큰 기록, EditorPrefs 변경)은 다른 부류로 판단했다. 하나는 기밀성, 다른 하나는 사용자 상태 변경이다. 각각 첫 발생이고 goal에 교정이 있어 후보로 올리지 않았다.
+  - harness O2·O3, heartbeat 초과, 나머지 교정 기록은 이미 분류돼 있거나 한 번뿐이라 후보로 올리지 않았다.
+- 후보 1(기존 후보에 근거 추가): Unity 실행 뒤 추적 파일 drift 두 종류다. SENTIS define 한 줄이 4회, `MinimapRT.renderTexture` 줄 끝이 5회 생겼고, 6.6에서는 매번 같은 hash 쌍이다. PR191 branch에만 있는 `unity-sentis-define-drift`에 근거를 더하고 MinimapRT까지 넓히는 안이다.
+  - MinimapRT의 원인 근거: `.gitattributes`가 `.renderTexture`의 줄 끝을 고정하지 않는다(`eol: unspecified`, 리드가 `git check-attr`로 다시 확인).
+  - 검사화(높은 층부터): `*.renderTexture text eol=lf`와 `%YAML` 추적 파일의 eol 지정 검사 → Unity 실행 뒤 「알려진 drift」 분류 단계 → 커밋 전 define 변경 경고(warning 파일럿).
+  - 소유는 CodeMap·Rules 경계이고, Unity 클라이언트 주인 Content가 협의한다.
+- 후보 2(새 후보): PowerShell 보고 helper에서 큰따옴표 문자열 안 `$이름` 바로 뒤에 한글 조사가 붙어 StrictMode가 멈춘 실패다. 작성자 넷이 다섯 번 겪었다.
+  - 검사화: 작성자가 실행 전에 부르는 AST 기반 자기 점검 helper(이름에 한글이 든 변수 표현 찾기) → 추적 `.ps1`·`.psm1` warning 파일럿 → 계약 양식 한 줄 순서다.
+  - 소유는 Rules(helper·양식)·CodeMap(정적 진단)이다.
+- 리드 표본 대조(18:24~18:26Z): `sol-remeasure` stderr의 `'$ReductionMessageId에' 변수는 설정되지 않았으므로` 문구, `sol-delete` 첫 시도 stderr의 `'$ErrorDecisionId를'` 문구, 독립 검증 뒤와 재검증 뒤 SENTIS drift 사본의 같은 SHA256(`333733a3…`), MinimapRT 사본 `7123af77…`, `.gitattributes` 속성을 확인했다.
+- 정산: release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true). 이 worktree 터미널은 0이다.
+- 채택과 소유는 메인을 거쳐 사용자가 정한다. 이 goal은 구현·BACKLOG 등록을 하지 않는다.
 
 ### 교정 기록
 
