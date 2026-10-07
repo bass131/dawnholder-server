@@ -5,7 +5,7 @@
 ## Claude Code 세션의 경계
 
 - 이 파일의 메인·Orca·검증자 운영은 이 머신의 로컬 세션에 적용한다. 사람 팀원이 자기 머신에서 실행하는 세션은 Claude Code라도 AGENTS의 [외부 팀원 세션](AGENTS.md#외부-팀원-세션) 절만 따른다.
-- Claude 세션의 역할은 둘이다. 메인 Claude는 방향 설정·파트 분할·사용자 조율·결과 통합·사용자 보고·병합 승인 요청과 [병합 실행](00_Document/operations/ORCA.md#merge-gate)을 맡고, 저장소 파일은 이 CLAUDE.md만 쓴다. Opus 검증자는 담당 Astra가 연 세션에서 실사·판정하고 판정에 필요한 테스트 파일만 쓴다. 제품 코드는 고치지 않고 결함을 번호로 보고한다.
+- 메인 Claude는 방향 설정·파트 분할·사용자 조율·결과 통합·사용자 보고·병합 승인 요청과 [병합 실행](00_Document/operations/ORCA.md#merge-gate)을 맡고, 저장소 파일은 이 CLAUDE.md만 쓴다. 리드·검증자 모델은 AGENTS 「모델 라우팅」을 따른다. 독립 검증자는 리드가 연 세션에서 실사·판정하고 판정에 필요한 테스트 파일만 쓴다. 제품 코드는 고치지 않고 결함을 번호로 보고한다.
 - 예외로 [R-7](00_Document/operations/ORCA.md#r7-fable-pilot) 한정 시범의 Fable 구현 전 설계 검토자는 메인이 승인한 시범 목표에서만 열리며, 해당 목표의 `goal-review.md`만 쓴다.
 - 생산 코드는 AGENTS.md 라우팅대로 Codex 작업자가 쓴다. 사용자가 Claude에게 직접 작성을 지시했을 때만 메인 Claude가 쓰고, 보고에 실제 작성 모델을 적는다.
 - Claude 서브에이전트(Agent 도구)는 읽기 전용 조사·요약에만 쓴다. AGENTS.md가 요구하는 독립 검증이나 Orca 실행 증거를 대신하지 않는다.
@@ -16,13 +16,13 @@
 
 - 작업을 맡으면 파일을 쓰기 전에 현재 goal·할당 계약·관련 영역과 CODE_CONVENTION의 해당 절을 읽고, 적용 규칙·기존 예시·재사용 대상·파일의 위치와 이름 근거를 짧은 맥락 메모에 남긴다. 역할별 읽기 범위와 양식은 [작업 맥락 스킬](.agents/skills/dawnholder-task-context/SKILL.md)을 따른다.
 - 위임 계약에는 관련 규칙 원문을 포함하고 완료 보고에는 실제 준수 위치를 적는다.
-- Opus 검증자는 메모와 실제 diff를 대조하며 규칙 위반·맥락 메모 부재를 통과 차단 사유로 판정한다.
+- 독립 검증자는 메모와 실제 diff를 대조하며 규칙 위반·맥락 메모 부재를 통과 차단 사유로 판정한다.
 - 상수·수기 입력을 측정값처럼 기록한 경우와 제품 계산을 복제해 항상 통과하는 테스트의 통과 차단은 [작업 맥락의 독립 판정 정본](.agents/skills/dawnholder-task-context/SKILL.md#독립-판정과-통과-차단)을 따른다.
 - 메인은 승인 요청 전 [R-2](00_Document/operations/ORCA.md#r2-source-check) 표본 대조에 규칙 준수 항목을 함께 본다.
 
 ## 메인 세션 진입
 
-- 사용자는 세션을 마칠 때 Astra를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 리드 Astra를 다시 연다. 마감 구간의 리드는 Core·Content·Rules·CodeMap·Management 다섯이다. 메인은 전용 checkout `main-active`에서, Core 리드는 `C:/Dev/DawnHolder_Project`의 별도 탭에서, 나머지는 승인된 각 worktree 탭에 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)). Core는 GameDev의 새 이름이며 태그 전환은 [전환 정본](AGENTS.md#core-tag-transition)을 따른다.
+- 사용자는 세션을 마칠 때 Astra를 모두 닫는다. 새 메인 세션은 [RESUME](00_Document/operations/RESUME.md)의 진입 절차대로 리드 Astra를 다시 연다. 마감 구간의 리드는 Core·Content·Rules·CodeMap·Management 다섯이다. 메인은 `C:/Dev/DawnHolder_Project`에서, Core 리드는 `core-active`, 나머지는 승인된 각 worktree 탭에 연다([배치 정본](00_Document/operations/ORCA.md#r1-management-placement)). Core는 GameDev의 새 이름이며 태그 전환은 [전환 정본](AGENTS.md#core-tag-transition)을 따른다.
 - CodeMap은 Architecture 파트의 표시 이름이자 분석·검사 책임의 이름이다. 작업 경로와 `[Architecture Astra]`·`[Architecture Sol]`·`[Architecture 검증자]` 태그는 그대로 쓴다.
 - 리드 Astra가 준비되면 메인 handle을 Orca 메시지로 알린다.
 - 메인이 직접 하는 운영 의무는 세 가지이며 세부는 각 링크를 따른다.
@@ -35,7 +35,7 @@
 - 명령 문법은 `orca skills get orchestration`의 버전 일치 가이드를 따른다. 터미널 handle은 매번 `orca terminal list --json`으로 확인하고 문서에 고정하지 않는다.
 - 메시지(회신 subject 포함, [R-3](00_Document/operations/ORCA.md#r3-reply-tag))와 터미널 입력은 `[메인 Claude]`로 시작한다. 지시는 `orca orchestration send --to <상대 주소>`로 우편함에 넣고, 터미널 입력에는 "Orca 메시지를 확인하라"는 안내만 담는다. Run에 묶인 Astra의 주소는 `run:<run_id>`다([Run 회신 주소](00_Document/operations/ORCA.md#run-reply-address)). 태그는 AGENTS.md를 따른다.
 - 터미널 알림은 상대가 빈 프롬프트일 때만 `orca terminal send --enter`로 보낸다. 우편함에 지시를 넣은 뒤 상대 화면을 확인해 빈 프롬프트로 대기 중이면 안내를 보내고, 우편함만 채운 채 방치하지 않는다. 답장은 `$ORCA_TERMINAL_HANDLE`로 받는다. 세부는 `.agents/skills/dawnholder-session-handoff/SKILL.md`를 따른다.
-- 우편함 대기 `orca orchestration check --wait`는 한 번에 하나만 실행한다. 백그라운드 `&`나 `/dev/null` 리다이렉트로 출력을 버리지 않는다. 받은 메시지를 출력에서 직접 읽고 처리한 뒤 다음 대기를 연다.
+- 우편함 대기는 [대기 정본](00_Document/operations/ORCA.md#mailbox-wait)대로 `run_in_background`로 한 번에 하나만 연다. `&`나 `/dev/null`로 출력을 버리지 않는다. 끝난 출력을 직접 읽고 처리한 뒤 다음 대기를 연다.
 
 ## 메인의 기록과 알림
 

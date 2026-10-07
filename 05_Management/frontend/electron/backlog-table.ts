@@ -7,6 +7,7 @@ export interface BacklogRow {
   prerequisite: string;
   owner: string;
   status: string;
+  group: string | null;
   cells: string[];
   goalLinks: string[];
 }
@@ -14,6 +15,7 @@ export interface BacklogRow {
 export interface BacklogTableResult {
   rows: BacklogRow[];
   formatIssues: { line: number; cause: string }[];
+  hasIdTable: boolean;
 }
 
 function tableCells(line: string): string[] | null {
@@ -58,6 +60,8 @@ export function parseBacklogTables(text: string): BacklogTableResult {
   const formatIssues: BacklogTableResult['formatIssues'] = [];
   const lines = text.replace(/^\uFEFF/, '').split(/\r\n|\r|\n/);
   let headers: string[] | null = null;
+  let group: string | null = null;
+  let hasIdTable = false;
   let fence: { marker: string; length: number } | null = null;
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index] ?? '';
@@ -67,7 +71,18 @@ export function parseBacklogTables(text: string): BacklogTableResult {
       continue;
     }
     if (marker?.[1]) {
-      fence = { marker: marker[1][0] ?? '', length: marker[1].length };
+      const character = marker[1][0] ?? '';
+      // Match the source reader's opening rule without changing its shared
+      // module: backticks in a backtick fence's info string prevent opening.
+      if (character !== '`' || !marker[2]?.includes('`')) {
+        fence = { marker: character, length: marker[1].length };
+        headers = null;
+        continue;
+      }
+    }
+    const heading = /^ {0,3}##[ \t]+(.*)$/.exec(line);
+    if (heading) {
+      group = (heading[1] ?? '').replace(/(?:[ \t]+|^)#+[ \t]*$/, '').trim();
       headers = null;
       continue;
     }
@@ -84,6 +99,7 @@ export function parseBacklogTables(text: string): BacklogTableResult {
         // Remember other tables too, so an ID-valued documentation row cannot
         // be mistaken for the header of a new candidate table.
         headers = cells;
+        if (headers[0] === 'ID') hasIdTable = true;
         index += 1;
       } else if (cells[0] === 'ID') {
         formatIssues.push({ line: index + 1, cause: 'ID 표의 구분 행 또는 열 수가 올바르지 않습니다.' });
@@ -104,9 +120,10 @@ export function parseBacklogTables(text: string): BacklogTableResult {
       prerequisite: cells[4] ?? '',
       owner: cells[5] ?? '',
       status: cells[statusColumn >= 0 ? statusColumn : headers.length - 1] ?? '',
+      group,
       cells,
       goalLinks: backlogGoalLinks(cells.join(' ')),
     });
   }
-  return { rows, formatIssues };
+  return { rows, formatIssues, hasIdTable };
 }

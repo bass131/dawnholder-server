@@ -2,11 +2,13 @@
 // Requirement: goal 「만들 것」 2·3 and 완료조건 3 (no write IPC; the app reads registered sources by
 // ID only) and index-v2-design.md 「Electron 경계」: the main process registers exactly
 // system-records:read, system-records:read-section, system-records:read-checkout and
-// system-guide:read; every handler checks trustedSender first; read-section hands its raw input to
-// the source-section reader; preload exposes only systemRecords.readCatalog·readSection·readCheckout
-// and systemGuide.readGuide. Electron is a test double (the tests/desktop-main.test.ts approach);
-// the stores are the real ones on the real repository, read only. node:fs mkdirSync is stubbed so
-// the profile folder is not created. Expected checkout values come from the git CLI.
+// system-guide:read, plus system-backlog:read from backlog-menu-design.md 「Electron 경계」; every
+// handler checks trustedSender first; read-section hands its raw input to the source-section reader;
+// preload exposes only systemRecords.readCatalog·readSection·readCheckout, systemGuide.readGuide and
+// systemBacklog.readBacklog (its own tests are in backlog-ipc-preload.test.ts). Electron is a test
+// double (the tests/desktop-main.test.ts approach); the stores are the real ones on the real
+// repository, read only. node:fs mkdirSync is stubbed so the profile folder is not created.
+// Expected checkout values come from the git CLI.
 import { spawnSync } from 'node:child_process';
 import { EventEmitter } from 'node:events';
 import { readFileSync } from 'node:fs';
@@ -16,7 +18,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('node:fs', async original => ({ ...await original<typeof import('node:fs')>(), mkdirSync: vi.fn() }));
 
-const RECORD_CHANNELS = ['system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section'];
+const RECORD_CHANNELS = ['system-backlog:read', 'system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section'];
 
 // Only what electron/main.ts touches at start-up; behaviour of each double is irrelevant here.
 function makeHost() {
@@ -60,7 +62,7 @@ function trusted() {
 }
 
 describe('records IPC channels', () => {
-  it('registers exactly the three read channels and the guide channel, with no save channel', async () => {
+  it('registers exactly the three read channels, the guide channel and the backlog channel, with no save channel', async () => {
     const handlers = await start();
     expect([...handlers.keys()].sort()).toEqual(RECORD_CHANNELS);
     expect(handlers.has('system-records:save')).toBe(false);
@@ -138,9 +140,9 @@ describe('preload bridge', () => {
     return { exposed, invoke };
   }
 
-  it('exposes only systemRecords.readCatalog·readSection·readCheckout and systemGuide.readGuide', async () => {
+  it('exposes only systemRecords.readCatalog·readSection·readCheckout, systemGuide.readGuide and systemBacklog', async () => {
     const { exposed } = await loadPreload();
-    expect([...exposed.keys()].sort()).toEqual(['systemGuide', 'systemRecords']);
+    expect([...exposed.keys()].sort()).toEqual(['systemBacklog', 'systemGuide', 'systemRecords']);
     expect(Object.keys(exposed.get('systemRecords') ?? {}).sort()).toEqual(['readCatalog', 'readCheckout', 'readSection']);
     expect(Object.keys(exposed.get('systemGuide') ?? {})).toEqual(['readGuide']);
   });

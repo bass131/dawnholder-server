@@ -154,7 +154,7 @@ describe('diagram frame entry and navigation decisions', () => {
     await start();
     const diagramFrame: Frame = { url: documentUrl, parent: host.mainFrame };
     const handlers = host.ipcMain.handle.mock.calls as unknown as [string, (event: unknown, input?: unknown) => Promise<unknown>][];
-    expect(handlers.map(([channel]) => channel).sort()).toEqual(['system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section']);
+    expect(handlers.map(([channel]) => channel).sort()).toEqual(['system-backlog:read', 'system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section']);
     for (const [channel, handle] of handlers) {
       expect(await handle({ sender: host.contents, senderFrame: diagramFrame }, {}), channel).toMatchObject({ ok: false, code: 'denied' });
       // The owned main frame passes the sender check; what each store then returns is tested elsewhere.

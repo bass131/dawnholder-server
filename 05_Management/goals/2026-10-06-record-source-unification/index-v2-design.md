@@ -210,7 +210,7 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 
 - 색인 error: `CATALOG_INVALID`(JSON·스키마·허용 밖 키·중복 ID), `REFERENCE_BROKEN`, `LOCATOR_INVALID`(local 경로 모양·handoff ID 모양), `SOURCE_PATH_REJECTED`(cause에 reason), `SOURCE_NOT_READABLE`(git 출처의 확장자에 `section` 지정, 일반 파일 아님), `SOURCE_MISSING`, `SOURCE_TOO_LARGE`, `SOURCE_INVALID_ENCODING`, `SECTION_MISSING`, `SECTION_AMBIGUOUS`.
 - goal warning: `GOAL_NOT_INDEXED`.
-- 백로그 warning: `BACKLOG_ID_FORMAT`, `BACKLOG_ID_DUPLICATE`, `BACKLOG_GOAL_LINK_MISSING`, `BACKLOG_PROMOTION_LINK_MISSING`, `BACKLOG_TABLE_FORMAT`.
+- 백로그 warning: `BACKLOG_ID_FORMAT`, `BACKLOG_ID_DUPLICATE`, `BACKLOG_GOAL_LINK_MISSING`, `BACKLOG_PROMOTION_LINK_MISSING`, `BACKLOG_TABLE_FORMAT`, `BACKLOG_GOAL_LINK_REJECTED`(PR3, cause에 reason. 판정 순서는 [백로그 메뉴 설계](backlog-menu-design.md) 「goal 링크 판정 순서」).
 
 | 묶음 | error(끊긴 링크) | warning(파일럿) |
 |---|---|---|
@@ -218,7 +218,7 @@ DTO를 색인 v2로 바꾸고 도구 세 개를 더한다. 실제 개발 세션 
 | goal | 없음 | `01_Phases/goals`·`05_Management/goals`에서 `goal.md`가 있는데 어떤 git 출처 locator도 `<goal 폴더>/`로 시작하지 않는 goal |
 | 백로그 | 없음 | `00_Document/operations/BACKLOG.md`의 첫 열이 `ID`인 표에서 ID 모양·중복, 상대 링크 중 goal 링크의 대상 파일 없음, 상태가 「goal 승격」인데 goal 링크 없음, 열 수 불일치 |
 
-종료 코드는 묶음 하나라도 실행 못 하면 2, 아니면 error가 있으면 1, 아니면 0이다. 실행 못 함과 정책 위반을 섞지 않는다([하네스 원칙](../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙) 1·3·4). local 출처의 파일 존재는 다른 checkout에서 확인할 수 없어 보지 않는다. CI 연결과 error 승격은 이 PR 범위가 아니다(묶음 2, 사용자 판단). BACKLOG 표 해석은 `electron/backlog-table.ts`의 순수 함수로 두고 PR3 메뉴가 같은 함수를 쓴다.
+종료 코드는 묶음 하나라도 실행 못 하면 2, 아니면 error가 있으면 1, 아니면 0이다. 실행 못 함과 정책 위반을 섞지 않는다([하네스 원칙](../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙) 1·3·4). local 출처의 파일 존재는 다른 checkout에서 확인할 수 없어 보지 않는다. CI 연결과 error 승격은 이 PR 범위가 아니다(묶음 2, 사용자 판단). BACKLOG 표 해석은 `electron/backlog-table.ts`의 순수 함수로 두고 PR3 메뉴가 같은 함수를 쓴다. PR3가 백로그 판정을 공유 모듈로 옮기고 코드·판정을 넓히는 내용은 [백로그 메뉴 설계](backlog-menu-design.md)를 따른다.
 
 ## 데이터 전환
 

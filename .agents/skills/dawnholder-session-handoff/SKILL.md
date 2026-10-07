@@ -22,7 +22,7 @@ description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 �
 
 - [RESUME의 진입 절차](../../../00_Document/operations/RESUME.md#세션-진입-배치)와 [R-1 배치](../../../00_Document/operations/ORCA.md#r1-management-placement), [R-8 Astra 수명](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)을 따른다.
 - 마감 구간 다섯 리드(Core·Content·Rules·CodeMap·Management)와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. Core의 기존 명칭과 태그 전환은 [AGENTS Core 전환 정본](../../../AGENTS.md#core-tag-transition)을 따른다. CodeMap의 기존 Architecture 경로·태그를 유지하며, 이 스킬이 추가 파트의 상시 배치나 생성 권한을 만들지 않는다.
-- 메인은 준비된 현재 리드들에 자기 handle을 Orca 메시지로 공유한다. Core 리드는 R-1의 별도 탭, 작업자·검증자는 각 Astra 아래 vertical split이다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
+- 메인은 준비된 현재 리드들에 자기 handle을 Orca 메시지로 공유한다. Core 리드는 R-1의 `core-active` worktree 별도 탭, 작업자·검증자는 각 Astra 아래 vertical split이다. 작업자 생성·연결·정산은 [Orca 위임 지침](../dawnholder-goal-loop/references/orca-work.md)을 따른다.
 
 ## 신규 prompt 준비 확인
 
@@ -32,7 +32,7 @@ description: Dawnholder의 Orca 세션 배치·준비 확인과 최소 맥락 �
 4. READY 응답 뒤 실제 handoff 직전에 target·runtime·incarnation을 새로 조회해 준비 확인 때의 값과 대조한다. 값이 바뀌거나 동일성을 확인할 수 없으면 이전 READY·receipt를 재사용하지 않고 보류한다. 새 대상에 자동 전송하지 않는다.
 5. `input_accepted`는 입력 접수, `turn_started`는 턴 시작 증거, 실제 준비 응답은 준비 확인이다. 이 셋을 같은 성공으로 보고하지 않는다.
 6. accepted 뒤 침묵만으로 새 텍스트를 보내지 않는다. 동일 request replay 전에도 runtime·target·incarnation 동일성을 새로 확인하고, 버전 일치 가이드가 중복 입력 없는 receipt replay를 보장할 때만 동일 request ID와 동일 payload로 **receipt를 재확인**한다. 이는 새 입력 재전송과 다르다. replay 미지원·request 불명확·준비 응답 부재이면 handoff를 보류하고 관찰 상태를 보고한다.
-7. 공식 계약 주입이 `turn_start_unobserved`이면 tail과 함께 JSON draft를 확인하고 [R-5 공식 draft 복구](../../../00_Document/operations/ORCA.md#official-contract-draft)를 적용한다. 새 pane·다른 입력 없음·공식 계약 크기와 맞는 placeholder의 확인 조건에서 담당 Astra가 텍스트 없는 Enter 한 번과 실제 시작 관측을 수행한다. 조건 불충족/동일성 미확인은 메인에 보고한다. 이 복구와 일반 사용자 prompt의 대리 제출, receipt replay, 텍스트 재전송을 구분한다.
+7. 공식 계약 주입이 `turn_start_unobserved`이면 tail과 함께 JSON draft를 확인하고 [R-5 공식 draft 복구](../../../00_Document/operations/ORCA.md#official-contract-draft)의 사전 추정·사후 계약 전문 대조를 적용한다. 조건 불충족/동일성 미확인은 메인에 보고한다. 이 복구와 일반 사용자 prompt의 대리 제출, receipt replay, 텍스트 재전송을 구분한다.
 
 준비 확인 실패는 무한 대기·강제 restart·권한 변경·세션 종료의 근거가 아니다. 일반 메시지로 응답을 확인했더라도 이전 무응답의 원인이 밝혀졌다고 주장하지 않는다.
 

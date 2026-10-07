@@ -18,6 +18,8 @@
 | 공통 계약·유지보수·영속성 단계 | [마일스톤 로드맵](../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md) |
 | DB 설계 전 리팩토링 순서 | [마일스톤 로드맵](../01_Phases/milestones/2026-09-29-refactor-before-persistence/roadmap.md) |
 | Orca 세션의 실행·제한 | [ORCA](operations/ORCA.md) |
+| 운영툴 문서·실행 진입 | [Management README](../05_Management/README.md) |
+| Management goal 위치 | [05_Management/goals](../05_Management/goals/) |
 | 기술 선택과 이유 | [ADR](ADR/INDEX.md) |
 | 과거 작업·운영·리뷰·보고서 | [영역별 보관](archive/INDEX.md) |
 

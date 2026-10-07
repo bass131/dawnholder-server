@@ -292,6 +292,59 @@ describe('diagnostic form', () => {
   });
 });
 
+// Requirement: backlog-menu-design.md 「색인 검사」 and 「두 단계」 behaviour rows: the check moves the
+// shared store's issues over as warnings (a null line is located at BACKLOG.md alone) and a BACKLOG.md
+// the store cannot read leaves the backlog group not run instead of becoming a diagnostic. The
+// REJECTED, null-line, over-limit and encoding cases fail until the behaviour step; the missing case
+// already holds. Sentences are copied from the design tables.
+describe('backlog group through the shared backlog store', () => {
+  const REJECTED_FIX = 'BACKLOG.md 기준 상대경로로 저장소 안의 goal 파일을 대소문자까지 같게 가리키고 링크·junction을 거치지 마세요.';
+  const backlogDiagnostics = (result: Awaited<ReturnType<typeof check>>) => result.diagnostics.filter(item => item.code.startsWith('BACKLOG_'));
+
+  it('reports BACKLOG_GOAL_LINK_REJECTED as a warning at BACKLOG.md:<line> with the reason in its cause', async () => {
+    const outsideRow = `| \`outside-link\` | 밖 링크 | 이유 | 출처 | 없음 | Rules | goal 승격 → [밖](../../../${GOAL_A}/goal.md) |`;
+    const lines = writeBacklog([...CLEAN_ROWS, outsideRow]);
+    const result = await check();
+    expect(backlogDiagnostics(result)).toEqual([{
+      severity: 'warning',
+      code: 'BACKLOG_GOAL_LINK_REJECTED',
+      location: `BACKLOG.md:${lines[2]}`,
+      cause: '상대 goal 링크가 저장소 경로 규칙에 맞지 않습니다 (parent).',
+      fix: REJECTED_FIX,
+    }]);
+    expect(groupStates(result)).toEqual({ index: true, goals: true, backlog: true });
+    expect(result.exitCode).toBe(0);
+  });
+
+  it('locates a missing ID table at BACKLOG.md without a line number', async () => {
+    repository.write(BACKLOG, '# 목표 전 후보\n\n아직 후보 표가 없다.\n');
+    const result = await check();
+    expect(backlogDiagnostics(result)).toEqual([{
+      severity: 'warning',
+      code: 'BACKLOG_TABLE_FORMAT',
+      location: 'BACKLOG.md',
+      cause: '첫 열이 ID인 후보 표가 없습니다.',
+      fix: '머리글 첫 열이 ID인 후보 표와 구분 행을 두세요.',
+    }]);
+    expect(result.exitCode).toBe(0);
+  });
+
+  // The readable text holds a row that would be BACKLOG_ID_FORMAT, so a partial read would show.
+  const readableText = `${[...BACKLOG_HEADER, ...CLEAN_ROWS, '| `Bad_ID` | 모양 | 이유 | 출처 | 없음 | Rules | 대기 |'].join('\n')}\n`;
+  const unreadable = [
+    { state: 'missing', prepare: () => rmSync(repository.path(BACKLOG)) },
+    { state: 'over 1 MiB', prepare: () => repository.write(BACKLOG, `${readableText}${'y'.repeat(1024 * 1024)}\n`) },
+    { state: 'not strict UTF-8', prepare: () => repository.write(BACKLOG, Buffer.concat([Buffer.from(readableText), Buffer.from([0xff, 0xfe, 0x0a])])) },
+  ];
+  it.each(unreadable)('marks the backlog group not run with exit code 2 and no BACKLOG_ diagnostic when BACKLOG.md is $state', async ({ prepare }) => {
+    prepare();
+    const result = await check();
+    expect(groupStates(result)).toEqual({ index: true, goals: true, backlog: false });
+    expect(backlogDiagnostics(result)).toEqual([]);
+    expect(result.exitCode).toBe(2);
+  });
+});
+
 describe('records:check CLI on this repository', () => {
   const frontend = fileURLToPath(new URL('../', import.meta.url));
 
