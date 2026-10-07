@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다. 그때 PlayMode는 0/11이었다. 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 파괴해 테스트 fixture의 저장·복원이 깨진 것으로 추정했다. 사용자 결정대로 그 구간을 고친 뒤 다시 재니 EditMode 356/356, PlayMode 11/11(실서버 경로 통과)로 기준선과 같다(자체 점검). 측정 중 Unity가 지운 기계별 SENTIS define 한 줄은 메인 결정대로 base 값으로 되돌려 커밋에서 뺐다. 신규 Opus 독립 검증은 PASS(차단 결함 0, 비차단 1)이고, 커밋된 tree에서 EditMode 356/356, PlayMode 11/11을 다시 냈다. 사용자 결정대로 검증자 테스트 2개를 업그레이드 커밋에 넣었다. 완료조건 (6) MCP 확인도 PASS다(차단 0, 비차단 1: relay 신원 키가 hash 기반이라 goal relay 줄을 고침). 그때 대화형 Editor가 6.6 형식으로 저장한 설정 두 파일을 사용자 결정대로 업그레이드 커밋에 넣었다. 그 커밋의 약 등급 재검증도 PASS다(EditMode 356/356, PlayMode 13/13, 차단 0). 남은 것은 push·PR·CI와 병합 승인이다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다. 그때 PlayMode는 0/11이었다. 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 파괴해 테스트 fixture의 저장·복원이 깨진 것으로 추정했다. 사용자 결정대로 그 구간을 고친 뒤 다시 재니 EditMode 356/356, PlayMode 11/11(실서버 경로 통과)로 기준선과 같다(자체 점검). 측정 중 Unity가 지운 기계별 SENTIS define 한 줄은 메인 결정대로 base 값으로 되돌려 커밋에서 뺐다. 신규 Opus 독립 검증은 PASS(차단 결함 0, 비차단 1)이고, 커밋된 tree에서 EditMode 356/356, PlayMode 11/11을 다시 냈다. 사용자 결정대로 검증자 테스트 2개를 업그레이드 커밋에 넣었다. 완료조건 (6) MCP 확인도 PASS다(차단 0, 비차단 1: relay 신원 키가 hash 기반이라 goal relay 줄을 고침). 그때 대화형 Editor가 6.6 형식으로 저장한 설정 두 파일을 사용자 결정대로 업그레이드 커밋에 넣었다. 그 커밋의 약 등급 재검증도 PASS다(EditMode 356/356, PlayMode 13/13, 차단 0). PR204가 사용자 승인으로 병합됐다(2026-10-07T18:01:57Z, merge commit `7086d45b`). 남은 것은 종료 Gardener, 종료 기록 PR, 종료 점검, R-8이다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -160,12 +160,12 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 
 | 항목 | 값 |
 |---|---|
-| 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / `chore/unity-engine-upgrade-20261007`(upstream `origin`에는 goal 커밋 `33925c73`까지만 있다. PR은 아직 없다) |
-| 기준 | `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0` |
+| 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / 종료 기록 branch `docs/unity-upgrade-closeout-20261008`. 제품 branch `chore/unity-engine-upgrade-20261007`는 PR204로 병합됐고 원격에서 지워졌다 |
+| 기준 | 제품 PR의 처음 base는 `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`이다. 종료 기록 branch의 base는 PR204 병합 뒤 main `7086d45b92b76742d8c11facbf8a1031b81d0853`이다 |
 | 리드 Run | `run_dd3bf2daea68`(2026-10-07 Content 리드, `content-active` pane) |
 | Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼다. 그 뒤 6000.6.4f1 열기를 다섯 번 거쳤고, 앞의 넷은 컴파일 실패였다. 앞의 네 열기가 남긴 부분 변경은 리드가 HEAD로 정리했다(`lead-restore-*.txt`). 다섯째 열기(Lucid 123개 삭제 뒤)부터 컴파일된다. 이어진 측정과 fixture 수정 뒤 재측정도 이 Library에서 했다. 지금 Unity는 0이다 |
 | 작업자 | 기준선 Sol, 엔진 첫 열기 Sol, 테스트 작성 Opus, 재열기 Sol, 업그레이드 열기 Sol, 측정 Sol, 관계 점검 Sol, 삭제·측정 Sol, fixture 작성 Opus, 재측정 Sol, SENTIS 한 줄 Sol, 독립 검증 Opus, MCP 확인 Opus, 재검증 Opus 정산·종료(아래 결과). 살아 있는 작업자 0, 이 worktree의 터미널 0. 기준 pane은 사용자 결정(`msg_02668751092e`)대로 닫았고, SENTIS Sol부터 `orca terminal create`로 이 worktree에 바로 열었다 |
-| 로컬 commit | push하지 않은 로컬 commit 둘이 goal 커밋 `33925c73` 위에 있다. 업그레이드 커밋 `62228618`과 그 위의 문서 커밋이다. 측정 때 쓴 로컬 checkpoint 셋(테스트 두 줄, 다섯째 열기 상태, fixture 수정), SENTIS 한 줄 되돌림, 검증자 테스트 2개, 대화형 설정 두 파일을 업그레이드 커밋 하나로 합쳤다. `62228618`의 tree는 재검증 대상 `71c98065`와 같고 메시지 한 문장만 다르다. 앞선 판정의 대상 `bebbb4e0`·`0a574c77`·`71c98065`·`ba513147`은 로컬 객체로 남아 있다. 줄 끝만 바뀐 `MinimapRT.renderTexture`는 커밋에서 빼고 HEAD로 되돌렸다. 메인 결정(`msg_a9234fbe1251`)대로 독립 검증이 끝난 뒤 push한다 |
+| commit | PR204로 main에 들어갔다(아래 「PR204 병합」). 측정 때 쓴 로컬 checkpoint 셋(테스트 두 줄, 다섯째 열기 상태, fixture 수정), SENTIS 한 줄 되돌림, 검증자 테스트 2개, 대화형 설정 두 파일은 업그레이드 커밋 `62228618` 하나로 합쳤다. `62228618`의 tree는 재검증 대상 `71c98065`와 같고 메시지 한 문장만 다르다. 앞선 판정의 대상 `bebbb4e0`·`0a574c77`·`71c98065`·`ba513147`은 이 worktree의 로컬 객체로만 남아 있다 |
 
 다음 순서:
 
@@ -178,8 +178,8 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 7. 커밋 재구성은 이 goal 갱신과 함께 했다. 결함 #1 메시지를 고치고 검증자 테스트를 업그레이드 커밋에 넣었다.
 8. 완료조건 (6) MCP 확인은 PASS로 끝났다(아래 결과). 사용자 결정 A(`msg_3d959b3798a7`)로 대화형 설정 두 파일을 업그레이드 커밋에 넣고, 문서 커밋을 이 goal 갱신과 함께 다시 만들었다.
 9. 두 파일을 더한 커밋의 약 등급 재검증은 PASS(비차단 결함 1)로 끝났다(아래 결과). 결함 #1의 문구를 커밋 메시지와 이 goal에서 고치고 두 커밋을 다시 만들었다.
-10. 다음 순서: push → PR·CI → 메인 승인 요청(정확한 head).
-11. 병합 뒤: 결과 기록 → Gardener → 종료 기록 → R-8. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다.
+10. push·PR204·CI·메인 승인 요청·병합은 끝났다(아래 「PR204 병합」).
+11. 다음 순서: 결과 기록(이 갱신) → 종료 Gardener(신규 Opus, 읽기 전용) → 결과 포함 종료 기록 PR 하나 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다. 시작 전에 메인에 계획을 status로 알린다(메인 `msg_a31233c60bf2`).
 
 ## 진척 단계
 
@@ -190,7 +190,8 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 - [x] 독립 검증
 - [x] MCP 연결 확인
 - [x] 설정 두 파일 재검증
-- [ ] PR 병합
+- [x] PR 병합
+- [>] 종료(Gardener·종료 기록 PR·종료 점검·R-8)
 
 ## 실제 결과와 미실행
 
@@ -474,6 +475,19 @@ Sol `task_fd269354bea8`(Dispatch `ctx_f63b8e064c1f`, 지정·화면 `gpt-6.1-sol
   - release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true). 이 worktree 터미널은 0이다.
 - 정리: 재검증이 남긴 SENTIS 한 줄과 `MinimapRT.renderTexture`는 사본(`lead-cleanup-after-reverify/`)을 남기고 HEAD로 되돌렸다. 작업 트리는 깨끗하다.
 
+### PR204 병합
+
+- main 통합: 승인 요청 전 main이 `94fc6845`에서 `8e498440`(PR199~PR203)으로 움직여, branch에 main을 병합했다(`11ba78898b12bec9b90167eb73655a22bebe4073`). 이미 원격에 있던 goal 커밋을 다시 쓰지 않으려고 rebase 대신 병합을 골랐다.
+  - main 쪽 44파일은 `.agents`·`00_Document`·`01_Phases`·`05_Management`·`AGENTS.md`·`CLAUDE.md`이고, `02_Server`·`03_Client`·`04_ClientNet`·`98_Shared`는 없다.
+  - 충돌은 `CURRENT.md`의 인접한 worktree 줄 하나였다. main의 Core·Rules·Management 줄과 이 branch의 Content 두 줄을 남겼다.
+  - 병합 뒤 remerge-diff(`lead-remerge-diff-11ba7889.txt`)의 바뀐 파일은 `CURRENT.md` 하나다. 이 원시는 병합 뒤에 남겼다(아래 교정 기록).
+  - 병합 뒤 main 대비 차이는 140파일 +853/-8147로, 병합 전 branch의 변경과 같다. 제품 쪽이 바뀌지 않아 Unity는 다시 돌리지 않았다.
+- push: 원격 branch를 `33925c73`에서 `11ba7889`로 fast-forward했다.
+- PR: [PR204](https://github.com/bass131/dawnholder-server/pull/204)(본문 `lead-pr-body.md`)다. CI는 넷 다 pass다. module-boundaries 2m29s, code-rules 1m31s, architecture-tests 5m11s, dotnet-tests 18m37s다(`lead-pr204-checks-final.txt`). Unity 테스트는 CI에 없다. GitHub 상태는 MERGEABLE / CLEAN이었다.
+- 승인 요청: 리드 `msg_f403653f4f98`(PR head·CI·판정 원문 셋·표본 대조·남은 우려).
+- 병합(메인 `msg_a31233c60bf2`): 사용자 원문은 메인 창에서 단독 한 줄로 Enter 제출된 「병합 승인: PR204 head 11ba78898b12bec9b90167eb73655a22bebe4073」이다(메인 전달). 메인이 직전 head·상태를 대조하고 `--merge --match-head-commit`으로 병합했다. 2026-10-07T18:01:57Z, merge commit `7086d45b92b76742d8c11facbf8a1031b81d0853`이다. 메인은 R-2로 세 판정 SHA256과 결론, 재검증 results.xml, PR 파일 140개를 직접 봤다.
+- 병합 뒤: 원격 branch `chore/unity-engine-upgrade-20261007`는 지워졌다(`git ls-remote` 0줄). 종료 기록은 최신 main에서 만든 `docs/unity-upgrade-closeout-20261008`에서 한다. 메인 checkout의 skip-worktree 세 파일 처리는 메인이 사용자 답을 기다리는 중이며, 이 worktree 작업과는 무관하다(메인 전달).
+
 ### 교정 기록
 
 첫 발생만 기록한다. 반복 규칙은 두 번째 발생부터 만든다.
@@ -491,6 +505,7 @@ Sol `task_fd269354bea8`(Dispatch `ctx_f63b8e064c1f`, 지정·화면 `gpt-6.1-sol
 - 원시에 들어간 Hub 토큰: MCP 검증자가 Editor 프로세스의 명령줄을 원시로 남길 때, Hub가 넘긴 `-accessToken`·`-hubSessionId` 값이 첫 M3 기록 한 곳에 들어갔다. 검증자가 스스로 찾아 바로 가렸고, 측정 스크립트도 그 뒤 자동으로 가리게 고쳤다. 근거 폴더는 로컬이라 push되지 않는다. 리드 계약은 명령줄 기록을 요구하면서 가리기 조건을 두지 않았다. 교정: Hub가 띄운 Editor의 명령줄을 기록하게 하는 다음 계약에는 두 인자의 값을 가린다는 조건을 넣는다.
 - 결정 답 수신 지연: 리드가 우편함을 기다릴 때 깨우는 유형(`--types`)에서 `dispatch`를 빠뜨렸다. 메인이 사용자 결정 A를 dispatch 유형(`msg_3d959b3798a7`, 16:49:37Z)으로 보냈는데, 리드는 메인이 다시 알린 17:13:41Z(`msg_033db43efc8e`) 뒤에야 읽었다. 그동안 리드는 메인에 대기 알림을 보냈다. 약 24분 늦었고 작업 결과에는 영향이 없다. 교정: 리드의 우편함 대기는 `--types`에 `dispatch`를 넣거나, 결정 답을 기다릴 때는 유형을 거르지 않는다.
 - 사용자 EditorPrefs 변경: 재검증 계약이 선택 실행으로 허용한 6.6 batch `-createProject`가 사용자 EditorPrefs 세 값을 지운 임시 경로로 바꿨다. 계약은 이 부작용을 예상하지 못해 실행 전 값을 남기게 하지 않았다. 그래서 원래 값은 모르고 복원하지 않았다. 앞선 독립 검증 계약도 같은 실행을 허용했다. 교정: `-createProject`를 허용하는 다음 계약은 그 세 값의 전후를 원시로 남기고 원래 값으로 되돌리게 하거나, 그 실행을 빼고 다른 근거를 쓴다.
+- 진행 중에 바뀐 병합 관문 정본: 이 PR이 진행되는 동안 main에 병합 관문 정본 갱신(PR199)이 들어왔다. 새 정본은 승인 묶음에 두 가지를 요구한다. 하나는 main 통합 때의 remerge-diff·같은 제품 blob 근거이고, 다른 하나는 검증 통과 뒤 goal·문서를 고쳤을 때 최종 head의 바뀐 부분을 한 번 재실사한 기록이다. 리드는 승인 요청 때 이 갱신을 읽지 않았다. 그래서 remerge-diff는 병합 뒤에야 남겼고, 재검증 뒤 고친 goal 결과 기록과 결함 #1 문구에 대한 재실사 기록은 없다. 그 변경은 문서와 커밋 메시지뿐이고 tree의 제품 부분은 재검증한 것과 같다. 교정: main 통합 뒤에는 병합 관문 정본을 다시 읽고 승인 묶음을 그 기준으로 만든다.
 
 ## 다음 계획 후보
 
