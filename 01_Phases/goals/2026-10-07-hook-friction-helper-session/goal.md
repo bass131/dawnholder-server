@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch: PR1은 `fix/hook-net-false-positives-20261007`(base `8e498440`)다. PR2는 PR1 병합 뒤 최신 main에서 만든다.
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T15:1xZ): 첫 독립 검증이 FAIL(차단 V1·V2)이다(아래 「PR1 독립 검증」). 메인이 O1을 받았다. 다음은 동작 계약 v3.2 → 신규 Opus 선행 시험 → 신규 Sol max 수정 → 신규 Opus 재검증이다. push 전이다.
+- **현재 위치**(2026-10-07T16:2xZ): 첫 독립 검증이 FAIL(차단 V1·V2)이라 수정 회차 중이다. 동작 계약 v3.2, 수정 회차 선행 시험, Sol 수정이 끝나 커밋됐다(아래 「PR1 수정 회차」). 다음은 신규 Opus 재검증이다. 계약 초안은 E/verify2-contract-head.md다. push 전이다.
 - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실린다. PR1 구현 중에는 이 checkout의 hook이 고치는 중인 판정 코드를 바로 쓴다(아래 「위험」).
 
 ## 진척 단계
@@ -179,7 +179,19 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 확정 실패 집계: 구현 계약 기준 V1·V2 1회. 같은 산출물(inert-text.mjs) 수정은 이번이 첫 회다.
 - 검증자 pane은 정산 뒤 15:01:41Z에 닫았다(사용자 직접 지시 범위). 부모인 리드 pane은 살아 있다.
 
+### PR1 수정 회차
+
+- 동작 계약 v3.2(E/merge-gate-behavior-spec-v3.2.md, SHA256 `69d3b1c9…`). 막는 쪽으로만 바뀐다. V1은 「bash와 다르게 읽을 수 있는 꼴」(따옴표 밖 `$'`·`$"`, 역따옴표 치환 안의 따옴표·역슬래시, CR, 따옴표·heredoc 본문 밖 특수 공백류)을 읽기 실패로 둔다. V2는 「묶음 뒤 파이프」를 묶음 안 모든 명령의 파이프로 본다. O1은 「실행기 찾기」 4(명령 낱말에 `$`·역따옴표)·5(gh·api 낱말)다. 문서 후속은 V5·V6·O4·O2다.
+- 선행 시험: 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown), Task `task_15f6e834cd37`, Dispatch `ctx_3ef4fbe18b53`, 계약 E/tdd2-contract.md(`642d50c4…`), 보고서 E/tdd2/report.md, worker_done `msg_da5ab53b69e2`. `text-masking.test.mjs`에 45개(막힘 유지 35, 대조 10)를 더하고 V4 본문을 고쳤다. 수정 전 306개 중 271 통과·35 실패이며 실패는 새 막힘 유지 35개뿐이다. 원문 harness는 v3.2 기대와 두 cwd 10/10이며 「풀림 7건」은 유지된다(메인 조건 충족).
+- 리드 R-2(E/lead-check/tdd2-r2-check.md): 같은 명령 재실행 수와 실패 이름 집합, harness 결과가 작업자 원시와 같다. 시험 파일에 개인 경로 0건이다. 비차단 관찰: 시험 파일 473·474·525행의 U+00A0·U+3000 실제 글자(작업자가 주석 표시), 작업자의 TEMP scratchpad receipt 쓰기(아래 「다음 계획 후보」).
+- 커밋(push 전): `b9fb4bef` 시험. 선행 시험 pane은 15:41:48Z에 닫았다.
+- 수정: 신규 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max · Full Access」, Codex v0.160.1, backend unknown), Task `task_8ad06eae8c39`, Dispatch `ctx_d3e40f51ae3f`, 계약 E/impl2-contract.md(`04b38e5d…`, 위험 2 문장 포함). worker-start가 `turn_start_unobserved`라 「공식 계약 draft 복구」대로 Enter 한 번을 보냈고 Codex 세션 기록에서 계약 전문 제출을 대조했다(E/impl2-draft-recovery.md).
+- 수정 결과(worker_done `msg_1d6bcee78d13`, 보고서 E/impl2/report.md): `inert-text.mjs`(V1·V2·O1, O4 주석), `merge-policy.mjs` 245행 주석(V6), README 「병합 관문」(V5, v3.2 설명), ORCA 233행(O2). MergeGate 306/306, Orca 22/22, 원문 harness 두 cwd 10/10(「풀림 7건」 유지), 리드 재현 V행 after = before. 여섯 문서 합 102,648. v3.2 최소 목록 밖에서 `$((` 산술 확장과 여는 괄호 앞 명령·대입 낱말도 읽기 실패로 뒀다(막는 쪽).
+- 리드 R-2(E/lead-check/impl2-r2-check.md): 네 파일 hash, 시험 수, harness, 재현 결과가 Sol 보고와 같다. 보호 파일 diff 없음. 비차단 관찰: Sol이 작업 36분 동안 heartbeat를 보내지 않았다.
+- 커밋(push 전): `d2fb23f0` O-T3 주석만(구조), `be093211` 동작과 문서. inert-text의 주석 변경은 바뀐 읽기를 설명하고 동작 hunk와 섞여 있어 동작 커밋에 함께 뒀다(커밋 메시지에 적음). 커밋 파일 hash가 Sol 최종과 같다. Sol pane은 16:22:18Z에 닫았고 리드 pane은 그대로다.
+
 ## 다음 계획 후보
 
 - `merge-gate-code-followup`의 O2(비ASCII 공백)·O6(이상한 session_id): 이 goal 밖이다. 종료 때 미해결이면 BACKLOG 새 행으로 등록한다.
+- Claude 작업자의 TEMP 쓰기(두 번째 발생): 첫 선행 시험 작성자의 `/tmp` 쓰기(첫 발생)에 이어, 수정 회차 선행 시험 작성자가 orca receipt를 Claude Code 세션 scratchpad(TEMP 아래)에 썼다가 근거 폴더로 옮겼다. 원인은 Claude Code가 scratchpad를 안내하고 계약은 「그 밖의 TEMP 쓰기 금지」만 적은 데 있다. 교정 후보는 위임 계약 양식(작업 맥락 스킬 templates)에 「Claude Code가 안내하는 scratchpad도 TEMP다. receipt·임시 파일은 근거 폴더 아래에 쓴다」를 넣는 것이다. 이 goal의 PR2 범위 밖이라 종료 때 BACKLOG 새 행으로 등록하고, 그 전까지 이 goal의 Claude 계약에 그 문장을 넣는다.
 - 작업자 pane 배치 문장 정리(ORCA R-1·R-5 2단계): 같은 worktree는 리드 pane split, 다른 worktree는 `terminal create --worktree`로 바로 열고 빈 받침 pane을 만들지 않는다(사용자 결정 `msg_e62c4989b3dc`). split close 때 부모 pane이 꺼지는 Orca 1.4.222 관측과 함께 다룬다. 종료 때 BACKLOG 새 행으로 등록한다.
