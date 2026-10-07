@@ -8,14 +8,14 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch: PR1은 `fix/hook-net-false-positives-20261007`(base `8e498440`)다. PR2는 PR1 병합 뒤 최신 main에서 만든다.
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T13:1xZ): PR1 branch를 만들고 goal 시작 기록을 쓰는 중이다. 다음은 동작 계약 v3 → 선행 시험 계약·기동이다.
+- **현재 위치**(2026-10-07T13:5xZ): 동작 계약 v3.1과 선행 시험이 끝났다(아래 「현재 결과」). 다음은 Sol 구현 계약·기동이다.
 - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실린다. PR1 구현 중에는 이 checkout의 hook이 고치는 중인 판정 코드를 바로 쓴다(아래 「위험」).
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
-- [>] 그물 설계와 선행 시험
-- [ ] 그물 구현·검증
+- [x] 그물 설계와 선행 시험
+- [>] 그물 구현·검증
 - [ ] 그물 PR 병합
 - [ ] 정본·스킬 작성·실사
 - [ ] 정본 PR 병합
@@ -112,6 +112,9 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 실제 차단 34건 중 그물(`suspect-words`) 12건이다. 2건은 10-06 검증자의 의도적 탐침이고 10건이 10-07 일상 명령 오탐이다(Rules 리드 5, 메인 3, Management 리드 2).
 - 10건 중 6건은 따옴표 구분자 heredoc 본문(받는 명령 `cat >`·`cat >>`·`git commit -F -`), 4건은 `echo`·`printf`·`node` 스크립트 인자의 따옴표 문자열이었다. 셸로 간 heredoc은 없었다.
 - 근사 분석(heredoc 본문 제외, 따옴표 문자열은 `$(...)` 부분만 코드로 남김)으로 10건이 모두 풀리고 탐침 2건은 계속 막힌다. 근사라서 v3과 선행 시험에서 다시 확인한다.
+- **v3.1 정정**: 같은 명령에 실행기가 있으면 가리지 않는다(아래 메인 결정). 그래서 **7건이 풀리고 3건은 계속 막힌다**. 막히는 3건은 05:44:15(heredoc 뒤 `node -e`), 08:38:19(`node board.mjs` 인자와 같은 명령의 `gh pr view`), 12:38:52(heredoc 뒤 `node --check`)다. 리드 근사는 E/census/interp-trigger-check.txt다.
+- 「7건 풀림」은 원문이 막힌 실제 cwd(feature branch 저장소) 기준이다. 저장소가 아닌 cwd에서는 05:52:41이 refspec 없는 push라 `branch-lookup-failed`가 된다. 원문 harness는 두 cwd를 모두 기록한다.
+- 집계 뒤 추가 오탐 1건: 13:3xZ 리드가 수신 대조 기록을 따옴표 구분자 heredoc으로 쓰고 같은 명령에서 우편함 송신을 하다 그물에 막혔다. 실행기가 없어 v3.1에서 풀리는 형태다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -120,6 +123,10 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 진입 지시: 메인 `msg_a944d3b84d3b`(2026-10-07T12:40:09Z, E/session/entry-check-msg_a944d3b84d3b.json). 씨앗 파일은 메인 개인 도구의 `plans/rules-hook-followup-seed.md`다.
 - 범위 초안 v1: 리드 `msg_15f282e3eec6`(12:55:32Z, 사본 E/scope-draft-v1.md).
 - 메인 결정 `msg_53e10a4d10c3`(12:57:04Z, E/session/wait1.raw.txt, 사용자 결정 아님): 질문 3 A(새 스킬은 bytes 묶음 밖), R-7 비적용, Z1을 `contract-context-check` 근거에 넣음, CLAUDE.md는 질문 2 A일 때 예외 한 줄만, PR2 실사는 시범 배정, 위험 2의 계약 문장 두 개는 PR1 계약에 필수.
+- 리드 설계 결정 둘(리드 `msg_4d4ba3803397`, 13:21:25Z): 1은 같은 명령 안 쓰기·실행을 받아들이는 한계로 두자는 안, 2는 저장소 시험에 원문 대신 구조 보존 축소형을 넣고 원문 10건은 근거 폴더 harness로 진입 스크립트에 넣는다는 안이다. 저장소가 공개라 원문의 개인 경로·내부 메모를 넣지 않는다.
+- 메인 결정 `msg_4e602fb57806`(13:22:13Z, E/session/wait4.raw.txt, 사용자 결정 아님): 1은 대안 「같은 명령에 셸·인터프리터 실행이 있으면 가리지 않음」으로 바꾼다(쓴 경로 추적 없이 넓은 쪽). 2는 동의. 리드가 동작 계약 v3.1(SHA256 `3e6a358f…`)과 선행 시험 계약 보충 v1.1(`msg_ec2d7bef05d9`)로 옮겼다. `node`가 실행기가 되면서 가리는 자리 「스크립트 파일 경로를 받은 node의 뒤 인자」는 쓸모가 없어 뺐다. 승인 범위 기본안에 「목록은 v3에서 확정한다」가 있다.
+- 메인 동의 `msg_589e4883d721`(13:33:12Z, E/session/wait6.raw.txt): v3.1과 「7건 풀림, 3건 유지」 정정을 승인 범위 안의 확정으로 본다. 08:38:19의 대가를 받아들이고, 쓰기와 실행이 함께 있을 때만 끄는 좁은 규칙은 만들지 않는다.
+- 선행 시험 질문 `msg_ad14f6e585f4`(13:39:07Z)과 리드 답 `msg_acb60f8728de`: 원문 harness는 저장소 아닌 임시 폴더와 feature branch 임시 저장소 두 cwd를 모두 기록한다.
 
 ## 적용 중인 사용자 결정
 
@@ -134,10 +141,19 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - **현황판 서브에이전트 쓰기 예외의 반복**(씨앗): 이전 goal의 첫 예외(보조 세션 표시) 뒤 10-07에 세 번 더 있었다. 두 번째는 표·코드 블록 터미널 렌더(18:0x KST), 세 번째는 mod 확인 실험(21:21), 네 번째는 「2) 병합 승인 방식 - 타이핑 대신 대시보드가 승인 줄을 채울지, 모달로 바꿀지 → A 대시보드가 승인 줄 채움」(21:26)이다. 네 번 모두 「메인 개인 도구 폴더 한정 + 사용자 결정마다」 모양이었다. 반복 규칙으로 올리는 것은 사용자 질문 2 A이며 PR2에서 CLAUDE.md(메인)에 반영한다.
 - **현황판의 승인 줄 채우기**: ORCA에는 적지 않는다(리드 판단, 범위 승인에 포함). ORCA 「병합 관문」이 이미 「사용자가 메인 창에 Enter로 제출」을 기준으로 삼고 입력 출처를 구분하지 못한다는 한계를 적어 두었다. 채우기는 메인 개인 도구의 동작이다.
 - **Management 종료 점검 1A·2A**: Management `backlog-management-closeout-handoff.md`가 전달한 원문(메인 `msg_02077b4a4df3`)은 「대시보드 결정 응답: 1) Management 종료 점검 1 - 운영툴 전 화면 글자 대비 장치를 어디에 둘지 → A BACKLOG 대기 행 · 2) Management 종료 점검 2 - Gardener 후보(맥락 메모 선행 판정 helper) → A 기존 BACKLOG 행에 근거 연결 · …」이다. 원문 사본은 이전 goal 근거 폴더에 있다. PR2의 BACKLOG 첫 변경 근거다.
+- **Advisor 모델 대안**(정본 반영 전 적용 중): 메인 `msg_87c0fed69b04`(13:30:23Z)·`msg_6439bbd9ef9b`(13:32:07Z, E/session/wait5.raw.txt)가 전달한 원문은 **「음 만약에 Advisor가 필요하면 Astra로 체크해보는거도 방법이야」**와 확인 **「OK, Advisor로 Fable 5.1도 있지만 GPT 6 Astra도 가능한점을 고려해줘」**다. 해석(사용자 확인으로 확정): 확정 실패 3회 뒤 Advisor는 신규 읽기 전용 `claude-fable-5-1`이 기본이고, 리드가 신규 읽기 전용 `gpt-6-astra` xhigh를 대안으로 고를 수 있다. 고르면 이유를 수행 기록에 남긴다. 기동 조건·기동 전 메인 보고·조언 파일 하나·새 Sol의 채택 기록·R-5·R-6은 그대로다. ORCA·AGENTS 반영은 이 goal 범위 밖이며 메인 씨앗 파일에 정본 반영 후보로 있다.
 
 ## 현재 결과
 
-- 아직 없다.
+### PR1 선행 시험
+
+- 작성: 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown), Task `task_91bc8b29a7ca`, Dispatch `ctx_38c14a6a0db5`, 계약 E/tdd-contract.md(`3ec3a43b…`)와 보충 v1.1(`382d8fa9…`). 보고서 E/tdd/report.md.
+- 새 시험 `99_Tools/MergeGate.Tests/text-masking.test.mjs`(135개)와 fixture `monitorInput` 추가, 기존 단정 세 곳 변경(`blocked-commands` 1, `suspect-words` 2, 전수 분류 표는 보고서 6절).
+- 구현 전 실행: 261개 중 215 통과, 46 실패. 실패는 통과 묶음 42(실행기 없는 축소형 7 포함), T1 2, 기대를 바꾼 기존 시험 2뿐이다. 막힘 유지 91(실행기 있는 축소형 3 포함)과 나머지 기존 시험 124는 통과다.
+- 원문 harness(E/tdd/census-harness.mjs): 두 cwd에서 10행 모두 `suspect-words`다. 구현 뒤 기대는 임시 폴더가 결정 없음 6·`branch-lookup-failed` 1·`suspect-words` 3, feature branch 저장소가 결정 없음 7·`suspect-words` 3이다.
+- 리드 R-2 대조(E/lead-check/tdd-r2-check.md): 같은 명령 재실행 결과와 실패 시험 이름 집합, harness 결과가 작업자 원시와 같다. 축소형 하나를 원문과 대조했다.
+- 작업자 자진 보고 경계 이탈 셋(비차단): 사용자 TEMP(`/tmp`) 쓰기 1건을 같은 명령에서 지움, Claude Code가 큰 셸 출력을 홈의 tool-results에 자동 저장(원문 포함, 저장소 밖), 맥락 메모 전 분석 명령 하나가 그물에 막힘(우회 없음). 첫 발생이라 반복 규칙은 만들지 않는다.
+- 작업자 pane은 정산 뒤 열어 둔다. 리드 pane을 직접 split한 pane이라, Orca 1.4.222에서 split을 닫을 때 부모가 꺼진 사례 때문에 R-8 인계 때 닫는다. 다음 작업자는 빈 기준 터미널에서 split한다.
 
 ## 다음 계획 후보
 
