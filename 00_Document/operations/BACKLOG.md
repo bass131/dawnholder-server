@@ -14,7 +14,7 @@
 | 담당 후보 | 소유 조율 대상이며 확정 배정이 아님 |
 | 상태 | 아래 세 값 중 하나 |
 
-상태는 `대기`, `goal 승격 → 링크`, `폐기 + 이유`로 제한한다. 승격 시 실제 `goal.md` 링크를, 폐기 시 이유와 결정 출처를 기록한다. 승격한 작업의 진행·검증·완료 결과는 링크된 goal에서 관리한다. 최초 12개와 아래 이관 후보 7개는 등록 당시 모두 `대기`였다. 현재 승격·폐기 처분은 해당 행의 상태와 결정 출처에서 확인한다. 최초 12개 ID·출처·조건·7필드는 보존한다.
+상태는 `대기`, `goal 승격 → 링크`, `폐기 + 이유`로 제한한다. 승격 시 실제 `goal.md` 링크를, 폐기 시 이유와 결정 출처를 기록한다. 승격한 작업의 진행·검증·완료 결과는 링크된 goal에서 관리한다. 현재 처분은 각 행의 상태·결정 출처에서 확인한다. 최초 등록 후보의 ID·출처·조건·7필드는 보존한다.
 
 ## 후보
 
@@ -28,9 +28,9 @@
 | `powershell-all-evidence` | 파트 PS 정리 후 All 비교·승격 제안과 문서 근거 인용/집계 비교 helper | 세 파트 정리 결과를 원시 근거와 대조하고 PS 정책을 판단 | 메인 전달·2026-10-03·`msg_8639aeaf7a12`(08:32:32Z, 인용 helper 채택)·`msg_d5453356cc75`(10:17:49Z, 집계 helper 통합)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달; `msg_c1412c982ac5`(10:39:09Z, 이번 목표에서 All/helper를 백로그로 분리); 메인 전달 `msg_7bfc0ca278f5`(2026-10-04T17:11:41Z), Gardener2 후보1의 문서 인용 결함 2건·사람 검출 관측을 기존 인용검사 근거에 연결 | **촉발 조건: 세 파트(GameDev·Architecture·Management) PS 정리 병합 완료.** 이후 별도 goal 승격 검토 | Rules | 대기 |
 | `workflow-definition-lint` | workflow 정의 lint | workflow 정의 오류 조기 검출; 전달된 [이전 목표의 결함 #4](../../01_Phases/goals/2026-10-02-agent-rule-context/goal.md) | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | actionlint류 도구 도입 사용자 승인 | Rules | 대기 |
 | `verification-depth-policy` | 검증 강도 차등·작은 작업 예외 | 원래 등록 이유: 검증 범위 차등의 미결 사용자 판단. 현재 처분: 승인된 검증 강도 시범의 goal 연결 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 등록 시 조건: 메인→사용자 정책 결정; 현 독립 검증 유지. 현재 결정: [승인 근거](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#요구사항-원천과-적용-결정)·[검증 강도 시범 정본](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범) | 메인→사용자 | goal 승격 → [운영 정본 반영](../../01_Phases/goals/2026-10-05-operating-canon/goal.md) |
-| `rule-document-pruning` | 규칙 문서 가지치기 | 규칙 유지 범위의 미결 사용자 판단 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 기존 명시 정비와 구분해 메인→사용자 정책 결정 | 메인→사용자 | 대기 |
+| `rule-document-pruning` | 규칙 문서 가지치기 | 규칙 유지 범위의 미결 사용자 판단; 계획 26의 ORCA 줄·스킬 bytes 증가와 가지치기 미반영 관측을 연결(이번 정본의 현재 수치가 아님) | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달; 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 26(76행), [PR2 원천](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#pr2-canon-sources) | 기존 명시 정비와 구분해 메인→사용자 정책 결정 | 메인→사용자 | 대기 |
 | `human-code-walkthrough` | 사람용 코드 따라읽기 문서 | 사람용 탐색 문서 도입의 미결 사용자 판단 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | 목적·유지비와 도입 여부를 메인→사용자가 결정 | 메인→사용자 | 대기 |
-| `post-db-static-analysis` | DB 뒤 정적 분석기 단계 | 유지보수성 후속 강화 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달 | DB 연동 뒤, 대상·담당 소유 조율 | 관련 영역 소유자와 조율 필요 | 대기 |
+| `post-db-static-analysis` | DB 뒤 정적 분석기 단계 | 유지보수성 후속 강화; 계획 30의 SQL·TS·Python 정적 검사 공백 후보를 연결 | 메인 전달·2026-10-03·첫 재계획 `msg_8639aeaf7a12`(08:32:32Z)를 새 계약 `msg_c9bc79f8ec43`(10:26:02Z)가 재전달; 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 30(80행), [PR2 원천](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#pr2-canon-sources) | DB 연동 뒤, 대상·담당 소유 조율 | 관련 영역 소유자와 조율 필요 | 대기 |
 | `npm-engine-warning` | CI npm engines 경고 노출 | 메인이 전달한 EBADENGINE 경고의 요약 누락 문제 | 메인 전달·2026-10-03·`msg_c9bc79f8ec43`가 재전달한 `msg_d5453356cc75` | warning 파일럿·npm 버전 증거·경고 포함/미포함 fixture·실측, Management engines 조율; 해소/승격은 사용자 판단 | Rules·Management | goal 승격 → [CI npm 경고와 운영 후속 정본화](../../01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md) |
 | `server-operations-view` | 운영툴 서버 운영 시각화 | 사용자 2026-10-03 요청을 메인이 전달 | 메인 전달·2026-10-03·`msg_c9bc79f8ec43`가 재전달한 `msg_acba01cbf81e`; 별도 목표 유지 승인 `msg_1da9a73ad0d2`와 [좁은 실시간 후보·Core 계약 근거](../../05_Management/goals/2026-10-05-development-record-navigation/goal.md#후속-후보와-서버-운영-시각화-근거) | DB 연동 뒤, 참고 출처는 구현 조사 때 확인 | Management | 대기 |
 | `work-status-view` | 운영툴 작업 현황 화면 | 작업 중·예정·결정 대기를 상시 보는 화면 요청 | 메인 전달·2026-10-03·`msg_c9bc79f8ec43`, 개인 CLI 참고 허용 `msg_c1412c982ac5` | 표시 범위·소유 조율과 별도 goal 승격 검토 | Management | 폐기 + 사용자 결정 「운영툴 「작업 현황」 화면 후보를 폐기할지 → A 폐기」; 메인 전달 `msg_a1fe33623cbe`·[다음 goal 사전 결정](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#다음-goal-사전-결정) |
@@ -44,7 +44,7 @@
 |---|---|---|---|---|---|---|
 | `powershell-dotnet-boundary-checklist` | PowerShell과 .NET 경계 체크리스트 | builder indexer·`[NullString]`·예외 체인 관련 실패에서 경계 확인 항목을 검토 | 메인 전달·2026-10-05T05:55:03Z·`msg_d57b6b7d08d2`, Fable 읽기 전용 조사 요약을 바탕으로 후보만 기록 지시 | 실제 원천 재확인·DB 단계 뒤 별도 범위와 사용자 채택 판단 | GameDev | 대기 |
 | `database-allowlist-drift-test` | DB allowlist 드리프트 probe의 정식 테스트 승격 | 검증자가 사용한 AST probe의 유지·회귀 검사 가치 검토 | 메인 전달·2026-10-05T05:55:03Z·`msg_d57b6b7d08d2`, 현재 TESTDB·INSTALL goal 범위에는 넣지 않음 | probe 원문·범위·오탐 및 기존 테스트 중복 대조 뒤 별도 goal 판단 | GameDev | 대기 |
-| `combat-smoke-timeout-investigation` | CombatSmoke_ZeroLag_Succeeds 간헐 timeout 조사 | 서버 제품 diff가 없다고 전달된 두 CI에서 15초 timeout. 원인은 미확정이며 flake·회귀로 단정하지 않음 | 메인 전달·2026-10-05T06:53:29Z·`msg_65740b4635b6`; 아래 두 사례와 Content 원시 경로는 재전달 근거 | G2·첫 PR 뒤 사용자와 조사 착수·범위를 결정. 후보 등록만으로 테스트 변경·서버 조사에 착수하지 않음 | GameDev | 대기 |
+| `combat-smoke-timeout-investigation` | CombatSmoke_ZeroLag_Succeeds 간헐 timeout 조사 | 서버 제품 diff가 없다고 전달된 두 CI에서 15초 timeout. 원인은 미확정이며 flake·회귀로 단정하지 않음; 계획 34의 같은 조사 후보를 연결 | 메인 전달·2026-10-05T06:53:29Z·`msg_65740b4635b6`; 아래 두 사례와 Content 원시 경로는 재전달 근거; 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 34(84행), [PR2 원천](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#pr2-canon-sources) | G2·첫 PR 뒤 사용자와 조사 착수·범위를 결정. 후보 등록만으로 테스트 변경·서버 조사에 착수하지 않음 | GameDev | 대기 |
 
 `combat-smoke-timeout-investigation`의 메인 전달 사례(원시 직접 미열람): PR179 Management는 서버 diff 0인 attempt1에서 실패하고 같은 head 재실행은 통과했으며 직전 head는 12초 통과했다. run ID는 이번 전달에서 미제공이다. PR180 Content는 새 head `3ee38bf`(최근 merge 제품 diff 0이라고 전달됨)의 dotnet run `37272468313` attempt1에서 테스트 :59의 target1이 15초 안에 공격거리2로 수렴하지 못했다. 같은 제품 코드 `ce3267a`의 CI `37235164389`는 12초 통과했고, 전달 시점에는 같은 head 1회 재실행 중이었다.
 
@@ -106,3 +106,43 @@ PR177 Gardener2의 [정리 후보2](../../.backups/verification/2026-10-04-teamm
 |---|---|---|---|---|---|---|
 | `persistence-recovery-post-deadline` | 영속화 제한 복구·principal 실증·전체 시험 행렬·crash 복구 | 기존 두 번째 PR의 PersistenceRecovery·Windows principal 실증·D1a 전체 행렬·crash 복구를 마감 뒤로 분리 | GameDev `msg_e1afafb84002`(2026-10-04T15:05:07Z), [전달 원문](../../.backups/verification/2026-10-05-operating-canon/msg_e1afafb84002.json); 메인 `msg_05ba75ccd7f9` 재전달, 승인된 [파트별 범위 사본](../../.backups/verification/2026-10-05-operating-canon/sources/plan-scopes-draft.md) | 11월 전시회 마감 뒤 별도 goal 승격 검토·현재 GameDev goal의 종료/보존 자원·실제 환경 경계 재확인; 저장소 자체의 마감용 구현은 게임 저장 고리 goal과 구분 | GameDev | 대기 |
 | `enemy-hit-dead-guard` | 즉시 적 타격의 IsDead 사전 가드 | `ApplyImmediateEnemyHit`의 죽은 대상 사전 거부 검토 후보; 실제 도달성은 이번 문서 작업에서 재검증하지 않음 | GameDev `msg_0a650b7e1c8b`(2026-10-04T16:11:42Z), [전달 원문](../../.backups/verification/2026-10-05-operating-canon/msg_0a650b7e1c8b.json)의 Content 전달 근거 `resume-content-dead-guard-candidate.json`·담당 goal; 메인 `msg_05ba75ccd7f9` 재전달 | 11월 전시회 마감 뒤 실제 경로·보존 전투 동작 재확인 및 코드 주인과 범위 조율 | GameDev·Content 협의 | 대기 |
+
+## 운영 현행화에서 연결한 후보
+
+계획 번호는 저장소 밖 `C:/Dev/DawnHolder_Dashboard/plans/ops-backlog-20261006.md` 75~88행이다. 원문은 E/pr2/sources.md 「BACKLOG 등록 원천」의 고정 발췌만 읽었다. 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`가 전달한 처리 계획 승인 「OK A로 가자…」의 「뒤로」 묶음이며 [PR2 원천](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#pr2-canon-sources)으로 연결한다. 계획 26·34는 기존 행, 30의 정적 분석은 `post-db-static-analysis`에 근거를 덧붙였다. 계획 38은 이미 반영돼 등록하지 않는다.
+
+| ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
+|---|---|---|---|---|---|---|
+| `harness-contract-completion` | 하네스 goal 미완 범위 연결 | 경로·사실 검사, PS 출력 고정, 홈 경로 하드코딩(format-check.ps1:83, runner.py:67), FEATURE_MAP 오경로 `Maps/States/Actions`, 없는 CODE_CONVENTION 절 참조, ADR-035가 승인 범위에서 멈췄다는 전달 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 25(75행) | 기존 goal의 미완 범위·현재 소유권 확인; 새 착수 승인으로 삼지 않음 | Rules(+Core) | goal 승격 → [하네스 원칙](../../01_Phases/goals/2026-10-03-harness-principles/goal.md) |
+| `operating-trial-evaluation` | 10-31 운영 시범 평가 준비 | Gardener 지속·검증 강도 시범·규칙 가지치기 세 평가의 담당·자료 수집이 필요 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 27(77행) | 담당 조율·각 시범 원시 확보·사용자 평가; 검증자 모델 시범 자료는 해당 goal에서 확인 | 메인 | 대기 |
+| `task-token-verdict-recording` | 작업별 토큰·판정 자동 기록 | 10-04 사용자 승인으로 전달된 기록 과제와 Sol rollout 공백으로 측정 원천이 비는 문제 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 28(78행) | 승인 원문·측정 원천·빈 rollout 처리·수집 범위를 재확인 | Rules | 대기 |
+| `codemap-runner-followup` | CodeMap runner·경로 검사 후속 | runner 회귀 fixture 저장소 편입·폴더 범위·경로 예산 검사·Node20 경고 후보 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 29(79행) | 현재 runner·CI와 기존 CodeMap goal의 완료 범위를 대조 | CodeMap | 대기 |
+| `operating-reference-maintenance` | 운영 검사 전제·참조 보존 점검 | CodeRules 로컬 실행 전제·Orca helper 1.4.218 고정·정본의 Git 밖 링크·보관 커밋 GC 위험 후보 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 30(80행) | 각 원문·현재 버전/참조·보존 수단 확인; SQL·TS·Python 정적 분석은 `post-db-static-analysis`로 연결 | Rules·CodeMap | 대기 |
+| `auto-mode-workflow-blockers` | auto mode의 리드 작업 차단 검토 | 리드 push·우편함 읽기가 pane별 사용자 허용으로만 풀렸다는 관측 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 31(81행) | 원시 차단 근거·프로젝트 범위 해법 확인; 전역 변경·우회는 사용자 명시 선택 범위만 | 메인→사용자 | 대기 |
+| `unity-mcp-seat-visibility` | Unity MCP 연결·시트 표시 후속 | AI Assistant 업그레이드로 연결 끊김 제거와 현황판 시트 보유 표시 후보 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 32(82행) | 현재 연결·시트 원시와 업그레이드 필요성·현황판 소유 조율 | Content·메인(현황판) | 대기 |
+| `windows-execution-prerequisites` | VHDX·PS5.1 실행 안내 점검 | 전달된 실행 전제를 DEVELOPMENT에 반영할 후보 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 33(83행) | 실제 환경·현재 실행 안내와 부작용을 대조 | Core | 대기 |
+| `management-operations-followup` | 운영 백엔드·시스템 카드 후속 | R-01~R-09·서버 등록/로그 계약·시스템 카드 전체 자료·R-15~R-17 후보 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 35(85행) | 기존 Management goal·`server-operations-view`와 경계 대조. VM 계획은 `management-e2e-input`, 실행 배치 확인은 `management-launcher-real-run`으로 연결 | Management | 대기 |
+| `script-formatting-followup` | PS·SQL 서식 보강 | OBS-1 이어지는 줄 199곳 등 서식 보강 후보이며 현재 잔여 실측값은 아님 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 36(86행) | 현재 잔여·코드 주인·이미 병합된 서식 범위 대조; 정리 후 All 측정은 `powershell-all-evidence` | Core+Rules | 대기 |
+| `rule-wording-ownership-followup` | 명칭·판정 표현·담당 잔여 점검 | GameDev 표기, O2, N1, N2, 판정 양식 표현, 외부 팀원 PR 응대 담당, 도우미 세션 역할, Unity 설정 부분 커밋 담당 후보 | 메인 전달·2026-10-06·목표 요청서 `msg_3902e180080c`, 외부 계획 37(87행); O2는 이 goal의 관문 O2와 다른 과거 관찰 번호 | 각 번호의 원래 goal·현재 명칭·담당 경계 대조; 일괄 명칭 정리는 승인 밖 | Rules 등 | 대기 |
+
+## Management에서 이관한 후보
+
+받은 7필드 행을 그대로 보존한다. [다음 일 분류표](../../05_Management/goals/2026-10-06-record-source-unification/next-steps-classification.md)는 commit `1f8a9dce`(반영 `3fc61360`) 기준으로 메인이 전달했다. remote-play-check·system-map-3d의 A(백로그로 옮긴다)는 2026-10-06 사용자 결정이며 Management `msg_2f00062564f8`가 전달했다.
+
+| ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
+|---|---|---|---|---|---|---|
+| management-launcher-real-run | 운영툴 실행 배치의 실제 더블클릭 확인 | README 34행이 사용자 진입점을 「미검증」으로 남겼다. 배치 분기 시험은 stub START였다 | Management 리드 제안·2026-10-06·msg_33365ac784b2(10:37:32Z, 같은 본문의 msg_54535201beaa)를 메인이 msg_b1bf869e87fd(10:38:19Z)로 받아 다음 Rules goal 입력에 넣음. 계획 35번과의 분리는 메인 결정 msg_da1c987f7ff0(10:54:00Z). 원문은 catalog nextSteps #25(change-launcher), 분류표 | 사람이 직접 더블클릭해야 한다. OS 합성 입력은 금지다 | Management | 대기 |
+| remote-play-check | 실제 원격 플레이 확인 | 원격 보간 goal이 실서버 원격 플레이·시각 jitter·성능을 미실행으로 남겼고 이후 실행 기록이 없다 | 사용자 결정·2026-10-06·메인 전달 msg_dfd3843e9464, catalog nextSteps #11(remote-rendering)·#23(change-interpolation), 분류표 | 로드맵 P7 「게임 회귀」 단계와 겹치는지 확인 | Core | 대기 |
+| system-map-3d | 운영툴 시스템 지도 3D 표현 | 9-30 이주 협의안의 Three.js 시스템 지도 후보가 처분 없이 남아 있다 | 사용자 결정·2026-10-06·메인 전달 msg_dfd3843e9464, catalog nextSteps #21(management-records), 분류표 | 색인 전환 뒤 표시할 관계 자료와 필요성 확인 | Management | 대기 |
+
+## 병합 관문 goal에서 연결한 후보
+
+[병합 관문 goal의 후보](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#다음-계획-후보)와 판정·관측을 연결한다. 메인 `msg_bf63c20c8abe`가 전달한 사용자 「후속 계획의 일괄 검토」 결정대로 개별 승인 없이 대기로 등록하며 새 검사·hook·계정 변경은 시작하지 않는다. 판정 원시는 E(`.backups/verification/2026-10-06-merge-gate-canon-refresh/`)에 있다.
+
+| ID | 제목 | 이유 | 출처(누가·언제·메시지 ID) | 선행 조건 | 담당 후보 | 상태 |
+|---|---|---|---|---|---|---|
+| `codex-merge-blocking` | Codex 세션 병합 차단 | 현재 Claude hook은 Codex에 적용되지 않음 | Rules goal 2026-10-06-merge-gate-canon-refresh 「다음 계획 후보」·초안 세부 근거 4; 메인 전달·2026-10-06·`msg_3902e180080c` | 프로젝트 hook 지원·신뢰 및 변경마다 사용자 검토 조건·현재 관문과 동일 판정 확인 | Rules | 대기 |
+| `agent-account-ruleset` | 에이전트 계정 분리·ruleset 보강 | 모든 세션을 서버 쪽에서 막는 대안과 관리자 우회 「PR로만」 중간안 후보 | Rules goal 2026-10-06-merge-gate-canon-refresh 「다음 계획 후보」·초안 세부 근거 3; 메인 전달·2026-10-06·`msg_3902e180080c` | 공식 ruleset 확인·계정/classic 토큰·이 PC gh/git 로그인 비용 검토·사용자 범위 승인 | 메인→사용자 | 대기 |
+| `mailbox-output-loss-hook` | 대기 출력 유실 차단 hook | 우편함 대기의 `&`·`/dev/null` 사용을 PreToolUse 층에서 막을 후보 | Rules goal 2026-10-06-merge-gate-canon-refresh 「다음 계획 후보」; 메인 확인·2026-10-06·`msg_bc4cea4b161f` 2항 | 묶음 2 계획 12와 범위·오탐·현행 Bash 백그라운드 절차 대조 | Rules | 대기 |
+| `merge-gate-code-followup` | 병합 관문 코드·경계 후속 | T1 `+main`·한국어 주석 언어·O-T3 단독 병합 예외 이유, 비ASCII 공백 O2·이상한 session_id O6 후보 | Rules goal 2026-10-06-merge-gate-canon-refresh 「다음 계획 후보」, E/reverify3/verdict.md 및 E/verify/verdict.md:138·142(2026-10-06). O2는 gh 실패의 관측·추론, O6는 UUID 사용 시 영향 없음 관측 | 각 판정·현행 동작·반례 재확인; 다른 goal의 계획 37 O2와 구분·현재 승인 관문 보존 | Rules | 대기 |
+| `sendmessage-delivery-observation` | SendMessage 전달 모양 실측 | 분류기 거부로 전달 모양을 미측정했으며 hook은 입력을 이미 막음 | Rules goal 2026-10-06-merge-gate-canon-refresh 「관문 적용 확인」(2026-10-07) | 허용된 안전 입력과 분류기 경계 확인·실제 전달/차단 근거 확보 | Rules·메인 | 대기 |

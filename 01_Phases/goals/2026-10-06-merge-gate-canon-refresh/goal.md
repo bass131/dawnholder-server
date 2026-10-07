@@ -8,14 +8,14 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - branch: PR1은 `feat/merge-gate-20261006`(base `a47a027`)이고 [#198](https://github.com/bass131/dawnholder-server/pull/198)로 병합됐다(아래 「PR1 병합」). PR2는 그 병합 commit `94fc6845`에서 만든 `docs/canon-refresh-20261006`이다.
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_62d7bc65-8590-4240-a6bb-7caad4e6b3da`(Claude Code 2.1.292 업데이트 뒤 같은 대화를 다시 연 세션, 이전 `term_af8ac4fc-…`). Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T05:55Z):
-  - 지금 단계: PR1이 [#198](https://github.com/bass131/dawnholder-server/pull/198)로 병합됐고(05:37:08Z, 병합 commit `94fc6845`, 아래 「PR1 병합」) 완료조건 5 적용 확인을 마쳤다(아래 「관문 적용 확인」). 다음은 PR2 작성 계약 → Sol 작성 → 신규 `gpt-6-astra` 실사다.
-  - 완료조건 5: 메인 창(`no-approval`), 리드 pane(`not-main-checkout`), 세션 중 반영 셋째 관측이 끝났다. SendMessage 전달 모양만 분류기 거부로 미측정이다.
-  - 메인 쪽 상태: 메인은 main-active의 새 세션 `term_b0a92ae1-…`이고 표식이 있다. PR2는 그 창의 승인 줄로 병합한다(완료조건 8).
-  - 살아 있는 작업자·검증자 pane: 없다.
+- **현재 위치**(2026-10-07T07:05Z):
+  - 지금 단계: PR2 Sol 작성이 끝났고 리드가 이관 원문을 넣고 표본 대조했다(아래 「PR2 작성」). 다음은 메인의 CLAUDE.md 수정 → 신규 `gpt-6-astra` xhigh 문서 실사 → PR2 생성·CI·승인 묶음이다.
+  - 완료조건 5: 끝났다(아래 「관문 적용 확인」, 맞바꾼 새 자리의 메인 창 덧붙임 포함). SendMessage 전달 모양만 분류기 거부로 미측정이다.
+  - 메인 쪽 상태: 폴더 맞바꾸기 뒤 메인은 원래 clone `C:/Dev/DawnHolder_Project`(branch main, 표식 있음)의 새 세션 `term_cdc06c26-…`이다. PR2는 그 창의 승인 줄로 병합한다(완료조건 8).
+  - 살아 있는 작업자·검증자 pane: 없다. PR2 Sol은 정산하고 닫았다.
   - 다시 열 때: Run은 `run_93a27bd491a9`다. rules-active에서 새 리드를 `claude-opus-5-5` xhigh로 열고, 새 handle을 `orca orchestration run-use`로 같은 Run에 묶는다. 그 뒤 이 절과 「관문 적용 확인」을 읽는다. 우편함 대기는 E/session/의 가장 큰 번호 wait 원시에서 처리한 delivery를 `--ack`로 넘겨 하나 연다. 메인 handle은 매번 `orca terminal list --json`으로 확인한다.
   - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실려 있다. 명령 문자열에 gh·merge나 push·main 낱말 조합을 쓰지 않고, 본문은 파일로 넘긴다. 승인 묶음을 보낸 PR의 branch에는 push하지 않는다(head가 옮겨진다, 아래 「PR1 병합」).
-- 지난 위치 기록: 설계 확정 → 선행 시험(`597839c`)·정본 문장(`4ae9622`)·CLAUDE.md(`00d180b`, 메인) → 구현(`26cb8b3`) → 독립 검증 차단(D1·D2) → v2.1 수정(`335bce6`·`56c29a8`·`97fa7b8`) → 재검증 차단(R1·R2) → v2.2 수정(`b9e1d2a`·`178ab0b`) → 두 번째 재검증 차단(S1·S2) → v2.3 수정(`d0caf8f`·`f8d9751`) → 세 번째 재검증 통과(`b41a433`·`644915a`) → PR #198 병합(`94fc6845`).
+- 지난 위치 기록: 설계 확정 → 선행 시험(`597839c`)·정본 문장(`4ae9622`)·CLAUDE.md(`00d180b`, 메인) → 구현(`26cb8b3`) → 독립 검증 차단(D1·D2) → v2.1 수정(`335bce6`·`56c29a8`·`97fa7b8`) → 재검증 차단(R1·R2) → v2.2 수정(`b9e1d2a`·`178ab0b`) → 두 번째 재검증 차단(S1·S2) → v2.3 수정(`d0caf8f`·`f8d9751`) → 세 번째 재검증 통과(`b41a433`·`644915a`) → PR #198 병합(`94fc6845`) → 적용 확인 → PR2 Sol 작성.
 
 ## 진척 단계
 
@@ -25,7 +25,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - [x] 병합 관문 구현·검증
 - [x] PR198 병합
 - [x] 관문 적용 확인
-- [ ] 정본 현행화 작성·실사
+- [>] 정본 현행화 작성·실사
 - [ ] 정본 PR 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 점검과 R-8 인계
@@ -452,6 +452,10 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 문구 없는 SendMessage로 전달 모양을 재려던 시도는 auto mode 분류기가 거부했다. 다른 경로로 다시 시도하지 않아 SendMessage의 실제 전달 모양은 미측정이다. 도구 설명에는 받는 쪽에 `<cross-session-message from=…>`로 감싸 도착한다고 적혀 있다(문서 근거).
   - 무해 CronCreate 한 번은 05:51:33Z에 실행돼 큐에 들어갔고, 리드 turn이 끝난 05:53:14Z에 원문 그대로(감싸는 태그 없음) 사용자 turn으로 전달됐다. 대화 기록 필드는 `isMeta` true, `promptSource` "system", `turnOrigin` "scheduled"다. 그래서 예약 prompt 입력의 차단이 필요한 방어다. UserPromptSubmit이 그 turn에 돌았는지는 기록으로 알 수 없다. 원시는 [E/apply-check-prompt-tools.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/apply-check-prompt-tools.md)다.
 - 판정: 완료조건 5의 세 실측(메인 창, 리드 pane, 세션 중 반영)이 끝났다. 남은 미측정은 SendMessage 전달 모양 하나이며, hook이 그 입력을 이미 막으므로 PR2 진행을 막지 않는다.
+- 덧붙임, 맞바꾼 새 자리의 메인 창: 폴더 맞바꾸기 뒤 메인 `msg_20cce05f10b3`(06:19:35Z, 원문 [E/apply-check-main-window-new-location.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/apply-check-main-window-new-location.md))이 측정을 보냈다.
+  - 원래 clone `C:/Dev/DawnHolder_Project`의 새 메인 본체(하위 에이전트 아님)가 승인 기록 없이 없는 PR 번호의 정식 단독 명령을 냈다.
+  - 결과는 `no-approval` deny다. 확인 창은 뜨지 않았다. 표식 검사를 지났으므로 새 자리에도 표식이 있다.
+  - 같은 전달의 사용자 지시는 새 메인 세션 시작 지시 「폴더 맞바꾸기 뒤 새 메인이야, 인계 메모 순서대로 진행해줘」뿐이며 새 결정은 아니다.
 
 ### PR2 작성 계획
 
@@ -486,6 +490,25 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
   - Gardener 순서: `msg_9291578c67e9`, `msg_ccd16077ebfa`. 예외는 `msg_0627c486562c`다.
   - draft 크기 조건: 범위 초안 리드 판단을 `msg_bc4cea4b161f` 2항이 승인했다.
 - 목표 사이 작업 폴더(항목 8): 메인 요청서 항목 8과 Management 제안 5다. 이번 실제 예는 메인 `msg_bdf15dee0740`, Management `msg_91def97e8eeb`다.
+
+### PR2 작성
+
+- Sol: 신규 `gpt-6.1-sol` max다. 리드 pane 아래 vertical split `term_afd9deb1-…`, Task `task_2a8a00b893a6`, Dispatch `ctx_d5b2601c70ec`다. 화면 표시는 「GPT-6.1-Sol max · Full Access · never」였고(E/pr2-first-screen.json) backend 모델은 unknown이다.
+- 계약 v1: E/pr2-contract.md(17,481자, SHA256 `6d6311fe…`, 고정 HEAD `6a9d522`). 리드 맥락 메모는 E/pr2-astra-context.md, 원천 발췌는 E/pr2/sources.md다.
+- 연결: worker-start가 `turn_start_unobserved`였다. R-5 draft 복구 조건을 확인했다(새 pane, 다른 입력 없음, placeholder 22,269자 = 계약 + 4,788자). 06:16:19Z에 텍스트 없는 Enter를 한 번 보냈다. 사후 대조에서 Sol 세션 기록의 두 번째 사용자 입력(22,267자)에 계약 전문이 있었다(E/pr2-draft-recovery.md).
+- 질문 넷: 모두 공식 ask다. Orca 1.4.222라 수신 helper 대신 사람이 identity를 대조했다(E/pr2-question1~4-manual-check.md).
+  1. `msg_2f1221cc05d7`(06:18:43Z): 화면 모델 문의다. 기동 화면 표시와 근거 경로로 답했다.
+  2. `msg_44867ac49320`(06:29:17Z): 계약의 감축 뒤에도 상한을 넘었다. 보충 1로 답했다. 새 문장 압축, 기동 블록 템플릿 한 줄, 관측·대기 절 합치기, 「실행과 감독」 중복의 링크화, 세 문장 추가 이관이다.
+  3. `msg_749ec9f5e47a`(06:36:51Z): 다시 넘었다. 보충 2로 답했다. 원천 링크를 ORCA 도입부 한 곳(`#pr2-source`)으로 묶고, 버전·날짜와 모델 시범 조건은 보존한다.
+  4. `msg_f746edc284ad`(06:43:30Z): 205 bytes 넘었다. 보충 3으로 Sol이 준비한 9문안을 허용하고 세 곳의 뜻을 살리게 고쳤다.
+  보충 원문은 E/pr2-contract-supplement1~3.md다. 모두 계약 v1의 감축 방법 안의 선택이며 범위를 넓히지 않았다.
+- 완료: worker_done `msg_25373a559e8b`(06:56:50Z)이다. 수신 helper가 허용했다(E/pr2-worker-done-check-output.json). 보고서는 E/pr2/report.md다.
+- 리드 재측정(E/lead-pr2-numbers.txt): ORCA 250줄, 여섯 파일 합계 102,649 bytes(base 102,660)다. 바뀐 파일은 허용한 9파일뿐이다. CLAUDE.md는 메인이 따로 잰다.
+- 이관: 15블록을 「ORCA에서 옮긴 서술」에 넣고 기계로 대조했다(E/lead-pr2-moved-check.txt, 모두 통과).
+- 리드 표본 대조(R-2 방식, 전수 아님): 아홉 파일 diff를 보고서의 위치표와 맞춰 봤다.
+  - ORCA에서 지운 「실행과 감독」 조건이 orca-work 「수행·정산·종료」에 있다. timeout은 종료 증거가 아니라는 조건(48행), 재사용 금지(20·50행), 전체 Delivery 뒤 ack(50행)를 확인했다.
+  - 관찰 하나: orca-work 39행이 「[draft 정본](…)를 따른다」로 바뀌어 조사가 어긋난다(원래 「을」). 리드가 고치지 않고 독립 실사 계약에 넘긴다.
+- 정산: worker-release는 06:57:27Z에 `retained`(`external_terminal`)로 끝났다. idle 화면을 확인하고 06:59:17Z에 pane을 닫았다(`ptyKilled: true`). 재조회에서 재출현은 없었다(E/pr2-release.json, pr2-before-close.json, pr2-close.json, pr2-list-after-close.json).
 
 ## 요구사항 원천과 적용 결정
 
@@ -525,7 +548,7 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
 ## 현재 결과
 
 - PR1 병합 관문: #198로 병합됐다(`94fc6845`, 「PR1 병합」). 적용 확인을 마쳤다(「관문 적용 확인」).
-- PR2 정본 현행화: 아직 없다.
+- PR2 정본 현행화: Sol 작성이 끝났다(「PR2 작성」). 메인의 CLAUDE.md 수정과 독립 실사 전이다.
 
 ## 다음 계획 후보
 
@@ -534,6 +557,9 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
 - Codex 세션의 병합 차단: 저장소 `.codex/` 프로젝트 hook으로 같은 판정을 거는 방법. 신뢰한 프로젝트에서만 읽고 hook 내용이 바뀔 때마다 사용자 검토가 필요하다(초안 세부 근거 4). 사용자 질문 1 A로 이번에는 하지 않는다.
 - 에이전트용 GitHub 계정 분리와 ruleset 보강: 서버 쪽에서 모든 세션을 막는 대안. 비용은 계정·classic 토큰·이 PC의 gh·git 로그인 전환이다(초안 세부 근거 3). ruleset 관리자 우회를 「PR로만」으로 바꾸는 더 싼 중간안은 문서 확인 전이다.
 - 우편함 대기 `&`·`/dev/null` 차단 hook: 묶음 2 계획 12에서 같은 PreToolUse 층으로 다룬다.
+  - 두 번째 발생: Management 리드가 06:38:36Z에 `check --wait`를 다른 명령 끝에 붙여 `&`와 `> /dev/null 2>&1`로 띄웠다(원문 `msg_9f655bb20a2c`, 근거 management-active E/check-after-stray-wait.json·E/inbox-after-stray-wait.json).
+  - 메인 판단 `msg_cec953dd3fdc`(06:40:23Z): 같은 리드·같은 실수의 두 번째라 교정 층 정본에 따라 문서보다 높은 층이 맞다. 후보는 병합 관문 hook과 같은 PreToolUse 자리의 검사다.
+  - Rules 리드 첫 발생: 06:57Z에 `--wait` 없는 `check --ack`의 출력을 `/dev/null`로 버렸다. 06:59:10Z에 다시 조회해 0건을 확인했다(E/session/wait62.raw.txt). 검사 범위를 `--wait`에 한정할지 `check` 전체로 할지 정할 근거다.
 - 병합 관문 후속(세 번째 재검증 비차단): T1 그물 조건 3의 `+main`(동작 계약 「맨 앞 `+`를 뗀 낱말」 보정), `merge-policy.mjs`의 한국어 이유 주석 세 줄을 파일 관례인 영어로, O-T3 정식 단독 병합이 그물을 건너뛰는 이유 주석. 원천은 E/reverify3/verdict.md다.
 
 <a id="orca-moved-history"></a>
@@ -543,6 +569,8 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
 ORCA 250줄 상한(완료조건 7)을 지키려고 PR1에서 ORCA의 역사 서술을 이 절로 옮겼다. 정본 문장 작업자가 원문을 `E/docs/moved-from-orca.md`에 보존했고, 리드가 기준 `e37ac7a`의 ORCA 행과 글자까지 같은지 기계로 대조했다(E/lead-moved-check.txt, 6블록 모두 같음). 이 절에 옮기면서 두 가지만 바꿨다. 상대 링크는 이 파일 위치에서 열리게 고쳤고, 원문의 `##` 제목은 굵은 글씨로 바꿨다.
 
 PR1 결함 수정에서 한 블록을 더 옮겼다(「R-7 M-1 관찰」). 수정 작업자가 같은 절 축약 뒤에도 ORCA가 상한을 227 bytes 넘는다고 보고했고(`msg_b5eb2054ebd7`), 계약의 두 번째 방법을 썼다. 원문은 `E/fix/moved-from-orca.md`에 있다. 리드가 기준 `eb10c80`의 ORCA 201행과 글자까지 같은지, 남은 행이 현행 평가 기준과 Fable 기동 경계를 지키는지 기계로 대조했다(E/lead-moved-check-fix.txt, 모두 같음). 바꾼 것은 상대 링크뿐이다.
+
+PR2(정본 현행화)에서 15블록을 더 옮겼다. ORCA 열 블록 외에 RESUME 두 블록과 goal-loop 스킬 세 블록도 이 절에 둔다(아래 「PR2 이관」 세 절). 작성 Sol이 원문을 `E/pr2/moved-originals.md`에 보존했다(계약 v1의 12블록, 보충 1의 3블록). 리드가 기준 `94fc6845`의 해당 행과 글자까지 같은지, 현재 파일에서 빠졌는지, 이 절에 들어왔는지 기계로 대조했다(E/lead-pr2-moved-check.mjs·txt, 15블록 모두 통과). 행 일부만 옮긴 블록은 「끝부분」이나 「가운데 문장」으로 적었고, 그 행의 나머지는 원래 파일에 남거나 현행 문장으로 바뀌었다. 바꾼 것은 상대 링크뿐이다. `.backups` 링크 중 둘(1.4.218 help, 2026-09-30 로컬 인계)은 원래 clone `C:/Dev/DawnHolder_Project`에만 있는 Git 제외 근거이며, 원래 위치에서도 이 worktree에서는 열리지 않았다.
 
 ### R-3 Orca 1.4.217 임시 확장(종료)과 1.4.220 복귀
 
@@ -593,6 +621,102 @@ D1a verification-2의 [종료 전 화면](../../../.backups/verification/2026-10
 **관찰 기록: 2026-10-04~05**
 
 메인이 전달한 이 PC의 당시 관측·출처·시각·확인 한계는 [환경·복구 기록](../2026-10-05-operating-canon/goal.md#pr1-environment-observations)에서 확인한다.
+
+### PR2 이관: ORCA
+
+#### R-1 이전 배치의 대체
+
+원래 위치: ORCA 53행 끝부분(`94fc6845`).
+
+이전의 메인과 두 Astra 좌우 배치, Management를 GameDev split에 두는 방식과 일괄적인 새 탭 금지는 이 결정으로 대체한다.
+
+#### R-1 Management 실증 식별자와 1.4.218 help
+
+원래 위치: ORCA 57행(`94fc6845`).
+
+메인이 전달한 2026-10-01 Management 실증은 Fable `term_4f0d2f42`, Sol `term_240ab30b` 두 건이다. 이 값은 당시 관찰 식별자이며 현재 실행 권한·재사용 대상이 아니다. Orca CLI **1.4.218**의 `terminal --help`에는 pane 크기 조절 명령이 없음을 확인했다([로컬 help](../../../.backups/verification/2026-10-01-operations-rules/terminal-help.txt)). 다른 버전의 지원 여부까지 일반화하지 않는다.
+
+#### R-2 메인 전달 사례
+
+원래 위치: ORCA 72행 끝부분(`94fc6845`).
+
+메인 전달 사례는 R-2 grep 대조와 smoke의 `handlerRuns` 상수 발견이다. [완료된 내장 컴포넌트 null 감사](../2026-10-01-native-component-null-audit/goal.md)의 검색 범위·원시 근거·미실행 한계는 관련 로컬 기록이며, smoke 사례의 관찰 출처는 [main-request.json](../2026-10-05-operating-canon/goal.md#orca-source-table-1)이다.
+
+#### R-3 helper smoke 검증 경위
+
+원래 위치: ORCA 115행 끝부분(`94fc6845`).
+
+자체 smoke는 독립 회귀와 구분하며 신규 Opus가 정상·각 ID 불일치·오래된 Dispatch·내용 있는 heartbeat·payload/CLI 실패와 공식 Question의 무태그 body/틀린 발신/일반 send 모방 반례를 독립 검증한다.
+
+#### R-3 helper 코드 변경 아님
+
+원래 위치: ORCA 117행 끝부분(`94fc6845`).
+
+이 문서 반영은 helper 코드 변경이 아니다.
+
+#### R-3 1.4.218의 2026-10-03 heartbeat 관측
+
+원래 위치: ORCA 119행(`94fc6845`).
+
+**Orca1.4.218의 2026-10-03 관측:** worker-show의 `lastHeartbeatAt=null`과 일반 Run check의 빈 결과에도 공개 inbox에는 해당 Run·Task·Dispatch·from_handle이 일치하는 heartbeat 5건과 `read=1`/`delivered_at`이 있었다. 저장·전달 처리는 원문·주소·identity·시각·receipt로 대조하고 null이나 빈 check만으로 송신 누락·프로세스 종료를 확정하지 않는다. 전송/저장, 정책 허용, 현재 liveness, 완료/정산을 구분하며 inbox 표시를 coordinator의 실제 본문 검토로 확대하지 않는다. 형식·runtime 버그·자동 소비 중 무엇이 원인인지는 미확정이다. 근거는 [메인 정정 요청](../../../.backups/verification/2026-10-03-harness-principles/operating-rules/main-heartbeat-observation-decision.json) `msg_29e3012b0274`(18:29:20Z), [inbox 원시](../../../.backups/verification/2026-10-03-harness-principles/operating-rules/heartbeat-worker-message-inspection.json), [worker-show 원시](../../../.backups/verification/2026-10-03-harness-principles/operating-rules/sol-heartbeat-current-show.json)다. 앞 4건의 태그 있는 subject/빈 body 불일치와 cadence 공백, Astra의 앞 송신 누락 안내 정정은 수행 보고에 따로 보존하며 새 실패 집계나 runtime 수정으로 확대하지 않는다.
+
+#### Unity MCP 연결 관측
+
+원래 위치: ORCA 137행(`94fc6845`).
+
+메인이 보고한 연결 관측은 다음과 같다. 시트가 없으면 첫 호출 뒤 「Connection revoked」가 났고, 시트를 활성화한 뒤에도 Unity의 **Edit > Project Settings > AI > Unity MCP**에서 연결을 다시 승인해야 풀렸다. 새 MCP 연결마다 다시 승인을 물을 수 있다. 이 관측과 전역 `unity-mcp` 등록 제거는 메인의 보고이며 Rules의 Unity 실행·실증이 아니다([후속 관측 출처](../2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정)).
+
+#### 공식 계약 draft 관측 경위
+
+원래 위치: ORCA 178행 끝부분(`94fc6845`).
+
+Architecture 초기 두 관측과 Management 세 번째 관측, 메인이 첫 tail만 보고 오판한 경위는 전달된 당시 사실이다. 문서 반영을 모든 pane의 복구 성공으로 일반화하지 않는다.
+
+#### R-6 환경 사실(skillOverrides)
+
+원래 위치: ORCA 187행(`94fc6845`).
+
+환경 사실: GameDev·Management·Architecture 세 checkout에 Git 제외 `.claude/settings.local.json`이 있고 `skillOverrides`의 `auto-mode-setup` 값은 `off`다. Architecture checkout에는 메인이 같은 `skillOverrides` 내용을 복사해 두었다. 이번 문서 작업에서 이 파일들은 읽기 전용이다. 이 값이 모든 세션·화면의 안내를 억제한다고 보장하지 않는다. D1a 종료 화면 관찰은 [이관 기록](#orca-moved-history)에 보존한다.
+
+#### R-7 당시 목표의 Fable 비기동
+
+원래 위치: ORCA 201행 끝부분(`94fc6845`).
+
+이번 운영 규칙 문서 목표에서는 Fable 세션을 열거나 새 시범 목표를 시작하지 않는다.
+
+### PR2 이관: RESUME
+
+#### RESUME 기록 정정·P1a 안내
+
+원래 위치: RESUME 3행 끝부분(`94fc6845`).
+
+[기록 정정](../2026-10-01-refactor-record-corrections/goal.md)은 PR150으로 병합됐다. [P1a 종료 기록](../2026-09-30-party-invite-command/goal.md)과 [로드맵](../../../01_Phases/milestones/2026-09-30-contracts-persistence/roadmap.md)은 이전 완료와 남은 의존성을 제공한다. 라우팅 시범은 성공했고 계층형 라우팅은 사용자 결정으로 전역 채택됐다. PR·규칙 문서 반영 상태는 goal에서 확인하며 P1b·DB·게임 정책 구현을 자동 시작하지 않는다.
+
+#### RESUME 2026-09-30 checkpoint
+
+원래 위치: RESUME 16행(`94fc6845`).
+
+2026-09-30 맥락 문서 checkpoint `b3cf78a`는 기존 준비 branch에 보존됐으며, 2026-10-01 정정 branch에 `147ef1c`로 가져왔다. 이후 push·PR·병합 상태는 정정 goal에서 확인한다. 기존 변경이나 이 문서 commit을 버리거나 무조건 main으로 전환하지 않는다. 새 checkout에 이 문서가 없다면 기존 작업 경로의 [로컬 인계](../../../.backups/handoffs/2026-09-30-game-dev-next-session.md)와 checkpoint를 확인한다. `CLAUDE.md`는 PR149로 main에 병합됐고 소유자는 Claude 메인이다. 상세 출처는 정정 goal에 있다. PR 병합에는 해당 PR에 대한 사용자 명시 승인이 필요하다.
+
+### PR2 이관: goal-loop 스킬
+
+#### goal-loop 현황판 설명
+
+원래 위치: goal-loop 스킬 18행(`94fc6845`).
+
+현황판이 각 worktree의 CURRENT 표 goal 링크와 `goal.md`의 「진척 단계」 절을 읽고, 해당 PR의 병합을 `gh`에서 확인하면 스스로 끝냄으로 표시한다는 것은 [메인의 설명](../2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정)이며 Rules가 현황판 동작을 검증한 사실이 아니다.
+
+#### goal-loop 당시 후속 범위
+
+원래 위치: goal-loop 스킬 68행 끝부분(`94fc6845`).
+
+정본 경로 검사/helper·토큰 기록·TDD 문구는 이번 문서 정비의 후속 범위다.
+
+#### goal-loop 하네스 goal 점검 예시
+
+원래 위치: goal-loop 스킬 90행 가운데 문장(`94fc6845`).
+
+예를 들어 현재 하네스 goal은 첫 BACKLOG PR 병합 뒤 중간 점검, 전체 PR/결과·[Gardener](../../../00_Document/operations/ORCA.md#goal-gardener) 뒤 종료 점검이다.
 
 ## 관찰 기록
 

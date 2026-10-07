@@ -19,7 +19,7 @@
 
 - 메인 Claude는 사용자와 목표·범위·완료조건·주요 결정을 정하고 파트 분할·결과 통합·사용자 보고·병합 승인 요청을 맡는다. 저장소 파일은 `CLAUDE.md`만 쓰며 파트 리드 Astra가 goal·구현 위임·검증·Git 작업을 맡는다.
 - 구현·테스트 작성·검증 판정은 Orca **외부 세션 작업자**에게 맡기고 구현자와 검증자를 분리한다. Codex 내부 `multi_agent`와 Claude 내부 Agent는 읽기 전용 조사·요약에만 쓰며 외부 작업자나 독립 검증을 대신하지 않는다. 독립 세션을 생략하는 작은 작업 예외는 없다. 승인된 [검증 강도 4주 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범)을 적용한다.
-- 신규 Opus 검증자는 구현자의 쓰기 종료 후 보고와 실제 diff·실행 근거부터 실사하고 요구사항·보존 동작을 기준으로 위 등급의 필수 검증을 수행한다. 테스트 파일만 쓰고 제품 결함은 번호로 반환한다. 문서 실사·강/약 코드 검증과 미실행 플레이·DB 등의 범위를 구분하며 [실제 진입 실행 판정](.agents/skills/dawnholder-task-context/SKILL.md#독립-판정과-통과-차단)을 따른다.
+- 신규 검증자는 [모델 라우팅](#모델-라우팅)의 시범 배정을 따른다. 구현자 쓰기 종료 후 보고·실제 diff·실행 근거부터 실사하고 요구사항·보존 동작으로 위 등급의 필수 검증을 수행한다. 테스트 파일만 쓰고 제품 결함은 번호로 반환한다. 문서 실사·강/약 코드 검증과 미실행 플레이·DB를 구분하며 [실제 진입 실행 판정](.agents/skills/dawnholder-task-context/SKILL.md#독립-판정과-통과-차단)을 따른다.
 - 작업자·검증자는 작업 하나 후 정산·종료하고 재사용하지 않는다. 수정과 재검증은 새 세션으로 수행한다. 같은 계약·같은 결함 번호의 확정 실패 3회 뒤 새 Sol과 읽기 전용 Fable Advisor를 쓰는 조건·집계·메인 보고는 [확정 실패 정본](00_Document/operations/ORCA.md#confirmed-failures)을 따른다. 파트당 검증자는 동시에 하나만 연다. 절차는 [Orca 위임 지침](.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다.
 - 일반 작업자는 할당 범위만 수행하고 추가 위임하지 않는다. 메인이 지정한 파트 리드 Astra만 승인된 목표·공간·권한 안에서 좁은 작업자를 한 단계 둘 수 있다. 새 목표·파트·승인 밖 세션 생성은 메인에 올린다. 범위 안 결함과 다음 후보·새 요청의 기본값·애매한 범위 판정은 [목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)을 따르며 후보마다 범위 확대 승인을 요청하지 않는다.
 - goal 범위는 만들 것·건드릴 곳·하지 않을 것·관찰 가능한 완료조건과 PR 경계로 고정한다. 착수 전 메인이 승인 초안과 대조하고 차이가 있으면 사용자가 판단한다. 완료조건을 막는 범위 안 결함만 루프에서 수정하며, 같은 산출물 수정이 3회를 넘으면 메인 체크포인트를 알린다. 이 체크포인트와 같은 계약·결함 번호의 확정 실패 3회 집계는 구분한다([목표 범위 정본](.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)).
@@ -30,10 +30,10 @@
 
 ## 모델 라우팅
 
-- 메인 Claude `claude-opus-5-5` → 파트 리드 Astra `gpt-6-astra` → 구현 Sol `gpt-6.1-sol`(reasoning effort `max` 고정), 독립 검증·테스트 작성·리뷰는 신규 `claude-opus-5-5` 세션으로 지정한다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다.
+- 메인 Claude `claude-opus-5-5` → 파트 리드 `claude-opus-5-5` xhigh(Claude Code, Astra 태그 유지) → Sol `gpt-6.1-sol`(reasoning effort `max` 고정)이다. 독립 검증·리뷰는 [모델 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지), 선행 시험 작성은 신규 `claude-opus-5-5`다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다.
 - [R-7 Fable 구현 전 설계 검토 시범](00_Document/operations/ORCA.md#r7-fable-pilot)은 4범주·2~3작업 한정으로 해당 정본의 범위와 절차를 따른다. 기본 모델 배정과 확정 실패 3회 뒤 Advisor를 대체하지 않는다.
-- 보고서 자료의 조사·설계 해설·본문·HTML·전용 생성 스크립트는 Astra가 작성한다. Sol에 보고서 작성·렌더링 구현을 맡기지 않는다. 독립 Opus가 내용·근거·표시를 검토하고 메인이 [작성 기준](00_Document/conventions/REPORTING.md)에 따라 사용자 최종 보고를 전달한다.
-- 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol capacity 장기 실패의 **신규 Astra 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.
+- 보고서 자료의 조사·설계 해설·본문·HTML·전용 생성 스크립트는 Astra가 작성한다. Sol에 보고서 작성·렌더링 구현을 맡기지 않는다. 독립 검증자가 내용·근거·표시를 검토하고 메인이 [작성 기준](00_Document/conventions/REPORTING.md)에 따라 사용자 최종 보고를 전달한다.
+- 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol capacity 장기 실패의 **신규 `gpt-6-astra` 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.
 - `gpt-6.1-sol`이 모델 목록에 없으면 Codex 업데이트 누락 가능성을 고려해 먼저 버전과 모델 노출을 확인한다. 원인을 단정하거나 승인 없이 업데이트·전역 설정 변경을 하지 않는다.
 
 ## 메시지와 보고
