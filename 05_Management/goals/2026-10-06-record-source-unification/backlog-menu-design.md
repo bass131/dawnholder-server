@@ -164,7 +164,7 @@ export function backlogIssueKind(code: BacklogIssueCode): 'format' | 'mismatch';
 | 2 구현 2단계(동작) | 같은 Sol | 위 파일과 `backlog-table.ts`·`main.ts`·`preload.cts`, `src/DevelopmentBacklog.tsx`·`recordsBridge.d.ts`·`App.tsx`·`styles.css` | 리드 commit |
 | 3 독립 검증(강) | 다른 신규 `claude-opus-5-5` | 판정에 필요한 시험 파일만 | 판정 원문 |
 | 4 대비 회귀 시험 | 신규 `claude-opus-5-5` | `tests/` | 리드가 시험만 commit |
-| 5 결함 #1 수정 | 신규 `gpt-6.1-sol` max | `src/styles.css`의 `.backlog-*` 규칙, `src/theme/tokens.css`의 `:root` 한 줄 | 리드 commit |
+| 5 결함 #1 수정 | 신규 `gpt-6.1-sol` max | `src/styles.css`의 `.backlog-*` 규칙, `src/theme/tokens.css`의 `:root`에 `--warning` 한 줄(기존 규칙은 바꾸지 않음, 메인 `msg_85435d570141`) | 리드 commit |
 | 6 재검증 | 다른 신규 `claude-opus-5-5` | 판정에 필요한 시험 파일만 | 판정 원문 |
 
 - 독립 검증은 실제 Electron에서 메뉴를 확인한다. 소유 TEMP 사본·자기 프로필·자기 프로세스만 쓰고, 사본의 BACKLOG를 바꿔 형식 오류·어긋남과 파일 없음 상태를 본다. 보조 화면 identity·bounds·scaleFactor와 앱 zoom 125%를 실행 때 관측한다. OS 합성 입력·전면화는 쓰지 않는다. 실행하지 못한 부분은 통과로 적지 않는다.
