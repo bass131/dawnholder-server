@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 사용자가 6000.6.4f1 설치를 마쳤고, 엔진 전환 작업자를 발행한다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1 첫 열기는 테스트 한 줄의 CS0619로 컴파일되지 않았다. 메인 범위 판정대로 테스트 작성자가 그 줄을 고친 뒤 새 작업자가 6.6으로 다시 열고 잰다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -17,7 +17,7 @@
 | 하지 않을 것 | 게임 코드·씬·프리팹·콘텐츠 수정, Force Reserialize Assets, 6.7 Beta·7000 Alpha, 안건 2에서 고르지 않은 패키지, MCP 승인 우회(EditorPrefs 직접 수정·화면 자동 클릭), C:/Dev checkout의 skip-worktree 세 파일, 전역 설정, content-active의 PR191 branch와 로컬 두 파일, `04_ClientNet`·`98_Shared` 변경(csproj 주석의 「Unity 6.4 LTS」 표기는 다음 계획 후보), 병합 실행 |
 | 관찰 가능한 완료조건 | (1) ProjectVersion이 6000.6.4f1 (12bfff696524)이고 lock은 Unity가 해석한 결과다(손 편집 없음). (2) 추적 파일 변경 전체가 분류표에 들어간다. 기존 `.meta` 전부의 `guid:` 값이 전후 같고(개수와 불일치 0을 기계 대조) 삭제·신규 `.meta`가 없다. 기계 로컬 값(cloud 3필드 등)은 커밋에 없다. (3) 같은 명령의 EditMode 전체·PlayMode 수치가 기준선(6000.4.7f1, 같은 main) = 엔진 커밋 뒤 = AI Assistant 커밋 뒤다. 실패는 (a)~(d)로 전수 분류한다. (4) 6.6에서 실제 경로 1회: 클라이언트가 로컬 서버(7777)에 붙는 기존 PlayMode 실서버 경로 또는 동등한 실제 진입. (5) 새 패키지 소스에서 상한 검사 부재와 신원 키 방식을 file:line으로 기록한다. (6) 사용자가 Editor를 열고 승인한 뒤 첫 무해 MCP 호출이 상한 거부 없이 성공하고, 컴파일과 Play 진입 뒤 두 번째 호출도 성공한다. 음소거 값은 원래대로 돌린다. (7) relay 실행 파일 hash 전후와 옛 패키지 worktree에서의 영향을 기록한다. (8) 문서·ADR·설치 안내(hash 고정 링크)가 새 버전을 가리킨다. (9) worktree별 영향과 되돌리기 절차가 goal에 있다 |
 
-「안건 2」는 아래 승인된 결정의 2A다. 위 네 항목은 초안 v2의 범위 표를 문구 그대로 옮겼다.
+「안건 2」는 아래 승인된 결정의 2A다. 위 네 항목은 초안 v2의 범위 표를 문구 그대로 옮겼다. 착수 뒤 메인 범위 판정으로 「건드릴 곳」에 테스트 한 줄이 더해졌다([승인된 결정](#승인된-결정)의 `msg_98f1c822d84e`).
 
 ### PR 경계와 점검
 
@@ -57,6 +57,7 @@ PR 하나에 커밋 셋이다(3A). 구조와 동작을 나누는 [하네스 원�
 - 7777(같은 메시지): 메인이 listener 0과 다른 파트의 게임 서버 미사용을 확인하고 Content 작업자에게 소유를 배정했다. 작업자는 시작 전 listener 0·다른 Unity 0을 확인하고 끝나면 해제를 원시로 남긴다.
 - 설치 확인(메인 `msg_d503ecc6f2dc`, 2026-10-07T09:07:54Z): 사용자 원문 「일단 지금 새로운 유니티 버전 설치가 다 끝났는데, 확인 가능한지 체크해봐줘」. 메인이 `C:\Program Files\Unity\Hub\Editor\6000.6.4f1\Editor\Unity.exe`의 ProductVersion `6000.6.4f1_12bfff696524`를 확인했다. 플랫폼 모듈은 Windows standalone과 Linux standalone이다(Linux는 추가 설치분, 빌드 대상과 무관한 환경 사실). 6.6 batch는 기준선 작업자가 끝나 다른 Unity가 0이 된 뒤 연다.
 - 작업자 배치(같은 메시지): `orca terminal split`에 작업 폴더 옵션이 없어, 리드 pane 대신 이 worktree 소속 「Terminal 1」을 split해 작업자를 연다. 소속 worktree와 cwd가 같아 R-1의 cwd만 옮기는 우회를 피한다. 메인이 승인했고 다음 작업자도 같게 연다. 「Terminal 1」은 기준 pane으로 남기고 작업자 정산 때 닫지 않는다.
+- 테스트 한 줄 범위 판정(메인 `msg_98f1c822d84e`, 2026-10-07T09:49:48Z, 메인 범위 판정이며 사용자 결정 아님): 6000.6.4f1 첫 열기가 `03_Client/Assets/Tests/EditMode/ComponentNullCharacterizationTests.cs`(176,62)의 CS0619 `Object.GetInstanceID()`(「Use GetEntityId instead」)로 컴파일되지 않았다. 메인은 이를 승인된 엔진 전환이 만든 범위 안 결함으로 보고 「건드릴 곳」에 그 한 줄(instance id 기록)을 더했다. 같은 파일의 다른 줄과 다른 테스트 파일은 밖이고, 다른 파일의 컴파일 오류가 새로 나오면 고치기 전에 다시 묻는다. 신규 Opus 테스트 작성자가 그 한 줄만 고치고, 기록 이름 변경(instanceId → entityId)이 기록 행을 읽는 다른 곳에 닿는지 grep으로 확인한다. 엔진 커밋에 Unity 생성 변경과 이 한 줄을 함께 묶는 것도 승인됐다(커밋 셋 구조 유지). 독립 검증자는 이 줄이 엔진 커밋에 들어간 이유와 단언 불변을 판정한다.
 
 ## 검증 계획
 
@@ -93,12 +94,12 @@ PR 하나에 커밋 셋이다(3A). 구조와 동작을 나누는 [하네스 원�
 | 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / `chore/unity-engine-upgrade-20261007`(upstream 없음) |
 | 기준 | `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0` |
 | 리드 Run | `run_dd3bf2daea68`(2026-10-07 Content 리드, `content-active` pane) |
-| Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼다. 6000.6.4f1은 설치됐다(메인 `msg_d503ecc6f2dc`) |
-| 작업자 | 기준선 Sol 정산·종료(아래 결과). 살아 있는 작업자 0, 「Terminal 1」은 기준 pane |
+| Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼고, 6000.6.4f1 첫 열기(컴파일 실패)를 한 번 거쳤다. 첫 열기의 부분 변경과 잠금 파일은 리드가 정리해 추적 파일은 HEAD와 같다(`lead-restore-first-open.txt`) |
+| 작업자 | 기준선 Sol, 엔진 첫 열기 Sol 정산·종료(아래 결과). 살아 있는 작업자 0, 「Terminal 1」은 기준 pane |
 
 다음 순서:
 
-1. 엔진 전환 Sol 계약(6000.6.4f1로 batch 첫 열기, 변경 분류표, 같은 harness로 EditMode·PlayMode 전체) → 결과 정산 → 리드 엔진 커밋.
+1. 신규 Opus 테스트 작성자가 `ComponentNullCharacterizationTests.cs`의 instance id 기록 한 줄만 고친다(메인 `msg_98f1c822d84e`) → 새 Sol이 6000.6.4f1로 다시 열어 업그레이드를 끝내고 변경 분류표와 같은 harness의 EditMode·PlayMode 전체를 잰다 → 정산 → 리드 엔진 커밋(Unity 생성 변경과 테스트 한 줄).
 2. AI Assistant Sol 계약(manifest 한 줄과 Unity 재해석 lock, 같은 측정, 새 패키지 소스 정적 확인) → 정산 → 리드 커밋.
 3. 문서 커밋 → 신규 Opus 독립 검증(MCP 확인 직전 메인에 알림) → PR·CI → 메인 승인 요청.
 4. 병합 뒤: 결과 기록 → Gardener → 종료 기록 → R-8. 보류 goal(PR191)은 [그 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)대로 main을 통합하고 6.6에서 검증한다.
@@ -132,6 +133,22 @@ Sol `task_140b8f96e4fd`(Dispatch `ctx_8c2f3e765fff`, 지정·화면 `gpt-6.1-sol
 - 리드 대조(09:35Z): 두 `results.xml`의 test-run 속성(356/356, 11/11, failed 0)과 실서버 테스트 Passed를 원시에서 다시 읽었다. 사후 음소거 값 0, Unity 0, 7777 listener 0(Windows·WSL)을 확인했다. release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true). 회수 대기 작업자는 0이다.
 - Unity가 기준선 실행 중 스스로 바꾼 두 파일: `ProjectSettings.asset`의 Standalone `SENTIS_ANALYTICS_ENABLED;` 제거 한 줄(SHA256 C1412CD2… → 934110CB…, 이전 goal에서 관측된 것과 같은 쌍)과 `MinimapRT.renderTexture` 줄바꿈(Git blob 같음). 작업자는 사본·diff를 남기고 그대로 두었다. 리드가 엔진 전환 전에 둘 다 HEAD 상태로 되돌렸고, 실행 전 hash와 같아졌다(`lead-restore-baseline-drift.txt`). 엔진 전환에서 생기는 변경만 따로 보이게 하려는 것이다.
 - 독립 판정은 아직 없다. 신규 Opus 검증의 입력이다.
+
+### 6000.6.4f1 첫 열기 — 컴파일 실패, 자체 점검
+
+Sol `task_5148d0531753`(Dispatch `ctx_cf508cb9ae6b`, 지정·화면 `gpt-6.1-sol max`, backend unknown)이 계약 v1(SHA256 `ed997bec…13f1`)대로 HEAD `1b7f3956`에서 실행했다. 보고 `sol-engine/report.md`(SHA256 `4959aec0…0301`), 분류표 `sol-engine/classification.json`(SHA256 `de8c5ca7…3b7e`).
+
+- 첫 batch 열기는 exit 1이다(74초, 대화형 입력 없음). editor.log 4733·4753·4788줄은 `ComponentNullCharacterizationTests.cs(176,62)` CS0619 `Object.GetInstanceID()` 「Use GetEntityId instead」, 4794줄은 「Scripts have compiler errors.」다. ProjectVersion은 6000.4.7f1 그대로였다.
+- Unity가 컴파일 전에 만든 변경은 셋이다: `manifest.json`, `packages-lock.json`(lock 항목 35개 변화: core 21, 최소 버전 강제 14, 분류 불가 0. 모듈 physicscore2d·tetgen·timelinefoundation 추가, vr 제거), 새 `ProjectSettings/PhysicsCoreProjectSettings2D.asset`(2키). 기존 ProjectSettings의 byte 변화와 SENTIS 반복 drift는 없었다. AI Assistant는 2.7.0-pre.3 그대로였다.
+- `.meta` 1129 → 1129, guid 불일치·삭제·신규 0이다. relay SHA256·크기·수정 시각은 전후 같다(`854f019d…cd66`). 음소거 0 → 1 → 0이다.
+- 계약 축소(리드 `msg_80dcfd34ed46`, `msg_38ffb4483224`): 컴파일 실패 뒤 EditMode를 한 번 시도했으나, 첫 열기가 남긴 `Temp/UnityLockfile`(0바이트) 때문에 harness gate가 Unity를 띄우지 않았다(`executed=false`). 서버 lane·PlayMode는 미실행이다. 6.6 수치는 아직 없다.
+- 리드 대조(10:11Z): editor.log 두 줄, `upgradeOpenExit=1`, `.meta` 대조 수치, Unity 0, 음소거 0, Windows·WSL 7777 listener 0을 원시와 현재 상태에서 다시 읽었다. release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true).
+- 리드 정리: 테스트 수정 뒤 다음 열기가 Unity 생성 변경 전체를 한 번에 남기도록 manifest·lock을 HEAD로 되돌리고 새 asset과 잠금 파일을 지웠다. 사본은 `sol-engine/runs/*/changed-files`·`untracked-files`에 같은 SHA256으로 있다(`lead-restore-first-open.txt`).
+
+교정 기록(첫 발생, 반복 규칙은 두 번째부터):
+
+- 작업자 보고 오류: 엔진 Sol이 미추적 파일 이름을 원시를 읽기 전에 `EntityIdSettings.asset`으로 보고했고(`msg_5ad15110534c`), 21초 뒤 실제 이름 `PhysicsCoreProjectSettings2D.asset`으로 고쳤다(`msg_e6bb33655c16`). 리드는 고치기 전 이름을 메인에 전달했다가(`msg_1ae62a1c1a38`) git status 원시로 확인하고 정정했다(`msg_0070907addae`). 다음 계약의 차단 항목에 「원시를 읽기 전의 보고」를 넣었다.
+- 리드 계약 이탈: 엔진 Sol 계약은 「리드의 쓰기는 끝났다」고 적었지만, 리드가 작업 중(약 10:00Z)에 이 goal에 메인 범위 판정을 기록했다. 작업자가 최종 status에서 발견해 물었고(`msg_2003e93b047a`), 리드가 소유를 확인해 보고에서 분리했다. 다음부터 작업자 실행 중 리드 기록은 근거 폴더에만 두고 추적 파일은 정산 뒤 쓴다.
 
 ## 다음 계획 후보
 
