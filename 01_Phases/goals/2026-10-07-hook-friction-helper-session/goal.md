@@ -5,11 +5,15 @@
 Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요구사항 원천과 적용 결정」) 재개를 지시했다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: PR2는 `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`)이고 이 goal 문서의 현행판이 여기에 있다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다.
+- branch·PR: PR2는 [PR208](https://github.com/bass131/dawnholder-server/pull/208), branch `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`)이고 이 goal 문서의 현행판이 여기에 있다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다. 분리 시험의 원격 흔적은 `trial/cred-base`(`7086d45b`)·`trial/cred-work-1`(`01a1d4d8`)과 PR #205(열림)다(2026-10-07T20:42Z 원격 조회).
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T19:5xZ): PR1은 멈추고 보존했다. 자격 증명 분리 시험의 밤사이 범위를 마쳤다(아래 「자격 증명 분리 시험」). 사용자 결정으로 이 goal은 PR2로 마치며(「적용 중인 사용자 결정」의 「이 goal은 PR2로 마침」), PR2 작성과 리드 R-2를 마쳤다(아래 「PR2 작성」). 다음은 신규 `gpt-6-astra` xhigh 독립 문서 실사다. CLAUDE.md 한 줄은 보류다(사용자 아침 확인).
-- 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실린다. PR1 구현 중에는 이 checkout의 hook이 고치는 중인 판정 코드를 바로 쓴다(아래 「위험」).
+- **현재 위치**(2026-10-07T20:4xZ): PR1은 멈추고 보존했다. 자격 증명 분리 시험의 밤사이 범위를 마쳤다(아래 「자격 증명 분리 시험」). 사용자 결정으로 이 goal은 PR2로 마친다(「적용 중인 사용자 결정」의 「이 goal은 PR2로 마침」). PR2는 작성과 독립 문서 실사(V1 차단 → 수정 → 좁힌 재실사 통과)를 마치고 PR208로 올렸다(아래 「PR2 작성」). 이 재개 지점 갱신 뒤 바뀐 부분을 다시 좁혀 실사받고 메인에 병합 승인 요청을 보낸다. 리드·작업자 세션은 그 뒤 닫힌다(사용자 지시 `msg_a82d8297c361`).
+- **다음 할 일**:
+  1. 메인: PR208 승인 묶음 R-2 → 사용자 승인 줄 → 병합. CLAUDE.md 한 줄은 보류다. 사용자가 직접 넣거나 허용 방법을 정하면 별도 커밋과 메인 R-2로 더한다. 이 줄 없이 병합할지도 사용자가 정한다(아래 「PR2 작성」).
+  2. 사용자 아침: 자격 증명 분리 시험 「아침 순서」 1~8(메인 보고 `msg_27ff509d7f16`, 아래 「자격 증명 분리 시험」)과 메인 리터럴 집계 1건 확인.
+  3. 병합 뒤 새 Rules 리드(R-8): 결과 기록 → Gardener → 종료 기록 PR → 종료 점검. 종료 때 「다음 계획 후보」의 BACKLOG 등록 대상을 처리한다. 분리 시험 후속 goal은 사용자 결정 뒤에만 연다(자동 착수 안 함).
+- 주의: rules-active에는 분리 시험의 worktree 설정이 남아 있다. 이 checkout에서 원격으로 보내는 커밋은 deploy key(SSH)로 나가고 https 자격 증명 도우미는 비어 있다(아래 「자격 증명 분리 시험」 ①). 유지·제거는 아침 ⑦ 정리의 사용자 결정에 맞춘다. 이 checkout의 병합 관문 hook은 PR2 branch라 기준 main과 같은 판정 코드를 쓴다.
 
 ## 진척 단계
 
@@ -17,8 +21,8 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - [x] 그물 설계와 선행 시험
 - [x] 그물 멈춤·후속 이관
 - [x] 분리 시험 밤사이 몫
-- [>] 정본·스킬 작성·실사
-- [ ] 정본 PR 병합
+- [x] 정본·스킬 작성·실사
+- [>] PR208 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 점검과 R-8 인계
 
@@ -256,6 +260,10 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 독립 문서 실사(신규 `gpt-6-astra` xhigh, Task `task_79934908506a`, 판정 E/pr2-review/verdict.md, 검증 HEAD `0136a3a5`): **차단 V1**. BACKLOG `mailbox-output-loss-hook` 덧붙임이 송신 결과 끊김 네 파일을 모두 파이프 원인으로 적었다. 넘김 원문과 Management goal은 파이프 원인 확인 두 파일과 당시 명령 미확인 두 파일을 구분한다. 귀속은 리드 계약(「쓸 내용」 6-c)과 이 goal 59행이다. 나머지 요구·보존·bytes·링크·권한·현실 시나리오 셋은 지적 없음, CLAUDE.md는 보류로 판정했다. 설계 관찰 O1(100행 최초 순서 문장)은 리드가 표식을 붙였다. 리드 R-2는 E/lead-check/pr2-review-r2-check.md다.
   - 확정 실패 집계: PR2 작성 계약 V1 1회(귀속 리드 계약·goal).
   - 처리: 리드가 59행을 원문 확인 수준으로 고쳤다. BACKLOG 덧붙임은 새 Sol 수정 세션이 고치고, 새 검증자가 수정분을 좁혀 재실사한다.
+- V1 수정(새 Sol, Task `task_9c8644a0b21b`, 보고 E/pr2-fix/report.md, 커밋 `5129e39c`): BACKLOG `mailbox-output-loss-hook` 출처 칸의 덧붙임만 고쳐 확인 두 파일과 당시 명령 미확인 두 파일을 나눴다. 리드 R-2는 E/lead-check/pr2-fix-r2-check.md다.
+- 좁힌 재실사(신규 `gpt-6-astra` xhigh, Task `task_4c0b1ebcbb19`, 판정 E/pr2-rereview/verdict.md, 검증 HEAD `5129e39c`): **통과**. V1 해소, O1 반영, 새 결함 없음, CLAUDE.md 보류 유지. 리드 R-2는 E/lead-check/pr2-rereview-r2-check.md다.
+- PR: branch를 원격에 올리고 [PR208](https://github.com/bass131/dawnholder-server/pull/208)을 만들었다(본문 E/pr2-body.md, 보류 문안 포함). 이 기록과 재개 지점 갱신은 통과 뒤 goal 변경이라 승인 요청 전에 바뀐 부분을 다시 실사받는다(ORCA 「병합 관문」).
+- 관측: 재개 지점을 고치려던 리드 Bash 명령 하나(heredoc 본문에 문서 낱말이 섞임)가 그물 `merge-gate:suspect-words`에 막혔다(20:4xZ). Edit 도구로 다시 했다. 그물 오탐 사례로 후속 goal에 넘긴다.
 
 <a id="orca-moved-history"></a>
 ## ORCA에서 옮긴 적용 기록
