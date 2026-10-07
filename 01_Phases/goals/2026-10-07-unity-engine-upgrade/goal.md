@@ -1,6 +1,6 @@
 # Unity 엔진 6.6·AI Assistant 업그레이드
 
-상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다. 그때 PlayMode는 0/11이었다. 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 파괴해 테스트 fixture의 저장·복원이 깨진 것으로 추정했다. 사용자 결정대로 그 구간을 고친 뒤 다시 재니 EditMode 356/356, PlayMode 11/11(실서버 경로 통과)로 기준선과 같다(자체 점검). 측정 중 Unity가 지운 기계별 SENTIS define 한 줄은 메인 결정대로 base 값으로 되돌려 커밋에서 뺐다. 신규 Opus 독립 검증은 PASS(차단 결함 0, 비차단 1)이고, 커밋된 tree에서 EditMode 356/356, PlayMode 11/11을 다시 냈다. 사용자 결정대로 검증자 테스트 2개를 업그레이드 커밋에 넣었다. 완료조건 (6) MCP 확인도 PASS다(차단 0, 비차단 1: relay 신원 키가 hash 기반이라 goal relay 줄을 고침). 그때 대화형 Editor가 6.6 형식으로 저장한 설정 두 파일을 사용자 결정대로 업그레이드 커밋에 넣었다. 그 커밋의 약 등급 재검증도 PASS다(EditMode 356/356, PlayMode 13/13, 차단 0). PR204가 사용자 승인으로 병합됐다(2026-10-07T18:01:57Z, merge commit `7086d45b`). 종료 Gardener도 끝났다(정리 후보 2, 채택 전). 종료 기록의 첫 문서 실사는 NOT PASS(차단 2: 리드 맥락 메모 사후 작성, 리드 대조 시각의 수기 기록)였고, 메인 결정대로 정정했다. 종료 기록 PR206을 열었고, 재실사의 NOT PASS(차단 3)도 정정했다. 남은 것은 새 문서 실사, PR206 병합 승인, 종료 점검, R-8이다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
+상태: **6000.4.7f1 기준선 측정 완료(EditMode 356/356, PlayMode 11/11, 자체 점검). 6000.6.4f1은 네 번 열었고 모두 컴파일되지 않았다. 원인은 차례로 테스트 한 줄(CS0619), 기존 AI Assistant 2.7.0-pre.3(UAC0005), 서드파티 Lucid Editor 두 파일(CS0619), 같은 Lucid Editor의 다른 한 줄(CS0619)이다. 테스트 한 줄은 고쳤고, AI Assistant 2.20.0-pre.2는 오류 없이 들어왔다. 사용자 결정대로 Lucid Editor 에디터 코드 123개를 지우자 다섯째 열기가 컴파일됐다. 그때 PlayMode는 0/11이었다. 6.6이 강제한 Input System 1.20.0이 임시 입력 설정을 파괴해 테스트 fixture의 저장·복원이 깨진 것으로 추정했다. 사용자 결정대로 그 구간을 고친 뒤 다시 재니 EditMode 356/356, PlayMode 11/11(실서버 경로 통과)로 기준선과 같다(자체 점검). 측정 중 Unity가 지운 기계별 SENTIS define 한 줄은 메인 결정대로 base 값으로 되돌려 커밋에서 뺐다. 신규 Opus 독립 검증은 PASS(차단 결함 0, 비차단 1)이고, 커밋된 tree에서 EditMode 356/356, PlayMode 11/11을 다시 냈다. 사용자 결정대로 검증자 테스트 2개를 업그레이드 커밋에 넣었다. 완료조건 (6) MCP 확인도 PASS다(차단 0, 비차단 1: relay 신원 키가 hash 기반이라 goal relay 줄을 고침). 그때 대화형 Editor가 6.6 형식으로 저장한 설정 두 파일을 사용자 결정대로 업그레이드 커밋에 넣었다. 그 커밋의 약 등급 재검증도 PASS다(EditMode 356/356, PlayMode 13/13, 차단 0). PR204가 사용자 승인으로 병합됐다(2026-10-07T18:01:57Z, merge commit `7086d45b`). 종료 Gardener도 끝났다(정리 후보 2, 채택 전). 종료 기록의 첫 문서 실사는 NOT PASS(차단 2: 리드 맥락 메모 사후 작성, 리드 대조 시각의 수기 기록)였고, 메인 결정대로 정정했다. 종료 기록 PR206을 열었고, 재실사의 NOT PASS(차단 3)와 3차 실사의 NOT PASS(결함 셋: 하나는 정정, 둘은 메인 결정)도 처리했다. 남은 것은 새 문서 실사, PR206 병합 승인, 종료 점검, R-8이다.** 이어갈 곳은 [재개 지점](#재개-지점)이다.
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active`, branch `chore/unity-engine-upgrade-20261007`. 보류 중인 [아이템·인벤토리·재화](../2026-10-05-items-inventory-currency/goal.md#재개-지점)는 `content-active`에 그대로 둔다.
@@ -162,11 +162,11 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 |---|---|
 | 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` / 종료 기록 branch `docs/unity-upgrade-closeout-20261008`. 제품 branch `chore/unity-engine-upgrade-20261007`는 PR204로 병합됐고 원격에서 지워졌다 |
 | 기준 | 제품 PR의 처음 base는 `94fc68455107c56aee2f5ba5ddffc1f1782de9c0`이다. 종료 기록 branch의 base는 PR204 병합 뒤 main `7086d45b92b76742d8c11facbf8a1031b81d0853`이다 |
-| 리드 Run | `run_dd3bf2daea68`(2026-10-07 Content 리드, `content-active` pane). 기록일 뿐이다. 사용자가 밤에 리드 세션을 모두 닫기로 해서(메인 `msg_28b3df556ef8`) 이 pane은 메인이 닫는다. 다시 열 때는 새 리드가 새 Run으로 시작한다([RESUME](../../../00_Document/operations/RESUME.md)) |
+| 리드 Run | `run_dd3bf2daea68`(2026-10-07 Content 리드, `content-active` pane). 기록일 뿐이다. 사용자가 밤에 리드 세션을 모두 닫기로 해서(메인 `msg_28b3df556ef8`) 이 pane은 메인이 닫는다. 다시 열 때는 새 리드가 새 Run으로 시작한다([RESUME](../../../00_Document/operations/RESUME.md)). 이 적용은 메인 결정 `msg_919c29d45d89`(3차 실사 #6 A)이다. 이 goal에 남은 리드 일이 PR206 병합 전 정정·실사뿐이라서, 목표 중간 교체(ORCA 210행, 같은 Run 인수)가 아니라 세션 종료로 본다. 두 정본 사이의 모호성은 메인이 Rules 후속 후보로 넘긴다 |
 | Unity | 이 worktree의 Library는 6000.4.7f1 기준선 실행으로 생겼다. 그 뒤 6000.6.4f1 열기를 다섯 번 거쳤고, 앞의 넷은 컴파일 실패였다. 앞의 네 열기가 남긴 부분 변경은 리드가 HEAD로 정리했다(`lead-restore-*.txt`). 다섯째 열기(Lucid 123개 삭제 뒤)부터 컴파일된다. 이어진 측정과 fixture 수정 뒤 재측정도 이 Library에서 했다. 지금 Unity는 0이다 |
 | 작업자 | 기준선 Sol, 엔진 첫 열기 Sol, 테스트 작성 Opus, 재열기 Sol, 업그레이드 열기 Sol, 측정 Sol, 관계 점검 Sol, 삭제·측정 Sol, fixture 작성 Opus, 재측정 Sol, SENTIS 한 줄 Sol, 독립 검증 Opus, MCP 확인 Opus, 재검증 Opus, 종료 Gardener Opus, 종료 기록 문서 실사 `gpt-6-astra` 둘 정산·종료(아래 결과). 이 goal 갱신 뒤의 실사자도 실사마다 새로 열고 정산·종료한다. 밤에 닫을 때 살아 있는 작업자는 0이고, 확인 값은 메인에 보내는 CLOSE-READY에 적는다. 기준 pane은 사용자 결정(`msg_02668751092e`)대로 닫았고, SENTIS Sol부터 `orca terminal create`로 이 worktree에 바로 열었다 |
 | commit | PR204로 main에 들어갔다(아래 「PR204 병합」). 측정 때 쓴 로컬 checkpoint 셋(테스트 두 줄, 다섯째 열기 상태, fixture 수정), SENTIS 한 줄 되돌림, 검증자 테스트 2개, 대화형 설정 두 파일은 업그레이드 커밋 `62228618` 하나로 합쳤다. `62228618`의 tree는 재검증 대상 `71c98065`와 같고 메시지 한 문장만 다르다. 앞선 판정의 대상 `bebbb4e0`·`0a574c77`·`71c98065`·`ba513147`은 이 worktree의 로컬 객체로만 남아 있다 |
-| 열린 PR | 종료 기록 [PR206](https://github.com/bass131/dawnholder-server/pull/206). head는 이 goal 갱신 commit이고, 정확한 40자는 병합 승인 요청에 적는다. 병합 전이다 |
+| 열린 PR | 종료 기록 [PR206](https://github.com/bass131/dawnholder-server/pull/206). head는 이 goal 갱신 commit이다(origin·PR206 head와 같게 push). 정확한 40자는 병합 승인 요청에 적는다. 병합 전이다 |
 | 로컬에만 둔 근거 | `.backups/verification/2026-10-07-unity-engine-upgrade/`(Git 제외)에 계약·판정 원문·harness가 있다. 이 worktree는 PR206 병합 뒤 지울 대상이고, 지우는 것은 사용자 확인 뒤다. 지우기 전에 이 근거 폴더를 보존 위치로 옮긴다. 보류 goal(PR191)의 6.6 batch도 이 harness를 출발점으로 쓴다 |
 
 다음 순서:
@@ -182,7 +182,7 @@ PR 하나에 커밋 둘이다. 처음 승인은 커밋 셋(3A)이었고, 사용�
 9. 두 파일을 더한 커밋의 약 등급 재검증은 PASS(비차단 결함 1)로 끝났다(아래 결과). 결함 #1의 문구를 커밋 메시지와 이 goal에서 고치고 두 커밋을 다시 만들었다.
 10. push·PR204·CI·메인 승인 요청·병합은 끝났다(아래 「PR204 병합」).
 11. 결과 기록(`f1f9cc73`)과 종료 Gardener는 끝났다(아래 「종료 Gardener」). 정리 후보 둘은 채택 전이다.
-12. 종료 기록 문서 실사는 NOT PASS(차단 2)였다. 메인 결정 A(`msg_b8151750a5df`)대로 정정했고(`2a6e5893`), 종료 기록 PR206을 열었다. 재실사도 NOT PASS(차단 3)라서 이 goal 갱신으로 다시 정정했다(아래 「종료 기록 문서 실사」).
+12. 종료 기록 문서 실사는 NOT PASS(차단 2)였다. 메인 결정 A(`msg_b8151750a5df`)대로 정정했고(`2a6e5893`), 종료 기록 PR206을 열었다. 재실사도 NOT PASS(차단 3)라서 `d7d003cd`로 다시 정정했다. 3차 실사의 NOT PASS(결함 셋: push 상태 누락은 정정, 새 Run 적용과 고정 입력 덧붙임은 메인 결정)는 메인 결정 `msg_919c29d45d89`대로 이 goal 갱신으로 처리했다(아래 「종료 기록 문서 실사」).
 13. 다음 순서(기록 2026-10-07T19:06:04Z, `date -u` 출력): 이 goal 갱신 commit의 새 독립 문서 실사(신규 `gpt-6-astra` xhigh) → PASS면 PR206 CI 확인과 병합 승인 요청(status) → 사용자 승인과 메인 병합 → 종료 점검 → R-8. 마지막 실사 결과는 병합 관문 정본대로 goal에 쓰지 않고 근거 폴더와 승인 묶음으로 전한다. 다음 goal은 자동으로 시작하지 않는다.
 14. 사용자 손·결정 대기: PR206 병합 승인, Gardener 정리 후보 둘의 채택, 던전 goal 초안과 PR191 재개 계획의 결정, `unity-upgrade-active` 삭제 확인. 메인 checkout의 skip-worktree 세 파일 처리는 메인 몫이다.
 15. 던전 goal 초안과 PR191 재개 계획: 메인 `msg_3a4fc4686315`(사용자 결정 「A 계획만 갱신」)대로 근거 폴더에만 썼다. 위치는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active/.backups/verification/2026-10-08-content-replan/`의 `dungeon-goal-draft.md`·`pr191-resume-plan.md`다. 게임 goal 재개 조건(운영 셋업 3단계 병합 뒤)은 그대로라서 PR191 작업과 작업자 기동은 하지 않았다. 재개 때는 [보류 goal의 재개 지점](../2026-10-05-items-inventory-currency/goal.md#재개-지점)과 그 계획을 함께 읽는다. 시작 전에 메인에 계획을 status로 알린다(메인 `msg_a31233c60bf2`).
@@ -532,6 +532,13 @@ Gardener `task_62754424b256`(Dispatch `ctx_67f8f8292155`, 최초 실행 `claude 
   - #3: 리드 사후 메모의 표가 병합 관문 교정 줄을 `dd383e3d`에 귀속했다. 실제로는 `f1f9cc73`에서 들어갔다. 메모를 고치고 그 파일 끝에 정정 기록을 남겼다.
   - #4: 진척 이름 「엔진 6.6 전환·AI Assistant 올림」의 화면 폭이 31이었다(goal-loop 상한 30). goal을 시작할 때부터 있던 이름이다. 「엔진 6.6·AI Assistant 전환」으로 줄였다.
   - 정산: release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true).
+- 3차 실사: 신규 `gpt-6-astra` xhigh 실사자(Task `task_c94fc66b77da`, Dispatch `ctx_f831a3c71511`, 화면 「GPT-6-Astra xhigh」, backend unknown)가 계약 v1(SHA256 `3ca8d194…2380`)대로 `d7d003cd`를 실사했다. 판정 원문은 `doc-audit3/verdict.md`(SHA256 `08f51219…1ead6`)이고, worker_done은 `msg_44833c93d6db`다.
+  - 판정: NOT PASS다. 재실사의 #2·#3·#4는 해소됐다.
+  - #5: 재개 지점 「열린 PR」 줄에 push 상태가 없었다. 「origin·PR206 head와 같게 push」를 적었다.
+  - #6: 밤 종료 뒤 새 Run으로 다시 열지, 같은 Run을 인수할지가 정해지지 않았다. 메인 결정 `msg_919c29d45d89`(A, 새 Run)를 재개 지점에 적었다.
+  - #7: 리드가 실사 중에 고정 입력 하나(아이템 goal 리드 메모)에 덧붙였다. 원래 540행 151211 bytes의 hash는 계약 값과 같았다(실사자 `raw/20`). 메인 결정(A)으로 이번 실사 결과를 인정하고 아래 교정 기록에 적었다.
+  - 정산: release는 `retained/external_terminal`이었고, 대기 화면을 확인한 뒤 pane을 닫았다(ptyKilled true).
+- 메인 체크포인트: 메인은 이 정정을 같은 산출물의 네 번째 수정으로 세어 AGENTS의 「3회를 넘으면 메인 체크포인트」에 해당한다고 기록하게 했다(`msg_919c29d45d89`). 문서 실사 범위가 재개 지점 문구로 좁혀진 것을 보고 계속 진행하기로 판단했다.
 - 다음: 이 정정을 새 독립 문서 실사에 넘긴다. 마지막 실사 결과는 병합 관문 정본대로 goal에 쓰지 않고 근거 폴더와 승인 묶음으로 전한다.
 
 ### 교정 기록
@@ -562,6 +569,10 @@ Gardener `task_62754424b256`(Dispatch `ctx_67f8f8292155`, 최초 실행 `claude 
   - REPORTING 「수치와 원시 근거」의 「수기로 채운 상수나 예상값을 실제 계측처럼 쓰지 않는다」를 어겼다.
   - 재실사가 같은 부류 한 줄을 더 찾았다. 「SENTIS define 한 줄 되돌림」의 리드 대조 줄이 release receipt 파일의 수정 시각을 release 시각으로만 적었다. 리드가 정정 범위를 「리드 대조(시각)」 꼴의 grep으로만 찾아 놓쳤다. 이 줄도 고쳤다.
   - 이 goal 밖에서도 반복됐다. 아이템 goal의 리드 메모(`content-active`의 `.backups/verification/2026-10-05-items-inventory-currency/astra-context.md` 468행)에 2026-10-05 「시각 표기 정정(두 번째 발생)」이 있다. 같은 Content 리드 역할이다. 반복 규칙의 층 판단은 Rules 몫이므로 메인에 근거로 넘긴다.
+- 실사 중 고정 입력 덧붙임(이 goal 첫 발생): 3차 문서 실사 중에 리드가 그 실사의 고정 입력인 아이템 goal 리드 메모 끝에 새 절을 덧붙였다. 계약의 「리드는 이 작업이 끝날 때까지 추적 파일과 고정 입력을 쓰지 않는다」를 어긴 것이다.
+  - 원인: 메인 지시 `msg_77e18af5234a`(PR191 재개 계획 승인을 보류 goal에 기록)를 처리하는 순서에서, 그 goal의 작성 전 메모를 쓸 파일이 고정 입력인지 확인하지 않았다.
+  - 영향: 기존 540행 151211 bytes는 그대로였고(실사자 `raw/20`), 실사가 본 468행도 그대로였다. 메인 결정 `msg_919c29d45d89`로 이번 실사 결과를 인정했다.
+  - 교정: 다음 계약부터 실사 근거는 근거 폴더 안의 불변 사본으로 고정하고, 실사 중에는 원본 대신 사본을 대조한다.
   - 교정: 결과에 시각을 적을 대조는 시작할 때 `date -u` 출력을 근거 폴더에 남기고 그 값만 옮긴다. 남기지 않았으면 시각을 적지 않는다.
 
 ## 다음 계획 후보
