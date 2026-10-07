@@ -97,3 +97,31 @@ describe('unconnected management foundation', () => {
     }
   });
 });
+
+// Requirement: goal 「만들 것」 6 and backlog-menu-design.md 「화면」: the development view has a third
+// tab 「이후 작업」 that shows the backlog screen, switched with `hidden` like the other two, and the
+// screen reads once on mount. The bridge is a fake window.systemBacklog. Fails until the behaviour step.
+describe('development backlog tab', () => {
+  it('shows the backlog screen under the third development tab 이후 작업', async () => {
+    const candidate = {
+      line: 23, id: 'tab-candidate', title: '탭 후보', reason: '이유', source: '출처', prerequisite: '없음', owner: 'Management', status: '대기',
+      cells: ['`tab-candidate`', '탭 후보', '이유', '출처', '없음', 'Management', '대기'], goalLinks: [], group: '후보',
+    };
+    const readBacklog = vi.fn(async () => ({ ok: true, rows: [candidate], issues: [], uncheckedLinks: [] }));
+    vi.stubGlobal('systemBacklog', { readBacklog });
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: '3 개발 현황' }));
+    const tabs = within(screen.getByLabelText('개발 현황 보기'));
+    expect(tabs.getAllByRole('button').map(button => button.textContent)).toEqual(['시스템 카드', '개발 기록', '이후 작업']);
+    expect(screen.queryByRole('button', { name: '다시 읽기' }), 'hidden before the tab opens').not.toBeInTheDocument();
+
+    await user.click(tabs.getByRole('button', { name: '이후 작업' }));
+    expect(tabs.getByRole('button', { name: '이후 작업' })).toHaveAttribute('aria-pressed', 'true');
+    expect(tabs.getAllByRole('button', { pressed: true })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: '다시 읽기' })).toBeVisible();
+    expect(await screen.findByText(/tab-candidate/)).toBeVisible();
+    expect(screen.queryByRole('button', { name: '기록 새로고침' }), 'records view hidden').not.toBeInTheDocument();
+    expect(readBacklog).toHaveBeenCalledOnce();
+  });
+});
