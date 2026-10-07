@@ -8,7 +8,7 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch: PR1은 `fix/hook-net-false-positives-20261007`(base `8e498440`)다. PR2는 PR1 병합 뒤 최신 main에서 만든다.
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T18:2xZ): 수정 회차 재검증이 FAIL(차단 W1 하나)이었다(아래 「PR1 재검증(수정 회차, FAIL)」). 사용자 결정으로 PR1은 멈추고 branch를 보존한다. 다음은 자격 증명 분리 시험 계획 초안을 메인에 보내고 승인을 기다리는 것이다(「적용 중인 사용자 결정」의 「PR1 멈춤과 자격 증명 분리 시험」).
+- **현재 위치**(2026-10-07T18:4xZ): 수정 회차 재검증이 FAIL(차단 W1 하나)이었다(아래 「PR1 재검증(수정 회차, FAIL)」). 사용자 결정으로 PR1은 멈추고 branch를 보존한다. 자격 증명 분리 시험을 밤사이 범위로 진행한다(「적용 중인 사용자 결정」의 마지막 두 항목, 결과는 아래 「자격 증명 분리 시험」).
 - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실린다. PR1 구현 중에는 이 checkout의 hook이 고치는 중인 판정 코드를 바로 쓴다(아래 「위험」).
 
 ## 진척 단계
@@ -159,6 +159,10 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - **PR1 멈춤과 자격 증명 분리 시험**: 메인 `msg_0e7cb4fe6f52`(18:19:23Z, E/session/check49.raw.txt)이 전달한 원문은 **「대시보드 결정 응답: 1) Rules PR1 - 병합 통제를 「대화형 유지 + 자격 증명 분리」로 바꾸는 시험을 할지 → A 대화형 유지 분리 시험」**이다(메인 창 Enter 제출, 메인 전달). 위 「미결·논의 중」은 이 결정으로 닫는다.
   - 사용자에게 보인 A: PR1 수정은 멈추고 branch는 보존한다. 에이전트가 병합하지 못하는 좁은 토큰과 push용 deploy key로 바꾸는 시험을 먼저 한다. 통과하면 글자 그물·가리기 코드를 걷는 새 Rules goal로 가고, 병합은 지금처럼 승인 한 줄을 치면 메인이 한다. 고르지 않은 B는 가리기 수정 한 회차로 PR1을 병합하는 안이었다.
   - 메인 지시: v3.3과 선행 시험은 열지 않는다. branch `fix/hook-net-false-positives-20261007`(head `ed320419`, GitHub PR 없음)는 삭제·force push·rebase 없이 보존한다. 지금 hook과 그물은 시험 동안 그대로 둔다. 리드는 자격 증명 분리 시험 계획 초안을 메인에 status로 보내고, GitHub 설정·자격 증명·원격을 건드리는 실행은 초안 승인 뒤에만 한다. main을 직접 대상으로 하는 push·병합 시도는 넣지 않고, 토큰 값·개인 키는 메일·goal·로그·화면·저장소에 남기지 않는다.
+- **자격 증명 분리 시험 밤사이 시작과 범위 추가**: 메인 `msg_fbbb07fa38a9`(18:39:35Z, E/session/check52.raw.txt)이 전달한 원문은 **「A로 진행하자」**다(메인 창 Enter 제출, 메인 전달). 질문은 현황판 rules-overnight-test-start 「Rules 분리 시험 - 계획 초안을 메인 대조로 승인해 밤사이 시작할지」, A 원문은 「초안을 메인 수정대로 승인하고 지금 Rules goal에 범위를 더해 밤사이 시작한다. 밤사이엔 deploy key push·PR 생성·세션 싣기·넘어감 확인만, 시험 ruleset·병합 403 시도·정리는 아침에 네 손으로.」다. 앞 결정은 위 `msg_0e7cb4fe6f52`의 A다.
+  - 계획: v1 E/credential-trial-plan-draft.md(`561a6664…`) + v2 차이 E/credential-trial-plan-v2-diff.md(`4f83f6cc…`). 메인 대조 `msg_af15c0a64df7`. 사용자 손 단계(deploy key·좁은 토큰·토큰 파일)는 메인 확인 `msg_f1bbd87c7176`.
+  - **범위 추가**: 이 결정으로 아래 「하지 않을 것」 중 「Codex 세션 병합 차단, 에이전트 계정·ruleset, 전역 Claude·Codex·Git·gh 설정 변경」을 이 시험에 한해 덮는다. 더한 범위는 계획 v1의 범위 표와 v2 차이다. 만들 것은 시험 기록·사용자 손 안내·리드 시험 스크립트·결과 보고와 후속 goal 입력이고, 건드릴 곳은 GitHub의 좁은 토큰·deploy key·시험 ruleset(아침, 사용자 승인)·`trial/cred-*` branch와 시험 PR, 로컬의 `%USERPROFILE%\.dawnholder-agent\`·rules-active `config.worktree`·일회 pane이다. main 대상 push·병합, main ruleset 변경, 그물·가리기 코드 변경, 정본 변경은 계속 하지 않는다.
+  - 근거 폴더는 E/credential-trial/로 나눈다. 비밀 값은 쓰지 않는다.
 
 ## 현재 결과
 
@@ -224,6 +228,17 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 검증자 pane은 17:19:01Z에 닫았다. 리드 pane은 그대로다.
 - 리드 수정 계획(메인 보고 `msg_ef093e2120a8`): 동작 계약 v3.3은 「bash와 다르게 읽을 수 있는 꼴」에 명령 자리의 복합 명령 낱말을 더해 읽기 실패로 둔다(막는 쪽). 리드 사전 점검(E/lead-check/w1-fix-option-check.txt, 제품 아님)에서 census 풀림 7건과 일상 T 18행은 그대로였다. 탐침 681개 중에서는 N1~N4가 막히고 if 안 echo 메모 하나(A27)가 v2.3처럼 다시 막혔다.
 - 다음: 메인 지시 `msg_278a7130befd`로 v3.3을 보류하고 두 안을 비교해 결정을 요청했다(`msg_eac0fa1f3d89`). 사용자 결정(`msg_0e7cb4fe6f52`)으로 v3.3·두 번째 수정 회차는 열지 않고 PR1을 멈춘다. 확정 실패 집계는 impl2 계약 W1 1회에서 멈춘다.
+
+### 자격 증명 분리 시험
+
+- 계획: v1 E/credential-trial-plan-draft.md + v2 차이 E/credential-trial-plan-v2-diff.md. 근거는 E/credential-trial/이고 결과 정리는 E/credential-trial/results-overnight.md다. 비밀 값은 쓰지 않았다(근거 폴더 토큰 패턴 검색 0건).
+- 밤사이(2026-10-07T18:40~18:48Z, main sha 다섯 시점 모두 `7086d45b`):
+  - 에이전트 gh 설정: 토큰 파일에서 `config.yml`(version "1")·`hosts.yml`(호스트 단위 토큰)을 만들었다. 출처가 에이전트 `hosts.yml`이고 keyring 항목은 그대로다.
+  - ① rules-active `config.worktree`에 SSH push 주소·deploy key 전용 `core.sshCommand`·빈 `credential.helper`를 넣었다. deploy key로 `trial/cred-base`·`trial/cred-work-1` push 성공(SSH 신원은 저장소 이름).
+  - ② 좁은 토큰으로 PR #205 생성·조회·코멘트·`gh pr checks` 성공(Checks·Issues 권한 없이).
+  - ③ 기동 명령 앞 `GH_CONFIG_DIR`만으로 맨 PowerShell·일회 Codex(`gpt-6-astra` low)·일회 Claude(`claude-haiku-4-5-20251001`)가 모두 에이전트 자격 증명을 받았다.
+  - ⑥ 넘어감: 환경을 빠뜨리면 gh는 관리자, 에이전트 설정에서도 사용자 지정 토큰 조회는 keyring 관리자, 에이전트 worktree의 https 직접 push는 막힘, 메인 checkout을 빌린 push는 관리자로 인증(dry-run).
+- 아침에 남은 것: 보호 branch 거부(U3 뒤), 병합 세 형태 403(사용자), ⑤ 브라우저, 선택 ④(b)·(라) 시험, ⑦ 정리.
 
 ## 다음 계획 후보
 
