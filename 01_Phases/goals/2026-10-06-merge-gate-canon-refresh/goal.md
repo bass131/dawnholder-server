@@ -462,6 +462,7 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
   - 대체: 낡은 문장은 덧붙이지 않고 바꾼다. ORCA 33의 전환 문장(「메인 전용 checkout 준비 전까지는 기존 배치」)은 main-active가 생겨 지운다. 이것으로 O11이 해소된다.
 - 세션: 작성은 신규 Sol max, 실사는 신규 `gpt-6-astra` xhigh(검증자 시범, 문서 실사)다. 실사 전에 메인이 CLAUDE.md를 고친다.
 - 메인 답 `msg_f4c2c8eb2852`(06:01:03Z): 감축 방식과 항목 범위에 이견이 없다. Sol 기동만 사용자 결정 하나가 나올 때까지 멈춘다. 걸린 결정은 메인·Core 폴더 맞바꾸기다(현황판 항목 `main-core-checkout-swap`). 맞바꾸면 원래 clone 폴더가 메인 전용 checkout이 되고 Core는 새 worktree로 옮긴다. 그 경우 ORCA R-1의 두 경로, RESUME 진입 배치, 세션 인계 스킬의 탭 위치가 PR2에 같이 실리도록 메인이 제안할 예정이다. 메인은 이것을 범위 변경 요청이 아니라고 했다. 리드는 맥락 메모와 계약을 먼저 쓰고, R-1 배치 부분은 결정 뒤에 채운다.
+- 결정 `msg_3bdf778317e9`(06:13:41Z): 맞바꾸기다(「적용 중인 사용자 결정」). 메인은 계약을 확정하고 Sol을 띄워도 된다고 했다. 계약 「R-1 배치」 절에 바뀐 경로를 적고, 허용 파일에 세션 인계 스킬과 CURRENT Core 줄을 더했다. 세션 인계 스킬은 원래부터 측정 묶음에 들어 있다.
 
 <a id="pr2-canon-sources"></a>
 
@@ -514,6 +515,10 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
 - **리드 Opus**: 다섯 리드는 `claude-opus-5-5` xhigh다(`msg_22cb1701a2cf`, 교체 시점은 `msg_25102e277345`). 원문은 직전 Rules goal에 있다. 정본의 「파트 리드 Astra `gpt-6-astra`」와 R-1 기동 명령은 PR2 전까지 낡은 문장이다.
 - **확인 창 대신 승인**: 메인 `msg_af033fe88521`(2026-10-06T14:33:33Z, E/session/wait7-msg_af033fe88521.raw.txt)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 병합 관문 - 승인이 맞을 때 확인 창을 hook이 대신 승인할지 → A hook이 대신 승인한다」**다. PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 낸다. 메인은 AGENTS 공학 조건 「Claude 권한 확인을 건너뛰는 플래그·설정 변경은 금지」에 이 hook의 예외 문장(사용자 결정 원문 링크)을 넣으라고 했다. 넣는 곳은 PR1이다. 리드 제안 `msg_043ef990dff0`에 메인 `msg_895f7ffa4512`(14:36:43Z, E/session/wait8-msg_895f7ffa4512.raw.txt)가 동의했다. PR1 병합 때 hook이 살아나므로 정본과 동작이 어긋나는 구간을 없애기 위해서다. 예외 문장에는 사용자 결정 원문과 이 절의 링크를 단다. 독립 검증 계약에는 「예외 문장의 조건이 hook 실제 동작과 일치」 대조를 넣는다.
 - **병합 관문**: 1안건 A(위 원문). PR1 병합과 적용 확인 전까지 병합은 지금 방식(리드 pane, 사용자 확인 창, 메인의 병합 신호)으로 한다. PR197·PR198이 이 방식의 마지막 병합이었다(「PR1 병합」). PR2는 적용 확인 뒤 새 관문으로 병합한다(완료조건 8).
+- **메인·Core 폴더 맞바꾸기**: 메인 `msg_3bdf778317e9`(2026-10-07T06:13:41Z, E/session/wait54.raw.txt)가 전달한 사용자 원문(메인 창에서 Enter로 제출, 15:0x KST)은 **「OK 세컨드 브레인에 내용 저장을 SubAgent한테 지시해주고, 우리 메인세션은 옮기는 작업 진행하자」**다. 메인이 물은 두 선택지(지금 맞바꿔 / 지금 구조 유지) 중 「지금 맞바꿔」에 대한 답이다. 메인이 선택지에 적은 결과는 「원래 clone 폴더가 메인 전용이 되고 Core는 새 worktree로 옮긴다. 다시 여는 세션은 메인 하나이고, 배치 문장 변경은 Rules PR2에 싣는다.」였다.
+  - 메인이 한 일(06:07~06:13Z): `C:/Dev/DawnHolder_Project`를 main(HEAD `94fc6845`)으로 바꿨다. Core는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active`(branch `feat/persistence-engine-judgment-20261006`)로 옮겼다. main-active는 detach해 정리 대상이 됐다. Orca 표시 이름은 「Main」(기본 배지)과 「Core」다.
+  - 남은 실제 조치(사용자·메인): 원래 clone 폴더 표식 생성, 새 메인 진입, main-active 제거.
+  - PR2 반영: ORCA R-1의 메인·Core 경로와 기동 줄, RESUME의 Core 경로와 현황판 명령, 세션 인계 스킬의 탭 위치, CURRENT의 Core 경로·branch 줄. CLAUDE.md 「메인 세션 진입」은 메인이 고친다. 정본 반영 전까지는 이 결정이 정본의 main-active 문장을 대신한다.
 - **후속 계획의 일괄 검토**: 메인 `msg_bf63c20c8abe`가 전달한 원문 「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」. 현재 goal 밖 후보는 BACKLOG로 모으고 개별 승인을 받지 않는다.
 - 메인 운영 지시(사용자 결정 아님): 우편함 대기는 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`로 heartbeat 단독 깨움을 뺀다(`msg_20663b7c7598`). 대기는 Bash 백그라운드로 한 번에 하나만 열고 `&`·`/dev/null`로 출력을 버리지 않는다(`msg_3902e180080c`).
 
