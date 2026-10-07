@@ -4,6 +4,10 @@
 
 ## 적용 중인 사용자 결정
 
+- **2026-10-07 게임 재개 조건과 「계획만 갱신」.** 메인 `msg_5d4d0b768d90`(2026-10-07T18:45:48Z)이 전달했다. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다.
+  - 조건(10-07 21:08 KST 사용자 결정, 메인 요약): 운영 셋업 3단계(hook 정리 → TDD·임시 쓰기 경계 → 후보 도착 확인)가 병합된 뒤 Core·Content 게임 goal을 연다. 현황판도 이 goal(SQL 설치·판정)을 같은 관문 뒤에 둔다.
+  - 원문: 「대시보드 결정 응답: … 2) Core·Content 게임 재개 - 오늘 밤 계획만 다시 쓸지, 조건을 풀고 Core 구현을 시작할지 → A 계획만 갱신」. 사용자에게 보인 A 설명 원문: 「조건은 그대로 둔다. Core 리드를 띄워 인스턴스 맵 초안을, Content 리드는 Unity 마무리 뒤 던전 초안과 PR191 재개 계획을 최신 main 기준으로 다시 써 아침 계획 검토로 올린다.」
+  - 그래서 이번 세션은 구현·작업자 기동·제품 코드 쓰기·main 받기를 하지 않았다.
 - **2026-10-06 SQL 시작 거부 다음 단계: 고친 A, 단 운영 정리 뒤로 보류.** 모두 메인이 전달했으며 이 pane의 사용자 직접 입력으로 격상하지 않는다.
   - 메인 `msg_5b6e974e46fd`(08:16:08Z) 전달 원문: 「SQL 조사는 A로 하고, 백업 위치는 기본안대로 가자」, 이어서 「SQL조사는 일단 뒤로 두고, 프로젝트 운영이랑 규칙 백로그부터 해결하고 넘어가야 매끄럽게 작업이 진행될거같아」.
   - 고친 A의 내용은 관리자 PS5.1 창 1회 실행이고 SQL 시작은 없다. 리드 제안은 `msg_347486884ac2`, 백업 보완은 `msg_de6ae4a87c08`이다.
@@ -409,6 +413,35 @@
 - 최초 체크포인트 `4bdbbcb1179fb83b1bd1af73ca973247a1aad9d8`의 실제 commit/push·보존은 로컬 `mid-closeout-checkpoint.json`, 이 정정 후 최신 결과는 `mid-closeout-final-checkpoint.json`에 둔다. 메인 `msg_398ecf11f1c9`의 요청대로 정정만 후속 커밋으로 남기며 중간 마감은 제품 PASS·G2 승인·실제 DB 성공·전체 goal 종료를 의미하지 않는다.
 
 ## 재개 지점
+
+### 리드 재진입과 다음 goal 계획 — 2026-10-08
+
+기록 시각은 2026-10-07T19:06:38Z(`date -u`)다. 메인 `msg_ccb3dfc31b6b`(18:58:14Z)의 요청으로 남긴다. 사용자가 잠들기 전에 리드 세션을 모두 닫는다. **이 블록이 현재 재개 정본이고 아래 소절은 역사다.**
+
+- **지금 단계:** 이 goal은 보류 그대로다. SQL 시작 거부 조사(고친 A)는 게임 재개 관문(운영 셋업 3단계 병합) 뒤에 연다. 이번 세션은 다음 goal 계획만 다시 썼다.
+- **이번 세션 결과**
+  - 인스턴스 맵 계획 초안 v2와 마감 로드맵 초안을 E/`next-goal-instance-map-plan-20261008/`에 썼다(`plan-draft.md`, `roadmap-draft.md`, `context-memo.md`, `sha256.txt`). 메인 보고는 `msg_2bb9a8e31741`이다.
+  - Content 리드와 인스턴스 계약을 조율했다. Content 질문은 `msg_c065c154b47a`, Core 답은 `msg_a0894a8db430`이다. Content의 확인 답(던전 맵이 새 MapId인지)은 대기다.
+- **다음 할 일 순서**
+  1. 아침 계획 검토에서 사용자가 계획 초안의 안건 1~4와 로드맵 저장소 반영을 정한다.
+  2. 게임 재개 관문이 병합되면 안건 4 결정대로 인스턴스 맵 goal을 연다. A면 이 worktree에서 최신 main으로 새 branch를 만들고, 이 영속화 branch는 push된 채 둔다.
+  3. SQL 조사(고친 A)는 메인 재개 신호 뒤 아래 「Claude Code 업데이트 전 기록」의 1~4 순서대로 한다. 실행 파일 초안과 실사는 근거 폴더에서 할 수 있다.
+  4. 엔진 판정 PR(설치·U-01)은 SQL 시작 문제가 풀린 뒤다.
+- **사용자 손·결정 대기:** 계획 초안 안건 1~4, 로드맵 저장소 반영 여부, SQL 조사 재개 신호(관리자 실행 1회 포함).
+- **PR·branch**
+  - 열린 Core PR은 없다. branch는 `feat/persistence-engine-judgment-20261006`이고 이 기록 commit을 push한다.
+  - origin/main `7086d45b` 대비 191커밋 뒤다. 메인 지시로 main은 받지 않았다.
+  - PR #198은 2026-10-07T05:37:08Z에 병합됐다. 아래 기록의 「PR #198 병합 전 main 금지」 조건은 끝났다. main 통합 시점은 이 goal을 다시 열 때 정한다.
+- **작업 위치:** checkout은 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` worktree다(10-07 메인과 폴더 맞바꿈). `.backups`는 원래 clone `C:/Dev/DawnHolder_Project/.backups`로 가는 junction이다. 아래 기록의 「이 checkout(`C:/Dev/DawnHolder_Project`)」은 옮기기 전 경로다.
+- **근거 폴더 쓰기 허용:** 이 세션은 사용자가 넣은 `/add-dir C:/Dev/DawnHolder_Project/.backups`로 확인 창 없이 근거 폴더에 썼다. 이 허용은 세션을 닫으면 사라진다. 다음 리드가 근거 폴더에 쓰면 확인 창이 다시 뜰 수 있다.
+- **미추적 파일:** `01_Phases/reports/2026-10-06-procmon-sql-start-diagnosis/`는 그대로 미추적이다. 처리는 아래 기록대로 재개 때 판단한다.
+- **작업자·검증자:** 살아 있는 pane은 0이다. 이번 세션은 아무도 띄우지 않았다.
+- **리드:** 요청 모델 `claude-opus-5-5` xhigh, 화면 「Opus 5.5 ⚡xhigh」, backend unknown. 태그는 AGENTS Core 전환대로 `[Core Astra]`다.
+- **Run과 다시 열 때 할 일**
+  - Run은 `run_b36cc92a4cf4`이고 회신 주소는 `run:run_b36cc92a4cf4`다. 이번 coordinator는 `term_d5e0652c-5130-4728-9507-43a1dc71c488`(consumer generation 3)이었다.
+  - 다시 열면 새 handle에서 `orca orchestration run-use --id run_b36cc92a4cf4 --json`을 실행한다. 그다음 우편함을 한 번 확인하고 `--types` 필터 대기를 하나만 연다. Content 확인 답이 와 있을 수 있으니 먼저 읽는다.
+  - 옛 세대 delivery ack가 `consumer_fenced`면 새 세대로 다시 온 같은 메시지 delivery를 ack한다.
+- **원시:** E/`opus-lead-entry/2026-10-08/`에 진입·READY·메인 지시·Content 메시지와 답·status 본문과 receipt, goal 갱신 메모가 있다.
 
 ### Claude Code 업데이트 전 기록 — 2026-10-07
 
