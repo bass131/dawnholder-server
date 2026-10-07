@@ -16,13 +16,13 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 14:4x KST, PR197 병합 뒤 PR3 branch의 첫 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 15:0x KST, PR3 설계 고정.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
 그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`, 8단계 재검증자의 판정 순서 시험은 `aacf35bd`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」·「PR2 좁힌 재검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 좁힌 재검증은 통과(비차단 W1, 리드가 정정)였다. 여덟 세션은 정산·종료했고 열린 작업자·검증자는 없었다. PR2는 PR197로 병합됐다(병합 commit `8c920d4d`).
 
-**PR3 시작 상태(2026-10-07 14:4x KST):**
+**PR3 상태(2026-10-07 15:0x KST):**
 
-- **지금 단계:** PR2는 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 병합됐다(아래 「PR197 병합」). PR3 branch `feat/management-backlog-menu-20261007`을 최신 main `94fc6845`(PR198 병합, PR197 포함)에서 만들었다. 다음 할 일은 PR3 설계 고정 → 신규 `claude-opus-5-5`의 TDD 선행 시험 → 신규 `gpt-6.1-sol` 구현 → 다른 신규 `claude-opus-5-5`의 강 등급 독립 검증 → PR 준비 보고다.
+- **지금 단계:** PR2는 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 병합됐다(아래 「PR197 병합」). PR3 branch `feat/management-backlog-menu-20261007`을 최신 main `94fc6845`(PR198 병합, PR197 포함)에서 만들었다. 리드가 PR3 경계와 인터페이스를 [백로그 메뉴 설계](backlog-menu-design.md)에 고정했다(아래 「PR3 설계」). 다음 할 일은 신규 `claude-opus-5-5`의 TDD 선행 시험 → 신규 `gpt-6.1-sol`의 두 단계 구현(구조 → 리드 commit → 동작) → 다른 신규 `claude-opus-5-5`의 강 등급 독립 검증 → PR 준비 보고다.
 - **병합 관문:** 이 PR부터 리드는 병합하지 않는다. PR 생성 뒤 정확한 head·CI·판정 원문을 메인에 보고하면, 메인이 R-2 뒤 사용자 승인을 받아 메인 전용 checkout에서 병합한다(메인 `msg_371394a813a7`, AGENTS 「Git 권한」).
 - **작업자·검증자:** 살아 있는 pane은 없다.
 - **Run과 재진입:** Run은 `run_3fa510a50602`다. 리드 handle은 `term_052ec1b2-cd90-4270-acbd-33f8cc36f9a8`(이 세션의 관측값이며 다음 리드의 실행 권한이 아님)이다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
@@ -177,6 +177,7 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - 운영툴 테스트 CI 편입과 색인 검사 연결: 계획 묶음 2(14번), Rules·CodeMap. `tests/` 타입 검사 script가 없다는 PR2 검증 관찰 O4도 함께 본다.
 - 색인 검사 진단 품질: 색인이 깨지면(`CATALOG_INVALID`) goal 묶음이 빈 목록으로 돌아 모든 goal에 `GOAL_NOT_INDEXED` warning을 낸다(PR2 검증 관찰 O1, 코드 읽기 추론이며 미측정).
 - 원문 읽기 경계의 hard link: `lstat`·realpath 판정은 루트 밖을 가리키는 hard link를 잡지 못한다(PR2 검증 관찰 O3). 메인 결정 `msg_883836e1208a` 2항에 따라 이번 PR 범위 밖이며, 종료 때 Rules에 넘길 BACKLOG 후보 목록에 넣는다.
+- Markdown fence 판정 통합: `backlog-table.ts`와 `source-section-contract.ts`가 fence를 따로 판정한다(PR2 검증 관찰 O2). PR3는 규칙만 맞추고, 합치는 일은 MCP 공유 모듈 변경과 `mcp-dist` 재빌드가 따라 후속으로 둔다([백로그 메뉴 설계](backlog-menu-design.md) 「fence 판정」). 종료 때 Rules에 넘길 BACKLOG 후보 목록에 넣는다.
 - 검증 실행 helper 정본화: 계획 묶음 2(11번).
 - MCP 실제 세션 연결: 운영툴 라이브 1.0 이후 [결정 보드 MCP 후보](../2026-10-02-system-cards/goal.md#후속-백로그--운영툴-라이브-10-이후-결정-보드의-mcp-관리)와 함께 다음 계획에서 정한다.
 - 운영 백엔드·서버 등록·로그·시스템 카드 전체 자료: 메인 계획 35번(BACKLOG 등록 예정).
@@ -321,8 +322,18 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **병합 관문 전환:** 곧이어 Rules의 PR198(병합 관문 hook과 정본 문장)이 병합됐다(`94fc6845`, 메인 `msg_371394a813a7`). 이제 리드는 병합하지 않고 PR 준비 보고만 한다. 병합은 메인 전용 checkout의 메인이 한다(AGENTS 「Git 권한」). PR197은 리드가 병합한 마지막 PR이다.
 - **세션 중 설정 반영 관측:** Rules 리드 요청(`msg_eecf9fa95144`)에 따라, PR3 branch를 만드는 받기 전후에 무해한 탐침을 한 번씩 실행했다. 받기 전 탐침은 그대로 실행됐다. 받은 뒤 9초 안의 탐침은 PreToolUse hook에 막혔다. 결과는 원문 그대로 Rules에 보냈다(`msg_91def97e8eeb`, E/`rules-hot-reload-probe-result.txt`).
 
+### PR3 설계
+
+리드가 구현 전 경계와 인터페이스를 [백로그 메뉴 설계](backlog-menu-design.md)에 고정했다. 사전 메모는 E/`astra-context.md` 「PR3 설계」다. 판단이 들어간 선택은 다음과 같다.
+
+- 백로그 행 판정은 지금 색인 검사 안에만 있다. 메뉴가 다시 구현하면 PR2 V2처럼 정책이 두 곳으로 갈려서, 판정을 `backlog-contract.ts`(순수)·`backlog-store.ts`(파일 I/O)로 옮기고 색인 검사와 메뉴가 같은 결과를 쓴다.
+- 구조와 동작을 다른 commit으로 남기려고 한 Sol 작업을 두 단계로 나눈다. 1단계는 지금 동작을 보존한 이동이고, 질문으로 멈춘 사이 리드가 commit한다. 리드가 hunk를 나누면 시험하지 않은 중간 상태가 생겨 이 방식을 골랐다.
+- BACKLOG 읽기와 goal 링크 존재 확인은 2단계에서 앱의 원문 읽기 경계(`createSourceSectionStore`·`inspectSourceFile`)를 쓴다. 링크·대소문자·크기·인코딩 판정이 앱 원문 읽기와 같아진다. 위반은 「형식 오류」·「어긋남」, 예상 밖 I/O 오류는 「확인 불가」로 나눈다.
+- O2(fence 판정 두 곳)는 통합하지 않고 규칙만 맞춘다. 통합하면 MCP 공유 모듈과 canonical `mcp-dist` 재빌드가 따라온다. 통합은 「후속 후보」에 적었다.
+- 독립 검증자 조건은 메인 결정 `msg_caa43cc537b5`로 신규 `claude-opus-5-5`다. 새 IPC 채널이 생기므로 설계 표의 조건으로도 같은 결론이다.
+
 ### 진입과 준비
 
 - **진입:** 새 Run `run_3fa510a50602`(E0/`run-create.json`), READY `msg_fa27c1982e46`(E0/`ready-sent.json`). 진입 때 worktree는 종료 기록 branch `docs/management-record-navigation-closeout`(HEAD `e37f261`, origin/main보다 19 뒤, 미커밋 0)이었다.
 - **27개 분류 초안:** 승인 전 읽기 조사로 E0/`nextsteps-classification-draft.md`를 만들었다. 확정 전 원천을 다시 대조한다.
-- **열린 질문:** PR3 시험 작성자 모델(PR3 계약 전 메인). DB 1단계 문서 위치는 Core 조율로, 27개 중 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
+- **열린 질문:** 없음. PR3 시험 작성자 모델은 메인 결정 `msg_caa43cc537b5`로, DB 1단계 문서 위치는 Core 조율로, 27개 중 결정 요청 후보 2건은 사용자 결정으로 닫혔다.
