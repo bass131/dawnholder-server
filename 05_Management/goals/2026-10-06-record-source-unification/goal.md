@@ -7,8 +7,8 @@
 - [x] PR196 병합
 - [x] 색인 선행 시험 작성
 - [x] 색인 전환 구현·검증
-- [>] PR197 병합
-- [ ] 백로그 메뉴 구현·검증
+- [x] PR197 병합
+- [>] 백로그 메뉴 구현·검증
 - [ ] 백로그 PR 병합
 - [ ] Gardener와 종료 기록
 
@@ -16,19 +16,16 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-07 13:2x KST(04:2xZ), Claude Code 업데이트 재시작 전의 재개 지점 기록 commit(메인 요청 `msg_669a14a08918`).** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-07 14:4x KST, PR197 병합 뒤 PR3 branch의 첫 commit.** 이 문단과 아래 순서는 그 시점의 상태와 당시 예정이다. 그 뒤의 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`, 8단계 재검증자의 판정 순서 시험은 `aacf35bd`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」·「PR2 좁힌 재검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 좁힌 재검증은 통과(비차단 W1, 리드가 정정)였다. 여덟 세션은 정산·종료했고 열린 작업자·검증자는 없었다.
+그 시점의 상태는 다음과 같다. PR1은 [PR196](https://github.com/bass131/dawnholder-server/pull/196)으로 병합됐다(아래 「PR196 병합」). PR2 branch `feat/management-record-index-20261006`을 최신 main `a47a0276`(PR196 병합 commit)에서 만들었다. 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`다. 리드가 PR2 경계와 인터페이스를 [색인 v2 설계](index-v2-design.md)에 고정했다(아래 「PR2 설계」). 1단계 선행 시험은 `736d3637`, 2단계 제품 코드는 `1c7824e2`, 3단계 데이터 전환은 `623b560b`, 4단계 MCP 선행 시험은 `948279df`, 5단계 MCP 구현은 `f8aaae02`, 6단계 검증자의 시험 정정은 `f9a1cc8e`, 7단계 V2 수정은 `bd40e3a6`, 8단계 재검증자의 판정 순서 시험은 `aacf35bd`로 commit됐다(아래 「PR2 선행 시험」·「PR2 구현」·「PR2 데이터 전환」·「PR2 MCP 선행 시험」·「PR2 MCP 구현」·「PR2 독립 검증」·「PR2 V2 수정」·「PR2 좁힌 재검증」). 독립 검증 판정은 차단(V1·V2)이고 기능 요구는 모두 충족이었다. V1은 메인 결정으로 현 이력을 받아들였고 V2는 고쳤다. 좁힌 재검증은 통과(비차단 W1, 리드가 정정)였다. 여덟 세션은 정산·종료했고 열린 작업자·검증자는 없었다. PR2는 PR197로 병합됐다(병합 commit `8c920d4d`).
 
-**재시작 전 상태(04:22Z 확인):**
+**PR3 시작 상태(2026-10-07 14:4x KST):**
 
-- **지금 단계:** PR2가 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 열려 있고 CI를 기다린다. 다음 할 일은 CI 결과 확인 → 메인 R-2 → 메인이 사용자 개별 병합 승인을 PR197의 정확한 head로 전달 → 리드 pane에서 병합이다.
-- **PR197 head:** 재시작 전 마지막 확인 head는 `8050073f673d12957c410b4173a5344d6bd874b2`다. 이 재개 지점 기록 commit을 push하면 head가 이 commit으로 바뀌고 CI가 다시 돈다. 정확한 40자 head는 메인 보고(「재개 지점 기록 완료」)와 `gh pr view 197 --json headRefOid`로 확인한다.
-- **CI(8050073f, 04:22Z):** `code-rules`·`module-boundaries`(check 둘) 통과, `architecture-tests`·`dotnet-tests`(test 둘) 진행 중. 새 head에서 다시 확인해야 한다.
-- **PR 본문:** 「PR head는 `8050073f`」 한 줄이 이 commit으로 낡는다. 재시작 뒤 첫 작업으로 본문(E/`pr2-pr-body.md`)의 head 줄을 새 head로 고쳐 `gh pr edit 197 --body-file`로 반영한다.
-- **메인에 보낼 것:** 아직 보내지 않은 결정 요청은 없다. CI 결과와 함께 「PR197 병합 승인 요청 준비」를 보내고, 메인 R-2와 사용자 승인 전달(정확한 head 포함)을 받는다.
-- **작업자·검증자:** 살아 있는 pane은 없다. 8단계까지 여덟 세션을 모두 정산하고 pane을 닫았다. PR197 병합까지 새 작업자는 띄우지 않는다.
-- **Run과 재진입:** Run은 `run_3fa510a50602`다. 다시 열면 새 리드 handle로 `orca orchestration run-use`를 해 이 Run을 묶고, 메인에 새 handle을 알린 뒤 `--types` 8개 필터의 우편함 대기를 하나만 연다. 직전 리드 handle `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`은 관측값이며 실행 권한이 아니다.
+- **지금 단계:** PR2는 [PR197](https://github.com/bass131/dawnholder-server/pull/197)로 병합됐다(아래 「PR197 병합」). PR3 branch `feat/management-backlog-menu-20261007`을 최신 main `94fc6845`(PR198 병합, PR197 포함)에서 만들었다. 다음 할 일은 PR3 설계 고정 → 신규 `claude-opus-5-5`의 TDD 선행 시험 → 신규 `gpt-6.1-sol` 구현 → 다른 신규 `claude-opus-5-5`의 강 등급 독립 검증 → PR 준비 보고다.
+- **병합 관문:** 이 PR부터 리드는 병합하지 않는다. PR 생성 뒤 정확한 head·CI·판정 원문을 메인에 보고하면, 메인이 R-2 뒤 사용자 승인을 받아 메인 전용 checkout에서 병합한다(메인 `msg_371394a813a7`, AGENTS 「Git 권한」).
+- **작업자·검증자:** 살아 있는 pane은 없다.
+- **Run과 재진입:** Run은 `run_3fa510a50602`다. 리드 handle은 `term_052ec1b2-cd90-4270-acbd-33f8cc36f9a8`(이 세션의 관측값이며 다음 리드의 실행 권한이 아님)이다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
 
 당시 예정 순서는 설계 문서의 「작업 순서와 소유」 표다.
 
@@ -36,8 +33,8 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 2. (끝남) 신규 `gpt-6.1-sol`(max)이 제품 코드를, 다른 신규 Sol이 `catalog.json` 데이터 전환을 맡는다.
 3. (끝남) 신규 `claude-opus-5-5` 시험 작성자가 MCP 시험을 만들고(화면 시험 시간 상한 포함), 신규 Sol이 MCP를 구현하고 `mcp-dist`를 새로 빌드한다.
 4. (끝남) 다른 신규 `claude-opus-5-5`가 PR 전체를 강 등급으로 독립 검증했다(차단 V1·V2). V1은 메인 결정 `msg_883836e1208a` 1항에 따라 현 이력을 받아들였다. V2는 새 Sol이 고치고 `mcp-dist`를 다시 빌드했다. 다른 새 `claude-opus-5-5`가 좁혀 재검증해 통과했다.
-5. PR 생성 직전 메인 알림(`msg_2b9dbdc4f69f`) → PR197 생성 → CI → 메인 R-2 → 사용자 개별 병합 승인.
-6. PR3(백로그 메뉴)은 PR2 병합 뒤 최신 main의 새 branch에서 시작한다. PR3 시험 작성자 모델은 계약 전에 메인에 묻는다.
+5. (끝남) PR 생성 직전 메인 알림(`msg_2b9dbdc4f69f`) → PR197 생성 → CI → 메인 R-2 → 사용자 개별 병합 승인 → 병합(`8c920d4d`).
+6. (진행) PR3(백로그 메뉴)은 최신 main `94fc6845`의 새 branch에서 시작했다. 시험 작성자와 독립 검증자는 메인 결정 `msg_caa43cc537b5`에 따라 각각 신규 `claude-opus-5-5`다.
 
 근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-06-record-source-unification/`, 진입 근거 E0은 `.backups/verification/2026-10-06-management-entry/`다. 리드 맥락 메모는 E/`astra-context.md`다. 이번 Run은 `run_3fa510a50602`다. 2026-10-06 22:4x KST Orca 재시작으로 리드 handle이 `term_d2c6dac2…`에서 `term_7ad342b5-663c-4d6b-980c-bc65ca5b1c26`으로 바뀌었고, 리드가 run-use로 Run을 다시 묶었다(E/`run-use-after-restart.json`). handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다.
 
@@ -94,6 +91,8 @@ PR 번호가 생기면 「문서 PR 병합」 같은 단계 이름을 「PR000 �
 메인 `msg_dbff8df03e07`의 운영 지시: `gh pr create`와 `gh pr merge`는 사용자 확인 창 대상이므로 실행 직전에 메인에 알린다. 병합은 PR마다 메인이 그 head에 대한 사용자 승인을 전달한 뒤에만 한다. 초안과 goal이 달라지는 곳이 생기면 쓰기 전에 메인에 알린다. 우편함 대기는 8개 type `--types` 필터와 `--timeout-ms 900000`을 쓴다(진입 메시지).
 
 메인 `msg_883836e1208a`(2026-10-06T19:40:31Z, E/`wait-71.json`)의 PR2 독립 검증 처리: (1) V1(5단계 commit의 구조·동작 혼합)은 현 이력을 받아들이고 force push하지 않는다. PR 본문에 `f8aaae02`가 두 성격을 섞었다는 한 줄을 남긴다. (2) O3(hard link)는 이번 PR 범위 밖 후속 후보이며 Rules에 넘길 BACKLOG 후보 목록에 넣고 설계의 경로 경계 한계에 한 줄 적는다. (3) V2 수정과 좁힌 재검증은 계획대로 한다.
+
+메인 `msg_caa43cc537b5`(2026-10-07T05:38:47Z, 현행 정본 범위라 사용자에게 올리지 않은 메인 결정)의 PR3 처리: PR3 TDD 선행 시험 작성자는 신규 `claude-opus-5-5`이고, 독립 검증자도 다른 신규 `claude-opus-5-5`다(아래 「설계와 검증 경계」 표의 PR3 검증자 조건은 이 결정으로 확정). PR3 branch는 최신 main `94fc6845`에서 만든다. 메인 `msg_371394a813a7`의 운영 지시: PR198 병합으로 새 병합 관문이 적용된다. 리드는 병합하지 않고 PR 준비 보고만 한다. 명령 한 줄에 금지 낱말 조합을 쓰지 않고, commit 메시지·PR 제목·본문은 파일로 넘긴다.
 
 ## 만들 것
 
@@ -313,6 +312,14 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 - **작업:** 신규 `[Management 검증자]`(지정 `claude-opus-5-5`, 관찰 화면 「Opus 5.5 with xhigh effort」, backend unknown)가 `cf8d235c..373d8c93`를 강 등급으로 좁혀 재검증했다. Task `task_d8f3f012ca61`, Dispatch `ctx_efb72251d491`, worker_done `msg_20464a814b1f`(2026-10-06T20:24:06Z). 계약 E/`pr2-v2-task.txt`(SHA-256 `768670e8…`), 판정 원문 E/`pr2-v2/verdict.md`(SHA-256 `e889ec07…`).
 - **판정:** 통과(비차단 W1 하나). V2는 해소됐다. 새 시험 `tests/source-section-order.test.ts`가 판정 순서(종류 → 경로 모양 → 확장자 → 파일)를 앱 reader·빌드된 MCP 진입·색인 검사에서 단정한다. 같은 시험이 V2 수정 전(`cf8d235c`와 그때의 `mcp-dist`)에도 통과해 동작 보존을 보였고, 순서를 일부러 무너뜨린 TEMP 변형에서는 실패했다. 같은 명령의 전체 시험은 1196개 중 1194 통과에서 1198개 중 1196 통과가 됐고 실패는 B01·B09뿐이다. 타입 검사 셋·`records:check`(error 0, warning 11)는 같다. `mcp-dist` 버전은 현재 소스로 다시 계산한 digest와 같다. 보호 산출물 561파일은 변경 0이다. 리드 문서 정정 다섯 문장은 원천과 같다. hard link 한계는 관측으로 확인됐다.
 - **처리:** 새 시험을 `aacf35bd`로 commit했다. W1(기존 시험 서술)과 P3(메모 선행을 파일 생성 시각으로 판정한 리드 기록)은 위 「PR2 MCP 선행 시험」·「PR2 V2 수정」 문장에서 고쳤다. **리드 절차 위반(첫 발생):** P3는 6단계 O6가 근거로 쓰지 말라고 한 파일 생성 시각을 리드가 7단계 대조에 다시 쓴 것이다. 결론은 rollout으로 맞았다. 운영 규칙은 O6와 함께 Rules 몫이다. P1(`record-index-check.ts`의 helper 결과 변수 이름), P2(helper의 모르는 kind 처리, 색인 계약이 막아 도달 불가), P4(빌드된 MCP 배치 코드 두 곳)는 동작 영향이 없어 이번 PR에서 고치지 않는다.
+
+### PR197 병합
+
+- **PR 생성과 CI:** 리드가 메인에 알린 뒤(`msg_2b9dbdc4f69f`) [PR197](https://github.com/bass131/dawnholder-server/pull/197)을 만들었다. 사용자 확인 창 때문에 생성은 2026-10-07 04:1xZ에 끝났다. 최종 head `0077309c502cf46f9cd180774eddd5645b245653`에서 code-rules·module-boundaries·architecture-tests·dotnet-tests 4개가 모두 통과했다(E/`pr197-checks-final.txt`). 본문의 head 줄은 재시작 뒤 이 head로 고쳤다(head 불변).
+- **Claude Code 업데이트 재시작:** 메인 요청(`msg_669a14a08918`)으로 재개 지점을 기록해 push했고(`0077309c`), 재시작 뒤 리드가 새 handle `term_052ec1b2-cd90-4270-acbd-33f8cc36f9a8`로 run-use했다(E/`run-use-after-claude-update.json`, consumer generation 3). 재시작 지시 `msg_83286ca6316d`는 Run 밖 터미널 주소라 우편함 check에 잡히지 않아 inbox로 읽었다.
+- **승인과 병합:** 리드의 승인 묶음(`msg_5aab06ffa5b9`) 뒤 메인 `msg_0792ee7d1508`이 사용자 원문 「대시보드 결정 응답: 1) PR197 - 운영툴 기록 색인 v2 전환 병합 승인 → A 병합 승인 (head 0077309c502cf46f9cd180774eddd5645b245653)」을 전달했다(메인 전달, 사용자 직접 입력으로 격상하지 않음). 메인 R-2는 일치였다. 리드가 직전 head를 다시 조회하고, 당시 방식(리드 pane, 사용자 확인 창, merge commit, head 고정)으로 병합했다. 병합 commit `8c920d4dbfcd8edf3e6187a6ae437e8b5c17e1f0`, 2026-10-07T05:34:55Z다(E/`pr197-merged.txt`). 원격 branch는 자동 삭제됐다.
+- **병합 관문 전환:** 곧이어 Rules의 PR198(병합 관문 hook과 정본 문장)이 병합됐다(`94fc6845`, 메인 `msg_371394a813a7`). 이제 리드는 병합하지 않고 PR 준비 보고만 한다. 병합은 메인 전용 checkout의 메인이 한다(AGENTS 「Git 권한」). PR197은 리드가 병합한 마지막 PR이다.
+- **세션 중 설정 반영 관측:** Rules 리드 요청(`msg_eecf9fa95144`)에 따라, PR3 branch를 만드는 받기 전후에 무해한 탐침을 한 번씩 실행했다. 받기 전 탐침은 그대로 실행됐다. 받은 뒤 9초 안의 탐침은 PreToolUse hook에 막혔다. 결과는 원문 그대로 Rules에 보냈다(`msg_91def97e8eeb`, E/`rules-hot-reload-probe-result.txt`).
 
 ### 진입과 준비
 
