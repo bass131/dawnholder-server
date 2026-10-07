@@ -9,7 +9,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_62d7bc65-8590-4240-a6bb-7caad4e6b3da`(Claude Code 2.1.292 업데이트 뒤 같은 대화를 다시 연 세션, 이전 `term_af8ac4fc-…`). Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
 - **현재 위치**(2026-10-07T07:05Z):
-  - 지금 단계: PR2 Sol 작성이 끝났고 리드가 이관 원문을 넣고 표본 대조했다(아래 「PR2 작성」). 다음은 메인의 CLAUDE.md 수정 → 신규 `gpt-6-astra` xhigh 문서 실사 → PR2 생성·CI·승인 묶음이다.
+  - 지금 단계: PR2 Sol 작성과 메인의 CLAUDE.md 수정이 끝났고 리드가 이관 원문을 넣고 표본 대조했다(아래 「PR2 작성」). 다음은 신규 `gpt-6-astra` xhigh 문서 실사 → PR2 생성·CI·승인 묶음이다.
   - 완료조건 5: 끝났다(아래 「관문 적용 확인」, 맞바꾼 새 자리의 메인 창 덧붙임 포함). SendMessage 전달 모양만 분류기 거부로 미측정이다.
   - 메인 쪽 상태: 폴더 맞바꾸기 뒤 메인은 원래 clone `C:/Dev/DawnHolder_Project`(branch main, 표식 있음)의 새 세션 `term_cdc06c26-…`이다. PR2는 그 창의 승인 줄로 병합한다(완료조건 8).
   - 살아 있는 작업자·검증자 pane: 없다. PR2 Sol은 정산하고 닫았다.
@@ -509,6 +509,10 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
   - ORCA에서 지운 「실행과 감독」 조건이 orca-work 「수행·정산·종료」에 있다. timeout은 종료 증거가 아니라는 조건(48행), 재사용 금지(20·50행), 전체 Delivery 뒤 ack(50행)를 확인했다.
   - 관찰 하나: orca-work 39행이 「[draft 정본](…)를 따른다」로 바뀌어 조사가 어긋난다(원래 「을」). 리드가 고치지 않고 독립 실사 계약에 넘긴다.
 - 정산: worker-release는 06:57:27Z에 `retained`(`external_terminal`)로 끝났다. idle 화면을 확인하고 06:59:17Z에 pane을 닫았다(`ptyKilled: true`). 재조회에서 재출현은 없었다(E/pr2-release.json, pr2-before-close.json, pr2-close.json, pr2-list-after-close.json).
+- CLAUDE.md: 메인에 쓰기 창을 열었다(`msg_0a3dec998dc4`, 07:05:21Z). 메인이 `msg_e3e25c909e66`(07:08:05Z)로 쓰기 종료를 알렸다.
+  - 바꾼 줄은 넷이다. 역할 줄(8행), 「Opus 검증자」 표기(19행), 메인·Core 배치(25행), 우편함 대기의 `#mailbox-wait` 링크(38행)다.
+  - 크기는 base 8,197 → 8,195 bytes다. 메인 맥락 메모는 E/main-claude-md-context.md다.
+  - 리드가 diff·크기·hash 앞 16자(`398c3d6eed3cf78b`)를 메인 보고와 대조하고 CLAUDE.md만 커밋했다(`4f64541`).
 
 ## 요구사항 원천과 적용 결정
 
@@ -534,21 +538,21 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
 
 정본 반영 전까지 적용하는 결정이다. PR2가 정본에 넣으면 각 줄에 반영 위치를 적는다. 모두 메인 전달이며 직접 입력으로 격상하지 않는다.
 
-- **검증자 모델 시범**: 위 원문(18:1x KST). 메인 진입 지시 `msg_3902e180080c`의 임시 규칙은 다음과 같다. 문서 실사와 코드 검증(강·약)의 독립 검증자는 신규 `gpt-6-astra` xhigh다(split에 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`). DB·영속 데이터, 프로토콜·공유 DLL, 보안 경계를 바꾸는 작업과 해당 여부가 애매한 작업은 신규 `claude-opus-5-5`가 검증한다. Gardener, 확정 실패 뒤 Advisor, R-7 설계 검토는 대상이 아니다. 선행 시험 작성자도 대상이 아니다(질문 4 A). 구현자·검증자 분리, 작업 하나 뒤 정산·종료, 파트당 검증자 동시 하나, 테스트 파일만 쓰기, 판정 양식과 통과 차단 사유, 태그는 그대로다. 판정의 지정 모델·관찰 모델 칸을 채운다.
-- **리드 Opus**: 다섯 리드는 `claude-opus-5-5` xhigh다(`msg_22cb1701a2cf`, 교체 시점은 `msg_25102e277345`). 원문은 직전 Rules goal에 있다. 정본의 「파트 리드 Astra `gpt-6-astra`」와 R-1 기동 명령은 PR2 전까지 낡은 문장이다.
-- **확인 창 대신 승인**: 메인 `msg_af033fe88521`(2026-10-06T14:33:33Z, E/session/wait7-msg_af033fe88521.raw.txt)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 병합 관문 - 승인이 맞을 때 확인 창을 hook이 대신 승인할지 → A hook이 대신 승인한다」**다. PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 낸다. 메인은 AGENTS 공학 조건 「Claude 권한 확인을 건너뛰는 플래그·설정 변경은 금지」에 이 hook의 예외 문장(사용자 결정 원문 링크)을 넣으라고 했다. 넣는 곳은 PR1이다. 리드 제안 `msg_043ef990dff0`에 메인 `msg_895f7ffa4512`(14:36:43Z, E/session/wait8-msg_895f7ffa4512.raw.txt)가 동의했다. PR1 병합 때 hook이 살아나므로 정본과 동작이 어긋나는 구간을 없애기 위해서다. 예외 문장에는 사용자 결정 원문과 이 절의 링크를 단다. 독립 검증 계약에는 「예외 문장의 조건이 hook 실제 동작과 일치」 대조를 넣는다.
-- **병합 관문**: 1안건 A(위 원문). PR1 병합과 적용 확인 전까지 병합은 지금 방식(리드 pane, 사용자 확인 창, 메인의 병합 신호)으로 한다. PR197·PR198이 이 방식의 마지막 병합이었다(「PR1 병합」). PR2는 적용 확인 뒤 새 관문으로 병합한다(완료조건 8).
+- **검증자 모델 시범**: 위 원문(18:1x KST). 메인 진입 지시 `msg_3902e180080c`의 임시 규칙은 다음과 같다. 문서 실사와 코드 검증(강·약)의 독립 검증자는 신규 `gpt-6-astra` xhigh다(split에 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`). DB·영속 데이터, 프로토콜·공유 DLL, 보안 경계를 바꾸는 작업과 해당 여부가 애매한 작업은 신규 `claude-opus-5-5`가 검증한다. Gardener, 확정 실패 뒤 Advisor, R-7 설계 검토는 대상이 아니다. 선행 시험 작성자도 대상이 아니다(질문 4 A). 구현자·검증자 분리, 작업 하나 뒤 정산·종료, 파트당 검증자 동시 하나, 테스트 파일만 쓰기, 판정 양식과 통과 차단 사유, 태그는 그대로다. 판정의 지정 모델·관찰 모델 칸을 채운다. PR2 반영: goal-loop 스킬 「검증자 모델 시범(2026-10-31까지)」, AGENTS 「역할과 범위」·「모델 라우팅」, ORCA R-5 2단계, orca-work 「역할과 작업 계약」.
+- **리드 Opus**: 다섯 리드는 `claude-opus-5-5` xhigh다(`msg_22cb1701a2cf`, 교체 시점은 `msg_25102e277345`). 원문은 직전 Rules goal에 있다. 정본의 「파트 리드 Astra `gpt-6-astra`」와 R-1 기동 명령은 PR2 전까지 낡은 문장이다. PR2 반영: AGENTS 「모델 라우팅」, ORCA R-1 기동 줄과 R-8 목표 중간 교체 문단. CLAUDE.md 세션 역할은 메인이 고친다.
+- **확인 창 대신 승인**: 메인 `msg_af033fe88521`(2026-10-06T14:33:33Z, E/session/wait7-msg_af033fe88521.raw.txt)가 전달한 사용자 원문은 **「대시보드 결정 응답: 1) 병합 관문 - 승인이 맞을 때 확인 창을 hook이 대신 승인할지 → A hook이 대신 승인한다」**다. PermissionRequest hook이 승인 기록과 정확히 맞는 단독 병합 명령에만 allow를 낸다. 메인은 AGENTS 공학 조건 「Claude 권한 확인을 건너뛰는 플래그·설정 변경은 금지」에 이 hook의 예외 문장(사용자 결정 원문 링크)을 넣으라고 했다. 넣는 곳은 PR1이다. 리드 제안 `msg_043ef990dff0`에 메인 `msg_895f7ffa4512`(14:36:43Z, E/session/wait8-msg_895f7ffa4512.raw.txt)가 동의했다. PR1 병합 때 hook이 살아나므로 정본과 동작이 어긋나는 구간을 없애기 위해서다. 예외 문장에는 사용자 결정 원문과 이 절의 링크를 단다. 독립 검증 계약에는 「예외 문장의 조건이 hook 실제 동작과 일치」 대조를 넣는다. 반영: AGENTS 「공학 조건」 예외 문장(PR1).
+- **병합 관문**: 1안건 A(위 원문). PR1 병합과 적용 확인 전까지 병합은 지금 방식(리드 pane, 사용자 확인 창, 메인의 병합 신호)으로 한다. PR197·PR198이 이 방식의 마지막 병합이었다(「PR1 병합」). PR2는 적용 확인 뒤 새 관문으로 병합한다(완료조건 8). 반영: ORCA `#merge-gate`(PR1). PR2는 같은 절에 운영 방식 `--merge`, DIRTY 재통합과 좁힌 재실사, 리드 세션의 그물 안내를 더했다.
 - **메인·Core 폴더 맞바꾸기**: 메인 `msg_3bdf778317e9`(2026-10-07T06:13:41Z, E/session/wait54.raw.txt)가 전달한 사용자 원문(메인 창에서 Enter로 제출, 15:0x KST)은 **「OK 세컨드 브레인에 내용 저장을 SubAgent한테 지시해주고, 우리 메인세션은 옮기는 작업 진행하자」**다. 메인이 물은 두 선택지(지금 맞바꿔 / 지금 구조 유지) 중 「지금 맞바꿔」에 대한 답이다. 메인이 선택지에 적은 결과는 「원래 clone 폴더가 메인 전용이 되고 Core는 새 worktree로 옮긴다. 다시 여는 세션은 메인 하나이고, 배치 문장 변경은 Rules PR2에 싣는다.」였다.
   - 메인이 한 일(06:07~06:13Z): `C:/Dev/DawnHolder_Project`를 main(HEAD `94fc6845`)으로 바꿨다. Core는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active`(branch `feat/persistence-engine-judgment-20261006`)로 옮겼다. main-active는 detach해 정리 대상이 됐다. Orca 표시 이름은 「Main」(기본 배지)과 「Core」다.
   - 남은 실제 조치(사용자·메인): 원래 clone 폴더 표식 생성, 새 메인 진입, main-active 제거.
-  - PR2 반영: ORCA R-1의 메인·Core 경로와 기동 줄, RESUME의 Core 경로와 현황판 명령, 세션 인계 스킬의 탭 위치, CURRENT의 Core 경로·branch 줄. CLAUDE.md 「메인 세션 진입」은 메인이 고친다. 정본 반영 전까지는 이 결정이 정본의 main-active 문장을 대신한다.
-- **후속 계획의 일괄 검토**: 메인 `msg_bf63c20c8abe`가 전달한 원문 「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」. 현재 goal 밖 후보는 BACKLOG로 모으고 개별 승인을 받지 않는다.
-- 메인 운영 지시(사용자 결정 아님): 우편함 대기는 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`로 heartbeat 단독 깨움을 뺀다(`msg_20663b7c7598`). 대기는 Bash 백그라운드로 한 번에 하나만 열고 `&`·`/dev/null`로 출력을 버리지 않는다(`msg_3902e180080c`).
+  - PR2 반영: ORCA R-1의 메인·Core 경로(32·36행)와 기동 줄, RESUME의 Core 경로(14행)와 현황판 명령(25행), 세션 인계 스킬의 탭 위치(25행), CURRENT의 Core 경로·branch 줄(13행). CLAUDE.md 「메인 세션 진입」은 메인이 고친다. 정본 반영 전까지는 이 결정이 정본의 main-active 문장을 대신한다.
+- **후속 계획의 일괄 검토**: 메인 `msg_bf63c20c8abe`가 전달한 원문 「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」. 현재 goal 밖 후보는 BACKLOG로 모으고 개별 승인을 받지 않는다. PR2 반영: BACKLOG 「병합 관문 goal에서 연결한 후보」.
+- 메인 운영 지시(사용자 결정 아님): 우편함 대기는 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`로 heartbeat 단독 깨움을 뺀다(`msg_20663b7c7598`). 대기는 Bash 백그라운드로 한 번에 하나만 열고 `&`·`/dev/null`로 출력을 버리지 않는다(`msg_3902e180080c`). PR2 반영: ORCA `#mailbox-wait`.
 
 ## 현재 결과
 
 - PR1 병합 관문: #198로 병합됐다(`94fc6845`, 「PR1 병합」). 적용 확인을 마쳤다(「관문 적용 확인」).
-- PR2 정본 현행화: Sol 작성이 끝났다(「PR2 작성」). 메인의 CLAUDE.md 수정과 독립 실사 전이다.
+- PR2 정본 현행화: Sol 작성과 메인의 CLAUDE.md 수정이 끝났다(「PR2 작성」). 독립 실사 전이다.
 
 ## 다음 계획 후보
 
