@@ -1,7 +1,8 @@
-import { lstat, readFile, readdir } from 'node:fs/promises';
-import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
-import { parseBacklogTables } from './backlog-table.js';
-import { catalogReferenceIssues, isRecordId, validateCatalog } from './catalog-contract.js';
+import { lstat, readdir } from 'node:fs/promises';
+import { join } from 'node:path';
+import type { BacklogIssueCode } from './backlog-contract.js';
+import { createBacklogStore } from './backlog-store.js';
+import { catalogReferenceIssues, validateCatalog } from './catalog-contract.js';
 import type { RecordCatalog, RecordSource } from './catalog-contract.js';
 import { readCatalogFile } from './catalog-store.js';
 import { sourcePathParts, sourceReadability } from './source-section-contract.js';
@@ -12,8 +13,7 @@ export type RecordIndexDiagnosticCode =
   | 'CATALOG_INVALID' | 'REFERENCE_BROKEN' | 'LOCATOR_INVALID'
   | 'SOURCE_PATH_REJECTED' | 'SOURCE_NOT_READABLE' | 'SOURCE_MISSING'
   | 'SOURCE_TOO_LARGE' | 'SOURCE_INVALID_ENCODING' | 'SECTION_MISSING' | 'SECTION_AMBIGUOUS'
-  | 'GOAL_NOT_INDEXED' | 'BACKLOG_ID_FORMAT' | 'BACKLOG_ID_DUPLICATE'
-  | 'BACKLOG_GOAL_LINK_MISSING' | 'BACKLOG_PROMOTION_LINK_MISSING' | 'BACKLOG_TABLE_FORMAT';
+  | 'GOAL_NOT_INDEXED' | BacklogIssueCode;
 
 export interface RecordIndexDiagnostic {
   severity: 'error' | 'warning';
@@ -30,7 +30,6 @@ export interface RecordIndexCheckResult {
 }
 
 const catalogPath = '05_Management/records/catalog.json';
-const backlogPath = '00_Document/operations/BACKLOG.md';
 const goalRoots = ['01_Phases/goals', '05_Management/goals'];
 const sourceCodes: Partial<Record<SourceSectionCode, RecordIndexDiagnosticCode>> = {
   'path-rejected': 'SOURCE_PATH_REJECTED',
@@ -177,38 +176,15 @@ export async function checkRecordIndex({ repositoryRoot }: { repositoryRoot: str
   }
 
   try {
-    const backlog = parseBacklogTables(await readFile(join(repositoryRoot, backlogPath), 'utf8'));
-    for (const issue of backlog.formatIssues) {
-      add('warning', 'BACKLOG_TABLE_FORMAT', `BACKLOG.md:${issue.line}`, issue.cause, 'ID 표의 머리글·구분 행·자료 행의 열 수를 맞추세요.');
-    }
-    const ids = new Set<string>();
-    for (const row of backlog.rows) {
-      const location = `BACKLOG.md:${row.line}`;
-      if (!isRecordId(row.id)) {
-        add('warning', 'BACKLOG_ID_FORMAT', location, '후보 ID가 소문자 단어를 하이픈으로 잇는 형식이 아닙니다.', '128자 이하의 안정적인 소문자 ID를 쓰세요.');
+    const backlog = await createBacklogStore({ repositoryRoot }).read();
+    if (!backlog.ok) {
+      failed('backlog');
+    } else {
+      for (const issue of backlog.issues) {
+        const location = issue.line === null ? 'BACKLOG.md' : `BACKLOG.md:${issue.line}`;
+        add('warning', issue.code, location, issue.cause, issue.fix);
       }
-      if (ids.has(row.id)) {
-        add('warning', 'BACKLOG_ID_DUPLICATE', location, `후보 ID ${row.id}가 중복됩니다.`, '후보마다 서로 다른 안정적인 ID를 지정하세요.');
-      }
-      ids.add(row.id);
-      if (row.status.includes('goal 승격') && row.goalLinks.length === 0) {
-        add('warning', 'BACKLOG_PROMOTION_LINK_MISSING', location, 'goal 승격 행에 goal 상대 링크가 없습니다.', '승격한 goal의 원문 파일로 가는 상대 링크를 상태에 추가하세요.');
-      }
-      for (const link of row.goalLinks) {
-        let exists = false;
-        try {
-          const path = resolve(repositoryRoot, dirname(backlogPath), decodeURIComponent(link));
-          const within = relative(resolve(repositoryRoot), path);
-          if (!isAbsolute(within) && within !== '..' && !within.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`)) {
-            exists = (await lstat(path)).isFile();
-          }
-        } catch (error) {
-          if (!isMissing(error) && !(error instanceof URIError)) throw error;
-        }
-        if (!exists) {
-          add('warning', 'BACKLOG_GOAL_LINK_MISSING', location, '상대 goal 링크의 대상 파일이 없습니다.', 'BACKLOG.md 기준 상대경로와 대상 goal 파일의 존재를 확인하세요.');
-        }
-      }
+      if (backlog.uncheckedLinks.length > 0) failed('backlog');
     }
   } catch {
     failed('backlog');
