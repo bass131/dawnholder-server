@@ -450,8 +450,41 @@ R-7: 리드는 PR1이 보호 집합·오류 분류·실패 수명에 닿아 해�
 - 예약·전달 prompt(O10·O-R7, 리드 pane, 표식 없는 checkout이라 기록이 생길 수 없다):
   - 승인 문장 꼴(없는 PR, 0 head)을 넣은 CronCreate와 SendMessage(자기 세션 대상)가 둘 다 `approval-injection`으로 막혔다.
   - 문구 없는 SendMessage로 전달 모양을 재려던 시도는 auto mode 분류기가 거부했다. 다른 경로로 다시 시도하지 않아 SendMessage의 실제 전달 모양은 미측정이다. 도구 설명에는 받는 쪽에 `<cross-session-message from=…>`로 감싸 도착한다고 적혀 있다(문서 근거).
-  - 무해 CronCreate 한 번은 05:51:33Z에 실행돼 세션 큐에 들어갔다(대화 기록의 `scheduled_task_fire`). 원시는 [E/apply-check-prompt-tools.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/apply-check-prompt-tools.md)다.
+  - 무해 CronCreate 한 번은 05:51:33Z에 실행돼 큐에 들어갔고, 리드 turn이 끝난 05:53:14Z에 원문 그대로(감싸는 태그 없음) 사용자 turn으로 전달됐다. 대화 기록 필드는 `isMeta` true, `promptSource` "system", `turnOrigin` "scheduled"다. 그래서 예약 prompt 입력의 차단이 필요한 방어다. UserPromptSubmit이 그 turn에 돌았는지는 기록으로 알 수 없다. 원시는 [E/apply-check-prompt-tools.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/apply-check-prompt-tools.md)다.
 - 판정: 완료조건 5의 세 실측(메인 창, 리드 pane, 세션 중 반영)이 끝났다. 남은 미측정은 SendMessage 전달 모양 하나이며, hook이 그 입력을 이미 막으므로 PR2 진행을 막지 않는다.
+
+### PR2 작성 계획
+
+- 범위는 「만들 것」 PR2 그대로다. 더한 것은 PR1 재검증의 비차단 문서 지적 둘(ORCA 231 `--merge` 대비, ORCA 74 두 확인 분리)과 리드 진입 안내 한 문장(O-T1)이다. 같은 goal의 PR1 문서 결함이고 PR2가 같은 파일을 고치므로 범위 안으로 본다. 메인에 보고했다(`msg_e0d89bcee2ef`, 05:57:15Z).
+- 감축 방식(완료조건 7): 메인이 승인한 방식(`msg_bc4cea4b161f` 2항, 역사 서술을 goal 이관 기록으로 옮김)의 두 번째 묶음이다.
+  - 측정 묶음: 다섯 규칙 문서(AGENTS·ORCA·goal-loop·RESUME·세션 인계 스킬)에 PR2가 고치는 orca-work를 더한 여섯 파일이다. base `94fc6845`의 합계는 102,660 bytes다. CLAUDE.md는 메인 몫으로 따로 잰다. CURRENT·INDEX·BACKLOG는 지도·목록이라 묶음 밖이고 수치만 보고한다.
+  - 이관 후보: ORCA 57·119·137·187행과 53·72·178행의 관측 경위 문장, RESUME 3행 뒷부분과 16행, goal-loop 18행과 68행 끝 문장, 90행 예시다. 합계는 5,624 bytes이고 ORCA에서는 문단 넷이 빠진다.
+  - 대체: 낡은 문장은 덧붙이지 않고 바꾼다. ORCA 33의 전환 문장(「메인 전용 checkout 준비 전까지는 기존 배치」)은 main-active가 생겨 지운다. 이것으로 O11이 해소된다.
+- 세션: 작성은 신규 Sol max, 실사는 신규 `gpt-6-astra` xhigh(검증자 시범, 문서 실사)다. 실사 전에 메인이 CLAUDE.md를 고친다.
+- 메인 답 `msg_f4c2c8eb2852`(06:01:03Z): 감축 방식과 항목 범위에 이견이 없다. Sol 기동만 사용자 결정 하나가 나올 때까지 멈춘다. 걸린 결정은 메인·Core 폴더 맞바꾸기다(현황판 항목 `main-core-checkout-swap`). 맞바꾸면 원래 clone 폴더가 메인 전용 checkout이 되고 Core는 새 worktree로 옮긴다. 그 경우 ORCA R-1의 두 경로, RESUME 진입 배치, 세션 인계 스킬의 탭 위치가 PR2에 같이 실리도록 메인이 제안할 예정이다. 메인은 이것을 범위 변경 요청이 아니라고 했다. 리드는 맥락 메모와 계약을 먼저 쓰고, R-1 배치 부분은 결정 뒤에 채운다.
+
+<a id="pr2-canon-sources"></a>
+
+#### PR2 정본 원천
+
+PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남긴 도구·환경 관측이며 사용자 결정이 아니다. 저장소 밖 원천의 발췌는 E/pr2/sources.md에 있다.
+
+- 리드 모델(항목 1): 사용자 결정은 「적용 중인 사용자 결정」의 「리드 Opus」 줄이다. 근거는 「사용자 관측과 메인 측정」의 두 갈래다. 기동·진입·`run-use` 인수 관측은 메인 메모리 「Opus 리드 띄우기」(2026-10-05)에 있다. 목표 중간 재개(`claude --resume`, 세대 2, `consumer_fenced`)는 「PR1 병합」의 재진입 줄이다.
+- 검증자 시범(항목 3): 「적용 중인 사용자 결정」의 「검증자 모델 시범」 줄이다. 10-31 평가 자료는 메인 요청서 「검증자 모델 시범의 관찰」이다.
+- Orca 절차 다섯(항목 5): 메인 메모리 다섯 건이다(조사 근거 「흩어진 후보 조사 27」).
+  - 닫은 pane 재출현(Orca 1.4.217, 2026-10-05)
+  - split 시간 초과 뒤 늦은 pane(1.4.219, 2026-10-04)
+  - 활성 Dispatch 없는 escalation의 도착(1.4.221, 2026-10-06, 직전 Rules goal 종료 인계에도 같은 관측)
+  - 메모리 회수로 꺼진 대기(2026-10-06)
+  - 크래시·업데이트 뒤 복구(1.4.220, 2026-10-05)
+- 우편함 대기(항목 6): 메인 지시 `msg_20663b7c7598`(`--types`)와 `msg_3902e180080c`(진입 순서 4)다. 비용 근거는 「사용자 관측과 메인 측정」이다. heartbeat 알림이 Claude 리드를 깨운다는 관측은 메인 메모리 「Opus 리드 띄우기」(Rules 관측 2026-10-06)에 있다. heartbeat 5분 유지는 메인 `msg_bc4cea4b161f` 2항이다.
+- 병합·종료(항목 7): 메인 운영 판단이다.
+  - 충돌·DIRTY 재통합: `msg_a678d816f1e5`, `msg_6f8f2d376551`. 직전 Rules goal에 기록돼 있다.
+  - 같은 결정의 Management 적용: `msg_053edb4e968d`, `msg_f799705f5003`, `msg_f1f757635ac1` 1항
+  - 재실사 결과 위치와 좁힌 재실사: `msg_709ede98a3ba`, `msg_455215cd0e21`, `msg_f1f757635ac1`
+  - Gardener 순서: `msg_9291578c67e9`, `msg_ccd16077ebfa`. 예외는 `msg_0627c486562c`다.
+  - draft 크기 조건: 범위 초안 리드 판단을 `msg_bc4cea4b161f` 2항이 승인했다.
+- 목표 사이 작업 폴더(항목 8): 메인 요청서 항목 8과 Management 제안 5다. 이번 실제 예는 메인 `msg_bdf15dee0740`, Management `msg_91def97e8eeb`다.
 
 ## 요구사항 원천과 적용 결정
 
