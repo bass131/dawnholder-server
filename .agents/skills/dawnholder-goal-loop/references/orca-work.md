@@ -36,7 +36,7 @@
 - 세션과 작업자의 배치는 [R-1](../../../../00_Document/operations/ORCA.md#r1-management-placement)을 따른다.
 - 생성·준비·최초 연결·모델 근거·실패 처리는 [R-5](../../../../00_Document/operations/ORCA.md#r5-worker-launch)를 따른다.
 - 첫 화면과 선택창 판단은 [R-6](../../../../00_Document/operations/ORCA.md#r6-first-screen), 준비 확인 절차는 [세션 인계 스킬](../../dawnholder-session-handoff/SKILL.md)을 따른다.
-- capacity 한정 재시도/신규 `gpt-6-astra` 작업자 예외와 공식 계약 draft의 조건부 Enter 제출은 [R-5 상세](../../../../00_Document/operations/ORCA.md#capacity-retry)·[draft 정본](../../../../00_Document/operations/ORCA.md#official-contract-draft)를 따른다. Run 바인딩 직후 [현재 회신 주소](../../../../00_Document/operations/ORCA.md#run-reply-address)를 메인에게 알린다.
+- capacity 한정 재시도/신규 `gpt-6-astra` 작업자 예외와 공식 계약 draft의 조건부 Enter 제출은 [R-5 상세](../../../../00_Document/operations/ORCA.md#capacity-retry)·[draft 정본](../../../../00_Document/operations/ORCA.md#official-contract-draft)을 따른다. Run 바인딩 직후 [현재 회신 주소](../../../../00_Document/operations/ORCA.md#run-reply-address)를 메인에게 알린다.
 
 실패 이력과 후속 실증의 범위는 [R-5 근거](../../../../00_Document/operations/ORCA.md#r5-worker-launch)에 둔다. 단순 전체 handoff에는 감독형 추적을 만들지 않는다.
 

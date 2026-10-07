@@ -9,7 +9,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_62d7bc65-8590-4240-a6bb-7caad4e6b3da`(Claude Code 2.1.292 업데이트 뒤 같은 대화를 다시 연 세션, 이전 `term_af8ac4fc-…`). Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
 - **현재 위치**(2026-10-07T07:05Z):
-  - 지금 단계: PR2 문서 실사가 FAIL이다(차단 A1·A2, 아래 「PR2 문서 실사」). 다음은 새 Sol의 A1·A2·A3 수정 → 새 `gpt-6-astra` xhigh의 좁힌 재실사 → PR2 생성·CI·승인 묶음이다.
+  - 지금 단계: PR2 문서 실사 FAIL(A1·A2)을 새 Sol이 고쳤다(아래 「PR2 실사 수정」). 다음은 새 Sol의 BACKLOG 누락 행 보강 → 새 `gpt-6-astra` xhigh의 좁힌 재실사 → PR2 생성·CI·승인 묶음이다.
   - 완료조건 5: 끝났다(아래 「관문 적용 확인」, 맞바꾼 새 자리의 메인 창 덧붙임 포함). SendMessage 전달 모양만 분류기 거부로 미측정이다.
   - 메인 쪽 상태: 폴더 맞바꾸기 뒤 메인은 원래 clone `C:/Dev/DawnHolder_Project`(branch main, 표식 있음)의 새 세션 `term_cdc06c26-…`이다. PR2는 그 창의 승인 줄로 병합한다(완료조건 8).
   - 살아 있는 작업자·검증자 pane: 없다. PR2 Sol은 정산하고 닫았다.
@@ -526,6 +526,22 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
   - 설계 관찰(비차단): O1은 시범 평가 자료까지 가는 경로가 길다는 것, O2는 RESUME 20·45행의 「Run 재사용 금지」와 R-8의 같은 Run 인수 경계가 진입 문서에서 바로 안 보인다는 것(base부터 있던 문장), O3는 ORCA 231행 한 줄에 조건이 몰렸다는 것이다.
 - 정산: release는 `retained`(`external_terminal`)였다. 07:26:53Z에 pane을 닫았고 재조회에서 재출현은 없었다(E/pr2-audit-release.json, -before-close.json, -close.json, -list-after-close.json).
 - 리드 결정: A1·A2는 완료조건을 막는 범위 안 결함이라 루프에서 고친다. 새 Sol max가 A1·A2·A3를 고치고, 바뀐 부분은 새 `gpt-6-astra` xhigh가 좁혀 재실사한다. 여유가 여섯 파일 11 bytes, ORCA 0줄이라 PR2 감축 방법(새 문장 압축, 역사 서술 이관)을 다시 허용하고, 그래도 넘으면 멈추고 묻게 한다. O1~O3는 이번 수정에 넣지 않고 종료 점검의 BACKLOG·Gardener 입력으로 넘긴다. PR2 정본의 같은 산출물 수정은 이번이 1회째다.
+- A2 문구의 출처: 「첫 입력」은 메인의 직전 제안(작업자 세션 로그의 첫 입력 길이 대조, 요청서의 `msg_551ff0c4af62` 절)을 리드가 범위 초안(E/session/scope-draft-v1.md 97행)과 작성 계약에 옮긴 것이다. 수정은 승인된 「사후 대조 필수」의 뜻은 두고 찾는 대상만 바로잡는다(메인에 `msg_0a179bcca658`으로 알림).
+
+### PR2 실사 수정
+
+- 수정 Sol: 신규 `gpt-6.1-sol` max다. pane `term_43351791-…`, Task `task_6043542f57aa`, Dispatch `ctx_75a251c1ea42`다. 화면 표시는 「GPT-6.1-Sol max」였고 backend는 unknown이다. 계약은 E/pr2-fix-contract.md(v1, HEAD `0e93b91`)다. 공식 ask 하나(`msg_0febd4ad4675`, 화면 모델)에 답했다(E/pr2-fix-question1-manual-check.md).
+- 완료: worker_done `msg_4c10dc5c2f89`(07:54:22Z)이고 수신 helper가 허용했다. 보고서는 E/pr2-fix/report.md다.
+  - A1: ORCA R-8 첫 문단의 사용자 결정 세 문장은 글자 그대로 두고, 뒤 세 문장 앞에 `[메인 운영 판단](#pr2-source):` 표지를 달았다. 같은 꼴 점검에서 운영 정본 도입부(21행)의 출처 열거에 「메인 운영 판단」을 더했다.
+  - A2: ORCA 178행을 「자동 지침 주입과 구분해 그 Dispatch의 계약으로 Enter 제출된 입력을 식별하고 계약 전문을 대조한다. 식별 불가·전문 불일치는 메인에 보고한다.」로 바꿨다. 세션 인계 스킬 등 다른 정본에는 「첫 입력」 기준이 없었다(E/pr2-fix/first-input-scan.txt).
+  - A3: orca-work 39행 조사를 「을」로 고쳤다.
+  - 상한: PR2 새 문장 아홉 곳을 압축(−116 bytes)하고 ORCA 94행 첫 문장(메인 측정)을 goal로 옮겼다(「PR2 실사 수정 이관」). 리드 재측정은 ORCA 250줄, 여섯 파일 102,658 bytes(base 102,660)다. 이관 블록은 기계 대조를 통과했다(E/lead-pr2-fix-moved-check.txt).
+- 정산: release는 `retained`였다. 07:55:35Z에 pane을 닫았고 재조회에서 재출현은 없었다(E/pr2-fix-release.json, -before-close.json, -close.json, -list-after-close.json).
+- 메인이 알린 PR2 범위 안 누락(`msg_9f5e4fce46f7`, 07:51:24Z, 사용자 요청으로 연 읽기 전용 규칙 백로그 점검에서 나옴):
+  - 승인 범위 초안 100행이 BACKLOG로 보낸 두 행(Management 제안 1 보고서 폴더 한 곳·계획 24, FEATURE_MAP의 Management 행)이 빠졌다. 리드가 PR2 작성 계약에서 빠뜨렸다.
+  - 관찰: PR2가 goal-loop 68행 끝 문장을 옮겨 「새 goal부터 TDD」(사용자 결정 10-04 「A」)로 가는 정본 쪽 연결이 없어진다. 정본화는 외부 계획 13(묶음 2)이다.
+  - 참고: CURRENT의 다른 파트 낡은 branch 줄은 묶음 3(계획 15) 몫으로 둔다.
+- 리드 결정(`msg_0a179bcca658`, 07:53:04Z): 새 Sol 하나로 BACKLOG에 두 행을 넣는다. TDD 연결 행과, 작업자·검증자가 자기 화면 모델을 못 읽어 공식 ask를 세 번 보낸 일(`msg_2f1221cc05d7`·`msg_fb4341b4059e`·`msg_0febd4ad4675`)의 계약 양식 후보 행도 같이 넣는다. `mailbox-output-loss-hook` 행 출처에는 두 번째 발생 근거를 덧붙인다. BACKLOG는 여섯 파일 합계 밖이다. 재실사는 A1·A2·A3 수정분과 BACKLOG 보강분을 함께 좁혀 본다. 그동안 리드는 계약에 첫 화면 표시를 직접 넣는다.
 
 ## 요구사항 원천과 적용 결정
 
@@ -565,7 +581,7 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
 ## 현재 결과
 
 - PR1 병합 관문: #198로 병합됐다(`94fc6845`, 「PR1 병합」). 적용 확인을 마쳤다(「관문 적용 확인」).
-- PR2 정본 현행화: Sol 작성과 메인의 CLAUDE.md 수정이 끝났다(「PR2 작성」). 문서 실사는 FAIL(A1·A2)이고 수정 중이다(「PR2 문서 실사」).
+- PR2 정본 현행화: Sol 작성과 메인의 CLAUDE.md 수정이 끝났다(「PR2 작성」). 문서 실사는 FAIL(A1·A2)이었고 새 Sol이 고쳤다(「PR2 문서 실사」·「PR2 실사 수정」). BACKLOG 누락 보강과 좁힌 재실사가 남았다.
 
 ## 다음 계획 후보
 
@@ -734,6 +750,14 @@ Architecture 초기 두 관측과 Management 세 번째 관측, 메인이 첫 ta
 원래 위치: goal-loop 스킬 90행 가운데 문장(`94fc6845`).
 
 예를 들어 현재 하네스 goal은 첫 BACKLOG PR 병합 뒤 중간 점검, 전체 PR/결과·[Gardener](../../../00_Document/operations/ORCA.md#goal-gardener) 뒤 종료 점검이다.
+
+### PR2 실사 수정 이관: ORCA
+
+#### 우편함 대기의 메인 측정 문장
+
+원래 위치: ORCA 94행 첫 문장(`0e93b91`). 실사 결함 A1·A2를 고친 수정 Sol이 bytes 상한을 맞추려고 옮겼다(E/pr2-fix/moved-originals.md). 리드가 기준 행과 글자까지 같은지, 현재 ORCA에서 빠졌는지 기계로 대조했다(E/lead-pr2-fix-moved-check.txt). 같은 측정의 수치와 한계는 「사용자 관측과 메인 측정」에 있다.
+
+메인 측정: Codex의 짧은 재대기마다 전체 문맥 호출이 생겼다.
 
 ## 관찰 기록
 
