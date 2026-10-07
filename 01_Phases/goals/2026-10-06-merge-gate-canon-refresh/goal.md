@@ -9,7 +9,7 @@ Rules의 목표다. 사용자가 범위 초안을 승인했고(아래 「요구�
 - 근거 폴더 E: `.backups/verification/2026-10-06-merge-gate-canon-refresh/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-06-merge-gate-canon-refresh/astra-context.md)다. 받은 메시지 원시와 범위 초안 사본은 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_62d7bc65-8590-4240-a6bb-7caad4e6b3da`(Claude Code 2.1.292 업데이트 뒤 같은 대화를 다시 연 세션, 이전 `term_af8ac4fc-…`). Run은 `run_93a27bd491a9`, 회신 주소는 `run:run_93a27bd491a9`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
 - **현재 위치**(2026-10-07T07:05Z):
-  - 지금 단계: PR2 문서 실사 FAIL(A1·A2)을 새 Sol이 고쳤다(아래 「PR2 실사 수정」). 다음은 새 Sol의 BACKLOG 누락 행 보강 → 새 `gpt-6-astra` xhigh의 좁힌 재실사 → PR2 생성·CI·승인 묶음이다.
+  - 지금 단계: PR2 문서 실사 FAIL(A1·A2)을 새 Sol이 고쳤고, 메인이 알린 BACKLOG 누락 행도 새 Sol이 보강했다(아래 「PR2 실사 수정」·「PR2 BACKLOG 보강」). 다음은 새 `gpt-6-astra` xhigh의 좁힌 재실사 → PR2 생성·CI·승인 묶음이다.
   - 완료조건 5: 끝났다(아래 「관문 적용 확인」, 맞바꾼 새 자리의 메인 창 덧붙임 포함). SendMessage 전달 모양만 분류기 거부로 미측정이다.
   - 메인 쪽 상태: 폴더 맞바꾸기 뒤 메인은 원래 clone `C:/Dev/DawnHolder_Project`(branch main, 표식 있음)의 새 세션 `term_cdc06c26-…`이다. PR2는 그 창의 승인 줄로 병합한다(완료조건 8).
   - 살아 있는 작업자·검증자 pane: 없다. PR2 Sol은 정산하고 닫았다.
@@ -543,6 +543,15 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
   - 참고: CURRENT의 다른 파트 낡은 branch 줄은 묶음 3(계획 15) 몫으로 둔다.
 - 리드 결정(`msg_0a179bcca658`, 07:53:04Z): 새 Sol 하나로 BACKLOG에 두 행을 넣는다. TDD 연결 행과, 작업자·검증자가 자기 화면 모델을 못 읽어 공식 ask를 세 번 보낸 일(`msg_2f1221cc05d7`·`msg_fb4341b4059e`·`msg_0febd4ad4675`)의 계약 양식 후보 행도 같이 넣는다. `mailbox-output-loss-hook` 행 출처에는 두 번째 발생 근거를 덧붙인다. BACKLOG는 여섯 파일 합계 밖이다. 재실사는 A1·A2·A3 수정분과 BACKLOG 보강분을 함께 좁혀 본다. 그동안 리드는 계약에 첫 화면 표시를 직접 넣는다.
 
+### PR2 BACKLOG 보강
+
+- Sol: 신규 `gpt-6.1-sol` max다. pane `term_b82e05a4-…`, Task `task_e49017cc9d0c`, Dispatch `ctx_76b86570739c`다. 계약은 E/pr2-backlog-contract.md(v1, HEAD `5caa5df`)이고, 리드가 읽은 첫 화면 표시(「GPT-6.1-Sol max」)를 계약에 직접 넣었다. 이번에는 화면 모델 질문이 없었다.
+- 완료: worker_done `msg_724431d516f2`(08:14:45Z)이고 수신 helper가 허용했다. 보고서는 E/pr2-backlog/report.md다.
+  - 새 행 넷(BACKLOG 149~152행): `report-folder-unification`, `management-feature-map-entry`, `new-goal-tdd-canon-link`, `dispatch-first-screen-display`. 모두 대기다.
+  - `mailbox-output-loss-hook` 행 출처 끝에 두 번째 발생과 Rules 리드 첫 발생 근거를 덧붙였다. 기존 출처 문자열은 그대로다.
+  - Sol 자체 점검: 후보 48행의 ID·7필드·상태, 기존 행 보존, 상대 링크 13개. BACKLOG는 148 → 152줄, 35,049 → 39,240 bytes다(여섯 파일 합계 밖).
+- 정산: release는 `retained`였다. 08:15:11Z에 pane을 닫았고 재조회에서 재출현은 없었다(E/pr2-backlog-release.json, -before-close.json, -close.json, -list-after-close.json).
+
 ## 요구사항 원천과 적용 결정
 
 메인이 전달한 사용자 결정은 사용자 직접 입력과 구분한다. 이번 착수의 원천은 다음과 같다.
@@ -576,16 +585,22 @@ PR2가 정본에 넣는 문장의 출처다. 메인 메모리는 메인이 남�
   - 남은 실제 조치(사용자·메인): 원래 clone 폴더 표식 생성, 새 메인 진입, main-active 제거.
   - PR2 반영: ORCA R-1의 메인·Core 경로(32·36행)와 기동 줄, RESUME의 Core 경로(14행)와 현황판 명령(25행), 세션 인계 스킬의 탭 위치(25행), CURRENT의 Core 경로·branch 줄(13행). CLAUDE.md 「메인 세션 진입」은 메인이 고친다. 정본 반영 전까지는 이 결정이 정본의 main-active 문장을 대신한다.
 - **후속 계획의 일괄 검토**: 메인 `msg_bf63c20c8abe`가 전달한 원문 「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」. 현재 goal 밖 후보는 BACKLOG로 모으고 개별 승인을 받지 않는다. PR2 반영: BACKLOG 「병합 관문 goal에서 연결한 후보」.
+- **규칙 백로그 다음 순서와 운영툴 시험 CI 담당**: 메인 `msg_aa6af67c24c6`(2026-10-07T08:01:15Z, E/session/wait73-msg_aa6af67c24c6.raw.txt)가 전달한 사용자 원문(메인 창 Enter 제출)은 **「대시보드 결정 응답: 1) 규칙 백로그 점검 세션 - 닫을지 → A 닫음 · 2) 규칙 백로그 다음 순서 - 점검 추천 순서를 기본으로 쓸지 → A 추천 순서를 기본으로 · 3) 운영툴 시험 CI - 맡을 파트 → A Management」**다. 점검은 메인 `msg_3e488a33cf7a`의 읽기 전용 규칙 백로그 점검이다.
+  - 2번: PR2 병합 뒤 Rules 다음 계획 초안은 ① 묶음 2 첫 PR(검증자 임시 쓰기 경계와 TDD 문구) ② 우편함 대기 출력 유실 hook ③ 운영툴 시험 CI ④ 10-31 평가 준비 순서를 기본으로 받는다. 계획마다 범위 승인은 따로 받는다. BACKLOG 누락 두 행은 PR2 안에서 처리해 순서에서 뺐다.
+  - 3번: 외부 계획 14 운영툴 시험 CI의 담당은 Management다. 메인이 Management에도 따로 전달했다.
+  - 1번: 점검 세션은 메인이 닫았다.
 - 메인 운영 지시(사용자 결정 아님): 우편함 대기는 `--types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question"`로 heartbeat 단독 깨움을 뺀다(`msg_20663b7c7598`). 대기는 Bash 백그라운드로 한 번에 하나만 열고 `&`·`/dev/null`로 출력을 버리지 않는다(`msg_3902e180080c`). PR2 반영: ORCA `#mailbox-wait`.
 
 ## 현재 결과
 
 - PR1 병합 관문: #198로 병합됐다(`94fc6845`, 「PR1 병합」). 적용 확인을 마쳤다(「관문 적용 확인」).
-- PR2 정본 현행화: Sol 작성과 메인의 CLAUDE.md 수정이 끝났다(「PR2 작성」). 문서 실사는 FAIL(A1·A2)이었고 새 Sol이 고쳤다(「PR2 문서 실사」·「PR2 실사 수정」). BACKLOG 누락 보강과 좁힌 재실사가 남았다.
+- PR2 정본 현행화: Sol 작성과 메인의 CLAUDE.md 수정이 끝났다(「PR2 작성」). 문서 실사는 FAIL(A1·A2)이었고 새 Sol이 고쳤다(「PR2 문서 실사」·「PR2 실사 수정」). BACKLOG 누락 행도 보강했다(「PR2 BACKLOG 보강」). 좁힌 재실사가 남았다.
 
 ## 다음 계획 후보
 
 이 goal 밖으로 둔 일이다. PR2에서 BACKLOG에 같은 규칙으로 기록한다.
+
+- 다음 계획의 기본 순서(사용자 결정, 「적용 중인 사용자 결정」의 「규칙 백로그 다음 순서와 운영툴 시험 CI 담당」): PR2 병합 뒤 Rules 다음 계획 초안은 ① 묶음 2 첫 PR(검증자 임시 쓰기 경계와 TDD 문구, BACKLOG `new-goal-tdd-canon-link`) ② 우편함 대기 출력 유실 hook(`mailbox-output-loss-hook`) ③ 운영툴 시험 CI(담당 Management) ④ 10-31 평가 준비 순서를 기본으로 한다. 계획마다 범위 승인을 따로 받는다.
 
 - Codex 세션의 병합 차단: 저장소 `.codex/` 프로젝트 hook으로 같은 판정을 거는 방법. 신뢰한 프로젝트에서만 읽고 hook 내용이 바뀔 때마다 사용자 검토가 필요하다(초안 세부 근거 4). 사용자 질문 1 A로 이번에는 하지 않는다.
 - 에이전트용 GitHub 계정 분리와 ruleset 보강: 서버 쪽에서 모든 세션을 막는 대안. 비용은 계정·classic 토큰·이 PC의 gh·git 로그인 전환이다(초안 세부 근거 3). ruleset 관리자 우회를 「PR로만」으로 바꾸는 더 싼 중간안은 문서 확인 전이다.
