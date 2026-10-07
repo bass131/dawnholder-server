@@ -1,5 +1,5 @@
-// Independent regressions for the text masking of behavior contract v3.1 (E/merge-gate-behavior-spec-v3.1.md,
-// SHA256 3e6a358f…7fff) and the T1 change it makes to the last net. Every expected decision and code
+// Independent regressions for the text masking of behavior contract v3.2 (E/merge-gate-behavior-spec-v3.2.md,
+// SHA256 69d3b1c9…fce66) and the T1 change it makes to the last net. Every expected decision and code
 // below is read from that contract, not from 99_Tools/MergeGate:
 // - §4 「글 가리기(v3)」 (user approval 1A, msg_9dc312f58c0f: only characters that are not run leave the
 //   net). Two kinds of text are masked: (1) the body of a heredoc whose delimiter is quoted, received by a
@@ -15,6 +15,15 @@
 //   the list, with a path or .exe allowed), a word starting with ./ ../ or ~/, or a simple command whose
 //   command word is . or a path, the whole command is judged unmasked, as in v2.3. Runner words inside the
 //   masked text do not count.
+// - v3.2 (lead decisions on the defects V1 and V2 of the first verification, E/verify/verdict.md, and main
+//   decision msg_93a8d89ec8b1 on its observation O1) only blocks more:
+//   - 「bash와 다르게 읽을 수 있는 꼴(v3.2)」: $' or $" outside quotes and heredoc bodies, a quote or a
+//     backslash inside a backtick substitution, a CR anywhere, or a space-like character other than space,
+//     tab and newline outside quotes and heredoc bodies is a reading failure, so nothing is masked.
+//   - 「묶음 뒤 파이프(v3.2)」: a | or |& after the closing ) or } of a group pipes the stdout of every simple
+//     command in it, nested groups included, and a | followed by a group flows into code.
+//   - 「실행기 찾기」 4·5 (v3.2): a command word holding $ or a backtick before quote removal, also inside a
+//     command substitution, or the words gh and api together in the masked string turn the masking off.
 // - §4 「Bash — 병합 시도 판정」: checks 1–3 and the last net read the masked string; check 4 (approval
 //   injection), check 5 (state folder) and the pass conditions read the original string.
 // - §4 「마지막 그물」: v3 adds the decision-none rows of the masking table and, in v3.1, the seven false
@@ -24,10 +33,14 @@
 // Every form runs for Bash in a main checkout holding a valid unused record, Bash by a subagent, Monitor
 // and Bash without the marker, from a repository on a feature branch like the sessions that met the
 // false positives, so a push without refspec looks up a branch that is not main.
-// Before the v3.1 implementation the pass forms and T1 fail; the kept blocks pass before and after.
-// Left out: forms v3.1 does not settle (for example `<< 'EOF'` with a space, git global options before
-// commit, upper-case runner words) and run paths outside the closed runner list, which §6 keeps as an
-// intended limit.
+// Before the v3.1 implementation the pass forms and T1 failed; the kept blocks passed before and after. On
+// the v3.1 implementation the v3.2 kept blocks fail where it still masks the text; the v3.2 contrast rows
+// get no decision before and after the v3.2 change.
+// Left out: forms the contract does not settle (for example `<< 'EOF'` with a space, git global options
+// before commit, upper-case runner words), run paths outside the closed runner list, which §6 keeps as an
+// intended limit, and bash quoting edges v3.2 does not name: §4 「bash와 다르게 읽을 수 있는 꼴」 lets an
+// implementation also treat such a form as a reading failure (and report it), so no row expects a decision
+// none from one.
 //
 // Environment: node and git. Each test owns a temporary project passed as CLAUDE_PROJECT_DIR; one
 // read-only feature branch repository serves as the input cwd of every test in this file.
@@ -128,7 +141,8 @@ const observedWithoutRunner = [
       'git push -q -u origin docs/part-closeout 2>&1 | tail -2; git status -sb | head -2',
   )],
   // 10-07 10:55:27Z, Management lead. cat >> file <<'EOF' whose long report body holds markdown tables
-  // with |, an escaped \|, backticks, main and push; then date ; git status.
+  // with |, an escaped \|, backticks, main, push and the words node and gh (a runner word that stands only
+  // in masked text, 「실행기 찾기(v3.1)」); then date ; git status.
   ['10:55:27Z, report appended through a heredoc', lines(
     "cat >> work/evidence/gardener-report.md <<'EOF'",
     '',
@@ -140,6 +154,7 @@ const observedWithoutRunner = [
     '|---|---|---|',
     '| 기준 대조 | `git merge-base HEAD main` = `0000000…`, `origin/main` 같음 | 일치 |',
     '| diff 동일성 | `git diff 1111111 2222222 \\| sha256sum` | 일치 |',
+    '| 병합 사실 | 읽기 전용 node로 목록 재해시, `gh pr view 1`의 state·mergedAt | 일치 |',
     '',
     '- 실제 쓰기 파일: 보고서 한 파일. commit·push·PR·병합은 하지 않았다.',
     'EOF',
@@ -423,4 +438,114 @@ const plusMain = [
 
 for (const [label, command] of plusMain) {
   test(`§4 「마지막 그물」 condition 3 (v3, T1), +main after ${label}: suspect-words`, t => assertDecisions(t, command, 'suspect-words'));
+}
+
+// v3.2 rows. The probe inputs come from the first independent verification (E/verify/probe-variants.mjs,
+// rows D1m–D11 and G1–G4), copied character for character with its names M, P and GQL; only the inputs
+// come from there. v3.2 judges these forms on the original string, so the expected codes are the v2.3
+// ones (a precise code first, otherwise suspect-words): Bash compound-command and Monitor non-bash-merge
+// for a merge attempt, push-main for a main push, api-merge for a gh api merge call.
+const M = `gh pr merge ${PR} --squash --match-head-commit ${HEAD_A}`;
+const P = 'git push origin HEAD:main';
+const GQL = '{"query":"mutation { mergePullRequest(input: {pullRequestId: \\"X\\"}) { clientMutationId } }"}';
+
+// 「bash와 다르게 읽을 수 있는 꼴(v3.2)」 (V1): the masking reader cannot promise to end quotes, comments and
+// words where bash does, so the whole command stays unmasked. Each label starts with the number of the
+// listed form; a row without a probe id covers a listed form the probe did not.
+// [label, command, Bash code, Monitor code when it differs]
+const unreadableForms = [
+  ['1, D1m: ANSI-C quote before the merge', `echo $'\\'' ; ${M} #'`, 'compound-command', 'non-bash-merge'],
+  ['1, D1p: ANSI-C quote before a main push', `echo $'\\'' ; ${P} #'`, 'push-main'],
+  ['1, D2m: ANSI-C quote with an escaped quote inside a word', `printf '%s' $'it\\'s' ; ${M} # '`, 'compound-command', 'non-bash-merge'],
+  ['1: locale quote $"…" next to a masked echo argument', `echo $"메모" '${M}' >> notes.md`, 'compound-command', 'non-bash-merge'],
+  ['2, D3m: single quote in a backtick substitution inside double quotes', `echo "\`echo '\`" ; true '\`' ; ${M} ; echo " #"`,
+    'compound-command', 'non-bash-merge'],
+  ['2, D3p: the same before a main push', `echo "\`echo '\`" ; true '\`' ; ${P} ; echo " #"`, 'push-main'],
+  ['2, D4m: single quote in a top-level backtick substitution', `echo \`echo '\` ; ${M} #'\``, 'compound-command', 'non-bash-merge'],
+  ['2: double quote in a top-level backtick substitution', `echo \`date "+%F"\` '${M}' >> notes.md`, 'compound-command', 'non-bash-merge'],
+  ['2: backslash in a backtick substitution inside double quotes', `echo "at \`date -u +%H\\:%M\`" '${P}' >> notes.md`, 'push-main'],
+  ['3, D5m: CR before # outside quotes', `echo a\r#'\necho x' ; ${M} #'`, 'compound-command', 'non-bash-merge'],
+  ['3, D6m: CR on the heredoc end line', `cat > f <<'EOF'\nbody\nEOF\r\necho '\nEOF\n${M} #'`, 'compound-command', 'non-bash-merge'],
+  // CR counts anywhere, so a CRLF line inside a quoted heredoc body to a file also keeps the command unmasked.
+  ['3: CR only inside a quoted heredoc body to a file', lines("cat > notes.md <<'EOF'", '- push 전에 main을 확인한다.\r', 'EOF'),
+    'suspect-words'],
+  // The D7m and ideographic space rows hold the raw characters U+00A0 and U+3000, not escapes.
+  ['4, D7m: NBSP before # outside quotes', `echo a #'\necho x' ; ${M} #'`, 'compound-command', 'non-bash-merge'],
+  ['4: ideographic space next to a masked echo argument', `echo a　b '${M}' >> notes.md`, 'compound-command', 'non-bash-merge'],
+  ['4: vertical tab next to a masked echo argument', `echo a\vb '${P}' >> notes.md`, 'push-main'],
+];
+
+// 「묶음 뒤 파이프(v3.2)」 (V2): a | or |& after a group pipes every simple command in it, nested groups
+// included, and a | followed by a group flows into code. A heredoc whose receiving command is piped is not
+// masked even when the pipe goes to a command on the pass list; echo and printf arguments are not masked
+// when the command has a pipe that flows into code. busybox and ash are not on the runner list, so the rows
+// that use them hold no runner word and only the pipe reading decides. D8–D10 also hold the words gh and
+// api, which 「실행기 찾기」 5 (v3.2) catches on its own.
+const groupPipeForms = [
+  ['D8: echo in a subshell piped into gh api', `( echo '${GQL}' ) | gh api graphql --input -`, 'api-merge'],
+  ['D9: heredoc in a subshell piped into gh api', `( cat <<'EOF' ) | gh api graphql --input -\n${GQL}\nEOF`, 'api-merge'],
+  ['D10: heredoc in a brace group piped into gh api', `{ cat <<'EOF'; } | gh api graphql --input -\n${GQL}\nEOF`, 'api-merge'],
+  ['D11: echo in a subshell piped into a shell off the runner list', `( echo '${M}' ) | busybox ash`, 'compound-command', 'non-bash-merge'],
+  ['heredoc in a brace group piped into tee, which is on the pass list', lines("{ cat <<'EOF'; } | tee out.txt", P, 'EOF'), 'push-main'],
+  ['|& after an echo in a subshell', `( echo '${M}' ) |& busybox ash`, 'compound-command', 'non-bash-merge'],
+  ['nested groups: echo in a subshell inside a subshell', `( ( echo '${P}' ) ) | busybox ash`, 'push-main'],
+  ['nested groups: heredoc in a subshell inside a brace group', lines("{ ( cat <<'EOF' ); } | tee out.txt", M, 'EOF'),
+    'compound-command', 'non-bash-merge'],
+  ['a pipe into a subshell', `echo '${M}' | ( cat > notes.md )`, 'compound-command', 'non-bash-merge'],
+  ['a pipe into a brace group', `echo '${P}' | { cat >> notes.md; }`, 'push-main'],
+];
+
+// 「실행기 찾기」 4·5 (v3.2, O1): a variable or a substitution becomes the command name (4), or the same
+// command's gh api may read the masked text as its body (5), so the masking is dropped.
+const runnerFourAndFive = [
+  ['4, G1: a substitution is the whole command', `$(echo '${M}')`, 'compound-command', 'non-bash-merge'],
+  ['4, G2: a backtick substitution is the whole command', `\`printf '${M}'\``, 'compound-command', 'non-bash-merge'],
+  ['4, G3: a substitution builds the gh command word', `"$(echo 'gh')" pr merge 12 --squash`, 'suspect-words'],
+  ['4: $VAR as the command word after a masked echo', `echo '${M}' >> notes.md && $EDITOR notes.md`, 'compound-command', 'non-bash-merge'],
+  ['4: ${VAR} as the command word after a masked echo', `echo '${P}' > x.txt; \${PAGER} x.txt`, 'push-main'],
+  ['4: $VAR as the command word inside $( )', `echo '${M}' >> notes.md; n=$($COUNT notes.md)`, 'compound-command', 'non-bash-merge'],
+  ['4: a backtick substitution as the command word', `echo '${P}' > x.txt; \`which less\` x.txt`, 'push-main'],
+  ['5, G4: gh api reads a file written through a masked heredoc', `cat > q.json <<'EOF'\n${GQL}\nEOF\ngh api graphql --input q.json`, 'api-merge'],
+  ['5: gh api reads a file written by a masked echo', `echo '${GQL}' > q.json && gh api graphql --input q.json`, 'api-merge'],
+  // The cost of the broad side: a gh api call that merges nothing still unmasks the note next to it.
+  ['5: a gh api read next to a masked echo note', `echo 'gh pr merge 메모' >> notes.md && gh api repos/o/r/pulls/${PR}`,
+    'compound-command', 'non-bash-merge'],
+];
+
+// Contrast rows: forms v3.2 still masks, so the v3.2 change must not block them. The two table rows and the
+// group piped into tee are named by v3.2; the others follow from the wording of the same items (outside
+// quotes and heredoc bodies, a pipe and not a redirect, a command word, words of the masked string).
+const unreadableContrasts = [
+  ['table (v3.2): backtick code notation, $\'x\' and | as text in a quoted heredoc body',
+    lines("cat > notes.md <<'EOF'", "- `git push origin main` 전에 `$'x'`와 `a | b` 표기를 확인한다.", 'EOF')],
+  ['table (v3.2): backticks inside single quotes', "echo '`gh pr merge` 메모' >> notes.md"],
+  ['escaped backticks inside double quotes are text', 'echo "\\`git push origin main\\` 전 확인" >> notes.md'],
+  ['escaped backticks inside a double-quoted git commit -m value', 'git commit -m "docs: \\`gh pr merge\\` 안내"'],
+  // The raw character U+00A0 stands between merge and 메모.
+  ['NBSP inside a single-quoted echo argument', "echo 'gh merge 메모' >> notes.md"],
+];
+const groupPipeContrasts = [
+  ['echo commands in a brace group piped into tee, which is on the pass list',
+    "{ echo 'gh merge 메모'; echo 'git push origin main'; } | tee -a notes.md"],
+  ['echo in a subshell piped into wc, which is on the pass list', "( echo 'git push origin main' ) | wc -l"],
+  ['heredoc in a brace group redirected to a file, not piped', lines("{ cat <<'EOF'; } > notes.md", '- push 전에 main을 확인한다.', 'EOF')],
+];
+const runnerFourAndFiveContrasts = [
+  ['4: $ only in an assignment and a redirect target, not in a command word', 'E=$(pwd) && echo \'gh merge 메모\' >> "$E/notes.md"'],
+  ['5: gh in code and api only in masked text', "gh pr view 12 --json state && echo 'gh api 병합 메모' >> notes.md"],
+];
+
+const v32Sections = [
+  ['bash와 다르게 읽을 수 있는 꼴(v3.2)', unreadableForms, unreadableContrasts],
+  ['묶음 뒤 파이프(v3.2)', groupPipeForms, groupPipeContrasts],
+  ['실행기 찾기 4·5(v3.2)', runnerFourAndFive, runnerFourAndFiveContrasts],
+];
+
+for (const [section, keptForms, contrasts] of v32Sections) {
+  for (const [label, command, bash, monitor] of keptForms) {
+    test(`§4 「${section}」 kept block, ${label}: ${bash}`, t => assertDecisions(t, command, bash, monitor));
+  }
+  for (const [label, command] of contrasts) {
+    test(`§4 「${section}」 contrast, ${label}: no decision`, t => assertDecisions(t, command, 'none'));
+  }
 }
