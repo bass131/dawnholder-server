@@ -1,0 +1,9 @@
+# 공개할 파일 목록. 규칙은 같은 폴더 README.md의 「공개 허용 목록」을 따른다.
+index.html
+styles.css
+images/castle-valley.jpg
+images/knight.png
+images/mage.png
+images/slime.png
+images/golem.png
+images/boss.png
