@@ -5,10 +5,10 @@
 Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요구사항 원천과 적용 결정」) 재개를 지시했다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: PR1은 `fix/hook-net-false-positives-20261007`(base `8e498440`)다. PR2는 PR1 병합 뒤 최신 main에서 만든다.
+- branch: PR2는 `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`)이고 이 goal 문서의 현행판이 여기에 있다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다.
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다.
-- **현재 위치**(2026-10-07T18:4xZ): 수정 회차 재검증이 FAIL(차단 W1 하나)이었다(아래 「PR1 재검증(수정 회차, FAIL)」). 사용자 결정으로 PR1은 멈추고 branch를 보존한다. 자격 증명 분리 시험을 밤사이 범위로 진행한다(「적용 중인 사용자 결정」의 마지막 두 항목, 결과는 아래 「자격 증명 분리 시험」).
+- **현재 위치**(2026-10-07T19:0xZ): PR1은 멈추고 보존했다. 자격 증명 분리 시험의 밤사이 범위를 마쳤다(아래 「자격 증명 분리 시험」). 사용자 결정으로 이 goal은 PR2로 마치며 PR2를 진행한다(「적용 중인 사용자 결정」의 「이 goal은 PR2로 마침」).
 - 주의: rules-active의 리드 세션에도 병합 관문 hook과 마지막 그물이 실린다. PR1 구현 중에는 이 checkout의 hook이 고치는 중인 판정 코드를 바로 쓴다(아래 「위험」).
 
 ## 진척 단계
@@ -79,6 +79,8 @@ PR2 — 정본·스킬·BACKLOG(문서)
 
 ### 관찰 가능한 완료조건
 
+사용자 결정(`msg_1108186019ec`)으로 아래 1~4와 7·8의 PR1 몫은 분리 시험 후속 goal로 넘긴다. 이 goal은 5·6·8과 PR2 병합으로 마친다.
+
 1. PR1 선행 시험이 구현 전에 통과 묶음에서 실패하고 구현 뒤 통과한다. 막힘 유지 묶음은 구현 전후 모두 막힌다.
 2. 기존 MergeGate·Orca 시험이 통과한다. 바뀐 기존 단정은 전수 분류 표에 이름·이전 단정·새 단정·요구사항 출처를 남긴다.
 3. 후속 세 건이 반영되고 독립 검증자가 확인한다.
@@ -92,7 +94,7 @@ PR2 — 정본·스킬·BACKLOG(문서)
 
 | PR | 변경 경계 | 등급과 세션 |
 |---|---|---|
-| 1 - 그물 오탐 줄이기 | 판정 코드·시험·도구 README·ORCA 그물 문장·goal·CURRENT | 강: 보안 경계와 실행 도구. 선행 시험은 신규 Opus(시범 대상 아님), 구현은 Sol max, 독립 검증은 신규 Opus(시범의 보안 경계 배정) |
+| 1 - 그물 오탐 줄이기(멈춤, 분리 시험 후속 goal로 넘김) | 판정 코드·시험·도구 README·ORCA 그물 문장·goal·CURRENT | 강: 보안 경계와 실행 도구. 선행 시험은 신규 Opus(시범 대상 아님), 구현은 Sol max, 독립 검증은 신규 Opus(시범의 보안 경계 배정) |
 | 2 - 정본·스킬·BACKLOG | 문서만 | 문서 실사. 작성은 Sol max, 실사는 신규 `gpt-6-astra` xhigh(시범). CLAUDE.md 문장은 저장소 밖 메인 개인 도구에 관한 것이라 보안 경계로 보지 않는다(메인 `msg_53e10a4d10c3`) |
 
 - 순서: PR1 → PR2. 둘 다 ORCA와 이 goal을 고치므로 PR2 branch는 PR1 병합 뒤 최신 main에서 만든다. PR1 검증 동안 PR2 계약 준비(읽기)는 한다.
@@ -163,6 +165,9 @@ PR2 — 정본·스킬·BACKLOG(문서)
   - 계획: v1 E/credential-trial-plan-draft.md(`561a6664…`) + v2 차이 E/credential-trial-plan-v2-diff.md(`4f83f6cc…`). 메인 대조 `msg_af15c0a64df7`. 사용자 손 단계(deploy key·좁은 토큰·토큰 파일)는 메인 확인 `msg_f1bbd87c7176`.
   - **범위 추가**: 이 결정으로 아래 「하지 않을 것」 중 「Codex 세션 병합 차단, 에이전트 계정·ruleset, 전역 Claude·Codex·Git·gh 설정 변경」을 이 시험에 한해 덮는다. 더한 범위는 계획 v1의 범위 표와 v2 차이다. 만들 것은 시험 기록·사용자 손 안내·리드 시험 스크립트·결과 보고와 후속 goal 입력이고, 건드릴 곳은 GitHub의 좁은 토큰·deploy key·시험 ruleset(아침, 사용자 승인)·`trial/cred-*` branch와 시험 PR, 로컬의 `%USERPROFILE%\.dawnholder-agent\`·rules-active `config.worktree`·일회 pane이다. main 대상 push·병합, main ruleset 변경, 그물·가리기 코드 변경, 정본 변경은 계속 하지 않는다.
   - 근거 폴더는 E/credential-trial/로 나눈다. 비밀 값은 쓰지 않는다.
+- **이 goal은 PR2로 마침**: 메인 `msg_1108186019ec`(18:44:30Z, E/session/check53.raw.txt)이 전달한 원문은 **「대시보드 결정 응답: 1) Rules hook 정리 - 분리 시험 뒤 PR2(문서)까지 밤사이 진행하고 이 goal을 PR2로 마칠지 → A 시험 뒤 PR2까지」**다(메인 창 Enter 제출, 메인 전달). 사용자에게 보인 A는 「분리 시험이 끝나면 리드가 PR2(문서)를 최신 main에서 진행해 PR까지 올린다. 이 goal은 PR2 병합으로 마치고, PR1 몫은 분리 시험 후속 goal이 맡는다. PR2 병합은 아침 네 승인.」이고, 현황판 상세에 「이 goal 완료조건에서 PR1을 빼고 분리 시험 후속 goal로 넘긴다」, 「병합 관문의 그물 설명처럼 분리 방향과 겹치는 문장은 PR2에서 빼고 후속 goal로 넘긴다」를 함께 적었다.
+  - 적용: 아래 「관찰 가능한 완료조건」과 「PR 경계와 검증」의 PR1 몫은 분리 시험 후속 goal로 넘긴다. PR1 branch `fix/hook-net-false-positives-20261007`(`13fe344d`)는 보존한다. PR2는 최신 main `7086d45b`에서 만든 `docs/hook-helper-session-canon-20261008`이고, 이 goal 문서는 PR1 branch `13fe344d`의 내용을 그대로 옮겨 이어 쓴다(커밋 `97ac25ba`). 메인 지시대로 PR2 범위는 승인 v1이다. 분리 방향과 겹쳐 뺀 문장은 아래 「다음 계획 후보」의 후속 goal 입력에 적는다.
+  - 오늘 밤 멈출 지점은 PR2를 올리고 독립 검증을 마친 뒤 병합 승인 요청을 보낸 지점이다. 사용자 원문은 「OK 전 파트 완료되면, 작업 결과 및 재개시점 맥락 최신화 해달라고하고, 리드급 세션들 다 닫고, 메인 세션만 남기고 메일함 자동갱신은 꺼줘」다(메인 `msg_a82d8297c361`).
 
 ## 현재 결과
 
@@ -238,7 +243,8 @@ PR2 — 정본·스킬·BACKLOG(문서)
   - ② 좁은 토큰으로 PR #205 생성·조회·코멘트·`gh pr checks` 성공(Checks·Issues 권한 없이).
   - ③ 기동 명령 앞 `GH_CONFIG_DIR`만으로 맨 PowerShell·일회 Codex(`gpt-6-astra` low)·일회 Claude(`claude-haiku-4-5-20251001`)가 모두 에이전트 자격 증명을 받았다.
   - ⑥ 넘어감: 환경을 빠뜨리면 gh는 관리자, 에이전트 설정에서도 사용자 지정 토큰 조회는 keyring 관리자, 에이전트 worktree의 https 직접 push는 막힘, 메인 checkout을 빌린 push는 관리자로 인증(dry-run).
-- 아침에 남은 것: 보호 branch 거부(U3 뒤), 병합 세 형태 403(사용자), ⑤ 브라우저, 선택 ④(b)·(라) 시험, ⑦ 정리.
+- 아침에 남은 것: 보호 branch 거부(U3 뒤), 병합 세 형태 403(사용자), ⑤ 브라우저, 선택 ④(b)·(라) 시험, ⑦ 정리. 순서는 메인 보고 `msg_27ff509d7f16` 「아침 순서」 1~8이다. 1번(`trial/cred-protected` 만들기)도 사용자 아침 답과 묶어 그때 한다(메인 `msg_1dfa956a845b`).
+- 메인 대조(`msg_1dfa956a845b`): 원격 ref·PR #205·worktree 설정·main sha 기록이 일치했다. **불일치 1건, 확인 보류**: 리드 보고는 「토큰 접두어 패턴 검색 0건」인데 메인이 근거 폴더 전체에서 리터럴 `github_pat_`을 세니 파일 1개가 걸렸다. 메인이 열어 보려 했으나 auto mode 분류기가 막았고, 리드도 그 파일을 열거나 찾지 않는다(메인 지시). 리드 스캔은 18:48Z의 `grep -rl -E "github_pat_|gho_[A-Za-z0-9]{20}"`이며 대상은 E/credential-trial/와 E/session/뿐이었다. 그 뒤 리드가 쓴 결과 문서 머리말은 검색한 패턴 이름을 글자로 적었다(리드 기억, 미확인). 근거 폴더는 Git 밖이라 원격 노출 경로는 없다. 사용자가 아침에 직접 보거나 허용 여부를 정한다.
 
 ## 다음 계획 후보
 
@@ -246,4 +252,7 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - Claude 작업자의 TEMP 쓰기(두 번째 발생): 첫 선행 시험 작성자의 `/tmp` 쓰기(첫 발생)에 이어, 수정 회차 선행 시험 작성자가 orca receipt를 Claude Code 세션 scratchpad(TEMP 아래)에 썼다가 근거 폴더로 옮겼다. 원인은 Claude Code가 scratchpad를 안내하고 계약은 「그 밖의 TEMP 쓰기 금지」만 적은 데 있다. 교정 후보는 위임 계약 양식(작업 맥락 스킬 templates)에 「Claude Code가 안내하는 scratchpad도 TEMP다. receipt·임시 파일은 근거 폴더 아래에 쓴다」를 넣는 것이다. 이 goal의 PR2 범위 밖이라 종료 때 BACKLOG 새 행으로 등록하고, 그 전까지 이 goal의 Claude 계약에 그 문장을 넣는다.
 - 실행 시점 검사·역할 분리(다음 Rules goal 설계 입력): 리드 비교 문서 E/runtime-check-comparison.md, 결정 요청 `msg_eac0fa1f3d89`. 그 뒤 도착한 메인 보충 `msg_9ff8eb25d846`(구조화된 도구 경로, 리드급 전면 거부와 메인 요청 인터페이스, 막는 층 셋)과 `msg_a7ce1ae26151`(세션 권한 판별 근거)은 사용자 원문과 함께 E/next-goal-inputs-runtime-role-split.md에 보관했다(메인 지시 `msg_4b7fc0b428af`). 메인이 설명한 「병합 자체를 사람 행동으로 빼는 안」은 사용자 판단 전이라 후보로만 둔다. PR1 결정 뒤 종료 때 BACKLOG 새 행 후보다.
 - Claude safeguard와 병합 관문 검증(첫 발생): 병합·push 문구를 많이 다루는 검증은 Opus 5.5 safeguard 선택창에 걸릴 수 있다(위 「PR1 재검증(수정 회차, FAIL)」). 반복 규칙은 두 번째 발생부터다. 생기면 교정 층(계약 양식 또는 검증자 배정)을 정하고, 종료 때 BACKLOG 새 행 후보로 본다.
+- 자격 증명 분리 후속 goal(이 goal의 PR1 몫을 받음, `msg_1108186019ec`): 아침 시험 3·4가 통과하면 R-5 기동에 `GH_CONFIG_DIR`, R-1 배치에 에이전트 worktree 설정 세 줄을 넣고 글자 그물·가리기 코드를 걷는다. 사용자 결정 후보는 (라)·(가), 프로젝트 범위 보강 후보는 (나)다(위 「자격 증명 분리 시험」·E/credential-trial/results-overnight.md). PR1 branch `13fe344d`의 시험·판정 원시는 출발 자료다. PR2에서 분리 방향과 겹쳐 뺀 문장은 아래 둘이며 이 goal에서 다시 쓴다.
+  - 보조 세션 스킬 초안(`C:/Dev/DawnHolder_Dashboard/plans/helper-session-skill-draft.md`) 38행 「gh·merge 또는 push·main 낱말이 함께 든 명령은 막힌다. 그런 문자열 검색은 Grep·Read 도구로 하고, 메시지 본문은 파일로 넘긴다.」 PR2 스킬에는 병합 관문 링크만 둔다.
+  - 같은 초안 44행의 이유 「본문 낱말이 명령 문자열에 섞여 hook에 막히는 일을 피한다.」
 - 작업자 pane 배치 문장 정리(ORCA R-1·R-5 2단계): 같은 worktree는 리드 pane split, 다른 worktree는 `terminal create --worktree`로 바로 열고 빈 받침 pane을 만들지 않는다(사용자 결정 `msg_e62c4989b3dc`). split close 때 부모 pane이 꺼지는 Orca 1.4.222 관측과 함께 다룬다. 종료 때 BACKLOG 새 행으로 등록한다.
