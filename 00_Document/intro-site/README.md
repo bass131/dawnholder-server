@@ -59,12 +59,15 @@
 | `images/blacksmith-idle.webp` | `03_Client/Assets/Art/Characters/NPC/BlackSmith/BlackSmith_Idle.png` | `1f426c4c33f1b106c5d2597dc44749e17acfb24c1c272dede0021162fd4e6791` | `0,0,512,411;512,0,512,411;1024,0,512,411;1536,0,512,411;0,411,512,411;512,411,512,411;1024,411,512,411;1536,411,512,411;0,822,512,411;512,822,512,411;1024,822,512,411;1536,822,512,411;0,1233,512,411;512,1233,512,411;1024,1233,512,411;1536,1233,512,411` | `3648x183` | `94d04930e4984070de828fcb45290331fec014fe760b90d98a8e6c3865287de9` |
 | `images/blacksmith-portrait.webp` | `03_Client/Assets/Art/Characters/NPC/BlackSmith/Portrait/blacksmith_base.png` | `dd9fdb2a9a0d2dfad8fbcabd77730e191b6c77735110409eb1f3afaea09a3282` | `0,0,1400,1123` | `700x562` | `2c0545e5d762344430e918de96a4db94500f14b60c2c43da6557f764cdd3dacd` |
 | `images/icon.png` | `03_Client/Assets/Art/UI/Character_Icon/knight_icon.png` | `c3ec4a9fd4b05d8bae77541b1cd41d17399a476b2d7c81aaee2c9fb4d4c2bfea` | `0,0,1090,2048` | `34x64` | `baa9b48b40ebe0ceaf0b48161583c9c8f758822f75def9bb2addd3c0a140f7b0` |
+| `images/title-art.webp` | `05_Management/goals/2026-10-08-intro-site/assets/title-art-strip.png` | `8bce1c8033d1245b049fd0d431a91a370f326b55784815fb40f9318c2fda7cae` | `0,0,688,384;688,0,688,384;1376,0,688,384;2064,0,688,384;2752,0,688,384;3440,0,688,384;4128,0,688,384;4816,0,688,384;5504,0,688,384;6192,0,688,384;6880,0,688,384;7568,0,688,384` | `8256x384` | `25450a6c48660a9b01b41d957f6437d54cda7ac66baf95662aefc6ac4d3f68ed` |
 
-모든 그림은 저장소에 이미 있는 그림의 웹용 사본이다. 원본과 `.meta`는 바꾸지 않았다. 확대한 사본은 없다. 사본 생성 스크립트는 저장소에 두지 않았다(goal 결정). 원본 일부에는 AI 생성 도구의 출처 표식이 있지만 사본에서는 사라질 수 있어서, 페이지 맨 아래의 「그림 일부는 AI 생성 도구를 활용해 만들었어요」 문장과 이 표가 그 표기를 대신한다.
+대문 아트(`images/title-art.webp`)를 뺀 모든 그림은 저장소에 이미 있는 게임 그림의 웹용 사본이다. 원본과 `.meta`는 바꾸지 않았다. 확대한 사본은 없다. 사본 생성 스크립트는 저장소에 두지 않았다(goal 결정). 원본 일부에는 AI 생성 도구의 출처 표식이 있지만 사본에서는 사라질 수 있어서, 페이지 맨 아래의 「그림 일부는 AI 생성 도구를 활용해 만들었어요」 문장과 이 표가 그 표기를 대신한다.
+
+대문 아트는 사용자 요청으로 AI 이미지 생성 도구(Codex 기본 이미지 생성, 모델 이름은 표시되지 않음)로 새로 만든 소개용 그림이고, 실제 게임 화면이 아니다. goal 「하지 않을 것」의 게임에 없는 장면 합성 금지에 대한 대문 아트 한정 사용자 예외다(goal 「사용자 중간 확인 의견 1」). 생성 원본(1677x938, SHA256 `8481955ea7df11e4bb6b5816ad7dbe5050941f83f57376abe52a88f1e821ca46`)을 688x384로 가장 가까운 이웃 방식으로 줄이고 128색으로 정리한 판이 첫 칸이다. 나머지 칸은 그 판에서 구름·물빛·창과 등불 픽셀만 정수 이동과 같은 팔레트 안 색 바꿈으로 만들었고, 산·성·집·길의 픽셀은 모든 칸에서 같다. 12칸을 가로로 이은 띠가 `05_Management/goals/2026-10-08-intro-site/assets/title-art-strip.png`이고 `images/title-art.webp`는 이 띠의 무손실 WebP다(복원 픽셀 차이 0). 마지막 칸은 첫 칸과 같은 그림이라 반복 경계에서 첫 그림이 두 칸 동안 보인다. 생성에 쓴 프롬프트 원문은 같은 폴더의 `title-art-prompt.txt`다. 두 파일은 이 그림을 허락한 goal 폴더에 두었고 사이트 폴더 밖이라 공개되지 않는다. 생성 원본의 보관 위치와 작업 기록은 goal에 있다.
 
 자른 영역은 원본 왼쪽 위 원점의 `x,y,폭,높이` 픽셀이다. 칸이 여럿인 동작 띠는 원본 `.meta`의 칸 영역을 원본 순서대로 `;`로 이었다.
 
-사본(WebP 20개와 `icon.png`)은 게임 화면의 크기 비율을 지키도록 게임 1단위가 사본 80px이 되게 줄였다. 원본마다 게임의 PPU(1단위당 픽셀)와 prefab 배율이 달라 축소율도 다르고, 그 결과는 「동작 배율과 기준점」 표에 있다. 동작 띠는 칸마다 원본 칸을 같은 비율로 줄여 칸 안 아래 가운데에 놓고 가로로 이었다. 원본 칸의 크기와 pivot 설정이 칸마다 같아서 기준점도 모든 칸에서 같은 자리다. 겹 배경은 원래 크기 그대로이고, 로고는 칸 폭 896px(원본의 0.875배, 16칸 띠가 WebP 한 변 한계 16383px 안에 드는 가장 큰 정수 칸), 대장장이 초상은 폭 700px, 아이콘은 높이 64px로 줄였다. WebP는 cwebp 1.6.0으로 만들었고 손실(그림 품질 90, 배경 85)과 무손실 중 작은 쪽을 골랐다(무손실이 1.15배 이내면 무손실). 이번 사본은 모두 손실이 골라졌다. 로고만 품질 75다. 첫 화면에서 가장 큰 그림이라 전송량을 줄였고, 투명도는 손실 없이 두었다.
+게임 그림 사본(WebP 20개와 `icon.png`)은 게임 화면의 크기 비율을 지키도록 게임 1단위가 사본 80px이 되게 줄였다. 원본마다 게임의 PPU(1단위당 픽셀)와 prefab 배율이 달라 축소율도 다르고, 그 결과는 「동작 배율과 기준점」 표에 있다. 동작 띠는 칸마다 원본 칸을 같은 비율로 줄여 칸 안 아래 가운데에 놓고 가로로 이었다. 원본 칸의 크기와 pivot 설정이 칸마다 같아서 기준점도 모든 칸에서 같은 자리다. 겹 배경은 원래 크기 그대로이고, 로고는 칸 폭 896px(원본의 0.875배, 16칸 띠가 WebP 한 변 한계 16383px 안에 드는 가장 큰 정수 칸), 대장장이 초상은 폭 700px, 아이콘은 높이 64px로 줄였다. WebP는 cwebp 1.6.0으로 만들었고 손실(그림 품질 90, 배경 85)과 무손실 중 작은 쪽을 골랐다(무손실이 1.15배 이내면 무손실). 게임 그림 사본은 모두 손실이 골라졌다. 대문 아트는 무손실이다(117,268 B, 손실 품질 90은 1,093,054 B). 로고만 품질 75다. 첫 화면에서 가장 큰 그림이라 전송량을 줄였고, 투명도는 손실 없이 두었다.
 
 ## 글꼴 출처
 
@@ -87,6 +90,7 @@
 | `images/layer-5-castle.webp` | `1` | `2172x724` | `0.0125` | `1086,362` | `-` | `정지` | `03_Client/Assets/Art/Environment/BackGround/Parallax/CastleValley_Sunset_Parallax_Layers/Assets/Art/Backgrounds/CastleValley_Sunset/05_Castle_City.png.meta:54; 03_Client/Assets/Prefabs/Environment/Parallax_CastleValley.prefab:574` |
 | `images/layer-6-valley.webp` | `1` | `2172x724` | `0.0125` | `1086,362` | `-` | `정지` | `03_Client/Assets/Art/Environment/BackGround/Parallax/CastleValley_Sunset_Parallax_Layers/Assets/Art/Backgrounds/CastleValley_Sunset/06_Valley_Fields_Ruins.png.meta:54; 03_Client/Assets/Prefabs/Environment/Parallax_CastleValley.prefab:574` |
 | `images/logo.webp` | `16` | `896x371` | `-` | `448,185.5` | `-` | `반복 12` | `03_Client/Assets/Scenes/00.Menu/MainMenu.unity:528; 03_Client/Assets/Prefabs/UI/MainTitle_Clip.anim:60` |
+| `images/title-art.webp` | `12` | `688x384` | `-` | `344,192` | `-` | `반복 8` | `05_Management/goals/2026-10-08-intro-site/assets/title-art-strip.png` |
 | `images/knight-idle.webp` | `16` | `228x165` | `0.012476` | `114,165` | `-` | `반복 8.4` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Idle.png.meta:56; 03_Client/Assets/Art/Characters/Playable/Knight/Animator/Knight.controller:218-219` |
 | `images/knight-move.webp` | `16` | `228x165` | `0.012476` | `114,165` | `-` | `반복 27.6` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Move.png.meta:56; 03_Client/Assets/Art/Characters/Playable/Knight/Animator/Knight.controller:454-455` |
 | `images/knight-attack.webp` | `16` | `357x196` | `0.012506` | `178,196` | `-` | `한 번 24` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Attack0.png.meta:56; 03_Client/Assets/Art/Characters/Playable/Knight/Animator/Knight.controller:10-11` |
@@ -100,7 +104,7 @@
 | `images/boss-idle.webp` | `16` | `274x198` | `0.012503` | `136.5,198` | `-` | `반복 8.4` | `03_Client/Assets/Art/Enemy/Boss_Vampire/Boss_Idle.png.meta:56; 03_Client/Assets/Art/Enemy/Boss_Vampire/Animator/Boss_Animator.controller:229-230` |
 | `images/blacksmith-idle.webp` | `16` | `228x183` | `0.012476` | `114,183` | `-` | `반복 6` | `03_Client/Assets/Art/Characters/NPC/BlackSmith/BlackSmith_Idle.png.meta:101; 03_Client/Assets/Art/Characters/NPC/BlackSmith/Animator/BlackSmith.controller:55-56` |
 
-사본 1px당 게임 단위가 모두 0.0125 근처인 것은 게임 1단위를 사본 80px로 맞췄기 때문이다. 정수 픽셀로 반올림한 칸 크기 때문에 끝자리가 조금씩 다르다. 그래서 같은 장면에서 같은 배율로 그리면 게임 화면과 같은 크기 비율이 된다. 로고는 메뉴 화면 UI라 게임 단위가 없다. 재생 속도는 게임 클립의 12fps에 애니메이터 상태 속도 배수를 곱한 값이다. 붙는 곳의 대시 효과 (1, 0.9)는 기사 몸의 효과 기준점이고, 낙뢰는 적의 발밑, 순간이동 도착 효과는 마법사 발밑에서 0.5단위 아래다.
+사본 1px당 게임 단위가 모두 0.0125 근처인 것은 게임 1단위를 사본 80px로 맞췄기 때문이다. 정수 픽셀로 반올림한 칸 크기 때문에 끝자리가 조금씩 다르다. 그래서 같은 장면에서 같은 배율로 그리면 게임 화면과 같은 크기 비율이 된다. 로고(메뉴 화면 UI)와 대문 아트(게임 화면이 아님)는 게임 단위가 없다. 대문 아트의 8fps는 작은 움직임이 차분하게 보이도록 고른 값이다. 재생 속도는 게임 클립의 12fps에 애니메이터 상태 속도 배수를 곱한 값이다. 붙는 곳의 대시 효과 (1, 0.9)는 기사 몸의 효과 기준점이고, 낙뢰는 적의 발밑, 순간이동 도착 효과는 마법사 발밑에서 0.5단위 아래다.
 
 ## 동작 맞물림
 

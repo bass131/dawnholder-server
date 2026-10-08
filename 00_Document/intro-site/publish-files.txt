@@ -23,6 +23,7 @@ images/mage-idle.webp
 images/mage-teleport-effect.webp
 images/mage-thunder-effect.webp
 images/slime-idle.webp
+images/title-art.webp
 fonts/Pretendard-Regular.subset.woff2
 fonts/Pretendard-Bold.subset.woff2
 fonts/LICENSE.txt
