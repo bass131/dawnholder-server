@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)로 병합됐다(merge commit `127cc5a1`). 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)이고 branch `docs/lead-tag-model-name-20261008`(base main `127cc5a1`)이다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T14:52:27Z): 리드 태그 PR 문서 실사가 끝났다. 문서는 지적 없음이고 heartbeat 이탈 R1·R2가 메인 결정 대기다(아래 「리드 태그 PR 문서 실사」).
-- **다음 할 일**: PR212 승인 묶음을 메인에 보낸다. 메인의 교정 층 결정(`msg_89901c25a9d3`)이 오면 goal에 원문을 적고, 그 결정에 따라 R1·R2 차단을 푼다. 병합 승인을 받으면 수신 helper PR을 최신 main에서 시작한다.
+- **현재 위치**(2026-10-08T15:14:43Z): PR212의 문서 실사가 끝났다. heartbeat 이탈 R1·R2는 메인 결정 `msg_a8e661983ce5`로 비차단 운영 기록이 됐다(아래 「리드 태그 PR 문서 실사」). 이 기록 커밋의 head로 메인에 승인 줄을 보낸다. 사용자 병합 승인은 아침이다.
+- **다음 할 일**: 사용자 병합 승인 → 메인 병합 → 수신 helper PR branch를 최신 main에서 만든다. 수신 helper PR은 선행 시험(신규 Opus, 거절 사례 셋) → Sol 구현 → 독립 검증(신규 Opus) 순서다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -121,6 +121,10 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 정본 PR 승인 묶음의 메인 결정: 메인 `msg_e7dd27f2bb2d`(2026-10-08T13:21:19Z, E/session/main-decision-msg_e7dd27f2bb2d.raw.json, 사용자 결정 아님). 리드 묶음 `msg_b923e30dea54`에 대한 답이다.
   - 안건 1 A: 재실사 R1·R2(heartbeat 418·373·411초 이탈)를 비차단 운영 기록으로 둔다. 근거는 재실사 판정의 해소 조건과, heartbeat가 리드가 받는 생존 신호 규약이며 산출물에 영향이 없다는 점이다. 한계는 이탈 동안 리드가 작업자 생존을 5분 단위로 확인하지 못한 것이다. 같은 이탈이 다시 나오면 교정 층을 정한다(후보: 「장문 판정 작성 전 heartbeat 한 번」 같은 계약 문장). 이번은 첫 발생 기록이다.
   - 안건 2 A: PR211을 PR207보다 먼저 병합한다. PR207 쪽이 CURRENT 한 줄을 새 형식으로 다시 쓰고, 메인이 Management에 알린다. PR191은 3단계 뒤 재개 때 맞춘다.
+- 리드 태그 PR heartbeat 재발의 메인 결정: 메인 `msg_a8e661983ce5`(2026-10-08T15:14:26Z, E/session/main-decision-msg_a8e661983ce5.raw.json, 사용자 결정 아님). 리드 요청 `msg_89901c25a9d3`·덧붙임 `msg_38c94d5b87f3`·승인 묶음 `msg_84b18a708a21`에 대한 답이다.
+  - A: R1(작성 Sol 363초)·R2(실사자 337초)를 비차단 운영 기록으로 둔다. 교정은 문서보다 높은 도구 층으로 고르고, 후보를 아래 「다음 계획 후보」에 둔다. 종료 때 BACKLOG로 넘긴다.
+  - 근거: 두 계약 모두 「긴 작성 직전 heartbeat 한 번」이 있었고 둘 다 지켰다. 그래도 한 번의 긴 작성이 5분을 넘었다. 같은 문장을 양식 정본으로 올리는 B로는 막지 못한다([교정 층과 반복 규칙](../../../00_Document/conventions/CODE_CONVENTION.md#교정-층과-반복-규칙)의 두 번째 발생).
+  - 한계: 두 공백 동안 리드는 작업자 생존을 5분 단위로 확인하지 못했다. 산출물에는 영향이 없었다(리드 R-2, 실사 판정).
 
 ## 적용 중인 사용자 결정
 
@@ -235,13 +239,14 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 
 - 계약: 신규 `[Rules 검증자]`(`gpt-6-astra` xhigh)에 v1(E/pr3-review-contract.md, SHA256 `dd329e22…`, 경로 확인 E/pr3-review-contract-pathcheck.txt)을 냈다. Task `task_80f54881ec9b`, Dispatch `ctx_f1c3a890c258`, 고정 HEAD `cbcf0e35`다. `turn_start_unobserved`는 draft 크기 대조(18,315 = 13,528 + 4,787) 뒤 Enter 한 번으로 풀었다(E/pr3-review-draft-recovery.md).
 - 판정(E/pr3-review/verdict.md, worker_done `msg_4cd492a5fe2c` 14:51:00Z): 문서 내용·참조·권한과 시나리오 S1~S3, 정적 C1~C10은 지적 없음이다. 묶음 102,655 bytes와 ORCA 249줄을 재현했다. 새 태그 빈 heartbeat를 수신 helper에 넣은 합성 입력은 allowed였다.
-- 차단 R1·R2(메인 결정 대기): R1은 작성 Sol heartbeat 363초(14:13:08Z → 14:19:11Z), R2는 실사자 자신의 337초(14:40:55Z → 14:46:32Z, 사이 escalation부터 302초, E/session/all3.raw.json)다. 둘 다 장문 작성 직전 heartbeat 문장이 계약에 있었는데도 났다. 메인에 교정 층 결정을 `msg_89901c25a9d3`·덧붙임 `msg_38c94d5b87f3`로 올렸다.
+- 차단 R1·R2: R1은 작성 Sol heartbeat 363초(14:13:08Z → 14:19:11Z), R2는 실사자 자신의 337초(14:40:55Z → 14:46:32Z, 사이 escalation부터 302초, E/session/all3.raw.json)다. 둘 다 장문 작성 직전 heartbeat 문장이 계약에 있었는데도 났다. 메인에 교정 층 결정을 `msg_89901c25a9d3`·덧붙임 `msg_38c94d5b87f3`로 올렸다.
+- R1·R2 처리: 메인 결정 `msg_a8e661983ce5`(「요구사항 원천과 적용 결정」)로 비차단 운영 기록이 됐다. 판정은 「메인이 원문·영향·한계를 명시하면 연결해 차단을 해소할 수 있다」고 적었다. 실사 세션은 계약대로 작업 하나 뒤 닫혀 재사용하지 않으므로, 위 결정 원문·영향·한계를 이 goal에 연결해 해소한다. 문서 재수정은 없다.
 - 비차단 관찰: O1 AGENTS 전환 문단의 「종료까지」를 다음 문안 정비 때 「세션 종료까지」로 밝힐지, O2 BACKLOG 65행의 「Astra 갱신 책임」 호칭, O3 다른 파트 진행 goal의 옛 세션명(소유 파트 몫, 일괄 치환 안 함). O1·O2는 아래 「다음 계획 후보」에 둔다.
 - 리드 이탈(첫 관찰, 리드 귀속): 실사자 escalation에 대한 일반 접수 회신을 `reply`로 보내 subject가 `Re: [Rules 검증자] …`가 됐다(`msg_95f44ddf4517`). R-3은 공식 질문 답만 `reply`로 하고 일반 회신은 자기 태그 subject의 `send`로 보낸다. 실사자가 지시로 처리하지 않고 교정을 요청했고(`msg_cf7326e63a9b`), 리드가 `send`로 다시 보냈다(`msg_513f0a49b0d3`, E/lead-check/pr3-review-r3-deviation.md).
 - 운영 관찰: 리드의 백그라운드 우편함 대기가 14:35Z쯤 메모리 부족으로 꺼졌다(E/session/wait29.raw.json 0 bytes). 다시 열지 않고 Orca 터미널 알림으로 받았다.
 - 리드 R-2(E/lead-check/pr3-review-r2.md): 판정 표본 아홉(CLAUDE 기준 bytes, 옮긴 문장 행, numstat, 공백 검사, helper 입출력, BACKLOG 65행, R2 간격, 자기 쓰기 감사, 맥락 메모)이 원천과 같았다.
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr3-review-release.json, pr3-review-idle.json, pr3-review-close.json).
-- PR: [PR212](https://github.com/bass131/dawnholder-server/pull/212)를 만들었다(본문 E/session/pr3-body.md). 메인 승인 묶음에 R1·R2 교정 층 결정을 함께 올린다.
+- PR: [PR212](https://github.com/bass131/dawnholder-server/pull/212)를 만들었다(본문 E/session/pr3-body.md). 메인 승인 묶음 `msg_84b18a708a21`에 R1·R2 교정 층 결정을 함께 올렸고, 메인이 A로 정했다. 메인은 현황판이 옛 리드 태그와 새 리드 태그를 같은 리드로 읽도록 고쳤다고 알렸다(goal 위험 4).
 
 ## 정본에서 옮긴 적용 기록
 
@@ -303,3 +308,4 @@ M-1 관찰·출처와 미검증 구분은 [이관 기록](../../01_Phases/goals/
 
 - 리드 태그 PR 실사 O1(Rules): AGENTS 전환 문단의 「종료까지」를 다음 문안 정비 때 「세션 종료까지」처럼 주체를 밝힐지 본다. 여섯 파일 묶음 여유가 3 bytes라 바꾸면 다시 잰다.
 - 리드 태그 PR 실사 O2(Rules): BACKLOG 65행 「Astra 갱신 책임」의 호칭을 그 행을 손볼 때 정리할지 본다. 지금은 AGENTS 전환 문단이 당시 이름으로 해석하게 한다.
+- 작업자 생존 확인의 도구 층 교정(Rules, 메인 결정 `msg_a8e661983ce5`): 예를 들어 리드 대기 중 heartbeat 공백이 5분을 넘으면 작업자 화면 상태를 읽어 기록하는 helper를 둘 수 있다. 장문 작성 중 heartbeat를 대신 보내는 방법도 검토한다. 5분 간격 자체가 긴 작성에 맞는지도 함께 본다. 문서로 끝내지 않는 이유: 「긴 작성 직전 heartbeat 한 번」 계약 문장을 두 작업자가 지켰는데도 한 번의 긴 작성이 5분을 넘었다(R1 363초, R2 337초). 작업자는 한 번의 긴 생성 도중에는 heartbeat를 보내지 못하는 것으로 보인다(추론, 미실증).
