@@ -19,12 +19,12 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-08 12:2x KST, 디자인 범위 개정 승인 직후.** 사용자는 첫 판 PR207을 보류하고 디자인을 다시 하기로 했다(아래 「디자인 재작업 범위 개정」). 06:32 KST의 로컬 결과 기록(V1·V2와 병합 승인 요청)은 메인 확인 `msg_80ddaefce11a` 1에 따라 이 개정과 함께 PR207 branch에 commit한다. 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-08 12:4x KST, 시안 세션 셋 작업 중.** 사용자는 첫 판 PR207을 보류하고 디자인을 다시 하기로 했다(아래 「디자인 재작업 범위 개정」). 06:32 KST의 로컬 결과 기록(V1·V2와 병합 승인 요청)은 이 개정과 함께 commit했다(`8db486f1`). 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-- **지금 단계:** 디자인 범위 v2가 승인됐다. 다음은 Q2 외부 파일 받기, 그림 사본, 무드보드와 디자인 요구서, 시안 세션 셋 발행, 그 뒤 선행 시험 작성자 발행이다(「디자인 작업 순서」). PR207(branch `feat/intro-site-20261008`, base `7086d45b`)은 열린 채 보류이고, 디자인 완성 뒤 새 head로 병합 승인을 요청한다. GitHub Pages는 꺼진 채다.
+- **지금 단계:** Q2 외부 파일, 그림 묶음, 무드보드, 시안 세션 셋 발행까지 끝났다(「무드보드와 시안 발행」). 시안 셋의 `worker_done`을 기다린다. 다음은 시안 정산, 메인에 미리보기 주소 한 번에 보내기, 그 뒤 선행 시험 작성자 T2 발행이다(계약 E/`contracts/t2-task.md` 준비됨). PR207(branch `feat/intro-site-20261008`, base `7086d45b`)은 열린 채 보류이고, 디자인 완성 뒤 새 head로 병합 승인을 요청한다. GitHub Pages는 꺼진 채다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run과 재진입:** Run은 `run_605925c36641`이다. 이번 리드 handle은 `term_436c20d1-eacc-4335-ab85-027f65e69f4f`이고, 이전 리드 handle `term_59adfc07-455c-493b-b4bc-1e2583b08ff9`와 함께 관측값일 뿐 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
-- **작업자·검증자:** T1·S1·V1·V2는 정산하고 닫았다. 지금 열린 작업자는 없다.
+- **작업자·검증자:** T1·S1·V1·V2는 정산하고 닫았다. 지금 열린 작업자는 시안 D1·D2·D3이다(pane·Task·Dispatch는 「무드보드와 시안 발행」).
 - **근거 폴더 E:** 저장소 로컬 `.backups/verification/2026-10-08-intro-site/`(Git 제외). 범위 단계 근거는 `.backups/verification/2026-10-08-intro-page-scope/`(E0)다. 첫 판 리드 맥락 메모는 E/`astra-context.md`, 디자인 범위 개정 근거와 메모는 E/`design-scope/`다.
 
 ## 요청 원천과 승인
@@ -309,3 +309,22 @@ workflow는 바꾸지 않아 Sol은 열지 않는다. 시안 세션 셋은 파�
 - 첫 화면 근거(리드 확인): 겹 배경 prefab `Prefabs/Environment/Parallax_CastleValley.prefab`이 마을·사냥터·보스방 장면에 놓여 있고 레이어 1~6번을 쓴다. 7번 전경 풀숲은 쓰지 않는다. 기사·마법사·슬라임 대기 시트의 `.meta`에는 칸 영역이 16개씩 있다.
 - 겹 배경 무게 측정(scratchpad, 리드): 레이어 2~7번 6장을 1440px 폭 PNG로 줄이면 합계 2,386,699 B다(E/`design-scope/raw/size-probe/probe.log`).
 - 운영 기록: curl로 출처 두 개를 받으려던 명령이 권한 확인에서 거부됐다. 우회하지 않고 WebFetch로 확인했다.
+
+### 무드보드와 시안 발행
+
+- **Q2 외부 파일(근거 폴더 안, 전역 설치 없음):** Pretendard 1.3.9를 `npm pack`으로 받아 공식 부분 집합 woff2 두 개와 OFL 전문을 꺼냈다. Lighthouse 13.5.0·Playwright 1.64.0은 정확한 버전으로 `--ignore-scripts` 설치했고, Firefox·WebKit은 Playwright 기본 위치(사용자 프로필)에 받았다. 판·크기·SHA256·lockfile hash는 E/`tools/ext/RECORD.md`에 있다.
+- **cwebp:** 리드의 curl 받기가 권한 확인에서 거부됐다. 우회하지 않고 메인에 올렸고, 사용자가 직접 받았다(메인 `msg_62c7295ac021`, 도착 `msg_acc183f564f8`). zip SHA256 `48886f50…93f1`이 메인 확인 값과 같고, `cwebp -version`은 1.6.0이다. 공식 페이지에 체크섬이 없고 PGP 서명은 검증하지 않았다(한계, RECORD.md).
+- **그림 묶음(근거 폴더, 시안용):** 리드 스크립트 E/`tools/make-design-assets.ps1`(SHA256 `52ddd9bd…26b5`)로 겹 배경 1~6번, 로고, 대장장이 초상, UI 틀 셋, 동작 띠 13개를 만들었다. 동작 칸은 각 시트 `.meta`의 칸 영역에서 자르고 칸 안 아래 가운데에 놓았다. 24개 8,328,017 B이며 목록·원본·SHA256은 E/`design/assets/manifest.json`(SHA256 `3ec5e46c…6cff`)이다. 사이트에 넣을 사본과 WebP 변환은 시안 선택 뒤 따로 만든다.
+- **무드보드:** E/`design/moodboard.md`(SHA256 `e719dd58…43ee1`). 사례 여섯과 비교 기준 둘, 빌릴 패턴 8, 피할 것 6, 따라 하지 않을 고유 표식, 우리 그림으로 되는 것과 안 되는 것이다. 다른 사이트 화면 사진은 두지 않았다(메인 조건).
+- **시안 세션 셋(구현 역할 태그 `[Management Sol]`, 실제 모델 `claude-opus-5-5`):** 2026-10-08 12:29~12:31 KST, 계약 E/`contracts/d-task.md`(SHA256 `c6744e89…d124`), 발행 기록 E/`contracts/d-issue.txt`, 요약 E/`design/launch/summary.md`. split 최초 실행 명령 `claude --model claude-opus-5-5`, 첫 화면 표시 「Opus 5.5 with xhigh effort」, 선택창 없음, backend unknown. 세 세션 모두 `input_accepted`와 `turn_started`를 확인했다.
+
+| 방향 | 쓰기 폴더 | pane | Task | Dispatch |
+|---|---|---|---|---|
+| D1 노을 풍경 시네마틱 | E/`drafts/d1-cinematic/` | `term_1db550e9…` | `task_90d1faf07484` | `ctx_dfd2c5c656eb` |
+| D2 게임 화면 속으로 | E/`drafts/d2-game-ui/` | `term_7ea65798…` | `task_58c51f1940e4` | `ctx_35f34844d490` |
+| D3 사이드스크롤 여정 | E/`drafts/d3-side-scroll/` | `term_398176fb…` | `task_6671d4a0b274` | `ctx_d3b82c584ae7` |
+
+- **D1 결과:** `worker_done` `msg_500326db0c2e`(2026-10-08T04:22:12Z, outcome succeeded). 발신 pane·Task·Dispatch가 발행 기록과 일치했다. 보고 E/`drafts/d1-cinematic/report.md`. 자체 점검(독립 판정 아님)은 27회 가로 넘침 0, 같은 출처 요청만, JS 없이 정지 스위치 작동, 움직임 줄이기 반복 0, 대비 최소 4.89:1, CLS 0, 글꼴 빠진 글자 0이다. 첫 화면 6,773,035 B로 목표를 넘는다. 넓은 화면 2배 표시는 0.5배 축소본을 키워 거칠다. 리드는 폴더 밖 쓰기가 없고 화면 사진이 실제 렌더임을 직접 봤다. 정산: `worker-release` `retained`, pane 대기(✳)를 확인하고 닫았다(E/`design/launch/d1-release.json`, `d1-close.json`).
+- **D2 결과:** `worker_done` `msg_c64b955f0568`(2026-10-08T04:04:48Z, outcome succeeded). 발신 pane·Task·Dispatch가 발행 기록과 일치했다. 보고 E/`drafts/d2-game-ui/report.md`. 자체 점검(독립 판정 아님)은 세 엔진 가로 스크롤 없음, 다른 출처 요청 0, JS 끔 정지 버튼 작동, 움직임 줄이기 애니메이션 0, CLS 0이다. 첫 화면 4,736,521 B·전체 6,746,534 B는 PNG 원본이라 목표를 넘고, 완성 때 WebP로 줄인다. 리드는 폴더 밖 쓰기가 없고(E의 새 파일은 모두 리드 기록) 화면 사진이 실제 렌더임을 직접 봤다. 정산: `worker-release` `retained`, pane 대기(✳)를 확인하고 닫았다(E/`design/launch/d2-release.json`, `d2-close.json`).
+- **D3 결과:** `worker_done` `msg_75ea919fbc06`(2026-10-08T04:21:30Z, outcome succeeded). 발신 pane·Task·Dispatch가 발행 기록과 일치했다. 보고 E/`drafts/d3-side-scroll/report.md`. 자체 점검(독립 판정 아님)은 세 엔진 × 세 조건 × 세 폭 27회 가로 넘침 0, 외부 요청 0, 정지 수단 반복 5→0, 대비 최저 4.88, CLS 0.001 이하다. 첫 화면 5,408,401 B·전체 5,661,134 B로 목표를 넘고, WebKit 스크롤 연동 0px 한 번은 재측정에서 재현되지 않았다. 추가 요청은 WebP, 이음매 맞춘 겹, favicon이다. 리드는 폴더 밖 쓰기가 없고 화면 사진이 실제 렌더임을 직접 봤다. 정산: `worker-release` `retained`, pane 대기(✳)를 확인하고 닫았다(E/`design/launch/d3-release.json`, `d3-close.json`).
+- **선행 시험 T2 준비:** 접점 E/`site-interface-v1.2.md`(SHA256 `a6bfe124…33a2`)와 계약 E/`contracts/t2-task.md`(SHA256 `b001e5a7…c18d`)를 썼다. 메인 조건대로 시안 세션 셋을 닫은 뒤 연다.
