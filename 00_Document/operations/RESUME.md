@@ -17,18 +17,18 @@ Core 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-ac
 
 현재 운영 규칙의 정본은 [ORCA R-1~R-8](ORCA.md#2026-10-01-운영-규칙-정본)이다. 이전 시범 goal은 당시 결과의 근거로만 읽고 현재 배치·기동 절차는 아래 정본 링크를 따른다.
 
-1. 새 Astra의 배치는 [R-1의 현재 리드 배치](ORCA.md#r1-management-placement), 작업자 기동은 [R-5](ORCA.md#r5-worker-launch), 첫 화면 확인은 [R-6](ORCA.md#r6-first-screen)을 따른다. 이전 handle/Run/Task/Dispatch를 재사용하지 않는다.
+1. 새 리드의 배치는 [R-1의 현재 리드 배치](ORCA.md#r1-management-placement), 작업자 기동은 [R-5](ORCA.md#r5-worker-launch), 첫 화면 확인은 [R-6](ORCA.md#r6-first-screen)을 따른다. 이전 handle/Run/Task/Dispatch를 재사용하지 않는다.
    현재 리드와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. 현재 goal의 종료조건도 확인하며 이 문서에 상세 규칙을 복제하지 않는다.
-2. 새 메인은 [R-1의 메인 전용 checkout](ORCA.md#r1-management-placement)에서 열고 Astra를 연 뒤 작업 현황 탭을 다시 띄운다. 현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다.
+2. 새 메인은 [R-1의 메인 전용 checkout](ORCA.md#r1-management-placement)에서 열고 리드를 연 뒤 작업 현황 탭을 다시 띄운다. 현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다.
 
    ```powershell
    orca terminal create --worktree path:C:/Dev/DawnHolder_Project --title "작업 현황" --command "node C:/Dev/DawnHolder_Dashboard/dashboard.mjs"
    ```
 
    탭을 띄운 뒤 `C:/Dev/DawnHolder_Dashboard/board.json`의 결정 항목이 현재 상태와 맞도록 메인이 갱신한다. 세부 결정 운영 규칙은 [CLAUDE 「메인의 기록과 알림」](../../CLAUDE.md#메인의-기록과-알림)을 따른다.
-3. Astra의 목표 종료·재진입·중간 재개·인계 기록은 [R-8](ORCA.md#r8-astra-lifecycle)을 따른다.
+3. 리드의 목표 종료·재진입·중간 재개·인계 기록은 [R-8](ORCA.md#r8-astra-lifecycle)을 따른다.
 4. 메인은 시작 시 [R-1의 현재 리드](ORCA.md#r1-management-placement)에 자기 handle을 알린다. 모든 세션 간 메시지 subject/body와 입력은 자기 발신 태그를 붙이고 `from_handle`과 대조한다. 회신 subject는 [R-3](ORCA.md#r3-reply-tag)을 따른다. 타 세션 터미널에는 태그와 Orca 메시지 확인 안내만 넣으며, 지시는 orchestration으로 전달한다. 표식 없는 터미널 입력만 사용자 직접 지시다.
-5. 작업자·검증자 세션은 작업 하나 후 정산·종료하고 재사용하지 않는다. 정상 완료는 `worker_done`·Astra 대조 후, 비정상 종료·막힘·무응답은 진단 기록 후 정산·종료한다. 수정·재검증에는 새 세션을 연다.
+5. 작업자·검증자 세션은 작업 하나 후 정산·종료하고 재사용하지 않는다. 정상 완료는 `worker_done`·리드 대조 후, 비정상 종료·막힘·무응답은 진단 기록 후 정산·종료한다. 수정·재검증에는 새 세션을 연다.
 
 ## 다음 조각을 시작하는 순서
 

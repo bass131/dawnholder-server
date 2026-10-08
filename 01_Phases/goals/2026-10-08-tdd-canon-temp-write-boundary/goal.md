@@ -5,11 +5,14 @@
 Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)이고 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream origin)이다.
+- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)로 병합됐다(merge commit `127cc5a1`). 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)이고 branch `docs/lead-tag-model-name-20261008`(base main `127cc5a1`)이다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T13:21:40Z): PR211을 만들었고 메인이 재실사 R1·R2를 비차단으로 결정했다. 메인이 CI 뒤 사용자에게 병합 승인을 요청한다.
-- **다음 할 일**: PR211 병합(메인) → 리드 태그 PR(작성 전 CLAUDE.md 줄 목록·문안을 메인에 먼저 보냄).
+- **현재 위치**(2026-10-08T22:39:25Z): PR212 사용자 병합 승인 대기다. 문서 실사, 메인 결정 `msg_a8e661983ce5`(heartbeat R1·R2 비차단), CI가 끝났다. 앞 head `1af06731`에서 CI 네 항목이 SUCCESS였다(E/session/pr212-view3.json). 이 재개 지점 커밋이 PR212의 마지막 커밋이며, 승인 줄은 그 head로 메인이 받는다. 열린 작업자·검증자 pane은 없다.
+- **기다리는 것**: 사용자 병합 승인 → 메인 병합. 사용자 요청(메인 전달 `msg_e54f163b20ea`)으로 이 리드 세션은 여기서 멈추고 새 세션으로 다시 연다.
+- **다음 첫 할 일**(병합 확인 뒤): 최신 main에서 수신 helper PR branch를 만들고 리드 맥락 메모를 쓴다. 그 뒤 선행 시험 계약을 낸다(신규 `claude-opus-5-5`, M2의 거절 사례 셋: 근거 누락, subject 옵션이 있는 help 근거, identity 불일치). 이어서 Sol 구현, 신규 Opus 독립 검증 순서다. 독립 검증은 실제 공식 ask 원시(후보 E/lead-check/pr1-ask1-check-input.json)로 `check-message.mjs`를 한 번 실행한다. 태그 붙은 heartbeat subject 사례(정본 PR 첫 실사)도 본다.
+- **재진입**: 이 리드의 Claude 세션 ID는 `64f22d75-946a-4b21-a275-d2e10254b75a`다(`--resume`). 다시 열면 handle이 바뀌므로 같은 Run을 인수하고 메인에 새 handle을 알린다. 태그는 AGENTS 전환 문단을 따른다. PR212 병합 뒤 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다. 이 세션을 `--resume`으로 이을 때의 태그는 정본이 따로 정하지 않았다. 리드 해석은 같은 세션이므로 `[Rules Astra]`를 유지한다는 것이다(「만들 것」 리드 태그 PR 2). 메인이 다르게 정하면 그 결정을 따른다.
+- 열린 PR·근거: PR212 판정 E/pr3-review/verdict.md, 리드 대조 E/lead-check/pr3-r2.md·pr3-review-r2.md, 메인 보고 E/session/main-report-pr212.md·main-report-pr212-head.md.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -17,9 +20,9 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 
 - [x] 범위와 기준 확정
 - [x] 정본 PR 작성·실사
-- [>] PR211 병합
-- [ ] 리드 태그 PR 실사
-- [ ] 리드 태그 PR 병합
+- [x] PR211 병합
+- [x] 리드 태그 PR 실사
+- [>] 리드 태그 PR 병합
 - [ ] 수신 helper 선행 시험
 - [ ] 수신 helper 구현·검증
 - [ ] 수신 helper PR 병합
@@ -121,6 +124,10 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 정본 PR 승인 묶음의 메인 결정: 메인 `msg_e7dd27f2bb2d`(2026-10-08T13:21:19Z, E/session/main-decision-msg_e7dd27f2bb2d.raw.json, 사용자 결정 아님). 리드 묶음 `msg_b923e30dea54`에 대한 답이다.
   - 안건 1 A: 재실사 R1·R2(heartbeat 418·373·411초 이탈)를 비차단 운영 기록으로 둔다. 근거는 재실사 판정의 해소 조건과, heartbeat가 리드가 받는 생존 신호 규약이며 산출물에 영향이 없다는 점이다. 한계는 이탈 동안 리드가 작업자 생존을 5분 단위로 확인하지 못한 것이다. 같은 이탈이 다시 나오면 교정 층을 정한다(후보: 「장문 판정 작성 전 heartbeat 한 번」 같은 계약 문장). 이번은 첫 발생 기록이다.
   - 안건 2 A: PR211을 PR207보다 먼저 병합한다. PR207 쪽이 CURRENT 한 줄을 새 형식으로 다시 쓰고, 메인이 Management에 알린다. PR191은 3단계 뒤 재개 때 맞춘다.
+- 리드 태그 PR heartbeat 재발의 메인 결정: 메인 `msg_a8e661983ce5`(2026-10-08T15:14:26Z, E/session/main-decision-msg_a8e661983ce5.raw.json, 사용자 결정 아님). 리드 요청 `msg_89901c25a9d3`·덧붙임 `msg_38c94d5b87f3`·승인 묶음 `msg_84b18a708a21`에 대한 답이다.
+  - A: R1(작성 Sol 363초)·R2(실사자 337초)를 비차단 운영 기록으로 둔다. 교정은 문서보다 높은 도구 층으로 고르고, 후보를 아래 「다음 계획 후보」에 둔다. 종료 때 BACKLOG로 넘긴다.
+  - 근거: 두 계약 모두 「긴 작성 직전 heartbeat 한 번」이 있었고 둘 다 지켰다. 그래도 한 번의 긴 작성이 5분을 넘었다. 같은 문장을 양식 정본으로 올리는 B로는 막지 못한다([교정 층과 반복 규칙](../../../00_Document/conventions/CODE_CONVENTION.md#교정-층과-반복-규칙)의 두 번째 발생).
+  - 한계: 두 공백 동안 리드는 작업자 생존을 5분 단위로 확인하지 못했다. 산출물에는 영향이 없었다(리드 R-2, 실사 판정).
 
 ## 적용 중인 사용자 결정
 
@@ -207,6 +214,43 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 열린 PR의 CURRENT(위험 3): PR207(Management 소개 페이지)과 PR191(Content 인벤토리 화면)이 옛 표 형식의 CURRENT를 고친다. 정본 PR 위에 PR207을 합치는 모의 병합은 충돌 1곳이었다(E/lead-check/open-prs-current.md). 병합 순서는 메인 결정(「요구사항 원천과 적용 결정」)대로 PR211이 먼저다.
 - PR과 처리: PR211을 만들었다. 메인 결정 `msg_e7dd27f2bb2d`(「요구사항 원천과 적용 결정」)로 R1·R2는 비차단 운영 기록이 됐다. 메인이 CI 뒤 사용자에게 병합 승인을 요청한다.
 
+### PR211 병합
+
+- 사용자 원문(메인 창 Enter 제출, 메인 전달 `msg_1d15bef8ded2`): 「병합 승인: PR211 head 2dfd7cf15aa487f7bdf8dfea63b0e7c1048e4dac」.
+- 메인이 head·MERGEABLE·CLEAN을 다시 조회한 뒤 병합했다. merge commit `127cc5a197a527c437412657c8dcfa38c1354862`, mergedAt 2026-10-08T13:41:27Z다.
+
+### 리드 태그 PR 착수
+
+- branch: 2026-10-08T13:42:30Z 최신 main `127cc5a1`에서 `docs/lead-tag-model-name-20261008`을 만들었다.
+- 조사: 범위 파일 열둘의 「Astra」를 종류별로 나눴다(태그·「리드 Astra」·앵커 id·산문, E/pr3/survey-astra.json). 도구 코드에는 리드 태그 목록이 없고 MergeGate 시험 자료 한 줄만 있다(하지 않을 것의 시험 자료 인용).
+- 열린 PR207·PR191은 이 PR의 대상 파일을 건드리지 않는다(E/pr3/open-prs.json).
+- M1: CLAUDE.md 26·27·28·30·37행의 바꿀 문안을 메인에 보냈다(`msg_71ec4060ed2d`, E/pr3/main-m1-claude-md.md).
+- `05_Management/RESUME.md` 7·27·29행 소유 요청을 Management 리드에 보냈다(`msg_ec828ef7dbff`). 다른 Run의 리드에게는 `--run`에 상대 Run을 적어야 보내졌다(`run_not_found`·`recipient_run_mismatch` 원시 E/pr3/mgmt-ownership-receipt*.json).
+- Management 동의: `msg_9918f34657f6`(13:48:29Z, E/pr3/mgmt-consent-wait24.raw.json). 세 줄만 Rules Sol이 고치고, Management는 이 PR 병합 때까지 그 파일을 쓰지 않는다. 지금 Management 리드는 끝날 때까지 옛 태그를 쓴다.
+- CLAUDE.md: 메인이 이 branch에 쓰고 리드가 `b3028154`로 커밋했다(M1).
+
+### 리드 태그 PR 작성
+
+- 계약: 신규 `[Rules Sol]`(`gpt-6.1-sol` max)에 v1(E/pr3-contract.md, SHA256 `2daeeaa3…`, 경로 확인 E/pr3-contract-pathcheck.txt)을 냈다. Task `task_df85be9762bd`, Dispatch `ctx_cb5ce542e50a`다. `turn_start_unobserved`는 draft 크기 대조 뒤 Enter 한 번으로 풀었다(E/pr3-draft-recovery.md).
+- 보충: Sol 질문 `msg_fcb32bda0afe`(bytes 초과)에 v1.1 `msg_a8bcbe4c1d0d`(E/pr3/answer1.md)로 답했다. 전환 문단 둘을 합치고, 그래도 넘으면 이관 기록을 가리키기만 하는 ORCA 문장만 옮긴다. 지금 운영 판단에 쓰는 도구 관측 문장(ORCA 90·94·132행)은 옮기지 않는다. Management 동의는 `msg_c0f7e5d3fa63`로 넘겼다.
+- 결과: worker_done `msg_e3fee478e51f`(14:22:04Z, 수신 helper allowed). 열두 파일 +98/−74, 보고 E/pr3/report.md, 메모 E/pr3/context.md다. 여섯 파일 묶음은 102,656 → 102,655 bytes, ORCA는 249줄이다. ORCA 75·146·201행 끝 문장을 아래 「정본에서 옮긴 적용 기록」으로 옮겼다.
+- 리드 R-2(E/lead-check/pr3-r2.md): bytes·줄 수·남은 「Astra」 분류·앵커·바뀐 범위·바뀐 줄 링크 80개·옮긴 문장을 스크립트로 다시 쟀다. 보고와 실제가 다른 곳은 없다. 실사에 넘길 관찰은 Core 전환 문구를 「종료까지」와 「Core 태그」로 줄인 두 곳이다.
+- heartbeat 이탈(두 번째 발생): Sol heartbeat 간격이 14:13:08Z → 14:19:11Z, 363초였다(E/session/all2.raw.json). 메인 결정 `msg_e7dd27f2bb2d`의 「같은 이탈이 다시 나오면 교정 층을 정한다」에 닿았으므로 승인 묶음에서 메인에 올린다.
+- 정산: release `retained`(`external_terminal`), tui-idle 확인 뒤 14:23:35Z에 pane을 닫았다(E/pr3-release.json, pr3-idle.json, pr3-close.json).
+
+### 리드 태그 PR 문서 실사
+
+- 계약: 신규 `[Rules 검증자]`(`gpt-6-astra` xhigh)에 v1(E/pr3-review-contract.md, SHA256 `dd329e22…`, 경로 확인 E/pr3-review-contract-pathcheck.txt)을 냈다. Task `task_80f54881ec9b`, Dispatch `ctx_f1c3a890c258`, 고정 HEAD `cbcf0e35`다. `turn_start_unobserved`는 draft 크기 대조(18,315 = 13,528 + 4,787) 뒤 Enter 한 번으로 풀었다(E/pr3-review-draft-recovery.md).
+- 판정(E/pr3-review/verdict.md, worker_done `msg_4cd492a5fe2c` 14:51:00Z): 문서 내용·참조·권한과 시나리오 S1~S3, 정적 C1~C10은 지적 없음이다. 묶음 102,655 bytes와 ORCA 249줄을 재현했다. 새 태그 빈 heartbeat를 수신 helper에 넣은 합성 입력은 allowed였다.
+- 차단 R1·R2: R1은 작성 Sol heartbeat 363초(14:13:08Z → 14:19:11Z), R2는 실사자 자신의 337초(14:40:55Z → 14:46:32Z, 사이 escalation부터 302초, E/session/all3.raw.json)다. 둘 다 장문 작성 직전 heartbeat 문장이 계약에 있었는데도 났다. 메인에 교정 층 결정을 `msg_89901c25a9d3`·덧붙임 `msg_38c94d5b87f3`로 올렸다.
+- R1·R2 처리: 메인 결정 `msg_a8e661983ce5`(「요구사항 원천과 적용 결정」)로 비차단 운영 기록이 됐다. 판정은 「메인이 원문·영향·한계를 명시하면 연결해 차단을 해소할 수 있다」고 적었다. 실사 세션은 계약대로 작업 하나 뒤 닫혀 재사용하지 않으므로, 위 결정 원문·영향·한계를 이 goal에 연결해 해소한다. 문서 재수정은 없다.
+- 비차단 관찰: O1 AGENTS 전환 문단의 「종료까지」를 다음 문안 정비 때 「세션 종료까지」로 밝힐지, O2 BACKLOG 65행의 「Astra 갱신 책임」 호칭, O3 다른 파트 진행 goal의 옛 세션명(소유 파트 몫, 일괄 치환 안 함). O1·O2는 아래 「다음 계획 후보」에 둔다.
+- 리드 이탈(첫 관찰, 리드 귀속): 실사자 escalation에 대한 일반 접수 회신을 `reply`로 보내 subject가 `Re: [Rules 검증자] …`가 됐다(`msg_95f44ddf4517`). R-3은 공식 질문 답만 `reply`로 하고 일반 회신은 자기 태그 subject의 `send`로 보낸다. 실사자가 지시로 처리하지 않고 교정을 요청했고(`msg_cf7326e63a9b`), 리드가 `send`로 다시 보냈다(`msg_513f0a49b0d3`, E/lead-check/pr3-review-r3-deviation.md).
+- 운영 관찰: 리드의 백그라운드 우편함 대기가 14:35Z쯤 메모리 부족으로 꺼졌다(E/session/wait29.raw.json 0 bytes). 다시 열지 않고 Orca 터미널 알림으로 받았다.
+- 리드 R-2(E/lead-check/pr3-review-r2.md): 판정 표본 아홉(CLAUDE 기준 bytes, 옮긴 문장 행, numstat, 공백 검사, helper 입출력, BACKLOG 65행, R2 간격, 자기 쓰기 감사, 맥락 메모)이 원천과 같았다.
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr3-review-release.json, pr3-review-idle.json, pr3-review-close.json).
+- PR: [PR212](https://github.com/bass131/dawnholder-server/pull/212)를 만들었다(본문 E/session/pr3-body.md). 메인 승인 묶음 `msg_84b18a708a21`에 R1·R2 교정 층 결정을 함께 올렸고, 메인이 A로 정했다. 메인은 현황판이 옛 리드 태그와 새 리드 태그를 같은 리드로 읽도록 고쳤다고 알렸다(goal 위험 4).
+
 ## 정본에서 옮긴 적용 기록
 
 규칙 문서 bytes를 상쇄하려고 메인 판단 `msg_e6c8eb971f30` M3와 계약 보충 v1.1에 따라 아래 원문을 옮겼다.
@@ -239,6 +283,32 @@ R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Pha
 이전 정정·checkpoint·라우팅 서술은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
 ```
 
+### 리드 태그 PR
+
+규칙 문서 bytes를 상쇄하려고 메인 판단 `msg_e6c8eb971f30` M3와 계약 보충 v1.1에 따라 아래 원문을 옮겼다.
+
+원래 위치의 행은 base `127cc5a197a527c437412657c8dcfa38c1354862` 기준이다.
+
+- `00_Document/operations/ORCA.md` 75행 끝 문장.
+
+```text
+종료된 1.4.217 확장·복귀 근거는 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 있다.
+```
+
+- `00_Document/operations/ORCA.md` 146행 끝 문장.
+
+```text
+실패 이력과 후속 성공의 원문은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
+```
+
+- `00_Document/operations/ORCA.md` 201행 끝 문장.
+
+```text
+M-1 관찰·출처와 미검증 구분은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
+```
+
 ## 다음 계획 후보
 
-- 아직 없다.
+- 리드 태그 PR 실사 O1(Rules): AGENTS 전환 문단의 「종료까지」를 다음 문안 정비 때 「세션 종료까지」처럼 주체를 밝힐지 본다. 여섯 파일 묶음 여유가 3 bytes라 바꾸면 다시 잰다.
+- 리드 태그 PR 실사 O2(Rules): BACKLOG 65행 「Astra 갱신 책임」의 호칭을 그 행을 손볼 때 정리할지 본다. 지금은 AGENTS 전환 문단이 당시 이름으로 해석하게 한다.
+- 작업자 생존 확인의 도구 층 교정(Rules, 메인 결정 `msg_a8e661983ce5`): 예를 들어 리드 대기 중 heartbeat 공백이 5분을 넘으면 작업자 화면 상태를 읽어 기록하는 helper를 둘 수 있다. 장문 작성 중 heartbeat를 대신 보내는 방법도 검토한다. 5분 간격 자체가 긴 작성에 맞는지도 함께 본다. 문서로 끝내지 않는 이유: 「긴 작성 직전 heartbeat 한 번」 계약 문장을 두 작업자가 지켰는데도 한 번의 긴 작성이 5분을 넘었다(R1 363초, R2 337초). 작업자는 한 번의 긴 생성 도중에는 heartbeat를 보내지 못하는 것으로 보인다(추론, 미실증).
