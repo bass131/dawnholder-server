@@ -5,12 +5,12 @@
 Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요구사항 원천과 적용 결정」) 재개를 지시했다. 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch·PR: PR2는 [PR208](https://github.com/bass131/dawnholder-server/pull/208), branch `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`, 승인 전 main `3bb2e77a`를 `b1d289b5`로 통합)이고 2026-10-08T02:38:29Z에 `c811261f`로 병합됐다(아래 「PR208 병합」). 종료 기록 PR은 [PR209](https://github.com/bass131/dawnholder-server/pull/209)(branch `docs/hook-helper-closeout-20261008`)이고 2026-10-08T06:52:26Z에 `b426a203`으로 병합됐다(아래 「PR209 병합」). 분리 시험 결과와 종료 점검 결정을 적는 기록 branch는 그 병합 commit에서 만든 `docs/cred-trial-record-20261008`이다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다. 분리 시험의 원격 흔적(PR #205, `trial/cred-*` branch 셋, 시험 ruleset)은 분리 시험 8번 정리로 모두 없앴다(2026-10-08T07:30Z 원격 조회, 아래 「자격 증명 분리 시험」).
+- branch·PR: PR2는 [PR208](https://github.com/bass131/dawnholder-server/pull/208), branch `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`, 승인 전 main `3bb2e77a`를 `b1d289b5`로 통합)이고 2026-10-08T02:38:29Z에 `c811261f`로 병합됐다(아래 「PR208 병합」). 종료 기록 PR은 [PR209](https://github.com/bass131/dawnholder-server/pull/209)(branch `docs/hook-helper-closeout-20261008`)이고 2026-10-08T06:52:26Z에 `b426a203`으로 병합됐다(아래 「PR209 병합」). 분리 시험 결과와 종료 점검 결정을 적는 기록 branch는 그 병합 commit에서 만든 `docs/cred-trial-record-20261008`이다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다. 분리 시험 8번 정리로 PR #205는 병합 없이 닫혔고 `trial/cred-*` branch 셋과 시험 ruleset은 지워졌다(2026-10-08T07:30Z 원격 조회, 아래 「자격 증명 분리 시험」).
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다. 사용자가 밤에 리드를 닫아 2026-10-08 새 리드(같은 모델, 화면 「Opus 5.5 ⚡xhigh」, handle `term_7c75b976-b2ea-499a-b22a-f85d53168774`)가 메인 진입 지시 `msg_143504243b6d`로 같은 Run을 인수했다(R-8 목표 중간 인수).
-- **현재 위치**(2026-10-08T07:37:08Z): PR209가 병합됐고 종료 점검의 사용자 결정 둘을 받았다. 분리 시험 순서 1~8과 정리를 마쳤다. 이 기록 PR(분리 시험 결과, 종료 점검 결정, 재개 지점 현행화)을 독립 문서 실사 뒤 올린다. PR1 branch는 그대로 보존 중이다.
+- **현재 위치**(2026-10-08T08:18:09Z): PR209가 병합됐고 종료 점검의 사용자 결정 둘을 받았다. 분리 시험 순서 1~8과 정리를 마쳤다. 기록 PR의 goal·CURRENT·BACKLOG 작성과 리드 R-2를 마쳤다. 독립 문서 실사는 NOT PASS(F1, 이 줄과 아래 「다음 할 일」의 현재성)였고 리드가 고쳤다(아래 「기록 PR 작성」). PR1 branch는 그대로 보존 중이다.
 - **다음 할 일**:
-  1. 리드: BACKLOG 출처 덧붙임(Sol) → 리드 R-2 → 독립 문서 실사 → 기록 PR → 메인 승인 묶음.
+  1. 리드: 좁힌 재실사 → 기록 PR → 메인 승인 묶음.
   2. 메인: 기록 PR 병합 뒤 종료 점검을 닫고 R-8로 리드 pane을 닫는다(메인 `msg_634c8e71f015`). 다음 goal은 자동으로 시작하지 않는다. 분리 시험 후속 goal도 사용자 결정 뒤에만 연다.
 - 주의: rules-active에는 분리 시험의 worktree 설정 세 줄이 남아 있다. 이 checkout에서 원격으로 보내는 커밋은 deploy key(SSH)로 나가고 https 자격 증명 도우미는 비어 있다(아래 「자격 증명 분리 시험」 ①). 사용자 결정 「8번 키 남김」으로 유지하며 후속 goal이 이어 쓴다. main ruleset은 관리자 우회 `always` 그대로라 이 deploy key의 main 직접 push가 막히지 않을 수 있다. 해소안은 후속 goal의 (라)다. 이 checkout의 병합 관문 hook은 main과 같은 판정 코드를 쓴다.
 
@@ -393,6 +393,15 @@ PR2 — 정본·스킬·BACKLOG(문서)
   - 리드 R-2(E/lead-check/cred-trial-backlog-r2-check.md): 리드 비교 스크립트로 바뀐 행이 여덟뿐이고 각 행에서 출처 칸만 바뀌었으며 기존 글자로 시작함을 확인했다. 덧붙임의 사실을 계약과 원천에 대조했다. `auto-mode-workflow-blockers` 덧붙임이 PR209 branch push 거부를 위 「PR209 병합」 절로 잇는데, 그 절에 거부 기록이 없었다. 리드 계약이 그 사실의 goal 위치를 주지 않은 탓이다. 리드가 「PR209 병합」에 분류기 관측 줄을 더해 맞췄다.
   - 정산: release `retained`(`external_terminal`), 「Worked for 15m 35s」 뒤 빈 prompt 확인, pane 닫음(ptyKilled). rules-active에는 리드만 남았다(E/cred-trial-record/backlog-release.json, -before-close.json, -close.json, -list-after-close.json).
 - 리드 이탈(네 번째 발생, 리드 귀속): 맥락 메모 완료 칸의 시각을 「07:42Z대」로 어림해 썼다가 `date -u`(07:41:52Z)로 곧바로 고쳤고 어림 값도 틀렸다(메모 끝 줄). `record-timestamp-from-clock`의 교정 층은 도구·양식 층으로 정해졌고 구현 전이다(위 「종료 점검 둘」). 이 기록 PR에서 따로 고치지 않는다.
+- 독립 문서 실사(NOT PASS): 신규 `gpt-6-astra` xhigh, 태그 `[Rules 검증자]`, 리드 pane split. 첫 화면은 선택창 없이 「GPT-6-Astra xhigh · Full Access · never · docs/cred-trial-record-20261008 · …」(Codex v0.161.0)였다(E/cred-trial-record/review-first-screen.json). backend는 unknown이다. Task `task_0af138c161f4`, Dispatch `ctx_ef1d662477da`, receipt turnStart observed. 계약은 E/cred-trial-record/review-contract.md(SHA256 `4c79d350…`, 고정 HEAD `5a2c43f4`)다.
+  - 실사 중 escalation 둘이 왔다. `msg_365b7465ccde`는 F1 후보였고 리드가 사실이라 답했다(`msg_2ebc1de2a46e`). `msg_8692c4bb083d`는 검증자 자신의 heartbeat 5분 간격 초과 공개였다(비차단 작업자 편차, 답 `msg_1c9a453578c8`). 리드는 실사가 끝날 때까지 입력을 고치지 않았다.
+  - 판정 E/cred-trial-record/review/verdict.md(SHA256 `11ff0821…`, 206행), worker_done `msg_f01754a96a48`(08:16:48Z, succeeded), 수신 helper 허용.
+    - **F1(차단, 리드 goal 귀속)**: 위 「재개 지점」의 다음 할 일이 이미 끝난 BACKLOG 작성과 리드 R-2를 남겨 두었다. `b0af766a` 뒤 갱신하지 않았다.
+    - **F2(비차단, Sol 자체 점검 귀속)**: Sol 보고와 점검이 후보를 65개로 셌다. 백틱 없는 ID 세 행을 뺀 범위다. 실제는 68개이고 중복이 없다. 검증자가 전체 표로 독립 확인했다. 추적 문서에 그 수치는 없다. 앞 「종료 기록 문서 실사」 좁힌 재실사의 G1과 같은 현상이다. 리드 계약이 G1의 교훈(백틱 유무와 무관한 ID 집계)을 싣지 않은 것도 원인이다(리드 계약 귀속).
+    - 설계 관찰 O1(비차단): 「재개 지점」 branch·PR 줄의 「원격 흔적을 모두 없앴다」가 PR #205를 지운 것처럼 읽힐 수 있다.
+  - 리드 R-2(E/lead-check/cred-trial-review-r2-check.md): 판정이 권장한 표본 여섯이 원천과 일치한다.
+  - 정산: release `retained`(`external_terminal`), 「Worked for 16m 52s」 뒤 빈 prompt 확인, pane 닫음(ptyKilled). rules-active에는 리드만 남았다(E/cred-trial-record/review-release.json, -before-close.json, -close.json, -list-after-close.json).
+- 수정(리드): F1은 「재개 지점」의 현재 위치·다음 할 일을 지금 상태로 고쳤다. O1은 branch·PR 줄을 「PR #205는 병합 없이 닫혔고 branch 셋과 시험 ruleset은 지워졌다」로 고쳤다. F2는 추적 문서 결함이 아니라 고칠 것이 없다. 다만 BACKLOG ID 집계 범위 누락은 G1에 이은 **두 번째 발생이라 반복 규칙 대상**이다. 막을 층은 BACKLOG 표를 읽는 검사 helper(백틱 유무와 무관한 ID 추출과 fixture)로 보인다. 교정 층 결정은 메인에 올리고 이 PR에서는 구현하지 않는다. 그 뒤 신규 검증자의 좁힌 재실사를 한다.
 
 <a id="orca-moved-history"></a>
 ## ORCA에서 옮긴 적용 기록
