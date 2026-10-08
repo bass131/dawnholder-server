@@ -8,9 +8,9 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch·PR: PR2는 [PR208](https://github.com/bass131/dawnholder-server/pull/208), branch `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`, 승인 전 main `3bb2e77a`를 `b1d289b5`로 통합)이고 2026-10-08T02:38:29Z에 `c811261f`로 병합됐다(아래 「PR208 병합」). 종료 기록 branch는 그 병합 commit에서 만든 `docs/hook-helper-closeout-20261008`이다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다. 분리 시험의 원격 흔적은 `trial/cred-base`(`7086d45b`)·`trial/cred-work-1`(`01a1d4d8`)과 PR #205(열림)다(2026-10-07T20:42Z 원격 조회).
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다. 사용자가 밤에 리드를 닫아 2026-10-08 새 리드(같은 모델, 화면 「Opus 5.5 ⚡xhigh」, handle `term_7c75b976-b2ea-499a-b22a-f85d53168774`)가 메인 진입 지시 `msg_143504243b6d`로 같은 Run을 인수했다(R-8 목표 중간 인수).
-- **현재 위치**(2026-10-08T03:02Z): PR208이 병합됐고 결과 기록과 종료 Gardener를 마쳤다(아래 「PR208 병합」·「종료 Gardener」). PR1 branch와 분리 시험 원격 흔적은 그대로 보존 중이다. BACKLOG 등록을 진행한다.
+- **현재 위치**(2026-10-08T03:39Z): PR208이 병합됐고 결과 기록·종료 Gardener·BACKLOG 등록 작성을 마쳤다(아래 「PR208 병합」·「종료 Gardener」·「종료 BACKLOG 등록」). PR1 branch와 분리 시험 원격 흔적은 그대로 보존 중이다. 리드 R-2의 결함 L1·L2 수정을 진행한다.
 - **다음 할 일**:
-  1. 리드: BACKLOG 등록(이 goal 「다음 계획 후보」와 메인이 넘긴 Unity goal 후보, 아래 「PR208 병합」의 배치) → 종료 기록 문서 실사 → 종료 기록 PR → 메인 승인 묶음.
+  1. 리드: BACKLOG 수정(L1·L2와 시각 이탈 세 번째 근거, 아래 「종료 BACKLOG 등록」) → 종료 기록 문서 실사 → 종료 기록 PR → 메인 승인 묶음.
   2. 메인·사용자: 종료 점검(Gardener 후보 채택 포함) → R-8. 다음 goal은 자동으로 시작하지 않는다. 분리 시험 후속 goal도 사용자 결정 뒤에만 연다.
   3. 사용자 아침: 자격 증명 분리 시험 「아침 순서」 1~8(리드 보고 `msg_27ff509d7f16`, 아래 「자격 증명 분리 시험」). 사용자 몫(②·④·⑤·⑦) 답이 오면 메인이 전달하고, 리드 몫은 준비만 했다(E/credential-trial/morning-lead-steps.md).
 - 주의: rules-active에는 분리 시험의 worktree 설정이 남아 있다. 이 checkout에서 원격으로 보내는 커밋은 deploy key(SSH)로 나가고 https 자격 증명 도우미는 비어 있다(아래 「자격 증명 분리 시험」 ①). 유지·제거는 아침 ⑦ 정리의 사용자 결정에 맞춘다. 이 checkout의 병합 관문 hook은 PR2 branch라 기준 main과 같은 판정 코드를 쓴다.
@@ -23,8 +23,8 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - [x] 분리 시험 밤사이 몫
 - [x] 정본·스킬 작성·실사
 - [x] PR208 병합
-- [>] 결과 기록·Gardener
-- [ ] 종료 기록 PR 병합
+- [x] 결과 기록·Gardener
+- [>] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8 인계
 
 PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다. 그물 구현·검증과 그물 PR 병합 단계는 사용자 결정(`msg_1108186019ec`)으로 분리 시험 후속 goal에 넘겼다.
@@ -300,6 +300,21 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - 정산: release는 `retained`(`external_terminal`)였다. 빈 prompt와 「done」 표시를 확인하고 02:58Z에 pane을 닫았다(ptyKilled). 재조회에서 rules-active에는 리드만 있었다(E/gardener-release.json, -before-close.json, -close.json, -list-after-close.json).
 - 리드 이탈(두 번째 발생, 리드 귀속): R-2 기록 머리 시각을 「03:0xZ」로 어림해 적었다가 `date -u`(02:58:44Z)를 보고 곧바로 고쳤다. 첫 발생은 위 「PR208 병합」의 맥락 메모 시각 오기다. 같은 리드·같은 실수의 두 번째라 반복 규칙 대상이다. 교정 층은 다음 계획에서 정하고 BACKLOG `record-timestamp-from-clock`으로 넘긴다. 같은 기록을 heredoc으로 쓰려던 명령도 본문의 인용 낱말 때문에 그물에 막혀 Write 도구로 다시 썼다.
 
+### 종료 BACKLOG 등록
+
+- 근거: 메인 `msg_da133245067b`의 종료 순서, 배치는 리드 판단을 메인이 수용했다(`msg_f33e3e50237d`). 대상은 이 goal 「다음 계획 후보」, Unity goal Gardener 후보 둘(사용자 결정 3 A), Unity goal 「다음 계획 후보」(메인 판단 `msg_5559d3b1d581`)다.
+- 계약: E/backlog-contract.md v1(SHA256 `2c7d1716…`, 고정 HEAD `94767f6b`). 발행 전에 종료 Gardener 편차를 반영했다. TEMP 후보 행을 빼고 `new-goal-tdd-canon-link` 출처 덧붙임(C2)과 `record-timestamp-from-clock` 행을 넣었다.
+- 작성자: 신규 `gpt-6.1-sol`(effort max), 태그 `[Rules Sol]`, 리드 pane split. 첫 화면은 선택창 없이 「GPT-6.1-Sol max · Full Access · never · docs/hook-helper-closeout-20261008 · …」(Codex v0.161.0)였다(E/backlog-first-screen.json). backend는 unknown이다. Task `task_2a9316c9ac65`, Dispatch `ctx_c65a3753c8e0`. receipt는 turn_start_unobserved였고 붙여넣은 계약(19,396자)이 미제출 draft로 남아 R-5 복구대로 Enter만 보냈다. 03:05:39Z 화면에서 시작을 확인했다(E/backlog-start-read*.json).
+- 질문 둘: `msg_e01446d98c06`(B 절 세 행의 담당 후보 값)에 리드가 「소유 조율 필요」와 원천 사실만 쓰라고 답했다(`msg_1ab7b42ad1c8`). `msg_f0be9418312e`(앞 답의 msg ID)에 `msg_687dfadfa79b`로 답했다. 수신 helper의 공식 ask 예외는 CLI 1.4.218 고정이라 현재 1.4.222에서 subject 태그로 걸렸다. 리드가 원시를 손으로 대조했다(E/lead-check/backlog-ask1-check.md).
+- 완료: worker_done `msg_9fdb2518122d`(03:35:39Z, succeeded), 수신 helper 허용. 보고서는 E/backlog/report.md(SHA256 `f8be04a8…`, 126행)다. 표 행이 53에서 68로 늘었고 기존 두 행은 출처 칸만 덧붙였다. 상대 링크 22개가 살아 있고 Git 밖 링크는 0이다. 작성자 점검 단언 24개가 통과했다. 작성자는 heartbeat 5분 간격을 놓친 구간을 자진 보고했다(비차단).
+- 리드 R-2(E/lead-check/backlog-r2-check.md): diff 전문, msg ID·시각 열 개, Git 밖 hash 둘, PR191 행 사본, Unity Gardener 수치를 대조했고 일치다. 결함 둘을 찾았다.
+  - L1(귀속 과장, 리드 계약 귀속): `unity-sentis-define-drift` 담당 후보 칸의 「사용자 소유 지시」. 사용자 결정 원문 「A 둘 다 채택」에는 소유가 없고, 소유 경계는 Unity Gardener 제안(보고서 228·241행)과 같은 값을 메인 진입 지시가 함께 전했다. 계약이 사용자 결정 원문과 소유 지시를 구분하지 않은 것이 원인이다.
+  - L2(조사, 작성자 귀속): `credential-separation-followup` 제목의 「goal와」.
+  - 처리: 독립 문서 실사 전에 새 Sol 한 세션으로 고친다.
+- commit: 작성 결과는 `690149e0`이다.
+- 정산: release는 `retained`(`external_terminal`)였다. 「Worked for 30m 14s」 뒤 빈 prompt를 확인하고 pane을 닫았다(ptyKilled). 재조회에서 rules-active에는 리드만 있었다(E/backlog-release.json, -before-close.json, -close.json, -list-after-close.json).
+- 리드 이탈(세 번째 발생, 리드 귀속): R-2 기록 머리를 「03:4xZ대」로 어림해 썼다가 `date -u`(03:37:40Z)로 곧바로 고쳤다. `record-timestamp-from-clock`을 등록한 바로 뒤의 재발이며 어림 값도 틀렸다. 그 행의 근거에 더한다.
+
 <a id="orca-moved-history"></a>
 ## ORCA에서 옮긴 적용 기록
 
@@ -310,12 +325,15 @@ PR2는 규칙 문서 bytes를 상쇄하려고 ORCA 「병합 관문」 첫 문�
 
 ## 다음 계획 후보
 
-- `merge-gate-code-followup`의 O2(비ASCII 공백)·O6(이상한 session_id): 이 goal 밖이다. 종료 때 미해결이면 BACKLOG 새 행으로 등록한다.
-- Claude 작업자의 TEMP 쓰기(두 번째 발생): 첫 선행 시험 작성자의 `/tmp` 쓰기(첫 발생)에 이어, 수정 회차 선행 시험 작성자가 orca receipt를 Claude Code 세션 scratchpad(TEMP 아래)에 썼다가 근거 폴더로 옮겼다. 원인은 Claude Code가 scratchpad를 안내하고 계약은 「그 밖의 TEMP 쓰기 금지」만 적은 데 있다. 교정 후보는 위임 계약 양식(작업 맥락 스킬 templates)에 「Claude Code가 안내하는 scratchpad도 TEMP다. receipt·임시 파일은 근거 폴더 아래에 쓴다」를 넣는 것이다. 이 goal의 PR2 범위 밖이라 그 전까지 이 goal의 Claude 계약에 그 문장을 넣었다. 처음에는 종료 때 BACKLOG 새 행으로 등록하려 했다. 종료 Gardener가 최소 운영 셋업 2단계(「TDD 정본화와 검증자 임시 쓰기 경계」, BACKLOG `new-goal-tdd-canon-link`)와 겹친다고 짚어(기록 편차 2) 새 행 대신 그 행 출처에 근거를 덧붙인다.
-- 실행 시점 검사·역할 분리(다음 Rules goal 설계 입력): 리드 비교 문서 E/runtime-check-comparison.md, 결정 요청 `msg_eac0fa1f3d89`. 그 뒤 도착한 메인 보충 `msg_9ff8eb25d846`(구조화된 도구 경로, 리드급 전면 거부와 메인 요청 인터페이스, 막는 층 셋)과 `msg_a7ce1ae26151`(세션 권한 판별 근거)은 사용자 원문과 함께 E/next-goal-inputs-runtime-role-split.md에 보관했다(메인 지시 `msg_4b7fc0b428af`). 메인이 설명한 「병합 자체를 사람 행동으로 빼는 안」은 사용자 판단 전이라 후보로만 둔다. PR1 결정 뒤 종료 때 BACKLOG 새 행 후보다.
-- Claude safeguard와 병합 관문 검증(첫 발생): 병합·push 문구를 많이 다루는 검증은 Opus 5.5 safeguard 선택창에 걸릴 수 있다(위 「PR1 재검증(수정 회차, FAIL)」). 반복 규칙은 두 번째 발생부터다. 생기면 교정 층(계약 양식 또는 검증자 배정)을 정하고, 종료 때 BACKLOG 새 행 후보로 본다.
-- 자격 증명 분리 후속 goal(이 goal의 PR1 몫을 받음, `msg_1108186019ec`): PR1 몫은 그물 오탐 줄이기와 BACKLOG `merge-gate-code-followup`의 후속 세 건(T1 `+main`, 한국어 주석 영어화, O-T3 이유 주석)이다. 아침 시험 3·4가 통과하면 R-5 기동에 `GH_CONFIG_DIR`, R-1 배치에 에이전트 worktree 설정 세 줄을 넣고 글자 그물·가리기 코드를 걷는다. 사용자 결정 후보는 (라)·(가), 프로젝트 범위 보강 후보는 (나)다(위 「자격 증명 분리 시험」·E/credential-trial/results-overnight.md). PR1 branch `13fe344d`의 시험·판정 원시는 출발 자료다. PR2에서 분리 방향과 겹쳐 뺀 문장은 아래 둘이며 이 goal에서 다시 쓴다.
+- `merge-gate-code-followup`의 O2(비ASCII 공백)·O6(이상한 session_id): 이 goal 밖이다. 종료 기록에서 BACKLOG `merge-gate-input-edge-cases`로 등록했다.
+- Claude 작업자의 TEMP 쓰기(두 번째 발생): 첫 선행 시험 작성자의 `/tmp` 쓰기(첫 발생)에 이어, 수정 회차 선행 시험 작성자가 orca receipt를 Claude Code 세션 scratchpad(TEMP 아래)에 썼다가 근거 폴더로 옮겼다. 원인은 Claude Code가 scratchpad를 안내하고 계약은 「그 밖의 TEMP 쓰기 금지」만 적은 데 있다. 교정 후보는 위임 계약 양식(작업 맥락 스킬 templates)에 「Claude Code가 안내하는 scratchpad도 TEMP다. receipt·임시 파일은 근거 폴더 아래에 쓴다」를 넣는 것이다. 이 goal의 PR2 범위 밖이라 그 전까지 이 goal의 Claude 계약에 그 문장을 넣었다. 처음에는 종료 때 BACKLOG 새 행으로 등록하려 했다. 종료 Gardener가 최소 운영 셋업 2단계(「TDD 정본화와 검증자 임시 쓰기 경계」, BACKLOG `new-goal-tdd-canon-link`)와 겹친다고 짚어(기록 편차 2) 새 행 대신 그 행 출처에 근거를 덧붙였다.
+- 실행 시점 검사·역할 분리(다음 Rules goal 설계 입력): 리드 비교 문서 E/runtime-check-comparison.md, 결정 요청 `msg_eac0fa1f3d89`. 그 뒤 도착한 메인 보충 `msg_9ff8eb25d846`(구조화된 도구 경로, 리드급 전면 거부와 메인 요청 인터페이스, 막는 층 셋)과 `msg_a7ce1ae26151`(세션 권한 판별 근거)은 사용자 원문과 함께 E/next-goal-inputs-runtime-role-split.md에 보관했다(메인 지시 `msg_4b7fc0b428af`). 메인이 설명한 「병합 자체를 사람 행동으로 빼는 안」은 사용자 판단 전이라 후보로만 둔다. BACKLOG `runtime-check-role-split`으로 등록했다.
+- Claude safeguard와 병합 관문 검증(첫 발생): 병합·push 문구를 많이 다루는 검증은 Opus 5.5 safeguard 선택창에 걸릴 수 있다(위 「PR1 재검증(수정 회차, FAIL)」). 반복 규칙은 두 번째 발생부터다. 생기면 교정 층(계약 양식 또는 검증자 배정)을 정한다. 정본 반영 전 적용 중인 사용자 결정(위 「적용 중인 사용자 결정」)과 함께 BACKLOG `claude-safeguard-verifier-switch`로 등록했다.
+- 자격 증명 분리 후속 goal(이 goal의 PR1 몫을 받음, `msg_1108186019ec`): PR1 몫은 그물 오탐 줄이기와 BACKLOG `merge-gate-code-followup`의 후속 세 건(T1 `+main`, 한국어 주석 영어화, O-T3 이유 주석)이다. 아침 시험 3·4가 통과하면 R-5 기동에 `GH_CONFIG_DIR`, R-1 배치에 에이전트 worktree 설정 세 줄을 넣고 글자 그물·가리기 코드를 걷는다. 사용자 결정 후보는 (라)·(가), 프로젝트 범위 보강 후보는 (나)다(위 「자격 증명 분리 시험」·E/credential-trial/results-overnight.md). PR1 branch `13fe344d`의 시험·판정 원시는 출발 자료다. PR2에서 분리 방향과 겹쳐 뺀 문장은 아래 둘이며 이 goal에서 다시 쓴다. BACKLOG `credential-separation-followup`으로 등록했고, 종료 Gardener 후보 2를 그 행 출처에 「Gardener 제안(채택은 사용자)」으로 붙였다.
   - 보조 세션 스킬 초안(`C:/Dev/DawnHolder_Dashboard/plans/helper-session-skill-draft.md`) 38행 「gh·merge 또는 push·main 낱말이 함께 든 명령은 막힌다. 그런 문자열 검색은 Grep·Read 도구로 하고, 메시지 본문은 파일로 넘긴다.」 PR2 스킬에는 병합 관문 링크만 둔다.
   - 같은 초안 44행의 이유 「본문 낱말이 명령 문자열에 섞여 hook에 막히는 일을 피한다.」
-- README 운영 주체 서술 정정(Rules 몫, 메인 결정): Management 리드 통지 `msg_81a1748512d3`(2026-10-07T19:39:40Z)에 따르면 `README.md` 14·65행이 운영 주체를 「Codex 메인 세션」·「Codex 스킬」로 적는다. 원천은 Management 소개 페이지 goal의 「후속 후보」다. 종료 때 BACKLOG 새 행 후보다.
-- 작업자 pane 배치 문장 정리(ORCA R-1·R-5 2단계): 같은 worktree는 리드 pane split, 다른 worktree는 `terminal create --worktree`로 바로 열고 빈 받침 pane을 만들지 않는다(사용자 결정 `msg_e62c4989b3dc`). split close 때 부모 pane이 꺼지는 Orca 1.4.222 관측과 함께 다룬다. 종료 때 BACKLOG 새 행으로 등록한다.
+- README 운영 주체 서술 정정(Rules 몫, 메인 결정): Management 리드 통지 `msg_81a1748512d3`(2026-10-07T19:39:40Z)에 따르면 `README.md` 14·65행이 운영 주체를 「Codex 메인 세션」·「Codex 스킬」로 적는다. 원천은 Management 소개 페이지 goal의 「후속 후보」다. BACKLOG `readme-operator-wording`으로 등록했다.
+- 작업자 pane 배치 문장 정리(ORCA R-1·R-5 2단계): 같은 worktree는 리드 pane split, 다른 worktree는 `terminal create --worktree`로 바로 열고 빈 받침 pane을 만들지 않는다(사용자 결정 `msg_e62c4989b3dc`). split close 때 부모 pane이 꺼지는 Orca 1.4.222 관측과 함께 다룬다. BACKLOG `worker-pane-placement-wording`으로 등록했다.
+- Advisor 모델 대안 정본화(위 「적용 중인 사용자 결정」의 「Advisor 모델 대안」): ORCA·AGENTS 반영은 이 goal 범위 밖이었다. BACKLOG `advisor-model-alternative-canon`으로 등록했다.
+- 기록 시각 어림(리드 이탈, 위 「PR208 병합」·「종료 Gardener」·「종료 BACKLOG 등록」): BACKLOG `record-timestamp-from-clock`으로 등록했다. 교정 층은 아직 정하지 않았다.
+- Unity 업그레이드 goal에서 넘겨받은 후보(사용자 결정 3 A와 메인 판단 `msg_5559d3b1d581`, 위 「적용 중인 사용자 결정」): BACKLOG 「Unity 업그레이드 goal에서 연결한 후보」 절의 일곱 행과 `unity-mcp-seat-visibility` 출처 덧붙임으로 등록했다.
