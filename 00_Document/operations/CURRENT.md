@@ -6,14 +6,14 @@
 |---|---|
 | Core | [실제 SQL 설치·저장소 통합](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#재개-지점) |
 | Content | [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Unity 엔진 6.6·AI Assistant 업그레이드](../../01_Phases/goals/2026-10-07-unity-engine-upgrade/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) |
-| Rules | [병합 관문과 운영 정본 현행화](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#재개-지점) |
+| Rules | [hook 차단 줄이기와 보조 세션 스킬](../../01_Phases/goals/2026-10-07-hook-friction-helper-session/goal.md#재개-지점) |
 | CodeMap(Architecture) | [Architecture 테스트 전체 PR CI](../../01_Phases/goals/2026-10-05-architecture-tests-ci/goal.md#재개-지점) |
 | Management | [운영툴 기록 원본 일원화와 역할 정리](../../05_Management/goals/2026-10-06-record-source-unification/goal.md#재개-지점) |
 
 - Core: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/persistence-engine-judgment-20261006`
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-ui-20261005`
 - Content(Unity 업그레이드): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` · `docs/unity-upgrade-closeout-20261008`
-- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/rules-backlog-intake-20261007`
+- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/hook-helper-session-canon-20261008`
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `docs/architecture-tests-ci-closeout-20261005`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `docs/management-record-source-closeout-20261007`
 
