@@ -8,9 +8,9 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch·PR: PR2는 [PR208](https://github.com/bass131/dawnholder-server/pull/208), branch `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`, 승인 전 main `3bb2e77a`를 `b1d289b5`로 통합)이고 2026-10-08T02:38:29Z에 `c811261f`로 병합됐다(아래 「PR208 병합」). 종료 기록 branch는 그 병합 commit에서 만든 `docs/hook-helper-closeout-20261008`이다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다. 분리 시험의 원격 흔적은 `trial/cred-base`(`7086d45b`)·`trial/cred-work-1`(`01a1d4d8`)과 PR #205(열림)다(2026-10-07T20:42Z 원격 조회).
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다. 사용자가 밤에 리드를 닫아 2026-10-08 새 리드(같은 모델, 화면 「Opus 5.5 ⚡xhigh」, handle `term_7c75b976-b2ea-499a-b22a-f85d53168774`)가 메인 진입 지시 `msg_143504243b6d`로 같은 Run을 인수했다(R-8 목표 중간 인수).
-- **현재 위치**(2026-10-08T03:39Z): PR208이 병합됐고 결과 기록·종료 Gardener·BACKLOG 등록 작성을 마쳤다(아래 「PR208 병합」·「종료 Gardener」·「종료 BACKLOG 등록」). PR1 branch와 분리 시험 원격 흔적은 그대로 보존 중이다. 리드 R-2의 결함 L1·L2 수정을 진행한다.
+- **현재 위치**(2026-10-08T03:57Z): PR208이 병합됐고 결과 기록·종료 Gardener·BACKLOG 등록과 그 수정 회차를 마쳤다(아래 「PR208 병합」·「종료 Gardener」·「종료 BACKLOG 등록」). PR1 branch와 분리 시험 원격 흔적은 그대로 보존 중이다. 종료 기록 문서 실사를 진행한다.
 - **다음 할 일**:
-  1. 리드: BACKLOG 수정(L1·L2와 시각 이탈 세 번째 근거, 아래 「종료 BACKLOG 등록」) → 종료 기록 문서 실사 → 종료 기록 PR → 메인 승인 묶음.
+  1. 리드: 종료 기록 문서 실사 → 종료 기록 PR → 메인 승인 묶음.
   2. 메인·사용자: 종료 점검(Gardener 후보 채택 포함) → R-8. 다음 goal은 자동으로 시작하지 않는다. 분리 시험 후속 goal도 사용자 결정 뒤에만 연다.
   3. 사용자 아침: 자격 증명 분리 시험 「아침 순서」 1~8(리드 보고 `msg_27ff509d7f16`, 아래 「자격 증명 분리 시험」). 사용자 몫(②·④·⑤·⑦) 답이 오면 메인이 전달하고, 리드 몫은 준비만 했다(E/credential-trial/morning-lead-steps.md).
 - 주의: rules-active에는 분리 시험의 worktree 설정이 남아 있다. 이 checkout에서 원격으로 보내는 커밋은 deploy key(SSH)로 나가고 https 자격 증명 도우미는 비어 있다(아래 「자격 증명 분리 시험」 ①). 유지·제거는 아침 ⑦ 정리의 사용자 결정에 맞춘다. 이 checkout의 병합 관문 hook은 PR2 branch라 기준 main과 같은 판정 코드를 쓴다.
@@ -314,6 +314,11 @@ PR2 — 정본·스킬·BACKLOG(문서)
 - commit: 작성 결과는 `690149e0`이다.
 - 정산: release는 `retained`(`external_terminal`)였다. 「Worked for 30m 14s」 뒤 빈 prompt를 확인하고 pane을 닫았다(ptyKilled). 재조회에서 rules-active에는 리드만 있었다(E/backlog-release.json, -before-close.json, -close.json, -list-after-close.json).
 - 리드 이탈(세 번째 발생, 리드 귀속): R-2 기록 머리를 「03:4xZ대」로 어림해 썼다가 `date -u`(03:37:40Z)로 곧바로 고쳤다. `record-timestamp-from-clock`을 등록한 바로 뒤의 재발이며 어림 값도 틀렸다. 그 행의 근거에 더한다.
+- 수정 회차: 신규 `gpt-6.1-sol`(effort max), 같은 첫 화면(E/backlog-fix-first-screen.json), Task `task_02c283076105`, Dispatch `ctx_bbf7cc30fe49`, receipt input_accepted·turnStart observed. 계약은 E/backlog-fix-contract.md(SHA256 `8f4c5bae…`, 고정 HEAD `903fd511`)다. 세 칸만 고쳤다: L1 담당 후보 칸을 「소유 지시(메인 전달 `msg_143504243b6d`, Unity Gardener 제안 소유 경계와 같음)」로, L2 제목 조사를, `record-timestamp-from-clock`의 이유·출처에 세 번째 발생을 넣었다.
+  - 완료: worker_done `msg_9c0006115eb5`(03:56:10Z, succeeded), 수신 helper 허용. 보고서 E/backlog-fix/report.md(SHA256 `66419f8a…`, 134행). 작성자 점검 23/23, 바뀐 칸 4개(행 3개), Git 밖 링크 0.
+  - 리드 R-2(E/lead-check/backlog-fix-r2-check.md): 단어 단위 diff 전문이 계약의 세 칸 지정과 같고 그 밖 변경은 없다. 파일 안 「사용자 소유」는 0건이다.
+  - 작성자 자진 보고 편차(비차단, 리드 계약 귀속): 첫 스킬 읽기에 허용 실행 열거 밖의 읽기 전용 `Get-Content`를 썼다. 열거가 파일 읽기 명령을 빠뜨린 리드 계약의 빈칸이다. 첫 발생이라 기록만 하고, 다음 계약(종료 기록 문서 실사)부터 허용 실행에 읽기 전용 파일 읽기 명령을 적었다.
+  - 정산: release `retained`(`external_terminal`), 「Worked for 15m 20s」 뒤 빈 prompt 확인, pane 닫음(ptyKilled). rules-active에는 리드만 남았다(E/backlog-fix-release.json, -before-close.json, -close.json, -list-after-close.json).
 
 <a id="orca-moved-history"></a>
 ## ORCA에서 옮긴 적용 기록
