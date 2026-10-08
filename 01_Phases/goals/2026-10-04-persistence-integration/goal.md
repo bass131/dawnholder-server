@@ -1,6 +1,6 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 실사에서 통과(전달 가능)했다. 메인 결정으로 카드 ⑩ 조건을 고친 카드 v3를 카드 한정으로 다시 실사 중이다(아래 「재개 지점」).
+상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 실사에서 통과(전달 가능)했다. 메인 결정으로 카드 ⑩ 조건을 고쳤고, 카드 v3 실사의 빈틈(SCS-10)을 고친 카드 v4를 카드 한정으로 다시 실사 중이다(아래 「재개 지점」).
 
 ## 적용 중인 사용자 결정
 
@@ -433,7 +433,15 @@
 
 기록 시각은 2026-10-08T11:36:03Z(`date -u`)이고, 11:59:00Z에 v2 판정 뒤 상태로 고쳤다. **이 블록이 현재 재개 정본이고 아래 「준비와 Orca 재시작」 블록부터는 역사다.** E·D 표기는 아래 「판독」 블록과 같다. 리드는 Orca 재시작 뒤 새 handle `term_cdfb3cdc-9e7e-4758-991f-5731311e3df6`에서 같은 Run(generation 6)을 이어받았다. 메인 handle은 `term_c7588791-f318-4f7c-a535-eb82d4550386`이다.
 
-- **지금 단계(12:05Z):** 메인이 `msg_9315703f1674`로 카드 ⑩ 처리 1을 골랐다. 원문은 「사용자는 카드만 보고 혼자 따르므로 D: 꺼내기 조건은 카드 안에 있어야 한다」, 「새 Opus 실사자 1개에게 카드 한정(바뀐 줄과 카드-스크립트 문구 대응)으로 다시 받는다」이다. 리드가 카드 v3를 만들었고 카드 한정 실사자가 실사 중이다.
+- **지금 단계(12:27Z):** 카드 v3 실사가 NOT PASS였다(차단 SCS-10). 리드가 카드 v4로 고쳤고, 같은 조건의 새 카드 한정 실사자가 실사 중이다. 이 묶음의 수정은 v4가 3회째다. 3회를 넘으면 메인에 체크포인트를 알린다.
+  - 카드 v3 판정: D/`sql-console-start-01/review-v3/verdict.md`(SHA256 `281CA6A300904D9FA193FBD822BC60388EE0335172AAF175FD3CFE4332881AE2`). SCS-10은 시작 직전 「INSTALLER STARTED」나 Console start 안의 「SQL Server is not fully stopped」 경로에서 대기가 돌지 않는 문제다. 이 경로에서는 WARNING이 나올 수 없고, 끝 계수가 0이면 ⑩이 꺼내기로 읽힌다. 리드가 실행 파일 1042~1043·1117~1120행으로 확인했다. 관찰은 C-16~C-19다. 메인 보고는 `msg_eb0f4f59c54b`(12:22:30Z)이고, 결정 요청은 없다. 실사자 `task_2e54e7c144ce`는 12:21Z에 release·idle 확인·close를 마쳤다.
+  - 카드 v4: `submission-v4/step-card.md`, SHA256 `379F044863A2522EDEF02CFA0CE3E1FE960B7FD53C3AC8EE03DA96A7043DA401`. 쓰기 전 메모는 `context-v4.md`다.
+    - ⑩은 세 조건이 모두 맞을 때만 꺼낸다. RESULT가 OPENED·DENIED이고, 「sqlservr running now: 0」이고, WARNING이 없어야 한다. 꺼내기 직전에 Windows 업데이트 화면을 다시 본다(C-16).
+    - INSTALLER STARTED·not fully stopped 줄 끝에 「D:는 그대로 둔다」를 넣었다. 멈춤 절차에 LocalDB를 더했다(C-17).
+    - 재시작 시각 읽기 원시는 `lead-read-01-system-log.txt`에 남겼다(C-19).
+    - 작성자 점검 `author-check-v4/run-1.txt`: 73 PASS, 0 FAIL, 1 NOT CHECKED다.
+  - 카드 v4 실사자: 계약 `review-v4/contract.md`, 기준 1~9, 새 결함은 SCS-11부터다. 12:26:24Z split `term_0b266ced-4ca0-43f1-8bdf-dcf5a6416e4a`, 12:26:36Z worker-start `task_32ee6a02ce8b` / `ctx_4a8e76b21119`다. 요청 `claude-opus-5-5`, 화면 「Opus 5.5 with xhigh effort」, backend unknown이다.
+- **카드 v3 단계(12:05Z, 역사):** 메인이 `msg_9315703f1674`로 카드 ⑩ 처리 1을 골랐다. 원문은 「사용자는 카드만 보고 혼자 따르므로 D: 꺼내기 조건은 카드 안에 있어야 한다」, 「새 Opus 실사자 1개에게 카드 한정(바뀐 줄과 카드-스크립트 문구 대응)으로 다시 받는다」이다.
   - 카드 v3: D/`sql-console-start-01/submission-v3/step-card.md`, SHA256 `2092390EFF14218E9F2E27833491C97FEDB86E8CD32231B465A3AD18584565DA`. 쓰기 전 메모 `context-v3.md`. 실행 파일·입력 파일·실행 한 줄(318글자)·멈춤 줄(243글자)은 v2 그대로다.
   - 바꾼 것: ⑩은 「⑦에서 sqlservr running now: 0을 봤고 WARNING이 없을 때만 꺼내고, 그 밖에는 D:를 그대로 둔다」로 바꿨다. 멈춤 절차 뒤에는 ⑩으로 가지 않는다. ⑪에 D: 상태 알림을 더했다. SCS-08 단서는 마지막 서비스 시작 10-06 뒤 Windows 시작 3번(10-06 11:51Z, 10-08 01:42Z·10:40Z)이다. C-11 model 줄, C-12 추론 표시, C-14 LocalDB 설명도 넣었다.
   - 작성자 점검 `author-check-v3/run-1.txt`: v2 하네스를 그대로 새 카드에 돌려 73 PASS, 0 FAIL, 1 NOT CHECKED(레지스트리)다.
@@ -461,11 +469,11 @@
   - 작성자 점검 `author-check-v2/run-1.txt`는 73 PASS, 0 FAIL, 1 NOT CHECKED다. 승격 없이 레지스트리 시작 인자 키를 읽을 수 없어 NOT CHECKED로 남겼다. `negctl-1/`은 시작 문을 되돌린 사본에서 문 시험이 FAIL함을 보였다. 하네스 첫 시도는 대역 powershell 하나를 남겼고 리드가 끝냈다(sqlservr 무관, `negctl-1/README.txt`).
 - **v2 실사자:** 계약 `review-v2/contract.md`(SHA256 `CA18CB16…3239`), 기준 1~12, 새 결함은 SCS-07부터다. 11:35:15Z split `term_d2134aa8-13e9-4b1b-b88e-ceb58f4c04b5`, 11:35:30Z worker-start `task_4e7bbe169b7d` / `ctx_a73de790d14c`다. 요청 `claude-opus-5-5`, 화면 「Opus 5.5 with xhigh effort」, backend unknown이다. 쓰기는 `review-v2/` 새 파일만이고 실행은 금지다(`review-v2/launch-record.txt`).
 - **다음 할 일 순서**
-  1. 카드 한정 실사자의 worker_done이 오면 `review-v3/verdict.md` 전문을 읽고 원천을 표본 대조한다. release·idle 확인·close를 한다.
-  2. PASS면 메인에 카드 v3 최종 SHA256과 실행 한 줄을 보낸다(메인 원문: 「PASS가 나오면 카드 최종 SHA·실행 한 줄을 보내라」). 메인이 현황판 「사용자 할 일」에 올린다.
-  3. NOT PASS면 카드를 다시 고친다. 이 산출물 묶음의 수정은 카드 v3가 2회째다. 3회를 넘으면 메인에 체크포인트를 알린다.
+  1. 카드 한정 실사자의 worker_done이 오면 `review-v4/verdict.md` 전문을 읽고 원천을 표본 대조한다. release·idle 확인·close를 한다.
+  2. PASS면 메인에 카드 v4 최종 SHA256과 실행 한 줄을 보낸다(메인 원문: 「PASS가 나오면 카드 최종 SHA·실행 한 줄을 보내라」). 메인이 현황판 「사용자 할 일」에 올린다.
+  3. NOT PASS면 이 묶음의 수정이 3회를 넘게 되므로, 고치기 전에 메인에 체크포인트를 알린다(목표 범위 정본).
   4. 사용자 실행 뒤 결과를 판독한다. 위 SCS-07·SCS-08 판독 기준을 쓴다.
-- **사용자 손·결정 대기:** 없음. 사용자 실행은 카드 v3 실사 PASS 뒤다.
+- **사용자 손·결정 대기:** 없음. 사용자 실행은 카드 v4 실사 PASS 뒤다.
 
 ### 콘솔 시작 분리 시험 준비와 Orca 재시작 — 2026-10-08
 
