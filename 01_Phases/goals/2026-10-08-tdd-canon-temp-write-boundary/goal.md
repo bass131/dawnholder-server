@@ -5,11 +5,11 @@
 Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)로 병합됐다(merge commit `127cc5a1`). 리드 태그 PR은 branch `docs/lead-tag-model-name-20261008`(base main `127cc5a1`)이고 아직 PR이 없다.
+- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)로 병합됐다(merge commit `127cc5a1`). 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)이고 branch `docs/lead-tag-model-name-20261008`(base main `127cc5a1`)이다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T14:25:42Z): 리드 태그 PR의 Sol 작성과 리드 R-2가 끝났다(아래 「리드 태그 PR 작성」). CLAUDE.md는 메인이 써서 리드가 커밋했다.
-- **다음 할 일**: 작성분 커밋·원격 반영 → 신규 `gpt-6-astra` xhigh 문서 실사 → PR 생성과 메인 승인 묶음. 묶음에는 heartbeat 이탈 두 번째 발생의 교정 층 판단을 함께 올린다.
+- **현재 위치**(2026-10-08T14:52:27Z): 리드 태그 PR 문서 실사가 끝났다. 문서는 지적 없음이고 heartbeat 이탈 R1·R2가 메인 결정 대기다(아래 「리드 태그 PR 문서 실사」).
+- **다음 할 일**: PR212 승인 묶음을 메인에 보낸다. 메인의 교정 층 결정(`msg_89901c25a9d3`)이 오면 goal에 원문을 적고, 그 결정에 따라 R1·R2 차단을 푼다. 병합 승인을 받으면 수신 helper PR을 최신 main에서 시작한다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -18,8 +18,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - [x] 범위와 기준 확정
 - [x] 정본 PR 작성·실사
 - [x] PR211 병합
-- [>] 리드 태그 PR 실사
-- [ ] 리드 태그 PR 병합
+- [x] 리드 태그 PR 실사
+- [>] 리드 태그 PR 병합
 - [ ] 수신 helper 선행 시험
 - [ ] 수신 helper 구현·검증
 - [ ] 수신 helper PR 병합
@@ -231,6 +231,18 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - heartbeat 이탈(두 번째 발생): Sol heartbeat 간격이 14:13:08Z → 14:19:11Z, 363초였다(E/session/all2.raw.json). 메인 결정 `msg_e7dd27f2bb2d`의 「같은 이탈이 다시 나오면 교정 층을 정한다」에 닿았으므로 승인 묶음에서 메인에 올린다.
 - 정산: release `retained`(`external_terminal`), tui-idle 확인 뒤 14:23:35Z에 pane을 닫았다(E/pr3-release.json, pr3-idle.json, pr3-close.json).
 
+### 리드 태그 PR 문서 실사
+
+- 계약: 신규 `[Rules 검증자]`(`gpt-6-astra` xhigh)에 v1(E/pr3-review-contract.md, SHA256 `dd329e22…`, 경로 확인 E/pr3-review-contract-pathcheck.txt)을 냈다. Task `task_80f54881ec9b`, Dispatch `ctx_f1c3a890c258`, 고정 HEAD `cbcf0e35`다. `turn_start_unobserved`는 draft 크기 대조(18,315 = 13,528 + 4,787) 뒤 Enter 한 번으로 풀었다(E/pr3-review-draft-recovery.md).
+- 판정(E/pr3-review/verdict.md, worker_done `msg_4cd492a5fe2c` 14:51:00Z): 문서 내용·참조·권한과 시나리오 S1~S3, 정적 C1~C10은 지적 없음이다. 묶음 102,655 bytes와 ORCA 249줄을 재현했다. 새 태그 빈 heartbeat를 수신 helper에 넣은 합성 입력은 allowed였다.
+- 차단 R1·R2(메인 결정 대기): R1은 작성 Sol heartbeat 363초(14:13:08Z → 14:19:11Z), R2는 실사자 자신의 337초(14:40:55Z → 14:46:32Z, 사이 escalation부터 302초, E/session/all3.raw.json)다. 둘 다 장문 작성 직전 heartbeat 문장이 계약에 있었는데도 났다. 메인에 교정 층 결정을 `msg_89901c25a9d3`·덧붙임 `msg_38c94d5b87f3`로 올렸다.
+- 비차단 관찰: O1 AGENTS 전환 문단의 「종료까지」를 다음 문안 정비 때 「세션 종료까지」로 밝힐지, O2 BACKLOG 65행의 「Astra 갱신 책임」 호칭, O3 다른 파트 진행 goal의 옛 세션명(소유 파트 몫, 일괄 치환 안 함). O1·O2는 아래 「다음 계획 후보」에 둔다.
+- 리드 이탈(첫 관찰, 리드 귀속): 실사자 escalation에 대한 일반 접수 회신을 `reply`로 보내 subject가 `Re: [Rules 검증자] …`가 됐다(`msg_95f44ddf4517`). R-3은 공식 질문 답만 `reply`로 하고 일반 회신은 자기 태그 subject의 `send`로 보낸다. 실사자가 지시로 처리하지 않고 교정을 요청했고(`msg_cf7326e63a9b`), 리드가 `send`로 다시 보냈다(`msg_513f0a49b0d3`, E/lead-check/pr3-review-r3-deviation.md).
+- 운영 관찰: 리드의 백그라운드 우편함 대기가 14:35Z쯤 메모리 부족으로 꺼졌다(E/session/wait29.raw.json 0 bytes). 다시 열지 않고 Orca 터미널 알림으로 받았다.
+- 리드 R-2(E/lead-check/pr3-review-r2.md): 판정 표본 아홉(CLAUDE 기준 bytes, 옮긴 문장 행, numstat, 공백 검사, helper 입출력, BACKLOG 65행, R2 간격, 자기 쓰기 감사, 맥락 메모)이 원천과 같았다.
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr3-review-release.json, pr3-review-idle.json, pr3-review-close.json).
+- PR: [PR212](https://github.com/bass131/dawnholder-server/pull/212)를 만들었다(본문 E/session/pr3-body.md). 메인 승인 묶음에 R1·R2 교정 층 결정을 함께 올린다.
+
 ## 정본에서 옮긴 적용 기록
 
 규칙 문서 bytes를 상쇄하려고 메인 판단 `msg_e6c8eb971f30` M3와 계약 보충 v1.1에 따라 아래 원문을 옮겼다.
@@ -289,4 +301,5 @@ M-1 관찰·출처와 미검증 구분은 [이관 기록](../../01_Phases/goals/
 
 ## 다음 계획 후보
 
-- 아직 없다.
+- 리드 태그 PR 실사 O1(Rules): AGENTS 전환 문단의 「종료까지」를 다음 문안 정비 때 「세션 종료까지」처럼 주체를 밝힐지 본다. 여섯 파일 묶음 여유가 3 bytes라 바꾸면 다시 잰다.
+- 리드 태그 PR 실사 O2(Rules): BACKLOG 65행 「Astra 갱신 책임」의 호칭을 그 행을 손볼 때 정리할지 본다. 지금은 AGENTS 전환 문단이 당시 이름으로 해석하게 한다.
