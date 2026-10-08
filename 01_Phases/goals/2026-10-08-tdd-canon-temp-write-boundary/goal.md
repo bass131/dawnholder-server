@@ -5,14 +5,12 @@
 Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)로 병합됐다(merge commit `127cc5a1`). 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)이고 branch `docs/lead-tag-model-name-20261008`(base main `127cc5a1`)이다.
-- 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
-- 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T22:39:25Z): PR212 사용자 병합 승인 대기다. 문서 실사, 메인 결정 `msg_a8e661983ce5`(heartbeat R1·R2 비차단), CI가 끝났다. 앞 head `1af06731`에서 CI 네 항목이 SUCCESS였다(E/session/pr212-view3.json). 이 재개 지점 커밋이 PR212의 마지막 커밋이며, 승인 줄은 그 head로 메인이 받는다. 열린 작업자·검증자 pane은 없다.
-- **기다리는 것**: 사용자 병합 승인 → 메인 병합. 사용자 요청(메인 전달 `msg_e54f163b20ea`)으로 이 리드 세션은 여기서 멈추고 새 세션으로 다시 연다.
-- **다음 첫 할 일**(병합 확인 뒤): 최신 main에서 수신 helper PR branch를 만들고 리드 맥락 메모를 쓴다. 그 뒤 선행 시험 계약을 낸다(신규 `claude-opus-5-5`, M2의 거절 사례 셋: 근거 누락, subject 옵션이 있는 help 근거, identity 불일치). 이어서 Sol 구현, 신규 Opus 독립 검증 순서다. 독립 검증은 실제 공식 ask 원시(후보 E/lead-check/pr1-ask1-check-input.json)로 `check-message.mjs`를 한 번 실행한다. 태그 붙은 heartbeat subject 사례(정본 PR 첫 실사)도 본다.
-- **재진입**: 이 리드의 Claude 세션 ID는 `64f22d75-946a-4b21-a275-d2e10254b75a`다(`--resume`). 다시 열면 handle이 바뀌므로 같은 Run을 인수하고 메인에 새 handle을 알린다. 태그는 AGENTS 전환 문단을 따른다. PR212 병합 뒤 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다. 이 세션을 `--resume`으로 이을 때의 태그는 정본이 따로 정하지 않았다. 리드 해석은 같은 세션이므로 `[Rules Astra]`를 유지한다는 것이다(「만들 것」 리드 태그 PR 2). 메인이 다르게 정하면 그 결정을 따른다.
-- 열린 PR·근거: PR212 판정 E/pr3-review/verdict.md, 리드 대조 E/lead-check/pr3-r2.md·pr3-review-r2.md, 메인 보고 E/session/main-report-pr212.md·main-report-pr212-head.md.
+- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)(merge commit `127cc5a1`), 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)(merge commit `5a1752eb`)로 병합됐다. 수신 helper PR은 branch `fix/receive-helper-ask-proof-20261009`(base main `5a1752eb`)이고 아직 PR이 없다.
+- 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 수신 helper PR은 [pr2/astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/pr2/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
+- 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`(PR212 병합 전에 연 세션이라 종료까지 유지, 메인 `msg_84fb999941ce`). Claude 세션 ID `64f22d75-946a-4b21-a275-d2e10254b75a`. 재진입 뒤 handle `term_73e94f29-d9a7-47bf-91d3-50f3676de874`, Run은 `run_be5206d9a2af`(run-use로 인수), 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
+- **현재 위치**(2026-10-08T23:05:17Z): PR212가 병합됐다. 최신 main에서 수신 helper PR branch를 만들고 리드 맥락 메모를 썼다(아래 「수신 helper PR 착수」).
+- **다음 할 일**: 선행 시험 계약(신규 `claude-opus-5-5`, M2의 거절 사례 셋) → 쓰기 종료 확인 → Sol 구현 계약 → 신규 Opus 독립 검증 → PR 생성과 메인 승인 묶음. 독립 검증은 실제 공식 ask 원시로 `check-message.mjs`를 한 번 실행한다.
+- 재진입: 같은 Claude 세션을 `--resume`으로 이으면 handle이 바뀐다. 같은 Run을 run-use로 인수하고 메인에 새 handle을 알린다. 이 세션은 `[Rules Astra]`를 유지하고, 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -22,8 +20,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - [x] 정본 PR 작성·실사
 - [x] PR211 병합
 - [x] 리드 태그 PR 실사
-- [>] 리드 태그 PR 병합
-- [ ] 수신 helper 선행 시험
+- [x] 리드 태그 PR 병합
+- [>] 수신 helper 선행 시험
 - [ ] 수신 helper 구현·검증
 - [ ] 수신 helper PR 병합
 - [ ] 결과 기록·Gardener
@@ -250,6 +248,21 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 R-2(E/lead-check/pr3-review-r2.md): 판정 표본 아홉(CLAUDE 기준 bytes, 옮긴 문장 행, numstat, 공백 검사, helper 입출력, BACKLOG 65행, R2 간격, 자기 쓰기 감사, 맥락 메모)이 원천과 같았다.
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr3-review-release.json, pr3-review-idle.json, pr3-review-close.json).
 - PR: [PR212](https://github.com/bass131/dawnholder-server/pull/212)를 만들었다(본문 E/session/pr3-body.md). 메인 승인 묶음 `msg_84b18a708a21`에 R1·R2 교정 층 결정을 함께 올렸고, 메인이 A로 정했다. 메인은 현황판이 옛 리드 태그와 새 리드 태그를 같은 리드로 읽도록 고쳤다고 알렸다(goal 위험 4).
+
+
+### PR212 병합과 재진입
+
+- 재시작: 사용자 요청(메인 전달 `msg_e54f163b20ea`)으로 재개 지점을 커밋하고(`21be0b97`) 세션을 멈췄다. 그 커밋으로 PR212 head가 바뀌어 메인에 새 head를 알렸다(`msg_d4598a929855`). 처음 쓴 알림에 승인 문장 형식 한 줄을 넣자 병합 관문 hook이 `merge-gate:approval-injection`으로 막아 head만 적었다. 원인 조사는 하지 않는다(메인 `msg_582539756e9d`).
+- 재진입: 메인이 사용자 지시 「중단된 부분부터 이어서 진행하자, 셋업 진행해줘」로 이 대화를 `--resume`으로 다시 열었다(`msg_582539756e9d`). 첫 check는 `consumer_fenced`였고 run-use로 같은 Run을 인수했다(E/session/check42.raw.json, reentry-run-use.json). Orca CLI는 1.4.223이 됐다.
+- resume 태그: 리드 판단은 정본에 따로 적지 않는 것이다(`msg_842b874b65e9`). 병합 전에 연 리드 세션이 끝날 때까지만 생기는 일시적 경우이고, `--resume`은 같은 세션을 잇는 것이라 AGENTS 전환 문단의 「종료까지」로 풀린다. 메인도 Core 명칭 전환 선례처럼 보고 이 세션은 종료까지 `[Rules Astra]`를 쓴다고 정했다(`msg_84fb999941ce`).
+- 병합: 사용자 원문(메인 창 Enter 제출, 메인 전달 `msg_84fb999941ce`)은 PR212 head `21be0b97ede94d77b4ad3de6002ee274bb5aab56` 승인 줄이다. 메인이 CI 네 항목 SUCCESS·CLEAN·head 일치를 다시 보고 병합했다. merge commit `5a1752ebb73df0ab84ac899812cdd4872ab469cd`, mergedAt 2026-10-08T23:04:21Z다.
+
+### 수신 helper PR 착수
+
+- branch: 2026-10-08T23:05:17Z 최신 main `5a1752eb`에서 `fix/receive-helper-ask-proof-20261009`를 만들었다. 리드 맥락 메모는 E/pr2/astra-context.md다.
+- 인터페이스(리드 결정, 계약에 적음): `expected.officialAsk`를 `{ messageId, cliVersion, askHelp, replyHelp }`로 바꾼다. askHelp·replyHelp는 coordinator가 같은 CLI에서 받은 ask/reply `--help` 원문이고, 둘 다 `--subject`가 없을 때만 공식 ask 예외를 연다. 버전 상수를 불리언 자기 선언으로 바꾸지 않고 원문을 helper가 직접 본다.
+- 실제 근거: Orca 1.4.222·1.4.223의 ask/reply help에 `--subject`가 0건이다(E/lead-check/ask-help-1.4.222.txt·ask-help-1.4.223.txt, reply-help 둘).
+- 범위 메모: `99_Tools/README.md` 23행은 「건드릴 곳」의 `99_Tools/Orca/` 밖이지만 같은 인터페이스 설명이라 함께 맞춘다. 태그 붙은 subject heartbeat는 정본대로 내용 있는 heartbeat라 동작을 바꾸지 않는다.
 
 ## 정본에서 옮긴 적용 기록
 
