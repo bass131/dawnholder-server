@@ -5,7 +5,7 @@
 Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch·PR: 정본 PR은 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream 없음)이고 아직 PR이 없다.
+- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)이고 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream origin)이다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - **현재 위치**(2026-10-08T13:17:21Z): 정본 PR 좁힌 재실사에서 문서 지적은 없었다. heartbeat 이탈 R1·R2의 메인 처리 결정이 남았다(아래 「좁힌 재실사」).
@@ -17,7 +17,7 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 
 - [x] 범위와 기준 확정
 - [>] 정본 PR 작성·실사
-- [ ] 정본 PR 병합
+- [ ] PR211 병합
 - [ ] 리드 태그 PR 실사
 - [ ] 리드 태그 PR 병합
 - [ ] 수신 helper 선행 시험
