@@ -1,15 +1,43 @@
 // Dawnholder 소개 페이지의 움직임·조작 보조. 글과 그림을 새로 만들지 않는다. 스크립트가 없어도 모든 글과 그림이 보이고,
 // 스크립트가 켜지면 직업 탭이 고르지 않은 직업의 패널만 숨긴다(접점 보충 3).
-// 맡는 일 네 가지:
-// 1. 첫 화면 대문 그림의 깊이: 스크롤 양을 .hero의 --sy에 넣는다(그림이 조금 늦게 따라 내려감).
-// 2. 게임 소개 슬라이드: 넘김 단추를 보이고 한 번에 한 장씩 옮긴다(접점 보충 2). 자동 넘김은 없다.
-// 3. 직업 탭: 기사·마법사 탭으로 패널 하나만 보이게 한다(접점 보충 3).
-// 4. 직업 절 스킬 재생: 스킬 이름(data-action)을 누르면 사이트 README 「동작 맞물림」 표대로 캐릭터와 효과를 재생한다.
+// 맡는 일 여섯 가지:
+// 1. 먼 장면의 띠 그림 늦게 받기: 게임 소개 2~5장과 몬스터 패널이 가까워지면 그 띠 그림을 받게 한다.
+// 2. 첫 화면 대문 그림의 깊이: 스크롤 양을 .hero의 --sy에 넣는다(그림이 조금 늦게 따라 내려감).
+// 3. 로고 띠 바꿔 끼우기: 정지 사본으로 먼저 보인 로고를, 움직임이 허용되면 첫 화면이 다 뜬 뒤 16칸 띠로 바꾼다.
+// 4. 게임 소개 슬라이드: 넘김 단추를 보이고 한 번에 한 장씩 옮긴다(접점 보충 2). 자동 넘김은 없다.
+// 5. 직업 탭: 기사·마법사 탭으로 패널 하나만 보이게 한다(접점 보충 3).
+// 6. 직업 절 스킬 재생: 스킬 이름 단추(data-action)를 누르면 사이트 README 「동작 맞물림」 표대로 캐릭터와 효과를 재생한다.
 // 움직임 허용의 정본은 「움직임 멈춤」 체크박스(data-motion-toggle)와 움직임 줄이기 설정이다.
 // 둘 중 하나라도 멈춤이면 이 스크립트도 아무것도 움직이지 않는다(styles.css도 같은 상태로 반복 움직임을 멈춘다).
 // 멈춤이면 슬라이드는 넘김 움직임 없이 바로 옮긴다. 탭 바꿈은 원래 움직임 없이 바로 바뀐다.
 (() => {
   'use strict';
+
+  // ── 1. 먼 장면의 띠 그림 늦게 받기 ──
+  // 스크립트가 켜진 브라우저에서 styles.css는 게임 소개 2~5장과 몬스터 패널의 띠 그림을 비워 둔다(디자인 비평 C26).
+  // 그 묶음이 화면에 들어오면(몬스터는 화면 반 높이 앞에서) is-near를 붙여 그림을 받게 한다. 다른 일보다 먼저 건다.
+  // 슬라이드는 묶음이 화면에 든 뒤에야 2장 이후를 볼 수 있어 앞당기지 않는다(첫 화면에서 받지 않게).
+  const DEFERRED = [['[data-carousel]', '[data-carousel-slide]', '0px'], ['.monsters', '.monster', '50% 0px']];
+  for (const [groupSelector, itemSelector, margin] of DEFERRED) {
+    for (const group of document.querySelectorAll(groupSelector)) {
+      const mark = () => {
+        for (const item of group.querySelectorAll(itemSelector)) {
+          item.classList.add('is-near');
+        }
+      };
+      if (!('IntersectionObserver' in window)) {
+        mark();
+        continue;
+      }
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          mark();
+        }
+      }, { rootMargin: margin });
+      observer.observe(group);
+    }
+  }
 
   const motionStop = document.querySelector('[data-motion-toggle]');
   if (!motionStop) {
@@ -25,7 +53,7 @@
 
   const motionAllowed = () => !motionStop.checked && !reducedMotion.matches;
 
-  // ── 1. 첫 화면 깊이 ──
+  // ── 2. 첫 화면 깊이 ──
   // 대문 그림은 한 장이라 마우스 깊이는 두지 않고, 스크롤한 만큼만 그림을 조금 늦게 내려 보낸다(styles.css .art-layer).
   const hero = document.querySelector('.hero');
   let renderRequest = 0;
@@ -48,7 +76,51 @@
   window.addEventListener('scroll', requestRender, { passive: true });
   window.addEventListener('resize', requestRender);
 
-  // ── 2. 게임 소개 슬라이드 ──
+  // ── 3. 로고 띠 바꿔 끼우기 ──
+  // 로고(16칸 띠, 약 0.95MB)는 첫 화면에서 가장 큰 그림이라 HTML에는 첫 칸과 같은 정지 사본(약 0.06MB)을 둔다(디자인 비평 C25).
+  // 움직임이 허용되면 첫 화면 등장 연출(1.3초)이 끝나고 브라우저가 한가할 때 띠를 받아 디코딩까지 마친 뒤 바꾼다.
+  // 띠의 첫 칸이 정지 사본과 같은 그림이라 바뀌는 순간이 보이지 않는다. 멈춤이면 받지 않고, 나중에 움직임을 켜면 그때 받는다.
+  const LOGO_STRIP = 'images/logo.webp';
+  const LOGO_AFTER_MS = 1300;
+  const logos = [...document.querySelectorAll('.logo-strip[data-sprite="images/logo-still.webp"]')];
+  let logoRequested = false;
+
+  const swapLogo = () => {
+    if (logoRequested || logos.length === 0 || !motionAllowed()) {
+      return;
+    }
+    logoRequested = true;
+    const strip = new Image();
+    strip.src = LOGO_STRIP;
+    strip.decode().then(() => {
+      for (const logo of logos) {
+        logo.dataset.sprite = LOGO_STRIP;
+      }
+    }, () => {
+      logoRequested = false;
+    });
+  };
+
+  const whenIdle = (callback) => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(callback, { timeout: 2000 });
+    } else {
+      window.setTimeout(callback, 0);
+    }
+  };
+
+  const scheduleLogo = () => {
+    const wait = Math.max(0, LOGO_AFTER_MS - performance.now());
+    window.setTimeout(() => whenIdle(swapLogo), wait);
+  };
+
+  if (document.readyState === 'complete') {
+    scheduleLogo();
+  } else {
+    window.addEventListener('load', scheduleLogo, { once: true });
+  }
+
+  // ── 4. 게임 소개 슬라이드 ──
   // 트랙은 스크립트 없이도 가로 스크롤과 맞춤 멈춤으로 모든 장에 닿는다. 여기서는 넘김 단추를 보이고,
   // 단추와 좌우 화살표 키로 한 장씩 옮긴다. 손가락·트랙패드로 넘긴 경우는 스크롤이 멈춘 뒤 지금 장을 다시 잰다.
   // 한 장 넘김에 걸리는 시간(ms). 접점 보충 2의 600ms 안에 끝나고 방향이 보일 만큼만 둔다.
@@ -78,14 +150,30 @@
       return nearest;
     };
 
-    // 장마다 「n / 5」가 글로 있어서(스크립트 없이도 맞는 표시) 여기서는 단추의 막힘만 맞춘다.
+    // 장마다 「n / 5」가 글로 있어서(스크립트 없이도 맞는 표시) 여기서는 단추의 막힘과 장 표시 네모만 맞춘다.
     // 끝 장에서 단추가 막힐 때 그 단추에 있던 키보드 초점은 트랙으로 옮긴다(초점이 페이지 맨 앞으로 사라지지 않게).
+    const pips = [...carousel.querySelectorAll('.pip')];
     const show = () => {
       for (const [button, blocked] of [[prev, index === 0], [next, index === last]]) {
         if (blocked && document.activeElement === button) {
           track.focus({ preventScroll: true });
         }
         button.disabled = blocked;
+      }
+      pips.forEach((pip, position) => pip.classList.toggle('is-current', position === index));
+    };
+
+    // 화면 낭독: 스크롤이 멈춘 뒤 트랙의 보이는 상자 밖에 온전히 나간 장만 낭독에서 뺀다(접점 보충 2 개정, 디자인 비평 C17).
+    // 조금이라도 걸친 장은 그대로 둔다. 트랙은 aria-live="polite"라 새로 드러난 장의 글을 읽어 준다. 장 안에는 초점 받을 요소가 없다.
+    const expose = () => {
+      const box = track.getBoundingClientRect();
+      for (const slide of slides) {
+        const rect = slide.getBoundingClientRect();
+        if (rect.right <= box.left + 1 || rect.left >= box.right - 1) {
+          slide.setAttribute('aria-hidden', 'true');
+        } else {
+          slide.removeAttribute('aria-hidden');
+        }
       }
     };
 
@@ -112,12 +200,16 @@
         }
         animation = 0;
         track.style.removeProperty('scroll-snap-type');
+        // 끝 프레임에서 스크롤 값이 그대로면 scroll·scrollend가 더 오지 않는다(scrollend는 움직이는 중에만 왔다). 여기서 멈춘 상태를 맞춘다.
+        settle();
       };
       animation = window.requestAnimationFrame(step);
     };
 
+    // 들어올 장은 움직이기 시작할 때 바로 낭독에 드러낸다(움직이는 동안 일부가 보이는 장). 나간 장은 멈춘 뒤 expose가 뺀다.
     const go = (delta) => {
       index = Math.min(last, Math.max(0, index + delta));
+      slides[index].removeAttribute('aria-hidden');
       moveTo(slideLeft(index));
       show();
     };
@@ -131,6 +223,7 @@
       }
       index = nearestIndex();
       show();
+      expose();
     };
 
     prev.addEventListener('click', () => go(-1));
@@ -155,6 +248,7 @@
       animation = 0;
       track.style.removeProperty('scroll-snap-type');
       track.scrollTo({ left: slideLeft(index), behavior: 'auto' });
+      expose();
     });
 
     prev.hidden = false;
@@ -162,15 +256,17 @@
     carousel.setAttribute('data-ready', '');
     index = nearestIndex();
     show();
+    expose();
   };
 
   for (const carousel of document.querySelectorAll('[data-carousel]')) {
     setupCarousel(carousel);
   }
 
-  // ── 3. 직업 탭 ──
+  // ── 5. 직업 탭 ──
   // 스크립트가 없으면 탭 목록은 숨은 채 두 패널이 다 보인다. 켜지면 탭 목록을 보이고 고른 탭의 패널만 남긴다.
-  // 좌우 화살표는 끝에서 처음으로 돌아가며 Home·End와 함께 초점과 선택을 같이 옮긴다. 무대는 패널 밖이라 그대로다.
+  // 좌우 화살표는 끝에서 처음으로 돌아가며 Home·End와 함께 초점과 선택을 같이 옮긴다. 무대는 패널 밖이라 그대로이고,
+  // 고른 패널 id를 묶음의 data-selected에 적어 무대의 그 캐릭터 머리 위에 표시를 세운다(styles.css 「직업」).
   const setupTabs = (root) => {
     const list = root.querySelector('[role="tablist"]');
     const tabs = [...root.querySelectorAll('[role="tab"]')];
@@ -186,6 +282,7 @@
         tab.tabIndex = selected ? 0 : -1;
         panels[position].hidden = !selected;
       });
+      root.dataset.selected = panels[chosen].id;
       if (moveFocus) {
         tabs[chosen].focus();
       }
@@ -218,7 +315,7 @@
     setupTabs(root);
   }
 
-  // ── 4. 스킬 재생 ──
+  // ── 6. 스킬 재생 ──
   const stage = document.querySelector('.stage');
   if (!stage) {
     return;
@@ -277,6 +374,7 @@
       idleSprite: element.dataset.sprite,
       effectNames: new Set(),
       run: null,
+      button: null,
     };
   }
   for (const action of Object.values(ACTIONS)) {
@@ -352,6 +450,8 @@
     actor.run = null;
 
     const { element, mover } = actor;
+    actor.button?.classList.remove('is-playing');
+    actor.button = null;
     element.style.setProperty('--loop-from', continuing ? String(Math.round(t - lastStep.since)) : '0');
     element.dataset.sprite = actor.idleSprite;
     element.classList.remove('is-acting');
@@ -421,7 +521,8 @@
     preload();
   }
 
-  const play = (name) => {
+  // 같은 캐릭터가 재생 중이면 그 재생을 끝내고 새로 시작한다. 재생 중인 스킬 단추는 금색으로 찬다.
+  const play = (name, button) => {
     const action = ACTIONS[name];
     if (!action || !motionAllowed()) {
       return;
@@ -429,14 +530,12 @@
     preload();
     const actor = actors[action.actor];
     const now = performance.now();
-    // 한 번 누름이 두 이벤트(keyup과 click)로 올 수 있다. 같은 동작을 막 시작했으면 무시한다.
-    if (actor.run && actor.run.action === action && now - actor.run.start < 60) {
-      return;
-    }
     if (actor.run) {
       finish(actor, now - actor.run.start);
     }
     actor.run = { action, start: now };
+    actor.button = button;
+    button.classList.add('is-playing');
     applyStep(actor, 0);
     if (!actionRequest) {
       actionRequest = window.requestAnimationFrame(tickActions);
@@ -451,30 +550,15 @@
     }
   };
 
-  // 조작마다 따로 고르는 라디오다(이름이 저마다 달라 Tab이 하나하나 닿는다). 이미 고른 것을 다시 눌러도 click은 오므로 click마다 재생하고,
-  // 같은 캐릭터의 다른 스킬 선택은 풀어 지금 고른 스킬만 표시한다.
-  const controls = [...document.querySelectorAll('[data-action]')];
-  for (const input of controls) {
-    const name = input.dataset.action;
-    input.addEventListener('click', () => {
-      for (const other of controls) {
-        if (other !== input && ACTIONS[other.dataset.action].actor === ACTIONS[name].actor) {
-          other.checked = false;
-        }
-      }
-      play(name);
-    });
-    // Chrome은 이미 고른 라디오에서 Space를 떼도 click을 보내지 않아서 keyup에서 다시 재생한다.
-    // keyup 처리는 브라우저 기본 동작보다 먼저라 checked는 누르기 전 상태다(안 고른 라디오는 이어지는 click이 맡는다).
-    input.addEventListener('keyup', (event) => {
-      if (event.key === ' ' && input.checked) {
-        play(name);
-      }
-    });
+  // 스킬 이름은 단추라 Enter·Space·누름이 모두 click 하나로 온다. 누를 때마다 처음부터 재생한다.
+  for (const button of document.querySelectorAll('[data-action]')) {
+    button.addEventListener('click', () => play(button.dataset.action, button));
   }
 
   const onMotionChange = () => {
-    if (!motionAllowed()) {
+    if (motionAllowed()) {
+      swapLogo();
+    } else {
       stopAll();
     }
     requestRender();

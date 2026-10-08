@@ -2,7 +2,6 @@
 index.html
 styles.css
 script.js
-images/blacksmith-idle.webp
 images/blacksmith-portrait.webp
 images/boss-idle.webp
 images/golem-idle.webp
@@ -17,6 +16,7 @@ images/layer-4-hills.webp
 images/layer-5-castle.webp
 images/layer-6-valley.webp
 images/logo.webp
+images/logo-still.webp
 images/mage-cast.webp
 images/mage-idle.webp
 images/mage-teleport-effect.webp
@@ -24,5 +24,5 @@ images/mage-thunder-effect.webp
 images/slime-idle.webp
 images/title-art.webp
 fonts/Pretendard-Regular.subset.woff2
-fonts/Pretendard-Bold.subset.woff2
+fonts/Pretendard-ExtraBold.subset.woff2
 fonts/LICENSE.txt
