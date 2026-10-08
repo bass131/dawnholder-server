@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <div class="title-card">
+    <div class="title-card" data-scene="title">
       <div class="sunlight" aria-hidden="true"></div>
       <h1 class="logo"><span class="logo-rise"><span class="sprite logo-strip" data-sprite="images/logo.webp" role="img" aria-label="Dawnholder"></span></span></h1>
       <div class="title-text">
@@ -123,10 +123,10 @@
     </section>
 
     <!-- 직업: 폐허 탑이 선 들판의 저녁 무대. 스킬 이름을 누르면 README 「동작 맞물림」 표대로 재생한다(script.js). -->
-    <section id="classes" class="chapter classes" aria-labelledby="classes-title">
+    <section id="classes" class="chapter classes" data-scene="classes" aria-labelledby="classes-title">
       <h2 class="chapter-title" id="classes-title">직업</h2>
       <div class="stage-frame">
-        <div class="scene stage" data-scene="classes">
+        <div class="scene stage">
           <div class="stage-layers" aria-hidden="true">
             <img class="band-layer" src="images/layer-3-far-mountains.webp" width="2172" height="724" alt="" loading="lazy" data-sprite="images/layer-3-far-mountains.webp">
             <img class="band-layer" src="images/layer-4-hills.webp" width="2172" height="724" alt="" loading="lazy" data-sprite="images/layer-4-hills.webp">
@@ -157,12 +157,12 @@
         <article class="class-note class-note-knight">
           <h3 class="class-name">기사</h3>
           <p data-fact="F11">가까이에서 싸우는 근접 직업이에요. 체력과 방어력이 높아요.</p>
-          <p data-fact="F12">스킬: 짧은 거리를 빠르게 돌진하는 <label class="skill" data-action="knight-dash"><input class="skill-input" type="radio" name="knight-dash"><strong>대시</strong></label></p>
+          <p data-fact="F12">스킬: 짧은 거리를 빠르게 돌진하는 <label class="skill"><input class="skill-input" type="radio" name="knight-dash" data-action="knight-dash"><strong>대시</strong></label></p>
         </article>
         <article class="class-note class-note-mage">
           <h3 class="class-name">마법사</h3>
           <p data-fact="F13">멀리서 공격하는 원거리 직업이에요. 체력은 낮지만 더 빠르게 움직입니다.</p>
-          <p data-fact="F14">스킬: 적들 위로 떨어지는 <label class="skill" data-action="mage-thunder"><input class="skill-input" type="radio" name="mage-thunder"><strong>낙뢰</strong></label>, 원하는 방향으로 옮겨 가는 <label class="skill" data-action="mage-teleport"><input class="skill-input" type="radio" name="mage-teleport"><strong>순간이동</strong></label></p>
+          <p data-fact="F14">스킬: 적들 위로 떨어지는 <label class="skill"><input class="skill-input" type="radio" name="mage-thunder" data-action="mage-thunder"><strong>낙뢰</strong></label>, 원하는 방향으로 옮겨 가는 <label class="skill"><input class="skill-input" type="radio" name="mage-teleport" data-action="mage-teleport"><strong>순간이동</strong></label></p>
         </article>
       </div>
     </section>

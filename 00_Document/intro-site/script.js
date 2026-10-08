@@ -334,13 +334,12 @@
   // 조작마다 따로 고르는 라디오다(이름이 저마다 달라 Tab이 하나하나 닿는다). 이미 고른 것을 다시 눌러도 click은 오므로 click마다 재생하고,
   // 같은 캐릭터의 다른 스킬 선택은 풀어 지금 고른 스킬만 표시한다.
   const controls = [...document.querySelectorAll('[data-action]')];
-  for (const control of controls) {
-    const input = control.querySelector('input');
-    const name = control.dataset.action;
+  for (const input of controls) {
+    const name = input.dataset.action;
     input.addEventListener('click', () => {
       for (const other of controls) {
-        if (other !== control && ACTIONS[other.dataset.action].actor === ACTIONS[name].actor) {
-          other.querySelector('input').checked = false;
+        if (other !== input && ACTIONS[other.dataset.action].actor === ACTIONS[name].actor) {
+          other.checked = false;
         }
       }
       play(name);
