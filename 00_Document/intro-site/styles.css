@@ -153,7 +153,7 @@ a:focus-visible,
 }
 
 /* 사본별 칸 정보: README 「동작 배율과 기준점」 표의 칸 수·칸 크기·재생 fps·기준점. --once는 「한 번」 재생 띠 */
-[data-sprite="images/logo.webp"] { --img: url('images/logo.webp'); --cw: 640; --ch: 265; --cells: 16; --fps: 12; --px: 320; --py: 132.5; }
+[data-sprite="images/logo.webp"] { --img: url('images/logo.webp'); --cw: 896; --ch: 371; --cells: 16; --fps: 12; --px: 448; --py: 185.5; }
 [data-sprite="images/knight-idle.webp"] { --img: url('images/knight-idle.webp'); --cw: 228; --ch: 165; --cells: 16; --fps: 8.4; --px: 114; --py: 165; }
 [data-sprite="images/knight-move.webp"] { --img: url('images/knight-move.webp'); --cw: 228; --ch: 165; --cells: 16; --fps: 27.6; --px: 114; --py: 165; }
 [data-sprite="images/knight-attack.webp"] { --img: url('images/knight-attack.webp'); --cw: 357; --ch: 196; --cells: 16; --fps: 24; --once: 1; --px: 178; --py: 196; }
@@ -278,7 +278,8 @@ a:focus-visible,
 
 /* ───────── 첫 화면: 노을의 설정 장면 ─────────
    --fx: 화면 가운데에 올 그림 x(해 = 1086). --base: 첫 화면 아래 끝에 맞출 그림 y.
-   --mx·--my·--sy: script.js가 넣는 마우스(-1~1)·스크롤(px) 값. 스크립트가 없으면 0이다. */
+   --mx·--my·--sy: script.js가 넣는 마우스(-1~1)·스크롤(px) 값. 스크립트가 없으면 0이다.
+   --logo-k: 로고를 줄이는 배율(1 이하). 화면 폭 구간마다 아래 「화면 폭」에서 바꾼다. */
 
 .hero {
   --fx: 1086;
@@ -287,6 +288,7 @@ a:focus-visible,
   --my: 0;
   --sy: 0;
   --title-top: var(--sp-6);
+  --logo-k: 1;
 
   position: relative;
   height: 100svh;
@@ -317,8 +319,7 @@ a:focus-visible,
 .layer-3 { --depth: 9; --lag: 0.35; }
 .layer-4 { --depth: 15; --lag: 0.25; }
 .layer-5 { --depth: 22; --lag: 0.15; }
-.layer-6,
-.layer-cast { --depth: 32; --lag: 0.06; }
+.layer-6 { --depth: 32; --lag: 0.06; }
 
 .layer img {
   position: absolute;
@@ -396,25 +397,16 @@ a:focus-visible,
 .motes i:nth-child(11) { --ox: 305; --oy: 435; --dur: 8.1s; --delay: 5.1s; --rise: 180; --sway: 14; }
 .motes i:nth-child(12) { --ox: -11; --oy: 475; --dur: 10.2s; --delay: 3.1s; --rise: 240; --sway: -6; }
 
-/* 첫 화면의 기사·마법사: 들판 위 그림 좌표(--gx, --gy)에 발을 딛는다 */
-.layer-cast .spot {
-  left: calc(50% + (var(--gx) - var(--fx)) * var(--s) * 1px);
-  bottom: calc((var(--base) - var(--gy)) * var(--s) * 1px);
-  animation: fade-in 700ms ease-out 1900ms both;
-}
-
-.hero-knight { --gx: 1236; --gy: 628; }
-.hero-mage { --gx: 1384; --gy: 634; }
-
 /* ───────── 제목 카드: 해 위로 떠오르는 로고와 햇빛 무리 ─────────
-   제목 카드는 로고 하나만 든 장면(data-scene="title")이다. 첫 화면 장면이 2배로 커져도 로고는 1배라 장면을 나눈다. */
+   제목 카드는 로고 하나만 든 장면(data-scene="title")이다. 첫 화면 장면이 2배로 커져도 로고는 1배 이하라 장면을 나눈다.
+   카드 폭은 글 단 760px과 화면의 로고 폭 중 넓은 쪽이라, 햇빛 무리가 로고 끝까지 덮는다. */
 
 .title-card {
   position: absolute;
   inset: calc(var(--menu-h) + var(--title-top)) 0 auto;
   z-index: 2;
   isolation: isolate;
-  width: min(100% - 2 * var(--gutter), 760px);
+  width: min(100% - 2 * var(--gutter), max(760px, 896px * var(--logo-k)));
   margin-inline: auto;
   color: var(--dusk);
   text-align: center;
@@ -439,14 +431,21 @@ a:focus-visible,
   animation: sunlight-in 1100ms ease-out 1000ms both;
 }
 
+/* 로고 사본(칸 896×371)은 키우지 않고 1배 이하로만 그린다. 띠 상자는 칸 그대로 두고 감싼 요소 하나를 --logo-k로 줄인다
+   (접점 보충 1의 1절: 칸 경계가 정수 px에 남음). 줄여도 레이아웃 상자는 896×371이라 h1 높이를 화면의 로고 높이로 맞춘다. */
 .logo {
   display: flex;
   justify-content: center;
+  height: calc(371px * var(--logo-k));
 }
 
-/* 로고는 메뉴 화면처럼 16칸을 12fps로 끝없이 돈다. 멈추면 칸 0(아래 「움직임 멈춤」) */
+/* 로고는 메뉴 화면처럼 16칸을 12fps로 끝없이 돈다. 멈추면 칸 0(아래 「움직임 멈춤」).
+   등장 연출은 transform, 축소는 scale 속성이라 서로 덮지 않는다 */
 .logo-rise {
   display: block;
+  flex: none;
+  scale: var(--logo-k);
+  transform-origin: 50% 0;
   animation: logo-rise 1000ms cubic-bezier(0.2, 0.8, 0.2, 1) 1100ms both;
 }
 
@@ -1271,7 +1270,7 @@ main {
 
 /* ───────── 화면 폭 ───────── */
 
-/* 넓고 높은 화면: 첫 화면 장면만 정수 2배(pixelated). 로고는 장면 밖이라 1배 그대로 */
+/* 넓고 높은 화면: 첫 화면 장면만 정수 2배(pixelated). 로고는 장면 밖이라 1배를 넘지 않는다 */
 @media (min-width: 1700px) and (min-height: 900px) {
   .hero {
     --title-top: var(--sp-7);
@@ -1281,9 +1280,15 @@ main {
     --s: 2;
   }
 
-  .hero-scene img,
-  .hero-scene .sprite {
+  .hero-scene img {
     image-rendering: pixelated;
+  }
+}
+
+/* 로고 축소 구간: 1440px 이상은 1배(896px). 그 아래는 들판이 로고에 덮이지 않게 화면 폭의 60% 안팎으로 줄인다 */
+@media (max-width: 1439px) {
+  .hero {
+    --logo-k: 0.875;
   }
 }
 
@@ -1309,6 +1314,11 @@ main {
 }
 
 @media (max-width: 1023px) {
+  /* 로고가 700px 폭의 글 단(668px) 안에 들어가게 */
+  .hero {
+    --logo-k: 0.7;
+  }
+
   .feature-list,
   .plans {
     grid-template-columns: 1fr 1fr;
@@ -1328,18 +1338,12 @@ main {
     --t6: 2.25rem;
   }
 
+  /* 로고는 390px 폭의 글 단(358px) 안에 들어가게 줄인다(896 × 0.39 = 349px) */
   .hero {
     --fx: 640;
     --base: 690;
     --title-top: var(--sp-4);
-  }
-
-  .hero-knight { --gx: 600; --gy: 640; }
-  .hero-mage { --gx: 730; --gy: 648; }
-
-  /* 로고 상자를 정확히 0.5배(칸 320)로. 칸 폭 640이 짝수라 칸 경계가 정수 px에 남는다 */
-  .logo-strip {
-    --s: 0.5;
+    --logo-k: 0.39;
   }
 
   .tagline {
@@ -1470,6 +1474,11 @@ main {
 }
 
 @media (max-width: 379px) {
+  /* 360px 폭의 글 단(328px) 안(896 × 0.36 = 323px) */
+  .hero {
+    --logo-k: 0.36;
+  }
+
   .classes {
     --k: 0.42;
   }

@@ -44,7 +44,7 @@
 | `images/layer-4-hills.webp` | `03_Client/Assets/Art/Environment/BackGround/Parallax/CastleValley_Sunset_Parallax_Layers/Assets/Art/Backgrounds/CastleValley_Sunset/04_Mid_Mountains_Hills.png` | `ec67b31a7fce5ef8218212a2965e2646f32fb1fb96a9112db8a941f29ddf8ad5` | `0,0,2172,724` | `2172x724` | `9187610e0f5d63a7a426856f4ef488c3a819dc40fb2bd7f05ebd9230766c0aa7` |
 | `images/layer-5-castle.webp` | `03_Client/Assets/Art/Environment/BackGround/Parallax/CastleValley_Sunset_Parallax_Layers/Assets/Art/Backgrounds/CastleValley_Sunset/05_Castle_City.png` | `ba9726dac966dbe5bfb98d63949be3352af1de58dedfd581645e2440f534db25` | `0,0,2172,724` | `2172x724` | `327d1536095fef0913519f127850e0e037f46873cf53839bb386d6b6d8aec7f0` |
 | `images/layer-6-valley.webp` | `03_Client/Assets/Art/Environment/BackGround/Parallax/CastleValley_Sunset_Parallax_Layers/Assets/Art/Backgrounds/CastleValley_Sunset/06_Valley_Fields_Ruins.png` | `129f8d4dcd061afdc86bdb38570af1bec2e52d4c55875a553c615c5596beccc2` | `0,0,2172,724` | `2172x724` | `1f459cad96c09a717bb5b3a66ba7563e312924f5b6175b5645fa48bdfb8a6fb9` |
-| `images/logo.webp` | `03_Client/Assets/Art/UI/BackGround/Dawnholder_MainTitle_Banner_keyed.png` | `b7fb7659c35778bffe2f6d84f39186695a34cf6e69c89cf44e5ecc8a41ba8c9c` | `0,0,1024,424;1024,0,1024,424;2048,0,1024,424;3072,0,1024,424;0,424,1024,424;1024,424,1024,424;2048,424,1024,424;3072,424,1024,424;0,848,1024,424;1024,848,1024,424;2048,848,1024,424;3072,848,1024,424;0,1272,1024,424;1024,1272,1024,424;2048,1272,1024,424;3072,1272,1024,424` | `10240x265` | `0f35ddec27625c1e5b4ab942f97637fc80c01c7f3d3ece99c283de627354a54f` |
+| `images/logo.webp` | `03_Client/Assets/Art/UI/BackGround/Dawnholder_MainTitle_Banner_keyed.png` | `b7fb7659c35778bffe2f6d84f39186695a34cf6e69c89cf44e5ecc8a41ba8c9c` | `0,0,1024,424;1024,0,1024,424;2048,0,1024,424;3072,0,1024,424;0,424,1024,424;1024,424,1024,424;2048,424,1024,424;3072,424,1024,424;0,848,1024,424;1024,848,1024,424;2048,848,1024,424;3072,848,1024,424;0,1272,1024,424;1024,1272,1024,424;2048,1272,1024,424;3072,1272,1024,424` | `14336x371` | `0a2e066b8ffca8cb8445b49a272a689320813e0f272a7c238d85ed4ad25b3662` |
 | `images/knight-idle.webp` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Idle.png` | `8267c5a16f1d96d0eef905749cf4b842a0e62bd022513a6d8e8f604f8f3d41b4` | `0,0,512,370;512,0,512,370;1024,0,512,370;1536,0,512,370;0,370,512,370;512,370,512,370;1024,370,512,370;1536,370,512,370;0,740,512,370;512,740,512,370;1024,740,512,370;1536,740,512,370;0,1110,512,370;512,1110,512,370;1024,1110,512,370;1536,1110,512,370` | `3648x165` | `f70863256367ba8bca69922fd3d18c6843781c0df13e5961a8f4ff97b8ff2b6e` |
 | `images/knight-move.webp` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Move.png` | `27cded85f6e5c4026f64312c48fb75dfaa528c1963c5ab80ba590ee60eef65d1` | `0,0,512,370;512,0,512,370;1024,0,512,370;1536,0,512,370;0,370,512,370;512,370,512,370;1024,370,512,370;1536,370,512,370;0,740,512,370;512,740,512,370;1024,740,512,370;1536,740,512,370;0,1110,512,370;512,1110,512,370;1024,1110,512,370;1536,1110,512,370` | `3648x165` | `10ac2420992206ba3c479f0223c15f667c6015c68fe1ebdb1209410da97f808e` |
 | `images/knight-attack.webp` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Attack0.png` | `5e03c132b9fb2f32af8cc9df86d53f27c8ff8011dcb665c00bf213ce999b465d` | `0,0,512,281;512,0,512,281;1024,0,512,281;1536,0,512,281;0,281,512,281;512,281,512,281;1024,281,512,281;1536,281,512,281;0,562,512,281;512,562,512,281;1024,562,512,281;1536,562,512,281;0,843,512,281;512,843,512,281;1024,843,512,281;1536,843,512,281` | `5712x196` | `1c0f2ba1f34ef561972aeff8191a35e1c580e8e167762654f350f07760ec93d2` |
@@ -64,7 +64,7 @@
 
 자른 영역은 원본 왼쪽 위 원점의 `x,y,폭,높이` 픽셀이다. 칸이 여럿인 동작 띠는 원본 `.meta`의 칸 영역을 원본 순서대로 `;`로 이었다.
 
-사본(WebP 20개와 `icon.png`)은 게임 화면의 크기 비율을 지키도록 게임 1단위가 사본 80px이 되게 줄였다. 원본마다 게임의 PPU(1단위당 픽셀)와 prefab 배율이 달라 축소율도 다르고, 그 결과는 「동작 배율과 기준점」 표에 있다. 동작 띠는 칸마다 원본 칸을 같은 비율로 줄여 칸 안 아래 가운데에 놓고 가로로 이었다. 원본 칸의 크기와 pivot 설정이 칸마다 같아서 기준점도 모든 칸에서 같은 자리다. 겹 배경은 원래 크기 그대로이고, 로고는 칸 폭 640px, 대장장이 초상은 폭 700px, 아이콘은 높이 64px로 줄였다. WebP는 cwebp 1.6.0으로 만들었고 손실(그림 품질 90, 배경 85)과 무손실 중 작은 쪽을 골랐다(무손실이 1.15배 이내면 무손실). 이번 사본은 모두 손실이 골라졌다. 로고만 품질 75다. 첫 화면에서 가장 큰 그림이라 전송량을 줄였고, 투명도는 손실 없이 두었다.
+사본(WebP 20개와 `icon.png`)은 게임 화면의 크기 비율을 지키도록 게임 1단위가 사본 80px이 되게 줄였다. 원본마다 게임의 PPU(1단위당 픽셀)와 prefab 배율이 달라 축소율도 다르고, 그 결과는 「동작 배율과 기준점」 표에 있다. 동작 띠는 칸마다 원본 칸을 같은 비율로 줄여 칸 안 아래 가운데에 놓고 가로로 이었다. 원본 칸의 크기와 pivot 설정이 칸마다 같아서 기준점도 모든 칸에서 같은 자리다. 겹 배경은 원래 크기 그대로이고, 로고는 칸 폭 896px(원본의 0.875배, 16칸 띠가 WebP 한 변 한계 16383px 안에 드는 가장 큰 정수 칸), 대장장이 초상은 폭 700px, 아이콘은 높이 64px로 줄였다. WebP는 cwebp 1.6.0으로 만들었고 손실(그림 품질 90, 배경 85)과 무손실 중 작은 쪽을 골랐다(무손실이 1.15배 이내면 무손실). 이번 사본은 모두 손실이 골라졌다. 로고만 품질 75다. 첫 화면에서 가장 큰 그림이라 전송량을 줄였고, 투명도는 손실 없이 두었다.
 
 ## 글꼴 출처
 
@@ -86,7 +86,7 @@
 | `images/layer-4-hills.webp` | `1` | `2172x724` | `0.0125` | `1086,362` | `-` | `정지` | `03_Client/Assets/Art/Environment/BackGround/Parallax/CastleValley_Sunset_Parallax_Layers/Assets/Art/Backgrounds/CastleValley_Sunset/04_Mid_Mountains_Hills.png.meta:54; 03_Client/Assets/Prefabs/Environment/Parallax_CastleValley.prefab:574` |
 | `images/layer-5-castle.webp` | `1` | `2172x724` | `0.0125` | `1086,362` | `-` | `정지` | `03_Client/Assets/Art/Environment/BackGround/Parallax/CastleValley_Sunset_Parallax_Layers/Assets/Art/Backgrounds/CastleValley_Sunset/05_Castle_City.png.meta:54; 03_Client/Assets/Prefabs/Environment/Parallax_CastleValley.prefab:574` |
 | `images/layer-6-valley.webp` | `1` | `2172x724` | `0.0125` | `1086,362` | `-` | `정지` | `03_Client/Assets/Art/Environment/BackGround/Parallax/CastleValley_Sunset_Parallax_Layers/Assets/Art/Backgrounds/CastleValley_Sunset/06_Valley_Fields_Ruins.png.meta:54; 03_Client/Assets/Prefabs/Environment/Parallax_CastleValley.prefab:574` |
-| `images/logo.webp` | `16` | `640x265` | `-` | `320,132.5` | `-` | `반복 12` | `03_Client/Assets/Scenes/00.Menu/MainMenu.unity:528; 03_Client/Assets/Prefabs/UI/MainTitle_Clip.anim:60` |
+| `images/logo.webp` | `16` | `896x371` | `-` | `448,185.5` | `-` | `반복 12` | `03_Client/Assets/Scenes/00.Menu/MainMenu.unity:528; 03_Client/Assets/Prefabs/UI/MainTitle_Clip.anim:60` |
 | `images/knight-idle.webp` | `16` | `228x165` | `0.012476` | `114,165` | `-` | `반복 8.4` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Idle.png.meta:56; 03_Client/Assets/Art/Characters/Playable/Knight/Animator/Knight.controller:218-219` |
 | `images/knight-move.webp` | `16` | `228x165` | `0.012476` | `114,165` | `-` | `반복 27.6` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Move.png.meta:56; 03_Client/Assets/Art/Characters/Playable/Knight/Animator/Knight.controller:454-455` |
 | `images/knight-attack.webp` | `16` | `357x196` | `0.012506` | `178,196` | `-` | `한 번 24` | `03_Client/Assets/Art/Characters/Playable/Knight/Knight_Attack0.png.meta:56; 03_Client/Assets/Art/Characters/Playable/Knight/Animator/Knight.controller:10-11` |
@@ -137,7 +137,6 @@
 |---|---|---|---|
 | F01 | 친구들과 함께 사냥을 떠나는 2D 사이드스크롤 RPG | `00_Document/PRD.md:3` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F02 | 개발 중인 프로토타입 | `00_Document/PRD.md:3` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
-| F03 | 한국어로 즐기는 PC 게임을 목표로 만들고 있다 | `00_Document/PRD.md:18` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F04 | 마을 대장장이 대사 「어이, 모험가! 무기 손질이 필요하면 들러. ...가게는 아직 준비 중이지만 말이야.」 | `03_Client/Assets/Scenes/01.PlayArea/Town.unity:5986-5988`; `03_Client/Assets/Scripts/Gameplay/NpcInteractable.cs:84` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F05 | 퀘스트 이름 「마을의 위협」, 목표 「사냥터의 몬스터 처치」 | `03_Client/Assets/Scripts/UI/QuestProgressHud.cs:31-32` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F06 | 옆으로 펼쳐진 맵을 달리고 점프한다 | `00_Document/PRD.md:3`; `00_Document/PRD.md:9` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
@@ -161,6 +160,7 @@
 | F24 | 재사용 권한을 부여하지 않는다(all rights reserved) | `README.md:97-98` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F25 | 그림 일부는 AI 생성 도구를 활용해 만들었다 | `README.md:34` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 | F26 | 「앞으로」 절의 항목은 아직 게임에 없다 | `00_Document/PRD.md:13-14`; `00_Document/FEATURE_MAP.md:19` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
+| F27 | Guild System & Tycoon: 사냥으로 얻은 자원으로 길드 거점을 발전시키는 길드 타이쿤을 결합한다(제품 방향이며 구현 완료가 아니다) | `00_Document/PRD.md:3`; `00_Document/ADR/gameplay/ADR-006-genre-mix.md:4-5` | `7086d45b92b76742d8c11facbf8a1031b81d0853` |
 
 기준 commit은 모두 `7086d45b92b76742d8c11facbf8a1031b81d0853`이다. 행 번호는 그 commit의 파일 기준이다.
 
