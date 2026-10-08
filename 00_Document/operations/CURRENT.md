@@ -13,7 +13,7 @@
 - Core: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/persistence-engine-judgment-20261006`
 - <a id="content-worktree"></a>Content: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-ui-20261005`
 - Content(Unity 업그레이드): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` · `docs/unity-upgrade-closeout-20261008`
-- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/hook-helper-closeout-20261008`
+- Rules: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/cred-trial-record-20261008`
 - CodeMap(Architecture): `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `docs/architecture-tests-ci-closeout-20261005`
 - Management: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `docs/management-record-source-closeout-20261007`
 
