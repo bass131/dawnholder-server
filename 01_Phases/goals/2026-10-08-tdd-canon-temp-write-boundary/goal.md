@@ -5,11 +5,11 @@
 Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)이고 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream origin)이다.
+- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)로 병합됐다(merge commit `127cc5a1`). 리드 태그 PR은 branch `docs/lead-tag-model-name-20261008`(base main `127cc5a1`)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T13:21:40Z): PR211을 만들었고 메인이 재실사 R1·R2를 비차단으로 결정했다. 메인이 CI 뒤 사용자에게 병합 승인을 요청한다.
-- **다음 할 일**: PR211 병합(메인) → 리드 태그 PR(작성 전 CLAUDE.md 줄 목록·문안을 메인에 먼저 보냄).
+- **현재 위치**(2026-10-08T13:42:30Z): PR211이 병합됐다. 리드 태그 PR branch를 최신 main에서 만들었다. CLAUDE.md 바꿀 줄과 문안을 메인에, `05_Management/RESUME.md` 세 줄 소유 요청을 Management 리드에 보냈다.
+- **다음 할 일**: 리드 태그 PR Sol 계약 → 리드 R-2 → 신규 `gpt-6-astra` xhigh 문서 실사 → PR 생성과 메인 승인 묶음. CLAUDE.md는 메인이 이 branch에 쓰고 리드가 커밋한다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -17,8 +17,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 
 - [x] 범위와 기준 확정
 - [x] 정본 PR 작성·실사
-- [>] PR211 병합
-- [ ] 리드 태그 PR 실사
+- [x] PR211 병합
+- [>] 리드 태그 PR 실사
 - [ ] 리드 태그 PR 병합
 - [ ] 수신 helper 선행 시험
 - [ ] 수신 helper 구현·검증
@@ -206,6 +206,19 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-rereview-release.json, pr1-rereview-idle.json, pr1-rereview-close.json).
 - 열린 PR의 CURRENT(위험 3): PR207(Management 소개 페이지)과 PR191(Content 인벤토리 화면)이 옛 표 형식의 CURRENT를 고친다. 정본 PR 위에 PR207을 합치는 모의 병합은 충돌 1곳이었다(E/lead-check/open-prs-current.md). 병합 순서는 메인 결정(「요구사항 원천과 적용 결정」)대로 PR211이 먼저다.
 - PR과 처리: PR211을 만들었다. 메인 결정 `msg_e7dd27f2bb2d`(「요구사항 원천과 적용 결정」)로 R1·R2는 비차단 운영 기록이 됐다. 메인이 CI 뒤 사용자에게 병합 승인을 요청한다.
+
+### PR211 병합
+
+- 사용자 원문(메인 창 Enter 제출, 메인 전달 `msg_1d15bef8ded2`): 「병합 승인: PR211 head 2dfd7cf15aa487f7bdf8dfea63b0e7c1048e4dac」.
+- 메인이 head·MERGEABLE·CLEAN을 다시 조회한 뒤 병합했다. merge commit `127cc5a197a527c437412657c8dcfa38c1354862`, mergedAt 2026-10-08T13:41:27Z다.
+
+### 리드 태그 PR 착수
+
+- branch: 2026-10-08T13:42:30Z 최신 main `127cc5a1`에서 `docs/lead-tag-model-name-20261008`을 만들었다.
+- 조사: 범위 파일 열둘의 「Astra」를 종류별로 나눴다(태그·「리드 Astra」·앵커 id·산문, E/pr3/survey-astra.json). 도구 코드에는 리드 태그 목록이 없고 MergeGate 시험 자료 한 줄만 있다(하지 않을 것의 시험 자료 인용).
+- 열린 PR207·PR191은 이 PR의 대상 파일을 건드리지 않는다(E/pr3/open-prs.json).
+- M1: CLAUDE.md 26·27·28·30·37행의 바꿀 문안을 메인에 보냈다(`msg_71ec4060ed2d`, E/pr3/main-m1-claude-md.md).
+- `05_Management/RESUME.md` 7·27·29행 소유 요청을 Management 리드에 보냈다(`msg_ec828ef7dbff`). 다른 Run의 리드에게는 `--run`에 상대 Run을 적어야 보내졌다(`run_not_found`·`recipient_run_mismatch` 원시 E/pr3/mgmt-ownership-receipt*.json).
 
 ## 정본에서 옮긴 적용 기록
 
