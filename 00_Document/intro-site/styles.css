@@ -1,394 +1,1491 @@
-/* 소개 페이지 스타일.
-   외부 글꼴·자원을 불러오지 않는다(공개 허용 목록의 파일만으로 보여야 한다).
-   색은 배경 그림의 노을빛과 밤하늘 남색에서 골랐다. */
+/* Dawnholder 소개 페이지.
+   페이지는 노을 하늘(첫 화면)에서 밤의 계곡(맨 아래)으로 카메라가 내려가는 한 장면이다.
+   절마다 같은 성 계곡을 다른 자리·더 늦은 시간에서 자른 띠를 쓴다.
+   외부 요청 없이 이 폴더의 그림·글꼴만 쓴다. */
 
-:root {
-  --night: #15162e;
-  --night-2: #1d1f3f;
-  --night-3: #272a52;
-  --cream: #f7efe6;
-  --cream-dim: #d9cfe0;
-  --sunset: #f4a961;
-  --rose: #ec90a8;
-  --violet: #a58bd6;
-  --line: rgba(247, 239, 230, 0.16);
-  --serif: "Noto Serif KR", "Nanum Myeongjo", "Batang", "AppleMyungjo", Georgia, serif;
-  --sans: system-ui, "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+@font-face {
+  font-family: 'Pretendard';
+  src: url('fonts/Pretendard-Regular.subset.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
 }
 
-* {
+@font-face {
+  font-family: 'Pretendard';
+  src: url('fonts/Pretendard-Bold.subset.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  /* 색 다섯: 겹 배경 1·3번 그림에서 뽑은 값. 저녁 그늘만 산 그늘 색상의 파생색이다.
+     시간대 색조는 새 색을 만들지 않고 이 다섯을 섞는다. */
+  --dusk: #1e1526;
+  --rose: #c6699a;
+  --gold: #ffd788;
+  --sun: #fde9bd;
+  --lavender: #ae95ae;
+  --evening: color-mix(in srgb, var(--lavender) 45%, var(--dusk));
+  --night: color-mix(in srgb, var(--dusk) 82%, black);
+
+  /* 글자 크기: 16·18·21·24·36·48 여섯 단계 */
+  --t1: 1rem;
+  --t2: 1.125rem;
+  --t3: 1.3125rem;
+  --t4: 1.5rem;
+  --t5: 2.25rem;
+  --t6: 3rem;
+
+  /* 간격: 이 여덟 값만 쓴다 */
+  --sp-1: 8px;
+  --sp-2: 12px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+  --sp-5: 32px;
+  --sp-6: 48px;
+  --sp-7: 64px;
+  --sp-8: 96px;
+
+  --gutter: var(--sp-6);
+  --content: 1200px;
+  --menu-h: 56px;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--menu-h);
 }
 
 body {
   margin: 0;
-  background: var(--night);
-  color: var(--cream);
-  font-family: var(--sans);
-  font-size: 1.0625rem;
+  background: var(--dusk);
+  color: var(--sun);
+  font-family: 'Pretendard', sans-serif;
+  font-size: var(--t2);
   line-height: 1.7;
   word-break: keep-all;
   overflow-wrap: break-word;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+blockquote {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
 }
 
 a {
-  color: var(--sunset);
+  color: inherit;
 }
 
-a:focus-visible {
-  outline: 3px solid var(--sunset);
-  outline-offset: 3px;
+a:focus-visible,
+.button:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 4px;
 }
 
-h1,
-h2,
-h3 {
-  font-family: var(--serif);
-  line-height: 1.3;
+/* ───────── 장면 배율 ─────────
+   그림 사본은 모두 「게임 1단위 = 사본 80px」로 만들어져 있다(사이트 README 「동작 배율과 기준점」).
+   장면(data-scene)마다 정수 --s 하나를 두면 장면 배율은 80 × --s px/단위이고,
+   모든 그림 상자 = 사본 칸 × --s, 모든 위치 = 게임 단위 × --u다. 그래서 같은 장면의 캐릭터·효과·몬스터·겹 배경이
+   게임과 같은 크기 비율로 그려진다. --s 2는 pixelated와 함께 첫 화면의 넓고 높은 화면에서만 쓴다.
+   화면보다 넓은 장면은 무대 요소 하나에 scale(--k)을 걸어 통째로 줄인다(접점 보충 1의 1절). */
+
+.scene {
+  --s: 1;
+  --u: calc(80px * var(--s));
 }
 
-h2 {
-  margin: 0 0 1.25rem;
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  color: var(--sunset);
+/* ───────── 동작 띠 ─────────
+   띠 요소 하나가 한 칸 크기의 상자이고, 사본 전체를 배경으로 깔아 background-position으로 칸을 넘긴다.
+   칸 경계가 늘 정수 px라 옆 칸이 비치지 않는다. 칸 수·칸 크기·fps·기준점은 data-sprite 값마다 아래 한 곳에서 정한다.
+   --frame은 지금 칸 번호(스크립트가 스킬 재생 중에 넣는다). 반복 띠는 steps(칸 수, jump-none)으로
+   첫 칸부터 끝 칸까지 한 칸에 1/fps초씩 머문 뒤 첫 칸으로 돌아간다(끝 다음의 빈 자리를 보이지 않음). */
+
+.sprite {
+  display: block;
+  width: calc(var(--cw) * var(--s) * 1px);
+  height: calc(var(--ch) * var(--s) * 1px);
+  background-image: var(--img);
+  background-repeat: no-repeat;
+  background-size: calc(var(--cw) * var(--cells) * var(--s) * 1px) calc(var(--ch) * var(--s) * 1px);
+  background-position: calc(var(--frame, 0) * var(--cw) * var(--s) * -1px) 0;
 }
 
-h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1.2rem;
+.sprite:not(.fx) {
+  animation: strip-loop calc(var(--cells) / var(--fps) * 1s) steps(var(--cells), jump-none) calc(var(--loop-from, 0) * -1ms) infinite;
 }
 
-.wrap {
-  width: min(1040px, 100% - 2rem);
-  margin: 0 auto;
+/* 스킬 재생 중에는 스크립트가 칸을 정한다 */
+.sprite.is-acting {
+  animation: none;
 }
 
-/* 첫 화면: 배경 그림 위에 글자를 얹고, 아래쪽을 밤하늘 색으로 이어 붙인다. */
-.hero {
-  position: relative;
-  min-height: min(92vh, 760px);
+@keyframes strip-loop {
+  from {
+    background-position-x: 0;
+  }
+
+  to {
+    background-position-x: calc((var(--cells) - 1) * var(--cw) * var(--s) * -1px);
+  }
+}
+
+/* 사본별 칸 정보: README 「동작 배율과 기준점」 표의 칸 수·칸 크기·재생 fps·기준점. --once는 「한 번」 재생 띠 */
+[data-sprite="images/logo.webp"] { --img: url('images/logo.webp'); --cw: 640; --ch: 265; --cells: 16; --fps: 12; --px: 320; --py: 132.5; }
+[data-sprite="images/knight-idle.webp"] { --img: url('images/knight-idle.webp'); --cw: 228; --ch: 165; --cells: 16; --fps: 8.4; --px: 114; --py: 165; }
+[data-sprite="images/knight-move.webp"] { --img: url('images/knight-move.webp'); --cw: 228; --ch: 165; --cells: 16; --fps: 27.6; --px: 114; --py: 165; }
+[data-sprite="images/knight-attack.webp"] { --img: url('images/knight-attack.webp'); --cw: 357; --ch: 196; --cells: 16; --fps: 24; --once: 1; --px: 178; --py: 196; }
+[data-sprite="images/knight-dash-effect.webp"] { --img: url('images/knight-dash-effect.webp'); --cw: 480; --ch: 224; --cells: 9; --fps: 21.6; --once: 1; --px: 240; --py: 112; }
+[data-sprite="images/mage-idle.webp"] { --img: url('images/mage-idle.webp'); --cw: 216; --ch: 169; --cells: 16; --fps: 7.2; --px: 108; --py: 169; }
+[data-sprite="images/mage-cast.webp"] { --img: url('images/mage-cast.webp'); --cw: 265; --ch: 232; --cells: 16; --fps: 16.8; --once: 1; --px: 132; --py: 232; }
+[data-sprite="images/mage-thunder-effect.webp"] { --img: url('images/mage-thunder-effect.webp'); --cw: 162; --ch: 316; --cells: 10; --fps: 12; --once: 1; --px: 80.5; --py: 261.2; }
+[data-sprite="images/mage-teleport-effect.webp"] { --img: url('images/mage-teleport-effect.webp'); --cw: 151; --ch: 228; --cells: 5; --fps: 12; --once: 1; --px: 75.5; --py: 217.1; }
+[data-sprite="images/slime-idle.webp"] { --img: url('images/slime-idle.webp'); --cw: 164; --ch: 119; --cells: 16; --fps: 12; --px: 82; --py: 119; }
+[data-sprite="images/golem-idle.webp"] { --img: url('images/golem-idle.webp'); --cw: 357; --ch: 219; --cells: 16; --fps: 4.8; --px: 178; --py: 219; }
+[data-sprite="images/boss-idle.webp"] { --img: url('images/boss-idle.webp'); --cw: 274; --ch: 198; --cells: 16; --fps: 8.4; --px: 136.5; --py: 198; }
+[data-sprite="images/blacksmith-idle.webp"] { --img: url('images/blacksmith-idle.webp'); --cw: 228; --ch: 183; --cells: 16; --fps: 6; --px: 114; --py: 183; }
+
+/* 기준점 자리: 크기 0인 점이 장면 좌표(게임 단위)에 놓이고, 그 안의 띠는 자기 기준점(발밑)을 이 점에 맞춘다.
+   띠가 바뀌어 칸 크기가 달라져도 발 위치가 그대로다. 좌우 뒤집기도 기준점을 축으로 한다. */
+.spot {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.spot .sprite {
+  position: absolute;
+  left: calc(var(--px) * var(--s) * -1px);
+  top: calc(var(--py) * var(--s) * -1px);
+  transform-origin: calc(var(--px) * var(--s) * 1px) calc(var(--py) * var(--s) * 1px);
+  scale: var(--face, 1) 1;
+}
+
+/* 캐릭터 이동: 스크립트가 --x(게임 단위)와 --face(1 오른쪽, -1 왼쪽)를 넣는다 */
+.mover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  translate: calc(var(--x, 0) * var(--u)) 0;
+}
+
+/* ───────── 고정 메뉴 바 ───────── */
+
+.menu {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 10;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  overflow: hidden;
-  isolation: isolate;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-4);
+  min-height: var(--menu-h);
+  padding: var(--sp-1) var(--gutter);
+  background: rgb(30 21 38 / 0.92);
+  backdrop-filter: blur(8px);
+  font-size: var(--t1);
+  line-height: 1.5;
 }
 
-.hero-art {
+.menu-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+}
+
+.menu-list a {
+  display: inline-block;
+  padding-block: var(--sp-1);
+  color: var(--sun);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.menu-list a:hover {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.motion {
+  display: flex;
+  align-items: center;
+}
+
+.motion-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+/* 픽셀 감각의 네모 칸. 체크됨 = 움직임 멈춤 = 칸이 노을 금으로 찬다 */
+.motion-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-block: var(--sp-1);
+  color: var(--sun);
+  cursor: pointer;
+}
+
+.motion-label::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--lavender);
+  background: linear-gradient(var(--gold), var(--gold)) no-repeat center / 0 0;
+  transition: background-size 120ms ease-out, border-color 120ms ease-out;
+}
+
+.motion-input:checked + .motion-label::before {
+  border-color: var(--gold);
+  background-size: 10px 10px;
+}
+
+.motion-input:focus-visible + .motion-label {
+  outline: 3px solid var(--gold);
+  outline-offset: 4px;
+}
+
+/* ───────── 첫 화면: 노을의 설정 장면 ─────────
+   --fx: 화면 가운데에 올 그림 x(해 = 1086). --base: 첫 화면 아래 끝에 맞출 그림 y.
+   --mx·--my·--sy: script.js가 넣는 마우스(-1~1)·스크롤(px) 값. 스크립트가 없으면 0이다. */
+
+.hero {
+  --fx: 1086;
+  --base: 667;
+  --mx: 0;
+  --my: 0;
+  --sy: 0;
+  --title-top: var(--sp-6);
+
+  position: relative;
+  height: 100svh;
+  min-height: 640px;
+  overflow: clip;
+  /* 그림 위쪽이 모자란 높이는 하늘 맨 윗줄 색으로 잇는다 */
+  background: var(--rose);
+}
+
+.hero-scene {
+  position: absolute;
+  inset: 0;
+}
+
+.layer {
+  --depth: 0;
+  --lag: 0;
+
+  position: absolute;
+  inset: 0;
+  translate:
+    calc(var(--mx) * var(--depth) * 1px)
+    calc(var(--my) * var(--depth) * 0.35px + var(--sy) * var(--lag) * 1px);
+}
+
+.layer-1 { --lag: 0.55; }
+.layer-2 { --depth: 5; --lag: 0.45; }
+.layer-3 { --depth: 9; --lag: 0.35; }
+.layer-4 { --depth: 15; --lag: 0.25; }
+.layer-5 { --depth: 22; --lag: 0.15; }
+.layer-6,
+.layer-cast { --depth: 32; --lag: 0.06; }
+
+.layer img {
+  position: absolute;
+  left: calc(50% - var(--fx) * var(--s) * 1px);
+  bottom: calc((var(--base) - 724) * var(--s) * 1px);
+  width: calc(2172px * var(--s));
+  max-width: none;
+  height: calc(724px * var(--s));
+}
+
+.drift {
+  position: absolute;
+  inset: 0;
+  animation: drift 40s ease-in-out infinite alternate;
+}
+
+/* 대표 연출(한 번): 하늘 → 구름 → 먼 산 → 언덕 → 성 → 들판이 차례로 떠오른다 */
+.layer-1 img {
+  animation: fade-in 900ms ease-out both;
+}
+
+.layer-2 img { --in: 150ms; --rise: 40; }
+.layer-3 img { --in: 300ms; --rise: 70; }
+.layer-4 img { --in: 450ms; --rise: 100; }
+.layer-5 img { --in: 600ms; --rise: 130; }
+.layer-6 img { --in: 750ms; --rise: 160; }
+
+.layer-2 img,
+.layer-3 img,
+.layer-4 img,
+.layer-5 img,
+.layer-6 img {
+  animation: layer-rise 1100ms cubic-bezier(0.16, 0.84, 0.3, 1) var(--in) both;
+}
+
+/* 들판 아래 끝이 저녁 그늘로 어두워져 이야기 절로 이어진다 */
+.hero-dusk {
+  position: absolute;
+  inset: auto 0 0;
+  height: 26%;
+  background: linear-gradient(to bottom, rgb(30 21 38 / 0), rgb(30 21 38 / 0.72) 64%, var(--dusk));
+}
+
+/* 해 둘레에서 오르는 빛 입자: 그림 좌표(해 x 1086) 기준으로 놓는다 */
+.motes {
+  position: absolute;
+  inset: 0;
+  translate:
+    calc(var(--mx) * 5px)
+    calc(var(--my) * 1.75px + var(--sy) * 0.45px);
+}
+
+.motes i {
+  position: absolute;
+  left: calc(50% + (1086 + var(--ox) - var(--fx)) * var(--s) * 1px);
+  bottom: calc((var(--base) - var(--oy)) * var(--s) * 1px);
+  width: 3px;
+  height: 3px;
+  background: var(--gold);
+  box-shadow: 0 0 6px 2px rgb(255 215 136 / 0.5);
+  opacity: 0;
+  animation: mote var(--dur) linear var(--delay) infinite;
+}
+
+.motes i:nth-child(1) { --ox: -282; --oy: 407; --dur: 7.2s; --delay: 2.1s; --rise: 150; --sway: 18; }
+.motes i:nth-child(2) { --ox: -215; --oy: 441; --dur: 8.4s; --delay: 3.4s; --rise: 190; --sway: -14; }
+.motes i:nth-child(3) { --ox: -147; --oy: 396; --dur: 6.6s; --delay: 2.6s; --rise: 130; --sway: 10; }
+.motes i:nth-child(4) { --ox: -90; --oy: 452; --dur: 9.1s; --delay: 4.2s; --rise: 210; --sway: -20; }
+.motes i:nth-child(5) { --ox: -34; --oy: 418; --dur: 7.7s; --delay: 2.3s; --rise: 170; --sway: 12; }
+.motes i:nth-child(6) { --ox: 23; --oy: 390; --dur: 6.9s; --delay: 3.9s; --rise: 140; --sway: -8; }
+.motes i:nth-child(7) { --ox: 79; --oy: 446; --dur: 8.8s; --delay: 2.9s; --rise: 200; --sway: 16; }
+.motes i:nth-child(8) { --ox: 136; --oy: 407; --dur: 7.4s; --delay: 4.8s; --rise: 160; --sway: -12; }
+.motes i:nth-child(9) { --ox: 192; --oy: 463; --dur: 9.6s; --delay: 2.4s; --rise: 220; --sway: 9; }
+.motes i:nth-child(10) { --ox: 249; --oy: 401; --dur: 6.8s; --delay: 3.6s; --rise: 140; --sway: -16; }
+.motes i:nth-child(11) { --ox: 305; --oy: 435; --dur: 8.1s; --delay: 5.1s; --rise: 180; --sway: 14; }
+.motes i:nth-child(12) { --ox: -11; --oy: 475; --dur: 10.2s; --delay: 3.1s; --rise: 240; --sway: -6; }
+
+/* 첫 화면의 기사·마법사: 들판 위 그림 좌표(--gx, --gy)에 발을 딛는다 */
+.layer-cast .spot {
+  left: calc(50% + (var(--gx) - var(--fx)) * var(--s) * 1px);
+  bottom: calc((var(--base) - var(--gy)) * var(--s) * 1px);
+  animation: fade-in 700ms ease-out 1900ms both;
+}
+
+.hero-knight { --gx: 1236; --gy: 628; }
+.hero-mage { --gx: 1384; --gy: 634; }
+
+/* ───────── 제목 카드: 해 위로 떠오르는 로고와 햇빛 무리 ───────── */
+
+.title-card {
+  position: absolute;
+  inset: calc(var(--menu-h) + var(--title-top)) 0 auto;
+  z-index: 2;
+  isolation: isolate;
+  width: min(100% - 2 * var(--gutter), 760px);
+  margin-inline: auto;
+  color: var(--dusk);
+  text-align: center;
+}
+
+/* 글자 뒤 밝기를 올리는 햇빛 무리. 아래 그림이 성·산이어도 글자 대비를 지킨다 */
+.sunlight {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  z-index: -1;
+  width: 150%;
+  height: 150%;
+  translate: -50% -50%;
+  background: radial-gradient(
+    closest-side,
+    rgb(253 233 189 / 0.95),
+    rgb(253 233 189 / 0.9) 46%,
+    rgb(255 215 136 / 0.5) 72%,
+    rgb(255 215 136 / 0)
+  );
+  animation: sunlight-in 1100ms ease-out 1000ms both;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+}
+
+/* 로고는 메뉴 화면처럼 16칸을 12fps로 끝없이 돈다. 멈추면 칸 0(아래 「움직임 멈춤」) */
+.logo-rise {
+  display: block;
+  animation: logo-rise 1000ms cubic-bezier(0.2, 0.8, 0.2, 1) 1100ms both;
+}
+
+.logo-strip {
+  --s: 1;
+}
+
+.title-text {
+  animation: fade-in 800ms ease-out 1600ms both;
+}
+
+.tagline {
+  margin-top: var(--sp-2);
+  font-size: var(--t4);
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.hero-note {
+  margin-top: var(--sp-1);
+  font-size: var(--t3);
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+.title-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.prototype {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--t1);
+  font-weight: 700;
+}
+
+/* 로고에 있는 네 갈래 반짝임 모양 */
+.prototype::before,
+.badge::before {
+  content: '';
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: currentColor;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+
+/* 모서리 네 칸을 비운 픽셀 단추. clip-path 대신 배경 두 겹이라 초점 테두리가 잘리지 않는다 */
+.button {
+  display: inline-block;
+  padding: var(--sp-2) var(--sp-5);
+  color: var(--sun);
+  font-size: var(--t1);
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+  background:
+    linear-gradient(var(--dusk), var(--dusk)) 4px 0 / calc(100% - 8px) 100% no-repeat,
+    linear-gradient(var(--dusk), var(--dusk)) 0 4px / 100% calc(100% - 8px) no-repeat;
+}
+
+.button:hover {
+  color: var(--gold);
+}
+
+.title-card .button:focus-visible {
+  outline-color: var(--dusk);
+}
+
+/* ───────── 절 공통 ─────────
+   글은 가운데 1200px 단 안에서 왼쪽 정렬, 그림 띠(.band·.stage-frame)는 화면 폭 가득. */
+
+/* --edge: 가운데 단의 왼쪽 끝. 그림 띠는 음수 여백으로 화면 끝까지 편다.
+   %는 쓰는 요소의 부모 폭을 따라 띠에서 값이 달라지므로, main 폭(100cqi)을 기준으로 잡는다 */
+main {
+  container-type: inline-size;
+}
+
+.chapter {
+  --edge: max(var(--gutter), (100cqi - var(--content)) / 2);
+
+  position: relative;
+  padding-inline: var(--edge);
+}
+
+.chapter > .band,
+.chapter > .stage-frame {
+  margin-inline: calc(-1 * var(--edge));
+}
+
+.chapter-title {
+  position: relative;
+  z-index: 3;
+  font-size: var(--t6);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* 장면 띠: 겹 배경을 1배로 잘라 깐다. --fx는 띠 가운데에 올 그림 x, --base는 띠 아래 끝에 맞출 그림 y.
+   띠가 넓어 --fx를 가운데 두면 그림 끝이 드러날 때는 그림이 띠를 덮는 범위 안으로 민다 */
+.band {
+  position: relative;
+  overflow: clip;
+}
+
+/* --layer-left: 그림 왼쪽 끝. 그림과 그 위에 선 인물이 같은 값을 써서 함께 움직인다 */
+.band-layer,
+.band .spot {
+  --layer-left: clamp(100% - 2172px * var(--s), 50% - var(--fx) * var(--s) * 1px, 0px);
+}
+
+.band .spot {
+  left: calc(var(--layer-left) + var(--gx) * var(--s) * 1px);
+}
+
+.band-layer {
+  position: absolute;
+  left: var(--layer-left);
+  bottom: calc((var(--base) - 724) * var(--s) * 1px);
+  width: calc(2172px * var(--s));
+  max-width: none;
+  height: calc(724px * var(--s));
+}
+
+/* 시간대 그늘: 그림을 저녁 보라로 곱해 누르고(.band-shade), 위아래 끝은 바탕 그늘로 녹인다(::after).
+   곱하기와 녹이기를 한 요소에 두면 끝이 바탕보다 더 어두워져 이음매가 보여서 둘로 나눴다. */
+.band-shade {
+  position: absolute;
+  inset: 0;
+  background: var(--evening);
+  mix-blend-mode: multiply;
+}
+
+.band::after,
+.stage-layers::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--dusk), rgb(30 21 38 / 0) 30%, rgb(30 21 38 / 0) 62%, var(--dusk));
+}
+
+.band .spot {
+  z-index: 2;
+}
+
+/* ───────── 이야기: 해 질 녘의 성 아랫마을 ───────── */
+
+.story {
+  display: grid;
+  padding-bottom: var(--sp-7);
+}
+
+.story-band {
+  --fx: 760;
+  --base: 724;
+
+  grid-area: 1 / 1;
+  height: 600px;
+}
+
+.story-band .band-shade {
+  opacity: 0.85;
+}
+
+.story-smith {
+  --gx: 1180;
+
+  bottom: calc((var(--base) - 570) * var(--s) * 1px);
+}
+
+.story > .chapter-title {
+  grid-area: 1 / 1;
+  align-self: start;
+  padding-top: var(--sp-7);
+}
+
+.story-talk {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: var(--sp-6);
+  margin-top: -240px;
+}
+
+/* 대화 창의 대장장이 초상. 원래보다 작게 그려 흐림 없는 축소다 */
+.portrait {
+  display: block;
+  width: 420px;
+  height: auto;
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
+  mask-image: linear-gradient(to bottom, black 70%, transparent);
+}
+
+.quote {
+  padding-bottom: var(--sp-5);
+}
+
+.quote p {
+  max-width: 22em;
+  font-size: var(--t5);
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.quote footer {
+  margin-top: var(--sp-3);
+  color: var(--lavender);
+  font-size: var(--t2);
+}
+
+.story-notes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4) var(--sp-6);
+  margin-top: var(--sp-5);
+}
+
+.story-notes p {
+  max-width: 30em;
+  color: var(--sun);
+}
+
+/* ───────── 플레이: 옆으로 펼쳐진 들판 ─────────
+   스크롤하면 겹마다 게임 겹 배경의 이동 비율(0.03·0.05·0.07·0.1, 들판 = 1로 나눔)만큼 옆으로 흐른다.
+   --pan은 script.js가 넣는 들판 겹의 이동 거리(px). 스크립트가 없거나 움직임을 멈추면 0이다. */
+
+.features {
+  padding-block: var(--sp-7);
+  background: linear-gradient(to bottom, var(--dusk), color-mix(in srgb, var(--evening) 40%, var(--dusk)) 40%, var(--dusk));
+}
+
+.pan-band {
+  --base: 724;
+
+  height: 340px;
+  margin-top: var(--sp-4);
+}
+
+.pan-layer {
+  --depth: 1;
+
+  position: absolute;
+  inset: 0;
+  translate: calc(var(--pan, 0px) * var(--depth) * -1) 0;
+}
+
+.pan-3 { --depth: 0.3; }
+.pan-4 { --depth: 0.5; }
+.pan-5 { --depth: 0.7; }
+
+.pan-layer img {
+  position: absolute;
+  left: 0;
+  bottom: calc((var(--base) - 724) * var(--s) * 1px);
+  width: calc(2172px * var(--s));
+  max-width: none;
+  height: calc(724px * var(--s));
+}
+
+.pan-band .band-shade {
+  opacity: 0.9;
+}
+
+.feature-list {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-6) var(--sp-6);
+  margin-top: calc(-1 * var(--sp-7));
+}
+
+.feature-name {
+  margin-bottom: var(--sp-1);
+  color: var(--gold);
+  font-size: var(--t4);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.feature p {
+  max-width: 24em;
+}
+
+/* ───────── 직업: 폐허 탑이 선 들판의 저녁 무대 ─────────
+   넓은 화면은 한 줄 무대(가로 1240px 좌표 상자), 좁은 화면은 두 줄 무대(800px)를 scale(--k)로 줄인다.
+   캐릭터 사이 거리는 스킬 이동 거리(대시 4단위, 순간이동 3.5단위)와 효과 크기가 무대 안에 남게 정했다. */
+
+.classes {
+  --stage-w: 1240;
+  --stage-h: 480;
+  --k: 1;
+
+  padding-top: var(--sp-7);
+}
+
+.classes > .chapter-title {
+  margin-bottom: calc(-1 * var(--sp-7));
+}
+
+.stage-frame {
+  position: relative;
+  height: calc(var(--stage-h) * var(--k) * 1px);
+  overflow: clip;
+}
+
+.stage {
+  --fx: 1500;
+  --base: 724;
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: calc(var(--stage-w) * 1px);
+  height: calc(var(--stage-h) * 1px);
+  margin-left: calc(var(--stage-w) * -0.5px);
+  transform: scale(var(--k));
+  transform-origin: 50% 0;
+}
+
+/* 무대 그림은 화면 폭 가득 보이도록 좌표 상자보다 넓게 깐다(같은 배율) */
+.stage-layers {
+  position: absolute;
+  inset: 0 -400px;
+}
+
+.stage-layers .band-shade {
+  opacity: 0.8;
+}
+
+.spot-knight { --gx: 2; --gy: 0; }
+.spot-mage { --gx: 9.25; --gy: 0; }
+.spot-slime { --gx: 14.25; --gy: 0; }
+
+.stage .spot {
+  z-index: 2;
+  left: calc(var(--gx) * var(--u));
+  bottom: calc(72px + var(--gy) * var(--u));
+}
+
+/* 앞 줄(기사)이 뒤 줄(마법사·슬라임) 앞에 온다 */
+.stage .spot-knight {
+  z-index: 3;
+}
+
+/* 효과는 캐릭터 앞에 그린다(게임 정렬 순서 100 > 0). 재생할 때만 보인다 */
+.fx {
+  z-index: 1;
+  opacity: 0;
+}
+
+.fx.is-on {
+  opacity: 1;
+}
+
+/* 효과 사본은 스크립트가 무대가 가까워졌다고 알린 뒤에 받는다. 스크립트가 없으면 재생도 없다 */
+.stage:not([data-ready]) .fx {
+  background-image: none;
+}
+
+/* 대시 효과: 기사 기준점에서 (1, 0.9)단위, 기사가 보는 쪽으로. 기사를 따라 움직이고 뒤집힌다 */
+.mover .fx-dash {
+  translate: calc(var(--face, 1) * 1 * var(--u)) calc(-0.9 * var(--u));
+}
+
+/* 순간이동 효과: 발밑에서 0.5단위 아래. 뒤집지 않는다. 떠난 자리 효과는 무대에 남는다(--dx) */
+.mover .fx-arrive {
+  --face: 1;
+
+  translate: 0 calc(0.5 * var(--u));
+}
+
+.spot-mage > .fx-depart {
+  translate: calc(var(--dx, 0) * var(--u)) calc(0.5 * var(--u));
+}
+
+/* 낙뢰: 맞는 적(슬라임)의 발밑. 뒤집지 않는다 */
+.spot-slime .fx-thunder {
+  --face: 1;
+}
+
+.class-notes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-5) var(--sp-6);
+  margin-top: var(--sp-4);
+}
+
+.class-name {
+  margin-bottom: var(--sp-2);
+  font-size: var(--t5);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.class-note p {
+  max-width: 30em;
+}
+
+.class-note p + p {
+  margin-top: var(--sp-1);
+  color: var(--lavender);
+}
+
+/* 스킬 이름 = 누르면 그 스킬을 무대에서 재생하는 조작. 게임 메뉴의 선택 커서와 픽셀 모서리 */
+.skill {
+  position: relative;
+  display: inline-block;
+  margin-block: 2px;
+  padding: 0 var(--sp-2);
+  color: var(--gold);
+  cursor: pointer;
+  background:
+    linear-gradient(rgb(255 215 136 / 0.12), rgb(255 215 136 / 0.12)) 2px 0 / calc(100% - 4px) 100% no-repeat,
+    linear-gradient(rgb(255 215 136 / 0.12), rgb(255 215 136 / 0.12)) 0 2px / 100% calc(100% - 4px) no-repeat;
+  box-shadow: inset 0 -2px 0 var(--gold);
+}
+
+.skill strong {
+  font-weight: 700;
+}
+
+/* 라디오는 글자 위에 투명하게 겹쳐 둔다. 누름은 label이 받아 라디오에 넘기므로 라디오 자신은 포인터를 받지 않는다
+   (글자를 가리는 요소로 잡히지 않게) */
+.skill-input {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: 30% 40%;
-  z-index: -2;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.hero::after {
-  content: "";
+.skill::before {
+  content: '';
   position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(180deg, rgba(21, 22, 46, 0.35) 0%, rgba(21, 22, 46, 0.15) 40%, rgba(21, 22, 46, 0.92) 85%, var(--night) 100%);
+  top: 50%;
+  left: -10px;
+  width: 7px;
+  height: 10px;
+  background: var(--gold);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  opacity: 0;
+  translate: -4px -50%;
+  transition: opacity 160ms ease-out, translate 160ms ease-out;
 }
 
-.site-nav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.25rem 1.25rem;
-  padding: 0.9rem 1rem;
-  background: rgba(21, 22, 46, 0.55);
+.skill:hover::before,
+.skill:has(.skill-input:checked)::before,
+.skill:has(.skill-input:focus-visible)::before {
+  opacity: 1;
+  translate: 0 -50%;
 }
 
-.site-nav a {
-  color: var(--cream);
-  text-decoration: none;
-  font-weight: 600;
+.skill:has(.skill-input:checked) {
+  color: var(--dusk);
+  background:
+    linear-gradient(var(--gold), var(--gold)) 2px 0 / calc(100% - 4px) 100% no-repeat,
+    linear-gradient(var(--gold), var(--gold)) 0 2px / 100% calc(100% - 4px) no-repeat;
 }
 
-.site-nav a:hover {
-  color: var(--sunset);
+.skill:has(.skill-input:focus-visible) {
+  outline: 3px solid var(--gold);
+  outline-offset: 4px;
 }
 
-.hero-text {
-  width: min(1040px, 100% - 2rem);
-  margin: 0 auto;
-  padding: 6rem 0 3.5rem;
-  text-shadow: 0 2px 12px rgba(21, 22, 46, 0.8);
-}
+/* ───────── 모험의 흐름: 밤이 내리는 들판 ───────── */
 
-.hero h1 {
-  margin: 0.3rem 0 0.4rem;
-  font-size: clamp(2.6rem, 9vw, 4.8rem);
-  letter-spacing: 0.02em;
-}
-
-.tagline {
-  margin: 0;
-  font-size: clamp(1.15rem, 3.2vw, 1.5rem);
-  font-weight: 600;
-}
-
-.hero-note {
-  margin: 0.4rem 0 1.6rem;
-  color: var(--cream-dim);
-}
-
-.button {
-  display: inline-block;
-  padding: 0.75rem 1.6rem;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--sunset), var(--rose));
-  color: var(--night);
-  font-weight: 700;
-  text-decoration: none;
-  text-shadow: none;
-}
-
-.button:hover {
-  filter: brightness(1.08);
-}
-
-.badge {
-  display: inline-block;
-  margin: 0;
-  padding: 0.15rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  line-height: 1.6;
-  text-shadow: none;
-}
-
-.badge-prototype {
-  background: rgba(165, 139, 214, 0.9);
-  color: var(--night);
-}
-
-.badge-progress {
-  background: var(--sunset);
-  color: var(--night);
-}
-
-.badge-plan {
-  background: transparent;
-  border: 1px solid var(--violet);
-  color: var(--violet);
-}
-
-/* 절마다 배경을 번갈아 두어 한 장 스크롤에서도 구획이 보이게 한다. */
-.band {
-  padding: 4rem 0;
-}
-
-.band-story,
-.band-classes,
-.band-roadmap {
-  background: var(--night-2);
-}
-
-.quote {
-  margin: 0 0 1.5rem;
-  padding: 1.25rem 1.5rem;
-  border-left: 4px solid var(--rose);
-  background: var(--night-3);
-  border-radius: 0 12px 12px 0;
-  font-family: var(--serif);
-  font-size: 1.2rem;
-}
-
-.quote p {
-  margin: 0;
-}
-
-.quote footer {
-  margin-top: 0.5rem;
-  font-family: var(--sans);
-  font-size: 0.95rem;
-  color: var(--cream-dim);
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.card {
-  padding: 1.25rem 1.25rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: rgba(39, 42, 82, 0.6);
-}
-
-.card p {
-  margin: 0.25rem 0 0;
-  color: var(--cream-dim);
-}
-
-.card .badge {
-  margin-bottom: 0.6rem;
-}
-
-/* 픽셀 그림은 원래 크기보다 키우지 않는다(흐려지지 않게). 표시 폭은 모두 원본 폭 이하다. */
-.sprite {
-  display: block;
-}
-
-.classes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
-}
-
-.class-card {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1.25rem;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--night-3);
-}
-
-.class-card .sprite {
-  width: 150px;
-}
-
-.class-card p {
-  margin: 0.4rem 0 0;
-  color: var(--cream-dim);
-}
-
-.class-card strong {
-  color: var(--sunset);
+.adventure {
+  padding-top: var(--sp-8);
 }
 
 .route {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0 0 1rem;
-  padding: 0;
-  list-style: none;
+  gap: var(--sp-4);
+  margin-top: var(--sp-5);
   counter-reset: step;
 }
 
+/* 실제 순서라 번호를 쓴다. 칸 사이를 잇는 선이 다음 단계로 간다 */
 .route li {
+  position: relative;
+  flex: 1;
+  padding-top: var(--sp-6);
+  font-weight: 700;
   counter-increment: step;
-  padding: 0.45rem 1rem;
-  border-radius: 999px;
-  background: var(--night-3);
-  border: 1px solid var(--line);
-  font-weight: 600;
 }
 
 .route li::before {
-  content: counter(step) ". ";
-  color: var(--sunset);
+  content: counter(step);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--dusk);
+  font-size: var(--t1);
+  line-height: 1;
+  background: var(--gold);
+}
+
+.route li::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 44px;
+  right: calc(-1 * var(--sp-4) + 12px);
+  height: 2px;
+  background: repeating-linear-gradient(to right, var(--lavender) 0 6px, transparent 6px 12px);
+}
+
+.route li:last-child::after {
+  content: none;
 }
 
 .route-note {
-  color: var(--cream-dim);
+  max-width: 34em;
+  margin-top: var(--sp-5);
+  color: var(--lavender);
 }
 
-.sub {
-  margin-top: 2.25rem;
+.sub-title {
+  margin-top: var(--sp-7);
+  font-size: var(--t4);
+  line-height: 1.4;
 }
 
+.monster-frame {
+  height: auto;
+  margin-top: var(--sp-3);
+}
+
+.monster-stage {
+  --fx: 1100;
+  --base: 724;
+
+  position: relative;
+  overflow: clip;
+}
+
+.monster-stage .stage-layers {
+  inset: 0;
+}
+
+.monster-stage .band-layer {
+  bottom: calc((var(--base) - 724) * var(--s) * 1px + 40px);
+}
+
+.monster-stage .stage-layers::after {
+  background: linear-gradient(to bottom, var(--dusk), rgb(30 21 38 / 0) 40%, rgb(30 21 38 / 0.3) 70%, var(--dusk));
+}
+
+/* 몬스터는 같은 땅선에 발을 딛고(칸 아래 = 기준점), 게임 배율 그대로라 골렘이 가장 크다 */
 .monsters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: var(--sp-8);
+  padding: var(--sp-7) var(--gutter) var(--sp-5);
 }
 
 .monster {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 1.25rem 1rem 0.75rem;
-  border-radius: 16px;
-  background: radial-gradient(ellipse at 50% 85%, rgba(236, 144, 168, 0.25), transparent 70%), var(--night-2);
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
 }
 
-.monster .sprite {
-  width: auto;
-  max-height: 150px;
+.monster .spot {
+  position: relative;
+  width: calc(var(--cw) * var(--s) * 1px);
+  height: calc(var(--ch) * var(--s) * 1px);
 }
 
-.monster p {
-  margin: 0.5rem 0 0;
+.monster-slime .spot { --cw: 164; --ch: 119; }
+.monster-golem .spot { --cw: 357; --ch: 219; }
+.monster-boss .spot { --cw: 274; --ch: 198; }
+
+.monster .spot .sprite {
+  left: 0;
+  top: 0;
+}
+
+.monster-name {
   font-weight: 700;
 }
 
+/* ───────── 앞으로: 밤하늘 ─────────
+   아직 게임에 없는 항목이라 게임 그림을 두지 않는다. 배지 글자색은 배지 클래스 하나가 정한다
+   (문단 선택자가 배지 색을 덮지 않게 같은 단계의 클래스만 쓴다). */
+
+.roadmap {
+  padding-top: var(--sp-8);
+  padding-bottom: var(--sp-7);
+  background: linear-gradient(to bottom, var(--dusk), var(--night));
+}
+
+.roadmap-lead {
+  max-width: 34em;
+  margin-top: var(--sp-4);
+}
+
+.plans {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-6);
+  margin-top: var(--sp-6);
+}
+
+.plan {
+  padding-top: var(--sp-4);
+  border-top: 2px solid rgb(174 149 174 / 0.4);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--t1);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.badge-progress {
+  color: var(--gold);
+}
+
+.badge-plan {
+  color: var(--lavender);
+}
+
+.plan-name {
+  margin-top: var(--sp-2);
+  font-size: var(--t4);
+  line-height: 1.4;
+}
+
+.plan-text {
+  max-width: 24em;
+  margin-top: var(--sp-1);
+  color: var(--sun);
+}
+
 .caution {
-  margin-top: 1.25rem;
-  color: var(--cream-dim);
-  font-size: 0.95rem;
+  max-width: 34em;
+  margin-top: var(--sp-5);
+  color: var(--lavender);
+}
+
+/* ───────── 개발 소식 ───────── */
+
+.news {
+  padding-top: var(--sp-7);
+  padding-bottom: var(--sp-5);
+  background: var(--night);
 }
 
 .timeline {
-  margin: 0 0 1rem;
-  padding-left: 1.2rem;
+  display: grid;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+  padding-left: var(--sp-5);
+  border-left: 2px solid rgb(174 149 174 / 0.4);
+}
+
+.timeline li {
+  position: relative;
+  max-width: 34em;
+}
+
+.timeline li::before {
+  content: '';
+  position: absolute;
+  top: 0.55em;
+  left: calc(-1 * var(--sp-5) - 7px);
+  width: 12px;
+  height: 12px;
+  background: var(--gold);
 }
 
 .timeline strong {
-  color: var(--sunset);
-  margin-right: 0.4rem;
+  display: block;
+  color: var(--gold);
+  font-size: var(--t4);
+  line-height: 1.4;
 }
+
+.news-note {
+  max-width: 34em;
+  margin-top: var(--sp-5);
+  color: var(--lavender);
+}
+
+/* ───────── 맨 아래: 밤의 산 그림자 ───────── */
 
 .site-footer {
-  padding: 2.5rem 0 3rem;
-  border-top: 1px solid var(--line);
-  background: #101125;
-  color: var(--cream-dim);
-  font-size: 0.92rem;
+  position: relative;
+  background: var(--night);
+  color: var(--lavender);
+  font-size: var(--t1);
+  line-height: 1.7;
 }
 
-.site-footer p {
-  margin: 0.3rem 0;
+/* 먼 산(겹 3)과 언덕(겹 4)의 능선만 보이게 잘라 밤 그림자로 누른다 */
+.night-ridge {
+  position: relative;
+  height: 200px;
+  overflow: clip;
 }
 
-@media (max-width: 480px) {
-  .band {
-    padding: 3rem 0;
+.night-ridge img {
+  position: absolute;
+  left: calc(50% - 1086px);
+  bottom: -290px;
+  width: 2172px;
+  max-width: none;
+  height: 724px;
+  filter: brightness(0.42) saturate(0.6);
+}
+
+.night-ridge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0) 55%, var(--night));
+}
+
+.footer-text {
+  display: grid;
+  gap: var(--sp-1);
+  width: min(100% - 2 * var(--gutter), var(--content));
+  margin-inline: auto;
+  padding-block: var(--sp-5) var(--sp-7);
+  background: var(--night);
+}
+
+.to-top {
+  color: var(--sun);
+  font-weight: 700;
+}
+
+/* ───────── 움직임 멈춤(스크립트 없이 :has로) ─────────
+   반복 띠는 칸 0, 로고도 칸 0에 선다. 빛 입자는 숨기고 겹 배경은 제자리. */
+
+:root:has(#motion-stop:checked) :is(.sprite, .drift, .motes i) {
+  animation: none;
+}
+
+:root:has(#motion-stop:checked) .motes {
+  visibility: hidden;
+}
+
+:root:has(#motion-stop:checked) [data-parallax] {
+  translate: none;
+}
+
+/* ───────── 키프레임 ───────── */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes layer-rise {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--rise) * 1px));
+  }
+}
+
+@keyframes sunlight-in {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+}
+
+@keyframes logo-rise {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+}
+
+@keyframes drift {
+  from { transform: translateX(-18px); }
+  to { transform: translateX(18px); }
+}
+
+@keyframes mote {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
   }
 
-  .class-card {
+  15% { opacity: 0.9; }
+  70% { opacity: 0.55; }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--sway) * 1px), calc(var(--rise) * -1px));
+  }
+}
+
+/* ───────── 화면 폭 ───────── */
+
+/* 넓고 높은 화면: 첫 화면 장면만 정수 2배(pixelated). 로고는 장면 밖이라 1배 그대로 */
+@media (min-width: 1700px) and (min-height: 900px) {
+  .hero {
+    --title-top: var(--sp-7);
+  }
+
+  .hero-scene {
+    --s: 2;
+  }
+
+  .hero-scene img,
+  .hero-scene .sprite {
+    image-rendering: pixelated;
+  }
+}
+
+/* 직업 무대: 한 줄(1240px)이 들어가지 않는 폭은 두 줄 무대(800 × 760). 뒤 줄 마법사·슬라임, 앞 줄 기사 */
+@media (max-width: 1239px) {
+  .classes {
+    --stage-w: 800;
+    --stage-h: 600;
+  }
+
+  .stage-layers {
+    inset: auto -800px 0;
+    height: 600px;
+  }
+
+  .spot-knight { --gx: 2; --gy: 0; }
+  .spot-mage { --gx: 1.5; --gy: 2.5; }
+  .spot-slime { --gx: 7; --gy: 2.5; }
+
+  .class-notes {
     grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
-  }
-
-  .class-card .sprite {
-    width: 130px;
   }
 }
 
+@media (max-width: 1023px) {
+  .feature-list,
+  .plans {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .monsters {
+    gap: var(--sp-6);
+  }
+}
+
+/* 좁은 화면: 16px 여백. 첫 화면은 1배 그대로 성 쪽을 잘라 보이고, 직업 무대는 통째로 줄인다 */
+@media (max-width: 699px) {
+  :root {
+    --gutter: var(--sp-3);
+    --menu-h: 92px;
+    --t5: 1.5rem;
+    --t6: 2.25rem;
+  }
+
+  .hero {
+    --fx: 640;
+    --base: 690;
+    --title-top: var(--sp-4);
+  }
+
+  .hero-knight { --gx: 600; --gy: 640; }
+  .hero-mage { --gx: 730; --gy: 648; }
+
+  /* 로고 상자를 정확히 0.5배(칸 320)로. 칸 폭 640이 짝수라 칸 경계가 정수 px에 남는다 */
+  .logo-strip {
+    --s: 0.5;
+  }
+
+  .tagline {
+    font-size: var(--t2);
+  }
+
+  .hero-note {
+    font-size: var(--t1);
+  }
+
+  .story-band {
+    --fx: 640;
+
+    height: 440px;
+  }
+
+  .story-smith {
+    --gx: 760;
+  }
+
+  .story-talk {
+    grid-template-columns: 1fr;
+    gap: var(--sp-3);
+    margin-top: -160px;
+  }
+
+  .portrait {
+    width: 220px;
+  }
+
+  .quote p {
+    font-size: var(--t4);
+  }
+
+  .story-notes,
+  .feature-list,
+  .plans {
+    grid-template-columns: 1fr;
+  }
+
+  .pan-band {
+    height: 260px;
+  }
+
+  .feature-list {
+    gap: var(--sp-5);
+    margin-top: calc(-1 * var(--sp-6));
+  }
+
+  .classes {
+    --k: 0.45;
+  }
+
+  .classes > .chapter-title {
+    margin-bottom: 0;
+  }
+
+  .route {
+    flex-direction: column;
+    gap: var(--sp-3);
+  }
+
+  .route li {
+    padding-top: 0;
+    padding-left: var(--sp-6);
+    line-height: 32px;
+  }
+
+  .route li::after {
+    top: 40px;
+    left: 15px;
+    right: auto;
+    width: 2px;
+    height: 8px;
+    background: var(--lavender);
+  }
+
+  /* 몬스터 무대: 한 줄(약 900px)이 들어가지 않아 직업 무대처럼 두 줄 장면(520 × 600)을 통째로 줄인다.
+     뒤 줄 슬라임·보스, 앞 줄 골렘. 이름 글자는 줄어들면 읽기 어려워서 같은 배율로 되돌려 키운다 */
+  .monster-frame {
+    --k: 0.75;
+
+    height: calc(600px * var(--k));
+  }
+
+  .monster-stage {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 520px;
+    height: 600px;
+    margin-left: -260px;
+    overflow: visible;
+    transform: scale(var(--k));
+    transform-origin: 50% 0;
+  }
+
+  /* 무대 상자보다 넓게 깔고 자르기는 바깥 틀(.stage-frame)에 맡긴다 */
+  .monster-stage .stage-layers {
+    inset: 0 -300px;
+  }
+
+  /* 앞 줄 발밑이 넓은 화면과 같이 그림 아래 끝에서 31px 위 땅선에 오게 한다 */
+  .monster-stage .band-layer {
+    bottom: 48px;
+  }
+
+  .monsters {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    align-content: end;
+    align-items: end;
+    gap: var(--sp-4) var(--sp-6);
+    height: 100%;
+    padding: 0 0 40px;
+  }
+
+  .monster-golem {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .monster-name {
+    scale: calc(1 / var(--k));
+    transform-origin: 50% 0;
+  }
+}
+
+@media (max-width: 379px) {
+  .classes {
+    --k: 0.42;
+  }
+
+  .monster-frame {
+    --k: 0.68;
+  }
+}
+
+/* ───────── 움직임 줄이기: 반복·등장·스크롤 연동 움직임을 모두 끈다(스크립트도 같은 설정을 읽는다) ───────── */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  [data-parallax] {
+    translate: none !important;
+  }
+
+  .motes {
+    display: none;
   }
 }
