@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream 없음)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T12:04:42Z): 정본 PR의 Sol 작성과 리드 R-2를 마쳤다(아래 「정본 PR 작성」). 커밋과 원격 반영 뒤 문서 실사 계약을 낸다.
-- **다음 할 일**: 신규 `gpt-6-astra` xhigh 문서 실사 → 리드 R-2 → PR 생성과 메인 승인 묶음.
+- **현재 위치**(2026-10-08T12:29:46Z): 정본 PR 문서 실사가 D1·D2로 차단됐다(아래 「정본 PR 문서 실사」). D1은 리드가 고쳤다.
+- **다음 할 일**: 새 Sol의 D2·O1·O2 수정 → 리드 R-2 → 새 `gpt-6-astra` xhigh 좁힌 재실사 → PR 생성과 메인 승인 묶음.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -103,8 +103,8 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 
 ### 위험
 
-1. 기동 때 TEMP 지정은 추론이다. Claude Code 임시 폴더와 Git Bash `/tmp`가 TEMP를 따르는지, 경로 길이가 괜찮은지 미측정이다. 완료조건 2의 기동 시험으로 확인하고, 실패하면 구절을 뺀다.
-2. 기동 명령이 기본 셸 문법에 묶인다. `orca terminal create --help`(1.4.222)는 `--command`가 호스트 기본 셸에 타이핑된다고 적는다. split도 같다고 보며(추론) 기동 시험에서 확인한다.
+1. 기동 때 TEMP 지정은 범위 승인 때 추론이었다. 기동 시험(아래 「기동 시험」)에서 Claude Code 임시 폴더와 `$TEMP`는 지정 경로를 따랐고, 쓴 파일 경로는 206자였다. Git Bash `/tmp`는 따르지 않았다. 처음 대응 「실패하면 구절을 뺀다」는 사용자 결정 「A 구절 남김」으로 바뀌었다. 남은 위험은 작업자가 Git Bash `/tmp`에 쓰는 것이다. 위임 계약 양식의 금지와 자기 쓰기 감사로 잡는다.
+2. 기동 명령이 기본 셸 문법에 묶인다. 기동 시험에서 명령 없이 split한 pane의 기본 셸은 PowerShell이었다. 시험은 split 뒤 명령을 직접 입력했다. `--command`가 기본 셸에 타이핑된다는 것은 `orca terminal create --help`(1.4.222)의 설명이고, split에서는 아직 추론이다. 기본 셸이 바뀌면 R-5 구절의 PowerShell 문법이 맞지 않는다.
 3. CURRENT 형식 변경은 CURRENT를 고친 열린 branch에 충돌을 한 번 더 만들 수 있다. 정본 PR 승인 묶음 직전에 열린 PR의 CURRENT 상태를 다시 보고 병합 순서를 메인과 정한다.
 4. 태그 전환기에 두 태그가 함께 쓰인다. 현황판의 리드 인식은 메인이 고친다.
 5. 병합 관문 그물: gh·merge 또는 push·main 낱말이 함께 든 명령은 막힌다. 긴 본문은 Write 도구로 파일에 쓰고 넘긴다.
@@ -160,6 +160,21 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 결과: worker_done `msg_6966e339484f`(2026-10-08T12:01:10Z, succeeded)을 수신 helper가 허용했다. 보고는 E/pr1/report.md다. 묶음은 102,658 → 102,592 bytes, ORCA는 249줄이다.
 - 리드 R-2(2026-10-08T12:04:42Z): 옮긴 네 문장의 글자 일치, CURRENT 링크·경로·branch 보존, BACKLOG 바뀐 칸, bytes·줄 수가 보고와 같았다(E/lead-check/pr1-r2.md). 차단 아닌 관찰 넷은 문서 실사에 넘긴다.
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-release.json, pr1-idle.json, pr1-close.json).
+
+### 정본 PR 문서 실사
+
+- 커밋: CURRENT 형식은 `d9c053a7`, 본문과 goal 기록은 `384739c5`로 나눴고 branch를 원격에 반영했다.
+- 실사자: 신규 `gpt-6-astra` xhigh(태그 `[Rules 검증자]`, Task `task_af30ca5a3c50`, Dispatch `ctx_17955ac87a7e`, 첫 화면 「GPT-6-Astra xhigh」, backend unknown). 계약은 E/pr1-review-contract.md(SHA256 `184520fa…`)이고 turnStart observed였다.
+- 공식 질문 1회(`msg_2d0a1460ab70`): E 밖 근거 링크의 처리와 CURRENT 비교 기준을 물었다. 리드가 손 대조 뒤 보충 v1.1로 답했다(`msg_f1130cc21cbd`, E/pr1-review-answer1.md).
+- 수신 관찰: 실사자 heartbeat 세 통이 subject `[Rules 검증자] alive`와 빈 body로 왔다. identity는 맞았지만 수신 helper는 `body-tag`로 막았다. 빈 heartbeat 예외가 subject를 빈 값이나 정확한 `alive`로만 인정하기 때문이다. 처리할 내용은 없었다(E/lead-check/pr1-review-wait10.md). 수신 helper PR에서 볼 사례다.
+- 판정(`msg_972725b54b98`, 2026-10-08T12:28:42Z): **차단 D1·D2**(E/pr1-review/verdict.md).
+  - D1(리드 기록): 「위험」 1·2번이 기동 시험 전 문구로 남았다. 실사 중 escalation `msg_a85c87acd426`으로 먼저 왔다.
+  - D2(작성자 귀속, 리드 계약의 700 bytes 목표가 영향): goal-loop 「구현·검증·수정」 첫 문단에 모델 정본 링크가 없어 시나리오 S1을 그 문단과 링크만으로 따라갈 수 없다.
+  - 비차단 관찰: O1 ORCA R-5 근거 링크에 앵커가 없다. O2 templates 허용 쓰기 위치 줄에서 지정 TEMP 아래 scratchpad 포함이 바로 드러나지 않는다.
+  - 수치·형식·보존은 일치했다. 묶음 102,592 bytes, ORCA 249줄, CURRENT 병합 시험 충돌 0, BACKLOG ID 69·중복 0. E 밖 기존 링크 12개는 보충 v1.1대로 미검토다.
+- 리드 R-2(2026-10-08T12:29:46Z): 판정 표본이 원시와 맞았다(E/lead-check/pr1-review-r2.md).
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-review-release.json, pr1-review-idle.json, pr1-review-close.json).
+- 처리: D1은 리드가 「위험」 1·2번을 고쳤다. D2·O1·O2는 새 Sol 세션이 고친다. 그 뒤 새 `gpt-6-astra` xhigh가 바뀐 부분을 좁혀 재실사한다. 같은 산출물의 첫 수정이다.
 
 ## 정본에서 옮긴 적용 기록
 
