@@ -5,13 +5,17 @@
 //   empty; non-string values and missing identities exit 2; real identity/tag mismatches exit 1);
 // - the first four real heartbeats with a tagged subject and empty body did not match the tag
 //   policy: Main msg_29e3012b0274;
-// - official blocking ask `Question` of Orca 1.4.218 and its three counterexamples: Main
-//   msg_09a19a463a74;
+// - official blocking ask `Question` and its three counterexamples: Main msg_09a19a463a74;
+// - the ask evidence is the question receipt ID, the coordinator's CLI version and that CLI's
+//   `ask --help` / `reply --help` stdout without `--subject`, replacing the 1.4.218 constant (fifth
+//   decision of the previous Rules goal, relayed in msg_a73d4d5bbb3c); missing evidence, help with a
+//   subject option and identity mismatch are rejected (Main msg_e6c8eb971f30 M2); outcomes and
+//   diagnostic codes from the receive-helper test contract v1 Q1~Q6 (task_315c27807b1b);
 // - result contract: exit 0 allowed, 1 policy violation, 2 input or tool failure; JSON stdout with
 //   cause and repair; no writes, messages, ack or lifecycle changes (helper contract of the
 //   operating-rules PR and the published ORCA `dispatch-message-policy` table).
-// Inputs are real Orca messages copied with their provenance into observed-messages.json. Boundary
-// cases change one field of a real message and name that field.
+// Inputs are real Orca messages and CLI help stdout copied with their provenance into
+// observed-messages.json. Boundary cases change one field of a real message or evidence and name it.
 //
 // Environment: ORCA_TESTS_BASH (a POSIX bash for the workflow step; Windows default is Git Bash).
 import assert from 'node:assert/strict';
@@ -36,6 +40,7 @@ const documentedExit = { allowed: 0, 'policy-violation': 1, 'input-error': 2 };
 const real = name => structuredClone(fixture.messages[name].message);
 const solExpected = () => structuredClone(fixture.identities.operatingRulesSol.expected);
 const resumeLinkExpected = () => structuredClone(fixture.identities.resumeLinkSol.expected);
+const tddCanonExpected = () => structuredClone(fixture.identities.tddCanonSol.expected);
 const parsedPayload = message => JSON.parse(message.payload);
 
 // The same message with one field replaced; `undefined` removes the field.
@@ -78,6 +83,12 @@ function assertException(result, label) {
 }
 
 const diagnosticPaths = result => result.diagnostics.map(diagnostic => diagnostic.path).join(' ');
+const diagnosticCodes = result => result.diagnostics.map(diagnostic => diagnostic.code);
+
+function assertRejected(result, status, code, label) {
+  assertDecision(result, status, label);
+  assert.ok(diagnosticCodes(result).includes(code), `${label}: diagnostic ${code}: ${JSON.stringify(result)}`);
+}
 
 test('real worker_done messages with JSON string payloads are accepted for the confirmed Dispatch', () => {
   assertPlainAllowed(evaluateMessage({ message: real('workerDoneStringPayload'), expected: resumeLinkExpected() }),
@@ -219,27 +230,126 @@ test('unsupported message types are not judged by this helper', () => {
   assertDecision(evaluateMessage({ message, expected: solExpected() }), 'input-error', 'unknown type');
 });
 
-// The real question has from_handle dispatch:<Dispatch>, thread_id = its id and payload.question = body.
-const askExpected = () => ({
+// Official ask evidence: the question receipt ID, the CLI version the coordinator ran and that CLI's
+// `ask --help` / `reply --help` stdout (fixture officialAskHelp, keyed by the captured version).
+const askProof = (version = '1.4.222') => ({
+  messageId: 'msg_e9ea9a930108',
+  cliVersion: version,
+  askHelp: fixture.officialAskHelp[version].askHelp,
+  replyHelp: fixture.officialAskHelp[version].replyHelp,
+});
+
+// The real 1.4.222 question has from_handle dispatch:<Dispatch>, thread_id = its id and payload.question = body.
+const askExpected = (officialAsk = askProof()) => ({
+  ...tddCanonExpected(),
+  fromHandle: 'dispatch:ctx_c1e8312629fb',
+  officialAsk,
+});
+
+// The 1.4.218 question with the evidence shape accepted before help evidence. Its help stdout is not in
+// this fixture, so it serves only as the old evidence shape and as a Question without evidence.
+const legacyAskExpected = () => ({
   ...solExpected(),
   fromHandle: 'dispatch:ctx_e99a28aa1f33',
   officialAsk: { messageId: 'msg_7634533175bb', cliVersion: fixture.officialAskEvidence.cliVersion },
 });
 
-test('the official 1.4.218 ask Question is accepted only with confirmed receipt evidence', () => {
-  const askException = assertException(evaluateMessage({ message: real('officialAskQuestion'), expected: askExpected() }),
-    'real official ask');
+test('the official ask Question is accepted with its receipt and ask/reply help evidence without --subject', () => {
+  const ask = real('officialAskQuestion1422');
+  // The CLI version is the one the coordinator ran, not a constant: the 1.4.222 capture, and the
+  // 1.4.223 capture taken after the update for the same real question.
+  for (const version of ['1.4.222', '1.4.223']) {
+    const exception = assertException(evaluateMessage({ message: ask, expected: askExpected(askProof(version)) }),
+      `real ask with ${version} help evidence`);
+    assert.equal(exception, 'official-blocking-ask', `${version}: the ask exception name carries no CLI version`);
+  }
   const heartbeatException = assertException(
     evaluateMessage({ message: real('heartbeatAlive'), expected: solExpected() }), 'heartbeat');
-  assert.notEqual(askException, heartbeatException, 'the two exceptions must be distinguishable');
+  assert.equal(heartbeatException, 'empty-heartbeat', 'the heartbeat exception stays distinguishable');
 
-  const withoutEvidence = { ...askExpected(), officialAsk: undefined };
-  assertDecision(evaluateMessage({ message: real('officialAskQuestion'), expected: withoutEvidence }),
-    'policy-violation', 'Question without receipt evidence');
+  for (const [name, expected] of [['officialAskQuestion', legacyAskExpected()], ['officialAskQuestion1422', askExpected()]]) {
+    assertDecision(evaluateMessage({ message: real(name), expected: { ...expected, officialAsk: undefined } }),
+      'policy-violation', `${name} without receipt evidence`);
+  }
+});
+
+test('missing or malformed official ask evidence is an input error, never the exception', () => {
+  const ask = real('officialAskQuestion1422');
+  const proof = askProof();
+  // Control: the complete real evidence opens the exception, so each case below fails by its changed field.
+  assertException(evaluateMessage({ message: ask, expected: askExpected(proof) }), 'complete evidence');
+  const cases = [
+    ['messageId absent', { messageId: undefined }],
+    ['messageId empty', { messageId: '' }],
+    ['messageId padded', { messageId: ` ${proof.messageId}` }],
+    ['cliVersion absent', { cliVersion: undefined }],
+    ['cliVersion empty', { cliVersion: '' }],
+    ['cliVersion not a string', { cliVersion: 1.4 }],
+    ['askHelp absent', { askHelp: undefined }],
+    ['askHelp empty', { askHelp: '' }],
+    ['askHelp not a string', { askHelp: [proof.askHelp] }],
+    ['reply help given as askHelp', { askHelp: proof.replyHelp }],
+    ['replyHelp absent', { replyHelp: undefined }],
+    ['replyHelp empty', { replyHelp: '' }],
+    ['replyHelp not a string', { replyHelp: [proof.replyHelp] }],
+    ['ask help given as replyHelp', { replyHelp: proof.askHelp }],
+    ['ask and reply help swapped', { askHelp: proof.replyHelp, replyHelp: proof.askHelp }],
+  ];
+  for (const [label, fields] of cases) {
+    assertRejected(evaluateMessage({ message: ask, expected: askExpected(changed(proof, fields)) }), 'input-error',
+      'official-ask-proof', label);
+  }
+
+  // Evidence without help: the shape accepted before, and the lead's real 1.4.222 check input of this question.
+  assertRejected(evaluateMessage({ message: real('officialAskQuestion'), expected: legacyAskExpected() }), 'input-error',
+    'official-ask-proof', 'previous { messageId, cliVersion: 1.4.218 } shape');
+  const leadCheckInput = askExpected({ messageId: proof.messageId, cliVersion: '1.4.222' });
+  assertRejected(evaluateMessage({ message: ask, expected: leadCheckInput }), 'input-error', 'official-ask-proof',
+    'lead check input lead-check/pr1-ask1-check-input.json');
+});
+
+// The real help with `--subject` added right after an anchor text that the help must contain.
+function withSubjectAfter(help, anchor, addition) {
+  assert.ok(help.includes(anchor), `help anchor ${JSON.stringify(anchor)}`);
+  return help.replace(anchor, `${anchor}${addition}`);
+}
+
+test('help evidence that shows a --subject option does not open the exception', () => {
+  const ask = real('officialAskQuestion1422');
+  const proof = askProof();
+  assertException(evaluateMessage({ message: ask, expected: askExpected(proof) }), 'help without --subject');
+  const cases = [
+    ['ask help with a --subject option line', { askHelp: withSubjectAfter(proof.askHelp, '  --question\n', '  --subject\n') }],
+    ['ask help with --subject in its usage line',
+      { askHelp: withSubjectAfter(proof.askHelp, '[--options <csv>] ', '[--subject <text>] ') }],
+    ['reply help with a --subject option line', { replyHelp: withSubjectAfter(proof.replyHelp, '  --body\n', '  --subject\n') }],
+  ];
+  for (const [label, fields] of cases) {
+    assertRejected(evaluateMessage({ message: ask, expected: askExpected(changed(proof, fields)) }), 'input-error',
+      'official-ask-subject-option', label);
+  }
+});
+
+test('valid help evidence does not excuse a sender, task or receipt mismatch', () => {
+  // ctx_cb5ce542e50a / task_df85be9762bd and its question msg_fcb32bda0afe are another real Dispatch of the
+  // same Run (pr3-worker-start.json and session/all2.raw.json of the 2026-10-08 goal evidence folder).
+  const ask = real('officialAskQuestion1422');
+  assertException(evaluateMessage({ message: ask, expected: askExpected() }), 'matching question');
+  const cases = [
+    ['Question from another Dispatch', changed(ask, { from_handle: 'dispatch:ctx_cb5ce542e50a' }), askExpected(),
+      'identity-mismatch'],
+    ['payload taskId of another task', withPayload(ask, { taskId: 'task_df85be9762bd' }), askExpected(),
+      'identity-mismatch'],
+    ['evidence of another question', ask, askExpected({ ...askProof(), messageId: 'msg_fcb32bda0afe' }),
+      'official-ask-mismatch'],
+  ];
+  for (const [label, message, expected, code] of cases) {
+    assertRejected(evaluateMessage({ message, expected }), 'policy-violation', code, label);
+  }
 });
 
 test('Main counterexamples: untagged body, other sender and a send imitating Question are rejected', () => {
-  const ask = real('officialAskQuestion');
+  const ask = real('officialAskQuestion1422');
   const untaggedText = '빈 heartbeat 경계를 확인합니다.';
   const untaggedBody = withPayload(changed(ask, { body: untaggedText }), { question: untaggedText });
   assertDecision(evaluateMessage({ message: untaggedBody, expected: askExpected() }), 'policy-violation',
@@ -248,30 +358,29 @@ test('Main counterexamples: untagged body, other sender and a send imitating Que
   const otherSender = changed(ask, { from_handle: 'dispatch:ctx_4c94e3f19113' });
   assertDecision(evaluateMessage({ message: otherSender, expected: askExpected() }), 'policy-violation',
     'Question from another Dispatch');
-  const termSender = changed(ask, { from_handle: 'term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23' });
+  const workerTerminal = tddCanonExpected().fromHandle;
+  const termSender = changed(ask, { from_handle: workerTerminal });
   assertDecision(evaluateMessage({ message: termSender, expected: askExpected() }), 'policy-violation',
     'Question whose sender is not the confirmed ask sender');
 
   // send can choose subject, thread and payload, so only coordinator receipt evidence may open the exception.
   const sendImitation = changed(ask, {
     id: 'msg_000000000001',
-    from_handle: 'term_1b46c1e3-0e61-4ed9-aabb-ab3463682a23',
+    from_handle: workerTerminal,
     thread_id: 'msg_000000000001',
   });
-  assertDecision(evaluateMessage({ message: sendImitation, expected: solExpected() }), 'policy-violation',
+  assertDecision(evaluateMessage({ message: sendImitation, expected: tddCanonExpected() }), 'policy-violation',
     'send imitating Question without evidence');
   assertDecision(evaluateMessage({ message: sendImitation, expected: { ...askExpected(), fromHandle: sendImitation.from_handle } }),
     'policy-violation', 'send imitating Question against the real ask receipt');
   const selfDeclared = withPayload(sendImitation, { official: true });
-  assertDecision(evaluateMessage({ message: selfDeclared, expected: solExpected() }), 'policy-violation',
+  assertDecision(evaluateMessage({ message: selfDeclared, expected: tddCanonExpected() }), 'policy-violation',
     'Question declaring itself official');
 });
 
-test('the ask exception is limited to the supported CLI version and to type question', () => {
-  const ask = real('officialAskQuestion');
-  const newerCli = { ...askExpected(), officialAsk: { messageId: 'msg_7634533175bb', cliVersion: '1.4.219' } };
-  assert.notEqual(evaluateMessage({ message: ask, expected: newerCli }).status, 'allowed',
-    'another CLI version must not open the version-specific exception');
+test('the ask exception is limited to type question', () => {
+  const ask = real('officialAskQuestion1422');
+  assertException(evaluateMessage({ message: ask, expected: askExpected() }), 'the same message as type question');
   const asStatus = changed(ask, { type: 'status' });
   assert.notEqual(evaluateMessage({ message: asStatus, expected: askExpected() }).status, 'allowed',
     'a status message cannot use the ask exception');
@@ -285,7 +394,7 @@ test('evaluation is pure: frozen input is accepted, left unchanged and decided t
     }
     return value;
   };
-  for (const [message, expected] of [[real('heartbeatAlive'), solExpected()], [real('officialAskQuestion'), askExpected()],
+  for (const [message, expected] of [[real('heartbeatAlive'), solExpected()], [real('officialAskQuestion1422'), askExpected()],
     [real('heartbeatTaggedSubject1'), solExpected()]]) {
     const input = deepFreeze({ message, expected });
     const before = JSON.stringify(input);
@@ -345,6 +454,19 @@ test('the CLI prints one JSON decision and exits 0, 1 or 2', async () => {
     assert.equal(run.stderr, '', `${name}: stderr`);
     assertDecision(parseSingleJsonLine(run, name), status, name);
   }
+});
+
+test('the CLI accepts the real official ask with help evidence and rejects its check input without help', async () => {
+  const ask = real('officialAskQuestion1422');
+  const accepted = runCli([await inputFile('official-ask.json', { message: ask, expected: askExpected() })]);
+  assert.equal(accepted.exit, 0, `${accepted.stdout}${accepted.stderr}`);
+  assert.equal(accepted.stderr, '', 'stderr');
+  assert.equal(assertException(parseSingleJsonLine(accepted, 'official ask'), 'official ask'), 'official-blocking-ask');
+
+  const withoutHelp = askExpected({ messageId: 'msg_e9ea9a930108', cliVersion: '1.4.222' });
+  const rejected = runCli([await inputFile('official-ask-without-help.json', { message: ask, expected: withoutHelp })]);
+  assert.equal(rejected.exit, 2, `${rejected.stdout}${rejected.stderr}`);
+  assertRejected(parseSingleJsonLine(rejected, 'without help'), 'input-error', 'official-ask-proof', 'without help');
 });
 
 test('argument, file, encoding and JSON failures are input errors with JSON repair guidance', async () => {
