@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream 없음)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T11:23:16Z): 기동 시험을 마쳤고 사용자가 R-5 구절을 남기기로 정했다. 정본 PR Sol 계약을 발행하는 중이다.
-- **다음 할 일**: 정본 PR Sol 작성 → 리드 R-2 → 신규 `gpt-6-astra` xhigh 문서 실사 → PR 생성과 메인 승인 묶음.
+- **현재 위치**(2026-10-08T12:04:42Z): 정본 PR의 Sol 작성과 리드 R-2를 마쳤다(아래 「정본 PR 작성」). 커밋과 원격 반영 뒤 문서 실사 계약을 낸다.
+- **다음 할 일**: 신규 `gpt-6-astra` xhigh 문서 실사 → 리드 R-2 → PR 생성과 메인 승인 묶음.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -151,6 +151,47 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - 따르지 않았다: Git Bash `/tmp`는 `cygpath -w` 기준 `C:\Users\bass1\AppData\Local\Temp` 그대로였다(작업자 11:16:07Z). 리드 재확인에서 `mount`가 `/tmp`를 `usertemp`로 보여 줬다(E/launch-probe/lead-check.txt, 11:17:51Z).
 - 처리: 사용자 결정 「A 구절 남김」(위 「적용 중인 사용자 결정」).
 - 정산: release `retained`(`external_terminal`), 빈 prompt와 「done」 표시 확인 뒤 pane을 닫았다(ptyKilled true). rules-active에는 리드만 남았다(E/launch-probe/release.json, idle.json, close.json, list-after-close.json).
+
+### 정본 PR 작성
+
+- 계약: v1(E/pr1-contract.md, SHA256 `c215bb21…`, 고정 HEAD `353d88ab`)과 보충 v1.1(E/pr1-contract-supplement-v1.1.md)이다. 작성자는 신규 `gpt-6.1-sol` max(태그 `[Rules Sol]`, Task `task_8a7a6a8e0665`, Dispatch `ctx_c1e8312629fb`, backend unknown)다. worker-start가 turnStart unobserved여서 draft 글자 수(계약 10,065자 + 머리 약 4,787자)를 확인하고 Enter 한 번으로 시작했다(E/pr1-draft-recovery.md).
+- 공식 질문 1회(`msg_e9ea9a930108`): 새 문장만 줄여서는 묶음이 1,223 bytes 넘었다. 리드가 보충 v1.1로 답했다. 지난 적용 기록 네 문장을 아래 「정본에서 옮긴 적용 기록」으로 옮기고 ORCA 250행의 TEMP 허용을 없앴다. ORCA 250행은 R2와 같은 규칙의 다른 자리라 범위 안 결함으로 봤다.
+- 수신 helper 한계: 공식 질문을 수신 helper에 넣으면 `official-ask-proof` input-error(exit 2)였다. helper가 CLI 1.4.218에 고정돼 있기 때문이다. 리드가 손으로 대조해 출처를 인정했다(E/lead-check/pr1-ask1-manual-check.md). 이 원시는 수신 helper PR의 실제 진입 입력 후보다.
+- 결과: worker_done `msg_6966e339484f`(2026-10-08T12:01:10Z, succeeded)을 수신 helper가 허용했다. 보고는 E/pr1/report.md다. 묶음은 102,658 → 102,592 bytes, ORCA는 249줄이다.
+- 리드 R-2(2026-10-08T12:04:42Z): 옮긴 네 문장의 글자 일치, CURRENT 링크·경로·branch 보존, BACKLOG 바뀐 칸, bytes·줄 수가 보고와 같았다(E/lead-check/pr1-r2.md). 차단 아닌 관찰 넷은 문서 실사에 넘긴다.
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-release.json, pr1-idle.json, pr1-close.json).
+
+## 정본에서 옮긴 적용 기록
+
+규칙 문서 bytes를 상쇄하려고 메인 판단 `msg_e6c8eb971f30` M3와 계약 보충 v1.1에 따라 아래 원문을 옮겼다.
+
+원래 위치의 행은 base `c35279bc0ce3dc2a63ed97e5db34beffcb88f25c` 기준이다.
+
+- (가) [goal-loop 「위임 계약」](../../../.agents/skills/dawnholder-goal-loop/SKILL.md#위임-계약), `.agents/skills/dawnholder-goal-loop/SKILL.md` 60행.
+
+```text
+반복 규칙의 검사화·수리 안내, 정본 helper의 짧은 경로, 수기 목록 존재 검사, warning→실측→사용자 승격/강등, 실행불가/위반 구분과 구조/동작 별도 커밋은 [하네스 원칙](../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙)을 다음 계약부터 승인 범위에 적용한다. 이 하네스 원칙만으로 주석 삭제·작은 작업 예외·검증 차등·가지치기를 도입하지 않는다. 이미 진행 중인 계약과 검증의 고정 입력은 조용히 바꾸지 않고 [버전 인계](references/orca-work.md#역할과-작업-계약)로 연결한다.
+```
+
+이관 이유: 첫 문장의 「다음 계약부터」는 지난 적용 시점이다. 둘째 문장은 [CODE_CONVENTION 「하네스 원칙」](../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙) 끝 문단에 같은 규칙이 있다. 셋째 문장은 [goal-loop 36행](../../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범)과 [orca-work 26행](../../../.agents/skills/dawnholder-goal-loop/references/orca-work.md#역할과-작업-계약)에 같은 규칙이 있다.
+
+- (나) [goal-loop 「기준과 상태」](../../../.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태), `.agents/skills/dawnholder-goal-loop/SKILL.md` 16행 끝 문장.
+
+```text
+형식·갱신 주체의 원천은 [진척 적용 결정](../../../01_Phases/goals/2026-10-05-operating-canon/goal.md#pr183-제출-뒤-적용한-사용자-결정)이다.
+```
+
+- (다) [ORCA R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle), `00_Document/operations/ORCA.md` 213행.
+
+```text
+R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
+```
+
+- (라) [RESUME](../../../00_Document/operations/RESUME.md), `00_Document/operations/RESUME.md` 3행 끝 문장.
+
+```text
+이전 정정·checkpoint·라우팅 서술은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
+```
 
 ## 다음 계획 후보
 
