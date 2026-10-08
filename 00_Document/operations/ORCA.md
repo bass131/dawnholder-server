@@ -29,7 +29,7 @@
 
 마감 구간 리드는 **Core·Content·Rules·CodeMap·Management 다섯**이다. 승인 응답·시각은 [다섯 리드 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-leads)에 있다. 게임은 Core 서버 기반과 Content 콘텐츠 두 파트로 나누며, 다른 파트의 구현·진행 상태는 각 goal에서 확인한다. Core의 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다.
 
-메인 Claude는 원래 clone `C:/Dev/DawnHolder_Project` 루트(main)의 사용자 생성 표식 checkout에서 열고 파일을 쓰지 않는다. Orca 「기본」 탭이다. Core Astra는 아래 표의 `core-active` worktree, 나머지 리드도 표의 승인 worktree 별도 탭에서 연다([배치 결정](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#적용-중인-사용자-결정)). CodeMap은 Architecture의 **분석·검사 책임과 표시 이름**이다. 리팩토링은 코드 주인 파트가 맡는다. `architecture-active` 경로·아래 표의 Architecture 태그를 유지한다.
+메인 Claude는 원래 clone `C:/Dev/DawnHolder_Project` 루트(main)의 사용자 생성 표식 checkout에서 열고 파일을 쓰지 않는다. Orca 「기본」 탭이다. Core Astra는 아래 표의 `core-active` worktree, 나머지 리드도 표의 승인 worktree 별도 탭에서 연다([배치 결정](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#적용-중인-사용자-결정)). CodeMap은 Architecture의 **분석·검사 책임과 표시 이름**이다. 리팩토링은 코드 주인 파트가 맡는다. `architecture-active` 경로·아래 표의 Architecture 태그를 유지한다. 보조 세션은 메인 checkout 탭의 split에 읽기 전용으로 열고 [보조 세션 스킬](../../.agents/skills/dawnholder-helper-session/SKILL.md)로 진입한다.
 
 | 리드 | 이 머신의 작업 경로 | 발신 태그 |
 |---|---|---|
@@ -139,7 +139,7 @@ Orca 1.4.221(2026-10-06)에서 **활성 Dispatch 없는 발신자**의 `escalati
 **Unity MCP opt-in:** Unity MCP는 필요한 세션만 켠다. 시트는 1개이므로 사용 전 메인에게 요청하고, 메인이 보유 세션을 현황판에 적은 뒤 기동한다. 그 세션이 닫히면 시트가 풀린다. 필요한 Claude 세션에만 아래 최초 실행 명령에 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 설정은 저장소 밖 파일이며 전역 등록이 아니다. 사용자 결정과 설정 경로의 출처는 [Unity opt-in 적용 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#pr183-제출-뒤-적용한-사용자-결정)이다.
 
 1. 설치된 `orca-cli`·`orchestration` 스킬로 CLI를 선택하고 버전 일치 가이드를 읽는다. 현재 runtime·담당 Astra handle·승인된 checkout을 확인한다.
-2. `orca terminal split --terminal <Astra-handle> --direction vertical`의 `--command`는 Sol이면 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`다. 독립 검증자는 [시범 배정](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)에 따라 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` 또는 `claude --model claude-opus-5-5`다. 시작 경로가 다르면 승인 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체 없이 메인에 보고한다. capacity 예외는 [정본](#capacity-retry)을 따른다.
+2. `orca terminal split --terminal <Astra-handle> --direction vertical`의 `--command`는 Sol이면 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`다. 독립 검증자는 [시범 배정](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)에 따라 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` 또는 `claude --model claude-opus-5-5`다. 시작 경로가 다르면 승인 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체 없이 메인에 보고한다. capacity 예외는 [정본](#capacity-retry)을 따른다. Claude `--command` 앞에 PowerShell로 TEMP·TMP를 절대 경로 `.backups/tmp/<짧은 이름>/`로 정한다. [Git Bash `/tmp`는 그대로다](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#기동-시험).
 3. `orca terminal wait --terminal <새-handle> --for tui-idle --timeout-ms 90000`의 `satisfied`를 확인하고 [R-6](#r6-first-screen) 및 [세션 준비 절차](../../.agents/skills/dawnholder-session-handoff/SKILL.md#신규-prompt-준비-확인)를 따른다. timeout·busy·불명확한 화면에 작업을 주입하지 않는다.
 4. 준비된 **신규 세션의 최초 작업**을 `orca orchestration worker-start --terminal <새-handle> --worktree <확인한-작업-공간>`에 `--task <현재-Task>` 또는 `--spec <작업-계약>`을 붙여 연결한다. `--terminal`과 `--model`을 함께 쓰지 않는다. 모델 근거는 최초 실행 명령과 화면 표시이며 attach의 null launch 모델값을 실제 모델로 해석하지 않는다. 확인할 수 없는 backend는 `unknown`이다. 현재 Run·Task·Dispatch와 `input_accepted`·`turn_started` receipt를 구분해 기록한다.
    `turn_start_unobserved`이면 화면 tail만으로 판정하지 않고 [공식 계약 draft 복구](#official-contract-draft)의 JSON draft·계약·동일성 조건을 확인한다.
@@ -210,7 +210,6 @@ PR 리뷰 수정 중이나 목표 중간에는 문맥을 비우려 수동 교체
 목표 중간 교체·복구는 이전 pane 종료 또는 같은 대화 `claude --resume`이다. 새 handle에서 `orca orchestration run-use --id <run_id> --json`으로 같은 Run을 인수하고 메인에 새 handle·`run:<id>`를 알린다. consumer 세대 상승으로 옛 delivery ack가 `consumer_fenced`면 새 세대로 다시 온 같은 메시지 delivery를 ack한다([원천](#orca-tool-observations)).
 
 <a id="관찰-기록-2026-09-29"></a><a id="관찰-기록-2026-10-0405"></a>
-R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
 
 <a id="goal-gardener"></a>
 ### 목표 종료 Gardener 4주 파일럿
@@ -223,11 +222,11 @@ R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Pha
 <a id="merge-gate"></a>
 ## 병합 관문
 
-[R-1](#r1-management-placement)의 메인 checkout에서 메인 세션만(하위 에이전트 제외) 병합한다. 사용자 생성 `.claude/state/merge-gate/main-checkout` 파일 존재로 식별한다. PR1 병합 뒤 사용자·메인이 checkout·표식 생성과 첫 세션의 작업 공간 신뢰 창을 처리한다. 병합 뒤 최신 main을 fast-forward로 받는다. 적용 확인·세션 중 settings 변경 즉시 반영 여부는 [goal 완료조건 5](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#관찰-가능한-완료조건)에 기록한다.
+[R-1](#r1-management-placement)의 메인 checkout에서 메인 세션만(하위 에이전트 제외) 병합한다. 사용자 생성 `.claude/state/merge-gate/main-checkout` 파일 존재로 식별한다. 병합 뒤 최신 main을 fast-forward로 받는다.
 
 사용자가 메인 창에 `병합 승인: PR<번호> head <40자 hex>`를 Enter로 제출한다. 앞뒤 공백 제외 입력 **전체**가 이 한 줄일 때만 session_id별 파일에 기록한다. 같은 세션·PR·head에 30분·한 번만 유효하다. 「대시보드 결정 응답」·다른 문장 안의 승인 줄은 기록하지 않는다. 새 세션은 이전 기록을 못 쓰며, `--resume`으로 이어 연 같은 세션은 30분 안의 미사용 기록이 남는다. `--continue`는 미측정이다.
 
-hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받지만 운영 방식은 `--merge`다. `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 명령만 쓴다. 다른 인자(`--delete-branch`·`--auto`·`--admin` 등)는 막힌다. PreToolUse 통과 때 기록을 소비하며 실패도 새 승인이 필요하다(아래 겹친 쓰기 한계 제외). 리드는 PR 번호·정확한 head 40자·CI·독립 검증 판정 원문으로 준비 보고하고 병합 뒤 goal을 기록한다. 병합은 실행하지 않는다.
+hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받지만 운영 방식은 `--merge`다. `gh pr merge <번호> --merge --match-head-commit <40자>` 단독 명령만 쓴다. 다른 인자(`--delete-branch`·`--auto`·`--admin` 등)는 막힌다. PreToolUse 통과 때 기록을 소비하며 실패도 새 승인이 필요하다(아래 겹친 쓰기 한계 제외). PR은 리드가 만들고, 사람의 검수는 이 관문의 메인 R-2 대조 → 사용자 승인 한 줄로 한다. 리드는 PR 번호·정확한 head 40자·CI·독립 검증 판정 원문으로 준비 보고하고 병합 뒤 goal을 기록한다. 병합은 실행하지 않는다.
 승인 묶음 직전 fresh `mergeStateStatus`를 본다. DIRTY면 최신 main을 통합하고 CURRENT 등 타 파트 줄을 보존한다. remerge-diff·동일 제품 blob과 새 head 전체 CI를 남긴다. main 병합·CURRENT 해결뿐이면 적용 이유와 함께 기존 독립 판정을 유지한다. 묶음 뒤 head가 바뀌면 옛 승인을 쓰지 않고 새 head의 새 승인 줄을 받는다. 통과 뒤 goal·문서를 고쳤으면 승인 요청 전 최종 head의 바뀐 부분을 한 번 재실사한다. 독립 판정 없는 보완은 승인 묶음에 올리지 않는다. 재실사 결과는 goal을 고치지 않고 근거 폴더·승인 묶음으로만 전한다([운영 판단 원천](#pr2-source)).
 
 모든 Claude Code 세션의 Bash·Monitor에서 복합·heredoc·`bash -c`·치환 속 병합, `gh api` 병합·자동 병합, main push(`--all`·`--mirror`, main에서 refspec 없음·`HEAD`·`@`), 단독 병합 밖의 gh·merge나 push·main 낱말 동반 명령, 상태 폴더 쓰기·경로가 든 명령, 터미널·예약/전달 prompt로 승인 문장 주입을 막는다. [결과·상세 형태](../../99_Tools/README.md)와 [확인 창 승인 예외](../../AGENTS.md#공학-조건)를 따른다.
@@ -247,4 +246,4 @@ hook은 방식 `--merge`·`--squash`·`--rebase` 중 하나를 받지만 운영 
 
 사용자는 Unity 설정 **3파일의 skip-worktree 숨김을 유지**했다. 대상은 `03_Client/Packages/manifest.json`, `03_Client/Packages/packages-lock.json`, `03_Client/ProjectSettings/ProjectSettings.asset`이다. 이유는 머신마다 다른 AI 패키지와 Unity Cloud 조직 연결이다. 게임 설정(productName·해상도·bundleVersion·커서)만 부분 커밋하는 일은 후속 담당 범위이며, Rules는 파일·인덱스 숨김 상태를 바꾸지 않는다. 근거는 [HANDOFF 결정 5](../../.backups/verification/2026-10-05-operating-canon/sources/handoff-decisions.md)와 운영 정본 goal의 승인 범위다.
 
-원문 로그는 목표 evidence 또는 TEMP에 보관한다. 메인에는 변경·검증 요약과 근거 위치를 전달한다. 이 지침은 운영 규약이며 실행·컨텍스트 격리를 기술적으로 강제하는 별도 시스템이 아니다.
+원문 로그는 목표 evidence에 보관한다. 메인에는 변경·검증 요약과 근거 위치를 전달한다. 이 지침은 운영 규약이며 실행·컨텍스트 격리를 기술적으로 강제하는 별도 시스템이 아니다.
