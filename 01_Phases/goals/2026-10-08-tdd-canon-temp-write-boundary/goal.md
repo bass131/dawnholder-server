@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)로 병합됐다(merge commit `127cc5a1`). 리드 태그 PR은 branch `docs/lead-tag-model-name-20261008`(base main `127cc5a1`)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T13:42:30Z): PR211이 병합됐다. 리드 태그 PR branch를 최신 main에서 만들었다. CLAUDE.md 바꿀 줄과 문안을 메인에, `05_Management/RESUME.md` 세 줄 소유 요청을 Management 리드에 보냈다.
-- **다음 할 일**: 리드 태그 PR Sol 계약 → 리드 R-2 → 신규 `gpt-6-astra` xhigh 문서 실사 → PR 생성과 메인 승인 묶음. CLAUDE.md는 메인이 이 branch에 쓰고 리드가 커밋한다.
+- **현재 위치**(2026-10-08T14:25:42Z): 리드 태그 PR의 Sol 작성과 리드 R-2가 끝났다(아래 「리드 태그 PR 작성」). CLAUDE.md는 메인이 써서 리드가 커밋했다.
+- **다음 할 일**: 작성분 커밋·원격 반영 → 신규 `gpt-6-astra` xhigh 문서 실사 → PR 생성과 메인 승인 묶음. 묶음에는 heartbeat 이탈 두 번째 발생의 교정 층 판단을 함께 올린다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -219,6 +219,17 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 열린 PR207·PR191은 이 PR의 대상 파일을 건드리지 않는다(E/pr3/open-prs.json).
 - M1: CLAUDE.md 26·27·28·30·37행의 바꿀 문안을 메인에 보냈다(`msg_71ec4060ed2d`, E/pr3/main-m1-claude-md.md).
 - `05_Management/RESUME.md` 7·27·29행 소유 요청을 Management 리드에 보냈다(`msg_ec828ef7dbff`). 다른 Run의 리드에게는 `--run`에 상대 Run을 적어야 보내졌다(`run_not_found`·`recipient_run_mismatch` 원시 E/pr3/mgmt-ownership-receipt*.json).
+- Management 동의: `msg_9918f34657f6`(13:48:29Z, E/pr3/mgmt-consent-wait24.raw.json). 세 줄만 Rules Sol이 고치고, Management는 이 PR 병합 때까지 그 파일을 쓰지 않는다. 지금 Management 리드는 끝날 때까지 옛 태그를 쓴다.
+- CLAUDE.md: 메인이 이 branch에 쓰고 리드가 `b3028154`로 커밋했다(M1).
+
+### 리드 태그 PR 작성
+
+- 계약: 신규 `[Rules Sol]`(`gpt-6.1-sol` max)에 v1(E/pr3-contract.md, SHA256 `2daeeaa3…`, 경로 확인 E/pr3-contract-pathcheck.txt)을 냈다. Task `task_df85be9762bd`, Dispatch `ctx_cb5ce542e50a`다. `turn_start_unobserved`는 draft 크기 대조 뒤 Enter 한 번으로 풀었다(E/pr3-draft-recovery.md).
+- 보충: Sol 질문 `msg_fcb32bda0afe`(bytes 초과)에 v1.1 `msg_a8bcbe4c1d0d`(E/pr3/answer1.md)로 답했다. 전환 문단 둘을 합치고, 그래도 넘으면 이관 기록을 가리키기만 하는 ORCA 문장만 옮긴다. 지금 운영 판단에 쓰는 도구 관측 문장(ORCA 90·94·132행)은 옮기지 않는다. Management 동의는 `msg_c0f7e5d3fa63`로 넘겼다.
+- 결과: worker_done `msg_e3fee478e51f`(14:22:04Z, 수신 helper allowed). 열두 파일 +98/−74, 보고 E/pr3/report.md, 메모 E/pr3/context.md다. 여섯 파일 묶음은 102,656 → 102,655 bytes, ORCA는 249줄이다. ORCA 75·146·201행 끝 문장을 아래 「정본에서 옮긴 적용 기록」으로 옮겼다.
+- 리드 R-2(E/lead-check/pr3-r2.md): bytes·줄 수·남은 「Astra」 분류·앵커·바뀐 범위·바뀐 줄 링크 80개·옮긴 문장을 스크립트로 다시 쟀다. 보고와 실제가 다른 곳은 없다. 실사에 넘길 관찰은 Core 전환 문구를 「종료까지」와 「Core 태그」로 줄인 두 곳이다.
+- heartbeat 이탈(두 번째 발생): Sol heartbeat 간격이 14:13:08Z → 14:19:11Z, 363초였다(E/session/all2.raw.json). 메인 결정 `msg_e7dd27f2bb2d`의 「같은 이탈이 다시 나오면 교정 층을 정한다」에 닿았으므로 승인 묶음에서 메인에 올린다.
+- 정산: release `retained`(`external_terminal`), tui-idle 확인 뒤 14:23:35Z에 pane을 닫았다(E/pr3-release.json, pr3-idle.json, pr3-close.json).
 
 ## 정본에서 옮긴 적용 기록
 
@@ -250,6 +261,30 @@ R-8의 당시 적용 시점과 두 관찰 기록은 [이관 기록](../../01_Pha
 
 ```text
 이전 정정·checkpoint·라우팅 서술은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
+```
+
+### 리드 태그 PR
+
+규칙 문서 bytes를 상쇄하려고 메인 판단 `msg_e6c8eb971f30` M3와 계약 보충 v1.1에 따라 아래 원문을 옮겼다.
+
+원래 위치의 행은 base `127cc5a197a527c437412657c8dcfa38c1354862` 기준이다.
+
+- `00_Document/operations/ORCA.md` 75행 끝 문장.
+
+```text
+종료된 1.4.217 확장·복귀 근거는 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 있다.
+```
+
+- `00_Document/operations/ORCA.md` 146행 끝 문장.
+
+```text
+실패 이력과 후속 성공의 원문은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
+```
+
+- `00_Document/operations/ORCA.md` 201행 끝 문장.
+
+```text
+M-1 관찰·출처와 미검증 구분은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 보존한다.
 ```
 
 ## 다음 계획 후보
