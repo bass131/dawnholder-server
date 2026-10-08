@@ -21,7 +21,7 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 
 **기록 시점: 2026-10-08 19:50 KST, Orca·PC 재부팅 뒤 재개(메인 `msg_26102b74a2ca`, 사용자 원문 「PC 재부팅도 하고 왔어, 다시 재개해보자」).** 재부팅 전 멈춤 지시는 메인 `msg_61d9a1bacfe2`(사용자 원문 「일단 지금 재개지점 빨리 잡아줘, 너무 오래 걸린다, 생각보다 시간을 더 잡아먹네」)이고, 앞 결정 「끝까지 기다림」(`msg_d7e4480df979`)을 대신했다. 사용자는 첫 판 PR207을 보류하고 디자인을 다시 하기로 했고(아래 「디자인 재작업 범위 개정」), 시안 D1을 골랐다(「시안 선택과 E2E·밀도 요구」). 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-- **지금 단계:** 리드가 같은 대화를 이어 새 handle로 Run을 다시 인수했다(consumer generation 3). T3·F는 둘 다 미완료로 정산했다(「F 멈춤 지점 2와 재시작 정지」, 「재부팅과 T3 미완료 정산」). 열린 작업자는 없다. 남은 단계는 새 세션 둘이 이어야 하고, 세션 상한을 넘는 것은 사용자 결정이라 메인에 선택지를 보냈다. 사용자 중간 확인용 미리보기 서버를 다시 띄웠다(`http://127.0.0.1:8750/`, 루트는 사이트 폴더, 지금 판은 F 멈춤 지점 2). PR207(branch `feat/intro-site-20261008`, base `7086d45b`)은 열린 채 보류이고 GitHub Pages는 꺼진 채다.
+- **지금 단계:** 리드가 같은 대화를 이어 새 handle로 Run을 다시 인수했다(consumer generation 3). T3·F는 둘 다 미완료로 정산했다(「F 멈춤 지점 2와 재시작 정지」, 「재부팅과 T3 미완료 정산」). 사용자가 세션 상한 10을 골랐고(「세션 상한 10」) 기사 대시 효과만 빼기로 했다(「대시 효과 제외」). 19:56 KST에 T3 이어받기와 F 이어받기를 열었다(「중간 확인 미리보기와 대체 세션 둘 발행」). 다음은 F 이어받기의 대시 효과 제외 status와 T3 이어받기의 고친 판 status다. 사용자 중간 확인용 미리보기는 `http://127.0.0.1:8750/`(F 멈춤 지점 2 판 사본 E/`preview/stop2-site/`)이고 보여 줄 시점은 메인과 사용자가 정한다. PR207(branch `feat/intro-site-20261008`, base `7086d45b`)은 열린 채 보류이고 GitHub Pages는 꺼진 채다.
 - **남은 단계와 이어 받을 곳:**
   - T3 대체(harness 수정): 축소 장면 판별 수정과 그 fixture·변형, DOM에 기대지 않는 사이트 칸 확인(`msg_20711bbcee19`), 로고·순간이동 효과 방향 판별(`msg_14d6b7394162`, 효과 이름은 README 근거대로 `@0,-0.5`가 도착·`@-3.5,-0.5`가 떠난 자리), 전체 selftest, 보고 갱신. T3가 고치다 멈춘 harness 파일은 「재부팅과 T3 미완료 정산」에 있다.
   - F 대체(완성 세션): 고친 harness로 전체 E2E 재실행과 통과, 로고 원인이 사이트로 판정되면 수정, 중간 확인·비평 뒤 멈춤 지점 3. 이어 받을 기록은 E/`f/stop-note.md`다.
@@ -29,7 +29,7 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 - **리드:** Claude 세션 ID `090e4c0e-03b6-4f71-bf11-8c419407e534`(재부팅 뒤 `claude --resume`), Run `run_605925c36641`. 미리보기 서버는 리드 Claude 세션의 background 작업이라 세션이 끝나면 꺼진다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run과 재진입:** Run은 `run_605925c36641`이다. 이번 리드 handle은 재부팅 뒤 `term_31b7307c-168d-4dd6-a78d-a68abc1430d2`이고, 이전 리드 handle `term_436c20d1…`·`term_59adfc07…`와 함께 관측값일 뿐 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
-- **작업자·검증자:** T1·S1·V1·V2, 시안 D1·D2·D3, 선행 시험 T2는 정산하고 닫았다. T3·F도 재시작 정지로 미완료 정산했다. 지금 열린 작업자는 없다.
+- **작업자·검증자:** T1·S1·V1·V2, 시안 D1·D2·D3, 선행 시험 T2는 정산하고 닫았다. T3·F도 재시작 정지로 미완료 정산했다. 지금 열린 작업자는 T3 이어받기와 F 이어받기다(「중간 확인 미리보기와 대체 세션 둘 발행」).
 - **근거 폴더 E:** 저장소 로컬 `.backups/verification/2026-10-08-intro-site/`(Git 제외). 범위 단계 근거는 `.backups/verification/2026-10-08-intro-page-scope/`(E0)다. 첫 판 리드 맥락 메모는 E/`astra-context.md`, 디자인 범위 개정 근거와 메모는 E/`design-scope/`다.
 
 ## 요청 원천과 승인
@@ -455,3 +455,12 @@ workflow는 바꾸지 않아 Sol은 열지 않는다. 시안 세션 셋은 파�
   | E/`t3/mutants/make.mjs` | 19:36:55 | `87cc1cc59b8e47f9` |
 
 - **미리보기 서버:** 리드 도구 E/`tools/preview-server.mjs`에 루트 인자를 더해(주지 않으면 E) 사이트 폴더로 `http://127.0.0.1:8750/`에 띄웠다. 공개 파일 다섯 개가 200으로 나오는 것을 확인했고, 사이트 세 파일의 SHA256이 F 멈춤 기록과 같다.
+
+### 중간 확인 미리보기와 대체 세션 둘 발행
+
+- **중간 확인 미리보기:** 10:52Z에 사이트 작업 트리(F 멈춤 지점 2 판, 대시 효과 포함)를 E/`preview/stop2-site/`로 복사해(원본과 SHA256 대조 일치, 목록 E/`preview/stop2-site.src.sha256`) `http://127.0.0.1:8750/`으로 띄웠다. 대체 세션이 사이트를 고쳐도 사용자가 보는 판은 바뀌지 않는다. 메인에 준비와 「지금 판을 먼저 보기」 추천을 알렸다(`msg_7b11fb940149`).
+- **F 멈춤 지점 2 사이트 commit:** 리드가 F의 미커밋 세 파일을 `319b6a67`로 commit·push했다.
+- **대시 효과 제외 리드 몫(작업 트리, F 이어받기의 첫 수정과 함께 commit):** README에서 `knight-dash-effect` 그림 출처·배율 행을 지우고 「동작 맞물림」 `knight-dash` 1·2단계 효과 열을 `-`로 바꿨다. 표 아래 설명 셋을 고쳤다(붙는 곳 설명에서 대시 효과를 빼고, 기사 대시 설명에 「페이지는 효과를 새로 만들 때까지 빼고 공격 동작만 보이며 단계 경계 400·767ms는 게임 시각 그대로」, 되돌아오기 설명의 시작 시각). `publish-files.txt`에서 그 그림을 지우고(26개) 그림을 `git rm`했다(사이트 그림 20개).
+- **T3 이어받기(신규 `claude-opus-5-5`, 태그 `[Management 검증자]`):** 10:55Z, pane `term_c1b3ab81…`(리드 pane split, 최초 실행 명령 `claude --model claude-opus-5-5`, 화면 표시 「Opus 5.5 with xhigh effort」, 선택창 없음, backend unknown), Task `task_aea2f521f241`, Dispatch `ctx_63243e90d0b6`, `input_accepted`·turnStart observed. 계약 E/`contracts/t3-resume-task.md`(SHA256 `b73eea20…6ae1`), 발행 기록 E/`contracts/t3-resume-issue.txt`(HEAD `319b6a67`), 요약 E/`t3-resume-launch/summary.md`. 범위: 축소 장면 칸 판별, 좁은 화면 로고 원인 판별, 순간이동 효과 좌우 판정(효과 이름은 README 근거대로), 대시 효과 제외 반영 확인, selftest·변형, 사이트 확인 실행.
+- **F 이어받기(신규 `claude-opus-5-5`, 구현 역할 태그 `[Management Sol]`):** 10:56Z, pane `term_fd57cd38…`(같은 방식, 화면 표시 「Opus 5.5 with xhigh effort」, 선택창 없음, backend unknown), Task `task_40993482d9b4`, Dispatch `ctx_6a1388a1a80d`, `input_accepted`·turnStart observed. 계약 E/`contracts/f-resume-task.md`(SHA256 `4c29d87a…bdef`), 발행 기록 E/`contracts/f-resume-issue.txt`, 요약 E/`f-resume-launch/summary.md`. 범위: 대시 효과 제외(먼저, status로 멈춤) → 고친 harness로 E2E 통과(멈춤 지점 2) → 중간 확인·비평 반영(멈춤 지점 3) → `worker_done`.
+- 세션 수: 상한 10 중 8을 열었다(시안 셋, T2, T3, F, T3 이어받기, F 이어받기). 남은 둘은 디자인 비평과 V3다.
