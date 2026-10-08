@@ -375,10 +375,24 @@ PR2 — 정본·스킬·BACKLOG(문서)
 ### PR209 병합
 
 - PR: [PR209](https://github.com/bass131/dawnholder-server/pull/209)(E/closeout-pr-create.txt, 본문 E/closeout-pr-body.md), head `2227161168446d117a853b2732464f8cd8401bb7`.
+- 분류기 관측: 리드의 첫 branch push가 auto mode 분류기 「Out-of-Place Publication」으로 거부돼 실행되지 않았다(차단 직후 `date -u` 04:52:51Z). 이어 리드의 대화 기록 읽기와 `orca orchestration send --help`도 같은 사유로 거부됐다(E/lead-check/closeout-push-blocked.md). 사용자가 리드 pane에서 `!`로 push했다. 그 뒤 PR 상태 조회(`gh pr view/checks`)도 거부됐다(리드 종료 점검 입력 `msg_8a1a9b056a08`). 리드는 우회하지 않았다. BACKLOG `auto-mode-workflow-blockers` 출처에 보탠다.
 - 승인 요청 `msg_fcc4ba7d0a6e`(06:29:20Z, 송신 receipt E/closeout-approval-request-send.json). 메인은 06:46Z에 dotnet-tests 진행 중을 확인하고 통과 뒤 head·CLEAN을 다시 대조해 사용자에게 올렸다(`msg_2a427066bbe7`).
 - 메인 `msg_98e08c2b1958`이 전달한 사용자 원문(메인 창 Enter 제출)은 **「병합 승인: PR209 head 2227161168446d117a853b2732464f8cd8401bb7」**다.
 - 병합(메인): 단독 명령으로 2026-10-08T06:52:26Z, merge commit `b426a2037a3a8c84663c337cdd7325e0e25b6fbb`. 리드 fetch 대조에서 부모는 `c811261f`·`22271611`이고 승인 head와 트리 차이가 없다(E/session/lead2-closeout-check-body.md).
 - 그 뒤: 리드는 rules-active에서 `b426a203`으로 기록 branch `docs/cred-trial-record-20261008`을 만들었다. 자동 설정된 origin/main 추적은 해제했다. 종료 점검 입력은 `msg_8a1a9b056a08`이고, 결정은 위 「종료 점검 둘」이다. 메인은 분리 시험 리드 몫을 이 세션이 이어 하고 R-8은 시험 뒤에 한다고 정했다(`msg_98e08c2b1958`).
+
+### 기록 PR 작성
+
+- 범위: 리드 범위 초안 E/cred-trial-record/scope-draft.md(SHA256 `7bd4948e…`)를 메인이 수용했다(`msg_634c8e71f015`). 이 goal의 마지막 기록 PR이며 R-8 전에 병합한다. 리드 맥락 메모는 E/cred-trial-record/astra-context.md다.
+- goal·CURRENT: 리드가 썼다(commit `b0af766a`). 범위 초안과 다른 점은 둘이다.
+  - 진척 단계 「종료 점검과 R-8 인계」는 goal-loop의 「`[>]` 최대 하나」 때문에 `[ ]`로 두었다.
+  - 초안은 heredoc 그물 오탐을 「첫 발생」이라 적었다. 위 「종료 Gardener」 리드 이탈 줄에 같은 모양이 이미 있어 그 관계로 고쳐 적었다(위 「자격 증명 분리 시험」의 그물 관측 줄).
+- BACKLOG: 신규 `gpt-6.1-sol`(effort max), 태그 `[Rules Sol]`, 리드 pane split. 첫 화면은 선택창 없이 「GPT-6.1-Sol max · Full Access · never · docs/cred-trial-record-20261008 · …」(Codex v0.161.0)였다(E/cred-trial-record/backlog-first-screen.json). backend는 unknown이다. Task `task_b70e722b4005`, Dispatch `ctx_06e2cc3336d4`, receipt turnStart observed. 계약은 E/cred-trial-record/backlog-contract.md(SHA256 `573e2bd8…`, 고정 HEAD `b0af766a`)다.
+  - 결과: 여덟 행의 출처 칸 끝에만 덧붙였다. 대상은 `credential-separation-followup`, `agent-account-ruleset`, `runtime-check-role-split`, `new-goal-tdd-canon-link`, `auto-mode-workflow-blockers`, `record-timestamp-from-clock`, `contract-context-check`, `operating-reference-maintenance`다.
+  - 완료: worker_done `msg_3bc1964dbee8`(07:56:58Z, succeeded), 수신 helper 허용. 보고서 E/cred-trial-record/backlog/report.md(SHA256 `ac2d55e3…`, 97행). 작성자 점검 18/18, 새 상대 링크 16개, anchor 실패 0, Git 밖 링크 0이다. 작성자 편차 보고는 없다.
+  - 리드 R-2(E/lead-check/cred-trial-backlog-r2-check.md): 리드 비교 스크립트로 바뀐 행이 여덟뿐이고 각 행에서 출처 칸만 바뀌었으며 기존 글자로 시작함을 확인했다. 덧붙임의 사실을 계약과 원천에 대조했다. `auto-mode-workflow-blockers` 덧붙임이 PR209 branch push 거부를 위 「PR209 병합」 절로 잇는데, 그 절에 거부 기록이 없었다. 리드 계약이 그 사실의 goal 위치를 주지 않은 탓이다. 리드가 「PR209 병합」에 분류기 관측 줄을 더해 맞췄다.
+  - 정산: release `retained`(`external_terminal`), 「Worked for 15m 35s」 뒤 빈 prompt 확인, pane 닫음(ptyKilled). rules-active에는 리드만 남았다(E/cred-trial-record/backlog-release.json, -before-close.json, -close.json, -list-after-close.json).
+- 리드 이탈(네 번째 발생, 리드 귀속): 맥락 메모 완료 칸의 시각을 「07:42Z대」로 어림해 썼다가 `date -u`(07:41:52Z)로 곧바로 고쳤고 어림 값도 틀렸다(메모 끝 줄). `record-timestamp-from-clock`의 교정 층은 도구·양식 층으로 정해졌고 구현 전이다(위 「종료 점검 둘」). 이 기록 PR에서 따로 고치지 않는다.
 
 <a id="orca-moved-history"></a>
 ## ORCA에서 옮긴 적용 기록
