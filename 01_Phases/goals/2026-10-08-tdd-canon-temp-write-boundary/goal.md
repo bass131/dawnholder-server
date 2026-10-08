@@ -8,16 +8,16 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)이고 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream origin)이다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T13:17:21Z): 정본 PR 좁힌 재실사에서 문서 지적은 없었다. heartbeat 이탈 R1·R2의 메인 처리 결정이 남았다(아래 「좁힌 재실사」).
-- **다음 할 일**: PR 생성 → 메인 승인 묶음(R1·R2 처리, 열린 PR과의 병합 순서, 병합 승인) → 메인 병합 → 리드 태그 PR.
+- **현재 위치**(2026-10-08T13:21:40Z): PR211을 만들었고 메인이 재실사 R1·R2를 비차단으로 결정했다. 메인이 CI 뒤 사용자에게 병합 승인을 요청한다.
+- **다음 할 일**: PR211 병합(메인) → 리드 태그 PR(작성 전 CLAUDE.md 줄 목록·문안을 메인에 먼저 보냄).
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
-- [>] 정본 PR 작성·실사
-- [ ] PR211 병합
+- [x] 정본 PR 작성·실사
+- [>] PR211 병합
 - [ ] 리드 태그 PR 실사
 - [ ] 리드 태그 PR 병합
 - [ ] 수신 helper 선행 시험
@@ -118,6 +118,9 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 범위 초안 v1: 리드 `msg_4c05bcfed7d9`(11:02:00Z, E/scope-draft-v1.md). 메인 판단 `msg_e6c8eb971f30`(11:03:40Z, E/session/wait2.raw.json, 사용자 결정 아님): M1 CLAUDE.md는 메인이 리드 태그 PR branch에 직접 쓰고 리드가 커밋, 바꿀 줄 목록과 문안을 먼저 보냄. M2 수신 helper PR은 R-7 비해당, 선행 시험에 거절 사례 셋 필수, 독립 검증 신규 Opus. M3 bytes는 같은 PR에서 상쇄, 리드 태그 PR에서 모자라면 실사 전 원시 수치와 함께 메인에 올림.
 - 범위 초안 v2: 리드 `msg_31e28cdb79e5`(11:09:15Z, E/scope-draft-v2.md). 사용자 수정 요청에 따라 범위 기준 절과 항목 표를 더했다. 범위와 PR 경계는 v1과 같다.
 - TDD 원문: 메인 개인 도구 `main-notes/2026-10-04/HANDOFF.md` 123행 「TDD: 새 goal부터 적용한다. 진행 중인 영속화 goal은 기존 방식이다. 문구는 격차표에서 다듬는다. 「A」」. 적용 문안의 바탕은 [Content goal](../2026-10-05-items-inventory-currency/goal.md) 59행 4항이다.
+- 정본 PR 승인 묶음의 메인 결정: 메인 `msg_e7dd27f2bb2d`(2026-10-08T13:21:19Z, E/session/main-decision-msg_e7dd27f2bb2d.raw.json, 사용자 결정 아님). 리드 묶음 `msg_b923e30dea54`에 대한 답이다.
+  - 안건 1 A: 재실사 R1·R2(heartbeat 418·373·411초 이탈)를 비차단 운영 기록으로 둔다. 근거는 재실사 판정의 해소 조건과, heartbeat가 리드가 받는 생존 신호 규약이며 산출물에 영향이 없다는 점이다. 한계는 이탈 동안 리드가 작업자 생존을 5분 단위로 확인하지 못한 것이다. 같은 이탈이 다시 나오면 교정 층을 정한다(후보: 「장문 판정 작성 전 heartbeat 한 번」 같은 계약 문장). 이번은 첫 발생 기록이다.
+  - 안건 2 A: PR211을 PR207보다 먼저 병합한다. PR207 쪽이 CURRENT 한 줄을 새 형식으로 다시 쓰고, 메인이 Management에 알린다. PR191은 3단계 뒤 재개 때 맞춘다.
 
 ## 적용 중인 사용자 결정
 
@@ -201,7 +204,8 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 R-2(2026-10-08T13:17:21Z): 표본이 원시와 맞았다(E/lead-check/pr1-rereview-r2.md).
 - 리드 이탈(첫 관찰, 리드 귀속): 첫 질문에 답한 foreground 명령 끝에 다음 우편함 대기를 `&`로 열었다. 대기 정본은 `run_in_background`로 하나만 연다. 리드가 그 고아 대기 프로세스를 끝내고 정상 대기를 다시 열었다(E/lead-check/pr1-rereview-wait15.md).
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-rereview-release.json, pr1-rereview-idle.json, pr1-rereview-close.json).
-- 열린 PR의 CURRENT(위험 3): PR207(Management 소개 페이지)과 PR191(Content 인벤토리 화면)이 옛 표 형식의 CURRENT를 고친다. 정본 PR 위에 PR207을 합치는 모의 병합은 충돌 1곳이었다(E/lead-check/open-prs-current.md). 병합 순서는 승인 묶음에서 메인과 정한다.
+- 열린 PR의 CURRENT(위험 3): PR207(Management 소개 페이지)과 PR191(Content 인벤토리 화면)이 옛 표 형식의 CURRENT를 고친다. 정본 PR 위에 PR207을 합치는 모의 병합은 충돌 1곳이었다(E/lead-check/open-prs-current.md). 병합 순서는 메인 결정(「요구사항 원천과 적용 결정」)대로 PR211이 먼저다.
+- PR과 처리: PR211을 만들었다. 메인 결정 `msg_e7dd27f2bb2d`(「요구사항 원천과 적용 결정」)로 R1·R2는 비차단 운영 기록이 됐다. 메인이 CI 뒤 사용자에게 병합 승인을 요청한다.
 
 ## 정본에서 옮긴 적용 기록
 
