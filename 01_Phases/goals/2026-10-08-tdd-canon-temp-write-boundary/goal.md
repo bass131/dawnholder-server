@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream 없음)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T11:12:03Z): 범위 승인 뒤 정본 PR branch를 만들고 goal 시작 기록을 쓰는 중이다.
-- **다음 할 일**: 리드가 작업자 기동 TEMP 지정의 기동 시험을 한다 → 정본 PR Sol 계약 → 문서 실사.
+- **현재 위치**(2026-10-08T11:23:16Z): 기동 시험을 마쳤고 사용자가 R-5 구절을 남기기로 정했다. 정본 PR Sol 계약을 발행하는 중이다.
+- **다음 할 일**: 정본 PR Sol 작성 → 리드 R-2 → 신규 `gpt-6-astra` xhigh 문서 실사 → PR 생성과 메인 승인 묶음.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -82,7 +82,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 ### 관찰 가능한 완료조건
 
 1. 정본 PR이 신규 `gpt-6-astra` xhigh 문서 실사를 통과한다. 현실 시나리오 셋을 대조한다: 새 코드 goal의 계약을 정본만 보고 선행 시험 → Sol → 독립 검증 순서로 쓸 수 있다. Claude 작업자 계약의 허용 쓰기·자기 쓰기 감사·기동 TEMP 지정이 서로 맞는다. 기록 시각 칸과 허용 실행의 읽기 기본값을 양식에서 바로 찾는다.
-2. 리드가 R-5 새 명령으로 Claude 시험 세션 하나를 열어 임시 폴더·Git Bash `/tmp`·Write 결과가 지정 경로로 가는지와 경로 길이를 원시로 남긴다. 따르지 않으면 R-5 구절을 빼고 메인에 알린다.
+2. 리드가 R-5 새 명령으로 Claude 시험 세션 하나를 열어 임시 폴더·Git Bash `/tmp`·Write 결과가 지정 경로로 가는지와 경로 길이를 원시로 남긴다. 시험 결과 `/tmp`는 따르지 않았고, 사용자 결정(아래 「기동 TEMP 지정 구절」)으로 구절을 남기고 `/tmp`는 양식의 금지와 자기 쓰기 감사로 막는다. 처음 승인 문구 「따르지 않으면 R-5 구절을 빼고 메인에 알린다」는 이 결정으로 바뀌었다.
 3. 리드 태그 PR이 문서 실사를 통과한다. 시나리오: 새 리드가 새 태그로 진입한다. 전환기 수신 측이 두 태그를 같은 파트로 인정하고 identity 대조는 계속한다. CLAUDE.md 문안과 AGENTS가 맞는다.
 4. 수신 helper 선행 시험이 구현 전에 실패하고 구현 뒤 통과한다. 기존 Orca 시험이 모두 통과하고, 바뀐 기존 단정은 전수 분류 표에 남긴다. 신규 Opus 독립 검증자가 `node 99_Tools/Orca/check-message.mjs`를 이 goal에서 받은 실제 공식 ask 원시로 한 번 실행한다.
 5. ORCA는 250줄 이하다. 여섯 파일 묶음(AGENTS·ORCA·goal-loop·RESUME·세션 인계 스킬·orca-work)은 PR마다 bytes가 늘지 않거나 같은 PR에서 줄인 원시 수치를 남긴다. 기준은 main `c35279bc`의 102,658 bytes다. task-context·templates·REPORTING은 묶음 밖에서 따로 잰다. CLAUDE.md는 메인 몫으로 따로 잰다.
@@ -128,6 +128,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - **범위 수정 요청**(`msg_73e4421772c2`, 11:05:56Z): 「대시보드 결정 응답: 1) 계획 검토 - Rules 운영 셋업 2단계 범위 승인 + Q1~Q3(TDD·임시 쓰기·리드 태그) → B 수정 요청 (초안 msg_4c05bcfed7d9), 코멘트 「범위의 기준이 좀 모호한데 더 구체적으로 설명해줄래?」」.
 - **범위 승인**(`msg_8dce3f61a14c`, 11:11:21Z, E/session/wait4.raw.json): 「대시보드 결정 응답: 1) 계획 검토 - Rules 운영 셋업 2단계 범위 v2 승인 + Q1~Q5 → A 승인 (초안 msg_31e28cdb79e5)」. **Q1~Q5를 모두 A로 읽은 것은 메인 해석이다.** 현황판 항목 제목이 「범위 v2 승인 + Q1~Q5」였고 초안 추천이 다섯 다 A였다. 메인이 이 해석을 사용자에게 알렸다. Q1 A 기동 때 TEMP 지정, Q2 A 리드만 모델명, Q3 A 「Opus」, Q4 A CURRENT 띄우기 넣음, Q5 A TDD 예외 구절 넣음이다.
 - **직전 goal 종료 점검**(직전 goal 「적용 중인 사용자 결정」의 「종료 점검 둘」, 메인 전달 `msg_a73d4d5bbb3c`): 교정 층 「A 도구·양식 층」(기록 시각, 위임 계약 허용 실행의 읽기 기본값)과 ⑤ 「수신 helper의 Orca 1.4.218 고정은 다음 Rules 운영 goal에서 고친다」. 그때까지 리드가 공식 ask를 손으로 대조한다.
+- **기동 TEMP 지정 구절**(`msg_31c442dd7c2f`, 11:22:37Z, E/session/wait6.raw.json): 「대시보드 결정 응답: … 2) Rules - 작업자 임시 폴더 지정이 반만 먹혔는데, 운영 규칙에 그 구절을 남길지 → A 구절 남김」. 같은 제출의 1번은 Management 안건이라 메인이 생략했다. 리드 요청 `msg_d35743169f36`의 A대로 R-5 구절을 남기고 「Git Bash `/tmp`는 바뀌지 않는다」를 넣는다. 위임 계약 양식은 `/tmp`를 따로 금지하고 자기 쓰기 감사로 잡는다. 이 결정이 완료조건 2의 처음 문구를 대신한다. 메인은 lead-check.txt를 읽고 메인 셸에서도 TEMP를 바꿔도 `cygpath -w /tmp`가 그대로임을 재현했다.
 - **F2 교정 층의 메인 처리**(`msg_6031c2e0ecc8`, 사용자 결정 「A 도구·양식 층」의 메인 적용): BACKLOG ID 검사 helper(백틱 유무와 무관한 ID 추출과 fixture)를 다음 Rules 운영 goal의 기록 helper 후보로 넘겼다. 메인이 넣을지 판단을 리드에 맡겼고(진입 지시), 이 goal에서는 BACKLOG 새 행으로만 둔다(범위 v2 빼는 항목 3번).
 
 ## 현재 결과
@@ -137,7 +138,19 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 진입: 2026-10-08T10:47Z 진입 지시 수신, 10:49:45Z Run 생성(E/session/run-create.json), READY `msg_cdc2ad590f91`(10:50:34Z).
 - 범위 근거 시험: E/probe-current-merge/에서 `git merge-file`로 CURRENT 줄 형식을 시험했다. 빈 줄 하나로 띄운 두 줄 변경은 exit 0으로 자동 병합됐고, 붙은 두 줄 변경은 exit 1로 충돌했다.
 - 리드 이탈(첫 관찰, 리드 귀속): 진입 직후 리드가 Orca 수신·가이드 원시를 시스템 TEMP에 먼저 저장했다가 근거 폴더로 복사했다. 이 goal이 다루는 임시 쓰기 사례 10번으로 범위 근거에 넣었다.
-- branch: 2026-10-08T11:12:03Z 최신 main `c35279bc`에서 `docs/tdd-canon-temp-boundary-20261008`을 만들었다.
+- 리드 이탈(첫 관찰, 리드 귀속): 「재개 지점」의 현재 위치 시각을 시계 출력 없이 「11:23:38Z」로 적었다가 `date -u`(11:23:16Z)를 보고 곧바로 고쳤다. 직전 goal `record-timestamp-from-clock`과 같은 실수이며 이 goal의 양식 몫이 막으려는 대상이다.
+- branch: 2026-10-08T11:12:03Z 최신 main `c35279bc`에서 `docs/tdd-canon-temp-boundary-20261008`을 만들었다. goal 시작 기록은 commit `f5b2e033`이다.
+
+### 기동 시험
+
+- 근거: 완료조건 2. 원시는 E/launch-probe/다.
+- 기동: 리드 pane을 명령 없이 split 해 기본 셸이 PowerShell(프롬프트 `PS C:\…\rules-active>`)임을 확인했다. 그 pane에 `$env:TEMP="…\rules-active\.backups\tmp\p1"; $env:TMP=$env:TEMP; …; claude --model claude-opus-5-5`를 넣었다. R-5의 `--command`가 기본 셸에 타이핑하는 것과 같은 글자다. 첫 화면은 선택창 없이 「Claude Code v2.1.293 · Opus 5.5 with xhigh effort」였다(E/launch-probe/first-screen.json). backend는 unknown이다.
+- 작업: 태그 `[Rules 기동 시험 Opus]`, Task `task_1b2e9ec20194`, Dispatch `ctx_aa2942bd58f9`, receipt turnStart observed. 계약은 E/launch-probe/contract.md다. worker_done `msg_4869bf6a11d8`(11:16:24Z, succeeded)을 수신 helper가 허용했다.
+- 결과:
+  - 따랐다: Claude Code 임시 폴더(scratchpad)가 `.backups\tmp\p1\claude\<경로 slug>\<세션>\scratchpad`에 생겼다. Bash 안의 `$TEMP`·`$TMP`도 지정 경로였다. Write 도구로 쓴 probe.txt 절대 경로는 206자였다. Claude Code 내부 임시 파일(bash-edit-diff)도 그 아래로 갔다.
+  - 따르지 않았다: Git Bash `/tmp`는 `cygpath -w` 기준 `C:\Users\bass1\AppData\Local\Temp` 그대로였다(작업자 11:16:07Z). 리드 재확인에서 `mount`가 `/tmp`를 `usertemp`로 보여 줬다(E/launch-probe/lead-check.txt, 11:17:51Z).
+- 처리: 사용자 결정 「A 구절 남김」(위 「적용 중인 사용자 결정」).
+- 정산: release `retained`(`external_terminal`), 빈 prompt와 「done」 표시 확인 뒤 pane을 닫았다(ptyKilled true). rules-active에는 리드만 남았다(E/launch-probe/release.json, idle.json, close.json, list-after-close.json).
 
 ## 다음 계획 후보
 
