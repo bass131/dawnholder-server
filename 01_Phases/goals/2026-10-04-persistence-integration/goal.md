@@ -1,6 +1,6 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 v2로 고쳐 새 Opus 실사자가 실사 중이다(아래 「재개 지점」).
+상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 실사에서 통과(전달 가능)했다. 카드 ⑩ 처리에 대한 메인 답을 기다린다(아래 「재개 지점」).
 
 ## 적용 중인 사용자 결정
 
@@ -431,9 +431,17 @@
 
 ### 콘솔 시작 시험 v1 실사 NOT PASS와 v2 재실사 — 2026-10-08
 
-기록 시각은 2026-10-08T11:36:03Z(`date -u`)다. **이 블록이 현재 재개 정본이고 아래 「준비와 Orca 재시작」 블록부터는 역사다.** E·D 표기는 아래 「판독」 블록과 같다. 리드는 Orca 재시작 뒤 새 handle `term_cdfb3cdc-9e7e-4758-991f-5731311e3df6`에서 같은 Run(generation 6)을 이어받았다. 메인 handle은 `term_c7588791-f318-4f7c-a535-eb82d4550386`이다.
+기록 시각은 2026-10-08T11:36:03Z(`date -u`)이고, 11:59:00Z에 v2 판정 뒤 상태로 고쳤다. **이 블록이 현재 재개 정본이고 아래 「준비와 Orca 재시작」 블록부터는 역사다.** E·D 표기는 아래 「판독」 블록과 같다. 리드는 Orca 재시작 뒤 새 handle `term_cdfb3cdc-9e7e-4758-991f-5731311e3df6`에서 같은 Run(generation 6)을 이어받았다. 메인 handle은 `term_c7588791-f318-4f7c-a535-eb82d4550386`이다.
 
-- **지금 단계:** v2를 새 Opus 실사자가 실사 중이다. 판정이 오면 원문을 직접 읽고, PASS면 메인에 status를 보낸다.
+- **지금 단계:** v2 실사는 통과(PASS, 「사용자 실행으로 전달 가능」)였다. 리드가 메인에 status `msg_1775e066ddb6`(11:58:59Z)를 보냈고, 카드 ⑩ 처리에 대한 메인 답을 기다린다.
+  - 판정 원문은 D/`sql-console-start-01/review-v2/verdict.md`(SHA256 `E18A8B2A6DC369492832814665B24DFF46A2CD45BA9F7B21DC0BF48F3E3DFFA9`)다. 차단 결함은 없고, 첫 실사 지적 16개 중 15개를 고쳤다. C-5는 판독 기준으로 넘긴 이유를 인정받았다.
+  - 비차단 SCS-09(중간)는 카드 ⑩ 「D: 꺼내기」에 「sqlservr 0·WARNING 없음」 조건이 없는 문제다. 리드 추천은 카드만 고친 다음 판을 새 Opus 실사자에게 카드 한정으로 다시 받는 것이다. 대안은 v2 카드를 그대로 올리고 메인이 말로 전하는 것이다.
+  - 비차단 SCS-07(낮음)은 실행 파일을 고치지 않는다. **리드 판독 기준:** `99-summary.json`에 `LaunchUtc`가 있는데 `Outcome`이 'not started'면 「콘솔 시작 뒤 Ctrl+C·정지 실패·대기 예외로 중단」으로 읽는다. 이때 21-wait-log·22-console-stop이 없을 수 있으니 ERRORLOG 사본과 50-sql-state를 먼저 본다.
+  - 비차단 SCS-08(낮음): OPENED는 「그사이 원인이 사라짐」과 가르지 못한다. 카드를 고치면 해석 줄에 단서를 넣고, 아니면 이 판독 기준으로 둔다. OPENED면 다음 단계에서 서비스 시작으로 확인한다.
+  - 관찰 C-11~C-15(model 목록 누락, 카드 104행 추론 표시, manifest Attributes 미대조, LocalDB sqlservr 계수, 암묵 스크립트 변수)는 리드 판단이다. 카드를 고칠 때 C-11·C-12·C-14 문장도 함께 본다.
+  - 실사자 경계 이탈 1건을 실사자가 자진 기록했다. `Test-Path 'D:\'` 1회(결과 False, 읽기·쓰기 없음)다. 리드가 `reviewer-read-04-cold-copy.txt` 3·20행으로 확인했고 메인에 보고했다.
+  - 리드 원천 대조: 카드 77행 ⑩과 실행 파일 1097~1136행 순서를 직접 확인했고 판정과 같다. 대상 SHA는 실사 전후 같고, `review-v2/` 밖에 새로 쓰인 파일과 `attempt-01`은 없다.
+  - 실사자 `task_4e7bbe169b7d` / `ctx_a73de790d14c`는 11:58Z에 release·idle 확인·close를 마쳤다(`review-v2/release.json`·`close.json`·`postclose-terminals.json`). 살아 있는 Core pane은 리드 하나다. 원시 메시지는 E/`opus-lead-entry/2026-10-08-sql-read/`의 `wait-08-msg_91cf81b404a3.json`·`ack-08.json`·`review-v2-status-body.txt`·`review-v2-status-receipt.json`이다.
 - **v1 실사(NOT PASS, 같은 산출물 독립 NOT PASS 1회째):** 메인 `msg_23d5fc42d4ea`(재부팅 뒤 재개)로 기동 보류가 풀렸다. 실사자 `task_db242a1694d5`가 차단 2건을 냈다. SCS-01은 머신 경로·서비스 SID·manifest hash를 스크립트 상수로 둔 규칙 위반이고, SCS-02는 120자를 넘는 식 6곳이다. 비차단은 SCS-03~06과 관찰 C-1~C-10이다. 판정 원문은 D/`sql-console-start-01/review-v1/verdict.md`(SHA256 `0246b7f6…c2c0`)이고, 메인 보고는 `msg_817156eb584e`다. 범위 안 결함이라 메인 결정으로 넘기지 않았다.
 - **v2에서 고친 것:** 쓰기 전 메모 `context-v2.md`(완료 갱신 포함)에 번호별 실제 줄이 있다.
   - 환경 값은 `submission-v2/sql-console-start-inputs.json`으로 옮겼다(SHA256 `A862145A…F1BC`). 스크립트가 상수 SHA256으로 대조하고, 서비스 실행 파일·SID를 시스템에서 다시 읽어 입력과 대조한다.
@@ -447,10 +455,10 @@
   - 작성자 점검 `author-check-v2/run-1.txt`는 73 PASS, 0 FAIL, 1 NOT CHECKED다. 승격 없이 레지스트리 시작 인자 키를 읽을 수 없어 NOT CHECKED로 남겼다. `negctl-1/`은 시작 문을 되돌린 사본에서 문 시험이 FAIL함을 보였다. 하네스 첫 시도는 대역 powershell 하나를 남겼고 리드가 끝냈다(sqlservr 무관, `negctl-1/README.txt`).
 - **v2 실사자:** 계약 `review-v2/contract.md`(SHA256 `CA18CB16…3239`), 기준 1~12, 새 결함은 SCS-07부터다. 11:35:15Z split `term_d2134aa8-13e9-4b1b-b88e-ceb58f4c04b5`, 11:35:30Z worker-start `task_4e7bbe169b7d` / `ctx_a73de790d14c`다. 요청 `claude-opus-5-5`, 화면 「Opus 5.5 with xhigh effort」, backend unknown이다. 쓰기는 `review-v2/` 새 파일만이고 실행은 금지다(`review-v2/launch-record.txt`).
 - **다음 할 일 순서**
-  1. worker_done이 오면 `review-v2/verdict.md` 전문을 읽고 원천을 표본 대조한다. 실사자를 release하고 idle을 확인한 뒤 close한다.
-  2. PASS면 메인에 status로 카드 경로와 스크립트·입력 파일·카드 SHA256, 판정 경로를 보낸다. 메인이 카드를 현황판에 올린다.
-  3. NOT PASS면 v3로 고치고 같은 조건의 새 실사자로 다시 받는다. 같은 산출물 수정이 3회를 넘으면 메인에 체크포인트를 알린다.
-- **사용자 손·결정 대기:** 없음. 사용자 실행은 실사 PASS 뒤다.
+  1. 메인이 「1」을 고르면 쓰기 전 메모를 남기고, 카드만 고친 다음 판을 만든다(⑩ 조건, SCS-08 단서, C-11·C-12·C-14 문장). 실행 파일·입력 파일은 그대로다. 같은 조건의 새 Opus 실사자에게 카드 한정으로 다시 받고, PASS면 메인에 새 카드 경로·SHA256을 보낸다.
+  2. 메인이 「2」를 고르면 v2 카드가 그대로 전달본이다. 메인이 현황판에 올리고 ⑩ 조건을 말로 전한다.
+  3. 사용자 실행 뒤 결과를 판독한다. 위 SCS-07·SCS-08 판독 기준을 쓴다.
+- **사용자 손·결정 대기:** 메인의 카드 ⑩ 처리 선택(리드·메인 판단). 사용자 실행은 그 뒤다.
 
 ### 콘솔 시작 분리 시험 준비와 Orca 재시작 — 2026-10-08
 
