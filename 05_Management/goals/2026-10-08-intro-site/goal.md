@@ -19,12 +19,17 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-08 16:2x KST, T2 정산 뒤 T3·완성 세션 발행 준비.** 사용자는 첫 판 PR207을 보류하고 디자인을 다시 하기로 했고(아래 「디자인 재작업 범위 개정」), 시안 D1을 골랐다(「시안 선택과 E2E·밀도 요구」). 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-08 17:36 KST, Orca 재시작 준비(메인 `msg_49163ec7a137`, 사용자 요청: 터미널 렉). T3·F 작업 중.** 사용자는 첫 판 PR207을 보류하고 디자인을 다시 하기로 했고(아래 「디자인 재작업 범위 개정」), 시안 D1을 골랐다(「시안 선택과 E2E·밀도 요구」). 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
-- **지금 단계:** 선행 시험 T2를 정산하고 닫았다(「선행 시험 결과(T2)」). 리드가 D1용 사이트 그림·글꼴 사본과 README 표 넷을 사이트 폴더에 넣었다(「사이트 그림·글꼴 사본과 README 표(리드)」). 다음은 E2E 시험 작성자 T3과 완성 세션 F의 발행이다. 임시 서버 127.0.0.1:8750은 T3의 시안 E2E가 끝나면 닫는다. PR207(branch `feat/intro-site-20261008`, base `7086d45b`)은 열린 채 보류이고, 디자인 완성 뒤 새 head로 병합 승인을 요청한다. GitHub Pages는 꺼진 채다.
+- **지금 단계:** 선행 시험 T2를 정산하고 닫았다(「선행 시험 결과(T2)」). 리드가 D1용 사이트 그림·글꼴 사본과 README 표 넷을 사이트 폴더에 넣었다(「사이트 그림·글꼴 사본과 README 표(리드)」). E2E 시험 작성자 T3과 완성 세션 F를 16:17 KST에 병렬로 열었다(「E2E 시험 T3과 완성 세션 F 발행」). 다음은 T3의 D1 버그 목록 status와 F의 멈춤 지점 1 status다. 임시 서버 127.0.0.1:8750은 T3의 시안 E2E가 끝나면 닫는다. PR207(branch `feat/intro-site-20261008`, base `7086d45b`)은 열린 채 보류이고, 디자인 완성 뒤 새 head로 병합 승인을 요청한다. GitHub Pages는 꺼진 채다.
+- **재시작 준비 상태(17:36 KST):** 새 작업자 기동은 보류 중이다. 작업자에게 멈춤 지시는 보내지 않았다.
+  - T3(E2E 시험, 신규 `claude-opus-5-5`): pane `term_312e1a08…`, Task `task_30e21975778a`, Dispatch `ctx_5c65fd855ef2`, 계약 E/`contracts/t3-task.md`. 마지막 heartbeat 08:28Z `implementing`. 쓴 것: E/`harness-v2/`의 `check-e2e.mjs`·`e2e/`, E/`t3/`(`test-writer-context.md`, `inputs`·`raw`·`runs`·`chrome`·`superseded`). D1 버그 목록·보고는 아직 없다.
+  - F(완성 세션, 신규 `claude-opus-5-5`, 태그 `[Management Sol]`): pane `term_40086209…`, Task `task_aa27bccd465e`, Dispatch `ctx_cd721f44ed4f`, 계약 E/`contracts/f-task.md`, 접점 보충 1. 마지막 heartbeat 08:17Z `self-check`(멈춤 지점 1 직전). 쓴 것: 사이트 `index.html`·`styles.css`(수정, 미커밋)와 새 `script.js`(미추적), E/`f/`(`designer-context.md`, `design-plan.md`, `report.md`, `shots`·`frames`·`raw`·`tools`). 멈춤 지점 1 status는 아직 없다.
+  - 리드 미리보기 서버 127.0.0.1:8750은 리드 Claude 세션의 background 작업이라 재시작으로 꺼진다. T3이 시안 E2E에 쓰면 리드가 다시 띄운다.
+  - 리드 Claude 세션 ID `090e4c0e-03b6-4f71-bf11-8c419407e534`, Run `run_605925c36641`. 재시작 뒤 첫 할 일: run-use로 Run을 인수하고 T3·F pane이 살아 있는지 `terminal list`로 본 뒤, 죽었으면 각 산출물을 보존한 채 메인에 알리고 크래시 정본대로 새 세션 대체를 준비한다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run과 재진입:** Run은 `run_605925c36641`이다. 이번 리드 handle은 `term_436c20d1-eacc-4335-ab85-027f65e69f4f`이고, 이전 리드 handle `term_59adfc07-455c-493b-b4bc-1e2583b08ff9`와 함께 관측값일 뿐 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
-- **작업자·검증자:** T1·S1·V1·V2, 시안 D1·D2·D3, 선행 시험 T2는 정산하고 닫았다. 지금 열린 작업자는 없다.
+- **작업자·검증자:** T1·S1·V1·V2, 시안 D1·D2·D3, 선행 시험 T2는 정산하고 닫았다. 지금 열린 작업자는 T3과 F다(pane·Task·Dispatch는 「E2E 시험 T3과 완성 세션 F 발행」).
 - **근거 폴더 E:** 저장소 로컬 `.backups/verification/2026-10-08-intro-site/`(Git 제외). 범위 단계 근거는 `.backups/verification/2026-10-08-intro-page-scope/`(E0)다. 첫 판 리드 맥락 메모는 E/`astra-context.md`, 디자인 범위 개정 근거와 메모는 E/`design-scope/`다.
 
 ## 요청 원천과 승인
@@ -372,3 +377,13 @@ workflow는 바꾸지 않아 Sol은 열지 않는다. 시안 세션 셋은 파�
 - **README 표:** 「그림 출처」에 22행을 더했고(첫 판 6행은 새 페이지가 쓰지 않게 되면 뺀다), 「글꼴 출처」 3행, 「동작 배율과 기준점」 20행, 「동작 맞물림」 17행(기사 대시·마법사 낙뢰·마법사 순간이동)을 새로 썼다. 맞물림 시각과 칸은 E/`design/timing-research.md`의 원천 값에서 계산했다. 순간이동 재사용 대기 30틱(`Constants.cs:76`)에 맞춰 돌아오는 순간이동은 1500ms에 둔다. 표의 칸 계산 규칙·효과 방향 칸은 접점 v1.3 3절에 정했다.
 - **공개 목록:** `publish-files.txt`에 그림 22개와 글꼴 셋을 더했다(34줄). 첫 판 그림 6개는 아직 남긴다. `script.js`는 완성 세션이 파일을 만든 뒤 리드가 더한다.
 - **리드 자체 점검(독립 판정 아님):** harness v2 `check-site --mode source --font-package …`는 exit 1, 위반 셋(CSP 없음, 정지 수단 없음, `@font-face` 없음)이다. 셋 다 완성 세션이 쓸 `index.html`·`styles.css`의 몫이다. 그림 출처·글꼴 출처·공개 목록·내부 정보·그림 합계를 포함한 나머지 13개 검사는 통과했다(E/`lead-run/assets-v2/check-site-1.json`).
+- **commit:** `0054fe59`(push 완료). 그림·글꼴 blob의 SHA256이 원본과 같다(리드 `git cat-file` 대조 4건).
+- **운영 기록(리드 부작용, 첫 발생):** 2026-10-08 07:1xZ에 Chrome 설치 판을 보려고 `chrome.exe --version`을 실행했다. Windows에서는 판을 출력하지 않고 이미 열린 사용자 Chrome 세션으로 넘겨져(「기존 브라우저 세션에서 여는 중입니다」) 사용자 Chrome에 새 창이나 탭이 열렸을 수 있다. 사용자 창을 잘못 닫을 수 있어 닫지 않았다. 그 직후 파일 속성 읽기(PowerShell)와 `date -u`가 auto mode 분류기에 거부됐고 우회하지 않았다. 메인에 보고했다(`msg_d12af9df1a1e`). T3·F 계약에 「Chrome 실행 파일 직접 실행 금지, Playwright와 임시 profile로만」을 적었다.
+
+### E2E 시험 T3과 완성 세션 F 발행
+
+- **접점 v1.3:** E/`site-interface-v1.3.md`(SHA256 `fe4e3b9b…2c91`). v1.2에 동작 그림·장면·붙는 곳·동작 실행 표식, README 「동작 배율과 기준점」·「동작 맞물림」 표, 화면 폭 1536×864, E2E 정의(동작 재생·크기 비율·동작 맞물림·실제 Chrome 재현·빈 띠)를 더했다.
+- **T3(신규 `claude-opus-5-5`, 태그 `[Management 검증자]`):** 2026-10-08 16:17 KST, pane `term_312e1a08…`(리드 pane split, 최초 실행 명령 `claude --model claude-opus-5-5`, 화면 표시 「Opus 5.5 with xhigh effort」, 선택창 없음, backend unknown), Task `task_30e21975778a`, Dispatch `ctx_5c65fd855ef2`, `input_accepted`·`turn_started`. 계약 E/`contracts/t3-task.md`(SHA256 `222d7acf…c36f`), 발행 기록 E/`contracts/t3-issue.txt`(HEAD `0054fe59`), 요약 E/`t3-launch/summary.md`.
+- **F(신규 `claude-opus-5-5`, 구현 역할 태그 `[Management Sol]`):** 2026-10-08 16:17 KST, pane `term_40086209…`(같은 방식, 화면 표시 「Opus 5.5 with xhigh effort」, 선택창 없음, backend unknown), Task `task_aa27bccd465e`, Dispatch `ctx_cd721f44ed4f`, `input_accepted`·`turn_started`. 계약 E/`contracts/f-task.md`(SHA256 `1b6331b2…78b8`), 발행 기록 E/`contracts/f-issue.txt`, 요약 E/`f-launch/summary.md`. 메인이 받아 둔 일정(17:00 KST 발행)보다 앞당겼다.
+- 세션 수: 시안 셋, T2, T3, F까지 6개를 열었다. 남은 상한은 비평 하나와 V3 하나다.
+- **F 질문과 접점 보충 1(리드 답, 범위 안 해석):** F가 사이트 파일 쓰기 전에 세 가지를 물었다(`msg_2a462b01ab18`). 리드 답 `msg_090ea40e7769`을 E/`site-interface-v1.3-addendum-1.md`(SHA256 `bf4612cf…691c`)로 고정하고 T3에도 알렸다(`msg_472d3e1084c2`). (1) 좁은 화면에서 띠 요소마다 0.5배로 줄이자는 기본값은 받지 않았다. 홀수 칸 폭 띠의 칸 경계가 반 픽셀에 걸려 옆 칸이 비치기 때문이다(사용자 버그 1과 같은 종류). 띠 상자는 칸 × 정수 배율로 두고 장면을 감싼 요소 하나에 축소 transform을 건다. (2) 정지 수단·움직임 줄이기에서 `data-action`은 고른 표시만 바꾸고 동작 시간표를 재생하지 않는다. (3) 순간이동 떠난 자리 효과에는 `data-anchor-to`를 두지 않는다. 캐릭터는 요소 하나이고 띠가 바뀌면 `data-sprite`도 함께 바꾼다.
