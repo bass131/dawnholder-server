@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream 없음)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T12:56:30Z): 정본 PR 실사 결함 D1·D2와 관찰 O1·O2를 고쳤다(아래 「실사 결함 수정」). 좁힌 재실사를 낸다.
-- **다음 할 일**: 새 `gpt-6-astra` xhigh 좁힌 재실사 → 리드 R-2 → PR 생성과 메인 승인 묶음.
+- **현재 위치**(2026-10-08T13:17:21Z): 정본 PR 좁힌 재실사에서 문서 지적은 없었다. heartbeat 이탈 R1·R2의 메인 처리 결정이 남았다(아래 「좁힌 재실사」).
+- **다음 할 일**: PR 생성 → 메인 승인 묶음(R1·R2 처리, 열린 PR과의 병합 순서, 병합 승인) → 메인 병합 → 리드 태그 PR.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -187,6 +187,21 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 R-2(2026-10-08T12:56:30Z): 바뀐 줄 넷과 수치가 보고와 같았다(E/lead-check/pr1-fix-r2.md).
 - 작업자 이탈(첫 관찰, 작성자 자기 보고): heartbeat 간격이 두 번 5분을 넘었다(12:34:23Z → 12:41:21Z → 12:47:34Z). 산출물에는 영향이 없다.
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-fix-release.json, pr1-fix-idle.json, pr1-fix-close.json).
+
+### 좁힌 재실사
+
+- 실사자: 신규 `gpt-6-astra` xhigh(태그 `[Rules 검증자]`, Task `task_47b933be78e4`, Dispatch `ctx_7e5ebddbdd28`, 첫 화면 「GPT-6-Astra xhigh」, backend unknown). 계약은 E/pr1-rereview-contract.md(SHA256 `498c12e1…`, 고정 HEAD `3d8b00da`)다. worker-start가 turnStart unobserved여서 draft 글자 수(계약 11,037자 + 머리 4,787자 = 15,824자)를 확인하고 Enter 한 번으로 시작했다(E/pr1-rereview-draft-recovery.md).
+- 공식 질문 2회, 둘 다 리드가 손 대조 뒤 답했다.
+  - `msg_7bc2de9cef06`: 수정 Sol heartbeat 이탈에 메인 결정이 있는지 물었다. 리드 답(`msg_868002ad8202`)은 메인 결정이 없다는 것과, 리드 해석으로는 산출물 규칙이 아닌 생존 신호 규약이라 비차단이라는 것이다. 독립적으로 차단이라 보면 근거와 함께 따로 적으라고 했다.
+  - `msg_5ec97c4936eb`: 재실사자 자기 heartbeat 두 통의 원시 보존을 요청했다. 리드가 E/lead-check/pr1-rereview-heartbeats.json에 뽑아 두고 경로를 보냈다(`msg_ebc5e129a807`).
+- 판정(`msg_406c94ce989e`, 2026-10-08T13:16:43Z): 문서 K1~K8은 **지적 없음**이다. D1·D2 수정과 O1·O2 반영을 확인했다. 전체 통과는 **R1·R2 메인 결정 전 차단**이다(E/pr1-rereview/verdict.md). 문서 재수정 요구는 없다.
+  - R1: 수정 Sol heartbeat 간격 418초·373초(작성자 귀속).
+  - R2: 재실사자 heartbeat 간격 411초(검증자 귀속).
+  - 실사자는 차단 문구에 산출물 규칙만이라는 한정이 없다고 보고 리드 해석을 받지 않았다. 메인이 비차단 운영 기록으로 처리한다고 명시하면 풀린다고 적었다.
+- 리드 R-2(2026-10-08T13:17:21Z): 표본이 원시와 맞았다(E/lead-check/pr1-rereview-r2.md).
+- 리드 이탈(첫 관찰, 리드 귀속): 첫 질문에 답한 foreground 명령 끝에 다음 우편함 대기를 `&`로 열었다. 대기 정본은 `run_in_background`로 하나만 연다. 리드가 그 고아 대기 프로세스를 끝내고 정상 대기를 다시 열었다(E/lead-check/pr1-rereview-wait15.md).
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-rereview-release.json, pr1-rereview-idle.json, pr1-rereview-close.json).
+- 열린 PR의 CURRENT(위험 3): PR207(Management 소개 페이지)과 PR191(Content 인벤토리 화면)이 옛 표 형식의 CURRENT를 고친다. 정본 PR 위에 PR207을 합치는 모의 병합은 충돌 1곳이었다(E/lead-check/open-prs-current.md). 병합 순서는 승인 묶음에서 메인과 정한다.
 
 ## 정본에서 옮긴 적용 기록
 
