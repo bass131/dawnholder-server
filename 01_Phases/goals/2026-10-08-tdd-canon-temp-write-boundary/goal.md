@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 branch `docs/tdd-canon-temp-boundary-20261008`(base main `c35279bc`, upstream 없음)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`, handle `term_10beffe1-9c4b-4593-893a-af699b52791d`. Run은 `run_be5206d9a2af`, 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T12:29:46Z): 정본 PR 문서 실사가 D1·D2로 차단됐다(아래 「정본 PR 문서 실사」). D1은 리드가 고쳤다.
-- **다음 할 일**: 새 Sol의 D2·O1·O2 수정 → 리드 R-2 → 새 `gpt-6-astra` xhigh 좁힌 재실사 → PR 생성과 메인 승인 묶음.
+- **현재 위치**(2026-10-08T12:56:30Z): 정본 PR 실사 결함 D1·D2와 관찰 O1·O2를 고쳤다(아래 「실사 결함 수정」). 좁힌 재실사를 낸다.
+- **다음 할 일**: 새 `gpt-6-astra` xhigh 좁힌 재실사 → 리드 R-2 → PR 생성과 메인 승인 묶음.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
 
@@ -175,6 +175,18 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 R-2(2026-10-08T12:29:46Z): 판정 표본이 원시와 맞았다(E/lead-check/pr1-review-r2.md).
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-review-release.json, pr1-review-idle.json, pr1-review-close.json).
 - 처리: D1은 리드가 「위험」 1·2번을 고쳤다. D2·O1·O2는 새 Sol 세션이 고친다. 그 뒤 새 `gpt-6-astra` xhigh가 바뀐 부분을 좁혀 재실사한다. 같은 산출물의 첫 수정이다.
+
+### 실사 결함 수정
+
+- 계약: E/pr1-fix-contract.md(SHA256 `cdaffb6c…`, 고정 HEAD `20734f4c`). 작성자는 신규 `gpt-6.1-sol` max(태그 `[Rules Sol]`, Task `task_2308e033188f`, Dispatch `ctx_164a9f605c57`, backend unknown)이고 turnStart observed였다.
+- 결과: worker_done `msg_873d5f6c4c0a`(2026-10-08T12:55:48Z, succeeded)을 수신 helper가 허용했다. 보고는 E/pr1-fix/report.md다.
+  - D2: TDD 문단에서 선행 시험 작성자를 AGENTS 「모델 라우팅」으로, 검증자를 「검증자 모델 시범」으로 연결했다.
+  - O2: templates 허용 쓰기 위치 줄에 지정 TEMP 아래 scratchpad가 허용 안이라고 적었다.
+  - O1: ORCA R-5 구절의 goal 링크에 「기동 시험」 앵커를 붙였다.
+  - bytes: 묶음 102,656(상한 102,658), ORCA 249줄이다. goal-loop 「위임 계약」의 원본 로그 줄을 줄여 상쇄했다.
+- 리드 R-2(2026-10-08T12:56:30Z): 바뀐 줄 넷과 수치가 보고와 같았다(E/lead-check/pr1-fix-r2.md).
+- 작업자 이탈(첫 관찰, 작성자 자기 보고): heartbeat 간격이 두 번 5분을 넘었다(12:34:23Z → 12:41:21Z → 12:47:34Z). 산출물에는 영향이 없다.
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-fix-release.json, pr1-fix-idle.json, pr1-fix-close.json).
 
 ## 정본에서 옮긴 적용 기록
 
