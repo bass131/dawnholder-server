@@ -54,7 +54,7 @@
 - 경로·branch·base·HEAD / 기존 변경·파일 소유·쓰기 종료 확인:
 - 허용 수정 파일 / 제품·테스트 소유 분리 / 건드리지 않을 영역:
 - 허용 실행(읽기 전용 파일 읽기는 기본 허용)·자원 소유·부작용 / 추가 위임·commit/push 금지:
-- 허용 쓰기 위치(근거 폴더 아래, receipt·임시 파일 포함. 세션 임시 폴더(scratchpad)·TEMP·`/tmp`·홈은 허용 밖. 기동 때 근거 쪽으로 지정한 TEMP는 허용 안. Git Bash `/tmp`는 그 지정과 무관하게 허용 밖):
+- 허용 쓰기 위치(근거 폴더 아래, receipt·임시 파일 포함. 기본 위치의 세션 임시 폴더(scratchpad)·TEMP·`/tmp`·홈은 허용 밖. 기동 때 근거 쪽으로 지정한 TEMP와 그 아래 Claude Code 임시 폴더(scratchpad)는 허용 안. Git Bash `/tmp`는 그 지정과 무관하게 허용 밖):
 - 작업 전 메모 경로 / 완료 보고·원시 근거 경로 / 질문할 담당자:
 - live preamble의 check·heartbeat·ask·정확히 한 번 worker_done과 명시 outcome:
 - 작업 하나 뒤 정산·종료 / 재사용 금지:
