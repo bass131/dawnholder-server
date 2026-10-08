@@ -8,9 +8,9 @@ Rules의 목표다. 사용자가 범위 초안 v1을 승인했고(아래 「요�
 - branch·PR: PR2는 [PR208](https://github.com/bass131/dawnholder-server/pull/208), branch `docs/hook-helper-session-canon-20261008`(base 최신 main `7086d45b`, 승인 전 main `3bb2e77a`를 `b1d289b5`로 통합)이고 2026-10-08T02:38:29Z에 `c811261f`로 병합됐다(아래 「PR208 병합」). 종료 기록 branch는 그 병합 commit에서 만든 `docs/hook-helper-closeout-20261008`이다. PR1 `fix/hook-net-false-positives-20261007`(`13fe344d`, 원격 보존)은 사용자 결정으로 멈췄고 분리 시험 후속 goal로 넘긴다. 분리 시험의 원격 흔적은 `trial/cred-base`(`7086d45b`)·`trial/cred-work-1`(`01a1d4d8`)과 PR #205(열림)다(2026-10-07T20:42Z 원격 조회).
 - 근거 폴더 E: `.backups/verification/2026-10-07-hook-friction-helper-session/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/astra-context.md), 승인 확정본은 [scope-approved.md](../../../.backups/verification/2026-10-07-hook-friction-helper-session/scope-approved.md)(SHA256 `0e536cac…`)다. 받은 메시지 원시와 수신 대조는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh, 태그 `[Rules Astra]`, handle `term_ad29f105-dff5-4f1b-9411-372b93adf7ea`. Run은 `run_573214a00f1b`, 회신 주소는 `run:run_573214a00f1b`다. 이전 Rules goal의 Run·Task·Dispatch는 실행 권한이 아니다. 사용자가 밤에 리드를 닫아 2026-10-08 새 리드(같은 모델, 화면 「Opus 5.5 ⚡xhigh」, handle `term_7c75b976-b2ea-499a-b22a-f85d53168774`)가 메인 진입 지시 `msg_143504243b6d`로 같은 Run을 인수했다(R-8 목표 중간 인수).
-- **현재 위치**(2026-10-08T04:16Z): PR208이 병합됐고 결과 기록·종료 Gardener·BACKLOG 등록과 그 수정 회차를 마쳤다. 종료 기록 문서 실사는 NOT PASS(F1~F3 차단)라 한 회차로 고치는 중이다(아래 「종료 기록 문서 실사」). PR1 branch와 분리 시험 원격 흔적은 그대로 보존 중이다.
+- **현재 위치**(2026-10-08T04:36Z): PR208이 병합됐고 결과 기록·종료 Gardener·BACKLOG 등록과 그 수정 회차를 마쳤다. 종료 기록 문서 실사 NOT PASS(F1~F3 차단)의 수정을 마쳤고 좁힌 재실사를 한다(아래 「종료 기록 문서 실사」). PR1 branch와 분리 시험 원격 흔적은 그대로 보존 중이다.
 - **다음 할 일**:
-  1. 리드: 실사 결함 수정(리드 몫 goal·메모 → 새 Sol BACKLOG 두 칸) → 좁힌 재실사 → 종료 기록 PR → 메인 승인 묶음.
+  1. 리드: 좁힌 재실사 → 종료 기록 PR → 메인 승인 묶음.
   2. 메인·사용자: 종료 점검(Gardener 후보 채택 포함) → R-8. 다음 goal은 자동으로 시작하지 않는다. 분리 시험 후속 goal도 사용자 결정 뒤에만 연다.
   3. 사용자 아침: 자격 증명 분리 시험 「아침 순서」 1~8(리드 보고 `msg_27ff509d7f16`, 아래 「자격 증명 분리 시험」). 사용자 몫(②·④·⑤·⑦) 답이 오면 메인이 전달하고, 리드 몫은 준비만 했다(E/credential-trial/morning-lead-steps.md).
 - 주의: rules-active에는 분리 시험의 worktree 설정이 남아 있다. 이 checkout에서 원격으로 보내는 커밋은 deploy key(SSH)로 나가고 https 자격 증명 도우미는 비어 있다(아래 「자격 증명 분리 시험」 ①). 유지·제거는 아침 ⑦ 정리의 사용자 결정에 맞춘다. 이 checkout의 병합 관문 hook은 PR2 branch라 기준 main과 같은 판정 코드를 쓴다.
@@ -333,6 +333,12 @@ PR2 — 정본·스킬·BACKLOG(문서)
   - 리드 R-2(E/lead-check/closeout-review-r2-check.md): 판정이 권장한 대조 넷과 numstat이 원천과 일치한다. F3의 원인은 Gardener 보고서 요약(「오탐 다섯 건」)과 본문(차단 5건, 오탐 확인 1건)의 어긋남을 리드 계약이 요약 쪽으로 옮긴 것이다.
   - 정산: release `retained`(`external_terminal`), 「Worked for 15m 39s」 뒤 빈 prompt 확인, pane 닫음(ptyKilled). rules-active에는 리드만 남았다(E/closeout-review-release.json, -before-close.json, -close.json, -list-after-close.json).
 - 수정 계획(한 회차): F1은 리드가 메모 완료 칸을 채운다. F2·F4와 goal 쪽 F3는 리드가 이 goal을 고친다. BACKLOG 쪽은 새 Sol이 `credential-separation-followup` 출처(F3)와 `contract-context-check` 출처 덧붙임(F2의 후속 위치)을 쓴다. 그 뒤 리드 R-2와 신규 `gpt-6-astra` xhigh 좁힌 재실사를 한다. 같은 기회에 「PR208 병합」 승인 요청의 시각 표기 「02:3xZ」를 송신 receipt 시각으로 바꿨다.
+- 리드 몫 수정: goal의 F2·F3·F4와 승인 요청 시각은 commit `27787b3a`, 메모 완료 칸(F1)은 E/closeout-astra-context.md 「준수 연결」(04:17:09Z 보완 표시)이다.
+- BACKLOG 수정 회차: 신규 `gpt-6.1-sol`(effort max), 같은 첫 화면(E/review-fix-first-screen.json), Task `task_e51a00fbcba4`, Dispatch `ctx_bdec87af2cd9`, receipt input_accepted·turnStart observed. 계약 E/review-fix-contract.md(SHA256 `b42bda42…`, 고정 HEAD `27787b3a`)는 허용 실행에 읽기 전용 파일 읽기 명령을 적었다.
+  - 결과: `credential-separation-followup` 출처를 「그물 차단 관측 다섯 건」과 확인 수준(오탐 확인은 PR2 작성 때 한 건, 나머지 미확인)으로 고쳤다. `contract-context-check` 출처 끝에 F2 근거와 교정 층 후보를 덧붙였다.
+  - 완료: worker_done `msg_5a81dee0ccd2`(04:35:26Z, succeeded), 수신 helper 허용. 보고서 E/review-fix/report.md(SHA256 `74ba7694…`, 117행). 작성자 점검 17/17, 바뀐 칸 2개, Git 밖 링크 0, 「오탐 다섯」 0건. 작성자 편차 보고는 없다.
+  - 리드 R-2(E/lead-check/review-fix-r2-check.md): 단어 단위 diff가 계약의 두 칸과 같고, F3 사실과 F2 근거 hash가 원천과 맞다.
+  - 정산: release `retained`(`external_terminal`), 「Worked for 16m 17s」 뒤 빈 prompt 확인, pane 닫음(ptyKilled). rules-active에는 리드만 남았다(E/review-fix-release.json, -before-close.json, -close.json, -list-after-close.json).
 
 <a id="orca-moved-history"></a>
 ## ORCA에서 옮긴 적용 기록
