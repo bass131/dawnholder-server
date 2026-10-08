@@ -431,23 +431,26 @@
 
 ### 콘솔 시작 분리 시험 준비와 Orca 재시작 — 2026-10-08
 
-기록 시각은 2026-10-08T08:38:04Z(`date -u`)다. 메인 `msg_c6437a7971a6`(08:35:22Z) 「Orca 재시작 준비」에 따라 남긴다. **이 블록이 현재 재개 정본이고 아래 「판독」 블록부터는 역사다.** E·D 표기는 아래 「판독」 블록과 같다.
+기록 시각은 2026-10-08T08:49:01Z(`date -u`)다. 처음 기록은 08:38:04Z, 메인 `msg_c6437a7971a6`(08:35:22Z) 「Orca 재시작 준비」 때였다. 메인 `msg_cd7bdb79ac53`(08:41:29Z)이 재시작을 진행 중 작업 뒤로 미뤘고, 리드 혼자 하는 일을 마친 지금 다시 고쳤다. **이 블록이 현재 재개 정본이고 아래 「판독」 블록부터는 역사다.** E·D 표기는 아래 「판독」 블록과 같다.
 
-- **지금 단계:** 사용자 결정 A(위 「적용 중인 사용자 결정」)대로 실행 파일과 카드를 썼다. 신규 Opus 문서 실사는 아직 띄우지 않았다. 메인 지시로 새 작업자·검증자 기동을 보류한다.
+- **지금 단계:** 사용자 결정 A(위 「적용 중인 사용자 결정」)대로 실행 파일·카드·작성자 점검·실사 계약까지 마쳤다. 다음은 신규 Opus 문서 실사자 1개 기동이고, 메인 지시로 재시작 뒤까지 보류한다.
 - **산출물:** 모두 D/`sql-console-start-01/` 아래다.
-  - 쓰기 전 메모 `context-v1.md`.
-  - 실행 파일 `submission-v1/sql-console-start.ps1`, SHA256 `25FB2D7914AB2089EBE2217DC868C469DE93BB9596B3DCA449E83125AB849408`. 시작 인자는 `-c -sSQLEXPRESS -m -T902 -T3608`이다.
-  - 사용자 카드 `submission-v1/step-card.md`. 실행 한 줄은 318글자다.
-  - 작성자 점검 `author-check-v1/author-check.ps1`. 진짜 sqlservr를 띄우지 않고 powershell 대역으로 시험한다.
-- **작성자 점검 상태:** 08:36Z 스크래치패드 예행에서 카드 4항목을 포함해 대부분 PASS했다. 「start: stand-in denial run」 1건이 「찾을 수 없습니다」로 FAIL했고, 08:27Z 예행에서는 같은 항목이 PASS였다. 원인을 아직 보지 않았다. 점검 harness가 FAIL이 있어도 exit 0을 낸 점도 같이 본다.
+  - 쓰기 전 메모 `context-v1.md`(완료 갱신 포함).
+  - 실행 파일 `submission-v1/sql-console-start.ps1`, SHA256 `DEE4DF14574F5A368770133DECF7EA535677818081AC5568BEE5191EDAFCEE5C`. 시작 인자는 `-c -sSQLEXPRESS -m -T902 -T3608`이다.
+  - 사용자 카드 `submission-v1/step-card.md`, SHA256 `1D7A5F21858798E5427018F479ADF0832F4915619A1D9199EACAF7913637689A`. 실행 한 줄은 318글자, 멈춤 줄은 194글자다.
+  - 작성자 점검 `author-check-v1/`. 진짜 sqlservr를 띄우지 않고 powershell 대역으로 시험한다. 실사 대상 회차는 `run-2.txt`(43 PASS, 0 FAIL, exit 0)다.
+  - 실사 계약 `review-v1/`(contract.md, spec.txt, path-check.ps1). path-check.txt와 inputs-sha256.txt는 이 commit 뒤에 만든다.
+- **작성자 점검에서 고친 것 2건:** 리드 작성분의 결함이고 독립 판정 전이다.
+  1. 실행 계정 조회(GetOwner)가 바로 끝나는 프로세스에서 「찾을 수 없습니다」로 throw해 판정을 잃었다. 실제 거부 시작도 1초 안에 끝나므로 같은 일이 날 수 있었다. try/catch로 고쳤다. 고치기 전 사본에서 새 시험이 FAIL함을 확인했다(`author-check-v1/negctl-1/`).
+  2. 콘솔 시작 직전의 설치 프로그램 확인이 「다시 붙여 넣으라」고 안내했다. 그때는 결과 폴더가 이미 있어 재실행이 거부된다. 직전 확인 문구를 「다시 붙여 넣지 말고 메인에 알림」으로 나눴다.
+  - 점검 harness가 FAIL이 있어도 exit 0을 냈던 것도 고쳤다.
 - **재시작 뒤 다음 할 일 순서**
   1. 새 handle에서 `run-use --id run_b36cc92a4cf4` 뒤 우편함을 확인한다.
-  2. 대역 거부 시험 FAIL의 원인을 보고 고친다. 그 뒤 작성자 점검을 `author-check-v1/run-1.txt`로 정식 실행한다. 실행 파일이 바뀌면 카드의 SHA256과 글자 수도 고친다.
-  3. 실사 계약 `review-v1/`(contract·inputs-sha256·path-check·spec)을 쓰고, 메인의 기동 보류가 풀리면 실사자 1개를 띄운다.
-  4. PASS면 카드 경로·SHA256·판정 경로를 status로 메인에 보낸다.
+  2. 메인이 기동 보류를 풀면 `review-v1/path-check.ps1`을 다시 돌려 HEAD·SHA를 확인하고, 실사자 1개를 R-5대로 띄운다(`claude --model claude-opus-5-5 --add-dir C:/Dev/DawnHolder_Project/.backups`, 쓰기는 `review-v1/` 새 파일만, 실행 금지).
+  3. PASS면 카드 경로·SHA256·판정 경로를 status로 메인에 보낸다. NOT PASS면 v2로 고치고 새 실사자로 다시 받는다.
 - **사용자 손·결정 대기:** 없음. 사용자 실행은 실사 PASS 뒤다.
 - **작업자·검증자:** 이번 세션은 아무도 띄우지 않았다. 살아 있는 pane은 리드 `term_199a94ca-e2f3-4df5-b0f0-6d20ffdb3866` 하나다. 리드 Claude 세션 ID는 `fcaada02-22b9-48a6-8eb6-a1ac70c12740`이다.
-- **원시:** E/`opus-lead-entry/2026-10-08-sql-read/`의 `wait-01`~`wait-03`(dispatch 원문)과 `ack-01`·`ack-02`.
+- **원시:** E/`opus-lead-entry/2026-10-08-sql-read/`의 `wait-01`~`wait-04`(dispatch 원문)와 `ack-01`~`ack-04`, 재시작 준비 회신 `restart-ready-body.txt`·`restart-ready-receipt.json`(`msg_22c0bd2878e9`).
 
 ### SQL 시작 거부 조사 판독 — 2026-10-08
 
