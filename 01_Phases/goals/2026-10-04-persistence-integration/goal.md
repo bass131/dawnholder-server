@@ -437,9 +437,22 @@
 
 ## 재개 지점
 
+### 세션 재시작 인계 — 2026-10-08T22:40Z
+
+기록 시각은 2026-10-08T22:40Z(`date -u`)다. **이 블록이 현재 재개 정본이다.** 세부는 바로 아래 「서비스 시작 재확인 v2 실사 PASS와 사용자 1회 실행 대기」 블록이 그대로 유효하다. 그 아래부터는 역사다.
+
+- **근거:** 메인 `msg_874099317f3d`(22:38:51Z)가 전한 사용자 원문(메인 창 Enter 제출): 「OK 나 다시 돌아왔어, 재개 포인트랑 맥락만 갱신해주고, 새로운 세션으로 다시 시작하자」. 메인 전달이며 격상하지 않는다. 새 작업은 시작하지 않았다.
+- **head:** branch `feat/persistence-engine-judgment-20261006`, 이 블록을 담은 commit이 head다(직전 `18098c7854b39e400ffe0ccea66302c195dbd1bf`). origin/main보다 233 commit 뒤, 19 commit 앞이다(goal 기록만). Core 열린 PR은 없다(goal 기록만 바뀐 branch라 PR을 만들지 않는다).
+- **열린 pane:** Core 탭에는 리드 pane 하나뿐이다. 작업자·검증자 pane은 없다(v2 실사자는 15:11:28Z에 닫았다).
+- **기다리는 것:** 사용자 1회 관리자 실행. 서비스 시작 재확인 카드 v2(SHA256 `D2C6AE38B44ABD468A664FCE9C5A2172B7DB32232316AACB091A7D7F4E2200DA`)이고, SVC-06은 그대로 전달한다(메인 `msg_61f17773057b`). 새 메인 세션이 카드를 사용자에게 전달한다. 병합 대기와 다른 사용자 결정 대기는 없다.
+- **다음 첫 할 일:** 메인이 실행 결과(RESULT 1·RESULT 2 줄, WARNING, D: 꺼냄 여부)를 전하면 S/`attempt-01/`의 SHA256을 고정하고 판독한다. 판독 때 볼 것은 아래 블록의 「판독 때 볼 것」(SVC-06·N-4·N-5)이다. 그다음 판독 결과와 다음 단계 선택지를 메인에 올린다.
+- **근거 위치:** S = `C:\Dev\DawnHolder_Project\.backups\verification\2026-10-04-persistence-integration\g2-service-diagnosis\sql-service-start-01`. 제출본 `submission-v2/`, 메모 `context-v2.md`, 작성자 점검 `author-check-v2/`, 실사 `review-v2/`(판정 `verdict.md`, 리드 표본 대조 `lead-r2-sample.txt`, 기동 기록 `launch-record.txt`). 메시지 원시는 E/`opus-lead-entry/2026-10-08-sql-read/`(이 인계는 `wait-39-msg_874099317f3d.json`·`ack-39.json`).
+- **리드 세션:** Claude Code 세션 ID `fcaada02-22b9-48a6-8eb6-a1ac70c12740`(cwd `C:\Users\bass1\orca\workspaces\DawnHolder_Project\core-active`). Run `run_b36cc92a4cf4`.
+- **미추적 파일:** `01_Phases/reports/2026-10-06-procmon-sql-start-diagnosis/report.html`은 그대로 미추적이다(아래 10-06 기록, 메인이 옮긴 것).
+
 ### 서비스 시작 재확인 v2 실사 PASS와 사용자 1회 실행 대기 — 2026-10-08
 
-기록 시각은 2026-10-08T15:12Z(`date -u`)다. **이 블록이 현재 재개 정본이고 아래 블록부터는 역사다.** E·D·T·S 표기는 아래 블록과 같다. 처음 쓴 14:47Z 뒤 실사 결과로 고쳤다.
+기록 시각은 2026-10-08T15:12Z(`date -u`)다. 위 「세션 재시작 인계」의 세부로 그대로 유효하고, 아래 블록부터는 역사다. E·D·T·S 표기는 아래 블록과 같다. 처음 쓴 14:47Z 뒤 실사 결과로 고쳤다.
 
 - **v1 실사:** 새 Opus 실사자(`term_381c8bd8-…`, task `task_5bb1543b080d`)가 S/`review-v1/verdict.md`(SHA256 `7DA4CBAD89CD713E11CF7B4EECE462541D7CC1E64F321EFEAD60DF5533CD1265`)로 NOT PASS를 냈다. worker_done은 `msg_f6811a3d0663`이다. 차단은 SVC-01 하나(경고 확장 문자열 한 줄 122자, 120자 규칙)다. 비차단은 SVC-02~05다. 2단계 결과 줄이 판정 기준보다 많이 말함, 1단계에 `-T 902`가 안 들어간 경우를 못 막음, 카드 최대 시간과 무출력 구간, 2단계 거부 결과가 카드에 없음이다. 관찰은 O-1~O-11이다. 리드는 원천을 대조한 뒤 실사자를 닫고 메인에 진행 보고(`msg_1149abd44e5e`)를 보냈다. 실사자 도구가 긴 출력 두 번을 자기 세션 폴더 `tool-results/`에 자동 저장한 것도 그 보고에 적었다.
 - **메인 운영 안내 `msg_708305083d5e`(14:04:31Z, 사용자 취침):** 사용자 원문 「나 자고 올게, 만약 마지막 작업 전부 완수했는데 10분동안 응답없으면 메일 대기 종료해주고 기다려줘.」 승인된 범위 안의 일은 계속한다. 사용자 결정·병합 승인·사용자 손 실행이 필요한 지점에서는 평소처럼 메인에 올리고 멈춘 채 이 「재개 지점」을 최신으로 적는다. 대기만 남으면 그 사실을 메인에 한 번 한 줄로 알린다. 회신은 필요 없다. 메인 전달이며 격상하지 않는다.
