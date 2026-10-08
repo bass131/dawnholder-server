@@ -1,10 +1,13 @@
-// Dawnholder 소개 페이지의 움직임 보조. 내용을 만들거나 숨기지 않는다(스크립트가 없어도 모든 글과 그림이 보인다).
-// 맡는 일 세 가지:
-// 1. 첫 화면 겹 배경의 깊이: 마우스 위치와 스크롤 양을 .hero의 --mx·--my·--sy에 넣는다.
-// 2. 플레이 절 파노라마: 절이 화면을 지나는 비율만큼 들판 겹의 이동 거리 --pan을 넣는다.
-// 3. 직업 절 스킬 재생: 스킬 이름(data-action)을 누르면 사이트 README 「동작 맞물림」 표대로 캐릭터와 효과를 재생한다.
+// Dawnholder 소개 페이지의 움직임·조작 보조. 글과 그림을 새로 만들지 않는다. 스크립트가 없어도 모든 글과 그림이 보이고,
+// 스크립트가 켜지면 직업 탭이 고르지 않은 직업의 패널만 숨긴다(접점 보충 3).
+// 맡는 일 네 가지:
+// 1. 첫 화면 대문 그림의 깊이: 스크롤 양을 .hero의 --sy에 넣는다(그림이 조금 늦게 따라 내려감).
+// 2. 게임 소개 슬라이드: 넘김 단추를 보이고 한 번에 한 장씩 옮긴다(접점 보충 2). 자동 넘김은 없다.
+// 3. 직업 탭: 기사·마법사 탭으로 패널 하나만 보이게 한다(접점 보충 3).
+// 4. 직업 절 스킬 재생: 스킬 이름(data-action)을 누르면 사이트 README 「동작 맞물림」 표대로 캐릭터와 효과를 재생한다.
 // 움직임 허용의 정본은 「움직임 멈춤」 체크박스(data-motion-toggle)와 움직임 줄이기 설정이다.
 // 둘 중 하나라도 멈춤이면 이 스크립트도 아무것도 움직이지 않는다(styles.css도 같은 상태로 반복 움직임을 멈춘다).
+// 멈춤이면 슬라이드는 넘김 움직임 없이 바로 옮긴다. 탭 바꿈은 원래 움직임 없이 바로 바뀐다.
 (() => {
   'use strict';
 
@@ -14,7 +17,6 @@
   }
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
 
   // 움직임 줄이기 설정이면 「움직임 멈춤」도 체크된 모양으로 맞춘다(CSS는 설정만으로 이미 멈춘다).
   if (reducedMotion.matches) {
@@ -23,51 +25,16 @@
 
   const motionAllowed = () => !motionStop.checked && !reducedMotion.matches;
 
-  // ── 1·2. 첫 화면 깊이와 플레이 파노라마 ──
+  // ── 1. 첫 화면 깊이 ──
+  // 대문 그림은 한 장이라 마우스 깊이는 두지 않고, 스크롤한 만큼만 그림을 조금 늦게 내려 보낸다(styles.css .art-layer).
   const hero = document.querySelector('.hero');
-  const panBand = document.querySelector('.pan-band');
-  const panImage = panBand ? panBand.querySelector('.pan-6 img') : null;
-  const pointer = { targetX: 0, targetY: 0, x: 0, y: 0 };
   let renderRequest = 0;
-
-  const renderHero = (active) => {
-    const goalX = active ? pointer.targetX : 0;
-    const goalY = active ? pointer.targetY : 0;
-
-    // 마우스를 바로 따라가지 않고 조금씩 다가가 부드럽게 어긋나게 한다.
-    pointer.x = active ? pointer.x + (goalX - pointer.x) * 0.08 : 0;
-    pointer.y = active ? pointer.y + (goalY - pointer.y) * 0.08 : 0;
-    const scroll = active ? Math.min(window.scrollY, hero.offsetHeight) : 0;
-
-    hero.style.setProperty('--mx', pointer.x.toFixed(3));
-    hero.style.setProperty('--my', pointer.y.toFixed(3));
-    hero.style.setProperty('--sy', scroll.toFixed(1));
-
-    return Math.abs(goalX - pointer.x) > 0.002 || Math.abs(goalY - pointer.y) > 0.002;
-  };
-
-  // 띠가 화면 아래 끝에 들어올 때 0, 위 끝을 벗어날 때 1인 비율로 들판 겹을 왼쪽으로 민다(카메라가 오른쪽으로 감).
-  const renderPan = (active) => {
-    if (!active) {
-      panBand.style.setProperty('--pan', '0px');
-      return;
-    }
-    const box = panBand.getBoundingClientRect();
-    const view = window.innerHeight;
-    const progress = Math.min(1, Math.max(0, (view - box.top) / (view + box.height)));
-    const range = Math.max(0, panImage.offsetWidth - panBand.clientWidth);
-    panBand.style.setProperty('--pan', `${(progress * range).toFixed(1)}px`);
-  };
 
   const render = () => {
     renderRequest = 0;
-    const active = motionAllowed();
-    const settling = hero ? renderHero(active) : false;
-    if (panBand && panImage) {
-      renderPan(active);
-    }
-    if (settling) {
-      requestRender();
+    if (hero) {
+      const scroll = motionAllowed() ? Math.min(window.scrollY, hero.offsetHeight) : 0;
+      hero.style.setProperty('--sy', scroll.toFixed(1));
     }
   };
 
@@ -77,29 +44,181 @@
     }
   };
 
-  if (hero) {
-    hero.addEventListener('pointermove', (event) => {
-      if (!finePointer.matches) {
-        return;
-      }
-      const box = hero.getBoundingClientRect();
-      pointer.targetX = ((event.clientX - box.left) / box.width) * 2 - 1;
-      pointer.targetY = ((event.clientY - box.top) / box.height) * 2 - 1;
-      requestRender();
-    });
-
-    hero.addEventListener('pointerleave', () => {
-      pointer.targetX = 0;
-      pointer.targetY = 0;
-      requestRender();
-    });
-  }
-
   // 스크롤은 읽기만 한다(passive). 페이지 스크롤을 가로채지 않는다.
   window.addEventListener('scroll', requestRender, { passive: true });
   window.addEventListener('resize', requestRender);
 
-  // ── 3. 스킬 재생 ──
+  // ── 2. 게임 소개 슬라이드 ──
+  // 트랙은 스크립트 없이도 가로 스크롤과 맞춤 멈춤으로 모든 장에 닿는다. 여기서는 넘김 단추를 보이고,
+  // 단추와 좌우 화살표 키로 한 장씩 옮긴다. 손가락·트랙패드로 넘긴 경우는 스크롤이 멈춘 뒤 지금 장을 다시 잰다.
+  // 한 장 넘김에 걸리는 시간(ms). 접점 보충 2의 600ms 안에 끝나고 방향이 보일 만큼만 둔다.
+  const SLIDE_MS = 360;
+
+  const setupCarousel = (carousel) => {
+    const track = carousel.querySelector('[data-carousel-track]');
+    const slides = [...carousel.querySelectorAll('[data-carousel-slide]')];
+    const prev = carousel.querySelector('[data-carousel-prev]');
+    const next = carousel.querySelector('[data-carousel-next]');
+    if (!track || slides.length === 0 || !prev || !next) {
+      return;
+    }
+
+    const last = slides.length - 1;
+    const slideLeft = (index) => slides[index].offsetLeft - slides[0].offsetLeft;
+    let index = 0;
+
+    // 지금 장 = 왼쪽 끝이 스크롤 위치에 가장 가까운 장.
+    const nearestIndex = () => {
+      let nearest = 0;
+      for (let candidate = 1; candidate <= last; candidate += 1) {
+        if (Math.abs(slideLeft(candidate) - track.scrollLeft) < Math.abs(slideLeft(nearest) - track.scrollLeft)) {
+          nearest = candidate;
+        }
+      }
+      return nearest;
+    };
+
+    // 장마다 「n / 5」가 글로 있어서(스크립트 없이도 맞는 표시) 여기서는 단추의 막힘만 맞춘다.
+    // 끝 장에서 단추가 막힐 때 그 단추에 있던 키보드 초점은 트랙으로 옮긴다(초점이 페이지 맨 앞으로 사라지지 않게).
+    const show = () => {
+      for (const [button, blocked] of [[prev, index === 0], [next, index === last]]) {
+        if (blocked && document.activeElement === button) {
+          track.focus({ preventScroll: true });
+        }
+        button.disabled = blocked;
+      }
+    };
+
+    // 넘김 움직임은 브라우저 부드러운 스크롤 대신 직접 그린다. Firefox의 부드러운 스크롤은 한 장에 0.7초 남짓 걸려
+    // 접점 보충 2의 600ms 안을 지키지 못해서다. 움직이는 동안만 맞춤 멈춤을 끈다(켜 두면 매 프레임 가까운 장으로 되돌린다).
+    let animation = 0;
+    const moveTo = (left) => {
+      window.cancelAnimationFrame(animation);
+      animation = 0;
+      const from = track.scrollLeft;
+      if (!motionAllowed() || Math.abs(left - from) < 1) {
+        track.style.removeProperty('scroll-snap-type');
+        track.scrollTo({ left, behavior: 'auto' });
+        return;
+      }
+      const start = performance.now();
+      track.style.setProperty('scroll-snap-type', 'none');
+      const step = (now) => {
+        const progress = Math.min(1, (now - start) / SLIDE_MS);
+        track.scrollLeft = from + (left - from) * (1 - (1 - progress) ** 3);
+        if (progress < 1) {
+          animation = window.requestAnimationFrame(step);
+          return;
+        }
+        animation = 0;
+        track.style.removeProperty('scroll-snap-type');
+      };
+      animation = window.requestAnimationFrame(step);
+    };
+
+    const go = (delta) => {
+      index = Math.min(last, Math.max(0, index + delta));
+      moveTo(slideLeft(index));
+      show();
+    };
+
+    // 넘김 움직임 중의 scroll은 단추가 정한 장을 덮지 않는다.
+    let settleTimer = 0;
+    const settle = () => {
+      window.clearTimeout(settleTimer);
+      if (animation) {
+        return;
+      }
+      index = nearestIndex();
+      show();
+    };
+
+    prev.addEventListener('click', () => go(-1));
+    next.addEventListener('click', () => go(1));
+    carousel.addEventListener('keydown', (event) => {
+      const delta = { ArrowLeft: -1, ArrowRight: 1 }[event.key];
+      if (delta === undefined) {
+        return;
+      }
+      event.preventDefault();
+      go(delta);
+    });
+    // scrollend가 없는 브라우저는 마지막 scroll 뒤 120ms 조용하면 멈춘 것으로 본다.
+    track.addEventListener('scroll', () => {
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(settle, 120);
+    }, { passive: true });
+    track.addEventListener('scrollend', settle);
+    // 폭이 바뀌면 장 너비도 바뀌므로 움직임을 멈추고 지금 장의 왼쪽 끝에 바로 맞춘다.
+    window.addEventListener('resize', () => {
+      window.cancelAnimationFrame(animation);
+      animation = 0;
+      track.style.removeProperty('scroll-snap-type');
+      track.scrollTo({ left: slideLeft(index), behavior: 'auto' });
+    });
+
+    prev.hidden = false;
+    next.hidden = false;
+    carousel.setAttribute('data-ready', '');
+    index = nearestIndex();
+    show();
+  };
+
+  for (const carousel of document.querySelectorAll('[data-carousel]')) {
+    setupCarousel(carousel);
+  }
+
+  // ── 3. 직업 탭 ──
+  // 스크립트가 없으면 탭 목록은 숨은 채 두 패널이 다 보인다. 켜지면 탭 목록을 보이고 고른 탭의 패널만 남긴다.
+  // 좌우 화살표는 끝에서 처음으로 돌아가며 Home·End와 함께 초점과 선택을 같이 옮긴다. 무대는 패널 밖이라 그대로다.
+  const setupTabs = (root) => {
+    const list = root.querySelector('[role="tablist"]');
+    const tabs = [...root.querySelectorAll('[role="tab"]')];
+    const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
+    if (!list || tabs.length === 0 || panels.includes(null)) {
+      return;
+    }
+
+    const select = (chosen, moveFocus) => {
+      tabs.forEach((tab, position) => {
+        const selected = position === chosen;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        panels[position].hidden = !selected;
+      });
+      if (moveFocus) {
+        tabs[chosen].focus();
+      }
+    };
+
+    const lastTab = tabs.length - 1;
+    tabs.forEach((tab, position) => {
+      tab.addEventListener('click', () => select(position, false));
+      tab.addEventListener('keydown', (event) => {
+        const target = {
+          ArrowRight: position === lastTab ? 0 : position + 1,
+          ArrowLeft: position === 0 ? lastTab : position - 1,
+          Home: 0,
+          End: lastTab,
+        }[event.key];
+        if (target === undefined) {
+          return;
+        }
+        event.preventDefault();
+        select(target, true);
+      });
+    });
+
+    const initial = tabs.findIndex((tab) => tab.getAttribute('aria-selected') === 'true');
+    select(Math.max(0, initial), false);
+    list.hidden = false;
+  };
+
+  for (const root of document.querySelectorAll('[data-tabs]')) {
+    setupTabs(root);
+  }
+
+  // ── 4. 스킬 재생 ──
   const stage = document.querySelector('.stage');
   if (!stage) {
     return;
@@ -267,6 +386,7 @@
   };
 
   // 스킬 띠·효과 사본은 무대가 가까워지면 받아 둔다(누른 첫 칸이 비지 않게). 받은 그림을 붙잡아 디코딩된 채로 둔다.
+  // 「가까움」은 화면 높이의 20% 앞이다. 직업 절이 위로 올라와 100%로 두면 첫 화면을 열 때 바로 받아 버린다(약 0.45MB).
   const preloaded = [];
   const preload = () => {
     if (stage.hasAttribute('data-ready')) {
@@ -295,7 +415,7 @@
         observer.disconnect();
         preload();
       }
-    }, { rootMargin: '100% 0px' });
+    }, { rootMargin: '20% 0px' });
     observer.observe(stage);
   } else {
     preload();

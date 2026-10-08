@@ -12,7 +12,6 @@ images/knight-dash-effect.webp
 images/knight-idle.webp
 images/knight-move.webp
 images/layer-1-sky.webp
-images/layer-2-clouds.webp
 images/layer-3-far-mountains.webp
 images/layer-4-hills.webp
 images/layer-5-castle.webp
