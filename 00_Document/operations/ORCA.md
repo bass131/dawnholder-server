@@ -72,7 +72,7 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 
 **blocking ask / worker question에는 CLI 계약의 `reply --id`로 답한다.** Orca CLI **1.4.218** `orchestration reply --help`의 subject 옵션 부재를 확인했다. [승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-reply)대로 이 경우만 subject 자기 태그 의무의 버전 한정 예외며, **body 첫머리 자기 태그·수신자의 `from_handle` 대조는 유지한다.** 없는 플래그를 만들거나 subject 수정·일반 `send`의 blocking question 해결을 주장하지 않는다. 근거는 [전달 원문](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-3)과 [로컬 reply help](../../.backups/verification/2026-10-01-operations-rules/reply-help.txt)다.
 
-**Orca 1.4.218 공식 blocking `ask`의 고정 subject `Question`**은 subject 태그 예외다(같은 버전 `ask --help`에 subject 옵션 없음). body 첫머리 태그·현재 `from_handle`·Task·Dispatch를 대조해 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`·`reply`는 제외하고 위 reply 예외의 별도 근거·범위를 유지한다. **ask가 subject 옵션을 지원하면 종료**한다. [공식 ask 승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-ask)와 [수신 helper](#dispatch-message-policy)의 별도 expected 근거로 공식 출처를 확인하며 값만으로 증명하지 않는다. 현재 **1.4.220 복귀**는 ask/reply help 양쪽의 subject 옵션 부재를 확인한 공식 ask/reply에만 위 태그·identity와 공식 receipt 대조를 적용한다. 불일치 처리·일반 send 제외는 위와 같고 해당 명령의 subject 옵션 지원 시 예외가 끝난다. help 확인은 실제 ask/reply 호출 실증과 구분하고 다른 버전 지원을 주장하지 않는다.
+**coordinator가 같은 CLI의 ask/reply help에 subject 옵션이 없음을 확인한 공식 blocking `ask`의 고정 subject `Question`**만 subject 태그 예외다. body 첫머리 태그·현재 `from_handle`·Task·Dispatch·공식 질문 receipt를 대조해 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`·`reply`는 제외하고 위 reply 예외의 별도 근거·범위를 유지한다. **ask가 subject 옵션을 지원하면 종료**한다. [수신 helper](#dispatch-message-policy)의 별도 expected 근거로 공식 출처를 확인하며 모양만으로 증명하지 않는다. help 확인은 실제 ask/reply 호출 실증과 구분한다. 지난 적용은 [1.4.218 승인](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-ask)·[1.4.220 복귀](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-14220-return)에 보존한다.
 
 <a id="run-reply-address"></a>
 ### Run 회신 주소와 receipt 확인
@@ -100,7 +100,7 @@ Claude 리드는 Bash `run_in_background`로 `orca orchestration check --wait --
 
 - **빈 heartbeat:** type이 `heartbeat`, 세 identity 일치, body가 빈 값이고 subject가 빈 값 또는 정확한 `alive`일 때만 태그 예외다. payload는 두 ID와 선택적 phase(문자열/null/누락) 생존 메타데이터만 가진다. 다른 payload 내용은 태그 검사를 받으며 비문자 phase는 입력 오류다. `alive`는 현재 공식 preamble의 생존 표식으로 좁게 인정한다. subject/body의 누락·`null`·빈 문자열·공백 문자열은 빈 값이며 숫자·배열·객체는 입력 오류다. identity 누락·잘못된 형식은 빈 생존 신호로 허용하지 않는다. 이 경우 교정 메시지를 보내지 않는다.
 - 내용 있는 heartbeat와 일반 status/question/worker_done/escalation은 subject/body **첫 글자부터** 자기 태그가 있어야 한다. 앞 공백이나 `Re:`를 태그 앞에 넣지 않는다.
-- 공식 ask의 `Question`만 coordinator가 실제 질문 receipt에서 확인한 `expected.officialAsk = { "messageId": "확인한 질문 ID", "cliVersion": "1.4.218" }`를 추가했을 때 예외 판정한다. actual type=question, id=thread_id=확인한 messageId, from_handle=`dispatch:<현재 Dispatch>`, payload.question=body도 대조한다. 이 출처 주소는 term sender와 다르므로 해당 수신 문맥의 기대 발신 주소를 질문 receipt와 독립 대조한다. 일반 send도 thread/payload를 지정할 수 있으므로 모양이나 `official=true` 같은 자기 선언만으로 공식성을 인정하지 않는다. 별도 receipt 근거가 없으면 예외를 열지 않고 현재 CLI/사람 대조로 돌아간다.
+- 공식 ask의 `Question`만 coordinator가 확인한 `expected.officialAsk = { messageId, cliVersion, askHelp, replyHelp }`를 추가했을 때 예외 판정한다(`official-blocking-ask`). messageId는 질문 receipt ID, cliVersion은 실제 CLI 버전, askHelp·replyHelp는 같은 CLI의 ask/reply help 원문이다. actual type=question, id=thread_id=messageId, from_handle=`dispatch:<현재 Dispatch>`, payload.question=body도 대조한다. term sender와 다른 기대 발신 주소는 질문 receipt와 독립 대조한다. 일반 send도 thread/payload를 지정할 수 있으므로 모양이나 `official=true` 같은 자기 선언만으로 공식성을 인정하지 않는다. 근거가 없거나 help에 subject 옵션이 있으면 예외를 열지 않고 사람 대조로 돌아간다.
 
 입력 파일은 `{ "message": 실제 Orca 메시지 객체, "expected": 독립 확인한 기대값 객체 }`다. 로컬 JSON 파일을 읽고 JSON 판정만 출력한다.
 
@@ -118,7 +118,7 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
 
 지원 대상은 **활성 Dispatch의 작업자 메시지 수신 정책**이다. 일반 Main terminal-only 메시지, blocking reply의 기존 subject 예외, 다른 message type, 원격 진위 검증은 지원하지 않는다. 이 보조의 허용이 런타임 진위·현재 작업 완료·수명주기 전환을 증명하지 않는다. 현재 CLI와 receipt/사람 대조가 계속 필요하다.
 
-위 helper의 공식 ask 근거는 `cliVersion: "1.4.218"` 한정이다. 종료된 R-3의 1.4.217 확장이나 현재1.4.220을 이 helper의 지원으로 가장하지 않으며 실제1.4.220을 입력의1.4.218로 바꾸지 않는다. 지원하지 않는 버전/문맥은 사람이 실제 질문·답변 receipt와 현재 identity·body 태그를 직접 대조하고 그 원시 경로·버전·확인 범위를 판정과 goal에 남긴다.
+위 helper는 질문 receipt ID·실제 cliVersion·같은 CLI의 ask/reply help 원문을 근거로 받는다. 버전 상수와 비교하지 않으며 실제 버전을 위장하지 않는다. 근거가 없거나 형식이 틀리거나 help에 subject 옵션이 있으면 예외를 열지 않고 사람 대조로 돌아간다. 지원하지 않는 문맥은 실제 질문·답변 receipt·현재 identity·body 태그를 직접 대조하고 원시 경로·버전·확인 범위를 판정과 goal에 남긴다.
 
 저장·전달은 원문·주소·identity·시각·receipt로 대조한다. null·빈 check만으로 송신 누락·프로세스 종료를 확정하지 않는다. 전송/저장·정책·liveness·완료/정산을 구분하며 inbox 표시를 본문 검토로 확대하지 않는다. 당시 관측은 [이관 기록](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 있다.
 
