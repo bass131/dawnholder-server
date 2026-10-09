@@ -5,11 +5,11 @@
 Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지시 「규칙·운영 V1.0 셋업 뒤 main 통합·재분화」를 묶는다. 사용자가 범위를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: 정본 PR은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)다.
+- branch: 정본 PR(PR216, 병합)은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)였다. 후보 검사 PR은 `feat/backlog-candidate-check-20261009`(base main `ff308e20`)다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T12:47:43Z): 정본 PR 문서는 재실사 PASS, 규칙 점검 보고서는 재검토 PASS다(「정본 PR 재실사」·「규칙 점검 보고서」).
-- **다음 할 일**: 정본 PR 생성과 승인 묶음 → 사용자 병합 승인 뒤 후보 도착 검사 PR.
+- **현재 위치**(2026-10-09T13:10:13Z): 정본 PR은 PR216으로 병합됐다(「PR216 병합」). 후보 검사 PR branch를 만들고 구현자 배정을 정했다(「후보 검사 PR 착수」).
+- **다음 할 일**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 후보 검사 PR.
 - 이 goal의 마지막 PR(종료 기록 PR) 병합 커밋이 합류점 J다.
 
 ## 진척 단계
@@ -17,8 +17,8 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - [x] 범위와 기준 확정
 - [x] 정본 PR 작성·실사
 - [x] 규칙 점검 보고서
-- [>] 정본 PR 병합
-- [ ] 후보 검사 선행 시험
+- [x] PR216 병합
+- [>] 후보 검사 선행 시험
 - [ ] 후보 검사 구현·검증
 - [ ] 후보 검사 PR 병합
 - [ ] 결과 기록·Gardener
@@ -142,6 +142,9 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - ASD 저작권 문서다. 저장소에 넣지 않고 보고서·정본에 규칙 원문을 옮기지 않는다. 규칙 번호와 한국어 요약만 쓰고, 꼭 필요하면 15단어 미만 인용 하나까지 둔다. 쪽을 보며 읽고 본문 텍스트를 파일로 뽑지 않는다.
   - 메인 대조: 쓰기 규칙 9절 53개와 GR-1~GR-8이 있다. 보고서의 「Issue 9, 2025년 1월, 9개 절, 53개」는 사양과 맞다.
   - 보고서 재검토가 PASS라 보고서는 다시 열지 않는다. 종료 기록 PR에서 PDF 경로와 hash를 BACKLOG `report-response-format` 근거에 더해 V1.x STE 검사 작업의 입력으로 둔다.
+- **STE 정본화 시점과 남은 PR 생성**(메인 전달 `msg_d9f7602e1194`, 2026-10-09T13:09:17Z, 22:1x KST): 「대시보드 결정 응답: 1) 규칙 점검 보고서 - STE 문장 규칙과 HTML 보고 방식을 V1.x로 미룰지, V1.0에 넣을지 → A V1.x에서 정본화 · 2) 남은 PR 둘 - 리드의 PR 생성이 분류기에 또 막히면 누가 만들지 → A 메인이 대신 만듦」.
+  - STE 문장 규칙과 HTML 보고 방식은 V1.0에 넣지 않는다. 보고서는 첫 시범으로 남는다. (가) 내용 초안 + 고정 템플릿과 (나) STE 문장 검사는 V1.x 다음 계획 후보다. 종료 기록 PR에서 BACKLOG `report-response-format`에 이 결정과 사양 PDF 경로·hash를 더한다.
+  - 후보 검사 PR과 종료 기록 PR에만 적용한다. 리드의 PR 생성이 분류기에 막히면 우회하지 않고 메인에 status로 PR 제목·본문 파일·push한 head를 알린다. 메인이 같은 head·본문으로 만들고 번호를 알린다. 병합은 그대로 사용자 승인 줄로만 한다. push가 막히면 이 결정에 들지 않으니 따로 알린다.
 - **이전 결정의 대체**: 이번 원문의 구현자 난이도 라우팅은 이전 사용자 결정 「Astra 구현 격상은 사용하지 않는다」(메인 `msg_c78692a42979`, management-active 시스템 카드 goal 882행, 확정 실패 네 번째 시도 맥락)를 바꾼다. 시범 운영은 메인이 원문을 좁히지 않는 운영 방식으로 수용했다(`msg_bd7e0409e4c5`).
 
 ## 이번 합류점 순서표
@@ -241,6 +244,20 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - 관찰 O-R1(2절 「네 묶음」과 표 머리 「층」·「여섯 파일 묶음」의 이름 겹침), O-R2(측정 상자 「그대로」 문구), O-R3(나눠 답할 때의 답 형식, 메인 몫).
 - 리드 R-2(E/lead-check/rr-rebuild/): 생성 스크립트로 다시 만든 보고서가 HEAD blob과 바이트 일치했다. #9의 승인 줄 위치(AGENTS:60, CLAUDE:47, ORCA:227)와 `.backups/tmp/rr2/` 쓰기(하네스·node 캐시뿐)를 확인했다.
 - 처리: 보고서는 재검토 PASS 상태로 닫고 더 고치지 않는다. 고치면 마지막 검토 근거가 바뀌기 때문이다. #9·O-R1·O-R2와 첫 검토 O5는 STE·보고 방식 V1.x 작업의 입력으로 두고, 종료 기록 PR에서 BACKLOG `report-response-format` 근거에 더한다. O-R3은 승인 묶음에서 메인에 넘긴다.
+
+### PR216 병합
+
+- 리드의 PR 생성(`gh pr create`)이 auto mode 분류기에 「Out-of-Place Publication」으로 거부됐다. 리드는 재시도·우회하지 않고 메인에 알렸다(`msg_2242f373213b`, 12:50:03Z, E/session/pr1-create-denied.txt). branch는 그 전에 head `dc60e325`로 원격에 올렸다.
+- 메인이 사용자에게 묻지 않고 메인 checkout에서 같은 head·본문으로 PR216을 만들었다. 메인은 이를 메인 판단 오류로 기록하라고 했다. 리드 질문은 사용자 허용도 선택지로 두었는데 메인이 혼자 정했다. 그 사실을 알리려던 메인 메시지는 분류기에 「Auto-Mode Bypass」로 거부돼 도착하지 않았다(`msg_3a57ea3f3772`).
+- 사용자 승인 줄 「병합 승인: PR216 head dc60e325f10962563aa02188a200fe84da40484c」(메인 전달) 뒤 메인이 병합 관문을 거쳐 병합했다. head 일치, CI 4/4 SUCCESS, CLEAN을 확인했다. 2026-10-09T13:06:19Z MERGED, 병합 커밋 `ff308e206713cd37929b1a06f4fb8ef1aec38d1f`다. 원격 branch 자동 삭제는 리드가 `git ls-remote`로 확인했다. 이 PR은 합류점 J가 아니다.
+- 그 뒤 사용자는 남은 두 PR의 생성을 메인이 대신하도록 정했다(「적용 중인 사용자 결정」 `msg_d9f7602e1194`).
+
+### 후보 검사 PR 착수
+
+- branch: 리드가 2026-10-09T13:08:26Z(reflog) 최신 main `ff308e20`에서 `feat/backlog-candidate-check-20261009`를 upstream 없이 만들었다.
+- 구현자 배정(implementer-routing 정본, 이 PR이 첫 적용): 신규 `gpt-6-astra` xhigh, 태그 `[Rules 구현 Astra]`. 신호 4 「설계 판단이 남은 새 다파일 기능·검사기」에 든다. 선행 시험이 요구를 고정하면 좁은 구현으로 볼 여지도 있어 애매하고, 정본은 애매하면 Astra다. 독립 검증자는 검증자 시범에 따라 신규 `claude-opus-5-5`다.
+- 메인 정정 `msg_a0c411956cb4`(13:09:01Z): `msg_3a57ea3f3772`의 「구현은 신규 gpt-6.1-sol max(Fast)」는 메인이 병합된 implementer-routing.md를 대조하지 않고 쓴 오기다. 메인 결정으로 정본을 덮은 것이 아니다. 리드 질문 `msg_2e1bcb772fca`에 대한 회신이다.
+- Fast 결정(`msg_7a08526d6820`)은 Sol 작업자에게만 적용된다. 이 PR에 Sol이 없으면 첫 Fast 기동 확인 세 가지는 Sol이 처음 뜨는 작업으로 넘어간다. Astra capacity는 재시도만 한다.
 
 ## 정본에서 옮긴 적용 기록
 
