@@ -1,6 +1,6 @@
 # 실제 SQL 설치·엔진 판정
 
-상태: **DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. DB 생성·설치는 미실행이다.** 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 실사에서 통과(전달 가능)했다. 메인 결정으로 카드 ⑩ 조건을 고쳤고, 카드 v3 실사의 빈틈(SCS-10)을 고친 카드 v4가 카드 한정 실사를 통과해 전달본이 됐다. 사용자가 12:44Z에 1회 실행했고 master가 열렸다(OPENED, 데이터 변경은 master 두 파일). 리드 판독은 서비스 실행 맥락 쪽 거부(1a)와 「그사이 원인이 사라짐」을 아직 가르지 못한다. 사용자가 A 서비스 시작 재확인을 골랐다. 리드가 실행 파일·카드 v1(D: 부착은 diskpart)을 쓰고 작성자 점검을 통과시켰다. v1 실사는 120자 규칙 1건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 재실사에서 PASS(전달 가능, 비차단 1건)했다. 사용자 결정으로 카드 v2 대기 대신 Fable 작업자가 진단·처치를 맡았다(아래 「재개 지점」). 10-09 처치에서 서비스가 두 회차 연속 정상 시작·질의·정지했다. 설정 변경은 없고 원인은 미확정이다. 독립 검증 차단 2건(스크립트 작성 규칙·준수 주장)은 사용자 A로 기록·수용했다. DB 생성은 여전히 미실행이며 재시도는 따로 사용자 승인을 받는다.
+상태: **2026-10-09 재시도 3회차로 DB 생성 1단계(A2·B2·A3·B3, 정지·꺼내기)를 완료했다(메인 판정 `msg_b2365c472ed4`). 시험 DB는 Baseline001 상태로 보존돼 있고 2단계(Complete·U-01·Test-Database)와 G4 정리는 미실행이다.** 세부는 「재개 지점」의 「DB 생성 1단계 재시도 계획」 블록이다. 아래는 그 전 경과다. 2026-10-05 DB 생성 1단계는 Prepare·장치 확인 뒤 SQL 서비스 시작 실패로 중단했다. 실제 사용자 PID27280의 PS5.1 Desktop·승격·승인 hash/G2·제품39개 불일치0을 원시로 확인했다.10:30:17Z StartServiceFailed 뒤 재시도하지 않았고, 서비스 Stopped/Manual을 읽기 확인했다. 같은 창의10:35:12Z transcript 종료 기록도 확인했다. 메인 보고의 master 파일 OS 오류5는 진단 관측이며 원인은 미확정이다. 승인 창은2026-10-05 20:00 KST까지였으나 잔여 시간만으로 실패 블록을 재시도하지 않는다. **G2는 사용자 승인 원문을 담은 메인 전달 ID `msg_31fb076e492d`**다. v4 정적 PASS와 오프라인1081PASS/0FAIL/9OBSERVED·반례15종19회 검출은 실제 서비스/DB 성공과 구분하며 절차 이탈을 면제하지 않는다. 2단계·첫 PR·G4·Gardener·전체 goal은 미완료다. 2026-10-08 사용자가 SQL 시작 거부 조사 v3를 관리자·일반 창에서 1회씩 실행했다(SQL 시작 0회). 리드 판독에서 DATA 백업 검증은 성공했고, 「여는 방식」 가설은 약해졌고, SQL 서비스 실행 맥락에서만 거부된다는 쪽이 유력하다. 원인은 미확정이다. 사용자가 다음 진단으로 A 콘솔 시작 분리 시험을 골랐다. v1 문서 실사는 규칙 위반 2건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 실사에서 통과(전달 가능)했다. 메인 결정으로 카드 ⑩ 조건을 고쳤고, 카드 v3 실사의 빈틈(SCS-10)을 고친 카드 v4가 카드 한정 실사를 통과해 전달본이 됐다. 사용자가 12:44Z에 1회 실행했고 master가 열렸다(OPENED, 데이터 변경은 master 두 파일). 리드 판독은 서비스 실행 맥락 쪽 거부(1a)와 「그사이 원인이 사라짐」을 아직 가르지 못한다. 사용자가 A 서비스 시작 재확인을 골랐다. 리드가 실행 파일·카드 v1(D: 부착은 diskpart)을 쓰고 작성자 점검을 통과시켰다. v1 실사는 120자 규칙 1건으로 NOT PASS였고, 리드가 고친 v2는 새 Opus 재실사에서 PASS(전달 가능, 비차단 1건)했다. 사용자 결정으로 카드 v2 대기 대신 Fable 작업자가 진단·처치를 맡았다(아래 「재개 지점」). 10-09 처치에서 서비스가 두 회차 연속 정상 시작·질의·정지했다. 설정 변경은 없고 원인은 미확정이다. 독립 검증 차단 2건(스크립트 작성 규칙·준수 주장)은 사용자 A로 기록·수용했다. DB 생성은 여전히 미실행이며 재시도는 따로 사용자 승인을 받는다.
 
 ## 적용 중인 사용자 결정
 
@@ -88,15 +88,15 @@
 - [x] 검사 도구 결함 수정
 - [x] 오프라인 독립 검증
 - [x] DB 생성 계획 실사
-- [>] DB 생성 실행
-- [ ] 설치·판정 계획 실사
+- [x] DB 생성 실행
+- [>] 설치·판정 계획 실사
 - [ ] 실제 DB 설치·판정
 - [x] 체크포인트 PR #190 병합
 - [ ] 엔진 판정 PR·CI·병합
 - [ ] 시험 DB 정리
 - [ ] 결과 기록·종료
 
-현재 표시된 DB 생성 실행 단계는 **10-05 서비스 시작 실패로 중단된 상태**다. 시작 문제는 10-09 Fable 작업자 처치로 서비스 시작이 다시 됐지만(설정 변경 없음, 원인 미확정), DB 생성 1단계 재시도는 따로 사용자 승인을 받는다. 10-09 재시도 1회차는 ③ 중복 실행으로, 2회차는 ⑧ A2의 컴퓨터 이름 대소문자 비교로 멈췄다. 2회차 원인은 PR215로 고쳤고 3회차 카드 v4는 실사 PASS 뒤 사용자 실행 승인을 기다린다(아래 「DB 생성 1단계 재시도 계획」). DB 생성·설치 성공으로 표시하지 않는다. 체크포인트 PR #190은 2026-10-06에 병합됐다(아래 「PR #190 병합 결과」). 엔진 판정은 새 branch `feat/persistence-engine-judgment-20261006`의 다음 PR이다. 이 체크리스트는 상태 전환 때 담당 리드가 갱신한다.
+DB 생성 실행 단계는 **2026-10-09 재시도 3회차로 완료**했다(메인 판정 `msg_b2365c472ed4`). 10-05에는 서비스 시작 실패로 중단됐었다. 시작 문제는 10-09 Fable 작업자 처치로 서비스 시작이 다시 됐지만(설정 변경 없음, 원인 미확정), DB 생성 1단계 재시도는 따로 사용자 승인을 받는다. 10-09 재시도 1회차는 ③ 중복 실행으로, 2회차는 ⑧ A2의 컴퓨터 이름 대소문자 비교로 멈췄다. 2회차 원인은 PR215로 고쳤고, 카드 v4로 실행한 3회차에서 A2·B2·A3·B3와 정지·꺼내기가 끝났다(아래 「DB 생성 1단계 재시도 계획」). 다음 단계 「설치·판정 계획 실사」는 2단계 계획 초안을 메인이 확인한 뒤 시작한다. 2단계 설치·판정 성공으로 표시하지 않는다. 체크포인트 PR #190은 2026-10-06에 병합됐다(아래 「PR #190 병합 결과」). 엔진 판정은 새 branch `feat/persistence-engine-judgment-20261006`의 다음 PR이다. 이 체크리스트는 상태 전환 때 담당 리드가 갱신한다.
 
 ## DB 장치 전제 정정 — C:\myVHDX.vhdx
 
@@ -596,8 +596,27 @@
   - 비차단 RTY-11(리드 메모 자기 쓰기 감사 빈틈): repin 출력을 처음 `repin-03-utc.txt`·`repin-03-output.txt`로 나눠 썼다. 그 뒤 `repin-products-03.txt`로 합치고 두 파일은 지웠는데, 이 사실이 감사에 없다. `review-v4/path-check.ps1`도 병합 뒤 병합 알림 원천(`wait-121.json`)을 더하려고 고쳤다. 값은 실사자가 독립 재계산으로 같음을 확인했다.
   - 메인 처리(`msg_e581671e6e33`, 메인 판단): R-2 표본이 일치했다. O-v4-1·O-v4-2(카드 문장 두 곳)는 다섯 번째 수정을 만들지 않으려고 고치지 않는다. 사용자에게는 「2회차에 이 설정으로 SQL 연결·조회까지는 됐다」를 메인이 전한다. 다음 카드 수정이 생기면 함께 고친다. O-v4-3(3회차 승인 msg ID ↔ execution-03 연결)은 3회차 정산 때 적는다.
   - 정산: pane을 08:29:05Z에 닫았다. 쓰기 감사에서 허용 밖은 0이다(N/`review-v4/settlement.txt`).
-- **다음 할 일:** 메인이 사용자 3회차 실행 승인을 받으면 dispatch로 원문·msg ID를 받는다(카드 23행의 실행 승인). 실행 중 단계 출력은 메인이 대조하고, ⑩ B2 끝에서 리드가 B2 기록을 대조한다. 정산 때 ④ 창 기록 공백, O-v3-1, RTY-11, O-v4-3을 기록한다.
-- **사용자 손·결정 대기:** 3회차 실행 날짜와 승인(오늘 24:00 KST 전 목표).
+- **3회차 실행 승인(메인 `msg_2ca303c28cc7`, 08:36:21Z):** 사용자 원문 「대시보드 결정 응답: 1) DB 생성 1단계 3회차 - 카드 v4로 오늘 실행할지 → A 지금 실행」(메인 전달, 격상하지 않음). 대상 카드 v4 `394A7D58…BD47`, 판정 review-v4 `3DE45525…DF17`, 근거 폴더 `execution-03`이다.
+- **3회차 실행 기록(원시 N/`execution-03/user-window.txt`, SHA256 `50675B193425047F2B8DFF798D9BE6D84F3F84521622CD9A13D73E7DFD992DF4`, 17,908 bytes, 17:37:51~17:54:14 KST, Pid 35048):**
+  - ③ 정상: Administrator true, 제품 39개 불일치 0, G2 `msg_12b862fc72c0`.
+  - ④ diskpart 실패(메인 `msg_699dd7cd5b70`): 카드 줄 `'select vdisk file="C:\myVHDX.vhdx"', 'attach vdisk' | diskpart`에서 diskpart가 첫 줄을 명령으로 받지 못했다. 도움말을 찍은 뒤 둘째 줄에 「There is no virtual disk selected.」로 끝났다(창 기록 25~82행). 바뀐 것은 없다. 카드 줄은 모두 ASCII다. 원인은 미확인이다. 1·2회차와 서비스 시작 기록에도 이 줄이 성공한 원시는 없고, 2회차는 기록 밖에서 붙였다(2회차 ④ 창 기록 공백의 답). 사용자 결정 A 「탐색기 「탑재」」로 같은 관리자 창을 유지한 채 탐색기로 붙였다. **다음 카드에서 ④ 방법을 고칠 후보다.**
+  - ⑤ D: 3.26/16.72 GB, Stopped·Manual, PathName 큰따옴표 경로 `-sSQLEXPRESS`. ⑥ Running, 불일치 0.
+  - ⑧ A2(08:43:01Z) Completed true, 「Exact database created and marked」. 창 기록의 `TerminatingError(Get-LocalUser) … dh_d1b_recovery was not found`는 Environment.Common.ps1 503행 try/catch의 부재 확인이다(O-v4-5의 남은 Create 조건이 이 실행에서 처음 통과).
+  - ⑨ B2(08:46:39Z) Completed true. ⑪ A3(08:51:37Z) 「Migration 1 applied.」, Completed true. ⑫ B3(08:52:36Z) Completed true.
+  - ⑬ Stopped·Manual(불일치 0), ⑭ sqlservr 0, ⑮ 기록 종료(08:54:14Z). ⑯ 사용자가 업데이트 화면 확인 뒤 탐색기로 꺼냈다. 메인 확인(08:55:57Z): D: 없음, VHDX Attached False, 서비스 Stopped, sqlservr 0.
+  - 시험 DB 기록 R/`fixture-manifest.json`(6,709 bytes, SHA256 `8DD7C4C398178EDA9FC806FD713884993961B554884B7EC27D9582E7EA784F57`): State Baseline001이고, Steps는 CreateDatabase·InitializeDatabaseMarkers·InstallBaseline001 모두 Done이다. DatabaseIdentity는 DatabaseId 9, Guid `34C4F650-1AE6-414D-AB67-BB9465C6611B`, CreationTime 2026-10-09T17:43:00.903, Owner 승인 SID다. Engine은 17.0.1135.8, Korean_Wansung_CI_AS, RCSI false다. MigrationManifest는 001 한 행이다. `.lock`은 0 bytes 그대로다.
+- **B2 대조(리드 `msg_7d749ea346ff`, 메모 N/`b2-compare-03.md`, 원시 요약 `b2-read-03.txt`) → 메인 판단 `msg_e88812c805ad`:** B2는 정상 종료했다. 파일은 9개이고 연결은 하나다. sysadmin은 직접 경로 하나이고, OtherConnections 0, A2 표식 객체 5개뿐이다.
+  - **관측 계획 기준 정정:** `g2-preparation-v4/observations.md` 175행은 「OriginalLogin 기대값 `YYH_DESKTOP\bass1`, OriginalLoginSid = 승인 ExecutorSid 이진」을 요구했다. 실측 OriginalLogin은 `MicrosoftAccount\bass131@naver.com`이고, OriginalLoginSid는 그 이름의 Microsoft 계정 SID(S-1-11-96-…, 토큰에 WINDOWS GROUP으로 있음)다. 메인은 실행자 동일성을 CurrentLoginSid·토큰 WINDOWS LOGIN(principal 259)·sysadmin MemberSid·preflight Sid 네 곳의 승인 SID 이진(`0x0105…E9030000`) 일치로 판정했다. 이후 이 기준을 「CurrentLoginSid(=승인 SID 이진)로 실행자 동일성, OriginalLogin은 Microsoft 계정 이름일 수 있음」으로 바로잡아 쓴다. SQL 관측값을 기대값으로 채택하지 않는 원칙은 그대로다. 기대값은 승인 SID이고, 바뀐 것은 대조하는 열이다.
+  - **리드 이탈(첫 관찰):** 2회차 뒤 리드 답 `msg_24b88143299f`에서 「B2 판정은 SID 이진값 비교로 한다」고 했다. 이때 OriginalLoginSid도 승인 SID로 나올 것이라고 확인 없이 가정했다. 실측에서 그 가정이 틀렸다. 같은 종류가 다시 생기면 관측 기준의 SQL 함수 의미(이름 해석 대 토큰)를 실사 계약에 넣는 교정을 검토한다.
+- **B3 대조(리드 `msg_534d944b6833`, 메모 N/`b3-compare-03.md`, 원시 요약 `b3-read-03.txt`) → 메인 판정 `msg_b2365c472ed4`:** 001 한 행의 세 원천이 같다. B3-SchemaVersion, manifest.MigrationManifest, 고정 소스 `001_initial.sql`(1,667 bytes, `A831893F…F214`, 3회차 고정 목록과 같음)이고 값은 Version 1, Name `001_initial.sql`, Checksum `F28502BB1A8D683A66F596F15BA9EEC779E5110BAD8ADDAEE03E393F26E54FCC`다. 기대 checksum은 Get-MigrationHash 규칙으로 리드(JS·PowerShell 식)와 메인이 각각 계산했다. 실행자·역할·다른 연결은 B2와 같은 기준으로 맞다. Objects 20개는 001 표·제약 이름과 A2 표식 5개를 합한 목록과 같다(최종 schema 대조는 2단계).
+- **판정(메인 `msg_b2365c472ed4`):** DB 생성 1단계(A2·B2·A3·B3, 정지·꺼내기)는 **완료**다. 2단계(Complete·U-01·Test-Database)와 G4 정리는 별도 계획·실사·사용자 승인 대상이다.
+- **정산 기록:**
+  - O-v4-3 승인 연결: 3회차 승인 `msg_2ca303c28cc7` ↔ `execution-03/user-window.txt` SHA256 `50675B19…2DF4`.
+  - O-v3-1 승인 연결: 2회차 승인 `msg_5eead86348d8` ↔ `execution-02/user-window.txt` SHA256 `FC26D4BC3AB4F931B3264254318EAF70EA995D54269872BB08409FF3AF40B211`(12,481 bytes). 실행 원시에는 G2 `msg_12b862fc72c0`만 찍히므로 회차 승인은 이 기록으로 잇는다.
+  - RTY-11(review-v4, 비차단): repin 출력을 처음 `repin-03-utc.txt`·`repin-03-output.txt` 두 파일로 썼다. 이를 `repin-products-03.txt` 하나로 합치고 두 파일은 지웠다. `review-v4/path-check.ps1`은 병합 뒤 병합 알림 원천(`wait-121.json`)을 더하려고 고쳤다. 둘 다 리드 메모 자기 쓰기 감사에 빠졌다. 다음부터 생성 스크립트 출력은 처음부터 한 파일로 쓰고, 기동 기록은 worker-start 전에 마친다(O-v4-4).
+  - O-v4-1·O-v4-2(카드 문장 두 곳)는 메인 결정으로 고치지 않았다. 다음 카드 수정 때 함께 고친다.
+- **다음 할 일:** 2단계 계획 초안을 메인에 보내고, 착수는 메인 확인 뒤다. 「DB 실행 위치」 사용자 결정(보조 메인 조사, 현행 유지 / WSL2 컨테이너)이 2단계 순서에 영향을 준다.
+- **사용자 손·결정 대기:** DB 실행 위치 결정, 2단계 착수 확인.
 
 ### Fable 작업자 SQL 서비스 진단·처치 — 2026-10-08T23:12Z
 
