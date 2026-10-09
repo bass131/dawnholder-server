@@ -5,12 +5,15 @@
 Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지시 「규칙·운영 V1.0 셋업 뒤 main 통합·재분화」를 묶는다. 사용자가 범위를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: 정본 PR(PR216, 병합)은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)였다. 후보 검사 PR(PR217, 병합)은 `feat/backlog-candidate-check-20261009`(base main `ff308e20`)였다. 종료 기록 PR은 `docs/ops-v1-closeout-20261010`(base main `bea63884`)다.
+- branch: 정본 PR(PR216, 병합)은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)였다. 후보 검사 PR(PR217, 병합)은 `feat/backlog-candidate-check-20261009`(base main `ff308e20`)였다. 종료 기록 PR은 `docs/ops-v1-closeout-20261010`(base main `bea63884`, 사용자 결정 `msg_6cd3ae08c16d`로 main `e5653eb9`을 받음)이고 원격에 push했으나 PR은 아직 없다. 정확한 head는 원격 branch와 리드의 「닫아도 됨」 status에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T15:35:06Z): PR217이 병합됐다(「PR217 병합」). 종료 기록 branch를 최신 main에서 만들었다.
-- **다음 할 일**: Gardener → 종료 기록 PR 작성(리드 기록과 milestones J 문안) → 후보 도착 검사 실행 → 문서 실사 → PR(생성이 막히면 메인 대행) → 승인 묶음 → 종료 점검·R-8.
-- 이번 합류점 J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이다. 종료 기록 PR 병합 커밋은 2차 맞춤의 기준이다.
+- **현재 위치**(2026-10-09T16:2xZ, 세션 마무리): 결과 기록·Gardener·J 문장(milestones)·후보 도착 검사 리드 실행을 마치고 종료 branch에 커밋·push했다. 사용자 결정(`msg_6cd3ae08c16d`)으로 오늘은 PR을 열지 않고 세션을 닫는다. 열린 작업자는 없다.
+- **다음 메인 세션에서 이 goal의 남은 순서**: 새 Rules 리드가 이 파일과 종료 branch를 읽는다 → 신규 `gpt-6-astra` xhigh 종료 기록 문서 실사(후보 도착 검사 재실행 포함, 「PR 경계와 검증」) → PR 생성(막히면 메인 대행, 「적용 중인 사용자 결정」) → 승인 묶음 → 사용자 병합 승인 → 2차 맞춤(「병합 뒤 2차 맞춤」) → 종료 점검·R-8. 이 goal은 종료 기록 PR 병합으로 끝난다.
+- **사용자 차례**(메인이 받는다): 종료 기록 PR의 병합 승인 줄, 태그 `ops-v1.0` 위치 질문, Gardener 후보 ①② 채택 질문이다. 질문 문안과 리드 추천은 「종료 점검 자료」에 있다. 두 종료 기록 PR의 병합 순서와 Management 2차 맞춤 여부는 메인이 정한다.
+- **이 goal 뒤 다음 Rules 할 일**: 없음, 새 goal은 사용자 결정. 다음 후보는 「다음 계획 후보」와 「종료 점검 자료」의 로드맵 초안에 있다.
+- 이번 합류점 J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이다. 2차 맞춤의 기준은 Rules·Content 종료 기록 PR 둘이 병합된 뒤의 main 커밋이다. 오늘 밤 다섯 worktree는 먼저 main `e5653eb9`에 맞췄다(`msg_6cd3ae08c16d`).
+- 재진입 주의: 이 리드의 handle·Run·Task·Dispatch는 재부팅 뒤 실행 권한이 아니다. 새 리드의 Run 인수는 RESUME 진입 절차와 메인 지시를 따른다.
 
 ## 진척 단계
 
@@ -21,8 +24,8 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - [x] 후보 검사 선행 시험
 - [x] 후보 검사 구현·검증
 - [x] PR217 병합
-- [>] 결과 기록·Gardener
-- [ ] 종료 기록 PR 병합
+- [x] 결과 기록·Gardener
+- [>] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8
 
 PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
@@ -52,7 +55,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 3. CI `code-rules`에 시험 단계 하나, `99_Tools/README.md` 진입, goal-loop 「기준과 상태」 한 문장(종료 기록 PR 전 리드 실행, 실사자 재실행).
 4. BACKLOG `backlog-id-extraction-check` 승격.
 
-종료 기록 PR(문서) = 합류점 J
+종료 기록 PR(문서). 병합 커밋이 2차 맞춤의 기준이다(J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`).
 
 1. 결과 기록, Gardener 결과, 다음 계획 후보의 BACKLOG 등록.
 2. 이 goal의 「다음 계획 후보」에 후보 도착 검사를 처음 실제 실행한다. 위반 0이어야 올린다.
@@ -95,7 +98,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 5. 후보 도착 검사 PR head의 CI `code-rules`가 새 시험 단계를 실제로 실행해 통과한다(시험 개수로 대상 0건이 아님을 확인).
 6. 종료 기록 PR 전 리드가 이 goal에 후보 도착 검사를 실행해 위반 0이고, 종료 기록 실사자가 같은 명령을 다시 실행한다.
 7. ORCA는 250줄 이하다. 여섯 파일 묶음(AGENTS·ORCA·goal-loop·RESUME·세션 인계 스킬·orca-work)은 PR마다 bytes가 늘지 않거나 같은 PR에서 줄인 원시 수치를 남긴다. 기준은 main `89a2c022`의 102,601 bytes다. templates·milestones·새 기준표·README·BACKLOG·보고서는 묶음 밖에서 따로 잰다.
-8. 각 PR은 메인 창의 승인 줄로 병합한다. 결과 기록 → Gardener → 종료 기록 PR(=J) → 종료 점검 → R-8 순서로 끝낸다. 태그 `ops-v1.0`은 J 병합 뒤 사용자 승인으로 단다. V1.x 단계는 자동으로 시작하지 않는다.
+8. 각 PR은 메인 창의 승인 줄로 병합한다. 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8 순서로 끝낸다. 태그 `ops-v1.0`은 사용자가 위치를 정하고 승인한 뒤 단다(J는 사용자 결정으로 PR216 병합 커밋이다). V1.x 단계는 자동으로 시작하지 않는다.
 
 ## PR 경계와 검증
 
@@ -158,6 +161,14 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - 메인 해석(결정 아님): 종료 기록 PR까지 남은 규칙 결정을 main에 넣고, 그 병합 커밋에 다섯 worktree를 한 번 더 맞춘다. 각 파트 새 작업은 그 main에서 시작한다.
   - 종료 기록 PR에 「병합 뒤 2차 맞춤」 순서표를 둔다. Content는 PR191 병합 전·후 두 갈래로 적는다. 태그 `ops-v1.0` 위치 질문의 추천안은 「종료 기록 PR 병합 커밋」이다. 태그·원격 변경은 별도 승인이다.
   - 메인의 빠짐 확인 목록(Sol max Fast 정본(뒤에 철회돼 시범 기록과 철회로 바뀜), STE A와 PDF 경로·hash, 남은 PR 생성 메인 대행, J 문안, PR216 경위와 현황판 교정 후보, heartbeat 상한 초과 반복)은 종료 기록 PR 작성 계약에서 이 절과 대조한다.
+- **종료 기록 PR 둘 뒤 2차 맞춤과 세션 재시작**(메인 전달 `msg_ee74be0af3df`, 2026-10-09T16:05:57Z, 01:0x KST): 「전체적으로 워크트리 맞추고 새로운 메인세션으로 시작해야겠다, Orca 재부팅도 해야돼」, 「대시보드 결정 응답: 1) 세션 재시작 - 종료 기록 PR 둘까지 넣고 맞춘 뒤 재시작할지, 지금 멈추고 재시작할지 → A 종료 기록 PR 뒤」.
+  - A의 효과 문안: 「Rules·Content 종료 기록 PR 둘을 실사·승인·병합한 뒤 다섯 worktree를 그 main에 맞춘다. 메인이 인계 메모를 쓰고 리드를 모두 닫은 뒤 Orca를 재부팅한다.」
+  - 메인 요청: 정리 후보 ①②를 이 PR의 사용자 채택 질문으로 올린다. 2차 맞춤 순서표에 재개 지점 고치기와 「닫아도 됨」 status를 각 파트 공통 마지막 줄로 넣는다. 다음 Rules 할 일은 「없음, 새 goal은 사용자 결정」이다.
+  - 그 직전 Content PR191이 병합됐다(메인 `msg_e8e9dacfc7c0`, 병합 커밋 `e5653eb9`, 16:01:46Z). 2차 맞춤 순서표의 Content는 「PR191 병합 뒤」 갈래다.
+- **오늘은 worktree 갱신까지, 종료 기록 PR은 다음 세션**(메인 전달 `msg_6cd3ae08c16d`, 2026-10-09T16:20:14Z, 01:2x KST): 「음 오늘 워크트리 갱신까지만 하고 마무리 해야겠다, 피곤하네, 나머지 어차피 나랑 같이해야 이어갈 수 있는 작업들 많이 남지 않았나?」. 바로 위 결정의 「A 종료 기록 PR 뒤」를 바꾼다.
+  - 공통: 자기 worktree를 main `e5653eb9`에 맞춘다. 일하는 작업자는 그 작업 하나만 끝내고 정산한다. 새 작업자는 열지 않는다. 로컬 기록을 커밋·push하고 PR은 열지 않는다. 재개 지점을 다음 메인 세션용으로 고치고 「닫아도 됨」 status를 한 번 보낸다. pane은 메인이 닫고 사용자가 Orca를 재부팅한다.
+  - Rules: J 문장 Sol을 정산하고 그 결과와 Gardener 결과 기록을 종료 branch에 커밋한다. 종료 branch에 main `e5653eb9`을 merge해 충돌을 해소하고 push한다. 충돌이 규칙 파일이면 해소하지 않고 상태만 보고한다.
+  - 리드 처리: 단계 전환 status `msg_90736eeff431`. 종료 기록 문서 실사는 새 작업자라 다음 세션으로 넘긴다.
 - **이전 결정의 대체**: 이번 원문의 구현자 난이도 라우팅은 이전 사용자 결정 「Astra 구현 격상은 사용하지 않는다」(메인 `msg_c78692a42979`, management-active 시스템 카드 goal 882행, 확정 실패 네 번째 시도 맥락)를 바꾼다. 시범 운영은 메인이 원문을 좁히지 않는 운영 방식으로 수용했다(`msg_bd7e0409e4c5`).
 
 ## 이번 합류점 순서표
@@ -178,6 +189,31 @@ J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이 됐다(「적용 �
 - 정정(2026-10-09T11:05:12Z, 리드): Core 행의 앞선 diff를 원시(E/session/branch-states.txt 14~15행)대로 「영속화 goal·BACKLOG」로 고쳤다. 이전 표기 「영속화 goal·CURRENT」는 범위 초안 v1부터 리드가 잘못 옮긴 것이다(정본 PR 문서 실사 #1). BACKLOG 변경은 Core 담당 새 행 `sql-environment-human-access` 하나다(E/lead-check/core-backlog-diff.txt, 11:03:27Z). 메인 대조로는 core-active 로컬에 push 안 된 goal만 바꾼 commit `e0658900`이 더 있으나 판정에 영향이 없다(`msg_16c35ae8003d`).
 - 메인이 받은 관찰(다른 파트 몫, 이 goal은 고치지 않음): CURRENT 「Content(Unity 업그레이드)」 줄의 `unity-upgrade-active` worktree가 지금 `git worktree list`에 없다. content-active 미커밋 두 파일, core-active 미추적 보고서 폴더 하나.
 
+### 최종 실측
+
+실측: 2026-10-09T15:41:18Z, main `bea63884`(PR217 병합), J `ff308e20`. 명령은 `git rev-list --left-right --count bea63884...<branch>`(뒤/앞)와 `git merge-base --is-ancestor`다. 다른 worktree의 status는 열지 않고 공유 ref만 읽었다. 원시는 E/session/branch-states-closeout.txt, branch-ahead-files-closeout.txt, open-prs-closeout.json이다.
+
+- 다섯 파트 모두 J를 받았다. Core·Content·Management branch는 J를 품고 main보다 PR217의 7커밋만 뒤였다. CodeMap worktree는 J에 detached HEAD로 있다. 원래 표는 Management를 「J 때 처리 없음」으로 두었는데 그 branch도 J를 품는다(관측, 받은 경위는 이 goal 밖).
+- Core `feat/persistence-engine-judgment-20261006`: 7/46, 앞선 파일은 영속화 goal·BACKLOG 두 개, push됨, PR 없음.
+- Content `feat/items-inventory-ui-20261005`: 7/14였고 PR191 head `cfe693fd`가 실화면 검증 중이었다. 16:01:46Z에 PR191이 병합됐다(병합 커밋 `e5653eb9`, 메인 `msg_e8e9dacfc7c0`). Content 리드가 같은 goal의 종료 기록 PR을 연다.
+- Management `feat/intro-site-20261008`: 7/39, PR207 head `07e29d65`, 사용자 지시로 보류.
+- 앞선 파일 중 PR217과 겹치는 것은 Core·Content의 BACKLOG.md뿐이다. PR191은 BACKLOG 첫 표에 행 하나를 더했다.
+
+### 병합 뒤 2차 맞춤
+
+기준 커밋은 Rules와 Content의 종료 기록 PR 둘이 모두 병합된 뒤의 main 커밋이다(사용자 결정 `msg_f827fa566df8`·`msg_ee74be0af3df`). 두 PR의 병합 순서는 둘 다 올라온 뒤 메인이 정하고, 뒤에 병합하는 쪽이 최신 main을 받는다. 메인은 기준 커밋 해시를 현황판과 각 파트 재개 계약에 적어 2차 맞춤 신호로 알린다. 처리는 milestones 「main 맞춤과 합류점」을 따르고 실제 맞춤은 각 파트 리드가 한다.
+
+사용자 결정 `msg_6cd3ae08c16d`로 다섯 worktree는 오늘 밤 먼저 main `e5653eb9`(PR191 병합)에 맞췄다. Rules는 종료 branch에 그 main을 받았다. 아래 표는 다음 세션에서 두 종료 기록 PR이 병합된 뒤 적용한다. 「지금 상태」는 16:02Z 기준이다.
+
+| 순서 | 파트 | 지금 상태(16:02Z) | 2차 맞춤 처리 | 주체·시점 |
+|---|---|---|---|---|
+| 0 | Rules | 이 종료 기록 PR(base `bea63884`). main이 PR191로 `e5653eb9`까지 앞섰다 | 오늘 밤 `e5653eb9`을 받았다. 뒤에 병합되면 최신 main을 받고 바뀐 부분을 재실사한다. 병합 뒤 worktree를 기준 커밋으로 옮기고 병합된 branch에 머물지 않는다. 이 goal은 이 PR로 끝나므로 「재개 지점」은 이 PR에서 끝남으로 고쳐 둔다. 다음 Rules goal은 새 리드가 최신 main의 새 branch로 시작한다 | Rules 리드(병합 전·맞춤), 메인(순서·병합·R-8) |
+| 1 | Core | 기록만 앞섬(J 받음, 7/46) | 기준 커밋을 자기 branch로 받는다. BACKLOG가 PR217·PR191·두 종료 기록 PR과 겹치니 받을 때 행 충돌을 본다 | Core 리드, 메인 신호 뒤 첫 안전 지점 |
+| 2 | Content | PR191 병합(`e5653eb9`), 같은 goal의 종료 기록 PR 준비 | 종료 기록 PR이 병합되면 PR branch는 끝난다. worktree를 기준 커밋으로 맞추고 다음 goal은 기준 커밋 이후 main의 새 branch로 시작한다 | Content 리드, 메인 신호 뒤 |
+| 3 | Management | 보류된 PR207(J 받음, 7/39) | milestones 판정은 「처리 없음」이다. 사용자 결정 효과 문안은 「다섯 worktree를 그 main에 맞춘다」이다. 둘이 다르므로 메인이 신호에서 받을지를 정한다. 재개가 정해지면 최신 main을 받고 남은 차단 2건을 처리한다 | 메인 신호에 따라 Management 리드 |
+| 4 | CodeMap | 끝남(worktree가 J에 detached) | worktree를 기준 커밋으로 옮긴다. 다음 goal은 기준 커밋 이후 main의 새 branch로 시작한다 | CodeMap 리드, 메인 신호 뒤 |
+| 공통 | 모든 파트 | — | 맞춘 뒤 자기 goal 「재개 지점」을 고친다(끝난 goal은 끝남 표시). 메인에 「닫아도 됨」 status를 보낸다. 그 뒤 세션 정리는 메인이 정한다. 이 줄의 원래 출처는 `msg_ee74be0af3df`이고, 오늘 밤 맞춤에는 `msg_6cd3ae08c16d`대로 먼저 적용했다 | 각 파트 리드 → 메인 |
+
 ## 현재 결과
 
 ### 착수
@@ -194,7 +230,7 @@ J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이 됐다(「적용 �
 - 계약 전달: worker-start가 turnStart unobserved였다. 리드가 draft를 확인하고 Enter 한 번으로 제출했다. Codex 기록에서 계약 전문을 담은 제출 입력 하나를 확인했다(E/pr1-draft-recovery.md).
 - 질문 1회: bytes 상쇄 후보(`msg_5f6887c37359`, 10:13:57Z). 리드가 공식 reply `msg_3e464481d320`으로 O2~O5 이관과 새 문장 축소를 답했다. 원문은 E/pr1-ask1-answer.md다. 이관 원문은 「정본에서 옮긴 적용 기록」에 있다.
 - 완료: worker_done `msg_b76e13e7165e`(10:33:55Z). 수신 helper 판정 allowed다. 정산(retained/external_terminal) 뒤 대기를 확인하고 pane을 닫았다. 보고는 E/pr1/report.md, 맥락 메모는 E/pr1/context.md다.
-- 관찰: heartbeat 간격 343초 한 구간(09:58:45Z `msg_813b8fe6d3e1` → 10:04:28Z `msg_092e582ae3a5`)이 있었다. BACKLOG `worker-liveness-tool-check`와 같은 갈래다. 산출물 영향은 실사 전 미확인이다(E/lead-observations.md).
+- 관찰: heartbeat 간격 343초 한 구간(09:58:45Z `msg_813b8fe6d3e1` → 10:04:28Z `msg_092e582ae3a5`)이 있었다. BACKLOG `worker-liveness-tool-check`와 같은 갈래다. 산출물 영향은 실사 전 미확인이다(E/lead-observations.md). 종료 Gardener가 같은 Sol의 332초 구간(10:26:50Z `msg_4f92ca8f3bba` → 10:32:22Z `msg_cbcd73127b85`)을 원시에서 더 찾았다. 리드 관찰과 실사가 완료 전 우편함 스냅샷으로 세어 놓쳤다(「종료 Gardener」).
 - 리드 R-2(10:37:18Z): 변경 파일이 허용 9개뿐임을 확인했다. 여섯 파일 묶음은 102,600 bytes(base 102,601)이고 ORCA는 249줄이다. AGENTS 전환 문단이 승인 문안(E/agents-transition-proposal.txt)과 같다. 라우팅 기준의 「애매하면 Astra」와 규칙 맞춤 문장은 개정 v2와 이전 goal의 정본화 후보 원문에 맞다. 새 anchor `#구현자-모델-시범`·`#main-맞춤과-합류점`이 있다. 이 대조는 리드 확인이며 독립 실사가 아니다.
 - 커밋: 리드가 작성 결과와 이 기록을 `c78ff977`로 커밋했다(push 전).
 
@@ -263,7 +299,7 @@ J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이 됐다(「적용 �
 ### PR216 병합
 
 - 리드의 PR 생성(`gh pr create`)이 auto mode 분류기에 「Out-of-Place Publication」으로 거부됐다. 리드는 재시도·우회하지 않고 메인에 알렸다(`msg_2242f373213b`, 12:50:03Z, E/session/pr1-create-denied.txt). branch는 그 전에 head `dc60e325`로 원격에 올렸다.
-- 메인이 사용자에게 묻지 않고 메인 checkout에서 같은 head·본문으로 PR216을 만들었다. 메인은 이를 메인 판단 오류로 기록하라고 했다. 리드 질문은 사용자 허용도 선택지로 두었는데 메인이 혼자 정했다. 그 사실을 알리려던 메인 메시지는 분류기에 「Auto-Mode Bypass」로 거부돼 도착하지 않았다(`msg_3a57ea3f3772`).
+- 메인이 사용자에게 묻지 않고 메인 checkout에서 같은 head·본문으로 PR216을 만들었다. 메인은 이를 메인 판단 오류로 기록하라고 했다. 리드 질문은 사용자 허용도 선택지로 두었는데 메인이 혼자 정했다. 그 사실을 알리려던 메인 메시지는 분류기에 「Auto-Mode Bypass」로 거부돼 도착하지 않았다. 이 일은 뒤 메인 메시지 `msg_3a57ea3f3772`가 전했다.
 - 사용자 승인 줄 「병합 승인: PR216 head dc60e325f10962563aa02188a200fe84da40484c」(메인 전달) 뒤 메인이 병합 관문을 거쳐 병합했다. head 일치, CI 4/4 SUCCESS, CLEAN을 확인했다. 2026-10-09T13:06:19Z MERGED, 병합 커밋 `ff308e206713cd37929b1a06f4fb8ef1aec38d1f`다. 원격 branch 자동 삭제는 리드가 `git ls-remote`로 확인했다. 병합 때 계획으로는 J가 아니었으나 뒤 사용자 결정으로 이 병합 커밋이 J가 됐다(「적용 중인 사용자 결정」 `msg_d20d91dc9e28`).
 - 승인 줄 경위(메인 정정 `msg_ebe2b45847d0`, 메인 진술): 위 승인 줄은 현황판이 만든 줄이다. 메인이 「PR216을 유지할지」 결정 항목에 pr·head를 붙였고, 현황판이 그 항목을 병합 승인 항목으로 보고 A 선택을 승인 줄로 바꿔 넣었다. 사용자가 고른 것은 「A PR216 유지」였을 가능성이 크다(메인 추정). 메인은 의도를 확인하지 않고 병합 관문을 실행했고 이를 메인 오류로 적었다. 사용자는 경위 보고 뒤 「그대로 가자」로 병합을 추인했다.
   - 같은 일이 Content PR191 결정에서도 났고 메인은 그때 실행하지 않았다. 현황판이 비병합 항목에서 승인 줄을 만든 일은 두 번째 발생이라 반복 규칙 대상이다. 가장 높은 층은 현황판 도구(결정 항목 종류를 나눠 병합 항목에서만 승인 줄 생성)다. 현황판은 저장소 밖 메인 도구라 이 goal은 고치지 않고 종료 기록 PR의 다음 계획 후보로 BACKLOG에 둔다(담당 후보 메인). 확인 없이 관문을 실행한 일은 메인의 첫 발생이다. 메인 쪽 교정은 메인 메모리에 있다.
@@ -313,7 +349,83 @@ J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이 됐다(「적용 �
 - 승인과 병합: 메인 `msg_88a1072575fe`(15:30:48Z, E/session/main-dispatch-msg_88a1072575fe.raw.json)에 따르면 사용자가 메인 창에 「병합 승인: PR217 head 00d526ca18c7e836aab62398558ebdf6a29e57bc」를 제출했다. 직전 현황판 항목은 kind "merge"인 PR217 병합 항목이었다. 메인이 head·CI 4/4·CLEAN을 다시 대조하고 단독 명령으로 병합했다. merge commit `bea63884cad6e7233710562a0f4a75d56a408b39`(부모 `ff308e20`·`00d526ca`), 2026-10-09T15:30:21Z다.
 - 메인 R-2 표본(메인 진술): 재조회, 판정 결론 「통과(PASS)」, 검증자 시험 파일 hash `99dced74…`와 커밋본 일치, CI 새 단계가 시험 묶음만 돌림, ORCA에서 뺀 구절 둘이 이 goal에 원문 그대로다.
 - 리드 확인: fetch 뒤 merge commit 부모가 위와 같고 원격 branch는 자동 삭제됐다(E/session/pr217-post-check.txt, 15:33:29Z).
+- 현황판 교정(메인 진술, `msg_88a1072575fe`): 메인이 10-09 23:06(KST)에 현황판이 kind "merge" 항목에서만 승인 줄을 만들도록 고쳤다. 기록은 저장소 밖 메인 도구의 `C:/Dev/DawnHolder_Dashboard/plans/dashboard-merge-kind-fix.md`다. 「PR216 병합」의 현황판 후보는 이 교정으로 해소돼 BACKLOG에 올리지 않는다. 이 줄은 종료 Gardener G5가 짚은 누락을 종료 기록에서 더한 것이다.
 - 종료 branch: 2026-10-09T15:31:07Z(reflog) 최신 main `bea63884`에서 `docs/ops-v1-closeout-20261010`을 upstream 없이 만들었다.
+
+### 종료 Gardener
+
+- 근거: 완료조건 8과 메인 `msg_88a1072575fe`의 순서다. 메인에 기동을 알렸다(`msg_f53819a1933b`).
+- Gardener: 신규 `claude-opus-5-5`, 태그 `[Rules 검증자]`다. 리드 pane을 split해 R-5 Claude 명령(TEMP `.backups/tmp/gd2/`)으로 열었다(2026-10-09T15:39:08Z). 첫 화면은 선택창 없이 「Claude Code v2.1.295 · Opus 5.5 with xhigh effort」였다. backend는 unknown이다. Task `task_71e325988cab`, Dispatch `ctx_6aab51f10234`이고 turnStart observed였다(E/gardener-start-note.md).
+- 계약: E/gardener-contract.md v1(SHA256 `e91ab4e5…`, 고정 HEAD `d783876d`)이다. 쓰기는 E/gardener/report.md 한 파일이다. 고정 입력 26개는 E/gardener-inputs.json이다. Gardener가 네트워크를 쓰지 않으므로 리드가 PR216·PR217 CI 원시와 이 Run의 우편함 146통을 미리 받았다(E/session/ci-final-pr216.txt, ci-runs-pr216.json, ci-runs-pr217.json, inbox-goal-run.json). 리드 후속 1(`msg_76bd8997723b`)로 고정 HEAD 뒤 리드 이탈 하나를 알렸다.
+- 완료: worker_done `msg_e094801f6730`(15:59:48Z, succeeded)을 수신 helper가 허용했다(E/gardener-worker-done-check-output.json). 보고서는 [E/gardener/report.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/gardener/report.md)(SHA256 `8c6fb79f…`, 377줄)다. 고정 입력 26개의 hash는 시작과 끝이 같았다.
+  - 집계: 확정 실패 3회 도달 0, 번호 매긴 독립 결함 12(판정 때 차단 9는 모두 해소, 비차단 3), CI 실패·재실행 0(실행 8회), 승인 없는 경고 억제·설정 완화 0, 검사를 끈 우회 0이다.
+  - 드리프트: 정본끼리 새 모순은 없고 Fast·`service_tier` 문구도 없다. 새 발견 둘은 goal·계약 층이다. 하나는 「만들 것」 종료 기록 PR 머리와 완료조건 8의 「종료 기록 PR = J」 문장이다. 다른 하나는 PR216 병합 뒤 리드 계약 넷의 사용자 차례 칸이다.
+  - 반복(원시 기준): 작업자 heartbeat 300초 초과 6구간·4세션(리드 기록은 5구간), `turn_start_unobserved` 4건(Codex 기동 다섯 중 넷, Claude 0), 리드 대조가 놓친 것 3건, 리드의 근거 폴더 밖 쓰기 2건, 원천보다 확인 수준을 올린 기록 좁게 2건, 현황판이 만든 승인 줄 2건, 계약 칸 이탈 4건이다.
+  - G5 표본 12: 누락·낡음 셋(정본 작성 Sol 332초, 「PR217 병합」의 현황판 교정, J 문장 둘)과 읽기 관찰 하나(PR216 대행 경위의 메시지 ID)다.
+  - 정리 후보 둘(제안): ① Dispatch별 heartbeat 간격 helper와 fixture 시험(BACKLOG `worker-liveness-tool-check` 근거 추가). ② 셸 명령의 명시 쓰기 목적지 가드(새 BACKLOG `shell-write-destination-guard`). 메인 요청(`msg_ee74be0af3df`)으로 둘 다 승인 묶음에서 사용자 채택 질문으로 올린다.
+- 리드 확인: J 문장 두 줄, 계약 넷의 칸, 332초 구간과 ask 시각, Gardener가 남긴 파일 hash를 원천에서 다시 봤고 보고서와 같았다(E/lead-check/gardener-sample.txt).
+- 처리: 정본 작성 Sol 332초, 「PR217 병합」의 현황판 교정, J 문장 둘, PR216 대행 경위의 메시지 ID 읽힘을 이 종료 기록에서 고쳤다. 계약 칸 이탈과 `turn_start_unobserved` 반복은 BACKLOG `contract-context-check`·`official-draft-check-helper`에 근거로 더했다.
+- 작업자 이탈(Gardener 자기 보고, 첫 관찰): 지정 TEMP에 셸 리다이렉트로 `.backups/tmp/gd2/inbox-index.txt`(21,202 bytes)를 썼다. 계약은 그 폴더를 하네스 임시 파일 위치로만 허용했다. 리드가 hash를 남기고 지웠다(E/lead-check/gardener-gd2-cleanup.txt).
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt(「Cogitated for 20m 33s」)를 확인하고 16:00:35Z에 pane을 닫았다(ptyKilled). 재조회에 handle은 0건이었다(E/gardener-release.json, gardener-idle.json, gardener-close.json, gardener-list-after-close.json).
+
+### 종료 기록 PR 작성
+
+- J 정의 문안(리드 판단, 「만들 것」 7): milestones 「main 맞춤과 합류점」의 정의를 넓힌다. 이번 J는 사용자가 PR216 병합 커밋으로 직접 정해 goal의 마지막 PR이 아니었다. J 뒤 규칙 PR이 더 병합될 때의 맞춤은 같은 절 첫 문단이 이미 다룬다. 그래서 정의 문장 하나만 「합류점 J는 사용자가 정한 병합 커밋이다. 커밋 없이 goal만 정했으면 그 goal의 마지막 PR 병합 커밋이다.」로 바꾼다.
+- 작성자: 신규 `[Rules Sol]` 요청 모델 `gpt-6.1-sol` max(기본 tier, 화면 「GPT-6.1-Sol max · Full Access · never」에 fast 표시 없음, Codex v0.162.0, backend unknown). 배정 근거는 구현자 배정 신호 다섯 모두 해당 없음이다(문안이 고정된 한 파일 한 문장). pane `term_64579798-…`, Task `task_980cda7a89a1`, Dispatch `ctx_381dddcf1934`, 계약 E/closeout-j-contract.md(SHA256 `8734b5d1…`, 고정 HEAD `d783876d`). 리드는 같은 시간에 milestones 밖의 goal·BACKLOG·CURRENT만 썼다(계약에 적음).
+  - draft 복구: worker-start(16:02Z대)가 turn_start_unobserved였다. draft 12,413자가 계약 7,626자와 머리말 4,787자의 합과 같아 16:03:13Z에 Enter를 한 번 보냈다. 세션 기록에서 제출 입력 하나가 계약 전문을 담은 것을 대조했다(E/closeout-j-start-note.md, E/lead-check/closeout-j-draft-postcheck.out.txt).
+  - 완료: worker_done `msg_afbc6411b851`(16:16:30Z, succeeded)을 수신 helper가 허용했다(E/closeout-j-worker-done-check-output.json). 보고 E/closeout-j/report.md다. 바꾼 파일은 milestones 하나이고 자기 쓰기 13경로 중 허용 밖은 0이다. release `retained`(`external_terminal`), tui-idle과 빈 prompt(「Worked for 13m 19s」)를 확인하고 16:17Z에 pane을 닫았다. 재조회에 handle은 0건이었다(E/closeout-j-release.json, closeout-j-idle.json, closeout-j-close.json, closeout-j-list-after-close.json).
+  - heartbeat: 송신 시각으로 16:05:41Z `msg_62805b71a7eb` → 16:12:12Z `msg_072d7b083db1`이 391초다. Sol이 escalation `msg_ad6669643c7e`(16:12:13Z)로 먼저 알렸고 자기 측정은 시계 출력 기준 323초였다. 리드는 송신 시각 원시를 기록 값으로 쓴다(E/lead-check/closeout-j-hb-intervals.txt). 비차단이며 BACKLOG `worker-liveness-tool-check` 근거에 더했다.
+  - 리드 R-2(E/lead-check/closeout-j-r2.txt, 16:18:22Z): milestones는 `d783876d` 대비 1줄 삭제·1줄 추가이고 문장이 계약 문안과 같다. SHA256은 보고와 같은 `dcb1a7bb…`다. 여섯 파일 묶음은 102,575 bytes로 base와 같고 ORCA는 249줄이다. 이 절을 가리키는 anchor 참조(ORCA 205행)와 제목(29행)은 그대로다.
+- 리드 기록:
+  - BACKLOG 새 절 「규칙·운영 V1.0 goal에서 연결한 후보」에 새 행 여섯(`candidate-check-excluded-section`·`candidate-check-ci-enforcement`·`astra-capacity-sol-fallback`·`ci-zero-test-guard`·`candidate-check-boundaries`·`shell-write-destination-guard`)을 더했다. 이 중 둘은 이 goal 「하지 않을 것」에 V1.x로 적었는데 BACKLOG에 없던 항목이다. 검사기가 보지 않는 절이라 리드가 손으로 찾았다.
+  - 기존 행 넷에 근거를 더했다. `worker-liveness-tool-check`(377·319·354·332·391초와 Gardener 후보 1), `report-response-format`(STE A V1.x 결정, 사양 PDF 경로·hash, V1.x 후속과 보고서 검토 입력), `contract-context-check`(계약 칸 이탈), `official-draft-check-helper`(`turn_start_unobserved` 반복)다.
+  - BACKLOG 표 ID는 75개에서 81개가 됐고 중복은 0이다(`check-candidates.mjs --backlog`). 새 행 여섯은 모두 7칸이다.
+  - CURRENT의 Rules 줄 branch를 이 종료 branch로 고쳤다. 「이번 합류점 순서표」에 최종 실측과 2차 맞춤을 더했다.
+- 「만들 것」 종료 기록 PR 대조: 4(Fast)는 시범 1회 기록과 철회가 「적용 중인 사용자 결정」에 있고 PR217로 main에 들어갔다. 이 PR은 더하지 않으며 Gardener G2(2)가 정본에 Fast 문구가 없음을 확인했다. 8의 현황판 후보는 메인 도구 교정으로 해소했다(「PR217 병합」). 나머지 후보는 위 BACKLOG 행으로 옮겼다.
+- 메인의 빠짐 확인 목록 대조: Fast는 시범 기록과 철회, STE A와 PDF 경로·hash는 BACKLOG `report-response-format`, 남은 PR 생성 메인 대행은 PR217에서 쓰이지 않았다(「PR217 병합」), J 문안은 milestones, PR216 경위와 현황판 교정은 「PR216 병합」·「PR217 병합」, heartbeat 반복은 BACKLOG `worker-liveness-tool-check`에 있다.
+- 리드 이탈(리드 귀속):
+  - 근거 폴더 밖 명시 쓰기 둘. 15:41Z에 범위를 재는 명령에 남은 리다이렉트로 Git Bash `/tmp/pr217files.txt`(956 bytes)를 만들었다. 16:03Z에는 대기 출력 처리 명령 끝에 붙인 리다이렉트로 저장소 상위 폴더에 `.backups-tmp-ignore`(Sol 화면 JSON)를 만들었다. 둘 다 내용을 확인했거나 같은 명령에서 지웠다(E/lead-check/tmp-write-deviation-closeout.txt, outside-write-deviation-closeout-2.txt). 「착수」의 `/tmp/x`에 이은 두 번째·세 번째 발생이라 반복 규칙 대상이다. 가장 높은 층은 도구(PreToolUse hook)이고 BACKLOG `shell-write-destination-guard`로 사용자 채택 질문에 올린다.
+  - 계약 칸 이탈 넷. PR216 병합 뒤 리드가 조립한 계약 넷 중 선행 시험 계약은 「사용자 차례」 칸이 없고, 구현·검증·Gardener 계약은 ORCA R-4의 리드 status 대신 ask로 적었다. 실제 사용자 차례는 0건이었다. 같은 리드의 반복이라 BACKLOG `contract-context-check`의 계약 lint 후보에 근거를 더했다. 이 PR의 J 문장 계약과 문서 실사 계약은 양식 문구(리드 status)로 썼다.
+- PR191과 겹침(E/lead-check/pr191-overlap.txt, 16:19:09Z): `bea63884`..`e5653eb9`가 바꾼 파일 중 이 branch와 겹치는 것은 BACKLOG 하나다. PR191은 첫 표 38행 근처에 행 하나(`combat-smoke-zero-lag-flaky`)를 더했고 이 branch는 195행 아래와 끝 절만 고쳤다.
+
+### 후보 도착 검사 첫 실행
+
+- 완료조건 6의 리드 실행이다. 명령은 `node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-09-plan-boundary-and-junction/goal.md`다.
+- 첫 실행(2026-10-09T16:15:28Z, HEAD `d783876d`와 미커밋 리드 기록): exit 0, `allowed`. BACKLOG ID 81·중복 0, 후보 8, 참조 없는 후보 0, 없는 ID 0이다(E/lead-check/candidate-check-closeout.json).
+- 이 검사는 「다음 계획 후보」 절만 본다. 「하지 않을 것」에 V1.x로 적은 두 항목은 리드가 손으로 찾아 BACKLOG에 더했다(「종료 기록 PR 작성」). 종료 기록 실사자가 같은 명령을 다시 실행한다.
+
+### 종료 점검 자료
+
+메인이 사용자와 결과·남은 위험·BACKLOG·다음 계획을 확인할 때 쓰는 자료다. 이 PR 병합으로 goal이 끝난다.
+
+| 완료조건 | 결과 | 근거 |
+|---|---|---|
+| 1 정본 PR 문서 실사 | 통과. 첫 실사 NOT PASS 뒤 수정 1회차, 재실사 PASS | 「정본 PR 재실사」 |
+| 2 규칙 점검 보고서 | 통과. 첫 검토 NOT PASS(차단 7) 뒤 리드 수정, 재검토 PASS. 렌더는 1440·390 폭 | 「규칙 점검 보고서」 |
+| 3 선행 시험 | 통과. 고정 HEAD에서 38 실패, 구현 뒤 같은 명령 39/39 | 「후보 검사 선행 시험」·「후보 검사 구현」 |
+| 4 실제 진입 | 통과. 이전 Rules goal과 현재 BACKLOG, 실제 사례 fixture 셋 | 「후보 검사 독립 검증」 |
+| 5 CI | 통과. code-rules Backlog 단계 tests 60 / pass 60 | 「PR217 병합」 |
+| 6 후보 도착 검사 | 리드 실행 위반 0. 실사자 재실행은 문서 실사에서 | 「후보 도착 검사 첫 실행」 |
+| 7 ORCA·여섯 파일 | ORCA는 세 시점 모두 249줄이다. 묶음은 기준 102,601 → PR216 102,600 → PR217 102,575 → 이 PR 102,575 bytes로 늘지 않았다(`git show`로 잼) | 「후보 검사 구현」·「종료 기록 PR 작성」 |
+| 8 순서와 태그 | PR216·PR217은 승인 줄로 병합. 결과 기록·Gardener를 마쳤다. 이 PR 병합, 종료 점검, R-8이 남았다. 태그는 아래 질문 | 「PR216 병합」·「PR217 병합」·「종료 Gardener」 |
+
+- PR: PR216(정본, `ff308e20` = J), PR217(후보 검사, `bea63884`), 이 종료 기록 PR이다. 확정 실패 3회 도달은 0, CI 실패·재실행은 0이다.
+- 미실행: 빌드·게임·DB는 이 goal 범위 밖이다. 후보 도착 검사의 CI 강제와 다른 파트 goal 대상 실행은 하지 않았다.
+- 남은 위험:
+  - 태그 push를 GitHub ruleset이 막는지 아직 모른다(「위험」 4).
+  - 2차 맞춤이 CURRENT 줄 띄우기 뒤 첫 다파트 실측이다(「위험」 5). Core는 BACKLOG 행 충돌을 볼 수 있다.
+  - Management의 2차 맞춤은 milestones 판정과 사용자 결정 효과 문안이 달라 메인이 정한다(「병합 뒤 2차 맞춤」).
+  - 반복이 남은 운영 문제는 heartbeat 300초 초과, `turn_start_unobserved`, 리드의 근거 폴더 밖 쓰기다. 모두 BACKLOG 후보이고 도구 층 교정은 아직 없다.
+- 로드맵 초안(리드 제안, 사용자 확인 대상): 게임 goal 재개가 먼저이고 아래는 Rules V1.x 순서다.
+  1. 우편함 출력 유실 hook 단계. Gardener 후보 ①·②와 공식 draft 대조 helper를 같은 도구 층으로 묶는다. 이 goal에서 반복이 가장 많았던 문제들이다.
+  2. 하네스 마무리. CI 시험 0개 통과 막기와 후보 도착 검사 경계 후속을 함께 본다.
+  3. 보고 방식 V1.x. (가) 내용 초안과 고정 템플릿, (나) STE 문장 검사다.
+  4. 자기 개선 루프. 위 셋의 실제 수행 근거가 쌓인 뒤 본다.
+  - 바뀐 점: 이전 계획은 넷의 순서를 정하지 않았다. 반복 근거가 쌓인 도구 층을 앞에 두자는 것이 이번 제안이다.
+- 사용자 결정 질문(승인 묶음에서 메인에 넘긴다):
+  - 태그 `ops-v1.0` 위치: A는 2차 맞춤 기준 커밋(두 종료 기록 PR 병합 뒤 main)이다. 다섯 worktree가 실제로 시작하는 커밋이고 J 정의 문장과 종료 기록이 들어 있다. 메인 추천 「종료 기록 PR 병합 커밋」과 같은 취지이며 리드도 A를 추천한다. B는 J `ff308e20`이다. AGENTS 「합류점 태그명」 문구와 글자 그대로 맞지만 이 PR의 기록은 빠진다. A를 고르면 J는 1차 맞춤 기록으로 남고 태그는 2차 맞춤을 가리킨다.
+  - Gardener 후보 ① heartbeat 간격 helper: 채택하면 로드맵 1단계 범위에 넣는다. 보류하면 BACKLOG 대기로 둔다.
+  - Gardener 후보 ② 셸 쓰기 목적지 가드: 채택하면 로드맵 1단계 범위에 넣는다. 보류하면 BACKLOG 대기로 둔다.
 
 ## 정본에서 옮긴 적용 기록
 
@@ -374,3 +486,14 @@ O5의 원래 위치는 `00_Document/operations/ORCA.md:220`의 첫 문장이다.
 ## 다음 계획 후보
 
 이 goal 밖으로 둔 일이다. 후보마다 BACKLOG ID나 기존 goal 링크를 단다. 종료 기록 PR 전에 후보 도착 검사로 확인한다.
+
+- 남은 로드맵 넷(Rules, V1.x, 범위 Q1 A): 우편함 출력 유실 hook, 하네스 마무리, 보고 방식, 자기 개선 루프다. 보고 방식은 이 goal에서 첫 적용(규칙 점검 보고서)까지만 했고 STE A는 V1.x 결정이다. 다음 순서 초안은 「종료 점검 자료」에 있다. BACKLOG `mailbox-output-loss-hook`·`harness-contract-completion`·`report-response-format`·`goal-loop-improvement`.
+- 종료 Gardener 후보 ①(Rules, 사용자 채택 질문): Dispatch별 heartbeat 간격 helper와 fixture 시험. 이 goal에서 300초 초과가 6구간·4세션이었고 리드 대조는 그중 하나를 놓쳤다. 이전 goal의 공식 draft 대조 helper와 함께 「우편함 출력 유실 hook」 단계 몫이다. BACKLOG `worker-liveness-tool-check`·`official-draft-check-helper`.
+- 종료 Gardener 후보 ②(Rules, 사용자 채택 질문): 셸 명령의 명시 쓰기 목적지 가드. 리드가 근거 폴더 밖에 리다이렉트로 세 번 썼고 Gardener도 한 번 썼다. 반복 규칙 대상이며 가장 높은 층은 PreToolUse hook이다. BACKLOG `shell-write-destination-guard`.
+- 후보 도착 검사 후속(Rules): 「하지 않을 것」 같은 넘김 절을 검사 범위에 넣을지, PR의 goal.md에 CI로 걸지, 독립 검증 관찰 O2~O9의 경계를 정할지 본다. CI 강제는 하네스 원칙 4의 warning 파일럿부터다. BACKLOG `candidate-check-excluded-section`·`candidate-check-ci-enforcement`·`candidate-check-boundaries`.
+- CI 시험 0개 통과(Rules, 독립 검증 관찰 O1): code-rules의 회귀 단계 셋이 시험 0개 suite도 통과시킨다. 이번에는 리드가 CI 로그의 시험 수를 손으로 대조했다. BACKLOG `ci-zero-test-guard`.
+- Astra 배정의 capacity 예외(Rules, 메인 M7 불수용): capacity 장기 실패 때 Astra 배정에서 Sol로 바꾸는 방향을 더할지 본다. BACKLOG `astra-capacity-sol-fallback`.
+- 위임 계약 칸 검사(Rules): 리드가 조립한 계약 넷의 사용자 차례 칸이 양식과 달랐다. 계약 lint 후보에 근거를 더했다. BACKLOG `contract-context-check`.
+- 이 goal이 손대지 않은 기존 후보(Rules, 「하지 않을 것」): BACKLOG `credential-separation-followup`·`receive-helper-review-followup`·`designated-temp-wording`·`powershell-clock-command`.
+
+종료 기록에서 새 후보를 BACKLOG 「규칙·운영 V1.0 goal에서 연결한 후보」에 등록하고 기존 행에는 근거를 더했다. 등록은 채택·착수 권한이 아니다.
