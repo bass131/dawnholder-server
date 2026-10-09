@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
-import { catalogBytes, expectEnvelope, expectError, expectSuccess, linkedCatalog, makeCatalog, makeRecord, makeSource, makeSystem, type ToolName } from './mcp-fixtures';
+import { TOOL_NAMES, catalogBytes, expectEnvelope, expectError, expectSuccess, linkedCatalog, makeCatalog, makeRecord, makeSource, makeSystem, type ToolName } from './mcp-fixtures';
 import {
   CANONICAL_CATALOG, ERAS, EXIT_DEADLINE_MS, PRODUCTION_ENTRY, REVISION, StdioProcess, removeTempRoots, sha256, sleep, structured, tempRoot, textHash, waitFor,
   type Era, type JsonObject, type SpawnOptions,
@@ -63,7 +63,6 @@ async function navigate(proc: StdioProcess): Promise<Navigation> {
 describe('production entry: two simultaneous independent clients on the canonical catalog', () => {
   it('legacy 2025-11-25 and pinned modern 2026-07-28 explore the same snapshot, stay isolated and exit 0 on EOF', async () => {
     const canonicalBefore = readFileSync(CANONICAL_CATALOG);
-    const canonical = JSON.parse(canonicalBefore.toString('utf8')) as { revision: string; asOf: string; sourceCommit: string };
     const buildDigest = builtDigest();
     const [legacy, modern] = await Promise.all([start({ era: 'legacy', label: 'prod-legacy' }), start({ era: 'modern', label: 'prod-modern' })]);
     expect(legacy.child.pid).not.toBe(modern.child.pid);
@@ -71,7 +70,8 @@ describe('production entry: two simultaneous independent clients on the canonica
       expect(proc.negotiated).toBe(REVISION[proc.options.era]);
       expect(proc.serverVersion).toBe(buildDigest);
       const tools = (await proc.client.listTools()).tools;
-      expect(tools.map(tool => tool.name).sort()).toEqual(['get_record', 'get_source', 'get_system', 'list_systems', 'search_records']);
+      // Design 「MCP」: the five record tools plus read_source_section and the two card tools.
+      expect(tools.map(tool => tool.name).sort()).toEqual([...TOOL_NAMES].sort());
     }
     // Wire-level handshake evidence: legacy has initialize/initialized, modern carries the
     // pinned revision in per-request metadata and never sends initialize.
@@ -99,7 +99,8 @@ describe('production entry: two simultaneous independent clients on the canonica
     // Same hash + same arguments -> identical domain results across the two processes.
     expect(b.calls.map(call => call.structured)).toEqual(a.calls.map(call => call.structured));
     const snapshot = (a.calls[0]?.structured as { snapshot: JsonObject }).snapshot;
-    expect(snapshot).toEqual({ hash: a.hash, revision: canonical.revision, asOf: canonical.asOf, sourceCommit: canonical.sourceCommit });
+    // Design 「MCP」 스냅샷: the index snapshot is the SHA-256 alone.
+    expect(snapshot).toEqual({ hash: a.hash });
 
     // Same conditions repeated on one process are deterministic too.
     const again = await navigate(legacy);
@@ -119,13 +120,14 @@ describe('production entry: two simultaneous independent clients on the canonica
 // ------------------------------------------------------------------ fixture entry, real I/O
 
 function pagedCatalog() {
-  const systems = Array.from({ length: 23 }, (_, index) => makeSystem(`sys-${String(index).padStart(2, '0')}`, { area: index % 2 ? '서버 플랫폼' : '게임 기반', summary: `요약 ${index} 검색어` }));
-  const sources = [makeSource('src-1', { locator: 'C:\\v2-fixture\\SENTINEL_LOCATOR\\never-opened.md' })];
+  const systems = Array.from({ length: 23 }, (_, index) => makeSystem(`sys-${String(index).padStart(2, '0')}`, { area: index % 2 ? '서버 플랫폼' : '게임 기반', title: `시스템 ${index} 검색어` }));
+  // A local-only source (index v2 pairs local with local-only): its locator stays data only.
+  const sources = [makeSource('src-1', { kind: 'local', availability: 'local-only', locator: 'C:\\v2-fixture\\SENTINEL_LOCATOR\\never-opened.md' })];
   const records = Array.from({ length: 31 }, (_, index) => makeRecord(`rec-${String(index).padStart(2, '0')}`, {
     type: (['변경', '결정', '검증', '계획'] as const)[index % 4] ?? '변경', systemIds: [`sys-${String(index % 23).padStart(2, '0')}`], sourceIds: ['src-1'],
   }));
   for (const system of systems) system.recordIds = records.filter(record => record.systemIds.includes(system.id)).map(record => record.id);
-  return makeCatalog({ revision: 'v2-paged-r1', asOf: '2018-05-06T07:08:09Z', sourceCommit: 'feedfacefeedfacefeedfacefeedfacefeedface', systems, records, sources });
+  return makeCatalog({ systems, records, sources });
 }
 
 async function walk(proc: StdioProcess, tool: 'list_systems' | 'search_records', args: JsonObject, hash?: string) {
@@ -168,17 +170,16 @@ describe('fixture entry (real I/O on a TEMP fixture): two simultaneous clients',
     const oracle = first.records.filter(record => record.type === '결정' && record.systemIds.some(id => first.systems.find(system => system.id === id)?.area === '서버 플랫폼')).map(record => record.id).sort();
     expect(filtered[0].ids).toEqual(oracle);
 
-    // Metadata preserved, not replaced by current time/HEAD.
+    // The snapshot is the index hash alone, not current time/HEAD (design 「MCP」 스냅샷).
     const listed = expectSuccess('list_systems', outcome(await modern.call('list_systems', { limit: 1 })));
-    expect(listed.snapshot).toEqual({ hash: firstHash, revision: 'v2-paged-r1', asOf: '2018-05-06T07:08:09Z', sourceCommit: 'feedfacefeedfacefeedfacefeedfacefeedface' });
+    expect(listed.snapshot).toEqual({ hash: firstHash });
 
-    // Source locator is data only: the fixture process never opens anything but the catalog.
+    // Source locator is data only: get_source never opens anything but the catalog.
     const source = expectSuccess('get_source', outcome(await legacy.call('get_source', { id: 'src-1' })));
     expect((source.data as { source: { locator: string } }).source.locator).toBe('C:\\v2-fixture\\SENTINEL_LOCATOR\\never-opened.md');
 
     // Update the catalog in place (atomic rename) while both processes keep running.
     const second = pagedCatalog();
-    second.revision = 'v2-paged-r2';
     second.systems[0] = { ...second.systems[0]!, title: '갱신된 시스템 제목' };
     second.systems.push(makeSystem('sys-zz-new', { area: '게임 기반' }));
     const secondHash = writeCatalog(path, second);
@@ -186,9 +187,9 @@ describe('fixture entry (real I/O on a TEMP fixture): two simultaneous clients',
     for (const proc of [legacy, modern]) {
       const next = expectSuccess('get_system', outcome(await proc.call('get_system', { id: 'sys-00' })));
       expect(next.snapshot.hash).toBe(secondHash);
-      expect(next.snapshot.revision).toBe('v2-paged-r2');
+      expect(next.snapshot).toEqual({ hash: secondHash });
       expect((next.data as { system: { title: string } }).system.title).toBe('갱신된 시스템 제목');
-      // Old hash: detail and later page conflict, return only the current metadata, no data.
+      // Old hash: detail and later page conflict, return only the current snapshot, no data.
       const detail = expectError('get_system', outcome(await proc.call('get_system', { id: 'sys-00', expectedHash: firstHash })), 'VERSION_CONFLICT');
       expect(detail.snapshot?.hash).toBe(secondHash);
       expect(detail.error.details).toEqual({ expectedHash: firstHash });
@@ -468,7 +469,8 @@ describe('missing / corrupt / changing catalogs over real stdio (fixture entry)'
         ctlSeen[label] = { code: envelope.error.code, retryable: envelope.error.retryable };
         expectSuccess('get_system', outcome(await ctl.call('get_system', { id: 'sys-beta' })));
       };
-      const bigger = catalogBytes({ ...linkedCatalog(), scopeNote: 'grown '.repeat(50) });
+      // A larger valid v2 catalog (no extra keys: index v2 rejects them).
+      const bigger = catalogBytes({ ...linkedCatalog(), systems: [...linkedCatalog().systems, makeSystem('sys-grown', { title: 'grown '.repeat(50).trim() })] });
       await ctlCode('changed-between-stats', 'CATALOG_CHANGED_DURING_READ', () => ctl.command({ c: 'pause', op: 'read', abortAware: false }), async from => {
         await waitReached(ctl, 'read', from);
         ctl.command({ c: 'setBytes', b64: Buffer.from(bigger).toString('base64') });

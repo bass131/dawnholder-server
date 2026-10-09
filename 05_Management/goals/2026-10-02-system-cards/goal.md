@@ -11,7 +11,9 @@
 - [x] 개발 현황 축약어 정리
 - [x] CI·실물 화면 재확인
 - [x] PR179 병합
-- [>] PR186 병합
+- [x] PR186 병합
+
+**종료 확인(2026-10-06, 이후 goal 기록):** PR186은 2026-10-05T12:11:10Z에 head `7e6f50f`로 병합됐다(merge `e9c78a0`). 이 goal은 종료됐다. 아래 조건부 문장은 병합 전 기록이다. 확인 원시는 [운영툴 기록 원본 일원화 goal](../2026-10-06-record-source-unification/goal.md)의 근거 폴더 `ended-goal-pr-states.txt`다.
 
 **[PR186 - 시스템 카드 목표 종료 기록 통합](https://github.com/bass131/dawnholder-server/pull/186) 병합으로 기록 통합과 goal 종료.** 앞의 9개 실행 단계는 완료됐다. 이 문서 PR의 독립 실사와 아래 정정에 대한 메인 R-2·최종 head CI·사용자 개별 승인 뒤 실제로 병합되면 마지막 기록 통합과 이 goal을 종료하고, 메인이 R-8로 넘긴다. 병합 전에는 이 조건을 완료로 해석하지 않는다. 병합 여부는 `docs/management-system-cards-closeout` 브랜치의 PR에서 확인한다.
 

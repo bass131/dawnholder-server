@@ -12,6 +12,20 @@ export const ERROR_MESSAGES = {
   RESPONSE_TOO_LARGE: '조회 결과가 응답 한도를 넘습니다. 본문을 반환하지 않습니다.',
   RATE_LIMITED: '동시 처리 또는 호출 빈도 한도를 넘었습니다. 잠시 후 다시 요청하세요.',
   REQUEST_CANCELLED: '조회 요청이 취소됐습니다.',
+  SOURCE_NOT_READABLE: '읽을 수 없는 출처입니다.',
+  SOURCE_PATH_REJECTED: '허용되지 않은 출처 경로입니다.',
+  SOURCE_MISSING: '출처 파일이 없습니다.',
+  SOURCE_TOO_LARGE: '출처 파일 또는 원문 구간이 크기 한도를 넘습니다.',
+  SOURCE_CHANGED_DURING_READ: '읽는 동안 출처 파일이 변경되어 다시 요청해야 합니다.',
+  SOURCE_INVALID_ENCODING: '출처 파일의 UTF-8 인코딩이 올바르지 않습니다.',
+  SOURCE_UNREADABLE: '출처 파일을 읽지 못해 다시 요청해야 합니다.',
+  SECTION_MISSING: '출처의 제목 구간을 찾을 수 없습니다.',
+  SECTION_AMBIGUOUS: '같은 제목 구간이 여러 개 있어 원문을 고를 수 없습니다.',
+  GUIDE_MISSING: '시스템 카드 자료가 없습니다.',
+  GUIDE_UNREADABLE: '시스템 카드 자료를 읽지 못해 다시 요청해야 합니다.',
+  GUIDE_TOO_LARGE: '시스템 카드 자료가 크기 한도를 넘습니다.',
+  GUIDE_INVALID: '시스템 카드 자료의 형식 또는 참조가 올바르지 않습니다.',
+  GUIDE_CHANGED_DURING_READ: '읽는 동안 시스템 카드 자료가 변경되어 다시 요청해야 합니다.',
 } as const;
 
 export type CatalogErrorCode = keyof typeof ERROR_MESSAGES;
@@ -28,5 +42,15 @@ export function checkCancelled(signal: AbortSignal): void {
 }
 
 export function errorIsRetryable(code: CatalogErrorCode): boolean {
-  return ['CATALOG_MISSING', 'CATALOG_UNREADABLE', 'CATALOG_CHANGED_DURING_READ', 'RATE_LIMITED'].includes(code);
+  return [
+    'CATALOG_MISSING',
+    'CATALOG_UNREADABLE',
+    'CATALOG_CHANGED_DURING_READ',
+    'RATE_LIMITED',
+    'SOURCE_CHANGED_DURING_READ',
+    'SOURCE_UNREADABLE',
+    'GUIDE_MISSING',
+    'GUIDE_UNREADABLE',
+    'GUIDE_CHANGED_DURING_READ',
+  ].includes(code);
 }

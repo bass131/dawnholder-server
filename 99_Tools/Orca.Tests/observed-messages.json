@@ -31,6 +31,22 @@
         ],
         "note": "worker-start receipt effects (terminal) and worker-show dispatch.assigneeHandle/taskId/id"
       }
+    },
+    "tddCanonSol": {
+      "expected": {
+        "fromHandle": "term_c091b752-f17b-4354-aa22-db0791a4aad6",
+        "taskId": "task_8a7a6a8e0665",
+        "dispatchId": "ctx_c1e8312629fb",
+        "tag": "[Rules Sol]"
+      },
+      "expectedSource": {
+        "paths": [
+          ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/pr1-worker-start.json",
+          ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/lead-check/pr1-ask1-check-input.json"
+        ],
+        "note": "worker-start receipt taskId/dispatchId and terminal effect id; its official ask comes from dispatch:ctx_c1e8312629fb (expected of the lead's check input)",
+        "copiedBy": "[Rules 검증자] task_315c27807b1b / ctx_a38458d832d0"
+      }
     }
   },
   "messages": {
@@ -289,6 +305,32 @@
         "delivered_at": null,
         "delivery_contract": "current_delivery"
       }
+    },
+    "officialAskQuestion1422": {
+      "source": {
+        "path": ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/lead-check/pr1-ask1-check-input.json",
+        "field": "message",
+        "sha256": "98BEE7E159E5E09632DDD1529630E48838BD7DB682DAC8E9272DACA66A15FF2F",
+        "messageId": "msg_e9ea9a930108",
+        "cliVersion": "1.4.222",
+        "note": "official blocking ask of the Rules Sol; the lead checked it by hand in lead-check/pr1-ask1-manual-check.md",
+        "copiedBy": "[Rules 검증자] task_315c27807b1b / ctx_a38458d832d0"
+      },
+      "message": {
+        "id": "msg_e9ea9a930108",
+        "run_id": "run_be5206d9a2af",
+        "from_handle": "dispatch:ctx_c1e8312629fb",
+        "to_handle": "run:run_be5206d9a2af",
+        "subject": "Question",
+        "body": "[Rules Sol] R6 판단 요청입니다. 신규 문안을 짧게 쓴 현재 묶음은 103881 bytes로 기준 102658보다 1223 늘었습니다(원시 E/pr1/work/metrics-draft.json). 상쇄 후보 원문·위치·실측은 E/pr1/work/offset-proposal.json입니다: goal-loop 기준 60행 하네스 적용 문단 640 bytes, 86행 사례·집계 후속 세 문장 372 bytes, ORCA 기준 90행 역사 관측 231 bytes·94행 관측 문장 110 bytes·213행 이관 기록 170 bytes, RESUME 3행 이관 기록 문장 165 bytes입니다. 앞의 goal-loop 후보에는 현행 제약도 섞여 통째 이관은 추천하지 않으며, 뒤 후보는 v1 허용 파일·구간 밖입니다. 옮길 정확한 문장과 필요한 허용 경계 변경을 지정해 주십시오. 기존 문장은 아직 옮기거나 삭제하지 않았습니다. 함께 범위 판정할 발견은 ORCA 250행의 원문 로그 TEMP 허용 문장입니다: R2·R4와 충돌하지만 R5 밖이라 그대로 뒀습니다.",
+        "type": "question",
+        "priority": "normal",
+        "thread_id": "msg_e9ea9a930108",
+        "payload": "{\"taskId\":\"task_8a7a6a8e0665\",\"dispatchId\":\"ctx_c1e8312629fb\",\"question\":\"[Rules Sol] R6 판단 요청입니다. 신규 문안을 짧게 쓴 현재 묶음은 103881 bytes로 기준 102658보다 1223 늘었습니다(원시 E/pr1/work/metrics-draft.json). 상쇄 후보 원문·위치·실측은 E/pr1/work/offset-proposal.json입니다: goal-loop 기준 60행 하네스 적용 문단 640 bytes, 86행 사례·집계 후속 세 문장 372 bytes, ORCA 기준 90행 역사 관측 231 bytes·94행 관측 문장 110 bytes·213행 이관 기록 170 bytes, RESUME 3행 이관 기록 문장 165 bytes입니다. 앞의 goal-loop 후보에는 현행 제약도 섞여 통째 이관은 추천하지 않으며, 뒤 후보는 v1 허용 파일·구간 밖입니다. 옮길 정확한 문장과 필요한 허용 경계 변경을 지정해 주십시오. 기존 문장은 아직 옮기거나 삭제하지 않았습니다. 함께 범위 판정할 발견은 ORCA 250행의 원문 로그 TEMP 허용 문장입니다: R2·R4와 충돌하지만 R5 밖이라 그대로 뒀습니다.\",\"options\":[]}",
+        "created_at": "2026-10-08T11:37:02Z",
+        "delivered_at": null,
+        "delivery_contract": "current_delivery"
+      }
     }
   },
   "officialAskEvidence": {
@@ -298,5 +340,33 @@
       ".backups/verification/2026-10-03-harness-principles/operating-rules/sol-heartbeat-boundary-question.json"
     ],
     "note": "ask --help of 1.4.218 has no subject option; the question receipt carries the message id"
+  },
+  "officialAskHelp": {
+    "1.4.222": {
+      "source": {
+        "askHelpPath": ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/lead-check/ask-help-1.4.222.txt",
+        "askHelpSha256": "8D46923C936370AD577C6DD5E567BCB20C7C4EE06E28833A8348EBFAC5158C16",
+        "replyHelpPath": ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/lead-check/reply-help-1.4.222.txt",
+        "replyHelpSha256": "8D508CBA3BD77FF5B28616F67562EEEC06B9E2C28E2507955A9A8341AF0D8CA8",
+        "capturedAt": "2026-10-08T11:38:26Z",
+        "note": "stdout of orca orchestration ask --help / reply --help saved by the lead; version from the file names and lead-check/pr1-ask1-manual-check.md; capturedAt is the file mtime of both files",
+        "copiedBy": "[Rules 검증자] task_315c27807b1b / ctx_a38458d832d0"
+      },
+      "askHelp": "orca orchestration ask\n\nUsage: orca orchestration ask (--question <text> | --resume <message_id>) [--to <run:id>] [--run <run_id>] [--options <csv>] [--timeout-ms <n>] [--from <handle>] [--retry-request <id>] [--json]\n\nAsk the coordinator a question and block until answered\n\nOptions:\n  --help                 Show this help message\n  --json                 Emit machine-readable JSON\n  --pairing-code\n  --environment\n  --to\n  --run\n  --question\n  --resume\n  --dispatch-capability\n  --options\n  --timeout-ms <ms>     Maximum wait time before timing out\n  --from\n  --retry-request\n\nNotes:\n  From an active Dispatch, a new question defaults to its owning Run mailbox.\n  Timeout leaves the question pending; resume with the original message ID.\n",
+      "replyHelp": "orca orchestration reply\n\nUsage: orca orchestration reply --id <msg_id> --body <text> [--run <run_id>] [--from <handle>] [--retry-request <id>] [--json]\n\nReply to a message\n\nOptions:\n  --help                 Show this help message\n  --json                 Emit machine-readable JSON\n  --pairing-code\n  --environment\n  --id <id>             Identifier for a target item or permission\n  --body\n  --run\n  --from\n  --retry-request\n"
+    },
+    "1.4.223": {
+      "source": {
+        "askHelpPath": ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/lead-check/ask-help-1.4.223.txt",
+        "askHelpSha256": "8D46923C936370AD577C6DD5E567BCB20C7C4EE06E28833A8348EBFAC5158C16",
+        "replyHelpPath": ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/lead-check/reply-help-1.4.223.txt",
+        "replyHelpSha256": "8D508CBA3BD77FF5B28616F67562EEEC06B9E2C28E2507955A9A8341AF0D8CA8",
+        "capturedAt": "2026-10-08T23:07:22Z",
+        "note": "stdout of orca orchestration ask --help / reply --help saved by the lead after the update; version from lead-check/orca-version-1.4.223.txt; capturedAt is the file mtime of both files; the text equals the 1.4.222 capture",
+        "copiedBy": "[Rules 검증자] task_315c27807b1b / ctx_a38458d832d0"
+      },
+      "askHelp": "orca orchestration ask\n\nUsage: orca orchestration ask (--question <text> | --resume <message_id>) [--to <run:id>] [--run <run_id>] [--options <csv>] [--timeout-ms <n>] [--from <handle>] [--retry-request <id>] [--json]\n\nAsk the coordinator a question and block until answered\n\nOptions:\n  --help                 Show this help message\n  --json                 Emit machine-readable JSON\n  --pairing-code\n  --environment\n  --to\n  --run\n  --question\n  --resume\n  --dispatch-capability\n  --options\n  --timeout-ms <ms>     Maximum wait time before timing out\n  --from\n  --retry-request\n\nNotes:\n  From an active Dispatch, a new question defaults to its owning Run mailbox.\n  Timeout leaves the question pending; resume with the original message ID.\n",
+      "replyHelp": "orca orchestration reply\n\nUsage: orca orchestration reply --id <msg_id> --body <text> [--run <run_id>] [--from <handle>] [--retry-request <id>] [--json]\n\nReply to a message\n\nOptions:\n  --help                 Show this help message\n  --json                 Emit machine-readable JSON\n  --pairing-code\n  --environment\n  --id <id>             Identifier for a target item or permission\n  --body\n  --run\n  --from\n  --retry-request\n"
+    }
   }
 }

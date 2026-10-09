@@ -6,7 +6,7 @@
 
 - .NET SDK: [global.json](../../global.json)의 정확한 `10.0.301`, `rollForward: disable`. 다른 버전으로 대체하지 않는다.
 - SDK pin 이전의 obj/bin이 남은 checkout은 해당 빌드 생성물을 확인·백업하고 정리한 뒤 1회 clean 빌드가 필요하다.
-- Unity: [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 `6000.4.7f1`과 revision을 확인한다.
+- Unity: [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 `6000.6.4f1`과 revision `12bfff696524`를 확인한다. Hub 화면에서는 revision을 고를 수 없으니 `unityhub://6000.6.4f1/12bfff696524` 링크로 설치한다. 이 링크는 Unity 릴리스 노트의 「Install with Unity Hub」 버튼 주소와 같은 형식이다. 6.6 전환을 아직 받지 않은 branch는 그 branch의 ProjectVersion대로 연다.
 - WSL Ubuntu: .NET SDK, Bash·Python 3·rsync·flock(util-linux)·ss(iproute2)·coreutils가 필요하다. 저장소는 ASCII 경로를 권장한다.
 - 서버·테스트 실행이 Windows 정책으로 차단되는 현재 환경에서는 WSL을 사용한다. Windows 전용 디버그 설정은 네이티브 실행이 허용된 머신용이다.
 
@@ -44,7 +44,7 @@ WSL 빌드는 Windows 원본 Unity DLL을 갱신하지 않는다. DLL 반영은 
 
 Windows 원본 Git에서 입력 manifest를 만들고 전용 WSL 복제본을 검사한다.
 
-제품 프로젝트는 `Dawnholder.slnx`의 명시 집합을 사용한다. slnx 밖의 독립 도구는 `99_Tools/Formatting/independent-projects.json`의 `SchemaVersion: 1`, `Projects` 배열에 저장소 상대 csproj 경로로 등록한다. 기본 목록은 Formatting과 Formatting.Tests이며 새 도구를 추가하는 파트가 자기 PR에서 해당 항목을 추가한다. 등록 검사 코드는 GameDev가 소유한다. 목록 자체도 입력 manifest와 hash 대조에 포함되며, 중복·없는 경로·제품과의 중복·미등록 csproj/C# 입력은 실패한다.
+제품 프로젝트는 `Dawnholder.slnx`의 명시 집합을 사용한다. slnx 밖의 독립 도구는 `99_Tools/Formatting/independent-projects.json`의 `SchemaVersion: 1`, `Projects` 배열에 저장소 상대 csproj 경로로 등록한다. 기본 목록은 Formatting과 Formatting.Tests이며 새 도구를 추가하는 파트가 자기 PR에서 해당 항목을 추가한다. 등록 검사 코드는 Core가 소유한다. 목록 자체도 입력 manifest와 hash 대조에 포함되며, 중복·없는 경로·제품과의 중복·미등록 csproj/C# 입력은 실패한다.
 
 두 집합은 restore, 실제 Debug/Release Compile 수집, whitespace 검사·snapshot 적용, 보존 비교에 모두 연결된다. formatter 실행 준비에 필요한 bootstrap과 전체 등록 대상의 검사를 구분한다. `Formatting.Tests`의 필수 실행은 유지하며, 다른 독립 도구의 모든 기능 테스트를 이 등록만으로 자동 실행하지는 않는다. 각 파트가 자기 테스트의 CI 연결을 소유한다.
 

@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import DevelopmentRecords from './DevelopmentRecords';
+import DevelopmentBacklog from './DevelopmentBacklog';
 import SystemCardsView from './systemCards/SystemCardsView';
 import ThemeImage from './theme/ThemeImage';
 
@@ -61,7 +62,7 @@ function Users() {
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<Section>('operations');
-  const [developmentView, setDevelopmentView] = useState<'cards' | 'records'>('cards');
+  const [developmentView, setDevelopmentView] = useState<'cards' | 'records' | 'backlog'>('cards');
   const section = sections[activeSection];
   return (
     <div className="management">
@@ -84,9 +85,14 @@ export default function App() {
             {activeSection === 'operations' && <Operations />}
             {activeSection === 'users' && <Users />}
             <div hidden={activeSection !== 'development'}>
-              <div className="development-tabs" aria-label="개발 현황 보기"><button type="button" aria-pressed={developmentView === 'cards'} onClick={() => setDevelopmentView('cards')}>시스템 카드</button><button type="button" aria-pressed={developmentView === 'records'} onClick={() => setDevelopmentView('records')}>개발 기록 · 기록 편집</button></div>
+              <div className="development-tabs" aria-label="개발 현황 보기">
+                <button type="button" aria-pressed={developmentView === 'cards'} onClick={() => setDevelopmentView('cards')}>시스템 카드</button>
+                <button type="button" aria-pressed={developmentView === 'records'} onClick={() => setDevelopmentView('records')}>개발 기록</button>
+                <button type="button" aria-pressed={developmentView === 'backlog'} onClick={() => setDevelopmentView('backlog')}>이후 작업</button>
+              </div>
               <div hidden={developmentView !== 'cards'}><SystemCardsView active={activeSection === 'development' && developmentView === 'cards'} openRecords={() => setDevelopmentView('records')} /></div>
               <div hidden={developmentView !== 'records'}><DevelopmentRecords active={activeSection === 'development' && developmentView === 'records'} /></div>
+              <div hidden={developmentView !== 'backlog'}><DevelopmentBacklog /></div>
             </div>
           </section>
         </main>

@@ -78,9 +78,18 @@ function validateInput(input) {
   }
   if (expected.officialAsk !== undefined) {
     const proof = expected.officialAsk;
-    if (!isRecord(proof) || !isIdentity(proof.messageId) || proof.cliVersion !== '1.4.218') {
-      issues.push(diagnostic('official-ask-proof', 'expected.officialAsk', 'The confirmed blocking-ask evidence is incomplete or unsupported.',
-        'Use the coordinator-confirmed question receipt ID and CLI version 1.4.218; otherwise compare the source manually.'));
+    // Check completeness first: malformed help needs repair before its subject options can be interpreted.
+    if (!isRecord(proof) || !isIdentity(proof.messageId) ||
+      typeof proof.cliVersion !== 'string' || proof.cliVersion.trim().length === 0 ||
+      typeof proof.askHelp !== 'string' || !proof.askHelp.includes('orca orchestration ask') ||
+      typeof proof.replyHelp !== 'string' || !proof.replyHelp.includes('orca orchestration reply')) {
+      issues.push(diagnostic('official-ask-proof', 'expected.officialAsk',
+        'The confirmed blocking-ask receipt, CLI version or ask/reply help evidence is missing or malformed.',
+        'Supply the question receipt ID and original ask/reply help output from the same CLI; otherwise compare the source manually.'));
+    } else if (proof.askHelp.includes('--subject') || proof.replyHelp.includes('--subject')) {
+      issues.push(diagnostic('official-ask-subject-option', 'expected.officialAsk',
+        'The supplied ask/reply help shows a subject option, so the Question exception is unavailable.',
+        'Use tagged subjects when supported. Retain the question receipt ID and original ask/reply help output from the same CLI for human comparison.'));
     }
   }
 
@@ -147,8 +156,8 @@ export function evaluateMessage(input) {
   const officialAsk = officialAskMatches(message, payload, expected);
   if (expected.officialAsk !== undefined && !officialAsk) {
     issues.push(diagnostic('official-ask-mismatch', 'expected.officialAsk',
-      'The message does not match the confirmed version-specific blocking-ask receipt and shape.',
-      'Do not open the Question exception based on its subject or self-declaration. Recheck the question receipt and report the mismatch to Main.'));
+      'The message does not match the confirmed blocking-ask receipt and shape.',
+      'Do not open the Question exception based on its subject or self-declaration. Recheck the question receipt ID and original ask/reply help from the same CLI; report the mismatch to Main.'));
   }
   if (!officialAsk && !hasTag(message.subject, expected.tag)) {
     issues.push(diagnostic('subject-tag', 'message.subject', 'Subject must start with the assigned sender tag.',
@@ -161,5 +170,5 @@ export function evaluateMessage(input) {
 
   return issues.length > 0
     ? result('policy-violation', issues)
-    : result('allowed', [], officialAsk ? 'official-blocking-ask-1.4.218' : null);
+    : result('allowed', [], officialAsk ? 'official-blocking-ask' : null);
 }

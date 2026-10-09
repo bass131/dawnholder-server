@@ -7,15 +7,44 @@
 - [x] 목록·상세·복귀 구현
 - [x] 독립 강 검증과 직접 영향 시험 정비
 - [x] 최종 전체 시험·Electron 화면 확인
-- [>] PR 발행·CI·메인 원천 대조
-- [ ] 사용자 개별 승인·PR 병합
-- [ ] Gardener·종료 기록 통합
+- [x] PR 발행·CI·승인 묶음 전달
+- [x] Gardener 점검
+- [x] 종료 기록 문서 실사
+- [x] PR189 병합
+- [x] PR194 병합
+
+**종료 확인(2026-10-06, 다음 goal 기록):** PR194는 2026-10-06T09:15:32Z에 head `e37f261`로 병합됐다(merge `9ee7ae1`). 이 goal은 종료됐고 메인이 R-8로 리드를 교체했다. 아래 「재개 지점」의 조건부 문장은 병합 전 기록이다. 확인 원시는 [다음 goal](../2026-10-06-record-source-unification/goal.md)의 근거 폴더 `ended-goal-pr-states.txt`다.
 
 ## 재개 지점
 
-상태는 **독립 강 검증 통과·PR 발행·CI/메인 원천 대조 진행**이다. [189 - 개발 기록 목록에서 전체 페이지 상세로 탐색](https://github.com/bass131/dawnholder-server/pull/189)을 발행했고 아직 사용자 개별 병합 승인을 받지 않았다. 제품 결함 0건, 비차단 관찰 O1~O5가 있다. 전체 시험은 902개 중 897통과·5실패이며 실패 5건은 범위 밖 기존 단정/환경으로 분류됐다. Management 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch는 `feat/management-record-navigation-20261005`, 시작 main은 `e9c78a0fd48173f6b2f89777ca9e2be22c9683d1`이다. 목표 준비 `270e6ce`, 구조 `41c26fe`, 동작 `163217f`, 검증 입력 `67f8aebe6515e66876d5f329c7c9dfef0cb4c239`, 검증 시험 커밋 `3cbe421`을 순서대로 보존한다. 다음은 정확 head의 CI와 fresh 병합 상태를 모아 메인에게 승인 묶음을 보내는 일이다. 승인 뒤 병합, 신규 Opus Gardener·종료 기록 PR의 별도 승인/병합, R-8 리드 전환 순서이며 다음 goal은 자동 시작하지 않는다.
+**[194 - 개발 기록 탐색 목표 종료 기록 통합](https://github.com/bass131/dawnholder-server/pull/194) 병합으로 기록 통합과 goal 종료.** 앞의 9개 단계는 완료됐다. PR194의 최종 head가 신규 Opus 좁힌 재실사·CI·메인 R-2·사용자 개별 승인을 거쳐 실제로 병합되면 이 goal을 종료하고, 메인이 R-8로 넘긴다. 병합 전에는 이 조건을 완료로 해석하지 않는다. 병합 여부와 정확한 head는 PR194에서 확인한다. 이 문단은 이전 Management 종료 PR186의 조건부 기록 관례를 따른다(메인 `msg_313ea6d96151`).
 
-근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-05-development-record-navigation/`이다. 시작 맥락은 E/`astra-context.md`, 승인 원문은 E/`main-approval-receipt.json`, 사용자 출력 기준선은 E/`user-artifacts-before.json`, 프로필 추가 관측은 E/`user-profile-before.json`이다. 경로·상태는 새 세션 진입 때 실제 Git/Orca 조회와 대조한다.
+PR189는 2026-10-06에 병합됐다. 경위는 아래 「결과와 열린 사항」의 「PR189 승인과 병합」과 「세션 마무리와 재개」에 있다. 제품 결함 0건, 제품 검증의 비차단 관찰 O1~O5가 있다. 전체 시험은 902개 중 897통과·5실패이며 실패 5건은 범위 밖 기존 단정/환경으로 분류됐다.
+
+**이 기록 commit 시점의 Git·PR 상태(2026-10-06):**
+
+- 작업 경로 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`, branch `docs/management-record-navigation-closeout`. PR189 병합 뒤 origin/main `a90426a4eca424bfbc059d16f85f3f1d1f772dfd`를 merge commit `bd7a2df`로 통합했다. 그 뒤 main은 PR190 병합으로 `afa1272`가 됐다. PR194는 그 main에 대해 `CLEAN`이고 로컬 merge-tree 충돌도 없어 main을 다시 merge하지 않았다(E/`resume-pr194-ci-cda7075.json`).
+- [189 - 개발 기록 목록에서 전체 페이지 상세로 탐색](https://github.com/bass131/dawnholder-server/pull/189): 2026-10-06T06:22:59Z MERGED, head `94f9a1e5e8dd8b46e82c54174b64f4198e9bb0c8`, 병합 commit `a90426a`(E/`resume-pr189-merged.json`).
+- PR194: 2026-10-06T06:33:26Z에 head `cda7075`로 열렸다. 그 head의 CI 4개는 모두 SUCCESS였고, 신규 Opus 좁힌 재실사는 통과(차단 없음, 비차단 V1~V3)였다. 이 기록 commit은 V3 처리로 head를 바꾼다. 새 head의 CI와 재실사는 아직 없다. 본문 원천은 E/`closeout-pr-body.md`다.
+- 살아 있는 작업자 pane은 0이다.
+
+**사용자 결정·행동 대기:**
+
+- PR194 최종 head의 개별 병합 승인. PR189 승인으로 대신하지 않는다.
+- 현황판 결정 `mgmt-gardener-candidates` 「Management Gardener 후보 2개 - 다음 계획 후보로 올릴지」. 사용자 결정에 따라 다음 goal 범위 초안과 함께 나중에 한꺼번에 검토하며, 지금 새로 쓰거나 올리지 않는다(아래 「세션 마무리와 재개」). 채택 전에는 구현하지 않는다(아래 「Gardener 결과」).
+
+**남은 순서(메인 `msg_313ea6d96151`):**
+
+1. 리드가 이 기록 commit을 push하고 새 head의 CI 4개를 받는다.
+2. 리드가 `cda7075` 이후 delta만 보는 신규 Opus 문서 실사를 한 번 연다.
+3. 판정과 CI가 나오면 리드가 PR194 본문 자리표시를 채우고, 정확한 head로 병합 승인 묶음을 메인에 보낸다.
+4. 메인 R-2와 사용자 개별 승인 뒤 리드가 그 head로 PR194를 병합한다. 그 뒤 메인이 R-8로 리드를 교체한다. 다음 goal은 자동 시작하지 않는다.
+
+**적용 중인 메인 결정:** `msg_053edb4e968d`(DIRTY 처리와 옛 head 승인 미사용), `msg_73cc8b553053`(PR 생성·병합은 사용자 확인 창, 우회 금지), `msg_f1f757635ac1` 1항(통과 뒤 보완은 독립 판정 없이 병합 승인에 올리지 않음)과 3항(Gardener 후보는 채택 전 구현하지 않음), `msg_405751374896`(재개 세션 진입, 현재 일 먼저·계획은 나중에 한꺼번에), `msg_f799705f5003`(CURRENT 다른 파트 줄 보존), `msg_313ea6d96151`(V3 처리 A안, 새 CI·좁힌 재실사 뒤 승인 묶음, 계약의 TEMP 금지 문구 유지). 원문은 E/`main-pr-and-routing-decisions.json`, `overnight-main-messages.json`, `post-report-inbox-1.json`, `resume-entry-inbox-all.json`, `resume-inbox-1.json`, `resume-inbox-3.json`에 있다. 쓰임을 다한 결정은 `msg_09f05dbcba5d`(PR189 head 한정 승인과 병합 조건), `msg_0627c486562c`(확인 창은 거절이 아님, 병합 전 Gardener 허용), `msg_625afc58eb42`(PR 체크포인트로 진행), `msg_fa6acb4ad374`(세션 마무리), `msg_f1f757635ac1`의 나머지 2·4·5항이다. 2·4·5항과 그 결과는 아래 「세션 마무리와 재개」에 있다.
+
+**다음 리드의 시작 조건:** 세션이 다시 끊기면 다음 리드는 새 handle과 새 Run으로 시작한다. 이번 세션 Run `run_da23a6159c93`, 리드 handle `term_0b302eb4-e6d6-4bb0-a6c4-fd24ada2dade`, 이전 Run `run_6e57ab3c5f70`과 그 Task·Dispatch·handle을 실행 권한으로 쓰지 않는다. 진입 때 실제 경로·branch·HEAD·PR 상태를 다시 조회해 이 기록과 대조한다.
+
+근거 폴더 E는 저장소 로컬 `.backups/verification/2026-10-05-development-record-navigation/`이다. 시작 맥락은 E/`astra-context.md`, 이전 Opus 리드의 종료 단계 맥락은 E/`opus-lead-context.md`, 이번 재개 세션 리드의 맥락은 E/`resume-lead-context.md`다. 승인 원문은 E/`main-approval-receipt.json`, 사용자 출력 기준선은 E/`user-artifacts-before.json`, 프로필 추가 관측은 E/`user-profile-before.json`이다.
 
 ## 요청 원천과 승인
 
@@ -29,8 +58,9 @@
 
 ## 적용 중인 사용자 결정
 
-- 메인 `msg_9a95637fe94e`(2026-10-05T14:18:43Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」. 앞선 「A 리드 Opus xhigh, 구현은 Sol max 유지」를 다섯 파트로 넓힌 결정이다. 현재 목표 중에는 Astra를 유지하고 **종료 기록 PR 병합과 Gardener 뒤** 메인이 R-8로 이 pane을 닫아 `claude-opus-5-5` xhigh 새 리드를 연다. Sol max·신규 Opus 검증자는 유지한다. AGENTS의 리드 모델 문구는 아직 Astra이며 정본 반영은 Rules의 다음 계획 후보다. 메인 전달을 사용자 직접 입력으로 격상하지 않는다.
-- 같은 메시지의 운영 지시로 이후 Orca 우편함의 서버 대기값은 `check --wait --timeout-ms 600000`으로 적용한다. 실행 도구는 비동기 session을 반환하도록 두고 60초를 넘는 단일 차단 호출을 사용하지 않는다. 메시지 도착 때 즉시 깨어나는 대기이며 짧은 우편함·화면 반복 조회를 피한다.
+- 메인 `msg_9a95637fe94e`(2026-10-05T14:18:43Z)가 전달한 사용자 원문: 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」. 앞선 「A 리드 Opus xhigh, 구현은 Sol max 유지」를 다섯 파트로 넓힌 결정이다. **교체 시점은 후속 `msg_5ae22b5ca4ae`의 작업자가 빈 즉시 교체로 대체됐다.** 그 즉시 교체는 아래 「리드 교체 인계 기록」대로 2026-10-05T14:27에 끝났다. R-8이 아니라 `msg_5ae22b5ca4ae`의 절차(메인이 이전 pane을 닫고 새 Opus 리드가 같은 Run을 이어받음)였다. 목표 종료 뒤의 R-8 교체는 「재개 지점」의 남은 순서 4번을 따른다. Sol max·신규 Opus 검증자는 유지한다. AGENTS의 리드 모델 문구는 아직 Astra이며 정본 반영은 Rules의 다음 계획 후보다. 메인 전달을 사용자 직접 입력으로 격상하지 않는다.
+- (이전 Codex 리드 조건, 아래 `msg_2c7fd80be0a5`로 대체됨) 같은 메시지의 운영 지시로 이후 Orca 우편함의 서버 대기값은 `check --wait --timeout-ms 600000`으로 적용한다. 실행 도구는 비동기 session을 반환하도록 두고 60초를 넘는 단일 차단 호출을 사용하지 않는다. 메시지 도착 때 즉시 깨어나는 대기이며 짧은 우편함·화면 반복 조회를 피한다.
+- 메인 운영 지시 `msg_2c7fd80be0a5`(2026-10-05T14:34:35Z): 우편함 대기는 heartbeat를 뺀 8개 type의 `--types` 필터와 `--timeout-ms 900000`을 쓴다. 원문은 E/`mailbox-types-instruction.json`이다.
 - 메인 `msg_053edb4e968d`(2026-10-05T14:13:56Z): 승인 묶음 직전 fresh `mergeStateStatus`를 확인한다. DIRTY이면 최신 main을 merge해 CURRENT의 다른 파트 줄과 자기 줄을 함께 보존한다. 충돌 해결이 CURRENT에 한정되고 제품 blob이 같다는 remerge-diff 원시가 있을 때만 **동일 제품 입력의 기존 판정 유지**로 표현하고 새 head 전체 CI를 수집한다. 승인 뒤 다른 PR 병합으로 DIRTY가 되면 옛 head 승인을 사용하지 않고 다시 이 절차와 새 승인을 거친다. 원문 두 건은 E/`main-pr-and-routing-decisions.json`에 보존한다.
 
 ## 이번 goal에서 만들 것
@@ -84,7 +114,7 @@ Electron 실제 확인은 소유 TEMP 사본·자기 프로필·자기 프로세
 
 ## PR 경계와 종료
 
-제품·직접 검증·사용 안내는 **PR 1개**다. 최신 main의 이 브랜치에서 구현·독립 검증 뒤 PR을 생성하고, 정확 head의 CI·메인 R-2 원천 대조 뒤 사용자 개별 병합 승인을 받는다. 자동 병합은 하지 않는다. 정상 구현/검증 작업자는 한 작업 뒤 정산·종료한다. 목표 전체의 병합/결과 기록 뒤 신규 Opus Gardener·종료 점검을 수행한다. 별도 종료 문서 PR이 필요하면 그 PR도 개별 승인을 받는다. 다음 goal은 자동 시작하지 않는다.
+제품·직접 검증·사용 안내는 **PR 1개**다. 최신 main의 이 브랜치에서 구현·독립 검증 뒤 PR을 생성하고, 정확 head의 CI·메인 R-2 원천 대조 뒤 사용자 개별 병합 승인을 받는다. 자동 병합은 하지 않는다. 정상 구현/검증 작업자는 한 작업 뒤 정산·종료한다. 목표 전체의 병합/결과 기록 뒤 신규 Opus Gardener·종료 점검을 수행한다(이번 Gardener는 메인 결정으로 PR189 병합 전에 수행했다. 「종료 단계」 참고). 별도 종료 문서 PR이 필요하면 그 PR도 개별 승인을 받는다. 다음 goal은 자동 시작하지 않는다.
 
 PR189 최초 조회는 main `635865038e174ee5591530f6bd83e2e698e0b077`에 대해 DIRTY였다. merge `2711ebd`에서 CURRENT의 CodeMap 줄은 main, Management 줄은 이 목표를 보존했다. E/`main-merge-remerge-diff.txt`의 충돌 해결은 CURRENT 한 파일뿐이며 제품6·시험3 blob은 통합 전후 모두 같다(E/`main-merge-evidence.json`). main의 Architecture CI와 그 goal은 main 내용 그대로 들어왔다. **동일 제품 입력의 기존 독립 판정을 유지**하며 새 head에서 로컬 강 검증을 새로 수행했다고 표현하지 않는다. 승인 묶음은 새 head의 전체 CI와 fresh 병합 상태를 확인한 뒤 보낸다.
 
@@ -98,7 +128,7 @@ DB 복구가 모든 모니터링의 기술적 전제는 아니지만 기존 DB �
 
 ## 결과와 열린 사항
 
-- Run `run_6e57ab3c5f70`, 구현 Task `task_f04cba20f402`, Dispatch `ctx_99e361d0a8c2`. 구현자 handle `term_56de706c-51f0-4088-b5e0-2a89d035de9b`, incarnation `31c33bc7-7c7a-4712-b473-bb45af611dda`, runtime `120aecfa-9f94-4533-9594-48a22f1853ba`다. 현재 회신 주소는 `run:run_6e57ab3c5f70`이며 메인에 바인딩 직후 알렸다.
+- Run `run_6e57ab3c5f70`, 구현 Task `task_f04cba20f402`, Dispatch `ctx_99e361d0a8c2`. 구현자 handle `term_56de706c-51f0-4088-b5e0-2a89d035de9b`, incarnation `31c33bc7-7c7a-4712-b473-bb45af611dda`, runtime `120aecfa-9f94-4533-9594-48a22f1853ba`다. 당시 회신 주소는 `run:run_6e57ab3c5f70`이었으며 메인에 바인딩 직후 알렸다.
 - Sol 최초 기동은 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 GPT-6.1-Sol max, backend unknown이다. 새 vertical pane의 준비 `satisfied:true`, 선택창 없는 첫 화면을 확인하고 최초 Task를 연결했다. attach launch 모델 null은 실제 모델로 해석하지 않는다. receipt의 `input_accepted`와 `turn_started`를 모두 관측했다. 근거는 E/`sol-launch.json`, `sol-ready.json`, `sol-first-screen-*.json`, `sol-worker-start.json`이다.
 - 고정 계약은 E/`sol-contract-v1.md`, 입력은 E/`inputs/goal-v1.md` 및 `inputs-manifest.json`이다. 경로 검사 `contract-path-check.json`은 같은 cwd의 입력 18개/신규 출력 부모 4개 존재, exit0을 기록한다. live goal 상태 갱신은 이 고정 요구사항을 바꾸지 않는다.
 - 시작 출력 35개 hash 실패 0은 `user-artifacts-before.json`의 배열/오류 필드에서 읽은 값이다. 최초 manifest가 프로필 경로를 `05_Management/.verification/desktop-profile`로 잘못 지정했으므로 이 숫자는 출력만의 결과다. `electron/main.ts`의 실제 경로로 추가 관측한 `user-profile-before.json`은 73파일/34 hash 실패(다른 프로세스 사용)를 기록한다. 어떤 원본 build/앱 실행도 하기 전 발견했고 메인 `msg_41732fa4e7e9`로 즉시 정정 보고했다. Sol에는 `msg_d76a409366b9`로 v1 보존 경로를 명시 보충하고 기존 고정 계약/사본은 바꾸지 않았다. 새 실행이나 제품 통과 실적은 아니다.
@@ -127,3 +157,59 @@ Orca 1.4.220 ask/reply의 subject 옵션 부재는 현재 help 원문으로 확�
 - 기존 출력35/35와 비교 가능한 프로필39/39 hash가 같다. 프로필34개는 기준 hash 부재로 비교 불가이며 전체 동일성을 주장하지 않는다. Vitest의 원본 `node_modules/.vite` 결과 캐시 쓰기는 원문에 공개한 실행 부수효과다. 원본 build/설치/의존성 교체는 하지 않았다. 실제 저장 버튼, 사라진 ID·숨은 화면 포커스의 Electron 경로, Windows OS 배율125와 Chromium 접근성 트리는 미측정이다. 해당 상태/포커스 경로는 jsdom에서 확인했다.
 - Astra는 판정 전문과 실제 시험 diff, 숫자 원시·변이2종·화면3장·보존/정리 근거를 표본 대조했다(E/`astra-source-audit.json`). 검증자의 전수 분류를 대신하지 않는다. 이 대조에서 `final-classification.json.changedFiles` 첫 경로의 `05_Management`가 `5_Management`로 잘린 helper trim/slice 표기 오류를 발견했다. 원문은 보존하고 실제 Git13경로를 따로 대조해 5실패 귀속·902/897/5 수치에 영향 없음을 기록, 메인 `msg_b344e4decb2a`로 보고했다. 원문 말미의 표현은 **5실패·4파일** 원시 수와 구분한다.
 - 비차단 O1(상세 진입 시 복귀 바가 위로 밀림)과 O5(카드 접근 이름의 구분자)는 다음 사용성 후보로 남긴다. O2(returnPoint 주석), O3(미사용 export/focus key), O4(범위 밖 theme의 죽은 선택자)는 같은 영역을 다시 만질 때 참고한다. 이번 완료조건을 막는 결함으로 판정되지 않아 추가 구현·새 goal을 자동 시작하지 않는다.
+
+### PR189 승인과 병합
+
+- **승인 묶음:** head `94f9a1e`의 CI 4개가 모두 SUCCESS로 끝났다. code-rules 14:25:00Z, module-boundaries 14:25:42Z, architecture-tests 14:31:05Z, dotnet-tests 14:41:12Z다. 그 뒤 fresh 조회는 `MERGEABLE`/`CLEAN`이었다(E/`pr-approval-bundle-state.json`). 이 파일과 E/`pre-merge-fresh.json`에는 관측 시각 필드가 없다. origin/main `6358650`은 `gh` 출력에 없는 값이다. 14:30:06Z 리드 관측(E/`opus-lead-head-input-check.json`)과 14:42:43Z 승인 묶음 본문의 리드 진술(E/`approval-bundle-sent.json`)에 있다. 리드는 메인에 승인 묶음 `msg_21ac8995a09e`를 보냈다(E/`approval-bundle-sent.json`).
+- **R-2 보충:** 새 리드는 판정 원문 SHA256을 다시 계산해 일치를 확인했다. 검증 시험 커밋 `3cbe421`에서 head까지 `05_Management/frontend` diff는 0이다. 최종 suite 입력 17개 중 15개는 head blob과 같고, 2개(`styles.css`, `records/system-guide.json`)는 작업 트리의 CR만 다르다(E/`opus-lead-head-input-check.json`).
+- **승인 전달:** 메인 `msg_09f05dbcba5d`(2026-10-05T14:51:38Z)가 사용자 원문을 전달했다. 원문은 「대시보드 결정 응답: … 2) PR189 - 개발 기록 목록에서 전체 페이지 상세로 탐색 병합 승인 → A 이 head로 병합 승인 (head 94f9a1e5e8dd8b46e82c54174b64f4198e9bb0c8)」다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다. 승인은 이 head에만 해당한다(E/`merge-approval-relay.json`). 메인의 R-2 기록 원문은 메인 소유라 E에 없다. 이 goal은 같은 메시지의 「메인 확인(전달 직전)」(head·CLEAN·merge-tree)만 근거로 인용한다.
+- **병합 시도:** 병합 직전 fresh 조회는 head `94f9a1e`, `CLEAN`, CI 4/4 SUCCESS, 자동 병합 없음이었다(E/`pre-merge-fresh.json`). 병합 명령은 ask 규칙 `Bash(gh pr merge*)`의 사용자 확인 창에서 멈췄다. **메인이 확인 창을 닫았으며 사용자 거절이 아니다**(메인 `msg_0627c486562c`, E/`overnight-main-messages.json`). 승인과 head는 그대로 유효하다.
+- **밤사이 권한 경계:** 메인 `msg_73cc8b553053`(E/`overnight-main-messages.json`)에 따라 Opus 리드의 `gh pr create`·`gh pr merge`는 사용자 확인 창을 띄운다. 밤에는 commit과 push까지만 하고 PR 생성·병합은 다음 세션에 사용자가 직접 확인한다. 확인 창을 우회하는 다른 수단(API 직접 호출, 설정 변경)은 쓰지 않는다.
+- **재개 세션의 첫 병합 시도(2026-10-06):** 메인 신호 `msg_f799705f5003`(E/`resume-inbox-1.json`) 뒤 06:09:06Z fresh 조회는 head `94f9a1e`, `MERGEABLE`/`CLEAN`, CI 4/4 SUCCESS, 자동 병합 없음이었다(E/`resume-pre-merge-fresh.json`·`.time`). `gh pr merge 189 --merge --match-head-commit 94f9a1e…`는 「GraphQL: Base branch was modified」 exit 1로 실패했고 병합되지 않았다(E/`resume-merge-attempt-1.txt`). PR188이 06:18:24Z에 먼저 병합돼 main이 `064cbd0`으로 움직인 때문이다.
+- **병합(2026-10-06):** 다시 조회한 PR189는 head `94f9a1e` 그대로 `MERGEABLE`/`CLEAN`이었다. 로컬 `git merge-tree`(origin/main `064cbd0` + `94f9a1e`)도 충돌이 없었다(E/`resume-pre-merge-fresh-2.json`·`.time`). `DIRTY`가 아니므로 `msg_053edb4e968d`의 승인 무효 조건에 해당하지 않는다. 같은 명령을 한 번 다시 실행해 exit 0이었다(E/`resume-merge-attempt-2.txt`). PR189는 06:22:59Z에 병합 commit `a90426a4eca424bfbc059d16f85f3f1d1f772dfd`로 MERGED됐다. 병합 상태 4필드는 E/`resume-pr189-merged.json`에 있다. 병합 commit `a90426a`의 두 부모는 `064cbd0`과 `94f9a1e`이고, `git merge-base --is-ancestor 94f9a1e a90426a`는 exit 0이었다(E/`resume-pr189-ancestry.txt`). 원격 제품 branch는 병합 뒤 원격에 없다. 06:54:54Z `git ls-remote --heads`에 종료 기록 branch만 나왔다(E/`closeout-delta-review-audit-ls-remote.txt`). 누가 지웠는지의 원시는 없다. 두 명령 모두 실행됐으며, 확인 창의 표시와 승인 화면은 리드 쪽 원시가 없다. PR189 CI 4/4는 `064cbd0` 이전 base에서 돈 결과다. main push로 도는 workflow는 `dotnet-tests` 하나다. `a90426a`의 그 실행은 06:27:31Z 조회 때 진행 중이었다(E/`resume-main-ci-after-merge.json`).
+
+### 리드 교체 인계 기록
+
+- **교체 원천:** 메인 `msg_5ae22b5ca4ae`(2026-10-05T14:23:54Z)의 사용자 결정 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 교체 시점 앞당기기 → A 작업자가 빈 시점에 바로 교체」. 이전 목표 종료 후 교체 시점을 대체한다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다.
+- **인계 시점 상태:** 이전 Codex 리드는 head `94f9a1e`(원격 push 완료), PR189 OPEN·`MERGEABLE`/`UNSTABLE`, CI 네 개 진행 중 상태로 인계했다(E/`pr-at-lead-handoff.json`). 구현 Sol과 독립 Opus는 모두 쓰기 종료·release·정확 pane close·Delivery ACK를 마쳐 살아 있는 작업자가 없었다. 미커밋은 이 goal 한 파일이었다(인계 메시지 `msg_9c1c83ef921d`, E/`lead-handoff-sent.json`).
+- **새 리드 진입:** 메인 `msg_a8dced49f427`(2026-10-05T14:27:14Z, 원문 E/`opus-lead-entry-message.json`)로 Opus 리드가 진입했다. handle `term_73de6775-fe1a-4d84-b972-485d21054a67`, 최초 명령은 메인이 띄운 `claude-opus-5-5`, 화면 표시 `Opus 5.5 ⚡xhigh`, backend unknown이다. `run-use --id run_6e57ab3c5f70`이 takeover 없이 성공했다(E/`opus-lead-run-use.json`). READY는 `msg_bd0d7dd8643a`다(E/`opus-lead-ready-sent.json`). 인계 기록과 실제 상태의 차이는 그 사이 CI 두 개가 SUCCESS로 끝난 것뿐이었다.
+- **인계 기록의 커밋 위치:** 이 인계 기록은 PR189 head를 흔들지 않도록 제품 branch에 커밋하지 않았다. 종료 기록 branch에서 처음 커밋한다.
+- **오발송 정정:** 새 리드가 메인 회신 명령에 남은 시험 줄 때문에 태그 없는 subject `x` 메시지 `msg_3d1d54589856`을 자기 Run 주소로 보냈다. 받는 사람은 리드 자신뿐이었다. 메인에 `msg_050fd7ac1f4a`로 정정 보고했다(E/`stray-message-report.json`). 그 메시지는 `delivery_b34db721b145`로 리드에게 돌아왔고(E/`stray-message-delivery.json`), 지시로 처리하지 않고 ack했다(E/`gardener-inbox-1.json`의 `acknowledged`). 리드 실수의 첫 발생으로 이 goal에만 기록한다.
+- **필수 원천:** `review/verdict.md` 전문(23249 bytes, SHA256 `C3B93409B4381E138BEAB62572644A14C6D3FC230698DEC253F7D793F2009994`), `astra-source-audit.json`, `review/raw/final-full-vitest.json`, `review/electron/summary.json`, `main-merge-evidence.json`, `lead-immediate-handoff-decision.json`. 완료조건은 이 goal과 고정 `inputs/goal-review-v1.md`, 검증 계약은 `review-contract-v1.md`와 보충1이다.
+
+### 종료 단계
+
+메인 `msg_625afc58eb42`(2026-10-05T14:58:54Z)는 사용자 원문 「PR로 체크포인트만 잘 만들어 놓으면 다음 작업 진행해도 되니까 할 수 있는 부분까지 해봐」를 전달했다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다. 메인 `msg_0627c486562c`는 PR189 head가 고정이므로 Gardener를 병합 전에 돌려도 된다고 했다(두 원문 E/`overnight-main-messages.json`). **이는 ORCA 「목표 종료 Gardener」의 「모든 PR 병합과 결과 기록 뒤」 순서에 대한 메인 결정의 예외다.** 그래서 Gardener 입력에는 PR189 병합 결과가 없다. 병합 뒤 추가 점검이 필요한지는 메인이 정한다. 종료 기록은 PR189 branch 위에 쌓고, 종료 기록 PR은 PR189 병합 뒤 최신 main 기준으로 연다.
+
+- **Gardener:** 신규 `claude-opus-5-5` 읽기 전용, 보고서 E/`gardener-report.md` 한 파일이다. 이 goal의 독립 결함·CI 실패·새 경고 억제·임시 우회·드리프트 중 Management TS/frontend 소유분을 본다. 반복 빈도 순 후보 최대 2건과 검사화 방법만 제안한다. 결과는 아래 「Gardener 결과」에 적는다.
+- **종료 기록 문서 실사:** 이 종료 기록 diff는 문서 변경이라 신규 Opus 문서 실사를 거친다. 첫 실사 `task_f55e190ae321` / `ctx_802a999a9f88`은 head `a606456`을 **차단**으로 판정했다(done `msg_cc2162007ab6`, E/`closeout-review-inbox-2.json`, 판정 E/`closeout-review/verdict.md` SHA256 `5d485ee5…`). 차단은 D1(원시 없는 reclaimable 문장)과 D2(리드 맥락 메모와 실제 CURRENT 변경 불일치)다. 비차단 D3~D8과 첫 문서 실사의 관찰 O1·O7을 함께 고쳤다. D1은 문장을 고치고 원시를 보존했고, D2는 E/`opus-lead-context.md`에 계획 변경과 완료 갱신을 추가했다. 첫 문서 실사의 관찰 O2(원시 꼬리)·O3(재개 지점 길이)·O4(CURRENT 괄호)·O5(이전 단계 이름 폭)는 다음 세션 PR 준비 때 다시 본다. 이 번호는 「재개 지점」의 제품 검증 관찰 O1~O5와 다른 목록이다. 작업자 정산은 release `retained`/`external_terminal`, 기동 때 incarnation(E/`closeout-review-start.json`)과 같은지 확인, close `ptyKilled true`다(E/`closeout-review-release.json`, `closeout-review-before-close.json`, `closeout-review-close.json`).
+- **정정 재실사:** 신규 Opus `task_fc47fd96f4a0` / `ctx_6c473cd302c7`이 정정 head `57d0cc0`을 **통과(차단 없음)**로 판정했다(done `msg_cd47eddfa964`, E/`closeout-recheck-inbox-2.json`, 판정 E/`closeout-recheck/verdict.md` SHA256 `17a48e095b00ccbc585fb3e8db14b1b6f4de1a39107e2abf3cc7eb9ef77e96a1`). D1·D2와 D3~D8, 첫 문서 실사 O1·O7이 해소됐다. 비차단 R1~R4(원시와 정리본 구분, 회수 대상 조회의 명령 부재, incarnation 비교 근거 미인용, 관찰 번호 겹침)와 관찰 P2·P3은 리드가 통과 뒤 이 기록과 메모·PR 본문에서 보완했다. 관찰 P1(새로 인용한 원시의 끝 꼬리)은 보완하지 않았고 첫 문서 실사 O2 처리로 넘겼다(아래 「세션 마무리와 재개」). 이 보완은 판정에 따른 리드의 기록 정리이며 별도 독립 재검증 실적이 아니다. 정산은 release `retained`/`external_terminal`, 기동 때와 같은 incarnation `ba2c7bb2…`, close `ptyKilled true`다(E/`closeout-recheck-start.json`, `closeout-recheck-release.json`, `closeout-recheck-before-close.json`, `closeout-recheck-close.json`).
+- **CURRENT:** Management 경로 줄의 branch를 종료 기록 branch로 바꿨다. 표의 goal 링크는 같은 goal이라 그대로 둔다. 제품·테스트·BACKLOG·README는 이 종료 기록에서 바꾸지 않는다.
+- 새 Sol은 띄우지 않는다. 승인 범위 밖 새 goal은 구현하지 않는다.
+
+#### Gardener 결과
+
+신규 Opus `task_c36f86e6fa47` / `ctx_6ff80e2a81ec`의 읽기 전용 Gardener가 done `msg_856200bca7d0`(2026-10-05T16:22:17Z, outcome succeeded, E/`gardener-inbox-3.json`)으로 끝났다.
+
+- **기동과 정산:** 리드 pane 아래 vertical split `claude --model claude-opus-5-5`로 열었다(명령 원문은 계약 E/`gardener-task.txt` 3행). 첫 화면은 선택창 없이 `Opus 5.5 with xhigh effort`였고 backend는 unknown이다. handle `term_5d490fe7-205e-4e79-8b28-4c3f43c824da`, incarnation `76cad6d5-8316-418c-80c2-fd42039e09e3`이다. `worker-start --terminal`의 `input_accepted`와 turn 시작을 관측했다(E/`gardener-launch.json`, `gardener-ready.json`, `gardener-first-screen-read.json`, `gardener-start.json`). done 원문 대조 뒤 release는 `retained`/`external_terminal`이었다. 같은 incarnation의 완료 화면을 확인하고 pane을 닫았다(`ptyKilled true`). 닫은 뒤 terminal list에 Gardener handle이 없다(E/`gardener-release.json`, `gardener-before-close.json`, `gardener-final-screen.json`, `gardener-close.json`, `gardener-final-terminals.json`). 리드는 Gardener 직후에도 reclaimable을 조회했지만 그 원시를 남기지 않았다. 문서 실사 작업자까지 닫은 뒤 다시 조회한 결과를 E/`closeout-review-reclaimable-after.json`(시각 `closeout-review-reclaimable-after.time`)에 보존했다. 이 원시에는 명령 원문이 없다. 출력 형식은 아래 마지막 조회(`worker-list --terminal-state reclaimable`)와 같다. 읽은 필드는 `workers` 0건이고, `counts`에는 reclaimable이 없고 retained 4다. 재실사 작업자까지 닫은 뒤의 마지막 조회는 명령 원문·시각·exit와 함께 E/`final-reclaimable-check.json`에 있다(`reclaimableWorkers` 0, retained 5).
+- **입력과 쓰기:** 계약 E/`gardener-task.txt`, 입력 manifest E/`gardener-inputs.json`(53개, SHA256 `010fb8e4…`)이다. 종료 뒤 같은 스크립트로 다시 해시해 입력 53개가 모두 그대로임을 확인했다(E/`gardener-inputs-after.json`). 쓰기는 보고서 E/`gardener-report.md` 한 파일이다(45113 bytes, SHA256 `df277f558c5902e6237b578bf8c3e48d11371b643cca98b2a8f877c3c62f8b92`). Git 작업 트리 변경이 없었다는 것은 Gardener 완료 보고 기준이다.
+- **후보 1 — 검증 실행 helper를 회차마다 다시 써서 같은 잠재 결함이 재발함:** PS5.1 배열이 WQL 필터로 들어가 `0x80041017`로 멈춘 결함이 이전 시스템 카드 목표와 이번 목표에서 두 번 났다. 이번 목표 안에서도 검증 helper의 첫 시도 결함이 4건이었다(결과 파일 덮어씀, Electron attempt-1, WQL, porcelain 경로 잘림). 제안은 소유 TEMP 정리·프로세스 identity·사용자 산출물 보존 목록을 정본 helper 하나로 묶고, Windows fixture 시험으로 단정하는 것이다.
+- **후보 2 — Management vitest가 CI 밖임:** 워크플로 4개 모두 vitest를 실행하지 않는다. 이번 목표에서 제품 변경이 만든 시험 드리프트 1건(`catalog-display-names`)은 검증자의 직접 영향 명령에서만 드러났다. 기존 5실패는 두 목표 연속으로 main에 남았는데 PR189 CI는 4/4 SUCCESS였다. 제안은 Management `vitest run`을 warning 파일럿 job으로 두고, 기준선 5건 밖의 새 실패 이름만 진단하는 것이다.
+- **두 번째 발생:** 두 후보 모두 이전 목표 Gardener가 제안한 유형이 다시 관측된 두 번째 발생이다. CODE 「교정 층과 반복 규칙」의 반복 규칙 검토 시점에 해당한다. 채택은 메인을 거친 사용자 결정이며, 구현은 일반 목표 루프로 한다. 이번 목표에서는 구현하지 않는다.
+- **종료 기록 사실 불일치 F1·F2(경미):** F1은 origin/main `6358650`의 인용 원천이 그 값을 담지 않은 파일이었던 것이다. F2는 이미 끝난 즉시 교체를 R-8 미래형으로 쓴 것이다. 두 곳 모두 위 「PR189 승인과 병합」과 「적용 중인 사용자 결정」에서 정정했다. 정정의 판정은 종료 기록 문서 실사가 맡는다.
+- **억제·완화:** PR189 전체 diff(13파일)의 빈 줄 제외 추가 956줄에서 지정 패턴의 새 경고 억제·설정 완화는 0건이다. 패턴과 범위 안의 결과이며 전수 재감사가 아니다. PR189 CI 로그는 E에 없어 CI 경고는 미측정이다.
+- **미대조 4건:** 원시가 E에 없어 대조하지 못한 주장이 4건이다. 진입 메시지 `msg_a8dced49f427` 원문, 운영 지시 `msg_2c7fd80be0a5` 원문, 오발송 ack, 메인 R-2 기록이다. 위반으로 세지 않는다. Gardener 입력에는 없던 앞의 세 원시를 리드가 E/`opus-lead-entry-message.json`, `mailbox-types-instruction.json`, `stray-message-delivery.json`·`gardener-inbox-1.json`으로 보존했다. 메인 R-2 기록은 메인 소유라 이 폴더에 없다.
+- **후보로 고르지 않은 관찰:** 작업 트리 혼합 EOL로 인한 거짓 hash 불일치는 BACKLOG `contract-context-check` 근거로 이미 등록돼 있다. `00_Document/FEATURE_MAP.md`에 Management 구간이 없는 점은 이전 목표 Gardener에 이은 두 번째 관찰이다. `05_Management/README.md` 문서 지도에 이 goal이 없는 점은 이번 goal의 관찰이다. 문서 지도 갱신은 다음 계획 판단으로 넘기며 이 종료 기록 PR에서 바꾸지 않는다.
+- **리드 표본 대조:** 리드가 원천을 직접 다시 확인한 표본은 넷이다. WQL 오류 문자열은 두 원시 파일 모두에 있었다. 워크플로 4개의 `vitest|npm test` 일치는 0건이었다. F1 파일에 `6358650`이 없었다. F2 문장은 실제 69행에 있었다. 네 표본 모두 보고서와 일치했다. 이 대조는 표본이며 Gardener 점검 전체의 재수행이 아니다.
+
+### 세션 마무리와 재개
+
+- **세션 마무리(2026-10-05):** 메인 `msg_fa6acb4ad374`(22:33:57Z, E/`session-wrapup-instruction.json`)가 사용자 원문 「일단 나중에 더 진행해보자, 현재 멈춘 기준으로 각 세션들 재개포인트 잡아주고 전부 마무리하자 / 나중에 새로운 세션에서 이어서 하지 뭐」를 전달해 멈췄다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다. 멈춘 시점의 22:34:40Z 조회는 PR189 OPEN·head `94f9a1e`·`CLEAN`·CI 4/4 SUCCESS였다(E/`wrapup-pr189-state.json`). 마무리 commit `a5be9e5`를 push했다.
+- **재개 세션 진입(2026-10-06):** 메인 `msg_405751374896`(06:05:35Z, E/`resume-entry-inbox-all.json`)으로 새 Opus 리드가 진입했다. 메인은 사용자 원문 둘을 전달했다. 리드 모델은 「대시보드 결정 응답: 1) 모델 라우팅 - 리드 Opus 전환을 다섯 파트로 넓히기 → A 다섯 리드 모두 Opus로 (각 목표 끝날 때)」다. 이번 세션 방향은 「오케이 후속 계획은 일단 현재 해야하는 작업들 먼저 진행하고, 나중에 계획 한번에 몰아서 검토하자.」다. 메인 전달이며 사용자 직접 입력으로 격상하지 않는다.
+- **새 리드와 Run:** handle `term_0b302eb4-e6d6-4bb0-a6c4-fd24ada2dade`, 화면 표시 `Opus 5.5 ⚡xhigh`(E/`resume-lead-screen.json`), backend unknown이다. 최초 실행 명령은 메인이 띄워 리드가 직접 보지 못했다. 새 Run은 `run_da23a6159c93`이다(E/`resume-run-create.json`). 06:06:31Z fresh 조회는 head `a5be9e5` 원격 일치, 미커밋 0, PR189 OPEN·`CLEAN`·CI 4/4, 종료 기록 PR 없음이었다(E/`resume-state-check.json`). 재개 기록과 차이가 없었다. READY는 `msg_4ea8295de52c`(E/`resume-ready-sent.json`), 병합 결과 보고는 `msg_3e27ddb2ec0b`(E/`resume-merge-report-sent.json`)다.
+- **main 통합:** origin/main `a90426a`를 merge commit `bd7a2df`로 통합했다. 수동 충돌 해결은 없다. 두 부모의 `git merge-tree --write-tree` 결과가 `bd7a2df^{tree}`와 같은 `ea8375d0`이다(E/`resume-main-merge-check.txt`). CURRENT는 main의 Rules 줄(PR188)과 이 branch의 Management 줄을 함께 보존한다.
+- **첫 문서 실사 관찰 O2~O5 처리:** O3은 「재개 지점」에 현재 상태·남은 순서·적용 결정만 남기고, 「PR189 승인과 병합」·「리드 교체 인계 기록」·「종료 단계」를 이 절 위로 옮겨 해소했다. O4는 CURRENT의 Management 줄 괄호를 「종료 기록」으로 줄여 해소했다. O2(원시 끝의 `[exited with code 0]`)는 과거 원시라 고치지 않는다. 이 goal이 인용한 원시 중 꼬리 때문에 `JSON.parse`가 실패하는 것은 8개다: `post-report-inbox-1.json`, `mailbox-types-instruction.json`, `merge-approval-relay.json`, `stray-message-delivery.json`, `gardener-inbox-1.json`, `gardener-inbox-3.json`, `closeout-review-inbox-2.json`, `closeout-recheck-inbox-2.json`. 첫 문서 실사가 센 5개에 정정 재실사 관찰 P1의 `closeout-review-inbox-2.json`과 이후 새로 인용한 `closeout-recheck-inbox-2.json`·`post-report-inbox-1.json`이 더해진 수다(E/`closeout-delta-review/verdict.md` V1). 이번 세션 원시는 대기 출력에서 JSON만 떼어 저장했다. O5(진척 단계 5·8·9행의 이름 폭)는 바뀌지 않은 과거 줄이라 고치지 않으며, 다음 goal부터 30폭 안의 이름을 쓴다.
+- **`msg_f1f757635ac1`의 결정(재개 지점에서 옮김):** 메인 `msg_f1f757635ac1`(2026-10-05T17:05:36Z, E/`post-report-inbox-1.json`)의 결정은 다섯이다. 통과 뒤 보완 `6c17cad`는 독립 판정 없이 병합 승인에 올리지 않는다. PR189가 head `94f9a1e` 그대로 병합되면 추가 Gardener는 열지 않고, head가 바뀌거나 충돌 해결이 필요하면 메인에 다시 올린다. Gardener 후보 1·2는 메인이 현황판에 사용자 결정으로 올리며 채택 전에는 구현하지 않는다. 첫 문서 실사 done 본문의 쓰기 종료 시각 오기는 결함으로 세지 않는다. 리드의 상태 영향 없는 실패 호출 셋은 기록만 둔다. **PR189는 head `94f9a1e` 그대로 병합됐으므로 추가 Gardener는 열지 않는다.** 지금도 적용되는 1·3항은 「재개 지점」의 적용 중인 메인 결정에 있다.
+- **PR194 생성:** 리드가 실행 직전 메인에 알렸고(`msg_ec0f23be3ba1`, E/`resume-pr-create-notice-sent.json`), 메인 신호 `msg_b842ab3452ef`(E/`resume-inbox-2.json`) 뒤 `gh pr create`를 실행했다. PR194는 2026-10-06T06:33:26Z에 head `cda7075`로 열렸다(E/`resume-pr194-create.txt`, `resume-pr194-created.json`). 그 head의 CI 4개는 모두 SUCCESS였고 마지막 dotnet-tests는 06:57:06Z에 끝났다(E/`resume-pr194-ci-cda7075.json`).
+- **좁힌 재실사:** 신규 Opus `task_49bd78dd0359` / `ctx_8ca9989b66f3`이 head `cda7075`의 `57d0cc0` 이후 delta를 **통과(차단 없음)**로 판정했다. 비차단은 V1~V3, 관찰은 Q1~Q4다(done `msg_05afc4302973`, E/`closeout-delta-review-inbox-2.json`, 판정 E/`closeout-delta-review/verdict.md` SHA256 `7d0dbeef888f65b0506aa19694e8f3b80ee5fc95a8be40cf7308eb6059c4667e`). 계약은 E/`closeout-delta-review-task.txt`, 입력 manifest는 E/`closeout-delta-review-inputs.json`(입력 100개, 누락 0, exit 0)이다. 리드 pane 아래 vertical split `claude --model claude-opus-5-5`로 열었고, 첫 화면은 선택창 없이 `Opus 5.5 with xhigh effort`였으며 backend는 unknown이다(E/`closeout-delta-review-launch.json`, `closeout-delta-review-ready.json`, `closeout-delta-review-first-screen.json`, `closeout-delta-review-start.json`). 정산은 release `retained`/`external_terminal`, 기동 때와 같은 incarnation `910f94ef…`, close `ptyKilled true`, terminal list에 handle 없음, reclaimable 0이다(E/`closeout-delta-review-show-start.json`, `closeout-delta-review-release.json`, `closeout-delta-review-before-close.json`, `closeout-delta-review-close.json`, `closeout-delta-review-final-terminals.json`, `closeout-delta-review-reclaimable-after.json`). 검증자는 계약 밖 실행 셋(허용 목록 밖 `git merge-tree` 1회, 저장소 밖 현황판 읽기 1회, 임시 비교 파일 9개 생성 뒤 삭제)을 판정에 스스로 밝혔다. 메인은 보고와 실제가 일치해 판정 효력에 영향이 없다고 봤다(`msg_313ea6d96151`). 리드는 판정 주장 4개를 원천에서 다시 대조해 모두 일치함을 확인했다.
+- **V3 처리 결정:** V3는 cda7075의 「재개 지점」이 PR194 생성 전 상태로 고정돼, 그대로 병합되면 main의 goal이 낡는다는 지적이다. 리드는 메인에 A(새 commit으로 조건부 종료 문장과 V1·V2·Q 반영, 새 CI·좁힌 재실사)와 B(그대로 병합, 결과는 별도 PR)를 올렸다(`msg_4624bc9755b5`, E/`closeout-delta-review-report-sent.json`). 먼저 type `decision_gate`로 보낸 사본은 `sender_not_assignee`로 거절됐지만 `msg_59ae0d345de4`로 메인에 도착했다(E/`closeout-delta-review-report-decision-gate-error.json`, 메인 회신). 메인 `msg_313ea6d96151`(06:56:17Z, E/`resume-inbox-3.json`)이 A로 정했다. V3는 goal 종료 기록의 범위 안 결함이라 메인이 정하며 사용자 범위 결정 대상이 아니라는 이유다. 이 기록 commit이 V1·V2·V3·Q3·Q4를 반영한다. Q1·Q2는 E/`resume-lead-context.md` 끝 절에서 보완했다.

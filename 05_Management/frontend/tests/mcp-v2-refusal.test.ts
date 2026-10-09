@@ -55,6 +55,12 @@ const ARG_CASES: ArgCase[] = [
   { label: 'id number', tool: 'get_system', args: { id: 12345 }, sentinels: [] },
   { label: 'tool-specific foreign arg', tool: 'get_system', args: { id: 'sys-alpha', limit: 5 }, sentinels: [] },
   { label: 'every field invalid + unknown key', tool: 'search_records', args: { query: 1e300, area: ['SENTINEL_AREA_ARR'], type: 'SENTINEL_T', systemId: '', limit: 1e300, offset: -1e300, expectedHash: 'SENTINEL_H', SENTINEL_EXTRA: 'SENTINEL_EXTRAV' }, sentinels: ['SENTINEL_'] },
+  // Design 「도구 규칙」 input bounds of the three new tools.
+  { label: 'section path key', tool: 'read_source_section', args: { id: 'src-a', path: 'C:\\SENTINEL_SECTION_PATH\\a.md' }, sentinels: ['SENTINEL_SECTION_PATH'] },
+  { label: 'section offset 262,145', tool: 'read_source_section', args: { id: 'src-a', offset: 262_145 }, sentinels: [] },
+  { label: 'section hash sentinel', tool: 'read_source_section', args: { id: 'src-a', offset: 1, expectedSectionHash: 'SENTINEL_SECTION_HASH' }, sentinels: ['SENTINEL_SECTION_HASH'] },
+  { label: 'card list area key', tool: 'list_guide_cards', args: { area: 'SENTINEL_CARD_AREA' }, sentinels: ['SENTINEL_CARD_AREA'] },
+  { label: 'card id 129 units', tool: 'get_guide_card', args: { id: `SENTINEL_CARD_${'c'.repeat(129 - 14)}` }, sentinels: ['SENTINEL_CARD'] },
   { label: 'arguments array (raw)', tool: 'list_systems', args: ['SENTINEL_ARGS_ARRAY'], sentinels: ['SENTINEL_ARGS_ARRAY'], raw: true },
   { label: 'arguments string (raw)', tool: 'list_systems', args: 'SENTINEL_ARGS_STRING', sentinels: ['SENTINEL_ARGS_STRING'], raw: true },
 ];
@@ -72,6 +78,8 @@ const NAME_CASES: Array<{ label: string; name: string; sentinels: string[] }> = 
   { label: 'constructor', name: 'constructor', sentinels: ['constructor'] },
   { label: 'near-miss case', name: 'LIST_SYSTEMS', sentinels: ['LIST_SYSTEMS'] },
   { label: 'near-miss space', name: ' list_systems', sentinels: [' list_systems'] },
+  { label: 'near-miss new tool', name: 'read_source', sentinels: ['read_source'] },
+  { label: 'near-miss new tool case', name: 'GET_GUIDE_CARD', sentinels: ['GET_GUIDE_CARD'] },
 ];
 const NON_STRING_NAMES: Array<{ label: string; params: unknown; sentinels: string[] }> = [
   { label: 'name number', params: { name: 424242, arguments: {} }, sentinels: ['424242'] },
@@ -125,12 +133,17 @@ async function runCases(proc: StdioProcess, counted: boolean): Promise<{ args: M
       expect(measured.entered, `${label}: handler entered`).toBe(0);
       expect(measured.reads, `${label}: readSnapshot`).toBe(0);
       expect(measured.opens, `${label}: file open`).toBe(0);
+      expect(now.readGuideCalls - baseline.readGuideCalls, `${label}: readGuide`).toBe(0);
+      expect(now.readSourceSectionCalls - baseline.readSourceSectionCalls, `${label}: readSourceSection`).toBe(0);
     }
     return measured;
   };
   const args: Measured[] = [];
   for (const item of ARG_CASES) {
     const exchange = item.raw ? await proc.raw({ name: item.tool, arguments: item.args }) : await proc.call(item.tool, item.args);
+    // Every case names a registered tool: its refusal comes from the input schema, not the name gate.
+    const message = exchange.thrown?.message ?? (exchange.responseLine?.json?.error as JsonObject | undefined)?.message;
+    expect(message, `${item.label}: refused as an unknown tool name`).not.toBe('Unknown tool name.');
     args.push(await measure(item.label, exchange, item.sentinels));
   }
   const names: Measured[] = [];
