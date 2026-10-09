@@ -20,7 +20,7 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
 
 입력은 `message`(원시 Orca message 객체)와 `expected`(coordinator가 현재 receipt/worker-show로 별도 확인한 `fromHandle`, `taskId`, `dispatchId`, `tag`)다. payload는 JSON 문자열이나 객체를 그대로 제공한다. identity를 메시지에서 유도하지 않는다. subject/body의 누락·null·공백은 빈 텍스트이고 비문자 값은 입력 오류다. 빈 heartbeat의 `alive` 표식, 내용 있는 메시지의 태그와 지원 문맥은 [ORCA 정본](../00_Document/operations/ORCA.md#dispatch-message-policy)을 따른다.
 
-Orca1.4.218 공식 blocking ask의 `Question` 예외를 쓸 때만 coordinator가 질문 receipt에서 확인한 `expected.officialAsk = { messageId, cliVersion: '1.4.218' }`를 추가한다. 실제 id/thread/dispatch 발신/payload.question도 대조하지만 **일반 send가 모양을 흉내낼 수 있으므로** 이 근거를 메시지에서 만들지 않는다. 근거 부재·지원 버전 변경이면 예외를 열지 않고 현재 CLI와 사람 대조로 돌아간다. body 태그와 세 identity 일치는 계속 필수다.
+공식 blocking ask의 `Question` 예외를 쓸 때만 coordinator가 확인한 `expected.officialAsk = { messageId, cliVersion, askHelp, replyHelp }`를 추가한다. messageId는 질문 receipt ID, cliVersion은 실제 버전, askHelp·replyHelp는 같은 CLI의 ask/reply help 원문이다. 실제 id/thread/dispatch 발신/payload.question도 대조하지만 **일반 send가 모양을 흉내낼 수 있으므로** 이 근거를 메시지에서 만들지 않는다. 근거가 없거나 형식이 틀리거나 help에 subject 옵션이 있으면 예외를 열지 않고 사람 대조로 돌아간다. body 태그와 세 identity 일치는 계속 필수다.
 
 결과는 `{ status, exitCode, exception, diagnostics }`이며 진단마다 `{ code, path, message, repair }`가 있다. exit0 `allowed`, exit1 `policy-violation`, exit2 `input-error`(형식/필수 identity/지원 문맥·파일/JSON/도구 실패)로 구분한다. stdout JSON은 기계 소비용이고 수정·보고 안내를 담는다. 파일/네트워크 쓰기·메시지 전송·ack·Orca 수명주기 변경·프로세스 강제 종료는 없다.
 
