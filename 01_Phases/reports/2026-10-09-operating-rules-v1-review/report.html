@@ -56,7 +56,7 @@ pre.diff .ctx{color:var(--muted)}
 ol.proc li,ul li{margin:4px 0}
 .mark{color:var(--amber);font-weight:600;white-space:nowrap}
 @media (max-width:800px){.wrap{padding:0 16px 64px}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.hero h1{font-size:30px}section h2{font-size:24px}}
-@media print{body{background:#fff;color:#000}nav.toc{display:none}.table-wrap{overflow:visible}}
+@media print{:root{--bg:#f3f5f0;--surface:#fff;--raised:#eaf0e9;--text:#182e36;--muted:#536770;--line:#cbd5d1;--accent:#23653b;--blue:#155d93;--amber:#805307;--red:#9b2d2d;--add-bg:#e2f4e6;--del-bg:#fbe5e3;--code-bg:#f4f6f3}body{background:#fff;color:#000}nav.toc{display:none}.table-wrap{overflow:visible}}
 </style>
 </head>
 <body>
@@ -359,7 +359,7 @@ ol.proc li,ul li{margin:4px 0}
 </tbody></table></div>
 <h3>V1.x 후보</h3>
 <div class="table-wrap"><table><thead><tr><th>후보</th><th>내용</th><th>근거</th></tr></thead><tbody>
-<tr><td>Astra 배정의 Sol 전환</td><td>Astra 배정이 capacity로 오래 막힐 때 Sol로 바꿀지 정합니다. V1.0은 재시도만 합니다.</td><td>메인 판단 M7, 지금은 불수용</td></tr>
+<tr><td>Astra 배정의 Sol 전환</td><td>Astra 배정이 capacity로 오래 막힐 때 Sol로 바꿀지 정합니다. V1.0은 재시도만 합니다.</td><td>메인 판단 <code>msg_bd7e0409e4c5</code>, 지금은 불수용</td></tr>
 <tr><td>후보 도착 검사 범위 확대</td><td>V1.0은 지정한 goal에만 검사를 돌립니다. 다른 파트 goal은 후보 줄 형식이 달라 위반이 많을 것으로 봅니다.</td><td>goal 위험 3</td></tr>
 <tr><td>수신 helper의 기계 강제</td><td>메시지 수신 대조는 지금 문서 운영 지침입니다. hook이나 CI로 강제할지 정합니다.</td><td>BACKLOG <code>receive-helper-review-followup</code> · <code>operating-reference-maintenance</code></td></tr>
 <tr><td>작업자 생존 확인 도구</td><td>heartbeat 간격 이탈을 도구로 잡습니다. 이번 goal에서도 343초와 302초 간격이 있었습니다.</td><td>BACKLOG <code>worker-liveness-tool-check</code></td></tr>
