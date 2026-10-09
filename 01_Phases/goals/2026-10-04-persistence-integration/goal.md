@@ -567,8 +567,21 @@
   - 12:27:05 KST 확인 한 줄의 결과는 machine_name YYH_Desktop, instance_name SQLEXPRESS, is_sysadmin 1, original_login MicrosoftAccount 형식, test_db_id NULL이다. 원인은 MachineName 대소문자로 확정됐다. 권한 변경은 필요 없고 DB는 만들어지지 않았다.
   - 정지: 12:29:26 ⑬ Stopped·Manual, 12:29:46 ⑭ 0, 12:30:24 ⑮ 기록 종료. 메인은 03:30:42Z에 sc query STOPPED를 확인하고 D: 꺼내기를 지시했다.
   - 같은 종류 함정 확인(리드 `msg_24b88143299f`): 실패하는 비교는 937행 하나다. ORIGINAL_LOGIN은 제품이 기록만 한다. 10-05 관측 계획의 「OriginalLogin 기대값 YYH_DESKTOP\bass1」은 Microsoft 계정 로그인이라 이름이 다르므로, B2 판정은 같은 문서의 SID 이진값 비교로 한다. A로 가면 수정 계약에 OS·SQL이 돌려주는 이름의 대소문자 구분 비교 전수를 넣는다.
-- **다음 할 일:** D: 꺼내기 결과와 사용자 A/B 결정을 기다린다. 예전 계획(실행 중 B2 대조)은 A2 멈춤으로 보류다. 사용자는 현황판 항목 `core-card-v3-run`으로 ⑩에서 「B2 끝」이나 「멈춤」을 답하고, 메인이 즉시 리드에 전한다. 리드는 B2 기록을 읽어 대조 결과를 status로 보낸다. 실행이 끝나면 정산 기록에 O-v3-1을 닫는다.
-- **사용자 손·결정 대기:** 카드 v3 실행. 주간 사용량 99%(사용자가 초기화권 사용 의사 밝힘).
+- **3회차 결정(메인 `msg_54aa206a25a3`, 03:33:21Z):** 사용자 원문 「OK A로 고쳐서 3회차 가자」(메인 전달, 격상하지 않음). 리드 A안대로 간다.
+  - 수정 계약에 「OS·SQL이 돌려주는 이름(기계·로그인·주체)의 대소문자 구분 비교 전수와 판정」을 넣는다. 범위는 test-environment·Database.Common의 이름 비교다.
+  - 카드 네 번째 수정의 메인 체크포인트는 이 답으로 넘겼다. 다섯 번째가 필요하면 진행 전에 메인에 알린다.
+  - PR은 최신 main `95d8a822` 기준 branch로 만든다. 메인 checkout은 병합 뒤 메인이 한 번에 최신 main으로 받는다. 재고정 시점은 리드가 알린다.
+  - `execution-02`·manifest(Planned)·lock은 보존한다. 3회차 A2 재시도 근거(Create 조건 State Planned·DatabaseIdentity null, lock OpenOrCreate)를 실사 기준에 넣는다.
+- **속도 보완(메인 `msg_1a4b667143f2`, 03:40:56Z):** 사용자 원문 「오늘안에 DB 빨리 해결하고 진척 높이는걸 목표로 하자」(메인 전달, 격상하지 않음).
+  - 앞 지시의 선행 시험 순서는 메인 정정으로 뺀다. 이 goal은 진행 goal이라 goal-loop SKILL 78행 「진행 goal은 기존 방식이다」를 따른다. 신규 Sol이 시험까지 쓰고 고치기 전 실패 원시를 보고에 남긴다. 이어서 신규 `claude-opus-5-5` 강 검증, 사용자 병합 승인 순서다.
+  - 실제로 바꿀 곳은 실패하는 비교(Environment.Common 937행 MachineName)뿐이다. 전수 판정 표는 Sol 보고에 두고 새 정리는 넣지 않는다.
+  - Sol·검증이 도는 동안 리드가 카드 v4 틀(A1 뺌, ⑧ A2부터, `execution-03`, ③ 재실행 방어 유지)과 준비 블록 3회차 생성 스크립트를 미리 만든다. review-v4는 PR 검증자 정산 뒤 열고, 카드 v3 대비 차이로 좁힌다.
+- **수정 PR 착수(리드 메모 `machine-name-case-fix/lead/context-memo.md`, `date -u` 03:43:00Z 뒤 첫 파일):**
+  - branch `fix/test-env-machine-name-case-20261009`(origin/main `95d8a822`)를 core-active에서 만든다. Sol·검증자는 core-active pane split에서 이 branch에 쓰고, commit/push는 리드가 한다.
+  - goal 기록은 이 goal branch에 남긴다. 수정 branch가 체크아웃된 동안의 진행은 근거 폴더 메모에 두고, PR 생성 뒤 goal branch로 돌아와 옮긴다.
+  - 근거 폴더는 `machine-name-case-fix/`(lead·implementation·review)다. 메인 checkout `08028f1b`과 origin/main 사이 `99_Tools/` 차이는 0이다.
+- **다음 할 일:** Sol 계약 발행 → Sol 구현·시험 → 신규 Opus 강 검증 → PR 생성·메인 보고 → 사용자 병합 승인 → 메인 checkout 갱신(리드가 재고정 시점 알림) → 제품 목록 재고정·준비 블록 3회차·카드 v4 생성 → review-v4 → 메인이 사용자에게 실행 승인을 묻는다. 정산 때 ④ 창 기록 공백과 O-v3-1을 기록한다.
+- **사용자 손·결정 대기:** PR 병합 승인과 3회차 실행(오늘 24:00 KST 전 목표). 주간 사용량 99%(사용자가 초기화권 사용 의사 밝힘).
 
 ### Fable 작업자 SQL 서비스 진단·처치 — 2026-10-08T23:12Z
 
