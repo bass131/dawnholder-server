@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - branch: 정본 PR은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T11:39:11Z): 정본 PR 문서는 재실사 PASS다(「정본 PR 재실사」). 규칙 점검 보고서를 완성해 렌더 점검까지 마쳤다(「규칙 점검 보고서」).
-- **다음 할 일**: 보고서 검토(신규 `claude-opus-5-5`) → 정본 PR 생성과 승인 묶음.
+- **현재 위치**(2026-10-09T12:15Z): 정본 PR 문서는 재실사 PASS다(「정본 PR 재실사」). 규칙 점검 보고서는 독립 검토 NOT PASS(차단 7)다(「규칙 점검 보고서」).
+- **다음 할 일**: 리드의 보고서 수정 → 새 `claude-opus-5-5` 재검토 → 정본 PR 생성과 승인 묶음.
 - 이 goal의 마지막 PR(종료 기록 PR) 병합 커밋이 합류점 J다.
 
 ## 진척 단계
@@ -57,12 +57,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 1. 결과 기록, Gardener 결과, 다음 계획 후보의 BACKLOG 등록.
 2. 이 goal의 「다음 계획 후보」에 후보 도착 검사를 처음 실제 실행한다. 위반 0이어야 올린다.
 3. 「이번 합류점 순서표」 최종판.
+4. Sol max 작업자 Fast 모드 정본화: AGENTS 모델 라우팅의 Sol 줄과 ORCA R-5 Sol 명령(「적용 중인 사용자 결정」, 메인 `msg_7a08526d6820`). 여섯 파일 묶음 bytes는 같은 PR에서 상쇄한다.
 
 ### 건드릴 곳
 
 - 정본 PR: AGENTS(판 한 줄·모델 라우팅·태그 형식·전환 문단), ORCA(R-4·R-5·R-8·capacity·확정 실패·75행), RESUME 14행, goal-loop SKILL(짧은 절), `.agents/skills/dawnholder-goal-loop/references/`(milestones 새 절, 새 기준표 파일), templates(머리말·위임 계약), CURRENT Rules 줄, BACKLOG, 이 goal, `01_Phases/reports/2026-10-09-operating-rules-v1-review/`.
 - 후보 도착 검사 PR: `99_Tools/Backlog/`, `99_Tools/Backlog.Tests/`, `.github/workflows/code-rules.yml`(단계 하나), `99_Tools/README.md`, goal-loop SKILL(한 문장), BACKLOG(승격 한 칸), 이 goal.
-- 종료 기록 PR: 이 goal, BACKLOG(새 후보 행), CURRENT의 Rules 줄.
+- 종료 기록 PR: 이 goal, BACKLOG(새 후보 행), CURRENT의 Rules 줄, AGENTS 모델 라우팅의 Sol 줄, ORCA R-5 Sol 명령.
 
 ### 하지 않을 것
 
@@ -130,6 +131,11 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - **V1.0 셋업과 main 통합**(진입 지시 `msg_416f23a3207b`, 18:0x KST): 「OK 일단 남은 워크트리 파트들 추가 진행하기전에, 한번정도 Main Branch에 통합하고, 그 통합된 Main Branch에서 또 워크트리 분화하는식으로 가는게 좋겠어 / 그전에 Rule쪽 더 논의해야하는 부분이 있다하면, 그 부분 먼저 최종적으로 V1.0 으로 셋업하고 main에 merge하고 최종적인 프로젝트 규칙 및 운영방식으로 셋업하고 넘어가자」.
 - **이어지는 기존 결정**(진입 지시가 전달): 10-08 「main 합류점 → A 게임 재개 관문을 합류점으로」, 10-07 「Core·Content 재개 시점 → A 3단계 뒤 재개」, 10-09 11:42 「TDD 정본화 goal 종료 점검 → A 제안대로」와 「worktree 규칙 맞춤 → A 열 때 맞춤 + 규칙화」(원문은 메인 개인 도구 main-notes/2026-10-09/next-rules-goal-entry.md, 이전 Rules goal `msg_b92b1bafa87f`).
 - **범위 승인과 수정 둘**(`msg_97fab6206b91`, 18:3x KST): 현황판 계획 검토의 A(「Q1 A, Q2 A」)와 원문 「그리고 아까 Rule쪽 계획을 읽어봤는데, A로 가되, 구현자를 6.1 Sol Max로만 한정지으니까 어려운 작업에서는 힘들어하던데 난이도별로 Astra xHigh랑 Sol Max를 구분지어서 라우팅하는 방향으로 마지막 수정만 하고 진행하자 / 그리고 최종 규칙을 한번 전체적으로 점검해보게 HTML로 보고서 작성해줘 / 이때 보고서 양식을 처음으로 우리 백로그에있는 ASD-STM100 with HTML을 같이 해결하면서 진행해보자」. 「ASD-STM100」은 BACKLOG `report-response-format`을 가리킨다는 것은 메인 해석이다. Q1 A는 V1.0을 씨앗 1~6으로 닫는 것, Q2 A는 AGENTS 판 한 줄과 합류점 태그 `ops-v1.0`(태그 push는 별도 승인)이다.
+- **Sol max 작업자 Fast 모드**(메인 전달 `msg_7a08526d6820`, 2026-10-09T11:54:27Z, 20:5x KST): 「6.1 Sol Max 한정으로 Fast 모드로 작업하는거로 가닥잡자」.
+  - 대상은 `gpt-6.1-sol` max 작업자뿐이다. Astra 구현자·검증자·리드·Fable은 그대로다.
+  - 기동 후보는 R-5 Sol 명령에 `-c service_tier="priority"`를 더한 것이다. 값 철자는 메인 추정이며 첫 기동에서 확정한다.
+  - 첫 Fast 기동에서 요청 명령·화면 Fast 표시·rollout `service_tier` 값을 이 goal에 적고 그 Sol rollout의 token_count를 남긴다. Fast가 확인되지 않으면 기록하고 메인에 status를 보낸다. 작업은 기본 tier로 계속할 수 있다. 실행 중인 세션의 tier는 바꾸지 않는다.
+  - 정본(AGENTS 모델 라우팅의 Sol 줄, ORCA R-5 Sol 명령)은 종료 기록 PR에서 반영하고 그 실사 범위에 넣는다. 정본 PR과 보고서는 고치지 않는다. 리드는 보고서 검토자의 쓰기 종료(`msg_102c3c3810ed`) 뒤에 이 기록을 썼다.
 - **이전 결정의 대체**: 이번 원문의 구현자 난이도 라우팅은 이전 사용자 결정 「Astra 구현 격상은 사용하지 않는다」(메인 `msg_c78692a42979`, management-active 시스템 카드 goal 882행, 확정 실패 네 번째 시도 맥락)를 바꾼다. 시범 운영은 메인이 원문을 좁히지 않는 운영 방식으로 수용했다(`msg_bd7e0409e4c5`).
 
 ## 이번 합류점 순서표
@@ -205,6 +211,16 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 정보 공백 처리: Karpathy 원문은 메인이 사용자 Chrome으로 확인했다(`msg_77b54a58aa27`). STE 사양 PDF는 받지 못해 모든 적용 판단에 「사양 전문 미대조」를 붙였다. answer-me-with-html은 설치하지 않았고 README 수치는 재현하지 않았다고 적었다.
 - STE식 측정(생성 스크립트): 절차 문장 상한 20어절 초과 0, 설명 문장 상한 25어절 초과 0, 여섯 문장 넘는 문단 0, 괄호 두 쌍 이상 문장 0이다.
 - 리드 렌더 점검(E/report/preview/render-check.md): 1440·390 폭 모두 페이지 가로 넘침 0, 끊긴 앵커 0, 상대 링크 29개 모두 존재다. 점검 중 수기 값이던 「바뀐 문서 9」를 Git 값 10(신규 2)으로 바꿨다. diff 줄 사이 빈 줄과 좁은 폭의 결정 표 잘림도 고쳤다. 인쇄에 어두운 테마 글자색이 남던 것도 고쳤다. 라이트 테마와 인쇄 PDF를 확인했다. 이 점검은 리드 확인이며 독립 검토가 아니다.
+- 독립 검토: 새 `[Rules 검증자]` 요청 모델 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown). 기동은 R-5 Claude 명령에 TEMP·TMP를 `.backups/tmp/rr1/`로 정했다. pane `term_dc850591-7668-465a-a47b-c4cd3b14984e`, Task `task_565edc4076da`, Dispatch `ctx_f2d7a917eb3b`. 계약 E/report-review-contract.md(SHA256 `b43933d3…`), 고정 HEAD `e4212086`. worker-start 11:47:35Z에 turnStart observed라 draft 복구는 없었다. heartbeat 간격은 300초 안이다.
+- 판정: worker_done `msg_102c3c3810ed`(12:10:49Z), 수신 helper allowed. **NOT PASS, 차단 7.** 판정 원문은 E/report-review/verdict.md다. 생성 재현은 바이트 일치였다. diff 11개, 상대 링크 29개, 앵커 9개도 모두 맞았다. 정산(retained/external_terminal) 뒤 pane을 닫았다. 결함은 모두 리드 몫이다.
+  - #1 3절 카드 3의 diff가 사용자 차례 칸이 아니라 구현자 배정 근거 칸을 보인다.
+  - #2 7절 「7개 파일 12곳」은 원천(조사 요약 한 줄)에 명령·정의·commit이 없고 재현되지 않는다(측정값 위장 사유). 「상대 링크 475개」의 원 목록 위치 표기도 틀렸다. 「6벌·1,718 bytes」·「goal 넷」은 재현되지만 정의·commit이 없다.
+  - #3 STE 측정의 제외 범위 일부가 본문에 없다. #4 근거 표에 재실사 판정과 수정 보고가 없다. #5 작성 모델 표기가 없다.
+  - #6 `msg_59451b2e9096`이 요구한 README 확인 commit·날짜와 직접 HTML 작성과의 비교(또는 미측정)가 없다. #7 배경 그래픽을 끈 기본 인쇄에서 diff 색이 사라진다.
+  - #8(비차단)은 9절 10-31 표 셋과 6절 다섯 건의 불일치다. 설계 관찰 O1은 결정 질문 형식(두 검토 질문을 A의 결과로 넣은 것)이며 메인 확인 대상이다.
+- 리드 R-2(E/lead-check/report-review-r2.md): #1 diff 표식, #2 수치 원천, #7 기본 인쇄 PDF를 직접 봤고 판정과 같다.
+- 관찰(리드 계약 귀속, 첫 관찰): 검토자가 자기 감사에서 읽기 금지 위반 1건을 보고했다. Claude Code 하네스가 큰 출력을 `~/.claude` 아래 tool-results 파일로 자동 저장했고 검토자가 그 파일을 읽었다. 계약의 「`~/.claude` 아래 세션 기록 읽기 금지」가 하네스 동작과 겹쳤다. 다른 세션 기록은 열지 않았다. 다음 Claude 계약에는 자기 tool-results 파일 읽기를 허용 범위로 적는다.
+- 같은 산출물 수정 횟수: 보고서 1회차(리드 수정).
 
 ## 정본에서 옮긴 적용 기록
 
