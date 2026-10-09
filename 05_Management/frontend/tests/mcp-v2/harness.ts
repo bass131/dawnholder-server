@@ -22,6 +22,7 @@ export const FRONTEND = fileURLToPath(new URL('../../', import.meta.url));
 export const PRODUCTION_ENTRY = join(FRONTEND, 'mcp-dist', 'mcp', 'main.js');
 export const FIXTURE_ENTRY = join(FRONTEND, 'tests', 'mcp-v2', 'fixture-entry.mjs');
 export const CANONICAL_CATALOG = resolve(FRONTEND, '..', 'records', 'catalog.json');
+export const CANONICAL_GUIDE = resolve(FRONTEND, '..', 'records', 'system-guide.json');
 export const EXIT_DEADLINE_MS = 5_000;
 
 export const bytesOf = (value: unknown) => Buffer.byteLength(JSON.stringify(value), 'utf8');
@@ -133,6 +134,8 @@ export interface Counters {
   readSnapshotCalls: number; readSnapshotOk: number; readSnapshotErrors: Record<string, number>;
   openAttempts: number; openFailures: Record<string, number>; opens: number; closes: number; openedPaths: string[]; openAtSettle: number; maxConcurrentReads: number;
   openHandlesNow: number; inMemoryOpen: number;
+  // Design 「MCP 서버 주입 지점」 calls made by the fixture entry.
+  readGuideCalls: number; readSourceSectionCalls: number; readCheckoutCalls: number;
 }
 
 export interface SpawnOptions {
@@ -142,6 +145,9 @@ export interface SpawnOptions {
   // fixture entry only
   mode?: 'real' | 'controlled';
   catalog?: string;
+  // Defaults mirror main.ts: system-guide.json next to the catalog, repository root two levels above it.
+  guide?: string;
+  repositoryRoot?: string;
   clock?: 'real' | 'frozen' | 'advancing';
   version?: string;
   // production probes
@@ -168,7 +174,10 @@ export class StdioProcess {
   private constructor(readonly options: SpawnOptions) {
     const fixture = options.entry === 'fixture';
     const args = fixture
-      ? [FIXTURE_ENTRY, '--mode', options.mode ?? 'real', '--catalog', options.catalog ?? '', '--clock', options.clock ?? 'advancing', '--version', options.version ?? 'v2-fixture']
+      ? [
+        FIXTURE_ENTRY, '--mode', options.mode ?? 'real', '--catalog', options.catalog ?? '', '--clock', options.clock ?? 'advancing', '--version', options.version ?? 'v2-fixture',
+        ...(options.guide ? ['--guide', options.guide] : []), ...(options.repositoryRoot ? ['--repository-root', options.repositoryRoot] : []),
+      ]
       : [PRODUCTION_ENTRY, ...options.extraArgs ?? []];
     this.child = spawn(process.execPath, args, {
       cwd: options.cwd ?? FRONTEND, env: options.env ?? process.env, windowsHide: true,

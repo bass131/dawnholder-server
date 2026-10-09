@@ -1,17 +1,22 @@
 // V3: an owned TEMP copy of 05_Management/{frontend sources, records} that keeps the original
 // relative layout (frontend/<entry> -> ../../records/catalog.json). Builds and source edits for
 // path/digest checks happen only here; the canonical tree is read, never written.
+// Record index v2 (index-v2-design.md 「MCP 빌드 경계」): the copy also holds the card data and the
+// registered git Markdown sources at their repository paths, so the copy root is the repository
+// root the copied MCP entry resolves (mcp-dist/mcp/main.js -> ../../../../).
 // node_modules is a directory junction to the canonical install (read-only use). Cleanup runs the
 // guarded native PowerShell script, which unlinks the junction before deleting the owned root.
 import { spawnSync } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
-import { cpSync, existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const FRONTEND = fileURLToPath(new URL('../../', import.meta.url));
 export const CANONICAL_CATALOG = fileURLToPath(new URL('../../../records/catalog.json', import.meta.url));
+export const CANONICAL_GUIDE = fileURLToPath(new URL('../../../records/system-guide.json', import.meta.url));
+export const CANONICAL_REPOSITORY = fileURLToPath(new URL('../../../../', import.meta.url));
 const CLEANUP_SCRIPT = fileURLToPath(new URL('./remove-owned-temp.ps1', import.meta.url));
 const SOURCES = [
   'electron', 'mcp', 'scripts', 'src', 'index.html', 'package.json', 'package-lock.json',
@@ -24,11 +29,41 @@ export interface TempCopy {
   root: string;
   frontend: string;
   catalog: string;
+  guide: string;
+  // The repository root of the copy (what main.ts resolves as `../../../../`).
+  repositoryRoot: string;
+  // Repository-relative locators of the registered git Markdown sources copied into the root.
+  copiedSources: string[];
   backup: string;
   run(args: string[]): { status: number | null; output: string };
   buildMcp(): string;
   buildDesktopMain(): void;
   remove(): string;
+}
+
+// A locator that stays a plain repository-relative path (no drive, absolute, parent, backslash or empty part).
+function plainRelativeParts(locator: string): string[] | null {
+  if (/^[a-z]:|^\/|\\|:/i.test(locator)) return null;
+  const parts = locator.split('/');
+  return parts.every(part => part !== '' && part !== '.' && part !== '..') ? parts : null;
+}
+
+// Copies the canonical catalog's git Markdown sources that are regular files (links are skipped).
+function copyRegisteredMarkdown(root: string): string[] {
+  const catalog = JSON.parse(readFileSync(CANONICAL_CATALOG, 'utf8')) as { sources: Array<{ kind: string; locator: string }> };
+  const copied: string[] = [];
+  for (const source of catalog.sources) {
+    if (source.kind !== 'git' || !source.locator.endsWith('.md')) continue;
+    const parts = plainRelativeParts(source.locator);
+    if (!parts) continue;
+    const from = join(CANONICAL_REPOSITORY, ...parts);
+    const to = join(root, ...parts);
+    if (!existsSync(from) || !lstatSync(from).isFile() || existsSync(to)) continue;
+    mkdirSync(dirname(to), { recursive: true });
+    writeFileSync(to, readFileSync(from), { flag: 'wx' });
+    copied.push(source.locator);
+  }
+  return copied;
 }
 
 export function createTempCopy(label: string): TempCopy {
@@ -42,8 +77,11 @@ export function createTempCopy(label: string): TempCopy {
   const frontend = join(root, '05_Management', 'frontend');
   for (const entry of SOURCES) cpSync(join(FRONTEND, entry), join(frontend, entry), { recursive: true, errorOnExist: true, force: false });
   const catalog = join(root, '05_Management', 'records', 'catalog.json');
+  const guide = join(root, '05_Management', 'records', 'system-guide.json');
   mkdirSync(join(root, '05_Management', 'records'));
   writeFileSync(catalog, readFileSync(CANONICAL_CATALOG), { flag: 'wx' });
+  writeFileSync(guide, readFileSync(CANONICAL_GUIDE), { flag: 'wx' });
+  const copiedSources = copyRegisteredMarkdown(root);
   const junction = join(frontend, 'node_modules');
   symlinkSync(join(FRONTEND, 'node_modules'), junction, 'junction');
 
@@ -52,7 +90,7 @@ export function createTempCopy(label: string): TempCopy {
     return { status: result.status, output: `${result.stdout ?? ''}${result.stderr ?? ''}` };
   }
   return {
-    root, frontend, catalog,
+    root, frontend, catalog, guide, repositoryRoot: root, copiedSources,
     backup: join(root, '05_Management', '.verification', 'system-records-last-good.json'),
     run,
     buildMcp() {

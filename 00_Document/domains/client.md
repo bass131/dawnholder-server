@@ -37,6 +37,12 @@ RemoteInterpolationState가 snapshot buffer·서버 시간축 렌더 시계·보
 
 기존 prefab을 저장하기 전에 추적 여부와 사용자 변경을 확인한다. 미추적 에셋은 Git으로 복원할 수 없으므로 덮어쓸 대상의 사본을 먼저 확보한다. `.meta`·GUID와 직렬화 값, Resources 등의 문자열 경로를 함께 보존한다. 이는 과거 BackGround prefab 덮어쓰기 사례에서 확인된 복구 한계다.
 
-Unity 버전은 [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 버전과 revision을 함께 확인한다. 과거에는 `6000.4.1f1`이라는 같은 표기에서 `8535861f39e1`과 `336a400b9ea2` revision 차이를 관찰했다. 이 숫자는 현재 설치 기준이 아니라 과거 사례다.
+Unity 버전은 [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 버전과 revision을 함께 확인한다. 2026-10-07부터 기준은 `6000.6.4f1`(`12bfff696524`)이고, 설치 방법은 [개발 안내](../operations/DEVELOPMENT.md#환경)에 있다. 6.6에서 달라져 코드와 에셋을 바꿀 때 확인할 점은 셋이다. 근거는 [전환 goal](../../01_Phases/goals/2026-10-07-unity-engine-upgrade/goal.md#실제-결과와-미실행)에 있다.
+
+- `Object.GetInstanceID()`는 컴파일 오류(CS0619)다. `GetEntityId()`를 쓴다.
+- 엔진이 강제한 Input System 1.20.0은 `InputSystem.settings`를 바꿀 때 이전 설정이 `HideAndDontSave`이면 파괴한다. 이 프로젝트에는 InputSettings 에셋이 없어 기본 설정이 그런 임시 객체다. 테스트가 전역 입력 설정을 바꾸면 [MapEntryPlayFixture](../../03_Client/Assets/Tests/PlayMode/MapEntryPlayFixture.cs)처럼 손대지 않은 사본을 두고 복원한다.
+- Cainos의 Lucid Editor 에디터 코드와 그것을 상속하는 Cainos 에디터 스크립트는 6.6에서 컴파일되지 않아 지웠다. 런타임 코드와 아트는 남겼다. 그 에셋을 다시 가져오면 지운 코드가 돌아와 컴파일이 막힌다.
+
+과거에는 `6000.4.1f1`이라는 같은 표기에서 `8535861f39e1`과 `336a400b9ea2` revision 차이를 관찰했다. 이 숫자는 현재 설치 기준이 아니라 과거 사례다.
 
 입력 ack·임펄스 예측의 경계는 [영역 간 경계](cross-cutting.md)에 있다. [이관 전 원문](https://github.com/bass131/dawnholder-server/blob/59c7f087dc630df79650cedc3ede29765397bd8d/.claude/knowledge/client/_index.md)은 에셋 사고와 2026-05-16 버전 관찰을 보존한다.

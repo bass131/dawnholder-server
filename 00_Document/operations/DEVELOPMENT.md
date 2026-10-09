@@ -6,7 +6,7 @@
 
 - .NET SDK: [global.json](../../global.json)의 정확한 `10.0.301`, `rollForward: disable`. 다른 버전으로 대체하지 않는다.
 - SDK pin 이전의 obj/bin이 남은 checkout은 해당 빌드 생성물을 확인·백업하고 정리한 뒤 1회 clean 빌드가 필요하다.
-- Unity: [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 `6000.4.7f1`과 revision을 확인한다.
+- Unity: [ProjectVersion.txt](../../03_Client/ProjectSettings/ProjectVersion.txt)의 `6000.6.4f1`과 revision `12bfff696524`를 확인한다. Hub 화면에서는 revision을 고를 수 없으니 `unityhub://6000.6.4f1/12bfff696524` 링크로 설치한다. 이 링크는 Unity 릴리스 노트의 「Install with Unity Hub」 버튼 주소와 같은 형식이다. 6.6 전환을 아직 받지 않은 branch는 그 branch의 ProjectVersion대로 연다.
 - WSL Ubuntu: .NET SDK, Bash·Python 3·rsync·flock(util-linux)·ss(iproute2)·coreutils가 필요하다. 저장소는 ASCII 경로를 권장한다.
 - 서버·테스트 실행이 Windows 정책으로 차단되는 현재 환경에서는 WSL을 사용한다. Windows 전용 디버그 설정은 네이티브 실행이 허용된 머신용이다.
 

@@ -934,7 +934,8 @@ SELECT CONVERT(nvarchar(128), SERVERPROPERTY('MachineName')) Machine,
     IS_SRVROLEMEMBER('sysadmin') IsSysadmin, ORIGINAL_LOGIN() OriginalLogin;
 '@ `
                 -Result Rows).Rows[0]
-        if ($row.Machine -cne $Manifest.Machine -or
+        # Windows machine names ignore case; SQL can report MachineName with mixed casing.
+        if ($row.Machine -ine $Manifest.Machine -or
             $row.InstanceName -cne $Contract.InstanceName -or $row.IsSysadmin -ne 1) {
             throw 'Exact local instance and privileged SQL executor required.'
         }

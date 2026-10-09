@@ -88,7 +88,7 @@ describe('R03: the default list budget is shared by an omitted and an explicit l
   afterEach(async () => { await Promise.all(harnesses.splice(0).map(harness => harness.close())); });
 
   it('limit omitted and limit 10 page identically within 8 KiB; limit 11 may use the 16 KiB cap', async () => {
-    // Summaries large enough that ten of them exceed the 8 KiB target (area is never truncated).
+    // Previews large enough that ten of them exceed the 8 KiB target (area is never truncated).
     const systems = Array.from({ length: 30 }, (_, index) => makeSystem(`s${String(index).padStart(2, '0')}`, { area: '가'.repeat(200) }));
     const harness = await connectHarness({ readSnapshot: fileBacked(makeCatalog({ systems })).readSnapshot });
     harnesses.push(harness);

@@ -11,7 +11,9 @@
 - [x] Gardener 점검
 - [x] 종료 기록 문서 실사
 - [x] PR189 병합
-- [>] 종료 기록 PR 병합
+- [x] PR194 병합
+
+**종료 확인(2026-10-06, 다음 goal 기록):** PR194는 2026-10-06T09:15:32Z에 head `e37f261`로 병합됐다(merge `9ee7ae1`). 이 goal은 종료됐고 메인이 R-8로 리드를 교체했다. 아래 「재개 지점」의 조건부 문장은 병합 전 기록이다. 확인 원시는 [다음 goal](../2026-10-06-record-source-unification/goal.md)의 근거 폴더 `ended-goal-pr-states.txt`다.
 
 ## 재개 지점
 

@@ -1,7 +1,7 @@
 export type CatalogView = 'systems' | 'records' | 'sources';
 
 export interface RecordSelection {
-  kind: 'system' | 'record';
+  kind: 'system' | 'record' | 'source';
   id: string;
 }
 
@@ -17,7 +17,6 @@ export interface ReturnPoint {
   scrollLeft: number;
   scrollTop: number;
   focusKey: string | null;
-  evidenceOpen: boolean;
 }
 
 export interface NavigationFrame {
@@ -33,7 +32,7 @@ export interface ExplorerNavigation {
 function frame(location: ExplorerLocation): NavigationFrame {
   return {
     location,
-    returnPoint: { scrollLeft: 0, scrollTop: 0, focusKey: null, evidenceOpen: false },
+    returnPoint: { scrollLeft: 0, scrollTop: 0, focusKey: null },
   };
 }
 

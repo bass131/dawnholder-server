@@ -1,5 +1,6 @@
 // V3-R1 verifier-owned stdio entry for R06 (not a product entry). It assembles the BUILT product
-// server factory (mcp-dist) like mcp/main.ts does, with a readSnapshot chosen by argv[2]:
+// server factory (mcp-dist) like mcp/main.ts does (all four injected reads, design 「MCP」 구현
+// 접점), with a readSnapshot chosen by argv[2]:
 //   ok           a small valid snapshot (normal path: no diagnostic expected)
 //   domain       the product's CatalogReadError('CATALOG_MISSING') (mapped code: no diagnostic expected)
 //   read-throw   an unexpected (non-CatalogReadError) error from the read step
@@ -20,8 +21,9 @@ function unexpectedError() {
   return Object.assign(error, { code: `${SENTINEL}_CODE`, path: `C:\\${SENTINEL}_PATH\\catalog.json`, syscall: 'open' });
 }
 
-const metadata = { hash: 'a'.repeat(64), revision: 'r06-revision', asOf: '2026-10-02T00:00:00Z', sourceCommit: 'r06-source-commit' };
-const catalog = { schemaVersion: 1, revision: metadata.revision, asOf: metadata.asOf, sourceCommit: metadata.sourceCommit, scopeNote: 'r06', sources: [], systems: [], records: [] };
+// Index v2 snapshot (index-v2-design.md 「색인 형식」·「MCP」 스냅샷; Astra 보충 v1.1 Q1).
+const metadata = { hash: 'a'.repeat(64) };
+const catalog = { schemaVersion: 2, sources: [], systems: [], records: [] };
 const throwingCatalog = { ...catalog, get systems() { throw unexpectedError(); }, get records() { throw unexpectedError(); }, get sources() { throw unexpectedError(); } };
 
 async function readSnapshot() {
@@ -31,5 +33,10 @@ async function readSnapshot() {
   return { metadata, catalog };
 }
 
-const connection = serveStdio(() => createCatalogServer({ readSnapshot, version: `v3-r1-${mode}` }));
+// The record tools R06 calls never use the guide, source or checkout reads (Astra 보충 v1.1 Q3);
+// a call would add a product diagnostic and break the exact stderr count the test asserts.
+const unused = async () => { throw new Error('R06 entry: unexpected injected read'); };
+const connection = serveStdio(() => createCatalogServer({
+  readSnapshot, readGuide: unused, readSourceSection: unused, readCheckout: unused, version: `v3-r1-${mode}`,
+}));
 process.once('SIGTERM', () => { void connection.close(); });
