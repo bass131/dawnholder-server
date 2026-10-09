@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - branch: 정본 PR은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T10:37:18Z): 정본 PR의 Sol 작성과 리드 R-2를 마쳤다. 결과는 「정본 PR 작성」이다.
-- **다음 할 일**: 문서 실사 → 규칙 점검 보고서 → 보고서 Opus 검토 → 정본 PR 승인 묶음.
+- **현재 위치**(2026-10-09T11:05:12Z): 정본 PR 문서 실사가 NOT PASS(차단 2)였고 메인이 처리를 정했다. 결과는 「정본 PR 문서 실사」다. 규칙 점검 보고서 초안은 E/report/에서 쓰는 중이다.
+- **다음 할 일**: milestones 정의 수정(새 Sol max) → 재실사(신규 Astra xhigh) → 보고서 완성 → 보고서 Opus 검토 → 정본 PR 승인 묶음.
 - 이 goal의 마지막 PR(종료 기록 PR) 병합 커밋이 합류점 J다.
 
 ## 진척 단계
@@ -139,12 +139,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 | 순서 | 파트 | 지금 상태 | J 뒤 처리 | 주체·시점 |
 |---|---|---|---|---|
 | 0 | Rules | 이 goal | 종료 기록 PR 병합이 J. 다음 Rules goal은 J 이후 main에서 새 branch | 메인이 J 기록, 다음 Rules 리드 |
-| 1 | Core | `feat/persistence-engine-judgment-20261006` 10/43, 앞선 diff는 영속화 goal·CURRENT 두 파일, push됨, PR 없음, 리드 살아 있음 | 기록만 앞섬: 다음 안전 지점에 J를 받는다. 영속화 goal을 잇는다. 인스턴스 맵 goal은 J 이후 main에서 새 branch(Core goal의 기존 결정) | Core 리드, 메인의 재개 신호 뒤 첫 안전 지점 |
+| 1 | Core | `feat/persistence-engine-judgment-20261006` 10/43, 앞선 diff는 영속화 goal·BACKLOG 두 파일(BACKLOG는 Core 담당 새 행 하나), push됨, PR 없음, 리드 살아 있음 | 기록만 앞섬: 다음 안전 지점에 J를 받는다. 영속화 goal을 잇는다. 인스턴스 맵 goal은 J 이후 main에서 새 branch(Core goal의 기존 결정) | Core 리드, 메인의 재개 신호 뒤 첫 안전 지점 |
 | 2 | Content | `feat/items-inventory-ui-20261005` 222/11, PR191 DIRTY, 실화면 검증 보류, 리드 닫힘 | 검증이 남은 열린 PR: 재진입 첫 일로 J를 통합(6.6 위, ProjectSettings 예외는 이 통합 한 번) → 실화면 독립 검증 → 새 head 승인 | 새 Content 리드, 메인의 게임 재개 신호 뒤 |
 | 3 | Management | `feat/intro-site-20261008` 24/37, PR207 CLEAN, 사용자 지시로 보류, 독립 검증 V3 차단 2건 | 보류된 PR: J 때 처리 없음. 재개 결정 뒤 J를 받고 차단 2건 처리 → 승인 묶음 | 사용자 재개 결정 뒤 Management 리드 |
 | 4 | CodeMap | `docs/architecture-tests-ci-closeout-20261005` 273/0, 끝남, upstream 없음 | 받을 것 없음. 다음 goal을 J 이후 main에서 새 branch | CodeMap 리드, 재진입 첫 일 |
 
 - Core와 Content는 같은 시기에 열 수 있다. 두 PR이 같은 시기에 열리면 뒤에 병합하는 쪽이 최신 main을 받는다.
+- 정정(2026-10-09T11:05:12Z, 리드): Core 행의 앞선 diff를 원시(E/session/branch-states.txt 14~15행)대로 「영속화 goal·BACKLOG」로 고쳤다. 이전 표기 「영속화 goal·CURRENT」는 범위 초안 v1부터 리드가 잘못 옮긴 것이다(정본 PR 문서 실사 #1). BACKLOG 변경은 Core 담당 새 행 `sql-environment-human-access` 하나다(E/lead-check/core-backlog-diff.txt, 11:03:27Z). 메인 대조로는 core-active 로컬에 push 안 된 goal만 바꾼 commit `e0658900`이 더 있으나 판정에 영향이 없다(`msg_16c35ae8003d`).
 - 메인이 받은 관찰(다른 파트 몫, 이 goal은 고치지 않음): CURRENT 「Content(Unity 업그레이드)」 줄의 `unity-upgrade-active` worktree가 지금 `git worktree list`에 없다. content-active 미커밋 두 파일, core-active 미추적 보고서 폴더 하나.
 
 ## 현재 결과
@@ -165,6 +166,21 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 완료: worker_done `msg_b76e13e7165e`(10:33:55Z). 수신 helper 판정 allowed다. 정산(retained/external_terminal) 뒤 대기를 확인하고 pane을 닫았다. 보고는 E/pr1/report.md, 맥락 메모는 E/pr1/context.md다.
 - 관찰: heartbeat 간격 343초 한 구간(09:58:45Z `msg_813b8fe6d3e1` → 10:04:28Z `msg_092e582ae3a5`)이 있었다. BACKLOG `worker-liveness-tool-check`와 같은 갈래다. 산출물 영향은 실사 전 미확인이다(E/lead-observations.md).
 - 리드 R-2(10:37:18Z): 변경 파일이 허용 9개뿐임을 확인했다. 여섯 파일 묶음은 102,600 bytes(base 102,601)이고 ORCA는 249줄이다. AGENTS 전환 문단이 승인 문안(E/agents-transition-proposal.txt)과 같다. 라우팅 기준의 「애매하면 Astra」와 규칙 맞춤 문장은 개정 v2와 이전 goal의 정본화 후보 원문에 맞다. 새 anchor `#구현자-모델-시범`·`#main-맞춤과-합류점`이 있다. 이 대조는 리드 확인이며 독립 실사가 아니다.
+- 커밋: 리드가 작성 결과와 이 기록을 `c78ff977`로 커밋했다(push 전).
+
+### 정본 PR 문서 실사
+
+- 실사: `[Rules 검증자]` 요청 모델 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown), pane `term_e61aa523-daf9-4279-8215-ae940a094850`, Task `task_c68b0458da26`, Dispatch `ctx_2c7268432b49`. 계약 E/pr1-review-contract.md(SHA256 `cbaa6f9a…`), 고정 HEAD `c78ff977`. 계약 전달은 draft 복구 Enter 1회이고 Codex 기록에서 계약 전문 입력 하나를 확인했다(E/pr1-review-draft-recovery.md).
+- 실사 중 status `msg_49ae64900b02`(10:52:29Z)로 #1을 먼저 알렸다. 리드가 원시를 확인하고 메인에 전달했다(`msg_667bf29411d6`).
+- 판정: worker_done `msg_5f67bdb7061a`(11:02:24Z), 수신 helper allowed. **NOT PASS, 차단 2.** 판정 원문은 E/pr1-review/verdict.md다. S1~S5·C1~C9를 수행했고 bytes·링크·이관 원문 일곱·전환 문안은 대조됐다. 정산(retained/external_terminal) 뒤 대기를 확인하고 pane을 닫았다.
+  - #1 Core 합류점 입력의 원천 불일치와 분류 공백. 귀속은 리드 기록·리드 계약이다. 실제 Core 입력(goal·BACKLOG 새 행)이 milestones 네 상태 어디에도 들지 않는다.
+  - #2 작성 Sol heartbeat 343초(상한 300초). 귀속은 작성자 절차다. 산출물 손상은 찾지 못했다.
+  - 설계 관찰 O1(보류 판정 우선순위), O2(「Opus」 검증자 호칭), O3(「Sol」 역할·모델 읽힘)은 비차단이다.
+- 메인 판단 `msg_16c35ae8003d`(11:04:36Z, 리드 질문 `msg_fa359cb2baed`):
+  - 1 수용: 「기록만 앞섬」 판정을 「앞선 diff가 자기 goal·CURRENT 자기 줄·담당이 자기 파트인 BACKLOG 새 행뿐이다. goal은 진행 중이다.」로 고친다. 다른 BACKLOG 변경 일반은 넣지 않는다. O1을 같은 표에 한 마디로 더한다. 순서는 goal 정정 → 새 Sol max로 milestones 수정 → 신규 `gpt-6-astra` xhigh 재실사다.
+  - 2 비차단 운영 기록: heartbeat 343초는 이번 판정을 막지 않는다. 메인이 선례 `msg_a8e661983ce5`와 같은 처분을 이번에 다시 정했다. 신호 5·확정 실패 집계에서 뺀다. BACKLOG `worker-liveness-tool-check` 출처에 사례로 더했다.
+  - 리드 조사에서 본 goal-loop 52·53행 우선순위와 신호 5의 「Sol」 읽힘은 보고서 후보로만 둔다.
+- 같은 산출물 수정 횟수: 정본 PR 문서 1회차(milestones 정의 수정).
 
 ## 정본에서 옮긴 적용 기록
 
