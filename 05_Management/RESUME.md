@@ -4,7 +4,7 @@
 
 새 세션의 배치·진입은 루트 [RESUME의 세션 진입 배치](../00_Document/operations/RESUME.md#세션-진입-배치)와 [R-1](../00_Document/operations/ORCA.md#r1-management-placement), 작업자 기동과 첫 화면 확인은 [R-5](../00_Document/operations/ORCA.md#r5-worker-launch)·[R-6](../00_Document/operations/ORCA.md#r6-first-screen)을 따른다. Orca pane 소속과 실제 작업 경로·runtime·모델 표시·준비 상태를 함께 확인한다. 실제 파일·Git 작업은 위 `management-active`에서만 수행하며 `C:/Dev/DawnHolder_Project`를 사용하지 않는다. 과거 배치 관찰이나 handle을 현재 세션의 실행 권한으로 재사용하지 않는다.
 
-목표 종료 후 Management Astra 교체는 메인이 [R-8](../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 수행하며, 새 Astra는 루트 RESUME의 진입 절차를 따른다. 문서 변경은 실제 세션 교체 완료를 뜻하지 않는다.
+목표 종료 후 Management 리드 교체는 메인이 [R-8](../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 수행하며, 새 리드는 루트 RESUME의 진입 절차를 따른다. 문서 변경은 실제 세션 교체 완료를 뜻하지 않는다.
 
 ## 최소 읽기 순서
 
@@ -24,6 +24,6 @@ Game Dev의 root CURRENT/goal·게임 코드·실행 wrapper는 해당 메인 �
 
 Management에도 이번 세션부터 [계층형 모델 라우팅](../AGENTS.md#모델-라우팅)을 적용한다. 공동 조회 합의와 기존 goal의 역할·모델·CLI 지정은 당시 기준이며, 현재 배정은 루트 AGENTS를 따른다. 적용 결정의 전달 경위와 PR154 병합 근거는 [운영 규칙 적용 goal](goals/2026-10-01-routing-adoption/goal.md)에 둔다. 규칙 문서 변경과 실제 세션의 모델 관측을 구분한다.
 
-Management Astra의 발신 태그는 `[Management Astra]`다. 수신 출처 대조와 터미널 알림·실제 지시 구분은 [메시지와 보고 규칙](../AGENTS.md#메시지와-보고)을 따른다. 새 세션에서는 루트 RESUME의 진입 배치에 따라 메인 handle과 실제 경로·모델 표시·준비 상태를 확인한다.
+Management 리드의 발신 태그는 `[Management 리드 Opus]`다. 전환은 [리드 태그 전환](../AGENTS.md#lead-tag-transition)을 따른다. 수신 출처 대조와 터미널 알림·실제 지시 구분은 [메시지와 보고 규칙](../AGENTS.md#메시지와-보고)을 따른다. 새 세션에서는 루트 RESUME의 진입 배치에 따라 메인 handle과 실제 경로·모델 표시·준비 상태를 확인한다.
 
-작업자·검증자는 담당 Astra 아래 pane에서 작업 하나를 마친 뒤 정산·종료하고 재사용하지 않는다. 준비·최초 작업 연결·거부 시 처리·정산 절차는 [Orca 위임 지침](../.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다. 이 종료 규칙을 메인·Astra·다른 사용자 세션의 종료 권한으로 확대하지 않는다. `--no-daemon`은 더 이상 필수가 아니며, 파일 소유권과 PR별 명시 병합 승인은 [AGENTS](../AGENTS.md)를 따른다.
+작업자·검증자는 담당 리드 아래 pane에서 작업 하나를 마친 뒤 정산·종료하고 재사용하지 않는다. 준비·최초 작업 연결·거부 시 처리·정산 절차는 [Orca 위임 지침](../.agents/skills/dawnholder-goal-loop/references/orca-work.md)을 따른다. 이 종료 규칙을 메인·리드·다른 사용자 세션의 종료 권한으로 확대하지 않는다. `--no-daemon`은 더 이상 필수가 아니며, 파일 소유권과 PR별 명시 병합 승인은 [AGENTS](../AGENTS.md)를 따른다.

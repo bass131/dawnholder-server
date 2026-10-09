@@ -282,4 +282,116 @@ Assert-True -Name 'New-TestDatabase OfflinePlan with another manifest path rejec
     $offlineWrongPath.ExitCode -ne 0 -and ($offlineWrongPath.StdOut + $offlineWrongPath.StdErr) -cmatch 'not the exact approved absolute path') `
     -Detail ('exit=' + $offlineWrongPath.ExitCode)
 
+# ---- SQL executor identity: evaluate the product guard without opening its SqlConnection boundary.
+# The actual if statement comes from the product AST; fixture expectations are fixed pass/reject outcomes.
+$executorTokens = $null
+$executorParseErrors = $null
+$executorCommonPath = Join-Path $script:ToolRoot 'test-environment/Environment.Common.ps1'
+$executorCommonAst = [Management.Automation.Language.Parser]::ParseFile(
+    $executorCommonPath, [ref]$executorTokens, [ref]$executorParseErrors)
+Assert-Equal -Name 'SQL executor guard product source parses' -Expected 0 -Actual $executorParseErrors.Count
+$executorOpenAst = $executorCommonAst.Find({
+        param($node)
+        $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -ceq 'Open-TestEnvironmentDatabase'
+    }, $true)
+Assert-True -Name 'Open-TestEnvironmentDatabase exists in the product source' -Condition ($null -ne $executorOpenAst)
+$executorGuards = @()
+if ($null -ne $executorOpenAst) {
+    $executorGuardPredicate = {
+        param($node)
+        $node -is [Management.Automation.Language.IfStatementAst] -and
+        $node.Extent.Text.Contains("throw 'Exact local instance and privileged SQL executor required.'")
+    }
+    $executorGuards = @($executorOpenAst.FindAll($executorGuardPredicate, $true))
+}
+Assert-Equal -Name 'the exact SQL executor guard is unique in the product function' `
+    -Expected 1 -Actual $executorGuards.Count
+if ($executorGuards.Count -eq 1) {
+    $executorGuardText = 'param($row, $Manifest, $Contract)' + "`n" + $executorGuards[0].Extent.Text
+    [IO.File]::WriteAllText((Join-Path $script:SuiteRoot 'sql-executor-guard.ps1'),
+        $executorGuardText, (New-Object Text.UTF8Encoding($false)))
+    $executorGuardBlock = [scriptblock]::Create($executorGuardText)
+    $executorManifest = [pscustomobject]@{ Machine = 'FIXTUREHOST' }
+    $executorContract = [pscustomobject]@{ InstanceName = 'FIXTURE' }
+    foreach ($case in @(
+            @{ Name = 'identical machine name case'; Machine = 'FIXTUREHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
+                Accepted = $true },
+            @{ Name = 'machine names differing only in case'; Machine = 'FixtureHost'; InstanceName = 'FIXTURE';
+                IsSysadmin = 1; Accepted = $true },
+            @{ Name = 'a different machine name'; Machine = 'OTHERHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
+                Accepted = $false },
+            @{ Name = 'a different instance name'; Machine = 'FIXTUREHOST'; InstanceName = 'OTHER'; IsSysadmin = 1;
+                Accepted = $false },
+            @{ Name = 'a non-sysadmin executor'; Machine = 'FIXTUREHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 0;
+                Accepted = $false }
+        )) {
+        $sqlIdentity = [pscustomobject]@{
+            Machine = $case.Machine
+            InstanceName = $case.InstanceName
+            IsSysadmin = $case.IsSysadmin
+        }
+        $executorMessage = Get-ThrownMessage -Action {
+            & $executorGuardBlock -row $sqlIdentity -Manifest $executorManifest -Contract $executorContract
+        }
+        if ($case.Accepted) {
+            Assert-True -Name ('SQL executor guard accepts ' + $case.Name) `
+                -Condition ($null -eq $executorMessage) -Detail ([string]$executorMessage)
+        } else {
+            $executorRejected = $null -ne $executorMessage
+            Assert-True -Name ('SQL executor guard rejects ' + $case.Name) -Condition $executorRejected
+            Assert-Equal -Name ('SQL executor guard preserves the exact error for ' + $case.Name) `
+                -Expected 'Exact local instance and privileged SQL executor required.' -Actual $executorMessage
+        }
+    }
+}
+
+# ---- Machine comparison boundaries: only letter case is ignored. Whitespace, missing or extra characters,
+# DNS qualification and SQL NULL still reject, and the instance and sysadmin conditions keep their exact checks.
+# Rows are DataRows so a SQL NULL arrives as DBNull, the shape the product reads after DataTable.Load.
+if ($executorGuards.Count -eq 1) {
+    $boundaryTable = [Data.DataTable]::new()
+    [void]$boundaryTable.Columns.Add('Machine', [string])
+    [void]$boundaryTable.Columns.Add('InstanceName', [string])
+    [void]$boundaryTable.Columns.Add('IsSysadmin', [int])
+    $boundaryManifest = [pscustomobject]@{ Machine = 'FIXTUREHOST' }
+    $boundaryContract = [pscustomobject]@{ InstanceName = 'FIXTURE' }
+    foreach ($case in @(
+            @{ Name = 'a machine name in lower case'; Machine = 'fixturehost'; InstanceName = 'FIXTURE';
+                IsSysadmin = 1; Accepted = $true },
+            @{ Name = 'a machine name with trailing whitespace'; Machine = 'FIXTUREHOST '; InstanceName = 'FIXTURE';
+                IsSysadmin = 1; Accepted = $false },
+            @{ Name = 'a case-variant machine name with an extra character'; Machine = 'FixtureHost2';
+                InstanceName = 'FIXTURE'; IsSysadmin = 1; Accepted = $false },
+            @{ Name = 'a truncated machine name'; Machine = 'FIXTUREHOS'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
+                Accepted = $false },
+            @{ Name = 'a DNS-qualified machine name'; Machine = 'fixturehost.fixture.local'; InstanceName = 'FIXTURE';
+                IsSysadmin = 1; Accepted = $false },
+            @{ Name = 'a NULL SQL machine name'; Machine = [DBNull]::Value; InstanceName = 'FIXTURE'; IsSysadmin = 1;
+                Accepted = $false },
+            @{ Name = 'an instance name differing only in case'; Machine = 'fixturehost'; InstanceName = 'fixture';
+                IsSysadmin = 1; Accepted = $false },
+            @{ Name = 'a non-sysadmin executor on a case-variant machine name'; Machine = 'fixturehost';
+                InstanceName = 'FIXTURE'; IsSysadmin = 0; Accepted = $false }
+        )) {
+        $boundaryRow = $boundaryTable.NewRow()
+        $boundaryRow['Machine'] = $case.Machine
+        $boundaryRow['InstanceName'] = $case.InstanceName
+        $boundaryRow['IsSysadmin'] = $case.IsSysadmin
+        $boundaryTable.Rows.Add($boundaryRow)
+        $boundaryMessage = Get-ThrownMessage -Action {
+            & $executorGuardBlock -row $boundaryRow -Manifest $boundaryManifest -Contract $boundaryContract
+        }
+        if ($case.Accepted) {
+            Assert-True -Name ('SQL executor guard accepts ' + $case.Name) `
+                -Condition ($null -eq $boundaryMessage) -Detail ([string]$boundaryMessage)
+        } else {
+            $boundaryRejected = $null -ne $boundaryMessage
+            Assert-True -Name ('SQL executor guard rejects ' + $case.Name) -Condition $boundaryRejected
+            Assert-Equal -Name ('SQL executor guard preserves the exact error for ' + $case.Name) `
+                -Expected 'Exact local instance and privileged SQL executor required.' -Actual $boundaryMessage
+        }
+    }
+}
+
 Complete-TestSuite
