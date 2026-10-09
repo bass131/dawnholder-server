@@ -187,7 +187,9 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 기록 커밋 `aabdf54c`(goal 정정·실사 기록·BACKLOG 사례) 뒤 새 `[Rules Sol]`이 milestones 두 칸을 고쳤다. 요청 모델 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max」, backend unknown), 배정 신호 해당 없음(문안이 고정된 한 파일 두 칸). pane `term_c229bdbc-2706-48f6-8296-17ca94f75414`, Task `task_a93e15a3567a`, Dispatch `ctx_6ab39f266014`. 계약 E/fix1-contract.md(SHA256 `a916256f…`). worker-start 11:07:31Z에 turnStart observed라 draft 복구는 없었다.
 - 완료: worker_done `msg_7fee9ab255e5`(11:17:14Z), 수신 helper allowed. 보고 E/fix1/report.md, 맥락 메모 E/fix1/context.md(생성 11:10:45Z, milestones 수정 11:13:10Z보다 앞섬). 정산(retained/external_terminal) 뒤 대기를 확인하고 pane을 닫았다.
 - 리드 R-2: diff는 milestones 한 파일의 38·40행이며 판정 칸만 메인 수용 문안과 글자 그대로 같다. 여섯 파일 묶음 102,600 bytes, ORCA 249줄로 변화가 없다.
-- 관찰: 수정 Sol의 heartbeat 간격 302초 한 구간(11:08:50Z `msg_6fe71be9e2d7` → 11:13:52Z `msg_57440506ffb1`)이 있었다. 상한 300초를 2초 넘었다. 처분은 메인에 올린다(E/lead-observations.md).
+- 관찰: 수정 Sol의 heartbeat 간격 302초 한 구간(11:08:50Z `msg_6fe71be9e2d7` → 11:13:52Z `msg_57440506ffb1`)이 있었다. 상한 300초를 2초 넘었다(E/lead-observations.md). 리드 질문 `msg_163d1240d1de`에 메인이 `msg_f4a418ddd476`(11:18:39Z)로 비차단 기록을 정했다. 신호 5·확정 실패 집계에서 빼고 BACKLOG `worker-liveness-tool-check` 출처에 사례로 더했다.
+- 반복 관찰(메인 `msg_f4a418ddd476`): heartbeat 상한 초과의 비차단 처분이 이 goal에서 두 번(343초, 302초), 선례 `msg_a8e661983ce5`까지 세 번째다. 교정 정본상 반복 규칙 후보이지만 정본 PR에는 새 규칙을 넣지 않는다. 보고서 V1.x 후보 「상한 초과 허용 폭 또는 원인 도구 점검」으로 둔다.
+- 커밋: 수정과 이 기록을 `5a282fb2`로 커밋했고, 처분 기록을 다음 커밋에 더했다(push 전).
 
 ## 정본에서 옮긴 적용 기록
 
