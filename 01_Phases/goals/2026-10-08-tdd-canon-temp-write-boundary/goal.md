@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)(merge commit `127cc5a1`), 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)(merge commit `5a1752eb`), 수신 helper PR은 [PR213](https://github.com/bass131/dawnholder-server/pull/213)(merge commit `08028f1b`)로 병합됐다. 종료 기록은 branch `docs/tdd-canon-closeout-20261009`(base main `08028f1b`)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 수신 helper PR은 [pr2/astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/pr2/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`(PR212 병합 전에 연 세션이라 종료까지 유지, 메인 `msg_84fb999941ce`). Claude 세션 ID `64f22d75-946a-4b21-a275-d2e10254b75a`. 재진입 뒤 handle `term_73e94f29-d9a7-47bf-91d3-50f3676de874`, Run은 `run_be5206d9a2af`(run-use로 인수), 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T00:50:36Z): 제품 PR 셋이 모두 병합됐다. PR213 결과를 기록했고 종료 Gardener를 연다(아래 「PR213 병합」).
-- **다음 할 일**: 종료 Gardener(신규 `claude-opus-5-5` 읽기 전용, 보고서 한 파일) → 결과를 넣은 종료 기록 PR과 메인 승인 묶음 → 종료 점검과 R-8. 다음 goal은 자동 착수하지 않는다.
+- **현재 위치**(2026-10-09T01:19:02Z): 제품 PR 셋이 병합됐고 결과 기록과 종료 Gardener가 끝났다(아래 「종료 Gardener」·「종료 점검 자료」).
+- **다음 할 일**: 종료 기록 PR과 메인 승인 묶음 → 사용자 병합 승인 → 메인·사용자의 종료 점검(결과·남은 위험·BACKLOG·로드맵 초안) → R-8. 다음 goal은 자동 착수하지 않는다.
 - 재진입: 같은 Claude 세션을 `--resume`으로 이으면 handle이 바뀐다. 같은 Run을 run-use로 인수하고 메인에 새 handle을 알린다. 이 세션은 `[Rules Astra]`를 유지하고, 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
@@ -24,8 +24,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - [x] 수신 helper 선행 시험
 - [x] 수신 helper 구현·검증
 - [x] PR213 병합
-- [>] 결과 기록·Gardener
-- [ ] 종료 기록 PR 병합
+- [x] 결과 기록·Gardener
+- [>] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8
 
 PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
@@ -167,6 +167,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 수신 helper 한계: 공식 질문을 수신 helper에 넣으면 `official-ask-proof` input-error(exit 2)였다. helper가 CLI 1.4.218에 고정돼 있기 때문이다. 리드가 손으로 대조해 출처를 인정했다(E/lead-check/pr1-ask1-manual-check.md). 이 원시는 수신 helper PR의 실제 진입 입력 후보다.
 - 결과: worker_done `msg_6966e339484f`(2026-10-08T12:01:10Z, succeeded)을 수신 helper가 허용했다. 보고는 E/pr1/report.md다. 묶음은 102,658 → 102,592 bytes, ORCA는 249줄이다.
 - 리드 R-2(2026-10-08T12:04:42Z): 옮긴 네 문장의 글자 일치, CURRENT 링크·경로·branch 보존, BACKLOG 바뀐 칸, bytes·줄 수가 보고와 같았다(E/lead-check/pr1-r2.md). 차단 아닌 관찰 넷은 문서 실사에 넘긴다.
+- heartbeat(종료 Gardener가 찾은 누락, 리드 R-2도 놓침): 작성 Sol의 공백이 질문 답 뒤 420초(11:39:08Z → 11:46:08Z)와 774초(11:46:08Z → 11:59:02Z)였다. 이 goal의 5분 초과 가운데 가장 이르고 가장 길다. heartbeat subject는 `[Rules Sol] alive` 4통이었다(E/session/all1.raw.json).
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-release.json, pr1-idle.json, pr1-close.json).
 
 ### 정본 PR 문서 실사
@@ -175,6 +176,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 실사자: 신규 `gpt-6-astra` xhigh(태그 `[Rules 검증자]`, Task `task_af30ca5a3c50`, Dispatch `ctx_17955ac87a7e`, 첫 화면 「GPT-6-Astra xhigh」, backend unknown). 계약은 E/pr1-review-contract.md(SHA256 `184520fa…`)이고 turnStart observed였다.
 - 공식 질문 1회(`msg_2d0a1460ab70`): E 밖 근거 링크의 처리와 CURRENT 비교 기준을 물었다. 리드가 손 대조 뒤 보충 v1.1로 답했다(`msg_f1130cc21cbd`, E/pr1-review-answer1.md).
 - 수신 관찰: 실사자 heartbeat 세 통이 subject `[Rules 검증자] alive`와 빈 body로 왔다. identity는 맞았지만 수신 helper는 `body-tag`로 막았다. 빈 heartbeat 예외가 subject를 빈 값이나 정확한 `alive`로만 인정하기 때문이다. 처리할 내용은 없었다(E/lead-check/pr1-review-wait10.md). 수신 helper PR에서 볼 사례다.
+- heartbeat(종료 Gardener가 찾은 누락, 리드 R-2도 놓침): 실사자의 heartbeat 공백이 547초(12:16:06Z → 12:25:13Z)였고, 사이 escalation 12:17:44Z부터는 449초다(E/session/all1.raw.json).
 - 판정(`msg_972725b54b98`, 2026-10-08T12:28:42Z): **차단 D1·D2**(E/pr1-review/verdict.md).
   - D1(리드 기록): 「위험」 1·2번이 기동 시험 전 문구로 남았다. 실사 중 escalation `msg_a85c87acd426`으로 먼저 왔다.
   - D2(작성자 귀속, 리드 계약의 700 bytes 목표가 영향): goal-loop 「구현·검증·수정」 첫 문단에 모델 정본 링크가 없어 시나리오 S1을 그 문단과 링크만으로 따라갈 수 없다.
@@ -193,7 +195,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - O1: ORCA R-5 구절의 goal 링크에 「기동 시험」 앵커를 붙였다.
   - bytes: 묶음 102,656(상한 102,658), ORCA 249줄이다. goal-loop 「위임 계약」의 원본 로그 줄을 줄여 상쇄했다.
 - 리드 R-2(2026-10-08T12:56:30Z): 바뀐 줄 넷과 수치가 보고와 같았다(E/lead-check/pr1-fix-r2.md).
-- 작업자 이탈(첫 관찰, 작성자 자기 보고): heartbeat 간격이 두 번 5분을 넘었다(12:34:23Z → 12:41:21Z → 12:47:34Z). 산출물에는 영향이 없다.
+- 작업자 이탈(작성자 자기 보고. 리드가 처음 기록한 이탈이며, 원시상 첫 발생은 「정본 PR 작성」의 작성 Sol이다): heartbeat 간격이 두 번 5분을 넘었다(12:34:23Z → 12:41:21Z → 12:47:34Z). 산출물에는 영향이 없다.
 - 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr1-fix-release.json, pr1-fix-idle.json, pr1-fix-close.json).
 
 ### 좁힌 재실사
@@ -246,7 +248,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 이탈(첫 관찰, 리드 귀속): 실사자 escalation에 대한 일반 접수 회신을 `reply`로 보내 subject가 `Re: [Rules 검증자] …`가 됐다(`msg_95f44ddf4517`). R-3은 공식 질문 답만 `reply`로 하고 일반 회신은 자기 태그 subject의 `send`로 보낸다. 실사자가 지시로 처리하지 않고 교정을 요청했고(`msg_cf7326e63a9b`), 리드가 `send`로 다시 보냈다(`msg_513f0a49b0d3`, E/lead-check/pr3-review-r3-deviation.md).
 - 운영 관찰: 리드의 백그라운드 우편함 대기가 14:35Z쯤 메모리 부족으로 꺼졌다(E/session/wait29.raw.json 0 bytes). 다시 열지 않고 Orca 터미널 알림으로 받았다.
 - 리드 R-2(E/lead-check/pr3-review-r2.md): 판정 표본 아홉(CLAUDE 기준 bytes, 옮긴 문장 행, numstat, 공백 검사, helper 입출력, BACKLOG 65행, R2 간격, 자기 쓰기 감사, 맥락 메모)이 원천과 같았다.
-- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr3-review-release.json, pr3-review-idle.json, pr3-review-close.json).
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt 확인 뒤 pane을 닫았다(E/pr3-review-release.json, pr3-review-idle.json, pr3-review-close.json). 첫 release는 `--run`을 붙여 `invalid_argument`로 거부됐고, 플래그를 빼고 다시 냈다(E/lead-check/pr3-review-r2.md 19행).
 - PR: [PR212](https://github.com/bass131/dawnholder-server/pull/212)를 만들었다(본문 E/session/pr3-body.md). 메인 승인 묶음 `msg_84b18a708a21`에 R1·R2 교정 층 결정을 함께 올렸고, 메인이 A로 정했다. 메인은 현황판이 옛 리드 태그와 새 리드 태그를 같은 리드로 읽도록 고쳤다고 알렸다(goal 위험 4).
 
 
@@ -296,6 +298,38 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 메인 R-2: 판정 전문을 읽었다. 결함 #1 표본(선행 시험 보고서 16행 「전 줄 CRLF」 대 PR head 두 파일의 CR 바이트 0)으로 불일치를 확인했다. 결론이 LF blob으로도 참이라 비차단에 동의했다. `1f73a67f`의 시험 파일 hash가 판정의 `aeff6f68`과 같고, 판정 뒤 변경은 goal.md뿐임도 확인했다.
 - 메인 지시: 다음 후보(O1~O7, 하네스 tool-results 관찰)는 BACKLOG 후보로만 남긴다. 메인이 사용자에게 묻는 「작업자가 사용자에게 차례를 넘길 때 리드→메인 알림의 정본화」는 이 goal 범위 밖이다.
 - 종료 branch: 2026-10-09T00:50:36Z 최신 main `08028f1b`에서 `docs/tdd-canon-closeout-20261009`를 만들었다. 리드 맥락 메모는 E/closeout-astra-context.md다.
+
+### 종료 Gardener
+
+- 근거: 완료조건 7과 메인 `msg_e46e9b3d5ce3`의 순서다. 메인에 기동을 알렸다(`msg_a446ca3c6dd8`).
+- Gardener: 신규 `claude-opus-5-5`, 태그 `[Rules 검증자]`다. 리드 pane을 split해 R-5 명령(TEMP `.backups/tmp/gd/`)으로 열었다(2026-10-09T00:53:58Z, E/gardener-split.json). 첫 화면은 선택창 없이 「Claude Code v2.1.295 · Opus 5.5 with xhigh effort」였다(E/gardener-first-screen.json). backend는 unknown이다. Task `task_8aa0bcb10eab`, Dispatch `ctx_ec2dd5166879`이고 turnStart observed였다.
+- 계약: E/gardener-contract.md v1(SHA256 `263a1cc4…`, 고정 HEAD `ecdb8ae3`)이다. 쓰기는 E/gardener/report.md 한 파일이다. 고정 입력 29개의 경로·hash는 E/gardener-inputs.json, 경로 확인은 E/gardener-contract-pathcheck.txt다. Gardener는 네트워크를 쓰지 않으므로 리드가 계약 전에 CI 원시를 받아 두었다(E/session/ci-final-pr211.json·ci-runs-pr211.json, PR212·PR213도 같은 이름).
+- 완료: worker_done `msg_8483ef4b00c6`(01:13:43Z, succeeded)을 수신 helper가 허용했다(E/gardener-worker-done-check-output.json). 보고서는 [E/gardener/report.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/gardener/report.md)(SHA256 `738ad4c0…`, 380줄)다. 고정 입력 29개의 hash와 HEAD·status는 시작과 끝이 같았고, 범위 밖 명시 쓰기는 0이다.
+  - 집계: 확정 실패 3회 도달 0, 번호 매긴 독립 결함 7(차단 6은 문서 수정 2·메인 결정 4로 해소, 비차단 1은 기록 정정), CI 실패·재실행 0(36회 실행), 승인 없는 경고 억제·설정 완화 0, 검사를 끈 우회 0이다.
+  - 드리프트 G2-a(새 발견, 낮음): ORCA 73행의 reply 예외가 아직 「1.4.218 버전 한정」이다. 바로 아래 75행의 ask 예외는 help 근거로 바뀌었다. 이 goal의 공식 질문 답 여섯은 1.4.222에서 `reply`로 보냈고, reply help에 `--subject`가 없다는 캡처는 있었다. 운용은 맞고 문장이 낡았다.
+  - 드리프트 G2-b(새 발견, 낮음): 지정 TEMP(`.backups/tmp/<이름>/`)를 ORCA R-5·templates·goal-loop가 다르게 부르고, 작업자가 receipt를 거기 써도 되는지 정하지 않는다. 그래서 선행 시험 작성자와 독립 검증자의 receipt가 근거 폴더 밖 `.backups/tmp/pt/`·`.backups/tmp/rv/`에 남았다. 계약 위반은 아니다.
+  - 반복(원시 기준): heartbeat 5분 초과 9구간·7세션, 공식 계약 draft 미제출 5건(모두 Codex), 규칙 묶음 측정 스크립트 11개, PowerShell `date -u` 별칭 실패 4세션, 리드 R-2 누락 3건, 리드 원시 형식 때문의 첫 파싱 실패 2건이다. 리드 이탈 7건은 종류별 첫 발생이다.
+  - 정리 후보 둘(제안): ① heartbeat 간격 원시 집계 helper와 fixture 시험. 아래 「다음 계획 후보」의 작업자 생존 확인 줄에 근거를 더하는 형태다. ② 공식 계약 draft 대조 helper와 fixture 시험(새 후보). 손으로 하던 크기 대조와 Enter 뒤 전문 대조를 도구로 옮긴다. 채택은 메인을 거쳐 사용자가 정한다.
+- 리드 확인:
+  - 표본: heartbeat 세 구간(답 뒤 420초, 774초, 547초)과 태그 붙은 heartbeat를 원시에서 다시 쟀고 보고서와 같았다(E/lead-check/gardener-sample.mjs).
+  - Gardener가 요청한 확인: 01:10:21Z~01:11:02Z 사이 리드가 이 Dispatch로 보낸 메시지는 없다. 버린 check 출력에 리드 후속은 없었다.
+  - Enter 뒤 계약 전문 대조: Gardener가 「기록 0건」으로 짚었다. 리드가 Codex 세션 기록에서 다섯 Dispatch의 제출 입력을 찾아 계약 전문과 대조했다. 다섯 모두 입력 하나가 계약 전문을 담았고, 계약 밖 글자는 머리말 4,787자였다. 계약을 담은 입력은 Dispatch마다 하나라 중복 제출도 없다(E/lead-check/draft-postcheck.mjs, 출력 draft-postcheck.out.txt의 mtime 2026-10-09T01:15:13Z).
+- 기록 정정(Gardener G5): 「정본 PR 작성」에 작성 Sol heartbeat 420·774초와 태그 붙은 heartbeat 4통을, 「정본 PR 문서 실사」에 실사자 547초를 더했다. 「실사 결함 수정」의 「첫 관찰」은 리드가 처음 기록한 시점이고, 원시상 첫 발생은 정본 PR 작성 Sol이다. 메인 결정 `msg_e7dd27f2bb2d`의 「첫 발생」도 그 기록에 기댔다. 뒤 결정 `msg_a8e661983ce5`가 이미 도구 층을 골라 결론은 같다. 「리드 태그 PR 문서 실사」 정산에는 첫 release 거부를 더했다.
+- 리드 이탈(리드 귀속, 같은 일 다섯 번): ORCA 「공식 계약 draft 복구」의 Enter 뒤 계약 전문 대조를 그때 하지 않았다. 다섯 번 모두 크기 대조와 Enter로 끝냈다. 이번 사후 대조로 결과는 확인했다. 정리 후보 ②가 이 일의 도구 층 교정이다.
+- 작업자 이탈(Gardener 자기 보고, 첫 관찰): `/tmp` 측정 중 check 출력 한 번을 `/dev/null`로 버렸다. 위 확인대로 잃은 후속은 없다. BACKLOG `mailbox-output-loss-hook`과 같은 갈래다.
+- 관찰: Gardener가 도는 동안 Git Bash `/tmp`에 빈 `.tmp*` 디렉터리 40개가 생겼다. Gardener 명령 앞뒤로는 개수가 변하지 않아 생성 주체는 미확인이다.
+- 정산: release `retained`(`external_terminal`), tui-idle과 빈 prompt를 확인하고 01:14:37Z에 pane을 닫았다(ptyKilled). 재조회에서 rules-active에는 리드만 있었다(E/gardener-release.json, gardener-idle.json, gardener-close.json, gardener-list-after-close.json).
+
+### 종료 점검 자료
+
+메인이 사용자와 결과·남은 위험·BACKLOG·다음 계획을 확인할 때 쓰는 자료다. 다음 goal은 자동으로 시작하지 않는다.
+
+- 목표 상태: 완료조건 1~6을 충족했다. 근거는 1은 「좁힌 재실사」, 2는 「기동 시험」, 3은 「리드 태그 PR 문서 실사」, 4는 「수신 helper 독립 검증」, 5는 각 PR의 bytes 기록, 6은 「PR211 병합」·「PR212 병합과 재진입」·「PR213 병합」이다. 7은 종료 기록 PR 병합과 R-8이 남았다.
+- PR: PR211(`127cc5a1`), PR212(`5a1752eb`), PR213(`08028f1b`)이 병합됐다. 세 PR 모두 메인 창 승인 줄로 병합됐고, 최종 head의 CI 네 항목이 SUCCESS였다(실패·재실행 0). 종료 기록 PR은 branch `docs/tdd-canon-closeout-20261009`(base `08028f1b`)다.
+- 보존할 정책: TDD 문단은 정본 PR 병합 뒤 범위 승인을 받는 goal부터 적용한다. 기동 TEMP 구절은 남기고 Git Bash `/tmp`는 양식의 금지와 자기 쓰기 감사로 막는다. 병합 전에 연 리드 세션은 종료까지 옛 태그를 쓴다. 공식 ask 예외는 같은 CLI의 help 근거로 판정한다.
+- 검증: `node --test 99_Tools/Orca.Tests/message-policy.test.mjs` 27/27(리드 재현, 같은 명령이 CI code-rules에 있다). 서버 빌드·게임·DB는 이 goal이 건드리지 않아 해당 없음이다. 미실행은 각 절의 「미실행」 줄과 Gardener 보고서 「미실행과 한계」에 있다.
+- 남은 위험: 「위험」 1(Git Bash `/tmp`는 지정을 따르지 않음)과 2(`split --command`가 기본 셸에 타이핑된다는 전제는 추론)는 그대로다. 문안 드리프트 둘(Gardener G2-a·G2-b)과 Claude 하네스의 홈 자동 쓰기는 BACKLOG 후보로 넘겼다. 크리티컬 위험은 없다.
+- 로드맵 초안(사용자 확인 필요): 최소 운영 셋업 순서([병합 관문 goal 「다음 계획 후보」](../2026-10-06-merge-gate-canon-refresh/goal.md#다음-계획-후보))상 다음은 3단계 「계획 경계」다. 넘긴 후보가 BACKLOG에 실제로 도착했는지 확인하는 장치이고, BACKLOG `backlog-id-extraction-check`를 같은 범위 판단에서 본다. 3단계 마지막 PR의 병합 커밋이 게임 재개 합류점이다(「적용 중인 사용자 결정」). 그 뒤 순서는 우편함 대기 출력 유실 hook → 하네스 마무리 → 보고 방식 → 자기 개선 루프 그대로다. 순서를 바꾸자는 제안은 없다. Gardener 후보 둘이 채택되면 같은 Orca 도구 층인 우편함 대기 출력 유실 hook 단계에서 함께 보길 권한다.
 
 ## 정본에서 옮긴 적용 기록
 
@@ -357,7 +391,7 @@ M-1 관찰·출처와 미검증 구분은 [이관 기록](../../01_Phases/goals/
 
 - 리드 태그 PR 실사 O1(Rules): AGENTS 전환 문단의 「종료까지」를 다음 문안 정비 때 「세션 종료까지」처럼 주체를 밝힐지 본다. 여섯 파일 묶음 여유가 3 bytes라 바꾸면 다시 잰다.
 - 리드 태그 PR 실사 O2(Rules): BACKLOG 65행 「Astra 갱신 책임」의 호칭을 그 행을 손볼 때 정리할지 본다. 지금은 AGENTS 전환 문단이 당시 이름으로 해석하게 한다.
-- 작업자 생존 확인의 도구 층 교정(Rules, 메인 결정 `msg_a8e661983ce5`): 예를 들어 리드 대기 중 heartbeat 공백이 5분을 넘으면 작업자 화면 상태를 읽어 기록하는 helper를 둘 수 있다. 장문 작성 중 heartbeat를 대신 보내는 방법도 검토한다. 5분 간격 자체가 긴 작성에 맞는지도 함께 본다. 문서로 끝내지 않는 이유: 「긴 작성 직전 heartbeat 한 번」 계약 문장을 두 작업자가 지켰는데도 한 번의 긴 작성이 5분을 넘었다(R1 363초, R2 337초). 작업자는 한 번의 긴 생성 도중에는 heartbeat를 보내지 못하는 것으로 보인다(추론, 미실증).
+- 작업자 생존 확인의 도구 층 교정(Rules, 메인 결정 `msg_a8e661983ce5`): 예를 들어 리드 대기 중 heartbeat 공백이 5분을 넘으면 작업자 화면 상태를 읽어 기록하는 helper를 둘 수 있다. 장문 작성 중 heartbeat를 대신 보내는 방법도 검토한다. 5분 간격 자체가 긴 작성에 맞는지도 함께 본다. 문서로 끝내지 않는 이유: 「긴 작성 직전 heartbeat 한 번」 계약 문장을 두 작업자가 지켰는데도 한 번의 긴 작성이 5분을 넘었다(R1 363초, R2 337초). 작업자는 한 번의 긴 생성 도중에는 heartbeat를 보내지 못하는 것으로 보인다(추론, 미실증). 종료 Gardener 후보 ①이 원시 9구간·7세션 근거와 간격 집계 helper·fixture 검사화 방법을 더했다.
 - 수신 helper 검증 관찰(Rules):
   - O1 `official-ask-proof` 진단 path를 필드별로 낸다.
   - O2 `official-ask-mismatch`의 수리 안내에서 help 재확인을 빼고 receipt·메시지 대조로 좁힌다.
@@ -367,3 +401,8 @@ M-1 관찰·출처와 미검증 구분은 [이관 기록](../../01_Phases/goals/
   - O6 AGENTS 47행 「버전 한정 subject 예외」를 「help 근거 한정」으로 고친다. 지금 읽기로도 틀리지 않으나 상수가 남았다고 오해할 수 있다.
   - O7 BACKLOG 120행 덧붙인 출처의 KST 날짜를 UTC 시각과 Task ID로 바꾼다.
 - Claude 작업자 하네스 쓰기(Rules): 큰 도구 출력은 하네스가 `~/.claude/projects/…/tool-results/`에 자동 저장한다. 위임 계약의 허용 쓰기 위치에서 이를 어떻게 다룰지 정한다. 작업자가 막을 수 없는 하네스 동작이다.
+- 종료 Gardener 후보 ②(Rules, 새 후보): 공식 계약 draft 대조 helper와 fixture 시험. Enter 전 placeholder 크기 판정과 Enter 뒤 세션 기록의 계약 전문 대조를 도구로 옮긴다. 이 goal에서 다섯 번 손으로 계산했고 Enter 뒤 대조는 사후에 했다(「종료 Gardener」).
+- 종료 Gardener 드리프트(Rules): G2-a ORCA 73행 reply 예외를 75행과 같은 help 근거로 맞춘다(수신 helper O6과 함께). G2-b 지정 TEMP의 용도(하네스 임시 파일만인지, receipt도 되는지)를 ORCA R-5·templates·goal-loop에서 한 뜻으로 맞춘다.
+- PowerShell 시계 명령(Rules): Codex PowerShell 세션 넷에서 `date -u`가 Get-Date 별칭으로 실패했고, 모두 Git `date.exe`로 다시 실행했다. 양식의 「`date -u` 같은 시계 명령」 안내에 PowerShell 대안을 적을지 본다.
+
+종료 기록에서 위 후보를 BACKLOG 「TDD·임시 쓰기 goal에서 연결한 후보」에 등록했다. 등록은 채택·착수 권한이 아니다.
