@@ -282,4 +282,68 @@ Assert-True -Name 'New-TestDatabase OfflinePlan with another manifest path rejec
     $offlineWrongPath.ExitCode -ne 0 -and ($offlineWrongPath.StdOut + $offlineWrongPath.StdErr) -cmatch 'not the exact approved absolute path') `
     -Detail ('exit=' + $offlineWrongPath.ExitCode)
 
+# ---- SQL executor identity: evaluate the product guard without opening its SqlConnection boundary.
+# The actual if statement comes from the product AST; fixture expectations are fixed pass/reject outcomes.
+$executorTokens = $null
+$executorParseErrors = $null
+$executorCommonPath = Join-Path $script:ToolRoot 'test-environment/Environment.Common.ps1'
+$executorCommonAst = [Management.Automation.Language.Parser]::ParseFile(
+    $executorCommonPath, [ref]$executorTokens, [ref]$executorParseErrors)
+Assert-Equal -Name 'SQL executor guard product source parses' -Expected 0 -Actual $executorParseErrors.Count
+$executorOpenAst = $executorCommonAst.Find({
+        param($node)
+        $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -ceq 'Open-TestEnvironmentDatabase'
+    }, $true)
+Assert-True -Name 'Open-TestEnvironmentDatabase exists in the product source' -Condition ($null -ne $executorOpenAst)
+$executorGuards = @()
+if ($null -ne $executorOpenAst) {
+    $executorGuardPredicate = {
+        param($node)
+        $node -is [Management.Automation.Language.IfStatementAst] -and
+        $node.Extent.Text.Contains("throw 'Exact local instance and privileged SQL executor required.'")
+    }
+    $executorGuards = @($executorOpenAst.FindAll($executorGuardPredicate, $true))
+}
+Assert-Equal -Name 'the exact SQL executor guard is unique in the product function' `
+    -Expected 1 -Actual $executorGuards.Count
+if ($executorGuards.Count -eq 1) {
+    $executorGuardText = 'param($row, $Manifest, $Contract)' + "`n" + $executorGuards[0].Extent.Text
+    [IO.File]::WriteAllText((Join-Path $script:SuiteRoot 'sql-executor-guard.ps1'),
+        $executorGuardText, (New-Object Text.UTF8Encoding($false)))
+    $executorGuardBlock = [scriptblock]::Create($executorGuardText)
+    $executorManifest = [pscustomobject]@{ Machine = 'FIXTUREHOST' }
+    $executorContract = [pscustomobject]@{ InstanceName = 'FIXTURE' }
+    foreach ($case in @(
+            @{ Name = 'identical machine name case'; Machine = 'FIXTUREHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
+                Accepted = $true },
+            @{ Name = 'machine names differing only in case'; Machine = 'FixtureHost'; InstanceName = 'FIXTURE';
+                IsSysadmin = 1; Accepted = $true },
+            @{ Name = 'a different machine name'; Machine = 'OTHERHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
+                Accepted = $false },
+            @{ Name = 'a different instance name'; Machine = 'FIXTUREHOST'; InstanceName = 'OTHER'; IsSysadmin = 1;
+                Accepted = $false },
+            @{ Name = 'a non-sysadmin executor'; Machine = 'FIXTUREHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 0;
+                Accepted = $false }
+        )) {
+        $sqlIdentity = [pscustomobject]@{
+            Machine = $case.Machine
+            InstanceName = $case.InstanceName
+            IsSysadmin = $case.IsSysadmin
+        }
+        $executorMessage = Get-ThrownMessage -Action {
+            & $executorGuardBlock -row $sqlIdentity -Manifest $executorManifest -Contract $executorContract
+        }
+        if ($case.Accepted) {
+            Assert-True -Name ('SQL executor guard accepts ' + $case.Name) `
+                -Condition ($null -eq $executorMessage) -Detail ([string]$executorMessage)
+        } else {
+            $executorRejected = $null -ne $executorMessage
+            Assert-True -Name ('SQL executor guard rejects ' + $case.Name) -Condition $executorRejected
+            Assert-Equal -Name ('SQL executor guard preserves the exact error for ' + $case.Name) `
+                -Expected 'Exact local instance and privileged SQL executor required.' -Actual $executorMessage
+        }
+    }
+}
+
 Complete-TestSuite
