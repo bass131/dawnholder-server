@@ -25,6 +25,8 @@ namespace Dawnholder.Client.Tests
         internal readonly CanvasGroup Group;
         internal readonly ManualConnectionQueue Queue = new();
         internal readonly List<Action> Delayed = new();
+        internal readonly List<float> Delays = new();
+        internal readonly List<float> Deadlines = new();
         internal readonly TestSocketPair Sockets;
         internal readonly UnityClientSession Session;
         internal readonly EntryBindingFixture Views;
@@ -54,11 +56,12 @@ namespace Dawnholder.Client.Tests
             SessionTestTools.Call(Popup, "OnEnable");
             Group = Popup.GetComponent<CanvasGroup>();
             Sockets = new TestSocketPair();
-            Session = new UnityClientSession(() => Current, Queue.Post, (action, _) =>
+            Session = new UnityClientSession(() => Current, Queue.Post, (action, delay) =>
             {
                 BeforeSchedule?.Invoke();
                 Delayed.Add(action);
-            });
+                Delays.Add(delay);
+            }, (action, seconds) => Deadlines.Add(seconds));
             Session.Start(Sockets.Client);
             Session.Publish();
             Views = new EntryBindingFixture(Session);
@@ -73,7 +76,9 @@ namespace Dawnholder.Client.Tests
         {
             SessionTestTools.Handshake(Session, Queue);
             Views.Begin();
+            int readyFrom = Delayed.Count;
             Views.Ready();
+            ReadyInventoryQuery.Consume(Sockets, Delayed, Delays, readyFrom, Deadlines);
         }
         internal void AssertVisible(bool visible)
         {
@@ -229,7 +234,15 @@ namespace Dawnholder.Client.Tests
             h.AssertVisible(false);
             h.AssertNoPacket();
             if (gate == "generation") h.Current = false;
-            if (gate == "epoch") { h.Views.Begin(); h.Views.Ready(); }
+            if (gate == "epoch")
+            {
+                // The popup-state hook guards the party click only; the new entry's R4 inventory query is checked by Consume.
+                h.BeforeSchedule = null;
+                h.Views.Begin();
+                int readyFrom = h.Delayed.Count;
+                h.Views.Ready();
+                ReadyInventoryQuery.Consume(h.Sockets, h.Delayed, h.Delays, readyFrom, h.Deadlines);
+            }
             if (gate == "closed") h.Session.OnDisconnected(new IPEndPoint(IPAddress.Loopback, 1));
             h.Delayed[0]();
             if (gate == "live") h.AssertResponse(false); else h.AssertNoPacket();

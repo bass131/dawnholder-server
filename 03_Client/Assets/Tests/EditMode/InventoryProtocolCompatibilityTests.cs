@@ -13,7 +13,7 @@ namespace Dawnholder.Client.Tests
     // 2026-10-05-items-inventory-currency/goal.md and its PR1 acceptance): LittleEndian, 4-byte header
     // (ushort size including the header, ushort id), IDs 35..38 after 34, protocol version 17.
     // They are written as literals here, never computed from the generator or the server.
-    // Inventory UI and play are out of scope; the client has no inventory handler yet.
+    // The client handler side of S_InventorySnapshot is covered in depth by InventoryClientContractTests.
     public sealed class InventoryProtocolCompatibilityTests
     {
         UnityClientSession _session;
@@ -156,20 +156,23 @@ namespace Dawnholder.Client.Tests
             Assert.AreEqual(50, ItemCatalog.For(ItemId.CoinPouch).CurrencyOnUse);
         }
 
-        // PR1 servers push S_InventorySnapshot on every kill. Until PR2 adds a handler, the current
-        // client must drop it through the existing unknown-ID path without closing the connection.
+        // PR1 servers push S_InventorySnapshot on every kill. PR2 registers its handler (pr2-acceptance.md
+        // R2/R3), so the current client applies the push on the main drain instead of the unknown-ID drop
+        // and keeps the connection open.
         [Test]
-        public void CurrentClient_DropsAnInventoryPushWithoutClosing()
+        public void CurrentClient_AppliesAnInventoryPushWithoutClosing()
         {
             var queue = new ManualConnectionQueue();
             _session = new UnityClientSession(() => true, queue.Post);
+            using InventoryMirrorProbe mirror = InventoryMirrorProbe.TryPublish();
             byte[] push = Bytes(new S_InventorySnapshot { revision = 1, currency = 10, slot0ItemId = 1, slot0Count = 1 }.Write());
 
-            LogAssert.Expect(LogType.Warning, "[Unity] Unknown PacketId 36 — dropped");
             _session.OnRecvPacket(new ArraySegment<byte>(push));
             queue.Drain();
 
+            LogAssert.NoUnexpectedReceived();
             Assert.IsFalse(_session.IsClosed);
+            new ServerInventory(1, 10, (ItemId.Material, 1)).AssertShownBy(mirror.Require(), "PR1 push applied by the PR2 client");
         }
 
         static byte[] Bytes(ArraySegment<byte> segment)
