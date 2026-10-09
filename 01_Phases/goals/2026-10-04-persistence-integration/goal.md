@@ -551,7 +551,19 @@
   - 정산: release `retained`, tui-idle·「done」 확인 뒤 pane을 닫았다(03:17:40Z). 리드 정산 status는 `msg_228eed9b5e6e`다.
 - **메인 처리(`msg_8dc44a600d42`, 메인 판단):** 카드 v3를 SHA 그대로 전달한다. RTY-09는 현황판 실행 안내에 「③을 다시 붙이면 『This window is already prepared …』로 시작하는 빨간 오류 몇 줄」로 적고 네 번째 수정은 하지 않는다. RTY-10은 다음 카드 수정 때 함께 고친다. O-v3-1은 실행 뒤 정산 기록에서 「`execution-02` = 2회차, 승인 `msg_5eead86348d8`」을 원시 경로와 함께 적어 닫는다.
 - **카드 v3 전달(메인 `msg_3c8cb49dabe1`):** 시간 창은 메인 `date -u` 출력 2026-10-09T03:18:40Z(12:18 KST)부터 24:00 KST까지다. 메인은 현황판 항목 `core-card-v3-run`을 「지금 시작」으로 바꿨고, 클립보드에는 ③ 줄만 넣고 사용자 「다음」마다 한 줄씩 바꾼다.
-- **다음 할 일:** 사용자 실행 중이다. 사용자는 현황판 항목 `core-card-v3-run`으로 ⑩에서 「B2 끝」이나 「멈춤」을 답하고, 메인이 즉시 리드에 전한다. 리드는 B2 기록을 읽어 대조 결과를 status로 보낸다. 실행이 끝나면 정산 기록에 O-v3-1을 닫는다.
+- **2회차 실행 기록(원시 N/`execution-02/user-window.txt`):**
+  - ③은 12:20:20 KST에 한 번 실행됐다(PID 30908, ProductMismatches 0, G2 `msg_12b862fc72c0`). ⑤는 12:21:15에 정상이었다.
+  - ④ diskpart 줄이 창 기록에 없는데 D:는 붙어 있었다. ③ 전이나 다른 창에서 붙였을 수 있어 메인이 사용자에게 묻는다(메인 `msg_c0375c8f2b29`). 정산 때 기록한다.
+  - ⑥은 12:22:43에 Running, ⑦ A1은 12:23:07에 Completed true였다. 이때 fixture-manifest.json(State Planned)과 .lock이 생겼다.
+- **2회차 ⑧ A2 멈춤(메인 `msg_9d18aa770d73`, 03:24:29Z):** 오류 「Exact local instance and privileged SQL executor required.」, `Completed:false`(New-TestDatabase.ps1:250)다. SQL은 Running이고 D:는 붙은 채다.
+  - 유력 원인(측정 + 추론): SQL이 보고하는 기계 이름이 대소문자 섞인 「YYH_Desktop」이다(오늘 처치 sqlcmd @@SERVERNAME `runs/02b-two-service-starts.txt` 37행, ERRORLOG 「Server name is 'YYH_Desktop\SQLEXPRESS'」). 제품 Environment.Common.ps1 937행은 SERVERPROPERTY('MachineName')을 manifest Machine 「YYH_DESKTOP」과 `-cne`로 비교한다. MachineName·IsSysadmin을 직접 잰 원시는 아직 없다.
+  - 리드 답 1 `msg_5b514d9a28ac`: 같은 창의 sqlcmd 읽기 한 줄(machine_name·instance_name·is_sysadmin·original_login·test_db_id)을 보내고, 그 뒤 ⑬→⑭→⑮→업데이트 화면→D: 꺼내기로 정지하도록 제안했다. ⑯ 카드 조건이 안 맞아 꺼내기는 메인이 명시적으로 지시한다.
+  - 리드 답 2 `msg_a1d7366c2b0b`: manifest는 State Planned·Steps []·UpdatedUtc = A1 시각이라 A2가 바꾸지 않았다. .lock은 OpenOrCreate라 막지 않는다. 그래서 정리 없이 A2부터 재시도할 수 있고, A1은 다음 카드에서 뺀다.
+    - 실행 JSON의 Machine을 바꾸는 길은 없다(486행 `$env:COMPUTERNAME -cne Machine`).
+    - 제품 937행을 대소문자 무시 비교로 고치는 한 줄과 시험이 필요하다. 이 함수는 2단계·정리도 모두 지난다.
+    - 선택지: A(제품 PR → 재고정 → 준비 블록 3회차·카드 v4 → review-v4 → 3회차, 리드 추천) / B(오늘 정지·보존, SQL 환경 단순화 먼저).
+  - 리드 이탈(첫 관찰): 오늘 아침 처치 원시의 @@SERVERNAME 「YYH_Desktop」을 재시도 계획·실사 계약에서 도구의 `-cne` 비교와 연결하지 못했다. 10-05 실사·시험(양쪽 'FIXTUREHOST')도 MachineName을 실측하지 않았다.
+- **다음 할 일:** 사용자 확인 한 줄 결과와 정지를 기다린다. 그 뒤 메인·사용자 A/B 결정을 따른다. 예전 계획(실행 중 B2 대조)은 A2 멈춤으로 보류다. 사용자는 현황판 항목 `core-card-v3-run`으로 ⑩에서 「B2 끝」이나 「멈춤」을 답하고, 메인이 즉시 리드에 전한다. 리드는 B2 기록을 읽어 대조 결과를 status로 보낸다. 실행이 끝나면 정산 기록에 O-v3-1을 닫는다.
 - **사용자 손·결정 대기:** 카드 v3 실행. 주간 사용량 99%(사용자가 초기화권 사용 의사 밝힘).
 
 ### Fable 작업자 SQL 서비스 진단·처치 — 2026-10-08T23:12Z
