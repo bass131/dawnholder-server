@@ -96,7 +96,7 @@
 - [ ] 시험 DB 정리
 - [ ] 결과 기록·종료
 
-현재 표시된 DB 생성 실행 단계는 **10-05 서비스 시작 실패로 중단된 상태**다. 시작 문제는 10-09 Fable 작업자 처치로 서비스 시작이 다시 됐지만(설정 변경 없음, 원인 미확정), DB 생성 1단계 재시도는 따로 사용자 승인을 받는다. DB 생성·설치 성공으로 표시하지 않는다. 체크포인트 PR #190은 2026-10-06에 병합됐다(아래 「PR #190 병합 결과」). 엔진 판정은 새 branch `feat/persistence-engine-judgment-20261006`의 다음 PR이다. 이 체크리스트는 상태 전환 때 담당 리드가 갱신한다.
+현재 표시된 DB 생성 실행 단계는 **10-05 서비스 시작 실패로 중단된 상태**다. 시작 문제는 10-09 Fable 작업자 처치로 서비스 시작이 다시 됐지만(설정 변경 없음, 원인 미확정), DB 생성 1단계 재시도는 따로 사용자 승인을 받는다. 10-09 재시도 1회차는 ③ 중복 실행으로, 2회차는 ⑧ A2의 컴퓨터 이름 대소문자 비교로 멈췄다. 2회차 원인은 PR215로 고쳤고 3회차 카드 v4는 실사 PASS 뒤 사용자 실행 승인을 기다린다(아래 「DB 생성 1단계 재시도 계획」). DB 생성·설치 성공으로 표시하지 않는다. 체크포인트 PR #190은 2026-10-06에 병합됐다(아래 「PR #190 병합 결과」). 엔진 판정은 새 branch `feat/persistence-engine-judgment-20261006`의 다음 PR이다. 이 체크리스트는 상태 전환 때 담당 리드가 갱신한다.
 
 ## DB 장치 전제 정정 — C:\myVHDX.vhdx
 
@@ -580,8 +580,24 @@
   - branch `fix/test-env-machine-name-case-20261009`(origin/main `95d8a822`)를 core-active에서 만든다. Sol·검증자는 core-active pane split에서 이 branch에 쓰고, commit/push는 리드가 한다.
   - goal 기록은 이 goal branch에 남긴다. 수정 branch가 체크아웃된 동안의 진행은 근거 폴더 메모에 두고, PR 생성 뒤 goal branch로 돌아와 옮긴다.
   - 근거 폴더는 `machine-name-case-fix/`(lead·implementation·review)다. 메인 checkout `08028f1b`과 origin/main 사이 `99_Tools/` 차이는 0이다.
-- **다음 할 일:** Sol 계약 발행 → Sol 구현·시험 → 신규 Opus 강 검증 → PR 생성·메인 보고 → 사용자 병합 승인 → 메인 checkout 갱신(리드가 재고정 시점 알림) → 제품 목록 재고정·준비 블록 3회차·카드 v4 생성 → review-v4 → 메인이 사용자에게 실행 승인을 묻는다. 정산 때 ④ 창 기록 공백과 O-v3-1을 기록한다.
-- **사용자 손·결정 대기:** PR 병합 승인과 3회차 실행(오늘 24:00 KST 전 목표). 주간 사용량 99%(사용자가 초기화권 사용 의사 밝힘).
+- **수정 PR 구현·검증(근거 F = E/`machine-name-case-fix/`):**
+  - Sol(task `task_4cb9f7dfd054`)이 Environment.Common.ps1 MachineName 비교만 `-cne`→`-ine`으로 바꾸고 이유 주석 한 줄을 더했다. 시험 11개도 더했다(commit `ac3e1019`). 고치기 전 FAIL은 실행 2 「SQL executor guard accepts machine names differing only in case」다(F/`implementation/report.md`, 이름 비교 전수표 포함).
+  - 기준선에서 ModuleBundle이 fixture 편집 단계에서 멈췄다. 원인은 core-active 작업 사본 24개 파일의 CRLF(i/lf w/crlf)다. 계약 보충 1과 Sol 질문 답(`msg_2ace7f0bd39f`)으로 기존 중단을 보존하고 시험·줄 끝은 고치지 않았다. 메인 checkout은 LF라 해당하지 않는다.
+  - 신규 Opus 강 검증(task `task_89d53a1541b7`): PASS, 결함 0(F/`review/verdict.md`, SHA256 `CFC1967D…CE3F`). SqlConnection만 대역으로 바꾼 New-TestDatabase Plan→Create 실제 진입 4 시나리오가 기대와 같았다. 검증자 경계 시험 15개는 리드가 별도 commit `09daf2a9`로 올렸다. 비차단 O-1(catalog collation 근거)은 이 기록으로 남긴다. O-2(주석 보강)는 「실패하는 비교만, 리팩토링 금지」라 적용하지 않았다. O-3(연결 경로 회귀 시험)은 후속 후보다.
+  - Sol·검증자 쓰기 감사는 둘 다 허용 밖 0이다(F/`lead/sol-settlement.txt`, `verifier-settlement.txt`).
+  - 메인 제안 `msg_e748ffe245b4`로 draft PR215를 먼저 열어 CI를 검증과 겹쳐 돌렸다. 판정 뒤 본문 검증 절을 채우고 draft를 해제했다. 승인 묶음은 `msg_e5965f81feba`, head `09daf2a9`의 CI 4개 SUCCESS는 `msg_d770b535ee37`이다.
+- **PR215 병합(메인 `msg_32231deb9baa`):** 사용자가 메인 창에 「병합 승인: PR215 head 09daf2a938931f6a103d2a09de9dc43a5c3f0bf1」을 제출했다. 병합 commit은 `89a2c0225ea38a846f5b6c163620a9e828a610e3`(08:03:11Z)이고, 메인 checkout은 ff로 받았다.
+- **3회차 준비(N, 리드 메모 N/`context-memo-v4.md`):**
+  - 재고정 `product-inputs-03.json` SHA256 `E1CB15616131A1897E7F7DD18FACC1056F9C1F89227AFF4527C2C3FF71E62C5E`. 39개 중 Environment.Common.ps1 하나만 바뀌었다(`5AFD166F…8CEF`, 50,792 bytes, PR 검증 대상과 같음).
+  - 준비 블록 `submissions-03/03-prepare.ps1` SHA256 `BFA9826C2FAC349F69B2F041B9A24AA3B11EA35255019959C7C5A28A5C48A02F`. 2회차와 머리 주석·근거 폴더 `execution-03`·고정 목록 경로·SHA만 다르고, 재실행 방어는 같다.
+  - 카드 v4 `step-card-v4.md` SHA256 `394A7D5886A9E8970F4366EC13DDC8C396838AA1C51CE66BC02BB632BE7ABD47`(140줄). A1을 빼고 ⑧ A2부터 하며, RTY-09·RTY-10을 고쳤다. 실행 줄 13개는 모두 한 문장이고 리터럴 뺀 길이는 89다.
+- **review-v4(신규 Opus, task `task_50ed512e632b`):** PASS(전달 가능), 차단 결함 없음(N/`review-v4/verdict.md`, SHA256 `3DE455259CD11292005E9D598AC51BDF6ECAB3113A6149417FEA455A72C1DF17`).
+  - 실사자 질문 `msg_bce8efe1c33d`에 리드가 답했다(`msg_491ff8a5ba13`). 제출 08~11의 이름 비교·throw 줄을 읽게 허용했고, B2·A3·B3에도 2회차 이름 값으로 멈출 비교가 없다고 판정됐다.
+  - 비차단 RTY-11(리드 메모 자기 쓰기 감사 빈틈): repin 출력을 처음 `repin-03-utc.txt`·`repin-03-output.txt`로 나눠 썼다. 그 뒤 `repin-products-03.txt`로 합치고 두 파일은 지웠는데, 이 사실이 감사에 없다. `review-v4/path-check.ps1`도 병합 뒤 병합 알림 원천(`wait-121.json`)을 더하려고 고쳤다. 값은 실사자가 독립 재계산으로 같음을 확인했다.
+  - 메인 처리(`msg_e581671e6e33`, 메인 판단): R-2 표본이 일치했다. O-v4-1·O-v4-2(카드 문장 두 곳)는 다섯 번째 수정을 만들지 않으려고 고치지 않는다. 사용자에게는 「2회차에 이 설정으로 SQL 연결·조회까지는 됐다」를 메인이 전한다. 다음 카드 수정이 생기면 함께 고친다. O-v4-3(3회차 승인 msg ID ↔ execution-03 연결)은 3회차 정산 때 적는다.
+  - 정산: pane을 08:29:05Z에 닫았다. 쓰기 감사에서 허용 밖은 0이다(N/`review-v4/settlement.txt`).
+- **다음 할 일:** 메인이 사용자 3회차 실행 승인을 받으면 dispatch로 원문·msg ID를 받는다(카드 23행의 실행 승인). 실행 중 단계 출력은 메인이 대조하고, ⑩ B2 끝에서 리드가 B2 기록을 대조한다. 정산 때 ④ 창 기록 공백, O-v3-1, RTY-11, O-v4-3을 기록한다.
+- **사용자 손·결정 대기:** 3회차 실행 날짜와 승인(오늘 24:00 KST 전 목표).
 
 ### Fable 작업자 SQL 서비스 진단·처치 — 2026-10-08T23:12Z
 
