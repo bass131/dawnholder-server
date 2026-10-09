@@ -19,21 +19,24 @@ PR 번호가 생기면 「제품 PR 병합」 같은 단계 이름을 「PR000 �
 
 ## 재개 지점
 
-**기록 시점: 2026-10-09 10:24 KST, 홈페이지 작업 보류(메인 `msg_85f428583e64`, 사용자 원문 「일단 Management 세션 정리좀 해줘, 당장 홈페이지 작업은 보류」).** 사용자는 첫 판 PR207을 보류하고 디자인을 다시 하기로 했고(아래 「디자인 재작업 범위 개정」), 시안 D1을 골랐다(「시안 선택과 E2E·밀도 요구」). 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
+**기록 시점: 2026-10-09 22:41 KST, 보류 중 합류점 J 받기(메인 `msg_e2beca76b1bd`, 「합류점 J 맞춤에 Management 포함」). 홈페이지 작업 보류(메인 `msg_85f428583e64`)와 V3 결정 보류는 그대로다.** 사용자는 첫 판 PR207을 보류하고 디자인을 다시 하기로 했고(아래 「디자인 재작업 범위 개정」), 시안 D1을 골랐다(「시안 선택과 E2E·밀도 요구」). 실제 진행은 「진척 단계」, 「결과와 열린 사항」, 그리고 리드가 단계마다 다시 쓰는 이 문단을 따른다.
 
 - **지금 단계(보류):** 사용자 지시로 홈페이지 작업 전체를 보류했다. 사유는 Core 작업 우선이다(「홈페이지 작업 보류」, 「V3 차단 뒤 결정 보류」). 보류 직전 상태는 이렇다. 반영 3차 사이트(`3282c138`)의 마지막 독립 검증 V3가 차단을 냈다(「독립 검증 V3(강)」). 결함은 둘이다. #1은 간격 단계 밖 낱값 28곳(완료조건 10-1)이고, #2는 넓은 화면의 단계 밖 글자 크기 14·17·22px(10-3)다. 기능·E2E 60조합·보안·접근성은 모두 통과했고, 둘 다 시각 일관성 결함이다. 세션 상한 11을 모두 썼다(리드 결정 요청 `msg_22809f89e9f3`).
+- **합류점 J:** 보류 중에 J(PR216 병합 `ff308e20`)를 merge `63d0c980`으로 받았다(「합류점 J 받기(보류 중)」). J는 사이트 파일과 workflow를 건드리지 않았고, 사이트 파일은 V3가 본 `3282c138`과 같다. 규칙은 V1.0 판으로 바뀌었다.
 - **기다리는 것:** 사용자의 재개 지시와 V3 결정 하나다(V3 결정은 그대로 보류). A는 상한 13으로 수정 세션 1개와 재검증 세션 1개를 연다(리드 추천). B는 기준을 완화해 사용자가 단계 밖 값을 받아들이고 수정 없이 간다. 사용자는 Core 작업을 먼저 보려고 이 결정을 보류했다(「V3 차단 뒤 결정 보류」, `msg_6b48d823de07`). 사용자가 다시 꺼내 메인이 전달할 때까지 새 작업자·검증자·Pages·미리보기를 켜지 않는다.
 - **다음 첫 할 일:**
+  - 재개가 정해지면 milestones 「검증이 남은 열린 PR」대로 처리한다. J는 이미 받았다. 바뀐 부분 재실사는 「합류점 J 받기(보류 중)」의 계획을 따른다. 재개 사이에 main이 더 나아갔으면 그 J도 먼저 받는다.
+  - 계약 전 메인 확인: V1.0 구현자 배정(`gpt-6.1-sol` max 또는 `gpt-6-astra` xhigh)과 이 goal의 Q3(완성은 신규 `claude-opus-5-5`)이 어긋난다. A의 수정 세션 모델은 메인에 물어 정한다(「합류점 J 받기(보류 중)」의 재읽기 차이 1).
   - A면: 결정 원문을 「적용 중인 사용자 결정」에 적고, 수정 세션 계약을 쓴다. 범위는 결함 #1·#2와 같은 파일의 관찰 P1(C10 주석 표현)이다. 간격 낱값은 토큰으로 바꾸거나 남길 값을 계획과 `styles.css:47` 주석에 이름으로 적는다. 글자 크기는 넓은 화면을 5~6단계 안으로 모은다. 완성 세션과 같은 배정으로 연다. 그 뒤 리드 R-2 → 커밋·push → 재검증 V4(새 CI 산출물로 check-site·check-design·E2E 60조합, 10-1·10-3 재판정, 바뀐 파일이 `styles.css`뿐인지 확인하고 나머지는 V3 판정을 잇는다) → 새 미리보기 → 사용자 최종 확인 요청에서 멈춘다.
   - B면: 결정 원문을 「적용 중인 사용자 결정」에 적고 완료조건 10-1·10-3에 완화 내용을 덧붙인다. 공개 파일 목록으로 새 사본을 만들어 미리보기 8750을 띄우고, 사용자 최종 확인 요청에서 멈춘다.
   - 어느 쪽이든 사용자 최종 확인 때 함께 올릴 것: V3의 사용자 결정 관련 셋(F27 「Guild System & Tycoon」이 첫 화면에 「계획」 표시 없이 나옴, 승인 안의 같은 두 겹 패널 체계, 10-4 첫 화면 기준이 대문 아트로 바뀐 점), P4(새 그림 파일 `logo-still.webp` 하나), 첫 화면 전송량 2,208,127 B(목표 1.5MB 초과 warning), Lighthouse 성능 77.
   - 사용자 확인 뒤 새 head로 병합 승인 요청(Pages 켜기 안내 포함).
-- **열린 PR·상태:** PR207 열림, head `7a606438`(이 보류 기록 커밋 뒤에는 그 커밋이 head다). `7a606438`의 CI 다섯(intro-site·code-rules·module-boundaries·architecture-tests·dotnet-tests)은 모두 success다. GitHub Pages 꺼짐, 미리보기 8750 꺼짐. 열린 작업자·검증자 없음, 리드의 백그라운드 작업 없음. E2E·검증을 다시 돌릴 때는 엔진마다 node 하나(`--jobs 1`), 세 프로세스 이하, 여유 메모리 6GB 이상이다.
-- **다시 여는 방법:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`에서 `claude --model claude-opus-5-5 --effort xhigh --resume 090e4c0e-03b6-4f71-bf11-8c419407e534`로 같은 대화를 잇고, `orca orchestration run-use --id run_605925c36641 --json`으로 같은 Run을 인수한다. 사용자가 원하면 새 세션으로 열고 이 「재개 지점」부터 읽는다. 다시 열면 새 handle을 메인에 알리고 우편함 대기를 하나만 연다.
+- **열린 PR·상태:** PR207 열림. J merge `63d0c980` 뒤 이 기록 커밋이 head다. push 전 head `ec4b9cc7`의 CI는 모두 success였고(deploy는 PR이라 skipped), 새 head의 CI는 push 뒤 다시 돈다. GitHub Pages 꺼짐, 미리보기 8750 꺼짐. 열린 작업자·검증자 없음, 리드의 백그라운드 작업 없음. E2E·검증을 다시 돌릴 때는 엔진마다 node 하나(`--jobs 1`), 세 프로세스 이하, 여유 메모리 6GB 이상이다.
+- **다시 여는 방법:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`에서 `claude --model claude-opus-5-5 --effort xhigh --resume dcbfed20-964c-4cd2-99ad-822db9aede82`로 같은 대화를 잇고, `orca orchestration run-use --id run_605925c36641 --json`으로 같은 Run을 인수한다. 사용자가 원하면 새 세션으로 열고 이 「재개 지점」부터 읽는다. 다시 열면 새 handle을 메인에 알린다. 우편함 대기는 메인 지시를 따른다. 2026-10-09 지시(`msg_e2beca76b1bd`)는 대기를 열지 않고, 메인이 터미널로 깨우면 `--wait` 없는 check 한 번으로 읽는 것이다.
 - **근거 위치:** V3 판정 E/`verify3/verdict.md`(SHA `475faab5…3b36`), V3 계약·발행 기록 E/`contracts/v3-task.md`·`v3-issue.txt`, harness 동결 final-5 E/`t3-resume/harness-final-5.sha256`(목록 SHA `a3204495…7eb3af`), 완성 세션 보고 E/`f-resume/report.md`, 리드 메시지 본문 E/`design/launch/`.
-- **리드:** Claude 세션 ID `090e4c0e-03b6-4f71-bf11-8c419407e534`(`claude --resume`으로 이을 수 있다), Run `run_605925c36641`. 미리보기 서버는 리드 Claude 세션의 background 작업이라 세션이 끝나거나 메모리가 부족하면 꺼진다.
+- **리드:** Claude 세션 ID `dcbfed20-964c-4cd2-99ad-822db9aede82`(2026-10-09 J 받기 때 연 새 리드, 태그 `[Management 리드 Opus]`, `claude --resume`으로 이을 수 있다), Run `run_605925c36641`. 이전 리드 세션 `090e4c0e…`은 기록일 뿐이다. 미리보기 서버는 리드 Claude 세션의 background 작업이라 세션이 끝나거나 메모리가 부족하면 꺼진다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
-- **Run과 재진입:** Run은 `run_605925c36641`이다. 마지막 리드 handle은 2026-10-09 재진입 뒤 `term_70dfe19c-6cae-4504-be49-fd13189df66a`(consumer_generation 4)이고, 이전 리드 handle `term_31b7307c…`·`term_436c20d1…`·`term_59adfc07…`와 함께 관측값일 뿐 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
+- **Run과 재진입:** Run은 `run_605925c36641`이다. 마지막 리드 handle은 2026-10-09 J 받기 때 run-use한 `term_9f32cb7f-f1fe-4918-b92e-13ef391dda46`(consumer_generation 5)이고, 이전 리드 handle `term_70dfe19c…`·`term_31b7307c…`·`term_436c20d1…`·`term_59adfc07…`와 함께 관측값일 뿐 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 run-use하고 메인에 알린 뒤 우편함 대기를 하나만 연다.
 - **작업자·검증자:** T1·S1·V1·V2, 시안 D1·D2·D3, 선행 시험 T2는 정산하고 닫았다. T3·F도 재시작 정지로 미완료 정산했다. 그 뒤 연 대문 아트 Sol과 디자인 비평 세션도 정산했다. T3 이어받기와 F 이어받기도 2026-10-08 20:23Z에 정산하고 닫았다(「F·T3 이어받기 정산」). V3도 21:55Z 판정 뒤 정산하고 닫았다(「독립 검증 V3(강)」). 지금 열린 작업자는 없다. 세션 상한 11을 모두 썼다.
 - **근거 폴더 E:** 저장소 로컬 `.backups/verification/2026-10-08-intro-site/`(Git 제외). 범위 단계 근거는 `.backups/verification/2026-10-08-intro-page-scope/`(E0)다. 첫 판 리드 맥락 메모는 E/`astra-context.md`, 디자인 범위 개정 근거와 메모는 E/`design-scope/`다.
 
@@ -189,6 +192,13 @@ A로 선택가자 선택지는」. 리드 질문 `msg_801673940b0d`의 A다. Sol
 
 - **사용자 원문(`msg_85f428583e64`, 2026-10-09T01:24:11Z 전달, 메인 창 Enter 제출):** 「일단 Management 세션 정리좀 해줘, 당장 홈페이지 작업은 보류」
 - **메인 적용(사용자 결정 아님):** 재개 지점을 보류 상태로 고치고 커밋·push한 뒤 리드 세션을 정리한다. 메인이 리드 pane을 닫는다. 새 일은 시작하지 않는다. V3 A/B 결정은 그대로 보류다.
+
+### 합류점 J 맞춤에 Management 포함(2026-10-09)
+
+메인 전달이며 사용자 직접 입력으로 격상하지 않는다.
+
+- **사용자 원문(`msg_e2beca76b1bd`, 2026-10-09T13:39:08Z 전달, 메인 창 Enter 제출):** 「일단 Main 최신화 정본 만들고 각 워크트리에 최신화하자」, 「대시보드 결정 응답: 1) 워크트리 맞춤 - 지금 PR216 병합 지점으로 다섯 워크트리를 맞출지, 종료 기록 PR 뒤로 둘지 → A 지금 맞춤」, 「매니지먼트랑 코드맵도 같이 해버리자」
+- **메인 적용(사용자 결정 아님):** milestones 「보류된 PR」 행은 J 때 아무것도 하지 않지만, 사용자가 Management를 이번 맞춤에 넣었다. 재개 때 할 처리 중 J 받기까지만 한다. 합류점 J는 PR216 병합 `ff308e206713cd37929b1a06f4fb8ef1aec38d1f`다. 홈페이지 보류와 V3 결정은 그대로 보류다. 새 작업자·검증자·Pages·미리보기를 켜지 않는다. 바뀐 부분 재실사는 계획만 적는다.
 
 ## 적용 중인 메인 결정
 
@@ -688,3 +698,18 @@ workflow는 바꾸지 않아 Sol은 열지 않는다. 시안 세션 셋은 파�
 - **리드 R-2:** 판정 원문 전체를 읽었다. `styles.css` `:38-56` 토큰과 주석, `:289`·`:293`·`:331`·`:757`·`:887`·`:1045`·`:1064`·`:1721`을 직접 열어 결함 #1·#2의 값이 판정과 같음을 확인했다. goal 완료조건 10-1·10-3 문장(`:282`·`:284`)도 판정 인용과 같다.
 - **정산:** worker-release(retained, external_terminal)와 pane 닫기(ptyKilled true)를 했다(E/`v3-launch/`). 세션 수는 상한 11 중 11을 모두 썼다.
 - **다음:** 수정 세션과 재검증 세션이 모두 상한 밖이라 메인에 결정을 올렸다(「재개 지점」).
+
+### 합류점 J 받기(보류 중)
+
+- **지시와 사전 상태:** 메인 `msg_e2beca76b1bd`(발신 handle이 메인 checkout `C:/Dev/DawnHolder_Project`임을 대조), 맥락 메모 E/`junction-j/context.md`. 2026-10-09T13:41Z에 HEAD = origin = PR207 head `ec4b9cc7`, 작업 트리 clean, merge-base `127cc5a1`(PR211 병합)이었다. Run `run_605925c36641`은 run-use로 이어받았다(consumer_generation 5).
+- **merge:** `git merge --no-ff ff308e20` → `63d0c980`(부모 `ec4b9cc7`·`ff308e20`), 트리 `917824be`로 메인의 merge-tree 사전 확인과 같다. 충돌은 없었다. J 쪽은 PR212~PR216의 24파일(리드 태그, 수신 helper, TDD 종료, 시험 환경, 규칙·운영 V1.0)이다. 양쪽이 고친 파일은 CURRENT.md 하나이고, 줄이 달라 main의 Rules 줄과 이 branch의 Management 줄이 함께 남았다.
+- **사이트 영향:** J 쪽 파일 중 `00_Document/intro-site/**`와 `.github/workflows/`는 0건이다. `git diff 3282c138 HEAD -- 00_Document/intro-site .github/workflows/intro-site.yml`은 비었다. 사이트 파일은 V3가 판정한 판과 같다. merge 뒤 AGENTS·CLAUDE·ORCA·`.agents/`·`.claude/`·conventions는 origin/main과 같다.
+- **재읽기 차이(재개 때 적용):**
+  1. 구현자 배정: V1.0은 구현자를 `gpt-6.1-sol` max 또는 `gpt-6-astra` xhigh로 두고, 정본 병합 뒤 발행하는 계약부터 적용한다(`implementer-routing.md`). 이 goal의 Q3 사용자 결정은 시안·완성을 신규 `claude-opus-5-5`로 정했고, 재개 지점 A는 「완성 세션과 같은 배정」이다. 둘이 어긋나므로 A 계약 전에 메인에 묻는다. 리드는 어느 쪽이 우선인지 정하지 않는다.
+  2. 위임 계약 양식에 「구현자 배정 근거」와 「사용자 차례 넘김·보고 종료 때 리드 status」 칸이 생겼다. 작업자는 차례를 넘기거나 보고를 마치면 리드에 status를 보내고, 리드는 판단 없이 바로 메인에 한 줄 status로 넘긴다(ORCA R-4).
+  3. 태그: 새 리드 세션은 `[Management 리드 Opus]`다. Astra 구현자는 `[Management 구현 Astra]`이고 그 독립 검증자는 신규 `claude-opus-5-5`다. Run objective의 `[Management Astra]`는 생성 당시 이름이다.
+  4. 기록 양식: 원천을 옮겨 적을 때 원천의 확인 수준을 유지하고 관측과 추론을 나눠 적는다.
+  5. 공식 blocking ask의 subject 예외는 버전 상수가 아니라 같은 CLI의 ask/reply help 원문으로 판정한다(ORCA 수신 정본). 작업자 ask가 있을 때만 해당한다.
+  - 보류, V3 결정, 세션 상한 11에는 영향이 없다.
+- **바뀐 부분 재실사(계획만, 지금 열지 않음):** J가 사이트 파일을 건드리지 않았으므로 사이트 내용의 재실사는 필요 없다고 판단한다. 재개 때 남는 확인은 둘이다. 하나는 새 head의 CI와 intro-site artifact가 HEAD blob과 같은지이며, A면 V4가, B면 리드가 미리보기 사본을 만들 때 확인한다. 다른 하나는 위 차이 1·2를 A 계약에 반영하는 일이다. 별도 재실사 세션은 열지 않는다.
+- **커밋·push:** 이 기록 커밋을 merge 위에 쌓아 push한다. 새 head의 CI 결과는 메인에 status로 알린다.
