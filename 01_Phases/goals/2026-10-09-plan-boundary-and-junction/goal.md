@@ -182,6 +182,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - 리드 조사에서 본 goal-loop 52·53행 우선순위와 신호 5의 「Sol」 읽힘은 보고서 후보로만 둔다.
 - 같은 산출물 수정 횟수: 정본 PR 문서 1회차(milestones 정의 수정).
 
+### 실사 결함 수정 1회차
+
+- 리드 기록 커밋 `aabdf54c`(goal 정정·실사 기록·BACKLOG 사례) 뒤 새 `[Rules Sol]`이 milestones 두 칸을 고쳤다. 요청 모델 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max」, backend unknown), 배정 신호 해당 없음(문안이 고정된 한 파일 두 칸). pane `term_c229bdbc-2706-48f6-8296-17ca94f75414`, Task `task_a93e15a3567a`, Dispatch `ctx_6ab39f266014`. 계약 E/fix1-contract.md(SHA256 `a916256f…`). worker-start 11:07:31Z에 turnStart observed라 draft 복구는 없었다.
+- 완료: worker_done `msg_7fee9ab255e5`(11:17:14Z), 수신 helper allowed. 보고 E/fix1/report.md, 맥락 메모 E/fix1/context.md(생성 11:10:45Z, milestones 수정 11:13:10Z보다 앞섬). 정산(retained/external_terminal) 뒤 대기를 확인하고 pane을 닫았다.
+- 리드 R-2: diff는 milestones 한 파일의 38·40행이며 판정 칸만 메인 수용 문안과 글자 그대로 같다. 여섯 파일 묶음 102,600 bytes, ORCA 249줄로 변화가 없다.
+- 관찰: 수정 Sol의 heartbeat 간격 302초 한 구간(11:08:50Z `msg_6fe71be9e2d7` → 11:13:52Z `msg_57440506ffb1`)이 있었다. 상한 300초를 2초 넘었다. 처분은 메인에 올린다(E/lead-observations.md).
+
 ## 정본에서 옮긴 적용 기록
 
 규칙 문서 bytes를 상쇄하려고 옮긴 원문을 둔다. 원래 위치는 base `89a2c0225ea38a846f5b6c163620a9e828a610e3` 기준이다. 상대 링크는 이 goal에서 같은 대상에 닿도록 고쳐 썼다. 링크 밖 원문은 그대로 보존했다.
