@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)(merge commit `127cc5a1`), 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)(merge commit `5a1752eb`), 수신 helper PR은 [PR213](https://github.com/bass131/dawnholder-server/pull/213)(merge commit `08028f1b`)로 병합됐다. 종료 기록은 branch `docs/tdd-canon-closeout-20261009`(base main `08028f1b`)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 수신 helper PR은 [pr2/astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/pr2/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`(PR212 병합 전에 연 세션이라 종료까지 유지, 메인 `msg_84fb999941ce`). Claude 세션 ID `64f22d75-946a-4b21-a275-d2e10254b75a`. 재진입 뒤 handle `term_73e94f29-d9a7-47bf-91d3-50f3676de874`, Run은 `run_be5206d9a2af`(run-use로 인수), 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T01:37:56Z): 종료 기록 문서 실사의 차단 #1·#2를 리드가 고쳤다. 좁힌 재실사를 연다(아래 「종료 기록 문서 실사」).
-- **다음 할 일**: 좁힌 재실사 → 종료 기록 PR과 메인 승인 묶음 → 사용자 병합 승인 → 메인·사용자의 종료 점검(결과·남은 위험·BACKLOG·로드맵 초안) → R-8. 다음 goal은 자동 착수하지 않는다.
+- **현재 위치**(2026-10-09T01:51:32Z): 종료 기록 좁힌 재실사가 통과했다(아래 「종료 기록 문서 실사」). 종료 기록 PR을 만들고 메인 승인 묶음을 보낸다.
+- **다음 할 일**: 종료 기록 PR과 메인 승인 묶음 → 사용자 병합 승인 → 메인·사용자의 종료 점검(결과·남은 위험·BACKLOG·로드맵 초안) → R-8. 다음 goal은 자동 착수하지 않는다.
 - 재진입: 같은 Claude 세션을 `--resume`으로 이으면 handle이 바뀐다. 같은 Run을 run-use로 인수하고 메인에 새 handle을 알린다. 이 세션은 `[Rules Astra]`를 유지하고, 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
@@ -344,6 +344,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - 정산: release `retained`(`external_terminal`), 「Worked for 12m 19s」 뒤 빈 prompt를 확인하고 01:36:25Z에 pane을 닫았다(ptyKilled). rules-active에는 리드만 남았다(E/closeout-review-release.json, closeout-review-idle.json, closeout-review-close.json, closeout-review-list-after-close.json).
 - 리드 수정(한 회차, 같은 산출물의 첫 수정): #1은 네 행 출처 칸에 발신자·완료 메시지 ID·UTC 시각을 넣었다. 시각은 각 worker_done 원시의 created_at이다(E/gardener-worker-done-check-input.json, pr2-review-worker-done-check-input.json, pr3-review-worker-done-check-input.json). `receive-helper-review-followup` 출처에도 같은 형식으로 시각을 보탰다. #2는 이유 칸을 관측(9구간·7세션)과 추론(긴 생성 중 송신 불가)으로 나눴다. O1·O2도 반영했다.
 - 리드 이탈(리드 귀속, 같은 종류의 두 번째 발생): 기록으로 옮기며 원천보다 확인 수준을 올렸다(#2). hook goal 「종료 기록 문서 실사」 F3(그물 차단 관측을 확인된 오탐으로 적음)과 같은 종류다. 교정 층은 종료 점검에서 메인 판단으로 올린다. 출처 칸 누락(#1)은 첫 관찰이다.
+- 좁힌 재실사(통과): 신규 `gpt-6-astra` xhigh, 태그 `[Rules 검증자]`이고 리드 pane split으로 열었다. 첫 화면은 같은 표시였다(E/closeout-rereview-first-screen.json). Task `task_237ae4f88b7c`, Dispatch `ctx_17e05615a6e1`, 계약 E/closeout-rereview-contract.md(SHA256 `6de2207c…`, 고정 HEAD `90239791`)다.
+  - draft 복구: turnStart가 unobserved였다. draft 17,775자가 계약 12,988자와 머리말 4,787자의 합과 같아 Enter를 한 번 보냈다. 곧바로 세션 기록에서 제출 입력 하나가 계약 전문을 담은 것을 대조했다(E/closeout-rereview-draft-recovery.md, E/lead-check/closeout-rereview-draft-postcheck.out.txt).
+  - 공식 질문 `msg_d500d2a4d4bb`(01:43:46Z): 이 절의 기동 시각 01:22:02Z와 재개 지점 01:37:56Z의 시계 출력 위치를 물었다. 두 값은 리드 Bash의 `date -u` 출력이었지만 E에 저장하지 않았다. 리드가 대화 기록에서 명령과 출력을 발췌해 새 파일로 두고 답했다(`msg_47b29cd090df`, E/lead-check/clock-transcript-excerpt.json SHA256 `faa5f63d…`). 수신 helper는 이 질문을 1.4.223 help 근거로 `official-blocking-ask` 예외 허용했다(E/closeout-rereview-ask1-check-output.json). PR213 판정이 실제 질문에 쓰인 첫 사례다.
+  - 판정 E/closeout-rereview/verdict.md(SHA256 `36ee093a…`, 174줄), worker_done `msg_80a4274fbd0c`(01:50:42Z, succeeded), 수신 helper 허용이다. **통과**: #1·#2 해소, O1·O2 반영, 새 차단 0이다. 시계 두 값은 리드의 사후 발췌와 대조했다는 한계를 판정에 남겼다.
+  - 리드 R-2: BACKLOG ID 75개·중복 0, 새 행 여섯이 7칸·메시지 ID·UTC 시각을 갖춤, 두 계약(E/pr3-contract.md 18행, E/pr3-review-contract.md 15행)의 긴 작성 전 heartbeat 문장을 원천과 다시 확인했다.
+  - 정산: release `retained`(`external_terminal`), 「Worked for 10m 28s」 뒤 빈 prompt를 확인하고 01:51:10Z에 pane을 닫았다(ptyKilled). rules-active에는 리드만 남았다(E/closeout-rereview-release.json, closeout-rereview-idle.json, closeout-rereview-close.json, closeout-rereview-list-after-close.json).
+- 리드 이탈(리드 귀속, 첫 관찰): goal에 적은 시각의 시계 출력을 E에 저장하지 않았다. 출력은 리드 대화 기록에만 있었고 재실사 질문 뒤 발췌했다.
 
 ## 정본에서 옮긴 적용 기록
 
