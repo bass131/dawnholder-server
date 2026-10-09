@@ -46,7 +46,7 @@ orca terminal create --worktree "path:<표의 작업 경로>" --title "<리드> 
 ```
 이전 리드 pane은 idle 확인 뒤 닫는다. 같은 탭에 다른 세션이 있으면 탭 전체를 닫는 `--tab`을 쓰지 않는다. 리드 첫 화면은 [R-6](#r6-first-screen), auto mode가 push·우편함 읽기를 막으면 우회 없이 메인에 보고한다([권한 기준](../../AGENTS.md#공학-조건)). 작업자·검증자는 담당 리드 아래 `vertical split`으로 열고 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. 실제 경로·화면 모델·준비 확인은 [R-5](#r5-worker-launch)를 따른다.
 
-pane의 소속 worktree와 shell의 실제 cwd는 별도로 확인한다. GameDev 소속 pane을 Management 작업자로 연결해 `terminal_worktree_mismatch`가 난 과거 사례처럼 cwd만 옮겨 소속 불일치를 우회하지 않는다. 현재 조회한 worktree/handle/identity를 기준으로 승인된 배치를 대조한다.
+pane의 소속 worktree와 shell의 실제 cwd는 별도로 확인한다. cwd만 옮겨 소속 불일치를 우회하지 않는다. 현재 조회한 worktree/handle/identity를 기준으로 승인된 배치를 대조한다.
 
 Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지한다. **승인 밖 새 파트는 사용자 승인 시 메인이 별도 worktree 탭에 열고 목표 종료 때 닫는다.** 작업자·검증자는 담당 리드 아래 `vertical split`과 R-5·R-6을 따르며, 태그는 [AGENTS](../../AGENTS.md#메시지와-보고)의 `[<파트> 리드 Opus]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 추가 파트 승인이나 태그가 기존 모델·쓰기·Git·병합 권한을 넓히지 않는다.
 
@@ -77,7 +77,7 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 <a id="run-reply-address"></a>
 ### Run 회신 주소와 receipt 확인
 
-리드는 새 Run을 만들거나 바인딩한 **즉시 메인에게 `run:<현재 run_id>` 회신 주소**를 알린다. Run 우편함과 terminal-only 우편함은 다른 수신 문맥이며 과거 term 주소로 간 우편이 현재 Run의 check에 보이지 않았던 사례가 있다. 바인딩 전 우편은 처리/보존한 뒤 전환한다. 발신 전에 현재 Run의 coordinator handle과 상대가 알려준 회신 주소를 대조하고, 과거 handle을 실행 권한으로 재사용하지 않는다.
+리드는 새 Run을 만들거나 바인딩한 **즉시 메인에게 `run:<현재 run_id>` 회신 주소**를 알린다. Run 우편함과 terminal-only 우편함은 다른 수신 문맥이다. 바인딩 전 우편은 처리/보존한 뒤 전환한다. 발신 전에 현재 Run의 coordinator handle과 상대가 알려준 회신 주소를 대조하고, 과거 handle을 실행 권한으로 재사용하지 않는다.
 
 못 받았다는 보고에는 현재 CLI로 원 메시지·수신 주소·receipt를 확인한다. **동일 request ID/동일 payload의 공식 receipt replay**는 접수 결과 재확인이며 새 입력/메시지 재전송과 구분한다. runtime·target·incarnation을 다시 대조하고 해당 버전 가이드가 중복 입력 없는 replay를 보장할 때만 사용한다. 재전달이 필요하면 원문 ID와 재전달 관계를 기록하되 accepted 뒤 침묵만으로 텍스트를 다시 보내지 않는다. 확인 불가/미지원은 원문을 보존해 메인에 보고한다.
 

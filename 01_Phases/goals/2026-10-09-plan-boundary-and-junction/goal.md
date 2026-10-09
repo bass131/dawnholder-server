@@ -331,6 +331,18 @@ O5의 원래 위치는 `00_Document/operations/ORCA.md:220`의 첫 문장이다.
 
 > 출처는 [Gardener 사용자 채택 기록](../2026-10-05-operating-canon/goal.md#orca-source-gardener)이다.
 
+### ORCA 후보 검사 PR의 지난 사례 이관
+
+이번 두 원문의 기준은 후보 검사 PR base `ab6007c9935cfdad20fe5cd2585e457672eb6f11`이다. goal-loop의 후보 검사 한 문장이 늘린 bytes를 상쇄하려고 지난 사례를 옮겼다. 문장 전체를 그대로 보존하며 현재 배치·수신 규칙은 ORCA에 남겼다.
+
+원래 위치는 `00_Document/operations/ORCA.md:49`의 두 번째 문장이다. 「GameDev 소속」부터 「사례처럼 」까지를 뺐다.
+
+> GameDev 소속 pane을 Management 작업자로 연결해 `terminal_worktree_mismatch`가 난 과거 사례처럼 cwd만 옮겨 소속 불일치를 우회하지 않는다.
+
+원래 위치는 `00_Document/operations/ORCA.md:80`의 두 번째 문장이다. 정본에는 「Run 우편함과 terminal-only 우편함은 다른 수신 문맥이다.」를 남겼다.
+
+> Run 우편함과 terminal-only 우편함은 다른 수신 문맥이며 과거 term 주소로 간 우편이 현재 Run의 check에 보이지 않았던 사례가 있다.
+
 ## 다음 계획 후보
 
 이 goal 밖으로 둔 일이다. 후보마다 BACKLOG ID나 기존 goal 링크를 단다. 종료 기록 PR 전에 후보 도착 검사로 확인한다.
