@@ -346,4 +346,52 @@ if ($executorGuards.Count -eq 1) {
     }
 }
 
+# ---- Machine comparison boundaries: only letter case is ignored. Whitespace, missing or extra characters,
+# DNS qualification and SQL NULL still reject, and the instance and sysadmin conditions keep their exact checks.
+# Rows are DataRows so a SQL NULL arrives as DBNull, the shape the product reads after DataTable.Load.
+if ($executorGuards.Count -eq 1) {
+    $boundaryTable = [Data.DataTable]::new()
+    [void]$boundaryTable.Columns.Add('Machine', [string])
+    [void]$boundaryTable.Columns.Add('InstanceName', [string])
+    [void]$boundaryTable.Columns.Add('IsSysadmin', [int])
+    $boundaryManifest = [pscustomobject]@{ Machine = 'FIXTUREHOST' }
+    $boundaryContract = [pscustomobject]@{ InstanceName = 'FIXTURE' }
+    foreach ($case in @(
+            @{ Name = 'a machine name in lower case'; Machine = 'fixturehost'; InstanceName = 'FIXTURE';
+                IsSysadmin = 1; Accepted = $true },
+            @{ Name = 'a machine name with trailing whitespace'; Machine = 'FIXTUREHOST '; InstanceName = 'FIXTURE';
+                IsSysadmin = 1; Accepted = $false },
+            @{ Name = 'a case-variant machine name with an extra character'; Machine = 'FixtureHost2';
+                InstanceName = 'FIXTURE'; IsSysadmin = 1; Accepted = $false },
+            @{ Name = 'a truncated machine name'; Machine = 'FIXTUREHOS'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
+                Accepted = $false },
+            @{ Name = 'a DNS-qualified machine name'; Machine = 'fixturehost.fixture.local'; InstanceName = 'FIXTURE';
+                IsSysadmin = 1; Accepted = $false },
+            @{ Name = 'a NULL SQL machine name'; Machine = [DBNull]::Value; InstanceName = 'FIXTURE'; IsSysadmin = 1;
+                Accepted = $false },
+            @{ Name = 'an instance name differing only in case'; Machine = 'fixturehost'; InstanceName = 'fixture';
+                IsSysadmin = 1; Accepted = $false },
+            @{ Name = 'a non-sysadmin executor on a case-variant machine name'; Machine = 'fixturehost';
+                InstanceName = 'FIXTURE'; IsSysadmin = 0; Accepted = $false }
+        )) {
+        $boundaryRow = $boundaryTable.NewRow()
+        $boundaryRow['Machine'] = $case.Machine
+        $boundaryRow['InstanceName'] = $case.InstanceName
+        $boundaryRow['IsSysadmin'] = $case.IsSysadmin
+        $boundaryTable.Rows.Add($boundaryRow)
+        $boundaryMessage = Get-ThrownMessage -Action {
+            & $executorGuardBlock -row $boundaryRow -Manifest $boundaryManifest -Contract $boundaryContract
+        }
+        if ($case.Accepted) {
+            Assert-True -Name ('SQL executor guard accepts ' + $case.Name) `
+                -Condition ($null -eq $boundaryMessage) -Detail ([string]$boundaryMessage)
+        } else {
+            $boundaryRejected = $null -ne $boundaryMessage
+            Assert-True -Name ('SQL executor guard rejects ' + $case.Name) -Condition $boundaryRejected
+            Assert-Equal -Name ('SQL executor guard preserves the exact error for ' + $case.Name) `
+                -Expected 'Exact local instance and privileged SQL executor required.' -Actual $boundaryMessage
+        }
+    }
+}
+
 Complete-TestSuite
