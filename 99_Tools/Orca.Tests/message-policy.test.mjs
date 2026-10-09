@@ -308,6 +308,29 @@ test('missing or malformed official ask evidence is an input error, never the ex
     'lead check input lead-check/pr1-ask1-check-input.json');
 });
 
+// Boundaries the test contract left open; their outcome is the receive-helper implementation contract v1 I1
+// (task_7845136f2c39): evidence that is null or not an object, or a blank cliVersion, is `official-ask-proof`.
+test('official ask evidence that is null, not an object or has a blank cliVersion is an input error', () => {
+  const ask = real('officialAskQuestion1422');
+  const proof = askProof();
+  // Control: the complete real evidence opens the exception, so each case below fails by its changed value.
+  assertException(evaluateMessage({ message: ask, expected: askExpected(proof) }), 'complete evidence');
+  const notAnObject = [
+    ['officialAsk null', null],
+    ['officialAsk true, a self-declaration', true],
+    ['officialAsk only the receipt ID', proof.messageId],
+    ['officialAsk an array holding the evidence', [proof]],
+  ];
+  for (const [label, officialAsk] of notAnObject) {
+    assertRejected(evaluateMessage({ message: ask, expected: askExpected(officialAsk) }), 'input-error',
+      'official-ask-proof', label);
+  }
+  for (const [label, cliVersion] of [['cliVersion a single space', ' '], ['cliVersion tabs and a newline', '\t\n\t']]) {
+    const expected = askExpected(changed(proof, { cliVersion }));
+    assertRejected(evaluateMessage({ message: ask, expected }), 'input-error', 'official-ask-proof', label);
+  }
+});
+
 // The real help with `--subject` added right after an anchor text that the help must contain.
 function withSubjectAfter(help, anchor, addition) {
   assert.ok(help.includes(anchor), `help anchor ${JSON.stringify(anchor)}`);
