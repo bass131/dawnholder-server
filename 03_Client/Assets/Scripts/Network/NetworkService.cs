@@ -103,14 +103,20 @@ namespace Dawnholder.Client.Network
             }
             var party = PartyState.Instance;
             var quest = QuestState.Instance;
+            var inventory = InventoryState.Instance;
+            var inventoryRequests = UnityClientSession.Instance?.Inventory;
             Reset(() => LocalPlayerMovement.Instance?.SuspendForMapEntry());
             Reset(() => party?.ResetSessionValues());
             Reset(() => quest?.ResetSessionValues());
+            Reset(() => inventory?.ResetSessionValues());
+            Reset(() => inventoryRequests?.ResetSessionValues());
             Reset(() => RemoteEntityRegistry.Instance?.Clear());
             Reset(() => EnemyRegistry.Instance?.Clear());
-            // Every mirror value is cleared before any Party/Quest subscriber is notified.
+            // Every mirror value is cleared before any Party/Quest/Inventory subscriber is notified.
             Reset(() => party?.NotifySessionReset());
             Reset(() => quest?.NotifySessionReset());
+            Reset(() => inventory?.NotifySessionReset());
+            Reset(() => inventoryRequests?.NotifySessionReset());
             if (errors.Count != 0) throw new AggregateException("Session mirror cleanup failed.", errors);
         }
 

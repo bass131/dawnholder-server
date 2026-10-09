@@ -66,6 +66,7 @@ namespace Dawnholder.Client.Tests
         readonly HashSet<GameObject> _beforeFixture;
         readonly HashSet<GameObject> _beforeTest;
         internal readonly ManualConnectionQueue Queue = new();
+        internal readonly TestSocketPair Sockets = new();
         internal readonly UnityClientSession Session;
         internal readonly EntryBindingFixture Views;
 
@@ -74,11 +75,15 @@ namespace Dawnholder.Client.Tests
             Assert.IsNull(UnityClientSession.Instance);
             _beforeFixture = ComponentPilotTools.SceneRoots();
             Session = new UnityClientSession(() => true, Queue.Post, (action, _) => { });
+            // R4 (pr2-acceptance.md): a gameplay Ready sends C_InventoryRequest, so the session needs a transport;
+            // without one ClientNet closes it and every later main-queue apply is skipped.
+            Session.Start(Sockets.Client);
             Session.Publish();
             SessionTestTools.Handshake(Session, Queue);
             Views = new EntryBindingFixture(Session);
             Views.Begin(x: 2, y: 3);
             Views.Ready();
+            CollectionAssert.AreEqual(InventoryWire.InventoryRequest, Sockets.ReadFrame(), "R4 Ready query");
             _beforeTest = ComponentPilotTools.SceneRoots();
         }
 
@@ -90,6 +95,7 @@ namespace Dawnholder.Client.Tests
             ComponentPilotTools.DestroyNewRoots(_beforeTest);
             Session.Cleanup();
             Views.Dispose();
+            Sockets.Dispose();
             ComponentPilotTools.DestroyNewRoots(_beforeFixture);
         }
     }

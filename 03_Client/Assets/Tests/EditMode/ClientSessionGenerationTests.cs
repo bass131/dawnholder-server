@@ -82,9 +82,10 @@ namespace Dawnholder.Client.Tests
             _sessions.Clear();
             UnityClientSession.SimulatedLatencyMs = _latency;
         }
-        UnityClientSession New(Func<bool> current, ManualConnectionQueue queue, Action<Action, float> delayed = null)
+        UnityClientSession New(Func<bool> current, ManualConnectionQueue queue, Action<Action, float> delayed = null,
+            Action<Action, float> deadlines = null)
         {
-            var session = new UnityClientSession(current, queue.Post, delayed);
+            var session = new UnityClientSession(current, queue.Post, delayed, deadlines);
             _sessions.Add(session);
             return session;
         }
@@ -186,8 +187,11 @@ namespace Dawnholder.Client.Tests
             using var sockets = new TestSocketPair();
             var queue = new ManualConnectionQueue();
             var delayed = new List<Action>();
+            var delays = new List<float>();
+            var deadlines = new List<float>();
             bool current = true;
-            var session = New(() => current, queue, (action, _) => delayed.Add(action));
+            var session = New(() => current, queue, (action, delay) => { delayed.Add(action); delays.Add(delay); },
+                (action, seconds) => deadlines.Add(seconds));
             using var views = new EntryBindingFixture(session);
             session.Start(sockets.Client);
             UnityClientSession.SimulatedLatencyMs = 100;
@@ -200,6 +204,7 @@ namespace Dawnholder.Client.Tests
                 Assert.IsEmpty(delayed, "handshake alone is not gameplay readiness");
                 views.Begin();
                 views.Ready();
+                ReadyInventoryQuery.Consume(sockets, delayed, delays, 0, deadlines);
                 session.SendIntent(new C_Ping { clientTimestampMs = 10 }.Write());
                 Assert.AreEqual(1, delayed.Count);
                 if (invalidate) current = false;

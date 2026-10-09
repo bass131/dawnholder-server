@@ -60,6 +60,8 @@ namespace Dawnholder.Client.Combat
                 BuildRemoteEntityRegistry,
                 BuildPartyState,
                 BuildQuestState,
+                BuildInventoryState,
+                BuildInventoryPanel,
                 BuildPartyInvitePopup,
                 BuildNpcDialogPanel,
                 BuildMinimapCamera,
@@ -142,6 +144,10 @@ namespace Dawnholder.Client.Combat
             if (QuestState.Instance != null) return;
             new GameObject("_QuestState").AddComponent<QuestState>();
         }
+
+        void BuildInventoryState() => InventoryState.EnsureInstance();
+
+        void BuildInventoryPanel() => InventoryPanel.BuildRuntime(transform);
 
         void BuildPartyInvitePopup()
         {

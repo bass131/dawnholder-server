@@ -1,0 +1,68 @@
+{
+  "purpose": "Real BACKLOG and goal text copied verbatim for the independent candidate check regressions, plus one marked reconstruction.",
+  "copiedBy": "[Rules 검증자] task_4e23d12d8aee / ctx_2c802b9fa0af",
+  "copiedAt": "2026-10-09T13:35:04Z",
+  "method": "git show <commit>:<path> redirected into the fixture file without changes; an excerpt keeps only the listed source lines of that output (sed -n).",
+  "expectations": "Expected outcomes are stated in observed-cases.test.mjs with the record they come from.",
+  "files": {
+    "backlog-with-plain-ids.md": {
+      "real": true,
+      "reconstructed": false,
+      "commit": "2227161168446d117a853b2732464f8cd8401bb7",
+      "path": "00_Document/operations/BACKLOG.md",
+      "sourceLines": "all",
+      "sourceSha256": "bec1ad46db59b9aeaa680884cf62a57f140273dcb84b030f16ac98cfbc999b97",
+      "copySha256": "bec1ad46db59b9aeaa680884cf62a57f140273dcb84b030f16ac98cfbc999b97",
+      "case": "65 versus 68: the fixed HEAD of the hook goal's narrowed re-review G1, where a count that skipped the three IDs without backticks (lines 134-136) found 65 rows.",
+      "countSource": "01_Phases/goals/2026-10-07-hook-friction-helper-session/goal.md line 400 at f8cea0a1519f0ded2ad76766cef234b4705d6522: 「실제는 68개이고 중복이 없다」"
+    },
+    "backlog-before-merge-gate-rows.md": {
+      "real": true,
+      "reconstructed": false,
+      "commit": "5caa5dfef264338911282c6bce591ec056848309",
+      "path": "00_Document/operations/BACKLOG.md",
+      "sourceLines": "all",
+      "sourceSha256": "d347a4f524bb7bba1d10085362de58ff8dce1622efbe406b9b7fa476e102ebc8",
+      "copySha256": "d347a4f524bb7bba1d10085362de58ff8dce1622efbe406b9b7fa476e102ebc8",
+      "case": "BACKLOG before the merge gate goal's 「PR2 BACKLOG 보강」; report-folder-unification and management-feature-map-entry are not rows yet.",
+      "countSource": "Lead contract v1 for this task (E/pr2-tdd-contract.md, F2a): 44 data rows."
+    },
+    "backlog-after-merge-gate-rows.md": {
+      "real": true,
+      "reconstructed": false,
+      "commit": "338effb0910ad771ec5b2b20dbed8bb4757e72e9",
+      "path": "00_Document/operations/BACKLOG.md",
+      "sourceLines": "all",
+      "sourceSha256": "fca746a18e2feed5b8d1b226383435dd1fc6ee8c60296c444fc755e5569551ee",
+      "copySha256": "fca746a18e2feed5b8d1b226383435dd1fc6ee8c60296c444fc755e5569551ee",
+      "case": "BACKLOG after 「PR2 BACKLOG 보강」, which added the two missing rows.",
+      "countSource": "01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md line 552 at f8cea0a1519f0ded2ad76766cef234b4705d6522: 「후보 48행」"
+    },
+    "merge-gate-goal-candidates.md": {
+      "real": true,
+      "reconstructed": false,
+      "commit": "5caa5dfef264338911282c6bce591ec056848309",
+      "path": "01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md",
+      "sourceLines": [
+        { "from": 1, "to": 1 },
+        { "from": 586, "to": 600 }
+      ],
+      "sourceSha256": "a8f464dc9204075a3a5897df0b52cc4697968cd8cc7e6fc7d807d6fe667c28cb",
+      "sourceShaCovers": "the whole source file, not the excerpt",
+      "copySha256": "3868f0d0108cd31e658c49d5a2b55263d75f1456ac1ef649b74eba2a55faa6b8",
+      "case": "The real 「다음 계획 후보」 section (586) up to the next heading (600). Its four candidates (590, 591, 592, 596) carry no BACKLOG ID; the two missing rows appeared only in 「하지 않을 것」 line 76, which is outside this check.",
+      "countSource": "Lead contract v1 for this task (E/pr2-tdd-contract.md, F2a) and the lead's observation in E/pr2-lead-context.md."
+    },
+    "merge-gate-goal-cited-rows.md": {
+      "real": false,
+      "reconstructed": true,
+      "commit": null,
+      "path": null,
+      "sourceLines": null,
+      "sourceSha256": null,
+      "copySha256": "1ad50796d8e8100b571b6bdfcbbff9291969deb670c3d46cf426008c5348bfa0",
+      "case": "Reconstruction, not a real goal: the two missing items written as candidates that cite the IDs the later BACKLOG gave them. Text copied from the code block of lead contract v1 (F2b).",
+      "countSource": "Lead contract v1 for this task (E/pr2-tdd-contract.md, F2b)."
+    }
+  }
+}

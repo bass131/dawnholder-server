@@ -26,6 +26,49 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
 
 일반 Main terminal-only 메시지, blocking reply의 기존 subject 예외, 다른 message type과 원격 진위 검증은 이 helper의 범위 밖이다. 허용 결과만으로 런타임 진위나 worker_done 정산을 증명하지 않는다. 독립 회귀는 신규 Opus 소유 `99_Tools/Orca.Tests/message-policy.test.mjs`이며 기존 [code-rules workflow](../.github/workflows/code-rules.yml)의 별도 단계가 부재/load 실패/nonzero도 실패 처리하고 stdout/stderr/exit를 기존 artifact 폴더에 보존한다. 자체 smoke와 신규 Opus 판정·원격 CI는 별도 근거다.
 
+## 후보 도착 검사
+
+BACKLOG ID의 중복과 goal 후보가 BACKLOG 또는 기존 goal에 도착했는지 검사한다.
+
+[Backlog/candidate-policy.mjs](Backlog/candidate-policy.mjs)의 `extractBacklogIds(text)`와 `checkCandidates(input)`은 순수 판정이며 [Backlog/check-candidates.mjs](Backlog/check-candidates.mjs)는 로컬 UTF-8 Markdown을 읽는 CLI다. Node 표준 라이브러리만 사용한다. 저장소 루트에서 다음처럼 실행한다.
+
+```powershell
+node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md
+node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-09-plan-boundary-and-junction/goal.md
+```
+
+`--backlog`는 필수이고 `--goal`은 선택이며 각 옵션은 한 번만 쓴다. LF·CRLF를 모두 받으며 경로의 `\`는 `/`로 바꾼다. ID 표는 첫 머리 칸이 정확히 `ID`이고 바로 다음 줄이 `|`·`-`·`:`·공백으로 된 구분 줄인 표다. 데이터 첫 칸의 둘레 공백과 양끝 백틱 한 쌍을 벗기므로 백틱 없는 ID도 센다. `extractBacklogIds`는 파일 순서대로 `{ id, line }`을 반환하고 빈 ID·중복 행도 보존한다.
+
+goal에는 정확한 `## 다음 계획 후보` 제목이 하나 있어야 한다(끝 공백 무시). 다음 `# `·`## ` 제목 전까지 열 0의 `- `·`* `·`+ `·`1. ` 꼴 목록마다 후보 하나다. 이어지는 들여쓴 줄과 빈 줄은 같은 후보이며 들여쓰지 않은 문단·제목·앵커나 다음 후보에서 끝난다. 후보 줄에는 ``BACKLOG `<id>` `` 또는 `[예정 goal](../예정-goal/goal.md)`처럼 기존 goal 링크를 둔다. 영숫자에 붙지 않은 `BACKLOG` 바로 뒤의 백틱 ID와 `·`·`,`·`/`로 이어진 백틱 ID만 인용이다. 다른 자리의 백틱은 인용으로 세지 않는다.
+
+goal 링크는 대상의 `#` 뒤를 뗀 파일명이 `goal.md`이고 검사 중인 goal과 다른 기존 파일이어야 한다. 경로는 goal 폴더 기준으로 정규화하며 `http(s)://` 링크와 자기 자신은 제외한다. 다른 절·후보 밖 문단과 링크 anchor의 존재는 검사하지 않는다. 모듈 입력은 `{ backlogText, backlogPath, goalText, goalPath, isExistingGoal }`이며 goal을 생략하면 BACKLOG만 검사한다. `isExistingGoal(path)`에는 정규화한 `/` 경로를 전달하고 파일 존재 판단은 호출자가 제공한다.
+
+stdout은 `{ status, exitCode, backlog, goal, counts, diagnostics }` JSON 한 개다. `allowed`는 exit0, `policy-violation`은 exit1, `input-error`는 exit2다. `backlog`·`goal`은 받은 경로(`/` 표기)이고 goal 생략 시 null이다. 입력 오류이면 오류 진단만 내고 `counts`는 null이다. 나머지 결과의 counts는 다음과 같다.
+
+| counts 필드 | 뜻 |
+|---|---|
+| `backlogIds` | ID 표 데이터 행 수(빈 ID·중복 포함) |
+| `duplicateIds` | 두 번 이상 나온 서로 다른 ID 수(빈 ID 제외) |
+| `candidates` | 후보 수 |
+| `candidatesWithoutReference` | 인용도 유효한 goal 링크도 없는 후보 수 |
+| `unknownIds` | BACKLOG에 없는 ID의 인용 건수(같은 ID 재인용도 별도) |
+
+goal 생략 시 후보 관련 세 값은 null이며 후보가 없으면 0이다. 각 진단은 `{ code, path, line, message, repair }`로 원인·수리 안내를 담는다. 줄은 1부터 세며 파일/인자 단위 진단은 null이다.
+
+| 진단 code | 상태와 위치 |
+|---|---|
+| `duplicate-backlog-id` | 정책 위반, 같은 ID의 두 번째 이후 각 행 |
+| `empty-backlog-id` | 정책 위반, 빈 ID의 각 행 |
+| `missing-reference` | 정책 위반, 참조 없는 후보의 첫 줄 |
+| `unknown-backlog-id` | 정책 위반, 도착하지 않은 각 ID 인용 줄(message에 ID 포함) |
+| `no-id-table` | 입력 오류, BACKLOG 파일·line null |
+| `missing-section` | 입력 오류, goal 파일·line null |
+| `duplicate-section` | 입력 오류, goal의 두 번째 후보 제목 줄 |
+| `usage` | 입력 오류, 인자 누락·중복·알 수 없는 옵션·값 없음; path/line null |
+| `unreadable-file` | 입력 오류, 읽을 수 없는 파일 경로·line null |
+
+인용 ID가 하나라도 있으면 그 ID의 도착 여부를 판정하고 `missing-reference`는 내지 않는다. CLI는 파일 쓰기·네트워크 접근·Git 변경을 하지 않는다. [goal-loop](../.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)의 종료 기록 전 검사에 쓴다. 독립 회귀는 `node --test 99_Tools/Backlog.Tests/*.test.mjs`(PowerShell에서는 glob을 따옴표로 감싼다)다. [code-rules workflow](../.github/workflows/code-rules.yml)의 `Run independent Backlog candidate regressions` 단계는 시험 부재/load 실패/nonzero도 실패 처리하고 `$RULES_OUTPUT/backlog-independent-tests/`에 command/stdout/stderr/exit를 보존한다. 이 CI 단계는 회귀 시험을 실행하며 PR의 goal 후보 위반을 자동 차단하는 단계는 아니다.
+
 ## 병합 관문
 
 [MergeGate/claude-hook.mjs](MergeGate/claude-hook.mjs)는 인자 없이 stdin hook JSON을 읽는다. `.claude/settings.json`이 `node "$CLAUDE_PROJECT_DIR/99_Tools/MergeGate/claude-hook.mjs"`를 세 사건에 등록한다. PreToolUse matcher는 `Bash|Monitor|Write|Edit|MultiEdit|NotebookEdit|CronCreate|ScheduleWakeup|SendMessage|RemoteTrigger`, PermissionRequest matcher는 `Bash`다. 상태는 `$CLAUDE_PROJECT_DIR/.claude/state/merge-gate/`의 `main-checkout`과 `approvals/<session_id>.json`이며 Git 제외다. Node 표준 라이브러리만 사용하고 모든 결과의 exit는 0이다.
