@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)(merge commit `127cc5a1`), 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)(merge commit `5a1752eb`)로 병합됐다. 수신 helper PR은 branch `fix/receive-helper-ask-proof-20261009`(base main `5a1752eb`)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 수신 helper PR은 [pr2/astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/pr2/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`(PR212 병합 전에 연 세션이라 종료까지 유지, 메인 `msg_84fb999941ce`). Claude 세션 ID `64f22d75-946a-4b21-a275-d2e10254b75a`. 재진입 뒤 handle `term_73e94f29-d9a7-47bf-91d3-50f3676de874`, Run은 `run_be5206d9a2af`(run-use로 인수), 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-08T23:05:17Z): PR212가 병합됐다. 최신 main에서 수신 helper PR branch를 만들고 리드 맥락 메모를 썼다(아래 「수신 helper PR 착수」).
-- **다음 할 일**: 선행 시험 계약(신규 `claude-opus-5-5`, M2의 거절 사례 셋) → 쓰기 종료 확인 → Sol 구현 계약 → 신규 Opus 독립 검증 → PR 생성과 메인 승인 묶음. 독립 검증은 실제 공식 ask 원시로 `check-message.mjs`를 한 번 실행한다.
+- **현재 위치**(2026-10-09T00:13:24Z): 수신 helper PR의 선행 시험·구현·독립 검증이 끝났다. 판정은 통과이고 차단 결함은 없다(아래 「수신 helper 독립 검증」).
+- **다음 할 일**: PR 생성과 메인 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검과 R-8.
 - 재진입: 같은 Claude 세션을 `--resume`으로 이으면 handle이 바뀐다. 같은 Run을 run-use로 인수하고 메인에 새 handle을 알린다. 이 세션은 `[Rules Astra]`를 유지하고, 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
@@ -21,9 +21,9 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - [x] PR211 병합
 - [x] 리드 태그 PR 실사
 - [x] 리드 태그 PR 병합
-- [>] 수신 helper 선행 시험
-- [ ] 수신 helper 구현·검증
-- [ ] 수신 helper PR 병합
+- [x] 수신 helper 선행 시험
+- [x] 수신 helper 구현·검증
+- [>] 수신 helper PR 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8
@@ -264,6 +264,32 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 실제 근거: Orca 1.4.222·1.4.223의 ask/reply help에 `--subject`가 0건이다(E/lead-check/ask-help-1.4.222.txt·ask-help-1.4.223.txt, reply-help 둘).
 - 범위 메모: `99_Tools/README.md` 23행은 「건드릴 곳」의 `99_Tools/Orca/` 밖이지만 같은 인터페이스 설명이라 함께 맞춘다. 태그 붙은 subject heartbeat는 정본대로 내용 있는 heartbeat라 동작을 바꾸지 않는다.
 
+### 수신 helper 선행 시험
+
+- 계약: 신규 `[Rules 검증자]`(`claude-opus-5-5`, R-5대로 TEMP·TMP를 `.backups/tmp/pt/`로 지정)에 v1(E/pr2-tdd-contract.md, SHA256 `9bd7f896…`)을 냈다. Task `task_315c27807b1b`, Dispatch `ctx_a38458d832d0`이다. 첫 화면은 선택창 없이 「Claude Code v2.1.295 · Opus 5.5 with xhigh effort」였고 TEMP 아래에 Claude 임시 폴더가 생겼다.
+- 결과(worker_done `msg_2678f30b5330`, E/pr2/tdd/report.md): 새 시험 4개를 더하고 기존 공식 ask 시험 4개의 근거 입력을 새 모양으로 옮겼다. 1.4.219 거절 단정 1개는 「cliVersion은 상수와 비교하지 않는다」에 따라 지웠다. 바뀐 기존 단정은 전수 분류 표에 있다. 같은 명령이 기준선 22/22에서 26개 중 19 통과·7 실패(exit 1)로 바뀌었다. 7개 모두 1.4.218 상수가 새 근거를 거절한 요구 부재였다. 커밋 `40e5fcf6`.
+- 리드 R-2(E/lead-check/pr2-tdd-r2.md): 같은 명령으로 19/7을 재현했다. 리드 첫 재현은 TEMP 폴더를 만들지 않아 26개 모두 ENOENT로 실패했고, 폴더를 만든 뒤 다시 실행했다(리드 실수, 원시 보존).
+- 비차단 기록: 작성자 heartbeat 381초 한 번(메인 결정 `msg_a8e661983ce5`대로 운영 기록), 허용 목록 밖 형식의 읽기 전용 `node -e` 2회.
+- 결함 #1 정정(독립 검증 발견, 리드도 놓침): 보고서 16행은 「전 줄 CRLF」와 CR 줄 수 658/658·372/372를 적었다. 실제로 두 파일의 CR 바이트는 커밋 blob과 작업 트리 모두 0이고 `git ls-files --eol`은 i/lf w/lf다(E/pr2-review/work/v9-check.json). 리드 R-2는 LF를 관측하고도 보고서 문장과 대조하지 않았다. 「numstat에 줄 끝 변경이 섞이지 않았다」는 결론은 LF 기준으로도 참이고, 시험·완료조건 판정에 쓰인 수치가 아니다.
+- 리드 이탈(첫 관찰, 리드 귀속): 이 기록을 처음 넣을 때 JS `String.replace`의 치환 문자열 안 `$'`가 특수 패턴으로 해석돼 문서 뒷부분이 한 번 더 붙었다. 커밋 전에 발견해 파일을 마지막 커밋으로 되돌리고, 치환을 함수형 스크립트(E/lead-check/pr2-goal-record.mjs)로 다시 했다.
+
+### 수신 helper 구현
+
+- 계약: 신규 `[Rules Sol]`(`gpt-6.1-sol` max)에 v1(E/pr2-impl-contract.md, SHA256 `31b3c323…`)을 냈다. Task `task_7845136f2c39`, Dispatch `ctx_0b2d88fd401d`다. `turn_start_unobserved`는 draft 크기 대조(22,408 = 17,621 + 4,787) 뒤 Enter 한 번으로 풀었다(E/pr2-impl-draft-recovery.md).
+- 결과(worker_done `msg_6177c70b2ff5`, E/pr2/impl/report.md): `message-policy.mjs`가 `{ messageId, cliVersion, askHelp, replyHelp }` 근거를 받는다. 근거 완전성을 먼저, subject 옵션을 다음으로 본다. exception은 `official-blocking-ask`다. ORCA 75·103·121행, `99_Tools/README.md` 23행, BACKLOG `operating-reference-maintenance` 출처 칸을 맞췄다. ORCA 73행(reply 예외)은 그대로다. 커밋 `bc029e1b`.
+- 리드 R-2(E/lead-check/pr2-impl-r2.md): 같은 명령 26/26, exit 0, stderr 0 bytes. 실제 공식 ask 입력은 CLI exit 0·`official-blocking-ask`, 옛 모양 입력은 exit 2·`official-ask-proof`. 여섯 파일 묶음 102,655 → 102,601 bytes, ORCA 249줄, 바뀐 줄 링크 6개 정상. Sol heartbeat 최대 229초.
+
+### 수신 helper 독립 검증
+
+- 계약: 신규 `[Rules 검증자]`(`claude-opus-5-5`, TEMP `.backups/tmp/rv/`)에 v1(E/pr2-review-contract.md, SHA256 `09845da6…`)을 냈다. Task `task_7ed1efa945fb`, Dispatch `ctx_f0e1d6320807`, 고정 HEAD `bc029e1b`다.
+- 판정(E/pr2-review/verdict.md, worker_done `msg_90ea985c6135`): **통과**, 차단 결함 없음.
+  - TDD 순서: `40e5fcf6` 트리에서 26/19/7을 재현했다. 구현 커밋은 시험 파일을 바꾸지 않았다.
+  - 실제 진입(완료조건 4): fixture에 없는 실제 공식 ask 둘(`msg_fcb32bda0afe`, `msg_deaf09879e34`)로 확인했다. identity는 receipt에서, 근거는 1.4.223 help에서 가져와 `check-message.mjs`에 넣었고, 둘 다 exit 0·`official-blocking-ask`였다. 근거 누락·subject 옵션·다른 Dispatch·다른 질문 변형은 각각 exit 2·2·1·1이었다.
+  - 경계 시험 보탬: null·객체 아닌 근거와 공백 cliVersion 시험을 더해 27/27이 됐다. null을 근거 없음으로 보거나 trim을 빼는 변이는 기존 26개로 잡히지 않았고 새 시험이 잡았다. 리드가 27/27을 재현하고 커밋했다(`1f73a67f`).
+  - 비차단 결함 #1은 위 「수신 helper 선행 시험」의 정정이다. 설계 관찰 O1~O7은 아래 「다음 계획 후보」에 둔다.
+- 관찰: Claude 작업자의 큰 도구 출력(30.8KB 초과)은 TEMP 지정과 무관하게 Claude Code 하네스가 `~/.claude/projects/…/tool-results/`에 저장했다. 명령의 명시 쓰기가 아니며, 위임 계약의 「홈은 허용 밖」과 맞지 않는 하네스 동작이다.
+- 정산: 세 작업자 모두 release `retained`(`external_terminal`), tui-idle 확인 뒤 pane을 닫았다(E/pr2-tdd-close.json, pr2-impl-close.json, pr2-review-close.json).
+
 ## 정본에서 옮긴 적용 기록
 
 규칙 문서 bytes를 상쇄하려고 메인 판단 `msg_e6c8eb971f30` M3와 계약 보충 v1.1에 따라 아래 원문을 옮겼다.
@@ -325,3 +351,12 @@ M-1 관찰·출처와 미검증 구분은 [이관 기록](../../01_Phases/goals/
 - 리드 태그 PR 실사 O1(Rules): AGENTS 전환 문단의 「종료까지」를 다음 문안 정비 때 「세션 종료까지」처럼 주체를 밝힐지 본다. 여섯 파일 묶음 여유가 3 bytes라 바꾸면 다시 잰다.
 - 리드 태그 PR 실사 O2(Rules): BACKLOG 65행 「Astra 갱신 책임」의 호칭을 그 행을 손볼 때 정리할지 본다. 지금은 AGENTS 전환 문단이 당시 이름으로 해석하게 한다.
 - 작업자 생존 확인의 도구 층 교정(Rules, 메인 결정 `msg_a8e661983ce5`): 예를 들어 리드 대기 중 heartbeat 공백이 5분을 넘으면 작업자 화면 상태를 읽어 기록하는 helper를 둘 수 있다. 장문 작성 중 heartbeat를 대신 보내는 방법도 검토한다. 5분 간격 자체가 긴 작성에 맞는지도 함께 본다. 문서로 끝내지 않는 이유: 「긴 작성 직전 heartbeat 한 번」 계약 문장을 두 작업자가 지켰는데도 한 번의 긴 작성이 5분을 넘었다(R1 363초, R2 337초). 작업자는 한 번의 긴 생성 도중에는 heartbeat를 보내지 못하는 것으로 보인다(추론, 미실증).
+- 수신 helper 검증 관찰(Rules):
+  - O1 `official-ask-proof` 진단 path를 필드별로 낸다.
+  - O2 `official-ask-mismatch`의 수리 안내에서 help 재확인을 빼고 receipt·메시지 대조로 좁힌다.
+  - O3 근거 완전성 조건을 이름 있는 술어로 뺀다.
+  - O4 help 명령 확인을 첫 줄 비교로 좁힌다(계약 변경 필요).
+  - O5 ORCA 103·121행의 같은 문장 중복을 줄인다.
+  - O6 AGENTS 47행 「버전 한정 subject 예외」를 「help 근거 한정」으로 고친다. 지금 읽기로도 틀리지 않으나 상수가 남았다고 오해할 수 있다.
+  - O7 BACKLOG 120행 덧붙인 출처의 KST 날짜를 UTC 시각과 Task ID로 바꾼다.
+- Claude 작업자 하네스 쓰기(Rules): 큰 도구 출력은 하네스가 `~/.claude/projects/…/tool-results/`에 자동 저장한다. 위임 계약의 허용 쓰기 위치에서 이를 어떻게 다룰지 정한다. 작업자가 막을 수 없는 하네스 동작이다.
