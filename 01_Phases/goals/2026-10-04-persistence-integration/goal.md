@@ -222,6 +222,7 @@
 | 마감 뒤 복구와 검사 후보 | 메인 `msg_ac202aff9b99`·plan-scopes-draft.md의 `persistence-recovery-post-deadline`, 기존 범위 밖 절의 Q-1B/ADR-035·C1/C2(`msg_5322a941f836`)·Rules 도구 후속 | 기존 제외/보류와 다음 계획 경계 유지. 이번 목표에 자동 편입하지 않음 |
 | DB 가상 디스크 실행 전제 문서 | `persistence-db-vhd-prerequisite`, 메인 `msg_f061272f74cb` 및 위 사용자 원문. `C:\myVHDX.vhdx`→D:와 고정 SQL 경로, 해제/자동 마운트 미확인 구분 | 현재 goal에는 즉시 정정했다. 이 PR에 공용 실행 안내 변경이 없으므로 DEVELOPMENT/MSSQL 등 정본 한 줄 반영은 다음 계획 후보로만 기록 |
 | OBS-1 - 이어지는 줄 들여쓰기 가독성 | E/`pr190-ci/indentation-review-1/verdict.md` 「설계 관찰」: `PSUseConsistentIndentation` 때문에 `+`·`-and`·`-or`로 이어지는 줄 199곳이 첫 줄과 같은 깊이로 붙었다. 사용자 결정 5) A(`msg_a00fe953e76c`) | 코드·검사 설정을 지금 바꾸지 않는다. 식 구조 변경이나 검사 설정 조정은 후속 계획 묶음 검토 때 함께 올린다 |
+| SQL 실행 환경 단순화와 사람 조회 공존 | 사용자 원문 「음 좀 불편하긴하네, 이 부분 나중에 어떻게 할지 Core 백로그로 남겨줘」 등 셋(메인 전달 `msg_32dfec1508d4`, 2026-10-09T01:56:53Z). 관리자 손 단계 단순화 후보(서비스 시작·정지 권한, VHDX 자동 부착, 데이터 이동)와 사람 조회 공존 경계(카드 실행 중 접속 금지, 스키마는 migrations로만, 카드 DATA 기준을 시작 시점 상태로, 조회 안내 한 절) | BACKLOG `sql-environment-human-access`(Core, 대기)로 등록. 지금 결정은 「나중에 정한다」뿐이고, DB 생성 1단계 재시도는 지금 환경 그대로 한다. 아래 `persistence-vhd-mount-convenience`와 겹침은 검토 때 대조 |
 | 관리자 묶음 스크립트 규칙 검사 전환 | 「재개 지점」 Fable 작업자 블록의 REP-01 첫 발생, 메인 `msg_e6b4501dff60`. 후보는 PS 파서로 120자 초과 줄을 세는 검사와 PSScriptAnalyzer `PSAvoidUsingPositionalParameters` | 후속 후보로만 기록. 지금 검사를 만들지 않는다 |
 | 가상 디스크 반복 준비 효율화 | `persistence-vhd-mount-convenience`, 질문 `msg_8739f507da55` 후 메인 `msg_9715b62aed0e`가 사용자 A 선택 전달 | 부팅 때 자동 마운트 선택. DB1단계 뒤 메인이 사용자와 별도 관리자 창에서 조율하며 GameDev는 실행하지 않음. 예약 작업 등록·동작 검증 완료는 미보고 |
 
@@ -481,8 +482,18 @@
   - 카드 N/`step-card.md`(①~⑰).
   - 기계 확인: `rule-check.txt`(파서 오류 0, 바뀐 줄의 120자 초과는 경로 리터럴뿐)와 `card-line-check.txt`(카드 줄 14개 파서 오류 0)다. dot-source 모형 `dotsource-sim/output.txt`도 남겼다.
   - 실사 계약 N/`review-v1/contract.md`(기준 10개, 결함 번호 RTY-), 경로 확인 `review-v1/path-check.txt`(실행 전 전제 모두 없음).
-- **다음 할 일:** 신규 Opus 실사자 1개 기동 → 판정 → 리드 표본 대조 → 메인 R-2 → 메인이 카드를 사용자에게 전달(시간 창 시작) → 사용자 실행. 사용자 차례·B2 대조점·실행 끝마다 바로 메인에 status.
-- **사용자 손·결정 대기:** 없음(실사 진행). 주간 사용량 97%(10-13 20:00 KST 리셋, 한도 도달 시 상태 보존·메인 보고).
+- **실사 review-v1:** 신규 `claude-opus-5-5`(화면 「Opus 5.5 ⚡xhigh」, backend unknown) pane `term_d9c253ea-4288-4e2e-8b88-679e7bf79750`, task `task_a1833c38c7d7`, dispatch `ctx_09efef50b30c`, 01:40:42Z 시작(`review-v1/launch-record.txt`). 메인 알림 `msg_014479eca1eb`.
+- **실사 결과: NOT PASS(수정 필요).** 판정 N/`review-v1/verdict.md`(SHA256 `02A441D91F467AC47395278985822D518D62EE9B8C042A430F1CF670E8C7BEA6`), status `msg_68823a5bc610`(01:58:34Z), worker_done `msg_3b73fe3458cc`(01:58:44Z), pane close 01:59:24Z. 메인 전달 `msg_bafa77c18c94`·`msg_dfa31f80c9b5`.
+  - 차단 RTY-01: 카드 명령 줄 12개가 대입과 if를 `;`로 한 줄에 묶었다(「SQL·PowerShell 작성」 한 줄 한 문장, 리드 메모 계획과 불일치). 리드 `card-line-check.ps1`은 파서 오류·길이만 봐서 놓쳤다.
+  - 차단 RTY-04: ⑤ 장치 확인에서 서비스가 이미 Running이거나 Manual·경로가 다를 때 멈추라는 지시가 없다. 04 블록은 그때 throw하지 않고, ⑥ Start-Service는 Running에서 같은 「정상」을 보인다. 실패 패치 재시도와 겹칠 수 있다.
+  - 비차단 RTY-02(「순서는 10-05 그대로」가 틀림: D: 붙이기를 준비 뒤로, 창은 Win+R), RTY-03(sqlcmd `-C`·업그레이드 17.0.1135.8이 카드에 없음). 관찰 O-1~O-8.
+  - 지적 없음: 준비 블록 동작 보존, 제품 재고정(3개 공백뿐·토큰 동일), 실행 JSON 두 값 변환, 카드 줄 SHA 12/12와 전역 범위, 실행 전 전제.
+  - 리드 표본 대조와 실사자 자기 쓰기 감사(최신 양식 칸을 리드가 메움, 메인 `msg_a50270c88549`): N/`review-v1/lead-r2-sample.txt`. 쓴 파일은 review-v1의 `context-memo.md`·`verdict.md` 둘, 도구 자동 저장 1건은 판정 머리에 밝힘.
+  - 처리: 네 건 모두 리드 결함으로 받아들이고 카드만 고친다(메인 `msg_5baa3a55ca43`). RTY-01은 실사자 대안 (가) 한 문장 if 형식. 제출 파일·실행 JSON·제품 목록 SHA는 그대로이고 카드 한정 재실사(review-v2)를 연다. 같은 계약·결함 번호의 확정 실패 1회째다.
+- **main 통합(메인 `msg_275e7dc83fa0`):** 사용자 원문 「지금 워크트리별로 규칙이 섞인거 같은데 확인해볼래?」(메인 전달, 격상하지 않음). core-active의 규칙 문서가 10-06판이었다. 판정 뒤 origin/main `08028f1b`를 merge했다(merge commit `6f654688`). 충돌은 `CURRENT.md` 하나였고 다른 파트 줄은 main 쪽을 썼다(Core 줄은 양쪽 같음). 이제 main과 다른 파일은 이 goal뿐이다. 메인 결정으로 이 리드 세션은 종료까지 `[Core Astra]` 태그를 쓴다(`msg_a50270c88549`, PR212 병합 전에 연 세션).
+- **어림 시각 보완(최신 양식 「시계 출력을 옮긴다」):** 위 「리드 대조(01:25Z 무렵)」는 앞뒤 `date -u` 출력 01:23:40Z와 01:27:28Z 사이다. 「작성 결과(01:40Z 무렵)」의 확정 시각은 `review-v1/path-check.txt` utc 01:40:08Z다. N/`context-memo.md`의 「01:30Z 무렵」 첫 쓰기는 `date -u` 01:28:59Z 뒤, 대상 첫 파일 01:30:39Z(실사자 측정) 앞이다. 메모는 실사 고정 입력이라 고치지 않고 여기서 보완한다.
+- **다음 할 일:** 카드 템플릿·`make-card.js`·`card-line-check.ps1` 수정 → 새 카드 → 기계 확인(한 줄 여러 문장 포함) → 카드 한정 실사 계약 review-v2(최신 양식, 자기 쓰기 감사 칸) → 신규 Opus 실사자 → 리드 표본 대조 → 메인 R-2 → 메인이 카드 전달(시간 창 시작) → 사용자 실행. 사용자 차례·B2 대조점·실행 끝마다 바로 메인에 status.
+- **사용자 손·결정 대기:** 없음(카드 수정). 주간 사용량 98%(실사자 화면 기준, 10-13 20:00 KST 리셋, 한도 도달 시 상태 보존·메인 보고).
 
 ### Fable 작업자 SQL 서비스 진단·처치 — 2026-10-08T23:12Z
 
