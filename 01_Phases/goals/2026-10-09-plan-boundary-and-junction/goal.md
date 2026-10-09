@@ -5,11 +5,11 @@
 Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지시 「규칙·운영 V1.0 셋업 뒤 main 통합·재분화」를 묶는다. 사용자가 범위를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: 정본 PR(PR216, 병합)은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)였다. 후보 검사 PR은 `feat/backlog-candidate-check-20261009`(base main `ff308e20`)다.
+- branch: 정본 PR(PR216, 병합)은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)였다. 후보 검사 PR(PR217, 병합)은 `feat/backlog-candidate-check-20261009`(base main `ff308e20`)였다. 종료 기록 PR은 `docs/ops-v1-closeout-20261010`(base main `bea63884`)다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T14:56:37Z): 후보 검사 구현(`7d0dc17f`)이 독립 검증을 통과했다(「후보 검사 구현」·「후보 검사 독립 검증」). 사용자가 Sol max Fast 결정을 철회했다(「적용 중인 사용자 결정」).
-- **다음 할 일**: 후보 검사 PR(push, 생성이 막히면 메인 대행) → CI 시험 수 확인 → 승인 묶음 → 결과 기록·Gardener → 종료 기록 PR.
+- **현재 위치**(2026-10-09T15:35:06Z): PR217이 병합됐다(「PR217 병합」). 종료 기록 branch를 최신 main에서 만들었다.
+- **다음 할 일**: Gardener → 종료 기록 PR 작성(리드 기록과 milestones J 문안) → 후보 도착 검사 실행 → 문서 실사 → PR(생성이 막히면 메인 대행) → 승인 묶음 → 종료 점검·R-8.
 - 이번 합류점 J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이다. 종료 기록 PR 병합 커밋은 2차 맞춤의 기준이다.
 
 ## 진척 단계
@@ -20,8 +20,8 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - [x] PR216 병합
 - [x] 후보 검사 선행 시험
 - [x] 후보 검사 구현·검증
-- [>] 후보 검사 PR 병합
-- [ ] 결과 기록·Gardener
+- [x] PR217 병합
+- [>] 결과 기록·Gardener
 - [ ] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8
 
@@ -305,6 +305,15 @@ J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이 됐다(「적용 �
   - 검증자 자기 감사: 자기 시험 파일 한 줄 `sed -i`(허용 실행 목록 밖), heartbeat 319·354초 초과.
 - 리드 R-2(E/lead-check/pr2-verify-r2-check.md): 60/60 재실행, 실제 진입 출력이 리드 R-2와 바이트로 같고 손 계산·시험 0개 관찰 원시도 판정문과 같다. 리드 처분: 결함 #1과 검증자 초과는 비차단, 종료 기록 PR의 heartbeat 초과 후보에 원시를 넣는다. O1은 완료조건 5에서 CI 시험 수 60을 대조하고, O1~O9는 「후보 도착 검사 경계 관찰」 후보로 둔다. 이 PR에서 제품을 고치지 않는다. 리드가 새 시험을 커밋했다.
 - 선행 시험 자체 점검 원형 `.backups/tmp/bpt/selfcheck/`(19파일)은 독립 검증 뒤 리드가 지웠다. 지우기 전 hash 목록은 E/lead-check/selfcheck-cleanup-manifest.txt다.
+
+### PR217 병합
+
+- PR: 리드가 `7d0dc17f`·`12f1c115`·`00d526ca`를 push하고 PR217을 만들었다(E/session/pr2-push.txt, pr2-create.txt). 분류기 거부는 없어서 메인 대행 결정(`msg_d9f7602e1194`)은 쓰지 않았다. 메인에 status `msg_209ea0512c01`(14:59:13Z)로 알렸다.
+- CI: head `00d526ca`의 네 항목이 SUCCESS였고 mergeStateStatus는 CLEAN이었다(E/session/pr2-checks-final.txt, pr2-view-final.json). code-rules의 「Run independent Backlog candidate regressions」 단계는 Linux에서 tests 60 / pass 60 / fail 0이다(E/session/pr2-code-rules-log.txt). 완료조건 5를 충족했다. 승인 묶음은 status `msg_9435ee5e81f0`(15:19:10Z, E/session/approval-pr217-body.txt)다.
+- 승인과 병합: 메인 `msg_88a1072575fe`(15:30:48Z, E/session/main-dispatch-msg_88a1072575fe.raw.json)에 따르면 사용자가 메인 창에 「병합 승인: PR217 head 00d526ca18c7e836aab62398558ebdf6a29e57bc」를 제출했다. 직전 현황판 항목은 kind "merge"인 PR217 병합 항목이었다. 메인이 head·CI 4/4·CLEAN을 다시 대조하고 단독 명령으로 병합했다. merge commit `bea63884cad6e7233710562a0f4a75d56a408b39`(부모 `ff308e20`·`00d526ca`), 2026-10-09T15:30:21Z다.
+- 메인 R-2 표본(메인 진술): 재조회, 판정 결론 「통과(PASS)」, 검증자 시험 파일 hash `99dced74…`와 커밋본 일치, CI 새 단계가 시험 묶음만 돌림, ORCA에서 뺀 구절 둘이 이 goal에 원문 그대로다.
+- 리드 확인: fetch 뒤 merge commit 부모가 위와 같고 원격 branch는 자동 삭제됐다(E/session/pr217-post-check.txt, 15:33:29Z).
+- 종료 branch: 2026-10-09T15:31:07Z(reflog) 최신 main `bea63884`에서 `docs/ops-v1-closeout-20261010`을 upstream 없이 만들었다.
 
 ## 정본에서 옮긴 적용 기록
 
