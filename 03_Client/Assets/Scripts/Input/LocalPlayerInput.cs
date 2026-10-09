@@ -27,11 +27,14 @@ namespace Dawnholder.Client.Input
 
         LocalPlayerMovement _movement = null!;
         LocalPlayerMotion? _motion;
+        PlayerInput _playerInput = null!;
+        readonly GameplayPointerInput _pointerInput = new GameplayPointerInput();
 
         void Awake()
         {
             _movement = GetComponent<LocalPlayerMovement>();
             _motion = GetComponent<LocalPlayerMotion>();
+            _playerInput = GetComponent<PlayerInput>();
             // ClassConfig 미장착 시 fallback — Resolve 실패는 ClassLoadout.Resolve()가 fail-loud 처리.
             _attackStrategy = new KnightMeleeAttack();
         }
@@ -69,6 +72,8 @@ namespace Dawnholder.Client.Input
         {
             if (!CanAcceptGameplayInput()) return;
             if (!value.isPressed) return; // up edge 무시 — down 시점 한 번만.
+            InputAction? attack = _playerInput != null ? _playerInput.currentActionMap?.FindAction("Attack") : null;
+            if (_pointerInput.IsOverUi(attack?.activeControl)) return;
             // 공격 쿨다운(서버 rate-limit의 클라 거울, AttackCooldownTicks=500ms) 중이면 재입력 무시 —
             //   "한 번 들어간 공격은 끝까지 커밋". commit window(이동잠금 400ms)보다 긴 쿨다운으로 게이트해
             //   스윙 종료 후 재공격까지 대기 + 유령 스윙(클라 예측-서버 거부 갭) 차단. 서버 상수 단일 진실 거울.

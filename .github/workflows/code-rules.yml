@@ -217,6 +217,31 @@ jobs:
           cat "$merge_gate_results/stdout.txt" "$merge_gate_results/stderr.txt"
           exit "$merge_gate_exit"
 
+      - name: Run independent Backlog candidate regressions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          backlog_results="$RULES_OUTPUT/backlog-independent-tests"
+          mkdir -p "$backlog_results"
+          printf '%s\n' 'node --test 99_Tools/Backlog.Tests/*.test.mjs' > "$backlog_results/command.txt"
+          shopt -s nullglob
+          backlog_tests=(99_Tools/Backlog.Tests/*.test.mjs)
+          set +e
+          if test "${#backlog_tests[@]}" -gt 0; then
+            node --test "${backlog_tests[@]}" \
+              > "$backlog_results/stdout.txt" 2> "$backlog_results/stderr.txt"
+            backlog_exit=$?
+          else
+            : > "$backlog_results/stdout.txt"
+            printf '%s\n' 'Independent test suite is missing: 99_Tools/Backlog.Tests/*.test.mjs' \
+              > "$backlog_results/stderr.txt"
+            backlog_exit=1
+          fi
+          printf '%s\n' "$backlog_exit" > "$backlog_results/exit.txt"
+          cat "$backlog_results/stdout.txt" "$backlog_results/stderr.txt"
+          exit "$backlog_exit"
+
       - name: Preserve results even on failure
         if: always()
         uses: actions/upload-artifact@v4
