@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **PR180(`8d1e885`)과 PR191(`e5653eb9`, 2026-10-09T16:01:46Z)이 병합됐다. PR191은 J 통합 독립 검증과 Unity 6000.6.4f1 실화면 독립 검증을 모두 통과했다(결함 0). 남은 것은 종료 Gardener, 종료 기록 PR 병합, 종료 점검, R-8이다. 이어갈 곳은 [종료 재개 지점](#종료-재개-지점--2026-10-10)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **PR180(`8d1e885`)과 PR191(`e5653eb9`, 2026-10-09T16:01:46Z)이 병합됐다. PR191은 J 통합 독립 검증과 Unity 6000.6.4f1 실화면 독립 검증을 모두 통과했다(결함 0). 종료 Gardener도 끝났다(정리 후보 2). 남은 것은 종료 기록 PR(생성·문서 실사·Gardener 후보의 사용자 채택 질문·병합), 종료 점검, R-8이며 다음 메인 세션에서 잇는다. 이어갈 곳은 [종료 재개 지점](#종료-재개-지점--2026-10-10)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, 현재 종료 기록 branch `docs/items-inventory-closeout-20261010`(base main `e5653eb9`). PR2 branch는 `feat/items-inventory-ui-20261005`(base `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`), PR1 branch는 `feat/items-inventory-currency-20261005`였다.
@@ -124,6 +124,12 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ## 정본 반영 전 적용 중인 사용자 결정
 
+메인이 PR191 병합 뒤 전달한 종료 순서와 사용자 결정은 아래와 같다. 사용자 원문은 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 원문은 근거 폴더의 `lead-1009-inbox-24.clean.json`이다.
+
+- `msg_ada6a80071a3`(메인 정정): 종료 순서는 goal 결과 기록(로컬) → Gardener(신규 Opus, 읽기 전용, 보고서 한 파일) → 그 결과를 넣은 종료 기록 PR → 종료 점검 → R-8이다(ORCA 「목표 종료 Gardener 4주 파일럿」).
+- `msg_13a053766f59`: 「전체적으로 워크트리 맞추고 새로운 메인세션으로 시작해야겠다, Orca 재부팅도 해야돼」와 「대시보드 결정 응답: 1) 세션 재시작 - 종료 기록 PR 둘까지 넣고 맞춘 뒤 재시작할지, 지금 멈추고 재시작할지 → A 종료 기록 PR 뒤」. 메인 요청은 Gardener 정리 후보가 있으면 PR에 「사용자 채택 질문」으로 올리는 것이다.
+- `msg_4a188e97c526`: 「음 오늘 워크트리 갱신까지만 하고 마무리 해야겠다, 피곤하네, 나머지 어차피 나랑 같이해야 이어갈 수 있는 작업들 많이 남지 않았나?」. 위 A를 바꾼다. 종료 기록 PR은 이날 열지 않고 다음 메인 세션에서 잇는다. 이날은 Gardener를 끝내 정산하고, 결과 기록을 종료 branch에 commit·push하고, 재개 지점을 다음 메인 세션용으로 고친 뒤 「닫아도 됨」을 보낸다.
+
 메인이 2026-10-09에 전달한 실화면·병합 관련 사용자 원문은 아래와 같다. 모두 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 원문은 근거 폴더의 `lead-1009-inbox-*.json`이다.
 
 - `msg_b2842a16a523`: 「음 Fast가 별 차이가 없네, 그냥 기본으로 돌려야겠다 앞으로」. 이후 Sol은 R-5 기본 tier로 기동한다(`-c service_tier="priority"` 없음). 아래 「J 통합과 Sol 자기 점검」의 Fast 기록은 지우지 않는다. 시범 1회와 철회의 기록은 [Rules goal](../2026-10-09-plan-boundary-and-junction/goal.md)이 이 goal의 관측을 인용해 맡았다.
@@ -186,22 +192,26 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ### 종료 재개 지점 — 2026-10-10
 
-다음 Content 리드는 이 블록부터 읽는다. 아래 블록들은 역사다.
+다음 메인 세션과 Content 리드는 이 블록부터 읽는다. 아래 블록들은 역사다. 사용자가 2026-10-10에 이날 작업을 여기서 멈췄다(`msg_4a188e97c526`). 남은 일에는 사용자 차례가 있어 다음 메인 세션에서 잇는다.
 
 | 항목 | 이 기록 시점의 값 |
 |---|---|
 | 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` / `docs/items-inventory-closeout-20261010`(base main `e5653eb9`) |
+| head | 이 기록을 담은 commit이며 push됐다. 40자는 `git log -1`과 메인에 보낸 「닫아도 됨」 status에 있다. PR은 아직 없다 |
 | 병합 | PR180 `8d1e885`, PR191 `e5653eb95577edbad38b6c3eabe3b9220c75a334`(2026-10-09T16:01:46Z, 부모 `bea63884`·`cfe693fd`) |
 | 로컬에만 둔 변경 | `ProjectSettings.asset`의 cloud 3필드(SHA256 `4a8db0bd…`)와 `MinimapRT.renderTexture`의 줄바꿈 표시. 커밋·되돌리기 금지는 그대로다 |
-| 작업자·실행 자원 | 작업자 pane 0, Unity.exe 0, 7777 0, 음소거 값 0. Unity MCP 시트는 반환했다 |
+| 작업자·실행 자원 | 작업자 pane 0(Gardener 정산·종료), Unity.exe 0, 7777 0, 음소거 값 0. Unity MCP 시트는 반환했다 |
 
-**끝난 것**: J 통합 독립 검증 PASS, 실화면 독립 검증 PASS, PR191 병합. 아래 결과 절 「J 통합 독립 검증」·「PR191 실화면 독립 검증」·「PR191 병합」에 있다.
+**끝난 것**: J 통합 독립 검증 PASS, 실화면 독립 검증 PASS, PR191 병합, 결과 기록 commit `7004b7ea`, 종료 Gardener. 아래 결과 절 「J 통합 독립 검증」·「PR191 실화면 독립 검증」·「PR191 병합」·「종료 Gardener」에 있다.
 
-**열린 것**
+**남은 순서**
 
-1. 종료 Gardener. 신규 `claude-opus-5-5`를 읽기 전용으로 열고 쓰기는 보고서 한 파일만 허용한다.
-2. 종료 기록 PR. 이 goal의 결과 기록, 「다음 계획 후보」의 BACKLOG 도착, CURRENT의 Content branch를 담는다. 후보 도착 검사 원시를 근거 폴더에 두고 신규 `gpt-6-astra` xhigh의 문서 실사를 받는다.
-3. 종료 기록 PR 병합 승인(메인), 종료 점검, R-8. 메인은 Rules 종료 기록 PR 병합 뒤 2차 맞춤 신호를 따로 보낸다(`msg_c96b28570984`). 그 전에 새 goal을 시작하지 않는다.
+1. 종료 기록 PR을 이 branch로 연다(리드). 이 goal의 결과 기록, 「다음 계획 후보」의 BACKLOG 도착, CURRENT의 Content branch를 담는다. 본문에 Gardener 정리 후보 2개를 「사용자 채택 질문」으로 올린다.
+2. 신규 `gpt-6-astra` xhigh 문서 실사. 후보 도착 검사를 PR head에서 다시 돌려 원시를 근거 폴더에 둔다.
+3. **사용자 차례**: Gardener 후보 2개의 채택 여부. 후보 1은 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더하는 것이고, 후보 2는 새 행(서버 lane 정상 종료 경로, 소유 Core)이다. 채택한 것만 BACKLOG에 반영한다.
+4. **사용자 차례**: 종료 기록 PR 병합 승인. 병합은 메인이 한다.
+5. 2차 맞춤. 메인은 Rules 종료 기록 PR 병합 뒤 2차 맞춤 신호를 따로 보낸다(`msg_c96b28570984`). content-active를 main에 맞출 때 사용자 미커밋 파일 둘을 보존한다.
+6. 종료 점검과 R-8. 그 전에 새 goal을 시작하지 않는다.
 
 **사용자 손 정리**(병합과 무관, 선택): Game view 해상도를 「16:9 Aspect」로 다시 고르고 「PR191 verify」 항목을 지운다. 단계는 실화면 판정의 「사용자 손 정리」 절에 있다.
 
@@ -385,8 +395,8 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 - [x] 화면 독립 검증(J 통합 PASS `task_d0b386bf3bda`, Unity 6.6 실화면 PASS `task_767e85c804d9`)
 - [x] 실제 플레이 최종 확인(실화면 MCP 흐름 3회 완주. 입력은 MCP 가상 장치와 직접 호출이며 사람 손 입력은 미실행)
 - [x] PR191 병합
-- [>] 결과 기록·Gardener
-- [ ] 종료 기록 PR 병합
+- [x] 결과 기록·Gardener
+- [>] 종료 기록 PR 병합
 
 ### 2026-10-05 크래시 중단과 복구
 
@@ -748,6 +758,30 @@ batch 재실행은 필수로 두지 않았다. main 병합은 코드 영역(02_S
 ### PR191 병합 — 2026-10-09
 
 사용자가 메인 창에 「병합 승인: PR191 head cfe693fdb9dcf4ce79cffc7aa42cc788831ac1ca」를 제출했다. 메인이 head, CI 4/4, CLEAN을 다시 대조하고 병합했다(`msg_c96b28570984`). 병합 commit은 `e5653eb95577edbad38b6c3eabe3b9220c75a334`(2026-10-09T16:01:46Z)다. 리드 승인 묶음은 `lead-1009-status-approval-bundle.md`(`msg_d674dd4d8f39`)다.
+
+### 종료 Gardener — 2026-10-09
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_6ea9e0c42a80` / `ctx_f10fee312c2d`, `[Content 검증자]` |
+| 모델 | 지정 `claude-opus-5-5`. 화면 표시 「Opus 5.5 with xhigh effort」. backend 실제 모델 unknown |
+| 계약 | `closeout/gardener-contract.md` SHA256 `2ee871bfe3c9b7212f33276619457062fa9a1565689603ea1b12e4d0658e7e3b`, 고정 입력 `closeout/gardener-inputs.txt` 24행 |
+| 보고 | `closeout/gardener/report.md` SHA256 `c6d03afc49bb6f6c6770f43bb8007314228a6594d03dfdae3415e0f7198b9d8f`(330행), worker_done `msg_01d8f22cc549`(16:40:45Z). 읽기 전용이며 쓰기는 보고서 한 파일이다 |
+
+- **확정 실패**: 결함 번호 6개가 각 1회다(PR1 #1·#3, PR2 #1~#4). 2회째에 이른 번호가 없어 확정 실패 3회 조건과 3회 초과 체크포인트는 생기지 않았다.
+- **CI**: PR191 병합 head의 CI는 4/4 통과다. PR180 main 동기화 CI의 `CombatSmoke_ZeroLag_Succeeds` 1회 실패는 BACKLOG `combat-smoke-zero-lag-flaky`가 맡는다. code-rules PASS 두 번 중 하나는 대상 0건이다. 빌드 경고 4건은 이 goal이 바꾸지 않은 파일의 것이다.
+- **경고 억제·설정 완화**: 새 억제는 `InventoryClientContractTests.cs:561`의 `LogAssert.ignoreFailingMessages` 한 곳이다. 불량 서버 입력 구간에만 켜고 try/finally로 되돌린다. Gardener는 이것을 「테스트 로그 정책의 범위 한정 완화 1건, 제품 경고 억제 아님」으로 분류했다. 설정·분석기 파일 변경은 0이다.
+- **관찰 입력과 기존 후보의 겹침**: SENTIS define 삭제 10회(batch 10세션)는 `unity-sentis-define-drift`가 맡는다. MCP revoked 2세션(10-05, 10-09)은 `unity-mcp-seat-visibility`, 우편함 `&` 1회는 `mailbox-output-loss-hook`, heartbeat 5분 초과 1구간은 `worker-liveness-tool-check`가 맡는다. Gardener는 BACKLOG를 고치지 않았다.
+
+**정리 후보 2개 — 사용자 채택 질문 대기**. Gardener는 제안만 했고 채택·등록은 하지 않았다. 다음 메인 세션의 종료 기록 PR에서 사용자에게 묻는다.
+
+1. Unity·서버 검증 harness의 세션별 재작성. 이 goal 안에서 batch 실행 harness 6개, 상태 기록 9개, 서버 lane 4개를 새로 쓰거나 고쳤다. 반대로 10-09 batch 두 세션은 Unity 업그레이드 goal의 harness를 고치지 않고 썼다. 제안은 그 harness가 출력 폴더와 허용 Editor를 인자로 받게 고쳐 추적되는 정본 위치로 올리는 것이다. 새 행이 아니라 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더한다.
+2. 서버 lane 정상 종료 경로(새 후보, 소유 Core). 서버 lane Stop 8회(7세션)가 모두 SIGINT 20초 무응답 뒤 SIGTERM으로 끝났다. `02_Server/GameServer/Program.cs`는 stdin 개행을 읽은 뒤에만 `host.Stop()`을 부르고 신호 처리기가 없다. `99_Tools/sync-wsl.sh`에는 stdin FIFO가 있지만 종료는 `kill`이다. 제안은 FIFO 개행 → 대기 → 남으면 TERM 순서의 종료 경로, Stop 기록의 `graceful` 필드, 정상 종료 smoke다.
+
+- **리드 R-2**(`closeout/lead-gardener-r2-sample.txt`): `Program.cs`의 `Console.ReadLine()` → `host.Stop()` → 「Server stopped.」 순서와 신호 처리기 0을 직접 읽었다. junction과 Unity 업그레이드 goal의 lane harness hash `870f9643`이 같은 것과 Stop 원시 두 개의 INT→TERM 순서도 대조했다. 모두 보고와 같다.
+- **미분류 편차의 리드 확인**: Gardener가 넘긴 것은 `opus-pr1-fix1` 검증자가 남긴 scratchpad `git archive` 사본(`prefix-0f956d0`)과 WSL 복제본(`~/.cache/dawnholder/workspaces/b388ad9a6a4a6b0ed8b3`)이다. 그 계약 「쓰기 경계」는 Items 테스트, headless-bot 시나리오, `opus-pr1-fix1/` 근거만 허용했다. 리드 판단은 「쓰기 경계 밖의 저장소 외부 사본, 검증자 자기 공개, 제품·Git 쓰기 없음, 지난 일」이다. 같은 부류(허용 밖 임시 쓰기)는 이 goal에 두 건이 이미 기록돼 있다(main 동기화 검증자, `opus-pr2-review`). Gardener는 이 부류를 BACKLOG `designated-temp-wording`과 10-08 임시 쓰기 goal이 다룬다고 분류했다. 그래서 새 교정은 올리지 않고 기록만 한다.
+- **Gardener 자기 공개 위반**: 첫 Git 조회 두 개(`git rev-parse HEAD`, `git branch --show-current`)를 `GIT_OPTIONAL_LOCKS=0` 없이 실행했다. index mtime은 세션 시작 전 값 그대로였다. 직접 쓰기 범위 밖은 0이다.
+- **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true). 화면 표시는 26분 16초, 158,687 token이다(`closeout/gardener-last-screen.json`).
 
 ## 다음 계획 후보
 
