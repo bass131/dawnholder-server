@@ -9,7 +9,7 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 수신 helper PR은 [pr2/astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/pr2/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`(PR212 병합 전에 연 세션이라 종료까지 유지, 메인 `msg_84fb999941ce`). Claude 세션 ID `64f22d75-946a-4b21-a275-d2e10254b75a`. 재진입 뒤 handle `term_73e94f29-d9a7-47bf-91d3-50f3676de874`, Run은 `run_be5206d9a2af`(run-use로 인수), 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - **현재 위치**(2026-10-09T00:13:24Z): 수신 helper PR의 선행 시험·구현·독립 검증이 끝났다. 판정은 통과이고 차단 결함은 없다(아래 「수신 helper 독립 검증」).
-- **다음 할 일**: PR 생성과 메인 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검과 R-8.
+- **다음 할 일**: PR213(수신 helper) 메인 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검과 R-8.
 - 재진입: 같은 Claude 세션을 `--resume`으로 이으면 handle이 바뀐다. 같은 Run을 run-use로 인수하고 메인에 새 handle을 알린다. 이 세션은 `[Rules Astra]`를 유지하고, 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
@@ -23,7 +23,7 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - [x] 리드 태그 PR 병합
 - [x] 수신 helper 선행 시험
 - [x] 수신 helper 구현·검증
-- [>] 수신 helper PR 병합
+- [>] PR213 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8
