@@ -5,11 +5,11 @@
 Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)(merge commit `127cc5a1`), 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)(merge commit `5a1752eb`)로 병합됐다. 수신 helper PR은 branch `fix/receive-helper-ask-proof-20261009`(base main `5a1752eb`)이고 아직 PR이 없다.
+- branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)(merge commit `127cc5a1`), 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)(merge commit `5a1752eb`), 수신 helper PR은 [PR213](https://github.com/bass131/dawnholder-server/pull/213)(merge commit `08028f1b`)로 병합됐다. 종료 기록은 branch `docs/tdd-canon-closeout-20261009`(base main `08028f1b`)이고 아직 PR이 없다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 수신 helper PR은 [pr2/astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/pr2/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`(PR212 병합 전에 연 세션이라 종료까지 유지, 메인 `msg_84fb999941ce`). Claude 세션 ID `64f22d75-946a-4b21-a275-d2e10254b75a`. 재진입 뒤 handle `term_73e94f29-d9a7-47bf-91d3-50f3676de874`, Run은 `run_be5206d9a2af`(run-use로 인수), 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T00:13:24Z): 수신 helper PR의 선행 시험·구현·독립 검증이 끝났다. 판정은 통과이고 차단 결함은 없다(아래 「수신 helper 독립 검증」).
-- **다음 할 일**: PR213(수신 helper) 메인 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검과 R-8.
+- **현재 위치**(2026-10-09T00:50:36Z): 제품 PR 셋이 모두 병합됐다. PR213 결과를 기록했고 종료 Gardener를 연다(아래 「PR213 병합」).
+- **다음 할 일**: 종료 Gardener(신규 `claude-opus-5-5` 읽기 전용, 보고서 한 파일) → 결과를 넣은 종료 기록 PR과 메인 승인 묶음 → 종료 점검과 R-8. 다음 goal은 자동 착수하지 않는다.
 - 재진입: 같은 Claude 세션을 `--resume`으로 이으면 handle이 바뀐다. 같은 Run을 run-use로 인수하고 메인에 새 handle을 알린다. 이 세션은 `[Rules Astra]`를 유지하고, 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
 - 직전 goal 기록: [hook 차단 줄이기와 보조 세션 스킬](../2026-10-07-hook-friction-helper-session/goal.md)은 PR210 병합(`c35279bc`)으로 끝났다. 그 goal의 「현재 위치」·「다음 할 일」은 기록 PR 재실사 전 시점으로 남았다. 끝난 goal은 고치지 않으므로 그 사실만 여기 적는다(메인 진입 지시 `msg_83e2bc491fda`, 이전 리드 인계 `msg_4b8b51290c62` 2항).
@@ -23,8 +23,8 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - [x] 리드 태그 PR 병합
 - [x] 수신 helper 선행 시험
 - [x] 수신 helper 구현·검증
-- [>] PR213 병합
-- [ ] 결과 기록·Gardener
+- [x] PR213 병합
+- [>] 결과 기록·Gardener
 - [ ] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8
 
@@ -289,6 +289,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - 비차단 결함 #1은 위 「수신 helper 선행 시험」의 정정이다. 설계 관찰 O1~O7은 아래 「다음 계획 후보」에 둔다.
 - 관찰: Claude 작업자의 큰 도구 출력(30.8KB 초과)은 TEMP 지정과 무관하게 Claude Code 하네스가 `~/.claude/projects/…/tool-results/`에 저장했다. 명령의 명시 쓰기가 아니며, 위임 계약의 「홈은 허용 밖」과 맞지 않는 하네스 동작이다.
 - 정산: 세 작업자 모두 release `retained`(`external_terminal`), tui-idle 확인 뒤 pane을 닫았다(E/pr2-tdd-close.json, pr2-impl-close.json, pr2-review-close.json).
+
+### PR213 병합
+
+- 승인과 병합: 메인 `msg_e46e9b3d5ce3`(2026-10-09T00:48:59Z, E/session/wait-pr213-1.raw.json)에 따르면 사용자가 메인 창에 PR213 head `4efd121e87e286d6041b67e8856b94e61b1eb2fd` 승인 줄을 Enter로 제출했다. 메인이 head 일치·CI 네 항목 SUCCESS·CLEAN을 다시 보고 병합 관문의 단독 명령으로 병합했다. merge commit `08028f1bcb98a8612dfc1a5b6b6c8ef06286030b`, mergedAt 2026-10-09T00:48:31Z.
+- 메인 R-2: 판정 전문을 읽었다. 결함 #1 표본(선행 시험 보고서 16행 「전 줄 CRLF」 대 PR head 두 파일의 CR 바이트 0)으로 불일치를 확인했다. 결론이 LF blob으로도 참이라 비차단에 동의했다. `1f73a67f`의 시험 파일 hash가 판정의 `aeff6f68`과 같고, 판정 뒤 변경은 goal.md뿐임도 확인했다.
+- 메인 지시: 다음 후보(O1~O7, 하네스 tool-results 관찰)는 BACKLOG 후보로만 남긴다. 메인이 사용자에게 묻는 「작업자가 사용자에게 차례를 넘길 때 리드→메인 알림의 정본화」는 이 goal 범위 밖이다.
+- 종료 branch: 2026-10-09T00:50:36Z 최신 main `08028f1b`에서 `docs/tdd-canon-closeout-20261009`를 만들었다. 리드 맥락 메모는 E/closeout-astra-context.md다.
 
 ## 정본에서 옮긴 적용 기록
 

@@ -8,7 +8,7 @@
 
 - Content(Unity 업그레이드): [Unity 엔진 6.6·AI Assistant 업그레이드](../../01_Phases/goals/2026-10-07-unity-engine-upgrade/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` · `docs/unity-upgrade-closeout-20261008`
 
-- Rules: [TDD 정본화와 작업자 임시 쓰기 경계](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `fix/receive-helper-ask-proof-20261009`
+- Rules: [TDD 정본화와 작업자 임시 쓰기 경계](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/tdd-canon-closeout-20261009`
 
 - CodeMap(Architecture): [Architecture 테스트 전체 PR CI](../../01_Phases/goals/2026-10-05-architecture-tests-ci/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `docs/architecture-tests-ci-closeout-20261005`
 
