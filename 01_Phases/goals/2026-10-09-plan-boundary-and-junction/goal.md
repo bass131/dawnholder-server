@@ -8,15 +8,15 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - branch: 정본 PR은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T11:05:12Z): 정본 PR 문서 실사가 NOT PASS(차단 2)였고 메인이 처리를 정했다. 결과는 「정본 PR 문서 실사」다. 규칙 점검 보고서 초안은 E/report/에서 쓰는 중이다.
-- **다음 할 일**: milestones 정의 수정(새 Sol max) → 재실사(신규 Astra xhigh) → 보고서 완성 → 보고서 Opus 검토 → 정본 PR 승인 묶음.
+- **현재 위치**(2026-10-09T11:39:11Z): 정본 PR 문서는 재실사 PASS다(「정본 PR 재실사」). 규칙 점검 보고서를 완성해 렌더 점검까지 마쳤다(「규칙 점검 보고서」).
+- **다음 할 일**: 보고서 검토(신규 `claude-opus-5-5`) → 정본 PR 생성과 승인 묶음.
 - 이 goal의 마지막 PR(종료 기록 PR) 병합 커밋이 합류점 J다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
-- [>] 정본 PR 작성·실사
-- [ ] 규칙 점검 보고서
+- [x] 정본 PR 작성·실사
+- [>] 규칙 점검 보고서
 - [ ] 정본 PR 병합
 - [ ] 후보 검사 선행 시험
 - [ ] 후보 검사 구현·검증
@@ -190,6 +190,21 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 관찰: 수정 Sol의 heartbeat 간격 302초 한 구간(11:08:50Z `msg_6fe71be9e2d7` → 11:13:52Z `msg_57440506ffb1`)이 있었다. 상한 300초를 2초 넘었다(E/lead-observations.md). 리드 질문 `msg_163d1240d1de`에 메인이 `msg_f4a418ddd476`(11:18:39Z)로 비차단 기록을 정했다. 신호 5·확정 실패 집계에서 빼고 BACKLOG `worker-liveness-tool-check` 출처에 사례로 더했다.
 - 반복 관찰(메인 `msg_f4a418ddd476`): heartbeat 상한 초과의 비차단 처분이 이 goal에서 두 번(343초, 302초), 선례 `msg_a8e661983ce5`까지 세 번째다. 교정 정본상 반복 규칙 후보이지만 정본 PR에는 새 규칙을 넣지 않는다. 보고서 V1.x 후보 「상한 초과 허용 폭 또는 원인 도구 점검」으로 둔다.
 - 커밋: 수정과 이 기록을 `5a282fb2`로 커밋했고, 처분 기록을 다음 커밋에 더했다(push 전).
+
+### 정본 PR 재실사
+
+- 재실사: 새 `[Rules 검증자]` 요청 모델 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown). pane `term_bb090ada-c850-4e08-bb04-e38806389f97`, Task `task_47fbeb983c82`, Dispatch `ctx_4379c58ed8d1`. 계약 E/pr1-rereview-contract.md(SHA256 `cb2eacfe…`)는 메인의 heartbeat 처분 두 건을 원문으로 담았다. 고정 HEAD는 `36b76d9b`다. 계약 전달은 draft 복구 Enter 1회이고 Codex 기록에서 계약 전문 입력 하나를 확인했다(E/pr1-rereview-draft-recovery.md).
+- 판정: worker_done `msg_573b5cf0366d`(11:32:34Z), 수신 helper allowed. **PASS.** 판정 원문은 E/pr1-rereview/verdict.md다. #1은 해소됐고 #2(343초)와 302초는 메인 처분대로 비차단이다. 정산 뒤 pane을 닫았다.
+- 재실사자 heartbeat 간격은 75~283초로 상한 안이다(E/session/inbox-rereview-hb.json).
+- 관찰 O-R1(비차단): 이 goal 재개 지점이 실사 전 상태였다. 이번 기록에서 고쳤다.
+
+### 규칙 점검 보고서
+
+- 위치: [보고서](../../reports/2026-10-09-operating-rules-v1-review/report.html). 리드가 작성했다. 생성 스크립트 E/report/build.mjs가 템플릿 E/report/template.html에 base `89a2c022`→head `36b76d9b`의 Git 값을 채운다. 채우는 값은 여섯 파일 묶음 bytes, ORCA 줄 수, 파일 크기, 바뀐 파일 수, diff 11개, 문장 길이 측정이다.
+- 사용자 결정 요청: STE 문장 규칙과 HTML 보고 방식을 V1.x에서 정본화(추천)할지 V1.0에 넣을지다. 메인에게 「STE A」·「STE B」로 받는다.
+- 정보 공백 처리: Karpathy 원문은 메인이 사용자 Chrome으로 확인했다(`msg_77b54a58aa27`). STE 사양 PDF는 받지 못해 모든 적용 판단에 「사양 전문 미대조」를 붙였다. answer-me-with-html은 설치하지 않았고 README 수치는 재현하지 않았다고 적었다.
+- STE식 측정(생성 스크립트): 절차 문장 상한 20어절 초과 0, 설명 문장 상한 25어절 초과 0, 여섯 문장 넘는 문단 0, 괄호 두 쌍 이상 문장 0이다.
+- 리드 렌더 점검(E/report/preview/render-check.md): 1440·390 폭 모두 페이지 가로 넘침 0, 끊긴 앵커 0, 상대 링크 29개 모두 존재다. 점검 중 수기 값이던 「바뀐 문서 9」를 Git 값 10(신규 2)으로 바꿨다. diff 줄 사이 빈 줄과 좁은 폭의 결정 표 잘림도 고쳤다. 이 점검은 리드 확인이며 독립 검토가 아니다.
 
 ## 정본에서 옮긴 적용 기록
 
