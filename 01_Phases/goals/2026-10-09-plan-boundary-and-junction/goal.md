@@ -8,7 +8,7 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - branch: 정본 PR(PR216, 병합)은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)였다. 후보 검사 PR(PR217, 병합)은 `feat/backlog-candidate-check-20261009`(base main `ff308e20`)였다. 종료 기록 PR은 `docs/ops-v1-closeout-20261010`(base main `bea63884`, 사용자 결정 `msg_6cd3ae08c16d`로 main `e5653eb9`을 받음)이고 원격에 push했으나 PR은 아직 없다. 정확한 head는 원격 branch와 리드의 「닫아도 됨」 status에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T16:2xZ, 세션 마무리): 결과 기록·Gardener·J 문장(milestones)·후보 도착 검사 리드 실행을 마치고 종료 branch에 커밋·push했다. 사용자 결정(`msg_6cd3ae08c16d`)으로 오늘은 PR을 열지 않고 세션을 닫는다. 열린 작업자는 없다.
+- **현재 위치**(2026-10-09T16:2xZ, 세션 마무리): 결과 기록·Gardener·J 문장(milestones)·후보 도착 검사 리드 실행을 마쳤다. 종료 branch에 기록을 커밋하고 main `e5653eb9`을 충돌 없이 받은 뒤(merge commit `242642af`, 「종료 기록 PR 작성」) push했다. 사용자 결정(`msg_6cd3ae08c16d`)으로 오늘은 PR을 열지 않고 세션을 닫는다. 열린 작업자는 없다.
 - **다음 메인 세션에서 이 goal의 남은 순서**: 새 Rules 리드가 이 파일과 종료 branch를 읽는다 → 신규 `gpt-6-astra` xhigh 종료 기록 문서 실사(후보 도착 검사 재실행 포함, 「PR 경계와 검증」) → PR 생성(막히면 메인 대행, 「적용 중인 사용자 결정」) → 승인 묶음 → 사용자 병합 승인 → 2차 맞춤(「병합 뒤 2차 맞춤」) → 종료 점검·R-8. 이 goal은 종료 기록 PR 병합으로 끝난다.
 - **사용자 차례**(메인이 받는다): 종료 기록 PR의 병합 승인 줄, 태그 `ops-v1.0` 위치 질문, Gardener 후보 ①② 채택 질문이다. 질문 문안과 리드 추천은 「종료 점검 자료」에 있다. 두 종료 기록 PR의 병합 순서와 Management 2차 맞춤 여부는 메인이 정한다.
 - **이 goal 뒤 다음 Rules 할 일**: 없음, 새 goal은 사용자 결정. 다음 후보는 「다음 계획 후보」와 「종료 점검 자료」의 로드맵 초안에 있다.
@@ -387,11 +387,13 @@ J는 사용자 결정으로 PR216 병합 커밋 `ff308e20`이 됐다(「적용 �
   - 근거 폴더 밖 명시 쓰기 둘. 15:41Z에 범위를 재는 명령에 남은 리다이렉트로 Git Bash `/tmp/pr217files.txt`(956 bytes)를 만들었다. 16:03Z에는 대기 출력 처리 명령 끝에 붙인 리다이렉트로 저장소 상위 폴더에 `.backups-tmp-ignore`(Sol 화면 JSON)를 만들었다. 둘 다 내용을 확인했거나 같은 명령에서 지웠다(E/lead-check/tmp-write-deviation-closeout.txt, outside-write-deviation-closeout-2.txt). 「착수」의 `/tmp/x`에 이은 두 번째·세 번째 발생이라 반복 규칙 대상이다. 가장 높은 층은 도구(PreToolUse hook)이고 BACKLOG `shell-write-destination-guard`로 사용자 채택 질문에 올린다.
   - 계약 칸 이탈 넷. PR216 병합 뒤 리드가 조립한 계약 넷 중 선행 시험 계약은 「사용자 차례」 칸이 없고, 구현·검증·Gardener 계약은 ORCA R-4의 리드 status 대신 ask로 적었다. 실제 사용자 차례는 0건이었다. 같은 리드의 반복이라 BACKLOG `contract-context-check`의 계약 lint 후보에 근거를 더했다. 이 PR의 J 문장 계약과 문서 실사 계약은 양식 문구(리드 status)로 썼다.
 - PR191과 겹침(E/lead-check/pr191-overlap.txt, 16:19:09Z): `bea63884`..`e5653eb9`가 바꾼 파일 중 이 branch와 겹치는 것은 BACKLOG 하나다. PR191은 첫 표 38행 근처에 행 하나(`combat-smoke-zero-lag-flaky`)를 더했고 이 branch는 195행 아래와 끝 절만 고쳤다.
+- main `e5653eb9` 받기(사용자 결정 `msg_6cd3ae08c16d`, E/lead-check/take-e5653eb9-check.txt, 16:23:39Z): 리드 기록 커밋 `ca326871` 뒤 merge commit `242642af`(부모 `ca326871`·`e5653eb9`)를 만들었다. 충돌은 없었고 BACKLOG는 자동으로 합쳐졌다. 충돌 표식 0, PR191 행 있음이다. `e5653eb9` 대비 이 branch의 변경은 milestones·BACKLOG·CURRENT·이 goal 네 파일이다. 여섯 파일 묶음 102,575 bytes와 ORCA 249줄은 그대로다.
 
 ### 후보 도착 검사 첫 실행
 
 - 완료조건 6의 리드 실행이다. 명령은 `node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-09-plan-boundary-and-junction/goal.md`다.
 - 첫 실행(2026-10-09T16:15:28Z, HEAD `d783876d`와 미커밋 리드 기록): exit 0, `allowed`. BACKLOG ID 81·중복 0, 후보 8, 참조 없는 후보 0, 없는 ID 0이다(E/lead-check/candidate-check-closeout.json).
+- main `e5653eb9`을 받은 뒤 재실행(16:23:39Z, HEAD `242642af`): exit 0, `allowed`. BACKLOG ID 82(PR191 행 포함)·중복 0, 후보 8, 위반 0이다(E/lead-check/take-e5653eb9-check.txt).
 - 이 검사는 「다음 계획 후보」 절만 본다. 「하지 않을 것」에 V1.x로 적은 두 항목은 리드가 손으로 찾아 BACKLOG에 더했다(「종료 기록 PR 작성」). 종료 기록 실사자가 같은 명령을 다시 실행한다.
 
 ### 종료 점검 자료
