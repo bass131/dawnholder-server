@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - branch: 정본 PR은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T09:5xZ): goal 시작 기록을 커밋하고 정본 PR 작성 계약을 준비한다.
-- **다음 할 일**: 정본 PR Sol 작성 → 리드 R-2 → 문서 실사 → 규칙 점검 보고서 → 보고서 Opus 검토 → 정본 PR 승인 묶음.
+- **현재 위치**(2026-10-09T10:37:18Z): 정본 PR의 Sol 작성과 리드 R-2를 마쳤다. 결과는 「정본 PR 작성」이다.
+- **다음 할 일**: 문서 실사 → 규칙 점검 보고서 → 보고서 Opus 검토 → 정본 PR 승인 묶음.
 - 이 goal의 마지막 PR(종료 기록 PR) 병합 커밋이 합류점 J다.
 
 ## 진척 단계
@@ -157,9 +157,58 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - 메인에 보낼 status를 `run:run_ee8c71e0897d`(리드 자신의 Run)로 보내 리드 자신이 받았다(`msg_dcc3fd8da3da`). 메인 term handle로 다시 보냈다(`msg_7ed952247304`). 리드→메인 주소는 메인 term handle이다.
   - 교정 층: 둘 다 첫 관찰이라 이 기록으로 둔다. 같은 일이 다시 나면 반복 규칙 대상이다.
 
+### 정본 PR 작성
+
+- 작성: `[Rules Sol]` 요청 모델 `gpt-6.1-sol` max(backend unknown), 배정 신호 해당 없음(명세가 정해진 문서 작성). pane `term_c13433ad-d3ec-4eb5-b9e0-349c331042b4`, Task `task_2871c36d68f6`, Dispatch `ctx_b603f1bde17b`. 계약은 E/pr1-contract.md다. split 09:56:35Z, worker-start 09:56:51Z였다.
+- 계약 전달: worker-start가 turnStart unobserved였다. 리드가 draft를 확인하고 Enter 한 번으로 제출했다. Codex 기록에서 계약 전문을 담은 제출 입력 하나를 확인했다(E/pr1-draft-recovery.md).
+- 질문 1회: bytes 상쇄 후보(`msg_5f6887c37359`, 10:13:57Z). 리드가 공식 reply `msg_3e464481d320`으로 O2~O5 이관과 새 문장 축소를 답했다. 원문은 E/pr1-ask1-answer.md다. 이관 원문은 「정본에서 옮긴 적용 기록」에 있다.
+- 완료: worker_done `msg_b76e13e7165e`(10:33:55Z). 수신 helper 판정 allowed다. 정산(retained/external_terminal) 뒤 대기를 확인하고 pane을 닫았다. 보고는 E/pr1/report.md, 맥락 메모는 E/pr1/context.md다.
+- 관찰: heartbeat 간격 343초 한 구간(09:58:45Z `msg_813b8fe6d3e1` → 10:04:28Z `msg_092e582ae3a5`)이 있었다. BACKLOG `worker-liveness-tool-check`와 같은 갈래다. 산출물 영향은 실사 전 미확인이다(E/lead-observations.md).
+- 리드 R-2(10:37:18Z): 변경 파일이 허용 9개뿐임을 확인했다. 여섯 파일 묶음은 102,600 bytes(base 102,601)이고 ORCA는 249줄이다. AGENTS 전환 문단이 승인 문안(E/agents-transition-proposal.txt)과 같다. 라우팅 기준의 「애매하면 Astra」와 규칙 맞춤 문장은 개정 v2와 이전 goal의 정본화 후보 원문에 맞다. 새 anchor `#구현자-모델-시범`·`#main-맞춤과-합류점`이 있다. 이 대조는 리드 확인이며 독립 실사가 아니다.
+
 ## 정본에서 옮긴 적용 기록
 
-규칙 문서 bytes를 상쇄하려고 옮긴 원문을 둔다. 정본 PR에서 채운다.
+규칙 문서 bytes를 상쇄하려고 옮긴 원문을 둔다. 원래 위치는 base `89a2c0225ea38a846f5b6c163620a9e828a610e3` 기준이다. 상대 링크는 이 goal에서 같은 대상에 닿도록 고쳐 썼다. 링크 밖 원문은 그대로 보존했다.
+
+### AGENTS 전환 문단
+
+원래 위치는 `AGENTS.md:45`다. Core 명칭 전환 부분 축소의 메인 확인은 `msg_f705412e769c`다. 이 메시지는 메인 판단이다.
+
+> - **Core 명칭과 리드 태그 전환:** GameDev는 Core의 이전 이름이다. [운영 후속 정본화의 PR2](../2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 세션과 새 계약부터 Core 태그를 쓴다. PR2 병합 전에 연 GameDev 세션과 진행 중인 계약은 종료까지 `[GameDev …]`를 유지한다. 진행 중인 영속화 통합 goal에는 중간 변경을 요구하지 않는다. 그 goal의 R-8로 새 리드를 열 때부터 Core 태그를 쓴다. [리드 태그 PR](../2026-10-08-tdd-canon-temp-write-boundary/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 리드 세션과 그 세션의 새 계약부터 `[<파트> 리드 Opus]`를 쓴다. 병합 전에 연 리드 세션은 종료까지 `[<파트> Astra]`를 쓴다. 전환기 수신 측은 각 전환의 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 과거 기록·BACKLOG의 GameDev·Astra는 당시 이름으로 해석한다.
+
+### RESUME 이전 준비 branch
+
+원래 위치는 `00_Document/operations/RESUME.md:14`다. 뺀 절이 들어 있던 문장 전체를 보존한다.
+
+> 현재 branch·기준 commit은 CURRENT의 goal, 이전 준비 branch는 P1a 종료 절에 있다.
+
+이전 준비 branch 절을 뺐다. CURRENT의 goal을 가리키는 앞절은 문장으로 다듬어 유지했다.
+
+### ORCA 지난 ask 적용
+
+원래 위치는 `00_Document/operations/ORCA.md:75`의 끝 문장이다.
+
+> 지난 적용은 [1.4.218 승인](../2026-10-05-operating-canon/goal.md#orca-source-r3-ask)·[1.4.220 복귀](../2026-10-05-operating-canon/goal.md#orca-14220-return)에 보존한다.
+
+### ORCA 추가 출처 기록 이관
+
+이관 근거는 리드 답(질문 `msg_5f6887c37359`에 대한 공식 reply `msg_3e464481d320`)이다. O2·O3·O4·O5를 옮겼다. O1인 ORCA 23행의 출처 이관 대조표 문장과 21행은 그대로 뒀다. 이 대조표에 아래 네 출처 행이 모두 있으므로 정본에서 출처까지 한 단계로 이어진다는 것은 리드 확인이다. 답 원시는 `E/pr1/work/offset-ask-receipt.txt`다. 아래 원문도 상대 링크만 이 goal 위치에 맞췄다.
+
+O2의 원래 위치는 `00_Document/operations/ORCA.md:73`의 마지막 문장이다.
+
+> 근거는 [전달 원문](../2026-10-05-operating-canon/goal.md#orca-source-table-3)과 [로컬 reply help](../../../.backups/verification/2026-10-01-operations-rules/reply-help.txt)다.
+
+O3의 원래 위치는 `00_Document/operations/ORCA.md:162`의 첫 문장이다.
+
+> 이 규칙의 출처는 [확정 실패 승인 기록](../2026-10-05-operating-canon/goal.md#orca-source-confirmed)이다.
+
+O4의 원래 위치는 `00_Document/operations/ORCA.md:153`의 마지막 문장이다.
+
+> 승인 출처는 [capacity 예외 기록](../2026-10-05-operating-canon/goal.md#orca-source-capacity)에 있다.
+
+O5의 원래 위치는 `00_Document/operations/ORCA.md:220`의 첫 문장이다.
+
+> 출처는 [Gardener 사용자 채택 기록](../2026-10-05-operating-canon/goal.md#orca-source-gardener)이다.
 
 ## 다음 계획 후보
 

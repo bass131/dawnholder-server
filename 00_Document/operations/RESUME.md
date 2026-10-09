@@ -11,7 +11,7 @@
 
 ## Git와 문서 보존
 
-Core 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active`다. 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다. `git status --short`, 현재 branch/HEAD, 원격 main과의 차이를 먼저 확인한다. 현재 branch·기준 commit은 CURRENT의 goal, 이전 준비 branch는 P1a 종료 절에 있다. branch 이름만 보고 다음 구현이 시작됐다고 판단하지 않는다. 기존 변경을 버리거나 무조건 main으로 전환하지 않는다.
+Core 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active`다. 기존 명칭과 세션·계약의 태그 전환은 [AGENTS Core 전환 정본](../../AGENTS.md#core-tag-transition)을 따른다. `git status --short`, 현재 branch/HEAD, 원격 main과의 차이를 먼저 확인한다. 현재 branch·기준 commit은 CURRENT의 goal에 있다. branch 이름만 보고 다음 구현이 시작됐다고 판단하지 않는다. 기존 변경을 버리거나 무조건 main으로 전환하지 않는다.
 
 ## 세션 진입 배치
 

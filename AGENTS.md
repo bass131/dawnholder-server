@@ -1,5 +1,7 @@
 # Dawnholder 작업 지침
 
+규칙·운영 V1.0이다. 합류점 태그명은 `ops-v1.0`이다. 판은 사용자 결정으로만 올린다.
+
 현재 사용자 합의와 이 파일을 프로젝트 운영 기준으로 삼는다. 스킬과 문서는 운영 지침이며 행동의 기술적 강제를 보장하지 않는다.
 
 ## 외부 팀원 세션
@@ -30,19 +32,19 @@
 
 ## 모델 라우팅
 
-- 메인 Claude `claude-opus-5-5` → 파트 리드 `claude-opus-5-5` xhigh(Claude Code, `[<파트> 리드 Opus]` 태그) → Sol `gpt-6.1-sol`(reasoning effort `max` 고정)이다. 독립 검증·리뷰는 [모델 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지), 선행 시험 작성은 신규 `claude-opus-5-5`다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다. 리드 모델 계열이 바뀌면 태그의 모델명도 그 계열로 바뀐다.
+- 메인 Claude `claude-opus-5-5` → 파트 리드 `claude-opus-5-5` xhigh(Claude Code, `[<파트> 리드 Opus]` 태그) → 구현자 `gpt-6.1-sol` max 또는 `gpt-6-astra` xhigh다. [배정](.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)·[시범](.agents/skills/dawnholder-goal-loop/SKILL.md#구현자-모델-시범)을 따른다. 독립 검증·리뷰는 [모델 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지), 선행 시험 작성은 신규 `claude-opus-5-5`다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다. 리드 모델 계열이 바뀌면 태그의 모델명도 그 계열로 바뀐다.
 - [R-7 Fable 구현 전 설계 검토 시범](00_Document/operations/ORCA.md#r7-fable-pilot)은 4범주·2~3작업 한정으로 해당 정본의 범위와 절차를 따른다. 기본 모델 배정과 확정 실패 3회 뒤 Advisor를 대체하지 않는다.
 - 보고서 자료의 조사·설계 해설·본문·HTML·전용 생성 스크립트는 리드가 작성한다. Sol에 보고서 작성·렌더링 구현을 맡기지 않는다. 독립 검증자가 내용·근거·표시를 검토하고 메인이 [작성 기준](00_Document/conventions/REPORTING.md)에 따라 사용자 최종 보고를 전달한다.
-- 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol capacity 장기 실패의 **신규 `gpt-6-astra` 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.
+- 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol 배정 작업자의 capacity 장기 실패 시 **신규 `gpt-6-astra` 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. Astra 배정은 재시도만 한다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.
 - `gpt-6.1-sol`이 모델 목록에 없으면 Codex 업데이트 누락 가능성을 고려해 먼저 버전과 모델 노출을 확인한다. 원인을 단정하거나 승인 없이 업데이트·전역 설정 변경을 하지 않는다.
 
 ## 메시지와 보고
 
-- 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[Core 리드 Opus]`, `[Core Sol]`, `[Core 검증자]`, `[Content 리드 Opus]`, `[Content Sol]`, `[Content 검증자]`, `[Rules 리드 Opus]`, `[Rules Sol]`, `[Rules 검증자]`, `[Architecture 리드 Opus]`, `[Architecture Sol]`, `[Architecture 검증자]`, `[Management 리드 Opus]`, `[Management Sol]`, `[Management 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다.
+- 모든 세션 간 Orca 메시지의 subject/body 첫머리와 타 세션 터미널 입력에는 자기 태그를 붙인다: `[메인 Claude]`, `[Core 리드 Opus]`, `[Core Sol]`, `[Core 검증자]`, `[Content 리드 Opus]`, `[Content Sol]`, `[Content 검증자]`, `[Rules 리드 Opus]`, `[Rules Sol]`, `[Rules 검증자]`, `[Architecture 리드 Opus]`, `[Architecture Sol]`, `[Architecture 검증자]`, `[Management 리드 Opus]`, `[Management Sol]`, `[Management 검증자]`. 회신은 [R-3](00_Document/operations/ORCA.md#r3-reply-tag)을 따른다. Astra 구현자는 `[<파트> 구현 Astra]`를 쓴다. 정본의 「Sol」은 구현자 역할도 뜻한다.
 
 <a id="core-tag-transition"></a><a id="lead-tag-transition"></a>
 
-- **Core 명칭과 리드 태그 전환:** GameDev는 Core의 이전 이름이다. [운영 후속 정본화의 PR2](01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 세션과 새 계약부터 Core 태그를 쓴다. PR2 병합 전에 연 GameDev 세션과 진행 중인 계약은 종료까지 `[GameDev …]`를 유지한다. 진행 중인 영속화 통합 goal에는 중간 변경을 요구하지 않는다. 그 goal의 R-8로 새 리드를 열 때부터 Core 태그를 쓴다. [리드 태그 PR](01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 리드 세션과 그 세션의 새 계약부터 `[<파트> 리드 Opus]`를 쓴다. 병합 전에 연 리드 세션은 종료까지 `[<파트> Astra]`를 쓴다. 전환기 수신 측은 각 전환의 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 과거 기록·BACKLOG의 GameDev·Astra는 당시 이름으로 해석한다.
+- **Core 명칭과 리드 태그 전환:** GameDev는 Core의 이전 이름이며 그 전환은 끝났다([운영 후속 정본화의 PR2](01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정)). [리드 태그 PR](01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 리드 세션과 그 세션의 새 계약부터 `[<파트> 리드 Opus]`를 쓴다. 병합 전에 연 리드 세션은 종료까지 `[<파트> Astra]`를 쓴다. 전환기 수신 측은 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 과거 기록·BACKLOG의 GameDev·Astra는 당시 이름으로 해석한다.
 
 - 현재 `from_handle`·Task·Dispatch가 모두 일치하는 내용 없는 heartbeat만 태그 없이 수신하며 교정 메시지를 보내지 않는다. 내용 있는 heartbeat와 일반 지시·보고·질문·완료는 태그가 필수다. 빈 값 경계와 수신 helper, 공식 blocking ask의 버전 한정 subject 예외는 [수신 정본](00_Document/operations/ORCA.md#dispatch-message-policy)과 R-3을 따른다.
 - 사용자 승인으로 [R-1](00_Document/operations/ORCA.md#r1-management-placement)에 따라 연 추가 파트는 `[<파트> 리드 Opus]`/`[<파트> Sol]`/`[<파트> 검증자]` 형식을 쓴다. 메인이 연 보조 세션은 `[<용도> <모델>]`(예: `[보조 메인 Opus]`)을 쓴다. 태그만으로 파트 생성이나 권한이 생기지 않는다.

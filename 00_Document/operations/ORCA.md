@@ -70,9 +70,9 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 
 회신 subject·body 첫머리는 **회신 세션 자신의 태그**로 시작하며 `from_handle`도 [태그 규칙](../../AGENTS.md#메시지와-보고)대로 대조한다. 메인이 전달한 관찰은 자동 `Re: [메인 Claude] …` 제목이다. 일반 회신은 자동 `Re:` 대신 `orca orchestration send --subject "[자기 태그] …"`로 보내고, 같은 대화는 현재 대화의 `--thread-id`로 묶는다.
 
-**blocking ask / worker question에는 CLI 계약의 `reply --id`로 답한다.** Orca CLI **1.4.218** `orchestration reply --help`의 subject 옵션 부재를 확인했다. [승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-reply)대로 이 경우만 subject 자기 태그 의무의 버전 한정 예외며, **body 첫머리 자기 태그·수신자의 `from_handle` 대조는 유지한다.** 없는 플래그를 만들거나 subject 수정·일반 `send`의 blocking question 해결을 주장하지 않는다. 근거는 [전달 원문](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-table-3)과 [로컬 reply help](../../.backups/verification/2026-10-01-operations-rules/reply-help.txt)다.
+**blocking ask / worker question에는 CLI 계약의 `reply --id`로 답한다.** Orca CLI **1.4.218** `orchestration reply --help`의 subject 옵션 부재를 확인했다. [승인 출처](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-reply)대로 이 경우만 subject 자기 태그 의무의 버전 한정 예외며, **body 첫머리 자기 태그·수신자의 `from_handle` 대조는 유지한다.** 없는 플래그를 만들거나 subject 수정·일반 `send`의 blocking question 해결을 주장하지 않는다.
 
-**coordinator가 같은 CLI의 ask/reply help에 subject 옵션이 없음을 확인한 공식 blocking `ask`의 고정 subject `Question`**만 subject 태그 예외다. body 첫머리 태그·현재 `from_handle`·Task·Dispatch·공식 질문 receipt를 대조해 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`·`reply`는 제외하고 위 reply 예외의 별도 근거·범위를 유지한다. **ask가 subject 옵션을 지원하면 종료**한다. [수신 helper](#dispatch-message-policy)의 별도 expected 근거로 공식 출처를 확인하며 모양만으로 증명하지 않는다. help 확인은 실제 ask/reply 호출 실증과 구분한다. 지난 적용은 [1.4.218 승인](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-r3-ask)·[1.4.220 복귀](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-14220-return)에 보존한다.
+**coordinator가 같은 CLI의 ask/reply help에 subject 옵션이 없음을 확인한 공식 blocking `ask`의 고정 subject `Question`**만 subject 태그 예외다. body 첫머리 태그·현재 `from_handle`·Task·Dispatch·공식 질문 receipt를 대조해 불일치는 처리하지 않고 메인에 보고한다. 일반 `send`·`reply`는 제외하고 위 reply 예외의 별도 근거·범위를 유지한다. **ask가 subject 옵션을 지원하면 종료**한다. [수신 helper](#dispatch-message-policy)의 별도 expected 근거로 공식 출처를 확인하며 모양만으로 증명하지 않는다. help 확인은 실제 ask/reply 호출 실증과 구분한다.
 
 <a id="run-reply-address"></a>
 ### Run 회신 주소와 receipt 확인
@@ -127,7 +127,7 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json
 
 결정 요청의 대시보드 수명(`review` → `waiting` → 사용자 응답 뒤 삭제), Enter 제출과 PR head 재대조는 메인 소유 [CLAUDE 「메인의 기록과 알림」](../../CLAUDE.md#메인의-기록과-알림)을 정본으로 따른다. 저장소 밖 개인 도구의 구현·갱신을 파트 작업자의 실적으로 보고하지 않는다.
 
-리드→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내용은 기존의 변경 요약·검증 근거 위치·리스크·결정 요청·판정 원문 경로를 유지한다.
+리드→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내용은 기존의 변경 요약·검증 근거 위치·리스크·결정 요청·판정 원문 경로를 유지한다. 작업자는 사용자에게 명령·입력 차례를 넘기거나 보고를 마치면 리드에 status를 보낸다. 리드는 판단 없이 바로 메인에 한 줄 status로 넘긴다. 메인 폴더 감시는 보조 그물이다.
 
 Orca 1.4.221(2026-10-06)에서 **활성 Dispatch 없는 발신자**의 `escalation`·`decision_gate`는 거부 receipt에도 본문이 도착했다. 재전송은 중복이므로 리드→메인 보고는 `status`다([관측 원천](#orca-tool-observations)). 활성 Dispatch 작업자는 live preamble의 질문·heartbeat·escalation·완료 절차와 권한을 따른다.
 
@@ -139,7 +139,7 @@ Orca 1.4.221(2026-10-06)에서 **활성 Dispatch 없는 발신자**의 `escalati
 **Unity MCP opt-in:** Unity MCP는 필요한 세션만 켠다. 시트는 1개이므로 사용 전 메인에게 요청하고, 메인이 보유 세션을 현황판에 적은 뒤 기동한다. 그 세션이 닫히면 시트가 풀린다. 필요한 Claude 세션에만 아래 최초 실행 명령에 `--mcp-config C:/Users/bass1/.unity/claude-mcp.json`을 붙인다. 이 설정은 저장소 밖 파일이며 전역 등록이 아니다. 사용자 결정과 설정 경로의 출처는 [Unity opt-in 적용 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#pr183-제출-뒤-적용한-사용자-결정)이다.
 
 1. 설치된 `orca-cli`·`orchestration` 스킬로 CLI를 선택하고 버전 일치 가이드를 읽는다. 현재 runtime·담당 리드 handle·승인된 checkout을 확인한다.
-2. `orca terminal split --terminal <리드-handle> --direction vertical`의 `--command`는 Sol이면 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`다. 독립 검증자는 [시범 배정](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)에 따라 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` 또는 `claude --model claude-opus-5-5`다. 시작 경로가 다르면 승인 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체 없이 메인에 보고한다. capacity 예외는 [정본](#capacity-retry)을 따른다. Claude `--command` 앞에 PowerShell로 TEMP·TMP를 절대 경로 `.backups/tmp/<짧은 이름>/`로 정한다. [Git Bash `/tmp`는 그대로다](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#기동-시험).
+2. `orca terminal split --terminal <리드-handle> --direction vertical`의 `--command`는 배정에 따라 Sol이면 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, Astra면 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`다. 독립 검증자는 [시범 배정](../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)에 따라 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh` 또는 `claude --model claude-opus-5-5`다. 시작 경로가 다르면 승인 checkout을 명시하고 실제 경로를 확인한다. 지정 모델 부재는 대체 없이 메인에 보고한다. capacity 예외는 [정본](#capacity-retry)을 따른다. Claude `--command` 앞에 PowerShell로 TEMP·TMP를 절대 경로 `.backups/tmp/<짧은 이름>/`로 정한다. [Git Bash `/tmp`는 그대로다](../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#기동-시험).
 3. `orca terminal wait --terminal <새-handle> --for tui-idle --timeout-ms 90000`의 `satisfied`를 확인하고 [R-6](#r6-first-screen) 및 [세션 준비 절차](../../.agents/skills/dawnholder-session-handoff/SKILL.md#신규-prompt-준비-확인)를 따른다. timeout·busy·불명확한 화면에 작업을 주입하지 않는다.
 4. 준비된 **신규 세션의 최초 작업**을 `orca orchestration worker-start --terminal <새-handle> --worktree <확인한-작업-공간>`에 `--task <현재-Task>` 또는 `--spec <작업-계약>`을 붙여 연결한다. `--terminal`과 `--model`을 함께 쓰지 않는다. 모델 근거는 최초 실행 명령과 화면 표시이며 attach의 null launch 모델값을 실제 모델로 해석하지 않는다. 확인할 수 없는 backend는 `unknown`이다. 현재 Run·Task·Dispatch와 `input_accepted`·`turn_started` receipt를 구분해 기록한다.
    `turn_start_unobserved`이면 화면 tail만으로 판정하지 않고 [공식 계약 draft 복구](#official-contract-draft)의 JSON draft·계약·동일성 조건을 확인한다.
@@ -148,18 +148,18 @@ Orca 1.4.221(2026-10-06)에서 **활성 Dispatch 없는 발신자**의 `escalati
 <a id="capacity-retry"></a>
 ### capacity 재시도와 신규 작업자 예외
 
-작업자 화면에 `Selected model is at capacity`가 관측되면 **같은 세션·같은 task에서 1→2→5→10분 간격**으로 재시도한다. 첫 capacity 관측부터 누적 30분에도 `gpt-6.1-sol`이 계속 실패하면 기존 작업자를 공식 정산·종료하고 신규 `gpt-6-astra` xhigh **작업자**를 열 수 있다. 기존 세션을 실행 중에 모델 변경하지 않는다. 파트 리드 직접 구현은 금지이고, 독립 검증자는 지정 모델로 재시도만 하며 대체하지 않는다. 다른 모델 부재·권한 확인을 이 예외로 우회하지 않는다.
+작업자 화면에 `Selected model is at capacity`가 관측되면 **같은 세션·같은 task에서 1→2→5→10분 간격**으로 재시도한다. 첫 capacity 관측부터 누적 30분에도 `gpt-6.1-sol`이 계속 실패하면 기존 작업자를 공식 정산·종료하고 신규 `gpt-6-astra` xhigh **작업자**를 열 수 있다. Astra 배정은 재시도만 한다. 기존 세션을 실행 중에 모델 변경하지 않는다. 파트 리드 직접 구현은 금지이고, 독립 검증자는 지정 모델로 재시도만 하며 대체하지 않는다. 다른 모델 부재·권한 확인을 이 예외로 우회하지 않는다.
 
-요청 모델·최초 실행/launch·화면 관측·backend 실제 모델 또는 `unknown`, 최초 관측/재시도 시각·누적 시간·전환 사유·사용자 결정 출처를 기록한다. 승인 출처는 [capacity 예외 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-capacity)에 있다.
+요청 모델·최초 실행/launch·화면 관측·backend 실제 모델 또는 `unknown`, 최초 관측/재시도 시각·누적 시간·전환 사유·사용자 결정 출처를 기록한다.
 
 <a id="confirmed-failures"></a>
 ### 확정 실패 집계와 Fable Advisor
 
-**같은 계약·같은 결함 번호**의 Sol `FAILED` 또는 독립 `NOT PASS`가 3회 확정되면 네 번째 시도를 신규 `gpt-6.1-sol max`와 신규 읽기 전용 `claude-fable-5-1` Advisor로 한다. 같은 산출물의 FAILED/NOT PASS는 이중 집계하지 않고 조사 전용 세션·개발 중 자체 smoke 수리·크래시로 중단된 작업자/검증자는 제외한다. 실패 세션은 작업 하나 뒤 정산·종료하며 재사용하지 않는다. [범위 정본의 산출물 수정 3회 초과 체크포인트](../../.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)는 별도 기준이다.
+**같은 계약·같은 결함 번호**의 Sol `FAILED` 또는 독립 `NOT PASS`가 3회 확정되면 네 번째 시도를 [배정](../../.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)에 따른 신규 구현자와 신규 읽기 전용 `claude-fable-5-1` Advisor로 한다. 같은 산출물의 FAILED/NOT PASS는 이중 집계하지 않고 조사 전용 세션·개발 중 자체 smoke 수리·크래시로 중단된 작업자/검증자는 제외한다. 실패 세션은 작업 하나 뒤 정산·종료하며 재사용하지 않는다. [범위 정본의 산출물 수정 3회 초과 체크포인트](../../.agents/skills/dawnholder-goal-loop/SKILL.md#기준과-상태)는 별도 기준이다.
 
 담당 리드는 Advisor 기동 전에 실패 이유와 **실패 원문 세 건 경로를 메인 status로 보고**한다. 사용자 사전 승인 규칙이므로 재승인을 기다리지 않는다. Advisor는 조언 파일 하나만 쓰고 제품·테스트·판정은 쓰지 않는다. 새 Sol은 구현 전에 Orca로 Advisor에게 **직접 질문**하고 조언·채택/거절 이유를 수행 보고에 남긴다. 리드가 구현을 떠맡지 않는다. 기동/모델/선택창은 R-5·R-6을 따른다. 네 번째도 실패하면 **다섯 번째 전에 메인 question으로 판단**을 받는다.
 
-이 규칙의 출처는 [확정 실패 승인 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-confirmed)이다. [R-7 구현 전 설계 검토 시범](#r7-fable-pilot)과 역할·시점·파일 권한이 다르다. 같은 부류 BACKLOG 출처 결함의 특정 사례를 모든 번호별 집계의 대체 규칙으로 쓰지 않는다.
+[R-7 구현 전 설계 검토 시범](#r7-fable-pilot)과 역할·시점·파일 권한이 다르다. 같은 부류 BACKLOG 출처 결함의 특정 사례를 모든 번호별 집계의 대체 규칙으로 쓰지 않는다.
 
 <a id="crash-recovery"></a>
 ### 크래시 중단과 checkpoint
@@ -202,7 +202,7 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 
 <a id="r8-astra-lifecycle"></a>
 ### R-8 — 목표 단위 리드 세션 교체
-사용자 결정: **PR 병합과 goal 결과 기록이 모두 끝나면** 메인이 해당 리드 pane을 닫고 새로 연다. 새 리드는 세션 진입과 같은 절차로 현재 handle을 공유하고 READY를 확인하며, [RESUME](RESUME.md#세션-진입-배치)과 새 goal로 시작한다. 실제 경로·runtime·handle·incarnation을 새로 확인하고 이전 목표의 Run·Task·Dispatch·가정을 실행 권한으로 재사용하지 않는다. [메인 운영 판단](#pr2-source): goal 종료·PR 병합 뒤 다음 goal 전 자기 worktree의 최신 main에서 새 branch를 만든다. 병합된 branch에 머물지 않는다. 메인 checkout은 [R-1](#r1-management-placement)·[관문](#merge-gate)대로 최신 main을 fast-forward로 받는다.
+사용자 결정: **PR 병합과 goal 결과 기록이 모두 끝나면** 메인이 해당 리드 pane을 닫고 새로 연다. 새 리드는 세션 진입과 같은 절차로 현재 handle을 공유하고 READY를 확인하며, [RESUME](RESUME.md#세션-진입-배치)과 새 goal로 시작한다. 실제 경로·runtime·handle·incarnation을 새로 확인하고 이전 목표의 Run·Task·Dispatch·가정을 실행 권한으로 재사용하지 않는다. [메인 운영 판단](#pr2-source): goal 종료·PR 병합 뒤 다음 goal 전 자기 worktree의 최신 main에서 새 branch를 만든다. 병합된 branch에 머물지 않는다. 메인 checkout은 [R-1](#r1-management-placement)·[관문](#merge-gate)대로 최신 main을 fast-forward로 받는다. [맞춤과 합류점](../../.agents/skills/dawnholder-goal-loop/references/milestones.md#main-맞춤과-합류점)을 따른다.
 
 전체 goal은 **제품 PR 병합·로컬 결과 기록 → Gardener → 결과 포함 종료 기록 PR 하나 → 종료 점검 → R-8** 순서다. head 고정 PR은 [메인 결정](#pr2-source)으로 병합 전 Gardener를 허용한다. 첫 PR마다 새 Gardener를 추가하지 않는다. 메인/사용자가 결과·남은 위험·BACKLOG·다음 계획을 점검한 뒤 재개하며 다음 goal 자동 착수는 금지다. [목표 루프](../../.agents/skills/dawnholder-goal-loop/SKILL.md#통합과-보고)·[마일스톤 운영](../../.agents/skills/dawnholder-goal-loop/references/milestones.md)을 따른다.
 
@@ -217,7 +217,7 @@ PR 리뷰 수정 중이나 목표 중간에는 문맥을 비우려 수동 교체
 
 반복 빈도와 원시 근거를 바탕으로 정리 후보를 **최대 두 개** 제안하고 후보마다 lint·테스트·fixture·정본 helper 등 검사화 방법을 적는다. 없으면 없음으로 마친다. 검사 실행불가와 실제 위반을 나누며 직접 수정·규칙 채택·다음 goal 발행 권한은 없다. 후보 채택은 메인을 거쳐 사용자가 결정하고 수정은 일반 목표 루프로 한다. **2026-10-31 무렵 비용·잡음으로 지속 여부를 평가**한다. 작은 목표 예외는 미합의이며 첫 PR마다 새 점검을 의무화하지 않는다.
 
-출처는 [Gardener 사용자 채택 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-gardener)이다. Gardener의 제안과 채택/실제 구현 완료를 구분한다.
+Gardener의 제안과 채택/실제 구현 완료를 구분한다.
 
 <a id="merge-gate"></a>
 ## 병합 관문
