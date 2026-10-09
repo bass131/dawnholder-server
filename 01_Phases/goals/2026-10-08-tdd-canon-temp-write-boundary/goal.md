@@ -8,7 +8,7 @@ Rules의 목표이며 운영 셋업 2단계다. 사용자가 범위 v2를 승인
 - branch·PR: 정본 PR은 [PR211](https://github.com/bass131/dawnholder-server/pull/211)(merge commit `127cc5a1`), 리드 태그 PR은 [PR212](https://github.com/bass131/dawnholder-server/pull/212)(merge commit `5a1752eb`), 수신 helper PR은 [PR213](https://github.com/bass131/dawnholder-server/pull/213)(merge commit `08028f1b`)로 병합됐다. 종료 기록은 [PR214](https://github.com/bass131/dawnholder-server/pull/214)(branch `docs/tdd-canon-closeout-20261009`, base main `08028f1b`)다.
 - 근거 폴더 E: `.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/`(Git 제외). 리드 맥락 메모는 [astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/astra-context.md), 수신 helper PR은 [pr2/astra-context.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/pr2/astra-context.md), 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-08-tdd-canon-temp-write-boundary/scope-draft-v2.md)(SHA256 `b93b6dbd…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules Astra]`(PR212 병합 전에 연 세션이라 종료까지 유지, 메인 `msg_84fb999941ce`). Claude 세션 ID `64f22d75-946a-4b21-a275-d2e10254b75a`. 재진입 뒤 handle `term_73e94f29-d9a7-47bf-91d3-50f3676de874`, Run은 `run_be5206d9a2af`(run-use로 인수), 회신 주소는 `run:run_be5206d9a2af`다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T01:51:32Z): 종료 기록 좁힌 재실사가 통과했다(아래 「종료 기록 문서 실사」). 종료 기록 PR을 만들고 메인 승인 묶음을 보낸다.
+- **현재 위치**(2026-10-09T02:16:31Z): PR214(종료 기록)를 만들고 메인 승인 묶음을 보냈다(`msg_63243ce1289a`). 그 뒤 메인 `msg_b92b1bafa87f`의 사용자 결정을 「적용 중인 사용자 결정」에 기록했다.
 - **다음 할 일**: PR214(종료 기록) 메인 승인 묶음 → 사용자 병합 승인 → 메인·사용자의 종료 점검(결과·남은 위험·BACKLOG·로드맵 초안) → R-8. 다음 goal은 자동 착수하지 않는다.
 - 재진입: 같은 Claude 세션을 `--resume`으로 이으면 handle이 바뀐다. 같은 Run을 run-use로 인수하고 메인에 새 handle을 알린다. 이 세션은 `[Rules Astra]`를 유지하고, 새로 연 리드 세션은 `[Rules 리드 Opus]`를 쓴다.
 - 주의: rules-active에는 직전 goal의 분리 시험이 남긴 worktree 설정 세 줄이 있다. 사용자 결정 「8번 키 남김」으로 유지하며 원격 반영은 deploy key(SSH)로 나간다.
@@ -138,6 +138,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - **직전 goal 종료 점검**(직전 goal 「적용 중인 사용자 결정」의 「종료 점검 둘」, 메인 전달 `msg_a73d4d5bbb3c`): 교정 층 「A 도구·양식 층」(기록 시각, 위임 계약 허용 실행의 읽기 기본값)과 ⑤ 「수신 helper의 Orca 1.4.218 고정은 다음 Rules 운영 goal에서 고친다」. 그때까지 리드가 공식 ask를 손으로 대조한다.
 - **기동 TEMP 지정 구절**(`msg_31c442dd7c2f`, 11:22:37Z, E/session/wait6.raw.json): 「대시보드 결정 응답: … 2) Rules - 작업자 임시 폴더 지정이 반만 먹혔는데, 운영 규칙에 그 구절을 남길지 → A 구절 남김」. 같은 제출의 1번은 Management 안건이라 메인이 생략했다. 리드 요청 `msg_d35743169f36`의 A대로 R-5 구절을 남기고 「Git Bash `/tmp`는 바뀌지 않는다」를 넣는다. 위임 계약 양식은 `/tmp`를 따로 금지하고 자기 쓰기 감사로 잡는다. 이 결정이 완료조건 2의 처음 문구를 대신한다. 메인은 lead-check.txt를 읽고 메인 셸에서도 TEMP를 바꿔도 `cygpath -w /tmp`가 그대로임을 재현했다.
 - **F2 교정 층의 메인 처리**(`msg_6031c2e0ecc8`, 사용자 결정 「A 도구·양식 층」의 메인 적용): BACKLOG ID 검사 helper(백틱 유무와 무관한 ID 추출과 fixture)를 다음 Rules 운영 goal의 기록 helper 후보로 넘겼다. 메인이 넣을지 판단을 리드에 맡겼고(진입 지시), 이 goal에서는 BACKLOG 새 행으로만 둔다(범위 v2 빼는 항목 3번).
+
+- **worktree 규칙 맞춤과 사용자 차례 알림**(`msg_b92b1bafa87f`, 2026-10-09T01:51:19Z, E/session/wait-pr214-1.raw.json): 「코어랑 룰쪽 작업 끝나면 한번 최종작업본인 Main규칙을 전체적으로 워크트리에 적용해야 할 거 같은데」, 「대시보드 결정 응답: 1) Core·Rules 작업 뒤 최신 main 규칙을 모든 worktree에 맞출 방식 - 쉬는 파트는 다시 열 때 맞출지, 한 번에 다 맞출지 → A 열 때 맞춤 + 규칙화」.
+  - 메인이 사용자에게 보인 A의 뜻: Core는 실사 뒤 main을 merge한다. Rules는 다음 goal을 최신 main에서 시작한다. 쉬는 Management·Content·CodeMap은 다시 여는 리드의 첫 일로 main을 받는다.
+  - 정본화 후보 ①(메인 전달): 규칙 문서(AGENTS·CLAUDE·ORCA·스킬·`.claude/settings.json`) PR이 병합되면 살아 있는 리드는 다음 안전 지점(새 계약·세션을 열기 전)에 최신 main을 자기 branch로 받는다. 닫혀 있던 파트는 재진입 첫 일로 받는다. 떠 있는 세션은 시작 때 읽은 hook을 쓰므로 새 세션부터 반영된다는 한계를 함께 적는다.
+  - 정본화 후보 ②(메인 전달): 작업자가 사용자에게 명령·입력 차례를 넘기거나 보고를 마치면 리드에게 status를 보낸다. 리드는 판단 없이 바로 메인에 한 줄 status로 넘긴다(Core goal 첫 발생, 메인 `msg_56e9fddd3ee6`). 메인 쪽 폴더 감시는 보조 그물이다.
+  - 메인 관측: core-active가 main 기준점보다 247 commit 뒤라 옛 규칙과 병합 관문 hook 없는 settings를 읽었다. rules-active는 차이가 없었다.
+  - 처리(리드 판단, goal-loop 「기준과 상태」의 「새 사용자 요청도 기본은 다음 계획」): 종료 기록 PR의 범위를 넓히지 않고 BACKLOG 행도 넣지 않는다. 메인이 두 후보를 다음 Rules goal 진입 계약 후보로 다시 보낸다(같은 메시지의 할 일). 정본 반영 전까지는 이 기록이 적용 근거다.
 
 ## 현재 결과
 
