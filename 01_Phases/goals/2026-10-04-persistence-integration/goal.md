@@ -500,13 +500,30 @@
   - 관찰: O-2(⑬ 앞 업데이트 화면 확인), O-3(⑭ 0이 아니면 꺼내지 않음), O-5(「파란」 삭제), ② 범위 ③~⑮를 반영했다. O-1·O-4·O-6·O-8은 카드 밖이다.
   - 기계 확인 `card-line-check-v2.ps1`: 문장 수·안쪽 문장 수·리터럴 뺀 길이·위치 인자를 잰다. 결과 `card-line-check-v2.txt`는 14줄 모두 문장 1·위치 인자 0이다. 대조군 `card-line-check-v2-control-v1.txt`는 v1 카드에서 문장 2를 잡았다.
   - 리드 이탈(첫 관찰): 메모를 v2 파일보다 늦게(`date -u` 02:07:33Z 뒤) 썼고, ② 범위 변경을 표에서 빠뜨려 02:12:44Z에 덧붙였다. 메모에 스스로 밝혔다.
+  - 메모 표에 없던 변경(review-v2 RTY-08): ④ 「정상」 문구(「오류가 없으면 된다 … 생겼는지 본다」 → 「정상: … 오류가 없다 … 생긴다」)와 ⑤ 「정상」 문구(필드 이름 Status·StartType, 전체 경로, 「로 시작」)도 다시 썼다. 둘 다 `card-v2-template-diff.txt`에 있다.
 - **실사 review-v2(카드 한정):** 계약 N/`review-v2/contract.md`(SHA256 `CDCE2853…0BB9`, 기준 11개, 해소 안 된 결함은 같은 번호, 새 결함은 RTY-05부터)다. 경로 확인 `review-v2/path-check.txt`(utc 02:14:48Z)의 결과는 아래와 같다.
   - 입력 48개가 있고, review-v1 입력과 같은 파일 30개는 SHA가 모두 같다.
   - 실행 전 전제는 모두 없다. 규칙 원문은 14줄이 다 들어갔다.
   - 신규 `claude-opus-5-5`(화면 「Opus 5.5 ⚡xhigh」, backend unknown)를 pane `term_656dc700-bd32-4a53-a5fe-ebb8bd612e92`에 열었다. task `task_189f7ec6858d`, dispatch `ctx_a11036270438`, `date -u` 02:15:26Z 시작, turnStart observed(`review-v2/launch-record.txt`).
   - 병합된 R-5에 따라 기동 때 TEMP·TMP를 `C:\Dev\DawnHolder_Project\.backups\tmp\core-rv2`로 지정했다. 세션 임시 폴더가 그 아래 생긴 것을 확인했다. review-v2 안에 두면 임시 경로가 232~250자라 피했다. 사용자 2A 조건(review-vN 새 파일만)은 계약이 지킨다. 실사자는 그곳에 직접 쓰지 않고, 도구가 만든 항목은 자기 쓰기 감사에 따로 적는다.
-- **다음 할 일:** 판정 수신 → 메인에 status 즉시 전달 → 리드 표본 대조(자기 쓰기 감사 포함) → 정산·pane 닫기 → 메인 R-2 → 메인이 카드 v2 전달(시간 창 시작) → 사용자 실행. 사용자 차례·B2 대조점·실행 끝마다 바로 메인에 status. NOT PASS가 다시 나와 세 번째 수정을 넘으면 메인 체크포인트다.
-- **사용자 손·결정 대기:** 없음(재실사 중). 주간 사용량 98%(실사자 화면 기준, 10-13 20:00 KST 리셋, 한도 도달 시 상태 보존·메인 보고).
+- **실사 결과: PASS(전달 가능).** 판정 N/`review-v2/verdict.md` 최종 SHA256 `B3D0BE6C4ABAC41E09B02B8A5408A5B4D7AED943F6FF4FCD2E14F0E195A05BF0`(170줄)이다.
+  - 수신: 판정 완료 status `msg_a9d57f01edf0`(02:34:54Z), worker_done `msg_cd1cb5d45fd0`(02:35:12Z, succeeded). 메인 전달은 `msg_8b071fa2c81a`·`msg_93e9a406a35d`다.
+  - 리드가 처음 전한 SHA `7567C1F0…`는 status 직후 값이다. 실사자가 status 뒤 02:35:00Z·02:35:05Z에 자기 쓰기 감사 한 줄만 고쳤다(실사자 대화 기록, `review-v2/lead-transcript-writes.txt`). 메인이 발견했다.
+  - RTY-01~04는 해소됐다. 새 결함 RTY-05~08은 모두 비차단이다.
+    - RTY-05: ⑭ 「0이 아니면 ⑮는 하되」와 「멈출 때」 일반 규칙이 충돌한다.
+    - RTY-06: ⑤ PathName 실제 출력은 큰따옴표로 시작하고 `-sSQLEXPRESS`가 붙는다. ⑨·⑫ 첫 줄은 출력이 없다.
+    - RTY-07: `card-line-check-v2.ps1`이 명령·멤버 이름까지 리터럴로 뺀다. 경로·해시만 뺀 실행 줄 길이는 89다(리드 재측정 `review-v2/lead-length-check.txt`, 12줄 모두 89).
+    - RTY-08: 위 「카드 v2」의 메모 누락 두 곳이다.
+  - 리드 표본 대조와 자기 쓰기 감사는 `review-v2/lead-r2-sample.txt`에 있다.
+    - 실사자 쓰기는 review-v2의 `context-memo.md`·`verdict.md`·`send-status-receipt.txt` 셋이다. 근거 폴더의 다른 곳과 두 checkout의 새 쓰기는 0이다.
+    - 지정 TEMP 아래 428개는 모두 도구가 만들었다. scratchpad·tasks는 비어 있고, 기본 TEMP에는 세션 폴더가 없다.
+    - Git Bash `/tmp`의 새 항목 6개는 실사자 것으로 보이지 않지만 귀속은 증명하지 못했다. 도구 자동 저장 1건은 판정 머리에 밝혔다.
+  - 정산: release `retained`(`external_terminal`), tui-idle·「done」 확인 뒤 pane을 닫았다(02:35:49Z, ptyKilled true). core-active에는 리드만 남았다.
+- **메인 처리(`msg_52cf0081132a`, 메인 판단, 사용자 승인 범위 안):**
+  - RTY-05·06은 (가)다. 카드 v2를 SHA 그대로 전달하고, 메인이 전달 문구에 안내 셋을 붙인다: ⑤ PathName은 큰따옴표로 시작하고 끝에 `-sSQLEXPRESS`가 붙는 게 정상, ⑨·⑫ 첫 줄은 아무것도 안 나오는 게 정상, ⑭가 0이 아니면 ⑮까지 하고 ⑯ 꺼내기는 하지 않고 알린다. 카드 v3는 만들지 않는다.
+  - RTY-07은 비차단으로 받는다. RTY-08은 위 한 줄로 보완했다. 같은 산출물 수정은 두 번에서 멈추고 체크포인트는 없다.
+- **다음 할 일:** 리드 정산 status → 메인이 사용자에게 카드 v2와 안내를 전달(그 시각부터 그날 24:00 KST가 시간 창) → 사용자 실행. 사용자가 「B2 끝」을 알리면 메인이 리드에 전하고, 리드는 B2 기록을 읽어 대조 결과를 status로 보낸다. A3 진행은 메인이 정한다. 실행이 끝나면(서비스 정지·D: 꺼내기 뒤) 메인에 알린다.
+- **사용자 손·결정 대기:** 메인의 카드 전달 뒤 사용자 실행. 주간 사용량 99%(실사자 화면 기준, 10-13 20:00 KST 리셋, 한도 도달 시 상태 보존·메인 보고).
 
 ### Fable 작업자 SQL 서비스 진단·처치 — 2026-10-08T23:12Z
 
