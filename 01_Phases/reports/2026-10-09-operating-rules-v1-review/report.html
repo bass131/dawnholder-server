@@ -23,6 +23,7 @@ header.top{padding:28px 0 8px;color:var(--muted);font-size:12px;letter-spacing:.
 .decision h2{margin:0 0 8px;font-size:20px;color:var(--amber)}
 .decision table{min-width:0}
 .notice{border-left:4px solid var(--blue);background:var(--surface);padding:12px 16px;border-radius:0 8px 8px 0;color:var(--muted);font-size:14px}
+.notice p{margin:0}
 nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
 nav.toc a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;font-size:14px;background:var(--surface)}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
@@ -49,14 +50,14 @@ figure.diff-card{margin:12px 0;border:1px solid var(--line);border-radius:10px;o
 figure.diff-card figcaption{padding:8px 12px;background:var(--raised);font-size:13px;color:var(--muted)}
 figure.diff-card .hunk{font-family:Consolas,monospace;font-size:12px}
 pre.diff{margin:0;padding:10px 12px;font:13px/1.6 Consolas,'D2Coding',monospace;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
-pre.diff span{display:block}
-pre.diff .add{background:var(--add-bg)}
-pre.diff .del{background:var(--del-bg)}
+pre.diff span{display:block;border-left:3px solid transparent;padding-left:4px}
+pre.diff .add{background:var(--add-bg);border-left-color:var(--accent)}
+pre.diff .del{background:var(--del-bg);border-left-color:var(--red)}
 pre.diff .ctx{color:var(--muted)}
 ol.proc li,ul li{margin:4px 0}
 .mark{color:var(--amber);font-weight:600;white-space:nowrap}
 @media (max-width:800px){.wrap{padding:0 16px 64px}.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.hero h1{font-size:30px}section h2{font-size:24px}}
-@media print{:root{--bg:#f3f5f0;--surface:#fff;--raised:#eaf0e9;--text:#182e36;--muted:#536770;--line:#cbd5d1;--accent:#23653b;--blue:#155d93;--amber:#805307;--red:#9b2d2d;--add-bg:#e2f4e6;--del-bg:#fbe5e3;--code-bg:#f4f6f3}body{background:#fff;color:#000}nav.toc{display:none}.table-wrap{overflow:visible}}
+@media print{:root{--bg:#f3f5f0;--surface:#fff;--raised:#eaf0e9;--text:#182e36;--muted:#536770;--line:#cbd5d1;--accent:#23653b;--blue:#155d93;--amber:#805307;--red:#9b2d2d;--add-bg:#e2f4e6;--del-bg:#fbe5e3;--code-bg:#f4f6f3}body{background:#fff;color:#000}nav.toc{display:none}.table-wrap{overflow:visible}pre.diff span{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 </head>
 <body>
@@ -73,15 +74,17 @@ ol.proc li,ul li{margin:4px 0}
 <h2>결정 필요 · STE 문장 규칙과 HTML 보고 방식을 정본으로 올릴 시점</h2>
 <p>결정할 것은 STE 문장 규칙과 HTML 보고 방식을 V1.0에 넣을지, V1.x로 미룰지입니다. 추천은 A, V1.x로 미루는 것입니다. 메인에게 「STE A」 또는 「STE B」 한 줄로 답해 주세요.</p>
 <div class="table-wrap"><table><thead><tr><th>선택지</th><th>고르면 일어나는 일</th></tr></thead><tbody>
-<tr><td><b>A · V1.x에서 정본화</b> <span class="badge ok">추천</span></td><td>이 보고서가 첫 시범으로 남습니다. 다음 계획이 두 질문을 다룹니다. 보고를 내용 초안과 고정 템플릿으로 바꿀지, STE 문장 규칙을 문서 검사로 바꿀지입니다.</td></tr>
+<tr><td><b>A · V1.x에서 정본화</b> <span class="badge ok">추천</span></td><td>이 보고서가 첫 시범으로 남습니다. 다음 계획이 두 질문을 다룹니다. (가)는 보고를 내용 초안과 고정 템플릿으로 바꿀지, (나)는 STE 문장 규칙을 문서 검사로 바꿀지입니다.</td></tr>
 <tr><td><b>B · V1.0에 포함</b></td><td>이번 goal에 REPORTING 규칙 절과 보고 양식 변경이 들어옵니다. 그 변경을 다시 실사하므로 합류점이 늦어집니다.</td></tr>
 </tbody></table></div>
+<p>(가)와 (나)를 다르게 정하려면 따로 말해 주세요.</p>
 <p class="meta">추천 이유와 적용표는 <a href="#ste">8절</a>에 있습니다.</p>
 </div>
 
-<!--ste-skip-->
-<div class="notice">스냅샷: 2026-10-09 · 정본 base <code>89a2c02</code> → head <code>36b76d9</code> · 독립 문서 실사: 첫 실사 NOT PASS(차단 2) → 수정 → 재실사 PASS<br>상태·결정·결과의 원본은 <a href="../../goals/2026-10-09-plan-boundary-and-junction/goal.md">goal</a>입니다. 이 보고서는 그 시점의 설명용 스냅샷입니다.</div>
-<!--/ste-skip-->
+<div class="notice">
+<p>이 보고서는 2026-10-09 스냅샷입니다. 정본 base는 <code>89a2c02</code>, head는 <code>36b76d9</code>입니다. 독립 문서 실사는 첫 실사 NOT PASS(차단 2), 수정, 재실사 PASS 순서로 끝났습니다.</p>
+<p>상태·결정·결과의 원본은 <a href="../../goals/2026-10-09-plan-boundary-and-junction/goal.md">goal</a>입니다. 이 보고서는 그 시점의 설명용 스냅샷입니다.</p>
+</div>
 
 <nav class="toc" aria-label="목차"><a href="#v1">1 V1.0</a><a href="#map">2 규칙 지도</a><a href="#changes">3 바뀐 것</a><a href="#roles">4 역할과 모델</a><a href="#junction">5 합류점</a><a href="#touch">6 사용자 결정 지점</a><a href="#findings">7 중복·충돌 후보</a><a href="#ste">8 ASD-STE100</a><a href="#next">9 V1.x 후보</a><a href="#limits">10 근거와 한계</a></nav>
 
@@ -95,7 +98,7 @@ ol.proc li,ul li{margin:4px 0}
 <section id="v1">
 <div class="step-label">01 / VERSION</div>
 <h2>V1.0이 뜻하는 것</h2>
-<p>V1.0은 지금까지 쌓은 운영 규칙을 한 판으로 묶은 이름입니다. 사용자는 V1.0의 범위를 진입 지시의 씨앗 1~6으로 닫았습니다. AGENTS 머리에 판 이름과 태그 이름을 한 줄로 적었습니다. 판은 사용자 결정으로만 올립니다.</p>
+<p>V1.0은 지금까지 쌓은 운영 규칙을 한 판으로 묶은 이름입니다. 사용자는 V1.0의 범위를 진입 지시가 낸 범위 항목 여섯 개로 닫았습니다. 그중 다섯은 3절 카드 1~4에 있고, 후보 도착 검사는 다음 PR이 맡습니다. AGENTS 머리에 판 이름과 태그 이름을 한 줄로 적었습니다. 판은 사용자 결정으로만 올립니다.</p>
 <p>합류점 J는 이 goal 마지막 PR의 병합 커밋입니다. J 뒤에 태그 <code>ops-v1.0</code>을 답니다. 태그 push는 사용자의 별도 승인을 받습니다.</p>
 <div class="table-wrap"><table><thead><tr><th>PR</th><th>담는 것</th><th>검증</th></tr></thead><tbody>
 <tr><td>정본 PR</td><td>정본 문서 변경과 이 보고서</td><td>신규 <code>gpt-6-astra</code> xhigh 문서 실사, 보고서는 신규 <code>claude-opus-5-5</code> 검토</td></tr>
@@ -107,7 +110,7 @@ ol.proc li,ul li{margin:4px 0}
 <section id="map">
 <div class="step-label">02 / RULE MAP</div>
 <h2>규칙 지도</h2>
-<p>규칙 문서는 세 층으로 나뉩니다. 운영 정본은 역할·권한·Orca 절차를 정합니다. 절차 스킬은 목표 루프·맥락 메모·세션 인계를 정합니다. 작성 기준과 상태 문서는 코드·보고 작성법과 현재 진행을 담습니다.</p>
+<p>규칙 문서는 네 묶음으로 나뉩니다. 운영 정본은 역할·권한·Orca 절차를 정합니다. 절차 스킬은 목표 루프·맥락 메모·세션 인계를 정합니다. 작성 기준은 코드와 보고의 작성법을 담습니다. 상태 문서는 현재 진행과 후보를 담습니다.</p>
 <p>기계가 강제하는 것은 병합 관문 hook과 CI뿐입니다. 나머지 규칙은 모두 문서 운영 지침입니다. AGENTS도 스스로 이 점을 밝힙니다.</p>
 <div class="table-wrap"><table><thead><tr><th>층</th><th>문서</th><th class="n">크기</th><th>역할</th><th>주로 읽는 사람</th></tr></thead><tbody>
 <tr><td rowspan="3">운영 정본</td><td><a href="../../../AGENTS.md">AGENTS</a></td><td class="n">19,209 B · 90줄</td><td>역할·모델·태그·Git 권한·공학 조건</td><td>모든 로컬 세션, 외부 팀원은 외부 절만</td></tr>
@@ -127,7 +130,7 @@ ol.proc li,ul li{margin:4px 0}
 <tr><td><a href="../../../00_Document/operations/BACKLOG.md">BACKLOG</a></td><td class="n">78,959 B · 200줄</td><td>goal 전 후보</td><td>계획·종료 점검 때 메인과 리드</td></tr>
 <tr><td><a href="../../../00_Document/operations/RESUME.md">RESUME</a></td><td class="n">6,271 B · 49줄</td><td>새 세션 읽기 순서와 진입 배치</td><td>새 메인, R-8 뒤 새 리드</td></tr>
 </tbody></table></div>
-<p class="meta" data-ste-skip>크기는 생성 스크립트가 head blob에서 잰 값입니다. 여섯 파일 묶음은 AGENTS·ORCA·goal-loop·RESUME·session-handoff·orca-work입니다. 이 표에 없는 규칙 문서로 helper-session 스킬, MSSQL, ENTRY_POINTS, 외부 팀원 안내가 있습니다.</p>
+<p class="meta">크기는 생성 스크립트가 head blob에서 잰 값입니다. 여섯 파일 묶음은 AGENTS·ORCA·goal-loop·RESUME·session-handoff·orca-work입니다. 이 표에 없는 규칙 문서로 helper-session 스킬, MSSQL, ENTRY_POINTS, 외부 팀원 안내가 있습니다.</p>
 
 <h3>기계가 강제하는 것</h3>
 <div class="table-wrap"><table><thead><tr><th>장치</th><th>막거나 검사하는 것</th><th>한계</th></tr></thead><tbody>
@@ -161,7 +164,7 @@ ol.proc li,ul li{margin:4px 0}
 <h3>3. 사용자 차례 알림</h3>
 <p>작업자가 사용자에게 명령이나 입력 차례를 넘기면 리드에 status를 보냅니다. 보고를 마칠 때도 같습니다. 리드는 판단 없이 바로 메인에 한 줄 status로 넘깁니다. 메인의 폴더 감시는 보조 그물입니다.</p>
 <figure class="diff-card"><figcaption><code>00_Document/operations/ORCA.md</code> <span class="hunk">@@ -129,3 +129,3 @@ node 99_Tools/Orca/check-message.mjs .backups/수신입력.json</span></figcaption><pre class="diff"><span class="ctx">  </span><span class="del">- 리드→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내용은 기존의 변경 요약·검증 근거 위치·리스크·결정 요청·판정 원문 경로를 유지한다.</span><span class="add">+ 리드→메인 보고는 `status` 또는 `question` 유형으로 보낸다. 내용은 기존의 변경 요약·검증 근거 위치·리스크·결정 요청·판정 원문 경로를 유지한다. 작업자는 사용자에게 명령·입력 차례를 넘기거나 보고를 마치면 리드에 status를 보낸다. 리드는 판단 없이 바로 메인에 한 줄 status로 넘긴다. 메인 폴더 감시는 보조 그물이다.</span><span class="ctx">  </span></pre></figure>
-<figure class="diff-card"><figcaption><code>.agents/skills/dawnholder-task-context/references/templates.md</code> <span class="hunk">@@ -51,3 +51,3 @@</span></figcaption><pre class="diff"><span class="ctx">  </span><span class="del">- - 역할·수신자의 자기 태그 / 지정 모델 / 요청·화면·backend 구분:</span><span class="add">+ - 역할·수신자의 자기 태그 / 지정 모델 / 요청·화면·backend 구분 / 구현자 배정 근거(신호 번호 또는 해당 없음·원시 근거):</span><span class="ctx">  - 승인 goal·요구사항 원천 / 작업 하나 / 보존 동작·완료조건:</span></pre></figure>
+<figure class="diff-card"><figcaption><code>.agents/skills/dawnholder-task-context/references/templates.md</code> <span class="hunk">@@ -60,2 +60,3 @@</span></figcaption><pre class="diff"><span class="ctx">  - 작업 하나 뒤 정산·종료 / 재사용 금지:</span><span class="add">+ - 사용자 차례 넘김·보고 종료 때 리드 status / [알림 의무](../../../../00_Document/operations/ORCA.md#r4-report-type):</span><span class="ctx">  - 계약 버전·원문 결정 출처·시각 / 고정 입력·hash / 다음 버전 적용 단계:</span></pre></figure>
 </div>
 
 <div class="card">
@@ -175,6 +178,7 @@ ol.proc li,ul li{margin:4px 0}
 <p>사용자는 Sol max만 쓰면 어려운 작업에서 힘들어한다고 보았습니다. 그래서 구현자를 <code>gpt-6.1-sol</code> max와 <code>gpt-6-astra</code> xhigh 둘로 나눴습니다. 리드는 위임 계약을 쓸 때 난이도 신호로 모델을 고릅니다. 신호가 하나라도 있으면 Astra, 애매해도 Astra, 없으면 Sol입니다.</p>
 <p>신호는 Sol max 시기 사례 14개에서 뽑았습니다. 같은 결함 번호가 다시 실패한 사례는 0건이었습니다. 그래서 확정 실패 3회 규칙은 한 번도 발동하지 않았습니다. 이 공백을 신호 5가 메웁니다. Astra 구현 표본은 아직 0이라 2026-10-31에 사용자가 평가합니다.</p>
 <figure class="diff-card"><figcaption><code>.agents/skills/dawnholder-goal-loop/references/implementer-routing.md</code> <span class="hunk">@@ -0,0 +1,29 @@ · hunk 일부(앞 10줄·뒤 12줄 생략)</span></figcaption><pre class="diff"><span class="add">+ | 번호 | Astra 배정 신호 | 기록 근거 |</span><span class="add">+ |---|---|---|</span><span class="add">+ | 1 | 열린·적대적 입력을 해석한다. 셸·명령줄 해석, 보안 그물, 입력 경계 검증이 해당한다. | 조사 사례 10·11: 셸 문법 해석 결함 |</span><span class="add">+ | 2 | 시간·순서·동시성·수명을 다룬다. 같은 틱 경합, 프로세스·서비스 수명, timeout·재시도가 해당한다. | 조사 사례 6·1~4: 같은 틱 경합과 DB·PowerShell 수명 도구 |</span><span class="add">+ | 3 | 런타임·언어 경계를 넘는 상호 운용을 다룬다. PS5.1↔.NET과 서버↔클라이언트 프로토콜이 해당한다. | 조사 사례 2~3·6: 런타임 경계와 프로토콜 |</span><span class="add">+ | 4 | 설계 판단이 남은 새 다파일 기능·검사기·화면이다. | 조사 사례 7·8: Unity 실화면과 새 검사기 |</span><span class="add">+ | 5 | 같은 계약에서 Sol 구현의 독립 NOT PASS가 두 번째다. 결함 번호와 무관하게 다음 수정 시도를 Astra에 맡긴다. | 조사에서 같은 번호 재실패가 0건이라 확정 실패 3회 규칙이 발동하지 않았다. |</span></pre></figure>
+<figure class="diff-card"><figcaption><code>.agents/skills/dawnholder-task-context/references/templates.md</code> <span class="hunk">@@ -51,3 +51,3 @@</span></figcaption><pre class="diff"><span class="ctx">  </span><span class="del">- - 역할·수신자의 자기 태그 / 지정 모델 / 요청·화면·backend 구분:</span><span class="add">+ - 역할·수신자의 자기 태그 / 지정 모델 / 요청·화면·backend 구분 / 구현자 배정 근거(신호 번호 또는 해당 없음·원시 근거):</span><span class="ctx">  - 승인 goal·요구사항 원천 / 작업 하나 / 보존 동작·완료조건:</span></pre></figure>
 <figure class="diff-card"><figcaption><code>AGENTS.md</code> <span class="hunk">@@ -32,6 +34,6 @@</span></figcaption><pre class="diff"><span class="ctx">  </span><span class="del">- - 메인 Claude `claude-opus-5-5` → 파트 리드 `claude-opus-5-5` xhigh(Claude Code, `[&lt;파트&gt; 리드 Opus]` 태그) → Sol `gpt-6.1-sol`(reasoning effort `max` 고정)이다. 독립 검증·리뷰는 [모델 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지), 선행 시험 작성은 신규 `claude-opus-5-5`다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다. 리드 모델 계열이 바뀌면 태그의 모델명도 그 계열로 바뀐다.</span><span class="add">+ - 메인 Claude `claude-opus-5-5` → 파트 리드 `claude-opus-5-5` xhigh(Claude Code, `[&lt;파트&gt; 리드 Opus]` 태그) → 구현자 `gpt-6.1-sol` max 또는 `gpt-6-astra` xhigh다. [배정](.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)·[시범](.agents/skills/dawnholder-goal-loop/SKILL.md#구현자-모델-시범)을 따른다. 독립 검증·리뷰는 [모델 시범](.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지), 선행 시험 작성은 신규 `claude-opus-5-5`다. 기동은 [R-5](00_Document/operations/ORCA.md#r5-worker-launch)를 따른다. 리드 모델 계열이 바뀌면 태그의 모델명도 그 계열로 바뀐다.</span><span class="ctx">  - [R-7 Fable 구현 전 설계 검토 시범](00_Document/operations/ORCA.md#r7-fable-pilot)은 4범주·2~3작업 한정으로 해당 정본의 범위와 절차를 따른다. 기본 모델 배정과 확정 실패 3회 뒤 Advisor를 대체하지 않는다.</span><span class="ctx">  - 보고서 자료의 조사·설계 해설·본문·HTML·전용 생성 스크립트는 리드가 작성한다. Sol에 보고서 작성·렌더링 구현을 맡기지 않는다. 독립 검증자가 내용·근거·표시를 검토하고 메인이 [작성 기준](00_Document/conventions/REPORTING.md)에 따라 사용자 최종 보고를 전달한다.</span><span class="del">- - 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol capacity 장기 실패의 **신규 `gpt-6-astra` 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.</span><span class="add">+ - 세션 생성 시 모델을 명시한다. 요청 모델·launch 설정·화면 표시와 백엔드 실제 모델을 구분하며 정확히 확인할 수 없는 실제 모델은 `unknown`으로 기록한다. 새 pane에 `--terminal`로 연결한 경우 launch 모델값 대신 최초 실행 명령과 화면 표시를 근거로 삼는다. 지정 모델 부재는 대체하지 않고 메인에 보고한다. 사용자 승인 예외인 Sol 배정 작업자의 capacity 장기 실패 시 **신규 `gpt-6-astra` 작업자** 전환만 [capacity 정본](00_Document/operations/ORCA.md#capacity-retry)을 따른다. Astra 배정은 재시도만 한다. 리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다. 문서 변경만으로 기존 런타임 모델이 바뀌었다고 보고하지 않는다.</span><span class="ctx">  - `gpt-6.1-sol`이 모델 목록에 없으면 Codex 업데이트 누락 가능성을 고려해 먼저 버전과 모델 노출을 확인한다. 원인을 단정하거나 승인 없이 업데이트·전역 설정 변경을 하지 않는다.</span></pre></figure>
 <figure class="diff-card"><figcaption><code>00_Document/operations/ORCA.md</code> <span class="hunk">@@ -150,5 +150,5 @@ Orca 1.4.221(2026-10-06)에서 **활성 Dispatch 없는 발신자**의 `escalati</span></figcaption><pre class="diff"><span class="ctx">  </span><span class="del">- 작업자 화면에 `Selected model is at capacity`가 관측되면 **같은 세션·같은 task에서 1→2→5→10분 간격**으로 재시도한다. 첫 capacity 관측부터 누적 30분에도 `gpt-6.1-sol`이 계속 실패하면 기존 작업자를 공식 정산·종료하고 신규 `gpt-6-astra` xhigh **작업자**를 열 수 있다. 기존 세션을 실행 중에 모델 변경하지 않는다. 파트 리드 직접 구현은 금지이고, 독립 검증자는 지정 모델로 재시도만 하며 대체하지 않는다. 다른 모델 부재·권한 확인을 이 예외로 우회하지 않는다.</span><span class="add">+ 작업자 화면에 `Selected model is at capacity`가 관측되면 **같은 세션·같은 task에서 1→2→5→10분 간격**으로 재시도한다. 첫 capacity 관측부터 누적 30분에도 `gpt-6.1-sol`이 계속 실패하면 기존 작업자를 공식 정산·종료하고 신규 `gpt-6-astra` xhigh **작업자**를 열 수 있다. Astra 배정은 재시도만 한다. 기존 세션을 실행 중에 모델 변경하지 않는다. 파트 리드 직접 구현은 금지이고, 독립 검증자는 지정 모델로 재시도만 하며 대체하지 않는다. 다른 모델 부재·권한 확인을 이 예외로 우회하지 않는다.</span><span class="ctx">  </span><span class="del">- 요청 모델·최초 실행/launch·화면 관측·backend 실제 모델 또는 `unknown`, 최초 관측/재시도 시각·누적 시간·전환 사유·사용자 결정 출처를 기록한다. 승인 출처는 [capacity 예외 기록](../../01_Phases/goals/2026-10-05-operating-canon/goal.md#orca-source-capacity)에 있다.</span><span class="add">+ 요청 모델·최초 실행/launch·화면 관측·backend 실제 모델 또는 `unknown`, 최초 관측/재시도 시각·누적 시간·전환 사유·사용자 결정 출처를 기록한다.</span><span class="ctx">  </span></pre></figure>
 </div>
@@ -182,7 +186,7 @@ ol.proc li,ul li{margin:4px 0}
 <div class="card">
 <h3>6. 규칙 문서 bytes 상쇄</h3>
 <p>여섯 파일 묶음은 PR마다 base보다 늘지 않아야 합니다. 새 문장이 늘린 만큼 지난 기록 문장 일곱 곳을 goal로 옮겼습니다. 옮긴 원문은 goal 「정본에서 옮긴 적용 기록」에 그대로 있습니다. AGENTS 전환 문단은 끝난 Core 명칭 전환 부분만 줄였습니다.</p>
-<div class="table-wrap"><table><thead><tr><th>파일</th><th class="n">base bytes</th><th class="n">head bytes</th><th class="n">차이</th></tr></thead><tbody><tr><td><code>AGENTS.md</code></td><td class="n">19,078</td><td class="n">19,209</td><td class="n">+131</td></tr><tr><td><code>00_Document/operations/ORCA.md</code></td><td class="n">41,504</td><td class="n">41,249</td><td class="n">-255</td></tr><tr><td><code>.agents/skills/dawnholder-goal-loop/SKILL.md</code></td><td class="n">16,695</td><td class="n">16,858</td><td class="n">+163</td></tr><tr><td><code>00_Document/operations/RESUME.md</code></td><td class="n">6,311</td><td class="n">6,271</td><td class="n">-40</td></tr><tr><td><code>.agents/skills/dawnholder-session-handoff/SKILL.md</code></td><td class="n">8,711</td><td class="n">8,711</td><td class="n">0</td></tr><tr><td><code>.agents/skills/dawnholder-goal-loop/references/orca-work.md</code></td><td class="n">10,302</td><td class="n">10,302</td><td class="n">0</td></tr><tr class="total"><td>합계</td><td class="n">102,601</td><td class="n">102,600</td><td class="n">-1</td></tr></tbody></table></div><p class="meta" data-ste-skip>ORCA.md head 줄 수: 249줄(상한 250줄).</p>
+<div class="table-wrap"><table><thead><tr><th>파일</th><th class="n">base bytes</th><th class="n">head bytes</th><th class="n">차이</th></tr></thead><tbody><tr><td><code>AGENTS.md</code></td><td class="n">19,078</td><td class="n">19,209</td><td class="n">+131</td></tr><tr><td><code>00_Document/operations/ORCA.md</code></td><td class="n">41,504</td><td class="n">41,249</td><td class="n">-255</td></tr><tr><td><code>.agents/skills/dawnholder-goal-loop/SKILL.md</code></td><td class="n">16,695</td><td class="n">16,858</td><td class="n">+163</td></tr><tr><td><code>00_Document/operations/RESUME.md</code></td><td class="n">6,311</td><td class="n">6,271</td><td class="n">-40</td></tr><tr><td><code>.agents/skills/dawnholder-session-handoff/SKILL.md</code></td><td class="n">8,711</td><td class="n">8,711</td><td class="n">0</td></tr><tr><td><code>.agents/skills/dawnholder-goal-loop/references/orca-work.md</code></td><td class="n">10,302</td><td class="n">10,302</td><td class="n">0</td></tr><tr class="total"><td>합계</td><td class="n">102,601</td><td class="n">102,600</td><td class="n">-1</td></tr></tbody></table></div><p class="meta">ORCA.md head 줄 수는 249줄입니다. 상한은 250줄입니다.</p>
 <figure class="diff-card"><figcaption><code>AGENTS.md</code> <span class="hunk">@@ -44,3 +46,3 @@</span></figcaption><pre class="diff"><span class="ctx">  </span><span class="del">- - **Core 명칭과 리드 태그 전환:** GameDev는 Core의 이전 이름이다. [운영 후속 정본화의 PR2](01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 세션과 새 계약부터 Core 태그를 쓴다. PR2 병합 전에 연 GameDev 세션과 진행 중인 계약은 종료까지 `[GameDev …]`를 유지한다. 진행 중인 영속화 통합 goal에는 중간 변경을 요구하지 않는다. 그 goal의 R-8로 새 리드를 열 때부터 Core 태그를 쓴다. [리드 태그 PR](01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 리드 세션과 그 세션의 새 계약부터 `[&lt;파트&gt; 리드 Opus]`를 쓴다. 병합 전에 연 리드 세션은 종료까지 `[&lt;파트&gt; Astra]`를 쓴다. 전환기 수신 측은 각 전환의 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 과거 기록·BACKLOG의 GameDev·Astra는 당시 이름으로 해석한다.</span><span class="add">+ - **Core 명칭과 리드 태그 전환:** GameDev는 Core의 이전 이름이며 그 전환은 끝났다([운영 후속 정본화의 PR2](01_Phases/goals/2026-10-05-ci-warning-operating-followup/goal.md#요구사항-원천과-적용-결정)). [리드 태그 PR](01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#요구사항-원천과-적용-결정) 병합 뒤 새로 여는 리드 세션과 그 세션의 새 계약부터 `[&lt;파트&gt; 리드 Opus]`를 쓴다. 병합 전에 연 리드 세션은 종료까지 `[&lt;파트&gt; Astra]`를 쓴다. 전환기 수신 측은 두 태그를 같은 파트로 인정하되 현재 `from_handle`·Task·Dispatch 대조를 계속한다. 과거 기록·BACKLOG의 GameDev·Astra는 당시 이름으로 해석한다.</span><span class="ctx">  </span></pre></figure>
 </div>
 
@@ -282,9 +286,9 @@ ol.proc li,ul li{margin:4px 0}
 </tbody></table></div>
 <h3>읽는 비용만 큰 후보</h3>
 <div class="table-wrap"><table><thead><tr><th>후보</th><th>내용</th></tr></thead><tbody>
-<tr><td>병합 승인 문장 복제</td><td>7개 파일 12곳에 있습니다. ORCA와 CLAUDE가 세부 정본으로 서로를 가리킵니다.</td></tr>
-<tr><td>bytes 상한의 위치</td><td>「ORCA 250줄, 여섯 파일 비증가」는 goal 넷의 완료조건에만 있고 정본에는 없습니다. 새 규칙을 묶음 밖 파일에 두려는 유인이 생긴다고 봅니다. V1.0의 새 규칙 둘도 묶음 밖에 있습니다.</td></tr>
-<tr><td>외부 팀원 경계 문단</td><td>같은 문단이 6벌 있습니다. 묶음 안 네 벌만 합쳐도 1,718 bytes입니다.</td></tr>
+<tr><td>병합 승인 문장 복제</td><td>「병합 승인」은 규칙 지도 문서 6개의 13줄에 나옵니다. 승인 줄 형식 <code>병합 승인: PR</code>을 그대로 적은 문서는 3개입니다.</td></tr>
+<tr><td>bytes 상한의 위치</td><td>「250줄」은 goal 문서 5개에 나옵니다. 규칙 지도 문서에서 이 말이 나오는 줄은 0줄입니다. 상한이 정본에 없어 새 규칙을 묶음 밖 파일에 두려는 유인이 생긴다고 봅니다. 이 판단은 추론입니다. V1.0의 새 규칙 둘도 묶음 밖에 있습니다.</td></tr>
+<tr><td>외부 팀원 경계 문단</td><td>AGENTS의 외부 팀원 절을 가리키는 경계 문단(링크 <code>#외부-팀원-세션</code>)이 규칙 지도 문서 6개에 있습니다. 여섯 파일 묶음 안의 4줄만 합쳐도 1,718 bytes입니다.</td></tr>
 <tr><td>정산·종료 절차 복제</td><td>RESUME가 정산 절차를 복제합니다. 같은 문서가 「상세 규칙을 복제하지 않는다」고도 적습니다.</td></tr>
 <tr><td>맥락 메모 필드</td><td>AGENTS·CLAUDE·task-context가 필드를 서로 다르게 나열합니다.</td></tr>
 <tr><td>낡은 이름과 호칭</td><td>CODE_CONVENTION에 「GameDev」가 남았습니다. task-context와 templates는 검증자를 「Opus」로 부릅니다.</td></tr>
@@ -293,7 +297,7 @@ ol.proc li,ul li{margin:4px 0}
 <tr><td>리드→메인 보고 유형</td><td>ORCA 한 곳은 「status 또는 question」, 다른 곳은 「status」입니다.</td></tr>
 <tr><td>10-31 평가의 담당</td><td>시범 다섯 건을 누가 어떻게 평가를 여는지 정본에 없습니다.</td></tr>
 </tbody></table></div>
-<p class="meta" data-ste-skip>링크 점검: 조사 대상 17개 정본 파일의 상대 링크 475개가 모두 파일과 제목 앵커에 닿았습니다. 이 값은 조사 에이전트의 측정이며 GitHub 앵커 규칙을 근사했습니다. 원 목록은 근거 폴더 <code>report-research/findings-digest.md</code>에 있습니다.</p>
+<p class="meta">이 표의 개수는 생성 스크립트가 head <code>36b76d9</code>에서 <code>git grep -F</code>로 센 값입니다. 센 문자열·범위·파일별 값은 <code>report/data.json</code>의 <code>greps</code>에 있습니다. 규칙 지도 문서는 2절 표의 16개 파일입니다. bytes는 일치한 줄의 UTF-8 bytes에 줄바꿈 하나씩을 더한 값입니다.</p>
 </section>
 
 <section id="ste">
@@ -304,20 +308,21 @@ ol.proc li,ul li{margin:4px 0}
 <p>Andrej Karpathy는 2026-10-02 <a href="https://x.com/karpathy/status/2105819303471976479">X 게시물</a>에서 LLM 출력을 읽는 형식을 네 단계로 제안했습니다. 단계는 글, 도식, 웹 페이지, 설명 영상 순서입니다. 글 단계에서는 LLM에게 ASD-STE100으로 설명하게 하라고 합니다. 규격이 엄격해 「80% of the way to ASD-STE100」로 완화하기도 한다고 적었습니다. 원문은 메인이 2026-10-09에 사용자의 Chrome으로 확인했습니다.</p>
 <p>이 안건의 두 갈래는 그 단계와 맞물립니다. STE 문장 규칙은 글 단계에 해당합니다. HTML 보고 방식은 웹 페이지 단계에 해당합니다.</p>
 <p>answer-me-with-html은 MIT 라이선스의 공개 저장소입니다. 에이전트는 짧은 Markdown 초안만 씁니다. 동봉 CLI가 템플릿으로 단일 HTML을 만듭니다. CLI는 렌더할 때 STE를 응용한 문장 검사도 합니다.</p>
-<p>README는 손으로 쓴 HTML보다 출력 토큰이 약 1/8이고 2.6배 빠르다고 주장합니다. 표본은 3주제를 3회씩 돈 중앙값입니다. 이 수치는 README 주장이며 재현하지 않았습니다. 2026-10-03 메모의 수치와도 달라 README가 그 뒤 바뀐 것으로 봅니다. 도구는 설치하지 않았고 도입은 사용자 승인과 코드 실사 뒤입니다.</p>
+<p>README는 손으로 쓴 HTML보다 출력 토큰이 약 1/8이고 2.6배 빠르다고 주장합니다. 표본은 3주제를 3회씩 돈 중앙값입니다. 이 수치는 README 주장이며 재현하지 않았습니다. README는 2026-10-09에 읽었고 확인한 commit은 기록하지 않았습니다. 2026-10-03 메모의 수치와도 달라 README가 그 뒤 바뀐 것으로 봅니다. 도구는 설치하지 않았고 도입은 사용자 승인과 코드 실사 뒤입니다.</p>
 <h3>두 검토 질문</h3>
 <div class="table-wrap"><table><thead><tr><th>질문</th><th>연결 원칙</th><th>이 보고서에서 한 것</th></tr></thead><tbody>
-<tr><td>보고를 내용 초안과 고정 템플릿으로 바꿀지</td><td><a href="../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙">하네스 원칙</a> 2: 정본 생성기를 쓰는 길을 가장 쉽게</td><td>손으로 쓴 HTML 틀에 생성 스크립트가 Git 수치와 diff를 채웠습니다. Markdown 초안 구조는 아닙니다.</td></tr>
-<tr><td>STE 문장 규칙을 문서 검사로 바꿀지</td><td><a href="../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙">하네스 원칙</a> 1·4: 기계 판단 규칙은 검사로, warning 시범부터</td><td>문장 길이만 스크립트로 쟀습니다. 결과는 아래 측정표에 있습니다.</td></tr>
+<tr><td>(가) 보고를 내용 초안과 고정 템플릿으로 바꿀지</td><td><a href="../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙">하네스 원칙</a> 2: 정본 생성기를 쓰는 길을 가장 쉽게</td><td>손으로 쓴 HTML 틀에 생성 스크립트가 Git 수치와 diff를 채웠습니다. Markdown 초안 구조는 아닙니다.</td></tr>
+<tr><td>(나) STE 문장 규칙을 문서 검사로 바꿀지</td><td><a href="../../../00_Document/conventions/CODE_CONVENTION.md#하네스-원칙">하네스 원칙</a> 1·4: 기계 판단 규칙은 검사로, warning 시범부터</td><td>문장 길이만 스크립트로 쟀습니다. 결과는 아래 측정표에 있습니다.</td></tr>
 </tbody></table></div>
+<p>직접 HTML 작성과의 비교는 일부만 했습니다. 같은 보고서를 answer-me-with-html로 만들지 않아 출력 토큰과 작성 시간은 미측정입니다. 직접 쓴 HTML 틀에서는 렌더 결함 넷을 고쳤습니다. 리드 점검에서 셋, 독립 검토에서 하나를 찾았습니다. answer-me-with-html이 같은 결함을 막는지는 확인하지 않았습니다.</p>
 <h3>ASD-STE100 규칙의 적용 판단</h3>
 <p>ASD-STE100은 항공 정비 문서를 위해 만든 영어 작성 규격입니다. 2차 자료에 따르면 현재판은 2025년 1월의 Issue 9입니다. 규칙은 9개 절, 53개입니다. 공식 사양 PDF는 이번 조사에서 HTTP 403으로 받지 못했습니다. 그래서 아래 모든 행에 <span class="mark">사양 전문 미대조</span>를 붙였습니다.</p>
-<p>사양은 서면 허가 없이 재생산할 수 없다고 안내되어 있습니다. 그래서 규칙 원문을 옮기지 않고 요지만 적었습니다. 절 번호와 요지는 2차 요약 자료를 따릅니다.</p>
+<p>2차 자료에 따르면 사양은 서면 허가 없이 재생산할 수 없다는 안내가 있습니다. 그래서 규칙 원문을 옮기지 않고 요지만 적었습니다. 절 번호와 요지는 2차 요약 자료를 따릅니다.</p>
 <div class="table-wrap"><table><thead><tr><th>STE 절</th><th>요지</th><th>이 프로젝트 적용</th><th>이유</th><th>검사 방법</th><th>대조 상태</th></tr></thead><tbody>
 <tr><td>1 낱말</td><td>승인 낱말만 쓴다. 한 낱말에 한 뜻을 둔다.</td><td>변형. 영어 승인 사전은 쓰지 않는다. 한 대상에 한 이름만 쓴다.</td><td>정본이 한국어다. 같은 대상의 이름이 바뀌어 전환 문단이 필요했던 일이 있다.</td><td>용어집이 생기면 기계 검사 가능</td><td><span class="mark">사양 전문 미대조</span></td></tr>
 <tr><td>2 명사 묶음</td><td>명사 묶음은 세 낱말 이하로 한다.</td><td>변형 적용. 긴 명사 나열을 풀어 쓴다.</td><td>「정본 PR 독립 문서 실사 계약」 같은 나열이 잦다.</td><td>사람 검토</td><td><span class="mark">사양 전문 미대조</span></td></tr>
 <tr><td>3 동사</td><td>능동을 쓰고 명사 구문 대신 동사를 쓴다.</td><td>변형 적용. 「~함」 종결과 이중 피동을 피한다.</td><td>영어의 시제·-ing 규칙은 한국어에 대응이 없다.</td><td>일부 정규식 검사 가능</td><td><span class="mark">사양 전문 미대조</span></td></tr>
-<tr><td>4 문장</td><td>문장은 짧게, 생각 하나만 담는다. 지시는 명령형으로 쓴다.</td><td>적용</td><td>정본은 이미 한 문장에 사실 하나를 두는 경향이다.</td><td>어절 수 검사</td><td><span class="mark">사양 전문 미대조</span></td></tr>
+<tr><td>4 문장</td><td>문장은 짧게, 생각 하나만 담는다. 지시는 명령형으로 쓴다.</td><td>적용</td><td>정본은 이미 한 문장에 사실 하나를 두는 경향이다. 이 판단은 추론이다.</td><td>어절 수 검사</td><td><span class="mark">사양 전문 미대조</span></td></tr>
 <tr><td>5 절차</td><td>문장은 20낱말 이하, 문장 하나에 지시 하나, 조건을 앞에 둔다.</td><td>적용. 낱말을 어절로 센다.</td><td>어절 20이 영어 20낱말과 같은 부담인지는 근거가 없다.</td><td>어절 수 검사</td><td><span class="mark">사양 전문 미대조</span></td></tr>
 <tr><td>6 설명</td><td>문장은 25낱말 이하, 문단 하나에 주제 하나, 여섯 문장 이하.</td><td>적용. 낱말을 어절로 센다.</td><td>5절과 같은 한계가 있다.</td><td>어절·문장 수 검사</td><td><span class="mark">사양 전문 미대조</span></td></tr>
 <tr><td>7 안전 지시</td><td>경고·주의를 구분하고 따르지 않을 때의 결과를 적는다.</td><td>변형 적용. 금지·차단 문장에 결과를 붙인다.</td><td>결과를 알면 금지를 덜 어긴다고 본다. 이 판단은 추론이다.</td><td>사람 검토</td><td><span class="mark">사양 전문 미대조</span></td></tr>
@@ -336,8 +341,9 @@ ol.proc li,ul li{margin:4px 0}
 </ol>
 <!--ste-skip-->
 <h3>측정 결과</h3>
-<p class="meta">대상은 본문의 문단과 목록 항목입니다. 표·diff·목차와 이 측정 상자는 뺐습니다. 문장은 마침표·물음표 뒤 공백에서 나눴고, 어절은 공백으로 나눴습니다. 절차는 위 번호 목록 항목이고 나머지는 설명입니다. 측정 코드는 근거 폴더의 <code>report/build.mjs</code>이고 원시 값은 같은 폴더의 <code>data.json</code>입니다.</p>
-<div class="table-wrap"><table><thead><tr><th>문장 종류</th><th class="n">문장 수</th><th class="n">상한(어절)</th><th class="n">상한 초과</th><th class="n">중앙값</th><th class="n">최댓값</th></tr></thead><tbody><tr><td>절차</td><td class="n">6</td><td class="n">20</td><td class="n">0</td><td class="n">5</td><td class="n">9</td></tr><tr><td>설명</td><td class="n">145</td><td class="n">25</td><td class="n">0</td><td class="n">7</td><td class="n">18</td></tr></tbody></table></div><p class="meta">여섯 문장을 넘는 문단 0개 · 쌍반점 0개 · 괄호가 두 쌍 이상인 문장 0개.</p>
+<p class="meta">대상은 본문의 p 문단과 li 목록 항목입니다. 제목과 요약 카드처럼 문단이 아닌 요소는 세지 않았습니다. 뺀 구조의 개수는 측정표 아래에 생성 스크립트가 적습니다. 문장은 마침표·물음표 뒤 공백에서 나눴고, 어절은 공백으로 나눴습니다. 절차는 위 번호 목록 항목이고 나머지는 설명입니다. 측정 코드는 근거 폴더의 <code>report/build.mjs</code>이고 원시 값은 같은 폴더의 <code>data.json</code>입니다.</p>
+<div class="table-wrap"><table><thead><tr><th>문장 종류</th><th class="n">문장 수</th><th class="n">상한(어절)</th><th class="n">상한 초과</th><th class="n">중앙값</th><th class="n">최댓값</th></tr></thead><tbody><tr><td>절차</td><td class="n">6</td><td class="n">20</td><td class="n">0</td><td class="n">5</td><td class="n">9</td></tr><tr><td>설명</td><td class="n">172</td><td class="n">25</td><td class="n">0</td><td class="n">7</td><td class="n">18</td></tr></tbody></table></div><p class="meta">여섯 문장을 넘는 문단 0개 · 쌍반점 0개 · 괄호가 두 쌍 이상인 문장 1개.</p><p class="meta">괄호가 두 쌍 이상인 문장: 「(가)와 (나)를 다르게 정하려면 따로 말해 주세요.」</p><p class="meta">측정에서 뺀 것: 표 17개, diff 12개, 그 밖의 코드 블록 0개, 목차 1개, 측정 상자 구간 1개, 측정 제외 표시 문단 0개.</p>
+<p class="meta">괄호가 두 쌍인 문장은 결정 블록의 번호 표지 문장입니다. 메인이 정한 문구라 그대로 두었습니다.</p>
 <p class="meta">이 측정은 길이만 봅니다. 문장에 생각이 하나인지, 같은 대상을 같은 이름으로 불렀는지는 사람 검토가 봅니다.</p>
 <!--/ste-skip-->
 
@@ -356,6 +362,8 @@ ol.proc li,ul li{margin:4px 0}
 <tr><td>구현자 난이도 라우팅</td><td>유지·조정·되돌리기. Astra 구현 표본은 지금 0입니다.</td><td><a href="../../../.agents/skills/dawnholder-goal-loop/references/implementer-routing.md">implementer-routing</a></td></tr>
 <tr><td>검증자 모델 시범</td><td>문서 실사와 코드 검증을 Astra xhigh로 둘지</td><td><a href="../../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지">goal-loop</a></td></tr>
 <tr><td>검증 강도 4주 시범</td><td>강·약 등급 기준을 확정할지</td><td><a href="../../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증-강도-4주-시범">goal-loop</a></td></tr>
+<tr><td>목표 종료 Gardener</td><td>비용·잡음을 보고 지속할지</td><td><a href="../../../00_Document/operations/ORCA.md#goal-gardener">ORCA Gardener</a></td></tr>
+<tr><td>규칙 문서 가지치기</td><td>Gardener 평가 때 가지치기를 할지</td><td><a href="../../../00_Document/conventions/CODE_CONVENTION.md#교정-층과-반복-규칙">CODE_CONVENTION</a></td></tr>
 </tbody></table></div>
 <h3>V1.x 후보</h3>
 <div class="table-wrap"><table><thead><tr><th>후보</th><th>내용</th><th>근거</th></tr></thead><tbody>
@@ -390,7 +398,10 @@ ol.proc li,ul li{margin:4px 0}
 <tr><td>정본 head</td><td><code>36b76d9bc2cfcf949f34ea577ed471835e79cea2</code> · branch <code>docs/ops-v1-canon-20261009</code></td></tr>
 <tr><td>goal</td><td><a href="../../goals/2026-10-09-plan-boundary-and-junction/goal.md">규칙·운영 V1.0 — 후보 도착 검사와 합류점 절차</a></td></tr>
 <tr><td>근거 폴더</td><td><code>.backups/verification/2026-10-09-plan-boundary-and-junction/</code> · Git 제외, 이 PC의 checkout에만 있음</td></tr>
-<tr><td>작성 보고·실사 판정</td><td><code>pr1/report.md</code> · <code>pr1-review/verdict.md</code></td></tr>
+<tr><td>정본 작성 보고</td><td><code>pr1/report.md</code></td></tr>
+<tr><td>정본 문서 실사</td><td>첫 실사 <code>pr1-review/verdict.md</code>(NOT PASS) · 수정 보고 <code>fix1/report.md</code> · 재실사 <code>pr1-rereview/verdict.md</code>(PASS)</td></tr>
+<tr><td>보고서 작성</td><td>Rules 리드, 지정 <code>claude-opus-5-5</code> xhigh, 화면 표시 「Opus 5.5 ⚡xhigh」, backend unknown</td></tr>
+<tr><td>보고서 검토 판정</td><td>이 보고서 뒤의 기록이라 goal 「규칙 점검 보고서」에 둡니다</td></tr>
 <tr><td>라우팅 근거</td><td><code>routing-evidence.md</code></td></tr>
 <tr><td>STE 조사</td><td><code>report-research/ste-sources-1.md</code> · <code>ste-sources-2.md</code> · <code>ste-html-sources-3.md</code></td></tr>
 <tr><td>보고서 생성</td><td><code>report/build.mjs</code> · <code>report/template.html</code> · <code>report/data.json</code></td></tr>
@@ -399,6 +410,7 @@ ol.proc li,ul li{margin:4px 0}
 <ul>
 <li>bytes·줄 수·diff는 두 고정 커밋에서 생성 스크립트가 직접 읽은 값입니다.</li>
 <li>2·4·6·7절 자료는 Claude 내부 읽기 전용 에이전트가 조사했습니다. 리드가 그 일부를 원문과 표본 대조했습니다. 이 조사는 독립 검증이 아닙니다.</li>
+<li>7절 개수는 생성 스크립트가 head에서 센 값입니다. 그 밖의 7절 후보는 조사 결과이며 리드가 일부만 대조했습니다.</li>
 <li>보고서의 내용·근거·표시는 신규 <code>claude-opus-5-5</code> 검토자가 따로 봅니다.</li>
 </ul>
 <h3>확인하지 않은 것</h3>
@@ -407,6 +419,7 @@ ol.proc li,ul li{margin:4px 0}
 <li>어절 기준값이 한국어 문서에 맞는지는 시험하지 않았습니다.</li>
 <li>정본 문장이 실제 행동을 강제하는지는 확인하지 않았습니다. 문서 반영은 기술적 강제의 증거가 아닙니다.</li>
 <li>태그 push를 GitHub ruleset이 막는지는 아직 모릅니다.</li>
+<li>규칙 문서 사이의 상대 링크는 전수 점검하지 않았습니다. 조사 에이전트가 모두 닿는다고 보고했지만 원시 목록은 남지 않았습니다.</li>
 <li>이 PR은 문서만 바꿉니다. 빌드·게임·DB·Unity 실행은 해당이 없습니다.</li>
 </ul>
 </section>

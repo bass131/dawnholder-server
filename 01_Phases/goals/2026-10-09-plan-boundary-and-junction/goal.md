@@ -8,8 +8,8 @@ Rules의 목표이며 운영 셋업 3단계 「계획 경계」와 사용자 지
 - branch: 정본 PR은 `docs/ops-v1-canon-20261009`(base main `89a2c022`)다.
 - 근거 폴더 E: `.backups/verification/2026-10-09-plan-boundary-and-junction/`(Git 제외). 리드 맥락 메모는 [lead-context.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/lead-context.md), 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-draft-v1.md)(SHA256 `22cdc5b6…`)와 [scope-revision-v2.md](../../../.backups/verification/2026-10-09-plan-boundary-and-junction/scope-revision-v2.md)(SHA256 `23619ccf…`)다. 받은 메시지 원시는 E/session/에 있다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_5f6a014b-4ec5-45f9-9103-b84cc11c18d2`, Run `run_ee8c71e0897d`. 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**(2026-10-09T12:15Z): 정본 PR 문서는 재실사 PASS다(「정본 PR 재실사」). 규칙 점검 보고서는 독립 검토 NOT PASS(차단 7)다(「규칙 점검 보고서」).
-- **다음 할 일**: 리드의 보고서 수정 → 새 `claude-opus-5-5` 재검토 → 정본 PR 생성과 승인 묶음.
+- **현재 위치**(2026-10-09T12:24:24Z): 정본 PR 문서는 재실사 PASS다(「정본 PR 재실사」). 규칙 점검 보고서는 독립 검토 NOT PASS(차단 7) 뒤 리드가 1회차 수정을 마쳤다(「규칙 점검 보고서」).
+- **다음 할 일**: 새 `claude-opus-5-5` 보고서 재검토 → 정본 PR 생성과 승인 묶음.
 - 이 goal의 마지막 PR(종료 기록 PR) 병합 커밋이 합류점 J다.
 
 ## 진척 단계
@@ -221,6 +221,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 R-2(E/lead-check/report-review-r2.md): #1 diff 표식, #2 수치 원천, #7 기본 인쇄 PDF를 직접 봤고 판정과 같다.
 - 관찰(리드 계약 귀속, 첫 관찰): 검토자가 자기 감사에서 읽기 금지 위반 1건을 보고했다. Claude Code 하네스가 큰 출력을 `~/.claude` 아래 tool-results 파일로 자동 저장했고 검토자가 그 파일을 읽었다. 계약의 「`~/.claude` 아래 세션 기록 읽기 금지」가 하네스 동작과 겹쳤다. 다른 세션 기록은 열지 않았다. 다음 Claude 계약에는 자기 tool-results 파일 읽기를 허용 범위로 적는다.
 - 같은 산출물 수정 횟수: 보고서 1회차(리드 수정).
+- 메인 판단 `msg_9123cdb49c02`(12:14:45Z): O1은 「STE A/B」 한 질문을 유지하고 질문 아래에 「(가)와 (나)를 다르게 정하려면 따로 말해 달라」 한 줄을 더한다. 차단 7은 리드 수정 → 새 Opus 재검토로 한다. #2 수치는 재현할 원시와 기준 commit이 없으면 지운다. 재검토 계약은 자기 세션의 하네스 자동 저장 출력 읽기를 허용한다.
+- 리드 수정 1회차(E/report/preview/fix1/render-check-fix1.md):
+  - #1 카드 3은 사용자 차례 칸 hunk를 보이고, 구현자 배정 근거 hunk는 카드 5로 옮겼다. diff는 12개다.
+  - #2 7절 개수는 생성 스크립트가 head에서 `git grep -F`로 세고 원시를 data.json `greps`에 남긴다. 「7개 파일 12곳」은 재측정 값으로 바꿨다. 「상대 링크 475개」는 지우고 「확인하지 않은 것」에 전수 점검 미실행을 적었다.
+  - #3 측정 제외 표시를 모두 없앴다. 뺀 구조의 개수는 생성 스크립트가 측정표 아래에 적는다.
+  - #4·#5 근거 표에 재실사 판정·수정 보고·보고서 작성 모델을 더했다. #6 README 확인 날짜와 commit 미기록, 직접 HTML 작성과의 비교(토큰·시간 미측정)를 적었다. #7 diff에 왼쪽 테두리를 주고 인쇄 색 유지를 지정했다. 기본 인쇄 PDF로 확인했다.
+  - #8과 관찰 O2~O4도 고쳤다. O1은 메인 판단대로 한 줄을 더했다. O5는 보고서 템플릿 후속 후보로 둔다.
 
 ## 정본에서 옮긴 적용 기록
 
