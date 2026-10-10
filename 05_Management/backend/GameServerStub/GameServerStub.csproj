@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Test-only stand-in for 02_Server/GameServer, launched the same way: dotnet GameServerStub.dll. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <UseAppHost>false</UseAppHost>
+    <RootNamespace>Dawnholder.Management.GameServerStub</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Release tests commit a marker per release so the collected log shows which build is running. -->
+  <ItemGroup>
+    <None Include="release-marker.txt" CopyToOutputDirectory="PreserveNewest" Condition="Exists('release-marker.txt')" />
+  </ItemGroup>
+
+</Project>

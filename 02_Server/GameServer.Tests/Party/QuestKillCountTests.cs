@@ -17,7 +17,7 @@ namespace Dawnholder.Server.GameServer.Tests.Party;
 // 검증 범위:
 //   1. 파티원이 킬 → Quest 소유 party progress 누적 + 멤버 전원에게 S_QuestUpdate 송신
 //   2. 솔로 킬 → GetSoloProgress 증가 + 본인에게 S_QuestUpdate 송신
-//   3. ResetAllQuestProgress → 파티 KillCount 0 + 솔로 progress 0
+//   3. 복사본 열쇠별 초기화 → 해당 진행만 0 (인스턴스 맵 goal 만들 것 7)
 //   4. targetCount = QuestConstants.BossUnlockKillCount(20) SSOT 검증
 //   5. (통합) GameMap.HandleEnemyDeath → OnEnemyKilled → Quest.EnqueueJob 드레인 → OnKill 적립
 //
@@ -31,7 +31,7 @@ public class QuestKillCountTests : IDisposable
     public QuestKillCountTests()
     {
         _world = new GameWorld(new Dictionary<MapId, (MapTerrain?, MapContent?)>());
-        _huntingGround = _world.GetMap(MapId.HuntingGround)!;
+        _huntingGround = _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(7));
     }
 
     public void Dispose() => _world.Stop();
@@ -135,10 +135,10 @@ public class QuestKillCountTests : IDisposable
         Assert.Equal(3, _world.Quest.GetSoloProgress(entityId));
     }
 
-    // ── 3. ResetAllQuestProgress → 공유·솔로 둘 다 0 ─────────────────────────
+    // ── 3. 파티 열쇠 초기화 → 그 파티만 0, 솔로 진행 보존 ───────────────────
 
     [Fact]
-    public void ResetAllQuestProgress_ClearsPartyKillCount_And_SoloProgress()
+    public void PartyKeyReset_ClearsPartyKillCount_And_PreservesSoloProgress()
     {
         int entityA = _world.NextEntityId();
         int entityB = _world.NextEntityId();
@@ -156,10 +156,10 @@ public class QuestKillCountTests : IDisposable
         Assert.Equal(2, _world.Quest.GetPartyProgress(_world.Party.GetPartyByEntity(entityA)!.PartyId));
         Assert.Equal(1, _world.Quest.GetSoloProgress(solo));
 
-        _world.Quest.ResetAllQuestProgress();
+        _world.Quest.ResetProgressFor(InstanceKey.ForParty(_world.Party.GetPartyByEntity(entityA)!.PartyId));
 
         Assert.Equal(0, _world.Quest.GetPartyProgress(_world.Party.GetPartyByEntity(entityA)!.PartyId));
-        Assert.Equal(0, _world.Quest.GetSoloProgress(solo));
+        Assert.Equal(1, _world.Quest.GetSoloProgress(solo));
     }
 
     // ── 3b. 영구 해금: 임계 달성 후 리셋(보스 킬)에도 게이트 통과 유지(재그라인드 X) ──────
@@ -176,8 +176,8 @@ public class QuestKillCountTests : IDisposable
         Assert.True(_world.Quest.IsBossUnlocked(solo));
         Assert.Equal(QuestConstants.BossUnlockKillCount, _world.Quest.GetKillCount(solo));
 
-        // 보스 킬 = ResetAllQuestProgress → raw progress는 0이 되지만 해금 latch는 유지.
-        _world.Quest.ResetAllQuestProgress();
+        // 혼자 열쇠의 보스 처치는 그 사람의 raw progress만 지우고 해금 latch를 유지한다.
+        _world.Quest.ResetProgressFor(InstanceKey.ForSolo(solo));
 
         Assert.Equal(0, _world.Quest.GetSoloProgress(solo));                                // raw 카운트 리셋
         Assert.True(_world.Quest.IsBossUnlocked(solo));                                     // 해금 유지

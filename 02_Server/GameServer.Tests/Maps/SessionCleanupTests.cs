@@ -40,7 +40,7 @@ public sealed class SessionCleanupTests : IDisposable
 
     static PacketID Id(byte[] bytes) => (PacketID)BitConverter.ToUInt16(bytes, 2);
     void Tick(long tick) => LifecycleTestWorld.Tick(_world, tick);
-    IEnumerable<PlayerEntity> Players => Enum.GetValues<MapId>().SelectMany(id => _world.GetMap(id)!.Players);
+    IEnumerable<PlayerEntity> Players => _world.AllLiveMaps.SelectMany(map => map.Players);
     CapturedSession Join()
     {
         CapturedSession session = new(_world);
@@ -85,7 +85,11 @@ public sealed class SessionCleanupTests : IDisposable
             session.OnPacket = id => { if (id == PacketID.S_MapTransition) session.OnDisconnected(Endpoint); };
         if (boundary >= 1) _world.Map.Tick(2);
         Assert.InRange(Players.Count(p => ReferenceEquals(p.Owner, session)), 0, 1);
-        if (boundary >= 2) _world.GetMap(MapId.HuntingGround)!.Tick(2);
+        if (boundary >= 2)
+        {
+            Assert.True(_world.TryGetInstance(MapId.HuntingGround, InstanceKey.ForSolo(entityId), out GameMap? hunting));
+            hunting!.Tick(2);
+        }
         if (boundary != 2) session.OnDisconnected(Endpoint);
         Task barrier = _world.FlushSessionClosuresAsync();
         Tick(3);
@@ -105,12 +109,14 @@ public sealed class SessionCleanupTests : IDisposable
         player.Position = new Vector2(20, 0);
         session.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
         Tick(2);
-        Assert.Same(session, Assert.Single(_world.GetMap(MapId.HuntingGround)!.Players).Owner);
+        Tick(3);
+        Assert.True(_world.TryGetInstance(MapId.HuntingGround, InstanceKey.ForSolo(session.EntityId), out GameMap? hunting));
+        Assert.Same(session, Assert.Single(hunting!.Players).Owner);
         // Contract probe: a lagging routing hint must never select the cleanup owner.
         // This is a controlled state fixture, not a claim to reproduce a thread interleaving.
         session.SetMigrating(1);
         session.OnDisconnected(Endpoint);
-        Tick(3);
+        Tick(4);
         Assert.Empty(Players);
         Assert.Equal(-1, session.EntityId);
     }
@@ -247,15 +253,19 @@ public sealed class SessionCleanupTests : IDisposable
         int originalId = original.EntityId;
         original.Hp = 37;
         // Populate the destination too, so transition order cannot pass with an empty roster.
+        // Solo players now enter different instances; party membership preserves this roster fixture.
+        var party = _world.Party.CreateParty(observer.EntityId, session.EntityId)!;
         PlayerEntity other = Assert.Single(Players, p => ReferenceEquals(p.Owner, observer));
         other.Position = new Vector2(20, 0);
         observer.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
         Tick(3);
-        Assert.Same(observer, Assert.Single(_world.GetMap(MapId.HuntingGround)!.Players).Owner);
+        Tick(4);
+        Assert.True(_world.TryGetInstance(MapId.HuntingGround, InstanceKey.ForParty(party.PartyId), out GameMap? hunting));
+        Assert.Same(observer, Assert.Single(hunting!.Players).Owner);
         original.Position = new Vector2(20, 0);
         session.Packets.Clear();
         session.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
-        Tick(4);
+        Tick(5);
         Assert.Equal(2, Players.Count());
         PlayerEntity moved = Assert.Single(Players, p => ReferenceEquals(p.Owner, session));
         Assert.Equal(originalId, moved.EntityId);

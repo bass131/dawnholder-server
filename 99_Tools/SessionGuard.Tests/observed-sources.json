@@ -1,0 +1,157 @@
+{
+  "purpose": "Real session write incidents and allowed shapes for the independent session guard regressions, with their provenance.",
+  "copiedBy": "[Rules 검증자] task_41e39f212554 / ctx_ffacc0131e85",
+  "expectations": "Expected decisions are stated in observed-incidents.test.mjs with their rule source (goal 「설계 / 세션 쓰기 가드」 at 852f88ca).",
+  "kinds": {
+    "original": "the command text is copied verbatim from the source; only the substitutions listed on the entry are applied",
+    "reconstruction": "the source keeps the destination or a description but not the command; the command is rewritten in the described shape and the rewritten parts are named in note"
+  },
+  "placeholders": {
+    "{TEMP}": "the test's TEMP folder of the hook process (outside the throwaway project), with `/` separators",
+    "{EVIDENCE}": "the evidence folder inside the throwaway project, `.backups/verification/2026-10-10-operating-tool-guards`"
+  },
+  "incidents": {
+    "leadScratchpadPeek": {
+      "kind": "original",
+      "tool": "Bash",
+      "command": "SP=\"{TEMP}/claude/C--Users-bass1-orca-workspaces-DawnHolder-Project-rules-active/84c77e5a-5474-4327-9877-e9b1130b6184/scratchpad\"; orca orchestration check --terminal \"$ORCA_TERMINAL_HANDLE\" --peek --json > \"$SP/inbox-peek.json\" 2>&1; wc -c \"$SP/inbox-peek.json\"; cat \"$SP/inbox-peek.json\"",
+      "originalText": "SP=\"C:/Users/bass1/AppData/Local/Temp/claude/C--Users-bass1-orca-workspaces-DawnHolder-Project-rules-active/84c77e5a-5474-4327-9877-e9b1130b6184/scratchpad\"; orca orchestration check --terminal \"$ORCA_TERMINAL_HANDLE\" --peek --json > \"$SP/inbox-peek.json\" 2>&1; wc -c \"$SP/inbox-peek.json\"; cat \"$SP/inbox-peek.json\"",
+      "substitutions": ["C:/Users/bass1/AppData/Local/Temp -> {TEMP}: the Windows TEMP of the lead session is replaced by the hook TEMP of the test, so the destination stays under TEMP and outside the project on every platform"],
+      "source": {
+        "path": ".backups/verification/2026-10-10-operating-tool-guards/tdd-contract.md",
+        "line": 43,
+        "sha256": "d335b0c597a30ef6c374f893c6e6c763fc3bb572d6a2caaf9504727bdccf7638",
+        "note": "the lead's contract v1 quotes the command of this goal's entry (2026-10-10T07:29Z); the same write is counted in E/lead-context.md 「정정」 line 59 (sha256 de1cd880c1f4b32bb002c02245f545ab2552931db1ecf422fbf1fd9083fa781d) and goal line 128"
+      }
+    },
+    "pr217FilesTmp": {
+      "kind": "reconstruction",
+      "tool": "Bash",
+      "command": "git diff --name-only origin/main...HEAD > /tmp/pr217files.txt",
+      "source": {
+        "path": ".backups/verification/2026-10-09-plan-boundary-and-junction/lead-check/tmp-write-deviation-closeout.txt",
+        "lines": "2-4",
+        "sha256": "0231e2849dda852aa77a7e4242a6b44e02758c07d1c307d3816b37513c590a05",
+        "note": "the record keeps the file /tmp/pr217files.txt (956 bytes, a list of 20 changed paths) and not the command; `git diff --name-only origin/main...HEAD` is the rewritten part. BACKLOG shell-write-destination-guard (line 229 at 852f88ca) names the same file"
+      }
+    },
+    "parentFolderTerminalRead": {
+      "kind": "original",
+      "tool": "Bash",
+      "command": "orca terminal read --terminal term_64579798-… --json > ../.backups-tmp-ignore 2>/dev/null; rm -f ../.backups-tmp-ignore",
+      "substitutions": [],
+      "source": {
+        "path": ".backups/verification/2026-10-09-plan-boundary-and-junction/lead-check/outside-write-deviation-closeout-2.txt",
+        "line": 2,
+        "sha256": "552cc859932ed5585427372723ecbb7d8004725d73e2b01b5f1b7613407d6a56",
+        "note": "the record quotes the part appended to the end of a wait-output command; the handle was already truncated with … in the record and is kept as is. cwd was the checkout root, played by the throwaway project"
+      }
+    },
+    "reentryTempReceipt": {
+      "kind": "reconstruction",
+      "tool": "Bash",
+      "command": "orca orchestration run-current --json > \"$TEMP/run-current-before.json\"",
+      "source": {
+        "path": ".backups/verification/2026-10-09-plan-boundary-and-junction/session/reentry-1010/temp-write-deviation.txt",
+        "lines": "1-3",
+        "sha256": "ed3c4ab0ee0941f1d84b16aa5238b66ab3f8d72e66d9a31fdae5a60bf6b8e906",
+        "note": "the record keeps two receipts first written to Windows TEMP and moved (run-current-before.json, entry-check.json) without the commands; the run-current redirect into $TEMP is the rewritten shape named by the contract"
+      }
+    },
+    "waitBackgroundDevNull": {
+      "kind": "reconstruction",
+      "tool": "Bash",
+      "command": "orca orchestration check --wait --types \"worker_done,escalation\" --timeout-ms 900000 --json > /dev/null 2>&1 &",
+      "source": {
+        "path": "00_Document/operations/BACKLOG.md",
+        "line": 152,
+        "commit": "852f88ca7bcb7124cc59a305e9c9f8b98c00f531",
+        "note": "mailbox-output-loss-hook: Management lead msg_9f655bb20a2c ran `check --wait` with `&` and `> /dev/null 2>&1`; the option values are rewritten"
+      }
+    },
+    "ackDevNull": {
+      "kind": "reconstruction",
+      "tool": "Bash",
+      "command": "orca orchestration check --ack delivery_000000000001 --json > /dev/null",
+      "source": {
+        "path": "00_Document/operations/BACKLOG.md",
+        "line": 152,
+        "commit": "852f88ca7bcb7124cc59a305e9c9f8b98c00f531",
+        "note": "same row: Rules lead 2026-10-07T06:57Z threw away the output of `check --ack` without `--wait`; the delivery id is synthetic"
+      }
+    },
+    "sendTeeHead": {
+      "kind": "reconstruction",
+      "tool": "Bash",
+      "command": "orca orchestration send --to run:run_000000000001 --subject \"[Management 리드 Opus] 보고\" --body \"본문\" --json | tee {EVIDENCE}/session/send-receipt.json | head -c 1024",
+      "source": {
+        "path": "00_Document/operations/BACKLOG.md",
+        "line": 152,
+        "commit": "852f88ca7bcb7124cc59a305e9c9f8b98c00f531",
+        "note": "same row: Management msg_f0bc3d74e103, send results cut at 1024-byte multiples by `tee <file>` followed by `head -c`; recipient, subject, body and file are synthetic"
+      }
+    },
+    "sendTeeGrep": {
+      "kind": "reconstruction",
+      "tool": "Bash",
+      "command": "orca orchestration send --to run:run_000000000001 --subject \"[Management 리드 Opus] 보고\" --body \"본문\" --json | tee {EVIDENCE}/session/send-receipt.json | grep -m1 '\"id\"'",
+      "source": {
+        "path": "00_Document/operations/BACKLOG.md",
+        "line": 152,
+        "commit": "852f88ca7bcb7124cc59a305e9c9f8b98c00f531",
+        "note": "same row, the `grep -m` variant; recipient, subject, body and file are synthetic"
+      }
+    },
+    "codemapScratchpadReceipt": {
+      "kind": "reconstruction",
+      "tool": "Bash",
+      "command": "orca orchestration run-create --objective \"CodeMap CURRENT 정리\" --json > \"{TEMP}/claude/C--Users-bass1-orca-workspaces-DawnHolder-Project-architecture-active/5e551011-0000-4000-8000-0000000000c8/scratchpad/run-create.json\"",
+      "source": {
+        "path": "C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active/.backups/verification/2026-10-10-codemap-current-cleanup/review/verdict.md",
+        "line": 83,
+        "sha256": "b035042137748411cc942c213bb26da2f5db609549a92318a618df6039e69e64",
+        "note": "결함 #1: the CodeMap lead wrote ten entry files (run-create.json among them) into the scratchpad before the memo; the command, the objective and the scratchpad session id are rewritten, and the scratchpad sits under {TEMP} as the real one sat under Windows TEMP"
+      }
+    },
+    "codemapScratchpadWrite": {
+      "kind": "reconstruction",
+      "tool": "Write",
+      "filePath": "{TEMP}/claude/C--Users-bass1-orca-workspaces-DawnHolder-Project-architecture-active/5e551011-0000-4000-8000-0000000000c8/scratchpad/ready-body.md",
+      "source": {
+        "path": "C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active/.backups/verification/2026-10-10-codemap-current-cleanup/review/verdict.md",
+        "line": 83,
+        "sha256": "b035042137748411cc942c213bb26da2f5db609549a92318a618df6039e69e64",
+        "note": "the same ten files include ready-body.md; the verdict does not say which tool wrote it, so this entry rewrites it as a Write tool call (goal 「설계」 규칙 2 쓰기 도구)"
+      }
+    },
+    "receiptBeforeMemo": {
+      "kind": "reconstruction",
+      "tool": "Bash",
+      "command": "orca orchestration run-create --objective \"세션 쓰기 가드와 생존 신호 간격 도구\" --json > {EVIDENCE}/session/run-create-receipt.json",
+      "source": {
+        "path": ".backups/verification/2026-10-10-operating-tool-guards/lead-context.md",
+        "line": 59,
+        "sha256": "de1cd880c1f4b32bb002c02245f545ab2552931db1ecf422fbf1fd9083fa781d",
+        "note": "「정정」: the lead wrote E/session/run-create-receipt.json (sha256 c915f6a418e34a4c6f60a1b2e62f71e66f6b8a1dcdb1549f4a80bfc04c1f04af) among 15 evidence files before the memo of 07:37:04Z; the objective text is rewritten"
+      }
+    }
+  },
+  "allowedShapes": {
+    "source": {
+      "path": "01_Phases/goals/2026-10-10-operating-tool-guards/goal.md",
+      "line": 132,
+      "commit": "852f88ca7bcb7124cc59a305e9c9f8b98c00f531",
+      "note": "「허용 모양」 and the contract's allowed list; every command below is a reconstruction in that shape"
+    },
+    "receiptAfterMemo": "orca orchestration run-create --objective \"세션 쓰기 가드와 생존 신호 간격 도구\" --json > {EVIDENCE}/session/run-create-receipt.json",
+    "backgroundWait": "orca orchestration check --wait --types \"worker_done,escalation\" --timeout-ms 900000 --json",
+    "peekToEvidence": "orca orchestration check --terminal \"$ORCA_TERMINAL_HANDLE\" --peek --json > {EVIDENCE}/session/inbox-peek-entry.json",
+    "readOnlyPipe": "orca orchestration inbox --json | node -e \"let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.parse(s).result.count))\"",
+    "stderrOnlyWait": "orca orchestration check --wait --types \"worker_done,escalation\" --timeout-ms 900000 --json 2>/dev/null",
+    "stderrOnlyGit": "git show origin/main:AGENTS.md 2>/dev/null | head -5",
+    "lastTee": "orca orchestration send --to run:run_000000000001 --subject \"[Rules 리드 Opus] 보고\" --body \"본문\" --json | tee {EVIDENCE}/session/send-receipt.json",
+    "gitCommands": ["git status --short", "git log --oneline -5", "git diff --stat origin/main", "git rev-parse HEAD"],
+    "mainCheckoutTempRedirect": "orca orchestration run-current --json > \"$TEMP/run-current.json\"",
+    "mainCheckoutWaitLoss": "orca orchestration check --wait --types \"worker_done,escalation\" --timeout-ms 900000 --json > /dev/null 2>&1 &"
+  }
+}

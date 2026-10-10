@@ -46,7 +46,7 @@ public class BossPortalGateTests : IDisposable
     // ── 테스트 세션 헬퍼 ─────────────────────────────────────────────────────
 
     // 킬카운트 stub 주입 가능한 migration 전용 세션.
-    // GetMap(현재 맵) + GetDestMap(목적지 맵) + GetKillCount(stub) override.
+    // GetMap(현재 맵) + ResolveDestination(목적지 맵) + GetKillCount(stub) override.
     class GateTestSession : GameSession
     {
         GameMap _currentMap;
@@ -63,7 +63,7 @@ public class BossPortalGateTests : IDisposable
         }
 
         protected override GameMap? GetMap() => _currentMap;
-        protected override GameMap? GetDestMap(MapId destMapId) => _destMap;
+        protected override GameMap? ResolveDestination(GameMap current, int entityId, MapId destMapId) => _destMap;
         // trust-boundary 불변식 #2: killCount는 서버 권위. stub이 PartyRegistry 역할 대행.
         protected override int GetKillCount(int entityId) => _stubKillCount;
 

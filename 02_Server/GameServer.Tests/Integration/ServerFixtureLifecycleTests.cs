@@ -82,7 +82,7 @@ public sealed class ServerFixtureLifecycleTests
             await Task.Run(fixture.Dispose).WaitAsync(TimeSpan.FromSeconds(15));
             await AssertClosed(client.GetStream());
             Assert.Null(GameWorld.Instance);
-            Assert.All(Enum.GetValues<MapId>(), id => Assert.Empty(fixture.World.GetMap(id)!.Players));
+            Assert.All(fixture.World.AllLiveMaps, map => Assert.Empty(map.Players));
             long stoppedTick = fixture.World.CurrentTick;
             await Task.Delay(100);
             Assert.Equal(stoppedTick, fixture.World.CurrentTick);

@@ -61,8 +61,7 @@ public class GameSession : PacketSession
     //   읽기 = socket thread (GetMap() → SubmitMoveIntent/SubmitAttack/SubmitEnterPortal/OnDisconnected 경로).
     //   쓰기 = tick thread (migration 람다, EnqueueJob 안).
     //   단일 writer + 단순 대입(RMW 아님) → Volatile로 가시성만 보장하면 충분. Interlocked/lock 불필요.
-    //   MapId는 int 기반 enum이라 Volatile.Read/Write 직접 불가 → int 백킹 필드(_currentMapIdValue) 패턴.
-    int _currentMapIdValue = (int)MapId.Town; // Volatile.Read/Write용 int 백킹 필드
+    GameMap? _currentMap;
 
     // Migration 중간 상태 플래그. 0=정상, 1=이동중(어느 맵에도 없는 순간).
     // 이 사이 도착하는 게임플레이 패킷(attack/move)은 GetMap()이 null 반환 → 핸들러 안전 no-op.
@@ -85,12 +84,6 @@ public class GameSession : PacketSession
 
     // protected internal: 같은 어셈블리(CharacterSelectHandler) + 서브클래스(테스트 TestGameSession) 양쪽 접근.
     protected internal bool HasSelectedClass => _stats != null;
-
-    MapId CurrentMapId
-    {
-        get => (MapId)Volatile.Read(ref _currentMapIdValue);
-        set => Volatile.Write(ref _currentMapIdValue, (int)value);
-    }
 
     public override void Disconnect()
     {
@@ -203,7 +196,19 @@ public class GameSession : PacketSession
     // ref 접근할 수 없으므로 래퍼 메서드로 캡슐화.
     internal void SetMigrating(int value) => Volatile.Write(ref _migrating, value);
     internal int ReadClosing() => Volatile.Read(ref _closing);
-    internal void SetCurrentMapId(MapId mapId) => CurrentMapId = mapId;
+    internal int ReadMigrating() => Volatile.Read(ref _migrating);
+    internal void SetCurrentMap(GameMap map) => Volatile.Write(ref _currentMap, map);
+
+    internal GameMap? ResolveMapDestination(GameMap current, int entityId, MapId destination)
+        => ResolveDestination(current, entityId, destination);
+
+    internal void EnqueueMapArrival(GameMap destination, Action arrival)
+    {
+        if (_world == null)
+            destination.EnqueueJob(arrival);
+        else
+            _world.EnqueueMapArrival(destination, arrival);
+    }
 
     // handshake version mismatch 거절: S_HandshakeResult(ok=false) Send + Disconnect.
     // 헌법 #3 정합 — timeout 안 기다리고 즉시 Disconnect (rate-limit 무효화 차단).
@@ -382,7 +387,6 @@ public class GameSession : PacketSession
                 entityId: eid,
                 currentMap: currentMap,
                 portalId: portalId,
-                getDestMap: self.GetDestMap,
                 getKillCount: self.GetKillCount));
     }
 
@@ -492,10 +496,10 @@ public class GameSession : PacketSession
 
     // handshake 통과 시 게임 월드 진입.
     // protected — TestGameSession이 handshake 우회(mock) 시 직접 호출 가능 (lifecycle 테스트 호환).
-    // 최초 진입 맵은 Town으로 명시 고정 (CurrentMapId Town 초기값과 정합).
+    // 최초 진입 맵은 Town으로 명시 고정. 테스트는 GetMap으로 입장 맵을 주입한다.
     protected void EnterGameWorld()
     {
-        GameMap? map = GetMap();
+        GameMap? map = GetMap() ?? _world?.Map;
         if (map == null)
         {
             // silent no-op은 shutdown race에는 맞지만 startup/config 버그(GameWorld 초기화 누락)를
@@ -525,6 +529,7 @@ public class GameSession : PacketSession
             // _stats는 EnterGameWorldIfReady 가드로 non-null 보장 (HasSelectedClass=true 충족 후에만 진입).
             PlayerEntity entity = map.AddPlayer(self, spawnPos, self._stats);
             self._entityId = entity.EntityId;
+            self.SetCurrentMap(map);
 
             // Economy admission follows the actual player owner, before sends can fail/close.
             // World close cleanup ends this registration; portal moves keep the same lifetime.
@@ -557,12 +562,22 @@ public class GameSession : PacketSession
     protected virtual GameMap? GetMap()
     {
         if (Volatile.Read(ref _migrating) == 1) return null;
-        return _world?.GetMap(CurrentMapId);
+        return Volatile.Read(ref _currentMap);
     }
 
     // 목적지 맵 조회 hook. 테스트가 다중 맵 주입 시 override.
-    protected virtual GameMap? GetDestMap(MapId destMapId)
-        => _world?.GetMap(destMapId);
+    protected virtual GameMap? ResolveDestination(GameMap current, int entityId, MapId destination)
+    {
+        if (_world == null) return null;
+        if (!MapKindTable.IsInstanced(destination)) return _world.GetMap(destination);
+
+        // 공용 맵에서 들어갈 때의 파티를 열쇠로 고정하고, 복사본 사이에서는 출발 열쇠를 승계한다.
+        InstanceKey key = current.InstanceKey ??
+            (_world.Party.GetPartyByEntity(entityId) is { } party
+                ? InstanceKey.ForParty(party.PartyId)
+                : InstanceKey.ForSolo(entityId));
+        return _world.GetOrCreateInstance(destination, key);
+    }
 
     // 보스 포탈 잠금 게이트용 killCount 조회 hook. 테스트가 stub 주입 시 override.
     // 서버 권위: QuestRegistry에서 읽음 — 클라 주장 X (헌법 #3 정합).
