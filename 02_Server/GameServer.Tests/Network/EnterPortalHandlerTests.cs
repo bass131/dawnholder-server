@@ -18,7 +18,7 @@ namespace GameServer.Tests.Network;
 ///   5. class_not_selected — handshake 완료지만 캐릭터 선택 전 → silent drop
 ///
 /// **테스트 전략**:
-///   - TestGameSession이 GetMap(currentMap) + GetDestMap(destMap) 양쪽 override
+///   - TestGameSession이 GetMap(currentMap) + ResolveDestination(destMap) 양쪽 override
 ///     → GameWorld singleton 없이 두 맵 주입 가능 (격리 보장)
 ///   - portal 근접 검증 = tick thread 안에서 실행 → map.Tick() 1회로 처리
 ///   - 헌법 #3 (Trust Boundary): 근접 실패 / invalid portalId = silent drop (disconnect X)
@@ -48,7 +48,7 @@ public class EnterPortalHandlerTests : IDisposable
     // portal (20, 0)에서 10 unit: (10, 0) → 실패 (dist²=100 > 4)
     static readonly Vector2 FarFromPortalPos = new Vector2(10f, 0f);
 
-    // TestGameSession: 두 맵 모두 주입 (GetMap=currentMap, GetDestMap=destMap)
+    // TestGameSession: 두 맵 모두 주입 (GetMap=currentMap, ResolveDestination=destMap)
     class TestGameSession : GameSession
     {
         readonly GameMap _currentMap;
@@ -69,7 +69,7 @@ public class EnterPortalHandlerTests : IDisposable
             return _currentMap;
         }
 
-        protected override GameMap? GetDestMap(MapId destMapId) => _destMap;
+        protected override GameMap? ResolveDestination(GameMap current, int entityId, MapId destMapId) => _destMap;
         // Town→HuntingGround 이동 — 게이트 미적용(BossRoom 아님). 단일 스레드 테스트 격리.
         protected override int GetKillCount(int entityId) => 0;
 

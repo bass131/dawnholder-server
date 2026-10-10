@@ -13,9 +13,9 @@
 | 스킬·행동 가능 조건 | `Handlers/Skill/SkillUseHandler.cs` → `Maps/Systems/ActionGate.cs`, `SkillSystem.cs`; `Maps/States/Actions/` | `Network/Handlers/Skill/`, `Prediction/PlayerAbilityTimers.cs` |
 | 적·보스 | `Maps/Systems/EnemyAISystem.cs`, `BossBehaviorSystem.cs`; `Entities/EnemyEntity.cs`, `Maps/States/EnemyStates.cs` | `Network/Handlers/Sync/EntityStateHandler.cs`, `Combat/Enemies/` |
 | 피격·사망·리스폰 | `Maps/Systems/CombatSystem.cs`, `RespawnSystem.cs`; 엔티티 HP·상태 | `Network/Handlers/Combat/`, `UI/` |
-| 포탈·맵 이동 | `Handlers/Zone/EnterPortalHandler.cs` → `GameSession.SubmitEnterPortal` → `Maps/Transitions/MapMigration.cs`; `Maps/PortalTable.cs` | `Network/Handlers/Zone/MapTransitionHandler.cs`, `Network/SceneRouter.cs` |
+| 포탈·맵 이동 | `Handlers/Zone/EnterPortalHandler.cs` → `GameSession.SubmitEnterPortal` → `Maps/Transitions/MapMigration.cs`(포탈·서버 공용 맵 복귀); `Maps/PortalTable.cs`, `MapKindTable.cs`, `InstanceKey.cs`, `InstanceMapRegistry.cs`(열쇠별 생성·입장 대기·틱 끝 정리); `GameSession`의 현재 맵 참조 | `Network/Handlers/Zone/MapTransitionHandler.cs`, `Network/SceneRouter.cs` |
 | 파티 | `Handlers/Party/` → `Party/PartyFlow.cs`; `PartyRegistry.cs`, `PartyState.cs`, `PartyNotifier.cs` | `Network/Handlers/Party/`, `State/PartyState.cs`, `UI/PartyInvitePopup.cs` → `PartyInviteResponseCommand.cs`, `PartyMemberHud.cs` |
-| 처치 진행·보스 해금 | `Loop/GameWorld.cs`의 처치 콜백 → `Quest/QuestRegistry.cs`의 solo/party 진행·해금; `QuestConstants.cs` | `Network/Handlers/Quest/`, `State/QuestState.cs`, `UI/QuestProgressHud.cs` |
+| 처치 진행·보스 해금 | `Loop/GameWorld.cs`의 처치 콜백 → `Quest/QuestRegistry.cs`의 solo/party 진행·해금, 보스 처치는 복사본 열쇠의 진행만 초기화; `QuestConstants.cs` | `Network/Handlers/Quest/`, `State/QuestState.cs`, `UI/QuestProgressHud.cs` |
 | 아이템·인벤토리·재화 | `Handlers/Inventory/` → `GameSession.SubmitInventoryRequest/SubmitItemUse` → `Items/InventoryRegistry.cs`의 연결 등록·상태 → `InventoryTransitions.cs`; 처치 입력은 `GameWorld.MakeMap` → `InventoryRegistry.EnqueueKill/ApplyKill` → `KillRewardPolicy.cs` | `Network/Handlers/Inventory/` → `State/InventoryState.cs`·`InventorySnapshotState.cs`; `MapEntryCoordinator.Ready` → `Network/InventoryRequestController.cs`의 재조회·사용/결과 → `UI/InventoryPanel.cs`·`InventoryPanelView.cs` |
 
 ## 공통 계약

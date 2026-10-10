@@ -74,16 +74,17 @@ public class GameMap
 
     public GameMap(MapId mapId = MapId.HuntingGround, Func<int>? idAllocator = null,
                    MapTerrain? terrain = null, MapContent? content = null,
-                   Action<int, EnemyEntity>? onEnemyKilled = null)
-        : this(EnemyRespawnPlacement.Default, mapId, idAllocator, terrain, content, onEnemyKilled)
+                   Action<int, EnemyEntity>? onEnemyKilled = null, InstanceKey? instanceKey = null)
+        : this(EnemyRespawnPlacement.Default, mapId, idAllocator, terrain, content, onEnemyKilled, instanceKey)
     {
     }
 
     internal GameMap(EnemyRespawnPlacement placement, MapId mapId = MapId.HuntingGround,
                      Func<int>? idAllocator = null, MapTerrain? terrain = null, MapContent? content = null,
-                     Action<int, EnemyEntity>? onEnemyKilled = null)
+                     Action<int, EnemyEntity>? onEnemyKilled = null, InstanceKey? instanceKey = null)
     {
         MapId = mapId;
+        InstanceKey = instanceKey;
         _idAllocator = idAllocator;
         _terrain = terrain;
         _content = content;
@@ -123,6 +124,8 @@ public class GameMap
     public bool IsStageCleared => _stageCleared;
 
     public MapId MapId { get; }
+
+    public InstanceKey? InstanceKey { get; }
 
     // 맵에 속한 portal 목록. PortalTable 단일 진실 공급원.
     public IReadOnlyList<Portal> Portals { get; }

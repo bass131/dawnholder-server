@@ -16,16 +16,17 @@ namespace Dawnholder.Server.GameServer.Loop;
 // GameSession이 자기 GameMap을 찾아 AddPlayer 마샬링하려면 정적 접근점이 필요 → Instance singleton.
 // 일회 설정(ctor에서) + 외부 set X (헌법 "정적 mutable 게임 상태 금지"의 *mutable 금지* 정신).
 //
-// Dictionary<MapId, GameMap> 맵 레지스트리: 4맵(Town / HuntingGround / BossRoom / Ending)을
-// 독립 actor로 관리. 매 틱 모든 맵 tick (foreach). GetMap(MapId)으로 맵 단건 조회.
+// 공용 맵은 고정 등록부, 복사본의 생성·정리는 InstanceMapRegistry가 소유한다.
 public class GameWorld
 {
     static GameWorld? _instance;
     readonly ConcurrentQueue<GameSession> _pendingCloses = new();
     readonly ConcurrentQueue<TaskCompletionSource> _cleanupBarriers = new();
-    // readonly Dictionary — 외부 set 금지 (헌법: 정적 mutable 게임 상태 금지).
-    // 4맵은 ctor에서 1회 생성 + 등록. 이후 추가/제거 X (맵간 이동도 맵 내용 변경이지 레지스트리 변경 아님).
     readonly Dictionary<MapId, GameMap> _maps;
+    readonly List<GameMap> _publicMaps = new();
+    readonly List<GameMap> _tickSnapshot = new();
+    readonly InstanceMapRegistry _instances;
+    readonly IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> _mapData;
 
     // 전역 entity id 발급기 (ADR-026).
     //
@@ -71,17 +72,16 @@ public class GameWorld
         _party = new PartyRegistry(OnPartyDisbanded);
         _quest = new QuestRegistry(_party.GetMembershipByEntity);
 
-        // 4맵 생성 + 등록. provider가 있으면 맵별 terrain/content 주입.
-        //
-        // **생성 순서 결정론적 고정**: Town → HuntingGround → BossRoom → Ending.
-        //   ctor 순서가 id 발급 순서를 결정. enemy 1마리당 id 1개 소비.
-        _maps = new Dictionary<MapId, GameMap>
+        _mapData = provider;
+        _instances = new InstanceMapRegistry((id, key) => MakeMap(id, key));
+        _maps = new Dictionary<MapId, GameMap>();
+        foreach (MapId id in Enum.GetValues<MapId>().OrderBy(id => id))
         {
-            { MapId.Town,          MakeMap(MapId.Town,          provider) },
-            { MapId.HuntingGround, MakeMap(MapId.HuntingGround, provider) },
-            { MapId.BossRoom,      MakeMap(MapId.BossRoom,      provider) },
-            { MapId.Ending,        MakeMap(MapId.Ending,        provider) },
-        };
+            if (MapKindTable.IsInstanced(id)) continue;
+            GameMap map = MakeMap(id);
+            _maps.Add(id, map);
+            _publicMaps.Add(map);
+        }
 
         _inventory = new InventoryRegistry(
             IsActiveSession,
@@ -108,6 +108,17 @@ public class GameWorld
     public TickScheduler Scheduler => _scheduler;
 
     internal InventoryRegistry Inventory => _inventory;
+
+    internal int LiveInstanceCount => _instances.Count;
+
+    internal IEnumerable<GameMap> AllLiveMaps
+    {
+        get
+        {
+            foreach (GameMap map in _publicMaps) yield return map;
+            foreach (GameMap map in _instances.Maps) yield return map;
+        }
+    }
 
     /// <summary>
     /// 전역 entity id 발급. 각 GameMap이 ctor에서 주입받는 Func&lt;int&gt;.
@@ -146,12 +157,12 @@ public class GameWorld
     ///   반드시 이 경로를 사용해야 한다 (헌법 §5, Map=Actor 원칙).
     ///
     /// entityId가 어느 맵에도 없으면(로그아웃/전환 중) silent 무시 (예외 X).
-    /// 맵 4개 순회 = O(4) 상수 — entityId→MapId 역인덱스 추가 시 동기화 부채(MapMigration 등)가
+    /// 살아 있는 맵 순회 — entityId→맵 역인덱스 추가 시 동기화 부채(MapMigration 등)가
     ///   늘어나므로 현 규모에서 순회가 더 단순하고 안전하다.
     /// </summary>
     public void SendToEntity(int entityId, ArraySegment<byte> payload)
     {
-        foreach (GameMap map in _maps.Values)
+        foreach (GameMap map in AllLiveMaps)
         {
             PlayerEntity? player = map.GetPlayer(entityId);
             if (player == null) continue;
@@ -177,12 +188,12 @@ public class GameWorld
     /// 파티 패킷(S_PartyInviteRecv.inviterClass / S_PartyUpdate.memberNClass)을 채울 때
     /// PartyRegistry job(tick thread)이 호출. entityId가 어느 맵에도 없으면 false 반환.
     ///
-    /// 맵 4개 순회 = O(4) 상수 — SendToEntity와 동일 패턴(entityId→MapId 역인덱스 추가 시
+    /// 살아 있는 맵 순회 — SendToEntity와 동일 패턴(entityId→맵 역인덱스 추가 시
     /// 동기화 부채가 늘어나므로 현 규모에선 순회가 더 단순·안전).
     /// </summary>
     public bool TryGetEntityClass(int entityId, out byte characterClass)
     {
-        foreach (GameMap map in _maps.Values)
+        foreach (GameMap map in AllLiveMaps)
         {
             PlayerEntity? player = map.GetPlayer(entityId);
             if (player == null) continue;
@@ -195,11 +206,20 @@ public class GameWorld
 
     internal void RequestSessionClose(GameSession session) => _pendingCloses.Enqueue(session);
 
+    internal bool TryGetInstance(MapId mapId, InstanceKey key, out GameMap? map)
+        => _instances.TryGet(mapId, key, out map);
+
+    internal GameMap GetOrCreateInstance(MapId mapId, InstanceKey key)
+        => _instances.GetOrCreate(mapId, key);
+
+    internal void EnqueueMapArrival(GameMap map, Action arrival)
+        => _instances.EnqueueArrival(map, arrival);
+
     internal bool IsActiveSession(GameSession session, int entityId)
-        => !session.IsClosing && _maps.Values.Any(map => ReferenceEquals(map.GetPlayer(entityId)?.Owner, session));
+        => !session.IsClosing && AllLiveMaps.Any(map => ReferenceEquals(map.GetPlayer(entityId)?.Owner, session));
 
     internal bool IsActiveEntity(int entityId)
-        => _maps.Values.Any(map => map.GetPlayer(entityId)?.Owner is { IsClosing: false });
+        => AllLiveMaps.Any(map => map.GetPlayer(entityId)?.Owner is { IsClosing: false });
 
 #if DEBUG
     // Called within the session's existing guarded quest job; do not enqueue a second job.
@@ -214,7 +234,7 @@ public class GameWorld
             int entityId = session.EntityId;
             List<(GameMap Map, int EntityId)> removed = new();
             // 모든 맵은 같은 월드 틱에서 실행된다. 소켓의 라우팅 힌트를 신뢰하지 않는다.
-            foreach (GameMap map in _maps.Values)
+            foreach (GameMap map in AllLiveMaps)
             {
                 foreach (PlayerEntity player in map.Players)
                 {
@@ -234,10 +254,9 @@ public class GameWorld
     void OnPartyDisbanded(int partyId)
         => _quest.EnqueueJob(() => _quest.ForgetPartyProgress(partyId));
 
-    GameMap MakeMap(MapId id,
-        IReadOnlyDictionary<MapId, (MapTerrain? Terrain, MapContent? Content)> provider)
+    GameMap MakeMap(MapId id, InstanceKey? key = null)
     {
-        // 킬 콜백: Boss 킬 → 전역 리셋, 그 외 → OnKill 적립.
+        // 킬 콜백: Boss 킬 → 복사본 열쇠의 진행 리셋, 그 외 → OnKill 적립.
         //   EnqueueJob 마샬링: solo/party 진행 변경과 통보를 기존 Quest job 안에서 처리.
         //   맵 Tick과 Quest.Tick은 같은 틱 스레드에서 순차 실행(GameWorld.OnTick).
         //   미래 맵 멀티스레드화 대비 방어적 — 현재는 0~1틱 지연만 발생.
@@ -246,18 +265,22 @@ public class GameWorld
             _quest.EnqueueJob(() =>
             {
                 if (EnemyCatalog.For(target.Kind).IsBoss)
-                    _quest.ResetAllQuestProgress();
+                {
+                    if (key.HasValue) _quest.ResetProgressFor(key.Value);
+                }
                 else
+                {
                     QuestNotifier.Send(this, _quest.OnKill(killerId));
+                }
             });
 
             // Independent of boss quest reset; the economy job retains only immutable values.
             _inventory.EnqueueKill(killerId, target.Kind, target.EntityId);
         };
 
-        if (provider.TryGetValue(id, out var pair))
-            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill);
-        return new GameMap(id, NextEntityId, onEnemyKilled: onKill);
+        if (_mapData.TryGetValue(id, out var pair))
+            return new GameMap(id, NextEntityId, pair.Terrain, pair.Content, onKill, key);
+        return new GameMap(id, NextEntityId, onEnemyKilled: onKill, instanceKey: key);
     }
 
     void OnTick(long tickNumber)
@@ -267,13 +290,18 @@ public class GameWorld
         try
         {
             DrainSessionCloses();
-            foreach (GameMap map in _maps.Values)
+            _tickSnapshot.Clear();
+            _tickSnapshot.AddRange(_publicMaps);
+            _instances.FillTickSnapshot(_tickSnapshot);
+            foreach (GameMap map in _tickSnapshot)
                 map.Tick(tickNumber);
             DrainSessionCloses();
 
             Party.Tick(tickNumber);
             Quest.Tick(tickNumber);
             _inventory.Tick();
+            // 이번 틱의 입장·종료·등록부 작업 뒤, 플레이어와 입장 대기가 모두 없는 복사본만 정리한다.
+            _instances.RemoveIdle();
             foreach (TaskCompletionSource completion in barriers) completion.TrySetResult();
         }
         catch (Exception ex)

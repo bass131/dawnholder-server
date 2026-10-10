@@ -323,7 +323,9 @@ public sealed class InventoryWireContractTests : IDisposable
         _world.Map.GetPlayer(knight.EntityId)!.Position = new Vector2(20, 0);
         knight.OnRecvPacket(new C_EnterPortal { portalId = 1 }.Write());
         Tick();
-        Assert.NotNull(_world.GetMap(MapId.HuntingGround)!.GetPlayer(knight.EntityId));
+        Tick(); // 새 복사본은 다음 틱부터 입장 job을 실행한다(IM-16).
+        Assert.True(_world.TryGetInstance(MapId.HuntingGround, InstanceKey.ForSolo(knight.EntityId), out GameMap? hunting));
+        Assert.NotNull(hunting!.GetPlayer(knight.EntityId));
 
         AssertQueriedState(knight, revision: 1, currency: 10, (MaterialId, 1));
     }

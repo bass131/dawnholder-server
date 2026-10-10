@@ -1,3 +1,4 @@
+using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
 using Dawnholder.Server.GameServer.Quest;
 
@@ -64,7 +65,7 @@ public sealed class QuestMembershipLifecycleTests
     }
 
     [Fact]
-    public void GlobalReset_ClearsEveryPartyAndSoloRaw_ButPreservesOnlyExistingLatches()
+    public void KeyedReset_ClearsOnlySelectedRawProgress_AndPreservesExistingLatches()
     {
         PartyRegistry party = new();
         QuestRegistry quest = new(party.GetMembershipByEntity);
@@ -78,12 +79,14 @@ public sealed class QuestMembershipLifecycleTests
         }
         quest.OnKill(30);
         quest.OnKill(60);
-        quest.ResetAllQuestProgress();
+        quest.ResetProgressFor(InstanceKey.ForParty(first.PartyId));
+        Assert.Equal(target + 1, quest.GetSoloProgress(50));
+        quest.ResetProgressFor(InstanceKey.ForSolo(50));
         Assert.Equal(0, quest.GetPartyProgress(first.PartyId));
-        Assert.Equal(0, quest.GetPartyProgress(second.PartyId));
-        Assert.Equal(0, quest.TrackedPartyProgressCount);
+        Assert.Equal(1, quest.GetPartyProgress(second.PartyId));
+        Assert.Equal(1, quest.TrackedPartyProgressCount);
         Assert.Equal(0, quest.GetSoloProgress(50));
-        Assert.Equal(0, quest.GetSoloProgress(60));
+        Assert.Equal(1, quest.GetSoloProgress(60));
         foreach (int id in new[] { 10, 20, 50 })
         {
             Assert.True(quest.IsBossUnlocked(id));
@@ -92,7 +95,7 @@ public sealed class QuestMembershipLifecycleTests
         foreach (int id in new[] { 30, 40, 60 })
         {
             Assert.False(quest.IsBossUnlocked(id));
-            Assert.Equal(0, quest.GetKillCount(id));
+            Assert.Equal(1, quest.GetKillCount(id));
         }
         Assert.All(quest.OnKill(20), u => Assert.Equal(1, u.CurrentCount));
         Assert.Equal(1, Assert.Single(quest.OnKill(50)).CurrentCount);
@@ -112,7 +115,7 @@ public sealed class QuestMembershipLifecycleTests
         original[1] = 99;
         current = new PartyMembership(8, new[] { 10, 30 });
         quest.OnKill(10);
-        quest.ResetAllQuestProgress();
+        quest.ResetProgressFor(InstanceKey.ForParty(7));
         Assert.Equal(new[] { 10, 20 }, before.Select(u => u.RecipientEntityId));
         Assert.All(before, u => Assert.Equal(1, u.CurrentCount));
         Assert.False(before is QuestProgressUpdate[]);

@@ -270,7 +270,7 @@ public class MapPublicationContractTests
         public void CloseWithoutWorldCleanup() => OnDisconnected(new IPEndPoint(IPAddress.Loopback, 0));
         public override void Send(ArraySegment<byte> segment) => deliveries.Add(new(name, Bytes(segment)));
         protected override GameMap? GetMap() => map;
-        protected override GameMap? GetDestMap(MapId _) => destination;
+        protected override GameMap? ResolveDestination(GameMap current, int entityId, MapId _) => destination;
         protected override void RequestWorldClose() { }
         public override void Disconnect() => CloseWithoutWorldCleanup();
     }
