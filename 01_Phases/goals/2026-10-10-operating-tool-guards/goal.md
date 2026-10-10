@@ -12,8 +12,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR224(`feat/session-guard-liveness-20261010`)는 병합됐다(「현재 결과 / PR224 병합」). 종료 기록은 `docs/session-guard-liveness-closeout-20261010`(base main `b482b84a`)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: 정본 문장 넷을 썼고 리드 R-2가 계약 문구와 일치를 확인했다(「종료 기록 PR 작성」). 종료 기록 PR을 만들고 그 head로 문서 실사를 연다.
-- **남은 순서**: 종료 기록 PR 생성 → 문서 실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- **현재 위치**: 정본 문장 넷을 썼고 리드 R-2가 계약 문구와 일치를 확인했다(「종료 기록 PR 작성」). 종료 기록 PR228을 만들었고(main PR226을 받은 head) 그 head로 문서 실사를 연다.
+- **남은 순서**: 문서 실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
 - **사용자 차례**: 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
@@ -24,7 +24,7 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - [x] 간격 도구 구현·검증(결함 #1 수정 뒤 재검증 통과, 비차단 #3은 다음 후보)
 - [x] PR224 병합
 - [x] 결과 기록·Gardener
-- [>] 종료 기록 PR 병합
+- [>] PR228 병합
 - [ ] 종료 점검과 R-8
 
 PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
