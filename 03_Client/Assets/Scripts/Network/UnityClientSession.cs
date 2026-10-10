@@ -47,6 +47,9 @@ namespace Dawnholder.Client.Network
         bool CanApply => !IsClosed && _isCurrent();
         public MapEntryCoordinator Entry { get; }
         public InventoryRequestController Inventory { get; }
+        // Client presentation, owned by this connection: InventoryPanel changes it on I input.
+        // New sessions start closed; map entries keep it, and Cleanup unpublishes the finished session.
+        internal bool IsInventoryPanelOpen { get; set; }
         LocalPlayerMovement _entryPlayer;
         long _playerEpoch;
         SceneTransition _sceneLoader;

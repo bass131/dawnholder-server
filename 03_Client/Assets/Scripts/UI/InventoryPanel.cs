@@ -2,6 +2,7 @@
 using Dawnholder.Client.Network;
 using Dawnholder.Client.State;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Dawnholder.Client.UI
@@ -46,6 +47,7 @@ namespace Dawnholder.Client.UI
         {
             BindSources();
             Render();
+            UpdateVisibility();
         }
 
         void OnDisable()
@@ -70,13 +72,28 @@ namespace Dawnholder.Client.UI
             bool canSend = _session != null && _session.CanSendGameplay;
             if (rebound || epoch != _renderedEpoch || state != _renderedEntryState || canSend != _renderedCanSend)
                 Render();
-            bool visible = IsGameplayScene(SceneManager.GetActiveScene().name) &&
-                IsGameplayScene(gameObject.scene.name);
-            bool interactive = visible && Time.timeScale > 0f &&
-                (SceneTransition.Instance == null || SceneTransition.Instance.ActiveRequest == null ||
-                    SceneTransition.Instance.ActiveRequest.IsFinished);
-            _view?.SetVisibility(visible, interactive);
+            if (CanAcceptInput() && Keyboard.current != null && Keyboard.current.iKey.wasPressedThisFrame)
+            {
+                _session!.IsInventoryPanelOpen = !_session.IsInventoryPanelOpen;
+                Render();
+            }
+            UpdateVisibility();
             _view?.Resize();
+        }
+
+        bool IsInGameplayScene() => IsGameplayScene(SceneManager.GetActiveScene().name) &&
+            IsGameplayScene(gameObject.scene.name);
+
+        bool CanAcceptInput() => IsInGameplayScene() && _session != null && _session.CanSendGameplay &&
+            Time.timeScale > 0f &&
+            (SceneTransition.Instance == null || SceneTransition.Instance.ActiveRequest == null ||
+                SceneTransition.Instance.ActiveRequest.IsFinished);
+
+        void UpdateVisibility()
+        {
+            bool visible = IsInGameplayScene() && _session != null && _session.IsInventoryPanelOpen;
+            // Hide only the view: the scene binding and connection's Ready query stay alive while closed.
+            _view?.SetVisibility(visible, visible && CanAcceptInput());
         }
 
         bool BindSources()
