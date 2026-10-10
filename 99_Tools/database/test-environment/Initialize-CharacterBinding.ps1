@@ -128,7 +128,8 @@ VALUES
         })
     Write-Output 'Fixed slot1 binding INSERT committed; no game row was created or adopted.'
 } catch {
-    $failureCode = Get-DatabaseFailureCode -Exception $_.Exception
+    $failure = $_.Exception
+    $failureCode = Get-DatabaseFailureCode -Exception $failure
     if ($null -ne $transaction -and $null -ne $transaction.Connection) {
         try {
             $transaction.Rollback()
@@ -142,7 +143,9 @@ VALUES
             -Name 'InitializeBinding' `
             -FailureCode $failureCode
     }
-    throw 'Test environment binding stopped; preserve manifest and investigate commit state before retry.'
+    $summary = Get-TestEnvironmentFailureSummary -Exception $failure
+    throw (('Test environment binding stopped; ' +
+        'preserve manifest and investigate commit state before retry. {0}') -f $summary)
 } finally {
     if ($null -ne $transaction) {
         $transaction.Dispose()

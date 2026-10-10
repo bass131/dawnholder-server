@@ -360,15 +360,23 @@ function Set-OfflineStubs {
     # Call after the test script dot-sources the product definitions into its own script scope.
     # Connection/identity/ACL/secret entry points are replaced there by fail-closed stubs.
     foreach ($name in @(
-            'Open-LocalDatabase',
             'Open-TestEnvironmentDatabase',
             'Invoke-DatabaseSql',
             'Assert-TestEnvironmentExecutor',
-            'Assert-TestEnvironmentLocalAccountAbsent',
             'Lock-TestEnvironmentManifest',
             'Set-TestEnvironmentDirectoryAcl',
             'New-TestEnvironmentOwnedFile',
-            'New-TestEnvironmentChildIdentity'
+            'New-TestEnvironmentChildIdentity',
+            'Import-Clixml',
+            'docker',
+            'wsl',
+            'wsl.exe',
+            'Get-NetTCPConnection',
+            'Start-Process',
+            'New-LocalUser',
+            'Remove-LocalUser',
+            'Get-LocalUser',
+            'Get-LocalGroupMember'
         )) {
         $stub = [scriptblock]::Create("throw 'Offline test stub: $name must not run.'")
         Set-Item -Path ('Function:script:' + $name) -Value $stub
@@ -509,5 +517,63 @@ function Invoke-PowerShellFile {
         ExitCode = $process.ExitCode
         StdOut = $stdout.Result
         StdErr = $stderr.Result
+    }
+}
+
+function New-OfflineContainerPlan {
+    param(
+        [string]$Root,
+        [string]$Database = 'Dawnholder_Dev_Fixture',
+        [bool]$Approved = $false,
+        [string]$G2 = ''
+    )
+    # Fixed fixture inputs, independent of the product's field list and observed engine values.
+    # Each child process points LocalAppData here; no real profile or private file is touched.
+    $env:LOCALAPPDATA = Join-Path $Root 'profile'
+    $private = Join-Path $env:LOCALAPPDATA 'Dawnholder\private'
+    $identity = Join-Path $env:LOCALAPPDATA 'Dawnholder\identity'
+    return [pscustomobject][ordered]@{
+        PlanVersion = 2
+        SchemaVersion = 2
+        ExecutionApproved = $Approved
+        Goal = 'offline-fixture'
+        GoalMarker = 'offline-fixture-marker'
+        G0 = 'fixture-g0'
+        G1 = 'fixture-g1'
+        G2 = $G2
+        Machine = 'FIXTUREHOST'
+        ContainerName = 'fixture-sql'
+        ContainerHostname = 'fixture-host'
+        VolumeName = 'fixture-data'
+        ImageDigest = 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+        Endpoint = 'tcp:127.0.0.1,14330'
+        AdminLogin = 'sa'
+        AdminCredentialPath = Join-Path $private 'admin.cred'
+        ExpectedCollation = 'Latin1_General_CI_AS'
+        ExpectedProductVersion = '16.0.1000.6'
+        ConnectTimeoutSeconds = 7
+        ReadyTimeoutSeconds = 180
+        ReadyAttemptLimit = 12
+        PullTimeoutSeconds = 1200
+        StopTimeoutSeconds = 45
+        SqlMemoryLimitMb = 2048
+        ContainerMemoryLimitMb = 3072
+        MinFreeMemoryMb = 2048
+        MinFreeDiskMb = 1024
+        Attempt = 1
+        Database = $Database
+        SlotId = 1
+        AccountId = '11111111-1111-1111-1111-111111111111'
+        CharacterId = '22222222-2222-2222-2222-222222222222'
+        RuntimeLogin = 'dh_fixture_runtime'
+        ExecutorSid = 'S-1-5-21-1-2-3-1001'
+        Encrypt = $true
+        TrustServerCertificate = $true
+        ManifestPath = Join-Path $Root 'lifecycle\manifest.json'
+        SettlementPath = Join-Path $Root 'lifecycle\settlement.json'
+        PrivateDirectory = $private
+        IdentityDirectory = $identity
+        IdentityPath = Join-Path $identity 'identity.json'
+        RuntimeCredentialPath = Join-Path $private 'runtime.cred'
     }
 }

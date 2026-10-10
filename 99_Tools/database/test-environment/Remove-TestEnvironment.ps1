@@ -76,12 +76,8 @@ function Assert-TestEnvironmentResourceIdentities(
     $Manifest,
     $Contract
 ) {
-    foreach ($kind in @('Runtime', 'Recovery')) {
-        $name = $(if ($kind -eq 'Runtime') {
-                $Manifest.RuntimeLogin
-            } else {
-                $Manifest.RecoveryPrincipal
-            })
+    foreach ($kind in @('Runtime')) {
+        $name = $Manifest.RuntimeLogin
         $observed = Invoke-DatabaseSql `
             -Connection $Master `
             -Sql 'SELECT CONVERT(varchar(170),sid,1) FROM sys.server_principals WHERE name=@name' `
@@ -94,21 +90,7 @@ function Assert-TestEnvironmentResourceIdentities(
             throw 'SQL login identity missing/unknown/changed; no deletion.'
         }
     }
-    $windows = $null
-    try {
-        $windows = Get-LocalUser -Name $Contract.RecoveryLocalName -ErrorAction Stop
-    }
-    catch {
-        if ($_.FullyQualifiedErrorId -notlike 'UserNotFound*') {
-            throw 'Cannot inspect exact Windows account identity.'
-        }
-    }
-    if (($null -eq $Manifest.WindowsAccountSid -and $null -ne $windows) -or
-        ($null -ne $Manifest.WindowsAccountSid -and ($null -eq $windows -or
-            $windows.SID.Value -cne $Manifest.WindowsAccountSid))) {
-        throw 'Windows account identity missing/unknown/changed; no deletion.'
-    }
-    foreach ($kind in @('Runtime', 'Recovery')) {
+    foreach ($kind in @('Runtime', 'Admin')) {
         $path = $Manifest.($kind + 'CredentialPath')
         $hash = $Manifest.($kind + 'CredentialHash')
         if ($null -eq $hash) {
@@ -122,8 +104,7 @@ function Assert-TestEnvironmentResourceIdentities(
     if ($null -ne $Manifest.IdentityHash) {
         Assert-TestEnvironmentDirectoryAcl `
             -Path $Manifest.IdentityDirectory `
-            -ExecutorSid $Manifest.ExecutorSid `
-            -ReaderSid $Manifest.WindowsAccountSid
+            -ExecutorSid $Manifest.ExecutorSid
         Assert-TestEnvironmentNoReparse -Path $Manifest.IdentityPath
         if ((Get-FileHash -LiteralPath $Manifest.IdentityPath -Algorithm SHA256).Hash -cne $Manifest.IdentityHash) {
             throw 'Child identity manifest changed.'
@@ -234,8 +215,7 @@ if ($Mode -eq 'OfflinePlan') {
             'Preserve evidence and remove test triggers',
             'Online identity and settlement preflight',
             'DROP exact DB without force',
-            'SID-matched SQL logins',
-            'SID-matched Windows account',
+            'SID-matched runtime SQL login',
             'Hash-matched exact credential files'
         )
         PrivateDirectoryRetained = $true
@@ -243,7 +223,7 @@ if ($Mode -eq 'OfflinePlan') {
     }
     return
 }
-Assert-TestEnvironmentExecutor -Contract $Contract -Administrator:($Mode -eq 'Execute')
+Assert-TestEnvironmentExecutor -Contract $Contract
 if ($Mode -eq 'Execute') {
     if ($ConfirmDatabase -cne $Database -or $ExpectedManifestHash -cnotmatch '^[0-9A-F]{64}$') {
         throw 'Execute requires an exact database confirmation and reviewed manifest hash.'
@@ -338,16 +318,12 @@ EXEC sys.sp_executesql @stmt = @dropSql;
             -Result NonQuery)
     $manifest.Cleanup.Steps[0].Status = 'Done'
     Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
-    foreach ($kind in @('Runtime', 'Recovery')) {
+    foreach ($kind in @('Runtime')) {
         $sid = $manifest.($kind + 'LoginSid')
         if ($null -eq $sid) {
             continue
         }
-        $name = $(if ($kind -eq 'Runtime') {
-                $manifest.RuntimeLogin
-            } else {
-                $manifest.RecoveryPrincipal
-            })
+        $name = $Manifest.RuntimeLogin
         $cleanupStep = 'Drop' + $kind + 'Login'
         $record = [pscustomobject]@{
             Name = $cleanupStep
@@ -380,24 +356,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
         $record.Status = 'Done'
         Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
     }
-    if ($null -ne $manifest.WindowsAccountSid) {
-        $cleanupStep = 'RemoveWindowsAccount'
-        $record = [pscustomobject]@{
-            Name = $cleanupStep
-            Status = 'Pending'
-            Identity = $manifest.WindowsAccountSid
-        }
-        $manifest.Cleanup.Steps = @($manifest.Cleanup.Steps) + $record
-        Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
-        $user = Get-LocalUser -Name $Contract.RecoveryLocalName -ErrorAction Stop
-        if ($user.SID.Value -cne $manifest.WindowsAccountSid) {
-            throw 'Windows SID changed; preserve account.'
-        }
-        Remove-LocalUser -SID $user.SID -ErrorAction Stop
-        $record.Status = 'Done'
-        Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
-    }
-    foreach ($kind in @('Runtime', 'Recovery')) {
+    foreach ($kind in @('Runtime', 'Admin')) {
         $hash = $manifest.($kind + 'CredentialHash')
         if ($null -eq $hash) {
             continue
@@ -422,7 +381,7 @@ IF EXISTS(SELECT 1 FROM sys.dm_exec_sessions WHERE security_id = @sid OR origina
     $manifest.Cleanup.State = 'Done'
     $manifest.State = 'Removed'
     Write-TestEnvironmentManifest -Contract $Contract -Manifest $manifest
-    Write-Output 'Exact DB and recorded principal/credential resources removed. Nonsecret manifests, evidence, empty directories and any Windows profile retained.'
+    Write-Output 'Exact DB and recorded principal/credential resources removed. Nonsecret manifests, evidence, empty directories retained.'
 } catch {
     $failure = $_.Exception
     $failureCode = Get-DatabaseFailureCode -Exception $failure
