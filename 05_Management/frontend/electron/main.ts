@@ -1,6 +1,6 @@
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { app, BrowserWindow, ipcMain, Menu, nativeImage, protocol, session, Tray, type IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, protocol, session, Tray, type IpcMainInvokeEvent } from 'electron';
 import { createCatalogStore } from './catalog-store.js';
 import { createSystemGuideStore } from './system-guide-store.js';
 import { createSourceSectionReader, createSourceSectionStore } from './source-section-store.js';
@@ -9,6 +9,8 @@ import { createCheckoutStore } from './checkout-store.js';
 import { createBacklogStore } from './backlog-store.js';
 import { diagramAssets, diagramScheme } from './diagram-asset-contract.js';
 import { createDiagramAssetHandler } from './diagram-asset-handler.js';
+import { createBackendConnection } from './backend-connection.js';
+import { operationFailure, parseCommitInput, parseLogQuery } from './server-operations-contract.js';
 
 // Electron requires this before ready. Standard resolves the renderer's local
 // relative assets; secure marks the local document as a trustworthy scheme.
@@ -35,6 +37,7 @@ const sectionReader = createSourceSectionReader({
 });
 const checkoutStore = createCheckoutStore({ repositoryRoot });
 const backlogStore = createBacklogStore({ repositoryRoot });
+const backendConnection = createBackendConnection({ repositoryRoot, env: process.env });
 function trustedSender(event: IpcMainInvokeEvent): boolean {
   return !!mainWindow && !mainWindow.isDestroyed() && event.sender === mainWindow.webContents && event.senderFrame === mainWindow.webContents.mainFrame && event.senderFrame.url === indexUrl;
 }
@@ -51,7 +54,82 @@ ipcMain.handle('system-records:read-checkout', async event => {
 ipcMain.handle('system-guide:read', event => trustedSender(event) ? guideStore.read() : denied);
 ipcMain.handle('system-backlog:read', event => trustedSender(event) ? backlogStore.read() : denied);
 
+ipcMain.handle('server-operations:connection', event => {
+  if (!trustedSender(event)) return denied;
+  return { ok: true, connection: backendConnection.connectionState() };
+});
+ipcMain.handle('server-operations:connect', async event => {
+  if (!trustedSender(event)) return denied;
+  return { ok: true, connection: await backendConnection.connect() };
+});
+for (const [action, call] of [
+  ['status', backendConnection.readStatus],
+  ['start', backendConnection.startServer],
+  ['stop', backendConnection.stopServer],
+  ['force-stop', backendConnection.forceStopServer],
+] as const) {
+  ipcMain.handle(`server-operations:${action}`, event => {
+    if (!trustedSender(event)) return denied;
+    return call();
+  });
+}
+ipcMain.handle('server-operations:logs', (event, input: unknown) => {
+  if (!trustedSender(event)) return denied;
+  const query = parseLogQuery(input);
+  return query ? backendConnection.readLogs(query) : operationFailure('invalidQuery');
+});
+ipcMain.handle('server-operations:release-candidate', async event => {
+  if (!trustedSender(event)) return denied;
+  const checkout = await checkoutStore.read();
+  const result = await backendConnection.readReleases();
+  if (!result.ok) return result;
+  return { ok: true, checkout, currentRelease: result.releases.currentRelease };
+});
+for (const [action, call] of [
+  ['release-build', backendConnection.buildRelease],
+  ['release-select', backendConnection.selectRelease],
+] as const) {
+  ipcMain.handle(`server-operations:${action}`, async (event, input: unknown) => {
+    if (!trustedSender(event)) return denied;
+    const commit = parseCommitInput(input);
+    if (commit === null) return operationFailure('invalidCommit');
+    const checkout = await checkoutStore.read();
+    if (checkout.state !== 'known' || checkout.head !== commit) return operationFailure('headChanged');
+    return call(commit);
+  });
+}
+
+let quitPending = false;
+async function quitFromTray() {
+  if (quitPending) return;
+  quitPending = true;
+  try {
+    const result = await backendConnection.readStatus();
+    if (result.ok && result.status.server.state !== 'stopped') {
+      const options = {
+        type: 'question' as const,
+        buttons: ['종료', '취소'],
+        defaultId: 1,
+        cancelId: 1,
+        message: '서버가 실행 중입니다. 종료하면 서버도 정상 종료합니다.',
+      };
+      const answer = mainWindow && !mainWindow.isDestroyed()
+        ? await dialog.showMessageBox(mainWindow, options)
+        : await dialog.showMessageBox(options);
+      if (answer.response === options.cancelId) return;
+    }
+    // Keep the close guard and tray alive until backend termination is done.
+    await backendConnection.shutdown();
+    app.quit();
+  } catch {
+    console.error('[desktop] 관리 백엔드를 종료하지 못했습니다. 다시 종료하세요.');
+  } finally {
+    quitPending = false;
+  }
+}
+
 app.whenReady().then(async () => {
+  void backendConnection.connect();
   protocol.handle(diagramScheme, createDiagramAssetHandler(new URL('../dist/', import.meta.url)));
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
@@ -90,7 +168,7 @@ app.whenReady().then(async () => {
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: '열기', click: openWindow },
     { type: 'separator' },
-    { label: '종료', click: () => app.quit() },
+    { label: '종료', click: () => { void quitFromTray(); } },
   ]));
   tray.on('double-click', openWindow);
   window.removeMenu();
@@ -127,7 +205,7 @@ app.whenReady().then(async () => {
   app.exit(1);
 });
 
-// 명시 종료는 이 앱만 닫는다. 미연결 WSL/서버에는 종료를 전달하지 않는다.
+// The tray path waits for shutdown before app.quit opens the existing close guard.
 app.on('before-quit', () => { isQuitting = true; });
 app.on('will-quit', () => {
   tray?.destroy();
