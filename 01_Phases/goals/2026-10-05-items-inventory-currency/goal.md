@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **PR180(`8d1e885`)과 PR191(`e5653eb9`, 2026-10-09T16:01:46Z)이 병합됐다. PR191은 J 통합 독립 검증과 Unity 6000.6.4f1 실화면 독립 검증을 모두 통과했다(결함 0). 종료 Gardener도 끝났다(정리 후보 2). 2026-10-10에 종료 기록 PR218을 열었다. 남은 것은 문서 실사, Gardener 후보의 사용자 채택, PR218 병합, 종료 점검, R-8이다. 이어갈 곳은 [종료 재개 지점](#종료-재개-지점--2026-10-10)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **PR180(`8d1e885`)과 PR191(`e5653eb9`, 2026-10-09T16:01:46Z)이 병합됐다. PR191은 J 통합 독립 검증과 Unity 6000.6.4f1 실화면 독립 검증을 모두 통과했다(결함 0). 종료 Gardener도 끝났다(정리 후보 2). 2026-10-10에 종료 기록 PR218을 열었다. Gardener 정리 후보 2개는 사용자가 모두 채택했다. 첫 문서 실사의 차단 3건은 정정했다. 남은 것은 좁힌 재실사, PR218 병합, 종료 점검, R-8이다. 이어갈 곳은 [종료 재개 지점](#종료-재개-지점--2026-10-10)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, 현재 종료 기록 branch `docs/items-inventory-closeout-20261010`(base main `e5653eb9`). PR2 branch는 `feat/items-inventory-ui-20261005`(base `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`), PR1 branch는 `feat/items-inventory-currency-20261005`였다.
@@ -124,9 +124,11 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ## 정본 반영 전 적용 중인 사용자 결정
 
+메인 `msg_ed07ba74a67f`(2026-10-10T05:46:33Z)이 전달한 사용자 원문은 「대시보드 결정 응답: 1) 2 - Content 정리 후보: 검증 실행 스크립트 재사용 근거 추가 → A 채택 · 2) 3 - Content 정리 후보: 서버 정상 종료 경로(담당 후보 Core) → A 채택 · 3) 4 - Rules 정리 후보: 작업자 생존 신호 간격 검사 도구 → A 채택 · 4) 5 - Rules 정리 후보: 셸 명령의 파일 쓰기 위치 검사 hook → A 채택 · 5) 6 - 규칙·운영 V1.0 태그 ops-v1.0 위치 → A 두 번째 맞춤 커밋」이다. 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 이 goal의 항목은 1)·2)이고 3)~5)는 Rules 항목이다. 1)에 따라 BACKLOG `unity-baseline-harness-reuse`에 이 goal의 근거를 더했다. 2)에 따라 새 행 `server-lane-graceful-stop`(담당 후보 Core, 대기)을 넣었다. 등록은 착수 권한이 아니며, Core DB 컨테이너 범위 검토 때 넣을지는 메인이 사용자에게 다시 묻는다. 반영은 메인 지시대로 첫 문서 실사 판정 뒤 결함 정정과 한 commit으로 했다. 원문은 근거 폴더의 `closeout/lead-1010-inbox-4.json`이다.
+
 메인 `msg_e607262f2c01`(2026-10-10T05:23:19Z)이 전달한 사용자 원문은 「대시보드 결정 응답: 1) 1 - Rules·Content 종료 기록 PR 재개 → A 지금 두 리드 열기」(2026-10-10 14:21 KST)다. 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 지난 리드 세션은 Orca 재부팅으로 끝났다. 새 리드 세션이 같은 Run `run_31b14736665a`을 인수해 종료 기록 PR을 잇는다(ORCA R-8 「목표 중간 교체·복구」). 같은 메시지의 병합 순서는 메인 결정이며 사용자 결정이 아니다. Rules·Content 두 종료 기록 PR 중 승인 묶음이 먼저 준비된 쪽을 먼저 병합한다. 다른 쪽은 그 main을 받아 BACKLOG·CURRENT 충돌을 확인하고, 다른 파트 줄을 보존한 뒤 바뀐 부분을 재실사해 승인 묶음을 다시 올린다. 원문은 근거 폴더의 `closeout/lead-1010-entry-inbox.json`이다.
 
-메인이 PR191 병합 뒤 전달한 종료 순서와 사용자 결정은 아래와 같다. 사용자 원문은 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 원문은 근거 폴더의 `lead-1009-inbox-24.clean.json`이다.
+메인이 PR191 병합 뒤 전달한 종료 순서와 사용자 결정은 아래와 같다. 사용자 원문은 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 원문은 근거 폴더에 있다. 앞 두 메시지(`msg_ada6a80071a3`, `msg_13a053766f59`)는 `lead-1009-inbox-23.clean.json`, `msg_4a188e97c526`은 `lead-1009-inbox-24.clean.json`이다.
 
 - `msg_ada6a80071a3`(메인 정정): 종료 순서는 goal 결과 기록(로컬) → Gardener(신규 Opus, 읽기 전용, 보고서 한 파일) → 그 결과를 넣은 종료 기록 PR → 종료 점검 → R-8이다(ORCA 「목표 종료 Gardener 4주 파일럿」).
 - `msg_13a053766f59`: 「전체적으로 워크트리 맞추고 새로운 메인세션으로 시작해야겠다, Orca 재부팅도 해야돼」와 「대시보드 결정 응답: 1) 세션 재시작 - 종료 기록 PR 둘까지 넣고 맞춘 뒤 재시작할지, 지금 멈추고 재시작할지 → A 종료 기록 PR 뒤」. 메인 요청은 Gardener 정리 후보가 있으면 PR에 「사용자 채택 질문」으로 올리는 것이다.
@@ -210,8 +212,8 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 **남은 순서**
 
 1. 끝남: 종료 기록 PR218을 이 branch로 열었다(리드). 이 goal의 결과 기록, 「다음 계획 후보」의 BACKLOG 도착, CURRENT의 Content 줄을 담는다. CURRENT에서는 Content branch를 고치고 끝난 「Content(Unity 업그레이드)」 줄을 지웠다. 그 줄은 메인 `msg_7637c2380718`의 판정 요청에 리드가 「이 PR의 Content 줄 범위」로 판정해 넣었다(이유는 근거 폴더 `closeout/lead-context-3.md`). 본문에 Gardener 정리 후보 2개를 「사용자 채택 질문」으로 올렸다.
-2. 신규 `gpt-6-astra` xhigh 문서 실사. 후보 도착 검사를 PR head에서 다시 돌려 원시를 근거 폴더에 둔다.
-3. **사용자 차례**: Gardener 후보 2개의 채택 여부. 후보 1은 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더하는 것이고, 후보 2는 새 행(서버 lane 정상 종료 경로, 소유 Core)이다. 채택한 것만 BACKLOG에 반영한다. 실사 뒤에 반영하면 바뀐 부분을 다시 실사한다.
+2. 신규 `gpt-6-astra` xhigh 문서 실사. 첫 실사는 NOT PASS(차단 3)였고 정정했다(아래 「종료 기록 문서 실사 — 2026-10-10」). 남은 것은 바뀐 줄만 좁힌 신규 재실사 1회다. 재실사 결과는 goal에 쓰지 않고 근거 폴더와 승인 묶음으로 전한다.
+3. 끝남: 사용자가 Gardener 후보 2개를 모두 채택했다(`msg_ed07ba74a67f`). 후보 1은 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더했고, 후보 2는 새 행 `server-lane-graceful-stop`이다.
 4. **사용자 차례**: PR218 병합 승인. 병합은 메인이 한다. Rules 종료 기록 PR과의 병합 순서는 위 결정 절의 메인 결정을 따른다.
 5. 2차 맞춤. 메인은 두 종료 기록 PR이 모두 병합된 뒤 2차 맞춤 신호를 따로 보낸다(`msg_e607262f2c01`). content-active를 main에 맞출 때 사용자 미커밋 파일 둘을 보존한다.
 6. 종료 점검과 R-8. 그 전에 새 goal을 시작하지 않는다.
@@ -730,7 +732,7 @@ batch 재실행은 필수로 두지 않았다. main 병합은 코드 영역(02_S
 - **통합 정확성**: 양쪽이 함께 바꾼 파일은 4개다. 한쪽만 바꾼 337파일(PR191 42 + J 295)의 blob은 merge `0fb81356`에서 모두 바뀐 쪽과 같았다. merge에서 HEAD까지 코드 2452/2452가 같다. fixture는 두 부모의 복원을 모두 보존했다.
 - **6.6 batch 독립 재실행**(HEAD `cfe693fd`): EditMode 404/404, PlayMode 23/23(실서버 경로 2개 포함), 실패 0.
 - **문서 delta 실사**: 지적 없음. 비차단 관찰 O-1은 위 J 블록 「열린 것 1」의 「fixture 밖 제품 diff 0」 문구다. 이 종료 기록에서 비교 양끝과 파일 집합을 적어 고쳤다.
-- **리드 R-2**: 교집합·단독 파일 수를 다시 구했고 blob 표본 10개, results.xml의 root 수, BACKLOG ID 중복 0을 대조했다(`lead-1009-verify-r2-sample.txt`).
+- **리드 R-2**: 교집합·단독 파일 수를 다시 구했고 blob 표본 고유 경로 9개(현존 blob 5·양쪽 삭제 4. 처음 적은 10개는 원시와 달라 종료 기록 실사 #D-03으로 고쳤다), results.xml의 root 수, BACKLOG ID 중복 0을 대조했다(`lead-1009-verify-r2-sample.txt`).
 - **정산**: release → 빈 프롬프트 확인 → close. token total 6,783,439(cached 6,545,920, output 37,141), 크레딧 잔액 변화 0, 작업 19분 37초다(`junction-1009/verify-token-observation.md`). batch가 다시 지운 SENTIS define 한 줄은 `msg_7691eaa0154c`대로 되살렸다.
 
 ### PR191 실화면 독립 검증 — PASS, 2026-10-09
@@ -776,15 +778,34 @@ batch 재실행은 필수로 두지 않았다. main 병합은 코드 영역(02_S
 - **경고 억제·설정 완화**: 새 억제는 `InventoryClientContractTests.cs:561`의 `LogAssert.ignoreFailingMessages` 한 곳이다. 불량 서버 입력 구간에만 켜고 try/finally로 되돌린다. Gardener는 이것을 「테스트 로그 정책의 범위 한정 완화 1건, 제품 경고 억제 아님」으로 분류했다. 설정·분석기 파일 변경은 0이다.
 - **관찰 입력과 기존 후보의 겹침**: SENTIS define 삭제 10회(batch 10세션)는 `unity-sentis-define-drift`가 맡는다. MCP revoked 2세션(10-05, 10-09)은 `unity-mcp-seat-visibility`, 우편함 `&` 1회는 `mailbox-output-loss-hook`, heartbeat 5분 초과 1구간은 `worker-liveness-tool-check`가 맡는다. Gardener는 BACKLOG를 고치지 않았다.
 
-**정리 후보 2개 — 사용자 채택 질문 대기**. Gardener는 제안만 했고 채택·등록은 하지 않았다. 다음 메인 세션의 종료 기록 PR에서 사용자에게 묻는다.
+**정리 후보 2개 — 사용자 채택(2026-10-10)**. Gardener는 제안만 했고 채택·등록은 하지 않았다. 종료 기록 PR218에서 물었고 사용자가 두 후보를 모두 채택했다(`msg_ed07ba74a67f`, 결정 절 맨 위). 등록은 착수 권한이 아니다.
 
-1. Unity·서버 검증 harness의 세션별 재작성. 이 goal 안에서 batch 실행 harness 6개, 상태 기록 9개, 서버 lane 4개를 새로 쓰거나 고쳤다. 반대로 10-09 batch 두 세션은 Unity 업그레이드 goal의 harness를 고치지 않고 썼다. 제안은 그 harness가 출력 폴더와 허용 Editor를 인자로 받게 고쳐 추적되는 정본 위치로 올리는 것이다. 새 행이 아니라 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더한다.
-2. 서버 lane 정상 종료 경로(새 후보, 소유 Core). 서버 lane Stop 8회(7세션)가 모두 SIGINT 20초 무응답 뒤 SIGTERM으로 끝났다. `02_Server/GameServer/Program.cs`는 stdin 개행을 읽은 뒤에만 `host.Stop()`을 부르고 신호 처리기가 없다. `99_Tools/sync-wsl.sh`에는 stdin FIFO가 있지만 종료는 `kill`이다. 제안은 FIFO 개행 → 대기 → 남으면 TERM 순서의 종료 경로, Stop 기록의 `graceful` 필드, 정상 종료 smoke다.
+1. Unity·서버 검증 harness의 세션별 재작성. 이 goal 안에서 batch 실행 harness 6개, 상태 기록 9개, 서버 lane 4개를 새로 쓰거나 고쳤다. 반대로 10-09 batch 두 세션은 Unity 업그레이드 goal의 harness를 고치지 않고 썼다. 제안은 그 harness가 출력 폴더와 허용 Editor를 인자로 받게 고쳐 추적되는 정본 위치로 올리는 것이다. 새 행 없이 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더했다.
+2. 서버 lane 정상 종료 경로(새 후보, 소유 Core). 서버 lane Stop 8회(7세션)가 모두 SIGINT 20초 무응답 뒤 SIGTERM으로 끝났다. `02_Server/GameServer/Program.cs`는 stdin 개행을 읽은 뒤에만 `host.Stop()`을 부르고 신호 처리기가 없다. `99_Tools/sync-wsl.sh`에는 stdin FIFO가 있지만 종료는 `kill`이다. 제안은 FIFO 개행 → 대기 → 남으면 TERM 순서의 종료 경로, Stop 기록의 `graceful` 필드, 정상 종료 smoke다. 새 행 BACKLOG `server-lane-graceful-stop`(담당 후보 Core, 대기)으로 넣었다.
 
 - **리드 R-2**(`closeout/lead-gardener-r2-sample.txt`): `Program.cs`의 `Console.ReadLine()` → `host.Stop()` → 「Server stopped.」 순서와 신호 처리기 0을 직접 읽었다. junction과 Unity 업그레이드 goal의 lane harness hash `870f9643`이 같은 것과 Stop 원시 두 개의 INT→TERM 순서도 대조했다. 모두 보고와 같다.
 - **미분류 편차의 리드 확인**: Gardener가 넘긴 것은 `opus-pr1-fix1` 검증자가 남긴 scratchpad `git archive` 사본(`prefix-0f956d0`)과 WSL 복제본(`~/.cache/dawnholder/workspaces/b388ad9a6a4a6b0ed8b3`)이다. 그 계약 「쓰기 경계」는 Items 테스트, headless-bot 시나리오, `opus-pr1-fix1/` 근거만 허용했다. 리드 판단은 「쓰기 경계 밖의 저장소 외부 사본, 검증자 자기 공개, 제품·Git 쓰기 없음, 지난 일」이다. 같은 부류(허용 밖 임시 쓰기)는 이 goal에 두 건이 이미 기록돼 있다(main 동기화 검증자, `opus-pr2-review`). Gardener는 이 부류를 BACKLOG `designated-temp-wording`과 10-08 임시 쓰기 goal이 다룬다고 분류했다. 그래서 새 교정은 올리지 않고 기록만 한다.
 - **Gardener 자기 공개 위반**: 첫 Git 조회 두 개(`git rev-parse HEAD`, `git branch --show-current`)를 `GIT_OPTIONAL_LOCKS=0` 없이 실행했다. index mtime은 세션 시작 전 값 그대로였다. 직접 쓰기 범위 밖은 0이다.
 - **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true). 화면 표시는 26분 16초, 158,687 token이다(`closeout/gardener-last-screen.json`).
+
+### 종료 기록 문서 실사 — 2026-10-10
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_ddb59165558d` / `ctx_38991e92af98`, `[Content 검증자]` |
+| 모델 | 지정 `gpt-6-astra` xhigh. 최초 실행 명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 화면 표시 「GPT-6-Astra xhigh · Full Access · never」. backend 실제 모델 unknown |
+| 계약 | `closeout/doc-audit-contract.md` SHA256 `0ede26ff8766691d8e3a130b7c85e773d4faf7116d06aa8f69787032f392e6f1`, 보충 1(`msg_59b6ec8abf01`)·보충 2(`msg_a2e47498773e`) |
+| 대상 | PR218 head `cb8606482bb125d833afb807c05babc011a722f6`(base `e5653eb9`)와 PR218 본문 |
+| 판정 | `closeout/doc-audit/verdict.md` SHA256 `456b449e391a996629fbc741d6b8d927ca9374472622b0ff5807360651734b16`, worker_done `msg_01ccc15bafa8`. NOT PASS, 차단 3 |
+
+- **#D-01 첫 메모보다 앞선 쓰기**: 2026-10-09 이전 리드 세션이 결과 기록 세 문서(goal·BACKLOG·CURRENT)를 맥락 메모 전에 한 번 적용했다. 순서는 첫 적용 16:10:11Z → 되돌림 16:10:41Z → 메모 Write 16:11:14Z → 재적용 16:11:20Z다(이전 세션 대화 기록에서 뽑은 `closeout/lead-1010-prior-session-excerpt.txt`). 첫 적용은 commit 전에 되돌렸고, 당시 status `msg_6105981ef743`으로 공개했다. 메인 결정 `msg_ec4b3884d146`(메인 결정이며 사용자 결정이 아님)으로 사후 기록으로 받아들였다. 메모 시각은 고치지 않았다. Content 종료 기록에서는 [Unity 업그레이드 goal](../2026-10-07-unity-engine-upgrade/goal.md)의 PR206에 이은 두 번째 「메모보다 앞선 쓰기」다. 메인 판단대로 새 규칙 문장은 만들지 않고 BACKLOG `contract-context-check`의 근거에 이 사례를 더했다.
+- **#D-02 원문 경로**: 위 결정 절의 종료 결정 문단이 원문 셋을 inbox-24 하나로 안내했다. 앞 두 메시지가 inbox-23에 있도록 경로를 나눠 고쳤다.
+- **#D-03 표본 수**: 「J 통합 독립 검증」의 리드 R-2가 blob 표본을 10개로 적었다. 원시가 뒷받침하는 고유 경로 9개(현존 blob 5·양쪽 삭제 4)로 고쳤다. 새 표본을 실행해 소급하지 않았다.
+- **지적 없음**: BACKLOG 일곱 행, CURRENT(끝난 Unity 업그레이드 줄 삭제 포함), PR218 본문(파일과 문자열 일치), 후보 도착 검사 재실행 allowed·exit 0.
+- **비차단 관찰 O-1**: 「다음 계획 후보」의 두 초안 메시지(`msg_b9768c16772e`, `msg_b7d6727d60ab`)는 근거 폴더에 message 원문 객체가 없고 초안 사본만 있다. 기존 기록 한계로 두었다.
+- **검증자 자기 공개 H1**: heartbeat 간격 약 6분 18초(중간 blocking ask 1회 포함). 판정 영향은 관측되지 않았다.
+- **리드 R-2**(`closeout/lead-1010-doc-audit-r2-sample.txt`): inbox-23/24의 메시지 위치, 표본 3+6, #D-01 시각, 후보 검사 재실행 stdout이 판정과 같다.
+- **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인(작업 15분 19초) → close(ptyKilled true).
 
 ## 다음 계획 후보
 
