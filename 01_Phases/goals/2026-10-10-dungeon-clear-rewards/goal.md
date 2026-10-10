@@ -1,9 +1,9 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)의 구현·독립 검증·R9 실화면(통과)이 끝났다. 실화면이 찾은 HUD 골드 7자리 넘침(S-1)은 사용자 결정으로 이 PR에서 고쳤다(R10). 선행 시험·구현·독립 검증·실화면 재확인이 모두 통과했고, 사용자 병합 승인이 남았다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 지금은 던전 패킷·창 PR의 범위 초안을 메인에 올리는 단계다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`).
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`).
 - 착수 원천: 메인 `msg_9fe1d49e00bb`(2026-10-10T07:39:37Z)가 전달한 사용자 승인. 원문은 아래 [적용 중인 사용자 결정](#적용-중인-사용자-결정)에 있다. 범위 원문은 리드 초안 `msg_f1bba119c853`이다.
 - 로컬 원문·계약·판정은 `.backups/verification/2026-10-10-dungeon-clear-rewards/`에 둔다(Git 밖).
 
@@ -115,15 +115,15 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 
 | 항목 | 값 |
 |---|---|
-| 작업 공간 / branch | `content-active` / `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, origin/main `bd4dbb5f`·`6d09ac1f`·`b88a1b4b`를 합침) |
-| PR | [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221). 정확한 head는 PR 화면과 `git rev-parse HEAD`로 확인한다 |
+| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-packets-20261011`(base `e775bc775e6f93bab95a2412512c11332017abca` = PR221 병합) |
+| PR | 던전 패킷·창 PR은 아직 없다. 결함 PR은 [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(head `f135eaf1`, merge commit `e775bc77`) |
 | 리드 세션 / Run | `term_df056d96-0389-436c-afcf-3d189f8dea53` / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
 | 작업자·실행 자원 | 작업자 0(R10 실화면 재확인 검증자까지 정산·종료), Unity.exe 0, 7777 0(World·Core·Management에 해제 통보) |
 | 로컬 부수 변경 | batch가 다시 쓴 `ProjectSettings.asset`·`TimeManager.asset`은 두 번 되돌렸다. 독립 검증의 마지막 batch 뒤 09:51:43Z(`settings-restore/post-state.txt`), R10 독립 검증의 마지막 batch 뒤 14:29:38Z(`settings-restore-2/post-state.txt`)다. 지금 ProjectSettings `4a8db0bd…`, TimeManager blob = HEAD다. R9와 R10 재확인의 Editor는 두 파일을 바꾸지 않았다. Unity가 Git 무시 대상 layout 파일만 저장했다 |
-| 남은 결정·준비 | 사용자 병합 승인. CI가 새 head에서 통과한 뒤 메인에 정확한 head로 승인 묶음을 보낸다. 병합 뒤에는 던전 패킷·창 PR로 간다(서버 진입점은 「파트 간 소유와 계약」) |
+| 남은 결정·준비 | 던전 패킷·창 PR 범위 초안을 메인에 올리고 확인을 받는다(메인 `msg_c91503d507b1`). 확인 뒤 이 goal의 「설계」에 그 PR의 요구를 더하고 선행 시험부터 위임한다 |
 
-**남은 순서**: 사용자 병합 승인 → 던전 패킷·창 PR → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: 던전 패킷·창 PR(범위 확인 → 선행 시험 → 구현 → 독립 검증 → PR·CI → 사용자 병합 승인) → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -132,8 +132,8 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - [x] 결함 구현·검증
 - [x] R9 실화면
 - [x] R10 골드 넘침 수정·재확인
-- [>] 결함 PR 병합
-- [ ] 패킷·창 구현·검증
+- [x] 결함 PR 병합
+- [>] 패킷·창 구현·검증
 - [ ] 패킷 PR 병합
 - [ ] 클리어 설계 확정
 - [ ] 클리어 서버 구현
@@ -145,7 +145,7 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 ## 실제 결과와 미실행
 
 - 범위 초안·사용자 승인·World 계약 확인까지 했다. 원문은 근거 폴더의 `scope-draft-v1.md`와 `inbox/`에 있다.
-- 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증 → PR 생성(CI) → R9 실화면 → R10 수정 루프와 실화면 재확인까지 끝났다(아래 다섯 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), CI, Unity Editor 실화면(MCP). 실행하지 않은 것: 봇, 빌드 단독 실행, 사람 손 입력.
+- 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증 → PR 생성(CI) → R9 실화면 → R10 수정 루프와 실화면 재확인 → 사용자 병합 승인까지 끝났다(아래 다섯 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), CI, Unity Editor 실화면(MCP). 실행하지 않은 것: 봇, 빌드 단독 실행, 사람 손 입력.
 
 ### 선행 시험 — RED 준비 성공, 2026-10-10
 
@@ -227,6 +227,7 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - **리드 R-2**: 단계마다 원천을 직접 대조했다. 대상은 XML 루트 수치, 관측 로그 줄, scene 감사 결과, 새 시험 본문, 관측 표 60행, 테두리 픽셀 결과, 서버 로그 `C_Attack` 수, 10자리 확대 캡처 두 장이다. 모두 판정과 일치했다(독립 검증은 `lead-inbox-notes.md` 14:28Z 항목, 재확인은 `r10-screen-prep/r2-lead-sample-check.md`).
 - **자원**: 7777은 독립 검증에서 두 번(14:14:58Z·14:20:44Z 해제), 재확인에서 한 번(15:06:55Z 해제) 썼다. World·Core·Management에 사전·해제를 알렸다. 재확인의 802×451 Play 직전 커밋 여유가 3.35GB로 4GB 기준에 걸렸다. 재측정에서 열린 뒤 시작했다.
 - **origin/main 합치기**: 재확인 뒤 `b88a1b4b`(PR225 World 마감 문서, PR226 SQL Server 컨테이너 도구)를 합쳤다. 클라이언트·서버·공유 코드 변경은 0이다. CURRENT는 Content 줄 옆에서 충돌했다. main 판을 유지하고 Content 줄과 Content 안내만 다시 넣었다.
+- **병합**: CI 4/4 통과·CLEAN인 head `f135eaf1`로 메인에 승인 묶음을 보냈다(`msg_016b427a8aef`). 그 사이 PR227(Management)이 먼저 병합됐다. 겹치는 파일은 CURRENT 하나였고 `git merge-tree` 충돌이 0이라 다시 합치지 않았다. 사용자가 메인 pane에 승인 줄을 제출했고, 메인이 head·CI·CLEAN을 다시 확인해 병합했다(2026-10-10T15:54:25Z, merge commit `e775bc775e6f93bab95a2412512c11332017abca`, 메인 `msg_c91503d507b1`). 메인 R-2는 제품 파일이 클라이언트 4개이고 서버·공유 변경이 0임, 두 판정의 통과 줄, client.md 26행, merge-tree 결과를 대조했다.
 
 ### 운영 기록(첫 발생)
 

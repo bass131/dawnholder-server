@@ -4,7 +4,7 @@
 
 - Core: [실제 SQL 설치·저장소 통합](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/persistence-engine-judgment-20261006`
 
-- <a id="content-worktree"></a>Content: [던전 클리어·보상과 눈에 띄는 결함 둘](../../01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `fix/hud-gold-inventory-panel-20261010`
+- <a id="content-worktree"></a>Content: [던전 클리어·보상과 눈에 띄는 결함 둘](../../01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/dungeon-clear-packets-20261011`
 
 - World: [인스턴스 맵 — 파티별 사냥터·보스방 복사본](../../01_Phases/goals/2026-10-10-instance-map-lifecycle/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/instance-map-closeout-20261010`
 
