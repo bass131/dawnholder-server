@@ -183,6 +183,14 @@ function Edit-FixtureText {
         [Parameter(Mandatory)][AllowEmptyString()][string]$Replace
     )
     $text = Read-FixtureText -Path $Path
+    # Preserve raw fixture reads; adapt only a requested line edit to a CRLF checkout.
+    if (-not $text.Contains($Find) -and $text.Contains("`r`n")) {
+        $windowsFind = $Find.Replace("`r`n", "`n").Replace("`n", "`r`n")
+        if ($text.Contains($windowsFind)) {
+            $Find = $windowsFind
+            $Replace = $Replace.Replace("`r`n", "`n").Replace("`n", "`r`n")
+        }
+    }
     if (-not $text.Contains($Find)) {
         throw "Fixture edit target not found in ${Path}: $Find"
     }
