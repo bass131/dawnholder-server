@@ -7,8 +7,8 @@
 - [x] 백엔드 선행 시험
 - [x] 백엔드 구현·검증
 - [x] PR222 병합
-- [>] 화면 연결 구현·검증
-- [ ] 화면 PR 병합
+- [x] 화면 연결 구현·검증
+- [>] 화면 PR 병합
 - [ ] 중간 점검
 - [ ] 장애 대응 구현·검증
 - [ ] 장애 대응 PR 병합
@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 23:10 KST, PR2 결함 #1 수정 commit 뒤.**
+**기록 시점: 2026-10-11 00:06 KST, PR2 실제 진입 PASS 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 창 쪽 구현을 원천 대조해 commit했다(아래 「PR2 창 쪽 구현 결과」). PR2 독립 검증 1차가 NOT PASS(결함 #1, 한 줄 압축)였다(아래 「PR2 독립 검증 결과(1차)」). 결함 #1과 설계 관찰 (a)·(h)를 고쳐 commit했다(`8ff5174f`). 다음은 새 검증자의 재검증 → PR 생성 → 메인에 병합 승인 요청 순서다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 창 쪽 구현을 원천 대조해 commit했다(아래 「PR2 창 쪽 구현 결과」). PR2 독립 검증 1차가 NOT PASS(결함 #1, 한 줄 압축)였다(아래 「PR2 독립 검증 결과(1차)」). 결함 #1과 설계 관찰 (a)·(h)를 고쳐 commit했다(`8ff5174f`). 재검증은 실제 진입만 남긴 판정 보류였고, 새 검증 세션의 실제 진입이 PASS였다(아래 「PR2 재검증과 실제 진입 결과」). 다음은 최신 main 받기 → PR 생성 → 메인에 병합 승인 요청 순서다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -298,7 +298,7 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 수정 결과: worker_done `msg_e3d61bee717b`(succeeded, 발신·Task·Dispatch 일치), 보고 E/`pr2-fix1/report.md`. `backend-connection.ts` +17/−6(`defaultRunProcess`의 `exitCode` 변수, `releaseOperation`의 두 분기, 새 `isFreshConnection(candidate, previous)`를 시작 대기와 시작 중 종료 대상이 함께 씀, pid로 가르지 않는 이유 주석), `App.tsx` +22/−2(안내·하단 문구를 변수로 먼저 정하고 JSX를 여러 줄로). 같은 명령 E/`pr2-frontend-tests/raw/fix1-final/`: 1352건 중 통과 1350, 실패 2(기존), 건너뜀 0, typecheck 3종 exit 0. 리드 대조(일치): `vitest.json` 셈, 시험 경로 diff 빈 출력, 제품 diff가 두 파일뿐, 옛 `App.tsx` 두 줄과 새 변수의 문구·조건이 같음, Codex 세션 기록의 메모(14:02:38Z)가 첫 제품 쓰기(14:02:58Z)보다 앞섬, 쓰기 9건 모두 허용 경로, 캐시 감사가 UTC 기준과 양성 대조로 갱신 1건을 잡음.
 - 리드 절차 실수 1건(첫 발생 기록): 판정 처리 중 우편함 대기를 `run_in_background`가 아닌 셸 `&`로 한 번 띄웠다. 내 프로세스(Orca CLI)만 끄고 정본 방식으로 다시 열었다(wait44). 그 사이 받은 메시지는 없다(대기 출력은 keepalive 한 줄).
 
-### PR2 재검증 결과
+### PR2 재검증과 실제 진입 결과
 
 - 재검증 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, Claude Code v2.1.296, backend 실제 모델 unknown). Task `task_715f3d3ec48d`, Dispatch `ctx_17961c2dc645`, `turn_started` 관측. 계약 E/`contracts/pr2-reverify-task.md` SHA256 `b239ccbf26e448f17fef0cbdfcf729cd22b26928d3833cf3ed587c09947fc379`, 기준 HEAD `48f0ac01`. 범위: 수정 diff 실사, 결함 #1 해소, 새 연결 파일 판정의 독립 시험, 창 쪽 시험 명령, 연결까지 실제 진입 1회(게임 서버 시작 없음, 7777 미사용). 1차의 7777 실제 진입·백엔드 시험은 인용한다. 띄우기 직전 커밋 여유 14.15 GB(14:11:21Z).
 - 재검증 질문 1(`msg_c740b5a2805f`): 연결까지 실제 진입 첫 시도(14:28:33Z)가 검증자 wrapper 결함(제품 `main.js` import 전에 기다려 `registerSchemesAsPrivileged`가 앱 준비 뒤 실행)으로 창 없이 끝났다. 리드가 `failure.json`과 남은 프로세스 0을 확인하고 같은 설정으로 1회 재시도를 허용했다. 첫 시도는 제품 실패나 통과 근거로 쓰지 않고, 재시도도 harness 문제면 판정 보류로 남기게 했다(`msg_d4bfba27ad6e`).
@@ -310,3 +310,11 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
   - 설계 관찰 (i): 검증용 바꿈 경로를 모양 때문에 거부할 때도 화면이 「함께 지정해야 합니다」라고 보여 원인을 잘못 짚게 한다. 운영 사용자 영향은 없다. 1차 (b)~(g)와 함께 PR4 문서 정리 때 BACKLOG 반영을 판단한다.
 - 리드 표본 대조(일치): `reverify-before`·`after`의 `vitest.json` 셈과 실패 이름 2건, `git status`의 미추적이 새 시험 2파일뿐, `git diff --numstat`의 17/6·22/2, `prefix-module/run.log`의 실패 2·통과 4(낡은 pid를 다시 받은 새 백엔드에 `kill -TERM 4242` 기대), `defect1/changed-lines.json` 요약(더한 39·초과 0, 지운 8·초과 4, 최장 124자), entry3 `launcher.log`의 `C:\c\Users\…\entry-launch.mjs` MODULE_NOT_FOUND와 `app/` 폴더 없음, 대조 시점(14:41Z) `electron.exe` 0. 검증자 pane은 idle을 확인하고 닫았다.
 - 리드 판단: 제품 수정은 필요 없다. 남은 것은 강 등급 필수인 연결까지 실제 진입 1회뿐이라, 새 검증 세션 하나가 그것만 한다. 세 번의 harness 결함은 제품 결함 번호가 아니어서 [확정 실패](../../../00_Document/operations/ORCA.md#confirmed-failures) 집계 대상이 아니다. 새 세션은 경로를 실행기 안 상수로 두는 1차 harness 방식을 따르고, Electron을 띄우기 전에 실행기 경로와 두 바꿈 경로가 실제로 어떻게 넘어가는지 Electron 없이 인자만 찍는 확인을 먼저 남긴다.
+- 실제 진입 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 with xhigh effort, Claude Code v2.1.296, backend 실제 모델 unknown). Task `task_52a179ce355b`, Dispatch `ctx_f9041f4bf768`, `turn_started` 관측. 계약 E/`contracts/pr2-entry-task.md` SHA256 `7292ded0887a02bc2b560e70656a50aa5094d8e2155e40f070dc47ed87fc143d`, 기준 HEAD `fc089bc4`. 범위: 연결까지 실제 진입 1회만(Electron 기동 최대 2회, 띄우기 전 인자 확인 필수, 게임 서버 시작 없음, 7777 미사용). 재검증의 실사·시험은 인용한다. 띄우기 직전 커밋 여유 6.04 GB(14:46:01Z).
+- 실제 진입 질문 1(`msg_15f464a49351`): 검증자가 첫 heartbeat receipt를 허용 TEMP 바깥 `.backups/tmp/p2e-hb.txt`에 한 번 썼다가 곧바로 `p2e/hb-1.txt`로 옮겼다고 스스로 알렸다. 리드가 그 파일이 없고 옮긴 파일 내용이 맞는지 확인했다. Git 제외 임시 폴더의 한 줄이라 차단 사유로 보지 않고 판정 계속과 자기 쓰기 감사 기록을 지시했다(`msg_41e352fcead8`). 검증자는 실제 진입(entry1)을 14:54:43~14:55:00Z에 마쳤다고 알렸다.
+- 실제 진입 결과: worker_done `msg_5a95b1537e70`(succeeded, 발신·Task·Dispatch 일치). 판정 E/`pr2-entry/verdict.md`: **PASS — 강 등급 필수 셋 충족.** 첫 Electron 기동(entry1, 14:54:43~14:55:00Z, 보조 디스플레이, 앱 내부 수단만)에서 낡은 연결 파일(pid 4194303) 자리에 새 백엔드(pid 1370, `startedAt` 14:54:48.04Z)가 새 파일을 썼다. 창 준비 뒤 6.2초에 「관리 기능 연결됨」이 됐다. 상태 기록은 `starting` → `connected` 둘뿐이고 `startTimeout`은 없다. 트레이 「종료」 뒤 백엔드가 끝나고 연결 파일이 지워졌으며, 남은 electron·`wsl.exe`·백엔드는 없다. 새 제품 결함은 없다.
+  - 띄우기 전 확인(`raw/preflight.txt`)에서 두 바꿈 값이 `/home/bass1/…`로 넘어가는 것을 먼저 보였다. 실사·독립 시험·시험 명령은 재검증을 인용했다.
+  - 설계 관찰 (j): 바꿈 포트 47777로 띄워도 화면 낱말은 「7777 대기」로 고정이다. 운영 설정은 7777이라 사용자 영향은 없다. 재검증 (i)·1차 (b)~(g)와 함께 PR4 때 BACKLOG 반영을 판단한다.
+  - 동시 실행: Content의 7777 실행(dotnet pid 1142)은 전후 같은 pid로 그대로였다.
+- 리드 표본 대조(일치): `preflight.txt`의 실행기 경로와 두 바꿈 값, `launch.json` environment, `connection-meta-02`(낡은 pid 4194303)와 `-06`(pid 1370, 새 `startedAt`), `connection-states-07.json`의 두 상태, `events.ndjson`의 check 9건 모두 passed, `post-pids.txt`의 두 pid `gone`, `exit.json`에 남은 `wsl.exe` 둘이 기동 전부터 있던 `sync-wsl.sh run`이라는 `pre-processes.json`, `checkouts-diff.txt` same, 대조 시점 `electron.exe` 0, `git status`는 리드 goal뿐. 검증자 pane은 idle을 확인하고 닫았다.
+- PR2 검증 종합: 1차 NOT PASS(결함 #1) → 수정 1회 → 재검증 판정 보류(실제 진입만 남음) → 실제 진입 PASS. 같은 산출물 수정은 1회다.
