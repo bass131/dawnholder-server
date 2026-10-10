@@ -19,12 +19,13 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 20:50 KST, PR2 백엔드 구현과 창 쪽 선행 시험 착수 뒤.**
+**기록 시점: 2026-10-10 21:19 KST, PR2 백엔드 구현 commit 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현(Astra)과 창 쪽 선행 시험(신규 Opus)이 함께 일하는 중이다(아래 「PR2 백엔드 선행 시험 결과」 마지막 두 줄). 둘의 worker_done을 받아 원천 대조·commit한 뒤 창 쪽 구현(Astra)을 연다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험 작성자가 일하는 중이다. 그 worker_done을 받아 원천 대조·commit한 뒤 창 쪽 구현(Astra)을 연다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
+- **main을 받을 때(PR224 세션 쓰기 가드, 메인 사전 알림 `msg_ad1debb0eeeb`):** 병합된 main을 받은 뒤 Claude 세션의 첫 쓰기가 막히면 맥락 메모를 Write로 한 번 고쳐 쓴다. 리드의 임시 파일(commit 문구 등)은 스크래치패드가 아니라 `.backups/tmp/` 아래에 둔다. `orca` 명령 출력을 `/dev/null`·`| head`로 버리지 않는다. 오탐은 Rules 리드에 보낸다.
 - **근거 폴더 E:** 저장소 로컬 `.backups/verification/2026-10-10-ops-tool-v1/`(Git 제외). 범위 초안 `scope-draft.md`, 맥락 메모 `context-memo.md`·`context-memo-goal.md`, Run·송신 receipt가 있다.
 
 ## 요청 원천과 승인
@@ -247,3 +248,12 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 구현 질문 2(`msg_46315005ac00`): `init-config`가 JSON 쓰기와 0600·O_EXCL 생성에 `python3` here-doc을 쓴다. DEVELOPMENT 10행의 WSL Python 3 전제와 같은 스크립트가 source하는 `sdk.sh`의 같은 모양을 근거로 승인하고, 「Python 도구 작성」 원문을 보충 계약 E/`contracts/pr2-backend-impl-task.supplement-1.md`(SHA256 `504fd270…4610`)로 붙였다(`msg_67201cecfa72`).
 - 창 쪽 시험 질문 1(`msg_853a09e586b1`): 기존 `backlog-contrast.test.ts`가 자기 하네스로 숨은 Electron 창을 여는 것은 허용 실행으로 보고 `npm test` 전체를 그대로 돌린다(A). `main.ts`를 띄우는 기존 시험 네 파일에 연결 모듈 대역 `vi.mock`만 더하는 고정 입력 보완은 단정 무변경·대역 모양 일치·구현 전 결과 동일 조건으로 받았다(`msg_a697bfe25a08`).
 - 창 쪽 시험 질문 2(`msg_79076754feaf`): 상태 주기 요청은 앞 요청이 끝난 뒤 2초(겹치지 않음)로 정하고, 순번 시험은 버튼 동작 뒤 즉시 다시 읽기와 주기 요청이 겹치는 경우로 하게 했다(`msg_2e98af946c62`). 설계 「화면」 상태 갱신 줄에 반영했다.
+
+### PR2 백엔드 구현 결과
+
+- worker_done `msg_cb3a66b6c63d`(succeeded, 발신·Task·Dispatch 일치). 보고 E/`pr2-backend-impl/report.md`, 맥락 메모 E/`pr2-backend-impl/context-memo.md`. 제품 5파일 +249/-70줄(`BackendSettings.cs`, `LogStore.cs`, `PortLease.cs`, `ServerSupervisor.cs`, `backend-wsl.sh`), 새 제품 파일 없음.
+- 같은 명령: 첫 깨끗한 빌드 98건 중 96 통과(B4·C3 실패, 원인은 `/proc/locks`만 보는 잠금 관측) → 리드 답 `msg_7b06c8db46e0`의 fdinfo 보충 뒤 깨끗한 빌드 98/98, `backend-wsl.sh test` 98/98, `build` 경고 0. 시험 파일 무변경.
+- 원시 수치(같은 512 MiB 조건): E8 겹친 상태 응답 0.005초(구현 전 2.201초). B3 상태 조회 200번 동안 잠금 시도 1,868,955회 중 충돌 0. 임시 설정의 `backend-wsl.sh run --config`는 `…/release/Dawnholder.Management.Backend.dll`을 실행했고(B-5), 보충 경로를 포함한 상태 HTTP 왕복은 평균 5.7~10.4 ms(각 10회)다.
+- 메모리 대기: Release 실행 직전 3.86 GB(12:05Z)·2.45 GB(12:10Z)로 계약대로 미뤘고 7.35 GB(12:15Z)에서 진행했다.
+- 리드 표본 대조(일치): `clean-1`·`clean-2`·`entry-test`의 `results.trx` 셈과 실패 이름, trx 출력의 E8·B3·I5 수치, `git diff --stat 953f14f6`의 시험 경로 빈 출력, 제품 numstat 합계, Codex 세션 기록의 메모 추가(11:52:06Z)가 첫 제품 수정(11:52:28Z)보다 앞섬, 실제 WSL `HOME`의 설정 파일·기본 데이터 폴더 부재, 남은 백엔드·가짜 서버 프로세스 0. `PortLease.IsHeldByOther`는 `statx`로 장치·inode만 읽고 파일을 열거나 잠그지 않는다.
+- 남은 위험(보고 「남은 위험」): 인자 없는 `run`의 기본 설정 분기는 정적 실사와 임시 `HOME`의 `init-config`로만 확인했다. `python3`가 없으면 `sdk.sh`도 실패하므로 `run` 전체가 실패할 수 있다(기존 전제). 실제 GameServer·창 연결은 독립 검증 몫이다.
