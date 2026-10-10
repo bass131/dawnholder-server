@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 지금은 던전 패킷·창 PR의 범위 초안을 메인에 올리는 단계다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 메인 범위 확인과 요구 P1~P8 확정까지 했고, 선행 시험 위임 전에 세션을 마감했다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`).
@@ -139,17 +139,19 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-10T16:14:00Z(KST 10-11 01:14)이고, 메인 세션 마감 지시(`msg_8afbca6db8ac`, 사용자 원문 「오늘은 진행중인 파트들까지만 마무리하고 정리해야겠다」)로 멈췄다.
 
 | 항목 | 값 |
 |---|---|
+| 다음 첫 일 | 던전 패킷·창 PR 선행 시험을 신규 `claude-opus-5-5`에 위임한다. 준비본은 근거 폴더의 `packets-tdd-contract.md`(v1, SHA256 `4681e7c0…`), `packets-tdd-spec.md`, `packets-tdd-inputs.txt`, `packets-tdd-preflight.txt`, harness 사본 `packets-tdd/harness/`다. v1은 HEAD `9108f8df` 기준이고, 그 뒤 이 재개 지점 커밋으로 goal.md hash가 바뀌었다. 그래서 새 HEAD로 inputs·preflight를 다시 뜨고 계약을 v2로 올린 뒤 R-5로 기동한다. 기동 전에 Core·Management·World에 큰 실행을 알린다(16:12Z 예고는 16:13Z에 취소함) |
+| 열린 Task·Dispatch | 없다. Run의 Dispatch 9개가 모두 completed다(`packets-tdd-worker-list-preclose.json`). 선행 시험용으로 나눈 빈 셸 pane 하나는 작업자를 띄우기 전에 닫았다(`packets-tdd-unused-pane-close.json`) |
 | 작업 공간 / branch | `content-active` / `feat/dungeon-clear-packets-20261011`(base `e775bc775e6f93bab95a2412512c11332017abca` = PR221 병합) |
 | PR | 던전 패킷·창 PR은 아직 없다. 결함 PR은 [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(head `f135eaf1`, merge commit `e775bc77`) |
 | 리드 세션 / Run | `term_df056d96-0389-436c-afcf-3d189f8dea53` / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | 작업자 0(R10 실화면 재확인 검증자까지 정산·종료), Unity.exe 0, 7777 0(World·Core·Management에 해제 통보) |
+| 작업자·실행 자원 | 작업자 pane 0(16:14Z `terminal list`), Unity.exe 0, 7777 0. Content는 이 세션에서 더 큰 실행을 하지 않는다 |
 | 로컬 부수 변경 | batch가 다시 쓴 `ProjectSettings.asset`·`TimeManager.asset`은 두 번 되돌렸다. 독립 검증의 마지막 batch 뒤 09:51:43Z(`settings-restore/post-state.txt`), R10 독립 검증의 마지막 batch 뒤 14:29:38Z(`settings-restore-2/post-state.txt`)다. 지금 ProjectSettings `4a8db0bd…`, TimeManager blob = HEAD다. R9와 R10 재확인의 Editor는 두 파일을 바꾸지 않았다. Unity가 Git 무시 대상 layout 파일만 저장했다 |
-| 남은 결정·준비 | 범위는 메인이 확인했다(`msg_33d93ad1147f`). 요구는 「던전 패킷·창 PR의 요구」 P1~P8이다. 다음은 신규 Opus 선행 시험 위임이다. 큰 실행 전에 Core·Management·World에 알린다 |
+| 남은 결정·준비 | 사용자 결정으로 남은 것은 없다. 범위는 메인이 확인했다(`msg_33d93ad1147f`). 요구는 「던전 패킷·창 PR의 요구」 P1~P8이다. 클리어 PR 설계 절은 아직 쓰지 않았다. 패킷·창 PR 진행 중 대기 시간에 쓴다 |
 
 **남은 순서**: 던전 패킷·창 PR(선행 시험 → 구현 → 독립 검증 → PR·CI → 사용자 병합 승인) → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
