@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 20:47 KST, PR2 백엔드 선행 시험 commit 뒤.**
+**기록 시점: 2026-10-10 20:50 KST, PR2 백엔드 구현과 창 쪽 선행 시험 착수 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 다음은 백엔드 구현(Astra)과 창 쪽 선행 시험(신규 Opus)을 함께 여는 것이다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현(Astra)과 창 쪽 선행 시험(신규 Opus)이 함께 일하는 중이다(아래 「PR2 백엔드 선행 시험 결과」 마지막 두 줄). 둘의 worker_done을 받아 원천 대조·commit한 뒤 창 쪽 구현(Astra)을 연다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -241,3 +241,5 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 같은 명령의 구현 전 실행(E/`pr2-backend-tests/raw/pre-implementation-final/`, 직전 커밋 여유 4.67 GB): 98건 중 통과 85, 실패 13, 건너뜀 0, exit 1, 남은 프로세스·수신 대기 0. 실패 13건은 모두 새 시험이고, B4는 보존 동작이라 구현 전에도 통과한다. 원시 수치: E8 단독 조회 2.440초(512 MiB), 겹친 상태 응답 2.201초(상한 0.5초). B3 상태 조회 200번 동안 잠금 시도 660,583회 중 164회 충돌.
 - 리드 표본 대조(일치): 두 실행의 `results.trx` 셈과 실패 이름 13개, trx 출력의 E8·B3·I5 수치, B1 단정 18줄이 HEAD와 같음(메서드 이름 줄만 다름), 시험 파일 SHA256 38개 `OK`. 작성자 세션 기록에서 메모 쓰기(11:25:32Z)가 첫 시험 파일 쓰기(11:29:38Z)보다 앞섰고, 제품·문서 쓰기는 0이다. 실제 WSL `HOME`에 설정 파일·기본 데이터 폴더가 없고 실제 WSL 복사본 mtime은 그대로다.
 - 비차단 기록: 보고의 메모 「첫 쓰기 11:24:38Z」는 쓰기 직전 시각을 잰 값이다. 세션 기록의 Write 시각은 11:25:32Z다. 구현 전 H2는 기본값으로 떠 관리 포트 47321을 실행마다 약 0.2초 썼다(구현 뒤 사라짐). 남은 위험은 보고 「남은 위험」: B1 재시도 경로 미실행, B3 확률성, E8 1회 측정, `FreePort`를 쓰는 다른 시험의 같은 경합.
+- 백엔드 구현 착수: 신규 `gpt-6-astra` xhigh `[Management 구현 Astra]`(화면 표시 GPT-6-Astra xhigh, Codex v0.162.1, 권한 표시는 PR1과 같은 「YOLO mode · Full Access · never」, backend 실제 모델 unknown). Task `task_3e837159d5be`, Dispatch `ctx_2edcb6c77459`, `turn_started` 관측. 계약 E/`contracts/pr2-backend-impl-task.md` SHA256 `ba4e8a0d0b2a86b6d1e18879165b864ac412b2ab32720c3be68c09a3702cd7ab`, 기준 HEAD `953f14f6`.
+- 창 쪽 선행 시험 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, backend 실제 모델 unknown). Task `task_b7f4f015590c`, Dispatch `ctx_392cf1a73574`, `turn_started` 관측. 계약 E/`contracts/pr2-frontend-tests-task.md` SHA256 `0a509738b3a32ba03809a2f1142e23b387687f0f5af99a039beba4031b8b0373`, 기준 HEAD `953f14f6`. 두 작업자는 같은 checkout에서 서로 다른 폴더만 쓴다. 띄우기 직전 커밋 여유 5.19 GB(11:48:33Z).
