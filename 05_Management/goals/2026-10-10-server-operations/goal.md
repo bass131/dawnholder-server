@@ -6,8 +6,8 @@
 - [x] 실행 환경 실측
 - [x] 백엔드 선행 시험
 - [x] 백엔드 구현·검증
-- [>] 백엔드 PR 병합
-- [ ] 화면 연결 구현·검증
+- [x] PR222 병합
+- [>] 화면 연결 구현·검증
 - [ ] 화면 PR 병합
 - [ ] 중간 점검
 - [ ] 장애 대응 구현·검증
@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 19:20 KST, PR1 독립 검증 PASS 뒤.**
+**기록 시점: 2026-10-10 19:58 KST, PR222 병합 뒤.**
 
-- **지금 단계:** PR1 독립 검증이 PASS였다(아래 「PR1 독립 검증 결과」). PR1을 만들고 메인에 병합 승인을 요청한다. 병합 뒤에는 「PR2 전에 판단할 것」을 보고 PR2 설계를 시작한다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. 다음은 PR2 설계다. 아래 「PR2 전에 판단할 것」을 설계에 반영하고, 설계가 승인 범위를 바꾸면 구현 전에 메인에 알린다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -215,4 +215,11 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 관찰 7: 서버가 꺼져 있을 때 상태 조회마다 공유 7777 잠금을 잠깐 잡는다. 화면이 자주 물으면 개발 helper가 잘못 거부될 수 있다.
 - 관찰 3·5·6·8: `run`의 Debug 빌드, 종료 중 `portOwner: unknown` 표시, 응답이 익명 객체·상태 문자열, 남이 SIGKILL한 종료의 `signal: null`. 화면 연결 때 함께 본다.
 - 관찰 2(PR3): 게임 서버가 WSL 복사본 잠금 fd를 물려받는다.
-- B1 시험의 빈 포트 경합: 시험 소유자가 실패 메시지에 상태를 넣고 포트를 잡아 두는 방식으로 고칠 후보다.
+- B1 시험의 빈 포트 경합: PR2 안에서 처리한다(리드 결정 `msg_0967be03bc1d`, 메인이 처리 위치를 리드에게 맡김 `msg_4a1bb8f52967`). PR2 선행 시험 계약에 실패 메시지에 상태 JSON·포트를 넣고 빈 포트를 잡아 두는 helper로 바꾸는 일을 시험 소유자 작업으로 넣는다. PR2도 같은 시험 명령으로 검증하므로 같은 경합이 판정을 흐릴 수 있기 때문이다.
+
+### PR222 병합
+
+- PR222 「feat: add the management backend for server operations (ops tool V1.0 PR1)」, head `dbfe8f491b0cf97f8808957e8f52faf9d26a6624`. CI 4개 통과(check 2개, architecture-tests 7분 38초, dotnet-tests 23분 13초).
+- 승인 요청 `msg_122f13d62688`. 메인 R-2 원천 대조 뒤 B1 (d)는 PASS 안에 둔다는 메인 판단을 받았다(`msg_4a1bb8f52967`, 사용자 결정 아님).
+- 사용자가 메인 pane에 「병합 승인: PR222 head dbfe8f491b0cf97f8808957e8f52faf9d26a6624」를 제출했고, 메인이 head를 다시 확인한 뒤 병합했다. MERGED 2026-10-10T10:57:56Z, merge commit `20630a90b404fd4b736606c5dba81a20975204d2`(메인 `msg_bc88d40255f8`). 원격 branch는 자동 삭제됐다.
+- CURRENT 충돌: PR220(CodeMap 정리)이 먼저 병합돼 이 PR이 정리했다. PR220이 지운 줄은 두고 Management 줄만 이 goal로 바꿨다(merge commit `dbfe8f49`).
