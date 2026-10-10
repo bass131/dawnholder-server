@@ -28,7 +28,7 @@
 | ④ | `dotnet test` 풀스위트 | **392/0/4 — CI 숫자와 동일** (로컬 테스트 부활) |
 | ⑤ | Windows→wslrelay→WSL2 TCP 7777 | 접속 OK (Unity Play 경로 검증) |
 
-**트레이드오프**: ① 환경 2벌 (Windows 빌드 = Unity DLL 공급 / WSL = 실행) — rsync 한 단계 추가, sync 누락 = stale 코드 실행 함정 ② WSL 상주 메모리 비용 (idle 자동 반환되나 수 GB 가능) ③ sudo 설치류는 Claude 위임 불가 (TTY + 권한 게이트 이중 차단 실측) — 환경 셋업에 본인 손 필수 구간 존재 ④ **LocalDB는 Linux 부재** — M5 영속화 진입 시 SQL Server Linux 컨테이너 vs Windows 실행 회귀 vs 원격 DB 결정 필요 (**명시 이월**) ⑤ 서버/봇 로그가 WSL 내부(`/tmp`)에 박힘 — Windows 도구로 직접 못 열고 `wsl` 경유 한 단계.
+**트레이드오프**: ① 환경 2벌 (Windows 빌드 = Unity DLL 공급 / WSL = 실행) — rsync 한 단계 추가, sync 누락 = stale 코드 실행 함정 ② WSL 상주 메모리 비용 (idle 자동 반환되나 수 GB 가능) ③ sudo 설치류는 Claude 위임 불가 (TTY + 권한 게이트 이중 차단 실측) — 환경 셋업에 본인 손 필수 구간 존재 ④ **LocalDB는 Linux 부재** — 2026-10-10 [ADR-035](../tech-stack/ADR-035-sqlserver-container-tools.md)의 로컬 시험 DB Linux SQL Server 컨테이너 선택으로 **이월 결정 종결**. 실제 실행·게임 서버 연결 완료와는 구분 ⑤ 서버/봇 로그가 WSL 내부(`/tmp`)에 박힘 — Windows 도구로 직접 못 열고 `wsl` 경유 한 단계.
 
 ---
 

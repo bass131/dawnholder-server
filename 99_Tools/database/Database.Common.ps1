@@ -3,42 +3,6 @@ $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot 'SqlError.Common.ps1')
 
-function Open-LocalDatabase(
-    [string]$Instance,
-    [string]$Database
-) {
-    # Deliberately local Windows/shared memory only. No password argument or remote alias.
-    if ($Instance -notmatch '^\.\\[A-Za-z0-9_]+$') {
-        throw 'Instance must be .\LOCAL_INSTANCE.'
-    }
-    if ($Database -ne 'master' -and $Database -notmatch '^Dawnholder_Dev(?:_[A-Za-z0-9_]+)?$') {
-        throw 'Only Dawnholder_Dev or Dawnholder_Dev_<suffix> is allowed.'
-    }
-    if ($Database.Length -gt 128) {
-        throw 'Database identifier is too long.'
-    }
-    $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
-    $builder['Data Source'] = 'lpc:' + $Instance
-    $builder['Initial Catalog'] = $Database
-    $builder['Integrated Security'] = $true
-    $builder['Encrypt'] = $true
-    $builder['TrustServerCertificate'] = $true # Local development shared memory only.
-    $builder['Connect Timeout'] = 5
-    $builder['Application Name'] = 'Dawnholder.DatabaseTool'
-    $connection = New-Object System.Data.SqlClient.SqlConnection $builder.ConnectionString
-    try {
-        $connection.Open()
-        $machine = Invoke-DbScalar -Connection $connection -Sql "SELECT CONVERT(nvarchar(128),SERVERPROPERTY('MachineName'))"
-        if ($machine -ne $env:COMPUTERNAME) {
-            throw 'SQL machine does not match this Windows computer.'
-        }
-        return $connection
-    } catch {
-        $connection.Dispose()
-        throw
-    }
-}
-
 function New-DbCommand(
     $Connection,
     [string]$Sql,

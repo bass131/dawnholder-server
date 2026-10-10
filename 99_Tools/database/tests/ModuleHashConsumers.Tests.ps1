@@ -901,7 +901,7 @@ Assert-True -Name 'ModuleHash.Common.ps1 functions do not redefine a function of
     -Detail ('scripts=' + $productScripts.Count + '; collisions=' + ($collisions -join ','))
 $forbidden = @(
     'Read-ModuleBundle', 'Test-ModuleStructure', 'Invoke-Migrations', 'Invoke-ModuleBundle', 'Invoke-DbScalar',
-    'Invoke-DbNonQuery', 'New-DbCommand', 'Open-LocalDatabase', 'Invoke-Sqlcmd', 'sqlcmd', 'Invoke-Expression',
+    'Invoke-DbNonQuery', 'New-DbCommand', 'Open-TestEnvironmentDatabase', 'Invoke-Sqlcmd', 'sqlcmd', 'Invoke-Expression',
     'Set-Content', 'Add-Content', 'Out-File', 'New-Item', 'Remove-Item', 'Set-Item', 'Copy-Item', 'Move-Item'
 )
 $commandNodes = $ast.FindAll({ param($node) $node -is [Management.Automation.Language.CommandAst] }, $true)
@@ -960,7 +960,7 @@ foreach ($case in $importCases) {
 $fixtureForStub = New-DatabaseFixture -Name 'stubbed-callers'
 $stubNames = @(
     'Read-ModuleBundle', 'Test-ModuleStructure', 'Get-ModuleExecutableText',
-    'Invoke-DbScalar', 'Invoke-DbNonQuery', 'New-DbCommand', 'Open-LocalDatabase'
+    'Invoke-DbScalar', 'Invoke-DbNonQuery', 'New-DbCommand', 'Open-TestEnvironmentDatabase'
 )
 $stubList = (@($stubNames | ForEach-Object { "'$_'" })) -join ', '
 $stubbed = Invoke-ChildScript -Name 'hash-without-bundle-reader' -Lines @(

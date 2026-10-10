@@ -15,38 +15,7 @@ $fixtureRoot = $script:SuiteRoot
 $database = 'Dawnholder_Dev_Fixture'
 
 function New-PlanObject {
-    $root = $fixtureRoot
-    return [pscustomobject][ordered]@{
-        PlanVersion = 1
-        SchemaVersion = 1
-        ExecutionApproved = $false
-        Goal = 'offline-fixture'
-        GoalMarker = 'offline-fixture-marker'
-        G0 = 'fixture-g0'
-        G1 = 'fixture-g1'
-        G2 = ''
-        Machine = 'FIXTUREHOST'
-        Instance = '.\FIXTURE'
-        InstanceName = 'FIXTURE'
-        Endpoint = 'tcp:127.0.0.1,14330'
-        Database = $database
-        SlotId = 1
-        AccountId = '11111111-1111-1111-1111-111111111111'
-        CharacterId = '22222222-2222-2222-2222-222222222222'
-        RuntimeLogin = 'dh_fixture_runtime'
-        RecoveryPrincipal = 'FIXTUREHOST\dhrecovery'
-        RecoveryLocalName = 'dhrecovery'
-        ExecutorSid = 'S-1-5-21-1-2-3-1001'
-        Encrypt = $true
-        TrustServerCertificate = $true
-        ManifestPath = Join-Path $root 'lifecycle\manifest.json'
-        SettlementPath = Join-Path $root 'lifecycle\settlement.json'
-        PrivateDirectory = Join-Path $root 'private'
-        IdentityDirectory = Join-Path $root 'identity'
-        IdentityPath = Join-Path $root 'identity\identity.json'
-        RuntimeCredentialPath = Join-Path $root 'private\runtime.cred'
-        RecoveryCredentialPath = Join-Path $root 'private\recovery.cred'
-    }
+    return New-OfflineContainerPlan -Root $fixtureRoot -Database $database
 }
 
 function Write-PlanFile {
@@ -96,22 +65,22 @@ Assert-NoThrow -Name 'BOM-prefixed plan hashed as stored bytes and parsed' -Acti
 }
 
 # ---- Approval plan shape: exact local target, principals and separated paths.
-$invalidTarget = '^Invalid explicit local target/principal'
+$invalidTarget = '^Invalid explicit container target/principal'
 foreach ($case in @(
         @{ Name = 'default game database name'; Property = 'Database'; Value = 'Dawnholder_Dev'; Pattern = $invalidTarget },
         @{ Name = 'unrelated database'; Property = 'Database'; Value = 'GameDB'; Pattern = $invalidTarget },
-        @{ Name = 'instance not matching instance name'; Property = 'Instance'; Value = '.\OTHER'; Pattern = $invalidTarget },
+        @{ Name = 'invalid container hostname'; Property = 'ContainerHostname'; Value = 'bad.host'; Pattern = '^Invalid explicit container' },
         @{ Name = 'non-loopback endpoint'; Property = 'Endpoint'; Value = 'tcp:10.0.0.5,14330'; Pattern = $invalidTarget },
         @{ Name = 'endpoint port out of range'; Property = 'Endpoint'; Value = 'tcp:127.0.0.1,70000'; Pattern = $invalidTarget },
-        @{ Name = 'recovery principal on another machine'; Property = 'RecoveryPrincipal'; Value = 'OTHERHOST\dhrecovery'; Pattern = $invalidTarget },
-        @{ Name = 'runtime login equals recovery principal'; Property = 'RuntimeLogin'; Value = 'FIXTUREHOST\dhrecovery'; Pattern = $invalidTarget },
+        @{ Name = 'non-sa admin'; Property = 'AdminLogin'; Value = 'other'; Pattern = $invalidTarget },
+        @{ Name = 'runtime login equals admin'; Property = 'RuntimeLogin'; Value = 'sa'; Pattern = $invalidTarget },
         @{ Name = 'malformed executor SID'; Property = 'ExecutorSid'; Value = 'S-1-x'; Pattern = $invalidTarget },
         @{ Name = 'empty binding GUID'; Property = 'AccountId'; Value = '00000000-0000-0000-0000-000000000000'; Pattern = '^Invalid fixed binding: AccountId' },
-        @{ Name = 'plan version 2'; Property = 'PlanVersion'; Value = 2; Pattern = '^Unsupported approval-plan version' },
-        @{ Name = 'encryption disabled'; Property = 'Encrypt'; Value = $false; Pattern = '^Unsupported approval-plan version' },
-        @{ Name = 'slot 2'; Property = 'SlotId'; Value = 2; Pattern = '^Unsupported approval-plan version' },
+        @{ Name = 'plan version 1'; Property = 'PlanVersion'; Value = 1; Pattern = '^Unsupported approval-plan' },
+        @{ Name = 'encryption disabled'; Property = 'Encrypt'; Value = $false; Pattern = '^Unsupported approval-plan' },
+        @{ Name = 'slot 2'; Property = 'SlotId'; Value = 2; Pattern = '^Unsupported approval-plan' },
         @{ Name = 'UNC manifest path'; Property = 'ManifestPath'; Value = '\\server\share\manifest.json'; Pattern = '^Approval paths must be explicit local absolute paths: ManifestPath' },
-        @{ Name = 'non-normalized identity path'; Property = 'IdentityPath'; Value = (Join-Path $fixtureRoot 'identity\..\identity\identity.json');
+        @{ Name = 'non-normalized identity path'; Property = 'IdentityPath'; Value = (Join-Path $fixtureRoot 'profile\Dawnholder\identity\..\identity\identity.json');
             Pattern = '^Approval paths must be distinct, normalized' },
         @{ Name = 'settlement path equal to manifest path'; Property = 'SettlementPath'; Value = (Join-Path $fixtureRoot 'lifecycle\manifest.json');
             Pattern = '^Approval paths must be distinct, normalized' },
@@ -130,14 +99,14 @@ Assert-Throws -Name 'plan missing a required field rejected' -Pattern '^Missing 
     -Action { Assert-TestEnvironmentApprovalPlan -Plan $plan }
 
 $plan = New-PlanObject
-$plan.ManifestPath = Join-Path $fixtureRoot 'private\manifest.json'
-$plan.SettlementPath = Join-Path $fixtureRoot 'private\settlement.json'
+$plan.ManifestPath = Join-Path $fixtureRoot 'profile\Dawnholder\private\manifest.json'
+$plan.SettlementPath = Join-Path $fixtureRoot 'profile\Dawnholder\private\settlement.json'
 Assert-Throws -Name 'nonsecret lifecycle evidence inside the private directory rejected' `
     -Pattern '^Nonsecret lifecycle evidence must remain outside' -Action { Assert-TestEnvironmentApprovalPlan -Plan $plan }
 
 $plan = New-PlanObject
-$plan.IdentityDirectory = Join-Path $fixtureRoot 'private\identity'
-$plan.IdentityPath = Join-Path $fixtureRoot 'private\identity\identity.json'
+$plan.IdentityDirectory = Join-Path $fixtureRoot 'profile\Dawnholder\private\identity'
+$plan.IdentityPath = Join-Path $fixtureRoot 'profile\Dawnholder\private\identity\identity.json'
 Assert-Throws -Name 'child identity directory nested in private directory rejected' `
     -Pattern '^Private and child directories must have separate ACL boundaries' -Action { Assert-TestEnvironmentApprovalPlan -Plan $plan }
 
@@ -157,23 +126,23 @@ Assert-Throws -Name 'draft contract cannot execute' -Pattern '^Draft plan cannot
     -Action { Assert-TestEnvironmentExecutionApproval -Contract $script:read }
 Assert-NoThrow -Name 'in-memory approved contract with G2 passes the execution gate' `
     -Action { Assert-TestEnvironmentExecutionApproval -Contract (Get-ApprovedContract) }
-Assert-NoThrow -Name 'exact database and instance accepted' `
-    -Action { Assert-TestEnvironmentTarget -Contract $script:read -Database $database -Instance '.\FIXTURE' }
+Assert-NoThrow -Name 'exact database and endpoint accepted' `
+    -Action { Assert-TestEnvironmentTarget -Contract $script:read -Database $database -Endpoint 'tcp:127.0.0.1,14330' }
 foreach ($case in @(
-        @{ Name = 'database differing only by case'; Database = 'dawnholder_Dev_Fixture'; Instance = '' },
-        @{ Name = 'another approved-looking database'; Database = 'Dawnholder_Dev_Other'; Instance = '' },
-        @{ Name = 'other instance'; Database = $database; Instance = '.\SQLEXPRESS' },
-        @{ Name = 'empty database'; Database = ''; Instance = '' }
+        @{ Name = 'database differing only by case'; Database = 'dawnholder_Dev_Fixture'; Endpoint = '' },
+        @{ Name = 'another approved-looking database'; Database = 'Dawnholder_Dev_Other'; Endpoint = '' },
+        @{ Name = 'other endpoint'; Database = $database; Endpoint = 'tcp:127.0.0.1,14331' },
+        @{ Name = 'empty database'; Database = ''; Endpoint = '' }
     )) {
     Assert-Throws -Name ("target $($case.Name) rejected") -Pattern '^Supply the explicit exact approved database' `
-        -Action { Assert-TestEnvironmentTarget -Contract $script:read -Database $case.Database -Instance $case.Instance }
+        -Action { Assert-TestEnvironmentTarget -Contract $script:read -Database $case.Database -Endpoint $case.Endpoint }
 }
 Assert-Throws -Name 'relative lifecycle path rejected' -Pattern '^Test environment path is not the exact approved absolute path' `
     -Action { Assert-TestEnvironmentPath -Path 'lifecycle\manifest.json' -Expected $script:read.ManifestPath }
 Assert-Throws -Name 'other lifecycle path rejected' -Pattern '^Test environment path is not the exact approved absolute path' `
     -Action { Assert-TestEnvironmentPath -Path (Join-Path $fixtureRoot 'other.json') -Expected $script:read.ManifestPath }
 
-# ---- Lifecycle manifest: SQL migration boundary per state, lifecycle schema stays 1.
+# ---- Lifecycle manifest: SQL migration boundary per state, lifecycle schema is 2.
 $contract = Get-ApprovedContract
 $migrations = @(Get-DatabaseMigrationSources -Phase Complete -DatabaseRoot $script:ToolRoot | ForEach-Object {
         [pscustomobject]@{ Version = $_.Version; Name = $_.Name; Checksum = $_.Checksum }
@@ -190,7 +159,7 @@ Assert-NoThrow -Name 'manifest: Planned/no migrations, Baseline001/001, Installe
     Test-ManifestBoundary -State 'Baseline001' -Rows @($migrations[0])
     Test-ManifestBoundary -State 'Installed' -Rows $migrations
 }
-Assert-Equal -Name 'manifest lifecycle schema remains 1' -Expected 1 `
+Assert-Equal -Name 'manifest lifecycle schema is 2' -Expected 2 `
     -Actual (New-TestEnvironmentManifest -Contract $contract -Database $database).SchemaVersion
 $boundary = '^Lifecycle state does not match the recorded SQL migration boundary'
 $ordered = '^Recorded migrations must retain the reviewed ordered contiguous version/name contract'
@@ -282,116 +251,6 @@ Assert-True -Name 'New-TestDatabase OfflinePlan with another manifest path rejec
     $offlineWrongPath.ExitCode -ne 0 -and ($offlineWrongPath.StdOut + $offlineWrongPath.StdErr) -cmatch 'not the exact approved absolute path') `
     -Detail ('exit=' + $offlineWrongPath.ExitCode)
 
-# ---- SQL executor identity: evaluate the product guard without opening its SqlConnection boundary.
-# The actual if statement comes from the product AST; fixture expectations are fixed pass/reject outcomes.
-$executorTokens = $null
-$executorParseErrors = $null
-$executorCommonPath = Join-Path $script:ToolRoot 'test-environment/Environment.Common.ps1'
-$executorCommonAst = [Management.Automation.Language.Parser]::ParseFile(
-    $executorCommonPath, [ref]$executorTokens, [ref]$executorParseErrors)
-Assert-Equal -Name 'SQL executor guard product source parses' -Expected 0 -Actual $executorParseErrors.Count
-$executorOpenAst = $executorCommonAst.Find({
-        param($node)
-        $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -ceq 'Open-TestEnvironmentDatabase'
-    }, $true)
-Assert-True -Name 'Open-TestEnvironmentDatabase exists in the product source' -Condition ($null -ne $executorOpenAst)
-$executorGuards = @()
-if ($null -ne $executorOpenAst) {
-    $executorGuardPredicate = {
-        param($node)
-        $node -is [Management.Automation.Language.IfStatementAst] -and
-        $node.Extent.Text.Contains("throw 'Exact local instance and privileged SQL executor required.'")
-    }
-    $executorGuards = @($executorOpenAst.FindAll($executorGuardPredicate, $true))
-}
-Assert-Equal -Name 'the exact SQL executor guard is unique in the product function' `
-    -Expected 1 -Actual $executorGuards.Count
-if ($executorGuards.Count -eq 1) {
-    $executorGuardText = 'param($row, $Manifest, $Contract)' + "`n" + $executorGuards[0].Extent.Text
-    [IO.File]::WriteAllText((Join-Path $script:SuiteRoot 'sql-executor-guard.ps1'),
-        $executorGuardText, (New-Object Text.UTF8Encoding($false)))
-    $executorGuardBlock = [scriptblock]::Create($executorGuardText)
-    $executorManifest = [pscustomobject]@{ Machine = 'FIXTUREHOST' }
-    $executorContract = [pscustomobject]@{ InstanceName = 'FIXTURE' }
-    foreach ($case in @(
-            @{ Name = 'identical machine name case'; Machine = 'FIXTUREHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
-                Accepted = $true },
-            @{ Name = 'machine names differing only in case'; Machine = 'FixtureHost'; InstanceName = 'FIXTURE';
-                IsSysadmin = 1; Accepted = $true },
-            @{ Name = 'a different machine name'; Machine = 'OTHERHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
-                Accepted = $false },
-            @{ Name = 'a different instance name'; Machine = 'FIXTUREHOST'; InstanceName = 'OTHER'; IsSysadmin = 1;
-                Accepted = $false },
-            @{ Name = 'a non-sysadmin executor'; Machine = 'FIXTUREHOST'; InstanceName = 'FIXTURE'; IsSysadmin = 0;
-                Accepted = $false }
-        )) {
-        $sqlIdentity = [pscustomobject]@{
-            Machine = $case.Machine
-            InstanceName = $case.InstanceName
-            IsSysadmin = $case.IsSysadmin
-        }
-        $executorMessage = Get-ThrownMessage -Action {
-            & $executorGuardBlock -row $sqlIdentity -Manifest $executorManifest -Contract $executorContract
-        }
-        if ($case.Accepted) {
-            Assert-True -Name ('SQL executor guard accepts ' + $case.Name) `
-                -Condition ($null -eq $executorMessage) -Detail ([string]$executorMessage)
-        } else {
-            $executorRejected = $null -ne $executorMessage
-            Assert-True -Name ('SQL executor guard rejects ' + $case.Name) -Condition $executorRejected
-            Assert-Equal -Name ('SQL executor guard preserves the exact error for ' + $case.Name) `
-                -Expected 'Exact local instance and privileged SQL executor required.' -Actual $executorMessage
-        }
-    }
-}
-
-# ---- Machine comparison boundaries: only letter case is ignored. Whitespace, missing or extra characters,
-# DNS qualification and SQL NULL still reject, and the instance and sysadmin conditions keep their exact checks.
-# Rows are DataRows so a SQL NULL arrives as DBNull, the shape the product reads after DataTable.Load.
-if ($executorGuards.Count -eq 1) {
-    $boundaryTable = [Data.DataTable]::new()
-    [void]$boundaryTable.Columns.Add('Machine', [string])
-    [void]$boundaryTable.Columns.Add('InstanceName', [string])
-    [void]$boundaryTable.Columns.Add('IsSysadmin', [int])
-    $boundaryManifest = [pscustomobject]@{ Machine = 'FIXTUREHOST' }
-    $boundaryContract = [pscustomobject]@{ InstanceName = 'FIXTURE' }
-    foreach ($case in @(
-            @{ Name = 'a machine name in lower case'; Machine = 'fixturehost'; InstanceName = 'FIXTURE';
-                IsSysadmin = 1; Accepted = $true },
-            @{ Name = 'a machine name with trailing whitespace'; Machine = 'FIXTUREHOST '; InstanceName = 'FIXTURE';
-                IsSysadmin = 1; Accepted = $false },
-            @{ Name = 'a case-variant machine name with an extra character'; Machine = 'FixtureHost2';
-                InstanceName = 'FIXTURE'; IsSysadmin = 1; Accepted = $false },
-            @{ Name = 'a truncated machine name'; Machine = 'FIXTUREHOS'; InstanceName = 'FIXTURE'; IsSysadmin = 1;
-                Accepted = $false },
-            @{ Name = 'a DNS-qualified machine name'; Machine = 'fixturehost.fixture.local'; InstanceName = 'FIXTURE';
-                IsSysadmin = 1; Accepted = $false },
-            @{ Name = 'a NULL SQL machine name'; Machine = [DBNull]::Value; InstanceName = 'FIXTURE'; IsSysadmin = 1;
-                Accepted = $false },
-            @{ Name = 'an instance name differing only in case'; Machine = 'fixturehost'; InstanceName = 'fixture';
-                IsSysadmin = 1; Accepted = $false },
-            @{ Name = 'a non-sysadmin executor on a case-variant machine name'; Machine = 'fixturehost';
-                InstanceName = 'FIXTURE'; IsSysadmin = 0; Accepted = $false }
-        )) {
-        $boundaryRow = $boundaryTable.NewRow()
-        $boundaryRow['Machine'] = $case.Machine
-        $boundaryRow['InstanceName'] = $case.InstanceName
-        $boundaryRow['IsSysadmin'] = $case.IsSysadmin
-        $boundaryTable.Rows.Add($boundaryRow)
-        $boundaryMessage = Get-ThrownMessage -Action {
-            & $executorGuardBlock -row $boundaryRow -Manifest $boundaryManifest -Contract $boundaryContract
-        }
-        if ($case.Accepted) {
-            Assert-True -Name ('SQL executor guard accepts ' + $case.Name) `
-                -Condition ($null -eq $boundaryMessage) -Detail ([string]$boundaryMessage)
-        } else {
-            $boundaryRejected = $null -ne $boundaryMessage
-            Assert-True -Name ('SQL executor guard rejects ' + $case.Name) -Condition $boundaryRejected
-            Assert-Equal -Name ('SQL executor guard preserves the exact error for ' + $case.Name) `
-                -Expected 'Exact local instance and privileged SQL executor required.' -Actual $boundaryMessage
-        }
-    }
-}
+# Container identity/Open, SQL error categories and credentials are exercised by ContainerConnection.Tests.ps1.
 
 Complete-TestSuite
