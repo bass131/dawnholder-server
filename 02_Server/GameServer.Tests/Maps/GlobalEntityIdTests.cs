@@ -11,7 +11,7 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 //
 // **검증 범위** (ADR-026 정합):
 //   - GameWorld.NextEntityId()가 단조 증가하며 globally-unique id 발급
-//   - 4맵 생성 후 AddPlayer가 전역 발급기에서 id 받음 (맵별 1 재시작 X)
+//   - 복사본 생성 후 AddPlayer가 전역 발급기에서 id 받음 (맵별 1 재시작 X)
 //   - SpawnEnemy도 전역 발급기에서 id 받음
 //   - 로컬 모드(idAllocator=null): 단독 GameMap 생성 시 1부터 시작 (테스트 격리 보존)
 //
@@ -25,7 +25,7 @@ public class GlobalEntityIdTests : IDisposable
     public GlobalEntityIdTests()
     {
         // HuntingGround Normal + BossRoom Boss content 주입 (옛 MapSpawnTable 값 보존).
-        // 생성 순서 결정론: Town→HG→BR→Ending → HG Normal=id1, BR Boss=id2.
+        // 시험이 HG→BR 복사본을 명시 생성하면 Normal=id1, Boss=id2.
         var provider = new Dictionary<MapId, (MapTerrain? Terrain, MapContent? Content)>
         {
             [MapId.Town] = (null, MapContent.Empty),
@@ -70,13 +70,9 @@ public class GlobalEntityIdTests : IDisposable
     [Fact]
     public void AllMaps_EnemyIds_AreGloballyUnique()
     {
-        // GameWorld ctor에서 4맵 생성 시 enemy가 전역 풀에서 id 받음.
-        // HuntingGround Normal=id??, BossRoom Boss=id?? — 서로 다른 id 보장.
-        //
-        // 구체적 기대값: Town(enemy 0개) → HuntingGround Normal = 1, BossRoom Boss = 2.
-        // (GameWorld ctor 주석 "생성 순서 결정론적 고정" 참조)
-        GameMap hg = _world.GetMap(MapId.HuntingGround)!;
-        GameMap br = _world.GetMap(MapId.BossRoom)!;
+        // 복사본 생성 순서를 입력으로 고정하고 전역 발급의 유일성·증가를 확인한다.
+        GameMap hg = _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(7));
+        GameMap br = _world.GetOrCreateInstance(MapId.BossRoom, InstanceKey.ForSolo(7));
 
         int normalId = hg.Enemies.Keys.Single();   // Normal enemy id
         int bossId = br.Enemies.Keys.Single();     // Boss enemy id
@@ -92,10 +88,9 @@ public class GlobalEntityIdTests : IDisposable
     [Fact]
     public void AddPlayer_Town_Gets_GlobalId_AfterEnemies()
     {
-        // GameWorld 4맵 생성 후 Town.AddPlayer() 호출 → 전역 풀에서 id 받음.
-        // enemy들(HuntingGround Normal=1, BossRoom Boss=2) 이후 발급 → player id > 2.
-        //
-        // Town 맵은 tick thread를 직접 사용하지 않고 직접 AddPlayer (테스트 직접 접근).
+        // 인스턴스는 지연 생성된다. 적 둘을 HG→BR 순서로 만든 뒤 같은 전역 발급 단정을 유지한다.
+        _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(7));
+        _world.GetOrCreateInstance(MapId.BossRoom, InstanceKey.ForSolo(7));
         GameMap town = _world.GetMap(MapId.Town)!;
         PlayerEntity player = town.AddPlayer(owner: null, spawnPos: Vector2.Zero);
 
@@ -126,7 +121,7 @@ public class GlobalEntityIdTests : IDisposable
         // AddPlayer 후 SpawnEnemy도 같은 전역 풀에서 id 받음.
         // → entity id 공간에서 player와 enemy가 섞여도 id 충돌 없음.
         GameMap town = _world.GetMap(MapId.Town)!;
-        GameMap hg = _world.GetMap(MapId.HuntingGround)!;
+        GameMap hg = _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(7));
 
         int normalEnemyId = hg.Enemies.Keys.Single(); // 전역 풀에서 이미 발급된 id
 

@@ -39,18 +39,16 @@ internal static class MapMigration
     /// <param name="entityId">세션의 entityId (_entityId 캡처값, tick thread 진입 전 캡처).</param>
     /// <param name="currentMap">현재 맵 (맵 A). 호출자가 EnqueueJob으로 이 맵 tick thread에서 호출.</param>
     /// <param name="portalId">클라가 보낸 portalId (untrusted — 범위 검증 후 사용).</param>
-    /// <param name="getDestMap">목적지 맵 조회 delegate (virtual hook 위임 — 테스트 override 지원).</param>
     /// <param name="getKillCount">entityId → killCount 서버 권위 조회 delegate (테스트 override 지원).</param>
     public static void Execute(
         GameSession session,
         int entityId,
         GameMap currentMap,
         int portalId,
-        Func<MapId, GameMap?> getDestMap,
         Func<int, int> getKillCount)
     {
         // ── 검증 단계 ────────────────────────────────────────────────────
-        if (!session.OwnsPlayer(currentMap, entityId)) return;
+        if (session.ReadMigrating() != 0 || !session.OwnsPlayer(currentMap, entityId)) return;
 
         // 1) portal lookup — portalId가 현재 맵의 유효 portal인가
         // hot-path 일관성: LINQ FirstOrDefault 대신 foreach (클로저 할당 회피).
@@ -102,39 +100,79 @@ internal static class MapMigration
             }
         }
 
-        // ── transfer 단계 ─────────────────────────────────────────────────
+        GameMap? destination;
+        try
+        {
+            destination = session.ResolveMapDestination(currentMap, entityId, portal.Dest);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Error] Destination map {portal.Dest} creation failed for player {entityId}: {ex.Message}");
+            return;
+        }
+        if (!RequireDestination(session, entityId, portal.Dest, destination)) return;
+        Transfer(session, player, currentMap, destination!, portal.DestSpawn);
+    }
 
-        // 검증 통과 → migration 시작.
-        // 캡처: migration에 필요한 상태 (tick thread 안에서 읽으므로 안전)
-        PlayerTransferState transfer = new PlayerTransferState(entityId, player.Stats, player.Hp);
-        Vector2 destSpawn = portal.DestSpawn;
-        MapId destMapId = portal.Dest;
+    public static MapMoveResult MoveToPublicMap(
+        GameSession session,
+        int entityId,
+        GameMap currentMap,
+        MapId destination,
+        Vector2? spawn = null)
+    {
+        if (session.IsClosing) return MapMoveResult.SessionClosing;
+        if (session.ReadMigrating() != 0) return MapMoveResult.AlreadyMigrating;
+        if (!session.OwnsPlayer(currentMap, entityId)) return MapMoveResult.NotInThatMap;
+        if (!currentMap.InstanceKey.HasValue) return MapMoveResult.NotInInstanceMap;
+        if (!Enum.IsDefined(destination) || MapKindTable.IsInstanced(destination))
+            return MapMoveResult.DestinationNotPublic;
+
+        GameMap? destMap = session.ResolveMapDestination(currentMap, entityId, destination);
+        if (RequireDestination(session, entityId, destination, destMap))
+        {
+            Transfer(session, currentMap.GetPlayer(entityId)!, currentMap, destMap!, spawn ?? destMap!.PlayerSpawnPosition);
+        }
+        return MapMoveResult.Accepted;
+    }
+
+    private static bool RequireDestination(GameSession session, int entityId, MapId destination, GameMap? map)
+    {
+        if (map != null) return true;
+        Console.WriteLine($"[Error] Destination map {destination} not found — disconnecting player {entityId}");
+        session.SetMigrating(0);
+        session.Disconnect();
+        return false;
+    }
+
+    private static void Transfer(GameSession session, PlayerEntity player, GameMap currentMap, GameMap destMap, Vector2 destSpawn)
+    {
+        int entityId = player.EntityId;
+        MapId destMapId = destMap.MapId;
+        PlayerTransferState transfer = new(entityId, player.Stats, player.Hp);
 
         // _migrating = 1 세팅 — 이 시점부터 GetMap() null 반환 (transient drop 시작)
         // tick thread에서 세팅하지만 GetMap()은 socket thread에서도 읽음 → SetMigrating(Volatile.Write).
         session.SetMigrating(1);
 
-        // 맵 A: RemovePlayer + 남은 플레이어에게 S_PlayerLeave broadcast
-        currentMap.RemovePlayer(entityId);
-        S_PlayerLeave leaveNotice = new S_PlayerLeave { entityId = entityId };
-        currentMap.BroadcastToAll(leaveNotice.Write()); // 자기 자신은 이미 _players에서 빠짐
-
-        Console.WriteLine($"[Map] Player {entityId} left map={currentMap.MapId} → heading to {destMapId}");
-
-        // 맵 B 조회
-        GameMap? destMap = getDestMap(destMapId);
-        if (destMap == null)
+        try
         {
-            // 목적지 맵 없음 = config 버그. disconnect (무결성 우선).
-            Console.WriteLine($"[Error] Destination map {destMapId} not found — disconnecting player {entityId}");
+            currentMap.RemovePlayer(entityId);
+            currentMap.BroadcastToAll(new S_PlayerLeave { entityId = entityId }.Write());
+            Console.WriteLine($"[Map] Player {entityId} left map={currentMap.MapId} → heading to {destMapId}");
+            session.EnqueueMapArrival(destMap, () => Arrive(session, transfer, destMap, destSpawn));
+        }
+        catch
+        {
             session.SetMigrating(0);
             session.Disconnect();
-            return;
+            throw;
         }
+    }
 
-        // 맵 B: EnqueueJob으로 AddPlayerWithId 마샬링 (Map=Actor 원칙).
-        // 한 맵의 tick thread가 다른 맵 상태를 직접 mutate 금지.
-        destMap.EnqueueJob(() =>
+    private static void Arrive(GameSession session, PlayerTransferState transfer, GameMap destMap, Vector2 destSpawn)
+    {
+        try
         {
             // closing race: 이미 disconnect된 세션이면 skip
             if (session.ReadClosing() == 1)
@@ -149,14 +187,14 @@ internal static class MapMigration
             // AddPlayerWithId: 기존 entity id 유지 (ADR-026 핵심)
             PlayerEntity newEntity = destMap.AddPlayerWithId(transfer, session, destSpawn);
 
-            // _currentMapId 갱신 + _migrating 해제 (이 시점부터 GetMap() 정상 반환)
-            session.SetCurrentMapId(destMapId);
+            // 현재 맵 참조 갱신 + _migrating 해제 (이 시점부터 GetMap() 정상 반환)
+            session.SetCurrentMap(destMap);
             session.SetMigrating(0);
 
             // 본인에게 S_MapTransition (목적지 맵 + spawn 좌표 — entityId 없음, ADR-026)
             S_MapTransition transition = new S_MapTransition
             {
-                destMapId = (byte)destMapId,
+                destMapId = (byte)destMap.MapId,
                 spawnX = destSpawn.X,
                 spawnY = destSpawn.Y,
             };
@@ -174,7 +212,13 @@ internal static class MapMigration
             destMap.BroadcastPlayerJoin(newEntity, session);
 
             Console.WriteLine(
-                $"[Map] Player {transfer.EntityId} arrived at map={destMapId} spawn=({destSpawn.X},{destSpawn.Y}) — hp={transfer.CurrentHp}, roster:{existingInDest.Count}");
-        });
+                $"[Map] Player {transfer.EntityId} arrived at map={destMap.MapId} spawn=({destSpawn.X},{destSpawn.Y}) — hp={transfer.CurrentHp}, roster:{existingInDest.Count}");
+        }
+        catch
+        {
+            session.SetMigrating(0);
+            session.Disconnect();
+            throw;
+        }
     }
 }
