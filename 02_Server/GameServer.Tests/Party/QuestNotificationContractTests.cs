@@ -49,7 +49,10 @@ public sealed class QuestNotificationContractTests : IDisposable
         CapturedSession session = new(_world);
         _sessions.Add(session);
         int id = _world.NextEntityId();
-        _world.GetMap(mapId)!.AddPlayerWithId(new PlayerTransferState(id, PlayerStats.Knight(), 100), session, Vector2.Zero);
+        GameMap map = MapKindTable.IsInstanced(mapId)
+            ? _world.GetOrCreateInstance(mapId, InstanceKey.ForSolo(id))
+            : _world.GetMap(mapId)!;
+        map.AddPlayerWithId(new PlayerTransferState(id, PlayerStats.Knight(), 100), session, Vector2.Zero);
         return (id, session);
     }
 
@@ -75,7 +78,10 @@ public sealed class QuestNotificationContractTests : IDisposable
     // Invoke the production death hook, which enqueues the real world quest job.
     void Death(int killer, EnemyKind kind = EnemyKind.Normal)
     {
-        GameMap map = _world.GetMap(MapId.HuntingGround)!;
+        InstanceKey key = _world.Party.GetPartyByEntity(killer) is { } party
+            ? InstanceKey.ForParty(party.PartyId)
+            : InstanceKey.ForSolo(killer);
+        GameMap map = _world.GetOrCreateInstance(MapId.HuntingGround, key);
         EnemyEntity enemy = map.SpawnEnemy(kind, x: 0, y: 0, maxHp: 10);
         map.HandleEnemyDeath(enemy, killer);
     }
@@ -249,7 +255,7 @@ public sealed class QuestNotificationContractTests : IDisposable
         var a = AddInMap(MapId.Town);
         var b = AddInMap(MapId.HuntingGround);
         var outsider = AddInMap(MapId.Town);
-        _world.Party.CreateParty(a.Id, b.Id);
+        PartyState party = _world.Party.CreateParty(a.Id, b.Id)!;
         ClearPackets();
         int target = QuestConstants.BossUnlockKillCount;
         for (int i = 0; i < target + 2; i++) Death(i % 2 == 0 ? a.Id : b.Id);
@@ -263,7 +269,7 @@ public sealed class QuestNotificationContractTests : IDisposable
         Assert.All(Quests(a.Session).Concat(Quests(b.Session)), p => Assert.Equal(target, p.targetCount));
         Assert.Empty(Quests(outsider.Session));
         ClearPackets();
-        _world.Quest.EnqueueJob(_world.Quest.ResetAllQuestProgress);
+        _world.Quest.EnqueueJob(() => _world.Quest.ResetProgressFor(InstanceKey.ForParty(party.PartyId)));
         Tick();
         Tick();
         Assert.All(_sessions, s => Assert.Empty(Quests(s)));

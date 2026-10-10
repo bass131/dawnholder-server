@@ -10,6 +10,7 @@ function Read-TestEnvironmentApprovalPlan {
         $ExpectedApprovalPlanHash -cnotmatch '^[0-9A-F]{64}$') {
         throw 'Supply the absolute nonsecret plan path and separately coordinator-reviewed SHA256.'
     }
+    Assert-TestEnvironmentProtectedPath -Path $ApprovalPlanPath
     Assert-TestEnvironmentNoReparse -Path $ApprovalPlanPath
     # Hash the same byte array that is parsed: file replacement cannot switch the reviewed input.
     $bytes = [IO.File]::ReadAllBytes($ApprovalPlanPath)
@@ -33,77 +34,123 @@ function Read-TestEnvironmentApprovalPlan {
     return $plan
 }
 
+# Field names are shared by validation and the immutable manifest projection; values remain approved inputs.
+function Get-TestEnvironmentPlanFields {
+    return @(
+        'PlanVersion'
+        'SchemaVersion'
+        'ExecutionApproved'
+        'Goal'
+        'GoalMarker'
+        'G0'
+        'G1'
+        'G2'
+        'Machine'
+        'ContainerName'
+        'ContainerHostname'
+        'VolumeName'
+        'ImageDigest'
+        'Endpoint'
+        'AdminLogin'
+        'AdminCredentialPath'
+        'ExpectedCollation'
+        'ExpectedProductVersion'
+        'ConnectTimeoutSeconds'
+        'ReadyTimeoutSeconds'
+        'ReadyAttemptLimit'
+        'PullTimeoutSeconds'
+        'StopTimeoutSeconds'
+        'SqlMemoryLimitMb'
+        'ContainerMemoryLimitMb'
+        'MinFreeMemoryMb'
+        'MinFreeDiskMb'
+        'Attempt'
+        'Database'
+        'SlotId'
+        'AccountId'
+        'CharacterId'
+        'RuntimeLogin'
+        'ExecutorSid'
+        'Encrypt'
+        'TrustServerCertificate'
+        'ManifestPath'
+        'SettlementPath'
+        'PrivateDirectory'
+        'IdentityDirectory'
+        'IdentityPath'
+        'RuntimeCredentialPath'
+    )
+}
+
 function Assert-TestEnvironmentApprovalPlan {
-    param(
-        $Plan
-    )
-    $required = @(
-        'PlanVersion',
-        'SchemaVersion',
-        'ExecutionApproved',
-        'Goal',
-        'GoalMarker',
-        'G0',
-        'G1',
-        'G2',
-        'Machine',
-        'Instance',
-        'InstanceName',
-        'Endpoint',
-        'Database',
-        'SlotId',
-        'AccountId',
-        'CharacterId',
-        'RuntimeLogin',
-        'RecoveryPrincipal',
-        'RecoveryLocalName',
-        'ExecutorSid',
-        'Encrypt',
-        'TrustServerCertificate',
-        'ManifestPath',
-        'SettlementPath',
-        'PrivateDirectory',
-        'IdentityDirectory',
-        'IdentityPath',
-        'RuntimeCredentialPath',
-        'RecoveryCredentialPath'
-    )
+    param($Plan)
+    if ($null -eq $Plan -or $null -eq $Plan.PSObject.Properties['PlanVersion'] -or
+        $null -eq $Plan.PSObject.Properties['SchemaVersion'] -or
+        $Plan.PlanVersion -isnot [int] -or $Plan.PlanVersion -ne 2 -or
+        $Plan.SchemaVersion -isnot [int] -or $Plan.SchemaVersion -ne 2) {
+        throw 'Unsupported approval-plan version; only container plan and manifest v2 are accepted.'
+    }
+    $required = @(Get-TestEnvironmentPlanFields)
     foreach ($key in $required) {
         if ($null -eq $Plan.PSObject.Properties[$key]) {
             throw "Missing approval-plan field: $key."
         }
     }
-    if ($Plan.PlanVersion -isnot [int] -or $Plan.PlanVersion -ne 1 -or
-        $Plan.SchemaVersion -isnot [int] -or $Plan.SchemaVersion -ne 1 -or
-        $Plan.SlotId -isnot [int] -or $Plan.SlotId -ne 1 -or $Plan.ExecutionApproved -isnot [bool] -or
+    foreach ($property in $Plan.PSObject.Properties) {
+        if ($property.Name -cnotin ($required + @('ApprovalPlanPath', 'ApprovalPlanHash'))) {
+            throw 'Unexpected approval-plan field; Windows resources and inline secrets are not accepted.'
+        }
+    }
+    if ($Plan.SlotId -isnot [int] -or $Plan.SlotId -ne 1 -or $Plan.ExecutionApproved -isnot [bool] -or
         $Plan.Encrypt -isnot [bool] -or -not $Plan.Encrypt -or
         $Plan.TrustServerCertificate -isnot [bool] -or -not $Plan.TrustServerCertificate) {
-        throw 'Unsupported approval-plan version, slot or fixture encryption contract.'
+        throw 'Unsupported approval-plan slot or fixture encryption contract.'
     }
-    foreach ($key in @(
-            'Goal',
-            'GoalMarker',
-            'G0',
-            'G1',
-            'Machine',
-            'InstanceName',
-            'RuntimeLogin',
-            'RecoveryLocalName'
-        )) {
+    foreach ($key in @('Goal', 'GoalMarker', 'G0', 'G1', 'Machine')) {
         if ($Plan.$key -isnot [string] -or [string]::IsNullOrWhiteSpace($Plan.$key)) {
             throw "Missing explicit approval value: $key."
         }
     }
-    if ($Plan.Database -isnot [string] -or $Plan.Database -cnotmatch '^Dawnholder_Dev_[A-Za-z0-9_]+$' -or
-        $Plan.Database.Length -gt 128 -or $Plan.RuntimeLogin.Length -gt 128 -or
-        $Plan.Instance -cne ('.\' + $Plan.InstanceName) -or $Plan.InstanceName -cnotmatch '^[A-Za-z0-9_]+$' -or
-        $Plan.Endpoint -cnotmatch '^tcp:127\.0\.0\.1,[0-9]{1,5}$' -or
-        [int]$Plan.Endpoint.Split(',')[1] -notin 1..65535 -or
-        $Plan.RecoveryLocalName -cnotmatch '^[A-Za-z0-9_]{1,20}$' -or
-        $Plan.RecoveryPrincipal -cne ($Plan.Machine + '\' + $Plan.RecoveryLocalName) -or
-        $Plan.RecoveryPrincipal.Length -gt 128 -or $Plan.RuntimeLogin -ceq $Plan.RecoveryPrincipal -or
-        $Plan.ExecutorSid -cnotmatch '^S-1-[0-9-]+$') {
-        throw 'Invalid explicit local target/principal; no game DB, system DB or endpoint fallback.'
+    # A canonical loopback endpoint closes aliases, shared memory, remote hosts and the game-server port.
+    if ($Plan.Database -isnot [string] -or
+        $Plan.Database -cnotmatch '^Dawnholder_(?:Dev|Test)_[A-Za-z][A-Za-z0-9_]*$' -or
+        $Plan.Database.Length -gt 128 -or
+        $Plan.RuntimeLogin -isnot [string] -or $Plan.RuntimeLogin -cnotmatch '^dh_[a-z][a-z0-9_]{0,124}$' -or
+        $Plan.Endpoint -isnot [string] -or $Plan.Endpoint -cnotmatch '^tcp:127\.0\.0\.1,[1-9][0-9]{0,4}$' -or
+        [int]$Plan.Endpoint.Split(',')[1] -gt 65535 -or [int]$Plan.Endpoint.Split(',')[1] -eq 7777 -or
+        $Plan.AdminLogin -cne 'sa' -or $Plan.ExecutorSid -cnotmatch '^S-1-[0-9-]+$') {
+        throw 'Invalid explicit container target/principal; no game DB, system DB or endpoint fallback.'
+    }
+    foreach ($key in @('ContainerName', 'ContainerHostname', 'VolumeName')) {
+        if ($Plan.$key -isnot [string] -or $Plan.$key -cnotmatch '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$' -or
+            $Plan.$key.Length -gt 63) {
+            throw 'Invalid explicit container, hostname or volume name.'
+        }
+    }
+    # Names describe their purpose, never an approval date, milestone or worker role.
+    foreach ($key in @('ContainerName', 'ContainerHostname', 'VolumeName', 'Database', 'RuntimeLogin')) {
+        if ($Plan.$key -match '(?:^|[-_])(?:[0-9]{4,}|d[0-9]+[a-z]?|m[0-9]+|sol|astra|opus|fable)(?:[-_]|$)') {
+            throw 'Resource names must describe purpose without dates, milestones or worker names.'
+        }
+    }
+    if ($Plan.ImageDigest -isnot [string] -or $Plan.ImageDigest -cnotmatch '^sha256:[a-f0-9]{64}$' -or
+        $Plan.ExpectedProductVersion -isnot [string] -or
+        $Plan.ExpectedProductVersion -cnotmatch '^\d+\.\d+\.\d+\.\d+$' -or
+        $Plan.ExpectedCollation -isnot [string] -or
+        $Plan.ExpectedCollation -cnotmatch '^[A-Za-z][A-Za-z0-9_]{0,127}$') {
+        throw 'Invalid approved image digest or expected engine values.'
+    }
+    # Finite positive bounds are input validation, not deployment defaults; actual values belong to the plan.
+    foreach ($key in @('ConnectTimeoutSeconds', 'ReadyTimeoutSeconds', 'ReadyAttemptLimit', 'PullTimeoutSeconds',
+            'StopTimeoutSeconds', 'SqlMemoryLimitMb', 'ContainerMemoryLimitMb', 'MinFreeMemoryMb', 'MinFreeDiskMb',
+            'Attempt')) {
+        if ($Plan.$key -isnot [int] -or $Plan.$key -le 0) {
+            throw 'Cost and attempt bounds must be explicit positive integers.'
+        }
+    }
+    if ($Plan.StopTimeoutSeconds -lt 30 -or $Plan.MinFreeMemoryMb -lt 2048 -or
+        $Plan.ContainerMemoryLimitMb -lt $Plan.SqlMemoryLimitMb -or $Plan.Attempt -gt 3) {
+        throw 'Approved cost or attempt bounds violate the preservation limits.'
     }
     foreach ($key in @('AccountId', 'CharacterId')) {
         $guid = [Guid]::Empty
@@ -119,25 +166,31 @@ function Assert-TestEnvironmentApprovalPlan {
     }
 }
 
+function Assert-TestEnvironmentProtectedPath {
+    param([string]$Path)
+    # Pure lexical rejection precedes even reparse/exists reads of a protected historical resource.
+    $full = [IO.Path]::GetFullPath($Path)
+    $legacyRoot = Join-Path $env:LOCALAPPDATA 'Dawnholder\MssqlWsl-SQLEXPRESS'
+    if ($full -match '(?i)^[a-z]:\\ProgramData(?:\\|$)' -or
+        $full.Equals($legacyRoot, [StringComparison]::OrdinalIgnoreCase) -or
+        $full.StartsWith($legacyRoot + '\', [StringComparison]::OrdinalIgnoreCase) -or
+        $full -match '(?i)\\2026-10-02-persistence-repository\\fixture-manifest\.json(?:\.(?:lock|pending))?$') {
+        throw 'Protected Windows lifecycle path; preserve the historical resources without reading them.'
+    }
+}
+
 function Assert-TestEnvironmentPlanPaths {
     param($Plan)
-    # Pure shape validation: private credentials and child identity must retain separate ACL owners/readers.
-    $paths = @(
-        'ManifestPath',
-        'SettlementPath',
-        'PrivateDirectory',
-        'IdentityDirectory',
-        'IdentityPath',
-        'RuntimeCredentialPath',
-        'RecoveryCredentialPath'
-    )
+    $paths = @('ManifestPath', 'SettlementPath', 'PrivateDirectory', 'IdentityDirectory', 'IdentityPath',
+        'RuntimeCredentialPath', 'AdminCredentialPath')
     $seen = @()
     foreach ($key in $paths) {
         $value = $Plan.$key
         if ($value -isnot [string] -or [string]::IsNullOrWhiteSpace($value) -or
-            -not [IO.Path]::IsPathRooted($value) -or $value.StartsWith('\\')) {
+            $value -cnotmatch '^[A-Za-z]:\\' -or $value.Substring(2).Contains(':')) {
             throw "Approval paths must be explicit local absolute paths: $key."
         }
+        Assert-TestEnvironmentProtectedPath -Path $value
         $resolved = [IO.Path]::GetFullPath($value)
         if ($resolved -cne $value -or $resolved -ieq [IO.Path]::GetPathRoot($resolved) -or $resolved -in $seen) {
             throw 'Approval paths must be distinct, normalized and below a directory root.'
@@ -145,13 +198,17 @@ function Assert-TestEnvironmentPlanPaths {
         $seen += $resolved
     }
     if ([IO.Path]::GetDirectoryName($Plan.RuntimeCredentialPath) -ine $Plan.PrivateDirectory -or
-        [IO.Path]::GetDirectoryName($Plan.RecoveryCredentialPath) -ine $Plan.PrivateDirectory -or
+        [IO.Path]::GetDirectoryName($Plan.AdminCredentialPath) -ine $Plan.PrivateDirectory -or
         [IO.Path]::GetDirectoryName($Plan.IdentityPath) -ine $Plan.IdentityDirectory -or
         [IO.Path]::GetDirectoryName($Plan.SettlementPath) -ine [IO.Path]::GetDirectoryName($Plan.ManifestPath)) {
         throw 'Credential, child identity and settlement locations do not match their approved responsibilities.'
     }
+    $profileRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'Dawnholder')) + '\'
     foreach ($directory in @($Plan.PrivateDirectory, $Plan.IdentityDirectory)) {
-        $prefix = $directory + [IO.Path]::DirectorySeparatorChar
+        if (-not $directory.StartsWith($profileRoot, [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'Private and identity directories must be below the current user LocalAppData Dawnholder root.'
+        }
+        $prefix = $directory + '\'
         foreach ($key in @('ManifestPath', 'SettlementPath')) {
             if ($Plan.$key.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) {
                 throw 'Nonsecret lifecycle evidence must remain outside the credential and child directories.'
@@ -177,13 +234,13 @@ function Assert-TestEnvironmentExecutionApproval {
 
 function Assert-TestEnvironmentTarget(
     [string]$Database,
-    [string]$Instance = '',
+    [string]$Endpoint = '',
     $Contract
 ) {
     if ($null -eq $Contract -or [string]::IsNullOrWhiteSpace($Database) -or
-        $Database -cne $Contract.Database -or $Database -cnotmatch '^Dawnholder_Dev_[A-Za-z0-9_]+$' -or
-        ($Instance -and $Instance -cne $Contract.Instance)) {
-        throw 'Supply the explicit exact approved database and local instance; no fallback.'
+        $Database -cne $Contract.Database -or $Database -cnotmatch '^Dawnholder_(?:Dev|Test)_[A-Za-z][A-Za-z0-9_]*$' -or
+        ($Endpoint -and $Endpoint -cne $Contract.Endpoint)) {
+        throw 'Supply the explicit exact approved database and container endpoint; no fallback.'
     }
 }
 
@@ -217,55 +274,28 @@ function New-TestEnvironmentManifest(
     $Contract
 ) {
     Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
-    $c = $Contract
     Assert-TestEnvironmentExecutionApproval -Contract $Contract
-    [pscustomobject]@{
-        SchemaVersion = 1
-        Goal = $c.Goal
-        GoalMarker = $c.GoalMarker
-        ApprovalPlanPath = $c.ApprovalPlanPath
-        ApprovalPlanHash = $c.ApprovalPlanHash
-        InstanceName = $c.InstanceName
-        RecoveryLocalName = $c.RecoveryLocalName
-        SettlementPath = $c.SettlementPath
-        G0 = $c.G0
-        G1 = $c.G1
-        G2 = $c.G2
-        Machine = $c.Machine
-        Instance = $c.Instance
-        Endpoint = $c.Endpoint
-        Database = $c.Database
-        SlotId = 1
-        AccountId = $c.AccountId
-        CharacterId = $c.CharacterId
-        RuntimeLogin = $c.RuntimeLogin
-        RecoveryPrincipal = $c.RecoveryPrincipal
-        ExecutorSid = $c.ExecutorSid
-        Encrypt = $true
-        TrustServerCertificate = $true
-        ManifestPath = $c.ManifestPath
-        PrivateDirectory = $c.PrivateDirectory
-        IdentityDirectory = $c.IdentityDirectory
-        IdentityPath = $c.IdentityPath
-        RuntimeCredentialPath = $c.RuntimeCredentialPath
-        RecoveryCredentialPath = $c.RecoveryCredentialPath
-        CreatedUtc = [DateTime]::UtcNow.ToString('o')
-        UpdatedUtc = [DateTime]::UtcNow.ToString('o')
-        State = 'Planned'
-        Engine = $null
-        DatabaseIdentity = $null
-        MigrationManifest = @()
-        WindowsAccountSid = $null
-        RuntimeLoginSid = $null
-        RecoveryLoginSid = $null
-        RuntimeUserSid = $null
-        RecoveryUserSid = $null
-        RuntimeCredentialHash = $null
-        RecoveryCredentialHash = $null
-        IdentityHash = $null
-        Steps = @()
-        Cleanup = $null
+    $record = [ordered]@{}
+    foreach ($key in @(Get-TestEnvironmentPlanFields) + @('ApprovalPlanPath', 'ApprovalPlanHash')) {
+        if ($key -cnotin @('PlanVersion', 'ExecutionApproved')) {
+            $record[$key] = $Contract.$key
+        }
     }
+    $record.CreatedUtc = [DateTime]::UtcNow.ToString('o')
+    $record.UpdatedUtc = [DateTime]::UtcNow.ToString('o')
+    $record.State = 'Planned'
+    $record.Engine = $null
+    $record.MasterFamilyGuid = $null
+    $record.DatabaseIdentity = $null
+    $record.MigrationManifest = @()
+    $record.RuntimeLoginSid = $null
+    $record.RuntimeUserSid = $null
+    $record.RuntimeCredentialHash = $null
+    $record.AdminCredentialHash = $null
+    $record.IdentityHash = $null
+    $record.Steps = @()
+    $record.Cleanup = $null
+    return [pscustomobject]$record
 }
 
 function Assert-TestEnvironmentManifest(
@@ -277,39 +307,23 @@ function Assert-TestEnvironmentManifest(
     Assert-TestEnvironmentTarget -Contract $Contract -Database $Database
     $c = $Contract
     Assert-TestEnvironmentPath -Path $ManifestPath -Expected $c.ManifestPath
-    foreach ($key in @(
-            'SchemaVersion',
-            'Goal',
-            'GoalMarker',
-            'G0',
-            'G1',
-            'G2',
-            'Machine',
-            'Instance',
-            'InstanceName',
-            'Endpoint',
-            'Database',
-            'SlotId',
-            'AccountId',
-            'CharacterId',
-            'RuntimeLogin',
-            'RecoveryPrincipal',
-            'RecoveryLocalName',
-            'ExecutorSid',
-            'Encrypt',
-            'TrustServerCertificate',
-            'ManifestPath',
-            'SettlementPath',
-            'PrivateDirectory',
-            'IdentityDirectory',
-            'IdentityPath',
-            'RuntimeCredentialPath',
-            'RecoveryCredentialPath',
-            'ApprovalPlanPath',
-            'ApprovalPlanHash'
-        )) {
+    if ($null -eq $Manifest.PSObject.Properties['SchemaVersion'] -or
+        $Manifest.SchemaVersion -isnot [int] -or $Manifest.SchemaVersion -ne 2) {
+        throw 'Unsupported lifecycle manifest version; only container v2 is accepted.'
+    }
+    $planFields = @(Get-TestEnvironmentPlanFields) + @('ApprovalPlanPath', 'ApprovalPlanHash')
+    foreach ($key in $planFields) {
+        if ($key -cin @('PlanVersion', 'ExecutionApproved')) {
+            continue
+        }
         if ($null -eq $Manifest.PSObject.Properties[$key] -or [string]$Manifest.$key -cne [string]$Contract.$key) {
             throw "Lifecycle manifest differs from the independently supplied approval plan: $key."
+        }
+    }
+    foreach ($key in @('Instance', 'InstanceName', 'WindowsAccountSid', 'RecoveryPrincipal', 'RecoveryLocalName',
+            'RecoveryCredentialPath', 'RecoveryCredentialHash', 'RecoveryLoginSid', 'RecoveryUserSid')) {
+        if ($null -ne $Manifest.PSObject.Properties[$key]) {
+            throw 'Windows resource fields are not accepted in a container lifecycle manifest.'
         }
     }
     Assert-TestEnvironmentExecutionApproval -Contract $Contract
@@ -320,15 +334,13 @@ function Assert-TestEnvironmentManifest(
     foreach ($key in @(
             'State',
             'Engine',
+            'MasterFamilyGuid',
             'DatabaseIdentity',
             'MigrationManifest',
-            'WindowsAccountSid',
             'RuntimeLoginSid',
-            'RecoveryLoginSid',
             'RuntimeUserSid',
-            'RecoveryUserSid',
             'RuntimeCredentialHash',
-            'RecoveryCredentialHash',
+            'AdminCredentialHash',
             'IdentityHash',
             'Steps',
             'Cleanup'
@@ -349,6 +361,12 @@ function Assert-TestEnvironmentManifest(
             'Removed'
         )) {
         throw 'Invalid manifest version/slot/state type.'
+    }
+    $familyGuid = [Guid]::Empty
+    if ($null -ne $Manifest.MasterFamilyGuid -and
+        (-not [Guid]::TryParseExact([string]$Manifest.MasterFamilyGuid, 'D', [ref]$familyGuid) -or
+        $familyGuid -eq [Guid]::Empty)) {
+        throw 'Invalid recorded master database identity.'
     }
     if ($null -ne $Manifest.Engine -and ($Manifest.Engine.ProductVersion -cnotmatch '^\d+\.\d+\.\d+\.\d+$' -or
             [string]::IsNullOrWhiteSpace($Manifest.Engine.ServerCollation) -or
@@ -384,21 +402,18 @@ function Assert-TestEnvironmentManifest(
     if (($Manifest.State -ceq 'Baseline001' -and $versions.Count -ne 1) -or
         ($Manifest.State -cin @('Installed', 'Bound', 'PrincipalsReady') -and $versions.Count -ne 4)) {
         throw (
-            'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version remains one.'
+            'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version is two.'
         )
     }
     foreach ($sidKey in @(
-            'WindowsAccountSid',
             'RuntimeLoginSid',
-            'RecoveryLoginSid',
-            'RuntimeUserSid',
-            'RecoveryUserSid'
+            'RuntimeUserSid'
         )) {
         if ($null -ne $Manifest.$sidKey -and [string]$Manifest.$sidKey -cnotmatch '^0x[0-9A-F]+$|^S-1-[0-9-]+$') {
             throw 'Invalid recorded SID.'
         }
     }
-    foreach ($hashKey in @('RuntimeCredentialHash', 'RecoveryCredentialHash', 'IdentityHash')) {
+    foreach ($hashKey in @('RuntimeCredentialHash', 'AdminCredentialHash', 'IdentityHash')) {
         if ($null -ne $Manifest.$hashKey -and [string]$Manifest.$hashKey -cnotmatch '^[0-9A-F]{64}$') {
             throw 'Invalid recorded hash.'
         }
@@ -475,39 +490,15 @@ function Lock-TestEnvironmentManifest(
     )
 }
 
-function Assert-TestEnvironmentExecutor(
-    [switch]$Administrator,
-    $Contract
-) {
-    $c = $Contract
+function Assert-TestEnvironmentExecutor($Contract) {
     Assert-TestEnvironmentExecutionApproval -Contract $Contract
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     try {
-        if ($env:COMPUTERNAME -cne $c.Machine -or $identity.User.Value -cne $c.ExecutorSid) {
+        if ($env:COMPUTERNAME -cne $Contract.Machine -or $identity.User.Value -cne $Contract.ExecutorSid) {
             throw 'Run as the separately approved machine/SID; no alternate identity is adopted.'
-        }
-        if ($Administrator -and -not ([Security.Principal.WindowsPrincipal]::new($identity)).IsInRole(
-                [Security.Principal.WindowsBuiltInRole]::Administrator)) {
-            throw 'Use an approved elevated Windows PowerShell with the same executor SID; no automatic UAC.'
         }
     } finally {
         $identity.Dispose()
-    }
-}
-
-function Assert-TestEnvironmentLocalAccountAbsent(
-    $Contract
-) {
-    $existing = $null
-    try {
-        $existing = Get-LocalUser -Name $Contract.RecoveryLocalName -ErrorAction Stop
-    } catch {
-        if ($_.FullyQualifiedErrorId -notlike 'UserNotFound*') {
-            throw 'Cannot prove the exact Windows account name is absent.'
-        }
-    }
-    if ($null -ne $existing) {
-        throw 'Test environment Windows account name occupied; no adoption.'
     }
 }
 
@@ -574,93 +565,141 @@ function Get-TestEnvironmentStopReason(
 ) {
     # Exact product literals are returned from this list, never copied from an exception or its inner text.
     $safeReasons = @(
-        'Manifest already exists; this one-time lifetime cannot be restarted.'
-        'Database creation is one-time and create-only.'
+        'A recorded credential hash is required before reading a secret file.'
         'A target lifecycle directory already exists; no adoption.'
+        'A task-owned connection is not settled.'
+        'Admin credential preparation is one-time and precedes container startup.'
         'An exact database/login name is occupied; no adoption or rotation.'
-        'Test environment Windows account name occupied; no adoption.'
-        'Cannot prove the exact Windows account name is absent.'
-        'Pending manifest remains; preserve it for coordinator inspection.'
+        'An exact SQL login/user name exists; no adoption.'
         'An incomplete attempt or cleanup exists; preserve resources and request coordinator reconciliation.'
-        'This one-time step has already been attempted.'
-        'Invalid step transition.'
+        'Approval paths must be distinct, normalized and below a directory root.'
+        'Approval plan changed after coordinator review.'
+        'Approved cost or attempt bounds violate the preservation limits.'
+        'Archived ledger count changed.'
+        'Child identity manifest changed.'
+        'Cleanup settlement is incomplete; no deletion is authorized by it.'
+        'Cleanup was already attempted; explicit reconciliation is required.'
+        'Complete installation is required before binding.'
+        'Complete installation needs an explicit reviewed test-environment contract.'
+        'Container endpoint unreachable; no fallback or retry, provider text suppressed.'
+        'Container identity mismatch; preserve resources without adoption.'
+        'Container login failed; provider and credential text suppressed.'
+        'Cost and attempt bounds must be explicit positive integers.'
+        'Created SQL login SID was not observed.'
+        'Credential hash changed; preserve it.'
+        'Credential path appeared; preserve it without reading.'
+        'Credential, child identity and settlement locations do not match their approved responsibilities.'
+        'Current bundle differs from its migration declaration; a different bundle needs a new release version.'
+        'Database creation is one-time and create-only.'
+        'Database has unknown/newer migrations; use the matching tool revision without downgrading.'
+        'Database is not online; preserve it.'
+        'Database lacks the expected owner marker; refusing to adopt or modify it.'
+        'DatabaseRoot must be a nonempty FileSystem path.'
+        'DatabaseRoot must use the FileSystem provider.'
+        'Directory ACL change is outside the exact lifecycle contract.'
+        'Draft plan cannot execute. Coordinator must review actual G2 approval and deliver its exact plan hash.'
+        'Engine changed; a new golden-vector decision is required.'
+        'Evidence must be durable, nonsecret files within this goal evidence directory.'
+        'Exact database identity missing or ambiguous.'
+        'Execute requires an exact database confirmation and reviewed manifest hash.'
+        'Execution needs the separately reviewed G2 record.'
+        'Existing module registration/object set is incomplete or unexpected; refuse adoption or overwrite.'
+        'Expected one immutable 001 source checksum guard.'
+        'Expected the complete database JSON row array, including [] for no rows.'
+        'File security is outside the exact lifecycle contract.'
+        'Held/mismatched binding or temporary trigger remains; cleanup does not release/drop it.'
+        'Immutable 001 source checksum drift; restore the reviewed baseline.'
+        'Incomplete migration history after application.'
+        'Incomplete module bundle; no module may be silently omitted.'
         'Install 001 first, leave its fixture to the independent verifier, then install 002+ in the same database.'
         'Installer core requires the lifecycle-owned manifest lock and exact connection.'
         'Installer requires the recorded active test-environment installation step.'
-        'Test environment shared-memory connection failed; no fallback, provider text suppressed.'
-        'Exact local instance and privileged SQL executor required.'
-        'Engine changed; a new golden-vector decision is required.'
-        'Exact database identity missing or ambiguous.'
-        'No recorded created database identity; no adoption.'
-        'Database is not online; preserve it.'
-        'Owner/goal marker mismatch; no adoption or cleanup.'
-        'Cleanup settlement is incomplete; no deletion is authorized by it.'
-        'Evidence must be durable, nonsecret files within this goal evidence directory.'
-        'Preserved evidence hash mismatch.'
-        'A task-owned connection is not settled.'
-        'Invalid settled request.'
-        'Terminal request lacks payload/outcome evidence.'
-        'SQL login identity missing/unknown/changed; no deletion.'
-        'Cannot inspect exact Windows account identity.'
-        'Windows account identity missing/unknown/changed; no deletion.'
-        'Unknown credential file exists; do not read/delete it.'
-        'Child identity manifest changed.'
-        'Unknown child identity manifest exists.'
-        'Remaining target connections/requests/transactions/locks; stop and preserve resources.'
-        'Recorded binding disappeared; preserve resources.'
-        'Held/mismatched binding or temporary trigger remains; cleanup does not release/drop it.'
-        'Archived ledger count changed.'
-        'Terminal operation evidence is absent.'
-        'Terminal operation evidence differs from settlement.'
-        'Manifest changed after review.'
-        'Cleanup was already attempted; explicit reconciliation is required.'
-        'Windows SID changed; preserve account.'
-        'Unexpected credential file ACL.'
-        'Credential hash changed; preserve it.'
-        # These checks can also be reached after the lifecycle entry point has entered its guarded try.
-        'Draft plan cannot execute. Coordinator must review actual G2 approval and deliver its exact plan hash.'
-        'Supply the explicit exact approved database and local instance; no fallback.'
-        'Test environment path is not the exact approved absolute path.'
-        'Test environment paths must not traverse reparse points.'
-        'Lifecycle encryption values must retain their boolean contract.'
-        'Invalid manifest version/slot/state type.'
-        'Invalid recorded engine observation.'
-        'Invalid recorded created database identity.'
-        'Invalid recorded migration identity.'
-        'Recorded migrations must retain the reviewed ordered contiguous version/name contract.'
-        'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version remains one.'
-        'Invalid recorded SID.'
-        'Invalid recorded hash.'
+        'Invalid approved image digest or expected engine values.'
+        'Invalid explicit container target/principal; no game DB, system DB or endpoint fallback.'
+        'Invalid explicit container, hostname or volume name.'
         'Invalid lifecycle step history.'
-        'Run as the separately approved machine/SID; no alternate identity is adopted.'
-        'Use an approved elevated Windows PowerShell with the same executor SID; no automatic UAC.'
-        'Unsupported Test environment SQL parameter type.'
-        'Test environment SQL parameter type/length mismatch.'
-        'SQL size is required.'
+        'Invalid manifest version/slot/state type.'
+        'Invalid module path/checksum/dependency list; use the reviewed exact paths.'
+        'Invalid recorded created database identity.'
+        'Invalid recorded engine observation.'
+        'Invalid recorded hash.'
+        'Invalid recorded master database identity.'
+        'Invalid recorded migration identity.'
+        'Invalid recorded SID.'
+        'Invalid settled request.'
+        'Invalid SID hex.'
         'Invalid SQL parameter name.'
-        'Typed SQL parameters required.'
-        # The installer keeps its own throw contract; only its fixed product reasons cross this reporting boundary.
-        'SQL tool parameters need a supported explicit CLR value; no provider inference.'
-        'Complete installation needs an explicit reviewed test-environment contract.'
-        'Incomplete migration history after application.'
+        'Invalid step transition.'
+        'Lifecycle encryption values must retain their boolean contract.'
+        'Lifecycle path already exists; never read or rotate existing secrets.'
+        'Lifecycle state does not match the recorded SQL migration boundary; lifecycle schema version is two.'
+        'Manifest already exists; this one-time lifetime cannot be restarted.'
+        'Manifest changed after review.'
+        'Manifest hash target registration has missing, duplicate or unknown paths; expected 19 entries.'
+        'Manifest identity requires UTF-8 without BOM, LF and a final newline.'
+        'Migration files must be the reviewed contiguous version/name set; reject holes, duplicates and extras.'
+        'Migration history has a hole, unknown name/version or checksum drift; do not rewrite applied history.'
+        'Migration-owned execute-only roles are missing.'
+        'Missing, duplicate or unknown catalog migration hash registration.'
+        'Module deployment requires the caller-owned migration transaction.'
         'Module manifest must be UTF-8 without BOM, LF, and a final newline; do not normalize its identity.'
         'Module manifest version/encoding differs from the reviewed current release.'
+        'Module release history has an unknown, missing-schema or malformed declaration; refuse deployment.'
         'Module SQL file set differs from the exact reviewed bundle; remove extras or restore missing files.'
-        'Invalid module path/checksum/dependency list; use the reviewed exact paths.'
+        'New SQL login SID differs from the recorded plan.'
+        'No recorded created database identity; no adoption.'
+        'Nonsecret lifecycle evidence must remain outside the credential and child directories.'
+        'Owner/goal marker mismatch; no adoption or cleanup.'
+        'Pending manifest remains; preserve it for coordinator inspection.'
+        'Permissions entry must not register an engine definition hash.'
         'Permissions must be the final single bundle entry without an engine definition.'
         'Permissions source must contain only the nine reviewed individual EXECUTE grants.'
-        'Incomplete module bundle; no module may be silently omitted.'
-        'Migration files must be the reviewed contiguous version/name set; reject holes, duplicates and extras.'
-        'Immutable 001 source checksum drift; restore the reviewed baseline.'
-        'Database has unknown/newer migrations; use the matching tool revision without downgrading.'
-        'Migration history has a hole, unknown name/version or checksum drift; do not rewrite applied history.'
-        'Expected the complete database JSON row array, including [] for no rows.'
-        'Existing module registration/object set is incomplete or unexpected; refuse adoption or overwrite.'
+        'Preserved evidence hash mismatch.'
+        'Private and child directories must have separate ACL boundaries.'
+        'Private and identity directories must be below the current user LocalAppData Dawnholder root.'
+        'Protected Windows lifecycle path; preserve the historical resources without reading them.'
+        'Provision requires complete install and the fixed binding.'
+        'Recorded binding disappeared; preserve resources.'
+        'Recorded migrations must retain the reviewed ordered contiguous version/name contract.'
+        'Remaining target connections/requests/transactions/locks; stop and preserve resources.'
+        'Resource names must describe purpose without dates, milestones or worker names.'
+        'Run as the separately approved machine/SID; no alternate identity is adopted.'
+        'SQL login identity missing/unknown/changed; no deletion.'
+        'SQL size is required.'
+        'SQL tool parameters need a supported explicit CLR value; no provider inference.'
+        'Supply the absolute nonsecret plan path and separately coordinator-reviewed SHA256.'
+        'Supply the explicit exact approved database and container endpoint; no fallback.'
+        'Terminal operation evidence differs from settlement.'
+        'Terminal operation evidence is absent.'
+        'Terminal request lacks payload/outcome evidence.'
+        'Test environment path is not the exact approved absolute path.'
+        'Test environment paths must not traverse reparse points.'
+        'Test environment SQL parameter type/length mismatch.'
+        'This one-time step has already been attempted.'
+        'Typed SQL parameters required.'
+        'Unexpected approval-plan field; Windows resources and inline secrets are not accepted.'
+        'Unexpected credential file ACL.'
+        'Unexpected explicit database role/grant/ownership on new users.'
+        'Unexpected explicit server authority on new principals.'
+        'Unexpected lifecycle directory access rule.'
+        'Unexpected lifecycle directory ACL.'
+        'Unknown child identity manifest exists.'
+        'Unknown credential file exists; do not read/delete it.'
+        'Unknown manifest version/encoding/entry format; hash inspection is unavailable.'
+        'Unknown secret path.'
         'Unregistered/missing/unexpected module; restore or review it before deploying a new declaration.'
-        'Module deployment requires the caller-owned migration transaction.'
-        'Current bundle differs from its migration declaration; a different bundle needs a new release version.'
-        'Module release history has an unknown, missing-schema or malformed declaration; refuse deployment.'
+        'Unsupported approval-plan slot or fixture encryption contract.'
+        'Unsupported approval-plan version; only container plan and manifest v2 are accepted.'
+        'Unsupported lifecycle manifest version; only container v2 is accepted.'
+        'Unsupported Test environment SQL parameter type.'
+        'Unterminated SQL block comment; lexical inspection is unavailable.'
+        'Unterminated SQL identifier; lexical inspection is unavailable.'
+        'Unterminated SQL string; lexical inspection is unavailable.'
+        'Use the approved 64-bit Windows PowerShell 5.1 executor; no module or runtime installation.'
+        'User/login SID mismatch.'
+        'Windows resource fields are not accepted in a container lifecycle manifest.'
     )
+
     foreach ($reason in $safeReasons) {
         if ([string]::Equals($Exception.Message, $reason, [StringComparison]::Ordinal)) {
             return $reason
@@ -668,12 +707,10 @@ function Get-TestEnvironmentStopReason(
     }
     # Interpolated throws retain their direct-call contract. Match complete, bounded templates and return constants:
     # keys, paths, object names and structure/provider details are never part of the reported reason.
-    $manifestKey = '(?:SchemaVersion|Goal|GoalMarker|G0|G1|G2|Machine|Instance|InstanceName|Endpoint|' +
-    'Database|SlotId|AccountId|CharacterId|RuntimeLogin|RecoveryPrincipal|RecoveryLocalName|ExecutorSid|' +
-    'Encrypt|TrustServerCertificate|ManifestPath|SettlementPath|PrivateDirectory|IdentityDirectory|' +
-    'IdentityPath|RuntimeCredentialPath|RecoveryCredentialPath|ApprovalPlanPath|ApprovalPlanHash)'
-    $lifecycleKey = '(?:State|Engine|DatabaseIdentity|MigrationManifest|WindowsAccountSid|RuntimeLoginSid|' +
-    'RecoveryLoginSid|RuntimeUserSid|RecoveryUserSid|RuntimeCredentialHash|RecoveryCredentialHash|' +
+    $manifestKeys = @(Get-TestEnvironmentPlanFields) + @('ApprovalPlanPath', 'ApprovalPlanHash')
+    $manifestKey = '(?:' + (($manifestKeys | ForEach-Object { [regex]::Escape($_) }) -join '|') + ')'
+    $lifecycleKey = '(?:State|Engine|MasterFamilyGuid|DatabaseIdentity|MigrationManifest|RuntimeLoginSid|' +
+    'RuntimeUserSid|RuntimeCredentialHash|AdminCredentialHash|' +
     'IdentityHash|Steps|Cleanup)'
     $identityKey = '(?:DatabaseId|CreationTime|OwnerSid|DatabaseGuid|Collation|Rcsi)'
     $modulePath = '(?:modules/(?:functions|procedures(?:/internal)?)/[a-z_]{1,80}\.sql|modules/permissions\.sql)'
@@ -896,6 +933,7 @@ function Open-TestEnvironmentDatabase(
     $Manifest,
     [string]$Database,
     [switch]$Master,
+    [switch]$RecordIdentity,
     $Contract
 ) {
     Assert-TestEnvironmentManifest `
@@ -904,49 +942,111 @@ function Open-TestEnvironmentDatabase(
         -Database $Database `
         -ManifestPath $Manifest.ManifestPath
     Assert-TestEnvironmentExecutor -Contract $Contract
-    $builder = [Data.SqlClient.SqlConnectionStringBuilder]::new()
-    $builder['Data Source'] = 'lpc:' + $Manifest.Instance
-    $builder['Initial Catalog'] = $(if ($Master) {
-            'master'
-        } else {
-            $Database
-        })
-    $builder['Integrated Security'] = $true
-    $builder['Encrypt'] = $true
-    $builder['TrustServerCertificate'] = $true
-    $builder['Pooling'] = $false
-    $builder['Connect Timeout'] = 5
-    $builder['Application Name'] = 'Dawnholder.TestEnvironment'
-    $connection = [Data.SqlClient.SqlConnection]::new($builder.ConnectionString)
+    Assert-TestEnvironmentSecretFile `
+        -Contract $Contract `
+        -Path $Manifest.AdminCredentialPath `
+        -ExpectedHash $Manifest.AdminCredentialHash `
+        -Manifest $Manifest
+    $secret = $null
+    $credential = $null
+    $connection = $null
     try {
+        try {
+            $credential = Import-Clixml -LiteralPath $Manifest.AdminCredentialPath
+            if ($credential -isnot [Management.Automation.PSCredential] -or
+                $credential.UserName -cne $Manifest.AdminLogin -or $credential.Password.Length -eq 0) {
+                throw 'Container login failed; provider and credential text suppressed.'
+            }
+            $secret = $credential.Password.Copy()
+            $secret.MakeReadOnly()
+        } catch {
+            throw 'Container login failed; provider and credential text suppressed.'
+        } finally {
+            if ($credential -is [Management.Automation.PSCredential]) {
+                $credential.Password.Dispose()
+            }
+            $credential = $null
+        }
+        $builder = [Data.SqlClient.SqlConnectionStringBuilder]::new()
+        $builder['Data Source'] = $Manifest.Endpoint
+        $builder['Initial Catalog'] = $(if ($Master) { 'master' } else { $Database })
+        $builder['Integrated Security'] = $false
+        $builder['Encrypt'] = $true
+        $builder['TrustServerCertificate'] = $true # Approved loopback container endpoint only.
+        $builder['Persist Security Info'] = $false
+        $builder['Pooling'] = $false
+        $builder['Connect Timeout'] = $Manifest.ConnectTimeoutSeconds
+        $builder['ConnectRetryCount'] = 0
+        $builder['Application Name'] = 'Dawnholder.TestEnvironment'
+        $sqlCredential = [Data.SqlClient.SqlCredential]::new($Manifest.AdminLogin, $secret)
+        # A constructor boundary shared by lifecycle and contract tests; no connection string contains identity/secret.
+        $connection = New-Object -TypeName System.Data.SqlClient.SqlConnection -ArgumentList @(
+            $builder.ConnectionString, $sqlCredential
+        )
         try {
             $connection.Open()
         } catch {
-            throw 'Test environment shared-memory connection failed; no fallback, provider text suppressed.'
+            $sqlFailure = New-DatabaseSqlFailure -Exception $_.Exception
+            $reason = 'Container endpoint unreachable; no fallback or retry, provider text suppressed.'
+            if ($sqlFailure.Data['DatabaseSqlNumber'] -eq 18456) {
+                $reason = 'Container login failed; provider and credential text suppressed.'
+            }
+            $failure = [InvalidOperationException]::new($reason)
+            $failure.Data['DatabaseSqlNumber'] = $sqlFailure.Data['DatabaseSqlNumber']
+            throw $failure
         }
-        $row = (Invoke-DatabaseSql `
-                -Connection $connection `
-                -Sql @'
+        $identityQuery = @'
 SELECT CONVERT(nvarchar(128), SERVERPROPERTY('MachineName')) Machine,
     CONVERT(nvarchar(128), SERVERPROPERTY('InstanceName')) InstanceName,
     CONVERT(nvarchar(128), SERVERPROPERTY('ProductVersion')) ProductVersion,
     CONVERT(nvarchar(128), SERVERPROPERTY('Collation')) ServerCollation,
+    (SELECT host_platform FROM sys.dm_os_host_info) HostPlatform,
+    (SELECT CONVERT(nvarchar(36), family_guid) FROM sys.database_recovery_status
+        WHERE database_id = 1) MasterFamilyGuid,
     IS_SRVROLEMEMBER('sysadmin') IsSysadmin, ORIGINAL_LOGIN() OriginalLogin;
-'@ `
-                -Result Rows).Rows[0]
-        # Windows machine names ignore case; SQL can report MachineName with mixed casing.
-        if ($row.Machine -ine $Manifest.Machine -or
-            $row.InstanceName -cne $Contract.InstanceName -or $row.IsSysadmin -ne 1) {
-            throw 'Exact local instance and privileged SQL executor required.'
+'@
+        $row = (Invoke-DatabaseSql -Connection $connection -Sql $identityQuery -Result Rows).Rows[0]
+        $familyGuid = [Guid]::Empty
+        $validGuid = [Guid]::TryParseExact([string]$row.MasterFamilyGuid, 'D', [ref]$familyGuid)
+        if ($row.Machine -cne $Manifest.ContainerHostname -or
+            ($null -ne $row.InstanceName -and $row.InstanceName -isnot [DBNull]) -or
+            $row.HostPlatform -cne 'Linux' -or $row.IsSysadmin -ne 1 -or
+            $row.OriginalLogin -cne $Manifest.AdminLogin -or -not $validGuid -or $familyGuid -eq [Guid]::Empty) {
+            throw 'Container identity mismatch; preserve resources without adoption.'
         }
-        if ($null -ne $Manifest.Engine -and ($row.ProductVersion -cne $Manifest.Engine.ProductVersion -or
-                $row.ServerCollation -cne $Manifest.Engine.ServerCollation)) {
+        if ($row.ProductVersion -cne $Manifest.ExpectedProductVersion -or
+            $row.ServerCollation -cne $Manifest.ExpectedCollation -or
+            ($null -ne $Manifest.Engine -and ($row.ProductVersion -cne $Manifest.Engine.ProductVersion -or
+                $row.ServerCollation -cne $Manifest.Engine.ServerCollation))) {
             throw 'Engine changed; a new golden-vector decision is required.'
+        }
+        if ($null -eq $Manifest.MasterFamilyGuid) {
+            # Only Create's master preflight can establish volume identity, before CREATE DATABASE.
+            if (-not $RecordIdentity -or -not $Master -or $Manifest.State -cne 'Planned' -or
+                $null -ne $Manifest.DatabaseIdentity) {
+                throw 'Container identity mismatch; preserve resources without adoption.'
+            }
+            $Manifest.MasterFamilyGuid = $familyGuid.ToString('D')
+            $Manifest.Engine = [pscustomobject]@{
+                ProductVersion = [string]$row.ProductVersion
+                ServerCollation = [string]$row.ServerCollation
+                OriginalLogin = [string]$row.OriginalLogin
+            }
+            Write-TestEnvironmentManifest -Contract $Contract -Manifest $Manifest
+        } elseif ($familyGuid -ne [Guid]$Manifest.MasterFamilyGuid) {
+            throw 'Container identity mismatch; preserve resources without adoption.'
         }
         return $connection
     } catch {
-        $connection.Dispose()
+        if ($null -ne $connection) {
+            $connection.Dispose()
+        }
         throw
+    } finally {
+        # Connections are one-shot, pooling/reconnect disabled. Open has consumed the credential before it returns.
+        if ($null -ne $secret) {
+            $secret.Dispose()
+        }
     }
 }
 
@@ -1044,15 +1144,81 @@ function ConvertFrom-DatabaseSidHex(
     return , $bytes
 }
 
+function New-TestEnvironmentSecret {
+    # Generated only in the approved external executor. No plaintext password pipeline.
+    $bytes = [byte[]]::new(32)
+    $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+    $secret = [Security.SecureString]::new()
+    try {
+        $rng.GetBytes($bytes)
+        foreach ($char in 'Dh1!'.ToCharArray()) {
+            $secret.AppendChar($char)
+        }
+        $alphabet = '0123456789ABCDEF'
+        foreach ($b in $bytes) {
+            $secret.AppendChar($alphabet[$b -shr 4])
+            $secret.AppendChar($alphabet[$b -band 15])
+        }
+        $secret.MakeReadOnly()
+        return $secret
+    } finally {
+        $rng.Dispose()
+        [Array]::Clear($bytes, 0, $bytes.Length)
+    }
+}
+
+function Save-TestEnvironmentCredential {
+    param(
+        [ValidateSet('Admin', 'Runtime')][string]$Kind,
+        [Management.Automation.PSCredential]$Credential,
+        $Manifest,
+        $Contract
+    )
+    $path = $Manifest.($Kind + 'CredentialPath')
+    $step = 'Save' + $Kind + 'Credential'
+    $plan = [pscustomobject]@{
+        Path = $path
+        Format = 'PSCredential CLIXML / current-executor Windows DPAPI'
+    }
+    Start-TestEnvironmentStep -Contract $Contract -Manifest $Manifest -Name $step -Plan $plan
+    if (Test-Path -LiteralPath $path) {
+        throw 'Credential path appeared; preserve it without reading.'
+    }
+    Assert-TestEnvironmentDirectoryAcl -Path $Manifest.PrivateDirectory -ExecutorSid $Manifest.ExecutorSid
+    $serialized = [Management.Automation.PSSerializer]::Serialize($Credential)
+    $file = New-TestEnvironmentOwnedFile -Contract $Contract -Path $path -ExecutorSid $Manifest.ExecutorSid
+    try {
+        $bytes = [Text.UTF8Encoding]::new($false).GetBytes($serialized)
+        $file.Write($bytes, 0, $bytes.Length)
+        $file.Flush($true)
+    } finally {
+        $file.Dispose()
+        $serialized = $null
+        $bytes = $null
+    }
+    $Manifest.($Kind + 'CredentialHash') = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+    $arguments = @{
+        Contract = $Contract
+        Path = $path
+        ExpectedHash = $Manifest.($Kind + 'CredentialHash')
+        Manifest = $Manifest
+    }
+    Assert-TestEnvironmentSecretFile @arguments
+    $identity = [pscustomobject]@{
+        Path = $path
+        Hash = $Manifest.($Kind + 'CredentialHash')
+        ExecutorSid = $Manifest.ExecutorSid
+    }
+    Complete-TestEnvironmentStep -Contract $Contract -Manifest $Manifest -Name $step -Identity $identity
+}
+
 function Set-TestEnvironmentDirectoryAcl(
     [string]$Path,
     [string]$ExecutorSid,
-    [string]$ReaderSid = '',
     $Contract
 ) {
     $c = $Contract
-    if ($Path -cnotin @($c.PrivateDirectory, $c.IdentityDirectory) -or $ExecutorSid -cne $c.ExecutorSid -or
-        ($Path -ceq $c.PrivateDirectory -and $ReaderSid)) {
+    if ($Path -cnotin @($c.PrivateDirectory, $c.IdentityDirectory) -or $ExecutorSid -cne $c.ExecutorSid) {
         throw 'Directory ACL change is outside the exact lifecycle contract.'
     }
     $acl = [Security.AccessControl.DirectorySecurity]::new()
@@ -1066,28 +1232,19 @@ function Set-TestEnvironmentDirectoryAcl(
                 'None',
                 'Allow'))
     }
-    if ($ReaderSid) {
-        $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-                [Security.Principal.SecurityIdentifier]::new($ReaderSid),
-                'ReadAndExecute',
-                'ContainerInherit,ObjectInherit',
-                'None',
-                'Allow'))
-    }
     # Directory.CreateDirectory with ACL is available in Windows PowerShell/.NET Framework.
     [void][IO.Directory]::CreateDirectory($Path, $acl)
-    Assert-TestEnvironmentDirectoryAcl -Path $Path -ExecutorSid $ExecutorSid -ReaderSid $ReaderSid
+    Assert-TestEnvironmentDirectoryAcl -Path $Path -ExecutorSid $ExecutorSid
 }
 
 function New-TestEnvironmentOwnedFile(
     [string]$Path,
     [string]$ExecutorSid,
-    [string]$ReaderSid = '',
     $Contract
 ) {
     $c = $Contract
-    if ($Path -cnotin @($c.RuntimeCredentialPath, $c.RecoveryCredentialPath, $c.IdentityPath) -or
-        $ExecutorSid -cne $c.ExecutorSid -or ($ReaderSid -and $Path -cne $c.IdentityPath)) {
+    if ($Path -cnotin @($c.RuntimeCredentialPath, $c.AdminCredentialPath, $c.IdentityPath) -or
+        $ExecutorSid -cne $c.ExecutorSid) {
         throw 'File security is outside the exact lifecycle contract.'
     }
     Assert-TestEnvironmentNoReparse -Path $Path
@@ -1098,10 +1255,6 @@ function New-TestEnvironmentOwnedFile(
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
                 [Security.Principal.SecurityIdentifier]::new($sid), 'FullControl', 'Allow'))
     }
-    if ($ReaderSid) {
-        $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new(
-                [Security.Principal.SecurityIdentifier]::new($ReaderSid), 'ReadAndExecute', 'Allow'))
-    }
     # Set owner and ACL at CreateNew, including under an elevated token. Never open an existing file.
     return [IO.FileStream]::new($Path, [IO.FileMode]::CreateNew, [Security.AccessControl.FileSystemRights]::FullControl,
         [IO.FileShare]::None, 4096, [IO.FileOptions]::WriteThrough, $acl)
@@ -1109,16 +1262,12 @@ function New-TestEnvironmentOwnedFile(
 
 function Assert-TestEnvironmentDirectoryAcl(
     [string]$Path,
-    [string]$ExecutorSid,
-    [string]$ReaderSid = ''
+    [string]$ExecutorSid
 ) {
     Assert-TestEnvironmentNoReparse -Path $Path
     $acl = Get-Acl -LiteralPath $Path
     $rules = @($acl.GetAccessRules($true, $true, [Security.Principal.SecurityIdentifier]))
     $expected = @($ExecutorSid, 'S-1-5-18')
-    if ($ReaderSid) {
-        $expected += $ReaderSid
-    }
     if (-not $acl.AreAccessRulesProtected -or
         $acl.GetOwner([Security.Principal.SecurityIdentifier]).Value -cne $ExecutorSid -or
         $rules.Count -ne $expected.Count) {
@@ -1128,11 +1277,7 @@ function Assert-TestEnvironmentDirectoryAcl(
         $rule = @($rules | Where-Object {
                 $_.IdentityReference.Value -ceq $sid
             })
-        $rightsName = $(if ($sid -ceq $ReaderSid) {
-                'ReadAndExecute'
-            } else {
-                'FullControl'
-            })
+        $rightsName = 'FullControl'
         # Allow rules add Synchronize on .NET Framework; compare the constructed effective mask.
         $rights = ([Security.AccessControl.FileSystemAccessRule]::new(
                 [Security.Principal.SecurityIdentifier]::new($sid),
@@ -1160,7 +1305,10 @@ function Assert-TestEnvironmentSecretFile(
         -Manifest $Manifest `
         -Database $Manifest.Database `
         -ManifestPath $Manifest.ManifestPath
-    if ($Path -cnotin @($Manifest.RuntimeCredentialPath, $Manifest.RecoveryCredentialPath)) {
+    if ($ExpectedHash -cnotmatch '^[0-9A-F]{64}$') {
+        throw 'A recorded credential hash is required before reading a secret file.'
+    }
+    if ($Path -cnotin @($Manifest.RuntimeCredentialPath, $Manifest.AdminCredentialPath)) {
         throw 'Unknown secret path.'
     }
     Assert-TestEnvironmentDirectoryAcl -Path $Manifest.PrivateDirectory -ExecutorSid $Manifest.ExecutorSid
@@ -1182,14 +1330,16 @@ function Assert-TestEnvironmentSecretFile(
 function New-TestEnvironmentChildIdentity {
     param($Manifest)
     return [pscustomobject]@{
-        SchemaVersion = 1
+        SchemaVersion = 2
         Goal = $Manifest.Goal
         GoalMarker = $Manifest.GoalMarker
         G0 = $Manifest.G0
         G1 = $Manifest.G1
         G2 = $Manifest.G2
         Machine = $Manifest.Machine
-        Instance = $Manifest.Instance
+        ContainerName = $Manifest.ContainerName
+        ContainerHostname = $Manifest.ContainerHostname
+        MasterFamilyGuid = $Manifest.MasterFamilyGuid
         Endpoint = $Manifest.Endpoint
         Database = $Manifest.Database
         Encrypt = $true
@@ -1203,10 +1353,6 @@ function New-TestEnvironmentChildIdentity {
         RuntimeLogin = $Manifest.RuntimeLogin
         RuntimeLoginSid = $Manifest.RuntimeLoginSid
         RuntimeUserSid = $Manifest.RuntimeUserSid
-        RecoveryPrincipal = $Manifest.RecoveryPrincipal
-        WindowsAccountSid = $Manifest.WindowsAccountSid
-        RecoveryLoginSid = $Manifest.RecoveryLoginSid
-        RecoveryUserSid = $Manifest.RecoveryUserSid
         ExecutorSid = $Manifest.ExecutorSid
         IdentityPath = $Manifest.IdentityPath
     }

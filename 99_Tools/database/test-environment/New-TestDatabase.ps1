@@ -42,13 +42,17 @@ try {
     }
     $manifest = Read-TestEnvironmentManifest -Contract $Contract -Database $Database -ManifestPath $ManifestPath
     Assert-TestEnvironmentReadyForStep -Manifest $manifest
-    $master = Open-TestEnvironmentDatabase -Contract $Contract -Manifest $manifest -Database $Database -Master
+    $master = Open-TestEnvironmentDatabase `
+        -Contract $Contract `
+        -Manifest $manifest `
+        -Database $Database `
+        -Master `
+        -RecordIdentity:($Action -eq 'Create')
     if ($Action -eq 'Create') {
         if ($manifest.State -cne 'Planned' -or $null -ne $manifest.DatabaseIdentity) {
             throw 'Database creation is one-time and create-only.'
         }
-        Assert-TestEnvironmentLocalAccountAbsent -Contract $Contract
-        foreach ($path in @($manifest.PrivateDirectory, $manifest.IdentityDirectory)) {
+        foreach ($path in @($manifest.IdentityDirectory)) {
             Assert-TestEnvironmentNoReparse -Path $path
             if (Test-Path -LiteralPath $path) {
                 throw 'A target lifecycle directory already exists; no adoption.'
@@ -58,25 +62,16 @@ try {
             -Connection $master `
             -Sql @'
 SELECT (SELECT COUNT( * ) FROM sys.databases WHERE name = @database) DatabaseCount,
-    (SELECT COUNT( * ) FROM sys.server_principals WHERE name IN (@runtime, @recovery)) LoginCount,
-    CONVERT(nvarchar(128), SERVERPROPERTY('ProductVersion')) ProductVersion,
-    CONVERT(nvarchar(128), SERVERPROPERTY('Collation')) ServerCollation,
-    ORIGINAL_LOGIN() OriginalLogin;
+    (SELECT COUNT( * ) FROM sys.server_principals WHERE name = @runtime) LoginCount;
 '@ `
             -Parameters @{
             database = (New-DatabaseSqlParameter -Type NVarChar -Value $Database -Size 128)
             runtime = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.RuntimeLogin -Size 128)
-            recovery = (New-DatabaseSqlParameter -Type NVarChar -Value $manifest.RecoveryPrincipal -Size 128)
         } `
             -Result Rows
         $r = $preflight.Rows[0]
         if ($r.DatabaseCount -ne 0 -or $r.LoginCount -ne 0) {
             throw 'An exact database/login name is occupied; no adoption or rotation.'
-        }
-        $manifest.Engine = [pscustomobject]@{
-            ProductVersion = [string]$r.ProductVersion
-            ServerCollation = [string]$r.ServerCollation
-            OriginalLogin = [string]$r.OriginalLogin
         }
         $stepName = 'CreateDatabase'
         Start-TestEnvironmentStep `

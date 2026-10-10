@@ -7,8 +7,8 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 // 맵 레지스트리 골격 단위 테스트.
 //
 // **검증 범위**:
-//   - 4맵 등록 (_maps.Count == 4)
-//   - 각 MapId GetMap 성공 (null X)
+//   - 공용 맵 둘만 초기 등록, 복사본은 입장 때 생성(goal 만들 것 1·3)
+//   - 인스턴스 종류는 공용 GetMap 조회에서 null
 //   - Map 프로퍼티(호환용) = Town 반환
 //
 // **싱글톤 관리**: GameWorld는 싱글톤 — 하나만 허용.
@@ -22,7 +22,7 @@ public class GameWorldRegistryTests : IDisposable
 
     public GameWorldRegistryTests()
     {
-        // 레지스트리 골격만 검증 — 빈 provider (평지+빈 콘텐츠 4맵, GameWorld provider 필수 인자)
+        // 레지스트리 골격만 검증 — 빈 provider (GameWorld provider 필수 인자)
         _world = new GameWorld(new Dictionary<MapId, (MapTerrain?, MapContent?)>());
     }
 
@@ -32,13 +32,13 @@ public class GameWorldRegistryTests : IDisposable
     }
 
     [Fact]
-    public void Maps_Count_Is_Four()
+    public void PublicMaps_Count_Is_Two_AndInstancesStartEmpty()
     {
-        // 4맵 (Town / HuntingGround / BossRoom / Ending) 등록 확인.
-        // MapId enum 모든 값을 조회해 null 아닌 것이 4개인지 검증.
         int count = Enum.GetValues<MapId>()
             .Count(id => _world.GetMap(id) != null);
-        Assert.Equal(4, count);
+        Assert.Equal(2, count);
+        Assert.Equal(0, _world.LiveInstanceCount);
+        Assert.Equal(new[] { MapId.Town, MapId.Ending }, _world.AllLiveMaps.Select(map => map.MapId));
     }
 
     [Fact]
@@ -50,19 +50,17 @@ public class GameWorldRegistryTests : IDisposable
     }
 
     [Fact]
-    public void GetMap_HuntingGround_ReturnsNonNull()
+    public void GetMap_HuntingGround_ReturnsNull()
     {
         GameMap? map = _world.GetMap(MapId.HuntingGround);
-        Assert.NotNull(map);
-        Assert.Equal(MapId.HuntingGround, map!.MapId);
+        Assert.Null(map);
     }
 
     [Fact]
-    public void GetMap_BossRoom_ReturnsNonNull()
+    public void GetMap_BossRoom_ReturnsNull()
     {
         GameMap? map = _world.GetMap(MapId.BossRoom);
-        Assert.NotNull(map);
-        Assert.Equal(MapId.BossRoom, map!.MapId);
+        Assert.Null(map);
     }
 
     [Fact]

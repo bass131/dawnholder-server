@@ -125,9 +125,9 @@ public class GameWorldPartyIntegrationTests : IDisposable
     {
         // entity A는 Town, entity B는 HuntingGround.
         // 각각 SendToEntity 시 해당 맵에서만 EnqueueJob이 발생해야 함.
-        // GameWorld._maps는 내부 필드라 직접 접근 불가 — GetMap으로 조회.
+        // 공용 맵과 명시적으로 만든 복사본 각각에 조회를 라우팅한다.
         GameMap? town = _world.GetMap(MapId.Town);
-        GameMap? hunting = _world.GetMap(MapId.HuntingGround);
+        GameMap? hunting = _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(7));
         Assert.NotNull(town);
         Assert.NotNull(hunting);
 

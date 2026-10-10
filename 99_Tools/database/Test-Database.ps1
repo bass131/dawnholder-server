@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Instance,
+    [string]$Endpoint,
     [string]$Database,
     [string]$ApprovalPlanPath,
     [string]$ExpectedApprovalPlanHash
@@ -10,10 +10,10 @@ param(
 $Contract = Read-TestEnvironmentApprovalPlan `
     -ApprovalPlanPath $ApprovalPlanPath `
     -ExpectedApprovalPlanHash $ExpectedApprovalPlanHash
-if ([string]::IsNullOrWhiteSpace($Instance)) {
-    throw 'Supply the explicit exact approved database and local instance; no fallback.'
+if ([string]::IsNullOrWhiteSpace($Endpoint)) {
+    throw 'Supply the explicit exact approved database and container endpoint; no fallback.'
 }
-Assert-TestEnvironmentTarget -Contract $Contract -Database $Database -Instance $Instance
+Assert-TestEnvironmentTarget -Contract $Contract -Database $Database -Endpoint $Endpoint
 Assert-TestEnvironmentExecutionApproval -Contract $Contract
 . (Join-Path $PSScriptRoot 'Database.Common.ps1')
 
@@ -48,10 +48,16 @@ function Assert-Rejected([scriptblock]$Action, [string]$Pattern, [string]$Label)
     throw "$Label unexpectedly succeeded."
 }
 
-Assert-Rejected { Open-LocalDatabase 'remote\SQLEXPRESS' $Database } 'Instance must' 'remote target rejected before connection'
-Assert-Rejected { Open-LocalDatabase $Instance 'GameDB' } 'Only Dawnholder_Dev' 'existing unrelated database rejected before connection'
+Assert-Rejected -Action {
+    Assert-TestEnvironmentTarget -Contract $Contract -Database $Database -Endpoint 'tcp:192.0.2.1,1433'
+} -Pattern '^Supply the explicit exact approved database' -Label 'remote target rejected before connection'
+Assert-Rejected -Action {
+    Assert-TestEnvironmentTarget -Contract $Contract -Database 'GameDB' -Endpoint $Endpoint
+} -Pattern '^Supply the explicit exact approved database' -Label 'existing unrelated database rejected before connection'
 
-$connection = Open-LocalDatabase $Instance $Database
+$manifest = Read-TestEnvironmentManifest -Contract $Contract -Database $Database -ManifestPath $Contract.ManifestPath
+Assert-TestEnvironmentReadyForStep -Manifest $manifest
+$connection = Open-TestEnvironmentDatabase -Contract $Contract -Manifest $manifest -Database $Database
 $other = $null
 $transaction = $null
 $accountId = [Guid]::NewGuid()
@@ -128,7 +134,7 @@ AND p.SavedUtc IS NOT NULL AND c.CreatedUtc IS NOT NULL AND a.CreatedUtc IS NOT 
     }
     Write-Output 'PASS: both classes, all maps and zero HP accepted'
 
-    $other = Open-LocalDatabase $Instance $Database
+    $other = Open-TestEnvironmentDatabase -Contract $Contract -Manifest $manifest -Database $Database
     Assert-Equal -1 (Invoke-DbScalar $other "DECLARE @r int; BEGIN TRAN; EXEC @r=sys.sp_getapplock @Resource=N'Dawnholder.SchemaMigration',@LockMode='Exclusive',@LockOwner='Transaction',@LockTimeout=0; ROLLBACK; SELECT @r;") 'second connection cannot acquire held migration lock'
     Assert-SqlError { Invoke-DbNonQuery $other 'SET LOCK_TIMEOUT 1000; UPDATE dh.CharacterProgress SET Hp=1 WHERE CharacterId=@character;' $argsSql } @(1222) 'second writer blocked by uncommitted save'
 
@@ -168,7 +174,7 @@ SELECT (SELECT COUNT(*) FROM dh.Account WHERE AccountId=@account)
         [void](Invoke-DbNonQuery $connection (Get-MigrationText (Join-Path $PSScriptRoot 'verify-schema.sql')))
     }
     Write-Output 'PASS: original CHECK/default definitions restored after each negative test'
-    Write-Output "PASS: all database checks on $Instance / $Database. No test rows committed."
+    Write-Output "PASS: all database checks on $Endpoint / $Database. No test rows committed."
 } finally {
     if ($null -ne $transaction) {
         if ($null -ne $transaction.Connection) { $transaction.Rollback() }

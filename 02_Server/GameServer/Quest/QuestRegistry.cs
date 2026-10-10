@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Dawnholder.Server.GameServer.Maps;
 using Dawnholder.Server.GameServer.Party;
 
 namespace Dawnholder.Server.GameServer.Quest;
@@ -65,11 +66,12 @@ public sealed class QuestRegistry
     }
 #endif
 
-    /// <summary>Boss death resets all raw progress without changing unlocks or emitting notifications.</summary>
-    public void ResetAllQuestProgress()
+    public void ResetProgressFor(InstanceKey key)
     {
-        _soloProgress.Clear();
-        _partyProgress.Clear();
+        if (key.Owner == InstanceOwner.Party)
+            ForgetPartyProgress(key.Id);
+        else
+            _soloProgress.Remove(key.Id);
     }
 
     /// <summary>Queued by the world after a successful disband; solo progress and unlocks are retained.</summary>
