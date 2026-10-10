@@ -5,12 +5,12 @@
 World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는 복사본(인스턴스)으로 바꾼다. 사용자가 범위 초안 v2와 상용 게임 조사를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active`.
-- branch: `feat/instance-map-lifecycle-20261010`, base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`(PR220 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
+- branch: 제품 branch `feat/instance-map-lifecycle-20261010`(base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`, PR220 병합 뒤)는 PR223으로 병합됐고 원격에서 지워졌다. 종료 기록은 최신 main `2492843e`에서 만든 `docs/instance-map-closeout-20261010`에서 한다. Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-instance-map-lifecycle/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/scope-draft-v2.md)(SHA256 `fc99c9eb…fde7a2`), 조사는 [instance-architecture-research.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/instance-architecture-research.md)(SHA256 `0d5a1bf9…918da`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-memo.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_8a825e57-3f6e-4b72-aa51-ceb3d847ca32`, Run `run_c21dddd08312`(회신 주소 `run:run_c21dddd08312`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 독립 검증이 통과했고 제품 PR223을 열었다. 검증자 새 시험을 더한 전체 서버 시험 974건 중 통과 969, 실패 0, 건너뜀 5이고, 봇 20개 시나리오가 모두 통과했다. 차단 결함은 없다. 사용자 병합 승인을 기다린다.
-- **남은 순서**: PR223 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
-- **사용자 차례**: PR223 병합 승인 줄이다. head는 메인이 승인 요청 때 알린다.
+- **현재 위치**: PR223이 병합됐다(2026-10-10T12:16:16Z, `2492843e`). 로컬 결과 기록을 마쳤고 종료 Gardener를 연다. 아래 「현재 결과」의 「PR223 병합」 절이 마지막 결과다.
+- **남은 순서**: Gardener → 종료 기록 PR(문서 실사 포함) → 종료 점검 → R-8.
+- **사용자 차례**: 지금은 없다. 종료 기록 PR이 준비되면 Gardener 정리 후보의 채택 질문과 그 PR의 병합 승인 줄이다.
 - 다음 goal(다중 계정 로그인)은 이 goal이 끝난 뒤 따로 승인받는다. 자동으로 시작하지 않는다.
 
 ## 진척 단계
@@ -22,8 +22,8 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - [x] 구현
 - [x] 독립 검증
 - [x] 봇 두 파티 확인
-- [>] PR223 병합
-- [ ] Gardener 점검
+- [x] PR223 병합
+- [>] Gardener 점검
 - [ ] 종료 기록 PR 병합
 
 PR 단계 이름은 PR 번호가 생기면 「PR### 병합」으로 바꾼다.
@@ -485,3 +485,10 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 - 검증자 새 시험 4파일과 이 goal 기록을 commit `b8a44abe`로 올렸다. 4파일의 SHA256은 검증자 기록과 같다.
 - main이 PR222(운영툴 백엔드)로 앞서 있어 `origin/main`을 branch에 합쳤다(`b1317fb3`). 겹친 파일은 `CURRENT.md` 하나였고, World 줄과 새 Management 줄을 둘 다 남겼다. 서버·시험·봇·공유 파일은 검증한 `b8a44abe`와 같다.
 - [PR223](https://github.com/bass131/dawnholder-server/pull/223)을 열었다. 본문은 E/`pr-body.md`다. 병합은 사용자가 메인 창에 승인 줄을 낸 뒤 메인이 한다.
+
+### PR223 병합 — 2026-10-10
+
+- 사용자가 메인 창에 「병합 승인: PR223 head 191d7cb43edcb29d0f96d6bcb63e75638293ce74」를 제출했다. 메인이 head, CI 4/4, CLEAN을 다시 대조하고 병합했다(`msg_ff648f58fc8f`). 병합 commit은 `2492843e45e5e5f4a372c7489429117ce777f007`(2026-10-10T12:16:16Z)다. 리드 승인 묶음은 E/`main-merge-request.txt`(`msg_84e2795fa2d0`)다.
+- 메인 R-2 표본은 head·CI·CLEAN, `b8a44abe` 뒤 서버·시험·봇 경로 변경 없음, 판정 원문 SHA256, VER-01의 원시 511행이었다.
+- 리드가 Content에 병합과 서버 이동 진입점 계약을 알렸다(`msg_6fe0fc6f994c`). Content 던전 클리어가 이 위에서 이어진다.
+- 병합 뒤 실행 확인은 하지 않았다. 병합 결과의 서버 파일은 독립 검증한 `b8a44abe`와 같다.
