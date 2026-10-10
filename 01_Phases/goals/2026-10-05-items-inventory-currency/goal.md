@@ -1,9 +1,9 @@
 # 아이템·인벤토리·재화
 
-상태: **PR180 병합 완료(`8d1e885`). PR2는 [PR191](https://github.com/bass131/dawnholder-server/pull/191)로 올렸고, 2026-10-06 실화면 검증 보류 뒤 2026-10-09 메인의 재개 신호로 다시 시작했다. 합류점 J(`ff308e20`, PR216 병합)를 통합 commit `0fb81356`으로 받았고, 그 head에서 Sol의 Unity 6000.6.4f1 batch 자기 점검은 EditMode 404/404·PlayMode 23/23이다(독립 판정 아님). 남은 것은 J 통합 독립 검증, 실화면 독립 검증, 병합 승인이다. 이어갈 곳은 [J 통합 재개 지점](#j-통합-재개-지점--2026-10-09)이다. PR2 전체 통과·병합과 goal 종료는 미완료다.**
+상태: **PR180(`8d1e885`)과 PR191(`e5653eb9`, 2026-10-09T16:01:46Z)이 병합됐다. PR191은 J 통합 독립 검증과 Unity 6000.6.4f1 실화면 독립 검증을 모두 통과했다(결함 0). 종료 Gardener도 끝났다(정리 후보 2). 2026-10-10에 종료 기록 PR218을 열었다. Gardener 정리 후보 2개는 사용자가 모두 채택했다. 첫 문서 실사의 차단 3건은 정정했다. 남은 것은 좁힌 재실사, PR218 병합, 종료 점검, R-8이다. 이어갈 곳은 [종료 재개 지점](#종료-재개-지점--2026-10-10)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, 현재 PR2 branch `feat/items-inventory-ui-20261005`(base `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`). PR1 branch는 `feat/items-inventory-currency-20261005`였다.
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, 현재 종료 기록 branch `docs/items-inventory-closeout-20261010`(base main `e5653eb9`). PR2 branch는 `feat/items-inventory-ui-20261005`(base `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`), PR1 branch는 `feat/items-inventory-currency-20261005`였다.
 - 착수 원천: 메인 Claude `msg_53fec7129c14`(2026-10-04T14:56:48Z). 메인이 전달한 사용자 결정이며 사용자 직접 입력으로 격상하지 않는다.
 - 범위 확인: 메인 `msg_763b1fa21bf5`(2026-10-04T15:04:28Z). 4항목·PR 경계 및 사용/세션 정리/기존 계약 보존이 승인 범위 안임을 확인했고 goal commit·Fable 진행과 신규 Opus 선행 TDD 구성을 허용했다.
 - 목표의 기준·상태·결과는 이 파일에 둔다. 로컬 원문·계약·판정은 `.backups/verification/2026-10-05-items-inventory-currency/`에 보존한다.
@@ -124,6 +124,25 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ## 정본 반영 전 적용 중인 사용자 결정
 
+메인 `msg_ed07ba74a67f`(2026-10-10T05:46:33Z)이 전달한 사용자 원문은 「대시보드 결정 응답: 1) 2 - Content 정리 후보: 검증 실행 스크립트 재사용 근거 추가 → A 채택 · 2) 3 - Content 정리 후보: 서버 정상 종료 경로(담당 후보 Core) → A 채택 · 3) 4 - Rules 정리 후보: 작업자 생존 신호 간격 검사 도구 → A 채택 · 4) 5 - Rules 정리 후보: 셸 명령의 파일 쓰기 위치 검사 hook → A 채택 · 5) 6 - 규칙·운영 V1.0 태그 ops-v1.0 위치 → A 두 번째 맞춤 커밋」이다. 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 이 goal의 항목은 1)·2)이고 3)~5)는 Rules 항목이다. 1)에 따라 BACKLOG `unity-baseline-harness-reuse`에 이 goal의 근거를 더했다. 2)에 따라 새 행 `server-lane-graceful-stop`(담당 후보 Core, 대기)을 넣었다. 등록은 착수 권한이 아니며, Core DB 컨테이너 범위 검토 때 넣을지는 메인이 사용자에게 다시 묻는다. 반영은 메인 지시대로 첫 문서 실사 판정 뒤 결함 정정과 한 commit으로 했다. 원문은 근거 폴더의 `closeout/lead-1010-inbox-4.json`이다.
+
+메인 `msg_e607262f2c01`(2026-10-10T05:23:19Z)이 전달한 사용자 원문은 「대시보드 결정 응답: 1) 1 - Rules·Content 종료 기록 PR 재개 → A 지금 두 리드 열기」(2026-10-10 14:21 KST)다. 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 지난 리드 세션은 Orca 재부팅으로 끝났다. 새 리드 세션이 같은 Run `run_31b14736665a`을 인수해 종료 기록 PR을 잇는다(ORCA R-8 「목표 중간 교체·복구」). 같은 메시지의 병합 순서는 메인 결정이며 사용자 결정이 아니다. Rules·Content 두 종료 기록 PR 중 승인 묶음이 먼저 준비된 쪽을 먼저 병합한다. 다른 쪽은 그 main을 받아 BACKLOG·CURRENT 충돌을 확인하고, 다른 파트 줄을 보존한 뒤 바뀐 부분을 재실사해 승인 묶음을 다시 올린다. 원문은 근거 폴더의 `closeout/lead-1010-entry-inbox.json`이다.
+
+메인이 PR191 병합 뒤 전달한 종료 순서와 사용자 결정은 아래와 같다. 사용자 원문은 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 원문은 근거 폴더에 있다. 앞 두 메시지(`msg_ada6a80071a3`, `msg_13a053766f59`)는 `lead-1009-inbox-23.clean.json`, `msg_4a188e97c526`은 `lead-1009-inbox-24.clean.json`이다.
+
+- `msg_ada6a80071a3`(메인 정정): 종료 순서는 goal 결과 기록(로컬) → Gardener(신규 Opus, 읽기 전용, 보고서 한 파일) → 그 결과를 넣은 종료 기록 PR → 종료 점검 → R-8이다(ORCA 「목표 종료 Gardener 4주 파일럿」).
+- `msg_13a053766f59`: 「전체적으로 워크트리 맞추고 새로운 메인세션으로 시작해야겠다, Orca 재부팅도 해야돼」와 「대시보드 결정 응답: 1) 세션 재시작 - 종료 기록 PR 둘까지 넣고 맞춘 뒤 재시작할지, 지금 멈추고 재시작할지 → A 종료 기록 PR 뒤」. 메인 요청은 Gardener 정리 후보가 있으면 PR에 「사용자 채택 질문」으로 올리는 것이다.
+- `msg_4a188e97c526`: 「음 오늘 워크트리 갱신까지만 하고 마무리 해야겠다, 피곤하네, 나머지 어차피 나랑 같이해야 이어갈 수 있는 작업들 많이 남지 않았나?」. 위 A를 바꾼다. 종료 기록 PR은 이날 열지 않고 다음 메인 세션에서 잇는다. 이날은 Gardener를 끝내 정산하고, 결과 기록을 종료 branch에 commit·push하고, 재개 지점을 다음 메인 세션용으로 고친 뒤 「닫아도 됨」을 보낸다.
+
+메인이 2026-10-09에 전달한 실화면·병합 관련 사용자 원문은 아래와 같다. 모두 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 원문은 근거 폴더의 `lead-1009-inbox-*.json`이다.
+
+- `msg_b2842a16a523`: 「음 Fast가 별 차이가 없네, 그냥 기본으로 돌려야겠다 앞으로」. 이후 Sol은 R-5 기본 tier로 기동한다(`-c service_tier="priority"` 없음). 아래 「J 통합과 Sol 자기 점검」의 Fast 기록은 지우지 않는다. 시범 1회와 철회의 기록은 [Rules goal](../2026-10-09-plan-boundary-and-junction/goal.md)이 이 goal의 관측을 인용해 맡았다.
+- `msg_4044f42e57c3`: 「대시보드 결정 응답: 1) PR191 실화면 검증 - 오늘 밤 할지, 내일로 미룰지 → A 오늘 밤 · 2) PR191 실화면 크기 - 1920×1080 맞추는 방법 「가」를 6.6에서도 쓸지 → A 「가」 그대로」. 메인은 Unity MCP 시트를 실화면 검증자 하나에 배정했다.
+- `msg_4638ea3d597d`: 「생각해보니까 에디터는 너가 직접 열어야됄거같은데, 어떤 워크트리 폴더에 있는지를 내가 모르겠네」. 메인이 이 checkout의 `03_Client`를 Unity 6000.6.4f1 Editor로 열었다(PID 6080).
+- `msg_e41976f09617`: 「Editor 열림·연결 승인 준비 완료」. 리드가 이 원문으로 검증자의 MCP gate를 열었다.
+- `msg_83dd73c44b35`의 「일단 둘다 승인해놨어」와 `msg_996e275b6447`의 「기존 리스트 다 지우고 다시 연결했어」. 첫 두 MCP 호출이 「Connection revoked」였을 때의 사용자 조치다.
+- `msg_c96b28570984`: 사용자가 「병합 승인: PR191 head cfe693fdb9dcf4ce79cffc7aa42cc788831ac1ca」를 제출했고 메인이 병합했다(`e5653eb95577edbad38b6c3eabe3b9220c75a334`).
+
 메인 `msg_40012db95830`(2026-10-09T13:36:16Z)이 전달한 사용자 원문은 「일단 Main 최신화 정본 만들고 각 워크트리에 최신화하자」와 「대시보드 결정 응답: 1) 워크트리 맞춤 - 지금 PR216 병합 지점으로 다섯 워크트리를 맞출지, 종료 기록 PR 뒤로 둘지 → A 지금 맞춤」이다. 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 메인은 이것을 아래 질문 1·2 A 결정의 「게임 재개 신호」로 썼다. 합류점 J는 PR216 병합 commit `ff308e20`이고, Content는 J를 PR191 branch로 받아 충돌을 풀고 재검증한다. 원문 `lead-1009-entry-inbox.json`.
 
 메인 `msg_4c42dc43a55a`(2026-10-09T13:45:25Z)는 리드의 재개 계획(`lead-1009-resume-plan.md`)을 A로 확인했다. 세션은 셋이다. 구현 Sol max Fast 하나, J 통합 검증 Astra xhigh 하나(코드 확인·batch 재실행·보류 기록 delta 문서 실사를 한 세션에서), 실화면 Opus 하나(`--mcp-config`)다. 실화면 PASS 뒤 goal 기록은 PR191에 넣지 않고 병합 뒤 종료 기록 PR로 보낸다. 승인 전 재실사는 없다. 같은 메시지는 대시보드 오분류로 제출된 「병합 승인: PR191 head 73cf9a24…」 줄을 **병합 승인으로 쓰지 않는다**고 밝혔다. PR191 승인은 실화면 PASS 뒤 새 head로 다시 받는다. 원문 `lead-1009-inbox-1.json`.
@@ -175,9 +194,35 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ## 재개 지점
 
-### J 통합 재개 지점 — 2026-10-09
+### 종료 재개 지점 — 2026-10-10
 
-다음 Content 리드는 이 블록부터 읽는다. 기록 근거는 위 「정본 반영 전 적용 중인 사용자 결정」의 `msg_40012db95830`·`msg_4c42dc43a55a` 문단이다. 이 블록이 아래 2026-10-06 블록을 대체한다. 아래 블록은 실화면 계약의 주의점 출처로만 읽는다.
+다음 메인 세션과 Content 리드는 이 블록부터 읽는다. 아래 블록들은 역사다. 사용자가 2026-10-10에 이날 작업을 여기서 멈췄다(`msg_4a188e97c526`). 같은 날 14:21 KST 사용자 재개 결정(`msg_e607262f2c01` 전달)으로 새 리드 세션이 이어받아 PR218을 열었다.
+
+| 항목 | 이 기록 시점의 값 |
+|---|---|
+| 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` / `docs/items-inventory-closeout-20261010`(base main `e5653eb9`) |
+| head | 이 기록을 담은 commit이며 push됐다. 40자는 `git log -1`과 승인 묶음에 있다. PR은 [PR218](https://github.com/bass131/dawnholder-server/pull/218)(열림)이다 |
+| 리드 세션 / Run | 2026-10-10 새 handle `term_7cf2ab84-2b2d-4cf4-8885-8f7e6aaff9f0`, 같은 Run `run_31b14736665a`(회신 주소 `run:run_31b14736665a`) |
+| 병합 | PR180 `8d1e885`, PR191 `e5653eb95577edbad38b6c3eabe3b9220c75a334`(2026-10-09T16:01:46Z, 부모 `bea63884`·`cfe693fd`) |
+| 로컬에만 둔 변경 | `ProjectSettings.asset`의 cloud 3필드(SHA256 `4a8db0bd…`)와 `MinimapRT.renderTexture`의 줄바꿈 표시. 커밋·되돌리기 금지는 그대로다 |
+| 작업자·실행 자원 | 작업자 pane 0(Gardener 정산·종료), Unity.exe 0, 7777 0, 음소거 값 0. Unity MCP 시트는 반환했다 |
+
+**끝난 것**: J 통합 독립 검증 PASS, 실화면 독립 검증 PASS, PR191 병합, 결과 기록 commit `7004b7ea`, 종료 Gardener. 아래 결과 절 「J 통합 독립 검증」·「PR191 실화면 독립 검증」·「PR191 병합」·「종료 Gardener」에 있다.
+
+**남은 순서**
+
+1. 끝남: 종료 기록 PR218을 이 branch로 열었다(리드). 이 goal의 결과 기록, 「다음 계획 후보」의 BACKLOG 도착, CURRENT의 Content 줄을 담는다. CURRENT에서는 Content branch를 고치고 끝난 「Content(Unity 업그레이드)」 줄을 지웠다. 그 줄은 메인 `msg_7637c2380718`의 판정 요청에 리드가 「이 PR의 Content 줄 범위」로 판정해 넣었다(이유는 근거 폴더 `closeout/lead-context-3.md`). 본문에 Gardener 정리 후보 2개를 「사용자 채택 질문」으로 올렸다.
+2. 신규 `gpt-6-astra` xhigh 문서 실사. 첫 실사는 NOT PASS(차단 3)였고 정정했다(아래 「종료 기록 문서 실사 — 2026-10-10」). 남은 것은 바뀐 줄만 좁힌 신규 재실사 1회다. 재실사 결과는 goal에 쓰지 않고 근거 폴더와 승인 묶음으로 전한다.
+3. 끝남: 사용자가 Gardener 후보 2개를 모두 채택했다(`msg_ed07ba74a67f`). 후보 1은 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더했고, 후보 2는 새 행 `server-lane-graceful-stop`이다.
+4. **사용자 차례**: PR218 병합 승인. 병합은 메인이 한다. Rules 종료 기록 PR과의 병합 순서는 위 결정 절의 메인 결정을 따른다.
+5. 2차 맞춤. 메인은 두 종료 기록 PR이 모두 병합된 뒤 2차 맞춤 신호를 따로 보낸다(`msg_e607262f2c01`). content-active를 main에 맞출 때 사용자 미커밋 파일 둘을 보존한다.
+6. 종료 점검과 R-8. 그 전에 새 goal을 시작하지 않는다.
+
+**사용자 손 정리**(병합과 무관, 선택): Game view 해상도를 「16:9 Aspect」로 다시 고르고 「PR191 verify」 항목을 지운다. 단계는 실화면 판정의 「사용자 손 정리」 절에 있다.
+
+### J 통합 재개 지점 — 2026-10-09 (역사)
+
+이 블록은 위 종료 재개 지점이 대체한다. 기록 근거는 위 「정본 반영 전 적용 중인 사용자 결정」의 `msg_40012db95830`·`msg_4c42dc43a55a` 문단이다. 이 블록이 아래 2026-10-06 블록을 대체한다. 아래 블록은 실화면 계약의 주의점 출처로만 읽는다.
 
 | 항목 | 이 기록 시점의 값 |
 |---|---|
@@ -198,7 +243,7 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 **열린 것**
 
-1. J 통합 독립 검증. 신규 `gpt-6-astra` xhigh `[Content 검증자]` 한 세션이 맡는다. 범위는 fixture의 두 부모 대비 diff, 6.6 batch 독립 재실행(EditMode·PlayMode 전체와 서버 lane), J와 HEAD 사이 fixture 밖 제품 diff 0 확인, 문서 delta 실사다. 문서 delta는 `d19744ab`, `64d55165`의 CURRENT 해소, `3507957f`, `73cf9a24`, `0fb81356`의 CURRENT 해소, `64c224fb`, 이 기록 commit이다.
+1. J 통합 독립 검증. 신규 `gpt-6-astra` xhigh `[Content 검증자]` 한 세션이 맡는다. 범위는 fixture의 두 부모 대비 diff, 6.6 batch 독립 재실행(EditMode·PlayMode 전체와 서버 lane), fixture 밖 제품 코드 확인(한쪽만 바꾼 파일의 blob이 merge `0fb81356`에서 바뀐 쪽과 같은지, merge에서 HEAD까지 코드 diff가 0인지. J에서 HEAD까지의 전체 diff에는 의도된 PR191 코드가 있다), 문서 delta 실사다. 문서 delta는 `d19744ab`, `64d55165`의 CURRENT 해소, `3507957f`, `73cf9a24`, `0fb81356`의 CURRENT 해소, `64c224fb`, 이 기록 commit이다.
 2. PR191 실화면 독립 검증. 신규 `claude-opus-5-5`(질문 2 A)에 `--mcp-config`를 붙인다. 사용자 손이 필요한 일(시트, 6.6 Editor 열기와 MCP 연결 승인, 크기 방법 「가」 재확인, 왼쪽 보조 모니터 레이아웃)은 기동 전에 메인에 한 번에 보낸다.
 3. PR191 병합 승인. 실화면 PASS 뒤 정확한 head로 새로 요청한다.
 4. 병합 뒤 결과 기록 → Gardener → 종료 기록 PR → R-8. 종료 기록 PR에는 Rules goal의 첫 Fast 기동 관측 메모를 함께 넣는다.
@@ -352,10 +397,11 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 - [x] 서버 독립 검증·수정
 - [x] PR180 병합
 - [x] 인벤토리 화면 구현
-- [>] 화면 독립 검증(결함4 batch 범위 해소 관측. 2026-10-09 J 통합 `0fb81356`, 6.6 batch는 Sol 자기 점검까지. 남은 것은 J 통합 독립 검증과 16:9 실화면)
-- [ ] 실제 플레이 최종 확인(결함4 수정 전 802×451에서 획득·사용 경로 확인. 수정 뒤 실화면 재확인은 위 실화면 검증에서 함께 한다)
-- [ ] PR191 병합(실화면 PASS 뒤 정확한 head로 승인 요청)
-- [ ] 결과 기록·종료
+- [x] 화면 독립 검증(J 통합 PASS `task_d0b386bf3bda`, Unity 6.6 실화면 PASS `task_767e85c804d9`)
+- [x] 실제 플레이 최종 확인(실화면 MCP 흐름 3회 완주. 입력은 MCP 가상 장치와 직접 호출이며 사람 손 입력은 미실행)
+- [x] PR191 병합
+- [x] 결과 기록·Gardener
+- [>] PR218 병합
 
 ### 2026-10-05 크래시 중단과 복구
 
@@ -599,23 +645,6 @@ PlayMode4회는 `MapEntryPlayFixture.Prepare`에서 AudioListener.volume0, Clean
 
 메인 운영 판단 `msg_2de31caf1c5d`에 따라 Astra가 정산 후 동일SENTIS define순서 한줄만 복원했다(E030A834…→A58A3CDF…, cloud3로컬유지). Knight선택으로바뀐 제품 Editor PlayerPrefs `SelectedCharacterClass_h323074203`은 사전hash/현재DWord0을 대조해 원래1로 복원했다(13:42:03Z). Editor/MCP 재기동과 이를 위한 추적파일변경은0이다. 근거 `ProjectSettings-pr2-fix1-review-restore.json`, `opus-pr2-fix1-playerprefs-restored.json`. layouts/cache/sessionprefs는 같은 메인 판단대로 기록만 남겼다.
 
-## 다음 계획 후보
-
-메인 msg_82735bd92cff 이후 새 범위 밖 후보·비차단 지적·새 요청은 이 절에 출처와 함께 기록만 한다. 이전 BACKLOG의 combat-smoke-zero-lag-flaky와 unity-sentis-define-drift는 기존 후보로 유지하며 이번 PR2의 원인 조사·수리 범위로 승격하지 않는다.
-
-- Unity 엔진 업그레이드 검토 — 출처 msg_8b8e828ec7e8, 이번 goal 착수 아님.
-- 기존 HUD Gold mock의 서버 재화 연결 또는 숨김 — `opus-pr2-review/report.md` O6, 메인 msg_dc98852233ed; 현재 범위 밖.
-- 인벤토리 패널 접힘·토글 등 시야 개선 — 같은 보고 O7와 메인 msg_dc98852233ed; 현재 요구 위반은 아니며 다음 제품 디자인 판단.
-- 종료 경로의 중복 null 정리·게임플레이 씬 목록 중복·Ready 관찰자 오류 격리·EditMode 상태 생성 안내 — 같은 보고 O2~O5의 비차단 관찰, 다음 계획 후보만.
-- 범용 dispatcher와 인벤토리 deadline 의존 방향·drainer 탐색 주석·실제 바인딩과 낡은 주석 일치·정적 scheduler 테스트 정리 — `opus-pr2-fix1/report.md` O-1/O-2/O-7와 가독성 관찰, 다음 계획 후보만.
-- 일반 HUD Graphic 위 마우스 공격 차단의 UX 범위·작은 화면의 한글 폰트 판독성 — 같은 보고 O-3/O-6. 전자는 소스 추론이며 미실측이고 GameDev와 제품 디자인 판단이 필요하다. 이번 HUD 제목 겹침4번과 구분한다.
-- 상시 패널 면적·퀘스트 알림의 일시 가림 — 같은 보고 O-4/O-5, 기존 O7 후속 후보에 포함한다.
-- `InventoryPanelView.cs:103` `top = 150f`의 이유 주석(HUD가 없을 때의 기본 상단 여백) 복원, HUD 영역 목록으로의 일반화, `"character_status"` 이름 의존의 문서화 — `opus-pr2-fix2/report.md`의 가독성 후속 1과 O-1/O-2. 동작 영향 없음, 비차단.
-- batch 640×480 고정이라 16:9 자동 회귀를 batch로 할 수 없는 공백 — 같은 보고 O-3. 다음 세션 실화면 계약에서 다루고, 상시 자동화 수단은 다음 계획 후보로만 둔다.
-- 다음 Content goal 「던전 인스턴스 콘텐츠·보상」 범위 초안 — 메인 지시 `msg_16add9c27b4d` 4항에 따라 `msg_b9768c16772e`로 보냈다(사본 근거 폴더 `next-goal-dungeon-scope-draft-sent.md`). 착수는 메인 계획 검토와 사용자 승인 뒤다.
-- Unity AI Assistant 패키지 업그레이드로 MCP 연결 상한 제거 범위 초안 — 메인 요청 `msg_b30e645172e0`, 회신 `msg_b7d6727d60ab`(사본 `next-goal-unity-ai-assistant-scope-draft-sent.md`). 의존성 변경이라 사용자 승인 전 구현하지 않는다.
-- 위 두 초안(던전 `msg_b9768c16772e`, Unity AI Assistant `msg_b7d6727d60ab`)은 현황판에서 사용자 일괄 검토를 기다린다(`msg_ab0836d1b2c8`). 2026-10-06 PR191 실화면 검증 보류는 Unity AI Assistant 초안과 「Unity 엔진 업그레이드 검토」에 닿아 있다. 사용자가 엔진 업데이트와 함께 Editor·MCP 연결을 새로 세팅하기로 했고, 실화면 검증 재개가 그 세팅을 전제로 하기 때문이다(`msg_111214123c99`).
-
 ### PR2 두 번째 수정 발행
 
 새 Sol Task `task_5f7f4e01ed5e`가 결함4의 `InventoryPanelView.cs` 배치만 수정한다. 제품/테스트 소유는 분리하고 원시 실제 화면 RED 및 R8 HUD 무겹침을 기준으로 한다. 계약 `sol-pr2-fix2-contract.md`, 입력 `sol-pr2-fix2-inputs.json`, 실제 경로 검사 `sol-pr2-fix2-preflight.json`; dispatch 뒤 이 goal과 보호 입력은 동결한다. 전체 PR2 강 검증은 유지하며 다음 신규 Opus가 자동 HUD 교집합 검사와 실제 표시를 재검증한다.
@@ -651,7 +680,7 @@ preflight는 이 세션 PATH에 rg가 없어 `git ls-files --cached --others --e
 
 리드 정산: 판정 본문 전문과 부록의 계약 원문 동일성(SHA256 `42D7EE19…`)을 확인하고, 판정 로직 표본(`InventorySceneLifecycleTests.cs:166-241`)을 직접 읽었다. 정산 감사 `opus-pr2-fix2-astra-settlement-audit.json`은 입력 182, meta 1144, tests 34, 허용 변경 3, 예상 밖 0, XML 6개 수치·hash 일치다. 독립 제품 검증으로 세지 않는다. ProjectSettings의 SENTIS 자동 제거 한 줄만 기존 승인(`msg_7691eaa0154c`, `msg_2de31caf1c5d`)대로 복원했다(EEE969AE → A58A3CDF, cloud3 유지). release → 같은 incarnation 확인 → close ptyKilled true → relay PID 34856·Unity·lock·7777 모두 0, 음소거 0(15:19:27Z). 검증자 보고의 관찰로, 첫 batch 중 자기 relay가 batch Unity에 붙어 unity-mcp 도구 목록이 노출됐다(원인 미확인, MCP 호출 0).
 
-이후 단위: PR2 커밋·최신 main 통합·push·PR·CI는 아래 체크포인트로 마쳤다. 남은 순서는 [J 통합 재개 지점](#j-통합-재개-지점--2026-10-09)에 있다.
+이후 단위: PR2 커밋·최신 main 통합·push·PR·CI는 아래 체크포인트로 마쳤다. 남은 순서는 [J 통합 재개 지점](#j-통합-재개-지점--2026-10-09-역사)에 있다.
 
 PR2 체크포인트: 커밋 `3085a20a`(제품)·`bf28954d`(테스트)·`66b02372`(기능 문서·BACKLOG)·`6852237a`(goal), main 55커밋 merge `a3136b6c`(겹친 파일은 BACKLOG.md 하나, 충돌 없음). 사용자 MinimapRT와 로컬 cloud3 ProjectSettings는 커밋에서 뺐고 커밋마다 staged 목록을 근거 폴더 `pr2-commit-1..4-staged.txt`, `pr2-merge-main-staged.txt`로 남겼다. [PR191 - 클라이언트 인벤토리 화면과 서버 동기화](https://github.com/bass131/dawnholder-server/pull/191). 이 PR의 CI는 Unity 테스트를 돌리지 않고, 로컬 code-rules도 `03_Client/` 제외로 대상 0건이었다. CI 결과를 클라이언트 검증으로 세지 않는다. 병합 승인 요청은 아침 실화면 확인 뒤에 한다.
 
@@ -668,7 +697,7 @@ PR2 체크포인트: 커밋 `3085a20a`(제품)·`bf28954d`(테스트)·`66b02372
 
 batch 재실행은 필수로 두지 않았다. main 병합은 코드 영역(02_Server·03_Client·04_ClientNet·98_Shared·PacketGenerator)을 바꾸지 않았고, `InventoryPanelView.cs`와 테스트 두 파일의 hash가 이전 batch 입력과 같다(`opus-pr2-screen-preflight.json`). 대안은 batch를 다시 돌리는 것이고, 그러면 사용자 Editor를 batch 뒤로 미뤄야 한다. 검증자도 같은 동일성을 기계로 다시 확인하며, 불일치면 첫 MCP 호출 전에 멈춘다. 테스트 파일 쓰기는 미리 허용하지 않았다. PR head를 고정한 관측이 목적이고, 필요하면 공식 ask로 받는다. 메인은 검증자 준비와 사용자 Editor 열기의 병렬 진행을 받았고, 사용자 「Editor 열림·연결 승인 준비 완료」 전달 전에는 첫 MCP 호출을 허용하지 않는다(`msg_c7bbb78079d3`). GameDev는 `msg_e53cb0134e1c`로 7777·Unity·Content WSL clone 사용 없음을 회신했다. 이 goal은 dispatch 뒤 검증자 쓰기 종료까지 동결하고, 그 사이 기록은 리드 메모 `astra-context.md`에 둔다.
 
-정산(2026-10-06): 크기 방법은 사용자 결정 「가」(`msg_240e30045d76`)를 받았지만 적용 전이었다. 사용자 휴식 중 일시 정지(`msg_af78a52cd8a6`)로 검증자가 자기 서버를 내렸다. 그 뒤 사용자 결정(`msg_111214123c99`)으로 실화면 검증을 Unity 엔진 업데이트 뒤로 보류했다. 마감 지시 `msg_b1d3de2585f2`에 따라 검증자는 worker_done `msg_d5ccb88e47ed`(11:04:34Z, outcome failed)를 보냈다. 판정 원문은 `opus-pr2-screen/report.md`(SHA256 `FF678DE7295A17C8F88DB5B32D13FDDDC962AE71CD40CB9EC90DB7142AF836FB`)다. **판정 보류·미실행이며 PASS가 아니다. 제품 결함 판정도 아니어서 확정 실패로 세지 않는다.** MCP 호출은 0이고 사용자 설정 변경도 0이다. 리드는 판정 본문 전문을 읽었고 마감 상태(GameViewSizes·ProjectSettings·레이아웃 hash, 음소거, 7777)를 직접 표본 대조했다. 정산 순서는 release(retained/external) → 같은 incarnation `e1a21a10…`의 빈 프롬프트 확인 → close(ptyKilled true)였다. 11:05:41Z terminal list에서 Content pane은 리드 하나였고 relay·Unity·reclaimable은 0이다. **Unity MCP 시트는 반납했다.** 재개는 그때 [보류 재개 지점](#보류-재개-지점--2026-10-06-역사)을 따랐고, 지금은 [J 통합 재개 지점](#j-통합-재개-지점--2026-10-09)이 대체한다.
+정산(2026-10-06): 크기 방법은 사용자 결정 「가」(`msg_240e30045d76`)를 받았지만 적용 전이었다. 사용자 휴식 중 일시 정지(`msg_af78a52cd8a6`)로 검증자가 자기 서버를 내렸다. 그 뒤 사용자 결정(`msg_111214123c99`)으로 실화면 검증을 Unity 엔진 업데이트 뒤로 보류했다. 마감 지시 `msg_b1d3de2585f2`에 따라 검증자는 worker_done `msg_d5ccb88e47ed`(11:04:34Z, outcome failed)를 보냈다. 판정 원문은 `opus-pr2-screen/report.md`(SHA256 `FF678DE7295A17C8F88DB5B32D13FDDDC962AE71CD40CB9EC90DB7142AF836FB`)다. **판정 보류·미실행이며 PASS가 아니다. 제품 결함 판정도 아니어서 확정 실패로 세지 않는다.** MCP 호출은 0이고 사용자 설정 변경도 0이다. 리드는 판정 본문 전문을 읽었고 마감 상태(GameViewSizes·ProjectSettings·레이아웃 hash, 음소거, 7777)를 직접 표본 대조했다. 정산 순서는 release(retained/external) → 같은 incarnation `e1a21a10…`의 빈 프롬프트 확인 → close(ptyKilled true)였다. 11:05:41Z terminal list에서 Content pane은 리드 하나였고 relay·Unity·reclaimable은 0이다. **Unity MCP 시트는 반납했다.** 재개는 그때 [보류 재개 지점](#보류-재개-지점--2026-10-06-역사)을 따랐고, 지금은 [J 통합 재개 지점](#j-통합-재개-지점--2026-10-09-역사)이 대체한다.
 
 ### J 통합과 Sol 자기 점검 — 2026-10-09
 
@@ -690,3 +719,110 @@ batch 재실행은 필수로 두지 않았다. main 병합은 코드 영역(02_S
 - **절차 관찰**: Sol heartbeat 간격이 한 번 7분 36초였다(5분 초과). 산출물에는 영향이 없어 결함으로 세지 않는다.
 - **정산**: worker_done → worker-release(retained/external_terminal) → 같은 incarnation의 빈 프롬프트 확인 → close(ptyKilled true).
 - **아직 아닌 것**: 독립 검증, 실화면, 사람 손 입력, touch, Player build, DB, Unity CI.
+
+### J 통합 독립 검증 — PASS, 2026-10-09
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_d0b386bf3bda` / `ctx_6e13572f2e57`, `[Content 검증자]` |
+| 모델 | 지정 `gpt-6-astra` xhigh. 화면 표시 「GPT-6-Astra xhigh」. backend 실제 모델 unknown |
+| 계약 | `junction-1009/verify-contract.md` SHA256 `4f80fe5e7d3ac06c323478ae54811dfd12b3ed45cf6eae7f5b00ecb56f74214a` |
+| 판정 | `junction-1009/verify/report.md` SHA256 `9caa1923ac4705e5534b8e5c3c50d7cf485ea2abbd90e9bacadb27992e01f19a`, worker_done `msg_f8c62743b9c1`. PASS, 결함 0 |
+
+- **통합 정확성**: 양쪽이 함께 바꾼 파일은 4개다. 한쪽만 바꾼 337파일(PR191 42 + J 295)의 blob은 merge `0fb81356`에서 모두 바뀐 쪽과 같았다. merge에서 HEAD까지 코드 2452/2452가 같다. fixture는 두 부모의 복원을 모두 보존했다.
+- **6.6 batch 독립 재실행**(HEAD `cfe693fd`): EditMode 404/404, PlayMode 23/23(실서버 경로 2개 포함), 실패 0.
+- **문서 delta 실사**: 지적 없음. 비차단 관찰 O-1은 위 J 블록 「열린 것 1」의 「fixture 밖 제품 diff 0」 문구다. 이 종료 기록에서 비교 양끝과 파일 집합을 적어 고쳤다.
+- **리드 R-2**: 교집합·단독 파일 수를 다시 구했고 blob 표본 고유 경로 9개(현존 blob 5·양쪽 삭제 4. 처음 적은 10개는 원시와 달라 종료 기록 실사 #D-03으로 고쳤다), results.xml의 root 수, BACKLOG ID 중복 0을 대조했다(`lead-1009-verify-r2-sample.txt`).
+- **정산**: release → 빈 프롬프트 확인 → close. token total 6,783,439(cached 6,545,920, output 37,141), 크레딧 잔액 변화 0, 작업 19분 37초다(`junction-1009/verify-token-observation.md`). batch가 다시 지운 SENTIS define 한 줄은 `msg_7691eaa0154c`대로 되살렸다.
+
+### PR191 실화면 독립 검증 — PASS, 2026-10-09
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_767e85c804d9` / `ctx_b9c24150f33b`, `[Content 검증자]` |
+| 모델 | 지정 `claude-opus-5-5`(질문 2 A 예외). 최초 실행 명령 `claude.exe --model claude-opus-5-5 --mcp-config C:/Users/bass1/.unity/claude-mcp.json`. 화면 표시 Opus 5.5. backend 실제 모델 unknown |
+| 계약 | `pr191-screen-unity66-contract.md` SHA256 `7d71750a653baff1d290164b45511b9259e5660d3fc95903455db5cfd1bd443c`. 보충 v1.1 `msg_4453cb493592`(서버 lane), v1.2 `msg_66c31817569d`(802×451 측정 방법) |
+| 대상 | branch `feat/items-inventory-ui-20261005`, HEAD `cfe693fdb9dcf4ce79cffc7aa42cc788831ac1ca`, 등급 강 |
+| 판정 | `pr191-screen-unity66/report.md` SHA256 `4f868edb239a74eb7731ac35c5dc75d14b07c58e320e7792301cef603bb80e20`, worker_done `msg_057ad6d3a964`. PASS, 결함 0 |
+
+- **HUD 겹침**: 세 크기의 Town·사냥터·보상·사용 결과·최대값 시점에서 CHECK 18/18이 PASS다. 세 크기는 관측 크기 709×399, v1.2 방법의 802×451, 1920×1080이다. HUD와 패널 겹침, 패널 버튼 위 HUD raycast, 화면 밖 라벨, 대체 글리프는 모두 0건이다. 상태창 아래와 패널 윗변의 간격은 4.43 / 5.01 / 12.00 px다.
+- **리사이즈**: 패널이 떠 있는 Play 중 709×399 → 1920×1080 → 709×399를 한 번 왕복했다. 리드는 이것을 계약 범위 2 충족으로 판단했다. 802×451을 끼운 전환은 하지 않았다.
+- **실제 흐름**: 메뉴 → Knight → Town → 일시정지/재개 → 포털 → 사냥터 → 처치 → 서버 보상 snapshot → 「사용」 → 서버 결과(재화 +50) → 새로고침을 세 번 완주했다. 서버가 받은 `C_Attack` 15건은 Enter 12회와 월드 클릭 3회의 합과 같다. UI 클릭이 만든 공격은 0건이다.
+- **802×451 측정 방법**: Game view 창이 1236×420으로 열려 레이아웃만으로는 709×399가 됐다. 리드 보충 v1.2에 따라 「가」에서 허용된 「PR191 verify」 항목 하나의 값을 802×451로 바꿔 측정했다. 창에 축소 표시된다는 차이는 판정에 적혀 있다.
+- **리드 R-2**: `driver-B.log` 79~126행을 읽었다. 서버 로그에서 `C_Attack` 15, `C_ItemUse` 3, `C_InventoryRequest` 14를 직접 셌고 B 구간을 Ping으로 나눈 값도 판정과 같았다. MCP 호출 #14·#18 원문도 판정과 같았다.
+- **정산**: release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true). 검증자의 relay와 claude 프로세스가 사라졌고 Unity MCP 시트는 반환됐다. 화면 표시는 41분 50초, 25.71$다.
+- **사후 상태**: Unity.exe 0, 7777(Windows·WSL) 0, 레지스트리 음소거 0, ProjectSettings `4a8db0bd…`(SENTIS 유지)다. Unity가 스스로 바꾼 것은 되돌리지 않았다. 레이아웃 `default-6000.dwlt` 51FFBD2B→34AC980B, PlayerPrefs `SelectedCharacterClass` 1→0, `GameViewSizes.asset` 330EBC87→7A712CB6(허용된 항목)이다.
+- **아직 아닌 것**: 사람 손 입력, 레이아웃 원래 조건의 802×451, 802×451을 끼운 리사이즈, touch, Player build, DB, Unity CI.
+
+**MCP 연결 경위**: 첫 두 호출(15:02:59Z, 15:09:36Z)이 `Connection revoked`였다. 검증자는 리드 회신마다 한 번씩만 호출했고 재시도·우회·relay 재기동은 없었다. 사용자가 연결 목록을 지우고 다시 연결한 뒤 세 번째 호출(15:14:10Z)부터 성공했다. 원인과 Unity AI 시트 상태는 확인하지 못했다. 관련 기존 후보는 BACKLOG `unity-mcp-seat-visibility`다.
+
+**리드 계약 결함(첫 발생)**: 실화면 계약 v1의 3단계가 batch용 서버 lane harness를 그대로 쓰게 했다. 그 harness는 출력 루트가 고정돼 검증자 출력 폴더를 받지 못한다. 또 Unity 프로세스가 하나라도 있으면 막는데, 실화면에서는 열린 Editor가 검증 대상이다. 검증자 질문 `msg_704261f90c99`에 보충 v1.1(`msg_4453cb493592`)로 답했다. harness 사본을 검증자 출력 폴더에 두고 Editor 6080(PID·생성 시각·프로젝트 경로)과 그 import worker만 허용하게 했다(`harness-diff.txt`). 첫 발생이라 goal에만 기록한다. 다음 실화면 계약에서 다시 나면 계약 양식에 서버 lane 조건을 넣는 교정을 올린다.
+
+**리드 절차 실수**: 리드가 우편함 대기 하나를 전경 명령 안의 `&`로 띄웠다([대기 정본](../../../00_Document/operations/ORCA.md#mailbox-wait) 위반). 메시지가 오기 전에 그 프로세스를 끄고 background 대기로 다시 열었다. 빠진 메시지는 없다. 같은 유형의 기존 후보는 BACKLOG `mailbox-output-loss-hook`이다.
+
+### PR191 병합 — 2026-10-09
+
+사용자가 메인 창에 「병합 승인: PR191 head cfe693fdb9dcf4ce79cffc7aa42cc788831ac1ca」를 제출했다. 메인이 head, CI 4/4, CLEAN을 다시 대조하고 병합했다(`msg_c96b28570984`). 병합 commit은 `e5653eb95577edbad38b6c3eabe3b9220c75a334`(2026-10-09T16:01:46Z)다. 리드 승인 묶음은 `lead-1009-status-approval-bundle.md`(`msg_d674dd4d8f39`)다.
+
+### 종료 Gardener — 2026-10-09
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_6ea9e0c42a80` / `ctx_f10fee312c2d`, `[Content 검증자]` |
+| 모델 | 지정 `claude-opus-5-5`. 화면 표시 「Opus 5.5 with xhigh effort」. backend 실제 모델 unknown |
+| 계약 | `closeout/gardener-contract.md` SHA256 `2ee871bfe3c9b7212f33276619457062fa9a1565689603ea1b12e4d0658e7e3b`, 고정 입력 `closeout/gardener-inputs.txt` 24행 |
+| 보고 | `closeout/gardener/report.md` SHA256 `c6d03afc49bb6f6c6770f43bb8007314228a6594d03dfdae3415e0f7198b9d8f`(330행), worker_done `msg_01d8f22cc549`(16:40:45Z). 읽기 전용이며 쓰기는 보고서 한 파일이다 |
+
+- **확정 실패**: 결함 번호 6개가 각 1회다(PR1 #1·#3, PR2 #1~#4). 2회째에 이른 번호가 없어 확정 실패 3회 조건과 3회 초과 체크포인트는 생기지 않았다.
+- **CI**: PR191 병합 head의 CI는 4/4 통과다. PR180 main 동기화 CI의 `CombatSmoke_ZeroLag_Succeeds` 1회 실패는 BACKLOG `combat-smoke-zero-lag-flaky`가 맡는다. code-rules PASS 두 번 중 하나는 대상 0건이다. 빌드 경고 4건은 이 goal이 바꾸지 않은 파일의 것이다.
+- **경고 억제·설정 완화**: 새 억제는 `InventoryClientContractTests.cs:561`의 `LogAssert.ignoreFailingMessages` 한 곳이다. 불량 서버 입력 구간에만 켜고 try/finally로 되돌린다. Gardener는 이것을 「테스트 로그 정책의 범위 한정 완화 1건, 제품 경고 억제 아님」으로 분류했다. 설정·분석기 파일 변경은 0이다.
+- **관찰 입력과 기존 후보의 겹침**: SENTIS define 삭제 10회(batch 10세션)는 `unity-sentis-define-drift`가 맡는다. MCP revoked 2세션(10-05, 10-09)은 `unity-mcp-seat-visibility`, 우편함 `&` 1회는 `mailbox-output-loss-hook`, heartbeat 5분 초과 1구간은 `worker-liveness-tool-check`가 맡는다. Gardener는 BACKLOG를 고치지 않았다.
+
+**정리 후보 2개 — 사용자 채택(2026-10-10)**. Gardener는 제안만 했고 채택·등록은 하지 않았다. 종료 기록 PR218에서 물었고 사용자가 두 후보를 모두 채택했다(`msg_ed07ba74a67f`, 결정 절 맨 위). 등록은 착수 권한이 아니다.
+
+1. Unity·서버 검증 harness의 세션별 재작성. 이 goal 안에서 batch 실행 harness 6개, 상태 기록 9개, 서버 lane 4개를 새로 쓰거나 고쳤다. 반대로 10-09 batch 두 세션은 Unity 업그레이드 goal의 harness를 고치지 않고 썼다. 제안은 그 harness가 출력 폴더와 허용 Editor를 인자로 받게 고쳐 추적되는 정본 위치로 올리는 것이다. 새 행 없이 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더했다.
+2. 서버 lane 정상 종료 경로(새 후보, 소유 Core). 서버 lane Stop 8회(7세션)가 모두 SIGINT 20초 무응답 뒤 SIGTERM으로 끝났다. `02_Server/GameServer/Program.cs`는 stdin 개행을 읽은 뒤에만 `host.Stop()`을 부르고 신호 처리기가 없다. `99_Tools/sync-wsl.sh`에는 stdin FIFO가 있지만 종료는 `kill`이다. 제안은 FIFO 개행 → 대기 → 남으면 TERM 순서의 종료 경로, Stop 기록의 `graceful` 필드, 정상 종료 smoke다. 새 행 BACKLOG `server-lane-graceful-stop`(담당 후보 Core, 대기)으로 넣었다.
+
+- **리드 R-2**(`closeout/lead-gardener-r2-sample.txt`): `Program.cs`의 `Console.ReadLine()` → `host.Stop()` → 「Server stopped.」 순서와 신호 처리기 0을 직접 읽었다. junction과 Unity 업그레이드 goal의 lane harness hash `870f9643`이 같은 것과 Stop 원시 두 개의 INT→TERM 순서도 대조했다. 모두 보고와 같다.
+- **미분류 편차의 리드 확인**: Gardener가 넘긴 것은 `opus-pr1-fix1` 검증자가 남긴 scratchpad `git archive` 사본(`prefix-0f956d0`)과 WSL 복제본(`~/.cache/dawnholder/workspaces/b388ad9a6a4a6b0ed8b3`)이다. 그 계약 「쓰기 경계」는 Items 테스트, headless-bot 시나리오, `opus-pr1-fix1/` 근거만 허용했다. 리드 판단은 「쓰기 경계 밖의 저장소 외부 사본, 검증자 자기 공개, 제품·Git 쓰기 없음, 지난 일」이다. 같은 부류(허용 밖 임시 쓰기)는 이 goal에 두 건이 이미 기록돼 있다(main 동기화 검증자, `opus-pr2-review`). Gardener는 이 부류를 BACKLOG `designated-temp-wording`과 10-08 임시 쓰기 goal이 다룬다고 분류했다. 그래서 새 교정은 올리지 않고 기록만 한다.
+- **Gardener 자기 공개 위반**: 첫 Git 조회 두 개(`git rev-parse HEAD`, `git branch --show-current`)를 `GIT_OPTIONAL_LOCKS=0` 없이 실행했다. index mtime은 세션 시작 전 값 그대로였다. 직접 쓰기 범위 밖은 0이다.
+- **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true). 화면 표시는 26분 16초, 158,687 token이다(`closeout/gardener-last-screen.json`).
+
+### 종료 기록 문서 실사 — 2026-10-10
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_ddb59165558d` / `ctx_38991e92af98`, `[Content 검증자]` |
+| 모델 | 지정 `gpt-6-astra` xhigh. 최초 실행 명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 화면 표시 「GPT-6-Astra xhigh · Full Access · never」. backend 실제 모델 unknown |
+| 계약 | `closeout/doc-audit-contract.md` SHA256 `0ede26ff8766691d8e3a130b7c85e773d4faf7116d06aa8f69787032f392e6f1`, 보충 1(`msg_59b6ec8abf01`)·보충 2(`msg_a2e47498773e`) |
+| 대상 | PR218 head `cb8606482bb125d833afb807c05babc011a722f6`(base `e5653eb9`)와 PR218 본문 |
+| 판정 | `closeout/doc-audit/verdict.md` SHA256 `456b449e391a996629fbc741d6b8d927ca9374472622b0ff5807360651734b16`, worker_done `msg_01ccc15bafa8`. NOT PASS, 차단 3 |
+
+- **#D-01 첫 메모보다 앞선 쓰기**: 2026-10-09 이전 리드 세션이 결과 기록 세 문서(goal·BACKLOG·CURRENT)를 맥락 메모 전에 한 번 적용했다. 순서는 첫 적용 16:10:11Z → 되돌림 16:10:41Z → 메모 Write 16:11:14Z → 재적용 16:11:20Z다(이전 세션 대화 기록에서 뽑은 `closeout/lead-1010-prior-session-excerpt.txt`). 첫 적용은 commit 전에 되돌렸고, 당시 status `msg_6105981ef743`으로 공개했다. 메인 결정 `msg_ec4b3884d146`(메인 결정이며 사용자 결정이 아님)으로 사후 기록으로 받아들였다. 메모 시각은 고치지 않았다. Content 종료 기록에서는 [Unity 업그레이드 goal](../2026-10-07-unity-engine-upgrade/goal.md)의 PR206에 이은 두 번째 「메모보다 앞선 쓰기」다. 메인 판단대로 새 규칙 문장은 만들지 않고 BACKLOG `contract-context-check`의 근거에 이 사례를 더했다.
+- **#D-02 원문 경로**: 위 결정 절의 종료 결정 문단이 원문 셋을 inbox-24 하나로 안내했다. 앞 두 메시지가 inbox-23에 있도록 경로를 나눠 고쳤다.
+- **#D-03 표본 수**: 「J 통합 독립 검증」의 리드 R-2가 blob 표본을 10개로 적었다. 원시가 뒷받침하는 고유 경로 9개(현존 blob 5·양쪽 삭제 4)로 고쳤다. 새 표본을 실행해 소급하지 않았다.
+- **지적 없음**: BACKLOG 일곱 행, CURRENT(끝난 Unity 업그레이드 줄 삭제 포함), PR218 본문(파일과 문자열 일치), 후보 도착 검사 재실행 allowed·exit 0.
+- **비차단 관찰 O-1**: 「다음 계획 후보」의 두 초안 메시지(`msg_b9768c16772e`, `msg_b7d6727d60ab`)는 근거 폴더에 message 원문 객체가 없고 초안 사본만 있다. 기존 기록 한계로 두었다.
+- **검증자 자기 공개 H1**: heartbeat 간격 약 6분 18초(중간 blocking ask 1회 포함). 판정 영향은 관측되지 않았다.
+- **리드 R-2**(`closeout/lead-1010-doc-audit-r2-sample.txt`): inbox-23/24의 메시지 위치, 표본 3+6, #D-01 시각, 후보 검사 재실행 stdout이 판정과 같다.
+- **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인(작업 15분 19초) → close(ptyKilled true).
+
+## 다음 계획 후보
+
+메인 msg_82735bd92cff 이후 새 범위 밖 후보·비차단 지적·새 요청은 이 절에 출처와 함께 기록만 한다. 이전 BACKLOG의 combat-smoke-zero-lag-flaky와 unity-sentis-define-drift는 기존 후보로 유지하며 이번 PR2의 원인 조사·수리 범위로 승격하지 않는다. 종료 기록 PR에서 각 후보에 BACKLOG ID나 진행한 goal 링크를 붙였다(메인 `msg_c96b28570984`). 등록은 착수 권한이 아니다.
+
+- Unity 엔진 업그레이드 검토 — 출처 msg_8b8e828ec7e8, 이번 goal 착수 아님. [Unity 엔진 6.6·AI Assistant 업그레이드 goal](../2026-10-07-unity-engine-upgrade/goal.md)로 진행했다.
+- 기존 HUD Gold mock의 서버 재화 연결 또는 숨김 — `opus-pr2-review/report.md` O6, 메인 msg_dc98852233ed; 현재 범위 밖. BACKLOG `hud-gold-server-currency`.
+- 인벤토리 패널 접힘·토글 등 시야 개선 — 같은 보고 O7와 메인 msg_dc98852233ed; 현재 요구 위반은 아니며 다음 제품 디자인 판단. BACKLOG `inventory-panel-visibility`.
+- 종료 경로의 중복 null 정리·게임플레이 씬 목록 중복·Ready 관찰자 오류 격리·EditMode 상태 생성 안내 — 같은 보고 O2~O5의 비차단 관찰, 다음 계획 후보만. BACKLOG `inventory-ui-readability-followup`.
+- 범용 dispatcher와 인벤토리 deadline 의존 방향·drainer 탐색 주석·실제 바인딩과 낡은 주석 일치·정적 scheduler 테스트 정리 — `opus-pr2-fix1/report.md` O-1/O-2/O-7와 가독성 관찰, 다음 계획 후보만. BACKLOG `inventory-ui-readability-followup`.
+- 일반 HUD Graphic 위 마우스 공격 차단의 UX 범위·작은 화면의 한글 폰트 판독성 — 같은 보고 O-3/O-6. 전자는 소스 추론이며 미실측이고 GameDev와 제품 디자인 판단이 필요하다. 이번 HUD 제목 겹침4번과 구분한다. BACKLOG `hud-pointer-attack-ux`.
+- 상시 패널 면적·퀘스트 알림의 일시 가림 — 같은 보고 O-4/O-5, 기존 O7 후속 후보에 포함한다. BACKLOG `inventory-panel-visibility`.
+- `InventoryPanelView.cs:103` `top = 150f`의 이유 주석(HUD가 없을 때의 기본 상단 여백) 복원, HUD 영역 목록으로의 일반화, `"character_status"` 이름 의존의 문서화 — `opus-pr2-fix2/report.md`의 가독성 후속 1과 O-1/O-2. 동작 영향 없음, 비차단. BACKLOG `inventory-ui-readability-followup`.
+- batch 640×480 고정이라 16:9 자동 회귀를 batch로 할 수 없는 공백 — 같은 보고 O-3. 다음 세션 실화면 계약에서 다루고, 상시 자동화 수단은 다음 계획 후보로만 둔다. BACKLOG `unity-16x9-ui-regression`.
+- 다음 Content goal 「던전 인스턴스 콘텐츠·보상」 범위 초안 — 메인 지시 `msg_16add9c27b4d` 4항에 따라 `msg_b9768c16772e`로 보냈다(사본 근거 폴더 `next-goal-dungeon-scope-draft-sent.md`). 착수는 메인 계획 검토와 사용자 승인 뒤다. BACKLOG `dungeon-instance-rewards`.
+- Unity AI Assistant 패키지 업그레이드로 MCP 연결 상한 제거 범위 초안 — 메인 요청 `msg_b30e645172e0`, 회신 `msg_b7d6727d60ab`(사본 `next-goal-unity-ai-assistant-scope-draft-sent.md`). 의존성 변경이라 사용자 승인 전 구현하지 않는다. [Unity 엔진 6.6·AI Assistant 업그레이드 goal](../2026-10-07-unity-engine-upgrade/goal.md)로 진행했다.
+- 위 두 초안(던전 `msg_b9768c16772e`, Unity AI Assistant `msg_b7d6727d60ab`)은 현황판에서 사용자 일괄 검토를 기다린다(`msg_ab0836d1b2c8`). 2026-10-06 PR191 실화면 검증 보류는 Unity AI Assistant 초안과 「Unity 엔진 업그레이드 검토」에 닿아 있다. 사용자가 엔진 업데이트와 함께 Editor·MCP 연결을 새로 세팅하기로 했고, 실화면 검증 재개가 그 세팅을 전제로 하기 때문이다(`msg_111214123c99`). BACKLOG `dungeon-instance-rewards`, [Unity 엔진 6.6·AI Assistant 업그레이드 goal](../2026-10-07-unity-engine-upgrade/goal.md).
+- 인벤토리 라벨의 말줄임 글리프 경고 — PR191 실화면 판정 O-1. Play마다 TMP가 Ellipsis 글리프 부재로 Truncate 전환 경고를 2번 냈다. 대상 라벨은 미확인이고 이번 실행의 overflow는 0이다. 비차단. BACKLOG `inventory-label-ellipsis-glyph`.
+- HUD 「Gold: 0」과 패널 재화의 동시 표시, 퀘스트 팝업의 일시 가림 — PR191 실화면 판정 O-2·O-3. 위 두 후보의 실화면 근거다. BACKLOG `hud-gold-server-currency`·`inventory-panel-visibility`.
+- Input 설정 자산이 없는 프로젝트의 화면 driver 복원 — PR191 실화면 판정 O-4. 검증 도구 관찰이며 제품과 무관하다. BACKLOG `unity-16x9-ui-regression`.
