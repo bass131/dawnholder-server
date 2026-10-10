@@ -98,7 +98,7 @@ $releasePattern = "ModuleRelease r JOIN dh\.SchemaVersion s[\s\S]*?ManifestCheck
 $releaseLiteral = [regex]::Match($catalog, $releasePattern).Groups[1].Value
 Assert-Equal -Name 'strict catalog release declaration expects the raw manifest SHA256 declared by 004' `
     -Expected $manifestHash -Actual $releaseLiteral
-$permissionsText = Read-FixtureText -Path (Join-Path $script:ToolRoot $permissions)
+$permissionsText = (Read-FixtureText -Path (Join-Path $script:ToolRoot $permissions)).Replace("`r`n", "`n")
 $grants = @([regex]::Matches($permissionsText, '(?m)^GRANT EXECUTE ON OBJECT::dh\.(\w+) TO (dh_runtime|dh_recovery);$') |
         ForEach-Object { $_.Groups[1].Value + '>' + $_.Groups[2].Value })
 Assert-Equal -Name 'permissions: exactly nine individual public EXECUTE grants (runtime5/recovery4)' `
@@ -243,7 +243,7 @@ Assert-Throws -Name 'lone CR in module source rejected even with matching checks
 
 $root = New-DatabaseFixture -Name 'source-crlf'
 $path = Join-Path $root $progress
-Write-FixtureText -Path $path -Text ((Read-FixtureText -Path $path).Replace("`n", "`r`n"))
+Write-FixtureText -Path $path -Text ((Read-FixtureText -Path $path).Replace("`r`n", "`n").Replace("`n", "`r`n"))
 Assert-NoThrow -Name 'CRLF checkout of a module keeps the same reviewed identity' -Action { Read-ModuleBundle -DatabaseRoot $root }
 
 $root = New-DatabaseFixture -Name 'source-bom'
