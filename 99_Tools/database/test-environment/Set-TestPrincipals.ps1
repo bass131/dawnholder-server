@@ -314,7 +314,7 @@ SELECT COUNT( * ) FROM sys.database_principals p WHERE p.name = @runtime AND
     # Keep the fixed connection category and SQL number without exposing native text or secret SQL parameters.
     $summary = Get-TestEnvironmentFailureSummary -Exception $failure
     throw (('Test environment principal provisioning stopped. {0} ' +
-        'Preserve every partial resource and manifest; no rotation, adoption or automatic cleanup.') -f $summary)
+            'Preserve every partial resource and manifest; no rotation, adoption or automatic cleanup.') -f $summary)
 } finally {
     if ($null -ne $runtimeSecret) {
         $runtimeSecret.Dispose()

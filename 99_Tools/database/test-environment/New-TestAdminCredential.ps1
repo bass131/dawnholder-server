@@ -71,7 +71,7 @@ try {
     }
     $summary = Get-TestEnvironmentFailureSummary -Exception $failure
     throw (('Admin credential preparation stopped. {0} ' +
-        'Preserve partial files and manifest; no retry or rotation.') -f $summary)
+            'Preserve partial files and manifest; no retry or rotation.') -f $summary)
 } finally {
     if ($null -ne $secret) {
         $secret.Dispose()

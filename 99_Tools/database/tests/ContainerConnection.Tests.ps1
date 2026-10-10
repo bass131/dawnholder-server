@@ -310,7 +310,7 @@ function Get-ConstantStopText {
     return $null
 }
 $files = @(Get-ChildItem -LiteralPath $script:ToolRoot -File -Filter '*.ps1') +
-    @(Get-ChildItem -LiteralPath (Join-Path $script:ToolRoot 'test-environment') -File -Filter '*.ps1')
+@(Get-ChildItem -LiteralPath (Join-Path $script:ToolRoot 'test-environment') -File -Filter '*.ps1')
 $reasonSites = @()
 $engineStopSites = @()
 $forbidden = @()
@@ -351,9 +351,9 @@ foreach ($file in $files) {
         # PS5.1 SafeGetValue rejects a newline-delimited @() statement block. Read its literal AST leaves;
         # each resulting value is also checked through the real classifier below.
         $safe = @($list.Right.FindAll({
-                param($node)
-                $node -is [Management.Automation.Language.StringConstantExpressionAst]
-            }, $true) | ForEach-Object { $_.Value })
+                    param($node)
+                    $node -is [Management.Automation.Language.StringConstantExpressionAst]
+                }, $true) | ForEach-Object { $_.Value })
     }
 }
 $reasonSites += @('Container endpoint unreachable; no fallback or retry, provider text suppressed.',
@@ -565,10 +565,10 @@ foreach ($entry in @(
         @{ File = 'Initialize-CharacterBinding.ps1'; Calls = 'Lock,Open,Unlock' }
     )) {
     foreach ($case in @(
-        @{ Reason = 'Container endpoint unreachable; no fallback or retry, provider text suppressed.'; Number = 64 },
-        @{ Reason = 'Container login failed; provider and credential text suppressed.'; Number = 18456 },
-        @{ Reason = 'Container identity mismatch; preserve resources without adoption.'; Number = 0 },
-        @{ Reason = 'Engine changed; a new golden-vector decision is required.'; Number = 0 }
+            @{ Reason = 'Container endpoint unreachable; no fallback or retry, provider text suppressed.'; Number = 64 },
+            @{ Reason = 'Container login failed; provider and credential text suppressed.'; Number = 18456 },
+            @{ Reason = 'Container identity mismatch; preserve resources without adoption.'; Number = 0 },
+            @{ Reason = 'Engine changed; a new golden-vector decision is required.'; Number = 0 }
         )) {
         $run = Invoke-EntryConnectionFailure -Reason $case.Reason -SqlNumber $case.Number -EntryFile $entry.File
         $numberText = $(if ($case.Number) { [string]$case.Number } else { 'unavailable' })

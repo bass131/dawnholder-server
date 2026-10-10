@@ -365,7 +365,7 @@ function Assert-TestEnvironmentManifest(
     $familyGuid = [Guid]::Empty
     if ($null -ne $Manifest.MasterFamilyGuid -and
         (-not [Guid]::TryParseExact([string]$Manifest.MasterFamilyGuid, 'D', [ref]$familyGuid) -or
-            $familyGuid -eq [Guid]::Empty)) {
+        $familyGuid -eq [Guid]::Empty)) {
         throw 'Invalid recorded master database identity.'
     }
     if ($null -ne $Manifest.Engine -and ($Manifest.Engine.ProductVersion -cnotmatch '^\d+\.\d+\.\d+\.\d+$' -or

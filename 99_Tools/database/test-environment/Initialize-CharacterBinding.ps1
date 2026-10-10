@@ -145,7 +145,7 @@ VALUES
     }
     $summary = Get-TestEnvironmentFailureSummary -Exception $failure
     throw (('Test environment binding stopped; ' +
-        'preserve manifest and investigate commit state before retry. {0}') -f $summary)
+            'preserve manifest and investigate commit state before retry. {0}') -f $summary)
 } finally {
     if ($null -ne $transaction) {
         $transaction.Dispose()

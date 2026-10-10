@@ -1167,7 +1167,7 @@ $openAst = $commonAst.Find({
 $builderStatements = @()
 if ($null -ne $openAst) {
     $builderStatements = @($openAst.FindAll({ param($node) $node -is [Management.Automation.Language.AssignmentStatementAst] -and
-            $node.Left.Extent.Text -cmatch '^\$builder\b' }, $true))
+                $node.Left.Extent.Text -cmatch '^\$builder\b' }, $true))
 }
 $builderCreation = '^\$builder = \[Data\.SqlClient\.SqlConnectionStringBuilder\]::new\(\)$'
 Assert-True -Name 'the lifecycle connection builder statements are located in Open-TestEnvironmentDatabase' -Condition (
@@ -1520,9 +1520,9 @@ Assert-True -Name 'an attempted cleanup reported as recorded is Failed on disk w
 
 # Windows account creation, lookup, group membership and removal are blocked but have no product calls (R-5/R-10).
 $osCalls = @($commonAst.FindAll({ param($node)
-        $node -is [Management.Automation.Language.CommandAst] -and
-        $node.GetCommandName() -in @('New-LocalUser', 'Get-LocalUser', 'Remove-LocalUser', 'Get-LocalGroupMember')
-    }, $true))
+            $node -is [Management.Automation.Language.CommandAst] -and
+            $node.GetCommandName() -in @('New-LocalUser', 'Get-LocalUser', 'Remove-LocalUser', 'Get-LocalGroupMember')
+        }, $true))
 Assert-Equal -Name 'Windows account boundaries remain blocked but common helper calls are zero' -Expected 0 -Actual $osCalls.Count
 $known = [InvalidOperationException]::new('Container identity mismatch; preserve resources without adoption.')
 $extended = [InvalidOperationException]::new($known.Message + ' ' + $fakeSecret)
