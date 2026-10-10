@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 21:52 KST, PR2 창 쪽 선행 시험 원천 대조 뒤.**
+**기록 시점: 2026-10-10 22:16 KST, PR2 창 쪽 구현 commit 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 다음은 창 쪽 구현(Astra) 계약과 착수다. 그 뒤 독립 검증 1회(실제 진입 포함), PR 생성, 메인에 병합 승인 요청 순서다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 창 쪽 구현을 원천 대조해 commit했다(아래 「PR2 창 쪽 구현 결과」). 다음은 PR2 전체 독립 검증 1회(실제 진입 포함), PR 생성, 메인에 병합 승인 요청 순서다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -269,3 +269,13 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 리드 표본 대조(일치): 두 실행 `vitest.json`의 셈과 실패 이름(새 파일 4개 26+21+13+15=75건, 나머지 6건의 이름), 기존 5파일 diff가 단정을 줄이지 않음(목록은 넓히고 diagram subframe 거부 반복은 새 채널까지 덮음), 시험의 백엔드 오류 코드 19개가 `ManagementBackend`가 내는 코드 전부와 같음, 작성자 세션 기록에서 메모 쓰기(12:02:41Z)가 첫 저장소 쓰기(12:12:29Z)보다 앞섬, 쓰기 39건이 모두 허용 경로(시험 10파일·근거 폴더·TEMP `.backups/tmp/p2f/`), 무시 대상 폴더에 작업 시간대 새 파일 0, 남은 Electron·`wsl.exe` 0.
 - 설계 관찰 처리(리드): 실행본 목록 5초·현재 운영 버전 지정 30초 상한과 pid 생존 확인(`--exec kill -0`)을 [화면 연결 설계](screen-design.md#시작과-붙기)에 정했다. 「마지막 종료 종류와 종료 코드」 표시는 설계 「화면」에 이미 있고 상태 응답 `lastExit`가 값을 주므로 창 쪽 구현 계약에 넣고 독립 검증자가 시험을 쓴다. `tests/`가 typecheck 밖인 것은 기존 상태라 이 PR에서 바꾸지 않는다.
 - 비차단 기록: 작성자가 단독 실행 하나(`dry2`, 12:24:21Z)를 커밋 여유 3.44 GB에서 돌렸다고 공개했다(4 GB 기준 일탈, 판정 실행 아님). gitignore 대상 Vitest 캐시(`node_modules/.vite/…`, `.vite-temp`)가 바뀌었다.
+- 창 쪽 구현 착수: 신규 `gpt-6-astra` xhigh `[Management 구현 Astra]`(화면 표시 GPT-6-Astra xhigh, Codex v0.162.1, 권한 표시 「YOLO mode · Full Access · never」, backend 실제 모델 unknown). 배정 신호 1·2·3·4. Task `task_425824c384f1`, Dispatch `ctx_8f175faf138a`, `turn_started` 관측. 계약 E/`contracts/pr2-frontend-impl-task.md` SHA256 `541df215ec07d9dcade663e922e0791f399cecc3ae7377a3c47574ff17ee49db`, 기준 HEAD `441ce45a`. 계약은 시험이 덮지 않는 설계 요구 셋(마지막 종료 표시, 실행본 목록·지정 상한, pid 생존 확인)을 넣게 했고 선행 시험 작성자의 임시 참조 구현을 열지 못하게 했다. 띄우기 직전 커밋 여유 15.77 GB(12:56:08Z).
+
+### PR2 창 쪽 구현 결과
+
+- worker_done `msg_de08fde38660`(succeeded, 발신·Task·Dispatch 일치). 보고 E/`pr2-frontend-impl/report.md`, 맥락 메모 E/`pr2-frontend-impl/context-memo.md`. 제품 8파일 +1174/−6줄, commit `69fffa1a`: 새 `electron/server-operations-contract.ts`(231줄)·`electron/backend-connection.ts`(427줄)·`src/ServerOperations.tsx`(367줄)·`src/serverOperationsBridge.d.ts`, 수정 `electron/main.ts`·`electron/preload.cts`·`src/App.tsx`·`src/styles.css`. 새 의존성 없음.
+- 같은 명령(E/`pr2-frontend-tests/raw/impl-first/`·`impl-final/`, HEAD `441ce45a`, 직전 커밋 여유 15.48·16.66 GB): 두 번 모두 1333건 중 통과 1331, 실패 2(기존 실패 App.test 링크·desktop-main 1280×720), 건너뜀 0, typecheck 3종 exit 0. 첫 실행부터 통과했고 자체 실사 보완(인증 다시 읽기까지 포함한 전체 시간 상한, 시작 중 오래된 연결 파일 pid를 끄지 않음, 시간 초과 뒤 늦은 결과 보호) 뒤 다시 돌렸다.
+- 시험이 덮지 않는 설계 요구 셋: 마지막 종료 표시 `ServerOperations.tsx` `LastExit`, 실행본 목록 5초·지정 30초 `backend-connection.ts` `readReleases`·`releaseOperation`, pid 생존 `pidLives`(`kill -0`). 구현자는 정적 실사만 했고 시험은 독립 검증자가 쓴다.
+- 리드 표본 대조(일치): 두 실행 `vitest.json`의 셈과 실패 이름, 시험 파일 diff·status 빈 출력, `git status`의 바뀐 파일이 제품 8파일과 리드 goal뿐, Codex 세션 기록에서 메모 쓰기(12:58:39Z)가 첫 제품 쓰기(12:59:56Z)보다 앞섬, 파일 쓰기 17건이 모두 허용 경로, 선행 시험 작성자의 임시 참조 구현·`self-check`를 연 명령 0건(재귀 탐색도 `.backups/tmp` 밖), 남은 electron·`wsl.exe`·Vitest 프로세스 0, 코드 표본(`pidLives`의 `kill -0`, 목록 5000 ms, 지정 30000 ms).
+- 보고와 원천의 불일치 1건(비차단, 메인에 알림): 보고는 「`node_modules/.vite*` 캐시 갱신 관측 0건」이라 했지만 `.vite/vitest/…/results.json`이 13:09:37Z에 바뀌었다. 구현자 감사 스크립트가 기준 시각 `[DateTime]'2026-10-10T12:57:56Z'`를 현지 시각으로 바꿔 UTC 파일 시각과 비교해 모두 걸렀다. 계약상 기록만 하는 gitignore 캐시라 범위 위반은 아니다.
+- 리드 관찰(판정은 검증자): `backend-connection.ts`의 `releaseOperation`이 한 줄에 삼항 세 개로 방법·경로·상한을 고른다(CODE_CONVENTION 「TypeScript·Electron 작성」의 한 줄 압축 기준).
