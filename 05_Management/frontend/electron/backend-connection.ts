@@ -37,7 +37,11 @@ interface ConnectionOptions {
 function defaultRunProcess(file: string, args: readonly string[]): Promise<ProcessResult> {
   return new Promise(resolve => {
     execFile(file, [...args], { windowsHide: true, timeout: 5000, maxBuffer: 1024 * 1024, encoding: 'utf8' }, (error, stdout, stderr) => {
-      resolve({ exitCode: error ? (typeof error.code === 'number' ? error.code : 1) : 0, stdout, stderr });
+      let exitCode = 0;
+      if (error) {
+        exitCode = typeof error.code === 'number' ? error.code : 1;
+      }
+      resolve({ exitCode, stdout, stderr });
     });
   });
 }
@@ -77,6 +81,11 @@ function parseConnection(text: string): ConnectionInfo | null {
   } catch {
     return null;
   }
+}
+
+function isFreshConnection(candidate: ConnectionInfo | null, previous: ConnectionInfo | null): candidate is ConnectionInfo {
+  // WSL may reuse the old pid after restarting; startedAt identifies the new run.
+  return candidate !== null && (previous === null || candidate.startedAt !== previous.startedAt);
 }
 
 export function createBackendConnection(options: ConnectionOptions) {
@@ -249,8 +258,7 @@ export function createBackendConnection(options: ConnectionOptions) {
       const waitUntilReady = async () => {
         while (active()) {
           const candidate = await readConnectionFile();
-          const fresh = candidate && (!previous || (candidate.pid !== previous.pid && candidate.startedAt !== previous.startedAt));
-          if (active() && fresh && await ready(candidate)) {
+          if (active() && isFreshConnection(candidate, previous) && await ready(candidate)) {
             if (active()) {
               info = candidate;
               state = { state: 'connected' };
@@ -357,10 +365,9 @@ export function createBackendConnection(options: ConnectionOptions) {
     let target = info;
     if (!target && stoppingChild) {
       const candidate = await readConnectionFile();
-      const fresh = candidate && (!launchPrevious || (candidate.pid !== launchPrevious.pid && candidate.startedAt !== launchPrevious.startedAt));
       // During startup an old file may still belong to a backend we could not
       // attach to. Only a fresh, authenticated backend is ours to terminate.
-      if (fresh && await ready(candidate)) target = candidate;
+      if (isFreshConnection(candidate, launchPrevious) && await ready(candidate)) target = candidate;
     }
     try {
       if (target) {
@@ -407,7 +414,11 @@ export function createBackendConnection(options: ConnectionOptions) {
   }
   function releaseOperation(commit: string, build: boolean): Promise<OperationResult> {
     if (parseCommitInput({ commit }) === null) return Promise.resolve(operationFailure('invalidCommit'));
-    return operation(build ? 'POST' : 'PUT', build ? '/api/releases' : '/api/releases/current', build ? 660000 : 30000, () => ({}), JSON.stringify({ commit }));
+    const body = JSON.stringify({ commit });
+    if (build) {
+      return operation('POST', '/api/releases', 660000, () => ({}), body);
+    }
+    return operation('PUT', '/api/releases/current', 30000, () => ({}), body);
   }
 
   return {

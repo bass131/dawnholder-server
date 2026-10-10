@@ -68,6 +68,18 @@ export default function App() {
   const [connection, setConnection] = useState<ConnectionState>({ state: 'disconnected', reason: 'notConnected' });
   const connected = connection.state === 'connected';
   const section = sections[activeSection];
+  const showConnectionNotice = activeSection !== 'operations' || !window.serverOperations;
+  const connectionTitle = connected ? '관리 기능 연결됨' : '관리 기능 미연결';
+  let connectionNotice = '실제 상태와 이력은 확인할 수 없습니다.';
+  if (connected) {
+    connectionNotice = '서버 운영 화면에서 상태를 확인할 수 있습니다.';
+  } else if (activeSection === 'development') {
+    connectionNotice = '시스템 기록은 로컬 파일에서 읽습니다. 서버의 실시간 상태는 미연결입니다.';
+  }
+  const footerConnection = connected ? '관리 기능 연결됨' : '관리 기능 미연결 · 서버 실시간 상태 미연결';
+  const footerRefresh = connected && activeSection === 'operations'
+    ? '서버 상태 · 화면이 보이는 동안 자동 갱신'
+    : '로컬 자료 · 자동 갱신 안 됨';
   return (
     <div className="management">
       <a className="skip-link" href="#management-section">본문으로 건너뛰기</a>
@@ -85,7 +97,12 @@ export default function App() {
           <section id="management-section" aria-labelledby="section-heading">
             {activeSection === 'development' && <h2 id="section-heading" className="visually-hidden">개발 현황</h2>}
             {activeSection !== 'development' && <div className="page-heading"><h2 id="section-heading">{section.title}</h2><p>{section.description}</p></div>}
-            {(activeSection !== 'operations' || !window.serverOperations) && <aside className="connection-notice" aria-label="연결 상태"><strong>{connected ? '관리 기능 연결됨' : '관리 기능 미연결'}</strong><p>{connected ? '서버 운영 화면에서 상태를 확인할 수 있습니다.' : activeSection === 'development' ? '시스템 기록은 로컬 파일에서 읽습니다. 서버의 실시간 상태는 미연결입니다.' : '실제 상태와 이력은 확인할 수 없습니다.'}</p></aside>}
+            {showConnectionNotice && (
+              <aside className="connection-notice" aria-label="연결 상태">
+                <strong>{connectionTitle}</strong>
+                <p>{connectionNotice}</p>
+              </aside>
+            )}
             {activeSection === 'operations' && (window.serverOperations ? <ServerOperations onConnectionChange={setConnection} /> : <Operations />)}
             {activeSection === 'users' && <Users />}
             <div hidden={activeSection !== 'development'}>
@@ -101,7 +118,10 @@ export default function App() {
           </section>
         </main>
       </div>
-      <footer className="app-status"><span>{connected ? '관리 기능 연결됨' : '관리 기능 미연결 · 서버 실시간 상태 미연결'}</span><span>{connected && activeSection === 'operations' ? '서버 상태 · 화면이 보이는 동안 자동 갱신' : '로컬 자료 · 자동 갱신 안 됨'}</span></footer>
+      <footer className="app-status">
+        <span>{footerConnection}</span>
+        <span>{footerRefresh}</span>
+      </footer>
     </div>
   );
 }
