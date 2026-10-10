@@ -200,6 +200,12 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 이탈(리드 귀속, 메인 `msg_27aefcdfcd45`로 사후 기록 수용): 진입 지시 peek 출력을 Claude Code scratchpad에 리다이렉트로 썼고, 맥락 메모(07:37:04Z) 전에 scratchpad 1개와 E 15개를 썼다(E/lead-context.md 「정정」). 리드의 근거 폴더 밖 쓰기는 사건 단위로 여섯 번째다. 이 goal 규칙 2·3의 fixture 원천이다.
 - branch `feat/session-guard-liveness-20261010`을 base main `cc20d428`에서 만들었다(07:5xZ). 착수 맥락 메모는 E/pr1-lead-context.md(07:52:35Z)다.
 
+### 첫 발생 기록
+
+교정 정본에 따라 첫 발생을 기록만 한다. 같은 일이 다시 나면 반복 규칙 후보다. 이 goal 범위를 넓히지 않는다.
+
+- 보조 터미널 알림과 메인 입력창 초안이 섞여 제출됨(메인 전달 `msg_53bb8fc67cff`, 2026-10-10T07:59:43Z): 16:4x KST 보조 메인 Opus가 메인 pane에 `orca terminal send --enter`로 「[보조 메인 Opus] Orca 메시지를 확인하라」를 넣는 순간 메인 입력창의 대시보드 결정 응답 초안과 섞여 제출됐다. 메인은 표식이 붙은 입력이라 결정으로 쓰지 않았고 사용자가 A 승인을 다시 제출했다(「적용 중인 사용자 결정」 범위 승인). 보조 진술 `msg_89cd1162a8bb`: 보내기 직전 terminal read tail의 마지막 줄은 「❯」뿐이고 draft 필드도 없었다. 메인은 보조에게 메인 pane terminal send를 금지했다(`msg_5946e443c356`). CLAUDE.md·보조 세션 스킬의 「빈 프롬프트일 때만 터미널 안내」는 이 경쟁 상태를 막지 못한다. 반복 때 후보 예: 메인 pane을 터미널 입력 대상에서 빼기.
+
 ## 다음 계획 후보
 
 이 goal 밖으로 둔 일이다. 후보마다 BACKLOG ID나 기존 goal 링크를 단다.
