@@ -12,15 +12,15 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR은 `feat/session-guard-liveness-20261010`(base main `cc20d428`, 선행 시험 뒤 main `bd4dbb5f`를 받음)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: 구현 둘과 README·CI가 끝났다(「현재 결과」). 가드 독립 검증을 위임한다.
-- **남은 순서**: 독립 검증 둘(차례로, 가드 먼저) → 도구 PR·CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **현재 위치**: 가드 독립 검증이 통과했다(「현재 결과 / 가드 독립 검증」). README 가드 절 한계 문장과 Orca 단계 이름을 고치는 문서 수정을 위임한다.
+- **남은 순서**: 문서 수정 → helper 독립 검증(문서 수정 검토 포함) → 도구 PR·CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **사용자 차례**: 도구 PR 병합 승인 줄과 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
 - [x] 선행 시험 작성
-- [>] 가드 hook 구현·검증(구현 끝, 검증 전)
+- [>] 가드 hook 구현·검증(독립 검증 통과, README 한계 문장 보완 중)
 - [>] 간격 도구 구현·검증(구현 끝, 검증 전)
 - [ ] 도구 PR 병합
 - [ ] 결과 기록·Gardener
@@ -226,6 +226,17 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 R-2(E/lead-r2-docs/r2-verdict.md): 재실행 수가 같다. 검증 관찰로 README의 Git 제외 파일 링크, 옛 이름이 남은 Orca 단계 이름을 넘긴다.
 - 생존 신호 초과(작성자 귀속, helper의 첫 실제 검출): 신호 7, 300초 초과 둘(346초 09:20:43Z→09:26:29Z, 310초 09:26:29Z→09:31:39Z). 계약 「heartbeat는 5분을 넘기지 않는다」 이탈이다. 질문 대기 40초는 빼고 셌다.
 
+### 가드 독립 검증
+
+- 검증자: 신규 `claude-opus-5-5`(화면 「Opus 5.5 ⚡xhigh」, backend unknown), Task `task_caaf2b5640ed`, Dispatch `ctx_2b935e48430f`, 09:34:58Z~09:56:23Z, worker_done `msg_27b103d032b4`. 계약 E/verify-guard-contract.md(SHA256 `147db1fb…`), 판정 원문 E/verify-guard/verdict.md.
+- 판정: 통과, 결함 번호 없음. 검증자 세션 자체가 실제 진입이었다(완료조건 2). 메모 전 쓰기 `memo-first`, 우편함 출력 버림 `mailbox-output-loss`, Bash `/tmp`·홈·Windows 기본 TEMP 쓰기 `write-outside-checkout`, Write `/tmp` `temp-write`가 실행 전에 막히고 고치는 법이 보였다. 메모 뒤 근거 폴더 쓰기, `run_in_background` 대기, git은 통과했다. 병합 관문 `not-main-checkout`도 같은 세션에서 그대로 막혔다. 호출 사이 `cd`는 다음 호출 기준 폴더에 반영된다.
+- 시험: 가드 164 + 판정 시험 3(새 두 파일 `verify-boundaries`·`verify-registration`) = 167/167, helper 25, MergeGate 126, Backlog 60 통과. Orca 전체는 알려진 1개만 실패한다. settings 변경은 가드 그룹 9줄뿐이고 병합 관문 등록은 바이트 그대로다. CI SessionGuard 단계 본문을 Git Bash로 재현해 정상·부재·load 실패·nonzero 네 경우가 맞았다. hook 지연 중앙값은 가드 70ms, 빈 node 58ms다.
+- 리드 R-2(E/lead-r2-verify-guard/r2-verdict.md): 상태 파일 막은 기록 10개, 지연 원시 75줄 재집계, CI 재현 원시, 시험 재실행 167이 판정과 같다.
+- 리드 판단: README 한계 문장(묶음 명령으로 감싼 출력 버림, `>& 파일`, hook 환경 변수, 호출 사이 `cd` 반영과 메모 쓰는 법), README 57행 Git 제외 링크, Orca 단계 이름은 이번 PR에서 문서 수정 작업자가 고친다. 단계 이름을 상수로 찾는 기존 시험 단정은 helper 독립 검증자가 653·668행과 함께 고친다. 그 밖의 관찰은 「다음 계획 후보」로 둔다. 적용 영향표 초안의 메인 줄·검증자 줄을 판정대로 바로잡았다(E/approval-impact-table-draft.md).
+- 생존 신호(helper): 신호 12, 최대 336초, 300초 초과 하나(09:41:09Z→09:46:45Z). README·CI 작성자에 이은 두 번째 발생이다. 같은 날 모든 파트 Dispatch 23개 중 18개가 300초를 넘어(최대 970초, E/lead-r2-verify-guard/liveness.json) 개인 이탈보다 운영 방식의 문제로 보인다. heartbeat 간격 변경은 이 goal의 「하지 않을 것」이라 메인에 사실만 올렸다. 정산 때 helper로 재는 규칙은 종료 기록 PR 4번이다.
+- 리드 수신 지연(리드 귀속): worker_done을 38분 31초 뒤(10:34:56Z)에 받았다. 메모리 회수로 꺼진 우편함 대기를 지시대로 다시 열지 않았고 pane 도착 알림이 없었다. 메인 안내 `msg_dd709a2a6008`로 확인했다.
+- 정산: 빈 프롬프트 확인, `worker-release` retained, `terminal close`(10:38:05Z).
+
 ### 첫 발생 기록
 
 교정 정본에 따라 첫 발생을 기록만 한다. 같은 일이 다시 나면 반복 규칙 후보다. 이 goal 범위를 넓히지 않는다.
@@ -238,3 +249,6 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 이 goal 밖으로 둔 일이다. 후보마다 BACKLOG ID나 기존 goal 링크를 단다.
 
 - 진입 순서 문서(Rules): 규칙 3이 실리면 리드·작업자 진입은 「읽기 → 메모 → Run·receipt·READY」여야 한다. RESUME과 세션 인계 스킬의 진입 순서 문장을 맞출지 본다. BACKLOG `contract-context-check`.
+- 가드 후속(가드 독립 검증 관찰, E/verify-guard/verdict.md): 셸 읽기 실패도 세션 상태 errors에 남기기(O1, 10월 31일 평가에서 조용한 통과를 세려면 필요), 같은 명령 안 리터럴 `cd <경로>` 따라가기(O4), Write·Edit 경로의 변수 풀이 빼기(O5), 같은 세션 hook 동시 실행의 기록 손실(O6, 10월 31일 평가와 함께), 묶음 명령·`>& 파일` 판정 넓히기(O2·O3), 가독성 지적 넷(메모 기록 시점 주석, 쓰기 목록 순서 주석, 줄바꿈 처리 주석, `pendingHeredoc` 세 상태). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
+- 작업자 기동 환경의 `GIT_OPTIONAL_LOCKS=0`(메인 후보 전달 `msg_41a586d79576`): World goal에서 작업자 첫 git 읽기의 누락이 두 번 나왔고 World 리드가 기동 명령 환경으로 올렸다. 모든 파트의 R-5 기동 절차에 TEMP·TMP와 함께 넣을지 본다. 세션 쓰기 가드는 git 자신의 잠금 파일 쓰기를 세지 않는다(「설계」 115행). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
+- heartbeat 운영 재평가: 같은 날 모든 파트 Dispatch 23개 중 18개가 300초를 넘었다(「현재 결과 / 가드 독립 검증」). 간격 기준과 긴 명령 중 신호 방법을 다시 볼지 메인이 판단한다.
