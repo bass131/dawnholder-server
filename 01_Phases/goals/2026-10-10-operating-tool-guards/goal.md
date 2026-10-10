@@ -9,12 +9,12 @@
 Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
-- branch: 도구 PR은 `feat/session-guard-liveness-20261010`(base main `cc20d428`, 선행 시험 뒤 main `bd4dbb5f`를 받음)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
+- branch: 도구 PR224(`feat/session-guard-liveness-20261010`)는 병합됐다(「현재 결과 / PR224 병합」). 종료 기록은 `docs/session-guard-liveness-closeout-20261010`(base main `b482b84a`)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: helper 재검증이 통과했고 도구 PR224를 만들었다(main PR222를 받은 head). CI를 확인한 뒤 승인 묶음을 메인에 올린다.
-- **남은 순서**: PR224 CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
-- **사용자 차례**: 도구 PR 병합 승인 줄과 종료 기록 PR 병합 승인 줄이다.
+- **현재 위치**: PR224가 병합됐다. 종료 기록 branch에 병합 결과를 기록했고 Gardener를 연다.
+- **남은 순서**: Gardener → 후보 도착 검사 → 정본 문장 셋 작성 → 문서 실사 → 종료 기록 PR·승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- **사용자 차례**: 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
 
@@ -22,8 +22,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - [x] 선행 시험 작성
 - [x] 가드 hook 구현·검증(독립 검증 통과. README 가드 절 보완은 helper 독립 검증이 함께 검토)
 - [x] 간격 도구 구현·검증(결함 #1 수정 뒤 재검증 통과, 비차단 #3은 다음 후보)
-- [ ] PR224 병합
-- [ ] 결과 기록·Gardener
+- [x] PR224 병합
+- [>] 결과 기록·Gardener
 - [ ] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8
 
@@ -53,6 +53,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 2. 시계 출력 저장 반복 규칙: 작업 맥락 양식 머리말의 시계 문장에 「그 출력은 근거 폴더 파일로 저장하고 기록에 경로를 단다. PowerShell에서는 Git의 `date.exe -u`를 쓴다」를 더한다. BACKLOG `powershell-clock-command`를 함께 닫는다.
 3. 결정 23 정본 반영: AGENTS 「공학 조건」의 권한 예외 문장에 core-active 근거 폴더 한 경로 허용을 더한다.
 4. ORCA 「Orca 도구 관측과 우편함 대기」에 한 문장: 출력 버림은 세션 쓰기 가드가 막고, 작업자 정산 때 리드는 간격 helper로 잰다.
+   - 같은 문장에 「300초 초과 구간은 goal에 적는다」를 더한다. 근거는 메인 후보 전달 `msg_6a2b5e7792c4`(2026-10-10T14:00:45Z, Core 작업자 300초 초과 두 번째 발생)다. 승인된 이 문장의 같은 행동이고 새 파일·절이 없어 리드가 넣기로 했다(status `msg_b7ac4f9171a1`).
 
 ### 건드릴 곳
 
@@ -268,6 +269,15 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 관찰 2에 따라 「설계」 145행 보충을 「어떤 Dispatch의 신호도 아니다」로 README와 맞췄다.
 - 리드 R-2(E/lead-r2-reverify-liveness/r2-verdict.md): 재실행 72/72, 저장 원시 초과 수 전후 같음, #3 재현 원시가 판정과 같다. 생존 신호 최대 211초, 초과 0.
 
+### PR224 병합
+
+- PR224 CI(head `b58f729d`): 리드 조회(2026-10-10T12:11:31Z) 때 code-rules·module-boundaries·architecture-tests가 성공했다. code-rules 로그의 시험 수는 Orca 72/72, MergeGate 126/126, SessionGuard 167 중 165 통과·2 건너뜀(Windows 전용 Git Bash 드라이브 경로), Backlog 60/60이다(E/pr224-ci/test-counts.txt). 0개 통과가 아니다(완료조건 5). dotnet-tests는 그때 진행 중이었고 메인이 병합 전에 통과(21m36s)를 확인했다. 리드의 CI 백그라운드 대기는 12:10:44Z에 메모리 회수로 꺼졌고 다시 켜지 않았다.
+- 승인 묶음: merge_ready `msg_5e78844538ec`(E/approval-bundle-pr224.md). 리드 R-2 원문 경로, 적용 영향표, 알려진 한계(재검증 결함 #3, 미실행 셋)를 담았다.
+- 병합(메인 전달 `msg_9c8f4bfd8ced`, 2026-10-10T12:19:15Z): 사용자가 메인 pane에 「병합 승인: PR224 head b58f729d49a85d05ce829d1cb296d09872e6bed3」를 제출했다. 메인이 4/4 통과와 head를 다시 확인하고 병합했다. 병합 커밋 `6d09ac1fd93b624fe01b35462138da8dd074aa4b`(2026-10-10T12:18:55Z), 둘째 부모가 승인 head `b58f729d`다(E/closeout/pr224-merge-commit.txt). 그 사이 PR223(`2492843e`, 12:16:16Z)이 먼저 병합됐지만 PR224는 충돌이 없었다. 메인은 병합 전 각 파트 리드에 memo-first 안내를 보냈고 메인 checkout을 `6d09ac1f`로 올렸다.
+- 메인 보고(메인 귀속, 같은 메시지): 승인 묶음 R-2 때 메인이 표식 파일 존재를 node 스크립트로 확인해 병합 관문 protected-path 글자 검사를 지났다. 내용 읽기·수정은 없었다. 후보로 넘긴다(「다음 계획 후보」).
+- 병합 알림 뒤 정지(메인 귀속, 메인 `msg_78972f78a12e` 2026-10-10T14:22:21Z): 메인이 병합 알림을 우편함에 넣고 빈 프롬프트 리드 pane에 터미널 안내를 보내지 않아 이 리드가 그 안내(14:22:21Z 송신)까지 병합을 몰랐다. 리드 우편함 대기는 메모리 회수 뒤 다시 열지 않은 상태였다. 리드는 이후 단계 경계마다 `--wait` 없는 check를 한다(status `msg_b7ac4f9171a1`).
+- 이 goal 전체 생존 신호(helper, E/closeout/liveness-goal-run.json, 입력은 전체 우편함 5000개 E/session/inbox-closeout-all.json에서 이 Run·handle·Dispatch 아홉으로 거른 113개 E/session/inbox-goal-run.json): Dispatch 아홉 중 300초 초과는 README·CI 작성자(346·310초)와 가드 검증자(336초) 둘이다. 그 밖의 최대는 267·245·264·233·211·201·144초다. 기록한 값과 같다(E/closeout/liveness-goal-run-summary.txt).
+
 ### 첫 발생 기록
 
 교정 정본에 따라 첫 발생을 기록만 한다. 같은 일이 다시 나면 반복 규칙 후보다. 이 goal 범위를 넓히지 않는다.
@@ -284,5 +294,8 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 가드 후속(가드 독립 검증 관찰, E/verify-guard/verdict.md): 셸 읽기 실패도 세션 상태 errors에 남기기(O1, 10월 31일 평가에서 조용한 통과를 세려면 필요), 같은 명령 안 리터럴 `cd <경로>` 따라가기(O4), Write·Edit 경로의 변수 풀이 빼기(O5), 같은 세션 hook 동시 실행의 기록 손실(O6, 10월 31일 평가와 함께), 묶음 명령·`>& 파일` 판정 넓히기(O2·O3), 가독성 지적 넷(메모 기록 시점 주석, 쓰기 목록 순서 주석, 줄바꿈 처리 주석, `pendingHeredoc` 세 상태). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
 - 작업자 기동 환경의 `GIT_OPTIONAL_LOCKS=0`(메인 후보 전달 `msg_41a586d79576`): World goal에서 작업자 첫 git 읽기의 누락이 두 번 나왔고 World 리드가 기동 명령 환경으로 올렸다. 모든 파트의 R-5 기동 절차에 TEMP·TMP와 함께 넣을지 본다. 세션 쓰기 가드는 git 자신의 잠금 파일 쓰기를 세지 않는다(「설계」 115행). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
 - helper 후속(helper 독립 검증 관찰, E/verify-liveness/verdict.md): 메시지 하나의 형식 오류가 모든 수신자 원시 분석 전체를 막지 않게 하기(O9), Orca workflow 회귀에 시험 파일 둘 경우 더하기(O4), 마지막 신호 뒤 침묵을 저장 시각까지 재기(O3, 실시간 감시는 이 goal 밖). 재검증 결함 #3(Error가 아닌 예외에서 CLI가 exit 1로 죽음, 한 줄 수정과 대역 시험 방식은 E/reverify-liveness/verdict.md 「결함 #3」), 신호 조건 이유 주석(재검증 관찰 1), README 80행 빈 문자열 문구(관찰 3). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
-- 작업자 부작용 실행은 저장한 harness로만(메인 후보 전달 `msg_546c56564af9`): Core goal에서 두 번 나왔다. 세션 쓰기 가드는 스크립트 내부 쓰기를 세지 않으므로(「설계」 115행) run/ 밖 쓰기나 manifest 누락은 잡지 못한다. 마감 검사 helper가 높은 층 후보다. 이 goal의 작업자들도 저장한 PowerShell 하네스로 허용 실행을 감쌌다(E/docs-fix/work/, E/fix-liveness/work/). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
+- 작업자 부작용 실행은 저장한 harness로만(메인 후보 전달 `msg_546c56564af9`): Core goal에서 두 번 나왔다. 세션 쓰기 가드는 스크립트 내부 쓰기를 세지 않으므로(「설계」 115행) run/ 밖 쓰기나 manifest 누락은 잡지 못한다. 마감 검사 helper가 높은 층 후보다. 이 goal의 작업자들도 저장한 PowerShell 하네스로 허용 실행을 감쌌다(E/docs-fix/work/, E/fix-liveness/work/). 보충(메인 `msg_4ae64986e435`, 2026-10-10T12:58:47Z): Core 정정 Sol이 Orca 명령 넷(ask·heartbeat·check·worker_done)을 저장 스크립트 밖에서 실행하고 「저장 harness로만」이라고 보고했다. 규칙이 Orca 프로토콜 명령을 대상에 넣는지 함께 정한다(예: 메시지 송수신은 직접 실행, 파일을 쓰는 명령만 harness). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
 - heartbeat 운영 재평가: 우편함 300개 창 안의 Dispatch 23개 중 19개가 300초를 넘었다(「현재 결과 / 가드 독립 검증」, 창 밖 Dispatch 포함 전체 집계는 아니다). 간격 기준과 긴 명령 중 신호 방법을 다시 볼지 메인이 판단한다.
+- 리드가 옮긴 측정 사실은 원시로 재계산(메인 후보 전달 `msg_cc75adaab9c7` 2026-10-10T12:16:50Z, 근거 추가 `msg_2e6f1580e158` 12:35:39Z): Core 리드가 계약·보고에 측정 사실을 원시와 다르게 옮긴 일이 하루에 세 번 나왔다(family_guid 「세 정지 뒤」, 간격 0.578초의 밀리초 아래 자름, 「완료 줄 부재」를 「시작 미완료」로 해석). 이 goal 리드의 Dispatch 수 눈셈(18→19, 「첫 발생 기록」)도 원시 대신 손으로 옮긴 같은 부류로 본다. 후보 문장: 리드 계약·보고에는 원시 경로·필드를 기준으로 적고 파생값은 계산 출력 경로를 달거나 「리드 계산, 원시로 재계산」으로 표시한다. 원시가 받치는 범위만 쓰고 관측하지 않은 것은 미측정으로 적는다. 검증 계약은 원시 재계산을 요구한다. 들어갈 곳은 작업 맥락 스킬의 원문 계약 기준이며(지금은 판정 양식 「실행과 미실행」에만 수치 원시 칸이 있다) 이 goal의 승인 파일 밖이다. 종료 기록 PR에서 BACKLOG 후보로 등록한다.
+- 메인 우편함 대기 겹침(메인 자기 보고 `msg_9647db589836`, 2026-10-10T14:14:04Z): 메인이 background `check --wait`를 연 채 하나를 더 열었다. 두 번째 발생이다(잃은 메일 없음). 대기 정본은 이미 「한 번에 하나만」이다. 높은 층은 가드가 같은 수신 주소의 `check --wait`가 아직 도는지 아는 것이다. PreToolUse 입력에는 앞 background 셸의 끝남이 없다(완료를 알리는 hook 사건이 있는지는 미확인). 실행 중 프로세스 목록에서 같은 `--run`·`--terminal`의 `check --wait`를 찾는 방법은 Windows 조회 비용과 오탐을 재야 한다. 코드·시험·독립 검증이 필요해 문서 PR에 넣지 않는다. 종료 기록 PR에서 BACKLOG 후보로 등록한다.
+- 병합 관문 표식 경로의 스크립트 경유 확인(메인 보고 `msg_9c8f4bfd8ced`): protected-path 검사는 명령 글자에 든 경로만 본다. 경로를 글자로 쓰지 않은 스크립트는 지나간다(가드 「위험」 2와 같은 부류). 글자 검사로는 막을 수 없으므로, 표식 존재만 답하는 정식 helper를 두어 메인이 경로를 건드리지 않게 할지와 정본 한계 문장을 둘지 본다. 종료 기록 PR에서 BACKLOG 후보로 등록한다.

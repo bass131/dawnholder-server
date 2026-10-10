@@ -8,7 +8,7 @@
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
-- Rules: [규칙·운영 V1.x 1단계 — 세션 쓰기 가드와 생존 신호 간격 도구](../../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `feat/session-guard-liveness-20261010`
+- Rules: [규칙·운영 V1.x 1단계 — 세션 쓰기 가드와 생존 신호 간격 도구](../../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/session-guard-liveness-closeout-20261010`
 
 CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 
