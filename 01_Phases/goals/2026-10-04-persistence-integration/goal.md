@@ -124,8 +124,8 @@
 - [x] 체크포인트 PR #190 병합
 - [x] Windows DB 생성 1단계
 - [x] 컨테이너 범위·설계 검토
-- [>] 위험 확인 시험
-- [ ] 도구 전환 PR 병합
+- [x] 위험 확인 시험
+- [>] 도구 전환 PR 병합
 - [ ] 컨테이너 DB 생성
 - [ ] 실제 엔진 판정
 - [ ] 엔진 판정 PR 병합
@@ -486,11 +486,11 @@
 
 - 대상: 질문 4 A 원문의 이름 정한 컨테이너 하나·저장 볼륨 하나. 이미지는 SQL Server 2025 리눅스 공식 이미지이고, 정확한 태그·digest는 위험 확인 시험에서 재고 승인 계획에 고정한다. 위험 확인 시험 관측값은 태그 `mcr.microsoft.com/mssql/server:2025-CU9-ubuntu-22.04`, digest `sha256:b61a2ce00b3b23307efeff8e16af07c964ef64270c3fa0109cb5802403cf9e98`이다(`container-risk-check/run/02-image.json`, 독립 실사 전). 카드는 `docker image inspect`의 digest가 계획과 같을 때만 `docker run`한다(R-7 INV-22).
 - 이름: 위험 확인 시험 계약이 정한 컨테이너 `dawnholder-sqlserver`, 볼륨 `dawnholder-sqlserver-data`, 호스트 포트 `127.0.0.1:14333`을 1단계도 쓴다(메인 판단 Q-4의 정리 원시 조건). hostname·시험 DB·로그인 이름은 승인 계획 v2에 고정한다. 새 이름에 날짜·마일스톤 코드·작업자 이름을 넣지 않는다(CODE_CONVENTION 「파일 위치와 이름」). 옛 Windows 이름(`Dawnholder_Dev_D1b_20261002`, `dh_d1b_*`)은 Windows 쪽 역사로 남긴다. 존재·부재·삭제 판정은 `docker inspect <정확한 이름>`으로만 하고, `--filter name=`의 부분 일치 결과를 부재 증명이나 삭제 대상 선정에 쓰지 않는다(R-7 INV-06). 볼륨 이름이 컨테이너 이름을 접두로 가지기 때문이다.
-- 연결: Windows PowerShell 5.1의 SqlClient가 `tcp:127.0.0.1,<포트>`로 붙는다. 포트는 127.0.0.1에만 묶어 외부에 열지 않고, 시작 뒤 listener 주소를 원시로 남긴다(R-7 INV-10). Encrypt는 필수이고 TrustServerCertificate는 이 로컬 컨테이너 연결에만 쓴다. 포트 7777은 쓰지 않는다(World 조율 `msg_b1a0f5517876`, Core는 7777을 쓰지 않는다고 답함). 연결 실패는 도달 불가·로그인 실패·신원 불일치·엔진 변경 넷으로 나눠 고정 사유와 SQL 번호를 남기고, 안전 사유 목록은 제품 throw 문구와 전수 일치시킨다(R-7 INV-14·INV-16).
-- 정확 대상(R-7 INV-07): 카드는 `docker run --hostname <계획 값>`을 쓴다. 도구는 접속마다 MachineName = 계획 hostname, InstanceName NULL(기본 인스턴스), `sys.dm_os_host_info.host_platform` = Linux, 관리 로그인의 sysadmin을 대조한다. 첫 접속에서 master `database_guid`를 manifest에 기록하고 이후 접속마다 같은지 본다. 위험 확인 시험(hostname 미지정)에서는 같은 볼륨 위 재생성 뒤 MachineName이 새 컨테이너 ID로 바뀌었고, ServerName은 첫 컨테이너 값으로 남았고, master guid는 같았다(`run/03-engine.json`·`04-engine.json`·`04-system-db-identity.json`, 독립 실사 전).
+- 연결: Windows PowerShell 5.1의 SqlClient가 `tcp:127.0.0.1,<포트>`로 붙는다. 포트는 127.0.0.1에만 묶어 외부에 열지 않고, 시작 뒤 listener 주소를 원시로 남긴다(R-7 INV-10). 2026-10-10 관측: 컨테이너 접속이 성공한 상태에서도 Windows `Get-NetTCPConnection -LocalPort 14333 -State Listen`은 일치 객체가 없었다(E/`r7-container-measure/run/failure.json`). 이 PC의 WSL2 mirrored 네트워크 때문으로 보인다[추론]. 그래서 포트 사용 여부는 Windows TCP 표가 아니라 `127.0.0.1:<포트>` 연결 탐침과 `docker port`로 본다. 앞선 측정의 「포트 비사용」 원시(`Get-NetTCPConnection` 기반)는 근거가 약하다. Encrypt는 필수이고 TrustServerCertificate는 이 로컬 컨테이너 연결에만 쓴다. 포트 7777은 쓰지 않는다(World 조율 `msg_b1a0f5517876`, Core는 7777을 쓰지 않는다고 답함). 연결 실패는 도달 불가·로그인 실패·신원 불일치·엔진 변경 넷으로 나눠 고정 사유와 SQL 번호를 남기고, 안전 사유 목록은 제품 throw 문구와 전수 일치시킨다(R-7 INV-14·INV-16).
+- 정확 대상(R-7 INV-07): 카드는 `docker run --hostname <계획 값>`을 쓴다. 도구는 접속마다 MachineName = 계획 hostname, InstanceName NULL(기본 인스턴스), `sys.dm_os_host_info.host_platform` = Linux, 관리 로그인의 sysadmin을 대조한다. 첫 접속(Create 전 preflight)에서 master `family_guid`(`sys.database_recovery_status`, `database_id = 1`)를 manifest에 기록하고 이후 접속마다 같은지 본다. master `database_guid`와 ServerName·`@@SERVERNAME`은 판별에 쓰지 않는다. 2026-10-10 리드 설계 정정이다(위험 확인 시험 독립 실사 설계 관찰 O1, 메인 수용 `msg_b62898e46f42`, 구현 보충 v1.1). 근거 원시는 셋이다. master `database_guid`는 서로 다른 세 볼륨에서 모두 `234C3F4C-…`였고 `create_date`는 2003-04-08이었다. 이미지 템플릿 값으로 보인다[추론]. master `family_guid`는 볼륨마다 달랐다(`F23FE50D-…`·`5BE631FB-…`·`9B931E12-…`). 같은 볼륨 위 재생성 뒤에는 hostname을 정하지 않은 위험 확인 시험에서 두 번 모두 유지됐다(E/`container-risk-check/run/measurement-attempt-1/03·04-system-db-identity.json`, `run/03·04-system-db-identity.json`, E/`r7-container-measure/run/04-initial-identity.json`). ServerName 첫 값 유지는 hostname 미지정 재생성 두 번 중 한 번뿐이었다. 첫 측정 실행에서는 새 MachineName을 따라갔다(`measurement-attempt-1/04-engine.json`). 고정 hostname 아래 재생성 생존은 R-7 재측정이 잰다.
 - 인증·주체: 관리 작업은 sa 로그인(DPAPI 보관, 위 「보존 동작」의 비밀 줄)으로 한다. runtime은 지금처럼 시험마다 만드는 전용 SQL 로그인이다. 컨테이너에서는 Windows 통합 인증과 로컬 Windows 계정을 쓸 수 없다. recovery 주체는 이 goal에서 만들지 않고 복구 기능을 실제로 쓰는 후속 goal에서 새 형태를 정한다(결정 27 A, R-7 INV-13). 이전 결정 `msg_dac79ea2b268`은 폐기가 아니라 「컨테이너에서의 형태는 후속 goal에서」다. DB의 `dh_recovery` 역할과 role 매핑·권한 검증(서버 role 0, DB role 하나, 직접 grant 0, schema 소유 0)은 그대로다.
 - 실행: 단계마다 메인이 전달하는 실행 승인 아래 작업자가 실행한다. 사용자 관리자 창은 없고 도구는 관리자 토큰을 요구하지 않는다(R-7 INV-12). Docker Desktop 첫 실행은 사용자 손이다. docker 수명(pull·만들기·시작·정지·삭제)은 실행 카드 단계에 두고, docker 쪽 실패는 카드가 종료 코드와 `docker logs`로 분류·보존한다. 도구는 그 상태를 도달 불가로만 본다(R-7 INV-04·INV-05·INV-15, Q-5 메인 수용). docker 신원 기록(컨테이너 Id·image digest·볼륨 CreatedAt·hostname·시작 UTC, 비밀 없음)은 실행 작업자가 단계 근거 폴더에 남기고 정리 카드가 대조한다(R-7 S-3). 컨테이너를 띄우는 계약은 사용권 근거 `msg_3a98521517fa`(결정 26 A)를 단다.
-- 정지·시작(R-7 INV-02): `docker run --restart no`를 명시하고, 정지는 `docker stop -t <30 이상>`만 쓴다. `docker kill`·`rm -f`·`restart`는 쓰지 않는다. 위험 확인 시험은 `--time 15`를 썼다(`run/03-Measure.ps1` 152행). 1단계 계획 값은 추가 측정의 정상 종료 시간을 보고 정한다.
+- 정지·시작(R-7 INV-02): `docker run --restart no`를 명시하고, 정지는 `docker stop -t <30 이상>`만 쓴다. `docker kill`·`rm -f`·`restart`는 쓰지 않는다. 위험 확인 시험은 `--time 15`를 썼다(`run/03-Measure.ps1` 152행). 1단계 계획 값은 추가 측정의 정상 종료 시간을 보고 정한다. 2026-10-10 관측: `docker stop`이 매번 시간 상한까지 걸렸다. 위험 확인 시험 `--time 15` 두 번은 약 15.7초씩이었다(E/`container-risk-check/run/04-old-container-stop-receipt.json`·`05-final-container-stop-receipt.json`). 추가 측정 `-t 30`은 30.75초, ExitCode 137이었고 정지 구간 로그에 종료 메시지가 없었다(E/`r7-container-measure/run/11-final-container-stop-receipt.json`·`11-final-container-after.json`). SIGTERM으로 스스로 내려가지 않고 강제 종료되는 것으로 보인다[추론]. R-7 재측정이 `docker stop -t 30`, sa의 T-SQL `SHUTDOWN`, `docker stop -t 120`을 비교한다. 카드의 정지 절차는 그 결과로 정한다.
 
 ### 검증 등급과 구현자 배정
 
@@ -513,15 +513,15 @@
 ### 순서와 미결
 
 1. 끝남: 범위 개정 commit `b2e7797b` → R-7 검토(`goal-review.md`) → 메인 원문 확인(`msg_506628a86629`).
-2. 위험 확인 시험: 정산 끝(결과 메인 수용 `msg_0f778523521b`) → 신규 독립 문서 실사 진행.
+2. 끝남: 위험 확인 시험 정산(결과 메인 수용 `msg_0f778523521b`) → 신규 독립 문서 실사 「차단(#1·#2·#3)」 → 메인 「수용」(`msg_b62898e46f42`, 정정 기록 조건). 정정은 아래 재개 블록 「위험 확인 시험 실사 정정 기록」에 있다.
 3. 끝남: R-7 보완 commit `b0470646` → 메인 승인(`msg_0571a9679c71`). 사용자 질문 P-A·P-B·P-C는 결정 27·28·29 모두 A로 답이 왔다(`msg_33c4463ed26f`).
-4. R-7 추가 측정(진행, 09:00Z 기동): 위험 확인 시험 worker_done과 정리 원시(컨테이너·볼륨 부재)를 확인한 뒤 새 작업자로 냈다. Korean_Wansung_CI_AS 지원 여부를 맨 먼저 잰다(결정 28 A의 고정 근거, 미지원이면 메인에 올려 다시 묻는다). 근거 줄에 결정 26 A를 단다.
-5. 도구 전환 PR 구현 → 강 검증 → PR → 병합 승인 요청. 보존 시험 데이터·동작 검사 도구는 병렬로 쓴다.
+4. R-7 추가 측정: 첫 측정은 failed로 끝났다(`msg_65940d780f0d`). 정렬 규칙 `Korean_Wansung_CI_AS` 지원은 확인했다(결정 28 A 충족). 남은 자원·로그인·실패 번호·정지·재생성은 재측정(E/`r7-container-remeasure/`, 10:06Z 컨테이너 기동 허락)이 잰다. 끝나면 실패 측정과 재측정을 함께 신규 독립 문서 실사한다.
+5. 도구 전환 PR: 구현 끝(`msg_32608058c304`, 작성자 오프라인 1282 PASS·0 FAIL) → 강 검증(계약 준비, 재측정 컨테이너 정리 뒤 기동) → 재측정 결과의 문서 반영 보충 → PR → 병합 승인 요청. 보존 시험 데이터·동작 검사 도구는 병렬로 쓴다.
 6. 컨테이너 1단계: 새 실행 승인 기록 → 작업자 실행 → 독립 판정.
 7. 2단계 → 독립 판정 → 엔진 판정 PR → 병합 승인 요청.
 8. 정리 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
-미결: `Korean_Wansung_CI_AS` 지원 여부(결정 28 A의 전제, 1단계 컨테이너 생성 전에 확인). 컨테이너 메모리 천장·Connect Timeout·정지 유예 값은 추가 측정 뒤 승인 계획 v2에 넣는다. 이미지 내려받기 해석은 메인 판단 `msg_1f6c1e1ec912`로 확인됐다. 일정은 10-19~10-21 종료 추정이다.
+미결: `Korean_Wansung_CI_AS` 지원 여부는 2026-10-10 추가 측정으로 닫혔다(지원, `r7-container-measure/run/02-collation.json`). 컨테이너 메모리 천장·Connect Timeout·정지 방식과 유예 값은 재측정 뒤 승인 계획 v2에 넣는다. 이미지 내려받기 해석은 메인 판단 `msg_1f6c1e1ec912`로 확인됐다. 일정은 10-19~10-21 종료 추정이다.
 
 ### R-7 설계 검토 결과와 채택
 
@@ -532,7 +532,7 @@
 | F-1 Restore 경로 | 채택(INV-09·G-7). 스크립트 삭제 전에 되돌리기 경로를 기록한다. 방식은 사용자 결정 29 A다: commit `cc20d428` 참조와 절차를 MSSQL.md 역사 절·goal(「보존 동작」의 되돌리기 줄)에 적고 파일을 지운다. `state.clixml`의 `Restored=false`는 리드도 확인했다. |
 | F-2 수명 단위 | 채택(INV-01·INV-20·G-1). 메인 판단 Q-4로 「보존 동작」에 넣었다. 검토의 「goal L463」 표기는 HEAD `b2e7797b`에서 L464다(메인 정정). |
 | F-3 정렬 규칙 고정 시점 | 채택(INV-21·G-3·G-12). 미결 시점을 「1단계 컨테이너 생성 전」으로 옮기고 기대 엔진값을 승인 계획 v2에 둔다. 측정: 리눅스 기본 `SQL_Latin1_General_CP1_CI_AS`, 엔진 17.0.5005.3(2025 CU9)(`run/04-engine.json`). 사용자 결정 28 A: `Korean_Wansung_CI_AS` 고정, 엔진 2025 CU9 새 기준, 지원 여부는 추가 측정에서 먼저 잰다. |
-| F-4 정확 대상 판별 | 채택(INV-07·G-2). 측정이 전제와 맞다: InstanceName NULL, MachineName은 컨테이너 hostname, 같은 볼륨 위 재생성 뒤 master guid 동일. 새 사실: ServerName은 첫 컨테이너의 hostname으로 남는다. 그래서 hostname을 계획 값으로 고정한다. |
+| F-4 정확 대상 판별 | 채택(INV-07·G-2). 측정이 전제 일부와 맞다: InstanceName NULL, MachineName은 컨테이너 hostname. hostname을 계획 값으로 고정한다. **2026-10-10 정정:** 볼륨 신원 값을 master `database_guid`에서 master `family_guid`로 바꿨다. `database_guid`는 서로 다른 볼륨에서도 같았기 때문이다(위 「컨테이너 접속 경계」의 정확 대상 줄, 독립 실사 설계 관찰 O1, 메인 수용 `msg_b62898e46f42`). 「ServerName은 첫 컨테이너의 hostname으로 남는다」는 새 사실로 적었으나 두 재생성 중 한 번만 관측돼 철회한다. ServerName·`@@SERVERNAME`은 판별에 쓰지 않는다. |
 | F-5 부분 일치 filter | 채택(INV-06). 부분 일치는 거짓 양성만 만들므로 위험 확인 시험의 빈 결과는 부재 증명으로 유효하다. 실제 일치 범위(M-1)는 추가 측정에서 잰다. |
 | F-6 승인 계획 v1 고정 | 채택(INV-08·G-10). 계획·manifest v2는 새 경로를 쓰고 v1은 거부한다. 옛 Windows 정리는 commit `cc20d428` 도구다(Q-7 메인 수용). |
 | F-7 recovery 주체 | 채택(INV-13·G-4). 사용자 결정 변경이라 사용자에게 물었고 결정 27 A로 이 goal에서는 만들지 않는다. |
@@ -542,7 +542,7 @@
 | F-11 시도 상한 | 채택(INV-03·INV-20, 메인 판단 Q-6). |
 | F-12 관리자 토큰·ProgramData | 채택(INV-12·G-5). 「건드릴 곳」에 넣었다. |
 | F-13 CI 정의 | 채택(G-8, Q-9 메인 수용). 완료조건 문장을 고쳤다. |
-| F-14 정지·재시작 | 채택(INV-02). 위험 확인 시험은 `--time 15`를 썼다. 1단계 값은 추가 측정의 정상 종료 시간을 보고 30초 이상으로 정한다. |
+| F-14 정지·재시작 | 채택(INV-02). 위험 확인 시험은 `--time 15`를 썼다. 1단계 값은 추가 측정의 정상 종료 시간을 보고 30초 이상으로 정한다. 2026-10-10까지 `docker stop`은 매번 상한까지 걸리고 ExitCode 137로 끝났다(「컨테이너 접속 경계」의 정지 줄). 정상 종료 방식은 R-7 재측정이 잰다. |
 
 | 나머지 항목 | 판정·반영 위치 |
 |---|---|
@@ -562,7 +562,7 @@
 
 메인 승인(R-7 5단계, 사용자 결정 아님): `msg_0571a9679c71`(2026-10-10T08:53:31Z). 메인이 원격 head `b0470646`과 두 파일 hash를 대조하고 `b2e7797b..b0470646` diff를 직접 읽었다. 범위 차이는 채택한 R-7 지적·결정 26~29·메인 판단 Q-4·Q-6·리드 제안에서 나온 보완이라 이미 승인된 완료조건을 위한 것으로 보고 승인했고, 사용자 보고에는 「범위 보완」으로 적는다. 구현 계약은 추가 측정과 나란히 내도 되며, 기대 엔진값은 상수가 아니라 승인 계획 필드로 둔다(INV-21).
 
-시범 평가: 이 검토는 범위 개정 commit에 없던 문제를 구현 전에 찾았다. 예는 Restore 경로 소실(F-1), 정렬 규칙 고정 시점(F-3), 사용자 결정 변경(F-7), 관리자 요구 잔존(F-12), CI 정의 공백(F-13)이다. 위험 확인 시험 원시가 F-4 전제를 확인했고, ServerName 잔존이라는 새 사실도 나왔다. 구현 뒤 검증 왕복이 줄었는지는 아직 평가할 수 없다.
+시범 평가: 이 검토는 범위 개정 commit에 없던 문제를 구현 전에 찾았다. 예는 Restore 경로 소실(F-1), 정렬 규칙 고정 시점(F-3), 사용자 결정 변경(F-7), 관리자 요구 잔존(F-12), CI 정의 공백(F-13)이다. 위험 확인 시험 원시가 F-4 전제 일부를 확인했다. 그러나 검토의 볼륨 신원 값(master `database_guid`)은 볼륨 교체를 구별하지 못했다. 이 문제는 설계 검토가 아니라 위험 확인 시험의 독립 문서 실사(설계 관찰 O1)가 구현 중에 찾았다. 리드는 처음에 「ServerName 잔존」을 새 사실로 적었으나, 이것도 같은 실사가 한 번뿐인 관측이라고 짚어 철회했다. 구현 뒤 검증 왕복이 줄었는지는 아직 평가할 수 없다.
 
 ### 개정 전 범위(역사)
 
@@ -604,9 +604,37 @@
 
 ## 재개 지점
 
+### 실사 수용, 추가 측정 실패와 재측정, 도구 전환 구현 정산 — 2026-10-10T10:12Z
+
+기록 시각은 2026-10-10T10:12:01Z(`date -u`, KST 19:12)다. **이 블록이 현재 재개 정본이다.** N = E/`opus-lead-entry/2026-10-10-main-sync`다. 리드의 시간순 기록은 N/`pending-goal-edits.txt`에 있다.
+
+- **위험 확인 시험 실사 정정 기록(메인 조건 1, `msg_b62898e46f42`):** 신규 독립 문서 실사(`claude-opus-5-5`, Task `task_33565b456d1c` / Dispatch `ctx_1905f93de8ba`)의 판정은 「차단(결함 #1·#2·#3)」이었다. 판정서는 E/`container-risk-check-review/verdict.md`(SHA256 `57394a2c6c312f7820192bf6db5ec843dfa3af459d309b992166c9210fc6faa1`, worker_done `msg_c9690faf9f8a`)다. 보고서 측정 수치 103건은 원시와 일치했다. 메인은 재작업 없이 「수용」했다(메인 판단, 사용자 결정 아님). 보고서 원문(E/`container-risk-check/report.md`)은 고치지 않고 아래로 읽는다.
+  - #1(낮음): 실행 스크립트가 「SQL·PowerShell 작성」을 어겼다. 세션 ID·머신 경로를 리터럴로 반복했고, 소유·부재 검사를 중복했다. 실행 기록이라 고치지 않는다. 다음 측정 계약에 반영했다.
+  - #2(중간, 측정값 위장 부류): 보고서 132행의 「비관리자·NoProfile·NonInteractive」는 **선언이며 관측이 아니다.** 관측된 것은 receipt마다의 PS 5.1과 01 단계의 프로세스 Bypass뿐이다.
+  - #3(중간): 보고서 134·136행의 쓰기 감사는 **훑지 않은 범위가 있다.** 대상 폴더와 지정 루트의 직속 항목만 확인됐다. 허용 밖 파일의 관측·삭제는 저장 harness 밖에서 실행됐다. 삭제 시각(폴더 mtime 08:47:43.605Z)과 지금의 부재는 독립 확인됐다.
+  - #4·#5(비차단): ServerName 관측을 정정한다. 첫 측정 실행 재생성에서는 새 MachineName(`84bd0890d0cd`)을 따라갔다. 연결 시도 JSONL에 두 실행이 섞여 있다. 「헤더만」이라고 적은 stats 원시는 실제로 0 bytes다.
+  - 메인 조건 2: 비관리자 실행은 INV-12의 근거다. 그래서 재측정에서 관측으로 바꿨다(재측정 보충 v1.1, 아래).
+  - 메인 조건 3: #2 부류(측정값 위장)가 이 goal에서 다시 나오면 메인 예외 없이 정정 작업으로 간다. 이 goal 안의 첫 발생으로 기록한다.
+  - 메인이 같이 받은 것: master `family_guid` 설계 정정, ServerName·`@@SERVERNAME` 판별 제외. 검증자 harness가 홈 아래 tool-results에 자동 저장한 큰 git 출력 1건(709,465 bytes, 경로 경고뿐)은 하네스 기록이다. `msg_0f778523521b` 조건 1의 두 번째 발생으로 세지 않는다.
+- **메모리 몰림 조율(메인 운영 판단 `msg_2d2f1fce3ee4`, 09:21:37Z):** 큰 실행(Core SQL 컨테이너, Content Unity batch·PlayMode)은 겹치지 않게 한다. 시작 직전 `FreePhysicalMemory`·`FreeVirtualMemory`를 원시로 남기고, 둘 중 하나라도 4GB 아래면 기다린다. 측정 계약에 보충 v1.1(E/`r7-container-measure/contract-supplement-v1.1.md`, SHA256 `f33851c7…7156`)로 넣었다. 재측정 계약에는 본문으로 넣었다. 리드가 기동 직전 측정을 남기고 Content와 우편함으로 조율했다. 첫 측정 창(09:33~09:39Z)에는 Content가 대기했다. 재측정 창(10:06Z~)은 Content 큰 실행이 끝난 뒤다.
+- **R-7 추가 측정 정산(failed):** worker_done `msg_65940d780f0d`(Task `task_e6e85cd799bf` / Dispatch `ctx_51e3f0e76449`). 정산은 release retained, tui-idle, 화면 확인, close ptyKilled true까지 했다. 보고서 E/`r7-container-measure/report.md`(SHA256 `286fea0892193ddf669885da0470c44f57bdf2aef4678803fff379aaf09e8ee1`)다. 정리 원시 `run/11-cleanup.json`은 부재가 모두 true이고 오류가 없다. 리드가 Docker를 따로 조회해도 이름 정한 컨테이너·볼륨이 0개였다(`lead-after-cleanup-docker.txt`).
+  - 측정됨: 정렬 규칙 `Korean_Wansung_CI_AS` 실제 기동·지원 개수 1(결정 28 A 충족). 준비 9.56초·5회 시도. MachineName·ServerName·`@@SERVERNAME` 모두 `dawnholder-sqlserver`, InstanceName NULL, 17.0.5005.3 CU9, Enterprise Developer Edition. 연결 `encrypt_option` TRUE·SQL·TCP. `HostConfig.Memory` 4294967296, `Config.User` mssql. `docker stop -t 30`은 30.75초·ExitCode 137.
+  - 미측정: 자원 나머지, 로그인 구문, 실패 번호, 재생성, 부분 일치. 6번의 `Get-NetTCPConnection` ObjectNotFound를 하네스가 오류로 처리해 건너뛰었다. 전체 비밀 대조도 미실행이다. 보고서 생성이 먼저 실패했고 비밀 파일은 지워졌다. 작업자는 일치 0을 주장하지 않았다. 하네스 근거 공백 1건(자기 구문 검사 프로세스 4.53GiB를 inline 명령으로 종료)과 45분 상한 초과가 있다.
+  - 측정 보충 v1.2(E/`r7-container-measure/contract-supplement-v1.2.md`, SHA256 `3d14ed11…4e43`)로 family_guid·create_date·vmmemWSL 기록과 #1·#2·#3 규칙 재확인을 넣었다.
+- **R-7 재측정(리드 판단, R-7 5단계 승인 범위 안, 같은 측정의 첫 재시도):** 계약은 E/`r7-container-remeasure/contract.md`(SHA256 `25498ba76b6cea0588f9736d301fa55d810a6a9b6d89483372b5dfe38110d665`)다. 같은 볼륨 위에서 컨테이너 A·B·C를 띄운다. 정지 방식 셋(`docker stop -t 30`, T-SQL `SHUTDOWN`, `docker stop -t 120`)을 비교한다. family_guid 생존 표, 로그인·실패 번호·자원도 잰다. 포트는 TcpClient 탐침으로 보고, 비밀 대조는 정리 전에 한다. 상한은 60분이다. 저장소는 `git show 30e3038b`로만 읽는다. 보충 v1.1(SHA256 `db21904d…27bf2`, 메인 조건 2): 실행 셸의 상승 여부(IsInRole·`whoami /groups`·Mandatory Label)와 PowerShell 실행 인자를 원시로 남긴다. 작업자는 `[Core Sol]` `gpt-6.1-sol` max(화면 표시), `term_caa90b75`, Task `task_e91d22ec1281` / Dispatch `ctx_2b08d4c3e8f2`다. 10:06:26Z 리드 측정은 여유 물리 8,429,204 KiB, 커밋 8,322,316 KiB였고 기동을 허락했다(`msg_e13c9d04f7e7`). 읽기 명령이 도구 셸 PS7에서 돈 escalation(`msg_d054f63e50e7`)은 측정 조건이 아니라 기록하고 계속하게 했다.
+- **도구 전환 PR 구현 정산(succeeded):** worker_done `msg_32608058c304`(Task `task_772ea30366c3` / Dispatch `ctx_d03f514d480b`). 정산은 release retained, tui-idle, 화면 확인, close ptyKilled true까지 했다. 보고서 E/`container-tools-implementation/report.md`(SHA256 `fae62b8203e42fabc0e59ef06955bab37844fa7e8ca7a93fcdc1b388a057f5aa`)다. 작성자 오프라인 결과는 최종 1282 PASS·0 FAIL·9 OBSERVED(9 suite exit 0), 구문 16파일 오류 0이다. PSScriptAnalyzer는 PS5.1에 없어 미실행이고 PR CI가 돈다. 기준선은 795 PASS·15 FAIL·3 suite 중단에서 줄끝 보정 뒤 1107·0으로 바뀌었다. 기존 FAIL 19건·중단 4건은 `failure-classification.md`에 분류했다.
+  - 리드 표본 대조: final summary 합계와 exit, migrations·modules diff 0, ModuleBundle diff 두 줄, 23경로 hash와 작성자 최종 감사 일치(E/`container-tools-review/target-hashes.txt`).
+  - 보충: v1.1 master family_guid(`msg_119f0a3962b8`), v1.2 ModuleBundle CRLF 두 지점(ask `msg_39f3221ae6d8`, 보존 동작 검증 suite의 조기 종료 해소), v1.3 `Initialize-CharacterBinding.ps1` catch 한정(ask `msg_2cfced01b635`, 계약 R-7 실패 분류를 최종 오류까지).
+  - 변경 23경로: 수정 18, 삭제 2(`Configure-WslAccess.ps1`·`Test-WslAccess.ps1`), 새 파일 3(ADR-035, `New-TestAdminCredential.ps1`, `ContainerConnection.Tests.ps1`). commit 전 작업 트리다.
+- **다음 할 일:**
+  1. 재측정 정리 알림 → Content에 알림 → 강 등급 검증자 기동(계약 E/`container-tools-review/contract.md` SHA256 `138384a5…4b3d`, 메모리 보호로 컨테이너 정리 뒤).
+  2. 재측정 worker_done 정산 → 정지 방식·포트·실패 번호·메모리 값을 구현 쪽 보충으로 정리한다(MSSQL.md 카드 규칙과 ADR-035 문장, 승인 계획 v2 값). 문서 수정은 새 작업자 계약으로 한다.
+  3. 실패 측정과 재측정을 함께 신규 독립 문서 실사한다. 강 검증이 끝난 뒤 연다(파트당 검증자 하나).
+  4. 구조·동작 commit 분리 → 원격 반영 → PR → 병합 승인 요청.
+
 ### 위험 확인 시험 정산과 R-7 추가 측정 — 2026-10-10T09:04Z
 
-기록 시각은 2026-10-10T09:04:44Z(`date -u`, KST 18:04)다. **이 블록이 현재 재개 정본이다.** N = E/`opus-lead-entry/2026-10-10-main-sync`다.
+기록 시각은 2026-10-10T09:04:44Z(`date -u`, KST 18:04)다. 2026-10-10T10:12Z 「실사 수용, 추가 측정 실패와 재측정, 도구 전환 구현 정산」 블록 전까지 이 블록이 재개 정본이었다. N = E/`opus-lead-entry/2026-10-10-main-sync`다.
 
 - **R-7 5단계:** 메인이 보완 goal(`b0470646`)을 승인했다(`msg_0571a9679c71`, 「현재 범위·PR 경계」의 「R-7 설계 검토 결과와 채택」 끝).
 - **위험 확인 시험 정산:** worker_done `msg_ec1f34d2aedd`(08:56:20Z, outcome failed). from_handle·Task `task_db8a1287ac6b`·Dispatch `ctx_257b659d9d53`이 맞다. release는 retained였고, tui-idle과 빈 프롬프트를 확인한 뒤 pane을 닫았다(ptyKilled true). 보고서는 E/`container-risk-check/report.md`(SHA256 `8e46b9ec4734dd0dd2d4c94206f76d28bad6d626130232fb51d5dfd4790eec50`, 사본 `report-at-worker-done.md`)다. 정리 원시 `run/05-cleanup.json`은 컨테이너·볼륨·비밀 파일 부재 true, 오류 없음이다. 비밀 대조는 근거 파일 350개 일치 0이다.
