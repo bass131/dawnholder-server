@@ -12,8 +12,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR224(`feat/session-guard-liveness-20261010`)는 병합됐다(「현재 결과 / PR224 병합」). 종료 기록은 `docs/session-guard-liveness-closeout-20261010`(base main `b482b84a`)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: 정본 문장 넷을 썼고 리드 R-2가 계약 문구와 일치를 확인했다(「종료 기록 PR 작성」). 종료 기록 PR228을 만들었고(main PR226을 받은 head) 그 head로 문서 실사를 연다.
-- **남은 순서**: 문서 실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- **현재 위치**: 정본 문장 넷을 썼고 리드 R-2가 계약 문구와 일치를 확인했다(「종료 기록 PR 작성」). 종료 기록 PR228의 문서 실사가 결함 #CR-01(수신 지연 끝점 혼합)로 차단됐고 리드가 기록을 고쳤다(「종료 기록 문서 실사」). 고친 head로 좁힌 재실사를 연다.
+- **남은 순서**: 좁힌 재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
 - **사용자 차례**: 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
@@ -293,7 +293,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - D2·D3: 한 파일만 쓰는 Claude 역할(R-7 Fable 검토자 `goal-review.md`, Fable Advisor 조언 파일, Gardener 보고서)과 가드 규칙 3이 맞물리는 문장이 정본에 없다. 메모 이름 조건도 README·goal 설계에만 있다. R-7 검토 세션은 다음 사용 때 첫 쓰기가 막힌다(실제 사건 0, 메인에 위험으로 알림).
   - D6: R-5 세션은 TEMP·TMP가 checkout 안이라 Write 도구의 Windows 기본 TEMP 쓰기를 가드가 막지 않는다. README에 이 한계가 없다.
   - D7: README 「Orca 메시지 수신 판정」 29행의 CI 문장(`message-policy.test.mjs` 별도 단계)이 PR224 뒤 낡았다.
-- 반복(G3): heartbeat 300초 초과(Dispatch 2·구간 3), Codex 기동 `turn_start_unobserved` 5/5, 리드 계약 문구 오류 2, 리드 계약의 규칙 원문 잘림 2, 리드 우편함 수신 지연 3(38분 33초, 299초, 2시간 5분 23초), 메모리 회수로 꺼진 대기 2.
+- 반복(G3): heartbeat 300초 초과(Dispatch 2·구간 3), Codex 기동 `turn_start_unobserved` 5/5, 리드 계약 문구 오류 2, 리드 계약의 규칙 원문 잘림 2, 리드 우편함 수신 지연 3(리드 check 기록까지 38분 33초·299초. PR224 병합 전달은 check31 기록까지 2시간 3분 14초이고, Gardener가 잰 2시간 5분 23초는 리드 다음 송신까지라 수신 지연의 상한이다), 메모리 회수로 꺼진 대기 2.
 - 정리 후보(G4, 제안): 후보 1은 리드 우편함 수신 지연을 정산 helper로 재기(새 후보), 후보 2는 위임 계약의 규칙 원문을 펜스 인식 helper로 뽑고 lint로 막기(BACKLOG `contract-context-check`에 근거 더하기)다. 채택은 메인을 거쳐 사용자가 정한다(status `msg_706745899a5c`).
 - 기록 대조(G5, 표본 9): 여섯 일치, 정정 셋을 위 해당 줄에 반영했다(「구현」 draft 크기 문구, 「가드 독립 검증」 수신 지연 38분 33초, 「PR224 병합」 리드 알림 내용).
 - 리드 이탈 둘(리드 귀속, Gardener 10절·G3 R4): Gardener 실행 중 고정 입력 E/main-decisions-log.md에 감시 기록 한 줄을 더해 끝 hash 대조가 39/40이 됐다(계약 「리드는 worker_done까지 고정 입력을 쓰지 않는다」 이탈). 리드 조립 스크립트의 절 자르기가 templates 「맥락 메모」 펜스 안 `# 작업 전 맥락`을 제목으로 읽어 Gardener 계약에서 양식 본문이 빠졌다(Gardener는 저장소 원본을 직접 읽었다). 같은 스크립트를 복사한 문장 작성 계약도 같았으나 발행 전이었다. 두 스크립트를 펜스 인식으로 고치고 문장 계약을 다시 조립해 양식 본문을 확인했다.
@@ -303,11 +303,19 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 ### 종료 기록 PR 작성
 
 - 리드 기록(맥락 메모 E/closeout-lead-context.md, 메모 머리 시각 2026-10-10T14:26:52Z 뒤): 「PR224 병합」·「종료 Gardener」 절, 기록 정정 셋, 사용자 결정 40~42와 범위 변경, BACKLOG 새 절 「규칙·운영 V1.x 1단계 goal에서 연결한 후보」 열한 행과 기존 행 다섯의 덧붙임(`powershell-clock-command`는 이 goal로 승격 처리), CURRENT Rules 줄의 branch. 커밋 `c5284c63`·`c1dfe3c7`.
-- 후보 도착 검사(리드 실행, E/closeout/candidate-check-2.json): `node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-10-operating-tool-guards/goal.md` → `allowed`, exit 0, BACKLOG ID 108, 중복 0, 후보 13, 인용 없는 후보 0, 모르는 ID 0. 첫 실행(E/closeout/candidate-check-1.json)은 채택 후보 둘을 더하기 전이다.
+- 후보 도착 검사(리드 실행, E/closeout/candidate-check-2.json): `node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-10-operating-tool-guards/goal.md` → `allowed`, exit 0, BACKLOG ID 108, 중복 0, 후보 13, 인용 없는 후보 0, 모르는 ID 0. 첫 실행(E/closeout/candidate-check-1.json)은 채택 후보 둘을 더하기 전이다. main PR226을 받은 뒤(merge `a455b449`) 다시 돌린 E/closeout/candidate-check-3.json은 BACKLOG ID 109(PR226이 한 행 더함)이고 나머지는 같다.
 - 정본 문장 넷 작성자: 신규 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max」, backend unknown), Task `task_431864fb18b1`, Dispatch `ctx_aa1de0b9cce2`, worker_done `msg_3f2408e66809`. 계약 E/closeout-sentences-contract.md, 보고 E/closeout-sentences/report.md. `turn_start_unobserved` 뒤 draft 대조(계약 16,685자 + 4,787 + 1)로 Enter를 보냈다.
 - 결과: templates 머리말 시계 문장(S1), AGENTS 「공학 조건」 결정 23 예외(S2), ORCA 우편함 대기 한 문장(S3), milestones hook 문장(S4). 네 파일 한 줄씩이며 bytes는 +234·+343·+303·+184다. 맥락 메모 시각을 메모 안에 적어 S1과 가드 규칙 3이 함께 지켜짐을 이 작성자가 먼저 보였다.
 - 리드 R-2(E/lead-r2-sentences/r2-verdict.md): HEAD 원문에 계약 교체를 적용한 전체 파일이 작업 트리와 네 파일 모두 같다(expect-check.out.txt).
 - 생존 신호(helper, S3 문장대로 기록): 신호 4, 최대 309초, 300초 초과 둘(309초 15:04:09Z→15:09:18Z, 305초 15:09:18Z→15:14:23Z). 작성자 귀속이며 비차단 운영 기록이다.
+
+### 종료 기록 문서 실사
+
+- 실사자: 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown), Task `task_cb7e157ea0c7`, Dispatch `ctx_bc0477c7080e`, 2026-10-10T15:21:48Z~15:34:25Z, worker_done `msg_6797be79bee5`. 계약 E/closeout-review-contract.md(고정 HEAD `822069b8`, PR228), 판정 원문 E/closeout-review/verdict.md. 실행 중 escalation `msg_d803ee643f59`로 아래 결함을 먼저 알렸다.
+- 판정: **차단, 결함 #CR-01**(리드 기록·등록 귀속, 낮음). 「리드 우편함 수신 지연 셋」 중 PR224 병합 전달의 2시간 5분 23초(7523초)는 리드의 다음 송신까지이고 수신 지연의 상한이다. 다른 둘(38분 33초, 299초)은 리드 check 기록까지다. 끝점이 다른 값을 같은 수신 지연으로 묶어 원천(Gardener R6·후보 1의 「다음 메시지」·「상한」)보다 확인 수준을 올렸다. check31 기록 기준으로는 7394초(2시간 3분 14초)다.
+- 그 밖: 정본 문장 S1~S4(현실 시나리오 다섯), 「만들 것」 1~5와 변경 경계, BACKLOG 구조·보존·중복, 후보 도착 검사 재실행, 형식·보존·PR226 merge, 리드·작성자 사전 메모, 사람 가독성은 지적 없음이다. 원시 대조 39개다. 설계 관찰 O-1(후보 검사 재실행의 ID 109 연결)·O-2(병합 뒤 재개 지점 갱신)는 비차단이다.
+- 리드 처리: CR-01을 「종료 Gardener」 G3 줄, 「다음 계획 후보」의 수신 지연 줄, BACKLOG `lead-mailbox-receive-delay` 이유 칸에서 고쳤다. check 기록까지의 값과 다음 송신까지의 상한을 나눠 적었다. O-1은 「종료 기록 PR 작성」의 후보 검사 줄에 반영했고 O-2는 종료 점검 때 한다. 후보 도착 검사 재실행(E/closeout/candidate-check-4.json)은 `allowed`, ID 109, 중복 0이다. 같은 산출물(종료 기록) 수정 1회째이며, 고친 기록은 새 실사자가 좁혀 재실사한다.
+- 리드 R-2(E/lead-r2-closeout-review/): 7523초·7394초를 두 메시지 `created_at`과 check31 기록에서 다시 계산해 판정과 같았다(cr01-recompute.txt). 생존 신호 신호 7, 최대 287초, 초과 0. 정산은 빈 프롬프트 확인, `worker-release` retained, `terminal close`(15:34:57Z)다.
 
 ### 첫 발생 기록
 
@@ -332,5 +340,5 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 병합 관문 표식 경로의 스크립트 경유 확인(메인 보고 `msg_9c8f4bfd8ced`): protected-path 검사는 명령 글자에 든 경로만 본다. 경로를 글자로 쓰지 않은 스크립트는 지나간다(가드 「위험」 2와 같은 부류). 글자 검사로는 막을 수 없으므로, 표식 존재만 답하는 정식 helper를 두어 메인이 경로를 건드리지 않게 할지와 정본 한계 문장을 둘지 본다. BACKLOG `merge-gate-marker-status-helper`.
 - 한 파일만 쓰는 Claude 역할과 메모 순서(종료 Gardener D2·D3): R-7 Fable 검토자의 「유일한 출력인 `goal-review.md`」, Fable Advisor의 조언 파일 하나, Gardener 보고서 한 파일이 가드 규칙 3(첫 쓰기는 `.backups/verification/` 아래 이름에 `context`가 든 `.md`)과 맞물리는 문장이 정본에 없다. 메모 이름 조건도 README·goal 설계에만 있다. 다음 R-7 검토 세션은 첫 쓰기에서 막힌다(실제 사건 0, 메인 위험 알림 `msg_706745899a5c`). 이 goal의 Gardener는 보고서 이름에 `context`를 넣어 맞췄다. BACKLOG `single-output-role-memo-first`.
 - README 「Orca 메시지 수신 판정」 29행의 CI 문장(종료 Gardener D7): 「`message-policy.test.mjs`이며 … 별도 단계」가 PR224의 Orca 단계 넓힘 뒤 낡았다. BACKLOG `receive-helper-review-followup`에 근거를 더한다.
-- 리드 우편함 수신 지연을 정산 helper로 재기(종료 Gardener 후보 1, 사용자 결정 40 A): 이 goal의 수신 지연 셋(38분 33초, 299초, 2시간 5분 23초)을 정산 때 helper가 함께 내게 한다. ORCA 「스스로 다시 켜지 않는다」 유지 여부는 그 행의 열린 질문이다. BACKLOG `lead-mailbox-receive-delay`.
+- 리드 우편함 수신 지연을 정산 helper로 재기(종료 Gardener 후보 1, 사용자 결정 40 A): 이 goal의 지연 셋(리드 check 기록까지 38분 33초·299초, PR224 병합 전달은 check31 기록까지 2시간 3분 14초)이 근거다. helper가 낼 값은 worker_done·질문 뒤 리드 다음 송신까지의 초이며 수신 지연의 상한이다(병합 전달 건은 2시간 5분 23초). ORCA 「스스로 다시 켜지 않는다」 유지 여부는 그 행의 열린 질문이다. BACKLOG `lead-mailbox-receive-delay`.
 - 위임 계약의 규칙 원문 잘림을 검사로 막기(종료 Gardener 후보 2, 사용자 결정 41 A): 리드 조립 스크립트의 절 자르기가 펜스 안 제목에서 끊었다(「종료 Gardener」 리드 이탈). BACKLOG `contract-context-check`에 근거를 더했다.
