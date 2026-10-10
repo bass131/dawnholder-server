@@ -14,6 +14,10 @@ vi.mock('node:fs', async (original) => ({
   mkdirSync: vi.fn(),
 }));
 
+// screen-design.md 「시작과 붙기」 1: main.ts starts the backend connection when the app is ready. This
+// double (the shape tests/backend-connection.test.ts fixes) keeps the test from starting wsl.exe.
+vi.mock('../electron/backend-connection.js', async () => (await import('./server-operations-fixtures')).backendConnectionModule());
+
 function makeElectronHost() {
   const contents = Object.assign(new EventEmitter(), { setWindowOpenHandler: vi.fn(), mainFrame: { url: new URL('../dist/index.html', new URL('../electron/main.ts', import.meta.url)).href } });
   const window = Object.assign(new EventEmitter(), {
@@ -95,7 +99,11 @@ describe('desktop shell authority and lifetime contracts', () => {
   it('allows only the owned main frame to reach the fixed catalog store', async () => {
     await start();
     // index-v2-design.md and backlog-menu-design.md 「Electron 경계」: three read channels, the guide channel and the backlog channel, no save channel.
+    // screen-design.md 「IPC 계약」 (M1) adds the ten server-operations channels; tests/server-operations-ipc-preload.test.ts checks them.
     expect(host.ipcMain.handle.mock.calls.map(call => call[0]).sort()).toEqual([
+      'server-operations:connect', 'server-operations:connection', 'server-operations:force-stop', 'server-operations:logs',
+      'server-operations:release-build', 'server-operations:release-candidate', 'server-operations:release-select',
+      'server-operations:start', 'server-operations:status', 'server-operations:stop',
       'system-backlog:read', 'system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section',
     ]);
     const read = host.ipcMain.handle.mock.calls.find(call => call[0] === 'system-records:read')?.[1];
@@ -160,7 +168,9 @@ describe('desktop shell authority and lifetime contracts', () => {
     await start();
     const menu = host.Menu.buildFromTemplate.mock.calls[0]?.[0];
     menu?.find((item) => item.label === '종료')?.click?.();
-    expect(host.app.quit).toHaveBeenCalledOnce();
+    // screen-design.md 「앱 종료(트레이 「종료」) — 잠정」 (M5): the app quits after the backend connection
+    // shuts down, so the quit can come a moment after the click. The connection double reports a stopped server.
+    await vi.waitFor(() => expect(host.app.quit).toHaveBeenCalledOnce());
     expect(host.closeEvent.preventDefault).not.toHaveBeenCalled();
     expect(host.window.hide).not.toHaveBeenCalled();
     expect(host.tray.destroy).toHaveBeenCalledOnce();

@@ -95,6 +95,46 @@ internal sealed class BackendProcess : IAsyncDisposable
             timeout,
             environment);
 
+    /// <summary>
+    /// Runs a backend that should refuse its configuration and exit by itself. A backend that starts anyway would run
+    /// until stopped, so the wait also ends when one of <paramref name="connectionFiles"/> appears or at
+    /// <paramref name="timeout"/>, and the process is killed then. Nothing outlives the call.
+    /// </summary>
+    public static async Task<RefusalRun> RunExpectingRefusalAsync(
+        string configPath,
+        string workingDirectory,
+        IReadOnlyDictionary<string, string?> environment,
+        IReadOnlyList<string> connectionFiles,
+        TimeSpan timeout)
+    {
+        using Process process = new() { StartInfo = CreateStartInfo(configPath, workingDirectory, environment) };
+        StringBuilder output = new();
+        process.OutputDataReceived += (_, line) => AppendTo(output, line.Data);
+        process.ErrorDataReceived += (_, line) => AppendTo(output, line.Data);
+        Stopwatch watch = Stopwatch.StartNew();
+        Assert.True(process.Start(), "backend process did not start");
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        while (!process.HasExited && watch.Elapsed < timeout && !connectionFiles.Any(File.Exists))
+        {
+            await Task.Delay(20);
+        }
+
+        bool exitedByItself = process.HasExited;
+        if (!exitedByItself)
+        {
+            process.Kill(entireProcessTree: true);
+        }
+
+        await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(10));
+        process.WaitForExit(); // drains the asynchronous output readers before reporting
+        watch.Stop();
+        lock (output)
+        {
+            return new RefusalRun(exitedByItself, process.ExitCode, output.ToString(), [.. connectionFiles.Where(File.Exists)], watch.Elapsed);
+        }
+    }
+
     public Task<ApiResult> GetAsync(string path) => SendAsync(HttpMethod.Get, path);
 
     public Task<ApiResult> PostAsync(string path, object? body = null, TimeSpan? timeout = null) =>
@@ -225,18 +265,20 @@ internal sealed class BackendProcess : IAsyncDisposable
         return start;
     }
 
-    void Append(string? line)
+    static void AppendTo(StringBuilder output, string? line)
     {
         if (line == null)
         {
             return;
         }
 
-        lock (_output)
+        lock (output)
         {
-            _output.AppendLine(line);
+            output.AppendLine(line);
         }
     }
+
+    void Append(string? line) => AppendTo(_output, line);
 
     /// <summary>
     /// Waits for a connection.json written by this process. A file left by a killed backend has another pid and is
@@ -292,4 +334,15 @@ internal sealed class BackendProcess : IAsyncDisposable
             return false;
         }
     }
+}
+
+/// <summary>
+/// A backend run that should have refused its configuration. <see cref="ExitedByItself"/> is false when it had to be
+/// killed; <see cref="ConnectionFiles"/> lists the watched connection.json files that existed afterwards.
+/// </summary>
+internal sealed record RefusalRun(bool ExitedByItself, int ExitCode, string Output, IReadOnlyList<string> ConnectionFiles, TimeSpan Elapsed)
+{
+    public string Describe() =>
+        $"exited by itself: {ExitedByItself}, exit {ExitCode} after {Elapsed.TotalSeconds:F1} s, "
+        + $"connection.json written: [{string.Join(", ", ConnectionFiles)}]\n--- backend output ---\n{Output}";
 }
