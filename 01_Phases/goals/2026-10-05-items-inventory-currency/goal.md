@@ -1,6 +1,6 @@
 # 아이템·인벤토리·재화
 
-상태: **PR180(`8d1e885`)과 PR191(`e5653eb9`, 2026-10-09T16:01:46Z)이 병합됐다. PR191은 J 통합 독립 검증과 Unity 6000.6.4f1 실화면 독립 검증을 모두 통과했다(결함 0). 종료 Gardener도 끝났다(정리 후보 2). 남은 것은 종료 기록 PR(생성·문서 실사·Gardener 후보의 사용자 채택 질문·병합), 종료 점검, R-8이며 다음 메인 세션에서 잇는다. 이어갈 곳은 [종료 재개 지점](#종료-재개-지점--2026-10-10)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **PR180(`8d1e885`)과 PR191(`e5653eb9`, 2026-10-09T16:01:46Z)이 병합됐다. PR191은 J 통합 독립 검증과 Unity 6000.6.4f1 실화면 독립 검증을 모두 통과했다(결함 0). 종료 Gardener도 끝났다(정리 후보 2). 2026-10-10에 종료 기록 PR218을 열었다. 남은 것은 문서 실사, Gardener 후보의 사용자 채택, PR218 병합, 종료 점검, R-8이다. 이어갈 곳은 [종료 재개 지점](#종료-재개-지점--2026-10-10)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content Astra. 시작 기준 `origin/main` = `955002a932925ff2c4ac81f4a5a99f2024a4b9b2`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`, 현재 종료 기록 branch `docs/items-inventory-closeout-20261010`(base main `e5653eb9`). PR2 branch는 `feat/items-inventory-ui-20261005`(base `8d1e8856a99e9a5ed74aa291294accd2299aaaf6`), PR1 branch는 `feat/items-inventory-currency-20261005`였다.
@@ -124,6 +124,8 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ## 정본 반영 전 적용 중인 사용자 결정
 
+메인 `msg_e607262f2c01`(2026-10-10T05:23:19Z)이 전달한 사용자 원문은 「대시보드 결정 응답: 1) 1 - Rules·Content 종료 기록 PR 재개 → A 지금 두 리드 열기」(2026-10-10 14:21 KST)다. 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 지난 리드 세션은 Orca 재부팅으로 끝났다. 새 리드 세션이 같은 Run `run_31b14736665a`을 인수해 종료 기록 PR을 잇는다(ORCA R-8 「목표 중간 교체·복구」). 같은 메시지의 병합 순서는 메인 결정이며 사용자 결정이 아니다. Rules·Content 두 종료 기록 PR 중 승인 묶음이 먼저 준비된 쪽을 먼저 병합한다. 다른 쪽은 그 main을 받아 BACKLOG·CURRENT 충돌을 확인하고, 다른 파트 줄을 보존한 뒤 바뀐 부분을 재실사해 승인 묶음을 다시 올린다. 원문은 근거 폴더의 `closeout/lead-1010-entry-inbox.json`이다.
+
 메인이 PR191 병합 뒤 전달한 종료 순서와 사용자 결정은 아래와 같다. 사용자 원문은 메인 pane에서 Enter로 제출된 지시의 전달이며 이 세션의 직접 입력으로 격상하지 않는다. 원문은 근거 폴더의 `lead-1009-inbox-24.clean.json`이다.
 
 - `msg_ada6a80071a3`(메인 정정): 종료 순서는 goal 결과 기록(로컬) → Gardener(신규 Opus, 읽기 전용, 보고서 한 파일) → 그 결과를 넣은 종료 기록 PR → 종료 점검 → R-8이다(ORCA 「목표 종료 Gardener 4주 파일럿」).
@@ -192,12 +194,13 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 ### 종료 재개 지점 — 2026-10-10
 
-다음 메인 세션과 Content 리드는 이 블록부터 읽는다. 아래 블록들은 역사다. 사용자가 2026-10-10에 이날 작업을 여기서 멈췄다(`msg_4a188e97c526`). 남은 일에는 사용자 차례가 있어 다음 메인 세션에서 잇는다.
+다음 메인 세션과 Content 리드는 이 블록부터 읽는다. 아래 블록들은 역사다. 사용자가 2026-10-10에 이날 작업을 여기서 멈췄다(`msg_4a188e97c526`). 같은 날 14:21 KST 사용자 재개 결정(`msg_e607262f2c01` 전달)으로 새 리드 세션이 이어받아 PR218을 열었다.
 
 | 항목 | 이 기록 시점의 값 |
 |---|---|
 | 작업 공간 / branch | `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` / `docs/items-inventory-closeout-20261010`(base main `e5653eb9`) |
-| head | 이 기록을 담은 commit이며 push됐다. 40자는 `git log -1`과 메인에 보낸 「닫아도 됨」 status에 있다. PR은 아직 없다 |
+| head | 이 기록을 담은 commit이며 push됐다. 40자는 `git log -1`과 승인 묶음에 있다. PR은 [PR218](https://github.com/bass131/dawnholder-server/pull/218)(열림)이다 |
+| 리드 세션 / Run | 2026-10-10 새 handle `term_7cf2ab84-2b2d-4cf4-8885-8f7e6aaff9f0`, 같은 Run `run_31b14736665a`(회신 주소 `run:run_31b14736665a`) |
 | 병합 | PR180 `8d1e885`, PR191 `e5653eb95577edbad38b6c3eabe3b9220c75a334`(2026-10-09T16:01:46Z, 부모 `bea63884`·`cfe693fd`) |
 | 로컬에만 둔 변경 | `ProjectSettings.asset`의 cloud 3필드(SHA256 `4a8db0bd…`)와 `MinimapRT.renderTexture`의 줄바꿈 표시. 커밋·되돌리기 금지는 그대로다 |
 | 작업자·실행 자원 | 작업자 pane 0(Gardener 정산·종료), Unity.exe 0, 7777 0, 음소거 값 0. Unity MCP 시트는 반환했다 |
@@ -206,11 +209,11 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 
 **남은 순서**
 
-1. 종료 기록 PR을 이 branch로 연다(리드). 이 goal의 결과 기록, 「다음 계획 후보」의 BACKLOG 도착, CURRENT의 Content branch를 담는다. 본문에 Gardener 정리 후보 2개를 「사용자 채택 질문」으로 올린다.
+1. 끝남: 종료 기록 PR218을 이 branch로 열었다(리드). 이 goal의 결과 기록, 「다음 계획 후보」의 BACKLOG 도착, CURRENT의 Content 줄을 담는다. CURRENT에서는 Content branch를 고치고 끝난 「Content(Unity 업그레이드)」 줄을 지웠다. 그 줄은 메인 `msg_7637c2380718`의 판정 요청에 리드가 「이 PR의 Content 줄 범위」로 판정해 넣었다(이유는 근거 폴더 `closeout/lead-context-3.md`). 본문에 Gardener 정리 후보 2개를 「사용자 채택 질문」으로 올렸다.
 2. 신규 `gpt-6-astra` xhigh 문서 실사. 후보 도착 검사를 PR head에서 다시 돌려 원시를 근거 폴더에 둔다.
-3. **사용자 차례**: Gardener 후보 2개의 채택 여부. 후보 1은 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더하는 것이고, 후보 2는 새 행(서버 lane 정상 종료 경로, 소유 Core)이다. 채택한 것만 BACKLOG에 반영한다.
-4. **사용자 차례**: 종료 기록 PR 병합 승인. 병합은 메인이 한다.
-5. 2차 맞춤. 메인은 Rules 종료 기록 PR 병합 뒤 2차 맞춤 신호를 따로 보낸다(`msg_c96b28570984`). content-active를 main에 맞출 때 사용자 미커밋 파일 둘을 보존한다.
+3. **사용자 차례**: Gardener 후보 2개의 채택 여부. 후보 1은 기존 BACKLOG `unity-baseline-harness-reuse`에 근거를 더하는 것이고, 후보 2는 새 행(서버 lane 정상 종료 경로, 소유 Core)이다. 채택한 것만 BACKLOG에 반영한다. 실사 뒤에 반영하면 바뀐 부분을 다시 실사한다.
+4. **사용자 차례**: PR218 병합 승인. 병합은 메인이 한다. Rules 종료 기록 PR과의 병합 순서는 위 결정 절의 메인 결정을 따른다.
+5. 2차 맞춤. 메인은 두 종료 기록 PR이 모두 병합된 뒤 2차 맞춤 신호를 따로 보낸다(`msg_e607262f2c01`). content-active를 main에 맞출 때 사용자 미커밋 파일 둘을 보존한다.
 6. 종료 점검과 R-8. 그 전에 새 goal을 시작하지 않는다.
 
 **사용자 손 정리**(병합과 무관, 선택): Game view 해상도를 「16:9 Aspect」로 다시 고르고 「PR191 verify」 항목을 지운다. 단계는 실화면 판정의 「사용자 손 정리」 절에 있다.
@@ -396,7 +399,7 @@ F-1~8의 취지는 위 INV 판정으로 연결한다. 특히 F-3의 유일해 �
 - [x] 실제 플레이 최종 확인(실화면 MCP 흐름 3회 완주. 입력은 MCP 가상 장치와 직접 호출이며 사람 손 입력은 미실행)
 - [x] PR191 병합
 - [x] 결과 기록·Gardener
-- [>] 종료 기록 PR 병합
+- [>] PR218 병합
 
 ### 2026-10-05 크래시 중단과 복구
 
