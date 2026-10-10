@@ -6,7 +6,7 @@
 
 - <a id="content-worktree"></a>Content: [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `docs/items-inventory-closeout-20261010`
 
-- Rules: [규칙·운영 V1.0 — 후보 도착 검사와 합류점 절차](../../01_Phases/goals/2026-10-09-plan-boundary-and-junction/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/ops-v1-closeout-20261010`
+- Rules: [규칙·운영 V1.x 1단계 — 세션 쓰기 가드와 생존 신호 간격 도구](../../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `feat/session-guard-liveness-20261010`
 
 - CodeMap(Architecture): [Architecture 테스트 전체 PR CI](../../01_Phases/goals/2026-10-05-architecture-tests-ci/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/architecture-active` · `docs/architecture-tests-ci-closeout-20261005`
 
