@@ -515,8 +515,8 @@
 1. 끝남: 범위 개정 commit `b2e7797b` → R-7 검토(`goal-review.md`) → 메인 원문 확인(`msg_506628a86629`).
 2. 끝남: 위험 확인 시험 정산(결과 메인 수용 `msg_0f778523521b`) → 신규 독립 문서 실사 「차단(#1·#2·#3)」 → 메인 「수용」(`msg_b62898e46f42`, 정정 기록 조건). 정정은 아래 재개 블록 「위험 확인 시험 실사 정정 기록」에 있다.
 3. 끝남: R-7 보완 commit `b0470646` → 메인 승인(`msg_0571a9679c71`). 사용자 질문 P-A·P-B·P-C는 결정 27·28·29 모두 A로 답이 왔다(`msg_33c4463ed26f`).
-4. R-7 추가 측정: 첫 측정 failed(`msg_65940d780f0d`) → 재측정 succeeded(`msg_4ab995924740`) → 두 건 함께 신규 독립 문서 실사 「차단」(`msg_fe263b75130f`) → 메인 판단(`msg_5cc63e6077ed`, 측정값 위장 부류라 메인 조건 3 적용) → 측정 보고 정정 작업(`msg_a60f64f5e62f`) → 정정 실사 「차단(#1·#2)」(`msg_e4e6bbd6c4ac`) → 수정 진행 중(Task `task_7fc054a66a09`). 정렬 규칙 `Korean_Wansung_CI_AS` 지원은 확인했다(결정 28 A 충족). 세부는 아래 13:2xZ 재개 블록이다.
-5. 도구 전환 PR: 구현(`msg_32608058c304`) → 강 검증 차단 #1 → 수정 → 수정분 강 검증 차단 #2(문서) → 문서 보완 → 문서 실사 차단 #3 → 문서 수정 2 → 문서 실사 통과(`msg_dcc5ddcd722d`) → 구조·동작 commit → main 맞춤 → PR226 → 병합 승인 요청. 보존 시험 데이터·동작 검사 도구는 병렬로 쓴다.
+4. R-7 추가 측정: 첫 측정 failed(`msg_65940d780f0d`) → 재측정 succeeded(`msg_4ab995924740`) → 두 건 함께 신규 독립 문서 실사 「차단」(`msg_fe263b75130f`) → 메인 판단(`msg_5cc63e6077ed`, 측정값 위장 부류라 메인 조건 3 적용) → 측정 보고 정정 작업(`msg_a60f64f5e62f`) → 정정 실사 「차단(#1·#2)」(`msg_e4e6bbd6c4ac`) → 수정(`msg_aef962da32e1`) → 수정 실사 통과(`msg_afb1089b68af`). 끝났다. 정렬 규칙 `Korean_Wansung_CI_AS` 지원은 확인했다(결정 28 A 충족). 세부는 아래 13:2xZ 재개 블록이다.
+5. 도구 전환 PR: 구현(`msg_32608058c304`) → 강 검증 차단 #1 → 수정 → 수정분 강 검증 차단 #2(문서) → 문서 보완 → 문서 실사 차단 #3 → 문서 수정 2 → 문서 실사 통과(`msg_dcc5ddcd722d`) → 구조·동작 commit → main 맞춤 → PR226 → CI code-rules 실패(들여쓰기 16곳) → 들여쓰기 수정 → 약 등급 검증 통과(`msg_7da0030ef35b`) → style commit → 병합 승인 요청. 보존 시험 데이터·동작 검사 도구는 병렬로 쓴다.
 6. 컨테이너 1단계: 새 실행 승인 기록 → 작업자 실행 → 독립 판정.
 7. 2단계 → 독립 판정 → 엔진 판정 PR → 병합 승인 요청.
 8. 정리 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
@@ -604,9 +604,32 @@
 
 ## 재개 지점
 
+### PR226 들여쓰기 수정 통과, 측정 보고 정정 끝 — 2026-10-10T14:2xZ
+
+기록 시각은 2026-10-10T14:25:28Z(`date -u`, KST 23:25)다. **이 블록이 현재 재개 정본이다.** E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다.
+
+- **측정 보고 정정 끝:** 수정 worker_done `msg_aef962da32e1`(fixture 30/0). 신규 `claude-opus-5-5` 문서·코드 실사(`task_24c657598dd6`, `msg_afb1089b68af`, `b48da9ad…f244`)는 **통과, 결함 0**이다. 직접 실행 30/0, TEMP 변이 14/14 탐지, 근거 706개·정정 대상 밖 158개 hash 불변, 작업자 Orca 명령은 rollout 원시로 모두 저장 harness를 거쳤다. 리드 R-2는 판정서 표본 1·2·4를 원시와 대조해 일치했다. 비차단: O-1(StrictMode 예외가 명명 FAIL이 아니라 시험 중단으로 잡힘), O-3(Codex 기동이 TEMP에 빈 폴더 둘), 가독성 1(helper 40행에 VmmemWSL 우선의 전제 설명 없음), 검증자의 기록 방식 이탈 1건(저장 스크립트 전 hash 요약 하나를 inline 리다이렉트로 씀, 자진 공개, 측정값 아님, 비차단 절차 이탈).
+- **heartbeat 간격(메인 판단 `msg_cf6eceb5ffdc`, 사용자 결정 아님, A):** 작업자 heartbeat 300초 초과가 정정 작업자(정정 실사 O-5)에 이어 정정 수정 작업자에서 두 번째로 나왔다. 메인이 Rules 후보로 넘겼다. 반영 전에는 Core가 작업자 정산 때 `orca orchestration inbox --limit 500 --json` 원시를 저장하고 `node 99_Tools/Orca/check-liveness.mjs <원시> --threshold-seconds 300`으로 재서 초과 구간을 여기 적는다(exit 1은 같은 원시의 다른 Dispatch 초과도 포함한다). 도구는 기동부터 첫 신호까지를 재지 않으므로 그 값은 `worker-start.json` 수정 시각으로 따로 계산한다.
+
+| 작업·Dispatch | 원시·출력 | 300초 초과 | 기동→첫 신호(리드 계산) |
+|---|---|---|---|
+| 정정 수정 `ctx_e44093a3b410`(시험 적용) | N/`inbox-liveness-trial.json` → N/`liveness-trial-out.json` | 332·468초. 실사자 cadence는 질문 구간을 나누지 않아 327·332·422·469초로 셌다 | 실사자 측정 327초 |
+| 들여쓰기 수정 `ctx_c0b8f1fa5c1d` | E/`container-tools-lint-fix/lead-inbox-at-settlement.json` → `lead-liveness.json` | 370·301·320초(작업자 보고는 앞 둘만) | 279초 |
+| 들여쓰기 검증 `ctx_9555b920a395` | E/`container-tools-lint-fix-review/lead-inbox-at-settlement.json` → `lead-liveness.json` | 없음(최대 174초) | 103초 |
+
+- **PR226 code-rules 실패와 들여쓰기 수정:** head `10284d81` CI는 code-rules만 실패했다(run 38055671796, 6파일 16곳 `PSUseConsistentIndentation`, 여러 줄 식의 이어지는 줄). module-boundaries·architecture-tests·dotnet-tests(22m43s)는 통과했다. 리드 로컬 재현도 같은 16곳이다(N/`code-rules-local-01`, 검사기는 `.backups` junction 출력을 거부해 실제 경로로 출력). 독립 검증들은 이 분석기를 돌리지 않았고 goal은 이 검사를 CI 단계로 두었다. goal 완료조건을 막는 범위 안 결함으로 고쳤다.
+  - 수정: `task_43fadf45e7e4`(`gpt-6.1-sol` max, 라우팅 신호 없음: lint 정리), 계약 E/`container-tools-lint-fix/contract.md`(`9f03a492…8e5b`)와 보충 v1.1(`c21395e3…f72d`, 줄 끝 기준 정정). 16줄 앞 공백만 바뀌었고 검사기 위반 0, 오프라인 1283/0/9다. 작업자는 heartbeat 초과만으로 outcome을 failed로 보냈다(검증 O-3: 산출 충족과 절차 이탈을 나눠 적는다).
+  - 독립 검증(약 등급, 기계 서식, DB 도구라 신규 `claude-opus-5-5`): `task_aaa764d2da9c`, `msg_7da0030ef35b`, `e3970b59…a476`. **통과, 차단 결함 없음.** 공백 무시 diff·줄 수·줄별 줄 끝·PS5.1 토큰 열이 같고, 검증자 직접 실행 검사기 PASS(대상 16·위반 0), 오프라인 9 suite 1283/0/9(기준·작업자와 suite별 같음)다. 리드 R-2는 표본 2·3을 원시와 대조해 일치했다. 비차단 절차 결함 #1(heartbeat 초과 3구간 중 보고에 1구간 누락), #2(첫 오프라인 실행의 WorkRoot를 계약과 달리 junction 경로로 줘 1078/15/8 실패, 원시 보존과 환경 분류는 정확).
+  - commit `34ef7320` style(database). 도구 코드 수정은 구현 뒤 두 번째라 3회 체크포인트가 아니다. MSSQL.md·ADR-035는 바뀌지 않았다.
+- **리드 실수 8:** 들여쓰기 수정 계약에 여섯 파일의 줄 끝을 CRLF로 적었다. 실제는 저장소 속성 `text eol=lf`라 LF이고 `ContainerConnection.Tests.ps1`만 585행 하나가 CRLF다. `core.autocrlf=true`만 보고 작업 트리 바이트를 확인하지 않았다. 작업자가 편집 전에 물어(`msg_72e4d1d813c3`) 보충 v1.1로 고쳤고 피해는 없다. 아래 측정 사실 서술 오류 교정(계약에는 원시로 확인한 값만)을 파일 바이트 사실에도 적용한다.
+- **후속 후보 추가(리드 판단):** 정정 수정 실사 O-1·O-3·가독성 1, 들여쓰기 검증 O-1(`Environment.Common.ps1:366-368` 괄호 안 조건이 바깥 수준으로 내려감, 조건을 두 문장으로 나누는 대안)·O-2(`ContainerConnection.Tests.ps1:312-313` 배열 덧셈 둘째 항이 0칸, 두 변수로 나누는 대안). 둘 다 토큰 변경이라 이번 범위 밖이었다.
+- **다음 할 일:**
+  1. 이 기록 commit → 원격 반영 → PR226 CI 재확인 → 메인에 정확 head 병합 승인 묶음.
+  2. 도구 전환 PR 병합 뒤: 컨테이너 1단계 카드 설계(볼륨 재사용 정지 필요성과 조건 (b), 승인 계획 v2 값, 문서 실사 2 가독성 지적·O-2·O-3) → 새 실행 승인 기록 → 실행 → 독립 판정.
+
 ### 도구 전환 검증 통과, 측정 보고 정정 진행 — 2026-10-10T13:2xZ
 
-기록 시각은 2026-10-10T13:15:30Z(`date -u`, KST 22:15)다. **이 블록이 현재 재개 정본이다.** E·N 표기와 시간순 기록 위치는 아래 10:12Z 블록과 같다(N/`pending-goal-edits.txt`). 판정서 원문은 모두 E 아래 각 폴더의 `verdict.md`이고, worker_done 시점 사본 `verdict-at-worker-done.md`를 함께 둔다.
+기록 시각은 2026-10-10T13:15:30Z(`date -u`, KST 22:15)다. 위 14:2xZ 블록이 이어 쓴다. E·N 표기와 시간순 기록 위치는 아래 10:12Z 블록과 같다(N/`pending-goal-edits.txt`). 판정서 원문은 모두 E 아래 각 폴더의 `verdict.md`이고, worker_done 시점 사본 `verdict-at-worker-done.md`를 함께 둔다.
 
 - **재측정 정산(succeeded):** worker_done `msg_4ab995924740`(Task `task_e91d22ec1281`). 보고서 E/`r7-container-remeasure/report.md`(SHA256 `688fd2c53f2518f66a2b8c5140c47cbc7d456208f9ea5b97a0236a9819af7671`). 정지 A(`-t 30`) 30.743초·137, B(T-SQL `SHUTDOWN`) 명령 0.219초·컨테이너 exited 255(SHUTDOWN 시작 뒤 1.354초 안), C(`-t 120`) 120.756초·137. master `family_guid`는 A·B·C 기동 표본에서 같았다(최종 C 정지 뒤 조회 없음). 틀린 비밀번호는 18456, 정지 상태 접속은 258이다. Windows TCP Listen 표에는 14333이 없고 TcpClient 탐침은 Connected였다. 실행 셸은 Medium 무결성·Administrators deny-only로 관측됐다(메인 조건 2, INV-12 근거). 비밀 대조는 334파일·일치 0이다. 컨테이너·볼륨 정리 뒤 리드 독립 조회 0개.
 - **도구 전환 PR 검증 경로(끝, 통과):**
@@ -627,7 +650,7 @@
   - 정정 작업(`task_8c2f57a8f6dd`, `gpt-6.1-sol` max): 두 근거 폴더에 `report-correction-addendum.md` 하나씩(원본 보고·원시 불변, 247·457개 hash 시작·끝 같음), 순수 StartTime helper, 생성기 사본 둘, fixture 시험 12/0.
   - 정정 실사(`task_965d6ed41c11`, `msg_e4e6bbd6c4ac`, `49ca5bc8…c25f`): 차단 #1(사본이 StartTime 문단 앞뒤 빈 줄을 없앰)·#2(사본의 원시 선택이 StrictMode Latest에서 vmmemWSL·Processes가 없는 budget 1~10행에 멈춤, 시험이 못 잡음). 추록 수치·helper 순수성·원본 보존은 일치했다.
   - **절차 이탈 — 보고와 실제 수행이 다름(비차단, 메인 판단 `msg_164c904b2994`):** 정정 작업자가 첫 ask(`msg_272b813e64c7`)·첫 heartbeat·최종 check·worker_done을 저장 harness 밖에서 실행했는데 보고 14행·메모 13행에 「실행은 저장 harness로만」이라고 적었다. 측정값이 아닌 실행 방식 서술이고 Orca msg ID로 원문이 남으며 그것으로 쓴 파일이 없어 조건 3은 적용하지 않는다. 수정 작업 보고에 정정 기록을 남긴다. Orca 프로토콜 명령이 이 규칙의 대상인지 계약에 없었으므로, 이후 Core 계약은 대상이라고 적는다(메인이 Rules 후보 `msg_546c56564af9`에 함께 넘김).
-  - 수정(진행 중): `task_7fc054a66a09`(`gpt-6.1-sol` max), 계약 E/`r7-measure-report-correction-fix/contract.md`(SHA256 `21db4b37…10b0`). 빈 줄 복원, 표본 선택 순수 함수를 helper 파일에 두고 사본 둘과 시험이 함께 쓰기, StrictMode Latest fixture·AST 단정, 정정 기록. 끝나면 신규 `claude-opus-5-5` 문서·코드 실사. 저장소 밖 근거라 도구 전환 PR과 별개다.
+  - 수정(끝, 결과는 위 14:2xZ 블록): `task_7fc054a66a09`(`gpt-6.1-sol` max), 계약 E/`r7-measure-report-correction-fix/contract.md`(SHA256 `21db4b37…10b0`). 빈 줄 복원, 표본 선택 순수 함수를 helper 파일에 두고 사본 둘과 시험이 함께 쓰기, StrictMode Latest fixture·AST 단정, 정정 기록. 끝나면 신규 `claude-opus-5-5` 문서·코드 실사. 저장소 밖 근거라 도구 전환 PR과 별개다.
 - **리드 실수(교정 기록):**
   1. 결함 #1 수정 계약 X-3에 family_guid를 「세 정지 뒤에도 같았다」로 적었다. 실제는 기동마다의 표본이고 최종 정지 뒤 조회는 없다. 작업자 질문(`msg_3fde65c5cb80`)으로 잡았다. 측정 사실 서술 오류 첫 발생.
   2. 메모리 값을 확인하기 전에 작업자 pane을 띄웠다(Unity Editor와 겹쳐 커밋 여유 1.08GB, worker-start 전 닫음, E/`container-tools-fix/launch-held.txt`). 첫 발생.
