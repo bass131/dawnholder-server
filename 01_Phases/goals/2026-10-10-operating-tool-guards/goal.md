@@ -12,8 +12,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR224(`feat/session-guard-liveness-20261010`)는 병합됐다(「현재 결과 / PR224 병합」). 종료 기록은 `docs/session-guard-liveness-closeout-20261010`(base main `b482b84a`)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: 종료 Gardener가 끝났고 결과·채택 후보·BACKLOG 등록을 기록했다(후보 도착 검사 위반 0). 정본 문장 넷을 신규 Sol이 쓴다.
-- **남은 순서**: 정본 문장 넷 작성 → 리드 R-2 → 종료 기록 PR 생성 → 문서 실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- **현재 위치**: 정본 문장 넷을 썼고 리드 R-2가 계약 문구와 일치를 확인했다(「종료 기록 PR 작성」). 종료 기록 PR을 만들고 그 head로 문서 실사를 연다.
+- **남은 순서**: 종료 기록 PR 생성 → 문서 실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
 - **사용자 차례**: 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
@@ -299,6 +299,15 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 이탈 둘(리드 귀속, Gardener 10절·G3 R4): Gardener 실행 중 고정 입력 E/main-decisions-log.md에 감시 기록 한 줄을 더해 끝 hash 대조가 39/40이 됐다(계약 「리드는 worker_done까지 고정 입력을 쓰지 않는다」 이탈). 리드 조립 스크립트의 절 자르기가 templates 「맥락 메모」 펜스 안 `# 작업 전 맥락`을 제목으로 읽어 Gardener 계약에서 양식 본문이 빠졌다(Gardener는 저장소 원본을 직접 읽었다). 같은 스크립트를 복사한 문장 작성 계약도 같았으나 발행 전이었다. 두 스크립트를 펜스 인식으로 고치고 문장 계약을 다시 조립해 양식 본문을 확인했다.
 - Gardener 자기 감사: 파일 쓰기는 보고서 하나뿐이다. 재귀 grep 2회가 읽기 금지 경로를 검색 대상으로 읽었다(결과는 걸러 판단에 쓰지 않음). Gardener 귀속 비차단 기록이다.
 - 리드 R-2(E/lead-r2-gardener/r2-verdict.md): 표본 일곱(R4 펜스 수, milestones 31행, README 29행, 38분 33초 계산, 메인 알림 원문, 끝 hash, ORCA 195행)이 보고와 같다. 생존 신호 신호 14, 최대 134초, 초과 0. 정산은 빈 프롬프트 확인, `worker-release` retained, `terminal close`(14:53:00Z)다.
+
+### 종료 기록 PR 작성
+
+- 리드 기록(맥락 메모 E/closeout-lead-context.md, 메모 머리 시각 2026-10-10T14:26:52Z 뒤): 「PR224 병합」·「종료 Gardener」 절, 기록 정정 셋, 사용자 결정 40~42와 범위 변경, BACKLOG 새 절 「규칙·운영 V1.x 1단계 goal에서 연결한 후보」 열한 행과 기존 행 다섯의 덧붙임(`powershell-clock-command`는 이 goal로 승격 처리), CURRENT Rules 줄의 branch. 커밋 `c5284c63`·`c1dfe3c7`.
+- 후보 도착 검사(리드 실행, E/closeout/candidate-check-2.json): `node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-10-operating-tool-guards/goal.md` → `allowed`, exit 0, BACKLOG ID 108, 중복 0, 후보 13, 인용 없는 후보 0, 모르는 ID 0. 첫 실행(E/closeout/candidate-check-1.json)은 채택 후보 둘을 더하기 전이다.
+- 정본 문장 넷 작성자: 신규 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max」, backend unknown), Task `task_431864fb18b1`, Dispatch `ctx_aa1de0b9cce2`, worker_done `msg_3f2408e66809`. 계약 E/closeout-sentences-contract.md, 보고 E/closeout-sentences/report.md. `turn_start_unobserved` 뒤 draft 대조(계약 16,685자 + 4,787 + 1)로 Enter를 보냈다.
+- 결과: templates 머리말 시계 문장(S1), AGENTS 「공학 조건」 결정 23 예외(S2), ORCA 우편함 대기 한 문장(S3), milestones hook 문장(S4). 네 파일 한 줄씩이며 bytes는 +234·+343·+303·+184다. 맥락 메모 시각을 메모 안에 적어 S1과 가드 규칙 3이 함께 지켜짐을 이 작성자가 먼저 보였다.
+- 리드 R-2(E/lead-r2-sentences/r2-verdict.md): HEAD 원문에 계약 교체를 적용한 전체 파일이 작업 트리와 네 파일 모두 같다(expect-check.out.txt).
+- 생존 신호(helper, S3 문장대로 기록): 신호 4, 최대 309초, 300초 초과 둘(309초 15:04:09Z→15:09:18Z, 305초 15:09:18Z→15:14:23Z). 작성자 귀속이며 비차단 운영 기록이다.
 
 ### 첫 발생 기록
 
