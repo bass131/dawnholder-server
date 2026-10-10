@@ -12,8 +12,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR은 `feat/session-guard-liveness-20261010`(base main `cc20d428`, 선행 시험 뒤 main `bd4dbb5f`를 받음)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: helper 결함 #1 수정이 끝났다(「현재 결과 / helper 결함 #1 수정」). 새 검증자가 재검증한다.
-- **남은 순서**: helper 재검증 → 도구 PR·CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **현재 위치**: helper 재검증이 통과했다(「현재 결과 / helper 재검증」). 도구 PR을 만들고 CI를 본다.
+- **남은 순서**: 도구 PR·CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **사용자 차례**: 도구 PR 병합 승인 줄과 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
@@ -21,7 +21,7 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - [x] 범위와 기준 확정
 - [x] 선행 시험 작성
 - [x] 가드 hook 구현·검증(독립 검증 통과. README 가드 절 보완은 helper 독립 검증이 함께 검토)
-- [>] 간격 도구 구현·검증(구현 끝, 검증 전)
+- [x] 간격 도구 구현·검증(결함 #1 수정 뒤 재검증 통과, 비차단 #3은 다음 후보)
 - [ ] 도구 PR 병합
 - [ ] 결과 기록·Gardener
 - [ ] 종료 기록 PR 병합
@@ -142,7 +142,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 진입: `node 99_Tools/Orca/check-liveness.mjs <파일>... [--threshold-seconds <n>]`. 기본 300초다.
 - 입력: 리드가 저장한 Orca CLI `--json` 출력이다. `inbox --json`·`check --json`(`result.messages`), 대기 출력(앞의 `_keepalive` JSON 줄은 건너뜀), 메시지 객체 배열을 받는다. 여러 파일의 메시지는 id로 합친다. 읽었지만 Dispatch가 하나도 없으면 `input-error`다.
 - 묶기: payload(객체 또는 JSON 문자열)의 `dispatchId`로 묶는다. dispatchId가 없고 `from_handle`이 `dispatch:<id>`면 그 id다. 그 밖의 메시지는 질문 답 찾기에만 쓴다.
-- 신호와 간격: 그 Dispatch가 보낸 모든 메시지(heartbeat·status·question·escalation·worker_done)를 송신 시각(`created_at`) 순으로 놓고 이웃 간격을 잰다. 같은 시각이면 `sequence` 오름차순, `sequence`가 없으면 입력 순이다. 마지막은 worker_done까지다. worker_done 뒤 메시지 처리는 구현 재량이다(미시험). 그 Dispatch에게 온 메시지(`to_handle`이 `dispatch:`로 시작하는 리드의 후속·답)는 payload에 `dispatchId`가 있어도 신호가 아니다. 답은 아래 질문 대기 계산에만 쓴다(helper 독립 검증 결함 #1로 보충).
+- 신호와 간격: 그 Dispatch가 보낸 모든 메시지(heartbeat·status·question·escalation·worker_done)를 송신 시각(`created_at`) 순으로 놓고 이웃 간격을 잰다. 같은 시각이면 `sequence` 오름차순, `sequence`가 없으면 입력 순이다. 마지막은 worker_done까지다. worker_done 뒤 메시지 처리는 구현 재량이다(미시험). 그 Dispatch에게 온 메시지(`to_handle`이 `dispatch:`로 시작하는 리드의 후속·답)는 payload에 `dispatchId`가 있어도 어떤 Dispatch의 신호도 아니다. 답은 아래 질문 대기 계산에만 쓴다(helper 독립 검증 결함 #1로 보충).
 - 질문 대기: Dispatch의 `question` Q 뒤에, `thread_id`가 Q의 id인 다른 발신자의 답 R이 그 Dispatch의 다음 신호 N보다 먼저(같은 시각 포함) 있으면 Q→R은 질문 대기이고 R→N은 보통 간격(시작은 R)이다. 답이 없거나 N보다 늦으면 Q→N이 보통 간격이다. 답이 여럿이면 가장 이른 답을 쓴다. 질문 대기는 길이와 무관하게 모두 내고 최대 간격·초과에 넣지 않는다. 작업자는 blocking ask 중에는 신호를 보낼 수 없지만 답을 받은 뒤에는 5분 안에 다시 보내야 하기 때문이다.
 - 출력: JSON 하나. 키는 `status`(`within`·`over`·`input-error`), `thresholdSeconds`, `dispatches[]`(`dispatchId`·`signalCount`·`firstAt`·`lastAt`·`maxGapSeconds`·`overGaps[]`·`questionWaits[]`), `diagnostics[]`(`code`·`path`·`message`·`repair`)다. `overGaps`의 항목은 `{from:{id,at,type}, to:{id,at,type}, seconds}`, `questionWaits`의 항목은 `{from, to, seconds, replyId}`다. `dispatches` 순서와 진단 code 값은 정하지 않는다. exit 0 `within`, 1 `over`, 2 `input-error`. 파일 쓰기·네트워크·상태 변경은 없다.
 - 시험 기대값은 지난 goal 리드·Gardener가 손으로 잰 기록값이다(제품 계산과 다른 원천). 예: 종료 기록 실사 303초(05:46:55Z→05:51:58Z, 지난 E `lead-check/closeout-review-hb-intervals.json`), J 문장 Sol 391초(지난 E `lead-check/closeout-j-hb-intervals.txt`). 원시가 남은 구간만 쓴다.
@@ -260,6 +260,14 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 저장 원시 여섯과 합본의 전후 비교에서 바뀐 것은 ctx_b9c24150f33b 신호 31→30 하나다(최대·초과 그대로).
 - 리드 R-2(E/lead-r2-fix-liveness/r2-verdict.md): diff·재실행 60/60·저장 원시 전후 비교가 보고와 같다. 생존 신호 최대 233초, 초과 0.
 
+### helper 재검증
+
+- 검증자: 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown), Task `task_1903402f49e5`, Dispatch `ctx_ec13300c0ee6`, 11:40:45Z~11:53:13Z, worker_done `msg_3b7b829e7309`. 계약 E/reverify-liveness-contract.md, 판정 원문 E/reverify-liveness/verdict.md.
+- 판정: **통과, 결함 #1 해소**. 새 경계 판정 시험 12개(`reverify-liveness.test.mjs`)가 수정 뒤 모두 통과하고 수정 전 코드에서는 11개가 실패한다. 수신 메시지는 신호에서 빠지고 질문 답으로는 쓰이며, 저장 원시 여섯·합본의 수정 전후 비교에서 바뀐 것은 ctx_b9c24150f33b 신호 31→30 하나다. Orca 72/72, SessionGuard 167, MergeGate 126, Backlog 60.
+- 비차단 결함 #3(낮음): `check-liveness.mjs` 52행이 Error가 아닌 예외에서 원인 문구를 읽다 죽어 exit 1(`over`와 같은 값)이 된다. 수정 전에는 tool-failure input-error였다. 현재 코드의 throw는 모두 Error 객체라 실제 입력으로는 갈 수 없는 경로다. 리드 계약 문구가 만든 회귀이며, 이 PR에서는 고치지 않고 승인 묶음의 알려진 한계와 다음 계획 후보로 둔다.
+- 관찰 2에 따라 「설계」 145행 보충을 「어떤 Dispatch의 신호도 아니다」로 README와 맞췄다.
+- 리드 R-2(E/lead-r2-reverify-liveness/r2-verdict.md): 재실행 72/72, 저장 원시 초과 수 전후 같음, #3 재현 원시가 판정과 같다. 생존 신호 최대 211초, 초과 0.
+
 ### 첫 발생 기록
 
 교정 정본에 따라 첫 발생을 기록만 한다. 같은 일이 다시 나면 반복 규칙 후보다. 이 goal 범위를 넓히지 않는다.
@@ -275,5 +283,6 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 진입 순서 문서(Rules): 규칙 3이 실리면 리드·작업자 진입은 「읽기 → 메모 → Run·receipt·READY」여야 한다. RESUME과 세션 인계 스킬의 진입 순서 문장을 맞출지 본다. BACKLOG `contract-context-check`.
 - 가드 후속(가드 독립 검증 관찰, E/verify-guard/verdict.md): 셸 읽기 실패도 세션 상태 errors에 남기기(O1, 10월 31일 평가에서 조용한 통과를 세려면 필요), 같은 명령 안 리터럴 `cd <경로>` 따라가기(O4), Write·Edit 경로의 변수 풀이 빼기(O5), 같은 세션 hook 동시 실행의 기록 손실(O6, 10월 31일 평가와 함께), 묶음 명령·`>& 파일` 판정 넓히기(O2·O3), 가독성 지적 넷(메모 기록 시점 주석, 쓰기 목록 순서 주석, 줄바꿈 처리 주석, `pendingHeredoc` 세 상태). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
 - 작업자 기동 환경의 `GIT_OPTIONAL_LOCKS=0`(메인 후보 전달 `msg_41a586d79576`): World goal에서 작업자 첫 git 읽기의 누락이 두 번 나왔고 World 리드가 기동 명령 환경으로 올렸다. 모든 파트의 R-5 기동 절차에 TEMP·TMP와 함께 넣을지 본다. 세션 쓰기 가드는 git 자신의 잠금 파일 쓰기를 세지 않는다(「설계」 115행). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
-- helper 후속(helper 독립 검증 관찰, E/verify-liveness/verdict.md): 메시지 하나의 형식 오류가 모든 수신자 원시 분석 전체를 막지 않게 하기(O9), Orca workflow 회귀에 시험 파일 둘 경우 더하기(O4), 마지막 신호 뒤 침묵을 저장 시각까지 재기(O3, 실시간 감시는 이 goal 밖). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
+- helper 후속(helper 독립 검증 관찰, E/verify-liveness/verdict.md): 메시지 하나의 형식 오류가 모든 수신자 원시 분석 전체를 막지 않게 하기(O9), Orca workflow 회귀에 시험 파일 둘 경우 더하기(O4), 마지막 신호 뒤 침묵을 저장 시각까지 재기(O3, 실시간 감시는 이 goal 밖). 재검증 결함 #3(Error가 아닌 예외에서 CLI가 exit 1로 죽음, 한 줄 수정과 대역 시험 방식은 E/reverify-liveness/verdict.md 「결함 #3」), 신호 조건 이유 주석(재검증 관찰 1), README 80행 빈 문자열 문구(관찰 3). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
+- 작업자 부작용 실행은 저장한 harness로만(메인 후보 전달 `msg_546c56564af9`): Core goal에서 두 번 나왔다. 세션 쓰기 가드는 스크립트 내부 쓰기를 세지 않으므로(「설계」 115행) run/ 밖 쓰기나 manifest 누락은 잡지 못한다. 마감 검사 helper가 높은 층 후보다. 이 goal의 작업자들도 저장한 PowerShell 하네스로 허용 실행을 감쌌다(E/docs-fix/work/, E/fix-liveness/work/). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
 - heartbeat 운영 재평가: 우편함 300개 창 안의 Dispatch 23개 중 19개가 300초를 넘었다(「현재 결과 / 가드 독립 검증」, 창 밖 Dispatch 포함 전체 집계는 아니다). 간격 기준과 긴 명령 중 신호 방법을 다시 볼지 메인이 판단한다.
