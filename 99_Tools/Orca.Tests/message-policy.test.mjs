@@ -603,7 +603,7 @@ function bashExecutable() {
 }
 
 const slashPath = path => path.replace(/\\/g, '/');
-const orcaStep = 'Run independent Orca message policy regressions';
+const orcaStep = 'Run independent Orca regressions';
 
 async function runOrcaStep(label, testFileText) {
   const workspace = join(work, `workflow-${label}`);
@@ -650,7 +650,7 @@ test('the Orca workflow step fails for a missing, unloadable or failing suite an
   const missing = await runOrcaStep('missing', null);
   assert.notEqual(missing.exit, 0, 'a missing entry point must fail the step');
   assert.equal(missing.evidence['exit.txt'], '1\n');
-  assert.match(missing.evidence['stderr.txt'] ?? '', /99_Tools\/Orca\.Tests\/message-policy\.test\.mjs/);
+  assert.match(missing.evidence['stderr.txt'] ?? '', /99_Tools\/Orca\.Tests\//);
 
   for (const [label, text] of [['unloadable', unloadableSuite], ['failing', failingSuite]]) {
     const run = await runOrcaStep(label, text);
@@ -665,7 +665,7 @@ test('the Orca workflow step fails for a missing, unloadable or failing suite an
   assert.equal(passing.evidence['exit.txt'], '0\n');
   // The reporter is spec or TAP depending on the terminal; both print the pass count.
   assert.match(passing.evidence['stdout.txt'], /\bpass 1\b/);
-  assert.match(passing.evidence['command.txt'], /node --test 99_Tools\/Orca\.Tests\/message-policy\.test\.mjs/);
+  assert.match(passing.evidence['command.txt'], /^node --test\b.*99_Tools\/Orca\.Tests\//m);
 });
 
 test('the Orca step always runs before the artifact upload of the same results folder', async () => {

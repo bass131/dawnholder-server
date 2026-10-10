@@ -1,0 +1,132 @@
+{
+  "purpose": "Provenance of the liveness helper fixtures in liveness-fixtures/ and of the hand-measured values check-liveness.test.mjs expects.",
+  "copiedBy": "[Rules 검증자] task_41e39f212554 / ctx_ffacc0131e85",
+  "reduction": {
+    "builder": ".backups/verification/2026-10-10-operating-tool-guards/tdd/work/build-liveness-fixtures.mjs",
+    "builderSha256": "f05851597bf12079f96e36639d9f481227d71a9f4cd72866858ae158b35bdea2",
+    "command": "node .backups/verification/2026-10-10-operating-tool-guards/tdd/work/build-liveness-fixtures.mjs (run from the repository root, stdout kept in the same folder as build-liveness-fixtures.out.json)",
+    "rules": [
+      "the envelope of the source CLI output is kept (inbox: id/ok/result.messages/result.count/_meta; check: the whole result object; wait: the leading _keepalive lines verbatim and the result)",
+      "only the messages of the named Dispatches and the replies whose thread_id is one of their questions are kept, in source order; result.count is set to the kept number",
+      "message fields kept: id, type, from_handle, to_handle, thread_id, created_at, sequence (when the source has it), subject, payload; body and the other fields are removed",
+      "payload is reduced to taskId, dispatchId, phase and outcome and written back in the source form (JSON string or object); question text, filesModified and reportPath are removed",
+      "no time, gap or decision is computed by the builder"
+    ]
+  },
+  "fixtures": {
+    "closeout-rereview-inbox.json": {
+      "kind": "reduction",
+      "shape": "inbox --json",
+      "source": ".backups/verification/2026-10-09-plan-boundary-and-junction/lead-check/closeout-rereview-inbox-raw.json",
+      "sourceSha256": "32bd319625cc1d35f28425e6dc73fa8e8ac87eb70af642b9411ade6949f83bd1",
+      "dispatches": [
+        "ctx_a8a439c04dce",
+        "ctx_381dddcf1934",
+        "ctx_91581c5e133d"
+      ],
+      "replies": [
+        "msg_2b11f01cfb83"
+      ],
+      "sha256": "7ce4af27c20581e0bee925e2371ef7abd0c62b54adedf15c710bda177294b28f"
+    },
+    "closeout-intake-inbox.json": {
+      "kind": "reduction",
+      "shape": "inbox --json",
+      "source": ".backups/verification/2026-10-09-plan-boundary-and-junction/lead-check/closeout-intake-review-inbox-raw.json",
+      "sourceSha256": "bf55c8ad2d9bac71ea83d289c5dd60cbcc255bd1019b4cf37726932b745ac2a2",
+      "dispatches": [
+        "ctx_982ffebe0e6b",
+        "ctx_91581c5e133d"
+      ],
+      "replies": [
+        "msg_2b11f01cfb83"
+      ],
+      "note": "ctx_91581c5e133d and its reply are also in closeout-rereview-inbox.json, for the merge by id",
+      "sha256": "f9e32636c1937cae374a990e421057625922c6b15b477e37c3eab2e5c2fab14a"
+    },
+    "pr1-writing-check.json": {
+      "kind": "reconstruction",
+      "shape": "check --json",
+      "source": [
+        ".backups/verification/2026-10-09-plan-boundary-and-junction/pr1-review-inbox1.json",
+        ".backups/verification/2026-10-09-plan-boundary-and-junction/pr1-review-inbox2.json"
+      ],
+      "sourceSha256": [
+        "4aab04281bd3468ec3f053c50fbe6d3494b8cee3dbd40aa9eb936f0516b18bf2",
+        "0d49f82ca53dea5d17bf9bb9d01e122845016a18a431b54d8fc781c16f9cd566"
+      ],
+      "dispatches": [
+        "ctx_b603f1bde17b"
+      ],
+      "replies": [
+        "msg_3e464481d320"
+      ],
+      "note": "the envelope is a real empty check result (pr1-review-inbox1.json) and the messages are the real inbox messages of the same Dispatch (pr1-review-inbox2.json); the join is the reconstruction",
+      "sha256": "549729964bb6af030e2af9e3c847f8e562f5d7a967362b56bfc9e0c911bc2abc"
+    },
+    "tdd-canon-wait.txt": {
+      "kind": "reduction",
+      "shape": "check --wait --json output with 56 leading _keepalive lines",
+      "source": ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/session/wait7.raw.json",
+      "sourceSha256": "fde1fc3ccaf08d0cc5a4dd1ba14fb5ef13e7aa950bf262d06735dda7fab019f0",
+      "kept": [
+        "msg_e9ea9a930108"
+      ],
+      "note": "the question msg_e9ea9a930108 is also in tdd-canon-messages.json, for the merge by id; this source has no sequence field",
+      "sha256": "83747c0212e252d4be4ef14d9f291505dc11692bb67d0803e2ab1126447ee69c"
+    },
+    "tdd-canon-messages.json": {
+      "kind": "reduction",
+      "shape": "message array (result.messages of an inbox output)",
+      "source": ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/session/all4.raw.json",
+      "sourceSha256": "ceacb42460dfb05e52884e0151ba2b3211575d23a0ad858e8f26e2b0f48a4c47",
+      "dispatches": [
+        "ctx_c1e8312629fb",
+        "ctx_17955ac87a7e",
+        "ctx_164a9f605c57",
+        "ctx_7e5ebddbdd28",
+        "ctx_cb5ce542e50a",
+        "ctx_f1c3a890c258",
+        "ctx_a38458d832d0",
+        "ctx_0b2d88fd401d"
+      ],
+      "note": "the lead's replies to the questions of this goal are not in the source, so no reply is kept; this source has no sequence field",
+      "sha256": "e424b66f6b16d0c4142ee9c8a5e3138a48ebe87555ad4ddf9453938c7112b308"
+    }
+  },
+  "expectations": {
+    "ctx_a8a439c04dce": {
+      "record": ".backups/verification/2026-10-09-plan-boundary-and-junction/lead-check/closeout-review-hb-intervals.json",
+      "recordSha256": "779c6dcc62bb63571baa43a7924cca1cf240dac554cde2810d010899c60feae7",
+      "values": "9 messages from 2026-10-10T05:39:08Z to 05:54:20Z; one gap over 300 s: 303 s to msg_ff1d70074a60 (05:51:58Z)",
+      "tie": "the record's gap list starts the 303 s gap at the status msg_8ea3ce129d98, which has the same second (05:46:55Z) as the heartbeat msg_633ee531d33a; by the lead's supplement 2 (same created_at -> sequence ascending: msg_8ea3ce129d98 8207, msg_633ee531d33a 8208) the gap starts at msg_633ee531d33a, as the contract and goal line 146 write it; seconds (303) and the end message are the same"
+    },
+    "ctx_381dddcf1934": {
+      "record": ".backups/verification/2026-10-09-plan-boundary-and-junction/lead-check/closeout-j-hb-intervals.txt",
+      "recordSha256": "982619f5a27673953567f7d2cd6275e3522f7ebb59065b5ec92cd731039ba241",
+      "values": "5 messages from 2026-10-09T16:05:41Z to 16:16:30Z; gaps 391, 1, 178, 79 s"
+    },
+    "ctx_91581c5e133d": {
+      "record": ".backups/verification/2026-10-09-plan-boundary-and-junction/lead-check/closeout-rereview-hb-intervals.json",
+      "recordSha256": "32acf9be9ed67ed57fd55e46d63db12a2c4ee8232b93067c6dc59a9034e48b8f",
+      "values": "8 messages from 2026-10-10T06:03:22Z to 06:14:15Z; deltas 164, 39, 105, 27, 144, 93, 81 s; maxDeltaSec 164",
+      "handCalculation": "the question wait follows the lead's supplement 1 item 2 (rule B): question msg_81471c9d0554 at 06:06:45Z, reply msg_2b11f01cfb83 at 06:07:46Z (from the raw source), 06:07:46 - 06:06:45 = 61 s, written by the test author by hand; the record's 105 s is question -> next signal and is not used as a wait"
+    },
+    "ctx_982ffebe0e6b": {
+      "record": ".backups/verification/2026-10-09-plan-boundary-and-junction/lead-check/closeout-intake-review-hb-intervals.json",
+      "recordSha256": "f77ad9062058bfa63f10bb27e54a15c3b74b2ea0c7ad9ff7962f69c5d642c4e6",
+      "values": "8 messages from 2026-10-10T06:32:57Z to 06:44:45Z; deltas after the first 173, 84, 0, 54, 169, 206, 22 s (the first delta, 165, is from the worker start, not a message)"
+    },
+    "ctx_b603f1bde17b": {
+      "record": "00_Document/operations/BACKLOG.md line 196 at 852f88ca7bcb7124cc59a305e9c9f8b98c00f531",
+      "values": "writing Sol 343 s (2026-10-09T09:58:45Z -> 10:04:28Z, lead record) and 332 s (10:26:50Z -> 10:32:22Z, Gardener of the V1.0 goal, report sha256 8c6fb79f…); the question msg_5f6887c37359 and its reply msg_3e464481d320 are asserted by id only (supplement 1 item 2)"
+    },
+    "tddCanonGoal": {
+      "record": ".backups/verification/2026-10-08-tdd-canon-temp-write-boundary/gardener/report.md lines 196-208",
+      "recordSha256": "738ad4c053991d89b1658a36f8b3662880bbda6890ccd67362335980f29ba699",
+      "values": "ctx_c1e8312629fb 774 s (11:46:08Z -> 11:59:02Z); ctx_17955ac87a7e 449 s after the escalation (msg_a85c87acd426 -> msg_4460357cafce); ctx_164a9f605c57 418 s and 373 s; ctx_7e5ebddbdd28 411 s; ctx_cb5ce542e50a 363 s; ctx_f1c3a890c258 302 s after the escalation before 14:46:32Z; ctx_a38458d832d0 381 s; ctx_0b2d88fd401d none, at most 229 s",
+      "notTested": "ctx_c1e8312629fb: the Gardener's 420 s after the reply and the question -> next signal gap, because the source has no reply (supplement 1 item 2); the Gardener's heartbeat-to-heartbeat values 547 s (ctx_17955ac87a7e), 337 s (ctx_f1c3a890c258) and the 382 s span with a question (ctx_cb5ce542e50a) measure across messages that goal 「설계」 counts as signals",
+      "idsFromRaw": "the start of the 302 s gap of ctx_f1c3a890c258 is the escalation msg_cf7326e63a9b (14:41:30Z), the only escalation between the heartbeats the record names"
+    }
+  }
+}

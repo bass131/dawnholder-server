@@ -1,0 +1,89 @@
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":15003,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":30012,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":45017,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":60030,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":75044,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":90050,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":105050,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":120059,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":135060,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":150064,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":165075,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":180082,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":195089,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":210099,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":225106,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":240107,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":255111,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":270111,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":285116,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":300122,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":315125,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":330129,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":345133,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":360134,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":375145,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":390148,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":405158,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":420173,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":435181,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":450193,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":465201,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":480213,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":495219,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":510223,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":525234,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":540237,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":555240,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":570252,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":585264,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":600276,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":615286,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":630300,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":645315,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":660322,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":675330,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":690333,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":705340,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":720345,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":735351,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":750364,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":765373,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":780386,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":795387,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":810390,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":825393,"deadlineMs":900000}
+{"_keepalive":true,"_heartbeat":true,"elapsedMs":840395,"deadlineMs":900000}
+{
+  "id": "bd4162d9-88f6-4b52-af0c-84e4599efc9d",
+  "ok": true,
+  "result": {
+    "runId": "run_be5206d9a2af",
+    "deliveryId": "delivery_970bd40ce765",
+    "messages": [
+      {
+        "id": "msg_e9ea9a930108",
+        "type": "question",
+        "from_handle": "dispatch:ctx_c1e8312629fb",
+        "to_handle": "run:run_be5206d9a2af",
+        "thread_id": "msg_e9ea9a930108",
+        "created_at": "2026-10-08T11:37:02Z",
+        "subject": "Question",
+        "payload": "{\"taskId\":\"task_8a7a6a8e0665\",\"dispatchId\":\"ctx_c1e8312629fb\"}"
+      }
+    ],
+    "count": 1,
+    "replayed": false,
+    "acknowledged": "delivery_cbafb30a6e2e",
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "e275c33c-2914-45c8-b844-f64f5c6769e8",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "457d5b58-591b-48ec-8957-09bfa70fa635"
+  }
+}
