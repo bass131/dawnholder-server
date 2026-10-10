@@ -1,31 +1,81 @@
 # 로컬 MSSQL 개발 DB
 
-`99_Tools/database`는 Windows SQL Express의 별도 개발 DB를 설치하고 검증하는 도구다. **게임 서버의 로그인·저장·재접속 복구는 아직 연결하지 않았다.** 서버가 실행 중이어도 이 테이블에는 자동 저장되지 않는다.
+## 현재 — Linux 컨테이너의 시험 DB 도구
 
-## 현재 SQL 구조와 실행 경계
+Windows PowerShell 5.1의 도구가 승인 계획 v2에 고정한 로컬 Linux SQL Server에 SQL 인증으로 접속한다. PowerShell 7 소스 분석과 제품 실행 지원은 구분한다. 게임 서버의 로그인·저장·재접속 연결은 후속 작업이며 이 테이블에 자동 저장되지 않는다. 전환 결정과 대안은 [ADR-035](../ADR/tech-stack/ADR-035-sqlserver-container-tools.md), 실제 실행 승인·진척·미실행은 [진행 goal](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#현재-범위pr-경계)에 있다. 이 안내와 계획의 승인 문자열 자체가 실행 승인을 대신하지 않는다.
 
-현재 database 설치·수명 도구와 오프라인 구조 검사·tests의 실행 host는 **Windows PowerShell 5.1 (`powershell.exe`)**이다. PowerShell 7에서 소스를 분석하는 CodeRules와 구분하며, 그 분석 결과를 제품 도구의 PowerShell 7 실행 지원으로 해석하지 않는다.
+### 진입점과 한 번 수명
 
-현재 [SQL 구조·오프라인 검증 목표](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md)의 첫 PR 범위는 SQL/PowerShell 구조·배포·구조 검사와 이 안내, 신규 Opus의 합동 오프라인 검증이다. `001_initial.sql`을 보존하고 `001~004`/SchemaVersion4와 현재 `modules/` 구조를 구현했으며 독립 검증은 대기 중이다. 설계와 구현 경계는 [SQL 구조·배포 설계](../../01_Phases/goals/2026-10-02-persistence-repository/sql-structure-design.md)에 있다. **실제 새 DB 설치·SQL 접속·G2·계정/ACL/DPAPI·Windows recovery 실행과 저장소/GameServer 연결은 미완료**이며 첫 PR 병합 뒤 후속 goal로 이어간다.
-
-정확 시험 DB·두 principal·실행 주체·한 번의 생성부터 폐기까지 수명은 [goal의 G1 승인 범위](../../01_Phases/goals/2026-10-02-persistence-repository/goal.md#사용자-세-안건--추천안-승인g1)를 따른다. 후속 goal 분리는 새 DB나 두 번째 수명 승인이 아니다. 이 문서의 도구·명령 설명도 SQL 접속이나 시스템 변경 권한을 추가하지 않는다. 아래 2026-09-29 성공 기록은 당시 001 구성의 근거다.
-
-현재 installer는 기본 DB를 자동 생성하는 진입점이 아니다. 명시한 DB·manifest·승인 계획과 별도로 검토한 계획 hash를 대조하고, 수명 도구가 만든 정확한 DB만 설치한다. 인자 없이 과거의 `Install-Database.ps1` 명령을 실행하지 않는다. 실제 명령·실행 주체·승인 입력은 최초 실행 전 G2 독립 검토 후 goal에 고정한다. 승인 계획의 문자열이나 `ExecutionApproved` 값 자체가 사용자 승인을 대신하지 않는다.
-
-| 도구 | 책임 |
+| 도구 | 입력과 책임 |
 |---|---|
-| [New-TestDatabase.ps1](../../99_Tools/database/test-environment/New-TestDatabase.ps1) | 승인된 이름의 부재 확인, 한 번의 시험 DB 생성과 수명 기록 |
-| [Install-Database.ps1](../../99_Tools/database/Install-Database.ps1) | 동일 DB의 `Baseline001` 또는 `Complete` 설치를 수명 도구에 전달. Complete는 001~004·module·권한·catalog 단계 |
-| [Initialize-CharacterBinding.ps1](../../99_Tools/database/test-environment/Initialize-CharacterBinding.ps1) | 승인된 슬롯·계정·캐릭터 식별자 바인딩 |
-| [Set-TestPrincipals.ps1](../../99_Tools/database/test-environment/Set-TestPrincipals.ps1) | 승인된 시험 principal·권한·격리 credential 구성 |
-| [Remove-TestEnvironment.ps1](../../99_Tools/database/test-environment/Remove-TestEnvironment.ps1) | identity·미확정 작업·owner·연결 정산 대조 후 정확한 자원 정리 |
-| [Environment.Common.ps1](../../99_Tools/database/test-environment/Environment.Common.ps1) | 승인 입력·수명 manifest·identity·단계 기록의 공통 경계 |
+| [New-TestDatabase.ps1](../../99_Tools/database/test-environment/New-TestDatabase.ps1) | 승인 계획 경로·별도로 검토한 SHA256·정확 DB·manifest 경로. OfflinePlan은 입력 검토, Plan은 비밀 없는 Planned manifest, Create는 사전 검사와 DB 생성, Install은 설치 단계 |
+| [New-TestAdminCredential.ps1](../../99_Tools/database/test-environment/New-TestAdminCredential.ps1) | 같은 승인 입력과 Planned manifest. 첫 컨테이너 기동 **전** private 폴더와 sa DPAPI CLIXML을 한 번 생성하고 hash·저널을 기록. SQL·Docker 호출 없음 |
+| [Install-Database.ps1](../../99_Tools/database/Install-Database.ps1) | 정확 수명의 Baseline001 또는 Complete(001~004·module·권한·catalog)를 수명 도구에 전달 |
+| [Initialize-CharacterBinding.ps1](../../99_Tools/database/test-environment/Initialize-CharacterBinding.ps1) | 승인된 slot1·AccountId·CharacterId 고정 바인딩 |
+| [Set-TestPrincipals.ps1](../../99_Tools/database/test-environment/Set-TestPrincipals.ps1) | runtime SQL 로그인·user·dh_runtime만 구성. 무작위 SID 계획·대조, 서버 role 0·DB role 정확히 하나·추가 직접 권한/소유 0 검사 |
+| [Test-Database.ps1](../../99_Tools/database/Test-Database.ps1) | 계획 경로/hash와 **-Endpoint**, **-Database** 필수. manifest를 읽고 동일 연결 helper로 두 연결을 열어 원래 rollback·잠금·계약 검사 수행 |
+| [Remove-TestEnvironment.ps1](../../99_Tools/database/test-environment/Remove-TestEnvironment.ps1) | 정산·quiescent·정확 identity/hash 확인. OfflinePlan / OnlinePreview / Execute를 구분하고 명시 확인과 manifest hash 뒤에만 정리 |
+| [Environment.Common.ps1](../../99_Tools/database/test-environment/Environment.Common.ps1) | v2 검증, 연결 설정·신원·오류 분류, ACL/DPAPI 파일, 저널의 단일 소유자 |
 
-DB명·principal·executor·endpoint·TLS·경로는 검토된 승인 계획에 둔다. 기존 DB나 같은 이름의 자원을 자동 채택하거나 다른 이름으로 재생성하지 않는다. 실패·부분 실행은 원문과 자원을 보존하고 조사하며 강제 연결 종료나 자동 정리로 넘기지 않는다. 이번 배포값 변경은 새 SQL을 아직 적용하지 않은 단계의 승인된 변경이며, 적용된 migration을 나중에 덮어쓰는 운영 규칙이 아니다.
+순서는 OfflinePlan 검토 → Plan → New-TestAdminCredential → 승인된 카드의 컨테이너 기동/준비 확인 → Create → Baseline001 → 보존 fixture 확인 → Complete → binding → runtime 주체 → 시험 → 정산/정리다. 제품 상태는 Planned → Created → Baseline001 → Installed → Bound → PrincipalsReady → CleanupStarted → Removed를 유지한다. **PrincipalsReady는 runtime 주체 준비 완료**이며 recovery 계정은 만들지 않는다(사용자 결정 27 A). DB의 dh_recovery role과 4개 RPC 권한은 유지하며 복구 주체 형태·실증은 후속 goal이다.
 
-구조 중간 commit `ad6d5cbb3432947aaf867ebc994151e9473b9d02`는 **설치 불가·소스 검토용**이며 DB 설치 `git bisect` 판정에서 제외한다. 배포 구현 commit은 `ccb71077987fb8addca552109b3de3f9a5105342`다. 설치·G2는 후속 goal의 최종 검증 tree로만 진행하며 이 커밋 자체가 실행 PASS를 뜻하지 않는다.
+단계 저널 Pending/Done/Failed, 배타 .lock, 미완 .pending 보존을 유지한다. 실패한 단계를 자동 재시도·정리하지 않으며 같은 이름 DB·로그인을 채택하거나 회전하지 않는다. 이미지는 보존, 볼륨+시험 DB는 한 번 수명, 컨테이너는 같은 볼륨 위 프로세스 host다. 승인당 시도 3회·단계당 컨테이너 재생성 1회 상한과 직전 수명의 정리 원시를 카드가 확인한다.
 
-## 현재 저장·권위·증빙 모델
+### 승인 계획 v2와 manifest v2
+
+계획은 JSON이며 아래 모든 필드를 명시한다. 누락·알 수 없는 필드·v1은 연결 전에 거부한다. PlanVersion/SchemaVersion은 모두 정수 2다. 계획 SHA256은 읽어서 파싱하는 동일 bytes에 대해 대조한다. 관측 엔진값을 기대값으로 채택하지 않는다.
+
+| 필드 | 형식·검증 |
+|---|---|
+| PlanVersion, SchemaVersion | 2만 허용. SQL migration 버전 4와 별개 |
+| ExecutionApproved, G0, G1, G2 | boolean 승인 표시와 검토 기록. 실제 실행은 true 및 별도 G2 기록 필요. 사용자 승인 원문은 별도로 검토 |
+| Goal, GoalMarker, Machine, ExecutorSid | 비어 있지 않은 목표/표식·Windows 실행 기계·SID. 모든 실행은 같은 기계/SID, 관리자 토큰 불필요 |
+| ContainerName, ContainerHostname, VolumeName | 소문자 영숫자와 중간 하이픈, 영문 시작, 최대 63자. 목적 이름을 쓰며 날짜·마일스톤·작업자 이름 거부 |
+| ImageDigest | sha256: 뒤 소문자 hex 64자리. 카드에서 정확 이미지 digest 대조 |
+| Endpoint, AdminLogin | tcp:127.0.0.1,포트(1~65535, 7777 제외), sa만 허용 |
+| ExpectedCollation, ExpectedProductVersion | SQL 정렬 규칙 이름과 숫자 네 부분 버전. 생성 전 계획으로 고정; 승인 값은 goal 결정 28 A, 지원/실행 근거는 goal에서 확인 |
+| ConnectTimeoutSeconds, ReadyTimeoutSeconds, ReadyAttemptLimit, PullTimeoutSeconds, StopTimeoutSeconds | 명시 양의 정수. StopTimeoutSeconds는 30 이상이며 강제 종료까지의 대기 값(아래 정지 측정 근거 참조). ConnectTimeout만 도구 연결에 사용, 나머지는 카드 비용 상한 |
+| SqlMemoryLimitMb, ContainerMemoryLimitMb, MinFreeMemoryMb, MinFreeDiskMb | 명시 양의 정수. 컨테이너 천장 ≥ SQL 천장, Windows 여유 메모리 바닥 ≥ 2048MiB. 실제 배치값은 승인 계획 |
+| Attempt | 1~3 정수. 자동 재시도 허가가 아님 |
+| Database, RuntimeLogin | Dawnholder_Test_ 또는 Dawnholder_Dev_ 뒤 목적 접미, 최대 128자; runtime은 dh_ 뒤 소문자 목적명. 옛 DB·날짜/마일스톤 이름은 거부 |
+| SlotId, AccountId, CharacterId | slot1, 비어 있지 않은 D형 GUID 두 개 |
+| Encrypt, TrustServerCertificate | boolean true. 이 로컬 컨테이너 endpoint에서만 인증서 신뢰 |
+| ManifestPath, SettlementPath | 서로 다른 정규화된 로컬 절대 파일 경로, 같은 부모. 비밀/identity 폴더 밖 |
+| PrivateDirectory, IdentityDirectory | 서로 분리된 %LOCALAPPDATA%\Dawnholder\ 하위 폴더. C:\ProgramData·과거 MssqlWsl-SQLEXPRESS 경로는 읽기 전 거부 |
+| AdminCredentialPath, RuntimeCredentialPath, IdentityPath | 각각 private 아래 sa/runtime 파일, identity 폴더 아래 비밀 없는 투영 파일. 경로 중복·reparse 경유 거부 |
+
+manifest는 승인 필드와 ApprovalPlanPath/Hash를 고정하고, 도구가 MasterFamilyGuid·Engine·시험 DB identity·migration 이력·runtime SID·비밀 파일 hash·단계/정리 저널을 쓴다. sa 파일 hash는 New-TestAdminCredential의 SaveAdminCredential 단계가 manifest에 고정한다. 비밀을 만들기 전 계획에 아직 없는 hash를 요구하는 순환을 피하며, 이후 읽기와 삭제 때 실행자+SYSTEM ACL·소유자·기록 hash를 모두 대조한다. sa는 회전하지 않는다.
+
+모든 SQL 연결은 SqlCredential와 읽기 전용 SecureString을 쓴다. 연결 문자열에는 Password/User ID가 없고 Integrated Security=false, Persist Security Info=false, Pooling=false, Encrypt/TrustServerCertificate=true, Connect Timeout=계획 값이다. ConnectRetryCount=0으로 자동 재연결도 막는다. 연결은 한 번 열어 쓰고 닫으며 재사용하지 않는다. CommandTimeout 30초, migration/create/binding lock 5000/5000/2000ms, 정리 LOCK_TIMEOUT 1000ms는 보존한다.
+
+접속마다 MachineName=계획 hostname, InstanceName NULL, host_platform=Linux, sa/sysadmin을 확인한다. Create의 master preflight에서 database_id=1의 **family_guid**를 MasterFamilyGuid에 기록하고 이후 매 접속에서 대조한다. master database_guid는 같은 이미지의 서로 다른 두 볼륨에서 같았으므로 볼륨 판별에 쓰지 않는다(계약 보충 v1.1, 위험 확인 원시 표본 2). ServerName/@@SERVERNAME도 재생성 때 보존/변경이 달라 쓰지 않는다. 시험 DB 자체의 database_guid·create_date·owner_sid·ID·collation·RCSI 대조는 유지한다.
+
+Open의 18456은 로그인 실패, 그 외 Open 오류는 도달 불가, 접속 후 신원 차이는 신원 불일치, 계획/manifest 엔진값 차이는 엔진 변경으로 고정 사유를 낸다. SqlException 번호는 SqlError.Common 경계를 통해 보존하고 제공자 문구는 억제한다. 도구가 Docker 원인을 추정하지 않는다. 다만 **준비 대기 성공 전의 18456은 비밀번호 오류의 증거가 아니다**. 재측정 [02-A-ready-attempts.jsonl](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-A-ready-attempts.jsonl)의 시도 4에서 18456이 나온 뒤 시도 5에서 접속에 성공했다. 위 진입 순서대로 카드가 준비 대기 성공을 기록한 뒤에만 도구를 부른다.
+
+### 실행 카드의 Docker 규칙과 정리
+
+도구 안에는 Docker·WSL 수명 호출이 없다. 카드 작성자는 다음을 원문으로 고정하고 실행 창의 시작·끝 UTC와 준비 대기 상한을 계획과 함께 확인한다.
+
+- 개발·시험용 SQL Server Developer 사용권은 사용자 결정 **26 A**, 전달 msg_3a98521517fa에 근거한다. 첫 실행은 ACCEPT_EULA=Y, MSSQL_PID=Developer다.
+- run은 --restart no, --hostname <계획 값>, -p 127.0.0.1:<계획 포트>:1433, --pull=never를 명시하고 사전 image digest를 대조한다. MSSQL_COLLATION, MSSQL_MEMORY_LIMIT_MB와 --memory는 계획 값이다. 시작 뒤 `127.0.0.1:<계획 포트>` TCP 연결 탐침 성공과 `docker port <정확한 이름>`의 `1433/tcp -> 127.0.0.1:<계획 포트>`를 함께 기록해 loopback 연결·바인딩을 증명하고, running 상태·준비 대기 성공도 원시로 남긴 뒤에만 도구에 넘긴다. 재측정은 [TCP 탐침 Connected: true](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/03-A-port-probe.json)와 [docker port 바인딩](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/03-A-port-stdout.txt)을 확인했다. 같은 상태에서 [Windows TCP 표에는 해당 포트의 Listen이 없었으므로](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/03-A-tcp-listeners.json) `Get-NetTCPConnection` 표를 이 증명에 쓰지 않는다.
+- sa 파일은 위 고정 진입점으로 먼저 만든다. 카드는 ACL/hash를 확인한 파일을 Import-Clixml로 복호해 **실행 프로세스 환경 변수만** 사용하고 docker run -e MSSQL_SA_PASSWORD처럼 이름만 argv에 넣는다. finally에서 환경값과 평문 참조를 제거한다. 비밀을 채팅·goal·argv·로그·연결 문자열에 넣지 않는다.
+- sa는 회전하지 않으며 초기 값이 컨테이너 Env에 남는다. 모든 docker inspect는 **Env를 읽지 않는 --format만** 사용한다. docker exec·cp·commit·export는 금지한다. docker logs는 이름 정한 컨테이너의 장애 분류에만 쓰고 저장 출력은 비밀 대조로 평문 부재를 확인한다.
+- 존재·부재·삭제 대상은 docker inspect <정확한 이름>(컨테이너/볼륨/이미지 종류 명시)로 확인한다. --filter name= 부분 일치 목록을 부재 근거나 삭제 대상에 쓰지 않는다. 컨테이너 Id·digest·볼륨 CreatedAt·hostname·시작 UTC를 비밀 없이 기록하고 정리 때 대조한다.
+- 현재 정지는 컨테이너·볼륨을 바로 지우는 정리 경로와 실패 보존 경로에 한해 `docker stop -t <계획 값, 30 이상>`을 쓴다. StopTimeoutSeconds는 **강제 종료까지의 대기**이며 정상 종료를 보장하는 유예가 아니다. `docker kill`·`rm -f`·`restart` 명령 금지는 유지한다. 실패하면 저널과 장애 원시, 정지된 컨테이너+볼륨을 보존하고 메인에 보고한다. 실패 시도 삭제는 별도 명시 승인 뒤에만 한다. 정지 뒤 같은 볼륨을 다시 쓰는 절차(SHUTDOWN 경로와 실행 주체 포함)는 1단계 카드 설계에서 정하며, 그 전에는 볼륨 재사용을 위한 정지를 하지 않는다. 해당 절차를 채택하기 전에는 SQL Server 시작 완료 뒤의 정지를 다시 잰다.
+
+  정지 재측정의 조건: 세 정지는 모두 첫 접속 성공 뒤 0.577~3.495초에 시작했다(접속 시각 [A](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-A-ready.json)·[B](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-B-ready.json)·[C](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-C-ready.json)의 `ConnectedUtc`와 아래 정지 원시의 `CommandStartedUtc` 차이). 시작 로그는 접속 직후에 수집했고, 수집 종료부터 정지 시작까지 0.372~3.255초 구간의 로그는 없다(수집 기록 [A](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-A-startup-logs-receipt.json)·[B](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-B-startup-logs-receipt.json)·[C](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-C-startup-logs-receipt.json)의 `FinishedUtc`부터 `CommandStartedUtc`까지). 시작 중이었음이 원시로 확인되는 것은 B뿐이다. B는 SHUTDOWN 시작 뒤에도 [색인 복원 로그](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/05-B-stop-logs-stdout.txt)가 이어졌다. A·C의 정지 시점 시작 완료 여부는 **미측정**이다. 따라서 아래 세 값은 **시작 직후 값이며 정상 상태의 정지 값으로 쓰지 않는다**.
+
+  이 조건에서 `docker stop -t 30`은 명령 소요 30.743초·[명령 exit 0](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/05-A-stop-command-receipt.json)이었고 [컨테이너는 exited·ExitCode 137](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/05-A-stop.json)로 강제 종료됐다. `-t 120`은 명령 소요 120.756초·[명령 exit 0](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/05-C-stop-command-receipt.json)이었고 [컨테이너는 exited·ExitCode 137](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/05-C-stop.json)로 강제 종료됐다. 관리 로그인 sa의 T-SQL `SHUTDOWN`은 명령 소요 0.219초, SHUTDOWN 시작 뒤 1.354초 안에 컨테이너의 exited·ExitCode 255를 관측했다([05-B-stop.json](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/05-B-stop.json)). 로그에는 `Server shut down by request from login sa`가 남았다([05-B-stop-logs-stdout.txt](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/05-B-stop-logs-stdout.txt)). 이는 측정 사실이며 SHUTDOWN 절차 채택을 뜻하지 않는다. SIGTERM 처리 원인은 미측정이다.
+
+  정상 상태의 비교 기준은 첫 추가 측정이다. [Recovery 완료 로그](../../.backups/verification/2026-10-04-persistence-integration/r7-container-measure/run/failure-container-logs-stdout.txt)와 [정렬 규칙 변경 완료 로그](../../.backups/verification/2026-10-04-persistence-integration/r7-container-measure/run/11-final-container-logs-stdout.txt)가 나온 뒤, 시작 완료 상태에서 실행한 `docker stop -t 30`은 [명령 소요 30.75초·명령 exit 0](../../.backups/verification/2026-10-04-persistence-integration/r7-container-measure/run/11-final-container-stop-receipt.json)이었고 [컨테이너는 exited·ExitCode 137](../../.backups/verification/2026-10-04-persistence-integration/r7-container-measure/run/11-final-container-after.json)이었다. **정상 상태의 SHUTDOWN은 미측정**이다.
+
+  master `family_guid`는 [A](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-A-identity.json)·[B](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-B-identity.json)·[C](../../.backups/verification/2026-10-04-persistence-integration/r7-container-remeasure/run/02-C-identity.json) 세 기동 표본에서 같았다. A의 30초 stop 뒤와 B의 SHUTDOWN 뒤 같은 볼륨 재기동에서 유지를 확인한 것이며, 최종 C의 120초 stop 뒤 조회는 없다.
+- **정리 순서:** 도구가 정산·연결/작업/owner/trigger·identity 확인 → DB DROP → SID가 맞는 runtime 로그인 → hash가 맞는 runtime 파일·sa 파일을 지운다. sa 로그인은 지우지 않는다. 그 뒤 카드가 컨테이너 정지·삭제 → 볼륨 삭제 → 각각 정확 이름 부재 확인을 기록한다. 정산·manifest·비밀 없는 identity·빈 폴더는 보존한다.
+- 매 단계 전 Windows 여유 메모리 2GiB 바닥과 계획 천장을 확인하고 Windows/WSL/Docker 메모리 원시를 남긴다. Docker Desktop 설정·.wslconfig를 바꾸지 않는다. pull 전·후, 볼륨 생성 후, 정리 후 **네 시점**의 docker system df·VM 디스크 크기·호스트 여유 공간을 기록한다. 볼륨 삭제가 VM 디스크 축소를 증명하지 않는다.
+
+
+
+### 현재 저장·권위·증빙 모델
 
 [001_initial.sql](../../99_Tools/database/migrations/001_initial.sql)의 게임 테이블 3개와 파일/checksum은 보존했다. `dh.SchemaVersion`은 [DB 생성 도구의 bootstrap](../../99_Tools/database/test-environment/New-TestDatabase.ps1)에서 따로 만들고 공유 runner가 적용 이력을 기록한다. [002](../../99_Tools/database/migrations/002_persistence_metadata.sql)는 authority/operation과 두 role, [003](../../99_Tools/database/migrations/003_module_metadata.sql)은 코드 배포 metadata를 추가한다.
 
@@ -48,7 +98,7 @@ Character와 Progress의 두 `rowversion`은 각각 읽기 의존·조건부 변
 
 이 절은 현재 SQL **소스 계약**이다. 실제 잠금·동시성·rowversion·replay·29열 provider metadata의 실행 검증은 남아 있다.
 
-## 공개 RPC와 최소권한
+### 공개 RPC와 최소권한
 
 [permissions.sql](../../99_Tools/database/modules/permissions.sql)은 아래 9개 객체에만 개별 EXECUTE를 부여한다. `dh_runtime`/`dh_recovery`에는 직접 테이블 DML/DDL·schema 전체 EXECUTE·내부 helper·codec 실행 권한을 부여하지 않는다. 정적 SQL과 동일 dbo 소유 체인을 전제로 하며 실제 principal의 상속 권한·직접 DML/타 역할 RPC 거부는 후속 실행 gate에서 확인한다.
 
@@ -64,11 +114,11 @@ Character와 Progress의 두 `rowversion`은 각각 읽기 의존·조건부 변
 | `dh_recovery` | [ReleaseRecovery](../../99_Tools/database/modules/procedures/release_recovery.sql) | 현재 recovery owner만 조건부 해제 |
 | `dh_recovery` | [ResolveRecoveryOperation](../../99_Tools/database/modules/procedures/resolve_recovery_operation.sql) | recovery 종류의 증빙 조회와 absent 취소 seal |
 
-runtime은 Windows/WSL 모두 전용 최소권한 **SQL principal**, recovery는 `dh_recovery`에만 매핑한 전용 **비관리자 Windows principal의 통합 인증**이 후속 연결 계약이다. 기존 Windows 관리자/sysadmin은 recovery 양성 시험의 대용이 아니다. login/password는 migration에 없고 실제 계정·role 매핑·launcher·비밀 접근 구성은 G2 이후 실행 범위다. [기술명세 §2](../../01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md#2-연결설정비밀권한)의 설정/인증/권한 계약을 따른다.
+runtime은 전용 SQL 로그인과 dh_runtime user로 만든다. recovery 주체는 사용자 결정 27 A로 후속 goal에서 정하며 이 도구는 만들지 않는다. dh_recovery 역할과 공개 권한은 유지한다. 실제 runtime의 권한·연결 시험과 recovery 실증의 미실행은 goal에서 구분한다.
 
 기존 `Configure-WslAccess` login의 직접 SELECT/INSERT/UPDATE 권한을 새 runtime에 재사용하면 fencing을 우회한다. 기존 DB/credential/WSL 도구의 역사 기록을 현재 RPC 사용법으로 적용하지 않는다.
 
-## SQL 소스 위치와 배포 책임
+### SQL 소스 위치와 배포 책임
 
 현재 정의와 immutable 적용 이력을 나눴다. [기술명세 §1.1](../../01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md#11-migration-배포-형식)의 초기 procedure별 migration 배치는 현재 승인된 [구조·배포 설계](../../01_Phases/goals/2026-10-02-persistence-repository/sql-structure-design.md)와 아래 실제 소스로 갱신됐다.
 
@@ -89,11 +139,11 @@ source checksum은 UTF-8/BOM 제외·CRLF→LF 기준이며 module의 남은 CR�
 
 [Module.Common.ps1](../../99_Tools/database/Module.Common.ps1)은 명시된 001~004/manifest/source를 검사하고 migration의 누락·미지/더 최신 버전·이름/checksum 불일치를 거부한다. 기존 module은 변경 source 적용 전에 등록 기록과 실제 객체 집합·정의·소유자/실행 컨텍스트를 대조하며, unchanged source도 검사한다. 첫 metadata 설치 외에는 비어 있거나 지워진 기록/객체를 자동 채택하지 않는다. 선언 hash가 맞는 변경 source만 적용하고 같은 묶음은 DDL을 생략하되 9grant와 최종 대조를 반복한다. 새 정의가 소스의 기대값과 맞아야 ModuleDefinition을 기록한다. drift를 덮어쓰거나 현재 선언과 다른 source를 자동 수선하지 않는다.
 
-현재 reader/catalog는 SchemaVersion4·테이블8·module18·정확9grant 등 고정 계약을 요구한다. [Environment.Common.ps1](../../99_Tools/database/test-environment/Environment.Common.ps1)도 수명 상태별 001/정확4개 migration을 대조하며 **수명 manifest 자체의 schema는 1**이다. 향후 코드 변경은 새 버전 선언과 그에 맞는 소스·도구·catalog 검토가 필요하다. 과거 migration checksum 변경이나 오래된 checkout의 강제 덮어쓰기로 되돌리지 않는다.
+현재 reader/catalog는 SchemaVersion4·테이블8·module18·정확9grant 등 고정 계약을 요구한다. [Environment.Common.ps1](../../99_Tools/database/test-environment/Environment.Common.ps1)도 수명 상태별 001/정확4개 migration을 대조하며 **수명 manifest 자체의 schema는 2**이다. 향후 코드 변경은 새 버전 선언과 그에 맞는 소스·도구·catalog 검토가 필요하다. 과거 migration checksum 변경이나 오래된 checkout의 강제 덮어쓰기로 되돌리지 않는다.
 
 이 배포 경계는 구현 및 자체 오프라인 모의 대조까지이며 실제 SQL 문법/compiler·CREATE OR ALTER 저장 정의/hash·catalog·권한·중간 실패 atomic rollback은 아직 실행하지 않았다. 예상 engine metadata가 다르면 원문을 보존하고 검토된 수정부터 진행한다.
 
-## 오프라인 module 구조 검사
+### 오프라인 module 구조 검사
 
 [Test-ModuleStructure.ps1](../../99_Tools/database/Test-ModuleStructure.ps1)은 고정 module 경로·객체명/종류·파일당 정의 하나와 공개 RPC의 정본 helper 직접 호출, 현재 소스의 hash 소비값을 읽기 전용으로 검사한다. 주석/리터럴을 제외한 제한된 lexer를 사용하며 입장 조회·관리 inspection·resolver의 서로 다른 책임을 별도로 등록한다. [ModuleHash.Common.ps1](../../99_Tools/database/ModuleHash.Common.ps1)이 소스 정규화·hash 계산과 소비 대조를 소유하며 bundle 읽기나 DB 연결을 호출하지 않는다.
 
@@ -127,7 +177,7 @@ hash drift는 Issues의 File/Line/Observed/Expected/Remediation을 따라 검토
 
 검사는 SQL 문법·중첩/들여쓰기·타입·transaction/동시성·권한·29열 실행을 판정하지 않으며 실제 DB의 manifest/hash 배포 검사를 대신하지 않는다. 기본 exit0만으로 구조 violation을 PASS로 읽지 않는다. 배치·직접 호출은 warning 파일럿을 유지하며 CLI·독립 tests의 CI 연결과 SQLFluff 적용성/연결은 **첫 PR 병합 뒤 Rules와 별도 조율**한다. CI 연결·SQLFluff parse·실제 엔진 PASS를 이 검사에 합치지 않는다.
 
-## 게임 정책과 후속 소비 계약
+### 게임 정책과 후속 소비 계약
 
 - [GameWorld](../../02_Server/GameServer/Loop/GameWorld.cs)의 `NextEntityId()`는 프로세스 메모리에서 증가하고 [GameSession](../../02_Server/GameServer/Sessions/GameSession.cs)은 재접속 때 새 entity를 만든다. 따라서 runtime EntityId를 DB PK로 쓰지 않는다. 후속 연동에는 서버가 확인한 AccountId/CharacterId와 세션 EntityId의 매핑이 필요하다. PlayerSnapshot도 현재 이 메모리 ID와 DB 계약을 구분한다.
 - [CharacterClass](../../98_Shared/Protocol/CharacterClass.cs)는 Knight=0, Mage=1. [PlayerStats](../../98_Shared/GameData/Combat/PlayerStats.cs)의 공격력·방어력·이동/점프 속도는 Class로 다시 생성한다. 레벨·경험치·장비·재화·길드는 현재 코드에 저장할 계약이 없어 넣지 않았다.
@@ -146,67 +196,26 @@ Acquire는 없는 Progress만 안전 초기화하고 기존 전투 위치/HP/해
 
 [기술명세 §7](../../01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md#7-timeoutcancel재시도)에 따라 dispatch 뒤 완전한 terminal receipt를 못 받으면 unknown이다. 후속 저장소는 lane을 멈추고 동일 ID/typed payload resolver로 조정하며 timeout/cancel/process 종료를 rollback·release 완료로 간주하지 않는다. 직접 ADO.NET·typed RPC와 SqlClient 버전 선택은 [기술명세 §1](../../01_Phases/goals/2026-10-01-persistence-technical-design/technical-spec.md#1-선택과-적용-경계)의 **후속 저장소 계약**이며 패키지 추가/restore·Windows/WSL .NET 실행 성공을 뜻하지 않는다.
 
-## 2026-09-29 기존 구성 기록
 
-2026-09-29 구성: `YYH_Desktop\SQLEXPRESS`, Express 17.0.1000.7, `Dawnholder_Dev`. 당시 Windows 관리 도구는 통합 인증/shared memory, native WSL은 전용 SQL 인증/`tcp:127.0.0.1,14330`을 사용했다. 사용자 승인으로 mixed 인증과 loopback TCP만 활성화했다. 기존 `GameDB`의 `dbo.accounts(playerID, playerName, playerMoney, playerDate)`와 `BaseballData`, `Northwind`의 데이터·스키마는 수정하지 않았다. 다른 프로젝트의 accounts를 게임 계정으로 재사용하지 않는다.
+## 역사 — Windows SQL Express와 WSL 접근
 
-당시 Windows PowerShell 5.1/7 도구는 명시 인자 또는 프로세스의 `DAWNHOLDER_SQL_INSTANCE`·`DAWNHOLDER_SQL_DATABASE`를 읽고, `lpc:` 로컬 shared memory·MachineName·`Dawnholder.DatabaseTool=development-v1` 소유 표시를 확인했다. 이 변수는 GameServer 설정이 아니며 현재 시험환경 수명 도구의 승인 입력을 대신하지 않는다. 기존 DB와 계정은 현재 목표의 수정·정리 대상에서 제외한다.
+아래는 과거 실행 근거이며 현재 컨테이너 승인이나 실행 방법으로 쓰지 않는다. Windows SQL Express·옛 시험 DB는 사용자 결정(컨테이너 범위 질문 5 A)으로 보존하며 이번 전환에서 정리하지 않는다. 옛 도구·명령·설명은 모두 **commit cc20d428**의 [database 폴더 전체](https://github.com/bass131/dawnholder-server/tree/cc20d428/99_Tools/database)와 [당시 MSSQL 안내](https://github.com/bass131/dawnholder-server/blob/cc20d428/00_Document/operations/MSSQL.md)를 기준으로 읽는다.
 
-## 2026-09-29 구성 검증 기록
+2026-09-29 구성은 YYH_Desktop\SQLEXPRESS, Express 17.0.1000.7, Dawnholder_Dev였다. Windows 도구는 Windows 통합 인증/lpc, native WSL은 전용 SQL 인증/tcp:127.0.0.1,14330을 썼다. [당시 목표와 실행 근거](../../01_Phases/goals/2026-09-29-mssql-setup/goal.md)는 당시 001 구성·rollback·최소권한 시험의 기록이다. 현재 001~004/module/RPC·게임 저장 연결의 통과 근거가 아니다. 기존 GameDB·BaseballData·Northwind는 별도 자원이다.
 
-[목표 결과](../../01_Phases/goals/2026-09-29-mssql-setup/goal.md)와 [근거 폴더](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/)를 참고한다.
+### 2026-09-29 Enable의 되돌리기 경로
 
-아래는 당시 001 구성과 기존 도구의 실행 기록이다. 현재 modules/RPC·배포·권한·경쟁·복구 검증의 통과 근거로 재사용하지 않는다.
+삭제한 Configure-WslAccess/Test-WslAccess의 Restore 경로를 이 절에 먼저 보존한다(사용자 결정 29 A). 대상 상태는 %LOCALAPPDATA%\Dawnholder\MssqlWsl-SQLEXPRESS\state.clixml의 Restored=false, LoginMode **1→2**, loopback TCP **14330**, 로그인 **Dawnholder_Dev_Wsl_688ea8c6f1bd**다. 현재 도구가 이 경로를 읽거나 수정하지 않는다.
 
-`Test-Database.ps1`은 GUID로 격리된 시험 행만 만들고 끝에서 반드시 rollback한다. 카탈로그, PK/unique/FK/check/nullability, 두 직업·네 맵·HP 경계, CRUD, 데이터가 있는 상태의 migration 두 번 재실행, 체크섬/미지 버전 거부, stale rowversion, 별도 연결의 migration 잠금 및 쓰기 잠금 timeout을 검사한다. CHECK/default의 실제 식과 소속 테이블·열도 비교하며, Class CHECK 완화·해금 DEFAULT1·잘못된 default 열을 잠깐 적용한 세 음성사례가 거부됨을 각각 rollback으로 확인한다. 운영 트래픽이 없는 개발 DB에서 실행한다. 삭제도 이 트랜잭션에서 만든 행만 대상으로 한다. rollback 전 남겨둔 witness 행이 rollback 후 없음을 확인한다. 실패한 경우에도 finally에서 rollback하며 실제 게임 행을 seed하거나 commit하지 않는다. rowversion 내부 카운터는 rollback 후에도 증가할 수 있고 연속 번호를 보장하지 않는다.
+되돌릴 도구는 [cc20d428의 Configure-WslAccess.ps1](https://github.com/bass131/dawnholder-server/blob/cc20d428/99_Tools/database/Configure-WslAccess.ps1) -Action Restore다. 같은 폴더 Database.Common.ps1을 dot-source하므로 **그 commit의 99_Tools/database/ 폴더 전체**를 별도 임시 위치에 꺼낸다. 예시는 별도 승인된 점검 시간에만 수행한다.
 
-Windows PowerShell 5.1/7 및 독립 재검토는 통과했다. Ubuntu 26.04 mirrored 모드에 Microsoft 공식 26.04 저장소의 `mssql-tools18`/`msodbcsql18` 18.7.1.1-1을 설치했다. 승인된 관리자 Enable 후 native WSL SQL 인증·최소권한·rollback 저장이 성공했다. 초기 TCP 실패 기록은 [초기 probe](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/wsl.txt), 최종 성공은 [native 인증 검사](../../01_Phases/goals/2026-09-29-mssql-setup/evidence/wsl-auth.txt)에 구분한다. **게임 서버 저장/재접속 복구는 미구현이며 Restore 실행 검증은 미실행**이다.
+~~~powershell
+# 역사 복구용 전체 checkout 예시; 현재 goal에서 실행하지 않는다.
+git worktree add --detach <임시 경로> cc20d428
+# 같은 Windows 계정의 관리자 PowerShell, 영향 확인·서비스 점검 시간 별도 승인 뒤:
+& '<임시 경로>\99_Tools\database\Configure-WslAccess.ps1' -Action Restore
+~~~
 
-## 기존 WSL 연결 및 관리자 복구 기록
+Restore는 기록된 원래 설정을 복구하고 SID가 맞는 신규 login만 비활성화하며 데이터·DB user·암호화된 복구 파일을 삭제하지 않는다. 다른 관리자가 값을 바꿨으면 덮어쓰지 않고 검토한다. 당시 Restore의 실제 실행 검증은 미실행이다. 옛 Windows 시험 DB의 장래 정리도 cc20d428 도구와 별도 승인을 사용한다.
 
-당시 이 PC는 사용자 승인 및 독립 검토 후 관리자 Enable까지 적용했다. 아래는 기존 도구의 구성·복구 기록이며 현재 저장 연동 시험환경의 실행 절차가 아니다. 기존 설정·credential을 새 목표에 재사용하거나 Enable·Restore·서비스 재시작을 이번 승인 범위로 해석하지 않는다. 다른 PC의 Enable이나 이 PC의 Restore에는 별도 영향 확인·점검 시간·관리자 실행 승인이 필요하다. 스크립트 자체가 UAC를 열지는 않는다. 당시 적용은 승인된 elevated PowerShell을 한 번 실행해 SQL 서비스를 재시작했으며, 복구 테스트만을 위한 추가 재시작은 하지 않았다.
-
-```powershell
-# 역사 기록: Plan은 설정과 정확한 변경 목록만 출력하는 읽기 전용 동작.
-./99_Tools/database/Configure-WslAccess.ps1 -Action Plan
-```
-
-적용된 변경 및 다른 PC에서의 승인 범위:
-
-1. `SQLEXPRESS`의 LoginMode를 Windows-only(1)에서 mixed(2)로 변경한다. 기존 로그인/암호를 교체하지 않는다.
-2. TCP Enabled=1, ListenOnAllIPs=0. 등록된 `127.0.0.1`과 `::1`만 Enabled=1, TcpPort=14330, TcpDynamicPorts=''로 바꾼다. 다른 IP는 비활성화한다. IPAll은 보존하고 ListenAll=0으로 무시된다. SQL Browser 및 방화벽 규칙은 변경하지 않는다.
-3. 난수 이름의 신규 SQL login과 `Dawnholder_Dev` user를 만들고, 세 게임 테이블에 SELECT/INSERT/UPDATE, SchemaVersion에는 SELECT만 부여한다. 삭제·DDL·db_owner/sysadmin·다른 사용자 DB 권한은 부여하지 않는다.
-4. 같은 인스턴스를 쓰는 모든 DB에 잠깐 영향을 주는 SQL 서비스 재시작 1회가 필요하다. 다른 사용자 SQL 세션이 있으면 스크립트는 중단한다. 검사 직후 새 접속까지 막는 유지보수 모드는 아니므로 실행 전에 다른 도구/사용자의 SQL 작업을 중지해야 한다.
-5. `%LOCALAPPDATA%\Dawnholder\MssqlWsl-SQLEXPRESS`에 원래 레지스트리 값 및 신규 login SID를 `state.clixml`, 256비트 난수 기반 암호를 Windows DPAPI `credential.clixml`로 저장한다. 폴더 ACL은 실행 사용자와 SYSTEM으로 제한한다. 동일 PC/Windows 사용자만 복호화할 수 있다. 저장소에 복사하거나 암호를 출력하지 않는다. 기존 폴더가 있으면 자동 재적용/비밀 교체 대신 거부한다.
-
-```powershell
-# 역사 기록: 당시 별도 승인된 동일 Windows 계정의 관리자 Enable.
-./99_Tools/database/Configure-WslAccess.ps1 -Action Enable
-
-# 역사 기록: 같은 관리자 계정의 복구 경로. Restore 실행 검증은 미실행.
-./99_Tools/database/Configure-WslAccess.ps1 -Action Restore
-```
-
-Restore는 원래 설정을 복구하고 SID가 일치하는 신규 login만 비활성화한다. 데이터·DB user·암호화된 복구 파일은 삭제하지 않는다. 적용 후 다른 관리자가 바꾼 값이 있으면 덮어쓰지 않고 수동 검토를 요구한다. Enable 도중 실패해도 백업을 보존하므로 무조건 재실행하지 말고 Restore를 사용한다. SQL 서비스가 시작 실패한 경우에도 원래 레지스트리를 먼저 복구한 뒤 시작한다. 백업 경로 생성 직후 중단되어 state.clixml이 없다면 아직 SQL/레지스트리 변경 전이다. SQL 설정이 복구된 뒤에도 데이터와 이전 시도 기록은 보존하며 새 Enable은 별도 검토한다.
-
-당시 WSL Ubuntu에 native `mssql-tools18`의 `/opt/mssql-tools18/bin/sqlcmd`를 설치했다. 새 환경의 설치는 Ubuntu 버전에 맞는 [Microsoft 공식 절차](https://learn.microsoft.com/en-us/sql/linux/sql-server-linux-setup-tools)와 별도 승인 범위를 따른다. 당시 Ubuntu 26.04용 `packages-microsoft-prod.deb`로 서명된 저장소를 등록하고 `ACCEPT_EULA=Y apt-get install -y mssql-tools18`로 필요한 ODBC 의존성만 설치했으며 기존 패키지 upgrade는 하지 않았다. 기존 probe의 실행 환경은 Windows PowerShell **7**이었다.
-
-```powershell
-# 역사 기록: 당시 native WSL 인증·권한·rollback probe 진입점.
-./99_Tools/database/Test-WslAccess.ps1 -Distribution Ubuntu
-```
-
-이 probe는 DPAPI 비밀을 LF로 끝나는 stdin으로 Linux child에 전달하고, child 수명 동안만 SQLCMDPASSWORD 환경변수에 둔다. Windows CRLF를 쓰면 암호에 CR이 붙어 로그인 실패하므로 LF를 명시한다. 비밀을 명령 인자·콘솔·Linux 파일에 출력하지 않는다. localhost의 self-signed 개발 인증서를 신뢰하고 SQL 로그인/권한/rollback 저장을 검사한다. 실패하면 메시지와 포트 상태를 확인하되 방화벽 전체 공개나 LAN 바인딩 확대를 자동 수행하지 않는다. 프로브 성공은 native Linux ODBC 경로 검증이며 .NET GameServer의 저장 서비스 구현을 의미하지 않는다.
-
-## 기존 구성의 인계·서비스 기록
-
-당시 DB 구성·접속 인계는 [인계문](../../01_Phases/goals/2026-09-29-mssql-setup/handoff.md), 현재 작업·승인 범위는 [CURRENT](CURRENT.md)의 goal에서 확인한다. 당시 DB 엔진은 Windows 서비스이며 WSL에서 별도 서버 프로세스를 띄우지 않았다. 서비스 시작 유형은 기존 Manual을 유지했다. 아래는 당시 인계한 서비스/probe 경로이며 현재 G2 실행 명령이 아니다.
-
-```powershell
-Get-Service 'MSSQL$SQLEXPRESS'
-# 역사 기록: 중지 상태에서 별도 승인된 관리자 서비스 시작 경로.
-Start-Service 'MSSQL$SQLEXPRESS'
-./99_Tools/database/Test-WslAccess.ps1
-```
-
-설계 참고: [SQL application lock](https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-getapplock-transact-sql), [TCP ListenAll 및 고정 포트](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-a-server-to-listen-on-a-specific-tcp-port), [Windows Export-Clixml/DPAPI](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/export-clixml).
+역사 절의 나머지 명령도 현재 파일 경로를 실행하지 않는다: Plan/Enable/Restore는 위 cc20d428 Configure-WslAccess, native WSL probe(-Distribution Ubuntu)는 [cc20d428 Test-WslAccess](https://github.com/bass131/dawnholder-server/blob/cc20d428/99_Tools/database/Test-WslAccess.ps1), Install/Test-Database 및 Get-Service/Start-Service 인계는 [cc20d428 MSSQL 안내](https://github.com/bass131/dawnholder-server/blob/cc20d428/00_Document/operations/MSSQL.md)의 해당 예시를 따른다. 서비스의 Manual 설정, D:의 옛 DB, VHDX, registry와 DPAPI 자료는 그대로 보존한다.

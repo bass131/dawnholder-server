@@ -1,6 +1,7 @@
 ### ADR-005: MSSQL (SQL Server) + EF Core 10
 **날짜**: (Harness 셋업일) — **2026-05-11 EF Core 8 → 10 정합** — **2026-05-14 PostgreSQL → MSSQL 정정**
 **상태**: 채택됨 (v2)
+**2026-10-10 적용 범위 갱신**: 로컬 시험 DB의 실행 환경·Windows 통합 인증·「비밀번호 0개」 근거는 [ADR-035](ADR-035-sqlserver-container-tools.md)의 Linux 컨테이너·SQL 인증·DPAPI 두 비밀로 대체한다. SQL Server 선택과 아래 당시 이유는 역사로 보존한다.
 **결정**: 영속화 DB로 **Microsoft SQL Server**(개발 환경 = LocalDB,
 인증 방식 = Windows 통합 인증), ORM은 Entity Framework Core 10.
 **이유**:

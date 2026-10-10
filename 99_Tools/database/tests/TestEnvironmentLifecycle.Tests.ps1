@@ -30,6 +30,7 @@ param(
 # Exit 3: a boundary was not shadowed. Exit 4: a path left the scenario root. The product did not run in both.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+$env:LOCALAPPDATA = Join-Path $ScenarioRoot 'profile'
 $scenario = [IO.File]::ReadAllText((Join-Path $ScenarioRoot 'scenario.json')) | ConvertFrom-Json
 $request = [IO.File]::ReadAllText((Join-Path $ScenarioRoot ($RunName + '.request.json'))) | ConvertFrom-Json
 $toolRoot = $scenario.ToolRoot
@@ -113,7 +114,7 @@ function global:Get-HarnessSqlKind {
         DropDatabase = "N'DROP DATABASE '"
         DropLogin = "N'DROP LOGIN '"
         CreateDatabase = "N'CREATE DATABASE '"
-        Preflight = ') LoginCount,'
+        Preflight = ') LoginCount;'
         InitializeMarkers = 'CREATE SCHEMA dh AUTHORIZATION dbo'
         DatabaseIdentity = 'sys.database_recovery_status r ON'
         ReadMarkers = "name IN (N'Dawnholder.DatabaseTool', N'Dawnholder.D1bGoal')"
@@ -151,39 +152,6 @@ function global:Assert-HarnessExecutor {
     Assert-TestEnvironmentExecutionApproval -Contract $Contract
 }
 
-function global:Assert-HarnessAccountAbsent {
-    param($Contract)
-    Write-HarnessCall -Name 'AccountAbsent' -Detail $Contract.RecoveryLocalName
-    if ($global:HarnessBehavior.AccountOccupied) {
-        throw 'Test environment Windows account name occupied; no adoption.'
-    }
-}
-
-function global:Get-HarnessLocalUser {
-    [CmdletBinding()]
-    param([string]$Name, $SID)
-    Write-HarnessCall -Name 'GetLocalUser' -Detail $Name
-    $users = @($global:HarnessBehavior.LocalUsers | Where-Object Name -CEQ $Name)
-    if ($users.Count -eq 1) {
-        return [pscustomobject]@{
-            Name = $Name
-            SID = [Security.Principal.SecurityIdentifier]::new($users[0].Sid)
-        }
-    }
-    $missing = [InvalidOperationException]::new("Offline harness: no fixture local user $Name.")
-    throw ([Management.Automation.ErrorRecord]::new(
-            $missing,
-            'UserNotFound',
-            [Management.Automation.ErrorCategory]::ObjectNotFound,
-            $Name))
-}
-
-function global:Remove-HarnessLocalUser {
-    [CmdletBinding()]
-    param($SID)
-    Write-HarnessCall -Name 'RemoveLocalUser' -Detail ([string]$SID.Value)
-}
-
 function global:Assert-HarnessSecretFile {
     param([string]$Path, [string]$ExpectedHash, $Manifest, $Contract)
     # Stands in for the ACL/owner/hash inspection of a credential file; it reads neither ACL nor content.
@@ -192,9 +160,18 @@ function global:Assert-HarnessSecretFile {
 }
 
 function global:Open-HarnessDatabase {
-    param($Manifest, [string]$Database, [switch]$Master, $Contract)
+    param($Manifest, [string]$Database, [switch]$Master, [switch]$RecordIdentity, $Contract)
     $catalog = $(if ($Master) { 'master' } else { $Database })
     Write-HarnessCall -Name 'Open' -Detail $catalog
+    if ($RecordIdentity -and $null -eq $Manifest.MasterFamilyGuid) {
+        $Manifest.MasterFamilyGuid = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+        $Manifest.Engine = [pscustomobject]@{
+            ProductVersion = '16.0.1000.6'
+            ServerCollation = 'Latin1_General_CI_AS'
+            OriginalLogin = 'sa'
+        }
+        Write-TestEnvironmentManifest -Contract $Contract -Manifest $Manifest
+    }
     # Returned unopened. No path under test opens it; an accidental Open could only reach a nonexistent
     # local shared-memory instance.
     $builder = [Data.SqlClient.SqlConnectionStringBuilder]::new()
@@ -341,7 +318,7 @@ function global:Invoke-HarnessSql {
             return 61
         }
         'LoginSid' {
-            return $null
+            return $behavior.LoginSid
         }
         { $_ -in @('ActiveSessions', 'BindingMismatch', 'BindingCount', 'UserTriggers', 'LedgerCount') } {
             return 0
@@ -361,9 +338,6 @@ function global:Stop-HarnessBoundary {
 $global:HarnessScenarioGuid = $scenario.DatabaseGuid
 $shadow = [ordered]@{
     'Assert-TestEnvironmentExecutor' = 'Assert-HarnessExecutor'
-    'Assert-TestEnvironmentLocalAccountAbsent' = 'Assert-HarnessAccountAbsent'
-    'Get-LocalUser' = 'Get-HarnessLocalUser'
-    'Remove-LocalUser' = 'Remove-HarnessLocalUser'
     'Open-TestEnvironmentDatabase' = 'Open-HarnessDatabase'
     'Invoke-DatabaseSql' = 'Invoke-HarnessSql'
     'Assert-TestEnvironmentSecretFile' = 'Stop-HarnessBoundary'
@@ -378,7 +352,13 @@ if ($request.Behavior.SecretFilesVerified) {
     $shadow['Assert-TestEnvironmentSecretFile'] = 'Assert-HarnessSecretFile'
 }
 $blocked = @(
-    'Open-LocalDatabase',
+    'docker',
+    'wsl',
+    'wsl.exe',
+    'Get-NetTCPConnection',
+    'Import-Clixml',
+    'Get-LocalUser',
+    'Remove-LocalUser',
     'Invoke-DbScalar',
     'Invoke-DbNonQuery',
     'New-LocalUser',
@@ -428,7 +408,7 @@ $paths = @(
     $contract.IdentityDirectory,
     $contract.IdentityPath,
     $contract.RuntimeCredentialPath,
-    $contract.RecoveryCredentialPath,
+    $contract.AdminCredentialPath,
     $scenario.PlanPath
 )
 foreach ($key in @('ManifestPath', 'SettlementPath', 'ApprovalPlanPath')) {
@@ -474,38 +454,7 @@ Write-FixtureText -Path (Join-Path $script:SuiteRoot 'sql-exception-factory.ps1'
 
 function New-DraftPlanObject {
     param([Parameter(Mandatory)][string]$Root)
-    # Same fixture shape as EnvironmentGuards; every lifecycle path stays below this scenario root.
-    return [pscustomobject][ordered]@{
-        PlanVersion = 1
-        SchemaVersion = 1
-        ExecutionApproved = $false
-        Goal = 'offline-fixture'
-        GoalMarker = 'offline-fixture-marker'
-        G0 = 'fixture-g0'
-        G1 = 'fixture-g1'
-        G2 = ''
-        Machine = 'FIXTUREHOST'
-        Instance = '.\FIXTURE'
-        InstanceName = 'FIXTURE'
-        Endpoint = 'tcp:127.0.0.1,14330'
-        Database = $database
-        SlotId = 1
-        AccountId = '11111111-1111-1111-1111-111111111111'
-        CharacterId = '22222222-2222-2222-2222-222222222222'
-        RuntimeLogin = 'dh_fixture_runtime'
-        RecoveryPrincipal = 'FIXTUREHOST\dhrecovery'
-        RecoveryLocalName = 'dhrecovery'
-        ExecutorSid = $executorSid
-        Encrypt = $true
-        TrustServerCertificate = $true
-        ManifestPath = Join-Path $Root 'lifecycle\manifest.json'
-        SettlementPath = Join-Path $Root 'lifecycle\settlement.json'
-        PrivateDirectory = Join-Path $Root 'private'
-        IdentityDirectory = Join-Path $Root 'identity'
-        IdentityPath = Join-Path $Root 'identity\identity.json'
-        RuntimeCredentialPath = Join-Path $Root 'private\runtime.cred'
-        RecoveryCredentialPath = Join-Path $Root 'private\recovery.cred'
-    }
+    return New-OfflineContainerPlan -Root $Root -Database $database
 }
 
 function New-LifecycleScenario {
@@ -524,9 +473,8 @@ function New-LifecycleScenario {
         ManifestPath = $plan.ManifestPath
         SettlementPath = $plan.SettlementPath
         GoalMarker = $plan.GoalMarker
-        RecoveryLocalName = $plan.RecoveryLocalName
         RuntimeCredentialPath = $plan.RuntimeCredentialPath
-        RecoveryCredentialPath = $plan.RecoveryCredentialPath
+        AdminCredentialPath = $plan.AdminCredentialPath
         RunCount = 0
     }
     $definition = [pscustomobject]@{
@@ -571,7 +519,7 @@ function Invoke-LifecycleRun {
     $effective = [ordered]@{
         PreflightDatabaseCount = 0
         PreflightLoginCount = 0
-        AccountOccupied = $false
+        LoginSid = $null
         FailSql = ''
         FailMessage = ''
         FailInnerMessage = ''
@@ -581,7 +529,6 @@ function Invoke-LifecycleRun {
         MigrationSqlNumber = 0
         SecretFilesVerified = $false
         SchemaRows = @()
-        LocalUsers = @()
     }
     foreach ($key in $Behavior.Keys) {
         $effective[$key] = $Behavior[$key]
@@ -809,8 +756,8 @@ $createAt = [Array]::IndexOf($names, 'Sql.CreateDatabase')
 Assert-True -Name 'executor gate precedes the first connection of Create' -Condition (
     [Array]::IndexOf($names, 'Executor') -ge 0 -and
     [Array]::IndexOf($names, 'Executor') -lt [Array]::IndexOf($names, 'Open')) -Detail (Format-RunDetail -Run $create)
-Assert-True -Name 'Create proves the exact Windows account and SQL names absent before CREATE DATABASE' -Condition (
-    $createAt -gt 0 -and [Array]::IndexOf($names, 'AccountAbsent') -in 0..($createAt - 1) -and
+Assert-True -Name 'Create proves the exact SQL names absent without Windows account calls before CREATE DATABASE' -Condition (
+    $createAt -gt 0 -and @($names | Where-Object { $_ -match 'LocalUser|AccountAbsent' }).Count -eq 0 -and
     [Array]::IndexOf($names, 'Sql.Preflight') -in 0..($createAt - 1)) -Detail (Format-RunDetail -Run $create)
 $journal = Get-JournalAt -Run $create -Name 'Sql.CreateDatabase'
 Assert-True -Name 'CREATE DATABASE is issued only after its one-time step is journaled Pending' -Condition (
@@ -898,8 +845,7 @@ $null = Invoke-LifecycleRun -Scenario $occupied -Arguments @{ Action = 'Plan' }
 $takenDatabase = $null
 foreach ($case in @(
         @{ Name = 'database name'; Behavior = @{ PreflightDatabaseCount = 1 } },
-        @{ Name = 'SQL login name'; Behavior = @{ PreflightLoginCount = 1 } },
-        @{ Name = 'Windows account name'; Behavior = @{ AccountOccupied = $true } }
+        @{ Name = 'SQL login name'; Behavior = @{ PreflightLoginCount = 1 } }
     )) {
     $before = Get-ManifestState -Scenario $occupied
     $run = Invoke-LifecycleRun -Scenario $occupied -Arguments @{ Action = 'Create' } -Behavior $case.Behavior
@@ -1073,26 +1019,26 @@ foreach ($case in @(
         $refusalMessage -cmatch $refusedAtLockGate) -Detail $refusalMessage
 }
 
-# ---- Cleanup: OnlinePreview changes nothing; Execute needs exact confirmation, reviewed hash and elevation.
+# ---- Cleanup: OnlinePreview changes nothing; Execute needs exact confirmation, reviewed hash and executor SID.
 $cleanup = New-LifecycleScenario -Name 'cleanup'
 $null = Invoke-LifecycleRun -Scenario $cleanup -Arguments @{ Action = 'Plan' }
 $null = Invoke-LifecycleRun -Scenario $cleanup -Arguments @{ Action = 'Create' }
 $cleanupReady = Test-CreatedWithIdentity -Scenario $cleanup
-# Principal fields as Set-TestPrincipals records them before a later login step fails: two credential files
-# (placeholders, no secret) and the new Windows account. Cleanup must remove exactly these recorded resources.
+# Recorded runtime identity and two credential placeholders. Cleanup must remove exactly these resources,
+# with DB and runtime login deletion preceding file deletion; no Windows account belongs to this lifetime.
 [void][IO.Directory]::CreateDirectory((Split-Path -Parent $cleanup.RuntimeCredentialPath))
 $manifest = Read-LifecycleManifest -Scenario $cleanup
-foreach ($kind in @('Runtime', 'Recovery')) {
+$manifest.RuntimeLoginSid = '0x01020304'
+foreach ($kind in @('Runtime', 'Admin')) {
     $credentialPath = $cleanup.($kind + 'CredentialPath')
     Write-FixtureText -Path $credentialPath -Text ('offline placeholder, not a credential: ' + $kind)
     $manifest.($kind + 'CredentialHash') = Get-FileHashHex -Path $credentialPath
 }
-$manifest.WindowsAccountSid = $recoveryAccountSid
 Write-FixtureText -Path $cleanup.ManifestPath -Text ($manifest | ConvertTo-Json -Depth 20)
 Write-CleanupSettlement -Scenario $cleanup
 $cleanupBehavior = @{
     SecretFilesVerified = $true
-    LocalUsers = @([pscustomobject]@{ Name = $cleanup.RecoveryLocalName; Sid = $recoveryAccountSid })
+    LoginSid = '0x01020304'
 }
 $reviewedHash = Get-FileHashHex -Path $cleanup.ManifestPath
 
@@ -1124,27 +1070,29 @@ $execute = Invoke-LifecycleRun -Scenario $cleanup -Entry Remove -Behavior $clean
     -Arguments (Get-RemoveArguments -Scenario $cleanup -Mode 'Execute')
 $names = @(Get-CallNames -Run $execute)
 $elevated = @($execute.Calls | Where-Object { $_.Name -ceq 'Executor' -and $_.Detail -ceq 'Administrator=True' })
-Assert-True -Name 'cleanup Execute requires the elevated approved executor before its first connection' -Condition (
-    $elevated.Count -ge 1 -and [Array]::IndexOf($names, 'Executor') -lt [Array]::IndexOf($names, 'Open')) `
+Assert-True -Name 'cleanup Execute verifies the approved executor without elevation before its first connection' -Condition (
+    $elevated.Count -eq 0 -and [Array]::IndexOf($names, 'Executor') -lt [Array]::IndexOf($names, 'Open')) `
     -Detail (Format-RunDetail -Run $execute)
 $journal = Get-JournalAt -Run $execute -Name 'Sql.DropDatabase'
 Assert-True -Name 'DROP DATABASE is issued only after CleanupStarted and its Pending cleanup step are journaled' `
     -Condition ($journal -cmatch '^State=CleanupStarted;' -and $journal -cmatch 'Cleanup\.DropDatabase:Pending$') `
     -Detail $journal
 $lookups = @(Find-Calls -Run $execute -Pattern '^GetLocalUser$' | ForEach-Object { [string]$_.Detail })
-Assert-True -Name 'cleanup looks up the Windows account only by the reviewed plan RecoveryLocalName' -Condition (
-    $lookups.Count -ge 2 -and @($lookups | Where-Object { $_ -cne $cleanup.RecoveryLocalName }).Count -eq 0) `
+Assert-True -Name 'cleanup never looks up a Windows account' -Condition (
+    $lookups.Count -eq 0) `
     -Detail ('lookups=' + ($lookups -join ',') + '; ' + (Format-RunDetail -Run $execute))
 $manifest = Read-LifecycleManifest -Scenario $cleanup
 $removed = @(Find-Calls -Run $execute -Pattern '^RemoveLocalUser$')
-Assert-True -Name 'cleanup removes the recorded account by its SID and the recorded credentials, then records Removed' `
-    -Condition ($execute.Completed -and -not $execute.Threw -and $removed.Count -eq 1 -and
-    [string]$removed[0].Detail -ceq $recoveryAccountSid -and $manifest.State -ceq 'Removed' -and
+Assert-True -Name 'cleanup removes runtime and admin credentials without Windows accounts, then records Removed' `
+    -Condition ($execute.Completed -and -not $execute.Threw -and $removed.Count -eq 0 -and $manifest.State -ceq 'Removed' -and
     $null -ne $manifest.Cleanup -and $manifest.Cleanup.State -ceq 'Done' -and
     -not [IO.File]::Exists($cleanup.RuntimeCredentialPath) -and
-    -not [IO.File]::Exists($cleanup.RecoveryCredentialPath)) `
+    -not [IO.File]::Exists($cleanup.AdminCredentialPath)) `
     -Detail ('cleanup=' + ($manifest.Cleanup | ConvertTo-Json -Compress -Depth 5) + '; ' +
     (Format-RunDetail -Run $execute))
+Assert-Equal -Name 'cleanup journal orders DB then runtime login then runtime and admin credential deletion' `
+    -Expected 'DropDatabase,DropRuntimeLogin,RemoveRuntimeCredential,RemoveAdminCredential' `
+    -Actual ($manifest.Cleanup.Steps.Name -join ',')
 
 # ---- A failed DROP is journaled as a partial cleanup and blocks automatic retry and later lifecycle steps.
 $dropFailure = New-LifecycleScenario -Name 'cleanup-drop-failure'
@@ -1200,8 +1148,8 @@ $literalLookups = @(foreach ($lookup in $accountLookups) {
             }
         }
     })
-Assert-True -Name 'structure: cleanup looks up Windows accounts by the reviewed plan value, never a name literal' `
-    -Condition ($removeErrors.Count -eq 0 -and $accountLookups.Count -ge 2 -and $literalLookups.Count -eq 0) `
+Assert-True -Name 'structure: cleanup has no Windows account lookup call' `
+    -Condition ($removeErrors.Count -eq 0 -and $accountLookups.Count -eq 0 -and $literalLookups.Count -eq 0) `
     -Detail ('lookups=' + $accountLookups.Count + '; literals=' + ($literalLookups -join ', '))
 
 # ---- The lifecycle connection settings, built by the product statements themselves without the following Open().
@@ -1218,7 +1166,8 @@ $openAst = $commonAst.Find({
     }, $true)
 $builderStatements = @()
 if ($null -ne $openAst) {
-    $builderStatements = @($openAst.Body.EndBlock.Statements | Where-Object { $_.Extent.Text -cmatch '^\$builder\b' })
+    $builderStatements = @($openAst.FindAll({ param($node) $node -is [Management.Automation.Language.AssignmentStatementAst] -and
+                $node.Left.Extent.Text -cmatch '^\$builder\b' }, $true))
 }
 $builderCreation = '^\$builder = \[Data\.SqlClient\.SqlConnectionStringBuilder\]::new\(\)$'
 Assert-True -Name 'the lifecycle connection builder statements are located in Open-TestEnvironmentDatabase' -Condition (
@@ -1230,7 +1179,7 @@ $builderLines = @('param($Manifest, [switch]$Master, [string]$Database)') +
 @($builderStatements | ForEach-Object { $_.Extent.Text }) + @('return , $builder')
 $builderBlock = [scriptblock]::Create($builderLines -join "`n")
 $builderArguments = @{
-    Manifest = [pscustomobject]@{ Instance = '.\FIXTURE' }
+    Manifest = [pscustomobject]@{ Endpoint = 'tcp:127.0.0.1,14330'; ConnectTimeoutSeconds = 7 }
     Master = $true
     Database = $database
 }
@@ -1238,12 +1187,15 @@ $script:builtSettings = $null
 $builderMessage = Get-ThrownMessage -Action { $script:builtSettings = & $builderBlock @builderArguments }
 Assert-True -Name 'the product statements build the lifecycle connection settings in this PowerShell host' `
     -Condition ($null -eq $builderMessage -and $null -ne $script:builtSettings) -Detail ([string]$builderMessage)
-# G1: exact local shared-memory instance, Windows authentication, mandatory encryption with the fixture-only
-# certificate trust; no pooling so the session-owned creation lock ends with the connection.
+# Container v2: exact loopback endpoint, SQL credential, mandatory encryption with local certificate trust;
+# no pooling so the session-owned creation lock ends with the connection, and no automatic reconnect.
 $expectedSettings = [ordered]@{
-    'Data Source' = 'lpc:.\FIXTURE'
+    'Data Source' = 'tcp:127.0.0.1,14330'
     'Initial Catalog' = 'master'
-    'Integrated Security' = 'True'
+    'Integrated Security' = 'False'
+    'Persist Security Info' = 'False'
+    'Connect Timeout' = '7'
+    'ConnectRetryCount' = '0'
     'Encrypt' = 'True'
     'TrustServerCertificate' = 'True'
     'Pooling' = 'False'
@@ -1254,7 +1206,7 @@ if ($null -ne $script:builtSettings) {
     $observedSettings = @($expectedSettings.Keys | ForEach-Object { $_ + '=' + [string]$parsed[$_] })
 }
 $expectedText = @($expectedSettings.Keys | ForEach-Object { $_ + '=' + $expectedSettings[$_] }) -join ';'
-Assert-Equal -Name 'the lifecycle connection targets the exact local instance with the reviewed security settings' `
+Assert-Equal -Name 'the lifecycle connection targets the exact container endpoint with the reviewed security settings' `
     -Expected $expectedText -Actual ($observedSettings -join ';')
 
 # ---- Journal writes: a later write replaces the manifest; a leftover pending write is preserved, never replaced.
@@ -1335,17 +1287,22 @@ function New-CleanupReadyScenario {
     return $scenario
 }
 
-# Create: the reason for an occupied exact name reaches the executor and no journal write is claimed.
+# Create: first capture records master identity, then collision stops before the CreateDatabase step.
+# The failure report distinguishes this earlier identity capture from a failure-journal write.
 $occupiedReport = New-LifecycleScenario -Name 'stop-report-occupied'
 $null = Invoke-LifecycleRun -Scenario $occupiedReport -Arguments @{ Action = 'Plan' }
 $plannedHash = Get-FileHashHex -Path $occupiedReport.ManifestPath
 $run = Invoke-LifecycleRun -Scenario $occupiedReport -Arguments @{ Action = 'Create' } `
     -Behavior @{ PreflightDatabaseCount = 1 }
-Assert-True -Name 'an occupied exact name is reported as a classified reason with no journal write claimed' `
+Assert-True -Name 'an occupied exact name preserves master capture without a creation or failure-journal write' `
     -Condition ($plannedHash -cne 'absent' -and $run.Completed -and $run.Threw -and
     $run.Message -cmatch '(?i)\boccupied\b' -and $run.Message -cnotmatch $unclassifiedReason -and
     $run.Message -cmatch $claimsNoJournalWrite -and $run.Message -cnotmatch $claimsJournalWritten -and
-    (Get-FileHashHex -Path $occupiedReport.ManifestPath) -ceq $plannedHash) `
+    (Get-FileHashHex -Path $occupiedReport.ManifestPath) -cne $plannedHash -and
+    (Read-LifecycleManifest -Scenario $occupiedReport).MasterFamilyGuid -ceq 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee' -and
+    (Read-LifecycleManifest -Scenario $occupiedReport).State -ceq 'Planned' -and
+    @((Read-LifecycleManifest -Scenario $occupiedReport).Steps).Count -eq 0 -and
+    @(Find-Calls -Run $run -Pattern '^Sql.CreateDatabase$').Count -eq 0) `
     -Detail (Format-RunDetail -Run $run)
 
 # Create: unsuppressed provider text and an inner exception, as an unknown failure could carry them.
@@ -1497,23 +1454,22 @@ Assert-True -Name 'a cleanup refused before deletion says so with a classified r
     @(Find-Calls -Run $run -Pattern '^(Sql\.Drop|RemoveLocalUser)').Count -eq 0) `
     -Detail ('ready=' + $ready + '; ' + (Format-RunDetail -Run $run))
 
-# Cleanup: the plan's account name now belongs to an account with another SID than the journal recorded.
+# Cleanup: the runtime login name now has another SID than the journal recorded.
 $sidChange = New-CleanupReadyScenario -Name 'cleanup-report-sid-change'
 $ready = Test-CreatedWithIdentity -Scenario $sidChange
 if ($ready) {
     $manifest = Read-LifecycleManifest -Scenario $sidChange
-    $manifest.WindowsAccountSid = $recoveryAccountSid
+    $manifest.RuntimeLoginSid = '0x01020304'
     Write-FixtureText -Path $sidChange.ManifestPath -Text ($manifest | ConvertTo-Json -Depth 20)
 }
 $reviewed = Get-FileHashHex -Path $sidChange.ManifestPath
-$otherAccount = @([pscustomobject]@{ Name = $sidChange.RecoveryLocalName; Sid = 'S-1-5-21-1-2-3-1999' })
-$run = Invoke-LifecycleRun -Scenario $sidChange -Entry Remove -Behavior @{ LocalUsers = $otherAccount } `
+$run = Invoke-LifecycleRun -Scenario $sidChange -Entry Remove -Behavior @{ LoginSid = '0x05060708' } `
     -Arguments (Get-RemoveArguments -Scenario $sidChange -Mode 'Execute')
-Assert-True -Name 'a recorded Windows account now holding another SID stops cleanup before any deletion' -Condition (
+Assert-True -Name 'a runtime login now holding another SID stops cleanup before any deletion' -Condition (
     $ready -and $run.Completed -and $run.Threw -and
     @(Find-Calls -Run $run -Pattern '^(Sql\.Drop|RemoveLocalUser)').Count -eq 0 -and
     (Get-FileHashHex -Path $sidChange.ManifestPath) -ceq $reviewed -and
-    $run.Message -cmatch '(?i)\bwindows account\b' -and $run.Message -cnotmatch $unclassifiedReason -and
+    $run.Message -cmatch '(?i)\bSQL login identity\b' -and $run.Message -cnotmatch $unclassifiedReason -and
     $run.Message -cmatch $claimsStoppedBeforeDeletion) -Detail ('ready=' + $ready + '; ' + (Format-RunDetail -Run $run))
 
 # Cleanup: the CleanupStarted journal write fails, before any deletion.
@@ -1562,112 +1518,17 @@ Assert-True -Name 'an attempted cleanup reported as recorded is Failed on disk w
     $dropManifest.Cleanup.State -ceq 'Failed' -and $dropSteps.Count -eq 1 -and $dropSteps[0].Status -ceq 'Failed') `
     -Detail (Format-RunDetail -Run $failedDrop)
 
-# ---- The real Assert-TestEnvironmentLocalAccountAbsent with only the OS Get-LocalUser cmdlet replaced. The harness
-# and Set-OfflineStubs replace this helper, so its own branches run here: the product file is dot-sourced again in a
-# child scope and a function in that scope shadows the cmdlet (functions win over cmdlets in command lookup). Both
-# resolutions are checked before the helper runs. No real account is looked up.
-$accountPlan = New-DraftPlanObject -Root (Join-Path $script:SuiteRoot 'local-account')
-$suiteFile = [IO.Path]::GetFullPath($PSCommandPath)
-
-function Invoke-RealLocalAccountAbsent {
-    param([Parameter(Mandatory)][ValidateSet('Exists', 'NotFound', 'LookupFailed')][string]$Lookup)
-    return & {
-        param($Plan, $LookupKind, $ProductFile, $StubFile)
-        . $ProductFile
-        $lookups = New-Object 'Collections.Generic.List[string]'
-        function Get-LocalUser {
-            [CmdletBinding()]
-            param([string]$Name)
-            # Like the OS cmdlet, a missing or unreadable account is a non-terminating error record.
-            $lookups.Add($Name)
-            if ($LookupKind -ceq 'Exists') {
-                return [pscustomobject]@{
-                    Name = $Name
-                    SID = [Security.Principal.SecurityIdentifier]::new('S-1-5-21-1-2-3-1005')
-                }
-            }
-            $notFound = $LookupKind -ceq 'NotFound'
-            $errorId = $(if ($notFound) { 'UserNotFound' } else { 'AccessDenied' })
-            $category = $(if ($notFound) { 'ObjectNotFound' } else { 'PermissionDenied' })
-            $PSCmdlet.WriteError([Management.Automation.ErrorRecord]::new(
-                    [InvalidOperationException]::new('Offline stub lookup result: ' + $errorId),
-                    $errorId,
-                    [Management.Automation.ErrorCategory]$category,
-                    $Name))
-        }
-        $stub = Get-Command -Name 'Get-LocalUser'
-        $helper = Get-Command -Name 'Assert-TestEnvironmentLocalAccountAbsent'
-        $stubFile = $(if ($stub.CommandType -eq 'Function') { [string]$stub.ScriptBlock.File } else { '' })
-        $helperFile = $(if ($helper.CommandType -eq 'Function') { [string]$helper.ScriptBlock.File } else { '' })
-        $resolved = [string]::Equals($stubFile, $StubFile, [StringComparison]::OrdinalIgnoreCase) -and
-        [string]::Equals($helperFile, $ProductFile, [StringComparison]::OrdinalIgnoreCase)
-        $failure = $null
-        if ($resolved) {
-            # The helper must stop on its own, not because the caller turned every error into a terminating one.
-            $ErrorActionPreference = 'Continue'
-            try {
-                Assert-TestEnvironmentLocalAccountAbsent -Contract $Plan
-            }
-            catch {
-                $failure = $_.Exception
-            }
-        }
-        [pscustomobject]@{
-            Resolved = $resolved
-            Resolution = 'Get-LocalUser=' + $stub.CommandType + ':' + $stubFile + ', helper=' + $helper.CommandType +
-            ':' + $helperFile
-            Failure = $failure
-            Lookups = @($lookups)
-        }
-    } $accountPlan $Lookup $commonFile $suiteFile
-}
-
-function Format-AccountCase {
-    param([Parameter(Mandatory)]$Case)
-    $message = $(if ($null -ne $Case.Failure) { $Case.Failure.Message } else { 'none' })
-    return ('resolved={0}; lookups={1}; failure=<{2}>' -f $Case.Resolved, (@($Case.Lookups) -join ','), $message)
-}
-
-$accountCases = [ordered]@{}
-foreach ($lookup in @('Exists', 'NotFound', 'LookupFailed')) {
-    $accountCases[$lookup] = Invoke-RealLocalAccountAbsent -Lookup $lookup
-}
-$resolutions = @($accountCases.Keys | ForEach-Object { $_ + ': ' + $accountCases[$_].Resolution })
-$unresolved = @($accountCases.Values | Where-Object { -not $_.Resolved })
-Assert-True -Name 'the real account-absence helper and the Get-LocalUser stub resolve as intended before any call' `
-    -Condition ($unresolved.Count -eq 0) -Detail ($resolutions -join '; ')
-$exists = $accountCases['Exists']
-$notFound = $accountCases['NotFound']
-$lookupFailed = $accountCases['LookupFailed']
-Assert-True -Name 'an existing exact Windows account name stops the real helper as occupied' -Condition (
-    $exists.Resolved -and $null -ne $exists.Failure -and $exists.Failure.Message -cmatch '(?i)\boccupied\b' -and
-    @($exists.Lookups).Count -eq 1 -and @($exists.Lookups)[0] -ceq $accountPlan.RecoveryLocalName) `
-    -Detail (Format-AccountCase -Case $exists)
-Assert-True -Name 'an exact UserNotFound lookup proves the account name absent in the real helper' -Condition (
-    $notFound.Resolved -and $null -eq $notFound.Failure -and @($notFound.Lookups).Count -eq 1) `
-    -Detail (Format-AccountCase -Case $notFound)
-Assert-True -Name 'any other lookup error stops the real helper as unproven absence, not as occupied' -Condition (
-    $lookupFailed.Resolved -and $null -ne $lookupFailed.Failure -and @($lookupFailed.Lookups).Count -eq 1 -and
-    $lookupFailed.Failure.Message -cmatch '(?i)\babsent\b' -and
-    $lookupFailed.Failure.Message -cnotmatch '(?i)\boccupied\b') `
-    -Detail (Format-AccountCase -Case $lookupFailed)
-$occupiedSummary = ''
-$unprovenSummary = ''
-$extendedSummary = ''
-if ($null -ne $exists.Failure -and $null -ne $lookupFailed.Failure) {
-    $occupiedSummary = Get-TestEnvironmentFailureSummary -Exception $exists.Failure
-    $unprovenSummary = Get-TestEnvironmentFailureSummary -Exception $lookupFailed.Failure
-    $extended = [InvalidOperationException]::new($exists.Failure.Message + ' ' + $fakeSecret)
-    $extendedSummary = Get-TestEnvironmentFailureSummary -Exception $extended
-}
-Assert-True -Name 'both real account stop reasons reach the executor summary classified and distinct' -Condition (
-    $occupiedSummary -cmatch '(?i)\boccupied\b' -and $unprovenSummary -cmatch '(?i)\babsent\b' -and
-    $occupiedSummary -cnotmatch $unclassifiedReason -and $unprovenSummary -cnotmatch $unclassifiedReason) `
-    -Detail ('occupied=<' + $occupiedSummary + '>; unproven=<' + $unprovenSummary + '>')
+# Windows account creation, lookup, group membership and removal are blocked but have no product calls (R-5/R-10).
+$osCalls = @($commonAst.FindAll({ param($node)
+            $node -is [Management.Automation.Language.CommandAst] -and
+            $node.GetCommandName() -in @('New-LocalUser', 'Get-LocalUser', 'Remove-LocalUser', 'Get-LocalGroupMember')
+        }, $true))
+Assert-Equal -Name 'Windows account boundaries remain blocked but common helper calls are zero' -Expected 0 -Actual $osCalls.Count
+$known = [InvalidOperationException]::new('Container identity mismatch; preserve resources without adoption.')
+$extended = [InvalidOperationException]::new($known.Message + ' ' + $fakeSecret)
+$extendedSummary = Get-TestEnvironmentFailureSummary -Exception $extended
 Assert-True -Name 'a known stop reason extended with other text is not echoed to the executor' -Condition (
-    $extendedSummary -and -not $extendedSummary.Contains($fakeSecret) -and
-    $extendedSummary -cmatch $unclassifiedReason) `
-    -Detail $extendedSummary
+    -not $extendedSummary.Contains($fakeSecret) -and $extendedSummary -cmatch $unclassifiedReason)
 
 # ---- Independent re-verification of the last INSTALL-05/06 fix (task_dcc811b02548), contract v2 requirements 1 and 2:
 # a product-owned stop reason reaches the executor identifiable while unknown text stays suppressed, and a failed
@@ -1958,7 +1819,7 @@ function Invoke-RealReasonProducer {
         . $DatabaseFile
         $blockedHits = New-Object 'Collections.Generic.List[string]'
         # Defined after the product import, so these win in this scope; any call means the probe reached SQL I/O.
-        foreach ($name in @('Open-LocalDatabase', 'Invoke-DbScalar', 'Invoke-DbNonQuery')) {
+        foreach ($name in @('Open-TestEnvironmentDatabase', 'Invoke-DbScalar', 'Invoke-DbNonQuery')) {
             $stub = [scriptblock]::Create("`$blockedHits.Add('$name')`nthrow 'blocked $name'")
             Set-Item -Path ('Function:' + $name) -Value $stub
         }
@@ -1972,7 +1833,7 @@ function Invoke-RealReasonProducer {
         $resolved = [string]::Equals($definedIn, $ModuleFile, [StringComparison]::OrdinalIgnoreCase)
         $fullRoot = [IO.Path]::GetFullPath($Root)
         $contained = $fullRoot.StartsWith($SuiteRootPath + '\', [StringComparison]::OrdinalIgnoreCase)
-        $stubbed = @('Open-LocalDatabase', 'Invoke-DbScalar', 'Invoke-DbNonQuery' | Where-Object {
+        $stubbed = @('Open-TestEnvironmentDatabase', 'Invoke-DbScalar', 'Invoke-DbNonQuery' | Where-Object {
                 [string](Get-Command -Name $_).ScriptBlock.File -ne ''
             }).Count -eq 0
         $failure = $null
@@ -2072,8 +1933,8 @@ $interpolatedPairs = [ordered]@{
     'plan field differs' = @{
         Messages = @(
             'Lifecycle manifest differs from the independently supplied approval plan: ApprovalPlanHash.',
-            'Lifecycle manifest differs from the independently supplied approval plan: RecoveryCredentialPath.')
-        Details = @('ApprovalPlanHash', 'RecoveryCredentialPath')
+            'Lifecycle manifest differs from the independently supplied approval plan: AdminCredentialPath.')
+        Details = @('ApprovalPlanHash', 'AdminCredentialPath')
     }
     'lifecycle field missing' = @{
         Messages = @('Missing lifecycle field: RuntimeCredentialHash.', 'Missing lifecycle field: MigrationManifest.')

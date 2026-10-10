@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory)][string]$WorkRoot
 )
 # Independent offline tests of the Test-Database.ps1 entry contract (TESTDB-01; user decision msg_6a82c1c724ad,
-# main scope msg_4bcc54fa9ef0): an explicit reviewed plan, exact Instance/Database and execution approval are
+# main scope msg_4bcc54fa9ef0): an explicit reviewed plan, exact Endpoint/Database and execution approval are
 # checked before any SQL connection object exists; all six Complete runner calls receive that one reader-produced
 # Contract; and the two migration rejection patterns accept only the current runner throws.
 # 1. Static checks read the script AST, so a reverted call argument or a widened pattern fails here again.
@@ -19,7 +19,7 @@ Set-OfflineStubs
 
 $testDatabasePath = [IO.Path]::GetFullPath((Join-Path $script:ToolRoot 'Test-Database.ps1'))
 $fixtureDatabase = 'Dawnholder_Dev_Fixture'
-$fixtureInstance = '.\FIXTURE'
+$fixtureEndpoint = 'tcp:127.0.0.1,14330'
 $parseTokens = $null
 $parseErrors = $null
 $scriptAst = [Management.Automation.Language.Parser]::ParseFile($testDatabasePath, [ref]$parseTokens,
@@ -102,12 +102,12 @@ Assert-Equal -Name 'Test-Database.ps1 parses without errors' -Expected 0 -Actual
 
 $parameters = @($(if ($null -ne $scriptAst.ParamBlock) { $scriptAst.ParamBlock.Parameters }))
 $parameterNames = @($parameters | ForEach-Object { $_.Name.VariablePath.UserPath })
-$requiredInputs = @('Instance', 'Database', 'ApprovalPlanPath', 'ExpectedApprovalPlanHash')
+$requiredInputs = @('Endpoint', 'Database', 'ApprovalPlanPath', 'ExpectedApprovalPlanHash')
 $missingInputs = @($requiredInputs | Where-Object { $_ -notin $parameterNames })
 $defaulted = @($parameters | Where-Object { $null -ne $_.DefaultValue } | ForEach-Object {
         $_.Name.VariablePath.UserPath + '=' + $_.DefaultValue.Extent.Text
     })
-Assert-True -Name 'entry takes explicit Instance/Database and reviewed plan path/hash with no default value' `
+Assert-True -Name 'entry takes explicit Endpoint/Database and reviewed plan path/hash with no default value' `
     -Condition ($missingInputs.Count -eq 0 -and $defaulted.Count -eq 0) `
     -Detail ('parameters=' + ($parameterNames -join ',') + '; missing=' + ($missingInputs -join ',') +
     '; defaults=' + ($defaulted -join ' | '))
@@ -121,7 +121,7 @@ $environmentReads = @(Find-Ast -Root $scriptAst -Predicate {
         ($node -is [Management.Automation.Language.InvokeMemberExpressionAst] -and
         $node.Member.Extent.Text -ieq 'GetEnvironmentVariable')
     } | ForEach-Object { $_.Extent.StartLineNumber.ToString() + ':' + $_.Extent.Text })
-Assert-True -Name 'Test-Database.ps1 reads no environment value (no instance/database fallback)' `
+Assert-True -Name 'Test-Database.ps1 reads no environment value (no endpoint/database fallback)' `
     -Condition ($environmentReads.Count -eq 0) -Detail ($environmentReads -join ' | ')
 
 $contractAssignments = @(Find-Ast -Root $scriptAst -Predicate {
@@ -198,14 +198,14 @@ $targetChecks = @(Get-CommandCalls -Root $scriptAst -Name 'Assert-TestEnvironmen
         $binding.Positional.Count -eq 0 -and
         (Test-VariableArgument -Argument $binding.Named['Contract'] -Name 'Contract') -and
         (Test-VariableArgument -Argument $binding.Named['Database'] -Name 'Database') -and
-        (Test-VariableArgument -Argument $binding.Named['Instance'] -Name 'Instance')
+        (Test-VariableArgument -Argument $binding.Named['Endpoint'] -Name 'Endpoint')
     })
 $approvalChecks = @(Get-CommandCalls -Root $scriptAst -Name 'Assert-TestEnvironmentExecutionApproval' | Where-Object {
         $binding = Get-CommandArguments -Command $_
         $binding.Positional.Count -eq 0 -and
         (Test-VariableArgument -Argument $binding.Named['Contract'] -Name 'Contract')
     })
-$connectionStatements = @(Get-CommandCalls -Root $scriptAst -Name 'Open-LocalDatabase' | ForEach-Object {
+$connectionStatements = @(Get-CommandCalls -Root $scriptAst -Name 'Open-TestEnvironmentDatabase' | ForEach-Object {
         Get-TopLevelIndex -Node $_
     } | Sort-Object)
 $firstConnection = $(if ($connectionStatements.Count) { $connectionStatements[0] } else { -1 })
@@ -216,7 +216,7 @@ $gateIndexes = @(
 )
 $lateGates = @($gateIndexes | Where-Object { $_ -lt 0 -or $_ -ge $firstConnection })
 $gatesFirst = $firstConnection -ge 0 -and $lateGates.Count -eq 0
-Assert-True -Name 'reader, exact target (with Instance) and execution approval run before any Open-LocalDatabase' `
+Assert-True -Name 'reader, exact target (with Endpoint) and execution approval run before any Open-TestEnvironmentDatabase' `
     -Condition $gatesFirst `
     -Detail ('gateStatements=' + ($gateIndexes -join ',') + '; firstConnectionStatement=' + $firstConnection +
     '; targetChecks=' + $targetChecks.Count + '; approvalChecks=' + $approvalChecks.Count)
@@ -300,7 +300,7 @@ $assertRejected = $scriptAst.Find({
     }, $true)
 $script:FixtureContract = [pscustomobject]@{
     Database = $fixtureDatabase
-    Instance = $fixtureInstance
+    Endpoint = $fixtureEndpoint
     ExecutionApproved = $true
     G2 = 'in-memory offline fixture; not an approval record'
 }
@@ -462,8 +462,9 @@ Assert-True -Name 'no pattern accepts the other rejection, Contract gate, lock S
 # New-Object, Activator, Add-Type, Invoke-Expression or an unknown dynamic call stop the runs before the product runs.
 $blockedFunctions = @(
     'Invoke-DbScalar', 'Invoke-DbNonQuery', 'Invoke-Migrations', 'Assert-DatabaseOwner', 'Invoke-DatabaseSql',
-    'Open-TestEnvironmentDatabase', 'Start-Process', 'Invoke-Expression', 'Invoke-Command', 'Add-Type',
-    'Get-LocalUser', 'New-LocalUser', 'Remove-LocalUser', 'Get-Acl', 'Set-Acl'
+    'Start-Process', 'Invoke-Expression', 'Invoke-Command', 'Add-Type',
+    'Get-LocalUser', 'New-LocalUser', 'Remove-LocalUser', 'Get-Acl', 'Set-Acl',
+    'docker', 'wsl', 'wsl.exe', 'Get-NetTCPConnection'
 )
 function Get-DotSourcedFiles {
     param([Parameter(Mandatory)][string]$Entry)
@@ -592,6 +593,7 @@ param(
 # (text only, it opens nothing) is created by the qualified cmdlet, and every other type is refused. SQL, identity,
 # ACL and process functions are refused. Exit 3: a shadow did not resolve, so the product was not started.
 $ErrorActionPreference = 'Stop'
+$env:LOCALAPPDATA = Join-Path $CaseRoot 'profile'
 $request = [IO.File]::ReadAllText((Join-Path $CaseRoot 'request.json')) | ConvertFrom-Json
 $global:HarnessEventsPath = Join-Path $CaseRoot 'events.jsonl'
 $global:HarnessSentinel = 'Offline harness stopped before creating the first SqlConnection.'
@@ -626,7 +628,37 @@ function global:Stop-HarnessBoundary {
     throw ('Offline harness blocked ' + $MyInvocation.InvocationName + '; it must not run.')
 }
 
-$shadow = [ordered]@{ 'New-Object' = 'New-HarnessObject' }
+function global:Read-HarnessManifest {
+    param($Contract, [string]$Database, [string]$ManifestPath)
+    $manifest = New-TestEnvironmentManifest -Contract $Contract -Database $Database
+    $manifest.MasterFamilyGuid = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+    $manifest.AdminCredentialHash = 'A' * 64
+    return $manifest
+}
+function global:Assert-HarnessExecutor {
+    param($Contract)
+    Assert-TestEnvironmentExecutionApproval -Contract $Contract
+}
+function global:Assert-HarnessSecret {
+    param($Contract, $Manifest, $Path, $ExpectedHash)
+    if ($Path -cne $Contract.AdminCredentialPath -or $ExpectedHash -cne ('A' * 64)) {
+        throw 'Offline harness credential identity mismatch.'
+    }
+}
+function global:Import-HarnessCredential {
+    param([string]$LiteralPath)
+    $secret = [Security.SecureString]::new()
+    $secret.AppendChar('x')
+    $secret.MakeReadOnly()
+    return [Management.Automation.PSCredential]::new('sa', $secret)
+}
+$shadow = [ordered]@{
+    'New-Object' = 'New-HarnessObject'
+    'Read-TestEnvironmentManifest' = 'Read-HarnessManifest'
+    'Assert-TestEnvironmentExecutor' = 'Assert-HarnessExecutor'
+    'Assert-TestEnvironmentSecretFile' = 'Assert-HarnessSecret'
+    'Import-Clixml' = 'Import-HarnessCredential'
+}
 foreach ($name in $request.Blocked) {
     $shadow[$name] = 'Stop-HarnessBoundary'
 }
@@ -686,37 +718,7 @@ function New-PlanFile {
     param([Parameter(Mandatory)][string]$Root, [bool]$Approved, [string]$G2)
     # Offline sample of the reviewed plan shape (as in EnvironmentGuards/Lifecycle). It is not an approval record;
     # every path stays below this case root.
-    $plan = [pscustomobject][ordered]@{
-        PlanVersion = 1
-        SchemaVersion = 1
-        ExecutionApproved = $Approved
-        Goal = 'offline-fixture'
-        GoalMarker = 'offline-fixture-marker'
-        G0 = 'fixture-g0'
-        G1 = 'fixture-g1'
-        G2 = $G2
-        Machine = 'FIXTUREHOST'
-        Instance = $fixtureInstance
-        InstanceName = 'FIXTURE'
-        Endpoint = 'tcp:127.0.0.1,14330'
-        Database = $fixtureDatabase
-        SlotId = 1
-        AccountId = '11111111-1111-1111-1111-111111111111'
-        CharacterId = '22222222-2222-2222-2222-222222222222'
-        RuntimeLogin = 'dh_fixture_runtime'
-        RecoveryPrincipal = 'FIXTUREHOST\dhrecovery'
-        RecoveryLocalName = 'dhrecovery'
-        ExecutorSid = 'S-1-5-21-1-2-3-1001'
-        Encrypt = $true
-        TrustServerCertificate = $true
-        ManifestPath = Join-Path $Root 'lifecycle\manifest.json'
-        SettlementPath = Join-Path $Root 'lifecycle\settlement.json'
-        PrivateDirectory = Join-Path $Root 'private'
-        IdentityDirectory = Join-Path $Root 'identity'
-        IdentityPath = Join-Path $Root 'identity\identity.json'
-        RuntimeCredentialPath = Join-Path $Root 'private\runtime.cred'
-        RecoveryCredentialPath = Join-Path $Root 'private\recovery.cred'
-    }
+    $plan = New-OfflineContainerPlan -Root $Root -Database $fixtureDatabase -Approved $Approved -G2 $G2
     $path = Join-Path $Root 'reviewed-plan.json'
     $bytes = (New-Object Text.UTF8Encoding($false)).GetBytes(($plan | ConvertTo-Json -Depth 5))
     [IO.File]::WriteAllBytes($path, $bytes)
@@ -779,111 +781,111 @@ function Format-EntryRun {
 # the message identifies which gate stopped the run so an unrelated earlier failure cannot pass a refusal case.
 $planInputRefused = 'Supply the absolute nonsecret plan path and separately coordinator-reviewed SHA256.'
 $planChanged = 'Approval plan changed after coordinator review.'
-$targetRefused = 'Supply the explicit exact approved database and local instance; no fallback.'
+$targetRefused = 'Supply the explicit exact approved database and container endpoint; no fallback.'
 $draftRefused = 'Draft plan cannot execute. Coordinator must review actual G2 approval and deliver its exact plan hash.'
 $g2Missing = 'Execution needs the separately reviewed G2 record.'
 $refusals = @(
     @{ Name = 'no-arguments'; Expected = $planInputRefused; Arguments = { param($p) @{} } },
     @{ Name = 'missing-plan-path'; Expected = $planInputRefused; Arguments = {
-            param($p) @{ ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance; Database = $fixtureDatabase }
+            param($p) @{ ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint; Database = $fixtureDatabase }
         }
     },
     @{ Name = 'relative-plan-path'; Expected = $planInputRefused; Arguments = {
             param($p) @{
                 ApprovalPlanPath = 'reviewed-plan.json'; ExpectedApprovalPlanHash = $p.Hash
-                Instance = $fixtureInstance; Database = $fixtureDatabase
+                Endpoint = $fixtureEndpoint; Database = $fixtureDatabase
             }
         }
     },
     @{ Name = 'blank-plan-path'; Expected = $planInputRefused; Arguments = {
             param($p) @{
-                ApprovalPlanPath = '   '; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance
+                ApprovalPlanPath = '   '; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint
                 Database = $fixtureDatabase
             }
         }
     },
     @{ Name = 'missing-hash'; Expected = $planInputRefused; Arguments = {
-            param($p) @{ ApprovalPlanPath = $p.Path; Instance = $fixtureInstance; Database = $fixtureDatabase }
+            param($p) @{ ApprovalPlanPath = $p.Path; Endpoint = $fixtureEndpoint; Database = $fixtureDatabase }
         }
     },
     @{ Name = 'lowercase-hash'; Expected = $planInputRefused; Arguments = {
             param($p) @{
                 ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash.ToLowerInvariant()
-                Instance = $fixtureInstance; Database = $fixtureDatabase
+                Endpoint = $fixtureEndpoint; Database = $fixtureDatabase
             }
         }
     },
     @{ Name = 'other-hash'; Expected = $planChanged; Arguments = {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = ('A' * 64); Instance = $fixtureInstance
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = ('A' * 64); Endpoint = $fixtureEndpoint
                 Database = $fixtureDatabase
             }
         }
     },
     @{ Name = 'draft-plan'; Plan = 'Draft'; Expected = $draftRefused; Arguments = {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint
                 Database = $fixtureDatabase
             }
         }
     },
     @{ Name = 'approved-without-g2'; Plan = 'ApprovedWithoutG2'; Expected = $g2Missing; Arguments = {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint
                 Database = $fixtureDatabase
             }
         }
     },
-    @{ Name = 'missing-instance'; Expected = $targetRefused; Arguments = {
+    @{ Name = 'missing-endpoint'; Expected = $targetRefused; Arguments = {
             param($p) @{ ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Database = $fixtureDatabase }
         }
     },
-    @{ Name = 'blank-instance'; Expected = $targetRefused; Arguments = {
+    @{ Name = 'blank-endpoint'; Expected = $targetRefused; Arguments = {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = '  '
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = '  '
                 Database = $fixtureDatabase
             }
         }
     },
-    @{ Name = 'other-instance'; Expected = $targetRefused; Arguments = {
+    @{ Name = 'other-endpoint'; Expected = $targetRefused; Arguments = {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = '.\OTHER'
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = 'tcp:127.0.0.1,14331'
                 Database = $fixtureDatabase
             }
         }
     },
     @{ Name = 'missing-database'; Expected = $targetRefused; Arguments = {
-            param($p) @{ ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance }
+            param($p) @{ ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint }
         }
     },
     @{ Name = 'other-database'; Expected = $targetRefused; Arguments = {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint
                 Database = 'Dawnholder_Dev_Other'
             }
         }
     },
     @{ Name = 'default-game-database'; Expected = $targetRefused; Arguments = {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint
                 Database = 'Dawnholder_Dev'
             }
         }
     },
     @{ Name = 'database-case-differs'; Expected = $targetRefused; Arguments = {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint
                 Database = $fixtureDatabase.ToLowerInvariant()
             }
         }
     },
     @{ Name = 'environment-target-only'; Expected = $targetRefused
-        Environment = @{ DAWNHOLDER_SQL_INSTANCE = $fixtureInstance; DAWNHOLDER_SQL_DATABASE = $fixtureDatabase }
+        Environment = @{ DAWNHOLDER_SQL_INSTANCE = $fixtureEndpoint; DAWNHOLDER_SQL_DATABASE = $fixtureDatabase }
         Arguments = { param($p) @{ ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash } }
     },
     # One explicit value with the other only in the environment: a fallback would complete the exact target.
-    @{ Name = 'instance-from-environment-only'; Expected = $targetRefused
-        Environment = @{ DAWNHOLDER_SQL_INSTANCE = $fixtureInstance }
+    @{ Name = 'endpoint-from-environment-only'; Expected = $targetRefused
+        Environment = @{ DAWNHOLDER_SQL_INSTANCE = $fixtureEndpoint }
         Arguments = {
             param($p) @{ ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Database = $fixtureDatabase }
         }
@@ -891,7 +893,7 @@ $refusals = @(
     @{ Name = 'database-from-environment-only'; Expected = $targetRefused
         Environment = @{ DAWNHOLDER_SQL_DATABASE = $fixtureDatabase }
         Arguments = {
-            param($p) @{ ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance }
+            param($p) @{ ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint }
         }
     }
 )
@@ -907,7 +909,7 @@ if ($inspection.Ready) {
             -Detail (Format-EntryRun -Run $run)
     }
 
-    $exactTarget = 'lpc:' + $fixtureInstance + '|' + $fixtureDatabase
+    $exactTarget = $fixtureEndpoint + '|' + $fixtureDatabase
     $preConnectionRefusals = @(
         'PASS: remote target rejected before connection',
         'PASS: existing unrelated database rejected before connection'
@@ -915,17 +917,17 @@ if ($inspection.Ready) {
     $approvedCases = @(
         @{ Name = 'approved-exact-input'; Environment = @{} },
         @{ Name = 'approved-input-with-other-environment'
-            Environment = @{ DAWNHOLDER_SQL_INSTANCE = '.\OTHER'; DAWNHOLDER_SQL_DATABASE = 'Dawnholder_Dev_Other' }
+            Environment = @{ DAWNHOLDER_SQL_INSTANCE = 'tcp:127.0.0.1,14331'; DAWNHOLDER_SQL_DATABASE = 'Dawnholder_Dev_Other' }
         }
     )
     foreach ($case in $approvedCases) {
         $run = Invoke-EntryCase -Name $case.Name -Environment $case.Environment -Arguments {
             param($p) @{
-                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Instance = $fixtureInstance
+                ApprovalPlanPath = $p.Path; ExpectedApprovalPlanHash = $p.Hash; Endpoint = $fixtureEndpoint
                 Database = $fixtureDatabase
             }
         }
-        Assert-True -Name ("$($case.Name) reaches the first SqlConnection only for the exact instance and database") `
+        Assert-True -Name ("$($case.Name) reaches the first SqlConnection only for the exact endpoint and database") `
             -Condition ($run.Completed -and $run.Threw -and $run.Message -ceq $harnessSentinel -and
             $run.Connections.Count -eq 1 -and $run.Connections[0] -ceq $exactTarget -and
             $run.Blocked.Count -eq 0 -and
