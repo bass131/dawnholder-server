@@ -8,9 +8,9 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - branch: 제품 branch `feat/instance-map-lifecycle-20261010`(base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`, PR220 병합 뒤)는 PR223으로 병합됐고 원격에서 지워졌다. 종료 기록은 최신 main `2492843e`에서 만든 `docs/instance-map-closeout-20261010`에서 한다. Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-instance-map-lifecycle/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/scope-draft-v2.md)(SHA256 `fc99c9eb…fde7a2`), 조사는 [instance-architecture-research.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/instance-architecture-research.md)(SHA256 `0d5a1bf9…918da`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-memo.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_8a825e57-3f6e-4b72-aa51-ceb3d847ca32`, Run `run_c21dddd08312`(회신 주소 `run:run_c21dddd08312`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: PR223이 병합됐다(2026-10-10T12:16:16Z, `2492843e`). 종료 Gardener를 마쳤고 사용자가 정리 후보 둘을 채택했다. 종료 기록 PR225의 첫 문서 실사가 정정 3건으로 통과하지 못해 리드가 고쳤다. 아래 「현재 결과」의 「종료 기록 문서 실사」 절이 마지막 결과다.
-- **남은 순서**: 고친 줄의 재실사 → PR225 병합 승인 → 종료 점검 → R-8.
-- **사용자 차례**: PR225의 병합 승인 줄이다(재실사 통과 뒤).
+- **현재 위치**: PR223이 병합됐다(2026-10-10T12:16:16Z, `2492843e`). 종료 Gardener를 마쳤고 사용자가 정리 후보 둘을 채택했다. 종료 기록 PR225의 첫 문서 실사(정정 3건)와 재실사(새 정정 1건)가 통과하지 못해 리드가 두 번 고쳤다. 아래 「현재 결과」의 「종료 기록 문서 실사」 절이 마지막 결과다.
+- **남은 순서**: 두 번째 수정의 세 번째 실사 → PR225 병합 승인 → 종료 점검 → R-8.
+- **사용자 차례**: PR225의 병합 승인 줄이다(실사 통과 뒤).
 - 다음 goal(다중 계정 로그인)은 이 goal이 끝난 뒤 따로 승인받는다. 자동으로 시작하지 않는다.
 
 ## 진척 단계
@@ -540,12 +540,27 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 - **DOC-01 PR 본문의 파일 수**: 본문이 「문서 두 개만 바꾼다」고 쓰고 goal·BACKLOG만 나열했다. 실제 PR은 `aca01bd7`의 CURRENT World 줄 변경까지 세 파일이다. 본문을 「문서 세 개」로 고치고 CURRENT 항목을 넣었다(로컬 E/`closeout/pr-body.md`와 PR 본문 모두).
 - **DOC-02 TEMP 자동 저장의 확인 수준**: 위 「종료 Gardener」 절이 411파일 전부를 기동 때 생긴 것으로 적었다. Gardener 원문은 그중 Node 캐시 401파일만 수정 시각으로 추론했다(보고 277·278행). 총수와 추론 범위를 나눠 고쳤다.
 - **DOC-03 메시지 시각**: BACKLOG `instance-map-startup-data-check` 출처의 `msg_4a578e26b5e7` 시각을 리드 진행 메모의 받은 시각(09:53:54Z)으로 적었다. 원문 created_at은 09:53:48Z다(E/`wait-24.out`). 원문 값으로 고쳤다.
-- **비차단 관찰 O-01·O-02**: 재개 지점의 「마지막 결과」 지칭이 뒤 절과 어긋났고(O-01), 「겹친 파일 없음」이 충돌 없음과 양쪽 변경 없음을 구분하지 않았다(O-02, 실제로는 CURRENT를 양쪽이 다른 줄에서 바꿈). 둘 다 같은 수정에서 고쳤다. 메인 보고 `msg_ff0919b67f0c`의 같은 표현은 다음 보고에서 바로잡는다.
+- **비차단 관찰 O-01·O-02**: 재개 지점의 「마지막 결과」 지칭이 뒤 절과 어긋났고(O-01), 「겹친 파일 없음」이 충돌 없음과 양쪽 변경 없음을 구분하지 않았다(O-02, 실제로는 CURRENT를 양쪽이 다른 줄에서 바꿈). 둘 다 같은 수정에서 고쳤다. 「겹친 파일 없음」은 이 goal의 「종료 기록 PR」 절과 PR 본문 v1에만 있었고, 메인 보고에는 없었다(아래 재실사 DOC-04).
 - **지적 없음**: BACKLOG 새 여섯 행의 7필드·상태, 기존 두 행의 원래 글 보존, CURRENT, 상대 링크 15건, 새 메시지 ID 16개(13개 원문, 다른 파트 셋은 메인 메시지 안 인용으로 표시됨), 후보 도착 검사 재실행(HEAD 97 ID·후보 6, merge-base 91 ID), 리드 메모와 commit 시각, Gardener 기록.
 - **검증자 자기 공개 SELF-01**: 판정 작성 중 heartbeat 간격이 5분을 넘었다(12:55:19Z 송신 명령 뒤 다음 송신 13:01:08Z). 13:01:08Z heartbeat(`msg_ce5ea619624a`)로 바로 공개했고 D1~D8 관측값에는 영향이 없다. 이 goal의 첫 기록이라 새 규칙은 만들지 않는다. 같은 부류의 검사는 PR224의 생존 신호 간격 도구가 맡는다.
 - **리드 R-2**(E/`closeout/lead-doc-audit-r2-sample.txt`): PR 본문 3행과 numstat 세 파일, goal 519행과 Gardener 보고 277·278행, BACKLOG 242행과 `wait-24.out`의 created_at, 합치기 양쪽의 CURRENT 변경을 직접 읽었다. 모두 판정과 같다.
 - **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true, 13:05:00Z). 화면 표시는 15분 36초다(E/`closeout/doc-audit-idle-before-close.json`).
-- 같은 산출물(PR225 문서)의 첫 수정이다. 고친 줄만 보는 재실사를 신규 세션에 맡긴다.
+- 같은 산출물(PR225 문서)의 첫 수정이다(`e72d63dc`, PR 본문 v2). 고친 줄만 보는 재실사를 신규 세션에 맡겼다.
+
+**재실사**
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_959202fefa7d` / `ctx_547171b1ae5a`, `[World 검증자]`(첫 실사와 다른 새 세션) |
+| 모델 | 지정 `gpt-6-astra` xhigh. 최초 실행 명령은 TEMP·TMP를 `.backups/tmp/a2`, `GIT_OPTIONAL_LOCKS=0`으로 정한 뒤 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`이고, 화면 표시는 「GPT-6-Astra xhigh · Full Access · never」다. backend 실제 모델은 unknown이다 |
+| 계약 | E/`closeout/doc-audit2-contract.md` SHA256 `56ee6c7902a623a7173c3ba25062a9abf63da5467a0f62fcdd5aa64261ae50ac`, 범위는 `d57f137f` → `e72d63dc`와 PR 본문 v1 → v2, 실사 항목 R1~R7 |
+| 판정 | E/`closeout/doc-audit2/verdict.md` SHA256 `a1be3b18b3386ff370179d52581d9d22e4acad2be3d05260ed45aa631a9f3a25`, worker_done `msg_2d967f912c91`(13:18:36Z). NOT PASS, DOC-01~DOC-03 해소, 새 차단 1 |
+
+- **DOC-04 메시지 내용 귀속**: 첫 수정이 위 O-01·O-02 줄에 「메인 보고 `msg_ff0919b67f0c`의 같은 표현은 다음 보고에서 바로잡는다」고 적었다. 그 메시지 원문(E/`closeout/main-closeout-pr-status-receipt.json`, 12:49:27Z)에는 「합쳤다」만 있고 「겹친 파일」이 없다. 잘못된 귀속은 리드 맥락 메모의 수정 계획에서 왔고, 메인에 보낸 경과 보고 `msg_c1929cbf259b`(13:09:19Z)도 같은 귀속을 반복했다. goal 문장을 실제 위치로 고쳤고, 메인 보고의 반복은 다음 메인 보고에서 바로잡는다.
+- **지적 없음**: PR 본문 v2와 실제 세 파일 목록, Gardener 절의 확인 수준, BACKLOG 시각, 재개 지점, 합치기 설명(CURRENT를 양쪽이 다른 줄에서 바꿈), 새 절의 첫 실사 기록, 고친 범위 밖 무변경, 후보 도착 검사 재실행(allowed, exit 0), 리드 메모 시각(13:05:15Z, commit 13:06:29Z). 첫 실사의 SELF-01은 과거 기록으로 유지했다.
+- **리드 R-2**(E/`closeout/lead-doc-audit2-r2-sample.txt`): `msg_ff0919b67f0c` 원문에 「겹친」이 없음과 `msg_c1929cbf259b`의 반복 문장, 「겹친 파일 없음」이 실제로 있던 두 곳(`d57f137f`의 goal 524행, PR 본문 v1 13행)을 직접 읽었다. 판정과 같다.
+- **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true, 13:19:04Z). 화면 표시는 9분 55초다(E/`closeout/doc-audit2-idle-before-close.json`).
+- 같은 산출물의 두 번째 수정이다. 고친 줄만 보는 세 번째 실사를 신규 세션에 맡긴다.
 
 ## 다음 계획 후보
 
