@@ -8,8 +8,8 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - branch: `feat/instance-map-lifecycle-20261010`, base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`(PR220 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-instance-map-lifecycle/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/scope-draft-v2.md)(SHA256 `fc99c9eb…fde7a2`), 조사는 [instance-architecture-research.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/instance-architecture-research.md)(SHA256 `0d5a1bf9…918da`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-memo.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_8a825e57-3f6e-4b72-aa51-ceb3d847ca32`, Run `run_c21dddd08312`(회신 주소 `run:run_c21dddd08312`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: R-7 Fable 설계 검토([goal-review.md](goal-review.md))와 goal 보완을 메인이 승인했다(`msg_56df80a3bd4f`). 신규 Opus 선행 시험 작성자를 연다.
-- **남은 순서**: 선행 시험(신규 Opus) → 구현(`gpt-6-astra` xhigh) → 독립 검증(신규 Opus) → 봇 두 파티 확인 → 제품 PR → 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **현재 위치**: 선행 시험이 끝났다. 새 시험 38건 중 지금 코드로 도는 18건은 14건이 요구 단정에서 실패하고 4건이 보호 시험으로 통과한다. 새 API를 부르는 20건은 컴파일 실패다. 아래 「선행 시험이 고정한 이름과 리드 판단」대로 구현자를 연다.
+- **남은 순서**: 구현(`gpt-6-astra` xhigh) → 독립 검증(신규 Opus) → 봇 두 파티 확인 → 제품 PR → 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **사용자 차례**: 지금은 없다. 제품 PR이 준비되면 병합 승인 줄이다.
 - 다음 goal(다중 계정 로그인)은 이 goal이 끝난 뒤 따로 승인받는다. 자동으로 시작하지 않는다.
 
@@ -18,8 +18,8 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - [x] 범위 승인
 - [x] Fable 설계 검토
 - [x] goal 보완 승인
-- [>] 선행 시험 작성
-- [ ] 구현
+- [x] 선행 시험 작성
+- [>] 구현
 - [ ] 독립 검증
 - [ ] 봇 두 파티 확인
 - [ ] 제품 PR 병합
@@ -311,6 +311,16 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 4. 새 파일 이름이 정해졌다. 「건드릴 곳」의 새 등록부 파일은 `Maps/InstanceMapRegistry.cs`, 맵 종류 표는 `Maps/MapKindTable.cs`다. 열쇠 타입 `Maps/InstanceKey.cs`와 서버 이동 결과 `Maps/Transitions/MapMoveResult.cs` 두 파일이 더 생긴다(P-02·P-08). 모두 「건드릴 곳」의 폴더 안이다.
 5. 지우는 메서드가 하나 있다. `QuestRegistry.ResetAllQuestProgress`다(P-12). 파일은 「건드릴 곳」 안이다.
 
+### 선행 시험이 고정한 이름과 리드 판단
+
+선행 시험 보고는 E/`tdd/report.md`(SHA256 `333c9ae5…d1ed`)다. 구현은 아래 이름으로 시험을 컴파일되게 하고, 새 시험 7파일은 고치지 않는다.
+
+- 서버가 시키는 이동: `MapMigration.MoveToPublicMap(GameSession session, int entityId, GameMap currentMap, MapId destination, Vector2? spawn = null)`이 `MapMoveResult`를 돌려준다. 결과 값은 `Accepted`, `SessionClosing`, `AlreadyMigrating`, `NotInThatMap`, `NotInInstanceMap`, `DestinationNotPublic`이다. 둘 다 `Maps/Transitions/`에 둔다. 검토 P-08의 공용 맵 조회 함수 인자는 뺐고, 공용 맵은 구현이 세션 쪽 월드 hook에서 찾는다. Content 계약 2·3의 「이름은 설계 뒤 알린다」는 이 이름으로 알린다.
+- 등록부 조회: `GameWorld.TryGetInstance`는 .NET Try 관례대로 `bool TryGetInstance(MapId, InstanceKey, out GameMap?)`다. 그 밖의 이름은 「채택과 보류」의 P-02·P-05·P-13 그대로다.
+- 시점: 포탈 job 안에서 복사본이 바로 생기고(IM-07), 새로 만든 복사본의 입장은 다음 틱에 끝난다(그림 4, IM-16). 그래서 마을에서 새 사냥터 복사본으로 가는 이동은 지금과 달리 같은 틱에 도착하지 않는다. 같은 틱 도착을 단정하던 기존 시험은 구현자가 실패 전수 분류 표에 넣는다.
+- 월드 생성자는 사냥터·보스방을 미리 만들거나 검사하지 않는다. 대가로, 사냥터·보스방 맵 데이터의 적 종류 오류를 서버 시작 때 잡지 못한다(「위험」 8). 출하 데이터의 이 오류는 두 맵에 들어가는 봇 회귀(완료조건 6)가 잡는다. 실행 중에는 플레이어가 마을에 남고 오류 로그가 남아 되돌릴 수 있다. 근거는 개발 성향 25(드러나지 않은 문제는 미리 막지 않음)와 31(가장 싼 환경에서 먼저 검증)이다.
+- 시험 목록에 없던 셋은 독립 검증자가 필수로 확인한다. 셋은 「복사본 안에서 파티를 나간 사람의 개인 진행은 지우지 않는다」(사용자 승인 해석 `msg_d0646fa471c6`), S-06 2번(혼자 열쇠 복사본에서 파티원이 된 사람의 보스 처치), 서버가 시키는 이동 도중의 끊김(IM-02·IM-06)이다. 새 선행 시험 세션을 여는 대신 검증 단계에서 시험으로 본다.
+
 ## 실행 자원과 조율
 
 - WSL: `99_Tools/sync-wsl.sh`는 원본 경로별 복제 공간을 쓰므로 world-active의 서버 시험은 다른 파트와 복제 공간이 겹치지 않는다.
@@ -396,6 +406,7 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 5. 포트 7777은 Content와 나눠 쓴다. 봇 실행 전에 Orca 메시지로 알리고, 겹치면 먼저 알린 쪽이 끝낼 때까지 기다린다.
 6. 복사본 안에서 파티를 맺어도 같은 복사본으로 합쳐지지 않는다(메인 판단 S-06). 플레이어는 이 상황을 겪어도 화면 통보를 받지 못하고, 파티원이 왜 안 보이는지 알 수 없다. 이 goal은 클라이언트·패킷을 바꾸지 않으므로 통보는 다음 후보다. goal 종료 때 BACKLOG 후보로 올린다.
 7. 정리된 복사본의 은퇴 표식은 넣지 않았다(설계 검토 IM-04, 메인 승인 `msg_56df80a3bd4f`). 맵 job 안에서 세션 쪽 guard를 푸는 코드가 생기면, 정리된 복사본에 들어간 그 job이 실행되지 않아 guard가 영원히 잡힌다. 그런 코드를 쓸 때는 검토 원문 IM-04의 은퇴 표식을 함께 넣는다.
+8. 사냥터·보스방 맵 데이터의 적 종류 오류를 서버 시작 때 잡지 못한다. 그 맵을 처음 열 때 복사본 생성이 실패하고, 플레이어는 마을에 남으며 오류 로그가 남는다. 봇 회귀가 두 맵에 들어가므로 출하 전에 잡힌다. 시작 때 다시 잡으려면 적 종류 검사를 맵 생성자와 함께 쓰는 helper로 빼서 월드 생성 때 부른다(후속 후보).
 
 ## 현재 결과
 
@@ -411,3 +422,15 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 - 정산은 `worker-release` 결과 retained(손수 연 pane)였다. 화면이 끝남·빈 프롬프트임을 확인하고 pane을 닫았다.
 - 메인이 원문을 확인했고(`msg_1e59e0802942`), 리드가 채택·보류를 「설계 검토 반영」에 적었다. 빌드·서버 시험·봇·성능 측정은 실행하지 않았다.
 - 08:58:18Z 메인이 goal 보완을 승인했다(`msg_56df80a3bd4f`, 메인 승인이며 사용자 결정 아님). 승인 범위 v2와 달라진 곳 다섯과 IM-04 은퇴 표식 보류를 받았고, 보류의 반례 조건을 「위험」 7에 남기라고 했다. 메인은 사용자 보고에 이를 「범위 보완」으로 적는다.
+
+### 선행 시험 — 2026-10-10
+
+- 09:03:58Z(UTC) 리드 pane 아래에 신규 `claude-opus-5-5` xhigh 작성자(`[World 검증자]`)를 열었다. 최초 실행 명령은 `claude --model claude-opus-5-5 --effort xhigh`, 첫 화면은 「Opus 5.5 with xhigh effort」이고 backend는 unknown이다. Task `task_401748c1e981`, Dispatch `ctx_36219ae1c4c3`, 계약 E/`tdd-contract.md`(SHA256 `1a202196…5de5`)다.
+- 09:43:09Z 완료 보고(`msg_64b1e6583ffa`)를 받았고, 보낸 handle·Task·Dispatch가 기동 기록과 같았다. 보고는 E/`tdd/report.md`, 원시는 E/`tdd/` 아래에 있다.
+  - 기준선(새 파일 전): 924건 중 통과 919, 실패 0, 건너뜀 5, exit 0.
+  - 지금 코드로 도는 새 시험 18건: 실패 14(모두 요구 단정 줄), 통과 4(보호 시험), exit 1.
+  - 새 API를 부르는 새 시험 20건: 컴파일 실패. 없는 심볼은 계약 이름과 같고 제품 프로젝트 오류는 0이다.
+  - 새 파일은 `GameServer.Tests/Maps/` 6개와 `Party/` 1개, 1262줄이다. 바이트 서식(BOM·CR·끝 개행·행 끝 공백·들여쓰기)은 확인했고 전체 서식 검사는 아직 하지 않았다.
+- 리드 표본 대조: 기준선·첫 실행의 합계 줄과 실패 14건 이름, 없는 심볼 집계, 퀘스트 초기화 시험의 첫 실패 값이 보고와 같다. 새 파일에 reflection은 없다.
+- 작성자가 스스로 적은 절차 위반이 셋 있다(비차단, 첫 기록). 허용 밖 쓰기 둘은 근거 폴더 부모의 임시 check 출력과 Git Bash `/tmp/x`이고, 둘 다 바로 지웠다. 나머지 하나는 첫 git 명령에 `GIT_OPTIONAL_LOCKS=0`을 빠뜨린 것이다. 산출물에는 영향이 없다.
+- 정산은 retained(손수 연 pane)였고, 화면이 끝남·빈 프롬프트임을 확인한 뒤 pane을 닫았다. 빌드·서버 시험은 작성자가 WSL에서 위 범위만 실행했다. 봇·서버 실행·Unity·DB는 실행하지 않았다.
