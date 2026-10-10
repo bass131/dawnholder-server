@@ -604,9 +604,30 @@
 
 ## 재개 지점
 
+### 세션 마감, 보존 데이터 도구 검증 통과 — 2026-10-10T16:3xZ
+
+기록 시각은 2026-10-10T16:37:00Z(`date -u`, KST 01:37)다. **이 블록이 현재 재개 정본이다.** E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다. 시간순 원기록은 N/`pending-goal-edits.txt`다.
+
+- **마감 지시(메인 `msg_91b523003fe7`, 16:13:08Z):** 사용자 원문 「오늘은 진행중인 파트들까지만 마무리하고 정리해야겠다」. 돌던 작업자·검증자만 끝까지 받고 새 작업자·검증자·단계는 열지 않았다. **열린 Task·Dispatch는 없다. Core 작업자 pane은 0이다**(`orca terminal list`에 core-active는 리드 pane 하나).
+- **branch·commit:** `feat/persistence-container-engine-20261010`. 이 세션 commit은 `8fa42808`(goal 기록), `f3452e18` feat(database, 도구 4파일과 runner 1줄), `8dbe08c4` docs(operations, MSSQL.md), 그리고 이 블록의 commit이다. 모두 원격에 반영한다. PR은 아직 없다(엔진 판정 PR은 2단계 뒤).
+- **보존 데이터·엔진 JSON 경계 도구 강 검증 통과:** 신규 `claude-opus-5-5` `task_6719219fd5ae`, worker_done `msg_5db0e1852890`, 판정서 E/`preservation-engine-check-review/verdict.md`(SHA256 `617963b8…a36f`). **결함 0, 판정 범위 1~10 모두 지적 없음.** 직접 오프라인 10 suite 1401/0/9, 실제 진입 독립 시험 87/0/1, mutant 셋(예행 미무장·제품 소유 중간 commit·제품 소유 전용 문구)에서 멈춤 확인, 6경로 hash 시작·끝 일치. 리드 R-2 표본 다섯 일치: `run/independent/console.txt` 마지막 줄 87/0/1, `run/offline-1/summary.json` 합계 10 suite 1401/0/9·exit 0 전부, `run/mutant2-MutantOwnedCommit/console.txt`의 `committedFlag=False`·「Rollback state differs」, EngineCheck 711-724가 `Rollback`만 가짐, 도구의 `.Commit(`은 334 한 줄, 6경로 현재 hash가 `target-hashes.txt`와 같음.
+  - 비차단 설계 관찰(후속 후보, 결정 주체는 리드·메인): **O-1** 제품 소유 실행(`Invoke-EngineAtomicity` 792-838) 앞뒤에 저널 단계가 없다. 제품 소유 모드에서만 주입이 발화하지 않으면 제품이 Complete를 commit하고 결과 파일 FAIL만 남는다. 그 사이 프로세스가 죽으면 공식 Complete가 history 4를 받아 Installed로 갈 수 있다. 대안은 제품 소유 실행 직전 Pending 단계를 열고 비교 통과 뒤 닫는 것이다. 리드가 메인에 알린 남는 위험과 같고 **1단계·2단계 카드 설계 때 반영 여부를 정한다.** O-2 `Committed` 플래그가 제품 정상 반환으로 추정돼 중간 commit 경우를 False로 적는다. O-3 가독성 둘(639 `$matches` 자동 변수 가림, 475-482 평행 배열). O-4 `container-connection` AST 감시가 `Stop-EngineCheck -Message` 상수를 훑지 않는다. O-5 R-4 label은 `-Sql @'` 호출 줄 기준이다. O-6 `check-liveness.mjs` 결과 맨 위 `status`가 우편함 전체 기준이라 대상 dispatch 판정을 오해하기 쉽다.
+  - 검증자 자진 공개: heartbeat 345초 1구간, 검증 중 우편함 check 0회라 리드의 HEAD 변경 알림을 마감 때 읽음(판정 영향 없음, `run/head-change.txt`).
+- **4차 정지 재측정은 다음 세션으로(메인 `msg_24ef4a73fcf7`):** 리드가 마감 지시를 읽기 전에 4차 작업자(`task_12ac7862e00d`)를 기동했다가 읽고 닫았다(아래 리드 실수 11). 작업자는 1분 동안 계약·goal 읽기만 했고 파일 0, 신호 0, Docker 단계 미도달이다. pane close 16:15:21Z, `worker-stop`으로 Dispatch `ctx_65f2b9cb7403` failed(`worker-release`는 ready 상태라 거부). TEMP `core-stop-attempt-4`에 Codex 기동 빈 임시 파일 둘만 있다. 메인은 앞선 「예행까지만」(`msg_8ed224c99fc5`)을 이 중지로 대신하고 예행과 실제 실행을 모두 다음 세션 첫 일로 정했다. 계약·지시문은 E/`container-stop-restart-attempt-4/`에 그대로 둔다.
+- **리드 실수 11:** 마감 지시(16:13:08Z) 도착 뒤, 읽기 전에 4차 작업자를 기동(16:13:32Z~16:14:11Z)하고 기동 보고(`msg_5645701c3aa7`)까지 보냈다. 기동 직전 우편함 확인을 하지 않았다. 셋째 작업자의 「복구 직전 check 누락」과 같은 부류다. 메인 사실 보고 `msg_a44838bd6989`.
+- **리드 실수 12:** 메인의 「예행까지만」(`msg_8ed224c99fc5`, 16:15:00Z)을 읽기 전 16:15:21Z에 4차 pane을 닫았다. 직전 확인은 16:14:42Z였고 닫기 직전에 다시 확인하지 않았다. 결과는 메인의 뒤 결정(`msg_24ef4a73fcf7`)과 같아 피해는 없다. 교정: 작업자 기동·종료·지시처럼 되돌리기 어려운 리드 동작 직전에는 `orca orchestration check`를 한 번 한다. 같은 부류가 리드와 작업자에서 세 번(셋째 작업자, 실수 11, 12) 났으므로 다음 세션에 Rules로 넘길 반복 규칙 후보다(교정 정본 「두 번째 발생부터」).
+- **정산 liveness 추가:** 정지 재측정 셋째 `ctx_b014abc1d121` 초과 없음(최대 221초), 기동→첫 신호 229초. 도구 강 검증 `ctx_5c5b3d914479` 345초 1구간(16:06:24Z→16:12:09Z), 143초. 4차 `ctx_65f2b9cb7403` 신호 0(1분 뒤 중지). 원시는 각 근거 폴더 `lead-liveness.json`.
+- **남은 사용자 결정:** Core에는 없다. 1단계 카드의 실행 승인은 카드 실사 뒤 새로 받는다.
+- **다음 세션 첫 일:**
+  1. 리드 진입 뒤 자기 checkout의 규칙 표류를 확인한다(`git diff --stat origin/main -- AGENTS.md CLAUDE.md .claude/settings.json`).
+  2. 4차 계약 v1.1: 지금 계약(`d4febf4b…5ab3`)은 HEAD `8fa42808`·goal `a4f95f2e…4906` 기준이다. 그때의 HEAD와 goal hash로 고치고 `contract.sha256`·`spec.txt`의 SHA·`path-check.txt`를 다시 만든다. 내용(예행 먼저, 실패와 우편함 규칙, 정리 순서와 멈춤 규칙)은 바꾸지 않는다.
+  3. 기동 직전 메모리 gate와 우편함 check → 새 Sol max 기동 → 오프라인 예행(P1·M1~M8·C1~C7, 불변식 I1~I7) → 리드가 예행 원시·`run\` 의 `.ps1`·`.sql` 전부를 읽고 실행 파일 hash가 예행 끝 목록과 같은지 확인 → Content에 알림 → 「가능」 → 실제 측정 → 정산 → 측정 보고 문서 실사.
+  4. 4차도 harness 결함으로 실패하면 측정을 멈추고 B(볼륨 재사용 정지 없이 카드 설계)와 함께 메인에 올린다.
+  5. 그 뒤 1단계 카드 설계(O-1 반영 여부 포함) → 카드 실사 → 사용자 실행 승인 → 실행 → 2단계(Record → BeforeComplete → Complete → Compare → AfterComplete → Test-Database) → 엔진 판정 PR(이 branch) → 정리 → Gardener.
+
 ### 조건 (b) 정지 재측정 세 번 실패, 보존 데이터 도구 구현 — 2026-10-10T16:0xZ
 
-기록 시각은 2026-10-10T16:09:00Z(`date -u`, KST 01:09)다. **이 블록이 현재 재개 정본이다.** E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다. 시간순 원기록은 N/`pending-goal-edits.txt`다.
+기록 시각은 2026-10-10T16:09:00Z(`date -u`, KST 01:09)다. 위 16:3xZ 블록이 이어 쓴다. E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다. 시간순 원기록은 N/`pending-goal-edits.txt`다.
 
 - **조건 (b) 발동:** 1단계 카드는 볼륨을 다시 쓰는 정지가 필요하다(1단계 → fixture·U-01 harness 제작 → 2단계 사이와 PR 검토 중 보존, 정리 때 DROP을 위한 재시작). 그래서 F-14 조건 (b)대로 시작 완료 뒤 정지를 다시 재기로 하고 메인에 알렸다(`msg_2f6097553e06`). 재는 것은 시작 완료 뒤 T-SQL `SHUTDOWN`과 `docker stop -t 30`, 그리고 각 정지 뒤 같은 컨테이너를 `docker start`로 다시 띄웠을 때의 master `family_guid`와 표식 DB 생존이다.
 - **같은 측정에서 harness 실수가 세 번 이어졌다(메인 지시 `msg_3ba6500bfb7f`로 기록).** 셋 다 작업자 harness 결함이고 엔진·계약 문제가 아니다. 셋 다 `gpt-6.1-sol` max이고 각 측정 하나 뒤 정산했다.
@@ -626,7 +647,7 @@
 - **리드 실수 10:** 셋째의 stop 137을 메인에 「새 관찰」로 보고했다. 계약의 인용 줄에 같은 값이 이미 있었다. 16:03:47Z에 정정했다(`msg_5a70d1615641`, 첫 보고 16:02:21Z). 계약에는 원시로 확인한 값만 쓴다는 교정을 보고에도 적용한다.
 - **보존 데이터·실제 엔진 JSON 경계 도구 구현(U-01·001 fixture 준비):** 계약 E/`preservation-engine-check-implementation/contract.md`(`f9b1b9cd…03fb`). 리드 설계 결정은 계약에 있다: 관측 위치 A(Baseline001 뒤 제품 Complete를 도구 transaction에서 예행하고 rollback), B(공식 Complete 뒤 자연·강제 빈 집합·거부), 강제 빈 집합은 rollback transaction 안 DELETE만, 원자성은 예행으로 주입 지점을 확인한 뒤에만 제품 소유 실행, 보존 데이터는 binding과 다른 GUID로 commit하고 Complete 뒤 rowversion까지 같아야 통과, unknown migration·checksum drift는 Test-Database 93~106행이 맡는다. MSSQL.md 두 줄 수정은 메인에 먼저 알렸다(`msg_7fdc80e04660`, 남는 위험: 원자성 주입 불발 때 저널 밖 commit 가능성 → 예행·멈춤 규칙, 실행 승인 때 재검토).
   - 구현 `task_dcc1c4972974`(`gpt-6-astra` xhigh), worker_done `msg_3fdafbecd492` succeeded. 리드 R-2: `run/final-verified/summary.json` 10 suite 1401/0/9, 기준 9 suite 1283/0/9, 검사기 「Code rules PASS」. 변경 6경로: 새 `99_Tools/database/test-environment/EngineCheck.Common.ps1`·`Invoke-PreservationCheck.ps1`(`-Action Record|Compare`)·`Test-EngineBoundary.ps1`(`-Action BeforeComplete|AfterComplete`), 새 `tests/PreservationEngine.Tests.ps1`, `tests/Invoke-OfflineTests.ps1` 1줄, MSSQL.md(도구 표 4행·순서 문장, 뒤 두 문장 줄 나눔).
-  - 강 등급 독립 검증 진행 중: 신규 `claude-opus-5-5` `task_6719219fd5ae`, 계약 E/`preservation-engine-check-review/contract.md`(`d2565d53…4de7`), 판정 범위 1~10, 원자성 제품 소유 실행의 위험 경로 집중.
+  - 강 등급 독립 검증: 신규 `claude-opus-5-5` `task_6719219fd5ae`, 계약 E/`preservation-engine-check-review/contract.md`(`d2565d53…4de7`), 판정 범위 1~10, 원자성 제품 소유 실행의 위험 경로 집중. 결과는 위 16:3xZ 블록(통과, 결함 0).
   - 범위 밖 관찰(후속 후보): `Install-Database.ps1` 3·43행의 `-Instance` 잔재.
 - **Content 조율:** Content의 큰 실행은 끝났다(`msg_5577548749c0`, Unity 0·7777 0, 이 PR에서 큰 실행·컨테이너 재사용 계획 없음). 컨테이너 시도마다 시작을 Content에 알렸다.
 - **정산 liveness(메인 판단 `msg_cf6eceb5ffdc`):** 원시는 각 근거 폴더의 `lead-inbox-at-settlement.json` → `lead-liveness.json`이다.
@@ -636,7 +657,7 @@
 | 정지 재측정 첫째 `ctx_3a514b187d15` | 326초 1구간(보고서 작성 중, 작업자 자진 공개 `msg_5017d0ea1d7d`) | 185초 |
 | 정지 재측정 둘째 `ctx_377b816c39b1` | 없음(최대 196초) | 212초 |
 | 보존 데이터 도구 구현 `ctx_ac09c823c13f` | 없음(최대 295초) | 102초 |
-| 정지 재측정 셋째 `ctx_b014abc1d121` | 정산 전 | 정산 전 |
+| 정지 재측정 셋째 `ctx_b014abc1d121` | 없음(최대 221초) | 229초 |
 
 - **다음 할 일:**
   1. 셋째 시도 실패 마감 정산(지시 `msg_618244d71d53`) → 네 번째 시도 기동 → 오프라인 예행 → 리드가 harness·SQL·예행 원시를 모두 읽고 「가능」 → 실제 측정 → 정산 → 측정 보고 문서 실사(파트당 검증자 하나라 도구 검증 뒤).
