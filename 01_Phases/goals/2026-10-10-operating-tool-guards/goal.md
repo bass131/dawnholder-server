@@ -12,8 +12,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR224(`feat/session-guard-liveness-20261010`)는 병합됐다(「현재 결과 / PR224 병합」). 종료 기록은 `docs/session-guard-liveness-closeout-20261010`(base main `b482b84a`)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: PR224가 병합됐다. 종료 기록 branch에 병합 결과를 기록했고 Gardener를 연다.
-- **남은 순서**: Gardener → 후보 도착 검사 → 정본 문장 셋 작성 → 문서 실사 → 종료 기록 PR·승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- **현재 위치**: 종료 Gardener가 끝났고 결과·채택 후보·BACKLOG 등록을 기록했다(후보 도착 검사 위반 0). 정본 문장 넷을 신규 Sol이 쓴다.
+- **남은 순서**: 정본 문장 넷 작성 → 리드 R-2 → 종료 기록 PR 생성 → 문서 실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
 - **사용자 차례**: 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
@@ -23,8 +23,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - [x] 가드 hook 구현·검증(독립 검증 통과. README 가드 절 보완은 helper 독립 검증이 함께 검토)
 - [x] 간격 도구 구현·검증(결함 #1 수정 뒤 재검증 통과, 비차단 #3은 다음 후보)
 - [x] PR224 병합
-- [>] 결과 기록·Gardener
-- [ ] 종료 기록 PR 병합
+- [x] 결과 기록·Gardener
+- [>] 종료 기록 PR 병합
 - [ ] 종료 점검과 R-8
 
 PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
@@ -54,11 +54,12 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 3. 결정 23 정본 반영: AGENTS 「공학 조건」의 권한 예외 문장에 core-active 근거 폴더 한 경로 허용을 더한다.
 4. ORCA 「Orca 도구 관측과 우편함 대기」에 한 문장: 출력 버림은 세션 쓰기 가드가 막고, 작업자 정산 때 리드는 간격 helper로 잰다.
    - 같은 문장에 「300초 초과 구간은 goal에 적는다」를 더한다. 근거는 메인 후보 전달 `msg_6a2b5e7792c4`(2026-10-10T14:00:45Z, Core 작업자 300초 초과 두 번째 발생)다. 승인된 이 문장의 같은 행동이고 새 파일·절이 없어 리드가 넣기로 했다(status `msg_b7ac4f9171a1`).
+5. milestones 「main 맞춤과 합류점」 31행의 「떠 있는 세션은 시작 때 읽은 지침·hook을 쓴다」 정정: hook은 실행 중인 Claude 세션에도 다음 도구 호출부터 실린다(「현재 결과 / 구현」 관측, 종료 Gardener D1). 사용자 결정 42 A로 더한 범위 변경이다(「적용 중인 사용자 결정」).
 
 ### 건드릴 곳
 
 - 도구 PR: `99_Tools/SessionGuard/`·`99_Tools/SessionGuard.Tests/`(새), `99_Tools/Orca/`·`99_Tools/Orca.Tests/`(새 파일만), `.claude/settings.json`(그룹 하나), `.github/workflows/code-rules.yml`(단계 하나와 Orca 단계 넓힘), `99_Tools/README.md`, 이 goal, CURRENT Rules 줄, BACKLOG.
-- 종료 기록 PR: 이 goal, BACKLOG, CURRENT Rules 줄, `.agents/skills/dawnholder-task-context/references/templates.md` 머리말 한 문장, AGENTS 「공학 조건」 한 문장, ORCA 한 문장.
+- 종료 기록 PR: 이 goal, BACKLOG, CURRENT Rules 줄, `.agents/skills/dawnholder-task-context/references/templates.md` 머리말 한 문장, AGENTS 「공학 조건」 한 문장, ORCA 한 문장, `.agents/skills/dawnholder-goal-loop/references/milestones.md` 「main 맞춤과 합류점」 한 문장(사용자 결정 42 A로 더함).
 - 병합 관문 파일(`99_Tools/MergeGate/`)은 바꾸지 않는다(「설계」의 재사용 판단).
 
 ### 하지 않을 것
@@ -75,7 +76,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 3. 실제 이탈 fixture(「설계」의 사건 목록)가 모두 규칙대로 판정된다. core-active junction 경우는 fixture로 확인한다.
 4. 간격 helper가 지난 goal 원시에서 손으로 잰 300초 초과 구간을 같은 값으로 내고, 질문 대기를 따로 낸다. 이 goal의 작업자 정산마다 리드가 helper를 실행해 원시를 E에 둔다.
 5. 도구 PR head의 CI `code-rules`가 새 시험 단계를 실제로 실행해 통과한다. 로그의 시험 수로 0개 통과가 아님을 남긴다.
-6. 종료 기록 PR의 정본 문장 셋이 문서 실사를 통과하고 후보 도착 검사 위반이 0이다.
+6. 종료 기록 PR의 정본 문장 셋(사용자 결정 42 A로 넷)이 문서 실사를 통과하고 후보 도착 검사 위반이 0이다.
 7. 각 PR은 메인 창 승인 줄로 병합한다. 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8 순서로 끝낸다. 다음 goal은 자동으로 시작하지 않는다.
 
 ## 설계
@@ -194,6 +195,11 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
   - AGENTS 「공학 조건」의 「Claude 권한 확인을 건너뛰는 플래그·설정 변경은 금지」에 대한 사용자 예외다. 정본 반영 전까지 이 기록으로 적용한다. 정본 문장은 종료 기록 PR에서 넣는다(메인 `msg_39e69295de62`).
 - **범위 수정 요청**(메인 전달 `msg_981fc90013d0`, 2026-10-10T07:47:59Z): 「어떤걸 만들고 싶은지 이해가 잘 안되는데, 텍스트가 너무 많아, 간결하게 설명해줘」. 범위 변경이 아니다. 메인이 간결판으로 다시 올렸다. 메인 지시: goal 문서와 사용자 문안은 첫 화면 세 줄 안에 무엇을 만드는지를 둔다.
 - **범위 승인**(메인 전달 `msg_4de2cd3a96d2`, 2026-10-10T07:50:11Z): 「대시보드 결정 응답: 1) 계획 검토 - Rules Rules 실수 막는 검사기와 신호 간격 도구(간결판, 질문 하나) → A 승인 (초안 msg_94712317aded)」. 초안 v1 그대로, 질문은 A(처음부터 막기), 넓힌 규칙 3 경계를 포함한다. 하네스 원칙 4(새 검사는 경고 시범부터)의 사용자 예외다. 승인 직전 보조 세션 알림과 섞여 들어온 C 코멘트 입력은 메인이 결정으로 쓰지 않았다.
+- **종료 Gardener 후보와 범위 변경**(메인 전달 `msg_02d37af41e2f`, 2026-10-10T14:55:56Z): 「대시보드 결정 응답: 1) 40 - Gardener 후보 1: 리드 우편함 수신 지연을 정산 도구로 재기 → A BACKLOG에 넣음 · 2) 41 - Gardener 후보 2: 위임 계약의 규칙 원문 잘림을 검사로 막기 → A 기존 행에 근거 추가 · 3) 42 - 틀린 정본 문장 한 줄을 Rules 종료 기록 PR에서 고칠지 → A 이번 PR에서 고침」.
+  - 40 A: 후보 1을 새 BACKLOG 행으로 넣는다. 딸린 정본 질문(ORCA 「메모리 회수로 대기가 꺼지면 스스로 다시 켜지 않는다」 유지 여부)은 그 행에 열린 질문으로 적고 지금 정본은 바꾸지 않는다(메인 지시).
+  - 41 A: BACKLOG `contract-context-check` 행에 근거를 더한다.
+  - 42 A: milestones.md 31행 정정 한 문장을 이 종료 기록 PR에 넣는다. 승인 파일 목록에 milestones.md를 더하는 범위 변경이며 문서 실사 범위에 넣는다.
+  - 메인 지시: R-7 가드 충돌은 BACKLOG 새 행으로 둔다. 그 전에 R-7을 쓰면 메인이 계약 예외를 정한다.
 
 ## 현재 결과
 
@@ -213,7 +219,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 
 ### 구현
 
-- 두 구현자: 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown) 둘을 08:47Z대에 동시에 기동했다. 두 `worker-start`가 `turn_start_unobserved`였고, draft 크기가 계약 크기와 1자 차이라 R-5 복구대로 텍스트 없는 Enter를 한 번씩 보냈다(E/draft-recovery-check.txt).
+- 두 구현자: 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown) 둘을 08:47Z대에 동시에 기동했다. 두 `worker-start`가 `turn_start_unobserved`였고, draft 크기가 「계약 크기 + 머리말 4,787자」보다 1자 커서(종료 Gardener G5 표본 8로 문구 정정) R-5 복구대로 텍스트 없는 Enter를 한 번씩 보냈다(E/draft-recovery-check.txt).
 - 간격 helper(Task `task_9d785ebacdc3`, Dispatch `ctx_7ec71181fbbe`, worker_done `msg_cfa234d74359`): `99_Tools/Orca/check-liveness.mjs`(CLI 56줄)·`liveness-policy.mjs`(순수 모듈 203줄), 커밋 `d30db136`. 선행 시험 25/25, 기존 수신 helper 시험 27/27. 리드 R-2(E/lead-r2-liveness/r2-verdict.md): 선행 시험 작성자 원시에서 helper 결과가 리드 손 계산(신호 18, 최대 267초, 질문 대기 46초)과 같다.
 - 세션 쓰기 가드(Task `task_d6dc5e93dc0b`, Dispatch `ctx_f117ca736701`, worker_done `msg_4788cf612783`): `99_Tools/SessionGuard/` 다섯 파일(447줄)과 `.claude/settings.json` 그룹 하나, 커밋 `bb283f58`. 가드 시험 164/164, 기존 MergeGate 126·Orca 27·Backlog 60 통과. 리드 R-2(E/lead-r2-guard/r2-verdict.md): 재실행 수가 같다. 표본 실행에서 같은 명령 안의 `cd`를 따라가지 않는 한계를 확인했고 「설계」 문장에 적었다.
 - 생존 신호(helper로 잼): helper 구현자 신호 4·최대 144초, 가드 구현자 신호 7·최대 201초, 둘 다 초과 0. 선행 시험 작성자는 helper로 다시 재어 신호 18·최대 267초였다.
@@ -235,7 +241,7 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 리드 R-2(E/lead-r2-verify-guard/r2-verdict.md): 상태 파일 막은 기록 10개, 지연 원시 75줄 재집계, CI 재현 원시, 시험 재실행 167이 판정과 같다.
 - 리드 판단: README 한계 문장(묶음 명령으로 감싼 출력 버림, `>& 파일`, hook 환경 변수, 호출 사이 `cd` 반영과 메모 쓰는 법), README 57행 Git 제외 링크, Orca 단계 이름은 이번 PR에서 문서 수정 작업자가 고친다. 단계 이름을 상수로 찾는 기존 시험 단정은 helper 독립 검증자가 653·668행과 함께 고친다. 그 밖의 관찰은 「다음 계획 후보」로 둔다. 적용 영향표 초안의 메인 줄·검증자 줄을 판정대로 바로잡았다(E/approval-impact-table-draft.md).
 - 생존 신호(helper): 신호 12, 최대 336초, 300초 초과 하나(09:41:09Z→09:46:45Z). README·CI 작성자에 이은 두 번째 발생이다. 모든 수신자 우편함 300개 창(07:55:42Z~10:34:47Z) 안의 Dispatch 23개 중 19개가 300초를 넘어(최대 970초, E/lead-r2-verify-guard/liveness.json) 개인 이탈보다 운영 방식의 문제로 보인다. 리드가 처음에 「같은 날 모든 파트 23개 중 18개」로 손으로 세어 메인에 보냈고, helper 독립 검증이 수와 범위를 바로잡았다(리드 기록 결함 #2, 스크립트 재집계 E/lead-r2-verify-liveness/recount-verify-guard-window.txt). heartbeat 간격 변경은 이 goal의 「하지 않을 것」이라 메인에 사실만 올렸다. 정산 때 helper로 재는 규칙은 종료 기록 PR 4번이다.
-- 리드 수신 지연(리드 귀속): worker_done을 38분 31초 뒤(10:34:56Z)에 받았다. 메모리 회수로 꺼진 우편함 대기를 지시대로 다시 열지 않았고 pane 도착 알림이 없었다. 메인 안내 `msg_dd709a2a6008`로 확인했다.
+- 리드 수신 지연(리드 귀속): worker_done을 38분 33초 뒤(10:34:56Z)에 받았다(처음 38분 31초로 잘못 적었고 종료 Gardener G5 표본 4로 정정). 09:20Z대 메모리 회수로 꺼진 우편함 대기(`b7ix6odqh`, E/session/bg-wait-events.md)를 지시대로 다시 열지 않았고 pane 도착 알림이 없었다. 메인 안내 `msg_dd709a2a6008`로 확인했다.
 - 정산: 빈 프롬프트 확인, `worker-release` retained, `terminal close`(10:38:05Z).
 
 ### 문서 수정
@@ -273,10 +279,26 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 
 - PR224 CI(head `b58f729d`): 리드 조회(2026-10-10T12:11:31Z) 때 code-rules·module-boundaries·architecture-tests가 성공했다. code-rules 로그의 시험 수는 Orca 72/72, MergeGate 126/126, SessionGuard 167 중 165 통과·2 건너뜀(Windows 전용 Git Bash 드라이브 경로), Backlog 60/60이다(E/pr224-ci/test-counts.txt). 0개 통과가 아니다(완료조건 5). dotnet-tests는 그때 진행 중이었고 메인이 병합 전에 통과(21m36s)를 확인했다. 리드의 CI 백그라운드 대기는 12:10:44Z에 메모리 회수로 꺼졌고 다시 켜지 않았다.
 - 승인 묶음: merge_ready `msg_5e78844538ec`(E/approval-bundle-pr224.md). 리드 R-2 원문 경로, 적용 영향표, 알려진 한계(재검증 결함 #3, 미실행 셋)를 담았다.
-- 병합(메인 전달 `msg_9c8f4bfd8ced`, 2026-10-10T12:19:15Z): 사용자가 메인 pane에 「병합 승인: PR224 head b58f729d49a85d05ce829d1cb296d09872e6bed3」를 제출했다. 메인이 4/4 통과와 head를 다시 확인하고 병합했다. 병합 커밋 `6d09ac1fd93b624fe01b35462138da8dd074aa4b`(2026-10-10T12:18:55Z), 둘째 부모가 승인 head `b58f729d`다(E/closeout/pr224-merge-commit.txt). 그 사이 PR223(`2492843e`, 12:16:16Z)이 먼저 병합됐지만 PR224는 충돌이 없었다. 메인은 병합 전 각 파트 리드에 memo-first 안내를 보냈고 메인 checkout을 `6d09ac1f`로 올렸다.
+- 병합(메인 전달 `msg_9c8f4bfd8ced`, 2026-10-10T12:19:15Z): 사용자가 메인 pane에 「병합 승인: PR224 head b58f729d49a85d05ce829d1cb296d09872e6bed3」를 제출했다. 메인이 4/4 통과와 head를 다시 확인하고 병합했다. 병합 커밋 `6d09ac1fd93b624fe01b35462138da8dd074aa4b`(2026-10-10T12:18:55Z), 둘째 부모가 승인 head `b58f729d`다(E/closeout/pr224-merge-commit.txt). 그 사이 PR223(`2492843e`, 12:16:16Z)이 먼저 병합됐지만 PR224는 충돌이 없었다. 메인은 병합 전 리드 알림을 21:13 KST에 Core·Content·World·Management·보조에 보냈고(알림 내용은 메인 원문에 없다. 처음 「memo-first 안내」로 적은 것은 승인 묶음의 요청에서 온 추론이라 종료 Gardener G5 표본 3으로 정정) 메인 checkout을 `6d09ac1f`로 올렸다.
 - 메인 보고(메인 귀속, 같은 메시지): 승인 묶음 R-2 때 메인이 표식 파일 존재를 node 스크립트로 확인해 병합 관문 protected-path 글자 검사를 지났다. 내용 읽기·수정은 없었다. 후보로 넘긴다(「다음 계획 후보」).
 - 병합 알림 뒤 정지(메인 귀속, 메인 `msg_78972f78a12e` 2026-10-10T14:22:21Z): 메인이 병합 알림을 우편함에 넣고 빈 프롬프트 리드 pane에 터미널 안내를 보내지 않아 이 리드가 그 안내(14:22:21Z 송신)까지 병합을 몰랐다. 리드 우편함 대기는 메모리 회수 뒤 다시 열지 않은 상태였다. 리드는 이후 단계 경계마다 `--wait` 없는 check를 한다(status `msg_b7ac4f9171a1`).
 - 이 goal 전체 생존 신호(helper, E/closeout/liveness-goal-run.json, 입력은 전체 우편함 5000개 E/session/inbox-closeout-all.json에서 이 Run·handle·Dispatch 아홉으로 거른 113개 E/session/inbox-goal-run.json): Dispatch 아홉 중 300초 초과는 README·CI 작성자(346·310초)와 가드 검증자(336초) 둘이다. 그 밖의 최대는 267·245·264·233·211·201·144초다. 기록한 값과 같다(E/closeout/liveness-goal-run-summary.txt).
+
+### 종료 Gardener
+
+- 점검자: 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown), 읽기 전용, Task `task_3f44e07af942`, Dispatch `ctx_24d005b8d4b4`, 2026-10-10T14:31:59Z~14:51:52Z, worker_done `msg_6a4bd7cf068d`. 계약 E/gardener-contract.md, 고정 HEAD `c5284c63`, 고정 입력 40개(E/gardener-inputs.json). 보고 E/gardener/context-report.md다. 가드 규칙 3의 메모 경로 조건(이름에 `context`)과 ORCA 「쓰기는 보고서 한 파일」을 함께 맞추려고 보고서 이름에 `context`를 넣었다. 가드 차단은 0이었다.
+- 집계(G1): 같은 계약·결함 번호의 확정 실패 3회 도달 0(최대 1회). 독립 결함 3(#1 차단·해소, #2 리드 기록·해소, #3 비차단·미해소). CI 실패 0, 재실행 수는 원시에 attempt 필드가 없어 셀 수 없다. dotnet-tests 통과는 메인 전달 수준이다. 승인 없는 경고 억제·설정 완화와 검사를 끈 임시 우회는 PR224 diff에서 0이다. Linux에서 건너뛴 가드 시험 2개는 시험 코드의 Windows 조건과 맞다.
+- 드리프트(G2): 새 발견은 D1·D2·D3·D6·D7 다섯이다. D4(진입 순서)·D5(우편함 대기)는 기존 후보에 근거를 더한다.
+  - D1: milestones 「main 맞춤과 합류점」 31행 「떠 있는 세션은 시작 때 읽은 지침·hook을 쓴다」가 「구현」의 관측(실행 중 세션에 hook이 바로 실림)과 반대다. 처리는 메인 범위 판정 요청(status `msg_706745899a5c`)이다.
+  - D2·D3: 한 파일만 쓰는 Claude 역할(R-7 Fable 검토자 `goal-review.md`, Fable Advisor 조언 파일, Gardener 보고서)과 가드 규칙 3이 맞물리는 문장이 정본에 없다. 메모 이름 조건도 README·goal 설계에만 있다. R-7 검토 세션은 다음 사용 때 첫 쓰기가 막힌다(실제 사건 0, 메인에 위험으로 알림).
+  - D6: R-5 세션은 TEMP·TMP가 checkout 안이라 Write 도구의 Windows 기본 TEMP 쓰기를 가드가 막지 않는다. README에 이 한계가 없다.
+  - D7: README 「Orca 메시지 수신 판정」 29행의 CI 문장(`message-policy.test.mjs` 별도 단계)이 PR224 뒤 낡았다.
+- 반복(G3): heartbeat 300초 초과(Dispatch 2·구간 3), Codex 기동 `turn_start_unobserved` 5/5, 리드 계약 문구 오류 2, 리드 계약의 규칙 원문 잘림 2, 리드 우편함 수신 지연 3(38분 33초, 299초, 2시간 5분 23초), 메모리 회수로 꺼진 대기 2.
+- 정리 후보(G4, 제안): 후보 1은 리드 우편함 수신 지연을 정산 helper로 재기(새 후보), 후보 2는 위임 계약의 규칙 원문을 펜스 인식 helper로 뽑고 lint로 막기(BACKLOG `contract-context-check`에 근거 더하기)다. 채택은 메인을 거쳐 사용자가 정한다(status `msg_706745899a5c`).
+- 기록 대조(G5, 표본 9): 여섯 일치, 정정 셋을 위 해당 줄에 반영했다(「구현」 draft 크기 문구, 「가드 독립 검증」 수신 지연 38분 33초, 「PR224 병합」 리드 알림 내용).
+- 리드 이탈 둘(리드 귀속, Gardener 10절·G3 R4): Gardener 실행 중 고정 입력 E/main-decisions-log.md에 감시 기록 한 줄을 더해 끝 hash 대조가 39/40이 됐다(계약 「리드는 worker_done까지 고정 입력을 쓰지 않는다」 이탈). 리드 조립 스크립트의 절 자르기가 templates 「맥락 메모」 펜스 안 `# 작업 전 맥락`을 제목으로 읽어 Gardener 계약에서 양식 본문이 빠졌다(Gardener는 저장소 원본을 직접 읽었다). 같은 스크립트를 복사한 문장 작성 계약도 같았으나 발행 전이었다. 두 스크립트를 펜스 인식으로 고치고 문장 계약을 다시 조립해 양식 본문을 확인했다.
+- Gardener 자기 감사: 파일 쓰기는 보고서 하나뿐이다. 재귀 grep 2회가 읽기 금지 경로를 검색 대상으로 읽었다(결과는 걸러 판단에 쓰지 않음). Gardener 귀속 비차단 기록이다.
+- 리드 R-2(E/lead-r2-gardener/r2-verdict.md): 표본 일곱(R4 펜스 수, milestones 31행, README 29행, 38분 33초 계산, 메인 알림 원문, 끝 hash, ORCA 195행)이 보고와 같다. 생존 신호 신호 14, 최대 134초, 초과 0. 정산은 빈 프롬프트 확인, `worker-release` retained, `terminal close`(14:53:00Z)다.
 
 ### 첫 발생 기록
 
@@ -290,12 +312,16 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 
 이 goal 밖으로 둔 일이다. 후보마다 BACKLOG ID나 기존 goal 링크를 단다.
 
-- 진입 순서 문서(Rules): 규칙 3이 실리면 리드·작업자 진입은 「읽기 → 메모 → Run·receipt·READY」여야 한다. RESUME과 세션 인계 스킬의 진입 순서 문장을 맞출지 본다. BACKLOG `contract-context-check`.
-- 가드 후속(가드 독립 검증 관찰, E/verify-guard/verdict.md): 셸 읽기 실패도 세션 상태 errors에 남기기(O1, 10월 31일 평가에서 조용한 통과를 세려면 필요), 같은 명령 안 리터럴 `cd <경로>` 따라가기(O4), Write·Edit 경로의 변수 풀이 빼기(O5), 같은 세션 hook 동시 실행의 기록 손실(O6, 10월 31일 평가와 함께), 묶음 명령·`>& 파일` 판정 넓히기(O2·O3), 가독성 지적 넷(메모 기록 시점 주석, 쓰기 목록 순서 주석, 줄바꿈 처리 주석, `pendingHeredoc` 세 상태). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
-- 작업자 기동 환경의 `GIT_OPTIONAL_LOCKS=0`(메인 후보 전달 `msg_41a586d79576`): World goal에서 작업자 첫 git 읽기의 누락이 두 번 나왔고 World 리드가 기동 명령 환경으로 올렸다. 모든 파트의 R-5 기동 절차에 TEMP·TMP와 함께 넣을지 본다. 세션 쓰기 가드는 git 자신의 잠금 파일 쓰기를 세지 않는다(「설계」 115행). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
-- helper 후속(helper 독립 검증 관찰, E/verify-liveness/verdict.md): 메시지 하나의 형식 오류가 모든 수신자 원시 분석 전체를 막지 않게 하기(O9), Orca workflow 회귀에 시험 파일 둘 경우 더하기(O4), 마지막 신호 뒤 침묵을 저장 시각까지 재기(O3, 실시간 감시는 이 goal 밖). 재검증 결함 #3(Error가 아닌 예외에서 CLI가 exit 1로 죽음, 한 줄 수정과 대역 시험 방식은 E/reverify-liveness/verdict.md 「결함 #3」), 신호 조건 이유 주석(재검증 관찰 1), README 80행 빈 문자열 문구(관찰 3). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
-- 작업자 부작용 실행은 저장한 harness로만(메인 후보 전달 `msg_546c56564af9`): Core goal에서 두 번 나왔다. 세션 쓰기 가드는 스크립트 내부 쓰기를 세지 않으므로(「설계」 115행) run/ 밖 쓰기나 manifest 누락은 잡지 못한다. 마감 검사 helper가 높은 층 후보다. 이 goal의 작업자들도 저장한 PowerShell 하네스로 허용 실행을 감쌌다(E/docs-fix/work/, E/fix-liveness/work/). 보충(메인 `msg_4ae64986e435`, 2026-10-10T12:58:47Z): Core 정정 Sol이 Orca 명령 넷(ask·heartbeat·check·worker_done)을 저장 스크립트 밖에서 실행하고 「저장 harness로만」이라고 보고했다. 규칙이 Orca 프로토콜 명령을 대상에 넣는지 함께 정한다(예: 메시지 송수신은 직접 실행, 파일을 쓰는 명령만 harness). 종료 기록 PR에서 BACKLOG 후보로 등록한다.
-- heartbeat 운영 재평가: 우편함 300개 창 안의 Dispatch 23개 중 19개가 300초를 넘었다(「현재 결과 / 가드 독립 검증」, 창 밖 Dispatch 포함 전체 집계는 아니다). 간격 기준과 긴 명령 중 신호 방법을 다시 볼지 메인이 판단한다.
-- 리드가 옮긴 측정 사실은 원시로 재계산(메인 후보 전달 `msg_cc75adaab9c7` 2026-10-10T12:16:50Z, 근거 추가 `msg_2e6f1580e158` 12:35:39Z): Core 리드가 계약·보고에 측정 사실을 원시와 다르게 옮긴 일이 하루에 세 번 나왔다(family_guid 「세 정지 뒤」, 간격 0.578초의 밀리초 아래 자름, 「완료 줄 부재」를 「시작 미완료」로 해석). 이 goal 리드의 Dispatch 수 눈셈(18→19, 「첫 발생 기록」)도 원시 대신 손으로 옮긴 같은 부류로 본다. 후보 문장: 리드 계약·보고에는 원시 경로·필드를 기준으로 적고 파생값은 계산 출력 경로를 달거나 「리드 계산, 원시로 재계산」으로 표시한다. 원시가 받치는 범위만 쓰고 관측하지 않은 것은 미측정으로 적는다. 검증 계약은 원시 재계산을 요구한다. 들어갈 곳은 작업 맥락 스킬의 원문 계약 기준이며(지금은 판정 양식 「실행과 미실행」에만 수치 원시 칸이 있다) 이 goal의 승인 파일 밖이다. 종료 기록 PR에서 BACKLOG 후보로 등록한다.
-- 메인 우편함 대기 겹침(메인 자기 보고 `msg_9647db589836`, 2026-10-10T14:14:04Z): 메인이 background `check --wait`를 연 채 하나를 더 열었다. 두 번째 발생이다(잃은 메일 없음). 대기 정본은 이미 「한 번에 하나만」이다. 높은 층은 가드가 같은 수신 주소의 `check --wait`가 아직 도는지 아는 것이다. PreToolUse 입력에는 앞 background 셸의 끝남이 없다(완료를 알리는 hook 사건이 있는지는 미확인). 실행 중 프로세스 목록에서 같은 `--run`·`--terminal`의 `check --wait`를 찾는 방법은 Windows 조회 비용과 오탐을 재야 한다. 코드·시험·독립 검증이 필요해 문서 PR에 넣지 않는다. 종료 기록 PR에서 BACKLOG 후보로 등록한다.
-- 병합 관문 표식 경로의 스크립트 경유 확인(메인 보고 `msg_9c8f4bfd8ced`): protected-path 검사는 명령 글자에 든 경로만 본다. 경로를 글자로 쓰지 않은 스크립트는 지나간다(가드 「위험」 2와 같은 부류). 글자 검사로는 막을 수 없으므로, 표식 존재만 답하는 정식 helper를 두어 메인이 경로를 건드리지 않게 할지와 정본 한계 문장을 둘지 본다. 종료 기록 PR에서 BACKLOG 후보로 등록한다.
+- 진입 순서 문서(Rules): 규칙 3이 실리면 리드·작업자 진입은 「읽기 → 메모 → Run·receipt·READY」여야 한다. RESUME과 세션 인계 스킬의 진입 순서 문장을 맞출지 본다. 종료 Gardener D4 근거: 정본의 메모 단위는 작업이고 가드는 세션이며, 진입 직후 receipt를 파일로 남기라는 정본 문장(R-5)을 따르면 첫 쓰기가 `memo-first`다. BACKLOG `session-entry-memo-order`.
+- 가드 후속(가드 독립 검증 관찰, E/verify-guard/verdict.md): 셸 읽기 실패도 세션 상태 errors에 남기기(O1, 10월 31일 평가에서 조용한 통과를 세려면 필요), 같은 명령 안 리터럴 `cd <경로>` 따라가기(O4), Write·Edit 경로의 변수 풀이 빼기(O5), 같은 세션 hook 동시 실행의 기록 손실(O6, 10월 31일 평가와 함께), 묶음 명령·`>& 파일` 판정 넓히기(O2·O3), 가독성 지적 넷(메모 기록 시점 주석, 쓰기 목록 순서 주석, 줄바꿈 처리 주석, `pendingHeredoc` 세 상태). 종료 Gardener D6: R-5 세션은 TEMP·TMP가 checkout 안이라 Write 도구의 Windows 기본 TEMP 쓰기를 막지 않는데 README에 그 한계가 없다. BACKLOG `session-guard-followup`.
+- 작업자 기동 환경의 `GIT_OPTIONAL_LOCKS=0`(메인 후보 전달 `msg_41a586d79576`): World goal에서 작업자 첫 git 읽기의 누락이 두 번 나왔고 World 리드가 기동 명령 환경으로 올렸다. 모든 파트의 R-5 기동 절차에 TEMP·TMP와 함께 넣을지 본다. 세션 쓰기 가드는 git 자신의 잠금 파일 쓰기를 세지 않는다(「설계」 115행). BACKLOG `worker-launch-git-optional-locks`.
+- helper 후속(helper 독립 검증 관찰, E/verify-liveness/verdict.md): 메시지 하나의 형식 오류가 모든 수신자 원시 분석 전체를 막지 않게 하기(O9), Orca workflow 회귀에 시험 파일 둘 경우 더하기(O4), 마지막 신호 뒤 침묵을 저장 시각까지 재기(O3, 실시간 감시는 이 goal 밖). 재검증 결함 #3(Error가 아닌 예외에서 CLI가 exit 1로 죽음, 한 줄 수정과 대역 시험 방식은 E/reverify-liveness/verdict.md 「결함 #3」), 신호 조건 이유 주석(재검증 관찰 1), README 80행 빈 문자열 문구(관찰 3). BACKLOG `liveness-helper-followup`.
+- 작업자 부작용 실행은 저장한 harness로만(메인 후보 전달 `msg_546c56564af9`): Core goal에서 두 번 나왔다. 세션 쓰기 가드는 스크립트 내부 쓰기를 세지 않으므로(「설계」 115행) run/ 밖 쓰기나 manifest 누락은 잡지 못한다. 마감 검사 helper가 높은 층 후보다. 이 goal의 작업자들도 저장한 PowerShell 하네스로 허용 실행을 감쌌다(E/docs-fix/work/, E/fix-liveness/work/). 보충(메인 `msg_4ae64986e435`, 2026-10-10T12:58:47Z): Core 정정 Sol이 Orca 명령 넷(ask·heartbeat·check·worker_done)을 저장 스크립트 밖에서 실행하고 「저장 harness로만」이라고 보고했다. 규칙이 Orca 프로토콜 명령을 대상에 넣는지 함께 정한다(예: 메시지 송수신은 직접 실행, 파일을 쓰는 명령만 harness). BACKLOG `worker-harness-only-execution`.
+- heartbeat 운영 재평가: 우편함 300개 창 안의 Dispatch 23개 중 19개가 300초를 넘었다(「현재 결과 / 가드 독립 검증」, 창 밖 Dispatch 포함 전체 집계는 아니다). Core 작업자 초과도 두 번 나왔다(메인 후보 전달 `msg_6a2b5e7792c4`). 간격 기준과 긴 명령 중 신호 방법을 다시 볼지 메인이 판단한다. BACKLOG `heartbeat-interval-review`.
+- 리드가 옮긴 측정 사실은 원시로 재계산(메인 후보 전달 `msg_cc75adaab9c7` 2026-10-10T12:16:50Z, 근거 추가 `msg_2e6f1580e158` 12:35:39Z): Core 리드가 계약·보고에 측정 사실을 원시와 다르게 옮긴 일이 하루에 세 번 나왔다(family_guid 「세 정지 뒤」, 간격 0.578초의 밀리초 아래 자름, 「완료 줄 부재」를 「시작 미완료」로 해석). 이 goal 리드의 Dispatch 수 눈셈(18→19, 「첫 발생 기록」)도 원시 대신 손으로 옮긴 같은 부류로 본다. 후보 문장: 리드 계약·보고에는 원시 경로·필드를 기준으로 적고 파생값은 계산 출력 경로를 달거나 「리드 계산, 원시로 재계산」으로 표시한다. 원시가 받치는 범위만 쓰고 관측하지 않은 것은 미측정으로 적는다. 검증 계약은 원시 재계산을 요구한다. 들어갈 곳은 작업 맥락 스킬의 원문 계약 기준이며(지금은 판정 양식 「실행과 미실행」에만 수치 원시 칸이 있다) 이 goal의 승인 파일 밖이다. 종료 Gardener G3 R5가 이 goal의 옮겨 적기 사례 하나를 더 셌다. BACKLOG `lead-measured-fact-recompute`.
+- 메인 우편함 대기 겹침(메인 자기 보고 `msg_9647db589836`, 2026-10-10T14:14:04Z): 메인이 background `check --wait`를 연 채 하나를 더 열었다. 두 번째 발생이다(잃은 메일 없음). 대기 정본은 이미 「한 번에 하나만」이다. 높은 층은 가드가 같은 수신 주소의 `check --wait`가 아직 도는지 아는 것이다. PreToolUse 입력에는 앞 background 셸의 끝남이 없다(완료를 알리는 hook 사건이 있는지는 미확인). 실행 중 프로세스 목록에서 같은 `--run`·`--terminal`의 `check --wait`를 찾는 방법은 Windows 조회 비용과 오탐을 재야 한다. 코드·시험·독립 검증이 필요해 문서 PR에 넣지 않는다. BACKLOG `mailbox-wait-overlap-guard`.
+- 병합 관문 표식 경로의 스크립트 경유 확인(메인 보고 `msg_9c8f4bfd8ced`): protected-path 검사는 명령 글자에 든 경로만 본다. 경로를 글자로 쓰지 않은 스크립트는 지나간다(가드 「위험」 2와 같은 부류). 글자 검사로는 막을 수 없으므로, 표식 존재만 답하는 정식 helper를 두어 메인이 경로를 건드리지 않게 할지와 정본 한계 문장을 둘지 본다. BACKLOG `merge-gate-marker-status-helper`.
+- 한 파일만 쓰는 Claude 역할과 메모 순서(종료 Gardener D2·D3): R-7 Fable 검토자의 「유일한 출력인 `goal-review.md`」, Fable Advisor의 조언 파일 하나, Gardener 보고서 한 파일이 가드 규칙 3(첫 쓰기는 `.backups/verification/` 아래 이름에 `context`가 든 `.md`)과 맞물리는 문장이 정본에 없다. 메모 이름 조건도 README·goal 설계에만 있다. 다음 R-7 검토 세션은 첫 쓰기에서 막힌다(실제 사건 0, 메인 위험 알림 `msg_706745899a5c`). 이 goal의 Gardener는 보고서 이름에 `context`를 넣어 맞췄다. BACKLOG `single-output-role-memo-first`.
+- README 「Orca 메시지 수신 판정」 29행의 CI 문장(종료 Gardener D7): 「`message-policy.test.mjs`이며 … 별도 단계」가 PR224의 Orca 단계 넓힘 뒤 낡았다. BACKLOG `receive-helper-review-followup`에 근거를 더한다.
+- 리드 우편함 수신 지연을 정산 helper로 재기(종료 Gardener 후보 1, 사용자 결정 40 A): 이 goal의 수신 지연 셋(38분 33초, 299초, 2시간 5분 23초)을 정산 때 helper가 함께 내게 한다. ORCA 「스스로 다시 켜지 않는다」 유지 여부는 그 행의 열린 질문이다. BACKLOG `lead-mailbox-receive-delay`.
+- 위임 계약의 규칙 원문 잘림을 검사로 막기(종료 Gardener 후보 2, 사용자 결정 41 A): 리드 조립 스크립트의 절 자르기가 펜스 안 제목에서 끊었다(「종료 Gardener」 리드 이탈). BACKLOG `contract-context-check`에 근거를 더했다.
