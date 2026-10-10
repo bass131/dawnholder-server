@@ -52,7 +52,7 @@ PR1 설계 문서의 해당 절을 이 내용으로 고친다.
 ### 시작과 붙기
 
 1. 앱이 준비되면 자동으로 연결을 시작한다.
-2. 먼저 이미 도는 백엔드가 있는지 본다. `wsl.exe -d Ubuntu --exec cat <연결 파일>`로 연결 파일을 읽는다. 그 pid가 살아 있고 그 비밀값으로 `GET /api/status`가 200이면 그 백엔드에 붙는다. 이 경우 자식 프로세스는 없다.
+2. 먼저 이미 도는 백엔드가 있는지 본다. `wsl.exe -d Ubuntu --exec cat <연결 파일>`로 연결 파일을 읽는다. 그 pid가 살아 있고(`wsl.exe -d Ubuntu --exec kill -0 <pid>`가 0으로 끝남) 그 비밀값으로 `GET /api/status`가 200이면 그 백엔드에 붙는다. 이 경우 자식 프로세스는 없다.
 3. 없으면 `wsl.exe -d Ubuntu --exec bash <checkout의 WSL 경로>/05_Management/backend/backend-wsl.sh run`을 자식으로 띄운다. checkout의 WSL 경로는 `main.ts`의 checkout 위치(`C:\…`)를 `/mnt/<소문자 드라이브>/…`로 바꾼 값이다. 셸 문자열을 만들지 않고 인자 배열로 넘긴다.
 4. 새 연결 파일이 생기고(이전 파일과 `startedAt`·`pid`가 다름) `GET /api/status`가 200이 될 때까지 기다린다. 상한은 120초다(첫 빌드 포함). 넘으면 자식을 끝내고 `disconnected: startTimeout`.
 5. 연결 파일 위치: 기본은 WSL `$HOME/.local/share/dawnholder/management/connection.json`이다. `$HOME`은 `wsl.exe -d Ubuntu --exec printenv HOME`으로 한 번 읽는다. 기본 설정 파일에서 `dataDirectory`를 바꾸면 창 프로세스가 연결 파일을 찾지 못한다. V1.0은 기본 데이터 폴더만 지원하고, 시간 초과 안내에 이 가능성을 적는다.
@@ -62,7 +62,7 @@ PR1 설계 문서의 해당 절을 이 내용으로 고친다.
 ### HTTP 대화
 
 - 창 프로세스의 Node HTTP로 `http://127.0.0.1:<포트>`에 요청한다. `Authorization: Bearer <비밀값>`을 붙이고 `Origin`을 보내지 않는다. 화면(renderer)은 HTTP를 하지 않는다.
-- 요청마다 시간 상한을 둔다: 상태·로그 5초, 시작·종료 30초, 강제 종료 30초, 실행본 빌드 660초(백엔드 상한 600초 + 여유).
+- 요청마다 시간 상한을 둔다: 상태·로그·실행본 목록 5초, 시작·종료·강제 종료·현재 운영 버전 지정 30초, 실행본 빌드 660초(백엔드 상한 600초 + 여유). 실행본 목록은 실행본 폴더를 읽기만 하고, 지정은 `current.json` 하나를 쓴다.
 - 응답은 계약 모듈이 `unknown`에서 검증한다. 모양이 다르면 `disconnected`로 바꾸지 않고 그 요청만 `invalidResponse` 실패로 돌린다. 연결 거부·시간 초과가 연속 3번이면 `disconnected: backendUnreachable`.
 - 백엔드 오류 응답 `{ error, message }`의 `error` 코드는 한국어 메시지 표로 바꾼다. 표는 `05_Management/backend/ManagementBackend/`가 내는 코드 전부(`busy`, `alreadyRunning`, `noCurrentRelease`, `portBusy`, `startFailed`, `notRunning`, `invalidCommit`, `commitNotFound`, `releaseNotFound`, `releaseSourceNotConfigured`, `buildFailed`, `invalidQuery`, `logReadFailed`, `operationFailed`, `invalidRequest`, `bodyTooLarge`, `notFound`, `forbidden`, `unauthorized`)를 덮고, 모르는 코드는 일반 실패 문구로 보인다. 백엔드의 `message`는 보조로만 쓴다. `unauthorized`는 연결 파일이 바뀐 것이므로 연결 정보를 한 번 다시 읽는다.
 

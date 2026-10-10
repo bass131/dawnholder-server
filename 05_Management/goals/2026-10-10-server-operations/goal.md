@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 21:19 KST, PR2 백엔드 구현 commit 뒤.**
+**기록 시점: 2026-10-10 21:52 KST, PR2 창 쪽 선행 시험 원천 대조 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험 작성자가 일하는 중이다. 그 worker_done을 받아 원천 대조·commit한 뒤 창 쪽 구현(Astra)을 연다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 다음은 창 쪽 구현(Astra) 계약과 착수다. 그 뒤 독립 검증 1회(실제 진입 포함), PR 생성, 메인에 병합 승인 요청 순서다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -257,3 +257,15 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 메모리 대기: Release 실행 직전 3.86 GB(12:05Z)·2.45 GB(12:10Z)로 계약대로 미뤘고 7.35 GB(12:15Z)에서 진행했다.
 - 리드 표본 대조(일치): `clean-1`·`clean-2`·`entry-test`의 `results.trx` 셈과 실패 이름, trx 출력의 E8·B3·I5 수치, `git diff --stat 953f14f6`의 시험 경로 빈 출력, 제품 numstat 합계, Codex 세션 기록의 메모 추가(11:52:06Z)가 첫 제품 수정(11:52:28Z)보다 앞섬, 실제 WSL `HOME`의 설정 파일·기본 데이터 폴더 부재, 남은 백엔드·가짜 서버 프로세스 0. `PortLease.IsHeldByOther`는 `statx`로 장치·inode만 읽고 파일을 열거나 잠그지 않는다.
 - 남은 위험(보고 「남은 위험」): 인자 없는 `run`의 기본 설정 분기는 정적 실사와 임시 `HOME`의 `init-config`로만 확인했다. `python3`가 없으면 `sdk.sh`도 실패하므로 `run` 전체가 실패할 수 있다(기존 전제). 실제 GameServer·창 연결은 독립 검증 몫이다.
+
+### PR2 창 쪽 선행 시험 결과
+
+- worker_done `msg_52df1bd3734a`(succeeded, 발신·Task·Dispatch 일치). 보고 E/`pr2-frontend-tests/report.md`, 맥락 메모 E/`pr2-frontend-tests/context-memo.md`, 같은 시험 명령 E/`pr2-frontend-tests/run-tests.sh`(frontend `npm test` → typecheck 3종).
+- 새 시험 76건: 계약 모듈 C 13(`tests/server-operations-contract.test.ts`), 연결 객체 K 21(`tests/backend-connection.test.ts`), IPC·preload M·P 15(`tests/server-operations-ipc-preload.test.ts`), 화면 S 27(`src/ServerOperations.test.tsx`). 대역 helper `tests/server-operations-fixtures.ts`. 구현자가 따를 바깥 계약(연결 객체 주입 대역·메서드, IPC 결과, preload 동작 이름, 화면 이름)은 보고 3절과 각 시험 머리 주석에 있다.
+- 기존 5파일 +35/−4: 채널 10개를 더한 목록 단정 3곳(desktop-main, records-ipc-preload, diagram-asset-desktop)과 preload 노출 목록 1곳, 트레이 종료 단정을 `vi.waitFor`로 기다리게 함(단정 내용 그대로), `main.ts`를 띄우는 네 파일에 연결 모듈 대역 `vi.mock`(질문 1 답 조건), App.test 주석 두 줄.
+- 같은 명령의 구현 전 실행(E/`pr2-frontend-tests/raw/pre-implementation-final/`, HEAD `4bd9894f`, 직전 커밋 여유 14.43 GB): 1333건 중 통과 1252, 실패 81, 건너뜀 0, typecheck 3종 exit 0. 실패 = 새 시험 75 + 바뀐 목록 단정 4 + 기존 실패 2. 기준(`159fa2e8`)은 1257건 중 실패 3이다.
+- 기존 실패 분류: App.test `cannot issue operating commands…`(옛 세부, 「본문으로 건너뛰기」 링크)와 desktop-main `1280 by 720`(옛 세부, 지금 1600×900)는 그대로 둔다. diagram-loader-policy 1건은 기준 실행에서만 5초 초과였고 단독·구현 전 실행에서 통과해 미확정(부하 추정)으로 둔다.
+- 자체 점검: 작성자가 TEMP에 임시 참조 구현을 만들어 새 75건 통과와 변이 38개 중 37개 포착(보강 뒤 표적 7개 모두)을 확인했다(리드 조건 `msg_a22887f1ecd1`). 참조 구현은 저장소·근거 폴더에 없고 구현자에게 넘기지 않는다.
+- 리드 표본 대조(일치): 두 실행 `vitest.json`의 셈과 실패 이름(새 파일 4개 26+21+13+15=75건, 나머지 6건의 이름), 기존 5파일 diff가 단정을 줄이지 않음(목록은 넓히고 diagram subframe 거부 반복은 새 채널까지 덮음), 시험의 백엔드 오류 코드 19개가 `ManagementBackend`가 내는 코드 전부와 같음, 작성자 세션 기록에서 메모 쓰기(12:02:41Z)가 첫 저장소 쓰기(12:12:29Z)보다 앞섬, 쓰기 39건이 모두 허용 경로(시험 10파일·근거 폴더·TEMP `.backups/tmp/p2f/`), 무시 대상 폴더에 작업 시간대 새 파일 0, 남은 Electron·`wsl.exe` 0.
+- 설계 관찰 처리(리드): 실행본 목록 5초·현재 운영 버전 지정 30초 상한과 pid 생존 확인(`--exec kill -0`)을 [화면 연결 설계](screen-design.md#시작과-붙기)에 정했다. 「마지막 종료 종류와 종료 코드」 표시는 설계 「화면」에 이미 있고 상태 응답 `lastExit`가 값을 주므로 창 쪽 구현 계약에 넣고 독립 검증자가 시험을 쓴다. `tests/`가 typecheck 밖인 것은 기존 상태라 이 PR에서 바꾸지 않는다.
+- 비차단 기록: 작성자가 단독 실행 하나(`dry2`, 12:24:21Z)를 커밋 여유 3.44 GB에서 돌렸다고 공개했다(4 GB 기준 일탈, 판정 실행 아님). gitignore 대상 Vitest 캐시(`node_modules/.vite/…`, `.vite-temp`)가 바뀌었다.
