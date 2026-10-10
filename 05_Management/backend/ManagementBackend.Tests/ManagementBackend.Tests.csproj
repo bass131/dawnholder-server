@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Dawnholder.Management.Backend.Tests</RootNamespace>
+    <BackendProject>$(MSBuildThisFileDirectory)../ManagementBackend/ManagementBackend.csproj</BackendProject>
+  </PropertyGroup>
+
+  <!-- Same test packages and versions as GameServer.Tests; no new dependency source. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <!-- xunit.runner.json runs the classes serially: each test starts a backend, a stub and often a dotnet publish,
+       and parallel CPU load would make the short start and stop timeouts flaky. -->
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Black-box tests start these as processes and never reference their implementation. The backend reference
+       is conditional so the tests build before the product exists and each test fails on its own. -->
+  <ItemGroup>
+    <ProjectReference Include="../GameServerStub/GameServerStub.csproj" ReferenceOutputAssembly="false" OutputItemType="ProcessUnderTest" />
+    <ProjectReference Include="$(BackendProject)" ReferenceOutputAssembly="false" OutputItemType="ProcessUnderTest" Condition="Exists('$(BackendProject)')" />
+  </ItemGroup>
+
+  <!-- Release tests commit the stub source and the pinned global.json into a temporary Git repository.
+       global.json is looked up, not addressed relatively, so a WSL copy with another folder depth still builds. -->
+  <PropertyGroup>
+    <PinnedGlobalJson>$([MSBuild]::GetPathOfFileAbove('global.json', '$(MSBuildThisFileDirectory)'))</PinnedGlobalJson>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../GameServerStub/*.cs;../GameServerStub/GameServerStub.csproj" LinkBase="ReleaseSource/GameServerStub" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(PinnedGlobalJson)" Link="ReleaseSource/global.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Built paths go into assembly metadata, so tests find the processes in any output layout (bin or artifacts). -->
+  <Target Name="RecordProcessUnderTestPaths" DependsOnTargets="ResolveProjectReferences" BeforeTargets="GetAssemblyAttributes">
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>%(ProcessUnderTest.Filename)%(ProcessUnderTest.Extension)</_Parameter1>
+        <_Parameter2>%(ProcessUnderTest.FullPath)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+
+</Project>

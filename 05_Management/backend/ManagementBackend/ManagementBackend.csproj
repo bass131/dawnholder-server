@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Dawnholder.Management.Backend</AssemblyName>
+    <RootNamespace>Dawnholder.Management.Backend</RootNamespace>
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+</Project>
