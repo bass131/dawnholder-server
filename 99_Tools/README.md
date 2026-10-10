@@ -48,15 +48,21 @@ node "$CLAUDE_PROJECT_DIR/99_Tools/SessionGuard/claude-hook.mjs" < .backups/veri
 
 모든 결과의 exit는 0이다. 차단 때만 `hookSpecificOutput`의 `hookEventName: "PreToolUse"`, `permissionDecision: "deny"`, `permissionDecisionReason: "session-guard:<code> <이유와 고치는 법>"`를 담은 JSON 한 줄을 stdout에 낸다. `allow`·`ask`는 내지 않는다. 규칙 1의 읽기 전용 하위 명령, `--peek`·`--all`이 붙은 check, `--help`는 대상 밖이며 목록과 셸 연산자 계약은 [goal 설계](../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#설계)에 있다.
 
-허용 뿌리는 `CLAUDE_PROJECT_DIR`와 checkout의 `.backups`가 junction·심볼릭 링크일 때 그 실제 대상이다. **허용 뿌리가 임시 뿌리보다 먼저**이므로 checkout 안 `.backups/tmp/`의 TEMP·TMP 쓰기는 위치 규칙을 통과한다. 상대 목적지는 입력 `cwd`(없으면 `CLAUDE_PROJECT_DIR`) 기준이며 따옴표·`.`·`..`와 Git Bash `/c/…`를 정규화한다. 변수는 같은 명령 앞의 대입(`export` 포함), hook 환경 순으로 풀고 `~`는 HOME으로 푼다. 미해결 목적지는 위치 판정에서 빠지지만 메모 순서에서는 쓰기로 센다. 쓰기 도구는 임시 경로만 위치 규칙으로 본다.
+허용 뿌리는 `CLAUDE_PROJECT_DIR`와 checkout의 `.backups`가 junction·심볼릭 링크일 때 그 실제 대상이다. **허용 뿌리가 임시 뿌리보다 먼저**이므로 checkout 안 `.backups/tmp/`의 TEMP·TMP 쓰기는 위치 규칙을 통과한다. 상대 목적지는 입력 `cwd`(없으면 `CLAUDE_PROJECT_DIR`) 기준이며 따옴표·`.`·`..`와 Git Bash `/c/…`를 정규화한다. `~`는 HOME으로 푼다. 미해결 목적지는 위치 판정에서 빠지지만 메모 순서에서는 쓰기로 센다. 쓰기 도구는 임시 경로만 위치 규칙으로 본다.
 
 메모는 허용 뿌리의 `.backups/verification/` 아래에서 파일 이름에 `context`가 들고 `.md`로 끝나는 경로다(대소문자 무시, junction 실제 대상도 포함). Bash 리다이렉트·`tee` 목적지를 글자 순서대로 보며 첫 쓰기가 메모면 기록하고 통과한다. `$CLAUDE_PROJECT_DIR/.claude/state/merge-gate/main-checkout`이 파일인 메인 checkout은 위치·메모 규칙을 적용하지 않으며 우편함 출력 규칙은 적용한다.
 
 상태·막은 기록은 Git 제외 `$CLAUDE_PROJECT_DIR/.claude/state/session-guard/<session_id>.json`에 있다. `version: 1`, `memoWrittenAt`(UTC 또는 null), `denials[]`의 `at`·`tool`·`code`·`target`, `errors[]`의 `at`·`message`를 저장한다. 같은 폴더 임시 파일 + rename으로 저장하며 기록 저장 실패에도 차단 결정은 유지한다. 메모 기록은 PreToolUse 시점에 남긴다.
 
-운영 관찰(2026-10-10T08:56Z): 실행 중인 Claude 세션에도 settings 변경 뒤 hook이 바로 실려 가드 상태에 메모 기록이 없던 그 세션의 다음 쓰기가 `memo-first`로 막혔고, 그 세션의 맥락 메모를 한 번 고쳐 쓰면 풀렸다([로컬 관측 원문·Git 제외](../.backups/verification/2026-10-10-operating-tool-guards/pr1-lead-context.md), 「세션 쓰기 가드 실림」).
+settings가 바뀌면 실행 중인 Claude 세션에도 다음 도구 호출부터 hook이 실린다. 가드 상태에 메모 기록이 없는 그 세션의 다음 쓰기는 `memo-first`로 막힌다. 그 세션의 맥락 메모를 Write·Edit 도구로 한 번 고쳐 쓰면 풀린다([goal 현재 결과 / 구현](../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#구현)).
 
-셸 한계는 별칭·스크립트 파일·변수 속 명령, 스크립트 내부 쓰기와 `cp`·`mv` 목적지다. **같은 명령 안의 `cd`는 따라가지 않는다**. 따라서 메모 쓰기 앞의 `cd`도 목적지 기준을 바꾸지 않는다. 메모 순서는 Claude 세션만 막으며 Codex는 계약과 독립 판정으로 확인한다. `claude --resume`의 같은 `session_id` 연결 여부는 실제 진입 확인 대상이다([goal 위험 2·3](../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#위험)).
+셸 한계는 별칭·스크립트 파일·변수 속 명령, 스크립트 내부 쓰기와 `cp`·`mv` 목적지다. 규칙 1은 `orca orchestration` 명령 자신의 리다이렉트와, 그 명령 또는 그 명령에서 이어지는 파이프라인의 마지막 명령 바로 뒤의 `&`만 본다. `orca … && echo done &`, `( orca … ) &`, `{ orca …; } &`, `{ orca …; } > /dev/null`처럼 목록·묶음으로 감싼 출력 버림은 보지 않는다. `>& 파일`에서 파일이 fd 번호나 `-`가 아닌 단어여도 fd 복제로 보아 쓰기 목적지로 세지 않는다.
+
+변수는 같은 명령 앞의 대입(`export` 포함), hook 환경 순으로 푼다. `CLAUDE_PROJECT_DIR`처럼 hook 환경에만 있는 변수는 Bash 셸에서는 빈 값일 수 있어 판정 경로와 실제 쓰기 경로가 다를 수 있다.
+
+호출 사이의 `cd`는 다음 호출의 입력 `cwd`에 반영된다. **같은 명령 안의 `cd`는 따라가지 않는다**. 그래서 메모는 Write 도구나 저장소 기준·절대 경로로 쓰고, 같은 명령 안 `cd` 뒤의 상대 경로나 같은 명령 안에서 대입하지 않은 셸 변수 경로로 쓰지 않는다. 입력 `cwd` 기준으로 메모 경로가 아니거나 변수가 풀리지 않는 쓰기는 메모로 기록되지 않는다.
+
+메모 순서는 Claude 세션만 막으며 Codex는 계약과 독립 판정으로 확인한다. `claude --resume`의 같은 `session_id` 연결 여부는 실제 진입 확인 대상이다([goal 위험 2·3](../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#위험)).
 
 독립 회귀는 `node --test 99_Tools/SessionGuard.Tests/*.test.mjs`(PowerShell에서는 glob을 따옴표로 감싼다)다. [code-rules workflow](../.github/workflows/code-rules.yml)의 `Run independent SessionGuard regressions` 단계는 시험 부재/load 실패/nonzero를 실패 처리하고 `$RULES_OUTPUT/session-guard-independent-tests/`에 command/stdout/stderr/exit를 보존한다. 로컬 회귀·실제 Claude 세션 진입·원격 CI는 각각의 실행 근거로 확인한다.
 

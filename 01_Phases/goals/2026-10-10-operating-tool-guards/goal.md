@@ -12,15 +12,15 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR은 `feat/session-guard-liveness-20261010`(base main `cc20d428`, 선행 시험 뒤 main `bd4dbb5f`를 받음)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: 가드 독립 검증이 통과했다(「현재 결과 / 가드 독립 검증」). README 가드 절 한계 문장과 Orca 단계 이름을 고치는 문서 수정을 위임한다.
-- **남은 순서**: 문서 수정 → helper 독립 검증(문서 수정 검토 포함) → 도구 PR·CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **현재 위치**: 가드 독립 검증이 통과했고 문서 수정이 끝났다(「현재 결과」). helper 독립 검증을 위임한다.
+- **남은 순서**: helper 독립 검증(문서 수정 검토 포함) → 도구 PR·CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **사용자 차례**: 도구 PR 병합 승인 줄과 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
 - [x] 선행 시험 작성
-- [>] 가드 hook 구현·검증(독립 검증 통과, README 한계 문장 보완 중)
+- [x] 가드 hook 구현·검증(독립 검증 통과. README 가드 절 보완은 helper 독립 검증이 함께 검토)
 - [>] 간격 도구 구현·검증(구현 끝, 검증 전)
 - [ ] 도구 PR 병합
 - [ ] 결과 기록·Gardener
@@ -236,6 +236,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 생존 신호(helper): 신호 12, 최대 336초, 300초 초과 하나(09:41:09Z→09:46:45Z). README·CI 작성자에 이은 두 번째 발생이다. 같은 날 모든 파트 Dispatch 23개 중 18개가 300초를 넘어(최대 970초, E/lead-r2-verify-guard/liveness.json) 개인 이탈보다 운영 방식의 문제로 보인다. heartbeat 간격 변경은 이 goal의 「하지 않을 것」이라 메인에 사실만 올렸다. 정산 때 helper로 재는 규칙은 종료 기록 PR 4번이다.
 - 리드 수신 지연(리드 귀속): worker_done을 38분 31초 뒤(10:34:56Z)에 받았다. 메모리 회수로 꺼진 우편함 대기를 지시대로 다시 열지 않았고 pane 도착 알림이 없었다. 메인 안내 `msg_dd709a2a6008`로 확인했다.
 - 정산: 빈 프롬프트 확인, `worker-release` retained, `terminal close`(10:38:05Z).
+
+### 문서 수정
+
+- 작성자: 신규 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max」, backend unknown), Task `task_e75a0cfd4232`, Dispatch `ctx_db79432eaca9`, worker_done `msg_83be04c8bf20`. 기동 환경에 TEMP·TMP와 함께 `GIT_OPTIONAL_LOCKS=0`을 넣었다(메인 후보 `msg_41a586d79576`).
+- 결과: README 「세션 쓰기 가드」 절에 묶음 명령으로 감싼 출력 버림, `>& 파일`, hook 환경 변수, 호출 사이 `cd` 반영과 메모 쓰는 법을 더했다. Git 제외 링크는 이 goal 「현재 결과 / 구현」 링크와 현재형 문장으로 바꿨다. CI Orca 단계 이름을 `Run independent Orca regressions`로 고쳤다. SessionGuard 167·MergeGate 126·Backlog 60 통과, Orca 50/52다. 실패 둘은 옛 단계 이름 상수로 단계를 찾는 시험이며 helper 독립 검증자가 고친다.
+- 작성자 질문 둘(`msg_45f731df92e7`, `msg_bf1ece3206d2`)은 리드 계약 예시와 문장이 코드보다 넓거나 틀린 곳을 잡았다. 보충 1·2로 고쳤다(E/docs-fix-ask1-answer.md, E/docs-fix-ask2-answer.md).
+- 리드 R-2(E/lead-r2-docs-fix/r2-verdict.md): diff·문장 대 코드·링크·재실행 50/52가 보고와 같다. 생존 신호 최대 245초, 초과 0. 질문 대기 312초는 리드가 늦게 본 것이다.
 
 ### 첫 발생 기록
 

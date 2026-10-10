@@ -169,7 +169,7 @@ jobs:
           node --test 99_Tools/CodeRules.Tests/code-rules.test.mjs \
             > "$CODE_RULES_RESULTS/stdout.txt" 2> "$CODE_RULES_RESULTS/stderr.txt"
 
-      - name: Run independent Orca message policy regressions
+      - name: Run independent Orca regressions
         if: always()
         shell: bash
         run: |
