@@ -23,7 +23,7 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 조회는 MapEntryCoordinator의 HP·roster 바인딩과 `Ready` 대입이 끝난 통지에서 epoch마다 한 번 시작한다. 대기·실패·Ending에서는 조회하지 않는다. 같은 연결의 맵 이동 동안 기존 snapshot은 보존하지만 새 Ready 뒤 응답을 확인하기 전에는 최신 확인 완료나 사용 가능으로 표시하지 않는다. 응답이 없으면 5초 간격으로 한 회복 구간당 조회를 최대 3번 시도하고 멈춘다. 세션 소유 [InventoryTimeoutScheduler](../../03_Client/Assets/Scripts/Network/InventoryTimeoutScheduler.cs)는 하나의 timeout 등록을 유지하며 교체·취소·종료 때 등록과 callback을 제거한다. MainThreadDispatcher가 응답 기한을 메인 스레드에서 처리하고 예외를 격리한다. 응답 기한은 편집기 송신 지연 FIFO와 분리되며 옛 epoch/종료 callback은 무효화된다. 다음 Ready 또는 사용자 새로고침은 새 회복 구간을 시작할 수 있다. 주입하는 응답 시간 경계도 송신 지연의 `postDelayed`와 별도다.
 
-[HudController](../../03_Client/Assets/Scripts/UI/HudController.cs)의 골드는 InventoryState의 `HasSnapshot`·`Currency`를 읽고 `OnInventoryChanged` 통지 안에서 갱신한다. snapshot 전과 연결 종료 정리 뒤에는 숫자 대신 `—`를 보인다. 늦게 생기거나 교체된 미러에 다시 묶고, 교체·disable·destroy 때 실제로 구독한 참조에서 해제한다. 재화는 클라이언트에서 계산하지 않는다.
+[HudController](../../03_Client/Assets/Scripts/UI/HudController.cs)의 골드는 InventoryState의 `HasSnapshot`·`Currency`를 읽고 `OnInventoryChanged` 통지 안에서 갱신한다. snapshot 전과 연결 종료 정리 뒤에는 숫자 대신 `-`를 보인다. 늦게 생기거나 교체된 미러에 다시 묶고, 교체·disable·destroy 때 실제로 구독한 참조에서 해제한다. 재화는 클라이언트에서 계산하지 않는다.
 
 [InventoryPanel](../../03_Client/Assets/Scripts/UI/InventoryPanel.cs)은 게임플레이 씬의 패널 하나를 만들고 실제 구독한 미러와 요청 controller를 보관해 disable/destroy 또는 source 교체 때 같은 참조에서 해제한다. 늦게 생긴 UI도 현재 snapshot을 다시 표시한다. 「I」 키의 새 눌림마다 열림·닫힘을 바꾸며, 열림 상태의 단일 소유자는 [UnityClientSession](../../03_Client/Assets/Scripts/Network/UnityClientSession.cs)의 `IsInventoryPanelOpen`이다. 새 연결은 닫힘으로 시작하고 같은 연결의 맵 이동 뒤 새 패널도 마지막 상태를 따른다. 연결 cleanup은 끝난 세션의 Instance를 해제하므로 다음 세션은 다시 닫힘으로 시작한다. 닫힌 동안에도 패널의 구독과 연결의 Ready 재조회는 유지하고, 열 때 최신 snapshot을 다시 표시한다.
 

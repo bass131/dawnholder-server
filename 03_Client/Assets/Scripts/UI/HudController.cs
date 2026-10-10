@@ -116,7 +116,10 @@ namespace Dawnholder.Client.UI
             if (_inventorySource != null && _inventorySource.HasSnapshot)
                 UpdateGold(_inventorySource.Currency);
             else if (_goldText != null)
-                _goldText.text = "Gold: —";
+            {
+                // Use an ASCII hyphen supported by the HUD's static font atlas.
+                _goldText.text = "Gold: -";
+            }
         }
 
         void TryBindLatestEntry()
