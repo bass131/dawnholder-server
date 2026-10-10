@@ -1,0 +1,198 @@
+name: intro-site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '00_Document/intro-site/**'
+      - '.github/workflows/intro-site.yml'
+  pull_request:
+    paths:
+      - '00_Document/intro-site/**'
+      - '.github/workflows/intro-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  assemble:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Assemble only explicitly published files
+        id: assemble
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          export LC_ALL=C.UTF-8
+          site_dir=00_Document/intro-site
+          manifest="$site_dir/publish-files.txt"
+          line_number=1
+          edge_whitespace=$' \t\v\f\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000'
+
+          fail() {
+            local row="$1" message="$2 $3" status="${4:-1}"
+            # Escape annotation data so a filename cannot inject a workflow command.
+            message="${message//%/%25}"
+            message="${message//$'\r'/%0D}"
+            message="${message//$'\n'/%0A}"
+            printf '::error file=%s,line=%s::%s\n' "$manifest" "$row" "$message" >&2
+            exit "$status"
+          }
+          trap 'fail "$line_number" "Assembly tool or I/O failure." "Inspect the preceding error, restore runner tools/file access, and rerun." 2' ERR
+
+          for tool in iconv realpath install sha256sum stat find mktemp; do
+            command -v "$tool" >/dev/null || fail 1 "Required tool '$tool' is unavailable." "Restore the ubuntu-24.04 runner toolset and rerun." 2
+          done
+          if [[ -L 00_Document || -L "$site_dir" || -L "$manifest" ]]; then
+            fail 1 "The site directory or allowlist is a symlink." "Replace it with real directories and a regular publish-files.txt inside the checkout."
+          fi
+          if [[ ! -f "$manifest" ]]; then
+            fail 1 "Missing regular allowlist file '$manifest'." "Create publish-files.txt with one site-relative file path per line."
+          fi
+          site_root="$(realpath -e -- "$site_dir")"
+
+          # Bash read discards NUL bytes; reject them before parsing any paths.
+          if IFS= read -r -d '' nul_prefix < "$manifest"; then
+            nul_line_count="$(printf '%s' "$nul_prefix" | wc -l)"
+            fail "$((nul_line_count + 1))" "NUL byte in the allowlist." "Remove binary bytes and save plain UTF-8 text with LF line endings."
+          fi
+
+          entries=()
+          entry_rows=()
+          declare -A seen=()
+          line_number=0
+          while IFS= read -r entry || [[ -n "$entry" ]]; do
+            ((line_number += 1))
+            if [[ "$entry" == *$'\xEF\xBB\xBF'* ]]; then
+              fail "$line_number" "UTF-8 BOM in the allowlist." "Remove the BOM and save UTF-8 without BOM."
+            fi
+            if [[ "$entry" == *$'\r'* ]]; then
+              fail "$line_number" "CR byte in the allowlist." "Convert line endings to LF only."
+            fi
+            if ! printf '%s' "$entry" | iconv -f UTF-8 -t UTF-8 >/dev/null 2>&1; then
+              fail "$line_number" "Invalid UTF-8 text in the allowlist." "Save publish-files.txt as UTF-8 without BOM."
+            fi
+            if [[ "$entry" == [$edge_whitespace]* || "$entry" == *[$edge_whitespace] ]]; then
+              fail "$line_number" "Leading or trailing whitespace in '$entry'." "Remove whitespace at both ends of this line."
+            fi
+            [[ -z "$entry" || "$entry" == \#* ]] && continue
+
+            if [[ "$entry" == /* ]]; then
+              fail "$line_number" "Absolute path '$entry' is forbidden." "Use a path relative to $site_dir."
+            fi
+            if [[ "$entry" =~ ^[A-Za-z]: ]]; then
+              fail "$line_number" "Drive-qualified path '$entry' is forbidden." "Remove the drive prefix and use a site-relative path."
+            fi
+            if [[ "$entry" == *\\* ]]; then
+              fail "$line_number" "Backslash in '$entry' is forbidden." "Use '/' as the path separator."
+            fi
+            if [[ "$entry" == -* ]]; then
+              fail "$line_number" "Leading '-' in '$entry' is forbidden." "Rename the file and update this line without a leading '-'."
+            fi
+            if [[ "$entry" == */ || "$entry" == *//* ]]; then
+              fail "$line_number" "Empty path segment in '$entry'." "Remove repeated or trailing '/' separators."
+            fi
+            IFS=/ read -r -a segments <<< "$entry"
+            for segment in "${segments[@]}"; do
+              case "$segment" in
+                ''|.|..)
+                  fail "$line_number" "Invalid path segment '$segment' in '$entry'." "Use only nonempty file/directory names without '.' or '..' segments."
+                  ;;
+                .*)
+                  # The Pages uploader excludes hidden paths, including .git/.github.
+                  fail "$line_number" "Hidden path segment '$segment' in '$entry' is forbidden." "Rename the file/directory without a leading '.' and update this line."
+                  ;;
+              esac
+            done
+            if [[ "$entry" == README.md || "$entry" == publish-files.txt ]]; then
+              fail "$line_number" "Internal site file '$entry' must not be published." "Remove this line; keep the site README and allowlist out of the artifact."
+            fi
+            if [[ -n "${seen[$entry]+present}" ]]; then
+              fail "$line_number" "Duplicate path '$entry', first listed on line ${seen[$entry]}." "Keep exactly one line for this file."
+            fi
+
+            # Check every source component before resolving or copying a file.
+            source="$site_dir"
+            for segment in "${segments[@]}"; do
+              source="$source/$segment"
+              if [[ -L "$source" ]]; then
+                fail "$line_number" "Symlink '$source' in published path '$entry'." "Replace the symlink with a regular file/directory inside $site_dir."
+              fi
+            done
+            if [[ ! -e "$source" ]]; then
+              fail "$line_number" "Listed file '$entry' does not exist." "Add the intended file inside $site_dir or remove this line."
+            fi
+            if [[ -d "$source" ]]; then
+              fail "$line_number" "Listed path '$entry' is a directory." "List each intended regular file instead of the directory."
+            fi
+            if [[ ! -f "$source" ]]; then
+              fail "$line_number" "Listed path '$entry' is not a regular file." "Replace it with a regular file or remove this line."
+            fi
+            resolved="$(realpath -e -- "$source")"
+            if [[ "$resolved" != "$site_root/"* ]]; then
+              fail "$line_number" "Resolved path '$entry' is outside $site_dir." "Move the intended regular file inside the site directory and update this line."
+            fi
+            seen["$entry"]="$line_number"
+            entries+=("$entry")
+            entry_rows+=("$line_number")
+          done < "$manifest"
+
+          if [[ ${#entries[@]} -eq 0 ]]; then
+            fail 1 "The allowlist contains zero published files." "List at least one existing regular site file."
+          fi
+
+          # Validate the whole allowlist before creating an isolated public artifact.
+          artifact_dir="$(mktemp -d "$RUNNER_TEMP/intro-site.XXXXXX")"
+          for index in "${!entries[@]}"; do
+            line_number="${entry_rows[$index]}"
+            entry="${entries[$index]}"
+            install -D -m 0644 -- "$site_dir/$entry" "$artifact_dir/$entry"
+          done
+          file_count="$(find "$artifact_dir" -type f -printf '.' | wc -c)"
+          if [[ "$file_count" -ne "${#entries[@]}" ]]; then
+            fail "$line_number" "Artifact file count $file_count differs from allowlist count ${#entries[@]}." "Check conflicting paths and copy errors, then rerun assembly."
+          fi
+
+          printf 'Published file inventory (path, SHA256, bytes):\n'
+          for index in "${!entries[@]}"; do
+            line_number="${entry_rows[$index]}"
+            entry="${entries[$index]}"
+            digest="$(sha256sum -- "$artifact_dir/$entry")"
+            size="$(stat --format=%s -- "$artifact_dir/$entry")"
+            printf 'file=%s sha256=%s size=%s\n' "$entry" "${digest%% *}" "$size"
+          done
+          printf 'Published files: %s\n' "$file_count"
+          printf 'path=%s\n' "$artifact_dir" >> "$GITHUB_OUTPUT"
+
+      - name: Upload the public site artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ${{ steps.assemble.outputs.path }}
+
+  deploy:
+    needs: assemble
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    # Only the main deployment needs Pages/OIDC writes; assembly stays read-only.
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: intro-site-pages
+      cancel-in-progress: false
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

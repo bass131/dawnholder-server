@@ -4,6 +4,8 @@
 
 > .NET 10 권위 서버와 Unity 6 클라이언트로 구현한 2D MMORPG 프로토타입.
 > KNUT 4인 캡스톤 프로젝트에서 서버와 AI 협업 환경을 설계·구현했습니다. (팀장 유영호)
+>
+> 게임 소개 페이지: <https://bass131.github.io/dawnholder-server/>
 
 ---
 
