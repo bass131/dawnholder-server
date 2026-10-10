@@ -16,11 +16,11 @@ PR1 설계 문서의 해당 절을 이 내용으로 고친다.
 | 번호 | 바꿀 것 | 이유(PR1 판정) | 관찰 가능한 결과 |
 |---|---|---|---|
 | B-1 | 명시한 `--config` 파일이 없으면 시작하지 않는다. 설정 파일의 모르는 키도 거부한다 | 관찰 4: 경로 오타 하나로 실제 데이터 폴더·7777 잠금을 쓴다 | 0이 아닌 종료 코드, 출력에 `config` 또는 모르는 키 이름, `connection.json` 없음 |
-| B-2 | `backend-wsl.sh run`은 기본 설정 파일이 없으면 `release.sourceRepository`만 적은 기본 설정 파일을 만들고 한 줄 출력한다. 값은 그 스크립트가 속한 checkout의 Git 객체 저장소를 가진 작업 트리다. `.git`이 폴더면 그 checkout이다. `.git`이 `gitdir: <Windows 경로>/.git/worktrees/<이름>` 파일이면 `wslpath`로 바꾼 뒤 `/.git/worktrees/<이름>`을 뗀 원래 clone이다. 정할 수 없으면 만들지 않는다 | PR1에서 `sourceRepository` 기본값이 없어 운영 버전을 만들 수 없다. 이 PC의 운영툴 checkout은 worktree라 `.git`이 Windows 경로를 가리켜 WSL Git이 그 폴더를 저장소로 읽지 못한다. worktree의 commit은 원래 clone과 같은 객체 저장소에 있다 | 일반 clone·worktree·이미 있는 파일 세 경우에 각각 그 checkout·원래 clone(이 PC는 `/mnt/c/Dev/DawnHolder_Project`)·변경 없음 |
+| B-2 | `backend-wsl.sh run`은 기본 설정 파일이 없으면 `release.sourceRepository`만 적은 기본 설정 파일을 만들고 한 줄 출력한다. 값은 그 스크립트가 속한 checkout의 Git 객체 저장소를 가진 작업 트리다. `.git`이 폴더면 그 checkout이다. `.git`이 `gitdir: <Windows 경로>/.git/worktrees/<이름>` 파일이면 `wslpath`로 바꾼 뒤 `/.git/worktrees/<이름>`을 뗀 원래 clone이다. 정할 수 없으면 만들지 않는다(`init-config`는 이유를 출력하고 0이 아닌 코드로 끝나며, `run`은 경고 한 줄 뒤 계속해 실행본 API가 `releaseSourceNotConfigured`를 낸다). 이 단계만 하고 끝나는 `backend-wsl.sh init-config`도 둔다. 이 동작은 WSL 복사본 잠금·복사·빌드보다 앞에서 처리한다 | PR1에서 `sourceRepository` 기본값이 없어 운영 버전을 만들 수 없다. 이 PC의 운영툴 checkout은 worktree라 `.git`이 Windows 경로를 가리켜 WSL Git이 그 폴더를 저장소로 읽지 못한다. worktree의 commit은 원래 clone과 같은 객체 저장소에 있다 | `HOME`을 임시 폴더로 둔 `init-config`가 일반 clone·worktree·이미 있는 파일 세 경우에 각각 그 checkout·원래 clone(이 PC는 `/mnt/c/Dev/DawnHolder_Project`)·변경 없음 |
 | B-3 | 상태 조회는 서버가 꺼져 있을 때 공유 7777 잠금을 잡지 않는다. 다른 실행의 보유 여부는 `/proc/locks`에서 그 파일 inode의 `FLOCK` 항목으로 읽는다 | 관찰 7: 화면이 2초마다 물으면 개발 helper가 잘못 거부될 수 있다 | 상태 조회 중 다른 프로세스의 `flock -n`이 항상 성공, `portLockHeldByOther`는 그대로 맞음 |
 | B-4 | 로그 조회와 보존 정리는 파일 목록만 수집 잠금 안에서 정하고 읽기는 잠금 밖에서 한다. 상태 응답은 로그 잠금을 기다리지 않는다 | 관찰 1: 1 GiB 조회 동안 상태 응답이 2초 기다린다 | 1 GiB 조회 중 보낸 상태 조회가 0.5초 안에 답한다(측정 조건은 시험 계약) |
-| B-5 | `backend-wsl.sh run`은 Release 구성으로 빌드·실행한다 | 관찰 3 | `run`의 실행 파일 경로가 Release 출력 |
-| B-6 | 시험 helper의 빈 포트 고르기를 포트를 잡아 둔 채 넘기는 방식으로 바꾸고, B1의 실패 메시지에 상태 JSON과 포트를 넣는다(시험 소유자 작업) | B1 실패: 다른 세션 시험과 빈 포트 경합 | 같은 시험 명령이 동시 세션이 있어도 B1에서 흔들리지 않음 |
+| B-5 | `backend-wsl.sh run`은 Release 구성으로 빌드·실행한다 | 관찰 3 | 실제 진입에서 백엔드 프로세스의 명령줄(`/proc/<pid>/cmdline`)이 Release 출력 경로 |
+| B-6 | B1이 다른 세션의 같은 포트 사용과 겹쳐도 판정이 흔들리지 않게 하고, 실패 메시지에 상태 JSON과 포트를 넣는다. 방식은 시험 작성자가 정한다(시험 소유자 작업) | B1 실패: 다른 세션 시험과 빈 포트 경합 | 다른 프로세스가 고른 포트에서 대기하는 상황을 시험이 만들어도 B1의 판정이 그 원인을 구분하고, 실패 때 상태 JSON·포트가 출력에 보임 |
 
 관찰 2(게임 서버가 WSL 복사본 잠금 fd를 물려받음)는 PR3, 관찰 5·6·8은 화면 표시와 창 쪽 응답 검증으로 다룬다(아래).
 
@@ -99,7 +99,7 @@ preload는 새 객체 `serverOperations` 하나를 노출한다. 채널은 `serv
 ## 시험
 
 - **선행 시험(신규 `claude-opus-5-5`):**
-  - 백엔드: B-1·B-2·B-3·B-4·B-5를 PR1과 같은 블랙박스 방식으로 더하고 B-6을 고친다. 같은 시험 명령(E/`pr1-tests/run-tests.sh`)을 쓴다.
+  - 백엔드: B-1·B-2·B-3·B-4를 PR1과 같은 블랙박스 방식으로 더하고 B-6을 고친다. B-5는 시험 명령으로 `run`을 돌리지 않으므로 독립 검증의 실제 진입에서 확인한다. 같은 시험 명령(E/`pr1-tests/run-tests.sh`)을 쓴다.
   - 창 쪽: 계약 모듈(입력·응답 검증, 오류 메시지 표, WSL 경로 바꾸기), 연결 객체(자식 프로세스·HTTP·파일 읽기를 주입한 대역으로 시작·붙기·시간 초과·끊김·종료 순서), IPC handler(발신자 거부, 입력 거부, commit이 HEAD와 다를 때 거부), preload API 목록, 화면(연결 상태별 표시, 버튼 활성·비활성, 강제 종료 확인, 로그의 「수집 시각」, 상태 순번).
   - 기존 시험의 바뀌는 단정(미연결 고정, 채널 목록)은 요구 출처와 함께 고친다. 기존 실패 B01·B09는 지금 실패 그대로 분류만 한다.
 - **구현:** 백엔드 조정과 창 쪽 구현을 각각 계약으로 나눈다.
