@@ -4,12 +4,14 @@
 
 - Core: [실제 SQL 설치·저장소 통합](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/persistence-engine-judgment-20261006`
 
+- <a id="content-worktree"></a>Content: [던전 클리어·보상과 눈에 띄는 결함 둘](../../01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `fix/hud-gold-inventory-panel-20261010`
+
 - World: [인스턴스 맵 — 파티별 사냥터·보스방 복사본](../../01_Phases/goals/2026-10-10-instance-map-lifecycle/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/instance-map-closeout-20261010`
 
 - Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
 - Rules: [규칙·운영 V1.x 1단계 — 세션 쓰기 가드와 생존 신호 간격 도구](../../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `feat/session-guard-liveness-20261010`
 
-CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
+Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 
 [다음 세션 재개 절차](RESUME.md) · [정본 반영 전 적용 결정](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#적용-중인-사용자-결정)

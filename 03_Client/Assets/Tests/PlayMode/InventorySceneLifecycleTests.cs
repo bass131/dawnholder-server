@@ -128,6 +128,31 @@ namespace Dawnholder.Client.Tests.PlayMode
                 .GetField(eventField, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(owner);
             return handler == null ? 0 : handler.GetInvocationList().Length;
         }
+
+        // The objects an event calls back. The HUD also follows the mirror (dungeon goal R1), so the panel's own
+        // subscription is told apart from the HUD's by target.
+        internal static object[] Targets(object owner, string eventField)
+        {
+            var handler = (Delegate)owner.GetType()
+                .GetField(eventField, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(owner);
+            return handler == null ? Array.Empty<object>() : handler.GetInvocationList().Select(d => d.Target).ToArray();
+        }
+
+        // A connection's first map starts with the panel closed and I opens it (dungeon goal R5, R4), so checks of
+        // the open panel's display, clicks and layout open it as a player does, after gameplay Ready.
+        internal static IEnumerator OpenWithI(MapEntryPlayFixture fixture)
+        {
+            bool shownBefore = Group.alpha > 0f;
+            bool raycastsBefore = Group.blocksRaycasts;
+            fixture.Keys(Key.I);
+            yield return fixture.Frames(2);
+            fixture.Keys();
+            yield return fixture.Frames(2);
+            Assert.IsFalse(shownBefore, "dungeon R5 the panel is closed before I");
+            Assert.IsFalse(raycastsBefore, "dungeon R6 the closed panel takes no raycasts");
+            Assert.AreEqual(1f, Group.alpha, "dungeon R4 I opens the panel");
+            Assert.IsTrue(Group.blocksRaycasts, "dungeon R4 the open panel's buttons take raycasts");
+        }
     }
 
     // R8 "기존 HUD … 겹침·입력 차단이 없는지" (opus-pr2-fix1 #4) on the live scene objects. Screen rectangles are read
@@ -387,6 +412,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         public IEnumerator RealTown_ShowsTheSnapshot_AndAPointerClickUsesThePouchOnceUntilItsSnapshot()
         {
             yield return ReadySyncedTown();
+            yield return InventoryPanelProbe.OpenWithI(_fixture);
             Debug.Log($"[PR2 verifier] Town screen {Screen.width}x{Screen.height}");
             Assert.AreEqual("재화 10", InventoryPanelProbe.Currency);
             Assert.AreEqual("재료 ×2", InventoryPanelProbe.Slot(0));
@@ -468,7 +494,11 @@ namespace Dawnholder.Client.Tests.PlayMode
             Assert.AreEqual("재화 20", InventoryPanelProbe.Currency);
             Assert.AreEqual("재료 ×3", InventoryPanelProbe.Slot(0));
             Assert.IsTrue(InventoryPanelProbe.Interactable(InventoryPanelProbe.Use(1)));
-            Assert.AreEqual(1, InventoryPanelProbe.Subscribers(mirror, "OnInventoryChanged"), "R8 the old panel left the mirror");
+            object[] mirrorTargets = InventoryPanelProbe.Targets(mirror, "OnInventoryChanged");
+            Assert.AreEqual(1, mirrorTargets.Count(target => target is InventoryPanel), "R8 the old panel left the mirror");
+            Assert.Contains(InventoryPanel.Instance, mirrorTargets, "R8 the new panel follows the mirror");
+            Assert.AreEqual(1, mirrorTargets.Count(target => target is HudController), "dungeon R1 the map's HUD follows the mirror once");
+            Assert.AreEqual(2, mirrorTargets.Length, "nothing else follows the mirror");
             Assert.AreEqual(1, InventoryPanelProbe.Subscribers(requests, "Changed"), "R8 the old panel left the requests");
 
             _fixture.Peer.Send(new S_MapTransition { destMapId = 3, spawnX = 0, spawnY = 0 }.Write());
@@ -486,6 +516,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         public IEnumerator PauseMenu_StopsPanelInput_AndResumeRestoresIt()
         {
             yield return ReadySyncedTown();
+            yield return InventoryPanelProbe.OpenWithI(_fixture);
             _fixture.Keys(Key.Escape);
             yield return MapEntryPlayFixture.Wait(() => Time.timeScale == 0f, "Escape opens the pause menu", 3);
             _fixture.Keys();
@@ -573,6 +604,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         public IEnumerator PanelPointerClicks_StartNoAttack_WhileWorldClicksAndKeyboardOverThePanelStillAttack()
         {
             yield return ReadySyncedTown();
+            yield return InventoryPanelProbe.OpenWithI(_fixture);
             LocalPlayerMovement player = _fixture.Player;
             yield return InventoryPanelProbe.AttackReady(player);
             int attacks = _fixture.Peer.Count(PacketID.C_Attack);
@@ -634,6 +666,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             InventoryPanelProbe.AssertEveryLabelIsDrawn();
             _fixture.Hp();
             yield return _fixture.WaitMap(0);
+            yield return InventoryPanelProbe.OpenWithI(_fixture);
             yield return WaitQueries(1);
             _fixture.Peer.Send(Snapshot(1, 1_000_000_000, (ItemId.Material, 99), (ItemId.CoinPouch, 99)));
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "maximum snapshot", 3);
@@ -683,6 +716,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             yield return _fixture.EnterScriptedTown();
             _fixture.Hp();
             yield return _fixture.WaitMap(0);
+            yield return InventoryPanelProbe.OpenWithI(_fixture);
             yield return WaitQueries(1);
             _fixture.Peer.Send(Snapshot(1, 1_000_000_000, (ItemId.Material, 99), (ItemId.CoinPouch, 99)));
             yield return MapEntryPlayFixture.Wait(() => InventoryPanelProbe.Status == "서버 확인 완료", "maximum snapshot", 3);
