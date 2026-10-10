@@ -28,7 +28,7 @@
 
 ## main 맞춤과 합류점
 
-규칙 문서(AGENTS·CLAUDE·ORCA·스킬·`.claude/settings.json`) PR이 병합되면 살아 있는 리드는 다음 안전 지점에 최신 main을 자기 branch로 받는다. 안전 지점은 새 계약·세션을 열기 전이다. 닫혀 있던 파트는 재진입 첫 일로 받는다. 떠 있는 세션은 시작 때 읽은 지침·hook을 쓴다. 바뀐 규칙은 새 세션부터 반영된다. 출처는 사용자 결정 [「worktree 규칙 맞춤 → A 열 때 맞춤 + 규칙화」](../../../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#적용-중인-사용자-결정)다.
+규칙 문서(AGENTS·CLAUDE·ORCA·스킬·`.claude/settings.json`) PR이 병합되면 살아 있는 리드는 다음 안전 지점에 최신 main을 자기 branch로 받는다. 안전 지점은 새 계약·세션을 열기 전이다. 닫혀 있던 파트는 재진입 첫 일로 받는다. 떠 있는 세션은 시작 때 읽은 지침을 쓰고 바뀐 지침은 새 세션부터 반영된다. 다만 `.claude/settings.json`의 hook은 실행 중인 Claude 세션에도 다음 도구 호출부터 실린다([세션 쓰기 가드](../../../../99_Tools/README.md#세션-쓰기-가드)). 출처는 사용자 결정 [「worktree 규칙 맞춤 → A 열 때 맞춤 + 규칙화」](../../../../01_Phases/goals/2026-10-08-tdd-canon-temp-write-boundary/goal.md#적용-중인-사용자-결정)다.
 
 합류점 J는 사용자가 정한 병합 커밋이다. 커밋 없이 goal만 정했으면 그 goal의 마지막 PR 병합 커밋이다. J 전에는 끝난 PR만 main에 받는다. 메인이 J 해시를 현황판과 각 파트 재개 계약에 적는다.
 
