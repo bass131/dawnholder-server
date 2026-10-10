@@ -4,9 +4,7 @@
 
 - Core: [실제 SQL 설치·저장소 통합](../../01_Phases/goals/2026-10-04-persistence-integration/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-active` · `feat/persistence-engine-judgment-20261006`
 
-- <a id="content-worktree"></a>Content: [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `feat/items-inventory-ui-20261005`
-
-- Content(Unity 업그레이드): [Unity 엔진 6.6·AI Assistant 업그레이드](../../01_Phases/goals/2026-10-07-unity-engine-upgrade/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/unity-upgrade-active` · `docs/unity-upgrade-closeout-20261008`
+- <a id="content-worktree"></a>Content: [아이템·인벤토리·재화](../../01_Phases/goals/2026-10-05-items-inventory-currency/goal.md#재개-지점) · [Content worktree 안내](#content-worktree) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active` · `docs/items-inventory-closeout-20261010`
 
 - Rules: [규칙·운영 V1.0 — 후보 도착 검사와 합류점 절차](../../01_Phases/goals/2026-10-09-plan-boundary-and-junction/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/ops-v1-canon-20261009`
 
