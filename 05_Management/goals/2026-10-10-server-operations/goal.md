@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 22:16 KST, PR2 창 쪽 구현 commit 뒤.**
+**기록 시점: 2026-10-10 22:57 KST, PR2 독립 검증 1차 NOT PASS 처리 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 창 쪽 구현을 원천 대조해 commit했다(아래 「PR2 창 쪽 구현 결과」). 다음은 PR2 전체 독립 검증 1회(실제 진입 포함), PR 생성, 메인에 병합 승인 요청 순서다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 창 쪽 구현을 원천 대조해 commit했다(아래 「PR2 창 쪽 구현 결과」). PR2 독립 검증 1차가 NOT PASS(결함 #1, 한 줄 압축)였다(아래 「PR2 독립 검증 결과(1차)」). 다음은 결함 #1과 설계 관찰 (a)·(h)의 수정 계약(새 구현 세션) → 새 검증자의 재검증 → PR 생성 → 메인에 병합 승인 요청 순서다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -279,3 +279,18 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 리드 표본 대조(일치): 두 실행 `vitest.json`의 셈과 실패 이름, 시험 파일 diff·status 빈 출력, `git status`의 바뀐 파일이 제품 8파일과 리드 goal뿐, Codex 세션 기록에서 메모 쓰기(12:58:39Z)가 첫 제품 쓰기(12:59:56Z)보다 앞섬, 파일 쓰기 17건이 모두 허용 경로, 선행 시험 작성자의 임시 참조 구현·`self-check`를 연 명령 0건(재귀 탐색도 `.backups/tmp` 밖), 남은 electron·`wsl.exe`·Vitest 프로세스 0, 코드 표본(`pidLives`의 `kill -0`, 목록 5000 ms, 지정 30000 ms).
 - 보고와 원천의 불일치 1건(비차단, 메인에 알림): 보고는 「`node_modules/.vite*` 캐시 갱신 관측 0건」이라 했지만 `.vite/vitest/…/results.json`이 13:09:37Z에 바뀌었다. 구현자 감사 스크립트가 기준 시각 `[DateTime]'2026-10-10T12:57:56Z'`를 현지 시각으로 바꿔 UTC 파일 시각과 비교해 모두 걸렀다. 계약상 기록만 하는 gitignore 캐시라 범위 위반은 아니다.
 - 리드 관찰(판정은 검증자): `backend-connection.ts`의 `releaseOperation`이 한 줄에 삼항 세 개로 방법·경로·상한을 고른다(CODE_CONVENTION 「TypeScript·Electron 작성」의 한 줄 압축 기준).
+- 불일치는 메인에 status `msg_ec2f3fe92a34`로 알렸다.
+- PR2 독립 검증 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, Claude Code v2.1.296, backend 실제 모델 unknown). Task `task_de51a4f93721`, Dispatch `ctx_690d5cc1fbba`, `turn_started` 관측. 계약 E/`contracts/pr2-verify-task.md` SHA256 `58213f2844383b0710c958be9331c40ef25cc90ff6e236dc5f3545e6110063e9`, 기준 HEAD `5406af30`, `verifies` 두 구현 Task. 범위: 실사, 독립 시험(시험이 덮지 않던 설계 요구 셋 필수), 시험 명령 둘, 7777 실제 진입 1회(보조 디스플레이의 실제 Electron 창, 이 PC의 `init-config` 값, B-3·B-5 관측). 띄우기 직전 커밋 여유 15.65 GB(13:18:20Z).
+
+### PR2 독립 검증 결과(1차)
+
+- worker_done `msg_d9e9ec19c69a`(succeeded, 발신·Task·Dispatch 일치). 판정 E/`pr2-verify/verdict.md`: **NOT PASS — 결함 #1(낮음, 차단).** 백엔드 Task에는 결함이 없다.
+  - 결함 #1(창 쪽 Task, 적용 규칙 위반): 「TypeScript·Electron 작성」의 한 줄 압축. `electron/backend-connection.ts:410`(160자, 같은 조건의 삼항 셋)·`:40`(중첩 삼항), `src/App.tsx:88`(354자)·`:104`(223자, 둘 다 이번 diff로 바뀐 줄). 동작 영향은 관측되지 않았다.
+  - 결함 #2(창 쪽 Task, 비차단): 구현 보고의 캐시 갱신 0건 주장. 위 「PR2 창 쪽 구현 결과」의 불일치와 같다.
+- 수행: 새 시험 5파일 20건(시험이 덮지 않던 설계 요구 셋, 실제 `node:http` 머리·상한, B-4 수집 중 로그 조회). 창 쪽 같은 명령 독립 시험 전 1333/1331/2/0 → 뒤 1352/1350/2/0(기존 실패 2건), typecheck 3종 exit 0. 백엔드 같은 명령 98/98 → 독립 시험 뒤 1회차 99건 중 E4 1건 `portBusy` 실패(원인 미확정, 빈 포트 경합 추정) → 재실행 99/99. 이 PC의 `init-config`는 `/mnt/c/Dev/DawnHolder_Project`, mode 600.
+- 7777 실제 진입 1회(13:41:53Z~13:42:27Z, 17 체크 통과): 보조 디스플레이 `24G2W1G4`에 창을 두고 앱 내부 수단만 썼다. 연결 6.4초, 백엔드 명령줄이 Release DLL(B-5), 서버 정지 중 상태 주기 동안 공유 잠금 `flock -n` 100/100 성공(B-3), HEAD `5406af30` 운영 실행본 실제 빌드 3.3초 → 지정 → 시작(7777 대기 pid = 상태 pid 1127, 실행 중 잠금 거부) → 로그 6줄 → 정상 종료(화면 「마지막 종료: 정상 · 종료 코드 0」) → 트레이 종료. 사후 7777·잠금·프로세스 정리, 두 checkout 무변화. 확인 창 대역(선택)은 안 했다.
+- 7777 알림: 시작 전 Core·World·Content 리드에 `msg_3e8ec415aa1c`·`msg_aa9342921ade`·`msg_6cab18db7fe2`, 검증자 진행 답 `msg_9b0aadc24fe9`, 종료 뒤 `msg_9ff5ff17ef61`·`msg_2a55b70b0e80`·`msg_370310577d77`. 리드가 시작 전(13:41:19Z)·종료 뒤(13:43:04Z) 7777·잠금·남은 프로세스를 직접 확인했다.
+- 리드 표본 대조(일치): 결함 #1 네 줄의 실제 길이·모양과 `App.tsx` 두 줄이 이번 diff의 줄임, E4 실패 줄(`HTTP 409 portBusy`)과 재실행 `results.trx` 99/99, 창 쪽 독립 시험 뒤 `vitest.json` 1352/1350/2/0, `git status`의 미추적이 새 시험 5파일뿐, 실제 진입 `events.ndjson`과 운영 실행본 빌드 로그(새 작업 폴더의 restore·컴파일).
+- 리드 판단(수정 범위, `goal-loop` 범위 안 결함): 결함 #1과 설계 관찰 (a)·(h)를 한 수정 계약으로 고친다. (a)는 새 연결 파일 판정을 「`pid`와 `startedAt`이 둘 다 다름」으로 읽어, WSL이 유휴 종료 뒤 다시 켜져 새 백엔드가 낡은 연결 파일과 같은 pid를 받으면 120초 `startTimeout`이 날 수 있다는 지적이다(추론, 미측정). PR1 검증에서 WSL 유휴 재시작을 두 번 관측했고, 선행 시험 K2는 둘 다 다른 경우만 다뤄 기준을 `startedAt`으로 바꿔도 깨지지 않는다. (h)는 같은 판정 식이 두 곳에 있어 함께 한 곳으로 모은다. 설계 「시작과 붙기」 4를 그 기준으로 고친다.
+- 미루는 설계 관찰(PR4 문서 정리 때 BACKLOG 반영을 판단): (b) 다른 탭에 있는 동안 하단 연결 상태가 낡을 수 있음, (c) 백엔드 ASP.NET Information 로그가 2초 상태 요청마다 창 콘솔로 흐름, (d) 실행본 목록 조회가 실패하면 checkout HEAD도 안 보임, (e) 트레이 종료의 `shuttingDown`이 한 번 실패하면 다시 시도할 수 없음, (f) 로그 기간 버튼이 다음 주기까지 다시 읽지 않음(설계상 허용), (g) 서버를 시작하는 백엔드 시험이 B-6의 포트 묶어 두기를 쓰지 않음(E4 1회 실패의 그럴듯한 원인, 시험 소유자 후속).
+- 리드 절차 실수 1건(첫 발생 기록): 판정 처리 중 우편함 대기를 `run_in_background`가 아닌 셸 `&`로 한 번 띄웠다. 내 프로세스(Orca CLI)만 끄고 정본 방식으로 다시 열었다(wait44). 그 사이 받은 메시지는 없다(대기 출력은 keepalive 한 줄).

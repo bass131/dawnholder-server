@@ -54,7 +54,7 @@ PR1 설계 문서의 해당 절을 이 내용으로 고친다.
 1. 앱이 준비되면 자동으로 연결을 시작한다.
 2. 먼저 이미 도는 백엔드가 있는지 본다. `wsl.exe -d Ubuntu --exec cat <연결 파일>`로 연결 파일을 읽는다. 그 pid가 살아 있고(`wsl.exe -d Ubuntu --exec kill -0 <pid>`가 0으로 끝남) 그 비밀값으로 `GET /api/status`가 200이면 그 백엔드에 붙는다. 이 경우 자식 프로세스는 없다.
 3. 없으면 `wsl.exe -d Ubuntu --exec bash <checkout의 WSL 경로>/05_Management/backend/backend-wsl.sh run`을 자식으로 띄운다. checkout의 WSL 경로는 `main.ts`의 checkout 위치(`C:\…`)를 `/mnt/<소문자 드라이브>/…`로 바꾼 값이다. 셸 문자열을 만들지 않고 인자 배열로 넘긴다.
-4. 새 연결 파일이 생기고(이전 파일과 `startedAt`·`pid`가 다름) `GET /api/status`가 200이 될 때까지 기다린다. 상한은 120초다(첫 빌드 포함). 넘으면 자식을 끝내고 `disconnected: startTimeout`.
+4. 새 연결 파일이 생기고(이전 파일과 `startedAt`이 다름) `GET /api/status`가 200이 될 때까지 기다린다. `pid`로는 가르지 않는다. WSL이 유휴 종료 뒤 다시 켜지면 남은 이전 파일의 pid 번호를 새 백엔드가 다시 받을 수 있다(PR2 검증 관찰). 상한은 120초다(첫 빌드 포함). 넘으면 자식을 끝내고 `disconnected: startTimeout`.
 5. 연결 파일 위치: 기본은 WSL `$HOME/.local/share/dawnholder/management/connection.json`이다. `$HOME`은 `wsl.exe -d Ubuntu --exec printenv HOME`으로 한 번 읽는다. 기본 설정 파일에서 `dataDirectory`를 바꾸면 창 프로세스가 연결 파일을 찾지 못한다. V1.0은 기본 데이터 폴더만 지원하고, 시간 초과 안내에 이 가능성을 적는다.
 6. 검증용 바꿈: 환경 변수 `DAWNHOLDER_MANAGEMENT_BACKEND_CONFIG`(WSL 경로)가 있으면 `run --config <그 경로>`로 넘기고, `DAWNHOLDER_MANAGEMENT_DATA_DIR`(WSL 경로)가 있으면 그 아래 연결 파일을 읽는다. 둘은 함께 주거나 함께 비운다. 하나만 있으면 연결하지 않고 `disconnected: invalidOverride`.
 7. 자식의 표준 출력·오류는 창 프로세스 콘솔에 줄 단위로 넘기되 비밀값이 섞일 수 있는 연결 파일 내용은 어디에도 기록하지 않는다.
