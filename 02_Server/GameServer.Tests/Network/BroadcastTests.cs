@@ -78,7 +78,7 @@ public class BroadcastTests : IDisposable
         });
         _world = new GameWorld(new Dictionary<MapId, (MapTerrain?, MapContent?)>
         { [MapId.HuntingGround] = (null, content) });
-        _map = _world.GetMap(MapId.HuntingGround)!;
+        _map = _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(7));
 
         _consoleCapture = new StringWriter();
         _originalOut = Console.Out;

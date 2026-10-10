@@ -65,21 +65,24 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
         AssertQueriedState(knight, revision: 1, currency: 10, (MaterialId, 1));
     }
 
-    // Positive control: Town portal 1 leads to HuntingGround, which the world ticks after Town, so
-    // the player is already in the destination map when the economy drains.
+    // Positive control: a pre-existing instance is in this tick's snapshot after Town (IM-16).
+    // A newly created instance would arrive on the next tick and would not exercise this control.
     [Fact]
     public void KillThenPortalToALaterTickedMap_InOneTick_RewardsTheKiller()
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
         StandAt(_world.Map, knight, 20f);
         EnemyEntity enemy = _world.Map.SpawnEnemy(EnemyKind.Normal, 21f, 0f, maxHp: 1);
+        GameMap destination = _world.GetOrCreateInstance(MapId.HuntingGround, InstanceKey.ForSolo(knight.EntityId));
 
         SubmitMelee(knight, enemy);
         EnterPortal(knight, portalId: 1);
         Tick();
         bool enemyKilledInThatTick = !_world.Map.Enemies.ContainsKey(enemy.EntityId);
+        Assert.NotNull(destination.GetPlayer(knight.EntityId));
         Settle();
-        bool killerArrivedInHuntingGround = _world.GetMap(MapId.HuntingGround)!.GetPlayer(knight.EntityId) != null;
+        bool killerArrivedInHuntingGround = _world.TryGetInstance(MapId.HuntingGround, InstanceKey.ForSolo(knight.EntityId), out GameMap? arrived) &&
+            arrived!.GetPlayer(knight.EntityId) != null;
 
         Assert.True(enemyKilledInThatTick, "fixture: the melee job must kill before the portal job runs");
         Assert.True(killerArrivedInHuntingGround, "fixture: the portal job must move the killer");
@@ -290,8 +293,8 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
         StandAt(_world.Map, session, 20f);
         EnterPortal(session, portalId: 1);
         Settle();
-        GameMap hunting = _world.GetMap(MapId.HuntingGround)!;
-        Assert.True(hunting.GetPlayer(session.EntityId) != null, "fixture: Town portal 1 must reach HuntingGround");
+        Assert.True(_world.TryGetInstance(MapId.HuntingGround, InstanceKey.ForSolo(session.EntityId), out GameMap? hunting));
+        Assert.True(hunting!.GetPlayer(session.EntityId) != null, "fixture: Town portal 1 must reach HuntingGround");
         return hunting;
     }
 

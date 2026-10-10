@@ -84,7 +84,7 @@ public sealed class ServerHostLifecycleTests
         Assert.Equal(0, OwnedConnections(host));
         Assert.Null(host.LocalEndPoint);
         Assert.Null(GameWorld.Instance);
-        Assert.All(Enum.GetValues<MapId>(), id => Assert.Empty(world.GetMap(id)!.Players));
+        Assert.All(world.AllLiveMaps, map => Assert.Empty(map.Players));
         using CancellationTokenSource timeout = new(Limit);
         byte[] remaining = new byte[4096];
         while (await stream.ReadAsync(remaining, timeout.Token) != 0) { }

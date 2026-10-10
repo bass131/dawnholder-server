@@ -27,7 +27,7 @@ namespace Dawnholder.Server.GameServer.Tests.Maps;
 ///  10. S_PlayerLeave entityId 정합 — 떠난 플레이어의 id로 broadcast
 ///
 /// **테스트 전략**:
-///   - TestMigrationSession: GetMap(current) + GetDestMap(dest) override로 GameWorld 없이 두 맵 주입
+///   - TestMigrationSession: GetMap(current) + ResolveDestination(current, id, dest) override로 GameWorld 없이 두 맵 주입
 ///   - portal 근접 조건: player 위치를 portal 좌표(±1.5unit) 안으로 수동 세팅
 ///   - Town portal: portalId=1, position x=20, dest=HuntingGround, destSpawn (2,0)
 ///   - HuntingGround portal: portalId=1, position x=25, dest=BossRoom, destSpawn (22,0)
@@ -50,18 +50,26 @@ public class MapMigrationTests : IDisposable
 
     // --- nested session 클래스들 ---
 
-    // disconnect-during-migration 결정론적 재현용 세션.
-    // GetDestMap override에서 OnDisconnected를 *동기적으로* 호출 —
-    // "맵 A RemovePlayer 완료 직후, 맵 B EnqueueJob 직전" 시점을 정확히 포착.
-    // 결과: destMap 람다 실행 시 _closing=1 → AddPlayerWithId skip → ghost 없음.
-    class DisconnectOnGetDestSession : GameSession
+    // 목적지 확보는 출발 전(IM-01). 끊김은 목적지 EnqueueJob에서 일으켜 제거 후 경계를 보존한다.
+    class DisconnectOnArrivalMap : GameMap
+    {
+        internal Action? BeforeArrivalQueued;
+        internal DisconnectOnArrivalMap() : base(MapId.HuntingGround) { }
+        public override void EnqueueJob(Action job)
+        {
+            BeforeArrivalQueued?.Invoke();
+            base.EnqueueJob(job);
+        }
+    }
+
+    class DisconnectOnArrivalSession : GameSession
     {
         GameMap _currentMap;
         readonly GameMap _destMap;
         public List<byte[]> SentPackets { get; } = new();
         public int DisconnectCalls { get; private set; }
 
-        public DisconnectOnGetDestSession(GameMap currentMap, GameMap destMap)
+        public DisconnectOnArrivalSession(GameMap currentMap, GameMap destMap)
         {
             _currentMap = currentMap;
             _destMap = destMap;
@@ -70,13 +78,8 @@ public class MapMigrationTests : IDisposable
         protected override GameMap? GetMap() => _currentMap;
         // Town→HuntingGround 이동 — 게이트 미적용(BossRoom 아님). 단일 스레드 테스트 격리.
         protected override int GetKillCount(int entityId) => 0;
-        protected override GameMap? GetDestMap(MapId destMapId)
+        protected override GameMap? ResolveDestination(GameMap current, int entityId, MapId destMapId)
         {
-            // tick thread에서 호출되는 이 시점 = 맵 A RemovePlayer 완료 직후.
-            // OnDisconnected를 직접 호출해 _closing=1로 세팅.
-            // socket thread가 아닌 tick thread에서 호출하지만, 테스트는 단일 스레드 —
-            // Interlocked.Exchange가 동기적으로 1을 박으므로 결정론적.
-            OnDisconnected(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, 0));
             return _destMap;
         }
 
@@ -114,12 +117,12 @@ public class MapMigrationTests : IDisposable
         }
 
         protected override GameMap? GetMap() => _currentMap;
-        protected override GameMap? GetDestMap(MapId destMapId) => _destMapOverride;
+        protected override GameMap? ResolveDestination(GameMap current, int entityId, MapId destMapId) => _destMapOverride;
         // 테스트 stub: 실제 GameWorld 없이 killCount 주입 (서버 권위 getKillCount delegate와 동일 계약).
         protected override int GetKillCount(int entityId) => _stubKillCount;
 
         // 왕복 테스트에서 현재 맵/목적지 맵 교체용
-        public void SetCurrentMap(GameMap map) => _currentMap = map;
+        public new void SetCurrentMap(GameMap map) => _currentMap = map;
         public void SetDestMap(GameMap map) => _destMapOverride = map;
         public Action? OnTransitionPublished { get; set; }
 
@@ -149,7 +152,7 @@ public class MapMigrationTests : IDisposable
 
         public ObserverSession(GameMap map) { _map = map; }
         protected override GameMap? GetMap() => _map;
-        protected override GameMap? GetDestMap(MapId _) => null;
+        protected override GameMap? ResolveDestination(GameMap current, int entityId, MapId _) => null;
 
         public override void Send(ArraySegment<byte> seg)
         {
@@ -178,7 +181,7 @@ public class MapMigrationTests : IDisposable
 
         public TransientTestSession(GameMap map) { _map = map; }
         protected override GameMap? GetMap() => _forceNullMap ? null : _map;
-        protected override GameMap? GetDestMap(MapId _) => null;
+        protected override GameMap? ResolveDestination(GameMap current, int entityId, MapId _) => null;
 
         public override void Send(ArraySegment<byte> seg)
         {
@@ -675,28 +678,24 @@ public class MapMigrationTests : IDisposable
     [Fact]
     public void DisconnectDuringMigration_NoGhostEntity()
     {
-        // **설계 의도**: 맵 A RemovePlayer 직후 ~ 맵 B AddPlayerWithId 직전에 OnDisconnected 도착.
-        //   DisconnectOnGetDestSession.GetDestMap()이 이 "중간 시점"을 결정론적으로 재현:
-        //   → GetDestMap override 안에서 OnDisconnected()를 직접 호출 (_closing=1 박힘)
-        //   → 그 후 destMap 람다 실행 시 _closing=1 확인 → AddPlayerWithId skip
-        //   → 결과: 양쪽 맵 모두 Players empty (ghost entity 없음).
-        //
-        // **왜 GetDestMap hook이 결정론적인가?**
-        //   migration lambda 순서: _migrating=1 → RemovePlayer(mapA) → GetDestMap() → destMap.EnqueueJob.
-        //   GetDestMap 호출 = RemovePlayer 완료 직후가 보장됨.
-        //   테스트는 단일 스레드 — Interlocked.Exchange가 동기적으로 _closing=1 박음.
-        //   실행 후 destMap.Tick → destMap 람다 실행 → _closing=1 확인 → skip.
+        // 목적지 EnqueueJob override가 출발 제거 뒤·도착 등록 전에 끊는다(IM-01, S-02).
 
         GameMap mapA = new GameMap(MapId.Town);
-        GameMap mapB = new GameMap(MapId.HuntingGround);
+        DisconnectOnArrivalMap mapB = new();
 
-        DisconnectOnGetDestSession s = new(mapA, mapB);
+        DisconnectOnArrivalSession s = new(mapA, mapB);
         s.OnConnected(Ep());
         s.BypassHandshake();
         mapA.Tick(1); // entity 등록
 
         Assert.Single(mapA.Players);
         Assert.Empty(mapB.Players);
+        bool closedAfterDeparture = false;
+        mapB.BeforeArrivalQueued = () =>
+        {
+            closedAfterDeparture = mapA.Players.Count == 0 && mapB.Players.Count == 0 && s.ReadMigrating() == 1;
+            s.OnDisconnected(Ep());
+        };
 
         // portal 근처로 이동 + EnterPortal 전송
         PlayerEntity? player = mapA.Players.FirstOrDefault(p => p.Owner == s);
@@ -707,8 +706,7 @@ public class MapMigrationTests : IDisposable
         s.OnRecvPacket(pkt.Write()); // → mapA.EnqueueJob(migration lambda)
 
         mapA.Tick(2);
-        // mapA tick: migration lambda 실행
-        //   _migrating=1 → RemovePlayer(mapA) → GetDestMap() → OnDisconnected() (_closing=1) → destMap.EnqueueJob(inner lambda)
+        Assert.True(closedAfterDeparture, "fixture: 끊김은 출발 제거 뒤·도착 전에 발생해야 한다");
 
         mapB.Tick(2);
         // mapB tick: inner lambda 실행

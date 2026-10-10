@@ -41,6 +41,14 @@ for (int i = 0; i < args.Length - 1; i++)
 Console.WriteLine($"=== HeadlessBot ===");
 Console.WriteLine($"target: {host}:{port}  scenario: {scenarioName}");
 
+if (string.Equals(scenarioName, "InstanceMapIsolationSmoke", StringComparison.OrdinalIgnoreCase))
+{
+    InstanceMapIsolationSmoke.Result r = await InstanceMapIsolationSmoke.Run(host, port);
+    Console.WriteLine($"[Bot] InstanceMapIsolationSmoke: success={r.Success} parties={r.PartiesFormed} isolated={r.IsolatedBots} returned={r.ReturnedBots}");
+    if (!r.Success) Console.WriteLine($"      reason: {r.Reason}");
+    return r.Success ? 0 : 1;
+}
+
 if (string.Equals(scenarioName, "MultiRosterSmoke", StringComparison.OrdinalIgnoreCase))
 {
     MultiRosterSmoke.Result r = await MultiRosterSmoke.Run(host, port);

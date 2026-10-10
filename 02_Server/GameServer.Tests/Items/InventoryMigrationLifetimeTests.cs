@@ -98,7 +98,11 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
     public void DeferredImpactLandingAfterTheMageReachedAnotherMap_RewardsTheMage()
     {
         ProbeSession mage = JoinAndEnter(CharacterClass.Mage);
+        ProbeSession observer = JoinAndEnter(CharacterClass.Knight);
+        Assert.NotNull(_world.Party.CreateParty(mage.EntityId, observer.EntityId));
         GameMap hunting = MoveToHuntingGround(mage);
+        Assert.Same(hunting, MoveToHuntingGround(observer));
+        // A resident keeps the source instance alive after the projectile's owner leaves.
         StandAt(hunting, mage, 5f);
         EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
 
@@ -189,8 +193,9 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
     {
         ProbeSession knight = JoinAndEnter(CharacterClass.Knight);
         ProbeSession observer = JoinAndEnter(CharacterClass.Knight);
+        Assert.NotNull(_world.Party.CreateParty(knight.EntityId, observer.EntityId));
         GameMap hunting = MoveToHuntingGround(knight);
-        MoveToHuntingGround(observer);
+        Assert.Same(hunting, MoveToHuntingGround(observer));
         StandAt(hunting, knight, 5f);
         EnemyEntity enemy = hunting.SpawnEnemy(EnemyKind.Normal, 6f, 0f, maxHp: 1);
         int knightId = knight.EntityId;
@@ -325,8 +330,11 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         StandAt(_world.Map, session, 20f);
         EnterPortal(session, portalId: 1);
         Settle();
-        GameMap hunting = _world.GetMap(MapId.HuntingGround)!;
-        Assert.True(hunting.GetPlayer(session.EntityId) != null, "fixture: Town portal 1 must reach HuntingGround");
+        InstanceKey key = _world.Party.GetPartyByEntity(session.EntityId) is { } party
+            ? InstanceKey.ForParty(party.PartyId)
+            : InstanceKey.ForSolo(session.EntityId);
+        Assert.True(_world.TryGetInstance(MapId.HuntingGround, key, out GameMap? hunting));
+        Assert.True(hunting!.GetPlayer(session.EntityId) != null, "fixture: Town portal 1 must reach HuntingGround");
         return hunting;
     }
 
@@ -339,8 +347,7 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
     }
 
     bool IsInNoMap(int entityId)
-        => new[] { MapId.Town, MapId.HuntingGround, MapId.BossRoom, MapId.Ending }
-            .All(id => _world.GetMap(id)!.GetPlayer(entityId) == null);
+        => _world.AllLiveMaps.All(map => map.GetPlayer(entityId) == null);
 
     void EnterPortal(ProbeSession session, int portalId)
         => session.OnRecvPacket(new C_EnterPortal { portalId = (byte)portalId }.Write());
