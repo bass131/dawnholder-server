@@ -49,8 +49,9 @@
 | `release.buildTimeoutSeconds` | `600` | 실행본 빌드 상한 |
 | `logs.retentionDays` | `7` | 서버당 일반 로그 보존 기간 |
 | `logs.retentionBytes` | `1073741824` | 서버당 일반 로그 보존 용량(1 GiB) |
+| `logs.retentionIntervalSeconds` | `600` | 실행 중 정리 주기(1 이상 정수) |
 
-설정 파일 기본 위치는 `$HOME/.config/dawnholder/management/backend.json`(저장소 밖)이고 없으면 위 기본값을 쓴다. `backend-wsl.sh run`은 그 파일이 있으면 `--config`로 넘긴다. 설정 값은 시작 때 검증한다(절대 경로, 포트 범위, 양수 시간·용량). 잘못된 설정은 이유를 출력하고 0이 아닌 코드로 끝난다.
+설정 파일은 JSON이고 표의 점 이름은 중첩 객체다(예: `{ "listenPort": 0, "server": { "port": 40001, "environment": { "K": "V" } }, "release": { "archivePaths": [ "…" ] }, "logs": { … } }`). 시간·용량은 JSON 정수다. 설정 파일 기본 위치는 `$HOME/.config/dawnholder/management/backend.json`(저장소 밖)이고 없으면 위 기본값을 쓴다. `backend-wsl.sh run`은 그 파일이 있으면 `--config`로 넘긴다. 설정 값은 시작 때 검증한다(절대 경로, 포트 범위, 양수 시간·용량). 잘못된 설정은 잘못된 키 이름(예: `dataDirectory`, `listenPort`)을 포함한 이유를 출력하고, 연결 파일을 만들지 않고, 0이 아닌 코드로 끝난다.
 
 ## 상태 소유와 수명
 
@@ -78,7 +79,7 @@
 
 ## API
 
-모든 응답은 JSON이고 이름은 camelCase, 시각은 UTC ISO 8601(`Z`)이다. 오류는 `{ "error": "<코드>", "message": "<한국어 설명>" }`다.
+모든 응답은 JSON이고 이름은 camelCase, 시각은 UTC ISO 8601(`Z`)이다. 오류는 `{ "error": "<코드>", "message": "<한국어 설명>" }`다. 성공은 2xx다. 시작·강제 종료·실행본 빌드·현재 버전 지정의 성공 본문 모양은 정하지 않고, 결과는 `GET /api/status`·`GET /api/releases`로 확인한다. `POST /api/server/stop`의 성공 본문은 상태 응답과 같은 모양이고 `server.state`가 `stopping`이다.
 
 | 메서드·경로 | 하는 일 | 주요 오류 |
 |---|---|---|
@@ -111,9 +112,21 @@
 }
 ```
 
-- `release`는 지금 실행 중인 실행본이다. `currentRelease`와 다를 수 있다(다음 시작부터 적용).
+- `release`는 지금 실행 중인 실행본이고 `currentRelease`와 같은 `{ "commit", "builtAt" }` 모양이다. `currentRelease`와 다를 수 있다(다음 시작부터 적용). 실행본이 하나도 없으면 `currentRelease`는 `null`, 종료 기록이 없으면 `lastExit`는 `null`이다.
+- 시작 실패(`startFailed`) 뒤 `server.state`는 `stopped`이고 `lastExit.kind`는 `startFailed`다.
 - `portOwner`가 `other`면 `portOwnerDetail`에 관측한 PID·명령 이름을 넣고, 알 수 없으면 `unknown`이다. 다른 실행이 잠금을 쥐고 있으면 `portLockHeldByOther`가 `true`다. 남의 프로세스는 끄지 않는다.
 - `stopTimedOut`은 정상 종료 요청 뒤 `stopTimeoutSeconds`가 지났는데 아직 살아 있을 때 `true`다. 화면은 이때 강제 종료를 따로 묻는다(PR2).
+
+### 실행본 목록 응답
+
+```json
+{
+  "releases": [ { "commit": "…", "builtAt": "…", "sdkVersion": "…", "sourceRepository": "…" } ],
+  "currentRelease": { "commit": "…", "builtAt": "…" }
+}
+```
+
+- `releases`의 각 항목은 그 실행본 `manifest.json`의 네 필드와 같다. 실행본이 없으면 빈 배열이고 `currentRelease`는 `null`이다.
 
 ### 로그 조회
 
@@ -124,7 +137,7 @@
 | `minutes` | 1~1440 정수 | 10 |
 | `contains` | 0~5개, 각 1~64자, 대소문자 무시, 하나라도 들어 있으면 일치 | 없음 |
 | `limit` | 1~5000 정수 | 1000 |
-| `runId` | 기록에 있는 실행 식별 | 모든 실행 |
+| `runId` | 기록에 있는 실행 식별(기록에 없는 값은 `400 invalidQuery`) | 모든 실행 |
 
 응답:
 
@@ -149,7 +162,7 @@
 4. **정상 종료:** 표준 입력에 줄바꿈 하나를 쓰고 `stopping`으로 답한다. 종료를 관측하면 `graceful`.
 5. **강제 종료:** 자기가 띄운 PID에만 SIGKILL을 보내고 종료를 기다린다. 결과는 `forced`.
 6. **요청 없는 종료:** `abnormal`. 종료 코드나 신호를 기록한다. 자동 재시작은 PR3다.
-7. **백엔드 종료(SIGTERM·SIGINT):** 서버가 실행 중이면 정상 종료를 요청하고 `stopTimeoutSeconds`까지 기다린 뒤 남아 있으면 강제 종료한다. 기록에 이유를 남긴다.
+7. **백엔드 종료(SIGTERM·SIGINT):** 서버가 실행 중이면 정상 종료를 요청하고 `stopTimeoutSeconds`까지 기다린 뒤 남아 있으면 강제 종료한다. 실행 기록의 `exitKind`는 정상 종료로 끝났으면 `graceful`, 강제 종료했으면 `forced`이고, `endedAt`을 채우며, `reason`에 백엔드 종료 때문임을 나타내는 비지 않은 문자열을 남긴다.
 
 7777 잠금은 개발 실행 helper와 같은 파일·같은 `flock` 방식이다. 운영 서버가 켜져 있는 동안 에이전트의 `sync-wsl.sh run`·`bot`은 잠금 실패로 거부된다. 반대로 개발 실행이 잠금을 쥐고 있으면 운영 서버 시작이 거부된다. .NET 기본 파일 잠금은 `flock`과 서로 막는지 확실하지 않으므로 `flock` 호출을 직접 쓴다.
 
@@ -157,20 +170,21 @@
 
 1. `commit`은 소문자 16진수 40자만 받는다. 저장소에 그 commit이 있는지 `git -c safe.directory=<저장소> -C <저장소> cat-file -e <commit>^{commit}`로 확인한다. 전역 Git 설정은 바꾸지 않는다.
 2. `<dataDirectory>/build-work/` 아래 새 작업 폴더에 `git archive <commit> -- <archivePaths>`를 푼다. Windows 원본 checkout에서는 빌드하지 않는다. 공유 DLL 빌드가 `../03_Client/Assets/Plugins/Shared/`로 복사하는 부작용(`98_Shared/Shared.csproj` CopyToUnityPlugins)이 작업 폴더 안에만 남게 하기 위해서다.
-3. `dotnet publish <projectPath> -c Release -o <releases>/<commit>.partial`을 `buildTimeoutSeconds` 안에 실행한다. 성공하면 `manifest.json`(`commit`, `builtAt`, `sdkVersion`, `sourceRepository`)을 쓰고 `<releases>/<commit>`로 이름을 바꾼다. 빌드 출력은 `<releases>/<commit>.build.log`에 남긴다. 작업 폴더는 지운다.
+3. `dotnet publish <projectPath> -c Release -o <releases>/<commit>.partial`을 `buildTimeoutSeconds` 안에 실행한다. 성공하면 `manifest.json`(`commit`, `builtAt`, `sdkVersion`, `sourceRepository`)을 쓰고(`sdkVersion`은 작업 폴더에서 `<dotnetPath> --version`이 낸 값이라 꺼낸 `global.json`을 따른다) `<releases>/<commit>`로 이름을 바꾼다. 빌드 출력은 `<releases>/<commit>.build.log`에 남긴다. 작업 폴더는 지운다.
 4. 같은 commit의 실행본이 이미 있으면 다시 빌드하지 않고 그대로 돌려준다.
 5. 현재 운영 버전은 `<releases>/current.json` 하나가 가리킨다. 지정 API로만 바뀐다. 개발 checkout을 고치거나 빌드해도 바뀌지 않는다.
 
 ## 로그 저장과 보존
 
 - 위치: `<dataDirectory>/servers/<serverId>/runs/<runId>/log-<6자리 번호>.jsonl`. 한 파일이 16 MiB를 넘으면 다음 번호로 넘긴다. 한 줄은 `{ "seq", "collectedAt", "stream", "text", "textTruncated" }`이고 `text`는 8,192자에서 자르고 표시한다.
-- 정리: 백엔드 시작 때, 실행이 끝날 때, 10분마다 서버별로 한다. 마지막 수집 시각이 `retentionDays`보다 오래된 파일과, 합계가 `retentionBytes`를 넘는 동안 가장 오래된 파일부터 지운다. 실행 중인 실행의 마지막 파일은 지우지 않는다. 지운 구간은 `<serverId>/retention-log.jsonl`에 남기고 로그 조회 응답의 `retention`에 보인다.
+- 정리: 백엔드 시작 때, 실행이 끝날 때, 실행 중에는 `logs.retentionIntervalSeconds`(기본 600초)마다 서버별로 한다. 파일의 마지막 수집 시각(그 파일 마지막 줄의 `collectedAt`)이 `retentionDays`보다 오래된 파일과, 합계가 `retentionBytes`를 넘는 동안 가장 오래된 파일부터 지운다. 실행 중인 실행의 마지막 파일은 지우지 않는다. 지운 구간은 `<serverId>/retention-log.jsonl`에 남기고 로그 조회 응답의 `retention`에 보인다.
 - 조사 근거의 별도 보존(합의 문서의 일반 정리 제외 대상)은 V1.0에 없다.
 
 ## 서버·실행 기록
 
 - `<dataDirectory>/servers/<serverId>/server.json`: `serverId`(백엔드 첫 시작 때 만든 UUID, 이후 고정), `displayName`, `port`, `createdAt`. 서버는 하나다.
 - `<serverId>/runs/<runId>/run.json`: `runId`, `startedAt`, `endedAt`, `pid`, `releaseCommit`, `exitKind`, `exitCode`, `signal`, `reason`.
+- 끝 시각 없는 실행 기록은 백엔드 다시 시작 때 `exitKind: "unknown"`과 `endedAt`(닫은 시각)으로 닫는다.
 - 저장된 기록만으로 실행 중이라고 판단하지 않는다([서버 등록·로그 합의](../2026-09-30-system-records/shared-read-agreements.md#서버-등록로그-합의)).
 
 ## 시험 계획
