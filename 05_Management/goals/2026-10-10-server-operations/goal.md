@@ -8,8 +8,8 @@
 - [x] 백엔드 구현·검증
 - [x] PR222 병합
 - [x] 화면 연결 구현·검증
-- [>] PR227 병합
-- [ ] 중간 점검
+- [x] PR227 병합
+- [>] 중간 점검
 - [ ] 장애 대응 구현·검증
 - [ ] 장애 대응 PR 병합
 - [ ] 마무리 PR 병합
@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-11 00:08 KST, PR227 생성 뒤.**
+**기록 시점: 2026-10-11 00:35 KST, PR227 병합과 중간 점검 준비 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 창 쪽 구현을 원천 대조해 commit했다(아래 「PR2 창 쪽 구현 결과」). PR2 독립 검증 1차가 NOT PASS(결함 #1, 한 줄 압축)였다(아래 「PR2 독립 검증 결과(1차)」). 결함 #1과 설계 관찰 (a)·(h)를 고쳐 commit했다(`8ff5174f`). 재검증은 실제 진입만 남긴 판정 보류였고, 새 검증 세션의 실제 진입이 PASS였다(아래 「PR2 재검증과 실제 진입 결과」). 최신 main을 받아 PR227을 만들었다(아래 「PR227 병합 요청」). 다음은 메인에 병합 승인 요청 → 병합 → 중간 점검이다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 창 쪽 구현을 원천 대조해 commit했다(아래 「PR2 창 쪽 구현 결과」). PR2 독립 검증 1차가 NOT PASS(결함 #1, 한 줄 압축)였다(아래 「PR2 독립 검증 결과(1차)」). 결함 #1과 설계 관찰 (a)·(h)를 고쳐 commit했다(`8ff5174f`). 재검증은 실제 진입만 남긴 판정 보류였고, 새 검증 세션의 실제 진입이 PASS였다(아래 「PR2 재검증과 실제 진입 결과」). 최신 main을 받아 PR227을 만들었고 병합됐다(아래 「PR227 병합」). PR3 branch `feat/server-operations-recovery-20261011`을 main `fe490a36`에서 만들었다. 중간 점검 준비를 메인에 보냈다. 다음은 사용자 중간 점검 → 남은 범위와 PR3 전 질문 결정 → PR3이다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -319,8 +319,14 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 리드 표본 대조(일치): `preflight.txt`의 실행기 경로와 두 바꿈 값, `launch.json` environment, `connection-meta-02`(낡은 pid 4194303)와 `-06`(pid 1370, 새 `startedAt`), `connection-states-07.json`의 두 상태, `events.ndjson`의 check 9건 모두 passed, `post-pids.txt`의 두 pid `gone`, `exit.json`에 남은 `wsl.exe` 둘이 기동 전부터 있던 `sync-wsl.sh run`이라는 `pre-processes.json`, `checkouts-diff.txt` same, 대조 시점 `electron.exe` 0, `git status`는 리드 goal뿐. 검증자 pane은 idle을 확인하고 닫았다.
 - PR2 검증 종합: 1차 NOT PASS(결함 #1) → 수정 1회 → 재검증 판정 보류(실제 진입만 남음) → 실제 진입 PASS. 같은 산출물 수정은 1회다.
 
-### PR227 병합 요청
+### PR227 병합
 
 - 최신 main 받기: main이 `20630a90`에서 `b88a1b4b`(PR226)로 나아가 있었다. 겹치는 파일은 CURRENT 하나라, main의 World·Rules 줄과 이 branch의 Management 줄을 둘 다 남겨 풀었다(merge commit `63580f4c`). main 쪽 변경에 `05_Management/` 파일은 없어 제품·시험을 다시 돌리지 않았다. 검증한 `fc089bc4` 뒤 바뀐 것은 goal 기록·CURRENT·main 병합뿐이다.
 - 병합 뒤 PR224의 세션 쓰기 가드가 리드 세션의 첫 쓰기를 `memo-first`로 막았다. 재개 지점 안내대로 맥락 메모 E/`context-memo-pr2-pr.md`를 Write로 쓰고 진행했다.
 - PR227 「feat: connect the server operations screen to the management backend (ops tool V1.0 PR2)」를 만들었다(2026-10-10T15:08Z). 본문은 요약·바뀐 것·검증·남은 것 네 절이다.
+- 병합 승인 요청: 메인에 status `msg_cfaac9c91104`로 보냈다(head `288c92568a7eac41f5cb054193d6c210b9cd248e`, base `b88a1b4b`, 15:09Z mergeable CLEAN, CI 결과 전). 이 줄은 head를 바꾸지 않으려고 병합 뒤에 commit했다.
+- 사용자 승인(메인 `msg_e6771955af27`, 15:28:01Z): 사용자가 2026-10-11 00:15 KST에 메인 pane에 PR227 승인 줄(head `288c9256…`)을 제출했다. 메인 R-2(head, 바뀐 파일 45·게임 코드 0, `fc089bc4` 뒤 창·백엔드 diff 0, 판정 세 개 결론, 실제 진입 원시, vitest 셈)가 일치했다. 남은 CI 시험이 통과하면 메인이 head를 다시 확인하고 병합한다. 리드는 head를 바꾸지 않는다.
+- 병합: CI 4/4 통과(check 2개, test 7분 30초, test 22분 48초). 메인이 head를 다시 확인하고 병합했다. MERGED 2026-10-10T15:32:05Z, merge commit `fe490a3644d9d6d2d392c06addf17506e76148da`(메인 `msg_af83a0d4afbe`). 원격 branch는 자동 삭제됐다.
+- 다음 branch: PR3 branch `feat/server-operations-recovery-20261011`을 main `fe490a36`에서 만들고 이 goal 기록과 CURRENT의 Management 줄을 옮겼다.
+- 중간 점검에서 찾은 제약: `backend-wsl.sh`는 WSL 백엔드 복사본(`~/.cache/dawnholder/management/backend-src`)을 처음 쓴 checkout 하나만 쓰게 한다(`.source-owner`, PR1부터). 지금 소유자는 이 작업 공간이다. 원래 clone에서 운영툴을 띄우면 백엔드가 「the WSL copy belongs to another checkout」으로 뜨지 않고, 원래 clone에는 frontend `node_modules`도 없다. 운영 위치와 개발 위치가 복사본 하나를 다투는 문제라 PR3 전 질문 때 함께 올린다.
+- 중간 점검 준비: 메인에 결정 요청 `msg_d383f0a96829`(15:35Z)를 보냈다. 어느 위치에서 띄울지(추천 A: 이 작업 공간의 실행 배치), 사용자 점검 순서 여섯 단계, 7777 알림 조율, 점검 뒤 결정 요청(남은 범위와 PR3 전 질문)을 담았다.

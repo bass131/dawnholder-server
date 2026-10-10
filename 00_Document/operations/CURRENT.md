@@ -6,7 +6,7 @@
 
 - World: [인스턴스 맵 — 파티별 사냥터·보스방 복사본](../../01_Phases/goals/2026-10-10-instance-map-lifecycle/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active` · `docs/instance-map-closeout-20261010`
 
-- Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-screen-20261010` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
+- Management: [운영툴 V1.0 — 서버 운영 기본](../../05_Management/goals/2026-10-10-server-operations/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active` · `feat/server-operations-recovery-20261011` · 게임 소개 페이지 goal은 보류(PR207 `feat/intro-site-20261008`)
 
 - Rules: [규칙·운영 V1.x 1단계 — 세션 쓰기 가드와 생존 신호 간격 도구](../../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `feat/session-guard-liveness-20261010`
 
