@@ -65,6 +65,8 @@ describe('unconnected management foundation', () => {
     }
   });
 
+  // No window.serverOperations here: screen-design.md 「화면」 keeps this unconnected screen without the
+  // desktop bridge (S1). With the bridge the screen is tested in src/ServerOperations.test.tsx.
   it('cannot issue operating commands or call services during the available interaction flow', async () => {
     const fetchRequest = vi.fn(() => Promise.reject(new Error('Unexpected service request')));
     const xhrRequest = vi.spyOn(XMLHttpRequest.prototype, 'send');
