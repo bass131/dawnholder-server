@@ -12,8 +12,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR224(`feat/session-guard-liveness-20261010`)는 병합됐다(「현재 결과 / PR224 병합」). 종료 기록은 `docs/session-guard-liveness-closeout-20261010`(base main `b482b84a`)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: 정본 문장 넷을 썼고 리드 R-2가 계약 문구와 일치를 확인했다(「종료 기록 PR 작성」). 종료 기록 PR228의 문서 실사가 #CR-01로 차단됐고 리드가 고친 뒤 좁힌 재실사가 통과했다(「종료 기록 좁힌 재실사」). 승인 묶음을 메인에 올린다.
-- **남은 순서**: 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- **현재 위치**: 정본 문장 넷을 썼고 리드 R-2가 계약 문구와 일치를 확인했다(「종료 기록 PR 작성」). 종료 기록 PR228의 문서 실사가 결함 #CR-01(수신 지연 끝점 혼합)로 차단됐고 리드가 기록을 고쳤다(「종료 기록 문서 실사」). 고친 head로 좁힌 재실사를 연다.
+- **남은 순서**: 좁힌 재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
 - **사용자 차례**: 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
@@ -316,12 +316,6 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 그 밖: 정본 문장 S1~S4(현실 시나리오 다섯), 「만들 것」 1~5와 변경 경계, BACKLOG 구조·보존·중복, 후보 도착 검사 재실행, 형식·보존·PR226 merge, 리드·작성자 사전 메모, 사람 가독성은 지적 없음이다. 원시 대조 39개다. 설계 관찰 O-1(후보 검사 재실행의 ID 109 연결)·O-2(병합 뒤 재개 지점 갱신)는 비차단이다.
 - 리드 처리: CR-01을 「종료 Gardener」 G3 줄, 「다음 계획 후보」의 수신 지연 줄, BACKLOG `lead-mailbox-receive-delay` 이유 칸에서 고쳤다. check 기록까지의 값과 다음 송신까지의 상한을 나눠 적었다. O-1은 「종료 기록 PR 작성」의 후보 검사 줄에 반영했고 O-2는 종료 점검 때 한다. 후보 도착 검사 재실행(E/closeout/candidate-check-4.json)은 `allowed`, ID 109, 중복 0이다. 같은 산출물(종료 기록) 수정 1회째이며, 고친 기록은 새 실사자가 좁혀 재실사한다.
 - 리드 R-2(E/lead-r2-closeout-review/): 7523초·7394초를 두 메시지 `created_at`과 check31 기록에서 다시 계산해 판정과 같았다(cr01-recompute.txt). 생존 신호 신호 7, 최대 287초, 초과 0. 정산은 빈 프롬프트 확인, `worker-release` retained, `terminal close`(15:34:57Z)다.
-
-### 종료 기록 좁힌 재실사
-
-- 재실사자: 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown), Task `task_6657b1a6fae1`, Dispatch `ctx_5fddc58539c9`, 2026-10-10T15:38:58Z~15:46:53Z, worker_done `msg_3750072ca3b2`. 계약 E/closeout-rereview-contract.md(고정 HEAD `f1090e8e`), 판정 원문 E/closeout-rereview/verdict.md.
-- 판정: **통과, #CR-01 해소**. 네 시간값(2313·299·7394·7523초)을 독립 계산했고 check 기록까지의 값과 다음 송신까지의 상한이 구분됐다. 변경은 goal·BACKLOG 두 파일(BACKLOG는 그 행의 이유 칸만)이며 후보 도착 검사는 `allowed`다. 새 결함·설계 관찰은 없다.
-- 리드 R-2(E/lead-r2-closeout-rereview/r2-verdict.md): 변경 경계·시간값·후보 검사가 판정과 같다. 생존 신호 신호 4, 최대 236초, 초과 0. 정산은 빈 프롬프트 확인, `worker-release` retained, `terminal close`(15:47:22Z)다.
 
 ### 첫 발생 기록
 
