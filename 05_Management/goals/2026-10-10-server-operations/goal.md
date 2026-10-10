@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 19:58 KST, PR222 병합 뒤.**
+**기록 시점: 2026-10-10 20:07 KST, PR2 설계 작성 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. 다음은 PR2 설계다. 아래 「PR2 전에 판단할 것」을 설계에 반영하고, 설계가 승인 범위를 바꾸면 구현 전에 메인에 알린다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 다음은 메인의 범위 판단을 받은 뒤 백엔드 선행 시험 계약 발행이다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -115,6 +115,7 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 - V1.0 동안 관리 백엔드 시험은 CI에서 돌지 않는다([PR1 설계](backend-design.md#배치이름등록)). 백엔드 회귀는 PR마다 독립 검증자의 WSL 실행 원시로만 확인한다. 크리티컬은 아니다.
 - 운영 서버가 켜져 있는 동안 에이전트의 서버·봇 검증(`sync-wsl.sh run`·`bot`)은 7777 잠금 때문에 거부된다.
 - WSL 안 프로세스가 Windows 쪽 연결이 모두 끊긴 뒤에도 사는지는 확인하지 못했다(실측 M3). PR3에서 다시 본다.
+- 운영툴의 관리 백엔드가 도는 동안 같은 WSL 사용자의 `backend-wsl.sh test`·`build`는 WSL 복사본 잠금 때문에 거부된다([화면 연결 설계](screen-design.md#백엔드-조정)). Management 백엔드 시험은 운영툴을 닫고 돌린다. 관찰 2와 같은 잠금이라 PR3에서 함께 본다.
 
 ### PR1 첫 단계 실측
 
@@ -223,3 +224,9 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 승인 요청 `msg_122f13d62688`. 메인 R-2 원천 대조 뒤 B1 (d)는 PASS 안에 둔다는 메인 판단을 받았다(`msg_4a1bb8f52967`, 사용자 결정 아님).
 - 사용자가 메인 pane에 「병합 승인: PR222 head dbfe8f491b0cf97f8808957e8f52faf9d26a6624」를 제출했고, 메인이 head를 다시 확인한 뒤 병합했다. MERGED 2026-10-10T10:57:56Z, merge commit `20630a90b404fd4b736606c5dba81a20975204d2`(메인 `msg_bc88d40255f8`). 원격 branch는 자동 삭제됐다.
 - CURRENT 충돌: PR220(CodeMap 정리)이 먼저 병합돼 이 PR이 정리했다. PR220이 지운 줄은 두고 Management 줄만 이 goal로 바꿨다(merge commit `dbfe8f49`).
+
+### PR2 설계
+
+- 설계: [화면 연결 설계](screen-design.md). 「PR2 전에 판단할 것」 중 관찰 1·3·4·7과 B1은 [백엔드 조정](screen-design.md#백엔드-조정) B-1~B-6으로, 관찰 5·6·8은 화면 표시와 창 쪽 응답 검증으로 다룬다. 관찰 2는 PR3로 남긴다.
+- 메인에 알린 범위 명확화: 「운영 버전 올리기」(현재 checkout HEAD를 빌드해 현재 운영 버전으로 지정) 화면을 PR2에 넣는다. 「만들 것」 PR2 행에 이름은 없지만 완료조건 1·7이 요구하고, 실행본이 없으면 시작이 `noCurrentRelease`로 거부되기 때문이다. 되돌리기와 다른 commit 고르기는 넣지 않는다.
+- 메인에 올린 질문: 트레이 「종료」로 앱을 완전히 끝낼 때 서버를 어떻게 할지. 원래 PR3 질문이지만 PR2가 백엔드를 자식으로 띄우므로 잠정 동작이 필요하다. 잠정안은 서버가 실행 중이면 확인을 받고 백엔드가 서버를 정상 종료하게 하는 것이다. 근거는 PR1 검증 중 WSL 유휴 재시작 관측이다.
