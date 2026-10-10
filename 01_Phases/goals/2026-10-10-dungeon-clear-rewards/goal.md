@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)의 구현·독립 검증·R9 실화면(통과)이 끝났다. 실화면이 찾은 HUD 골드 7자리 넘침(S-1)을 사용자 결정으로 이 PR에서 고친다(R10). 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR(PR221)의 구현·독립 검증·R9 실화면(통과)이 끝났다. 실화면이 찾은 HUD 골드 7자리 넘침(S-1)은 사용자 결정으로 이 PR에서 고쳤다(R10). 선행 시험·구현·독립 검증·실화면 재확인이 모두 통과했고, 사용자 병합 승인이 남았다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`).
@@ -107,6 +107,7 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - **R9 실화면 준비**(메인 `msg_67a2d57c5d69`, 2026-10-10T10:57:26Z). 원문 「대시보드 결정 응답: 1) 30 - PR221 실제 화면 확인 준비(Unity Editor·연결 승인) → A 지금 준비」. 이어서 사용자 지시(메인 `msg_2bf7955c0de9`) 「일단 유니티 에디터는 작업자가 직접 열고 MCP 연결만 승인요청 해달라고 해줘, 연결하고 싶은 세션이 미리 대기해달라고 전해줘」. 효과: Editor는 리드가 열고, 사용자는 MCP 연결 승인만 한다. 이 지시는 S-1 수정 뒤 실화면 재확인에도 그대로다(`msg_2f5bc1c2b8f2`).
 - **R9 검증자의 Unity 코드 실행 허용**(결정 31·32). 메인 `msg_37e095c97cd2`가 전달한 원문 「A 맞아, 방금 Permission 줬어」, 메인 `msg_31520b4eb780`이 전달한 원문 「대시보드 결정 응답: 1) 32 - Content 실제 화면 검증 계속할지(Editor 닫을지) → A 지금 계속」, 메인 `msg_90e7310b4b68`이 전달한 원문 「Content 탭에 규칙 다시 저장했어」. 효과: 사용자가 content-active `.claude/settings.local.json`(Git 무시)에 `mcp__unity-mcp__Unity_RunCommand` 허용 한 줄을 저장했고, 검증자의 세 번째 확인 호출이 통과했다.
 - **허용 규칙 지움과 S-1을 이 PR에서 고침**(메인 `msg_2f5bc1c2b8f2`, 2026-10-10T13:09:45Z). 원문 「대시보드 결정 응답: 1) 36 - Content 작업 공간의 Unity 코드 실행 허용 규칙 지우기 → A 지움 · 2) 37 - HUD 골드 7자리 이상 넘침(S-1)을 이번 PR에서 고칠지 → A 이번 PR에서 고침」. 효과: 메인이 허용 한 줄만 지웠다. 재확인 때 다시 필요하면 메인에 결정 요청으로 올리고 에이전트가 직접 허용하지 않는다. S-1을 R10으로 PR221 범위에 넣고, 고친 뒤 실화면으로 다시 확인한다. `UI.unity`의 `.meta`·GUID·의도 밖 직렬화 값은 보존한다. 수정 계획은 리드 `msg_ef372eeeb40b`, 메인 확인은 `msg_257941a5063f`다.
+- **재확인 동안만 Unity 코드 실행 허용**(메인 `msg_63aa0980d58a`, 2026-10-10T14:12:50Z). 원문 「대시보드 결정 응답: 1) 38 - 골드 수정 실제 화면 재확인 동안 Unity 코드 실행 허용 → A 재확인 동안만 허용」. 효과: 메인이 content-active `.claude/settings.local.json`에 허용 한 줄을 넣었고, 재확인 검증자는 그 뒤에 새로 기동했다. MCP 사용이 끝난 뒤 리드 요청(`msg_cd7e37a05073`)으로 메인이 그 한 줄을 지웠다(`msg_aa4aae54b7d7`, 15:12:15Z). 남은 내용은 `skillOverrides`뿐이다.
 
 ## 재개 지점
 
@@ -114,15 +115,15 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 
 | 항목 | 값 |
 |---|---|
-| 작업 공간 / branch | `content-active` / `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, origin/main `bd4dbb5f`·`6d09ac1f`를 합침) |
+| 작업 공간 / branch | `content-active` / `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, origin/main `bd4dbb5f`·`6d09ac1f`·`b88a1b4b`를 합침) |
 | PR | [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221). 정확한 head는 PR 화면과 `git rev-parse HEAD`로 확인한다 |
 | 리드 세션 / Run | `term_df056d96-0389-436c-afcf-3d189f8dea53` / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | 작업자 0(R9 실화면 검증자까지 정산·종료), Unity.exe 0, 7777 0(World·Core에 해제 통보) |
-| 로컬 부수 변경 | batch가 다시 쓴 `ProjectSettings.asset`·`TimeManager.asset`은 독립 검증의 마지막 batch 뒤 2026-10-10T09:51:43Z에 되돌렸다(근거 `settings-restore/post-state.txt`). R9 Editor는 두 파일을 바꾸지 않았다(ProjectSettings `4a8db0bd…`, TimeManager blob = HEAD). Unity가 Git 무시 대상 layout 파일만 저장했다. R10 batch가 다시 쓰면 같은 방식으로 되돌린다 |
-| 남은 결정·준비 | R10(S-1) 수정 루프: 리드 설계 메모 → 신규 Opus 선행 시험(RED) → 신규 Astra 구현(GREEN) → 신규 Opus 독립 검증 → 커밋·push·CI → 실화면 재확인. 재확인에 Unity 코드 실행 허용이 다시 필요하면 메인에 결정 요청으로 올린다. 병합 승인은 재확인 결과와 함께 묻는다 |
+| 작업자·실행 자원 | 작업자 0(R10 실화면 재확인 검증자까지 정산·종료), Unity.exe 0, 7777 0(World·Core·Management에 해제 통보) |
+| 로컬 부수 변경 | batch가 다시 쓴 `ProjectSettings.asset`·`TimeManager.asset`은 두 번 되돌렸다. 독립 검증의 마지막 batch 뒤 09:51:43Z(`settings-restore/post-state.txt`), R10 독립 검증의 마지막 batch 뒤 14:29:38Z(`settings-restore-2/post-state.txt`)다. 지금 ProjectSettings `4a8db0bd…`, TimeManager blob = HEAD다. R9와 R10 재확인의 Editor는 두 파일을 바꾸지 않았다. Unity가 Git 무시 대상 layout 파일만 저장했다 |
+| 남은 결정·준비 | 사용자 병합 승인. CI가 새 head에서 통과한 뒤 메인에 정확한 head로 승인 묶음을 보낸다. 병합 뒤에는 던전 패킷·창 PR로 간다(서버 진입점은 「파트 간 소유와 계약」) |
 
-**남은 순서**: R10 수정 루프 → 실화면 재확인 → 사용자 병합 승인 → 던전 패킷·창 PR → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: 사용자 병합 승인 → 던전 패킷·창 PR → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -130,8 +131,8 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - [x] 결함 선행 시험
 - [x] 결함 구현·검증
 - [x] R9 실화면
-- [>] R10 골드 넘침 수정·재확인
-- [ ] 결함 PR 병합
+- [x] R10 골드 넘침 수정·재확인
+- [>] 결함 PR 병합
 - [ ] 패킷·창 구현·검증
 - [ ] 패킷 PR 병합
 - [ ] 클리어 설계 확정
@@ -144,7 +145,7 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 ## 실제 결과와 미실행
 
 - 범위 초안·사용자 승인·World 계약 확인까지 했다. 원문은 근거 폴더의 `scope-draft-v1.md`와 `inbox/`에 있다.
-- 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증 → PR 생성(CI) → R9 실화면까지 끝났다(아래 네 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), CI, Unity Editor 실화면(MCP). 실행하지 않은 것: 봇, 빌드 단독 실행, 사람 손 입력.
+- 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증 → PR 생성(CI) → R9 실화면 → R10 수정 루프와 실화면 재확인까지 끝났다(아래 다섯 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), CI, Unity Editor 실화면(MCP). 실행하지 않은 것: 봇, 빌드 단독 실행, 사람 손 입력.
 
 ### 선행 시험 — RED 준비 성공, 2026-10-10
 
@@ -206,7 +207,26 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - **권한 경위**: 첫 확인 호출이 Claude Code 자동 모드 분류기에 「Sensitive Remote Exec」로, 두 번째가 「Auto-Mode Bypass」로 막혔다. 둘 다 Unity에 닿지 않았다. 사용자가 허용 규칙을 파일에 저장한 뒤 세 번째가 통과했다(적용 중인 결정 31·32). 이전 PR191 실화면에서는 같은 도구가 허용 규칙 없이 통과했다.
 - **리드 R-2**: 표본 8곳이 원천과 일치했다(`r9-prep/r2-lead-sample-check.md`). 실패 조건 분해, driver 차이, scene 값, 확대 캡처 세 장, 서버 로그 패킷 수, MCP 기록, 마감 상태 hash를 직접 대조했다.
 - **마감·정산**: mute와 「PR191 verify」 709×399를 되돌렸고 GameViewSizes hash는 실행 전과 같다. 서버 Stop 12:25:19Z 뒤 7777 해제를 World·Core에 알렸다. Editor는 12:26:04Z에 정상 종료했다. 검증자 pane은 release(retained) 뒤 close했고 relay도 사라졌다.
-- **한계**: R9는 `6d09ac1f`를 합치기 전 서버로 실행했다. 이 PR의 diff는 클라이언트만이다. 합친 head의 실화면은 R10 재확인 때 본다.
+- **한계**: R9는 `6d09ac1f`를 합치기 전 서버로 실행했다. 이 PR의 diff는 클라이언트만이다. 합친 head의 실화면은 R10 재확인 때 본다(아래 절에서 수행).
+
+### R10 골드 한 줄 맞춤 — 통과, 2026-10-10
+
+| 단계 | Task / 모델 | 결과 | 원시 |
+|---|---|---|---|
+| 선행 시험(RED) | `task_31bcf8848ee0`, 신규 `claude-opus-5-5` | PlayMode 2개 중 7~10자리 시험 실패(두 줄·테두리 밖), 6자리 이하 시험 통과. 커밋 `a9e74a1f` | `r10-tdd/report.md`, `runs/playmode-red-1/results.xml`(SHA256 `d56ea8a9…`) |
+| 구현 | `task_d0826fbf1ec3`, 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown) | `UI.unity` GoldText TMP 다섯 필드(자동 크기 12~18, 줄바꿈 끔, 상하 margin −10)와 client.md 한 문장. PlayMode 네 클래스 26/26, EditMode 417/417. 커밋 `74fce329` | `r10-impl/report.md`, `runs/playmode-green-2/`(`ec3d184c…`), `runs/editmode-regression-2/`(`2928993b…`) |
+| 독립 검증 | `task_3027b332eed1`, 신규 `claude-opus-5-5` | 통과, 제품 결함 0. 서버 lane 위 PlayMode 전체 28/28 → 보완 뒤 30/30, EditMode 417/417 두 번. 보완 시험 커밋 `a1a392d0` | `r10-verify/verdict.md`(`e3ea6ec1…`) |
+| 실화면 재확인 | `task_1ef08b9e0e20`, 신규 `claude-opus-5-5`(`--mcp-config`) | 통과, 결함 0. 세 크기 캡처 60프레임 모두 한 줄·테두리 안. MCP `Unity_RunCommand` 14회(거부 0) | `r10-screen/report.md`(`722af848…`) |
+
+- **방법**: 이 폰트는 크기 18의 줄 높이(34.35)가 글자 상자 높이(14.92)보다 크다. 그래서 여백 없이 자동 크기를 켜면 모든 값이 줄어든다. 상하 margin −10으로 배치 높이만 넓혔다. 처음 방식인 상자 높이 확장은 버렸다. 이 상자는 raycast 대상이라 포인터를 막는 영역도 커지기 때문이다(`msg_cdae955c1614`).
+- **관측값**: 6자리 이하는 세 크기 모두 18.00이다. 가장 넓은 6자리 444,444도 18.00이다. 7자리 이상은 17.80(1,000,000)·16.85(4,444,444)·14.30(444,444,444)·14.00(상한)이다. 상한 뒤 작은 값은 18로 돌아온다.
+- **테두리 선**: 배율 1 캡처 픽셀로 쟀다. 7자리 이상의 오른쪽 끝에서 어두운 칸 선까지 709·802·1920에서 2·3·6 px이 비어 있다. 위·아래도 선에 닿지 않았다.
+- **보존**: scene에서 바뀐 줄은 GoldText TMP 객체의 다섯 필드뿐이다. RectTransform·`Gold_bar`·`.meta`·GUID는 그대로다. 포인터 세 점(상자 중심 적중, 위·아래 5 단위 밖 비적중)이 세 크기에서 기대대로였다.
+- **합친 head의 R9 흐름**: 재확인이 `6d09ac1f`를 합친 head(`0135d5e2`)의 서버로 세 크기 흐름을 끝까지 지났다. 판정 줄 47개가 PASS이고, 서버 `C_Attack`은 연결마다 6(= Enter 3 + UI 밖 클릭 3)이다. 닫힌 패널 동안 퀘스트 배너·팝업도 관측했고 가림·가로채기는 0이다.
+- **리드 결정**: 독립 검증의 보완 시험을 커밋했다. 판정의 가독성 지적대로 client.md 26행을 나누고 이유를 보탰다(`0135d5e2`). 이 문장은 재확인 검증자가 직렬화 값과 대조하고 30초 가독성 확인을 했다. 두 시험 클래스의 측정 코드 사본은 두 곳뿐이라 그대로 둔다. CODE_CONVENTION은 같은 로직이 세 곳 이상일 때 추출한다.
+- **리드 R-2**: 단계마다 원천을 직접 대조했다. 대상은 XML 루트 수치, 관측 로그 줄, scene 감사 결과, 새 시험 본문, 관측 표 60행, 테두리 픽셀 결과, 서버 로그 `C_Attack` 수, 10자리 확대 캡처 두 장이다. 모두 판정과 일치했다(독립 검증은 `lead-inbox-notes.md` 14:28Z 항목, 재확인은 `r10-screen-prep/r2-lead-sample-check.md`).
+- **자원**: 7777은 독립 검증에서 두 번(14:14:58Z·14:20:44Z 해제), 재확인에서 한 번(15:06:55Z 해제) 썼다. World·Core·Management에 사전·해제를 알렸다. 재확인의 802×451 Play 직전 커밋 여유가 3.35GB로 4GB 기준에 걸렸다. 재측정에서 열린 뒤 시작했다.
+- **origin/main 합치기**: 재확인 뒤 `b88a1b4b`(PR225 World 마감 문서, PR226 SQL Server 컨테이너 도구)를 합쳤다. 클라이언트·서버·공유 코드 변경은 0이다. CURRENT는 Content 줄 옆에서 충돌했다. main 판을 유지하고 Content 줄과 Content 안내만 다시 넣었다.
 
 ### 운영 기록(첫 발생)
 
@@ -218,6 +238,10 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - 다른 리드의 `run:` 주소로 보낼 때 리드 자신의 `--run`을 붙이면 「Run … was not found」로 실패했다. `--run` 없이 보내 성공했다(`outbox/37-*-receipt*.json`).
 - 이 checkout이 PR224를 받은 직후 첫 Edit가 세션 가드 `memo-first`로 막혔다. 시계 출력을 넣은 맥락 메모를 Write로 다시 쓴 뒤 진행했다(메인 예고 `msg_9afc844173ae`대로).
 - **우편함 대기를 `&`로 띄운 실수 두 번째 발생**(11:07Z, 즉시 정리, 손실 0. 첫 발생은 이전 goal PR191 실화면). 메인 판단 `msg_257941a5063f`: 더 높은 층인 PR224 가드가 orca orchestration 명령 끝의 `&`를 막는다(`99_Tools/SessionGuard/session-policy.mjs:51`). 11:07Z는 가드가 이 checkout에 들어오기 전이라 새 반복 규칙은 만들지 않는다. BACKLOG `mailbox-output-loss-hook`에 근거로 더했다. 가드가 들어온 뒤 다시 나면 가드 누락으로 Rules에 원문을 보낸다.
+- 리드가 결정 요청을 `--type decision_gate`로 보내 `sender_not_assignee` 오류 receipt를 받았다. 그런데 본문은 메인에 도착해 있었다(`msg_b4661ed3ee6e`). 리드가 미도착으로 보고 status로 다시 보내 중복이 생겼다(`msg_3b796a014aa6`, 메인에 중복 알림 `msg_95f83ba75699`). 10-07 Management 관측(미도착)과 결과가 달라, 메모리 기록을 「처음부터 status로 보내고, 재전송 전에 메인 회신을 확인한다」로 고쳤다.
+- 검증자가 큰 명령 출력이나 MCP 응답을 화면으로 받으면, Claude Code가 홈 `~/.claude/projects/…/tool-results/`에 사본을 자동 저장했다. R10 독립 검증에서 1건, 재확인에서 3건이다. 두 검증자 모두 허용 밖 쓰기로 스스로 보고했다. 재확인 계약에는 「큰 출력은 파일로 받는다」를 넣었다. 그래도 MCP driver 응답은 파일로 돌릴 방법이 없어 3건이 남았다.
+- R10 재확인 검증자가 orca가 아닌 명령에서 `2>/dev/null`을 두 번 썼다(계약은 리다이렉트를 checkout·`.backups` 안으로만 허용). 판정에 스스로 적었고 가드는 막지 않았다.
+- 리드 커밋 첫 시도가 `index.lock` File exists로 실패했다. 다시 확인했을 때 잠금은 없었고 git 프로세스도 0이었다. 같은 명령을 다시 내 성공했다.
 
 ## 다음 계획 후보
 
@@ -229,6 +253,9 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - `UI.unity`에 지운 필드 `_mockGold: 0`의 직렬화 잔여가 있다. 다음 scene 저장 때 Unity가 지운다(O-3).
 - EditMode 씬 전환 시험은 맵 입장과 SceneTransition이 함께 걸린 경우만 본다. 지금 제품 경로에서는 둘이 늘 겹친다(O-4).
 - EditMode 가상 키보드가 Input System 내부 `runPlayerUpdatesInEditMode`에 기댄다. 패키지 업데이트 때 fixture가 먼저 깨진다(O-5).
-- 실화면 driver의 HUD 골드 넘침 검사는 이 폰트에서 쓸 수 없다. 다음 실화면부터 줄 수와 글자 경계로 잰다(R9 판정 O-1). 폰트 asset의 줄 metrics가 비정상인지도 확인할 후보다.
+- 실화면 driver의 HUD 골드 넘침 검사는 이 폰트에서 쓸 수 없었다(R9 판정 O-1). R10 재확인 driver는 줄 수와 글리프 quad로 바꿨다(`r10-screen/driver/`). 폰트 asset의 줄 metrics가 비정상인지는 남은 확인 후보다.
+- 작은 렌더 해상도에서 HUD 골드 판독성: 709×399·802×451에서는 크기 18이든 14든 한 글자가 5~7 px이라 숫자가 뭉개져 보인다. R10의 수치 기준(크기 12 이상)은 충족한다. 작은 창의 판독성 목표가 필요한지는 사용자·메인이 정한다(R10 재확인 판정 O-1).
+- HUD 골드의 높이 여유가 얇다. 배치 높이 34.92와 줄 높이 34.35의 차이가 0.57이다. 폰트·줄 간격·상자 높이가 조금만 바뀌어도 모든 값이 줄어든다. 지금은 6자리 크기 18 단정 시험이 막는다(R10 독립 판정 O-1).
+- R10 두 PlayMode 시험 클래스가 측정 코드(`Measure`·`GoldLayout`)를 사본으로 가진다. 세 번째 사용처가 생기면 공용 helper로 뽑는다(R10 독립 판정 O-3).
 - **게임 UI·아트 스타일 기준 문서화**: 기준 게임은 Moonlighter다. 차이는 둘이다. 시점은 Moonlighter가 Top-View, 우리는 사이드 스크롤이다. 플레이 형태는 Moonlighter가 솔로, 우리는 온라인이다. 출처는 메인 `msg_4dffdfb3323b` 원문 「우리가 원하는 게임의 스타일에 제일 가까운게 Moonlighter거든? 그래서 게임 UI나 디자인 셋업할때 참고하면 좋을거 같아, 근데 그 게임같은 경우에는 Top-View 게임인데, 우리 게임은 Side Scroll인게 차이점이야」와 `msg_4df6930b3cf0` 원문 「거기에 그 게임은 솔로게임인데 우리는 온라인 게임인거고」다. 문서 위치·형식은 goal로 올릴 때 정한다. 종료 기록 때 BACKLOG에 등록한다.
 - **직업 추가 — 사제·궁수**(10-13 발표에서 추가 예정으로 표기). 출처는 메인 `msg_9f231a21d4cc`가 전달한 원문 「음 첫 대문 배경에 직업이 색깔만 바뀌고 겹치니까 좀 어색한데, 이참에 다른 직업군도 넣어볼까? 사제, 궁수도?」와 「대시보드 결정 응답: 1) 33 - 발표 표지에 사제·궁수를 넣을지 → A 추가 예정 직업으로 넣음」이다. 지금 게임 직업은 전사·마법사 둘이고 저장소에 두 직업 계획은 없다. 착수와 기획 내용은 goal로 올릴 때 사용자와 정한다. 종료 기록 때 BACKLOG에 등록한다.
