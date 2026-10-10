@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 첫 PR인 결함 PR의 선행 시험을 준비하고 있다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR의 선행 시험(RED)이 끝났고 구현을 맡길 차례다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`).
@@ -41,7 +41,7 @@
 
 | 시점 | 할 일 |
 |---|---|
-| 인스턴스 맵이 main에 들어오기 전 | 결함 PR 전부. 던전 패킷·창 PR 전부. World 리드와 기술 계약 확정. 던전 클리어 PR의 설계 절, R-7 설계 검토(메인이 정하면), 맵 하나 위의 클리어 규칙 단위 시험과 규칙 단위 구현(새 던전 폴더 안, World·Core 파일은 건드리지 않음). |
+| 인스턴스 맵이 main에 들어오기 전 | 결함 PR 전부. 던전 패킷·창 PR 전부. World 리드와 기술 계약 확정. 던전 클리어 PR의 설계 절 확정, 맵 하나 위의 클리어 규칙 단위 시험과 규칙 단위 구현(새 던전 폴더 안, World·Core 파일은 건드리지 않음). |
 | 들어온 뒤에만 | 보스 사망 분기와 처치 콜백 연결, 보스방 복사본 플레이어 목록 사용, 「확인」 → 마을 복귀, `KillRewardPolicy`·`InventoryRegistry` 수정, 봇 두 파티, 실제 플레이. |
 
 ## 설계
@@ -73,7 +73,7 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 | 인스턴스 맵(사냥터·보스방 복사본), 맵 종류 표, 맵 이동, 보스 처치 때 퀘스트 초기화 범위, 「서버가 시키는 이동」 진입점 | World(`[World 리드 Opus]`, 회신 주소 `run:run_c21dddd08312`). 10-08 Core 계획 v2를 World가 이어받았다(메인 `msg_6412194a47fa`). |
 | 입구 | 기존 마을 → 사냥터 포탈이다. Content가 맵 종류 표·포탈 표에 더할 줄은 없다(World `msg_6e96d918962c` 1). |
 | 클리어 대상 | 보스 사망 틱의 그 보스방 복사본 플레이어 목록. 파티원 재확인은 하지 않는다. 열쇠를 맵에서 읽는 이름은 World 설계 뒤 알린다(같은 메시지 2). |
-| 마을 복귀 | Content의 「확인」 처리기가 플레이어 한 명씩 World 진입점을 부른다. 틱 스레드의 현재 맵 job 안에서 부른다. Content 요구: 도착 좌표 기본값은 World가 정함, 예외 대신 거부 결과, 이동 중 인벤토리·파티 보존(Content `msg_92f0e5340ca3`, World `msg_6e96d918962c` 3). |
+| 마을 복귀 | Content의 「확인」 처리기가 플레이어 한 명씩 World 진입점을 부른다. 틱 스레드의 현재 맵 job 안에서 부른다. Content 요구: 도착 좌표 기본값은 World가 정함, 예외 대신 거부 결과, 이동 중 인벤토리·파티 보존(Content `msg_92f0e5340ca3`, World `msg_6e96d918962c` 3). World 답(`msg_25abb610ef01`): 도착은 도착 맵의 기본 입장 지점(`GameMap.PlayerSpawnPosition`, 최초 입장·재접속과 같은 곳), 인스턴스 밖·이동 중·세션 종료 중·같은 사람 두 번째 호출은 상태를 바꾸지 않는 거부, 성공하면 포탈 이동과 같은 맵 이동 패킷만 나간다. 이름·시그니처는 World 설계 뒤 알린다. |
 | PDL·생성 패킷·프로토콜 버전 | 던전 패킷·창 PR이 39·40번과 버전 17 → 18을 쓴다. World 인스턴스 맵 PR은 PDL을 바꾸지 않는다. World의 다중 계정 로그인과 같은 시기에 열리면 먼저 병합되는 쪽이 앞 번호를 갖고, 뒤 PR이 main을 받아 재생성해 번호를 다시 확인한다(같은 메시지 4). 기존 번호 재사용·재배열 금지. |
 | `GameMap.cs` 보스 사망 분기, `GameWorld.cs` 처치 콜백, `Items/InventoryRegistry.cs` | World 인스턴스 맵 PR 병합 전에는 Content가 쓰지 않는다. World는 `InventoryRegistry.cs` 본문을 바꾸지 않을 계획이며, 바꿔야 하면 쓰기 전에 알린다(같은 메시지 5). |
 | 포트 7777 | 서로 실행 전에 Orca 메시지로 알리고 DEVELOPMENT의 전역 lock·listener 검사를 따른다. |
@@ -85,7 +85,7 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 - **TDD**: 세 PR 모두 코드 변경이다. 신규 `claude-opus-5-5`가 요구 시험과 구현 전 실패 원시를 먼저 근거 폴더에 둔다. 쓰기 종료를 확인한 뒤 구현자가 같은 명령의 통과 원시를 둔다. 준비 단계의 실패는 제품 확정 실패에 넣지 않는다.
 - **구현자**: 세 PR 모두 신규 `gpt-6-astra` xhigh다([배정](../../../.agents/skills/dawnholder-goal-loop/references/implementer-routing.md)). 결함 PR은 신호 4(배치 판단이 남은 다파일 화면 변경), 던전 패킷·창 PR은 신호 3(서버↔클라이언트 프로토콜)과 4(새 화면), 던전 클리어 PR은 신호 2(보스 사망 틱, 보상 창을 보는 동안의 퇴장·정리 수명)와 3이다.
 - **검증자**: Astra 구현이라 세 PR 모두 신규 `claude-opus-5-5`다([검증자 시범](../../../.agents/skills/dawnholder-goal-loop/SKILL.md#검증자-모델-시범2026-10-31까지)).
-- **R-7**: 결함 PR과 던전 패킷·창 PR은 비해당이다. 네 범주(실패 수명·보호 집합·오류 분류·비용 상한)에 닿지 않는 표시·직렬화 작업이기 때문이다. 던전 클리어 PR은 후보다. 실패 수명(보상 창을 보는 중 끊김·퇴장과 복사본 정리)과 오류 분류(가방 가득·상한 거부와 내부 실패 구분)에 닿는다. 시범 남은 자리가 World·Core와 겹쳐 메인이 클리어 PR 설계 전에 정한다(`msg_949e9610871f`).
+- **R-7**: 결함 PR과 던전 패킷·창 PR은 비해당이다. 네 범주(실패 수명·보호 집합·오류 분류·비용 상한)에 닿지 않는 표시·직렬화 작업이기 때문이다. 던전 클리어 PR도 비해당이다. 실패 수명과 오류 분류에 닿지만, 시범의 남은 두 자리를 World 인스턴스 맵과 Core DB 도구 컨테이너 전환 PR에 썼다(아이템·인벤토리 goal을 더해 시범 상한 세 건). 그래서 리드 설계 절과 선행 시험으로 간다(메인 결정 `msg_cfcaae303755`).
 - **Unity**: 같은 checkout에서 Unity는 한 번에 하나만 실행한다. batch는 Unity 업그레이드 goal의 harness 사본을 쓴다. 실화면은 Unity MCP 시트를 메인에 요청한 뒤 한다.
 - **실행과 미실행 구분**: 빌드, 서버 시험, 봇, Unity 컴파일·EditMode·PlayMode, 실화면, CI를 각각 따로 기록한다. DB는 이 goal에서 쓰지 않는다.
 
@@ -96,7 +96,7 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 - **다음 goal과 우선순위**(메인 `msg_6d3f7b2831e6`, 2026-10-10 16:24 KST 메인 pane 제출). 원문 「7) 19 - Content 다음 goal → A 던전 + 결함 둘」, 「5) 17 - 마일스톤 우선순위(기능 동결 10월 28일까지) → A 인스턴스 던전 먼저」. 효과: 10-08 승인 던전 초안 v3을 goal로 옮기고, 인스턴스 맵이 들어올 때까지 기술 계약·클라이언트 쪽을 먼저 한다. 그동안 결함 둘을 같은 goal 첫 PR로 고친다.
 - **범위 승인**(메인 `msg_9fe1d49e00bb`, 2026-10-10T07:39:37Z). 원문 「대시보드 결정 응답: 1) 계획 검토 - Content Content 던전 클리어·보상과 결함 둘 goal 범위(질문 셋, 추천 전부 A) → A 승인 (초안 msg_f1bba119c853)」. 효과: 범위 초안 v1 그대로이고 세 질문 모두 A다. 1 HUD 골드를 서버 재화에 연결한다. 2 「I」 키로 패널을 열고 닫는다. 3 보스 처치자 보상을 없애고 클리어 보상 하나로 합친다. PR 순서 결함 → 패킷·창 → 클리어도 승인 범위다.
 - **10-08 던전 초안 v3 「전부 A」**(근거 `.backups/verification/2026-10-08-content-replan/dungeon-goal-draft-v3.md`, SHA256 `7a41a0d4…f5bd`). 1 보상은 그 순간 던전 안의 파티원 전원, 2 기존 적·보스 재사용(수치는 임시값), 3 복사본이 된 지금의 사냥터 → 보스방 길을 던전으로 쓴다.
-- **메인 판단(사용자 결정 아님)**: R-7은 던전 클리어 PR 설계 전에 메인이 정한다(`msg_949e9610871f`).
+- **메인 결정(사용자 결정 아님)**: R-7 시범은 이 goal에 쓰지 않는다(`msg_cfcaae303755`, 이전 보류 `msg_949e9610871f`를 대신함). 이 goal의 모든 Unity batch에 이전 결정 `msg_833c357e684e`와 같은 음소거 조건을 적용한다(`msg_498aa060f88d`): HKCU `Software\Unity Technologies\Unity Editor 5.x` / `AudioMasterMute_h3604209190` 하나만, 다른 Unity 0일 때만, 이미 1이면 쓰지 않음, finally 복원, 같은 폴더에 Editor가 열려 있으면 batch 금지, 실행마다 전후 원시를 남김.
 
 ## 재개 지점
 
@@ -107,19 +107,20 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 | 작업 공간 / branch | `content-active` / `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`) |
 | 리드 세션 / Run | `term_df056d96-0389-436c-afcf-3d189f8dea53` / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | 작업자 0, Unity.exe 0, 7777 0 |
+| 작업자·실행 자원 | 작업자 0(선행 시험 작업자 정산·종료), Unity.exe 0, 7777 0 |
+| 로컬 부수 변경 | 선행 시험 batch가 `03_Client/ProjectSettings/ProjectSettings.asset`의 SENTIS define 한 줄을 지우고 `TimeManager.asset`을 6.6 형식으로 다시 썼다. 둘 다 커밋하지 않으며 복원 시점은 메인과 정한다(아래 「선행 시험 — RED 준비 성공」) |
 
-**남은 순서**: 결함 PR의 선행 시험(신규 Opus) → 구현(신규 Astra) → 독립 검증(신규 Opus) → 실화면 → PR → 사용자 병합 승인 → 던전 패킷·창 PR → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: 구현(신규 Astra) → 독립 검증(신규 Opus) → 실화면 → PR → 사용자 병합 승인 → 던전 패킷·창 PR → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] 결함 선행 시험
-- [ ] 결함 구현·검증
+- [x] 결함 선행 시험
+- [>] 결함 구현·검증
 - [ ] 결함 PR 병합
 - [ ] 패킷·창 구현·검증
 - [ ] 패킷 PR 병합
-- [ ] 클리어 설계 검토
+- [ ] 클리어 설계 확정
 - [ ] 클리어 서버 구현
 - [ ] 검증·실제 플레이
 - [ ] 클리어 PR 병합
@@ -129,7 +130,25 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 ## 실제 결과와 미실행
 
 - 범위 초안·사용자 승인·World 계약 확인까지 했다. 원문은 근거 폴더의 `scope-draft-v1.md`와 `inbox/`에 있다.
-- 제품 코드·시험·빌드·Unity·봇·실화면은 아직 실행하지 않았다.
+- 제품 코드·빌드·봇·실화면·PlayMode는 아직 실행하지 않았다.
+
+### 선행 시험 — RED 준비 성공, 2026-10-10
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_f4fb52449c6c` / `ctx_b8327985145f`, `[Content 검증자]` |
+| 모델 | 지정 `claude-opus-5-5`. 최초 실행 명령 `$env:TEMP=…\.backups\tmp\pr1-tdd; claude --model claude-opus-5-5`, 화면 표시 「Opus 5.5 with xhigh effort」. backend 실제 모델 unknown |
+| 계약 | `opus-pr1-tdd-contract.md` SHA256 `f0dae46d44f313384608b994cd54d742ab3583dd6f975d3d502aa392e1e40ee1`, 요약 spec `opus-pr1-tdd-spec.md`. 보충 v1.1(`msg_df9f59cf608b`): harness를 pwsh 7.6.6으로 돌리고 EditMode만 실행 |
+| 보고 | `opus-pr1-tdd/report.md`, worker_done `msg_9a89f1c0dcb3`(08:31:07Z, succeeded) |
+
+- **결과**: 새 EditMode 시험 13개(`HudGoldMirrorTests.cs` R1~R3 6개, `InventoryPanelToggleTests.cs` R4~R8 7개, 공용 대역 `GameplayViewTestSupport.cs`)가 모두 미구현으로 실패한다. 마지막 실행 `editmode-red-3`은 417개 중 통과 404, 실패 13, 건너뜀 0, exit 2다. fixture 원인 실패와 기존 시험 실패는 0이다. 컴파일 오류 0. 음소거는 0 → 1 → 0으로 복원됐다.
+- **리드 R-2**: `runs/editmode-red-3/results.xml`(SHA256 `db7c6dcb…`)을 node로 읽어 test-run의 417/404/13/0과 실패 13개의 이름이 모두 새 두 시험 파일임을 확인했다. editor.log의 `error CS` 0건, 「Exiting with code 2」, mute-events 세 줄을 직접 읽었다. R1·R2 시험 본문을 읽어 기대값이 서버 리터럴과 화면 글자이고 제품 계산을 복제하지 않음을 확인했다.
+- **리드 채택 결정**: (1) 열림 관찰면은 패널 root의 CanvasGroup·Canvas 활성·본문 활성이다. (2) 「I」 키 대역은 Input System의 `runPlayerUpdatesInEditMode`를 켜고 이전 값으로 되돌린다. 계약의 설정 사본 방식은 이 플래그가 직렬화되지 않아 복원하지 못하기 때문이다. 패키지 내부 필드에 기대므로 패키지 업데이트 때 fixture Assert가 먼저 깨진다. (3) 「I」 처리는 `InventoryPanel.BuildRuntime`이 만든 객체 안에 둔다. 시험이 그 객체의 Update만 부르기 때문이다. (4) 일시정지는 `Time.timeScale = 0`, 씬 전환은 SceneTransition의 끝나지 않은 요청과 맵 입장 진행이다. (5) HUD 빈 값은 숫자가 없는 글자 또는 꺼진 글자다.
+- **알아 둘 것**: R7 두 시험의 본 단정(정지·전환 중 불변)은 지금 「I」 처리 자체가 없어서 통과하고, RED는 대조 단정이 만든다. 검증자는 둘이 함께 통과하는지 본다. 기존 PlayMode `InventorySceneLifecycleTests.cs` 189·398·399행은 입장 직후 패널이 보인다고 단정해 구현 뒤 실패할 것으로 예상된다(미실행 예측, 분류 (a) 후보).
+- **부수 변경**: 첫 실행 때 Unity가 `ProjectSettings.asset`(사용자 미커밋, SENTIS define 한 줄 삭제, 알려진 `unity-sentis-define-drift`)과 `TimeManager.asset`(6.6 형식으로 다시 씀, 값 같음)을 저장했다. 작업자는 되돌리지 않았고 사본·diff를 `opus-pr1-tdd/side-effects/`에 두었다.
+- **정산**: worker-release(retained/external_terminal) → 빈 prompt와 「done」 확인 → close(ptyKilled true). 화면 표시는 12분 48초 작업, 18.37$다.
+- **리드 기동 실수(첫 발생)**: 전체 계약을 `--spec`으로 넣다가 Git Bash 인자 길이 한도(Argument list too long, exit 126)로 orca가 실행되지 않았다. worker-list 0건을 확인하고 계약 경로·hash를 가리키는 요약 spec으로 다시 붙였다. 첫 발생이라 goal에만 기록한다.
+- **리드 도구 사고(첫 발생)**: 리드가 큰 우편함 JSON에 `grep -o` 범위 정규식과 `| head`를 써서 grep이 부모 없이 남아 메모리 16GB를 잡았다(메인 `msg_64f64f30c24f`). 다른 리드의 우편함 대기가 메모리 회수로 꺼졌다. 사용자가 그 프로세스를 처리했다. 이후 JSON은 node로 읽는다.
 
 ## 다음 계획 후보
 
