@@ -5,12 +5,12 @@
 World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는 복사본(인스턴스)으로 바꾼다. 사용자가 범위 초안 v2와 상용 게임 조사를 승인했다(아래 「적용 중인 사용자 결정」). 기준·상태·결과는 이 파일에 모으고 [CURRENT](../../../00_Document/operations/CURRENT.md)는 이 목표를 가리킨다.
 
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/world-active`.
-- branch: `feat/instance-map-lifecycle-20261010`, base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`(PR220 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
+- branch: 제품 branch `feat/instance-map-lifecycle-20261010`(base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`, PR220 병합 뒤)는 PR223으로 병합됐고 원격에서 지워졌다. 종료 기록은 최신 main `2492843e`에서 만든 `docs/instance-map-closeout-20261010`에서 한다. Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-instance-map-lifecycle/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/scope-draft-v2.md)(SHA256 `fc99c9eb…fde7a2`), 조사는 [instance-architecture-research.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/instance-architecture-research.md)(SHA256 `0d5a1bf9…918da`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-memo.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_8a825e57-3f6e-4b72-aa51-ceb3d847ca32`, Run `run_c21dddd08312`(회신 주소 `run:run_c21dddd08312`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 독립 검증이 통과했고 제품 PR223을 열었다. 검증자 새 시험을 더한 전체 서버 시험 974건 중 통과 969, 실패 0, 건너뜀 5이고, 봇 20개 시나리오가 모두 통과했다. 차단 결함은 없다. 사용자 병합 승인을 기다린다.
-- **남은 순서**: PR223 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
-- **사용자 차례**: PR223 병합 승인 줄이다. head는 메인이 승인 요청 때 알린다.
+- **현재 위치**: PR223이 병합됐다(2026-10-10T12:16:16Z, `2492843e`). 종료 Gardener를 마쳤고 사용자가 정리 후보 둘을 채택했다. 종료 기록 PR225의 첫 문서 실사(정정 3건)와 재실사(새 정정 1건)가 통과하지 못해 리드가 두 번 고쳤다. 아래 「현재 결과」의 「종료 기록 문서 실사」 절이 마지막 결과다.
+- **남은 순서**: 두 번째 수정의 세 번째 실사 → PR225 병합 승인 → 종료 점검 → R-8.
+- **사용자 차례**: PR225의 병합 승인 줄이다(실사 통과 뒤).
 - 다음 goal(다중 계정 로그인)은 이 goal이 끝난 뒤 따로 승인받는다. 자동으로 시작하지 않는다.
 
 ## 진척 단계
@@ -22,9 +22,9 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - [x] 구현
 - [x] 독립 검증
 - [x] 봇 두 파티 확인
-- [>] PR223 병합
-- [ ] Gardener 점검
-- [ ] 종료 기록 PR 병합
+- [x] PR223 병합
+- [x] Gardener 점검
+- [>] PR225 병합
 
 PR 단계 이름은 PR 번호가 생기면 「PR### 병합」으로 바꾼다.
 
@@ -485,3 +485,90 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 - 검증자 새 시험 4파일과 이 goal 기록을 commit `b8a44abe`로 올렸다. 4파일의 SHA256은 검증자 기록과 같다.
 - main이 PR222(운영툴 백엔드)로 앞서 있어 `origin/main`을 branch에 합쳤다(`b1317fb3`). 겹친 파일은 `CURRENT.md` 하나였고, World 줄과 새 Management 줄을 둘 다 남겼다. 서버·시험·봇·공유 파일은 검증한 `b8a44abe`와 같다.
 - [PR223](https://github.com/bass131/dawnholder-server/pull/223)을 열었다. 본문은 E/`pr-body.md`다. 병합은 사용자가 메인 창에 승인 줄을 낸 뒤 메인이 한다.
+
+### PR223 병합 — 2026-10-10
+
+- 사용자가 메인 창에 「병합 승인: PR223 head 191d7cb43edcb29d0f96d6bcb63e75638293ce74」를 제출했다. 메인이 head, CI 4/4, CLEAN을 다시 대조하고 병합했다(`msg_ff648f58fc8f`). 병합 commit은 `2492843e45e5e5f4a372c7489429117ce777f007`(2026-10-10T12:16:16Z)다. 리드 승인 묶음은 E/`main-merge-request.txt`(`msg_84e2795fa2d0`)다.
+- 메인 R-2 표본은 head·CI·CLEAN, `b8a44abe` 뒤 서버·시험·봇 경로 변경 없음, 판정 원문 SHA256, VER-01의 원시 511행이었다.
+- 리드가 Content에 병합과 서버 이동 진입점 계약을 알렸다(`msg_6fe0fc6f994c`). Content 던전 클리어가 이 위에서 이어진다.
+- 병합 뒤 실행 확인은 하지 않았다. 병합 결과의 서버 파일은 독립 검증한 `b8a44abe`와 같다.
+
+### 종료 Gardener — 2026-10-10
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_07b4e6497c7b` / `ctx_113907482289`, `[World 검증자]` |
+| 모델 | 지정 `claude-opus-5-5` xhigh. 최초 실행 명령은 TEMP·TMP를 `.backups/tmp/g1`, `GIT_OPTIONAL_LOCKS=0`으로 정한 뒤 `claude --model claude-opus-5-5 --effort xhigh`이고, 화면 표시는 「Opus 5.5 with xhigh effort」다. backend 실제 모델은 unknown이다 |
+| 계약 | E/`closeout/gardener-contract.md` SHA256 `4e165acaedf1e2b48741f74fb9a15d357e539905e25889272f2600c170e2a9ce`, 고정 입력 E/`closeout/gardener-inputs.txt` 20행. 고정 HEAD는 `aca01bd7`이다 |
+| 보고 | E/`closeout/gardener/report.md` SHA256 `6f21a441085d76166d8a872cc013c04d2a2d14b0dc7700f23a7d0fd20e22d1dd`(286행), worker_done `msg_db03fff6cc7e`(12:33:02Z). 읽기 전용이며 쓰기는 보고서 한 파일이다 |
+
+- **확정 실패**: 0이다. R-7 검토는 설계 입력이고, 선행 시험의 RED는 확정 실패로 세지 않으며, 독립 검증은 통과였다. 같은 산출물 수정 3회 초과 체크포인트도 없다.
+- **독립 결함·자기 발견**: 비차단 VER-01 하나와 구현 중 자기 발견 IMPL-01 하나다. 분류는 위 「구현」·「독립 검증」 절 그대로다.
+- **CI**: PR223 head `191d7cb4`는 4/4 성공, CLEAN이었다. 빌드 경고 4건은 기준선과 같은 파일·규칙이고 새 파일 경고는 0이다. 병합 commit `2492843e`의 main CI(dotnet-tests push)는 Gardener 조회(12:26:40Z) 때 진행 중이었고, 12:40:34Z에 성공으로 끝났다(리드 조회 E/`closeout/main-ci-2492843e-4.json`).
+- **경고 억제·설정 완화**: PR223 순 변경 44파일에서 설정 계열 파일 변경과 억제 구문 추가가 모두 0이다. 계약 범위 `bd4dbb5f..2492843e`에 섞인 csproj 3개와 `Skip =` 2줄은 PR222(운영툴 백엔드) 몫이라 뺐다.
+- **임시 우회**: 제품 코드 우회는 0이다. IM-04 은퇴 표식 보류와 위험 8의 시작 때 검사 제거는 설계 결정이다.
+- **관찰 입력과 기존 후보의 겹침**: 병합 관문 그물 오탐 2회(리드)는 BACKLOG `credential-separation-followup`, 봇 helper 종료 시점(F-10)은 `server-lane-graceful-stop`, Git Bash `/tmp`·근거 폴더 부모 쓰기 2회(선행 시험 작성자)는 `shell-write-destination-guard`와 PR224 세션 쓰기 가드가 맡는다. `GIT_OPTIONAL_LOCKS=0` 누락(2세션, git 명령 5개)은 메인이 Rules에 넘겼고(`msg_c43c20269d2f`), 기동 환경 교정 뒤 검증자·Gardener 세션의 누락 기록은 0이다. Orca 주소 오류 `recipient_run_mismatch`(2개 goal 3건)는 송신이 거부돼 조용한 손실이 없어 가치가 낮다고 봤다. 포트 7777 예약 대기(약 21분)는 첫 관측이다. Gardener는 BACKLOG를 고치지 않았다.
+
+**정리 후보 2개 — 사용자 채택(2026-10-10)**. Gardener는 제안만 했고 채택·등록은 하지 않았다. 리드가 메인을 거쳐 사용자 채택을 물었고(`msg_51fac3994a5f`), 사용자가 두 후보를 모두 A로 채택했다(메인 전달 `msg_bbc6534811dc` 12:40:28Z). 메인 pane에 제출된 원문은 「대시보드 결정 응답: 1) 34 - Gardener 후보: WSL 진입 명령 인자 분리로 실패가 성공으로 가려지는 문제 → A BACKLOG 새 후보로 등록 · 2) 35 - Gardener 후보: 보고서 수치가 원시와 다른 문제의 대조 helper 촉발 조건 → A 근거 추가 + 촉발 조건 분리」다. 등록은 착수 권한이 아니다.
+
+1. WSL 진입 명령의 인자 분리로 helper exit가 가려지는 문제(새 후보). 진입 명령 `wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh …`는 인자를 Linux 셸이 다시 읽어서 `;`·`|`가 명령 구분자로 나뉜다. 이 goal 선행 시험 run2에서 helper exit 1이 exit 0으로 가려졌고(작성자가 수치로 알아채 통과로 쓰지 않음), [리팩토링 기준선 goal](../2026-09-29-refactor-baseline/goal.md)에도 같은 원인의 exit 127이 있다(66행). 제안은 높은 층부터 셋이다. 저장소 도구 둘(`99_Tools/format-check.ps1:84`, `99_Tools/CodeRules/execution.mjs:102`)이 이미 쓰는 `--exec`를 진입 명령에 재사용하고, `;`·`|`·공백 인자의 argv와 exit 전파를 fixture로 단정하며, 그래도 어려우면 DEVELOPMENT 진입 절에 따옴표 규칙을 둔다. 새 행 BACKLOG `wsl-entry-argument-split`(담당 후보 Core·Rules 소유 조율, 대기)으로 넣었다. 같은 helper 파일의 `server-lane-graceful-stop`(Core)과는 문제가 달라(인자 분리와 정상 종료) 묶지 않고 서로 관련 행으로만 잇는다(메인 판단, 같은 메시지).
+2. 보고서에 옮긴 원시 인용·집계 값의 대조 helper(기존 행 근거 추가). 3개 goal에서 5건이다(이 goal VER-01, Management system-cards goal 2건, teammate-onboarding Gardener2 2건). 기존 행 `powershell-all-evidence`가 인용/집계 helper를 이미 품고 있어 새 행 대신 그 행에 근거를 더한다. 그 행의 선행 조건은 「세 파트 PS 정리 병합 완료」이고, 2026-10-05 같은 부류의 사용자 결정은 그 조건을 유지했다. 이번 채택으로 BACKLOG `powershell-all-evidence`의 출처 칸에 근거를 더하고, 인용/집계 대조 helper만 PS 촉발 조건에서 떼어 따로 승격 검토할 수 있게 했다. All 비교·승격 제안은 기존 촉발 조건 그대로다. 메인이 같은 날 다른 파트의 같은 부류 둘(Core 측정 보고의 관측 안 한 값 문장, Rules의 Dispatch 수 눈셈)을 근거로 더해도 된다고 해서 함께 적었다. 그 둘의 원시는 World 리드가 보지 않았다. 제안된 첫 범위는 실패 분류 표와 dotnet 콘솔 원시 하나이고 warning 파일럿부터 시작한다.
+
+- **리드 R-2**(E/`closeout/lead-gardener-r2-sample.txt`): 후보 1의 두 원시(`tdd/report.md` 20·27행, 리팩토링 기준선 goal 66행), `--exec`를 쓰는 두 도구의 줄, BACKLOG 28행, VER-01의 두 원시 줄, system-cards goal 568행을 직접 읽었다. 모두 보고 인용과 같다.
+- **Gardener 미검토**: 작업자 heartbeat 간격 전수, 정본 간 드리프트 전수, 검증자 명령 이력 전체는 고정 입력 밖이라 보지 않았다. 다른 goal의 횟수는 그 goal.md·BACKLOG 서술에서 옮겼다.
+- **Gardener 자기 공개**: 허용 밖 직접 쓰기 0, `GIT_OPTIONAL_LOCKS=0` 누락 0, 그물·분류기에 막힌 명령 0이다. 지정 TEMP `.backups/tmp/g1`에는 도구가 자동으로 저장한 411파일이 있다(직접 쓰기 아님). 그중 Node 컴파일 캐시 401파일은 수정 시각이 Gardener의 첫 명령보다 앞서 기동 때 생긴 것으로 Gardener가 추론했다. 나머지 10파일(Claude Code 셸 편집 추적·명령 출력)의 생성 시점은 확인하지 않았다.
+- **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true, 12:34:39Z). 화면 표시는 12분 40초, 318,756 token이다(E/`closeout/gardener-last-screen.json`).
+
+### 종료 기록 PR — 2026-10-10
+
+- 리드 맥락 메모는 E/`closeout/closeout-pr-context.md`다. 최신 main(PR224, `6d09ac1f`)을 종료 branch에 충돌 없이 합쳤다(`a77c1daa`). 양쪽이 모두 바꾼 파일은 `CURRENT.md` 하나였고, 서로 다른 줄(World 줄의 branch, 새 Rules 줄)이라 자동으로 합쳐졌다.
+- 합친 뒤 리드의 첫 Write가 PR224 세션 쓰기 가드의 memo-first로 막혔다. 가드가 실리기 전에 쓴 맥락 메모를 세션 기록이 모르기 때문이다. 메인 사전 안내(`msg_1aa032695c39`)대로 맥락 메모를 한 번 다시 써서 풀었다. 오탐이 아니라 안내된 첫 진입 동작이다.
+- goal의 「종료 Gardener」 절과 「다음 계획 후보」 절, BACKLOG 새 절과 기존 두 행의 갱신을 `d0b3ada0`으로 올리고 [PR225](https://github.com/bass131/dawnholder-server/pull/225)를 열었다. 본문은 E/`closeout/pr-body.md`다.
+- 후보 도착 검사는 `allowed`, exit 0이다. 후보 6개, 인용 없는 후보 0, 없는 ID 0이고, BACKLOG ID는 91개에서 97개가 됐다(E/`closeout/candidate-check-1.json`, 기준 main 출력 E/`closeout/candidate-check-base.json`).
+- 빌드·서버 시험·봇·Unity·DB는 실행하지 않았다. 문서만 바뀐 PR이다.
+
+### 종료 기록 문서 실사 — 2026-10-10
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_73ae06782615` / `ctx_d2618ea4ac01`, `[World 검증자]` |
+| 모델 | 지정 `gpt-6-astra` xhigh. 최초 실행 명령은 TEMP·TMP를 `.backups/tmp/a1`, `GIT_OPTIONAL_LOCKS=0`으로 정한 뒤 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`이고, 화면 표시는 「GPT-6-Astra xhigh · Full Access · never」다. backend 실제 모델은 unknown이다 |
+| 계약 | E/`closeout/doc-audit-contract.md` SHA256 `dab1f7aa10460e89a598a220b5f2c60bf28598e8b0ec67de8c1bf804b3a5ead7`, 실사 항목 D1~D8 |
+| 대상 | PR225 head `d57f137f969deff0985ff3b872bed98424b25761`(merge-base `6d09ac1f`)와 PR225 본문 |
+| 판정 | E/`closeout/doc-audit/verdict.md` SHA256 `921c0f4df1c0d8523e216d22b87a69e20913b8ab1c75f4bf6d651e575a07c226`, worker_done `msg_d0906da1f18d`(13:04:29Z). NOT PASS, 차단 3 |
+
+- **DOC-01 PR 본문의 파일 수**: 본문이 「문서 두 개만 바꾼다」고 쓰고 goal·BACKLOG만 나열했다. 실제 PR은 `aca01bd7`의 CURRENT World 줄 변경까지 세 파일이다. 본문을 「문서 세 개」로 고치고 CURRENT 항목을 넣었다(로컬 E/`closeout/pr-body.md`와 PR 본문 모두).
+- **DOC-02 TEMP 자동 저장의 확인 수준**: 위 「종료 Gardener」 절이 411파일 전부를 기동 때 생긴 것으로 적었다. Gardener 원문은 그중 Node 캐시 401파일만 수정 시각으로 추론했다(보고 277·278행). 총수와 추론 범위를 나눠 고쳤다.
+- **DOC-03 메시지 시각**: BACKLOG `instance-map-startup-data-check` 출처의 `msg_4a578e26b5e7` 시각을 리드 진행 메모의 받은 시각(09:53:54Z)으로 적었다. 원문 created_at은 09:53:48Z다(E/`wait-24.out`). 원문 값으로 고쳤다.
+- **비차단 관찰 O-01·O-02**: 재개 지점의 「마지막 결과」 지칭이 뒤 절과 어긋났고(O-01), 「겹친 파일 없음」이 충돌 없음과 양쪽 변경 없음을 구분하지 않았다(O-02, 실제로는 CURRENT를 양쪽이 다른 줄에서 바꿈). 둘 다 같은 수정에서 고쳤다. 「겹친 파일 없음」은 이 goal의 「종료 기록 PR」 절과 PR 본문 v1에만 있었고, 메인 보고에는 없었다(아래 재실사 DOC-04).
+- **지적 없음**: BACKLOG 새 여섯 행의 7필드·상태, 기존 두 행의 원래 글 보존, CURRENT, 상대 링크 15건, 새 메시지 ID 16개(13개 원문, 다른 파트 셋은 메인 메시지 안 인용으로 표시됨), 후보 도착 검사 재실행(HEAD 97 ID·후보 6, merge-base 91 ID), 리드 메모와 commit 시각, Gardener 기록.
+- **검증자 자기 공개 SELF-01**: 판정 작성 중 heartbeat 간격이 5분을 넘었다(12:55:19Z 송신 명령 뒤 다음 송신 13:01:08Z). 13:01:08Z heartbeat(`msg_ce5ea619624a`)로 바로 공개했고 D1~D8 관측값에는 영향이 없다. 이 goal의 첫 기록이라 새 규칙은 만들지 않는다. 같은 부류의 검사는 PR224의 생존 신호 간격 도구가 맡는다.
+- **리드 R-2**(E/`closeout/lead-doc-audit-r2-sample.txt`): PR 본문 3행과 numstat 세 파일, goal 519행과 Gardener 보고 277·278행, BACKLOG 242행과 `wait-24.out`의 created_at, 합치기 양쪽의 CURRENT 변경을 직접 읽었다. 모두 판정과 같다.
+- **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true, 13:05:00Z). 화면 표시는 15분 36초다(E/`closeout/doc-audit-idle-before-close.json`).
+- 같은 산출물(PR225 문서)의 첫 수정이다(`e72d63dc`, PR 본문 v2). 고친 줄만 보는 재실사를 신규 세션에 맡겼다.
+
+**재실사**
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_959202fefa7d` / `ctx_547171b1ae5a`, `[World 검증자]`(첫 실사와 다른 새 세션) |
+| 모델 | 지정 `gpt-6-astra` xhigh. 최초 실행 명령은 TEMP·TMP를 `.backups/tmp/a2`, `GIT_OPTIONAL_LOCKS=0`으로 정한 뒤 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`이고, 화면 표시는 「GPT-6-Astra xhigh · Full Access · never」다. backend 실제 모델은 unknown이다 |
+| 계약 | E/`closeout/doc-audit2-contract.md` SHA256 `56ee6c7902a623a7173c3ba25062a9abf63da5467a0f62fcdd5aa64261ae50ac`, 범위는 `d57f137f` → `e72d63dc`와 PR 본문 v1 → v2, 실사 항목 R1~R7 |
+| 판정 | E/`closeout/doc-audit2/verdict.md` SHA256 `a1be3b18b3386ff370179d52581d9d22e4acad2be3d05260ed45aa631a9f3a25`, worker_done `msg_2d967f912c91`(13:18:36Z). NOT PASS, DOC-01~DOC-03 해소, 새 차단 1 |
+
+- **DOC-04 메시지 내용 귀속**: 첫 수정이 위 O-01·O-02 줄에 「메인 보고 `msg_ff0919b67f0c`의 같은 표현은 다음 보고에서 바로잡는다」고 적었다. 그 메시지 원문(E/`closeout/main-closeout-pr-status-receipt.json`, 12:49:27Z)에는 「합쳤다」만 있고 「겹친 파일」이 없다. 잘못된 귀속은 리드 맥락 메모의 수정 계획에서 왔고, 메인에 보낸 경과 보고 `msg_c1929cbf259b`(13:09:19Z)도 같은 귀속을 반복했다. goal 문장을 실제 위치로 고쳤고, 메인 보고의 반복은 다음 메인 보고에서 바로잡는다.
+- **지적 없음**: PR 본문 v2와 실제 세 파일 목록, Gardener 절의 확인 수준, BACKLOG 시각, 재개 지점, 합치기 설명(CURRENT를 양쪽이 다른 줄에서 바꿈), 새 절의 첫 실사 기록, 고친 범위 밖 무변경, 후보 도착 검사 재실행(allowed, exit 0), 리드 메모 시각(13:05:15Z, commit 13:06:29Z). 첫 실사의 SELF-01은 과거 기록으로 유지했다.
+- **리드 R-2**(E/`closeout/lead-doc-audit2-r2-sample.txt`): `msg_ff0919b67f0c` 원문에 「겹친」이 없음과 `msg_c1929cbf259b`의 반복 문장, 「겹친 파일 없음」이 실제로 있던 두 곳(`d57f137f`의 goal 524행, PR 본문 v1 13행)을 직접 읽었다. 판정과 같다.
+- **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true, 13:19:04Z). 화면 표시는 9분 55초다(E/`closeout/doc-audit2-idle-before-close.json`).
+- 같은 산출물의 두 번째 수정이다. 고친 줄만 보는 세 번째 실사를 신규 세션에 맡긴다.
+
+## 다음 계획 후보
+
+이 goal이 「하지 않을 것」·「위험」과 설계 검토·독립 검증에서 다음으로 넘긴 것을 출처와 함께 적는다. 종료 기록 PR에서 각 후보를 BACKLOG에 등록했다. 등록은 착수 권한이 아니다. 「하지 않을 것」의 나머지 줄 가운데 재접속 때 복사본 복귀와 복사본 시간제한·수 상한·재입장 제한은 승인 범위가 뺀 정책이고 후보로 약속하지 않아 올리지 않는다. 길드 거점, 던전 클리어·보상, DB 저장은 다른 파트 몫이다. 종료 Gardener 정리 후보 둘은 이 절이 아니라 위 「종료 Gardener」 절에 적었고, 사용자 채택에 따라 BACKLOG에 반영했다.
+
+- 다중 계정 로그인 — 진입 지시 `msg_9d7b35aa7317`의 승인 범위(인스턴스 맵 다음)와 「하지 않을 것」 셋째 줄. 이 goal이 끝난 뒤 따로 승인받고 자동으로 시작하지 않는다. BACKLOG `multi-account-login`.
+- 복사본 안에서 맺은 파티의 화면 통보 — 「위험」 6, 설계 검토 S-06과 메인 판단 `msg_1e59e0802942`. 클라이언트·패킷 변경이 필요하다. BACKLOG `instance-party-join-notice`.
+- 사냥터·보스방 맵 데이터의 서버 시작 때 검사 — 「위험」 8, 메인 `msg_4a578e26b5e7` (다), 독립 검증 F-09. BACKLOG `instance-map-startup-data-check`.
+- 빈 보스방이 정리 직전 틱에 보스를 다시 만드는 낭비 — 설계 검토 O-01, 독립 검증 F-08(실제 관측). BACKLOG `instance-empty-boss-respawn`.
+- 주석 보완 넷(서버 이동 진입점의 호출 계약 F-01, 이동 단계 요약 F-02, 열쇠별 초기화 요약 F-03, 열쇠 결정 위치 안내 F-06)과 시험 helper 이름(F-04) — 독립 검증의 비차단 관찰, 동작 영향 없음. BACKLOG `instance-map-readability-followup`.
+- 봇 helper가 봇 종료 직후 서버를 꺼서 복사본 정리 줄 하나를 놓치는 문제 — 독립 검증 F-10. 같은 함수 `stop_server`의 종료 순서를 다루는 기존 행과 겹친다는 Gardener 판단에 따라 새 행을 만들지 않았다. BACKLOG `server-lane-graceful-stop`.
