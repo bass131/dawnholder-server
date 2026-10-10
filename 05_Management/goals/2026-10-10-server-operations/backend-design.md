@@ -170,7 +170,7 @@
 
 1. `commit`은 소문자 16진수 40자만 받는다. 저장소에 그 commit이 있는지 `git -c safe.directory=<저장소> -C <저장소> cat-file -e <commit>^{commit}`로 확인한다. 전역 Git 설정은 바꾸지 않는다.
 2. `<dataDirectory>/build-work/` 아래 새 작업 폴더에 `git archive <commit> -- <archivePaths>`를 푼다. Windows 원본 checkout에서는 빌드하지 않는다. 공유 DLL 빌드가 `../03_Client/Assets/Plugins/Shared/`로 복사하는 부작용(`98_Shared/Shared.csproj` CopyToUnityPlugins)이 작업 폴더 안에만 남게 하기 위해서다.
-3. `dotnet publish <projectPath> -c Release -o <releases>/<commit>.partial`을 `buildTimeoutSeconds` 안에 실행한다. 성공하면 `manifest.json`(`commit`, `builtAt`, `sdkVersion`, `sourceRepository`)을 쓰고(`sdkVersion`은 작업 폴더에서 `<dotnetPath> --version`이 낸 값이라 꺼낸 `global.json`을 따른다) `<releases>/<commit>`로 이름을 바꾼다. 빌드 출력은 `<releases>/<commit>.build.log`에 남긴다. 작업 폴더는 지운다.
+3. `dotnet publish <projectPath> -c Release -o <releases>/<commit>.partial --disable-build-servers`를 `buildTimeoutSeconds` 안에 실행한다. 빌드가 끝난 뒤 MSBuild·컴파일러 서버 프로세스가 남지 않게 하기 위해서다. 시간이 넘으면 자기가 띄운 빌드 프로세스 트리를 끝내고 `buildFailed`로 처리한다. 성공하면 `manifest.json`(`commit`, `builtAt`, `sdkVersion`, `sourceRepository`)을 쓰고(`sdkVersion`은 작업 폴더에서 `<dotnetPath> --version`이 낸 값이라 꺼낸 `global.json`을 따른다) `<releases>/<commit>`로 이름을 바꾼다. 빌드 출력은 `<releases>/<commit>.build.log`에 남긴다. 작업 폴더는 지운다.
 4. 같은 commit의 실행본이 이미 있으면 다시 빌드하지 않고 그대로 돌려준다.
 5. 현재 운영 버전은 `<releases>/current.json` 하나가 가리킨다. 지정 API로만 바뀐다. 개발 checkout을 고치거나 빌드해도 바뀌지 않는다.
 

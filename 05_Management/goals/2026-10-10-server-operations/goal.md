@@ -4,8 +4,8 @@
 
 - [x] 범위 승인과 goal 고정
 - [x] 실행 환경 실측
-- [>] 백엔드 선행 시험
-- [ ] 백엔드 구현·검증
+- [x] 백엔드 선행 시험
+- [>] 백엔드 구현·검증
 - [ ] 백엔드 PR 병합
 - [ ] 화면 연결 구현·검증
 - [ ] 화면 PR 병합
@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 17:3x KST, 실측 정산과 PR1 설계 고정 뒤.**
+**기록 시점: 2026-10-10 18:18 KST, PR1 선행 시험 정산 뒤.**
 
-- **지금 단계:** 실행 환경 실측을 마쳤고(아래 「PR1 실행 환경 실측 결과」) 승인 범위를 바꾸는 결과는 없었다. PR1 설계를 [backend-design.md](backend-design.md)에 고정했다. 다음은 신규 `claude-opus-5-5`의 선행 시험 계약이다.
+- **지금 단계:** PR1 선행 시험 72건을 커밋했다(아래 「PR1 선행 시험 결과」). 다음은 `gpt-6-astra` xhigh 구현 계약이다. 계약 초안은 E/`contracts/pr1-impl-task.draft.md`이고, 발행 전에 시험 commit과 규칙 원문을 채운다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -168,3 +168,13 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
   - M3: 떼어 낸 표식 프로세스는 10·60·180초에 살아 있었다. 180초에는 다른 `wsl.exe` 연결 4개와 docker-desktop이 있어 연결 0 수명은 미재현이다. 측정 시작 전 Ubuntu는 `Stopped`였다.
 - 리드 표본 대조(일치): `raw/m1-runtime.stdout.txt` 12행, `raw/m2-loopback-bound-ss.stdout.txt`(127.0.0.1:49191, pid 433), `raw/m2-loopback-attempt-1.json`·`-3.json`, `raw/m2-wildcard-attempt-3.json`, `raw/m3-t180-summary.json`.
 - 설계 반영: 관리 주소는 127.0.0.1만(M2). 백엔드는 운영툴이 앞에서 잡는 자식으로 시작하고 수명 문제는 PR3로 넘긴다(M3). 저장소 규칙 조사로 솔루션·독립 목록 미등록과 V1.0 CI 미편입을 정했다([PR1 설계](backend-design.md#배치이름등록)). 승인 범위 변경은 없다.
+
+### PR1 선행 시험 결과
+
+- 작성자 `[Management 검증자]`(신규 `claude-opus-5-5`, 화면 표시 「Opus 5.5 with xhigh effort」, backend unknown), Task `task_5b0fd90abdf7`, Dispatch `ctx_a7366e3f3ec7`. 계약 E/`contracts/pr1-tests-task.md` v1(SHA256 `b65ec94c…7d`).
+- 설계 질의 12건(`msg_8610f23efa78`)에 답하고 설계를 고쳤다(commit `b41d3617`, 답 `msg_6e7113793a0b`). 리드 판단은 실행 중 정리 주기 설정 키 `logs.retentionIntervalSeconds` 추가 하나다. 기본값 600초라 운영 동작은 그대로이고, E7을 결정적으로 재현하려고 넣었다.
+- 허용 밖 쓰기 후보 질의(`msg_b2ea9a363362`): 고정 SDK 설치 폴더의 빈 `metadata` 폴더 mtime이 `dotnet build` 때 바뀐다. 허용 실행의 SDK 부작용으로 판단해 기록만 했다(답 `msg_c6b8238ba3e6`). 다음 구현·검증 계약에 미리 적는다.
+- 완료: `worker_done` `msg_e72172c63a90`(succeeded), Dispatch `completed`·`settled`. idle 확인 뒤 pane을 닫았다. 보고 E/`pr1-tests/report.md`.
+- 결과: `05_Management/backend/ManagementBackend.Tests/`·`GameServerStub/` 새 파일 30개. 요구 A1~H1 전부에 시험이 있고 미작성 요구는 없다. 같은 명령의 구현 전 실행(E/`pr1-tests/raw/pre-implementation/`)은 전체 72, 통과 8(가짜 서버·임시 원천 저장소 자체 점검), 실패 64, 건너뜀 0, 빌드 경고 0이다. 실패 64건은 모두 「Management backend is not built」다.
+- 리드 표본 대조(일치): `results.trx`의 `<Counters>`와 결과 72줄(Failed 64·Passed 8)을 직접 셌고, 실패 메시지 64건 모두 같은 이유였다. 작업자 세션 기록에서 맥락 메모 첫 쓰기(08:43:26Z)가 첫 시험 파일(08:46:11Z)보다 앞섰다. E7 시험이 설계 「로그 저장과 보존」의 정리 순서와 맞는지 읽었다. 7777·14333은 제외 목록에만 있다.
+- 남은 위험(보고 「남은 위험과 설계 관찰」): 백엔드를 상대하는 helper는 실제 백엔드와 아직 돌지 않았다. C6·D1·D2·E7 등은 2~4초 시간 가정에 기대며 직렬 실행으로 줄였다. 구현 뒤 전체 실행 시간은 미측정이다(작성자 추정 3~5분). 기본값 경로(관리 포트 47321, 기본 데이터 폴더, 7777 잠금)는 시험하지 않는다. 시험은 백엔드에 build server를 끄는 환경 변수를 넘기므로, 운영 중 실행본 빌드가 build server를 남기지 않는지는 설계 문장으로 고정하고 검증자가 코드로 본다.
