@@ -3,8 +3,8 @@
 ## 진척 단계
 
 - [x] 범위 승인과 goal 고정
-- [>] 실행 환경 실측
-- [ ] 백엔드 선행 시험
+- [x] 실행 환경 실측
+- [>] 백엔드 선행 시험
 - [ ] 백엔드 구현·검증
 - [ ] 백엔드 PR 병합
 - [ ] 화면 연결 구현·검증
@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 16:5x KST, 범위 승인 직후 goal 고정.**
+**기록 시점: 2026-10-10 17:3x KST, 실측 정산과 PR1 설계 고정 뒤.**
 
-- **지금 단계:** 사용자가 범위 초안의 네 질문을 모두 A로 승인했다(아래 「요청 원천과 승인」). 리드가 최신 main `cc20d428`에서 branch `feat/server-operations-20261010`을 만들고 이 goal을 고정했다. 다음은 PR1 첫 단계의 실행 환경 실측이다(아래 「PR1 첫 단계 실측」).
+- **지금 단계:** 실행 환경 실측을 마쳤고(아래 「PR1 실행 환경 실측 결과」) 승인 범위를 바꾸는 결과는 없었다. PR1 설계를 [backend-design.md](backend-design.md)에 고정했다. 다음은 신규 `claude-opus-5-5`의 선행 시험 계약이다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -66,7 +66,7 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 건드릴 곳과 소유권
 
-- `05_Management/backend/`(신규): 관리 백엔드와 그 시험. 위치 근거는 [CODE_CONVENTION 파일 위치와 이름](../../../00_Document/conventions/CODE_CONVENTION.md#파일-위치와-이름)의 `05_Management/` 행(운영 애플리케이션의 화면·기능과 해당 테스트)이다. 프로젝트·폴더 이름과 솔루션 등록 방식(`Dawnholder.slnx` 등록 또는 CI의 독립 등록)은 PR1 설계에서 정하고, 공용 파일을 건드리면 해당 소유 리드와 먼저 맞춘다.
+- `05_Management/backend/`(신규): 관리 백엔드와 그 시험. 위치 근거는 [CODE_CONVENTION 파일 위치와 이름](../../../00_Document/conventions/CODE_CONVENTION.md#파일-위치와-이름)의 `05_Management/` 행(운영 애플리케이션의 화면·기능과 해당 테스트)이다. 프로젝트 이름과 등록 방식은 [PR1 설계](backend-design.md#배치이름등록)에서 정했다: 솔루션·독립 목록에 등록하지 않고 V1.0 동안 CI에 넣지 않는다. 공용 파일은 건드리지 않는다.
 - `05_Management/frontend/`: 「서버 운영」 화면, Electron 창 프로세스와 연결 통로, 해당 시험.
 - `05_Management/` 문서(README·requirements·decisions·MCP 안내)와 이 goal.
 - `00_Document/operations/CURRENT.md`의 Management 줄, `00_Document/operations/BACKLOG.md`의 담당 Management 행.
@@ -147,4 +147,16 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 
 - 2026-10-10 16:36 KST 새 Run `run_003b556f0ba8`을 만들고 메인에 READY를 보냈다(`msg_0766a3e1cf8e`). receipt는 E/`run-create-receipt.json`·`ready-send-receipt.json`이다.
 - 범위 초안을 보냈고(`msg_7aae08911190`) 사용자 승인을 받았다(`msg_d9a5047140d1`).
-- 최신 main `cc20d428`에서 branch를 만들고 이 goal, CURRENT Management 줄, BACKLOG `management-launcher-real-run` 행의 상태를 고정했다. 맥락 메모는 E/`context-memo-goal.md`다.
+- 최신 main `cc20d428`에서 branch를 만들고 이 goal, CURRENT Management 줄, BACKLOG `management-launcher-real-run` 행의 상태를 고정했다(commit `1f56658b`). 맥락 메모는 E/`context-memo-goal.md`다.
+
+### PR1 실행 환경 실측 결과
+
+- 작업자 `[Management Sol]`(요청 `gpt-6.1-sol` max, 세션 기록 turn_context `gpt-6.1-sol`·`max`, backend unknown), Task `task_109b3a99b814`, Dispatch `ctx_eed2070ef558`. 계약 E/`contracts/measure-task.md`(SHA256 `3e59f9db…a6a71`).
+- 연결: `worker-start`가 `turn_start_unobserved`였다. draft `[Pasted Content 13025 chars]`가 계약 8,237자 + 머리말 추정 4,787자와 1자 차이라 [공식 draft 복구](../../../00_Document/operations/ORCA.md#official-contract-draft)대로 Enter 한 번을 보냈다. 사후에 작업자 세션 기록에서 계약 전문(13,024자) 포함을 확인했다(E/`contracts/measure-contract-delivery-check.txt`).
+- 완료: `worker_done` `msg_0aa1cd9bd018`(succeeded). 보고 E/`measure/report.md`. 정산 `worker-release`는 `retained`(외부 터미널)였고 idle 확인 뒤 pane을 닫았다.
+- 결과:
+  - M1: 선택 SDK `10.0.301`에 `Microsoft.AspNetCore.App 10.0.9`가 있다. PATH의 `dotnet`은 없다.
+  - M2: 127.0.0.1에 묶은 WSL 수신 대기는 Windows 127.0.0.1에서 성공, 이더넷 `192.168.45.227`·Default Switch `172.27.48.1`에서 2초 시간 초과였다. 대조군 0.0.0.0은 이더넷에서 성공했다. 하마치 주소는 이 시점 열거에 없었다. 다른 기기의 실제 LAN·하마치 접속은 미실행이다.
+  - M3: 떼어 낸 표식 프로세스는 10·60·180초에 살아 있었다. 180초에는 다른 `wsl.exe` 연결 4개와 docker-desktop이 있어 연결 0 수명은 미재현이다. 측정 시작 전 Ubuntu는 `Stopped`였다.
+- 리드 표본 대조(일치): `raw/m1-runtime.stdout.txt` 12행, `raw/m2-loopback-bound-ss.stdout.txt`(127.0.0.1:49191, pid 433), `raw/m2-loopback-attempt-1.json`·`-3.json`, `raw/m2-wildcard-attempt-3.json`, `raw/m3-t180-summary.json`.
+- 설계 반영: 관리 주소는 127.0.0.1만(M2). 백엔드는 운영툴이 앞에서 잡는 자식으로 시작하고 수명 문제는 PR3로 넘긴다(M3). 저장소 규칙 조사로 솔루션·독립 목록 미등록과 V1.0 CI 미편입을 정했다([PR1 설계](backend-design.md#배치이름등록)). 승인 범위 변경은 없다.
