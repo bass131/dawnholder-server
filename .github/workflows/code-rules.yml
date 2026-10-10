@@ -176,15 +176,17 @@ jobs:
           set -euo pipefail
           orca_results="$RULES_OUTPUT/orca-independent-tests"
           mkdir -p "$orca_results"
-          printf '%s\n' 'node --test 99_Tools/Orca.Tests/message-policy.test.mjs' > "$orca_results/command.txt"
+          printf '%s\n' 'node --test 99_Tools/Orca.Tests/*.test.mjs' > "$orca_results/command.txt"
+          shopt -s nullglob
+          orca_tests=(99_Tools/Orca.Tests/*.test.mjs)
           set +e
-          if test -f 99_Tools/Orca.Tests/message-policy.test.mjs; then
-            node --test 99_Tools/Orca.Tests/message-policy.test.mjs \
+          if test "${#orca_tests[@]}" -gt 0; then
+            node --test "${orca_tests[@]}" \
               > "$orca_results/stdout.txt" 2> "$orca_results/stderr.txt"
             orca_exit=$?
           else
             : > "$orca_results/stdout.txt"
-            printf '%s\n' 'Independent test entry point is missing: 99_Tools/Orca.Tests/message-policy.test.mjs' \
+            printf '%s\n' 'Independent test suite is missing: 99_Tools/Orca.Tests/*.test.mjs' \
               > "$orca_results/stderr.txt"
             orca_exit=1
           fi
@@ -216,6 +218,31 @@ jobs:
           printf '%s\n' "$merge_gate_exit" > "$merge_gate_results/exit.txt"
           cat "$merge_gate_results/stdout.txt" "$merge_gate_results/stderr.txt"
           exit "$merge_gate_exit"
+
+      - name: Run independent SessionGuard regressions
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          session_guard_results="$RULES_OUTPUT/session-guard-independent-tests"
+          mkdir -p "$session_guard_results"
+          printf '%s\n' 'node --test 99_Tools/SessionGuard.Tests/*.test.mjs' > "$session_guard_results/command.txt"
+          shopt -s nullglob
+          session_guard_tests=(99_Tools/SessionGuard.Tests/*.test.mjs)
+          set +e
+          if test "${#session_guard_tests[@]}" -gt 0; then
+            node --test "${session_guard_tests[@]}" \
+              > "$session_guard_results/stdout.txt" 2> "$session_guard_results/stderr.txt"
+            session_guard_exit=$?
+          else
+            : > "$session_guard_results/stdout.txt"
+            printf '%s\n' 'Independent test suite is missing: 99_Tools/SessionGuard.Tests/*.test.mjs' \
+              > "$session_guard_results/stderr.txt"
+            session_guard_exit=1
+          fi
+          printf '%s\n' "$session_guard_exit" > "$session_guard_results/exit.txt"
+          cat "$session_guard_results/stdout.txt" "$session_guard_results/stderr.txt"
+          exit "$session_guard_exit"
 
       - name: Run independent Backlog candidate regressions
         if: always()
