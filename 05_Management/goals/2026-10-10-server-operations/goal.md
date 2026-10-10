@@ -21,7 +21,7 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 **기록 시점: 2026-10-10 18:18 KST, PR1 선행 시험 정산 뒤.**
 
-- **지금 단계:** PR1 선행 시험 72건을 커밋했다(아래 「PR1 선행 시험 결과」). 다음은 `gpt-6-astra` xhigh 구현 계약이다. 계약 초안은 E/`contracts/pr1-impl-task.draft.md`이고, 발행 전에 시험 commit과 규칙 원문을 채운다.
+- **지금 단계:** PR1 구현을 커밋했다(아래 「PR1 구현」, 72/72 통과). 다음은 신규 `claude-opus-5-5` 독립 검증이고, 그 실제 진입 1회가 진짜 GameServer를 7777로 띄우므로 그 전에 Core·World·Content 리드에게 알린다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -178,3 +178,17 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 결과: `05_Management/backend/ManagementBackend.Tests/`·`GameServerStub/` 새 파일 30개. 요구 A1~H1 전부에 시험이 있고 미작성 요구는 없다. 같은 명령의 구현 전 실행(E/`pr1-tests/raw/pre-implementation/`)은 전체 72, 통과 8(가짜 서버·임시 원천 저장소 자체 점검), 실패 64, 건너뜀 0, 빌드 경고 0이다. 실패 64건은 모두 「Management backend is not built」다.
 - 리드 표본 대조(일치): `results.trx`의 `<Counters>`와 결과 72줄(Failed 64·Passed 8)을 직접 셌고, 실패 메시지 64건 모두 같은 이유였다. 작업자 세션 기록에서 맥락 메모 첫 쓰기(08:43:26Z)가 첫 시험 파일(08:46:11Z)보다 앞섰다. E7 시험이 설계 「로그 저장과 보존」의 정리 순서와 맞는지 읽었다. 7777·14333은 제외 목록에만 있다.
 - 남은 위험(보고 「남은 위험과 설계 관찰」): 백엔드를 상대하는 helper는 실제 백엔드와 아직 돌지 않았다. C6·D1·D2·E7 등은 2~4초 시간 가정에 기대며 직렬 실행으로 줄였다. 구현 뒤 전체 실행 시간은 미측정이다(작성자 추정 3~5분). 기본값 경로(관리 포트 47321, 기본 데이터 폴더, 7777 잠금)는 시험하지 않는다. 시험은 백엔드에 build server를 끄는 환경 변수를 넘기므로, 운영 중 실행본 빌드가 build server를 남기지 않는지는 설계 문장으로 고정하고 검증자가 코드로 본다.
+
+### PR1 구현
+
+| 회차 | 배정 모델(신호) | 세션 | 계약 | 독립 결함 수 | 절차 실패 |
+|---|---|---|---|---|---|
+| 1 | `gpt-6-astra` xhigh(1·2·3·4) | Task `task_b04cc43a7e24`, Dispatch `ctx_15e6495ae887` | E/`contracts/pr1-impl-task.md` v1(SHA256 `44fca8b2…4164`) | 독립 검증 중 | 없음(기동 `turn_started` 관측, worker_done 1회) |
+
+- 배정 근거: 관리 접근 경계의 입력 검증(1), 게임 서버 프로세스 수명·시간 상한·잠금(2), WSL Linux 호출·Git·.NET 호스트 경계(3), 새 다파일 기능(4). 영역은 `05_Management/backend/ManagementBackend/**`와 `backend-wsl.sh`다. 위 「설계와 검증 경계」에 적은 2·3·4에 1을 더했다.
+- 기동: Codex v0.162.1, 첫 화면 「GPT-6-Astra xhigh」, rollout turn_context `gpt-6-astra`·`xhigh`, backend unknown. 첫 화면에 선택창은 없었다.
+- 완료: `worker_done` `msg_f291251eb2ea`(succeeded), Dispatch `completed`·`settled`. idle 확인 뒤 pane을 닫았다. 보고 E/`pr1-impl/report.md`.
+- 결과: 제품 새 파일 16개 1,502줄(`ManagementBackend/` 15개, `backend-wsl.sh`). 같은 시험 명령의 깨끗한 빌드 실행은 72/72 통과, 건너뜀 0, 122초(E/`pr1-impl/raw/final-clean/`). 첫 실행은 71/72였다. A5(16 KiB 초과 본문) 실패를 구현자가 제품 결함으로 분류했고, Kestrel의 중복 본문 상한을 없애 접근 경계 하나가 검사하게 고쳤다. `backend-wsl.sh build` 제품 경고 0, `backend-wsl.sh test` 72/72.
+- 구현자 자체 점검: `backend-wsl.sh run`으로 메인 checkout의 commit `a70cc205` 운영 실행본을 빌드했다(GameServer 시작 API는 호출하지 않음). 이 worktree는 `.git` 파일이 Windows 경로를 가리켜 WSL Git이 읽지 못하므로, `release.sourceRepository`는 설계대로 메인 checkout이어야 한다. 실행본 빌드에서 기존 코드의 SA1201·SA1202 경고 2건(`EnemyCatalog.cs`, `PartyRegistry.cs`)이 보였고 범위 밖이라 고치지 않았다.
+- 리드 표본 대조(일치): `final-clean`·`entry-test`·`trial-1`의 `results.trx` 셈과 exit를 직접 셌다. 시험 파일 무변경은 `git diff --stat a70cc205`의 빈 출력으로 확인했다. rollout에서 맥락 메모 첫 쓰기(09:24:23Z)가 첫 제품 파일(09:25:31Z)보다 앞섰다. 제품 파일은 CR 0, BOM 없음이다.
+- 검증자에게 넘길 관찰: 시험 원시의 `environment.txt`에 `head=unknown`이 찍힌다(WSL Git이 worktree를 못 읽음). 구현자 harness 일부가 Python·PowerShell(근거 폴더 안, 제품 아님)이다. `run`은 Debug 빌드로 실행하고 WSL 복사본 잠금(fd 9)을 쥔 채 백엔드로 exec한다.
