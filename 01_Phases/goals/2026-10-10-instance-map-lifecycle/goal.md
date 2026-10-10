@@ -8,9 +8,9 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - branch: `feat/instance-map-lifecycle-20261010`, base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`(PR220 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-instance-map-lifecycle/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/scope-draft-v2.md)(SHA256 `fc99c9eb…fde7a2`), 조사는 [instance-architecture-research.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/instance-architecture-research.md)(SHA256 `0d5a1bf9…918da`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-memo.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_8a825e57-3f6e-4b72-aa51-ceb3d847ca32`, Run `run_c21dddd08312`(회신 주소 `run:run_c21dddd08312`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 독립 검증이 통과했다. 검증자 새 시험을 더한 전체 서버 시험 974건 중 통과 969, 실패 0, 건너뜀 5이고, 봇 20개 시나리오가 모두 통과했다. 차단 결함은 없다. 아래 「현재 결과」의 「독립 검증」 절을 보고 제품 PR을 연다.
-- **남은 순서**: 제품 PR → 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
-- **사용자 차례**: 지금은 없다. 제품 PR이 준비되면 병합 승인 줄이다.
+- **현재 위치**: 독립 검증이 통과했고 제품 PR223을 열었다. 검증자 새 시험을 더한 전체 서버 시험 974건 중 통과 969, 실패 0, 건너뜀 5이고, 봇 20개 시나리오가 모두 통과했다. 차단 결함은 없다. 사용자 병합 승인을 기다린다.
+- **남은 순서**: PR223 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **사용자 차례**: PR223 병합 승인 줄이다. head는 메인이 승인 요청 때 알린다.
 - 다음 goal(다중 계정 로그인)은 이 goal이 끝난 뒤 따로 승인받는다. 자동으로 시작하지 않는다.
 
 ## 진척 단계
@@ -22,7 +22,7 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - [x] 구현
 - [x] 독립 검증
 - [x] 봇 두 파티 확인
-- [>] 제품 PR 병합
+- [>] PR223 병합
 - [ ] Gardener 점검
 - [ ] 종료 기록 PR 병합
 
@@ -479,3 +479,9 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 - 비차단 설계 관찰 F-01~F-10은 이 PR에서 고치지 않는다. 완료조건을 막지 않기 때문이다. 주석 보완 넷(서버 이동 진입점의 호출 계약 F-01, 이동 단계 요약의 목적지 확보 F-02, 열쇠별 초기화 요약 F-03, 열쇠 결정 위치 안내 F-06)과 시험 helper 이름(F-04), helper 종료 시점(F-10)은 goal 종료 때 BACKLOG 후보로 올린다. 빈 보스방의 보스 재출현은 이미 후속인 O-01이 실제로 관측된 것이다(F-08).
 - 리드 표본 대조: 전체 시험 합계 줄, 봇 요약 줄과 exit, 복사본 집계 합계, 봇 직전 메모리 원시, VER-01의 원시 오류 줄, 작업 트리(새 시험 4파일만 추가)가 판정과 같다.
 - 정산은 retained(손수 연 pane)였다. 화면이 끝남·빈 프롬프트임을 확인한 뒤 pane을 닫았다. Release 빌드·실제 플레이(Unity)·DB·CI·성능 측정은 실행하지 않았다.
+
+### 제품 PR — 2026-10-10
+
+- 검증자 새 시험 4파일과 이 goal 기록을 commit `b8a44abe`로 올렸다. 4파일의 SHA256은 검증자 기록과 같다.
+- main이 PR222(운영툴 백엔드)로 앞서 있어 `origin/main`을 branch에 합쳤다(`b1317fb3`). 겹친 파일은 `CURRENT.md` 하나였고, World 줄과 새 Management 줄을 둘 다 남겼다. 서버·시험·봇·공유 파일은 검증한 `b8a44abe`와 같다.
+- [PR223](https://github.com/bass131/dawnholder-server/pull/223)을 열었다. 본문은 E/`pr-body.md`다. 병합은 사용자가 메인 창에 승인 줄을 낸 뒤 메인이 한다.
