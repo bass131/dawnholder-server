@@ -5,8 +5,8 @@
 - [x] 범위 승인과 goal 고정
 - [x] 실행 환경 실측
 - [x] 백엔드 선행 시험
-- [>] 백엔드 구현·검증
-- [ ] 백엔드 PR 병합
+- [x] 백엔드 구현·검증
+- [>] 백엔드 PR 병합
 - [ ] 화면 연결 구현·검증
 - [ ] 화면 PR 병합
 - [ ] 중간 점검
@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 18:18 KST, PR1 선행 시험 정산 뒤.**
+**기록 시점: 2026-10-10 19:20 KST, PR1 독립 검증 PASS 뒤.**
 
-- **지금 단계:** PR1 구현을 커밋했다(아래 「PR1 구현」, 72/72 통과). 다음은 신규 `claude-opus-5-5` 독립 검증이고, 그 실제 진입 1회가 진짜 GameServer를 7777로 띄우므로 그 전에 Core·World·Content 리드에게 알린다.
+- **지금 단계:** PR1 독립 검증이 PASS였다(아래 「PR1 독립 검증 결과」). PR1을 만들고 메인에 병합 승인을 요청한다. 병합 뒤에는 「PR2 전에 판단할 것」을 보고 PR2 설계를 시작한다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -183,7 +183,7 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 
 | 회차 | 배정 모델(신호) | 세션 | 계약 | 독립 결함 수 | 절차 실패 |
 |---|---|---|---|---|---|
-| 1 | `gpt-6-astra` xhigh(1·2·3·4) | Task `task_b04cc43a7e24`, Dispatch `ctx_15e6495ae887` | E/`contracts/pr1-impl-task.md` v1(SHA256 `44fca8b2…4164`) | 독립 검증 중 | 없음(기동 `turn_started` 관측, worker_done 1회) |
+| 1 | `gpt-6-astra` xhigh(1·2·3·4) | Task `task_b04cc43a7e24`, Dispatch `ctx_15e6495ae887` | E/`contracts/pr1-impl-task.md` v1(SHA256 `44fca8b2…4164`) | 0(독립 검증 PASS) | 없음(기동 `turn_started` 관측, worker_done 1회) |
 
 - 배정 근거: 관리 접근 경계의 입력 검증(1), 게임 서버 프로세스 수명·시간 상한·잠금(2), WSL Linux 호출·Git·.NET 호스트 경계(3), 새 다파일 기능(4). 영역은 `05_Management/backend/ManagementBackend/**`와 `backend-wsl.sh`다. 위 「설계와 검증 경계」에 적은 2·3·4에 1을 더했다.
 - 기동: Codex v0.162.1, 첫 화면 「GPT-6-Astra xhigh」, rollout turn_context `gpt-6-astra`·`xhigh`, backend unknown. 첫 화면에 선택창은 없었다.
@@ -191,4 +191,28 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 결과: 제품 새 파일 16개 1,502줄(`ManagementBackend/` 15개, `backend-wsl.sh`). 같은 시험 명령의 깨끗한 빌드 실행은 72/72 통과, 건너뜀 0, 122초(E/`pr1-impl/raw/final-clean/`). 첫 실행은 71/72였다. A5(16 KiB 초과 본문) 실패를 구현자가 제품 결함으로 분류했고, Kestrel의 중복 본문 상한을 없애 접근 경계 하나가 검사하게 고쳤다. `backend-wsl.sh build` 제품 경고 0, `backend-wsl.sh test` 72/72.
 - 구현자 자체 점검: `backend-wsl.sh run`으로 메인 checkout의 commit `a70cc205` 운영 실행본을 빌드했다(GameServer 시작 API는 호출하지 않음). 이 worktree는 `.git` 파일이 Windows 경로를 가리켜 WSL Git이 읽지 못하므로, `release.sourceRepository`는 설계대로 메인 checkout이어야 한다. 실행본 빌드에서 기존 코드의 SA1201·SA1202 경고 2건(`EnemyCatalog.cs`, `PartyRegistry.cs`)이 보였고 범위 밖이라 고치지 않았다.
 - 리드 표본 대조(일치): `final-clean`·`entry-test`·`trial-1`의 `results.trx` 셈과 exit를 직접 셌다. 시험 파일 무변경은 `git diff --stat a70cc205`의 빈 출력으로 확인했다. rollout에서 맥락 메모 첫 쓰기(09:24:23Z)가 첫 제품 파일(09:25:31Z)보다 앞섰다. 제품 파일은 CR 0, BOM 없음이다.
+- 독립 검증: `[Management 검증자]` 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown), Task `task_19b63a45a969`, Dispatch `ctx_4e5d1c448ae9`, 계약 E/`contracts/pr1-verify-task.md` v1(SHA256 `77adb8b2…88e3`). 실제 진입 1회 직전에 검증자가 묻고, 리드가 Core·World·Content 리드에게 7777 사용을 알린 뒤 진행 답을 준다.
 - 검증자에게 넘길 관찰: 시험 원시의 `environment.txt`에 `head=unknown`이 찍힌다(WSL Git이 worktree를 못 읽음). 구현자 harness 일부가 Python·PowerShell(근거 폴더 안, 제품 아님)이다. `run`은 Debug 빌드로 실행하고 WSL 복사본 잠금(fd 9)을 쥔 채 백엔드로 exec한다.
+
+### PR1 독립 검증 결과
+
+- 판정 **PASS**: `worker_done` `msg_0f6489e5c321`, Dispatch `completed`·`settled`, idle 확인 뒤 pane을 닫았다. 판정 원문 E/`pr1-verify/verdict.md`, `verifies` `task_b04cc43a7e24`. 차단 결함 0, 설계 관찰 8.
+- 강 등급 세 항목:
+  - 실사: 구현 보고의 파일·줄 수·셈·메모 순서·서식이 실제 diff·원시와 일치했다.
+  - 독립 시험: 새 시험 7파일 12건(경로 모양 입력, 64자 경계, 16 KiB 정확한 경계와 큰 본문 조기 거부, 실행본 명령 동시성, 빌드 시간 초과 정리, build server 잔류 없음, 강제 종료된 백엔드 뒤 재시작, 16 MiB 회전)을 더했다. 같은 시험 명령으로 84/84(147초)다.
+  - 실제 진입 1회(10:07:48Z~10:08:02Z): `backend-wsl.sh run`으로 메인 checkout의 HEAD `2ae6a605` 실행본을 빌드했다. 진짜 GameServer를 7777로 시작해 `running`·`portOwner: self`·같은 pid 대기를 확인했다. 그동안 공유 잠금은 개발 helper가 거부될 상태였다. 정상 종료는 `graceful`·종료 코드 0으로 끝났고, 7777·잠금·47321이 다시 비었다. 두 checkout의 `git status`와 Unity DLL hash는 전후 같았다.
+- 7777 알림: 시작 전 Core·World·Content 리드에게 알렸고(`msg_b01e67632858`·`msg_3f19a5178c87`·`msg_0330dceca6f9`), 리드 사전 관측(10:04:37Z)도 비어 있었다. 끝난 뒤 리드가 비었음을 다시 확인하고(10:13:48Z) 종료를 알렸다(`msg_8a944feae847`·`msg_88a21094ea9d`·`msg_68f69de886cd`).
+- 기존 시험 B1 1회 실패: 판정용 실행 한 번(84 중 83)에서 `portListening`이 `true`였다. 그때 다른 세션의 `sync-wsl.sh test`가 같은 WSL에서 빈 포트를 쓰고 있었다. 시험의 빈 포트 고르기가 열었다 닫는 방식이라 겹칠 수 있다. 검증자는 원인 미확정 (d)로 남기고 시험을 고치지 않았다. 재실행·기준 실행 등 다른 네 번은 통과했다.
+- 허용 실행의 부작용(기록만): WSL `/tmp/.dotnet` 생성(`msg_4d37625ec1ff`, 원인 미확정), 고정 SDK `metadata` mtime. 검증 중 WSL이 두 번 다시 켜져 `/tmp`가 비었다. 우리 쪽 shutdown 명령은 없었다.
+- 리드 표본 대조(일치): `before-independent`·`after-independent`·`after-independent-rerun`의 `results.trx` 셈(72/72, 84/83/1, 84/84)과 실패 이름을 직접 셌다. B1 실패 원문(`after-independent/console.log` 78-96행)과 실제 진입 `summary.txt`를 읽었다. 검증자 세션 기록에서 메모 첫 쓰기(09:51:38Z)가 첫 저장소 쓰기(09:56:43Z)보다 앞섰고, 제품·기존 시험·`Support/` 쓰기는 0이다.
+
+### PR2 전에 판단할 것
+
+검증 판정의 설계 관찰과 B1 실패에서 나온 판단 거리다. PR1 범위의 설계 문장은 어기지 않는다. PR2 설계 때 리드가 판단하고, 범위 판단이 필요한 것만 메인에 올린다.
+
+- 관찰 1: 1 GiB 로그 조회가 2.4초 동안 수집 잠금을 쥐어 상태 조회도 2초 기다린다. 화면이 상태를 주기적으로 묻기 전에 정한다.
+- 관찰 4: 명시한 `--config` 파일이 없거나 모르는 키가 있어도 조용히 기본값을 쓴다. 경로 오타 하나로 실제 데이터 폴더·7777 잠금을 쓰게 되므로 실패로 바꾸는 쪽을 검토한다.
+- 관찰 7: 서버가 꺼져 있을 때 상태 조회마다 공유 7777 잠금을 잠깐 잡는다. 화면이 자주 물으면 개발 helper가 잘못 거부될 수 있다.
+- 관찰 3·5·6·8: `run`의 Debug 빌드, 종료 중 `portOwner: unknown` 표시, 응답이 익명 객체·상태 문자열, 남이 SIGKILL한 종료의 `signal: null`. 화면 연결 때 함께 본다.
+- 관찰 2(PR3): 게임 서버가 WSL 복사본 잠금 fd를 물려받는다.
+- B1 시험의 빈 포트 경합: 시험 소유자가 실패 메시지에 상태를 넣고 포트를 잡아 두는 방식으로 고칠 후보다.
