@@ -79,10 +79,14 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 | P2 | `S_DungeonClearResult`의 필드는 이 순서다. 결과 byte, 받은 골드 int, 아이템 세 칸(칸마다 itemId int, count int, 빈 칸은 0/0). `C_DungeonClearConfirm`은 `reserved` byte 하나이고 0이어야 한다. | 서버 시험(독립 encoder/decoder로 바이트 대조) |
 | P3 | 결과 값은 공유 enum `InventoryResult`의 `Success`·`CurrencyCap`·`InventoryFull` 셋만 쓴다. 새 enum을 만들지 않는다. | 서버·클라이언트 시험 |
 | P4 | 서버는 버전 18만 받고 17 클라이언트는 기존처럼 거부한다. 서버는 40번 핸들러를 등록하지 않는다. 그래서 캐릭터 선택 뒤 세션이 보낸 40번은 상태 변화·응답·연결 종료 없이 버려진다. 서버는 39번을 만들지 않는다. | 서버 시험 |
-| P5 | Shared GameData의 새 던전 폴더에 클리어 보상표를 둔다. 값은 골드 50, Material 1, CoinPouch 1이다(10-08 결정 2 A의 임시값, 지금 보스 처치자 보상과 같다). 모든 아이템은 카탈로그에 있고, 개수는 1~`InventoryLimits.MaxStack`, 골드는 0~`InventoryLimits.MaxCurrency`, 아이템 종류는 패킷 칸 수(3) 이하다. 이 PR에서 서버는 이 표를 읽지 않는다. | 서버 또는 클라이언트 시험 |
-| P6 | 클라이언트 39번 핸들러는 정확한 길이·머리, 결과 세 값, 골드 범위, 칸마다 「카탈로그 id와 개수 1~`MaxStack`」 또는 「0/0」을 검증한다. 하나라도 틀리면 버리고 기록만 한다. 창은 열리지 않고 상태도 바뀌지 않는다. 맞으면 메인 스레드에서 창을 연다. | EditMode 시험 |
-| P7 | 보상 창은 런타임으로 만든다. 성공이면 받은 골드와 아이템 줄(카탈로그 표시 이름과 개수)을 보인다. `CurrencyCap`·`InventoryFull`이면 받은 것이 없다는 것과 그 이유를 보인다. 「확인」은 연결이 handshake를 마친 때에만 40번(`reserved` 0)을 정확히 한 번 보내고 창을 닫는다. 두 번 눌러도 한 번만 보낸다. 창이 열린 동안 새 결과가 오면 새 결과로 바꾼다. 숨긴 창은 클릭과 공격 입력을 막지 않는다. 연결 종료 정리와 게임플레이 밖 씬에서는 닫혀 있다. | EditMode 시험 |
-| P8 | 마을(Town) 게임플레이 씬에서 마을의 사냥터행 포탈 위에 「던전 입구」 글자를 런타임으로 붙인다. 사냥터·보스방에는 붙이지 않는다. 마을의 포탈은 하나라는 전제를 시험으로 고정해, 두 번째 포탈이 생기면 그 시험이 먼저 깨진다. 글자는 클릭과 공격 입력을 막지 않는다. 맵·포탈 표, 서버, scene·prefab 파일은 바꾸지 않는다. | EditMode 시험 |
+| P5 | Shared GameData의 새 던전 폴더에 클리어 보상표를 둔다. 값은 골드 50, Material 1, CoinPouch 1이다(10-08 결정 2 A의 임시값, 지금 보스 처치자 보상과 같다). 모든 아이템은 카탈로그에 있고, 개수는 1~`InventoryLimits.MaxStack`, 골드는 0~`InventoryLimits.MaxCurrency`, 아이템 종류는 패킷 칸 수(3) 이하다. 이 PR에서 서버는 이 표를 읽지 않는다. | 서버 시험 |
+| P6 | 클라이언트 39번 핸들러는 정확한 길이·머리, 결과 세 값, 골드 범위, 칸마다 「카탈로그 id와 개수 1~`MaxStack`」 또는 「0/0」을 검증한다. 하나라도 틀리면 기존 인벤토리 핸들러처럼 조용히 버린다. 창은 열리지 않고 상태도 바뀌지 않는다. 맞으면 메인 스레드에서 창을 연다. | PlayMode 시험(실제 마을 씬, 스크립트 TCP 상대) |
+| P7 | 보상 창은 런타임으로 만든다. 성공이면 받은 골드와 아이템 줄(카탈로그 표시 이름과 개수)을 보인다. `CurrencyCap`·`InventoryFull`이면 받은 것이 없다는 것과 그 이유를 보인다. 「확인」은 연결이 handshake를 마친 때에만 40번(`reserved` 0)을 정확히 한 번 보내고 창을 닫는다. 두 번 눌러도 한 번만 보낸다. 창이 열린 동안 새 결과가 오면 새 결과로 바꾼다. 숨긴 창은 클릭과 공격 입력을 막지 않는다. 연결 종료 정리와 게임플레이 밖 씬에서는 닫혀 있다. | PlayMode 시험(같은 방식). PlayMode로 닿기 어려운 경로(handshake 전 「확인」)는 독립 검증에서 본다 |
+| P8 | 마을(Town) 게임플레이 씬에서 마을의 사냥터행 포탈 위에 「던전 입구」 글자를 런타임으로 붙인다. 사냥터·보스방에는 붙이지 않는다. 마을의 포탈은 하나라는 전제를 시험으로 고정해, 두 번째 포탈이 생기면 그 시험이 먼저 깨진다. 글자는 클릭과 공격 입력을 막지 않는다. 맵·포탈 표, 서버, scene·prefab 파일은 바꾸지 않는다. | PlayMode 시험(실제 마을·사냥터 씬) |
+
+**미리 정하는 공개 이름**: 선행 시험과 구현이 같은 이름을 쓰도록 여기서 고정한다. 생성 패킷의 필드는 `result`, `currency`, `reward0ItemId`·`reward0Count`·`reward1ItemId`·`reward1Count`·`reward2ItemId`·`reward2Count`(기존 snapshot의 `slot0ItemId` 꼴), 확인 요청은 `reserved`다. 보상표는 `98_Shared/GameData/Dungeon/DungeonClearRewards.cs`의 정적 클래스 `Shared.GameData.DungeonClearRewards`이고, `Currency`(int), `Items`(`IReadOnlyList<InventorySlot>`), 패킷 칸 수 `MaxItemKinds`(const int 3)를 가진다. 클라이언트 핸들러·창·입구 글자의 타입 이름은 구현이 정하고, 시험은 화면 글자와 버튼으로 관찰한다.
+
+P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispatch 표를 거쳐 창과 글자가 생기는지까지 한 번에 본다. 시험이 미리 정한 내부 타입 이름에 묶이지 않고 화면 글자와 버튼으로 관찰한다. 상대는 기존 PlayMode fixture의 스크립트 TCP 상대(임시 포트, 7777 아님)다.
 
 **건드릴 곳 보충**(메인 조건 1): 입구 표시와 보상 창은 클라이언트 전투 씬 초기화 `03_Client/Assets/Scripts/Combat/CombatBootstrap.cs`의 installer 배열에 한 줄씩 더하고, 그 줄이 부르는 Build 메서드 둘만 더한다. 이 파일의 주석이 정한 「새 인프라 = Build 메서드 + 이 배열 1행」 방식이다. 기존 installer의 순서·내용은 바꾸지 않는다. 39번 수신은 `Network/UnityClientSession.cs`의 dispatch 표에 한 줄을 더한다(같은 파일 주석 「새 패킷 추가 = 핸들러 1개 신설 + 여기 1줄 등록만」).
 
