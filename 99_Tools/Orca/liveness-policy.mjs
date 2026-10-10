@@ -52,6 +52,9 @@ function normalizeMessage(message, order) {
   if (message.thread_id != null && !isText(message.thread_id)) {
     throw new Error('thread_id must be text when present.');
   }
+  if (message.to_handle != null && typeof message.to_handle !== 'string') {
+    throw new Error('to_handle must be text when present.');
+  }
   const payload = typeof message.payload === 'string' ? JSON.parse(message.payload) : message.payload;
   if (payload != null && !isRecord(payload)) {
     throw new Error('payload must be an object, a JSON object string, or null.');
@@ -79,6 +82,7 @@ function orderMessages(messages) {
   }
   // Sender timestamps measure worker silence; mailbox delivery/collection time does not.
   return [...byTime.entries()].sort(([a], [b]) => a - b).flatMap(([, tied]) => {
+    // Mixed pairwise sequence/input comparisons are not transitive, so the whole tie keeps input order.
     const hasSequences = tied.every(message => message.sequence != null);
     return tied.sort((a, b) => hasSequences
       ? a.sequence - b.sequence || a.order - b.order
@@ -175,7 +179,7 @@ export function evaluateLiveness(inputs, thresholdSeconds = 300) {
   const groups = new Map();
   const replies = new Map();
   for (const message of orderMessages([...unique.values()])) {
-    if (message.dispatchId != null) {
+    if (message.dispatchId != null && !message.to_handle?.startsWith('dispatch:')) {
       if (!groups.has(message.dispatchId)) {
         groups.set(message.dispatchId, []);
       }

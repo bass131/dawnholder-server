@@ -48,8 +48,8 @@ async function main(args) {
 let decision;
 try {
   decision = await main(process.argv.slice(2));
-} catch {
-  decision = inputFailure(null, 'tool-failure', '$', 'The local liveness tool could not complete the evaluation.',
+} catch (error) {
+  decision = inputFailure(null, 'tool-failure', '$', `The local liveness tool could not complete the evaluation: ${error.message}`,
     'Preserve the saved inputs and inspect the local tool/runtime failure.');
 }
 process.stdout.write(`${JSON.stringify(decision)}\n`);

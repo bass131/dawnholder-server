@@ -12,8 +12,8 @@ Rules의 V1.x 로드맵 1단계 goal이다. 사용자가 범위를 승인했다(
 - branch: 도구 PR은 `feat/session-guard-liveness-20261010`(base main `cc20d428`, 선행 시험 뒤 main `bd4dbb5f`를 받음)이다. 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-operating-tool-guards/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-10-operating-tool-guards/scope-draft-v1.md)(SHA256 `caf31c40…`)와 넓힌 규칙 3 경계(메인 `msg_27aefcdfcd45`)다. 리드 맥락 메모는 E/lead-context.md(범위 초안)와 E/pr1-lead-context.md(착수)다. 메인 판단·사용자 결정 원시 목록은 E/main-decisions-log.md다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_dee0b834-2c69-4fb0-8ebe-a32e4e9af95f`, Run `run_d8372ac2ca97`(회신 주소 `run:run_d8372ac2ca97`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
-- **현재 위치**: helper 독립 검증이 결함 #1로 차단했다(「현재 결과 / helper 독립 검증」). 새 구현 세션이 #1을 고친다.
-- **남은 순서**: helper 수정 → helper 재검증 → 도구 PR·CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **현재 위치**: helper 결함 #1 수정이 끝났다(「현재 결과 / helper 결함 #1 수정」). 새 검증자가 재검증한다.
+- **남은 순서**: helper 재검증 → 도구 PR·CI → 승인 묶음 → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **사용자 차례**: 도구 PR 병합 승인 줄과 종료 기록 PR 병합 승인 줄이다.
 
 ## 진척 단계
@@ -252,6 +252,13 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 그 밖: 설계 문장·README 가드 절 수정·CI Orca 단계(bash 재현 여섯 경우)·단계 이름 변경은 지적 없음이다. 기존 시험 옛 단정 셋(606행 상수·653·668행)을 분류 (a)로 고쳐 Orca 기존 52/52, 선행 25/25, MergeGate 126, Backlog 60이다. 리드 정산 원시 다섯의 helper 출력이 리드 기록과 바이트 같다.
 - 리드 R-2(E/lead-r2-verify-liveness/r2-verdict.md): Orca 재실행 60 중 59(실패는 「defect 1」 하나), 기존 시험 diff 세 줄, 메시지 모양 집계에서 `dispatch:`로 보낸 메시지 중 payload `dispatchId`가 있는 것이 그 하나뿐임을 확인했다. 생존 신호 최대 264초, 초과 0.
 - 「설계」 145행에 「그 Dispatch에게 온 메시지는 신호가 아니다」를 보충했다. 수정은 원래 구현 배정대로 신규 `gpt-6-astra` xhigh가 하고, 새 검증자가 재검증한다(같은 산출물 수정 1회째, 같은 계약 확정 실패 1회째).
+
+### helper 결함 #1 수정
+
+- 구현자: 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown), Task `task_468552542915`, Dispatch `ctx_c607a6f9f21e`, worker_done `msg_6d51bb81ee60`. 계약 E/fix-liveness-contract.md.
+- 결과: 신호를 정하는 한 곳에서 `to_handle`이 `dispatch:`로 시작하는 메시지를 뺐다. 그 메시지도 질문 답 찾기에는 남는다. `to_handle`이 문자열이 아니면 input-error다. 같은 파일 관찰(동률 묶음 이유 주석, tool-failure 원인 문구)과 README 문장(신호 정의, 시험 묶음, 저장 창 한계, 가드 절 두 문장)을 함께 고쳤다. Orca 60/60, SessionGuard 167, MergeGate 126, Backlog 60 통과.
+- 저장 원시 여섯과 합본의 전후 비교에서 바뀐 것은 ctx_b9c24150f33b 신호 31→30 하나다(최대·초과 그대로).
+- 리드 R-2(E/lead-r2-fix-liveness/r2-verdict.md): diff·재실행 60/60·저장 원시 전후 비교가 보고와 같다. 생존 신호 최대 233초, 초과 0.
 
 ### 첫 발생 기록
 

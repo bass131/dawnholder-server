@@ -56,11 +56,11 @@ node "$CLAUDE_PROJECT_DIR/99_Tools/SessionGuard/claude-hook.mjs" < .backups/veri
 
 settings가 바뀌면 실행 중인 Claude 세션에도 다음 도구 호출부터 hook이 실린다. 가드 상태에 메모 기록이 없는 그 세션의 다음 쓰기는 `memo-first`로 막힌다. 그 세션의 맥락 메모를 Write·Edit 도구로 한 번 고쳐 쓰면 풀린다([goal 현재 결과 / 구현](../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#구현)).
 
-셸 한계는 별칭·스크립트 파일·변수 속 명령, 스크립트 내부 쓰기와 `cp`·`mv` 목적지다. 규칙 1은 `orca orchestration` 명령 자신의 리다이렉트와, 그 명령 또는 그 명령에서 이어지는 파이프라인의 마지막 명령 바로 뒤의 `&`만 본다. `orca … && echo done &`, `( orca … ) &`, `{ orca …; } &`, `{ orca …; } > /dev/null`처럼 목록·묶음으로 감싼 출력 버림은 보지 않는다. `>& 파일`에서 파일이 fd 번호나 `-`가 아닌 단어여도 fd 복제로 보아 쓰기 목적지로 세지 않는다.
+셸 한계는 별칭·스크립트 파일·변수 속 명령, 스크립트 내부 쓰기와 `cp`·`mv` 목적지다. 규칙 1은 `orca orchestration` 명령 자신의 리다이렉트와, 그 명령 또는 그 명령에서 이어지는 파이프라인의 마지막 명령 바로 뒤의 `&`만 본다(파이프 판정은 위 결과 코드 표에 있다). `orca … && echo done &`, `( orca … ) &`, `{ orca …; } &`, `{ orca …; } > /dev/null`처럼 목록·묶음으로 감싼 출력 버림은 보지 않는다. `>& 파일`에서 파일이 fd 번호나 `-`가 아닌 단어여도 fd 복제로 보아 쓰기 목적지로 세지 않는다.
 
 변수는 같은 명령 앞의 대입(`export` 포함), hook 환경 순으로 푼다. `CLAUDE_PROJECT_DIR`처럼 hook 환경에만 있는 변수는 Bash 셸에서는 빈 값일 수 있어 판정 경로와 실제 쓰기 경로가 다를 수 있다.
 
-호출 사이의 `cd`는 다음 호출의 입력 `cwd`에 반영된다. **같은 명령 안의 `cd`는 따라가지 않는다**. 그래서 메모는 Write 도구나 저장소 기준·절대 경로로 쓰고, 같은 명령 안 `cd` 뒤의 상대 경로나 같은 명령 안에서 대입하지 않은 셸 변수 경로로 쓰지 않는다. 입력 `cwd` 기준으로 메모 경로가 아니거나 변수가 풀리지 않는 쓰기는 메모로 기록되지 않는다.
+호출 사이의 `cd`는 다음 호출의 입력 `cwd`에 반영된다. **같은 명령 안의 `cd`는 따라가지 않는다**. 그래서 메모는 Write 도구를 사용하거나 절대 경로나 입력 `cwd` 기준 경로로 쓰고, 같은 명령 안 `cd` 뒤의 상대 경로나 같은 명령 안에서 대입하지 않은 셸 변수 경로로 쓰지 않는다. 입력 `cwd` 기준으로 메모 경로가 아니거나 변수가 풀리지 않는 쓰기는 메모로 기록되지 않는다.
 
 메모 순서는 Claude 세션만 막으며 Codex는 계약과 독립 판정으로 확인한다. `claude --resume`의 같은 `session_id` 연결 여부는 실제 진입 확인 대상이다([goal 위험 2·3](../01_Phases/goals/2026-10-10-operating-tool-guards/goal.md#위험)).
 
@@ -75,9 +75,9 @@ node 99_Tools/Orca/check-liveness.mjs .backups/verification/우편함.json
 node 99_Tools/Orca/check-liveness.mjs .backups/verification/우편함.json .backups/verification/추가-우편함.json --threshold-seconds 300
 ```
 
-`--threshold-seconds`는 한 번만 쓰는 유한한 0 이상 초 값이며 기본은 300초다. 입력은 리드가 저장한 Orca `inbox --json`·`check --json`의 `result.messages`, 앞의 `_keepalive` JSON 줄을 건너뛴 대기 결과, 또는 메시지 객체 배열이다. 각 메시지는 `id`·`type`·`from_handle`·유효한 송신 시각 `created_at`을 보존한다. `payload`는 객체·JSON 객체 문자열·null이며 선택 `sequence`는 안전한 정수, `thread_id`는 답의 원래 질문 id다. 여러 파일은 메시지 id로 합치며 중복 id는 먼저 읽은 원문을 쓴다.
+`--threshold-seconds`는 한 번만 쓰는 유한한 0 이상 초 값이며 기본은 300초다. 입력은 리드가 저장한 Orca `inbox --json`·`check --json`의 `result.messages`, 앞의 `_keepalive` JSON 줄을 건너뛴 대기 결과, 또는 메시지 객체 배열이다. 각 메시지는 `id`·`type`·`from_handle`·유효한 송신 시각 `created_at`을 보존한다. `payload`는 객체·JSON 객체 문자열·null이며 선택 `sequence`는 안전한 정수, `thread_id`는 답의 원래 질문 id다. `to_handle`은 생략·null 또는 문자열이며 다른 형식은 입력 오류다. 여러 파일은 메시지 id로 합치며 중복 id는 먼저 읽은 원문을 쓴다.
 
-`payload.dispatchId`로 묶고 없으면 `from_handle`의 `dispatch:<id>`를 쓴다. Dispatch 없는 메시지도 질문 답을 찾는 데 사용하며 Dispatch가 하나도 없으면 입력 오류다. heartbeat뿐 아니라 status·question·escalation·worker_done 등 그 Dispatch의 모든 메시지가 신호다. `created_at` 순으로 이웃 간격을 재며 같은 시각 묶음은 모두 sequence가 있으면 오름차순, 누락이 있으면 입력 순이다. 첫 worker_done까지 측정하고 그 뒤는 제외한다. 신호 하나의 최대 간격은 0이며 첫 신호 전·마지막 신호 후는 재지 않는다.
+`payload.dispatchId`로 묶고 없으면 `from_handle`의 `dispatch:<id>`를 쓴다. Dispatch 없는 메시지도 질문 답을 찾는 데 사용하며 Dispatch가 하나도 없으면 입력 오류다. heartbeat뿐 아니라 status·question·escalation·worker_done 등 그 Dispatch가 보낸 모든 메시지가 신호다. `to_handle`이 `dispatch:`로 시작하는 후속·답은 payload에 `dispatchId`가 있어도 어떤 Dispatch의 신호에도 넣지 않으며, `thread_id`로 질문 답을 찾는 데는 계속 쓴다. `to_handle`이 없거나 null이면 기존 묶기 규칙을 따른다. `created_at` 순으로 이웃 간격을 재며 같은 시각 묶음은 모두 sequence가 있으면 오름차순, 누락이 있으면 입력 순이다. 첫 worker_done까지 측정하고 그 뒤는 제외한다. 신호 하나의 최대 간격은 0이며 첫 신호 전·마지막 신호 후는 재지 않는다.
 
 질문 Q의 id를 `thread_id`로 가진 다른 발신자의 가장 이른 답 R이 다음 신호 N 이전(같은 시각 포함)에 있으면 Q→R은 질문 대기, R→N은 보통 간격이다. 답이 없거나 N보다 늦으면 Q→N이 보통 간격이다. 질문 대기는 길이와 관계없이 따로 내고 최대 간격·초과에서는 뺀다. 답 뒤 간격은 계속 검사한다.
 
@@ -89,7 +89,7 @@ node 99_Tools/Orca/check-liveness.mjs .backups/verification/우편함.json .back
 
 stdout은 `status`·`thresholdSeconds`·`dispatches[]`·`diagnostics[]`를 담은 JSON 하나다. Dispatch별로 `dispatchId`·`signalCount`·`firstAt`·`lastAt`·`maxGapSeconds`·`overGaps[]`·`questionWaits[]`를 낸다. 간격 항목은 `{ from: { id, at, type }, to: { id, at, type }, seconds }`이고 질문 대기에는 `replyId`도 있다. 진단은 `{ code, path, message, repair }`로 원인·입력 위치·고치는 법을 알린다. 자체 상태/출력 파일을 만들지 않으며 stdout 보존 위치는 호출자가 지정한다.
 
-저장 원시에 있는 신호 간격만 분석하며 파일 쓰기·네트워크·Orca 상태 변경은 없다. 실시간 감시나 메시지 수신 판정은 하지 않는다. 독립 회귀는 `node --test 99_Tools/Orca.Tests/check-liveness.test.mjs`다. [code-rules workflow](../.github/workflows/code-rules.yml)의 기존 Orca 단계가 `node --test 99_Tools/Orca.Tests/*.test.mjs`로 수신·간격 시험 전부를 실행하고 `$RULES_OUTPUT/orca-independent-tests/`에 command/stdout/stderr/exit를 보존한다. 저장 fixture 회귀와 실제 작업자 정산의 원시 분석·원격 CI는 별도 근거다.
+저장 원시에 있는 신호 간격만 분석하며 파일 쓰기·네트워크·Orca 상태 변경은 없다. 실시간 감시나 메시지 수신 판정은 하지 않는다. 저장 창(`inbox --limit` 등) 밖의 앞 신호는 빠지므로, 정산 원시는 Dispatch 시작 전부터 담거나 여러 원시를 함께 넣어 id로 합친다. 독립 회귀는 `node --test 99_Tools/Orca.Tests/*.test.mjs`(PowerShell에서는 glob을 따옴표로 감싼다)다. [code-rules workflow](../.github/workflows/code-rules.yml)의 기존 Orca 단계가 `node --test 99_Tools/Orca.Tests/*.test.mjs`로 수신·간격 시험 전부를 실행하고 `$RULES_OUTPUT/orca-independent-tests/`에 command/stdout/stderr/exit를 보존한다. 저장 fixture 회귀와 실제 작업자 정산의 원시 분석·원격 CI는 별도 근거다.
 
 ## 후보 도착 검사
 
