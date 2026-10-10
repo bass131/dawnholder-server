@@ -604,9 +604,48 @@
 
 ## 재개 지점
 
+### 조건 (b) 정지 재측정 세 번 실패, 보존 데이터 도구 구현 — 2026-10-10T16:0xZ
+
+기록 시각은 2026-10-10T16:09:00Z(`date -u`, KST 01:09)다. **이 블록이 현재 재개 정본이다.** E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다. 시간순 원기록은 N/`pending-goal-edits.txt`다.
+
+- **조건 (b) 발동:** 1단계 카드는 볼륨을 다시 쓰는 정지가 필요하다(1단계 → fixture·U-01 harness 제작 → 2단계 사이와 PR 검토 중 보존, 정리 때 DROP을 위한 재시작). 그래서 F-14 조건 (b)대로 시작 완료 뒤 정지를 다시 재기로 하고 메인에 알렸다(`msg_2f6097553e06`). 재는 것은 시작 완료 뒤 T-SQL `SHUTDOWN`과 `docker stop -t 30`, 그리고 각 정지 뒤 같은 컨테이너를 `docker start`로 다시 띄웠을 때의 master `family_guid`와 표식 DB 생존이다.
+- **같은 측정에서 harness 실수가 세 번 이어졌다(메인 지시 `msg_3ba6500bfb7f`로 기록).** 셋 다 작업자 harness 결함이고 엔진·계약 문제가 아니다. 셋 다 `gpt-6.1-sol` max이고 각 측정 하나 뒤 정산했다.
+
+| 시도·Task | 계약 | 실패 지점·원인 | 그 전까지 잰 것 | 정리 |
+|---|---|---|---|---|
+| 첫째 `task_09aeb1f179b5` | E/`container-stop-restart-measure/contract.md`(`50b11853…f5a9`) | 표식 DB 생성 batch, SQL 911. `CREATE DATABASE`와 `USE`를 한 batch에 넣었다 | R1 첫 접속 8.50초, 시작 완료 27.02초(`run/R1-startup-complete.json`) | 계약 정리 정상, 비밀 대조 199파일 일치 0 |
+| 둘째 `task_794bda039d76` | E/`container-stop-restart-remeasure/contract.md`(`90b74a30…3070`, batch 규칙 추가) | R1 조회, SQL 156. 열 별칭에 예약어 `RowCount` | R1 시작 완료 31.61초, 표식 DB·표·행 생성 성공 | 계약 정리 정상, 222파일 일치 0 |
+| 셋째 `task_6bbe8ec6c477` | E/`container-stop-restart-attempt-3/contract.md`(`4cc51f1e…2415`, 예약어 금지와 `SET PARSEONLY ON` 구문 사전 검사 추가) | `docker run` 직후 로그 저장 helper(`run/Log.Secret.ps1`)가 파일 이름 둘을 한 경로로 이어 FileNotFoundException | 컨테이너 시작만 | 아래 정리 순서 결함과 절차 위반 |
+
+- **정리 순서 결함(셋째):** 계약 정리도 같은 helper에서 멈췄다. 그런데 정리 함수 `Invoke-Finalization`(E/`container-stop-restart-attempt-3/run/Measure.Stages.ps1`)이 sa 비밀 파일 삭제를 `finally`에 두어, 정지·삭제가 실패했는데도 비밀을 지웠다. 그래서 컨테이너가 running이고 포트가 열린 채로 `SHUTDOWN`에 필요한 비밀이 사라졌다(`run/Cleanup-absence.json`의 AllAbsent false, 15:57Z).
+- **절차 위반(셋째):** 리드는 15:58:26Z에 「로그 helper만 고쳐 로그 저장 → `docker stop -t 30` 한 번 → rm·volume rm 금지, 보존」을 보냈다(`msg_ee03eed24e20`). 작업자는 이 지시를 읽기 전에 계약 밖 복구 스크립트(`run/Recovery.Cleanup.ps1`)를 만들어 stop(15:59:11Z~41Z)·`docker rm`·`docker volume rm`(15:59:42Z)을 했다. 리드 중지 메시지(`msg_1702d981032c`, 15:59:34Z)도 늦었다. 메인은 15:59:24Z에 리드에게 삭제를 정했지만 작업자에게는 전달되지 않았으므로 메인 결정 전 삭제다. 삭제 전 `docker logs`는 남기지 않았다. 작업자가 「복구 직전 우편함 확인을 빠뜨렸다」고 스스로 알렸다(`msg_63c73287826b`). 끝 상태는 원시로 확인했다: `run/RecoveryCleanup-absence.json`(15:59:44Z) 컨테이너·볼륨·비밀 파일 없음, 14333 연결 실패, 이미지 1개. 메인에 사실 보고 `msg_1c0be2778378`.
+- **정지 관측(인용용):** 셋째의 복구 정지에서 `docker stop -t 30`은 30.73초였고 ExitCode 137이었다(`run/RecoveryCleanup-stop30-receipt.json`·`RecoveryCleanup-after-stop.json`). 첫 추가 측정의 30.7467초·137(`r7-container-measure/run/11-final-container-*`)과 같은 결과의 재현이다. 정지 직전 로그가 없어 SQL이 정지 신호를 받았는지는 모른다. 첫째의 정리 `SHUTDOWN`은 시작 완료 뒤 명령 0.187초, exited 관측 1.363초, ExitCode 255, 로그 「Server shut down by request from login sa」였다(`container-stop-restart-measure/run/Cleanup-stop.json`).
+- **메인 판단(`msg_3ba6500bfb7f`, 사용자 결정 아님):** 근거는 사용자 지시(10-10 17:44) 「판단이 애매해지면 세컨드 브레인의 성향으로 판단」과 성향 31 「검증은 가장 싼 환경에서 먼저 한다」다. 1 삭제(이미 일어난 상태라 추가 동작 없음). 2 A: 새 Sol 네 번째 시도. 컨테이너 전에 가짜 docker·SQL 오프라인 예행으로 성공·실패·정리 실패 가지를 모두 돌리고, 비밀 삭제는 컨테이너·볼륨 부재 확인 뒤로만 둔다. 리드는 「가능」 전에 예행 원시와 SQL·harness 파일을 모두 읽는다. **네 번째도 harness 실수로 실패하면 측정을 멈추고 B(볼륨 재사용 정지 없이 카드 설계)와 함께 메인에 다시 올린다.**
+- **교정 층:** 같은 부류(작업자 harness 결함)가 세 번 났다. 계약 문장 추가(batch 규칙·예약어 금지·구문 검사)는 매번 다음 결함을 막지 못했다. 그래서 네 번째는 실행 전 단계에서 harness 전체를 가짜 외부 호출로 돌리는 오프라인 예행을 둔다. 실패와 우편함 규칙도 둔다: Docker·SQL 스크립트 실행 직전 check, escalation·ask 뒤 답 전 동작 금지, 계약 밖 복구 스크립트 금지, 정리 단계 실패 시 남은 파괴 동작을 멈추고 ask. 계약은 E/`container-stop-restart-attempt-4/contract.md`다.
+- **리드 실수 9:** 둘째 시도의 「가능」 전에 생성 SQL 두 파일만 읽고 실패한 조회 SQL(`R1-probe.sql`)을 읽지 않았다. 셋째부터 SQL 전부를 읽었다(E/`container-stop-restart-attempt-3/lead-sql-reviewed-hashes.txt`). 네 번째부터는 harness 전부와 예행 원시까지 읽는다.
+- **리드 실수 10:** 셋째의 stop 137을 메인에 「새 관찰」로 보고했다. 계약의 인용 줄에 같은 값이 이미 있었다. 16:03:47Z에 정정했다(`msg_5a70d1615641`, 첫 보고 16:02:21Z). 계약에는 원시로 확인한 값만 쓴다는 교정을 보고에도 적용한다.
+- **보존 데이터·실제 엔진 JSON 경계 도구 구현(U-01·001 fixture 준비):** 계약 E/`preservation-engine-check-implementation/contract.md`(`f9b1b9cd…03fb`). 리드 설계 결정은 계약에 있다: 관측 위치 A(Baseline001 뒤 제품 Complete를 도구 transaction에서 예행하고 rollback), B(공식 Complete 뒤 자연·강제 빈 집합·거부), 강제 빈 집합은 rollback transaction 안 DELETE만, 원자성은 예행으로 주입 지점을 확인한 뒤에만 제품 소유 실행, 보존 데이터는 binding과 다른 GUID로 commit하고 Complete 뒤 rowversion까지 같아야 통과, unknown migration·checksum drift는 Test-Database 93~106행이 맡는다. MSSQL.md 두 줄 수정은 메인에 먼저 알렸다(`msg_7fdc80e04660`, 남는 위험: 원자성 주입 불발 때 저널 밖 commit 가능성 → 예행·멈춤 규칙, 실행 승인 때 재검토).
+  - 구현 `task_dcc1c4972974`(`gpt-6-astra` xhigh), worker_done `msg_3fdafbecd492` succeeded. 리드 R-2: `run/final-verified/summary.json` 10 suite 1401/0/9, 기준 9 suite 1283/0/9, 검사기 「Code rules PASS」. 변경 6경로: 새 `99_Tools/database/test-environment/EngineCheck.Common.ps1`·`Invoke-PreservationCheck.ps1`(`-Action Record|Compare`)·`Test-EngineBoundary.ps1`(`-Action BeforeComplete|AfterComplete`), 새 `tests/PreservationEngine.Tests.ps1`, `tests/Invoke-OfflineTests.ps1` 1줄, MSSQL.md(도구 표 4행·순서 문장, 뒤 두 문장 줄 나눔).
+  - 강 등급 독립 검증 진행 중: 신규 `claude-opus-5-5` `task_6719219fd5ae`, 계약 E/`preservation-engine-check-review/contract.md`(`d2565d53…4de7`), 판정 범위 1~10, 원자성 제품 소유 실행의 위험 경로 집중.
+  - 범위 밖 관찰(후속 후보): `Install-Database.ps1` 3·43행의 `-Instance` 잔재.
+- **Content 조율:** Content의 큰 실행은 끝났다(`msg_5577548749c0`, Unity 0·7777 0, 이 PR에서 큰 실행·컨테이너 재사용 계획 없음). 컨테이너 시도마다 시작을 Content에 알렸다.
+- **정산 liveness(메인 판단 `msg_cf6eceb5ffdc`):** 원시는 각 근거 폴더의 `lead-inbox-at-settlement.json` → `lead-liveness.json`이다.
+
+| 작업·Dispatch | 300초 초과 | 기동→첫 신호(리드 계산) |
+|---|---|---|
+| 정지 재측정 첫째 `ctx_3a514b187d15` | 326초 1구간(보고서 작성 중, 작업자 자진 공개 `msg_5017d0ea1d7d`) | 185초 |
+| 정지 재측정 둘째 `ctx_377b816c39b1` | 없음(최대 196초) | 212초 |
+| 보존 데이터 도구 구현 `ctx_ac09c823c13f` | 없음(최대 295초) | 102초 |
+| 정지 재측정 셋째 `ctx_b014abc1d121` | 정산 전 | 정산 전 |
+
+- **다음 할 일:**
+  1. 셋째 시도 실패 마감 정산(지시 `msg_618244d71d53`) → 네 번째 시도 기동 → 오프라인 예행 → 리드가 harness·SQL·예행 원시를 모두 읽고 「가능」 → 실제 측정 → 정산 → 측정 보고 문서 실사(파트당 검증자 하나라 도구 검증 뒤).
+  2. 도구 강 검증 정산·R-2.
+  3. 1단계 카드 설계 → 카드 실사 → 사용자 실행 승인 → 실행 → 2단계(Record → BeforeComplete → Complete → Compare → AfterComplete → Test-Database) → 엔진 판정 PR(이 branch) → 정리 → Gardener.
+
 ### 도구 전환 PR226 병합, 컨테이너 1단계 준비 — 2026-10-10T14:4xZ
 
-기록 시각은 2026-10-10T14:46:16Z(`date -u`, KST 23:46)다. **이 블록이 현재 재개 정본이다.** E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다.
+기록 시각은 2026-10-10T14:46:16Z(`date -u`, KST 23:46)다. 위 16:0xZ 블록이 이어 쓴다. E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다.
 
 - **PR226 병합:** 리드가 정확 head `96ece181869aeff773726733e4ed9f3244719bdd`(CI 네 개 통과, MERGEABLE·CLEAN)로 승인 묶음을 보냈다(`msg_80dd9afd4286`). 사용자가 메인 pane에 승인 줄을 제출했고 메인이 head·CI·CLEAN을 다시 확인해 병합했다(`msg_cd7d5e29e29e`). MERGED 2026-10-10T14:45:05Z, merge commit `b88a1b4bf4eb9d47b6d68110004afa1f023a4ab7`. 메인 R-2: 바뀐 파일 27(서버·클라이언트·공유·설정 0), `10284d81` 이후 ps1 공백 무시 diff 0, 두 판정서 통과 줄, 오프라인 합계 1283/0/9를 원시에서 확인했다. 승인 묶음을 보낼 때 main은 PR225(`b482b84a`, BACKLOG·CURRENT·인스턴스 맵 goal)로 앞서 있었고 공통 파일 BACKLOG.md는 merge-tree 충돌이 없어 다시 맞추지 않았다.
 - **엔진 판정 PR branch:** 「현재 범위·PR 경계」의 「도구 전환 PR 병합 뒤 최신 main을 받은 branch에서 연다(branch는 그때 정한다)」에 따라 `feat/persistence-container-engine-20261010`을 `b88a1b4b`에서 만들었다. 옛 원격 branch `feat/persistence-engine-judgment-20261006`은 병합 뒤 자동 삭제됐다.
