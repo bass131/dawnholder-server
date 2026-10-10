@@ -8,8 +8,8 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - branch: `feat/instance-map-lifecycle-20261010`, base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`(PR220 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-instance-map-lifecycle/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/scope-draft-v2.md)(SHA256 `fc99c9eb…fde7a2`), 조사는 [instance-architecture-research.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/instance-architecture-research.md)(SHA256 `0d5a1bf9…918da`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-memo.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_8a825e57-3f6e-4b72-aa51-ceb3d847ca32`, Run `run_c21dddd08312`(회신 주소 `run:run_c21dddd08312`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: R-7 Fable 설계 검토([goal-review.md](goal-review.md))와 메인 원문 확인이 끝났다. 아래 「설계 검토 반영」에 채택·보류와 승인 범위 v2와 달라진 곳을 적었고, 메인 승인을 기다린다.
-- **남은 순서**: 메인 승인 → 선행 시험(신규 Opus) → 구현(`gpt-6-astra` xhigh) → 독립 검증(신규 Opus) → 봇 두 파티 확인 → 제품 PR → 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **현재 위치**: R-7 Fable 설계 검토([goal-review.md](goal-review.md))와 goal 보완을 메인이 승인했다(`msg_56df80a3bd4f`). 신규 Opus 선행 시험 작성자를 연다.
+- **남은 순서**: 선행 시험(신규 Opus) → 구현(`gpt-6-astra` xhigh) → 독립 검증(신규 Opus) → 봇 두 파티 확인 → 제품 PR → 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **사용자 차례**: 지금은 없다. 제품 PR이 준비되면 병합 승인 줄이다.
 - 다음 goal(다중 계정 로그인)은 이 goal이 끝난 뒤 따로 승인받는다. 자동으로 시작하지 않는다.
 
@@ -17,8 +17,8 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 
 - [x] 범위 승인
 - [x] Fable 설계 검토
-- [>] goal 보완 승인
-- [ ] 선행 시험 작성
+- [x] goal 보완 승인
+- [>] 선행 시험 작성
 - [ ] 구현
 - [ ] 독립 검증
 - [ ] 봇 두 파티 확인
@@ -395,6 +395,7 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 4. 병합 관문 그물: gh·merge 또는 push·main 낱말이 함께 든 명령은 막힌다. PR 문구는 파일로 넘기고 push는 따로 실행한다. 막히면 우회하지 않고 메인에 알린다.
 5. 포트 7777은 Content와 나눠 쓴다. 봇 실행 전에 Orca 메시지로 알리고, 겹치면 먼저 알린 쪽이 끝낼 때까지 기다린다.
 6. 복사본 안에서 파티를 맺어도 같은 복사본으로 합쳐지지 않는다(메인 판단 S-06). 플레이어는 이 상황을 겪어도 화면 통보를 받지 못하고, 파티원이 왜 안 보이는지 알 수 없다. 이 goal은 클라이언트·패킷을 바꾸지 않으므로 통보는 다음 후보다. goal 종료 때 BACKLOG 후보로 올린다.
+7. 정리된 복사본의 은퇴 표식은 넣지 않았다(설계 검토 IM-04, 메인 승인 `msg_56df80a3bd4f`). 맵 job 안에서 세션 쪽 guard를 푸는 코드가 생기면, 정리된 복사본에 들어간 그 job이 실행되지 않아 guard가 영원히 잡힌다. 그런 코드를 쓸 때는 검토 원문 IM-04의 은퇴 표식을 함께 넣는다.
 
 ## 현재 결과
 
@@ -409,3 +410,4 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 - 08:50:26Z 완료 보고를 받았다. 보낸 handle·Task·Dispatch가 기동 기록과 같았다. 저장소 쓰기는 `goal-review.md` 하나였고 추적 파일 변경은 0이었다. 검토자의 지정 TEMP(`.backups/tmp/f1`)에는 도구가 만든 캐시 파일이 있다. 검토 원문의 「TEMP 아래에 파일을 만들지 않았다」는 직접 쓰기만 가리킨 것으로 보고, 허용 경로 안이라 차단 사유로 보지 않는다. 사본은 E/`fable-review/goal-review-v1.md`다.
 - 정산은 `worker-release` 결과 retained(손수 연 pane)였다. 화면이 끝남·빈 프롬프트임을 확인하고 pane을 닫았다.
 - 메인이 원문을 확인했고(`msg_1e59e0802942`), 리드가 채택·보류를 「설계 검토 반영」에 적었다. 빌드·서버 시험·봇·성능 측정은 실행하지 않았다.
+- 08:58:18Z 메인이 goal 보완을 승인했다(`msg_56df80a3bd4f`, 메인 승인이며 사용자 결정 아님). 승인 범위 v2와 달라진 곳 다섯과 IM-04 은퇴 표식 보류를 받았고, 보류의 반례 조건을 「위험」 7에 남기라고 했다. 메인은 사용자 보고에 이를 「범위 보완」으로 적는다.
