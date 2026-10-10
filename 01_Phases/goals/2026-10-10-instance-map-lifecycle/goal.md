@@ -8,8 +8,8 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - branch: `feat/instance-map-lifecycle-20261010`, base main `bd4dbb5fab6c690f68c4d37111a52b8e93e9d992`(PR220 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-10-instance-map-lifecycle/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v2.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/scope-draft-v2.md)(SHA256 `fc99c9eb…fde7a2`), 조사는 [instance-architecture-research.md](../../../.backups/verification/2026-10-10-instance-map-lifecycle/lead-entry/instance-architecture-research.md)(SHA256 `0d5a1bf9…918da`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-memo.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_8a825e57-3f6e-4b72-aa51-ceb3d847ca32`, Run `run_c21dddd08312`(회신 주소 `run:run_c21dddd08312`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 구현이 끝났다. 전체 서버 시험 962건 중 통과 957, 실패 0, 건너뜀 5이고 선행 시험 38건은 모두 통과한다. 봇 실행과 독립 검증은 아직이다. 아래 「현재 결과」의 「구현」 절에 넘긴 확인 항목 다섯을 담아 독립 검증자를 연다.
-- **남은 순서**: 독립 검증(신규 Opus) → 봇 두 파티 확인 → 제품 PR → 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **현재 위치**: 독립 검증이 통과했다. 검증자 새 시험을 더한 전체 서버 시험 974건 중 통과 969, 실패 0, 건너뜀 5이고, 봇 20개 시나리오가 모두 통과했다. 차단 결함은 없다. 아래 「현재 결과」의 「독립 검증」 절을 보고 제품 PR을 연다.
+- **남은 순서**: 제품 PR → 사용자 병합 승인 → 결과 기록 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **사용자 차례**: 지금은 없다. 제품 PR이 준비되면 병합 승인 줄이다.
 - 다음 goal(다중 계정 로그인)은 이 goal이 끝난 뒤 따로 승인받는다. 자동으로 시작하지 않는다.
 
@@ -20,9 +20,9 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - [x] goal 보완 승인
 - [x] 선행 시험 작성
 - [x] 구현
-- [>] 독립 검증
-- [ ] 봇 두 파티 확인
-- [ ] 제품 PR 병합
+- [x] 독립 검증
+- [x] 봇 두 파티 확인
+- [>] 제품 PR 병합
 - [ ] Gardener 점검
 - [ ] 종료 기록 PR 병합
 
@@ -447,7 +447,7 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 - 10:28:09Z 완료 보고(`msg_11e446119d72`)를 받았고, 보낸 handle·Task·Dispatch가 기동 기록과 같았다. 보고는 E/`impl/report.md`(SHA256 `453e7fde…055e`), 원시는 E/`impl/` 아래에 있다.
   - 전체 서버 시험(WSL): 962건 중 통과 957, 실패 0, 건너뜀 5, exit 0. 선행 시험 38건은 모두 통과했다.
   - 서식 검사(`99_Tools/format-check.ps1`)는 「Formatting checks passed」, exit 0이다.
-  - 중간 실패 90행은 모두 분류했다. 옛 고정 맵 가정 38, IMPL-01 연쇄 51, 실제 제품 회귀 1(IMPL-01 자신)이다.
+  - 중간 실패 90행은 모두 분류했다. 보고는 옛 고정 맵 가정 38, IMPL-01 연쇄 51, 실제 제품 회귀 1(IMPL-01 자신)이었다. 독립 검증이 한 행의 잘못된 분류를 찾아(VER-01, 아래 「독립 검증」) 실제는 37, 52, 1이다.
   - 바뀐 파일은 30개다. 제품 9(새 파일 4), 기존 시험 17, 봇 2(새 시나리오 `InstanceMapIsolationSmoke`), 문서 2(`server.md`·`FEATURE_MAP.md`)다. 선행 시험 7파일과 금지 영역은 바뀌지 않았다.
 - 리드 표본 대조: 선행 38건 합계, 맵 등록 시험의 전후 단정(분류 표 5·6·18번), IMPL-01 수정 줄, 퀘스트 초기화 시험의 열쇠별 단정, 보스 처치 콜백, 전체 초기화 함수의 잔존 0, 서버 계약 문서의 조건 문장이 보고와 같다.
 - 절차 기록(비차단, 산출물 영향 없음): 첫 git 읽기 둘에 `GIT_OPTIONAL_LOCKS=0`을 빠뜨렸다. 이 goal에서 두 번째 발생이다. 이미 계약에 있는 규칙의 반복이므로 새 규칙 대신 더 높은 층으로 고친다. 독립 검증자부터 기동 명령의 환경에 이 값을 TEMP·TMP와 함께 넣는다. 그 밖에 근거 정리 도구가 세 번 막혔다가 바로 고쳐졌다.
@@ -458,3 +458,24 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
   3. 서버 이동 도중 연결이 끊길 때 유령 entity와 입장 대기 수가 남지 않는지.
   4. 봇 두 파티 실행이 시작 때 데이터 검사 회귀(위험 8)를 실제로 덮는지(메인 `msg_4a578e26b5e7`).
   5. 마지막 사람이 나갈 때 날아가던 투사체·지연 피해가 사라지고 그 뒤 처치·보상이 없는지.
+
+### 독립 검증 — 2026-10-10
+
+- 10:39:12Z(UTC) 리드 pane 아래에 신규 `claude-opus-5-5` xhigh 검증자(`[World 검증자]`)를 열었다. 최초 실행 명령은 TEMP·TMP를 `.backups/tmp/v1`, `GIT_OPTIONAL_LOCKS=0`으로 정한 뒤 `claude --model claude-opus-5-5 --effort xhigh`이고, 첫 화면은 「Opus 5.5 with xhigh effort」, backend는 unknown이다. Task `task_77b1374ae5f3`, Dispatch `ctx_20a2b5363de9`, 계약 E/`verify-contract.md`(SHA256 `d97baeac…463a`), 등급은 강이다. 기동 환경에 `GIT_OPTIONAL_LOCKS`를 넣은 첫 사례이며 메인이 받았다(`msg_c43c20269d2f`).
+- 포트 7777 조율: Content가 R9 실화면으로 먼저 예약해(`msg_af66df3051a8`) 검증자의 사용 요청(`msg_e60d2e28ac19`)에 「대기」로 답했다. R9가 사용자 권한 설정을 기다리는 동안 Content가 World 먼저를 승인했다(`msg_abc2cc5dc1f4`). 시작 직전 메모리는 여유 물리 6.6GB, 커밋 여유 4.6GB로 메인 기준 4GB 이상이었다. 봇은 11:32:36~11:37:54Z에 돌았고, 끝난 뒤 Content·Core·Management에 해제를 알렸다.
+- 11:44:11Z 완료 보고(`msg_7c97745ae246`)를 받았고, 보낸 handle·Task·Dispatch가 기동 기록과 같았다. 판정 원문은 E/`verify/verdict.md`(SHA256 `dfbe6dd01a32445a1344f1ac9dcf3d6bc5b207eb006907d652e8134ce69eea14`), 원시는 E/`verify/` 아래에 있다.
+  - 판정: 통과. 차단 결함은 없다.
+  - 검증자 새 시험 4파일 12건이 모두 통과했다(`Maps/InstanceMapRetirementTests.cs`, `Maps/InstanceMapTickOrderTests.cs`, `Maps/ServerMapMoveDisconnectTests.cs`, `Party/InstanceKeyMembershipChangeTests.cs`).
+  - 전체 서버 시험(WSL): 974건 중 통과 969, 실패 0, 건너뜀 5, exit 0. 서식 검사는 「Formatting checks passed」다.
+  - 봇 20개 시나리오: `REGRESSION SUMMARY: PASS=20 FAIL=0`, exit 0. 서버 로그 합계는 사냥터 복사본 생성 18·정리 17, 보스방 복사본 생성 6·정리 6이고, 생성 실패·예외 줄은 0이다. 두 파티 시나리오는 파티 열쇠 사냥터 복사본 2개를 따로 만들고 마을 복귀 뒤 둘 다 정리했다. 정리 줄 하나가 빠진 것은 helper가 봇 종료 직후 서버를 끄기 때문이다(관찰 F-10).
+  - 기존 시험 17파일의 변경 약 40곳은 모두 옛 고정 맵 가정의 교체이며 행동 단정이 약해진 곳은 없다. 두 곳은 단정을 더했다.
+- 확인 항목 다섯의 결과는 다음과 같다.
+  1. 파티 복사본 안에서 파티를 나간 사람의 개인 진행은 보스 처치 뒤에도 남는다. 남은 사람이 잡든 나간 사람이 잡든 같다.
+  2. 혼자 열쇠 복사본에서 파티원이 된 사람이 보스를 잡으면 본인 개인 진행만 지워지고, 그 사이 쌓인 파티 진행과 해금은 남는다.
+  3. 서버 이동을 수락한 뒤 도착 전에 끊기면 그 entity는 어느 맵에도 없고, 빈 출발 복사본이 정리되며, 다른 사람에게 입장 통보가 가지 않는다.
+  4. 봇 회귀 묶음이 사냥터·보스방 복사본을 실제 맵 데이터로 각각 만들었다. 적 종류 데이터가 틀리면 그 맵에 들어가는 시나리오가 실패로 드러난다. 다만 두 파티 시나리오 단독은 사냥터만 덮고, 보스방은 같은 묶음의 시나리오 여섯이 덮는다(관찰 F-09).
+  5. 마지막 사람이 나가면 날아가던 투사체가 사라지고 그 뒤 처치·보상이 없다. 같은 입력에 파티원이 남는 대조군에서는 처치·보상이 생긴다.
+- VER-01(비차단, 귀속 구현자): 구현 보고의 중간 실패 분류 한 행이 원시와 달랐다. `impl/failures-all.md:49`는 선행 시험 하나의 실패를 다른 시험의 줄로 적고 옛 가정으로 분류했지만, 원시(`impl/before-lookup-full2.txt:511`)의 오류는 IMPL-01 싱글턴 연쇄다. 제품·시험 결과에는 영향이 없다. 보고와 실제가 다른 경우라 메인에 보고했다. 구현자 근거 파일은 원본으로 두고 정정은 이 goal에 적는다. 이 goal의 첫 발생이라 새 규칙은 만들지 않는다. 분류표의 원시줄을 기계로 대조하는 helper로 검사 전환이 가능하다는 검증자 판단은 후속 후보로 둔다.
+- 비차단 설계 관찰 F-01~F-10은 이 PR에서 고치지 않는다. 완료조건을 막지 않기 때문이다. 주석 보완 넷(서버 이동 진입점의 호출 계약 F-01, 이동 단계 요약의 목적지 확보 F-02, 열쇠별 초기화 요약 F-03, 열쇠 결정 위치 안내 F-06)과 시험 helper 이름(F-04), helper 종료 시점(F-10)은 goal 종료 때 BACKLOG 후보로 올린다. 빈 보스방의 보스 재출현은 이미 후속인 O-01이 실제로 관측된 것이다(F-08).
+- 리드 표본 대조: 전체 시험 합계 줄, 봇 요약 줄과 exit, 복사본 집계 합계, 봇 직전 메모리 원시, VER-01의 원시 오류 줄, 작업 트리(새 시험 4파일만 추가)가 판정과 같다.
+- 정산은 retained(손수 연 pane)였다. 화면이 끝남·빈 프롬프트임을 확인한 뒤 pane을 닫았다. Release 빌드·실제 플레이(Unity)·DB·CI·성능 측정은 실행하지 않았다.
