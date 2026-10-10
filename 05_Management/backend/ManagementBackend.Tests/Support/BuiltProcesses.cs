@@ -37,6 +37,17 @@ internal static class BuiltProcesses
     /// <summary>Stub source and pinned global.json, copied next to the tests for the temporary release repository.</summary>
     public static string ReleaseSource => Path.Combine(AppContext.BaseDirectory, "ReleaseSource");
 
+    /// <summary>The repository's backend-wsl.sh, copied next to the tests. Tests run copies of it, never the original.</summary>
+    public static string BackendEntryScript
+    {
+        get
+        {
+            string path = Path.Combine(AppContext.BaseDirectory, "BackendEntry", "backend-wsl.sh");
+            Assert.True(File.Exists(path), $"backend-wsl.sh was not copied next to the tests: {path}");
+            return path;
+        }
+    }
+
     static string Locate(string assemblyFile, string missing)
     {
         string? path = typeof(BuiltProcesses).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()

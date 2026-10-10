@@ -40,6 +40,8 @@ internal static class FreePort
     static readonly HashSet<int> Reserved = [7777, 14333];
     static readonly HashSet<int> Handed = [];
 
+    public static bool IsReserved(int port) => Reserved.Contains(port);
+
     public static int Next()
     {
         lock (Handed)

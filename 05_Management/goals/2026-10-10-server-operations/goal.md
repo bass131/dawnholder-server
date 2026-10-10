@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 20:19 KST, PR2 백엔드 선행 시험 착수 뒤.**
+**기록 시점: 2026-10-10 20:47 KST, PR2 백엔드 선행 시험 commit 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험 작성자가 일하는 중이다(아래 「PR2 설계」 마지막 줄). 그 worker_done을 받으면 원시를 표본 대조하고 commit한 뒤 백엔드 구현(Astra)과 프런트 선행 시험(신규 Opus)을 연다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 다음은 백엔드 구현(Astra)과 창 쪽 선행 시험(신규 Opus)을 함께 여는 것이다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -233,3 +233,11 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 범위 명확화(메인 진행 판단 `msg_62780420552f`): 「운영 버전 올리기」(현재 checkout HEAD를 빌드해 현재 운영 버전으로 지정) 화면을 PR2에 넣는다. 「만들 것」 PR2 행에 이름은 없지만 완료조건 1·7이 요구하고, 실행본이 없으면 시작이 `noCurrentRelease`로 거부되기 때문이다. 되돌리기와 다른 commit 고르기는 넣지 않는다.
 - 앱 완전 종료 때 서버 처리: **잠정 동작, PR3 질문으로 확정.** 트레이 「종료」 때 서버가 실행 중이면 확인을 받고 백엔드가 서버를 정상 종료하게 한다. 원래 PR3 질문이지만 PR2가 백엔드를 자식으로 띄우므로 잠정 동작이 필요했다. 근거는 PR1 검증 중 WSL 유휴 재시작 관측이다. 메인이 잠정안 진행으로 판단했다(`msg_62780420552f`, 사용자 결정 아님).
 - 백엔드 선행 시험 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, backend 실제 모델 unknown). Task `task_73bc9b53865a`, Dispatch `ctx_10231cc20e69`, `turn_started` 관측. 계약 E/`contracts/pr2-backend-tests-task.md` SHA256 `cad274eea943a5adf4d43a27fa4e8d4692b44d455d3903117053b5052c4eccd8`, 경로 확인 E/`contracts/pr2-backend-tests-path-check.txt`. 계약 작성 중 잰 커밋 여유 메모리 4.43 GB(측정 시각은 기록하지 않음, 11:15:21Z 경로 확인 전).
+
+### PR2 백엔드 선행 시험 결과
+
+- worker_done `msg_708147296afd`(succeeded, 발신·Task·Dispatch 일치). 보고 E/`pr2-backend-tests/report.md`, 맥락 메모 E/`pr2-backend-tests/context-memo.md`.
+- 새 시험 14건: H2·H3 둘(설정 거부), I1~I5(`init-config`, I4 세 경우), B3·B4·B5(상태 조회와 공유 잠금), E8(큰 로그 조회 중 상태 응답). 기존 B1은 서버 포트를 시험이 bind해 둔 채 직전·직후 대기를 관측하고 최대 3회 다시 하도록 고쳤고, 단정 18개는 그대로다. helper는 새 진입점만 더했다.
+- 같은 명령의 구현 전 실행(E/`pr2-backend-tests/raw/pre-implementation-final/`, 직전 커밋 여유 4.67 GB): 98건 중 통과 85, 실패 13, 건너뜀 0, exit 1, 남은 프로세스·수신 대기 0. 실패 13건은 모두 새 시험이고, B4는 보존 동작이라 구현 전에도 통과한다. 원시 수치: E8 단독 조회 2.440초(512 MiB), 겹친 상태 응답 2.201초(상한 0.5초). B3 상태 조회 200번 동안 잠금 시도 660,583회 중 164회 충돌.
+- 리드 표본 대조(일치): 두 실행의 `results.trx` 셈과 실패 이름 13개, trx 출력의 E8·B3·I5 수치, B1 단정 18줄이 HEAD와 같음(메서드 이름 줄만 다름), 시험 파일 SHA256 38개 `OK`. 작성자 세션 기록에서 메모 쓰기(11:25:32Z)가 첫 시험 파일 쓰기(11:29:38Z)보다 앞섰고, 제품·문서 쓰기는 0이다. 실제 WSL `HOME`에 설정 파일·기본 데이터 폴더가 없고 실제 WSL 복사본 mtime은 그대로다.
+- 비차단 기록: 보고의 메모 「첫 쓰기 11:24:38Z」는 쓰기 직전 시각을 잰 값이다. 세션 기록의 Write 시각은 11:25:32Z다. 구현 전 H2는 기본값으로 떠 관리 포트 47321을 실행마다 약 0.2초 썼다(구현 뒤 사라짐). 남은 위험은 보고 「남은 위험」: B1 재시도 경로 미실행, B3 확률성, E8 1회 측정, `FreePort`를 쓰는 다른 시험의 같은 경합.
