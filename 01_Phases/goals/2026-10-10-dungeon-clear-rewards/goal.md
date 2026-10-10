@@ -34,7 +34,7 @@
 | PR | 내용 | 시작 조건 | 끝나는 조건 |
 |---|---|---|---|
 | 결함 PR | 완료조건 1~3. 클라이언트만 바꾼다. 이 goal.md와 CURRENT의 Content 줄도 넣는다. | 범위 승인 | 독립 검증·실화면 확인 뒤 사용자 병합 승인 |
-| 던전 패킷·창 PR | 39번 클리어 결과와 40번 확인 요청 패킷, 프로토콜 버전 17 → 18, 던전 보상표, 클라이언트 보상 창·핸들러·입구 표시. 서버는 이 PR에서 새 패킷을 보내지도 처리하지도 않는다. 등록되지 않은 요청은 지금처럼 버린다(`Sessions/GameSession.cs:184`). | 결함 PR의 Unity 작업 뒤(같은 checkout) | 새 버전의 서버·봇 접속과 기존 봇 회귀, Unity 컴파일·EditMode 시험. 실화면은 다음 PR에서 한다 |
+| 던전 패킷·창 PR | 39번 클리어 결과와 40번 확인 요청 패킷, 프로토콜 버전 17 → 18, 던전 보상표, 클라이언트 보상 창·핸들러·입구 표시. 서버는 이 PR에서 새 패킷을 보내지도 처리하지도 않는다. 등록되지 않은 요청은 지금처럼 버린다(`Sessions/GameSession.cs:177`). | 결함 PR의 Unity 작업 뒤(같은 checkout) | 새 버전의 서버·봇 접속과 기존 봇 회귀, Unity 컴파일·EditMode 시험. 실화면은 다음 PR에서 한다 |
 | 던전 클리어 PR | 완료조건 4~8. 서버 클리어 판정·보상·마을 복귀 요청 처리, 보스 처치자 보상 합치기, 봇 두 파티, 실제 플레이 | World 인스턴스 맵 PR 병합. 규칙 단위 설계·시험은 그 전에 시작한다 | 독립 검증·실제 플레이 뒤 사용자 병합 승인 |
 
 각 PR은 신규 독립 검증, 정확한 head의 CI와 원시 실행 근거를 메인에 보고한 뒤 **그 PR 병합 직전 사용자 명시 승인**을 받는다. 자동 병합하지 않는다. 중간 점검은 던전 패킷·창 PR 병합 때 인스턴스 맵 진행과 일정을 함께 본다. 종료 점검은 전체 PR 병합·결과 기록·Gardener 뒤다. 같은 산출물 수정이 3회를 넘으면 메인에 체크포인트를 알린다. 확정 실패 집계는 [ORCA 실패 정본](../../../00_Document/operations/ORCA.md#confirmed-failures)을 따른다.
@@ -68,6 +68,29 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 보존 동작: HUD HP·MP 표시와 세션 바인딩, 패널의 기존 표시·사용 버튼·재조회·버튼만 raycast 받는 정책, 메뉴·캐릭터 선택·Ending에는 패널이 없음, 기존 공격 입력과 포인터 raycast 차단 경로. 근거는 [클라이언트 영역 계약](../../../00_Document/domains/client.md#인벤토리-표시와-요청-수명)이다.
 
 던전 패킷·창 PR과 클리어 PR의 설계는 각 PR 착수 때 이 절에 더한다.
+
+### 던전 패킷·창 PR의 요구
+
+클리어 결과를 알리는 패킷과 「확인」 요청 패킷, 보상 창, 던전 입구 표시를 만든다. 서버는 이 PR에서 새 패킷을 보내지도 처리하지도 않는다. 범위 초안은 리드 `msg_9747b2350231`, 메인 확인은 `msg_33d93ad1147f`다.
+
+| 번호 | 요구 | 확인 방법 |
+|---|---|---|
+| P1 | PDL 맨 아래에 39 `S_DungeonClearResult`(서버 → 클라이언트)와 40 `C_DungeonClearConfirm`(클라이언트 → 서버)을 더한다. 기존 1~38의 이름·순서·필드는 그대로다. 생성 코드는 실제 생성기로 만든다. 프로토콜 버전은 18이고 버전 이력 주석에 한 줄을 더한다. | 서버 시험, 클라이언트 EditMode 시험, 생성 diff |
+| P2 | `S_DungeonClearResult`의 필드는 이 순서다. 결과 byte, 받은 골드 int, 아이템 세 칸(칸마다 itemId int, count int, 빈 칸은 0/0). `C_DungeonClearConfirm`은 `reserved` byte 하나이고 0이어야 한다. | 서버 시험(독립 encoder/decoder로 바이트 대조) |
+| P3 | 결과 값은 공유 enum `InventoryResult`의 `Success`·`CurrencyCap`·`InventoryFull` 셋만 쓴다. 새 enum을 만들지 않는다. | 서버·클라이언트 시험 |
+| P4 | 서버는 버전 18만 받고 17 클라이언트는 기존처럼 거부한다. 서버는 40번 핸들러를 등록하지 않는다. 그래서 캐릭터 선택 뒤 세션이 보낸 40번은 상태 변화·응답·연결 종료 없이 버려진다. 서버는 39번을 만들지 않는다. | 서버 시험 |
+| P5 | Shared GameData의 새 던전 폴더에 클리어 보상표를 둔다. 값은 골드 50, Material 1, CoinPouch 1이다(10-08 결정 2 A의 임시값, 지금 보스 처치자 보상과 같다). 모든 아이템은 카탈로그에 있고, 개수는 1~`InventoryLimits.MaxStack`, 골드는 0~`InventoryLimits.MaxCurrency`, 아이템 종류는 패킷 칸 수(3) 이하다. 이 PR에서 서버는 이 표를 읽지 않는다. | 서버 또는 클라이언트 시험 |
+| P6 | 클라이언트 39번 핸들러는 정확한 길이·머리, 결과 세 값, 골드 범위, 칸마다 「카탈로그 id와 개수 1~`MaxStack`」 또는 「0/0」을 검증한다. 하나라도 틀리면 버리고 기록만 한다. 창은 열리지 않고 상태도 바뀌지 않는다. 맞으면 메인 스레드에서 창을 연다. | EditMode 시험 |
+| P7 | 보상 창은 런타임으로 만든다. 성공이면 받은 골드와 아이템 줄(카탈로그 표시 이름과 개수)을 보인다. `CurrencyCap`·`InventoryFull`이면 받은 것이 없다는 것과 그 이유를 보인다. 「확인」은 연결이 handshake를 마친 때에만 40번(`reserved` 0)을 정확히 한 번 보내고 창을 닫는다. 두 번 눌러도 한 번만 보낸다. 창이 열린 동안 새 결과가 오면 새 결과로 바꾼다. 숨긴 창은 클릭과 공격 입력을 막지 않는다. 연결 종료 정리와 게임플레이 밖 씬에서는 닫혀 있다. | EditMode 시험 |
+| P8 | 마을(Town) 게임플레이 씬에서 마을의 사냥터행 포탈 위에 「던전 입구」 글자를 런타임으로 붙인다. 사냥터·보스방에는 붙이지 않는다. 마을의 포탈은 하나라는 전제를 시험으로 고정해, 두 번째 포탈이 생기면 그 시험이 먼저 깨진다. 글자는 클릭과 공격 입력을 막지 않는다. 맵·포탈 표, 서버, scene·prefab 파일은 바꾸지 않는다. | EditMode 시험 |
+
+**건드릴 곳 보충**(메인 조건 1): 입구 표시와 보상 창은 클라이언트 전투 씬 초기화 `03_Client/Assets/Scripts/Combat/CombatBootstrap.cs`의 installer 배열에 한 줄씩 더하고, 그 줄이 부르는 Build 메서드 둘만 더한다. 이 파일의 주석이 정한 「새 인프라 = Build 메서드 + 이 배열 1행」 방식이다. 기존 installer의 순서·내용은 바꾸지 않는다. 39번 수신은 `Network/UnityClientSession.cs`의 dispatch 표에 한 줄을 더한다(같은 파일 주석 「새 패킷 추가 = 핸들러 1개 신설 + 여기 1줄 등록만」).
+
+**고친 기존 시험**: 패킷 수 38과 버전 17을 단정하는 기존 시험(서버 `Items/InventoryProtocolContractTests.cs`, `Maps/BossBehaviorTests.cs`의 버전 시험, 클라이언트 EditMode `InventoryProtocolCompatibilityTests.cs`)은 P1 때문에 40·18로 바뀐다. 바꾸는 쪽은 선행 시험 작성자이고, 분류표(옛 세부, 요구 출처 P1)와 같은 명령의 전후 원시를 남긴다(메인 결정 `msg_71e41e231d55`).
+
+**보존 동작**: 기존 1~38 패킷의 직렬화, 미등록 요청을 버리는 서버 경로, 인벤토리·파티 팝업·스테이지 클리어 표시·포탈 입력, 기존 봇 시나리오, HUD와 인벤토리 패널.
+
+**실행**: WSL `dotnet` 빌드·시험 전체, 실제 생성기 재생성 diff, Windows에서 Shared·ClientNet DLL 재빌드와 `03_Client/Assets/Plugins/` 사본 diff(메인 조건 2), 새 서버와 기존 봇 접속 회귀, Unity 컴파일·EditMode 전체, 독립 검증의 PlayMode 전체(서버 lane, 회귀). 실화면은 클리어 PR에서 한다. 7777과 Unity batch 같은 큰 실행은 Core SQL 컨테이너 재측정과 Management 운영툴 중간 점검(7777)에 미리 알려 겹치지 않게 하고, 메모리 4GB 기준을 원시로 남긴다(메인 조건 3).
 
 ### 파트 간 소유와 계약
 
@@ -108,6 +131,7 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - **R9 검증자의 Unity 코드 실행 허용**(결정 31·32). 메인 `msg_37e095c97cd2`가 전달한 원문 「A 맞아, 방금 Permission 줬어」, 메인 `msg_31520b4eb780`이 전달한 원문 「대시보드 결정 응답: 1) 32 - Content 실제 화면 검증 계속할지(Editor 닫을지) → A 지금 계속」, 메인 `msg_90e7310b4b68`이 전달한 원문 「Content 탭에 규칙 다시 저장했어」. 효과: 사용자가 content-active `.claude/settings.local.json`(Git 무시)에 `mcp__unity-mcp__Unity_RunCommand` 허용 한 줄을 저장했고, 검증자의 세 번째 확인 호출이 통과했다.
 - **허용 규칙 지움과 S-1을 이 PR에서 고침**(메인 `msg_2f5bc1c2b8f2`, 2026-10-10T13:09:45Z). 원문 「대시보드 결정 응답: 1) 36 - Content 작업 공간의 Unity 코드 실행 허용 규칙 지우기 → A 지움 · 2) 37 - HUD 골드 7자리 이상 넘침(S-1)을 이번 PR에서 고칠지 → A 이번 PR에서 고침」. 효과: 메인이 허용 한 줄만 지웠다. 재확인 때 다시 필요하면 메인에 결정 요청으로 올리고 에이전트가 직접 허용하지 않는다. S-1을 R10으로 PR221 범위에 넣고, 고친 뒤 실화면으로 다시 확인한다. `UI.unity`의 `.meta`·GUID·의도 밖 직렬화 값은 보존한다. 수정 계획은 리드 `msg_ef372eeeb40b`, 메인 확인은 `msg_257941a5063f`다.
 - **재확인 동안만 Unity 코드 실행 허용**(메인 `msg_63aa0980d58a`, 2026-10-10T14:12:50Z). 원문 「대시보드 결정 응답: 1) 38 - 골드 수정 실제 화면 재확인 동안 Unity 코드 실행 허용 → A 재확인 동안만 허용」. 효과: 메인이 content-active `.claude/settings.local.json`에 허용 한 줄을 넣었고, 재확인 검증자는 그 뒤에 새로 기동했다. MCP 사용이 끝난 뒤 리드 요청(`msg_cd7e37a05073`)으로 메인이 그 한 줄을 지웠다(`msg_aa4aae54b7d7`, 15:12:15Z). 남은 내용은 `skillOverrides`뿐이다.
+- **메인 확인(사용자 결정 아님) — 던전 패킷·창 PR 범위**(`msg_33d93ad1147f`, 2026-10-10T16:04:16Z). 리드 초안 `msg_9747b2350231`의 1~6과 달라진 점 넷을 승인 범위 안의 구현 방식 선택으로 확인했다. 조건 셋은 「던전 패킷·창 PR의 요구」에 반영했다. 전투 씬 초기화 파일을 「건드릴 곳」 보충으로 적는다. 39·40을 맨 아래에 더하고 서버·Unity 양쪽 검증과 Plugins 사본 diff를 원시로 남긴다. 큰 실행은 Core 재측정·Management 중간 점검과 겹치지 않게 미리 알린다.
 
 ## 재개 지점
 
@@ -121,9 +145,9 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
 | 작업자·실행 자원 | 작업자 0(R10 실화면 재확인 검증자까지 정산·종료), Unity.exe 0, 7777 0(World·Core·Management에 해제 통보) |
 | 로컬 부수 변경 | batch가 다시 쓴 `ProjectSettings.asset`·`TimeManager.asset`은 두 번 되돌렸다. 독립 검증의 마지막 batch 뒤 09:51:43Z(`settings-restore/post-state.txt`), R10 독립 검증의 마지막 batch 뒤 14:29:38Z(`settings-restore-2/post-state.txt`)다. 지금 ProjectSettings `4a8db0bd…`, TimeManager blob = HEAD다. R9와 R10 재확인의 Editor는 두 파일을 바꾸지 않았다. Unity가 Git 무시 대상 layout 파일만 저장했다 |
-| 남은 결정·준비 | 던전 패킷·창 PR 범위 초안을 메인에 올리고 확인을 받는다(메인 `msg_c91503d507b1`). 확인 뒤 이 goal의 「설계」에 그 PR의 요구를 더하고 선행 시험부터 위임한다 |
+| 남은 결정·준비 | 범위는 메인이 확인했다(`msg_33d93ad1147f`). 요구는 「던전 패킷·창 PR의 요구」 P1~P8이다. 다음은 신규 Opus 선행 시험 위임이다. 큰 실행 전에 Core·Management·World에 알린다 |
 
-**남은 순서**: 던전 패킷·창 PR(범위 확인 → 선행 시험 → 구현 → 독립 검증 → PR·CI → 사용자 병합 승인) → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: 던전 패킷·창 PR(선행 시험 → 구현 → 독립 검증 → PR·CI → 사용자 병합 승인) → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -241,7 +265,7 @@ R10의 알려진 함정(R9 판정 O-1): HUD 골드 폰트 `Pretendard SDF Proper
 - **우편함 대기를 `&`로 띄운 실수 두 번째 발생**(11:07Z, 즉시 정리, 손실 0. 첫 발생은 이전 goal PR191 실화면). 메인 판단 `msg_257941a5063f`: 더 높은 층인 PR224 가드가 orca orchestration 명령 끝의 `&`를 막는다(`99_Tools/SessionGuard/session-policy.mjs:51`). 11:07Z는 가드가 이 checkout에 들어오기 전이라 새 반복 규칙은 만들지 않는다. BACKLOG `mailbox-output-loss-hook`에 근거로 더했다. 가드가 들어온 뒤 다시 나면 가드 누락으로 Rules에 원문을 보낸다.
 - 리드가 결정 요청을 `--type decision_gate`로 보내 `sender_not_assignee` 오류 receipt를 받았다. 그런데 본문은 메인에 도착해 있었다(`msg_b4661ed3ee6e`). 리드가 미도착으로 보고 status로 다시 보내 중복이 생겼다(`msg_3b796a014aa6`, 메인에 중복 알림 `msg_95f83ba75699`). 10-07 Management 관측(미도착)과 결과가 달라, 메모리 기록을 「처음부터 status로 보내고, 재전송 전에 메인 회신을 확인한다」로 고쳤다.
 - 검증자가 큰 명령 출력이나 MCP 응답을 화면으로 받으면, Claude Code가 홈 `~/.claude/projects/…/tool-results/`에 사본을 자동 저장했다. R10 독립 검증에서 1건, 재확인에서 3건이다. 두 검증자 모두 허용 밖 쓰기로 스스로 보고했다. 재확인 계약에는 「큰 출력은 파일로 받는다」를 넣었다. 그래도 MCP driver 응답은 파일로 돌릴 방법이 없어 3건이 남았다.
-- R10 재확인 검증자가 orca가 아닌 명령에서 `2>/dev/null`을 두 번 썼다(계약은 리다이렉트를 checkout·`.backups` 안으로만 허용). 판정에 스스로 적었고 가드는 막지 않았다.
+- R10 재확인 검증자가 orca가 아닌 명령에서 `2>/dev/null`을 두 번 썼다(계약은 리다이렉트를 checkout·`.backups` 안으로만 허용). 판정에 스스로 적었고 가드는 막지 않았다. 리드도 패킷 PR 사전 조사의 원격 branch 검사에서 한 번 썼다(16:02Z). 정본은 orca 출력만 버리지 못하게 한다(CLAUDE 우편함 대기, 세션 가드 `mailboxLoss`). 계약의 「리다이렉트는 checkout·`.backups` 안으로만」이 정본보다 넓었다. 그래서 다음 계약부터 「판정 근거가 되는 명령 출력은 버리지 않는다」로 좁혀 쓴다.
 - 리드 커밋 첫 시도가 `index.lock` File exists로 실패했다. 다시 확인했을 때 잠금은 없었고 git 프로세스도 0이었다. 같은 명령을 다시 내 성공했다.
 
 ## 다음 계획 후보
