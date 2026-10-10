@@ -11,13 +11,25 @@ Windows PowerShell 5.1의 도구가 승인 계획 v2에 고정한 로컬 Linux S
 | [New-TestDatabase.ps1](../../99_Tools/database/test-environment/New-TestDatabase.ps1) | 승인 계획 경로·별도로 검토한 SHA256·정확 DB·manifest 경로. OfflinePlan은 입력 검토, Plan은 비밀 없는 Planned manifest, Create는 사전 검사와 DB 생성, Install은 설치 단계 |
 | [New-TestAdminCredential.ps1](../../99_Tools/database/test-environment/New-TestAdminCredential.ps1) | 같은 승인 입력과 Planned manifest. 첫 컨테이너 기동 **전** private 폴더와 sa DPAPI CLIXML을 한 번 생성하고 hash·저널을 기록. SQL·Docker 호출 없음 |
 | [Install-Database.ps1](../../99_Tools/database/Install-Database.ps1) | 정확 수명의 Baseline001 또는 Complete(001~004·module·권한·catalog)를 수명 도구에 전달 |
+| [Invoke-PreservationCheck.ps1][preservation] | `-Action Record`는 Baseline001에서 행 기록, `Compare`는 Installed에서 보존 대조 |
+| [Test-EngineBoundary.ps1][engine-boundary] | `-Action BeforeComplete`는 위치 A, `AfterComplete`는 위치 B. 모든 관측 rollback |
+| 위 두 도구의 승인 입력 | `-ApprovalPlanPath`, `-ExpectedApprovalPlanHash`, `-Database`, `-ManifestPath` |
+| 위 두 도구의 근거 입력 | 기존 절대 `-EvidenceDirectory` 아래 `-ResultPath`, `-SnapshotPath`. Record만 신규 스냅숏, 나머지는 기록본. 덮어쓰기 금지 |
 | [Initialize-CharacterBinding.ps1](../../99_Tools/database/test-environment/Initialize-CharacterBinding.ps1) | 승인된 slot1·AccountId·CharacterId 고정 바인딩 |
 | [Set-TestPrincipals.ps1](../../99_Tools/database/test-environment/Set-TestPrincipals.ps1) | runtime SQL 로그인·user·dh_runtime만 구성. 무작위 SID 계획·대조, 서버 role 0·DB role 정확히 하나·추가 직접 권한/소유 0 검사 |
 | [Test-Database.ps1](../../99_Tools/database/Test-Database.ps1) | 계획 경로/hash와 **-Endpoint**, **-Database** 필수. manifest를 읽고 동일 연결 helper로 두 연결을 열어 원래 rollback·잠금·계약 검사 수행 |
 | [Remove-TestEnvironment.ps1](../../99_Tools/database/test-environment/Remove-TestEnvironment.ps1) | 정산·quiescent·정확 identity/hash 확인. OfflinePlan / OnlinePreview / Execute를 구분하고 명시 확인과 manifest hash 뒤에만 정리 |
 | [Environment.Common.ps1](../../99_Tools/database/test-environment/Environment.Common.ps1) | v2 검증, 연결 설정·신원·오류 분류, ACL/DPAPI 파일, 저널의 단일 소유자 |
 
-순서는 OfflinePlan 검토 → Plan → New-TestAdminCredential → 승인된 카드의 컨테이너 기동/준비 확인 → Create → Baseline001 → 보존 fixture 확인 → Complete → binding → runtime 주체 → 시험 → 정산/정리다. 제품 상태는 Planned → Created → Baseline001 → Installed → Bound → PrincipalsReady → CleanupStarted → Removed를 유지한다. **PrincipalsReady는 runtime 주체 준비 완료**이며 recovery 계정은 만들지 않는다(사용자 결정 27 A). DB의 dh_recovery role과 4개 RPC 권한은 유지하며 복구 주체 형태·실증은 후속 goal이다.
+[preservation]: ../../99_Tools/database/test-environment/Invoke-PreservationCheck.ps1
+[engine-boundary]: ../../99_Tools/database/test-environment/Test-EngineBoundary.ps1
+
+순서는 OfflinePlan 검토 → Plan → New-TestAdminCredential → 승인된 카드의 컨테이너 기동/준비 확인 → Create → Baseline001 →
+보존 기록(Record) → 위치 A 관측(BeforeComplete) → Complete → 보존 대조(Compare) → 위치 B 관측(AfterComplete) →
+binding → runtime 주체 → 시험 → 정산/정리다.
+제품 상태는 Planned → Created → Baseline001 → Installed → Bound → PrincipalsReady → CleanupStarted → Removed를 유지한다.
+**PrincipalsReady는 runtime 주체 준비 완료**이며 recovery 계정은 만들지 않는다(사용자 결정 27 A).
+DB의 dh_recovery role과 4개 RPC 권한은 유지하며 복구 주체 형태·실증은 후속 goal이다.
 
 단계 저널 Pending/Done/Failed, 배타 .lock, 미완 .pending 보존을 유지한다. 실패한 단계를 자동 재시도·정리하지 않으며 같은 이름 DB·로그인을 채택하거나 회전하지 않는다. 이미지는 보존, 볼륨+시험 DB는 한 번 수명, 컨테이너는 같은 볼륨 위 프로세스 host다. 승인당 시도 3회·단계당 컨테이너 재생성 1회 상한과 직전 수명의 정리 원시를 카드가 확인한다.
 
