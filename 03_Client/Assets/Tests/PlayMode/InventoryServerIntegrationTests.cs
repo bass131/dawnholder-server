@@ -45,6 +45,7 @@ namespace Dawnholder.Client.Tests.PlayMode
         {
             yield return _fixture.Prepare(true);
             yield return _fixture.WaitMap(0);
+            yield return InventoryPanelProbe.OpenWithI(_fixture);
             yield return WaitSynchronized("initial Town snapshot");
             Debug.Log($"[PR2 verifier real server] screen {Screen.width}x{Screen.height}, Town rev={InventoryState.Instance.Revision} " +
                 $"currency={InventoryState.Instance.Currency} material={Held(ItemId.Material)} pouch={Held(ItemId.CoinPouch)}");
