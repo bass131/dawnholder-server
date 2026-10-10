@@ -34,6 +34,21 @@ PR1 설계 문서의 해당 절을 이 내용으로 고친다.
 
 연결 상태: `starting`(백엔드를 띄우는 중), `connected`, `disconnected`(이유 코드와 함께), `stopping`(앱 종료 중).
 
+### 모듈 배치
+
+기존 기록·백로그 기능의 계약·I/O 분리(`backlog-contract.ts`·`backlog-store.ts`)를 따른다. 경로는 `05_Management/frontend/` 기준이다.
+
+| 파일 | 책임 |
+|---|---|
+| `electron/server-operations-contract.ts`(새, 순수) | IPC 입력 검증, 백엔드 응답 검증(`unknown` → 타입), 오류 코드 → 한국어 문구 표, Windows 경로 → WSL 경로, 결과·연결 상태·bridge 타입 |
+| `electron/backend-connection.ts`(새, I/O) | `createBackendConnection(…)`. 백엔드 자식 프로세스·연결 정보·연결 상태의 단일 소유자. 자식 프로세스 시작, `wsl.exe --exec` 한 번 실행, 127.0.0.1 HTTP, 시계를 주입받아 시험에서 대역을 쓴다. 기본 구현은 `node:child_process`·`node:http`다 |
+| `electron/main.ts` | 연결 객체를 만들고 앱 준비 때 연결을 시작한다. `server-operations:*` handler를 등록하고(`trustedSender` 먼저), 트레이 「종료」의 확인과 연결 종료를 한다 |
+| `electron/preload.cts` | `serverOperations` 노출 |
+| `src/serverOperationsBridge.d.ts`(새) | renderer의 `window.serverOperations` 타입 |
+| `src/ServerOperations.tsx`(새) | 「서버 운영」 화면. `App.tsx`의 `Operations`가 이 화면을 그린다 |
+
+연결 객체의 메서드 이름과 주입 대역의 모양은 선행 시험 작성자가 위 책임 안에서 정하고 보고에 적는다. 구현자는 시험을 고치지 않고 그 모양을 따른다.
+
 ### 시작과 붙기
 
 1. 앱이 준비되면 자동으로 연결을 시작한다.

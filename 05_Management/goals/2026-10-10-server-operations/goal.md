@@ -19,9 +19,9 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 20:11 KST, PR2 범위 판단을 받은 뒤.**
+**기록 시점: 2026-10-10 20:19 KST, PR2 백엔드 선행 시험 착수 뒤.**
 
-- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 다음은 백엔드 선행 시험 계약 발행이다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험 작성자가 일하는 중이다(아래 「PR2 설계」 마지막 줄). 그 worker_done을 받으면 원시를 표본 대조하고 commit한 뒤 백엔드 구현(Astra)과 프런트 선행 시험(신규 Opus)을 연다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
@@ -232,3 +232,4 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 설계: [화면 연결 설계](screen-design.md). 「PR2 전에 판단할 것」 중 관찰 1·3·4·7과 B1은 [백엔드 조정](screen-design.md#백엔드-조정) B-1~B-6으로, 관찰 5·6·8은 화면 표시와 창 쪽 응답 검증으로 다룬다. 관찰 2는 PR3로 남긴다.
 - 범위 명확화(메인 진행 판단 `msg_62780420552f`): 「운영 버전 올리기」(현재 checkout HEAD를 빌드해 현재 운영 버전으로 지정) 화면을 PR2에 넣는다. 「만들 것」 PR2 행에 이름은 없지만 완료조건 1·7이 요구하고, 실행본이 없으면 시작이 `noCurrentRelease`로 거부되기 때문이다. 되돌리기와 다른 commit 고르기는 넣지 않는다.
 - 앱 완전 종료 때 서버 처리: **잠정 동작, PR3 질문으로 확정.** 트레이 「종료」 때 서버가 실행 중이면 확인을 받고 백엔드가 서버를 정상 종료하게 한다. 원래 PR3 질문이지만 PR2가 백엔드를 자식으로 띄우므로 잠정 동작이 필요했다. 근거는 PR1 검증 중 WSL 유휴 재시작 관측이다. 메인이 잠정안 진행으로 판단했다(`msg_62780420552f`, 사용자 결정 아님).
+- 백엔드 선행 시험 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, backend 실제 모델 unknown). Task `task_73bc9b53865a`, Dispatch `ctx_10231cc20e69`, `turn_started` 관측. 계약 E/`contracts/pr2-backend-tests-task.md` SHA256 `cad274eea943a5adf4d43a27fa4e8d4692b44d455d3903117053b5052c4eccd8`, 경로 확인 E/`contracts/pr2-backend-tests-path-check.txt`. 계약 작성 중 잰 커밋 여유 메모리 4.43 GB(측정 시각은 기록하지 않음, 11:15:21Z 경로 확인 전).
