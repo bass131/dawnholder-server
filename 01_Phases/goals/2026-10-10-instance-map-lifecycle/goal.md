@@ -24,7 +24,7 @@ World의 첫 goal이다. 사냥터와 보스방을 파티마다 따로 열리는
 - [x] 봇 두 파티 확인
 - [x] PR223 병합
 - [x] Gardener 점검
-- [>] 종료 기록 PR 병합
+- [>] PR225 병합
 
 PR 단계 이름은 PR 번호가 생기면 「PR### 병합」으로 바꾼다.
 
@@ -504,7 +504,7 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 
 - **확정 실패**: 0이다. R-7 검토는 설계 입력이고, 선행 시험의 RED는 확정 실패로 세지 않으며, 독립 검증은 통과였다. 같은 산출물 수정 3회 초과 체크포인트도 없다.
 - **독립 결함·자기 발견**: 비차단 VER-01 하나와 구현 중 자기 발견 IMPL-01 하나다. 분류는 위 「구현」·「독립 검증」 절 그대로다.
-- **CI**: PR223 head `191d7cb4`는 4/4 성공, CLEAN이었다. 빌드 경고 4건은 기준선과 같은 파일·규칙이고 새 파일 경고는 0이다. 병합 commit `2492843e`의 main CI(dotnet-tests push)는 Gardener 조회(12:26:40Z)와 종료 기록 작성 때 진행 중이었다.
+- **CI**: PR223 head `191d7cb4`는 4/4 성공, CLEAN이었다. 빌드 경고 4건은 기준선과 같은 파일·규칙이고 새 파일 경고는 0이다. 병합 commit `2492843e`의 main CI(dotnet-tests push)는 Gardener 조회(12:26:40Z) 때 진행 중이었고, 12:40:34Z에 성공으로 끝났다(리드 조회 E/`closeout/main-ci-2492843e-4.json`).
 - **경고 억제·설정 완화**: PR223 순 변경 44파일에서 설정 계열 파일 변경과 억제 구문 추가가 모두 0이다. 계약 범위 `bd4dbb5f..2492843e`에 섞인 csproj 3개와 `Skip =` 2줄은 PR222(운영툴 백엔드) 몫이라 뺐다.
 - **임시 우회**: 제품 코드 우회는 0이다. IM-04 은퇴 표식 보류와 위험 8의 시작 때 검사 제거는 설계 결정이다.
 - **관찰 입력과 기존 후보의 겹침**: 병합 관문 그물 오탐 2회(리드)는 BACKLOG `credential-separation-followup`, 봇 helper 종료 시점(F-10)은 `server-lane-graceful-stop`, Git Bash `/tmp`·근거 폴더 부모 쓰기 2회(선행 시험 작성자)는 `shell-write-destination-guard`와 PR224 세션 쓰기 가드가 맡는다. `GIT_OPTIONAL_LOCKS=0` 누락(2세션, git 명령 5개)은 메인이 Rules에 넘겼고(`msg_c43c20269d2f`), 기동 환경 교정 뒤 검증자·Gardener 세션의 누락 기록은 0이다. Orca 주소 오류 `recipient_run_mismatch`(2개 goal 3건)는 송신이 거부돼 조용한 손실이 없어 가치가 낮다고 봤다. 포트 7777 예약 대기(약 21분)는 첫 관측이다. Gardener는 BACKLOG를 고치지 않았다.
@@ -518,6 +518,14 @@ R-7 2단계 원문은 [goal-review.md](goal-review.md)다. SHA256은 `3927bed2�
 - **Gardener 미검토**: 작업자 heartbeat 간격 전수, 정본 간 드리프트 전수, 검증자 명령 이력 전체는 고정 입력 밖이라 보지 않았다. 다른 goal의 횟수는 그 goal.md·BACKLOG 서술에서 옮겼다.
 - **Gardener 자기 공개**: 허용 밖 직접 쓰기 0, `GIT_OPTIONAL_LOCKS=0` 누락 0, 그물·분류기에 막힌 명령 0이다. 지정 TEMP `.backups/tmp/g1`에는 Claude Code와 Node가 기동 때 자동으로 만든 411파일이 있다(직접 쓰기 아님).
 - **정산**: worker-release(retained/external_terminal) → 빈 프롬프트 확인 → close(ptyKilled true, 12:34:39Z). 화면 표시는 12분 40초, 318,756 token이다(E/`closeout/gardener-last-screen.json`).
+
+### 종료 기록 PR — 2026-10-10
+
+- 리드 맥락 메모는 E/`closeout/closeout-pr-context.md`다. 최신 main(PR224, `6d09ac1f`)을 종료 branch에 합쳤고(`a77c1daa`) 겹친 파일은 없었다.
+- 합친 뒤 리드의 첫 Write가 PR224 세션 쓰기 가드의 memo-first로 막혔다. 가드가 실리기 전에 쓴 맥락 메모를 세션 기록이 모르기 때문이다. 메인 사전 안내(`msg_1aa032695c39`)대로 맥락 메모를 한 번 다시 써서 풀었다. 오탐이 아니라 안내된 첫 진입 동작이다.
+- goal의 「종료 Gardener」 절과 「다음 계획 후보」 절, BACKLOG 새 절과 기존 두 행의 갱신을 `d0b3ada0`으로 올리고 [PR225](https://github.com/bass131/dawnholder-server/pull/225)를 열었다. 본문은 E/`closeout/pr-body.md`다.
+- 후보 도착 검사는 `allowed`, exit 0이다. 후보 6개, 인용 없는 후보 0, 없는 ID 0이고, BACKLOG ID는 91개에서 97개가 됐다(E/`closeout/candidate-check-1.json`, 기준 main 출력 E/`closeout/candidate-check-base.json`).
+- 빌드·서버 시험·봇·Unity·DB는 실행하지 않았다. 문서만 바뀐 PR이다.
 
 ## 다음 계획 후보
 
