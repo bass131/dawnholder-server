@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR의 선행 시험(RED)이 끝났고 구현을 맡길 차례다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR의 구현과 독립 검증(통과, 제품 결함 0)이 끝났고 R9 실화면이 남았다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`).
@@ -72,8 +72,8 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 |---|---|
 | 인스턴스 맵(사냥터·보스방 복사본), 맵 종류 표, 맵 이동, 보스 처치 때 퀘스트 초기화 범위, 「서버가 시키는 이동」 진입점 | World(`[World 리드 Opus]`, 회신 주소 `run:run_c21dddd08312`). 10-08 Core 계획 v2를 World가 이어받았다(메인 `msg_6412194a47fa`). |
 | 입구 | 기존 마을 → 사냥터 포탈이다. Content가 맵 종류 표·포탈 표에 더할 줄은 없다(World `msg_6e96d918962c` 1). |
-| 클리어 대상 | 보스 사망 틱의 그 보스방 복사본 플레이어 목록. 파티원 재확인은 하지 않는다. 열쇠를 맵에서 읽는 이름은 World 설계 뒤 알린다(같은 메시지 2). |
-| 마을 복귀 | Content의 「확인」 처리기가 플레이어 한 명씩 World 진입점을 부른다. 틱 스레드의 현재 맵 job 안에서 부른다. Content 요구: 도착 좌표 기본값은 World가 정함, 예외 대신 거부 결과, 이동 중 인벤토리·파티 보존(Content `msg_92f0e5340ca3`, World `msg_6e96d918962c` 3). World 답(`msg_25abb610ef01`): 도착은 도착 맵의 기본 입장 지점(`GameMap.PlayerSpawnPosition`, 최초 입장·재접속과 같은 곳), 인스턴스 밖·이동 중·세션 종료 중·같은 사람 두 번째 호출은 상태를 바꾸지 않는 거부, 성공하면 포탈 이동과 같은 맵 이동 패킷만 나간다. 이름·시그니처는 World 설계 뒤 알린다. |
+| 클리어 대상 | 보스 사망 틱의 그 보스방 복사본 플레이어 목록. 파티원 재확인은 하지 않는다(같은 메시지 2). 열쇠는 `GameMap.InstanceKey`(`InstanceKey?`)다. 공용 맵은 null이고 복사본은 값이 있다. `InstanceKey`는 `Owner`(Party/Solo)와 `Id`를 가진 값 비교 record struct이며, 복사본에 들어갈 때 정해져 그 안에서 파티를 나가도 바뀌지 않는다(World `msg_14c7e14412f3` 1, World 선행 시험 commit `3511b66c`). |
+| 마을 복귀 | Content의 「확인」 처리기가 플레이어 한 명씩 World 진입점을 부른다. 틱 스레드의 현재 맵 job 안에서 부른다. Content 요구: 도착 좌표 기본값은 World가 정함, 예외 대신 거부 결과, 이동 중 인벤토리·파티 보존(Content `msg_92f0e5340ca3`, World `msg_6e96d918962c` 3). World 답(`msg_25abb610ef01`): 도착은 도착 맵의 기본 입장 지점(`GameMap.PlayerSpawnPosition`, 최초 입장·재접속과 같은 곳), 인스턴스 밖·이동 중·세션 종료 중·같은 사람 두 번째 호출은 상태를 바꾸지 않는 거부, 성공하면 포탈 이동과 같은 맵 이동 패킷만 나간다. 진입점은 `MapMigration.MoveToPublicMap(GameSession session, int entityId, GameMap currentMap, MapId destination, Vector2? spawn = null)` → `MapMoveResult`다. 거부 검사 순서는 `SessionClosing` → `AlreadyMigrating` → `NotInThatMap` → `NotInInstanceMap` → `DestinationNotPublic`이고, 모두 통과하면 `Accepted`다. 공용 맵 도착은 다음 틱 이내다(World `msg_14c7e14412f3` 2). |
 | PDL·생성 패킷·프로토콜 버전 | 던전 패킷·창 PR이 39·40번과 버전 17 → 18을 쓴다. World 인스턴스 맵 PR은 PDL을 바꾸지 않는다. World의 다중 계정 로그인과 같은 시기에 열리면 먼저 병합되는 쪽이 앞 번호를 갖고, 뒤 PR이 main을 받아 재생성해 번호를 다시 확인한다(같은 메시지 4). 기존 번호 재사용·재배열 금지. |
 | `GameMap.cs` 보스 사망 분기, `GameWorld.cs` 처치 콜백, `Items/InventoryRegistry.cs` | World 인스턴스 맵 PR 병합 전에는 Content가 쓰지 않는다. World는 `InventoryRegistry.cs` 본문을 바꾸지 않을 계획이며, 바꿔야 하면 쓰기 전에 알린다(같은 메시지 5). |
 | 포트 7777 | 서로 실행 전에 Orca 메시지로 알리고 DEVELOPMENT의 전역 lock·listener 검사를 따른다. |
@@ -97,6 +97,9 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 - **범위 승인**(메인 `msg_9fe1d49e00bb`, 2026-10-10T07:39:37Z). 원문 「대시보드 결정 응답: 1) 계획 검토 - Content Content 던전 클리어·보상과 결함 둘 goal 범위(질문 셋, 추천 전부 A) → A 승인 (초안 msg_f1bba119c853)」. 효과: 범위 초안 v1 그대로이고 세 질문 모두 A다. 1 HUD 골드를 서버 재화에 연결한다. 2 「I」 키로 패널을 열고 닫는다. 3 보스 처치자 보상을 없애고 클리어 보상 하나로 합친다. PR 순서 결함 → 패킷·창 → 클리어도 승인 범위다.
 - **10-08 던전 초안 v3 「전부 A」**(근거 `.backups/verification/2026-10-08-content-replan/dungeon-goal-draft-v3.md`, SHA256 `7a41a0d4…f5bd`). 1 보상은 그 순간 던전 안의 파티원 전원, 2 기존 적·보스 재사용(수치는 임시값), 3 복사본이 된 지금의 사냥터 → 보스방 길을 던전으로 쓴다.
 - **메인 결정(사용자 결정 아님)**: R-7 시범은 이 goal에 쓰지 않는다(`msg_cfcaae303755`, 이전 보류 `msg_949e9610871f`를 대신함). 이 goal의 모든 Unity batch에 이전 결정 `msg_833c357e684e`와 같은 음소거 조건을 적용한다(`msg_498aa060f88d`): HKCU `Software\Unity Technologies\Unity Editor 5.x` / `AudioMasterMute_h3604209190` 하나만, 다른 Unity 0일 때만, 이미 1이면 쓰지 않음, finally 복원, 같은 폴더에 Editor가 열려 있으면 batch 금지, 실행마다 전후 원시를 남김.
+- **메인 판단(사용자 결정 아님) — Unity가 다시 쓴 설정 파일**(`msg_c9fac8091065`, 2026-10-10T08:34:26Z). `ProjectSettings.asset`(사용자 미커밋)과 `TimeManager.asset`은 이 PR의 마지막 batch 뒤, 실화면 Editor를 열기 전, PR 생성 전 중 가장 이른 때에 리드가 한 번에 되돌린다. 그 전에는 두 파일을 stage·커밋하지 않고 계약마다 이 금지를 원문으로 넣는다. 되돌린 뒤 ProjectSettings는 SHA256 `4a8db0bd…`, TimeManager는 HEAD와 바이트가 같은지 원시로 남긴다.
+- **메인 운영 조율(사용자 결정 아님) — 큰 실행 분리**(`msg_e30ad0e2a36c`, 2026-10-10T09:21:37Z). Core의 SQL 컨테이너와 Content의 Unity batch·PlayMode는 겹치지 않는다. 시작 직전 여유 물리·커밋 메모리(`Win32_OperatingSystem`의 FreePhysicalMemory·FreeVirtualMemory)를 원시로 남기고, 하나라도 4GB 아래면 기다린다. 상대가 큰 실행 중인지 모르면 우편함으로 알린다.
+- **메인 결정(사용자 결정 아님) — 기존 시험 실패 분류**(`msg_71e41e231d55`, 이전 goal 근거 `2026-10-05-items-inventory-currency/main-test-classification-decision.json`). 독립 검증 계약에 원문을 붙였다. 실패를 (a) 옛 세부·(b) fixture·(c) 회귀·(d) 미확정으로 빠짐없이 나누고, 고친 시험은 표와 같은 명령의 전후 원시를 남긴다.
 
 ## 재개 지점
 
@@ -107,10 +110,11 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 | 작업 공간 / branch | `content-active` / `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`) |
 | 리드 세션 / Run | `term_df056d96-0389-436c-afcf-3d189f8dea53` / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | 작업자 0(선행 시험 작업자 정산·종료), Unity.exe 0, 7777 0 |
-| 로컬 부수 변경 | 선행 시험 batch가 `03_Client/ProjectSettings/ProjectSettings.asset`의 SENTIS define 한 줄을 지우고 `TimeManager.asset`을 6.6 형식으로 다시 썼다. 둘 다 커밋하지 않으며 복원 시점은 메인과 정한다(아래 「선행 시험 — RED 준비 성공」) |
+| 작업자·실행 자원 | 작업자 0(구현·수정 1·독립 검증 작업자 모두 정산·종료), Unity.exe 0, 7777 0(World·Core에 해제 통보) |
+| 로컬 부수 변경 | batch가 다시 쓴 `ProjectSettings.asset`·`TimeManager.asset`은 독립 검증의 마지막 batch 뒤 2026-10-10T09:51:43Z에 되돌렸다. ProjectSettings는 사용자 원래 상태 `4a8db0bd…`, TimeManager는 HEAD와 같다(근거 `settings-restore/post-state.txt`). 실화면 Editor가 다시 쓰면 같은 방식으로 기록한다 |
+| 남은 결정·준비 | R9 실화면: Unity MCP 시트 배정과 사용자의 content-active Editor 열기·MCP 연결 승인을 메인에 요청했다(`msg_6d76f198a58b`). 메인 답(`msg_471ee22962bc`): 사용자가 돌아온 뒤 Editor 먼저 → 연결 승인 → 검증자 기동 순서로 하고, 시트는 Content R9 검증자 한 세션에 배정한다. 그 전에는 MCP를 호출하지 않는다. PR 생성(CI)은 먼저 하고 병합 승인은 R9 결과와 함께 묻는다 |
 
-**남은 순서**: 구현(신규 Astra) → 독립 검증(신규 Opus) → 실화면 → PR → 사용자 병합 승인 → 던전 패킷·창 PR → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: 결함 PR 생성(CI) → R9 실화면(신규 Opus + Unity MCP) → 사용자 병합 승인 → 던전 패킷·창 PR → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -130,7 +134,7 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 ## 실제 결과와 미실행
 
 - 범위 초안·사용자 승인·World 계약 확인까지 했다. 원문은 근거 폴더의 `scope-draft-v1.md`와 `inbox/`에 있다.
-- 제품 코드·빌드·봇·실화면·PlayMode는 아직 실행하지 않았다.
+- 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증까지 끝났다(아래 세 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음). 실행하지 않은 것: R9 실화면, 봇, 빌드 단독 실행, CI.
 
 ### 선행 시험 — RED 준비 성공, 2026-10-10
 
@@ -150,8 +154,47 @@ HUD와 패널은 서버 상태를 표시만 한다. 재화를 클라이언트에
 - **리드 기동 실수(첫 발생)**: 전체 계약을 `--spec`으로 넣다가 Git Bash 인자 길이 한도(Argument list too long, exit 126)로 orca가 실행되지 않았다. worker-list 0건을 확인하고 계약 경로·hash를 가리키는 요약 spec으로 다시 붙였다. 첫 발생이라 goal에만 기록한다.
 - **리드 도구 사고(첫 발생)**: 리드가 큰 우편함 JSON에 `grep -o` 범위 정규식과 `| head`를 써서 grep이 부모 없이 남아 메모리 16GB를 잡았다(메인 `msg_64f64f30c24f`). 다른 리드의 우편함 대기가 메모리 회수로 꺼졌다. 사용자가 그 프로세스를 처리했다. 이후 JSON은 node로 읽는다.
 
+### 결함 구현과 수정 1, 2026-10-10
+
+| 작업 | Task / 모델 | 결과 | 원시 |
+|---|---|---|---|
+| 1차 구현 | `task_c3ed610e39b9`, 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown) | 제품 3파일 +69/−11, 문서 2파일 +6/−2. EditMode 417/417/0/0. 커밋 `79d7fc55` | `astra-pr1-impl/report.md`, `runs/editmode-green-1/results.xml`(SHA256 `d90e188a…`) |
+| 수정 1 | `task_1d9237212f9e`, 신규 `gpt-6-astra` xhigh | HUD 빈 값 `Gold: —` → `Gold: -`. EditMode 417/417/0/0. 커밋 `2ebcbcf6` | `astra-pr1-fix1/report.md`, `runs/editmode-fix-1/results.xml`(SHA256 `660075f5…`), 문자표 `glyphs-after.json` |
+
+- **설계**: 열림 상태는 연결 객체 `UnityClientSession.IsInventoryPanelOpen` 하나가 갖는다. 새 연결은 닫힘으로 시작하고, 맵 이동은 같은 세션이라 유지되며, 연결 정리 뒤 새 세션은 다시 닫힘이다. 「I」는 `InventoryPanel.Update`가 읽고, 일시정지·씬 전환·게임플레이 Ready 전에는 무시한다. 닫힘은 CanvasGroup만 끄므로 구독과 재조회가 유지된다. HUD 골드는 `InventoryState`의 `HasSnapshot`·`Currency`와 변경 통지로 그리고, `_mockGold` 필드는 지웠다.
+- **리드 발견 L-1(수정 1의 원인)**: 1차의 빈 값 `—`(U+2014)가 HUD 골드 글자의 폰트 `Pretendard SDF Proper`(정적 atlas, 자체 fallback 없음)와 TMP 전역 fallback(같은 폰트)에 없었다. EditMode 시험은 숫자만 읽어 이를 보지 못했다. 같은 산출물 수정 1회째이며 확정 실패가 아니다(`lead-r2-impl-1.md`).
+- **리드 R-2**: 두 작업 모두 results.xml을 node로 다시 읽어 수치와 새 시험 13개 통과, `error CS` 0, 음소거 복원을 확인했다. 수정 1 뒤 리드가 폰트의 `m_Unicode` 11267개를 직접 읽어 HUD 골드 두 문자열의 누락 글자 0을 확인했다.
+
+### 결함 PR 독립 검증 — 통과, 2026-10-10
+
+| 항목 | 값 |
+|---|---|
+| Task / 모델 | `task_299bc7fdf7c8`, 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown) |
+| 계약 | `opus-pr1-verify-contract.md` SHA256 `35cba0dc…fb54`. 보충 v1.1 메모리 확인, v1.2 Core 컨테이너 동안 대기, v1.3 재개 |
+| 판정 | `opus-pr1-verify/verdict.md`, worker_done `msg_74d5dca1c629`(09:50:00Z). 통과, 제품 결함 0 |
+| 수치 | EditMode 417/417 → 417/417. PlayMode(이 checkout의 WSL GameServer 7777 위) 23/16/7/0 → 26/26/0/0 |
+| 커밋 | 검증자 시험 4파일 `efd0442b` |
+
+- **기존 시험 7개 (a)**: PlayMode `InventorySceneLifecycleTests` 6개와 `InventoryServerIntegrationTests` 1개가 「입장 직후 패널 보임」과 「미러 구독자 1」을 단정해 실패했다. 메인 결정 `msg_71e41e231d55`에 따라 I로 연 뒤 원래 단정을 그대로 두게 고쳤다. 구독자 단정은 「패널 1·HUD 1·그 밖 0」으로 대상을 구분해 더 엄격해졌다.
+- **새 PlayMode 시험 3개**: 실제 UI 씬 HUD 골드(빈 값·패널과 같은 재화·폰트 누락 0), 닫힌 패널 자리 클릭이 공격으로 통과하고 연 뒤에는 사용이 됨, 실제 일시정지 메뉴 동안 I 무효.
+- **실제 진입**: 서버 lane 위 PlayMode에서 실제 서버 Town → 키보드 I로 열기 → 포털 이동 뒤 열림 유지 → 키보드 처치 보상 → 포인터 사용 확정까지 통과했다.
+- **리드 R-2**: 일치(`lead-r2-verify.md`). XML 네 개의 hash·수치, 실패 7개 이름, 고친 시험 diff를 직접 대조했다.
+- **설정 파일 복원**: 이 검증이 이 PR의 마지막 batch다. 그 뒤 메인 판단 `msg_c9fac8091065`대로 두 설정 파일을 되돌렸다(재개 지점).
+
+### 운영 기록(첫 발생)
+
+- Orca CLI 1.4.224의 `terminal split`에는 `--title`이 없어 첫 구현자 기동이 실패했다. 플래그 없이 다시 열었다(`astra-pr1-impl-launch-fail-title.json`).
+- 수정 1 작업자의 heartbeat 하나가 subject에 태그를 붙이고 body를 비워 helper가 body-tag 위반으로 판정했다(`msg_2c48778c8c93`). identity는 맞았고 내용이 없어 처리하지 않았다. 다음 계약부터 빈 heartbeat subject를 정확히 `alive`로 쓰라고 넣었다.
+- 리드가 수정 1 진행 중에 고정 입력 파일(`lead-r2-impl-1.md`)에 관찰을 덧붙여 hash를 바꿨다가 바로 떼어 내 원래 hash로 되돌렸다. 관찰은 `lead-inbox-notes.md`로 옮겼다.
+- 메모리 몰림(메인 `msg_e30ad0e2a36c`) 뒤 Core SQL 컨테이너가 먼저 돌도록 Content가 15분 기다렸다(Core `msg_fced0edb6f02` → `msg_ab97dbb84891`).
+
 ## 다음 계획 후보
 
-이 goal에서 발견한 범위 밖 후보는 출처와 함께 한 줄로 적고 [BACKLOG](../../../00_Document/operations/BACKLOG.md)의 ID를 붙인다. 등록은 착수 권한이 아니다.
+이 goal에서 발견한 범위 밖 후보는 출처와 함께 한 줄로 적고 [BACKLOG](../../../00_Document/operations/BACKLOG.md)의 ID를 붙인다. 등록은 착수 권한이 아니다. 아래는 결함 PR 독립 검증의 비차단 관찰이며, BACKLOG 등록 여부는 종료 기록 때 정한다.
 
-- 아직 없음.
+- `HudController` 클래스 요약에 골드의 출처(InventoryState 미러)가 없다. 지금은 FEATURE_MAP·client.md에서 찾는다(판정 「사람 가독성 지적」).
+- `UnityClientSession`이 UI 표시 bool을 가진다. 표시 상태가 늘면 연결이 소유하는 작은 표시 상태 객체로 옮긴다(O-1).
+- `HudController`의 `OnEnable`·`Start`가 `BindInventory` 뒤 `RenderGold`를 한 번 더 부른다. 동작 영향은 없다(O-2).
+- `UI.unity`에 지운 필드 `_mockGold: 0`의 직렬화 잔여가 있다. 다음 scene 저장 때 Unity가 지운다(O-3).
+- EditMode 씬 전환 시험은 맵 입장과 SceneTransition이 함께 걸린 경우만 본다. 지금 제품 경로에서는 둘이 늘 겹친다(O-4).
+- EditMode 가상 키보드가 Input System 내부 `runPlayerUpdatesInEditMode`에 기댄다. 패키지 업데이트 때 fixture가 먼저 깨진다(O-5).
