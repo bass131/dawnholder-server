@@ -102,11 +102,12 @@ PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
 - 경로 풀기: 따옴표를 벗긴다. `$NAME`·`${NAME}`은 같은 명령에서 앞서 준 `NAME=값`(`export` 포함)으로 먼저, 다음에 hook 프로세스 환경으로 푼다. `~`는 HOME이다. Git Bash 드라이브 모양 `/c/…`는 `C:/…`로 읽는다. 상대 경로는 입력 `cwd`(없으면 `CLAUDE_PROJECT_DIR`) 기준이다. `.`·`..`는 글자로 접는다. 드라이브 경로는 대소문자를 가리지 않는다. 풀리지 않는 변수가 남으면 「미해결」이다.
 - 허용 뿌리: `CLAUDE_PROJECT_DIR`, 그리고 `<checkout>/.backups`가 junction·심볼릭 링크면 그 실제 대상이다(core-active). 목적지가 허용 뿌리 밖이면 `write-outside-checkout`이다. 미해결 목적지는 규칙 2가 판정하지 않는다(한계).
 - 쓰기 도구: `file_path`(Write·Edit·MultiEdit)나 `notebook_path`(NotebookEdit)가 임시 뿌리(`os.tmpdir()`, 환경 TEMP·TMP·TMPDIR, `/tmp`) 아래면 `temp-write`다. Claude Code scratchpad도 TEMP 아래라 여기에 든다. 그 밖의 checkout 밖 경로(메모리 폴더 등)는 규칙 2가 보지 않는다.
+- 허용 뿌리가 먼저다: 경로가 허용 뿌리 안이면 임시 뿌리 안이어도 통과한다. R-5가 Claude 작업자의 TEMP·TMP를 checkout 안 `.backups/tmp/<이름>/`으로 정하기 때문이다.
 - 고치는 법: 근거 폴더(`.backups/verification/<goal>/`) 아래로 쓴다.
 
 규칙 3 메모 순서
 
-- 세션 상태: `$CLAUDE_PROJECT_DIR/.claude/state/session-guard/<session_id>.json`(Git 제외 폴더). 메모 기록 시각과 막은 기록 목록을 둔다. 저장은 병합 관문처럼 같은 폴더 임시 파일 + rename이다.
+- 세션 상태: `$CLAUDE_PROJECT_DIR/.claude/state/session-guard/<session_id>.json`(Git 제외 폴더). 형식은 `{"version":1,"memoWrittenAt":"<UTC>"|null,"denials":[{"at":"<UTC>","tool":"<도구>","code":"<결과 코드>","target":"<경로>"|null}],"errors":[{"at":"<UTC>","message":"<문구>"}]}`이다. 저장은 병합 관문처럼 같은 폴더 임시 파일 + rename이다. `session_id`는 병합 관문과 같은 파일 이름 한 조각 형식만 받는다.
 - 메모 경로: 허용 뿌리의 `.backups/verification/` 아래이고 파일 이름에 `context`가 들고 `.md`로 끝나는 파일(대소문자 무시)이다. 실제 관례 근거는 E/session/memo-naming-count.txt(다섯 작업 공간 618개)다.
 - 판정: 한 호출의 쓰기를 글자 순서대로 본다. 쓰기 도구는 그 경로 하나, Bash는 규칙 2의 목적지(미해결 포함, 파일 아닌 것 제외)다. 세션 메모 기록이 없을 때, 첫 쓰기가 메모 경로면 메모 기록을 남기고 통과한다. 메모보다 앞에 다른 쓰기가 있으면 `memo-first`로 막는다. 메모 기록이 생긴 뒤에는 규칙 3이 통과한다. 기존 메모를 Edit로 고치는 것도 메모 쓰기다(재개한 세션의 길).
 - 세지 않는 것: 리다이렉트·`tee`가 없는 git·mkdir·cp·mv·스크립트 내부 쓰기, 하네스 자동 저장, 가드 자신의 상태 쓰기.
