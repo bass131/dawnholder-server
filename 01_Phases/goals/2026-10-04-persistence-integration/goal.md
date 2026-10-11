@@ -610,9 +610,34 @@
 
 ## 재개 지점
 
+### 카드 v1 실사 차단 둘과 v2 수정 — 2026-10-11T09:0xZ
+
+기록 시각은 2026-10-11T09:08:22Z(`date -u`, KST 18:08, 원시 N2/`time-goal-record-3.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. REVIEW는 E/`container-run-card-review`다.
+
+- **v1 실사(신규 claude-opus-5-5, `task_3b9175bf8a0c`):** worker_done `msg_b5eabd74830c`(08:50:45Z), 판정 원문 REVIEW/`verdict.md`. 결과는 차단 둘, 비차단 둘이다.
+  - 차단 #1: 카드 단계 PreserveStop이 `docker logs` 비밀 대조를 정지보다 먼저 했다. 로그에 비밀이 있으면 정지하지 않고 끝난다.
+  - 차단 #2: 「매 단계 전 Windows 여유 메모리 2GB 바닥」(이 goal 「보존 동작」과 MSSQL.md 「실행 카드의 Docker 규칙과 정리」)을 확인할 수단이 카드에 없었다.
+  - 비차단 #3: Docker 인자 가드가 일부 금지(`rm -fv`, prune, `image rm`, 다른 이름, 전체 설정 출력)를 못 막았다. 비차단 #4: 판정이 차단일 때 켜 둔 컨테이너의 처리가 없었다.
+  - 실행 전에는 줄일 수 없는 잔여 위험 R-1~R-7(실제 TDS·daemon·DPAPI 등)은 실행 판정으로 넘긴다. 정산은 release·idle·화면 보존·pane 종료까지 마쳤다. 리드 R-2 대조로 #1·#2의 원천 행을 확인했다.
+- **v2 수정(리드 작성, 제품 파일 변경 없음):** 대응 표는 CARD/`card.md` 끝 「v1 실사 반영」, 원인과 파일별 변경은 CARD/`context-memo.md` 「v1 실사 반영」 절에 있다.
+  - #1: PreserveStop을 정지 → 상태 확인 → 로그 순서로 바꿨다. 비밀이 나온 저장 파일은 바로 지우고 이름만 남긴다.
+  - #2: 실행 helper가 모든 실행 전에 메모리 원시를 남기고, 2048MB 아래면 아무것도 띄우지 않고 거부한다. 거부는 출력 파일을 만들지 않아 리드 답 뒤 같은 이름으로 다시 실행할 수 있다.
+  - #3: 가드를 카드가 쓰는 호출 모양의 허용 목록으로 바꿨다. #4: 판정 차단이면 같은 날 PreserveStop 한 번으로 정지·보존하고, 삭제는 명시 승인 뒤에만 한다.
+  - 관찰 반영: Ready의 TCP 탐침 실패를 멈춤 조건으로 쓰고, 확인 단계가 되돌림 시나리오 넷·빈 요청 거부·첫 설치 관찰을 요구한다.
+- **리드 발견:** PowerShell 7 부모는 모듈 자동 적재 때 `PSModulePath`를 다시 채운다. 처음 한 번만 지우면 5.1 자식이 `Microsoft.PowerShell.Security`를 못 불러온다. 그래서 helper가 자식 실행 직전마다 지운다.
+- **v2 예행(리드, 실행 근거 아님):** CARD/`rehearsal-v2.txt`(09:05:31Z)에서 다섯 단계 예행과 helper의 5.1·7 두 부모 셸 예행이 모두 통과했다. 120자 초과와 파서 오류는 0이고, 실제 run 폴더는 생기지 않았다. 대상 SHA256은 `card.md` `36e784b3…4898`, `Invoke-ContainerCardStep.ps1` `6d9c5801…21e6`, `card-session.ps1` `9af8c611…e0ea`, `Test-CardSession.ps1` `3210b1c2…884a`, `secret-path-facts.txt` `91c2908f…b49b`다. 승인 계획 검토본은 바뀌지 않았다.
+- **같은 산출물 수정:** 카드 묶음의 1회째 수정이다.
+- **리드 실수 18:** bash 큰따옴표 안의 `\$s`가 글자로 남아 `.backups/tmp`에 `card-fix-try$s-085824` 폴더가 생겼다. 시험 출력뿐임을 확인하고 지웠다. 실수 17과 같은 원인의 두 번째 발생이다. 반복 규칙 후보(「Windows 경로는 `cygpath -w`나 작은따옴표 리터럴로 만든다」)로 메인을 거쳐 규칙 정본 담당에 넘긴다.
+- **우편함:** 08:28Z에 Claude Code가 메모리 부족으로 리드의 background 대기를 회수했다. 지침대로 다시 열지 않고, Orca 알림 턴마다 한 번 check한다. 메인에 보고했다(`msg_955401c41cb0`).
+- **파트 조율:** World 재실행 셋(08:50~09:15Z)에 「진행」으로 답했다(`msg_15758793c10e`). Content는 독립 검증 중(`msg_35c475857128`, 7777·Unity 점유)이며, Core는 SQL 컨테이너 시작 전에 Content에 먼저 알린다.
+- **다음 할 일:**
+  1. 신규 Opus 재실사를 연다(새 폴더 E/`container-run-card-review-2`). 계약에 v2 대상 hash, v1 판정 대응, 잔여 위험을 넣고, v1 실사자의 가짜 docker 시험 재사용을 허용한다.
+  2. 재실사가 통과하면 메인에 한 번 회신하고 사용자 실행 승인(G2)을 요청한다.
+  3. G2 뒤 실행 계획·`$planHash`·입력 hash 목록 → Content·World 알림 → Sol 실행 → 판정 → 같은 날 정리 → 엔진 판정 PR → Gardener.
+
 ### 컨테이너 실행 카드 v1 초안과 오프라인 예행 — 2026-10-11T08:1xZ
 
-기록 시각은 2026-10-11T08:18:36Z(`date -u`, KST 17:18, 원시 N2/`time-goal-record-2.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같고, CARD는 E/`container-run-card`다.
+기록 시각은 2026-10-11T08:18:36Z(`date -u`, KST 17:18, 원시 N2/`time-goal-record-2.txt`)다. 이 블록은 직전 재개 정본이다. 약어는 아래 블록과 같고, CARD는 E/`container-run-card`다.
 
 - **결정:** 사용자 D-1 A(하루 한 수명)와 D-2 A(실행 절차서의 확인 단계)가 확정됐다(「적용 중인 사용자 결정」 맨 위 두 항목). 메인 지시 순서는 카드 본문·준비 대기 스크립트·승인 계획 v2 → 신규 Opus 카드 실사 → 사용자 실행 승인 요청이고, 메인 회신은 실사 결과와 함께 한 번이다(`msg_af86c9254f72`).
 - **카드 초안(실행 승인 전):** CARD/`card.md` SHA256 `263867e1…cde6`, `card-session.ps1` `1bce1db5…976f`, `Invoke-ContainerCardStep.ps1` `d24c7a69…fb0c`, 승인 계획 검토본 `approval-plan.review.json` `1621e9b5…7ee4`(`ExecutionApproved` false, `G2` 빈 값). 리드 맥락 메모는 CARD/`context-memo.md`, 설계 초안은 `design-draft.md`다. 제품 파일 변경은 없다.
