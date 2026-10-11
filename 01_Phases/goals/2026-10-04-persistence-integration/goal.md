@@ -630,9 +630,45 @@
 
 ## 재개 지점
 
+### 진단 실행과 독립 판정 NOT PASS(절차), 범위 결정 대기 — 2026-10-11T14:09Z
+
+기록 시각은 2026-10-11T14:09:25Z(`date -u`, KST 23:09, 원시 N2/`time-goal-record-11.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. XR은 E/`container-diagnosis-execution-review`(새 폴더)다.
+
+- **진단 실행(사용자 승인 A `msg_223c9a08bdd0`의 창 안):** 신규 `gpt-6.1-sol` max 실행 작업자다. handle `term_02bda0b7-79f1-46d5-b35d-b736b6e8dd2e`, Task `task_2dbae5468ddc`, Dispatch `ctx_291c4432c7e2`. 계약은 X2/`contract.md` v1(SHA256 `89F228C7…920A`), 기동은 13:15:42Z(X2/`launch-record.txt`)이고 메인에 알렸다(`msg_fe1c21820526`).
+  - 단계 순서: preserved-remove(13:22:16~13:22:23Z) → c0 관문 → C0~C2 → c3 관문 → c3-start → C3 Ready → C4 Created·Baseline001 → diagnose-modules → diagnosed-remove(13:30:16~13:30:50Z). 모든 단계가 exit 0이다.
+  - preserved-remove는 시도 1 컨테이너(Id `c3d4a7c2…`)와 볼륨을 승인 값 대조 뒤 지웠다. 부재 원시는 AllAbsent true다.
+  - 관문 두 번은 리드가 메모리 표본을 다시 보고 「가능」으로 답했다. c0는 `msg_180cd953f14a`(여유 5,780MB), c3는 `msg_0c5f0ae0ad2c`(6,146MB)다.
+  - 새 컨테이너는 Id `0f711894…`, 시작 13:26:31Z, 메모리 상한 4GB였다. 001 checksum은 `F28502BB…4FCC`로 세 원천이 같다. 정리 때 ExitCode 137이었고 부재 원시는 AllAbsent true다.
+  - 진단 Facts: 기대 모듈 18, 행 18, 제품 불일치 18, 미관측 0, 롤백 원상 복원, DiagnosisSha256 `3C3C2173…0F79`. 제품 Complete는 「Registered/actual module drift: dh.PersistencePayloadV1; refuse overwrite, including unchanged source.」로 실패했다.
+  - 원인 관측: 엔진(17.0.5005.3)은 「CREATE OR ALTER 」 머리말을 「CREATE」 뒤 공백 세 칸으로 바꿔 저장한다. 그래서 18개 모두 7글자 짧다. 머리말만 맞추면 18/18 같다(X2/`lead-header-compare.txt`, 판정자 독립 비교). 도구는 원문 그대로를 기대 정의로 계산해서 설치마다 거부한다. 기존 가짜 엔진 시험은 보낸 글자가 그대로 저장된다고 가정했고, 그 가정이 관측된 적 없다는 표시가 시험 안에 있었다(`99_Tools/database/tests/ModuleDeployment.Tests.ps1` 411~419행).
+  - worker_done은 `msg_424c607d1793`(13:40:36Z), outcome failed다. 사유는 작업자가 스스로 공개한 heartbeat 5분 초과다. 정산은 release(retained) → tui-idle → 마지막 화면 → close(ptyKilled true)다.
+  - World·Content에는 13:32Z에 「Core 끝」을 알렸다(World `msg_a5534029a504`, Content `msg_a18ed271d458`).
+- **독립 판정: NOT PASS, 차단 #1~#3(모두 절차).** 신규 `gpt-6-astra` xhigh, handle `term_246ad86b-c7b7-4c44-9d09-62c3ebcf14be`, Task `task_9da119958675`, Dispatch `ctx_7daba5b558e1`이다. 계약은 XR/`contract.md` v1(SHA256 `199DB29F…AE55B`), 기동은 13:42:21Z(XR/`launch-record.txt`)이고 메인에 알렸다(`msg_9589c0479c68`). worker_done은 `msg_7a624d8d73fa`(14:05:08Z, outcome failed), 판정은 XR/`verdict.md`(SHA256 앞 16자리 `cdbb01d76268ed9a`)다.
+  - #1(실행 작업자): heartbeat의 활성 간격이 431·341·420초로 5분을 넘었다.
+  - #2(리드): 실행 계약에 CODE_CONVENTION 관련 절 원문 묶음이 없다. 판정 계약도 「사람의 탐색과 가독성」 절을 일부만 인용했다. 1차 실행 계약(E/`container-run-execution/contract.md`)에도 없었다. 처음 드러난 결함이라 이 기록으로 남긴다. 다음 계약부터 리드가 근거 폴더의 계약 발행 스크립트 안에서 관련 규칙 원문 묶음을 확인한다(메인 조건 2). 저장소 도구는 고치지 않는다.
+  - #3(실행 작업자): 초기 지원 셸 12개가 카드의 dot-source 첫 줄을 지키지 않았다. 카드 단계 명령 13개는 지켰다.
+  - 확인된 것: 단계 순서와 각 1회, 관문 회신 뒤 시작, Facts 11/11, 롤백 복원, 두 정리의 부재, Docker argv 31개 모두 Env 없는 inspect, 대상 hash 254개 시작·끝 동일이다.
+  - 판정자 자기 이탈: 허용 밖 git 읽기 1회(변경 없음)와 heartbeat 307·303초다. 판정자가 스스로 공개했다.
+  - 반복 관측: heartbeat 5분 초과가 이 goal에서 세 세션째다(카드 실사 v1, 실행, 판정). 메인은 이것을 BACKLOG heartbeat-interval-review의 근거로 붙이고, 다음 Rules goal 진입 때 Rules에 전달한다고 했다(메인 조건 3). Core가 따로 요청하지 않는다.
+  - **처분: 메인 판단 「수용」(`msg_6148bb9c6153`, 14:09:28Z).** 세 결함은 관측값을 바꾸지 않는 절차 결함이다. 그래서 이번 진단 관측을 원인 근거로 쓴다. 세 결함과 판정자 자기 이탈은 이 블록에 비차단 운영 기록으로 남긴다(메인 조건 1). 메인 운영 결정이고 사용자 결정이 아니다.
+  - 정산은 release(retained) → tui-idle → 마지막 화면 → close(ptyKilled true)로 마쳤다(XR/`lead-*.json`).
+- **R-2(리드, XR/`lead-r2-check.txt`):** 표본 다섯 개가 판정과 같다. heartbeat 간격, 두 계약의 CODE_CONVENTION 유무, 작업자 기록 사본 L13~L59의 첫 줄, 두 부재 JSON, 진단 파일 hash와 머리말 교체 비교다.
+- **결정:**
+  1. 끝남: 메인 판단 요청 `msg_afc1f8c74539` → 「수용」 `msg_6148bb9c6153`(위 처분).
+  2. 대기: 사용자 범위 결정 `msg_c76635afcdcd`, 메인이 사용자에게 올렸다. 「1) Core 모듈 정의 비교 수정 - 범위 포함 여부」, 리드 추천 A다. A는 기대 정의 계산을 엔진이 저장하는 머리말 형태에 맞추고 18개 기대 hash(`modules/manifest.json`·`verify-schema.sql`)를 다시 만든다. 프로시저 본문·SourceChecksum·001은 그대로다. 커밋은 이 branch, PR은 엔진 판정 PR이다. B는 엔진 판정을 멈추고 수정을 별도 goal 후보로 넘긴다.
+  3. 대기: 관리 비밀 파일 처분이다. 시도 1과 진단의 private 폴더·manifest가 남아 있다. 별도 결정이고 아직 올리지 않았다.
+- **자원 상태:** 컨테이너 `dawnholder-sqlserver`와 볼륨 `dawnholder-sqlserver-data`는 없다. 근거는 DIAG/`run/diagnosed-remove/diagnosed-remove-final-absence.json`(13:30:50Z)과 시도 1 자원의 DIAG/`run/preserved-remove/preserved-final-absence.json`(13:22:23Z)이다. 이미지는 보존한다.
+- **마감(메인 `msg_b7256a2a63ca`):** 새 작업자를 열지 않는다. Core worktree의 pane은 리드 하나이고, Core가 띄운 Codex·Docker 실행은 없다(N2/`closeout-check-1.txt`).
+- **다시 열 때:** branch `feat/persistence-container-engine-20261010`, Run `run_b36cc92a4cf4`, 리드 Claude 세션 `0fe2a6f9-e8b6-456a-bdae-2ede3ac4d3fe`다. 이 기록을 담은 commit의 HEAD는 메인 마감 보고에 적는다. core-active에 사용자 미커밋 파일은 없다.
+- **다음 할 일:**
+  1. 사용자 범위 결정을 받는다.
+  2. A면 맥락 메모 → 구현 계약(CODE_CONVENTION 관련 절 원문 포함) → 신규 `gpt-6-astra` xhigh 구현 → 신규 `claude-opus-5-5` 강 등급 검증 순서다. 그 뒤 새 실행 카드와 사용자 실행 승인을 받아 컨테이너 1단계를 다시 실행한다.
+  3. B면 엔진 판정을 멈춘 상태를 기록하고 goal 처리를 메인에 묻는다.
+  4. 관리 비밀 처분 결정을 메인에 올린다.
+
 ### 진단 카드 v1.1 재확인 통과와 실행 승인 — 2026-10-11T13:11Z
 
-기록 시각은 2026-10-11T13:11:47Z(`date -u`, KST 22:11, 원시 N2/`time-goal-record-10.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. R2는 E/`container-diagnosis-card-review-2`, X2는 E/`container-diagnosis-execution`(새 폴더)이다.
+기록 시각은 2026-10-11T13:11:47Z(`date -u`, KST 22:11, 원시 N2/`time-goal-record-10.txt`)다. 이 블록은 직전 재개 정본이다. 약어는 아래 블록과 같다. R2는 E/`container-diagnosis-card-review-2`, X2는 E/`container-diagnosis-execution`(새 폴더)이다.
 
 - **신규 Astra 한정 재확인: 통과, 신규 차단 0.** `gpt-6-astra` xhigh, handle `term_83190a1b-ad41-42e1-a2f0-a0e82c55f09c`, Task `task_483641f69152`, Dispatch `ctx_8951e660391e`. 계약은 R2/`contract.md` v1(SHA256 `8E573D36…1A30`), 기동은 12:45:08Z(R2/`launch-record.txt`)이고 메인에 알렸다(`msg_64f272ce9ca1`). worker_done은 `msg_dd7f0d25f125`(13:00:01Z), 판정은 R2/`verdict.md`(SHA256 앞 16자리 `b349ab3ad8116d0e`)다.
   - 첫 실사 #1·#2가 해소됐다. 예행 18회와 독립 검사 312개(두 셸, 각 156)가 통과했다. 첫 실사의 실패 입력은 이제 `PRODUCT_ACTUAL_INCOMPLETE`로 끝나고 삭제 관문이 거부한다.
