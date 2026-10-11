@@ -8,7 +8,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_fddebc03-9972-41d8-8941-e7c98af2dabe`, Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 구현이 끝나 구현 파일을 commit했다(아래 「현재 결과」의 구현). 다음은 독립 검증 계약 발행이다. 검증의 Unity·7777 실행은 Content 독립 검증(08:49Z 시작 알림 `msg_3c0de8f0729a`)이 Unity와 7777을 놓은 뒤다.
+- **현재 위치**: 독립 검증이 끝났다. 기능 결함은 없고 판정은 문서 한 줄(VER-01, `00_Document/domains/client.md:16`) 때문에 차단이다(아래 「현재 결과」의 독립 검증). 검증자 새 시험은 commit했다. 다음은 VER-01 수정(신규 `gpt-6.1-sol` max) → 문서 실사 재검증(신규 `gpt-6-astra` xhigh)이고, 실화면 확인을 메인에 따로 요청한다.
 - **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -18,8 +18,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 설계 절 작성
 - [x] 선행 시험 작성
 - [x] 구현
-- [>] 독립 검증
-- [ ] 봇·실화면 확인
+- [>] 독립 검증(VER-01 수정·재검증 남음)
+- [>] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
 - [ ] 종료 기록 PR 병합
@@ -360,3 +360,34 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
   2. **맥락 메모 순서**: 독립 검증 계약 초안(E/`verify-contract-draft.md`)을 맥락 메모(E/`verify-prep-context.md`)보다 먼저 썼다. 위임 전 초안이라 결과물에 영향은 없다.
   3. **보류 전달 지연**: Content가 08:49:10Z에 Unity 사용을 알렸는데 리드가 구현자 보류를 08:51:50Z에 보냈다. 그 사이 구현자가 앞선 진행에 따라 PlayMode를 08:50:15Z~08:51:13Z에 돌렸다. Content에 「08:50Z에 보류」라고 잘못 적었고 뒤에 정정했다(`msg_a8855130a311`). Content 검증자는 Unity 0을 기다리는 규칙이라 겹침 피해는 없었다.
   4. **빈 본문 메시지**: 우편함 가드에 막힌 복합 명령 뒤 본문 파일이 없는 채로 send해 Content에 빈 메시지(`msg_3502b131fc8e`)가 갔다. 바로 본문을 넣어 다시 보냈다(`msg_87e039a832cf`). 그 뒤로는 본문 파일을 `test -s`로 확인한 뒤 보낸다.
+
+### 독립 검증 — 2026-10-11
+
+- 검증자: 신규 `claude-opus-5-5` xhigh(최초 명령 `claude --model claude-opus-5-5 --effort xhigh`, 첫 화면 「Opus 5.5 with xhigh effort」, backend unknown), 태그 `[World 검증자]`. 배정은 검증자 시범의 「Astra 구현 → 신규 Opus」와 「프로토콜·공유 DLL → 신규 Opus」다. 리드 pane 아래 split `term_699a4630-4007-4336-ba5f-f12528be7d91`, Task `task_6f7de5b2db44`, Dispatch `ctx_809a116bf6b1`(09:16:47Z). worker_done `msg_e35237580f89`(10:54:02Z, succeeded). release `retained` 뒤 pane을 닫았다.
+- 계약: E/`verify-contract.md` v1(SHA256 `e538fceddc61306f01f0eb84532a719d8bdd4f5f9f554d12e9e366c04f130cab`), 요약 E/`verify-spec.md`, 입력 hash E/`verify-inputs.txt`(84개), 경로 확인 E/`verify-preflight.txt`, 리드 메모 E/`verify-prep-context.md`. 강 등급, 대상 commit `c5482d6b`.
+- 판정: E/`verify/verdict.md`(SHA256 `a1951067b6c3ad9a6b6c38df3094890092375bf4c501855d90f0b8f83b21fe20`). **차단(VER-01)**. 필수 검증 A~G와 강 등급 실제 진입 둘을 모두 했고 기능·동작 결함은 없었다.
+- 실행(원시는 E/`verify/`):
+
+| 실행 | exit | 결과 |
+|---|---|---|
+| 봇 회귀 17개(첫 항목 `MultiAccountLoginSmoke`) | 0 | PASS=17 FAIL=0. 새 시나리오 로그인 로그: accepted 3, AlreadyOnline 1, InvalidName 1(원래 이름은 서버 로그 0건). 거부 결과 둘이 봇에 닿았다 |
+| WSL 서버 전체 | 0 | 1047 / 1042 / 0 / 5(구현 1039 + 검증자 새 시험 8) |
+| Windows `dotnet build Dawnholder.slnx`(증분) | 0 | 경고 7 / 오류 0. Shared·ClientNet은 다시 컴파일되지 않아 재현 증명이 아니었다 |
+| `--no-incremental` 재빌드 Shared·ClientNet | 0 | 두 DLL이 커밋 bytes와 같다(`f11ad385…`, `dc708e2f…`) |
+| 서식 검사 | 0 | 제품 298파일 수정 0, 도구 시험 244/244 |
+| Unity EditMode 전체 | 0 | 445 / 445(구현 436 + 검증자 9) |
+| Unity PlayMode 가짜 서버 lane | 0 | 32 / 32(다섯 클래스 28 + 검증자 `LoginRejectionMenuTests` 4) |
+| 서버 lane(WSL GameServer 7777 + 실서버 PlayMode 두 클래스) | 0 | 2 / 2. 서버 로그에 실제 Unity 클라이언트 세 연결의 `C_Login` → accepted → `C_CharacterSelect` 순서 |
+
+- 검증자 새 시험(commit 대상): 서버 `GameServer.Tests/Accounts/AccountLoginVerificationTests.cs`(D1 작은 길이 머리 4경우, D4 로그인·끊김 경합 두 종류 각 300회, D5 계정 번호 미송신, 로그 형식), EditMode `ClientLoginVerificationTests.cs`(D2 범위 밖 결과 값, D6 거부 직후 끊김 수정 넷), PlayMode `LoginRejectionMenuTests.cs`(D3 거부·이름 문제 뒤 메인 메뉴와 안내 넷). 모두 통과했고 제품 결함으로 RED가 된 시험은 없다.
+- 결함:
+  - **VER-01**(낮음, 차단, 귀속 구현자): `00_Document/domains/client.md:16`이 「`LoginResultHandler`는 세션의 메인 스레드 gate를 거쳐 결과를 적용」이라고 적는다. 구현 중 고친 뒤로 유효 거부 둘은 닫힌 전송 검사(`CanApply`)를 건너뛰어 정리 전까지 적용된다. CODE_CONVENTION 「주석과 문서」 위반이다. 검사로 바꿀 수 없다고 판단했다(문장 의미 대조).
+  - **VER-02**(낮음, 비차단, 귀속 구현자): 구현자 분류 표 121행(`ServerHostLifecycleTests.Stop_…(enterWorld: True)`)은 (b)로 적혔지만 처음 패킷 단정을 바꿨으므로 (a)+(b)가 맞다. 리드 정정: 서버 기존 실패 128건 = (a) 3 + (a)+(b) 2 + (b) 123(검증자 재판정 표 E/`verify/server-failure-rejudge.md`). 구현자 근거 원본은 고치지 않는다.
+- 기존 시험 재판정: 64구간 모두 약화 없음. 수정 전 통과였던 5개 시험은 로그인 게이트 때문에 헛통과하던 것을 로그인을 더해 원래 상태로 되돌린 강화다. 구현자 회귀 11경우 중 RED 4건이 결함 경로를 실제로 재현했다.
+- 설계 관찰(비차단, 후속 후보): O-1 `AlreadyOnline` 안내 문장도 `MainMenuNotice` 상수로 모으기, O-2 `Duplicate C_Login` 로그 문구 넓히기, O-3 `ClientConnectionLifetime`의 소유 검사와 닫힘 검사를 이름으로 나누기, O-5 봇 계정 이름 일련번호 건너뜀. O-4는 위 「위험」 8, O-7은 「위험」 2다.
+- 다른 파트로 넘길 관찰: O-8 서식 검사의 Plugins DLL 가드가 WSL 사본에 없는 파일을 해시해 빈 파일끼리 비교하므로 항상 통과한다(`99_Tools/format-check.sh:42-48·107·138`). 검사 코드 담당인 Core 리드에 알린다.
+- 실행 조율: 봇은 Content 수정 단계의 7777 빈 틈에(Content `msg_0e0eec0571bc`), WSL·빌드·서식은 Content·Core 진행 뒤(`msg_39b19125e05a`·`msg_973fa48d7e8d`), Unity·서버 lane은 Content 해제(`msg_bc322f3be185`, 10:21Z)와 Core 컨테이너 종료(`msg_c1b0607f6fab`, 10:40:46Z) 뒤(리드 진행 `msg_bb5a04edb680`)에 돌렸다. Core가 컨테이너를 먼저 띄우려 해 Unity 단계를 한 번 미뤘다(`msg_d6fc95d67a76`).
+- 부수 효과: Unity가 `ProjectSettings.asset` SENTIS 한 줄과 `MinimapRT.renderTexture` 줄 끝을 다시 써서 리드가 되돌렸다.
+- 리드 기록(첫 발생이라 goal에만 적는다):
+  1. **DLL 재현 명령**: 검증 계약 G가 증분 `dotnet build Dawnholder.slnx`를 재현 확인으로 적었다. 입력이 최신이면 Shared·ClientNet을 다시 컴파일하지 않아 재현 증명이 되지 않는다(검증자 관찰 O-6). 검증자가 찾아 리드가 `--no-incremental` 재빌드를 허용했다(`msg_ff3c566f85cc`). 다음 계약부터 `--no-incremental`로 적는다.
+  2. **계약 C의 수치**: 검증 계약 C가 구현자의 초기 status 값 「(a) 3, (b) 125」를 적었다. 구현 보고는 4/124로 정밀화했다. 판정에는 영향이 없다.
