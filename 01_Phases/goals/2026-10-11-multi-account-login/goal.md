@@ -8,7 +8,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_fddebc03-9972-41d8-8941-e7c98af2dabe`, Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 범위 승인 뒤 goal 첫 commit(`0e3a6ce9`)을 했고, 아래 「설계」 절을 썼다. 다음은 선행 시험 계약 발행이다.
+- **현재 위치**: 선행 시험이 끝나 새 시험 파일을 commit했다(아래 「현재 결과」의 선행 시험). 다음은 구현 계약 발행이다.
 - **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -16,8 +16,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 
 - [x] 범위 승인
 - [x] 설계 절 작성
-- [>] 선행 시험 작성
-- [ ] 구현
+- [x] 선행 시험 작성
+- [>] 구현
 - [ ] 독립 검증
 - [ ] 봇·실화면 확인
 - [ ] 제품 PR 병합
@@ -215,6 +215,31 @@ PR 단계 이름은 PR 번호가 생기면 「PR### 병합」으로 바꾼다.
 - 봇: 새 시나리오와 기존 회귀 묶음.
 - 실화면 한 번(독립 검증): 메인 메뉴 입력칸이 보이고 다른 요소와 겹치지 않는지, 거부 뒤 메인 메뉴의 이유 글자. PlayMode로 닿지 않는 화면 확인을 대신한다.
 
+### 선행 시험이 고정한 이름
+
+선행 시험(아래 「현재 결과」)이 위 기본안을 그대로 쓴 이름: `AccountNameRule`(`MinLength`·`MaxLength`·`TryNormalize`), `LoginResult`(0·1·2), `C_Login.accountName`, `S_LoginResult.result`, `AccountIdentity(Name, AccountId)`, `AccountIdResolver.Resolve`, `GameWorld.Accounts`, `GameSession.Account`·`IsLoggedIn`, `IClientConnectionSession.SendLogin`·`LoginResultReceived`, `ClientConnectionLifetime.LoginRejected`, `MainMenuNotice.Set`·`TryTake`.
+
+새로 고정한 것:
+
+| 고정한 것 | 이유 |
+|---|---|
+| `GameWorld.Accounts.OnlineCount : int` | 설계가 남긴 시험용 조회 자리. 「목록이 바뀌지 않는다」를 수로 본다 |
+| `GameWorld.Accounts.TryGetOnlineSession(string normalizedName, out GameSession? session) : bool` | 같은 자리. 「등록 주인이 바로 그 세션」을 본다 |
+| `ClientConnectionLifetime.LoginRejected`의 형식 `event Action<LoginResult>` | 거부 결과 값을 이벤트로 받는다 |
+| `ClientConnectionLifetime.Connect(IPEndPoint endPoint, byte selectedClass, string accountName)` | 설계 문구 순서 |
+| `MainMenuController`의 직렬화 필드 `_accountNameInputField` | 기존 `_serverHostInputField`와 짝. 씬 배선 시험이 `SerializedObject`로 읽는다 |
+| 메뉴 시작 때 `MainMenuNotice.TryTake`로 안내를 꺼내 지운다 | 설계 「보이고 지운다」 |
+| 같은 연결의 두 번째 `C_Login`은 결과 없이 버린다 | 설계 「로그인 흐름과 게이트」 2 |
+
+시험이 부르지 않아 고정하지 않은 설계 이름: `AccountRegistry`, `EnqueueLogin`·`Tick`·`Forget`, `TryBeginLogin`·`CompleteLogin`·`RejectLogin`, `LoginHandler`, `LoginResultHandler`, `AccountLoadout`. 구현이 기본안을 따르되 바꾸면 이유를 보고한다.
+
+리드 판단(사용자 결정 아님, 근거 E/`tdd-result-goal-context.md`):
+
+1. 길이 머리가 실제 내용보다 **작아** 바이트가 남는 `C_Login`도 `InvalidName`으로 거부한다. 완료조건 6의 「길이 머리와 실제 내용 불일치」 그대로다. 선행 시험은 큰 경우만 넣었으므로 구현 계약에 요구로 적고 독립 검증자가 시험으로 본다.
+2. T9의 「두 패킷이 가장 큰 두 번호」 단정은 유지한다. 이 goal이 먼저 병합되면 Content 패킷 PR이 버전 단정 셋과 함께 이 시험도 고친다(넷째 자리). Content에 알린다.
+3. PlayMode 선행 시험은 쓰지 않았다. 거부 안내가 오류 글자칸에 들어가는 것은 EditMode 시험이 실제 씬과 제품 `Awake/Start`로 본다. 화면의 보임·겹침은 독립 검증의 실화면이 본다.
+4. 기존 클라이언트 시험 `03_Client/Assets/Tests/EditMode/ClientConnectionLifetimeTests.cs`의 대역은 인터페이스와 `Connect` 변경으로 컴파일되지 않는다. 구현 계약의 고칠 기존 시험에 넣는다.
+
 ## 다른 파트와 맞춘 경계
 
 Content 리드(`msg_59c720446c32`, World 질문 `msg_b9bcc472dc39`):
@@ -275,3 +300,26 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 리드 진입: Run `run_a927bbaff1f5`(06:24:46Z), READY `msg_7b0f365216d2`. 진입 지시와 우편함 원시는 E/`lead-entry/`에 있다.
 - 조사: 읽기 전용 내부 에이전트 둘이 지금 접속 흐름과 영속화 계정 모델을 조사했고, 리드가 원문 줄을 표본 대조했다(E/`lead-entry/research-notes.md` 끝). 외부 실행이나 독립 검증이 아니다.
 - 범위 승인 뒤 최신 main `6782cd67`에서 이 branch를 만들고 이 파일과 CURRENT의 World 줄을 첫 commit에 넣었다. 빌드·서버 시험·봇·Unity·DB는 실행하지 않았다.
+
+### 선행 시험 — 2026-10-11
+
+- 작성자: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 with xhigh effort」, backend unknown), 태그 `[World 검증자]`. 리드 pane 아래 split `term_e9d6cabe-4f04-4ff8-bf03-3c9c48d73d66`(07:05:08Z), Task `task_52e64b8fca7f`, Dispatch `ctx_2b90c21eec6c`. worker_done `msg_800ffc59a8ee`(07:40:13Z, succeeded). release `retained`(external_terminal) 뒤 pane을 닫았다.
+- 계약: E/`tdd-contract.md` v1(SHA256 `80d7482b9911ee026510e8b5408e5432023652f998a532d0e9fb398f2cc828b1`), 요약 E/`tdd-spec.md`, 입력 hash E/`tdd-inputs.txt`, 경로 확인 E/`tdd-preflight.txt`, Unity 실행기 E/`tdd-harness/Run-UnityTests.ps1`(SHA256 `140e1543…`).
+- 보고: E/`tdd/report.md`(SHA256 `68cd905732cecc7ea65b69ccb4fce956e313f11e8b0ae501e11cbc6474456727`), E/`tdd/verdict.json`(SHA256 `4620c37b…463b`).
+- 새 시험: 서버 7파일 694줄(`GameServer.Tests/Accounts/` 셋, `Network/Login*` 넷), 클라이언트 EditMode 3파일 314줄과 Unity가 만든 `.meta` 셋. 서버 메서드 24개(경우 65개), 클라이언트 메서드 7개(경우 8개).
+- 실행(원시는 E/`tdd/`):
+
+| 실행 | exit | total / pass / fail / skip |
+|---|---|---|
+| 서버 WSL 기준선 | 0 | 974 / 969 / 0 / 5 |
+| Unity EditMode 기준선(첫 import 200.8초 포함 230.2초) | 0 | 417 / 417 / 0 / 0 |
+| 서버 (1) 지금 경계 | 1 | 3 / 2 / 1 / 0 — T8 RED 1, 보호 GREEN 2 |
+| Unity (1) 지금 경계 | 2 | 2 / 0 / 2 / 0 — T10 RED 2 |
+| 서버 (2) 새 API | 1 | 컴파일 RED(선언 오류 7건) |
+| Unity (2) 새 API | 1 | 컴파일 RED(6건) |
+
+- 컴파일러가 선언 단계 오류만 냈으므로 새 심볼 전체는 보고의 정적 목록에 있다.
+- 리드 대조: T2 기대 문자열 4개가 Python `uuid.uuid5` 원시와 같다. 새 시험에 이름 문자열로 API를 찾는 reflection이 없다. (1) RED 파일이 (2)에서 바뀌지 않았다. Unity (1) 결과 파일의 두 T10 시험이 Failed다. 작업 트리가 보고의 쓰기 목록과 같다(E/`tdd-result-goal-context.md`).
+- 실행 조율: Core SQL 컨테이너 측정과 겹치지 않게 기준선 뒤 07:18Z~07:33Z에 실행을 멈췄다(Core `msg_b796b7140470`·`msg_439f622ca89b`, 리드 `msg_6ebfdd724930`·`msg_d4da3f7632ad`).
+- 부수 효과: Unity가 `03_Client/ProjectSettings/ProjectSettings.asset`의 정의 기호 한 줄(`SENTIS_ANALYTICS_ENABLED` 제거)을 다시 썼다. 알려진 BACKLOG `unity-sentis-define-drift`라 리드가 되돌렸고 commit에 넣지 않았다. Claude Code가 작성자의 큰 읽기 출력 하나를 홈의 자기 `tool-results`에 자동 저장했다. 런타임 자체 저장이라 조치하지 않았다.
+- 실행하지 않은 것: PlayMode, 서버 실행, 봇, 7777, DB, Unity Editor·MCP, 패킷 생성기, Windows 빌드, 서식 검사.
