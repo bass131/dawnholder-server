@@ -250,8 +250,10 @@ public sealed class InventoryWireContractTests : IDisposable
 
     // ── Additional data/order contract ──────────────────────────────────────────
 
+    // Dungeon goal C5: a boss pays only through the dungeon clear reward of a boss room copy, so a boss killed
+    // in a public map gives its killer nothing. The query proves the economy path still answers.
     [Fact]
-    public void BossKill_GrantsPouchMaterialAndFiftyCurrencyInItemIdOrder()
+    public void BossKill_InAPublicMap_GivesTheKillerNoReward()
     {
         EconomySession killer = JoinAndEnter(CharacterClass.Knight);
         int mark = killer.Packets.Count;
@@ -259,8 +261,8 @@ public sealed class InventoryWireContractTests : IDisposable
         KillWithMelee(killer, SpawnOneHitEnemy(EnemyKind.Boss, 1f));
         Settle();
 
-        AssertSnapshot(Assert.Single(killer.EconomyPacketsSince(mark)), revision: 1, currency: 50,
-            (MaterialId, 1), (CoinPouchId, 1));
+        Assert.Empty(killer.EconomyPacketsSince(mark));
+        AssertQueriedState(killer, revision: 0, currency: 0);
     }
 
     [Fact]

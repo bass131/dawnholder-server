@@ -17,7 +17,8 @@ public sealed class InventoryAuthorityBoundaryTests
 
     static InventoryReward NormalReward => KillRewardPolicy.Resolve(7, EnemyKind.Normal, 9).Reward;
 
-    static InventoryReward BossReward => KillRewardPolicy.Resolve(7, EnemyKind.Boss, 9).Reward;
+    // Dungeon goal C5 removes the boss killer bundle; the shared clear bundle of the same size is the whole-bundle input now.
+    static InventoryReward ClearReward => new(DungeonClearRewards.Currency, DungeonClearRewards.Items.ToArray());
 
     [Fact]
     public void Grant_UpToMaxCurrency_Succeeds_AndTheNextRewardIsRejectedWhole()
@@ -38,10 +39,10 @@ public sealed class InventoryAuthorityBoundaryTests
     [Fact]
     public void Grant_BundleWhoseLaterItemOverflowsItsStack_AppliesNothing()
     {
-        // The boss bundle's material would fit; only the pouch stack is full. Nothing may be granted.
+        // The clear bundle's material would fit; only the pouch stack is full. Nothing may be granted.
         InventoryState current = State(10, 100, (ItemId.CoinPouch, 99));
 
-        InventoryResult result = InventoryTransitions.Grant(current, BossReward, out InventoryState next);
+        InventoryResult result = InventoryTransitions.Grant(current, ClearReward, out InventoryState next);
 
         Assert.NotEqual(InventoryResult.Success, result);
         Assert.Same(current, next);
@@ -51,11 +52,13 @@ public sealed class InventoryAuthorityBoundaryTests
     [Fact]
     public void Grant_BundleWhoseCurrencyOverflows_AppliesNoItemEither()
     {
+        // Dungeon goal C2: the wire cannot reach the 1,000,000,000 cap, so this transition shows the clear bundle's
+        // CurrencyCap refusal. The material stack would still fit, which leaves currency as the only reason.
         InventoryState current = State(10, 999_999_990, (ItemId.Material, 98));
 
-        InventoryResult result = InventoryTransitions.Grant(current, BossReward, out InventoryState next);
+        InventoryResult result = InventoryTransitions.Grant(current, ClearReward, out InventoryState next);
 
-        Assert.NotEqual(InventoryResult.Success, result);
+        Assert.Equal(InventoryResult.CurrencyCap, result);
         Assert.Same(current, next);
         AssertState(current, 10, 999_999_990, (ItemId.Material, 98));
     }
@@ -165,13 +168,14 @@ public sealed class InventoryAuthorityBoundaryTests
     }
 
     [Fact]
-    public void KillRewardPolicy_PaysTheKillerTheFixedPlaceholderTable()
+    public void KillRewardPolicy_PaysNormalAndGolemKillers_AndRejectsTheBossLikeAnUnknownKind()
     {
         (int normalRecipient, InventoryReward normal) = KillRewardPolicy.Resolve(11, EnemyKind.Normal, 21);
         (int golemRecipient, InventoryReward golem) = KillRewardPolicy.Resolve(12, EnemyKind.Golem, 22);
-        (int bossRecipient, InventoryReward boss) = KillRewardPolicy.Resolve(13, EnemyKind.Boss, 23);
+        Exception? bossError = Record.Exception(() => KillRewardPolicy.Resolve(13, EnemyKind.Boss, 23));
+        Exception? unknownError = Record.Exception(() => KillRewardPolicy.Resolve(14, (EnemyKind)99, 24));
         EnemyKind[] unpaidKinds = Enum.GetValues<EnemyKind>()
-            .Where(kind => kind is not (EnemyKind.Normal or EnemyKind.Golem or EnemyKind.Boss))
+            .Where(kind => kind is not (EnemyKind.Normal or EnemyKind.Golem))
             .ToArray();
 
         Assert.Equal(11, normalRecipient);
@@ -180,11 +184,12 @@ public sealed class InventoryAuthorityBoundaryTests
         Assert.Equal(12, golemRecipient);
         Assert.Equal(10, golem.Currency);
         Assert.Equal(new[] { (ItemId.CoinPouch, 1) }, Items(golem));
-        Assert.Equal(13, bossRecipient);
-        Assert.Equal(50, boss.Currency);
-        Assert.Equal(new[] { (ItemId.Material, 1), (ItemId.CoinPouch, 1) }, Items(boss));
-        // The acceptance asks for an explicit table before any further enemy kind is rewarded.
-        Assert.Empty(unpaidKinds);
+        // Dungeon goal C5: the boss pays only through the dungeon clear reward, so the killer table has no boss row
+        // and a boss is the same policy error as a kind without a row.
+        Assert.NotNull(unknownError);
+        Assert.NotNull(bossError);
+        Assert.Equal(unknownError!.GetType(), bossError!.GetType());
+        Assert.Equal(new[] { EnemyKind.Boss }, unpaidKinds);
     }
 
     static InventoryState State(uint revision, int currency, params (ItemId ItemId, int Count)[] stacks)

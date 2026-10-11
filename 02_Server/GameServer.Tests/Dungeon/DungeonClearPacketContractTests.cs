@@ -124,12 +124,12 @@ public sealed class DungeonClearPacketContractTests : IDisposable
         Assert.Equal((byte)0, GetField(decoded, "reserved"));
     }
 
-    // Positive control: this already holds before the implementation, because 40 is unknown to the server today.
-    // Goal P4 keeps it that way in this PR (no handler, so the request is dropped like any unregistered one).
+    // Dungeon goal C6: the clear PR registers a 40 handler, and a selected session in Town is not a beneficiary of a
+    // cleared boss room copy, so its 40 is still dropped. The registration check keeps the drop from passing vacuously.
     [Fact]
     public void ConfirmFromASelectedSession_IsDroppedWithoutReplyCloseOrInventoryChange()
     {
-        bool registered = HandlerRegistry.TryGet((PacketID)Wire.ClearConfirmId, out _);
+        bool handlerRegistered = HandlerRegistry.TryGet((PacketID)Wire.ClearConfirmId, out _);
         ProbeSession session = JoinAndEnter();
         GainGolemReward(session);
         byte[] before = QuerySnapshot(session);
@@ -144,12 +144,12 @@ public sealed class DungeonClearPacketContractTests : IDisposable
         HashSet<ushort> afterIds = session.IdsSince(mark);
         byte[] after = QuerySnapshot(session);
 
-        Assert.False(registered, "P4 the server registers no handler for 40 in this PR");
+        Assert.True(handlerRegistered, "C6 the server registers a handler for 40");
         Assert.Null(thrown);
         Assert.Equal(0, sentDuringReceive);
         Assert.Subset(idleIds, afterIds);
         Assert.DoesNotContain(Wire.ClearResultId, afterIds);
-        Assert.False(session.IsClosing, "P4 an unregistered 40 is dropped without closing the connection");
+        Assert.False(session.IsClosing, "C6 a 40 from a non-beneficiary in Town is dropped without closing the connection");
         Assert.Equal(before, after);
     }
 
