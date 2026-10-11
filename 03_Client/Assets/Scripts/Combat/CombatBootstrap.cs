@@ -66,6 +66,8 @@ namespace Dawnholder.Client.Combat
                 BuildNpcDialogPanel,
                 BuildMinimapCamera,
                 BuildQuestIntro,
+                BuildDungeonClearRewardWindow,
+                BuildDungeonEntranceLabel,
             };
             foreach (System.Action install in installers)
                 install();
@@ -148,6 +150,10 @@ namespace Dawnholder.Client.Combat
         void BuildInventoryState() => InventoryState.EnsureInstance();
 
         void BuildInventoryPanel() => InventoryPanel.BuildRuntime(transform);
+
+        void BuildDungeonClearRewardWindow() => DungeonClearRewardWindow.BuildRuntime(transform);
+
+        void BuildDungeonEntranceLabel() => DungeonEntranceLabel.BuildRuntime(transform);
 
         void BuildPartyInvitePopup()
         {

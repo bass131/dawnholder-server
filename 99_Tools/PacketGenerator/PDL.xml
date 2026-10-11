@@ -447,4 +447,19 @@
         <int name="itemId"/>
         <uint name="revision"/>
     </packet>
+    <!-- Dungeon clear presentation. Append-only IDs 39..40; empty rewards = 0/0.
+         result uses InventoryResult Success/CurrencyCap/InventoryFull; confirm reserved must be zero. -->
+    <packet name="S_DungeonClearResult">
+        <byte name="result"/>
+        <int name="currency"/>
+        <int name="reward0ItemId"/>
+        <int name="reward0Count"/>
+        <int name="reward1ItemId"/>
+        <int name="reward1Count"/>
+        <int name="reward2ItemId"/>
+        <int name="reward2Count"/>
+    </packet>
+    <packet name="C_DungeonClearConfirm">
+        <byte name="reserved"/>
+    </packet>
 </PDL>
