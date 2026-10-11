@@ -67,7 +67,8 @@ namespace Shared.Protocol;
 ///         AllowCheats 기본 ON(프로덕션 배포 시 false). append-only, ID 34 — 기존 ID 33(S_PortalLocked) 시프트 0.
 ///   - v17: 아이템·인벤토리·재화 — C_InventoryRequest/S_InventorySnapshot/C_ItemUse/S_ItemUseResult
 ///         (ID 35..38) append. 고정 8슬롯·revision과 사용 결과를 전달하며 기존 ID 1..34는 불변.
-///   - v18: C_Login/S_LoginResult (ID 39..40) append. handshake 뒤 계정 로그인, 성공 뒤 직업 선택.
+///   - v18: 던전 클리어 결과 S_DungeonClearResult(39)·확인 C_DungeonClearConfirm(40) append, 기존 ID 1..38 불변.
+///   - v19: C_Login/S_LoginResult (ID 41..42) append. handshake 뒤 계정 로그인, 성공 뒤 직업 선택.
 ///
 /// **핸드셰이크 봉합 (M3 Phase 02 완료, 2026-05-18)**:
 ///   - C_Handshake { clientVersion } / S_HandshakeResult { ok, serverVersion, reason } 신설 (PDL).
@@ -81,6 +82,6 @@ namespace Shared.Protocol;
 /// </summary>
 public static class ProtocolVersion
 {
-    /// <summary>현재 프로토콜 버전. v18 = 계정 로그인 요청/결과 append (ID 39..40).</summary>
-    public const ushort Current = 18;
+    /// <summary>현재 프로토콜 버전. v19 = 계정 로그인 요청/결과 append (ID 41..42).</summary>
+    public const ushort Current = 19;
 }

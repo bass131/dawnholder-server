@@ -19,6 +19,7 @@ Core 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-ac
 
 1. 새 리드의 배치는 [R-1의 현재 리드 배치](ORCA.md#r1-management-placement), 작업자 기동은 [R-5](ORCA.md#r5-worker-launch), 첫 화면 확인은 [R-6](ORCA.md#r6-first-screen)을 따른다. 이전 handle/Run/Task/Dispatch를 재사용하지 않는다.
    현재 리드와 승인된 목표 한정 추가 파트의 배치·종료 권한은 R-1 정본에서 확인한다. 현재 goal의 종료조건도 확인하며 이 문서에 상세 규칙을 복제하지 않는다.
+   Claude 세션은 첫 파일 쓰기 전 맥락 메모를 쓰고 읽기 → 메모 → Run·receipt·READY 순서로 진입한다. 메모는 `.backups/verification/<goal>/` 아래 `context`가 든 이름의 `.md`다. 범위 승인 전에는 예정 goal 폴더를 쓴다. 리드 세션 임시 파일은 `.backups/tmp/`에 둔다. checkout 밖 Claude Code scratchpad는 [세션 쓰기 가드](../../99_Tools/README.md#세션-쓰기-가드)가 막는다.
 2. 새 메인은 [R-1의 메인 전용 checkout](ORCA.md#r1-management-placement)에서 열고 리드를 연 뒤 작업 현황 탭을 다시 띄운다. 현재는 Claude Code 쪽의 저장소 밖 개인 도구 `C:/Dev/DawnHolder_Dashboard`로 운영한다.
 
    ```powershell
@@ -34,7 +35,7 @@ Core 작업 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/core-ac
 
 - [CURRENT](CURRENT.md)의 해당 파트 worktree·branch를 확인하고 그 goal의 「재개 지점」을 따른다. 상태와 다음 작업을 이 문서에 복제하지 않는다. 아직 병합되지 않은 다른 파트 goal은 해당 worktree에서 읽는다.
 - goal 종료 뒤에는 다음 goal을 자동으로 시작하지 않는다. 메인과 사용자가 결과·남은 위험·BACKLOG·마일스톤의 다음 순서를 점검한 뒤 다음 계획을 정하고 재개한다.
-- 정본 규칙에 아직 반영되지 않았지만 적용 중인 결정은 [Rules goal의 적용 결정](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#적용-중인-사용자-결정)을 확인한다. 사용자 결정과 메인 결정을 구분하고, 운영 규칙 PR 병합 뒤에는 그 절이 가리키는 정본을 따른다.
+- 적용 중인 결정은 각 goal의 「적용 중인 사용자 결정」 절에 있고, 정본 반영을 기다리는 결정은 [BACKLOG](BACKLOG.md) 행으로 찾는다. 사용자·메인 결정을 구분하고, 운영 규칙 PR 병합 뒤에는 해당 정본을 따른다.
 
 ## Management와의 경계
 

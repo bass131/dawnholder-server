@@ -479,8 +479,9 @@ public class BossBehaviorTests : IDisposable
         // M5 A0: 파티/퀘스트/보스게이트 8패킷 신설 (ID 26~33) → v14→v15.
         // M5+: 시연용 디버그 치트 C_CheatCommand 신설 (ID 34) → v15→v16.
         // 아이템·인벤토리·재화 PR1: 경제 패킷 4종 신설 (ID 35~38) → v16→v17.
-        // 계정 로그인: C_Login/S_LoginResult (ID 39..40) → v17→v18.
-        Assert.Equal(18, ProtocolVersion.Current);
+        // 던전 패킷·창 PR: 클리어 결과·확인 요청 신설 (ID 39·40) → v17→v18.
+        // 계정 로그인: C_Login/S_LoginResult (ID 41..42) → v18→v19.
+        Assert.Equal(19, ProtocolVersion.Current);
     }
 
     [Fact]

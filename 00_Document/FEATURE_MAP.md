@@ -17,12 +17,13 @@
 | 파티 | `Handlers/Party/` → `Party/PartyFlow.cs`; `PartyRegistry.cs`, `PartyState.cs`, `PartyNotifier.cs` | `Network/Handlers/Party/`, `State/PartyState.cs`, `UI/PartyInvitePopup.cs` → `PartyInviteResponseCommand.cs`, `PartyMemberHud.cs` |
 | 처치 진행·보스 해금 | `Loop/GameWorld.cs`의 처치 콜백 → `Quest/QuestRegistry.cs`의 solo/party 진행·해금, 보스 처치는 복사본 열쇠의 진행만 초기화; `QuestConstants.cs` | `Network/Handlers/Quest/`, `State/QuestState.cs`, `UI/QuestProgressHud.cs` |
 | 아이템·인벤토리·재화 | `Handlers/Inventory/` → `GameSession.SubmitInventoryRequest/SubmitItemUse` → `Items/InventoryRegistry.cs`의 연결 등록·상태 → `InventoryTransitions.cs`; 처치 입력은 `GameWorld.MakeMap` → `InventoryRegistry.EnqueueKill/ApplyKill` → `KillRewardPolicy.cs` | `Network/Handlers/Inventory/` → `State/InventoryState.cs`·`InventorySnapshotState.cs` → `UI/HudController.cs` 골드; `MapEntryCoordinator.Ready` → `Network/InventoryRequestController.cs`의 재조회·사용/결과 → `UI/InventoryPanel.cs`·`InventoryPanelView.cs`; I 열림 상태는 `Network/UnityClientSession.IsInventoryPanelOpen`이 연결별 소유 |
+| 던전 클리어 표시 | [공유 보상표](../98_Shared/GameData/Dungeon/DungeonClearRewards.cs); 서버는 아직 39번 미발신·40번 미등록 | `Network/Handlers/Dungeon/DungeonClearResultHandler.cs` → `State/DungeonClearRewardState.cs` → `UI/DungeonClearRewardWindow.cs`; `Combat/CombatBootstrap.cs` → `UI/DungeonEntranceLabel.cs`(Town 포탈 위) |
 
 ## 공통 계약
 
 | 바꾸는 대상 | 원본과 함께 확인할 곳 |
 |---|---|
-| 패킷 | [PDL](../99_Tools/PacketGenerator/PDL.xml) → [생성 코드](../98_Shared/Protocol/Generated/GenPackets.cs), [버전](../98_Shared/Protocol/ProtocolVersion.cs), 양쪽 핸들러·봇 |
+| 패킷 | [PDL](../99_Tools/PacketGenerator/PDL.xml) → [생성 코드](../98_Shared/Protocol/Generated/GenPackets.cs), [버전](../98_Shared/Protocol/ProtocolVersion.cs), 양쪽 핸들러·봇; [v18 던전 클리어 39·40](domains/protocol.md#v18-던전-클리어-패킷) |
 | 물리·입력 | [Physics](../98_Shared/GameData/Physics.cs), [InputBits](../98_Shared/GameData/InputBits.cs); 서버 물리와 클라이언트 예측 |
 | 전투 값·공식 | [Combat](../98_Shared/GameData/Combat/), [Enums](../98_Shared/GameData/Enums/); 실행·판정은 서버 |
 | 맵 데이터 | [맵 바이너리](../98_Shared/GameData/Maps/), [서버 로더](../02_Server/GameServer/Maps/MapDataLoader.cs), [클라이언트 지형](../03_Client/Assets/Scripts/Prediction/ClientTerrainStore.cs) |

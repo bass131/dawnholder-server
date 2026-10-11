@@ -13,7 +13,7 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 
 `MainMenuController`는 서버 주소와 계정 이름을 받고 공유 `AccountNameRule`로 이름을 먼저 검사한다. 서버 probe 성공 때 [AccountLoadout](../../03_Client/Assets/Scripts/Bootstrap/AccountLoadout.cs)에 정규화한 이름을 저장한다. 접속에는 프로세스의 `SessionAccountName`을 쓰고, PlayerPrefs `AccountName`은 다음 메뉴의 입력칸을 채우는 데만 사용한다. 이름이 없거나 잘못되면 `NetworkService`는 메인 메뉴로 돌아간다.
 
-[ClientConnectionLifetime](../../03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs)은 연결에 이름과 직업을 고정하고, handshake 성공 뒤 로그인 요청을 한 번, `Accepted` 뒤 직업 선택을 한 번 보낸다. `LoginResultHandler`는 세션의 메인 스레드 gate를 거쳐 결과를 적용하며 정의 밖 결과면 연결을 끊는다. 거부는 `LoginRejected` → [MainMenuNotice](../../03_Client/Assets/Scripts/UI/MainMenuNotice.cs) → 메인 메뉴의 오류 글자 순서로 전달한다. 메뉴 시작 때 안내를 소비한다. 이전 연결의 늦은 결과는 generation/구독 해제로 무효화한다.
+[ClientConnectionLifetime](../../03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs)은 연결에 이름과 직업을 고정하고, handshake 성공 뒤 로그인 요청을 한 번, `Accepted` 뒤 직업 선택을 한 번 보낸다. `LoginResultHandler`가 받은 유효 거부(`InvalidName`·`AlreadyOnline`)는 원격 종료가 뒤따라도 세션 정리 전까지 메인 큐에서 적용하며, 소유자는 세대·동일 세션·로그인 요청 여부를 검사한다. `Accepted`·정의 밖 결과와 다른 패킷은 닫힌 전송에서 적용하지 않으며, 정의 밖 결과는 열린 현재 연결의 메인 스레드 gate를 통과했을 때 연결을 끊는다. 거부는 `LoginRejected` → [MainMenuNotice](../../03_Client/Assets/Scripts/UI/MainMenuNotice.cs) → 메인 메뉴의 오류 글자 순서로 전달한다. 메뉴 시작 때 안내를 소비한다. 이전 연결의 늦은 결과는 generation/구독 해제로 무효화한다.
 
 ## 파티 초대 요청과 구독
 
@@ -38,6 +38,14 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 [LocalPlayerInput](../../03_Client/Assets/Scripts/Input/LocalPlayerInput.cs)은 공격 액션의 실제 activeControl을 [GameplayPointerInput](../../03_Client/Assets/Scripts/Input/GameplayPointerInput.cs)에 넘긴다. 마우스·터치의 자기 장치 좌표에서 현재 EventSystem uGUI raycast가 맞으면 공격 송신·예측·쿨다운 전에 반환한다. InputSystem 콜백 시점에는 EventSystem의 이전 프레임 포인터 캐시를 사용하지 않는다. UI 밖 포인터와 키보드·게임패드 공격은 기존 gate/전략을 유지한다. EventSystem 또는 장치가 없으면 기존 입력을 유지하며, 포인터 raycast 예외는 로그 후 해당 클릭의 공격을 막는다.
 
 사용은 현재 연결·게임플레이 Ready·snapshot 확인·소유량·ItemCatalog의 사용 가능 조건을 다시 읽고 현재 revision으로 요청한다. Material은 사용할 수 없고 소유 CoinPouch만 사용한다. 중복 클릭은 결과 대기 중 막으며 사용 요청을 자동 반복하지 않는다. 송신 반환은 사용 성공이 아니고, [ItemUseResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Inventory/ItemUseResultHandler.cs)의 검증된 서버 결과만 성공/거부 신호다. 성공·Stale 뒤의 snapshot이 누락되거나 결과가 오지 않으면 제한된 재조회로 회복한다. 로컬에서 수량·재화를 바꾸지 않으며 낮은 revision의 결과는 현재 표시를 덮지 않는다.
+
+## 던전 보상 창과 입구 글자
+
+39번 [DungeonClearResultHandler](../../03_Client/Assets/Scripts/Network/Handlers/Dungeon/DungeonClearResultHandler.cs)는 [v18 패킷 계약](protocol.md#v18-던전-클리어-패킷)을 검증한 뒤 `EnqueueApply`로 [DungeonClearRewardState](../../03_Client/Assets/Scripts/State/DungeonClearRewardState.cs)에 적용한다. 이 root는 결과를 받은 연결을 소유자로 기록하고 최신 결과 하나를 보관한다. 씬 전환 중 창이 없어도 결과를 보존하며 새 결과는 이전 표시를 대체한다. `NetworkService.ResetGlobalSessionMirrors`는 다른 미러와 함께 값을 비운 뒤 통지한다. 옛 연결의 늦은 callback은 세션 적용 gate가 거부하고, 창도 현재 연결의 identity와 종료 여부를 확인한다.
+
+[DungeonClearRewardWindow](../../03_Client/Assets/Scripts/UI/DungeonClearRewardWindow.cs)는 `CombatBootstrap`이 게임플레이 씬에 만드는 전용 Canvas다. 성공이면 서버가 보낸 정수 골드와 카탈로그 이름·개수를 표시하고, 용량 거부이면 받은 보상이 없다는 안내와 이유만 표시한다. 현재 연결의 `CanSendGameplay`가 참일 때만 「확인」이 pending 결과를 먼저 소비하고 40번(`reserved=0`)을 한 번 보낸다. 같은 프레임 중복 클릭과 자동 재시도는 송신을 추가하지 않으며, 송신 예외에서도 소비한 창은 닫힌다. 정상 반환은 서버 처리 완료의 확인이 아니다. 게임플레이 밖 씬·연결 종료·disable에서는 CanvasGroup의 표시와 입력을 모두 끄고, disable/destroy 때 실제로 구독한 상태에서 해제한다. 열린 창도 확인 버튼만 raycast를 받으며 닫힌 창은 클릭과 공격을 막지 않는다.
+
+[DungeonEntranceLabel](../../03_Client/Assets/Scripts/UI/DungeonEntranceLabel.cs)은 같은 bootstrap에서 Town 씬의 기존 단일 `PortalTrigger` 위에 「던전 입구」를 붙인다. 포탈 collider의 위쪽에 여백을 둔 world-space TMP 글자이며 raycast를 받지 않는다. 포탈의 자식으로 씬과 함께 사라지고, HuntingGround·BossRoom에는 생성하지 않는다. 맵·포탈 표와 scene·prefab은 이 표시에 관여하지 않는다.
 
 ## 원격 보간
 
