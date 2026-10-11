@@ -116,6 +116,7 @@ namespace Dawnholder.Client.Tests.PlayMode
             bool opened = false;
             yield return OpenSuccessWindow(2468, met => opened = met);
             Assert.IsTrue(opened, "P7 precondition: a valid success result opens the window");
+            yield return ScreenUiProbe.WaitForEventSystem();
             Component button = ConfirmButtons().Single();
             TMP_Text gold = WindowTexts(button).First(text => HasNumber(text.text, 2468));
             HashSet<GameObject> window = ScreenUiProbe.GroupBelowCanvas(button);

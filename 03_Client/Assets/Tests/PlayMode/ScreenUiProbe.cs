@@ -99,6 +99,16 @@ namespace Dawnholder.Client.Tests.PlayMode
             return results.Cast<object>().Select(result => (GameObject)hit.GetValue(result)).Where(item => item != null).ToArray();
         }
 
+        // The EventSystem lives in the UI scene, which SceneBootstrap loads additively after a gameplay scene and which
+        // is not a gameplay readiness barrier; the fixture also unloads it after every test. A pointer check waits for
+        // it the way a player's first click would. A UI scene that never loads still fails here, after the timeout.
+        internal static IEnumerator WaitForEventSystem(float seconds = 5f)
+        {
+            PropertyInfo current = FindType("UnityEngine.EventSystems.EventSystem")
+                .GetProperty("current", BindingFlags.Public | BindingFlags.Static);
+            yield return MapEntryPlayFixture.Wait(() => current.GetValue(null) != null, "the UI scene's EventSystem", seconds);
+        }
+
         // Waits without failing, so a test can still record an observation that never happened.
         internal static IEnumerator WaitUntil(Func<bool> condition, float seconds, Action<bool> done)
         {
