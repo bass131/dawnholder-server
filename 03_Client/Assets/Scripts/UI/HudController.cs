@@ -1,6 +1,7 @@
 using TMPro;
 using Dawnholder.Client.Scenes;
 using Dawnholder.Client.Network;
+using Dawnholder.Client.State;
 using Shared.GameData;
 using Shared.Protocol;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Dawnholder.Client.UI
         bool _hasServerHp;
         UnityClientSession _boundSession;
         long _boundEpoch;
+        InventoryState _inventorySource;
 
         [Header("HP")]
         [FormerlySerializedAs("hpSlider")]
@@ -36,9 +38,7 @@ namespace Dawnholder.Client.UI
         [FormerlySerializedAs("goldText")]
         [SerializeField] TMP_Text _goldText;
 
-        [Header("Mock Initial Values (MP/Gold — 서버 채널 미박힘)")]
-        [FormerlySerializedAs("mockGold")]
-        [SerializeField] int _mockGold = 0;
+        [Header("Mock Initial Values (MP — 서버 채널 미박힘)")]
         [SerializeField] int _mockMpCurrent = 50;
         [SerializeField] int _mockMpMax = 50;
 
@@ -55,6 +55,7 @@ namespace Dawnholder.Client.UI
 
         void OnDestroy()
         {
+            UnbindInventory();
             _boundSession?.UnbindHud(this);
             _boundSession = null;
             if (Instance == this) Instance = null;
@@ -62,8 +63,15 @@ namespace Dawnholder.Client.UI
 
         void OnDisable()
         {
+            UnbindInventory();
             _boundSession?.UnbindHud(this);
             _boundSession = null;
+        }
+
+        void OnEnable()
+        {
+            BindInventory();
+            RenderGold();
         }
 
         void Start()
@@ -75,11 +83,44 @@ namespace Dawnholder.Client.UI
             if (!_hasServerHp) UpdateHP(stats.MaxHp, stats.MaxHp);
 
             UpdateMP(_mockMpCurrent, _mockMpMax);
-            UpdateGold(_mockGold);
+            BindInventory();
+            RenderGold();
             TryBindLatestEntry();
         }
 
-        void Update() => TryBindLatestEntry();
+        void Update()
+        {
+            TryBindLatestEntry();
+            BindInventory();
+        }
+
+        void BindInventory()
+        {
+            var source = InventoryState.Instance;
+            if (ReferenceEquals(_inventorySource, source)) return;
+            UnbindInventory();
+            _inventorySource = source;
+            if (source != null) source.OnInventoryChanged += RenderGold;
+            RenderGold();
+        }
+
+        void UnbindInventory()
+        {
+            // A destroyed Unity object can still own the managed event we subscribed to.
+            if (!ReferenceEquals(_inventorySource, null)) _inventorySource.OnInventoryChanged -= RenderGold;
+            _inventorySource = null;
+        }
+
+        void RenderGold()
+        {
+            if (_inventorySource != null && _inventorySource.HasSnapshot)
+                UpdateGold(_inventorySource.Currency);
+            else if (_goldText != null)
+            {
+                // Use an ASCII hyphen supported by the HUD's static font atlas.
+                _goldText.text = "Gold: -";
+            }
+        }
 
         void TryBindLatestEntry()
         {

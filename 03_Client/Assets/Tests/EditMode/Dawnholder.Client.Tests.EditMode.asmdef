@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Dawnholder.Client",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"
