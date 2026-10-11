@@ -610,9 +610,33 @@
 
 ## 재개 지점
 
+### 컨테이너 실행 시도 1 — C6 실패와 정지·보존 — 2026-10-11T10:56Z
+
+기록 시각은 2026-10-11T10:56:38Z(`date -u`, KST 19:56, 원시 N2/`time-goal-record-5.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같고, X는 E/`container-run-execution`이다. 단계 원시는 CARD/`run/`에 있다. 리드 대조의 시간순 기록은 N2/`pending-goal-edits.txt`다.
+
+- **실행 준비:** 메인 `msg_62bcccf466c4`(10:23:08Z)가 `$planHash` 한 줄이 G2 범위 안이라고 확인했다. 실행 계약은 X/`contract.md` v1(SHA256 `F9388B13…9468`)이다. Sol 실행 작업자는 `task_b82da4b79b17`/`ctx_1dff85064acb`이고, 최종 화면 표시는 GPT-6.1-Sol max다. Content는 Unity·7777을 비웠고(`msg_f67847b73b60`), World는 Core가 끝날 때까지 기다렸다(`msg_d6fc95d67a76`).
+- **C0~C5 통과(리드 원시 대조):** 작업자의 c3 관문 질문(`msg_93a9033495d3`)에 리드가 10:34:47Z 「가능」으로 답했다(`msg_2b2bbd5267f5`, 여유 물리 9.47GB).
+  - C3: 컨테이너 ID `c3d4a7c2…cc00`이다. 이미지 digest, 메모리 천장 4096MB, `127.0.0.1:14333`, 볼륨이 계획과 같다. 비밀 인자는 이름만 넘어갔다. Ready는 두 번 모두 Korean_Wansung_CI_AS·17.0.5005.3이다.
+  - C4: 001 checksum `F28502BB…4FCC`가 소스(리드 재계산)·DB 이력·manifest 세 원천에서 같다.
+  - C5: Outcome PASS이고, 실행된 도구 41개 hash가 입력 목록과 같다.
+- **C6 실패:** `c6-before-complete`가 10:39:50Z에 exit 1·Outcome FAIL로 끝났다. Committed false이고 DB는 Baseline001 그대로다.
+  - 제품 모듈 검사 `Assert-DatabaseModuleState`가 거부했다(Module.Common.ps1 332행 호출, 266행 throw). 처음 설치 직후 엔진의 정의가 소스 기대값과 달랐다. 결과 정리 함수(Environment.Common.ps1 759행)가 객체 이름을 지운다.
+  - 결과 파일에는 엔진 조회의 앞 200자만 남는다. 그 안의 `dh.AcquireAndLoad`는 엔진 30838바이트·`221320C4…`이고, 기대값은 30852바이트·`62A12FB3…`이다. 엔진 쪽이 7글자 짧다. 리드 재계산 기대값은 manifest 18개와 모두 같다. 나머지 18개 모듈은 엔진 값이 없다.
+  - 저장 프로시저 설치는 실제 엔진에서 이번이 처음이다. 시험 관찰기가 SQL을 바꾸지 않는 것은 확인했다(EngineCheck.Common.ps1 652~663행). 원인은 미확정이고, 후보는 실제값 조회의 REPLACE(정렬 규칙 영향)와 엔진 저장 차이다.
+- **정지·보존:** `fail-preserve-stop`을 한 번 실행했고 10:40:46Z에 Passed true였다. 같은 컨테이너가 exited이고 OOMKilled false, 볼륨이 유지됐다. 실패 로그는 저장됐고 비밀 대조는 MatchCount 0이다.
+  - 새 위험 R-13: `docker stop -t 30`이 30초를 다 써서 ExitCode 137이고, SQL 로그에 정상 종료 줄이 없다. 다음 카드는 정상 종료 대기 시간을 다시 정한다.
+- **정산·보고:** worker_done `msg_25daa5c0b290`(failed), 보고서 X/`report.md`다. R-2 대조가 일치했고 heartbeat 5분 초과는 작업자가 스스로 밝혔다. release retained·idle·화면 보존·pane 종료까지 마쳤다. 메인에 status `msg_5dc90d4f0a50`(10:47:26Z)를 보냈다. 지금 사용자 결정은 없고 엔진 없이 원인 분석을 먼저 한다는 내용이다. World·Content에는 Core 대기 해제를 알렸다(`msg_c1b0607f6fab`·`msg_749dac3eaa51`).
+- **남은 자원:** 컨테이너 `dawnholder-sqlserver`와 볼륨 `dawnholder-sqlserver-data`가 정지 상태로 남아 있다. 오늘 G2는 시도 1로 끝난 것으로 본다. 정리(R-11·R-12)는 분석 결과와 함께 메인에 올린다.
+- **범위 주의:** 고칠 곳이 「하지 않을 것」의 저장 프로시저·migrations·모듈 해시 방식 변경에 닿으면 사용자 범위 판단을 받는다.
+- **리드 실수 19:** World·Content 알림을 내 Run(`--run run_b36cc92a4cf4`)으로 보내 `run_not_found`를 받았다. 수신 측 Run으로 다시 보냈고 영향은 없다. 첫 발생이다.
+- **다음 할 일:**
+  1. 엔진 없이 원인을 좁힌다. 대상은 모듈 원본, manifest, 실제값 조회식, 결과 원시다.
+  2. 엔진 진단이 필요하면 진단 단계를 더한 카드와 새 실행 승인 요청을 보존 자원 정리와 묶어 메인에 올린다.
+  3. 고친 뒤 새 시도(정리 → 재실행) → 판정 → 엔진 판정 PR → Gardener.
+
 ### 카드 v2.1 재실사 통과와 v2.2 수정 — 2026-10-11T09:4xZ
 
-기록 시각은 2026-10-11T09:49:39Z(`date -u`, KST 18:49, 원시 N2/`time-goal-record-4.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. REVIEW2는 E/`container-run-card-review-2`, REVIEW3은 E/`container-run-card-review-3`이다.
+기록 시각은 2026-10-11T09:49:39Z(`date -u`, KST 18:49, 원시 N2/`time-goal-record-4.txt`)다. 이 블록은 직전 재개 정본이다. 약어는 아래 블록과 같다. REVIEW2는 E/`container-run-card-review-2`, REVIEW3은 E/`container-run-card-review-3`이다.
 
 - **v2.1 재실사(신규 claude-opus-5-5, `task_107a6e245fc9`):** worker_done `msg_96b02525c68d`(09:41:11Z), 판정 원문 REVIEW2/`verdict.md`. 결과는 **통과**(차단 0)이고, 비차단 결함 #1~#5와 관찰 O-1~O-3이 나왔다.
   - v1 차단 둘과 비차단 둘, 관찰 넷의 해소를 예행 재현 12건과 독립 시험(가짜 docker 88건, 제품 BeforeComplete 일정 원문 실행)으로 확인했다.
@@ -633,7 +657,7 @@
 - **리드 판단:** 카드는 v2.2 hash로 고정한다. 새 비차단 둘은 카드를 다시 고치지 않고(고치면 같은 산출물 3회째와 재확인 한 번 더) 실행 작업자 계약의 지침으로 막는다. #1에는 영수증 존재·ExitCode 보고, #2에는 남은 `failure-logs-*` 파일을 열지 않고 이름만 보고하는 지침을 둔다. 사용자가 B를 고르면 먼저 고친다.
 - **G2 요청:** 메인에 결과와 결정 요청을 한 번에 보냈다(`msg_1309198f528f`, 10:11:36Z). 추천은 A(승인 전달부터 2026-10-11 24:00 KST까지 한 수명), 대안 B는 결함 둘 먼저 수정이다.
 - **G2 승인(사용자 결정, 메인 전달 `msg_86bdcffc4335`, 10:20:01Z):** 사용자 원문 「대시보드 결정 응답: 1) Core 컨테이너 엔진 판정 - 실행 카드로 오늘 실제 실행을 승인할지 → A 오늘 실행 승인」(메인 pane Enter 제출, 메인 전달). G2 값은 이 메시지 ID다. 실행 창은 10:20:01Z부터 15:00Z(24:00 KST)까지이고, 컨테이너 한 수명 안에서 1·2단계·독립 판정·정리를 끝낸다. 못 끝나면 멈춰 보존하고 보고한다. 승인 대상은 위 고정 SHA256과 review-3 판정이며, 하나라도 바뀌면 이 승인은 쓰지 못한다. 실패 보존 뒤 정리(R-11·R-12)는 카드 밖이라 메인에 올린다.
-- **G2 뒤 준비(10:2xZ):** 실행 계획 `approval-plan.execution.json` SHA256 `6276105D…6DFAD`(검토본과 다른 키는 `ExecutionApproved`·`G2` 둘, 감사 CARD/`execution-plan-audit.json`, 제품 OfflinePlan exit 0). 입력 hash 목록 `inputs-expected.txt` SHA256 `18C60ECE…72333`(58줄, `Test-CardInputs` True). 카드 설계대로 `card-session.ps1`의 `$planHash` 한 줄을 채워 그 파일 hash가 `a4c590d5…deeb` → `1858f734…acb5`로 바뀌었다. 승인 문장이 hash 변경을 막으므로 메인에 이 한 줄이 승인 범위 안인지 확인을 요청했다(`msg_ab44fc781bbb`). 확인 전에는 실행 작업자를 열지 않는다. Content·World에 시작 예고와 겹침 질문을 보냈다(`msg_8b4ad1f30afd`·`msg_fb2824709e5d`).
+- **G2 뒤 준비(10:21~10:24Z):** 실행 계획 `approval-plan.execution.json` SHA256 `6276105D…6DFAD`(검토본과 다른 키는 `ExecutionApproved`·`G2` 둘, 감사 CARD/`execution-plan-audit.json`, 제품 OfflinePlan exit 0). 입력 hash 목록 `inputs-expected.txt` SHA256 `18C60ECE…72333`(58줄, `Test-CardInputs` True). 카드 설계대로 `card-session.ps1`의 `$planHash` 한 줄을 채워 그 파일 hash가 `a4c590d5…deeb` → `1858f734…acb5`로 바뀌었다. 승인 문장이 hash 변경을 막으므로 메인에 이 한 줄이 승인 범위 안인지 확인을 요청했다(`msg_ab44fc781bbb`). 확인 전에는 실행 작업자를 열지 않는다. Content·World에 시작 예고와 겹침 질문을 보냈다(`msg_8b4ad1f30afd`·`msg_fb2824709e5d`).
 - **다음 할 일:**
   1. 메인 확인과 Content·World 답을 받으면 실행 계약(E/`container-run-execution`)을 발행하고 Sol 실행 작업자를 연다. 계약에는 재확인 비차단 #1·#2 보고 지침과 `c3-start` 전 리드 「가능」 관문을 넣는다.
   2. C9 뒤 신규 Opus 판정 → 통과면 새 실행 작업자의 C10 정리, 차단이면 `fail-preserve-stop` → 엔진 판정 PR → Gardener.
