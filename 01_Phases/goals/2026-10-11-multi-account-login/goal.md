@@ -8,8 +8,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_328d1a7f-d009-4652-ae3d-8f5713873017`(재기동 `msg_6fa922f40f7d` 뒤, 이전 `term_fddebc03…`), Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: RV-01·O-1 수정의 약 등급 재검증이 통과했다(아래 「현재 결과」의 RV-01·O-1 재검증). 남은 독립 검증 일은 같은 종류의 fixture 설명 7줄(RO-01과 리드 훑기)을 고치는 수정과 그 약 등급 재검증이다.
-- **다음 행동**: 7줄 수정 계약을 쓴다(신규 `gpt-6.1-sol` max). 작업자 기동과 WSL 실행은 Core SQL 진단의 메모리 창(13:45Z부터 Core 「끝」까지, 늦어도 14:35Z, `msg_16e499d4ecf6`)과 Content 7777 봇이 끝난 뒤로 둔다. 그 사이 World는 새 WSL 큰 실행·7777·Unity를 시작하지 않는다. 실화면은 그 뒤 메인에 다시 요청한다.
+- **현재 위치**: fixture 설명 7줄(RO-01) 수정이 끝났다(아래 「현재 결과」의 RO-01 수정). 수정 작업자와 리드 전수 훑기로 같은 종류 18줄을 세 파일에서 더 찾았다.
+- **다음 행동**: 18줄 수정 계약을 쓰고 신규 `gpt-6.1-sol` max에 맡긴다. 그 뒤 7줄과 18줄을 한 번에 약 등급으로 재검증한다(신규 `gpt-6-astra` xhigh). WSL 전체·서식은 직전 여유 물리·가상이 각각 4GB 이상이면 기다리지 않고 돌린다(Content `msg_588b14556202`). 실화면은 Content 7777 봇이 끝나 listener 0을 알린 뒤 메인에 다시 요청한다.
 - **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -19,7 +19,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 설계 절 작성
 - [x] 선행 시험 작성
 - [x] 구현
-- [>] 독립 검증(fixture 설명 7줄 수정 남음)
+- [>] 독립 검증(시험 설명 18줄 수정·재검증 남음)
 - [ ] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
@@ -310,6 +310,8 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - Unity 시험 harness가 알려진 Unity 부수 효과 두 파일을 「리드 복원 대상」으로 표시(메인이 Rules에 BACKLOG 후보로 넘김, `msg_834e29b98d68`).
 - 위임 계약을 낼 때 고른 규칙 절의 원문 전체와 계약 발췌를 기계로 비교(RV-01 재검증 RF-01의 검사 전환 판단).
 - 버전을 올릴 때 숫자가 든 시험 이름과 리터럴 버전의 불일치를 찾는 좁은 검사(같은 판정의 RV-01 검사 전환 판단, `Nineteen` 같은 표기 정책이 먼저 필요).
+- 이제 로그인까지 하는 시험 helper 이름 정리(`CharacterSelectHandlerTests`의 `BypassHandshake`·`SetupHandshakedSession`). Combat 시험 네 파일이 같은 이름 `BypassHandshake`를 로그인 없이 쓰는 관례라 함께 판단한다(아래 「RO-01 수정」).
+- 진입 단계를 바꾸는 goal의 계약을 낼 때 그 단계를 부르는 모든 경로(helper·직접 호출·봇·통합 시험)를 기계로 모아 옆 설명과 대조(아래 「RO-01 수정」의 리드 훑기 누락).
 
 ## 현재 결과
 
@@ -501,3 +503,29 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
   - Content 브랜치 `2d168f19`는 `InventoryWireContractTests.cs` 250~265행만 바꿔 이 줄들과 겹치지 않는다.
 - 실행 조율: 큰 실행은 Content(`msg_926ab980acb3`)·Core(`msg_78ca49c474f1`) 허용 뒤 13:45Z 전 시작 조건으로 진행했다. 이어 Core SQL 진단의 메모리 창을 받아들였다(`msg_16e499d4ecf6`). 서식 검사가 끝난 시각은 Core에 알렸다(`msg_08a95364c78b`). 13:11:48Z와 13:19:57Z에 7777 listener 0, Unity.exe 0, dotnet.exe 0이었다.
 - 부수 효과: Unity를 쓰지 않아 되돌린 파일이 없다. 작업 트리는 clean이다.
+
+### RO-01 수정 — 2026-10-11
+
+- 작업자: 신규 `gpt-6.1-sol` max(최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 첫 화면 「GPT-6.1-Sol max · Full Access · never」, 선택창 없음, backend unknown), 태그 `[World Sol]`. 배정은 implementer-routing 「명세가 고정된 1~2파일 수정」에 가까운 고정 문구 교체다. 리드 pane 아래 split `term_6b5442e6-9427-4f85-9bc2-d3c439569922`, Task `task_d86a6f272327`, Dispatch `ctx_3f24e7cc45e1`. worker_done `msg_4e4ec5470644`(13:53:01Z, succeeded). release `retained` 뒤 pane을 닫았다.
+- 계약: E/`ro01-contract.md` v1(SHA256 `4987b15f58119f3e76ce73ebf1df0c66c13c824e425673dc03252f0bb92ba4f7`), 요약 E/`ro01-spec.md`, 입력 E/`ro01-inputs.txt`, 경로 확인 E/`ro01-preflight.txt`, 리드 메모 E/`ro01-prep-context.md`. 약 등급, 고정 HEAD `ac5342bd`. CODE_CONVENTION 세 절은 처음부터 절 전체로 실었다(RF-01 재발 방지).
+- 바꾼 것: 시험 fixture 설명 7줄에 로그인 단계를 넣었다. 영어 주석 `InventoryWireContractTests.cs:431`, 영어 단정 메시지 `InventoryWireContractTests.cs:440`·`InventoryLifecycleRaceTests.cs:288`·`InventoryMigrationLifetimeTests.cs:326`, 한국어 단정 메시지 `InstanceMapRetirementTests.cs:121,133`·`InstanceMapTestWorld.cs:139`. 단정 조건·fixture 동작은 그대로다.
+- 보고: E/`ro01/report.md`(SHA256 `e8c9fe2a4b97aaa7dffc038b2b1634ca075468ba1991df0a6ad579cbe87ad83f`), 사전 메모 E/`ro01/context-before.md`. 리드 대조 메모 E/`ro01-result-goal-context.md`.
+
+| 실행 | exit | 결과 |
+|---|---|---|
+| `git diff --check` | 0 | 출력 없음, 5 files 7+ 7- |
+| WSL 서버 전체(TRX, 13:43:33Z~13:45:42Z) | 0 | 1060 / 1055 / 0 / 5(바꾸기 전과 같은 수) |
+
+- 실행 조율: 작업자가 status `msg_271e88ea6d42`(여유 물리 6069984 KiB, 가상 4905080 KiB)를 보낸 뒤 공식 질문 `msg_ec670dd139aa`로 물었다. 리드가 진행 `msg_8507544a4549`와 답 `msg_38416c9100be`를 보낸 뒤 한 번 돌렸다.
+- 리드 R-2 표본: `server-full.result.json`의 exit와 실행 수, stdout 요약 줄, TRX 건별 outcome 재집계(Passed 1055, NotExecuted 5), 실제 diff와 계약 문구, 사전 메모 생성 시각(13:37:50Z, 첫 소스 쓰기 13:38:20Z 전)을 직접 확인했다. 작업자가 처음 TRX 요약의 `notExecuted="0"`을 건너뜀 수로 읽은 파생 집계는 보존돼 있고, 시험은 다시 돌리지 않았다.
+- 같은 종류 18줄을 더 찾았다.
+  - 작업자 「남은 것」이 `Network/SessionStateMachineTests.cs:12,20,174`를 보고했다. 리드가 구현 commit `c5482d6b`의 시험·fixture·봇 파일 21개 diff를 모두 다시 보았다.
+  - 찾은 줄은 세 파일 18줄이다.
+    - `Network/SessionStateMachineTests.cs` 13줄(12·14·19·20·144·150·168·174·198·203·226·231·263): 다섯 시험에 `CompleteLogin`이 들어갔는데 클래스 문서·시험 문서·arrange 주석은 handshake와 class 선택만 말한다.
+    - `Network/CharacterSelectHandlerTests.cs` 3줄(23·86·101): `BypassHandshake()`가 이제 로그인도 하는데 설명은 「handshake 우회」「handshake 통과 상태」다.
+    - `99_Tools/headless-bot/Scenarios/ProbeBase.cs` 2줄(13·217): 대기 이벤트 목록에 이번 goal이 넣은 `_login`·`_disconnected`가 없고, `HandleExtraPacket` 설명이 기반 클래스가 처리하는 `S_LoginResult`를 뺀다.
+  - 앞 훑기는 `LifecycleTestWorld.LogIn` 추가 지점만 찾아 `CompleteLogin`·봇 경로를 놓쳤다. 리드 계약의 누락이고 첫 발생이라 여기에 기록하며, 재발 방지 검사는 다음 계획 후보로 둔다.
+  - 해당 없음으로 본 것: 통합·호스트·퀘스트 알림·세션 정리 시험, PlayMode fixture, `M2BasicMovement`(설명이 없거나 구현이 이미 고침), 클라이언트 연결 시험(시험 이름을 `AcceptedLogin_…`로 바꿈), `SessionStateMachineTests.cs:145`(지금도 맞음), Combat 시험의 `BypassHandshake`(이번 goal이 바꾸지 않았고 로그인하지 않음).
+  - helper 이름 `BypassHandshake`·`SetupHandshakedSession`은 바꾸지 않는다. 다른 시험 네 파일이 같은 이름을 쓰는 관례라 옆 설명으로 로그인을 밝히고, 이름 정리는 다음 계획 후보로 둔다.
+- 처리: RO-01과 같은 이유로 이 goal 안에서 고친다. 시험 설명 수정은 O-1·RO-01에 이어 3회차라 「3회를 넘으면 메인 체크포인트」 전이다. Content 브랜치(`2d168f19`)는 세 파일을 바꾸지 않는다. 재검증은 7줄과 18줄을 묶어 한 번만 한다.
+- 부수 효과: Unity를 쓰지 않아 되돌린 파일이 없다.

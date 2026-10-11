@@ -136,7 +136,7 @@ internal sealed class InstanceMapTestWorld : IDisposable
         LifecycleTestWorld.LogIn(World, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight }.Write());
         Tick();
-        Assert.True(session.EntityId >= 0, "fixture: 실제 핸드셰이크·클래스 선택으로 마을에 들어가야 한다");
+        Assert.True(session.EntityId >= 0, "fixture: 실제 핸드셰이크·로그인·클래스 선택으로 마을에 들어가야 한다");
         return session;
     }
 

@@ -285,7 +285,7 @@ public sealed class InventoryLifecycleRaceTests : IDisposable
         LifecycleTestWorld.LogIn(_world, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)characterClass }.Write());
         Tick();
-        Assert.True(session.EntityId >= 0, "fixture: the real handshake and class selection must enter the world");
+        Assert.True(session.EntityId >= 0, "fixture: the real handshake, login and class selection must enter the world");
         return session;
     }
 

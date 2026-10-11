@@ -428,7 +428,7 @@ public sealed class InventoryWireContractTests : IDisposable
         for (int i = 0; i < ticks; i++) Tick();
     }
 
-    // Real handshake and class selection bytes, then one world tick to enter Town at the origin.
+    // Real handshake, an account login and class selection bytes, then one world tick to enter Town at the origin.
     EconomySession JoinAndEnter(CharacterClass characterClass)
     {
         EconomySession session = new(_world);
@@ -437,7 +437,7 @@ public sealed class InventoryWireContractTests : IDisposable
         LifecycleTestWorld.LogIn(_world, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)characterClass }.Write());
         Tick();
-        Assert.True(session.EntityId >= 0, "fixture: the real handshake and class selection must enter the world");
+        Assert.True(session.EntityId >= 0, "fixture: the real handshake, login and class selection must enter the world");
         return session;
     }
 
