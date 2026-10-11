@@ -9,7 +9,7 @@ namespace Dawnholder.Server.GameServer.Tests.Items;
 // built directly as internal fixtures; the wire paths are covered by InventoryWireContractTests.
 // Every expected number is a literal from the PR1 acceptance table referenced from
 // 01_Phases/goals/2026-10-05-items-inventory-currency/goal.md (MaxStack 99, MaxCurrency 1,000,000,000,
-// normal 10 + material 1, golem 10 + pouch 1, boss 50 + material 1 + pouch 1, pouch use +50),
+// normal 10 + material 1, golem 10 + pouch 1, dungeon clear 50 + material 1 + pouch 1, pouch use +50),
 // never recomputed from the product.
 public sealed class InventoryAuthorityBoundaryTests
 {
