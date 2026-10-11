@@ -14,4 +14,4 @@
 
 Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 
-[다음 세션 재개 절차](RESUME.md) · [정본 반영 전 적용 결정](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#적용-중인-사용자-결정)
+[다음 세션 재개 절차](RESUME.md) · 적용 중인 결정은 각 goal의 「적용 중인 사용자 결정」 절에 있고, 정본 반영을 기다리는 결정은 [BACKLOG](BACKLOG.md) 행으로 찾는다.

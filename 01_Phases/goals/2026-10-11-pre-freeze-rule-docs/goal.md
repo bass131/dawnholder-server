@@ -13,16 +13,16 @@
 - 근거 폴더 E: `.backups/verification/2026-10-11-pre-freeze-rule-docs/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-pre-freeze-rule-docs/scope-draft-v1.md)(SHA256 `b783ae27…`)와 메인 판단 넷(「요구사항 원천과 적용 결정」)이다. 리드 맥락 메모는 E/lead-context.md(진입·범위 초안)와 E/pr-lead-context.md(착수)다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_b1fddc67-1e99-4471-af0b-8fe6c295d371`, Run `run_d447bca7c344`(회신 주소 `run:run_d447bca7c344`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - 앞 goal의 끝: [세션 쓰기 가드와 생존 신호 간격 도구](../2026-10-10-operating-tool-guards/goal.md)는 PR224·PR228 병합으로 끝났다. PR228 좁힌 재실사 통과(근거 rules-active [E/closeout-rereview/verdict.md](../../../.backups/verification/2026-10-10-operating-tool-guards/closeout-rereview/verdict.md)).
-- **현재 위치**: 시작 기록을 커밋했다. 정본 문장 작성자와 BACKLOG 정리를 연다.
-- **남은 순서**: 정본 문장·BACKLOG → 리드 대조·bytes·후보 검사 → PR → 문서 실사 → Gardener → 결과 기록·재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
-- **사용자 차례**: 병합 승인 줄이다(bytes 상쇄가 모자라면 그 전에 메인이 한 번 묻는다).
+- **현재 위치**: 정본 문장 여섯과 BACKLOG 정리를 마쳤고 리드 R-2가 보고와 원시의 일치를 확인했다(「현재 결과 / 정본 문장 작성」·「대기 목록 정리」). bytes는 상쇄로 3 bytes 줄어 사용자 질문이 없다. PR을 만들고 문서 실사를 연다.
+- **남은 순서**: PR → 문서 실사 → Gardener → 결과 기록·재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- **사용자 차례**: 병합 승인 줄이다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
-- [>] 정본 문장 작성
-- [ ] 대기 목록 정리
-- [ ] 문서 실사
+- [x] 정본 문장 작성
+- [x] 대기 목록 정리
+- [>] 문서 실사
 - [ ] 종료 점검자 확인
 - [ ] 결과 기록·재실사
 - [ ] PR 병합
@@ -133,13 +133,50 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 
 - 진입: Run `run_d447bca7c344`(2026-10-11T06:36:56Z, E/session/run-create.json), READY status `msg_caf09cfaa914`. 진입 지시는 Run 바인딩 전 터미널 우편함으로 왔다. 바인딩 뒤에는 소비할 수 없어 원문 보존으로 처리했다(바인딩 뒤 Run peek 0건, E/session/check-peek-after-bind.json).
 - 진입 중 세션 쓰기 가드 차단 둘, 실제 쓰기 0(S5 근거): (1) orchestration 가이드 출력을 Claude Code scratchpad로 저장하려다 `write-outside-checkout`, (2) 메모 전에 우편함 출력을 근거 폴더에 저장하려다 `memo-first`. 리드는 `check --peek`(가드 허용)으로 지시를 읽고 메모(E/lead-context.md, 06:36:13Z)부터 썼다.
-- 시작 기록: branch `docs/pre-freeze-rule-docs-20261011`을 origin/main `6782cd67`(06:45:45Z fetch)에서 만들고 이 goal과 CURRENT Rules 줄을 커밋한다. 착수 메모는 E/pr-lead-context.md(06:45:45Z)다.
+- 시작 기록: branch `docs/pre-freeze-rule-docs-20261011`을 origin/main `6782cd67`(06:45:45Z fetch)에서 만들었다. 커밋은 `27845993`(이 goal과 CURRENT Rules 줄)과 `497324de`(근거 줄 범위 154~160 정정)다. 착수 메모는 E/pr-lead-context.md(06:45:45Z)다.
+
+### 정본 문장 작성
+
+- 작성자: 신규 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max」, backend unknown), Task `task_f5fbd4403fbb`, Dispatch `ctx_0b84ff5dd49f`, 2026-10-11T06:54:41Z~07:21:45Z, worker_done `msg_555fe02cf582`(succeeded). 계약 E/sentences-contract.md v1(SHA256 `c87e0b01…`, 고정 HEAD `497324de`), 보고 E/sentences/report.md, 기동 기록 E/sentences-start-note.md다. 작성자 맥락 메모 E/sentences/context.md는 대상 첫 쓰기 전(06:56:17Z)이다.
+- 기동: 첫 worker-start는 Git Bash가 35KB 계약 인자를 받지 못해(「Argument list too long」) orca가 실행되지 않았다. 입력은 없었다. 지난 goal의 node 감싸기(E/worker-start.mjs)로 다시 했다. `turn_start_unobserved`였고 draft 25,042자(계약 20,254 + 4,787 + 1)를 확인해 Enter만 한 번 보냈다. rollout 사후 대조에서 Enter로 제출된 입력 하나가 계약 전문을 담았다(E/sentences-rollout-match.json).
+- 결과: S1 ORCA:93, S2 ORCA:158, S3 ORCA:153(151행에 「capacity로 막힌」 한정 구절), S4 ORCA:47·51·142, S5 RESUME:22, S6 RESUME:38. 고정 HEAD 대비 numstat은 ORCA 20/20, RESUME 2/1이다.
+- bytes: 여섯 파일 묶음 103,221 → 103,218(−3), ORCA 41,343 → 40,961 bytes, 249줄. 문장 증가 1,675 bytes를 출처 가리킴 구절 열셋 1,678 bytes 이관으로 상쇄했다(「정본에서 옮긴 적용 기록」). 메인 판단 1의 사용자 질문 조건은 생기지 않았다.
+- 리드 R-2(E/lead-check/r2-sentences.json, 스크립트 r2-sentences.mjs): 합계·ORCA 줄 수를 다시 재어 보고와 같다. 열세 구절은 모두 고정 HEAD에 원문 그대로 있었고 작업 파일에서 빠졌다. 두 파일의 제목·anchor 목록이 같다(ORCA 제목 21·anchor 21, RESUME 제목 7). 보고서의 S6 문장이 RESUME 줄과 같다. 표본 대조이며 독립 판정이 아니다.
+- Codex 영역 충돌 후보(작성자 보고, 파일은 쓰지 않음): (1) AGENTS 「모델 라우팅」의 「리드 직접 구현·실행 중 모델 변경·Opus 대체는 허용하지 않는다」를 따로 읽으면 S3과 어긋날 수 있다. 리드 판단은 구현자 실패 때 Opus로 대신 맡기는 것을 막는 문장이라 충돌이 아니라는 것이다. (2) session-handoff 스킬 「세션 진입과 배치」의 「작업자·검증자는 각 리드 아래 vertical split이다」는 S4의 다른 worktree 작업자와 어긋날 수 있다. 문서 실사가 판정하고, 충돌이면 메인을 거쳐 사용자 승인으로만 고친다(「위험」 2와 같은 처리).
+- 생존 신호(helper, E/lead-check/liveness-sol.json): 신호 7, 최대 411초. 300초 초과는 셋(307초 07:02:08Z→07:07:15Z, 343초 07:07:15Z→07:12:58Z, 411초 07:12:58Z→07:19:49Z)이다. 작성자는 411초를 스스로 알렸다(status `msg_46bd296690cc`). 작성자 귀속 비차단 운영 기록이다.
+- 정산: 빈 프롬프트 확인, `worker-release` retained(external_terminal), `terminal close`(07:23:52Z).
+
+### 대기 목록 정리
+
+- 리드가 E/backlog-edit.mjs로 고쳤다(결과 E/backlog-edit-result.json). 승격 넷, 근거 더하기 셋(`mailbox-wait-overlap-guard`·`goal-state-drift`·`single-output-role-memo-first`), 새 절의 행 셋이다. 스크립트는 고친 행마다 한 번만 있고 일곱 칸인지 단정했다. 단어 단위 diff로 덧붙인 글만 바뀐 것을 확인했다.
+- 후보 도착 검사(E/lead-check/candidate-check-1.json): `allowed`, exit 0, BACKLOG ID 112, 중복 0, 후보 6, 인용 없는 후보 0, 모르는 ID 0.
+- CURRENT 하단 링크는 S6 첫 문장으로 고쳤다(메인 판단 3).
 
 ### 첫 기록
 
 교정 정본에 따라 기록한다. 이 goal 범위를 넓히지 않는다.
 
 - 재검토 뒤 goal 수정(두 번째 이탈, 메인 판단 `msg_c3df82b7150e`): ORCA [병합 관문](../../../00_Document/operations/ORCA.md#merge-gate)은 「재실사 결과는 goal을 고치지 않고 근거 폴더·승인 묶음으로만 전한다」고 이미 정한다. 첫째는 PR214의 `ef7c943c`(「docs: record the closeout re-review pass」, 2026-10-09T10:51:38+09:00), 둘째는 PR228의 `a09ca3f1`(「docs: record the PR228 narrowed re-audit pass」, 2026-10-11T00:47:43+09:00)이고 `247829ad`(00:50:51+09:00)로 되돌렸다. 금지 문장이 있는데 반복됐으므로 다음 층은 승인 묶음 전 재실사 고정 head 대비 바뀐 파일을 보여 주는 helper다. 도구라 동결 뒤다(BACKLOG `rereview-head-diff-helper`).
+
+## 정본에서 옮긴 적용 기록
+
+규칙 문서 bytes를 상쇄하려고 ORCA에서 옮긴 출처 가리킴 구절 열셋이다. 원래 위치는 고정 HEAD `497324de150c70a39305e7575040fdc3fa09598b`의 `00_Document/operations/ORCA.md` 줄 번호다. 원문은 작성자 원시(E/sentences/work/offset-original-O*.txt)에서 생성했다. 상대 링크는 이 goal에서 같은 대상에 닿도록 고쳐 썼고 링크 밖 원문은 그대로다. 앞뒤 공백은 인용에서 뺐다.
+
+- O1, ORCA:21(127 bytes): PR2 원천은 [goal 항목별 출처](../2026-10-06-merge-gate-canon-refresh/goal.md#pr2-canon-sources)다.
+- O2, ORCA:23(171 bytes): 승인 출처·시각과 전달 원문은 [출처 이관 대조표](../2026-10-05-operating-canon/goal.md#orca-source-relocation-r2)에서 확인한다.
+- O3, ORCA:30(142 bytes): 승인 응답·시각은 [다섯 리드 승인 출처](../2026-10-05-operating-canon/goal.md#orca-source-leads)에 있다.
+- O4, ORCA:32(115 bytes): ([배치 결정](../2026-10-06-merge-gate-canon-refresh/goal.md#적용-중인-사용자-결정))
+- O11, ORCA:73(101 bytes): [승인 출처](../2026-10-05-operating-canon/goal.md#orca-source-r3-reply)대로
+- O5, ORCA:123(130 bytes): 당시 관측은 [이관 기록](../2026-10-06-merge-gate-canon-refresh/goal.md#orca-moved-history)에 있다.
+- O6, ORCA:139(185 bytes): 사용자 결정과 설정 경로의 출처는 [Unity opt-in 적용 기록](../2026-10-05-operating-canon/goal.md#pr183-제출-뒤-적용한-사용자-결정)이다.
+- O7, ORCA:169(129 bytes): 근거는 [checkpoint 승인 출처](../2026-10-05-operating-canon/goal.md#orca-source-checkpoint)에 있다.
+- O8, ORCA:180(182 bytes): 근거는 [계약 draft 복구 승인 출처](../2026-10-05-operating-canon/goal.md#orca-source-draft)와 [크기 추정·사후 대조 결정](../../../00_Document/operations/ORCA.md#pr2-source)이다.
+- O10, ORCA:192(167 bytes): 기존 goal 검토 시범을 이 형태로 넓힌 [승인 결정](../2026-10-05-operating-canon/goal.md#요구사항-원천과-적용-결정)이며
+- O12, ORCA:210(35 bytes): ([원천](../../../00_Document/operations/ORCA.md#orca-tool-observations))
+- O13, ORCA:230(37 bytes): ([운영 판단 원천](../../../00_Document/operations/ORCA.md#pr2-source))
+- O9, ORCA:247(157 bytes): 근거는 [HANDOFF 결정 5](../../../.backups/verification/2026-10-05-operating-canon/sources/handoff-decisions.md)와 운영 정본 goal의 승인 범위다.
+
+ORCA 안에 남은 `#pr2-source` 링크(R-8 「메인 운영 판단」 등)가 가리키던 PR2 원천은 위 O1이다.
 
 ## 다음 계획 후보
 
