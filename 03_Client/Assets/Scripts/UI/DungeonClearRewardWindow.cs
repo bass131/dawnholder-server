@@ -93,13 +93,14 @@ namespace Dawnholder.Client.UI
             _source = null;
         }
 
-        bool IsInGameplayScene() => IsGameplayScene(gameObject.scene.name) &&
-            IsGameplayScene(SceneManager.GetActiveScene().name);
+        // CombatBootstrap.CombatScenes selects gameplay scenes; only its installer creates this window.
+        // UI loads additively without becoming active, so the window must belong to the active scene.
+        bool IsInActiveScene() => gameObject.scene == SceneManager.GetActiveScene();
 
         void UpdateVisibility()
         {
             var session = UnityClientSession.Instance;
-            bool visible = IsInGameplayScene() && _source != null && _source.HasPendingFor(session);
+            bool visible = IsInActiveScene() && _source != null && _source.HasPendingFor(session);
             SetVisibility(visible);
             _confirm.interactable = visible && session != null && session.CanSendGameplay;
         }
@@ -133,7 +134,7 @@ namespace Dawnholder.Client.UI
 
         void Confirm()
         {
-            if (!isActiveAndEnabled || !IsInGameplayScene()) return;
+            if (!isActiveAndEnabled || !IsInActiveScene()) return;
             var session = UnityClientSession.Instance;
             var source = _source;
             if (session == null || source == null || !source.TryConsume(session)) return;
@@ -217,8 +218,5 @@ namespace Dawnholder.Client.UI
             text.raycastTarget = false;
             return text;
         }
-
-        static bool IsGameplayScene(string name) =>
-            name == "Town" || name == "HuntingGround" || name == "BossRoom" || name == "GameplayTest";
     }
 }
