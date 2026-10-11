@@ -18,9 +18,7 @@
 
 ## 2026-10-01 운영 규칙 정본
 
-<a id="pr2-source"></a>R-1~R-8의 상세는 이 절에만 둔다. 다른 현재 운영 문서·프로젝트 스킬은 아래 고정 anchor를 참조한다. 출처는 메인 Claude가 전달한 사용자 결정·메인 운영 판단·관측이며 사용자 직접 입력으로 격상하지 않는다.
-
-
+<a id="pr2-source"></a>R-1~R-8의 상세는 이 절에만 둔다. 다른 현재 운영 문서·프로젝트 스킬은 아래 고정 anchor를 참조한다. 출처는 메인 Claude가 전달한 사용자 결정·메인 운영 판단·관측이며 사용자 직접 입력으로 격상하지 않는다. PR2 원천은 [goal 항목별 출처](../../01_Phases/goals/2026-10-06-merge-gate-canon-refresh/goal.md#pr2-canon-sources)다.
 
 로컬 `.backups/` 근거는 Git 제외 자료다. 전달 사실과 직접 보존된 실행 근거를 구분하며, 문서 반영을 runtime 전환·새 실행 성공으로 보고하지 않는다.
 
@@ -176,8 +174,6 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 담당 리드의 **텍스트 없는 Enter 한 번** 사전 조건은 새 pane에 다른 입력이 없고 JSON draft의 placeholder 크기가 「계약 크기 + 관측 머리말(약 4,787자) ± 2자」 범위라는 추정이다. 머리말 길이는 버전마다 달라질 수 있는 관측값이다. 공식 payload/계약과 placeholder 대조 근거·원문 미확인 한계를 보존한다. 조건·동일성 미확인은 메인에 보고하며 사용자 작성 prompt를 대신 제출하지 않는다.
 
 조건 충족 시 `terminal send --terminal <확인한 handle> --enter`로 Enter만 한 번 보낸다. 사후에 작업자 세션 기록에서 자동 지침 주입과 구분해 그 Dispatch의 계약으로 Enter 제출된 입력을 식별하고 계약 전문을 대조한다. 식별 불가·전문 불일치는 메인에 보고한다. 수 초 뒤 JSON draft 소멸·Working 화면·worker-show의 실제 시작을 관측한다. receipt 접수와 실제 시작, Enter 제출과 동일 request receipt 재확인/텍스트 재전송을 구분한다. 시작 미관측은 무한 Enter·중복 발행·임의 종료의 근거가 아니다.
-
-
 
 <a id="r6-first-screen"></a>
 ### R-6 — 첫 화면 선택창과 설정 불변
