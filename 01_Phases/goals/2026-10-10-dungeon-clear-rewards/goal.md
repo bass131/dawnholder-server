@@ -1,9 +1,9 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 올렸다. 독립 검증이 찾은 규칙 위반 하나(V-1)를 고쳤고 재검증이 통과했다. 다음은 CI와 사용자 병합 승인이다(2026-10-11). 던전 클리어 PR은 리드 설계 초안(C1~C9)을 World가 확인했다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 사용자 승인을 받아 병합됐다(2026-10-11T10:57:10Z). 던전 클리어 PR은 메인이 범위를 확인했고, 다음은 선행 시험이다(2026-10-11). 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침).
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`).
 - 착수 원천: 메인 `msg_9fe1d49e00bb`(2026-10-10T07:39:37Z)가 전달한 사용자 승인. 원문은 아래 [적용 중인 사용자 결정](#적용-중인-사용자-결정)에 있다. 범위 원문은 리드 초안 `msg_f1bba119c853`이다.
 - 로컬 원문·계약·판정은 `.backups/verification/2026-10-10-dungeon-clear-rewards/`에 둔다(Git 밖).
 
@@ -14,7 +14,7 @@
 | 항목 | 내용 |
 |---|---|
 | 만들 것 | (결함) HUD 골드를 서버 재화에 연결한다. 인벤토리 패널을 「I」 키로 열고 닫는다. (던전) 보스방 복사본의 클리어 정의와 보상표, 클리어 결과 패킷과 확인 요청 패킷(39·40번), 클라이언트 보상 창과 「확인」 전송, 사냥터 포탈의 던전 입구 표시, 서버 클리어 판정과 보상 원자 지급, 보스 처치자 보상을 클리어 보상으로 합치기, 「확인」 뒤 마을 복귀 요청, 봇 두 파티 시나리오, 기능 문서. |
-| 건드릴 곳 | (결함) 클라이언트 `UI/HudController.cs`, `UI/InventoryPanel.cs`·`UI/InventoryPanelView.cs`, 입력 연결, EditMode 시험. R10은 `Scenes/99.UI/UI.unity`의 HUD 골드 글자(`GoldText`, 필요하면 `Gold_bar`) 직렬화 값과 PlayMode 시험(사용자 결정 37 A). (던전 패킷·창) PDL·생성 패킷·프로토콜 버전, Shared GameData의 던전 보상표(새 폴더), 클라이언트 새 보상 창·수신 핸들러. (던전 서버) 서버 새 던전 폴더, `Items/KillRewardPolicy.cs`·`Items/InventoryRegistry.cs`의 보상 연결, `GameMap` 보스 사망 분기 안쪽과 `GameWorld` 처치 콜백(World 인스턴스 맵 PR 병합 뒤), `HandlerRegistry` 등록 한 줄, 새 핸들러, 서버 시험, 봇. 마을 복귀는 World의 「서버가 시키는 이동」 진입점을 부르기만 한다. 이 goal.md, CURRENT의 Content 줄, FEATURE_MAP·영역 문서의 해당 줄. |
+| 건드릴 곳 | (결함) 클라이언트 `UI/HudController.cs`, `UI/InventoryPanel.cs`·`UI/InventoryPanelView.cs`, 입력 연결, EditMode 시험. R10은 `Scenes/99.UI/UI.unity`의 HUD 골드 글자(`GoldText`, 필요하면 `Gold_bar`) 직렬화 값과 PlayMode 시험(사용자 결정 37 A). (던전 패킷·창) PDL·생성 패킷·프로토콜 버전, Shared GameData의 던전 보상표(새 폴더), 클라이언트 새 보상 창·수신 핸들러. (던전 서버) 서버 새 던전 폴더, `Items/KillRewardPolicy.cs`·`Items/InventoryRegistry.cs`의 보상 연결, `GameMap` 보스 사망 분기 안쪽과 `GameWorld` 처치 콜백(World 인스턴스 맵 PR 병합 뒤), `HandlerRegistry` 등록 한 줄, `Sessions/GameSession.cs`의 확인 요청 제출 메서드 하나(2026-10-11 사용자 결정), 새 핸들러, 서버 시험, 봇. 마을 복귀는 World의 「서버가 시키는 이동」 진입점을 부르기만 한다. 이 goal.md, CURRENT의 Content 줄, FEATURE_MAP·영역 문서의 해당 줄. |
 | 하지 않을 것 | 새 맵 번호·맵 데이터·포탈 줄. 인스턴스 생성·입장·정리, 맵 종류 표, 맵 이동, 보스 처치 때 퀘스트 초기화 범위(모두 World). 새 아트·보스 패턴. 길드·거점. DB 저장. 난이도·매칭·재입장 제한·시간제한·자동 퇴장. 기존 보스방 → 엔딩 → 마을 길의 제거. 다른 대기 후보(`inventory-ui-readability-followup`, `inventory-label-ellipsis-glyph`, `hud-pointer-attack-ux` 등). Unity scene·prefab 저작은 필요하면 메인에 요청한다. |
 | 관찰 가능한 완료조건 | 아래 여덟 개다. |
 
@@ -96,9 +96,9 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 
 **실행**: WSL `dotnet` 빌드·시험 전체, 실제 생성기 재생성 diff, Windows에서 Shared·ClientNet DLL 재빌드와 `03_Client/Assets/Plugins/` 사본 diff(메인 조건 2), 새 서버와 기존 봇 접속 회귀, Unity 컴파일·EditMode 전체, 독립 검증의 PlayMode 전체(서버 lane, 회귀). 실화면은 클리어 PR에서 한다. 7777과 Unity batch 같은 큰 실행은 Core SQL 컨테이너 재측정과 Management 운영툴 중간 점검(7777)에 미리 알려 겹치지 않게 하고, 메모리 4GB 기준을 원시로 남긴다(메인 조건 3).
 
-### 던전 클리어 PR의 요구(리드 초안)
+### 던전 클리어 PR의 요구
 
-완료조건 4~8을 서버에서 만든다. 리드 초안이고, World 리드가 GameMap·GameWorld·확인 맥락을 확인했다(아래 「World 확인」). 클리어 PR 착수 때 이 절을 확정한다. 원고는 근거 폴더의 `clear-pr-prep/lead-design-clear-pr.md`이고, 사실 근거는 HEAD `54b7d88a`의 리드 직접 대조와 읽기 전용 조사 1회다.
+완료조건 4~8을 서버에서 만든다. World 리드가 GameMap·GameWorld·확인 맥락을 확인했고(아래 「World 확인」), 메인이 클리어 PR 범위를 확인했다(리드 요청 `msg_0d95711472f4`, 메인 `msg_a3531f312474`). 원고는 근거 폴더의 `clear-pr-prep/lead-design-clear-pr.md`다. 사실 근거는 HEAD `54b7d88a`의 리드 직접 대조와 읽기 전용 조사 1회다. PR230 병합 뒤 origin/main `999b1b98`에서 리드가 다시 대조했고, 아래의 코드 위치와 바뀔 기존 시험의 줄 번호가 모두 같았다.
 
 | 번호 | 요구 | 확인 방법 |
 |---|---|---|
@@ -121,13 +121,15 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 5. 확인 요청은 세션에서 맵 job으로 간다. 서버 새 던전 핸들러가 길이·머리·`reserved`를 검사하고 `GameSession`의 새 제출 메서드를 부른다. 이 메서드는 포탈 입장 제출처럼 현재 맵(이동 중이면 없음)과 entityId를 잡아 현재 맵 job으로 넘긴다. job 안에서 소유 확인 → 수혜자 집합 확인 → `MoveToPublicMap` → `Accepted`면 집합에서 지운다. `HandlerRegistry`에 한 줄을 더한다.
 6. 모든 단계가 World 틱 스레드의 메모리 작업이고 DB·파일 I/O는 없다.
 
+**건드릴 곳 보충**(2026-10-11 사용자 결정): 5번의 제출 메서드는 `Sessions/GameSession.cs`의 `SubmitEnterPortal` 옆에 같은 모양으로 하나만 더한다. 이 파일의 다른 구간은 바꾸지 않는다. 쓰기 전 알림과 병합 순서는 아래 「파트 간 소유와 계약」의 세션·등록 행을 따른다.
+
 리드가 정한 것(이유):
 
 - `RevisionExhausted`는 `Grant`가 돌려줄 수 있지만 P3의 결과 값 셋에 없다. 연결마다 revision이 40억 번 바뀌어야 나오는 값이라 실제로 닿지 않는다. 이 경우 결과 패킷을 보내지 않고 기록만 한다. 수혜자 표시는 남아 확인은 할 수 있다. 패킷·창 PR의 P3을 바꾸지 않으려는 선택이다.
 - 수혜자는 맵 `Players`로 판정한다. 아래 「파트 간 소유와 계약」의 클리어 대상 합의와 같다.
 - 결과는 직접 송신한다. 처치 snapshot은 이동 중 생략될 수 있다([서버 영역 계약](../../../00_Document/domains/server.md)). 클리어 결과는 창과 「확인」의 시작점이라, 생략되면 그 사람이 보스방에 멈춘다.
 
-바뀔 기존 시험(옛 세부, 요구 출처 C5 = 범위 승인 질문 3 A): `GameServer.Tests/Items/InventoryAuthorityBoundaryTests.cs`의 보스 보상 묶음(20행)과 그 묶음으로 거부를 보이는 두 시험(39~61행), 보스가 처치자에게 주는 50+2(168~188행). `InventoryWireContractTests.cs`의 `BossKill_GrantsPouchMaterialAndFiftyCurrencyInItemIdOrder`(254~264행). 선행 시험 작성자가 고치고 분류표와 같은 명령의 전후 원시를 남긴다(메인 결정 `msg_71e41e231d55`).
+바뀔 기존 시험(옛 세부, 요구 출처 C5 = 범위 승인 질문 3 A): `GameServer.Tests/Items/InventoryAuthorityBoundaryTests.cs`의 보스 보상 묶음(20행)과 그 묶음으로 거부를 보이는 두 시험(39~61행), 보스가 처치자에게 주는 50+2(168~188행). `InventoryWireContractTests.cs`의 `BossKill_GrantsPouchMaterialAndFiftyCurrencyInItemIdOrder`(254~264행). PR230의 P4 시험 `Dungeon/DungeonClearPacketContractTests.cs`도 바뀐다(요구 출처 C6). 147행은 「서버는 40 처리기를 등록하지 않는다」를 단정하고, 152행은 같은 전제를 실패 메시지에 담는다. 이 PR이 처리기를 등록하므로 옛 세부다. 나머지 단정(마을의 비수혜자가 보낸 40은 응답·종료·인벤토리 변화가 없음)은 C6에서도 맞으므로 그대로 둔다. World 병합 작업자는 같은 파일의 `JoinAndEnter`(188~197행)에 로그인 한 단계를 더한다(World `msg_3b64363cd9dd`). 선행 시험 작성자가 고치고 분류표와 같은 명령의 전후 원시를 남긴다(메인 결정 `msg_71e41e231d55`). 문서 `FEATURE_MAP.md` 20행의 「서버는 아직 39번 미발신·40번 미등록」과 `domains/protocol.md` 22행의 같은 내용도 구현과 함께 바꾼다.
 
 봇: 두 파티 시나리오는 지금 `Party/InstanceMapIsolationSmoke.cs`(네 봇, 마을 → 사냥터 → 마을)뿐이다. 이것은 바꾸지 않고, 보스방까지 가는 새 시나리오를 더한다. 보스 문은 기존 DEBUG 치트로 연다(`BossStageClearSmoke`와 같은 방식). 단정은 파티마다 39번 한 번, 결과 Success, 골드와 아이템이 Shared 표와 같음, snapshot revision +1, 확인 뒤 마을 맵 이동, 다른 파티의 39번 0이다.
 
@@ -151,8 +153,9 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 | 입구 | 기존 마을 → 사냥터 포탈이다. Content가 맵 종류 표·포탈 표에 더할 줄은 없다(World `msg_6e96d918962c` 1). |
 | 클리어 대상 | 보스 사망 틱의 그 보스방 복사본 플레이어 목록. 파티원 재확인은 하지 않는다(같은 메시지 2). 열쇠는 `GameMap.InstanceKey`(`InstanceKey?`)다. 공용 맵은 null이고 복사본은 값이 있다. `InstanceKey`는 `Owner`(Party/Solo)와 `Id`를 가진 값 비교 record struct이며, 복사본에 들어갈 때 정해져 그 안에서 파티를 나가도 바뀌지 않는다(World `msg_14c7e14412f3` 1, World 선행 시험 commit `3511b66c`). |
 | 마을 복귀 | Content의 「확인」 처리기가 플레이어 한 명씩 World 진입점을 부른다. 틱 스레드의 현재 맵 job 안에서 부른다. Content 요구: 도착 좌표 기본값은 World가 정함, 예외 대신 거부 결과, 이동 중 인벤토리·파티 보존(Content `msg_92f0e5340ca3`, World `msg_6e96d918962c` 3). World 답(`msg_25abb610ef01`): 도착은 도착 맵의 기본 입장 지점(`GameMap.PlayerSpawnPosition`, 최초 입장·재접속과 같은 곳), 인스턴스 밖·이동 중·세션 종료 중·같은 사람 두 번째 호출은 상태를 바꾸지 않는 거부, 성공하면 포탈 이동과 같은 맵 이동 패킷만 나간다. 진입점은 `MapMigration.MoveToPublicMap(GameSession session, int entityId, GameMap currentMap, MapId destination, Vector2? spawn = null)` → `MapMoveResult`다. 거부 검사 순서는 `SessionClosing` → `AlreadyMigrating` → `NotInThatMap` → `NotInInstanceMap` → `DestinationNotPublic`이고, 모두 통과하면 `Accepted`다. 공용 맵 도착은 다음 틱 이내다(World `msg_14c7e14412f3` 2). |
-| PDL·생성 패킷·프로토콜 버전 | 던전 패킷·창 PR이 39·40번과 버전 17 → 18을 쓴다. World 인스턴스 맵 PR은 PDL을 바꾸지 않는다. World의 다중 계정 로그인과 같은 시기에 열리면 먼저 병합되는 쪽이 앞 번호를 갖고, 뒤 PR이 main을 받아 재생성해 번호를 다시 확인한다(같은 메시지 4). 기존 번호 재사용·재배열 금지. World 로그인 패킷 `C_Login{string accountName}`·`S_LoginResult{byte result}`(`LoginResult` Accepted0·InvalidName1·AlreadyOnline2)도 main 기준 39·40·v18을 계획한다(World `msg_4e01d634628b`, commit `757b59ac`). World가 먼저 병합되면 Content PR은 버전 단정·생성 코드·이력 주석·DLL에 더해 World 시험 `Network/LoginProtocolContractTests.cs`의 T9(로그인 패킷이 가장 큰 두 번호)와 Content P4 시험(`Dungeon/DungeonClearPacketContractTests.cs`, 직업 선택 입장에 로그인 helper가 필요)을 맞춘다. Content가 먼저면 World가 41·42를 쓴다. |
-| `GameMap.cs` 보스 사망 분기, `GameWorld.cs` 처치 콜백, `Items/InventoryRegistry.cs` | World 인스턴스 맵 PR 병합 전에는 Content가 쓰지 않는다. World는 `InventoryRegistry.cs` 본문을 바꾸지 않을 계획이며, 바꿔야 하면 쓰기 전에 알린다(같은 메시지 5). |
+| PDL·생성 패킷·프로토콜 버전 | 던전 패킷·창 PR이 39·40번과 버전 17 → 18을 쓴다. World 인스턴스 맵 PR은 PDL을 바꾸지 않는다. World의 다중 계정 로그인과 같은 시기에 열리면 먼저 병합되는 쪽이 앞 번호를 갖고, 뒤 PR이 main을 받아 재생성해 번호를 다시 확인한다(같은 메시지 4). 기존 번호 재사용·재배열 금지. World 로그인 패킷 `C_Login{string accountName}`·`S_LoginResult{byte result}`(`LoginResult` Accepted0·InvalidName1·AlreadyOnline2)도 main 기준 39·40·v18을 계획한다(World `msg_4e01d634628b`, commit `757b59ac`). World가 먼저 병합되면 Content PR은 버전 단정·생성 코드·이력 주석·DLL에 더해 World 시험 `Network/LoginProtocolContractTests.cs`의 T9(로그인 패킷이 가장 큰 두 번호)와 Content P4 시험(`Dungeon/DungeonClearPacketContractTests.cs`, 직업 선택 입장에 로그인 helper가 필요)을 맞춘다. Content가 먼저면 World가 41·42를 쓴다. **결과**: PR230이 먼저 병합돼(2026-10-11T10:57:10Z) 39·40·v18은 Content가 쓴다. World 로그인은 41·42와 v19로 다시 번호를 매긴다(Content 알림 `msg_929b97d8c951`). World 병합 작업자는 Content 시험 `Dungeon/DungeonClearPacketContractTests.cs`의 `JoinAndEnter`에 로그인 한 단계를 더하고(`msg_3b64363cd9dd`), `domains/protocol.md` v18 절 첫 문장을 과거 시제로 바꾼다(`msg_725c091951ad`). |
+| `GameMap.cs` 보스 사망 분기, `GameWorld.cs` 처치 콜백, `Items/InventoryRegistry.cs` | World 인스턴스 맵 PR 병합 전에는 Content가 쓰지 않는다. World는 `InventoryRegistry.cs` 본문을 바꾸지 않을 계획이며, 바꿔야 하면 쓰기 전에 알린다(같은 메시지 5). 인스턴스 맵은 main에 들어왔다(`2bbd710d`). Content는 쓰기 전에 World에 다시 알린다. |
+| `Sessions/GameSession.cs`, `Handlers/HandlerRegistry.cs` | 아이템 goal 때는 GameDev(지금 Core) 소유 파일로 순차 쓰기 허용을 받았다. World 로그인 PR도 `GameSession`의 로그인 상태와 `HandlerRegistry` 한 줄을 바꾼다. Content는 쓰기 전에 World·Core 리드에 함께 알리고, 늦게 병합되는 PR이 main을 받는다(메인 조건 `msg_a3531f312474`). |
 | 포트 7777 | 서로 실행 전에 Orca 메시지로 알리고 DEVELOPMENT의 전역 lock·listener 검사를 따른다. |
 | CURRENT | Content 줄만 바꾼다. 다른 파트 줄은 보존한다. |
 
@@ -184,24 +187,26 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **재확인 동안만 Unity 코드 실행 허용**(메인 `msg_63aa0980d58a`, 2026-10-10T14:12:50Z). 원문 「대시보드 결정 응답: 1) 38 - 골드 수정 실제 화면 재확인 동안 Unity 코드 실행 허용 → A 재확인 동안만 허용」. 효과: 메인이 content-active `.claude/settings.local.json`에 허용 한 줄을 넣었고, 재확인 검증자는 그 뒤에 새로 기동했다. MCP 사용이 끝난 뒤 리드 요청(`msg_cd7e37a05073`)으로 메인이 그 한 줄을 지웠다(`msg_aa4aae54b7d7`, 15:12:15Z). 남은 내용은 `skillOverrides`뿐이다.
 - **메인 확인(사용자 결정 아님) — 던전 패킷·창 PR 범위**(`msg_33d93ad1147f`, 2026-10-10T16:04:16Z). 리드 초안 `msg_9747b2350231`의 1~6과 달라진 점 넷을 승인 범위 안의 구현 방식 선택으로 확인했다. 조건 셋은 「던전 패킷·창 PR의 요구」에 반영했다. 전투 씬 초기화 파일을 「건드릴 곳」 보충으로 적는다. 39·40을 맨 아래에 더하고 서버·Unity 양쪽 검증과 Plugins 사본 diff를 원시로 남긴다. 큰 실행은 Core 재측정·Management 중간 점검과 겹치지 않게 미리 알린다.
 - **Content·Core 우선**(메인 `msg_e9af11e8efee`, 2026-10-11T07:46:38Z). 원문 「일단 좀 급한게 컨텐츠랑 코어쪽이니까 이 쪽 작업 우선해보자, 운영툴은 재개지점 맥락확보하고 세션 정리해줘」. 효과: Content·Core가 먼저다. Management는 재개 지점을 남기고 닫으며, 그 7777 중간 점검 일정은 없어졌다(메인 조건 3의 Management 겹침 대상이 사라짐). World·Rules는 큰 실행이 겹치면 양보한다. 큰 실행 전 알림은 그대로 한다.
+- **라우팅 핫픽스**(메인 `msg_154e43b875cb`, 2026-10-11T11:03:16Z). 원문 「대시보드 결정 응답: 1) 모델 라우팅 - 모든 리드를 문맥 25만에서 압축하도록 지금 적용할지 → A 전체 적용 · 2) 모델 라우팅 - 리드가 같은 메시지로 두 번 깨는 것을 지금 규칙으로 막을지 → A 지금 적용 · 3) 모델 라우팅 - 로컬 DB 설치·기동 도구의 검증을 지금부터 Astra로 옮길지 → A 지금부터 Astra · 4) 모델 라우팅 - 선행 시험 작성자를 Codex로 옮기는 시점 → A 10-31 평가 때」. 이 goal에 닿는 효과는 셋이다. 1: Content 리드는 `--autocompact 250000`으로 다시 떴다. 압축 뒤 맥락을 잃어 일을 다시 한 사례가 나오면 바로 메인에 보고한다. 2: 우편함 대기 background가 살아 있는데 Orca 자동 알림으로 깨면 도구 호출 없이 한 줄로 턴을 끝낸다. 대기가 꺼졌거나 확실하지 않으면 check로 처리하고 대기를 다시 연다. 4: 선행 시험 작성자는 10-31 평가 때까지 신규 `claude-opus-5-5` 그대로다. 3은 로컬 DB 도구 검증이라 이 goal에 해당하지 않는다.
+- **클리어 PR의 세션 파일 제출 메서드**(메인 `msg_a3531f312474`, 2026-10-11T11:06:04Z). 원문 「대시보드 결정 응답: 1) Content 클리어 PR - 세션 파일에 확인 요청 제출 메서드 하나를 더하는 것을 범위에 넣을지 → A 넣는다」. 효과: `Sessions/GameSession.cs`에 확인 요청 제출 메서드 하나가 「건드릴 곳」에 들어간다. 나머지 범위는 메인이 리드 요청 `msg_0d95711472f4`와 승인 범위를 대조해 차이가 없었다. 메인 조건은 둘이다. `GameSession`·`HandlerRegistry`는 쓰기 전에 World·Core 리드에 함께 알리고 늦게 병합되는 PR이 main을 받는다. 7777·Unity 큰 실행은 미리 묻는다. 구현자 신규 `gpt-6-astra` xhigh(신호 2·3·4)와 선행 시험 신규 `claude-opus-5-5` 배정도 확인했다.
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-11T10:22:55Z(`lead-goal-edit-1011c/clock.txt`)이다. 패킷·창 PR의 재검증이 통과하고 PR230을 만든 시점이다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-11T11:08:50Z(`lead-goal-edit-1011d/clock.txt`)이다. PR230이 병합되고, 메인이 던전 클리어 PR 범위를 확인해 새 branch를 만든 시점이다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | [PR230 - 던전 패킷·창](https://github.com/bass131/dawnholder-server/pull/230)의 정확한 head CI를 확인하고, 메인에 병합 승인 요청(R-4 준비 보고)을 보낸다. 병합 뒤에는 클리어 PR 착수 전에 World 다중 계정 로그인 PR과의 패킷 번호·버전 순서를 다시 맞춘다 |
-| 열린 Task·Dispatch | 없다. 독립 검증 `ctx_9d95ce82d14f`, V-1 수정 `ctx_9c05d9c7936b`, 재검증 `ctx_47fddb9f9d06`은 정산했다 |
-| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 10-11에 origin/main `6782cd67`을 합침) |
-| PR | 던전 패킷·창은 PR230(OPEN, 이 기록 커밋 전 head `a35b7611`). 결함 PR은 [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(head `f135eaf1`, merge commit `e775bc77`) |
-| 리드 세션 / Run | `term_89459727-3c79-4004-a8d0-859d7a0052a9`(10-11 재진입) / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
+| 다음 첫 일 | World·Core 리드에 클리어 PR의 쓰기 계획(파일·구간·시기)을 함께 알린다. 이어서 클리어 PR 선행 시험 계약(C1~C7 서버 시험, 옛 세부 고침, C8 봇 시나리오 빌드)을 쓰고 신규 `claude-opus-5-5`를 기동한다. 서버 시험 harness 사실은 읽기 전용 조사 1회의 결과를 원천과 표본 대조한 뒤 계약에 넣는다 |
+| 열린 Task·Dispatch | 없다 |
+| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-server-20261011`(origin/main `999b1b98`에서 만듦) |
+| PR | 클리어 PR은 아직 없다. 던전 패킷·창은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 병합됐다(head `ac98fe69`, merge commit `999b1b98`). 결함 PR은 [PR221](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(merge commit `e775bc77`) |
+| 리드 세션 / Run | `term_e90e3c30-7af3-4155-a74c-21afa8842ed7`(11:05Z 재기동, `--autocompact 250000`) / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`, 재기동 뒤 `run-use`로 다시 묶음) |
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | Content 작업자 pane 0(10:20:04Z `terminal list`). Content는 10:21Z에 Unity·7777을 놓았다고 World·Core에 알렸다(`msg_bc322f3be185`, `msg_f67847b73b60`). Core SQL 컨테이너가 10:30Z 전후 시작 예정이다(Core `msg_8b4ad1f30afd`) |
-| 로컬 부수 변경 | `ProjectSettings.asset`은 10:21Z에 사용자 원래 상태 `4a8db0bd…`로 되돌렸다. TimeManager는 HEAD와 같다. 클리어 PR의 Unity batch가 다시 쓰면 같은 방식으로 되돌린다 |
-| 남은 결정·준비 | 사용자 결정으로 남은 것은 PR230 병합 승인뿐이다. World 다중 계정 로그인과의 병합 순서에 따라 패킷 번호와 시험을 맞춘다(「파트 간 소유와 계약」 PDL 행). C9 실화면에는 Unity 코드 실행 허용 결정이 다시 필요하다 |
+| 작업자·실행 자원 | Content 작업자 pane 0, Unity.exe 0(11:11:55Z `terminal list`·`tasklist`). Content는 Unity·7777을 쓰지 않는다. World 병합 작업자가 Windows 빌드·WSL 전체·Unity EditMode·가짜 서버 PlayMode·서식을 차례로 돌린다(World `msg_c1ddff558b8d`, Content 회신 `msg_e2fa43b6adba`). Core SQL 컨테이너 재측정은 실패로 끝났고 Core 쪽 제약은 없다(Core `msg_749dac3eaa51`) |
+| 로컬 부수 변경 | `ProjectSettings.asset`은 사용자 원래 상태 `4a8db0bd…`다. 클리어 PR의 Unity batch가 다시 쓰면 메인 판단 `msg_c9fac8091065`대로 같은 방식으로 되돌린다 |
+| 남은 결정·준비 | C9 실화면 직전에 검증자의 Unity 코드 실행 허용을 메인에 결정 요청으로 따로 올린다. World 로그인 PR(41·42·v19)이 `GameSession`·`HandlerRegistry`·`Dungeon/DungeonClearPacketContractTests.cs`·`domains/protocol.md`를 함께 바꾼다. 늦게 병합되는 PR이 main을 받는다 |
 
-**남은 순서**: PR230 CI → 사용자 병합 승인 → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: 클리어 선행 시험 → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`, 강) → C9 실화면 → PR·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -212,8 +217,9 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - [x] R10 골드 넘침 수정·재확인
 - [x] 결함 PR 병합
 - [x] 패킷·창 구현·검증
-- [>] PR230 병합
-- [ ] 클리어 설계 확정
+- [x] PR230 병합
+- [x] 클리어 설계 확정
+- [>] 클리어 선행 시험
 - [ ] 클리어 서버 구현
 - [ ] 검증·실제 플레이
 - [ ] 클리어 PR 병합
@@ -224,7 +230,7 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 - 범위 초안·사용자 승인·World 계약 확인까지 했다. 원문은 근거 폴더의 `scope-draft-v1.md`와 `inbox/`에 있다.
 - 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증 → PR 생성(CI) → R9 실화면 → R10 수정 루프와 실화면 재확인 → 사용자 병합 승인까지 끝났다(아래 다섯 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), CI, Unity Editor 실화면(MCP). 실행하지 않은 것: 봇, 빌드 단독 실행, 사람 손 입력.
-- 던전 패킷·창 PR은 선행 시험 → 구현 → 줄 끝 수정 → 독립 검증(차단 V-1) → V-1 수정 → 재검증(통과) → PR230 생성까지 했다(아래 세 절). 실행한 것: WSL 빌드·서버 시험, Windows 솔루션 빌드, 추출본 생성기·DLL 재현, Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), 봇 회귀. 실행하지 않은 것: 실화면, DB.
+- 던전 패킷·창 PR은 선행 시험 → 구현 → 줄 끝 수정 → 독립 검증(차단 V-1) → V-1 수정 → 재검증(통과) → PR230 생성 → 사용자 병합 승인까지 끝났다(아래 세 절). 실행한 것: WSL 빌드·서버 시험, Windows 솔루션 빌드, 추출본 생성기·DLL 재현, Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), 봇 회귀. 실행하지 않은 것: 실화면, DB.
 
 ### 선행 시험 — RED 준비 성공, 2026-10-10
 
@@ -407,6 +413,8 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **라우팅 시범 기록**: Astra 1회차(구현)의 독립 결함은 V-1 하나이고 귀속은 리드 계약·기존 코드다. Sol 1회차(줄 끝 수정)의 독립 결함은 0이다. Sol 2회차(V-1 수정)의 독립 결함은 0이다. 절차 실패는 300초 초과 heartbeat가 구현 셋, 줄 끝 수정 하나, V-1 수정 하나다.
 - **설정 파일 되돌림**: 재검증이 이 PR의 마지막 batch였다. 그 뒤 메인 판단 `msg_c9fac8091065`대로 `ProjectSettings.asset`을 `5a03375a…` → `4a8db0bd…`로 되돌렸다. 되돌림 사본과의 차이는 Unity가 지운 SENTIS define 한 줄뿐이었다. TimeManager는 HEAD와 같다(`lead-settings-restore-1011/`).
 - **미실행**: 실화면(클리어 PR), 서버 시험·봇·DLL 재현의 재검증 재실행(판정 diff가 서버·공유 코드를 건드리지 않음), DB.
+- **병합**: CI 4/4 통과(가장 긴 dotnet-tests 24m11s, 10:49:36Z 완료)·MERGEABLE CLEAN인 head `ac98fe69`로 메인에 승인 묶음을 보냈다(`msg_c78e1ddae8f8`). 그 사이 PR229(Rules 동결 전 규칙 문서)가 먼저 병합됐다. 겹치는 파일은 CURRENT 하나였고 `git merge-tree` 충돌이 0이라 다시 합치지 않았다(`merge-tree-704baa5e.txt`). 사용자가 메인 pane에 「병합 승인: PR230 head ac98fe6927e8ca6a41b5a66962bbb18e73feab2f」를 제출했고, 메인이 병합했다(2026-10-11T10:57:10Z, merge commit `999b1b98ba38934568f852adc2d22c9ee333d864`, 메인 `msg_8659906ef748`). 원격 branch는 병합 뒤 지워졌다(11:09Z `git ls-remote` 0건).
+- **번호 확정 알림**: 병합 직후 World에 39·40·v18이 main에 들어갔고 World 로그인은 41·42를 쓴다고 알렸다(`msg_929b97d8c951`). 버전 18을 리터럴로 단정하는 서버·클라이언트 시험 위치도 함께 보냈다.
 
 ### 운영 기록(첫 발생)
 
@@ -433,6 +441,8 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - V-1 수정 작업자의 첫 감사 파일 `sol-v1-fix/audit-final.json`이 204,499,098바이트가 됐다. PowerShell이 Git stderr 경고의 ErrorRecord를 JSON 객체로 직렬화했다. 근거 폴더(Git 밖)라 커밋 영향은 없고, 작업자가 보고에 스스로 적고 문자열로 정규화한 감사를 다시 남겼다.
 - 재검증자가 서버 lane Start를 전경으로 돌려 도구가 300초 뒤 백그라운드로 넘겼다. `Run-ServerLane.ps1`의 Start는 Stop까지 launcher에 붙어 있다(`:164-165`). 그 구간에 heartbeat 간격이 314초가 됐다. 이전 독립 검증자는 처음부터 백그라운드로 돌렸다. 첫 발생이라 이 goal에만 적는다.
 - Content가 Unity·7777을 쥐고 있는 동안 World 검증자의 봇 회귀(7777만, 09:30Z~09:36Z)를 V-1 수정 단계 사이에 끼웠다. World가 시작 전에 묻고 끝나자 해제를 알려 재검증과 겹치지 않았다(World `msg_784b84931692` → `msg_91b307b9bcdf`).
+- 리드의 PR230 병합 승인 요청(`msg_c78e1ddae8f8`)이 재검증 뒤 들어온 커밋을 `ac98fe69` 하나로 적었다. 실제로는 `a35b7611`(검증자 시험)과 `ac98fe69`(goal) 둘이었다. 메인 R-2가 찾았고 승인에는 영향이 없었다(`msg_8659906ef748`). 첫 발생이라 이 goal에만 적는다. 다음 보고부터 리드는 base 이후 리드 커밋을 `git log`로 뽑아 빠짐없이 적는다.
+- 라우팅 핫픽스 결정 1로 메인이 Content 리드 pane을 `--autocompact 250000`과 `--resume`으로 다시 띄웠다(11:05Z). 대화는 이어졌고 handle은 `term_e90e3c30-…`으로 바뀌었다. 리드는 같은 Run에 `run-use`로 다시 묶었다(consumer_generation 3, `inbox/run-use-1011d.json`). 이 시각 앞뒤 우편함 기록의 리드 handle이 다른 이유다.
 
 ## 다음 계획 후보
 
