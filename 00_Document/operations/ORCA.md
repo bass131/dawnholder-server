@@ -89,7 +89,7 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 - 활성 Dispatch 없는 escalation(1.4.221, 2026-10-06)은 [R-4](#r4-report-type), 메모리 회수로 꺼진 대기(2026-10-06)는 아래 대기 정책을 따른다.
 - 크래시·업데이트 복구(1.4.220, 2026-10-05): 크래시 때 리드 탭은 새 handle로 되살아나고 split 작업자는 복구되지 않았으며 업데이트·재부팅 때는 아무 터미널도 복구되지 않았다. Codex 리드는 rollout의 cwd·model로 대화를 찾아 `codex resume`, Claude 리드는 `claude --resume`으로 다시 열고 [R-8 인수](#r8-astra-lifecycle)를 따른다. 다른 worktree는 `terminal list --worktree path:<경로>`, 옛 handle 우편함은 `orchestration inbox --terminal <옛 handle>`로 조회한다. 작업자는 [크래시 정본](#crash-recovery)대로 새 세션으로 대체한다.
 
-Claude 리드는 Bash `run_in_background`로 `orca orchestration check --wait --types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question" --timeout-ms 900000 --json`을 한 번에 하나만 연다. Run 바인딩 시 `--run <run_id>`, 처리한 delivery는 다음 대기의 `--ack`로 넘긴다. `&`·`/dev/null`로 출력을 버리지 않는다. 끝난 출력을 직접 읽고 처리한 뒤 다음 대기를 연다.
+Claude 리드는 Bash `run_in_background`로 `orca orchestration check --wait --types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question" --timeout-ms 900000 --json`을 한 번에 하나만 연다. Run 바인딩 시 `--run <run_id>`, 처리한 delivery는 다음 대기의 `--ack`로 넘긴다. `&`·`/dev/null`로 출력을 버리지 않는다. 끝난 출력을 직접 읽고 처리한 뒤 다음 대기를 연다. 출력 버림은 [세션 쓰기 가드](../../99_Tools/README.md#세션-쓰기-가드)가 실행 전에 막고, 리드는 작업자 정산 때 [생존 신호 간격 helper](../../99_Tools/README.md#생존-신호-간격)로 저장한 우편함 원시를 재어 300초 초과 구간을 goal에 적는다.
 메모리 회수로 대기가 꺼지면 스스로 다시 켜지 않는다. 「Orca 메시지를 확인하라」 안내가 오면 `--wait` 없는 check 한 번으로 처리한다(2026-10-06 관측).
 대기는 Claude 리드가 맡고 작업자·검증자는 한 작업 뒤 끝나 대기 비용이 없다. `--types`로 heartbeat를 빼도 Orca 알림이 heartbeat마다 Claude 리드를 깨웠다(2026-10-06 관측). heartbeat 5분을 유지한다. 위 버전·날짜 관측은 타 버전을 보장하지 않는다([원천·측정 한계](#pr2-source)).
 
