@@ -8,15 +8,15 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_fddebc03-9972-41d8-8941-e7c98af2dabe`, Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 범위 승인 뒤 goal 첫 commit을 했다. 다음은 아래 「설계」 절 작성이다.
-- **남은 순서**: 설계 절 → 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **현재 위치**: 범위 승인 뒤 goal 첫 commit(`0e3a6ce9`)을 했고, 아래 「설계」 절을 썼다. 다음은 선행 시험 계약 발행이다.
+- **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
 ## 진척 단계
 
 - [x] 범위 승인
-- [>] 설계 절 작성
-- [ ] 선행 시험 작성
+- [x] 설계 절 작성
+- [>] 선행 시험 작성
 - [ ] 구현
 - [ ] 독립 검증
 - [ ] 봇·실화면 확인
@@ -128,7 +128,92 @@ PR 단계 이름은 PR 번호가 생기면 「PR### 병합」으로 바꾼다.
 
 ## 설계
 
-리드가 작성한다. 다음 commit에서 이 절을 채운 뒤 선행 시험 계약을 발행한다.
+리드가 썼다(기준 main `6782cd67`). 파일·타입·메서드 이름은 기본안이고 선행 시험이 고정한다. 선행 시험이 바꾼 이름은 아래 「선행 시험이 고정한 이름」에 적는다. 범위·완료조건은 바꾸지 않았다.
+
+### 고른 방식과 검토한 다른 방식
+
+| 방식 | 판단 |
+|---|---|
+| 로그인 판정을 월드 틱의 계정 등록부에서 한다 (고름) | 소켓 스레드는 이름을 검사하고 작업을 큐에 넣기만 한다. 접속 중 목록의 추가·제거는 모두 틱 스레드에서 일어나고, 종료 정리(`GameWorld.DrainSessionCloses`)와 같은 스레드라 잠금이 없다. 인벤토리·파티·퀘스트 등록부와 같은 「큐 + Tick」 모양이다. 대가는 로그인 결과가 최대 한 틱(50ms) 늦는 것이다. 나중에 Core의 DB 조회가 들어와도 결과를 틱에서 적용하는 자리가 이미 있다. |
+| 소켓 스레드에서 동시 사전으로 바로 판정 | 고르지 않음. 끊김이 다른 스레드에서 오면 「등록 → 닫힘 재확인 → 내 등록만 지우기」 순서를 지켜야 남는 등록이 없다. 정리는 틱에서, 등록은 소켓에서 일어나 두 스레드의 순서를 시험으로 덮기 어렵다. |
+| handshake 패킷에 이름 칸을 더한다 | 고르지 않음. 기존 패킷의 필드를 바꾸고, 버전 거부와 로그인 거부가 한 결과에 섞인다. |
+| 계정 번호를 무작위로 발급해 메모리에 둔다 | 고르지 않음. 재시작 때 번호가 바뀌어 나중 DB 행과 맞출 수 없다(Core `msg_775584e3f699` 1). |
+| 서버 설정에 등록된 이름만 받는다 | 고르지 않음. 「확인한 기본값」 3(처음 보는 이름은 새 계정). |
+
+### 구성
+
+공유(`98_Shared`, 서버·클라이언트·봇이 함께 쓴다):
+
+- 패킷: PDL 맨 아래에 `C_Login { string accountName }`(클라이언트 → 서버)과 `S_LoginResult { byte result }`(서버 → 클라이언트)를 더한다. 프로토콜 버전을 main보다 하나 올리고 버전 이력 주석에 한 줄을 더한다. 생성 코드는 PacketGenerator로 만든다.
+- 결과 값: `Shared.GameData.LoginResult : byte` = `Accepted 0`, `InvalidName 1`, `AlreadyOnline 2`. 위치는 기존 `InventoryResult`와 같은 `98_Shared/GameData/Enums/LoginResult.cs`다.
+- 이름 규칙: `Shared.GameData.AccountNameRule`(`98_Shared/GameData/Accounts/AccountNameRule.cs`). `MinLength 3`, `MaxLength 16`, `bool TryNormalize(string? raw, out string normalized)`. ASCII `A-Z`는 소문자로 바꾸고, 바꾼 뒤 모든 글자가 `a-z`·`0-9`·`_`이고 길이가 3~16이면 통과한다. 앞뒤 공백을 자르지 않는다(공백은 허용 밖 글자다). 서버가 권위 판정에 쓰고, 클라이언트는 메뉴 사전 검사에, 봇은 이름 생성 검사에 같은 규칙을 쓴다. 규칙은 공유, 판정은 서버라는 CODE_CONVENTION 「상태와 책임」을 따른다.
+
+서버(`02_Server/GameServer/Accounts/` 새 폴더, 파티·퀘스트·아이템 등록부와 같은 도메인 폴더 관례):
+
+- `AccountIdentity`: `readonly record struct AccountIdentity(string Name, Guid AccountId)`. 세션이 들고 있는 계정이다. 로딩 게이트가 읽을 자리다.
+- `AccountIdResolver`: `static Guid Resolve(string normalizedName)`. 계정 번호를 정하는 유일한 곳이다. 지금은 RFC 9562의 이름 기반 v5 UUID(SHA-1)로 계산한다. 이름공간 GUID는 이 파일의 상수 `d05083ec-6067-4d21-9ce9-271da508bbfd`로 고정한다. 그래서 같은 이름은 재시작 뒤에도 같은 번호이고 빈 GUID가 나오지 않는다. SHA-1은 번호 계산용이며 보안 용도가 아니다. 나중에 Core가 이 메서드 몸통을 DB 조회로 바꾼다. 지금은 쓰는 곳이 하나라 인터페이스를 만들지 않는다(CODE_CONVENTION 「사용처 없는 확장 hook·추상화를 추가하지 않는다」).
+- `AccountRegistry`(internal, 월드 틱 소유): `ConcurrentQueue<Action>` 작업 큐와 `Dictionary<string, GameSession>` 접속 중 목록(열쇠는 정규화한 이름). `EnqueueLogin(GameSession session, string normalizedName)`, `Tick()`, `Forget(GameSession session)`. 시험용 조회(`IsOnline(string)` 등)는 선행 시험이 정한다.
+- 로그인 처리기 `Handlers/Session/LoginHandler.cs`: `RequiresSelectedClass => false`. `HandlerRegistry`에 한 줄로 등록한다.
+- `GameSession`: 로그인 상태(없음 → 요청함 → 성공)와 `AccountIdentity? Account`를 가진다. `TryBeginLogin()`(소켓 스레드, 없음 → 요청함 원자 전환), `CompleteLogin(AccountIdentity)`(틱 스레드, 계정과 상태를 먼저 쓰고 성공 결과를 보냄), `RejectLogin(LoginResult)`(결과를 보내고 연결을 끊음, 기존 `RejectHandshake`와 같은 모양), `IsLoggedIn`. 시험 하위 클래스가 로그인을 우회할 수 있게 `CompleteLogin`은 `protected internal`로 둔다.
+- `GameWorld`: `AccountRegistry`를 만들어 들고 `Accounts`로 노출한다. `DrainSessionCloses`에서 `_accounts.Forget(session)`을 부른다. `OnTick`에서는 첫 `DrainSessionCloses` 바로 뒤에 `_accounts.Tick()`을 부른다.
+
+클라이언트(`03_Client/Assets/Scripts/`):
+
+- `Bootstrap/AccountLoadout.cs`: 지금 `ClassLoadout`과 같은 모양이다. 프로세스 안 값 `SessionAccountName`이 1순위이고 PlayerPrefs `AccountName`은 입력칸 채우기용이다.
+- `UI/MainMenuController.cs`와 `MainMenu.unity`: 서버 주소 입력칸 아래에 계정 이름 입력칸(`TMP_InputField`)을 더한다. 시작 버튼에서 `AccountNameRule.TryNormalize`로 먼저 검사해 틀리면 기존 오류 글자칸에 이유를 쓴다. 시험 접속이 성공하면 정규화한 이름을 `AccountLoadout`에 저장한다. 메뉴가 열릴 때 남아 있는 로그인 거부 안내가 있으면 오류 글자칸에 보이고 지운다.
+- `UI/MainMenuNotice.cs`(새, 정적): 씬을 넘어 거부 안내 한 줄을 넘긴다. `Set(string)`, `TryTake(out string)`.
+- `Network/ClientConnectionLifetime.cs`: `Connect(endPoint, selectedClass, accountName)`. handshake 성공 때 연결당 한 번 `SendLogin(accountName)`을 보낸다. 로그인 결과가 `Accepted`이면 연결당 한 번 `SendCharacterSelect`를 보낸다. 그 밖이면 거부 결과를 남기고 `LoginRejected` 이벤트를 낸 뒤 연결을 끊는다. `IClientConnectionSession`에 `event Action<LoginResult> LoginResultReceived`와 `void SendLogin(string accountName)`을 더한다.
+- `Network/UnityClientSession.cs`: dispatch 표에 `S_LoginResult` 한 줄, `SendLogin`. 새 `Network/Handlers/Session/LoginResultHandler.cs`는 결과 값이 0~2인지 보고 메인 스레드에서 이벤트를 낸다. 범위 밖 값은 로그를 남기고 연결을 끊는다.
+- `Network/NetworkService.cs`: `Connect`가 `AccountLoadout`에서 이름을 읽는다. 이름이 없거나 규칙에 맞지 않으면 지금의 잘못된 주소처럼 메인 메뉴로 돌아간다. `LoginRejected`를 받으면 안내를 `MainMenuNotice`에 넣고 메인 메뉴로 돌아간다. 안내 문장은 `InvalidName` → 「계정 이름은 영문 소문자·숫자·밑줄 3~16자로 입력해주세요」, `AlreadyOnline` → 「이미 접속 중인 계정입니다」다.
+
+봇(`99_Tools/headless-bot/`):
+
+- `ProbeBase`: `protected virtual string AccountName`의 기본값은 봇마다 다른 이름(`bot_<실행마다 정하는 4자리 16진수>_<일련번호>`, 16자 이하)이다. handshake 성공 때 `C_Login`을 보내고, `S_LoginResult`를 받아 `LoginResult` 속성과 대기 신호를 세우며, `Accepted`일 때만 `C_CharacterSelect`를 보낸다. `WaitLogin(TimeSpan)`을 더한다.
+- `Scenarios/Movement/M2BasicMovement.cs`: 손수 짠 handshake 뒤에 같은 로그인 단계를 넣는다.
+- 새 시나리오 `MultiAccountLoginSmoke`(위치는 기존 시나리오 하위 폴더 관례를 따라 구현이 정함): 서로 다른 두 이름의 동시 입장, 같은 이름 세 번째 연결의 `AlreadyOnline`과 끊김, 그동안 첫 연결이 계속 스냅샷을 받음, 첫 연결을 끊은 뒤 같은 이름의 재입장, 규칙 위반 이름의 `InvalidName`. `Program.cs`와 `99_Tools/run_bot_regression.sh`에 등록한다.
+
+### 로그인 흐름과 게이트
+
+1. `C_Handshake` 처리는 지금 그대로다(첫 패킷 강제, 버전 정확 일치).
+2. `C_Login`(소켓 스레드, `LoginHandler`):
+   - `TryBeginLogin()`이 실패하면(이미 요청했거나 성공함) `[Trust]` 로그를 남기고 버린다. 계정은 바뀌지 않는다(완료조건 7).
+   - 패킷을 읽다 길이 머리가 버퍼를 넘으면 예외를 밖으로 내지 않고 `InvalidName`으로 거부한다. `AccountNameRule.TryNormalize`가 실패해도 `InvalidName`으로 거부한다(완료조건 6). 로그에는 원래 이름 대신 길이만 남긴다.
+   - 세션에 월드가 없으면 버린다(시험용 `GameSession(null)`).
+   - 통과하면 `world.Accounts.EnqueueLogin(session, normalized)`.
+3. 로그인 작업(틱 스레드, `AccountRegistry.Tick`):
+   - 세션이 닫히는 중이면 아무것도 하지 않는다(등록하지 않음).
+   - `AccountIdResolver.Resolve`로 번호를 정한다.
+   - 같은 이름이 접속 중이면 `RejectLogin(AlreadyOnline)`. 기존 세션은 건드리지 않는다(완료조건 2).
+   - 아니면 목록에 넣고 `CompleteLogin(new AccountIdentity(name, id))`. 상태를 먼저 쓰고 결과를 보낸다. 그래서 클라이언트가 결과를 받고 보낸 `C_CharacterSelect`는 늘 로그인 성공 상태를 본다.
+   - 로그 한 줄: `[Login] accepted account=<name>` 또는 `[Login] rejected account=<name> result=AlreadyOnline`.
+4. `C_CharacterSelect`(소켓 스레드): `CharacterSelectHandler`가 맨 앞에서 `IsLoggedIn`을 보고, 로그인 전이면 `[Trust]` 로그를 남기고 버린다. 지금의 중복 선택·범위 검사는 그 뒤에 그대로다.
+5. 게임 입력: 지금처럼 `RequiresSelectedClass` 게이트로 버린다. 직업 선택이 로그인 뒤에만 되므로 로그인 전 게임 입력도 처리되지 않는다(완료조건 7).
+
+게이트를 직업 선택 한 곳에만 두는 이유: 실제 클라이언트가 직업을 얻는 길은 `CharacterSelectHandler` 하나다. `EnterGameWorldIfReady`와 `OnRecvPacket` 전체에 로그인 게이트를 더하면 직업을 직접 넣고 입장하는 기존 시험 도우미(`CompleteHandshakeAndEnter` → `SetCharacterClass` → `EnterGameWorldIfReady`)가 모두 바뀐다. `EnterGameWorldIfReady()`를 직접 부르는 시험만 28파일 34곳이다(`grep -rn 'EnterGameWorldIfReady()' 02_Server/GameServer.Tests`, main `6782cd67`). 게이트가 지키는 행동은 같고 시험 변경만 커진다. 대신 `C_CharacterSelect` 패킷을 보내 직업 선택 처리기를 거치는 기존 시험 12파일은 로그인 단계를 더해야 하고 실패 전수 분류 표에 넣는다(`grep -ln 'C_CharacterSelect' 02_Server/GameServer.Tests`, main `6782cd67`): `Integration/ServerFixtureLifecycleTests.cs`, `Items/InventoryLifecycleRaceTests.cs`·`InventoryMigrationLifetimeTests.cs`·`InventoryProtocolContractTests.cs`·`InventoryWireContractTests.cs`, `Maps/InstanceMapRetirementTests.cs`·`InstanceMapTestWorld.cs`·`SessionCleanupTests.cs`, `Network/CharacterSelectHandlerTests.cs`·`ServerHostLifecycleTests.cs`·`SessionStateMachineTests.cs`, `Party/QuestNotificationContractTests.cs`. 실제 실패 목록은 선행 시험의 구현 전 실행 원시로 확정한다.
+
+### 스레드와 순서 계약 (완료조건 11)
+
+- 접속 중 목록은 틱 스레드에서만 바뀐다(로그인 작업, 종료 정리의 `Forget`).
+- 소켓 스레드는 로그인 상태의 원자 전환, 이름 검사(순수 계산), 큐 넣기만 한다.
+- 틱 안에서 파일·DB·네트워크를 기다리지 않는다. 번호 계산은 16바이트 이하의 해시다.
+- 끊김과의 순서: `OnDisconnected`가 닫힘 표시를 먼저 쓰고 종료 요청을 큐에 넣는다. 로그인 작업과 종료 정리는 같은 틱 스레드에서 돈다. 그래서 (가) 작업이 닫힘 전에 돌면 등록하고 다음 종료 정리가 내린다. (나) 닫힘 뒤에 돌면 등록하지 않는다. 남는 등록이 없다.
+- `Forget`은 목록의 값이 바로 그 세션일 때만 지운다. 늦게 온 정리가 다른 세션의 등록을 지우지 못한다.
+- 한 틱 안 순서는 「종료 정리 → 로그인 작업 → 맵 틱 → 종료 정리 → 파티 → 퀘스트 → 인벤토리 → 복사본 정리」다. 같은 틱에 끊긴 계정을 그 틱의 새 로그인이 다시 쓸 수 있다.
+- 거부는 결과를 보낸 뒤 연결을 끊는다. 이 「보내고 바로 끊기」는 지금 `RejectHandshake`와 같은 모양이다. 끊는 순간 서버 수신 버퍼에 읽지 않은 데이터가 있으면 운영체제가 연결을 리셋해 결과가 클라이언트에 닿지 않을 수 있다(추론, 미측정). 봇 시나리오가 거부 결과 수신을 단정해 실제로 본다. 닿지 않으면 구현 단계에서 리드에 올린다.
+
+### 영속화 설계와의 대응
+
+- 세션 상태 HandshakePending → Selecting → Loading → Resolved → Entering → Active([D0 설계](../2026-09-29-persistence-design/design.md) 52~56행)에서 로그인은 HandshakePending과 Selecting 사이다. 나중의 Loading은 직업 선택 뒤에 들어오므로 로그인 단계를 다시 짜지 않는다.
+- Core가 번호 해석을 DB 조회로 바꿀 때는 로그인 작업이 조회를 맡기고 결과를 틱에서 적용하는 두 단계가 된다. 결과 적용 때 닫힘을 다시 보는 자리는 이미 있다.
+- 같은 계정 이중 접속 거부는 D0의 같은 캐릭터 중복 접속 거부(같은 파일 37행)와 같은 방향이다. 기존 세션을 끊고 새로 받는 방식은 쓰지 않는다.
+
+### 시험이 덮을 것과 대체 실측
+
+- 서버 xUnit(선행 시험): 완료조건 1~7과 9의 서버 쪽. 같은 이름 동시 로그인(완료조건 3)은 두 세션이 같은 틱 전에 로그인을 넣은 뒤 한 틱을 돌려 하나만 `Accepted`인지 본다. 계정 번호 기대값은 제품 코드가 아닌 독립 구현(예: WSL Python `uuid.uuid5`)으로 미리 계산해 원시와 함께 둔다. 제품 계산을 복제한 기대값은 통과 차단 사유다.
+- 클라이언트 EditMode(선행 시험): `ClientConnectionLifetime`이 handshake 뒤 로그인을 먼저 보내고 `Accepted` 뒤에만 직업 선택을 보내는지, 거부 때 `LoginRejected`를 내고 끊는지. `AccountNameRule` 단정은 서버 시험에 두고 클라이언트는 중복하지 않는다.
+- PlayMode: 메인 메뉴 씬에 계정 이름 입력칸이 있고 남은 거부 안내가 오류 글자칸에 보이는지. 선행 시험이 덮을 수 있는 만큼 덮는다.
+- 봇: 새 시나리오와 기존 회귀 묶음.
+- 실화면 한 번(독립 검증): 메인 메뉴 입력칸이 보이고 다른 요소와 겹치지 않는지, 거부 뒤 메인 메뉴의 이유 글자. PlayMode로 닿지 않는 화면 확인을 대신한다.
 
 ## 다른 파트와 맞춘 경계
 
