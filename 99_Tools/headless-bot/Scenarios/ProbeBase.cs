@@ -10,7 +10,7 @@ namespace Dawnholder.Tools.HeadlessBot.Scenarios;
 // 공통 핸드셰이크 + 연결 인프라 베이스.
 //
 // 모든 Probe가 반복 구현하던 다음 4종을 집중 관리한다:
-//   1. Connector + _connected/_handshake/_enterMap ManualResetEventSlim
+//   1. Connector + _connected/_handshake/_login/_disconnected/_enterMap ManualResetEventSlim
 //   2. Connect() — OnConnected 시 C_Handshake 자동 송신
 //   3. S_HandshakeResult → C_Login → Accepted 뒤 C_CharacterSelect 송신
 //   4. S_EnterMap 처리 — LocalEntityId + SpawnX + _serverX 초기화
@@ -214,6 +214,6 @@ abstract class ProbeBase
     // S_Snapshot은 자기 자신의 것만 호출 (entityId 필터 후).
     protected virtual void OnSnapshot(S_Snapshot packet) { }
 
-    // S_HandshakeResult / S_EnterMap / S_MapTransition / S_Snapshot 외 모든 패킷.
+    // S_HandshakeResult / S_LoginResult / S_EnterMap / S_MapTransition / S_Snapshot 외 모든 패킷.
     protected virtual void HandleExtraPacket(PacketID id, ArraySegment<byte> buffer) { }
 }

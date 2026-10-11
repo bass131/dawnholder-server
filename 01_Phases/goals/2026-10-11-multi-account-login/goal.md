@@ -8,8 +8,11 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_328d1a7f-d009-4652-ae3d-8f5713873017`(재기동 `msg_6fa922f40f7d` 뒤, 이전 `term_fddebc03…`), Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: fixture 설명 7줄(RO-01) 수정이 끝났다(아래 「현재 결과」의 RO-01 수정). 수정 작업자와 리드 전수 훑기로 같은 종류 18줄을 세 파일에서 더 찾았다.
-- **다음 행동**: 18줄 수정 계약을 쓰고 신규 `gpt-6.1-sol` max에 맡긴다. 그 뒤 7줄과 18줄을 한 번에 약 등급으로 재검증한다(신규 `gpt-6-astra` xhigh). WSL 전체·서식은 직전 여유 물리·가상이 각각 4GB 이상이면 기다리지 않고 돌린다(Content `msg_588b14556202`). 실화면은 Content 7777 봇이 끝나 listener 0을 알린 뒤 메인에 다시 요청한다.
+- **현재 위치**(2026-10-11 마감): 시험·봇 설명 수정 7줄(RO-01)과 18줄(RO-01 나머지)이 둘 다 commit됐다(아래 「현재 결과」). 18줄은 WSL 전체·봇 컴파일을 돌리지 않았다(메모리 미달과 마감으로 리드가 계약에서 뺌). 사용자 마감 지시(아래 「적용 중인 사용자 결정」)로 세션을 닫았고, 열린 작업자·검증자는 없다.
+- **다음 행동**: 7줄과 18줄을 묶어 약 등급 독립 재검증을 한 번 연다(신규 `gpt-6-astra` xhigh, `[World 검증자]`). 실행은 WSL 서버 전체(TRX, 봇 컴파일 포함)·서식 한 번·`git diff --check`다. 큰 실행은 직전 여유 물리·가상이 각각 4GB 이상일 때만 한다(Content `msg_588b14556202`).
+  - 계약 초안: 메모 E/`ro01-reverify-prep-context.md`, 머리 E/`ro01-reverify-build/head.md`. 지금 머리는 7줄 기준이고 `@@FIX_SHA@@`·`@@REPORT_SHA@@` 자리표시가 남았다. 18줄의 세 파일, commit 범위(`ac5342bd..` 18줄 commit), 옛 문구 검색 패턴을 넣어 고친다. 규칙 원문은 E/`ro01-rest-build/assemble.mjs`로 CODE_CONVENTION 119~126·71~82·128~141·162~172행을 붙인다.
+  - 통과하면 실화면을 메인에 다시 요청한다. 요청서 E/`screen-request.txt`, harness E/`screen-harness/hold_account.py`(아직 실행 안 함). 시작 직전에 Content·Core에 7777·Unity 사용을 묻는다.
+- **다시 열 때 필요한 것**: 이 리드의 Claude 세션 ID `1531e871-7aaa-4331-a1db-d831038f8f4a`, Run `run_a927bbaff1f5`. branch는 이 기록 commit까지 원격에 올렸다(마감 때 처음 생성). world-active에 사용자 미커밋 파일은 없다. 사용자·메인 결정 대기 항목은 없다.
 - **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -19,7 +22,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 설계 절 작성
 - [x] 선행 시험 작성
 - [x] 구현
-- [>] 독립 검증(시험 설명 18줄 수정·재검증 남음)
+- [>] 독립 검증(시험·봇 설명 7줄과 18줄의 묶음 재검증 남음)
 - [ ] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
@@ -278,6 +281,8 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 
 모두 메인 창 Enter 제출, 메인 전달이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
 
+- **마감 준비**(메인 전달 `msg_a657e13c5efc`, 2026-10-11T14:03:06Z, 사용자 제출 14:0xZ): 「일단 슬슬 마감 준비도 하자, 각 파트 마지막 작업 끝나면 재개 포인트 잡고 마무리하는 방향으로 지시해줘」. 효과: 이미 띄운 작업까지만 끝내고 새 작업자·검증자·Gardener는 열지 않는다. 재개 지점을 고치고 자기 branch를 commit·push한 뒤 메인에 「마감 준비 완료」를 보낸다. 18줄 작업자는 이 지시를 읽기 전(14:02Z)에 띄워 「이미 띄운 작업자」로 끝까지 처리했고 메인에 알렸다(`msg_09592295380f`). 묶음 재검증과 실화면은 다음 세션이다.
+
 - **라우팅 핫픽스**(메인 전달 `msg_22f631ad7da7`, 2026-10-11T11:03:16Z, 정본 반영은 다음 Rules goal): 「대시보드 결정 응답: 1) 모델 라우팅 - 모든 리드를 문맥 25만에서 압축하도록 지금 적용할지 → A 전체 적용 · 2) 모델 라우팅 - 리드가 같은 메시지로 두 번 깨는 것을 지금 규칙으로 막을지 → A 지금 적용 · 3) 모델 라우팅 - 로컬 DB 설치·기동 도구의 검증을 지금부터 Astra로 옮길지 → A 지금부터 Astra · 4) 모델 라우팅 - 선행 시험 작성자를 Codex로 옮기는 시점 → A 10-31 평가 때」. 효과: 리드는 우편함 대기가 살아 있을 때 Orca 자동 알림으로 깨면 도구 호출 없이 한 줄로 턴을 끝낸다(대기가 꺼졌거나 불확실하면 check로 처리). 메인이 안전 지점(진행 중인 작업자 0)에서 리드 pane을 `--autocompact 250000`으로 다시 띄우므로 재개에 필요한 것은 이 파일 「재개 지점」과 근거 폴더에 둔다. 압축 뒤 맥락을 잃어 일을 다시 한 사례가 나오면 메인에 바로 알린다. 선행 시험 작성자는 그대로 신규 `claude-opus-5-5`다.
   - 결정 2 정정(메인 전달 `msg_7c26237ca10c`, 11:49:52Z): 처음 문장의 「대기를 다시 연다」는 메인의 덧붙임이었다. 사용자 원문(메인 pane Enter 제출): 「대시보드 결정 응답: 1) 라우팅 정본 반영 - 메모리 부족으로 꺼진 우편함 대기를 리드가 다시 켜지 않는 규칙을 유지할지 → A 유지 · 2) 라우팅 정본 반영 - 규칙 문서 크기가 약 1.8KB 느는 것을 허용할지 → A 허용」. 효과: 대기 background 작업이 돌고 있고(종료·kill 알림을 받지 않음) Orca 자동 알림으로 깼다면 도구 호출 없이 한 줄로 턴을 끝낸다. 메시지 처리는 대기가 끝나 깰 때 한다. 대기가 메모리 회수로 꺼졌거나 살아 있는지 확실하지 않으면 `--wait` 없는 check로 처리하고, 메모리 회수로 꺼진 대기는 스스로 다시 켜지 않는다.
 
@@ -528,4 +533,21 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
   - 해당 없음으로 본 것: 통합·호스트·퀘스트 알림·세션 정리 시험, PlayMode fixture, `M2BasicMovement`(설명이 없거나 구현이 이미 고침), 클라이언트 연결 시험(시험 이름을 `AcceptedLogin_…`로 바꿈), `SessionStateMachineTests.cs:145`(지금도 맞음), Combat 시험의 `BypassHandshake`(이번 goal이 바꾸지 않았고 로그인하지 않음).
   - helper 이름 `BypassHandshake`·`SetupHandshakedSession`은 바꾸지 않는다. 다른 시험 네 파일이 같은 이름을 쓰는 관례라 옆 설명으로 로그인을 밝히고, 이름 정리는 다음 계획 후보로 둔다.
 - 처리: RO-01과 같은 이유로 이 goal 안에서 고친다. 시험 설명 수정은 O-1·RO-01에 이어 3회차라 「3회를 넘으면 메인 체크포인트」 전이다. Content 브랜치(`2d168f19`)는 세 파일을 바꾸지 않는다. 재검증은 7줄과 18줄을 묶어 한 번만 한다.
+- 부수 효과: Unity를 쓰지 않아 되돌린 파일이 없다.
+
+### RO-01 나머지 수정 — 2026-10-11
+
+- 작업자: 신규 `gpt-6.1-sol` max(최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 첫 화면 「GPT-6.1-Sol max · Full Access · never」, 선택창 없음, backend unknown), 태그 `[World Sol]`. 리드 pane 아래 split `term_e1a460b2-8804-4ed4-8c59-d24faade88a6`, Task `task_e64b4497da54`, Dispatch `ctx_ae89d165331c`. worker_done `msg_079ccecddfbf`(14:19:19Z, succeeded). release `retained` 뒤 pane을 닫았다.
+- 계약: E/`ro01-rest-contract.md` v1(SHA256 `ddb5bb3c2bdb5a275688addb0da3c63e6dc77196a185a6280a1201d57872f16f`), 요약 E/`ro01-rest-spec.md`, 입력 E/`ro01-rest-inputs.txt`, 경로 확인 E/`ro01-rest-preflight.txt`, 리드 메모 E/`ro01-rest-prep-context.md`. 약 등급, 고정 HEAD `c7235bb0`. CODE_CONVENTION 세 절은 조립 스크립트 E/`ro01-rest-build/assemble.mjs`가 원문 행 범위를 그대로 붙이고 원문과 같은지 비교했다(E/`ro01-rest-build/assemble.stdout.json`, 다음 계획 후보 「규칙 절 발췌 기계 비교」의 이번 goal 한정 적용).
+- 바꾼 것: 「RO-01 수정」 절에서 찾은 세 파일 18줄의 주석에 로그인 단계를 넣었다. `SessionStateMachineTests.cs` 13줄, `CharacterSelectHandlerTests.cs` 3줄, 봇 `ProbeBase.cs` 2줄(대기 이벤트 `_login`·`_disconnected`, 기반 클래스가 처리하는 `S_LoginResult`)이다. 식별자·단정·실행 코드는 그대로다.
+- 보고: E/`ro01-rest/report.md`(SHA256 `4d4ce271ef9f34da99057f7ade828310723061d0cb453772e4206a3d570491d4`), 사전 메모 E/`ro01-rest/context-before.md`. 리드 대조 메모 E/`ro01-rest-result-goal-context.md`.
+
+| 실행 | exit | 결과 |
+|---|---|---|
+| `git diff --check` | 0 | 출력 없음, 3 files 18+ 18- |
+| WSL 서버 전체(봇 컴파일 포함) | 미실행 | 리드 계약 변경으로 다음 묶음 재검증에 넘김 |
+
+- 계약 변경: 작업자가 직전 status `msg_b981175f2114`(14:11:45Z, 여유 물리 3214040 KiB·가상 5067060 KiB)를 보내고 공식 질문 `msg_0d533b7c8523`으로 물었다. 물리가 기준 4194304 KiB에 못 미쳤다. 또 Content 7777 봇이 14:15Z~14:25Z 시작 창을 잡았고(`msg_23a93cf2142c`), 사용자 마감 지시가 왔다. 그래서 리드가 전체 실행을 계약에서 빼고 다른 실행으로 메우지 말라고 답했다(`msg_8a10a801469b`). 컴파일과 전체 시험은 아직 확인되지 않았다.
+- 리드 R-2 표본: 계약 표 18행의 「바꾼 뒤」 문구와 실제 줄이 18/18 같다(E/`ro01-rest-build/postcheck.stdout.txt`). `git diff --numstat`는 파일별 3/13/2다. 추가·삭제 줄에 XML 문서 주석을 깨는 `<`·`>`·`&`가 없다. 사전 메모 생성(14:08:03Z)이 첫 소스 쓰기(14:08:49Z)보다 앞선다. 전체 시험 결과 폴더가 없어 미실행 보고와 맞는다.
+- 마감 점검(14:20Z, E/`wrapup-process-check.txt`): Unity.exe 0, Windows dotnet.exe 0, WSL dotnet 0, 7777 listener 0, Docker 컨테이너 0이다. World가 띄운 실행은 남지 않았다.
 - 부수 효과: Unity를 쓰지 않아 되돌린 파일이 없다.
