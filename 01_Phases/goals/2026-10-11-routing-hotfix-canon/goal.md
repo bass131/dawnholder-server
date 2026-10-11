@@ -13,16 +13,16 @@
 - 근거 폴더 E: `.backups/verification/2026-10-11-routing-hotfix-canon/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-routing-hotfix-canon/scope-draft-v1.md)(SHA256 `32c0186e…b927`)와 메인 승인의 답 넷(「요구사항 원천과 적용 결정」)이다. 리드 맥락 메모는 E/lead-context.md이고 차례마다 절을 더한다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 압축 기준 `--autocompact 250000`은 메인 기동값이며 화면에서 확인하지 못했다. 태그 `[Rules 리드 Opus]`, handle `term_991652c5-0324-450d-9208-3d8c9663777f`, Run `run_bea2c841fa15`(회신 주소 `run:run_bea2c841fa15`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - 앞 goal의 끝: [규칙·운영 동결 전 문서 정리](../2026-10-11-pre-freeze-rule-docs/goal.md)는 PR229·PR231 병합으로 끝났다. 마지막 기록은 이 goal의 시작 커밋으로 넣었다(「현재 결과 / 착수」).
-- **현재 위치**: 착수. 시작 커밋 뒤 정본 문장 작성(신규 Sol)과 BACKLOG 정리(리드)를 함께 진행한다.
-- **남은 순서**: 리드 대조·bytes·후보 검사 → PR 생성 → 문서 실사 → Gardener → 결과 기록 → 바뀐 부분 재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다.
-- **사용자 차례**: 지금은 없다. 정본 문장이 bytes 허용 조건을 넘으면 메인을 거쳐 다시 묻는다(「PR 경계와 검증」).
+- **현재 위치**: 문서 실사. 정본 문장(Sol)과 BACKLOG(리드)를 마쳤고 리드 대조를 통과했다. bytes 초과는 메인이 허용 안으로 판단했다(「현재 결과 / 정본 문장과 리드 대조」). PR을 연 뒤 신규 Astra 문서 실사를 연다.
+- **남은 순서**: PR 생성 → 문서 실사 → Gardener → 결과 기록 → 바뀐 부분 재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다.
+- **사용자 차례**: 지금은 없다. bytes 초과(+174)는 메인이 사용자 허용 안으로 판단했다(메인 판단, 「현재 결과」).
 
 ## 진척 단계
 
 - [x] 범위와 기준 확정
-- [>] 정본 문장 작성
-- [ ] 대기 목록 정리
-- [ ] 문서 실사
+- [x] 정본 문장 작성
+- [x] 대기 목록 정리
+- [>] 문서 실사
 - [ ] 종료 점검자 확인
 - [ ] 결과 기록·재실사
 - [ ] 병합
@@ -163,6 +163,15 @@ git diff --stat origin/main -- 00_Document/operations/ORCA.md .agents/skills/daw
 - 진입: Run `run_bea2c841fa15`(2026-10-11T11:36:00Z, E/session/run-create.json), READY status `msg_393cc84eb17f`(11:36:24Z). 진입 우편 소비 원시는 E/session/check-entry.json이다. 메모는 E/lead-context.md 「진입·범위 초안 차례」다.
 - 범위 초안 v1 `msg_162e62a9c2b2`(11:45:11Z) → 메인 승인 `msg_9494d6bd3ac5`(11:49:51Z).
 - 시작 기록: branch `docs/routing-hotfix-canon-20261011`을 origin/main `a570dbf3`(11:50:06Z fetch)에서 만들었다. 시작 커밋은 이전 goal 이월, 이 goal, CURRENT Rules 줄이다. 착수 메모는 E/lead-context.md 「착수 차례」(11:52:35Z)다. 이월 편집은 E/carryover-edit.mjs가 바꿀 원문이 정확히 한 번 있는지 단정하며 했다(E/carryover-edit-result.json).
+
+### 정본 문장과 리드 대조
+
+- 작성자: 신규 `gpt-6.1-sol` max(첫 화면 「GPT-6.1-Sol max」, rollout turn 모델 `gpt-6.1-sol`, backend unknown). Task `task_a1115b33e401`, Dispatch `ctx_b0e1f9945f0f`. 계약은 E/sentences-contract.md v1(SHA256 `b0495978…f682`), 고정 HEAD `b9a83152`다. 12:07:27Z에 시작해 worker_done succeeded `msg_d39708e41ade`(12:23:56Z)로 끝났다. 보고서 E/sentences/report.md, 기동 기록 E/sentences-start-note.md.
+- 바뀐 자리: ORCA 43·88·207행 기동 명령에 `--autocompact 250000`, 45행 문단 앞에 실행 한정·첫 턴 압축·되돌림 조건(결정 1). ORCA 91행 새 줄에 자동 알림으로 깼을 때의 처리와 5분 감시를 넣었고 원래 91행은 92행으로 그대로다(결정 2). 목표 루프 스킬 55행 새 줄(결정 3). 스킬 58행과 ORCA 215행의 평가 안건(결정 4).
+- 리드 R-2(E/r2-lead.mjs, E/r2-lead.json): 보존 줄 11개가 바이트 단위로 같고 각각 한 번만 있다. 두 파일의 제목·`<a id>`·링크 목록이 고정 HEAD와 같다. 바뀐 자리는 위 여덟 곳뿐이고 numstat은 ORCA 6/5, 스킬 2/1이다. 사용자 원문 `msg_ca6641b7a9e2`, 정정판 `msg_9494d6bd3ac5`, 진입 할 일 `msg_300feadfab41`과 문장 뜻을 대조했다.
+- bytes: 여섯 파일 묶음 103,306 → 105,254(+1,948). ORCA +1,209(245→246줄), 스킬 +739(103→104줄), 나머지 넷은 0이다. 결정별로는 533·547·613·255다(Sol E/sentences/work/check-output.json). 예상 +1,774보다 174 크다. 리드가 status `msg_c95cbb6ba789`(12:27:09Z)로 물었고 메인이 `msg_f876e290be4c`(12:27:34Z)로 「A 그대로 진행」이라 답했다. 메인 판단이며 사용자 결정이 아니다. 늘어난 것은 결정 넷의 문장뿐이고 새 규칙이 없어 사용자 허용 「A 허용」 안이라는 판단이다.
+- 생존 신호(E/sentences-liveness.json, `99_Tools/Orca/check-liveness.mjs`): `within`, 신호 7, 최대 간격 271초. 300초 초과 구간은 없다. Sol pane은 tui-idle 확인 뒤 12:25:56Z에 닫았다.
+- BACKLOG(리드, E/backlog-edit.mjs): 갱신 둘(`operating-trial-evaluation`에 결정 4, `lead-mailbox-receive-delay`의 열린 질문에 답 「A 유지」)과 새 절 「라우팅 핫픽스 정본 반영 goal에서 연결한 후보」의 두 행. 141,329 → 145,559 bytes, 276 → 285줄(묶음 밖). 후보 도착 검사는 `allowed`(ID 116, 중복 0, 후보 2, unknown 0, E/backlog-check-after.json)이고 이전 goal도 `allowed`다(E/backlog-check-after-prev.json).
 
 ## 다음 계획 후보
 

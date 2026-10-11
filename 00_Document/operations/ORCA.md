@@ -40,9 +40,9 @@
 아래 `<표의 작업 경로>`·`<리드>`는 위 표의 승인 경로·리드 이름으로 바꾼다. 경로·태그가 새 파트·권한을 만들지 않는다.
 
 ```text
-orca terminal create --worktree "path:<표의 작업 경로>" --title "<리드> 리드 Opus" --command "claude --model claude-opus-5-5 --effort xhigh"
+orca terminal create --worktree "path:<표의 작업 경로>" --title "<리드> 리드 Opus" --command "claude --model claude-opus-5-5 --effort xhigh --autocompact 250000"
 ```
-이전 리드 pane은 idle 확인 뒤 닫는다. 같은 탭에 다른 세션이 있으면 탭 전체를 닫는 `--tab`을 쓰지 않는다. 리드 첫 화면은 [R-6](#r6-first-screen), auto mode가 push·우편함 읽기를 막으면 우회 없이 메인에 보고한다([권한 기준](../../AGENTS.md#공학-조건)). 같은 worktree 작업자·검증자는 리드 pane을 `vertical split`해서 열고, 다른 worktree 작업자는 `orca terminal create --worktree`로 바로 열어 빈 받침 pane을 만들지 않는다. split을 닫으면 부모 pane도 꺼질 수 있어(Orca 1.4.222 관측) 다음 split 전에 부모가 살아 있는지 본다. 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. 실제 경로·화면 모델·준비 확인은 [R-5](#r5-worker-launch)를 따른다.
+`--autocompact 250000`은 해당 실행만 문맥 25만에서 자동 압축하며 전역 설정은 바꾸지 않는다. 기준을 넘긴 대화를 이어 띄우면 첫 턴에 바로 압축된다(2026-10-11 Core 27만→8.6만 관측). 재개에 필요한 것은 goal 재개 지점과 근거 폴더에 둔다. 압축 뒤 맥락 손실로 재작업이 한 번이라도 나오면 리드가 바로 메인에 보고하고 메인이 모든 리드를 50만으로 되돌린다. 이전 리드 pane은 idle 확인 뒤 닫는다. 같은 탭에 다른 세션이 있으면 탭 전체를 닫는 `--tab`을 쓰지 않는다. 리드 첫 화면은 [R-6](#r6-first-screen), auto mode가 push·우편함 읽기를 막으면 우회 없이 메인에 보고한다([권한 기준](../../AGENTS.md#공학-조건)). 같은 worktree 작업자·검증자는 리드 pane을 `vertical split`해서 열고, 다른 worktree 작업자는 `orca terminal create --worktree`로 바로 열어 빈 받침 pane을 만들지 않는다. split을 닫으면 부모 pane도 꺼질 수 있어(Orca 1.4.222 관측) 다음 split 전에 부모가 살아 있는지 본다. 준비된 신규 세션의 최초 작업을 `worker-start --terminal`로 연결한다. 실제 경로·화면 모델·준비 확인은 [R-5](#r5-worker-launch)를 따른다.
 
 pane의 소속 worktree와 shell의 실제 cwd는 별도로 확인한다. cwd만 옮겨 소속 불일치를 우회하지 않는다. 현재 조회한 worktree/handle/identity를 기준으로 승인된 배치를 대조한다.
 
@@ -85,9 +85,10 @@ Rules를 포함한 기존 목표 한정 추가 파트의 승인 경계는 유지
 - 닫은 pane 재출현(1.4.217, 2026-10-05): 보고·종료 직전에 `terminal list`를 다시 본다. 되살아난 pane에는 입력하지 않고 화면 확인 뒤 닫는다.
 - split 시간 초과(1.4.219, 2026-10-04): 바로 재시도하지 않는다. 수십 초 뒤 `terminal list`를 다시 보고 늦게 생긴 미사용 pane은 확인 뒤 닫는다.
 - 활성 Dispatch 없는 escalation(1.4.221, 2026-10-06)은 [R-4](#r4-report-type), 메모리 회수로 꺼진 대기(2026-10-06)는 아래 대기 정책을 따른다.
-- 크래시·업데이트 복구(1.4.220, 2026-10-05): 크래시 때 리드 탭은 새 handle로 되살아나고 split 작업자는 복구되지 않았으며 업데이트·재부팅 때는 아무 터미널도 복구되지 않았다. Codex 리드는 rollout의 cwd·model로 대화를 찾아 `codex resume`, Claude 리드는 `claude --resume`으로 다시 열고 [R-8 인수](#r8-astra-lifecycle)를 따른다. 다른 worktree는 `terminal list --worktree path:<경로>`, 옛 handle 우편함은 `orchestration inbox --terminal <옛 handle>`로 조회한다. 작업자는 [크래시 정본](#crash-recovery)대로 새 세션으로 대체한다.
+- 크래시·업데이트 복구(1.4.220, 2026-10-05): 크래시 때 리드 탭은 새 handle로 되살아나고 split 작업자는 복구되지 않았으며 업데이트·재부팅 때는 아무 터미널도 복구되지 않았다. Codex 리드는 rollout의 cwd·model로 대화를 찾아 `codex resume`, Claude 리드는 `claude --resume --autocompact 250000`으로 다시 열고 [R-8 인수](#r8-astra-lifecycle)를 따른다. 다른 worktree는 `terminal list --worktree path:<경로>`, 옛 handle 우편함은 `orchestration inbox --terminal <옛 handle>`로 조회한다. 작업자는 [크래시 정본](#crash-recovery)대로 새 세션으로 대체한다.
 
 Claude 리드는 Bash `run_in_background`로 `orca orchestration check --wait --types "status,dispatch,worker_done,merge_ready,escalation,handoff,decision_gate,question" --timeout-ms 900000 --json`을 한 번에 하나만 연다. Run 바인딩 시 `--run <run_id>`, 처리한 delivery는 다음 대기의 `--ack`로 넘긴다. `&`·`/dev/null`로 출력을 버리지 않는다. 끝난 출력을 직접 읽고 처리한 뒤 다음 대기를 연다. 출력 버림은 [세션 쓰기 가드](../../99_Tools/README.md#세션-쓰기-가드)가 실행 전에 막고, 리드는 작업자 정산 때 [생존 신호 간격 helper](../../99_Tools/README.md#생존-신호-간격)로 저장한 우편함 원시를 재어 300초 초과 구간을 goal에 적는다.
+Orca 자동 알림(「You have N orchestration message」)으로 깼을 때 리드의 우편함 대기 background 작업이 아직 돌고 있으면(시작 뒤 그 작업의 종료·kill 알림을 받지 않음) 도구 호출 없이 한 줄로 턴을 끝내고 메시지는 대기가 끝나 깰 때 처리한다. 이때 대기가 메모리 회수로 꺼졌거나 살아 있는지 확실하지 않으면 `--wait` 없는 check로 처리한다. 놓친 메시지는 메인 화면 감시가 5분 넘게 안 읽힌 완료·질문 메시지를 잡는다.
 메모리 회수로 대기가 꺼지면 스스로 다시 켜지 않는다. 「Orca 메시지를 확인하라」 안내가 오면 `--wait` 없는 check 한 번으로 처리한다(2026-10-06 관측). 리드는 작업자 기동·종료·지시 직전, 작업자는 컨테이너·볼륨 삭제·중지 같은 되돌리기 어려운 명령 직전에 `--wait` 없는 check를 한 번 하여 그 사이 도착한 지시를 읽고 움직인다.
 대기는 Claude 리드가 맡고 작업자·검증자는 한 작업 뒤 끝나 대기 비용이 없다. `--types`로 heartbeat를 빼도 Orca 알림이 heartbeat마다 Claude 리드를 깨웠다(2026-10-06 관측). heartbeat 5분을 유지한다. 위 버전·날짜 관측은 타 버전을 보장하지 않는다([원천·측정 한계](#pr2-source)).
 
@@ -203,7 +204,7 @@ accepted 뒤 침묵만으로 새 텍스트를 전송하거나 abandon하지 않�
 전체 goal은 **제품 PR 병합·로컬 결과 기록 → Gardener → 결과 포함 종료 기록 PR 하나 → 종료 점검 → R-8** 순서다. head 고정 PR은 [메인 결정](#pr2-source)으로 병합 전 Gardener를 허용한다. 첫 PR마다 새 Gardener를 추가하지 않는다. 메인/사용자가 결과·남은 위험·BACKLOG·다음 계획을 점검한 뒤 재개하며 다음 goal 자동 착수는 금지다. [목표 루프](../../.agents/skills/dawnholder-goal-loop/SKILL.md#통합과-보고)·[마일스톤 운영](../../.agents/skills/dawnholder-goal-loop/references/milestones.md)을 따른다.
 
 PR 리뷰 수정 중이나 목표 중간에는 문맥을 비우려 수동 교체하지 않는다. 자동 압축 뒤에는 현재 `goal.md`로 이어간다. 문서에 없는 운영 감각은 소유권 범위 안 RESUME 또는 goal에 남긴다. 작업자·검증자의 작업 하나 뒤 종료와 리드의 목표 단위 교체를 구분한다.
-목표 중간 교체·복구는 이전 pane 종료 또는 같은 대화 `claude --resume`이다. 새 handle에서 `orca orchestration run-use --id <run_id> --json`으로 같은 Run을 인수하고 메인에 새 handle·`run:<id>`를 알린다. consumer 세대 상승으로 옛 delivery ack가 `consumer_fenced`면 새 세대로 다시 온 같은 메시지 delivery를 ack한다.
+목표 중간 교체·복구는 이전 pane 종료 또는 같은 대화 `claude --resume --autocompact 250000`이다. 새 handle에서 `orca orchestration run-use --id <run_id> --json`으로 같은 Run을 인수하고 메인에 새 handle·`run:<id>`를 알린다. consumer 세대 상승으로 옛 delivery ack가 `consumer_fenced`면 새 세대로 다시 온 같은 메시지 delivery를 ack한다.
 
 <a id="관찰-기록-2026-09-29"></a><a id="관찰-기록-2026-10-0405"></a>
 
@@ -211,7 +212,7 @@ PR 리뷰 수정 중이나 목표 중간에는 문맥을 비우려 수동 교체
 ### 목표 종료 Gardener 4주 파일럿
 제품 PR 병합·로컬 결과 기록 뒤 담당 리드가 자기 pane 아래 신규 `claude-opus-5-5`를 읽기 전용으로 연다. 결과를 종료 기록 PR 하나에 넣고 종료 점검·R-8로 이어가며 병합 전 예외는 [R-8](#r8-astra-lifecycle)을 따른다. 쓰기는 점검 보고서 **한 파일**만 허용한다. 입력은 끝난 goal의 독립 결함·CI 실패·새 경고 억제/설정 완화·임시 우회·드리프트/규칙 검사 중 담당 범위다.
 
-반복 빈도와 원시 근거를 바탕으로 정리 후보를 **최대 두 개** 제안하고 후보마다 lint·테스트·fixture·정본 helper 등 검사화 방법을 적는다. 없으면 없음으로 마친다. 검사 실행불가와 실제 위반을 나누며 직접 수정·규칙 채택·다음 goal 발행 권한은 없다. 후보 채택은 메인을 거쳐 사용자가 결정하고 수정은 일반 목표 루프로 한다. **2026-10-31 무렵 비용·잡음으로 지속 여부를 평가**한다. 작은 목표 예외는 미합의이며 첫 PR마다 새 점검을 의무화하지 않는다.
+반복 빈도와 원시 근거를 바탕으로 정리 후보를 **최대 두 개** 제안하고 후보마다 lint·테스트·fixture·정본 helper 등 검사화 방법을 적는다. 없으면 없음으로 마친다. 검사 실행불가와 실제 위반을 나누며 직접 수정·규칙 채택·다음 goal 발행 권한은 없다. 후보 채택은 메인을 거쳐 사용자가 결정하고 수정은 일반 목표 루프로 한다. **2026-10-31 무렵 비용·잡음으로 지속 여부를 평가**한다. 같은 검증자 모델 시범 평가 때 선행 시험 작성자의 Codex 이동 여부와 Gardener 배정도 함께 정한다. 작은 목표 예외는 미합의이며 첫 PR마다 새 점검을 의무화하지 않는다.
 
 Gardener의 제안과 채택/실제 구현 완료를 구분한다.
 
