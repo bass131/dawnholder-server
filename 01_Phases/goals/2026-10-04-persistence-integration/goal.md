@@ -4,6 +4,12 @@
 
 ## 적용 중인 사용자 결정
 
+- **2026-10-11 컨테이너 카드 D-2 A: 실행 절차서의 확인 단계.** 메인 `msg_af86c9254f72`(2026-10-11T08:02:27Z)가 전한 사용자 원문 중 Core 항목(메인 pane Enter 제출, 현황판 결정 응답): 「대시보드 결정 응답: 1) Core 엔진 검사 약점 - 실행 절차에 확인 단계를 넣을지, 도구 코드를 고칠지 → A 절차에 확인 단계」. 같은 응답의 2)·3)은 PR229 항목이다. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다.
+  - 뜻(메인 전달 문장): 도구 코드는 고치지 않는다. 실행 절차서(카드)의 엔진 검사 단계 뒤에 확인 단계를 둔다. 결과 파일 존재, 원자성 두 항목 PASS, `Committed` false, 전 항목 PASS가 아니면 공식 Complete로 가지 않고 그 컨테이너를 멈춘 채 보존한다. 도구 저널 단계는 후속 후보로 남긴다.
+  - 낱말: 처음 쓴 「카드 관문」 대신 「실행 절차서의 확인 단계」로 쓴다(메인 지시). `Committed` 하나에 기대지 않는 이유(도구 강 검증 관찰 O-2)는 카드 본문에 적었다.
+- **2026-10-11 컨테이너 카드 D-1 A: 하루 한 수명.** 메인 `msg_74800fd22810`(2026-10-11T07:52:22Z)이 전한 사용자 원문(메인 pane Enter 제출, 현황판 결정 응답): 「대시보드 결정 응답: 1) Core 컨테이너 카드 - DB 컨테이너를 하루 한 수명 안에서 끝낼지 → A 하루 한 수명」. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다. 리드 요청은 `msg_d17643adc16c`, 설계 초안은 E/`container-run-card/design-draft.md`다.
+  - 뜻: 1단계·2단계·독립 판정·정리를 같은 날 한 컨테이너 수명 안에서 끝낸다. PR 검토 중에는 DB를 보존하지 않고 원시·manifest·판정만 남긴다. 그래서 아래 「보존 동작」의 정리 줄과 「G4 정산안」의 「첫 PR 검토 중 보존 → 병합 뒤 정리」는 컨테이너 시험 DB에 대해 「같은 날 판정 뒤 정리, 원시는 종료 뒤까지 보존」으로 바뀐다. 볼륨 재사용 정지는 쓰지 않는다(메인 대리 결정 `msg_05d1b9d0c872`). PR 검토에서 재관측이 필요하면 새 시도를 처음부터 연다.
+  - 같은 응답의 2)(O-1 처리 층)는 사용자가 「카드 관문이라는 말이 좀 이상한데 무슨 말이야?」라고 되물어 미결이었다. 메인이 「실행 절차서의 확인 단계 vs 도구 코드 수정」으로 고쳐 다시 물었고, 위 D-2 A로 확정됐다.
 - **2026-10-10 R-7 사용자 질문 셋: 27(P-A)·28(P-B)·29(P-C) 모두 A.** 메인 `msg_33c4463ed26f`(2026-10-10T08:48:56Z)가 전한 사용자 원문(메인 pane Enter 제출): 「전부 A로 가자」. 메인이 바로 앞에 올린 결정 27·28·29(리드 `msg_b1070d2f552d`의 P-A·P-B·P-C, 현황판 같은 글)에 대한 답이다. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다. 뜻(메인 전달 문장):
   - 27(P-A) A: 이 goal에서는 복구 계정을 만들지 않고, 복구 기능을 실제로 쓰는 후속 goal에서 새 형태를 정한다. DB의 `dh_recovery` 역할과 권한 검사는 그대로다. 이전 결정 `msg_dac79ea2b268`은 폐기가 아니라 「컨테이너에서의 형태는 후속 goal에서」로 기록한다.
   - 28(P-B) A: 정렬 규칙은 Windows 기록과 같은 `Korean_Wansung_CI_AS`로 고정하고, 엔진은 2025 CU9(17.0.5005.3)를 새 기준으로 받는다. 추가 측정에서 지원 여부를 먼저 재고, 지원하지 않으면 메인에 올려 다시 묻는다.
@@ -604,9 +610,28 @@
 
 ## 재개 지점
 
+### 컨테이너 실행 카드 v1 초안과 오프라인 예행 — 2026-10-11T08:1xZ
+
+기록 시각은 2026-10-11T08:18:36Z(`date -u`, KST 17:18, 원시 N2/`time-goal-record-2.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같고, CARD는 E/`container-run-card`다.
+
+- **결정:** 사용자 D-1 A(하루 한 수명)와 D-2 A(실행 절차서의 확인 단계)가 확정됐다(「적용 중인 사용자 결정」 맨 위 두 항목). 메인 지시 순서는 카드 본문·준비 대기 스크립트·승인 계획 v2 → 신규 Opus 카드 실사 → 사용자 실행 승인 요청이고, 메인 회신은 실사 결과와 함께 한 번이다(`msg_af86c9254f72`).
+- **카드 초안(실행 승인 전):** CARD/`card.md` SHA256 `263867e1…cde6`, `card-session.ps1` `1bce1db5…976f`, `Invoke-ContainerCardStep.ps1` `d24c7a69…fb0c`, 승인 계획 검토본 `approval-plan.review.json` `1621e9b5…7ee4`(`ExecutionApproved` false, `G2` 빈 값). 리드 맥락 메모는 CARD/`context-memo.md`, 설계 초안은 `design-draft.md`다. 제품 파일 변경은 없다.
+- **설계 요점:**
+  - 볼륨 재사용 정지 없이 C0~C9를 한 수명에서 실행한다. 판정 동안 컨테이너는 켜 두고, 판정 통과 뒤 같은 날 C10 정리를 한다.
+  - Codex 셸 호출은 매번 새 프로세스라, 모든 명령이 `card-session.ps1`을 dot-source한다. 이 helper는 고정 값, 새 run 폴더, 입력 hash 대조, 같은 이름 반복 거부, 출력·exit 기록을 맡는다. 상속된 `PSModulePath`도 지운다(PS7 부모 아래 5.1 자식의 `Get-FileHash` 실패 방지).
+  - C6 확인 단계는 카드 단계 `ConfirmEngineCheck`가 결과 JSON을 기계로 대조한다. 읽기 전용이고 Docker·SQL을 쓰지 않는다.
+  - 정산 파일은 제품 도구가 읽기만 하고 쓰지 않는다. 형식 정본은 시험 fixture `Write-CleanupSettlement`다. 그래서 카드 단계 `WriteSettlement`가 manifest와 증거 다섯 파일의 hash로 만든다. 앞서 손으로 쓰던 틀에는 `LedgerCount`가 빠져 있었다.
+- **오프라인 예행(리드, 실행 근거 아님):** 최종본 hash 기준 다섯 종이 모두 통과했다(CARD/`rehearsal-final-3.txt`). 준비 대기 연결 객체 생성, 확인 단계 표본 14건(통과 1·규칙별 실패 13), 제품 정산 reader의 수락과 증거 1바이트 변경 거부, helper의 5.1·7 두 부모 셸 동작이다. 실제 run 폴더는 생기지 않았다.
+- **World 조율:** World의 큰 실행 확인 세 묶음에 「진행」으로 답했다(`msg_c8bea1a1d302`·`msg_05ea6d6b09eb`·`msg_19b197e5ce96`·`msg_37aee9a3d777`). Core 컨테이너 실행 전에는 다시 묻고 기다린다.
+- **리드 실수 17:** 최종 예행 명령의 bash 따옴표 처리로 근거 폴더 옆에 `container-run-card$d` 폴더가 생겼다. 안에 든 것은 그 실행의 예행 결과 한 파일뿐임을 확인하고 지웠다. 경로를 문자 그대로 적어 다시 돌렸다(`rehearsal-final-2.txt`에 실패 기록 보존). 첫 발생이라 기록만 한다.
+- **다음 할 일:**
+  1. 신규 Opus 카드 실사를 연다(문서 실사, 예행 재현 포함). 결과와 함께 메인에 한 번 회신한다.
+  2. 사용자 실행 승인(G2) 뒤 실행 계획·`$planHash`·입력 hash 목록을 만들고 Content·World에 알린 뒤 Sol 실행 작업자를 연다.
+  3. 판정 → 같은 날 정리 → 엔진 판정 PR(이 branch) → Gardener.
+
 ### 4차 정지 측정 harness 결함 실패, 정지 없는 카드 설계로 — 2026-10-11T07:4xZ
 
-기록 시각은 2026-10-11T07:42:42Z(`date -u`, KST 16:42, 원시 N2/`time-goal-record.txt`)다. **이 블록이 현재 재개 정본이다.** E는 `.backups/verification/2026-10-04-persistence-integration`, A4는 E/`container-stop-restart-attempt-4`, N2는 E/`opus-lead-entry/2026-10-11-resume`이다. 시간순 원기록은 N2/`pending-goal-edits.txt`다.
+기록 시각은 2026-10-11T07:42:42Z(`date -u`, KST 16:42, 원시 N2/`time-goal-record.txt`)다. 이 블록은 직전 재개 정본이다. E는 `.backups/verification/2026-10-04-persistence-integration`, A4는 E/`container-stop-restart-attempt-4`, N2는 E/`opus-lead-entry/2026-10-11-resume`이다. 시간순 원기록은 N2/`pending-goal-edits.txt`다.
 
 - **재진입:** 메인 `msg_58eb0334a4f5`(06:21:50Z)이 사용자 결정 「1) 리드 재기동 → A 지금 넷 연다」를 전했다(메인 전달, 직접 입력으로 격상하지 않음). 새 리드 handle은 `term_a9595668`이고 Run `run_b36cc92a4cf4`를 이어받았다. 06:24Z에 origin/main `6782cd67`을 이 branch에 merge했다(충돌 없음, `36a4853d`). 바뀐 규칙 파일 넷(settings.json hook, 시각 출력 근거 파일, 출력 버림 가드·정산 liveness helper, AGENTS 결정 23 예외)을 반영했다.
 - **4차 계약 v1.1:** A4/`contract.md` SHA256 `5cefd4de…e5f5`. HEAD·goal·MSSQL hash와 작업 트리 서술만 고쳤다. v1 보존본은 `contract-v1.md`·`spec-v1.txt`다.
