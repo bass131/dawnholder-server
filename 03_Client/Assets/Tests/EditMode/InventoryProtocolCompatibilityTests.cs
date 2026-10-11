@@ -11,7 +11,8 @@ namespace Dawnholder.Client.Tests
     // Consumer check of the committed Shared.dll for the server economy packets. The expected bytes
     // are the fixed wire table of the items/inventory/currency goal (01_Phases/goals/
     // 2026-10-05-items-inventory-currency/goal.md and its PR1 acceptance): LittleEndian, 4-byte header
-    // (ushort size including the header, ushort id), IDs 35..38 after 34, protocol version 17.
+    // (ushort size including the header, ushort id), IDs 35..38 after 34, then the dungeon goal's 39·40
+    // (01_Phases/goals/2026-10-10-dungeon-clear-rewards/goal.md P1) and protocol version 18.
     // They are written as literals here, never computed from the generator or the server.
     // The client handler side of S_InventorySnapshot is covered in depth by InventoryClientContractTests.
     public sealed class InventoryProtocolCompatibilityTests
@@ -26,9 +27,24 @@ namespace Dawnholder.Client.Tests
         }
 
         [Test]
-        public void ProtocolVersion_IsSeventeen()
+        public void ProtocolVersion_IsEighteen()
         {
-            Assert.AreEqual(17, ProtocolVersion.Current);
+            Assert.AreEqual(18, ProtocolVersion.Current);
+        }
+
+        // Looked up by name: the committed Shared.dll has no such PacketID members before the generator runs,
+        // and a direct reference would stop this test assembly from compiling.
+        [Test]
+        public void DungeonClearPacketIds_AppendAfterTheEconomyIds()
+        {
+            bool hasResult = Enum.TryParse("S_DungeonClearResult", out PacketID result);
+            bool hasConfirm = Enum.TryParse("C_DungeonClearConfirm", out PacketID confirm);
+
+            Assert.AreEqual(38, (ushort)PacketID.S_ItemUseResult, "existing IDs must not shift");
+            Assert.IsTrue(hasResult, "dungeon goal P1: S_DungeonClearResult is appended to PacketID");
+            Assert.AreEqual(39, (ushort)result);
+            Assert.IsTrue(hasConfirm, "dungeon goal P1: C_DungeonClearConfirm is appended to PacketID");
+            Assert.AreEqual(40, (ushort)confirm);
         }
 
         [Test]
