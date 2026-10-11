@@ -604,9 +604,33 @@
 
 ## 재개 지점
 
+### 4차 정지 측정 harness 결함 실패, 정지 없는 카드 설계로 — 2026-10-11T07:4xZ
+
+기록 시각은 2026-10-11T07:42:42Z(`date -u`, KST 16:42, 원시 N2/`time-goal-record.txt`)다. **이 블록이 현재 재개 정본이다.** E는 `.backups/verification/2026-10-04-persistence-integration`, A4는 E/`container-stop-restart-attempt-4`, N2는 E/`opus-lead-entry/2026-10-11-resume`이다. 시간순 원기록은 N2/`pending-goal-edits.txt`다.
+
+- **재진입:** 메인 `msg_58eb0334a4f5`(06:21:50Z)이 사용자 결정 「1) 리드 재기동 → A 지금 넷 연다」를 전했다(메인 전달, 직접 입력으로 격상하지 않음). 새 리드 handle은 `term_a9595668`이고 Run `run_b36cc92a4cf4`를 이어받았다. 06:24Z에 origin/main `6782cd67`을 이 branch에 merge했다(충돌 없음, `36a4853d`). 바뀐 규칙 파일 넷(settings.json hook, 시각 출력 근거 파일, 출력 버림 가드·정산 liveness helper, AGENTS 결정 23 예외)을 반영했다.
+- **4차 계약 v1.1:** A4/`contract.md` SHA256 `5cefd4de…e5f5`. HEAD·goal·MSSQL hash와 작업 트리 서술만 고쳤다. v1 보존본은 `contract-v1.md`·`spec-v1.txt`다.
+- **4차 작업자:** `gpt-6.1-sol` max `task_df9c1b8a5d60`/`ctx_25912dc021b2`, 06:26:53Z 기동, 기동→첫 신호 172.7초(A4/`lead-start-to-first-signal.txt`). 오프라인 예행 16개(P1·M1~M8·C1~C7)는 불변식 I1~I7·외부 호출 0으로 통과했다. 가짜 비밀은 실제 부재를 확인한 뒤 정산했다.
+- **리드 검토와 「가능」:** 리드가 `run\`의 ps1 20·sql 7을 모두 읽었다(A4/`lead-review.md`, 관찰 6개, 코드 변경 요청 없음). 작업자가 그 뒤 원장 동시 쓰기 직렬화로 `Common.ps1`·`Message.ps1`을 고쳐(`msg_7980c4aba78b`·`msg_e131e0f2802d`) 리드가 두 파일을 다시 읽었다. 최종 예행(07:23:13Z~07:24:59Z)도 통과했다. 27파일 hash는 예행 후 목록과 모두 같았다(A4/`lead-hash-recheck-0727.txt`). World의 Unity 첫 import가 끝난 뒤(`msg_9e80d2eaac82`) World·Content는 창 동안 큰 실행을 보류했고 Management에도 알렸다. 07:28:21Z에 「가능」(`msg_ba49de53cb86`)을 보냈다. 시작 전 여유 물리는 11,992,168 KiB였다.
+- **실패:** 07:30:20Z R1에서 컨테이너를 띄운 직후 첫 SQL 연결 객체를 만들다 `System.ArgumentException`으로 멈췄다. **SQL은 0회 실행됐다.** SHUTDOWN과 두 재시작은 미측정이다. 원인은 리드가 외부 호출 없이 PS5.1에서 재현했다(N2/`lead-sqlcred-probe-output.txt`). `Sql.ps1` 54행 `$builder.DataSource = …`를 PowerShell이 `SqlConnectionStringBuilder`의 사전 키 쓰기로 처리해 「Keyword not supported: 'DataSource'」가 났다. Fake 대역은 이 객체를 만들지 않아 예행이 못 잡았다.
+- **정리:** 계약 순서대로 성공했다. 07:30:57Z에 컨테이너·볼륨 부재와 14333 연결 실패를 확인했다. 17,171파일 비밀 대조 일치 0 뒤 비밀을 삭제했다. 보고서는 정지·보존 값을 모두 「미측정」으로 적었다. 쓰기 감사 두 번 모두 통과했다(A4/`run/real/measurement-result.json`·`trace.jsonl`, `run/final-write-audit.json`).
+- **부수 참고값(측정 아님):** 시작 직후(collation 변경 완료 23초 뒤) 정리의 `docker stop -t 30`이 30.9초 뒤 ExitCode 137로 끝났다(`run/real/Cleanup-b-stop.json`). 앞선 30.7초·137 관찰과 같은 모양이다. 그 파일의 TerminationLines는 master 복사 안내의 「shutdown」 낱말을 종료 흔적으로 잘못 골랐다.
+- **메인 대리 결정(`msg_05d1b9d0c872`, 07:37:28Z, 사용자 위임이며 사용자 직접 결정 아님):** 5차를 열지 않고 「볼륨 재사용 정지 없이 카드 설계」로 간다. 위임 원문(메인 pane Enter 제출, 15:5x KST)은 「나 잠깐 자리좀 비울게, 진행하고 있어줘」 → 「세컨드 브레인 보고 결정 가능한건 결정해줘」다. 근거는 성향 29(게이트 강도는 손상의 가역성으로)와 33(유한한 자원부터 식별, 기능 동결까지 17일·영속화 0/5)이다. 사용자가 뒤집으면 따른다.
+  - **기록 조건(성향 26):** 정지 측정 네 번 모두 harness 실행 결함이었다. 정지·재시작 측정 방법 자체가 틀렸다는 근거는 없다. 다시 잰다면 교훈은 「예행이 실제 객체 경로(이번엔 `SqlConnectionStringBuilder`)를 덮는다는 전제를 먼저 검증」이다. **5차는 「측정 보류(방법 유효)」 후보로 남긴다.**
+- **작업자 정산:** worker_done `msg_d04de4e059cc` failed(본문에 리드 재현 원인과 부수 관찰 넷). `worker-release`는 retained(external_terminal) → tui-idle → `final-screen.json` → pane close → inbox → liveness 순으로 했다. 300초 초과는 388초(06:31:54Z→06:38:22Z)와 593초(→06:48:15Z) 두 구간이고 작업 중 이미 알렸다(A4/`lead-heartbeat-notice-1.json`, `lead-liveness.json`). Liveness helper는 07:19:20Z 종료를 확인했다. 리드 R-2 표본: `measurement-result.json`, `trace.jsonl` 54행, `Cleanup-b-stop.json`, `report.md` 머리, 두 쓰기 감사. 메인도 `measurement-result.json`을 독립 대조했다. 받아들일 측정 결과가 없어 측정 보고 문서 실사는 열지 않는다.
+- **리드 실수 13:** harness 검토에서 PowerShell 사전 adapter 함정(`$builder.DataSource`)을 놓쳤다. 교정 후보는 「예행 대역도 실제 외부 객체 생성까지는 거친다」 또는 리드 검토 항목에 넣기다. 첫 발생이라 기록만 한다.
+- **리드 실수 14:** 메인에 보낸 HEAD 줄임을 `36a4853d0c`로 틀리게 썼다(`msg_437a76738906`으로 정정, 파일에는 틀린 값 없음).
+- **리드 실수 15:** 07:20:46Z에 작업자에게 Authorize 재실행 지시(`msg_259d4a46b168`)를 보냈다. 그때 작업자는 이미 고친 코드로 예행을 다시 돌리기 시작해 Check-Coordinator가 그 메시지를 보고 멈췄다. 자원 생성은 없었고 실제 docker 호출은 읽기 전용 `ps -a` 1회였다. 직전 check(check-11)는 했지만 작업자 status(07:20:33Z)가 그 뒤에 왔고, 작업자 화면·`invocations`를 보지 않았다. 교정: 우편함 확인으로 멈추는 harness를 돌리는 작업자에게 지시하기 전에는 작업자 화면과 실행 기록을 먼저 본다.
+- **리드 실수 16:** 우편함 대기를 다른 명령과 한 background 명령으로 두 번 묶었다(send+wait, 기록 추가+wait). 기능 영향은 없다. 대기는 단독으로 연다는 규칙의 두 번째 발생이라 반복 규칙 후보다. 실수 11·12의 「되돌리기 어려운 동작 직전 check」 후보와 함께 메인을 거쳐 규칙 정본 담당에 넘긴다.
+- **World 저장 경계 회신(`msg_775584e3f699`):** GUID는 재시작에도 같은 값일 때만 유익하다. 겹치는 파일은 World PR 병합 뒤 Core D2·D3 순서다. 이름→번호 DB 이전은 Core 후속 후보다(새 migration, 별도 goal과 사용자 결정 필요).
+- **남은 것:** TEMP `.backups/tmp/core-stop-attempt-4`에는 빈 폴더만 남았다. 리드 진단 파일 `.backups/tmp/lead-sqlcred-probe.ps1`은 비밀을 담지 않는다. 열린 Task·Dispatch와 Core 작업자 pane은 0이다.
+- **다음 할 일:**
+  1. 1단계 카드 설계를 볼륨 재사용 정지에 기대지 않게 잡는다. O-1(제품 소유 실행 앞뒤 저널 단계) 반영 여부를 함께 정한다. 초안이 나오면 메인에 status로 알린다.
+  2. 카드 실사(신규 검증자) → 사용자 실행 승인 → 실행 → 2단계(Record → BeforeComplete → Complete → Compare → AfterComplete → Test-Database) → 엔진 판정 PR(이 branch) → 정리 → Gardener.
+
 ### 세션 마감, 보존 데이터 도구 검증 통과 — 2026-10-10T16:3xZ
 
-기록 시각은 2026-10-10T16:37:00Z(`date -u`, KST 01:37)다. **이 블록이 현재 재개 정본이다.** E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다. 시간순 원기록은 N/`pending-goal-edits.txt`다.
+기록 시각은 2026-10-10T16:37:00Z(`date -u`, KST 01:37)다. 위 2026-10-11T07:4xZ 블록이 이어 쓴다. E·N 표기와 판정서 위치는 아래 13:2xZ 블록과 같다. 시간순 원기록은 N/`pending-goal-edits.txt`다.
 
 - **마감 지시(메인 `msg_91b523003fe7`, 16:13:08Z):** 사용자 원문 「오늘은 진행중인 파트들까지만 마무리하고 정리해야겠다」. 돌던 작업자·검증자만 끝까지 받고 새 작업자·검증자·단계는 열지 않았다. **열린 Task·Dispatch는 없다. Core 작업자 pane은 0이다**(`orca terminal list`에 core-active는 리드 pane 하나).
 - **branch·commit:** `feat/persistence-container-engine-20261010`. 이 세션 commit은 `8fa42808`(goal 기록), `f3452e18` feat(database, 도구 4파일과 runner 1줄), `8dbe08c4` docs(operations, MSSQL.md), 그리고 이 블록의 commit이다. 모두 원격에 반영한다. PR은 아직 없다(엔진 판정 PR은 2단계 뒤).
