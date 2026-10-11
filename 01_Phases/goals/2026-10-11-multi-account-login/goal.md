@@ -8,7 +8,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_fddebc03-9972-41d8-8941-e7c98af2dabe`, Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: main(Content PR230) 병합과 로그인 41·42·버전 19 재번호·VER-01 수정을 merge commit `44ffe9e3db04c3fb482c727e2fbacfc427b8b043`으로 넣었다(아래 「현재 결과」의 main 병합과 재번호). 다음은 신규 `claude-opus-5-5` 재검증(계약 초안 E/`reverify-contract.head.md`·`.mid.md`·`.tail.md`, 메모 E/`reverify-prep-context.md`)이고, 그 뒤 실화면을 메인에 다시 요청한다.
+- **현재 위치**: main 병합(merge `44ffe9e3`)의 재검증이 끝났다. 기능 결함은 없고 판정은 시험 이름 하나(RV-01, `BossBehaviorTests.ProtocolVersion_Is18`이 19를 단정) 때문에 차단이다(아래 「현재 결과」의 재검증). 다음은 RV-01과 O-1(Content 시험 주석) 수정(신규 `gpt-6.1-sol` max) → 약 등급 재검증(신규 `gpt-6-astra` xhigh)이고, 그 뒤 실화면을 메인에 다시 요청한다. 리드 pane 재기동은 메인이 이 안전 지점에서 한다.
 - **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -18,7 +18,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 설계 절 작성
 - [x] 선행 시험 작성
 - [x] 구현
-- [>] 독립 검증(main 병합·재번호·VER-01 수정 완료, 재검증 남음)
+- [>] 독립 검증(재검증 끝, RV-01 수정·재검증 남음)
 - [>] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
@@ -278,6 +278,7 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 모두 메인 창 Enter 제출, 메인 전달이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
 
 - **라우팅 핫픽스**(메인 전달 `msg_22f631ad7da7`, 2026-10-11T11:03:16Z, 정본 반영은 다음 Rules goal): 「대시보드 결정 응답: 1) 모델 라우팅 - 모든 리드를 문맥 25만에서 압축하도록 지금 적용할지 → A 전체 적용 · 2) 모델 라우팅 - 리드가 같은 메시지로 두 번 깨는 것을 지금 규칙으로 막을지 → A 지금 적용 · 3) 모델 라우팅 - 로컬 DB 설치·기동 도구의 검증을 지금부터 Astra로 옮길지 → A 지금부터 Astra · 4) 모델 라우팅 - 선행 시험 작성자를 Codex로 옮기는 시점 → A 10-31 평가 때」. 효과: 리드는 우편함 대기가 살아 있을 때 Orca 자동 알림으로 깨면 도구 호출 없이 한 줄로 턴을 끝낸다(대기가 꺼졌거나 불확실하면 check로 처리). 메인이 안전 지점(진행 중인 작업자 0)에서 리드 pane을 `--autocompact 250000`으로 다시 띄우므로 재개에 필요한 것은 이 파일 「재개 지점」과 근거 폴더에 둔다. 압축 뒤 맥락을 잃어 일을 다시 한 사례가 나오면 메인에 바로 알린다. 선행 시험 작성자는 그대로 신규 `claude-opus-5-5`다.
+  - 결정 2 정정(메인 전달 `msg_7c26237ca10c`, 11:49:52Z): 처음 문장의 「대기를 다시 연다」는 메인의 덧붙임이었다. 사용자 원문(메인 pane Enter 제출): 「대시보드 결정 응답: 1) 라우팅 정본 반영 - 메모리 부족으로 꺼진 우편함 대기를 리드가 다시 켜지 않는 규칙을 유지할지 → A 유지 · 2) 라우팅 정본 반영 - 규칙 문서 크기가 약 1.8KB 느는 것을 허용할지 → A 허용」. 효과: 대기 background 작업이 돌고 있고(종료·kill 알림을 받지 않음) Orca 자동 알림으로 깼다면 도구 호출 없이 한 줄로 턴을 끝낸다. 메시지 처리는 대기가 끝나 깰 때 한다. 대기가 메모리 회수로 꺼졌거나 살아 있는지 확실하지 않으면 `--wait` 없는 check로 처리하고, 메모리 회수로 꺼진 대기는 스스로 다시 켜지 않는다.
 
 - **Content·Core 우선**(메인 전달 `msg_775122227f2a`, 2026-10-11T07:46:37Z, 사용자 제출 16:5x KST): 「일단 좀 급한게 컨텐츠랑 코어쪽이니까 이 쪽 작업 우선해보자, 운영툴은 재개지점 맥락확보하고 세션 정리해줘」. 효과: 이 goal은 계속한다. 다만 Unity batch·포트 7777·큰 메모리 실행이 Content·Core와 겹치면 그쪽이 먼저다. 이미 시작한 실행은 끝까지 하고, 다음 큰 실행 전에는 Content·Core 리드에 묻는다. 그래서 구현자는 큰 실행 전에 리드의 「진행」을 기다린다. Management 7777 중간 점검 일정은 없어졌다.
 - **범위 승인**(메인 전달 `msg_493c03f863cf`, 2026-10-11T06:45:14Z, 사용자 제출 15:4x KST): 「대시보드 결정 응답: 1) 계획 검토 - World 다중 계정 로그인 goal 범위 초안 v1 → A 승인 (초안 msg_148c21badf30) · …」. 효과: 범위 v1 그대로, 질문 1은 A(계정 이름만 입력, 비밀번호 없음), 「확인할 기본값」 1~4도 초안대로다.
@@ -421,3 +422,29 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 리드 기록:
   1. **Unity 부수 효과 계약 누락(두 번째 발생)**: 병합 계약이 `ProjectSettings.asset`만 적고 `MinimapRT.renderTexture`를 빠뜨려 작업자가 공식 질문을 보냈다(`msg_4f1c3dfb4a4b`). 첫 독립 검증 계약도 같은 누락이었다. 두 번째 발생이라 이 goal의 다음 계약부터 두 파일을 함께 적는다(재검증 초안에 반영). 더 높은 층은 Unity 시험 harness가 전후 git 상태에서 알려진 두 파일을 「리드 복원 대상」으로 따로 표시하는 것이다. 메인에 후보로 올린다.
   2. **큰 실행 묶음 진행**: Content·Core 허용을 받은 뒤 단계별 status만 받게 하여 승인 대기를 생성기 48초·빌드 87초로 줄였다. 다음 큰 실행 묶음도 같은 방식으로 묻는다.
+
+### 재검증 — 2026-10-11
+
+- 검증자: 신규 `claude-opus-5-5` xhigh(최초 명령 `claude --model claude-opus-5-5 --effort xhigh`, 첫 화면 「Opus 5.5 with xhigh effort」, 선택창 없음, backend unknown), 태그 `[World 검증자]`. 배정은 검증자 시범의 「Astra 구현 → 신규 Opus」와 「프로토콜·공유 DLL → 신규 Opus」다. 리드 pane 아래 split `term_bb444d7f-a8be-4ac1-8fa4-23b9ac3052e8`, Task `task_daa6e0025e74`, Dispatch `ctx_d3ae5103199f`(11:43:13Z). worker_done `msg_0acdc8b06df9`(12:22:53Z, succeeded). release `retained` 뒤 pane을 닫았다.
+- 계약: E/`reverify-contract.md` v1(SHA256 `463c0c0356895f91faa73d1d98f052f0fa528766f022055a017642e0b622e98b`), 요약 E/`reverify-spec.md`, 입력 E/`reverify-inputs.txt`(43개와 두 numstat), 경로 확인 E/`reverify-preflight.txt`, 리드 메모 E/`reverify-prep-context.md`. 강 등급, 대상 merge `44ffe9e3`, 고정 HEAD `a0a13a3e`.
+- 판정: E/`reverify/verdict.md`(SHA256 `1ea975f42f30eb2e1b54505af1a0d4aabf5e680cc5084802bfe65c0fe2064199`). **차단(RV-01)**. 병합 해결·재번호·버전·생성 코드 재현(CR만 지운 결과가 커밋 bytes와 같음)·DLL `--no-incremental` 재현·VER-01 문장별 대조·Content 보존·실제 진입 둘을 모두 했고 기능·동작 결함은 없었다.
+- 실행(원시는 E/`reverify/`):
+
+| 실행 | exit | 결과 |
+|---|---|---|
+| 봇 회귀 17개(7777 진행 `msg_43b62fd66802`) | 0 | PASS=17 FAIL=0. 새 시나리오 accepted 3, AlreadyOnline 1, InvalidName 1, 잘못된 이름 원문은 서버 로그 0건 |
+| WSL 서버 전체 | 0 | 1060 / 1055 / 0 / 5(병합 1058 + 검증자 새 시험 2) |
+| Unity EditMode 전체 | 0 | 451 / 451(병합 446 + 검증자 5경우) |
+| 서버 lane + PlayMode 전체(7777 진행 `msg_99802a855d48`) | PlayMode 2 | 47 / 46 / 1. 실서버 두 클래스 통과, 서버 로그에 실제 Unity 세 연결의 `version=19` handshake → `C_Login` → accepted → `C_CharacterSelect` |
+| 실패 분류 재실행 `HudGoldAndPanelToggleSceneTests` 2회(진행 `msg_0a288182b645`) | 0·0 | 3/3·3/3 |
+| 서식 검사 2회차 | 0 | 1회차는 Unity와 겹쳐 git 상태가 바뀌어 도구가 중단(위반 아님) |
+| 생성기·Windows `--no-incremental` 빌드 셋 | 0 | 생성 코드·두 DLL이 커밋 bytes와 같음 |
+
+- 검증자 새 시험(commit 대상): 서버 `GameServer.Tests/Network/LoginAndDungeonPacketRoutingTests.cs`(G1 한 세션의 로그인 41과 던전 40, 리터럴 bytes 2경우), EditMode `LoginAndDungeonResultDispatchTests.cs`(G2 클라이언트 dispatch 42와 39, 5경우). G3(버전 18 거부)는 기존 `InventoryProtocolContractTests.ProtocolVersion_IsNineteen_AndTheHandshakeRejectsEighteen`이 덮는다. 새 시험 RED는 없다.
+- 결함:
+  - **RV-01**(낮음, 차단, 귀속 병합 작업자, 리드 계약 표가 「버전 단정 19」로만 적은 점이 기여): `02_Server/GameServer.Tests/Maps/BossBehaviorTests.cs:475` 시험 이름 `ProtocolVersion_Is18`이 `:484` `Assert.Equal(19, ProtocolVersion.Current)`를 단정한다. 이전 버전 올림 둘은 이름을 같이 바꿨고 같은 병합의 다른 버전 시험 둘도 19 이름으로 바꿨다. CODE_CONVENTION 「주석과 문서」 「이름·공개 API·테스트에 의도와 계약을 표현한다」 위반이다.
+- PlayMode 실패 1건: `HudGoldAndPanelToggleSceneTests.ClosedPanel_LetsAClickOnItsUseSpotAttack_AndAfterIThatClickUses_AcrossAMapMove`의 실시간 3초 대기 시간 초과(13.9714 > 13.9708). 병합이 이 시험·패널·`C_ItemUse` 경로를 바꾸지 않았고 단독 재실행 두 번 통과라, 검증자는 이번 병합 결함이 아니고 원인은 미확정이라고 분류했다(실패 결과 46/47은 덮지 않음).
+- 설계 관찰(비차단): O-1 `DungeonClearPacketContractTests.cs:187` 메서드 주석이 로그인 단계를 말하지 않음, O-2 `FEATURE_MAP.md:26` 패킷 줄이 v18 던전 절만 링크(World 브랜치부터), O-3 `client.md:16`이 잘못된 길이의 끊기를 말하지 않음(반대 서술은 아님), O-4 HUD 시험 실시간 대기의 간헐 실패 위험, O-5 검증자가 서식 검사를 Unity와 겹쳐 돌림.
+- 처리: RV-01과 O-1은 이번 goal의 변경이 만든 부정확한 이름·주석이라 한 수정 계약에 묶는다(신규 `gpt-6.1-sol` max, 약 등급 재검증 신규 `gpt-6-astra` xhigh, 리드 메모 E/`reverify-result-goal-context.md`). O-2·O-3은 후속 후보로 둔다. O-4는 그 시험 소유 파트에 알린다. O-5는 다음 계약에 「서식 검사는 Unity와 겹치지 않게」를 적는다.
+- 실행 조율: 큰 실행은 Content(`msg_b9fdffeba9dc`)·Core(`msg_3f21046a6140`) 허용 뒤 묶음 진행(`msg_a1c970641968`)으로, 7777은 단계마다 리드가 listener 0을 확인하고 허용했다.
+- 부수 효과: Unity가 `ProjectSettings.asset` SENTIS 한 줄과 `MinimapRT.renderTexture` 줄 끝을 다시 써서 리드가 되돌렸다.
