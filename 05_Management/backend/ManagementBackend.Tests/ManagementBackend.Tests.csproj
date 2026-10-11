@@ -40,6 +40,11 @@
     <None Include="$(PinnedGlobalJson)" Link="ReleaseSource/global.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- init-config tests copy the repository's backend-wsl.sh into a throwaway checkout and run only that copy. -->
+  <ItemGroup>
+    <None Include="../backend-wsl.sh" Link="BackendEntry/backend-wsl.sh" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <!-- Built paths go into assembly metadata, so tests find the processes in any output layout (bin or artifacts). -->
   <Target Name="RecordProcessUnderTestPaths" DependsOnTargets="ResolveProjectReferences" BeforeTargets="GetAssemblyAttributes">
     <ItemGroup>

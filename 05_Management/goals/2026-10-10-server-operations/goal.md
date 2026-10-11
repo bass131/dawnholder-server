@@ -6,9 +6,9 @@
 - [x] 실행 환경 실측
 - [x] 백엔드 선행 시험
 - [x] 백엔드 구현·검증
-- [>] 백엔드 PR 병합
-- [ ] 화면 연결 구현·검증
-- [ ] 화면 PR 병합
+- [x] PR222 병합
+- [x] 화면 연결 구현·검증
+- [>] PR227 병합
 - [ ] 중간 점검
 - [ ] 장애 대응 구현·검증
 - [ ] 장애 대응 PR 병합
@@ -19,12 +19,13 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 
 ## 재개 지점
 
-**기록 시점: 2026-10-10 19:20 KST, PR1 독립 검증 PASS 뒤.**
+**기록 시점: 2026-10-11 00:08 KST, PR227 생성 뒤.**
 
-- **지금 단계:** PR1 독립 검증이 PASS였다(아래 「PR1 독립 검증 결과」). PR1을 만들고 메인에 병합 승인을 요청한다. 병합 뒤에는 「PR2 전에 판단할 것」을 보고 PR2 설계를 시작한다.
+- **지금 단계:** PR1(PR222)이 병합됐다(아래 「PR222 병합」). PR2 branch `feat/server-operations-screen-20261010`을 최신 main `20630a90`에서 만들었다. PR2 설계를 [화면 연결 설계](screen-design.md)에 썼다(아래 「PR2 설계」). 메인이 범위 판단 두 건을 설계대로 진행하라고 답했다(`msg_62780420552f`). 백엔드 선행 시험을 commit했다(아래 「PR2 백엔드 선행 시험 결과」). 백엔드 구현을 commit했다(아래 「PR2 백엔드 구현 결과」). 창 쪽 선행 시험을 원천 대조해 commit했다(아래 「PR2 창 쪽 선행 시험 결과」). 창 쪽 구현을 원천 대조해 commit했다(아래 「PR2 창 쪽 구현 결과」). PR2 독립 검증 1차가 NOT PASS(결함 #1, 한 줄 압축)였다(아래 「PR2 독립 검증 결과(1차)」). 결함 #1과 설계 관찰 (a)·(h)를 고쳐 commit했다(`8ff5174f`). 재검증은 실제 진입만 남긴 판정 보류였고, 새 검증 세션의 실제 진입이 PASS였다(아래 「PR2 재검증과 실제 진입 결과」). 최신 main을 받아 PR227을 만들었다(아래 「PR227 병합 요청」). 다음은 메인에 병합 승인 요청 → 병합 → 중간 점검이다.
 - **작업 경로:** `C:/Users/bass1/orca/workspaces/DawnHolder_Project/management-active`.
 - **Run:** `run_003b556f0ba8`(objective 「Management - 운영툴 V1.0」). 리드 handle은 이 세션의 관측값이며 다음 리드의 실행 권한이 아니다. 다시 열면 새 handle로 `orca orchestration run-use --id run_003b556f0ba8 --json` 뒤 메인에 `run:run_003b556f0ba8`을 알린다.
 - **보류 중인 다른 goal:** 게임 소개 페이지 goal은 PR207 branch `feat/intro-site-20261008`(head `02fcd8a4`)에만 있고 main에는 없다. 10-13 교수 면담 뒤 재개가 정해지면 아래 「작업 공간과 소개 페이지」 순서를 따른다.
+- **main을 받을 때(PR224 세션 쓰기 가드, 메인 사전 알림 `msg_ad1debb0eeeb`):** 병합된 main을 받은 뒤 Claude 세션의 첫 쓰기가 막히면 맥락 메모를 Write로 한 번 고쳐 쓴다. 리드의 임시 파일(commit 문구 등)은 스크래치패드가 아니라 `.backups/tmp/` 아래에 둔다. `orca` 명령 출력을 `/dev/null`·`| head`로 버리지 않는다. 오탐은 Rules 리드에 보낸다.
 - **근거 폴더 E:** 저장소 로컬 `.backups/verification/2026-10-10-ops-tool-v1/`(Git 제외). 범위 초안 `scope-draft.md`, 맥락 메모 `context-memo.md`·`context-memo-goal.md`, Run·송신 receipt가 있다.
 
 ## 요청 원천과 승인
@@ -55,6 +56,8 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 - PR3 전 세부 질문 셋(재시작 횟수·간격, 운영툴 완전 종료 때 서버 처리, 알림 받을 실패 종류)은 그때 메인에 올린다(`msg_d9a5047140d1`).
 - 백엔드를 솔루션·독립 목록에 등록하지 않고 V1.0 동안 CI에 넣지 않는 판단을 받았다. 그 위험은 아래 「남은 위험」에 적고, PR마다 독립 검증자가 WSL에서 돌린 시험 원시 결과를 근거 폴더에 남긴다(`msg_27c6883a8b34`).
 - 시험과 실측은 7777 말고도 Core의 DB 컨테이너 시험 포트 127.0.0.1:14333을 쓰지 않는다(`msg_27c6883a8b34`, 2026-10-10 기준).
+- PR2 범위: 「운영 버전 올리기」 화면과 백엔드 조정 B-1~B-6을 PR2에 넣는다. 다른 commit 고르기·되돌리기는 넣지 않는다. 앱 완전 종료 때 서버 처리는 [화면 연결 설계](screen-design.md)의 잠정 동작으로 진행하고, 최종 동작은 PR3 전 질문 셋에 남겨 그때 메인에 올린다(`msg_62780420552f`).
+- 큰 실행(실화면 검증, 게임 서버 시작) 직전에 커밋 여유 메모리 4 GB 이상을 확인한다(`msg_62780420552f`, 2026-10-10 기준. Content가 Unity Editor로 메모리를 많이 쓰는 중).
 
 ## 만들 것
 
@@ -115,6 +118,7 @@ PR 번호가 생기면 「백엔드 PR 병합」 같은 단계 이름을 「PR00
 - V1.0 동안 관리 백엔드 시험은 CI에서 돌지 않는다([PR1 설계](backend-design.md#배치이름등록)). 백엔드 회귀는 PR마다 독립 검증자의 WSL 실행 원시로만 확인한다. 크리티컬은 아니다.
 - 운영 서버가 켜져 있는 동안 에이전트의 서버·봇 검증(`sync-wsl.sh run`·`bot`)은 7777 잠금 때문에 거부된다.
 - WSL 안 프로세스가 Windows 쪽 연결이 모두 끊긴 뒤에도 사는지는 확인하지 못했다(실측 M3). PR3에서 다시 본다.
+- 운영툴의 관리 백엔드가 도는 동안 같은 WSL 사용자의 `backend-wsl.sh test`·`build`는 WSL 복사본 잠금 때문에 거부된다([화면 연결 설계](screen-design.md#백엔드-조정)). Management 백엔드 시험은 운영툴을 닫고 돌린다. 관찰 2와 같은 잠금이라 PR3에서 함께 본다.
 
 ### PR1 첫 단계 실측
 
@@ -215,4 +219,108 @@ V1.0 뒤로 미룬 것과 막는 것. 새 후보는 BACKLOG에 두고 여기에�
 - 관찰 7: 서버가 꺼져 있을 때 상태 조회마다 공유 7777 잠금을 잠깐 잡는다. 화면이 자주 물으면 개발 helper가 잘못 거부될 수 있다.
 - 관찰 3·5·6·8: `run`의 Debug 빌드, 종료 중 `portOwner: unknown` 표시, 응답이 익명 객체·상태 문자열, 남이 SIGKILL한 종료의 `signal: null`. 화면 연결 때 함께 본다.
 - 관찰 2(PR3): 게임 서버가 WSL 복사본 잠금 fd를 물려받는다.
-- B1 시험의 빈 포트 경합: 시험 소유자가 실패 메시지에 상태를 넣고 포트를 잡아 두는 방식으로 고칠 후보다.
+- B1 시험의 빈 포트 경합: PR2 안에서 처리한다(리드 결정 `msg_0967be03bc1d`, 메인이 처리 위치를 리드에게 맡김 `msg_4a1bb8f52967`). PR2 선행 시험 계약에 실패 메시지에 상태 JSON·포트를 넣고 빈 포트를 잡아 두는 helper로 바꾸는 일을 시험 소유자 작업으로 넣는다. PR2도 같은 시험 명령으로 검증하므로 같은 경합이 판정을 흐릴 수 있기 때문이다.
+
+### PR222 병합
+
+- PR222 「feat: add the management backend for server operations (ops tool V1.0 PR1)」, head `dbfe8f491b0cf97f8808957e8f52faf9d26a6624`. CI 4개 통과(check 2개, architecture-tests 7분 38초, dotnet-tests 23분 13초).
+- 승인 요청 `msg_122f13d62688`. 메인 R-2 원천 대조 뒤 B1 (d)는 PASS 안에 둔다는 메인 판단을 받았다(`msg_4a1bb8f52967`, 사용자 결정 아님).
+- 사용자가 메인 pane에 「병합 승인: PR222 head dbfe8f491b0cf97f8808957e8f52faf9d26a6624」를 제출했고, 메인이 head를 다시 확인한 뒤 병합했다. MERGED 2026-10-10T10:57:56Z, merge commit `20630a90b404fd4b736606c5dba81a20975204d2`(메인 `msg_bc88d40255f8`). 원격 branch는 자동 삭제됐다.
+- CURRENT 충돌: PR220(CodeMap 정리)이 먼저 병합돼 이 PR이 정리했다. PR220이 지운 줄은 두고 Management 줄만 이 goal로 바꿨다(merge commit `dbfe8f49`).
+
+### PR2 설계
+
+- 설계: [화면 연결 설계](screen-design.md). 「PR2 전에 판단할 것」 중 관찰 1·3·4·7과 B1은 [백엔드 조정](screen-design.md#백엔드-조정) B-1~B-6으로, 관찰 5·6·8은 화면 표시와 창 쪽 응답 검증으로 다룬다. 관찰 2는 PR3로 남긴다.
+- 범위 명확화(메인 진행 판단 `msg_62780420552f`): 「운영 버전 올리기」(현재 checkout HEAD를 빌드해 현재 운영 버전으로 지정) 화면을 PR2에 넣는다. 「만들 것」 PR2 행에 이름은 없지만 완료조건 1·7이 요구하고, 실행본이 없으면 시작이 `noCurrentRelease`로 거부되기 때문이다. 되돌리기와 다른 commit 고르기는 넣지 않는다.
+- 앱 완전 종료 때 서버 처리: **잠정 동작, PR3 질문으로 확정.** 트레이 「종료」 때 서버가 실행 중이면 확인을 받고 백엔드가 서버를 정상 종료하게 한다. 원래 PR3 질문이지만 PR2가 백엔드를 자식으로 띄우므로 잠정 동작이 필요했다. 근거는 PR1 검증 중 WSL 유휴 재시작 관측이다. 메인이 잠정안 진행으로 판단했다(`msg_62780420552f`, 사용자 결정 아님).
+- 백엔드 선행 시험 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, backend 실제 모델 unknown). Task `task_73bc9b53865a`, Dispatch `ctx_10231cc20e69`, `turn_started` 관측. 계약 E/`contracts/pr2-backend-tests-task.md` SHA256 `cad274eea943a5adf4d43a27fa4e8d4692b44d455d3903117053b5052c4eccd8`, 경로 확인 E/`contracts/pr2-backend-tests-path-check.txt`. 계약 작성 중 잰 커밋 여유 메모리 4.43 GB(측정 시각은 기록하지 않음, 11:15:21Z 경로 확인 전).
+
+### PR2 백엔드 선행 시험 결과
+
+- worker_done `msg_708147296afd`(succeeded, 발신·Task·Dispatch 일치). 보고 E/`pr2-backend-tests/report.md`, 맥락 메모 E/`pr2-backend-tests/context-memo.md`.
+- 새 시험 14건: H2·H3 둘(설정 거부), I1~I5(`init-config`, I4 세 경우), B3·B4·B5(상태 조회와 공유 잠금), E8(큰 로그 조회 중 상태 응답). 기존 B1은 서버 포트를 시험이 bind해 둔 채 직전·직후 대기를 관측하고 최대 3회 다시 하도록 고쳤고, 단정 18개는 그대로다. helper는 새 진입점만 더했다.
+- 같은 명령의 구현 전 실행(E/`pr2-backend-tests/raw/pre-implementation-final/`, 직전 커밋 여유 4.67 GB): 98건 중 통과 85, 실패 13, 건너뜀 0, exit 1, 남은 프로세스·수신 대기 0. 실패 13건은 모두 새 시험이고, B4는 보존 동작이라 구현 전에도 통과한다. 원시 수치: E8 단독 조회 2.440초(512 MiB), 겹친 상태 응답 2.201초(상한 0.5초). B3 상태 조회 200번 동안 잠금 시도 660,583회 중 164회 충돌.
+- 리드 표본 대조(일치): 두 실행의 `results.trx` 셈과 실패 이름 13개, trx 출력의 E8·B3·I5 수치, B1 단정 18줄이 HEAD와 같음(메서드 이름 줄만 다름), 시험 파일 SHA256 38개 `OK`. 작성자 세션 기록에서 메모 쓰기(11:25:32Z)가 첫 시험 파일 쓰기(11:29:38Z)보다 앞섰고, 제품·문서 쓰기는 0이다. 실제 WSL `HOME`에 설정 파일·기본 데이터 폴더가 없고 실제 WSL 복사본 mtime은 그대로다.
+- 비차단 기록: 보고의 메모 「첫 쓰기 11:24:38Z」는 쓰기 직전 시각을 잰 값이다. 세션 기록의 Write 시각은 11:25:32Z다. 구현 전 H2는 기본값으로 떠 관리 포트 47321을 실행마다 약 0.2초 썼다(구현 뒤 사라짐). 남은 위험은 보고 「남은 위험」: B1 재시도 경로 미실행, B3 확률성, E8 1회 측정, `FreePort`를 쓰는 다른 시험의 같은 경합.
+- 백엔드 구현 착수: 신규 `gpt-6-astra` xhigh `[Management 구현 Astra]`(화면 표시 GPT-6-Astra xhigh, Codex v0.162.1, 권한 표시는 PR1과 같은 「YOLO mode · Full Access · never」, backend 실제 모델 unknown). Task `task_3e837159d5be`, Dispatch `ctx_2edcb6c77459`, `turn_started` 관측. 계약 E/`contracts/pr2-backend-impl-task.md` SHA256 `ba4e8a0d0b2a86b6d1e18879165b864ac412b2ab32720c3be68c09a3702cd7ab`, 기준 HEAD `953f14f6`.
+- 창 쪽 선행 시험 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, backend 실제 모델 unknown). Task `task_b7f4f015590c`, Dispatch `ctx_392cf1a73574`, `turn_started` 관측. 계약 E/`contracts/pr2-frontend-tests-task.md` SHA256 `0a509738b3a32ba03809a2f1142e23b387687f0f5af99a039beba4031b8b0373`, 기준 HEAD `953f14f6`. 두 작업자는 같은 checkout에서 서로 다른 폴더만 쓴다. 띄우기 직전 커밋 여유 5.19 GB(11:48:33Z).
+- 구현 질문 1(`msg_2558b5cd440e`): 다른 실행의 잠금이 `/proc/locks`에 보이지 않는 경우(잠금을 건 `flock` 자식이 끝남, 개발 helper도 같은 모양). 리드가 `/proc/<pid>/fdinfo` 보충 경로를 조건과 함께 허용하고(`msg_7b06c8db46e0`) 설계 B-3에 반영했다.
+- 구현 질문 2(`msg_46315005ac00`): `init-config`가 JSON 쓰기와 0600·O_EXCL 생성에 `python3` here-doc을 쓴다. DEVELOPMENT 10행의 WSL Python 3 전제와 같은 스크립트가 source하는 `sdk.sh`의 같은 모양을 근거로 승인하고, 「Python 도구 작성」 원문을 보충 계약 E/`contracts/pr2-backend-impl-task.supplement-1.md`(SHA256 `504fd270…4610`)로 붙였다(`msg_67201cecfa72`).
+- 창 쪽 시험 질문 1(`msg_853a09e586b1`): 기존 `backlog-contrast.test.ts`가 자기 하네스로 숨은 Electron 창을 여는 것은 허용 실행으로 보고 `npm test` 전체를 그대로 돌린다(A). `main.ts`를 띄우는 기존 시험 네 파일에 연결 모듈 대역 `vi.mock`만 더하는 고정 입력 보완은 단정 무변경·대역 모양 일치·구현 전 결과 동일 조건으로 받았다(`msg_a697bfe25a08`).
+- 창 쪽 시험 질문 2(`msg_79076754feaf`): 상태 주기 요청은 앞 요청이 끝난 뒤 2초(겹치지 않음)로 정하고, 순번 시험은 버튼 동작 뒤 즉시 다시 읽기와 주기 요청이 겹치는 경우로 하게 했다(`msg_2e98af946c62`). 설계 「화면」 상태 갱신 줄에 반영했다.
+
+### PR2 백엔드 구현 결과
+
+- worker_done `msg_cb3a66b6c63d`(succeeded, 발신·Task·Dispatch 일치). 보고 E/`pr2-backend-impl/report.md`, 맥락 메모 E/`pr2-backend-impl/context-memo.md`. 제품 5파일 +249/-70줄(`BackendSettings.cs`, `LogStore.cs`, `PortLease.cs`, `ServerSupervisor.cs`, `backend-wsl.sh`), 새 제품 파일 없음.
+- 같은 명령: 첫 깨끗한 빌드 98건 중 96 통과(B4·C3 실패, 원인은 `/proc/locks`만 보는 잠금 관측) → 리드 답 `msg_7b06c8db46e0`의 fdinfo 보충 뒤 깨끗한 빌드 98/98, `backend-wsl.sh test` 98/98, `build` 경고 0. 시험 파일 무변경.
+- 원시 수치(같은 512 MiB 조건): E8 겹친 상태 응답 0.005초(구현 전 2.201초). B3 상태 조회 200번 동안 잠금 시도 1,868,955회 중 충돌 0. 임시 설정의 `backend-wsl.sh run --config`는 `…/release/Dawnholder.Management.Backend.dll`을 실행했고(B-5), 보충 경로를 포함한 상태 HTTP 왕복은 평균 5.7~10.4 ms(각 10회)다.
+- 메모리 대기: Release 실행 직전 3.86 GB(12:05Z)·2.45 GB(12:10Z)로 계약대로 미뤘고 7.35 GB(12:15Z)에서 진행했다.
+- 리드 표본 대조(일치): `clean-1`·`clean-2`·`entry-test`의 `results.trx` 셈과 실패 이름, trx 출력의 E8·B3·I5 수치, `git diff --stat 953f14f6`의 시험 경로 빈 출력, 제품 numstat 합계, Codex 세션 기록의 메모 추가(11:52:06Z)가 첫 제품 수정(11:52:28Z)보다 앞섬, 실제 WSL `HOME`의 설정 파일·기본 데이터 폴더 부재, 남은 백엔드·가짜 서버 프로세스 0. `PortLease.IsHeldByOther`는 `statx`로 장치·inode만 읽고 파일을 열거나 잠그지 않는다.
+- 남은 위험(보고 「남은 위험」): 인자 없는 `run`의 기본 설정 분기는 정적 실사와 임시 `HOME`의 `init-config`로만 확인했다. `python3`가 없으면 `sdk.sh`도 실패하므로 `run` 전체가 실패할 수 있다(기존 전제). 실제 GameServer·창 연결은 독립 검증 몫이다.
+
+### PR2 창 쪽 선행 시험 결과
+
+- worker_done `msg_52df1bd3734a`(succeeded, 발신·Task·Dispatch 일치). 보고 E/`pr2-frontend-tests/report.md`, 맥락 메모 E/`pr2-frontend-tests/context-memo.md`, 같은 시험 명령 E/`pr2-frontend-tests/run-tests.sh`(frontend `npm test` → typecheck 3종).
+- 새 시험 76건: 계약 모듈 C 13(`tests/server-operations-contract.test.ts`), 연결 객체 K 21(`tests/backend-connection.test.ts`), IPC·preload M·P 15(`tests/server-operations-ipc-preload.test.ts`), 화면 S 27(`src/ServerOperations.test.tsx`). 대역 helper `tests/server-operations-fixtures.ts`. 구현자가 따를 바깥 계약(연결 객체 주입 대역·메서드, IPC 결과, preload 동작 이름, 화면 이름)은 보고 3절과 각 시험 머리 주석에 있다.
+- 기존 5파일 +35/−4: 채널 10개를 더한 목록 단정 3곳(desktop-main, records-ipc-preload, diagram-asset-desktop)과 preload 노출 목록 1곳, 트레이 종료 단정을 `vi.waitFor`로 기다리게 함(단정 내용 그대로), `main.ts`를 띄우는 네 파일에 연결 모듈 대역 `vi.mock`(질문 1 답 조건), App.test 주석 두 줄.
+- 같은 명령의 구현 전 실행(E/`pr2-frontend-tests/raw/pre-implementation-final/`, HEAD `4bd9894f`, 직전 커밋 여유 14.43 GB): 1333건 중 통과 1252, 실패 81, 건너뜀 0, typecheck 3종 exit 0. 실패 = 새 시험 75 + 바뀐 목록 단정 4 + 기존 실패 2. 기준(`159fa2e8`)은 1257건 중 실패 3이다.
+- 기존 실패 분류: App.test `cannot issue operating commands…`(옛 세부, 「본문으로 건너뛰기」 링크)와 desktop-main `1280 by 720`(옛 세부, 지금 1600×900)는 그대로 둔다. diagram-loader-policy 1건은 기준 실행에서만 5초 초과였고 단독·구현 전 실행에서 통과해 미확정(부하 추정)으로 둔다.
+- 자체 점검: 작성자가 TEMP에 임시 참조 구현을 만들어 새 75건 통과와 변이 38개 중 37개 포착(보강 뒤 표적 7개 모두)을 확인했다(리드 조건 `msg_a22887f1ecd1`). 참조 구현은 저장소·근거 폴더에 없고 구현자에게 넘기지 않는다.
+- 리드 표본 대조(일치): 두 실행 `vitest.json`의 셈과 실패 이름(새 파일 4개 26+21+13+15=75건, 나머지 6건의 이름), 기존 5파일 diff가 단정을 줄이지 않음(목록은 넓히고 diagram subframe 거부 반복은 새 채널까지 덮음), 시험의 백엔드 오류 코드 19개가 `ManagementBackend`가 내는 코드 전부와 같음, 작성자 세션 기록에서 메모 쓰기(12:02:41Z)가 첫 저장소 쓰기(12:12:29Z)보다 앞섬, 쓰기 39건이 모두 허용 경로(시험 10파일·근거 폴더·TEMP `.backups/tmp/p2f/`), 무시 대상 폴더에 작업 시간대 새 파일 0, 남은 Electron·`wsl.exe` 0.
+- 설계 관찰 처리(리드): 실행본 목록 5초·현재 운영 버전 지정 30초 상한과 pid 생존 확인(`--exec kill -0`)을 [화면 연결 설계](screen-design.md#시작과-붙기)에 정했다. 「마지막 종료 종류와 종료 코드」 표시는 설계 「화면」에 이미 있고 상태 응답 `lastExit`가 값을 주므로 창 쪽 구현 계약에 넣고 독립 검증자가 시험을 쓴다. `tests/`가 typecheck 밖인 것은 기존 상태라 이 PR에서 바꾸지 않는다.
+- 비차단 기록: 작성자가 단독 실행 하나(`dry2`, 12:24:21Z)를 커밋 여유 3.44 GB에서 돌렸다고 공개했다(4 GB 기준 일탈, 판정 실행 아님). gitignore 대상 Vitest 캐시(`node_modules/.vite/…`, `.vite-temp`)가 바뀌었다.
+- 창 쪽 구현 착수: 신규 `gpt-6-astra` xhigh `[Management 구현 Astra]`(화면 표시 GPT-6-Astra xhigh, Codex v0.162.1, 권한 표시 「YOLO mode · Full Access · never」, backend 실제 모델 unknown). 배정 신호 1·2·3·4. Task `task_425824c384f1`, Dispatch `ctx_8f175faf138a`, `turn_started` 관측. 계약 E/`contracts/pr2-frontend-impl-task.md` SHA256 `541df215ec07d9dcade663e922e0791f399cecc3ae7377a3c47574ff17ee49db`, 기준 HEAD `441ce45a`. 계약은 시험이 덮지 않는 설계 요구 셋(마지막 종료 표시, 실행본 목록·지정 상한, pid 생존 확인)을 넣게 했고 선행 시험 작성자의 임시 참조 구현을 열지 못하게 했다. 띄우기 직전 커밋 여유 15.77 GB(12:56:08Z).
+
+### PR2 창 쪽 구현 결과
+
+- worker_done `msg_de08fde38660`(succeeded, 발신·Task·Dispatch 일치). 보고 E/`pr2-frontend-impl/report.md`, 맥락 메모 E/`pr2-frontend-impl/context-memo.md`. 제품 8파일 +1174/−6줄, commit `69fffa1a`: 새 `electron/server-operations-contract.ts`(231줄)·`electron/backend-connection.ts`(427줄)·`src/ServerOperations.tsx`(367줄)·`src/serverOperationsBridge.d.ts`, 수정 `electron/main.ts`·`electron/preload.cts`·`src/App.tsx`·`src/styles.css`. 새 의존성 없음.
+- 같은 명령(E/`pr2-frontend-tests/raw/impl-first/`·`impl-final/`, HEAD `441ce45a`, 직전 커밋 여유 15.48·16.66 GB): 두 번 모두 1333건 중 통과 1331, 실패 2(기존 실패 App.test 링크·desktop-main 1280×720), 건너뜀 0, typecheck 3종 exit 0. 첫 실행부터 통과했고 자체 실사 보완(인증 다시 읽기까지 포함한 전체 시간 상한, 시작 중 오래된 연결 파일 pid를 끄지 않음, 시간 초과 뒤 늦은 결과 보호) 뒤 다시 돌렸다.
+- 시험이 덮지 않는 설계 요구 셋: 마지막 종료 표시 `ServerOperations.tsx` `LastExit`, 실행본 목록 5초·지정 30초 `backend-connection.ts` `readReleases`·`releaseOperation`, pid 생존 `pidLives`(`kill -0`). 구현자는 정적 실사만 했고 시험은 독립 검증자가 쓴다.
+- 리드 표본 대조(일치): 두 실행 `vitest.json`의 셈과 실패 이름, 시험 파일 diff·status 빈 출력, `git status`의 바뀐 파일이 제품 8파일과 리드 goal뿐, Codex 세션 기록에서 메모 쓰기(12:58:39Z)가 첫 제품 쓰기(12:59:56Z)보다 앞섬, 파일 쓰기 17건이 모두 허용 경로, 선행 시험 작성자의 임시 참조 구현·`self-check`를 연 명령 0건(재귀 탐색도 `.backups/tmp` 밖), 남은 electron·`wsl.exe`·Vitest 프로세스 0, 코드 표본(`pidLives`의 `kill -0`, 목록 5000 ms, 지정 30000 ms).
+- 보고와 원천의 불일치 1건(비차단, 메인에 알림): 보고는 「`node_modules/.vite*` 캐시 갱신 관측 0건」이라 했지만 `.vite/vitest/…/results.json`이 13:09:37Z에 바뀌었다. 구현자 감사 스크립트가 기준 시각 `[DateTime]'2026-10-10T12:57:56Z'`를 현지 시각으로 바꿔 UTC 파일 시각과 비교해 모두 걸렀다. 계약상 기록만 하는 gitignore 캐시라 범위 위반은 아니다.
+- 리드 관찰(판정은 검증자): `backend-connection.ts`의 `releaseOperation`이 한 줄에 삼항 세 개로 방법·경로·상한을 고른다(CODE_CONVENTION 「TypeScript·Electron 작성」의 한 줄 압축 기준).
+- 불일치는 메인에 status `msg_ec2f3fe92a34`로 알렸다.
+- PR2 독립 검증 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, Claude Code v2.1.296, backend 실제 모델 unknown). Task `task_de51a4f93721`, Dispatch `ctx_690d5cc1fbba`, `turn_started` 관측. 계약 E/`contracts/pr2-verify-task.md` SHA256 `58213f2844383b0710c958be9331c40ef25cc90ff6e236dc5f3545e6110063e9`, 기준 HEAD `5406af30`, `verifies` 두 구현 Task. 범위: 실사, 독립 시험(시험이 덮지 않던 설계 요구 셋 필수), 시험 명령 둘, 7777 실제 진입 1회(보조 디스플레이의 실제 Electron 창, 이 PC의 `init-config` 값, B-3·B-5 관측). 띄우기 직전 커밋 여유 15.65 GB(13:18:20Z).
+
+### PR2 독립 검증 결과(1차)
+
+- worker_done `msg_d9e9ec19c69a`(succeeded, 발신·Task·Dispatch 일치). 판정 E/`pr2-verify/verdict.md`: **NOT PASS — 결함 #1(낮음, 차단).** 백엔드 Task에는 결함이 없다.
+  - 결함 #1(창 쪽 Task, 적용 규칙 위반): 「TypeScript·Electron 작성」의 한 줄 압축. `electron/backend-connection.ts:410`(160자, 같은 조건의 삼항 셋)·`:40`(중첩 삼항), `src/App.tsx:88`(354자)·`:104`(223자, 둘 다 이번 diff로 바뀐 줄). 동작 영향은 관측되지 않았다.
+  - 결함 #2(창 쪽 Task, 비차단): 구현 보고의 캐시 갱신 0건 주장. 위 「PR2 창 쪽 구현 결과」의 불일치와 같다.
+- 수행: 새 시험 5파일 20건(시험이 덮지 않던 설계 요구 셋, 실제 `node:http` 머리·상한, B-4 수집 중 로그 조회). 창 쪽 같은 명령 독립 시험 전 1333/1331/2/0 → 뒤 1352/1350/2/0(기존 실패 2건), typecheck 3종 exit 0. 백엔드 같은 명령 98/98 → 독립 시험 뒤 1회차 99건 중 E4 1건 `portBusy` 실패(원인 미확정, 빈 포트 경합 추정) → 재실행 99/99. 이 PC의 `init-config`는 `/mnt/c/Dev/DawnHolder_Project`, mode 600.
+- 7777 실제 진입 1회(13:41:53Z~13:42:27Z, 17 체크 통과): 보조 디스플레이 `24G2W1G4`에 창을 두고 앱 내부 수단만 썼다. 연결 6.4초, 백엔드 명령줄이 Release DLL(B-5), 서버 정지 중 상태 주기 동안 공유 잠금 `flock -n` 100/100 성공(B-3), HEAD `5406af30` 운영 실행본 실제 빌드 3.3초 → 지정 → 시작(7777 대기 pid = 상태 pid 1127, 실행 중 잠금 거부) → 로그 6줄 → 정상 종료(화면 「마지막 종료: 정상 · 종료 코드 0」) → 트레이 종료. 사후 7777·잠금·프로세스 정리, 두 checkout 무변화. 확인 창 대역(선택)은 안 했다.
+- 7777 알림: 시작 전 Core·World·Content 리드에 `msg_3e8ec415aa1c`·`msg_aa9342921ade`·`msg_6cab18db7fe2`, 검증자 진행 답 `msg_9b0aadc24fe9`, 종료 뒤 `msg_9ff5ff17ef61`·`msg_2a55b70b0e80`·`msg_370310577d77`. 리드가 시작 전(13:41:19Z)·종료 뒤(13:43:04Z) 7777·잠금·남은 프로세스를 직접 확인했다.
+- 리드 표본 대조(일치): 결함 #1 네 줄의 실제 길이·모양과 `App.tsx` 두 줄이 이번 diff의 줄임, E4 실패 줄(`HTTP 409 portBusy`)과 재실행 `results.trx` 99/99, 창 쪽 독립 시험 뒤 `vitest.json` 1352/1350/2/0, `git status`의 미추적이 새 시험 5파일뿐, 실제 진입 `events.ndjson`과 운영 실행본 빌드 로그(새 작업 폴더의 restore·컴파일).
+- 리드 판단(수정 범위, `goal-loop` 범위 안 결함): 결함 #1과 설계 관찰 (a)·(h)를 한 수정 계약으로 고친다. (a)는 새 연결 파일 판정을 「`pid`와 `startedAt`이 둘 다 다름」으로 읽어, WSL이 유휴 종료 뒤 다시 켜져 새 백엔드가 낡은 연결 파일과 같은 pid를 받으면 120초 `startTimeout`이 날 수 있다는 지적이다(추론, 미측정). PR1 검증에서 WSL 유휴 재시작을 두 번 관측했고, 선행 시험 K2는 둘 다 다른 경우만 다뤄 기준을 `startedAt`으로 바꿔도 깨지지 않는다. (h)는 같은 판정 식이 두 곳에 있어 함께 한 곳으로 모은다. 설계 「시작과 붙기」 4를 그 기준으로 고친다.
+- 미루는 설계 관찰(PR4 문서 정리 때 BACKLOG 반영을 판단): (b) 다른 탭에 있는 동안 하단 연결 상태가 낡을 수 있음, (c) 백엔드 ASP.NET Information 로그가 2초 상태 요청마다 창 콘솔로 흐름, (d) 실행본 목록 조회가 실패하면 checkout HEAD도 안 보임, (e) 트레이 종료의 `shuttingDown`이 한 번 실패하면 다시 시도할 수 없음, (f) 로그 기간 버튼이 다음 주기까지 다시 읽지 않음(설계상 허용), (g) 서버를 시작하는 백엔드 시험이 B-6의 포트 묶어 두기를 쓰지 않음(E4 1회 실패의 그럴듯한 원인, 시험 소유자 후속).
+- 수정 착수: 신규 `gpt-6-astra` xhigh `[Management 구현 Astra]`(화면 표시 GPT-6-Astra xhigh, Codex v0.162.1, 권한 표시 「YOLO mode · Full Access · never」, backend 실제 모델 unknown). 배정 신호 2(새 연결 파일 판정은 시작·종료 수명 분기). Task `task_c6370f5c1e1b`, Dispatch `ctx_c608b8e2b5ca`, `turn_started` 관측. 계약 E/`contracts/pr2-fix1-task.md` SHA256 `79b93e3363da9fc3174ec390e40140b53bf20360592c2b974d6b1953dcef07f1`, 기준 HEAD `65bbdcb2`, 허용 파일 `backend-connection.ts`·`App.tsx` 둘. 띄우기 직전 커밋 여유 16.46 GB(13:59:09Z).
+- 수정 질문 1(`msg_98a9295bbccc`): 진입 때 `goal.md`에 미커밋 변경(리드의 착수 기록)이 있어 계약의 「미커밋 없음」과 다르다. 리드 소유 선행 변경으로 보존하고, 제품 diff 범위는 `05_Management/frontend`·`backend` 경로로 확인해 구분 보고하게 했다. 리드는 이 작업이 끝날 때까지 commit하지 않는다(`msg_b8af28616336`).
+- 수정 결과: worker_done `msg_e3d61bee717b`(succeeded, 발신·Task·Dispatch 일치), 보고 E/`pr2-fix1/report.md`. `backend-connection.ts` +17/−6(`defaultRunProcess`의 `exitCode` 변수, `releaseOperation`의 두 분기, 새 `isFreshConnection(candidate, previous)`를 시작 대기와 시작 중 종료 대상이 함께 씀, pid로 가르지 않는 이유 주석), `App.tsx` +22/−2(안내·하단 문구를 변수로 먼저 정하고 JSX를 여러 줄로). 같은 명령 E/`pr2-frontend-tests/raw/fix1-final/`: 1352건 중 통과 1350, 실패 2(기존), 건너뜀 0, typecheck 3종 exit 0. 리드 대조(일치): `vitest.json` 셈, 시험 경로 diff 빈 출력, 제품 diff가 두 파일뿐, 옛 `App.tsx` 두 줄과 새 변수의 문구·조건이 같음, Codex 세션 기록의 메모(14:02:38Z)가 첫 제품 쓰기(14:02:58Z)보다 앞섬, 쓰기 9건 모두 허용 경로, 캐시 감사가 UTC 기준과 양성 대조로 갱신 1건을 잡음.
+- 리드 절차 실수 1건(첫 발생 기록): 판정 처리 중 우편함 대기를 `run_in_background`가 아닌 셸 `&`로 한 번 띄웠다. 내 프로세스(Orca CLI)만 끄고 정본 방식으로 다시 열었다(wait44). 그 사이 받은 메시지는 없다(대기 출력은 keepalive 한 줄).
+
+### PR2 재검증과 실제 진입 결과
+
+- 재검증 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 xhigh, Claude Code v2.1.296, backend 실제 모델 unknown). Task `task_715f3d3ec48d`, Dispatch `ctx_17961c2dc645`, `turn_started` 관측. 계약 E/`contracts/pr2-reverify-task.md` SHA256 `b239ccbf26e448f17fef0cbdfcf729cd22b26928d3833cf3ed587c09947fc379`, 기준 HEAD `48f0ac01`. 범위: 수정 diff 실사, 결함 #1 해소, 새 연결 파일 판정의 독립 시험, 창 쪽 시험 명령, 연결까지 실제 진입 1회(게임 서버 시작 없음, 7777 미사용). 1차의 7777 실제 진입·백엔드 시험은 인용한다. 띄우기 직전 커밋 여유 14.15 GB(14:11:21Z).
+- 재검증 질문 1(`msg_c740b5a2805f`): 연결까지 실제 진입 첫 시도(14:28:33Z)가 검증자 wrapper 결함(제품 `main.js` import 전에 기다려 `registerSchemesAsPrivileged`가 앱 준비 뒤 실행)으로 창 없이 끝났다. 리드가 `failure.json`과 남은 프로세스 0을 확인하고 같은 설정으로 1회 재시도를 허용했다. 첫 시도는 제품 실패나 통과 근거로 쓰지 않고, 재시도도 harness 문제면 판정 보류로 남기게 했다(`msg_d4bfba27ad6e`).
+- 재검증 질문 2(`msg_dedc200b9b19`): 재시도(entry2, 14:32:05Z)는 창이 보조 디스플레이에 정상으로 떴지만, 검증자가 경로를 node 인자로 넘기게 바꾸면서 Git Bash가 `/home/…`을 `C:/Program Files/Git/home/…`으로 바꿔 제품이 설계 「시작과 붙기」 6의 거부 경로(invalidOverride)로 백엔드를 띄우지 않았다. 리드가 `launch.json` environment의 바뀐 두 경로, `02-failure.json`의 안내 문구, `exit.json`의 electron·wsl 잔여 0을 확인했다. 질문 1의 「재시도도 harness 문제면 보류」를 바꿔 마지막 1회(entry3)를 허용했다. 이유는 원인이 원천으로 확인된 한 줄(`MSYS_NO_PATHCONV=1`)이고 사후 정리가 깨끗하며, 이번 수정의 시작 대기 판정을 실제로 지나는 근거가 이 실행뿐이기 때문이다. entry3도 harness 결함이면 더 묻지 않고 실제 진입을 판정 보류로 적게 했다(`msg_6cf976fa3dd8`).
+- 재검증 결과: worker_done `msg_5ac3c28baed1`(succeeded, 발신·Task·Dispatch 일치). 판정 E/`pr2-reverify/verdict.md`: **판정 보류 — 강 등급 필수 「연결까지 실제 진입 1회」 미실행.** 1차 결함 #1(`task_425824c384f1`)은 해소됐다. 새 결함 #3은 비차단이고, 차단 결함은 없다.
+  - 수행: 새 시험 2파일 8건을 더했다(`tests/backend-connection-new-file.test.ts` 6건, `src/App.connection-notice.test.tsx` 2건). 수정 전 모듈 사본에서는 pid 재사용의 대기·종료 2건만 실패했다. 같은 명령은 1352/1350/2/0에서 1360/1358/2/0으로 바뀌었고 기존 실패 2건은 같다. typecheck 3종과 `desktop:build`는 exit 0이다. 결함 #1의 네 줄이 나뉘었고, 더한 39줄 중 기준 초과는 0이다.
+  - 실제 진입 세 시도는 모두 검증자 harness 결함으로 연결 경로에 닿지 못했다. 1은 wrapper가 `main.js` import 전에 기다린 것, 2는 Git Bash 경로 변환, 3은 `MSYS_NO_PATHCONV=1`이 실행기 스크립트 경로의 변환까지 막아 `MODULE_NOT_FOUND`로 Electron이 뜨지 않은 것이다. 세 시도 모두 사후 electron·`wsl.exe`·백엔드가 0이고, 7777과 공유 잠금은 쓰지 않았으며, 두 checkout은 그대로다.
+  - 결함 #3(리드 기록): 위 「수정 결과」와 재검증 계약 21행의 `backend-connection.ts` +16/−7은 틀렸다. `git diff --numstat 65bbdcb2..48f0ac01`은 +17/−6이다. goal은 고쳤고, 계약은 고정 입력이라 그대로 두고 여기에 정정을 남긴다.
+  - 설계 관찰 (i): 검증용 바꿈 경로를 모양 때문에 거부할 때도 화면이 「함께 지정해야 합니다」라고 보여 원인을 잘못 짚게 한다. 운영 사용자 영향은 없다. 1차 (b)~(g)와 함께 PR4 문서 정리 때 BACKLOG 반영을 판단한다.
+- 리드 표본 대조(일치): `reverify-before`·`after`의 `vitest.json` 셈과 실패 이름 2건, `git status`의 미추적이 새 시험 2파일뿐, `git diff --numstat`의 17/6·22/2, `prefix-module/run.log`의 실패 2·통과 4(낡은 pid를 다시 받은 새 백엔드에 `kill -TERM 4242` 기대), `defect1/changed-lines.json` 요약(더한 39·초과 0, 지운 8·초과 4, 최장 124자), entry3 `launcher.log`의 `C:\c\Users\…\entry-launch.mjs` MODULE_NOT_FOUND와 `app/` 폴더 없음, 대조 시점(14:41Z) `electron.exe` 0. 검증자 pane은 idle을 확인하고 닫았다.
+- 리드 판단: 제품 수정은 필요 없다. 남은 것은 강 등급 필수인 연결까지 실제 진입 1회뿐이라, 새 검증 세션 하나가 그것만 한다. 세 번의 harness 결함은 제품 결함 번호가 아니어서 [확정 실패](../../../00_Document/operations/ORCA.md#confirmed-failures) 집계 대상이 아니다. 새 세션은 경로를 실행기 안 상수로 두는 1차 harness 방식을 따르고, Electron을 띄우기 전에 실행기 경로와 두 바꿈 경로가 실제로 어떻게 넘어가는지 Electron 없이 인자만 찍는 확인을 먼저 남긴다.
+- 실제 진입 착수: 신규 `claude-opus-5-5` `[Management 검증자]`(화면 표시 Opus 5.5 with xhigh effort, Claude Code v2.1.296, backend 실제 모델 unknown). Task `task_52a179ce355b`, Dispatch `ctx_f9041f4bf768`, `turn_started` 관측. 계약 E/`contracts/pr2-entry-task.md` SHA256 `7292ded0887a02bc2b560e70656a50aa5094d8e2155e40f070dc47ed87fc143d`, 기준 HEAD `fc089bc4`. 범위: 연결까지 실제 진입 1회만(Electron 기동 최대 2회, 띄우기 전 인자 확인 필수, 게임 서버 시작 없음, 7777 미사용). 재검증의 실사·시험은 인용한다. 띄우기 직전 커밋 여유 6.04 GB(14:46:01Z).
+- 실제 진입 질문 1(`msg_15f464a49351`): 검증자가 첫 heartbeat receipt를 허용 TEMP 바깥 `.backups/tmp/p2e-hb.txt`에 한 번 썼다가 곧바로 `p2e/hb-1.txt`로 옮겼다고 스스로 알렸다. 리드가 그 파일이 없고 옮긴 파일 내용이 맞는지 확인했다. Git 제외 임시 폴더의 한 줄이라 차단 사유로 보지 않고 판정 계속과 자기 쓰기 감사 기록을 지시했다(`msg_41e352fcead8`). 검증자는 실제 진입(entry1)을 14:54:43~14:55:00Z에 마쳤다고 알렸다.
+- 실제 진입 결과: worker_done `msg_5a95b1537e70`(succeeded, 발신·Task·Dispatch 일치). 판정 E/`pr2-entry/verdict.md`: **PASS — 강 등급 필수 셋 충족.** 첫 Electron 기동(entry1, 14:54:43~14:55:00Z, 보조 디스플레이, 앱 내부 수단만)에서 낡은 연결 파일(pid 4194303) 자리에 새 백엔드(pid 1370, `startedAt` 14:54:48.04Z)가 새 파일을 썼다. 창 준비 뒤 6.2초에 「관리 기능 연결됨」이 됐다. 상태 기록은 `starting` → `connected` 둘뿐이고 `startTimeout`은 없다. 트레이 「종료」 뒤 백엔드가 끝나고 연결 파일이 지워졌으며, 남은 electron·`wsl.exe`·백엔드는 없다. 새 제품 결함은 없다.
+  - 띄우기 전 확인(`raw/preflight.txt`)에서 두 바꿈 값이 `/home/bass1/…`로 넘어가는 것을 먼저 보였다. 실사·독립 시험·시험 명령은 재검증을 인용했다.
+  - 설계 관찰 (j): 바꿈 포트 47777로 띄워도 화면 낱말은 「7777 대기」로 고정이다. 운영 설정은 7777이라 사용자 영향은 없다. 재검증 (i)·1차 (b)~(g)와 함께 PR4 때 BACKLOG 반영을 판단한다.
+  - 동시 실행: Content의 7777 실행(dotnet pid 1142)은 전후 같은 pid로 그대로였다.
+- 리드 표본 대조(일치): `preflight.txt`의 실행기 경로와 두 바꿈 값, `launch.json` environment, `connection-meta-02`(낡은 pid 4194303)와 `-06`(pid 1370, 새 `startedAt`), `connection-states-07.json`의 두 상태, `events.ndjson`의 check 9건 모두 passed, `post-pids.txt`의 두 pid `gone`, `exit.json`에 남은 `wsl.exe` 둘이 기동 전부터 있던 `sync-wsl.sh run`이라는 `pre-processes.json`, `checkouts-diff.txt` same, 대조 시점 `electron.exe` 0, `git status`는 리드 goal뿐. 검증자 pane은 idle을 확인하고 닫았다.
+- PR2 검증 종합: 1차 NOT PASS(결함 #1) → 수정 1회 → 재검증 판정 보류(실제 진입만 남음) → 실제 진입 PASS. 같은 산출물 수정은 1회다.
+
+### PR227 병합 요청
+
+- 최신 main 받기: main이 `20630a90`에서 `b88a1b4b`(PR226)로 나아가 있었다. 겹치는 파일은 CURRENT 하나라, main의 World·Rules 줄과 이 branch의 Management 줄을 둘 다 남겨 풀었다(merge commit `63580f4c`). main 쪽 변경에 `05_Management/` 파일은 없어 제품·시험을 다시 돌리지 않았다. 검증한 `fc089bc4` 뒤 바뀐 것은 goal 기록·CURRENT·main 병합뿐이다.
+- 병합 뒤 PR224의 세션 쓰기 가드가 리드 세션의 첫 쓰기를 `memo-first`로 막았다. 재개 지점 안내대로 맥락 메모 E/`context-memo-pr2-pr.md`를 Write로 쓰고 진행했다.
+- PR227 「feat: connect the server operations screen to the management backend (ops tool V1.0 PR2)」를 만들었다(2026-10-10T15:08Z). 본문은 요약·바뀐 것·검증·남은 것 네 절이다.

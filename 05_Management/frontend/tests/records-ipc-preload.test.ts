@@ -17,8 +17,14 @@ import { transformWithOxc } from 'vite';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('node:fs', async original => ({ ...await original<typeof import('node:fs')>(), mkdirSync: vi.fn() }));
+// screen-design.md 「시작과 붙기」 1: main.ts starts the backend connection when the app is ready. This
+// double (the shape tests/backend-connection.test.ts fixes) keeps the test from starting wsl.exe.
+vi.mock('../electron/backend-connection.js', async () => (await import('./server-operations-fixtures')).backendConnectionModule());
 
 const RECORD_CHANNELS = ['system-backlog:read', 'system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section'];
+// screen-design.md 「IPC 계약」 (M1): the server operations screen adds these; tests/server-operations-ipc-preload.test.ts checks them.
+const SERVER_OPERATION_CHANNELS = ['connection', 'connect', 'status', 'start', 'stop', 'force-stop', 'logs', 'release-candidate', 'release-build', 'release-select']
+  .map(action => `server-operations:${action}`);
 
 // Only what electron/main.ts touches at start-up; behaviour of each double is irrelevant here.
 function makeHost() {
@@ -64,7 +70,7 @@ function trusted() {
 describe('records IPC channels', () => {
   it('registers exactly the three read channels, the guide channel and the backlog channel, with no save channel', async () => {
     const handlers = await start();
-    expect([...handlers.keys()].sort()).toEqual(RECORD_CHANNELS);
+    expect([...handlers.keys()].sort()).toEqual([...RECORD_CHANNELS, ...SERVER_OPERATION_CHANNELS].sort());
     expect(handlers.has('system-records:save')).toBe(false);
   });
 
@@ -142,7 +148,8 @@ describe('preload bridge', () => {
 
   it('exposes only systemRecords.readCatalog·readSection·readCheckout, systemGuide.readGuide and systemBacklog', async () => {
     const { exposed } = await loadPreload();
-    expect([...exposed.keys()].sort()).toEqual(['systemBacklog', 'systemGuide', 'systemRecords']);
+    // screen-design.md 「IPC 계약」 (P1) adds serverOperations; tests/server-operations-ipc-preload.test.ts checks its actions.
+    expect([...exposed.keys()].sort()).toEqual(['serverOperations', 'systemBacklog', 'systemGuide', 'systemRecords']);
     expect(Object.keys(exposed.get('systemRecords') ?? {}).sort()).toEqual(['readCatalog', 'readCheckout', 'readSection']);
     expect(Object.keys(exposed.get('systemGuide') ?? {})).toEqual(['readGuide']);
   });

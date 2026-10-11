@@ -6,10 +6,71 @@ fail() {
     exit 2
 }
 
+init_config() {
+    local source_repository git_entry git_directory
+    if [[ -e "$config" || -L "$config" ]]; then
+        printf 'management backend: configuration already exists: %s\n' "$config"
+        return 0
+    fi
+    if [[ -d "$repo_root/.git" ]]; then
+        source_repository=$repo_root
+    elif [[ -f "$repo_root/.git" ]]; then
+        IFS= read -r git_entry < "$repo_root/.git" || [[ -n "$git_entry" ]]
+        git_entry=${git_entry%$'\r'}
+        if [[ "$git_entry" == 'gitdir: '* ]]; then
+            git_directory=${git_entry#gitdir: }
+            if [[ "$git_directory" =~ ^[A-Za-z]:[/\\] ]]; then
+                git_directory=$(wslpath -u "$git_directory") || return 1
+            fi
+            if [[ "$git_directory" =~ ^(/.+)/\.git/worktrees/([^/]+)$ \
+                && "${BASH_REMATCH[2]}" != . && "${BASH_REMATCH[2]}" != .. ]]; then
+                source_repository=${BASH_REMATCH[1]}
+            fi
+        fi
+    fi
+    if [[ -z "${source_repository:-}" ]]; then
+        printf 'management backend: warning: cannot determine release source from %s/.git; configuration not created\n' "$repo_root" >&2
+        return 1
+    fi
+
+    # JSON escaping and exclusive 0600 creation also cover paths with quotes and concurrent initializers.
+    python3 - "$config" "$source_repository" <<'PY'
+import json
+import os
+import sys
+
+path, source = sys.argv[1:]
+try:
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, "w", encoding="utf-8") as output:
+        json.dump({"release": {"sourceRepository": source}}, output)
+        output.write("\n")
+except FileExistsError:
+    print(f"management backend: configuration already exists: {path}")
+except OSError as error:
+    print(f"management backend: warning: cannot create configuration {path}: {error}", file=sys.stderr)
+    sys.exit(1)
+else:
+    print(f"management backend: created configuration: {path}")
+PY
+}
+
 action=${1:-}
-[[ "$action" == build || "$action" == test || "$action" == run ]] || fail 'usage: backend-wsl.sh build|test|run [arguments]'
+[[ "$action" == build || "$action" == test || "$action" == run || "$action" == init-config ]] \
+    || fail 'usage: backend-wsl.sh build|test|run|init-config [arguments]'
 shift
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd -P)
+config="$HOME/.config/dawnholder/management/backend.json"
+# Initialization must work even in a minimal checkout, before the copy lock, rsync or SDK selection.
+if [[ "$action" == init-config ]]; then
+    [[ $# -eq 0 ]] || fail 'usage: backend-wsl.sh init-config'
+    init_config || exit 2
+    exit 0
+elif [[ "$action" == run && $# -eq 0 && ! -e "$config" && ! -L "$config" ]]; then
+    init_config || true
+fi
+
 cache="$HOME/.cache/dawnholder/management"
 snapshot="$cache/backend-src"
 mkdir -p -- "$cache"
@@ -56,9 +117,9 @@ elif [[ "$action" == build ]]; then
     exec "$DOTNET" build "$backend" --artifacts-path "$artifacts" --disable-build-servers "$@"
 fi
 
-"$DOTNET" build "$backend" --artifacts-path "$artifacts" --disable-build-servers
-if [[ $# -eq 0 && -f "$HOME/.config/dawnholder/management/backend.json" ]]; then
-    set -- --config "$HOME/.config/dawnholder/management/backend.json"
+"$DOTNET" build "$backend" -c Release --artifacts-path "$artifacts" --disable-build-servers
+if [[ $# -eq 0 && -f "$config" ]]; then
+    set -- --config "$config"
 fi
 # Foreground exec preserves signals and stdin ownership for the window process which launched us.
-exec "$DOTNET" "$artifacts/bin/ManagementBackend/debug/Dawnholder.Management.Backend.dll" "$@"
+exec "$DOTNET" "$artifacts/bin/ManagementBackend/release/Dawnholder.Management.Backend.dll" "$@"

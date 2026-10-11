@@ -12,16 +12,21 @@ internal sealed class BackendScenario : IAsyncDisposable
 {
     static readonly TimeSpan BuildTimeout = TimeSpan.FromSeconds(330);
 
+    // Long enough for a backend that ignores its configuration to start and write connection.json.
+    static readonly TimeSpan RefusalTimeout = TimeSpan.FromSeconds(30);
+
     readonly ScratchDirectory _scratch;
+    readonly PortReservation? _serverPortReservation;
     readonly List<BackendProcess> _backends = [];
     readonly List<Process> _helpers = [];
     readonly List<StubProcess> _otherStubs = [];
 
-    BackendScenario(string purpose)
+    BackendScenario(string purpose, PortReservation? serverPortReservation)
     {
         _scratch = new ScratchDirectory(purpose);
+        _serverPortReservation = serverPortReservation;
         Home = _scratch.Create("home");
-        Stub = new StubBehavior(FreePort.Next(), _scratch.Create("stub-pids"));
+        Stub = new StubBehavior(serverPortReservation?.Port ?? FreePort.Next(), _scratch.Create("stub-pids"));
         Settings = new BackendSettings(
             Path.Combine(_scratch.Root, "data"),
             Path.Combine(_scratch.Create("locks"), "server.lock"),
@@ -41,6 +46,9 @@ internal sealed class BackendScenario : IAsyncDisposable
 
     public string DataDirectory => Settings.DataDirectory;
 
+    /// <summary>The default dataDirectory of backend-design.md 「설정」 under this scenario's HOME.</summary>
+    public string DefaultDataDirectory => Path.Combine(Home, ".local", "share", "dawnholder", "management");
+
     public ReleaseSourceRepository? Source { get; private set; }
 
     /// <summary>
@@ -50,7 +58,17 @@ internal sealed class BackendScenario : IAsyncDisposable
     public static BackendScenario Create(string purpose)
     {
         _ = BuiltProcesses.Backend;
-        return new BackendScenario(purpose);
+        return new BackendScenario(purpose, null);
+    }
+
+    /// <summary>
+    /// Like <see cref="Create"/>, but the server port stays bound by the test until disposal, so no other process that
+    /// asks the kernel for a free port gets it meanwhile. Only for tests that never start the stub on that port.
+    /// </summary>
+    public static BackendScenario CreateWithReservedServerPort(string purpose)
+    {
+        _ = BuiltProcesses.Backend;
+        return new BackendScenario(purpose, PortReservation.Take());
     }
 
     /// <summary>
@@ -83,6 +101,25 @@ internal sealed class BackendScenario : IAsyncDisposable
         WriteConfig(config);
         return BackendProcess.RunToExitAsync(ConfigPath, Root, environment, TimeSpan.FromSeconds(60));
     }
+
+    /// <summary>Writes <paramref name="config"/> and runs a backend that should refuse it without starting.</summary>
+    public Task<RefusalRun> RunBackendExpectingRefusalAsync(JsonObject config)
+    {
+        WriteConfig(config);
+        return RunBackendExpectingRefusalAsync(ConfigPath);
+    }
+
+    /// <summary>
+    /// Runs a backend with `--config <paramref name="configPath"/>` that should refuse to start. One that starts anyway
+    /// is killed as soon as it writes connection.json in the configured or in the default data directory.
+    /// </summary>
+    public Task<RefusalRun> RunBackendExpectingRefusalAsync(string configPath) =>
+        BackendProcess.RunExpectingRefusalAsync(
+            configPath,
+            Root,
+            BackendEnvironment(),
+            [Path.Combine(DataDirectory, "connection.json"), Path.Combine(DefaultDataDirectory, "connection.json")],
+            RefusalTimeout);
 
     public async Task<ReleaseSourceRepository> CreateReleaseSourceAsync()
     {
@@ -183,6 +220,7 @@ internal sealed class BackendScenario : IAsyncDisposable
             helper.Dispose();
         }
 
+        _serverPortReservation?.Dispose();
         _scratch.Dispose();
     }
 

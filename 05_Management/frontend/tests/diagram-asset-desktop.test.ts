@@ -10,6 +10,9 @@ vi.mock('node:fs', async (original) => ({ ...await original<typeof import('node:
 // Record index v2 (index-v2-design.md 「Electron 경계」): the catalog store only reads.
 vi.mock('../electron/catalog-store.js', () => ({ createCatalogStore: vi.fn(() => ({ read: vi.fn(async () => ({ ok: true })) })) }));
 vi.mock('../electron/system-guide-store.js', () => ({ createSystemGuideStore: vi.fn(() => ({ read: vi.fn(async () => ({ ok: true })) })) }));
+// screen-design.md 「시작과 붙기」 1: main.ts starts the backend connection when the app is ready. This
+// double (the shape tests/backend-connection.test.ts fixes) keeps the test from starting wsl.exe.
+vi.mock('../electron/backend-connection.js', async () => (await import('./server-operations-fixtures')).backendConnectionModule());
 
 const documentUrl = 'dh-diagram://renderer/diagram-renderer.html';
 type Frame = { url: string; parent: Frame | null };
@@ -154,7 +157,13 @@ describe('diagram frame entry and navigation decisions', () => {
     await start();
     const diagramFrame: Frame = { url: documentUrl, parent: host.mainFrame };
     const handlers = host.ipcMain.handle.mock.calls as unknown as [string, (event: unknown, input?: unknown) => Promise<unknown>][];
-    expect(handlers.map(([channel]) => channel).sort()).toEqual(['system-backlog:read', 'system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section']);
+    // screen-design.md 「IPC 계약」 (M1) adds the ten server-operations channels; tests/server-operations-ipc-preload.test.ts checks them.
+    expect(handlers.map(([channel]) => channel).sort()).toEqual([
+      'server-operations:connect', 'server-operations:connection', 'server-operations:force-stop', 'server-operations:logs',
+      'server-operations:release-build', 'server-operations:release-candidate', 'server-operations:release-select',
+      'server-operations:start', 'server-operations:status', 'server-operations:stop',
+      'system-backlog:read', 'system-guide:read', 'system-records:read', 'system-records:read-checkout', 'system-records:read-section',
+    ]);
     for (const [channel, handle] of handlers) {
       expect(await handle({ sender: host.contents, senderFrame: diagramFrame }, {}), channel).toMatchObject({ ok: false, code: 'denied' });
       // The owned main frame passes the sender check; what each store then returns is tested elsewhere.

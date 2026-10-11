@@ -246,12 +246,7 @@ internal sealed class ServerSupervisor : IHostedService
         bool alive = _process != null && !_process.HasExited;
         int? pid = alive ? _process!.Id : null;
         PortObservation port = PortObservation.Read(_settings.Server.Port, pid);
-        bool heldByOther = false;
-        if (_lease == null)
-        {
-            using PortLease? probe = PortLease.TryAcquire(_settings.Server.PortLockFile);
-            heldByOther = probe == null;
-        }
+        bool heldByOther = _lease == null && PortLease.IsHeldByOther(_settings.Server.PortLockFile);
 
         return new
         {

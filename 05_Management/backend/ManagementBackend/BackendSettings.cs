@@ -4,6 +4,11 @@ namespace Dawnholder.Management.Backend;
 
 internal sealed class BackendSettings
 {
+    private static readonly JsonSerializerOptions ConfigurationOptions = new(JsonFiles.Options)
+    {
+        UnmappedMemberHandling = System.Text.Json.Serialization.JsonUnmappedMemberHandling.Disallow,
+    };
+
     public int ListenPort { get; init; } = 47321;
     public string DataDirectory { get; init; } = Path.Combine(Home, ".local/share/dawnholder/management");
     public ServerSettings Server { get; init; } = new();
@@ -22,19 +27,20 @@ internal sealed class BackendSettings
                 throw new ArgumentException("설정 인자는 --config <절대 경로>입니다.");
             path = args[1];
             Absolute(path, "config");
+            if (!File.Exists(path)) throw new ArgumentException($"config: 설정 파일이 없습니다: {path}");
         }
 
         BackendSettings settings;
         try
         {
             settings = File.Exists(path)
-                ? JsonSerializer.Deserialize<BackendSettings>(File.ReadAllText(path), JsonFiles.Options)
+                ? JsonSerializer.Deserialize<BackendSettings>(File.ReadAllText(path), ConfigurationOptions)
                     ?? throw new ArgumentException("config: 설정 객체가 필요합니다.")
                 : new BackendSettings();
         }
         catch (JsonException error)
         {
-            throw new ArgumentException($"설정 {error.Path}: 올바른 JSON 값이 필요합니다.", error);
+            throw new ArgumentException($"config {error.Path}: 올바른 설정 JSON이 필요합니다. {error.Message}", error);
         }
 
         settings.Validate();

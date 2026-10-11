@@ -21,6 +21,9 @@ const backlog = vi.hoisted(() => {
   return { storeResult, read: vi.fn(), createBacklogStore: vi.fn() };
 });
 vi.mock('../electron/backlog-store.js', () => ({ createBacklogStore: backlog.createBacklogStore }));
+// screen-design.md 「시작과 붙기」 1: main.ts starts the backend connection when the app is ready. This
+// double (the shape tests/backend-connection.test.ts fixes) keeps the test from starting wsl.exe.
+vi.mock('../electron/backend-connection.js', async () => (await import('./server-operations-fixtures')).backendConnectionModule());
 
 const DENIED = { ok: false, code: 'denied', message: '이 창에는 기록 접근 권한이 없습니다.' };
 const MAIN_URL = new URL('../electron/main.ts', import.meta.url);
