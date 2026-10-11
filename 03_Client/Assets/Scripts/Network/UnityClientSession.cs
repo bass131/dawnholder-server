@@ -120,6 +120,7 @@ namespace Dawnholder.Client.Network
                 { PacketID.S_QuestUpdate,        new QuestUpdateHandler() },
                 { PacketID.S_InventorySnapshot,  new InventorySnapshotHandler() },
                 { PacketID.S_ItemUseResult,      new ItemUseResultHandler() },
+                { PacketID.S_DungeonClearResult, new Handlers.Dungeon.DungeonClearResultHandler() },
             };
 
         // Editor only 송신 latency 시뮬레이션.

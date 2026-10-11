@@ -104,11 +104,13 @@ namespace Dawnholder.Client.Network
             var party = PartyState.Instance;
             var quest = QuestState.Instance;
             var inventory = InventoryState.Instance;
+            var dungeonReward = DungeonClearRewardState.Instance;
             var inventoryRequests = UnityClientSession.Instance?.Inventory;
             Reset(() => LocalPlayerMovement.Instance?.SuspendForMapEntry());
             Reset(() => party?.ResetSessionValues());
             Reset(() => quest?.ResetSessionValues());
             Reset(() => inventory?.ResetSessionValues());
+            Reset(() => dungeonReward?.ResetSessionValues());
             Reset(() => inventoryRequests?.ResetSessionValues());
             Reset(() => RemoteEntityRegistry.Instance?.Clear());
             Reset(() => EnemyRegistry.Instance?.Clear());
@@ -116,6 +118,7 @@ namespace Dawnholder.Client.Network
             Reset(() => party?.NotifySessionReset());
             Reset(() => quest?.NotifySessionReset());
             Reset(() => inventory?.NotifySessionReset());
+            Reset(() => dungeonReward?.NotifyChanged());
             Reset(() => inventoryRequests?.NotifySessionReset());
             if (errors.Count != 0) throw new AggregateException("Session mirror cleanup failed.", errors);
         }
