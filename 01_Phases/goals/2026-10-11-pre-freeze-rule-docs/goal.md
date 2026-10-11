@@ -13,9 +13,9 @@
 - 근거 폴더 E: `.backups/verification/2026-10-11-pre-freeze-rule-docs/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-pre-freeze-rule-docs/scope-draft-v1.md)(SHA256 `b783ae27…`)와 메인 판단 넷(「요구사항 원천과 적용 결정」)이다. 리드 맥락 메모는 E/lead-context.md(진입·범위 초안), E/pr-lead-context.md(착수), E/closeout-lead-context.md(종료 기록)다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_b1fddc67-1e99-4471-af0b-8fe6c295d371`, Run `run_d447bca7c344`(회신 주소 `run:run_d447bca7c344`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - 앞 goal의 끝: [세션 쓰기 가드와 생존 신호 간격 도구](../2026-10-10-operating-tool-guards/goal.md)는 PR224·PR228 병합으로 끝났다. PR228 좁힌 재실사 통과(근거 rules-active [E/closeout-rereview/verdict.md](../../../.backups/verification/2026-10-10-operating-tool-guards/closeout-rereview/verdict.md)).
-- **현재 위치**: PR229가 병합됐다(「현재 결과 / PR229 병합 전 재실사와 병합」). 완료조건 대조는 「현재 결과 / 완료조건 대조」에 있다. 이 종료 기록 PR이 병합 뒤 결과를 main에 올린다.
-- **남은 순서**: 종료 기록 PR 실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다.
-- **사용자 차례**: 종료 기록 PR의 병합 승인 줄이다. 그 뒤 종료 점검에서 결과·남은 위험·BACKLOG·다음 계획을 확인한다.
+- **현재 위치**: PR229가 병합됐다(「현재 결과 / PR229 병합 전 재실사와 병합」). 완료조건 대조는 「현재 결과 / 완료조건 대조」에 있다. 종료 기록 PR231이 병합 뒤 결과를 main에 올린다.
+- **남은 순서**: PR231 실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다.
+- **사용자 차례**: PR231의 병합 승인 줄이다. 그 뒤 종료 점검에서 결과·남은 위험·BACKLOG·다음 계획을 확인한다.
 
 ## 진척 단계
 
@@ -26,10 +26,10 @@
 - [x] 종료 점검자 확인
 - [x] 결과 기록·재실사
 - [x] PR229 병합
-- [>] 종료 기록 PR 병합
+- [>] PR231 병합
 - [ ] 종료 점검과 R-8
 
-PR229(https://github.com/bass131/dawnholder-server/pull/229)를 2026-10-11에 만들었고 같은 날 병합했다. 종료 기록 PR 단계 이름은 PR이 생기면 「PR### 병합」으로 바꾼다.
+PR229(https://github.com/bass131/dawnholder-server/pull/229)를 2026-10-11에 만들었고 같은 날 병합했다. 종료 기록 PR231(https://github.com/bass131/dawnholder-server/pull/231)을 같은 날 만들었다.
 
 ## 범위
 
