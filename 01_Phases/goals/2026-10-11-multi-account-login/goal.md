@@ -13,7 +13,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
   - 계약 초안: 메모 E/`ro01-reverify-prep-context.md`, 머리 E/`ro01-reverify-build/head.md`. 지금 머리는 7줄 기준이고 `@@FIX_SHA@@`·`@@REPORT_SHA@@` 자리표시가 남았다. 18줄의 세 파일, commit 범위(`ac5342bd..` 18줄 commit), 옛 문구 검색 패턴을 넣어 고친다. 규칙 원문은 E/`ro01-rest-build/assemble.mjs`로 CODE_CONVENTION 119~126·71~82·128~141·162~172행을 붙인다.
   - 통과하면 실화면을 메인에 다시 요청한다. 요청서 E/`screen-request.txt`, harness E/`screen-harness/hold_account.py`(아직 실행 안 함). 시작 직전에 Content·Core에 7777·Unity 사용을 묻는다.
 - **다시 열 때 필요한 것**: 이 리드의 Claude 세션 ID `1531e871-7aaa-4331-a1db-d831038f8f4a`, Run `run_a927bbaff1f5`. branch는 이 기록 commit까지 원격에 올렸다(마감 때 처음 생성). world-active에 사용자 미커밋 파일은 없다. 사용자·메인 결정 대기 항목은 없다.
-- **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **남은 순서**(2026-10-11 마감 기준): 7줄·18줄 묶음 약 등급 재검증(신규 `gpt-6-astra` xhigh) → 실화면 확인 → 제품 PR·사용자 병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **다음 goal 메모**: 사용자 결정 「World 다음 goal - 로그인 goal 끝난 뒤 무엇을 할지 → A 서버 후속 묶음」(메인 pane 현황판 결정 응답, 2026-10-11 23:3x KST, 메인 전달 `msg_6974802727a2`). BACKLOG의 서버 후속 셋을 Content 던전 클리어 PR 병합 뒤 서버만 고친다. 다음 goal은 R-8 뒤 새 리드가 연다.
 - 다음 goal은 자동으로 시작하지 않는다.
 
 ## 진척 단계
