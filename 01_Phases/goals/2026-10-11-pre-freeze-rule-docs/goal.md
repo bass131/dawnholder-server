@@ -171,8 +171,8 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
   - D4(P3, 처분 근거): 작성 Sol 생존 신호 위반의 「비차단」 단정에 근거가 없었다. 메인 결정 `msg_9b35d66297d6`을 처분 출처로 적었다(「정본 문장 작성」).
 - 실사자 생존 신호(E/lead-check/liveness-review.json): 신호 9, 최대 264초, 300초 초과 0. 정산: 빈 프롬프트 확인, `worker-release` retained, `terminal close`(07:53:24Z).
 - 수정 1회째(같은 산출물 ORCA 1회째): 새 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max」, backend unknown), Task `task_5ecf769dd096`, Dispatch `ctx_dfc3d135f594`, 2026-10-11T08:08:26Z~08:19:53Z, worker_done `msg_63040e8836b6`(succeeded). 계약 E/fix1-contract.md v1(SHA256 `cc2b7624…`, 고정 head `70c80014`), 보고 E/fix1/report.md, 기동 기록 E/fix1-start-note.md다. `turn_start_unobserved`였고 draft 23,672자(계약 18,884 + 4,787 + 1)를 확인해 Enter만 한 번 보냈다. rollout 사후 대조에서 Enter로 제출된 입력 하나가 계약 전문을 담았다(E/fix1-rollout-match.json).
-- 수정 결과: ORCA 21행이 base 21행과 같아졌고 연속 빈 줄 묶음이 4에서 0이 됐다. ORCA는 249줄에서 245줄이 됐고 제목·anchor 수는 그대로다. 스킬은 25행 한 문장만 「Core 리드 탭과 작업자·검증자 pane 배치는 R-1 정본에서 확인한다.」로 바뀌었다(120 → 85 bytes).
-- bytes: 여섯 파일 묶음이 base 103,221, 앞 고정 head 103,218, 수정 뒤 103,306(base 대비 +85)이다. 증가분은 출처 복원 127 bytes에서 빈 줄 4 bytes와 스킬 문장 35 bytes를 뺀 값이고 사용자가 허용했다. 리드 R-2(E/lead-check/r2-fix1.json, 스크립트 r2-fix1.mjs)가 같은 값을 다시 쟀다. 표본 대조이며 독립 판정이 아니다.
+- 수정 결과: ORCA 21행이 base 21행과 같아졌다. 연속 빈 줄 묶음 둘(앞 head 22~24행, 179~181행, 각 빈 줄 셋)에서 초과 빈 줄 4개를 지워 묶음이 2에서 0이 됐다. 리드 원시 r2-fix1.json의 `orcaBlankRunsOutsideFences` 값 4는 묶음 수가 아니라 인접한 빈 줄 쌍의 수다. ORCA는 249줄에서 245줄이 됐고 제목·anchor 수는 그대로다. 스킬은 25행 한 문장만 「Core 리드 탭과 작업자·검증자 pane 배치는 R-1 정본에서 확인한다.」로 바뀌었다(120 → 85 bytes).
+- bytes: 여섯 파일 묶음이 base 103,221, 앞 고정 head 103,218, 수정 뒤 103,306이다. 이번 수정은 앞 고정 head 대비 +88(출처 복원 127 bytes − 빈 줄 4 bytes − 스킬 문장 35 bytes)이고, 앞 head의 base 대비 −3과 합쳐 base 대비 +85다. 이 증가는 사용자가 허용했다. 리드 R-2(E/lead-check/r2-fix1.json, 스크립트 r2-fix1.mjs)가 같은 값을 다시 쟀다. 표본 대조이며 독립 판정이 아니다.
 - 수정 작성자 생존 신호(E/lead-check/liveness-fix1.json): 신호 5, 최대 241초, 300초 초과 0. 정산: 빈 프롬프트 확인, `worker-release` retained, `terminal close`(08:20:47Z).
 - 설계 관찰(비차단) 둘은 하위 분화 후보에 묶었다(「다음 계획 후보」): AGENTS 「모델 라우팅」의 「Opus 대체」 목적어가 따로 읽으면 모호하다. ORCA capacity 제목 아래의 safeguard 안내는 제목만 훑으면 찾기 어렵다.
 
