@@ -269,6 +269,7 @@
 | SQL 실행 환경 단순화와 사람 조회 공존 | 사용자 원문 「음 좀 불편하긴하네, 이 부분 나중에 어떻게 할지 Core 백로그로 남겨줘」 등 셋(메인 전달 `msg_32dfec1508d4`, 2026-10-09T01:56:53Z). 관리자 손 단계 단순화 후보(서비스 시작·정지 권한, VHDX 자동 부착, 데이터 이동)와 사람 조회 공존 경계(카드 실행 중 접속 금지, 스키마는 migrations로만, 카드 DATA 기준을 시작 시점 상태로, 조회 안내 한 절) | BACKLOG `sql-environment-human-access`(Core, 대기)로 등록. 지금 결정은 「나중에 정한다」뿐이고, DB 생성 1단계 재시도는 지금 환경 그대로 한다. 아래 `persistence-vhd-mount-convenience`와 겹침은 검토 때 대조 |
 | 관리자 묶음 스크립트 규칙 검사 전환 | 「재개 지점」 Fable 작업자 블록의 REP-01 첫 발생, 메인 `msg_e6b4501dff60`. 후보는 PS 파서로 120자 초과 줄을 세는 검사와 PSScriptAnalyzer `PSAvoidUsingPositionalParameters` | 후속 후보로만 기록. 지금 검사를 만들지 않는다 |
 | 가상 디스크 반복 준비 효율화 | `persistence-vhd-mount-convenience`, 질문 `msg_8739f507da55` 후 메인 `msg_9715b62aed0e`가 사용자 A 선택 전달 | 부팅 때 자동 마운트 선택. DB1단계 뒤 메인이 사용자와 별도 관리자 창에서 조율하며 GameDev는 실행하지 않음. 예약 작업 등록·동작 검증 완료는 미보고 |
+| 서식 검사 Plugins DLL 가드 빈 비교 | World 리드 `msg_0d2d16fe0bd5`(2026-10-11T10:57:28Z)가 World 검증자 관찰 O-8을 전달했다. `99_Tools/format-check.sh` 42~48행 `record_plugins`는 파일이 없으면 건너뛰어, WSL 사본에 DLL이 없을 때 107·138행 `cmp`가 빈 파일끼리 비교한다. 리드가 코드에서 확인했다 | 이번 goal 범위 밖. 종료 Gardener 때 BACKLOG 등록을 검토하고, 그때까지 서식 검사의 DLL 보호 결과를 근거로 쓰지 않는다 |
 
 `persistence-vhd-mount-convenience` 결정 출처는 메인 `msg_9715b62aed0e`(Orca2026-10-05T09:58:26Z), 원문 `g2-postreview-check-delivery_31fec47b0c0a.json`이다. 메인 본문이 적은 사용자 제출은10:0xZ 무렵이며 서버 시각과 구분해 보존한다. 전달된 사용자 원문:
 
