@@ -13,8 +13,8 @@
 - 근거 폴더 E: `.backups/verification/2026-10-11-routing-hotfix-canon/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-routing-hotfix-canon/scope-draft-v1.md)(SHA256 `32c0186e…b927`)와 메인 승인의 답 넷(「요구사항 원천과 적용 결정」)이다. 리드 맥락 메모는 E/lead-context.md이고 차례마다 절을 더한다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 압축 기준 `--autocompact 250000`은 메인 기동값이며 화면에서 확인하지 못했다. 태그 `[Rules 리드 Opus]`, handle `term_991652c5-0324-450d-9208-3d8c9663777f`, Run `run_bea2c841fa15`(회신 주소 `run:run_bea2c841fa15`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - 앞 goal의 끝: [규칙·운영 동결 전 문서 정리](../2026-10-11-pre-freeze-rule-docs/goal.md)는 PR229·PR231 병합으로 끝났다. 마지막 기록은 이 goal의 시작 커밋으로 넣었다(「현재 결과 / 착수」).
-- **현재 위치**: 문서 실사. 정본 문장(Sol)과 BACKLOG(리드)를 마쳤고 리드 대조를 통과했다. bytes 초과는 메인이 허용 안으로 판단했다(「현재 결과 / 정본 문장과 리드 대조」). PR을 연 뒤 신규 Astra 문서 실사를 연다.
-- **남은 순서**: PR 생성 → 문서 실사 → Gardener → 결과 기록 → 바뀐 부분 재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다.
+- **현재 위치**: 문서 실사. 정본 문장(Sol)과 BACKLOG(리드)를 마쳤고 리드 대조를 통과했다. bytes 초과는 메인이 허용 안으로 판단했다(「현재 결과 / 정본 문장과 리드 대조」). [PR232](https://github.com/bass131/dawnholder-server/pull/232)를 열었고 신규 Astra 문서 실사를 연다.
+- **남은 순서**: 문서 실사 → Gardener → 결과 기록 → 바뀐 부분 재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다.
 - **사용자 차례**: 지금은 없다. bytes 초과(+174)는 메인이 사용자 허용 안으로 판단했다(메인 판단, 「현재 결과」).
 
 ## 진척 단계
@@ -171,6 +171,8 @@ git diff --stat origin/main -- 00_Document/operations/ORCA.md .agents/skills/daw
 - 리드 R-2(E/r2-lead.mjs, E/r2-lead.json): 보존 줄 11개가 바이트 단위로 같고 각각 한 번만 있다. 두 파일의 제목·`<a id>`·링크 목록이 고정 HEAD와 같다. 바뀐 자리는 위 여덟 곳뿐이고 numstat은 ORCA 6/5, 스킬 2/1이다. 사용자 원문 `msg_ca6641b7a9e2`, 정정판 `msg_9494d6bd3ac5`, 진입 할 일 `msg_300feadfab41`과 문장 뜻을 대조했다.
 - bytes: 여섯 파일 묶음 103,306 → 105,254(+1,948). ORCA +1,209(245→246줄), 스킬 +739(103→104줄), 나머지 넷은 0이다. 결정별로는 533·547·613·255다(Sol E/sentences/work/check-output.json). 예상 +1,774보다 174 크다. 리드가 status `msg_c95cbb6ba789`(12:27:09Z)로 물었고 메인이 `msg_f876e290be4c`(12:27:34Z)로 「A 그대로 진행」이라 답했다. 메인 판단이며 사용자 결정이 아니다. 늘어난 것은 결정 넷의 문장뿐이고 새 규칙이 없어 사용자 허용 「A 허용」 안이라는 판단이다.
 - 생존 신호(E/sentences-liveness.json, `99_Tools/Orca/check-liveness.mjs`): `within`, 신호 7, 최대 간격 271초. 300초 초과 구간은 없다. Sol pane은 tui-idle 확인 뒤 12:25:56Z에 닫았다.
+- 정산 순서: [Orca 위임 지침](../../../.agents/skills/dawnholder-goal-loop/references/orca-work.md)은 `worker-release` 뒤 `terminal close`인데, 리드가 pane을 먼저 닫고(12:25:56Z) release를 뒤에 했다(12:30:01Z, E/sentences-release.json). 결과는 `retained`(`external_terminal`, `processAction` none)로 이전 Rules goal에서 순서대로 한 release와 같아 영향은 없다. 첫 발생이라 기록만 한다.
+- PR232: 커밋 `95033862`(정본 문장·BACKLOG·이 goal 기록)를 push하고 12:29:30Z에 열었다(E/session/pr-create.txt, E/session/pr-body.md). 실사 고정 head는 실사 계약에 적는다.
 - BACKLOG(리드, E/backlog-edit.mjs): 갱신 둘(`operating-trial-evaluation`에 결정 4, `lead-mailbox-receive-delay`의 열린 질문에 답 「A 유지」)과 새 절 「라우팅 핫픽스 정본 반영 goal에서 연결한 후보」의 두 행. 141,329 → 145,559 bytes, 276 → 285줄(묶음 밖). 후보 도착 검사는 `allowed`(ID 116, 중복 0, 후보 2, unknown 0, E/backlog-check-after.json)이고 이전 goal도 `allowed`다(E/backlog-check-after-prev.json).
 
 ## 다음 계획 후보
