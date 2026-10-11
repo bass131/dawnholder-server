@@ -13,8 +13,8 @@
 - 근거 폴더 E: `.backups/verification/2026-10-11-pre-freeze-rule-docs/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-pre-freeze-rule-docs/scope-draft-v1.md)(SHA256 `b783ae27…`)와 메인 판단 넷(「요구사항 원천과 적용 결정」)이다. 리드 맥락 메모는 E/lead-context.md(진입·범위 초안)와 E/pr-lead-context.md(착수)다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[Rules 리드 Opus]`, handle `term_b1fddc67-1e99-4471-af0b-8fe6c295d371`, Run `run_d447bca7c344`(회신 주소 `run:run_d447bca7c344`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - 앞 goal의 끝: [세션 쓰기 가드와 생존 신호 간격 도구](../2026-10-10-operating-tool-guards/goal.md)는 PR224·PR228 병합으로 끝났다. PR228 좁힌 재실사 통과(근거 rules-active [E/closeout-rereview/verdict.md](../../../.backups/verification/2026-10-10-operating-tool-guards/closeout-rereview/verdict.md)).
-- **현재 위치**: 정본 문장 여섯과 BACKLOG 정리를 마쳤다. 문서 실사는 차단 넷(D1~D4)을 냈다(「현재 결과 / 문서 실사」). 사용자가 스킬 한 문장 수정과 출처 복원에 따른 bytes 증가를 승인했다. 새 Sol이 D1·D2를 고쳤고 리드가 D3·D4를 고쳤다. 신규 Astra 좁힌 재실사를 연다.
-- **남은 순서**: 결함 수정 → 좁힌 재실사 → Gardener → 결과 기록·재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- **현재 위치**: 정본 문장 여섯과 BACKLOG 정리를 마쳤다. 문서 실사의 차단 넷(D1~D4)을 고쳤고, 좁힌 재실사가 낸 리드 기록 오류 R1도 고쳤다(「현재 결과 / 문서 실사」). 병합 전 고정 head에서 Gardener가 끝났다(「현재 결과 / 종료 점검(Gardener)」). 사용자가 Gardener 정리 후보 둘을 BACKLOG에 넣기로 해 결과 기록에 반영했다. 바뀐 부분 재실사를 연다.
+- **남은 순서**: 결과 기록 → 바뀐 부분 재실사 → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
 - **사용자 차례**: 병합 승인 줄이다.
 
 ## 진척 단계
@@ -22,9 +22,9 @@
 - [x] 범위와 기준 확정
 - [x] 정본 문장 작성
 - [x] 대기 목록 정리
-- [>] 문서 실사
-- [ ] 종료 점검자 확인
-- [ ] 결과 기록·재실사
+- [x] 문서 실사
+- [x] 종료 점검자 확인
+- [>] 결과 기록·재실사
 - [ ] PR229 병합
 - [ ] 종료 점검과 R-8
 
@@ -44,7 +44,7 @@ PR229(https://github.com/bass131/dawnholder-server/pull/229)를 2026-10-11에 �
    - S5 RESUME 「세션 진입 배치」: Claude 세션은 첫 파일 쓰기 전에 맥락 메모를 쓴다. 진입 순서는 읽기 → 메모 → Run·receipt·READY다. 메모는 `.backups/verification/<goal>/` 아래 이름에 `context`가 든 `.md`이고, 범위 승인 전이면 예정 goal 이름의 폴더를 쓴다. 리드 세션의 임시 파일은 Claude Code scratchpad(checkout 밖이라 가드가 막는다)가 아니라 `.backups/tmp/` 아래에 둔다.
    - S6 RESUME 「다음 조각을 시작하는 순서」 끝 줄: 적용 중인 결정은 각 goal의 「적용 중인 사용자 결정」 절에 있고, 정본 반영을 기다리는 결정은 BACKLOG 행으로 찾는다. CURRENT 하단 「정본 반영 전 적용 결정」 링크도 같은 문장으로 고친다(메인 판단 3, 리드가 S6 확정 뒤 씀).
 2. 이 goal 파일. 첫 기록 셋(메인 판단 `msg_c3df82b7150e`): 재개 지점의 PR228 재실사 통과 한 줄, 「현재 결과 / 첫 기록」의 재검토 뒤 goal 수정 두 번째 이탈과 helper 후보, 「위험」 4의 남은 위험. bytes 상쇄로 옮긴 문장이 있으면 「정본에서 옮긴 적용 기록」 절에 둔다.
-3. BACKLOG: 새 절 「동결 전 문서 정리 goal에서 연결한 후보」에 새 행 셋(`rereview-head-diff-helper`, `terminal-workspace-alternative-review`, `merge-gate-deny-wording`)과 실사 뒤 사용자 조건으로 더한 넷째 `rule-document-subdivision`(「적용 중인 사용자 결정」). 기존 행 갱신: 이 goal로 승격 넷(`session-entry-memo-order`, `advisor-model-alternative-canon`, `claude-safeguard-verifier-switch`, `worker-pane-placement-wording`), 근거 더하기 둘(`mailbox-wait-overlap-guard` 셋째 발생, `goal-state-drift` 처리한 부분), `single-output-role-memo-first`에 S5가 메모 이름 조건을 정본에 두었다는 한 구절.
+3. BACKLOG: 새 절 「동결 전 문서 정리 goal에서 연결한 후보」에 새 행 셋(`rereview-head-diff-helper`, `terminal-workspace-alternative-review`, `merge-gate-deny-wording`)과 실사 뒤 사용자 조건으로 더한 넷째 `rule-document-subdivision`, Gardener 후보를 사용자가 채택한 다섯째 `rule-document-measure-helper`(「적용 중인 사용자 결정」). Gardener 결과로 `official-draft-check-helper`·`lead-mailbox-receive-delay`에 근거를 더한다. 기존 행 갱신: 이 goal로 승격 넷(`session-entry-memo-order`, `advisor-model-alternative-canon`, `claude-safeguard-verifier-switch`, `worker-pane-placement-wording`), 근거 더하기 둘(`mailbox-wait-overlap-guard` 셋째 발생, `goal-state-drift` 처리한 부분), `single-output-role-memo-first`에 S5가 메모 이름 조건을 정본에 두었다는 한 구절.
 4. CURRENT Rules 줄(이 goal 링크·경로·branch)과 하단 링크(S6과 같은 문장).
 
 ### 건드릴 곳
@@ -55,7 +55,7 @@ PR229(https://github.com/bass131/dawnholder-server/pull/229)를 2026-10-11에 �
 | `00_Document/operations/RESUME.md` | 신규 Sol | S5·S6 |
 | `.agents/skills/dawnholder-session-handoff/SKILL.md` | 새 Sol | 실사 D1 수정: 25행의 배치 문장 하나만 R-1 참조로 바꾼다(사용자 승인, 이 한 문장 한정) |
 | 이 goal | 리드 | 범위·진척 단계·첫 기록·결정·결과 |
-| `00_Document/operations/BACKLOG.md` | 리드 | 새 행 넷(넷째는 실사 뒤 사용자 조건의 `rule-document-subdivision`), 기존 행 갱신 |
+| `00_Document/operations/BACKLOG.md` | 리드 | 새 행 다섯(넷째는 실사 뒤 사용자 조건의 `rule-document-subdivision`, 다섯째는 사용자가 채택한 Gardener 후보 `rule-document-measure-helper`), 기존 행 갱신 |
 | `00_Document/operations/CURRENT.md` | 리드 | Rules 줄과 하단 링크. 다른 파트 줄은 보존 |
 
 Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다.
@@ -72,7 +72,7 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 ### 관찰 가능한 완료조건
 
 1. S1~S6이 ORCA·RESUME에 들어가고 각 문장이 원천(사용자 원문·메인 전달 msg ID·반복 근거 행)과 맞는다. 신규 독립 실사자가 원천 대조와 현실 시나리오 다섯(새 리드 진입과 가드, 미확인 메일이 있는 채 작업자 pane 닫기 직전, 확정 실패 3회 뒤 Advisor 고르기, Opus 검증자의 safeguard 선택창, 다른 worktree 작업자 띄우기)으로 확인한다.
-2. BACKLOG 새 행 넷·기존 행 갱신이 항목 계약(7필드, 상태 세 값)을 지키고, 후보 도착 검사(`node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-11-pre-freeze-rule-docs/goal.md`)가 `allowed`·중복 0이다. 리드 실행 원시를 E에 두고 실사자가 같은 명령을 다시 돈다.
+2. BACKLOG 새 행 다섯·기존 행 갱신이 항목 계약(7필드, 상태 세 값)을 지키고, 후보 도착 검사(`node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-11-pre-freeze-rule-docs/goal.md`)가 `allowed`·중복 0이다. 리드 실행 원시를 E에 두고 실사자가 같은 명령을 다시 돈다.
 3. 이 goal에 첫 기록 셋과 이번 사용자 결정 원문이 있다.
 4. 변경 경계: `git diff --stat <base>...HEAD`에 「건드릴 곳」의 여섯 파일만 있다. 코드·다른 파트 파일 변경 0이고, Codex 영역은 승인된 스킬 한 문장뿐이다.
 5. 규칙 문서 크기: ORCA 250줄 이하. 여섯 파일 묶음 합계는 「PR 경계와 검증」의 bytes 줄대로 잰다. 출처 복원에 따른 증가는 사용자가 허용했다(「적용 중인 사용자 결정」).
@@ -133,6 +133,7 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 - **범위 승인**(메인 전달 `msg_935fcc451ce8`, 2026-10-11 15:4x KST): 「대시보드 결정 응답: 1) 계획 검토 - World 다중 계정 로그인 goal 범위 초안 v1 → A 승인 (초안 msg_148c21badf30) · 2) 계획 검토 - Rules 동결 전 규칙 문서 정리 범위 초안 v1 → A 승인 (초안 msg_37a299c91578)」. 이 goal은 2)다. 초안 그대로이며 코멘트가 없어 S3은 초안대로 「Opus 검증자」 한정이다. 메인은 정리본에서 「사용자 원문은 검증자로 한정하지 않았다」는 관찰을 사용자에게 보였고 사용자는 코멘트 없이 승인했다.
 - **실사 결함 처리 — 출처 복원과 bytes**(메인 전달 `msg_0c222663ca85`, 2026-10-11 17:0x KST): 「대시보드 결정 응답: 1) Core 엔진 검사 약점 - 실행 절차에 확인 단계를 넣을지, 도구 코드를 고칠지 → A 절차에 확인 단계 · 2) PR229 - 세션 이어받기 스킬 한 문장을 정본 참조로 바꿀지(Codex 영역) → C 코멘트 「세션 이어받기 스킬이 어떤거 말하는거지?」 · 3) PR229 - 끊긴 출처 링크를 되살려 규칙 문서가 조금(약 73 bytes) 느는 것을 허용할지 → C 코멘트 「대부분 A로가되, 너무 길어지면 하위 문서로 분화시킬 것, AI Readiness를 최대한 원활하게 해줘」」. Rules 해당은 2)·3)이다. 1)은 Core 안건이고, 2)는 아래 줄에서 다시 답했다. 메인 해석은 「요구사항 원천과 적용 결정」에 있다.
 - **실사 결함 처리 — 스킬 문장 교체**(메인 전달 `msg_3253008689b9`, 2026-10-11T08:05:22Z): 「대시보드 결정 응답: 1) PR229 - 세션 준비·인계 스킬의 작업자 배치 문장 하나를 정본 참조로 바꿀지 → A 바꿈 승인」. 앞 응답의 2)에서 사용자가 「세션 이어받기 스킬이 어떤거 말하는거지?」라고 물어 메인이 설명한 뒤 다시 받은 답이다.
+- **Gardener 정리 후보 반영**(메인 전달 `msg_404b9a6bdb15`, 2026-10-11T09:17:21Z): 「대시보드 결정 응답: 1) PR229 - 작업자 기동 도우미 스크립트 후보를 BACKLOG에 넣을지 → A 넣음 · 2) PR229 - 규칙 문서 크기 계측 스크립트 후보를 BACKLOG에 넣을지 → A 넣음」. 1)은 Gardener 후보 1(공식 계약 기동 helper), 2)는 후보 2(규칙 문서 크기·출처 연결 계측 helper)다. 메인이 사용자에게 보인 설명: 둘 다 착수 권한이 아니고 기능 동결(10-28) 뒤 착수 전제다. 2)의 줄 수 상한(250줄을 늘 지키는 상한으로 올릴지, 200줄 목표, 묶음 범위) 같은 정책은 이 답으로 정해지지 않았고 착수 때 다시 묻는다.
 
 ## 현재 결과
 
@@ -159,6 +160,7 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 - 후보 도착 검사(E/lead-check/candidate-check-1.json): `allowed`, exit 0, BACKLOG ID 112, 중복 0, 후보 6, 인용 없는 후보 0, 모르는 ID 0.
 - CURRENT 하단 링크는 S6 첫 문장으로 고쳤다(메인 판단 3).
 - 실사 뒤 넷째 새 행 `rule-document-subdivision`을 같은 절에 더했다(메인 해석 `msg_0c222663ca85`). 후보 도착 검사(E/lead-check/candidate-check-3.json): `allowed`, exit 0, BACKLOG ID 113, 중복 0, 후보 7, 인용 없는 후보 0, 모르는 ID 0.
+- 결과 기록 때 사용자가 채택한 Gardener 후보로 다섯째 새 행 `rule-document-measure-helper`를 같은 절에 더했고, `official-draft-check-helper`(이유·출처)와 `lead-mailbox-receive-delay`(출처)에는 원래 글 뒤에 덧붙이기만 했다. 후보 도착 검사(E/lead-check/candidate-check-5.json): `allowed`, exit 0, BACKLOG ID 114, 중복 0, 후보 10, 인용 없는 후보 0, 모르는 ID 0.
 
 ### 문서 실사
 
@@ -174,7 +176,20 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 - 수정 결과: ORCA 21행이 base 21행과 같아졌다. 연속 빈 줄 묶음 둘(앞 head 22~24행, 179~181행, 각 빈 줄 셋)에서 초과 빈 줄 4개를 지워 묶음이 2에서 0이 됐다. 리드 원시 r2-fix1.json의 `orcaBlankRunsOutsideFences` 값 4는 묶음 수가 아니라 인접한 빈 줄 쌍의 수다. ORCA는 249줄에서 245줄이 됐고 제목·anchor 수는 그대로다. 스킬은 25행 한 문장만 「Core 리드 탭과 작업자·검증자 pane 배치는 R-1 정본에서 확인한다.」로 바뀌었다(120 → 85 bytes).
 - bytes: 여섯 파일 묶음이 base 103,221, 앞 고정 head 103,218, 수정 뒤 103,306이다. 이번 수정은 앞 고정 head 대비 +88(출처 복원 127 bytes − 빈 줄 4 bytes − 스킬 문장 35 bytes)이고, 앞 head의 base 대비 −3과 합쳐 base 대비 +85다. 이 증가는 사용자가 허용했다. 리드 R-2(E/lead-check/r2-fix1.json, 스크립트 r2-fix1.mjs)가 같은 값을 다시 쟀다. 표본 대조이며 독립 판정이 아니다.
 - 수정 작성자 생존 신호(E/lead-check/liveness-fix1.json): 신호 5, 최대 241초, 300초 초과 0. 정산: 빈 프롬프트 확인, `worker-release` retained, `terminal close`(08:20:47Z).
+- 좁힌 재실사(수정 루프): 신규 `gpt-6-astra` xhigh(화면 「GPT-6-Astra xhigh」, backend unknown), Task `task_097db7d38c8f`, Dispatch `ctx_5bc3ee6aac42`, 2026-10-11T08:23:27Z~08:38:10Z, worker_done `msg_f85d0c0711fa`(succeeded). 계약 E/rereview-contract.md v1(SHA256 `9f110eb5…`, 고정 head `200354d2`), 판정 E/rereview/verdict.md, 기동 기록 E/rereview-start-note.md다. D1~D4는 해소됐다. 새 차단 R1(P3, 리드 기록)은 수정 결과 줄의 빈 줄 계수 단위 오류였고, 리드가 커밋 `407ff8dc`에서 고쳤다(같은 산출물 goal 결과 줄 수정 1회째). 설계 관찰 O-R1(bytes 증가분의 기준)도 같은 커밋에 반영했다. R1 정정의 독립 확인은 결과 기록 뒤의 바뀐 부분 재실사가 맡는다.
+- 좁힌 재실사자 생존 신호(E/lead-check/liveness-rereview.json): 신호 7, 최대 270초, 300초 초과 0. 정산: 빈 프롬프트 확인, `worker-release` retained, `terminal close`(08:38:44Z).
+- 우편함 대기: 리드의 background 대기가 08:29Z 무렵 메모리 회수로 꺼졌다. ORCA 「우편함 대기」대로 다시 켜지 않았고 메인에 알렸다(`msg_9156859f0d3b`). 그 뒤 Orca 알림을 받을 때마다 `--wait` 없는 check로 처리했다(E/session/bg-wait-events.md).
 - 설계 관찰(비차단) 둘은 하위 분화 후보에 묶었다(「다음 계획 후보」): AGENTS 「모델 라우팅」의 「Opus 대체」 목적어가 따로 읽으면 모호하다. ORCA capacity 제목 아래의 safeguard 안내는 제목만 훑으면 찾기 어렵다.
+
+### 종료 점검(Gardener)
+
+- 점검자: 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown), Task `task_fedf973ae3d6`, Dispatch `ctx_09c108f86171`, 2026-10-11T08:43:03Z~09:03:00Z, worker_done `msg_502689654297`(succeeded). 병합 전 고정 head `407ff8dc`(메인 판단 2). 계약 E/gardener-contract.md v1(SHA256 `fb5699cb…`), 보고 E/gardener/context-report.md, 기동 기록 E/gardener-start-note.md다. 고정 입력 34개(E/gardener-inputs.json)의 hash는 시작과 끝이 같았다.
+- 집계: 같은 계약·결함 번호의 확정 실패 3회 도달 0(번호별 최대 1). 번호 결함 다섯(D1~D4·R1) 중 리드 귀속 넷(D1 리드 계약, D3·D4·R1 리드 기록). CI 실패·재실행 0이고, 고정 head의 CI 넷은 조회 때 진행 중이었다(E/pr229-ci/). 승인 없는 경고 억제·설정 완화·검사를 끈 우회 0.
+- 드리프트 발견: 계약 인자 길이로 worker-start가 실행되지 않은 일이 네 goal에서 4회였고 점검 때는 BACKLOG에 근거가 없었다(결과 기록에서 `official-draft-check-helper`에 더했다). 「250줄 상한·200줄 목표」와 bytes 상쇄 조건이 정본에 없고 goal·계약에만 있다. draft 크기 차이는 넷 모두 계약 글자 수 + 4,788이며 정본은 단위를 적지 않는다. 메모리 회수로 꺼진 대기에 실린 ack와 Orca 자동 안내 문구, S1 check의 실제 형태(`--peek`)가 정본에 없다. R-1 리드 기동 명령에는 TEMP·TMP 설정이 없다. ORCA 「공식 계약 draft 복구」의 「아래 기록 링크」는 이 PR 전부터 가리킬 링크가 없다.
+- 반복: 공식 계약 draft 미제출은 Codex 기동 4/4로 앞 goal들과 이어진다. 인자 길이 실패는 네 goal 4회다. 작업자 heartbeat 초과는 작성 Sol 한 Dispatch였고, 메인 결정 뒤 계약에 상한을 다시 강조한 세 Dispatch는 0이었다(원인은 단정하지 않음). 리드 기록 수치 오류 둘(근거 줄 범위 자체 정정, R1)과 리드 계약이 만든 결함 둘(D1, D2를 통과시킨 상쇄 조건)이 있다. 가드의 리드 진입 차단 둘, 메모리 회수 하나가 앞 goal들과 이어진다. 재실사 뒤 goal 수정은 0이다.
+- 리드 기록 대조: 표본 13 중 12 일치, 1 낡음(고정 head의 재개 지점·진척 단계). 이 결과 기록에서 고쳤다.
+- 정리 후보 둘(동결 뒤 착수 전제): 공식 계약 기동 helper, 규칙 문서 크기·출처 연결 계측 helper와 크기 규칙의 정본 자리. 리드가 메인에 물었고(`msg_f2292fcea8ae`) 사용자가 둘 다 BACKLOG에 넣기로 했다(「적용 중인 사용자 결정」). 후보 1은 `official-draft-check-helper`에 근거를 더하고 범위를 계약 파일 전달까지 넓혔고, 후보 2는 새 대기 행 `rule-document-measure-helper`다. 메모리 회수로 꺼진 대기의 관찰은 `lead-mailbox-receive-delay`에 근거로 더했다.
+- Gardener 생존 신호(E/lead-check/liveness-gardener.json): 신호 26, 최대 124초, 300초 초과 0. 정산: 대기 화면 확인, `worker-release` retained, `terminal close`(09:03:27Z).
 
 ### 첫 기록
 
@@ -213,3 +228,6 @@ ORCA 안에 남은 `#pr2-source` 링크(R-8 「메인 운영 판단」 등)는 O
 - 메인 우편함 대기 겹침의 셋째 발생: 도구라 동결 뒤다. BACKLOG `mailbox-wait-overlap-guard`.
 - goal 기록 표류의 나머지(끝난 goal 줄 정리 주체·검사): 이 goal은 적용 결정 링크만 고쳤다. BACKLOG `goal-state-drift`.
 - 규칙 문서 하위 분화(실사 뒤 사용자 조건 「너무 길어지면 하위 문서로 분화」): 수정 뒤 ORCA는 250줄 상한 안이라 이 PR은 출처 복원만 했다. 문서 재구성 때 실사의 설계 관찰 둘(AGENTS 「Opus 대체」 목적어, safeguard 안내의 제목 탐색)도 함께 본다. BACKLOG `rule-document-subdivision`.
+- 공식 계약 기동 helper(Gardener 후보 1, 사용자 채택): 계약 파일을 셸 인자 없이 worker-start에 넘기고 `turn_start_unobserved`일 때 draft 크기를 글자 수로 대조한다. 동결 뒤다. BACKLOG `official-draft-check-helper`.
+- 규칙 문서 크기·출처 연결 계측 helper와 크기 규칙의 정본 자리(Gardener 후보 2, 사용자 채택): 정책 값은 착수 때 사용자에게 묻는다. 동결 뒤다. BACKLOG `rule-document-measure-helper`.
+- 메모리 회수로 꺼진 대기에 실린 ack와 Orca 자동 안내 문구(Gardener G2-1): 근거를 더했다. BACKLOG `lead-mailbox-receive-delay`.
