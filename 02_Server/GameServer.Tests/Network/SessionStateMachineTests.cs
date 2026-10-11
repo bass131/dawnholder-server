@@ -150,6 +150,7 @@ public class SessionStateMachineTests : IDisposable
         // arrange + act: handshake 정상 처리.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
 
         // S_HandshakeResult(ok=true) 회신 확인.
         Assert.Contains(s.SentPackets, p => PacketIdOf(p) == PacketID.S_HandshakeResult);
@@ -173,6 +174,7 @@ public class SessionStateMachineTests : IDisposable
         // arrange + act: handshake → class 선택 (Knight).
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
 
         // 아직 class 선택 전 — 월드 미진입 확인.
         _map.Tick(1);
@@ -201,6 +203,7 @@ public class SessionStateMachineTests : IDisposable
         // arrange: handshake 완료 + class 선택 전.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
         _map.Tick(1);
         Assert.Empty(_map.Players); // class 선택 전 = 월드 미진입
 
@@ -228,6 +231,7 @@ public class SessionStateMachineTests : IDisposable
         // arrange: handshake 완료 + class 선택 전.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
         _map.Tick(1);
         Assert.Empty(_map.Players);
 
@@ -259,6 +263,7 @@ public class SessionStateMachineTests : IDisposable
         // arrange: 정상 handshake + Knight 선택 + 월드 진입.
         TestGameSession s = CreateConnectedSession();
         s.OnRecvPacket(HandshakePacket());
+        s.CompleteLogin(new("test_account", Guid.NewGuid()));
         s.OnRecvPacket(CharacterSelectPacket(0)); // Knight
         _map.Tick(1);
         Assert.Single(_map.Players);

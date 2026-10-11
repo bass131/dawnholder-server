@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Dawnholder.Client.Net;
+using Shared.GameData;
 
 namespace Dawnholder.Client.Network
 {
@@ -14,8 +15,10 @@ namespace Dawnholder.Client.Network
         bool IsClosed { get; }
         event Action Closed;
         event Action HandshakeSucceeded;
+        event Action<LoginResult> LoginResultReceived;
         void Activate(Socket socket);
         void Publish();
+        void SendLogin(string accountName);
         void SendCharacterSelect(byte characterClass);
         void Disconnect();
         void Cleanup();
@@ -32,9 +35,14 @@ namespace Dawnholder.Client.Network
         IClientConnectionSession _session;
         Action _closedHandler;
         Action _handshakeHandler;
+        Action<LoginResult> _loginHandler;
+        string _accountName;
+        bool _loginSent;
         byte _selectedClass;
         bool _characterSelectSent;
         bool _disposed;
+
+        public event Action<LoginResult> LoginRejected;
 
         public ClientConnectionState State { get; private set; }
         public long Generation { get; private set; }
@@ -51,12 +59,14 @@ namespace Dawnholder.Client.Network
             _resetMirrors = resetMirrors ?? throw new ArgumentNullException(nameof(resetMirrors));
         }
 
-        public bool Connect(IPEndPoint endPoint, byte selectedClass)
+        public bool Connect(IPEndPoint endPoint, byte selectedClass, string accountName)
         {
             if (_disposed || State != ClientConnectionState.Disconnected) return false;
             Generation++;
             long generation = Generation;
             _selectedClass = selectedClass;
+            _accountName = accountName;
+            _loginSent = false;
             _characterSelectSent = false;
             LastError = null;
             State = ClientConnectionState.Connecting;
@@ -111,8 +121,10 @@ namespace Dawnholder.Client.Network
                 _session = session;
                 _closedHandler = () => _post(() => HandleClosed(generation, session));
                 _handshakeHandler = () => HandleHandshake(generation, session);
+                _loginHandler = result => HandleLogin(generation, session, result);
                 session.Closed += _closedHandler;
                 session.HandshakeSucceeded += _handshakeHandler;
+                session.LoginResultReceived += _loginHandler;
                 session.Activate(socket);
                 socket = null;
                 if (!IsCurrent(generation, session))
@@ -137,7 +149,34 @@ namespace Dawnholder.Client.Network
 
         void HandleHandshake(long generation, IClientConnectionSession session)
         {
-            if (!IsCurrent(generation, session) || _characterSelectSent) return;
+            if (!IsCurrent(generation, session) || _loginSent) return;
+            _loginSent = true;
+            try { session.SendLogin(_accountName); }
+            catch (Exception error)
+            {
+                LastError = error;
+                Disconnect();
+            }
+        }
+
+        void HandleLogin(long generation, IClientConnectionSession session, LoginResult result)
+        {
+            if (result == LoginResult.InvalidName || result == LoginResult.AlreadyOnline)
+            {
+                // A received rejection precedes remote close; preserve it for this owner even after transport closes.
+                if (_disposed || generation != Generation || session == null ||
+                    !ReferenceEquals(_session, session) || !_loginSent) return;
+                try { LoginRejected?.Invoke(result); }
+                finally { Disconnect(); }
+                return;
+            }
+            if (!IsCurrent(generation, session) || !_loginSent) return;
+            if (result != LoginResult.Accepted)
+            {
+                Disconnect();
+                return;
+            }
+            if (_characterSelectSent) return;
             _characterSelectSent = true;
             try { session.SendCharacterSelect(_selectedClass); }
             catch (Exception error)
@@ -161,16 +200,21 @@ namespace Dawnholder.Client.Network
             var session = _session;
             var closed = _closedHandler;
             var handshake = _handshakeHandler;
+            var login = _loginHandler;
             _attempt = null;
             _session = null;
             _closedHandler = null;
             _handshakeHandler = null;
+            _loginHandler = null;
+            _accountName = null;
+            _loginSent = false;
             _characterSelectSent = false;
             State = ClientConnectionState.Disconnected;
             if (session != null)
             {
                 session.Closed -= closed;
                 session.HandshakeSucceeded -= handshake;
+                session.LoginResultReceived -= login;
             }
             if (attempt != null)
             {

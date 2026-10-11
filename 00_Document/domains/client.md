@@ -9,6 +9,12 @@ Unity는 입력·예측·화면 적용을 담당한다. 최종 게임 판정은 
 - 씬 전환과 연결 종료를 혼동하지 않는다. `NetworkService`, `SceneRouter`, bootstrap의 객체 수명을 함께 확인한다.
 - 입력·HP·파티 등 UI는 서버 상태의 표시와 클라이언트 임시 상태를 구분한다.
 
+## 메뉴와 계정 로그인
+
+`MainMenuController`는 서버 주소와 계정 이름을 받고 공유 `AccountNameRule`로 이름을 먼저 검사한다. 서버 probe 성공 때 [AccountLoadout](../../03_Client/Assets/Scripts/Bootstrap/AccountLoadout.cs)에 정규화한 이름을 저장한다. 접속에는 프로세스의 `SessionAccountName`을 쓰고, PlayerPrefs `AccountName`은 다음 메뉴의 입력칸을 채우는 데만 사용한다. 이름이 없거나 잘못되면 `NetworkService`는 메인 메뉴로 돌아간다.
+
+[ClientConnectionLifetime](../../03_Client/Assets/Scripts/Network/ClientConnectionLifetime.cs)은 연결에 이름과 직업을 고정하고, handshake 성공 뒤 로그인 요청을 한 번, `Accepted` 뒤 직업 선택을 한 번 보낸다. `LoginResultHandler`는 세션의 메인 스레드 gate를 거쳐 결과를 적용하며 정의 밖 결과면 연결을 끊는다. 거부는 `LoginRejected` → [MainMenuNotice](../../03_Client/Assets/Scripts/UI/MainMenuNotice.cs) → 메인 메뉴의 오류 글자 순서로 전달한다. 메뉴 시작 때 안내를 소비한다. 이전 연결의 늦은 결과는 generation/구독 해제로 무효화한다.
+
 ## 파티 초대 요청과 구독
 
 [PartyInvitePopup](../../03_Client/Assets/Scripts/UI/PartyInvitePopup.cs)은 클릭음·버튼 의도·표시/숨김과 이벤트 구독을 맡고, [PartyInviteResponseCommand](../../03_Client/Assets/Scripts/UI/PartyInviteResponseCommand.cs)는 실행 시 현재 상태/세션 조회·응답 패킷 구성·SendIntent 호출·pending 소비를 맡는다. void SendIntent 정상 반환은 실제 송신 접수나 서버 가입 확정이 아니다. 요청 처리 중 예외가 나면 뒤의 pending 소비와 숨김을 진행하지 않으며 membership은 기존 서버 update로 갱신한다.

@@ -239,6 +239,7 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         ProbeSession session = new(_world);
         session.OnConnected(Endpoint);
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(_world, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight }.Write());
 
         session.OnDisconnected(Endpoint);
@@ -265,6 +266,7 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         };
         session.OnConnected(Endpoint);
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(_world, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight }.Write());
 
         Tick();
@@ -318,6 +320,7 @@ public sealed class InventoryMigrationLifetimeTests : IDisposable
         ProbeSession session = new(_world);
         session.OnConnected(Endpoint);
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(_world, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)characterClass }.Write());
         Tick();
         Assert.True(session.EntityId >= 0, "fixture: the real handshake and class selection must enter the world");

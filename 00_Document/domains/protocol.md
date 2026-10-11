@@ -8,9 +8,15 @@ PDL 수정 → 생성기 실행 → 생성 diff와 [ProtocolVersion](../../98_Sh
 
 패킷 ID를 재사용하거나 정의 순서를 바꾸지 않는다. 필드 끝 추가도 기존 읽기 코드에 영향을 준다. 버전 일치로 연결을 제한하는 현재 핸드셰이크와 새 동작을 함께 검증한다. 전송의 프레임 길이 검사는 [서버](../../02_Server/Network/FrameValidator.cs)와 [클라이언트](../../04_ClientNet/FrameValidator.cs)에 각각 있다.
 
+## v18 계정 로그인
+
+`ProtocolVersion.Current=18`이며 v17 연결은 기존 버전 일치 검사로 거부한다. 기존 ID 1..38의 번호·필드는 보존하고 PDL 끝에 `C_Login`(39, `string accountName`)과 `S_LoginResult`(40, `byte result`)를 추가했다. 문자열은 UInt16 바이트 길이와 UTF-16 LittleEndian 내용이며, 서버는 길이 머리와 전체 프레임의 정확한 일치를 먼저 확인한다.
+
+접속 순서는 `C_Handshake` → 성공 → `C_Login` → `Accepted` → `C_CharacterSelect`다. [AccountNameRule](../../98_Shared/GameData/Accounts/AccountNameRule.cs)은 3~16자 ASCII 영문·숫자·밑줄을 받으며 A-Z만 소문자로 바꾸고 공백은 자르지 않는다. [LoginResult](../../98_Shared/GameData/Enums/LoginResult.cs)는 Accepted=0, InvalidName=1, AlreadyOnline=2다. 거부 결과 뒤 연결을 끊고, 같은 연결의 두 번째 로그인은 결과 없이 버린다. 계정 번호는 서버에만 두며 비밀번호 인증·DB 저장은 포함하지 않는다.
+
 ## v17 경제 패킷
 
-`ProtocolVersion.Current=17`이며 v16 연결은 기존 버전 일치 검사로 거부한다. 기존 ID 1..34와 필드 순서는 보존하고 PDL 끝에 아래 4개를 추가했다. 필드는 LittleEndian이며 전체 길이는 ushort size + ushort id의 4바이트 헤더를 포함한다. 슬롯은 ItemId 오름차순으로 조밀하게 채운 고정 8개이고 빈 슬롯은 0/0이다.
+v17에서 기존 ID 1..34와 필드 순서를 보존하고 PDL 끝에 아래 4개를 추가했다. 필드는 LittleEndian이며 전체 길이는 ushort size + ushort id의 4바이트 헤더를 포함한다. 슬롯은 ItemId 오름차순으로 조밀하게 채운 고정 8개이고 빈 슬롯은 0/0이다.
 
 | ID | 패킷 | 헤더 뒤 필드 순서 | 전체 길이 |
 |---|---|---|---|

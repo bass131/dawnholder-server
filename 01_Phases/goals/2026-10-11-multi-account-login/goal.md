@@ -8,7 +8,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_fddebc03-9972-41d8-8941-e7c98af2dabe`, Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 선행 시험이 끝나 새 시험 파일을 commit했다(아래 「현재 결과」의 선행 시험). 다음은 구현 계약 발행이다.
+- **현재 위치**: 구현이 끝나 구현 파일을 commit했다(아래 「현재 결과」의 구현). 다음은 독립 검증 계약 발행이다. 검증의 Unity·7777 실행은 Content 독립 검증(08:49Z 시작 알림 `msg_3c0de8f0729a`)이 Unity와 7777을 놓은 뒤다.
 - **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -17,8 +17,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 범위 승인
 - [x] 설계 절 작성
 - [x] 선행 시험 작성
-- [>] 구현
-- [ ] 독립 검증
+- [x] 구현
+- [>] 독립 검증
 - [ ] 봇·실화면 확인
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
@@ -160,7 +160,7 @@ PR 단계 이름은 PR 번호가 생기면 「PR### 병합」으로 바꾼다.
 클라이언트(`03_Client/Assets/Scripts/`):
 
 - `Bootstrap/AccountLoadout.cs`: 지금 `ClassLoadout`과 같은 모양이다. 프로세스 안 값 `SessionAccountName`이 1순위이고 PlayerPrefs `AccountName`은 입력칸 채우기용이다.
-- `UI/MainMenuController.cs`와 `MainMenu.unity`: 서버 주소 입력칸 아래에 계정 이름 입력칸(`TMP_InputField`)을 더한다. 시작 버튼에서 `AccountNameRule.TryNormalize`로 먼저 검사해 틀리면 기존 오류 글자칸에 이유를 쓴다. 시험 접속이 성공하면 정규화한 이름을 `AccountLoadout`에 저장한다. 메뉴가 열릴 때 남아 있는 로그인 거부 안내가 있으면 오류 글자칸에 보이고 지운다.
+- `UI/MainMenuController.cs`와 `MainMenu.unity`: 서버 주소 입력칸 **위** 빈 오른쪽 영역에 계정 이름 입력칸(`TMP_InputField`)을 더한다. 처음 설계는 「아래」였지만 실제 서버 칸이 시작 버튼보다 아래에 있어 자리가 없었다. 구현자 질문에 리드가 위로 정했다(`msg_7337a614965c`, anchor x .755~.983·y .26~.32, 서버 칸 크기·글꼴·색 복제). 보임·겹침은 실화면 확인이 본다. 시작 버튼에서 `AccountNameRule.TryNormalize`로 먼저 검사해 틀리면 기존 오류 글자칸에 이유를 쓴다. 시험 접속이 성공하면 정규화한 이름을 `AccountLoadout`에 저장한다. 메뉴가 열릴 때 남아 있는 로그인 거부 안내가 있으면 오류 글자칸에 보이고 지운다.
 - `UI/MainMenuNotice.cs`(새, 정적): 씬을 넘어 거부 안내 한 줄을 넘긴다. `Set(string)`, `TryTake(out string)`.
 - `Network/ClientConnectionLifetime.cs`: `Connect(endPoint, selectedClass, accountName)`. handshake 성공 때 연결당 한 번 `SendLogin(accountName)`을 보낸다. 로그인 결과가 `Accepted`이면 연결당 한 번 `SendCharacterSelect`를 보낸다. 그 밖이면 거부 결과를 남기고 `LoginRejected` 이벤트를 낸 뒤 연결을 끊는다. `IClientConnectionSession`에 `event Action<LoginResult> LoginResultReceived`와 `void SendLogin(string accountName)`을 더한다.
 - `Network/UnityClientSession.cs`: dispatch 표에 `S_LoginResult` 한 줄, `SendLogin`. 새 `Network/Handlers/Session/LoginResultHandler.cs`는 결과 값이 0~2인지 보고 메인 스레드에서 이벤트를 낸다. 범위 밖 값은 로그를 남기고 연결을 끊는다.
@@ -293,6 +293,7 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 5. 이름 도용: 비밀번호가 없으므로 남의 계정 이름으로 들어올 수 있다. 접속 중인 계정은 이중 접속 거부로 지켜지지만, 접속하지 않은 계정은 지켜지지 않는다.
 6. 병합 관문 그물: gh·merge 또는 push·main 낱말이 함께 든 명령은 막힌다. PR 문구는 파일로 넘기고 push는 따로 실행한다. 막히면 우회하지 않고 메인에 알린다.
 7. 기능 동결(10-28): 서버·클라이언트·봇을 한 PR로 바꾸므로 Unity 확인이 늦으면 일정이 밀린다.
+8. 거부 안내의 역순 소실: 보통은 거부 결과가 끊김보다 먼저 main 큐에 들어가 안내가 보인다(구현 중 고친 결함). 다만 다른 스레드의 송신 실패나 외부 `Disconnect`가 정리를 먼저 예약하면 뒤의 거부는 끝난 연결의 결과로 무시된다. 그때 사용자는 안내 없이 지금 씬(보통 Town)에 끊긴 채 남는다(구현 보고 「미실행·남은 작업」의 `GameEntryPoint.Start`·`NetworkService.Update` 근거). 고치려면 공유 DLL인 `04_ClientNet` 전송 계층이나 끊김 뒤 메뉴 복귀 흐름을 바꿔야 해서 이번 범위 밖으로 두었다(리드 답 `msg_a9fc34e86079`). 실제로 겪으면 「끊기면 메인 메뉴로 돌아가기」를 후보로 올린다.
 
 ## 현재 결과
 
@@ -325,3 +326,37 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 부수 효과: Unity가 `03_Client/ProjectSettings/ProjectSettings.asset`의 정의 기호 한 줄(`SENTIS_ANALYTICS_ENABLED` 제거)을 다시 썼다. 알려진 BACKLOG `unity-sentis-define-drift`라 리드가 되돌렸고 commit에 넣지 않았다. Claude Code가 작성자의 큰 읽기 출력 하나를 홈의 자기 `tool-results`에 자동 저장했다. 런타임 자체 저장이라 조치하지 않았다.
 - 실행하지 않은 것(작성자): PlayMode, 서버 실행, 봇, 7777, DB, Unity Editor·MCP, 패킷 생성기, Windows 빌드, 서식 검사.
 - 리드 서식 검사: commit `757b59ac` 뒤 `pwsh -NoProfile -File 99_Tools/format-check.ps1` exit 0, 「Formatting checks passed」(07:43:19Z 시작, 약 13분, 원시 E/`lead-format/format-check.txt`). 도구가 증거를 사용자 TEMP의 `dawnholder-format-<id>/evidence`에 기본으로 남겼다.
+
+### 구현 — 2026-10-11
+
+- 구현자: 신규 `gpt-6-astra` xhigh(첫 화면 「GPT-6-Astra xhigh · Full Access」, backend unknown), 태그 `[World 구현 Astra]`. 리드 pane 아래 split `term_26100139-05c7-4c23-b3c7-3dcc2298f967`, Task `task_1cd120ce26cf`, Dispatch `ctx_2b8c1df07943`(07:58:40Z). worker_done `msg_26812a115ece`(09:08:01Z, succeeded). release `retained`(external_terminal) 뒤 pane을 닫았다.
+- 계약: E/`impl-contract.md` v1(SHA256 `245a977f8a72e6b0717f18d9583debf8b3e63125f2052f6a8ae69b38a543b7c7`), 요약 E/`impl-spec.md`, 입력 hash E/`impl-inputs.txt`, 경로 확인 E/`impl-preflight.txt`, 리드 메모 E/`impl-prep-context.md`.
+- 구현 중 리드 보충 넷(원시는 E/`impl-answer-*.txt`·`impl-go-*.txt`·`impl-supplement-playmode.txt`):
+  1. 입력칸 자리: 서버 칸 위(`msg_7337a614965c`). 위 「설계」 클라이언트에 반영했다.
+  2. 생성 코드 줄 끝: 작업본 `GenPackets.cs`가 CRLF 283줄로 섞여 있어(Content `msg_f78373adc6c1` 지적) 첫 Windows 빌드 전 CR만 지워 LF로 맞추는 예외를 허용했다(`msg_714dd50b7a99`). 생성기 출력 SHA256 `cd456910…a522` → 정규화 `0cb097fd…0370`, CR 0.
+  3. 기존 PlayMode fixture 로그인 단계(`msg_9eb7fec7a934`): 아래 리드 기록 1.
+  4. 거부 안내 소실 결함 수정(`msg_6c2d51ac00e0`, 순서 답 `msg_a9fc34e86079`): 구현자가 자체 정적 실사로 찾았다. 거부 결과가 main 큐에 있는 동안 원격 끊김이 `_closed`를 먼저 세워 `CanApply`·`IsCurrent`가 거부를 버렸다. 범위 안 결함 (c)로 받아 두 거부 값에만 닫힌 전송 검사를 건너뛰게 했다(세대·같은 세션·`_loginSent` 검사는 유지). 구현자 회귀 시험 6메서드 11경우를 `ClientConnectionLifetimeTests.cs`에 더했고, 제품 수정 전 436건 중 새 4건이 「InvalidName/AlreadyOnline 누락」으로 실패한 RED를 남겼다. 남은 역순 경로는 위 「위험」 8이다.
+- 보고: E/`impl/report.md`(SHA256 `0b2cde7407de8b2d842cdd6341dabf2d65aec283abdbf60b698b7cf043941f36`). 바뀐 파일 52개(추적 39 +1112/−46, 새 13개 348줄), 수기 제품 C# 22파일 +538/−12.
+- 실행(원시는 E/`impl/`):
+
+| 실행 | exit | total / pass / fail / skip |
+|---|---|---|
+| 서버 WSL 전체, 기존 시험 보완 전 | 1 | 1039 / 906 / 128 / 5 — (a) 4, (b) 124 |
+| 서버 WSL 전체, 보완 뒤 | 0 | 1039 / 1034 / 0 / 5 |
+| Windows `dotnet build Dawnholder.slnx`(LF 맞춘 뒤) | 0 | 경고 7 / 오류 0 |
+| Unity EditMode 전체(보완 뒤) | 0 | 425 / 425 / 0 / 0 |
+| PlayMode 수정 전 표본(`HudGoldAndPanelToggleSceneTests`) | 2 | 3 / 0 / 3 / 0 — 「handshake and character selection」 시간 초과 |
+| 거부 회귀 추가 뒤 EditMode(RED) | 2 | 436 / 432 / 4 / 0 |
+| 최종 EditMode 전체 | 0 | 436 / 436 / 0 / 0 |
+| 최종 PlayMode 가짜 서버 lane 다섯 클래스 | 0 | 28 / 28 / 0 / 0 |
+| 최종 서식 검사 | 0 | 제품 297파일 수정 0, 도구 시험 244/244 |
+
+- 리드 대조(E/`impl-result-goal-context.md`): 최종 원시 다섯 개가 보고와 같다. 서버 시험 뒤 바뀐 서버·공유·도구 파일이 없어 서버 결과가 최종 트리를 반영한다. 선행 시험 10파일이 그대로다. 작업 트리 목록이 worker_done 파일 목록과 같다. 생성 코드·Shared.dll hash가 보고와 같고 ClientNet DLL은 그대로다. 실패 분류 표 128행((a) 4, (b) 124)의 표본 두 건이 diff와 같다.
+- 부수 효과: Unity가 `ProjectSettings.asset` SENTIS 정의 한 줄을 다시 써서 리드가 되돌렸다(BACKLOG `unity-sentis-define-drift`). PlayMode 뒤 `MinimapRT.renderTexture`가 변경으로 보였지만 내용이 HEAD와 같아(SHA256 `7123af77…`) commit에 넣지 않았다.
+- 실행 조율: 큰 실행마다 Content·Core 리드의 진행을 받았다(Core `msg_19b197e5ce96`·`msg_37aee9a3d777`·`msg_3de0491cf888`·`msg_15758793c10e`, Content `msg_f78373adc6c1`·`msg_7c7fb65c7591`·`msg_73c72f640159`). Core는 08:29:06Z에 여유 물리 메모리가 약 4GB까지 떨어져 자기 대기가 꺼졌다고 알렸다(World Unity 종료와 서식 검사 시작 무렵).
+- 실행하지 않은 것(구현자): 서버 실행, 봇, 7777, 실서버 PlayMode 두 클래스, DB, Unity Editor·MCP, 실화면. 봇 새 시나리오는 빌드와 등록만 했다.
+- 리드 기록(첫 발생이라 goal에만 적는다, 교정 정본 「첫 발생은 goal에 기록」):
+  1. **PlayMode 계약 누락**: 구현 계약이 Unity EditMode만 적었다. 완료조건 10에는 PlayMode도 들어가고 공용 fixture가 로그인 없이 직업 선택까지 가는 구조라 깨질 것이었다. 리드가 구현 중 찾아 보충했다(분류 (b)).
+  2. **맥락 메모 순서**: 독립 검증 계약 초안(E/`verify-contract-draft.md`)을 맥락 메모(E/`verify-prep-context.md`)보다 먼저 썼다. 위임 전 초안이라 결과물에 영향은 없다.
+  3. **보류 전달 지연**: Content가 08:49:10Z에 Unity 사용을 알렸는데 리드가 구현자 보류를 08:51:50Z에 보냈다. 그 사이 구현자가 앞선 진행에 따라 PlayMode를 08:50:15Z~08:51:13Z에 돌렸다. Content에 「08:50Z에 보류」라고 잘못 적었고 뒤에 정정했다(`msg_a8855130a311`). Content 검증자는 Unity 0을 기다리는 규칙이라 겹침 피해는 없었다.
+  4. **빈 본문 메시지**: 우편함 가드에 막힌 복합 명령 뒤 본문 파일이 없는 채로 send해 Content에 빈 메시지(`msg_3502b131fc8e`)가 갔다. 바로 본문을 넣어 다시 보냈다(`msg_87e039a832cf`). 그 뒤로는 본문 파일을 `test -s`로 확인한 뒤 보낸다.

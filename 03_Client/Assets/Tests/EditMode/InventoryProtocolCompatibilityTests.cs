@@ -11,7 +11,7 @@ namespace Dawnholder.Client.Tests
     // Consumer check of the committed Shared.dll for the server economy packets. The expected bytes
     // are the fixed wire table of the items/inventory/currency goal (01_Phases/goals/
     // 2026-10-05-items-inventory-currency/goal.md and its PR1 acceptance): LittleEndian, 4-byte header
-    // (ushort size including the header, ushort id), IDs 35..38 after 34, protocol version 17.
+    // (ushort size including the header, ushort id), IDs 35..38 after 34. Login append advances the version to 18.
     // They are written as literals here, never computed from the generator or the server.
     // The client handler side of S_InventorySnapshot is covered in depth by InventoryClientContractTests.
     public sealed class InventoryProtocolCompatibilityTests
@@ -26,9 +26,9 @@ namespace Dawnholder.Client.Tests
         }
 
         [Test]
-        public void ProtocolVersion_IsSeventeen()
+        public void ProtocolVersion_IsEighteen()
         {
-            Assert.AreEqual(17, ProtocolVersion.Current);
+            Assert.AreEqual(18, ProtocolVersion.Current);
         }
 
         [Test]

@@ -115,6 +115,7 @@ public sealed class InstanceMapRetirementTests : IDisposable
         InstanceProbeSession session = new(World);
         session.OnConnected(InstanceProbeSession.Endpoint);
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(World, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)characterClass }.Write());
         _fixture.Tick();
         Assert.True(session.EntityId >= 0, "fixture: 실제 핸드셰이크·클래스 선택으로 마을에 들어가야 한다");
@@ -126,6 +127,7 @@ public sealed class InstanceMapRetirementTests : IDisposable
         TransitionSendFailingSession session = new(World);
         session.OnConnected(InstanceProbeSession.Endpoint);
         session.OnRecvPacket(new C_Handshake { clientVersion = ProtocolVersion.Current }.Write());
+        LifecycleTestWorld.LogIn(World, session);
         session.OnRecvPacket(new C_CharacterSelect { characterClass = (byte)CharacterClass.Knight }.Write());
         _fixture.Tick();
         Assert.True(session.EntityId >= 0, "fixture: 실제 핸드셰이크·클래스 선택으로 마을에 들어가야 한다");
