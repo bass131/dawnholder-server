@@ -8,8 +8,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_328d1a7f-d009-4652-ae3d-8f5713873017`(재기동 `msg_6fa922f40f7d` 뒤, 이전 `term_fddebc03…`), Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: RV-01(시험 이름)과 O-1(Content 시험 주석) 수정이 끝났다(아래 「현재 결과」의 RV-01·O-1 수정). 다음은 약 등급 재검증(신규 `gpt-6-astra` xhigh)이고, 통과하면 실화면을 메인에 다시 요청한다.
-- **다음 행동**: 약 등급 재검증 계약을 쓴다. 내용은 수정 diff·근거 실사, WSL 서버 전체와 두 필터 시험, 서식 검사(Unity와 겹치지 않게)다. 계약에 Unity 부수 효과 두 파일을 적는다. WSL 전체·서식 실행 전에 Content·Core에 묻는다. Core는 13:30Z~15:00Z에 SQL 컨테이너 진단(127.0.0.1:14333, 30분 안팎)을 예정했고, World는 겹치면 재검증 실행과 실화면을 그 앞이나 뒤로 미룬다고 회신했다(`msg_6d0350723883`).
+- **현재 위치**: RV-01·O-1 수정의 약 등급 재검증이 통과했다(아래 「현재 결과」의 RV-01·O-1 재검증). 남은 독립 검증 일은 같은 종류의 fixture 설명 7줄(RO-01과 리드 훑기)을 고치는 수정과 그 약 등급 재검증이다.
+- **다음 행동**: 7줄 수정 계약을 쓴다(신규 `gpt-6.1-sol` max). 작업자 기동과 WSL 실행은 Core SQL 진단의 메모리 창(13:45Z부터 Core 「끝」까지, 늦어도 14:35Z, `msg_16e499d4ecf6`)과 Content 7777 봇이 끝난 뒤로 둔다. 그 사이 World는 새 WSL 큰 실행·7777·Unity를 시작하지 않는다. 실화면은 그 뒤 메인에 다시 요청한다.
 - **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -19,8 +19,8 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 설계 절 작성
 - [x] 선행 시험 작성
 - [x] 구현
-- [>] 독립 검증(RV-01 수정 끝, 약 등급 재검증 남음)
-- [>] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
+- [>] 독립 검증(fixture 설명 7줄 수정 남음)
+- [ ] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
 - [ ] 종료 기록 PR 병합
@@ -308,6 +308,8 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - HUD PlayMode 시험의 실시간 3초 대기 간헐 시간 초과(재검증 O-4). Content 소유로 보여 Content에 알렸다(`msg_75c883fc0f0b`).
 - 첫 독립 검증의 설계 관찰 O-1·O-2·O-3·O-5(아래 「독립 검증」 절).
 - Unity 시험 harness가 알려진 Unity 부수 효과 두 파일을 「리드 복원 대상」으로 표시(메인이 Rules에 BACKLOG 후보로 넘김, `msg_834e29b98d68`).
+- 위임 계약을 낼 때 고른 규칙 절의 원문 전체와 계약 발췌를 기계로 비교(RV-01 재검증 RF-01의 검사 전환 판단).
+- 버전을 올릴 때 숫자가 든 시험 이름과 리터럴 버전의 불일치를 찾는 좁은 검사(같은 판정의 RV-01 검사 전환 판단, `Nineteen` 같은 표기 정책이 먼저 필요).
 
 ## 현재 결과
 
@@ -474,3 +476,28 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 | `git diff --check` | 0 | 출력 없음, 2 files 3+ 3- |
 
 - 리드 대조: 실제 diff가 계약 문구와 같고, 원시 stdout 요약 줄과 exit가 보고와 같다. WSL 전체·서식·Unity·7777은 계약대로 돌리지 않았다(재검증이 맡는다).
+
+### RV-01·O-1 재검증 — 2026-10-11
+
+- 검증자: 신규 `gpt-6-astra` xhigh(첫 화면 「GPT-6-Astra xhigh · Full Access · never」, 선택창 없음, backend unknown), 태그 `[World 검증자]`. 리드 pane 아래 split `term_6e847cf5-cee9-4db7-97a6-58b857099400`, Task `task_a604834faf39`, Dispatch `ctx_8b8f9f7d2278`. 첫 `worker-start`는 Codex가 뜨는 중이라 `agent_unconfigured`로 거절됐고 재시도로 받아들여졌다. worker_done `msg_99659e3625bb`(13:19:47Z, succeeded). release `retained` 뒤 pane을 닫았다.
+- 계약: E/`rv01-reverify-contract.md` v1(SHA256 `c599121dc7ffbe8572ce1e319e76915a99481839f5748e6dd3c13c4059a00f8b`), 보충 1 E/`rv01-reverify-supplement-1.md`(SHA256 `1f371a75ceb64b746a317751154cc9387a6b586892e8d6d72109940741a7cb41`), 요약 E/`rv01-reverify-spec.md`, 입력 E/`rv01-reverify-inputs.txt`, 리드 메모 E/`rv01-reverify-prep-context.md`. 약 등급, 대상 `d6eb876d..269229b6`의 시험 두 파일.
+- 판정: E/`rv01-reverify/verdict.md`(SHA256 `a231fba52815fe5016a33d9bc2eb1a8695a5572006ca77d1f87ac304963e9050`). **통과**. RV-01과 O-1이 해소됐고 수정의 새 결함은 0이다.
+
+| 실행 | exit | 결과 |
+|---|---|---|
+| WSL 필터 `BossBehaviorTests`(TRX) | 0 | 29 / 29 / 0 / 0, `ProtocolVersion_Is19` Passed |
+| WSL 필터 `DungeonClearPacketContractTests`(TRX) | 0 | 8 / 8 / 0 / 0 |
+| WSL 서버 전체(TRX) | 0 | 1060 / 1055 / 0 / 5, `ProtocolVersion_Is19` Passed, skip 다섯은 이전과 같음 |
+| 서식 검사 1회(13:03:24Z~13:16:45Z, Unity.exe 0) | 0 | 도구 자체 시험 244 / 244, 최종 검증 339 입력 |
+| `git diff --check d6eb876d 269229b6` | 0 | 출력 없음 |
+
+- 리드 원천 대조: 네 result.json의 exit와 stdout 요약 줄, 두 TRX의 outcome 수와 `Is19`, 서식 tests.log·final-validate.log, 보충 원문 대조 2/2, 작업 트리 clean을 직접 읽었다. 메모는 E/`rv01-reverify-result-goal-context.md`.
+- 결함:
+  - **RF-01**(낮음, 귀속 리드 계약): 계약 v1이 CODE_CONVENTION 「C# 공백 서식」과 「사람의 탐색과 가독성」 절의 일부만 실었다. 검증자 공식 질문 `msg_0f81a895ae0c`에 보충 1로 두 절 전체를 고정해 실행 전에 해소했다. 첫 발생이라 goal에만 기록하고, 검사 전환은 다음 계획 후보로 둔다.
+- 설계 관찰과 처리:
+  - RO-01: 인벤토리 시험 세 파일 네 줄이 실제 `LogIn` 호출 뒤에도 핸드셰이크와 직업 선택만 말한다(`InventoryWireContractTests.cs:431,440`, `InventoryLifecycleRaceTests.cs:288`, `InventoryMigrationLifetimeTests.cs:326`).
+  - 리드가 같은 구현 commit `c5482d6b`의 `LogIn` 추가 지점을 모두 훑어 같은 종류 세 줄을 더 찾았다(`InstanceMapRetirementTests.cs:121,133`, `InstanceMapTestWorld.cs:139`의 한국어 메시지).
+  - 일곱 줄 모두 이번 goal의 변경이 만든 부정확한 설명이고 CODE_CONVENTION 「이름·공개 API·테스트에 의도와 계약을 표현한다」에 걸린다. 그래서 O-1처럼 이번 goal에서 고친다(신규 `gpt-6.1-sol` max, 약 등급 재검증). 시험 문구 수정은 이번이 2회차다.
+  - Content 브랜치 `2d168f19`는 `InventoryWireContractTests.cs` 250~265행만 바꿔 이 줄들과 겹치지 않는다.
+- 실행 조율: 큰 실행은 Content(`msg_926ab980acb3`)·Core(`msg_78ca49c474f1`) 허용 뒤 13:45Z 전 시작 조건으로 진행했다. 이어 Core SQL 진단의 메모리 창을 받아들였다(`msg_16e499d4ecf6`). 서식 검사가 끝난 시각은 Core에 알렸다(`msg_08a95364c78b`). 13:11:48Z와 13:19:57Z에 7777 listener 0, Unity.exe 0, dotnet.exe 0이었다.
+- 부수 효과: Unity를 쓰지 않아 되돌린 파일이 없다. 작업 트리는 clean이다.
