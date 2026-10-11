@@ -4,6 +4,12 @@
 
 ## 적용 중인 사용자 결정
 
+- **2026-10-11 모듈 정의 진단 오늘 실행 승인(A).** 메인 `msg_223c9a08bdd0`(2026-10-11T13:08:28Z)이 전한 사용자 원문(메인 pane Enter 제출, 현황판 결정 응답, 13:07Z 무렵): 「대시보드 결정 응답: 1) Core 모듈 정의 진단 - 오늘 실행 승인(1차 실행에서 남긴 컨테이너·볼륨 삭제 포함) → A 오늘 실행 승인」. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다. 리드 요청은 `msg_02a1bed2eaf3`(N2/`main-diag-approval-request-body.txt`)이고, 이 메시지 ID가 실행 계획의 G2다.
+  - 범위는 메인이 적은 셋뿐이다. 진단 카드 v1.1(card.md `8ba2e54f…f67c`, Invoke-ContainerCardStep.ps1 `734621a9…c4a0`, Test-CardSession.ps1 `c455e8fd…dfce`)로 오늘 한 수명 실행, 시도 1 자원 삭제, 리드의 기계적 준비 셋(실행 계획, `$planHash` 한 줄, 실행 계획·입력 hash 목록)이다. 그 밖의 바이트가 바뀌면 실행하지 않고 다시 묻는다.
+  - 삭제 대상은 컨테이너 `dawnholder-sqlserver`(Id `c3d4a7c278f7e0811c35d62dc6f288dd45b8bb996b8e07cf5a50c2062dbdcc00`, StartedAt `2026-10-11T10:35:28.270055605Z`)와 볼륨 `dawnholder-sqlserver-data`(CreatedAt `2026-10-11T10:35:27Z`)다. 신원 기록 `container-identity.json`(`5bc91fdf…116e`)과 정확히 맞고 정지 상태일 때만 지운다(MSSQL.md 76행의 별도 명시 승인).
+  - 실행 창은 승인 전달 시각부터 15:00Z(24:00 KST)까지다. 창 안에 못 끝나면 카드대로 멈춰 보존하고 보고한다. 다음 날 실행은 새 승인을 받는다.
+  - 실행자는 신규 `gpt-6.1-sol` max다. 비차단 둘은 실행 작업자 계약 지침으로 막는다(정지 영수증과 ExitCode 그대로 보고, 남은 failure-logs 파일은 열지 않고 이름만 보고).
+  - 실행 뒤 결과 판정과 R-2 원문 경로를 보고한다. 고칠 곳이 모듈 해시 방식이나 저장 프로시저면 범위 판단을 따로 올린다. 관리 비밀 파일 처분은 이 승인 밖이다.
 - **2026-10-11 C6 원인은 엔진을 다시 띄워 진단(A).** 메인 `msg_57287865eacf`(2026-10-11T11:08:17Z)가 전한 사용자 원문(메인 pane Enter 제출, 현황판 결정 응답): 「대시보드 결정 응답: 1) Core 컨테이너 엔진 - 모듈 정의 불일치 원인을 엔진을 다시 띄워 진단할지 → A 엔진 진단 실행」. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다. 리드 요청은 N2/`main-c6-analysis-body.txt`다.
   - 이 A는 진단 카드 작성과 실사까지의 승인이다. 실행은 실사 통과 뒤 따로 실행 승인을 받는다.
   - 카드는 남은 컨테이너·볼륨 정리 → 새 컨테이너 DB 생성 → 진단 → 정지·삭제를 한 수명에 둔다. 모듈 설치는 되돌리는 트랜잭션 안에서만 하고 제품 코드는 고치지 않는다.
@@ -624,9 +630,34 @@
 
 ## 재개 지점
 
+### 진단 카드 v1.1 재확인 통과와 실행 승인 — 2026-10-11T13:11Z
+
+기록 시각은 2026-10-11T13:11:47Z(`date -u`, KST 22:11, 원시 N2/`time-goal-record-10.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. R2는 E/`container-diagnosis-card-review-2`, X2는 E/`container-diagnosis-execution`(새 폴더)이다.
+
+- **신규 Astra 한정 재확인: 통과, 신규 차단 0.** `gpt-6-astra` xhigh, handle `term_83190a1b-ad41-42e1-a2f0-a0e82c55f09c`, Task `task_483641f69152`, Dispatch `ctx_8951e660391e`. 계약은 R2/`contract.md` v1(SHA256 `8E573D36…1A30`), 기동은 12:45:08Z(R2/`launch-record.txt`)이고 메인에 알렸다(`msg_64f272ce9ca1`). worker_done은 `msg_dd7f0d25f125`(13:00:01Z), 판정은 R2/`verdict.md`(SHA256 앞 16자리 `b349ab3ad8116d0e`)다.
+  - 첫 실사 #1·#2가 해소됐다. 예행 18회와 독립 검사 312개(두 셸, 각 156)가 통과했다. 첫 실사의 실패 입력은 이제 `PRODUCT_ACTUAL_INCOMPLETE`로 끝나고 삭제 관문이 거부한다.
+  - 비차단 승계: 이번 #1(첫 실사 #3, card.md 173행)과 #2(첫 실사 #4, card.md 170행)다. 실행 작업자 계약의 보고 지침으로 막는다.
+  - 설계 관찰 O-1~O-3은 비차단이다. O-3은 「하지 않을 것」의 modules 19가 manifest 전체 항목 수라는 설명이다. 그 문장을 나중에 고칠 때 저장 프로시저 17·함수 1·권한 1로 풀어 쓴다.
+  - 실제 Docker·SQL·롤백·정지·삭제는 미실행·판정 보류다.
+  - 정산은 release(state retained) → tui-idle → 마지막 화면 → close(ptyKilled true) 순서로 마쳤다(R2/`lead-*.json`).
+- **R-2(리드, R2/`lead-r2-check.txt`):** 대상 hash 12개를 다시 계산해 불일치 0이고 카드 run 폴더는 없다. 실제값 조회 실패 사례는 두 셸 모두 `Passed` false·`PRODUCT_ACTUAL_INCOMPLETE`(QueryFailed true, 불일치 0, 미관측 1)다. 첫 실사 때는 불일치 1로 세어졌다. safety `Isolated` true, 시험 156건 중 실패 0이다. 삭제 관문 시험 19건 중 이 사례는 `DOCKER_REMOVAL_REQUIRES_PASSED_DIAGNOSIS`로 거부됐다. 예행 분석 사례도 리드 예행과 같다.
+- **실행 승인:** 리드 요청 `msg_02a1bed2eaf3`(13:03:36Z) → 사용자 A, 메인 `msg_223c9a08bdd0`(13:08:28Z). 원문과 범위는 「적용 중인 사용자 결정」 첫 항목이다.
+- **기계적 준비 셋(13:08:54Z, `.backups/tmp/diag-exec-prep.cjs`):** 실행 계획 SHA256 `BB5F23DD…5908`(검토본과 다른 키는 `ExecutionApproved`·`G2` 둘, 감사 DIAG/`execution-plan-audit.json`). `diagnosis-session.ps1`은 22행 하나만 바뀌어 `67B039AA…5DB5` → `1BA2E19D…C247`이다. 입력 목록 `inputs-expected.txt`는 SHA256 `D301BD22…3824`, 59줄(카드 5, 시도 1 신원 기록 1, `99_Tools/database` 추적 파일 53)이다. 리드 확인(PowerShell 5.1)은 입력 대조 True, 제품 OfflinePlan exit 0, run 폴더 없음이다(X2/`lead-plan-check/plan-check.json`). 메인에 기록용으로 알렸다(`msg_c28ae792880b`).
+- **World·Content 조정:**
+  - 사전 안내는 World `msg_78fbc9de0c56`, Content `msg_66c29be758cb`로 보냈다. World는 요청하면 7777을 끄고 listener 0을 확인해 회신한다고 했다(`msg_6d0350723883`). 13:15Z~13:45Z WSL 서버 전체 시험·서식 검사 질문(`msg_6748d374c4cc`)에는 「진행」으로 답했다(`msg_78ca49c474f1`).
+  - Content는 독립 검증자를 13:05Z~13:15Z에 열고, WSL 빌드·서버 전체 시험은 13:30Z 안팎부터, 7777 봇은 빨라야 14:00Z 안팎에 돌린다고 했다(`msg_518d6a6ccea1`·`msg_96e6fdb2ddb5`). 리드는 승인 전 「먼저 시작한 쪽이 끝날 때까지 다른 쪽이 기다린다」고 답했다(`msg_c7784db8bde7`).
+  - 13:10Z 표본의 여유 물리 메모리는 4231MB였다(WSL VM 3.4GB). 카드 C0은 4096MB 이상을 요구하고 컨테이너는 최대 4GB를 더 쓴다. 그래서 승인 뒤 13:45Z~14:35Z에 WSL 큰 실행·7777·Unity를 멈춰 달라고 요청했다(World `msg_72d21e9de50d`, Content `msg_2178eaa383ac`). World는 사용자 우선순위상 양보 쪽이고(메인 `msg_2e4c12f4af29`), Content는 Core와 같은 우선순위다. 14:10Z까지 컨테이너를 띄우지 못하면 오늘 실행을 접고 메인에 보고한다.
+  - World 회신(`msg_16e499d4ecf6`, 13:12:18Z): 창을 받아들였다. WSL 전체 시험은 13:03Z에 끝났고 서식 검사는 13:16Z 안팎에 끝난다. 13:11:48Z에 7777 listener 0, Unity.exe 0이었다. Core 「끝」 전까지 새 WSL 큰 실행·7777·Unity를 시작하지 않는다.
+- **실행 계약 준비:** X2/`contract-draft.md`와 발행 스크립트 `.backups/tmp/diag-exec-contract.cjs`를 써 두었다. 작업자가 `c3-start` 전에 「c3 시작 가능?」을 묻는 관문과 비차단 보고 지침 셋을 넣었다.
+- **다음 할 일:**
+  1. 이 기록을 commit·push한 뒤 계약을 발행한다.
+  2. World·Content 회신을 받고 7777·Unity가 꺼져 있으면 신규 `gpt-6.1-sol` max 실행 작업자를 연다. `c3-start` 질문 때 메모리 표본을 다시 본다.
+  3. worker_done 뒤 신규 `gpt-6-astra` xhigh로 실행 원시를 독립 판정하고 R-2 뒤 메인에 보고한다. World·Content에 「Core 끝」을 보낸다.
+  4. 진단으로 원인이 확정되면 고칠 곳을 정한다. 「하지 않을 것」에 닿으면 범위 판단을 받는다.
+
 ### 진단 카드 v1 실사 차단과 v1.1 수정 — 2026-10-11T12:37Z
 
-기록 시각은 2026-10-11T12:37:46Z(`date -u`, KST 21:37, 원시 N2/`time-goal-record-8.txt`)다. 처음 쓴 시각은 12:03:31Z(N2/`time-goal-record-7.txt`)이고, 실사 결과와 수정을 더해 다시 썼다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. R은 E/`container-diagnosis-card-review`다.
+기록 시각은 2026-10-11T12:37:46Z(`date -u`, KST 21:37, 원시 N2/`time-goal-record-8.txt`)다. 처음 쓴 시각은 12:03:31Z(N2/`time-goal-record-7.txt`)이고, 실사 결과와 수정을 더해 다시 썼다. 이 블록은 직전 재개 정본이다. 약어는 아래 블록과 같다. R은 E/`container-diagnosis-card-review`다.
 
 - **진단 카드 v1:** DIAG에 `card.md`(새), `diagnosis-session.ps1`·`Invoke-ContainerCardStep.ps1`·`Test-CardSession.ps1`(v2.2 복사본 편집), `approval-plan.review.json`, `context-memo.md`를 썼다. 제품 파일 변경과 Docker·SQL 실행은 없다.
   - 단계: `preserved-remove`(시도 1 신원 기록이 가리키는 정지 컨테이너·볼륨만 삭제) → v2.2의 C0~C4(새 DB 생성까지) → `diagnose-modules`(되돌리는 트랜잭션 안의 제품 Complete와 모듈별 정의 조회, 롤백 뒤 상태 비교) → `diagnosed-remove`(진단 통과 때만 정지·삭제). 실패 때 정지·보존 규칙은 v2.2를 그대로 쓴다.
