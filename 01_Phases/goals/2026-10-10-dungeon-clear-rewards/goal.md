@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 사용자 승인을 받아 병합됐다(2026-10-11T10:57:10Z). 던전 클리어 PR은 메인이 범위를 확인했고, 선행 시험 RED 준비와 서버 구현이 끝났다(시험 커밋 `2e2c5c92`, 구현 커밋 `654b2728`, 2026-10-11). 다음은 독립 검증이다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 사용자 승인을 받아 병합됐다(2026-10-11T10:57:10Z). 던전 클리어 PR은 메인이 범위를 확인했고, 선행 시험 RED 준비·서버 구현·독립 검증이 끝났다(시험 커밋 `2e2c5c92`, 구현 커밋 `654b2728`, 2026-10-11). 독립 검증은 봇을 돌리지 못해 판정 보류이고 차단 결함은 없다. 다음은 C8 봇이다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`).
@@ -105,7 +105,7 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 | C1 | 보스방 복사본(`MapId.BossRoom`이고 `InstanceKey`가 있음)에서 보스가 처음 죽는 틱에, 그 틱의 그 맵 `Players` 중 세션이 살아 있는 사람이 수혜자다. 파티 소속은 다시 보지 않는다. 그 틱에 이동 중인 사람, 사냥터 복사본에 남은 파티원, 클리어 뒤 들어온 사람은 수혜자가 아니다. | 서버 시험 |
 | C2 | 수혜자마다 `DungeonClearRewards` 묶음을 기존 `InventoryTransitions.Grant`로 전부 주거나 전부 거부한다. 성공이면 상태를 한 번 commit하고 revision이 1 오른다. 거부(`InventoryFull`·`CurrencyCap`)면 상태가 그대로다. | 서버 시험 |
 | C3 | 수혜자마다 39 `S_DungeonClearResult`를 정확히 한 번 보낸다. 성공이면 결과 `Success`와 준 골드·아이템, 그 뒤 새 snapshot이다. 거부면 결과 코드만 있고 골드 0·빈 칸이며 snapshot은 없다. 순서는 아이템 사용과 같다(결과 → snapshot). | 서버 시험 |
-| C4 | 같은 복사본의 클리어 보상은 두 번 나가지 않는다. 기존 `IsStageCleared` 한 번 규칙에 묶는다. 보스는 방이 빌 때만 다시 나오고, 빈 복사본은 그 틱 끝에 정리된다. | 서버 시험 |
+| C4 | 같은 클리어의 보상은 두 번 나가지 않는다. 지급은 기존 `IsStageCleared`가 false에서 true로 바뀌는 한 번에 묶는다. 보스는 방이 빌 때만 다시 나온다. 빈 복사본은 들어오는 사람이 없으면 그 틱 끝에 정리된다. 입장 대기 중인 사람이 있어 남은 빈 보스방은 보스를 다시 내고, 그 처치는 새 클리어로 그때 방에 있는 사람에게 지급된다. 지급 단위는 복사본이 아니라 처치다(독립 검증 V-1, 리드 결정 2026-10-11, `lead-r2-clear-verify/r2.md`). | 서버 시험(`DungeonClearRepeatClearTests` 포함) |
 | C5 | 보스 처치자에게 따로 가던 처치 보상은 나가지 않는다. 일반·골렘 처치 보상은 그대로다. | 서버 시험. 기존 보스 보상 시험은 옛 세부로 분류해 고친다 |
 | C6 | 40 `C_DungeonClearConfirm`은 정확한 길이 5·머리·`reserved` 0만 받고, 캐릭터 선택 뒤에만 받는다. 현재 맵 job 안에서, 그 맵이 클리어된 보스방 복사본이고 보낸 사람이 그 복사본의 수혜자이며 아직 확인하지 않았을 때만 `MapMigration.MoveToPublicMap(session, entityId, map, MapId.Town)`을 부른다. 그 밖은 상태·패킷 변화 없이 버린다. `Accepted`가 아니면 수혜자 표시를 남겨 다시 누를 수 있다. | 서버 시험 |
 | C7 | 마을 도착은 World 진입점이 정한 기본 입장 지점이고, 인벤토리·재화·파티가 보존된다. | 서버 시험(진입점 보존은 World 시험이 이미 증명하고, 여기서는 연결만 본다) |
@@ -189,24 +189,29 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **Content·Core 우선**(메인 `msg_e9af11e8efee`, 2026-10-11T07:46:38Z). 원문 「일단 좀 급한게 컨텐츠랑 코어쪽이니까 이 쪽 작업 우선해보자, 운영툴은 재개지점 맥락확보하고 세션 정리해줘」. 효과: Content·Core가 먼저다. Management는 재개 지점을 남기고 닫으며, 그 7777 중간 점검 일정은 없어졌다(메인 조건 3의 Management 겹침 대상이 사라짐). World·Rules는 큰 실행이 겹치면 양보한다. 큰 실행 전 알림은 그대로 한다.
 - **라우팅 핫픽스**(메인 `msg_154e43b875cb`, 2026-10-11T11:03:16Z). 원문 「대시보드 결정 응답: 1) 모델 라우팅 - 모든 리드를 문맥 25만에서 압축하도록 지금 적용할지 → A 전체 적용 · 2) 모델 라우팅 - 리드가 같은 메시지로 두 번 깨는 것을 지금 규칙으로 막을지 → A 지금 적용 · 3) 모델 라우팅 - 로컬 DB 설치·기동 도구의 검증을 지금부터 Astra로 옮길지 → A 지금부터 Astra · 4) 모델 라우팅 - 선행 시험 작성자를 Codex로 옮기는 시점 → A 10-31 평가 때」. 이 goal에 닿는 효과는 셋이다. 1: Content 리드는 `--autocompact 250000`으로 다시 떴다. 압축 뒤 맥락을 잃어 일을 다시 한 사례가 나오면 바로 메인에 보고한다. 2: 우편함 대기 background가 살아 있는데 Orca 자동 알림으로 깨면 도구 호출 없이 한 줄로 턴을 끝낸다. 대기가 꺼졌거나 확실하지 않으면 check로 처리하고 대기를 다시 연다. 4: 선행 시험 작성자는 10-31 평가 때까지 신규 `claude-opus-5-5` 그대로다. 3은 로컬 DB 도구 검증이라 이 goal에 해당하지 않는다. **결정 2 정정**(메인 `msg_6e84b81f7e50`, 2026-10-11T11:49:52Z): 「대기를 다시 연다」는 사용자 결정 2에 없던 메인의 덧붙임이었고 ORCA 정본과 어긋났다. 사용자가 정본을 유지했다. 원문(메인 pane Enter 제출) 「대시보드 결정 응답: 1) 라우팅 정본 반영 - 메모리 부족으로 꺼진 우편함 대기를 리드가 다시 켜지 않는 규칙을 유지할지 → A 유지 · 2) 라우팅 정본 반영 - 규칙 문서 크기가 약 1.8KB 느는 것을 허용할지 → A 허용」. 정정판: 대기가 아직 돌고 있고(종료·kill 알림을 받지 않음) Orca 자동 알림으로 깼으면 도구 호출 없이 한 줄로 턴을 끝내고, 메시지는 대기가 끝나 깰 때 처리한다. 대기가 메모리 회수로 꺼졌거나 살아 있는지 확실하지 않으면 `--wait` 없는 check로 처리한다. 메모리 회수로 꺼진 대기는 스스로 다시 켜지 않는다. 메시지 도착·시간 초과로 정상 종료한 대기를 다음 대기로 여는 것은 그대로다.
 - **클리어 PR의 세션 파일 제출 메서드**(메인 `msg_a3531f312474`, 2026-10-11T11:06:04Z). 원문 「대시보드 결정 응답: 1) Content 클리어 PR - 세션 파일에 확인 요청 제출 메서드 하나를 더하는 것을 범위에 넣을지 → A 넣는다」. 효과: `Sessions/GameSession.cs`에 확인 요청 제출 메서드 하나가 「건드릴 곳」에 들어간다. 나머지 범위는 메인이 리드 요청 `msg_0d95711472f4`와 승인 범위를 대조해 차이가 없었다. 메인 조건은 둘이다. `GameSession`·`HandlerRegistry`는 쓰기 전에 World·Core 리드에 함께 알리고 늦게 병합되는 PR이 main을 받는다. 7777·Unity 큰 실행은 미리 묻는다. 구현자 신규 `gpt-6-astra` xhigh(신호 2·3·4)와 선행 시험 신규 `claude-opus-5-5` 배정도 확인했다.
+- **마감 준비**(메인 `msg_e5eef9da3206`, 2026-10-11T14:03:05Z). 원문 「일단 슬슬 마감 준비도 하자, 각 파트 마지막 작업 끝나면 재개 포인트 잡고 마무리하는 방향으로 지시해줘」. 효과: Content의 마지막 작업은 돌던 독립 검증의 결과 처리까지다. 새 작업자 세션은 열지 않는다. 리드는 정산하고 남은 프로세스 0을 확인한 뒤 재개 지점을 고쳐 자기 branch에 커밋·push하고 메인에 「마감 준비 완료」를 보낸다. C9 실화면과 Unity 실행 허용 결정은 다음 세션이다.
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-11T12:52:26Z(`lead-goal-edit-1011f/clock.txt`)이다. 클리어 서버 구현을 커밋해 원격에 반영한 직후다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-11T14:33:33Z(`lead-goal-edit-1011g/clock.txt`)이다. 사용자 마감 지시(메인 `msg_e5eef9da3206`)에 따라 클리어 독립 검증의 결과를 처리하고 세션을 닫기 직전이다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 메인에 구현 결과를 보고한다. 이어서 독립 검증 계약을 쓰고 신규 `claude-opus-5-5` 검증자(강)를 기동한다. 검증 대상은 이 기록 커밋의 HEAD다. 아래 「클리어 서버 구현」 절의 보류 요구 셋과 리드 관찰 다섯(`lead-r2-clear-impl/r2.md`)을 계약에 넣는다 |
-| 열린 Task·Dispatch | 없다. 구현 `task_2bfe92fb8745` / `ctx_068349d19378`은 정산했다 |
-| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-server-20261011`(origin/main `999b1b98`에서 만듦). base 이후 리드 커밋은 `78431e8e`(goal 범위) → `2e2c5c92`(선행 시험) → `b13db4d1`(선행 시험 기록) → `654b2728`(서버 구현) → 이 기록 커밋이다 |
+| 단계 | 진척 「검증·실제 플레이」 중이다. 독립 검증은 **판정 보류(봇 미실행), 차단 결함 없음**이다(아래 「클리어 독립 검증」 절). 남은 필수 검증은 C8 봇과 기존 봇 회귀다 |
+| 다음 첫 일 | 새 검증자 세션(신규 `claude-opus-5-5`)으로 C8 봇을 돌려 판정 보류를 닫는다. 명령은 검증 계약 27행 `wsl -d Ubuntu --exec bash 99_Tools/sync-wsl.sh bot DungeonClearSmoke InstanceMapIsolationSmoke BossStageClearSmoke InventorySmoke PartyQuest MapTransition MultiRosterSmoke DashSmoke`다. 시작 전에 World·Core에 7777 사용을 알리고, 여유 물리·가상 메모리 4GB 이상, 7777 listener 0, 사용자 게임 없음을 원시로 남긴다. 계약은 `opus-clear-verify-contract.md`(`6438e486…`)에서 봇 항목만 남긴 새 판으로 쓴다. 검증 대상은 이 기록 커밋의 HEAD다 |
+| 그다음 | C9 실화면(검증자의 Unity 코드 실행 허용을 메인에 결정 요청으로 먼저 올림) → PR 생성·CI → 사용자 병합 승인 |
+| 열린 Task·Dispatch | 없다. 독립 검증 `task_af8b7df35b78` / `ctx_8aa7d29336af`는 정산했다(`lead-settle-clear-verify/settlement.md`) |
+| 결정 대기 | 사용자 결정 대기는 없다. C9 직전에 Unity 코드 실행 허용을 새로 요청한다. V-1은 리드가 「처치마다 한 번」으로 정해 C4에 반영했고, 메인 마감 보고에 함께 알렸다 |
+| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-server-20261011`(origin/main `999b1b98`에서 만듦). base 이후 리드 커밋은 `78431e8e`(goal 범위) → `2e2c5c92`(선행 시험) → `b13db4d1`(선행 시험 기록) → `654b2728`(서버 구현) → `2d168f19`(구현 기록) → 이 기록 커밋(검증자 새 시험 두 파일 포함)이다. 원격에 push한다 |
 | PR | 클리어 PR은 아직 없다. 던전 패킷·창은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 병합됐다(head `ac98fe69`, merge commit `999b1b98`). 결함 PR은 [PR221](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(merge commit `e775bc77`) |
-| 리드 세션 / Run | `term_e90e3c30-7af3-4155-a74c-21afa8842ed7`(11:05Z 재기동, `--autocompact 250000`) / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
-| 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`(`7123af77…`), `03_Client/ProjectSettings/ProjectSettings.asset`(`4a8db0bd…`). 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | Content 작업자 pane 0, Unity.exe 0(12:52:26Z `tasklist`, `lead-goal-edit-1011f/tasklist-unity.txt`). Core가 15:00Z 전 SQL 컨테이너 진단(14333, 30분 안팎)을 예고했다. 아직 사용자 실행 승인 전이다. Content는 요청이 오면 7777·Unity를 끄고, 돌던 WSL 실행이 끝난 뒤 다음 큰 실행을 Core 종료 알림까지 보류하기로 회신했다(Core `msg_66c29be758cb`, Content `msg_518d6a6ccea1`). Content의 7777은 World에 먼저 알리고, World의 7777 해제 뒤에 쓴다 |
-| 로컬 부수 변경 | `ProjectSettings.asset`은 사용자 원래 상태 `4a8db0bd…`다. 클리어 PR의 Unity batch가 다시 쓰면 메인 판단 `msg_c9fac8091065`대로 되돌린다. WSL 작업 사본 아래에 경로 변환으로 생긴 빈 디렉터리 사슬(`…/C:/Program Files/Git/mnt/c/…`)이 있다. 구현자의 서식 검사가 WSL 캐시와 `99_Tools/Formatting/obj`·`bin`(Git 제외)을 만들었다. 모두 저장소 밖이거나 Git 제외다 |
-| 남은 결정·준비 | C9 실화면 직전에 검증자의 Unity 코드 실행 허용을 메인에 결정 요청으로 따로 올린다. World 로그인 PR(41·42·v19)이 `GameSession`·`HandlerRegistry`·`Dungeon/DungeonClearPacketContractTests.cs`·`domains/protocol.md`를 함께 바꾼다. 늦게 병합되는 PR이 main을 받는다. World는 그 시험 파일의 187·196행 문구만 더 고친다(World `msg_75c883fc0f0b`). 클리어 PR의 147·152행과 겹치지 않는다 |
+| 리드 세션 / Run | Claude 세션 `eeb74a27-8d3b-43e3-b58a-b460e30db0cd`, pane `term_e90e3c30-7af3-4155-a74c-21afa8842ed7`(11:05Z 재기동, `--autocompact 250000`) / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`). 새 세션은 RESUME 절차로 연다 |
+| 근거 폴더 | `.backups/verification/2026-10-10-dungeon-clear-rewards/`(Git 밖). 판정 `opus-clear-verify/verdict.md`(`609fb7ed…`), 리드 R-2 `lead-r2-clear-verify/r2.md`, 수신 기록 `lead-inbox-notes.md` |
+| 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`(`7123af77…`), `03_Client/ProjectSettings/ProjectSettings.asset`(`4a8db0bd…`). 커밋·되돌리기·stash 금지. TimeManager는 HEAD와 같다(`1a83e54a…`) |
+| 작업자·실행 자원 | Content 작업자 pane 0. 14:37:50Z 마감 확인에서 7777 listener 0, WSL dotnet 0, Unity 0이고, 14:38:04Z Docker 컨테이너는 0개다(`lead-goal-edit-1011g/procs-final.txt`, `docker-final.txt`). Docker Desktop 앱과 사용자 게임은 켜져 있었고 Content가 띄운 것이 아니다 |
+| 로컬 부수 변경 | `ProjectSettings.asset`은 사용자 원래 상태 `4a8db0bd…`다. C9의 Unity가 다시 쓰면 메인 판단 `msg_c9fac8091065`대로 되돌린다. WSL 작업 사본 아래에 경로 변환으로 생긴 빈 디렉터리 사슬이 있다. 서식 검사가 WSL 캐시와 `99_Tools/Formatting/obj`·`bin`(Git 제외)을 만들었다. 모두 저장소 밖이거나 Git 제외다 |
+| 다른 파트와 맞출 것 | World 로그인 PR(41·42·v19)이 `GameSession`·`HandlerRegistry`·`Dungeon/DungeonClearPacketContractTests.cs`·`domains/protocol.md`를 함께 바꾼다. 늦게 병합되는 PR이 main을 받는다. 재개 때 `origin/main`에 그 PR이 들어왔는지 먼저 본다. 들어왔다면 handshake를 손으로 짜는 봇 시나리오에 로그인 단계가 필요하다(위 「던전 클리어 PR의 요구」의 World 확인) |
 
-**남은 순서**: 독립 검증(신규 `claude-opus-5-5`, 강) → C8 봇(7777 사전 알림) → C9 실화면(Unity 실행 허용 결정 요청) → PR·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: C8 봇(새 검증자, 7777 사전 알림) → C9 실화면(Unity 실행 허용 결정 요청) → PR·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -231,7 +236,7 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - 범위 초안·사용자 승인·World 계약 확인까지 했다. 원문은 근거 폴더의 `scope-draft-v1.md`와 `inbox/`에 있다.
 - 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증 → PR 생성(CI) → R9 실화면 → R10 수정 루프와 실화면 재확인 → 사용자 병합 승인까지 끝났다(아래 다섯 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), CI, Unity Editor 실화면(MCP). 실행하지 않은 것: 봇, 빌드 단독 실행, 사람 손 입력.
 - 던전 패킷·창 PR은 선행 시험 → 구현 → 줄 끝 수정 → 독립 검증(차단 V-1) → V-1 수정 → 재검증(통과) → PR230 생성 → 사용자 병합 승인까지 끝났다(아래 세 절). 실행한 것: WSL 빌드·서버 시험, Windows 솔루션 빌드, 추출본 생성기·DLL 재현, Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), 봇 회귀. 실행하지 않은 것: 실화면, DB.
-- 던전 클리어 PR은 선행 시험까지 했다(아래 「클리어 선행 시험」 절). 실행한 것: WSL 빌드·필터 서버 시험, 봇 빌드. 실행하지 않은 것: 봇 실행, 7777, Unity, DB, 필터 없는 전체 시험, 서식 검사.
+- 던전 클리어 PR은 선행 시험 → 서버 구현 → 독립 검증(판정 보류, 봇 미실행)까지 했다(아래 세 절). 실행한 것: WSL 빌드, 필터·전체 서버 시험, 서식 검사, 봇 빌드. 실행하지 않은 것: 봇 실행(C8과 기존 봇 회귀), 7777, Unity·실화면, DB.
 
 ### 선행 시험 — RED 준비 성공, 2026-10-10
 
@@ -474,6 +479,37 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **정산**: 대기 확인(tui-idle, 「Worked for 32m 45s」) → worker-release(retained/external_terminal) → close(ptyKilled true) → 12:49:41Z 목록에서 사라짐(`lead-settle-clear-impl/settlement.md`).
 - **미실행**: 7777 서버, C8 봇, Unity, DB, PacketGenerator, 원본 제품 Windows 빌드는 돌리지 않았다. 승인된 서식 검사가 근거 폴더의 격리 snapshot에서 Shared·ClientNet을 빌드했지만 원본 Plugins DLL은 바뀌지 않았다. 구현자는 첫 Git 읽기 세 명령에 `GIT_OPTIONAL_LOCKS=0`을 빠뜨렸다고 스스로 보고했다(읽기 전용, 쓰기 Git 없음).
 
+### 클리어 독립 검증 — 판정 보류(봇 미실행), 2026-10-11
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_af8b7df35b78` / `ctx_8aa7d29336af`, `[Content 검증자]`, 첫 신호 13:08:30Z, worker_done 14:29:47Z |
+| 모델 | 신규 `claude-opus-5-5` xhigh. 화면 표시 「Claude Code v2.1.296 · Opus 5.5 with xhigh effort」. backend 실제 모델 unknown |
+| 계약 | `opus-clear-verify-contract.md` SHA256 `6438e486…`, 요약 spec `opus-clear-verify-spec.md`(`b693c644…`), 고정 입력 `opus-clear-verify-inputs.txt`(`f19dec0f…`) |
+| 결과 | `opus-clear-verify/verdict.md`(`609fb7ed…`), worker_done `msg_6facf25b1815`. **판정 보류(봇 미실행), 차단 결함 없음.** 결함 V-1·V-2는 낮음, 비차단이다 |
+| 새 시험 | `Dungeon/DungeonClearRefusalTests.cs`(82줄), `Dungeon/DungeonClearRepeatClearTests.cs`(92줄), 9결과. 이 기록 커밋에 넣었다 |
+
+| 실행 | total / pass / fail / skip | 원시(SHA256 앞 8자) |
+|---|---|---|
+| 서버 전체, 새 시험 전 | 1004 / 999 / 0 / 5 | `runs/full-before/`(`81681813`) |
+| 서버 전체, 새 시험 뒤 | 1013 / 1008 / 0 / 5 | `runs/full-after/`(`a8f942f7`). 늘어난 9건이 새 시험이다. skip 5는 기존 `Skip` 속성 시험이다 |
+| WSL 빌드 | 경고 4·오류 0 | 판정 근거는 `runs/build-before2/`·`runs/build-after/`다. `build-before`는 근거가 아니다(운영 기록) |
+| 서식 검사 | exit 0, 제품 296파일 수정 0, 도구 시험 244 / 244 | `runs/format-after-2/`. 첫 실행 `format-after`는 무효다(운영 기록) |
+| C8 봇과 기존 봇 회귀 | 미실행 | `runs/bot/gate-summary.json`. 시작 조건 확인 18회, 충족 0회 |
+
+- **V-1(낮음, 명세)**: C4의 옛 셋째 문장 「빈 복사본은 그 틱 끝에 정리된다」가 입장 대기 중인 빈 보스방에서 성립하지 않았다. `InstanceMapRegistry.RemoveIdle`이 들어오는 사람이 있는 복사본을 남긴다. 그러면 `GameMap.MaybeRespawnBoss`가 보스를 다시 내고 `_stageCleared`를 false로 되돌린다. 그 처치는 새 클리어로 지급된다. 새 시험 `DungeonClearRepeatClearTests`가 실제 월드 틱 순서로 재현했다. 구현은 C4 둘째 문장과 `server.md`대로다.
+- **V-1 리드 결정 「처치마다 한 번」**: 사용자 완료조건 5·6이 처치 단위다. 판정 O-1대로 해금이 처치 뒤에도 남아, 새 복사본 재도전과 경제 영향이 같다. 그래서 제품·`server.md`·새 시험은 그대로 두고 C4만 고쳤다(`lead-r2-clear-verify/r2.md`). 「복사본마다 한 번」을 골랐다면 구현·`server.md`·새 시험의 마지막 단정이 바뀌었다.
+- **V-2(낮음)**: 구현자가 고친 `InventoryAuthorityBoundaryTests.cs:10-13` 머리 주석이 클리어 묶음의 출처를 아이템 goal 승인표 리터럴이라고 적는다. 실제 출처는 공유 `DungeonClearRewards`(10-08 결정 2 A)다. 다음에 그 파일을 고칠 때 바로잡는다(「다음 계획 후보」).
+- **코드 대조로 판정한 요구 셋**: wire CurrencyCap, Accepted가 아닌 이동 거부 뒤 다시 확인, `RevisionExhausted` 모두 지적이 없다. 이동 거부는 새 시험이 `AlreadyMigrating`으로 실행했다. 나머지 둘의 실행은 상태 심기 없이는 불가라 하지 않았다.
+- **선행 시험 품질과 고친 기존 다섯 단정**: (a) 옛 세부 분류가 맞다. 기대값 일괄 재생성·완화와 제품 계산 복제는 없다.
+- **설계 관찰**: O-1(해금 수명, World 소유)과 O-2~O-5는 「다음 계획 후보」로 옮겼다. O-6은 선행 시험의 보스 처치가 직접 호출이라는 관찰이고, 실제 전투 경로는 C8 봇이 본다.
+- **판정 보류의 이유**: 강 등급은 실제 진입 1회 전에는 통과하지 않는다. 이 PR의 실제 진입은 봇 `DungeonClearSmoke`다. 리드가 조건부로 허락했지만(`msg_60b01e559689`), 사용자 게임 실행과 메모리 4GB 미달로 14:25Z까지 시작 조건이 한 번도 맞지 않았다. 봇이 통과하면 나머지 판정은 그대로 쓴다. 실패하면 새로 분류한다.
+- **큰 실행 보류**: Core SQL 컨테이너 진단 동안 리드가 큰 실행을 막았다(`msg_ab3bfab2d9d8` 13:12:59Z → 해제 `msg_1d6f2b271287` 13:32:44Z, Core 끝 알림 `msg_a18ed271d458`).
+- **리드 R-2**(`lead-r2-clear-verify/r2.md`): HEAD·status·보호 세 파일·새 시험 hash가 판정과 같다. TRX 두 개를 node로 다시 세어 표의 수와 같았다. 서식 exit, 봇 관문 요약, 7777 마감 원시도 판정과 같다.
+- **생존 신호(helper, `lead-settle-clear-verify/liveness.txt`)**: 신호 34개, 가장 긴 간격 273초, 300초 초과 0이다. 질문 셋(메모리 `msg_c5525803aca8`, 서식 회수 `msg_a3ec91c73364`, 봇 `msg_da2c43981385`)에 모두 답했다.
+- **정산**: 대기 확인(tui-idle) → worker-release(retained/external_terminal) → close(ptyKilled true) → 14:30:25Z 목록에서 사라짐(`lead-settle-clear-verify/settlement.md`).
+- **미실행**: C8 봇·기존 봇 회귀, C9 실화면·Unity·MCP, DB·CI·PacketGenerator·Windows `dotnet build`.
+
 ### 운영 기록(첫 발생)
 
 - Orca CLI 1.4.224의 `terminal split`에는 `--title`이 없어 첫 구현자 기동이 실패했다. 플래그 없이 다시 열었다(`astra-pr1-impl-launch-fail-title.json`).
@@ -504,6 +540,11 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - 리드의 클리어 선행 시험 계약이 WSL 시험 명령을 `wsl -d Ubuntu -- bash 99_Tools/sync-wsl.sh test --filter "…"` 형태로 적었다. 이 형태에서는 필터 인자의 `|`를 셸이 파이프로 읽어 exit 127로 끝났다(`clear-tdd/runs/server-before/test-attempt1-shell-pipe.txt`). 작업자가 이전 선행 시험 근거의 `--exec` 형태로 바꿔 통과했다. 계약 귀속이며 첫 발생이라 이 goal에만 적는다. 다음 계약부터 `--exec` 형태를 적는다.
 - 같은 작업자의 기준 시험에서 `--results-directory /mnt/c/…`가 Git Bash 경로 변환으로 `C:/Program Files/Git/mnt/c/…`가 되어 TRX가 WSL 작업 사본 아래에 생겼다(`clear-tdd/runs/server-before/trx-move.txt`). 작업자가 hash를 잰 뒤 옮기고, 작성 뒤 실행에는 `MSYS_NO_PATHCONV=1`을 붙였다. Git Bash 경로 변환은 `git show`·`orca terminal send`에서도 났지만 정본 규칙은 없다. 다음 계약에 넣고, 반복 규칙으로 올릴지는 종료 기록 때 본다.
 - 다른 리드의 메시지가 기록과 다른 handle에서 왔다(Core `msg_66c29be758cb`, `term_24b8aa94…`, 이전 기록은 `term_a9595668…`). `orca orchestration run-show --id run_b36cc92a4cf4`의 `coordinator_handle`이 같은 값이라 Core 리드의 재기동(Run 갱신 11:08:26Z)으로 보고 처리했다(`inbox/core-run-show-1246.json`). 태그와 handle이 Run 기록과도 어긋나면 처리하지 않고 메인에 보고한다.
+- 클리어 검증자의 서식 검사 첫 실행 중 13:44Z 무렵 메모리 부족으로 Claude Code가 검증자의 백그라운드 셸을 회수했다. 하위 프로세스는 계속 돌아 13:52:28Z exit 1로 끝났다. 출력은 콘솔 제목 설정 중 「파이프의 다른 끝에 프로세스가 없습니다」였다. 리드가 끝까지 두되 요약과 증거가 끝까지 쓰이지 않으면 무효로 정했다(`msg_241b5a3ab284`, 원시 `outbox/110-format-orphan-check.txt`). 검증자가 새 폴더로 다시 돌려 통과했다. 작업자의 긴 실행이 회수된 첫 발생이라 이 goal에만 적는다.
+- 클리어 검증자가 리드의 큰 실행 보류 dispatch를 읽기 전에 13초짜리 WSL 증분 빌드(`build-before`)를 시작했다. 직전 check와 실행 사이에 보류가 도착했다. 판정 근거로 쓰지 않았고 검증자가 스스로 보고했다. 첫 발생이라 이 goal에만 적는다. 다음 계약에 「큰 실행 직전에 우편함을 확인한다」를 넣는다.
+- 클리어 검증자의 큰 출력이 홈 `~/.claude/projects/…/tool-results/`에 자동 사본으로 2건 남았다. 위 R10 항목에 이어 같은 goal의 세 번째 관측이다. 계약 안내 「큰 출력은 파일로 받는다」만으로는 첫 화면 출력 몇 건이 남는다. 두 번째 이상 발생이라 교정 층 판단을 종료 기록 때 메인에 올린다. 검증자는 hook이 그 세션에 대해 쓴 `.claude/state/session-guard/` 상태 파일(Git 제외)도 허용 밖 위치로 스스로 보고했다.
+- 사용자 게임(약 9GB) 실행으로 여유 메모리가 4GB 아래에 머물러 C8 봇을 돌리지 못했다. 리드가 14:15Z~14:25Z 조건부 창을 열었지만 조건 확인 18회 모두 미충족이었다. World·Core에 예고와 취소를 보냈다(`outbox/112-*`, `outbox/115-*`). 첫 발생이라 이 goal에만 적는다.
+- 마감 중 리드 Bash 도구가 명령 문자열이 대략 60~90자를 넘으면 실행 wrapper가 잘려 「unexpected EOF」로 실패했다. 짧은 `echo` 시험으로 길이 문제임을 확인했고, 스크립트 파일과 glob 짧은 경로로 우회했다. 앞서 따옴표 섞인 긴 한 줄이 실패한 것도 같은 원인으로 본다. 도구 사실이라 메모리 후보다.
 
 ## 다음 계획 후보
 
@@ -529,3 +570,9 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - PlayMode 던전 창 시험 두 클래스가 helper(39 encoder·`HasNumber`·`Confirms`)를 사본으로 가진다. 세 번째 사용처가 생기면 `ScreenUiProbe` 옆 probe로 뽑는다(독립 검증 O-4, 재검증 O-2).
 - 서버 lane Stop이 다섯 번 모두 INT 20초 안에 끝나지 않아 TERM으로 정리됐다. 서버의 INT 처리를 확인할 후보다(독립 검증·재검증 O-5).
 - **HUD PlayMode 시험 간헐 시간 초과**: World 재검증의 서버 lane PlayMode 전체(12:03:59Z~12:05:15Z)에서 `HudGoldAndPanelToggleSceneTests.ClosedPanel_LetsAClickOnItsUseSpotAttack_AndAfterIThatClickUses_AcrossAMapMove`가 「Timed out: the open panel's Use」로 한 번 실패했다. 가짜 서버 peer의 `C_ItemUse`를 실시간 3초 기다리는 곳(`HudGoldAndPanelToggleSceneTests.cs:93`)이다. 같은 HEAD 재실행은 3/3·3/3 통과였고 원인은 확정하지 못했다. 대기 한도를 늘리거나 프레임 수 기반 대기로 바꾸는 안이 있다. 출처는 World `msg_75c883fc0f0b`와 World 근거 `.backups/verification/2026-10-11-multi-account-login/reverify/verdict.md` O-4다. 클리어 PR의 검증에서 같은 시간 초과가 나면 이 관찰로 분류하고 원시를 남긴다.
+- **클리어 시험 머리 주석 출처**: `InventoryAuthorityBoundaryTests.cs:10-13`이 클리어 묶음을 아이템 goal 승인표 리터럴이라고 적는다. 실제로는 공유 `DungeonClearRewards`(10-08 결정 2 A)에서 읽는다. 다음에 그 파일을 고치는 작업에서 바로잡는다(클리어 독립 검증 V-2).
+- 보스 처치 뒤에도 `_bossUnlocked`가 남아, 같은 사람이 바로 새 복사본에서 다시 클리어할 수 있다. 재도전 제한이 필요하면 World·Quest가 해금 수명을 정한다. 결정은 사용자·메인이다(클리어 독립 검증 O-1).
+- 재출현이 `_stageCleared`만 되돌리고 `_dungeonClear`는 다음 클리어까지 남는다. 확인 job이 `IsStageCleared`를 먼저 봐서 지금은 안전하다. 재출현 때 상태도 비우거나 상태 객체가 세대를 확인하는 안이 있다. `MaybeRespawnBoss`가 World 소유 구간이라 함께 정한다(O-2).
+- `DungeonClearState`가 수혜자 `GameSession` 참조를 복사본 정리나 다음 클리어까지 든다. 확인 집합만 남기고 수혜자 목록은 콜백 뒤 버리는 안이 있다(O-3).
+- `HandlerRegistry`·`GameMap`·`InventoryRegistry`·`GameSession`이 `using` 대신 `Dungeon.` 부분 한정 이름을 쓴다. 다음에 그 파일을 고치는 PR에서 `using`으로 바꾼다(O-4).
+- `DungeonClearState` 머리 주석에 호출처가 없다. 한 줄을 더한다(O-5).
