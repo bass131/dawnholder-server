@@ -4,6 +4,12 @@
 
 ## 적용 중인 사용자 결정
 
+- **2026-10-11 모듈 정의 비교 수정을 이 goal 범위에 넣는다(A).** 메인 `msg_ea17b3841191`(2026-10-11T14:11:07Z)이 전한 사용자 원문(메인 pane Enter 제출, 현황판 결정 응답): 「대시보드 결정 응답: 1) Core 모듈 정의 비교 수정 - 이 goal 범위에 넣을지 → A 범위에 넣는다」. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다. 리드 요청은 `msg_c76635afcdcd`(N2/`send-main-module-compare-scope.txt`)다.
+  - 뜻(메인 전달 문장): 기대 정의 계산을 엔진이 실제로 저장하는 머리말 형태(「CREATE OR ALTER」 → 「CREATE」 + 공백 셋)에 맞춘다. 모듈 18개의 기대 DefinitionBytes·DefinitionChecksum과 `verify-schema.sql` 18행, 가짜 엔진과 hash 소비처 시험을 고친다. 프로시저 본문, SourceChecksum, 001 migration은 바꾸지 않는다.
+  - 범위 표의 「하지 않을 것」과 「보존 동작」 첫 줄을 이 결정에 맞게 좁혔다.
+  - 순서: 2026-10-11은 기록만 한다(마감 지시 `msg_b7256a2a63ca`). 구현은 `gpt-6-astra` xhigh이고 다음 세션이다. 그 뒤 컨테이너 재실행은 새 사용자 실행 승인을 받는다.
+  - 검증자 모델은 열린 질문이다. 리드 요청과 메인 전달은 신규 `claude-opus-5-5` 강 등급으로 적었다. 그런데 아래 핫픽스 결정 3은 로컬 DB 도구·실행 카드의 독립 검증을 신규 `gpt-6-astra` xhigh로 옮겼고, 게임 영속 데이터의 스키마·저장 로직만 Opus로 남겼다. 이번 수정은 설치 도구의 기대값 계산이라 리드는 Astra 쪽으로 읽는다. 구현 계약 전에 메인 확인을 받는다.
+  - 관리 비밀 파일 처분은 이 결정 밖이다.
 - **2026-10-11 모듈 정의 진단 오늘 실행 승인(A).** 메인 `msg_223c9a08bdd0`(2026-10-11T13:08:28Z)이 전한 사용자 원문(메인 pane Enter 제출, 현황판 결정 응답, 13:07Z 무렵): 「대시보드 결정 응답: 1) Core 모듈 정의 진단 - 오늘 실행 승인(1차 실행에서 남긴 컨테이너·볼륨 삭제 포함) → A 오늘 실행 승인」. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다. 리드 요청은 `msg_02a1bed2eaf3`(N2/`main-diag-approval-request-body.txt`)이고, 이 메시지 ID가 실행 계획의 G2다.
   - 범위는 메인이 적은 셋뿐이다. 진단 카드 v1.1(card.md `8ba2e54f…f67c`, Invoke-ContainerCardStep.ps1 `734621a9…c4a0`, Test-CardSession.ps1 `c455e8fd…dfce`)로 오늘 한 수명 실행, 시도 1 자원 삭제, 리드의 기계적 준비 셋(실행 계획, `$planHash` 한 줄, 실행 계획·입력 hash 목록)이다. 그 밖의 바이트가 바뀌면 실행하지 않고 다시 묻는다.
   - 삭제 대상은 컨테이너 `dawnholder-sqlserver`(Id `c3d4a7c278f7e0811c35d62dc6f288dd45b8bb996b8e07cf5a50c2062dbdcc00`, StartedAt `2026-10-11T10:35:28.270055605Z`)와 볼륨 `dawnholder-sqlserver-data`(CreatedAt `2026-10-11T10:35:27Z`)다. 신원 기록 `container-identity.json`(`5bc91fdf…116e`)과 정확히 맞고 정지 상태일 때만 지운다(MSSQL.md 76행의 별도 명시 승인).
@@ -487,16 +493,16 @@
 
 | 항목 | 컨테이너 기준 범위 |
 |---|---|
-| 만들 것 | 1 위험 확인 시험 보고와 R-7 추가 측정 보고(제품 파일 없음). 2 DB 도구 컨테이너 전환 PR: 연결·환경 검사·실행자 확인·계정·정리를 컨테이너 기준으로 바꾸고 오프라인 시험·운영 문서·새 설계 결정 기록을 넣는다. 3 컨테이너에서 DB 생성 1단계 재실행(계획 → 생성 → 기준 상태 기록 → 확인). 4 001 보존 시험 데이터(fixture)와 실제 엔진 동작 검사 도구(U-01). 5 2단계(완료 처리·시험 DB 검사·동작 검사) 원시와 엔진 판정 PR. 6 컨테이너 시험 DB 정리. |
-| 건드릴 곳 | `99_Tools/database/`의 연결·수명 도구와 시험(R-7 G-5·G-6 반영, 줄 번호는 `b2e7797b` 기준 R-7 검토 관측이며 구현 계약 때 다시 잰다): `Database.Common.ps1` 6~40행(연결·이름 정규식·MachineName 대조), `test-environment/Environment.Common.ps1`의 승인 계획 검증(36~120행)·manifest 필드(215~413행)·실행자와 관리자 요구(478~496행)·로컬 계정 확인(498~512행)·안전 사유 목록(572~736행)·연결과 신원 대조(895~951행), `test-environment/Set-TestPrincipals.ps1`(관리자 요구 60행 제거, Windows 계정·recovery 가지 제거, 결정 27 A), `test-environment/Remove-TestEnvironment.ps1`(관리자 요구 246행 제거, Windows 계정·recovery 가지 제거), `test-environment/New-TestDatabase.ps1`(Create 전 기대 엔진값 대조), `Test-Database.ps1`(13~16·51~54·131행, Q-10), `Configure-WslAccess.ps1`·`Test-WslAccess.ps1` 삭제(되돌릴 commit과 절차를 기록한 뒤, 결정 29 A), 가짜 SqlClient를 쓰는 시험(TestDatabaseContract·TestEnvironmentLifecycle·EnvironmentGuards) 이상. 앞 여섯 도구 파일은 2026-10-10 기준 2672줄이다(`wc -l`). 승인 계획의 비밀·신원 폴더는 `C:\ProgramData` 대신 사용자 프로필(`%LOCALAPPDATA%\Dawnholder\…`) 아래로 옮긴다. 문서는 `00_Document/operations/MSSQL.md`(현재 절과 역사 절을 나누고 역사 절의 명령 예시는 commit 참조로), 새 설계 결정 기록 한 건(비밀 셋·DPAPI·inspect 제한, ADR-005의 「비밀번호 0개」 근거 대체), ADR-005 상태 표시, ADR-029 트레이드오프 ④ 종결 표시다. 과거 goal 문서(technical-spec 등)는 역사라 고치지 않는다. 실행 승인 계획 v2(PlanVersion·SchemaVersion 2, 컨테이너·볼륨·hostname·image digest·기대 엔진값·시간과 메모리 상한·시도 번호)와 이 goal 기록·근거 폴더도 포함한다. |
-| 하지 않을 것 | 저장 프로시저(modules 19개)·migrations 001~004·모듈 해시 방식 변경, PostgreSQL 전환, 게임 서버 C#의 저장·재접속 연결(다음 goal), C# Testcontainers와 CI의 DB 서비스 컨테이너(후보로만), 게임 서버 컨테이너화, Windows SQL Express 제거와 옛 Windows 시험 DB 정리(질문 5 A), 에이전트의 sudo·설치·Docker 설정·전역 설정 변경, 이름 정한 컨테이너·볼륨 밖의 Docker 자원 조작, PowerShell 도구 안의 `docker`·`wsl` 호출(docker 수명은 실행 카드 단계, R-7 Q-5), recovery 주체 생성과 그 최소권한 실증(결정 27 A, 후속 goal), World 줄의 서버 코드(`02_Server/GameServer`의 맵·세션·퀘스트)와 포트 7777 사용. |
+| 만들 것 | 1 위험 확인 시험 보고와 R-7 추가 측정 보고(제품 파일 없음). 2 DB 도구 컨테이너 전환 PR: 연결·환경 검사·실행자 확인·계정·정리를 컨테이너 기준으로 바꾸고 오프라인 시험·운영 문서·새 설계 결정 기록을 넣는다. 3 컨테이너에서 DB 생성 1단계 재실행(계획 → 생성 → 기준 상태 기록 → 확인). 4 001 보존 시험 데이터(fixture)와 실제 엔진 동작 검사 도구(U-01). 5 2단계(완료 처리·시험 DB 검사·동작 검사) 원시와 엔진 판정 PR. 6 컨테이너 시험 DB 정리. 7 모듈 기대 정의 계산 수정(2026-10-11 사용자 결정 `msg_ea17b3841191`): 기대 정의 텍스트의 머리말을 엔진 저장 형태에 맞추고 기대 hash 18개를 다시 만든다. 3의 재실행보다 먼저 한다. |
+| 건드릴 곳 | `99_Tools/database/`의 연결·수명 도구와 시험(R-7 G-5·G-6 반영, 줄 번호는 `b2e7797b` 기준 R-7 검토 관측이며 구현 계약 때 다시 잰다): `Database.Common.ps1` 6~40행(연결·이름 정규식·MachineName 대조), `test-environment/Environment.Common.ps1`의 승인 계획 검증(36~120행)·manifest 필드(215~413행)·실행자와 관리자 요구(478~496행)·로컬 계정 확인(498~512행)·안전 사유 목록(572~736행)·연결과 신원 대조(895~951행), `test-environment/Set-TestPrincipals.ps1`(관리자 요구 60행 제거, Windows 계정·recovery 가지 제거, 결정 27 A), `test-environment/Remove-TestEnvironment.ps1`(관리자 요구 246행 제거, Windows 계정·recovery 가지 제거), `test-environment/New-TestDatabase.ps1`(Create 전 기대 엔진값 대조), `Test-Database.ps1`(13~16·51~54·131행, Q-10), `Configure-WslAccess.ps1`·`Test-WslAccess.ps1` 삭제(되돌릴 commit과 절차를 기록한 뒤, 결정 29 A), 가짜 SqlClient를 쓰는 시험(TestDatabaseContract·TestEnvironmentLifecycle·EnvironmentGuards) 이상. 앞 여섯 도구 파일은 2026-10-10 기준 2672줄이다(`wc -l`). 승인 계획의 비밀·신원 폴더는 `C:\ProgramData` 대신 사용자 프로필(`%LOCALAPPDATA%\Dawnholder\…`) 아래로 옮긴다. 문서는 `00_Document/operations/MSSQL.md`(현재 절과 역사 절을 나누고 역사 절의 명령 예시는 commit 참조로), 새 설계 결정 기록 한 건(비밀 셋·DPAPI·inspect 제한, ADR-005의 「비밀번호 0개」 근거 대체), ADR-005 상태 표시, ADR-029 트레이드오프 ④ 종결 표시다. 과거 goal 문서(technical-spec 등)는 역사라 고치지 않는다. 실행 승인 계획 v2(PlanVersion·SchemaVersion 2, 컨테이너·볼륨·hostname·image digest·기대 엔진값·시간과 메모리 상한·시도 번호)와 이 goal 기록·근거 폴더도 포함한다. 2026-10-11 사용자 결정(`msg_ea17b3841191`)으로 기대 정의 계산(`ModuleHash.Common.ps1`·`Module.Common.ps1`), `modules/manifest.json`의 기대 DefinitionBytes·DefinitionChecksum 18개, `verify-schema.sql`의 해당 18행, 가짜 엔진과 hash 소비처 시험을 더한다. 줄 번호는 구현 계약 때 잰다. |
+| 하지 않을 것 | 저장 프로시저 본문(manifest 19항목: 저장 프로시저 17·함수 1·권한 1)·migrations 001~004·모듈 해시 계산식(SourceChecksum과 정의 hash의 알고리즘·인코딩) 변경, PostgreSQL 전환. 단 기대 정의 텍스트의 머리말을 엔진 저장 형태에 맞추는 수정과 그에 따른 기대 hash 18개 갱신은 2026-10-11 사용자 결정(`msg_ea17b3841191`)으로 범위 안이다. 그 밖에 하지 않을 것: 게임 서버 C#의 저장·재접속 연결(다음 goal), C# Testcontainers와 CI의 DB 서비스 컨테이너(후보로만), 게임 서버 컨테이너화, Windows SQL Express 제거와 옛 Windows 시험 DB 정리(질문 5 A), 에이전트의 sudo·설치·Docker 설정·전역 설정 변경, 이름 정한 컨테이너·볼륨 밖의 Docker 자원 조작, PowerShell 도구 안의 `docker`·`wsl` 호출(docker 수명은 실행 카드 단계, R-7 Q-5), recovery 주체 생성과 그 최소권한 실증(결정 27 A, 후속 goal), World 줄의 서버 코드(`02_Server/GameServer`의 맵·세션·퀘스트)와 포트 7777 사용. |
 | 관찰 가능한 완료조건 | 위험 확인 시험 보고(연결 성공 또는 PowerShell 7 전환 비용, 엔진 값, 볼륨 생존, WSL·Docker 메모리 원시)와 R-7 추가 측정 보고, 각각 신규 독립 문서 실사. 도구 전환 PR의 R-7 설계 검토 반영, 강 등급 신규 독립 검증 통과, CI(code-rules 워크플로의 PSScriptAnalyzer 통과)와 DB 오프라인 시험 9개 suite(2026-10-10 컨테이너 연결 suite 추가, 수정분 강 검증 설계 관찰 O-16)를 검증자가 로컬에서 돌린 summary 원시(R-7 Q-9), 정확 head 사용자 병합 승인. 컨테이너 1단계 원시(001 checksum 세 원천 일치). 2단계와 동작 검사 원시, 아래 「보존 동작」의 필수 관측, 신규 독립 판정. 엔진 판정 PR 정확 head 사용자 병합 승인. 컨테이너 시험 DB 정리 원시. 옛 Windows 시험 DB 「보존, 정리 미실행」 기록. goal 결과 기록, 목표 종료 점검(Gardener), 종료 기록 PR, 종료 점검. |
-| PR 경계 | 도구 전환 PR은 이 branch에서 연다. 도구 컨테이너 전환과 문서·설계 결정 기록(위험 확인 시험 근거 포함)에 이 branch의 앞선 goal 기록과 SQL 시작 진단 보고서(결정 14 A)를 함께 담는다(milestones 「기록만 앞섬」). 엔진 판정 PR은 보존 시험 데이터·동작 검사 도구·결과·goal 기록이며, 도구 전환 PR 병합 뒤 최신 main을 받은 branch에서 연다(branch는 그때 정한다). 두 PR 모두 사용자 개별 병합 승인을 받는다. |
+| PR 경계 | 도구 전환 PR은 이 branch에서 연다. 도구 컨테이너 전환과 문서·설계 결정 기록(위험 확인 시험 근거 포함)에 이 branch의 앞선 goal 기록과 SQL 시작 진단 보고서(결정 14 A)를 함께 담는다(milestones 「기록만 앞섬」). 엔진 판정 PR은 보존 시험 데이터·동작 검사 도구·모듈 기대 정의 계산 수정(2026-10-11 사용자 결정)·결과·goal 기록이며, 도구 전환 PR 병합 뒤 최신 main을 받은 branch에서 연다(branch는 그때 정한다). 두 PR 모두 사용자 개별 병합 승인을 받는다. |
 | 점검 지점 | 중간: R-7 검토 반영 뒤 메인 승인, 정렬 규칙 지원 측정(미지원이면 메인에 올려 다시 묻는다, 결정 28 A), 도구 전환 PR 병합 승인 요청, 첫 엔진 판정. 전체: 엔진 판정 PR 병합·정리·결과 기록 뒤 Gardener와 종료 점검. |
 
 ### 보존 동작(옛 절에서 이어 쓰는 항목)
 
-- 제품 SQL의 9RPC·29열·JSON·결과/오류/grant·transaction 계약, 001 원문과 checksum, 모듈 해시 방식(「범위와 보존 동작」).
+- 제품 SQL의 9RPC·29열·JSON·결과/오류/grant·transaction 계약, 001 원문과 checksum, 모듈 해시 계산식(「범위와 보존 동작」). 기대 정의 텍스트의 머리말 형태와 기대 hash 18개는 2026-10-11 사용자 결정(`msg_ea17b3841191`)으로 바꾼다.
 - 시험 DB 하나의 신규 생성 → 설치 → 시험 → 폐기 한 번 수명과 동명 자원의 채택·DROP·재생성 금지(「DB 접속 경계」 G1 대상/수명의 원칙). 대상은 `.\SQLEXPRESS` 대신 이름 정한 컨테이너 안의 SQL Server다. G1 binding(slot1, AccountId·CharacterId)은 그대로다.
 - 자원 수명은 넷이고 단위가 다르다(R-7 INV-01, 메인 판단 Q-4 `msg_506628a86629`). 이미지는 보존, 볼륨+시험 DB는 한 번 수명, 컨테이너는 같은 볼륨 위에 다시 만들 수 있는 프로세스 host다. 바로 위 줄의 「동명 자원의 채택·DROP·재생성 금지」는 볼륨+시험 DB 단위에 적용한다. 실패 때 보존 단위는 정지된 컨테이너+볼륨이다. 위험 확인 시험·추가 측정이 쓴 이름을 1단계가 다시 쓰는 것은 그 시험의 정리 원시(컨테이너·볼륨 부재)가 먼저 있을 때만 허용한다.
 - 시도 상한(메인 판단 Q-6, R-7 INV-03·INV-20). 자동 정리·재시도 금지는 그대로다. 승인당 시도는 3회, 같은 볼륨 위 컨테이너 재생성은 단계당 1회다. 실패 시도의 컨테이너·볼륨 삭제는 저널 Failed와 `docker logs` 보존 뒤 메인이 전달하는 명시 승인으로만 하고, 3회를 넘으면 메인 체크포인트다.
@@ -630,9 +636,9 @@
 
 ## 재개 지점
 
-### 진단 실행과 독립 판정 NOT PASS(절차), 범위 결정 대기 — 2026-10-11T14:09Z
+### 진단 실행과 독립 판정 NOT PASS(절차), 모듈 정의 비교 수정 범위 포함 — 2026-10-11T14:09Z
 
-기록 시각은 2026-10-11T14:09:25Z(`date -u`, KST 23:09, 원시 N2/`time-goal-record-11.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. XR은 E/`container-diagnosis-execution-review`(새 폴더)다.
+기록 시각은 2026-10-11T14:09:25Z(`date -u`, KST 23:09, 원시 N2/`time-goal-record-11.txt`)다. 사용자 결정 반영은 그 뒤 고쳐 적었다(아래 「결정」 2). **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. XR은 E/`container-diagnosis-execution-review`(새 폴더)다.
 
 - **진단 실행(사용자 승인 A `msg_223c9a08bdd0`의 창 안):** 신규 `gpt-6.1-sol` max 실행 작업자다. handle `term_02bda0b7-79f1-46d5-b35d-b736b6e8dd2e`, Task `task_2dbae5468ddc`, Dispatch `ctx_291c4432c7e2`. 계약은 X2/`contract.md` v1(SHA256 `89F228C7…920A`), 기동은 13:15:42Z(X2/`launch-record.txt`)이고 메인에 알렸다(`msg_fe1c21820526`).
   - 단계 순서: preserved-remove(13:22:16~13:22:23Z) → c0 관문 → C0~C2 → c3 관문 → c3-start → C3 Ready → C4 Created·Baseline001 → diagnose-modules → diagnosed-remove(13:30:16~13:30:50Z). 모든 단계가 exit 0이다.
@@ -655,16 +661,16 @@
 - **R-2(리드, XR/`lead-r2-check.txt`):** 표본 다섯 개가 판정과 같다. heartbeat 간격, 두 계약의 CODE_CONVENTION 유무, 작업자 기록 사본 L13~L59의 첫 줄, 두 부재 JSON, 진단 파일 hash와 머리말 교체 비교다.
 - **결정:**
   1. 끝남: 메인 판단 요청 `msg_afc1f8c74539` → 「수용」 `msg_6148bb9c6153`(위 처분).
-  2. 대기: 사용자 범위 결정 `msg_c76635afcdcd`, 메인이 사용자에게 올렸다. 「1) Core 모듈 정의 비교 수정 - 범위 포함 여부」, 리드 추천 A다. A는 기대 정의 계산을 엔진이 저장하는 머리말 형태에 맞추고 18개 기대 hash(`modules/manifest.json`·`verify-schema.sql`)를 다시 만든다. 프로시저 본문·SourceChecksum·001은 그대로다. 커밋은 이 branch, PR은 엔진 판정 PR이다. B는 엔진 판정을 멈추고 수정을 별도 goal 후보로 넘긴다.
+  2. 끝남: 사용자 범위 결정 A(메인 `msg_ea17b3841191`, 14:11:07Z, 리드 요청 `msg_c76635afcdcd`). 모듈 정의 비교 수정을 이 goal 범위에 넣는다. 원문과 효과는 「적용 중인 사용자 결정」 첫 항목, 범위는 「현재 범위·PR 경계」 표의 만들 것 7이다. 커밋은 이 branch, PR은 엔진 판정 PR이다.
   3. 대기: 관리 비밀 파일 처분이다. 시도 1과 진단의 private 폴더·manifest가 남아 있다. 별도 결정이고 아직 올리지 않았다.
+  4. 확인 필요: 수정 검증자 모델이다. 핫픽스 결정 3(`msg_0da44f41ac52`)과 리드 요청의 「신규 `claude-opus-5-5` 강 등급」이 어긋날 수 있다(「적용 중인 사용자 결정」 첫 항목). 구현 계약 전에 메인에 묻는다.
 - **자원 상태:** 컨테이너 `dawnholder-sqlserver`와 볼륨 `dawnholder-sqlserver-data`는 없다. 근거는 DIAG/`run/diagnosed-remove/diagnosed-remove-final-absence.json`(13:30:50Z)과 시도 1 자원의 DIAG/`run/preserved-remove/preserved-final-absence.json`(13:22:23Z)이다. 이미지는 보존한다.
 - **마감(메인 `msg_b7256a2a63ca`):** 새 작업자를 열지 않는다. Core worktree의 pane은 리드 하나이고, Core가 띄운 Codex·Docker 실행은 없다(N2/`closeout-check-1.txt`).
 - **다시 열 때:** branch `feat/persistence-container-engine-20261010`, Run `run_b36cc92a4cf4`, 리드 Claude 세션 `0fe2a6f9-e8b6-456a-bdae-2ede3ac4d3fe`다. 이 기록을 담은 commit의 HEAD는 메인 마감 보고에 적는다. core-active에 사용자 미커밋 파일은 없다.
-- **다음 할 일:**
-  1. 사용자 범위 결정을 받는다.
-  2. A면 맥락 메모 → 구현 계약(CODE_CONVENTION 관련 절 원문 포함) → 신규 `gpt-6-astra` xhigh 구현 → 신규 `claude-opus-5-5` 강 등급 검증 순서다. 그 뒤 새 실행 카드와 사용자 실행 승인을 받아 컨테이너 1단계를 다시 실행한다.
-  3. B면 엔진 판정을 멈춘 상태를 기록하고 goal 처리를 메인에 묻는다.
-  4. 관리 비밀 처분 결정을 메인에 올린다.
+- **다음 할 일(다음 세션, 2026-10-11은 기록만):**
+  1. 기대 정의 계산 수정 구현 계약이다. 먼저 검증자 모델을 메인에 확인한다(「결정」 4). 그다음 맥락 메모 → 구현 계약(CODE_CONVENTION 관련 절 원문 묶음을 발행 스크립트에서 확인) → 신규 `gpt-6-astra` xhigh 구현 → 신규 독립 검증 순서다.
+  2. 수정이 통과하면 새 실행 카드와 새 사용자 실행 승인을 받아 컨테이너 1단계를 다시 실행한다.
+  3. 관리 비밀 처분 결정을 메인에 올린다.
 
 ### 진단 카드 v1.1 재확인 통과와 실행 승인 — 2026-10-11T13:11Z
 
