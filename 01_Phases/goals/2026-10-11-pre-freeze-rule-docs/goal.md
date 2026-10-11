@@ -113,7 +113,7 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
   3. CURRENT 하단 링크는 S6과 같은 문장으로 이 PR에서 고친다. 다른 파트 줄은 보존한다.
   4. R-7 비해당.
 - S1 반복 근거(같은 부류 3회, Core branch `feat/persistence-container-engine-20261010`의 커밋 `dab31b60`에 있는 [영속 통합 goal](https://github.com/bass131/dawnholder-server/blob/dab31b6087311d80d0da1f05f9f9e89a29a73689/01_Phases/goals/2026-10-04-persistence-integration/goal.md) 617·618·642행, 아직 main 밖): Core 셋째 작업자가 리드 지시를 읽기 전에 컨테이너·볼륨을 지웠고 「복구 직전 우편함 확인을 빠뜨렸다」고 알렸다. Core 리드 실수 11은 마감 지시를 읽기 전 작업자 기동, 실수 12는 메인 지시를 읽기 전 pane 닫기다. 교정 층: 셋째 발생은 Codex 작업자라 Claude hook이 닿지 않는다. 리드·작업자 둘 다에 닿는 층은 정본 문장과 계약 문구다. 기능 동결 전 도구 금지(사용자 결정)도 있다.
-- S2·S3·S4 원천: [hook 정리 goal 「적용 중인 사용자 결정」](../2026-10-07-hook-friction-helper-session/goal.md#적용-중인-사용자-결정) 154~159행.
+- S2·S3·S4 원천: [hook 정리 goal 「적용 중인 사용자 결정」](../2026-10-07-hook-friction-helper-session/goal.md#적용-중인-사용자-결정) 154~160행.
   - S2 사용자 원문 「음 만약에 Advisor가 필요하면 Astra로 체크해보는거도 방법이야」·「OK, Advisor로 Fable 5.1도 있지만 GPT 6 Astra도 가능한점을 고려해줘」(메인 전달 `msg_87c0fed69b04`·`msg_6439bbd9ef9b`, 2026-10-07T13:30:23Z·13:32:07Z).
   - S3 사용자 원문 「만약 또 SafeGuard로 막히면 Astra로 대체해서 진행해줘」(메인 전달 `msg_1aa6aa9fa263`, 2026-10-07T16:40:00Z). 실제 교체는 메인 지시 `msg_47708ee158ad`(16:50:37Z, 선택창 두 번째 발생 뒤).
   - S4 사용자 원문 「음 아마 우리 규칙에서 문장상 모호한게 있었나보네, 창 하나를 띄울때는 굳이 Pane을 하나 더 만들어서 Agent를 할당할 필요는 없어」(메인 전달 `msg_e62c4989b3dc`, 2026-10-07T14:23:02Z). split close 뒤 부모 pane 꺼짐은 같은 goal 206행의 1.4.222 관측이다.
