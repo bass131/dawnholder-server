@@ -610,9 +610,30 @@
 
 ## 재개 지점
 
+### 카드 v2.1 재실사 통과와 v2.2 수정 — 2026-10-11T09:4xZ
+
+기록 시각은 2026-10-11T09:49:39Z(`date -u`, KST 18:49, 원시 N2/`time-goal-record-4.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. REVIEW2는 E/`container-run-card-review-2`, REVIEW3은 E/`container-run-card-review-3`이다.
+
+- **v2.1 재실사(신규 claude-opus-5-5, `task_107a6e245fc9`):** worker_done `msg_96b02525c68d`(09:41:11Z), 판정 원문 REVIEW2/`verdict.md`. 결과는 **통과**(차단 0)이고, 비차단 결함 #1~#5와 관찰 O-1~O-3이 나왔다.
+  - v1 차단 둘과 비차단 둘, 관찰 넷의 해소를 예행 재현 12건과 독립 시험(가짜 docker 88건, 제품 BeforeComplete 일정 원문 실행)으로 확인했다.
+  - #1~#3은 PreserveStop 실패 경로다. 비밀 파일 삭제가 실패하면 비밀이 남고 코드가 틀리게 읽혔다. 정지를 확인하지 못해도 로그를 받았다. 정지 전에 자격 증명 읽기가 실패하면 정지하지 않았다.
+  - #4는 inspect 형식 우회 2건, #5는 메모리 읽기 실패를 측정값 0으로 적는 문제다.
+  - 실행 전 잔여 위험 R-1~R-11은 실행 판정으로 넘긴다. 새 R-8은 `HostConfig.Memory`의 실제 값 형식 미관측이다.
+  - 정산은 release·idle·화면 보존·pane 종료까지 마쳤다. 리드 R-2 대조로 다섯 결함의 원천 행을 확인했다.
+- **v2.2 수정(리드 작성, 제품 파일 변경 없음):** 다섯 모두 작고 실패 경로의 비밀·정지 보존에 닿아, G2 요청 전에 함께 고쳤다. 같은 산출물 수정 2회째다. 대응 표는 CARD/`card.md` 끝 「v2.1 재실사 반영」, 원인과 파일별 변경은 CARD/`context-memo.md` 같은 이름의 절에 있다. 수정 전 사본은 REVIEW3/`baseline-v2-1/`이다.
+  - PreserveStop 순서: 승인 → 같은 컨테이너 증명 → 정지 → 상태 확인 → (자격 증명 → 로그). 정지를 확인하지 못하면 로그를 받지 않는다.
+  - 비밀 파일을 지우지 못하면 `SAVED_DOCKER_OUTPUT_SECRET_NOT_REMOVED`로 끝나고 파일 이름만 남는다.
+  - 가드는 inspect 형식이 카드 상수와 글자까지 같을 때만 허용한다. 메모리 읽기 실패는 미측정으로 남기고 일반 단계를 `MEMORY_SAMPLE_UNAVAILABLE`로 거부한다.
+- **v2.2 예행(리드, 실행 근거 아님):** CARD/`rehearsal-v2-2.txt`(09:49:01Z)에서 다섯 단계 예행과 helper 5.1·7 예행이 모두 통과했다. 120자 초과와 파서 오류는 0이다. 대상 SHA256은 `card.md` `5beb20dd…5f85`, `Invoke-ContainerCardStep.ps1` `51b1abd4…55ee5`, `card-session.ps1` `a4c590d5…deeb`, `Test-CardSession.ps1` `6d115f31…da3b`다.
+- **파트 조율:** World 검증자의 WSL 전체·Windows 빌드·서식 검사에 Core 쪽 「진행」으로 답했다(`msg_973fa48d7e8d`). Content는 Unity·7777을 10:45Z 무렵까지 한 번 더 쓴다(`msg_18ad4fddeefe`). Core 컨테이너는 14333만 쓰고, 시작 전 Content에 알린다.
+- **다음 할 일:**
+  1. 신규 Opus의 범위 한정 재확인(REVIEW3)을 연다. 범위는 v2.1→v2.2 차이와 #1~#5·O-1~O-3 대응, 회귀다.
+  2. 통과하면 메인에 한 번 회신하고 사용자 실행 승인(G2)을 요청한다.
+  3. G2 뒤 실행 계획·`$planHash`·입력 hash 목록 → Content·World 알림 → Sol 실행 → 판정 → 같은 날 정리 → 엔진 판정 PR → Gardener.
+
 ### 카드 v1 실사 차단 둘과 v2 수정 — 2026-10-11T09:0xZ
 
-기록 시각은 2026-10-11T09:08:22Z(`date -u`, KST 18:08, 원시 N2/`time-goal-record-3.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. REVIEW는 E/`container-run-card-review`다.
+기록 시각은 2026-10-11T09:08:22Z(`date -u`, KST 18:08, 원시 N2/`time-goal-record-3.txt`)다. 이 블록은 직전 재개 정본이다. 약어는 아래 블록과 같다. REVIEW는 E/`container-run-card-review`다.
 
 - **v1 실사(신규 claude-opus-5-5, `task_3b9175bf8a0c`):** worker_done `msg_b5eabd74830c`(08:50:45Z), 판정 원문 REVIEW/`verdict.md`. 결과는 차단 둘, 비차단 둘이다.
   - 차단 #1: 카드 단계 PreserveStop이 `docker logs` 비밀 대조를 정지보다 먼저 했다. 로그에 비밀이 있으면 정지하지 않고 끝난다.
