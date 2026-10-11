@@ -8,7 +8,7 @@
   - 뜻(메인 전달 문장): 기대 정의 계산을 엔진이 실제로 저장하는 머리말 형태(「CREATE OR ALTER」 → 「CREATE」 + 공백 셋)에 맞춘다. 모듈 18개의 기대 DefinitionBytes·DefinitionChecksum과 `verify-schema.sql` 18행, 가짜 엔진과 hash 소비처 시험을 고친다. 프로시저 본문, SourceChecksum, 001 migration은 바꾸지 않는다.
   - 범위 표의 「하지 않을 것」과 「보존 동작」 첫 줄을 이 결정에 맞게 좁혔다.
   - 순서: 2026-10-11은 기록만 한다(마감 지시 `msg_b7256a2a63ca`). 구현은 `gpt-6-astra` xhigh이고 다음 세션이다. 그 뒤 컨테이너 재실행은 새 사용자 실행 승인을 받는다.
-  - 검증자 모델은 열린 질문이다. 리드 요청과 메인 전달은 신규 `claude-opus-5-5` 강 등급으로 적었다. 그런데 아래 핫픽스 결정 3은 로컬 DB 도구·실행 카드의 독립 검증을 신규 `gpt-6-astra` xhigh로 옮겼고, 게임 영속 데이터의 스키마·저장 로직만 Opus로 남겼다. 이번 수정은 설치 도구의 기대값 계산이라 리드는 Astra 쪽으로 읽는다. 구현 계약 전에 메인 확인을 받는다.
+  - 검증자 모델은 메인 운영 판단으로 신규 `gpt-6-astra` xhigh다(`msg_794078007947`, 14:15:11Z, 리드 질문 `msg_47fecd183dfa`). 아래 핫픽스 결정 3에 따라서다. 리드 요청 글의 「신규 `claude-opus-5-5` 강 등급」은 이 판단으로 바뀐다. 사용자 결정 A의 효과는 그대로다.
   - 관리 비밀 파일 처분은 이 결정 밖이다.
 - **2026-10-11 모듈 정의 진단 오늘 실행 승인(A).** 메인 `msg_223c9a08bdd0`(2026-10-11T13:08:28Z)이 전한 사용자 원문(메인 pane Enter 제출, 현황판 결정 응답, 13:07Z 무렵): 「대시보드 결정 응답: 1) Core 모듈 정의 진단 - 오늘 실행 승인(1차 실행에서 남긴 컨테이너·볼륨 삭제 포함) → A 오늘 실행 승인」. 메인 전달이며 이 pane의 직접 입력으로 격상하지 않는다. 리드 요청은 `msg_02a1bed2eaf3`(N2/`main-diag-approval-request-body.txt`)이고, 이 메시지 ID가 실행 계획의 G2다.
   - 범위는 메인이 적은 셋뿐이다. 진단 카드 v1.1(card.md `8ba2e54f…f67c`, Invoke-ContainerCardStep.ps1 `734621a9…c4a0`, Test-CardSession.ps1 `c455e8fd…dfce`)로 오늘 한 수명 실행, 시도 1 자원 삭제, 리드의 기계적 준비 셋(실행 계획, `$planHash` 한 줄, 실행 계획·입력 hash 목록)이다. 그 밖의 바이트가 바뀌면 실행하지 않고 다시 묻는다.
@@ -663,12 +663,12 @@
   1. 끝남: 메인 판단 요청 `msg_afc1f8c74539` → 「수용」 `msg_6148bb9c6153`(위 처분).
   2. 끝남: 사용자 범위 결정 A(메인 `msg_ea17b3841191`, 14:11:07Z, 리드 요청 `msg_c76635afcdcd`). 모듈 정의 비교 수정을 이 goal 범위에 넣는다. 원문과 효과는 「적용 중인 사용자 결정」 첫 항목, 범위는 「현재 범위·PR 경계」 표의 만들 것 7이다. 커밋은 이 branch, PR은 엔진 판정 PR이다.
   3. 대기: 관리 비밀 파일 처분이다. 시도 1과 진단의 private 폴더·manifest가 남아 있다. 별도 결정이고 아직 올리지 않았다.
-  4. 확인 필요: 수정 검증자 모델이다. 핫픽스 결정 3(`msg_0da44f41ac52`)과 리드 요청의 「신규 `claude-opus-5-5` 강 등급」이 어긋날 수 있다(「적용 중인 사용자 결정」 첫 항목). 구현 계약 전에 메인에 묻는다.
+  4. 끝남: 수정 검증자 모델은 신규 `gpt-6-astra` xhigh다(메인 운영 판단 `msg_794078007947`, 핫픽스 결정 3 `msg_0da44f41ac52`).
 - **자원 상태:** 컨테이너 `dawnholder-sqlserver`와 볼륨 `dawnholder-sqlserver-data`는 없다. 근거는 DIAG/`run/diagnosed-remove/diagnosed-remove-final-absence.json`(13:30:50Z)과 시도 1 자원의 DIAG/`run/preserved-remove/preserved-final-absence.json`(13:22:23Z)이다. 이미지는 보존한다.
 - **마감(메인 `msg_b7256a2a63ca`):** 새 작업자를 열지 않는다. Core worktree의 pane은 리드 하나이고, Core가 띄운 Codex·Docker 실행은 없다(N2/`closeout-check-1.txt`).
 - **다시 열 때:** branch `feat/persistence-container-engine-20261010`, Run `run_b36cc92a4cf4`, 리드 Claude 세션 `0fe2a6f9-e8b6-456a-bdae-2ede3ac4d3fe`다. 이 기록을 담은 commit의 HEAD는 메인 마감 보고에 적는다. core-active에 사용자 미커밋 파일은 없다.
 - **다음 할 일(다음 세션, 2026-10-11은 기록만):**
-  1. 기대 정의 계산 수정 구현 계약이다. 먼저 검증자 모델을 메인에 확인한다(「결정」 4). 그다음 맥락 메모 → 구현 계약(CODE_CONVENTION 관련 절 원문 묶음을 발행 스크립트에서 확인) → 신규 `gpt-6-astra` xhigh 구현 → 신규 독립 검증 순서다.
+  1. 기대 정의 계산 수정 구현 계약이다. 맥락 메모 → 구현 계약(CODE_CONVENTION 관련 절 원문 묶음을 발행 스크립트에서 확인) → 신규 `gpt-6-astra` xhigh 구현 → 신규 `gpt-6-astra` xhigh 독립 검증 순서다. 계약 메모: 검증자는 메인 판단 `msg_794078007947`로 Astra이고, 구현 중 스키마나 저장 로직을 건드려야 하면 Opus 강 등급으로 돌리고 메인에 알린다.
   2. 수정이 통과하면 새 실행 카드와 새 사용자 실행 승인을 받아 컨테이너 1단계를 다시 실행한다.
   3. 관리 비밀 처분 결정을 메인에 올린다.
 
