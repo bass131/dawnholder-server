@@ -1,9 +1,9 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 메인 범위 확인과 요구 P1~P8 확정까지 했고, 선행 시험 위임 전에 세션을 마감했다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 선행 시험(RED)을 커밋했고(2026-10-11, `cf0cacc1`) 다음은 구현이다. 던전 클리어 PR은 리드 설계 초안(C1~C9)까지 썼다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`).
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침).
 - 착수 원천: 메인 `msg_9fe1d49e00bb`(2026-10-10T07:39:37Z)가 전달한 사용자 승인. 원문은 아래 [적용 중인 사용자 결정](#적용-중인-사용자-결정)에 있다. 범위 원문은 리드 초안 `msg_f1bba119c853`이다.
 - 로컬 원문·계약·판정은 `.backups/verification/2026-10-10-dungeon-clear-rewards/`에 둔다(Git 밖).
 
@@ -96,6 +96,43 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 
 **실행**: WSL `dotnet` 빌드·시험 전체, 실제 생성기 재생성 diff, Windows에서 Shared·ClientNet DLL 재빌드와 `03_Client/Assets/Plugins/` 사본 diff(메인 조건 2), 새 서버와 기존 봇 접속 회귀, Unity 컴파일·EditMode 전체, 독립 검증의 PlayMode 전체(서버 lane, 회귀). 실화면은 클리어 PR에서 한다. 7777과 Unity batch 같은 큰 실행은 Core SQL 컨테이너 재측정과 Management 운영툴 중간 점검(7777)에 미리 알려 겹치지 않게 하고, 메모리 4GB 기준을 원시로 남긴다(메인 조건 3).
 
+### 던전 클리어 PR의 요구(리드 초안)
+
+완료조건 4~8을 서버에서 만든다. 리드 초안이며 World 리드 확인 전이다. 아래 「World와 맞출 것」을 확인한 뒤 확정한다. 원고는 근거 폴더의 `clear-pr-prep/lead-design-clear-pr.md`이고, 사실 근거는 HEAD `54b7d88a`의 리드 직접 대조와 읽기 전용 조사 1회다.
+
+| 번호 | 요구 | 확인 방법 |
+|---|---|---|
+| C1 | 보스방 복사본(`MapId.BossRoom`이고 `InstanceKey`가 있음)에서 보스가 처음 죽는 틱에, 그 틱의 그 맵 `Players` 중 세션이 살아 있는 사람이 수혜자다. 파티 소속은 다시 보지 않는다. 그 틱에 이동 중인 사람, 사냥터 복사본에 남은 파티원, 클리어 뒤 들어온 사람은 수혜자가 아니다. | 서버 시험 |
+| C2 | 수혜자마다 `DungeonClearRewards` 묶음을 기존 `InventoryTransitions.Grant`로 전부 주거나 전부 거부한다. 성공이면 상태를 한 번 commit하고 revision이 1 오른다. 거부(`InventoryFull`·`CurrencyCap`)면 상태가 그대로다. | 서버 시험 |
+| C3 | 수혜자마다 39 `S_DungeonClearResult`를 정확히 한 번 보낸다. 성공이면 결과 `Success`와 준 골드·아이템, 그 뒤 새 snapshot이다. 거부면 결과 코드만 있고 골드 0·빈 칸이며 snapshot은 없다. 순서는 아이템 사용과 같다(결과 → snapshot). | 서버 시험 |
+| C4 | 같은 복사본의 클리어 보상은 두 번 나가지 않는다. 기존 `IsStageCleared` 한 번 규칙에 묶는다. 보스는 방이 빌 때만 다시 나오고, 빈 복사본은 그 틱 끝에 정리된다. | 서버 시험 |
+| C5 | 보스 처치자에게 따로 가던 처치 보상은 나가지 않는다. 일반·골렘 처치 보상은 그대로다. | 서버 시험. 기존 보스 보상 시험은 옛 세부로 분류해 고친다 |
+| C6 | 40 `C_DungeonClearConfirm`은 정확한 길이 5·머리·`reserved` 0만 받고, 캐릭터 선택 뒤에만 받는다. 현재 맵 job 안에서, 그 맵이 클리어된 보스방 복사본이고 보낸 사람이 그 복사본의 수혜자이며 아직 확인하지 않았을 때만 `MapMigration.MoveToPublicMap(session, entityId, map, MapId.Town)`을 부른다. 그 밖은 상태·패킷 변화 없이 버린다. `Accepted`가 아니면 수혜자 표시를 남겨 다시 누를 수 있다. | 서버 시험 |
+| C7 | 마을 도착은 World 진입점이 정한 기본 입장 지점이고, 인벤토리·재화·파티가 보존된다. | 서버 시험(진입점 보존은 World 시험이 이미 증명하고, 여기서는 연결만 본다) |
+| C8 | 봇 두 파티(각 두 명)가 각자 보스방 복사본에서 보스를 잡고, 각자 39번을 한 번씩 받고, 확인 뒤 마을에 도착한다. 상대 파티 복사본의 결과는 받지 않는다. 기존 봇 회귀가 그대로다. | 봇(7777, 사전 알림) |
+| C9 | 실제 클라이언트에서 마을 → 사냥터 → 보스방 → 보스 처치 → 보상 창 → 인벤토리 표시 → 「확인」 → 마을 복귀. 세 크기에서 보상 창과 HUD·패널의 겹침 0. 보스방 → 엔딩 → 마을 길도 남는다. | 실화면(MCP, 사용자 결정 필요) |
+
+서버 흐름과 소유:
+
+1. 보스 사망은 맵 틱의 `GameMap.HandleEnemyDeath` 보스 분기 안쪽에서 일어난다(World 소유). `SetStageCleared` 직후, 복사본이면 그 틱의 수혜자 `(entityId, session)` 목록을 값으로 잡는다. 목록 계산은 서버 새 던전 폴더의 순수 규칙이 맡는다. `GameMap`은 규칙을 부르고 결과를 넘기기만 한다. 넘기는 길은 기존 `_onEnemyKilled`처럼 생성자로 주입한 콜백 하나이고, `GameWorld`가 연결한다.
+2. 확인 판정에 쓰는 「이 복사본의 수혜자이고 아직 확인 안 함」 집합은 그 복사본 `GameMap`이 가진다. 복사본이 정리되면 함께 사라져 따로 정리할 수명이 없다. 바꾸는 것은 맵 틱 스레드뿐이다.
+3. 지급은 World 틱의 Inventory 단계에서 한다. `InventoryRegistry`에 클리어 지급 요청 등록을 더한다. 보스 사망 틱에 등록된 세션을 잡고, 같은 World 틱의 Inventory 단계에서 수혜자마다 `Grant` → commit → 결과 송신 → 성공이면 snapshot 송신이다. 아이템 사용 결과와 같은 직접 송신이다. 처치 보상의 송신 길은 이동 중이면 생략되므로 쓰지 않는다.
+4. 처치 보상: `GameWorld.MakeMap`의 처치 콜백에서 보스면 처치 보상을 등록하지 않는다. `KillRewardPolicy`의 Boss 줄은 지우고, 보스가 들어오면 기존처럼 정책 오류다. 일반·골렘은 그대로다.
+5. 확인 요청은 세션에서 맵 job으로 간다. 서버 새 던전 핸들러가 길이·머리·`reserved`를 검사하고 `GameSession`의 새 제출 메서드를 부른다. 이 메서드는 포탈 입장 제출처럼 현재 맵(이동 중이면 없음)과 entityId를 잡아 현재 맵 job으로 넘긴다. job 안에서 소유 확인 → 수혜자 집합 확인 → `MoveToPublicMap` → `Accepted`면 집합에서 지운다. `HandlerRegistry`에 한 줄을 더한다.
+6. 모든 단계가 World 틱 스레드의 메모리 작업이고 DB·파일 I/O는 없다.
+
+리드가 정한 것(이유):
+
+- `RevisionExhausted`는 `Grant`가 돌려줄 수 있지만 P3의 결과 값 셋에 없다. 연결마다 revision이 40억 번 바뀌어야 나오는 값이라 실제로 닿지 않는다. 이 경우 결과 패킷을 보내지 않고 기록만 한다. 수혜자 표시는 남아 확인은 할 수 있다. 패킷·창 PR의 P3을 바꾸지 않으려는 선택이다.
+- 수혜자는 맵 `Players`로 판정한다. 아래 「파트 간 소유와 계약」의 클리어 대상 합의와 같다.
+- 결과는 직접 송신한다. 처치 snapshot은 이동 중 생략될 수 있다([서버 영역 계약](../../../00_Document/domains/server.md)). 클리어 결과는 창과 「확인」의 시작점이라, 생략되면 그 사람이 보스방에 멈춘다.
+
+바뀔 기존 시험(옛 세부, 요구 출처 C5 = 범위 승인 질문 3 A): `GameServer.Tests/Items/InventoryAuthorityBoundaryTests.cs`의 보스 보상 묶음(20행)과 그 묶음으로 거부를 보이는 두 시험(39~61행), 보스가 처치자에게 주는 50+2(168~188행). `InventoryWireContractTests.cs`의 `BossKill_GrantsPouchMaterialAndFiftyCurrencyInItemIdOrder`(254~264행). 선행 시험 작성자가 고치고 분류표와 같은 명령의 전후 원시를 남긴다(메인 결정 `msg_71e41e231d55`).
+
+봇: 두 파티 시나리오는 지금 `Party/InstanceMapIsolationSmoke.cs`(네 봇, 마을 → 사냥터 → 마을)뿐이다. 이것은 바꾸지 않고, 보스방까지 가는 새 시나리오를 더한다. 보스 문은 기존 DEBUG 치트로 연다(`BossStageClearSmoke`와 같은 방식). 단정은 파티마다 39번 한 번, 결과 Success, 골드와 아이템이 Shared 표와 같음, snapshot revision +1, 확인 뒤 마을 맵 이동, 다른 파티의 39번 0이다.
+
+World와 맞출 것(구현 전에 World 리드에 확인): `GameMap.cs` 보스 분기 안쪽에 수혜자 계산 호출·수혜자 집합·주입 콜백 하나를 더한다. `GameWorld.MakeMap` 처치 콜백에서 보스의 처치 보상 등록을 빼고 클리어 콜백을 연결한다. World의 다중 계정 로그인이 `GameSession`·`GameWorld`를 바꿀 수 있어 쓰기 순서를 맞춘다. `MoveToPublicMap`의 첫 제품 호출자가 Content가 된다(지금은 시험에서만 쓴다).
+
 ### 파트 간 소유와 계약
 
 | 대상 | 소유와 합의 |
@@ -139,21 +176,21 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-10T16:14:00Z(KST 10-11 01:14)이고, 메인 세션 마감 지시(`msg_8afbca6db8ac`, 사용자 원문 「오늘은 진행중인 파트들까지만 마무리하고 정리해야겠다」)로 멈췄다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-11T07:11:55Z(`reentry-1011/clock-goal-resume.txt`)이다. 10-11 재진입 뒤 패킷·창 선행 시험을 마치고 커밋한 시점이다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 던전 패킷·창 PR 선행 시험을 신규 `claude-opus-5-5`에 위임한다. 준비본은 근거 폴더의 `packets-tdd-contract.md`(v1, SHA256 `4681e7c0…`), `packets-tdd-spec.md`, `packets-tdd-inputs.txt`, `packets-tdd-preflight.txt`, harness 사본 `packets-tdd/harness/`다. v1은 HEAD `9108f8df` 기준이고, 그 뒤 이 재개 지점 커밋으로 goal.md hash가 바뀌었다. 그래서 새 HEAD로 inputs·preflight를 다시 뜨고 계약을 v2로 올린 뒤 R-5로 기동한다. 기동 전에 Core·Management·World에 큰 실행을 알린다(16:12Z 예고는 16:13Z에 취소함) |
-| 열린 Task·Dispatch | 없다. Run의 Dispatch 9개가 모두 completed다(`packets-tdd-worker-list-preclose.json`). 선행 시험용으로 나눈 빈 셸 pane 하나는 작업자를 띄우기 전에 닫았다(`packets-tdd-unused-pane-close.json`) |
-| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-packets-20261011`(base `e775bc775e6f93bab95a2412512c11332017abca` = PR221 병합) |
+| 다음 첫 일 | 던전 패킷·창 PR 구현을 신규 `gpt-6-astra` xhigh에 위임한다(R-5). 입력은 「던전 패킷·창 PR의 요구」 P1~P8과 위 「패킷·창 선행 시험」 절이고, 시험 커밋은 `cf0cacc1`이다. 계약에는 관찰면 아홉 가지, 리다이렉트 문장 정정, worker_done의 쉼표 형식을 넣는다. 기동 전에 Core·Management·World에 큰 실행을 알린다 |
+| 열린 Task·Dispatch | 없다. 선행 시험 Dispatch `ctx_7a2bd8359a41`은 정산했다 |
+| 작업 공간 / branch | `content-active` / `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 10-11에 origin/main `6782cd67`을 합침) |
 | PR | 던전 패킷·창 PR은 아직 없다. 결함 PR은 [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(head `f135eaf1`, merge commit `e775bc77`) |
-| 리드 세션 / Run | `term_df056d96-0389-436c-afcf-3d189f8dea53` / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
+| 리드 세션 / Run | `term_89459727-3c79-4004-a8d0-859d7a0052a9`(10-11 재진입) / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | 작업자 pane 0(16:14Z `terminal list`), Unity.exe 0, 7777 0. Content는 이 세션에서 더 큰 실행을 하지 않는다 |
-| 로컬 부수 변경 | batch가 다시 쓴 `ProjectSettings.asset`·`TimeManager.asset`은 두 번 되돌렸다. 독립 검증의 마지막 batch 뒤 09:51:43Z(`settings-restore/post-state.txt`), R10 독립 검증의 마지막 batch 뒤 14:29:38Z(`settings-restore-2/post-state.txt`)다. 지금 ProjectSettings `4a8db0bd…`, TimeManager blob = HEAD다. R9와 R10 재확인의 Editor는 두 파일을 바꾸지 않았다. Unity가 Git 무시 대상 layout 파일만 저장했다 |
-| 남은 결정·준비 | 사용자 결정으로 남은 것은 없다. 범위는 메인이 확인했다(`msg_33d93ad1147f`). 요구는 「던전 패킷·창 PR의 요구」 P1~P8이다. 클리어 PR 설계 절은 아직 쓰지 않았다. 패킷·창 PR 진행 중 대기 시간에 쓴다 |
+| 작업자·실행 자원 | 작업자 pane 0(07:08:51Z `terminal list`), Unity.exe 0, 7777 0 |
+| 로컬 부수 변경 | 선행 시험 batch가 `ProjectSettings.asset`의 SENTIS define 한 줄을 지웠다(지금 `5a03375a…`). 되돌림 사본은 `opus-pr1-tdd/side-effects/ProjectSettings.pre-run-reconstructed.asset`(`4a8db0bd…`)이다. 이 PR의 마지막 batch 뒤, 실화면 Editor를 열기 전, PR 생성 전 중 가장 이른 때에 리드가 되돌린다. TimeManager는 HEAD와 같다 |
+| 남은 결정·준비 | 사용자 결정으로 남은 것은 없다. 클리어 PR 설계는 「던전 클리어 PR의 요구(리드 초안)」에 썼고, 확정 전에 World 리드와 쓰기 순서를 맞춘다. C9 실화면에는 Unity 코드 실행 허용 결정이 다시 필요하다 |
 
-**남은 순서**: 던전 패킷·창 PR(선행 시험 → 구현 → 독립 검증 → PR·CI → 사용자 병합 승인) → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: 던전 패킷·창 PR(구현 → 독립 검증 → PR·CI → 사용자 병합 승인) → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -259,6 +296,33 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 - **origin/main 합치기**: 재확인 뒤 `b88a1b4b`(PR225 World 마감 문서, PR226 SQL Server 컨테이너 도구)를 합쳤다. 클라이언트·서버·공유 코드 변경은 0이다. CURRENT는 Content 줄 옆에서 충돌했다. main 판을 유지하고 Content 줄과 Content 안내만 다시 넣었다.
 - **병합**: CI 4/4 통과·CLEAN인 head `f135eaf1`로 메인에 승인 묶음을 보냈다(`msg_016b427a8aef`). 그 사이 PR227(Management)이 먼저 병합됐다. 겹치는 파일은 CURRENT 하나였고 `git merge-tree` 충돌이 0이라 다시 합치지 않았다. 사용자가 메인 pane에 승인 줄을 제출했고, 메인이 head·CI·CLEAN을 다시 확인해 병합했다(2026-10-10T15:54:25Z, merge commit `e775bc775e6f93bab95a2412512c11332017abca`, 메인 `msg_c91503d507b1`). 메인 R-2는 제품 파일이 클라이언트 4개이고 서버·공유 변경이 0임, 두 판정의 통과 줄, client.md 26행, merge-tree 결과를 대조했다.
 
+### 패킷·창 선행 시험 — RED 준비 성공, 2026-10-11
+
+| 항목 | 값 |
+|---|---|
+| Task / Dispatch | `task_cdbdb60cde2c` / `ctx_7a2bd8359a41`, `[Content 검증자]`, 06:26:24Z~07:06:37Z |
+| 모델 | 지정 `claude-opus-5-5`. 최초 실행 명령 `claude --model claude-opus-5-5`(TEMP `.backups/tmp/packets-tdd`), 화면 표시 「Opus 5.5 with xhigh effort」. backend 실제 모델 unknown |
+| 계약 | `packets-tdd-contract.md` v2 SHA256 `0f34c05f…8143`, 요약 spec `packets-tdd-spec.md`. v1(`4681e7c0…`)과 다른 것은 HEAD, 시각 기록 문장, 생존 신호 문장뿐이다 |
+| 보고 | `packets-tdd/report.md`, worker_done `msg_978901b3f52f`(succeeded) |
+| 커밋 | 시험 11파일 `cf0cacc1`(+967/−13) |
+
+| 실행 | total / pass / fail / skip | 원시(SHA256 앞 8자) |
+|---|---|---|
+| 서버 새 두 클래스(`Dungeon/`) | 11 / 1 / 10 / 0 | `runs/server-red-new-2/*.trx`(`77b6630f`) |
+| 서버 고친 두 클래스, 고치기 전 → 뒤 | 32/32/0/0 → 32/29/3/0 | `server-before`(`1db2193c`) → `server-after-existing`(`9bd45cf8`) |
+| EditMode 고친 클래스, 고치기 전 → 뒤 | 8/8/0/0 → 9/7/2/0 | `editmode-before`(`34f45f9b`) → `editmode-after-3`(`4962426c`) |
+| PlayMode 새 두 클래스 | 9 / 1 / 8 / 0 | `runs/playmode-red-3/results.xml`(`038539c7`) |
+
+- **결과**: 실패 23개가 모두 「아직 없는 타입·창·글자」 때문이다. 컴파일 오류, fixture·환경 실패, 고친 시험 밖의 기존 시험 실패는 0이다. 서버 P2는 생성 타입의 `Write()`·`Read()`를 독립 encoder bytes와 대조하고, PlayMode P6~P8은 실제 Town 씬에서 스크립트 TCP 상대(임시 포트)가 보낸 39번으로 화면 글자와 버튼을 본다.
+- **지금 통과하는 둘**: P4 「선택 뒤 40번은 응답·종료·인벤토리 변화 없이 버려진다」는 이 PR에서도 그대로 두는 동작이라 구현 뒤에도 통과해야 한다. P6 「틀린 bytes 12건은 창을 열지 않는다」는 지금 39번이 미등록이라 통과한다. 짝인 성공 시험이 실패하므로 대상 0 통과가 아니다.
+- **고친 기존 시험**: 버전·패킷 수 단정 넷을 (a) 옛 세부로 분류해 18·40으로 바꿨고, 클라이언트에 39·40 번호 시험 하나를 더했다. 같은 명령의 전후 원시가 위 표다. 이름에 숫자가 든 버전 시험 셋은 이름도 바꿨다.
+- **시험에 없는 요구**: P3 「새 enum을 만들지 않는다」, P4 「서버는 39번을 만들지 않는다」, P7 handshake 전 「확인」과 「게임플레이 밖 씬에서 닫힘」, P8 「맵·포탈 표·scene·prefab 불변」은 독립 검증의 코드 검색·diff 검토로 본다.
+- **관찰면이 구현을 묶는 지점(리드 채택)**: 보고서 표의 아홉 가지를 모두 구현 계약의 조건으로 넣는다. 「확인」은 uGUI `Button` 아래 TMP 글자다. 숨김은 비활성·CanvasGroup alpha 0·Canvas 끔 중 하나이고 화면 밖 이동이 아니다. 창은 자기 canvas에 둔다. 아이템 이름과 개수는 같은 부모 아래 둔다. 골드는 축약 없이 보인다(자릿수 구분은 허용). 입구 글자는 포탈보다 위다. 창은 39번 적용 뒤 5프레임 안에 연다. 다른 대안(창 루트의 공개 이름 고정 등)은 이름을 하나 더 묶을 뿐 판정면이 같아 택하지 않았다.
+- **리드 R-2**: 작업자 스크립트 없이 원시 TRX·XML 여섯 개를 직접 읽어 hash와 수치, 실패·통과 이름이 보고와 같음을 확인했다(`lead-r2-packets-tdd/counts.txt`). 서버·PlayMode 실패 메시지 18개를 읽어 모두 미구현 사유임을 봤다. 고친 기존 시험 셋의 diff가 버전·패킷 수 단정과 그 이름·주석뿐임을 확인했다. 보호 파일 hash와 Unity.exe 0을 다시 쟀다.
+- **부수 변경**: Unity batch가 사용자 미커밋 `ProjectSettings.asset`의 SENTIS define 한 줄을 지웠다(`4a8db0bd…` → `5a03375a…`). TimeManager는 그대로다. 메인 판단 `msg_c9fac8091065`대로 이 PR의 마지막 batch 뒤에 리드가 되돌린다. Unity Test Framework가 batch마다 홈의 기본 결과 사본(`AppData/LocalLow/DefaultCompany/03_Client/TestResults.xml`)을 덮어쓴다. R10 선행 시험에서도 나온 harness 실행의 기본 동작이다.
+- **생존 신호(helper로 잼, `lead-r2-packets-tdd/liveness.json`)**: 신호 13개, 기동 → 첫 신호 36초(리드 계산), 가장 긴 간격 445초. 300초 초과는 06:29:13Z → 06:36:38Z(445초)와 06:36:38Z → 06:42:12Z(334초) 두 구간이다. 둘 다 시험 작성 중이었고 화면은 계속 작업 중이었다. 질문 답 대기는 24초다.
+- **정산**: 대기 확인(tui-idle, 빈 prompt) → worker-release(retained/external_terminal) → close(ptyKilled true) → 07:08:51Z 목록에서 사라짐. 화면 표시는 40분 24초 작업이다.
+
 ### 운영 기록(첫 발생)
 
 - Orca CLI 1.4.224의 `terminal split`에는 `--title`이 없어 첫 구현자 기동이 실패했다. 플래그 없이 다시 열었다(`astra-pr1-impl-launch-fail-title.json`).
@@ -273,6 +337,10 @@ P6~P8을 PlayMode로 보는 이유: 실제 씬의 전투 씬 초기화와 dispat
 - 검증자가 큰 명령 출력이나 MCP 응답을 화면으로 받으면, Claude Code가 홈 `~/.claude/projects/…/tool-results/`에 사본을 자동 저장했다. R10 독립 검증에서 1건, 재확인에서 3건이다. 두 검증자 모두 허용 밖 쓰기로 스스로 보고했다. 재확인 계약에는 「큰 출력은 파일로 받는다」를 넣었다. 그래도 MCP driver 응답은 파일로 돌릴 방법이 없어 3건이 남았다.
 - R10 재확인 검증자가 orca가 아닌 명령에서 `2>/dev/null`을 두 번 썼다(계약은 리다이렉트를 checkout·`.backups` 안으로만 허용). 판정에 스스로 적었고 가드는 막지 않았다. 리드도 패킷 PR 사전 조사의 원격 branch 검사에서 한 번 썼다(16:02Z). 정본은 orca 출력만 버리지 못하게 한다(CLAUDE 우편함 대기, 세션 가드 `mailboxLoss`). 계약의 「리다이렉트는 checkout·`.backups` 안으로만」이 정본보다 넓었다. 그래서 다음 계약부터 「판정 근거가 되는 명령 출력은 버리지 않는다」로 좁혀 쓴다.
 - 리드 커밋 첫 시도가 `index.lock` File exists로 실패했다. 다시 확인했을 때 잠금은 없었고 git 프로세스도 0이었다. 같은 명령을 다시 내 성공했다.
+- 패킷·창 선행 시험 작성자의 새 PlayMode 시험이 Unity 6.6에서 막힌 `GetInstanceID()`를 써서 batch가 컴파일 오류로 끝났다. 그 batch가 `03_Client/Temp/UnityLockfile`(0바이트)을 남겨 다음 실행의 harness gate가 닫혔다. 작업자는 파일을 건드리지 않고 공식 질문으로 물었다(`msg_57ea949f61c6`). 리드가 Unity 0과 크기·mtime을 확인하고, 지우기 직전 재확인을 조건으로 그 파일 하나만 지우게 답했다(`msg_017c756ba883`, 24초). 작업자의 자체 수리이며 제품 실패·RED로 세지 않는다.
+- 위 「R10 재확인 검증자의 `2>/dev/null`」 항목에서 다음 계약부터 좁히기로 한 리다이렉트 문장을 리드가 패킷 선행 시험 계약 v2에 반만 반영했다. 좁힌 문장 「판정 근거 출력과 orca 출력은 버리지 않는다」 앞에 옛 문장 「리다이렉트 파일 대상은 checkout·`.backups` 안으로만」이 남았다. 그래서 작업자가 탐색 grep의 `2>/dev/null`을 위반으로 스스로 보고했다. 판정 근거 출력이 아니어서 결과에는 영향이 없다. 구현자 계약부터 옛 문장을 지운다.
+- 선행 시험 작업자의 worker_done 첫 시도는 `--files-modified`를 공백으로 나눠 CLI가 전송 전에 거부했다. 쉼표로 고쳐 한 번만 보냈다. 다음 계약에 쉼표 형식을 적는다.
+- `orca orchestration inbox`에는 `--run`이 없다. 생존 신호 helper의 원시는 `inbox --limit 500 --full --json`으로 저장했다(`lead-r2-packets-tdd/inbox-raw.json`).
 
 ## 다음 계획 후보
 
