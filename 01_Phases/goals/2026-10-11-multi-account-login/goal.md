@@ -8,7 +8,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_fddebc03-9972-41d8-8941-e7c98af2dabe`, Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**: 독립 검증이 끝났다. 기능 결함은 없고 판정은 문서 한 줄(VER-01, `00_Document/domains/client.md:16`) 때문에 차단이다(아래 「현재 결과」의 독립 검증). 검증자 새 시험은 commit했다. 다음은 VER-01 수정(신규 `gpt-6.1-sol` max) → 문서 실사 재검증(신규 `gpt-6-astra` xhigh)이고, 실화면 확인을 메인에 따로 요청한다.
+- **현재 위치**: main(Content PR230) 병합과 로그인 41·42·버전 19 재번호·VER-01 수정을 merge commit `44ffe9e3db04c3fb482c727e2fbacfc427b8b043`으로 넣었다(아래 「현재 결과」의 main 병합과 재번호). 다음은 신규 `claude-opus-5-5` 재검증(계약 초안 E/`reverify-contract.head.md`·`.mid.md`·`.tail.md`, 메모 E/`reverify-prep-context.md`)이고, 그 뒤 실화면을 메인에 다시 요청한다.
 - **남은 순서**: 선행 시험(신규 `claude-opus-5-5`) → 구현(신규 `gpt-6-astra` xhigh) → 독립 검증(신규 `claude-opus-5-5`) → 봇·실화면 확인 → 제품 PR·병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -18,7 +18,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 설계 절 작성
 - [x] 선행 시험 작성
 - [x] 구현
-- [>] 독립 검증(VER-01 수정·재검증 남음)
+- [>] 독립 검증(main 병합·재번호·VER-01 수정 완료, 재검증 남음)
 - [>] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
@@ -277,6 +277,8 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 
 모두 메인 창 Enter 제출, 메인 전달이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
 
+- **라우팅 핫픽스**(메인 전달 `msg_22f631ad7da7`, 2026-10-11T11:03:16Z, 정본 반영은 다음 Rules goal): 「대시보드 결정 응답: 1) 모델 라우팅 - 모든 리드를 문맥 25만에서 압축하도록 지금 적용할지 → A 전체 적용 · 2) 모델 라우팅 - 리드가 같은 메시지로 두 번 깨는 것을 지금 규칙으로 막을지 → A 지금 적용 · 3) 모델 라우팅 - 로컬 DB 설치·기동 도구의 검증을 지금부터 Astra로 옮길지 → A 지금부터 Astra · 4) 모델 라우팅 - 선행 시험 작성자를 Codex로 옮기는 시점 → A 10-31 평가 때」. 효과: 리드는 우편함 대기가 살아 있을 때 Orca 자동 알림으로 깨면 도구 호출 없이 한 줄로 턴을 끝낸다(대기가 꺼졌거나 불확실하면 check로 처리). 메인이 안전 지점(진행 중인 작업자 0)에서 리드 pane을 `--autocompact 250000`으로 다시 띄우므로 재개에 필요한 것은 이 파일 「재개 지점」과 근거 폴더에 둔다. 압축 뒤 맥락을 잃어 일을 다시 한 사례가 나오면 메인에 바로 알린다. 선행 시험 작성자는 그대로 신규 `claude-opus-5-5`다.
+
 - **Content·Core 우선**(메인 전달 `msg_775122227f2a`, 2026-10-11T07:46:37Z, 사용자 제출 16:5x KST): 「일단 좀 급한게 컨텐츠랑 코어쪽이니까 이 쪽 작업 우선해보자, 운영툴은 재개지점 맥락확보하고 세션 정리해줘」. 효과: 이 goal은 계속한다. 다만 Unity batch·포트 7777·큰 메모리 실행이 Content·Core와 겹치면 그쪽이 먼저다. 이미 시작한 실행은 끝까지 하고, 다음 큰 실행 전에는 Content·Core 리드에 묻는다. 그래서 구현자는 큰 실행 전에 리드의 「진행」을 기다린다. Management 7777 중간 점검 일정은 없어졌다.
 - **범위 승인**(메인 전달 `msg_493c03f863cf`, 2026-10-11T06:45:14Z, 사용자 제출 15:4x KST): 「대시보드 결정 응답: 1) 계획 검토 - World 다중 계정 로그인 goal 범위 초안 v1 → A 승인 (초안 msg_148c21badf30) · …」. 효과: 범위 v1 그대로, 질문 1은 A(계정 이름만 입력, 비밀번호 없음), 「확인할 기본값」 1~4도 초안대로다.
 - **World 새 리드와 첫 일**(2026-10-10 23:21 KST, 진입 지시 `msg_4ffc2152ccc9`에 전달): 「결정 39 → B 「B로 가자」」. 효과: World 새 리드는 다음 세션에 열고 첫 일은 다중 계정 로그인 범위 초안, 구현은 범위 승인 뒤.
@@ -391,3 +393,31 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 리드 기록(첫 발생이라 goal에만 적는다):
   1. **DLL 재현 명령**: 검증 계약 G가 증분 `dotnet build Dawnholder.slnx`를 재현 확인으로 적었다. 입력이 최신이면 Shared·ClientNet을 다시 컴파일하지 않아 재현 증명이 되지 않는다(검증자 관찰 O-6). 검증자가 찾아 리드가 `--no-incremental` 재빌드를 허용했다(`msg_ff3c566f85cc`). 다음 계약부터 `--no-incremental`로 적는다.
   2. **계약 C의 수치**: 검증 계약 C가 구현자의 초기 status 값 「(a) 3, (b) 125」를 적었다. 구현 보고는 4/124로 정밀화했다. 판정에는 영향이 없다.
+
+### main 병합과 재번호 — 2026-10-11
+
+- 왜: Content PR230이 main(merge `999b1b98ba38934568f852adc2d22c9ee333d864`, 10:57:10Z)에 먼저 들어가 패킷 39·40과 버전 18을 썼다(메인 알림 `msg_aa95be30ee82`). 「PR 경계와 점검」 넷째 줄대로 World는 41·42번·버전 19로 옮겼다. VER-01도 같은 계약에 묶었다(확정 실패 집계상 VER-01 1회차 수정).
+- 작업자: 신규 `gpt-6-astra` xhigh `[World 구현 Astra]`(배정 근거 implementer-routing 신호 3, backend unknown), 리드 pane 아래 split `term_a22887db-cdfd-49aa-b807-004cb7332b93`, Task `task_4cbea266fa22`, Dispatch `ctx_2b8550f92fbf`(11:04:34Z). worker_done `msg_004a934fda9a`(11:36:02Z, succeeded). release `retained` 뒤 pane을 닫았다. 작업자는 git 상태를 바꾸지 않았고 리드가 stage·commit했다.
+- 계약: E/`merge-contract.md` v1(SHA256 `31b04b11db5308bd50374d2717edda7bb3c1eb6c6763c0e837eb3d368ece5fe4`), 리드 메모 E/`merge-prep-context.md`. 보충·답: 보충 1 `msg_2f88b3642582`(Content 시험 `JoinAndEnter`에 로그인 한 단계, Content에 쓰기 전 알림 `msg_3b64363cd9dd`), 답 1 `msg_d68364b8c861`(protocol.md v18 절 첫 문장만 과거 시제, Content 알림 `msg_725c091951ad`), 생성기 진행 `msg_1c2b3e313e90`·`msg_f70d67c11464`, 묶음 진행 `msg_7e07433fb46c`(Content `msg_e2fa43b6adba`·Core `msg_38260c734c85` 허용 뒤), Unity 부수 효과 답 `msg_c8d02ffb8d92`.
+- 결과: merge commit `44ffe9e3db04c3fb482c727e2fbacfc427b8b043`(parent `b2953476`·`999b1b98`, 45파일 +2470/−74 중 main 쪽 변경 포함). 보고 E/`merge/report.md`(SHA256 `e18c0c1206a846ab39c47269143566521fa3e27d0a3fa351857e769e6a773dd1`).
+  - 충돌 8개(PDL·생성 코드·버전·Shared.dll·버전 단정 세 곳·protocol.md)를 main 쪽 정의·번호·이력·단정은 그대로 두고 World 추가를 뒤로 옮겨 풀었다. PDL 순서는 39 `S_DungeonClearResult`, 40 `C_DungeonClearConfirm`, 41 `C_Login`, 42 `S_LoginResult`다.
+  - 생성 코드는 해결한 PDL로 실제 생성기를 돌려 CR 306바이트만 지웠다(최종 SHA256 `d3499106…7d40f`). Shared.dll은 `--no-incremental` 빌드 산출이다(`bba58745…1ed6`). ClientNet DLL은 다시 빌드했지만 bytes가 그대로다(`dc708e2f…e175`, `b2953476`·`999b1b98`과 같음).
+  - VER-01: `client.md` 「메뉴와 계정 로그인」 둘째 문단을 유효 거부는 정리 전까지 메인 큐에서 적용하고 `Accepted`·정의 밖 값·다른 패킷은 닫힌 전송에서 적용하지 않는다는 실제 분기로 고쳤다. 「위험」 8의 역순은 「세션 정리 전까지」라는 한계로만 표현했다.
+  - 기존 시험 실패 분류: Content `DungeonClearPacketContractTests` 1건 (b) fixture 누락(같은 WSL 필터 명령 전 8/7/1 → 후 8/8/0, 기존 `LifecycleTestWorld.LogIn` 한 줄). 버전 단정 세 곳은 계약이 미리 정한 (a)다.
+- 실행(원시 E/`merge/`):
+
+| 실행 | exit | 결과 |
+|---|---|---|
+| 생성기 | 0 | 로그인 41·42, Content 39·40 유지 |
+| Windows `--no-incremental` Shared → ClientNet → slnx | 0 | 경고 7 / 오류 0, DLL hash 위와 같음 |
+| WSL 서버 전체 | 0 | 1058 / 1053 / 0 / 5(World 1047 + Content 11) |
+| Unity EditMode 전체 | 0 | 446 / 446 |
+| Unity PlayMode 가짜 서버 11클래스 | 0 | 45 / 45 |
+| 서식 검사 | 0 | 도구 시험 244 / 244 |
+
+- 리드 대조(E/`merge-commit-context.md`): DLL 둘·생성 코드 hash, 서버·EditMode·PlayMode·서식 원시, Content fixture 한 줄, 충돌 표식 0, PDL 순서가 보고와 같다. `git diff --check`의 생성 코드 행 끝 공백 18곳은 생성기 템플릿 출력이다(행 끝 공백 줄 수 `b2953476` 243 → `999b1b98` 257 → 병합 261).
+- 실행하지 않은 것(작업자): 봇, 7777·서버 lane, DB, Unity Editor·MCP, 실화면. 재검증이 봇과 서버 lane PlayMode를 맡는다.
+- 부수 효과: Unity가 `ProjectSettings.asset` SENTIS 한 줄과 `MinimapRT.renderTexture` 줄 끝을 다시 써서 리드가 commit 전에 되돌렸다.
+- 리드 기록:
+  1. **Unity 부수 효과 계약 누락(두 번째 발생)**: 병합 계약이 `ProjectSettings.asset`만 적고 `MinimapRT.renderTexture`를 빠뜨려 작업자가 공식 질문을 보냈다(`msg_4f1c3dfb4a4b`). 첫 독립 검증 계약도 같은 누락이었다. 두 번째 발생이라 이 goal의 다음 계약부터 두 파일을 함께 적는다(재검증 초안에 반영). 더 높은 층은 Unity 시험 harness가 전후 git 상태에서 알려진 두 파일을 「리드 복원 대상」으로 따로 표시하는 것이다. 메인에 후보로 올린다.
+  2. **큰 실행 묶음 진행**: Content·Core 허용을 받은 뒤 단계별 status만 받게 하여 승인 대기를 생성기 48초·빌드 87초로 줄였다. 다음 큰 실행 묶음도 같은 방식으로 묻는다.
