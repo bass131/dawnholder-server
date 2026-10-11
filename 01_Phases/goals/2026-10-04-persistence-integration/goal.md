@@ -625,7 +625,8 @@
   - #3: 가드를 카드가 쓰는 호출 모양의 허용 목록으로 바꿨다. #4: 판정 차단이면 같은 날 PreserveStop 한 번으로 정지·보존하고, 삭제는 명시 승인 뒤에만 한다.
   - 관찰 반영: Ready의 TCP 탐침 실패를 멈춤 조건으로 쓰고, 확인 단계가 되돌림 시나리오 넷·빈 요청 거부·첫 설치 관찰을 요구한다.
 - **리드 발견:** PowerShell 7 부모는 모듈 자동 적재 때 `PSModulePath`를 다시 채운다. 처음 한 번만 지우면 5.1 자식이 `Microsoft.PowerShell.Security`를 못 불러온다. 그래서 helper가 자식 실행 직전마다 지운다.
-- **v2 예행(리드, 실행 근거 아님):** CARD/`rehearsal-v2.txt`(09:05:31Z)에서 다섯 단계 예행과 helper의 5.1·7 두 부모 셸 예행이 모두 통과했다. 120자 초과와 파서 오류는 0이고, 실제 run 폴더는 생기지 않았다. 대상 SHA256은 `card.md` `36e784b3…4898`, `Invoke-ContainerCardStep.ps1` `6d9c5801…21e6`, `card-session.ps1` `9af8c611…e0ea`, `Test-CardSession.ps1` `3210b1c2…884a`, `secret-path-facts.txt` `91c2908f…b49b`다. 승인 계획 검토본은 바뀌지 않았다.
+- **v2.1(리드 추가 발견, 09:12Z):** v2의 메모리 바닥 거부가 정지·삭제 단계까지 막아, 메모리가 모자랄 때 부하를 끌 수 없었다. 그래서 `PreserveStop`·`Remove` 두 단계는 원시만 남기고 거부하지 않는다.
+- **v2.1 예행(리드, 실행 근거 아님):** CARD/`rehearsal-v2-1.txt`(09:12:20Z)에서 다섯 단계 예행과 helper의 5.1·7 두 부모 셸 예행이 모두 통과했다. 120자 초과는 0이다. 기록의 파서 오류 1건은 리드 예행 스크립트의 인자 오류였고, 파일별 재실행(CARD/`parse-check-v2-1.txt`)은 0이다. 실제 run 폴더는 생기지 않았다. 대상 SHA256은 `card.md` `ef027790…1917`, `Invoke-ContainerCardStep.ps1` `6d9c5801…21e6`, `card-session.ps1` `dcbd6d9c…6a7b`, `Test-CardSession.ps1` `bd0b1333…528a`, `secret-path-facts.txt` `91c2908f…b49b`다. 승인 계획 검토본은 바뀌지 않았다. v2 기록은 `rehearsal-v2.txt`다.
 - **같은 산출물 수정:** 카드 묶음의 1회째 수정이다.
 - **리드 실수 18:** bash 큰따옴표 안의 `\$s`가 글자로 남아 `.backups/tmp`에 `card-fix-try$s-085824` 폴더가 생겼다. 시험 출력뿐임을 확인하고 지웠다. 실수 17과 같은 원인의 두 번째 발생이다. 반복 규칙 후보(「Windows 경로는 `cygpath -w`나 작은따옴표 리터럴로 만든다」)로 메인을 거쳐 규칙 정본 담당에 넘긴다.
 - **우편함:** 08:28Z에 Claude Code가 메모리 부족으로 리드의 background 대기를 회수했다. 지침대로 다시 열지 않고, Orca 알림 턴마다 한 번 check한다. 메인에 보고했다(`msg_955401c41cb0`).
