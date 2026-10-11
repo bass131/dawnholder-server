@@ -277,6 +277,7 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 
 모두 메인 창 Enter 제출, 메인 전달이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
 
+- **Content·Core 우선**(메인 전달 `msg_775122227f2a`, 2026-10-11T07:46:37Z, 사용자 제출 16:5x KST): 「일단 좀 급한게 컨텐츠랑 코어쪽이니까 이 쪽 작업 우선해보자, 운영툴은 재개지점 맥락확보하고 세션 정리해줘」. 효과: 이 goal은 계속한다. 다만 Unity batch·포트 7777·큰 메모리 실행이 Content·Core와 겹치면 그쪽이 먼저다. 이미 시작한 실행은 끝까지 하고, 다음 큰 실행 전에는 Content·Core 리드에 묻는다. 그래서 구현자는 큰 실행 전에 리드의 「진행」을 기다린다. Management 7777 중간 점검 일정은 없어졌다.
 - **범위 승인**(메인 전달 `msg_493c03f863cf`, 2026-10-11T06:45:14Z, 사용자 제출 15:4x KST): 「대시보드 결정 응답: 1) 계획 검토 - World 다중 계정 로그인 goal 범위 초안 v1 → A 승인 (초안 msg_148c21badf30) · …」. 효과: 범위 v1 그대로, 질문 1은 A(계정 이름만 입력, 비밀번호 없음), 「확인할 기본값」 1~4도 초안대로다.
 - **World 새 리드와 첫 일**(2026-10-10 23:21 KST, 진입 지시 `msg_4ffc2152ccc9`에 전달): 「결정 39 → B 「B로 가자」」. 효과: World 새 리드는 다음 세션에 열고 첫 일은 다중 계정 로그인 범위 초안, 구현은 범위 승인 뒤.
 - **리드 재기동**(2026-10-11 15:19 KST 무렵, 같은 진입 지시): 「대시보드 결정 응답: 1) 리드 재기동 - Core·Content·Management 이어서, World 새로 열기 → A 지금 넷 연다 · …」.
@@ -322,4 +323,5 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 리드 대조: T2 기대 문자열 4개가 Python `uuid.uuid5` 원시와 같다. 새 시험에 이름 문자열로 API를 찾는 reflection이 없다. (1) RED 파일이 (2)에서 바뀌지 않았다. Unity (1) 결과 파일의 두 T10 시험이 Failed다. 작업 트리가 보고의 쓰기 목록과 같다(E/`tdd-result-goal-context.md`).
 - 실행 조율: Core SQL 컨테이너 측정과 겹치지 않게 기준선 뒤 07:18Z~07:33Z에 실행을 멈췄다(Core `msg_b796b7140470`·`msg_439f622ca89b`, 리드 `msg_6ebfdd724930`·`msg_d4da3f7632ad`).
 - 부수 효과: Unity가 `03_Client/ProjectSettings/ProjectSettings.asset`의 정의 기호 한 줄(`SENTIS_ANALYTICS_ENABLED` 제거)을 다시 썼다. 알려진 BACKLOG `unity-sentis-define-drift`라 리드가 되돌렸고 commit에 넣지 않았다. Claude Code가 작성자의 큰 읽기 출력 하나를 홈의 자기 `tool-results`에 자동 저장했다. 런타임 자체 저장이라 조치하지 않았다.
-- 실행하지 않은 것: PlayMode, 서버 실행, 봇, 7777, DB, Unity Editor·MCP, 패킷 생성기, Windows 빌드, 서식 검사.
+- 실행하지 않은 것(작성자): PlayMode, 서버 실행, 봇, 7777, DB, Unity Editor·MCP, 패킷 생성기, Windows 빌드, 서식 검사.
+- 리드 서식 검사: commit `757b59ac` 뒤 `pwsh -NoProfile -File 99_Tools/format-check.ps1` exit 0, 「Formatting checks passed」(07:43:19Z 시작, 약 13분, 원시 E/`lead-format/format-check.txt`). 도구가 증거를 사용자 TEMP의 `dawnholder-format-<id>/evidence`에 기본으로 남겼다.
