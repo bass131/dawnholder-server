@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 선행 시험(`cf0cacc1`)과 구현(`ef58d7de`, 생성 코드 줄 끝 수정 포함)을 커밋했고 다음은 독립 검증이다(2026-10-11). 던전 클리어 PR은 리드 설계 초안(C1~C9)을 World가 확인했다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-10). 결함 PR(PR221)은 사용자 승인으로 병합됐다(2026-10-10T15:54:25Z). 실화면이 찾은 HUD 골드 7자리 넘침(S-1)도 그 PR에서 고쳤다(R10). 던전 패킷·창 PR은 [PR230](https://github.com/bass131/dawnholder-server/pull/230)으로 올렸다. 독립 검증이 찾은 규칙 위반 하나(V-1)를 고쳤고 재검증이 통과했다. 다음은 CI와 사용자 병합 승인이다(2026-10-11). 던전 클리어 PR은 리드 설계 초안(C1~C9)을 World가 확인했다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Content 리드(`[Content 리드 Opus]`). 시작 기준 `origin/main` = `cc20d428f7988fdcb232a7c811cf2e729446abdc`.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침).
@@ -187,21 +187,21 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-11T08:47:05Z(`lead-goal-edit-1011b/clock.txt`)이다. 패킷·창 구현과 줄 끝 수정을 커밋한 시점이다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-11T10:22:55Z(`lead-goal-edit-1011c/clock.txt`)이다. 패킷·창 PR의 재검증이 통과하고 PR230을 만든 시점이다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 던전 패킷·창 PR 독립 검증을 신규 `claude-opus-5-5`에 위임한다(R-5). 계약 초안은 근거 폴더의 `opus-packets-verify-contract.head.md`이고 HEAD·커밋 자리를 채워 낸다. 서버 전체 시험, EditMode·PlayMode 전체(서버 lane 7777), 봇 회귀, 생성기·DLL 재현, 구현 단계 PlayMode 실패 하나의 분류를 본다. 기동 전에 World·Core에 Unity와 7777을 알린다 |
-| 열린 Task·Dispatch | 없다. 구현 `ctx_4342a8667657`과 줄 끝 수정 `ctx_cd4f70418fbb`은 정산했다 |
+| 다음 첫 일 | [PR230 - 던전 패킷·창](https://github.com/bass131/dawnholder-server/pull/230)의 정확한 head CI를 확인하고, 메인에 병합 승인 요청(R-4 준비 보고)을 보낸다. 병합 뒤에는 클리어 PR 착수 전에 World 다중 계정 로그인 PR과의 패킷 번호·버전 순서를 다시 맞춘다 |
+| 열린 Task·Dispatch | 없다. 독립 검증 `ctx_9d95ce82d14f`, V-1 수정 `ctx_9c05d9c7936b`, 재검증 `ctx_47fddb9f9d06`은 정산했다 |
 | 작업 공간 / branch | `content-active` / `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 10-11에 origin/main `6782cd67`을 합침) |
-| PR | 던전 패킷·창 PR은 아직 없다. 결함 PR은 [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(head `f135eaf1`, merge commit `e775bc77`) |
+| PR | 던전 패킷·창은 PR230(OPEN, 이 기록 커밋 전 head `a35b7611`). 결함 PR은 [PR221 - HUD 골드와 인벤토리 패널 「I」 키](https://github.com/bass131/dawnholder-server/pull/221)로 병합됐다(head `f135eaf1`, merge commit `e775bc77`) |
 | 리드 세션 / Run | `term_89459727-3c79-4004-a8d0-859d7a0052a9`(10-11 재진입) / `run_b680cd89da9a`(회신 주소 `run:run_b680cd89da9a`) |
 | 로컬에만 둔 변경 | 사용자 미커밋 `03_Client/Assets/Resources/MinimapRT.renderTexture`, `03_Client/ProjectSettings/ProjectSettings.asset`. 커밋·되돌리기·stash 금지 |
-| 작업자·실행 자원 | Content 작업자 pane 0(08:45:16Z `terminal list`). 7777 listener 0. Unity.exe는 08:47:05Z에 2(Content 것 아님), 08:47:25Z에 0 |
-| 로컬 부수 변경 | 선행 시험 batch가 `ProjectSettings.asset`의 SENTIS define 한 줄을 지웠다(지금 `5a03375a…`). 되돌림 사본은 `opus-pr1-tdd/side-effects/ProjectSettings.pre-run-reconstructed.asset`(`4a8db0bd…`)이다. 이 PR의 마지막 batch(독립 검증) 뒤, 실화면 Editor를 열기 전, PR 생성 전 중 가장 이른 때에 리드가 되돌린다. TimeManager는 HEAD와 같다 |
-| 남은 결정·준비 | 사용자 결정으로 남은 것은 없다. 클리어 PR은 World 확인을 받았다. World 다중 계정 로그인과의 병합 순서에 따라 패킷 번호와 시험을 맞춘다(「파트 간 소유와 계약」 PDL 행). C9 실화면에는 Unity 코드 실행 허용 결정이 다시 필요하다 |
+| 작업자·실행 자원 | Content 작업자 pane 0(10:20:04Z `terminal list`). Content는 10:21Z에 Unity·7777을 놓았다고 World·Core에 알렸다(`msg_bc322f3be185`, `msg_f67847b73b60`). Core SQL 컨테이너가 10:30Z 전후 시작 예정이다(Core `msg_8b4ad1f30afd`) |
+| 로컬 부수 변경 | `ProjectSettings.asset`은 10:21Z에 사용자 원래 상태 `4a8db0bd…`로 되돌렸다. TimeManager는 HEAD와 같다. 클리어 PR의 Unity batch가 다시 쓰면 같은 방식으로 되돌린다 |
+| 남은 결정·준비 | 사용자 결정으로 남은 것은 PR230 병합 승인뿐이다. World 다중 계정 로그인과의 병합 순서에 따라 패킷 번호와 시험을 맞춘다(「파트 간 소유와 계약」 PDL 행). C9 실화면에는 Unity 코드 실행 허용 결정이 다시 필요하다 |
 
-**남은 순서**: 던전 패킷·창 PR(독립 검증 → PR·CI → 사용자 병합 승인) → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
+**남은 순서**: PR230 CI → 사용자 병합 승인 → 던전 클리어 PR → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
 
 ## 진척 단계
 
@@ -211,8 +211,8 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - [x] R9 실화면
 - [x] R10 골드 넘침 수정·재확인
 - [x] 결함 PR 병합
-- [>] 패킷·창 구현·검증
-- [ ] 패킷 PR 병합
+- [x] 패킷·창 구현·검증
+- [>] PR230 병합
 - [ ] 클리어 설계 확정
 - [ ] 클리어 서버 구현
 - [ ] 검증·실제 플레이
@@ -224,6 +224,7 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 - 범위 초안·사용자 승인·World 계약 확인까지 했다. 원문은 근거 폴더의 `scope-draft-v1.md`와 `inbox/`에 있다.
 - 결함 PR은 선행 시험 → 구현 → 수정 1 → 독립 검증 → PR 생성(CI) → R9 실화면 → R10 수정 루프와 실화면 재확인 → 사용자 병합 승인까지 끝났다(아래 다섯 절). 실행한 것: Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), CI, Unity Editor 실화면(MCP). 실행하지 않은 것: 봇, 빌드 단독 실행, 사람 손 입력.
+- 던전 패킷·창 PR은 선행 시험 → 구현 → 줄 끝 수정 → 독립 검증(차단 V-1) → V-1 수정 → 재검증(통과) → PR230 생성까지 했다(아래 세 절). 실행한 것: WSL 빌드·서버 시험, Windows 솔루션 빌드, 추출본 생성기·DLL 재현, Unity batch EditMode·PlayMode, WSL GameServer 서버 lane(DB 없음), 봇 회귀. 실행하지 않은 것: 실화면, DB.
 
 ### 선행 시험 — RED 준비 성공, 2026-10-10
 
@@ -374,6 +375,39 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **정산**: tui-idle → worker-release(retained/external_terminal) → close(ptyKilled true) → 목록에서 사라짐(`lead-settle-eol-fix/settlement.md`). 화면 표시는 20분 40초 작업이다.
 - **미실행**: 이 작업은 서버 시험·Unity·봇을 돌리지 않았다. AGENTS의 「서버와 Unity 사용처 양쪽 검증」은 독립 검증이 맡는다.
 
+### 패킷·창 독립 검증·V-1 수정·재검증 — 통과, 2026-10-11
+
+| 항목 | 독립 검증 | V-1 수정 | 재검증 |
+|---|---|---|---|
+| Task / Dispatch | `task_eaa1138f1ee3` / `ctx_9d95ce82d14f`, `[Content 검증자]` | `task_abd16373404a` / `ctx_9c05d9c7936b`, `[Content Sol]` | `task_d781f9564f60` / `ctx_47fddb9f9d06`, `[Content 검증자]` |
+| 모델 | 신규 `claude-opus-5-5`(화면 「Opus 5.5 with xhigh effort」, backend unknown) | 신규 `gpt-6.1-sol` max(화면 「GPT-6.1-Sol max」, backend unknown). 배정 신호 해당 없음(명세가 고정된 1파일 수정), 라우팅 시범 Sol 2회차 | 신규 `claude-opus-5-5`(같은 화면, backend unknown). 시범 「해당 여부가 애매한 작업」(PR 전체가 프로토콜) |
+| 계약 | `opus-packets-verify-contract.md` SHA256 `45467e2b…`, head `86c2098f` | `sol-v1-fix-contract.md` SHA256 `e3a3315c…`, head `648809f0` | `opus-v1-reverify-contract.md` SHA256 `44aa3462…`, head `02a7239b` |
+| 결과 | `opus-packets-verify/verdict.md`(`d23ff763…`), worker_done `msg_402f7e9535e5`. **차단(V-1)**, 제품 동작 결함 0 | `sol-v1-fix/report.md`(`a9d68e83…`), worker_done `msg_cbf49afc2c72` | `opus-v1-reverify/verdict.md`(`3254edb5…`), worker_done `msg_a13c6c9cd659`. **통과, V-1 해소, 새 결함 0** |
+| 커밋 | 검증자 시험 6파일 `648809f0` | 창 1파일 +5/−7 `02a7239b` | 검증자 시험 2파일 `a35b7611` |
+
+| 실행 | total / pass / fail / skip | 원시(SHA256 앞 8자) |
+|---|---|---|
+| 독립 검증 WSL 서버 전체 | 985 / 980 / 0 / 5 | TRX `56da5b90`. skip 5는 기존 `Skip` 속성 시험이다 |
+| 독립 검증 EditMode 전체 | 418 / 418 / 0 / 0 | `c18286b3` |
+| 독립 검증 PlayMode 전체(서버 lane 7777) | 39 / 38 / 1 / 0 → 42 / 42 / 0 / 0 | `62a9e113` → `e46ff3fd` |
+| 독립 검증 봇 회귀 | PASS 6 / FAIL 0 | `runs/bots/run-1-output.txt` |
+| V-1 수정 PlayMode 던전 네 클래스(수정 전·뒤) | 12 / 12 / 0 / 0, 12 / 12 / 0 / 0 | `ac8b1999`, `27265e8c` |
+| V-1 수정 EditMode 전체 | 418 / 418 / 0 / 0 | `9cf39edf` |
+| 재검증 EditMode 전체 | 418 / 418 / 0 / 0 | `b220a2b5` |
+| 재검증 PlayMode 전체(서버 lane 7777) | 42 / 42 / 0 / 0 → 43 / 43 / 0 / 0 | `ad320d26` → `c4abdc12` |
+
+- **V-1(규칙 위반)**: 보상 창의 `IsGameplayScene`이 게임플레이 씬 이름 집합의 네 번째 사본이었다. 나머지는 `Combat/CombatBootstrap.cs:36` `CombatScenes`, `UI/InventoryPanel.cs:158-159`, `Bootstrap/LocalPlayerSpawner.cs:36`(GameplayTest 없음)이다. CODE_CONVENTION 「같은 이유로 함께 바뀌는 로직이 세 곳 이상이면 추출한다」 위반이고, 새 게임플레이 씬을 `CombatScenes`에만 더하면 창이 그 씬에서 숨는 위험이었다. 귀속은 리드 계약과 기존 코드다. 구현 계약이 `CombatBootstrap`의 다른 구간과 `InventoryPanel` 수정을 막았고, 이름 판정을 가진 `InventoryPanel.BuildRuntime`을 따를 예시로 지정했다.
+- **V-1 처리(리드 판단 `lead-context-14.md`)**: 이 PR이 더한 범위 안 차단 결함이라 루프에서 고쳤다. 보상 창 파일은 goal 「건드릴 곳」 안이라 메인 결정은 필요 없었다. 창은 이제 이름을 알지 않고 「자기 씬이 활성 씬인가」(`IsInActiveScene`)만 본다. 표시와 「확인」 gate가 이 판정 하나를 쓴다. 창은 `CombatBootstrap` installer만 만들고, 씬 전환은 Single, UI 씬은 Additive이며 제품 코드에 `SetActiveScene`이 없다. 그래서 제품 경로에서는 수정 전 판정과 같은 결과다. 검증자가 낸 공용 helper 추출안은 `InventoryPanel`·`CombatBootstrap` 다른 구간을 바꿔 이 PR 경계 밖이라 「다음 계획 후보」로 옮겼다. 보상 창 파일의 수정은 구현 다음 이번이 두 번째다.
+- **V-2(선행 시험 fixture, (b))**: 구현 단계 실패 F-1은 「확인」 포인터 시험이 UI 씬의 EventSystem이 아직 없을 때 raycast해서 났다. 검증자가 `ScreenUiProbe.WaitForEventSystem` 대기 한 줄만 더했고 단정은 바꾸지 않았다. 같은 명령 8/7/1 → 8/8/0이다.
+- **검증자가 더한 시험**: 맵 이동 중 「확인」은 40을 보내지 않고 다음 맵 창이 같은 결과를 보인다, Ending에는 창이 없다, 보스방에는 입구 글자가 없다(독립 검증). 창이 남은 채 다른 씬이 활성이면 창이 닫히고 누름이 40을 보내지 않는다(재검증, V-1 판정의 거짓 분기).
+- **실제 진입**: 서버 lane 위 PlayMode 전체에서 `InventoryServerIntegrationTests`·`MapEntryServerIntegrationTests`가 이 checkout의 WSL GameServer(v18)에 실제 handshake로 붙었다. 봇 여섯이 v18 서버에 접속했다. 생성기·DLL 재현에서 커밋 소스로 다시 빌드한 Shared(`a9223eba`)·ClientNet(`dc708e2f`) DLL이 커밋 bytes와 같았다.
+- **리드 R-2**: 세 판정·보고의 결과 XML·TRX를 다시 세어 수치·hash·실패 이름이 맞았다. 시험 diff와 새 시험의 기대값(리터럴·독립 encoder·control)을 읽어 측정값 위장과 제품 계산 복제가 없음을 확인했다(`lead-r2-packets-verify/r2.md`, `lead-r2-v1-fix/r2.md`, `lead-r2-v1-reverify/r2.md`).
+- **생존 신호(helper)**: 독립 검증 최대 258초, V-1 수정 최대 310초(보고 작성 구간 한 번), 재검증 최대 314초(서버 lane Start를 전경으로 돌린 구간 한 번, 판정에 자진 기록). 질문은 없었다.
+- **정산**: 세 pane 모두 tui-idle → worker-release(retained) → close(ptyKilled) → 목록에서 사라짐(`lead-settle-packets-verify/`, `lead-settle-v1-fix/`, `lead-settle-v1-reverify/`).
+- **라우팅 시범 기록**: Astra 1회차(구현)의 독립 결함은 V-1 하나이고 귀속은 리드 계약·기존 코드다. Sol 1회차(줄 끝 수정)의 독립 결함은 0이다. Sol 2회차(V-1 수정)의 독립 결함은 0이다. 절차 실패는 300초 초과 heartbeat가 구현 셋, 줄 끝 수정 하나, V-1 수정 하나다.
+- **설정 파일 되돌림**: 재검증이 이 PR의 마지막 batch였다. 그 뒤 메인 판단 `msg_c9fac8091065`대로 `ProjectSettings.asset`을 `5a03375a…` → `4a8db0bd…`로 되돌렸다. 되돌림 사본과의 차이는 Unity가 지운 SENTIS define 한 줄뿐이었다. TimeManager는 HEAD와 같다(`lead-settings-restore-1011/`).
+- **미실행**: 실화면(클리어 PR), 서버 시험·봇·DLL 재현의 재검증 재실행(판정 diff가 서버·공유 코드를 건드리지 않음), DB.
+
 ### 운영 기록(첫 발생)
 
 - Orca CLI 1.4.224의 `terminal split`에는 `--title`이 없어 첫 구현자 기동이 실패했다. 플래그 없이 다시 열었다(`astra-pr1-impl-launch-fail-title.json`).
@@ -395,6 +429,10 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - 커밋된 Plugins `Shared.dll`(`595e970a`, 커밋 `32626771`)이 HEAD 소스로 다시 빌드한 DLL(`8411d6d2`)과 달랐다. 패킷 구현자의 기준선 빌드가 찾았다(question `msg_47e32c0637b4`, 리드 확인 `lead-r2-packets-impl/baseline-drift-check.txt`, reply `msg_8c302fd00fca`). 기능 차이는 없다. `Shared.csproj`가 `EmbedAllSources`·embedded PDB라 소스 bytes가 DLL에 들어간다. 줄 끝 수정 작업자의 진단(D2)으로 그 DLL은 경제 커밋 소스와 생성기의 CRLF 섞인 출력으로 빌드된 것이 확인됐다. 구현자 기준선과 커밋 DLL 사이의 차이는 커밋 `03c4ce6d`(10-05, 아이템 goal)가 `ProtocolVersion.cs` 주석 두 줄을 바꾸고 DLL을 다시 빌드하지 않은 것이다.
 - 패킷 생성기가 Windows에서 `Environment.NewLine`으로 `GenPackets.cs` 일부 줄을 CRLF로 쓴다(이번 작업본 3071줄 중 304줄). `.gitattributes`는 `*.cs text eol=lf`라 커밋은 LF가 되고, 섞인 작업본으로 빌드한 Plugins DLL은 커밋 소스로 다시 빌드한 DLL과 달라진다. 리드 R-2가 찾았고(`lead-r2-packets-impl/code-sample-review.md`), 이번 PR은 줄 끝 수정 작업자가 작업본을 LF로 맞추고 DLL을 다시 만들었다. 교정 층 후보는 생성기가 LF로 쓰게 고치는 것(구조 층)과 Shared 소스·Plugins DLL 일치 검사(검사 층)다. 경제 PR(커밋 DLL `595e970a`)에 이은 두 번째 발생이라 아래 「다음 계획 후보」에 올렸다. 생성기를 돌린 작업본에는 CRLF 섞인 파일이 남지만 `eol=lf` 정규화 때문에 `git status`에 보이지 않는다.
 - Git Bash `grep -c $'\r$'`가 LF 줄까지 모두 CRLF로 세어 틀린 값을 냈다. 줄 끝은 node로 센다.
+- 독립 검증의 차단 V-1은 리드 계약에 귀속됐다. 구현 계약이 따를 예시로 지정한 `InventoryPanel.BuildRuntime`의 파일에 같은 씬 이름 판정이 이미 있었고, 계약이 그 파일과 `CombatBootstrap`의 다른 구간 수정을 막았다. 구현자는 예시를 따라 네 번째 사본을 만들었다. 첫 발생이라 이 goal에만 적는다. 다음 계약부터 리드는 따를 예시를 지정할 때 그 예시 안의 중복도 맥락 메모에서 함께 확인한다.
+- V-1 수정 작업자의 첫 감사 파일 `sol-v1-fix/audit-final.json`이 204,499,098바이트가 됐다. PowerShell이 Git stderr 경고의 ErrorRecord를 JSON 객체로 직렬화했다. 근거 폴더(Git 밖)라 커밋 영향은 없고, 작업자가 보고에 스스로 적고 문자열로 정규화한 감사를 다시 남겼다.
+- 재검증자가 서버 lane Start를 전경으로 돌려 도구가 300초 뒤 백그라운드로 넘겼다. `Run-ServerLane.ps1`의 Start는 Stop까지 launcher에 붙어 있다(`:164-165`). 그 구간에 heartbeat 간격이 314초가 됐다. 이전 독립 검증자는 처음부터 백그라운드로 돌렸다. 첫 발생이라 이 goal에만 적는다.
+- Content가 Unity·7777을 쥐고 있는 동안 World 검증자의 봇 회귀(7777만, 09:30Z~09:36Z)를 V-1 수정 단계 사이에 끼웠다. World가 시작 전에 묻고 끝나자 해제를 알려 재검증과 겹치지 않았다(World `msg_784b84931692` → `msg_91b307b9bcdf`).
 
 ## 다음 계획 후보
 
@@ -413,3 +451,9 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **게임 UI·아트 스타일 기준 문서화**: 기준 게임은 Moonlighter다. 차이는 둘이다. 시점은 Moonlighter가 Top-View, 우리는 사이드 스크롤이다. 플레이 형태는 Moonlighter가 솔로, 우리는 온라인이다. 출처는 메인 `msg_4dffdfb3323b` 원문 「우리가 원하는 게임의 스타일에 제일 가까운게 Moonlighter거든? 그래서 게임 UI나 디자인 셋업할때 참고하면 좋을거 같아, 근데 그 게임같은 경우에는 Top-View 게임인데, 우리 게임은 Side Scroll인게 차이점이야」와 `msg_4df6930b3cf0` 원문 「거기에 그 게임은 솔로게임인데 우리는 온라인 게임인거고」다. 문서 위치·형식은 goal로 올릴 때 정한다. 종료 기록 때 BACKLOG에 등록한다.
 - **패킷 생성기 줄 끝**: 생성기가 Windows에서 `Environment.NewLine`으로 CRLF를 섞어 써서, 생성기를 돌린 작업본으로 만든 Plugins `Shared.dll`이 커밋 소스로 다시 빌드한 DLL과 달라진다. 경제 PR과 이 PR에서 두 번 났다. 생성기가 LF로 쓰게 고치는 것(구조 층)이나 Shared 소스·Plugins DLL 일치 검사(검사 층)가 후보다. 출처는 「운영 기록(첫 발생)」의 줄 끝 항목과 `lead-r2-eol-fix/r2.md`다. 종료 기록 때 BACKLOG에 등록한다.
 - **직업 추가 — 사제·궁수**(10-13 발표에서 추가 예정으로 표기). 출처는 메인 `msg_9f231a21d4cc`가 전달한 원문 「음 첫 대문 배경에 직업이 색깔만 바뀌고 겹치니까 좀 어색한데, 이참에 다른 직업군도 넣어볼까? 사제, 궁수도?」와 「대시보드 결정 응답: 1) 33 - 발표 표지에 사제·궁수를 넣을지 → A 추가 예정 직업으로 넣음」이다. 지금 게임 직업은 전사·마법사 둘이고 저장소에 두 직업 계획은 없다. 착수와 기획 내용은 goal로 올릴 때 사용자와 정한다. 종료 기록 때 BACKLOG에 등록한다.
+- **게임플레이 씬 이름 사본 정리**: `UI/InventoryPanel.cs:158-159`(Town·HuntingGround·BossRoom·GameplayTest)와 `Bootstrap/LocalPlayerSpawner.cs:36`(GameplayTest 없음)이 `Combat/CombatBootstrap.cs:36` `CombatScenes`와 따로 있다. 패널도 보상 창처럼 자기 씬이 활성인지 보게 하거나 공용 판정으로 모은다. `LocalPlayerSpawner`는 spawn 대상이라 의미가 같은지 먼저 확인한다. 출처는 패킷·창 PR 독립 검증 V-1과 재검증 O-4다. 종료 기록 때 BACKLOG에 등록한다.
+- 보상 창의 「installer만 창을 만든다」는 불변식이 주석으로만 있다. `BuildRuntime`은 public static이고 지금 호출처는 installer 하나다(재검증 O-1).
+- 보상 창 `Update`가 매 프레임 `DungeonClearRewardState.EnsureInstance()`를 불러, 상태가 없으면 만든다. 상태 생성을 한 곳에 두고 창은 null을 허용하는 안이 있다(독립 검증 O-1).
+- 클라이언트는 거부 결과(`CurrencyCap`·`InventoryFull`)에 실린 골드·아이템도 받아 둔다. 창은 사유만 보인다. 클리어 PR 설계 C3의 「거부 = 골드 0·빈 칸」과 맞출지 클리어 PR 착수 때 정한다(독립 검증 O-2).
+- PlayMode 던전 창 시험 두 클래스가 helper(39 encoder·`HasNumber`·`Confirms`)를 사본으로 가진다. 세 번째 사용처가 생기면 `ScreenUiProbe` 옆 probe로 뽑는다(독립 검증 O-4, 재검증 O-2).
+- 서버 lane Stop이 다섯 번 모두 INT 20초 안에 끝나지 않아 TERM으로 정리됐다. 서버의 INT 처리를 확인할 후보다(독립 검증·재검증 O-5).
