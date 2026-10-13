@@ -7,7 +7,7 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: PR234를 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 첫 독립 검증은 **NOT PASS, 차단 결함 #1~#9 첫 확정**이다. 그 시험6개는 `f33ea8f9`, 새 Astra 수정5파일은 `83b6f3d409d910f9d94b3fee777cdbfc904b7410`로 고정했고 수정 세션도 정산·종료했다. 신규 Opus 재검증을 준비한다. 실제 Codex 신뢰·새 세션·도구 진입과 Linux CI는 미실행이다. PR1 최종 판정·PR·cadence 상세 정본 기록과 Archify/Unity 권한 문서 정합은 메인 지시대로 PR2 뒤 문서 PR에 남긴다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
+- 현재 차례: PR234는 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 첫 수정 `83b6f3d4`의 신규 Opus 재검증도 **NOT PASS**다. #1~#9 수정은 확인됐지만 새 차단 결함 #10~#18이 확정됐고, 검증자는 정산·종료했다. 메인의 호스트 재불일치 조건에 따라 다음 제품 수정은 판단 전 보류한다. 실제 Codex 진입과 Linux CI는 미실행이다. Art 기본 파트 추가 결정은 즉시 적용하되 별도 문서 PR은 PR2 병합 뒤이며 재계획 초안/담당 문구 두 판을 메인에 보낸다. 기존 후속 기록·Archify/Unity 정합도 유지한다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
@@ -17,12 +17,14 @@
 - [x] 문서 재실사와 부분 관측 정리
 - [x] 문서 PR 병합
 - [>] 가드 신뢰 경계 — 소스 조사 완료, 실제 UI/신규 세션 유지 미실행
-- [>] 가드 구현과 검증 — 첫 독립 NOT PASS 9건 수정 종료, 신규 강 재검증 준비
+- [>] 가드 구현과 검증 — 첫 재검증 NOT PASS 새9건, 후속 수정은 메인 판단 대기
 - [ ] 가드 PR 병합
 - [ ] 종료 점검과 기록
 - [ ] 종료 확인과 교체
 
 ## 범위
+
+Art 기본 파트 문서 PR 추가 결정은 아래 사용자 결정6에 기록했다. 다섯 범위 요소의 재계획 초안은 `E/art-formal-part-replan-v1.md`이며 메인 대조·담당 문구 두 판의 사용자 판단 전이다. 현재 PR2 뒤 최신 main의 별도 문서 PR이고 아래 기존 PR2 기준은 유지한다.
 
 ### 만들 것
 
@@ -100,7 +102,14 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 
 5. 메인 `msg_3a48680901db`(2026-10-13T14:06:36Z), 사용자 23:0x KST: 「그리고 아무래도 매번 넣기 불편하니까 필요한 워크트리에는 계속 세팅해주는게 좋겠어」. **메인 해석**은 content-active·world-active·art-active 세 곳의 Git 제외 `.claude/settings.local.json`에서 `permissions.allow`에 `mcp__unity-mcp__Unity_RunCommand` 한 항목만 상시 허용하는 것이다. Core·Rules·CodeMap·Management, 다른 MCP/Bash 허용은 제외한다. 메인 `msg_6302a1f52a46`은 사용자가 자기 pane에서 명령을 실행했고 메인이 14:20:57Z에 세 파일과 Git 제외를 확인했다고 보고했다. content SHA256 `791ab2fd62cff891e8e2ac95bfd3b0fc0c8859c3b704c9c666191f674c201ec0`, world/art 각각 `cceb092d846438ec1f97037fa65cfcceaf1076f18a451b816fcb5126c138c9d9`다. Rules의 설정 쓰기나 독립 확인 실적이 아니다. 원시·기존 내용 보존·다음 문서 PR의 좁은 정합 범위는 `E/pending-next-doc-unity-permission.md`에 있다.
 
+6. 메인 `msg_13ca12fccdc4`(2026-10-13T17:49:49Z)가 자기 pane Enter 제출로 확인해 전달한 사용자 원문은 다음 두 줄이다.
+   - 요청: 「아트쪽또 정신 파트로 편입시켜도 좋을거 같은데 갱신좀 해줄래?」. 메인은 「정식 파트 편입」으로 이해했고 결정 화면에도 그렇게 표시했다.
+   - 결정: 「대시보드 결정 응답: 1) Art 정식 파트 편입 - 규칙 문서에 지금 반영할지, 다음 Rules 목표로 미룰지 → A 이번 Rules 목표에 문서 PR 추가」.
+   Art는 지금부터 기본 여섯 번째 파트이며 목표 종료 뒤 R-8로 새 목표를 열고 새 메인 진입에도 포함한다. World는 목표 한정 추가 파트다. 현재 PR2 가드 완료·병합 뒤 최신 main에서 별도 문서 PR을 만든다. 담당 문구의 추가 후보는 아래 메인 보충과 재계획 초안에 두며 사용자 확정 전이다. Rules pane의 직접 사용자 입력으로 격상하지 않는다.
+
 ### 메인 적용 판단과 승인
+
+- Art 추가 문서 PR 재계획은 `msg_13ca12fccdc4` 승인 초안과 대조한다. 메인 보충 `msg_dec1c5141657`(17:52:10Z)은 Art 담당 문구를 승인 초안과 수정 후보 두 판으로 제시하도록 했다. 수정 후보는 표시 전용 코드까지 명시하는 차이가 있어 메인 대조 뒤 사용자가 판단한다. Art 기본 파트 결정은 적용하되 문구 선택을 승인된 것으로 소급하지 않는다.
 
 - 진입 메시지: 리드급은 기본 다섯·승인 추가 파트 모두이며 사용자 모델 전환 지시가 AGENTS 변경 승인을 겸한다고 해석했다. 25만 압축·재작업 1회 뒤 50만 복귀를 Codex 세션 옵션으로 맞추는 것은 메인 판단이다.
 - `msg_0a7edf480a02`(09:59:51Z): READY 뒤 종료는 진입 한 번만이었다. 남은 일이 있으면 계속하고 답을 기다릴 때만 턴을 끝낸다.
@@ -203,6 +212,15 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 같은 산출물 수정3회 초과를 `msg_32ccdd1dae62`로 메인에 알렸다. 메인 `msg_59c9ef934fa2`는 현재 범위 계속을 판단하고 #3 두 호스트 실측과 다시 어긋나 같은 지점을 수정해야 하면 먼저 멈추고 원인(파서 설계/표본 누락)을 보고하도록 했다. 보충 `E/guard-fix-01-design-supplement-01.md`·전달 `msg_c9b994e9011e`를 작업자가 수신·대조했으며 마지막 보완 뒤 조건 미발생이라고 보고했다. 독립 확정 실패 각1회와 별도이며 재검증은 #1 그룹 파이프/OR/finally·#3 두 호스트 옵션 소비를 필수 확인한다.
 - 생존 helper는 현재 Dispatch 신호10·최대390초·초과1구간·질문대기0, exit1이었다(`E/guard-fix-01-final-liveness.json`·`guard-fix-01-liveness-execution.json`). 최신100건에 현재 Dispatch 신호는 모두 있으나 과거 Run 전체 범위가 아니다. 5분 준수로 보고하지 않는다. 제품 판정/확정 실패와 별도 절차 이탈이다.
 - 신규 Opus의 verifies는 이번 수정 Task `task_3fe8f2e6ca86`다. 이전 #1~#9와 새 귀속을 연결하고 전체 PR2 보존·내용·사람 가독성을 실사한다. 실제 Codex 진입은 변경 명령을 전달하지 않는 가짜 CLI 계획을 새로 만든 뒤 리드 기동/R-6 메인 신뢰 처리와 조율한다. 이전 live 계획의 실제 로컬 bare push는 재사용하지 않는다. 실제 trust·같은 경로 새 세션·exec/code-mode/headless와 Linux CI는 계속 미실행이다.
+
+### PR2 첫 수정 재검증 종료
+
+- 신규 Opus Task `task_95d61c26df09` / Dispatch `ctx_d78fde8cee77`의 writes-end `msg_760a1cd9f850`·worker_done `msg_18288b5312f0` failed를 대조했다. 판정 `E/guard-recheck-01/verdict.md` SHA256 `9547898b46df731872231dc804d25d8d207514d1474ce28280b1c033fac69f98`와 context 전체·신규 시험4파일을 읽었다. verifies는 수정 Task `task_3fe8f2e6ca86`이며 **NOT PASS**다.
+- #1~#9의 원래/추가 표본 수정은 확인됐다. 새 차단은 #10 백그라운드 cd 위치, #11 실패 조건 본문 위치, #12 exit로 끝나는 실패 경계 오탐, #13 Windows PowerShell 위치 인자/옵션, #14 Command·cmd 꼬리 결합, #15 pwsh CommandWithArgs, #16 iex 약어·콜론·리터럴 파이프, #17 catch 타입 목록, #18 PowerShell 백틱 인용 오탐이다. #12 전부와 #13 네 표본·#15 두 표본은 첫 수정이 만든 회귀다. 새 번호별 확정은 각1회이며 옛 #1~#9 각1회·개발 중 자체 보완과 합치지 않는다.
+- 저장 원시 `guard-recheck-01/raw/recheck-01/summary.json`은 전체718/통과669/실패49, leaf603/통과564/실패39다. 기존14시험472/472, 신규4시험131중39실패이며 모두 제품 결함으로 귀속했고 미분류0이다. Claude293/293이다. 제품 수정은 없고 실제 Codex 진입/신뢰·새 세션·code-mode·headless와 Linux CI는 미실행·보류다. stdin 시험 통과로 대신하지 않는다.
+- 구현 수치/hash·사후 재구성 주장은 독립 재집계와 일치한다. 다만 지원 동작 주장은 설치 호스트 실측과 다르고 정상 exit 관용구 회귀가 있다. 호스트별 CLI 의미와 위치/종료 경로를 충분히 나누지 않은 파서 설계가 잠정 원인이다. 메인 `msg_59c9ef934fa2`의 조건에 따라 중간 `msg_0373f32408b6`로 즉시 알렸고 후속 제품 수정은 판단 전 시작하지 않는다. N1 일반 순차 cd 성공 가정·N4 catch 예외 경로, #16 파이프 범위와 N2/N3 후속 후보 해석도 최종 판정에 남아 있다.
+- `E/settle-guard-recheck-01.mjs`는 실행입력28·고정입력83·신규시험4·판정/메모 hash를 대조해 불일치0·허용 밖 Git 경로0을 확인했다. 이 정산 뒤에만 Art 결정/goal 기록을 썼다. worker-show failed/settled→release external retained→동일 idle pane close ptyKilled=true, reclaimable0이며 재사용하지 않는다. 제품 PASS와 다른 소유·입력 정산이다.
+- 생존 helper 원시는 최신100건에 현재 Dispatch 전체를 포함하며 신호16·최대306초·초과305/306초 두 구간·질문0, exit1이다(`E/guard-recheck-01-final-liveness.json`). 검증자가 공개한 두 번의 5분 초과와 일치한다. 최초 메모 전 heartbeat 시도2개는 hook에 막혀 전송되지 않았고 우회하지 않았다는 판정 기록을 유지한다. 절차 이탈을 제품 확정 실패에 더하지 않는다.
 
 ## 다음 계획 후보
 
