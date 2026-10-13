@@ -123,17 +123,17 @@
 
 ## 재개 지점
 
-다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T04:11:34Z다. 범위 승인 직후 goal branch를 만든 시점이다.
+다음 리드는 이 블록부터 읽는다. 기록 시각은 `date -u` 2026-10-13T04:38:16Z다. 무료 시범을 측정하고 사용자 결정을 메인에 올리기 직전이다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 무료 시범 Sol의 `worker_done`을 받아 원본 경로·SHA256을 직접 대조하고, 격자 후처리·프레임별 색 분포·미리보기를 만든다 |
-| 열린 Task·Dispatch | 무료 시범 Task `task_e97b1225c67a` / Dispatch `ctx_1f1c9bb71423`(Sol pane `term_edb29807-2049-4a1e-b98d-94e39c7d068a`) |
+| 다음 첫 일 | 무료 시범 결과의 사용 결정을 메인을 거쳐 받는다. 받으면 결정을 이 goal에 적고 시범 PR을 연다 |
+| 열린 Task·Dispatch | 없다. 무료 시범 Task `task_e97b1225c67a` / Dispatch `ctx_1f1c9bb71423`은 정산했고 Sol pane을 닫았다 |
 | 작업 공간 / branch | `art-active` / `docs/demo-video-art-trial-20261013`(base `a570dbf3`) |
 | PR | 없다 |
 | 리드 세션 / Run | `term_63ecd821-d71c-4eab-8ab0-b5fc6da987d1` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`) |
 | 로컬에만 둔 변경 | 없다 |
-| 작업자·실행 자원 | Art 작업자 pane 1(무료 시범 Sol). Unity는 아직 이 작업 사본에서 연 적이 없다 |
+| 작업자·실행 자원 | Art 작업자 pane 0. Unity는 아직 이 작업 사본에서 연 적이 없다 |
 | 남은 결정·준비 | 무료 시범 결과를 본 뒤 사용 여부와 다음 경로(사용자). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정 |
 
 **남은 순서**: 비교 글 → 무료 시범 → 시범 PR → UI 창 PR → 효과 PR → 10-21 판단 → 발판·지형 PR → 마지막 손질 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검 → R-8.
@@ -153,12 +153,19 @@
 
 ## 실제 결과와 미실행
 
-### 무료 시범 — 진행 중, 2026-10-13
+### 무료 시범 — 생성 끝, 사용 결정 대기, 2026-10-13
 
 - 계약: 근거 폴더 `contracts/sheet-trial-sol-v1.md`(1판, 04:16Z). 배정 `gpt-6.1-sol` max, 배정 신호 해당 없음(측정·조사).
 - 기동: 리드 pane vertical split, 최초 실행 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 표시 「GPT-6.1-Sol max」, backend `unknown`. 첫 화면에 선택창 없음.
 - 연결: `worker-start`가 `turn_start_unobserved`를 돌려줬다. 입력창 draft가 「[Pasted Content 11719 chars]」로 계약 6,932자와 관측 머리말 약 4,787자의 합과 맞아, [draft 복구 정본](../../../00_Document/operations/ORCA.md#official-contract-draft)대로 Enter만 한 번 보냈다(04:18:50Z). 뒤이어 draft가 사라지고 Working 화면을 관측했다.
-- 원시: 근거 폴더 `sheet-trial/`의 `launch-*`, `worker-start-receipt.json`, `draft-read-1.json`·`draft-read-2.json`, `draft-enter-*`.
+- 완료: Sol `worker_done` `msg_a5b42967364f`(04:36:01Z, outcome succeeded). 생성 1회 뒤 네 조건을 관찰해 일찍 멈췄다. 보고는 근거 폴더 `sheet-trial/sol-report.md`다.
+- 리드 대조:
+  - 생성 폴더 `~/.codex/generated_images/01a1337b-…/`에 파일이 하나뿐이고, 원본과 복사본 `attempt-1.png`의 SHA256이 같다(`1eab4314…`).
+  - Sol 대화 기록(rollout)의 이미지 생성 호출은 04:23:10Z 한 번이다. 맥락 메모 작성 호출(04:21:52Z)이 생성보다 먼저다.
+  - `git status --porcelain` 출력이 비어 있다.
+- 정산: `worker-release`는 `retained`(손수 split한 pane이라 `external_terminal`)였다. 리드가 idle을 확인하고 04:37:02Z에 pane을 닫았다.
+- 측정·미리보기: 결과 표와 리드 눈 확인은 [비교 글의 무료 시범 결과](sheet-method-comparison.md#무료-시범-결과)에 있다. 분석 도구는 근거 폴더 `tools/`(`sheet-analyze.ps1`, `sheet-realign.ps1`, `frames-gif.ps1`, `gif-loop.cjs`)에 있고 출력은 `lead-analysis/`에 있다.
+- 원시: 근거 폴더 `sheet-trial/`의 `launch-*`, `worker-start-receipt.json`, `draft-read-1.json`·`draft-read-2.json`, `draft-enter-*`, `lead-analysis/`의 `worker-release-receipt.json`·`sol-close-*`.
 
 ## 다음 계획 후보
 
