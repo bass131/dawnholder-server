@@ -647,9 +647,40 @@
 
 ## 재개 지점
 
+### 재실행 카드 작성과 실사 통과, 사용자 실행 승인 대기 — 2026-10-13T07:14Z
+
+기록 시각은 2026-10-13T07:14:37Z(`date -u`, KST 16:14, 원시 N2/`time-goal-record-14.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. RC는 E/`container-rerun-card`, RCR은 E/`container-rerun-card-review`, RCR2는 E/`container-rerun-card-review-2`(모두 새 폴더)다.
+
+- **현재 상태: 사용자 실행 승인(G2) 대기.** 리드 승인 묶음은 `msg_d1574a756c0d`(06:54:27Z, RCR2/`send-main-ready.txt`)다. 메인이 현황판 `core-g2-rerun`으로 사용자에게 올렸다(`msg_e4a309fc765b`, 07:13:54Z, 메인 추천 A). 사용자는 자리를 비웠다. 답이 오기 전에는 아무것도 실행하지 않는다.
+- **재실행 카드(RC):** 리드가 시도 1 카드 v2.2 복사본에 값만 바꿔 썼다. 맥락 메모는 RC/`context-memo.md`(SHA256 `25C0B36C…D8B1`), 카드는 RC/`card.md`(SHA256 `7362EFD5…54C5`)다.
+  - 바꾼 값: 검토본 경로 7개, `card-session.ps1`의 카드 경로와 빈 `$planHash`, 판정자 모델(아래)이다. 관리 비밀은 결정 B의 세 번째 새 경로 `%LOCALAPPDATA%\Dawnholder\container-rerun\`이다. 이름·포트·이미지 digest·메모리·정지 대기 30초·Attempt는 그대로다. `Invoke-ContainerCardStep.ps1`은 바이트까지 같다.
+  - 계획 밖 변경(리드 관찰): `Test-CardSession.ps1` 15행 `$reviewHash`다. 세션 예행이 검토본 hash를 상수로 들고 있어 첫 예행(RC/`rehearsal-rerun.txt`)이 「Approval plan changed after coordinator review.」로 실패했다. 새 검토본 hash `8C628E72…A262`로 바꿨다. 리드가 계획 키만 보고 그 hash의 사용처를 찾지 않은 첫 발생이라 기록만 한다.
+  - 예행: RC/`rehearsal-rerun-2.txt`에서 단계 예행 다섯과 세션 예행 5.1·7이 통과했다. 120자 초과와 파서 오류는 0이다.
+  - 정지 대기 30초(R-13): 30초보다 긴 대기는 측정하지 않았다. 나아진다는 근거가 없어 30초로 두고 R-13 위험을 받아들인다(card.md 215행).
+- **첫 실사(RCR): NOT PASS.** 신규 `gpt-6-astra` xhigh 검증자다. handle `term_73a16a89-73da-4825-b9f7-3ba3c3b385cd`, Task `task_a92e145f6e48`, Dispatch `ctx_bcbd5810d052`. 계약은 RCR/`contract.md`(SHA256 `9C25FB80…637F`), worker_done은 `msg_5b1658283121`(06:26:53Z), 판정은 RCR/`verdict.md`(SHA256 `30E368A7…C495`)다.
+  - 통과: 예행 두 셸 12회와 독립 검사 26건이다. 실행 스크립트 결함은 0건이다.
+  - #1(카드 문서, 리드): 「v2.2와 다른 곳은 아래뿐」이라 쓴 변경 표가 card.md 본문 변경 일부를 행으로 대응하지 않았다. 리드가 diff와 대조해 맞다.
+  - #2(검증자 자기 절차): heartbeat 간격 325초다(`msg_1395d662667e` → `msg_4584f7c1b937`). 리드가 정본 check-liveness로 같은 값을 확인했다(RCR/`lead-liveness-picked.txt`). 검증자가 escalation `msg_05d2f1cb61b9`로 스스로 알렸다.
+  - O-1(비차단): R-13 근거 문장 하나가 미측정 범위까지 단정했다.
+  - 처분: #1은 표에 「위치」 열과 빠진 행을 더해 고쳤다. O-1 문장도 고쳤다(RC/`context-memo.md` 「첫 실사 반영」). #2는 그 검증자 귀속이고 첫 실사의 다른 결론은 유지한다. 처분을 메인 알림 `msg_966f464e8678`에 담았고 다른 처분은 오지 않았다. heartbeat 5분 초과의 이 goal 안 세 번째 발생이다. 반복 규칙 후보는 메인의 Rules 전달 목록에 이미 있다.
+- **재실사(RCR2): PASS.** 신규 `gpt-6-astra` xhigh 검증자다. handle `term_dcbad065-78fc-486e-9d56-8516f5b8f35f`, Task `task_98796041532b`, Dispatch `ctx_3d01673c1b05`. 계약은 RCR2/`contract.md` v1(SHA256 `9F825C05…0FA3`)이다. v1.1은 범위 3을 고정 129개로 한정했고, 번호 없는 `rehearsal-rerun-*` 119개는 불변 미검토로 뒀다. v1.2는 아래 heartbeat 처분이다. worker_done은 `msg_135d201b2c5d`(06:52:02Z), 판정은 RCR2/`verdict.md`(SHA256 `6360AAA5…CAB0`, 메인 R-2 확인)다.
+  - 범위 1~4에 지적이 없다.
+  - 비차단 표현 관찰 둘: O-1은 맥락 메모 52행 「13개 덩어리」의 단위가 모호하다는 것이다. O-2는 54행 「스크립트 네 파일」이 실제로 PS 3개와 JSON 1개라는 것이다. 근거 메모의 표현이라 고치지 않는다.
+  - 검증자 자기 절차 #1: heartbeat 간격 271.417초다. 계약의 4분 예방 간격은 넘었지만 차단 기준 300초 안이다. 리드 해석으로 비차단 처리했다(RCR2/`contract-v1.2.md`·`lead-heartbeat-disposition.txt`). 메인이 그대로 받았다(`msg_e4a309fc765b`).
+  - 리드 R-2: 표 미대응 0, 변경 덩어리 18개 중 미대응 0이다. 고정 129개 중 바뀐 파일은 card.md·context-memo.md 둘이다. 정본 생존 측정 최대 간격은 272초다(RCR2/`lead-liveness-picked.txt`).
+- **판정자 모델: 신규 `gpt-6-astra` xhigh.** v2.2의 「신규 Opus」는 핫픽스 결정 3 전 문구다. 메인이 운영 판단으로 확인했다(`msg_e4a309fc765b`).
+- **정산:** 두 검증자 모두 release(retained) → tui-idle → 마지막 화면 → close로 마쳤다(각 폴더 `lead-close.json`).
+- **자원 상태:** 바뀌지 않았다. 컨테이너와 볼륨은 없고 이미지는 보존한다. 새 비밀 루트 `container-rerun`은 아직 없다. 이번 구간은 Docker·WSL·SQL을 쓰지 않았다.
+- **다음 할 일:**
+  1. 사용자 G2를 기다린다. 승인이 오면 실행 계획 파일(검토본과 ExecutionApproved·G2만 다름), `$planHash`, 입력 hash 목록(카드 파일과 `99_Tools/database` 추적 파일)을 채운다.
+  2. 다른 리드(Content·World·Rules·Art)에 알리고 여유 메모리 4GB 이상을 원시로 남긴다. 그 뒤 신규 `gpt-6.1-sol` max 실행 작업자를 연다. World의 Unity batch 창은 09:00Z까지다(`msg_3e153f50ea8a`, 회신 `msg_3016769ea232`).
+     - 실행 계약에 넣을 것: CODE_CONVENTION 원문 묶음, 시작 확인 Git 명령을 담은 허용 목록, 정지 영수증·ExitCode 보고, `failure-logs-*`는 이름만 보고, 지원 셸 dot-source 첫 줄.
+  3. 신규 Astra 판정 → 카드 C10 정리.
+  4. goal 끝에 세 비밀 폴더 처분을 한 번에 묻는다(결정 B). 10-24에 재접속 복원 가능성을 메인에 보고한다.
+
 ### 정의 수정 구현·검증, 문서 정정과 동작 커밋 — 2026-10-13T05:46Z
 
-기록 시각은 2026-10-13T05:46:06Z(`date -u`, KST 14:46, 원시 N2/`time-goal-record-13.txt`)다. **이 블록이 현재 재개 정본이다.** 약어는 아래 블록과 같다. MDR은 E/`module-definition-fix-review`, MDD는 E/`module-definition-doc-fix`, MDV는 E/`module-definition-doc-fix-review`(모두 새 폴더)다.
+기록 시각은 2026-10-13T05:46:06Z(`date -u`, KST 14:46, 원시 N2/`time-goal-record-13.txt`)다. 이 블록은 직전 재개 정본이다. 약어는 아래 블록과 같다. MDR은 E/`module-definition-fix-review`, MDD는 E/`module-definition-doc-fix`, MDV는 E/`module-definition-doc-fix-review`(모두 새 폴더)다.
 
 - **구현(만들 것 7):** 신규 `gpt-6-astra` xhigh 구현자다. handle `term_7174ae6c-ddee-44f5-a518-96653e6085ac`, Task `task_8b2bf4b04f25`, Dispatch `ctx_c2ab185be5bc`. 계약은 MDF/`contract.md` v1(SHA256 `07DA1E62…F278`), 기동 기록은 MDF/`launch-record.txt`, worker_done은 `msg_8072ffe01101`이다.
   - 내용: 기대 정의를 엔진 저장 형태(머리말 「CREATE」 + 공백 셋)로 바꾸는 규칙을 `ModuleHash.Common.ps1` 한 곳에 뒀다. bundle 읽기·hash 소비자·시험 fixture가 그 규칙을 쓴다. manifest와 verify-schema의 기대값 18개, 004 선언 checksum을 고쳤다(004 제자리 수정은 「적용 중인 사용자 결정」 첫 항목).
