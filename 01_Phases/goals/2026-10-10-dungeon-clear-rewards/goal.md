@@ -1,6 +1,6 @@
 # 던전 클리어·보상과 눈에 띄는 결함 둘
 
-상태: **PR221·PR230은 병합됐다. C9 S-1·S-2 최소 수정의 시험본 v1은 겹침6/6이나 기존 회귀12/14에서 확인 클릭2건이 실패했다. 현재 v2는 원인 가설에 따른 미실행 후속 수정이다. 구현자는 failed로 정산·종료했고 새 Astra가 원인 확인과 수정을 이어간다. 신규 독립 검증·세 크기 실화면은 아직 남았으며 C9는 완료가 아니다. 다음 goal은 자동 시작하지 않는다.**
+상태: **오늘 마감 결정으로 안전 지점에서 중단했다. PR221·PR230은 병합됐으나 C9는 미완료다. 시험본 v1은 겹침6/6·기존 회귀12/14이고 확인 클릭2건의 원인은 미확정이다. 후속 R-1은 제품쓰기0·Unity실행0으로 failed 정산·pane 종료했으며 미실행 v2 두 파일은 미커밋 보존했다. 사용자 ProjectSettings는 원래 bytes로 복원했다. 새 세션의 회귀 실행·독립 검증·세 크기 실화면이 남아 있다. 오늘 추가 실행과 다음 goal 자동 시작은 없다.**
 
 - 담당: Content 리드 [Content 리드 Astra], 지정/표시 gpt-6-astra xhigh, backend unknown. 시작 기준 origin/main = cc20d428f7988fdcb232a7c811cf2e729446abdc.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/content-active`. 결함 PR branch `fix/hud-gold-inventory-panel-20261010`(base `cc20d428`, 병합 뒤 원격 삭제). 던전 패킷·창 PR branch `feat/dungeon-clear-packets-20261011`(base `e775bc77`, 2026-10-11에 origin/main `6782cd67`을 합침, 병합 뒤 원격 삭제). 던전 클리어 PR branch `feat/dungeon-clear-server-20261011`(base `999b1b98`).
@@ -171,6 +171,8 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 ## 적용 중인 사용자 결정
 
+- **오늘 마감·재부팅 전 안전 지점**(메인 전달 `msg_9c6867e907ba`, 2026-10-13T18:33:00Z). 사용자 원문 「일단 오늘 작업 좀 오래해서 현황판 수정이랑 나머지 리드급 남은 작업만 마무리하고 쉴까 하는데 어때?」, 「대시보드 결정 응답: 1) 오늘 마무리 방식 - 40분 안에 끝낼 것만 끝내고 안전 지점에서 멈출지, 지금 바로 멈출지 → A 40분 마감」. 메인 전달이며 이 pane의 사용자 직접 입력으로 격상하지 않는다. 효과: 19:15Z(04:15 KST)까지 정산·작업자 pane 종료, 신규 작업자/검증자/Unity·DB·Docker·WSL 큰 실행 금지, 미완 제품은 미커밋 보존, goal 재개 기록만 commit/push. 리드 pane은 사용자가 닫는다. Content의 오늘 추가 batch는 없고 ProjectSettings의 자동변경 한 항목을 원래 사용자 hash로 지금 복원한다. R-1은 조사 결과의 확정/미확정을 남기고 정산한다.
+
 정본에 반영하지 않은, 이 goal에만 적용하는 사용자 결정이다. 모두 메인이 전달했으며 리드 pane의 사용자 직접 입력으로 격상하지 않는다.
 
 - **C9 최소 수정·UI 계층 별도**(메인 `msg_b78153624c8b`, 2026-10-13T15:39:15Z, 10-14 KST). 사용자 원문 순서: ① 「UI쪽에 Stacking 처리가 제대로 안됐나보네 Z값 기준으로 정렬하는거랑 / 그리고 원래 UGUI 형식 보면은 부모 오브젝트로 하위 오브젝트로 묶어서 관리하기도 하니까, 그 부분 설계가 아예없나?」 ② 「그리고 Stacking할때 일단 분류상으로 전역 Variable로 0,1,2,3,4 식으로 카테고리로 먼저 Z Depth 분류하고 이후에 안에서 세부적으로 Stacking Value 셋업하는 방식으로 하는게 더 깔끔해보이긴 해」 ③ 「그리고 값으로만 관리하기 힘드니까 변수명으로 Enum 컨트롤 해도 좋고」 ④ 「대시보드 결정 응답: 1) UI 계층 설계 - C9는 두 결함만 고치고 계층 설계는 따로 할지, C9에 같이 넣을지 → A C9 최소 수정 + 계층 따로」. 효과: C9는 S-1·S-2만 최소 수정하고 공용 UI 계층은 [BACKLOG ui-layer-sort-design](../../../00_Document/operations/BACKLOG.md#ui-layer-sort-design의-원문검토-범위)으로 분리한다.
@@ -205,18 +207,19 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 
 | 항목 | 값 |
 |---|---|
-| 단계 | 「검증·실제 플레이」 중. 서버·봇 검증 통과, C9 범위1~4 수행 완료·제품 판정 차단 S-1·S-2 |
-| 다음 첫 일 | 신규 Astra가 P7 확인 클릭 실패 F-1/F-2와 미실행 v2를 확인·수정 → 동일4클래스 회귀와 새1클래스6시험 → 신규 Opus 독립 검증·세 크기 실화면. Core 다음 SQL창 준비(msg_b8826b588005)를 반영해 초기 조사/코드만 시작하고 매 batch는 네 파트 새 조율·4GiB 관문을 거친다. 사용자 최소 수정/계층 분리와 메인 숨김·닫음 지침을 구분한다 |
-| 실행 조건 | 큰 실행 전 네 파트 통지와 새 물리/커밋 여유4GiB gate. 신규 MCP 연결 승인 필요를 메인에 미리 알린다. 다음 실화면은 종료 준비 공식 ask의 리드 확인 응답 뒤에만 Editor를 닫는다 |
-| 열린 Task·Dispatch | 없음. 구현 task_1cf65e5fd8c8 / ctx_69cc0cc2d6da는 worker_done failed(msg_8091543706cc). 원문 실사 후 worker-release retained/external_terminal→정확 pane close ptyKilled=true.18:05:45Z worker pane0·리드1. 이전 선행 시험/C9도 정산 완료 |
-| 결정 대기 | 새 제품 범위 승인 요청 없음. Art 현재 쓰기 충돌 없음 확인. 새 MCP 연결 승인은 다음 실화면 gate에서 확인 |
-| 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011(base999b1b98). main44bd4319를 충돌 없이 합쳐 d8cc35fa27be4f770bb01c434e6a18074d225ba8로 push. C9는 이 HEAD·v18에서 수행 |
+| 단계 | 사용자 마감으로 안전 지점 중단. C9 미완료, S-1/S-2 및 확인 클릭 F-1/F-2(d 미확정), 현재 v2 미실행 |
+| 다음 첫 일 | 새 리드가 현재 Orca 신원·branch/HEAD·미커밋 4파일/hash와 c9-fix-r1/report.md를 확인한다. 복원 후 ProjectSettings hash를 새 계약에 고정하고 신규 Astra가 동일4클래스14회귀부터 재개한다. 별도6시험·신규 Opus 독립 검증·세 크기 실화면이 남는다. 과거 Task/Dispatch/pane과 release는 재사용하지 않는다 |
+| 실행 조건 | 오늘 신규 작업자/검증자/Unity·DB·Docker·WSL 큰 실행 금지(msg_9c6867e907ba). 다음 세션 실행은 현재 네 파트와 새 조율·공식 ask/1회 release·직전 물리/커밋 각4GiB·Unity0/lock없음 확인 후에만 한다. MCP 승인과 실화면 종료 ask도 당시 현재 신원으로 확인한다 |
+| 열린 Task·Dispatch | 없음. R-1 task_7cc454b14f0d / ctx_79042651b1db는18:42:25Z worker_done failed(msg_6f7959f6e056), 요구검증 미실행/마감 정산이다. 원문 실사→worker-release retained/external_terminal→정확 pane close ptyKilled=true. 선행 구현/시험/C9도 정산·종료 완료 |
+| 결정 대기 | 새 제품 범위 사용자 결정 없음. 다음 실화면 MCP 연결 권한은 메인과 확인한다. 오늘 마감/리드 pane 종료·재부팅은 메인이 전달한 사용자 결정이며 리드 스스로 자기 pane을 닫지 않는다 |
+| 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011(base999b1b98). R-1 및 마감 기록 직전 HEAD83ffad2641aa9d29f852a11b25f8d9b3860b54db. 이후 이 goal 기록만 commit/push하며 실제 기록 commit SHA는 c9-fix-r1-prep/day-wrap-git.json과 메인 마감 보고에 남긴다 |
+| 미커밋 파일 | 제품: 03_Client/Assets/Scripts/UI/DungeonClearRewardWindow.cs(25e10cb2…), UI/StageClearUI.cs(1a55a155…), 합계+52/-4·v2 미실행. 사용자: 03_Client/Assets/Resources/MinimapRT.renderTexture(7123af77…), 03_Client/ProjectSettings/ProjectSettings.asset(4a8db0bd…). 네 파일 모두 작업 사본에 보존하며 마감 커밋에서 제외 |
 | main 합류 | 15:53:38Z 최신 origin/main b9f78ff07514b54b80370cbfca1f0df33baa5ac4를 충돌 없이 합쳤다(merge1c593f5bf60357acf7d3bf3687e65cafa1304f66). World v19·로그인 포함. DungeonClearSmoke는 변경된 ProbeBase의 handshake→login→CharacterSelect를 상속하고, 서버 시험 fixture도 LifecycleTestWorld.LogIn을 호출함을 정적으로 확인했다. 합친 HEAD의 C9 선행 PlayMode6개는 아래 결과대로 실행했으며 서버·봇 재검증은 아직 미실행 |
 | PR | 클리어 PR은 아직 없음. 결함 PR221·패킷/창 PR230은 사용자 승인으로 병합됨 |
-| 리드 / Run | [Content 리드 Astra], pane term_357ea2c3-f573-4067-a8f5-a1d4c7669a21, incarnation85570fe7-8ae5-426a-b621-8fb218412149. run_b680cd89da9a, generation5. 회신 run:run_b680cd89da9a |
-| 근거 | .backups/verification/2026-10-10-dungeon-clear-rewards/(Git 밖). 최신 구현 원문 c9-fix-impl/report.md(SHA2560d932cd1…), result.json(af112d2a…), 시험별 XML·product-v1.diff/current product.diff. 리드 대조·정산 c9-fix-impl-prep/settlement-*.json, 후속 전 메모 c9-fix-r1-prep/lead-context.md. 이전 C9/선행 판정·원시는 보존 |
-| 사용자 파일 | MinimapRT7123af77…/TimeManager1a83e54a…/settings allow791ab2fd… 동일. batch가 ProjectSettings의 SENTIS_ANALYTICS_ENABLED; 한 줄을 제거해 현재5a03375a…이며 원 사용자4a8db0bd…는 그 한 줄 역변환으로 재현됨. stage/commit/stash 금지. 메인 msg_c9fac8091065에 따라 마지막 batch 뒤·실화면 전·PR 전 중 가장 이른 때 리드가 해당 한 줄만 복원하고 원 hash를 확인한다 |
-| 작업자·실행 자원 | 18:05:45Z UTC 구현 worker pane0·리드pane1·Unity0·lock없음. 마지막 batch는17:50:02Z 종료. Content 큰 실행 없음/추가release0. Core는 다음 SQL40~60분(상한2h) 창 준비를 통지했으며 실제 시작/끝과 후속 회귀를 새로 조율한다 |
+| 리드 / Run | 마감 당시 [Content 리드 Astra], pane term_357ea2c3-f573-4067-a8f5-a1d4c7669a21, incarnation85570fe7-8ae5-426a-b621-8fb218412149, run_b680cd89da9a generation5. 재부팅 뒤 역사 주소를 실행 권한으로 쓰지 않고 현재 배치·신원을 다시 확인한다 |
+| 근거 | .backups/verification/2026-10-10-dungeon-clear-rewards/(Git 밖). 최신 c9-fix-r1/report.md(89da8b2d…), result.json(e6a3ebd6…), product-final.diff(c8b18c09…). 리드 c9-fix-r1-prep/day-wrap-*에 마감 지시·복원·보존 diff/hash·정산·종료·Git 원시. 선행 c9-fix-impl의 v1 실행과 v2 미실행 원문은 보존 |
+| 사용자 파일 | ProjectSettings.asset은18:35:37Z 원 사용자4a8db0bd0b2416d9a9536527cba7ba2ae8c9e0c4e38313f7d363c359667cd21a로 정확 복원했다. MinimapRT7123af77…/TimeManager1a83e54a…/settings allow791ab2fd… 동일. 사용자 MinimapRT·ProjectSettings의 원래 dirty는 보존하며 stage/commit/stash하지 않는다 |
+| 작업자·실행 자원 | R-1 worker pane0·현재 리드1을 종료 후 목록에서 확인했다. Content 실행/소유 Unity·서버·컨테이너0; 이번 R-1은 하나도 시작하지 않았다.18:36:41Z Windows Unity/서버/dotnet/WSL 관련 프로세스와7777/14334 리스너0·lock없음. Core는 msg_ab9430189ee8로 정확 신규 SQL 자원 부재·창 반환을 보고했으나 값 기반 비밀 감사미실행을 구분했다. 다른 파트 전체 자원을 Content가 직접 감사한 것으로 확대하지 않는다 |
 | 설정 | 사용자 현행 결정 msg_ed1f78c433f4로 settings.local.json 허용 줄 유지(SHA256791ab2fd…). 과거 종료 후 삭제 조건은 대체됨 |
 | 다음 순서 | 수정·독립 검증·실화면 → PR·CI → 사용자 병합 승인 → 결과 기록·Gardener → 종료 기록 PR → 종료 점검·R-8. 다음 goal 자동 시작 없음 |
 | 아트 인계: 대장장이 | 이 goal은 `Npc_BlackSmith.prefab`·`BlackSmith.controller`·대장장이 동작 코드를 바꾸지 않는다. 컨트롤러 기본 상태 교체, 새 망치질 클립, 다듬은 시트와 `.meta`는 아트 효과 PR이 맡는다. 다음 Content goal이 상호작용 컴포넌트를 그 프리팹에 붙이게 되면 쓰기 전에 아트와 파일·시기를 나눈다(아트 `msg_55ea71c3ee0a`, 리드 회신 `msg_136ca02071fc`) |
@@ -573,6 +576,16 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - 자원: batch1 17:32:54~17:33:34Z exit0, batch2 17:49:26~17:50:02Z exit2(실제 시험실패·timeout아님). 둘 다 원시 물리/커밋 각4GiB 이상·Unity0/lock없음에서 시작해 음소거0→1→0 복원, 종료 뒤Unity0를 확인했다. 네 파트 사전·시작·종료 통지를 보존했다. 두 번째 release17:48:23Z는 Art 이전 계획+이번 사전 통지를 근거로 했고 새 Art 충돌없음 회신17:48:40Z는 실제 Unity 시작 전 도착했다. 이 시각 차이를 숨기지 않는다.
 - 절차·보호: 전체 inbox1000에서 현재 Dispatch heartbeat14개를 계수해 최대4분 계약 초과5구간(271/284/259/256/250초),5분초과0을 확인했다. 앞선3→4구간 중간 보고는 최종5로 교정하며 제품 실패 수에 합산하지 않는다. 보호4hash는 동일. 홈 TestResults 자동 사본은 마지막 XML과 byte/hash 동일, Codex 자동 transcript는 실행 중 lock으로 hash미확인이다. 자동 부수 출력을 규칙 PASS로 표현하지 않는다.
 - 정산·다음: worker_done failed msg_8091543706cc→worker-release retained→정확 pane close,18:05:45Z pane0·리드1·Unity0/lock없음. 완료 실패 산출물1건과 F-1/F-2 원인 미확정을 기록한다. 기존 S-1/S-2 독립 차단 각1회·개발 중 자체 수리·미실행 v2를 같은 번호의 확정실패로 이중 집계하지 않는다. 새 Astra가 기존 v2의 타당성부터 확인하고 필요한 최소 수정·두 필터 실행을 새 자원 조율 뒤 수행한다. 그 뒤 신규 Opus의 독립 판정과 C9 실화면을 진행한다. 메인 보고 msg_316b1243b10d·msg_a9765f461276, 후속 준비 메모 c9-fix-r1-prep/lead-context.md.
+
+### C9 확인 클릭 R-1 — 원인 미확정·실행 없이 마감 정산, 2026-10-14
+
+- 기준 HEAD `83ffad2641aa9d29f852a11b25f8d9b3860b54db`, 계약 SHA256 `f3854e4a90c5a8dd677232d6e54ee52ba8fcb599fe3abedebffd07f3f3901fe5`. 신규 Astra `task_7cc454b14f0d / ctx_79042651b1db`는 요청/최초 launch/화면 gpt-6-astra xhigh, backend unknown이었다. 첫 맥락·52입력/55경로 확인 뒤 기존 상태/씬/포인터 흐름과 원문을 읽었다. **이번 제품쓰기0·테스트/fixture/harness쓰기0·Unity실행0**이며 인계 v2를 그대로 첫 후보로 채택한 정적 판단만 남겼다.
+- F-1/F-2는 모두 **(d) 원인 미확정**이다. v1의 표시 공개 뒤 LateUpdate 배치와 이미 읽은 포인터 좌표의 어긋남은 가설이다. v2의 배치 뒤 공개가 해결했는지, 동적 프레임·좌표 및 v1/v2 A/B는 미실행이다. 선행 v1의6/6·12/14를 현재 v2 통과로 쓰지 않는다. 요구 검증은 같은4클래스14회귀 → 별도1클래스6시험 → 신규 독립 Opus → 709×399·802×451·1920×1080 실제 C9 화면 순으로 남는다.
+- 공식 실행 질문 `msg_06d4fe01128c`는 물리151856/커밋여유1594644KiB 및 Core 우선창으로 `msg_4fc0b92eb17e` HOLD 답을 받았다. 이후 메모리는 회복됐지만 마감 지시 `msg_ba939809dbdf`에 따라 실행하지 않았다. Core는 실제 fixture 중단·자원 정리 후 `msg_ab9430189ee8`로 창을 반환했으며 반환을 오늘 새 실행 권한으로 쓰지 않았다. 해당 회차의 failed는 필수 검증 미실행 정산이고 확정 제품 결함 횟수 증가가 아니다.
+- 최종 원문 `c9-fix-r1/report.md` SHA256 `89da8b2d8f7ae0c87fcb7038008bea8f433f2373ec11429cbfe7e6a9a89fd64c`, `result.json` SHA256 `e6a3ebd6565ccbe62ca93a3e847cd421a309de1aa86bdc727748761f44b8a650`. 리드는 원문 전체·실제 제품/보호 hash·diff·수신 원시를 대조했다. 선행 v2와 제품 bytes는 동일하고 저장 diff SHA256 `c8b18c09626bfa6c0cda43d4d299bfebb8504e40003624d7c999153b43be9a69`는 선행 PowerShell diff와 저장 형식이 달라 hash만 다르다. 이번 새 변경량이 아니라 인계 제품 변경량 +52/-4다.
+- 최종 고정입력은51개 동일+승인된 리드 설정복원1개다. 리드가18:35:37.6117263Z `Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY` 한 항목만 복원해 ProjectSettings 전체 SHA256 `4a8db0bd0b2416d9a9536527cba7ba2ae8c9e0c4e38313f7d363c359667cd21a`가 원래 사용자 bytes와 일치했다. MinimapRT·TimeManager·settings allow·시험/meta는 보존했다. 전후 bytes/hash는 `c9-fix-r1-prep/day-wrap-ProjectSettings-restore.json`, 제품 diff/hash는 `day-wrap-product.diff`·`day-wrap-preserved-files.json`에 있다.
+- 운영: 최종 현재 신원의 heartbeat10개, 인접 최대208초,240초/300초 초과0을 리드가 원시에서 재계수했다. 작업자의 첫 heartbeat 파싱0건 오류 등 도구상 오류는 report/result에 교정 원시와 함께 보존하며 제품 실패로 합산하지 않는다. provider transcript의 사용 중 hash미확인은 그대로 남겼다. 정상 종료 신호 `msg_6f7959f6e056`(18:42:25Z, failed)와 신원을 대조한 뒤 worker-release retained/external_terminal → 정확 pane `term_68f0246d-7211-4801-8725-3953e7ff766e` close ptyKilled=true를 확인했다. 리드 pane은 유지한다. `c9-fix-r1-prep/day-wrap-*`가 정산·종료·수신·자원 관측 원시다.
+- 본 마감 기록은 정산/재개 기록이며 제품·문서 독립 PASS가 아니다. 오늘 새 검증자를 열지 않는 마감 지시를 적용했고, 현재 goal 전체 종료·PR·Gardener는 수행하지 않았다.
 
 ### 운영 기록(첫 발생)
 
