@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13). 시범 PR233은 병합됐다. 사용자는 브라운 B1을 선택했다. ART-UI-03 renderer 회귀·ART-UI-02 보고 수량 수정은 독립 재검증 PASS로 끝났다. 새 계약으로 전체 키트 B1 변환을 진행한다. Unity 적용은 변환·검증·메인 페이지 갱신 뒤 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13). 시범 PR233은 병합됐다. 사용자는 브라운 B1을 선택했다. ART-UI-03 renderer 회귀·ART-UI-02 보고 수량 수정은 독립 재검증 PASS로 끝났다. 전체 키트 B1 구현·자체검사가 끝났고 신규 Opus가 독립 검증 중이다. Unity 적용은 변환·검증·메인 페이지 갱신 뒤 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며, 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 현재 pane을 닫고 새 목표에는 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -155,8 +155,8 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | renderer 수정 독립 PASS 뒤 사용자 선택 B1 전체 키트 변환을 새 Astra 계약으로 진행한다. 신규 Opus 독립 검증→메인 페이지 갱신 뒤 Unity 적용은 별도로 잇는다 |
-| 열린 Task·Dispatch | B1 구현 Astra `task_4f9e1b1a28e7` / `ctx_49972272a111`, handle `term_3dc55b40-0e95-4b0b-a9a1-4eed30e62f49`, 실제 제출18:04:53.041Z·Working/live다. 계약 `contracts/ui-kit-b1-production-astra-v1.md`, 고정 입력·기동 원시 `ui-kit-b1-production-launch/`, 구현 출력 `ui-kit-b1-production/`. renderer 독립 검증자는 PASS·정산·pane 종료했으며 이전 세션은 재사용하지 않는다 |
+| 다음 첫 일 | 완료된 B1 전체 키트의 신규 Opus 독립 검증을 진행한다. 판정 뒤 메인 페이지 갱신, Unity 적용은 별도로 잇는다 |
+| 열린 Task·Dispatch | B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`, handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96`, 접수18:38:11Z·turn_started/Working/live다. 계약 `contracts/ui-kit-b1-review-opus-v1.md`, 고정 입력·기동 원시 `ui-kit-b1-review-launch/`, 검증 출력 `ui-kit-b1-review/`. B1 구현자는 완료·정산·pane 종료했으며 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | `term_55937e27-00b8-484e-a0d6-299b7e52cd25` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`, consumer 2). 이전 handle·Claude 세션 ID는 실행 권한으로 쓰지 않는다 |
@@ -300,6 +300,14 @@
 
 - 실제 B1 기동: 보호6패키지2240파일과 별도고정17입력의 실제 경로/hash를 확인하고 계약 관련6절 전문을 붙였다. 계약 SHA256 `58e45af39d05f3b4022490d064577d89bd6c70b75684331f3b7817059eb79bd4`, 15462자. 신규 vertical split 최초명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. Task `task_4f9e1b1a28e7` / Dispatch `ctx_49972272a111`, 접수18:03:37Z.
 - 공식 draft20,250 = 계약15,462 + 관측머리말4,787 +1 및 runtime/handle/incarnation 대조 뒤 bare Enter 한 번. 실제 제출18:04:53.041Z의 현재 Task/Dispatch user 계약을 세션 기록에서 식별했고 비어 있지 않은95줄이 대소문자까지 완전일치한다. 전송 빈 줄10개 증가로 raw 비교는 false다. draft 소멸·Working/live를 관측했고 durable start_unknown은 그대로 보존했다. 공개 transcript는 clipping이어서 후보 session_meta의 경로/UTC를 확인한 뒤 현재 계약만 읽었다. 리드 후보 검색의 DateTime 재파싱 오류와 수정은 launch 근거에 분리했다.
+
+### B1 본 변환 — 구현 완료, 독립 검증 중
+
+- 구현 완료 `msg_3748dd8b5640`(2026-10-13T18:31:24Z, succeeded)의 `ui-kit-b1-production/implementation-report.md` 전문을 읽었다. 자체33조각/12미리보기·표면21변환/12byte보존·기존B1 10개동일·46재현·104픽셀검사·205글자/17장식/최소11UI·정상거부10진입을 보고했다. 이 수치는 구현자 자체 결과이며 독립 판정 전이다. 새 생성0, 페이지·Unity 미실행이다.
+- 현재 Task/Dispatch/identity와 worker-show completed/succeeded/settled·done을 대조하고 release retained/external_terminal, exact pane close ptyKilled=true, 전체 delivery ACK 뒤0으로 정산했다. 리드는 실제980파일 전경로·size/hash를 명단과 대조해 차이0, overview/components 1x 두 그림을 직접 열어 표본 확인했다. 보고 SHA256 `abd01f7b50bca4f233b3368fb3dfeadd63c57985e2009e7a3290907d39900312`, 고정명단/리드감사 `ui-kit-b1-review-launch/package-manifest.json`·`lead-package-audit.json`이다.
+- 신규 `claude-opus-5-5` 독립 검증을 준비한다(Astra 구현, 강 로컬I/O). 새 테스트·실제 정상/거부진입·사본2회 재현·전체33픽셀·12그림/글자/여백·원본보존·규칙/보고 실사를 맡긴다. 코드는 바꾸지 않는 사본의 자료 경로/actor만 적응하며 완료980과 이전2240은 읽기 전용이다. Claude 프로세스 한정 TEMP/TMP는 `.backups/tmp/art-b1-review/`, Git Bash `/tmp`는 그대로다.
+
+- 실제 신규 독립 기동: 완료980파일 manifest와 이전2240 보호목록·추가22고정입력 및 출력부모를 기계 확인했다. 계약15993자/SHA256 `9eb05bca8cbbbde697c1d5fca57cb5cdb56040c1ae90d6bc19bca29694dea450`. 신규 vertical split에서 프로세스 TEMP/TMP만 명시한 뒤 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh/ClaudeCode2.1.296, backend unknown. 준비 satisfied/모달 없음, Task `task_5a7a117d5076` / Dispatch `ctx_86117100e676`, 접수18:38:11Z. receipt input_accepted와 turn_started·실제 Working/live를 확인했으며 별도 Enter 복구는 하지 않았다. 권한·전역 설정을 바꾸지 않았다.
 
 ## 다음 계획 후보
 
