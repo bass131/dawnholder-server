@@ -7,7 +7,7 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: PR234를 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했고, PR2 선행 시험 Opus도 쓰기 종료·정산·pane 종료했다. 시험 8파일을 실행 당시 hash와 대조해 commit `8176c438`로 고정했다. 신규 Astra 구현 → 신규 Opus 강 검증을 진행한다. PR1 최종 판정·PR·cadence 상세 정본 기록과 Archify/Unity 권한 문서 정합은 메인 지시대로 PR2 뒤 문서 PR에 남긴다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
+- 현재 차례: PR234를 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 선행 시험 Opus와 구현 Astra를 각각 정산·종료했고 시험8파일은 `8176c438`, 구현9파일은 `17432bc367f921cc1015257ad632f4211718e593`로 고정했다. 신규 Opus 강 검증을 준비한다. 실제 Codex 신뢰·새 세션·도구 진입과 Linux CI는 미실행이다. PR1 최종 판정·PR·cadence 상세 정본 기록과 Archify/Unity 권한 문서 정합은 메인 지시대로 PR2 뒤 문서 PR에 남긴다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
@@ -17,7 +17,7 @@
 - [x] 문서 재실사와 부분 관측 정리
 - [x] 문서 PR 병합
 - [>] 가드 신뢰 경계 — 소스 조사 완료, 실제 UI/신규 세션 유지 미실행
-- [>] 가드 구현과 검증 — 선행 시험 완료, 구현 위임 준비
+- [>] 가드 구현과 검증 — 구현 종료, 신규 독립 강 검증 준비
 - [ ] 가드 PR 병합
 - [ ] 종료 점검과 기록
 - [ ] 종료 확인과 교체
@@ -175,6 +175,16 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - Q1은 메인 `msg_1915fbc7b085`의 B: 원격 기본 branch를 확인할 로컬 근거가 없으면 오류 deny하며 대상 원격·사람의 로컬 복구 방법을 안내하고 자동 네트워크 조회/설정 수리는 하지 않는다. Q2~Q5는 리드 보충1(`0829fb5f…`)과 메인의 수용, Q1 원문은 보충2(`d91f3b21…`)에 있다. 보호 범위는 모든 원격의 main/각 기본 branch, 판정 가능한 입력 오류·잡힌 예외도 오류 deny, REST merge 변경/GraphQL merge·enable auto·enqueue는 deny, 조회/disable auto는 보존한다. gh pr merge 명령 자체는 disable-auto도 deny다. 명시 cd·명령 치환·리터럴 eval/iex는 포함하고 EncodedCommand 본문은 제외한다. legacy decision:block도 공식 동등 출력으로 인정하되 정상 allow/명령 rewrite는 하지 않는다.
 - writes-end `msg_aa340b5094b6`, worker_done `msg_8ad6a447e6fb` succeeded와 현재 identity를 대조하고 release external retained 뒤 동일 incarnation의 idle pane만 닫았다(`E/guard-pretest-close.json`, ptyKilled=true; reclaimable0). 생존 helper는 공식 reply 원문 포함, 현재 Dispatch 신호11·최대407초·초과1구간·questionWaits0였다. background ask 중에도 신호가 이어졌으므로 질문 전체를 면제하지 않았다. 절차 간격 이탈은 제품 결함 집계와 구분하며 메인에 보고한다.
 - 신규 Astra xhigh 구현은 첫 회차, 독립 제품 결함0이다. 신호1(열린 셸/명령줄 입력)·3(Codex hook/Windows·POSIX/Node 경계)에 따라 배정하며 선행 시험을 읽기 전용으로 고정한다. 실제 신뢰 UI·동일 경로 새 세션 유지·실제 exec/code-mode 발동과 Linux CI는 후속 독립 Opus의 강 검증에 남는다.
+
+### PR2 구현 종료와 독립 검증 인계
+
+- 구현 Task `task_2ebfebb5935a` / Dispatch `ctx_960d59bd3bad` / 계약 `E/guard-impl-contract-v1.md` SHA256 `2d0983861ae5eb5e9c9d4866c49f8c2d2a2c5ffb96d405169940371b6cd303ac`. 최초 명령/화면 gpt-6-astra xhigh, backend unknown이다. R-5 동일성·draft18105+4788 확인 뒤 bare Enter1회, 실제 제출 전문 대조와 Working을 확인했다. 최초 receipt의 start_unknown을 ready로 고쳐 쓰지 않았다(`E/guard-impl-submitted-check.json`).
+- writes-end `msg_ee636b433f40`와 worker_done `msg_de275a1fd501` succeeded를 대조했다. 보고 `E/guard-impl/report.md` SHA256 `da2e0b73ed025e458a22cdb6cf37db9195490342ddff765750db33b86e8147a4` 전체와 맥락 메모·실제 변경/원시를 읽었다. worker-show completed/succeeded→release external retained→동일 idle pane close ptyKilled=true, reclaimable0이다. 이 구현자를 재사용하지 않는다.
+- 구현자 저장 최종 회귀 `raw/impl-03`은 전체434/434·leaf371/371, 기존 Claude 회귀293/293, 추가 정책39/39·등록 wrapper10/10·CI fixture3/3이라고 기록한다. 자체 결과이며 독립 PASS가 아니다. 리드의 저장 `E/settle-guard-impl.mjs`는 선행시험8·제품9·보호입력32·최종회귀입력17의 현재 hash와 근거를 직접 대조해 불일치0·허용 밖 Git 경로0을 확인했다(`guard-impl-lead-settlement.json`). 구현 commit의 diff는9파일 +790/-2다.
+- 보충1의 root 조사 판단(`msg_08543dfe1175`, 질문 `msg_3e46aaa42f43`)에 따라 공식 git-root 조회와 Windows wrapper를 사용한다. 보고/context에서 질문ID를 회신ID로 표기한 부분은 원시 질문/실제 회신으로 구분해 후속 검증에 연결한다. 존재하지 않는 프로젝트 환경변수·전역 신뢰 설정을 추가하지 않았다.
+- 자체 보완 3회 초과 체크포인트 `msg_41cd9155e902`에 메인 `msg_4a3fc66dd26a`는 같은 범위·모델 계속을 판단했다. 이후 POSIX 분기 cwd 소실/no-space PowerShell else 보완이 이어졌으므로 「명시 정책 구분자·제어흐름/cwd」를 신규 Opus의 필수 확인 항목으로 지정한다(`E/guard-review-required-checkpoint.md`). Windows wrapper 실패 전달도 검증한다. 현재 독립 확정 제품 결함0이며 개발 중 자체 수정과 확정 실패3회를 합치지 않는다.
+- 생존 helper는 공식 reply 원문 포함 신호12개·최대403초·초과341/351/403초 3구간·질문 대기174초를 계산했다. full-run exit1이며 현재 Dispatch도 초과다(`E/guard-impl-final-liveness.json`, `liveness-execution.json`). 이를 5분 준수로 보고하지 않으며 제품/독립 판정과 구분해 메인에 전달한다.
+- 남은 강 검증은 diff/원시 실사·신규 독립 시험/실행·실제 Codex 정상 trust/같은 경로 신규 세션/exec·code-mode 진입이다. 안전한 가짜 CLI/로컬 fixture로만 명령 실행 전 차단·허용 표식을 관측한다. 필요 TUI 대상은 리드가 승인된 같은 goal의 검증 대상으로 기동하고 최초 선택창은 메인이 R-6으로 처리한다. 검증자 추가 위임·전역 설정 수동 주입·실제 원격 병합/push는 허용하지 않는다. Linux 원격 CI도 별도 실행 결과로 남긴다.
 
 ## 다음 계획 후보
 
