@@ -86,7 +86,8 @@ namespace Dawnholder.Client.Tests
                 }
             }
 
-            Assert.That(problems, Is.Empty);
+            Assert.That(problems, Is.Empty,
+                "Fix MainMenuNotice.cs: write each listed constant only with characters that font has, or add back a missing constant");
         }
     }
 }
