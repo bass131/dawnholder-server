@@ -1,5 +1,8 @@
 using Dawnholder.Client.UI;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using TMPro;
 using UnityEditor;
 
@@ -49,6 +52,41 @@ namespace Dawnholder.Client.Tests
             {
                 MainMenuNotice.TryTake(out _);
             }
+        }
+
+        // Screen check S-1: every MainMenuNotice sentence shows in the menu's error text. Its font has a static atlas, so a
+        // character missing from it and its fallbacks renders blank. Both sentences the goal names must be found.
+        [Test]
+        public void S1_EveryMenuNotice_HasAllItsCharactersInTheErrorTextFont()
+        {
+            using var menu = new MainMenuSceneFixture();
+            SerializedProperty error = new SerializedObject(menu.Controller).FindProperty("_errorMessageText");
+            var errorText = error?.objectReferenceValue as TMP_Text;
+            Assert.IsNotNull(errorText, "fixture: MainMenu.unity wires _errorMessageText");
+
+            TMP_FontAsset font = errorText.font;
+            Assert.IsNotNull(font, "fixture: the menu error text has a font");
+
+            var notices = typeof(MainMenuNotice).GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Where(field => field.IsLiteral && field.FieldType == typeof(string))
+                .ToDictionary(field => field.Name, field => (string)field.GetRawConstantValue());
+            var problems = new List<string>();
+            foreach (string name in new[] { "InvalidAccountName", "AlreadyOnlineAccount" })
+            {
+                if (!notices.ContainsKey(name)) problems.Add($"missing notice constant {name}");
+            }
+
+            foreach (var notice in notices)
+            {
+                string name = notice.Key;
+                foreach (char c in notice.Value)
+                {
+                    if (!font.HasCharacter(c, searchFallbacks: true, tryAddCharacter: false))
+                        problems.Add($"{name}: U+{(int)c:X4} '{c}' is not in {font.name} or its fallbacks");
+                }
+            }
+
+            Assert.That(problems, Is.Empty);
         }
     }
 }

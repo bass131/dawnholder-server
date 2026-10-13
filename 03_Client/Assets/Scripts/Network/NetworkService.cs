@@ -98,7 +98,7 @@ namespace Dawnholder.Client.Network
         void HandleLoginRejected(LoginResult result)
         {
             MainMenuNotice.Set(result == LoginResult.AlreadyOnline
-                ? "이미 접속 중인 계정입니다"
+                ? MainMenuNotice.AlreadyOnlineAccount
                 : MainMenuNotice.InvalidAccountName);
             ReturnToMainMenu();
         }

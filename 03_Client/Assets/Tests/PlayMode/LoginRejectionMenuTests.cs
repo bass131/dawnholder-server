@@ -26,7 +26,7 @@ namespace Dawnholder.Client.Tests.PlayMode
     public sealed class LoginRejectionMenuTests
     {
         const string AccountName = "alice_01";
-        const string InvalidNameNotice = "계정 이름은 영문 소문자·숫자·밑줄 3~16자로 입력해주세요";
+        const string InvalidNameNotice = "계정 이름은 영문 소문자, 숫자, 밑줄 3~16자로 입력해주세요";
         const string AlreadyOnlineNotice = "이미 접속 중인 계정입니다";
 
         // D3: the server answers C_Login with InvalidName and closes; the menu returns showing the name rule.
