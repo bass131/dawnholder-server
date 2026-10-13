@@ -5,34 +5,20 @@ export function commandName(value = '') {
 }
 
 function readSubstitution(source, start, end, depth) {
-  let offset = start;
-  let level = 1;
-  let quote = null;
-  while (offset < source.length) {
-    const char = source[offset++];
-    if (char === '\\' && quote !== "'") {
-      offset++;
-      continue;
-    }
-    if (char === quote) quote = null;
-    else if (!quote && (char === "'" || char === '"')) quote = char;
-    else if (!quote && char === '(' && end === ')') level++;
-    else if (!quote && char === end && --level === 0) {
-      return { offset, tokens: readShell(source.slice(start, offset - 1), depth + 1) };
-    }
-  }
-  throw new Error(`unclosed shell substitution (${end})`);
+  // Use the command lexer itself so heredoc/here-string data cannot close a substitution.
+  const nested = readSequence(source.slice(start), depth + 1, end);
+  return { offset: start + nested.offset, tokens: nested.tokens };
 }
 
-function heredocSubstitutions(body, depth) {
+function heredocSubstitutions(body, depth, powerShell = false) {
   const substitutions = [];
   for (let index = 0; index < body.length; index++) {
-    if (body[index] === '\\') {
+    if (body[index] === (powerShell ? '`' : '\\')) {
       index++;
       continue;
     }
     const dollar = body.startsWith('$(', index);
-    if (!dollar && body[index] !== '`') continue;
+    if (!dollar && (powerShell || body[index] !== '`')) continue;
     const nested = readSubstitution(body, index + (dollar ? 2 : 1), dollar ? ')' : '`', depth);
     substitutions.push(nested.tokens);
     index = nested.offset - 1;
@@ -41,11 +27,22 @@ function heredocSubstitutions(body, depth) {
 }
 
 export function readShell(source, depth = 0) {
+  return readSequence(source, depth).tokens;
+}
+
+// PowerShell permits these control keywords directly against a scriptblock brace.
+const adjacentBlockKeywords = new Set(['else', 'try', 'catch', 'finally', 'do']);
+const powerShellCatchType = /^\[[^\]\r\n]+\]$/;
+// gh API placeholders are data, including a standalone {owner} or a path component.
+const apiPlaceholder = /^\{[A-Za-z_][A-Za-z0-9_]*\}(?:\/|$)/;
+
+function readSequence(source, depth, terminator = null) {
   if (depth > 32) throw new Error('shell nesting exceeds 32 levels');
   let offset = 0;
   const tokens = [];
   const heredocs = [];
   let braceDepth = 0;
+  let parenthesisDepth = 0;
   let pendingHeredoc = null;
   const operators = /^(?:\d*(?:<<-|<<<|<<|>>|>&|<&|>|<)|&&|\|\||\|&|[;&|\n])/;
 
@@ -56,6 +53,10 @@ export function readShell(source, depth = 0) {
   }
 
   while (offset < source.length) {
+    if (terminator && source[offset] === terminator && parenthesisDepth === 0) {
+      if (heredocs.length || pendingHeredoc !== null) throw new Error('unclosed heredoc');
+      return { tokens, offset: offset + 1 };
+    }
     if (/[ \t\r]/.test(source[offset])) {
       offset++;
       continue;
@@ -71,20 +72,23 @@ export function readShell(source, depth = 0) {
       continue;
     }
     const char = source[offset];
-    const placeholder = /^\{[A-Za-z_][A-Za-z0-9_]*\}(?:\/|$)/.test(source.slice(offset));
+    const processSubstitution = /^[<>]\(/.test(source.slice(offset));
+    const placeholder = apiPlaceholder.test(source.slice(offset));
     if (char === '(' || (char === '{' && !placeholder)) {
       tokens.push({ kind: 'open', value: char });
       if (char === '{') braceDepth++;
+      if (char === '(') parenthesisDepth++;
       offset++;
       continue;
     }
     if (char === ')' || (char === '}' && braceDepth > 0)) {
       tokens.push({ kind: 'close', value: char });
       if (char === '}') braceDepth--;
+      if (char === ')') parenthesisDepth--;
       offset++;
       continue;
     }
-    const operator = operators.exec(source.slice(offset))?.[0];
+    const operator = !processSubstitution && operators.exec(source.slice(offset))?.[0];
     if (operator) {
       offset += operator.length;
       tokens.push({ kind: /[<>]/.test(operator) ? 'redirect' : 'operator', value: operator });
@@ -121,8 +125,33 @@ export function readShell(source, depth = 0) {
     let embeddedBraces = 0;
     while (offset < source.length) {
       const current = source[offset];
+      if (!quote && terminator === '`' && current === '`') break;
+      if (!quote && /^@["']\r?\n/.test(source.slice(offset))) {
+        const quoteMark = source[offset + 1];
+        const bodyStart = source.indexOf('\n', offset) + 1;
+        const closing = new RegExp(`^${quoteMark}@`, 'm').exec(source.slice(bodyStart));
+        if (!closing) throw new Error('unclosed PowerShell here-string');
+        const body = source.slice(bodyStart, bodyStart + closing.index);
+        word.value += body.replace(/\r?\n$/, '');
+        word.quoted = true;
+        if (quoteMark === '"') {
+          word.substitutions.push(...heredocSubstitutions(body, depth, true));
+          if (body.includes('$')) word.literal = false;
+        }
+        offset = bodyStart + closing.index + 2;
+        continue;
+      }
+      // POSIX process substitutions are argument words whose contents execute in a child scope.
+      if (!quote && /^[<>]\(/.test(source.slice(offset))) {
+        offset += 2;
+        word.substitutions.push(substitution(')'));
+        word.literal = false;
+        word.value += '<process-substitution>';
+        continue;
+      }
       if (!quote && (/[\s;&|()<>]/.test(current))) break;
-      if (!quote && current === '{' && /^(?:else|try|do|finally)$/i.test(word.value)) break;
+      if (!quote && current === '{' && (adjacentBlockKeywords.has(word.value.toLowerCase()) ||
+          powerShellCatchType.test(word.value))) break;
       if (!quote && current === '}' && braceDepth > 0 && embeddedBraces === 0) break;
       if (!quote && current === '{') embeddedBraces++;
       if (!quote && current === '}' && embeddedBraces > 0) embeddedBraces--;
@@ -151,6 +180,7 @@ export function readShell(source, depth = 0) {
         continue;
       }
       if (quote !== "'" && current === '`' && source.indexOf('`', offset + 1) >= 0) {
+        // Paired backticks are POSIX command substitution; an unpaired one is a PS escape below.
         offset++;
         word.substitutions.push(substitution('`'));
         word.literal = false;
@@ -183,5 +213,6 @@ export function readShell(source, depth = 0) {
     }
   }
   if (heredocs.length || pendingHeredoc !== null) throw new Error('unclosed heredoc');
-  return tokens;
+  if (terminator) throw new Error(`unclosed shell substitution (${terminator})`);
+  return { tokens, offset };
 }

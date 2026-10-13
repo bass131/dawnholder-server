@@ -1,5 +1,9 @@
 import { spawnSync } from 'node:child_process';
-import { resolve } from 'node:path';
+import { isAbsolute, resolve } from 'node:path';
+
+function resolveDirectory(cwd, directory) {
+  return isAbsolute(directory) ? resolve(directory) : cwd === null ? null : resolve(cwd, directory);
+}
 
 function parseGit(argv, cwd) {
   const options = [];
@@ -9,13 +13,13 @@ function parseGit(argv, cwd) {
     if (word === '-C') {
       const directory = argv[++index];
       if (directory === undefined) throw new Error('git -C requires a directory');
-      if (directory) cwd = resolve(cwd, directory);
+      if (directory) cwd = resolveDirectory(cwd, directory);
     } else if (word === '-c') {
       const value = argv[++index];
       if (value === undefined) throw new Error('git -c requires a value');
       options.push('-c', value);
     } else if (/^-(?:C|c).+/.test(word)) {
-      if (word[1] === 'C') cwd = resolve(cwd, word.slice(2));
+      if (word[1] === 'C') cwd = resolveDirectory(cwd, word.slice(2));
       else options.push('-c', word.slice(2));
     } else if (/^--(?:git-dir|work-tree)(?:=|$)/.test(word)) {
       options.push(word);
@@ -74,6 +78,7 @@ function branchDestination(refspec) {
   const destination = clean.includes(':') ? clean.slice(clean.indexOf(':') + 1) : clean;
   if (destination.startsWith('refs/heads/')) return destination.slice(11);
   if (destination.startsWith('refs/')) return null;
+  if (destination.startsWith('heads/')) return destination.slice(6);
   return destination;
 }
 
@@ -142,17 +147,16 @@ function targetRemotes(push, repository, cwd) {
   const selected = push.remote ?? get(`branch.${current}.pushremote`) ?? get('remote.pushdefault') ??
     get(`branch.${current}.remote`) ?? (remotes.length === 1 ? remotes[0] : 'origin');
   const named = remotes.includes(selected);
-  const pushUrls = named && config.get(`remote.${selected}.pushurl`);
-  if (named && !pushUrls) return [{ name: selected, configName: selected }];
-  return (pushUrls || [selected]).flatMap(url => {
-    const resolved = canonicalUrl(rewriteUrl(url, config), cwd);
-    const matches = remotes.filter(name => {
-      const urls = config.get(`remote.${name}.url`) ?? [];
-      return urls.some(candidate => canonicalUrl(rewriteUrl(candidate, config), cwd) === resolved);
-    });
-    const configName = named ? selected : null;
-    return matches.length ? matches.map(name => ({ name, configName })) : [{ name: url, configName }];
+  // A named remote owns its config and remote HEAD even when transport uses a separate pushurl.
+  if (named) return [{ name: selected, configName: selected }];
+  const resolved = canonicalUrl(rewriteUrl(selected, config), cwd);
+  const matches = remotes.filter(name => {
+    const urls = [...(config.get(`remote.${name}.url`) ?? []), ...(config.get(`remote.${name}.pushurl`) ?? [])];
+    return urls.some(candidate => canonicalUrl(rewriteUrl(candidate, config), cwd) === resolved);
   });
+  // A literal URL can borrow local HEAD evidence, but does not select that remote's push config.
+  return matches.length ? matches.map(name => ({ name, configName: null })) :
+    [{ name: selected, configName: null, unmatched: true }];
 }
 
 function wildcardMatches(pattern, value) {
@@ -177,7 +181,8 @@ function reachesBranch(refspec, branch, push, repository, remote) {
       repository.refs.has(`refs/tags/${destination}`) && !repository.refs.has(`refs/heads/${destination}`)) {
     return false;
   }
-  if (!destination.startsWith('refs/')) destination = `refs/heads/${destination}`;
+  if (destination.startsWith('heads/')) destination = `refs/${destination}`;
+  else if (!destination.startsWith('refs/')) destination = `refs/heads/${destination}`;
   const match = wildcardMatches(destination, `refs/heads/${branch}`);
   if (!match) return false;
   if (!destination.includes('*') || push.delete || push.prune || !source) return true;
@@ -219,20 +224,26 @@ export function evaluateGitPush(argv, cwd, budget) {
   if (push.refspecs.some(refspec => branchDestination(refspec) === 'main')) {
     return deny(push.remote ?? '(configured remote)', 'main');
   }
+  if (parsed.cwd === null) throw new Error('push execution directory is not an explicit path');
   const repository = readLocalRepository(parsed, budget.deadline);
   for (const target of targetRemotes(push, repository, parsed.cwd)) {
     const mirror = push.mirror || (target.configName &&
       /^(?:true|yes|on|1)$/i.test(repository.get(`remote.${target.configName}.mirror`) ?? 'false'));
     const refspecs = defaultRefspecs(push, target, repository);
-    const reaches = branch => mirror || (push.all && repository.refs.has(`refs/heads/${branch}`)) ||
+    // --all supplies refs/heads/*; --prune also removes destination branches absent locally.
+    const reaches = branch => mirror || (push.all && (push.prune || repository.refs.has(`refs/heads/${branch}`))) ||
       refspecs.some(refspec => reachesBranch(refspec, branch, push, repository, target.name));
     if (reaches('main')) return deny(target.name, 'main');
     const remotePrefix = `refs/remotes/${target.name}/`;
     const head = repository.refs.get(`${remotePrefix}HEAD`);
     if (!head?.startsWith(remotePrefix) || !repository.refs.has(head)) {
-      throw new Error(`remote ${target.name}: default branch cannot be confirmed from local remote HEAD. ` +
+      const recovery = target.unmatched ?
+        'Have a person identify a configured remote for this URL and verify its default branch; ' +
+          'then restore git remote set-head <that-remote-name> <verified-default-branch>' :
         `After a person verifies this remote's default branch, restore the local symbolic ref with ` +
-        `git remote set-head "${target.name}" <verified-default-branch> (the tracking ref must already exist). ` +
+          `git remote set-head "${target.name}" <verified-default-branch>`;
+      throw new Error(`remote ${target.name}: default branch cannot be confirmed from local remote HEAD. ` +
+        `${recovery} (the tracking ref must already exist). ` +
         'No network query or automatic refs/config repair was performed');
     }
     const defaultBranch = head.slice(remotePrefix.length);

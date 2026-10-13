@@ -151,18 +151,27 @@ node --test "99_Tools/CodexGuard.Tests/*.test.mjs"
 |---|---|
 | gh 차단 | 모든 역할의 `gh pr merge`(auto·disable-auto 포함), REST PR merge endpoint의 비GET/필드 기본POST, inline GraphQL `mergePullRequest`·`enablePullRequestAutoMerge`·`enqueuePullRequest` mutation |
 | gh 보존 | PR create/view/checks, 일반 조회·명시 GET merge 조회·`disablePullRequestAutoMerge`, 다른 REST 쓰기와 데이터 인자 속 낱말 |
-| Git 차단 | 모든 원격의 main·그 원격의 로컬 근거로 확인한 기본 branch로 향하는 push. refspec·복수·force/delete·wildcard·all/mirror, 기본 push·remote.push·push.default·원격 선택 설정을 검사 |
+| Git 차단 | 모든 원격의 main·그 원격의 로컬 근거로 확인한 기본 branch로 향하는 push. `heads/<branch>` 축약을 포함한 refspec·복수·force/delete·wildcard·all/mirror, `--all/--branches --prune` 삭제, 기본 push·remote.push·push.default·원격 선택 설정을 검사 |
 | Git 보존 | 로컬 merge·조회, 확인된 작업 branch 목적지, branch와 구분되는 명시 tag ref. 출발 branch 이름만으로 막지 않음 |
-| 셸 | 명시 compound·pipe·줄바꿈·기본 POSIX/PowerShell 제어 형태, `bash/sh -c`·`pwsh/powershell -Command`·`cmd /c`, `env`·`command`·`exec`, 명시 cd/Set-Location·git -C, 실행되는 명령치환·한 리터럴 문자열 eval/iex |
-| 데이터 | 인용된 메시지·PR제목·검색문구·주석·heredoc 본문 자체는 명령으로 취급하지 않음. 비인용 POSIX heredoc의 명령치환은 검사 |
+| 셸 | 명시 compound·pipe·줄바꿈·기본 POSIX/PowerShell 제어 형태, `bash/sh -c`·`pwsh/powershell -Command`·`cmd /c`, `env`·`command`·`exec`, 명시 cd/Set-Location·git -C, 실행되는 명령/프로세스 치환·한 리터럴 문자열 eval/iex(Invoke-Expression의 `-Command` 포함) |
+| 데이터 | 인용된 메시지·PR제목·검색문구·주석·heredoc/here-string 본문 자체는 명령으로 취급하지 않음. 비인용 POSIX heredoc·PowerShell 큰따옴표 here-string 안의 실행되는 치환은 검사 |
 
-원격 기본 branch 근거는 `refs/remotes/<remote>/HEAD`의 유효한 로컬 symbolic ref다. 단일 추적 branch 이름으로 기본 branch를 추정하지 않는다. 근거가 없으면 대상 원격을 밝힌 **Error deny**와 사람이 검증한 기본 branch로 `git remote set-head <remote> <verified-default-branch>`를 수행하는 복구 안내를 낸다(그 추적 ref가 이미 있어야 함). 가드는 네트워크 조회나 refs/config 수리를 하지 않는다. 명시 main 갱신은 이 근거가 없어도 **Policy deny**다. 원격 URL은 일치하는 로컬 remote 설정으로 대응하며 대응되지 않으면 기본 branch 확인 오류다. matching/wildcard 판단에 사용하는 로컬 refs는 실제 원격과 다를 수 있다.
+원격 기본 branch 근거는 `refs/remotes/<remote>/HEAD`의 유효한 로컬 symbolic ref다. 이름으로 선택한 원격은 별도 pushurl이 있어도 그 이름의 설정과 HEAD 근거를 유지한다. 직접 지정한 URL은 로컬 remote의 url/pushurl에 대응해 HEAD 근거만 사용한다. 단일 추적 branch 이름으로 기본 branch를 추정하지 않는다. 근거가 없으면 대상 원격을 밝힌 **Error deny**와 사람이 검증한 기본 branch로 `git remote set-head <remote> <verified-default-branch>`를 수행하는 복구 안내를 낸다(그 추적 ref가 이미 있어야 함). 대응되지 않는 URL에는 먼저 실제 원격 이름을 확인하도록 안내하며 URL을 원격 이름 자리에 넣지 않는다. 가드는 네트워크 조회나 refs/config 수리를 하지 않는다. 명시 main 갱신은 이 근거가 없어도 **Policy deny**다. matching/wildcard 판단에 사용하는 로컬 refs는 실제 원격과 다를 수 있다.
+
+실행 위치는 순차 명령·`&&`/`||`·파이프·if/else·try/catch/finally에서 가능한 위치를 보존하며 조건 명령을 실행해 참/거짓을 추측하지 않는다. 계산된 cd/Set-Location만으로 차단하지 않고, 뒤 push가 필요한 위치를 확정하지 못할 때 오류 deny한다. 그 사이의 명시 gh 병합이나 실행되는 치환 검사는 계속한다. 기본 제어 형태와 회귀 표본을 다루는 정적 해석이며 셸 전체의 실행 의미를 보장하지 않는다.
 
 정책 차단과 잘못된 JSON/대상 입력·잡힌 내부 예외·필요한 Git 읽기 실패 모두 exit0의 `hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason }` 한 객체를 반환하며 이유의 Policy/Error로 구별한다. 정상·비대상 사건/도구는 stdout 없이 exit0으로 기존 권한 판단에 넘긴다. 명시 allow/ask·명령 rewrite·Claude 승인 소비·메인 예외는 없다. stdout에는 진단 로그를 섞지 않는다.
 
 설치 Codex0.162.1의 공식 문서/대응 소스 기준 등록이다. 정상 TUI의 프로젝트 신뢰와 hook 신뢰는 필요하며 최초/변경 picker는 [R-6](../00_Document/operations/ORCA.md#r6-first-screen)에 따라 메인에게 넘긴다. 신뢰는 사용자 설정의 source 경로·event·group/handler 위치별 선언 해시 상태다. 같은 경로·정의의 새 세션에서 유지될 수 있다는 것은 소스상 추론이며 외부 스크립트 본문까지 해시로 보호한다고 주장하지 않는다. 에이전트가 전역 신뢰 설정을 쓰거나 우회하지 않는다. headless `codex exec`는 미신뢰 hook을 건너뛸 수 있다.
 
 이것은 명시 명령 검사이며 우회 불가능한 권한 시스템이 아니다. 변수/계산된 문자열·별칭/함수·외부 script 내부·EncodedCommand 본문, 재사용 셸 `write_stdin`(PreToolUse 재호출 없음), 다른 클라이언트/MCP는 보호 범위 밖이다. `gh api --input`·`field=@file` 본문은 읽지 않지만 명시 REST merge endpoint의 변경 호출은 막는다. hook/등록 자체 변경, 미기동·timeout·강제종료·출력 전달 실패는 잡힌 오류 deny와 다르며 Codex가 계속할 수 있다. 셸 조건·파이프의 실제 실행 여부와 외부 명령이 바꿀 미래 저장소 상태는 실행해 예측하지 않는다.
+
+독립 검토에서 확인한 추가 한계는 다음과 같다. 이 목록은 새 지원 범위를 뜻하지 않는다.
+
+- 명령 표본에서 `time`·`nohup`·`timeout`·`xargs`·`sudo`·`nice`·`wsl` 접두, `cmd /k`, 여러 낱말을 주는 `eval gh pr merge …`는 검사하지 않았다. 한 리터럴 문자열 eval과 구분한다.
+- 공백 없는 `ForEach-Object{…}`·`%{…}`는 독립 표본에서 명령으로 인식하지 못했다. `catch{…}`·`catch [Type]{…}`의 어휘 수리가 일반 scriptblock·별칭 지원을 뜻하지 않는다.
+- 다른 원격 변경 경로인 `gh api repos/{o}/{r}/merges`, Git refs REST 수정, `gh repo sync`는 범위 밖이다(원격 변경 가능성은 코드/계약에 따른 추론, 실제 실행 없음). `.exe` 외 명시 `gh.cmd`·`gh.bat` 등 shim 이름도 인식 대상이 아니다(코드 확인).
+- 공식 POSIX runner의 `$SHELL -lc`에서 login profile이 stdout을 출력하거나 비POSIX 셸이 등록 구문을 해석하지 못하면 hook 실패로 이어질 수 있다(설치 버전 소스에 따른 추론, Linux 미실행). Windows wrapper 회귀는 공식 `%COMSPEC% /C "<commandWindows>"` 형태를 사용하며 `/D /S`를 추가한 실행과 구분한다.
 
 독립 회귀 CI는 [code-rules](../.github/workflows/code-rules.yml)의 `Run independent CodexGuard regressions` 한 단계다. 시험 부재/load 실패/nonzero를 실패 처리하고 기존 artifact의 `$RULES_OUTPUT/codex-guard-independent-tests/`에 command/stdout/stderr/exit를 보존한다. stdin 회귀와 등록 wrapper의 로컬 자체검사는 실제 Codex 발동 검증이 아니다. 정상 최초 trust·새 세션 유지·exec_command/code-mode·headless 신뢰 전후·timeout, Linux 원격 CI는 각각 후속 독립 실행 근거로 확인한다.
 
