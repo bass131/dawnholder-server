@@ -12,7 +12,7 @@
 
 - Art: [10-28 시연 아트 — UI 창·성장 효과·발판 교체](../../01_Phases/goals/2026-10-13-demo-video-art/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active` · `docs/demo-video-art-trial-20261013`
 
-- Rules: [라우팅 핫픽스 정본 반영](../../01_Phases/goals/2026-10-11-routing-hotfix-canon/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/routing-hotfix-canon-20261011`
+- Rules: [리드 Astra 전환과 우편함 수신·Codex 병합 금지](../../01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md#재개-지점) · `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active` · `docs/astra-lead-mailbox-20261013`
 
 Content goal의 상태·결정·남은 일은 위 상대 링크의 재개 지점에서 확인하며, 작업은 해당 Content worktree에서 이어간다. CodeMap은 표시 이름이며 경로·Architecture 태그는 유지한다. Rules와 확인한 Content 진입 외 다른 파트의 상태·branch를 새로 추정해 갱신하지 않는다.
 
