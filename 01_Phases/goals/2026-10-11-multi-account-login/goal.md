@@ -8,11 +8,14 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_940c23cb-4746-4ae6-bcc7-d88ed59ec926`(2026-10-13 재진입 `msg_c1b1e75ea27e` 뒤 `--resume`, 이전 `term_328d1a7f…`·`term_fddebc03…`), Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**(2026-10-13): 실화면 넷을 수행했고 판정은 차단(S-1, 안내 문장의 가운뎃점이 폰트에 없음)이다(아래 「실화면 확인」). 메인 판단으로 S-1은 이 goal에서 고치고 S-2(작은 화면에서 안내가 넘침)는 다음 계획 후보로 둔다. Editor·서버·Unity 시트는 모두 풀었다. 열린 작업자는 없다.
-- **다음 행동**: S-1 수정 작업자 계약을 쓴다. 안내 문장의 「·」을 폰트에 있는 글자로 바꾸고, 메뉴 안내 문장의 모든 글자가 그 폰트에 있는지 보는 EditMode 시험을 더한다. O-3(「이미 접속 중」 문장 상수화)도 함께 한다. 신규 작업자 1 + 신규 검증자 1이고 실화면은 다시 열지 않는다.
-  - Unity batch·WSL 실행 전에 Content·Core·Rules·Art에 알린다. 큰 실행 조건은 아래 「실행 자원과 조율」을 따르고, 서식 검사도 WSL dotnet을 쓴다고 적는다.
+- **현재 위치**(2026-10-13T07:52:34Z, 세션 마감): 실화면 차단 S-1을 고쳤고 독립 검증까지 통과했다. S-1 수정의 독립 검증이 SV-01(시험 실패 진단에 고치는 방법 없음)을 잡았고, 그 수정의 약 재검증이 통과했다(아래 「S-1 수정」~「SV-01 재검증」). 제품 범위의 남은 결함은 없다. 메인 세션 마감 지시(`msg_a35ef478ee65`)대로 제품 PR은 다음 세션의 첫 일이다.
+  - 열린 Task·Dispatch 없음: Run의 Task 17개가 모두 completed이고 마지막 두 Dispatch(`ctx_945d34b392b4`·`ctx_d1eefe67402b`)는 release `retained`다. 07:52Z `terminal list`의 world-active pane은 리드 하나이고 작업자 pane은 0이다. Unity.exe는 0이다.
+- **다음 행동**:
+  1. 최신 main(`da717247a1dea0d50242777113245c6055f0f4a8`, PR232 라우팅 핫픽스 정본)을 이 branch에 받는다. 메인 점검으로는 바뀐 규칙 파일이 있고 모의 병합 충돌은 없다. 받은 뒤 바뀐 AGENTS·CLAUDE·스킬을 먼저 읽는다.
+  2. 제품 PR을 만든다(서버·클라이언트·봇 한 PR, 아래 「PR 경계와 점검」). 병합은 사용자 승인 뒤 메인이 한다.
+  - Unity batch·WSL 실행이 다시 필요하면 Content·Core·Rules·Art에 먼저 알린다. 큰 실행 조건은 아래 「실행 자원과 조율」을 따르고, 서식 검사도 WSL dotnet을 쓴다고 적는다.
 - **다시 열 때 필요한 것**: 이 리드의 Claude 세션 ID `1531e871-7aaa-4331-a1db-d831038f8f4a`, Run `run_a927bbaff1f5`. branch는 이 기록 commit까지 원격에 올렸다. world-active에 사용자 미커밋 파일은 없다. 사용자·메인 결정 대기 항목은 없다.
-- **남은 순서**(2026-10-13 기준): S-1 수정 → 재검증 → 제품 PR·사용자 병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **남은 순서**(2026-10-13 마감 기준): 최신 main 받기 → 제품 PR·사용자 병합 승인 → Gardener → 종료 기록 PR(S-2 BACKLOG 등록과 계산 근거, 다음 goal 길드 서버 메모) → 종료 점검 → R-8.
 - **다음 goal 메모**: 사용자 승인 「10-28 시연 계획과 파트 배정 → A」(아래 「적용 중인 사용자 결정」, 메인 전달 `msg_5ed276291957`)로 다음 goal은 「서버 후속 묶음」 대신 **길드 서버**다. 범위 후보는 기본 길드·길드원, 길드 금고와 던전 클리어 적립, 거점 레벨 올리기, 대장간 무기 강화와 공격력 반영, 패킷과 프로토콜 판(41·42·19 다음 번호)이다. R-8 뒤 새 리드가 범위 초안을 쓰고 메인이 사용자 승인을 받는다. 지금 리드는 준비하지 않는다. 앞선 결정(`msg_6974802727a2`, 서버 후속 묶음)은 이 승인으로 바뀌었다.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -23,7 +26,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 선행 시험 작성
 - [x] 구현
 - [x] 독립 검증(RF-01 재검증 통과)
-- [>] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 수행·차단 S-1, 수정과 재검증 남음)
+- [x] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 차단 S-1은 수정·독립 검증·SV-01 재검증 통과, 실화면 재실행 없음은 메인 판단 `msg_d52061c05d13`)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
 - [ ] 종료 기록 PR 병합
@@ -168,7 +171,7 @@ PR 단계 이름은 PR 번호가 생기면 「PR### 병합」으로 바꾼다.
 - `UI/MainMenuNotice.cs`(새, 정적): 씬을 넘어 거부 안내 한 줄을 넘긴다. `Set(string)`, `TryTake(out string)`.
 - `Network/ClientConnectionLifetime.cs`: `Connect(endPoint, selectedClass, accountName)`. handshake 성공 때 연결당 한 번 `SendLogin(accountName)`을 보낸다. 로그인 결과가 `Accepted`이면 연결당 한 번 `SendCharacterSelect`를 보낸다. 그 밖이면 거부 결과를 남기고 `LoginRejected` 이벤트를 낸 뒤 연결을 끊는다. `IClientConnectionSession`에 `event Action<LoginResult> LoginResultReceived`와 `void SendLogin(string accountName)`을 더한다.
 - `Network/UnityClientSession.cs`: dispatch 표에 `S_LoginResult` 한 줄, `SendLogin`. 새 `Network/Handlers/Session/LoginResultHandler.cs`는 결과 값이 0~2인지 보고 메인 스레드에서 이벤트를 낸다. 범위 밖 값은 로그를 남기고 연결을 끊는다.
-- `Network/NetworkService.cs`: `Connect`가 `AccountLoadout`에서 이름을 읽는다. 이름이 없거나 규칙에 맞지 않으면 지금의 잘못된 주소처럼 메인 메뉴로 돌아간다. `LoginRejected`를 받으면 안내를 `MainMenuNotice`에 넣고 메인 메뉴로 돌아간다. 안내 문장은 `InvalidName` → 「계정 이름은 영문 소문자·숫자·밑줄 3~16자로 입력해주세요」, `AlreadyOnline` → 「이미 접속 중인 계정입니다」다.
+- `Network/NetworkService.cs`: `Connect`가 `AccountLoadout`에서 이름을 읽는다. 이름이 없거나 규칙에 맞지 않으면 지금의 잘못된 주소처럼 메인 메뉴로 돌아간다. `LoginRejected`를 받으면 안내를 `MainMenuNotice`에 넣고 메인 메뉴로 돌아간다. 안내 문장은 `InvalidName` → 「계정 이름은 영문 소문자, 숫자, 밑줄 3~16자로 입력해주세요」, `AlreadyOnline` → 「이미 접속 중인 계정입니다」다. 두 문장은 `MainMenuNotice`의 상수다. 처음 문장의 「·」은 메뉴 폰트에 없어 실화면에서 공백으로 그려졌고 쉼표로 바꿨다(아래 「S-1 수정」).
 
 봇(`99_Tools/headless-bot/`):
 
@@ -331,6 +334,7 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - `CharacterSelectHandlerTests.cs:63~64`가 `HasSelectedClass`를 「internal getter」, 접근 이유를 「같은 어셈블리 내 서브클래스」라고 적는다. 실제 선언은 `protected internal`(`GameSession.cs:91`)이고 시험 어셈블리 접근은 `InternalsVisibleTo`(`GameServer.csproj:20~22`)다(아래 「RF-01 수정」 작업자 관찰, goal 전부터 있던 문구).
 - 같은 파일의 옛 설명 두 줄: `:24`는 없는 `GetStatsForTest` getter로 검증한다고 적고(실제는 `StatsSet`·로그·`DisconnectCalls`), `:56`은 class 선택 뒤 월드 진입이 시험 대상이라고 적지만 다섯 시험은 월드 진입을 단정하지 않는다(아래 「RF-01 재검증」 O-2·O-3, goal 전부터 있던 문구).
 - **BACKLOG 등록 대상** 메인 메뉴 최소 화면 크기와 오류 안내 넘침(실화면 S-2, 메인 판단 `msg_d52061c05d13`): Editor Game view 709x399에서 이름 규칙 안내(22pt 고정, 필요 폭 508.1px)가 오류 글자칸(폭 449.5px)을 넘쳐 두 줄이 된다. 끝 4자가 화면 밖으로 나가고 첫 줄이 서버 주소 칸과 2405.4px² 겹친다(검증자 측정). 계산 근거(리드가 `MainMenu.unity`를 읽음, 측정 아님): 오류 글자칸 폭은 0.32365·화면폭 + 219.99, 높이는 0.12424·화면높이 − 32.21이다. 10-28 영상 크기 1920x1080이면 약 841×102px라 한 줄(줄 높이 42px)에 들어간다. 한 줄 조건은 화면폭 약 891 이상, 높이 조건은 화면높이 약 598 이상이다. 먼저 최소 화면 크기를 정해야 고칠 방식(문장 줄이기, 자동 크기, 칸 넓히기)을 고를 수 있다. S-1 수정 뒤 문장 폭은 조금 달라지므로 등록 때 다시 잰 값을 쓴다. 종료 기록 PR에서 BACKLOG에 올린다.
+- 메뉴 오류 글자칸 폰트에 fallback이나 동적 atlas를 더하면 S-1 글자 시험(`MainMenuAccountSceneTests`의 `HasCharacter` 기준)이 실제 그려지는 범위와 달라진다. 그때 시험 기준을 다시 정한다(아래 「S-1 독립 검증」 VO-01).
 - 실화면 설계 관찰(아래 「실화면 확인」): O-1 이미 접속 중 거부 때 Town을 잠깐 지난 뒤 메뉴로 돌아온다(설계대로, 화면에 비쳤는지는 미측정). O-2 클라이언트 로그에 거부 사실 줄이 없다(`NetworkService.cs:98-104`). O-4 Town의 `LiberationSans SDF` 폰트 없음 경고가 여럿이다(기존 자산, 해당 파트 판단).
 
 ## 현재 결과
@@ -671,3 +675,86 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 리드 R-2 표본: 캡처 4개 SHA256을 다시 계산해 보고와 같았다. 서버 로그 SHA256과 1113·1156행을 직접 읽었다. 폰트 자산을 읽어 글자 11267개, U+00B7 없음, 쉼표 있음, `m_FallbackFontAssetTable: []`, 정적 atlas를 확인했다. 사후 상태(05:37:59Z, E/`screen-prep/state-post-check-1.json`)는 Unity.exe 0, `AccountName` 없음, 음소거 0, `UnityLockfile` 없음이었다.
 - 마감 상태: Play 종료 05:36:00Z, 음소거 원래 값 복원, `AccountName` 삭제(`HasKey=False`), `EditorApplication.Exit(0)` 뒤 05:38:58Z Unity.exe 0. `ServerHost`·`SelectedCharacterClass`는 시작 전과 같은 값이다.
 - 부수 효과: Unity가 `MinimapRT.renderTexture`의 줄 끝을 다시 써서 리드가 `git restore`로 되돌렸다(SHA256 `286d3cc8…`로 복귀, `git status` 0행). 다른 설정 파일 hash는 그대로였다.
+
+### S-1 수정 — 2026-10-13
+
+- 큰 실행 조율: 계약 전에 Content·Core·Rules·Art 리드에 Unity 창 06:20Z~08:00Z를 물었다(E/`leads-s1-unity-ask-228.txt`, `msg_5f065e7985c9`·`msg_f61bba1102f5`·`msg_0dcaa2930d59`·`msg_c61ebf00d813`). Art `msg_ed3164ac1a0e`·Content `msg_97c449d484c0`·Core `msg_2cf727dd7b99`는 겹침 없음이었다. Rules는 회신이 없었고 06:07:40Z `terminal list`에 Rules 리드 pane이 없었다.
+- 작업자: 신규 `gpt-6.1-sol` max(최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 첫 화면 「GPT-6.1-Sol max · Full Access · never」, Codex v0.162.1, 선택창 없음, backend unknown), 태그 `[World Sol]`. 리드 pane 아래 split `term_9483ad5f-b1ad-4c36-98eb-52f5ac6202c0`, Task `task_3760001955d6`, Dispatch `ctx_b2f655f15c4a`. worker_done `msg_be1b5c084a10`(06:37:43Z, succeeded). release `retained` 뒤 06:38:27Z에 pane을 닫았다. 메인에는 기동을 `msg_d91bb25175ef`로 알렸다.
+- 계약: E/`s1-fix-contract.md` v1(SHA256 `c34d1aae4098462a30ebdc5c3b400b91a259a9a247a129305e1cdbb3a8f22570`), 요약 E/`s1-fix-spec.md`, 입력 E/`s1-fix-inputs.txt`, 경로 확인 E/`s1-fix-preflight.txt`, 리드 메모 E/`s1-fix-prep-context.md`. 고정 HEAD `37a02466`. CODE_CONVENTION 여섯 절은 같은 조립 스크립트로 붙였고 원문 비교가 모두 일치했다. 대상 줄 확인은 3/3이다.
+- 리드 측정(node로 폰트 `m_CharacterTable` 11267자를 읽음): 새 안내 문장 35자, 「이미 접속 중인 계정입니다」 14자, 「서버 주소를 입력해주세요」, `ConnectionProbe` 고정 문장 9개 모두 빠진 글자가 없었다.
+- 바꾼 것(commit `fa813f78`, 4파일 +43/-3):
+  - `MainMenuNotice.cs:5~7`: 정적 atlas 제약을 적은 주석 한 줄, 「·」을 쉼표로 바꾼 `InvalidAccountName`, 새 상수 `AlreadyOnlineAccount`(O-3).
+  - `NetworkService.cs:101`: 「이미 접속 중」 리터럴을 새 상수로 바꿨다.
+  - `LoginRejectionMenuTests.cs:29`: 기대 문장을 새 문장으로 바꿨다.
+  - `MainMenuAccountSceneTests.cs:57~90`: 실제 메뉴 오류 글자칸의 폰트에 두 상수의 모든 글자가 있는지 보는 EditMode 시험을 더했다.
+- 실행(보고 E/`s1-fix/report.md`, SHA256 `c3df8c04…48bcf`, 사전 메모 E/`s1-fix/context-before.md`):
+
+| 실행 | Label | exit | 결과 |
+|---|---|---|---|
+| RED | `s1-red` | Unity 2 | 0/1/1, `missing notice constant AlreadyOnlineAccount`, `InvalidAccountName: U+00B7` 두 자리 |
+| EditMode 전체 | `s1-green-editmode` | 0 | 452/0/452 |
+| PlayMode 로그인 거부 | `s1-green-playmode` | 0 | 4/0/4 |
+
+- 리드 R-2 표본: 세 실행의 `results.xml` 수와 보고가 같았다. diff가 계약의 지정 줄과 같았다.
+- 부수 효과: Unity가 `ProjectSettings.asset`의 SENTIS 정의 줄을 지워 리드가 diff를 E/`s1-fix-lead-projectsettings.diff`에 저장한 뒤 `git restore`로 되돌렸다.
+
+### S-1 독립 검증 — 2026-10-13
+
+- 검증자: 신규 `gpt-6-astra` xhigh(최초 명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 첫 화면 「GPT-6-Astra xhigh · Full Access · never」, Codex v0.162.1, 선택창 없음, backend unknown), 태그 `[World 검증자]`. 리드 pane 아래 split `term_efea13ba-cc68-418d-a2fb-236a6834fd28`, Task `task_6865e728bd61`, Dispatch `ctx_01d991b13f68`, verifies `task_3760001955d6`. worker_done `msg_464a3f65a34f`(07:10:52Z, succeeded). release `retained` 뒤 07:11:56Z에 pane을 닫았다. 메인에는 기동을 `msg_fd4159c849cb`로 알렸다.
+- 계약: E/`s1-verify-contract.md` v1(SHA256 `5eaa6bf7ff75d538283d8b8123cc72c4b373bc919e277c7b977406e64743a211`), 요약 E/`s1-verify-spec.md`, 입력 E/`s1-verify-inputs.txt`, 경로 확인 E/`s1-verify-preflight.txt`, 리드 메모 E/`s1-verify-prep-context.md`. 강 등급, 고정 HEAD `fa813f78`. CODE_CONVENTION 여덟 절은 같은 조립 스크립트로 붙였고 원문 비교가 모두 일치했다.
+- 판정: E/`s1-verify/verdict.md`(SHA256 `fd234f16…11e79`) **차단 SV-01**. 사전 메모 E/`s1-verify/context-before.md`.
+  - 동작은 통과했다. 제품 회귀는 없었다.
+  - 검증자 새 독립 시험 `MainMenuNoticeRenderingTests.cs`(commit `162682a7`) E1~E3: 실제 메뉴의 TMP mesh에서 두 안내의 글자가 모두 그대로 그려진다. E2 대조는 옛 문장의 13·16번째 글자 「·」이 공백으로 바뀌는 것을 잡았다.
+  - SV-01(낮음, 규칙상 차단, 리드 계약 귀속): 작업자 글자 시험 `MainMenuAccountSceneTests.cs:89`의 실패 진단에 고치는 방법이 없다. CODE_CONVENTION 하네스 원칙 1(원인·대상 위치·고치는 방법)에 못 미친다. 그 메시지 모양은 리드 계약이 정했다.
+
+| 실행 | exit | 결과 |
+|---|---|---|
+| EditMode 전체 | 0 | 455/0/455(새 독립 시험 3개 포함), XML SHA256 `cf76f964…abfa80` |
+| PlayMode 가짜 서버 lane 11클래스 | 0 | 45/0/45, XML SHA256 `5d4a4118…276b9` |
+
+- 설계 관찰: VO-01 S-1 수정 계약의 「`HasCharacter` 범위 = 화면에 그려지는 범위」 표현은 지금 배선(정적 atlas, Regular·Normal 스타일, fallback 없음)에서만 맞다. 동적 atlas·스타일·sprite·글자 대체 callback이 끼면 두 범위가 달라질 수 있다(`s1-fix-contract.md:70`, `TMP_Text.cs:6411`). VO-02 위 「설계」 `Network/NetworkService.cs` 항목의 안내 문장(이 기록 전 171행) 갱신은 리드 몫이다(이 기록 commit에서 고쳤다). VO-03 이 검증 계약의 리드 메모가 계약 초안 뒤에 쓰였다(메모에 그 사실을 적었다). VO-04 S-2는 범위 밖이다.
+- 리드 R-2 표본: XML 두 개를 node로 다시 세어 455/0, 45/0이었다. SV-01 대상 줄과 S-1 수정 계약 66~73행, CODE_CONVENTION 154행을 대조해 지적이 맞음을 확인했다. 새 시험 파일을 읽었다.
+- 큰 실행 조율: Unity 창을 09:00Z까지 늘린다고 네 리드에 알렸다(E/`leads-s1-unity-extend-236.txt`, Content `msg_0e0f84d9d50c`·Core `msg_3e153f50ea8a`·Rules `msg_5e91757bc24a`·Art `msg_1589d0ce045d`). Core는 겹침 없음, Docker SQL 재실행은 사용자 승인 대기라고 답했다(`msg_3016769ea232`).
+- 부수 효과: SENTIS 정의 줄 diff를 E/`s1-verify-lead-projectsettings.diff`에 저장한 뒤 `git restore`로 되돌렸다. `MinimapRT.renderTexture`도 되돌렸다.
+- 메인 보고 `msg_e5bb3332fd91`.
+
+### SV-01 수정 — 2026-10-13
+
+- 작업자: 신규 `gpt-6.1-sol` max(최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 첫 화면 「GPT-6.1-Sol max · Full Access · never」, 선택창 없음, backend unknown), 태그 `[World Sol]`. 리드 pane 아래 split `term_d4a67a43-833e-4171-89f1-7ae922d34bbb`, Task `task_8558f5d9c45f`, Dispatch `ctx_945d34b392b4`. worker_done `msg_73b8b74b06a7`(07:29:58Z, succeeded). release `retained` 뒤 07:30:33Z에 pane을 닫았다. 메인에는 기동을 S-1 독립 검증 보고 `msg_e5bb3332fd91`에 함께 알렸다.
+- 계약: E/`s1-diag-contract.md` v1(SHA256 `3dcda9812f1d702aac79beffdd4e2ed6e606fbeade47cc8cff643de8843ab5c6`), 요약 E/`s1-diag-spec.md`, 입력 E/`s1-diag-inputs.txt`, 경로 확인 E/`s1-diag-preflight.txt`, 리드 메모 E/`s1-diag-prep-context.md`(계약 파일보다 먼저 씀). 약 등급, 고정 HEAD `162682a7`. CODE_CONVENTION 세 절(역할별 적용·하네스 원칙·사람의 탐색과 가독성)은 같은 조립 스크립트로 붙였고 원문 비교가 모두 일치했다. 대상 줄 확인은 1/1이다.
+- 바꾼 것(commit `7e4c79a4`, 1파일 +2/-1): `MainMenuAccountSceneTests.cs:89~90` 단정에 고치는 방법을 담은 메시지를 붙였다(「Fix MainMenuNotice.cs: write each listed constant only with characters that font has, or add back a missing constant」). 항목 문장(76·85행)과 검사 방법은 그대로다.
+- 같은 산출물 수정은 S-1 수정에 이어 두 번째라 3회 체크포인트 전이다.
+- 실행(보고 E/`s1-diag/report.md`, SHA256 `09ea436d…259f`, 사전 메모 E/`s1-diag/context-before.md`):
+
+| 실행 | Label | 시각(UTC) | exit | 결과 |
+|---|---|---|---|---|
+| EditMode 전체 | `s1-diag-editmode` | 07:21:39~07:22:56 | 0 | 455/0/455, XML SHA256 `d0d1fc65…ecfd45` |
+
+- 직전 여유 메모리는 물리 14406 / 가상 18237 MB였다. 455는 S-1 수정 452에 검증자 새 시험 3개를 더한 수다.
+- 리드 R-2 표본: `git diff -U0`가 89행 한 줄을 계약의 두 줄로 바꾼 것과 글자까지 같았다. `git diff --check`는 exit 0이었다. XML을 직접 읽어 455/0이었다.
+- 리드 메모 정정: 메모의 「2줄 미만 변경」은 틀렸고 실제는 +2/-1이다. 약 조건에는 그대로 해당해 재검증 계약에는 실제 수를 적었다.
+- 부수 효과: SENTIS 정의 줄 diff를 E/`s1-diag-lead-projectsettings.diff`에 저장한 뒤 `git restore`로 되돌렸다.
+
+### SV-01 재검증 — 2026-10-13
+
+- 검증자: 신규 `gpt-6-astra` xhigh(최초 명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 첫 화면 「GPT-6-Astra xhigh · Full Access · never」, Codex v0.162.1, 선택창 없음, backend unknown), 태그 `[World 검증자]`. 리드 pane 아래 split `term_c33a093d-54c0-4bd1-940e-58d94ecaf596`, Task `task_e1cbc2c4d2b2`, Dispatch `ctx_d1eefe67402b`, verifies `task_8558f5d9c45f`. worker_done `msg_a1d46dbcc4bf`(07:51:33Z, succeeded). release `retained` 뒤 07:52:05Z에 pane을 닫았다. 메인에는 기동을 `msg_e33a9e6af6d2`로 알렸다.
+- 계약: E/`s1-diag-verify-contract.md` v1(SHA256 `7d2691316e256e6ef21ca2f3d2d74aff37f1e6deaa87d8857d657f9fd93efcfc`), 요약 E/`s1-diag-verify-spec.md`, 입력 E/`s1-diag-verify-inputs.txt`, 경로 확인 E/`s1-diag-verify-preflight.txt`, 리드 메모 E/`s1-diag-prep-context.md`(「재검증 계약 덧붙임」). 약 등급, 고정 HEAD `7e4c79a4`. CODE_CONVENTION 세 절은 같은 조립 스크립트로 붙였고 원문 비교가 모두 일치했다.
+- 판정: E/`s1-diag-verify/verdict.md`(SHA256 `7331b289b03e582f2b1fa5622f837d7d46cfd9873200e3456c58ef497d6a7eda`) **통과**. SV-01은 해소됐고 새 결함은 없다. 사전 메모 E/`s1-diag-verify/context-before.md`.
+  - 실제 diff가 계약의 두 줄 교체 하나와 전체 문자열로 같았다(`onlyContractReplacement=true`). 인코딩도 계약대로다.
+  - 실패 진단은 항목 문장(76행 원인·상수 이름, 85행 상수·코드포인트·폰트)과 새 메시지(고칠 파일과 방법)를 합쳐 하네스 원칙 1을 채운다. 폰트·scene을 바꾸라고 하지 않는다.
+  - NUnit이 사용자 메시지와 목록을 함께 출력하는 것은 과거 실패 원시 두 개로 확인했다. 새 메시지를 실제로 실패시켜 본 출력은 제품을 깨야 해서 미실행이다.
+  - 구현자 사전 메모는 생성 시각 07:19:44Z로 대상 수정(07:20:17Z 전후 audit) 전에 있었다.
+
+| 실행 | 시각(UTC) | exit | 결과 |
+|---|---|---|---|
+| EditMode 전체 `s1-diag-verify-editmode` | 07:37:15~07:38:27 | 0 | 455/0/455, XML SHA256 `aa88c1c9…e8c39` |
+
+- 직전 여유 메모리는 물리 15607 / 가상 20591 MB였다. 455개 이름 집합이 구현자 실행과 같았다.
+- 리드 R-2 표본: XML 두 개(구현자·검증자)를 node로 읽어 455개 이름과 결과가 같았다. S-1 RED XML의 실패 원문에서 「Expected: <empty> / But was: < "missing notice constant AlreadyOnlineAccount", "InvalidAccountName: U+00B7 …" >」를 직접 봤다. HEAD `7e4c79a4` 유지를 확인했다.
+- 미실행: PlayMode·실화면(메인 판단 `msg_d52061c05d13`으로 재실행 없음)·빌드·서버·DB.
+- 부수 효과: SENTIS 정의 줄 diff를 E/`s1-diag-verify-lead-projectsettings.diff`에 저장한 뒤 `git restore`로 되돌렸다. `git status`는 0행이다.
+
+### 세션 마감 — 2026-10-13
+
+- 메인 세션 마감 지시(`msg_a35ef478ee65`, 07:19:59Z, 사용자 지시를 메인이 전달, 격상하지 않는다): SV-01 작업자와 약 등급 재검증자 1명까지 끝낸다. 통과면 goal 기록을 commit·push한 뒤 마감하고, 재검증이 다시 차단이면 고치지 않고 재개 지점에 적은 뒤 마감한다. 제품 PR·실화면·새 수정 차례는 다음 세션이다.
+- 결과: SV-01 재검증이 통과해 이 기록을 commit·push하고 마감한다. 이번 세션의 마지막 Unity 실행은 07:38:27Z에 끝났다. 다른 리드에게 알린 Unity 창(09:00Z까지)은 메인 지시대로 거두지 않는다. 마감 보고는 메인 term에 status로 보낸다.
