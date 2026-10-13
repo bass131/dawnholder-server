@@ -7,7 +7,7 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: PR234를 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 선행 시험8파일은 `8176c438`, 구현9파일은 `17432bc367f921cc1015257ad632f4211718e593`다. 신규 Opus 강 검증은 **NOT PASS, 차단 결함 #1~#9 첫 확정**이며 검증 세션을 정산·종료했다. 새 Astra 수정 뒤 새 Opus 재검증으로 계속한다. 실제 Codex 신뢰·새 세션·도구 진입과 Linux CI는 미실행이다. PR1 최종 판정·PR·cadence 상세 정본 기록과 Archify/Unity 권한 문서 정합은 메인 지시대로 PR2 뒤 문서 PR에 남긴다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
+- 현재 차례: PR234를 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했다. PR2 첫 독립 검증은 **NOT PASS, 차단 결함 #1~#9 첫 확정**이다. 그 시험6개는 `f33ea8f9`, 새 Astra 수정5파일은 `83b6f3d409d910f9d94b3fee777cdbfc904b7410`로 고정했고 수정 세션도 정산·종료했다. 신규 Opus 재검증을 준비한다. 실제 Codex 신뢰·새 세션·도구 진입과 Linux CI는 미실행이다. PR1 최종 판정·PR·cadence 상세 정본 기록과 Archify/Unity 권한 문서 정합은 메인 지시대로 PR2 뒤 문서 PR에 남긴다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
@@ -17,7 +17,7 @@
 - [x] 문서 재실사와 부분 관측 정리
 - [x] 문서 PR 병합
 - [>] 가드 신뢰 경계 — 소스 조사 완료, 실제 UI/신규 세션 유지 미실행
-- [>] 가드 구현과 검증 — 첫 독립 NOT PASS 9건, 신규 수정 준비
+- [>] 가드 구현과 검증 — 첫 독립 NOT PASS 9건 수정 종료, 신규 강 재검증 준비
 - [ ] 가드 PR 병합
 - [ ] 종료 점검과 기록
 - [ ] 종료 확인과 교체
@@ -194,6 +194,15 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - `E/settle-guard-review.mjs`는 실행입력24·고정입력71·시험6개·verdict hash와 Git 소유를 대조해 불일치0/허용 밖 Git 경로0을 확인했다. 이는 내용 통과가 아니다. worker-show completed/succeeded→release external retained→동일 idle pane close ptyKilled=true로 정산했고 재사용하지 않는다. 생존 helper는 현재 Dispatch 신호17·최대392초·초과1구간·질문대기0, exit1이었다(`E/guard-review-final-liveness.json`·`guard-review-liveness-execution.json`). 조회 원시는 최신100건이며 현재 Dispatch 전체는 포함하지만 Run의 처음부터 끝까지라는 뜻은 아니다.
 - 검증자 `probe/git-semantics.mjs`는 지정 TEMP 아래 로컬 bare에 실제 Git push(main 포함)를 실행했다. 하네스·원시의 대상은 해당 fixture이고 외부 원격 변경 근거는 없지만 완료조건4의 「실제 병합/push는 없다」와 충돌하는 절차 이탈로 남긴다. 이후 직접 Bash 실행은 Claude 관문에 막혔고 우회하지 않았다는 보고다. 리드가 소급 승인하거나 제품 실패에 중복 합산하지 않는다. 후속은 변경 명령을 전달하지 않는 가짜 CLI 표식을 쓰며 이 하네스는 재실행하지 않는다.
 - 메인 보고 `msg_cdc2b3fc39a8`에 결함·원문·미실행·상태 표기·로컬 fixture 실행을 전달했다. 새 Astra 수정의 쓰기는 기존 제품/등록/좁은 문서·CI 및 `E/guard-fix-01`뿐이며 시험14개와 과거 원시는 고정한다. O1~O7의 범위 밖 명령·shim/셸 환경 한계는 문서에 드러내고 새 지원 보장으로 넓히지 않는다. 새 Opus가 수정 결과와 실제 진입을 독립 판정한다.
+
+### PR2 첫 수정 종료와 강 재검증 인계
+
+- 수정 Task `task_3fe8f2e6ca86` / Dispatch `ctx_b21594bb9e8a`, 신규 gpt-6-astra xhigh/화면·rollout model 일치·backend unknown. 계약 `E/guard-fix-01-contract-v1.md` SHA256 `a465fd620a19afc0abfc3db71496000b8e5d220e99988c923c665a1994b69555`, 입력61/부모3/누락0이었다. R-5 draft24126=계약19338+4788·동일 identity 확인 후 bare Enter1회, 실제 제출 전문 대조 exit0과 Working을 확인했다. 최초 start_unknown receipt는 보존했다.
+- writes-end `msg_d43fc2f3523e`·worker_done `msg_5e4fdd29a0fd` succeeded를 대조했다. 보고 `E/guard-fix-01/report.md` SHA256 `d780e365df0167c954f7a5c9b7601b3e3be7cf896bbbde8eaa77a10fd07559d5` 전체·context·실제 diff를 읽었다. 제품3/문서2 +302/-88, 기존14시험·등록/CI 무변경이다. worker-show completed/succeeded→release external retained→동일 idle pane close ptyKilled=true로 종료했고 재사용하지 않는다.
+- 자체 회귀 before 전체564/512/52·leaf472/436/36에서 after-04 전체564/564·leaf472/472, Claude293/293으로 보고했다. 추가 표본은25중1실패→29중5실패→29/29→31중2실패→31/31→32중1실패→32/32다. #1 위치 합류·#3 호스트 약어의 자체 보완 원시를 보존했고 초기25개 harness는 사후 재구성/hash 대조라고 밝혔으며 당시 파일로 소급하지 않았다. 리드 저장 `E/settle-guard-fix-01.mjs`는 실행입력24/수정5/보호56의 불일치0·허용 밖 Git경로0을 확인했다. 자체검사와 해시 정산은 독립 PASS가 아니다.
+- 같은 산출물 수정3회 초과를 `msg_32ccdd1dae62`로 메인에 알렸다. 메인 `msg_59c9ef934fa2`는 현재 범위 계속을 판단하고 #3 두 호스트 실측과 다시 어긋나 같은 지점을 수정해야 하면 먼저 멈추고 원인(파서 설계/표본 누락)을 보고하도록 했다. 보충 `E/guard-fix-01-design-supplement-01.md`·전달 `msg_c9b994e9011e`를 작업자가 수신·대조했으며 마지막 보완 뒤 조건 미발생이라고 보고했다. 독립 확정 실패 각1회와 별도이며 재검증은 #1 그룹 파이프/OR/finally·#3 두 호스트 옵션 소비를 필수 확인한다.
+- 생존 helper는 현재 Dispatch 신호10·최대390초·초과1구간·질문대기0, exit1이었다(`E/guard-fix-01-final-liveness.json`·`guard-fix-01-liveness-execution.json`). 최신100건에 현재 Dispatch 신호는 모두 있으나 과거 Run 전체 범위가 아니다. 5분 준수로 보고하지 않는다. 제품 판정/확정 실패와 별도 절차 이탈이다.
+- 신규 Opus의 verifies는 이번 수정 Task `task_3fe8f2e6ca86`다. 이전 #1~#9와 새 귀속을 연결하고 전체 PR2 보존·내용·사람 가독성을 실사한다. 실제 Codex 진입은 변경 명령을 전달하지 않는 가짜 CLI 계획을 새로 만든 뒤 리드 기동/R-6 메인 신뢰 처리와 조율한다. 이전 live 계획의 실제 로컬 bare push는 재사용하지 않는다. 실제 trust·같은 경로 새 세션·exec/code-mode/headless와 Linux CI는 계속 미실행이다.
 
 ## 다음 계획 후보
 
