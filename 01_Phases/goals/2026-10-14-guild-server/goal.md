@@ -10,7 +10,7 @@
 - 근거 보존: E는 `.backups/verification/2026-10-14-guild-server/`(Git 제외)다. E/`shutdown/preservation.json`에 미커밋12파일의 원본/사본 SHA256와 오류 없는 대조가 있다. `shutdown/working-copy/`는 사본, `tracked-uncommitted.patch`·`untracked-guild.patch`는 diff다. 원본 작업 사본은 그대로 둔다.
 - 다음 첫 할 일: 사용자가 재개한 새 세션에서 지침/R-8·현재 Git 상태·이 goal·위 부분 보고를 읽고 현재 Run 권한/신원을 다시 확인한다. Core 실제 자원 정리/창 반환 상태와 당시 메모리 창을 새로 조율한 뒤에만 신규 `claude-opus-5-5`를 연다. 같은 Task가 현재 Run에서 유효할 때 공식 `--retry-of ctx_e4dbbb2d2bb1`의 새 Dispatch로 남은 RED1회/실패 전수 분류를 맡긴다. 재부팅 전 handle·자원 허용을 그대로 쓰지 않는다.
 - 입력 주의: RED 보존 manifest SHA256은 `67954C41386B96FE2D7A9116D74F5F3D3C84308DF45ABBD293C281836441BD14`이나 HEAD 행을 포함하므로 **이번 goal 기록 커밋 뒤 전체 hash는 달라진다.** 새 실행자는 현재 HEAD의 새 preflight에서 변경된 커밋이 goal 한 파일뿐인지, 미완 시험 해시와 나머지 manifest 항목이 유지되는지 대조한다. 옛 preflight를 현재 입력으로 위장하지 않으며 새 메모리·공식 ask 뒤에만 실행한다.
-- 자원/결정: World가 만든 Unity·컨테이너·서버는0, baseline 자기 clone의 마지막 잔여 process/lock 관측0 후 추가 실행 없음.18:37:08Z Windows Unity/GameServer 프로세스0·7777 listener0이다. **Core 컨테이너 cleanup/창 반환은 이 마감 기록 시점 미수신**이며 전역 컨테이너0을 주장하지 않는다. 남은 사용자 결정 요청은 없고, 전체 완료조건/Content 서버 main 병합 의존은 미해결이다.
+- 자원/결정: World가 만든 Unity·컨테이너·서버는0, baseline 자기 clone의 마지막 잔여 process/lock 관측0 후 추가 실행 없음.18:37:08Z Windows Unity/GameServer 프로세스0·7777 listener0이다. Core `msg_48a01172575a`(18:37:39Z)가 이번 신규 SQL 컨테이너/볼륨/비밀 root 부재·14334 TCP0·fixture0 확인과 창 반환을 보고했다. 이는 Core 리드의 원시 대조 보고이며 World가 전역 컨테이너를 직접 조회한 결과가 아니다. Core의 비밀 출력 감사는 미실행/Unresolved로 남아 정리 전체 PASS가 아니며, **자원 반환 뒤에도 오늘 신규 큰 실행 금지가 우선**이다. 남은 사용자 결정 요청은 없고, 전체 완료조건/Content 서버 main 병합 의존은 미해결이다.
 
 미커밋 파일은 다음12개다. 아래 시험11개와 CURRENT는 이번 기록 커밋에서 제외한다.
 
