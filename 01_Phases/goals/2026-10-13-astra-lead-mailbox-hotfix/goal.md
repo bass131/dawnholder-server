@@ -5,19 +5,19 @@
 ## 재개 지점
 
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
-- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. PR1 branch `docs/astra-lead-mailbox-20261013`, base `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`.
+- 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. 현재 PR2 branch `feat/codex-merge-guard-20261013`, 생성 당시 최신 main/base `44bd4319f78078f6fcc3f4941590f6371d58e2b7`. PR1 branch는 `docs/astra-lead-mailbox-20261013`, 당시 base는 `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`였다.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: 첫 실사 NOT PASS(#1·#2) 뒤 기본 문맥/저장 harness 수정과 B 관측·A 미관측 부분 결과를 기록했다. 추가 Sol도 B 설명 한 줄/README 두 표현 반영과 저장 자체검사를 마치고 정산·종료했다. 최신 11개 문서와 원시를 고정해 신규 Astra 한 명의 독립 재실사 v2로 넘긴다. 재실사 v1은 미발행으로 보존하며 PR은 아직 만들지 않았다.
+- 현재 차례: PR234를 메인이 사용자 승인 뒤 병합했다(`msg_56377f9a74a8`, merge `44bd4319…`). A 후속 관측은 실제 압축 미관측으로 부분 종료했고, PR2 선행 시험 Opus도 쓰기 종료·정산·pane 종료했다. 시험 8파일을 실행 당시 hash와 대조해 commit `8176c438`로 고정했다. 신규 Astra 구현 → 신규 Opus 강 검증을 진행한다. PR1 최종 판정·PR·cadence 상세 정본 기록과 Archify/Unity 권한 문서 정합은 메인 지시대로 PR2 뒤 문서 PR에 남긴다(`E/pending-next-doc-records.md`, `pending-backlog-archify.md`, `pending-next-doc-unity-permission.md`).
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 승인
 - [x] 리드 규칙 작성
-- [>] 문서 재실사와 부분 관측 정리
-- [ ] 문서 PR 병합
-- [ ] 가드 신뢰 경계
-- [ ] 가드 구현과 검증
+- [x] 문서 재실사와 부분 관측 정리
+- [x] 문서 PR 병합
+- [>] 가드 신뢰 경계 — 소스 조사 완료, 실제 UI/신규 세션 유지 미실행
+- [>] 가드 구현과 검증 — 선행 시험 완료, 구현 위임 준비
 - [ ] 가드 PR 병합
 - [ ] 종료 점검과 기록
 - [ ] 종료 확인과 교체
@@ -98,6 +98,8 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 3. 메인 `msg_fbf9b79c0a77`(2026-10-13T10:18:18Z): 「대시보드 결정 응답: 1) 리드 재개 시점 - 문서 PR 병합 뒤 바로 열지, 병합 금지 가드 PR까지 기다릴지 → A 문서 PR 뒤 바로」. 메인은 PR1 병합 뒤 Core·Content·Art·World 리드를 Astra로 연다. PR2 전까지 병합 금지는 규칙 경계이며 PR1 우선과 실제 관측으로 확정한 R-1 명령을 유지한다.
 4. 메인 `msg_58a7c1654b0c`(2026-10-13T11:10:23Z): 「아마 273K로 GPT 모델들의 컨텐스트를 제약한게, Tibo라는 OpenAI 테크리드가 이야기하기를 제일 효율적인 토큰사용량을 가져서 그렇게 설정한거라는데, 성능적인거도 그렇고, 그부분도 감안해서 최대 Context 메모리를 세팅하는게 좋을꺼야」, 「그리고 Compaction이 생각보다 정해진 퍼센트에 정확하게 진행하는지는 확인된게 없어서 확인이 필요해」. 효율성·성능 설명은 사용자 전언이며 원출처를 검증한 사실이 아니다. 기본값 사용과 작은 실험의 구체 방식은 아래 메인 적용 판단이다.
 
+5. 메인 `msg_3a48680901db`(2026-10-13T14:06:36Z), 사용자 23:0x KST: 「그리고 아무래도 매번 넣기 불편하니까 필요한 워크트리에는 계속 세팅해주는게 좋겠어」. **메인 해석**은 content-active·world-active·art-active 세 곳의 Git 제외 `.claude/settings.local.json`에서 `permissions.allow`에 `mcp__unity-mcp__Unity_RunCommand` 한 항목만 상시 허용하는 것이다. Core·Rules·CodeMap·Management, 다른 MCP/Bash 허용은 제외한다. 메인 `msg_6302a1f52a46`은 사용자가 자기 pane에서 명령을 실행했고 메인이 14:20:57Z에 세 파일과 Git 제외를 확인했다고 보고했다. content SHA256 `791ab2fd62cff891e8e2ac95bfd3b0fc0c8859c3b704c9c666191f674c201ec0`, world/art 각각 `cceb092d846438ec1f97037fa65cfcceaf1076f18a451b816fcb5126c138c9d9`다. Rules의 설정 쓰기나 독립 확인 실적이 아니다. 원시·기존 내용 보존·다음 문서 PR의 좁은 정합 범위는 `E/pending-next-doc-unity-permission.md`에 있다.
+
 ### 메인 적용 판단과 승인
 
 - 진입 메시지: 리드급은 기본 다섯·승인 추가 파트 모두이며 사용자 모델 전환 지시가 AGENTS 변경 승인을 겸한다고 해석했다. 25만 압축·재작업 1회 뒤 50만 복귀를 Codex 세션 옵션으로 맞추는 것은 메인 판단이다.
@@ -165,6 +167,14 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 
 - 메인 요청의 신뢰 저장·유지·checkout/세션 범위 조사는 E/research/hook-trust-findings.md와 공식 `rust-v0.162.1` 대응 소스 원시에 보존하고 `msg_fd2c6560a871`로 보고했다. 정상 TUI 신뢰는 사용자 설정의 hook 경로/위치 키별 해시 상태이며 세션 ID·만료 시간은 없다. 동일 설정·cwd·정의의 새 세션마다 확인하는 구조는 아니라는 소스상 추론이다. 다른 checkout·정의 변경의 재확인, R-6 메인 소유의 최초 picker 처리는 구분한다.
 - 실제 hook 등록/UI 승인·새 세션의 신뢰 유지·Windows headless 동작은 미실행이다. 사용자 설정에 정상 UI 신뢰 상태가 쓰이는 것과 에이전트의 전역 수동 편집을 구분하며 후자는 하지 않았다. PR2 가드 구현·실제 진입 통과 근거로 이 조사를 대신하지 않는다.
+
+### PR2 선행 시험과 구현 경계
+
+- 신규 Opus 선행 시험 Task `task_f6bae5117df2` / Dispatch `ctx_8e527d71d1dd`는 계약 `E/guard-pretest-contract-v1.md`와 설계 보충1·2에 따라 시험 8파일을 작성했다. 최초 명령 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh, backend unknown이다. `E/guard-pretest/report.md` SHA256 `d1c03e4822f61d43e97b72da8d68efce81d5e04802fb2437f42df49fb5d76c22`와 요구 표를 리드가 직접 읽었다.
+- 저장 harness `E/guard-pretest/run-pretest.ps1 -RunLabel run-01`은 기록/합계 대조 exit0, 기준 `node --test "99_Tools/CodexGuard.Tests/*.test.mjs"`는 exit1이다. leaf371은 진입 부재367·등록 부재1·fixture self-check PASS3이며 fixture 오류0·그 밖의 단정 실패0다. 의미 있는 잘못된 판정 검출과 실제 hook 진입은 미실행이다. 의도한 선행 RED를 제품 결함·독립 PASS로 세지 않는다. 리드의 `E/settle-guard-pretest.ps1`은 시험8/8 및 보고 hash 일치를 확인했다.
+- Q1은 메인 `msg_1915fbc7b085`의 B: 원격 기본 branch를 확인할 로컬 근거가 없으면 오류 deny하며 대상 원격·사람의 로컬 복구 방법을 안내하고 자동 네트워크 조회/설정 수리는 하지 않는다. Q2~Q5는 리드 보충1(`0829fb5f…`)과 메인의 수용, Q1 원문은 보충2(`d91f3b21…`)에 있다. 보호 범위는 모든 원격의 main/각 기본 branch, 판정 가능한 입력 오류·잡힌 예외도 오류 deny, REST merge 변경/GraphQL merge·enable auto·enqueue는 deny, 조회/disable auto는 보존한다. gh pr merge 명령 자체는 disable-auto도 deny다. 명시 cd·명령 치환·리터럴 eval/iex는 포함하고 EncodedCommand 본문은 제외한다. legacy decision:block도 공식 동등 출력으로 인정하되 정상 allow/명령 rewrite는 하지 않는다.
+- writes-end `msg_aa340b5094b6`, worker_done `msg_8ad6a447e6fb` succeeded와 현재 identity를 대조하고 release external retained 뒤 동일 incarnation의 idle pane만 닫았다(`E/guard-pretest-close.json`, ptyKilled=true; reclaimable0). 생존 helper는 공식 reply 원문 포함, 현재 Dispatch 신호11·최대407초·초과1구간·questionWaits0였다. background ask 중에도 신호가 이어졌으므로 질문 전체를 면제하지 않았다. 절차 간격 이탈은 제품 결함 집계와 구분하며 메인에 보고한다.
+- 신규 Astra xhigh 구현은 첫 회차, 독립 제품 결함0이다. 신호1(열린 셸/명령줄 입력)·3(Codex hook/Windows·POSIX/Node 경계)에 따라 배정하며 선행 시험을 읽기 전용으로 고정한다. 실제 신뢰 UI·동일 경로 새 세션 유지·실제 exec/code-mode 발동과 Linux CI는 후속 독립 Opus의 강 검증에 남는다.
 
 ## 다음 계획 후보
 
