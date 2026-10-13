@@ -62,7 +62,7 @@ Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식
 04_ClientNet/       클라이언트용 소켓 라이브러리
 98_Shared/          공유 프로토콜·게임 데이터
 99_Tools/           PacketGenerator·헤드리스 봇·실행 도구
-.agents/skills/    프로젝트 전용 Codex 스킬
+.agents/skills/    프로젝트 전용 스킬
 .github/           CODEOWNERS와 저장소 설정
 ```
 
@@ -88,7 +88,7 @@ Claude Code 규칙·역할별 에이전트·슬래시 명령·검증 훅·지식
 
 ## 문제 해결
 
-환경·빌드는 [개발 안내](00_Document/operations/DEVELOPMENT.md), 진행 상태·남은 검증은 [현재 목표](00_Document/operations/CURRENT.md), 설계의 배경은 [ADR](00_Document/ADR/INDEX.md)에서 확인합니다. 과거 `/setup`이나 `/session:start`는 현행 Codex 명령이 아닙니다.
+환경·빌드는 [개발 안내](00_Document/operations/DEVELOPMENT.md), 진행 상태·남은 검증은 [현재 목표](00_Document/operations/CURRENT.md), 설계의 배경은 [ADR](00_Document/ADR/INDEX.md)에서 확인합니다. 과거 `/setup`이나 `/session:start`는 현행 운영 명령이 아닙니다.
 
 ---
 

@@ -7,7 +7,7 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. PR1 branch `docs/astra-lead-mailbox-20261013`, base `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: 첫 실사 NOT PASS(#1·#2) 뒤 기본 문맥/저장 harness 수정과 B 관측·A 미관측 부분 결과를 `fb5369958603e7ee1bca82f0e17bd9238640dfdc`에 기록하고 두 작업자를 종료했다. 재실사 발행 전 메인의 B 설명 한 줄/README 두 표현 추가를 받았으므로 신규 Sol이 이를 반영한 뒤 신규 Astra 한 명이 재실사한다. 준비한 재실사 v1은 미발행이며 다음 입력으로 대체한다. PR은 아직 만들지 않았다.
+- 현재 차례: 첫 실사 NOT PASS(#1·#2) 뒤 기본 문맥/저장 harness 수정과 B 관측·A 미관측 부분 결과를 기록했다. 추가 Sol도 B 설명 한 줄/README 두 표현 반영과 저장 자체검사를 마치고 정산·종료했다. 최신 11개 문서와 원시를 고정해 신규 Astra 한 명의 독립 재실사 v2로 넘긴다. 재실사 v1은 미발행으로 보존하며 PR은 아직 만들지 않았다.
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
@@ -156,6 +156,10 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 실제 A/B 합계 입력210292(B154661+A55631), cached114176은 입력의 부분집합, output459다. 압축 usage40396을 포함하며 일반 token_count 누적169896만으로 마감하지 않았다. 남은89708로 A의 추가 요청·압축·후속 비용을 제한할 수 없어 중단했다. B의 사전 예약78000 대비 실제80040은2040 초과했으나 전체30만은 넘지 않았다. 예약은 엄격한 런타임 상한이 아니며 관측자 자체 세션 비용·가격·서버 숨은 usage는 이 합계로 검증하지 않았다(E/compact-experiment/result.json·commands.json·원시/receipt).
 - 두 작업자 모두 현재 from/Task/Dispatch와 worker-show 완료 상태를 대조하고 release의 external retained 뒤 해당 pane만 close했다(각 E/doc-fix-*·compact-experiment-* done-show/release/close). reclaimable0이며 재사용하지 않는다. 고정 입력을 바꾼 뒤 기존 판정을 재활용하지 않고 새 재실사를 수행한다.
 - 정산 생존 검사 E/run-fix-wave-liveness.ps1·fix-wave-final-liveness.json·execution.json은 exit1이다. 첫 검증자 신호10개/최대268초, 관측 Astra9개/최대365초, 수정 Sol5개/최대382초(303·310·382초 초과 구간)다. 5분 전체 준수를 주장하지 않으며 첫 신호 전/마지막 신호 후·ID 없는 신호는 포함하지 않는다.
+- 추가 세 문구는 신규 Sol Task `task_e231912e836c` / Dispatch `ctx_df250d2b5dc2`, 계약 E/doc-addendum-contract-v1.md(SHA256 `413885260d086170d090598cd34d1db646c55af51aa22109a49f3d0cc99f209f`)에 맡겼다. 기준 HEAD `aae5cd8e28d62ec78177dc415581c70ce845df56`, 입력17/출력부모1 모두 존재, 최초 명령/화면 gpt-6.1-sol max·backend unknown이다. R-5 조건부 bare Enter1회 뒤 실제 제출 계약의 CR→LF 전송 대조와 Working을 확인했다(E/doc-addendum-*). 쓰기 종료 후 재실사 입력 v2를 고정하며 v1은 미발행 이력이다.
+- 추가 Sol writes-end `msg_03f53479c35a`(12:27:44Z), worker_done `msg_54433de2e5da`(12:28:43Z) outcome succeeded를 현재 identity/Task/Dispatch와 대조했다. E/doc-addendum/report.md(SHA256 `82f335cd0d94431c90f198ea7c96a1030e4959772eddbc10b784ba0216200d6b`)·최종 receipt·실제 diff를 직접 읽고 ORCA/README/저장 harness hash를 확인했다. ORCA +1/-1줄·+368bytes, README +2/-2줄·-5bytes이며 지정 구간 밖/README14를 보존한 자체검사 exit0이다. 독립 PASS는 아직 아니다.
+- 추가 Sol의 prepare-01 exit1은 리드가 발행 뒤 goal에 Task/Dispatch 기록 한 줄을 쓴 것을 감지한 입력/소유 가정 차이다. 요구 변경 없음과 리드 귀속을 `msg_8c1c9b3d8fa2`로 확인했고 이전/현재 hash·실패 원시를 보존한 prepare-02와 최종 저장 inspection-02는 exit0이다. 다른 예상 밖 변경을 허용하거나 과거 실패를 없애지 않았다. 제품 확정 실패 횟수에 합치지 않는다.
+- 추가 Sol worker-show completed/succeeded→release external retained→같은 pane close ptyKilled=true를 확인했다(E/doc-addendum-done-show.json·release.json·close.json). E/run-addendum-liveness.ps1·addendum-final-liveness.json은 이 Dispatch 신호7개/최대353초·초과1구간을 확인했고 exit1이다. 첫/마지막 신호 바깥을 포함한 전 구간 준수를 주장하지 않는다. 최종 재실사는 이 절차 이탈과 제품/문서 판정을 구분한다.
 
 ### PR2 신뢰 사전 조사
 
