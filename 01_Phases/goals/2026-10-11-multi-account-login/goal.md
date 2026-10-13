@@ -8,12 +8,11 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - branch: `feat/multi-account-login-20261011`(base main `6782cd674f03d33b989943b409d68883d0fb5b21`, PR228 병합 뒤). Orca가 만든 로컬 branch `bass131/world-active`는 원격에 올리지 않는다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-multi-account-login/`(Git 제외). 진입·범위 기록은 E/`lead-entry/`에 있다. 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/scope-draft-v1.md)(SHA256 `1d73a1be…8540`), 조사 메모는 [research-notes.md](../../../.backups/verification/2026-10-11-multi-account-login/lead-entry/research-notes.md)(SHA256 `7cae47d1…ad08`)다. 리드 맥락 메모는 E/`lead-entry/context-memo.md`와 E/`goal-write-context.md`다.
 - 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 태그 `[World 리드 Opus]`, handle `term_940c23cb-4746-4ae6-bcc7-d88ed59ec926`(2026-10-13 재진입 `msg_c1b1e75ea27e` 뒤 `--resume`, 이전 `term_328d1a7f…`·`term_fddebc03…`), Run `run_a927bbaff1f5`(회신 주소 `run:run_a927bbaff1f5`). 메인 주소는 메인 term handle이다. 작업자 태그는 `[World Sol]`(Astra 구현자는 `[World 구현 Astra]`), 검증자는 `[World 검증자]`다.
-- **현재 위치**(2026-10-13): RF-01 수정의 약 등급 재검증이 통과했다(아래 「RF-01 재검증」). 독립 검증 단계가 끝났다. 열린 작업자는 없다.
-- **다음 행동**: 실화면을 메인에 다시 요청한다. 요청서 E/`screen-request.txt`, harness E/`screen-harness/hold_account.py`(아직 실행 안 함).
-  - 시작 직전에 Content·Core·Art에 7777·Unity 사용을 묻는다. 큰 실행 조건은 아래 「실행 자원과 조율」을 따른다.
-  - 다른 리드에 알릴 때 서식 검사도 WSL dotnet을 쓴다고 적는다(아래 「RF-01 재검증」의 조율 정정).
+- **현재 위치**(2026-10-13): 실화면 넷을 수행했고 판정은 차단(S-1, 안내 문장의 가운뎃점이 폰트에 없음)이다(아래 「실화면 확인」). 메인 판단으로 S-1은 이 goal에서 고치고 S-2(작은 화면에서 안내가 넘침)는 다음 계획 후보로 둔다. Editor·서버·Unity 시트는 모두 풀었다. 열린 작업자는 없다.
+- **다음 행동**: S-1 수정 작업자 계약을 쓴다. 안내 문장의 「·」을 폰트에 있는 글자로 바꾸고, 메뉴 안내 문장의 모든 글자가 그 폰트에 있는지 보는 EditMode 시험을 더한다. O-3(「이미 접속 중」 문장 상수화)도 함께 한다. 신규 작업자 1 + 신규 검증자 1이고 실화면은 다시 열지 않는다.
+  - Unity batch·WSL 실행 전에 Content·Core·Rules·Art에 알린다. 큰 실행 조건은 아래 「실행 자원과 조율」을 따르고, 서식 검사도 WSL dotnet을 쓴다고 적는다.
 - **다시 열 때 필요한 것**: 이 리드의 Claude 세션 ID `1531e871-7aaa-4331-a1db-d831038f8f4a`, Run `run_a927bbaff1f5`. branch는 이 기록 commit까지 원격에 올렸다. world-active에 사용자 미커밋 파일은 없다. 사용자·메인 결정 대기 항목은 없다.
-- **남은 순서**(2026-10-13 기준): 실화면 확인 → 제품 PR·사용자 병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
+- **남은 순서**(2026-10-13 기준): S-1 수정 → 재검증 → 제품 PR·사용자 병합 승인 → Gardener → 종료 기록 PR → 종료 점검 → R-8.
 - **다음 goal 메모**: 사용자 승인 「10-28 시연 계획과 파트 배정 → A」(아래 「적용 중인 사용자 결정」, 메인 전달 `msg_5ed276291957`)로 다음 goal은 「서버 후속 묶음」 대신 **길드 서버**다. 범위 후보는 기본 길드·길드원, 길드 금고와 던전 클리어 적립, 거점 레벨 올리기, 대장간 무기 강화와 공격력 반영, 패킷과 프로토콜 판(41·42·19 다음 번호)이다. R-8 뒤 새 리드가 범위 초안을 쓰고 메인이 사용자 승인을 받는다. 지금 리드는 준비하지 않는다. 앞선 결정(`msg_6974802727a2`, 서버 후속 묶음)은 이 승인으로 바뀌었다.
 - 다음 goal은 자동으로 시작하지 않는다.
 
@@ -24,7 +23,7 @@ World의 두 번째 goal이다. 접속할 때 계정 이름을 받아 세션에 
 - [x] 선행 시험 작성
 - [x] 구현
 - [x] 독립 검증(RF-01 재검증 통과)
-- [>] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 남음)
+- [>] 봇·실화면 확인(봇은 검증에서 17/17, 실화면 수행·차단 S-1, 수정과 재검증 남음)
 - [ ] 제품 PR 병합
 - [ ] Gardener 점검
 - [ ] 종료 기록 PR 병합
@@ -283,6 +282,8 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 
 모두 메인 창 Enter 제출, 메인 전달이다. 이 pane의 사용자 직접 입력으로 격상하지 않는다.
 
+- **실화면 동안만 Unity 코드 실행 허용**(메인 전달 `msg_43acdbdacea8`, 2026-10-13 14:1x KST 사용자 제출): 「대시보드 결정 응답: 1) 실화면 두 건 - 확인하는 동안만 Unity 코드 실행을 허용할지(World 로그인, Content 던전 클리어) → A 확인 동안만 허용」. 리드 질문 `msg_d9d08ec6f2a3`(world-active에 허용 줄 없음)에서 시작했다. 효과: 메인이 world-active `.claude/settings.local.json`(Git 제외, 새 파일)에 permissions.allow `mcp__unity-mcp__Unity_RunCommand` 한 줄만 넣었다(05:15:02Z, SHA256 `cceb092d…c9d9`). 리드가 실화면 뒤 「허용 줄 지울 차례」를 알렸고(`msg_b5642dc8ad68`), 메인이 05:49:21Z에 파일째 지웠다(지우기 직전 SHA256이 넣을 때와 같음, `msg_d52061c05d13`). 이 결정의 허용 기간은 끝났다.
+
 - **10-28 시연 계획 승인**(메인 전달 `msg_5ed276291957`, 2026-10-13T03:46:56Z, 사용자 제출 12:4x KST): 「대시보드 결정 응답: 1) 계획 검토 - Main 10-28 시연 영상 시나리오와 파트 배정 → A」, 코멘트 「A로 가되 길드거점은 맵형태로 나중에 시간나면 꼭 만들었으면 좋겠어, 시각적인 성장 이펙트나 이런게 도드라지면 좋겠네, Shader로 해결할 수 있는건 해결하고, …」(전체 원문은 메인 메시지와 계획 원문 `C:/Dev/DawnHolder_Dashboard/plans/demo-video-1028-scenario.md`의 「승인 기록」). 효과: 이 goal은 재검증 → 실화면 → 제품 PR → 병합 승인 → 종료 순서로 끝낸다. 다음 goal은 길드 서버이고 R-8 뒤 새 리드가 범위 초안을 쓴다. 서버 PR이 패킷 계약을 먼저 정하고 Content 길드 화면 PR이 따른다. 지금 리드는 다음 goal을 준비하지 않고 종료 기록 「다음 계획」에 이 결정을 적는다.
 
 - **10-28 시연 영상에 길드 거점**(메인 전달 `msg_850c8aef1678`, 2026-10-13T03:34:07Z, 사용자 제출 12:3x KST): 「대시보드 결정 응답: 1) 10-28 시연 영상 - 길드 거점 최소 순환을 새로 넣을지 → A 길드 거점 넣음」. 효과: 시나리오 승인 전에는 어느 리드도 새 goal을 열거나 준비하지 않고, 진행 중인 goal은 끝까지 간다.
@@ -329,6 +330,8 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 반복 규칙 후보: 설명 줄을 바꾸는 계약은 그 줄의 주장마다 실제 호출 위치 대조표를 붙인다(리드 설명 대조 누락의 두 번째 발생, 아래 「RO-01 묶음 재검증」). 규칙 정본은 Rules 몫이고, 다음 Rules goal이 10-28 뒤라 메인이 그때 Rules 진입 계약에 넘긴다(`msg_eb45c17c73e9`). 이 goal에서는 「RF-01 수정」 계약에 먼저 적용했다.
 - `CharacterSelectHandlerTests.cs:63~64`가 `HasSelectedClass`를 「internal getter」, 접근 이유를 「같은 어셈블리 내 서브클래스」라고 적는다. 실제 선언은 `protected internal`(`GameSession.cs:91`)이고 시험 어셈블리 접근은 `InternalsVisibleTo`(`GameServer.csproj:20~22`)다(아래 「RF-01 수정」 작업자 관찰, goal 전부터 있던 문구).
 - 같은 파일의 옛 설명 두 줄: `:24`는 없는 `GetStatsForTest` getter로 검증한다고 적고(실제는 `StatsSet`·로그·`DisconnectCalls`), `:56`은 class 선택 뒤 월드 진입이 시험 대상이라고 적지만 다섯 시험은 월드 진입을 단정하지 않는다(아래 「RF-01 재검증」 O-2·O-3, goal 전부터 있던 문구).
+- **BACKLOG 등록 대상** 메인 메뉴 최소 화면 크기와 오류 안내 넘침(실화면 S-2, 메인 판단 `msg_d52061c05d13`): Editor Game view 709x399에서 이름 규칙 안내(22pt 고정, 필요 폭 508.1px)가 오류 글자칸(폭 449.5px)을 넘쳐 두 줄이 된다. 끝 4자가 화면 밖으로 나가고 첫 줄이 서버 주소 칸과 2405.4px² 겹친다(검증자 측정). 계산 근거(리드가 `MainMenu.unity`를 읽음, 측정 아님): 오류 글자칸 폭은 0.32365·화면폭 + 219.99, 높이는 0.12424·화면높이 − 32.21이다. 10-28 영상 크기 1920x1080이면 약 841×102px라 한 줄(줄 높이 42px)에 들어간다. 한 줄 조건은 화면폭 약 891 이상, 높이 조건은 화면높이 약 598 이상이다. 먼저 최소 화면 크기를 정해야 고칠 방식(문장 줄이기, 자동 크기, 칸 넓히기)을 고를 수 있다. S-1 수정 뒤 문장 폭은 조금 달라지므로 등록 때 다시 잰 값을 쓴다. 종료 기록 PR에서 BACKLOG에 올린다.
+- 실화면 설계 관찰(아래 「실화면 확인」): O-1 이미 접속 중 거부 때 Town을 잠깐 지난 뒤 메뉴로 돌아온다(설계대로, 화면에 비쳤는지는 미측정). O-2 클라이언트 로그에 거부 사실 줄이 없다(`NetworkService.cs:98-104`). O-4 Town의 `LiberationSans SDF` 폰트 없음 경고가 여럿이다(기존 자산, 해당 파트 판단).
 
 ## 현재 결과
 
@@ -636,3 +639,35 @@ Core 리드(`msg_775584e3f699`, World 질문 `msg_84e8fc956049`):
 - 범위 밖 관찰: O-1 helper 이름(이미 다음 계획 후보), O-2 `:24` 없는 getter, O-3 `:56` 월드 진입 시험 대상 설명. O-2·O-3은 다음 계획 후보에 한 줄로 넣었다.
 - 미실행: 실화면(별도 단계), 봇 시나리오·DB·Unity.
 - 부수 효과: Unity를 쓰지 않아 되돌린 파일이 없다.
+
+### 실화면 확인 — 2026-10-13
+
+- 메인 운영 판단(`msg_41585413d0e9`, 사용자 결정이 아니다): 리드가 world-active에서 신규 `claude-opus-5-5 --mcp-config` 검증자를 연다. Unity 시트는 World가 먼저 쓰고 Content C9가 그 뒤에 쓴다. Editor를 먼저 열고 MCP 세션은 그 뒤에 연다. PlayerPrefs `AccountName`은 시작 전 상태로 되돌린다. 서버 7777과 이름 점유는 리드 몫이다. Unity 코드 실행 허용은 위 「적용 중인 사용자 결정」의 「실화면 동안만 Unity 코드 실행 허용」을 따랐다.
+- 검증자: 신규 `claude-opus-5-5` xhigh(`--mcp-config C:/Users/bass1/.unity/claude-mcp.json`, 첫 화면 「Opus 5.5 with xhigh effort」, 선택창 없음, backend unknown), 태그 `[World 검증자]`. 리드 pane 아래 split `term_d7314c1e-b5de-4114-af94-b59c9250f328`, Task `task_8ee7bf118a6d`, Dispatch `ctx_a5e16e33fbb8`, verifies `task_1cd120ce26cf`. 사용자가 Unity MCP 연결을 승인했다(메인 전달 `msg_0ca8276c9cac`). worker_done `msg_e6dd9b510a00`(05:45:16Z). release `retained` 뒤 05:46:51Z에 pane을 닫아 시트를 풀었다(relay_win.exe 0). 메인에는 기동을 `msg_c40cb3a94e36`으로 알렸다.
+- 계약: E/`screen-contract.md` v1(SHA256 `677831f46598f921670dead0a15310f657e122527526a9a1f5903d3896f655ed`), 요약 E/`screen-spec.md`, 입력 E/`screen-inputs.txt`, 경로 확인 E/`screen-preflight.txt`, 리드 메모 E/`screen-prep-context.md`. 고정 HEAD `3e0eb704`. CODE_CONVENTION 네 절(상태와 책임·Unity와 이름·역할별 적용·사람의 탐색과 가독성)은 같은 조립 스크립트로 붙였고 원문 비교가 모두 일치했다.
+- 큰 실행 조율: 네 리드에 7777·Unity 사용을 물었고 모두 겹침 없음이었다(질문 `msg_6891be04b0b4`·`msg_ae25de415c11`·`msg_c7e19d1cf465`·`msg_3a8e9dc1d750`, 회신 Content `msg_d1863c3a342e`·Core `msg_ebe177d5dc58`·Rules `msg_b978d10d3dc9`·Art `msg_f71544764277`). 시작(`msg_fb1b8a258e60` 등 넷), 7777·Editor 해제(`msg_a2c1b9f77270` 등 넷), 시트 해제(`msg_28246f9ce402` 등 넷)를 알렸다. 질문 알림에는 서식 검사도 WSL dotnet을 쓴다는 정정을 넣었다.
+- 리드가 띄운 것:
+  - 서버: Gate exit 0 뒤 Start 05:16:08Z, ready 05:16:21Z(WSL pid 1139, HEAD 3e0eb704). 직전 여유 물리 11684968 / 가상 16826060 KiB. 원시 E/`screen-server/runs/server/screen1-*`. Stop 05:39:32Z exit 0, WSL listener 없음, 서버 로그 복사(`screen1-server.log`, SHA256 `63ab1600…c912`).
+  - Editor: 05:16:39Z 기동, 05:17:47Z 로드(PID 20608). 직전 여유 물리 9210704 / 가상 13915792 KiB. 원시 E/`screen-prep/editor-*.json`. PlayerPrefs 시작 전 값은 E/`screen-prep/prefs-before.txt`(`AccountName` 없음).
+- 메모리 gate 사건: Editor의 asset import 작업자 넷 때문에 05:18:25Z 여유 물리가 342232 KiB까지 떨어졌다(E/`screen-prep/memory-*`). 검증자 gate-1(05:25:33Z, 물리 3402768 / 가상 4114400)이 미달이라 Play 없이 물었다(`msg_6dc84e265b3c`). 리드는 기준을 그대로 두고 약 2분 간격으로 다시 재서 통과하면 진행하라고 답했다(`msg_9c147e95bd1f`). gate-2(05:27:09Z, 4581900 / 5439080)가 통과해 05:27:43Z에 Play를 시작했다. 첫 발생이라 여기 기록만 한다.
+- 화면 3 점유 harness 일탈: 원본 E/`screen-harness/hold_account.py`(SHA256 `faa4d4d5…83a8`)의 첫 실행은 Git Bash 경로 변환 때문에 실패했다(`MSYS_NO_PATHCONV=1` 필요). 둘째는 프로토콜 18이라 서버가 `ProtocolVersion mismatch (client=18, server=19)`로 거부했다. 리드가 사본 E/`screen-harness/hold_account_v19.py`(SHA256 `980ae7b6…efc7`)를 만들어 PROTOCOL_VERSION 19, C_LOGIN 41, S_LOGIN_RESULT 42 세 줄만 바꿨다. 셋째 실행에서 05:33:56Z 「login result: 0 Accepted」를 받고 300초 유지했다(`closed exit 0 end 05:38:57Z`, E/`screen-hold/hold-3-*`). 원본 harness는 계약 고정 입력이라 그대로 두었다. 회신 `msg_b52360427a0c`.
+- 판정: E/`screen/report.md` **차단(S-1)**. 화면 넷을 한 Play(05:27:43Z~05:36:00Z)에서 모두 수행했다. MCP `Unity_RunCommand`는 16회 호출했고 거부·연결 철회는 0회였다. 사전 메모 E/`screen/context-before.md`.
+
+| 화면 | 입력 | 결과 | 캡처 SHA256 |
+|---|---|---|---|
+| 1 메인 메뉴 | 없음 | 통과. 입력칸 placeholder 「계정 이름」, 보이는 요소와 겹침 0(TITLE 투명 여백은 육안) | `1-menu.png` e07d6796… |
+| 2 이름 규칙 위반 | `ab` | **차단 S-1**. 접속 시도 0건, 메뉴 유지, 글자칸 `text`는 원문과 같다. 화면에는 「·」 두 개가 공백으로 그려진다. 709x399에서 두 줄로 넘친다(S-2) | `2-invalid-name.png` 1e32a164… |
+| 3 이미 접속 중 | `screencheck`(리드 점유 중) | 통과. 서버 `rejected account=screencheck result=AlreadyOnline`(1113행) 뒤 메뉴 복귀, 「이미 접속 중인 계정입니다」 | `3-already-online.png` fcd8a717… |
+| 4 정상 | `screenok` | 통과. Town 입장, LocalPlayer 1, 서버 `accepted account=screenok`(1156행) | `4-town.png` 4d587944… |
+
+- 결함:
+  - S-1: 폰트 `Pretendard SDF Proper`에 U+00B7이 없고 fallback도 없다. TMP가 공백으로 바꿔 그린다. 같은 상수를 서버 `InvalidName` 거부 안내와 `Connect`의 이름 오류도 쓴다(`NetworkService.cs:84`·`:102`). 귀속은 리드 설계 문구와 기존 폰트 자산이다.
+  - S-2: 709x399에서 안내가 오류 글자칸을 넘친다. 기준 화면 크기가 없어 차단 여부는 정하지 않았다.
+- 메인 판단(`msg_d52061c05d13`, 05:49:57Z, 메인 운영 판단이며 사용자 결정이 아니다. 사용자가 자리를 비웠고 목표 범위 정본의 기본값을 따랐다. 사용자가 돌아와 다른 길을 원하면 바꾼다): 리드 보고 `msg_b5642dc8ad68`의 A다.
+  - S-1은 이 goal에서 고친다. 「·」을 폰트에 있는 글자로 바꾸고, 메뉴 안내 문장의 모든 글자가 그 폰트에 있는지 보는 EditMode 시험을 더한다. O-3도 같은 파일 한 줄이라 함께 한다. 신규 작업자 1 + 신규 검증자 1이고 실화면은 다시 열지 않는다.
+  - S-2는 최소 화면 크기 결정이 필요한 후속 후보로 BACKLOG에 올린다. 1080p 계산 근거는 「다음 계획 후보」에 적었다.
+  - 메인 R-2: 캡처 넷 SHA256 앞자리, `2-invalid-name.png`의 빈칸·겹침, `MainMenuNotice.cs:5`의 「·」 두 개를 직접 봤다.
+- 설계 관찰(비차단): O-1·O-2·O-4는 「다음 계획 후보」에 적었다. O-3(「이미 접속 중」 문장이 `MainMenuNotice` 상수가 아니라 `NetworkService.cs:101` 리터럴이다)은 S-1 수정에 넣는다.
+- 리드 R-2 표본: 캡처 4개 SHA256을 다시 계산해 보고와 같았다. 서버 로그 SHA256과 1113·1156행을 직접 읽었다. 폰트 자산을 읽어 글자 11267개, U+00B7 없음, 쉼표 있음, `m_FallbackFontAssetTable: []`, 정적 atlas를 확인했다. 사후 상태(05:37:59Z, E/`screen-prep/state-post-check-1.json`)는 Unity.exe 0, `AccountName` 없음, 음소거 0, `UnityLockfile` 없음이었다.
+- 마감 상태: Play 종료 05:36:00Z, 음소거 원래 값 복원, `AccountName` 삭제(`HasKey=False`), `EditorApplication.Exit(0)` 뒤 05:38:58Z Unity.exe 0. `ServerHost`·`SelectedCharacterClass`는 시작 전과 같은 값이다.
+- 부수 효과: Unity가 `MinimapRT.renderTexture`의 줄 끝을 다시 써서 리드가 `git restore`로 되돌렸다(SHA256 `286d3cc8…`로 복귀, `git status` 0행). 다른 설정 파일 hash는 그대로였다.
