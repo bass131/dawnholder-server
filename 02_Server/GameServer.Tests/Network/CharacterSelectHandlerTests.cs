@@ -83,7 +83,7 @@ public class CharacterSelectHandlerTests : IDisposable
         return pkt.Write();
     }
 
-    // handshake·로그인 우회 + tick 1회 → EnterGameWorld 람다 처리 완료 상태.
+    // handshake·로그인 우회 + tick 1회 → class 선택 전·월드 미진입 상태.
     TestGameSession SetupHandshakedSession()
     {
         TestGameSession s = new(_map);
