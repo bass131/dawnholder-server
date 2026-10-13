@@ -7,14 +7,14 @@
 - 메인이 범위 초안 v1을 승인했다(`msg_f6fcab954e76`, 2026-10-13T10:12:35Z). 승인 원문은 아래 「적용 중인 사용자 결정」과 구분된 메인 판단이다.
 - 작업 공간: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`. PR1 branch `docs/astra-lead-mailbox-20261013`, base `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`.
 - 근거 E: `.backups/verification/2026-10-13-astra-lead-mailbox-hotfix/`(Git 제외). 맥락 메모 `E/lead-context.md`, 승인 초안 `E/scope-draft-v1.md` SHA256 `49b705fb39c087396010b7c4637f39a840f5f44f25de738221985c023d638aa0`, 조사 `E/research/findings.md`.
-- 현재 차례: Sol 문서6개와 메인 CLAUDE.md 두 문장 쓰기가 끝났다. 구현 작업자는 정산·종료했다. 입력을 고정하고 신규 Astra가 문서 실사와 문맥 옵션 관측을 한다.
+- 현재 차례: 첫 독립 실사는 고정 HEAD `96df2ea2c41428180c398465dda21960fb05a007`에서 NOT PASS(#1·#2)로 끝났고 검증자를 정산·종료했다. 최신 메인 `msg_58a7c1654b0c`에 따라 기본 문맥 명령으로 수정하고 작은 자동 압축 관측을 병행한다. 신규 Sol 문서/저장 harness 수정과 신규 Astra 관측 뒤 신규 Astra 한 명이 재실사한다. PR은 아직 만들지 않았다.
 - Run `run_54319375ed08`은 이번 goal의 현재 namespace다. 회신 `run:run_54319375ed08`. handle·runtime·incarnation은 사용할 때 다시 확인하며 이전 Rules goal의 ID는 권한으로 쓰지 않는다.
 
 ## 진척 단계
 
 - [x] 범위와 기준 승인
 - [x] 리드 규칙 작성
-- [>] 문맥 실측과 실사
+- [>] 문서 수정과 관측
 - [ ] 문서 PR 병합
 - [ ] 가드 신뢰 경계
 - [ ] 가드 구현과 검증
@@ -32,7 +32,8 @@
 4. 기존 MergeGate·SessionGuard가 Claude Code 전용임을 구분한다. PR1에서는 Codex가 두 hook 밖이라는 사실을 유지하고, PR2 검증 뒤 새 가드의 지원 범위만 기술 보호로 바꾼다. Codex의 출력/쓰기 가드 이식은 BACKLOG 후보 한 행에만 둔다.
 5. 10-31 검증자 시범 평가와 BACKLOG에 전환 뒤 리드 토큰을 10-05 기준선과 rollout token_count로 비교하고 비용이 다시 커지면 사용자에게 올리는 안건을 넣는다. 조건이 다른 수치를 같은 추세로 단정하거나 절감률·새 측정 도구를 만들지 않는다.
 6. 프로젝트 `.codex/hooks.json`의 PreToolUse 등록과 Codex용 명령 판정·시험을 만든다. `gh pr merge`(auto 포함), gh api의 PR merge/auto-merge 변경 호출, 원격 main/기본 branch를 갱신하는 git push를 막는다. 옵션·경로·refspec·기본 push 목적지·all/mirror·삭제 등 같은 동작을 대조한다. 로컬 git merge·작업 branch push·gh pr create/view/checks·일반 조회는 보존하고, 문구에 단어가 있다는 이유의 오탐을 만들지 않는다. 해석 가능한 명시 명령·셸 compound/wrapper가 대상이며 동적 실행·별칭·외부 스크립트·재사용 셸 stdin·다른 클라이언트 우회까지 완전 차단하는 권한 시스템은 아니다. 최소 요구의 누락을 한계로 면제하지 않는다. 기존 Claude hook/settings/승인 저장소는 건드리지 않는다.
-7. PR1 실사 세션을 `-c model_context_window=1000000 -c model_auto_compact_token_limit=250000`으로 열어 화면/rollout에 적용된 값을 관측한다. 상한으로 잘리면 실제 표시 최대값을 창으로, 250000을 압축 기준으로 확정한다. 272000에서 불변·압축 기준 미적용·실행 거부만 메인에게 다시 보고한다. 맥락 손실 재작업 1회면 메인이 전체 리드의 압축 기준을 500000으로 되돌린다. 전역 설정은 바꾸지 않으며 현재 리드 재기동은 메인이 판단한다. 짧은 턴 옵션 관측과 긴 입력·실제 압축 실증을 구분한다.
+7. 최신 메인 계획 `msg_58a7c1654b0c`에 따라 리드 신규 기동은 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 재개는 같은 대화 `codex resume <session-id>`에 같은 모델·effort를 사용한다. 문맥 창·압축 기준 override는 명령에서 빼고 두 키는 사용자 결정으로 조정하는 수단으로만 설명한다. 조정 검토 근거는 압축 뒤 맥락 손실로 일을 다시 한 사례다. 10-11의 25만/50만 결정은 당시 Claude 세션으로 좁힌다. 최초 실사 세션의 1000000/250000 요청과 usable828400 관측은 역사 근거로만 남긴다.
+8. 설치 버전 공식 소스의 기본 압축 한도와 실제 발동 조건을 구분하고, 신규 Astra 관측자 한 명이 저장 harness로 작은 A/B 실험을 한다. A는 창만64000으로 줄이고 압축 기준은 기본값, B는 기본 창에 압축 기준40000이다. 실제 읽기 등으로 채운 뒤 자동 압축 직전·직후 token_count/이벤트를 기록한다. 두 실험의 합계 입력은 대략30만 이하로 제한하고 강제 압축·큰 창 채우기·전역 변경은 하지 않는다. 소스와 큰 차이가 나면 메인에 즉시 보고한다. PR1 수정 차례 안에 끝나면 정본/PR에 한 줄 결과, 늦으면 진행 중으로 적고 PR2/종료 기록에 반영한다.
 
 ### 건드릴 곳
 
@@ -45,7 +46,8 @@
 | `00_Document/operations/RESUME.md` | 문서 Sol | 로컬 리드 메모 순서·Claude 기술 가드 구분 |
 | `05_Management/RESUME.md` | 문서 Sol | Management 리드 태그 한 곳 |
 | `CLAUDE.md` | 메인 단독 | Architecture 리드 태그·Codex 수신자 조건부 안내. Sol 종료 뒤 쓰기 |
-| `00_Document/operations/BACKLOG.md` | 리드 | 지정 다섯 행·평가 행과 후속 후보 한 행 |
+| `00_Document/operations/BACKLOG.md` | 리드 | 지정 다섯 행·평가 행과 후속 후보, 독립 지적 #1의 주장 정정 |
+| `E/doc-fix/`, `E/compact-experiment/` | 신규 Sol / 신규 Astra 각각 | 저장 검사 harness·재실행 / 소규모 자동 압축 관측. 이전 근거 불변 |
 | `00_Document/operations/CURRENT.md` Rules 줄·이 goal | 리드 | 기준·진척·결정·결과. 타 파트 보존 |
 | `.codex/hooks.json` | PR2 구현 Astra | 신규 프로젝트 hook 등록. config.toml은 범위 아님 |
 | `99_Tools/CodexGuard/codex-hook.mjs`, `command-policy.mjs` | PR2 구현 Astra | 신규 어댑터/판정. 추가 파일은 같은 책임 내 계약에 고정 |
@@ -59,7 +61,7 @@ CodexGuard는 MergeGate·SessionGuard의 책임별 폴더 관례를 따른다. �
 - 원격 PR 병합·자동 병합 예약·main push와 실제 외부 쓰기 실험. 전역 Codex/Claude/Git 설정·업데이트·신뢰 우회 플래그·현재 리드 자기 재기동.
 - 기존 `.claude/settings.json`·MergeGate·SessionGuard 코드/승인 상태 변경, Codex의 메모/출력/파일 쓰기 가드 구현.
 - 서버·Unity·DB·프로토콜·공유 DLL·대시보드·메인 개인 도구 쓰기, 다른 파트 goal과 과거 기록·Orca.Tests 역사 태그 변경.
-- heartbeat 간격 변경·우편함 필터·실행 helper·새 비용 측정기. 기존 구현자/검증자·Gardener/Advisor/선행 시험 배정 변경. 판 올림·다음 goal 자동 착수.
+- heartbeat 간격 변경·우편함 필터·지속 운영 실행 helper·새 비용 측정기. 할당 근거 폴더의 저장 검증/관측 harness는 필요 범위에 포함한다. 기존 구현자/검증자·Gardener/Advisor/선행 시험 배정 변경. 판 올림·다음 goal 자동 착수.
 
 orca-work·implementer-routing은 AGENTS/R-1을 참조하므로 그대로 둔다. helper-session의 Claude 메인 수신 안내, R-5 작업자 명령/Claude TEMP, CODE_CONVENTION·task-context의 과거 역할 표현도 이번 리드 전환을 이유로 일괄 정리하지 않는다.
 
@@ -67,7 +69,7 @@ orca-work·implementer-routing은 AGENTS/R-1을 참조하므로 그대로 둔다
 
 1. 허용 diff 안에서 현재 리드 모델·태그·기동·같은 대화 재개·추가 파트 규칙이 맞고 역사 기록·기존 Claude 경계가 보존된다.
 2. 신규 문서 실사자가 진입·worker_done·heartbeat-only·무알림 시나리오에서 무대기 수신/전체 처리/ack/조건부 안내를 실제 문서로 찾아 대조한다. 문서가 미래 자동 준수를 보장한다고 쓰지 않는다.
-3. 메인의 CLAUDE 쓰기 종료·diff가 최종 실사에 포함되고, 문맥 옵션의 새 세션 관측/미실행 경계와 최종 값이 남는다.
+3. 메인의 CLAUDE 쓰기 종료·diff가 최종 실사에 포함되고, 리드 기본 문맥 명령·사용자 조정 경계와 최초 실사 관측의 한계가 남는다. 작은 압축 관측은 저장 harness/원시와 소스의 한도·실제 발동을 구분해 보고하며, 늦으면 PR1에 미완료 상태를 숨기지 않는다.
 4. 가드 최소 차단/허용 표본을 자동 회귀와 실제 신규 Codex 세션 모두에서 확인한다. 가짜 gh/git 또는 안전한 로컬 fixture로 deny 전 실행 표식 없음·허용 표식/출력을 남기고 실제 병합/push는 없다. stdin 직접 시험만으로 실제 진입 PASS를 내지 않는다. 신뢰·오류/timeout·잘못된 JSON·재사용 셸·동적 명령 한계를 공개하며 정상 명령 오탐은 통과하지 않는다.
 5. 신규 가드 CI 회귀와 실행 원시가 있고 기존 Claude 파일/승인 경로 보존을 diff·관련 회귀로 확인한다. 실제 메인 병합을 시험하지 않는다.
 6. 리드와 실사자가 후보 도착 검사(`node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-13-astra-lead-mailbox-hotfix/goal.md`)를 각각 실행한다. 최초 출처·7필드·안정 ID·미완료 후보를 보존한다.
@@ -77,7 +79,7 @@ orca-work·implementer-routing은 AGENTS/R-1을 참조하므로 그대로 둔다
 
 | PR | 산출물 | 배정·검증 |
 |---|---|---|
-| 1 - 리드 모델·수신·문맥 정본 | 항목 1~5·7의 문서/관리 기록. `docs/astra-lead-mailbox-20261013` | 문서 실사. 신규 Sol max(문서, 난이도 신호 없음) → 신규 Astra xhigh(기동에 항목 7 옵션). TDD 비해당 |
+| 1 - 리드 모델·수신·문맥 정본 | 항목 1~5·7의 문서/관리 기록, 항목8은 같은 차례 완료 시 결과 한 줄. `docs/astra-lead-mailbox-20261013` | 문서 실사. 신규 Sol max 문서·저장 자체검사 수정과 신규 Astra xhigh 관측 병행 → 신규 Astra xhigh 재실사. 제품/지속 도구 코드는 없으며 TDD 비해당. 임시 근거 harness는 실행 파일로 보존 |
 | 2 - Codex 병합 금지 가드 | 항목 6 코드·등록·시험·CI/설명. PR1 병합 뒤 최신 main에서 `feat/codex-merge-guard-20261013` | 강(보안 입력/실행 도구). 신규 Opus 선행 요구 시험/실패 → 신규 Astra xhigh 구현(신호 1·3) → 신규 Opus 독립 시험/실제 진입 |
 | 종료 기록 | 전체 결과·Gardener/후보·종료 점검 하나 | 신규 Opus Gardener와 바뀐 기록 독립 실사 |
 
@@ -92,6 +94,7 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 1. 메인 `msg_f8bd6a9085b0`(2026-10-13T09:54:10Z), 사용자 18:3x KST: 「나 그리고 돌아왔어 이어서 진행하자」, 이어 「잠깐, 그전에 리드급을 아스트라로 변경하고, 당시에 아스트라가 Orca 메일대기 때문에 낭비되던 토큰 사용방식을 개선하는 방향으로 룰 핫픽스 진행해줘」.
 2. 메인 `msg_3345bd69d295`(2026-10-13T09:58:30Z), 사용자 19:0x KST: 「그러면 병합 금지 훅을 한번 셋업해주고, 잦은 압축같은 경우에는 Codex 모델들도 컨텍스트 메모리 크기를 커스텀 할 수 있어」. 앞 지시의 「Codex 기술 가드는 BACKLOG만」을 가드 구현으로 바꾼다.
 3. 메인 `msg_fbf9b79c0a77`(2026-10-13T10:18:18Z): 「대시보드 결정 응답: 1) 리드 재개 시점 - 문서 PR 병합 뒤 바로 열지, 병합 금지 가드 PR까지 기다릴지 → A 문서 PR 뒤 바로」. 메인은 PR1 병합 뒤 Core·Content·Art·World 리드를 Astra로 연다. PR2 전까지 병합 금지는 규칙 경계이며 PR1 우선과 실제 관측으로 확정한 R-1 명령을 유지한다.
+4. 메인 `msg_58a7c1654b0c`(2026-10-13T11:10:23Z): 「아마 273K로 GPT 모델들의 컨텐스트를 제약한게, Tibo라는 OpenAI 테크리드가 이야기하기를 제일 효율적인 토큰사용량을 가져서 그렇게 설정한거라는데, 성능적인거도 그렇고, 그부분도 감안해서 최대 Context 메모리를 세팅하는게 좋을꺼야」, 「그리고 Compaction이 생각보다 정해진 퍼센트에 정확하게 진행하는지는 확인된게 없어서 확인이 필요해」. 효율성·성능 설명은 사용자 전언이며 원출처를 검증한 사실이 아니다. 기본값 사용과 작은 실험의 구체 방식은 아래 메인 적용 판단이다.
 
 ### 메인 적용 판단과 승인
 
@@ -103,6 +106,9 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 판단 3: 문맥 옵션 1000000/250000을 PR1 실사에서 관측한다. 상한 절삭이면 실제 표시 최대값/250000으로 리드가 확정한다. 272000 불변·압축 미적용·거부만 다시 올린다.
 - 판단 4: R-7 미지정. 메인 전달에 따르면 마지막 시범 자리는 Core 컨테이너 PR에 배정됐다(`persistence-integration/goal.md` 21행의 `msg_446a9239bf3e`). 이 goal은 별도 Fable 없이 강 검증한다.
 - CLAUDE는 문서 Sol 쓰기 종료 뒤 메인이 같은 branch의 해당 두 문장만 쓰고 종료를 알린다. 다른 파트 리드 재개 시점은 메인이 사용자와 정하며 이 goal 범위를 바꾸지 않는다.
+- `msg_ffae972fdb0b`(11:06:44Z)는 창872000/압축250000·실제 압축 발동 미관측을 허용하고 리드 ack 주장 오류 제거/새 실사를 승인했다. **문맥·압축 부분은 뒤의 msg_58a7c1654b0c가 대체한다.** 오류 제거 승인과 이전 판정 보존은 유지한다.
+- 최신 `msg_58a7c1654b0c`(E/check-after-context-decision.json)는 기본 문맥/압축 설정 사용, 두 키의 사용자 조정 경계, Claude 역사 결정 구분, 신규 Astra 한 명의 작은 A/B 실험·두 실험 합계 입력 대략30만 이하·저장 harness/원시·큰 차이 즉시 보고를 정했다. 기존 1000000/250000 실사자는 그대로 마치며 새 런타임 전환으로 보고하지 않는다. PR1을 오래 막지 않으며 지연 시 실험 결과만 PR2/종료 기록으로 넘긴다.
+- `msg_132ccdcee6f7`(11:06:16Z)의 「리드 Astra 안착 뒤 검증자 Opus 복귀」는 조건부 다음 후보다. 사용자 원문은 「만약에 아스트라 리드를 성공적으로 안착시키면 예전처럼 검증자를 Opus 5.5를 써도 됄 것 같은데」이며 현재 시범 변경 승인이 아니다. BACKLOG의 해당 후보에 메인 제안 기준을 둔다.
 
 ## 현재 결과
 
@@ -124,6 +130,15 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 - 최종 Sol 보충 `msg_322f3056e4fe`와 worker_done `msg_5461dd979639`(10:47:31Z)의 from/Task/Dispatch·6개파일·보고를 대조했다. worker-show는 completed/succeeded였고 release는 external_terminal/retained여서 R-5의 같은 작업 pane 확인 뒤 해당 terminal만 닫았다(E/doc-impl-done-show.json·release.json·close.json). 부모 리드 생존도 확인했다. 수정에 이 세션을 재사용하지 않는다.
 - 메인 `msg_4ec72d6ae5e7`(10:47:42Z)은 CLAUDE.md의 태그·발신 안내 두 문장 쓰기 종료를 알렸다. 실제 SHA256 `db7eda36a24e7db8aee219d06bacbad3d1f6c171497e68721927044be0ba270b`, 8690bytes와 메인 보고가 일치하고 Claude background 대기 문장은 보존됐다(E/claude-write-end-check.json). 해당 입력은 독립 실사에 포함한다. PR push/생성·문맥 실측·독립 판정은 아직 미완료다.
 
+### PR1 첫 실사와 첫 수정 차례
+
+- 독립 실사 Task `task_0b8683fe42c1` / Dispatch `ctx_a5a02bdb21c8`, 고정 HEAD `96df2ea2c41428180c398465dda21960fb05a007`, 계약 E/doc-review-contract-v1.md. 판정 E/doc-review/verdict.md(SHA256 `2f1c621a637706626244c052179e24c426da44365650fbf270d65617be4aff72`)을 리드가 직접 읽었다. 참조50·보호절7·원문계약10·후보/diff 검사에 지적은 없지만 **NOT PASS #1·#2**다. 결과를 전체 통과로 쓰지 않는다.
+- #1은 리드가 승인 원천 없이 검증 계약과 BACKLOG에 중단 ack 복구가 정본화됐다고 쓴 오류다. Sol 구현 계약 요구가 아니므로 Sol 단독 실패로 세지 않는다. #2는 실제 자체검사를 inline 문자열로 실행하고 실행 파일로 보존하지 않은 차이이며, 리드 계약의 하네스 비해당 분류와 Sol 실행에 함께 귀속된다. 두 번호는 현재 산출물 첫 확정1회이며 같은 결과를 worker_done과 중복 집계하지 않는다. 문맥 V1은 미확인/후속 결정 항목이지 Sol 미적용 결함이 아니다.
+- worker_done `msg_ac7c10fab878`(11:11:21Z) outcome failed를 현재 identity/Task/Dispatch와 대조했다. worker-show failed/settled, release retained(external), 같은 pane close ptyKilled=true, reclaimable0(E/doc-review-done-show.json·release.json·close.json·settled-list.json). 검증자는 재사용하지 않는다. 마지막 판정 뒤 새 메인 문맥 결정은 다음 계약에만 반영한다.
+- 이번 첫 수정은 리드의 BACKLOG 주장/goal 원천 정정과 신규 Sol의 ORCA 기본 명령/저장 harness 재실행이다. 승인 근거와 완료 주장·계약을 바로잡는 층을 택하고 첫 실수로 기록한다. 새 반복 규칙/일괄 lint를 만들지 않는다. 이전 inline 실행을 저장 파일로 수행했다고 소급하지 않는다.
+- 최초 문맥 관측은 요청1000000/250000, usable828400이며 설정상 상한872000×95%와 일치한다(E/doc-review/session-observations.json). 실제 자동 압축/큰 입력 성공은 미관측이다. 공식 설치 버전 소스의 기본 압축 한도90%와 usable95%는 별개다(E/research/context-config-findings.md·source manifest). 실제 발동은 작은 실험에서 구분할 예정이며 아직 결과가 없다.
+- 기존 Sol 최종 생존 helper는 신호6개 구간에서 최대344초, 300초 초과326·344초 두 구간, exit1이었다(E/run-doc-impl-liveness.ps1·doc-impl-final-liveness.json·execution.json). 첫 신호 전·마지막 신호 후·ID 없는 status까지 측정했다고 확대하지 않는다.
+
 ### PR2 신뢰 사전 조사
 
 - 메인 요청의 신뢰 저장·유지·checkout/세션 범위 조사는 E/research/hook-trust-findings.md와 공식 `rust-v0.162.1` 대응 소스 원시에 보존하고 `msg_fd2c6560a871`로 보고했다. 정상 TUI 신뢰는 사용자 설정의 hook 경로/위치 키별 해시 상태이며 세션 ID·만료 시간은 없다. 동일 설정·cwd·정의의 새 세션마다 확인하는 구조는 아니라는 소스상 추론이다. 다른 checkout·정의 변경의 재확인, R-6 메인 소유의 최초 picker 처리는 구분한다.
@@ -132,4 +147,5 @@ R-7은 메인이 지정하지 않았다(아래 판단 4). 중간 점검은 PR1 �
 ## 다음 계획 후보
 
 - Codex 출력/쓰기 경계 기술화: BACKLOG `codex-session-write-guard`. 이번 가드 PR은 PR 병합/원격 main 갱신만 다룬다.
+- 리드 Astra 안착 뒤 검증자 Opus 복귀: BACKLOG `reviewer-opus-after-astra-settles`. 현재 시범을 변경하지 않고 안착 근거 뒤 사용자 판단을 받는 조건부 후속이다.
 - 기존 BACKLOG `wake-token-filter`의 Jev/필터 구현, BACKLOG `heartbeat-interval-review`, BACKLOG `mailbox-wait-overlap-guard`, BACKLOG `lead-mailbox-receive-delay`, BACKLOG `lead-launch-command-source` 도구는 대기다. 이번 문서 정합·평가 안건 반영을 해당 도구의 구현 완료로 보고하지 않는다.
