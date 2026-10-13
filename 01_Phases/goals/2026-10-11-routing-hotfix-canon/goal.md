@@ -1,7 +1,7 @@
 # 라우팅 핫픽스 정본 반영
 
 - 만드는 것: 지금 쓰는 모델 라우팅 핫픽스 사용자 결정 넷을 운영 정본(ORCA)과 목표 루프 스킬에 넣는다. 리드 압축 기준, 같은 메시지로 두 번 깨지 않기, 로컬 DB 도구의 검증자, 10-31 평가 안건이다.
-- 덧붙여 이전 Rules goal의 마지막 기록을 이월하고, 대기 목록(BACKLOG)에 새 후보 둘을 넣고 기존 행 둘을 갱신한다. 사용자 직접 지시로 새 후보 셋과 기존 행 갱신 둘을 더했다(메인 전달 `msg_30cd8b7b30d8`). 도구는 만들지 않는다.
+- 덧붙여 이전 Rules goal의 마지막 기록을 이월하고, 대기 목록(BACKLOG)에 새 후보 둘을 넣고 기존 행 둘을 갱신한다. 사용자 직접 지시로 새 후보 셋과 기존 행 갱신 둘을 더했다(메인 전달 `msg_30cd8b7b30d8`). 종료 점검에서 사용자가 채택한 새 후보 하나와 기존 행 갱신도 더했다(메인 전달 `msg_491f67bea26c`). 도구는 만들지 않는다.
 - PR 하나, 문서만 바꾼다. Codex 영역은 사용자 결정 3이 승인을 겸한 목표 루프 스킬 한 파일뿐이다. 정본은 이 goal에서 한 번만 고치고, 각 worktree는 병합 뒤 main을 받아 정착시킨다.
 
 ## 재개 지점
@@ -11,13 +11,13 @@
 - 작업 경로: `C:/Users/bass1/orca/workspaces/DawnHolder_Project/rules-active`.
 - branch: `docs/routing-hotfix-canon-20261011`(base main `a570dbf3`). 정확한 head는 원격 branch와 승인 묶음에서 확인한다.
 - 근거 폴더 E: `.backups/verification/2026-10-11-routing-hotfix-canon/`(Git 제외). 승인 범위는 [scope-draft-v1.md](../../../.backups/verification/2026-10-11-routing-hotfix-canon/scope-draft-v1.md)(SHA256 `32c0186e…b927`)와 메인 승인의 답 넷(「요구사항 원천과 적용 결정」)이다. 리드 맥락 메모는 E/lead-context.md이고 차례마다 절을 더한다.
-- 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 압축 기준 `--autocompact 250000`은 메인 기동값이며 화면에서 확인하지 못했다. 태그 `[Rules 리드 Opus]`, handle `term_991652c5-0324-450d-9208-3d8c9663777f`, Run `run_bea2c841fa15`(회신 주소 `run:run_bea2c841fa15`). 메인 주소는 메인 term handle이다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
+- 리드: 신규 `claude-opus-5-5` xhigh(화면 「Opus 5.5 ⚡xhigh」, backend unknown), 압축 기준 `--autocompact 250000`은 메인 기동값이며 화면에서 확인하지 못했다. 태그 `[Rules 리드 Opus]`, handle `term_991652c5-0324-450d-9208-3d8c9663777f`(10-11), 2026-10-13 재진입 뒤 `term_58f6f5cf-4ba1-43d5-979a-aad239af265e`. Run `run_bea2c841fa15`(회신 주소 `run:run_bea2c841fa15`, 10-13 `run-use`로 consumer_generation 2, E/session/run-use-1013.json). 메인 주소는 메인 term handle이고 10-13에 바뀌었다. 이전 Rules goal의 Run·Task·Dispatch·handle은 실행 권한이 아니다.
 - 앞 goal의 끝: [규칙·운영 동결 전 문서 정리](../2026-10-11-pre-freeze-rule-docs/goal.md)는 PR229·PR231 병합으로 끝났다. 마지막 기록은 이 goal의 시작 커밋으로 넣었다(「현재 결과 / 착수」).
-- **현재 위치**: 결과 기록까지 커밋하고 마감했다. 2026-10-11 사용자 마감 지시(메인 전달 `msg_9cabdebd16c1`)에 따라 새 작업자·검증자 세션은 열지 않았다. [PR232](https://github.com/bass131/dawnholder-server/pull/232)의 Gardener가 끝났고, 그 결과와 사용자가 채택한 후보 둘의 BACKLOG 반영, 기록 누락·낡음 정정을 이 결과 기록에 넣었다(「현재 결과 / 종료 점검(Gardener)」).
-- **다음 한 걸음**: 바뀐 부분 재실사를 신규 `gpt-6-astra` xhigh로 연다. 범위는 S1 정정(ORCA 91행, Gardener의 대기 재개 갈래 관찰을 입력으로), R3·R4 기록과 처분 기록, BACKLOG의 새 행 여섯과 갱신 행, 후보 도착 검사 재실행, 이 결과 기록이다. 결과는 goal을 고치지 않고 근거·승인 묶음으로 넘긴다.
-- **남은 순서**: 바뀐 부분 재실사 → 승인 묶음(CI 재조회, CURRENT가 다른 PR과 겹치면 main 받기) → 사용자 병합 승인 → 종료 점검 → R-8. 다음 goal은 자동으로 시작하지 않는다.
-- **사용자 차례**: 지금은 없다. Gardener 결정 요청(`msg_0f80e7631586`)의 안건 1은 사용자 결정 A, 안건 2는 메인 운영 결정 A로 답을 받았다(「요구사항 원천과 적용 결정」).
-- **다시 열 때**: 이 리드의 Claude 세션 ID는 `d721bb8b-fb36-4f01-bc3e-773baaeda336`, Run은 `run_bea2c841fa15`다. 마감 때 이 작업 경로에 사용자 미커밋 파일은 없었고, 띄운 작업자·검증자·Gardener pane은 모두 정산해 닫았다. 재개는 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)의 목표 중간 교체·복구 문장(같은 대화 `--resume`과 `run-use`)을 따른다.
+- **현재 위치**: 10-11에 결과 기록까지 커밋하고 마감했다(사용자 마감 지시, 메인 전달 `msg_9cabdebd16c1`). 10-13에 같은 대화로 다시 열어 [PR232](https://github.com/bass131/dawnholder-server/pull/232)의 바뀐 부분 재실사를 돌렸다. 재실사가 리드 기록 결함 N1·N2로 막혔고, 이 기록에서 고쳤다(「현재 결과 / 바뀐 부분 재실사」).
+- **다음 한 걸음**: N1·N2 수정과 이 재실사 결과 기록만 좁혀 신규 `gpt-6-astra` xhigh로 다시 실사한다. 통과하면 결과는 goal을 고치지 않고 근거·승인 묶음으로 넘긴다. 다시 막히면 메인 체크포인트로 올린다(메인 동의 `msg_562024e2bee4`).
+- **남은 순서**: 좁힌 재실사 → 승인 묶음(CI 재조회, CURRENT가 다른 PR과 겹치면 main 받기) → 사용자 병합 승인 → 종료 점검 → R-8. 다음 Rules goal은 10-28 뒤로 밀렸고(「적용 중인 사용자 결정」), 자동으로 시작하지 않는다.
+- **사용자 차례**: 지금은 없다. 재실사 결정 요청(`msg_13eb91d9cfdf`)은 메인 운영 판단 「A 가」(`msg_562024e2bee4`)로 답을 받았다(「요구사항 원천과 적용 결정」).
+- **다시 열 때**: 이 리드의 Claude 세션 ID는 `d721bb8b-fb36-4f01-bc3e-773baaeda336`, Run은 `run_bea2c841fa15`다. 10-11 마감 때 이 작업 경로에 사용자 미커밋 파일은 없었고, 띄운 작업자·검증자·Gardener pane은 모두 정산해 닫았다. 10-13 재실사자 pane도 정산해 닫았다. 재개는 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)의 목표 중간 교체·복구 문장(같은 대화 `--resume`과 `run-use`)을 따른다.
 
 ## 진척 단계
 
@@ -26,7 +26,7 @@
 - [x] 대기 목록 정리
 - [x] 문서 실사
 - [x] 종료 점검자 확인
-- [>] 결과 기록·재실사(결과 기록 끝, 바뀐 부분 재실사 전)
+- [>] 결과 기록·재실사(결과 기록 끝, 바뀐 부분 재실사 차단 N1·N2 수정 끝, 좁힌 재실사 전)
 - [ ] 병합
 - [ ] 종료 점검과 R-8
 
@@ -47,6 +47,8 @@
    - 갱신 둘: `operating-trial-evaluation`(121행)에 결정 4와 출처 `msg_ca6641b7a9e2`, `lead-mailbox-receive-delay`(264행)의 열린 질문에 사용자 답 「유지」(Q1). helper 제안은 그대로 대기다.
    - 문서 실사 처분(메인 `msg_3bc350db7c54`): `contract-context-check` 출처 칸에 R1 근거를 더한다.
    - 사용자 직접 지시(메인 전달 `msg_30cd8b7b30d8`): 같은 새 절에 새 행 셋 `loop-graph-concepts`·`agent-flow-program`·`wake-token-filter`를 둔다. 갱신 둘은 `goal-loop-improvement`(진단 근거, 남은 범위는 `loop-graph-concepts` 먼저)와 `rule-document-subdivision`(순서 1A, 전이 표 입력 3A, 문서 실사 O1·O2)이다. 행의 구현과 개념 조사는 하지 않는다.
+   - 종료 점검 채택(사용자 결정 A, 메인 전달 `msg_491f67bea26c`): 같은 새 절에 새 행 `lead-launch-command-source`를 둔다. 이 goal의 새 행 `lead-memo-audit-field-check`의 범위·근거를 넓히고, 기존 행 셋(`contract-context-check`·`official-draft-check-helper`·`rule-document-measure-helper`)의 칸 끝에 근거를 더한다. 세부는 「현재 결과 / 종료 점검(Gardener)」이다.
+   - 집계(base `a570dbf3` 대비 행 ID): 새 행 여섯(`lead-memo-audit-field-check`·`unity-harness-user-file-restore-mark`·`loop-graph-concepts`·`agent-flow-program`·`wake-token-filter`·`lead-launch-command-source`), base에 있던 행 갱신 일곱(`operating-trial-evaluation`·`lead-mailbox-receive-delay`·`contract-context-check`·`goal-loop-improvement`·`rule-document-subdivision`·`official-draft-check-helper`·`rule-document-measure-helper`)이다. 이 goal의 새 행 하나(`lead-memo-audit-field-check`)는 종료 점검 채택으로 다시 넓혔다.
 4. 이 goal 파일과 CURRENT Rules 줄.
 
 ### 건드릴 곳
@@ -55,7 +57,7 @@
 |---|---|---|
 | `00_Document/operations/ORCA.md` | 신규 Sol | 결정 1(43·45·88·206행), 결정 2(90~92행), 결정 4(214행) |
 | `.agents/skills/dawnholder-goal-loop/SKILL.md` | 신규 Sol | 결정 3(54행 뒤 새 줄), 결정 4(57행). Codex 영역이며 사용자 결정 3이 수정 승인을 겸한다 |
-| `00_Document/operations/BACKLOG.md` | 리드 | 새 행 다섯, 기존 행 갱신 다섯(사용자 직접 지시의 새 행 셋·갱신 둘과 실사 처분의 근거 추가 하나 포함) |
+| `00_Document/operations/BACKLOG.md` | 리드 | base 대비 새 행 여섯, base에 있던 행 갱신 일곱(사용자 직접 지시의 새 행 셋·갱신 둘, 실사 처분의 근거 추가 하나, 종료 점검 채택의 새 행 하나·갱신 포함). 이 goal의 새 행 하나는 종료 점검 채택으로 다시 넓혔다(「만들 것」 3 집계) |
 | `01_Phases/goals/2026-10-11-pre-freeze-rule-docs/goal.md` | 리드 | 이전 goal 이월. 시작 커밋 |
 | 이 goal | 리드 | 범위·진척 단계·결정·결과. 시작 커밋 |
 | `00_Document/operations/CURRENT.md` | 리드 | Rules 줄만. 다른 파트 줄은 보존 |
@@ -76,7 +78,7 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 2. ORCA 대기 절에 결정 2 정정판 문장과 5분 감시가 있고 `msg_9494d6bd3ac5`의 정정판 원문과 대조된다. 91행은 그대로이며 새 문장과 어긋나거나 같은 내용을 되풀이하지 않는다.
 3. 스킬에서 로컬 DB 도구가 54행 예외에서 빠졌다. 실제 경로 1회 유지, 되돌림, 회차 기록, 스키마·저장 로직 Opus 유지가 모두 있다. 강 등급 표와 53행은 그대로이고, Astra가 구현한 DB 도구 카드는 53행대로 Opus가 검증한다는 읽기가 성립한다.
 4. 10-31 안건 항목이 스킬 57행, ORCA 214행, BACKLOG `operating-trial-evaluation`에 있다.
-5. 이전 goal 이월 넷이 들어 있다. BACKLOG 새 행 다섯과 갱신 행 다섯이 항목 계약(7필드, 상태 세 값, 최초 필드 보존)을 지키고, 후보 도착 검사(`node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-11-routing-hotfix-canon/goal.md`)가 `allowed`·중복 0이다. 리드 실행 원시를 E에 두고 실사자가 같은 명령을 다시 돈다.
+5. 이전 goal 이월 넷이 들어 있다. BACKLOG의 base 대비 새 행 여섯과 base에 있던 행 갱신 일곱(「만들 것」 3 집계)이 항목 계약(7필드, 상태 세 값, 최초 필드 보존)을 지키고, 후보 도착 검사(`node 99_Tools/Backlog/check-candidates.mjs --backlog 00_Document/operations/BACKLOG.md --goal 01_Phases/goals/2026-10-11-routing-hotfix-canon/goal.md`)가 `allowed`·중복 0이다. 리드 실행 원시를 E에 두고 실사자가 같은 명령을 다시 돈다.
 6. 변경 경계: `git diff --stat <base>...HEAD`에 「건드릴 곳」의 여섯 파일만 있다. Codex 영역은 목표 루프 스킬뿐이다.
 7. 크기: ORCA 250줄 이하다. 여섯 파일 묶음 bytes는 「PR 경계와 검증」의 bytes 줄대로 잰다.
 8. PR 설명에 바뀐 정본 파일 목록과 정착 확인 명령이 있다.
@@ -95,7 +97,7 @@ Sol과 리드는 파일이 겹치지 않는다. commit·push는 리드만 한다
 | Gardener | 신규 `claude-opus-5-5` 읽기 전용, 보고서 한 파일(이름에 `context`를 넣어 세션 쓰기 가드와 맞춘다). 병합 전 고정 head(메인 판단) |
 | 수정·재실사 | 결함이 나오면 새 Sol, 새 Astra. 같은 산출물 수정 3회 초과는 메인 체크포인트 |
 
-- 차례: 시작 커밋(리드) → 정본 문장(Sol)과 BACKLOG(리드) 동시 → 리드 대조·bytes·후보 검사 → PR 생성 → 문서 실사 → Gardener → 결과 기록 → 바뀐 부분 재실사(결과는 goal을 고치지 않고 근거·승인 묶음으로) → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
+- 차례: 시작 커밋(리드) → 정본 문장(Sol)과 BACKLOG(리드) 동시 → 리드 대조·bytes·후보 검사 → PR 생성 → 문서 실사 → Gardener → 결과 기록 → 바뀐 부분 재실사(통과하면 결과는 goal을 고치지 않고 근거·승인 묶음으로, 리드 기록 결함으로 막히면 리드가 고친 뒤 좁힌 재실사) → 승인 묶음 → 사용자 병합 승인 → 종료 점검 → R-8.
 - 규칙 문서 bytes: 사용자가 핫픽스 넷의 정본 문장만큼 느는 것을 허용했다(Q2, 「적용 중인 사용자 결정」). 기준 `a570dbf3`의 여섯 파일 묶음(AGENTS·ORCA·goal-loop SKILL·RESUME·session-handoff SKILL·orca-work)은 `git show <rev>:<file> | wc -c`로 합계 103,306 bytes, ORCA 41,084 bytes·245줄이다(E/bytes-base.txt). 초안의 예상 증가는 +1,774 bytes였고(E/scope-bytes.txt), 그 예상은 91행을 바꾸는 문장 기준이라 실제 값은 달라진다. 리드 해석: 묶음 증가가 +1,774 bytes 이하면 그대로 진행하고, 넘으면 실사 전에 원시 수치를 status로 올려 메인을 거쳐 다시 묻는다. CLAUDE.md는 메인 몫이라 따로, BACKLOG·CURRENT·goal은 묶음 밖에서 수치만 보고한다.
 - CURRENT가 다른 파트 PR과 겹치면 승인 묶음 직전에 main을 받아 맞추고 다른 파트 줄을 보존한다.
 - 정착 확인 명령(PR 설명에 넣는다). 바뀐 정본은 ORCA와 목표 루프 스킬 두 파일이다. 각 worktree에서 리드가 안전 지점에 main을 받은 뒤 메인이 확인한다. 둘째 줄이 `settled`이고 셋째 줄 출력이 비면 그 worktree는 정착했다.
@@ -136,10 +138,11 @@ git diff --stat origin/main -- 00_Document/operations/ORCA.md .agents/skills/daw
 - BACKLOG 범위 변경: 메인 `msg_30cd8b7b30d8`(13:22:13Z, E/session/wait15.json). 사용자가 BACKLOG 갱신을 직접 지시했고 BACKLOG를 고치는 열린 PR이 PR232뿐이라 메인이 여기로 보냈다. 새 행 셋과 갱신 둘이며 행의 구현과 개념 조사는 하지 않는다. 바뀐 부분 재실사에 새 행·갱신 행을 넣고 후보 도착 검사를 다시 확인한다. bytes 허용(Q2)은 정본 문장 묶음 기준이라 BACKLOG 증가에는 적용되지 않고, BACKLOG 줄 수·bytes 변화는 결과 기록에 적는다.
   - 메인 해석(사용자에게도 알림): 「개념을 먼저 정립하고 진행」은 1A·2A로 정한 다음 goal을 멈추라는 뜻이 아니라 그 밖의 자기 개선 루프·그래프 작업에 붙는 선행 조건이다.
   - 리드 확정: ID 셋은 메인 제안 그대로다. `rule-document-subdivision`의 출처 칸에는 메인 처분 `msg_3bc350db7c54`가 분화 goal 입력으로 둔 문서 실사 O1·O2도 더했다.
-- Gardener 결정 요청: 리드 status `msg_0f80e7631586`(2026-10-11T14:01:44Z, 본문 E/session/gardener-decision-body.md). 안건 1은 정리 후보 둘의 BACKLOG 반영, 안건 2는 Gardener 계약 이탈 셋의 처분이다.
+- Gardener 결정 요청: 리드 status `msg_0f80e7631586`(2026-10-11T14:01:45Z, send receipt created_at, 본문 E/session/gardener-decision-body.md). 안건 1은 정리 후보 둘의 BACKLOG 반영, 안건 2는 Gardener 계약 이탈 셋의 처분이다.
   - 안건 2: 메인 `msg_9cabdebd16c1`(14:03:06Z, E/session/wait19.json)의 메인 운영 결정 A, 비차단 운영 기록이다. 사용자 결정이 아니다. 선례는 `msg_9b35d66297d6`·`msg_3bc350db7c54`다.
   - 안건 1: 사용자 결정 A(「적용 중인 사용자 결정」), 메인 전달 `msg_491f67bea26c`(14:05:24Z, E/session/wait20.json).
 - 마감: 같은 `msg_9cabdebd16c1`이 사용자 지시 「일단 슬슬 마감 준비도 하자, 각 파트 마지막 작업 끝나면 재개 포인트 잡고 마무리하는 방향으로 지시해줘」(메인 pane Enter 제출)를 전달했다. 메인은 Rules의 마지막 작업을 결과 기록 커밋·push로 정했다. 바뀐 부분 재실사와 승인 묶음은 다음 세션이다.
+- 바뀐 부분 재실사 처분: 리드 status `msg_13eb91d9cfdf`(2026-10-13T04:13:02Z, 본문 E/session/rereview-decision-body.md) → 메인 `msg_562024e2bee4`(04:13:34Z, E/session/wait37.json)의 「A 가」. 메인 운영 판단이며 사용자 결정이 아니다. 재실사자 자기 위반 V2·V3는 비차단 운영 기록이고, 리드가 메인 프로젝트 메모리에 쓴 파일은 남긴다. 세부는 「현재 결과 / 바뀐 부분 재실사」다.
 - 정합 탐색(초안 6절): 검색어 `autocompact`, `claude --model`, `claude --resume`, `--wait`, `깨`, `자동 알림`, `DB`와 검증자 모델, `10-31`·`10월 31일`. 범위는 AGENTS·ORCA·RESUME·`.agents/`·`00_Document/conventions/`·`99_Tools/README.md`·BACKLOG다. 고칠 곳은 「건드릴 곳」에 있고, 그대로 둔 곳과 이유는 아래와 같다. 표의 줄 번호는 base `a570dbf3` 기준이다. HEAD에서 ORCA 140·223·91·92·128행은 141·224·92·93·129행이다.
 
 | 위치 | 그대로 둔 이유 |
@@ -176,6 +179,8 @@ git diff --stat origin/main -- 00_Document/operations/ORCA.md .agents/skills/daw
   - 이 goal은 BACKLOG 행으로만 반영한다(「만들 것」 3).
 - **Gardener 정리 후보 둘**(메인 전달 `msg_491f67bea26c`, 2026-10-11T14:05:24Z, 현황판 결정 응답): 「대시보드 결정 응답: 1) PR232 - 라우팅 핫픽스 정본 Gardener 정리 후보 둘을 백로그에 넣을지 → A 넣는다」. 리드 결정 요청 `msg_0f80e7631586`의 안건 1이다. 착수는 동결 뒤이고 지금은 기록만 한다. 반영은 「현재 결과 / 종료 점검(Gardener)」에 있다.
 - **대기 55분 연장 후보**(메인 전달 `msg_413d0b280e14`, 2026-10-11T14:08:24Z, 현황판 결정 응답): 「대시보드 결정 응답: 1) 깨우기 토큰(재질문) - 대기 시간 55분 연장만 다음 Rules 작업 후보로 넣을지 → A 55분 연장만 후보로」. ORCA 우편함 대기의 `--timeout-ms 900000`(15분)을 55분으로 늘리는 문서 수정을 다음 Rules goal의 후보로 둔다. 코드 필터 셋(대기 감싸기, Orca 안내 거르기 hook, 우편함 처리 묶기)은 동결 뒤 그대로다. 이 goal은 ORCA와 BACKLOG를 고치지 않고 「다음 계획 후보」에 한 줄로만 적는다.
+- **10-28 시연 영상의 길드 거점**(메인 전달 `msg_ca4a11e52851`, 2026-10-13T03:34:08Z, 사용자 제출 12:3x KST): 「대시보드 결정 응답: 1) 10-28 시연 영상 - 길드 거점 최소 순환을 새로 넣을지 → A 길드 거점 넣음」. 메인 전달에 따르면 이 결정의 효과로 다음 Rules goal(후보 출구·규칙 문서 분화)이 10-28 뒤로 밀린다. Rules는 PR232의 병합과 종료 점검까지만 한다.
+- **10-28 시연 계획과 파트 배정**(메인 전달 `msg_9272a9ce4257`, 2026-10-13T03:46:57Z, 사용자 제출 12:4x KST): 「대시보드 결정 응답: 1) 계획 검토 - Main 10-28 시연 영상 시나리오와 파트 배정 → A , 코멘트 「A로 가되 길드거점은 맵형태로 나중에 시간나면 꼭 만들었으면 좋겠어, 시각적인 성장 이펙트나 이런게 도드라지면 좋겠네, Shader로 해결할 수 있는건 해결하고, 문제는 이제 애니메이션 시트를 만드는게 문제인데, 이게 GPT Image 2.5로 해결이 되는지, 아니면 힉스필드나 Unity AI 토큰으로 만들어서 해결해야 하는지도 문제네, 그리고 Unity AI로 시트화 시키는건 애니메이션 일관화가 프롬프팅으로는 랜덤성이 짙어서 원하는거를 뽑을때 까지 드는 비용도 생각해야 돼」」. Rules에 닿는 부분은 위 줄과 같다. 다음 Rules goal은 10-28 뒤이고, 종료 기록의 「다음 계획 후보」에 그렇게 적는다. 승인된 계획 원문은 메인 개인 도구 폴더에 있어 리드는 읽지 않았다.
 
 ## 현재 결과
 
@@ -222,7 +227,7 @@ git diff --stat origin/main -- 00_Document/operations/ORCA.md .agents/skills/daw
 
 - 근거: 메인 `msg_30cd8b7b30d8`(「요구사항 원천과 적용 결정」, 「적용 중인 사용자 결정」). 메모는 E/lead-context.md 「BACKLOG 추가 차례」(13:22:50Z, 첫 쓰기 전)다.
 - 편집(E/add-backlog-edit.mjs, E/add-backlog-edit-result.json): 각 앵커가 정확히 한 번 있는지 단정하고 기존 칸 끝에만 덧붙였다. 새 행 셋은 「라우팅 핫픽스 정본 반영 goal에서 연결한 후보」 절 끝에 두었다. 절 머리에는 셋째~다섯째 행의 출처를 한 문장으로 더했다.
-- BACKLOG 크기(묶음 밖, `wc -lc`): 기준 `a570dbf3` 141,329 bytes·276줄 → 실사 고정 head `c2c3e2a3` 145,559 bytes·285줄 → 지금 151,402 bytes·288줄이다. 실사 처분의 R1 근거가 +528 bytes, 사용자 직접 지시가 +5,315 bytes·+3줄이다. 사용자 직접 지시분 가운데 다섯 행은 +5,219이고 나머지 96은 절 머리 문장이다(Gardener 표본 14).
+- BACKLOG 크기(묶음 밖, `wc -lc`): 기준 `a570dbf3` 141,329 bytes·276줄 → 실사 고정 head `c2c3e2a3` 145,559 bytes·285줄 → 추가 커밋 `02fa6423` 151,402 bytes·288줄이다(종료 점검 뒤 `695b3b0b`는 157,536 bytes·289줄, 「종료 점검(Gardener)」). 실사 처분의 R1 근거가 +528 bytes, 사용자 직접 지시가 +5,315 bytes·+3줄이다. 사용자 직접 지시분 가운데 다섯 행은 +5,219이고 나머지 96은 절 머리 문장이다(Gardener 표본 14).
 - 추가 뒤 후보 도착 검사(13:27:04Z, E/add-backlog-check.json): `allowed`, ID 119, 중복 0, 후보 5, 인용 없음 0, 모르는 ID 0이다. 이전 goal도 `allowed`(후보 10, E/add-backlog-check-prev.json)다. 이 줄은 처음 결과 기록에서 빠졌고 Gardener 표본 15가 찾았다.
 
 ### 종료 점검(Gardener)
@@ -259,6 +264,25 @@ git diff --stat origin/main -- 00_Document/operations/ORCA.md .agents/skills/daw
 - 리드 R-2(E/gardener-r2.md): 「전부/없음」 주장 여섯은 원천과 일치했고 새 발견 일곱은 재현됐다. CI는 14:00:09Z에 다시 조회했다(E/pr232-ci-2/). 고정 head `02fa6423`의 code-rules·module-boundaries·architecture-tests·dotnet-tests 넷 모두 success, attempt 1이다.
 - Gardener 생존 신호(E/gardener-liveness.json): 신호 22, 최대 90초, 300초 초과 0이다. 정산: peek 1건(같은 worker_done) → `worker-release` 13:57:43Z(retained) → terminal list·tui-idle·화면 확인 → `terminal close` 13:58:02Z.
 
+### 바뀐 부분 재실사
+
+- 재진입: 2026-10-13 메인 지시 `msg_999c05d33b22`(03:23:54Z) 뒤 같은 대화 `--resume`과 `run-use`(03:25:07Z, consumer_generation 2)로 다시 열었다. READY는 `msg_7d07056628bf`(03:26:01Z)다. 메모는 E/lead-context.md 「10-13 재진입」이다.
+- 재실사자: 신규 `gpt-6-astra` xhigh(첫 화면 「GPT-6-Astra xhigh」, rollout turn 모델 `gpt-6-astra`, backend unknown). Task `task_50cdf3b14825`, Dispatch `ctx_e4d5bb59790c`. 계약은 E/rereview-contract.md v1(32,299자, SHA256 `a8bbda3e…068e`), 고정 head `695b3b0b`다. 03:37:05Z에 시작해(worker-start 시각, rollout의 계약 입력 03:37:17Z) worker_done succeeded `msg_30461593234f`(04:06:32Z)로 끝났다. 판정 E/rereview/verdict.md(SHA256 `0544bae1…5c06`), 기동 기록 E/rereview-start-note.md.
+- 계약 인자 길이: 첫 조립본 45,230자는 worker-start가 `ENAMETOOLONG`으로 orca를 띄우지 못했다(Windows 명령줄 한도 32,767자, E/rereview-worker-start-fail1.json). 전달·Task 생성은 없었다. 원천 메시지 본문 여덟을 원시 파일·메시지 ID·SHA256 표로 바꿔 줄였다. 같은 부류는 BACKLOG `official-draft-check-helper`의 인자 길이 근거에 이미 있다.
+- 판정: 차단 둘(N1·N2, 리드 기록, P3). 앞 실사의 S1·R3·R4는 해소됐고 R1·R2·V1 처분 기록은 정확하다. 새 제품 동작 결함·무단 변경은 발견되지 않았다.
+  - N1: 「요구사항 원천과 적용 결정」의 Gardener 결정 요청 줄과 E/lead-context.md가 `msg_0f80e7631586`의 시각을 14:01:44Z로 적었다. send receipt의 created_at은 14:01:45Z다.
+  - N2: 「건드릴 곳」 BACKLOG 줄과 완료조건 5가 「새 행 다섯·갱신 다섯」에 머물렀고, 「만들 것」 3에 종료 점검 채택이 빠졌다. base 대비 실제 값은 새 행 여섯·base에 있던 행 갱신 일곱이다. R4와 같은 기록 정합 부류의 새 발생이다.
+- 재실사자 자기 위반 둘: V2는 heartbeat 간격 한 구간 450초(03:50:54Z → 03:58:24Z)다. 정산 helper(E/rereview-liveness.json)는 신호 13, 최대 450초, 300초 초과 1구간이다. V3는 계약의 허용 git 목록에 없는 읽기 전용 `git branch --show-current` 1회이며 변경은 없었다. 둘 다 재실사자가 status(`msg_fdc876a2d33d`·`msg_affef2c93210`)로 스스로 알렸다.
+- 비차단 관찰 O-R1: ORCA 「Orca 도구 관측과 우편함 대기」의 대기 줄은 check 뒤에도 대기가 살아 있는지 불확실할 때 무엇으로 확인할지 적지 않았다. base에도 없던 기존 공백이고 S1 정정이 만든 것이 아니다. 다음 goal 입력으로 넘긴다(「다음 계획 후보」 표).
+- 리드 R-2(E/rereview-r2.md, E/rereview-r2.mjs → E/rereview-r2.json): N1 시각, N2의 BACKLOG 행 ID 집계(base→HEAD, 커밋별), S1 numstat, 후보 검사 재실행 exit, V2 간격, 재실사자 쓰기 경계를 원시와 대조했고 모두 일치했다.
+- 정산: peek 1건(같은 worker_done) → `worker-release` 04:07:14Z(retained, `external_terminal`) → terminal list·tui-idle·화면 확인 → `terminal close` 04:07:28Z(E/rereview-release.json, E/rereview-close.json).
+- 리드 쓰기 위반 하나: 리드가 03:38:00Z(파일 mtime)에 Write 도구로 메인 프로젝트 메모리 폴더에 계약 인자 길이 사실 파일 하나를 만들었다. 리드 허용 쓰기(checkout 안 근거·임시 폴더와 승인된 저장소 파일) 밖이다. 인덱스 줄을 더하려던 다음 명령은 세션 가드 `write-outside-checkout`이 막았다. 자동 메모리 지침과 리드 쓰기 경계의 충돌을 리드가 가려내지 못했다. 첫 발생이라 이 goal에 기록한다.
+- 메인 처분 `msg_562024e2bee4`(04:13:34Z): 「A 가」. 메인 운영 판단이며 사용자 결정이 아니다. 결정 요청은 리드 status `msg_13eb91d9cfdf`(04:13:02Z)다.
+  - A: V2·V3는 앞 V1과 같이 비차단 운영 기록이다. V2는 BACKLOG `heartbeat-interval-review`의 근거로 함께 보며, 그 BACKLOG 처리는 10-28 뒤 Rules goal 몫이라 이 goal은 BACKLOG를 고치지 않는다.
+  - 가: 메모리 파일은 남긴다. 메인이 내용을 읽고 도구 사실이라 메모리 기준에 맞는다고 판단해 인덱스 줄을 직접 더했다. 앞으로 메모리에 남길 도구 사실은 메인에 보내고 메인이 쓴다.
+- 수정(리드 기록 영역이라 수정 Sol을 쓰지 않았다): N1은 「요구사항 원천과 적용 결정」의 시각을 14:01:45Z로 고치고 E/lead-context.md도 같이 고쳤다. N2는 맨 위 요약, 「만들 것」 3(종료 점검 채택과 base 대비 행 ID 집계), 「건드릴 곳」 BACKLOG 줄, 완료조건 5를 고쳤다. 재개 지점·진척 단계·차례 줄도 재실사 뒤 상태로 맞췄다. 같은 부류로 「BACKLOG 추가」 크기 줄의 「지금」을 커밋 `02fa6423` 기준으로 밝혔다(리드 판단, 판정 지적 밖). 메모는 E/lead-context.md 「재실사 차단 N1·N2 기록 수정·재실사 결과 기록 차례」다.
+- 집계: N1·N2는 새 결함 번호라 같은 결함 번호의 확정 실패는 각 1회다. PR232 독립 판정 차단은 앞 실사와 이번 재실사로 2회다. 계약이 달라 사용자 결정 2A(같은 계약의 독립 판정 3회 막힘)에는 닿지 않는다. goal.md 결함 수정은 R3·R4 다음 두 번째다. 좁힌 재실사도 막히면 메인 체크포인트로 올린다(메인 동의).
+
 ## 다음 계획 후보
 
 이 goal 밖으로 둔 일이다. 후보마다 BACKLOG ID를 단다.
@@ -271,7 +295,7 @@ git diff --stat origin/main -- 00_Document/operations/ORCA.md .agents/skills/daw
 - 흐름을 쥐는 바깥 프로그램(사용자 3C·3A): Agent SDK 뼈대이며 지금은 만들지 않는다. BACKLOG `agent-flow-program`.
 - 대기·응답 토큰 측정과 깨우기 필터·Jev 판단(사용자 4C·4A): 측정을 먼저 한다. BACKLOG `wake-token-filter`.
 
-다음 Rules goal은 「후보 출구와 10-31 시범 평가 준비」이고 그 뒤가 규칙 문서 분화(BACKLOG `rule-document-subdivision`)다(사용자 결정 1A·2A, 메인 전달 `msg_42d892af6e89`). 새 goal 초안·branch는 PR232 병합 뒤 R-8로 여는 새 리드가 열며 자동으로 시작하지 않는다. 다음 goal로 넘기는 입력은 아래와 같다.
+다음 Rules goal은 「후보 출구와 10-31 시범 평가 준비」이고 그 뒤가 규칙 문서 분화(BACKLOG `rule-document-subdivision`)다(사용자 결정 1A·2A, 메인 전달 `msg_42d892af6e89`). 2026-10-13 사용자 결정(10-28 시연, 메인 전달 `msg_ca4a11e52851`·`msg_9272a9ce4257`)으로 이 두 goal은 10-28 뒤로 밀렸다. 새 goal 초안·branch는 10-28 뒤에 열며 자동으로 시작하지 않는다. 다음 goal로 넘기는 입력은 아래와 같다.
 
 | 입력 | 받을 goal |
 |---|---|
@@ -279,3 +303,4 @@ git diff --stat origin/main -- 00_Document/operations/ORCA.md .agents/skills/daw
 | Gardener 관찰: 10-31 평가 이름이 넷으로 흩어졌고 준비 행 `operating-trial-evaluation`에 구현자 모델 시범 평가·세션 쓰기 가드 자료가 없다 | 후보 출구와 10-31 시범 평가 준비 |
 | Gardener 관찰: 메인 5분 화면 감시가 ORCA 91행에만 있고 메인 진입 문서(CLAUDE.md·RESUME)에 없다 | 후보 출구와 10-31 시범 평가 준비 |
 | 우편함 대기 55분 연장 후보 | 후보 출구와 10-31 시범 평가 준비 |
+| 재실사 O-R1: 대기 줄에 check 뒤에도 생존이 불확실할 때의 확인 수단이 없다. 재실사자 대안 「생존이 불확실한 동안 새 대기는 열지 않고, 기존 대기의 종료 여부·종료 원인을 확인한 뒤 정상 종료는 다음 대기, 메모리 회수는 재기동 금지를 따른다」 | 규칙 문서 분화 |
