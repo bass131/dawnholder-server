@@ -151,8 +151,8 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | ART-UI-03 기본 renderer 진입과 ART-UI-02 보고 수량 수정·신규 독립 검증을 먼저 끝낸다. 이어 사용자 선택 B1 전체 키트 변환을 새 계약으로 진행하고 독립 검증→메인 페이지 갱신 뒤 Unity 적용은 별도로 잇는다 |
-| 열린 Task·Dispatch | 신규 수정 Sol `task_137748cab042` / `ctx_09a651c9a14c`, handle `term_03b1bc8e-78c8-452a-b147-d4953470307c`. 계약 `contracts/ui-kit-renderer-fix-sol-v1.md`, 고정 입력·기동 원시 `ui-kit-renderer-fix-launch/`, 새 출력 `ui-kit-renderer-fix/`다. 브라운 독립 Astra `task_476703ef4bcd`는 전체 NOT PASS로 정산·pane 종료했다. 이전 세션은 재사용하지 않는다 |
+| 다음 첫 일 | 완료된 ART-UI-03 기본 renderer 진입과 ART-UI-02 보고 수량 수정을 신규 Astra가 독립 재검증한다. 그 판정 뒤 사용자 선택 B1 전체 키트 변환을 새 계약으로 진행하고 독립 검증→메인 페이지 갱신 뒤 Unity 적용은 별도로 잇는다 |
+| 열린 Task·Dispatch | 신규 독립 Astra `task_6afcb4059dcc` / `ctx_e0a4a4f41656`, handle `term_c6635117-73c0-4931-b226-b61623260504`. 계약 `contracts/ui-kit-renderer-review-astra-v1.md`, 고정 입력·기동 원시 `ui-kit-renderer-review-launch/`, 검증 출력 `ui-kit-renderer-review/`다. 수정 Sol `task_137748cab042`는 완료 정산·pane 종료했다. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | `term_55937e27-00b8-484e-a0d6-299b7e52cd25` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`, consumer 2). 이전 handle·Claude 세션 ID는 실행 권한으로 쓰지 않는다 |
@@ -277,6 +277,14 @@
 - 검증 정산: worker-show failed/settled·done, release retained/external_terminal, 정확한 pane close ptyKilled=true, 전체 delivery ACK 뒤0. 검증452파일(명단451+manifest 자기1)과 브라운363파일을 대조해 불일치0이다. 새 고정 명단·판정 hash는 `ui-kit-renderer-fix-launch/review-package-manifest.json`, `lead-review-audit.json`에 있다. 최초 리드 명단 비교에서 자기 manifest 한 파일을 포함하지 않은 관측도 별도 보존했고 제품 변화는 없었다.
 - 후속은 신규 Sol max가 `ui-kit-renderer-fix/package/`에 브라운363파일을 비파괴 복사하고 renderer 기본 경로 계산과 copied 보고서 수량만 고친다. 새 생성·미관 변경 없이 수정 전/후 같은 실제 호출, 명시 manifest/외부 root, 남색46·비교26 hash 보존을 확인한다. 관련6절 원문과 기존 독립 실패 사례를 계약에 포함했다. 수정 뒤 신규 Astra가 독립 재검증한다. 같은 산출물 수정은 이력분리/브라운에 이어 예정2회로3회 초과 체크포인트에 아직 도달하지 않았다.
 - 실제 신규 기동: 고정 입력877개 경로/hash 확인 뒤 vertical split, 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 `GPT-6.1-Sol max`/Codex0.162.1, backend unknown. Task `task_137748cab042` / Dispatch `ctx_09a651c9a14c`, 접수17:06:52Z. 공식 draft19,372 = 계약14,584 + 머리말4,787 +1과 runtime/handle/incarnation 대조 뒤 bare Enter 한 번, 실제 제출17:07:59.248Z·draft 소멸·Working/live를 확인했다. 비어 있지 않은99줄 완전일치, 빈 줄4개 추가로 raw 비교 false를 기록했다. durable start_unknown은 관측과 구분해 보존했다.
+
+### renderer 좁은 수정 — 구현 완료, 독립 재검증 중
+
+- Sol `msg_c2cbbf07d578`(17:30:06Z, succeeded)의 보고 `ui-kit-renderer-fix/sol-report.md` 전문을 읽었다. 사본 renderer의 기본 manifest 계산을 본문으로 옮기고 명시 빈값/공백을 거부하며 copied report의 미변형21→22 한 줄을 정정했다. 자체16진입 전10통과/6실패→후16통과/0실패, 남색46·브라운26 hash 불변을 보고했으며 독립 판정은 아직이다.
+- 현재 Task/Dispatch/identity와 worker-show completed/succeeded/settled·done을 대조하고 release retained/external_terminal, 정확한 pane close ptyKilled=true, 전체 delivery ACK 뒤0으로 정산했다. 원시 `ui-kit-renderer-fix-launch/worker-show-done.json`, `worker-release.json`, `worker-close.json`, `ack-worker-done.json`.
+- 리드가 완료450파일 명단/hash와 보고를 전수 대조해 차이0, 기존 브라운363·검증452도 불변임을 확인했다. renderer 실제 diff와 copied 보고 한 줄을 읽었다. 고정 manifest/관측은 `ui-kit-renderer-review-launch/package-manifest.json`, `lead-package-audit.json`이다. 판정 전이므로 ART-UI-03 확정1회는 유지하며 새 실패로 세지 않는다.
+- 새 Astra xhigh에게 로컬 I/O 강 필수 독립 검사·PowerShell5.1 기본/명시/관련 실패 진입과46/26 보존·수량 정정을 맡긴다. 현재450파일을 보존한 사본에서 데이터 경로/실행 identity만 적응하고 코드 변경 없이 검증한다. B1 본 변환·새 이미지 생성·Unity·대형 실행은 하지 않는다. Content C9 첫 batch 자원 조율에 Art 충돌 없음으로 회신했다(`msg_bab9aa540ce4`).
+- 실제 신규 기동: 고정 입력479개 경로/hash 및 별도 연결한 이전 패키지 manifest를 확인했다. vertical split, 최초 명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 화면 `GPT-6-Astra xhigh`/Codex0.162.1, backend unknown. Task `task_6afcb4059dcc` / Dispatch `ctx_e0a4a4f41656`, 접수17:36:05Z. 공식 draft19,512 = 계약14,724 + 머리말4,787 +1과 runtime/handle/incarnation 대조 뒤 bare Enter 한 번, 실제 제출17:37:14.112Z·draft 소멸·Working/live 확인. 비어 있지 않은90줄 완전일치, 빈 줄4개 추가로 raw 비교 false이며 durable start_unknown은 그대로 보존했다.
 
 ## 다음 계획 후보
 
