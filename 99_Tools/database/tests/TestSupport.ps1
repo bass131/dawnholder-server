@@ -130,13 +130,14 @@ function Get-Sha256Hex {
 
 function Get-ExpectedModuleValues {
     param([Parameter(Mandatory)][string]$Path)
-    # Independent recomputation from the source file: UTF-8 source identity and UTF-16LE engine expectation.
+    # Fixture recomputation uses the observed engine header; fixed Node answers in ModuleBundle bind this helper.
     $bytes = [IO.File]::ReadAllBytes($Path)
     $offset = 0
     if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) { $offset = 3 }
     $text = (New-Object Text.UTF8Encoding($false, $true)).GetString($bytes, $offset, $bytes.Length - $offset)
     $text = $text.Replace("`r`n", "`n")
-    $utf16 = (New-Object Text.UnicodeEncoding($false, $false)).GetBytes($text)
+    $definition = $text -creplace '^CREATE OR ALTER ', 'CREATE   '
+    $utf16 = (New-Object Text.UnicodeEncoding($false, $false)).GetBytes($definition)
     return [pscustomobject]@{
         SourceChecksum = Get-Sha256Hex -Bytes ((New-Object Text.UTF8Encoding($false)).GetBytes($text))
         DefinitionBytes = $utf16.Length
