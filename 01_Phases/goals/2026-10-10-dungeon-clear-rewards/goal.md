@@ -204,12 +204,12 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 | 항목 | 값 |
 |---|---|
 | 단계 | 「검증·실제 플레이」 중. 서버·봇 검증 통과, C9 범위1~4 수행 완료·제품 판정 차단 S-1·S-2 |
-| 다음 첫 일 | Art 현재 충돌 없음 확인(msg_00a35103222d) → 최신 main/World PR235(v19·41/42 로그인) 합류·봇 호환 대조 → S-1·S-2 신규 작업자 수정·신규 독립 검증·새 실화면. 메인 msg_efe8f8c75321은 기존 겹침 수정 범위에서 진행을 확인했다 |
+| 다음 첫 일 | Art 현재 충돌 없음 확인(msg_00a35103222d)·World PR235 합류 완료 → S-1·S-2 신규 Opus 선행 시험 → 신규 Astra 최소 수정 → 신규 Opus 독립 검증·새 실화면. Core의 일회용 SQL 진단과 큰 실행 시작을 조율한다. 메인 msg_efe8f8c75321·사용자 결정 msg_b78153624c8b의 최소 수정 범위만 따른다 |
 | 실행 조건 | 큰 실행 전 네 파트 통지와 새 물리/커밋 여유4GiB gate. 신규 MCP 연결 승인 필요를 메인에 미리 알린다. 다음 실화면은 종료 준비 공식 ask의 리드 확인 응답 뒤에만 Editor를 닫는다 |
 | 열린 Task·Dispatch | 없음. C9 task_4ebd46df972b / ctx_bd2dc65abca4는 outcome succeeded(수행 완료)·제품 차단으로 완료. worker-release(retained) 뒤 정확한 pane 종료 |
 | 결정 대기 | 새 제품 범위 승인 요청 없음. Art 현재 쓰기 충돌 없음 확인. 새 MCP 연결 승인은 다음 실화면 gate에서 확인 |
 | 작업 공간 / branch | content-active / feat/dungeon-clear-server-20261011(base999b1b98). main44bd4319를 충돌 없이 합쳐 d8cc35fa27be4f770bb01c434e6a18074d225ba8로 push. C9는 이 HEAD·v18에서 수행 |
-| main 합류 | World PR235 main b9f78ff07514b54b80370cbfca1f0df33baa5ac4 병합 보고 msg_32c4766c93e9 수신. 새 코드 작업 전 최신 main의 GameSession·HandlerRegistry·DungeonClearPacketContractTests·봇 로그인 단계를 대조 |
+| main 합류 | 15:53:38Z 최신 origin/main b9f78ff07514b54b80370cbfca1f0df33baa5ac4를 충돌 없이 합쳤다(merge1c593f5bf60357acf7d3bf3687e65cafa1304f66). World v19·로그인 포함. DungeonClearSmoke는 변경된 ProbeBase의 handshake→login→CharacterSelect를 상속하고, 서버 시험 fixture도 LifecycleTestWorld.LogIn을 호출함을 정적으로 확인했다. 합친 HEAD 실행·봇 재검증은 아직 미실행 |
 | PR | 클리어 PR은 아직 없음. 결함 PR221·패킷/창 PR230은 사용자 승인으로 병합됨 |
 | 리드 / Run | [Content 리드 Astra], pane term_357ea2c3-f573-4067-a8f5-a1d4c7669a21, incarnation85570fe7-8ae5-426a-b621-8fb218412149. run_b680cd89da9a, generation5. 회신 run:run_b680cd89da9a |
 | 근거 | .backups/verification/2026-10-10-dungeon-clear-rewards/(Git 밖). C9 원문 c9-screen/report.md(SHA256bee02275…), 리드 실사·정산 lead-astra-resume-1013/c9-audit-settlement.md, 사전 메모 c9-closeout-context.md. 이전 판정·원시는 보존 |
@@ -541,6 +541,8 @@ World 확인(World `msg_33914e42ac7c`, 2026-10-11T07:23:48Z, world-active `8f6c8
 - **미실행**: C9 실화면·Unity·MCP, 서버 전체 시험(10-11 판정 그대로), DB·CI·PacketGenerator·Windows `dotnet build`.
 
 ### C9 실화면 — 차단, 2026-10-14
+
+- 기록 커밋78a5000d 뒤 최신 main/World PR235를 merge1c593f5b로 합쳤다. 자동 병합 충돌0, 사용자 세 파일 hash 동일(c9-world-merge-before.json/after.json). 이전 C9 판정은 d8cc35fa의 실적이며 합친 HEAD 실적으로 확대하지 않는다. 다음 최소 수정은 표시 수명·패킷 도착 순서를 다뤄 구현 Astra xhigh(라우팅 신호2), 선행 시험·독립 검증은 각각 신규 Opus다. 강 등급을 유지한다. 계층 전면 재설계·새 아트·프로토콜 변경은 이번 수정 밖이다.
 
 - 신규 외부 Opus(task_4ebd46df972b / ctx_bd2dc65abca4, 지정/표시 claude-opus-5-5 xhigh·backend unknown)가 HEAD d8cc35fa·계약v3에서 범위1~4를 수행했다. outcome succeeded는 수행 완료이며 제품은 **차단 S-1·S-2**다. 원문 c9-screen/report.md, 리드 실사·정산 lead-astra-resume-1013/c9-audit-settlement.md.
 - S-1: 패널 열림 때 창∩패널은 709×399 14707.38, 802×451 18804.74, 1920×1080 107805.60px². S-2: 기존 StageClearUI 배너가 보상 줄을 덮음. 기존 클라이언트 귀속이나 C9를 막아 이 PR에서 수정한다(메인 msg_efe8f8c75321·Art 순서 문의 msg_9882e3a187cb). C9 같은 계약/각 번호 최초 NOT PASS 각1건·수정 시도0회.
