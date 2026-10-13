@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13). 시범 PR233은 병합됐다. 사용자는 브라운 B1을 선택했다. ART-UI-03 renderer 회귀·ART-UI-02 보고 수량 수정은 독립 재검증 PASS로 끝났다. 전체 키트 B1 구현·자체검사가 끝났고 신규 Opus가 독립 검증 중이다. Unity 적용은 변환·검증·메인 페이지 갱신 뒤 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13), 사용자 마감으로 안전 중지·정산 완료. 시범 PR233은 병합됐다. 사용자는 브라운 B1을 선택했다. ART-UI-03 renderer 회귀·ART-UI-02 보고 수량 수정은 독립 재검증 PASS로 끝났다. 전체 키트 B1 구현·자체검사가 끝났으며, 신규 Opus 검증은 마감 취소로 정산·pane 종료했다. B1 독립 판정은 없고 다음 세션 신규 Opus 강 독립 검증부터 재개한다. 메인 페이지 갱신과 Unity 적용은 그 뒤 별도다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 목표 한정 추가 파트로 시작했으나 사용자 결정 `msg_d758b8432b22`로 **정식(기본) 파트**가 됐다. 현재 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 그대로다. 이 goal이 끝나도 파트를 폐쇄하지 않으며, 메인이 [R-8](../../../00_Document/operations/ORCA.md#r8-astra-lifecycle)에 따라 현재 pane을 닫고 새 목표에는 새 리드를 연다. 다음 goal을 자동 착수하지 않는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -149,19 +149,24 @@
 - **위 결정 화면의 승인 초안과 효과**: 기본 리드 다섯에 Art를 더해 여섯으로 하고 AGENTS 역할·모델·메시지 태그, ORCA R-1 제목·본문·「다섯 리드 결정」 문장·배치 표, RESUME 진입 절차와 CLAUDE.md 「메인 세션 진입」을 반영한다. Art 경로는 `C:/Users/bass1/orca/workspaces/DawnHolder_Project/art-active`, 태그는 `[Art 리드 Astra]`·`[Art Sol]`·`[Art 검증자]`다. 역할 초안은 「Art는 03_Client/Assets/Art/ 아래 그림·UI 조각·셰이더·효과와 그 변환 도구를 맡는다. 화면 로직·게임 상태·효과를 부르는 위치는 Content가 맡는다.」이며 World는 목표 한정 추가 파트로 유지한다. 결정 자체는 지금부터 적용한다. Art는 goal 종료 뒤 파트를 폐쇄하지 않고 메인이 R-8에 따라 현재 pane을 닫고 새 목표의 새 리드를 열며, 새 메인도 Art 리드를 함께 연다. 규칙 문서는 Rules가 PR2 뒤 문서 PR로 반영한다.
 - **메인 지시(사용자 결정 아님) — 현재 작업 유지와 경계 확인**(같은 `msg_d758b8432b22`). 현재 goal 범위·쓰기 경로·태그·모델과 renderer 독립 재검증 → B1 본 변환 순서는 그대로다. 리드 대조: 현재 승인 범위에는 `Art/` 밖 기존 네 창의 그림 적용 코드와 표시 전용 효과 컴포넌트도 있으므로 위 일반 역할 문장과의 차이를 메인에 알린다. 이 결정 기록으로 제품 쓰기 범위를 줄이거나 넓히지 않는다.
 
+- **오늘 마감 — 40분 안에 안전 지점 정리**(메인 `msg_79236e0f9bac`, 2026-10-13T18:33:01Z). 사용자 원문(메인 pane Enter 제출, 리드 직접 입력으로 격상하지 않음): 「일단 오늘 작업 좀 오래해서 현황판 수정이랑 나머지 리드급 남은 작업만 마무리하고 쉴까 하는데 어때?」 및 「대시보드 결정 응답: 1) 오늘 마무리 방식 - 40분 안에 끝낼 것만 끝내고 안전 지점에서 멈출지, 지금 바로 멈출지 → A 40분 마감」. 19:15Z(04:15 KST)까지 쓰기 중지·정산하고 새 작업자·검증자·큰 실행을 열지 않는다. goal 재개 기록만 commit/push하며 미완 제품 변경은 보존한다. 리드 pane은 사용자가 닫는다.
+- **메인 중지 지시 — B1 독립 검증은 다음 세션**(`msg_2149a5802b58`, 18:40:14Z). 18:38:11Z 신규 검증 기동은 위 마감 지시를 읽기 전이었다. 두 메시지를 첫 열람한 뒤 즉시 안전 중지를 전달했다. 검증자의 착수 관측만 보존하고 「사용자 마감으로 미실행 취소」로 정산한다. 독립 PASS/FAIL 판정·확정 실패 집계 대상이 아니다. B1 완료980파일은 고정 보존한다. 원문 `ui-kit-b1-review-launch/check-next-01.json`, 초기 메인 회신 `main-stop-initial-status.json`.
+
 ## 재개 지점
 
 다음 리드는 이 블록부터 읽는다. 이전 리드의 2026-10-13T07:22:33Z 마감 기록은 commit `013f37ef`에 보존한다. 메인 재개 계약 `msg_95a32eefd146`(13:29:35Z)과 진행 지시 `msg_124204ed8a54`(13:36:56Z)에 따라 같은 goal을 Astra 리드가 이어간다. READY `msg_aab0c6f2d6fe` 뒤 본 제작 진행을 지시받았다. 기록 시각·상태 원시는 `lead-resume-astra/context.md`·`git-final.json`·`run-use.json`에 있다.
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 완료된 B1 전체 키트의 신규 Opus 독립 검증을 진행한다. 판정 뒤 메인 페이지 갱신, Unity 적용은 별도로 잇는다 |
-| 열린 Task·Dispatch | B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`, handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96`, 접수18:38:11Z·turn_started/Working/live다. 계약 `contracts/ui-kit-b1-review-opus-v1.md`, 고정 입력·기동 원시 `ui-kit-b1-review-launch/`, 검증 출력 `ui-kit-b1-review/`. B1 구현자는 완료·정산·pane 종료했으며 이전 세션은 재사용하지 않는다 |
+| 다음 첫 일 | 다음 세션에서 완료 B1 전체 키트를 **신규 Opus 강 독립 검증**한다. 중지 회차의 미완 시험/관측을 PASS로 쓰지 않는다. 기존 계약 `contracts/ui-kit-b1-review-opus-v1.md`의 요구사항을 새 Task·Dispatch·별도 근거 경로로 고정하고 새 리드가 현재 배치와 권한을 확인해 발행한다. 독립 판정 뒤 메인 페이지 갱신, Unity 적용은 별도다 |
+| 멈춘 Task·Dispatch | 열린 작업자0. B1 독립 Opus `task_5a7a117d5076` / `ctx_86117100e676`은 18:47:04Z `msg_462991215713`로 사용자 마감 취소 정산했다. 도구 상태 failed는 취소 정산용이며 검증 PASS/FAIL·확정 실패가 아니다(failureCount0). release 뒤 정확 handle `term_6658f0fb-ae35-4e49-8db0-b4edcd00fe96` pane 종료·ptyKilled=true. 중지 원문 `ui-kit-b1-review/stop-report.md`, 생명주기 원시 `ui-kit-b1-review-launch/stop-worker-*.json`. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
+| 마감 Git 기준 | 정리 전 HEAD `ae7f403dfbd1e5f0b7af7ec61730fba032d3b4bf`, origin 일치·미커밋 제품0. 마감 기록 commit은 이 goal만 포함하며 최종 HEAD/origin/미커밋 목록은 `ui-kit-b1-review-launch/stop-git-final.json`에서 확인한다. `.backups` 산출물은 로컬 보존이며 Git push 대상이 아니다 |
+| 보존할 B1 결과 | `ui-kit-b1-production/` 전체980파일, 구현 보고 SHA256 `abd01f7b50bca4f233b3368fb3dfeadd63c57985e2009e7a3290907d39900312`. pane 종료 뒤18:47:59Z에도 기존 `package-manifest.json` 대비 수량·전파일 size/hash·누락·추가 차이0(`stop-package-final-audit.json`). 이는 패키지 보존 확인이며 독립 검증 판정이 아니다. 중지 검증자의 착수물13파일은 `stop-review-manifest.json`으로 별도 보존한다 |
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | `term_55937e27-00b8-484e-a0d6-299b7e52cd25` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`, consumer 2). 이전 handle·Claude 세션 ID는 실행 권한으로 쓰지 않는다 |
 | 기록 보존 | `013f37ef`을 새 branch의 `c9c34b41`로 옮겨 push했다. 옛 branch에 최신 main을 받은 merge head `857dae52`와 새 head의 tree가 같다(diff exit 0). 옛 branch는 삭제하지 않았다 |
-| 작업자·실행 자원 | 진입 때 Art pane은 현재 리드 하나(13:34Z terminal-list.json), 열린 작업자 없음. Unity는 아직 이 작업 사본에서 연 적이 없다. 작업자는 아래 실제 기동 기록으로 갱신한다 |
+| 작업자·실행 자원 | 정산 후 Art terminal-list는 현재 리드1개만, reclaimable0. 검증자 보고의 남은 자식 실행0, 18:44:40Z 직접 읽기 전용 관측도 Unity·GameServer·sqlservr 및 이미지 renderer/b1 진입 실행0(`stop-process-snapshot.json`). Art가 시작한 컨테이너0. Core 신규 SQL 자원 부재·창 반환은 `msg_72dac87b04a3`의 타 파트 보고이며 Art 직접 검증이 아니다. 리드 pane은 사용자가 닫으며 새 실행을 열지 않는다 |
 | Unity·화면 조작 | 사용자 지시(메인 채팅 전달) 원문 「그리고 만약에 MCP 연결이나 컴퓨터 조작관련 행동이 필요하면 Codex CLI가 아닌 Codex Desktop을 통한 GPT Astra한테 명령하면 대신 조작 잘 해줄거야, 권한 최대한 자율로 줄게」. Art가 UI 창 PR에서 Unity를 열 때 쓸 수 있다. 큰 실행 전 메모리 4GB 원시와 다른 리드 알림은 그대로다 |
 | 남은 결정·준비 | 본 제작 미리보기 사용자 확인(산출 뒤). 출처 기록 세 가지(사용자, 10-27 전). 다음 Content goal 리드와 `03_Client` 소유 확정(대장장이 프리팹 쓰기 시기 포함). 현재 Content 회신 주소 `run:run_b680cd89da9a`는 재사용 전 현재 상태와 대조한다 |
 
@@ -301,13 +306,17 @@
 - 실제 B1 기동: 보호6패키지2240파일과 별도고정17입력의 실제 경로/hash를 확인하고 계약 관련6절 전문을 붙였다. 계약 SHA256 `58e45af39d05f3b4022490d064577d89bd6c70b75684331f3b7817059eb79bd4`, 15462자. 신규 vertical split 최초명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 화면 GPT-6-Astra xhigh/Codex0.162.1, backend unknown. Task `task_4f9e1b1a28e7` / Dispatch `ctx_49972272a111`, 접수18:03:37Z.
 - 공식 draft20,250 = 계약15,462 + 관측머리말4,787 +1 및 runtime/handle/incarnation 대조 뒤 bare Enter 한 번. 실제 제출18:04:53.041Z의 현재 Task/Dispatch user 계약을 세션 기록에서 식별했고 비어 있지 않은95줄이 대소문자까지 완전일치한다. 전송 빈 줄10개 증가로 raw 비교는 false다. draft 소멸·Working/live를 관측했고 durable start_unknown은 그대로 보존했다. 공개 transcript는 clipping이어서 후보 session_meta의 경로/UTC를 확인한 뒤 현재 계약만 읽었다. 리드 후보 검색의 DateTime 재파싱 오류와 수정은 launch 근거에 분리했다.
 
-### B1 본 변환 — 구현 완료, 독립 검증 중
+### B1 본 변환 — 구현 완료, 독립 검증은 사용자 마감으로 중지
 
 - 구현 완료 `msg_3748dd8b5640`(2026-10-13T18:31:24Z, succeeded)의 `ui-kit-b1-production/implementation-report.md` 전문을 읽었다. 자체33조각/12미리보기·표면21변환/12byte보존·기존B1 10개동일·46재현·104픽셀검사·205글자/17장식/최소11UI·정상거부10진입을 보고했다. 이 수치는 구현자 자체 결과이며 독립 판정 전이다. 새 생성0, 페이지·Unity 미실행이다.
 - 현재 Task/Dispatch/identity와 worker-show completed/succeeded/settled·done을 대조하고 release retained/external_terminal, exact pane close ptyKilled=true, 전체 delivery ACK 뒤0으로 정산했다. 리드는 실제980파일 전경로·size/hash를 명단과 대조해 차이0, overview/components 1x 두 그림을 직접 열어 표본 확인했다. 보고 SHA256 `abd01f7b50bca4f233b3368fb3dfeadd63c57985e2009e7a3290907d39900312`, 고정명단/리드감사 `ui-kit-b1-review-launch/package-manifest.json`·`lead-package-audit.json`이다.
 - 신규 `claude-opus-5-5` 독립 검증을 준비한다(Astra 구현, 강 로컬I/O). 새 테스트·실제 정상/거부진입·사본2회 재현·전체33픽셀·12그림/글자/여백·원본보존·규칙/보고 실사를 맡긴다. 코드는 바꾸지 않는 사본의 자료 경로/actor만 적응하며 완료980과 이전2240은 읽기 전용이다. Claude 프로세스 한정 TEMP/TMP는 `.backups/tmp/art-b1-review/`, Git Bash `/tmp`는 그대로다.
 
 - 실제 신규 독립 기동: 완료980파일 manifest와 이전2240 보호목록·추가22고정입력 및 출력부모를 기계 확인했다. 계약15993자/SHA256 `9eb05bca8cbbbde697c1d5fca57cb5cdb56040c1ae90d6bc19bca29694dea450`. 신규 vertical split에서 프로세스 TEMP/TMP만 명시한 뒤 `claude --model claude-opus-5-5`, 화면 Opus5.5 xhigh/ClaudeCode2.1.296, backend unknown. 준비 satisfied/모달 없음, Task `task_5a7a117d5076` / Dispatch `ctx_86117100e676`, 접수18:38:11Z. receipt input_accepted와 turn_started·실제 Working/live를 확인했으며 별도 Enter 복구는 하지 않았다. 권한·전역 설정을 바꾸지 않았다.
+- 마감 지시 첫 열람 뒤 18:43:08Z 정확 Dispatch에 안전 중지를 보냈다. 이후 제한 화면에서 새 시험 작성 계속이 보여 18:46Z 지시 전 check0을 거쳐 정확 Claude pane에 공식 `terminal send --interrupt`와 태그·메시지 확인 안내만 보냈다. 원시 `stop-request.json`·`stop-screen-01.json`·`stop-screen-02.json`·`stop-attention.json`이며 접수 성공과 실제 정산을 구분한다.
+- 첫 발생 교정: [기동 직전 check](../../../00_Document/operations/ORCA.md#mailbox-wait)를 이번 18:38Z 기동에서 빠뜨려 18:33Z 마감 지시를 뒤늦게 읽었다. 교정 층은 리드의 기존 기동 관문 준수다. 사용자 마감으로 신규 세션을 열 수 없고 제품 코드와 무관하므로 이 사실과 재개 관문을 기록한다. 새 반복 규칙·검사 도구·전역 설정은 만들지 않으며 제품 결함·검증 확정 실패로 집계하지 않는다.
+- 중지 결과: 검증자는 18:46:09Z 지시를 읽고 착수 관측만 남겼다. `stop-report.md` 전문을 읽었으며 SHA256은 `87a5ee8f29962952a4b0971b4156a384e1e0eb7ccddbce65e59483597e5a1171`이다. 맥락 메모·시험 보조3파일·시작 보호 감사만 수행했고 픽셀/그림/사본재현/실제진입/끝감사/독립 판정은 미실행이다. 18:47:04Z worker_done의 현재 identity·Task/Dispatch·명시 outcome을 대조하고 failed/settled/done을 확인했다. release retained/external_terminal 뒤 정확 pane close ptyKilled=true, delivery ACK0, 현재 리드 pane1·reclaimable0이다. 원시 `stop-worker-show.json`·`stop-worker-release.json`·`stop-worker-close.json`·`stop-terminal-list.json`·`stop-reclaimable.json`.
+- 생존 신호 helper로 저장된 heartbeat2건과 완료1건을 측정했다. 최대 간격286초, 300초 초과0(`stop-liveness.json`). 검증자가 보고한 실행 중 자식0과 리드의 패키지 보존 확인을 독립 PASS로 확대하지 않는다. 새 검증자는 다음 세션 별도 근거 경로에서 시작한다.
 
 ## 다음 계획 후보
 
