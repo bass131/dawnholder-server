@@ -143,8 +143,8 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 남색·금(A) 본 제작 Sol 결과를 받아 원본/복사본·생성 상한·33조각과 실제 조합 미리보기를 대조한다. 「[E] 다음」과 장식 겹침·판 중앙 개선을 확인한다. 독립 검토와 메인을 통한 사용자 본 제작 확인 뒤 Unity 적용 계약으로 잇는다 |
-| 열린 Task·Dispatch | 본 제작 Sol `task_0baaa5d2e39e` / `ctx_1a7191ecafab`, handle `term_6cb58aba-6f9c-4e7c-82f6-e56394361e37`. 계약 `contracts/ui-kit-production-sol-v1.md`, 고정 입력·기동 원시 `ui-kit-production-launch/`. 이전 재검증·시안 Task는 정산한 기록이며 재사용하지 않는다 |
+| 다음 첫 일 | 남색·금(A) 본 제작의 신규 Astra 독립 검토를 진행한다. Sol 보고·원본/복사본·생성 상한·33조각/12미리보기의 리드 실사를 마쳤다. 독립 검토와 메인을 통한 사용자 본 제작 확인 뒤 Unity 적용 계약으로 잇는다 |
+| 열린 Task·Dispatch | 독립 Astra `task_13507a85da27` / `ctx_113419c2424e`, handle `term_17d436cf-3c3b-4a66-8de3-5a462c5feb4e`. 계약 `contracts/ui-kit-production-review-astra-v1.md`, 고정 입력·기동 원시 `ui-kit-production-review-launch/`, 출력 `ui-kit-production-review/`. 본 제작 Sol `task_0baaa5d2e39e` / `ctx_1a7191ecafab`는 완료·정산·pane 종료했으며 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | `term_55937e27-00b8-484e-a0d6-299b7e52cd25` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`, consumer 2). 이전 handle·Claude 세션 ID는 실행 권한으로 쓰지 않는다 |
@@ -233,13 +233,18 @@
 - 선택 요청: 메인 `msg_f51655d5e2fd`(06:40:54Z), 리드 추천 A. 현황판 `art-ui-style`에 올라갔다.
 - 첫 발생 교정 기록: ORCA [R-5](../../../00_Document/operations/ORCA.md#r5-worker-launch) 2항은 같은 worktree 작업자를 `orca terminal split --direction vertical`로 열라고 한다. 이번 goal의 첫 두 Sol(04:17Z, 04:57Z)은 vertical이었지만, 그 뒤 PR233 검증자 둘(05:17Z, 05:45Z)과 스타일 시안 Sol(05:55Z)은 `--direction horizontal`로 열었다(리드 대화 기록의 split 명령). 다음 기동부터 vertical로 연다. 반복 규칙은 두 번째 발생 때 판단한다.
 
-### 남색·금 UI 조각 본 제작 — 진행 중
+### 남색·금 UI 조각 본 제작 — 제작 완료, 독립 검토
 
 - 사용자 A 선택과 메인 진행 지시를 반영했다. 계약은 `contracts/ui-kit-production-sol-v1.md`, 작업 폴더는 `ui-kit-production/`다. 입력 22파일·새 출력 부모의 존재/hash/cwd를 확인했다(`ui-kit-production-launch/contract-inputs.json`). 저장소 제품 변경 없이 조각 12종·변형 33장과 네 창/HUD 미리보기를 만든다. 새 이미지 생성 상한은 네 번이다.
 - 신규 `gpt-6.1-sol` max를 리드 아래 `vertical split`으로 기동했다. 화면 `GPT-6.1-Sol max`, Codex 0.162.1, backend unknown. Task `task_0baaa5d2e39e`, Dispatch `ctx_1a7191ecafab`, 계약 접수 시각 2026-10-13T13:48:06Z다.
 - 최초 receipt는 `input_accepted`/`turn_start_unobserved`였다. JSON draft 20,851자는 계약 16,063자 + 관측 머리말 4,787자 대비 +1자로 R-5 조건을 충족했다. 새 pane·runtime·incarnation을 대조한 뒤 텍스트 없는 Enter 한 번으로 복구했다. 이후 draft 소멸·Working 화면과 worker-show의 `live`/`activity=working`을 확인했다. 저장된 lifecycle stage `start_unknown`은 수동 변경하지 않았다.
 - 제출 원문은 자동 AGENTS 주입과 구분한 실제 user response(13:49:56.028Z)로 대조했다. 전송 중 관련 규칙 절 경계에 빈 줄 여섯 개가 추가되어 raw 전문 비교는 불일치지만, 비어 있지 않은 모든 줄의 문자·공백·순서는 일치했다. `submitted-contract-comparison.json`, `contract-line-comparison.json`, `contract-transport-diff.txt`를 보존하고 메인에 이 차이를 보고한다. 제출 재전송·중복 작업자·임의 정산은 하지 않았다.
-- 자체 제작 결과·독립 판정·Unity 적용은 아직 없다. 다음은 Sol 보고 실사와 신규 독립 검토, 사용자 본 제작 그림 확인이다. Core·Content에 Art의 Unity/WSL/7777/Docker 점유 없음과 향후 실행 전 재조율을 알렸다(`core-resource-reply.json`, `content-resource-reply.json`).
+- Sol 완료 `msg_ad8549a1cf12`(2026-10-13T14:53:17Z, succeeded): 12종·33 PNG, 6종×2해상도 미리보기, 명세·출처·재현 스크립트 총 214파일. 원문은 `ui-kit-production/sol-report.md`다. 자체 검사 33/33·장식 최소 여백 11.75 UI·두 실행 46파일 hash 일치를 보고했으며 이는 독립 판정 전 구현자 결과다.
+- 리드가 실제 214파일/보고 명단의 차이 0, 원본 생성 폴더 4장과 복사본의 SHA256 일치, PNG IHDR 크기, Sol의 실제 imagegen 호출 4건을 대조했다(`ui-kit-production-review-launch/lead-source-audit.json`, `lead-generation-call-audit.json`, `package-manifest.json`). overview/components를 직접 확인했다. 생성 상한 네 번은 소진됐다.
+- 정산: 현재 identity/Task/Dispatch와 완료 원문 대조, worker-show `succeeded/settled`·Dispatch `completed`, release `retained/external_terminal`, 정확한 pane close `ptyKilled=true`, 전체 delivery ACK 뒤 메시지 0(`ui-kit-production-launch/worker-show-done.json`, `worker-release.json`, `worker-close.json`, `ack-production-done.json`). heartbeat 시각은 null이므로 수행했다고 보고하지 않는다.
+- 독립 검토는 신규 Astra가 아트/출처를 실사하고, 실제 8개 스크립트 1,575줄의 I/O·재현 경로는 강 필수에 맞춰 독립 검사·진입 실행을 한다. 원본 보존 때문에 검증 전용 사본의 경로 상수만 적응하며 그 diff와 실행 제한을 판정에 명시한다. 원본 경로 실행·Unity 코드 강 검증·게임 화면 성공으로 확대하지 않는다. 계약은 `contracts/ui-kit-production-review-astra-v1.md`다.
+- 독립 기동(한국 시각 10-14): 최초 명령 `codex --model gpt-6-astra -c model_reasoning_effort=xhigh`, 화면 `GPT-6-Astra xhigh`, backend unknown, vertical split, 모달 없는 준비 화면 확인. 15:04:36Z Task `task_13507a85da27` / Dispatch `ctx_113419c2424e` 접수 후 `turn_start_unobserved`였다. draft 25,774자는 계약 20,986 + 머리말 4,787 대비 +1로 조건을 충족해 텍스트 없는 Enter 한 번을 보냈다. 실제 제출 15:05:43.413Z·draft 소멸·Working/live를 확인했다. 제출 원문의 151개 비어 있지 않은 줄은 완전히 같고 빈 줄 6개가 추가되어 raw 비교는 false다(`ui-kit-production-review-launch/submitted-contract-comparison.json`). durable stage는 `start_unknown` 그대로 보존했다.
+- 독립 판정·사용자 본 제작 확인·Unity 적용은 아직 없다. Core·Content에 Art의 Unity/WSL/7777/Docker 점유 없음과 향후 실행 전 재조율을 알렸다(`core-resource-reply.json`, `content-resource-reply.json`).
 
 ## 다음 계획 후보
 
