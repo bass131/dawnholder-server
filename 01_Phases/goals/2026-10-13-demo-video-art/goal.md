@@ -1,6 +1,6 @@
 # 10-28 시연 아트 — UI 창·성장 효과·발판 교체
 
-상태: **범위 승인(2026-10-13). 시범 PR233은 병합됐다. 남색·금(A)의 규칙 결함 수정과 브라운 비교 시안 제작을 마쳐 신규 Astra의 독립 검증 중이다. 색·재질의 사용자 선택과 Unity 적용은 아직 없다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
+상태: **범위 승인(2026-10-13). 시범 PR233은 병합됐다. 브라운 비교의 독립 기술 검증은 통과했으나 renderer 기본 호출 회귀 ART-UI-03으로 전체 NOT PASS다. 새 작업자에게 좁은 수정을 반환한다. 색·재질의 사용자 선택과 Unity 적용은 아직 없다. 이어갈 곳은 [재개 지점](#재개-지점)이다. 다음 goal은 자동으로 시작하지 않는다.**
 
 - 담당: Art 리드(`[Art 리드 Astra]`, 2026-10-13 중간 재개부터). 이전 리드는 `[Art 리드 Opus]`였다. Art는 [R-1](../../../00_Document/operations/ORCA.md#r1-management-placement)의 승인 밖 새 파트이고, 승인 범위는 10-28 시연 영상과 11-06 발표자료를 위한 아트 트랙 하나다. 이 goal이 끝나면 메인이 작업 공간을 닫는다.
 - 시작 기준 `origin/main` = `a570dbf333ce98b1ca8318338e85295056041844`.
@@ -146,8 +146,8 @@
 
 | 항목 | 값 |
 |---|---|
-| 다음 첫 일 | 신규 독립 검증의 A) ART-UI-01 수정/남색 보존과 B) 브라운 출처·구조/비교 조건 판정 원문을 확인한다. 메인에 전달한 비교4장에 대한 사용자 색·재질 선택 뒤 Unity 적용으로 잇는다 |
-| 열린 Task·Dispatch | 신규 독립 Astra `task_476703ef4bcd` / `ctx_469d242a73e4`, handle `term_11556aab-4a9a-47fd-aeff-1b4ba20676db`. 계약 `contracts/ui-kit-brown-review-astra-v1.md`, 고정 입력·기동 원시 `ui-kit-brown-review-launch/`, 검증 출력 `ui-kit-brown-review/`. 수정/브라운 Sol `task_c3f831b82a65`는 완료 정산·pane 종료했다. 이전 제작자/검증자 세션은 재사용하지 않는다 |
+| 다음 첫 일 | ART-UI-03 기본 renderer 진입과 ART-UI-02 보고 수량을 새 Sol이 사본에서 수정하고 새 독립 검증을 거친다. 비교4장에 대한 사용자 색·재질 선택 뒤 Unity 적용으로 잇는다 |
+| 열린 Task·Dispatch | 신규 수정 Sol `task_137748cab042` / `ctx_09a651c9a14c`, handle `term_03b1bc8e-78c8-452a-b147-d4953470307c`. 계약 `contracts/ui-kit-renderer-fix-sol-v1.md`, 고정 입력·기동 원시 `ui-kit-renderer-fix-launch/`, 새 출력 `ui-kit-renderer-fix/`다. 브라운 독립 Astra `task_476703ef4bcd`는 전체 NOT PASS로 정산·pane 종료했다. 이전 세션은 재사용하지 않는다 |
 | 작업 공간 / branch | `art-active` / `feat/demo-video-art-ui-20261013`(base `44bd4319`, 진입 HEAD `c9c34b4197186d8291b5645bfef226f95996d132`, 당시 원격 일치·미커밋 0) |
 | PR | [PR233](https://github.com/bass131/dawnholder-server/pull/233) - 10-28 시연 아트 시범. 2026-10-13T09:29:28Z 병합, merge `9c731f7cc2182724b757d71ab7d28d0dbd6c0b23`(`lead-resume-astra/pr233-merged.json`) |
 | 리드 세션 / Run | `term_55937e27-00b8-484e-a0d6-299b7e52cd25` / `run_79ffbf5c8612`(회신 주소 `run:run_79ffbf5c8612`, consumer 2). 이전 handle·Claude 세션 ID는 실행 권한으로 쓰지 않는다 |
@@ -253,7 +253,7 @@
 - 비차단 관찰: 장식 3종의 저알파 잔여 총122픽셀(max alpha 2/255, 원시 탐색 exit1 유지), 최초 inspector hash 미기록, 특정 root 이식성, heartbeat 미확인. 임의로 장식 alpha를 지우지 않고 후속 실제 배경에서 확인한다. 검증자 자체 스키마 오류 두 건은 원시·수정과 함께 공개되어 있으며 제품 실패로 세지 않는다.
 - 최종 정산 원시 `ui-kit-production-review-launch/worker-show-done.json`, `worker-release.json`, `worker-close.json`, `ack-worker-done.json`: failed/settled, retained/external_terminal 뒤 정확한 검증 pane만 종료(ptyKilled=true), 전체 delivery ACK 뒤 메시지0. 고정 원문/입력/241파일은 보존한다.
 
-### 브라운 비교 시안 — 제작 완료, 독립 검증 중
+### 브라운 비교 시안 — B 기술 PASS, A 신규 회귀 수정
 
 - 신규 사용자 결정과 순서 원문은 `ui-kit-brown-compare-launch/main-user-decision.json`, `main-order-direction.json`이다. 남색 검토 입력을 바꾸지 않고 끝냈다. 신규 Sol 계약 `contracts/ui-kit-brown-compare-sol-v1.md`는 ART-UI-01 수정과 비교 시안을 한 작업으로 묶되 수정부터 수행한다. 기존 제작·검증 폴더는 읽기 전용으로 보존하고 새 폴더의 `repaired-navy/`에서 이력을 분리한 뒤 46개 기존 산출 hash 불변을 확인한다.
 - Content `2026-10-10-dungeon-clear-rewards/r9-screen/runs/screens/B-03-town-first-screen-closed-1920x1080.png`와 그 Play 보고를 확인했다. 원본을 읽기 전용으로 유지한 바이트 동일 사본과 SHA256·좌표별 색 표본은 `ui-kit-brown-compare-launch/inputs/`, `game-colour-samples.json`에 있다. 기존 HUD는 표본/생성 참고에 쓰지 않았다. 새로운 Unity 실행은 없다.
@@ -266,6 +266,12 @@
 - 새 독립 계약은 `contracts/ui-kit-brown-review-astra-v1.md`다. 신규 Astra xhigh가 A) ART-UI-01 수정/남색 보존과 B) 브라운 출처/금테·alpha·구조/색·재질 분리/동일 배경 비교를 별도 판정한다. 로컬 I/O 코드의 강 필수 검증이며 자기 사본의 manifest 경로만 적응하고 코드 변경 없이 실제 진입·독립 검사를 수행한다. Unity/게임/DB 검증은 포함하지 않는다.
 - Core 진단 창 UTC16:08:35~18:08:35의 메모리 우선권을 확인했다(`msg_64710d5d132b`). Art는 Node/PowerShell 이미지 조립만 수행하며 Unity·WSL·서버·DB·Docker·7777·대형 빌드 점유는 없다.
 - 고정 입력417개 경로/hash를 확인했다(브라운363파일 포함, live goal만 리드 상태 갱신 허용). 신규 Astra xhigh를 vertical split으로 기동해 최초 명령·화면 표시를 확인했다. backend unknown. Task `task_476703ef4bcd` / Dispatch `ctx_469d242a73e4`, 접수16:32:39Z. draft25,875 = 계약21,087 + 머리말4,787 +1 조건과 동일 runtime/handle/incarnation을 대조한 뒤 bare Enter 한 번, 실제 제출16:33:55.374Z·draft 소멸·Working/live를 확인했다. 제출137개 비어 있지 않은 줄은 정확히 같고 빈 줄4개 추가로 raw 비교 false다(`submitted-contract-comparison.json`). durable stage는 start_unknown으로 남겨 관측과 구분했다.
+
+- 독립 최종 `msg_c591873c5dd0`(17:00:31Z, failed): `ui-kit-brown-review/verdict.md` 전문을 읽었다. **전체 NOT PASS, A NOT PASS, B 기술 PASS**다. ART-UI-01 이력 분리는 해소됐다. ART-UI-03은 `render-preview.ps1:4`의 선택 HistoryManifest 기본식이 PowerShell5.1 parameter binding에서 빈 PSScriptRoot로 실패하는 신규 회귀(중간·차단·이번 Sol)다. 정상 OutputRoot만 준 기존 호출 두 cwd 모두 exit1이며 명시 manifest는 exit0이다. 브라운 원구현 계약1판/ART-UI-03 최초 확정 NOT PASS **1회**로 기록하고 해소된 ART-UI-01의 과거1회와 합산하지 않는다.
+- ART-UI-02는 `sol-report.md:65`의 미변형21→실제22 보고 오기(낮음·비차단)다. 변형 원조각11+미변형22=33이며 파일 누락은 없다. 검증자의 중간 sol-context 귀속과 리드의 :64 위치 전달은 오류여서 각각 정정했다. 원문·정정 통지는 `ui-kit-brown-review-launch/`에 보존한다. 독립 픽셀116·글자109 검사, 최종1x 최소 여백17.029386UI, 남색46·브라운26 hash 보존은 기술 근거이며 사용자 미관·Unity 승인과 구분한다.
+- 검증 정산: worker-show failed/settled·done, release retained/external_terminal, 정확한 pane close ptyKilled=true, 전체 delivery ACK 뒤0. 검증452파일(명단451+manifest 자기1)과 브라운363파일을 대조해 불일치0이다. 새 고정 명단·판정 hash는 `ui-kit-renderer-fix-launch/review-package-manifest.json`, `lead-review-audit.json`에 있다. 최초 리드 명단 비교에서 자기 manifest 한 파일을 포함하지 않은 관측도 별도 보존했고 제품 변화는 없었다.
+- 후속은 신규 Sol max가 `ui-kit-renderer-fix/package/`에 브라운363파일을 비파괴 복사하고 renderer 기본 경로 계산과 copied 보고서 수량만 고친다. 새 생성·미관 변경 없이 수정 전/후 같은 실제 호출, 명시 manifest/외부 root, 남색46·비교26 hash 보존을 확인한다. 관련6절 원문과 기존 독립 실패 사례를 계약에 포함했다. 수정 뒤 신규 Astra가 독립 재검증한다. 같은 산출물 수정은 이력분리/브라운에 이어 예정2회로3회 초과 체크포인트에 아직 도달하지 않았다.
+- 실제 신규 기동: 고정 입력877개 경로/hash 확인 뒤 vertical split, 최초 명령 `codex --model gpt-6.1-sol -c model_reasoning_effort=max`, 화면 `GPT-6.1-Sol max`/Codex0.162.1, backend unknown. Task `task_137748cab042` / Dispatch `ctx_09a651c9a14c`, 접수17:06:52Z. 공식 draft19,372 = 계약14,584 + 머리말4,787 +1과 runtime/handle/incarnation 대조 뒤 bare Enter 한 번, 실제 제출17:07:59.248Z·draft 소멸·Working/live를 확인했다. 비어 있지 않은99줄 완전일치, 빈 줄4개 추가로 raw 비교 false를 기록했다. durable start_unknown은 관측과 구분해 보존했다.
 
 ## 다음 계획 후보
 
